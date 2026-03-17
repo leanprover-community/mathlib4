@@ -30,7 +30,7 @@ namespace Derivative
 /--
 Normalized derivative $D = \frac{1}{2\pi i} \frac{d}{dz}$.
 -/
-@[expose] public noncomputable def normalizedDerivOfComplex (F : ℍ → ℂ) : ℍ → ℂ :=
+def normalizedDerivOfComplex (F : ℍ → ℂ) : ℍ → ℂ :=
   fun (z : ℍ) ↦ (2 * π * I)⁻¹ * deriv (F ∘ ofComplex) z
 
 /-- We denote the normalized derivative by `D`. -/
@@ -49,8 +49,8 @@ theorem normalizedDerivOfComplex_mdifferentiable {F : ℍ → ℂ} (hF : MDiff F
   intro z hz
   simp [normalizedDerivOfComplex, c, Function.comp_apply, ofComplex_apply_of_im_pos hz]
 
-/--
-Basic properties of derivatives: linearity, Leibniz rule, etc.
+/-!
+Basic properties of derivatives.
 -/
 @[simp]
 theorem normalizedDerivOfComplex_add (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
@@ -71,6 +71,12 @@ theorem normalizedDerivOfComplex_sub (F G : ℍ → ℂ) (hF : MDiff F) (hG : MD
   simp only [normalizedDerivOfComplex, Pi.sub_apply]
   rw [show (F - G) ∘ ofComplex = F ∘ ofComplex - G ∘ ofComplex from rfl,
     deriv_sub hFz hGz, mul_sub]
+
+@[simp]
+theorem normalizedDerivOfComplex_const (c : ℂ) : D (fun _ ↦ c) = 0 := by
+  ext z
+  change (2 * π * I)⁻¹ * deriv (fun _ : ℂ ↦ c) (z : ℂ) = 0
+  simp [deriv_const]
 
 @[simp]
 theorem normalizedDerivOfComplex_smul (c : ℂ) (F : ℍ → ℂ) (hF : MDiff F) : D (c • F) = c • D F := by
@@ -100,19 +106,15 @@ theorem normalizedDerivOfComplex_mul (F G : ℍ → ℂ) (hF : MDiff F) (hG : MD
   simp [Function.comp_apply, ofComplex_apply]
   ring
 
-
 @[simp]
-theorem normalizedDerivOfComplex_sq (F : ℍ → ℂ) (hF : MDiff F) : D (F ^ 2) = 2 * F * D F := by
-  rw [sq, normalizedDerivOfComplex_mul F F hF hF]
+theorem normalizedDerivOfComplex_pow (F : ℍ → ℂ) (n : ℕ) (hF : MDiff F) :
+    D (F ^ n) = n * F ^ (n - 1) * D F := by
   ext z
-  simp only [Pi.add_apply, Pi.mul_apply, Pi.ofNat_apply]
+  have hFz := UpperHalfPlane.mdifferentiableAt_iff.mp (hF z)
+  simp only [normalizedDerivOfComplex, Pi.mul_apply, Pi.pow_apply]
+  rw [show (F ^ n) ∘ ofComplex = (F ∘ ofComplex) ^ n from rfl, deriv_pow hFz n]
+  simp [Function.comp_apply, ofComplex_apply]
   ring
-
-@[simp]
-theorem normalizedDerivOfComplex_const (c : ℂ) : D (Function.const _ c) = 0 := by
-  ext z
-  change (2 * π * I)⁻¹ * deriv (fun _ : ℂ ↦ c) (z : ℂ) = 0
-  simp [deriv_const]
 
 /--
 Serre derivative of weight $k$.
