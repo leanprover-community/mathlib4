@@ -17,7 +17,6 @@ not modulized: MathlibTest/Clear_.lean
 not modulized: MathlibTest/CommDiag.lean
 not modulized: MathlibTest/CompileInductive.lean
 not modulized: MathlibTest/Complex.lean
-not modulized: MathlibTest/ComputeDegree.lean
 not modulized: MathlibTest/Constructor.lean
 not modulized: MathlibTest/Continuity.lean
 not modulized: MathlibTest/Contrapose.lean
@@ -33,7 +32,6 @@ not modulized: MathlibTest/DeprecateTo.lean
 not modulized: MathlibTest/DeprecatedModule.lean
 not modulized: MathlibTest/DeprecatedModuleTest.lean
 not modulized: MathlibTest/DeprecatedSyntaxLinter.lean
-not modulized: MathlibTest/DeriveFintype.lean
 not modulized: MathlibTest/DeriveToExpr.lean
 not modulized: MathlibTest/DifferentialGeometry/Notation/Advanced.lean
 not modulized: MathlibTest/DifferentialGeometry/Notation/Basic.lean
@@ -62,7 +60,6 @@ not modulized: MathlibTest/GRewrite.lean
 not modulized: MathlibTest/GuardGoalNums.lean
 not modulized: MathlibTest/GuardHypNums.lean
 not modulized: MathlibTest/HashCommandLinter.lean
-not modulized: MathlibTest/Have.lean
 not modulized: MathlibTest/HaveLetLinter.lean
 not modulized: MathlibTest/Header.lean
 not modulized: MathlibTest/HeaderFail.lean
@@ -134,7 +131,6 @@ not modulized: MathlibTest/ValidatePRTitle.lean
 not modulized: MathlibTest/ValuedCSP.lean
 not modulized: MathlibTest/Variable.lean
 not modulized: MathlibTest/VersoHeader.lean
-not modulized: MathlibTest/abel.lean
 not modulized: MathlibTest/aesop_cat.lean
 not modulized: MathlibTest/algebraize.lean
 not modulized: MathlibTest/antidiagonal.lean
@@ -240,7 +236,6 @@ not modulized: MathlibTest/slim_check.lean
 not modulized: MathlibTest/solve_by_elim/basic.lean
 not modulized: MathlibTest/solve_by_elim/dummy_label_attr.lean
 not modulized: MathlibTest/solve_by_elim/instances.lean
-not modulized: MathlibTest/spread.lean
 not modulized: MathlibTest/sqrt.lean (disabled test)
 not modulized: MathlibTest/success_if_fail_with_msg.lean
 not modulized: MathlibTest/superscript.lean
