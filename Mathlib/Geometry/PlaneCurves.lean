@@ -207,9 +207,9 @@ lemma normal_hasDerivAt_aux {I : Set ℝ} [I.OrdConnected] (hI : IsOpen I)
   {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc : ContDiffOn ℝ 2 c I) {t : ℝ} (ht : t ∈ I) :
   HasDerivAt (normal c) (deriv (normal c) t) t := by
   have hd : ContDiffOn ℝ 1 (deriv c) I := hc.deriv_of_isOpen hI (by norm_num)
-  refine' hasDerivAt_deriv_iff.mpr _
   have h_diff : DifferentiableOn ℝ (deriv c) I := hd.differentiableOn (by norm_num)
-  unfold normal; simp
+  unfold normal 
+  simp only [Fin.isValue, hasDerivAt_deriv_iff]
   have h : DifferentiableOn ℝ (fun t ↦ !₂[-(deriv c t) 1, (deriv c t) 0]) I := by
     rw [differentiableOn_piLp] at *
     intro i
@@ -310,7 +310,7 @@ def initialCurve_of_orientedCurvature (κ : ℝ → ℝ) (t₀ : ℝ) (p₀ : Eu
 
 /-- Auxiliary lemma which says that the angle function (fun x ↦ θ₀ + ∫ξ in t₀..x, κ ξ) is continuous
 on the interval I. -/
-lemma continuousOn_angle_fun_aux {I : Set ℝ} [h_int : I.OrdConnected] (hI : IsOpen I) {κ : ℝ → ℝ}
+lemma continuousOn_angle_fun_aux {I : Set ℝ} [hIoC : I.OrdConnected] (hI : IsOpen I) {κ : ℝ → ℝ}
   (hκ : ContinuousOn κ I) {t₀ : ℝ} (ht₀ : t₀ ∈ I) (θ₀ : ℝ) :
   ContinuousOn (fun x ↦ θ₀ + ∫ (ξ : ℝ) in t₀..x, κ ξ) I := by
   have h₁ : ContinuousOn (fun x ↦ θ₀) I := continuousOn_const
@@ -322,14 +322,14 @@ lemma continuousOn_angle_fun_aux {I : Set ℝ} [h_int : I.OrdConnected] (hI : Is
     have hd : HasDerivAt (fun x => ∫ ξ in t₀..x, κ ξ) (κ x) x := by
       apply_rules [intervalIntegral.integral_hasDerivAt_right]
       · apply_rules [ContinuousOn.intervalIntegrable, hκ]
-        exact hκ.mono (h_int.uIcc_subset ht₀ hx)
+        exact hκ.mono (hIoC.uIcc_subset ht₀ hx)
       · exact ContinuousOn.stronglyMeasurableAtFilter hI hκ x hx
       · exact hκ.continuousAt (hI.mem_nhds hx)
     exact hd.continuousAt.continuousWithinAt
   exact h₁.add h₂
 
 protected lemma _root_.HasDerivAt.initialCurve_of_orientedCurvature {I : Set ℝ}
-  [h_int : I.OrdConnected] (hI : IsOpen I) {κ : ℝ → ℝ} (hκ : ContinuousOn κ I) {t₀ : ℝ}
+  [hIoC : I.OrdConnected] (hI : IsOpen I) {κ : ℝ → ℝ} (hκ : ContinuousOn κ I) {t₀ : ℝ}
   (ht₀ : t₀ ∈ I) (p₀ : EuclideanSpace ℝ (Fin 2)) (θ₀ : ℝ) {t : ℝ} (ht : t ∈ I) :
   HasDerivAt (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)
     !₂[Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ), Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ)] t := by
@@ -350,7 +350,7 @@ protected lemma _root_.HasDerivAt.initialCurve_of_orientedCurvature {I : Set ℝ
       exact intervalIntegral.hasDerivWithinAt_of_continuousOn_interval h' ht₀ ht
   exact hI.mem_nhds ht
 
-lemma second_deriv_of_initialCurve_of_orientedCurvature {I : Set ℝ} [h_int: I.OrdConnected]
+lemma second_deriv_of_initialCurve_of_orientedCurvature {I : Set ℝ} [hIoC : I.OrdConnected]
   (hI : IsOpen I) {κ : ℝ → ℝ} (hκ : ContinuousOn κ I) {t₀ : ℝ} (ht₀ : t₀ ∈ I)
   (p₀ : EuclideanSpace ℝ (Fin 2)) (θ₀ : ℝ) {t : ℝ} (ht : t ∈ I) :
   iteratedDeriv 2 (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀) t =
@@ -396,7 +396,7 @@ lemma second_deriv_of_initialCurve_of_orientedCurvature {I : Set ℝ} [h_int: I.
       exact hint
   exact h'.derivWithin (hI.uniqueDiffWithinAt ht)
 
-lemma _root_.HasDerivAt.deriv_initialCurve_of_orientedCurvature {I : Set ℝ} [h_int: I.OrdConnected]
+lemma _root_.HasDerivAt.deriv_initialCurve_of_orientedCurvature {I : Set ℝ} [hIoC : I.OrdConnected]
   (hI : IsOpen I) {κ : ℝ → ℝ} (hκ : ContinuousOn κ I) {t₀ : ℝ} (ht₀ : t₀ ∈ I)
   (p₀ : EuclideanSpace ℝ (Fin 2)) (θ₀ : ℝ) {t : ℝ} (ht : t ∈ I) :
   HasDerivAt (deriv (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀))
