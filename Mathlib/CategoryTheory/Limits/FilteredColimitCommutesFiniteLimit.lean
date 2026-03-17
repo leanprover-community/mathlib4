@@ -82,13 +82,13 @@ theorem colimitLimitToLimitColimit_injective :
     dsimp at x y
     -- Since the images of `x` and `y` are equal in a limit, they are equal componentwise
     -- (indexed by `j : J`),
-    replace h := fun j => ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
-    -- and they are equations in a filtered colimit,
-    -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`a9
-    simp only [comp_obj, colim_obj, lim_obj, ι_colimitLimitToLimitColimit_π_apply] at h
-    conv at h =>
-      enter [j]
-      erw [colimit_eq_iff]
+    have h (j : J) :
+      (colimit.ι ((curry.obj F).obj j) kx)
+        ((limit.π ((curry.obj (swap K J ⋙ F)).obj kx) j) x) =
+        (colimit.ι ((curry.obj F).obj j) ky)
+          ((limit.π ((curry.obj (swap K J ⋙ F)).obj ky) j) y) := by
+      simpa using ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
+    simp only [colimit_eq_iff] at h
     let k j := (h j).choose
     let f : ∀ j, kx ⟶ k j := fun j => (h j).choose_spec.choose
     let g : ∀ j, ky ⟶ k j := fun j => (h j).choose_spec.choose_spec.choose
@@ -308,12 +308,11 @@ theorem colimitLimitToLimitColimit_surjective :
       -- pointing out the morphism which carries one representative to the other:
       simp only [comp_obj, colim_obj, lim_obj, Bifunctor.map_id_comp, comp_apply, id_eq,
         ι_colimitLimitToLimitColimit_π_apply]
-      simp only [← colim_obj, ← comp_obj] at e ⊢
-      rw [← e j]
+      generalize_proofs _ _ _ _ _ h
+      rw [← dsimp% e j, dsimp% Limit.π_mk _ _ h]
       dsimp only [comp_obj, colim_obj, ← curry_obj_obj_obj]
       rw [colimit_eq_iff]
       refine ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), ?_⟩
-      erw [Limit.π_mk]
       simp
 
 instance colimitLimitToLimitColimit_isIso : IsIso (colimitLimitToLimitColimit F) :=

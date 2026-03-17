@@ -219,7 +219,7 @@ noncomputable def Limit.mk (x : ∀ j, F.obj j) (h : ∀ (j j') (f : j ⟶ j'), 
 
 @[simp]
 theorem Limit.π_mk (x : ∀ j, F.obj j) (h : ∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j') (j) :
-    limit.π F j (Limit.mk F x h) = x j := by
+    dsimp% limit.π F j (Limit.mk F x h) = x j := by
   dsimp [Limit.mk]
   simp
 
