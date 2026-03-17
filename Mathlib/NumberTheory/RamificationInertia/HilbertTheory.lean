@@ -72,9 +72,12 @@ instance [IsGalois K L] : IsInertiaField K L P
     (FixedPoints.intermediateField (inertia Gal(L/K) P) : IntermediateField K L) where
   toIsGaloisGroup := IsGaloisGroup.subgroup Gal(L/K) K L (inertia Gal(L/K) P)
 
-variable [Algebra B L] [IsFractionRing B L] [SMulDistribClass Gal(L/K) B L] (G : Type*) [Group G]
-    [Finite G] [MulSemiringAction G L] [IsGaloisGroup G K L] [MulSemiringAction G B]
-    [SMulDistribClass G B L]
+variable (G : Type*) [Group G] [Finite G] [MulSemiringAction G L] [IsGaloisGroup G K L]
+  [MulSemiringAction G B]
+
+section of_isGaloisGroup
+
+variable [Algebra B L] [IsFractionRing B L] [SMulDistribClass Gal(L/K) B L] [SMulDistribClass G B L]
 
 /--
 If `G` is a Galois group for `L/K` and the stabilizer of `P` in `G` is a Galois group for
@@ -103,6 +106,45 @@ theorem IsInertiaField.of_isGaloisGroup [h : IsGaloisGroup (inertia G P) D L] :
   · obtain ⟨y, z, _, rfl⟩ := IsFractionRing.div_surjective (A := B) x
     simp_rw [smul_div₀', subgroup_smul_def, ← algebraMap.smul', ← subgroup_smul_def,
       inertiaEquiv_symm_apply_smul]
+
+end of_isGaloisGroup
+
+variable (D' : Type*) [Field D'] [Algebra D' L] (E' : Type*) [Field E'] [Algebra E' L]
+
+/-- Two decomposition fields are isomorphic. -/
+noncomputable def IsDecompositionField.ringEquiv [IsDecompositionField K L P D]
+    [IsDecompositionField K L P D'] :
+    D ≃+* D' :=
+  IsGaloisGroup.ringEquiv (stabilizer Gal(L/K) P) D D' L
+
+@[simp]
+theorem IsDecompositionField.algebraMap_ringEquiv_apply [IsDecompositionField K L P D]
+    [IsDecompositionField K L P D'] (x : D) :
+    algebraMap D' L (IsDecompositionField.ringEquiv K L P D D' x) = algebraMap D L x := by
+  simp [IsDecompositionField.ringEquiv, IsGaloisGroup.ringEquiv]
+
+@[simp]
+theorem IsDecompositionField.algebraMap_ringEquiv_symm_apply [IsDecompositionField K L P D]
+    [IsDecompositionField K L P D'] (x : D') :
+    algebraMap D L ((IsDecompositionField.ringEquiv K L P D D').symm x) = algebraMap D' L x := by
+  simp [IsDecompositionField.ringEquiv, IsGaloisGroup.ringEquiv]
+
+/-- Two inertia fields are isomorphic. -/
+noncomputable def IsInertiaField.ringEquiv [IsInertiaField K L P E] [IsInertiaField K L P E'] :
+    E ≃+* E' :=
+  IsGaloisGroup.ringEquiv (inertia Gal(L/K) P) E E' L
+
+@[simp]
+theorem IsInertiaField.algebraMap_ringEquiv_apply [IsInertiaField K L P E]
+    [IsInertiaField K L P E'] (x : E) :
+    algebraMap E' L (IsInertiaField.ringEquiv K L P E E' x) = algebraMap E L x := by
+  simp [IsInertiaField.ringEquiv, IsGaloisGroup.ringEquiv]
+
+@[simp]
+theorem IsInertiaField.algebraMap_ringEquiv_symm_apply [IsInertiaField K L P E]
+    [IsInertiaField K L P E'] (x : E') :
+    algebraMap E L ((IsInertiaField.ringEquiv K L P E E').symm x) = algebraMap E' L x := by
+  simp [IsInertiaField.ringEquiv, IsGaloisGroup.ringEquiv]
 
 end basic
 

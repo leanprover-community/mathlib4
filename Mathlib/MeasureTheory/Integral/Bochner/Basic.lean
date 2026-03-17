@@ -352,6 +352,18 @@ theorem enorm_integral_le_lintegral_enorm (f : α → G) : ‖∫ a, f a ∂μ�
   apply ENNReal.ofReal_le_of_le_toReal
   exact norm_integral_le_lintegral_norm f
 
+theorem dist_integral_le_lintegral_edist
+    {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :
+    dist (∫ a, f a ∂μ) (∫ a, g a ∂μ) ≤ (∫⁻ a, edist (f a) (g a) ∂μ).toReal := by
+  grw [dist_eq_norm, ← integral_sub hf hg, norm_integral_le_lintegral_norm]
+  simp [edist_eq_enorm_sub]
+
+theorem edist_integral_le_lintegral_edist
+    {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :
+    edist (∫ a, f a ∂μ) (∫ a, g a ∂μ) ≤ ∫⁻ a, edist (f a) (g a) ∂μ := by
+  rw [edist_dist]
+  exact ENNReal.ofReal_le_of_le_toReal (dist_integral_le_lintegral_edist hf hg)
+
 theorem integral_eq_zero_of_ae {f : α → G} (hf : f =ᵐ[μ] 0) : ∫ a, f a ∂μ = 0 := by
   simp [integral_congr_ae hf, integral_zero]
 

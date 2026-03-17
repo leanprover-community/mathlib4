@@ -435,7 +435,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt' (hn : n ≠ ∞) :
     · intro h
       apply (f_an h).mono hwu
     · refine ((huf' y <| hwu hy).mono hwu).mono_of_mem_nhdsWithin ?_
-      refine mem_of_superset ?_ (inter_subset_inter_left _ (subset_insert _ _))
+      grw [← subset_insert]
       exact inter_mem_nhdsWithin _ (hw.mem_nhds hy.2)
     · exact hf'.mono_of_mem_nhdsWithin (nhdsWithin_mono _ (subset_insert _ _) hu)
   · rw [← contDiffWithinAt_insert, contDiffWithinAt_succ_iff_hasFDerivWithinAt hn,
