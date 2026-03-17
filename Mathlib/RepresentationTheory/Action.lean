@@ -16,7 +16,7 @@ constructing the functor from the `Representation` would reduce the amount of De
 currently are doing in the `Rep` file.
 
 TODO (Edison) : Refactor `Rep` to be a concrete category of `Representation` and
-reconstruct the current `lineaization` functor using this file.
+reconstruct the current `linearize` functor using this file.
 
 -/
 
@@ -47,7 +47,6 @@ lemma linearize_single (g : G) (x : X.V) :
     linearize k G X g (Finsupp.single x 1) = Finsupp.single (X.ρ g x) 1 := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every morphism between `G`-sets could be made into an intertwining map between
   `Representation`s by the linear map induced on the indexing sets. -/
 def linearizeMap (f : X ⟶ Y) : IntertwiningMap (A := k) (linearize k G X) (linearize k G Y) where
@@ -76,7 +75,6 @@ unif_hint where ⊢ (𝟙_ (Action (Type w) G)).V ≟ PUnit
 lemma _root_.Action.tensor_ρ_apply (g : G) (xy : (X ⊗ Y).V) :
     (X ⊗ Y).ρ g xy = (X.ρ g xy.1, Y.ρ g xy.2) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (k G) in
 -- I could use `Action.trivial G (PUnit)` but that's not reducibly equal to the tensor unit
 /-- The counit of the linearize functor. -/

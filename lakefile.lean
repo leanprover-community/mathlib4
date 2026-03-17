@@ -44,9 +44,6 @@ abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
     ⟨`maxSynthPendingDepth, .ofNat 3⟩,
-    -- This feature is broken, see
-    -- https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/574421640.
-    -- We disable it here to avoid tripping over new contributors.
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
@@ -69,10 +66,11 @@ lean_lib Mathlib where
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
-lean_lib Cache
+lean_lib Cache where
+  globs := #[`Cache.+]
 
 lean_lib MathlibTest where
-  globs := #[.submodules `MathlibTest]
+  globs := #[`MathlibTest.+]
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions

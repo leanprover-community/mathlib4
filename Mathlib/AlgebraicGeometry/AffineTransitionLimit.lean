@@ -1045,9 +1045,7 @@ lemma exists_isAffineOpen_preimage_eq
     (isQuasiSeparated_iff_quasiSeparatedSpace _ (D.map _ ⁻¹ᵁ _).2).mp (.of_quasiSeparatedSpace _)
   have : IsAffine (opensCone D c i U).pt := hU
   obtain ⟨j, hj⟩ := Scheme.exists_isAffine_of_isLimit _ _ (isLimitOpensCone D c hc i U)
-  refine ⟨_, _, hj, ?_⟩
-  rw [← Scheme.Hom.comp_preimage, c.w]
-  simp
+  exact ⟨_, _, hj, by simp [← Scheme.Hom.comp_preimage]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 open TopologicalSpace in
