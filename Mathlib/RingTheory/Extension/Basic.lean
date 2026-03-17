@@ -171,6 +171,7 @@ not an instance.
 noncomputable def algebraBaseChange : Algebra P.Ring (P.baseChange (T := T)).Ring :=
   TensorProduct.rightAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] algebraBaseChange in
 instance : IsScalarTower R P.Ring (P.baseChange (T := T)).Ring :=
   .of_algebraMap_eq fun x ↦ by simp [baseChange, RingHom.algebraMap_toAlgebra]; rfl
@@ -255,6 +256,7 @@ def Hom.mapKer (f : P.Hom P')
   map_add' _ _ := Subtype.ext (map_add _ _ _)
   map_smul' := by simp [Algebra.smul_def, ← halg]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- The canonical hom from `P` to its base change `P.baseChange`. -/
 @[simps]

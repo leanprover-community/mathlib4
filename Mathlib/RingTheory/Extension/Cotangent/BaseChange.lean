@@ -39,6 +39,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable (P : Extension.{u} R S)
 variable (T : Type*) [CommRing T] [Algebra R T]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cotangent space of an extension commutes with base change. -/
 noncomputable
 def tensorCotangentSpace (P : Extension.{u} R S) (T : Type*) [CommRing T] [Algebra R T] :
@@ -84,6 +85,7 @@ lemma tensorCotangentSpace_tmul_tmul (t : T) (s : S) (x : Ω[P.Ring⁄R]) :
       tmul_smul, hx, LinearMap.map_smul, ← algebraMap_smul (P.baseChange (T := T)).Ring a,
       tmul_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 @[simp]
 lemma tensorCotangentSpace_tmul (t : T) (x : P.CotangentSpace) :
