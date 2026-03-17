@@ -28,27 +28,26 @@ variable {R A : Type*} [CommRing R]
 
 section Ring
 
-variable [Ring A] [Algebra R A]
+variable [Ring A] [Algebra R A] {x : A}
 
 /-- The `AlgEquiv` between `R[X][Y]` and `R[a][Y]` for some transcendental `a`. -/
-def equivAdjoinOfTranscendental (x : A) (hx : Transcendental R x) :
+def Transcendental.algEquivAdjoin (hx : Transcendental R x) :
     R[X][Y] ≃ₐ[R] (Algebra.adjoin R {x})[X] :=
   mapAlgEquiv (algEquivOfTranscendental _ x hx)
 
-theorem equivAdjoinOfTranscendental_apply {x : A} (hx : Transcendental R x) (p : R[X][Y]) :
-    equivAdjoinOfTranscendental x hx p = mapAlgHom (aeval ⟨x, self_mem_adjoin_singleton R x⟩) p :=
+theorem Transcendental.algEquivAdjoin_apply (hx : Transcendental R x) (p : R[X][Y]) :
+    hx.algEquivAdjoin p = mapAlgHom (aeval ⟨x, self_mem_adjoin_singleton R x⟩) p :=
   rfl
 
 attribute [local instance] algebra in
-theorem equivAdjoinOfTranscendental_swap_eq_aeval {x : A} (hx : Transcendental R x) (p : R[X][Y]) :
-    equivAdjoinOfTranscendental x hx (swap p) =
-      aeval (C ⟨x, self_mem_adjoin_singleton R x⟩) p := by
+theorem Transcendental.algEquivAdjoin_swap_eq_aeval (hx : Transcendental R x) (p : R[X][Y]) :
+    hx.algEquivAdjoin (swap p) = aeval (C ⟨x, self_mem_adjoin_singleton R x⟩) p := by
   induction p using Polynomial.induction_on' with
   | add => simp_all only [map_add]
   | monomial n a =>
     induction a using Polynomial.induction_on' with
     | add p q => simp_all only [map_add]
-    | monomial => simp_all [C_mul_X_pow_eq_monomial, equivAdjoinOfTranscendental]
+    | monomial => simp_all [C_mul_X_pow_eq_monomial, Transcendental.algEquivAdjoin]
 
 end Ring
 
@@ -59,23 +58,23 @@ variable [CommRing A] [Algebra R A]
 variable {B : Type*} [CommRing B] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
 
 attribute [local instance] Polynomial.algebra in
-theorem aeval_aeval_eq_aeval_equivAdjoinOfTranscendental {x : A} (y : B)
+theorem aeval_aeval_eq_aeval_algEquivAdjoin {x : A} (y : B)
     (hx : Transcendental R x) (p : R[X][Y]) :
     aeval (algebraMap A B x) (aeval (C (⟨y, self_mem_adjoin_singleton R y⟩ :
-      adjoin R {y})) p) = aeval y (equivAdjoinOfTranscendental x hx p) := by
+      adjoin R {y})) p) = aeval y (hx.algEquivAdjoin p) := by
   induction p using Polynomial.induction_on' with
   | add p q hp hq => simp_all [map_add]
   | monomial n a =>
-    simp_all [aeval_algebraMap_apply, equivAdjoinOfTranscendental, Subalgebra.algebraMap_def]
+    simp_all [aeval_algebraMap_apply, Transcendental.algEquivAdjoin, Subalgebra.algebraMap_def]
 
 theorem _root_.IsAlgebraic.adjoin_singleton {x : A} {y : B} (hx : Transcendental R x)
     (hy : Transcendental R y) (h : IsAlgebraic (adjoin R {x}) y) :
     IsAlgebraic (adjoin R {y}) (algebraMap A B x) := by
   obtain ⟨f, hnezero, halg⟩ := h
-  refine ⟨(equivAdjoinOfTranscendental y hy) (swap ((equivAdjoinOfTranscendental x hx).symm f)),
+  refine ⟨hy.algEquivAdjoin (swap (hx.algEquivAdjoin.symm f)),
     by simpa only [map_ne_zero_iff _ (AlgEquiv.injective _)], ?_⟩
-  rw [equivAdjoinOfTranscendental_swap_eq_aeval hy]
-  simpa [aeval_aeval_eq_aeval_equivAdjoinOfTranscendental y hx]
+  rw [Transcendental.algEquivAdjoin_swap_eq_aeval hy]
+  simpa [aeval_aeval_eq_aeval_algEquivAdjoin y hx]
 
 end CommRing
 
