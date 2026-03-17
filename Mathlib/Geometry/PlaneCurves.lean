@@ -5,14 +5,10 @@ Authors: Michael Novak
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 public import Mathlib.Analysis.Calculus.Deriv.Prod
-public import Mathlib.Data.Real.CompleteField
-public import Mathlib.Data.Real.StarOrdered
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
-public import Mathlib.Order.BourbakiWitt
 
 /-!
 # Plane curves
@@ -298,7 +294,7 @@ theorem deriv_normal_eq_minus_orientedCurvature_times_deriv {I : Set ℝ} [I.Ord
               inner_smul_left_eq_smul (normal c t) (normal c t)]
         _ = inner ℝ (deriv c t) (deriv (normal c) t) + (orientedCurvature c t) := by
           simp only [inner_self_eq_norm_sq_to_K, normal_is_unit_of_unit_speed hc₂ ht,
-                     Real.ringHom_apply, one_pow, smul_eq_mul, mul_one]
+                     RCLike.ofReal_real_eq_id, id_eq, one_pow, smul_eq_mul, mul_one]
           rw [add_comm, real_inner_comm]
     linarith [h']
   simp [h]
@@ -463,12 +459,12 @@ protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature {I : Set �
     interval_cases m
     · rw [iteratedDeriv_zero]
       apply HasDerivAt.continuousOn
-      intro t ht
-      exact HasDerivAt.initialCurve_of_orientedCurvature hI hκ ht₀ p₀ θ₀ ht
+      · intro t ht
+        exact HasDerivAt.initialCurve_of_orientedCurvature hI hκ ht₀ p₀ θ₀ ht
     · rw [iteratedDeriv_one]
       apply HasDerivAt.continuousOn
-      intro t ht
-      exact HasDerivAt.deriv_initialCurve_of_orientedCurvature hI hκ ht₀ p₀ θ₀ ht
+      · intro t ht
+        exact HasDerivAt.deriv_initialCurve_of_orientedCurvature hI hκ ht₀ p₀ θ₀ ht
     · intro t ht
       have h' : ∀ y ∈ I, (iteratedDeriv 2 (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) y
                        = (fun t ↦ !₂[-(κ t)*Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ),
