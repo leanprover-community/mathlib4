@@ -13,10 +13,10 @@ public import Mathlib.RingTheory.Localization.Defs
 
 # Extension of algebras
 
-## Main definition
+## Main definitions
 
 - `Algebra.Extension`: An extension of an `R`-algebra `S` is an `R` algebra `P` together with a
-surjection `P →ₐ[R] R`.
+  surjection `P →ₐ[R] R`.
 
 - `Algebra.Extension.Hom`: Given a commuting square
   ```
@@ -171,6 +171,7 @@ not an instance.
 noncomputable def algebraBaseChange : Algebra P.Ring (P.baseChange (T := T)).Ring :=
   TensorProduct.rightAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] algebraBaseChange in
 instance : IsScalarTower R P.Ring (P.baseChange (T := T)).Ring :=
   .of_algebraMap_eq fun x ↦ by simp [baseChange, RingHom.algebraMap_toAlgebra]; rfl
@@ -255,6 +256,7 @@ def Hom.mapKer (f : P.Hom P')
   map_add' _ _ := Subtype.ext (map_add _ _ _)
   map_smul' := by simp [Algebra.smul_def, ← halg]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- The canonical hom from `P` to its base change `P.baseChange`. -/
 @[simps]

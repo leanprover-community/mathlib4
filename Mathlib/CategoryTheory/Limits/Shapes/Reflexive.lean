@@ -542,7 +542,7 @@ coforks on the underlying parallel pair. -/
 @[simps! functor_obj_pt inverse_obj_pt]
 def reflexiveCoforkEquivCofork :
     ReflexiveCofork F ≌ Cofork (F.map left) (F.map right) :=
-  (Functor.Final.coconesEquiv _ F).symm.trans (Cocones.precomposeEquivalence
+  (Functor.Final.coconesEquiv _ F).symm.trans (Cocone.precomposeEquivalence
     (diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F))).symm
 
 @[simp]
@@ -557,7 +557,7 @@ lemma reflexiveCoforkEquivCofork_inverse_obj_π
     (G : Cofork (F.map left) (F.map right)) :
     ((reflexiveCoforkEquivCofork F).inverse.obj G).π = G.π := by
   dsimp only [reflexiveCoforkEquivCofork, Equivalence.symm, Equivalence.trans,
-    ReflexiveCofork.π, Cocones.precomposeEquivalence, Cocones.precompose,
+    ReflexiveCofork.π, Cocone.precomposeEquivalence, Cocone.precompose,
     Functor.comp, Functor.Final.coconesEquiv]
   rw [Functor.Final.extendCocone_obj_ι_app' (Y := .one) (f := 𝟙 zero)]
   simp

@@ -80,15 +80,10 @@ variable {R : Type*} (S T A : Type*) [CommRing R] [CommRing S] [Algebra R S]
 is isomorphic to the quotient of `A ⊗[R] T` by the extended ideal, as an `S`-algebra. -/
 noncomputable def tensorQuotientEquiv (I : Ideal T) :
     A ⊗[R] (T ⧸ I) ≃ₐ[S] (A ⊗[R] T) ⧸ I.map (includeRight (A := A) (R := R)) :=
-  have heq : LinearMap.range ((AlgebraTensorModule.lTensor S A)
-      (I.subtype.restrictScalars R)) =
-        (I.map (includeRight (A := A) (R := R))).restrictScalars S := by
-    rw [← (Submodule.restrictScalars_injective R _ _).eq_iff]
-    exact (I.map_includeRight_eq (R := R) (A := A)).symm
-  letI g : (A ⊗[R] T ⧸ LinearMap.range ((AlgebraTensorModule.lTensor S A)
+  letI g : (A ⊗[R] T ⧸ LinearMap.range (AlgebraTensorModule.lTensor S A
       (I.subtype.restrictScalars R))) ≃ₗ[S]
       A ⊗[R] T ⧸ (I.map (includeRight (A := A) (R := R))).restrictScalars S :=
-    Submodule.quotEquivOfEq _ _ heq
+    Submodule.quotEquivOfEq _ _ (AlgebraTensorModule.range_lTensor_idealMap _ _ _)
   .ofLinearEquiv (AlgebraTensorModule.tensorQuotientEquiv (R := R) S T A I ≪≫ₗ g) rfl <| by
     refine LinearMap.map_mul_of_map_mul_tmul fun a₁ a₂ b₁ b₂ ↦ ?_
     obtain ⟨b₁, rfl⟩ := Ideal.Quotient.mk_surjective b₁

@@ -98,7 +98,6 @@ theorem Lcomplement {P : M} (h : IsLprojection X P) : IsLprojection X (1 - P) :=
 theorem Lcomplement_iff (P : M) : IsLprojection X P ↔ IsLprojection X (1 - P) :=
   ⟨Lcomplement, fun h => sub_sub_cancel 1 P ▸ h.Lcomplement⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     Commute P Q := by
   have PR_eq_RPR : ∀ R : M, IsLprojection X R → P * R = R * P * R := fun R h₃ => by

@@ -181,6 +181,13 @@ lemma quotTensorEquivQuotSMul_mk_tmul (I : Ideal R) (r : R) (x : M) :
           Submodule.Quotient.mk_smul I r 1) <|
       smul_tmul r _ x
 
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma quotTensorEquivQuotSMul_mk_one_tmul (I : Ideal R) (x : M) :
+    quotTensorEquivQuotSMul M I (1 ⊗ₜ x) = Submodule.Quotient.mk x := by
+  rw [← RingHom.map_one (Ideal.Quotient.mk I), TensorProduct.quotTensorEquivQuotSMul_mk_tmul]
+  simp
+
 lemma quotTensorEquivQuotSMul_comp_mkQ_rTensor (I : Ideal R) :
     quotTensorEquivQuotSMul M I ∘ₗ I.mkQ.rTensor M =
       (I • ⊤ : Submodule R M).mkQ ∘ₗ TensorProduct.lid R M :=
@@ -264,6 +271,7 @@ variable {R : Type*} (A B : Type*) [CommRing R] [CommRing A] [Algebra R A]
 variable (M : Type*) [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
 variable {N : Type*} [AddCommGroup N] [Module R N] [Module B N] [IsScalarTower R B N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- More linear version of `TensorProduct.tensorQuotientEquiv`. -/
 noncomputable def tensorQuotientEquiv (n : Submodule B N) :
     M ⊗[R] (N ⧸ n) ≃ₗ[A]

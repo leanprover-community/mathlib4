@@ -141,7 +141,6 @@ theorem prime_iff_not_exists_mul_eq {p : ℕ} :
   exact (Nat.mul_eq_right (by lia)).mp
     (hp.symm.trans (hpn.antisymm (hp ▸ Nat.le_mul_of_pos_left _ (by lia))))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.Coprime m) : Prime n := by
   refine prime_def_lt.mpr ⟨h1, fun m mlt mdvd => ?_⟩
   have hm : m ≠ 0 := by

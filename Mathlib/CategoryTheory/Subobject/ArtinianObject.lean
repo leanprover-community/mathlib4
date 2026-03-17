@@ -21,10 +21,10 @@ satisfies the descending chain condition. The corresponding property of
 objects `isArtinianObject : ObjectProperty C` is always
 closed under subobjects.
 
-## Future works
+## Future work
 
 * when `C` is an abelian category, relate `IsArtinianObject` in `C`
-with `IsNoetherianObject` in `Cᵒᵖ`.
+  with `IsNoetherianObject` in `Cᵒᵖ`.
 
 -/
 

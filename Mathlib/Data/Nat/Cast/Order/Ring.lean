@@ -125,7 +125,6 @@ lemma mul_le_pow {a : ℕ} (ha : a ≠ 1) (b : ℕ) :
       refine (le_add_left ?_ ?_).trans' ?_
       exact le_mul_of_one_le_right' (one_le_pow _ _ (by simp))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma two_mul_sq_add_one_le_two_pow_two_mul (k : ℕ) : 2 * k ^ 2 + 1 ≤ 2 ^ (2 * k) := by
   induction k with
   | zero => simp

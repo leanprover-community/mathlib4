@@ -15,33 +15,34 @@ Just as there are natural transformations between functors, there are transforma
 between oplax functors. The equality in the naturality condition of a natural transformation gets
 replaced by a specified 2-morphism. Now, there are three possible types of transformations (between
 oplax functors):
-* Oplax natural transformations;
-* Lax natural transformations;
-* Strong natural transformations.
+* oplax natural transformations;
+* lax natural transformations;
+* strong natural transformations.
+
 These differ in the direction (and invertibility) of the 2-morphisms involved in the naturality
 condition.
 
 ## Main definitions
 
-* `Oplax.LaxTrans F G`: oplax transformations between oplax functors `F` and `G`. The naturality
+* `Oplax.LaxTrans F G`: lax transformations between oplax functors `F` and `G`. The naturality
   condition is given by a 2-morphism `app a ≫ G.map f ⟶ F.map f ≫ app b` for each 1-morphism
   `f : a ⟶ b`.
 * `Oplax.OplaxTrans F G`: oplax transformations between oplax functors `F` and `G`. The naturality
   condition is given by a 2-morphism `F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism
   `f : a ⟶ b`.
-* `Oplax.StrongTrans F G`: Strong transformations between oplax functors `F` and `G`. The naturality
+* `Oplax.StrongTrans F G`: strong transformations between oplax functors `F` and `G`. The naturality
   condition is given by a 2-isomorphism `F.map f ≫ app b ≅ app a ≫ G.map f` for each 1-morphism
   `f : a ⟶ b`.
 
-Using these, we define three `CategoryStruct` (scoped) instances on `B ⥤ᵒᵖᴸ C`, in the
+Using these, we define three (scoped) `CategoryStruct` instances on `B ⥤ᵒᵖᴸ C`, in the
 `Oplax.LaxTrans`, `Oplax.OplaxTrans`, and `Oplax.StrongTrans` namespaces. The arrows in these
-CategoryStruct's are given by lax transformations, oplax transformations, and strong
+`CategoryStruct` instances are given by lax transformations, oplax transformations, and strong
 transformations respectively.
 
 We also provide API for going between oplax transformations and strong transformations:
-* `Oplax.StrongCore F G`: a structure on an oplax transformation between oplax functors that
+* `OplaxTrans.StrongCore η`: a structure on an oplax transformation between oplax functors that
   promotes it to a strong transformation.
-* `Oplax.mkOfOplax η η'`: given an oplax transformation `η` such that each component
+* `StrongTrans.mkOfOplax η η'`: given an oplax transformation `η` such that each component
   2-morphism is an isomorphism, `mkOfOplax` gives the corresponding strong transformation.
 
 ## References
@@ -66,9 +67,9 @@ These 2-morphisms satisfy the naturality condition, and preserve the identities 
 the compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/
 structure LaxTrans (F G : OplaxFunctor B C) where
-  /-- The component 1-morphisms of an oplax transformation. -/
+  /-- The component 1-morphisms of a lax transformation. -/
   app (a : B) : F.obj a ⟶ G.obj a
-  /-- The 2-morphisms underlying the oplax naturality constraint. -/
+  /-- The 2-morphisms underlying the lax naturality constraint. -/
   naturality {a b : B} (f : a ⟶ b) : app a ≫ G.map f ⟶ F.map f ≫ app b
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
       naturality f ≫ F.map₂ η ▷ app b = app a ◁ G.map₂ η ≫ naturality g := by
@@ -309,7 +310,7 @@ that is "natural up to 2-isomorphisms".
 
 More precisely, it consists of the following:
 * a 1-morphism `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`.
-* a 2-isomorphism `η.naturality f : F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism
+* a 2-isomorphism `η.naturality f : F.map f ≫ app b ≅ app a ≫ G.map f` for each 1-morphism
   `f : a ⟶ b`.
 * These 2-isomorphisms satisfy the naturality condition, and preserve the identities and the
   compositions modulo some adjustments of domains and codomains of 2-morphisms.
@@ -338,7 +339,7 @@ attribute [reassoc (attr := simp)] StrongTrans.naturality_naturality
 
 /-- A structure on an oplax transformation that promotes it to a strong transformation.
 
-See `Pseudofunctor.StrongTrans.mkOfOplax`. -/
+See `StrongTrans.mkOfOplax`. -/
 structure OplaxTrans.StrongCore {F G : B ⥤ᵒᵖᴸ C} (η : F ⟶ G) where
   /-- The underlying 2-isomorphisms of the naturality constraint. -/
   naturality {a b : B} (f : a ⟶ b) : F.map f ≫ η.app b ≅ η.app a ≫ G.map f
