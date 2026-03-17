@@ -85,8 +85,7 @@ instance [P.IsClosedUnderSubobjects] : P.IsClosedUnderKernels where
     letI := Fork.IsLimit.mono hk
     exact P.prop_of_mono k.ι hf.1
 
-noncomputable instance hasLimitParallelPairInclusion {X Y : P.FullSubcategory}
-    (f : X ⟶ Y) [HasKernel f.hom] :
+lemma hasLimit_parallelPair_comp_ι {X Y : P.FullSubcategory} (f : X ⟶ Y) [HasKernel f.hom] :
     HasLimit (parallelPair f 0 ⋙ P.ι) :=
   hasLimit_of_iso (F := parallelPair f.hom 0) (Iso.symm (diagramIsoParallelPair _))
 
@@ -104,6 +103,7 @@ noncomputable def createsKernels [P.IsClosedUnderKernels] {X Y : P.FullSubcatego
 instance [P.IsClosedUnderKernels] [HasKernels C] : HasKernels P.FullSubcategory where
   has_limit f :=
     letI := P.createsKernels f
+    letI := P.hasLimit_parallelPair_comp_ι f
     hasLimit_of_created _ P.ι
 
 /-- A property of objects satisfies `P.IsClosedUnderCokernels` if whenever `X` and `Y`
@@ -112,14 +112,12 @@ satisfy `P`, all kernels of morphisms from `X` to `Y` satisfy `P`. -/
 class IsClosedUnderCokernels : Prop where
   cokernels_le : (MorphismProperty.ofObjectProperty P P).cokernels ≤ P
 
-variable [P.IsClosedUnderCokernels]
-
-lemma prop_of_isColimit_cokernelCofork {X Y : C} {f : X ⟶ Y} {k : CokernelCofork f}
-    (hk : IsColimit k) (hX : P X) (hY : P Y) : P k.pt :=
+lemma prop_of_isColimit_cokernelCofork [P.IsClosedUnderCokernels] {X Y : C} {f : X ⟶ Y}
+    {k : CokernelCofork f} (hk : IsColimit k) (hX : P X) (hY : P Y) : P k.pt :=
   IsClosedUnderCokernels.cokernels_le _ (.of_isColimit _ k hk ⟨hX, hY⟩)
 
-lemma prop_cokernel {X Y : C} (f : X ⟶ Y) [HasCokernel f] (hX : P X) (hY : P Y) :
-    P (cokernel f) :=
+lemma prop_cokernel [P.IsClosedUnderCokernels] {X Y : C} (f : X ⟶ Y) [HasCokernel f] (hX : P X)
+    (hY : P Y) : P (cokernel f) :=
   (P.prop_of_isColimit_cokernelCofork (cokernelIsCokernel f) hX hY :)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -129,8 +127,7 @@ instance [P.IsClosedUnderQuotients] : P.IsClosedUnderCokernels where
     letI := Cofork.IsColimit.epi hk
     exact P.prop_of_epi k.π hf.2
 
-noncomputable instance hasColimitParallelPairInclusion {X Y : P.FullSubcategory}
-    (f : X ⟶ Y) [HasCokernel f.hom] :
+lemma hasColimit_parallelPair_comp_ι {X Y : P.FullSubcategory} (f : X ⟶ Y) [HasCokernel f.hom] :
     HasColimit (parallelPair f 0 ⋙ P.ι) :=
   hasColimit_of_iso (F := parallelPair f.hom 0) (diagramIsoParallelPair _)
 
@@ -148,6 +145,7 @@ noncomputable def createsCokernels [P.IsClosedUnderCokernels] {X Y : P.FullSubca
 instance [P.IsClosedUnderCokernels] [HasCokernels C] : HasCokernels P.FullSubcategory where
   has_colimit f :=
     letI := P.createsCokernels f
+    letI := P.hasColimit_parallelPair_comp_ι f
     hasColimit_of_created _ P.ι
 
 end ObjectProperty
