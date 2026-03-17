@@ -1390,15 +1390,16 @@ instance algebraIdeal : Algebra (Ideal R) (Submodule R A) where
 
 end
 
-lemma smul_top_le_comap_smul_top {M N : Type*} [Semiring R] [AddCommMonoid M]
-    [AddCommMonoid N] [Module R M] [Module R N] (I : Ideal R)
-    (f : M →ₗ[R] N) : I • ⊤ ≤ comap f (I • ⊤) :=
+variable [Semiring R] {M N : Type*}
+
+lemma smul_top_le_comap_smul_top [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+    (I : Ideal R) (f : M →ₗ[R] N) : I • ⊤ ≤ comap f (I • ⊤) :=
   map_le_iff_le_comap.mp <| le_of_eq_of_le (map_smul'' _ _ _) <|
     smul_mono_right _ le_top
 
-lemma comap_smul_top_of_surjective {M N : Type*} [Semiring R]
-    [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] (I : Ideal R) (f : M →ₗ[R] N)
-    (h : Function.Surjective f) : I • ⊤ ⊔ (LinearMap.ker f) = comap f (I • ⊤) := by
+lemma comap_smul_top_of_surjective [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+    (I : Ideal R) (f : M →ₗ[R] N) (h : Function.Surjective f) :
+    I • ⊤ ⊔ (LinearMap.ker f) = comap f (I • ⊤) := by
   refine le_antisymm (sup_le (smul_top_le_comap_smul_top I f) (LinearMap.ker_le_comap f)) ?_
   rw [← Submodule.comap_map_eq f (I • (⊤ : Submodule R M)),
     Submodule.comap_le_comap_iff_of_surjective h,
