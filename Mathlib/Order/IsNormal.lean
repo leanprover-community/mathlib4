@@ -113,41 +113,6 @@ theorem to_Iio (hf : IsNormal f) (a : α) :
   refine ⟨fun x y h ↦ hf.strictMono h, fun b hb c hc ↦ hf.2 (hb.subtypeVal (isLowerSet_Iio _)) ?_⟩
   simpa [upperBounds] using fun d hd ↦ hc ⟨d, hd.trans b.2⟩ hd
 
-section WellFoundedLT
-variable [WellFoundedLT α] [SuccOrder α]
-
-theorem of_succ_lt
-    (hs : ∀ a, f a < f (succ a)) (hl : ∀ {a}, IsSuccLimit a → IsLUB (f '' Iio a) (f a)) :
-    IsNormal f := by
-  refine ⟨fun a b ↦ ?_, fun ha ↦ (hl ha).2⟩
-  induction b using SuccOrder.limitRecOn with
-  | isMin b hb => exact hb.not_lt.elim
-  | succ b hb IH =>
-    intro hab
-    obtain rfl | h := (lt_succ_iff_eq_or_lt_of_not_isMax hb).1 hab
-    · exact hs a
-    · exact (IH h).trans (hs b)
-  | isSuccLimit b hb IH =>
-    intro hab
-    have hab' := hb.succ_lt hab
-    exact (IH _ hab' (lt_succ_of_not_isMax hab.not_isMax)).trans_le
-      ((hl hb).1 (mem_image_of_mem _ hab'))
-
-protected theorem ext [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : IsNormal g) :
-    f = g ↔ f ⊥ = g ⊥ ∧ ∀ a, f a = g a → f (succ a) = g (succ a) := by
-  constructor
-  · simp_all
-  rintro ⟨H₁, H₂⟩
-  ext a
-  induction a using SuccOrder.limitRecOn with
-  | isMin a ha => rw [ha.eq_bot, H₁]
-  | succ a ha IH => exact H₂ a IH
-  | isSuccLimit a ha IH =>
-    apply (hf.isLUB_image_Iio_of_isSuccLimit ha).unique
-    convert hg.isLUB_image_Iio_of_isSuccLimit ha using 1
-    aesop
-
-end WellFoundedLT
 end LinearOrder
 
 section ConditionallyCompleteLinearOrder
@@ -203,5 +168,48 @@ theorem apply_of_isSuccLimit (hf : IsNormal f) (ha : IsSuccLimit a) :
     exact hx.le
 
 end ConditionallyCompleteLinearOrderBot
+
+section WellFoundedLT
+variable [LinearOrder α] [WellFoundedLT α] [SuccOrder α] [LinearOrder β]
+
+theorem of_succ_lt
+    (hs : ∀ a, f a < f (succ a)) (hl : ∀ {a}, IsSuccLimit a → IsLUB (f '' Iio a) (f a)) :
+    IsNormal f := by
+  refine ⟨fun a b ↦ ?_, fun ha ↦ (hl ha).2⟩
+  induction b using SuccOrder.limitRecOn with
+  | isMin b hb => exact hb.not_lt.elim
+  | succ b hb IH =>
+    intro hab
+    obtain rfl | h := (lt_succ_iff_eq_or_lt_of_not_isMax hb).1 hab
+    · exact hs a
+    · exact (IH h).trans (hs b)
+  | isSuccLimit b hb IH =>
+    intro hab
+    have hab' := hb.succ_lt hab
+    exact (IH _ hab' (lt_succ_of_not_isMax hab.not_isMax)).trans_le
+      ((hl hb).1 (mem_image_of_mem _ hab'))
+
+protected theorem ext [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : IsNormal g) :
+    f = g ↔ f ⊥ = g ⊥ ∧ ∀ a, f a = g a → f (succ a) = g (succ a) := by
+  constructor
+  · simp_all
+  rintro ⟨H₁, H₂⟩
+  ext a
+  induction a using SuccOrder.limitRecOn with
+  | isMin a ha => rw [ha.eq_bot, H₁]
+  | succ a ha IH => exact H₂ a IH
+  | isSuccLimit a ha IH =>
+    apply (hf.isLUB_image_Iio_of_isSuccLimit ha).unique
+    convert hg.isLUB_image_Iio_of_isSuccLimit ha using 1
+    aesop
+
+theorem exists_btwn [NoMaxOrder α] [OrderBot α] {f : α → α} {x : α}
+    (hf : Order.IsNormal f) (hx : f ⊥ ≤ x) : ∃ a, f a ≤ x ∧ x < f (Order.succ a) := by
+  let := WellFoundedLT.conditionallyCompleteLinearOrderBot α
+  refine ⟨sSup (f ⁻¹' Set.Iic x), ?_, ?_⟩
+  · rw [hf.le_iff_le_sSup' ⟨⊥, hx⟩]
+  · rw [← not_le, hf.le_iff_le_sSup' ⟨⊥, hx⟩, not_le, Order.lt_succ_iff]
+
+end WellFoundedLT
 end IsNormal
 end Order
