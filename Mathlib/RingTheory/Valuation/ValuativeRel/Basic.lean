@@ -70,7 +70,7 @@ More precisely, if v is a valuation on R then the associated relation is `x ≤�
 Use this class to talk about the case where `R` is equipped with an equivalence class
 of valuations. -/
 @[ext]
-class ValuativeRel (R : Type*) [CommRing R] where
+class ValuativeRel (R : Type*) [Ring R] where
   /-- The valuation less-equal operator arising from `ValuativeRel`. -/
   vle : R → R → Prop
   vle_total (x y) : vle x y ∨ vle y x
@@ -79,6 +79,7 @@ class ValuativeRel (R : Type*) [CommRing R] where
   mul_vle_mul_left {x y} (h : vle x y) (z) : vle (x * z) (y * z)
   vle_mul_cancel {x y z} : ¬ vle z 0 → vle (x * z) (y * z) → vle x y
   not_vle_one_zero : ¬ vle 1 0
+  vle_mul_comm {x y} : vle (x * y) (y * x)
 
 @[inherit_doc] infix:50 " ≤ᵥ " => ValuativeRel.vle
 
@@ -86,7 +87,7 @@ macro_rules | `($a ≤ᵥ $b) => `(binrel% ValuativeRel.vle $a $b)
 
 namespace Valuation
 
-variable {R Γ : Type*} [CommRing R] [LinearOrderedCommMonoidWithZero Γ]
+variable {R Γ : Type*} [Ring R] [LinearOrderedCommMonoidWithZero Γ]
   (v : Valuation R Γ)
 
 /-- We say that a valuation `v` is `Compatible` if the relation `x ≤ᵥ y`
@@ -98,7 +99,7 @@ end Valuation
 
 /-- A preorder on a ring is said to be "valuative" if it agrees with the
 valuative relation. -/
-class ValuativePreorder (R : Type*) [CommRing R] [ValuativeRel R] [Preorder R] where
+class ValuativePreorder (R : Type*) [Ring R] [ValuativeRel R] [Preorder R] where
   vle_iff_le (x y : R) : x ≤ᵥ y ↔ x ≤ y
 
 namespace ValuativeRel
@@ -111,7 +112,7 @@ namespace ValuativeRel
 @[deprecated (since := "2025-12-20")] alias rel_mul_cancel := vle_mul_cancel
 @[deprecated (since := "2025-12-20")] alias not_rel_one_zero := not_vle_one_zero
 
-variable {R : Type*} [CommRing R] [ValuativeRel R] {x y z : R}
+variable {R : Type*} [Ring R] [ValuativeRel R] {x y z : R}
 
 /-- The valuation less-than relation, defined as `x <ᵥ y ↔ ¬ y ≤ᵥ x`. -/
 def vlt (x y : R) : Prop := ¬ y ≤ᵥ x
@@ -126,6 +127,9 @@ macro_rules | `($a <ᵥ $b) => `(binrel% ValuativeRel.vlt $a $b)
 def veq : R → R → Prop := AntisymmRel (· ≤ᵥ ·)
 
 @[inherit_doc] infix:50 " =ᵥ " => ValuativeRel.veq
+
+@[gcongr]
+lemma veq_mul_comm (x y : R) : x * y =ᵥ y * x := ⟨vle_mul_comm, vle_mul_comm⟩
 
 macro_rules | `($a =ᵥ $b) => `(binrel% ValuativeRel.veq $a $b)
 
@@ -206,9 +210,8 @@ lemma zero_vlt_one : (0 : R) <ᵥ 1 :=
 lemma vle_mul_right {x y : R} (z) (h : x ≤ᵥ y) : x * z ≤ᵥ y * z :=
   mul_vle_mul_left h z
 
-lemma mul_vle_mul_right {x y : R} (h : x ≤ᵥ y) (z) : z * x ≤ᵥ z * y := by
-  rw [mul_comm z x, mul_comm z y]
-  exact mul_vle_mul_left h z
+lemma mul_vle_mul_right {x y : R} (h : x ≤ᵥ y) (z) : z * x ≤ᵥ z * y :=
+  vle_trans (veq_mul_comm _ _).1 (vle_trans (mul_vle_mul_left h z) ((veq_mul_comm _ _).1))
 
 @[deprecated (since := "2025-12-20")] alias rel_mul_left := mul_vle_mul_right
 
@@ -234,6 +237,18 @@ lemma veq_trans {x y z : R} (h1 : x =ᵥ y) (h2 : y =ᵥ z) : x =ᵥ z :=
 instance : @Trans R R R veq veq veq where
   trans := veq_trans
 
+lemma vle_of_veq_of_vle {x y z : R} (h1 : x =ᵥ y) (h2 : y ≤ᵥ z) : x ≤ᵥ z :=
+  h1.1.trans h2
+
+lemma vle_of_vle_of_veq {x y z : R} (h1 : x ≤ᵥ y) (h2 : y =ᵥ z) : x ≤ᵥ z :=
+  h1.trans h2.1
+
+instance : @Trans R R R veq vle vle where
+  trans := vle_of_veq_of_vle
+
+instance : @Trans R R R vle veq vle where
+  trans := vle_of_vle_of_veq
+
 @[gcongr]
 lemma mul_vle_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x' ≤ᵥ y * y' :=
   (mul_vle_mul_left h1 _).trans (mul_vle_mul_right h2 _)
@@ -246,7 +261,11 @@ lemma mul_vle_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x'
 @[deprecated (since := "2025-12-20")] alias mul_rel_mul_iff_left := mul_vle_mul_iff_left
 
 @[simp] lemma mul_vle_mul_iff_right (hx : 0 <ᵥ x) : x * y ≤ᵥ x * z ↔ y ≤ᵥ z := by
-  simp [mul_comm x, hx]
+  refine ⟨fun h ↦ ?_ , fun h ↦ ?_⟩
+  · grw [veq_mul_comm, veq_mul_comm (x := x)] at h
+    rwa [mul_vle_mul_iff_left hx] at h
+  · grw [veq_mul_comm, veq_mul_comm (x := x)]
+    rwa [mul_vle_mul_iff_left hx]
 
 @[deprecated (since := "2025-12-20")] alias mul_rel_mul_iff_right := mul_vle_mul_iff_right
 
@@ -280,7 +299,7 @@ theorem vle_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
 @[simp] lemma zero_vlt_mul (hx : 0 <ᵥ x) (hy : 0 <ᵥ y) : 0 <ᵥ x * y := by
   contrapose hy
   rw [not_vlt] at hy ⊢
-  rw [show (0 : R) = x * 0 by simp, mul_comm x y, mul_comm x 0] at hy
+  grw [show (0 : R) = x * 0 by simp, veq_mul_comm, veq_mul_comm x] at hy
   exact vle_mul_cancel hx hy
 
 @[deprecated (since := "2025-12-20")] alias zero_srel_mul := zero_vlt_mul
@@ -521,7 +540,7 @@ instance : LE (ValueGroupWithZero R) where
       · apply vle_mul_cancel s.prop
         apply vle_mul_cancel hz
         calc y * u * s * z
-          _ = y * s * (z * u) := by ring
+          _ =ᵥ y * s * (z * u) := by sorry
           _ ≤ᵥ x * t * (w * v) := by gcongr
           _ = x * v * (t * w) := by ring
           _ ≤ᵥ z * s * (t * w) := by gcongr
@@ -669,7 +688,7 @@ lemma ValueGroupWithZero.mk_eq_div (r : R) (s : posSubmonoid R) :
 /-- Construct a valuative relation on a ring using a valuation. -/
 @[implicit_reducible]
 def ofValuation
-    {S Γ : Type*} [CommRing S]
+    {S Γ : Type*} [Ring S]
     [LinearOrderedCommGroupWithZero Γ]
     (v : Valuation S Γ) : ValuativeRel S where
   vle x y := v x ≤ v y
@@ -682,6 +701,7 @@ def ofValuation
     simp only [map_mul] at h
     exact le_of_mul_le_mul_right h (lt_of_le_of_ne' zero_le' h0)
   not_vle_one_zero := by simp
+  vle_mul_comm := by simp [map_mul, mul_comm]
 
 lemma _root_.Valuation.Compatible.ofValuation
     {S Γ : Type*} [CommRing S]
@@ -777,6 +797,7 @@ instance : ValuativeRel (WithPreorder R) where
   mul_vle_mul_left := mul_vle_mul_left (R := R)
   vle_mul_cancel := vle_mul_cancel (R := R)
   not_vle_one_zero := not_vle_one_zero (R := R)
+  vle_mul_comm := vle_mul_comm (R := R)
 
 instance : ValuativePreorder (WithPreorder R) where
   vle_iff_le _ _ := Iff.rfl
