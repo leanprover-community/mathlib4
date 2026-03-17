@@ -62,12 +62,14 @@ namespace ValuativeRel
 
 variable (R : Type u) [CommRing R] [ValuativeRel R]
 
+/-- The topology induced by a valuative relation. -/
 @[implicit_reducible]
 def topologicalSpace : TopologicalSpace R := (valuation R).subgroups_basis.topology
 
 instance nonarchimedeanRing : @NonarchimedeanRing R _ (topologicalSpace R) :=
   (valuation R).subgroups_basis.nonarchimedean
 
+/-- The uniform space induced by a valuative relation. -/
 @[implicit_reducible]
 def uniformSpace : UniformSpace R :=
   @IsTopologicalAddGroup.rightUniformSpace R _ (topologicalSpace R) _

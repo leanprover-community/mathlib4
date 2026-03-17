@@ -1166,7 +1166,7 @@ induction x using ValuativeRel.ValueGroupWithZero.ind with
 | mk r s =>
   simp
 
-/- If a valuation `v` is compatible with the valuative relation, then its value group
+/-- If a valuation `v` is compatible with the valuative relation, then its value group
 is isomorphic (as an ordered group with zero) to `ValueGroupWithZero R`. -/
 noncomputable
 def ValueGroupWithZero.embed [h : v.Compatible] : ValueGroupWithZero R ≃*o ValueGroup₀ v where
