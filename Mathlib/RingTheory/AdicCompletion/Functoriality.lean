@@ -485,7 +485,6 @@ def finsuppSumInv : AdicCompletion I (σ →₀ M) →ₗ[AdicCompletion I R] (�
   (linearEquivFunOnFinite (AdicCompletion I R) (AdicCompletion I M) σ).symm ∘ₗ
     .pi (fun i ↦ map I (lapply i))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finsuppSumInv_comp_map_finsuppLEquivDirectSum_symm [DecidableEq σ] :
     finsuppSumInv I M σ ∘ₗ map I (finsuppLEquivDirectSum R M σ).symm =
       ((finsuppLEquivDirectSum (AdicCompletion I R) (AdicCompletion I M) σ)).symm ∘ₗ
