@@ -40,9 +40,11 @@ universe v v' w u u'
 
 namespace TypeCat
 
+/-- A one-field structure wrapping a function between types. -/
 @[ext]
 structure Fun (X Y : Type*) where
   mk' ::
+  /-- The underlying function. -/
   protected as : X → Y
 
 instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
@@ -51,6 +53,7 @@ instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
 
 initialize_simps_projections Fun (as → apply)
 
+/-- Construct a `Fun` from a function between types. -/
 def Fun.mk {X Y : Type*} (f : X → Y) : Fun X Y where
   as := f
 
@@ -66,12 +69,15 @@ lemma Fun.mk_apply {X Y : Type*} (f : X → Y) (x : X) : (Fun.mk f) x = f x :=
 lemma Fun.coe_mk {X Y : Type*} (f : X → Y) : (Fun.mk f : X → Y) = f :=
   rfl
 
+/-- The identity function as a `Fun`. -/
 @[simps!]
 def Fun.id (X : Type*) : Fun X X := Fun.mk _root_.id
 
+/-- Composition of `Fun`s. -/
 @[simps!]
 def Fun.comp {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) : Fun X Z := mk (f.as ∘ g.as)
 
+/-- The equivalence between `Fun`s and functions between types. -/
 def Fun.homEquiv (X Y : Type u) : (Fun X Y) ≃ (X → Y) where
   toFun f := f
   invFun f := ⟨f⟩
@@ -511,9 +517,11 @@ theorem equivEquivIso_inv {X Y : Type u} (e : X ≅ Y) : equivEquivIso.symm e = 
 
 section unif_hints
 
+/-- Unification hint for `(𝟭 _).obj X = X`. -/
 unif_hint id_obj_eq_self (X X' : Type u) where
   X ≟ X' ⊢ (𝟭 _).obj X ≟ X'
 
+/-- Unification hint for `(F ⋙ G).obj X = G.obj (F.obj X)`. -/
 unif_hint comp_map_eq_comp {C D : Type*} [Category* C] [Category* D]
     (F : C ⥤ D) (G : D ⥤ Type*) (X X' : C) where
   X ≟ X' ⊢ (F ⋙ G).obj X ≟ (G.obj (F.obj X))
