@@ -16,10 +16,14 @@ In this file we make `SimpleGraph` an instance of `HasDart`.
 
 variable {α : Type*}
 
-instance : HasDart α (SimpleGraph α) where
+instance : HasSymmDart α (SimpleGraph α) where
   verts _ := Set.univ
   Adj G := G.Adj
-  dart G u v := G.Adj u v
-  nonempty_dart_iff_adj := nonempty_prop
+  darts G u v := G.Adj u v
+  nonempty_darts_iff_adj := nonempty_prop
   left_mem_verts_of_adj _ {u _ : α} _ := Set.mem_univ u
   right_mem_verts_of_adj _ {_ v : α} _ := Set.mem_univ v
+  dartsEquiv G u v :=
+  { toFun := G.adj_symm
+    invFun := G.adj_symm}
+  dartsEquiv_symm G u v := rfl
