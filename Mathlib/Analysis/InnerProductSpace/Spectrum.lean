@@ -382,20 +382,11 @@ variable [CompleteSpace E] {T : E →L[𝕜] E}
 
 theorem eq_zero_of_forall_hasEigenvalue_eq_zero (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
     (∀ μ, HasEigenvalue (T : End 𝕜 E) μ → μ = 0) ↔ T = 0 := by
-  constructor
-  · intro h
-    replace h : spectrum 𝕜 T ⊆ {0} := by
-      intro μ hμ
-      contrapose! h
-      exact ⟨μ, (hT.hasEigenvalue_iff_mem_spectrum h).mpr hμ, h⟩
-    rw [← isSelfAdjoint_iff_isSymmetric] at hT'
-    rw [← nnnorm_eq_zero, ← ENNReal.coe_eq_zero, ← T.spectralRadius_eq_nnnorm hT', spectralRadius]
-    obtain (h | h) := Set.subset_singleton_iff_eq.mp h <;> simp [h]
-  · rintro rfl μ h
-    obtain ⟨v, hv⟩ := h.exists_hasEigenvector
-    rw [hasEigenvector_iff, mem_genEigenspace_one] at hv
-    exact (smul_eq_zero_iff_left hv.2).mp hv.1.symm
-
+  rw [← nnnorm_eq_zero, ← ENNReal.coe_eq_zero, ← T.spectralRadius_eq_nnnorm hT'.isSelfAdjoint,
+    spectralRadius, ← not_iff_not, ENNReal.iSup_eq_zero]
+  push Not
+  apply exists_congr
+  simp +contextual [hT.hasEigenvalue_iff_mem_spectrum]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The **Spectral Theorem** for compact self-adjoint operators: the eigenspaces of a compact
@@ -404,8 +395,8 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot
     (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
     (⨆ μ, eigenspace (T : Module.End 𝕜 E) μ)ᗮ = ⊥ := by
   let S : (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ →L[𝕜] (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ :=
-  { __ := T.restrict hT'.orthogonalComplement_iSup_eigenspaces_invariant
-    cont := by fun_prop }
+    { __ := T.restrict hT'.orthogonalComplement_iSup_eigenspaces_invariant
+      cont := by fun_prop }
   have hS_compact : IsCompactOperator S :=
     hT.restrict' hT'.orthogonalComplement_iSup_eigenspaces_invariant
   have hS_symm : S.IsSymmetric :=
@@ -419,10 +410,7 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot
     rw [mem_eigenspace_iff] at hv ⊢
     exact Subtype.ext_iff.mp hv
   have h μ : HasEigenvalue (S : End 𝕜 (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ) μ → μ = 0 := by
-    intro hμ
-    rw [hasEigenvalue_iff] at hμ
-    specialize hS μ
-    contradiction
+    simp_all [hasEigenvalue_iff]
   rw [eq_zero_of_forall_hasEigenvalue_eq_zero hS_compact hS_symm] at h
   rw [← Submodule.subsingleton_iff_eq_bot]
   by_contra! hV
