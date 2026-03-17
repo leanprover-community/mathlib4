@@ -1204,6 +1204,40 @@ lemma subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
   rw [hmem_union, Ideal.subset_union_prime a b (fun i hin ↦ hp i ((ht i).mp hin))]
   exact exists_congr (fun i ↦ and_congr_left fun _ ↦ ht i)
 
+/-- Generalize `Ideal.IsMaximal.exists_inv` to power of maximal ideals. -/
+theorem IsMaximal.exists_inv_pow (I : Ideal R) [I.IsMaximal]
+    {x : R} (hx : x ∉ I) (n : ℕ) : ∃ (y : R), ∃ i ∈ I ^ n, y * x + i = 1 := by
+  obtain ⟨y, i, hmem, hi⟩ := Ideal.IsMaximal.exists_inv ‹_› hx
+  obtain ⟨y, hy⟩ : ∃ y : R, y * x + i ^ n = 1 := by
+    induction n with
+    | zero => exact ⟨0, by simp⟩
+    | succ n ih =>
+      obtain ⟨z, hz⟩ := ih
+      refine ⟨z * i + y, ?_⟩
+      trans z * i * x + i * i ^ n + y * x
+      · ring
+      · rw [mul_comm z i, mul_assoc, ← mul_add, hz, add_comm]
+        simpa
+  exact ⟨y, i ^ n, Ideal.pow_mem_pow hmem n, hy⟩
+
+/-- See also `Ideal.IsPrime.mul_mem_pow` for prime ideal in Dedekind domain. -/
+theorem IsMaximal.mul_mem_pow (I : Ideal R) [I.IsMaximal]
+    {a b : R} {n : ℕ} (h : a * b ∈ I ^ n) : a ∈ I ∨ b ∈ I ^ n := by
+  rw [Classical.or_iff_not_imp_left]
+  intro ha
+  obtain ⟨c, i, hi, hc⟩ := exists_inv_pow I ha n
+  obtain hb := congr($hc * b)
+  rw [one_mul] at hb
+  rw [← hb, add_mul, mul_assoc]
+  exact add_mem (mul_mem_left _ _ h) (mul_mem_right _ _ hi)
+
+/-- See also `Ideal.IsPrime.mem_pow_mul` for prime ideal in Dedekind domain. -/
+theorem IsMaximal.mem_pow_mul {R : Type*} [CommSemiring R] (I : Ideal R) [I.IsMaximal]
+    {a b : R} {n : ℕ} (h : a * b ∈ I ^ n) : a ∈ I ^ n ∨ b ∈ I := by
+  rw [mul_comm] at h
+  rw [or_comm]
+  exact mul_mem_pow _ h
+
 section Dvd
 
 /-- If `I` divides `J`, then `I` contains `J`.
