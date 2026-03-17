@@ -26,30 +26,103 @@ public def UnicodeVariant.emoji := '\uFE0F'
 /-- Following any unicode character, this indicates that the text variant should be displayed -/
 public def UnicodeVariant.text := '\uFE0E'
 
-/-- Prints a unicode character's codepoint in hexadecimal with prefix 'U+'.
-E.g., 'a' is "U+0061". -/
-public def Char.printCodepointHex (c : Char) : String :=
-  let digits := Nat.toDigits 16 c.val.toNat
-  -- print at least 4 (could be more) hex characters using leading zeros
-  ("U+".append <| "0000".drop digits.length |>.toString).append <| String.ofList digits
+/-- Allowed (by the linter) whitespace characters -/
+def ASCII.allowedWhitespace (c : Char) : Bool := #[' ', '\n'].contains c
 
-/-- Prints all characters in a string in hexadecimal with prefix 'U+'.
-E.g., "ab" is "U+0061;U+0062". -/
-public def String.printCodepointHex (s : String) : String :=
-  -- note: must not contain spaces because of the error message parsing below!
-  ";".intercalate <| s.toList.map Char.printCodepointHex
+/-- Printable ASCII characters, not including whitespace. -/
+def ASCII.printable (c : Char) : Bool := 0x21 ≤ c.toNat && c.toNat ≤ 0x7e
 
-/-- Blocklist: If `false`, the character is not allowed in Mathlib. -/
-public def isAllowedCharacter (c : Char) : Bool :=
-  !#['\u00A0'].contains c -- non-breaking space
+/-- Allowed (by the linter) ASCII characters -/
+def ASCII.allowed (c : Char) : Bool := ASCII.allowedWhitespace c || ASCII.printable c
 
-/-- Provide default replacement (`String`) for a blocklisted character, or `none` if none defined -/
-public def replaceDisallowed : Char → Option String
-| '\u00a0' => " " -- replace non-breaking space with normal whitespace
-| _ => none
+/--
+Symbols with VSCode extension abbreviation, as of March 17, 2026.
+Obtained using `scripts/extract-unique-nonascii.lean` from
+https://github.com/leanprover/vscode-lean4/blob/132d329aa8afa3e8508ef77cfdcff112d3b35c88
+-/
+def withVSCodeAbbrev : Array Char := #[
+'⦃', '⦄', '⟦', '⟧', '⟨', '⟩', '⟮', '⟯', '⸨', '⸩', '‹', '›', '«', '»', '⁅', '⁆',
+'‖', '₊', '⌊', '⌋', '⌈', '⌉', '⦋', '⦌', 'α', 'β', 'χ', '↓', 'ε', 'γ', '∩', 'μ',
+'∘', 'Π', '▸', '→', '↑', '∨', '×', '⁻', '¹', '∼', '·', '⋆', '¬', '¿', '₁', '₂',
+'₃', '₄', '₅', '₆', '₇', '₈', '₉', '₀', '←', 'Ø', '⅋', '𝔸', 'ℂ', 'Δ', '𝔽', 'Γ',
+'ℍ', '⋂', '𝕂', 'Λ', 'ℕ', 'ℚ', 'ℝ', 'Σ', '⋃', 'ℤ', '♯', '∶', '∣', 'δ', 'ζ', 'η',
+'θ', 'ι', 'κ', 'λ', 'ν', 'ξ', 'π', 'ρ', 'ς', 'σ', 'τ', 'φ', 'ψ', 'ω', 'À', 'Á',
+'Â', 'Ã', 'Ä', 'Ā', 'Ç', 'È', 'É', 'Ê', 'Ë', 'Ē', 'Ì', 'Í', 'Î', 'Ï', 'Ī', 'Ñ',
+'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Ō', 'Ù', 'Ú', 'Û', 'Ü', 'Ū', 'Ý', 'à', 'á', 'â', 'ã',
+'ä', 'ā', 'ç', 'è', 'é', 'ê', 'ë', 'ē', 'ì', 'í', 'î', 'ï', 'ī', 'ñ', 'ò', 'ó',
+'ô', 'õ', 'ö', 'ø', 'ō', 'ù', 'ú', 'û', 'ü', 'ū', 'ý', 'ÿ', 'Ł', '♩', '∉', '≮',
+'𐆎', '∌', '∋', '⟹', '♮', '₦', '∇', '≉', '№', '⇍', '⇎', '⇏', '⊯', '⊮', '≇', '↗',
+'≢', '≠', '∄', '≱', '≯', '↚', '↮', '≰', '∤', '∦', '⋠', '⊀', '↛', '≄', '≁', '⊈',
+'⊄', '⋡', '⊁', '⊉', '⊅', '⋬', '⋪', '⋭', '⋫', '⊭', '⊬', '↖', '≃', '≖', '≕', '⋝',
+'⋜', '⊢', '–', '∃', '∅', '—', '€', 'ℓ', '≅', '∈', '⊺', '∫', '⨍', '∆', '⊓', '⨅',
+'∞', '↔', 'ı', '≣', '≡', '≗', '⇒', '≋', '≊', '≈', '⟶', 'ϩ', '↩', '↪', '₴', 'ͱ',
+'♥', 'ℏ', '∻', '≔', '∺', '∷', '≂', '⊣', '²', '³', '∹', '─', '═', '━', '╌', '⊸',
+'≑', '≐', '∔', '∸', '⋯', '≘', '⟅', '≙', '∧', '∠', '∟', 'Å', '∀', 'ᶠ', 'ᵐ', 'ℵ',
+'⁎', '∗', '≍', '⌶', 'å', 'æ', '₳', '∐', '≚', 'ª', 'º', '⊕', 'ᵒ', 'ᵈ', 'ᵃ', 'ᵖ',
+'⊖', '⊝', '⊗', '⊘', '⊙', '⊚', '⊜', 'œ', '🛑', 'Ω', '℥', 'ο', '∮', '∯', '⨂', '∂',
+'≛', '≜', '▹', '▿', '⊴', '◃', '⊵', '▵', '⬝', '◂', '↞', '↠', '⁀', '∴', '℡', '₸',
+'♪', 'µ', '⁄', '฿', '✝', '⁒', '₡', '℗', '₩', '₱', '‱', '₤', '℞', '※', '‽', '℮',
+'◦', '₮', '⊤', 'ₛ', 'ₐ', 'ᵇ', 'ₗ', 'ₘ', 'ₚ', '⇨', '￢', '⋖', '⩿', '≝', '°', 'ϯ',
+'⊡', '₫', '⇊', '⇃', '⇂', '↘', '⇘', '₯', '↙', '⇙', '⇵', '↧', '⟱', '⇓', '↡', '‡',
+'⋱', '↯', '◆', '◇', '◈', '⚀', '÷', '⋇', '⌀', '♢', '⋄', 'ϝ', '†', 'ℸ', 'ð', '≞',
+'∡', '↦', '♂', '✠', '₼', 'ℐ', '−', '₥', '℧', '⊧', '∓', '≟', '⁇', '🛇', '∏', '∝',
+'≾', '≼', '⋨', '≺', '′', '↣', '𝒫', '£', '▰', '▱', '㉐', '¶', '∥', '±', '⟂', 'ᗮ',
+'‰', '⅌', '₧', '⋔', '≦', '≤', '↝', '↢', '↽', '↼', '⇇', '⇆', '⇋', '↭', '⋋', '≲',
+'⋚', '≶', '⊔', '⟷', '⇔', '⌟', '⟵', '↤', '⇚', '⇐', '↜', '⌞', '〚', '≪', '₾', '…',
+'“', '《', '⧏', '◁', '⋦', '≨', '↫', '↬', '✧', '‘', '⋉', '≧', '≥', '„', '‚', '₲',
+'ϫ', '⋙', '≫', 'ℷ', '⋧', '≩', '≳', '⋗', '⋛', '≷', '≴', '⟪', '≵', '⟫', '√', '✂',
+'⊂', '⊃', '⊏', '⊐', '⊆', '⊊', '⊇', '⊋', '⨆', '∛', '∜', '≿', '≽', '⋩', '≻', '∑',
+'⤳', '⋢', '⊑', '⋣', '⊒', '□', '⇝', '■', '▣', '▢', '◾', '✦', '✶', '✴', '✹', 'ϛ',
+'₷', '∙', '♠', '∢', '§', 'ϻ', 'ϡ', 'ϸ', 'ϭ', 'ϣ', '﹨', '∖', '⌣', '•', '◀', 'Τ',
+'Θ', 'Þ', '∪', '‿', '⯑', '⊎', '⊍', '↨', '↕', '⇕', '⇖', '⌜', '⇗', '⌝', '⇈', '⇅',
+'↥', '⟰', '⇑', '↟', 'υ', '↿', '↾', '⋀', 'Å', 'Æ', 'Α', '⋁', '⨁', '⨀', '⍟', 'Œ',
+'Ω', 'Ο', 'Ι', 'ℑ', '⨄', '⨃', 'Υ', 'ƛ', 'Ϫ', 'Β', 'Ε', 'Ζ', 'Κ', 'Μ', 'Ν', 'Ξ',
+'Ρ', 'Φ', 'Χ', 'Ψ', '✉', '⋘', '↰', '⊨', '⇰', '⊩', '⊫', '⊪', '⋒', '⋓', '¤', '⋞',
+'⋟', '⋎', '⋏', '↶', '↷', '♣', '🚧', 'ᶜ', '∁', '©', '●', '○', '◌', '◎', '◯', '↺',
+'↻', '®', 'Ⓢ', '⊛', '¢', '₵', '℃', 'ȩ', '✓', '₢', '☡', '∎', '⧸', '⊹', '⊞', '⊟',
+'⊠', '¦', 'ℙ', '𝔹', '⅀', '𝟘', '𝟙', '𝟚', '𝟛', '𝟜', '𝟝', '𝟞', '𝟟', '𝟠', '𝟡', '𝟬',
+'𝟭', '𝟮', '𝟯', '𝟰', '𝟱', '𝟲', '𝟳', '𝟴', '𝟵', '‣', '≏', '☣', '★', '▽', '△', 'ℶ',
+'≬', '∵', '≌', '∍', '‵', '⋍', '∽', '⊼', '▪', '☻', '▾', '▴', '⊥', '⋈', '◫', '⇉',
+'⇶', '⇄', '⇛', '▬', '▭', '⟆', '☢', '〛', '’', '⇁', '⇀', '⇌', '⋌', '≓', '₽', '₨',
+'▷', '⋊', '”', '》', '⥤', '½', '⅓', '¼', '⅕', '⅙', '⅛', '⅟', '⅔', '⅖', '¾', '⅗',
+'⅜', '⅘', '⅚', '⅝', '⅞', '⌢', '♀', 'ϥ', '℻', '≒', '♭', 'ℜ', '↱', 'Ϥ', '☹', 'Ϩ',
+'Ͱ', 'Ϧ', 'Ϟ', 'ᵉ', 'ᵍ', 'ʰ', 'ⁱ', 'ʲ', 'ᵏ', 'ˡ', 'ⁿ', 'ʳ', 'ˢ', 'ᵗ', 'ᵘ', 'ᵛ',
+'ʷ', 'ˣ', 'ʸ', 'ᶻ', 'ᴬ', 'ᴮ', 'ᴰ', 'ᴱ', 'ᴳ', 'ᴴ', 'ᴵ', 'ᴶ', 'ᴷ', 'ᴸ', 'ᴹ', 'ᴺ',
+'ᴼ', 'ᴾ', 'ᴿ', 'ᵀ', 'ᵁ', 'ⱽ', 'ᵂ', '⁰', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹', '⁾', '⁽',
+'⁼', '⁺', 'ꭟ', 'ᶶ', 'ᶷ', 'ꭞ', 'ꭝ', 'ᶪ', 'ᶩ', 'ꟹ', 'ꭜ', 'ʱ', 'ꟸ', 'ᶿ', 'ᶺ', 'ᶭ',
+'ᵚ', 'ᶣ', 'ᶛ', 'ᵆ', 'ᵄ', 'ᵎ', 'ᵌ', 'ʵ', 'ʴ', 'ᶵ', 'ᵔ', 'ᶾ', 'ᶴ', 'ᶞ', 'ᵑ', 'ᶽ',
+'ᶼ', 'ᶹ', 'ᶦ', 'ᶫ', 'ᶰ', 'ᶸ', 'ᶧ', 'ʶ', 'ᶝ', 'ᵡ', 'ᶳ', 'ᶢ', 'ᵊ', 'ᵙ', 'ᶲ', 'ᶱ',
+'ᵝ', 'ᵕ', 'ᶯ', 'ᶮ', 'ᶬ', 'ᶨ', 'ᶥ', 'ᶤ', 'ᶟ', 'ˤ', 'ᵠ', 'ᵞ', 'ˠ', 'ᵜ', 'ᵅ', 'ᵓ',
+'ᵋ', 'ᴽ', 'ᴻ', 'ᴲ', 'ᴯ', 'ᴭ', '℠', '™', 'ₑ', 'ₕ', 'ᵢ', 'ⱼ', 'ₖ', 'ₙ', 'ₒ', 'ᵣ',
+'ₜ', 'ᵤ', 'ᵥ', 'ₓ', '₎', '₍', '₌', '₋', '‼', '⁉', 'Ϻ', 'Ϡ', 'Ϸ', 'Ϭ', 'Ϣ', 'Ϛ',
+'⋐', '⋑', '☺', '𝐀', '𝐁', '𝐂', '𝐃', '𝐄', '𝐅', '𝐆', '𝐇', '𝐈', '𝐉', '𝐊', '𝐋', '𝐌',
+'𝐍', '𝐎', '𝐏', '𝐐', '𝐑', '𝐒', '𝐓', '𝐔', '𝐕', '𝐖', '𝐗', '𝐘', '𝐙', '𝐚', '𝐛', '𝐜',
+'𝐝', '𝐞', '𝐟', '𝐠', '𝐡', '𝐢', '𝐣', '𝐤', '𝐥', '𝐦', '𝐧', '𝐨', '𝐩', '𝐪', '𝐫', '𝐬',
+'𝐭', '𝐮', '𝐯', '𝐰', '𝐱', '𝐲', '𝐳', '𝐴', '𝐵', '𝐶', '𝐷', '𝐸', '𝐹', '𝐺', '𝐻', '𝐼',
+'𝐽', '𝐾', '𝐿', '𝑀', '𝑁', '𝑂', '𝑃', '𝑄', '𝑅', '𝑆', '𝑇', '𝑈', '𝑉', '𝑊', '𝑋', '𝑌',
+'𝑍', '𝑎', '𝑏', '𝑐', '𝑑', '𝑒', '𝑓', '𝑔', '𝑖', '𝑗', '𝑘', '𝑙', '𝑚', '𝑛', '𝑜', '𝑝',
+'𝑞', '𝑟', '𝑠', '𝑡', '𝑢', '𝑣', '𝑤', '𝑥', '𝑦', '𝑧', '𝑨', '𝑩', '𝑪', '𝑫', '𝑬', '𝑭',
+'𝑮', '𝑯', '𝑰', '𝑱', '𝑲', '𝑳', '𝑴', '𝑵', '𝑶', '𝑷', '𝑸', '𝑹', '𝑺', '𝑻', '𝑼', '𝑽',
+'𝑾', '𝑿', '𝒀', '𝒁', '𝒂', '𝒃', '𝒄', '𝒅', '𝒆', '𝒇', '𝒈', '𝒉', '𝒊', '𝒋', '𝒌', '𝒍',
+'𝒎', '𝒏', '𝒐', '𝒑', '𝒒', '𝒓', '𝒔', '𝒕', '𝒖', '𝒗', '𝒘', '𝒙', '𝒚', '𝒛', '𝒜', 'ℬ',
+'𝒞', '𝒟', 'ℰ', 'ℱ', '𝒢', 'ℋ', '𝒥', '𝒦', 'ℒ', 'ℳ', '𝒩', '𝒪', '𝒬', 'ℛ', '𝒮', '𝒯',
+'𝒰', '𝒱', '𝒲', '𝒳', '𝒴', '𝒵', '𝒶', '𝒷', '𝒸', '𝒹', 'ℯ', '𝒻', 'ℊ', '𝒽', '𝒾', '𝒿',
+'𝓀', '𝓁', '𝓂', '𝓃', 'ℴ', '𝓅', '𝓆', '𝓇', '𝓈', '𝓉', '𝓊', '𝓋', '𝓌', '𝓍', '𝓎', '𝓏',
+'𝓐', '𝓑', '𝓒', '𝓓', '𝓔', '𝓕', '𝓖', '𝓗', '𝓘', '𝓙', '𝓚', '𝓛', '𝓜', '𝓝', '𝓞', '𝓟',
+'𝓠', '𝓡', '𝓢', '𝓣', '𝓤', '𝓥', '𝓦', '𝓧', '𝓨', '𝓩', '𝓪', '𝓫', '𝓬', '𝓭', '𝓮', '𝓯',
+'𝓰', '𝓱', '𝓲', '𝓳', '𝓴', '𝓵', '𝓶', '𝓷', '𝓸', '𝓹', '𝓺', '𝓻', '𝓼', '𝓽', '𝓾', '𝓿',
+'𝔀', '𝔁', '𝔂', '𝔃', '𝔄', '𝔅', 'ℭ', '𝔇', '𝔈', '𝔉', '𝔊', 'ℌ', '𝔍', '𝔎', '𝔏', '𝔐',
+'𝔑', '𝔒', '𝔓', '𝔔', '𝔖', '𝔗', '𝔘', '𝔙', '𝔚', '𝔛', '𝔜', 'ℨ', '𝔞', '𝔟', '𝔠', '𝔡',
+'𝔢', '𝔣', '𝔤', '𝔥', '𝔦', '𝔧', '𝔨', '𝔩', '𝔪', '𝔫', '𝔬', '𝔭', '𝔮', '𝔯', '𝔰', '𝔱',
+'𝔲', '𝔳', '𝔴', '𝔵', '𝔶', '𝔷', '¥', 'ϱ', 'ϰ', 'ϗ', 'ϖ', 'ϕ', 'ϑ', '⊲', '⊳', 'ϐ',
+'⊻', 'ě', 'Ě', '⋮', 'ď', 'Ď', 'č', 'Č', 'ϟ', '₭', 'į', 'Į', 'K', 'ϧ', '⚠', '℘',
+'≀', 'Ϯ', 'Ϝ', 'Ð', 'Η', '≎', '𝔻', '𝔼', '𝔾', '𝕀', '𝕁', '𝕃', '𝕄', '𝕆', '𝕊', '𝕋',
+'𝕌', '𝕍', '𝕎', '𝕏', '𝕐', '𝕒', '𝕓', '𝕔', '𝕕', '𝕖', '𝕗', '𝕘', '𝕙', '𝕚', '𝕛', '𝕜',
+'𝕝', '𝕞', '𝕟', '𝕠', '𝕡', '𝕢', '𝕣', '𝕤', '𝕥', '𝕦', '𝕧', '𝕨', '𝕩', '𝕪', '𝕫', '⨯',
+'⨿', 'Ϳ', '⧾', '⧿', '¡']
 
 /-- Unicode symbols in mathlib that should always be followed by the emoji variant selector. -/
-public def emojis := #[
+public def emojis : Array Char := #[
 '\u2705',        -- ✅️
 '\u274C',        -- ❌️
  -- TODO "missing end of character literal" if written as '\u1F4A5'
@@ -65,5 +138,70 @@ public def emojis := #[
 
 /-- Unicode symbols in mathlib that should always be followed by the text variant selector. -/
 public def nonEmojis : Array Char := #[]
+-- TODO: should there be any? maybe #['↗', '↘', '✝', '▼', '▶']?
+
+/--
+Other unicode characters present in Mathlib but not present in any of the above lists.
+(as of March 17, 2026)
+Empty lines make sure the characters don't overlap as displayed.
+-/
+def othersInMathlib : Array Char := #[
+'✔', '«', '»', '⟍', 'ł', 'ń', '⎯', '⏐', 'ć', 'š', '̂', 'ᘁ', '𝖣', 'ß', 'ỳ', '⤏',
+
+'┌', '┐', '│', '├', '└', '┬', '┘', '▼', '◄', '⋅', 'ś', '－', '＼', '◥', '／', '◢',
+
+'◿', '◹', 'ő', '⥥', '⤞', '⥢', '╱', '⟋', 'Ž', 'ą', 'Š', 'ầ', '：', '꙳', '⎛',
+
+'⎞', '⎜', '⎟', '⎝', '⎠', 'ă', 'ĝ', 'ᵧ', '▶', '‑', '‾', 'ř', '⏎', '‐', '̀', '𐞥',
+
+'ꟴ', 'ᵟ', 'ᴀ', 'ʙ', 'ᴄ', 'ᴅ', 'ᴇ', 'ꜰ', 'ɢ', 'ʜ', 'ɪ', 'ᴊ', 'ᴋ', 'ʟ', 'ᴍ', 'ɴ',
+
+'ᴏ', 'ᴘ', 'ꞯ', 'ʀ', 'ꜱ', 'ᴛ', 'ᴜ', 'ᴠ', 'ᴡ', 'ʏ', 'ᴢ', 'ᵦ', 'ᵨ', 'ᵩ', 'ᵪ'
+]
+
+/-- Prints a unicode character's codepoint in hexadecimal with prefix 'U+'.
+E.g., 'a' is "U+0061". -/
+public def Char.printCodepointHex (c : Char) : String :=
+  let digits := Nat.toDigits 16 c.val.toNat
+  -- print at least 4 (could be more) hex characters using leading zeros
+  ("U+".append <| "0000".drop digits.length |>.toString).append <| String.ofList digits
+
+/-- Prints all characters in a string in hexadecimal with prefix 'U+'.
+E.g., "ab" is "U+0061;U+0062". -/
+public def String.printCodepointHex (s : String) : String :=
+  -- note: must not contain spaces because of the error message parsing below!
+  ";".intercalate <| s.toList.map Char.printCodepointHex
+
+/-- If `false`, the character is not allowed in Mathlib.
+Consider adding it to one of the whitelists.
+Note: if `true`, a character might still not be allowed depending on context
+(e.g. misplaced variant selectors)
+-/
+public def isAllowedCharacter (c : Char) : Bool :=
+  ASCII.allowed c
+  || withVSCodeAbbrev.contains c
+  || emojis.contains c
+  || nonEmojis.contains c
+  || c == UnicodeVariant.emoji
+  || c == UnicodeVariant.text
+  || othersInMathlib.contains c
+
+/-- Provide default replacement (`String`) for a blocklisted character, or `none` if none defined -/
+public def replaceDisallowed : Char → Option String
+| '\u00a0' => " " -- replace "NO-BREAK SPACE" by normal space
+| '\u202f' => " " -- replace "NARROW NO-BREAK SPACE" by normal space
+| '\u2000' => " " -- replace "EN QUAD" by normal space
+| '\u2001' => " " -- replace "EM QUAD" by normal space
+| '\u2002' => " " -- replace "EN SPACE" by normal space
+| '\u2003' => " " -- replace "EM SPACE" by normal space
+| '\u2004' => " " -- replace "THREE-PER-EM SPACE" by normal space
+| '\u2005' => " " -- replace "FOUR-PER-EM SPACE" by normal space
+| '\u2006' => " " -- replace "SIX-PER-EM SPACE" by normal space
+| '\u2007' => " " -- replace "FIGURE SPACE" by normal space
+| '\u2008' => " " -- replace "PUNCTUATION SPACE" by normal space
+| '\u2009' => " " -- replace "THIN SPACE" by normal space
+| '\u200A' => " " -- replace "HAIR SPACE" by normal space
+| _ => none
+
 
 end Mathlib.Linter.TextBased.UnicodeLinter

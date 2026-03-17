@@ -1,0 +1,52 @@
+/-
+Copyright (c) 2026 Adomas Baliuka. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Adomas Baliuka
+-/
+import Batteries
+
+/-!
+This script extracts all unique non-ascii characters from what is given via stdin.
+It is designed to update the unicode character list in
+`Mathlib/Tactic/Linter/TextBased/UnicodeLinter.lean`
+from
+https://github.com/leanprover/vscode-lean4/blob/master/lean4-unicode-input/src/abbreviations.json
+
+Note: We should disallow any characters which cause right-to-left alignment.
+For more information about Unicode's bidirectional classes, see
+https://www.unicode.org/reports/tr44/tr44-34.html#Bidi_Class_Values
+
+Note: this script will be used very rarely (if at all).
+Therefore we probably shouldn't register it in `lakefile.lean` to avoid clutter.
+
+Example usage:
+```sh
+URL="https://raw.githubusercontent.com/leanprover/vscode-lean4/refs/heads/master/lean4-unicode-input/src/abbreviations.json"
+curl $URL | lake env lean --run scripts/extract-unique-nonascii.lean
+```
+-/
+
+def Char.isAscii (c : Char) : Bool := c.toNat < 128
+
+/-- We deliberately exclude some characters. -/
+def Char.allowedNonAscii (c : Char) : Bool :=
+    !c.isAscii
+    && c != '\u2001' -- \quad (U+2001) (due to being non-strandard whitespace)
+    && c != '\uFDFC' -- RIAL sign (U+FDFC) (due to triggering right-aligned text).
+    && c != '\u060B' -- AFGHANI sign (U+060B) (due to triggering right-aligned text)
+    && c != '\u0332' -- COMBINING LOW LINE (U+0332) (due to modifying characters around it)
+
+def reprCharsChunked (xs : List Char) (chunkSize : Nat := 16) : String :=
+  let elems := xs.map (fun c => "'" ++ String.singleton c ++ "'")
+  let lines :=
+    elems
+      |>.toChunks chunkSize
+      |>.map (fun chunk => String.intercalate ", " chunk)
+  "[" ++ String.intercalate ",\n" lines ++ "]"
+
+def main : IO Unit := do
+  let stdin ← IO.getStdin
+  let allText ← stdin.readToEnd
+  let outputList := (allText.toList.filter Char.allowedNonAscii).eraseDups
+  IO.println s!"Found {outputList.length} unique non-ascii characters (dropping U+2001 and U+FDFC):"
+  IO.println s!"{reprCharsChunked outputList}"
