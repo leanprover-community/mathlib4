@@ -3,16 +3,10 @@ Copyright (c) 2026 Jakob Scharmberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scharmberg
 -/
-import Mathlib.Topology.Defs.Basic
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Defs.Induced
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.CategoryTheory.CommSq
-import Mathlib.Topology.Homotopy.Basic
-import Mathlib.Topology.Category.TopCat.Limits.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.Topology.UnitInterval
-import Mathlib.Topology.Category.TopCat.Limits.Basic
+module
+
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Mathlib.Topology.Homotopy.Basic
 
 /-!
 # Topological Pairs
@@ -25,6 +19,8 @@ right adjoint to the first projection functor, respectively.
 We also define for two morphisms of topological pairs f, g : X ⟶ Y the structure `Homotopy f g` of
 homotopies between them.
 -/
+
+@[expose] public section
 
 open TopologicalSpace CategoryTheory unitInterval
 
