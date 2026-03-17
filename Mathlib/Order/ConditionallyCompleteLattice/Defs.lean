@@ -110,38 +110,7 @@ instance : ConditionallyCompleteLattice my_T :=
     ..conditionallyCompleteLatticeOfsSup my_T _ }
 ```
 -/
-@[implicit_reducible]
-def conditionallyCompleteLatticeOfsSup (α : Type*) [H1 : PartialOrder α] [H2 : OrderSupInfSet α]
-    (bddAbove_pair : ∀ a b : α, BddAbove ({a, b} : Set α))
-    (bddBelow_pair : ∀ a b : α, BddBelow ({a, b} : Set α))
-    (isLUB_sSup : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (sSup s)) :
-    ConditionallyCompleteLattice α where
-  sup a b := sSup {a, b}
-  le_sup_left a b :=
-    (isLUB_sSup {a, b} (bddAbove_pair a b) (insert_nonempty _ _)).1 (mem_insert _ _)
-  le_sup_right a b :=
-    (isLUB_sSup {a, b} (bddAbove_pair a b) (insert_nonempty _ _)).1
-      (mem_insert_of_mem _ (mem_singleton _))
-  sup_le a b _ hac hbc :=
-    (isLUB_sSup {a, b} (bddAbove_pair a b) (insert_nonempty _ _)).2
-      (forall_insert_of_forall (forall_eq.mpr hbc) hac)
-  inf a b := sSup (lowerBounds {a, b})
-  inf_le_left a b :=
-    (isLUB_sSup (lowerBounds {a, b}) (insert_nonempty _ _).bddAbove_lowerBounds
-          (bddBelow_pair a b)).2
-      fun _ hc => hc <| mem_insert _ _
-  inf_le_right a b :=
-    (isLUB_sSup (lowerBounds {a, b}) (insert_nonempty _ _).bddAbove_lowerBounds
-          (bddBelow_pair a b)).2
-      fun _ hc => hc <| mem_insert_of_mem _ (mem_singleton _)
-  le_inf c a b hca hcb :=
-    (isLUB_sSup (lowerBounds {a, b}) (insert_nonempty _ _).bddAbove_lowerBounds
-          ⟨c, forall_insert_of_forall (forall_eq.mpr hcb) hca⟩).1
-      (forall_insert_of_forall (forall_eq.mpr hcb) hca)
-  exists_isLUB_of_nonempty_of_bddAbove _ hn hb := ⟨_, isLUB_sSup _ hb hn⟩
-  exists_isGLB_of_nonempty_of_bddBelow s hn hb :=
-    ⟨sSup (lowerBounds s), isLUB_lowerBounds.mp (isLUB_sSup _ hn.bddAbove_lowerBounds hb)⟩
-
+@[to_dual (attr := implicit_reducible) (reorder := 4 5)
 /-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `inf` function
 that returns the greatest lower bound of a nonempty set which is bounded below. Usually this
 constructor provides poor definitional equalities.  If other fields are known explicitly, they
@@ -157,43 +126,28 @@ instance : ConditionallyCompleteLattice my_T :=
     -- don't care to fix sup, sSup
     ..conditionallyCompleteLatticeOfsInf my_T _ }
 ```
--/
-@[implicit_reducible]
-def conditionallyCompleteLatticeOfsInf (α : Type*) [H1 : PartialOrder α] [H2 : OrderSupInfSet α]
+-/]
+def conditionallyCompleteLatticeOfsSup (α : Type*) [H1 : PartialOrder α] [H2 : OrderSupInfSet α]
     (bddAbove_pair : ∀ a b : α, BddAbove ({a, b} : Set α))
     (bddBelow_pair : ∀ a b : α, BddBelow ({a, b} : Set α))
-    (isGLB_sInf : ∀ s : Set α, BddBelow s → s.Nonempty → IsGLB s (sInf s)) :
+    (isLUB_sSup : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (sSup s)) :
     ConditionallyCompleteLattice α where
-  inf a b := sInf {a, b}
-  inf_le_left a b :=
-    (isGLB_sInf {a, b} (bddBelow_pair a b) (insert_nonempty _ _)).1 (mem_insert _ _)
-  inf_le_right a b :=
-    (isGLB_sInf {a, b} (bddBelow_pair a b) (insert_nonempty _ _)).1
-      (mem_insert_of_mem _ (mem_singleton _))
-  le_inf _ a b hca hcb :=
-    (isGLB_sInf {a, b} (bddBelow_pair a b) (insert_nonempty _ _)).2
-      (forall_insert_of_forall (forall_eq.mpr hcb) hca)
-  sup a b := sInf (upperBounds {a, b})
-  le_sup_left a b :=
-    (isGLB_sInf (upperBounds {a, b}) (insert_nonempty _ _).bddBelow_upperBounds
-          (bddAbove_pair a b)).2
-      fun _ hc => hc <| mem_insert _ _
-  le_sup_right a b :=
-    (isGLB_sInf (upperBounds {a, b}) (insert_nonempty _ _).bddBelow_upperBounds
-          (bddAbove_pair a b)).2
-      fun _ hc => hc <| mem_insert_of_mem _ (mem_singleton _)
-  sup_le a b c hac hbc :=
-    (isGLB_sInf (upperBounds {a, b}) (insert_nonempty _ _).bddBelow_upperBounds
-          ⟨c, forall_insert_of_forall (forall_eq.mpr hbc) hac⟩).1
-      (forall_insert_of_forall (forall_eq.mpr hbc) hac)
-  exists_isGLB_of_nonempty_of_bddBelow _ hn hb := ⟨_, isGLB_sInf _ hb hn⟩
-  exists_isLUB_of_nonempty_of_bddAbove s hn hb :=
-    ⟨sInf (upperBounds s), isGLB_upperBounds.mp (isGLB_sInf _ hn.bddBelow_upperBounds hb)⟩
+  __ := Lattice.ofIsLUBofIsGLB (fun a b ↦ sSup {a, b}) (fun a b ↦ sSup (lowerBounds {a, b}))
+    (fun a b ↦ isLUB_sSup {a, b} (bddAbove_pair a b) (insert_nonempty _ _))
+    (fun a b ↦ isLUB_lowerBounds.mp <| isLUB_sSup (lowerBounds {a, b})
+      (insert_nonempty _ _).bddAbove_lowerBounds (bddBelow_pair a b))
+  __ := H2
+  exists_isLUB_of_nonempty_of_bddAbove _ hn hb := ⟨_, isLUB_sSup _ hb hn⟩
+  exists_isGLB_of_nonempty_of_bddBelow s hn hb :=
+    ⟨sSup (lowerBounds s), isLUB_lowerBounds.mp (isLUB_sSup _ hn.bddAbove_lowerBounds hb)⟩
 
 /-- A version of `conditionallyCompleteLatticeOfsSup` when we already know that `α` is a lattice.
 
 This should only be used when it is both hard and unnecessary to provide `inf` explicitly. -/
-@[implicit_reducible]
+@[to_dual (attr := implicit_reducible)
+/-- A version of `conditionallyCompleteLatticeOfsInf` when we already know that `α` is a lattice.
+
+This should only be used when it is both hard and unnecessary to provide `sup` explicitly. -/]
 def conditionallyCompleteLatticeOfLatticeOfsSup (α : Type*) [H1 : Lattice α] [OrderSupInfSet α]
     (isLUB_sSup : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (sSup s)) :
     ConditionallyCompleteLattice α :=
@@ -202,19 +156,6 @@ def conditionallyCompleteLatticeOfLatticeOfsSup (α : Type*) [H1 : Lattice α] [
       (fun a b => ⟨a ⊔ b, forall_insert_of_forall (forall_eq.mpr le_sup_right) le_sup_left⟩)
       (fun a b => ⟨a ⊓ b, forall_insert_of_forall (forall_eq.mpr inf_le_right) inf_le_left⟩)
       isLUB_sSup with }
-
-/-- A version of `conditionallyCompleteLatticeOfsInf` when we already know that `α` is a lattice.
-
-This should only be used when it is both hard and unnecessary to provide `sup` explicitly. -/
-@[implicit_reducible]
-def conditionallyCompleteLatticeOfLatticeOfsInf (α : Type*) [H1 : Lattice α] [OrderSupInfSet α]
-    (isGLB_sInf : ∀ s : Set α, BddBelow s → s.Nonempty → IsGLB s (sInf s)) :
-    ConditionallyCompleteLattice α :=
-  { H1,
-    conditionallyCompleteLatticeOfsInf α
-      (fun a b => ⟨a ⊔ b, forall_insert_of_forall (forall_eq.mpr le_sup_right) le_sup_left⟩)
-      (fun a b => ⟨a ⊓ b, forall_insert_of_forall (forall_eq.mpr inf_le_right) inf_le_left⟩)
-      isGLB_sInf with }
 
 open scoped Classical in
 /-- A well-founded linear order is conditionally complete, with a bottom element. -/
