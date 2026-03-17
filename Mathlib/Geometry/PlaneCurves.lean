@@ -80,7 +80,7 @@ theorem inner_of_normal_velocity_eq_zero (c : ℝ → EuclideanSpace ℝ (Fin 2)
 
 /-- The normal vector at point of a plane curve parametrized by arc-length (i.e., with unit-speed)
 has length 1 (is a unit vector). -/
-theorem normal_is_unit_of_unit_speed {I : Set ℝ} [I.OrdConnected] {c : ℝ → EuclideanSpace ℝ (Fin 2)}
+theorem normal_is_unit_of_unit_speed {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)}
   (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) {t : ℝ} (ht : t ∈ I) : ‖normal c t‖ = 1 := by
   simp only [norm, OfNat.ofNat_ne_zero, ↓reduceIte, ENNReal.ofNat_ne_top, normal, Fin.isValue,
              ENNReal.toReal_ofNat,Real.rpow_ofNat, sq_abs, Fin.sum_univ_two, Matrix.cons_val_zero,
@@ -125,8 +125,8 @@ def frameAt {I : Set ℝ} [I.OrdConnected] {c : ℝ → EuclideanSpace ℝ (Fin 
 set_option backward.isDefEq.respectTransparency false in
 /-- A simpler formula for the curvature of a plane curve parametrized by arc-length, or in other
 words with unit speed. -/
-theorem orientedCurvature_of_unit_speed_curve {I : Set ℝ} [I.OrdConnected]
-  {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) {t : ℝ} (ht : t ∈ I) :
+theorem orientedCurvature_of_unit_speed_curve {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} 
+  (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) {t : ℝ} (ht : t ∈ I) :
   orientedCurvature c t = inner ℝ (iteratedDeriv 2 c t) (normal c t) := by
   unfold orientedCurvature normal
   rw [hc t ht]
@@ -141,7 +141,7 @@ universe u
 
 /-- Auxiliary lemma: If `c` is a twice continuously differentiable plane curve on an interval `I`,
 then the velocity vector `deriv c` has a derivative at every point of `I`. -/
-lemma velocity_hasDerivAt_aux {I : Set ℝ} [I.OrdConnected] (hI : IsOpen I) {ι : Type u} [Fintype ι]
+lemma velocity_hasDerivAt_aux {I : Set ℝ} (hI : IsOpen I) {ι : Type u} [Fintype ι]
   {c : ℝ → EuclideanSpace ℝ ι} (hc : ContDiffOn ℝ 2 c I) {t : ℝ} (ht : t ∈ I) :
   HasDerivAt (deriv c) (iteratedDeriv 2 c t) t := by
   --have := Fintype.ofFinite ι
@@ -205,9 +205,9 @@ theorem second_deriv_eq_orientedCurvature_times_normal {I : Set ℝ} [I.OrdConne
 
 /-- Auxiliary lemma: If `c` is a twice continuously differentiable plane curve on an interval `I`,
 then the normal has a derivative at every point of `I`. -/
-lemma normal_hasDerivAt_aux {I : Set ℝ} [I.OrdConnected] (hI : IsOpen I)
-  {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc : ContDiffOn ℝ 2 c I) {t : ℝ} (ht : t ∈ I) :
-  HasDerivAt (normal c) (deriv (normal c) t) t := by
+lemma normal_hasDerivAt_aux {I : Set ℝ} (hI : IsOpen I) {c : ℝ → EuclideanSpace ℝ (Fin 2)} 
+  (hc : ContDiffOn ℝ 2 c I) {t : ℝ} (ht : t ∈ I) : 
+    HasDerivAt (normal c) (deriv (normal c) t) t := by
   have hd : ContDiffOn ℝ 1 (deriv c) I := hc.deriv_of_isOpen hI (by norm_num)
   have h_diff : DifferentiableOn ℝ (deriv c) I := hd.differentiableOn (by norm_num)
   unfold normal
