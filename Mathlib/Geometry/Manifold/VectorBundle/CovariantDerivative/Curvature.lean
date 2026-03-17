@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorField.LieBracket
+public import Mathlib.LinearAlgebra.Trace
 
 /-! # Curvature of an affine connection
 
@@ -71,7 +72,10 @@ lemma ContMDiffCovariantDerivativeOn.contMDiff' [IsManifold I 1 M] [VectorBundle
 
 end prelim
 
-/-! ## Curvature tensor of an unbundled covariant derivative on `TM` on a set `s` -/
+/-! ## The Riemannian curvature tensor of an unbundled covariant derivative on `TM` on a set `s`
+
+TODO: generalise this discussion to any vector bundle E
+-/
 namespace IsCovariantDerivativeOn
 
 variable (cov : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[𝕜] TangentSpace I x))
@@ -216,5 +220,60 @@ theorem curvatureTensorAux_tensorial₃ (hcov : IsCovariantDerivativeOn E cov) (
     TensorialAt I E (curvatureTensorAux cov X Y · x) x :=
   -- linearity should be "easy" also, scalar multiplication is a different proof
   sorry
+
+noncomputable section
+
+/-- The Riemannian curvature endomorphism `R`, as a (3,1)-tensor field: for vector fields `X`, `Y`
+and `Z`, it is defined as `R(X, Y)Z = ∇_X (∇_Y Z) - ∇_Y (∇_X Z) - ∇_[X,Y] Z`. -/
+-- This definition follows Lee's sign conventions.
+-- TODO: decide if we want this one, and add a comment accordingly!
+def curvatureEndomorphismTensor (hcov : IsCovariantDerivativeOn E cov) (x : M)
+    [ContMDiffCovariantDerivativeOn E 1 cov univ] :
+    TangentSpace I x →L[𝕜] TangentSpace I x →L[𝕜] TangentSpace I x →L[𝕜] TangentSpace I x :=
+  TensorialAt.mkHom₃ (curvatureTensorAux cov · · · x) x
+    (fun σ τ _ ↦ hcov.curvatureTensorAux_tensorial₁ x σ τ)
+    (fun σ τ _ ↦ hcov.curvatureTensorAux_tensorial₂ x σ τ)
+    (fun σ τ _ ↦ hcov.curvatureTensorAux_tensorial₃ x σ τ)
+
+variable [ContMDiffCovariantDerivativeOn E 1 cov univ]
+
+-- lemmas: curvatureEndomorphismTensor_apply and curvatureEndomorphismTensor_apply_extend
+
+variable (X) in
+@[simp]
+lemma curvatureEndomorphismTensor_self (hcov : IsCovariantDerivativeOn E cov)
+    (X₀ : TangentSpace I x) :
+    hcov.curvatureEndomorphismTensor x X₀ X₀ = 0 := by
+  sorry
+
+variable (X Y) in
+lemma curvatureEndomorphismTensor_swap (hcov : IsCovariantDerivativeOn E cov)
+    (X₀ Y₀ : TangentSpace I x) :
+    hcov.curvatureEndomorphismTensor x X₀ Y₀ = - hcov.curvatureEndomorphismTensor x Y₀ X₀ := by
+  sorry
+
+-- lemma: if cov is the Levi-Civita connection, we have <V, R(X, Y)Z> + <R(X, Y)V, Z> = 0
+-- for all vector fields V, X, Y and Z.
+
+-- The Ricci curvature is the trace of this linear map
+def ricciCurvatureAux (hcov : IsCovariantDerivativeOn E cov) (x : M) (Y Z : TangentSpace I x) :
+    TangentSpace I x →L[𝕜] TangentSpace I x where
+  toFun := fun X₀ ↦ curvatureEndomorphismTensor hcov x X₀ Y Z
+  map_add' X₀ X₁ := by simp
+  map_smul' a X₀ := by simp
+
+def RicciCurvatureFun (hcov : IsCovariantDerivativeOn E cov) (x : M) :
+    TangentSpace I x → TangentSpace I x → 𝕜 :=
+  fun Y Z ↦ LinearMap.trace 𝕜 _ (ricciCurvatureAux hcov x Y Z).toLinearMap
+
+def RicciCurvature (hcov : IsCovariantDerivativeOn E cov) (x : M) :
+    TangentSpace I x →L[𝕜] TangentSpace I x → 𝕜 :=
+  sorry -- apply tensoriality criterion, again
+
+-- most conceptual proof: define the contraction of a tensor and show it is still a tensor
+
+-- scalar curvature left to the reader
+
+end
 
 end IsCovariantDerivativeOn
