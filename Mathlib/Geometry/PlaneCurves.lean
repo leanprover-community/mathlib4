@@ -125,8 +125,8 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A simpler formula for the curvature of a plane curve parametrized by arc-length, or in other
 words with unit speed. -/
 theorem orientedCurvature_of_unit_speed_curve {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)}
-  (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) {t : ℝ} (ht : t ∈ I) :
-  orientedCurvature c t = inner ℝ (iteratedDeriv 2 c t) (normal c t) := by
+    (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) {t : ℝ} (ht : t ∈ I) :
+    orientedCurvature c t = inner ℝ (iteratedDeriv 2 c t) (normal c t) := by
   unfold orientedCurvature normal
   rw [hc t ht]
   simp only [Fin.isValue, Matrix.det_fin_two_of, one_pow, div_one]
