@@ -90,11 +90,6 @@ abbrev OncePerRow (M : Matrix m n α) : Prop :=
 abbrev DistinctColEntries (M : Matrix m n α) : Prop :=
   ∀ y, Function.Injective (M.col y)
 
-/-- This condition states that entries are not repeated in a given row.
-    Equivalently, ∀ x : m, ∀ y₁ y₂ : n, y₁ ≠ y₂ → M x y₁ ≠ M x y₂. -/
-abbrev DistinctRowEntries (M : Matrix m n α) : Prop :=
-  ∀ y, Function.Injective (M.row y)
-
 /-- For m ≤ n, an m × n Latin rectangle is a partial n × n Latin Square where
     the first m entries are filled. -/
 class LatinRectangle (m : Type*) (n : Type*) (α : Type*)
