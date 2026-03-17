@@ -35,28 +35,19 @@ variable {k : Type*} [DivisionRing k]
 
 namespace ChainComplex
 
-/-- For consecutive integers j and j+1, their absolute values differ by exactly 1. -/
 lemma Int.natAbs_add_one_eq_add_one_or_sub_one (j : ℤ) :
     (j + 1).natAbs = j.natAbs + 1 ∨ j.natAbs = (j + 1).natAbs + 1 := by
   omega
 
-/-- An interval [a, b+1) can be split as {a} ∪ [a+1, b+1) when a ≤ b. -/
 lemma Finset.Ico_eq_singleton_union_Ico_succ (a b : ℤ) (hab : a ≤ b) :
     Finset.Ico a (b + 1) = {a} ∪ Finset.Ico (a + 1) (b + 1) := by
   ext x; simp [Finset.mem_Ico]; omega
 
-/-- An interval [a, b+1) can be split as [a, b) ∪ {b} when a ≤ b. -/
 lemma Finset.Ico_eq_Ico_union_singleton (a b : ℤ) (hab : a ≤ b) :
     Finset.Ico a (b + 1) = Finset.Ico a b ∪ {b} := by
   ext x; simp [Finset.mem_Ico]; omega
 
-/-- Alternating sum lemma for integer intervals.
-    If a sequence decomposes as `s(k) = h(k) + b(k) + c(k)` where the terms
-    satisfy a shift relation `b(k+1) = c(k)` with boundary conditions `b(a) = 0`
-    and `c(b) = 0`, then the alternating sum equals the alternating sum of h terms
-    (the b and c terms telescope and cancel). More precisely:
-
-    ∑_{k=a}^b (-1)^k s_k = ∑_{k=a}^b (-1)^k h_k -/
+/-- Telescoping cancellation for alternating sums with shift decomposition. -/
 private lemma sum_Ico_alternating_shift_decomp {α : Type*} [Ring α] (a b : ℤ)
     (hab : a ≤ b) (s h p c : ℤ → α)
     (h_decomp : ∀ k ∈ Finset.Ico a (b + 1), s k = h k + p k + c k)
@@ -65,12 +56,9 @@ private lemma sum_Ico_alternating_shift_decomp {α : Type*} [Ring α] (a b : ℤ
     (h_cb : c b = 0) :
     ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * s k =
     ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * h k := by
-  have expand : ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * s k =
-      ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * (h k + p k + c k) := by
-    apply Finset.sum_congr rfl
-    intros k hk
-    rw [h_decomp k hk]
-  rw [expand]
+  rw [show ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * s k =
+      ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * (h k + p k + c k) from
+    Finset.sum_congr rfl fun k hk => by rw [h_decomp k hk]]
   simp_rw [mul_add]
   rw [Finset.sum_add_distrib, Finset.sum_add_distrib]
   suffices h_cancel : ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * p k +
@@ -92,13 +80,9 @@ private lemma sum_Ico_alternating_shift_decomp {α : Type*} [Ring α] (a b : ℤ
     · simp [Finset.sum_singleton]
     · simp [Finset.disjoint_singleton_right, Finset.mem_Ico]
   rw [hc, h_cb, mul_zero, add_zero]
-  have c_as_p : ∑ k ∈ Finset.Ico a b, (-1 : α)^k.natAbs * c k =
-      ∑ k ∈ Finset.Ico a b, (-1 : α)^k.natAbs * p (k + 1) := by
-    apply Finset.sum_congr rfl
-    intros k hk
-    congr 1
-    exact (h_shift k hk).symm
-  rw [c_as_p]
+  rw [show ∑ k ∈ Finset.Ico a b, (-1 : α)^k.natAbs * c k =
+      ∑ k ∈ Finset.Ico a b, (-1 : α)^k.natAbs * p (k + 1) from
+    Finset.sum_congr rfl fun k hk => by rw [(h_shift k hk).symm]]
   have index_shift :
       Finset.Ico (a + 1) (b + 1) = (Finset.Ico a b).image (· + 1) := by
     ext x
@@ -110,17 +94,9 @@ private lemma sum_Ico_alternating_shift_decomp {α : Type*} [Ring α] (a b : ℤ
     rw [← add_mul]
     suffices (-1 : α)^(j + 1).natAbs + (-1 : α)^j.natAbs = 0 by
       rw [this, zero_mul]
-    have h := Int.natAbs_add_one_eq_add_one_or_sub_one j
-    cases h with
-    | inl h1 =>
-      rw [h1, pow_add, pow_one]
-      simp only [mul_neg, mul_one, neg_add_cancel]
-    | inr h2 =>
-      rw [h2, pow_add, pow_one]
-      simp only [mul_neg, mul_one, add_neg_cancel]
-  · intros x _ y _ h
-    simp at h
-    omega
+    rcases Int.natAbs_add_one_eq_add_one_or_sub_one j with h1 | h1 <;>
+      simp only [h1, pow_add, pow_one, mul_neg, mul_one, neg_add_cancel, add_neg_cancel]
+  · intro x _ y _ h; simp at h; omega
 
 end ChainComplex
 
@@ -145,8 +121,7 @@ lemma dTo_zero_range (C : HomologicalComplex (ModuleCat k) c) (j : ι)
     LinearMap.range (C.dTo j).hom = ⊥ := by
   rw [h.eq_zero_of_src (C.dTo j), ModuleCat.hom_zero, LinearMap.range_zero]
 
-/-- The range of `dFrom i` has the same dimension as the range of the underlying
-differential `C.d i j`. -/
+/-- `finrank(range(dFrom i)) = finrank(range(C.d i j))`. -/
 lemma dFrom_range_finrank_eq_d (C : HomologicalComplex (ModuleCat k) c) {i j : ι}
     (r : c.Rel i j) :
     Module.finrank k (LinearMap.range (C.dFrom i).hom) =
@@ -156,8 +131,7 @@ lemma dFrom_range_finrank_eq_d (C : HomologicalComplex (ModuleCat k) c) {i j : �
     LinearMap.range_comp,
     ← LinearEquiv.finrank_map_eq (C.xNextIso r).toLinearEquiv.symm]
 
-/-- The range of `dTo j` has the same dimension as the range of the underlying
-differential `C.d i j`. -/
+/-- `finrank(range(dTo j)) = finrank(range(C.d i j))`. -/
 lemma dTo_range_finrank_eq_d (C : HomologicalComplex (ModuleCat k) c) {i j : ι}
     (r : c.Rel i j) :
     Module.finrank k (LinearMap.range (C.dTo j).hom) =
@@ -217,45 +191,20 @@ lemma homology_finrank_formula
       (LinearMap.range (C.dTo i).hom) : ℤ) =
     (Module.finrank k
       (LinearMap.ker (C.dFrom i).hom) : ℤ) := by
-  let S := C.sc i
-  let data := S.moduleCatLeftHomologyData
-  have homology_iso : C.homology i ≅ data.H :=
-    S.moduleCatHomologyIso
-  have dim_image := moduleCatToCycles_range_finrank_eq C i
-  have dim_homology :
-      Module.finrank k (C.homology i) =
-      Module.finrank k data.H := by
-    exact LinearEquiv.finrank_eq homology_iso.toLinearEquiv
-  have data_H_eq : data.H =
-      ModuleCat.of k (LinearMap.ker (C.dFrom i).hom ⧸
-        LinearMap.range S.moduleCatToCycles) := rfl
-  calc (Module.finrank k (C.homology i) : ℤ) +
-       (Module.finrank k
-         (LinearMap.range (C.dTo i).hom) : ℤ)
-      = (Module.finrank k data.H : ℤ) +
-        (Module.finrank k
-          (LinearMap.range (C.dTo i).hom) : ℤ) := by
-          simp only [dim_homology]
-    _ = (Module.finrank k data.H : ℤ) +
-        (Module.finrank k
-          (LinearMap.range S.moduleCatToCycles) : ℤ) := by
-          rw [dim_image]
-    _ = (Module.finrank k
-          (LinearMap.ker (C.dFrom i).hom) : ℤ) := by
-          have h := Submodule.finrank_quotient_add_finrank
-            (LinearMap.range S.moduleCatToCycles :
-              Submodule k
-                (LinearMap.ker (C.dFrom i).hom))
-          have eq1 : Module.finrank k data.H =
-            Module.finrank k
-              (LinearMap.ker (C.dFrom i).hom ⧸
-                LinearMap.range S.moduleCatToCycles) := by
-            rw [data_H_eq]
-          rw [eq1]
-          norm_cast
+  have h_eq : Module.finrank k (C.homology i) =
+      Module.finrank k (LinearMap.ker (C.dFrom i).hom ⧸
+        LinearMap.range (C.sc i).moduleCatToCycles) :=
+    (LinearEquiv.finrank_eq (C.sc i).moduleCatHomologyIso.toLinearEquiv).trans rfl
+  have dim_im := moduleCatToCycles_range_finrank_eq C i
+  have quot := Submodule.finrank_quotient_add_finrank
+    (LinearMap.range (C.sc i).moduleCatToCycles :
+      Submodule k (LinearMap.ker (C.dFrom i).hom))
+  exact_mod_cast show Module.finrank k (C.homology i) +
+      Module.finrank k (LinearMap.range (C.dTo i).hom) =
+      Module.finrank k (LinearMap.ker (C.dFrom i).hom) by
+    rw [h_eq, ← dim_im]; exact quot
 
-/-- The dimension of a chain space equals the dimension of its kernel plus
-    the dimension of its image (rank-nullity theorem). -/
+/-- Rank-nullity for `dFrom i`. -/
 lemma chain_dimension_decomposition
     (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ)
     [Module.Finite k (C.X i)] :
@@ -267,8 +216,7 @@ lemma chain_dimension_decomposition
   have := LinearMap.finrank_range_add_finrank_ker (C.dFrom i).hom
   omega
 
-/-- `Int.negOnePow n` equals `(-1) ^ n.natAbs` as an integer.
-This bridges the coercion gap between `Units.val` and `Int.cast ∘ Units.val`. -/
+/-- `↑(n.negOnePow) = (-1) ^ n.natAbs` as an integer. -/
 private lemma negOnePow_val (n : ℤ) :
     (↑(n.negOnePow) : ℤ) = (-1) ^ n.natAbs :=
   Int.coe_negOnePow ℤ n
@@ -312,55 +260,41 @@ theorem eulerChar_eq_homologyEulerChar
     exact finrank_eq_zero_of_isZero _ (ShortComplex.isZero_homology_of_isZero_X₂ _
       (isZero_outside_Ico C a b i hi hC_bounded_below hC_bounded_above))
   rw [C.eulerChar_eq_sum_finSet_of_finrankSupport_subset
-    (Finset.Ico a (b + 1)) h_supp_X]
-  rw [C.homologyEulerChar_eq_sum_finSet_of_finrankSupport_subset
+    (Finset.Ico a (b + 1)) h_supp_X,
+    C.homologyEulerChar_eq_sum_finSet_of_finrankSupport_subset
     (Finset.Ico a (b + 1)) h_supp_H]
   -- Bridge from (c.χ i : ℤ) to (-1)^i.natAbs
   simp only [ComplexShape.eulerCharSignsDownInt_χ]
   simp_rw [negOnePow_val]
   -- Now both sides use (-1)^i.natAbs, apply the telescoping argument
-  let s := fun i => (Module.finrank k (C.X i) : ℤ)
-  let h := fun i => (Module.finrank k (C.homology i) : ℤ)
-  let p := fun i =>
-    (Module.finrank k
-      (LinearMap.range (C.dFrom i).hom) : ℤ)
-  let c := fun i =>
-    (Module.finrank k
-      (LinearMap.range (C.dTo i).hom) : ℤ)
-  apply sum_Ico_alternating_shift_decomp a b hab s h p c
+  apply sum_Ico_alternating_shift_decomp a b hab
+    (fun i => (Module.finrank k (C.X i) : ℤ))
+    (fun i => (Module.finrank k (C.homology i) : ℤ))
+    (fun i => (Module.finrank k
+      (LinearMap.range (C.dFrom i).hom) : ℤ))
+    (fun i => (Module.finrank k
+      (LinearMap.range (C.dTo i).hom) : ℤ))
   -- s(j) = h(j) + p(j) + c(j)
-  · intros j _
-    change (Module.finrank k (C.X j) : ℤ) =
-      (Module.finrank k (C.homology j) : ℤ) +
-      (Module.finrank k
-        (LinearMap.range (C.dFrom j).hom) : ℤ) +
-      (Module.finrank k
-        (LinearMap.range (C.dTo j).hom) : ℤ)
-    rw [chain_dimension_decomposition C j]
-    rw [← homology_finrank_formula C j]
-    ring
+  · intro j _
+    rw [chain_dimension_decomposition C j,
+      ← homology_finrank_formula C j]; ring
   -- p(j+1) = c(j)
-  · intros j _
-    change (Module.finrank k
-        (LinearMap.range (C.dFrom (j + 1)).hom) : ℤ) =
-      (Module.finrank k
-        (LinearMap.range (C.dTo j).hom) : ℤ)
-    congr 1
-    exact dFrom_succ_range_finrank_eq_dTo C j
+  · intro j _
+    exact_mod_cast dFrom_succ_range_finrank_eq_dTo C j
   -- p(a) = 0
-  · change (Module.finrank k
-        (LinearMap.range (C.dFrom a).hom) : ℤ) = 0
-    have : LinearMap.range (C.dFrom a).hom = ⊥ := by
+  · have : LinearMap.range (C.dFrom a).hom = ⊥ := by
       apply dFrom_zero_range
-      simp only [xNext, show (ComplexShape.down ℤ).next a = a - 1 from by simp]
+      simp only [xNext,
+        show (ComplexShape.down ℤ).next a = a - 1 from
+          by simp]
       exact hC_bounded_below _ (by omega)
     rw [this]; simp
   -- c(b) = 0
-  · change (Module.finrank k
-        (LinearMap.range (C.dTo b).hom) : ℤ) = 0
-    have : LinearMap.range (C.dTo b).hom = ⊥ := by
+  · have : LinearMap.range (C.dTo b).hom = ⊥ := by
       apply dTo_zero_range
-      simp only [xPrev, show (ComplexShape.down ℤ).prev b = b + 1 from by simp]
+      simp only [xPrev,
+        show (ComplexShape.down ℤ).prev b = b + 1 from
+          by simp]
       exact hC_bounded_above _ (by omega)
     rw [this]; simp
 
