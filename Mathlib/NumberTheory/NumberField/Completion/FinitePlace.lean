@@ -84,7 +84,7 @@ namespace NumberField
 variable (K : Type*) [Field K] {R : Type*} [CommRing R] [Algebra R K] [IsDedekindDomain R]
   [IsFractionRing R K] (v : HeightOneSpectrum R)
 
-/-- The embedding of a number field inside its completion with respect to `v`. -/
+/-- The embedding of a field inside its `adicCompletion` with respect to `v`. -/
 noncomputable def FinitePlace.embedding : K →+* adicCompletion K v :=
   UniformSpace.Completion.coeRingHom.comp (WithVal.equiv (v.valuation K)).symm
 
@@ -161,17 +161,17 @@ theorem adicAbv_intCast_le_one (n : ℤ) : adicAbv K v n ≤ 1 :=
   (isNonarchimedean_adicAbv K v).apply_intCast_le_one_of_isNonarchimedean
 
 @[deprecated (since := "2026-03-11")]
-alias NumberTheory.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm := one_lt_absNorm
+alias NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm := one_lt_absNorm
 @[deprecated (since := "2026-03-11")]
-alias NumberTheory.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm_nnreal := one_lt_absNorm_nnreal
+alias NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm_nnreal := one_lt_absNorm_nnreal
 @[deprecated (since := "2026-03-11")]
-alias NumberTheory.RingOfIntegers.HeightOneSpectrum.absNorm_ne_zero := absNorm_ne_zero
+alias NumberField.RingOfIntegers.HeightOneSpectrum.absNorm_ne_zero := absNorm_ne_zero
 @[deprecated (since := "2026-03-11")]
-alias NumberTheory.RingOfIntegers.HeightOneSpectrum.adicAbv := adicAbv
+alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv := adicAbv
 @[deprecated (since := "2026-03-11")]
-alias NumberTheory.RingOfIntegers.HeightOneSpectrum.adicAbv_def := adicAbv_def
+alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_def := adicAbv_def
 @[deprecated (since := "2026-03-11")]
-alias NumberTheory.RingOfIntegers.HeightOneSpectrum.isNonarchimedean_adicAbv :=
+alias NumberField.RingOfIntegers.HeightOneSpectrum.isNonarchimedean_adicAbv :=
   isNonarchimedean_adicAbv
 @[deprecated (since := "2026-03-11")]
 alias NumberField.instIsRankOneDiscreteWithZeroMultiplicativeIntAdicCompletionRingOfIntegersV :=
@@ -193,6 +193,7 @@ alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max := adicAbv
 alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_natCast_le_one := adicAbv_natCast_le_one
 @[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_intCast_le_one := adicAbv_intCast_le_one
+
 end HeightOneSpectrum
 
 open HeightOneSpectrum Valuation.IsRankOneDiscrete
@@ -246,8 +247,6 @@ theorem FinitePlace.norm_lt_one_iff_mem (x : R) :
   exact v.adicAbv_coe_lt_one_iff (one_lt_absNorm_nnreal v) x
 
 end AbsoluteValue
-
-section FinitePlace
 
 open HeightOneSpectrum
 
@@ -399,8 +398,6 @@ alias IsDedekindDomain.HeightOneSpectrum.equivHeightOneSpectrum_symm_apply :=
   equivHeightOneSpectrum_symm_apply
 @[deprecated (since := "2026-03-11")]
 alias IsDedekindDomain.HeightOneSpectrum.embedding_mul_absNorm := embedding_mul_absNorm
-
-end FinitePlace
 
 end FinitePlace
 
