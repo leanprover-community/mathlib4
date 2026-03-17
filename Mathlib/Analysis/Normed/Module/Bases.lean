@@ -47,9 +47,9 @@ This file provides a unified structure `GeneralSchauderBasis` that captures both
 * `UnconditionalSchauderBasis.enormProjBound`: The supremum of projection norms (`ℝ≥0∞`).
 * `UnconditionalSchauderBasis.nnnormProjBound`: The supremum of projection norms (`ℝ≥0`),
   requires `[CompleteSpace X]`.
-* `RankOneDecompostion 𝕜 X`: Data for constructing a Schauder basis from
+* `RankOneDecomposition 𝕜 X`: Data for constructing a Schauder basis from
   a sequence of finite-rank projections whose differences are rank one.
-* `RankOneDecompostion.basis`: Constructs a `SchauderBasis` from a `RankOneDecompostion`.
+* `RankOneDecomposition.basis`: Constructs a `SchauderBasis` from a `RankOneDecomposition`.
 
 ## Main Results
 
@@ -427,8 +427,8 @@ the differences `succSub P n = P (n+1) - P n` are rank-one operators
 (see `finrank_range_succSub_eq_one`). Choosing a nonzero vector `e n` in the range of each
 `succSub P n` yields a Schauder basis for `X`.
 
-Use `RankOneDecompostion.basis` to construct the `SchauderBasis` from this data. -/
-structure RankOneDecompostion where
+Use `RankOneDecomposition.basis` to construct the `SchauderBasis` from this data. -/
+structure RankOneDecomposition where
   /-- The sequence of finite-rank projections. -/
   P : ℕ → X →L[𝕜] X
   /-- The sequence of candidate basis vectors. -/
@@ -446,9 +446,9 @@ structure RankOneDecompostion where
   /-- The vector `e_n` is non-zero. -/
   e_ne_zero (n : ℕ) : e n ≠ 0
 
-namespace RankOneDecompostion
+namespace RankOneDecomposition
 
-variable (D : RankOneDecompostion 𝕜 X)
+variable (D : RankOneDecomposition 𝕜 X)
 
 /-- There exists a coefficient scaling `e n` to match `(succSub D.P n) x`. -/
 lemma exists_coeff (n : ℕ) (x : X) :
@@ -520,6 +520,6 @@ theorem basis_proj : (basis D).proj = D.P := by
 theorem basis_coe : ⇑(basis D) = D.e :=
   rfl
 
-end RankOneDecompostion
+end RankOneDecomposition
 
 end SchauderBasis
