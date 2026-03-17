@@ -238,23 +238,8 @@ def renameLatinRectangle
     have h' : Fintype.card α = Fintype.card β := Fintype.card_congr h
     have k' := A.exactly_n_symbols
     omega,
-  once_per_row := by
-    simp only [OncePerRow, Matrix.row]
-    have h' := A.once_per_row
-    simp only [OncePerRow, Matrix.row] at h'
-    intro i'
-    specialize h' (f.symm i') --(h.symm b')
-    have h_comp :
-      (fun j' ↦ h (LatinRectangle.M (f.symm i') (g.symm j'))) =
-      h ∘ (LatinRectangle.M (f.symm i')) ∘ g.symm := by
-      ext
-      simp
-    rw [h_comp]
-    apply Function.Bijective.comp
-    · exact Equiv.bijective h
-    · apply Function.Bijective.comp
-      · exact h'
-      · exact Equiv.bijective g.symm,
+  once_per_row i' :=
+    h.bijective.comp (A.once_per_row (f.symm i') |>.comp g.symm.bijective)
   distinct_col_entries := by
     simp only [DistinctColEntries, Matrix.col]
     have h' := A.distinct_col_entries
