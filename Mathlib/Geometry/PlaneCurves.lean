@@ -101,7 +101,7 @@ def frameAt {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc : ∀ t �
     · intro i
       rcases eq_or_ne i 0 with h | h
       · simp only [h, Fin.isValue]; exact hc t ht
-      · have h' : i=1 := Fin.eq_one_of_ne_zero i h
+      · have h' : i = 1 := Fin.eq_one_of_ne_zero i h
         simp only [h', Fin.isValue]; exact normal_is_unit_of_unit_speed hc ht
     · intro i j hinej
       rcases (eq_or_ne i 0) with h | h
