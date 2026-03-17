@@ -706,8 +706,8 @@ partial def _root_.Lean.MVarId.gcongr
 
 /-- `gcongr` applies "generalized congruence" rules to recursively reduce a goal of form
 `⊢ R (f a₁ ... aₙ) (f b₁ ... bₙ)` to (possibly multiple) goal(s) `⊢ Rᵢ aᵢ bᵢ`, keeping only the
-distinct pairs `aᵢ ≠ bᵢ`, where `Rᵢ` is a possibly different relation (depending on the precise rule).
-The relations `R`, `Rᵢ` can be any two-argument relation, including `· → ·`.
+distinct pairs `aᵢ ≠ bᵢ`, where `Rᵢ` is a possibly different relation (depending on the
+precise rule). The relations `R`, `Rᵢ` can be any two-argument relation, including `· → ·`.
 
 This tactic is extensible: to add a "generalized congruence" rule, tag a theorem with the attribute
 `@[gcongr]`.
@@ -716,8 +716,8 @@ If a "generalized congruence" lemma has a side goal, `gcongr` will try to discha
 `gcongr_discharger`, which is an extensible tactic based on `positivity`. Side goals not discharged
 in this way are left for the user.
 
-* `gcongr with x y ... z` names the variables that are introduced by descending into binders (for example
-  sums or suprema).
+* `gcongr with x y ... z` names the variables that are introduced by descending into binders (for
+  example sums or suprema).
 * `gcongr n`, where `n` is a natural number literal, limits the depth of the recursive applications.
   This is useful if `gcongr` is too aggressive in breaking down the goal.
 * `gcongr t`, where `t` is a term with `?_` holes, performs congruence up to the holes in `t`.
