@@ -328,7 +328,7 @@ variable (n₁ n₂ K₁ K₂) in
 
 This is in fact continuous (see `monoCLM`). Furthermore:
 * it is a topological embedding when `n₁ = n₂` and `K₁ ⊆ K₂` (not in Mathlib yet)
-* it maps bounded sets to compact sets when `n₁ ≥ n₂ +1` and `K₁ ⊆ K₂` (not in Mathlib yet)
+* it maps bounded sets to compact sets when `n₁ ≥ n₂ + 1` and `K₁ ⊆ K₂` (not in Mathlib yet)
 -/
 noncomputable def monoLM :
     𝓓^{n₁}_{K₁}(E, F) →ₗ[𝕜] 𝓓^{n₂}_{K₂}(E, F) where
@@ -346,7 +346,6 @@ lemma monoLM_apply (f : 𝓓^{n₁}_{K₁}(E, F)) :
   rw [monoLM]
   split_ifs <;> rfl
 
-@[simp]
 lemma monoLM_eq_zero (H : ¬ (n₂ ≤ n₁ ∧ K₁ ≤ K₂)) :
     (monoLM 𝕜 n₁ n₂ K₁ K₂ : 𝓓^{n₁}_{K₁}(E, F) →ₗ[𝕜] 𝓓^{n₂}_{K₂}(E, F)) = 0 := by
   ext; simp [H]
@@ -761,30 +760,30 @@ lemma postcompCLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[�
 theorem seminorm_monoLM_le {i : ℕ} (f : 𝓓^{n₁}_{K₁}(E, F)) :
     N[𝕜]_{K₂, n₂, i} (monoLM 𝕜 n₁ n₂ K₁ K₂ f) ≤ N[𝕜]_{K₁, n₁, i} f := by
   by_cases H : n₂ ≤ n₁ ∧ K₁ ≤ K₂
-  · simp (discharger := positivity) only [ContDiffMapSupportedIn.seminorm_le_iff_withOrder,
-      monoLM_apply, H, true_and, if_true]
+  · simp (discharger := positivity) only [ContDiffMapSupportedIn.seminorm_le_iff, monoLM_apply, H,
+      and_self, ↓reduceIte]
     intro hik _ _
-    exact norm_iteratedFDeriv_apply_le_seminorm_withOrder _ (hik.trans (mod_cast H.1))
-  · simp [H]
+    exact norm_iteratedFDeriv_apply_le_seminorm _ (hik.trans (mod_cast H.1))
+  · simp [monoLM_eq_zero, H]
 
 theorem seminorm_monoLM_eq {i : ℕ} (h₁ : n₁ = n₂) (h₂ : K₁ ≤ K₂) (f : 𝓓^{n₁}_{K₁}(E, F)) :
     N[𝕜]_{K₂, n₂, i} (monoLM 𝕜 n₁ n₂ K₁ K₂ f) = N[𝕜]_{K₁, n₁, i} f := by
   simp [BoundedContinuousFunction.norm_eq_iSup_norm, ContDiffMapSupportedIn.seminorm_apply,
-    structureMapCLM_apply_withOrder, h₁, h₂]
+    structureMapCLM_apply, h₁, h₂]
 
 variable (n₁ n₂ K₁ K₂) in
-/-- If `n₁ ≥ n₂` and `K₁ ≤ K₂`, `monoCLM 𝕜 n₁ n₂ K₁ K₂` is the continuous `𝕜`-linear inclusion of
-`𝓓^{n₁}_{K₁}(E, F)` inside `𝓓^{}_{Q'}(E, F)`. Otherwise, this is the zero map.
+/-- If `n₁ ≥ n₂` and `K₁ ⊆ K₂`, `monoCLM 𝕜 n₁ n₂ K₁ K₂` is the continuous `𝕜`-linear inclusion of
+`𝓓^{n₁}_{K₁}(E, F)` inside `𝓓^{n₂}_{K₂}(E, F)`. Otherwise, this is the zero map.
 
 Furthermore:
-* it is a topological embedding when `k = n` and `Q ⊆ Q'` (not in Mathlib yet)
-* it maps bounded sets to compact sets when `k + 1 ≤ n` and `Q ⊆ Q'` (not in Mathlib yet)
+* it is a topological embedding when `n₁ = n₂` and `K₁ ⊆ K₂` (not in Mathlib yet)
+* it maps bounded sets to compact sets when `n₁ ≥ n₂ + 1` and `K₁ ⊆ K₂` (not in Mathlib yet)
 -/
 noncomputable def monoCLM :
     𝓓^{n₁}_{K₁}(E, F) →L[𝕜] 𝓓^{n₂}_{K₂}(E, F) where
   toLinearMap := monoLM 𝕜 n₁ n₂ K₁ K₂
   cont := show Continuous (monoLM 𝕜 n₁ n₂ K₁ K₂) by
-    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
+    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
       (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _) _ (fun i ↦ ⟨{i}, 1, fun f ↦ ?_⟩)
     simpa using seminorm_monoLM_le 𝕜 f
 
@@ -794,7 +793,6 @@ lemma monoCLM_apply (f : 𝓓^{n₁}_{K₁}(E, F)) :
     (monoCLM 𝕜 n₁ n₂ K₁ K₂ f : E → F) = if n₂ ≤ n₁ ∧ K₁ ≤ K₂ then f else 0 :=
   monoLM_apply 𝕜 f
 
-@[simp]
 lemma monoCLM_eq_zero (H : ¬ (n₂ ≤ n₁ ∧ K₁ ≤ K₂)) :
     (monoCLM 𝕜 n₁ n₂ K₁ K₂ : 𝓓^{n₁}_{K₁}(E, F) →L[𝕜] 𝓓^{n₂}_{K₂}(E, F)) = 0 := by
   ext; simp [H]
