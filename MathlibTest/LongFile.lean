@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Linter.Style
 
 /-
@@ -30,7 +31,7 @@ set_option linter.style.longFile 1500
 warning: using 'exit' to interrupt Lean
 ---
 warning: The default value of the `longFile` linter is 50.
-This file is 42 lines long which does not exceed the allowed bound.
+This file is 43 lines long which does not exceed the allowed bound.
 Please, remove the `set_option linter.style.longFile 60`.
 
 Note: This linter can be disabled with `set_option linter.style.longFile 0`
@@ -44,7 +45,7 @@ set_option linter.style.longFile 60 in
 /--
 warning: using 'exit' to interrupt Lean
 ---
-warning: This file is 58 lines long, but the limit is 20.
+warning: This file is 59 lines long, but the limit is 20.
 
 You can extend the allowed length of the file using `set_option linter.style.longFile 200`.
 You can completely disable this linter by setting the length limit to `0`.
@@ -74,7 +75,7 @@ set_option linter.style.longFile 100 in
 /--
 warning: using 'exit' to interrupt Lean
 ---
-warning: This file is 86 lines long. The current limit is 101, but it is expected to be 200:
+warning: This file is 87 lines long. The current limit is 101, but it is expected to be 200:
 `set_option linter.style.longFile 200`.
 
 Note: This linter can be disabled with `set_option linter.style.longFile 0`
@@ -95,7 +96,7 @@ set_option linter.style.longFileDefValue 1000
 /--
 warning: using 'exit' to interrupt Lean
 ---
-warning: This file is 104 lines long. The current limit is 500, but it is expected to be 1000:
+warning: This file is 105 lines long. The current limit is 500, but it is expected to be 1000:
 `set_option linter.style.longFile 1000`.
 
 Note: This linter can be disabled with `set_option linter.style.longFile 0`
@@ -130,7 +131,7 @@ set_option linter.style.longFileDefValue 400
 warning: using 'exit' to interrupt Lean
 ---
 warning: The default value of the `longFile` linter is 400.
-This file is 140 lines long which does not exceed the allowed bound.
+This file is 141 lines long which does not exceed the allowed bound.
 Please, remove the `set_option linter.style.longFile 5000`.
 
 Note: This linter can be disabled with `set_option linter.style.longFile 0`
