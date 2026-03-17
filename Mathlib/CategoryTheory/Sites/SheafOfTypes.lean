@@ -162,7 +162,7 @@ theorem isSheafFor_comp_uliftFunctor_iff {R : Presieve X} :
     R.IsSheafFor (P ⋙ uliftFunctor.{w'}) ↔ R.IsSheafFor P :=
   (isSheafFor_iff_of_nat_equiv (fun _ => Equiv.ulift.symm) (fun _ _ _ _ => rfl)).symm
 
-/-- A presheaf is a sheaf after composiing with a universe lift if and only if it is a sheaf. -/
+/-- A presheaf is a sheaf after composing with a universe lift if and only if it is a sheaf. -/
 @[simp]
 theorem isSheaf_comp_uliftFunctor_iff : IsSheaf J (P ⋙ uliftFunctor.{w'}) ↔ IsSheaf J P :=
   (isSheaf_iff_of_nat_equiv (fun _ => Equiv.ulift.symm) (fun _ _ _ _ => rfl)).symm
