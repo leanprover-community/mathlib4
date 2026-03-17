@@ -404,8 +404,7 @@ theorem injective_toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTow
 
 instance : ContinuousEvalConst 𝓓^{n}(Ω, F) E F :=
   ContinuousEvalConst.of_continuous_forget
-    (f := toBoundedContinuousFunctionCLM (𝕜 := ℝ))
-    (toBoundedContinuousFunctionCLM (𝕜 := ℝ)).continuous
+    (toBoundedContinuousFunctionCLM ℝ).continuous
 
 instance : T3Space 𝓓^{n}(Ω, F) :=
   suffices T2Space 𝓓^{n}(Ω, F) from inferInstance

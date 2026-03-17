@@ -191,15 +191,11 @@ end mapCLM
 section DiracDelta
 
 /-- The Dirac delta distribution -/
-def delta (x : Ω) : 𝓓'^{n}(Ω, ℝ) := by
-  refine {
-    toLinearMap := {
-      toFun := fun f => f x
-      map_add' := by simp
-      map_smul' := by simp
-    }
-    cont := continuous_eval_const (x : E)
-  }
+def delta (x : E) : 𝓓'^{n}(Ω, ℝ) where
+  toFun f := f x
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  cont := continuous_eval_const _
 
 @[simp]
 theorem delta_apply (x : Ω) (f : 𝓓^{n}(Ω, ℝ)) : delta (n := n) x f = f x := by

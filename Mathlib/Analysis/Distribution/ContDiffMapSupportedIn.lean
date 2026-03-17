@@ -721,8 +721,7 @@ lemma toBoundedContinuousFunctionCLM_eq_of_scalars (𝕜' : Type*) [Nontrivially
 
 instance : ContinuousEval 𝓓^{n}_{K}(E, F) E F :=
   ContinuousEval.of_continuous_forget
-    (f := toBoundedContinuousFunctionCLM (𝕜 := ℝ))
-    (toBoundedContinuousFunctionCLM (𝕜 := ℝ)).continuous
+    (toBoundedContinuousFunctionCLM ℝ).continuous
 
 instance : T3Space 𝓓^{n}_{K}(E, F) :=
   have : Injective (toBoundedContinuousFunctionCLM ℝ : 𝓓^{n}_{K}(E, F) →L[ℝ] E →ᵇ F) :=
