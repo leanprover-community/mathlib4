@@ -339,7 +339,7 @@ See `Nat.div_mod_unique` for a similar propositional statement. -/
 def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
   toFun a := (a / n, Fin.ofNat n a)
   invFun := (n.mkDivMod · ·.val).uncurry
-  left_inv _ := n.mkDivMod_div_mod
+  left_inv _ := by exact n.mkDivMod_div_mod
   right_inv _ := Prod.ext (n.div_mkDivMod_of_lt <| Fin.is_lt _)
     (Fin.ext <| by exact mod_mkDivMod_of_lt <| Fin.is_lt _)
 
