@@ -546,7 +546,7 @@ theorem IsTree_exists_atleast_two_leaves [Fintype V] [Nontrivial V] [DecidableRe
       let path1 : G.Path v1 w := ⟨p1, hp1_path⟩
       let path2 : G.Path v1 w := ⟨p2, hp2_path⟩
       have h_ne : p1 ≠ p2 := by
-        rintro rfl
+        rintro h_eq
         have h_len : p1.length = p2.length := by rw [h_eq]
         simp only [length_cons, length_nil, zero_add, p1] at h_len
         have h1 : w = path.getVert 1 := by
