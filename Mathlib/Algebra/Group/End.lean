@@ -715,10 +715,10 @@ def conj [Group G] : G →* MulAut G where
   toFun g :=
     { toFun h := g * h * g⁻¹
       invFun h := g⁻¹ * h * g
-      left_inv h := by simp [mul_assoc]
-      right_inv h := by simp [mul_assoc]
+      left_inv _ := by simp [mul_assoc]
+      right_inv _ := by simp [mul_assoc]
       map_mul' := by simp [mul_assoc] }
-  map_mul' g₁ g₂ := by ext; simp [mul_assoc]
+  map_mul' _ _ := by ext; simp [mul_assoc]
   map_one' := by ext; simp
 
 @[simp]
