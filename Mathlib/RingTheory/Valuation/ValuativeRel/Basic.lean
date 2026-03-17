@@ -314,6 +314,7 @@ lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) : (x : R) ≠ 0 := by
 
 variable (R) in
 /-- The setoid used to construct `ValueGroupWithZero R`. -/
+@[implicit_reducible]
 def valueSetoid : Setoid (R × posSubmonoid R) where
   r := fun (x, s) (y, t) => x * t ≤ᵥ y * s ∧ y * s ≤ᵥ x * t
   iseqv := {
@@ -665,8 +666,8 @@ lemma ValueGroupWithZero.mk_eq_div (r : R) (s : posSubmonoid R) :
   rw [eq_div_iff (valuation_posSubmonoid_ne_zero _)]
   simp [valuation, mk_eq_mk]
 
-set_option linter.flexible false in -- simp followed by gcongr
 /-- Construct a valuative relation on a ring using a valuation. -/
+@[implicit_reducible]
 def ofValuation
     {S Γ : Type*} [CommRing S]
     [LinearOrderedCommGroupWithZero Γ]
@@ -675,7 +676,7 @@ def ofValuation
   vle_total x y := le_total (v x) (v y)
   vle_trans := le_trans
   vle_add hab hbc := (map_add_le_max v _ _).trans (sup_le hab hbc)
-  mul_vle_mul_left _ h := by simp [map_mul]; gcongr
+  mul_vle_mul_left _ h := by simp only [map_mul]; gcongr
   vle_mul_cancel h0 h := by
     rw [map_zero, le_zero_iff] at h0
     simp only [map_mul] at h

@@ -21,8 +21,8 @@ Ostrowski's Theorem for the field `ℚ`: every absolute value on `ℚ` is equiva
 ## Main results
 
 - `Rat.AbsoluteValue.equiv_real_or_padic`: given an absolute value on `ℚ`, it is equivalent
-to the standard Archimedean (Euclidean) absolute value `Rat.AbsoluteValue.real` or to a `p`-adic
-absolute value `Rat.AbsoluteValue.padic p` for a unique prime number `p`.
+  to the standard Archimedean (Euclidean) absolute value `Rat.AbsoluteValue.real` or to a `p`-adic
+  absolute value `Rat.AbsoluteValue.padic p` for a unique prime number `p`.
 
 ## TODO
 
