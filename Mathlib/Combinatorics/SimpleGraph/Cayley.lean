@@ -33,19 +33,45 @@ def mulCayley {M : Type*} (s : Set M) [Mul M] : SimpleGraph M :=
 
 variable {M : Type*} (s : Set M)
 
+section mul
+variable [Mul M]
+
 @[to_additive]
-lemma mulCayley_adj' [Mul M] (u v : M) :
+lemma mulCayley_adj' (u v : M) :
     (mulCayley s).Adj u v ↔ u ≠ v ∧ ∃ g ∈ s, u * g = v ∨ u = v * g := by
   simp [mulCayley,← exists_or,← and_or_left, eq_comm]
 
 @[to_additive]
-lemma mulCayley_adj [Group M] (u v : M) :
-    (mulCayley s).Adj u v ↔ u ≠ v ∧ (u⁻¹ * v ∈ s ∨ v⁻¹ * u ∈ s) := by
-  simp [mulCayley_adj',← eq_inv_mul_iff_mul_eq (b := u),← inv_mul_eq_iff_eq_mul (a := v),
-    and_or_left, exists_or]
+instance [Fintype M] [DecidableEq M] [DecidablePred (· ∈ s)] :
+    DecidableRel (mulCayley s).Adj := fun u v =>
+  decidable_of_iff (u ≠ v ∧ ∃ g ∈ s, u * g = v ∨ u = v * g) (mulCayley_adj' s u v).symm
+
+@[to_additive (attr := gcongr)]
+theorem mulCayley_mono ⦃U V : Set M⦄ (hUV : U ⊆ V) : mulCayley U ≤ mulCayley V := by
+  intro _ _
+  simp_rw [mulCayley_adj']
+  gcongr
+
+@[to_additive (attr := simp)]
+theorem mulCayley_empty : mulCayley (∅ : Set M) = ⊥ := by
+  ext _ _
+  simp [mulCayley_adj']
+
+end mul
+section semigroup
+variable [Semigroup M]
 
 @[to_additive]
-theorem mulCayley_eq_erase_one [MulOneClass M] : mulCayley s = mulCayley (s \ {1}) := by
+theorem mulCayley_adj_mul_left_iff [IsLeftCancelMul M] {s : Set M} {u v d : M} :
+    (mulCayley s).Adj u v ↔ (mulCayley s).Adj (d * u) (d * v) := by
+  simp [mulCayley_adj', mul_assoc]
+
+end semigroup
+section muloneclass
+variable [MulOneClass M]
+
+@[to_additive]
+theorem mulCayley_eq_erase_one : mulCayley s = mulCayley (s \ {1}) := by
   ext u v
   simp only [mulCayley_adj', Set.mem_diff, Set.mem_singleton_iff, and_congr_right_iff, and_assoc]
   intro h
@@ -55,51 +81,42 @@ theorem mulCayley_eq_erase_one [MulOneClass M] : mulCayley s = mulCayley (s \ {1
   simp_all
 
 @[to_additive]
-theorem mulCayley_eq_union_one [MulOneClass M] : mulCayley s = mulCayley (s ∪ {1}) := by
+theorem mulCayley_eq_union_one : mulCayley s = mulCayley (s ∪ {1}) := by
   rw [mulCayley_eq_erase_one s, mulCayley_eq_erase_one (s ∪ _)]
   simp
 
+@[to_additive (attr := simp)]
+theorem mulCayley_singleton_one : mulCayley ({1} : Set M) = ⊥ := by
+  rw [mulCayley_eq_erase_one, Set.diff_self, mulCayley_empty]
+
+end muloneclass
+section group
+variable [Group M]
+
 @[to_additive]
-theorem mulCayley_eq_symm [Group M] : mulCayley s = mulCayley (s ∪ (s⁻¹)) := by
+lemma mulCayley_adj (u v : M) :
+    (mulCayley s).Adj u v ↔ u ≠ v ∧ (u⁻¹ * v ∈ s ∨ v⁻¹ * u ∈ s) := by
+  simp [mulCayley_adj',← eq_inv_mul_iff_mul_eq (b := u),← inv_mul_eq_iff_eq_mul (a := v),
+    and_or_left, exists_or]
+
+@[to_additive]
+theorem mulCayley_eq_symm : mulCayley s = mulCayley (s ∪ (s⁻¹)) := by
   ext u v
   simp [mulCayley_adj, or_comm]
 
 @[to_additive]
-instance [Group M] [DecidableEq M] [DecidablePred (· ∈ s)] : DecidableRel (mulCayley s).Adj :=
+instance [DecidableEq M] [DecidablePred (· ∈ s)] : DecidableRel (mulCayley s).Adj :=
   fun u v => decidable_of_iff (u ≠ v ∧ (u⁻¹ * v ∈ s ∨ v⁻¹ * u ∈ s)) (mulCayley_adj s u v).symm
 
-@[to_additive]
-instance [Mul M] [Fintype M] [DecidableEq M] [DecidablePred (· ∈ s)] :
-    DecidableRel (mulCayley s).Adj := fun u v =>
-  decidable_of_iff (u ≠ v ∧ ∃ g ∈ s, u * g = v ∨ u = v * g) (mulCayley_adj' s u v).symm
-
-@[to_additive]
-theorem mulCayley_adj_mul_left_iff [Semigroup M] [IsLeftCancelMul M] {s : Set M} {u v d : M} :
-    (mulCayley s).Adj u v ↔ (mulCayley s).Adj (d * u) (d * v) := by
-  simp [mulCayley_adj', mul_assoc]
-
-@[to_additive (attr := gcongr)]
-theorem mulCayley_mono [Mul M] ⦃U V : Set M⦄ (hUV : U ⊆ V) : mulCayley U ≤ mulCayley V := by
-  intro _ _
-  simp_rw [mulCayley_adj']
-  gcongr
-
 @[to_additive (attr := simp)]
-theorem mulCayley_empty [Mul M] : mulCayley (∅ : Set M) = ⊥ := by
-  ext _ _
-  simp [mulCayley_adj']
-
-@[to_additive (attr := simp)]
-theorem mulCayley_singleton_one [MulOneClass M] : mulCayley ({1} : Set M) = ⊥ := by
-  rw [mulCayley_eq_erase_one, Set.diff_self, mulCayley_empty]
-
-@[to_additive (attr := simp)]
-theorem mulCayley_univ [Group M] : mulCayley (Set.univ : Set M) = ⊤ := by
+theorem mulCayley_univ : mulCayley (Set.univ : Set M) = ⊤ := by
   ext _ _
   simp [mulCayley_adj]
 
 @[to_additive (attr := simp)]
-theorem mulCayley_compl_singleton_one [Group M] : mulCayley ({1}ᶜ : Set M) = ⊤ := by
+theorem mulCayley_compl_singleton_one : mulCayley ({1}ᶜ : Set M) = ⊤ := by
   rw [Set.compl_eq_univ_diff,← mulCayley_eq_erase_one, mulCayley_univ]
+
+end group
 
 end SimpleGraph
