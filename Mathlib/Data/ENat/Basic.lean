@@ -292,8 +292,9 @@ theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 :=
 theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
   Order.add_one_le_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
 
+-- TODO: deprecate
 theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
-  Order.one_le_iff_pos.trans pos_iff_ne_zero
+  Order.one_le_iff_ne_zero
 
 lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
   not_le.symm.trans one_le_iff_ne_zero.not_left
