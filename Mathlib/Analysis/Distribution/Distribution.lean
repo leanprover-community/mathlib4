@@ -199,7 +199,6 @@ def delta (x : E) : 𝓓'^{n}(Ω, ℝ) where
 
 @[simp]
 theorem delta_apply (x : E) (f : 𝓓^{n}(Ω, ℝ)) : delta x f = f x := by
-
   rfl
 
 end DiracDelta
