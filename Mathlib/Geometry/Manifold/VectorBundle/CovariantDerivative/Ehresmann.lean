@@ -184,26 +184,17 @@ lemma pushCovDer_isCovariantDerivativeOn
     (hcov : IsCovariantDerivativeOn F cov u) :
     IsCovariantDerivativeOn F (e.pushCovDer cov) u where
   add {σ σ' x} hσ hσ' hx := by
-    set s := e.funToSec σ
-    have hs : MDiffAt (T% s) x :=
-      mdifferentiableAt_funToSec e (hu hx) <| mdifferentiableAt_section_trivial_iff.mp hσ
-    set s' := e.funToSec σ'
-    have hs' : MDiffAt (T% s') x :=
-      mdifferentiableAt_funToSec e (hu hx) <| mdifferentiableAt_section_trivial_iff.mp hσ'
+    have hs := mdifferentiableAt_funToSec' e (hu hx) hσ
+    have hs' := mdifferentiableAt_funToSec' e (hu hx) hσ'
     unfold Trivialization.pushCovDer
-    rw [← ContinuousLinearMap.comp_add, ← hcov.add hs hs' hx]
-    congr
-    ext y
-    rw [e.funToSec_map_add 𝕜]
+    rw [← ContinuousLinearMap.comp_add, ← hcov.add hs hs' hx, e.funToSec_map_add 𝕜]
   leibniz {σ g x} hσ hg hx := by
-    set s := e.funToSec σ
-    have hs : MDiffAt (T% s) x :=
-      mdifferentiableAt_funToSec e (hu hx) <| mdifferentiableAt_section_trivial_iff.mp hσ
+    have hs := mdifferentiableAt_funToSec' e (hu hx) hσ
+    ext u
     unfold Trivialization.pushCovDer
     rw [e.funToSec_map_smul g]
     rw [hcov.leibniz hs hg hx]
-    ext u
-    simp [e.linearMapAt_funToSec (hu hx), s]
+    simp [e.linearMapAt_funToSec (hu hx)]
 
 -- This is PAIIIIINNNN and currently unused
 variable {e} in
@@ -250,19 +241,17 @@ variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
 
 local notation "TM" => TangentSpace I
 
--- FIXME the statement of CovariantDerivative.isCovariantDerivativeOn should work on any set
-
 noncomputable
 def proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
     TangentSpace (I.prod 𝓘(𝕜, F)) v →L[𝕜] V v.proj :=
   letI t := trivializationAt F V v.proj
   haveI d_covDerOn := t.pushCovDer_isCovariantDerivativeOn (u := t.baseSet) subset_rfl
-    (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
+    cov.isCovariantDerivativeOn
   letI tproj := d_covDerOn.projection v.proj (t v).2
   letI Tvt := t.deriv I v
   t.symmL 𝕜 v.proj ∘L tproj ∘L Tvt
 
-omit [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F] in
+omit [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] [IsManifold I 1 M] in
 lemma isCovariantDerivativeOn_pushCovDer
     (cov : CovariantDerivative I F V) (e : Trivialization F (π F V)) [MemTrivializationAtlas e] :
     IsCovariantDerivativeOn F (e.pushCovDer cov) e.baseSet :=
@@ -317,30 +306,25 @@ lemma horiz_vert_direct_sum [ContMDiffVectorBundle 1 F V I]
 
 variable {cov : CovariantDerivative I F V}
 
-set_option backward.isDefEq.respectTransparency false in
-omit [ContMDiffVectorBundle 1 F V I] in
-lemma proj_mderiv [ContMDiffVectorBundle 1 F V I]
-    {σ : Π x : M, V x} (x : M)
+lemma proj_mderiv {σ : Π x : M, V x} (x : M)
     (hσ : MDiffAt (T% σ) x) :
     cov σ x = cov.proj (σ x) ∘L
       (mfderiv I (I.prod 𝓘(𝕜, F)) (T% σ) x) := by
-  stop
   let t := trivializationAt F V x
-  let s := fun x ↦ (t (σ x)).2
+  let s := t.secToFun σ
   let Tσx := mfderiv% (T% σ) x
-  -- FIXME `mfderiv%` fails in next line (fixed on master?)
+  -- FIXME `mfderiv%` fails in next line
   let Ttσx := mfderiv (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) t (σ x)
   ext1 X₀
-  change cov σ x X₀ = (cov.proj (T% σ x)) ((mfderiv% (T% σ) x) X₀)
   have hcov := cov.isCovariantDerivativeOn_pushCovDer t
   have hx := mem_baseSet_trivializationAt F V x
-  have hs : MDiffAt (T% s) x := by
-    rw [t.mdifferentiableAt_section_iff I σ hx] at hσ
-    exact (mdifferentiableAt_section I s).mpr hσ
+  have hs : MDiffAt (T% s) x := t.mdifferentiableAt_total_secToFun hx hσ
+  change cov σ x X₀ = cov.proj (T% σ x) (mfderiv% (T% σ) x X₀)
   apply t.eq_of hx
-  erw  [cov.snd_triv_proj (T% σ x),
-       ← t.pushCovDer_ofSect (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _) hσ,
+  rw  [cov.snd_triv_proj (T% σ x),
+       ← t.pushCovDer_secToFun cov.isCovariantDerivativeOn hσ,
        hcov.cov_eq_proj s X₀ hs, t.mfderiv_comp_section hσ _ hx]
+  rfl
 
 lemma mem_horiz_iff_exists [FiniteDimensional 𝕜 E]
     {cov : CovariantDerivative I F V} {v : TotalSpace F V}

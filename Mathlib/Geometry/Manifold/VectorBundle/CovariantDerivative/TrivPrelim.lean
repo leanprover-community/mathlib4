@@ -87,6 +87,14 @@ lemma secToFun_congr {σ σ' : (b : B) → E b} {b : B} (h : σ b = σ' b) :
     e.secToFun σ b = e.secToFun σ' b := by
   simp [secToFun, h]
 
+lemma apply_total_eventuallyEq
+    {x : B} (hx : x ∈ e.baseSet) (σ : Π x, E x) :
+    e ∘ T%σ =ᶠ[𝓝 x] fun x ↦ (x, e.secToFun σ x) := by
+  filter_upwards [e.baseSet_mem_nhds hx] with y hy
+  ext
+  · exact e.coe_coe_fst hy
+  · simp [secToFun]
+
 -- @[congr]
 -- lemma secToFun_congr {σ σ' : (b : B) → E b} {b : B} (h : ∀ x, x = b → σ x = σ' x) :
 --     e.secToFun σ b = e.secToFun σ' b := by
@@ -218,20 +226,6 @@ lemma eq_of {x : B} {v v' : E x} (hx : x ∈ e.baseSet) (hvv' : (e v).2 = (e v')
   rw [hvv'] at this
   grind [e.symm_proj_apply v' hx]
 
-variable [(b : B) → TopologicalSpace (E b)] [FiberBundle F E]
-
-
--- FIXME super weird elaborator bug: removing the
--- omitted assumption from the variable line breaks the lemma
-set_option linter.unusedSectionVars false in
-lemma apply_total_eventuallyEq
-    {x : B} (hx : x ∈ e.baseSet) (σ : Π x, E x) :
-    e ∘ T%σ =ᶠ[𝓝 x] fun x ↦ (x, e.secToFun σ x) := by
-  filter_upwards [e.baseSet_mem_nhds hx] with y hy
-  ext
-  · exact e.coe_coe_fst hy
-  · simp [secToFun]
-
 end
 
 end trivilization_topology
@@ -344,6 +338,18 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)]
   [∀ x : M, TopologicalSpace (V x)]
   [FiberBundle F V]
+
+@[simp]
+lemma _root_.mdifferentiableAt_total_trivial_iff {s : M → F} {x : M} :
+    MDiffAt (T% s) x ↔ MDiffAt s x := by
+  rw [mdifferentiableAt_section I]
+  simp
+
+@[simp]
+lemma _root_.mdifferentiableAt_section_trivial_iff {σ : (x : M) → Trivial M F x} {x : M} :
+    MDiffAt (T% σ) x ↔ MDifferentiableAt I 𝓘(𝕜, F) σ x := by
+  rw [mdifferentiableAt_section I]
+  simp
 
 variable (e : Trivialization F (π F V)) [MemTrivializationAtlas e]
 
@@ -484,6 +490,14 @@ lemma mdifferentiableAt_funToSec
   have := e.secToFun_funToSec_eventuallyEq hx s
   exact hs.congr_of_eventuallyEq this
 
+lemma mdifferentiableAt_funToSec'
+    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
+    {x : M} (hx : x ∈ e.baseSet) {s : M → F}
+    (hs : MDiffAt (T% s) x) :
+    MDiffAt (T% (e.funToSec s)) x := by
+  rw [mdifferentiableAt_total_trivial_iff] at hs
+  apply mdifferentiableAt_funToSec _ hx hs
+
 lemma mdifferentiableAt_secToFun
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
     {x : M} (hx : x ∈ e.baseSet) {σ : (x : M) → V x}
@@ -491,6 +505,14 @@ lemma mdifferentiableAt_secToFun
     MDiffAt (e.secToFun σ) x := by
   rw [e.mdifferentiableAt_section_iff (IB := I) _ hx] at hσ
   exact hσ
+
+lemma mdifferentiableAt_total_secToFun
+    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
+    {x : M} (hx : x ∈ e.baseSet) {σ : (x : M) → V x}
+    (hσ : MDiffAt (T% σ) x) :
+    MDiffAt (T% (e.secToFun σ)) x := by
+  rw [e.mdifferentiableAt_section_iff (IB := I) _ hx] at hσ
+  exact (mdifferentiableAt_section I _).mpr hσ
 
 omit [MemTrivializationAtlas e] [(x : M) → Module 𝕜 (V x)] in
 @[simp]
@@ -550,7 +572,7 @@ lemma mfderiv_comp_section
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
     {σ : Π x : M, V x} {x : M} (hσ : MDiffAt T%σ x)
     (u : TangentSpace I x) (hx : x ∈ e.baseSet) :
-    (e.deriv I (σ x)).toLinearMap ((mfderiv% T%σ x) u) = (u, mfderiv% (e.secToFun σ) x u) := by
+    e.deriv I (σ x) ((mfderiv% T%σ x) u) = (u, mfderiv% (e.secToFun σ) x u) := by
   have mdiffe : MDifferentiableAt (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) e (σ x) :=
     e.mdifferentiableAt hx _
   have : mfderiv% (e ∘ T%σ) x = (e.deriv I (σ x)) ∘L (mfderiv% T%σ x) :=
@@ -594,18 +616,6 @@ lemma mfderiv_secToFun
       .snd 𝕜 (TangentSpace I x) F ∘L (e.deriv I (σ x)) ∘L (mfderiv% T%σ x) :=
   ContinuousLinearMap.ext fun u ↦ mfderiv_secToFun_apply e hσ hx u
 
-@[simp]
-lemma _root_.mdifferentiableAt_total_trivial_iff {s : M → F} {x : M} :
-    MDiffAt (T% s) x ↔ MDiffAt s x := by
-  rw [mdifferentiableAt_section I]
-  simp
-
-@[simp]
-lemma _root_.mdifferentiableAt_section_trivial_iff {σ : (x : M) → Trivial M F x} {x : M} :
-    MDiffAt (T% σ) x ↔ MDifferentiableAt I 𝓘(𝕜, F) σ x := by
-  rw [mdifferentiableAt_section I]
-  simp
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
@@ -614,6 +624,18 @@ theorem Bundle.Trivial.mdifferentiableAt_iff (σ : (x : E) → Trivial E E' x) (
     MDiffAt (T% σ) e ↔ DifferentiableAt 𝕜 σ e := by
   simp [mdifferentiableAt_totalSpace, mdifferentiableAt_iff_differentiableAt]
 
-end to_trivialization
+-- unused but we need all combinations at some point.
+@[simp]
+theorem Bundle.Trivial.contMDiffOn_iff {n : WithTop ℕ∞} {σ : (x : E) → Trivial E E' x} {s : Set E} :
+    ContMDiffOn 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) n (T% σ) s ↔
+    ContDiffOn 𝕜 n σ s := by
+  sorry
 
+end to_trivialization
 end Bundle.Trivialization
+
+section
+@[simp]
+lemma Bundle.TotalSpace.proj_mk' {B : Type*} {F : Type*} {E : B → Type*} (b : B) (e : E b) :
+    proj (TotalSpace.mk' F b e) = b := rfl
+end

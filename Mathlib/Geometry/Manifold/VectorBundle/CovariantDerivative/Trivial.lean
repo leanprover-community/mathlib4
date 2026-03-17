@@ -78,7 +78,9 @@ variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 /-- The trivial connection on the trivial bundle is smooth -/
 lemma trivial_isSmooth :
     ContMDiffCovariantDerivative (𝕜 := 𝕜) (trivial 𝓘(𝕜, E) E E') (⊤ : ℕ∞) where
-  contMDiff := by -- {X σ} hX hσ
+  contMDiff := ⟨by
+    intro σ hσ
+    dsimp only [trivial]
     sorry /-
     -- except for local trivialisations, contDiff_infty_iff_fderiv covers this well
     simp only [trivial]
@@ -99,7 +101,7 @@ lemma trivial_isSmooth :
     simp at h₂
     -- now use ContMDiffOn.congr and contDiff_infty_iff_fderiv,
     -- or perhaps a contMDiffOn version of this lemma?
-    sorry -/
+    sorry -/⟩
 
 noncomputable def of_endomorphism (A : E → E' →L[𝕜] E →L[𝕜] E') :
     CovariantDerivative 𝓘(𝕜, E) E' (Trivial E E') where
