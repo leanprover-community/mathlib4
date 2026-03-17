@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Patrick Massot, Michael Rothgang
 module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
-public import Mathlib.Geometry.Manifold.Algebra.Monoid
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 import Mathlib.Geometry.Manifold.Notation
@@ -18,9 +17,8 @@ import Mathlib.Geometry.Manifold.Notation
 
 public section
 
-open Bundle Set OpenPartialHomeomorph ContinuousLinearMap Pretrivialization Filter
-
-open scoped Manifold Bundle Topology
+open Bundle Set ContinuousLinearMap Pretrivialization Filter
+open scoped Manifold Topology
 
 section
 

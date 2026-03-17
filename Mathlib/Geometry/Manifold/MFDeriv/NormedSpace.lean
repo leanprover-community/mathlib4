@@ -81,6 +81,8 @@ theorem Differentiable.comp_mdifferentiable {g : F → F'} {f : M → F}
     (hg : Differentiable 𝕜 g) (hf : MDiff f) : MDiff (g ∘ f) :=
   fun x ↦ hg.differentiableAt.comp_mdifferentiableAt (hf x)
 
+end Module
+
 section extChartAt
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : M → F}
@@ -100,8 +102,6 @@ theorem DifferentiableWithinAt.mdifferentiableWithinAt_of_comp_extChartAt_symm [
   simpa [extChartAt_self_eq] using hf.mdifferentiableWithinAt
 
 end extChartAt
-
-end Module
 
 /-! ### Linear maps between normed spaces are differentiable -/
 
