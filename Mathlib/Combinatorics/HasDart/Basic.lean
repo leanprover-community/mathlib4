@@ -25,7 +25,6 @@ graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
 
 ## TODO
 * Migrate from `SimpleGraph` all the results that only depend on the adjacency relation.
-* Define `HasSymmDart` and the reverse of a dart for them.
 * Define the degree of a graph.
 -/
 
@@ -41,24 +40,28 @@ class HasDart (α : outParam Type*) (Gr : Type*) where
   /-- The set of vertices of a graph-like structure. -/
   verts (G : Gr) : Set α
   /-- The type of darts (oriented edges) of a graph-like structure. -/
-  dart : Gr → α → α → Sort u'
+  darts : Gr → α → α → Sort u'
   /-- The adjacency relation of a graph-like structure. -/
-  Adj (G : Gr) (u v : α) : Prop := Nonempty (dart G u v)
-  nonempty_dart_iff_adj {G : Gr} {u v : α} : Nonempty (dart G u v) ↔ Adj G u v := by rfl
+  Adj (G : Gr) (u v : α) : Prop := Nonempty (darts G u v)
+  nonempty_darts_iff_adj {G : Gr} {u v : α} : Nonempty (darts G u v) ↔ Adj G u v := by rfl
   left_mem_verts_of_adj {G : Gr} {u v : α} (h : Adj G u v) : u ∈ verts G
   right_mem_verts_of_adj {G : Gr} {u v : α} (h : Adj G u v) : v ∈ verts G
+
+class HasSymmDart (α : outParam Type*) (Gr : Type*) extends HasDart α Gr where
+  dartsEquiv (G : Gr) (u v : α) : darts G u v ≃ darts G v u
+  dartsEquiv_symm (G : Gr) (u v : α) : (dartsEquiv G u v).symm = dartsEquiv G v u
 
 namespace HasDart
 
 @[inherit_doc verts]
 scoped notation "V(" G ")" => verts G
 
-section GeneralHasDart
+section HasDart
 
 variable {α Gr : Type*} [HasDart α Gr] {G : Gr} {v w : α}
 
 /-- Dot notation for reverse direction of `adj_iff_nonempty_dart`. -/
-lemma dart.adj (d : dart G v w) : Adj G v w := nonempty_dart_iff_adj.mp ⟨d⟩
+lemma darts.adj (d : darts G v w) : Adj G v w := nonempty_darts_iff_adj.mp ⟨d⟩
 
 /-- Dot notation for `left_mem_verts_of_adj`. -/
 lemma Adj.left_mem (h : Adj G v w) : v ∈ V(G) :=
@@ -68,17 +71,17 @@ lemma Adj.left_mem (h : Adj G v w) : v ∈ V(G) :=
 lemma Adj.right_mem (h : Adj G v w) : w ∈ V(G) :=
   right_mem_verts_of_adj h
 
-lemma dart.left_mem (d : dart G v w) : v ∈ V(G) :=
+lemma darts.left_mem (d : darts G v w) : v ∈ V(G) :=
   d.adj.left_mem
 
-lemma dart.right_mem (d : dart G v w) : w ∈ V(G) :=
+lemma darts.right_mem (d : darts G v w) : w ∈ V(G) :=
   d.adj.right_mem
 
 /-- A `prodDart` is an oriented edge or a form of dart that does not have its end points in its
 type. -/
 structure prodDart [HasDart α Gr] (G : Gr) : Type (max u' u_1) extends α × α where
   /-- `fst` and `snd` have `dart` between them. -/
-  dart' : (dart G fst snd : Sort u')
+  dart' : (darts G fst snd : Sort u')
 
 initialize_simps_projections prodDart (+toProd, -fst, -snd)
 
@@ -101,7 +104,32 @@ the second dart's first vertex. -/
 def prodDartAdj (G : Gr) (d d' : prodDart G) : Prop :=
   d.snd = d'.fst
 
-end GeneralHasDart
+end HasDart
+
+section HasSymmDart
+
+open HasSymmDart
+
+variable {α Gr : Type*} [HasSymmDart α Gr] {G : Gr} {v w : α}
+
+def darts.symm (d : darts G v w) : darts G w v := dartsEquiv G v w d
+
+@[simp]
+lemma darts.symm_symm (d : darts G v w) : d.symm.symm = d := by
+  unfold symm
+  rw [← dartsEquiv_symm, Equiv.symm_apply_apply]
+
+instance : Std.Symm (Adj G) where
+  symm _ _ h := by
+    rw [← nonempty_darts_iff_adj] at h ⊢
+    obtain ⟨d⟩ := h
+    use d.symm
+
+lemma Adj.symm (h : Adj G v w) : Adj G w v := symm_of (Adj G) h
+
+lemma adj_comm : Adj G v w ↔ Adj G w v := ⟨symm_of (Adj G), symm_of (Adj G)⟩
+
+end HasSymmDart
 
 section HasAdj
 
@@ -120,8 +148,8 @@ namespace prodDart
 variable {α Gr : Type*} [HasDart.{0} α Gr] {G : Gr}
 
 @[simp]
-lemma dart_iff_adj {u v : α} : dart G u v ↔ Adj G u v := by
-  simp [← nonempty_dart_iff_adj]
+lemma darts_iff_adj {u v : α} : darts G u v ↔ Adj G u v := by
+  simp [← nonempty_darts_iff_adj]
 
 theorem ext_iff' (d₁ d₂ : prodDart G) : d₁ = d₂ ↔ d₁.toProd = d₂.toProd := by
   simp +contextual only [ext_iff, and_iff_left_iff_imp, HEq.rfl, implies_true]
@@ -136,8 +164,8 @@ theorem toProd_injective : Function.Injective (toProd : prodDart G → α × α)
 instance [DecidableEq α] (G : Gr) : DecidableEq (prodDart G) :=
   toProd_injective.decidableEq
 
-instance fintype [Fintype α] [DecidableRel (dart G)] : Fintype (prodDart G) :=
-  Fintype.ofEquiv (Σ v, { w | dart G v w })
+instance fintype [Fintype α] [DecidableRel (darts G)] : Fintype (prodDart G) :=
+  Fintype.ofEquiv (Σ v, { w | darts G v w })
     { toFun := fun s => ⟨(s.fst, s.snd), s.snd.property⟩
       invFun := fun d => ⟨d.fst, d.snd, d.dart'⟩ }
 
