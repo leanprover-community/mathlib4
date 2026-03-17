@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Finsupp.SMulWithZero
@@ -42,6 +43,12 @@ When the domain is multiplicative, e.g. a group, this will be used to define the
 We introduce the notation `R[M]` for both `MonoidAlgebra R M` and `AddMonoidAlgebra R M`.
 The notations are scoped to their respective namespaces, and which one `R[M]` resolves to therefore
 depends on which of the two namespaces is open.
+
+## TODO
+
+Use `coeff`/`ofCoeff` more widely. See
+https://github.com/leanprover-community/mathlib4/pull/36746
+https://github.com/leanprover-community/mathlib4/pull/25273
 -/
 
 @[expose] public section
@@ -96,6 +103,46 @@ meta def unexpander : Lean.PrettyPrinter.Unexpander
 section Semiring
 variable [Semiring R] {x y : R[M]} {r r₁ r₂ : R} {m m' m₁ m₂ : M}
 
+/-- Construct an element of the monoid algebra `R[M]` from its coefficients `M →₀ R`. -/
+@[to_additive
+/-- Construct an element of the additive monoid algebra `R[M]` from its coefficients `M →₀ R`. -/ ]
+def ofCoeff : (M →₀ R) → R[M] := id
+
+/-- The coefficients `M →₀ R` of an element of the monoid algebra `R[M]`. -/
+@[to_additive
+/-- The coefficients `M →₀ R` of an element of the additive monoid algebra `R[M]`. -/]
+def coeff : R[M] → M →₀ R := id
+
+@[to_additive (attr := simp)] lemma coeff_ofCoeff (x : M →₀ R) : coeff (ofCoeff x) = x := rfl
+@[to_additive (attr := simp)] lemma ofCoeff_coeff (x : R[M]) : ofCoeff x.coeff = x := rfl
+
+/-- `MonoidAlgebra.coeff` as an equiv. -/
+@[to_additive (attr := simps! apply symm_apply)
+/-- `AddMonoidAlgebra.coeff` as an equiv. -/]
+def coeffEquiv : R[M] ≃ (M →₀ R) where
+  toFun := coeff
+  invFun := ofCoeff
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+@[to_additive] lemma «forall» {P : R[M] → Prop} : (∀ p, P p) ↔ ∀ q, P (ofCoeff q) :=
+  coeffEquiv.forall_congr_left
+
+@[to_additive] lemma «exists» {P : R[M] → Prop} : (∃ p, P p) ↔ ∃ q, P (ofCoeff q) :=
+  coeffEquiv.exists_congr_left
+
+@[to_additive]
+lemma coeff_injective : (coeff : R[M] → M →₀ R).Injective := coeffEquiv.injective
+
+@[to_additive]
+lemma ofCoeff_injective : (ofCoeff : (M →₀ R) → R[M]).Injective := coeffEquiv.symm.injective
+
+@[to_additive (attr := simp)]
+lemma coeff_inj : x.coeff = y.coeff ↔ x = y := coeff_injective.eq_iff
+
+@[to_additive]
+lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoeff_injective.eq_iff
+
 @[to_additive] instance inhabited : Inhabited R[M] :=
   inferInstanceAs <| Inhabited <| M →₀ R
 
@@ -117,6 +164,39 @@ variable [Semiring R] {x y : R[M]} {r r₁ r₂ : R} {m m' m₁ m₂ : M}
 /-- A copy of `Finsupp.ext` for `MonoidAlgebra`. -/
 @[to_additive (attr := ext) /-- A copy of `Finsupp.ext` for `AddMonoidAlgebra`. -/]
 lemma ext ⦃f g : R[M]⦄ (hfg : ∀ m, f m = g m) : f = g := Finsupp.ext hfg
+
+/-- `MonoidAlgebra.coeff` as an `AddEquiv`. -/
+@[to_additive (attr := simps! apply symm_apply)
+/-- `AddMonoidAlgebra.coeff` as an `AddEquiv`. -/]
+def coeffAddEquiv : R[M] ≃+ (M →₀ R) := coeffEquiv.addEquiv
+
+@[to_additive (attr := simp)] lemma coeff_zero : coeff (0 : R[M]) = 0 := rfl
+@[to_additive (attr := simp)] lemma ofCoeff_zero : (ofCoeff 0 : R[M]) = 0 := rfl
+@[to_additive (attr := simp)] lemma coeff_eq_zero : coeff x = 0 ↔ x = 0 := coeff_inj
+@[to_additive (attr := simp)] lemma ofCoeff_eq_zero {x : M →₀ R} : ofCoeff x = 0 ↔ x = 0 :=
+  ofCoeff_inj
+
+@[to_additive (attr := simp)]
+lemma coeff_add (x y : R[M]) : coeff (x + y) = coeff x + coeff y := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_add (x y : M →₀ R) : ofCoeff (x + y) = ofCoeff x + ofCoeff y := rfl
+
+@[to_additive (attr := simp)]
+lemma coeff_sum (s : Finset ι) (f : ι → R[M]) :
+    coeff (∑ i ∈ s, f i) = ∑ i ∈ s, coeff (f i) := map_sum coeffAddEquiv ..
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_sum (s : Finset ι) (f : ι → M →₀ R) :
+    ofCoeff (∑ i ∈ s, f i) = ∑ i ∈ s, ofCoeff (f i) := map_sum coeffAddEquiv.symm ..
+
+@[to_additive (attr := simp)]
+lemma coeff_finsuppSum [AddCommMonoid N] (f : ι →₀ N) (g : ι → N → R[M]) :
+    coeff (f.sum g) = f.sum (fun i n ↦ coeff (g i n)) := map_finsuppSum coeffAddEquiv ..
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_finsuppSum [AddCommMonoid N] (f : ι →₀ N) (g : ι → N → M →₀ R) :
+    ofCoeff (f.sum g) = f.sum (fun i n ↦ ofCoeff (g i n)) := map_finsuppSum coeffAddEquiv.symm ..
 
 -- TODO: This definition is very leaky, and we later have frequent problems conflating the two
 -- versions of `single`. Perhaps someone wants to try making this a `def` rather than an `abbrev`?
