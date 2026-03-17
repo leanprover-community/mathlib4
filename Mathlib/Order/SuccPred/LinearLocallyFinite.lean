@@ -66,7 +66,6 @@ namespace LinearOrder
 
 variable [SuccOrder ι] [PredOrder ι]
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) isPredArchimedean_of_isSuccArchimedean [IsSuccArchimedean ι] :
     IsPredArchimedean ι where
   exists_pred_iterate_of_le {i j} hij := by
@@ -150,6 +149,7 @@ variable (ι) in
 /-- A locally finite order is a `SuccOrder`.
 This is not an instance, because its `succ` field conflicts with computable `SuccOrder` structures
 on `ℕ` and `ℤ`. -/
+@[implicit_reducible]
 noncomputable def succOrder [LocallyFiniteOrder ι] : SuccOrder ι where
   succ := succFn
   le_succ := le_succFn
@@ -160,6 +160,7 @@ variable (ι) in
 /-- A locally finite order is a `PredOrder`.
 This is not an instance, because its `succ` field conflicts with computable `PredOrder` structures
 on `ℕ` and `ℤ`. -/
+@[implicit_reducible]
 noncomputable def predOrder [LocallyFiniteOrder ι] : PredOrder ι :=
   letI := succOrder (ι := ιᵒᵈ)
   inferInstanceAs (PredOrder ιᵒᵈᵒᵈ)

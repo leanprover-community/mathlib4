@@ -660,6 +660,24 @@ theorem iteratedFDeriv_smul_const_apply {f : E → A} (hf : ContDiffAt 𝕜 i f 
         (iteratedFDeriv 𝕜 i f x) :=
   (ContinuousLinearMap.id 𝕜 A).smulRight v |>.iteratedFDeriv_comp_left hf le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
+theorem iteratedFDeriv_comp_const_smul (a : 𝕜) (hf : ContDiff 𝕜 i f) :
+    iteratedFDeriv 𝕜 i (fun z ↦ f (a • z)) = fun x ↦ a ^ i • iteratedFDeriv 𝕜 i f (a • x) := by
+  induction i with
+  | zero => ext; simp
+  | succ i hi =>
+    ext v
+    rw [iteratedFDeriv_succ_eq_comp_left, iteratedFDeriv_succ_eq_comp_left]
+    simp only [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, self_le_add_right, hf.of_le, hi,
+      comp_apply, continuousMultilinearCurryLeftEquiv_symm_apply,
+      ContinuousMultilinearMap.smul_apply]
+    rw [fderiv_fun_const_smul, fderiv_comp_smul, smul_smul, ← pow_succ]
+    · simp
+    rw [← Function.comp_def (g := (a • ·))]
+    apply DifferentiableAt.comp
+    · exact hf.contDiffAt.differentiableAt_iteratedFDeriv (Nat.cast_lt.2 i.lt_succ_self)
+    · exact differentiableAt_id.const_smul _
+
 end ConstSMul
 
 /-! ### Cartesian product of two functions -/

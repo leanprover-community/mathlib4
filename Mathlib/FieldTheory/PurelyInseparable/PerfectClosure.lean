@@ -176,7 +176,6 @@ alias AlgEquiv.perfectClosure := perfectClosure.algEquivOfAlgEquiv
 
 end map
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a perfect field of exponential characteristic `p`, then the (relative) perfect closure
 `perfectClosure F E` is perfect. -/
 instance perfectClosure.perfectRing (p : ℕ) [ExpChar E p]
@@ -189,7 +188,6 @@ instance perfectClosure.perfectRing (p : ℕ) [ExpChar E p]
   exact ⟨⟨x', (mem_perfectClosure_iff_pow_mem p).2 ⟨n + 1, y, hy⟩⟩, by
     simp_rw [frobenius_def, SubmonoidClass.mk_pow, hx]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a perfect field, then the (relative) perfect closure
 `perfectClosure F E` is perfect. -/
 instance perfectClosure.perfectField [PerfectField E] : PerfectField (perfectClosure F E) :=

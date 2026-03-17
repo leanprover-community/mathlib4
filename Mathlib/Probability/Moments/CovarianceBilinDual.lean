@@ -204,7 +204,6 @@ lemma uncenteredCovarianceBilinDual_zero : uncenteredCovarianceBilinDual (0 : Me
 @[deprecated (since := "2025-10-10")] alias uncenteredCovarianceBilin_zero :=
   uncenteredCovarianceBilinDual_zero
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_uncenteredCovarianceBilinDual_le (L₁ L₂ : StrongDual ℝ E) :
     ‖uncenteredCovarianceBilinDual μ L₁ L₂‖ ≤ ‖L₁‖ * ‖L₂‖ * ∫ x, ‖x‖ ^ 2 ∂μ := by
   by_cases h : MemLp id 2 μ

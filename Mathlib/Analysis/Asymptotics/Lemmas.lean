@@ -498,7 +498,7 @@ theorem isLittleO_iff_exists_eq_mul :
   · exact fun h => ⟨fun x => u x / v x, h.tendsto_div_nhds_zero, h.eventually_mul_div_cancel.symm⟩
   · simp only [IsLittleO_def]
     rintro ⟨φ, hφ, huvφ⟩ c hpos
-    rw [NormedAddCommGroup.tendsto_nhds_zero] at hφ
+    rw [NormedAddGroup.tendsto_nhds_zero] at hφ
     exact isBigOWith_of_eq_mul _ ((hφ c hpos).mono fun x => le_of_lt) huvφ
 
 alias ⟨IsLittleO.exists_eq_mul, _⟩ := isLittleO_iff_exists_eq_mul
@@ -655,7 +655,6 @@ theorem isBigO_one_nat_atTop_iff {f : ℕ → E''} :
   Iff.trans (isBigO_nat_atTop_iff fun _ h => (one_ne_zero h).elim) <| by
     simp only [norm_one, mul_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsBigO.nat_of_atTop {f : ℕ → E''} {g : ℕ → F''} (hfg : f =O[atTop] g)
     {l : Filter ℕ} (h : ∀ᶠ n in l, g n = 0 → f n = 0) : f =O[l] g := by
   obtain ⟨C, hC_pos, hC⟩ := bound_of_isBigO_nat_atTop hfg
