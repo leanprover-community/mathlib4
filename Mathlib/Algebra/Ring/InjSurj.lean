@@ -215,7 +215,7 @@ protected abbrev nonUnitalCommSemiring [NonUnitalCommSemiring R] (f : S → R)
   toNonUnitalSemiring := hf.nonUnitalSemiring f zero add mul nsmul
   __ := hf.commSemigroup f mul
 
-/- Pullback a `NonAssocCommSemiring` instance along an injective function. -/
+/-- Pullback a `NonAssocCommSemiring` instance along an injective function. -/
 -- See note [reducible non-instances]
 protected abbrev nonAssocCommSemiring [NonAssocCommSemiring R] (f : S → R)
     (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
