@@ -124,6 +124,13 @@ end Mk
 
 section Coord
 
+@[simp]
+theorem linearIndependent_coord {R : Type*} [CommSemiring R] [Module R M] (b : Basis ι R M) :
+    LinearIndependent R b.coord := by
+  classical
+  refine linearIndependent_iff'ₛ.mpr fun s l₁ l₂ h j hj ↦ ?_
+  simpa [hj, Finsupp.single_apply] using congr($h (b j))
+
 variable (hli : LinearIndependent R v) (hsp : ⊤ ≤ span R (range v))
 
 variable {hli hsp}
@@ -175,8 +182,19 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
     rwa [h_x_eq_y]
 
 @[simp]
-protected theorem span_apply (i : ι) : (Basis.span hli i : M) = v i :=
-  congr_arg ((↑) : span R (range v) → M) <| Basis.mk_apply _ _ _
+protected theorem span_apply (i : ι) :
+    Basis.span hli i = ⟨v i, Submodule.subset_span <| mem_range_self _⟩ := by
+  ext
+  exact congr_arg ((↑) : span R (range v) → M) <| Basis.mk_apply _ _ _
+
+protected theorem coe_span_apply (i : ι) : (Basis.span hli i : M) = v i := by simp
+
+@[simp]
+protected theorem span_repr_eq_single (i : ι)
+    (hi : v i ∈ span R (range v) := subset_span <| mem_range_self i) :
+    (Basis.span hli).repr ⟨v i, hi⟩ = single i 1 := by
+  rw [← LinearEquiv.eq_symm_apply]
+  simp [Basis.span]
 
 end Span
 
