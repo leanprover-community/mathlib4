@@ -184,6 +184,7 @@ theorem fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 := by
   simp_rw [this]
   exact ciSup_const
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For `n ≠ 0`, a translation by `T / 2 / n` negates the function `fourier n`. -/
 theorem fourier_add_half_inv_index {n : ℤ} (hn : n ≠ 0) (hT : 0 < T) (x : AddCircle T) :
     @fourier T n (x + ↑(T / 2 / n)) = -fourier n x := by
@@ -273,10 +274,7 @@ theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   rw [ContinuousMap.inner_toLp (@haarAddCircle T hT) (fourier i) (fourier j)]
   simp_rw [← fourier_neg, ← fourier_add]
   split_ifs with h
-  · simp_rw [h, add_neg_cancel]
-    have : ⇑(@fourier T 0) = (fun _ => 1 : AddCircle T → ℂ) := by ext1; exact fourier_zero
-    rw [this, integral_const, probReal_univ, Complex.real_smul,
-      Complex.ofReal_one, mul_one]
+  · simp [h]
   have hij : j + -i ≠ 0 := by
     exact sub_ne_zero.mpr (Ne.symm h)
   convert integral_eq_zero_of_add_right_eq_neg (μ := haarAddCircle)
@@ -419,6 +417,7 @@ monomials `fourier n` on the circle considered as elements of `L²`. -/
 theorem coe_fourierBasis : ⇑(@fourierBasis T hT) = @fourierLp T hT 2 _ :=
   HilbertBasis.coe_mk _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Under the isometric isomorphism `fourierBasis` from `Lp ℂ 2 haarAddCircle` to `ℓ²(ℤ, ℂ)`, the
 `i`-th coefficient is `fourierCoeff f i`, i.e., the integral over `AddCircle T` of
 `fun t => fourier (-i) t * f t` with respect to the Haar measure of total mass 1. -/
@@ -491,6 +490,7 @@ theorem fourierCoeff_toLp (n : ℤ) :
 
 variable {f}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the sequence of Fourier coefficients of `f` is summable, then the Fourier series converges
 uniformly to `f`. -/
 theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
@@ -556,6 +556,7 @@ theorem has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0
   · ext1 y; rw [div_div_eq_mul_div]; ring
   · simp [mul_div_cancel_left₀, hn, (Fact.out : 0 < T).ne', Real.pi_pos.ne']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Express Fourier coefficients of `f` on an interval in terms of those of its derivative. -/
 theorem fourierCoeffOn_of_hasDeriv_right {a b : ℝ} (hab : a < b) {f f' : ℝ → ℂ}
     {n : ℤ} (hn : n ≠ 0)

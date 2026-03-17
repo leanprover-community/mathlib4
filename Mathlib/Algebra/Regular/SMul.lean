@@ -258,15 +258,6 @@ lemma isSMulRegular_iff_right_eq_zero_of_smul [AddGroup M] [DistribSMul R M] {r 
 
 alias ⟨_, IsSMulRegular.of_right_eq_zero_of_smul⟩ := isSMulRegular_iff_right_eq_zero_of_smul
 
-@[deprecated (since := "2025-08-04")]
-alias IsSMulRegular.eq_zero_of_smul_eq_zero := IsSMulRegular.right_eq_zero_of_smul
-
-@[deprecated (since := "2025-08-04")]
-alias isSMulRegular_iff_smul_eq_zero_imp_eq_zero := isSMulRegular_iff_right_eq_zero_of_smul
-
-@[deprecated (since := "2025-08-04")]
-alias isSMulRegular_of_smul_eq_zero_imp_eq_zero := IsSMulRegular.of_right_eq_zero_of_smul
-
 lemma Equiv.isSMulRegular_congr {R S M M'} [SMul R M] [SMul S M'] {e : M ≃ M'}
     {r : R} {s : S} (h : ∀ x, e (r • x) = s • e x) :
     IsSMulRegular M r ↔ IsSMulRegular M' s :=

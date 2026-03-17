@@ -54,6 +54,7 @@ theorem edist_pi_const_le (a b : α) : (edist (fun _ : β => a) fun _ => b) ≤ 
 theorem edist_pi_const [Nonempty β] (a b : α) : (edist (fun _ : β => a) fun _ => b) = edist a b :=
   Finset.sup_const univ_nonempty (edist a b)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of a finite number of pseudoemetric spaces, with the max distance, is still
 a pseudoemetric space.
 This construction would also work for infinite products, but it would not give rise

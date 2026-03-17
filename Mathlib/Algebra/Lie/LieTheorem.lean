@@ -49,6 +49,7 @@ local notation "π" => LieModule.toEnd R _ V
 
 private abbrev T (w : A) : Module.End R V := (π w) - χ w • 1
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 /-- An auxiliary lemma used only in the definition `LieModule.weightSpaceOfIsLieTower` below. -/
 private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpace V χ) :
@@ -205,6 +206,7 @@ variable [Nontrivial V]
 
 open LieAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 -- This lemma is the central inductive argument in the proof of Lie's theorem below.
 -- The statement is identical to `LieModule.exists_forall_lie_eq_smul_of_isSolvable`
 -- except that it additionally assumes a finiteness hypothesis.
@@ -229,6 +231,7 @@ decreasing_by
   apply Submodule.finrank_lt_finrank_of_lt
   exact hA.lt_top
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Lie's theorem**: Lie modules of solvable Lie algebras over fields of characteristic 0
 have a common eigenvector for the action of all elements of the Lie algebra.
 
