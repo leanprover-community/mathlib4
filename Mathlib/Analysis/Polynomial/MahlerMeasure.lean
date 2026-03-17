@@ -370,7 +370,7 @@ theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
     _ ≤ ∏ z ∈ p.roots.toFinset, (1 ⊔ ‖z‖) ^ count z x := by
       simp_rw [← coe_nnnorm]
       norm_cast
-      exact Finset.prod_le_prod_of_subset_of_one_le' (toFinset_subset.mpr hx.1)
+      exact Finset.prod_le_prod_of_subset_of_one_le' (toFinset_subset.mpr (subset_of_le hx.1))
         (fun a _ _ ↦ one_le_pow₀ (le_max_left 1 ‖a‖))
     _ ≤ ∏ z ∈ p.roots.toFinset, (1 ⊔ ‖z‖) ^ count z p.roots := by
       gcongr with a
