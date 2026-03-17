@@ -44,11 +44,13 @@ finitely presented group, finitely generated normal closure
 
 @[expose] public section
 
+variable {G H α β : Type*}
+
 open Subgroup
 
 section
 
-variable {G H : Type*} [Group G] [Group H]
+variable [Group G] [Group H]
 
 /-- Definition of subgroup that is given by the normal closure of finitely many elements. -/
 def IsNormalClosureFG (K : Subgroup G) : Prop :=
@@ -77,7 +79,7 @@ section
 variable {G : Type*} [Group G]
 
 /-- Every finitely presented group is finitely generated. -/
-instance isFP_isFG [h : IsFinitelyPresented G] : Group.FG G := by
+instance isFinitelyPresented_isFG [h : IsFinitelyPresented G] : Group.FG G := by
   rw [Group.fg_iff_exists_freeGroup_hom_surjective_finite]
   obtain ⟨α, hα, rels, hrels, ⟨iso⟩⟩ := h
   unfold PresentedGroup at iso
@@ -92,22 +94,6 @@ end
 
 namespace IsFinitelyPresented
 
-variable {G α β : Type*}
-
-section MulOne
-
-variable [MulOne G]
-
-/-- Composing a homomorphism with a reindexing `freeGroupCongr` preserves surjectivity. -/
-@[to_additive /-- Composing an additive homomorphism with a reindexing `freeAddGroupCongr`
-preserves surjectivity. -/]
-lemma surjective_comp_freeGroupCongr
-    (e : α ≃ β) (f : FreeGroup α →* G) (hfsurj : Function.Surjective f) :
-  Function.Surjective (f ∘ FreeGroup.freeGroupCongr e.symm) := by
-  let iso : FreeGroup β ≃* FreeGroup α := FreeGroup.freeGroupCongr e.symm
-  simpa [iso] using hfsurj.comp iso.surjective
-
-end MulOne
 
 section Group
 
@@ -138,7 +124,7 @@ lemma exists_reindex_freeGroup_hom
   let iso : FreeGroup β ≃* FreeGroup α := FreeGroup.freeGroupCongr e.symm
   let f' : FreeGroup β →* G := f.comp iso
   refine ⟨f', ?_, ?_⟩
-  · simpa [f', iso] using surjective_comp_freeGroupCongr (G := G) e f hfsurj
+  · exact hfsurj.comp iso.surjective
   · simpa [f', iso] using isNormalClosureFG_ker_comp_freeGroupCongr (G := G) e f hfker
 
 /-- A group is finitely presented if and only if there exists a surjective homomorphism from
@@ -314,8 +300,7 @@ theorem iff_hom_surj_finset_G :
       let iso : FreeGroup S' ≃* FreeGroup S
         := FreeGroup.freeGroupCongr e.symm
       let f' : FreeGroup S' →* G := f.comp iso
-      let hf'surj :=
-        surjective_comp_freeGroupCongr (G := G) (e := e) f hfsurj
+      let hf'surj : Function.Surjective f' := hfsurj.comp iso.surjective
       have hf'ker : IsNormalClosureFG f'.ker := by
         simpa [f', iso] using
           isNormalClosureFG_ker_comp_freeGroupCongr (G := G) (e := e) f hfker
