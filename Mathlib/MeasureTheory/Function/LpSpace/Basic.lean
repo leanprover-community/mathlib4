@@ -574,7 +574,7 @@ theorem toLp_compMeasurePreserving {g : β → E} (hg : MemLp g p μb) (hf : Mea
 
 @[simp]
 theorem compMeasurePreserving_id :
-    compMeasurePreserving (E:=E) (p:=p) id (.id μb) = AddMonoidHom.id _ := by
+    compMeasurePreserving (E := E) (p := p) id (.id μb) = AddMonoidHom.id _ := by
   ext
   simp
 
