@@ -29,8 +29,6 @@ a specific compatible valuation is chosen.
 The canonical way to introduce the topological structure from a chosen valuation is:
 1. First define the `ValuativeRel` structure using `ValuationRel.ofValuation`;
 2. Then define the `UniformSpace` structure using `ValuativeRel.uniformSpace`.
-
-
 -/
 
 @[expose] public section
