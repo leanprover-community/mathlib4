@@ -46,7 +46,7 @@ def ofSubset {X : TopCat} (A : Set X) : TopPair where
   first := X
   second := TopCat.of A
   map := ⟨{ toFun := (↑) }⟩
-  map_inducing := ⟨Eq.symm (TopologicalSpace.ext rfl)⟩
+  map_inducing := ⟨TopologicalSpace.ext rfl⟩
 
 variable {X Y : TopPair}
 
@@ -73,29 +73,29 @@ instance : Category TopPair where
 projection to the first space. -/
 @[simps]
 def proj₁ : TopPair ⥤ TopCat where
-  obj := fun X ↦ X.first
-  map := fun f ↦ f.first
+  obj X := X.first
+  map f := f.first
 
 /-- The functor from topological pairs to topological spaces that forgets the first space, ie. the
 projection to the second space. -/
 @[simps]
 def proj₂ : TopPair ⥤ TopCat where
-  obj := fun X ↦ X.second
-  map := fun f ↦ f.second
+  obj X := X.second
+  map f := f.second
 
 /-- The inclusion functor from topological spaces to topological pairs that sends a space X to
 (X, ∅). -/
 @[simps]
 def incl : TopCat ⥤ TopPair where
-  obj := fun X ↦ ⟨_, _, TopCat.isInitialPEmpty.to _, TopCat.IsInducing.empty X⟩
-  map := fun f ↦ ⟨f, 𝟙 (TopCat.of PEmpty), ⟨by ext x; induction x⟩⟩
+  obj X := ⟨_, _, TopCat.isInitialPEmpty.to _, TopCat.IsInducing.empty X⟩
+  map f := ⟨f, 𝟙 (TopCat.of PEmpty), ⟨by ext x; induction x⟩⟩
 
 /-- The functor from topological spaces to topological pairs that sends a space X to (X, X) with the
 identity morphism on X. -/
 @[simps]
 def diag : TopCat ⥤ TopPair where
-  obj := fun X ↦ ⟨_, _, 𝟙 X, by rw [hom_id]; exact Topology.IsInducing.id⟩
-  map := fun f ↦ { first := f, second := f }
+  obj X := ⟨_, _, 𝟙 X, Topology.IsInducing.id⟩
+  map f := { first := f, second := f }
 
 @[simps]
 instance : Inhabited TopPair := ⟨incl.obj TopCat.inhabited.default⟩
@@ -106,30 +106,15 @@ def inclAdjProj₁ : incl ⊣ proj₁ where
   unit := { app X := 𝟙 X }
   counit := {
     app X := { first := 𝟙 X.first, second := TopCat.isInitialPEmpty.to _ }
-    naturality := by
-      intro X Y f
-      apply Hom.ext
-      · simp
-      · simp only [Functor.comp_obj, proj₁_obj, Functor.id_obj, Functor.comp_map, proj₁_map,
-        comp_second, incl_map_second, Functor.id_map, Limits.IsInitial.to_comp]
-        cat_disch
+    naturality X Y f := Hom.ext (by simp) (by cat_disch)
   }
-  left_triangle_components X := by
-    simp only [Functor.id_obj, Functor.comp_obj, proj₁_obj, incl_obj_first,
-      CategoryTheory.Functor.map_id, Category.id_comp]
-    apply Hom.ext
-    · simp only [incl_obj_first, id_first]
-    · cat_disch
+  left_triangle_components X := Hom.ext (by simp) (by cat_disch)
 
 /-- The projection functor to the first component is left adjoint to the diagonal functor. -/
 def proj₁AdjDiag : proj₁ ⊣ diag where
   unit := {
     app X := { first := 𝟙 X.first, second := X.map },
-    naturality := by
-      intro X Y f
-      apply Hom.ext
-      · simp
-      · exact f.comm.w
+    naturality X Y f := Hom.ext (by simp) f.comm.w
   }
   counit := { app X := 𝟙 X }
 
