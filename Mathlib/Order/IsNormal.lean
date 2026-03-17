@@ -203,7 +203,6 @@ protected theorem ext [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : IsNo
     convert hg.isLUB_image_Iio_of_isSuccLimit ha using 1
     aesop
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_btwn_of_exists_ge [NoMaxOrder α] [OrderBot α] [WellFoundedLT β]
     {f : α → β} {x : β} (hf : Order.IsNormal f) (hf' : ∃ y, x ≤ f y) (hx : f ⊥ ≤ x) :
     ∃ a, f a ≤ x ∧ x < f (Order.succ a) := by
