@@ -132,12 +132,12 @@ theorem isIso_tfae : List.TFAE
     simp only [comp_obj, flip_obj_obj, yoneda_obj_obj, id_obj, op_tensorObj, unop_tensorObj,
       EquivLike.comp_bijective, EquivLike.bijective_comp]
     -- We commute the tensor product using the auxiliary commutative square `w₂`.
-    have w₂ : (((coyoneda.map (adj.unit.app d ▷ d').op).app (R.obj c)) : _ → _) =
-        ((yoneda.obj (R.obj c)).mapIso (β_ _ _)).hom ∘
-          ((coyoneda.map (d' ◁ adj.unit.app d).op).app (R.obj c)) ∘
+    have w₂ : ((coyoneda.map (adj.unit.app d ▷ d').op).app (R.obj c)) =
+        ((yoneda.obj (R.obj c)).mapIso (β_ _ _)).hom ≫
+          ((coyoneda.map (d' ◁ adj.unit.app d).op).app (R.obj c)) ≫
             ((yoneda.obj (R.obj c)).mapIso (β_ _ _)).hom := by ext; simp
-    erw [w₂, ← types_comp, ← types_comp, ← isIso_iff_bijective]
-    refine IsIso.comp_isIso' (IsIso.comp_isIso' inferInstance ?_) inferInstance
+    rw [w₂, ← isIso_iff_bijective]
+    suffices IsIso <| (coyoneda.map (d' ◁ adj.unit.app d).op).app (R.obj c) by infer_instance
     have w₃ : ((coyoneda.map (d' ◁ adj.unit.app d).op).app (R.obj c) : _ → _) =
         ((ihom.adjunction d').homEquiv _ _).symm ∘
           ((coyoneda.map (adj.unit.app _).op).app _) ∘ (ihom.adjunction d').homEquiv _ _ := by
@@ -145,8 +145,7 @@ theorem isIso_tfae : List.TFAE
       simp only [id_obj, op_tensorObj, flip_obj_obj, yoneda_obj_obj, unop_tensorObj, comp_obj,
         flip_map_app, Function.comp_apply, Adjunction.homEquiv_unit, Adjunction.homEquiv_counit]
       simp
-    rw [isIso_iff_bijective]
-    erw [w₃]
+    rw [isIso_iff_bijective, w₃]
     simp only [comp_obj, op_tensorObj, flip_obj_obj, yoneda_obj_obj, unop_tensorObj, id_obj,
       yoneda_obj_obj, curriedTensor_obj_obj, EquivLike.comp_bijective, EquivLike.bijective_comp]
     have w₄ : (coyoneda.map (adj.unit.app d).op).app ((ihom d').obj (R.obj c)) ≫

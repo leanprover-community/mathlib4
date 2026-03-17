@@ -281,7 +281,7 @@ lemma associator_hom_unit_unit (x y z : C) :
           (associatorCorepresentingIso F G H).symm |>.homEquiv (𝟙 _))
   dsimp [associator, Coyoneda.fullyFaithful, corepresentableBy₂,
     corepresentableBy₂', Functor.CorepresentableBy.ofIso, corepresentableBy₂,
-    Functor.corepresentableByEquiv, associatorCorepresentingIso, Equiv.toIso, Iso.toEquiv] at this ⊢
+    Functor.corepresentableByEquiv, associatorCorepresentingIso] at this ⊢
   simp only [whiskerLeft_id, Category.comp_id, Category.assoc] at this
   simp only [Category.assoc, this]
   dsimp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
@@ -306,12 +306,13 @@ lemma associator_inv_unit_unit (x y z : C) :
           (associatorCorepresentingIso F G H) |>.homEquiv (𝟙 _))
   dsimp [associator, Coyoneda.fullyFaithful, corepresentableBy₂,
     corepresentableBy₂', Functor.CorepresentableBy.ofIso, corepresentableBy₂,
-    Functor.corepresentableByEquiv, associatorCorepresentingIso, Equiv.toIso, Iso.toEquiv] at this ⊢
+    Functor.corepresentableByEquiv, associatorCorepresentingIso] at this ⊢
   simp only [whiskerRight_tensor, id_whiskerRight, Category.id_comp, Iso.inv_hom_id] at this
   simp only [this]
   dsimp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
-  erw [id_apply] -- regression
+  erw [id_apply]
   simp
+
 
 set_option backward.isDefEq.respectTransparency false in
 variable {F G H} in
