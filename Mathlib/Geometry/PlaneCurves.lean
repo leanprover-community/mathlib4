@@ -93,7 +93,7 @@ theorem normal_is_unit_of_unit_speed {I : Set ℝ} {c : ℝ → EuclideanSpace �
 /-- For every plane curve parametrized by arc-length, the velocity vector and the normal vector at
 each point form an orthonormal basis of the plane, which is sometimes called the moving frame of the
 curve or the Frenet frame, which we call `frameAt`. -/
-def frameAt {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) {t : ℝ} 
+def frameAt {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) {t : ℝ}
   (ht : t ∈ I) : OrthonormalBasis (Fin 2) ℝ (EuclideanSpace ℝ (Fin 2)) :=
   let B := ![(deriv c t), (normal c t)]
   have hBon : Orthonormal ℝ B := by
@@ -150,7 +150,7 @@ lemma velocity_hasDerivAt_aux {I : Set ℝ} (hI : IsOpen I) {ι : Type u} [Finty
 
 /-- For any twice continuously differentiable parametrized curve with constant speed, at any given
 point the velocity vector is perpendicular to the acceleration vector. -/
-theorem inner_of_velocity_accel_of_const_speed_eq_zero {I : Set ℝ} (hI : IsOpen I) {ι : Type u} 
+theorem inner_of_velocity_accel_of_const_speed_eq_zero {I : Set ℝ} (hI : IsOpen I) {ι : Type u}
   [Fintype ι] {c : ℝ → EuclideanSpace ℝ ι} (hc₁ : ContDiffOn ℝ 2 c I) {r : ℝ}
   (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = r) {t : ℝ} (ht : t ∈ I) :
   inner ℝ (iteratedDeriv 2 c t) (deriv c t) = 0 := by
@@ -219,8 +219,8 @@ lemma normal_hasDerivAt_aux {I : Set ℝ} (hI : IsOpen I) {c : ℝ → Euclidean
 
 /-- For any twice continuously differentiable plane curve with constant speed, at any given point
 the normal vector is perpendicular to the derivative of the normal vector. -/
-theorem inner_of_normal_deriv_normal_of_unit_speed_eq_zero {I : Set ℝ} (hI : IsOpen I) 
-  {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc₁ : ContDiffOn ℝ 2 c I) (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1) 
+theorem inner_of_normal_deriv_normal_of_unit_speed_eq_zero {I : Set ℝ} (hI : IsOpen I)
+  {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc₁ : ContDiffOn ℝ 2 c I) (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1)
   {t : ℝ} (ht : t ∈ I) : inner ℝ (normal c t) (deriv (normal c) t) = 0 := by
   let f (x : ℝ) := inner ℝ (normal c x) (normal c x)
   have h₁ : ∀ x ∈ I, f x = 1 := by
