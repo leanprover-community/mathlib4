@@ -71,7 +71,6 @@ instance (F : J ⥤ Cat.{v, v}) : Category (limit (F ⋙ Cat.objects) :) where
     (fun j => limit.π (homDiagram X Y) j f ≫ limit.π (homDiagram Y Z) j g) fun j j' h => by
     simp [-homDiagram_obj, ← limit.w_apply (homDiagram X Y) h f,
       ← limit.w_apply (homDiagram Y Z) h g]
-    simp
   id_comp _ := by
     apply Types.limit_ext.{v, v}
     simp [-homDiagram_obj]
