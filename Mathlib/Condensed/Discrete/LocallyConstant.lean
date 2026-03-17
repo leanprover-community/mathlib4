@@ -109,7 +109,7 @@ section
 variable {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q Z) (a : Fiber r)
 
 /-- A fiber of a locally constant map as a `CompHausLike P`. -/
-def fiber : CompHausLike.{u} P := CompHausLike.of P a.val
+abbrev fiber : CompHausLike.{u} P := CompHausLike.of P a.val
 
 set_option backward.isDefEq.respectTransparency false in
 instance : HasProp P (fiber r a) := inferInstanceAs (HasProp P (Subtype _))
@@ -251,6 +251,7 @@ noncomputable def functorIso :
   NatIso.ofComponents (fun X ↦ (fullyFaithfulSheafToPresheaf _ _).preimageIso
     (functorToPresheavesIso P hs X))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit is natural in both `S : CompHausLike P` and
 `Y : Sheaf (coherentTopology (CompHausLike P)) (Type (max u w))` -/
 @[simps!]
@@ -267,33 +268,29 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
       ObjectProperty.ι_map, ObjectProperty.lift_map, ObjectProperty.FullSubcategory.comp_hom,
       ObjectProperty.homMk_hom, Functor.id_map]
     ext S (f : LocallyConstant _ _)
-    simp only [functorToPresheaves_obj_obj, NatTrans.comp_app, functorToPresheaves_map_app,
-      counitApp_app, TypeCat.hom_as_apply, CategoryTheory.comp_apply, ConcreteCategory.hom_ofHom,
-      TypeCat.Fun.mk_apply]
+    simp only [NatTrans.comp_app, counitApp_app, TypeCat.Fun.as_apply, CategoryTheory.comp_apply]
     apply presheaf_ext (f.map (g.hom.app (op (CompHausLike.of P PUnit.{u + 1}))))
     intro a
-    simp only [op_unop]
-    rw [incl_of_counitAppApp]
-    apply presheaf_ext (f.comap (sigmaIncl (map (g.hom.app (op (of P PUnit.{u + 1}))) f) a).hom.hom)
+    simp only [functorToPresheaves_obj_obj, functorToPresheaves_map_app, TypeCat.hom_ofHom,
+      TypeCat.Fun.mk_apply, dsimp% incl_of_counitAppApp]
+    apply presheaf_ext (f.comap (sigmaIncl _ _).hom.hom)
     intro b
     simp only [counitAppAppImage, ← Functor.map_comp_apply, ← op_comp,
       map_apply, IsTerminal.comp_from, ← map_preimage_eq_image_map]
-    simp only [← g.hom.naturality_apply]
+    change (_ ≫ Y.obj.map _) _ = (_ ≫ Y.obj.map _) _
+    simp only [← g.hom.naturality]
     rw [show sigmaIncl (f.comap (sigmaIncl (f.map _) a).hom.hom) b ≫ sigmaIncl (f.map _) a =
         CompHausLike.ofHom P (X := fiber _ b) (sigmaInclIncl f _ a b) ≫ sigmaIncl f (Fiber.mk f _)
       by ext; rfl]
-    simp only [op_comp, Functor.map_comp, types_comp_apply]
-    erw [incl_of_counitAppApp]
-    simp only [counitAppAppImage]
+    simp only [op_comp, Functor.map_comp, types_comp_apply, dsimp% incl_of_counitAppApp]
+    simp only [counitAppAppImage, ← Functor.map_comp_apply, ← op_comp]
     rw [mk_image]
     change (X.obj.map _ ≫ _) _ = (X.obj.map _ ≫ _) _
     simp only [g.hom.naturality]
-    dsimp
-    erw [g.hom.naturality_apply]
+    simp only [types_comp_apply]
     have := map_preimage_eq_image (f := g.hom.app _ ∘ f) (a := a)
     simp only [Function.comp_apply] at this
-    conv_lhs => simp only [CategoryTheory.comp_apply, this]
-    conv_rhs => simp only [← Functor.map_comp_apply]
+    rw [this]
     apply congrArg
     symm
     convert (b.preimage).prop
