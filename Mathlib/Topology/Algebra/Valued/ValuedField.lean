@@ -5,7 +5,7 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Algebra.Valued.ValuationTopology
+public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
@@ -100,6 +100,21 @@ instance (priority := 100) Valued.isTopologicalDivisionRing [Valued K Γ₀] :
       apply hs
       simp only [mem_setOf_eq, Units.min_val, Units.val_mul] at y_in
       exact Valuation.inversion_estimate _ x_ne y_in }
+
+-- /-- The topology coming from a valuation on a division ring makes it a topological division ring
+-- [BouAC, VI.5.1 middle of Proposition 1] -/
+-- instance (priority := 100) ValuativeRel.isTopologicalDivisionRing {K} [Field K] [ValuativeRel K] [TopologicalSpace K] [IsValuativeTopology K] :
+--     IsTopologicalDivisionRing K :=
+--   { (by infer_instance : IsTopologicalRing K) with
+--     continuousAt_inv₀ x x_ne s s_in := by
+--       obtain ⟨γ, hs⟩ := (valuation K).mem_nhds.mp s_in; clear s_in
+--       rw [mem_map, (valuation K).mem_nhds]
+--       let γ' := Units.mk0 ((ValueGroup₀.restrict₀ _) x) ((valuation K).restrict.ne_zero_iff.mpr x_ne)
+--       use min (γ * (γ' * γ')) γ'
+--       intro y y_in
+--       apply hs
+--       simp only [mem_setOf_eq, Units.min_val, Units.val_mul] at y_in
+--       exact Valuation.inversion_estimate _ x_ne y_in }
 
 /-- A valued division ring is separated. -/
 instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := by

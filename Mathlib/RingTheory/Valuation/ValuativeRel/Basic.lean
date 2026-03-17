@@ -681,7 +681,7 @@ def ofValuation
     exact le_of_mul_le_mul_right h (lt_of_le_of_ne' zero_le' h0)
   not_vle_one_zero := by simp
 
-lemma _root_.Valuation.Compatible.ofValuation
+instance _root_.Valuation.Compatible.ofValuation
     {S Γ : Type*} [CommRing S]
     [LinearOrderedCommGroupWithZero Γ]
     (v : Valuation S Γ) :
