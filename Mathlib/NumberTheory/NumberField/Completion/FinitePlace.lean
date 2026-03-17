@@ -21,9 +21,9 @@ This file defines finite places of a number field `K` as absolute values coming 
 into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
 
 Many of the results in this file are expressed in the generality of: `R` is a Dedekind domain
-with field of fractions `K` such that `Module.Finite ℤ R` and `Module.Free ℤ R`. This
-characterises `R` as being isomorphic to `𝓞 K` without explicitly requiring `𝓞 K`.
-This is so that `ℤ` and `𝓞 ℚ` can be used interchangeably.
+with field of fractions `K` such that `Module.Finite ℤ R` and `Module.Free ℤ R`. If `K` is
+a number field, then this characterises `R` as being isomorphic to `𝓞 K` without explicitly
+requiring `𝓞 K`. This is so that `ℤ` and `𝓞 ℚ` can be used interchangeably.
 
 ## Main Definitions and Results
 * `NumberField.adicAbv`: a `v`-adic absolute value on `K`.
