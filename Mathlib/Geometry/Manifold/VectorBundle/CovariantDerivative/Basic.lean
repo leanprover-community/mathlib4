@@ -212,7 +212,6 @@ section computational_properties
 
 variable {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)} {s : Set M}
 
-@[simp]
 lemma zero [VectorBundle 𝕜 F V] (hcov : IsCovariantDerivativeOn F cov s)
     {x} (hx : x ∈ s := by trivial) :
     cov 0 x = 0 := by
@@ -224,7 +223,7 @@ lemma neg [VectorBundle 𝕜 F V] (hcov : IsCovariantDerivativeOn F cov s)
     (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
     cov (-σ) x = - cov σ x := by
   rw [eq_neg_iff_add_eq_zero, ← hcov.add (mdifferentiableAt_neg_section hσ) hσ]
-  simp (disch := assumption)
+  simp (disch := assumption) [hcov.zero]
 
 lemma sub [VectorBundle 𝕜 F V] (hcov : IsCovariantDerivativeOn F cov s)
     {σ σ' : Π x : M, V x} {x}
