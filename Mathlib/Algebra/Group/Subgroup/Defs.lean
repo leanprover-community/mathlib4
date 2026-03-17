@@ -686,18 +686,38 @@ def setNormalizer (S : Set G) : Subgroup G where
     rw [ha (a⁻¹ * n * a⁻¹⁻¹)]
     simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
 
+@[to_additive]
+theorem setNormalizer_eq : setNormalizer H = H.normalizer :=
+  rfl
+
+variable {s : Set G} {g : G}
+
+@[to_additive]
+theorem mem_setNormalizer_iff_conj_mem : g ∈ setNormalizer s ↔ ∀ h, h ∈ s ↔ g * h * g⁻¹ ∈ s :=
+  .rfl
+
+@[to_additive]
+theorem mem_setNormalizer_iff_conj_mem' : g ∈ setNormalizer s ↔ ∀ h, h ∈ s ↔ g⁻¹ * h * g ∈ s := by
+  rw [← inv_mem_iff, mem_setNormalizer_iff_conj_mem, inv_inv]
+
+@[to_additive]
+theorem mem_setNormalizer_iff_mem_iff_mem : g ∈ setNormalizer s ↔ ∀ h, h * g ∈ s ↔ g * h ∈ s := by
+  refine ⟨fun hh h ↦ ?_, fun hh h ↦ ?_⟩
+  · rw [hh, mul_assoc, mul_inv_cancel_right]
+  · rw [mul_assoc, ← hh, inv_mul_cancel_right]
+
 variable {H}
 
 @[to_additive]
-theorem mem_normalizer_iff {g : G} : g ∈ H.normalizer ↔ ∀ h, h ∈ H ↔ g * h * g⁻¹ ∈ H :=
-  Iff.rfl
+theorem mem_normalizer_iff : g ∈ H.normalizer ↔ ∀ h, h ∈ H ↔ g * h * g⁻¹ ∈ H :=
+  .rfl
 
 @[to_additive]
-theorem mem_normalizer_iff'' {g : G} : g ∈ H.normalizer ↔ ∀ h : G, h ∈ H ↔ g⁻¹ * h * g ∈ H := by
-  rw [← inv_mem_iff (x := g), mem_normalizer_iff, inv_inv]
+theorem mem_normalizer_iff'' : g ∈ H.normalizer ↔ ∀ h, h ∈ H ↔ g⁻¹ * h * g ∈ H :=
+  mem_setNormalizer_iff_conj_mem'
 
 @[to_additive]
-theorem mem_normalizer_iff' {g : G} : g ∈ H.normalizer ↔ ∀ n, n * g ∈ H ↔ g * n ∈ H :=
+theorem mem_normalizer_iff' : g ∈ H.normalizer ↔ ∀ n, n * g ∈ H ↔ g * n ∈ H :=
   ⟨fun h n => by rw [h, mul_assoc, mul_inv_cancel_right], fun h n => by
     rw [mul_assoc, ← h, inv_mul_cancel_right]⟩
 

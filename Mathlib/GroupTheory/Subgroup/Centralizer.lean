@@ -26,10 +26,9 @@ variable {H K : Subgroup G}
 /-- The `centralizer` of `s` is the subgroup of `g : G` commuting with every `h : s`. -/
 @[to_additive
 /-- The `centralizer` of `s` is the additive subgroup of `g : G` commuting with every `h : s`. -/]
-def centralizer (s : Set G) : Subgroup G :=
-  { Submonoid.centralizer s with
-    carrier := Set.centralizer s
-    inv_mem' := Set.inv_mem_centralizer }
+def centralizer (s : Set G) : Subgroup G where
+  __ := Submonoid.centralizer s
+  inv_mem' := Set.inv_mem_centralizer
 
 @[to_additive]
 theorem mem_centralizer_iff {g : G} {s : Set G} : g ∈ centralizer s ↔ ∀ h ∈ s, h * g = g * h :=
@@ -39,6 +38,12 @@ theorem mem_centralizer_iff {g : G} {s : Set G} : g ∈ centralizer s ↔ ∀ h 
 theorem mem_centralizer_iff_commutator_eq_one {g : G} {s : Set G} :
     g ∈ centralizer s ↔ ∀ h ∈ s, h * g * h⁻¹ * g⁻¹ = 1 := by
   simp only [mem_centralizer_iff, mul_inv_eq_iff_eq_mul, one_mul]
+
+@[to_additive]
+theorem mem_centralizer_iff_commutator_eq_one' {g : G} {s : Set G} :
+    g ∈ centralizer s ↔ ∀ h ∈ s, g * h * g⁻¹ * h⁻¹ = 1 := by
+  refine forall₂_congr fun _ _ ↦ ?_
+  rw [mul_inv_eq_iff_eq_mul, mul_inv_eq_iff_eq_mul, one_mul, eq_comm]
 
 @[to_additive]
 lemma mem_centralizer_singleton_iff {g k : G} :
@@ -132,7 +137,31 @@ abbrev closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x *
       have := closure_le_centralizer_centralizer k
       Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
 
-/-- The conjugation action of N(H) on H. -/
+@[to_additive]
+theorem centralizer_le_setNormalizer (s : Set G) : centralizer s ≤ setNormalizer s := by
+  refine fun g hg h ↦ ⟨fun hh ↦ ?_, fun hh ↦ ?_⟩
+  · simpa [← hg h hh]
+  · convert hh
+    simpa using hg _ hh
+
+@[to_additive]
+instance normal_subgroupOf_centralizer_setNormalizer (s : Set G) :
+    (centralizer s |>.subgroupOf <| setNormalizer s).Normal := by
+  refine (Subgroup.normal_subgroupOf_iff <| centralizer_le_setNormalizer s).mpr fun c n hc hn ↦ ?_
+  refine mem_centralizer_iff_commutator_eq_one'.mpr fun g hg ↦ ?_
+  suffices n * (c * (n⁻¹ * g * n) * c⁻¹ * n⁻¹ * g⁻¹) = 1 by simpa [mul_assoc]
+  simp [← hc _ <| mem_setNormalizer_iff_conj_mem'.mp hn g |>.mp hg]
+
+@[to_additive]
+theorem setNormalizer_singleton (g : G) : setNormalizer {g} = centralizer {g} := by
+  refine ext fun h ↦ ⟨?_, ?_⟩
+  · rintro hh g rfl
+    exact mul_eq_of_eq_mul_inv (hh g |>.mp rfl).symm
+  · refine fun hh g ↦ ⟨?_, ?_⟩ <;> rintro rfl
+    · exact (eq_mul_inv_of_mul_eq <| hh g rfl).symm
+    · simpa using hh _ rfl
+
+/-- The conjugation action of `N(H)` on `H`. -/
 @[simps]
 instance : MulDistribMulAction H.normalizer H where
   smul g h := ⟨g * h * g⁻¹, (g.2 h).mp h.2⟩
@@ -141,7 +170,7 @@ instance : MulDistribMulAction H.normalizer H where
   smul_one := by simp [HSMul.hSMul]
   smul_mul := by simp [HSMul.hSMul]
 
-/-- The homomorphism N(H) → Aut(H) with kernel C(H). -/
+/-- The homomorphism `N(H) → Aut(H)` with kernel `C(H)`. -/
 @[simps!]
 def normalizerMonoidHom : H.normalizer →* MulAut H :=
   MulDistribMulAction.toMulAut H.normalizer H
