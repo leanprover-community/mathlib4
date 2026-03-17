@@ -724,6 +724,9 @@ theorem le_of_mul_le_mul_left {a b c : Ordinal} (h : c * a ≤ c * b) (h0 : 0 < 
 theorem mul_right_inj {a b c : Ordinal} (a0 : 0 < a) : a * b = a * c ↔ b = c :=
   mul_left_cancel_iff_of_pos a0
 
+instance : IsLeftCancelMulZero Ordinal where
+  mul_left_cancel_of_ne_zero h0 _ _ := mul_left_cancel_iff_of_pos h0.pos |>.mp
+
 theorem isSuccLimit_mul_right {a b : Ordinal} (a0 : 0 < a) (l : IsSuccLimit b) :
     IsSuccLimit (a * b) :=
   (isNormal_mul_right a0).map_isSuccLimit l
