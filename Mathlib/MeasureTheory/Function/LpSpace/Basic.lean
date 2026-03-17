@@ -573,21 +573,13 @@ theorem toLp_compMeasurePreserving {g : β → E} (hg : MemLp g p μb) (hf : Mea
     compMeasurePreserving f hf (hg.toLp g) = (hg.comp_measurePreserving hf).toLp _ := rfl
 
 @[simp]
-theorem compMeasurePreserving_id (g : Lp E p μb) :
-    compMeasurePreserving id (MeasurePreserving.id μb) g = g := by
-  apply Subtype.ext
-  rw [compMeasurePreserving_val]
-  exact AEEqFun.compMeasurePreserving_id _
-
-theorem compMeasurePreserving_id' :
-    compMeasurePreserving (E:=E) (p:=p) id (MeasurePreserving.id μb) = id (α:=Lp E p μb) := by
-  funext g
-  exact compMeasurePreserving_id g
-
-theorem compMeasurePreserving_id'_ :
-    compMeasurePreserving (E:=E) (p:=p) id (MeasurePreserving.id μb) = AddMonoidHom.id _ := by
-  ext g
+theorem compMeasurePreserving_id :
+    compMeasurePreserving (E:=E) (p:=p) id (.id μb) = AddMonoidHom.id _ := by
+  ext
   simp
+
+theorem compMeasurePreserving_id' (g : Lp E p μb) :
+    compMeasurePreserving id (MeasurePreserving.id μb) g = g := by simp
 
 theorem compMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ} {μc : Measure γ}
     (g : Lp E p μc) {f : β → γ} (hf : MeasurePreserving f μb μc) {f' : α → β}
