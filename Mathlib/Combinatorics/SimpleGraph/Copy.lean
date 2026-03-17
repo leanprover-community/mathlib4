@@ -303,13 +303,17 @@ theorem Copy.degree_le (f : Copy G H) (v : V) [Fintype <| G.neighborSet v]
     [Fintype <| H.neighborSet (f v)] : G.degree v ≤ H.degree (f v) := by
   simpa using Fintype.card_le_of_injective _ (f.mapNeighborSet v).injective
 
-theorem IsContained.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj]
-    [DecidableRel H.Adj] (hGH : G ⊑ H) : G.maxDegree ≤ H.maxDegree := by
-  obtain ⟨f⟩ := hGH
+theorem Copy.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj]
+    [DecidableRel H.Adj] (f : Copy G H) : G.maxDegree ≤ H.maxDegree := by
   cases isEmpty_or_nonempty V
   · simp
   obtain ⟨v, h⟩ := exists_maximal_degree_vertex G
   grind [degree_le_maxDegree H (f v), f.degree_le v]
+
+theorem IsContained.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj]
+    [DecidableRel H.Adj] (hGH : G ⊑ H) : G.maxDegree ≤ H.maxDegree := by
+  obtain ⟨f⟩ := hGH
+  exact Copy.max_degree_le f
 
 end IsContained
 
