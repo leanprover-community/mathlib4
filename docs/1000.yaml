@@ -849,8 +849,9 @@ Q766722:
 
 Q776578:
   title: Wedderburn–Artin theorem
-  decl: IsSimpleRing.exists_algEquiv_matrix_divisionRing
-  decl: IsSemisimpleRing.exists_algEquiv_pi_matrix_divisionRing
+  decls:
+    - IsSimpleRing.exists_algEquiv_matrix_divisionRing
+    - IsSemisimpleRing.exists_algEquiv_pi_matrix_divisionRing
 
 Q777924:
   title: Tijdeman's theorem

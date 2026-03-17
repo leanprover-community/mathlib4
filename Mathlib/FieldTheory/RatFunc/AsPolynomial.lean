@@ -62,7 +62,6 @@ theorem algebraMap_C (a : K) : algebraMap K[X] K⟮X⟯ (Polynomial.C a) = C a :
 theorem algebraMap_comp_C : (algebraMap K[X] K⟮X⟯).comp Polynomial.C = C :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem smul_eq_C_mul (r : K) (x : K⟮X⟯) : r • x = C r * x := by
   rw [Algebra.smul_def, algebraMap_eq_C]
 
@@ -83,7 +82,6 @@ theorem algebraMap_monomial (n : ℕ) (a : K) :
     algebraMap K[X] K⟮X⟯ (Polynomial.monomial n a) = C a * X ^ n := by
   simp [← Polynomial.C_mul_X_pow_eq_monomial]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem aeval_X_left_eq_algebraMap (p : K[X]) :
     p.aeval (X : K⟮X⟯) = algebraMap K[X] K⟮X⟯ p := by
@@ -234,7 +232,6 @@ theorem algEquivOfTranscendental_algebraMap (g : K[X]) :
   ext
   simp [algEquivOfTranscendental]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem algEquivOfTranscendental_X :
     algEquivOfTranscendental f h (X : RatFunc K) = f := by
@@ -395,7 +392,9 @@ open scoped WithZero
 
 open Polynomial
 
-instance : Valued K⟮X⟯ ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
+/- We give this instance a name so that it can be locally disabled when defining `FqtInfty`.
+Something similar might be needed after the refactor from `Valued` to `ValuativeRel`. -/
+instance valuedRatFunc : Valued K⟮X⟯ ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
 
 @[simp]
 theorem v_def {x : K⟮X⟯} :
