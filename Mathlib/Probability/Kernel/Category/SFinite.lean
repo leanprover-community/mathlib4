@@ -1,0 +1,159 @@
+/-
+Copyright (c) 2026 Gaëtan Serré. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Gaëtan Serré
+-/
+module
+
+public import Mathlib.CategoryTheory.MarkovCategory.Basic
+public import Mathlib.Probability.Kernel.Composition.KernelLemmas
+public import Mathlib.Probability.Kernel.Category.Tactics
+
+@[expose] public section
+
+open CategoryTheory ProbabilityTheory MeasureTheory
+
+universe u
+
+structure SFinKer : Type (u + 1) where
+  of ::
+  carrier : Type u
+  [str : MeasurableSpace carrier]
+
+attribute [instance] SFinKer.str
+
+instance : CoeSort SFinKer Type* :=
+  ⟨SFinKer.carrier⟩
+
+noncomputable section
+
+instance : LargeCategory SFinKer where
+  Hom X Y := { k : Kernel X Y // IsSFiniteKernel k }
+  id X := ⟨Kernel.id, by kernel_instance⟩
+  comp κ η := ⟨η.1 ∘ₖ κ.1, by kernel_instance⟩
+  assoc κ η ξ := by simp [Kernel.comp_assoc]
+
+instance : MonoidalCategory SFinKer.{u} where
+  tensorObj X Y := SFinKer.of (X × Y)
+  whiskerLeft X Y₁ Y₂ κ := ⟨Kernel.id ∥ₖ κ.1, by kernel_instance⟩
+  whiskerRight κ Y := ⟨κ.1 ∥ₖ Kernel.id, by kernel_instance⟩
+  tensorUnit := SFinKer.of PUnit
+  associator X Y Z := by
+    let f₁ := fun (x : (X × Y) × Z) ↦ (x.1.1, x.1.2, x.2)
+    let f₂ := fun (x : X × Y × Z) ↦ ((x.1, x.2.1), x.2.2)
+    have hf₁ : Measurable f₁ := by fun_prop
+    have hf₂ : Measurable f₂ := by fun_prop
+    refine ⟨⟨Kernel.id.map f₁, by kernel_instance⟩,
+      ⟨Kernel.id.map f₂, by kernel_instance⟩, ?_, ?_⟩
+    · kernel_cat
+      rw [Kernel.id_map hf₁, Kernel.id_map hf₂, Kernel.deterministic_comp_eq_map hf₂,
+        Kernel.deterministic_map hf₁ hf₂]
+      ext : 1
+      simp [Kernel.deterministic_apply, Kernel.id_apply, f₁, f₂]
+    · kernel_cat
+      rw [Kernel.id_map hf₂, Kernel.id_map hf₁, Kernel.deterministic_comp_eq_map hf₁,
+        Kernel.deterministic_map hf₂ hf₁]
+      ext : 1
+      simp [Kernel.deterministic_apply, Kernel.id_apply, f₁, f₂]
+  leftUnitor X := by
+    let f₁ := fun (x : X) ↦ (PUnit.unit, x)
+    have hf₁ : Measurable f₁ := by fun_prop
+    have hf₂ : Measurable (Prod.snd : PUnit × X → X) := by fun_prop
+    refine ⟨⟨Kernel.id.map Prod.snd, by kernel_instance⟩,
+      ⟨Kernel.id.map f₁, by kernel_instance⟩, ?_, ?_⟩
+    · kernel_cat
+      rw [Kernel.id_map hf₁, Kernel.deterministic_comp_eq_map hf₁, Kernel.id_map hf₂,
+        Kernel.deterministic_map hf₂ hf₁]
+      ext : 1
+      simp [Kernel.deterministic_apply, Kernel.id_apply, f₁]
+    · kernel_cat
+      rw [Kernel.id_map hf₂, Kernel.deterministic_comp_eq_map hf₂, Kernel.id_map hf₁,
+        Kernel.deterministic_map hf₁ hf₂]
+      ext : 1
+      simp [Kernel.deterministic_apply, Kernel.id_apply, f₁]
+  rightUnitor X := by
+    let f₁ := fun (x : X) ↦ (x, PUnit.unit)
+    have hf₁ : Measurable f₁ := by fun_prop
+    have hf₂ : Measurable (Prod.fst : X × PUnit → X) := by fun_prop
+    refine ⟨⟨Kernel.id.map Prod.fst, by kernel_instance⟩,
+      ⟨Kernel.id.map f₁, by kernel_instance⟩, ?_, ?_⟩
+    · kernel_cat
+      rw [Kernel.id_map hf₁, Kernel.deterministic_comp_eq_map hf₁, Kernel.id_map hf₂,
+        Kernel.deterministic_map hf₂ hf₁]
+      ext : 1
+      simp [Kernel.deterministic_apply, Kernel.id_apply, f₁]
+    · kernel_cat
+      rw [Kernel.id_map hf₂, Kernel.deterministic_comp_eq_map hf₂, Kernel.id_map hf₁,
+        Kernel.deterministic_map hf₁ hf₂]
+      ext : 1
+      simp [Kernel.deterministic_apply, Kernel.id_apply, f₁]
+  whiskerLeft_id X Y := by
+    kernel_cat
+    simp
+  id_whiskerRight X Y := by
+    kernel_cat
+    simp
+  id_tensorHom_id X₁ X₂ := by
+    kernel_cat
+    simp
+  leftUnitor_naturality κ := by
+    kernel_cat
+    rw [Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop)]
+    simp only [Kernel.deterministic_comp_eq_map, Kernel.comp_deterministic_eq_comap]
+    ext _ _ hs
+    have := κ.2
+    rw [Kernel.map_apply' _ (by fun_prop) _ hs, Kernel.comap_apply' _ (by fun_prop),
+      Kernel.parallelComp_apply' <| measurable_snd hs]
+    simp only [Kernel.id_apply, lintegral_dirac]
+    congr
+  rightUnitor_naturality κ := by
+    kernel_cat
+    rw [Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop)]
+    simp only [Kernel.deterministic_comp_eq_map, Kernel.comp_deterministic_eq_comap]
+    ext _ _ hs
+    have := κ.2
+    rw [Kernel.map_apply' _ (by fun_prop) _ hs, Kernel.comap_apply' _ (by fun_prop),
+      Kernel.parallelComp_apply' <| measurable_fst hs]
+    simp only [Kernel.id_apply, MeasurableSpace.measurableSet_top, Measure.dirac_apply']
+    rw [← lintegral_indicator_one hs]
+    congr
+  tensorHom_comp_tensorHom κ₁ κ₂ η₁ η₂ := by
+    kernel_cat
+    have := η₂.2
+    have := η₁.2
+    have := κ₁.2
+    have := κ₂.2
+    simp only [Kernel.comp_id_parallelComp]
+    exact Kernel.parallelComp_comp_parallelComp
+  associator_naturality κ₁ κ₂ η := by
+    kernel_cat
+    have := κ₁.2
+    have := κ₂.2
+    have := η.2
+    simp only [Kernel.comp_id_parallelComp]
+    rw [Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop),
+      Kernel.deterministic_comp_eq_map, Kernel.comp_deterministic_eq_comap]
+    ext _ _ hs
+    rw [Kernel.map_apply' _ (by fun_prop) _ hs, Kernel.comap_apply' _ (by fun_prop)]
+    repeat rw [Kernel.parallelComp_apply]
+    rw [Measure.prod_apply hs, Measure.prod_apply (by measurability), lintegral_prod]
+    · congr with a
+      rw [Measure.prod_apply (by measurability)]
+      congr
+    · refine Measurable.aemeasurable ?_
+      exact measurable_measure_prodMk_left (by measurability)
+  pentagon W X Y Z := by
+    kernel_cat
+    rw [Kernel.parallelComp_id_id_map (by fun_prop), Kernel.parallelComp_id_map_id (by fun_prop),
+      Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop),
+      Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop)]
+    simp [Kernel.deterministic_comp_deterministic]
+    congr 1
+  triangle X Y := by
+    kernel_cat
+    rw [Kernel.parallelComp_id_id_map (by fun_prop), Kernel.parallelComp_id_map_id (by fun_prop),
+      Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop),
+      Kernel.deterministic_comp_deterministic]
+    congr
+
+end
