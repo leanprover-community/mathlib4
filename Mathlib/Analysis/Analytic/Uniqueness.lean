@@ -43,7 +43,6 @@ section Uniqueness
 
 open ContinuousMultilinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p : E [×n]→L[𝕜] F}
     (h : (fun y => p fun _ => y) =O[𝓝 0] fun y => ‖y‖ ^ (n + 1)) (y : E) : (p fun _ => y) = 0 := by
   obtain ⟨c, c_pos, hc⟩ := h.exists_pos

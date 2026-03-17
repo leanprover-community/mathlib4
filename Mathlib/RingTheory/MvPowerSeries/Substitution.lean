@@ -210,6 +210,7 @@ theorem coe_substAlgHom (ha : HasSubst a) :
   letI : UniformSpace S := ⊥
   rw [substAlgHom_eq_aeval, coe_aeval ha.hasEval, subst_eq_eval₂]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem subst_self : subst (MvPowerSeries.X : σ → MvPowerSeries σ R) = id := by
   rw [← coe_substAlgHom HasSubst.X]
   letI : UniformSpace R := ⊥
@@ -272,10 +273,10 @@ theorem continuous_subst (ha : HasSubst a)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem coeff_subst_finite (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :
-    Set.Finite (fun d ↦ coeff d f • (coeff e (d.prod fun s e => (a s) ^ e))).support :=
+    (fun d ↦ coeff d f • (coeff e (d.prod fun s e => (a s) ^ e))).HasFiniteSupport :=
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
-  Summable.finite_support_of_discreteTopology _
+  Summable.hasFiniteSupport_of_discreteTopology _
     ((hasSum_aeval ha.hasEval f).map (coeff e) (continuous_coeff S e)).summable
 
 set_option backward.isDefEq.respectTransparency false in

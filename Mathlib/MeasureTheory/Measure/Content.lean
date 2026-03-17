@@ -114,7 +114,6 @@ theorem sup_le (K₁ K₂ : Compacts G) : μ (K₁ ⊔ K₂) ≤ μ K₁ + μ K�
 theorem lt_top (K : Compacts G) : μ K < ∞ :=
   ENNReal.coe_lt_top
 
-set_option backward.isDefEq.respectTransparency false in
 theorem empty : μ ⊥ = 0 := by simpa [toNNReal_eq_zero_iff] using μ.sup_disjoint' ⊥ ⊥
 
 /-- Constructing the inner content of a content. From a content defined on the compact sets, we
@@ -202,7 +201,7 @@ theorem innerContent_comap (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ (K
   apply h
 
 @[to_additive]
-theorem is_mul_left_invariant_innerContent [Group G] [ContinuousMul G]
+theorem is_mul_left_invariant_innerContent [Group G] [SeparatelyContinuousMul G]
     (h : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_const_mul g) = μ K) (g : G)
     (U : Opens G) :
     μ.innerContent (Opens.comap (Homeomorph.mulLeft g) U) = μ.innerContent U := by
@@ -291,7 +290,7 @@ theorem outerMeasure_lt_top_of_isCompact [WeaklyLocallyCompactSpace G]
     _ < ⊤ := μ.lt_top _
 
 @[to_additive]
-theorem is_mul_left_invariant_outerMeasure [Group G] [ContinuousMul G]
+theorem is_mul_left_invariant_outerMeasure [Group G] [SeparatelyContinuousMul G]
     (h : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_const_mul g) = μ K) (g : G)
     (A : Set G) : μ.outerMeasure ((g * ·) ⁻¹' A) = μ.outerMeasure A := by
   convert μ.outerMeasure_preimage (Homeomorph.mulLeft g) (fun K => h g) A
