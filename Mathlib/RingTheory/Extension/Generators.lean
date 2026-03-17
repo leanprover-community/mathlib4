@@ -8,7 +8,7 @@ module
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.MvPolynomial.Tower
-public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 public import Mathlib.RingTheory.Extension.Basic
 
 /-!
@@ -268,6 +268,30 @@ def baseChange (T) [CommRing T] [Algebra R T] (P : Generators R S ι) :
     obtain ⟨b, hb⟩ := ey
     use (a + b)
     rw [map_add, ha, hb]
+
+variable (T) in
+set_option backward.isDefEq.respectTransparency false in
+/-- The forwards direction of the canonical isomorphism `T ⊗[R] R[Xᵢ] ≃ₐ[T] T[Xᵢ]` as
+a map of extensions. -/
+@[simps!]
+noncomputable def baseChangeFromBaseChange :
+    (P.toExtension.baseChange (T := T)).Hom (P.baseChange (T := T)).toExtension :=
+  .ofAlgHom (MvPolynomial.algebraTensorAlgEquiv R T).toAlgHom <| by
+    dsimp [Extension.baseChange]
+    ext
+    simp [RingHom.algebraMap_toAlgebra]
+
+variable (T) in
+set_option backward.isDefEq.respectTransparency false in
+/-- The backwards direction of the canonical isomorphism `T ⊗[R] R[Xᵢ] ≃ₐ[T] T[Xᵢ]` as
+a map of extensions. -/
+@[simps!]
+noncomputable def baseChangeToBaseChange :
+    (P.baseChange (T := T)).toExtension.Hom (P.toExtension.baseChange (T := T)) :=
+  .ofAlgHom (MvPolynomial.algebraTensorAlgEquiv R T).symm.toAlgHom <| by
+    dsimp [Extension.baseChange]
+    ext
+    simp [RingHom.algebraMap_toAlgebra]
 
 /-- Extend generators by more variables. -/
 noncomputable def extend (P : Generators R S ι) (b : ι' → S) : Generators R S (ι ⊕ ι') :=

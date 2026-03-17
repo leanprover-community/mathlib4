@@ -260,6 +260,28 @@ lemma Cotangent.lift_surjective_iff (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (
 
 end Lift
 
+/-- A linear isomorphism between cotangent spaces induced by an equality of ideals. -/
+@[expose]
+def Cotangent.equivOfEq (I J : Ideal R) (hIJ : I = J) :
+    I.Cotangent ≃ₗ[R] J.Cotangent where
+  __ := Cotangent.lift (J.toCotangent ∘ₗ LinearEquiv.ofEq I J hIJ) <| fun x y ↦ by
+    simp [toCotangent_eq_zero, ← hIJ, sq, mul_mem_mul]
+  invFun := Cotangent.lift (I.toCotangent ∘ₗ LinearEquiv.ofEq J I hIJ.symm) <| fun x y ↦ by
+    simp [toCotangent_eq_zero, hIJ, sq, mul_mem_mul]
+  left_inv x := by
+    subst hIJ
+    obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
+    simp
+  right_inv x := by
+    subst hIJ
+    obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
+    simp
+
+@[simp]
+lemma Cotangent.equivOfEq_toCotangent (I J : Ideal R) (hIJ : I = J) (x : I) :
+    Cotangent.equivOfEq I J hIJ (I.toCotangent x) = J.toCotangent (LinearEquiv.ofEq I J hIJ x) :=
+  rfl
+
 end Ideal
 
 namespace IsLocalRing
