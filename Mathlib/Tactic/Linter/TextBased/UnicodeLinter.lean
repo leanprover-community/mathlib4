@@ -159,19 +159,6 @@ def othersInMathlib : Array Char := #[
 'ᴏ', 'ᴘ', 'ꞯ', 'ʀ', 'ꜱ', 'ᴛ', 'ᴜ', 'ᴠ', 'ᴡ', 'ʏ', 'ᴢ', 'ᵦ', 'ᵨ', 'ᵩ', 'ᵪ'
 ]
 
-/-- Prints a unicode character's codepoint in hexadecimal with prefix 'U+'.
-E.g., 'a' is "U+0061". -/
-public def Char.printCodepointHex (c : Char) : String :=
-  let digits := Nat.toDigits 16 c.val.toNat
-  -- print at least 4 (could be more) hex characters using leading zeros
-  ("U+".append <| "0000".drop digits.length |>.toString).append <| String.ofList digits
-
-/-- Prints all characters in a string in hexadecimal with prefix 'U+'.
-E.g., "ab" is "U+0061;U+0062". -/
-public def String.printCodepointHex (s : String) : String :=
-  -- note: must not contain spaces because of the error message parsing below!
-  ";".intercalate <| s.toList.map Char.printCodepointHex
-
 /-- If `false`, the character is not allowed in Mathlib.
 Consider adding it to one of the whitelists.
 Note: if `true`, a character might still not be allowed depending on context
@@ -204,5 +191,17 @@ public def replaceDisallowed : Char → Option String
 | '\u200b' => "" -- replace "ZERO WIDTH SPACE" by nothing.
 | _ => none
 
+/-- Prints a unicode character's codepoint in hexadecimal with prefix 'U+'.
+E.g., 'a' is "U+0061". -/
+public def Char.printCodepointHex (c : Char) : String :=
+  let digits := Nat.toDigits 16 c.val.toNat
+  -- print at least 4 (could be more) hex characters using leading zeros
+  ("U+".append <| "0000".drop digits.length |>.toString).append <| String.ofList digits
+
+/-- Prints all characters in a string in hexadecimal with prefix 'U+'.
+E.g., "ab" is "U+0061;U+0062". -/
+public def String.printCodepointHex (s : String) : String :=
+  -- note: must not contain spaces because of the error message parsing below!
+  ";".intercalate <| s.toList.map Char.printCodepointHex
 
 end Mathlib.Linter.TextBased.UnicodeLinter
