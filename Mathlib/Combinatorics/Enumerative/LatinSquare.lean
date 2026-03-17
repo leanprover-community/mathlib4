@@ -479,41 +479,14 @@ lemma exists_larger_subset
     (h₁ : ∀ j, Finset.card (B j) = k)
     (h₂ : (s.biUnion B).card < (s.card)) :
     ∃ x ∈ s.biUnion B, k < (Finset.card {j | j ∈ s ∧ x ∈ B j}) := by
-  by_contra hc
-  simp only [Finset.mem_biUnion, not_exists, not_and,
-             not_lt, forall_exists_index, and_imp] at hc
-  have pullback : ∀ i ∈ (s.biUnion B),
-    ∃ x, ∀ j, (j ∈ s ∧ i ∈ B j) ↔ (j ∈ s ∧ x ∈ B j) := by
-      intro i hi
-      use i
-      simp
-  have hc' : (∀ i ∈ s.biUnion B, Finset.card {j | j ∈ s ∧ i ∈ B j} ≤ k) := by
-    intro i h
-    have h' := hc i
-    rw [Finset.mem_biUnion] at h
-    obtain ⟨ a, i ⟩ := h
-    specialize h' a
-    specialize h' i.left
-    specialize h' i.right
-    exact h'
-  have g := Finset.sum_le_sum  (s := s.biUnion B) (ι := α)
+  by_contra! hc
+  have hc' := Finset.sum_le_sum  (s := s.biUnion B) (ι := α)
     (f := fun x => Finset.card {j | j ∈ s ∧ x ∈ B j})
-    (g := fun _ => k)
-  apply g at hc'
-  simp only [Finset.sum_const, smul_eq_mul] at hc'
-  have _ : 0 < k := by
-    have _ := nek.out
-    omega
-  have _ : (Finset.card (s.biUnion B))*k < s.card*k := by
-    rw [Nat.mul_lt_mul_right]
-    · omega
-    assumption
-  replace hc' : ∑ i ∈ s.biUnion B, Finset.card {j | j ∈ s ∧ i ∈ B j} < (s.card) * k := by omega
-  have h' : ∑ j ∈ s, (Finset.card (B j)) =
-    ∑ x ∈ (s.biUnion B), Finset.card {j | j ∈ s ∧ x ∈ B j} :=
-    count_by_group_or_element_indicator B s
-  rw [← h'] at hc'
-  simp[h₁] at hc'
+    (g := fun _ => k) (by grind)
+  have : (Finset.card (s.biUnion B))*k < s.card*k :=
+    Nat.mul_lt_mul_right (Nat.ne_zero_iff_zero_lt.mp nek.out) |>.mpr (by lia)
+  simp at hc'
+  simpa [← count_by_group_or_element_indicator B s, h₁] using Nat.lt_of_le_of_lt hc' this
 
 lemma latin_rect_hall_property
     {α : Type*} [DecidableEq α]
