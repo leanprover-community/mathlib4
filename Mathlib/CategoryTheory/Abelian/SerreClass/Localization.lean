@@ -18,6 +18,9 @@ which shows that if `L : C ⥤ D` is a localization functor with respect to
 the class of morphisms `P.isoModSerre` for a Serre class `P : ObjectProperty C`
 in the abelian category `C`, then `D` is an abelian category.
 
+We also show that a functor `G : D ⥤ E` to an abelian category is exact iff
+the composition `L ⋙ G` is.
+
 -/
 
 @[expose] public section
@@ -438,6 +441,128 @@ def abelian : Abelian D := by
   have := isNormalMonoCategory L P
   have := isNormalEpiCategory L P
   constructor
+
+lemma preservesFiniteLimits : PreservesFiniteLimits L := by
+  letI := abelian L P
+  rw [((Functor.preservesFiniteLimits_tfae L).out 3 2:)]
+  intro _ _ f
+  exact preservesKernel L P f
+
+lemma preservesFiniteColimits : PreservesFiniteColimits L := by
+  letI := abelian L P
+  rw [((Functor.preservesFiniteColimits_tfae L).out 3 2:)]
+  intro _ _ f
+  exact preservesCokernel L P f
+
+lemma isIso_map_iff {X Y : C} (f : X ⟶ Y) :
+    IsIso (L.map f) ↔ P.isoModSerre f := by
+  letI := abelian L P
+  rw [isIso_iff_mono_and_epi, mono_map_iff L P, epi_map_iff L P, isoModSerre_iff]
+
+lemma inverseImage_isomorphisms :
+    (MorphismProperty.isomorphisms _).inverseImage L = P.isoModSerre := by
+  ext
+  simp [isIso_map_iff L P]
+
+variable (G : D ⥤ E)
+
+set_option backward.isDefEq.respectTransparency false in
+lemma preservesFiniteLimits_comp_iff :
+    PreservesFiniteLimits (L ⋙ G) ↔ PreservesFiniteLimits G := by
+  letI := abelian L P
+  have := preservesFiniteLimits L P
+  refine ⟨fun _ ↦ ?_, fun _ ↦ comp_preservesFiniteLimits _ _⟩
+  have := (Localization.functor_additive_iff L P.isoModSerre G).mpr
+    (L ⋙ G).additive_of_preserves_binary_products
+  refine ((Functor.preservesFiniteLimits_tfae G).out 2 3).mp (fun _ _ f ↦ ?_)
+  obtain ⟨f', ⟨iso⟩⟩ :=
+    (Localization.essSurj_mapArrow L P.isoModSerre).mem_essImage (Arrow.mk f)
+  have : PreservesLimit (parallelPair (L.map f'.hom) 0) G :=
+    preservesLimit_of_preserves_limit_cone
+      (KernelFork.isLimitMapConeEquiv _ _
+        (isLimitOfPreserves L (kernelIsKernel f'.hom)))
+          ((KernelFork.isLimitMapConeEquiv _ G).symm
+            (KernelFork.isLimitMapConeEquiv _ (L ⋙ G)
+              (isLimitOfPreserves (L ⋙ G) (kernelIsKernel f'.hom))))
+  exact preservesLimit_of_iso_diagram G
+    (show parallelPair (L.map f'.hom) 0 ≅ parallelPair f 0 from
+      parallelPair.ext (Arrow.leftFunc.mapIso iso) (Arrow.rightFunc.mapIso iso))
+
+set_option backward.isDefEq.respectTransparency false in
+lemma preservesFiniteColimits_comp_iff :
+    PreservesFiniteColimits (L ⋙ G) ↔ PreservesFiniteColimits G := by
+  letI := abelian L P
+  have := preservesFiniteColimits L P
+  refine ⟨fun _ ↦ ?_, fun _ ↦ comp_preservesFiniteColimits _ _⟩
+  have := (Localization.functor_additive_iff L P.isoModSerre G).mpr (by
+    have := preservesBinaryBiproducts_of_preservesBinaryCoproducts (L ⋙ G)
+    exact Functor.additive_of_preservesBinaryBiproducts _)
+  refine ((Functor.preservesFiniteColimits_tfae G).out 2 3).mp (fun _ _ f ↦ ?_)
+  obtain ⟨f', ⟨iso⟩⟩ :=
+    (Localization.essSurj_mapArrow L P.isoModSerre).mem_essImage (Arrow.mk f)
+  have : PreservesColimit (parallelPair (L.map f'.hom) 0) G :=
+    preservesColimit_of_preserves_colimit_cocone
+      (CokernelCofork.isColimitMapCoconeEquiv _ _
+        (isColimitOfPreserves L (cokernelIsCokernel f'.hom)))
+          ((CokernelCofork.isColimitMapCoconeEquiv _ G).symm
+            (CokernelCofork.isColimitMapCoconeEquiv _ (L ⋙ G)
+              (isColimitOfPreserves (L ⋙ G) (cokernelIsCokernel f'.hom))))
+  exact preservesColimit_of_iso_diagram G
+    (show parallelPair (L.map f'.hom) 0 ≅ parallelPair f 0 from
+      parallelPair.ext (Arrow.leftFunc.mapIso iso) (Arrow.rightFunc.mapIso iso))
+
+lemma exactFunctor_comp_iff :
+    exactFunctor _ _ (L ⋙ G) ↔ exactFunctor _ _ G := by
+  simp [preservesFiniteLimits_comp_iff L P, preservesFiniteColimits_comp_iff L P]
+
+variable (E)
+
+/-- When `L : C ⥤ D` is a localization functor with respect to a Serre class
+in the abelian category `C`, this is the functor `(D ⥤ₑ E) ⥤ C ⥤ₑ E`
+obtained by precomposition with `L`. -/
+def whiskeringLeft : (D ⥤ₑ E) ⥤ C ⥤ₑ E :=
+  ObjectProperty.lift _
+    (ObjectProperty.ι _ ⋙ (Functor.whiskeringLeft _ _ _).obj L) (fun G ↦ by
+      dsimp
+      simpa only [exactFunctor_comp_iff L P] using G.property)
+
+@[simp]
+lemma whiskeringLeft_obj_obj (G : D ⥤ₑ E) :
+    ((whiskeringLeft L P E).obj G).obj = L ⋙ G.obj := rfl
+
+/-- When `L : C ⥤ D` is a localization functor with respect to a Serre class
+in the abelian category `C`, the functor `whiskeringLeft L P E: (D ⥤ₑ E) ⥤ C ⥤ₑ E`
+is fully faithful. -/
+noncomputable def fullyFaithfulWhiskeringLeft :
+    (whiskeringLeft L P E).FullyFaithful :=
+  Functor.FullyFaithful.ofCompFaithful (G := ObjectProperty.ι _)
+    ((exactFunctor D E).fullyFaithfulι.comp
+      (Localization.fullyFaithfulWhiskeringLeft L P.isoModSerre E))
+
+instance : (whiskeringLeft L P E).Faithful :=
+  (fullyFaithfulWhiskeringLeft L P E).faithful
+
+instance : (whiskeringLeft L P E).Full :=
+  (fullyFaithfulWhiskeringLeft L P E).full
+
+/-- Let `L : C ⥤ D` be a localization functor with respect to a Serre class `P`
+in the abelian category `C`. If `G : C ⥤ₑ E` is an exact functor to an abelian
+category, it "factors" through `D` (i.e. it is in the essential image of
+`whiskeringLeft L P E : (D ⥤ₑ E) ⥤ C ⥤ₑ E`) iff `G` inverts the class
+of morphisms `P.isoModSerre`. -/
+lemma essImage_whiskeringLeft :
+    (whiskeringLeft L P E).essImage =
+      fun G ↦ P.isoModSerre.IsInvertedBy G.obj := by
+  ext F
+  refine ⟨?_, fun hF ↦ ?_⟩
+  · rintro ⟨G, ⟨e⟩⟩
+    rw [← MorphismProperty.IsInvertedBy.iff_of_iso _
+      (show  L ⋙ G.obj ≅ F.obj from (ObjectProperty.ι _).mapIso e)]
+    exact MorphismProperty.IsInvertedBy.of_comp _ _ (Localization.inverts L _) _
+  · refine ⟨⟨Localization.lift F.obj hF L, ?_⟩,
+      ⟨ObjectProperty.isoMk _ (Localization.fac F.obj hF L)⟩⟩
+    rw [← exactFunctor_comp_iff L P]
+    exact ObjectProperty.prop_of_iso _ (Localization.fac F.obj hF L).symm F.property
 
 end SerreClassLocalization
 
