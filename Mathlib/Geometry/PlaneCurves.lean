@@ -125,7 +125,7 @@ def frameAt {I : Set ℝ} [I.OrdConnected] {c : ℝ → EuclideanSpace ℝ (Fin 
 set_option backward.isDefEq.respectTransparency false in
 /-- A simpler formula for the curvature of a plane curve parametrized by arc-length, or in other
 words with unit speed. -/
-theorem orientedCurvature_of_unit_speed_curve {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} 
+theorem orientedCurvature_of_unit_speed_curve {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)}
   (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) {t : ℝ} (ht : t ∈ I) :
   orientedCurvature c t = inner ℝ (iteratedDeriv 2 c t) (normal c t) := by
   unfold orientedCurvature normal
@@ -205,8 +205,8 @@ theorem second_deriv_eq_orientedCurvature_times_normal {I : Set ℝ} [I.OrdConne
 
 /-- Auxiliary lemma: If `c` is a twice continuously differentiable plane curve on an interval `I`,
 then the normal has a derivative at every point of `I`. -/
-lemma normal_hasDerivAt_aux {I : Set ℝ} (hI : IsOpen I) {c : ℝ → EuclideanSpace ℝ (Fin 2)} 
-  (hc : ContDiffOn ℝ 2 c I) {t : ℝ} (ht : t ∈ I) : 
+lemma normal_hasDerivAt_aux {I : Set ℝ} (hI : IsOpen I) {c : ℝ → EuclideanSpace ℝ (Fin 2)}
+  (hc : ContDiffOn ℝ 2 c I) {t : ℝ} (ht : t ∈ I) :
     HasDerivAt (normal c) (deriv (normal c) t) t := by
   have hd : ContDiffOn ℝ 1 (deriv c) I := hc.deriv_of_isOpen hI (by norm_num)
   have h_diff : DifferentiableOn ℝ (deriv c) I := hd.differentiableOn (by norm_num)
