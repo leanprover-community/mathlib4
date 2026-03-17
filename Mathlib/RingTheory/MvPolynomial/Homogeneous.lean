@@ -72,7 +72,7 @@ theorem weightedTotalDegree_piSingle [DecidableEq σ] (i : σ) (p : MvPolynomial
   simp only [weightedTotalDegree, weight, linearCombination, Pi.single_apply, degreeOf, degrees,
     Multiset.count_finset_sup]
   congr; ext d
-  by_cases h : d i = 0 <;> simp [h]
+  simp +contextual
 
 theorem weightedTotalDegree_rename_of_injective {σ τ : Type*} {e : σ → τ}
     {w : τ → ℕ} {P : MvPolynomial σ R} (he : Function.Injective e) :
