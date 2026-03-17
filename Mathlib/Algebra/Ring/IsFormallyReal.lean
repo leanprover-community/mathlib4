@@ -115,7 +115,7 @@ theorem of_eq_zero_of_mul_self_of_eq_zero_of_add [AddCommMonoid R] [Mul R]
     intro x hx
     induction hx with
     | sq ha => grind
-    | @sq_add b s hb hs ih => grind [ha (IsSumSq.mul_self b) (IsSumSq.isSumNonzeroSq hs)]
+    | @sq_add b s hb hs ih => grind [ha (IsSumSq.mul_self b) hs.isSumSq]
 
 theorem of_eq_zero_of_eq_zero_of_mul_self_add [NonUnitalNonAssocSemiring R]
     (h : ∀ {s a : R}, IsSumSq s → a * a + s = 0 → a = 0) : IsFormallyReal R where
@@ -127,7 +127,7 @@ theorem of_eq_zero_of_eq_zero_of_mul_self_add [NonUnitalNonAssocSemiring R]
     | sq_add ha hs ih => grind [IsSumSq.isSumNonzeroSq hs]
 
 instance [Ring R] [LinearOrder R] [IsStrictOrderedRing R] : IsFormallyReal R :=
-  of_eq_zero_of_mul_self_of_eq_zero_of_add R mul_self_eq_zero.mp <|
+  of_eq_zero_of_mul_self_of_eq_zero_of_add mul_self_eq_zero.mp <|
     fun hs₁ hs₂ h ↦ ((add_eq_zero_iff_of_nonneg (IsSumSq.nonneg hs₁) (IsSumSq.nonneg hs₂)).mp h).1
 
 instance [Ring R] [IsFormallyReal R] : IsReduced R := by
