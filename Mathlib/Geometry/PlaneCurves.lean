@@ -332,7 +332,7 @@ protected lemma _root_.HasDerivAt.initialCurve_of_orientedCurvature {I : Set ℝ
   (ht₀ : t₀ ∈ I) (p₀ : EuclideanSpace ℝ (Fin 2)) (θ₀ : ℝ) {t : ℝ} (ht : t ∈ I) :
   HasDerivAt (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)
     !₂[Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ), Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ)] t := by
-  apply HasDerivWithinAt.hasDerivAt
+  apply HasDerivWithinAt.hasDerivAt (s := I)
   · rw [hasDerivWithinAt_pi_euclidean]
     unfold initialCurve_of_orientedCurvature
     have h₀ := continuousOn_angle_fun_aux hI hκ ht₀ θ₀
