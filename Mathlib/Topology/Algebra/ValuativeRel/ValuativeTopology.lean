@@ -7,20 +7,21 @@ module
 
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology
+public import Mathlib.Topology.Algebra.WithZeroTopology
 
 /-!
 # The topology on a valued ring
 
 In this file, we define the non-Archimedean topology induced by a valuation on a ring.
-The main definition is a `Valued` type class which equips a ring with a valuation taking
-values in a group with zero. Other instances are then deduced from this.
 
-*NOTE* (2025-07-02):
-The `Valued` class defined in this file will eventually get replaced with `ValuativeRel`
-from `Mathlib.RingTheory.Valuation.ValuativeRel.Basic`. New developments on valued rings/fields
-should take this into consideration.
+## Main definitions
 
-*NOTE* (2026-03-17): After the above refactoring, the `Valued` instance on a ring `R` would be
+* If we have both `[ValuativeRel R]` and `[TopologicalSpace R]`, then writing
+  `[IsValuativeTopology R]` ensures that the topology on `R` agrees with the one induced by the
+  valuation.
+* `ValuativeRel.uniformSpace`: The uniform space introduced by a `ValuativeRel`.
+
+*NOTE* (2026-03-17): The `Valued` instance on a ring `R` would be
 replaced by `[ValuativeRel R] [UniformSpace R] [IsValuativeTopology R] [IsUniformAddGroup R]`
 (or `[ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]` when the uniformity is
 not relevant). Additional input `(v : Valuation R A) [v.Compatible]` can be introduced whenever
@@ -102,6 +103,30 @@ lemma mem_nhds_zero (s : Set R) : s ∈ 𝓝 (0 : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, { x | valuation R x < γ } ⊆ s := by
   convert IsValuativeTopology.mem_nhds (x := (0 : R))
   rw [sub_zero]
+
+theorem hasBasis_nhds (x : R) :
+    (𝓝 x).HasBasis (fun _ => True)
+      fun γ : (ValueGroupWithZero R)ˣ => { z | valuation R (z - x) < γ } := by
+  simp [Filter.hasBasis_iff, mem_nhds]
+
+/-- A variant of `hasBasis_nhds` where `· ≠ 0` is unbundled. -/
+lemma hasBasis_nhds' (x : R) :
+    (𝓝 x).HasBasis (· ≠ 0) ({ y | valuation R (y - x) < · }) :=
+  (hasBasis_nhds x).to_hasBasis (fun γ _ ↦ ⟨γ, by simp⟩)
+    fun γ hγ ↦ ⟨.mk0 γ hγ, by simp⟩
+
+variable (R) in
+theorem hasBasis_nhds_zero :
+    (𝓝 (0 : R)).HasBasis (fun _ => True)
+      fun γ : (ValueGroupWithZero R)ˣ => { x | valuation R x < γ } := by
+  convert hasBasis_nhds (0 : R); rw [sub_zero]
+
+variable (R) in
+/-- A variant of `hasBasis_nhds_zero` where `· ≠ 0` is unbundled. -/
+lemma hasBasis_nhds_zero' :
+    (𝓝 0).HasBasis (· ≠ 0) ({ x | valuation R x < · }) :=
+  (hasBasis_nhds_zero R).to_hasBasis (fun γ _ ↦ ⟨γ, by simp⟩)
+    fun γ hγ ↦ ⟨.mk0 γ hγ, by simp⟩
 
 end IsValuativeTopology
 

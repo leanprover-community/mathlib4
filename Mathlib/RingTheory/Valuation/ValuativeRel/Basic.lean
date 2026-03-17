@@ -33,9 +33,6 @@ saying that `R` is endowed with an equivalence class of valuations.
 - Given a valuation `v` on `R` and an instance `[ValuativeRel R]`, writing `[v.Compatible]`
   ensures that the relation `x ≤ᵥ y` is equivalent to `v x ≤ v y`. Note that
   it is possible to have `[v.Compatible]` and `[w.Compatible]` for two different valuations on `R`.
-- If we have both `[ValuativeRel R]` and `[TopologicalSpace R]`, then writing
-  `[IsValuativeTopology R]` ensures that the topology on `R` agrees with the one induced by the
-  valuation.
 - Given `[ValuativeRel A]`, `[ValuativeRel B]` and `[Algebra A B]`, the class
   `[ValuativeExtension A B]` ensures that the algebra map `A → B` is compatible with the valuations
   on `A` and `B`. For example, this can be used to talk about extensions of valued fields.
@@ -693,9 +690,6 @@ lemma _root_.Valuation.Compatible.ofValuation
   letI := ValuativeRel.ofValuation v
   ⟨fun _ _ ↦ Iff.rfl⟩
 
-@[deprecated "Use `ValuativeRel.ofValuation` and .... instead" (since := "2026-03-05")]
-alias Valued.mk' := ValuativeRel.ofValuation
-
 lemma isEquiv {Γ₁ Γ₂ : Type*}
     [LinearOrderedCommMonoidWithZero Γ₁]
     [LinearOrderedCommMonoidWithZero Γ₂]
@@ -1172,18 +1166,8 @@ induction x using ValuativeRel.ValueGroupWithZero.ind with
 | mk r s =>
   simp
 
--- -- The general lemma is here, move this:
--- variable {M N F : Type*} [EquivLike F M N] [LinearOrder M] [LinearOrder N] [OrderHomClass F M N]
-
--- theorem _root_.OrderHomClass.map_le_map_iff (f : F) {a b : M} : f a ≤ f b ↔ a ≤ b := by
---     refine ⟨?_, fun h ↦ OrderHomClass.monotone f h⟩
---     contrapose!
---     rw [lt_iff_le_and_ne, lt_iff_le_and_ne]
---     refine fun ⟨h1, h2⟩ ↦ ⟨OrderHomClass.monotone f h1, (EquivLike.injective f).ne h2⟩
-
--- instance _root_.OrderHomClass.toOrderIsoClass : OrderIsoClass F M N where
---   map_le_map_iff := _root_.OrderHomClass.map_le_map_iff
-
+/- If a valuation `v` is compatible with the valuative relation, then its value group
+is isomorphic (as an ordered group with zero) to `ValueGroupWithZero R`. -/
 noncomputable
 def ValueGroupWithZero.embed [h : v.Compatible] : ValueGroupWithZero R ≃*o ValueGroup₀ v where
   __ := embedAux v
@@ -1226,7 +1210,7 @@ lemma leftInverse_embedding_embed : Function.LeftInverse (ValueGroup₀.embeddin
   split_ifs <;> simp_all [ValueGroupWithZero.mk_eq_div]
 
 /-- The isomorphism between `ValueGroupWithZero R` and `ValueGroup₀ (valuation R)`. -/
-@[deprecated "use ValueGroupWithZero.embed (valuation R) instead" (since := "2026-03-11")]
+@[deprecated "use ValueGroupWithZero.embed (valuation R) instead" (since := "2026-03-17")]
 def valueGroupWithZero_equiv_valueGroup₀ := ValueGroupWithZero.embed (valuation R)
 
 open ValueGroupWithZero
