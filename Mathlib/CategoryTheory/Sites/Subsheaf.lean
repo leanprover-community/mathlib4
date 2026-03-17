@@ -191,7 +191,6 @@ theorem Subfunctor.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
   ext U s
   apply (h _ s.prop).isSeparatedFor.ext
   rintro V i hi
-  dsimp at hi
   dsimp
   rw [← dsimp% l₁.naturality_apply, ← dsimp% l₂.naturality_apply]
   exact ConcreteCategory.congr_hom (congr_app e <| op V) ⟨_, hi⟩
