@@ -270,7 +270,10 @@ end Coyoneda
 
 namespace Functor
 
-/-- The data which expresses that a functor `F : Cᵒᵖ ⥤ Type v` is representable by `Y : C`. -/
+/-- The data which expresses that a functor `F : Cᵒᵖ ⥤ Type v` is representable by `Y : C`.
+
+In the situation where `F` factors through a concrete category, it may be more convenient to use
+the API in the file `Mathlib/CategoryTheory/ConcreteCategory/Representable.lean`. -/
 structure RepresentableBy (F : Cᵒᵖ ⥤ Type v) (Y : C) where
   /-- the natural bijection `(X ⟶ Y) ≃ F.obj (op X)`. -/
   homEquiv {X : C} : (X ⟶ Y) ≃ F.obj (op X)
