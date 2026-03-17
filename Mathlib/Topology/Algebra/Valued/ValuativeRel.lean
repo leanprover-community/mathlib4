@@ -32,8 +32,7 @@ open ValuativeRel TopologicalSpace Filter Topology Set
 
 local notation "v" => valuation R
 
-/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order
-to
+/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
 prove `IsValuativeTopology R`. -/
 theorem of_zero [ContinuousConstVAdd R R]
     (h₀ : ∀ s : Set R, s ∈ 𝓝 0 ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | v z < γ } ⊆ s) :
