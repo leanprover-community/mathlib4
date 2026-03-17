@@ -20,11 +20,11 @@ commute with base change.
 
 - `Algebra.Extension.tensorCotangentSpace`: If `T` is an `R`-algebra, there is a `T`-linear
   isomorphism `T ⊗[R] P.CotangentSpace ≃ₗ[T] (P.baseChange).CotangentSpace`.
-- `Algebra.Extension.tensorCotangent`: If `T` is flat over `R`, there is a `T`-linear
+- `Algebra.Extension.tensorCotangentOfFlat`: If `T` is flat over `R`, there is a `T`-linear
   isomorphism `T ⊗[R] P.Cotangent ≃ₗ[T] (P.baseChange).Cotangent`.
-- `Algebra.Extension.tensorH1Cotangent`: If `T` is flat over `R`, there is a `T`-linear
+- `Algebra.Extension.tensorH1CotangentOfFlat`: If `T` is flat over `R`, there is a `T`-linear
   isomorphism `T ⊗[R] P.H1Cotangent ≃ₗ[T] (P.baseChange).H1Cotangent`.
-- `Algebra.tensorH1Cotangent`: Flat base change commutes with `H1Cotangent`.
+- `Algebra.tensorH1CotangentOfFlat`: Flat base change commutes with `H1Cotangent`.
 
 -/
 
@@ -104,7 +104,7 @@ lemma tensorCotangentSpace_tmul (t : T) (x : P.CotangentSpace) :
 
 /-- If `T` is flat over `R`, there is a `T`-linear isomorphism
 `T ⊗[R] P.Cotangent ≃ₗ[T] (P.baseChange).Cotangent`. -/
-noncomputable def tensorCotangent [Module.Flat R T] :
+noncomputable def tensorCotangentOfFlat [Module.Flat R T] :
     T ⊗[R] P.Cotangent ≃ₗ[T] (P.baseChange (T := T)).Cotangent :=
   AlgebraTensorModule.congr (.refl T T) (P.cotangentEquivCotangentKer.restrictScalars R) ≪≫ₗ
     P.ker.tensorCotangentEquiv R T ≪≫ₗ
@@ -114,9 +114,9 @@ noncomputable def tensorCotangent [Module.Flat R T] :
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 @[simp]
 lemma tensorCotangent_tmul [Module.Flat R T] (t : T) (x : P.Cotangent) :
-    P.tensorCotangent T (t ⊗ₜ x) = t • Cotangent.map (P.toBaseChange T) x := by
+    P.tensorCotangentOfFlat T (t ⊗ₜ x) = t • Cotangent.map (P.toBaseChange T) x := by
   obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
-  simp only [tensorCotangent, LinearEquiv.trans_apply, AlgebraTensorModule.congr_tmul,
+  simp only [tensorCotangentOfFlat, LinearEquiv.trans_apply, AlgebraTensorModule.congr_tmul,
     LinearEquiv.refl_apply, LinearEquiv.restrictScalars_apply, cotangentEquivCotangentKer_apply,
     Cotangent.val_mk, Ideal.tensorCotangentEquiv_tmul, map_smul, Cotangent.map_mk,
     Hom.toAlgHom_apply, Ideal.Cotangent.equivOfEq_toCotangent]
@@ -153,7 +153,7 @@ lemma tensorToH1Cotangent_bijective_of_flat [Module.Flat R T] :
     ((P.baseChange (T := T)).cotangentComplex.restrictScalars R)
     0 0
     ((P.tensorToH1Cotangent T).restrictScalars R)
-    ((P.tensorCotangent T).restrictScalars R)
+    ((P.tensorCotangentOfFlat T).restrictScalars R)
     ((P.tensorCotangentSpace T).restrictScalars R)
   · simp
   · simp
@@ -174,13 +174,13 @@ lemma tensorToH1Cotangent_bijective_of_flat [Module.Flat R T] :
   · apply exact_hCotangentι_cotangentComplex
   · tauto
   · simp
-  · exact (P.tensorCotangent T).bijective
+  · exact (P.tensorCotangentOfFlat T).bijective
   · exact (P.tensorCotangentSpace T).injective
 
 /-- If `T` is flat over `R`, there is a `T`-linear isomorphism
 `T ⊗[R] P.H1Cotangent ≃ₗ[T] (P.baseChange).H1Cotangent`. -/
 @[expose]
-noncomputable def tensorH1Cotangent [Module.Flat R T] :
+noncomputable def tensorH1CotangentOfFlat [Module.Flat R T] :
     T ⊗[R] P.H1Cotangent ≃ₗ[T] (P.baseChange (T := T)).H1Cotangent :=
   LinearEquiv.ofBijective (P.tensorToH1Cotangent T)
     (P.tensorToH1Cotangent_bijective_of_flat T)
@@ -188,15 +188,15 @@ noncomputable def tensorH1Cotangent [Module.Flat R T] :
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 @[simp]
 lemma tensorH1Cotangent_tmul [Module.Flat R T] (t : T) (x : P.H1Cotangent) :
-    (P.tensorH1Cotangent T (t ⊗ₜ x)).val = t • Cotangent.map (P.toBaseChange T) x.val :=
+    (P.tensorH1CotangentOfFlat T (t ⊗ₜ x)).val = t • Cotangent.map (P.toBaseChange T) x.val :=
   rfl
 
 end Extension
 
 /-- Flat base change commutes with `H1Cotangent`. -/
-noncomputable def tensorH1Cotangent (T : Type*) [CommRing T] [Algebra R T] [Module.Flat R T] :
+noncomputable def tensorH1CotangentOfFlat (T : Type*) [CommRing T] [Algebra R T] [Module.Flat R T] :
     T ⊗[R] H1Cotangent R S ≃ₗ[T] H1Cotangent T (T ⊗[R] S) :=
-  (Generators.self R S).toExtension.tensorH1Cotangent T ≪≫ₗ
+  (Generators.self R S).toExtension.tensorH1CotangentOfFlat T ≪≫ₗ
     (Extension.H1Cotangent.equiv
       ((Generators.self R S).baseChangeFromBaseChange T)
       ((Generators.self R S).baseChangeToBaseChange T)).restrictScalars T ≪≫ₗ
