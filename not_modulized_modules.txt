@@ -4,7 +4,6 @@ not modulized: MathlibTest/ArithMult.lean
 not modulized: MathlibTest/AssertExists.lean
 not modulized: MathlibTest/BigOps.lean
 not modulized: MathlibTest/BinPow.lean
-not modulized: MathlibTest/BinaryRec.lean
 not modulized: MathlibTest/CategoryTheory/CancelIso.lean
 not modulized: MathlibTest/CategoryTheory/SubstHomLift.lean
 not modulized: MathlibTest/CategoryTheory/ToApp.lean
@@ -205,8 +204,6 @@ not modulized: MathlibTest/matrix.lean
 not modulized: MathlibTest/measurability.lean
 not modulized: MathlibTest/meta.lean
 not modulized: MathlibTest/mod_cases.lean
-not modulized: MathlibTest/module.lean
-not modulized: MathlibTest/nomatch.lean
 not modulized: MathlibTest/nontriviality.lean
 not modulized: MathlibTest/norm_cast.lean
 not modulized: MathlibTest/norm_num.lean
@@ -244,18 +241,18 @@ not modulized: MathlibTest/solve_by_elim/basic.lean
 not modulized: MathlibTest/solve_by_elim/dummy_label_attr.lean
 not modulized: MathlibTest/solve_by_elim/instances.lean
 not modulized: MathlibTest/spread.lean
-not modulized: MathlibTest/sqrt.lean
+not modulized: MathlibTest/sqrt.lean (disabled test)
 not modulized: MathlibTest/success_if_fail_with_msg.lean
 not modulized: MathlibTest/superscript.lean
 not modulized: MathlibTest/symbolFrequency.lean
 not modulized: MathlibTest/symm.lean
 not modulized: MathlibTest/tactic_timeout.lean
-not modulized: MathlibTest/tfae.lean
 not modulized: MathlibTest/toAdditive.lean
 not modulized: MathlibTest/toAdditiveIrredDef.lean
 not modulized: MathlibTest/trace.lean
 not modulized: MathlibTest/tryAtEachStep.lean
-not modulized: MathlibTest/vec_notation.lean
 not modulized: MathlibTest/willRoundTrip.lean
 not modulized: MathlibTest/wlog.lean
 not modulized: MathlibTest/zmod.lean (compiler bug!)
+
+modulized: MathlibTest/module.lean (This `module` IS NOT module system BUT R-MODULE)

@@ -2,6 +2,7 @@
 Manually ported from
 https://github.com/leanprover-community/mathlib/blob/fee91d74414e681a8b72cb7160e6b5ef0ec2cc0b/test/vec_notation.lean
 -/
+module
 import Mathlib.Data.Fin.VecNotation
 
 open Lean
