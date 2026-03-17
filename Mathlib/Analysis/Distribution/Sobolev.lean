@@ -19,8 +19,23 @@ tempered distribution `u` belongs to the Sobolev space `H^{s,p}` if
 
 ## Main definitions
 
-* `SchwartzMap.fderivCLM`: The differential as a continuous linear map
-  `𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F)`
+* `TemperedDistribution.besselPotential`: The Bessel potential operator is the Fourier multiplier
+  with the function `(1 + ‖x‖ ^ 2) ^ (s / 2)`.
+* `TemperedDistribution.memSobolev`: A tempered distribution lies in the Sobolev space of order `s`
+  and `p` if `besselPotential E F s u ∈ Lp`.
+
+## Main statements
+
+* `SchwartzMap.memSobolev`: Each Schwartz function belongs every Sobolev space
+* `TemperedDistribution.memSobolev_two_iff_fourier`: The characterization of `p = 2` Sobolev
+  functions
+* `TemperedDistribution.MemSobolev.memSobolev_fourierMultiplierCLM_of_bounded`: If `u` is a Sobolev
+  function, then `g • u` is a Sobolev function of the same order provided `g` is bounded.
+* `TemperedDistribution.MemSobolev.lineDerivOp`: If `u` is a Sobolev function of order `s`, then
+  `∂_{m} u` is a Sobolev function of order `s - 1`.
+* `TemperedDistribution.MemSobolev.laplacian`: If `u` is a Sobolev function of order `s`, then
+  `Δ u` is a Sobolev function of order `s - 2`.
+
 
 -/
 
@@ -70,11 +85,16 @@ theorem besselPotential_compL_besselPotential (s s' : ℝ) :
   ext f : 1
   exact besselPotential_besselPotential_apply s s' f
 
+theorem besselPotential_neg_apply_eq_iff (s : ℝ) (f g : 𝓢'(E, F)) :
+    besselPotential E F (-s) f = g ↔ besselPotential E F s g = f := by
+  constructor
+  all_goals { intro h; simp [← h] }
+
 open scoped Real Laplacian LineDeriv
 
 set_option backward.isDefEq.respectTransparency false in
 theorem besselPotential_neg_one_lineDerivOp_eq {m : E} (f : 𝓢'(E, F)) :
-    ((besselPotential E F (-1)) (∂_{m} f)) =
+    (besselPotential E F (-1)) (∂_{m} f) =
       (2 * π * Complex.I) • fourierMultiplierCLM F (fun x ↦ Complex.ofReal <|
       inner ℝ x m * (1 + ‖x‖ ^ 2) ^ (-1/2 : ℝ)) f := by
   rw [lineDeriv_eq_fourierMultiplierCLM, besselPotential,
@@ -86,7 +106,7 @@ theorem besselPotential_neg_one_lineDerivOp_eq {m : E} (f : 𝓢'(E, F)) :
 
 set_option backward.isDefEq.respectTransparency false in
 theorem besselPotential_neg_two_laplacian_eq (f : 𝓢'(E, F)) :
-    ((besselPotential E F (-2)) (Δ f)) = -(2 * π) ^ 2 •
+    (besselPotential E F (-2)) (Δ f) = -(2 * π) ^ 2 •
       fourierMultiplierCLM F (fun x ↦ Complex.ofReal <| ‖x‖ ^ 2 * (1 + ‖x‖ ^ 2) ^ (-1 : ℝ)) f := by
   rw [laplacian_eq_fourierMultiplierCLM, besselPotential,
     ContinuousLinearMap.map_smul_of_tower,
@@ -168,10 +188,11 @@ section inner
 
 variable [InnerProductSpace ℂ F] [CompleteSpace F]
 
+/-- A tempered distribution belongs to the Sobolev space of order `s` and `p = 2` if and only if
+its Fourier transform multiplied by `(1 + ‖x‖ ^ 2) ^ (s / 2)` is in `Lp`. -/
 theorem memSobolev_two_iff_fourier {s : ℝ} {f : 𝓢'(E, F)} :
     MemSobolev s 2 f ↔ ∃ (f' : Lp F 2 (volume : Measure E)),
     smulLeftCLM F (fun (x : E) ↦ ((1 + ‖x‖ ^ 2) ^ (s / 2) : ℝ)) (𝓕 f) = f' := by
-  rw [MemSobolev]
   constructor
   · intro ⟨f', hf'⟩
     use 𝓕 f'
@@ -265,13 +286,12 @@ section LineDeriv
 
 open scoped LineDeriv Laplacian Real
 
-/-- The directional derivative maps `H^{s}` to `H^{s - 1}`. -/
+/-- The directional derivative maps `H ^ {s}` to `H ^ {s - 1}`. -/
 theorem MemSobolev.lineDerivOp {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 f) {m : E} :
     MemSobolev (s - 1) 2 (∂_{m} f) := by
   rw [SubNegMonoid.sub_eq_add_neg s 1, add_comm, ← memSobolev_besselPotential_iff,
     besselPotential_neg_one_lineDerivOp_eq f]
-  apply MemSobolev.smul
-  apply hf.memSobolev_fourierMultiplierCLM_of_bounded (by fun_prop)
+  apply (hf.memSobolev_fourierMultiplierCLM_of_bounded (by fun_prop) ?_).smul
   use ‖m‖
   intro x
   apply le_of_sq_le_sq _ (by positivity)
@@ -294,13 +314,12 @@ theorem MemSobolev.lineDerivOp {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 
   apply le_of_eq
   field_simp
 
-/-- The Laplacian maps `H^{s}` to `H^{s - 2}`. -/
+/-- The Laplacian maps `H ^ {s}` to `H ^ {s - 2}`. -/
 theorem MemSobolev.laplacian {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 f) :
     MemSobolev (s - 2) 2 (Δ f) := by
   rw [SubNegMonoid.sub_eq_add_neg s 2, add_comm, ← memSobolev_besselPotential_iff,
     besselPotential_neg_two_laplacian_eq f]
-  apply MemSobolev.smul
-  apply hf.memSobolev_fourierMultiplierCLM_of_bounded (by fun_prop)
+  apply (hf.memSobolev_fourierMultiplierCLM_of_bounded (by fun_prop) ?_).smul
   use 1
   intro x
   rw [Real.rpow_neg (by positivity)]
