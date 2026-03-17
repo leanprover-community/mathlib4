@@ -130,7 +130,7 @@ theorem firstMap_eq_secondMap :
     Equalizer.Presieve.Arrows.secondMap F X c.inj := by
   ext ⟨i, j⟩ a
   simp only [Equalizer.Presieve.Arrows.firstMap, limit.lift_π, Fan.mk_pt, Fan.mk_π_app,
-    TypeCat.hom_as_apply, comp_apply, Equalizer.Presieve.Arrows.secondMap]
+    TypeCat.Fun.as_apply, comp_apply, Equalizer.Presieve.Arrows.secondMap]
   by_cases hi : i = j
   · rw [hi, Mono.right_cancellation _ _ pullback.condition]
   · have := preservesTerminal_of_isSheaf_for_empty F hF hI

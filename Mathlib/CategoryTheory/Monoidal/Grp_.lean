@@ -309,7 +309,7 @@ def ofInvertible (G : C) [CartesianMonoidalCategory C] [MonObj G]
   inv := Yoneda.fullyFaithful.preimage
     ⟨fun X ↦ TypeCat.ofHom (fun f ↦ (h X.unop f).invOf), fun X Y f ↦ by
       ext g
-      simp only [yoneda_obj_obj, yoneda_obj_map, TypeCat.hom_as_apply, comp_apply,
+      simp only [yoneda_obj_obj, yoneda_obj_map, TypeCat.Fun.as_apply, comp_apply,
         ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, invOf_eq_iff_left]
       rw [← comp_mul, invOf_mul_self, comp_one]⟩
   left_inv := by simp [Yoneda.fullyFaithful_preimage, ← Hom.mul_def, Hom.one_def]

@@ -144,10 +144,10 @@ def Hom.Simps.hom (X Y : Type u) (f : X ⟶ Y) :=
 initialize_simps_projections Hom (hom' → hom)
 
 @[simp]
-lemma Fun.as_apply {X Y : Type u} (f : Fun X Y) (x : X) : f.as x = f x := by
+lemma Fun.as_apply {X Y : Type u} (f : Fun X Y) (x : X) : f.as x = f x :=
   rfl
 
-@[simp]
+-- @[simp]
 lemma hom_as_apply {X Y : Type u} (f : X ⟶ Y) (x : X) : (ConcreteCategory.hom f).as x =
     ConcreteCategory.hom f x :=
   rfl

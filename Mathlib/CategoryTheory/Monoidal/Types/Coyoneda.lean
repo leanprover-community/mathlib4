@@ -30,7 +30,7 @@ instance (C : Type u) [Category.{v} C] [MonoidalCategory C] :
     (associativity := fun X Y Z => by
       ext ⟨⟨f, g⟩, h⟩; dsimp at f g h
       simp only [op_tensorUnit, Functor.flip_obj_obj, yoneda_obj_obj, unop_tensorUnit, tensorHom_id,
-        Functor.flip_obj_map, yoneda_map_app, TypeCat.hom_as_apply, comp_apply, whiskerRight_apply,
+        Functor.flip_obj_map, yoneda_map_app, TypeCat.Fun.as_apply, comp_apply, whiskerRight_apply,
         ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, Category.assoc, id_tensorHom,
         whiskerLeft_apply, associator_hom_apply_1, associator_hom_apply_2_1,
         associator_hom_apply_2_2, Iso.cancel_iso_inv_left]

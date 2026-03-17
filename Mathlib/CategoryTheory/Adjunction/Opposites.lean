@@ -91,7 +91,7 @@ def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (a
     Functor.comp_map, Functor.op_map, NatTrans.comp_app, Functor.flip_map_app, yoneda_obj_map,
     Quiver.Hom.unop_op, NatIso.ofComponents_hom_app, Equiv.toIso_hom, Equiv.trans_apply,
     homEquiv_unit, homEquiv_counit, Functor.map_comp, Category.assoc, counit_naturality,
-    Functor.id_obj, TypeCat.hom_as_apply, comp_apply, ConcreteCategory.hom_ofHom,
+    Functor.id_obj, TypeCat.Fun.as_apply, comp_apply, ConcreteCategory.hom_ofHom,
     TypeCat.Fun.mk_apply]
   simp only [← Category.assoc, ← Functor.map_comp, ← unit_naturality, Functor.id_obj,
     Functor.comp_obj]

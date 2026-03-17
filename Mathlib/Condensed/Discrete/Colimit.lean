@@ -255,7 +255,7 @@ def isoFinYoneda : toProfinite.op ⋙ F ≅ finYoneda F :=
   NatIso.ofComponents (fun X ↦ isoFinYonedaComponents F (toProfinite.obj X.unop)) fun _ ↦ by
     simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]
     ext
-    simp only [isoFinYonedaComponents_hom, TypeCat.hom_as_apply, CategoryTheory.comp_apply,
+    simp only [isoFinYonedaComponents_hom, TypeCat.Fun.as_apply, CategoryTheory.comp_apply,
       ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, Function.comp_apply, toProfinite_obj,
       ← Functor.map_comp_apply]
     rfl
@@ -290,7 +290,7 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1
   simp only [← Category.assoc, op_obj, functorToPresheaves_obj_obj]
   congr
   ext f
-  simp only [toProfinite_obj, TypeCat.hom_as_apply, CategoryTheory.comp_apply,
+  simp only [toProfinite_obj, TypeCat.Fun.as_apply, CategoryTheory.comp_apply,
     ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, counitApp_app]
   apply presheaf_ext.{u, u + 1} (X := X) (Y := X) (f := f)
   intro x
@@ -542,7 +542,7 @@ def isoFinYoneda : toLightProfinite.op ⋙ F ≅ finYoneda F :=
   NatIso.ofComponents (fun X ↦ isoFinYonedaComponents F (toLightProfinite.obj X.unop)) fun _ ↦ by
     simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]
     ext
-    simp only [isoFinYonedaComponents_hom, TypeCat.hom_as_apply, CategoryTheory.comp_apply,
+    simp only [isoFinYonedaComponents_hom, TypeCat.Fun.as_apply, CategoryTheory.comp_apply,
       ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, Function.comp_apply, toLightProfinite_obj,
       ← Functor.map_comp_apply]
     rfl
