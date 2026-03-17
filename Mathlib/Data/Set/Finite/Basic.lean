@@ -649,7 +649,7 @@ theorem exists_finite_iff_finset {p : Set α → Prop} :
 theorem exists_subset_image_finite_and {f : α → β} {s : Set α} {p : Set β → Prop} :
     (∃ t ⊆ f '' s, t.Finite ∧ p t) ↔ ∃ t ⊆ s, t.Finite ∧ p (f '' t) := by
   classical
-  simp_rw [@and_comm (_ ⊆ _), and_assoc, exists_finite_iff_finset, @and_comm (p _),
+  simp_rw [@and_comm _ (_ ∧ _), and_assoc, exists_finite_iff_finset, @and_comm (p _),
     Finset.subset_set_image_iff]
   aesop
 
