@@ -110,7 +110,7 @@ theorem hasDerivWithinAt_pi_piLp [Fintype ι] {p : ENNReal} [Fact (1 ≤ p)] {f 
   congr! 3
 
 theorem hasDerivWithinAt_pi_euclidean [Fintype ι] {f : 𝕜 → EuclideanSpace 𝕜 ι}
-  {f' : EuclideanSpace 𝕜 ι} {s : Set 𝕜} {x : 𝕜} :
+    {f' : EuclideanSpace 𝕜 ι} {s : Set 𝕜} {x : 𝕜} :
     HasDerivWithinAt f f' s x ↔ ∀ i, HasDerivWithinAt (fun t ↦  f t i) (f' i) s x := by
   have := Fintype.ofFinite ι
   convert hasDerivWithinAt_pi_piLp using 1
