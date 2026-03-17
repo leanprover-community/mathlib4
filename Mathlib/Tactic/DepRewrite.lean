@@ -9,6 +9,7 @@ public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.Tactic.Conv.Basic
 public meta import Lean.Elab.Tactic.Rewrite
 public import Mathlib.Init
+public import Lean.Elab.Tactic.Config
 
 /-! ## Dependent rewrite tactic -/
 
@@ -508,7 +509,7 @@ The result is expected to be defeq to the original expression. -/
 def cleanupCasts (e : Expr) : MetaM Expr :=
   transform (input := e) (skipConstInApp := true) (pre := fun e =>
     -- since the `pre` method returns a result instead of calling itself recursively,
-    -- the tracing creates many parallel nodes insetad of nesting them
+    -- the tracing creates many parallel nodes instead of nesting them
     -- unfortunately, there does not seem to be a way to nest the trace nodes
     -- within the bounds of the `Lean.Meta.transform` API
     withTraceNode traceClsClean (fun
@@ -603,7 +604,7 @@ def depRwLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
     (← getMainGoal).depRewrite localDecl.type e symm (config := config)
   let r ← (← getMainGoal).replaceLocalDecl fvarId rwResult.eNew rwResult.eqProof
   let mvarId' ← r.mvarId.changeLocalDecl r.fvarId (← withTransparency config.castTransparency
-    (r.mvarId.withContext <| cleanupCasts (← r.fvarId.getType)))
+    (r.mvarId.withContext do cleanupCasts (← r.fvarId.getType)))
   replaceMainGoal (mvarId' :: rwResult.mvarIds)
 
 /-- Elaborate `DepRewrite.Config`. -/

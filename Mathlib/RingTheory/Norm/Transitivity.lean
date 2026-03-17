@@ -210,6 +210,7 @@ open Module IntermediateField AdjoinSimple
 
 namespace Algebra
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] {x : L}
     (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
   by_cases h : FiniteDimensional K L
@@ -226,6 +227,7 @@ theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] {x : L
   obtain ⟨P, hP⟩ := minpoly.dvd K x (show aeval x ((minpoly R x).map (algebraMap R K)) = 0 by simp)
   simp [hP, aeval_mul, (mem_aroots'.mp hy).2]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_eq_norm_adjoin (x : L) :
     norm K x = norm K (AdjoinSimple.gen K x) ^ finrank K⟮x⟯ L := by
   by_cases h : FiniteDimensional K L
@@ -257,6 +259,7 @@ theorem norm_eq_prod_roots {x : L} (hF : ((minpoly K x).map (algebraMap K F)).Sp
 
 variable [FiniteDimensional K L]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For `L/K` a finite separable extension of fields and `E` an algebraically closed extension
 of `K`, the norm (down to `K`) of an element `x` of `L` is equal to the product of the images
 of `x` over all the `K`-embeddings `σ` of `L` into `E`. -/

@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 # AB axioms in functor categories
 
 This file proves that, when the relevant limits and colimits exist, exactness of limits and
-colimits carries over from `A` to the functor category `C ⥤ A`
+colimits carries over from `A` to the functor category `C ⥤ A`.
 -/
 
 @[expose] public section

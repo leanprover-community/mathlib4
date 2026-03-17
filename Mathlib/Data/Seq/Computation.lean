@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Stream.Init
+public import Mathlib.Logic.Relator
 public import Mathlib.Tactic.Common
+public import Batteries.Tactic.Lint.Simp
 
 /-!
 # Coinductive formalization of unbounded computations.

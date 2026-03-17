@@ -280,7 +280,7 @@ variable [Zero ι] [GOne A]
 
 /-- `1 : A 0` is the value provided in `GOne.one`. -/
 @[nolint unusedArguments]
-instance GradeZero.one : One (A 0) :=
+instance (priority := 900) GradeZero.one : One (A 0) :=
   ⟨GOne.one⟩
 
 end One
@@ -293,12 +293,12 @@ variable [AddZeroClass ι] [GMul A]
 an `Eq.rec` to turn `A (0 + i)` into `A i`.
 -/
 instance GradeZero.smul (i : ι) : SMul (A 0) (A i) where
-  smul x y := @Eq.rec ι (0+i) (fun a _ => A a) (GMul.mul x y) i (zero_add i)
+  smul x y := @Eq.rec ι (0 + i) (fun a _ => A a) (GMul.mul x y) i (zero_add i)
 
 /-- `(*) : A 0 → A 0 → A 0` is the value provided in `GradedMonoid.GMul.mul`, composed with
 an `Eq.rec` to turn `A (0 + 0)` into `A 0`.
 -/
-instance GradeZero.mul : Mul (A 0) where mul := (· • ·)
+instance (priority := 900) GradeZero.mul : Mul (A 0) where mul := (· • ·)
 
 variable {A}
 
@@ -325,7 +325,7 @@ theorem mk_zero_pow (a : A 0) (n : ℕ) : mk _ (a ^ n) = mk _ a ^ n :=
   Sigma.ext (nsmul_zero n).symm <| eqRec_heq _ _
 
 /-- The `Monoid` structure derived from `GMonoid A`. -/
-instance GradeZero.monoid : Monoid (A 0) :=
+instance (priority := 900) GradeZero.monoid : Monoid (A 0) :=
   Function.Injective.monoid (mk 0) sigma_mk_injective rfl mk_zero_smul mk_zero_pow
 
 end Monoid
@@ -335,7 +335,7 @@ section Monoid
 variable [AddCommMonoid ι] [GCommMonoid A]
 
 /-- The `CommMonoid` structure derived from `GCommMonoid A`. -/
-instance GradeZero.commMonoid : CommMonoid (A 0) :=
+instance (priority := 900) GradeZero.commMonoid : CommMonoid (A 0) :=
   Function.Injective.commMonoid (mk 0) sigma_mk_injective rfl mk_zero_smul mk_zero_pow
 
 end Monoid
@@ -540,7 +540,8 @@ def submonoid : Submonoid R where
 
 -- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The monoid `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
-instance instMonoid : Monoid (A 0) := inferInstanceAs <| Monoid (GradeZero.submonoid A)
+instance instMonoid : Monoid (A 0) :=
+  inferInstanceAs <| Monoid (GradeZero.submonoid A)
 
 -- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The commutative monoid `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/

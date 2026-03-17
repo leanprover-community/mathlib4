@@ -6,8 +6,9 @@ Authors: Bhavik Mehta, Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 
 /-!
 # Disjoint coproducts
@@ -75,6 +76,14 @@ lemma CoproductDisjoint.of_cofan {c : Cofan X} (hc : IsColimit c)
     rw [show d.inj i = c.inj i ≫ (hd.uniqueUpToIso hc).inv.hom by simp]
     infer_instance
 
+lemma CoproductDisjoint.of_hasCoproduct [HasCoproduct X] [∀ i, Mono (Sigma.ι X i)]
+    (s : ∀ {i j : ι} (_ : i ≠ j), PullbackCone (Sigma.ι X i) (Sigma.ι X j))
+    (hs : ∀ {i j : ι} (hij : i ≠ j), IsLimit (s hij))
+    (H : ∀ {i j : ι} (hij : i ≠ j), IsInitial (s hij).pt) :
+    CoproductDisjoint X :=
+  have (i : ι) : Mono ((Cofan.mk (∐ X) (Sigma.ι X)).inj i) := inferInstanceAs <| Mono (Sigma.ι X i)
+  .of_cofan (coproductIsCoproduct X) s hs H
+
 variable [CoproductDisjoint X]
 
 lemma _root_.CategoryTheory.Mono.of_coproductDisjoint {c : Cofan X} (hc : IsColimit c) (i : ι) :
@@ -113,7 +122,25 @@ noncomputable def ofCoproductDisjointOfIsLimit
     IsInitial s.pt :=
   ofCoproductDisjointOfIsColimitOfIsLimit hij (colimit.isColimit _) hs
 
+/-- If `C` has strict initial objects and there is a commutative square `Xᵢ ← Z → Xⱼ`
+over `∐ X`, then `Z` is initial. -/
+noncomputable def ofCoproductDisjointOfCommSq [HasStrictInitialObjects C]
+    {c : Cofan X} (hc : IsColimit c) {Z : C} (fst : Z ⟶ X i) (snd : Z ⟶ X j)
+    (h : fst ≫ c.inj i = snd ≫ c.inj j) [HasPullback (c.inj i) (c.inj j)] :
+    Limits.IsInitial Z :=
+  .ofStrict (pullback.lift fst snd h) <|
+    .ofCoproductDisjointOfIsColimitOfIsLimit hij hc (limit.isLimit _)
+
 end IsInitial
+
+lemma CoproductDisjoint.isPullback_of_isInitial {c : Cofan X} (hc : IsColimit c)
+    {Y : C} (hY : IsInitial Y) {i j : ι} [HasPullback (c.inj i) (c.inj j)] (hij : i ≠ j) :
+    IsPullback (hY.to _) (hY.to _) (c.inj i) (c.inj j) := by
+  refine .of_iso_pullback (by simp) ?_ ?_ ?_
+  · refine hY.uniqueUpToIso ?_
+    exact IsInitial.ofCoproductDisjointOfIsColimit hij hc
+  · simp
+  · simp
 
 end
 

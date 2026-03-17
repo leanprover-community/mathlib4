@@ -6,7 +6,7 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.Polynomial.RingDivision
-public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
@@ -32,7 +32,7 @@ theorem mem_span_C_X_sub_C_X_sub_C_iff_eval_eval_eq_zero {b : R[X]} {P : R[X][X]
   rw [Ideal.mem_span_pair]
   constructor <;> intro h
   · rcases h with ⟨_, _, rfl⟩
-    simp only [eval_C, eval_X, eval_add, eval_sub, eval_mul, add_zero, mul_zero, sub_self]
+    simp
   · rcases dvd_iff_isRoot.mpr h with ⟨p, hp⟩
     rcases @X_sub_C_dvd_sub_C_eval _ b _ P with ⟨q, hq⟩
     exact ⟨C p, q, by rw [mul_comm, mul_comm q, eq_add_of_sub_eq' hq, hp, C_mul]⟩

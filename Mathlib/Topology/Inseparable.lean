@@ -594,17 +594,23 @@ instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
 
 @[simp]
-theorem inseparableSetoid_eq_top_iff {t : TopologicalSpace α} :
-    inseparableSetoid α = ⊤ ↔ t = ⊤ :=
-  Setoid.eq_top_iff.trans TopologicalSpace.eq_top_iff_forall_inseparable.symm
+theorem inseparableSetoid_eq_top_iff [TopologicalSpace α] :
+    inseparableSetoid α = ⊤ ↔ IndiscreteTopology α :=
+  Setoid.eq_top_iff.trans TopologicalSpace.indiscrete_iff_forall_inseparable.symm
 
-theorem subsingleton_iff {t : TopologicalSpace α} :
-    Subsingleton (SeparationQuotient α) ↔ t = ⊤ :=
+theorem subsingleton_iff [TopologicalSpace α] :
+    Subsingleton (SeparationQuotient α) ↔ IndiscreteTopology α :=
   Quotient.subsingleton_iff.trans inseparableSetoid_eq_top_iff
 
-theorem nontrivial_iff {t : TopologicalSpace α} :
-    Nontrivial (SeparationQuotient α) ↔ t ≠ ⊤ := by
-  simpa only [not_subsingleton_iff_nontrivial] using subsingleton_iff.not
+instance [TopologicalSpace α] [IndiscreteTopology α] : Subsingleton (SeparationQuotient α) :=
+  subsingleton_iff.2 ‹_›
+
+theorem nontrivial_iff [TopologicalSpace α] :
+    Nontrivial (SeparationQuotient α) ↔ NontrivialTopology α := by
+  simpa [not_subsingleton_iff_nontrivial] using subsingleton_iff.not
+
+instance [TopologicalSpace α] [NontrivialTopology α] : Nontrivial (SeparationQuotient α) :=
+  nontrivial_iff.2 ‹_›
 
 @[to_additive] instance [One X] : One (SeparationQuotient X) := ⟨mk 1⟩
 

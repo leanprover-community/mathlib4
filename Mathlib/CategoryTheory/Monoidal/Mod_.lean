@@ -219,9 +219,9 @@ open MonoidalLeftAction in
 /-- When `M` is a `B`-module in `D` and `f : A ⟶ B` is a morphism of internal
 monoid objects, `M` inherits an `A`-module structure via
 "restriction of scalars", i.e `γ[A, M] = f.hom ⊵ₗ M ≫ γ[B, M]`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def scalarRestriction (M : D) [ModObj B M] : ModObj A M where
-  smul := f ⊵ₗ M ≫ γ[B, M]
+  smul := f ⊵ₗ M ≫ γ[B,M]
   one_smul' := by
     rw [← comp_actionHomLeft_assoc]
     rw [IsMonHom.one_hom, ModObj.one_smul]

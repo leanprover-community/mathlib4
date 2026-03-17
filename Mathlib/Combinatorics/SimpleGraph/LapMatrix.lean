@@ -81,13 +81,13 @@ $$x^{\top} L x = \sum_{i \sim j} (x_{i}-x_{j})^{2}$$,
 where $\sim$ denotes the adjacency relation -/
 theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
     toLinearMap₂' R (G.lapMatrix R) x x =
-    (∑ i : V, ∑ j : V, if G.Adj i j then (x i - x j)^2 else 0) / 2 := by
+    (∑ i : V, ∑ j : V, if G.Adj i j then (x i - x j) ^ 2 else 0) / 2 := by
   simp_rw [toLinearMap₂'_apply', lapMatrix, sub_mulVec, dotProduct_sub, dotProduct_mulVec_degMatrix,
     dotProduct_mulVec_adjMatrix, ← sum_sub_distrib, degree_eq_sum_if_adj, sum_mul, ite_mul, one_mul,
     zero_mul, ← sum_sub_distrib, ite_sub_ite, sub_zero]
   rw [← add_self_div_two (∑ x_1 : V, ∑ x_2 : V, _)]
-  conv_lhs => enter [1,2,2,i,2,j]; rw [if_congr (adj_comm G i j) rfl rfl]
-  conv_lhs => enter [1,2]; rw [Finset.sum_comm]
+  conv_lhs => enter [1, 2, 2, i, 2, j]; rw [if_congr (adj_comm G i j) rfl rfl]
+  conv_lhs => enter [1, 2]; rw [Finset.sum_comm]
   simp_rw [← sum_add_distrib, ite_add_ite]
   congr 2 with i
   congr 2 with j

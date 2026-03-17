@@ -71,6 +71,10 @@ theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
     exact ⟨hx.tower_top, hhx.of_dvd (map_ne_zero (map_ne_zero (minpoly.ne_zero hx)))
       ((map_dvd_map' _).mpr (minpoly.dvd_map_of_isScalarTower F K x))⟩
 
+set_option backward.isDefEq.respectTransparency false in
+instance IntermediateField.normal (K : IntermediateField F E) [Normal F E] : Normal K E :=
+  Normal.tower_top_of_normal F K E
+
 theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function.Bijective ϕ :=
   h.toIsAlgebraic.bijective_of_isScalarTower' ϕ
 
@@ -130,10 +134,9 @@ def AlgHom.restrictNormalAux [h : Normal F E] :
       rintro x ⟨y, ⟨z, hy⟩, hx⟩
       rw [← hx, ← hy]
       apply minpoly.mem_range_of_degree_eq_one E
-      refine
-        Or.resolve_left (splits_iff_splits.mp (h.splits z))
-          (map_ne_zero (minpoly.ne_zero (h.isIntegral z))) (minpoly.irreducible ?_)
-          (minpoly.dvd E _ (by simp [aeval_algHom_apply]))
+      refine ((h.splits z).of_dvd (map_ne_zero (minpoly.ne_zero (h.isIntegral z)))
+        (minpoly.dvd E _ (by simp [aeval_algHom_apply]))).degree_eq_one_of_irreducible
+        (minpoly.irreducible ?_)
       simp only [AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom]
       suffices IsIntegral F _ by exact this.tower_top
       exact ((h.isIntegral z).map <| toAlgHom F E K₁).map ϕ⟩
@@ -185,6 +188,7 @@ theorem AlgEquiv.restrictNormal_trans [Normal F E] :
 def AlgEquiv.restrictNormalHom [Normal F E] : Gal(K₁/F) →* Gal(E/F) :=
   MonoidHom.mk' (fun χ => χ.restrictNormal E) fun ω χ => χ.restrictNormal_trans ω E
 
+set_option backward.isDefEq.respectTransparency false in
 lemma AlgEquiv.restrictNormalHom_apply (L : IntermediateField F K₁) [Normal F L]
     (σ : Gal(K₁/F)) (x : L) : restrictNormalHom L σ x = σ x :=
   AlgEquiv.restrictNormal_commutes σ L x

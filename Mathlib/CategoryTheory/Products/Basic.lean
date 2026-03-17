@@ -20,7 +20,7 @@ We define:
 * `fst`       : the functor `⟨X, Y⟩ ↦ X`
 * `snd`       : the functor `⟨X, Y⟩ ↦ Y`
 * `swap`      : the functor `C × D ⥤ D × C` given by `⟨X, Y⟩ ↦ ⟨Y, X⟩`
-    (and the fact this is an equivalence)
+    (and the fact that this is an equivalence)
 
 We further define `evaluation : C ⥤ (C ⥤ D) ⥤ D` and `evaluationUncurried : C × (C ⥤ D) ⥤ D`,
 and products of functors and natural transformations, written `F.prod G` and `α.prod β`.
@@ -323,6 +323,7 @@ end NatIso
 
 namespace Equivalence
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Cartesian product of two equivalences of categories. -/
 @[simps]
 def prod (E₁ : A ≌ B) (E₂ : C ≌ D) : A × C ≌ B × D where

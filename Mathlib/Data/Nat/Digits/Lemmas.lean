@@ -81,10 +81,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   · cases m
     · cases hm rfl
     · simp
-  · cases m
-    · cases hm rfl
-    simp only [zero_add, digits_one, List.getLast_replicate_succ]
-    exact Nat.one_ne_zero
+  · simp
   revert hm
   induction m using Nat.strongRecOn with | ind n IH => ?_
   intro hn
@@ -147,15 +144,12 @@ theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     this (getLast_digit_ne_zero _ hm)
   rw [ofDigits_digits]
 
--- TODO: fix the non-terminal simp_all; it runs on three goals, leaving only one
-set_option linter.flexible false in
 /-- Any non-zero natural number `m` is greater than
 b^((number of digits in the base b representation of m) - 1)
 -/
 theorem base_pow_length_digits_le (b m : ℕ) (hb : 1 < b) :
     m ≠ 0 → b ^ (digits b m).length ≤ b * m := by
-  rcases b with (_ | _ | b) <;> try simp_all
-  exact base_pow_length_digits_le' b m
+  rcases b with (_ | _ | b) <;> simp_all [base_pow_length_digits_le']
 
 open Finset
 
@@ -342,7 +336,7 @@ theorem length_digitsAppend {b : ℕ} (hb : 1 < b) (l : ℕ) (hn : n < b ^ l) :
 theorem lt_of_mem_digitsAppend {b : ℕ} (hb : 1 < b) (l i : ℕ)
     (hi : i ∈ digitsAppend b l n) : i < b := by
   rw [digitsAppend, mem_append, mem_replicate] at hi
-  obtain hi | ⟨_, rfl⟩  := hi
+  obtain hi | ⟨_, rfl⟩ := hi
   · exact digits_lt_base hb hi
   · linarith
 
@@ -356,7 +350,7 @@ theorem mapsTo_digitsAppend {b : ℕ} (hb : 1 < b) (l : ℕ) :
 
 theorem injOn_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.InjOn (ofDigits b) {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} :=
-  fun _ _ _ _ h ↦ ofDigits_inj_of_len_eq hb (by aesop) (by aesop) (by aesop) h
+  fun _ _ _ _ h ↦ ofDigits_inj_of_len_eq hb (by simp_all) (by simp_all) (by simp_all) h
 
 theorem setInvOn_digitsAppend_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.InvOn (digitsAppend b l) (ofDigits b) {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b}
@@ -427,7 +421,7 @@ The bijection `Nat.bijOn_digitsAppend` stated as a bijection between `Finset`.
 This spelling can be helpful for some proofs.
 -/
 theorem _root_.Nat.bijOn_digitsAppend' {b : ℕ} (hb : 1 < b) (l : ℕ) :
-    Set.BijOn (digitsAppend b l) (Finset.range (b ^ l)) (fixedLengthDigits hb l)  := by
+    Set.BijOn (digitsAppend b l) (Finset.range (b ^ l)) (fixedLengthDigits hb l) := by
   rw [fixedLengthDigits, Set.coe_toFinset]
   convert bijOn_digitsAppend hb l
   ext; simp
@@ -436,7 +430,8 @@ theorem _root_.Nat.bijOn_digitsAppend' {b : ℕ} (hb : 1 < b) (l : ℕ) :
 theorem fixedLengthDigits_zero {b : ℕ} (hb : 1 < b) :
     fixedLengthDigits hb 0 = {[]} := by
   ext
-  simpa [eq_comm, fixedLengthDigits] using by grind
+  simp [fixedLengthDigits]
+  grind
 
 @[simp]
 theorem fixedLengthDigits_one {b : ℕ} (hb : 1 < b) :
