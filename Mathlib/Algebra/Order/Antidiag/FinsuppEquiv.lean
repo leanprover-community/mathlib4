@@ -19,9 +19,9 @@ This file collects further results about equivalence and cardinality related to
 reduce imports.
 
 ## Main declarations
-* `Finset.finsuppAntidiagEquiv`: `Finset.finsuppAntidiag s n` is equivalent to subtype of `s →₀ μ`
-  whose sum is `n`.
-* `Finset.finsuppAntidiagEquivSym`: `Finset.finsuppAntidiag s n` is equivalent to `Sym s n` for
+* `Finset.finsuppAntidiagEquivSubtype`: `Finset.finsuppAntidiag s n` is equivalent to subtype of
+  `s →₀ μ` whose sum is `n`.
+* `Finset.finsuppAntidiagEquiv`: `Finset.finsuppAntidiag s n` is equivalent to `Sym s n` for
   natural number `n`.
 * `Finset.card_finsuppAntidiag_nat_eq_choose` and `Finset.card_finsuppAntidiag_nat_eq_multichoose`:
   cardinality formula for `Finset.finsuppAntidiag s n` for natural number `n`.
@@ -41,7 +41,7 @@ variable (s n) in
 /-- The equivalence between `Finset.finsuppAntidiag s n` and the subtype of `s →₀ μ` whose sum is
 `n`. -/
 @[simps]
-noncomputable def finsuppAntidiagEquiv :
+noncomputable def finsuppAntidiagEquivSubtype :
     s.finsuppAntidiag n ≃ { P : s →₀ μ // (P.sum fun (_ : s) ↦ id) = n } where
   toFun f := ⟨subtypeDomain (· ∈ s) f.val, by
     have hf := f.2
@@ -57,25 +57,25 @@ noncomputable def finsuppAntidiagEquiv :
 
 variable (s) in
 /-- The equivalence between `Finset.finsuppAntidiag s n` and `Sym s n`. -/
-noncomputable def finsuppAntidiagEquivSym (n : ℕ) : s.finsuppAntidiag n ≃ Sym s n :=
-  (finsuppAntidiagEquiv s n).trans (Sym.equivNatSum s n).symm
+noncomputable def finsuppAntidiagEquiv (n : ℕ) : s.finsuppAntidiag n ≃ Sym s n :=
+  (finsuppAntidiagEquivSubtype s n).trans (Sym.equivNatSum s n).symm
 
 @[simp]
-theorem finsuppAntidiagEquivSym_symm_apply_apply (n : ℕ) (f : Sym s n) (a : s) :
-    ((finsuppAntidiagEquivSym s n).symm f).val a.val = f.toMultiset.count a := by
-  simp [finsuppAntidiagEquivSym]
+theorem finsuppAntidiagEquiv_symm_apply_apply (n : ℕ) (f : Sym s n) (a : s) :
+    ((finsuppAntidiagEquiv s n).symm f).val a.val = f.toMultiset.count a := by
+  simp [finsuppAntidiagEquiv]
 
 @[simp]
-theorem count_coe_finsuppAntidiagEquivSym_apply (n : ℕ) (f : s.finsuppAntidiag n) (a : s) :
-    (finsuppAntidiagEquivSym s n f).toMultiset.count a = f.val a := by
-  simp [finsuppAntidiagEquivSym]
+theorem count_coe_finsuppAntidiagEquiv_apply (n : ℕ) (f : s.finsuppAntidiag n) (a : s) :
+    (finsuppAntidiagEquiv s n f).toMultiset.count a = f.val a := by
+  simp [finsuppAntidiagEquiv]
 
 theorem card_finsuppAntidiag_nat_eq_choose (n : ℕ) :
     #(s.finsuppAntidiag n) = (#s + n - 1).choose n := by
-  simp [card_eq_of_equiv_fintype (finsuppAntidiagEquivSym s n), Sym.card_sym_eq_choose]
+  simp [card_eq_of_equiv_fintype (finsuppAntidiagEquiv s n), Sym.card_sym_eq_choose]
 
 theorem card_finsuppAntidiag_nat_eq_multichoose (n : ℕ) :
     #(s.finsuppAntidiag n) = (#s).multichoose n := by
-  simp [card_eq_of_equiv_fintype (finsuppAntidiagEquivSym s n), Sym.card_sym_eq_multichoose]
+  simp [card_eq_of_equiv_fintype (finsuppAntidiagEquiv s n), Sym.card_sym_eq_multichoose]
 
 end Finset
