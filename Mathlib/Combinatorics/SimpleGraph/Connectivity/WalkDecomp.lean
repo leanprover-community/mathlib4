@@ -57,6 +57,24 @@ lemma takeUntil_first (p : G.Walk u v) :
 lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
     (p.takeUntil w hwp).Nil ↔ u = w := ⟨Nil.eq, (by cases ·; simp)⟩
 
+lemma takeUntil_eq_take (p : G.Walk u v) (h : w ∈ p.support) :
+    p.takeUntil w h = (p.take <| p.support.idxOf w).copy rfl (p.getVert_support_idxOf h) := by
+  apply ext_support
+  induction p with
+  | nil =>
+    simp only [takeUntil, eq_mpr_eq_cast, support_nil, getVert_nil, take, support_copy]
+    grind [mem_support_nil_iff, support_nil]
+  | @cons a _ _ _ p ih =>
+    by_cases! h' : w = a
+    · grind [List.idxOf_cons_self, take_zero, copy_rfl_rfl, support_nil, takeUntil_first]
+    · rw [take_cons_eq _ _ _ (by grind), takeUntil_cons (List.mem_of_ne_of_mem h' h) h'.symm,
+        support_cons, support_copy, ih (by grind)]
+      grind
+
+lemma length_takeUntil (p : G.Walk u v) (h : w ∈ p.support) :
+    (p.takeUntil w h).length = p.support.idxOf w := by
+  simp [takeUntil_eq_take, Nat.le_iff_lt_add_one, ← length_support, List.idxOf_lt_length_of_mem h]
+
 /-- Given a vertex in the support of a path, give the path from (and including) that vertex to
 the end. In other words, drop vertices from the front of a path until (and not including)
 that vertex. -/
@@ -84,6 +102,29 @@ theorem take_spec {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     · simp!
     · simp! only
       split_ifs with h' <;> subst_vars <;> simp [*]
+
+@[simp]
+lemma dropUntil_first (p : G.Walk u v) (h : u ∈ p.support) : p.dropUntil u h = p := by
+  unfold dropUntil
+  split <;> simp
+
+lemma dropUntil_eq_drop (p : G.Walk u v) (h : w ∈ p.support) :
+    p.dropUntil w h = (p.drop <| p.support.idxOf w).copy (p.getVert_support_idxOf h) rfl := by
+  apply ext_support
+  induction p with
+  | nil =>
+    simp only [dropUntil, eq_mpr_eq_cast, support_nil, getVert_nil, drop, support_copy]
+    grind [mem_support_nil_iff, support_nil]
+  | @cons a _ _ _ p ih =>
+    by_cases! h' : w = a
+    · subst h'
+      simp [dropUntil_first, drop_support_eq_support_drop_min]
+    · rw [drop_cons_eq _ _ _ (by grind), support_copy, dropUntil]
+      grind
+
+lemma length_dropUntil (p : G.Walk u v) (h : w ∈ p.support) :
+    (p.dropUntil w h).length = p.length - p.support.idxOf w := by
+  simp [dropUntil_eq_drop]
 
 theorem isSubwalk_takeUntil (p : G.Walk u v) (h : w ∈ p.support) : (p.takeUntil w h).IsSubwalk p :=
   ⟨nil, p.dropUntil w h, by simp⟩

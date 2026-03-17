@@ -40,7 +40,7 @@ variable [Preorder α]
 def hasse : SimpleGraph α where
   Adj a b := a ⋖ b ∨ b ⋖ a
   symm _a _b := Or.symm
-  loopless _a h := h.elim (irrefl _) (irrefl _)
+  loopless := ⟨fun _a h ↦ h.elim (irrefl _) (irrefl _)⟩
 
 variable {α β} {a b : α}
 
@@ -99,9 +99,7 @@ def pathGraph (n : ℕ) : SimpleGraph (Fin n) :=
   hasse _
 
 theorem pathGraph_adj {n : ℕ} {u v : Fin n} :
-    (pathGraph n).Adj u v ↔ u.val + 1 = v.val ∨ v.val + 1 = u.val := by
-  simp only [pathGraph, hasse]
-  simp_rw [← Fin.coe_covBy_iff, covBy_iff_add_one_eq]
+    (pathGraph n).Adj u v ↔ u.val + 1 = v.val ∨ v.val + 1 = u.val := by simp [pathGraph, hasse]
 
 theorem pathGraph_preconnected (n : ℕ) : (pathGraph n).Preconnected :=
   hasse_preconnected_of_succ _
@@ -111,6 +109,6 @@ theorem pathGraph_connected (n : ℕ) : (pathGraph (n + 1)).Connected :=
 
 theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   ext u v
-  fin_cases u <;> fin_cases v <;> simp [pathGraph, ← Fin.coe_covBy_iff, covBy_iff_add_one_eq]
+  fin_cases u <;> fin_cases v <;> simp [pathGraph]
 
 end SimpleGraph

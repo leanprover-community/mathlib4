@@ -393,14 +393,13 @@ instance Conj.quandle (G : Type*) [Group G] : Quandle (Conj G) where
     simp [mul_assoc]
   fix := by simp
 
-@[simp]
+@[simp, grind =]
 theorem conj_act_eq_conj {G : Type*} [Group G] (x y : Conj G) :
     x ◃ y = ((x : G) * (y : G) * (x : G)⁻¹ : G) :=
   rfl
 
 theorem conj_swap {G : Type*} [Group G] (x y : Conj G) : x ◃ y = y ↔ y ◃ x = x := by
-  dsimp [Conj] at *; constructor
-  repeat' intro h; conv_rhs => rw [eq_mul_inv_of_mul_eq (eq_mul_inv_of_mul_eq h)]; simp
+  grind [eq_mul_inv_iff_mul_eq]
 
 /-- `Conj` is functorial
 -/

@@ -133,6 +133,11 @@ theorem sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} 
       rw [@trim_trim _ _ μ _ _ hm₂ hm]
     _ < ∞ := measure_spanningSets_lt_top _ _
 
+lemma SigmaFinite.of_trim {m m0 : MeasurableSpace α} {μ : Measure α} (hm : m ≤ m0)
+    [SigmaFinite (μ.trim hm)] : SigmaFinite μ := by
+  rw [← trim_eq_self (μ := μ)]
+  exact sigmaFiniteTrim_mono le_rfl hm
+
 theorem sigmaFinite_trim_bot_iff : SigmaFinite (μ.trim bot_le) ↔ IsFiniteMeasure μ := by
   rw [sigmaFinite_bot_iff]
   refine ⟨fun h => ⟨?_⟩, fun h => ⟨?_⟩⟩ <;> have h_univ := h.measure_univ_lt_top

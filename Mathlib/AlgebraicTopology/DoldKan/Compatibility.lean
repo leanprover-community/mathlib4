@@ -17,7 +17,7 @@ equivalences `simplicial_object C ≅ Karoubi (SimplicialObject C)` and
 `ChainComplex C ℕ ≅ Karoubi (ChainComplex C ℕ)`.
 
 It is certainly possible to get an equivalence `SimplicialObject C ≌ ChainComplex C ℕ`
-using a compositions of the three equivalences above, but then neither the functor
+using a composition of the three equivalences above, but then neither the functor
 nor the inverse would have good definitional properties. For example, it would be better
 if the inverse functor of the equivalence was exactly the functor
 `Γ₀ : SimplicialObject C ⥤ ChainComplex C ℕ` which was constructed in `FunctorGamma.lean`.
@@ -27,11 +27,11 @@ In this file, given four categories `A`, `A'`, `B`, `B'`, equivalences `eA : A �
 compatibilities, we construct successive equivalences:
 - `equivalence₀` from `A` to `B'`, which is the composition of `eA` and `e'`.
 - `equivalence₁` from `A` to `B'`, with the same inverse functor as `equivalence₀`,
-but whose functor is `F`.
+  but whose functor is `F`.
 - `equivalence₂` from `A` to `B`, which is the composition of `equivalence₁` and the
-inverse of `eB`:
+  inverse of `eB`:
 - `equivalence` from `A` to `B`, which has the same functor `F ⋙ eB.inverse` as `equivalence₂`,
-but whose inverse functor is `G`.
+  but whose inverse functor is `G`.
 
 When extra assumptions are given, we shall also provide simplification lemmas for the
 unit and counit isomorphisms of `equivalence`.
@@ -127,6 +127,7 @@ def equivalence₂CounitIso : (eB.functor ⋙ e'.inverse ⋙ eA.inverse) ⋙ F �
     _ ≅ eB.functor ⋙ eB.inverse := isoWhiskerLeft _ (leftUnitor _)
     _ ≅ 𝟭 B := eB.unitIso.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem equivalence₂CounitIso_eq :
     (equivalence₂ eB hF).counitIso = equivalence₂CounitIso eB hF := by
   ext Y'
@@ -203,6 +204,7 @@ def equivalenceCounitIso : G ⋙ F ⋙ eB.inverse ≅ 𝟭 B :=
 
 variable {η hF hG}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem equivalenceCounitIso_eq (hη : τ₀ = τ₁ hF hG η) :
     (equivalence hF hG).counitIso = equivalenceCounitIso η := by
   ext1; apply NatTrans.ext; ext Y

@@ -65,6 +65,7 @@ are homotopic relative to `P.symm` -/
 def symm {f g : X ⟶ Y} (h : P.LeftHomotopy f g) : P.symm.LeftHomotopy g f where
   h := h.h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f₀` is homotopic to `f₁` relative to a precylinder `P`,
 and `f₁` is homotopic to `f₂` relative to `P'`, then
 `f₀` is homotopic to `f₂` relative to `P.trans P'`. -/
@@ -252,6 +253,7 @@ lemma equivalence [ModelCategory C] (X Y : C) [IsCofibrant X] :
   symm h := h.symm
   trans h h' := h.trans h'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma precomp [ModelCategory C] {f g : X ⟶ Y} [IsFibrant Y] (h : LeftHomotopyRel f g)
     {Z : C} (i : Z ⟶ X) : LeftHomotopyRel (i ≫ f) (i ≫ g) := by
   obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good_cylinder

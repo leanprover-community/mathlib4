@@ -11,7 +11,6 @@ public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.TypeStar
 public import Mathlib.Tactic.Linter.OldObtain
-public import Mathlib.Tactic.Simproc.ExistsAndEq
 public import Batteries.Util.LibraryNote -- For `library_note` command.
 
 /-!
@@ -23,7 +22,7 @@ This file defines some basic utilities for tactic writing, and also
 and explicitly name the non-dependent hypotheses,
 - an `assumption` macro, calling the `assumption` tactic on all goals
 - the tactics `match_target` and `clear_aux_decl` (clearing all auxiliary declarations from the
-context).
+  context).
 -/
 
 public meta section

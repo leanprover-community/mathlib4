@@ -40,6 +40,7 @@ open CategoryTheory Finsupp TensorProduct Rep
 
 variable {k G : Type u} [CommRing k] [Group G] {S : Subgroup G} (A : Rep k S)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a projective resolution `P` of `k` as a `k`-linear `G`-representation, a subgroup
 `S ≤ G`, and a `k`-linear `S`-representation `A`, this is an isomorphism of complexes
 `Hom(Res(S)(P), A) ≅ Hom(P, Coind_S^G(A)).` -/

@@ -199,6 +199,20 @@ def toNonUnitalSubalgebra (S : Subalgebra R A) : NonUnitalSubalgebra R A where
 lemma one_mem_toNonUnitalSubalgebra (S : Subalgebra R A) : (1 : A) ∈ S.toNonUnitalSubalgebra :=
   S.one_mem
 
+@[simp]
+lemma mem_toNonUnitalSubalgebra {S : Subalgebra R A} {x : A} :
+    x ∈ S.toNonUnitalSubalgebra ↔ x ∈ S :=
+  Iff.rfl
+
+lemma toNonUnitalSubalgebra_injective : Function.Injective
+    (toNonUnitalSubalgebra : Subalgebra R A → NonUnitalSubalgebra R A) :=
+  fun _ _ ↦ by simp [SetLike.ext_iff]
+
+@[simp]
+lemma toNonUnitalSubalgebra_inj {S U : Subalgebra R A} :
+    S.toNonUnitalSubalgebra = U.toNonUnitalSubalgebra ↔ S = U :=
+  toNonUnitalSubalgebra_injective.eq_iff
+
 instance {R A : Type*} [CommRing R] [Ring A] [Algebra R A] : SubringClass (Subalgebra R A) A :=
   { Subalgebra.instSubsemiringClass with
     neg_mem := fun {S x} hx => neg_one_smul R x ▸ S.smul_mem hx _ }
@@ -696,6 +710,7 @@ theorem coe_inclusion (s : S) : (inclusion h s : A) = s :=
 
 namespace inclusion
 
+set_option backward.isDefEq.respectTransparency false in
 scoped instance isScalarTower_left (X) [SMul X R] [SMul X A] [IsScalarTower X R A] :
     letI := (inclusion h).toModule; IsScalarTower X S T :=
   letI := (inclusion h).toModule
@@ -863,6 +878,7 @@ theorem rangeS_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algeb
   rw [algebraMap_eq, Algebra.algebraMap_self, RingHom.id_comp, ← toSubsemiring_subtype,
     Subsemiring.rangeS_subtype]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem range_algebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
     (S : Subalgebra R A) : (algebraMap S A).range = S.toSubring := by
