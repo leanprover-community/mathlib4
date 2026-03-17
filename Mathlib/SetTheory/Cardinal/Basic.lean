@@ -318,7 +318,7 @@ theorem cantor' (a) {b : Cardinal} (hb : 1 < b) : a < b ^ a := by
 theorem one_le_iff_pos {c : Cardinal} : 1 ≤ c ↔ 0 < c := by
   rw [← succ_zero, succ_le_iff]
 
-theorem one_le_iff_ne_zero {c : Cardinal} : 1 ≤ c ↔ c ≠ 0 := by
+protected theorem one_le_iff_ne_zero {c : Cardinal} : 1 ≤ c ↔ c ≠ 0 := by
   rw [one_le_iff_pos, pos_iff_ne_zero]
 
 @[simp]
@@ -487,7 +487,7 @@ theorem mul_lt_aleph0_iff {a b : Cardinal} : a * b < ℵ₀ ↔ a = 0 ∨ b = 0 
     by_cases hb : b = 0
     · exact Or.inl hb
     right
-    rw [← Ne, ← one_le_iff_ne_zero] at ha hb
+    rw [← Ne, ← Cardinal.one_le_iff_ne_zero] at ha hb
     constructor
     · rw [← mul_one a]
       exact (mul_le_mul' le_rfl hb).trans_lt h
@@ -517,7 +517,7 @@ theorem eq_one_iff_unique {α : Type*} : #α = 1 ↔ Subsingleton α ∧ Nonempt
   calc
     #α = 1 ↔ #α ≤ 1 ∧ 1 ≤ #α := le_antisymm_iff
     _ ↔ Subsingleton α ∧ Nonempty α :=
-      le_one_iff_subsingleton.and (one_le_iff_ne_zero.trans mk_ne_zero_iff)
+      le_one_iff_subsingleton.and (Cardinal.one_le_iff_ne_zero.trans mk_ne_zero_iff)
 
 theorem infinite_iff {α : Type u} : Infinite α ↔ ℵ₀ ≤ #α := by
   rw [← not_lt, lt_aleph0_iff_finite, not_finite_iff_infinite]
