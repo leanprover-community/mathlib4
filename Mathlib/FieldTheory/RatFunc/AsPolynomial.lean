@@ -333,7 +333,7 @@ theorem valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (w : 
     ← lt_iff_le_and_ne] at hi
   simp only [← C_mul_X_pow_eq_monomial, map_mul, aeval_C, map_pow, aeval_X, coeff_natDegree]
   by_cases h0 : (p.coeff i) = 0
-  · simp [h0, map_zero, zero_mul, one_mul, hv.eq_one p.leadingCoeff ((leadingCoeff_ne_zero).mpr hp),
+  · simp [h0, map_zero, zero_mul, one_mul, hv.eq_one p.leadingCoeff (leadingCoeff_ne_zero.mpr hp),
       pow_pos (lt_trans zero_lt_one hpos) p.natDegree]
   · simp [one_mul, hv.eq_one p.leadingCoeff ((leadingCoeff_ne_zero).mpr hp),
       hv.eq_one _ h0, one_mul, pow_lt_pow_right₀ hpos hi]
