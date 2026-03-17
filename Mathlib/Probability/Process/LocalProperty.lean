@@ -10,14 +10,14 @@ public import Mathlib.Probability.Process.Stopping
 /-! # Local properties of processes
 
 This file defines local and stable properties of stochastic processes with respect to a filtration.
-This is notably useful in local martingales.
+This is notably useful for local martingales.
 
 ## Main definitions
 
 * `ProbabilityTheory.IsPreLocalizingSequence`: A pre-localizing sequence is a sequence of stopping
   times which tends almost surely to infinity.
 * `ProbabilityTheory.IsLocalizingSequence`: A localizing sequence is a pre-localizing sequence
-  which is almost surely increasing.
+  which is almost surely non-decreasing.
 * `ProbabilityTheory.Locally`: A stochastic process `X` is said to satisfy a property `p` locally
   with respect to a filtration `𝓕` if there exists a localizing sequence `(τ n)` such that for all
   `n`, the stopped process `X^{τ n} I_{τ n > ⊥}` satisfies `p`.
@@ -30,9 +30,7 @@ This is notably useful in local martingales.
   "satisfies `p` locally" is also stable.
 * `ProbabilityTheory.isLocalizingSequence_of_isPreLocalizingSequence`: Given a
   pre-localizing sequence `(τ n)`, the sequence `⊓ j ≥ n, τ j` is a localizing sequence.
-* `ProbabilityTheory.locally_of_isPreLocalizingSequence`: If a property `p` is stable, then it is
-  locally satisfied by `X` if the definition of local holds replacing localizing sequence by
-  pre-localizing sequence.
+* `ProbabilityTheory.locally_of_isPreLocalizingSequence`: If a property `p` is stable, then to prove that `X` satisfies `p` locally, one can replace the localizing sequence in the definition of "locally" by a pre-localizing sequence.
 * `ProbabilityTheory.locally_locally`: For stable properties, locally is idempotent.
 * `ProbabilityTheory.locally_induction`: If `q` is a stable property, and `p` implies locally `q`,
   then locally `p` implies locally `q`.
@@ -70,7 +68,7 @@ lemma isLocalizingSequence_const_top [Preorder ι] [TopologicalSpace ι] [OrderT
     (𝓕 : Filtration ι mΩ) (P : Measure Ω) : IsLocalizingSequence 𝓕 (fun _ _ ↦ ⊤) P where
   isStoppingTime n := by simp [IsStoppingTime]
   mono := ae_of_all _ fun _ _ _ _ ↦ by simp
-  tendsto_top := by filter_upwards [] with ω using tendsto_const_nhds
+  tendsto_top := ae_of_all _ fun _ ↦ tendsto_const_nhds
 
 section LinearOrder
 
@@ -80,7 +78,7 @@ lemma IsLocalizingSequence.min [TopologicalSpace ι] [OrderTopology ι] {τ σ :
     (hτ : IsLocalizingSequence 𝓕 τ P) (hσ : IsLocalizingSequence 𝓕 σ P) :
     IsLocalizingSequence 𝓕 (min τ σ) P where
   isStoppingTime n := (hτ.isStoppingTime n).min (hσ.isStoppingTime n)
-  mono := by filter_upwards [hτ.mono, hσ.mono] with ω hτω hσω; exact hτω.min hσω
+  mono := by filter_upwards [hτ.mono, hσ.mono] with ω hτω hσω using hτω.min hσω
   tendsto_top := by
     filter_upwards [hτ.tendsto_top, hσ.tendsto_top] with ω hτω hσω using hτω.min hσω
 
@@ -88,7 +86,7 @@ variable [OrderBot ι]
 
 /-- A stochastic process `X` is said to satisfy a property `p` locally with respect to a
 filtration `𝓕` if there exists a localizing sequence `(τ_n)` such that for all `n`, the stopped
-process of `fun i ↦ {ω | ⊥ < τ n ω}.indicator (X i)` satisfies `p`. -/
+process `fun i ↦ {ω | ⊥ < τ n ω}.indicator (X i)` satisfies `p`. -/
 def Locally [TopologicalSpace ι] [OrderTopology ι] [Zero E]
     (p : (ι → Ω → E) → Prop) (𝓕 : Filtration ι mΩ)
     (X : ι → Ω → E) (P : Measure Ω := by volume_tac) : Prop :=
@@ -143,8 +141,7 @@ def IsStable
     ∀ X : ι → Ω → E, p X → ∀ τ : Ω → WithTop ι, IsStoppingTime 𝓕 τ →
       p (stoppedProcess (fun i ↦ {ω | ⊥ < τ ω}.indicator (X i)) τ)
 
-lemma IsStable.and (p q : (ι → Ω → E) → Prop)
-    (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q) :
+lemma IsStable.and (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q) :
     IsStable 𝓕 (fun X ↦ p X ∧ q X) :=
   fun _ hX τ hτ ↦ ⟨hp _ hX.left τ hτ, hq _ hX.right τ hτ⟩
 
@@ -155,11 +152,11 @@ lemma IsStable.isStable_locally (hp : IsStable 𝓕 p) :
   intro X hX τ hτ
   refine ⟨hX.localSeq, hX.IsLocalizingSequence, fun n ↦ ?_⟩
   simp_rw [← stoppedProcess_indicator_comm', Set.indicator_indicator, Set.inter_comm,
-    ← Set.indicator_indicator, stoppedProcess_stoppedProcess, inf_comm]
-  rw [stoppedProcess_indicator_comm', ← stoppedProcess_stoppedProcess]
+    ← Set.indicator_indicator, stoppedProcess_stoppedProcess, inf_comm,
+    stoppedProcess_indicator_comm', ← stoppedProcess_stoppedProcess]
   exact hp _ (hX.stoppedProcess n) τ hτ
 
-lemma locally_and (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q) :
+lemma IsStable.locally_and_iff (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q) :
     Locally (fun Y ↦ p Y ∧ q Y) 𝓕 X P ↔ Locally p 𝓕 X P ∧ Locally q 𝓕 X P := by
   refine ⟨Locally.of_and, fun ⟨hpX, hqX⟩ ↦
     ⟨_, hpX.IsLocalizingSequence.min hqX.IsLocalizingSequence, fun n ↦ ?_⟩⟩
@@ -189,13 +186,13 @@ section ConditionallyCompleteLinearOrderBot
 variable [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace ι] [OrderTopology ι]
   {𝓕 : Filtration ι mΩ} {X : ι → Ω → E} {p q : (ι → Ω → E) → Prop}
 
-lemma isLocalizingSequence_of_isPreLocalizingSequence
+lemma IsPreLocalizingSequence.isLocalizingSequence_biInf
     [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι]
     {τ : ℕ → Ω → WithTop ι} [IsRightContinuous 𝓕] (hτ : IsPreLocalizingSequence 𝓕 τ P) :
     IsLocalizingSequence 𝓕 (fun i ω ↦ ⨅ j ≥ i, τ j ω) P where
   isStoppingTime (n : ℕ) := IsStoppingTime.biInf (Set.to_countable {j | j ≥ n})
     (fun j _ ↦ hτ.isStoppingTime j)
-  mono :=  ae_of_all _ <| fun ω n m hnm ↦ iInf_le_iInf_of_subset <| fun k hk ↦ hnm.trans hk
+  mono := ae_of_all _ <| fun ω n m hnm ↦ iInf_le_iInf_of_subset <| fun k hk ↦ hnm.trans hk
   tendsto_top := by
     filter_upwards [hτ.tendsto_top] with ω hω
     replace hω := hω.liminf_eq
@@ -203,12 +200,11 @@ lemma isLocalizingSequence_of_isPreLocalizingSequence
     rw [← hω]
     refine tendsto_atTop_iSup ?_
     intro n m hnm
-    simp only [ge_iff_le, le_iInf_iff, iInf_le_iff]
-    intro k hk i hi
+    simp [iInf_le_iff]
     grind
 
-/-- A stable property satisfies `p` locally for `X` if there exists a pre-localizing sequence `τ`
-for which the stopped process of `fun i ↦ {ω | ⊥ < τ n ω}.indicator (X i)` satisfies `p`. -/
+/-- A process `X` satisfies a stable property `p` locally if there exists a pre-localizing sequence `τ`
+for which the stopped processes of `fun i ↦ {ω | ⊥ < τ n ω}.indicator (X i)` satisfy `p`. -/
 lemma locally_of_isPreLocalizingSequence
     [Zero E] [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι] {τ : ℕ → Ω → WithTop ι}
     (hp : IsStable 𝓕 p) [IsRightContinuous 𝓕] (hτ : IsPreLocalizingSequence 𝓕 τ P)
@@ -222,9 +218,7 @@ lemma locally_of_isPreLocalizingSequence
     (isLocalizingSequence_of_isPreLocalizingSequence hτ).isStoppingTime n using 2
   ext i ω
   rw [stoppedProcess_indicator_comm', Set.indicator_indicator]
-  congr 1
-  ext ω'
-  simp only [ge_iff_le, Set.mem_setOf_eq, Set.mem_inter_iff]
+  congr with ω
   exact ⟨fun h ↦ ⟨h, lt_of_lt_of_le h <| (iInf_le _ n).trans (iInf_le _ le_rfl)⟩, fun h ↦ h.1⟩
 
 section
