@@ -229,6 +229,7 @@ variable {kf : KernelFork S.g} {cc : CokernelCofork S.f}
   (fac : kf.ι ≫ cc.π = π ≫ ι)
   [Epi π] [Mono ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `S` be a short complex in an abelian category. Let `kf` be a
 limit kernel fork of `S.g` and `cc` a limit cokernel cofork of `S.f`.
 Let `kf.pt ⟶ H ⟶ cc.pt` be an epi-mono factorization of `kf.ι ≫ cc.π : kf.pt ⟶ cc.pt`,
@@ -239,6 +240,7 @@ noncomputable def isoImage : H ≅ image (S.iCycles ≫ S.pOpcycles) := by
     simp [← reassoc_of% fac]
   exact image.isoStrongEpiMono _ _ this
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma isoImage_ι :
     (isoImage S hkf hcc fac).hom ≫ image.ι (S.iCycles ≫ S.pOpcycles) =
@@ -253,6 +255,7 @@ then `H` identifies to the homology of `S`. -/
 noncomputable def isoHomology : H ≅ S.homology :=
   isoImage S hkf hcc fac ≪≫ S.homologyIsoImageICyclesCompPOpcycles.symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_comp_isoHomology_hom :
     π ≫ (isoHomology S hkf hcc fac).hom = (S.isoCyclesOfIsLimit hkf).hom ≫ S.homologyπ := by
@@ -267,12 +270,14 @@ lemma isoHomology_hom_comp_ι :
   simp [← cancel_epi S.homologyπ, ← cancel_epi (S.isoCyclesOfIsLimit hkf).hom,
     ← π_comp_isoHomology_hom_assoc S hkf hcc fac, ← fac]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma f'_eq :
     hkf.lift (KernelFork.ofι S.f S.zero) =
       S.toCycles ≫ (S.isoCyclesOfIsLimit hkf).inv := by
   have := Fork.IsLimit.mono hkf
   simp [← cancel_mono kf.ι]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma g'_eq : hcc.desc (CokernelCofork.ofπ S.g S.zero) =
     (S.isoOpcyclesOfIsColimit hcc).hom ≫ S.fromOpcycles := by
   have := Cofork.IsColimit.epi hcc
@@ -291,6 +296,7 @@ lemma isoHomology_inv_homologyι :
   rw [← cancel_mono (S.isoOpcyclesOfIsColimit hcc).inv, assoc, assoc, Iso.hom_inv_id,
     comp_id, ← isoHomology_hom_comp_ι S hkf hcc fac, Iso.hom_inv_id_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `S` be a short complex in an abelian category. Let `kf` be a
 limit kernel fork of `S.g` and `cc` a limit cokernel cofork of `S.f`.
 Let `kf.pt ⟶ H ⟶ cc.pt` be an epi-mono factorization of `kf.ι ≫ cc.π : kf.pt ⟶ cc.pt`.
@@ -313,6 +319,7 @@ noncomputable def leftHomologyData : S.LeftHomologyData where
     · exact parallelPair.ext (Iso.refl _) (S.isoCyclesOfIsLimit hkf)
     · exact Cofork.ext (isoHomology S hkf hcc fac) (by simp [Cofork.π])
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] g'_eq in
 /-- Let `S` be a short complex in an abelian category. Let `kf` be a
 limit kernel fork of `S.g` and `cc` a limit cokernel cofork of `S.f`.

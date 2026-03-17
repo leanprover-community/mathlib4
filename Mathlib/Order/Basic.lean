@@ -20,10 +20,6 @@ public import Mathlib.Tactic.GCongr.Core
 This file proves basic results about orders, provides extensive dot notation, defines useful order
 classes and allows to transfer order instances.
 
-## Type synonyms
-
-* `OrderDual α` : A type synonym reversing the meaning of all inequalities, with notation `αᵒᵈ`.
-
 ### Transferring orders
 
 - `Order.Preimage`, `Preorder.lift`: Transfers a (pre)order on `β` to an order on `α`
@@ -170,14 +166,10 @@ theorem le_of_forall_le (H : ∀ c, c ≤ a → c ≤ b) : a ≤ b := H _ le_rfl
 theorem forall_le_iff_le : (∀ ⦃c⦄, c ≤ a → c ≤ b) ↔ a ≤ b :=
   ⟨le_of_forall_le, fun h _ hca ↦ le_trans hca h⟩
 
-@[deprecated (since := "2025-07-27")] alias forall_le_iff_ge := forall_ge_iff_le
-
 /-- monotonicity of `≤` with respect to `→` -/
 @[gcongr, to_dual self (reorder := a b, c d, h₁ h₂)]
 theorem le_imp_le_of_le_of_le (h₁ : c ≤ a) (h₂ : b ≤ d) : a ≤ b → c ≤ d :=
   fun hab ↦ (h₁.trans hab).trans h₂
-
-@[deprecated (since := "2025-07-31")] alias le_implies_le_of_le_of_le := le_imp_le_of_le_of_le
 
 /-- monotonicity of `<` with respect to `→` -/
 @[gcongr, to_dual self (reorder := a b, c d, h₁ h₂)]
@@ -484,103 +476,25 @@ lemma LinearOrder.toPartialOrder_injective : Function.Injective (@LinearOrder.to
       exact (A_compare_canonical _ _).trans (B_compare_canonical _ _).symm
     congr
 
+@[to_dual self]
 lemma Preorder.ext {A B : Preorder α} (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) : A = B := by
   ext x y; exact H x y
 
+@[to_dual self]
 lemma PartialOrder.ext {A B : PartialOrder α} (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
     A = B := by ext x y; exact H x y
 
+@[to_dual self]
 lemma PartialOrder.ext_lt {A B : PartialOrder α} (H : ∀ x y : α, (haveI := A; x < y) ↔ x < y) :
     A = B := by ext x y; rw [le_iff_lt_or_eq, @le_iff_lt_or_eq _ A, H]
 
+@[to_dual self]
 lemma LinearOrder.ext {A B : LinearOrder α} (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
     A = B := by ext x y; exact H x y
 
+@[to_dual self]
 lemma LinearOrder.ext_lt {A B : LinearOrder α} (H : ∀ x y : α, (haveI := A; x < y) ↔ x < y) :
     A = B := LinearOrder.toPartialOrder_injective (PartialOrder.ext_lt H)
-
-/-! ### Order dual -/
-
-/-- Type synonym to equip a type with the dual order: `≤` means `≥` and `<` means `>`. `αᵒᵈ` is
-notation for `OrderDual α`. -/
-def OrderDual (α : Type*) : Type _ :=
-  α
-
-@[inherit_doc]
-notation:max α "ᵒᵈ" => OrderDual α
-
-namespace OrderDual
-
-instance (α : Type*) [h : Nonempty α] : Nonempty αᵒᵈ :=
-  h
-
-instance (α : Type*) [h : Subsingleton α] : Subsingleton αᵒᵈ :=
-  h
-
-instance (α : Type*) [LE α] : LE αᵒᵈ :=
-  ⟨fun x y : α ↦ y ≤ x⟩
-
-instance (α : Type*) [LT α] : LT αᵒᵈ :=
-  ⟨fun x y : α ↦ y < x⟩
-
-instance instOrd (α : Type*) [Ord α] : Ord αᵒᵈ where
-  compare := fun (a b : α) ↦ compare b a
-
-@[to_dual]
-instance instSup (α : Type*) [Min α] : Max αᵒᵈ :=
-  ⟨((· ⊓ ·) : α → α → α)⟩
-
-instance instIsTransLE [LE α] [T : IsTrans α LE.le] : IsTrans αᵒᵈ LE.le where
-  trans := fun _ _ _ hab hbc ↦ T.trans _ _ _ hbc hab
-
-instance instIsTransLT [LT α] [T : IsTrans α LT.lt] : IsTrans αᵒᵈ LT.lt where
-  trans := fun _ _ _ hab hbc ↦ T.trans _ _ _ hbc hab
-
-instance instPreorder (α : Type*) [Preorder α] : Preorder αᵒᵈ where
-  le_refl := fun _ ↦ le_refl _
-  le_trans := fun _ _ _ hab hbc ↦ hbc.trans hab
-  lt_iff_le_not_ge := fun _ _ ↦ lt_iff_le_not_ge
-
-instance instPartialOrder (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ where
-  __ := inferInstanceAs (Preorder αᵒᵈ)
-  le_antisymm := fun a b hab hba ↦ @le_antisymm α _ a b hba hab
-
-instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
-  __ := inferInstanceAs (PartialOrder αᵒᵈ)
-  __ := inferInstanceAs (Ord αᵒᵈ)
-  le_total := fun a b : α ↦ le_total b a
-  max := fun a b ↦ (min a b : α)
-  min := fun a b ↦ (max a b : α)
-  min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
-  max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
-  toDecidableLE := (inferInstance : DecidableRel (fun a b : α ↦ b ≤ a))
-  toDecidableLT := (inferInstance : DecidableRel (fun a b : α ↦ b < a))
-  toDecidableEq := (inferInstance : DecidableEq α)
-  compare_eq_compareOfLessAndEq a b := by
-    simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
-    rfl
-
-/-- The opposite linear order to a given linear order -/
-def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
-  inferInstanceAs <| LinearOrder (OrderDual α)
-
-instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
-
-theorem Ord.dual_dual (α : Type*) [H : Ord α] : OrderDual.instOrd αᵒᵈ = H :=
-  rfl
-
-theorem Preorder.dual_dual (α : Type*) [H : Preorder α] : OrderDual.instPreorder αᵒᵈ = H :=
-  rfl
-
-theorem instPartialOrder.dual_dual (α : Type*) [H : PartialOrder α] :
-    OrderDual.instPartialOrder αᵒᵈ = H :=
-  rfl
-
-theorem instLinearOrder.dual_dual (α : Type*) [H : LinearOrder α] :
-    OrderDual.instLinearOrder αᵒᵈ = H :=
-  rfl
-
-end OrderDual
 
 /-! ### `Compl` -/
 
@@ -747,10 +661,10 @@ end Function
 
 /-! ### Pullbacks of order instances -/
 
--- `to_dual` cannot yet reorder arguments of arguments
 /-- Pull back a `Preorder` instance along an injective function.
 
 See note [reducible non-instances]. -/
+@[to_dual self]
 abbrev Function.Injective.preorder [Preorder β] [LE α] [LT α] (f : α → β)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y) :
     Preorder α where
@@ -762,6 +676,7 @@ abbrev Function.Injective.preorder [Preorder β] [LE α] [LT α] (f : α → β)
 /-- Pull back a `PartialOrder` instance along an injective function.
 
 See note [reducible non-instances]. -/
+@[to_dual self]
 abbrev Function.Injective.partialOrder [PartialOrder β] [LE α] [LT α] (f : α → β)
     (hf : Function.Injective f)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y) :
@@ -1059,13 +974,6 @@ theorem DenselyOrdered.dense' [LT α] [DenselyOrdered α] :
 theorem exists_between [LT α] [DenselyOrdered α] {a₁ a₂ : α} : a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂ :=
   DenselyOrdered.dense _ _
 
-instance OrderDual.denselyOrdered (α : Type*) [LT α] [h : DenselyOrdered α] :
-    DenselyOrdered αᵒᵈ :=
-  ⟨fun _ _ ha ↦ (@exists_between α _ h _ _ ha).imp fun _ ↦ And.symm⟩
-
-@[simp]
-theorem denselyOrdered_orderDual [LT α] : DenselyOrdered αᵒᵈ ↔ DenselyOrdered α :=
-  ⟨by convert @OrderDual.denselyOrdered αᵒᵈ _, @OrderDual.denselyOrdered α _⟩
 
 /-- Any ordered subsingleton is densely ordered. Not an instance to avoid a heavy subsingleton
 typeclass search. -/
@@ -1121,8 +1029,8 @@ theorem dense_or_discrete [LinearOrder α] (a₁ a₂ : α) :
     ⟨fun a ha₁ ↦ le_of_not_gt fun ha₂ ↦ h ⟨a, ha₁, ha₂⟩,
      fun a ha₂ ↦ le_of_not_gt fun ha₁ ↦ h ⟨a, ha₁, ha₂⟩⟩
 
--- `to_dual` cannot yet reorder arguments of arguments
 /-- If a linear order has no elements `x < y < z`, then it has at most two elements. -/
+@[to_dual self (reorder := h (x z, 4 5))]
 lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
     (h : ∀ ⦃x y z : α⦄, x < y → y < z → False) (x y z : α) : x = y ∨ y = z ∨ x = z := by
   by_contra hne

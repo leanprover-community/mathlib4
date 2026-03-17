@@ -34,6 +34,7 @@ universe u v
 
 variable {J : Type v} [SmallCategory J] [IsCofiltered J] {F : J ⥤ Profinite.{max u v}} (C : Cone F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `X` is a cofiltered limit of profinite sets, then any clopen subset of `X` arises from
 a clopen set in one of the terms in the limit.
 -/
@@ -104,6 +105,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
       rw [(hV s).2]
       rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, C.w] at hx
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.pt (Fin 2)) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) (Fin 2)), f = g.comap (C.π.app _).hom.hom := by
   let U := f ⁻¹' {0}
@@ -116,6 +118,7 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
     LocallyConstant.ofIsClopen_fiber_zero]
   exact h
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit C)
     (f : LocallyConstant C.pt α) : ∃ (j : J) (g : LocallyConstant (F.obj j) (α → Fin 2)),
@@ -148,6 +151,7 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
   change _ = (g a) ((C.π.app j0 ≫ F.map (fs a)) x)
   rw [C.w]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempty α]
     (hC : IsLimit C) (f : LocallyConstant C.pt α) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _).hom.hom := by
@@ -180,6 +184,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
     · exact hh1.symm
     · exact False.elim (bot_ne_top hhh)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any locally constant function from a cofiltered limit of profinite sets factors through
 one of the components. -/
 theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstant C.pt α) :

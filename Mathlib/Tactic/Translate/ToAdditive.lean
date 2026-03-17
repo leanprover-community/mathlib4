@@ -257,10 +257,10 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
     descr :=
       "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
     add := fun _ stx ↦ do
-        let ids ← match stx with
-          | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
-          | _ => throwUnsupportedSyntax
-        return ids.toList }
+      let ids ← match stx with
+        | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.getNat - 1)
+        | _ => throwUnsupportedSyntax
+      return ids.toList }
 
 @[inherit_doc TranslateData.doTranslateAttr]
 initialize doTranslateAttr : NameMapExtension Bool ← registerNameMapExtension _

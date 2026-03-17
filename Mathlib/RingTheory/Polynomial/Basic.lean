@@ -700,6 +700,7 @@ theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
 
 variable {σ}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
     Prime (rename ((↑) : s → σ) p) ↔ Prime (p : MvPolynomial s R) := by
   classical
@@ -916,25 +917,7 @@ instance isNoetherianRing [Finite σ] [IsNoetherianRing R] :
     @isNoetherianRing_of_ringEquiv (MvPolynomial (Fin (Fintype.card σ)) R) _ _ _
       (renameEquiv R (Fintype.equivFin σ).symm).toRingEquiv isNoetherianRing_fin
 
-/-- Auxiliary lemma:
-Multivariate polynomials over an integral domain
-with variables indexed by `Fin n` form an integral domain.
-This fact is proven inductively,
-and then used to prove the general case without any finiteness hypotheses.
-See `MvPolynomial.noZeroDivisors` for the general case. -/
-@[deprecated "MvPolynomial.noZeroDivisors" (since := "2025-07-18")]
-theorem noZeroDivisors_fin (R : Type u) [CommSemiring R] [NoZeroDivisors R] :
-    ∀ n : ℕ, NoZeroDivisors (MvPolynomial (Fin n) R) := fun _ ↦ inferInstance
-
-/-- Auxiliary lemma:
-Multivariate polynomials in finitely many variables over an integral domain form an integral domain.
-This fact is proven by transport of structure from the `MvPolynomial.noZeroDivisors_fin`,
-and then used to prove the general case without finiteness hypotheses.
-See `MvPolynomial.noZeroDivisors` for the general case. -/
-@[deprecated "MvPolynomial.noZeroDivisors" (since := "2025-07-18")]
-theorem noZeroDivisors_of_finite (R : Type u) (σ : Type v) [CommSemiring R]
-    [NoZeroDivisors R] : NoZeroDivisors (MvPolynomial σ R) := inferInstance
-
+set_option backward.isDefEq.respectTransparency false in
 theorem map_mvPolynomial_eq_eval₂ {S : Type*} [CommSemiring S] [Finite σ]
     (ϕ : MvPolynomial σ R →+* S) (p : MvPolynomial σ R) :
     ϕ p = MvPolynomial.eval₂ (ϕ.comp MvPolynomial.C) (fun s => ϕ (MvPolynomial.X s)) p := by

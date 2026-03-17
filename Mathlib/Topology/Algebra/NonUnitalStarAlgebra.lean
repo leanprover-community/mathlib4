@@ -55,6 +55,11 @@ theorem topologicalClosure_minimal (s : NonUnitalStarSubalgebra R A)
     s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
+@[gcongr]
+theorem topologicalClosure_mono {s t : NonUnitalStarSubalgebra R A} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  closure_mono h
+
 /-- If a non-unital star subalgebra of a non-unital topological star algebra is commutative, then
 so is its topological closure.
 

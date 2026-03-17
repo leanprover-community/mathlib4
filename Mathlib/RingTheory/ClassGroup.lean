@@ -118,6 +118,7 @@ theorem ClassGroup.Quot_mk_eq_mk (I : (FractionalIdeal R⁰ (FractionRing R))ˣ)
     MonoidHom.id_apply, QuotientGroup.mk'_apply]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ClassGroup.mk_eq_mk {I J : (FractionalIdeal R⁰ <| FractionRing R)ˣ} :
     ClassGroup.mk I = ClassGroup.mk J ↔
       ∃ x : (FractionRing R)ˣ, I * toPrincipalIdeal R (FractionRing R) x = J := by
@@ -201,6 +202,7 @@ noncomputable def ClassGroup.equiv :
   exact QuotientGroup.congr (toPrincipalIdeal R (FractionRing R)).range (toPrincipalIdeal R K).range
     (Units.mapEquiv (FractionalIdeal.canonicalEquiv R⁰ (FractionRing R) K).toMulEquiv) this
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ClassGroup.equiv_mk (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRing R K']
     (I : (FractionalIdeal R⁰ K)ˣ) :
@@ -359,9 +361,7 @@ theorem ClassGroup.isPrincipal_coeSubmodule_of_isUnit [Subsingleton (ClassGroup 
     (I : FractionalIdeal R⁰ K) (hI : IsUnit I) :
     (I : Submodule R K).IsPrincipal := by
   rcases hI with ⟨I, rfl⟩
-  have hmk : ClassGroup.mk I = 1 := by
-    simpa using (Subsingleton.elim (ClassGroup.mk I) 1)
-  exact (ClassGroup.mk_eq_one_iff).1 hmk
+  rw [← ClassGroup.mk_eq_one_iff, Subsingleton.elim (ClassGroup.mk I) 1]
 
 /-- If the class group is trivial, any integral ideal that is a unit as a fractional ideal
 is principal. -/

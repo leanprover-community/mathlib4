@@ -7,15 +7,16 @@ module
 
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Properties of the module `α →₀ M`
 
 * `Finsupp.linearEquivFunOnFinite`: `α →₀ β` and `a → β` are equivalent if `α` is finite
 * `FunOnFinite.map`: the map `(X → M) → (Y → M)` induced by a map `f : X ⟶ Y` when
-`X` and `Y` are finite.
+  `X` and `Y` are finite.
 * `FunOnFinite.linearMmap`: the linear map `(X → M) →ₗ[R] (Y → M)` induced
-by a map `f : X ⟶ Y` when `X` and `Y` are finite.
+  by a map `f : X ⟶ Y` when `X` and `Y` are finite.
 
 ## Tags
 
@@ -107,7 +108,7 @@ def prodOfFinsuppNat : (ℕ →₀ P) →ₗ[R] P × M :=
 
 theorem fst_prodOfFinsuppNat (x : ℕ →₀ P) : (prodOfFinsuppNat f x).1 = x 0 := by
   simp_rw [prodOfFinsuppNat, coe_lsum, sum, Prod.fst_sum]
-  rw [Finset.sum_eq_single 0 (fun n _ hn ↦ ?_) (by simp_all)]
+  rw [Finset.sum_eq_single 0 (fun n _ hn ↦ ?_) (by simp)]
   · simp
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn
   simp [pow_succ']

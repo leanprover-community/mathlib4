@@ -30,6 +30,7 @@ namespace Derivation
 variable {R A M : Type*} [CommRing R] [CommRing A] [Algebra R A] [AddCommGroup M]
   [Module A M] [Module R M] (d : Derivation R A M)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The `R`-derivation from `A[X]` to `M[X]` which applies the derivative to each
 of the coefficients.

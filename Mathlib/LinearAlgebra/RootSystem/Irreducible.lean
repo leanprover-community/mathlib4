@@ -92,6 +92,7 @@ lemma invtRootSubmodule.eq_top_iff {K : Type*} [Field K] [Module K M] [Module K 
     q = ⊤ ↔ range P.root ⊆ q :=
   ⟨fun h ↦ by simp [h], fun h ↦ by simpa using Submodule.span_mono h (R := K)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSimpleModule_weylGroupRootRep_iff [Nontrivial M] :
     IsSimpleModule R[P.weylGroup] P.weylGroupRootRep.asModule ↔
     ∀ (q : Submodule R M), (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤ := by
@@ -129,6 +130,7 @@ instance [P.IsIrreducible] : P.flip.IsIrreducible where
   eq_top_of_invtSubmodule_reflection := IsIrreducible.eq_top_of_invtSubmodule_coreflection (P := P)
   eq_top_of_invtSubmodule_coreflection := IsIrreducible.eq_top_of_invtSubmodule_reflection (P := P)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSimpleModule_weylGroupRootRep [P.IsIrreducible] :
     IsSimpleModule R[P.weylGroup] P.weylGroupRootRep.asModule :=
   have := IsIrreducible.nontrivial P
