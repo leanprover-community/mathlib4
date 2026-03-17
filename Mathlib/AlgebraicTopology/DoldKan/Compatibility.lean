@@ -17,7 +17,7 @@ equivalences `simplicial_object C ≅ Karoubi (SimplicialObject C)` and
 `ChainComplex C ℕ ≅ Karoubi (ChainComplex C ℕ)`.
 
 It is certainly possible to get an equivalence `SimplicialObject C ≌ ChainComplex C ℕ`
-using a compositions of the three equivalences above, but then neither the functor
+using a composition of the three equivalences above, but then neither the functor
 nor the inverse would have good definitional properties. For example, it would be better
 if the inverse functor of the equivalence was exactly the functor
 `Γ₀ : SimplicialObject C ⥤ ChainComplex C ℕ` which was constructed in `FunctorGamma.lean`.
