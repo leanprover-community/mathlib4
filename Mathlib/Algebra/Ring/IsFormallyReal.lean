@@ -152,6 +152,6 @@ theorem eq_zero_of_add_left [NonUnitalNonAssocSemiring R] [IsFormallyReal R]
 
 theorem eq_zero_of_isSumSq_of_neg_isSumSq [NonUnitalNonAssocRing R] [IsFormallyReal R]
     {s : R} (h₁ : IsSumSq s) (h₂ : IsSumSq (-s)) : s = 0 :=
-eq_zero_of_add_right h₁ h₂ (by simp)
+  eq_zero_of_add_right h₁ h₂ (by simp)
 
 end IsFormallyReal
