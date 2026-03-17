@@ -145,7 +145,6 @@ private lemma circleAverage_re_smul_on_ball_zero_aux {φ θ : ℝ} {r : ℝ} :
 ## Integral Formulas
 -/
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 -- Version of `DiffContOnCl.circleAverage_re_smul` in case where the center of the ball is zero.
 private lemma DiffContOnCl.circleAverage_re_smul_on_ball_zero [CompleteSpace E]
@@ -153,7 +152,7 @@ private lemma DiffContOnCl.circleAverage_re_smul_on_ball_zero [CompleteSpace E]
     Real.circleAverage (fun z ↦ ((z + w) / (z - w)).re • f z) 0 R = f w := by
   -- Trivial case: nonpositive radius
   rcases le_or_gt R 0 with hR | hR
-  · simp_all [(ball_eq_empty).2 hR]
+  · simp_all [ball_eq_empty.2 hR]
   -- Trivial case: w is at the center
   obtain rfl | h₁w := eq_or_ne w 0
   · refine (circleAverage_congr_sphere fun z hz ↦ ?_).trans (abs_of_pos hR ▸ hf |>.circleAverage)
@@ -207,8 +206,6 @@ private lemma DiffContOnCl.circleAverage_re_smul_on_ball_zero [CompleteSpace E]
       rw [← abs_of_pos hR] at hw hf
       simp [← hf.circleAverage_smul_div hw, circleAverage_eq_circleIntegral (ne_of_lt hR).symm, h0]
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.whnf.reducibleClassField false in
 /--
 **Poisson integral formula** for ℂ-differentiable functions on arbitrary disks in the complex plane,
 formulated with the real part of the Herglotz–Riesz kernel of integration.
@@ -217,7 +214,7 @@ theorem DiffContOnCl.circleAverage_re_herglotzRieszKernel_smul [CompleteSpace E]
     (hf : DiffContOnCl ℂ f (ball c R)) (hw : w ∈ ball c R) :
     Real.circleAverage ((re ∘ herglotzRieszKernel c w) • f) c R = f w := by
   rcases le_or_gt R 0 with hR | hR
-  · simp_all [(ball_eq_empty).2 hR]
+  · simp_all [ball_eq_empty.2 hR]
   have h₁g : DiffContOnCl ℂ (fun z ↦ f (z + c)) (ball 0 R) :=
     hf.comp (DifferentiableOn.diffContOnCl <| by fun_prop) (by intro; aesop)
   have h₂g : w - c ∈ ball 0 R := by simpa using mem_ball_iff_norm.1 hw

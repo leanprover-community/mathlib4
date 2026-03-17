@@ -39,7 +39,7 @@ namespace AlgebraicGeometry
 variable {X Y Z S : Scheme} (f : X ⟶ S) (g : Y ⟶ S)
 
 /-- We say that morphism `f : X ⟶ Y` is geometrically reduced if for all `Spec K ⟶ Y` with `K`
-a field, `X ×[Y] Spec K` is irrreducible. -/
+a field, `X ×[Y] Spec K` is reduced. -/
 @[mk_iff]
 class GeometricallyReduced (f : X ⟶ Y) : Prop where
   geometrically_isReduced : geometrically IsReduced f

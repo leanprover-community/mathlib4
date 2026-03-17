@@ -705,7 +705,7 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
 
 /-- The 0-cycles of the complex of inhomogeneous chains of `A` are isomorphic to `A`. -/
 def cyclesIso₀ : cycles A 0 ≅ A.V :=
-  (inhomogeneousChains A).iCyclesIso _ 0 (by aesop) (by aesop) ≪≫ chainsIso₀ A
+  (inhomogeneousChains A).iCyclesIso _ 0 (by simp) (by simp) ≪≫ chainsIso₀ A
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -970,7 +970,6 @@ variable [A.IsTrivial]
 
 open TensorProduct
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a `G`-representation on `A` is trivial, this is the natural map `Gᵃᵇ → A → H₁(G, A)`
 sending `⟦g⟧, a` to `⟦single g a⟧`. -/
 def mkH1OfIsTrivial : Additive (Abelianization G) →ₗ[ℤ] A →ₗ[ℤ] H1 A :=

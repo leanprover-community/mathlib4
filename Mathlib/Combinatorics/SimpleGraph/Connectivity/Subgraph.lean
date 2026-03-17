@@ -241,6 +241,7 @@ theorem toSubgraph_reverse (p : G.Walk u v) : p.reverse.toSubgraph = p.toSubgrap
     congr
     ext <;> simp [-Set.bot_eq_empty]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toSubgraph_rotate [DecidableEq V] (c : G.Walk v v) (h : u ∈ c.support) :
     (c.rotate h).toSubgraph = c.toSubgraph := by
@@ -278,8 +279,7 @@ theorem toSubgraph_adj_getVert {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.leng
   | nil => cases hi
   | cons hxy i' ih =>
     cases i
-    · simp only [Walk.toSubgraph, Walk.getVert_zero, zero_add, getVert_cons_succ, Subgraph.sup_adj,
-        subgraphOfAdj_adj, true_or]
+    · simp
     · simp only [Walk.toSubgraph, getVert_cons_succ, Subgraph.sup_adj, subgraphOfAdj_adj, Sym2.eq,
         Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
       right

@@ -302,10 +302,10 @@ def objSupIsoProdEqLocus {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) 
     F.1.obj (op <| U ⊔ V) ≅ CommRingCat.of <|
     -- Porting note: Lean 3 is able to figure out the ring homomorphism automatically
     RingHom.eqLocus
-      (RingHom.comp (F.val.map (homOfLE inf_le_left : U ⊓ V ⟶ U).op).hom
-        (RingHom.fst (F.val.obj <| op U) (F.val.obj <| op V)))
-      (RingHom.comp (F.val.map (homOfLE inf_le_right : U ⊓ V ⟶ V).op).hom
-        (RingHom.snd (F.val.obj <| op U) (F.val.obj <| op V))) :=
+      (RingHom.comp (F.obj.map (homOfLE inf_le_left : U ⊓ V ⟶ U).op).hom
+        (RingHom.fst (F.obj.obj <| op U) (F.obj.obj <| op V)))
+      (RingHom.comp (F.obj.map (homOfLE inf_le_right : U ⊓ V ⟶ V).op).hom
+        (RingHom.snd (F.obj.obj <| op U) (F.obj.obj <| op V))) :=
   (F.isLimitPullbackCone U V).conePointUniqueUpToIso (CommRingCat.pullbackConeIsLimit _ _)
 
 theorem objSupIsoProdEqLocus_hom_fst {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
