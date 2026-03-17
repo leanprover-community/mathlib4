@@ -1,3 +1,4 @@
-import Lean.LabelAttribute
+module
+public import Lean.LabelAttribute
 
 register_label_attr dummy_label_attr

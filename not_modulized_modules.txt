@@ -224,12 +224,8 @@ not modulized: MathlibTest/runCmd.lean
 not modulized: MathlibTest/says.lean
 not modulized: MathlibTest/says_whitespace.lean
 not modulized: MathlibTest/search/BestFirst.lean
-not modulized: MathlibTest/set_like.lean
 not modulized: MathlibTest/simp_intro.lean
 not modulized: MathlibTest/slim_check.lean
-not modulized: MathlibTest/solve_by_elim/basic.lean
-not modulized: MathlibTest/solve_by_elim/dummy_label_attr.lean
-not modulized: MathlibTest/solve_by_elim/instances.lean
 not modulized: MathlibTest/sqrt.lean (disabled test)
 not modulized: MathlibTest/success_if_fail_with_msg.lean
 not modulized: MathlibTest/superscript.lean

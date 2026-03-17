@@ -3,10 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+module
 import Lean.Meta.Tactic.SolveByElim
 import Mathlib.Tactic.Constructor
 import Batteries.Tactic.PermuteGoals
-import MathlibTest.solve_by_elim.dummy_label_attr
+public import MathlibTest.solve_by_elim.dummy_label_attr
 
 
 example (h : Nat) : Nat := by solve_by_elim
