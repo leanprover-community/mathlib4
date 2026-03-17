@@ -168,7 +168,7 @@ theorem IsTrail.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
 
 theorem append_isTrail_iff_edges_disjoint {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
     (hp : p.IsTrail) (hq : q.IsTrail) :
-    (p.append q).IsTrail ↔ p.edges.Disjoint q.edges:= by
+    (p.append q).IsTrail ↔ p.edges.Disjoint q.edges := by
   rw [Walk.isTrail_def, Walk.edges_append, List.nodup_append]
   exact ⟨fun h _ x y ↦ h.2.2 _ x _ y rfl,
     fun h ↦ ⟨hp.edges_nodup, hq.edges_nodup, fun _ x _ y ↦ ne_of_mem_of_not_mem x (h.symm y)⟩⟩
@@ -686,7 +686,7 @@ variable {G} {u v : V}
 lemma IsPath.exists_of_edges {u v a b : V} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath)
     (hep : s(a, b) ∈ p.edges) (heq : s(a, b) ∈ q.edges) (hl : 1 < p.length) :
     ∃ z, z ∈ p.support.tail ∧ z ∈ q.support.tail := by
-  rcases show (a = v ∨ b = v) ∨ (a ≠ v ∧ b ≠ v) by grind with h' | h'
+  by_cases! h' : a = v ∨ b = v
   · wlog hh : a = v
     · exact this (a := b) (b := a) hp (by grind) (by grind) hl h'.symm (by simpa [hh] using h')
     have := (eq_penultimate_of_mem_edges hp (hh ▸ hep)).symm
@@ -739,18 +739,12 @@ theorem cycle_from_two_paths {u v : V} {p q : G.Walk u v} (hp : p.IsPath) (hq : 
         (hp.dropUntil hwp) (hq.dropUntil hwq) (by grind [take_spec]) rfl
       refine ⟨x, ?_, ?_, c, hc₁, hc₂.trans <| List.Sublist.append ?_ ?_⟩ <;>
         grind [support_tail_of_not_nil, dropUntil_support_isSuffix, List.IsSuffix.sublist]
-  · use u, by simp, by simp, p.append q.reverse
-    refine ⟨isPath_append_isCycle hp ((isPath_reverse_iff q).mpr hq) ?_ ?_,
-      by simp [support_append]⟩
+  · refine ⟨u, by simp, by simp, p.append q.reverse,
+      isPath_append_isCycle hp ((isPath_reverse_iff q).mpr hq) ?_ ?_, by simp [support_append]⟩
     · intro; grind [support_eq_concat, IsPath.support_nodup, support_reverse, support_eq_cons]
     rw [length_reverse, lt_sup_iff]
     by_contra! ⟨hpl, hql⟩
-    rw [Nat.le_one_iff_eq_zero_or_eq_one] at hpl hql
-    rcases hpl with hpl | hpl <;> rcases hql with hql | hql
-    · grind [length_eq_zero_iff, (nil_iff_length_eq.mpr hpl).eq]
-    · exact (adj_of_length_eq_one hql).ne (nil_iff_length_eq.mpr hpl).eq
-    · exact (adj_of_length_eq_one hpl).ne (nil_iff_length_eq.mpr hql).eq
-    · grind [Nat.le_one_iff_eq_zero_or_eq_one, ext_getVert_le_length, getVert_length, getVert_zero]
+    exact h <| eq_of_length_le_one hpl hql
 
 theorem cycle_from_two_paths_le_length_sum {u v : V} {p q : G.Walk u v}
     (hp : p.IsPath) (hq : q.IsPath) (h : p ≠ q) :
