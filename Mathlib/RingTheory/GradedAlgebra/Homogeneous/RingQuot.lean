@@ -3,9 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.RingQuot
-import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
-import Mathlib.RingTheory.Ideal.Quotient.Operations
+module
+
+public import Mathlib.Algebra.RingQuot
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-! # Graded algebra structure on a ring quotient
 
@@ -36,6 +38,8 @@ Let `R` be a commutative semiring, `A` a commutative `R`-algebra, `I` an ideal i
   relation is homogeneous.
 
 -/
+
+@[expose] public section
 
 section AdditiveRelations
 
