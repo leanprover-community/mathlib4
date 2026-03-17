@@ -107,6 +107,18 @@ class IsFormallyReal [AddCommMonoid R] [Mul R] : Prop where
 
 namespace IsFormallyReal
 
+instance [Ring R] [LinearOrder R] [IsStrictOrderedRing R] : IsFormallyReal R :=
+  of_eq_zero_of_mul_self_of_eq_zero_of_add R mul_self_eq_zero.mp <|
+    fun hs₁ hs₂ h ↦ ((add_eq_zero_iff_of_nonneg (IsSumSq.nonneg hs₁) (IsSumSq.nonneg hs₂)).mp h).1
+
+instance [Ring R] [IsFormallyReal R] : IsReduced R := by
+  rw [isReduced_iff_pow_one_lt 2 (by lia)]
+  intro x hx
+  by_contra! hc
+  exact not_isSumNonzeroSq_zero <| by simpa [← pow_two, hx] using IsSumNonzeroSq.sq hc
+
+variable {R}
+
 theorem of_eq_zero_of_mul_self_of_eq_zero_of_add [AddCommMonoid R] [Mul R]
     (hz : ∀ {a : R}, a * a = 0 → a = 0)
     (ha : ∀ {s₁ s₂ : R}, IsSumSq s₁ → IsSumSq s₂ → s₁ + s₂ = 0 → s₁ = 0) : IsFormallyReal R where
@@ -125,18 +137,6 @@ theorem of_eq_zero_of_eq_zero_of_mul_self_add [NonUnitalNonAssocSemiring R]
     induction hx with
     | sq ha => exact fun hc ↦ ha (h IsSumSq.zero (by simpa using hc))
     | sq_add ha hs ih => grind [IsSumSq.isSumNonzeroSq hs]
-
-instance [Ring R] [LinearOrder R] [IsStrictOrderedRing R] : IsFormallyReal R :=
-  of_eq_zero_of_mul_self_of_eq_zero_of_add R mul_self_eq_zero.mp <|
-    fun hs₁ hs₂ h ↦ ((add_eq_zero_iff_of_nonneg (IsSumSq.nonneg hs₁) (IsSumSq.nonneg hs₂)).mp h).1
-
-variable {R}
-
-instance [Ring R] [IsFormallyReal R] : IsReduced R := by
-  rw [isReduced_iff_pow_one_lt 2 (by lia)]
-  intro x hx
-  by_contra! hc
-exact not_isSumNonzeroSq_zero <| by simpa [← pow_two, hx] using IsSumNonzeroSq.sq hc
 
 theorem eq_zero_of_add_right [NonUnitalNonAssocSemiring R] [IsFormallyReal R]
     {s₁ s₂ : R} (hs₁ : IsSumSq s₁) (hs₂ : IsSumSq s₂) (h : s₁ + s₂ = 0) : s₁ = 0 := by
