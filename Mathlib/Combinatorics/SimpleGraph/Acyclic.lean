@@ -139,7 +139,7 @@ lemma IsAcyclic.isTree_connectedComponent (h : G.IsAcyclic) (c : G.ConnectedComp
 theorem IsAcyclic.of_card_le_two (h : ENat.card V ≤ 2) : G.IsAcyclic := by
   intro v p hp
   have := hp.three_le_length
-  have := Nat.cast_le.mp <| hp.support_nodup.length_le_enat_card.trans h
+  have := Nat.cast_le.mp <| hp.support_nodup.length_le_enatCard.trans h
   rw [List.length_tail, p.length_support] at this
   lia
 
