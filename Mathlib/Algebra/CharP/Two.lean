@@ -68,6 +68,8 @@ theorem natCast_eq_mod (n : ℕ) : (n : R) = (n % 2 : ℕ) := by
 theorem ofNat_eq_mod (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R) = (ofNat(n) % 2 : ℕ) :=
   natCast_eq_mod n
 
+example : (37 : R) = 1 := by simp
+
 end AddMonoidWithOne
 
 section Semiring
