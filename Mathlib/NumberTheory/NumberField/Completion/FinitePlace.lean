@@ -20,6 +20,11 @@ import Mathlib.Algebra.FiniteSupport.Basic
 This file defines finite places of a number field `K` as absolute values coming from an embedding
 into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
 
+Many of the results in this file are expressed in the generality of: `R` is a Dedekind domain
+with field of fractions `K` such that `Module.Finite ℤ R` and `Module.Free ℤ R`. This
+characterises `R` as being isomorphic to `𝓞 K` without explicitly requiring `𝓞 K`.
+This is so that `ℤ` and `𝓞 ℚ` can be used interchangeably.
+
 ## Main Definitions and Results
 * `NumberField.adicAbv`: a `v`-adic absolute value on `K`.
 * `NumberField.FinitePlace`: the type of finite places of a number field `K`.
@@ -92,6 +97,19 @@ theorem FinitePlace.embedding_apply (x : K) : embedding K v x = ↑x := rfl
 
 section AbsoluteValue
 
+
+noncomputable instance : ((Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰)).IsRankOneDiscrete where
+  exists_generator_lt_one' := by
+    have h : (v.valuation K).IsRankOneDiscrete := Valuation.IsRankOneDiscrete.mk' (valuation K v)
+    exact ⟨h.generator, by rw [h.generator_zpowers_eq_valueGroup, adicCompletion_valueGroup_eq],
+      h.generator_lt_one⟩
+
+section FiniteFree
+
+/-! In this section we assume we assume further that `Module.Finite ℤ R` and `Module.Free ℤ R`.
+This characterises `R` as being isomorphic to `𝓞 K` without explicitly requiring that type.
+As a result, if `F = ℚ`, then we can use `ℤ` and `𝓞 ℚ` interchangeably. -/
+
 variable [Module.Finite ℤ R] [Module.Free ℤ R]
 
 namespace HeightOneSpectrum
@@ -122,23 +140,18 @@ theorem adicAbv_def {x : K} : adicAbv K v x = toNNReal (absNorm_ne_zero v) (v.va
 theorem isNonarchimedean_adicAbv : IsNonarchimedean (adicAbv K v) :=
   v.isNonarchimedean_adicAbv <| one_lt_absNorm_nnreal v
 
-noncomputable instance : ((Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰)).IsRankOneDiscrete where
-  exists_generator_lt_one' := by
-    have h : (v.valuation K).IsRankOneDiscrete := Valuation.IsRankOneDiscrete.mk' (valuation K v)
-    exact ⟨h.generator, by rw [h.generator_zpowers_eq_valueGroup, adicCompletion_valueGroup_eq],
-      h.generator_lt_one⟩
-
 open Valuation.IsRankOneDiscrete
 
-noncomputable instance [Module.Finite ℤ R] [Module.Free ℤ R] : (v.valuation K).RankOne :=
+noncomputable instance : (v.valuation K).RankOne :=
   rankOne (v.valuation K) (one_lt_absNorm_nnreal v)
 
-noncomputable instance instRankOneAdicCompletion [Module.Finite ℤ R] [Module.Free ℤ R] :
+noncomputable instance instRankOneAdicCompletion :
     (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).RankOne :=
   rankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) (one_lt_absNorm_nnreal v)
 
+
 /-- The `v`-adic completion of `K` is a normed field. -/
-noncomputable instance instNormedFieldValuedAdicCompletion [Module.Finite ℤ R] [Module.Free ℤ R] :
+noncomputable instance instNormedFieldValuedAdicCompletion :
     NormedField (adicCompletion K v) := Valued.toNormedField (adicCompletion K v) ℤᵐ⁰
 
 lemma rankOne_hom'_def :
@@ -173,12 +186,6 @@ alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_def := adicAbv_def
 @[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.isNonarchimedean_adicAbv :=
   isNonarchimedean_adicAbv
-@[deprecated (since := "2026-03-11")]
-alias NumberField.instIsRankOneDiscreteWithZeroMultiplicativeIntAdicCompletionRingOfIntegersV :=
-  instIsRankOneDiscreteWithZeroMultiplicativeIntAdicCompletionV
-@[deprecated (since := "2026-03-11")]
-alias NumberField.instRankOneWithZeroMultiplicativeIntValuationRingOfIntegers :=
-  instRankOneWithZeroMultiplicativeIntValuationOfFiniteOfFree
 @[deprecated (since := "2026-03-11")]
 alias NumberField.instRankOneAdicCompletion := instRankOneAdicCompletion
 @[deprecated (since := "2026-03-11")]
@@ -245,6 +252,8 @@ theorem FinitePlace.norm_lt_one_iff_mem (x : R) :
     ‖embedding K v (algebraMap _ _ x)‖ < 1 ↔ x ∈ v.asIdeal := by
   rw [norm_embedding]
   exact v.adicAbv_coe_lt_one_iff (one_lt_absNorm_nnreal v) x
+
+end FiniteFree
 
 end AbsoluteValue
 
