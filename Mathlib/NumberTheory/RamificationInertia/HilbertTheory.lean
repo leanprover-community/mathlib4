@@ -427,9 +427,7 @@ end IsInertiaField
 
 end splitting
 
-section IntermediateField
-
-open IntermediateField
+namespace IntermediateField
 
 variable [MulSemiringAction Gal(L/K) B] [FiniteDimensional K L] [IsGalois K L]
   {F : IntermediateField K L}
