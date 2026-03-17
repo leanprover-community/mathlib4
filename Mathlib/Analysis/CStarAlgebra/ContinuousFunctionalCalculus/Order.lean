@@ -155,7 +155,8 @@ lemma CFC.exists_pos_algebraMap_le_iff {A : Type*} [TopologicalSpace A] [Ring A]
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨r, hr, hr_le⟩
     exact (hr.trans_le <| hr_le · ·)
-  · obtain ⟨r, hr, hr_min⟩ := h_cpct.exists_isMinOn (spectrum_nonempty ℝ a ha) continuousOn_id
+  · obtain ⟨r, hr, hr_min⟩ := h_cpct.exists_isMinOn
+      (ContinuousFunctionalCalculus.spectrum_nonempty a ha) continuousOn_id
     exact ⟨r, h _ hr, hr_min⟩
 
 section CStar_unital
@@ -303,7 +304,6 @@ lemma CStarAlgebra.isUnit_of_le (a : A) {b : A} (hab : a ≤ b)
   peel h₀ with r hr _
   exact this.trans hab
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_iff_norm_sqrt_mul_rpow (a b : A) (ha : 0 ≤ a := by cfc_tac)
     (hb : IsStrictlyPositive b := by cfc_tac) :
     a ≤ b ↔ ‖sqrt a * (b : A) ^ (-(1 / 2) : ℝ)‖ ≤ 1 := by
