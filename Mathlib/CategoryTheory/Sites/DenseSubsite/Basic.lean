@@ -402,6 +402,7 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) :
   intro Y f hf
   conv_lhs => rw [← hf.some.fac]
   dsimp
+  rw [TypeCat.Fun.mk_as]
   simp only [Functor.map_comp, ← Category.assoc]
   congr 1
   simp only [Category.assoc]
