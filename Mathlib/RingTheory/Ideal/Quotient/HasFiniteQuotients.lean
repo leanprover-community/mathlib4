@@ -72,16 +72,16 @@ theorem cardQuot_pos (I : Ideal R) (hI : I ≠ ⊥) : 0 < I.cardQuot := by
   rw [Submodule.cardQuot_apply]
   exact Nat.card_pos
 
-theorem finite_of_mem (x : R) (hx : x ≠ 0) : {I : Ideal R | x ∈ I}.Finite := by
+theorem finite_setOf_mem (x : R) (hx : x ≠ 0) : {I : Ideal R | x ∈ I}.Finite := by
   have := finiteQuotient (mt Ideal.span_singleton_eq_bot.mp hx)
   have : {I | Ideal.comap (Ideal.Quotient.mk (Ideal.span {x})) ⊥ ≤ I}.Finite :=
     .of_equiv _ (Ideal.relIsoOfSurjective _ Ideal.Quotient.mk_surjective).toEquiv
   simpa [← RingHom.ker_eq_comap_bot] using this
 
 open Pointwise in
-/-- A ring with finite quotients has only finitely many ideals of bounded norm. -/
-theorem finite_cardQuot_ideal_le (B : ℕ) :
-    {I : Ideal R | I.cardQuot ≤ B}.Finite := by
+/-- For every bound `B`, a ring with finite quotients has only finitely many ideals of norm bounded
+by `B`. -/
+theorem finite_cardQuot_le (B : ℕ) : {I : Ideal R | I.cardQuot ≤ B}.Finite := by
   classical
   rcases finite_or_infinite R
   · apply Set.toFinite
@@ -93,7 +93,7 @@ theorem finite_cardQuot_ideal_le (B : ℕ) :
   -- in a ring with finite quotients, each nonzero element is contained in only finitely many ideals
   -- so it is enough to show that each ideal `I` of norm at most `B` contains some element of `t`
   suffices {I | Submodule.cardQuot I ≤ B} \ {⊥} ⊆ ⋃ x ∈ t, {I | x ∈ I} from
-    (t.finite_toSet.biUnion fun x hx ↦ finite_of_mem x (by grind)).subset this
+    (t.finite_toSet.biUnion fun x hx ↦ finite_setOf_mem x (by grind)).subset this
   intro I hI
   rw [Set.mem_diff, Set.mem_setOf, Submodule.cardQuot_apply] at hI
   simp_rw [Set.mem_iUnion, exists_prop, Set.mem_setOf_eq]
@@ -109,14 +109,14 @@ theorem finite_cardQuot_ideal_le (B : ℕ) :
   rwa [Finset.notMem_singleton, sub_ne_zero]
 
 /-- A ring with finite quotients has only finitely many ideals of bounded norm. -/
-theorem finite_absNorm_ideal_le [IsDedekindDomain R] [Module.Free ℤ R] (B : ℕ) :
+theorem finite_absNorm_le [IsDedekindDomain R] [Module.Free ℤ R] (B : ℕ) :
     {I : Ideal R | I.absNorm ≤ B}.Finite :=
-  finite_cardQuot_ideal_le B
+  finite_cardQuot_le B
 
 /-- A ring with finite quotients has only finitely many nonzero prime ideals of bounded norm. -/
 theorem finite_cardQuot_heightOneSpectrum_le (B : ℕ) :
     {p : IsDedekindDomain.HeightOneSpectrum R | p.asIdeal.cardQuot ≤ B}.Finite :=
-  (finite_cardQuot_ideal_le B).of_injOn (by simp [Set.MapsTo])
+  (finite_cardQuot_le B).of_injOn (by simp [Set.MapsTo])
     (Function.Injective.injOn fun _ _ ↦ IsDedekindDomain.HeightOneSpectrum.ext)
 
 /-- A ring with finite quotients has only finitely many nonzero prime ideals of bounded norm. -/
