@@ -129,8 +129,7 @@ theorem Ordering.Compares.cmp_eq [LinearOrder α] {a b : α} {o : Ordering} (h :
 @[simp]
 theorem cmp_swap [Preorder α] [DecidableLT α] (a b : α) : (cmp a b).swap = cmp b a := by
   unfold cmp cmpUsing
-  by_cases h : a < b <;> by_cases h₂ : b < a <;> simp [h, h₂, Ordering.swap]
-  grind [lt_asymm]
+  by_cases h : a < b <;> by_cases h₂ : b < a <;> simp_all [lt_asymm]
 
 @[simp]
 theorem cmpLE_toDual [LE α] [DecidableLE α] (x y : α) : cmpLE (toDual x) (toDual y) = cmpLE y x :=
