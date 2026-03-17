@@ -52,10 +52,36 @@ theorem mulCayley_mono ⦃U V : Set M⦄ (hUV : U ⊆ V) : mulCayley U ≤ mulCa
   simp_rw [mulCayley_adj']
   gcongr
 
+variable (M) in
+/-- `mulCayley` is a left (order-)adjoint. -/
+@[to_additive]
+lemma mulCayley_gc :
+    GaloisConnection (mulCayley ·) ({g : M | ∀ a , a * g ≠ a → ·.Adj (a * g) a}) := by
+  apply GaloisConnection.monotone_intro _ mulCayley_mono
+  · intro s x hx
+    simp_rw [Set.mem_setOf, mulCayley_adj']
+    intro a hab
+    use hab, x, hx
+    simp
+  · intro s x y
+    simp only [ne_eq, mulCayley_adj', Set.mem_setOf_eq, and_imp, forall_exists_index]
+    rintro hne z hz (rfl|rfl)
+    · exact (hz x (hne ·.symm)).symm
+    · exact hz y hne
+  · intro G H hle
+    simp only [ne_eq, Set.le_eq_subset, Set.setOf_subset_setOf]
+    intro z hz m hm
+    exact hle (hz m hm)
+
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem mulCayley_empty : mulCayley (∅ : Set M) = ⊥ := by
-  ext _ _
-  simp [mulCayley_adj']
+  exact (mulCayley_gc M).l_bot
+
+set_option backward.isDefEq.respectTransparency false in
+@[to_additive (attr := simp)]
+theorem mulCayley_union (s₁ s₂ : Set M) : mulCayley (s₁ ∪ s₂) = mulCayley s₁ ⊔ mulCayley s₂ := by
+  exact (mulCayley_gc M).l_sup
 
 end mul
 section semigroup
@@ -70,24 +96,20 @@ end semigroup
 section muloneclass
 variable [MulOneClass M]
 
-@[to_additive]
-theorem mulCayley_eq_erase_one : mulCayley s = mulCayley (s \ {1}) := by
+@[to_additive (attr := simp)]
+theorem mulCayley_eq_erase_one : mulCayley (s \ {1}) = mulCayley s := by
+  nth_rw 2 [← Set.diff_union_inter s {1}]
+  rw [mulCayley_union]
   ext u v
-  simp only [mulCayley_adj', Set.mem_diff, Set.mem_singleton_iff, and_congr_right_iff, and_assoc]
-  intro h
-  congr! 3
-  rw [iff_and_self]
-  rintro _ rfl
-  simp_all
+  simp +contextual [mulCayley_adj']
 
 @[to_additive]
-theorem mulCayley_eq_union_one : mulCayley s = mulCayley (s ∪ {1}) := by
-  rw [mulCayley_eq_erase_one s, mulCayley_eq_erase_one (s ∪ _)]
-  simp
+theorem mulCayley_eq_union_one : mulCayley (s ∪ {1}) = mulCayley s := by
+  simp [-Set.union_singleton, ← mulCayley_eq_erase_one]
 
 @[to_additive (attr := simp)]
 theorem mulCayley_singleton_one : mulCayley ({1} : Set M) = ⊥ := by
-  rw [mulCayley_eq_erase_one, Set.diff_self, mulCayley_empty]
+  rw [← mulCayley_eq_erase_one, Set.diff_self, mulCayley_empty]
 
 end muloneclass
 section group
@@ -99,10 +121,14 @@ lemma mulCayley_adj (u v : M) :
   simp [mulCayley_adj',← eq_inv_mul_iff_mul_eq (b := u),← inv_mul_eq_iff_eq_mul (a := v),
     and_or_left, exists_or]
 
-@[to_additive]
-theorem mulCayley_eq_symm : mulCayley s = mulCayley (s ∪ (s⁻¹)) := by
+@[to_additive (attr := simp)]
+theorem mulCayley_inv_eq : mulCayley s⁻¹ = mulCayley s := by
   ext u v
   simp [mulCayley_adj, or_comm]
+
+@[to_additive]
+theorem mulCayley_eq_symm : mulCayley s = mulCayley (s ∪ (s⁻¹)) := by
+  simpa using mulCayley_mono (Set.Subset.refl s)
 
 @[to_additive]
 instance [DecidableEq M] [DecidablePred (· ∈ s)] : DecidableRel (mulCayley s).Adj :=
@@ -115,7 +141,7 @@ theorem mulCayley_univ : mulCayley (Set.univ : Set M) = ⊤ := by
 
 @[to_additive (attr := simp)]
 theorem mulCayley_compl_singleton_one : mulCayley ({1}ᶜ : Set M) = ⊤ := by
-  rw [Set.compl_eq_univ_diff,← mulCayley_eq_erase_one, mulCayley_univ]
+  simp [Set.compl_eq_univ_diff]
 
 end group
 
