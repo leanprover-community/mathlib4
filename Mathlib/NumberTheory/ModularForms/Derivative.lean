@@ -30,8 +30,7 @@ namespace Derivative
 /--
 Normalized derivative $D = \frac{1}{2\pi i} \frac{d}{dz}$.
 -/
-def normalizedDerivOfComplex (F : ℍ → ℂ) : ℍ → ℂ :=
-  fun (z : ℍ) ↦ (2 * π * I)⁻¹ * deriv (F ∘ ofComplex) z
+def normalizedDerivOfComplex (F : ℍ → ℂ) (z : ℍ) : ℂ := (2 * π * I)⁻¹ * deriv (F ∘ ofComplex) z
 
 /-- We denote the normalized derivative by `D`. -/
 scoped notation "D" => normalizedDerivOfComplex
@@ -50,7 +49,7 @@ theorem normalizedDerivOfComplex_mdifferentiable {F : ℍ → ℂ} (hF : MDiff F
   simp [normalizedDerivOfComplex, c, Function.comp_apply, ofComplex_apply_of_im_pos hz]
 
 /-!
-Basic properties of derivatives.
+Basic properties of normalized derivative.
 -/
 @[simp]
 theorem normalizedDerivOfComplex_add (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
@@ -119,8 +118,8 @@ theorem normalizedDerivOfComplex_pow (F : ℍ → ℂ) (n : ℕ) (hF : MDiff F) 
 /--
 Serre derivative of weight $k$.
 -/
-@[expose] public noncomputable def serreDerivative (k : ℂ) (F : ℍ → ℂ) : ℍ → ℂ :=
-  fun z ↦ D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z
+def serreDerivative (k : ℂ) (F : ℍ → ℂ) (z : ℍ) : ℂ :=
+  D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z
 
 @[simp]
 lemma serreDerivative_apply (k : ℂ) (F : ℍ → ℂ) (z : ℍ) :
@@ -130,7 +129,7 @@ lemma serreDerivative_apply (k : ℂ) (F : ℍ → ℂ) (z : ℍ) :
 lemma serreDerivative_eq (k : ℂ) (F : ℍ → ℂ) :
     serreDerivative k F = fun z ↦ D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
 
-/--
+/-!
 Basic properties of Serre derivative.
 -/
 theorem serreDerivative_add (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
