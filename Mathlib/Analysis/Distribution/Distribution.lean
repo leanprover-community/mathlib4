@@ -198,7 +198,8 @@ def delta (x : E) : 𝓓'^{n}(Ω, ℝ) where
   cont := continuous_eval_const _
 
 @[simp]
-theorem delta_apply (x : Ω) (f : 𝓓^{n}(Ω, ℝ)) : delta (n := n) x f = f x := by
+theorem delta_apply (x : E) (f : 𝓓^{n}(Ω, ℝ)) : delta x f = f x := by
+
   rfl
 
 end DiracDelta
