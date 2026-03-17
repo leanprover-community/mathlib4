@@ -128,7 +128,8 @@ theorem exists_length_eq_zero_iff : (∃ p : Walk G u v, p.length = 0) ↔ u = v
   ⟨fun ⟨_, h⟩ ↦ (eq_of_length_eq_zero h), (· ▸ ⟨nil, rfl⟩)⟩
 
 @[simp]
-lemma exists_length_eq_one_iff : (∃ (p : Walk G u v), p.length = 1) ↔ Nonempty (dart G u v) := by
+lemma exists_length_eq_one_iff : (∃ (p : Walk G u v), p.length = 1) ↔ Adj G u v := by
+  rw [← nonempty_dart_iff_adj]
   refine ⟨fun ⟨p, hp⟩ ↦ ?_, fun ⟨d⟩ ↦ ⟨d.toWalk, by simp⟩⟩
   induction p with
   | nil => simp at hp
