@@ -250,19 +250,20 @@ namespace GrothendieckTopology
 
 section
 
-variable {D E : Type*} [Category.{max v u} D] [Category.{max v u} E] (F : D ⥤ E)
+variable {D E : Type*} [Category* D] [Category* E] (F : D ⥤ E)
   [∀ (J : MulticospanShape.{max v u, max v u}), HasLimitsOfShape (WalkingMulticospan J) D]
   [∀ (J : MulticospanShape.{max v u, max v u}), HasLimitsOfShape (WalkingMulticospan J) E]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ E]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
   [∀ (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (W.index P).multicospan F]
-  {FD : D → D → Type*} {CD : D → Type (max v u)} {FE : E → E → Type*} {CE : E → Type (max v u)}
+  {FD : D → D → Type*} {CD : D → Type*} {FE : E → E → Type*} {CE : E → Type*}
   [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [∀ X Y, FunLike (FE X Y) (CE X) (CE Y)]
   [instCCD : ConcreteCategory D FD] [instCCE : ConcreteCategory E FE]
   [∀ X, PreservesColimitsOfShape (Cover J X)ᵒᵖ (forget D)]
   [∀ X, PreservesColimitsOfShape (Cover J X)ᵒᵖ (forget E)]
-  [PreservesLimits (forget D)] [PreservesLimits (forget E)]
+  [PreservesLimitsOfSize.{max v u, max v u} (forget D)]
+  [PreservesLimitsOfSize.{max v u, max v u} (forget E)]
   [(forget D).ReflectsIsomorphisms] [(forget E).ReflectsIsomorphisms]
 
 set_option backward.isDefEq.respectTransparency false in

@@ -33,9 +33,7 @@ section BijectiveResidueField
 variable {R R' S : Type*} [CommRing R] [CommRing R'] [CommRing S] [Algebra R R'] [Algebra R S]
     {p : Ideal R} {q : Ideal R'} [p.IsPrime] [q.IsPrime] [q.LiesOver p]
 
-#adaptation_note /-- The maxHeartbeats bump is required after leanprover/lean4#12564. -/
 set_option backward.isDefEq.respectTransparency false in
-set_option synthInstance.maxHeartbeats 40000 in -- see adaptation note
 /-- If `q` is a prime of `R'` lying over `p`, a prime of `R`, such that `κ(q) = κ(p)`, then
 the fiber of `R' → R' ⊗[R] S` over `q` is in bijection with the fiber of `R → S` over `p`. -/
 noncomputable

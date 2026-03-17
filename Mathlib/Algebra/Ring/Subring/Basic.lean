@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Algebra.Ring.Subring.Defs
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
-public import Mathlib.RingTheory.NonUnitalSubring.Defs
+public import Mathlib.RingTheory.NonUnitalSubring.Basic
 public import Mathlib.Data.Set.Finite.Basic
 
 /-!
@@ -451,6 +451,10 @@ theorem centralizer_toSubmonoid (s : Set R) :
 
 theorem centralizer_toSubsemiring (s : Set R) :
     (centralizer s).toSubsemiring = Subsemiring.centralizer s :=
+  rfl
+
+theorem centralizer_toNonUnitalSubring (s : Set R) :
+    (centralizer s).toNonUnitalSubring = NonUnitalSubring.centralizer s :=
   rfl
 
 theorem mem_centralizer_iff {s : Set R} {z : R} : z ∈ centralizer s ↔ ∀ g ∈ s, g * z = z * g :=
