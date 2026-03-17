@@ -110,13 +110,13 @@ lemma mem_inv_smul_finset_iff₀ (ha : a ≠ 0) : b ∈ a⁻¹ • s ↔ a • b
 
 @[simp]
 lemma smul_finset_subset_smul_finset_iff₀ (ha : a ≠ 0) : a • s ⊆ a • t ↔ s ⊆ t :=
-  show Units.mk0 a ha • _ ⊆ _ ↔ _ from smul_finset_subset_smul_finset_iff
+  show Units.mk0 a ha • s ⊆ _ ↔ _ from smul_finset_subset_smul_finset_iff
 
 lemma smul_finset_subset_iff₀ (ha : a ≠ 0) : a • s ⊆ t ↔ s ⊆ a⁻¹ • t :=
-  show Units.mk0 a ha • _ ⊆ _ ↔ _ from smul_finset_subset_iff
+  show Units.mk0 a ha • s ⊆ _ ↔ _ from smul_finset_subset_iff
 
 lemma subset_smul_finset_iff₀ (ha : a ≠ 0) : s ⊆ a • t ↔ a⁻¹ • s ⊆ t :=
-  show _ ⊆ Units.mk0 a ha • _ ↔ _ from subset_smul_finset_iff
+  show _ ⊆ Units.mk0 a ha • t ↔ _ from subset_smul_finset_iff
 
 lemma smul_finset_inter₀ (ha : a ≠ 0) : a • (s ∩ t) = a • s ∩ a • t :=
   image_inter _ _ <| MulAction.injective₀ ha
