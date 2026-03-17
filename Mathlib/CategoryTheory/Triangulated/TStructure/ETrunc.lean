@@ -509,7 +509,7 @@ lemma eTruncLTGEIsoGELT_hom_naturality (a b : EInt) {X Y : C} (f : X ⟶ Y) :
 lemma eTruncLTGEIsoGELT_hom_app_fac (a b : EInt) (X : C) :
     (t.eTruncLT.obj b).map ((t.eTruncGE.obj a).map ((t.eTruncLTι b).app X)) ≫
       (t.eTruncLTGEIsoGELT a b).hom.app X =
-    (t.eTruncLTι b).app ((t.eTruncGE.obj a).obj ((t.eTruncLT.obj b).obj X)):= by
+    (t.eTruncLTι b).app ((t.eTruncGE.obj a).obj ((t.eTruncLT.obj b).obj X)) := by
   simp [eTruncLTGEIsoGELT]
 
 set_option backward.isDefEq.respectTransparency false in

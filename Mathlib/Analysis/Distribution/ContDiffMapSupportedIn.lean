@@ -724,7 +724,7 @@ lemma postcompCLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[�
   rfl
 
 theorem seminorm_fderivLM_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
-    N[𝕜]_{K, k, i} (fderivLM 𝕜 n k f) ≤ N[𝕜]_{K, n, i+1} f := by
+    N[𝕜]_{K, k, i} (fderivLM 𝕜 n k f) ≤ N[𝕜]_{K, n, i + 1} f := by
   by_cases! hk : k + 1 ≤ n
   · rw [ContDiffMapSupportedIn.seminorm_le_iff 𝕜 (apply_nonneg ..)]
     intro hi x hx
@@ -734,7 +734,7 @@ theorem seminorm_fderivLM_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
   · simp [fderivLM_apply_of_gt 𝕜 f hk]
 
 theorem seminorm_fderivLM_top {i : ℕ} (f : 𝓓_{K}(E, F)) :
-    N[𝕜]_{K, i} (fderivLM 𝕜 ⊤ ⊤ f) = N[𝕜]_{K, i+1} f := by
+    N[𝕜]_{K, i} (fderivLM 𝕜 ⊤ ⊤ f) = N[𝕜]_{K, i + 1} f := by
   simp [ContDiffMapSupportedIn.seminorm_apply, BoundedContinuousFunction.norm_eq_iSup_norm,
     norm_iteratedFDeriv_fderiv]
 

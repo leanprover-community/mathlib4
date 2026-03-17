@@ -321,18 +321,18 @@ theorem mahlerMeasure_le_sqrt_natDegree_add_one_mul_supNorm (p : Polynomial ℂ)
             (analyticOnNhd_id.aeval_polynomial p).meromorphicOn).1
         · exact (integrable_congr hlogAe).mpr hcont.integrableOn_uIoc
     _ = ⨍ (θ : ℝ) in 0..(2 * π), ‖p.eval (circleMap 0 1 θ)‖ := average_congr hlogAe
-    _ = √ ((⨍ (θ : ℝ) in 0..(2 * π), ‖p.eval (circleMap 0 1 θ)‖) ^ 2) := by
+    _ = √((⨍ (θ : ℝ) in 0..(2 * π), ‖p.eval (circleMap 0 1 θ)‖) ^ 2) := by
         rw [sqrt_sq]; exact integral_nonneg (fun _ ↦ norm_nonneg _)
-    _ ≤ √ (⨍ (θ : ℝ) in 0..(2 * π),  ‖p.eval (circleMap 0 1 θ)‖ ^ 2) := by
+    _ ≤ √(⨍ (θ : ℝ) in 0..(2 * π), ‖p.eval (circleMap 0 1 θ)‖ ^ 2) := by
         -- Second Jensen's inequality invocation
         gcongr
         refine (convexOn_pow 2).map_average_le (continuousOn_pow 2)
             isClosed_Ici (by filter_upwards; simp) ?_ ?_
         · exact hcont.integrableOn_Icc.mono_set Set.Ioc_subset_Icc_self
         · exact ((continuous_pow 2).comp hcont).integrableOn_Icc.mono_set Set.Ioc_subset_Icc_self
-    _ = √ (circleAverage (fun θ ↦ ‖p.eval θ‖ ^ 2) 0 1) := by simp [circleAverage_eq_intervalAverage]
-    _ = √ (∑ i ∈ p.support, ‖p.coeff i‖ ^ 2) := by simp [p.sum_sq_norm_coeff_eq_circleAverage]
-    _ ≤ √ ((p.natDegree + 1) * p.supNorm ^ 2) := by
+    _ = √(circleAverage (fun θ ↦ ‖p.eval θ‖ ^ 2) 0 1) := by simp [circleAverage_eq_intervalAverage]
+    _ = √(∑ i ∈ p.support, ‖p.coeff i‖ ^ 2) := by simp [p.sum_sq_norm_coeff_eq_circleAverage]
+    _ ≤ √((p.natDegree + 1) * p.supNorm ^ 2) := by
         gcongr
         refine (p.support.sum_le_card_nsmul _ (p.supNorm ^ 2) fun i hi ↦ ?_).trans ?_
         · gcongr

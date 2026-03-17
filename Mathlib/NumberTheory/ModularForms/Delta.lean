@@ -80,7 +80,7 @@ lemma logDeriv_eta_comp_eq_logDeriv_csqrt_eta (z : ℍ) :
     Int.reduceNeg, zpow_neg, riemannZeta_two, mul_inv_rev, inv_div, Pi.sub_apply, Pi.smul_apply,
     D2, ModularGroup.denom_S, smul_eq_mul] at hE2
   rw [deriv_sqrt (mem_slitPlane z), div_eq_mul_inv, logDeriv_eta_eq_E2 z,
-    logDeriv_eta_eq_E2 (.mk _ z.im_inv_neg_coe_pos),  ← mul_assoc, mul_comm, ← mul_assoc, hE2, sqrt,
+    logDeriv_eta_eq_E2 (.mk _ z.im_inv_neg_coe_pos), ← mul_assoc, mul_comm, ← mul_assoc, hE2, sqrt,
     show ModularGroup.S 1 0 = 1 by simp [ModularGroup.S]]
   transitivity 1 / z / 2 + π * I / 12 * E2 z
   · field_simp
@@ -132,7 +132,7 @@ lemma delta_T_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.T) = Δ := by
 lemma eta_comp_eq_csqrt_I_inv : upperHalfPlaneSet.EqOn
     (η ∘ (-1 / ·)) ((sqrt I)⁻¹ • (sqrt * η)) := by
   obtain ⟨z, hz, h⟩ := eta_comp_eqOn_const_mul_csqrt_eta
-  have h3 :  η I = z * sqrt I * η I := by simpa [← mul_assoc] using h (show I ∈ _ by simp)
+  have h3 : η I = z * sqrt I * η I := by simpa [← mul_assoc] using h (show I ∈ _ by simp)
   grind [sqrt, eta_ne_zero (show 0 < I.im by simp)]
 
 /-- The discriminant satisfies the modular transformation for `S : z ↦ -1 / z`:

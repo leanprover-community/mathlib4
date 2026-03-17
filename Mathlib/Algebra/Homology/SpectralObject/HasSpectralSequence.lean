@@ -375,7 +375,7 @@ variable [Y.IsFirstQuadrant]
 
 lemma isZero₁_of_isFirstQuadrant (i j : EInt) (hij : i ≤ j) (hj : j ≤ (0 : ℤ)) (n : ℤ) :
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
-  IsFirstQuadrant.isZero₁ i j hij  hj n
+  IsFirstQuadrant.isZero₁ i j hij hj n
 
 lemma isZero₂_of_isFirstQuadrant (i j : EInt) (hij : i ≤ j) (n : ℤ) (hi : n < i) :
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=

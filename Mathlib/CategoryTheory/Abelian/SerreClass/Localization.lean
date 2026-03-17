@@ -321,7 +321,7 @@ lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
   have := preservesEpimorphisms L P
   have := Localization.essSurj L P.isoModSerre
   suffices ∀ (W : D) (z : L.obj Y ⟶ W) (hz : L.map f ≫ z = 0),
-      ∃ (l : L.obj (cokernel f) ⟶ W), L.map (cokernel.π  f) ≫ l = z from
+      ∃ (l : L.obj (cokernel f) ⟶ W), L.map (cokernel.π f) ≫ l = z from
     preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f)
       ((CokernelCofork.isColimitMapCoconeEquiv _ L).2
         (Cofork.IsColimit.ofExistsUnique

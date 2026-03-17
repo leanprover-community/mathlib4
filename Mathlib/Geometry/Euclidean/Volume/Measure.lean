@@ -73,7 +73,7 @@ scoped[MeasureTheory] notation "μHE[" d "]" => MeasureTheory.Measure.euclideanH
 $\pi^{d/2} / (2^d \Gamma (d/2+1))$. -/
 proof_wanted MeasureTheory.Measure.addHaarScalarFactor_hausdorffMeasure_eq (d : ℕ) :
     addHaarScalarFactor (volume : Measure (EuclideanSpace ℝ (Fin d))) μH[d] =
-    volume (Metric.ball (0 : EuclideanSpace ℝ (Fin d)) 1) / volume (Metric.ball (0 : Fin d -> ℝ) 1)
+    volume (Metric.ball (0 : EuclideanSpace ℝ (Fin d)) 1) / volume (Metric.ball (0 : Fin d → ℝ) 1)
 
 theorem MeasureTheory.Measure.euclideanHausdorffMeasure_def (d : ℕ) :
     (μHE[d] : Measure X) =
