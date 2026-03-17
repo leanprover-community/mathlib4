@@ -25,7 +25,8 @@ graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
 
 ## TODO
 * Migrate from `SimpleGraph` all the results that only depend on the adjacency relation.
-
+* Define `HasSymmDart` and the reverse of a dart for them.
+* Define the degree of a graph.
 -/
 
 @[expose] public section
@@ -73,7 +74,7 @@ lemma dart.left_mem (d : dart G v w) : v ∈ V(G) :=
 lemma dart.right_mem (d : dart G v w) : w ∈ V(G) :=
   d.adj.right_mem
 
-/-- A `prodDart` is an oriented edge or A form of dart that does not have its end points in its
+/-- A `prodDart` is an oriented edge or a form of dart that does not have its end points in its
 type. -/
 structure prodDart [HasDart α Gr] (G : Gr) : Type (max u' u_1) extends α × α where
   /-- `fst` and `snd` have `dart` between them. -/
@@ -102,7 +103,7 @@ def prodDartAdj (G : Gr) (d d' : prodDart G) : Prop :=
 
 end GeneralHasDart
 
-section HasPDart
+section HasAdj
 
 /-
 ### prodDart for `HasDart.{0} α Gr`
@@ -149,5 +150,5 @@ lemma prodDart_finite (hV : V(G).Finite) : Finite (prodDart G) := by
   ext <;> tauto
 
 end prodDart
-end HasPDart
+end HasAdj
 end HasDart
