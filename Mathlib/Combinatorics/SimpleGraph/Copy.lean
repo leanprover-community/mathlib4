@@ -301,20 +301,15 @@ alias ⟨IsContained.exists_iso_subgraph, IsContained.of_exists_iso_subgraph⟩ 
 
 theorem Copy.degree_le (f : Copy G H) (v : V) [Fintype <| G.neighborSet v]
     [Fintype <| H.neighborSet (f v)] : G.degree v ≤ H.degree (f v) := by
-  repeat rw [← card_neighborSet_eq_degree]
-  have h1 := Copy.mapNeighborSet f v
-  exact Fintype.card_le_of_injective h1.toFun h1.inj'
+  simpa using Fintype.card_le_of_injective _ (f.mapNeighborSet v).injective
 
 theorem IsContained.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj]
-[DecidableRel H.Adj]
-    (hcont : G ⊑ H) : G.maxDegree ≤ H.maxDegree := by
-  obtain ⟨copy⟩ := hcont
+    [DecidableRel H.Adj] (hGH : G ⊑ H) : G.maxDegree ≤ H.maxDegree := by
+  obtain ⟨f⟩ := hGH
   cases isEmpty_or_nonempty V
   · simp
-  · have ⟨v, h⟩ := exists_maximal_degree_vertex G
-    have : H.degree (copy v) ≤ H.maxDegree := (@degree_le_maxDegree W H) _
-    have : G.degree v ≤ H.degree (copy v) := by simp_all only [Copy.degree_le]
-    grind
+  obtain ⟨v, h⟩ := exists_maximal_degree_vertex G
+  grind [degree_le_maxDegree H (f v), f.degree_le v]
 
 end IsContained
 
