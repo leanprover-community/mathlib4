@@ -1230,6 +1230,21 @@ lemma leftInverse_embedding_embed : Function.LeftInverse (ValueGroup₀.embeddin
 @[deprecated "use ValueGroupWithZero.embed (valuation R) instead" (since := "2026-03-11")]
 def valueGroupWithZero_equiv_valueGroup₀ := ValueGroupWithZero.embed (valuation R)
 
+open ValueGroupWithZero
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma valuation_lt_symm_embed [v.Compatible] (γ : ValueGroup₀ v) (x : R) :
+    valuation R x < (embed v).symm γ ↔ v.restrict x < γ :=
+  calc
+    _ ↔ embed v _ < embed v _ := (map_lt_map_iff (embed v)).symm
+    _ ↔ _ := by simp [← v.restrict_def]
+
+@[simp]
+lemma restrict_lt_embed [v.Compatible] (γ : ValueGroupWithZero R) (x : R) :
+    v.restrict x < (embed v) γ ↔ (valuation R) x < γ := by
+  simpa using (valuation_lt_symm_embed v (embed v γ) x).symm
+
 /-- For any `x ∈ posSubmonoid R`, the trivial valuation `1 : Valuation R Γ` sends `x` to `1`.
 In fact, this is true for any `x ≠ 0`. This lemma is a special case useful for shorthand of
 `x ∈ posSubmonoid R → x ≠ 0`. -/

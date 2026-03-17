@@ -184,6 +184,9 @@ section LE
 
 variable [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β]
 
+@[simp]
+theorem coe_apply (f : F) (a : α) : (f : α ≃o β) a = f a := rfl
+
 @[to_dual (attr := simp) le_map_inv_iff]
 theorem map_inv_le_iff (f : F) {a : α} {b : β} : EquivLike.inv f b ≤ a ↔ b ≤ f a := by
   convert (map_le_map_iff f).symm

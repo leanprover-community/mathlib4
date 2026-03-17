@@ -5,8 +5,7 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
-public import Mathlib.Topology.Algebra.Valued.ValuationTopology
+public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 
 /-!
