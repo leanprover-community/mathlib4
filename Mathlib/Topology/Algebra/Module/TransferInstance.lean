@@ -66,10 +66,16 @@ section ContinuousLinearEquiv
 
 variable [Semiring R]
 
+-- TODO: should this take an `Equiv` instead, deducing the typeclass hypotheses on `α`
+-- from the ones on `β`?
+-- While this lemma would apply to `ContinuousAddEquiv`s unchanged, that phrasing would be less
+-- ergonomic: in practice, it is only applies to a continuous linear equivalence (so far).
+-- As there is no direct project ContinuousLinearEquiv.toContinuousAddEquiv, applying the changed
+-- lemma would be additional burden for no gain.
 /-- Given a continuous linear equivalence `e : α ≃L[R] β`, if `β` is a topological additive group,
 then so is `α`. -/
 @[implicit_reducible]
-def ContinuousLinearEquiv.IsTopologicalAddGroup
+def ContinuousLinearEquiv.isTopologicalAddGroup
     [TopologicalSpace β] [AddCommGroup β] [IsTopologicalAddGroup β] [Module R β]
     [TopologicalSpace α] [AddCommGroup α] [Module R α]
     (e : α ≃L[R] β) : IsTopologicalAddGroup α where
@@ -81,25 +87,8 @@ def ContinuousLinearEquiv.IsTopologicalAddGroup
     have : Continuous (e.symm ∘ (fun q ↦ -q) ∘ e) := by fun_prop
     exact this.congr (fun p ↦ by simp)
 
-/- TODO: should there be the following version instead, deducing the instances for α
--- from the ones for β? Currently, the statement errors for reasons I don't understand yet.
-def Equiv.IsTopologicalAddGroup
-    [TopologicalSpace β] [AddCommGroup β] [IsTopologicalAddGroup β] [Module R β]
-    (e : α ≃ β) :
-    letI := e.topologicalSpace
-    letI := e.addCommGroup
-    letI := e.module R
-    IsTopologicalAddGroup α where
-  continuous_add := by
-    let f := (fun q ↦ q.1 + q.2 : β × β → β)
-    have : Continuous (fun p ↦ e.symm <| f (e p.1, e p.2) : (α × α → α)) := by fun_prop
-    exact this.congr <| fun p ↦ by simp [f]
-  continuous_neg := by
-    have : Continuous (e.symm ∘ (fun q ↦ -q) ∘ e) := by fun_prop
-    exact this.congr (fun p ↦ by simp)
--/
-
--- TODO: should the instances for α be deduced from the ones for β?
+-- TODO: should this take an `Equiv` instead, deducing the typeclass hypotheses on `α`
+-- from the ones on `β`?
 /-- Given a continuous linear equivalence `e : α ≃L[R] β`, if scalar multiplication on `β` is
 continuous, then so is it for `α`. -/
 @[implicit_reducible]
