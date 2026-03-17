@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.LinearAlgebra.Dimension.RankNullity
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.Data.Int.Interval
+public import Mathlib.Data.Int.SuccPred
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
@@ -32,73 +33,6 @@ finite-dimensional modules over a division ring.
 open CategoryTheory Limits HomologicalComplex
 
 variable {k : Type*} [DivisionRing k]
-
-namespace ChainComplex
-
-lemma Int.natAbs_add_one_eq_add_one_or_sub_one (j : ℤ) :
-    (j + 1).natAbs = j.natAbs + 1 ∨ j.natAbs = (j + 1).natAbs + 1 := by
-  omega
-
-lemma Finset.Ico_eq_singleton_union_Ico_succ (a b : ℤ) (hab : a ≤ b) :
-    Finset.Ico a (b + 1) = {a} ∪ Finset.Ico (a + 1) (b + 1) := by
-  ext x; simp [Finset.mem_Ico]; omega
-
-lemma Finset.Ico_eq_Ico_union_singleton (a b : ℤ) (hab : a ≤ b) :
-    Finset.Ico a (b + 1) = Finset.Ico a b ∪ {b} := by
-  ext x; simp [Finset.mem_Ico]; omega
-
-/-- Telescoping cancellation for alternating sums with shift decomposition. -/
-private lemma sum_Ico_alternating_shift_decomp {α : Type*} [Ring α] (a b : ℤ)
-    (hab : a ≤ b) (s h p c : ℤ → α)
-    (h_decomp : ∀ k ∈ Finset.Ico a (b + 1), s k = h k + p k + c k)
-    (h_shift : ∀ k ∈ Finset.Ico a b, p (k + 1) = c k)
-    (h_pa : p a = 0)
-    (h_cb : c b = 0) :
-    ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * s k =
-    ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * h k := by
-  rw [show ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * s k =
-      ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * (h k + p k + c k) from
-    Finset.sum_congr rfl fun k hk => by rw [h_decomp k hk]]
-  simp_rw [mul_add]
-  rw [Finset.sum_add_distrib, Finset.sum_add_distrib]
-  suffices h_cancel : ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * p k +
-                     ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * c k = 0 by
-    rw [add_assoc, h_cancel, add_zero]
-  have split_first := Finset.Ico_eq_singleton_union_Ico_succ a b hab
-  have split_last := Finset.Ico_eq_Ico_union_singleton a b hab
-  have hp : ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * p k =
-      (-1 : α)^a.natAbs * p a +
-      ∑ k ∈ Finset.Ico (a + 1) (b + 1), (-1 : α)^k.natAbs * p k := by
-    rw [split_first, Finset.sum_union]
-    · simp [Finset.sum_singleton]
-    · simp [Finset.disjoint_singleton_left, Finset.mem_Ico]
-  rw [hp, h_pa, mul_zero, zero_add]
-  have hc : ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * c k =
-      ∑ k ∈ Finset.Ico a b, (-1 : α)^k.natAbs * c k +
-      (-1 : α)^b.natAbs * c b := by
-    rw [split_last, Finset.sum_union]
-    · simp [Finset.sum_singleton]
-    · simp [Finset.disjoint_singleton_right, Finset.mem_Ico]
-  rw [hc, h_cb, mul_zero, add_zero]
-  rw [show ∑ k ∈ Finset.Ico a b, (-1 : α)^k.natAbs * c k =
-      ∑ k ∈ Finset.Ico a b, (-1 : α)^k.natAbs * p (k + 1) from
-    Finset.sum_congr rfl fun k hk => by rw [(h_shift k hk).symm]]
-  have index_shift :
-      Finset.Ico (a + 1) (b + 1) = (Finset.Ico a b).image (· + 1) := by
-    ext x
-    simp [Finset.mem_Ico]
-  rw [index_shift, Finset.sum_image]
-  · rw [← Finset.sum_add_distrib]
-    apply Finset.sum_eq_zero
-    intros j hj
-    rw [← add_mul]
-    suffices (-1 : α)^(j + 1).natAbs + (-1 : α)^j.natAbs = 0 by
-      rw [this, zero_mul]
-    rcases Int.natAbs_add_one_eq_add_one_or_sub_one j with h1 | h1 <;>
-      simp only [h1, pow_add, pow_one, mul_neg, mul_one, neg_add_cancel, add_neg_cancel]
-  · intro x _ y _ h; simp at h; omega
-
-end ChainComplex
 
 /-! ### Dimension lemmas for homological complex differentials
 
@@ -216,11 +150,6 @@ lemma chain_dimension_decomposition
   have := LinearMap.finrank_range_add_finrank_ker (C.dFrom i).hom
   omega
 
-/-- `↑(n.negOnePow) = (-1) ^ n.natAbs` as an integer. -/
-private lemma negOnePow_val (n : ℤ) :
-    (↑(n.negOnePow) : ℤ) = (-1) ^ n.natAbs :=
-  Int.coe_negOnePow ℤ n
-
 /-- `IsZero` implies `finrank` is zero. -/
 private lemma finrank_eq_zero_of_isZero (M : ModuleCat k)
     (h : IsZero M) : Module.finrank k M = 0 := by
@@ -263,39 +192,78 @@ theorem eulerChar_eq_homologyEulerChar
     (Finset.Ico a (b + 1)) h_supp_X,
     C.homologyEulerChar_eq_sum_finSet_of_finrankSupport_subset
     (Finset.Ico a (b + 1)) h_supp_H]
-  -- Bridge from (c.χ i : ℤ) to (-1)^i.natAbs
   simp only [ComplexShape.eulerCharSignsDownInt_χ]
-  simp_rw [negOnePow_val]
-  -- Now both sides use (-1)^i.natAbs, apply the telescoping argument
-  apply sum_Ico_alternating_shift_decomp a b hab
-    (fun i => (Module.finrank k (C.X i) : ℤ))
-    (fun i => (Module.finrank k (C.homology i) : ℤ))
-    (fun i => (Module.finrank k
-      (LinearMap.range (C.dFrom i).hom) : ℤ))
-    (fun i => (Module.finrank k
-      (LinearMap.range (C.dTo i).hom) : ℤ))
-  -- s(j) = h(j) + p(j) + c(j)
-  · intro j _
-    rw [chain_dimension_decomposition C j,
-      ← homology_finrank_formula C j]; ring
-  -- p(j+1) = c(j)
-  · intro j _
-    exact_mod_cast dFrom_succ_range_finrank_eq_dTo C j
-  -- p(a) = 0
-  · have : LinearMap.range (C.dFrom a).hom = ⊥ := by
+  simp_rw [show ∀ n : ℤ, (n.negOnePow : ℤ) = (-1) ^ n.natAbs
+    from Int.coe_negOnePow ℤ]
+  -- Decompose finrank(X i) = finrank(homology i) + finrank(range dFrom i) + finrank(range dTo i)
+  rw [show ∑ x ∈ Finset.Ico a (b + 1),
+        (-1 : ℤ) ^ x.natAbs * ↑(Module.finrank k ↑(C.X x)) =
+      ∑ x ∈ Finset.Ico a (b + 1), (-1 : ℤ) ^ x.natAbs *
+        (↑(Module.finrank k (C.homology x)) +
+         ↑(Module.finrank k ↥(LinearMap.range (C.dFrom x).hom)) +
+         ↑(Module.finrank k ↥(LinearMap.range (C.dTo x).hom)))
+    from Finset.sum_congr rfl fun x _ => by
+      rw [chain_dimension_decomposition C x,
+        ← homology_finrank_formula C x]; ring]
+  simp_rw [mul_add]
+  rw [Finset.sum_add_distrib, Finset.sum_add_distrib]
+  -- Suffices to show the p-sum and c-sum cancel
+  suffices h_cancel :
+      ∑ x ∈ Finset.Ico a (b + 1),
+        (-1 : ℤ) ^ x.natAbs *
+          ↑(Module.finrank k ↥(LinearMap.range (C.dFrom x).hom)) +
+      ∑ x ∈ Finset.Ico a (b + 1),
+        (-1 : ℤ) ^ x.natAbs *
+          ↑(Module.finrank k ↥(LinearMap.range (C.dTo x).hom)) = 0 by
+    linarith
+  -- Split first element from p-sum: p(a) = 0
+  have hp_a : (Module.finrank k
+      ↥(LinearMap.range (C.dFrom a).hom) : ℤ) = 0 := by
+    have : LinearMap.range (C.dFrom a).hom = ⊥ := by
       apply dFrom_zero_range
       simp only [xNext,
-        show (ComplexShape.down ℤ).next a = a - 1 from
-          by simp]
+        show (ComplexShape.down ℤ).next a = a - 1 from by simp]
       exact hC_bounded_below _ (by omega)
     rw [this]; simp
-  -- c(b) = 0
-  · have : LinearMap.range (C.dTo b).hom = ⊥ := by
+  have hp_split : ∑ x ∈ Finset.Ico a (b + 1),
+      (-1 : ℤ) ^ x.natAbs *
+        ↑(Module.finrank k ↥(LinearMap.range (C.dFrom x).hom)) =
+      ∑ x ∈ Finset.Ico (a + 1) (b + 1),
+        (-1 : ℤ) ^ x.natAbs *
+          ↑(Module.finrank k ↥(LinearMap.range (C.dFrom x).hom)) := by
+    rw [← Finset.insert_Ico_add_one_left_eq_Ico (show a < b + 1 by omega),
+      Finset.sum_insert (by simp [Finset.mem_Ico]),
+      hp_a, mul_zero, zero_add]
+  -- Split last element from c-sum: c(b) = 0
+  have hc_b : (Module.finrank k
+      ↥(LinearMap.range (C.dTo b).hom) : ℤ) = 0 := by
+    have : LinearMap.range (C.dTo b).hom = ⊥ := by
       apply dTo_zero_range
       simp only [xPrev,
-        show (ComplexShape.down ℤ).prev b = b + 1 from
-          by simp]
+        show (ComplexShape.down ℤ).prev b = b + 1 from by simp]
       exact hC_bounded_above _ (by omega)
     rw [this]; simp
+  have hc_split : ∑ x ∈ Finset.Ico a (b + 1),
+      (-1 : ℤ) ^ x.natAbs *
+        ↑(Module.finrank k ↥(LinearMap.range (C.dTo x).hom)) =
+      ∑ x ∈ Finset.Ico a b,
+        (-1 : ℤ) ^ x.natAbs *
+          ↑(Module.finrank k ↥(LinearMap.range (C.dTo x).hom)) := by
+    rw [← Finset.insert_Ico_right_eq_Ico_add_one hab,
+      Finset.sum_insert Finset.right_notMem_Ico,
+      hc_b, mul_zero, zero_add]
+  rw [hp_split, hc_split]
+  -- Rewrite c(k) = p(k+1) via dFrom_succ_range_finrank_eq_dTo
+  rw [show ∑ x ∈ Finset.Ico a b,
+        (-1 : ℤ) ^ x.natAbs *
+          ↑(Module.finrank k ↥(LinearMap.range (C.dTo x).hom)) =
+      ∑ x ∈ Finset.Ico a b,
+        (-1 : ℤ) ^ x.natAbs *
+          ↑(Module.finrank k ↥(LinearMap.range (C.dFrom (x + 1)).hom))
+    from Finset.sum_congr rfl fun x _ => by
+      rw [dFrom_succ_range_finrank_eq_dTo C x]]
+  -- Apply the general alternating cancellation lemma
+  exact Finset.sum_Ico_add_sum_Ico_shift_neg_cancel _ _ a b 1
+    (fun j => by simp [← Int.coe_negOnePow, Int.negOnePow_succ])
 
 end ChainComplex
