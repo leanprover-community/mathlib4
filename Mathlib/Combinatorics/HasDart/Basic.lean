@@ -50,9 +50,10 @@ class HasDart (α : outParam Type*) (Gr : Type*) where
 
 /-- `HasSymmDart` extends `HasDart` for graph-like structures with symmetric darts. -/
 class HasSymmDart (α : outParam Type*) (Gr : Type*) extends HasDart α Gr where
-  /-- The equivalence between darts in the forward and backward directions. -/
-  dartsEquiv (G : Gr) (u v : α) : darts G u v ≃ darts G v u
-  dartsEquiv_symm (G : Gr) (u v : α) : (dartsEquiv G u v).symm = dartsEquiv G v u
+  /-- The reverse direction of a dart. -/
+  dartsSymm {G : Gr} {u v : α} (d : darts G u v) : darts G v u
+  dartsSymm_symm {G : Gr} {u v : α} (d : darts G u v) : dartsSymm (dartsSymm d) = d
+  dartsSymm_ne {G : Gr} {u : α} (d : darts G u u) : dartsSymm d ≠ d
 
 namespace HasDart
 
@@ -116,12 +117,10 @@ open HasSymmDart
 variable {α Gr : Type*} [HasSymmDart α Gr] {G : Gr} {v w : α}
 
 /-- The reverse direction of a dart. -/
-def darts.symm (d : darts G v w) : darts G w v := dartsEquiv G v w d
+def darts.symm (d : darts G v w) : darts G w v := dartsSymm d
 
 @[simp]
-lemma darts.symm_symm (d : darts G v w) : d.symm.symm = d := by
-  unfold symm
-  rw [← dartsEquiv_symm, Equiv.symm_apply_apply]
+lemma darts.symm_symm (d : darts G v w) : d.symm.symm = d := dartsSymm_symm d
 
 instance : Std.Symm (Adj G) where
   symm _ _ h := by

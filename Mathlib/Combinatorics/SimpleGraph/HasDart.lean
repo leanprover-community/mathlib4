@@ -23,7 +23,6 @@ instance : HasSymmDart α (SimpleGraph α) where
   nonempty_darts_iff_adj := nonempty_prop
   left_mem_verts_of_adj _ {u _ : α} _ := Set.mem_univ u
   right_mem_verts_of_adj _ {_ v : α} _ := Set.mem_univ v
-  dartsEquiv G u v :=
-  { toFun := G.adj_symm
-    invFun := G.adj_symm}
-  dartsEquiv_symm G u v := rfl
+  dartsSymm {G _ _} d := G.adj_symm d
+  dartsSymm_symm _ := rfl
+  dartsSymm_ne {G _} d := (G.irrefl d).elim
