@@ -58,46 +58,59 @@ open Classical in
 noncomputable instance WithTop.instInfSet [InfSet α] : InfSet (WithTop α) :=
   ⟨fun S => if S ⊆ {⊤} ∨ ¬BddBelow S then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
 
+@[to_dual]
 theorem WithTop.isLUB_image_coe {s : Set α} {a : α} :
     IsLUB ((↑) '' s) (a : WithTop α) ↔ IsLUB s a := by
-  refine ⟨.of_image WithTop.coe_le_coe,
-    fun h ↦ ⟨WithTop.coe_mono.mem_upperBounds_image h.1, fun b hb ↦ ?_⟩⟩
+  refine ⟨.of_image coe_le_coe,
+    fun h ↦ ⟨coe_mono.mem_upperBounds_image h.1, fun b hb ↦ ?_⟩⟩
   cases b with | top => exact le_top | coe b => ?_
-  simp only [mem_upperBounds, forall_mem_image, WithTop.coe_le_coe] at hb ⊢
+  simp only [mem_upperBounds, forall_mem_image, coe_le_coe] at hb ⊢
   exact h.2 hb
 
-@[to_dual existing]
-theorem WithBot.isGLB_image_coe {s : Set α} {a : α} :
-    IsGLB ((↑) '' s) (a : WithBot α) ↔ IsGLB s a := by
-  refine ⟨.of_image WithBot.coe_le_coe,
-    fun h ↦ ⟨WithBot.coe_mono.mem_lowerBounds_image h.1, fun b hb ↦ ?_⟩⟩
-  cases b with
-  | bot => exact bot_le
-  | coe b =>
-    simp only [mem_lowerBounds, forall_mem_image, WithBot.coe_le_coe] at hb ⊢
-    exact h.2 hb
+@[to_dual]
+theorem WithTop.isLUB_coe {s : Set (WithTop α)} {a : α} :
+    IsLUB s (a : WithTop α) ↔ ⊤ ∉ s ∧ IsLUB ((↑) ⁻¹' s) a := by
+  trans ⊤ ∉ s ∧ IsLUB s (a : WithTop α)
+  · exact iff_and_self.mpr fun h hs ↦ not_top_le_coe _ (h.1 hs)
+  rw [and_congr_right]
+  intro hs
+  lift s to Set α
+  · rintro _ hs' rfl
+    exact hs hs'
+  rw [isLUB_image_coe, preimage_image_eq _ coe_injective]
 
-theorem WithTop.isGLB_image_coe {s : Set α} {a : α} (hs : s.Nonempty) :
-    IsGLB ((↑) '' s) (a : WithTop α) ↔ IsGLB s a := by
-  refine ⟨.of_image WithTop.coe_le_coe,
-    fun h ↦ ⟨WithTop.coe_mono.mem_lowerBounds_image h.1, fun b hb ↦ ?_⟩⟩
+@[to_dual]
+theorem WithTop.isGLB_image_coe {s : Set α} {a : α} :
+    IsGLB ((↑) '' s) (a : WithTop α) ↔ s.Nonempty ∧ IsGLB s a := by
+  refine ⟨fun h ↦ ⟨?_, h.of_image coe_le_coe⟩,
+    fun ⟨hs, h⟩ ↦ ⟨coe_mono.mem_lowerBounds_image h.1, fun b hb ↦ ?_⟩⟩
+  · contrapose h
+    rw [not_nonempty_iff_eq_empty] at h
+    subst h
+    simpa using fun h ↦ not_top_le_coe _ (h _)
   cases b with
   | top => exact hs.elim (by simpa [mem_lowerBounds] using hb)
   | coe b =>
-    simp only [mem_lowerBounds, forall_mem_image, WithTop.coe_le_coe] at hb ⊢
+    simp only [mem_lowerBounds, forall_mem_image, coe_le_coe] at hb ⊢
     exact h.2 hb
 
-@[to_dual existing]
-theorem WithBot.isLUB_image_coe {s : Set α} {a : α} (hs : s.Nonempty) :
-    IsLUB ((↑) '' s) (a : WithBot α) ↔ IsLUB s a := by
-  refine ⟨.of_image WithBot.coe_le_coe,
-    fun h ↦ ⟨WithBot.coe_mono.mem_upperBounds_image h.1, fun b hb ↦ ?_⟩⟩
-  cases b with
-  | bot =>
-    exact hs.elim (by simpa [mem_upperBounds] using hb)
-  | coe b =>
-    simp only [mem_upperBounds, forall_mem_image, WithBot.coe_le_coe] at hb ⊢
-    exact h.2 hb
+@[to_dual]
+theorem WithTop.isGLB_coe {s : Set (WithTop α)} {a : α} :
+    IsGLB s (a : WithTop α) ↔ ¬s ⊆ {⊤} ∧ IsGLB ((↑) ⁻¹' s) a := by
+  trans ¬s ⊆ {⊤} ∧ IsGLB s (a : WithTop α)
+  · exact iff_and_self.mpr fun h hs ↦ not_top_le_coe _ (h.2 fun _ h ↦ (hs h).ge)
+  rw [and_congr_right]
+  intro hs
+  rw [← diff_nonempty] at hs
+  have h1 : lowerBounds s = lowerBounds ((↑) '' (((↑) : α → WithTop α) ⁻¹' s)) := by
+    refine subset_antisymm (lowerBounds_mono_set (image_preimage_subset _ _)) ?_
+    intro b hb c hc
+    cases c with | top => exact le_top | coe => exact hb (mem_image_of_mem _ hc)
+  rw [isGLB_congr h1, isGLB_image_coe, and_iff_right_iff_imp]
+  rintro -
+  rw [← image_nonempty (f := ((↑) : α → WithTop α)), image_preimage_eq_inter_range]
+  convert hs using 1
+  ext; simp [ne_top_iff_exists]
 
 @[to_dual]
 noncomputable instance WithTop.instOrderSupInfSet [OrderSupInfSet α] :
@@ -115,10 +128,10 @@ noncomputable instance WithTop.instOrderSupInfSet [OrderSupInfSet α] :
       · rintro rfl
         obtain ⟨_, hbdd⟩ := hbdd
         simpa using h.2 (Monotone.mem_upperBounds_image coe_mono hbdd)
-      rw [WithTop.isLUB_image_coe] at h ⊢
+      rw [isLUB_image_coe] at h ⊢
       exact h.isLUB_sSup
     · cases a with | top => exact h | coe a => ?_
-      rw [WithTop.isLUB_image_coe] at h
+      rw [isLUB_image_coe] at h
       exact absurd h.bddAbove hbdd
   isGLB_sInf_of_isGLB s a h := by
     dsimp [sInf]
@@ -126,35 +139,12 @@ noncomputable instance WithTop.instOrderSupInfSet [OrderSupInfSet α] :
     · obtain hs | hbdd := hs
       · exact ⟨fun b hb ↦ (hs hb).ge, fun _ _ ↦ le_top⟩
       exact absurd h.bddBelow hbdd
-    · rw [subset_singleton_iff] at hs
-      push_neg at hs
-      obtain ⟨⟨x, hxs, hx⟩, hbdd⟩ := hs
-      lift x to α using hx
-      have isGLB_erase (a) : IsGLB s a ↔ IsGLB (s \ {⊤}) a := by
-        apply isGLB_congr
-        refine subset_antisymm (lowerBounds_mono_set Set.diff_subset) ?_
-        intro b hb c hc
-        cases c with | top => exact le_top | coe => exact hb ⟨hc, by simp⟩
-      simp only [isGLB_erase] at h ⊢
-      generalize hs' : s \ {⊤} = s' at *
-      have hbot : ⊤ ∉ s' := by
-        rw [← hs']
-        exact notMem_diff_of_mem rfl
-      lift s' to Set α
-      · rintro x hx rfl
-        exact hbot hx
-      have preimage_coe_s : (↑) ⁻¹' s = s' := by
-        trans some ⁻¹' (s \ {⊤})
-        · rw [preimage_diff, preimage_singleton_eq_empty.mpr (by simp), diff_empty]
-        · rw [hs', preimage_image_eq _ coe_injective]
-      replace hxs' : x ∈ s' := by rwa [← preimage_coe_s, mem_preimage]
+    · push_neg at hs
       lift a to α
       · rintro rfl
-        obtain ⟨_, hbdd⟩ := hbdd
-        simpa using h.1 (mem_image_of_mem _ hxs')
-      rw [preimage_coe_s]
-      rw [WithTop.isGLB_image_coe ⟨x, by rwa [← preimage_coe_s, mem_preimage]⟩] at h ⊢
-      exact h.isGLB_sInf
+        exact hs.1 fun x hx ↦ WithTop.top_le_iff.mp (h.1 hx)
+      rw [isGLB_coe] at h ⊢
+      exact h.imp_right IsGLB.isGLB_sInf
 
 theorem WithTop.sSup_eq [SupSet α] {s : Set (WithTop α)} (hs : ⊤ ∉ s)
     (hs' : BddAbove ((↑) ⁻¹' s : Set α)) : sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
