@@ -38,7 +38,7 @@ the differential `X.d` of the spectral object (see the lemma
 `spectralSequence_page_d_eq`). Indeed, the assumptions that
 are part of `data` give equalities of indices `i₂ r pq' = i₀ r pq`
 and `i₃ pq' = i₁ pq`, so that we have a chain of inequalities
-`i₀ r pq' ≤ i₁ pq' ≤ i₂ pq' ≤ i₃ r pq' ≤ i₂ pq ≤ i₄ r pq` for which
+`i₀ r pq' ≤ i₁ pq' ≤ i₂ pq' ≤ i₃ r pq' ≤ i₂ pq ≤ i₃ r pq` for which
 the API of spectral objects provides a differential
 `X.d : E^n(i₀ r pq ≤ i₁ pq ≤ i₂ pq ≤ i₃ r pq) ⟶ E^{n + 1}(i₀ r pq' ≤ i₁ pq' ≤ i₂ pq' ≤ i₃ r pq')`.
 
