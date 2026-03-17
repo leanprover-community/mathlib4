@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Riccardo Brasca, Emilie Uthaiwat, Haoming Ning, Brian Nugent
+Authors: Riccardo Brasca, Emilie Uthaiwat, Haoming Ning
 -/
 module
 
@@ -131,57 +131,49 @@ variable [CommRing R]
 
 /-- Given a prime `P` of finite height ≥ 1, there exists a prime `Q` of height one contained
 in `P`. -/
-lemma exists_height_one_le_of_finite_height
-    {P : Ideal R} (h_prime : P.IsPrime) (h_fin : P.FiniteHeight) (hP : P.primeHeight ≥ 1) :
-    ∃ Q ≤ P, Q.IsPrime ∧ Q.height = 1 := by
+lemma exists_height_one_le_of_finite_height {P : Ideal R} (h_prime : P.IsPrime)
+    (h_fin : P.FiniteHeight) (hP : P.primeHeight ≥ 1) : ∃ Q ≤ P, Q.IsPrime ∧ Q.height = 1 := by
   by_cases h1 : P.primeHeight = 1
-  · rw [← P.height_eq_primeHeight] at h1
-    exact ⟨P, le_refl _, h_prime, h1⟩
-  · have hPgt1 : 1 < P.primeHeight := hP.lt_of_ne' h1
-    obtain ⟨Q, hQ⟩ := (Order.coe_lt_height_iff P.primeHeight_lt_top).mp hPgt1
-    exact ⟨Q.asIdeal, hQ.1.1, Q.2, by rw [Ideal.height_eq_primeHeight]; exact hQ.right⟩
+  · exact ⟨P, le_rfl, h_prime, P.height_eq_primeHeight ▸ h1⟩
+  · obtain ⟨Q, hQ⟩ := (Order.coe_lt_height_iff P.primeHeight_lt_top).mp (hP.lt_of_ne' h1)
+    exact ⟨Q.asIdeal, hQ.1.1, Q.2, Q.asIdeal.height_eq_primeHeight ▸ hQ.right⟩
 
 variable [IsDomain R]
 
 /-- An ideal of height one is nonzero. -/
-lemma ne_bot_of_height_one {I : Ideal R} (h : I.height = 1) : I ≠ ⊥ :=
-  fun h_bot => by simp [h_bot, Ideal.height_bot] at h
+lemma ne_bot_of_height_one {I : Ideal R} (h : I.height = 1) : I ≠ ⊥ := by
+  rintro rfl; simp [Ideal.height_bot] at h
 
+/-This following lemma is edited down from proof provided by Brian Nugent -/
 /-- Height of a nonzero prime ideal in a domain is at least one. -/
-public lemma height_ge_one_of_prime_ne_bot
-    {P : Ideal R} (h_prime : P.IsPrime) (h_ne : P ≠ ⊥) :
+public lemma height_ge_one_of_prime_ne_bot {P : Ideal R} (h_prime : P.IsPrime) (h_ne : P ≠ ⊥) :
     P.height ≥ 1 := by
   by_contra hC
   push_neg at hC
-  rw [ENat.lt_one_iff_eq_zero, P.height_eq_primeHeight] at hC
-  have hC' : Order.height (⟨P, h_prime⟩ : PrimeSpectrum R) = 0 := hC
-  rw [Order.height_eq_zero, isMin_iff_eq_bot] at hC'
-  exact h_ne (congrArg PrimeSpectrum.asIdeal hC' |>.trans PrimeSpectrum.asIdeal_bot)
+  rw [ENat.lt_one_iff_eq_zero, P.height_eq_primeHeight, Ideal.primeHeight_eq_zero_iff,
+      IsDomain.minimalPrimes_eq_singleton_bot, Set.mem_singleton_iff] at hC
+  exact h_ne hC
 
-/-
-This following lemma is edited down and refactored from proof first shown kindly to us by
+/- This following lemma is edited down and refactored from proof first shown kindly to us by
 Bianca Viray, Bryan Boehnke, Grant Yang, George Peykanu, and Tianshuo Wang, see
-<https://github.com/uw-math-ai/monogenic-extensions/blob/9a46c352a33af11818cc10f474b383f0a2d6dcac/Monogenic/MonogenicOfNonEtale.lean#L93>
--/
+<https://github.com/uw-math-ai/monogenic-extensions/blob/9a46c352a33af11818cc10f474b383f0a2d6dcac/Monogenic/MonogenicOfNonEtale.lean#L93> -/
 /-- UFD implies every prime ideal of height one is principal. -/
-lemma height_one_prime_principal [UniqueFactorizationMonoid R]
-    (q : Ideal R) [hq_prime : q.IsPrime] (hq_height : q.height = 1) :
-    ∃ q₀ : R, q = Ideal.span {q₀} := by
+lemma height_one_prime_principal [UniqueFactorizationMonoid R] (q : Ideal R) [hq_prime : q.IsPrime]
+    (hq_height : q.height = 1) : ∃ q₀ : R, q = Ideal.span {q₀} := by
   obtain ⟨p, hp_mem, hp_prime⟩ :=
     hq_prime.exists_mem_prime_of_ne_bot (ne_bot_of_height_one hq_height)
-  have h_span_prime : (Ideal.span {p}).IsPrime :=
-    (Ideal.span_singleton_prime hp_prime.ne_zero).mpr hp_prime
+  haveI : (Ideal.span {p}).IsPrime := (Ideal.span_singleton_prime hp_prime.ne_zero).mpr hp_prime
   have h_span_le : Ideal.span {p} ≤ q := (Ideal.span_singleton_le_iff_mem (I := q)).mpr hp_mem
   refine ⟨p, ?_⟩
   by_contra h_ne
-  have h_lt : Ideal.span {p} < q := h_span_le.lt_of_ne (Ne.symm h_ne)
   haveI : q.FiniteHeight := ⟨Or.inr (hq_height ▸ ENat.one_ne_top)⟩
   haveI : (Ideal.span {p}).FiniteHeight := Ideal.finiteHeight_of_le h_span_le hq_prime.ne_top
-  have h_ht_zero : (Ideal.span {p}).height = 0 :=
-    ENat.lt_one_iff_eq_zero.mp (hq_height ▸ Ideal.height_strict_mono_of_is_prime h_lt)
+  have h_ht_zero : (Ideal.span {p}).height = 0 := ENat.lt_one_iff_eq_zero.mp
+    (hq_height ▸ Ideal.height_strict_mono_of_is_prime (h_span_le.lt_of_ne (Ne.symm h_ne)))
   rw [Ideal.height_eq_primeHeight, Ideal.primeHeight_eq_zero_iff,
-      IsDomain.minimalPrimes_eq_singleton_bot] at h_ht_zero
-  exact hp_prime.ne_zero (Ideal.span_singleton_eq_bot.mp (Set.mem_singleton_iff.mp h_ht_zero))
+      IsDomain.minimalPrimes_eq_singleton_bot, Set.mem_singleton_iff,
+      Ideal.span_singleton_eq_bot] at h_ht_zero
+  exact hp_prime.ne_zero h_ht_zero
 
 end CommRing
 
@@ -201,19 +193,16 @@ theorem of_height_one_prime_principal : (∀ (I : Ideal R), I.IsPrime →
       (I.height_eq_primeHeight ▸ hIge1)
   obtain ⟨x, hx⟩ := h J hJprime h_height
   have hx_ne : x ≠ 0 := by
-    rintro rfl; simp only [Ideal.span_singleton_zero] at hx
-    exact ne_bot_of_height_one h_height hx
-  have hx_prime : Prime x := by
-    rw [← Ideal.span_singleton_prime hx_ne, ← hx]; exact hJprime
-  exact ⟨x, hJI (hx ▸ Ideal.subset_span (mem_singleton_iff.mpr rfl)), hx_prime⟩
+    rintro rfl
+    exact ne_bot_of_height_one h_height (hx.trans Ideal.span_singleton_zero)
+  exact ⟨x, hJI (hx ▸ Ideal.subset_span (mem_singleton_iff.mpr rfl)),
+    (Ideal.span_singleton_prime hx_ne).mp (hx ▸ hJprime)⟩
 
 /-- Factoriality criterion: a Noetherian integral domain is a UFD
 if and only if every height one prime is principal. -/
-public theorem iff_height_one_prime_principal :
-    UniqueFactorizationMonoid R ↔ (∀ (I : Ideal R), I.IsPrime →
-    I.height = 1 → ∃ x : R, I = Ideal.span {x}) :=
-  ⟨fun _ I _ hI_height => height_one_prime_principal I hI_height,
-  of_height_one_prime_principal⟩
+public theorem iff_height_one_prime_principal : UniqueFactorizationMonoid R ↔
+    (∀ (I : Ideal R), I.IsPrime → I.height = 1 → ∃ x : R, I = Ideal.span {x}) :=
+  ⟨fun _ I _ hI_height => height_one_prime_principal I hI_height, of_height_one_prime_principal⟩
 
 end IsNoetherianDomain
 
