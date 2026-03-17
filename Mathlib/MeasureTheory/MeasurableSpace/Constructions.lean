@@ -704,6 +704,10 @@ protected theorem MeasurableSet.univ_pi [Countable δ] {t : ∀ i : δ, Set (X i
     (ht : ∀ i, MeasurableSet (t i)) : MeasurableSet (pi univ t) :=
   MeasurableSet.pi (to_countable _) fun i _ => ht i
 
+theorem MeasurableSet.univ_pi' [Countable δ] {t : ∀ i : δ, Set (X i)}
+    (ht : ∀ i, MeasurableSet (t i)) : MeasurableSet {f : ∀ i : δ, X i | ∀ i : δ, f i ∈ t i} :=
+  (MeasurableSet.univ_pi ht).congr (by grind)
+
 theorem measurableSet_pi_of_nonempty {s : Set δ} {t : ∀ i, Set (X i)} (hs : s.Countable)
     (h : (pi s t).Nonempty) : MeasurableSet (pi s t) ↔ ∀ i ∈ s, MeasurableSet (t i) := by
   classical
