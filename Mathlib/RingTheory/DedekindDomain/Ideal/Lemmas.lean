@@ -1064,6 +1064,14 @@ theorem equivPrimesOver_apply (hp : p ≠ 0)
     (v : {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p}) :
     equivPrimesOver B hp v = v.1.asIdeal := rfl
 
+variable (A) {B} in
+/-- The pullback of a height one prime in `B` to `A`. -/
+@[simps]
+def under [Algebra.IsIntegral A B] (w : HeightOneSpectrum B) : HeightOneSpectrum A where
+  asIdeal := w.asIdeal.under A
+  isPrime := .under A w.asIdeal
+  ne_bot := mt Ideal.eq_bot_of_comap_eq_bot w.ne_bot
+
 end IsDedekindDomain.HeightOneSpectrum
 
 variable (p) [Algebra.IsIntegral A B]
