@@ -127,6 +127,7 @@ lemma cfcₙAux_mem_range_inr (f : C(σₙ 𝕜 a, 𝕜)₀) :
 
 variable [CStarRing A]
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 include hp₁ in
 open Unitization NonUnitalStarAlgHom in
 theorem RCLike.nonUnitalContinuousFunctionalCalculus :
@@ -175,7 +176,7 @@ theorem RCLike.nonUnitalContinuousFunctionalCalculusIsClosedEmbedding :
   isClosedEmbedding a ha := by
     apply isometry_inr (𝕜 := 𝕜) (A := A) |>.isClosedEmbedding |>.of_comp_iff.mp
     convert isClosedEmbedding_cfcₙAux hp₁ a ha
-    congrm(⇑$(inrNonUnitalStarAlgHom_comp_cfcₙHom_eq_cfcₙAux hp₁ a ha))
+    congrm (⇑$(inrNonUnitalStarAlgHom_comp_cfcₙHom_eq_cfcₙAux hp₁ a ha))
 
 end RCLike
 
@@ -299,7 +300,7 @@ open NNReal in
 instance Nonneg.instNonUnitalContinuousFunctionalCalculus :
     NonUnitalContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·) :=
   QuasispectrumRestricts.cfc (q := IsSelfAdjoint) ContinuousMap.realToNNReal
-    isometry_subtype_coe.isClosedEmbedding le_rfl
+    NNReal.isClosedEmbedding_coe le_rfl
     (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
 
 /-- In a C⋆-algebra, commuting nonnegative elements have nonnegative products. -/
@@ -337,7 +338,7 @@ open NNReal in
 instance Nonneg.instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·) :=
   SpectrumRestricts.cfc (q := IsSelfAdjoint) ContinuousMap.realToNNReal
-    isometry_subtype_coe.isClosedEmbedding le_rfl
+    NNReal.isClosedEmbedding_coe le_rfl
     (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
 
 theorem IsStrictlyPositive.commute_iff {a b : A} (ha : IsStrictlyPositive a)
@@ -421,7 +422,7 @@ lemma cfcHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :
 lemma cfc_nnreal_eq_real (f : ℝ≥0 → ℝ≥0) (a : A) (ha : 0 ≤ a := by cfc_tac) :
     cfc f a = cfc (fun x ↦ f x.toNNReal : ℝ → ℝ) a := by
   apply (SpectrumRestricts.nnreal_of_nonneg ha).cfc_eq_restrict _
-    isometry_subtype_coe.isClosedEmbedding ha (.of_nonneg ha)
+    NNReal.isClosedEmbedding_coe ha (.of_nonneg ha)
 
 lemma cfc_real_eq_nnreal {f : ℝ → ℝ} (a : A) (hf_nonneg : ∀ x ∈ spectrum ℝ a, 0 ≤ f x)
     (ha : 0 ≤ a := by cfc_tac) : cfc f a = cfc (fun x : ℝ≥0 ↦ (f x).toNNReal) a := by
@@ -448,7 +449,7 @@ lemma cfcₙHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :
 lemma cfcₙ_nnreal_eq_real (f : ℝ≥0 → ℝ≥0) (a : A) (ha : 0 ≤ a := by cfc_tac) :
     cfcₙ f a = cfcₙ (fun x ↦ f x.toNNReal : ℝ → ℝ) a := by
   apply (QuasispectrumRestricts.nnreal_of_nonneg ha).cfcₙ_eq_restrict _
-    isometry_subtype_coe.isClosedEmbedding ha (.of_nonneg ha)
+    NNReal.isClosedEmbedding_coe ha (.of_nonneg ha)
 
 lemma cfcₙ_real_eq_nnreal {f : ℝ → ℝ} (a : A) (hf_nonneg : ∀ x ∈ σₙ ℝ a, 0 ≤ f x)
     (ha : 0 ≤ a := by cfc_tac) : cfcₙ f a = cfcₙ (fun x : ℝ≥0 ↦ (f x).toNNReal) a := by

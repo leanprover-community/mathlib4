@@ -187,7 +187,7 @@ theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → 
   · simp [hr.le]
   replace hf₀ : ∀ᵐ x, x ∈ Ioo d b → HasDerivAt f 0 x := by
     filter_upwards [hf₀] with x _ _ using by grind
-  have hfdb': 0 < r / (b - d) := by apply div_pos <;> linarith
+  have hfdb' : 0 < r / (b - d) := by apply div_pos <;> linarith
   have ⟨u, hu₁, hu₂, hu₃⟩ :=
     exists_dist_slope_lt_pairwiseDisjoint_hasSum hd.right hf₀ hfdb'
   let g := fun (z : u) ↦ dist (f z.val.1) (f z.val.2)

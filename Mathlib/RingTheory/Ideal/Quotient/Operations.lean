@@ -313,7 +313,7 @@ theorem snd_comp_quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCopri
 /-- **Chinese remainder theorem**, specialized to two ideals. -/
 noncomputable def quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
     R ⧸ I * J ≃+* (R ⧸ I) × R ⧸ J :=
-  Ideal.quotEquivOfEq (inf_eq_mul_of_isCoprime coprime).symm |>.trans <|
+  Ideal.quotEquivOfEq (mul_eq_inf_of_isCoprime coprime) |>.trans <|
     Ideal.quotientInfEquivQuotientProd I J coprime
 
 @[simp]
@@ -1174,7 +1174,6 @@ def powQuotPowSuccLinearEquivMapMkPowSuccPow :
     refine ⟨Submodule.Quotient.mk ⟨y, hy⟩, ?_⟩
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `I ^ n ⧸ I ^ (n + 1)` can be viewed as a quotient module and as ideal of `R ⧸ I ^ (n + 1)`.
 This definition gives the equivalence between the two, instead of the `R`-linear equivalence,
 to bypass typeclass synthesis issues on complex `Module` goals. -/

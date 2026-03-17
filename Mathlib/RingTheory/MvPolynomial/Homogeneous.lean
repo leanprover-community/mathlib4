@@ -26,6 +26,13 @@ if all monomials occurring in `φ` have degree `n`.
   their summand that is homogeneous of degree `n`.
 * `sum_homogeneousComponent`: every polynomial is the sum of its homogeneous components.
 
+## Library notes
+
+* The `MvPolynomial.weightedGradedAlgebra` instance provides a `GradedAlgebra` structure, yielding
+  the isomorphism `MvPolynomial σ R ≃ₐ[R] ⨁ m, weightedHomogeneousSubmodule R w m` for a weight
+  function `w`.
+* The special case with `w = 1` of the above yields the algebra isomorphism
+  `MvPolynomial σ R ≃ₐ[R] ⨁ i, homogeneousSubmodule σ R i`.
 -/
 
 @[expose] public section
@@ -34,11 +41,6 @@ if all monomials occurring in `φ` have degree `n`.
 namespace MvPolynomial
 
 variable {σ : Type*} {τ : Type*} {R : Type*} {S : Type*}
-
-/-
-TODO
-* show that `MvPolynomial σ R ≃ₐ[R] ⨁ i, homogeneousSubmodule σ R i`
--/
 
 open Finsupp
 

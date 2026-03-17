@@ -38,7 +38,6 @@ section
 
 variable [CompleteSpace 𝕜]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ker_closedComplemented_of_finiteDimensional_range (f : E →L[𝕜] F)
     [FiniteDimensional 𝕜 f.range] : f.ker.ClosedComplemented := by
   set f' : E →L[𝕜] f.range := f.codRestrict _ (LinearMap.mem_range_self (f : E →ₗ[𝕜] F))
