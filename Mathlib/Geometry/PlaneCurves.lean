@@ -46,6 +46,8 @@ theorem of plane curves.
 We mainly followed [zbMATH07533267], especially for the fundamental theorem of plane curves.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 namespace PlaneCurve
@@ -348,7 +350,7 @@ protected lemma _root_.HasDerivAt.initialCurve_of_orientedCurvature {I : Set ℝ
       have h' : ContinuousOn (fun x ↦  Real.sin (θ₀ + ∫ (ξ : ℝ) in t₀..x, κ ξ)) I := by
         exact Real.continuous_sin.comp_continuousOn' h₀
       exact intervalIntegral.hasDerivWithinAt_of_continuousOn_interval h' ht₀ ht
-  exact hI.mem_nhds ht
+  · exact hI.mem_nhds ht
 
 lemma second_deriv_of_initialCurve_of_orientedCurvature {I : Set ℝ} [hIoC : I.OrdConnected]
   (hI : IsOpen I) {κ : ℝ → ℝ} (hκ : ContinuousOn κ I) {t₀ : ℝ} (ht₀ : t₀ ∈ I)
