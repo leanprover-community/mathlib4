@@ -35,6 +35,7 @@ universe u
 /-- The category of measurable spaces and s-finite kernels. -/
 structure SFinKer : Type (u + 1) where
   of ::
+  /-- The underlying measurable space. -/
   carrier : Type u
   [str : MeasurableSpace carrier]
 

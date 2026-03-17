@@ -44,8 +44,6 @@ universe u
 /-- Morphism property selecting Markov kernels in `SFinKer`. -/
 abbrev StochHom : MorphismProperty SFinKer := fun _ _ κ => IsMarkovKernel κ.1
 
-instance {X Y : SFinKer} {κ : X ⟶ Y} {hκ : StochHom κ} : IsMarkovKernel κ.1 := hκ
-
 instance : StochHom.IsMultiplicative where
   id_mem X := by
     kernel_cat
@@ -59,6 +57,7 @@ abbrev Stoch := WideSubcategory StochHom
 
 noncomputable section
 
+/-- `stoch_ext` unfolds the definition of morphisms in `Stoch`. -/
 macro "stoch_ext" : tactic =>
   `(tactic| (rw [Subtype.ext_iff]; try simp only [WideSubcategory.comp_def]))
 
