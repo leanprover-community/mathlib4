@@ -28,7 +28,7 @@ not relevant). Additional input `(v : Valuation R A) [v.Compatible]` can be intr
 a specific compatible valuation is chosen.
 
 The canonical way to introduce the topological structure from a chosen valuation is:
-1. First define the `ValuativeRel` structure using `ValuationRel.ofValuation`;
+1. First define the `ValuativeRel` structure using `ValuativeRel.ofValuation`;
 2. Then define the `UniformSpace` structure using `ValuativeRel.uniformSpace`.
 -/
 
