@@ -93,6 +93,7 @@ lemma fac_aux₁ {n : ℕ}
   rw [spineToSimplex_arrow]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma fac_aux₂ {n : ℕ}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
     (x : s.pt) (i j : ℕ) (hij : i ≤ j) (hj : j ≤ n) :
@@ -111,7 +112,6 @@ lemma fac_aux₂ {n : ℕ}
         (strArrowMk₂ (⦋1⦌.const ⦋0⦌ 0 ≫ ⦋0⦌.const ⦋n⦌ ⟨i, Nat.lt_add_one_of_le hj⟩)) :=
             StructuredArrow.homMk ((Hom.tr (⦋1⦌.const ⦋0⦌ 0)).op) (by simp; rfl)
       have nat := ConcreteCategory.congr_hom (s.π.naturality α) x
-      dsimp at nat
       erw [nat, op_comp, Functor.map_comp]
       simp only [types_comp_apply]
       refine congrArg (X.map (⦋1⦌.const ⦋0⦌ 0).op) ?_
@@ -158,7 +158,6 @@ lemma fac_aux₂ {n : ℕ}
             rfl
       erw [← StructuredArrow.w β₁, Functor.map_comp_apply, this, ← s.w β₁]
       dsimp
-      rfl
 
 lemma fac_aux₃ {n : ℕ}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))

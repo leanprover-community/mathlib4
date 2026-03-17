@@ -168,7 +168,7 @@ example (X : Type u) : CategoryTheory.ToType X = X := by with_reducible rfl
 lemma ofHom_eq {X Y : Type u} (f : X ⟶ Y) : ofHom f = f :=
   rfl
 
-@[simp]
+@[simp high]
 lemma hom_ofHom {X Y : Type u} (f : X → Y) : Hom.hom (ofHom f) = Fun.mk f := rfl
 
 @[simp]

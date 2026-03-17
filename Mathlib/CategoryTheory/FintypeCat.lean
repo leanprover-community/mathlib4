@@ -58,7 +58,7 @@ abbrev incl : FintypeCat ⥤ Type* := ObjectProperty.ι _
 instance : incl.Full := ObjectProperty.full_ι _
 instance : incl.Faithful := ObjectProperty.faithful_ι _
 
-instance concreteCategoryFintype : ConcreteCategory FintypeCat
+example : ConcreteCategory FintypeCat
     (fun X Y ↦ TypeCat.Fun X.obj Y.obj) :=
   inferInstance
 

@@ -187,8 +187,6 @@ noncomputable def isColimit : IsColimit (cocone F) := by
     obtain ⟨Z, f, z, hgal, hfz⟩ := exists_hom_from_galois_of_fiber F Y y
     refine ⟨⟨Z, z, hgal⟩, f ≫ i, ?_⟩
     simp [← hfz, ← h1]
-    simp [← comp_apply, ← map_comp]
-    rfl
   · intro ⟨A, a, _⟩ ⟨B, b, _⟩ (u : (A : C) ⟶ X) (v : (B : C) ⟶ X) (h : F.map u a = F.map v b)
     obtain ⟨⟨Z, z, _⟩, ⟨f, hf⟩, ⟨g, hg⟩, _⟩ :=
       IsFilteredOrEmpty.cocone_objs (C := (PointedGaloisObject F)ᵒᵖ)
@@ -316,19 +314,13 @@ set_option backward.isDefEq.respectTransparency false in
 lemma endEquivSectionsFibers_π (f : End F) (A : PointedGaloisObject F) :
     (endEquivSectionsFibers F f).val A = f.app A A.pt := by
   dsimp [endEquivSectionsFibers, Types.sectionsEquiv]
-  erw [Types.limitEquivSections_apply]
-  simp only [comp_obj, incl_obj, FintypeCat.incl_obj, uliftFunctor_obj]
-  erw [colimitCoyonedaHomIsoLimit'_π_apply]
+  erw [Types.limitEquivSections_apply, colimitCoyonedaHomIsoLimit'_π_apply]
   change (((FullyFaithful.whiskeringRight (FullyFaithful.ofFullyFaithful
       FintypeCat.incl) C).homEquiv) f).app A
     (((colimit.ι _ _) ≫ (colimit.isoColimitCocone ⟨cocone F, isColimit F⟩).hom).app
       A _) = f.app A A.pt
-  simp only [whiskeringRight_obj_obj, comp_obj, FintypeCat.incl_obj, FullyFaithful.homEquiv,
-    Equiv.coe_fn_mk, whiskeringRight_obj_map, whiskerRight_app, FintypeCat.incl_map, op_obj,
-    incl_obj, flip_obj_obj, yoneda_obj_obj, colimit.isoColimitCocone_ι_hom, cocone_app,
-    ConcreteCategory.hom_ofHom, FintypeCat.hom_apply]
-  change f.app A.obj (F.map (𝟙 _) A.pt) = _
   simp
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Functorial isomorphism `Aut A ≅ F.obj A` for Galois objects `A`. -/
