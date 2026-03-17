@@ -84,6 +84,9 @@ under `ci-tools/`).
   provided on stdin, outputs only those modules in topological order.
   Usage: `python3 scripts/topological_sort.py [--reverse]`
 
+- `check_modulized_tests.lean`
+  Prints not modulized tests.
+
 **Backward-compatibility `set_option` migration tools**
 
 These scripts help with testing Lean PRs that change backward-compatibility option
