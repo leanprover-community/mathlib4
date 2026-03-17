@@ -164,8 +164,8 @@ theorem coe_symm_measurableEquivPiIoc :
     ⇑(measurableEquivPiIoc b).symm = fun x i => x.1 i := rfl
 
 @[simp]
-theorem coe_symm_measurableEquivPiIoc_apply {x : ι → ℝ} (hx : ∀ i, x i ∈ Ioc (b i) (b i + 1)) :
-    (measurableEquivPiIoc b).symm ⟨x, hx⟩ = fun i => (x i : UnitAddCircle) := rfl
+theorem coe_symm_measurableEquivPiIoc_apply (y : {x : ι → ℝ // ∀ i, x i ∈ Ioc (b i) (b i + 1)}) :
+    (measurableEquivPiIoc b).symm y = fun i => (y.1 i : UnitAddCircle) := rfl
 
 /-- The equivalence `measurableEquivPiIoc` is measure preserving. -/
 lemma measurePreserving_equivPiIoc :
