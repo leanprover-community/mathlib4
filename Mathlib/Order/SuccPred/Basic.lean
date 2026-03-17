@@ -141,7 +141,7 @@ noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder
     (fun ha _ ↦ by
       rw [not_isMax_iff] at ha
       simp_rw [Set.Nonempty, mem_Ioi, dif_pos ha]
-      exact ⟨(wellFounded_lt.min_le · ha), lt_of_lt_of_le (wellFounded_lt.min_mem _ ha)⟩)
+      exact ⟨wellFounded_lt.min_le (s := Ioi _), lt_of_lt_of_le (wellFounded_lt.prop_min ha)⟩)
     fun _ ha ↦ dif_neg (not_not_intro ha <| not_isMax_iff.mpr ·)
 
 /-- A linear order with well-founded greater-than relation is a `PredOrder`. -/

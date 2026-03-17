@@ -109,7 +109,6 @@ theorem condition_one (t : PullbackCone f g) : t.π.app WalkingCospan.one = t.fs
   have w := t.π.naturality WalkingCospan.Hom.inl
   dsimp at w; simpa using w
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A pullback cone on `f` and `g` is determined by morphisms `fst : W ⟶ X` and `snd : W ⟶ Y`
 such that `fst ≫ f = snd ≫ g`. -/
 @[simps]
@@ -329,7 +328,6 @@ theorem condition_zero (t : PushoutCocone f g) : t.ι.app WalkingSpan.zero = f �
   have w := t.ι.naturality WalkingSpan.Hom.fst
   dsimp at w; simpa using w.symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A pushout cocone on `f` and `g` is determined by morphisms `inl : Y ⟶ W` and `inr : Z ⟶ W` such
 that `f ≫ inl = g ↠ inr`. -/
 @[simps]

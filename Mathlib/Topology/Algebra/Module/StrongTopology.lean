@@ -374,7 +374,7 @@ theorem topologicalSpace_mono [TopologicalSpace F] [IsTopologicalAddGroup F] (h 
 
 variable {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {σ : 𝕜₁ →+* 𝕜₂} [Module 𝕜₁ E] in
 variable {F} in
-protected theorem continuous_of_uncurry [AddCommGroup G]
+protected theorem continuous_of_continuous_uncurry [AddCommGroup G]
     {𝕜₃ : Type*} [NormedField 𝕜₃] [Module 𝕜₃ G]
     {τ : 𝕜₃ →+* 𝕜₂} [RingHomSurjective τ]
     [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F]
@@ -654,7 +654,7 @@ lemma toUniformConvergenceCLM_continuous [IsTopologicalAddGroup F]
     Continuous (ContinuousLinearMap.toUniformConvergenceCLM σ F 𝔖) :=
   continuous_id_of_le <| UniformConvergenceCLM.topologicalSpace_mono _ _ h
 
-theorem continuous_of_uncurry
+theorem continuous_of_continuous_uncurry
     {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {σ : 𝕜₁ →+* 𝕜₂} [Module 𝕜₁ E]
     {τ : 𝕜₃ →+* 𝕜₂} [RingHomSurjective τ]
     [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
@@ -662,7 +662,7 @@ theorem continuous_of_uncurry
     (B : G →ₛₗ[τ] (E →SL[σ] F))
     (hB : Continuous (fun p : G × E ↦ B p.1 p.2)) :
     Continuous B :=
-  UniformConvergenceCLM.continuous_of_uncurry (fun _ ↦ id) B hB
+  UniformConvergenceCLM.continuous_of_continuous_uncurry (fun _ ↦ id) B hB
 
 end BoundedSets
 
@@ -866,7 +866,7 @@ variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Modul
 @[simps!]
 def toSpanSingletonCLE : E ≃L[𝕜] (𝕜 →L[𝕜] E) where
   toLinearEquiv := toSpanSingletonLE ..
-  continuous_toFun := continuous_of_uncurry _ <|
+  continuous_toFun := continuous_of_continuous_uncurry _ <|
     continuous_snd.smul continuous_fst
   continuous_invFun := continuous_eval_const 1
 
