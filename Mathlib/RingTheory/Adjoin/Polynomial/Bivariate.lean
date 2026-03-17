@@ -42,12 +42,7 @@ theorem Transcendental.algEquivAdjoin_apply (hx : Transcendental R x) (p : R[X][
 attribute [local instance] algebra in
 theorem Transcendental.algEquivAdjoin_swap_eq_aeval (hx : Transcendental R x) (p : R[X][Y]) :
     hx.algEquivAdjoin (swap p) = aeval (C ⟨x, self_mem_adjoin_singleton R x⟩) p := by
-  induction p using Polynomial.induction_on' with
-  | add => simp_all only [map_add]
-  | monomial n a =>
-    induction a using Polynomial.induction_on' with
-    | add p q => simp_all only [map_add]
-    | monomial => simp_all [C_mul_X_pow_eq_monomial, Transcendental.algEquivAdjoin]
+  simp [algEquivAdjoin, Bivariate.aveal_eq_map_swap]
 
 end Ring
 
@@ -73,8 +68,7 @@ theorem _root_.IsAlgebraic.adjoin_singleton {x : A} {y : B} (hx : Transcendental
   obtain ⟨f, hnezero, halg⟩ := h
   refine ⟨hy.algEquivAdjoin (swap (hx.algEquivAdjoin.symm f)),
     by simpa only [map_ne_zero_iff _ (AlgEquiv.injective _)], ?_⟩
-  rw [Transcendental.algEquivAdjoin_swap_eq_aeval hy]
-  simpa [aeval_aeval_eq_aeval_algEquivAdjoin y hx]
+  simpa [Transcendental.algEquivAdjoin_swap_eq_aeval hy, aeval_aeval_eq_aeval_algEquivAdjoin y hx]
 
 end CommRing
 
