@@ -19,7 +19,7 @@ variable {α : Type*}
 instance : HasDart α (Digraph α) where
   verts _ := Set.univ
   Adj G := G.Adj
-  dart G u v := G.Adj u v
-  nonempty_dart_iff_adj := nonempty_prop
+  darts G u v := G.Adj u v
+  nonempty_darts_iff_adj := nonempty_prop
   left_mem_verts_of_adj _ := Set.mem_univ _
   right_mem_verts_of_adj _ := Set.mem_univ _
