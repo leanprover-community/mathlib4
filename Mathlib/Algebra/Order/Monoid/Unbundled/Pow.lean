@@ -173,7 +173,8 @@ theorem Monotone.pow_const {f : β → M} (hf : Monotone f) : ∀ n : ℕ, Monot
 @[to_additive nsmul_right_mono]
 theorem pow_left_mono (n : ℕ) : Monotone fun a : M => a ^ n := monotone_id.pow_const _
 
-@[to_additive (attr := gcongr)]
+-- `gcongr low` so that we prefer `Set.pow_subset_pow` and `Finset.pow_subset_pow`
+@[to_additive (attr := gcongr low)]
 lemma pow_le_pow {a b : M} (hab : a ≤ b) (ht : 1 ≤ b) {m n : ℕ} (hmn : m ≤ n) : a ^ m ≤ b ^ n :=
   (pow_le_pow_left' hab _).trans (pow_le_pow_right' ht hmn)
 
