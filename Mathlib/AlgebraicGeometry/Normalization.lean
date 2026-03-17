@@ -462,10 +462,8 @@ lemma normalization.hom_ext (f₁ f₂ : f.normalization ⟶ T) (g : T ⟶ Y) [I
       rw [this, f.toNormalization_app_preimage U]
       simp [appIso_hom', IsAffineOpen.SpecMap_appLE_fromSpec_assoc _ _ (isAffineOpen_top (Spec _)),
         IsAffineOpen.fromSpec_top, normalizationObjIso, normalizationDiagram]
-      erw [Spec.map_id]
-      -- The following also works but is hiding the defeq abuse:
-      -- -- `Spec.map_id` isn't firing in the previous simp call, so:
-      -- simp [← Spec.map_comp_assoc, -Spec.map_comp]
+      -- `Spec.map_id` isn't firing in the previous simp call. TODO: investigate why.
+      simp [← Spec.map_comp_assoc, -Spec.map_comp]
       rfl
     · simp only [AlgHom.toRingHom_eq_coe, hf₀, comp_appLE, Spec.map_comp, Category.assoc,
         app_eq_appLE]
@@ -478,10 +476,8 @@ lemma normalization.hom_ext (f₁ f₂ : f.normalization ⟶ T) (g : T ⟶ Y) [I
       rw [this, f.toNormalization_app_preimage U]
       simp [appIso_hom', IsAffineOpen.SpecMap_appLE_fromSpec_assoc _ _ (isAffineOpen_top (Spec _)),
         IsAffineOpen.fromSpec_top, normalizationObjIso, normalizationDiagram]
-      erw [Spec.map_id]
-      -- The following also works but is hiding the defeq abuse:
-      -- -- `Spec.map_id` isn't firing in the previous simp call, so:
-      -- simp [← Spec.map_comp_assoc, -Spec.map_comp]
+      -- `Spec.map_id` isn't firing in the previous simp call. TODO: investigate why.
+      simp [← Spec.map_comp_assoc, -Spec.map_comp]
       rfl
 
 end UniversalProperty
