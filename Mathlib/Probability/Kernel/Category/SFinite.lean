@@ -156,4 +156,26 @@ instance : MonoidalCategory SFinKer.{u} where
       Kernel.deterministic_comp_deterministic]
     congr
 
+instance {X : SFinKer.{u}} : ComonObj X where
+  counit := ⟨Kernel.discard X, by kernel_instance⟩
+  comul := ⟨Kernel.copy X, by kernel_instance⟩
+  counit_comul := by
+    kernel_cat
+    simp only [Kernel.discard, Kernel.copy, Kernel.id]
+    rw [Kernel.deterministic_parallelComp_deterministic,
+      Kernel.deterministic_comp_deterministic, Kernel.deterministic_map measurable_id (by fun_prop)]
+    congr 1
+  comul_counit := by
+    kernel_cat
+    simp only [Kernel.discard, Kernel.copy, Kernel.id]
+    rw [Kernel.deterministic_parallelComp_deterministic,
+      Kernel.deterministic_comp_deterministic, Kernel.deterministic_map measurable_id (by fun_prop)]
+    congr 1
+  comul_assoc := by
+    kernel_cat
+    rw [Kernel.id_map (by fun_prop)]
+    simp [Kernel.copy, Kernel.id, Kernel.deterministic_comp_deterministic,
+      Kernel.deterministic_parallelComp_deterministic]
+    congr 1
+
 end
