@@ -55,14 +55,11 @@ not modulized: MathlibTest/ExtractGoal.lean
 not modulized: MathlibTest/FieldSimp.lean
 not modulized: MathlibTest/Find.lean
 not modulized: MathlibTest/FindDeprecations.lean
-not modulized: MathlibTest/FunLike.lean
 not modulized: MathlibTest/GCongr/GCongr.lean
 not modulized: MathlibTest/GCongr/implications.lean
 not modulized: MathlibTest/GCongr/inequalities.lean
 not modulized: MathlibTest/GCongr/mod.lean
 not modulized: MathlibTest/GRewrite.lean
-not modulized: MathlibTest/GalNotation.lean
-not modulized: MathlibTest/Group.lean
 not modulized: MathlibTest/GuardGoalNums.lean
 not modulized: MathlibTest/GuardHypNums.lean
 not modulized: MathlibTest/HashCommandLinter.lean
@@ -122,8 +119,6 @@ not modulized: MathlibTest/StringDiagram.lean
 not modulized: MathlibTest/Subsingleton.lean
 not modulized: MathlibTest/SwapVar.lean
 not modulized: MathlibTest/TacticAnalysis.lean
-not modulized: MathlibTest/Tauto.lean
-not modulized: MathlibTest/TautoSet.lean
 not modulized: MathlibTest/TermCongr.lean
 not modulized: MathlibTest/TermCongr2.lean
 not modulized: MathlibTest/TermReduce.lean
@@ -140,7 +135,6 @@ not modulized: MathlibTest/ValidatePRTitle.lean
 not modulized: MathlibTest/ValuedCSP.lean
 not modulized: MathlibTest/Variable.lean
 not modulized: MathlibTest/VersoHeader.lean
-not modulized: MathlibTest/Zify.lean
 not modulized: MathlibTest/abel.lean
 not modulized: MathlibTest/aesop_cat.lean
 not modulized: MathlibTest/algebraize.lean
