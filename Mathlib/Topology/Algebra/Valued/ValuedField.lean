@@ -84,7 +84,15 @@ theorem Valuation.inversion_estimate' {x y r s : K} (y_ne : y ≠ 0) (hr : r ≠
 
 end InversionEstimate
 
-open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀ Valued
+open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
+
+section IsValuativeTopology
+
+end IsValuativeTopology
+
+section Valued
+
+open Valued
 
 /-- The topology coming from a valuation on a division ring makes it a topological division ring
 [BouAC, VI.5.1 middle of Proposition 1] -/
@@ -166,6 +174,8 @@ theorem Valued.continuous_valuation_of_surjective [hv : Valued K Γ₀]
     exact Valued.loc_const (by simpa using h0)
 
 end
+
+end Valued
 
 end ValuationTopologicalDivisionRing
 
