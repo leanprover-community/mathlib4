@@ -3,8 +3,10 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
-import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
 
 /-!
 # Negation and addition formulae for nonsingular points in projective coordinates
@@ -56,6 +58,8 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Formula.lean`.
 
 elliptic curve, projective, negation, doubling, addition, group law
 -/
+
+@[expose] public section
 
 local notation3 "x" => (0 : Fin 3)
 
@@ -223,12 +227,10 @@ lemma isUnit_dblZ_of_Y_ne' {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equat
     IsUnit (W.dblZ P) :=
   (dblZ_ne_zero_of_Y_ne' hP hQ hPz hQz hx hy).isUnit
 
-private lemma toAffine_slope_of_eq [DecidableEq F]
-    {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+private lemma toAffine_slope_of_eq [DecidableEq F] {P Q : Fin 3 → F}
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
     W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z) =
       -eval P W.polynomialX / P z / (P y - W.negY P) := by
-  have hPy : P y - W.negY P ≠ 0 := sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hPz hQz hx hy
   simp only [X_eq_iff hPz hQz, ne_eq, Y_eq_iff' hPz hQz] at hx hy
   rw [Affine.slope_of_Y_ne hx <| negY_of_Z_ne_zero hQz ▸ hy, ← negY_of_Z_ne_zero hPz]
   simp [field, eval_polynomialX]
@@ -290,6 +292,8 @@ lemma dblX_of_Y_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Equation P) (
   rw [dblX_eq' hP, Y_eq_negY_of_Y_eq hQz hx hy hy']
   ring1
 
+-- Non-terminal simp, used to be field_simp
+set_option linter.flexible false in
 private lemma toAffine_addX_of_eq {P : Fin 3 → F} (hPz : P z ≠ 0) {n d : F} (hd : d ≠ 0) :
     W.toAffine.addX (P x / P z) (P x / P z) (-n / P z / d) =
       (n ^ 2 - W.a₁ * n * P z * d - W.a₂ * P z ^ 2 * d ^ 2 - 2 * P x * P z * d ^ 2) * d / P z
@@ -301,7 +305,7 @@ lemma dblX_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) 
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
     W.dblX P / W.dblZ P = W.toAffine.addX (P x / P z) (Q x / Q z)
       (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
-  rw [dblX_eq hP hPz, dblZ, toAffine_slope_of_eq hP hQ hPz hQz hx hy, ← (X_eq_iff hPz hQz).mp hx,
+  rw [dblX_eq hP hPz, dblZ, toAffine_slope_of_eq hPz hQz hx hy, ← (X_eq_iff hPz hQz).mp hx,
     toAffine_addX_of_eq hPz <| sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hPz hQz hx hy]
 
 variable (W') in
@@ -386,7 +390,7 @@ lemma negDblY_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation 
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
     W.negDblY P / W.dblZ P = W.toAffine.negAddY (P x / P z) (Q x / Q z) (P y / P z)
       (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
-  rw [negDblY_eq hP hPz, dblZ, toAffine_slope_of_eq hP hQ hPz hQz hx hy, ← (X_eq_iff hPz hQz).mp hx,
+  rw [negDblY_eq hP hPz, dblZ, toAffine_slope_of_eq hPz hQz hx hy, ← (X_eq_iff hPz hQz).mp hx,
     toAffine_negAddY_of_eq hPz <| sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hPz hQz hx hy]
 
 variable (W') in

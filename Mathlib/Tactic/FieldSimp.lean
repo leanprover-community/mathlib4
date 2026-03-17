@@ -3,11 +3,15 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, David Renshaw, Heather Macbeth, Arend Mellendijk, Michael Rothgang
 -/
-import Mathlib.Tactic.FieldSimp.Discharger
-import Mathlib.Tactic.FieldSimp.Lemmas
-import Mathlib.Util.AtLocation
-import Mathlib.Util.AtomM.Recurse
-import Mathlib.Util.SynthesizeUsing
+module
+
+public meta import Mathlib.Data.Ineq
+public import Mathlib.Tactic.FieldSimp.Attr
+public import Mathlib.Tactic.FieldSimp.Discharger
+public import Mathlib.Tactic.FieldSimp.Lemmas
+public import Mathlib.Util.AtomM.Recurse
+public import Mathlib.Util.SynthesizeUsing
+public import Mathlib.Data.Ineq
 
 /-!
 # `field_simp` tactic
@@ -15,13 +19,15 @@ import Mathlib.Util.SynthesizeUsing
 Tactic to clear denominators in algebraic expressions.
 -/
 
+public meta section
+
 open Lean Meta Qq
 
 namespace Mathlib.Tactic.FieldSimp
 
 initialize registerTraceClass `Tactic.field_simp
 
-variable {v : Level}
+variable {v : Level} {M : Q(Type v)}
 
 /-! ### Lists of expressions representing exponents and atoms, and operations on such lists -/
 
@@ -42,16 +48,11 @@ abbrev qNF (M : Q(Type v)) := List ((ℤ × Q($M)) × ℕ)
 
 namespace qNF
 
-variable {M : Q(Type v)}
-
 /-- Given `l` of type `qNF M`, i.e. a list of `(ℤ × Q($M)) × ℕ`s (two `Expr`s and a natural
 number), build an `Expr` representing an object of type `NF M` (i.e. `List (ℤ × M)`) in the
 in the obvious way: by forgetting the natural numbers and gluing together the integers and `Expr`s.
 -/
-def toNF (l : qNF q($M)) : Q(NF $M) :=
-  let l' : List Q(ℤ × $M) := (l.map Prod.fst).map (fun (a, x) ↦ q(($a, $x)))
-  let qt : List Q(ℤ × $M) → Q(List (ℤ × $M)) := List.rec q([]) (fun e _ l ↦ q($e ::ᵣ $l))
-  qt l'
+def toNF (l : qNF q($M)) : Q(NF $M) := l.foldr (fun ((a, x), _) l ↦ q(($a, $x) ::ᵣ $l)) q([])
 
 /-- Given `l` of type `qNF M`, i.e. a list of `(ℤ × Q($M)) × ℕ`s (two `Expr`s and a natural
 number), apply an expression representing a function with domain `ℤ` to each of the `ℤ`
@@ -241,27 +242,100 @@ def mkDivProof (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M) :
       let pf := mkDivProof iM (((a₁, x₁), k₁) :: t₁) t₂
       (q(NF.div_eq_eval₃ ($a₂, $x₂) $pf):)
 
+end qNF
+
+/-- Constraints on denominators which may need to be considered in `field_simp`: no condition,
+nonzeroness, or strict positivity. -/
+inductive DenomCondition (iM : Q(GroupWithZero $M))
+  | none
+  | nonzero
+  | positive (iM' : Q(PartialOrder $M)) (iM'' : Q(PosMulStrictMono $M))
+      (iM''' : Q(PosMulReflectLT $M)) (iM'''' : Q(ZeroLEOneClass $M))
+
+namespace DenomCondition
+
+/-- Given a field-simp-normal-form expression `L` (a product of powers of atoms), a proof (according
+to the value of `DenomCondition`) of that expression's nonzeroness, strict positivity, etc. -/
+@[expose] def proof {iM : Q(GroupWithZero $M)} (L : qNF M) : DenomCondition iM → Type
+  | .none => Unit
+  | .nonzero => Q(NF.eval $(qNF.toNF L) ≠ 0)
+  | .positive _ _ _ _ => Q(0 < NF.eval $(qNF.toNF L))
+
+/-- The empty field-simp-normal-form expression `[]` (representing `1` as an empty product of powers
+of atoms) can be proved to be nonzero, strict positivity, etc., as needed, as specified by the
+value of `DenomCondition`. -/
+def proofZero {iM : Q(CommGroupWithZero $M)} :
+    ∀ cond : DenomCondition (M := M) q(inferInstance), cond.proof []
+  | .none => Unit.unit
+  | .nonzero => q(one_ne_zero (α := $M))
+  | .positive _ _ _ _ => q(zero_lt_one (α := $M))
+
+end DenomCondition
+
+/-- Given a proof of the nonzeroness, strict positivity, etc. (as specified by the value of
+`DenomCondition`) of a field-simp-normal-form expression `L` (a product of powers of atoms),
+construct a corresponding proof for `((r, e), i) :: L`.
+
+In this version we also expose the proof of nonzeroness of `e`. -/
+def mkDenomConditionProofSucc {iM : Q(CommGroupWithZero $M)}
+    (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
+    {cond : DenomCondition (M := M) q(inferInstance)}
+    {L : qNF M} (hL : cond.proof L) (e : Q($M)) (r : ℤ) (i : ℕ) :
+    MetaM (Q($e ≠ 0) × cond.proof (((r, e), i) :: L)) := do
+  match cond with
+  | .none => return (← disch q($e ≠ 0), Unit.unit)
+  | .nonzero =>
+    let pf ← disch q($e ≠ 0)
+    let pf₀ : Q(NF.eval $(qNF.toNF L) ≠ 0) := hL
+    return (pf, q(NF.cons_ne_zero $r $pf $pf₀))
+  | .positive _ _ _ _ =>
+    let pf ← disch q(0 < $e)
+    let pf₀ : Q(0 < NF.eval $(qNF.toNF L)) := hL
+    let pf' := q(NF.cons_pos $r (x := $e) $pf $pf₀)
+    return (q(LT.lt.ne' $pf), pf')
+
+/-- Given a proof of the nonzeroness, strict positivity, etc. (as specified by the value of
+`DenomCondition`) of a field-simp-normal-form expression `L` (a product of powers of atoms),
+construct a corresponding proof for `((r, e), i) :: L`. -/
+def mkDenomConditionProofSucc' {iM : Q(CommGroupWithZero $M)}
+    (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
+    {cond : DenomCondition (M := M) q(inferInstance)}
+    {L : qNF M} (hL : cond.proof L) (e : Q($M)) (r : ℤ) (i : ℕ) :
+    MetaM (cond.proof (((r, e), i) :: L)) := do
+  match cond with
+  | .none => return Unit.unit
+  | .nonzero =>
+    let pf ← disch q($e ≠ 0)
+    let pf₀ : Q(NF.eval $(qNF.toNF L) ≠ 0) := hL
+    return q(NF.cons_ne_zero $r $pf $pf₀)
+  | .positive _ _ _ _ =>
+    let pf ← disch q(0 < $e)
+    let pf₀ : Q(0 < NF.eval $(qNF.toNF L)) := hL
+    return q(NF.cons_pos $r (x := $e) $pf $pf₀)
+
+namespace qNF
+
 /-- Extract a common factor `L` of two products-of-powers `l₁` and `l₂` in `M`, in the sense that
 both `l₁` and `l₂` are quotients by `L` of products of *positive* powers.
 
-The boolean flag `nonzero` specifies whether we extract a *certified nonzero* (and therefore
-potentially smaller) common factor. The metaprogram returns a "proof" that this common factor is
-nonzero, i.e. an expression `Q(NF.eval $(L.toNF) ≠ 0)`, but this will be junk if the boolean flag
-`nonzero` is set to `false`. -/
+The variable `cond` specifies whether we extract a *certified nonzero[/positive]* (and therefore
+potentially smaller) common factor. If so, the metaprogram returns a "proof" that this common factor
+is nonzero/positive, i.e. an expression `Q(NF.eval $(L.toNF) ≠ 0)` / `Q(0 < NF.eval $(L.toNF))`. -/
 partial def gcd (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M)
-    (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (nonzero : Bool) :
+    (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
+    (cond : DenomCondition (M := M) q(inferInstance)) :
   MetaM <| Σ (L l₁' l₂' : qNF M),
     Q((NF.eval $(L.toNF)) * NF.eval $(l₁'.toNF) = NF.eval $(l₁.toNF)) ×
     Q((NF.eval $(L.toNF)) * NF.eval $(l₂'.toNF) = NF.eval $(l₂.toNF)) ×
-    Q(NF.eval $(L.toNF) ≠ 0) :=
+    cond.proof L :=
 
   /- Handle the case where atom `i` is present in the first list but not the second. -/
   let absent (l₁ l₂ : qNF M) (n : ℤ) (e : Q($M)) (i : ℕ) :
       MetaM <| Σ (L l₁' l₂' : qNF M),
         Q((NF.eval $(L.toNF)) * NF.eval $(l₁'.toNF) = NF.eval $(qNF.toNF (((n, e), i) :: l₁))) ×
         Q((NF.eval $(L.toNF)) * NF.eval $(l₂'.toNF) = NF.eval $(l₂.toNF)) ×
-        Q(NF.eval $(L.toNF) ≠ 0) := do
-    let ⟨L, l₁', l₂', pf₁, pf₂, pf₀⟩ ← gcd iM l₁ l₂ disch nonzero
+        cond.proof L := do
+    let ⟨L, l₁', l₂', pf₁, pf₂, pf₀⟩ ← gcd iM l₁ l₂ disch cond
     if 0 < n then
       -- Don't pull anything out
       return ⟨L, ((n, e), i) :: l₁', l₂', (q(NF.eval_mul_eval_cons $n $e $pf₁):), q($pf₂), pf₀⟩
@@ -271,40 +345,39 @@ partial def gcd (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M)
       let pf'' : Q(NF.eval ((0, $e) ::ᵣ $(l₁'.toNF)) = NF.eval $(l₁''.toNF)) := pf''
       return ⟨L, l₁'', l₂', (q(NF.eval_mul_eval_cons_zero $pf₁ $pf''):), q($pf₂), pf₀⟩
     try
-      let pf : Q($e ≠ 0) ← disch q($e ≠ 0)
+      let (pf, b) ← mkDenomConditionProofSucc disch pf₀ e n i
       -- if nonzeroness proof succeeds
       return ⟨((n, e), i) :: L, l₁', ((-n, e), i) :: l₂', (q(NF.eval_cons_mul_eval $n $e $pf₁):),
-        (q(NF.eval_cons_mul_eval_cons_neg $n $pf $pf₂):),
-        (q(NF.cons_ne_zero $n $pf $pf₀):)⟩
+        (q(NF.eval_cons_mul_eval_cons_neg $n $pf $pf₂):), b⟩
     catch _ =>
       -- if we can't prove nonzeroness, don't pull out e.
       return ⟨L, ((n, e), i) :: l₁', l₂', (q(NF.eval_mul_eval_cons $n $e $pf₁):), q($pf₂), pf₀⟩
 
   /- Handle the case where atom `i` is present in both lists. -/
-  let bothPresent (t₁ t₂ : qNF M) (n₁ n₂ : ℤ) (e : Q($M)) (he : Q($e ≠ 0)) (i : ℕ) :
+  let bothPresent (t₁ t₂ : qNF M) (n₁ n₂ : ℤ) (e : Q($M)) (i : ℕ) :
       MetaM <| Σ (L l₁' l₂' : qNF M),
         Q((NF.eval $(L.toNF)) * NF.eval $(l₁'.toNF) = NF.eval $(qNF.toNF (((n₁, e), i) :: t₁))) ×
         Q((NF.eval $(L.toNF)) * NF.eval $(l₂'.toNF) = NF.eval $(qNF.toNF (((n₂, e), i) :: t₂))) ×
-        Q(NF.eval $(L.toNF) ≠ 0) := do
-    let ⟨L, l₁', l₂', pf₁, pf₂, pf₀⟩ ← gcd iM t₁ t₂ disch nonzero
+        cond.proof L := do
+    let ⟨L, l₁', l₂', pf₁, pf₂, pf₀⟩ ← gcd iM t₁ t₂ disch cond
     if n₁ < n₂ then
       let N : ℤ := n₂ - n₁
       return ⟨((n₁, e), i) :: L, l₁', ((n₂ - n₁, e), i) :: l₂',
         (q(NF.eval_cons_mul_eval $n₁ $e $pf₁):), (q(NF.mul_eq_eval₂ $n₁ $N $e $pf₂):),
-          (q(NF.cons_ne_zero $n₁ $he $pf₀):)⟩
+        ← mkDenomConditionProofSucc' disch pf₀ e n₁ i⟩
     else if n₁ = n₂ then
       return ⟨((n₁, e), i) :: L, l₁', l₂', (q(NF.eval_cons_mul_eval $n₁ $e $pf₁):),
-        (q(NF.eval_cons_mul_eval $n₂ $e $pf₂):), (q(NF.cons_ne_zero $n₁ $he $pf₀):)⟩
+        (q(NF.eval_cons_mul_eval $n₂ $e $pf₂):), ← mkDenomConditionProofSucc' disch pf₀ e n₁ i⟩
     else
       let N : ℤ := n₁ - n₂
       return ⟨((n₂, e), i) :: L, ((n₁ - n₂, e), i) :: l₁', l₂',
         (q(NF.mul_eq_eval₂ $n₂ $N $e $pf₁):), (q(NF.eval_cons_mul_eval $n₂ $e $pf₂):),
-          (q(NF.cons_ne_zero $n₂ $he $pf₀):)⟩
+        ← mkDenomConditionProofSucc' disch pf₀ e n₂ i⟩
 
   match l₁, l₂ with
   | [], [] => pure ⟨[], [], [],
     (q(one_mul (NF.eval $(qNF.toNF (M := M) []))):),
-    (q(one_mul (NF.eval $(qNF.toNF (M := M) []))):), q(one_ne_zero)⟩
+    (q(one_mul (NF.eval $(qNF.toNF (M := M) []))):), cond.proofZero⟩
   | ((n, e), i) :: t, [] => do
     let ⟨L, l₁', l₂', pf₁, pf₂, pf₀⟩ ← absent t [] n e i
     return ⟨L, l₁', l₂', q($pf₁), q($pf₂), pf₀⟩
@@ -316,20 +389,17 @@ partial def gcd (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M)
       let ⟨L, l₁', l₂', pf₁, pf₂, pf₀⟩ ← absent t₁ (((n₂, e₂), i₂) :: t₂) n₁ e₁ i₁
       return ⟨L, l₁', l₂', q($pf₁), q($pf₂), pf₀⟩
     else if i₁ == i₂ then
-      if nonzero then
-        try
-          let pf_e ← disch q($e₁ ≠ 0)
-          -- if we can prove nonzeroness
-          bothPresent t₁ t₂ n₁ n₂ e₁ pf_e i₁
-        catch _ =>
-          -- if we can't prove nonzeroness, don't pull out e.
-          let ⟨L, l₁', l₂', pf₁, pf₂, pf₀⟩ ← gcd iM t₁ t₂ disch nonzero
-          return ⟨L, ((n₁, e₁), i₁) :: l₁', ((n₂, e₂), i₂) :: l₂',
-            (q(NF.eval_mul_eval_cons $n₁ $e₁ $pf₁):), (q(NF.eval_mul_eval_cons $n₂ $e₂ $pf₂):), pf₀⟩
-      else
-        -- the `default` is a "junk" expression:
-        -- the proof doesn't get used when flag `nonzero` is set to false
-        bothPresent t₁ t₂ n₁ n₂ e₁ default i₁
+      try
+        bothPresent t₁ t₂ n₁ n₂ e₁ i₁
+      catch _ =>
+        -- if `bothPresent` fails, don't pull out `e`
+        -- the failure case of `bothPresent` should be:
+        -- * `.none` case: never
+        -- * `.nonzero` case: if `e` can't be proved nonzero
+        -- * `.positive _` case: if `e` can't be proved positive
+        let ⟨L, l₁', l₂', pf₁, pf₂, pf₀⟩ ← gcd iM t₁ t₂ disch cond
+        return ⟨L, ((n₁, e₁), i₁) :: l₁', ((n₂, e₂), i₂) :: l₂',
+          (q(NF.eval_mul_eval_cons $n₁ $e₁ $pf₁):), (q(NF.eval_mul_eval_cons $n₂ $e₂ $pf₂):), pf₀⟩
     else
       let ⟨L, l₂', l₁', pf₂, pf₁, pf₀⟩ ← absent t₂ (((n₁, e₁), i₁) :: t₁) n₂ e₂ i₂
       return ⟨L, l₁', l₂', q($pf₁), q($pf₂), pf₀⟩
@@ -337,8 +407,6 @@ partial def gcd (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M)
 end qNF
 
 /-! ### Core of the `field_simp` tactic -/
-
-variable {M : Q(Type v)}
 
 /-- The main algorithm behind the `field_simp` tactic: partially-normalizing an
 expression in a field `M` into the form x1 ^ c1 * x2 ^ c2 * ... x_k ^ c_k,
@@ -377,7 +445,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
     let ⟨G, pf_y⟩ := ← Sign.div iM y₁ y₂ g₁ g₂
     pure ⟨q($y₁ / $y₂), ⟨G, q(Eq.trans (congr_arg₂ HDiv.hDiv $pf₁_sgn $pf₂_sgn) $pf_y)⟩,
       qNF.div l₁ l₂, q(NF.div_eq_eval $pf₁ $pf₂ $pf)⟩
-  /- normalize a inversion: `y⁻¹` -/
+  /- normalize an inversion: `y⁻¹` -/
   | ~q($y⁻¹) =>
     let ⟨y', ⟨g, pf_sgn⟩, l, pf⟩ ← normalize disch iM y
     let pf_y ← Sign.inv iM y' g
@@ -405,7 +473,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
       let pf_s ← mkDecideProofQ q($s ≠ 0)
       let ⟨G, pf_y⟩ ← Sign.pow iM y' g s
       let pf_y' := q(Eq.trans (congr_arg (· ^ $s) $pf_sgn) $pf_y)
-      pure ⟨q($y' ^ $s), ⟨G, pf_y'⟩, l.onExponent (HMul.hMul s), (q(NF.pow_eq_eval $pf_s $pf):)⟩
+      pure ⟨q($y' ^ $s), ⟨G, pf_y'⟩, l.onExponent (↑s * ·), (q(NF.pow_eq_eval $pf_s $pf):)⟩
   /- normalize a `(1:M)` -/
   | ~q(1) => pure ⟨q(1), ⟨Sign.plus,  q(rfl)⟩, [], q(NF.one_eq_eval $M)⟩
   /- normalize an addition: `a + b` -/
@@ -415,7 +483,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
       assumeInstancesCommute
       let ⟨_, ⟨g₁, pf_sgn₁⟩, l₁, pf₁⟩ ← normalize disch iM a
       let ⟨_, ⟨g₂, pf_sgn₂⟩, l₂, pf₂⟩ ← normalize disch iM b
-      let ⟨L, l₁', l₂', pf₁', pf₂', _⟩ ← l₁.gcd iM l₂ disch false
+      let ⟨L, l₁', l₂', pf₁', pf₂', _⟩ ← l₁.gcd iM l₂ disch .none
       let ⟨e₁, pf₁''⟩ ← qNF.evalPretty iM l₁'
       let ⟨e₂, pf₂''⟩ ← qNF.evalPretty iM l₂'
       have pf_a := ← Sign.mkEqMul iM pf_sgn₁ q(Eq.trans $pf₁ (Eq.symm $pf₁')) pf₁''
@@ -434,7 +502,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
       assumeInstancesCommute
       let ⟨_, ⟨g₁, pf_sgn₁⟩, l₁, pf₁⟩ ← normalize disch iM a
       let ⟨_, ⟨g₂, pf_sgn₂⟩, l₂, pf₂⟩ ← normalize disch iM b
-      let ⟨L, l₁', l₂', pf₁', pf₂', _⟩ ← l₁.gcd iM l₂ disch false
+      let ⟨L, l₁', l₂', pf₁', pf₂', _⟩ ← l₁.gcd iM l₂ disch .none
       let ⟨e₁, pf₁''⟩ ← qNF.evalPretty iM l₁'
       let ⟨e₂, pf₂''⟩ ← qNF.evalPretty iM l₂'
       have pf_a := ← Sign.mkEqMul iM pf_sgn₁ q(Eq.trans $pf₁ (Eq.symm $pf₁')) pf₁''
@@ -476,12 +544,49 @@ def reduceEqQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
     AtomM (Σ f₁ f₂ : Q($M), Q(($e₁ = $e₂) = ($f₁ = $f₂))) := do
   let ⟨_, ⟨g₁, pf_sgn₁⟩, l₁, pf_l₁⟩ ← normalize disch iM e₁
   let ⟨_, ⟨g₂, pf_sgn₂⟩, l₂, pf_l₂⟩ ← normalize disch iM e₂
-  let ⟨_, l₁', l₂', pf_lhs, pf_rhs, pf₀⟩ ← l₁.gcd iM l₂ disch true
+  let ⟨L, l₁', l₂', pf_lhs, pf_rhs, pf₀⟩ ← l₁.gcd iM l₂ disch .nonzero
+  let pf₀ : Q(NF.eval $(qNF.toNF L) ≠ 0) := pf₀
   let ⟨f₁', pf_l₁'⟩ ← l₁'.evalPretty iM
   let ⟨f₂', pf_l₂'⟩ ← l₂'.evalPretty iM
   have pf_ef₁ := ← Sign.mkEqMul iM pf_sgn₁ q(Eq.trans $pf_l₁ (Eq.symm $pf_lhs)) pf_l₁'
   have pf_ef₂ := ← Sign.mkEqMul iM pf_sgn₂ q(Eq.trans $pf_l₂ (Eq.symm $pf_rhs)) pf_l₂'
   return ⟨g₁.expr f₁', g₂.expr f₂', q(eq_eq_cancel_eq $pf_ef₁ $pf_ef₂ $pf₀)⟩
+
+/-- Given `e₁` and `e₂`, cancel positive factors to construct a new inequality which is logically
+equivalent to `e₁ ≤ e₂`. -/
+def reduceLeQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
+    (iM : Q(CommGroupWithZero $M)) (iM' : Q(PartialOrder $M))
+    (iM'' : Q(PosMulStrictMono $M)) (iM''' : Q(PosMulReflectLE $M)) (iM'''' : Q(ZeroLEOneClass $M))
+    (e₁ e₂ : Q($M)) :
+    AtomM (Σ f₁ f₂ : Q($M), Q(($e₁ ≤ $e₂) = ($f₁ ≤ $f₂))) := do
+  let ⟨_, ⟨g₁, pf_sgn₁⟩, l₁, pf_l₁⟩ ← normalize disch iM e₁
+  let ⟨_, ⟨g₂, pf_sgn₂⟩, l₂, pf_l₂⟩ ← normalize disch iM e₂
+  let ⟨L, l₁', l₂', pf_lhs, pf_rhs, pf₀⟩
+    ← l₁.gcd iM l₂ disch (.positive iM' iM'' q(inferInstance) iM'''')
+  let pf₀ : Q(0 <  NF.eval $(qNF.toNF L)) := pf₀
+  let ⟨f₁', pf_l₁'⟩ ← l₁'.evalPretty iM
+  let ⟨f₂', pf_l₂'⟩ ← l₂'.evalPretty iM
+  have pf_ef₁ := ← Sign.mkEqMul iM pf_sgn₁ q(Eq.trans $pf_l₁ (Eq.symm $pf_lhs)) pf_l₁'
+  have pf_ef₂ := ← Sign.mkEqMul iM pf_sgn₂ q(Eq.trans $pf_l₂ (Eq.symm $pf_rhs)) pf_l₂'
+  return ⟨g₁.expr f₁', g₂.expr f₂', q(le_eq_cancel_le $pf_ef₁ $pf_ef₂ $pf₀)⟩
+
+/-- Given `e₁` and `e₂`, cancel positive factors to construct a new inequality which is logically
+equivalent to `e₁ < e₂`. -/
+def reduceLtQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
+    (iM : Q(CommGroupWithZero $M)) (iM' : Q(PartialOrder $M))
+    (iM'' : Q(PosMulStrictMono $M)) (iM''' : Q(PosMulReflectLT $M)) (iM'''' : Q(ZeroLEOneClass $M))
+    (e₁ e₂ : Q($M)) :
+    AtomM (Σ f₁ f₂ : Q($M), Q(($e₁ < $e₂) = ($f₁ < $f₂))) := do
+  let ⟨_, ⟨g₁, pf_sgn₁⟩, l₁, pf_l₁⟩ ← normalize disch iM e₁
+  let ⟨_, ⟨g₂, pf_sgn₂⟩, l₂, pf_l₂⟩ ← normalize disch iM e₂
+  let ⟨L, l₁', l₂', pf_lhs, pf_rhs, pf₀⟩
+    ← l₁.gcd iM l₂ disch (.positive iM' iM'' iM''' iM'''')
+  let pf₀ : Q(0 <  NF.eval $(qNF.toNF L)) := pf₀
+  let ⟨f₁', pf_l₁'⟩ ← l₁'.evalPretty iM
+  let ⟨f₂', pf_l₂'⟩ ← l₂'.evalPretty iM
+  have pf_ef₁ := ← Sign.mkEqMul iM pf_sgn₁ q(Eq.trans $pf_l₁ (Eq.symm $pf_lhs)) pf_l₁'
+  have pf_ef₂ := ← Sign.mkEqMul iM pf_sgn₂ q(Eq.trans $pf_l₂ (Eq.symm $pf_rhs)) pf_l₂'
+  return ⟨g₁.expr f₁', g₂.expr f₂', q(lt_eq_cancel_lt $pf_ef₁ $pf_ef₂ $pf₀)⟩
 
 /-- Given `x` in a commutative group-with-zero, construct a new expression in the standard form
 *** / *** (all denominators at the end) which is equal to `x`. -/
@@ -502,28 +607,47 @@ def reduceExpr (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (x :
   let ⟨e, pf⟩ ← reduceExprQ disch iK x
   return { expr := e, proof? := some pf }
 
-/-- Given an equality `a = b`, cancel nonzero factors to construct a new equality which is logically
-equivalent to `a = b`. -/
-def reduceEq (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (t : Expr) :
+/-- Given an (in)equality `a = b` (respectively, `a ≤ b`, `a < b`), cancel nonzero (resp. positive)
+factors to construct a new (in)equality which is logically equivalent to `a = b` (respectively,
+`a ≤ b`, `a < b`). -/
+def reduceProp (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (t : Expr) :
     AtomM Simp.Result := do
-  let some ⟨_, a, b⟩ := t.eq? | throwError "not an equality"
+  let ⟨i, _, a, b⟩ ← t.ineq?
   -- infer `u` and `K : Q(Type u)` such that `x : Q($K)`
   let ⟨u, K, a⟩ ← inferTypeQ' a
   -- find a `CommGroupWithZero` instance on `K`
   let iK : Q(CommGroupWithZero $K) ← synthInstanceQ q(CommGroupWithZero $K)
-  trace[Tactic.field_simp] "clearing denominators in {a} = {b}"
-  -- run the core equality-transforming mechanism on `a = b`
-  let ⟨a', b', pf⟩ ← reduceEqQ disch iK a b
-  let t' ← mkAppM `Eq #[a', b']
-  return { expr := t', proof? := pf }
+  trace[Tactic.field_simp] "clearing denominators in {a} ~ {b}"
+  -- run the core (in)equality-transforming mechanism on `a =/≤/< b`
+  match i with
+  | .eq =>
+    let ⟨a', b', pf⟩ ← reduceEqQ disch iK a b
+    let t' ← mkAppM `Eq #[a', b']
+    return { expr := t', proof? := pf }
+  | .le =>
+    let iK' : Q(PartialOrder $K) ← synthInstanceQ q(PartialOrder $K)
+    let iK'' : Q(PosMulStrictMono $K) ← synthInstanceQ q(PosMulStrictMono $K)
+    let iK''' : Q(PosMulReflectLE $K) ← synthInstanceQ q(PosMulReflectLE $K)
+    let iK'''' : Q(ZeroLEOneClass $K) ← synthInstanceQ q(ZeroLEOneClass $K)
+    let ⟨a', b', pf⟩ ← reduceLeQ disch iK iK' iK'' iK''' iK'''' a b
+    let t' ← mkAppM `LE.le #[a', b']
+    return { expr := t', proof? := pf }
+  | _ =>
+    let iK' : Q(PartialOrder $K) ← synthInstanceQ q(PartialOrder $K)
+    let iK'' : Q(PosMulStrictMono $K) ← synthInstanceQ q(PosMulStrictMono $K)
+    let iK''' : Q(PosMulReflectLT $K) ← synthInstanceQ q(PosMulReflectLT $K)
+    let iK'''' : Q(ZeroLEOneClass $K) ← synthInstanceQ q(ZeroLEOneClass $K)
+    let ⟨a', b', pf⟩ ← reduceLtQ disch iK iK' iK'' iK''' iK'''' a b
+    let t' ← mkAppM `LT.lt #[a', b']
+    return { expr := t', proof? := pf }
 
 /-! ### Frontend -/
 
 open Elab Tactic Lean.Parser.Tactic
 
-/-- If the user provided a discharger, elaborate it. If not, we will use the `field_simp` default
-discharger, which (among other things) includes a simp-run for the specified argument list, so we
-elaborate those arguments. -/
+/-- If the user provided a discharger, elaborate it. If not, we will use the `field_simp_discharge`
+default discharger, which (among other things) includes a simp-run for the specified argument list,
+so we elaborate those arguments. -/
 def parseDischarger (d : Option (TSyntax ``discharger)) (args : Option (TSyntax ``simpArgs)) :
     TacticM (∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) := do
   match d with
@@ -541,37 +665,85 @@ def parseDischarger (d : Option (TSyntax ``discharger)) (args : Option (TSyntax 
     | _ => throwError "could not parse the provided discharger {d}"
 
 /--
-The goal of `field_simp` is to reduce an expression in a field to an expression of the form `n / d`
-where neither `n` nor `d` contains any division symbol.
+`field_simp` normalizes expressions in (semi-)fields by rewriting them to a common denominator,
+i.e. to reduce them to expressions of the form `n / d` where neither `n` nor `d` contains any
+division symbol. The `field_simp` tactic will also clear denominators in field *(in)equalities*, by
+cross-multiplying.
 
-If the goal is an equality, this tactic will also clear the denominators, so that the proof
-can normally be concluded by an application of `ring`.
+A very common pattern is `field_simp; ring` (clear denominators, then the resulting goal is
+solvable by the axioms of a commutative ring). The finishing tactic `field` is a shorthand for this
+pattern.
 
-For example,
-```lean
-example (a b c d x y : ℂ) (hx : x ≠ 0) (hy : y ≠ 0) :
-    a + b / x + c / x ^ 2 + d / x ^ 3 = a + x⁻¹ * (y * b / y + (d / x + c) / x) := by
-  field_simp
-  ring
+The tactic will try discharge proofs of nonzeroness of denominators, and skip steps if discharging
+fails. These denominators are made out of denominators appearing in the input expression,
+by repeatedly taking products or divisors. The default discharger can be non-universal, i.e. can be
+specific to the field at hand (order properties, explicit `≠ 0` hypotheses, `CharZero` if that is
+known, etc). See `field_simp_discharge` for full details of the default discharger algorithm.
+
+* `field_simp at l1 l2 ...` can be used to normalize at the given locations.
+* `field_simp (disch := tac)` uses the tactic sequence `tac` to discharge nonzeroness/positivity
+  proofs.
+* `field_simp [t₁, ..., tₙ]` provides terms `t₁`, ..., `tₙ` to the discharger for
+  nonzeroness/positivity proofs.
+
+Examples:
 ```
+-- `x / (1 - y) / (1 + y / (1 - y))` is reduced to `x / (1 - y + y)`
+example (x y z : ℚ) (hy : 1 - y ≠ 0) :
+    ⌊x / (1 - y) / (1 + y / (1 - y))⌋ < 3 := by
+  field_simp
+  -- new goal: `⊢ ⌊x / (1 - y + y)⌋ < 3`
+  sorry
 
-Cancelling and combining denominators often requires "nonzeroness" side conditions. The `field_simp`
-tactic attempts to discharge these, and will omit such steps if it cannot discharge the
-corresponding side conditions. The discharger will try, among other things, `positivity` and
-`norm_num`, and will also use any nonzeroness proofs included explicitly (e.g. `field_simp [hx]`).
-If your expression is not completely reduced by `field_simp`, check the denominators of the
-resulting expression and provide proofs that they are nonzero to enable further progress.
+-- `field_simp` will clear the `x` denominators in the following equation
+example {K : Type*} [Field K] {x : K} (hx0 : x ≠ 0) :
+    (x + 1 / x) ^ 2 + (x + 1 / x) = 1 := by
+  field_simp
+  -- new goal: `⊢ (x ^ 2 + 1) * (x ^ 2 + 1 + x) = x ^ 2`
+  sorry
+```
 -/
 elab (name := fieldSimp) "field_simp" d:(discharger)? args:(simpArgs)? loc:(location)? :
     tactic => withMainContext do
   let disch ← parseDischarger d args
   let s ← IO.mkRef {}
   let cleanup r := do r.mkEqTrans (← simpOnlyNames [] r.expr) -- convert e.g. `x = x` to `True`
-  let m := AtomM.recurse s {} (fun e ↦ reduceEq disch e <|> reduceExpr disch e) cleanup
+  let m := AtomM.recurse s { contextual := true } (wellBehavedDischarge := false)
+    (fun e ↦ reduceProp disch e <|> reduceExpr disch e) cleanup
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  transformAtLocation (m ·) "field_simp" (failIfUnchanged := true) (mayCloseGoalFromHyp := true) loc
+  transformAtLocation
+    (m ·) "`field_simp`" (failIfUnchanged := true) (mayCloseGoalFromHyp := true) loc
 
-@[inherit_doc fieldSimp]
+/--
+`field_simp` normalizes an expression in a (semi-)field by rewriting it to a common denominator,
+i.e. to reduce it to an expression of the form `n / d` where neither `n` nor `d` contains any
+division symbol.
+
+The `field_simp` conv tactic is a variant of the main (i.e., not conv) `field_simp` tactic. The
+latter operates recursively on subexpressions, bringing *every* field-expression encountered to the
+form `n / d`.
+
+The tactic will try discharge proofs of nonzeroness of denominators, and skip steps if discharging
+fails. These denominators are made out of denominators appearing in the input expression,
+by repeatedly taking products or divisors. The default discharger can be non-universal, i.e. can be
+specific to the field at hand (order properties, explicit `≠ 0` hypotheses, `CharZero` if that is
+known, etc). See `field_simp_discharge` for full details of the default discharger algorithm.
+
+* `field_simp (disch := tac)` uses the tactic sequence `tac` to discharge nonzeroness/positivity
+  proofs.
+* `field_simp [t₁, ..., tₙ]` provides terms `t₁`, ..., `tₙ` to the discharger for
+  nonzeroness/positivity proofs.
+
+Examples:
+
+```
+-- `x / (1 - y) / (1 + y / (1 - y))` is reduced to `x / (1 - y + y)`:
+example (x y z : ℚ) (hy : 1 - y ≠ 0) :
+    ⌊x / (1 - y) / (1 + y / (1 - y))⌋ < 3 := by
+  conv => enter [1, 1]; field_simp
+  -- new goal: `⊢ ⌊x / (1 - y + y)⌋ < 3`
+```
+-/
 elab "field_simp" d:(discharger)? args:(simpArgs)? : conv => do
   -- find the expression `x` to `conv` on
   let x ← Conv.getLhs
@@ -581,24 +753,54 @@ elab "field_simp" d:(discharger)? args:(simpArgs)? : conv => do
   -- convert `x` to the output of the normalization
   Conv.applySimpResult r
 
-end Mathlib.Tactic.FieldSimp
+/--
+`field` is a `simp` set that clears denominators in (semi-)field (in)equalities.
 
-open Mathlib.Tactic
+The `field` simp set is a variant of the `field_simp` tactic. The latter operates recursively on
+subexpressions, bringing every field-expression encountered to the form `n / d`, and then attempts
+to clear the denominator. (For confluence reasons, the `field` simprocs also have a slightly
+different normal form from `field_simp`'s.)
 
-simproc_decl field (Eq _ _) := fun (t : Expr) ↦ do
+The tactic will try discharge proofs of nonzeroness of denominators, and skip steps if discharging
+fails. These denominators are made out of denominators appearing in the input expression,
+by repeatedly taking products or divisors. The discharger can be non-universal, i.e. can be specific
+to the field at hand (order properties, explicit `≠ 0` hypotheses, `CharZero` if that is known,
+etc). See `field_simp_discharge` for full details of the discharger algorithm.
+
+* `simp [field, t₁, ..., tₙ]` provides terms `t₁`, ..., `tₙ` to the discharger for
+  nonzeroness/positivity proofs.
+
+Examples:
+```
+example {K : Type*} [Field K] {x : K} (hx0 : x ≠ 0) :
+    (x + 1 / x) ^ 2 + (x + 1 / x) = 1 := by
+  simp only [field]
+  -- new goal: `⊢ (x ^ 2 + 1) * (x ^ 2 + 1 + x) = x ^ 2`
+```
+-/
+def proc : Simp.Simproc := fun (t : Expr) ↦ do
   let ctx ← Simp.getContext
   let disch e : MetaM Expr := Prod.fst <$> (FieldSimp.discharge e).run ctx >>= Option.getM
   try
-    let r ← AtomM.run .reducible <| FieldSimp.reduceEq disch t
+    let r ← AtomM.run .reducible <| FieldSimp.reduceProp disch t
     -- the `field_simp`-normal form is in opposition to the `simp`-lemmas `one_div` and `mul_inv`,
     -- so we need to undo any such lemma applications, otherwise we can get infinite loops
     return .visit <| ← r.mkEqTrans (← simpOnlyNames [``one_div, ``mul_inv] r.expr)
   catch _ =>
     return .continue
 
-attribute [inherit_doc FieldSimp.fieldSimp] field
+end Mathlib.Tactic.FieldSimp
+
+open Mathlib.Tactic
+
+simproc_decl fieldEq (Eq _ _) := FieldSimp.proc
+simproc_decl fieldLe (LE.le _ _) := FieldSimp.proc
+simproc_decl fieldLt (LT.lt _ _) := FieldSimp.proc
+
+attribute [field, inherit_doc FieldSimp.proc] fieldEq fieldLe fieldLt
 
 /-!
  We register `field_simp` with the `hint` tactic.
  -/
-register_hint field_simp
+register_hint 1000 field_simp
+register_try?_tactic (priority := 1000) field_simp

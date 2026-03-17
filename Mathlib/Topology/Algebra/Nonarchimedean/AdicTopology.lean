@@ -3,9 +3,13 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.Topology.Algebra.Nonarchimedean.Bases
-import Mathlib.Topology.Algebra.UniformRing
+module
+
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
+import Mathlib.Topology.Algebra.UniformRing  -- shake: keep (used in `example` only)
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+
 
 /-!
 # Adic topology
@@ -40,6 +44,8 @@ to make sure it is definitionally equal to the `I`-topology on `R` seen as an `R
 
 -/
 
+@[expose] public section
+
 
 variable {R : Type*} [CommRing R]
 
@@ -71,11 +77,13 @@ theorem adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ => (I ^ n •
       exact (I ^ n).smul_mem x hb }
 
 /-- The adic ring filter basis associated to an ideal `I` is made of powers of `I`. -/
+@[implicit_reducible]
 def ringFilterBasis (I : Ideal R) :=
   I.adic_basis.toRing_subgroups_basis.toRingFilterBasis
 
 /-- The adic topology associated to an ideal `I`. This topology admits powers of `I` as a basis of
 neighborhoods of zero. It is compatible with the ring structure and is non-archimedean. -/
+@[implicit_reducible]
 def adicTopology (I : Ideal R) : TopologicalSpace R :=
   (adic_basis I).topology
 
@@ -119,6 +127,7 @@ theorem adic_module_basis :
 
 /-- The topology on an `R`-module `M` associated to an ideal `M`. Submodules $I^n M$,
 written `I^n • ⊤` form a basis of neighborhoods of zero. -/
+@[implicit_reducible]
 def adicModuleTopology : TopologicalSpace M :=
   @ModuleFilterBasis.topology R M _ I.adic_basis.topology _ _
     (I.ringFilterBasis.moduleFilterBasis (I.adic_module_basis M))
@@ -204,6 +213,16 @@ theorem is_bot_adic_iff {A : Type*} [CommRing A] [TopologicalSpace A] [IsTopolog
       use 1
       simp [mem_of_mem_nhds U_nhds]
 
+omit [IsTopologicalRing R] in
+theorem IsAdic.hasBasis_nhds_zero {I : Ideal R} (hI : IsAdic I) :
+    (𝓝 (0 : R)).HasBasis (fun _ ↦ True) fun n ↦ ↑(I ^ n) :=
+  hI ▸ Ideal.hasBasis_nhds_zero_adic I
+
+omit [IsTopologicalRing R] in
+theorem IsAdic.hasBasis_nhds {I : Ideal R} (hI : IsAdic I) (x : R) :
+    (𝓝 x).HasBasis (fun _ ↦ True) fun n ↦ (x + ·) '' ↑(I ^ n) :=
+  hI ▸ Ideal.hasBasis_nhds_adic I x
+
 end IsAdic
 
 /-- The ring `R` is equipped with a preferred ideal. -/
@@ -222,13 +241,14 @@ instance (priority := 100) : NonarchimedeanRing R :=
   RingSubgroupsBasis.nonarchimedean _
 
 instance (priority := 100) : UniformSpace R :=
-  IsTopologicalAddGroup.toUniformSpace R
+  IsTopologicalAddGroup.rightUniformSpace R
 
 instance (priority := 100) : IsUniformAddGroup R :=
   isUniformAddGroup_of_addCommGroup
 
 /-- The adic topology on an `R` module coming from the ideal `WithIdeal.I`.
 This cannot be an instance because `R` cannot be inferred from `M`. -/
+@[implicit_reducible]
 def topologicalSpaceModule (M : Type*) [AddCommGroup M] [Module R M] : TopologicalSpace M :=
   (i : Ideal R).adicModuleTopology M
 

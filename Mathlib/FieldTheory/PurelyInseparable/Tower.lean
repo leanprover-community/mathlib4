@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.LinearDisjoint
-import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
+module
+
+public import Mathlib.FieldTheory.LinearDisjoint
+public import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
 
 /-!
 
@@ -40,6 +42,8 @@ This file contains results related to `Field.sepDegree`, `Field.insepDegree` and
 separable degree, degree, separable closure, purely inseparable
 
 -/
+
+public section
 
 open Polynomial IntermediateField Field
 
@@ -84,7 +88,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
       Finsupp.onFinset_sum _ (fun _ ↦ by exact zero_smul _ _)]
     refine Finset.sum_congr rfl fun i _ ↦ ?_
     simp_rw [Algebra.smul_def, mul_pow, IsScalarTower.algebraMap_apply F E K, hlF, map_pow]
-  refine pow_eq_zero ((hlF _).symm.trans ?_)
+  refine eq_zero_of_pow_eq_zero ((hlF _).symm.trans ?_)
   convert map_zero (algebraMap F E)
   exact congr($h i)
 
@@ -138,6 +142,7 @@ lemma insepDegree_eq_of_isSeparable [Algebra.IsSeparable F E] :
   rw [insepDegree, insepDegree, separableClosure.eq_restrictScalars_of_isSeparable F E K]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable,
 then $[K:F]_s = [K:E]_s$.
 It is a special case of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`, and is an
@@ -168,6 +173,7 @@ lemma rank_mul_insepDegree_of_isPurelyInseparable (K : Type v) [Field K] [Algebr
     Module.rank F E * insepDegree E K = insepDegree F K := by
   simpa only [Cardinal.lift_id] using lift_rank_mul_lift_insepDegree_of_isPurelyInseparable F E K
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then their
 separable degrees satisfy the tower law: $[E:F]_s [K:E]_s = [K:F]_s$. -/
 theorem lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic [Algebra.IsAlgebraic F E] :
@@ -183,6 +189,7 @@ theorem sepDegree_mul_sepDegree_of_isAlgebraic (K : Type v) [Field K] [Algebra F
     sepDegree F E * sepDegree E K = sepDegree F K := by
   simpa only [Cardinal.lift_id] using lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic F E K
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then their
 inseparable degrees satisfy the tower law: $[E:F]_i [K:E]_i = [K:F]_i$. -/
 theorem lift_insepDegree_mul_lift_insepDegree_of_isAlgebraic [Algebra.IsAlgebraic F E] :
@@ -208,6 +215,7 @@ theorem finInsepDegree_mul_finInsepDegree_of_isAlgebraic [Algebra.IsAlgebraic F 
 
 end Field
 
+set_option backward.isDefEq.respectTransparency false in
 variable {F K} in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable, then
 for any subset `S` of `K` such that `F(S) / F` is algebraic, the `E(S) / E` and `F(S) / F` have
@@ -254,6 +262,7 @@ theorem IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInsepara
   have := sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable (F := F) E (S : Set K)
   rwa [adjoin_self] at this
 
+set_option backward.isDefEq.respectTransparency false in
 variable {F K} in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable, then
 for any element `x` of `K` separable over `F`, it has the same minimal polynomials over `F` and
@@ -269,7 +278,6 @@ theorem minpoly.map_eq_of_isSeparable_of_isPurelyInseparable (x : K)
   haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
   haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep'
   have := Algebra.IsSeparable.isAlgebraic F F⟮x⟯
-  have := Algebra.IsSeparable.isAlgebraic E E⟮x⟯
   rw [Polynomial.natDegree_map, ← adjoin.finrank hi, ← adjoin.finrank hi',
     ← finSepDegree_eq_finrank_of_isSeparable F _, ← finSepDegree_eq_finrank_of_isSeparable E _,
     finSepDegree_eq, finSepDegree_eq,

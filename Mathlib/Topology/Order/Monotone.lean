@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Tactic.Order
-import Mathlib.Topology.Order.IsLUB
+module
+
+public import Mathlib.Tactic.Order
+public import Mathlib.Topology.Order.IsLUB
 
 /-!
 # Monotone functions on an order topology
@@ -14,6 +16,8 @@ linearly-ordered sets (with the order topology). For example, we prove that a mo
 has left and right limits at any point (`Monotone.tendsto_nhdsLT`, `Monotone.tendsto_nhdsGT`).
 
 -/
+
+public section
 
 open Set Filter TopologicalSpace Topology Function
 
@@ -33,13 +37,13 @@ lemma MonotoneOn.insert_of_continuousWithinAt [TopologicalSpace β] [OrderClosed
   apply monotoneOn_insert_iff.2 ⟨fun b hb hbx ↦ ?_, fun b hb hxb ↦ ?_, hf⟩
   · rcases hbx.eq_or_lt with rfl | hbx
     · exact le_rfl
-    simp [ContinuousWithinAt] at h'x
+    simp only [ContinuousWithinAt] at h'x
     apply ge_of_tendsto h'x
     have : s ∩ Ioi b ∈ 𝓝[s] x := inter_mem_nhdsWithin _ (Ioi_mem_nhds hbx)
     filter_upwards [this] with y hy using hf hb hy.1 (le_of_lt hy.2)
   · rcases hxb.eq_or_lt with rfl | hxb
     · exact le_rfl
-    simp [ContinuousWithinAt] at h'x
+    simp only [ContinuousWithinAt] at h'x
     apply le_of_tendsto h'x
     have : s ∩ Iio b ∈ 𝓝[s] x := inter_mem_nhdsWithin _ (Iio_mem_nhds hxb)
     filter_upwards [this] with y hy

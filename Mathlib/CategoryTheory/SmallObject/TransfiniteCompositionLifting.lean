@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
-import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
-import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
+module
+
+public import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
+public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 
 /-!
 # The left lifting property is stable under transfinite composition
@@ -49,6 +51,8 @@ This is constructed by transfinite induction on `j`:
 * When `j` is a limit element, we use the "continuity" of `F`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -99,11 +103,13 @@ attribute [reassoc (attr := simp)] w₁ w₂
 
 variable {c p f g} {j : J} (sq' : SqStruct c p f g j)
 
+set_option backward.isDefEq.respectTransparency false in
 include sq' in
 @[reassoc]
 lemma w : f ≫ p = c.ι.app ⊥ ≫ g := by
   rw [← sq'.w₁, assoc, sq'.w₂, Cocone.w_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given `sq' : SqStruct c p f g j`, this is the commutative square
 ```
@@ -122,6 +128,7 @@ lemma sq [SuccOrder J] :
     CommSq sq'.f' (F.map (homOfLE (Order.le_succ j))) p (c.ι.app _ ≫ g) where
   w := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `sqFunctor`. -/
 @[simps]
 def map {j' : J} (α : j' ⟶ j) : SqStruct c p f g j' where
@@ -145,6 +152,7 @@ namespace wellOrderInductionData
 variable {p c f g} {j : J} (hj : Order.IsSuccLimit j)
   (s : ((OrderHom.Subtype.val (· ∈ Set.Iio j)).monotone.functor.op ⋙ sqFunctor c p f g).sections)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `transfiniteComposition.wellOrderInductionData`. -/
 noncomputable def liftHom : F.obj j ⟶ X :=
   (F.isColimitOfIsWellOrderContinuous j hj).desc
@@ -160,6 +168,7 @@ lemma liftHom_fac (i : J) (hi : i < j) :
     F.map (homOfLE hi.le) ≫ liftHom hj s = (s.1 ⟨⟨i, hi⟩⟩).f' :=
   (F.isColimitOfIsWellOrderContinuous j hj).fac _ ⟨i, hi⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `transfiniteComposition.wellOrderInductionData`. -/
 @[simps]
 noncomputable def lift : (sqFunctor c p f g).obj (Opposite.op j) where
@@ -183,13 +192,18 @@ lemma map_lift {i : J} (hij : i < j) :
 end wellOrderInductionData
 
 variable {p} [SuccOrder J] [WellFoundedLT J]
-  (hF : ∀ (j : J) (_ : ¬IsMax j), HasLiftingProperty (F.map (homOfLE (Order.le_succ j))) p)
+
+section
+
+variable (hF : ∀ (j : J) (_ : ¬IsMax j),
+  HasLiftingPropertyFixedBot (F.map (homOfLE (Order.le_succ j))) p (c.ι.app _ ≫ g))
 
 open wellOrderInductionData in
 /-- The projective system `sqFunctor c p f g` has a `WellOrderInductionData` structure. -/
 noncomputable def wellOrderInductionData :
     (sqFunctor c p f g).WellOrderInductionData where
   succ j hj sq' :=
+    have := hF j hj sq'.f'
     have := hF j hj
     { f' := sq'.sq.lift
       w₁ := by
@@ -205,6 +219,7 @@ include hF hc
 
 variable {c f g} (sq : CommSq f (c.ι.app ⊥) p g)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasLift : sq.HasLift := by
   obtain ⟨s, hs⟩ := (wellOrderInductionData c f g hF).surjective { w₂ := sq.w, .. }
   replace hs := congr_arg SqStruct.f' hs
@@ -219,8 +234,17 @@ lemma hasLift : sq.HasLift := by
     fac_left := by rw [hl, hs]
     fac_right := hc.hom_ext (fun j ↦ by rw [reassoc_of% (hl j), SqStruct.w₂])}⟩⟩
 
+lemma hasLiftingPropertyFixedBot_ι_app_bot : HasLiftingPropertyFixedBot (c.ι.app ⊥) p g :=
+  fun _ sq ↦ hasLift hc hF sq
+
+end
+
+variable {c} (hF : ∀ (j : J) (_ : ¬IsMax j),
+  HasLiftingProperty (F.map (homOfLE (Order.le_succ j))) p)
+
+include hc hF
 lemma hasLiftingProperty_ι_app_bot : HasLiftingProperty (c.ι.app ⊥) p where
-  sq_hasLift sq := hasLift hc hF sq
+  sq_hasLift sq := hasLift hc (fun j hj _ _ ↦ by have := hF j hj; infer_instance) sq
 
 end transfiniteComposition
 
@@ -231,6 +255,7 @@ namespace MorphismProperty
 variable (W : MorphismProperty C)
   (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
 
+set_option backward.isDefEq.respectTransparency false in
 instance isStableUnderTransfiniteCompositionOfShape_llp :
     W.llp.IsStableUnderTransfiniteCompositionOfShape J := by
   rw [isStableUnderTransfiniteCompositionOfShape_iff]

@@ -3,11 +3,12 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.LinearAlgebra.PiTensorProduct
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Data.Finset.NoncommProd
+public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Data.Finset.NoncommProd
 
 /-!
 # Tensor product of `R`-algebras and rings
@@ -17,6 +18,8 @@ with structure map defined by `r ↦ r • 1`.
 
 In particular if we take `R` to be `ℤ`, then this collapses into the tensor product of rings.
 -/
+
+@[expose] public section
 
 open TensorProduct Function
 
@@ -153,7 +156,7 @@ instance instAlgebra : Algebra R' (⨂[R] i, A i) where
   algebraMap :=
   { toFun := (· • 1)
     map_one' := by simp
-    map_mul' r s := show (r * s) • 1 = mul (r • 1) (s • 1)  by
+    map_mul' r s := show (r * s) • 1 = mul (r • 1) (s • 1) by
       rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply, mul_comm,
         mul_smul]
       congr

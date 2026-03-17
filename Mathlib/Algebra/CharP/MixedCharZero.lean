@@ -3,9 +3,10 @@ Copyright (c) 2022 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster
 -/
-import Mathlib.Algebra.CharP.LocalRing
-import Mathlib.RingTheory.Ideal.Quotient.Basic
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Algebra.CharP.LocalRing
+public import Mathlib.RingTheory.Ideal.Quotient.Basic
 
 /-!
 # Equal and mixed characteristic
@@ -52,6 +53,8 @@ equivalent conditions.
 
 - Relate mixed characteristic in a local ring to p-adic numbers [NumberTheory.PAdics].
 -/
+
+@[expose] public section
 
 variable (R : Type*) [CommRing R]
 
@@ -149,6 +152,7 @@ Note: Property `(2)` is denoted as `EqualCharZero` in the statement names below.
 
 namespace EqualCharZero
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `ℚ`-algebra implies equal characteristic. -/
 theorem of_algebraRat [Algebra ℚ R] : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   intro I hI
@@ -164,6 +168,7 @@ section ConstructionAlgebraRat
 
 variable {R}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Internal: Not intended to be used outside this local construction. -/
 theorem PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))]
     (n : ℕ+) : IsUnit (n : R) := by
@@ -204,6 +209,7 @@ theorem pnatCast_eq_natCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R �
   simp only [IsUnit.unit_spec]
 
 /-- Equal characteristic implies `ℚ`-algebra. -/
+@[implicit_reducible]
 noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) :
     Algebra ℚ R :=
   haveI : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) := ⟨h⟩
@@ -213,7 +219,7 @@ noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
     map_one' := by simp
     map_mul' := by
       intro a b
-      simp only [divp_assoc', divp_mul_eq_mul_divp, divp_divp_eq_divp_mul, divp_eq_iff_mul_eq,
+      simp only [← divp_assoc, divp_mul_eq_mul_divp, divp_divp_eq_divp_mul, divp_eq_iff_mul_eq,
         pnatCast_eq_natCast, Rat.coe_pnatDen, Units.val_mul]
       trans (↑((a * b).num * a.den * b.den) : R)
       · simp_rw [Int.cast_mul, Int.cast_natCast]
@@ -280,13 +286,12 @@ A ring of characteristic zero is not a `ℚ`-algebra iff it has mixed characteri
 -/
 theorem isEmpty_algebraRat_iff_mixedCharZero [CharZero R] :
     IsEmpty (Algebra ℚ R) ↔ ∃ p > 0, MixedCharZero R p := by
-  rw [← not_iff_not]
-  push_neg
-  rw [not_isEmpty_iff, ← EqualCharZero.iff_not_mixedCharZero]
+  contrapose!
+  rw [← EqualCharZero.iff_not_mixedCharZero]
   apply EqualCharZero.nonempty_algebraRat_iff
 
 /-!
-# Splitting statements into different characteristic
+### Splitting statements into different characteristic
 
 Statements to split a proof by characteristic. There are 3 theorems here that are very
 similar. They only differ in the assumptions we can make on the positive characteristic

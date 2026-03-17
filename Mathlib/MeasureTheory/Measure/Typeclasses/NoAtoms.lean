@@ -3,7 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.Restrict
+module
+
+public import Mathlib.MeasureTheory.Measure.Restrict
+public import Mathlib.Topology.DiscreteSubset
 
 /-!
 # Measures having no atoms
@@ -15,9 +18,11 @@ A measure `μ` has no atoms if the measure of each singleton is zero.
 Should `NoAtoms` be redefined as `∀ s, 0 < μ s → ∃ t ⊆ s, 0 < μ t ∧ μ t < μ s`?
 -/
 
+@[expose] public section
+
 namespace MeasureTheory
 
-open Set Measure
+open Set Measure Filter TopologicalSpace
 
 variable {α : Type*} {m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
 
@@ -58,8 +63,8 @@ theorem _root_.Set.Countable.ae_notMem (h : s.Countable) (μ : Measure α) [NoAt
     ∀ᵐ x ∂μ, x ∉ s := by
   simpa only [ae_iff, Classical.not_not] using h.measure_zero μ
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.Set.Countable.ae_not_mem := _root_.Set.Countable.ae_notMem
+lemma Measure.ae_ne (μ : Measure α) [NoAtoms μ] (a : α) : ∀ᵐ x ∂μ, x ≠ a :=
+  (countable_singleton a).ae_notMem μ
 
 lemma _root_.Set.Countable.measure_restrict_compl (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
     μ.restrict sᶜ = μ :=
@@ -77,6 +82,16 @@ theorem _root_.Finset.measure_zero (s : Finset α) (μ : Measure α) [NoAtoms μ
 
 theorem insert_ae_eq_self (a : α) (s : Set α) : (insert a s : Set α) =ᵐ[μ] s :=
   union_ae_eq_right.2 <| measure_mono_null diff_subset (measure_singleton _)
+
+/-
+If a set has positive measure under an atomless measure, then it has an accumulation point.
+-/
+theorem exists_accPt_of_noAtoms {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
+    {μ : Measure X} [NoAtoms μ] {E : Set X} [SeparableSpace E] (hE : 0 < μ E) :
+    ∃ x, AccPt x (𝓟 E) := by
+  by_contra! h
+  haveI : DiscreteTopology E := discreteTopology_of_noAccPts fun x _ => h x
+  exact hE.ne' <| (Set.countable_coe_iff.mp <| separableSpace_iff_countable.mp ‹_›).measure_zero μ
 
 section
 

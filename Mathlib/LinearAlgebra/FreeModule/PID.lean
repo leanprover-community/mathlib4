@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.Matrix.ToLin
+module
+
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-! # Free modules over PID
 
@@ -45,6 +47,8 @@ free module, finitely generated module, rank, structure theorem
 
 -/
 
+@[expose] public section
+
 open Module
 
 universe u v
@@ -63,7 +67,7 @@ theorem eq_bot_of_generator_maximal_map_eq_zero (b : Basis ι R M) {N : Submodul
   intro x hx
   refine b.ext_elem fun i ↦ ?_
   rw [(eq_bot_iff_generator_eq_zero _).mpr hgen] at hϕ
-  rw [LinearEquiv.map_zero, Finsupp.zero_apply]
+  rw [map_zero, Finsupp.zero_apply]
   exact
     (Submodule.eq_bot_iff _).mp (not_bot_lt_iff.1 <| hϕ (Finsupp.lapply i ∘ₗ ↑b.repr)) _
       ⟨x, hx, rfl⟩
@@ -75,27 +79,17 @@ theorem eq_bot_of_generator_maximal_submoduleImage_eq_zero {N O : Submodule R M}
   intro x hx
   refine (mk_eq_zero _ _).mp (show (⟨x, hNO hx⟩ : O) = 0 from b.ext_elem fun i ↦ ?_)
   rw [(eq_bot_iff_generator_eq_zero _).mpr hgen] at hϕ
-  rw [LinearEquiv.map_zero, Finsupp.zero_apply]
+  rw [map_zero, Finsupp.zero_apply]
   refine (Submodule.eq_bot_iff _).mp (not_bot_lt_iff.1 <| hϕ (Finsupp.lapply i ∘ₗ ↑b.repr)) _ ?_
   exact (LinearMap.mem_submoduleImage_of_le hNO).mpr ⟨x, hx, rfl⟩
 
 end Ring
 
-section IsDomain
-
-variable {ι : Type*} {R : Type*} [CommRing R] [IsDomain R]
-variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
-
-open Submodule.IsPrincipal Set Submodule
-
-theorem dvd_generator_iff {I : Ideal R} [I.IsPrincipal] {x : R} (hx : x ∈ I) :
-    x ∣ generator I ↔ I = Ideal.span {x} := by
-  conv_rhs => rw [← span_singleton_generator I]
-  rw [Ideal.submodule_span_eq, Ideal.span_singleton_eq_span_singleton, ← dvd_dvd_iff_associated,
-    ← mem_iff_generator_dvd]
-  exact ⟨fun h ↦ ⟨hx, h⟩, fun h ↦ h.2⟩
-
-end IsDomain
+open Submodule.IsPrincipal in
+theorem dvd_generator_iff {R : Type*} [CommSemiring R] {I : Ideal R} [I.IsPrincipal] {x : R}
+    (hx : x ∈ I) : x ∣ generator I ↔ I = Ideal.span {x} := by
+  simp_rw [le_antisymm_iff, I.span_singleton_le_iff_mem.2 hx, and_true, ← Ideal.mem_span_singleton]
+  conv_rhs => rw [← span_singleton_generator I, Submodule.span_singleton_le_iff_mem]
 
 section PrincipalIdealDomain
 
@@ -106,7 +100,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
 
 section StrongRankCondition
 
-variable [IsDomain R] [IsPrincipalIdealRing R]
+variable [IsPrincipalIdealRing R]
 
 open Submodule.IsPrincipal
 
@@ -141,6 +135,8 @@ theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ 
     rw [← span_singleton_generator (ϕ.submoduleImage N)]
     exact Ideal.span_singleton_le_span_singleton.mpr d_dvd_left
   · exact subset_span (mem_insert _ _)
+
+variable [IsDomain R]
 
 /-- The induction hypothesis of `Submodule.basisOfPid` and `Submodule.smithNormalForm`.
 
@@ -187,7 +183,6 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
     contradiction
   -- We claim that `ϕ⁻¹ a = y` can be taken as basis element of `N`.
   obtain ⟨y, yN, ϕy_eq⟩ := (LinearMap.mem_submoduleImage_of_le N_le_M).mp a_mem
-  have _ϕy_ne_zero : ϕ ⟨y, N_le_M yN⟩ ≠ 0 := fun h ↦ a_zero (ϕy_eq.symm.trans h)
   -- Write `y` as `a • y'` for some `y'`.
   have hdvd : ∀ i, a ∣ b'M.coord i ⟨y, N_le_M yN⟩ := fun i ↦
     generator_maximal_submoduleImage_dvd N_le_M ϕ_max y yN ϕy_eq (b'M.coord i)
@@ -214,8 +209,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
         a • ϕ ⟨y', y'M⟩ = ϕ ⟨a • y', _⟩ := (ϕ.map_smul a ⟨y', y'M⟩).symm
         _ = ϕ ⟨y, N_le_M yN⟩ := by simp only [a_smul_y']
         _ = a := ϕy_eq
-        _ = a * 1 := (mul_one a).symm
-        )
+        _ = a * 1 := (mul_one a).symm)
   have ϕy'_ne_zero : ϕ ⟨y', y'M⟩ ≠ 0 := by simpa only [ϕy'_eq] using one_ne_zero
   -- `M' := ker (ϕ : M → R)` is smaller than `M` and `N' := ker (ϕ : N → R)` is smaller than `N`.
   let M' : Submodule R O := (LinearMap.ker ϕ).map M.subtype
@@ -235,8 +229,8 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
     obtain ⟨⟨x, xM⟩, hx', rfl⟩ := Submodule.mem_map.mp xM'
     rw [LinearMap.mem_ker] at hx'
     have hc' : (c • ⟨y', y'M⟩ + ⟨x, xM⟩ : M) = 0 := by exact @Subtype.coe_injective O (· ∈ M) _ _ hc
-    simpa only [LinearMap.map_add, LinearMap.map_zero, LinearMap.map_smul, smul_eq_mul, add_zero,
-      mul_eq_zero, ϕy'_ne_zero, hx', or_false] using congr_arg ϕ hc'
+    simpa only [map_add, map_zero, map_smul, smul_eq_mul, add_zero, mul_eq_zero, ϕy'_ne_zero, hx',
+      or_false] using congr_arg ϕ hc'
   -- And `a • y'` is orthogonal to `N'`.
   have ay'_ortho_N' : ∀ (c : R), ∀ z ∈ N', c • a • y' + z = 0 → c = 0 := by
     intro c z zN' hc
@@ -252,7 +246,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
       obtain ⟨b, hb⟩ : _ ∣ ϕ ⟨z, N_le_M zN⟩ := generator_submoduleImage_dvd_of_mem N_le_M ϕ zN
       refine ⟨-b, Submodule.mem_map.mpr ⟨⟨_, N.sub_mem zN (N.smul_mem b yN)⟩, ?_, ?_⟩⟩
       · refine LinearMap.mem_ker.mpr (show ϕ (⟨z, N_le_M zN⟩ - b • ⟨y, N_le_M yN⟩) = 0 from ?_)
-        rw [LinearMap.map_sub, LinearMap.map_smul, hb, ϕy_eq, smul_eq_mul, mul_comm, sub_self]
+        rw [map_sub, map_smul, hb, ϕy_eq, smul_eq_mul, mul_comm, sub_self]
       · simp only [sub_eq_add_neg, neg_smul, coe_subtype]
   -- And extend a basis for `M'` with `y'`
   intro m' hn'm' bM'
@@ -260,8 +254,8 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
   · refine Basis.mkFinConsOfLE y' y'M bM' M'_le_M y'_ortho_M' ?_
     intro z zM
     refine ⟨-ϕ ⟨z, zM⟩, ⟨⟨z, zM⟩ - ϕ ⟨z, zM⟩ • ⟨y', y'M⟩, LinearMap.mem_ker.mpr ?_, ?_⟩⟩
-    · rw [LinearMap.map_sub, LinearMap.map_smul, ϕy'_eq, smul_eq_mul, mul_one, sub_self]
-    · rw [LinearMap.map_sub, LinearMap.map_smul, sub_eq_add_neg, neg_smul]
+    · rw [map_sub, map_smul, ϕy'_eq, smul_eq_mul, mul_one, sub_self]
+    · rw [map_sub, map_smul, sub_eq_add_neg, neg_smul]
       rfl
   -- It remains to show the extended bases are compatible with each other.
   intro as h
@@ -332,7 +326,7 @@ noncomputable def Submodule.basisOfPidOfLESpan {ι : Type*} [Finite ι] {b : ι 
 
 /-- A finite type torsion free module over a PID admits a basis. -/
 noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M}
-    (hs : span R (range s) = ⊤) [NoZeroSMulDivisors R M] : Σ n : ℕ, Basis (Fin n) R M := by
+    (hs : span R (range s) = ⊤) [IsTorsionFree R M] : Σ n : ℕ, Basis (Fin n) R M := by
   classical
     -- We define `N` as the submodule spanned by a maximal linear independent subfamily of `s`
     have := exists_maximal_linearIndepOn R s
@@ -361,7 +355,7 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
       simpa using ha
     -- `M ≃ A • M` because `M` is torsion free and `A ≠ 0`
     let φ : M →ₗ[R] M := LinearMap.lsmul R M A
-    have : LinearMap.ker φ = ⊥ := @LinearMap.ker_lsmul R M _ _ _ _ _ hA
+    have : LinearMap.ker φ = ⊥ := LinearMap.ker_lsmul hA
     let ψ := LinearEquiv.ofInjective φ (LinearMap.ker_eq_bot.mp this)
     have : LinearMap.range φ ≤ N := by
       -- as announced, `A • M ⊆ N`
@@ -379,30 +373,29 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
     exact ⟨n, b.map ψ.symm⟩
 
 theorem Module.free_of_finite_type_torsion_free [_root_.Finite ι] {s : ι → M}
-    (hs : span R (range s) = ⊤) [NoZeroSMulDivisors R M] : Module.Free R M := by
+    (hs : span R (range s) = ⊤) [IsTorsionFree R M] : Module.Free R M := by
   cases nonempty_fintype ι
   obtain ⟨n, b⟩ : Σ n, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree hs
   exact Module.Free.of_basis b
 
 /-- A finite type torsion free module over a PID admits a basis. -/
 noncomputable def Module.basisOfFiniteTypeTorsionFree' [Module.Finite R M]
-    [NoZeroSMulDivisors R M] : Σ n : ℕ, Basis (Fin n) R M :=
+    [IsTorsionFree R M] : Σ n : ℕ, Basis (Fin n) R M :=
   Module.basisOfFiniteTypeTorsionFree Module.Finite.exists_fin.choose_spec.choose_spec
 
-instance Module.free_of_finite_type_torsion_free' [Module.Finite R M] [NoZeroSMulDivisors R M] :
+instance Module.free_of_finite_type_torsion_free' [Module.Finite R M] [IsTorsionFree R M] :
     Module.Free R M := by
   obtain ⟨n, b⟩ : Σ n, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree'
   exact Module.Free.of_basis b
 
 instance {S : Type*} [CommRing S] [Algebra R S] {I : Ideal S} [hI₁ : Module.Finite R I]
-    [hI₂ : NoZeroSMulDivisors R I] : Module.Free R I := by
+    [hI₂ : IsTorsionFree R I] : Free R I := by
   have : Module.Finite R (restrictScalars R I) := hI₁
-  have : NoZeroSMulDivisors R (restrictScalars R I) := hI₂
+  have : IsTorsionFree R (restrictScalars R I) := hI₂
   change Module.Free R (restrictScalars R I)
   exact Module.free_of_finite_type_torsion_free'
 
-theorem Module.free_iff_noZeroSMulDivisors [Module.Finite R M] :
-    Module.Free R M ↔ NoZeroSMulDivisors R M :=
+theorem Module.free_iff_isTorsionFree [Module.Finite R M] : Free R M ↔ IsTorsionFree R M :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
 end StrongRankCondition
@@ -435,15 +428,9 @@ lemma repr_eq_zero_of_notMem_range {i : ι} (hi : i ∉ Set.range snf.f) :
   replace hi : ∀ j, snf.f j ≠ i := by simpa using hi
   simp [hi, snf.snf, map_finsuppSum]
 
-@[deprecated (since := "2025-05-24")]
-alias repr_eq_zero_of_nmem_range := repr_eq_zero_of_notMem_range
-
 lemma le_ker_coord_of_notMem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     N ≤ LinearMap.ker (snf.bM.coord i) :=
   fun m hm ↦ snf.repr_eq_zero_of_notMem_range ⟨m, hm⟩ hi
-
-@[deprecated (since := "2025-05-24")]
-alias le_ker_coord_of_nmem_range := le_ker_coord_of_notMem_range
 
 @[simp] lemma repr_apply_embedding_eq_repr_smul {i : Fin n} :
     snf.bM.repr m (snf.f i) = snf.bN.repr (snf.a i • m) i := by

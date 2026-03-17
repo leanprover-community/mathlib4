@@ -3,8 +3,10 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Defs
-import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
+public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 
 /-!
 ### Restricting Scalars in Iterated Fréchet Derivatives
@@ -14,6 +16,8 @@ comparing iterated derivatives with respect to a field `𝕜'` to iterated deriv
 a subfield `𝕜 ⊆ 𝕜'`. The results are analogous to those found in
 `Mathlib.Analysis.Calculus.FDeriv.RestrictScalars`.
 -/
+
+public section
 
 variable
   {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
@@ -34,6 +38,7 @@ lemma fderivWithin_restrictScalars_comp
   ext a b
   simp [h.restrictScalars_fderivWithin 𝕜 hs]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `f` is `n` times continuously differentiable at `x` within `s`, then the `n`th iterated Fréchet
 derivative within `s` with respect to `𝕜` equals scalar restriction of the `n`th iterated Fréchet

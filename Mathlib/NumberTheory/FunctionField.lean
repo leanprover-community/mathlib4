@@ -3,10 +3,13 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Ashvni Narayanan
 -/
-import Mathlib.FieldTheory.RatFunc.Degree
-import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.Topology.Algebra.Valued.ValuedField
+module
+
+public import Mathlib.FieldTheory.RatFunc.Degree
+public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.Topology.Algebra.Valued.ValuedField
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 
 /-!
 # Function fields
@@ -39,6 +42,8 @@ adding them back in lemmas when they are needed.
 function field, ring of integers
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -69,9 +74,9 @@ theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
       simp only [map_one, map_mul, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   constructor <;> intro h
   · let b := Module.finBasis (RatFunc Fq) F
-    exact FiniteDimensional.of_fintype_basis (b.mapCoeffs e this)
+    exact (b.mapCoeffs e this).finiteDimensional_of_finite
   · let b := Module.finBasis Fqt F
-    refine FiniteDimensional.of_fintype_basis (b.mapCoeffs e.symm ?_)
+    refine (b.mapCoeffs e.symm ?_).finiteDimensional_of_finite
     intro c x; convert (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
 
 namespace FunctionField
@@ -80,9 +85,6 @@ theorem algebraMap_injective [Algebra Fq[X] F] [Algebra (RatFunc Fq) F]
     [IsScalarTower Fq[X] (RatFunc Fq) F] : Function.Injective (⇑(algebraMap Fq[X] F)) := by
   rw [IsScalarTower.algebraMap_eq Fq[X] (RatFunc Fq) F]
   exact (algebraMap (RatFunc Fq) F).injective.comp (IsFractionRing.injective Fq[X] (RatFunc Fq))
-
-@[deprecated (since := "2025-03-03")]
-alias _root_.algebraMap_injective := FunctionField.algebraMap_injective
 
 /-- The function field analogue of `NumberField.ringOfIntegers`:
 `FunctionField.ringOfIntegers Fq Fqt F` is the integral closure of `Fq[t]` in `F`.
@@ -105,6 +107,7 @@ instance : IsIntegralClosure (ringOfIntegers Fq F) Fq[X] F :=
 
 variable [Algebra (RatFunc Fq) F] [IsScalarTower Fq[X] (RatFunc Fq) F]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem algebraMap_injective : Function.Injective (⇑(algebraMap Fq[X] (ringOfIntegers Fq F))) := by
   have hinj : Function.Injective (⇑(algebraMap Fq[X] F)) := by
     rw [IsScalarTower.algebraMap_eq Fq[X] (RatFunc Fq) F]
@@ -115,6 +118,7 @@ theorem algebraMap_injective : Function.Injective (⇑(algebraMap Fq[X] (ringOfI
   rw [injective_iff_map_eq_zero (algebraMap Fq[X] F)] at hinj
   exact hinj p hp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem not_isField : ¬IsField (ringOfIntegers Fq F) := by
   simpa [← (IsIntegralClosure.isIntegral_algebra Fq[X] F).isField_iff_isField
       (algebraMap_injective Fq F)] using
@@ -128,9 +132,11 @@ instance : IsFractionRing (ringOfIntegers Fq F) F :=
 instance : IsIntegrallyClosed (ringOfIntegers Fq F) :=
   integralClosure.isIntegrallyClosedOfFiniteExtension (RatFunc Fq)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.IsSeparable (RatFunc Fq) F] : IsNoetherian Fq[X] (ringOfIntegers Fq F) :=
   IsIntegralClosure.isNoetherian _ (RatFunc Fq) F _
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.IsSeparable (RatFunc Fq) F] : IsDedekindDomain (ringOfIntegers Fq F) :=
   IsIntegralClosure.isDedekindDomain Fq[X] (RatFunc Fq) F _
 
@@ -216,10 +222,12 @@ theorem inftyValuation.X_inv : inftyValuation Fq (1 / RatFunc.X) = exp (-1) := b
 -- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/.60synthInstance.2EmaxHeartbeats.60.20error.20but.20only.20in.20.60simpNF.60
 theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
     inftyValuationDef Fq (algebraMap Fq[X] (RatFunc Fq) p) = exp (p.natDegree : ℤ) := by
-  have hp' : algebraMap Fq[X] (RatFunc Fq) p ≠ 0 := by simpa
-  rw [inftyValuationDef, if_neg hp', RatFunc.intDegree_polynomial]
+  rw [inftyValuationDef, if_neg (by simpa), RatFunc.intDegree_polynomial]
+
+instance : Valuation.IsNontrivial (inftyValuation Fq) := ⟨RatFunc.X, by simp⟩
 
 /-- The valued field `Fq(t)` with the valuation at infinity. -/
+@[implicit_reducible]
 def inftyValuedFqt : Valued (RatFunc Fq) ℤᵐ⁰ :=
   Valued.mk' <| inftyValuation Fq
 
@@ -227,21 +235,28 @@ theorem inftyValuedFqt.def {x : RatFunc Fq} :
     (inftyValuedFqt Fq).v x = inftyValuationDef Fq x :=
   rfl
 
+namespace FqtInfty
+
+/- We temporarily disable the existing valued instance coming from the ideal `X` to avoid diamonds
+with the uniform space structure coming from the valuation at infinity. -/
+attribute [-instance] RatFunc.valuedRatFunc
+
+/- Locally add the uniform space structure coming from the valuation at infinity. This instance
+is scoped in the `FqtInfty` namescape in case it is needed in the future. -/
+/-- The uniform space structure on `RatFunc Fq` coming from the valuation at infinity. -/
+scoped instance : UniformSpace (RatFunc Fq) := (inftyValuedFqt Fq).toUniformSpace
+
 /-- The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the valuation at infinity. -/
-def FqtInfty :=
-  @UniformSpace.Completion (RatFunc Fq) <| (inftyValuedFqt Fq).toUniformSpace
+def _root_.FunctionField.FqtInfty := UniformSpace.Completion (RatFunc Fq)
+deriving Field, Algebra (RatFunc Fq), Coe (RatFunc Fq), Inhabited
 
-instance : Field (FqtInfty Fq) :=
-  letI := inftyValuedFqt Fq
-  UniformSpace.Completion.instField
-
-instance : Inhabited (FqtInfty Fq) :=
-  ⟨(0 : FqtInfty Fq)⟩
+end FqtInfty
 
 /-- The valuation at infinity on `k(t)` extends to a valuation on `FqtInfty`. -/
 instance valuedFqtInfty : Valued (FqtInfty Fq) ℤᵐ⁰ := (inftyValuedFqt Fq).valuedCompletion
 
-theorem valuedFqtInfty.def {x : FqtInfty Fq} : Valued.v x = (inftyValuedFqt Fq).extension x := rfl
+theorem valuedFqtInfty.def {x : FqtInfty Fq} :
+  Valued.v x = (inftyValuedFqt Fq).extensionValuation x := rfl
 
 end InftyValuation
 

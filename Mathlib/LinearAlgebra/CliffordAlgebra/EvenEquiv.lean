@@ -3,9 +3,11 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
-import Mathlib.LinearAlgebra.CliffordAlgebra.Even
-import Mathlib.LinearAlgebra.QuadraticForm.Prod
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Even
+public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 /-!
 # Isomorphisms with the even subalgebra of a Clifford algebra
@@ -30,6 +32,8 @@ This file provides some notable isomorphisms regarding the even subalgebra, `Cli
   "Clifford conjugate", that is `CliffordAlgebra.reverse` composed with
   `CliffordAlgebra.involute`.
 -/
+
+@[expose] public section
 
 
 namespace CliffordAlgebra
@@ -58,8 +62,8 @@ def v : M →ₗ[R] CliffordAlgebra (Q' Q) :=
   ι (Q' Q) ∘ₗ LinearMap.inl _ _ _
 
 theorem ι_eq_v_add_smul_e0 (m : M) (r : R) : ι (Q' Q) (m, r) = v Q m + r • e0 Q := by
-  rw [e0, v, LinearMap.comp_apply, LinearMap.inl_apply, ← LinearMap.map_smul, Prod.smul_mk,
-    smul_zero, smul_eq_mul, mul_one, ← LinearMap.map_add, Prod.mk_add_mk, zero_add, add_zero]
+  rw [e0, v, LinearMap.comp_apply, LinearMap.inl_apply, ← map_smul, Prod.smul_mk,
+    smul_zero, smul_eq_mul, mul_one, ← map_add, Prod.mk_add_mk, zero_add, add_zero]
 
 theorem e0_mul_e0 : e0 Q * e0 Q = -1 :=
   (ι_sq_scalar _ _).trans <| by simp
@@ -101,6 +105,7 @@ end EquivEven
 
 open EquivEven
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The embedding from the smaller algebra into the new larger one. -/
 def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
   refine CliffordAlgebra.lift Q ⟨?_, fun m => ?_⟩
@@ -109,17 +114,19 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
     rw [Subtype.coe_mk, pow_two]
     exact Submodule.mul_mem_mul (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _)
   · ext1
-    rw [Subalgebra.coe_mul]  -- Porting note: was part of the `dsimp only` below
+    rw [Subalgebra.coe_mul] -- Porting note: was part of the `dsimp only` below
     erw [LinearMap.codRestrict_apply] -- Porting note: was part of the `dsimp only` below
     dsimp only [LinearMap.comp_apply, LinearMap.mulLeft_apply, Subalgebra.coe_algebraMap]
     rw [← mul_assoc, e0_mul_v_mul_e0, v_sq_scalar]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q * v Q m := by
   rw [toEven, CliffordAlgebra.lift_ι_apply]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
   erw [LinearMap.codRestrict_apply]
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.mulLeft_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The embedding from the even subalgebra with an extra dimension into the original algebra. -/
 def ofEven : CliffordAlgebra.even (Q' Q) →ₐ[R] CliffordAlgebra Q := by
   /-
@@ -141,7 +148,7 @@ def ofEven : CliffordAlgebra.even (Q' Q) →ₐ[R] CliffordAlgebra Q := by
     ∀ m : M × R,
       ι Q m.1 * ι Q m.1 - algebraMap R _ m.2 * algebraMap R _ m.2 = algebraMap R _ (Q' Q m) := by
     intro m
-    rw [ι_sq_scalar, ← RingHom.map_mul, ← RingHom.map_sub, sub_eq_add_neg, Q'_apply, sub_eq_add_neg]
+    rw [ι_sq_scalar, ← map_mul, ← map_sub, sub_eq_add_neg, Q'_apply, sub_eq_add_neg]
   refine even.lift (Q' Q) ⟨f, ?_, ?_⟩ <;> simp_rw [f_apply]
   · intro m
     rw [← (hc _ _).symm.mul_self_sub_mul_self_eq, hm]
@@ -149,11 +156,13 @@ def ofEven : CliffordAlgebra.even (Q' Q) →ₐ[R] CliffordAlgebra Q := by
     rw [← mul_smul_comm, ← mul_assoc, mul_assoc (_ + _), ← (hc _ _).symm.mul_self_sub_mul_self_eq',
       Algebra.smul_def, ← mul_assoc, hm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofEven_ι (x y : M × R) :
     ofEven Q ((even.ι (Q' Q)).bilin x y) =
       (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) :=
   even.lift_ι (Q' Q) _ x y
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=
   even.algHom_ext (Q' Q) <|
     EvenHom.ext <|
@@ -203,6 +212,7 @@ basis vector. -/
 def equivEven : CliffordAlgebra Q ≃ₐ[R] CliffordAlgebra.even (Q' Q) :=
   AlgEquiv.ofAlgHom (toEven Q) (ofEven Q) (toEven_comp_ofEven Q) (ofEven_comp_toEven Q)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The representation of the clifford conjugate (i.e. the reverse of the involute) in the even
 subalgebra is just the reverse of the representation. -/
 theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
@@ -218,6 +228,7 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
 
 /-! ### Constructions needed for `CliffordAlgebra.evenEquivEvenNeg` -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- One direction of `CliffordAlgebra.evenEquivEvenNeg` -/
 def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     CliffordAlgebra.even Q →ₐ[R] CliffordAlgebra.even Q' :=
@@ -229,11 +240,13 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
         simp_rw [LinearMap.neg_apply, neg_mul_neg, EvenHom.contract_mid, h,
           QuadraticMap.neg_apply, smul_neg, neg_smul] }
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem evenToNeg_ι (Q' : QuadraticForm R M) (h : Q' = -Q) (m₁ m₂ : M) :
     evenToNeg Q Q' h ((even.ι Q).bilin m₁ m₂) = -(even.ι Q').bilin m₁ m₂ :=
   even.lift_ι _ _ m₁ m₂
 
+set_option backward.isDefEq.respectTransparency false in
 theorem evenToNeg_comp_evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) (h' : Q = -Q') :
     (evenToNeg Q' Q h').comp (evenToNeg Q Q' h) = AlgHom.id R _ := by
   ext m₁ m₂ : 4

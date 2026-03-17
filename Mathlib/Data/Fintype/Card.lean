@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Fintype.Basic
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Cardinalities of finite types
@@ -19,6 +21,8 @@ We also include some elementary results on the values of `Fintype.card` on speci
   itself is also surjective.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -96,7 +100,7 @@ theorem toFinset_card {α : Type*} (s : Set α) [Fintype s] : s.toFinset.card = 
 
 end Set
 
-@[simp]
+@[simp, grind =]
 theorem Finset.card_univ [Fintype α] : #(univ : Finset α) = Fintype.card α := rfl
 
 theorem Finset.eq_univ_of_card [Fintype α] (s : Finset α) (hs : #s = Fintype.card α) :
@@ -115,9 +119,6 @@ theorem Finset.card_lt_univ_of_notMem [Fintype α] {s : Finset α} {x : α} (hx 
     #s < Fintype.card α :=
   card_lt_card ⟨subset_univ s, not_forall.2 ⟨x, fun hx' => hx (hx' <| mem_univ x)⟩⟩
 
-@[deprecated (since := "2025-05-23")]
-alias Finset.card_lt_univ_of_not_mem := Finset.card_lt_univ_of_notMem
-
 theorem Finset.card_lt_iff_ne_univ [Fintype α] (s : Finset α) :
     #s < Fintype.card α ↔ s ≠ Finset.univ :=
   s.card_le_univ.lt_iff_ne.trans (not_congr s.card_eq_iff_eq_univ)
@@ -127,8 +128,7 @@ theorem Finset.card_compl_lt_iff_nonempty [Fintype α] [DecidableEq α] (s : Fin
   sᶜ.card_lt_iff_ne_univ.trans s.compl_ne_univ_iff_nonempty
 
 theorem Finset.card_univ_diff [DecidableEq α] [Fintype α] (s : Finset α) :
-    #(univ \ s) = Fintype.card α - #s :=
-  Finset.card_sdiff (subset_univ s)
+    #(univ \ s) = Fintype.card α - #s := by grind
 
 theorem Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) : #sᶜ = Fintype.card α - #s :=
   Finset.card_univ_diff s
@@ -204,11 +204,13 @@ theorem Fintype.card_subtype_true [Fintype α] {h : Fintype {_a : α // True}} :
 
 /-- Given that `α ⊕ β` is a fintype, `α` is also a fintype. This is non-computable as it uses
 that `Sum.inl` is an injection, but there's no clear inverse if `α` is empty. -/
+@[implicit_reducible]
 noncomputable def Fintype.sumLeft {α β} [Fintype (α ⊕ β)] : Fintype α :=
   Fintype.ofInjective (Sum.inl : α → α ⊕ β) Sum.inl_injective
 
 /-- Given that `α ⊕ β` is a fintype, `β` is also a fintype. This is non-computable as it uses
 that `Sum.inr` is an injection, but there's no clear inverse if `β` is empty. -/
+@[implicit_reducible]
 noncomputable def Fintype.sumRight {α β} [Fintype (α ⊕ β)] : Fintype β :=
   Fintype.ofInjective (Sum.inr : β → α ⊕ β) Sum.inr_injective
 
@@ -229,6 +231,10 @@ variable [Fintype α] [Fintype β]
 theorem card_le_of_injective (f : α → β) (hf : Function.Injective f) : card α ≤ card β :=
   Finset.card_le_card_of_injOn f (fun _ _ => Finset.mem_univ _) fun _ _ _ _ h => hf h
 
+theorem not_injective_of_card_lt (f : α → β) (h : card β < card α) :
+    ¬Function.Injective f :=
+  Nat.not_le_of_lt h ∘ card_le_of_injective f
+
 theorem card_le_of_embedding (f : α ↪ β) : card α ≤ card β :=
   card_le_of_injective f f.2
 
@@ -239,9 +245,6 @@ theorem card_lt_of_injective_of_notMem (f : α → β) (h : Function.Injective f
     _ < card β :=
       Finset.card_lt_univ_of_notMem (x := b) <| by
         rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
-
-@[deprecated (since := "2025-05-23")]
-alias card_lt_of_injective_of_not_mem := card_lt_of_injective_of_notMem
 
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
     (h' : ¬Function.Surjective f) : card α < card β :=
@@ -336,9 +339,15 @@ alias ⟨_root_.Function.Injective.bijective_of_finite, _⟩ := injective_iff_bi
 
 alias ⟨_root_.Function.Surjective.bijective_of_finite, _⟩ := surjective_iff_bijective
 
-alias ⟨_root_.Function.Injective.surjective_of_fintype,
-    _root_.Function.Surjective.injective_of_fintype⟩ :=
+alias ⟨_root_.Function.Injective.surjective_of_finite,
+    _root_.Function.Surjective.injective_of_finite⟩ :=
   injective_iff_surjective_of_equiv
+
+@[deprecated (since := "2025-11-28")]
+alias _root_.Function.Injective.surjective_of_fintype := Injective.surjective_of_finite
+
+@[deprecated (since := "2025-11-28")]
+alias _root_.Function.Surjective.injective_of_fintype := Surjective.injective_of_finite
 
 end Finite
 
@@ -357,7 +366,7 @@ theorem Fintype.card_prop : Fintype.card Prop = 2 :=
 
 theorem set_fintype_card_le_univ [Fintype α] (s : Set α) [Fintype s] :
     Fintype.card s ≤ Fintype.card α :=
-  Fintype.card_le_of_embedding (Function.Embedding.subtype s)
+  Fintype.card_le_of_embedding (Function.Embedding.subtype (· ∈ s))
 
 theorem set_fintype_card_eq_univ_iff [Fintype α] (s : Set α) [Fintype s] :
     Fintype.card s = Fintype.card α ↔ s = Set.univ := by
@@ -407,14 +416,13 @@ theorem univ_eq_singleton_of_card_one {α} [Fintype α] (x : α) (h : Fintype.ca
     (univ : Finset α) = {x} := by
   symm
   apply eq_of_subset_of_card_le (subset_univ {x})
-  apply le_of_eq
-  simp [h, Finset.card_univ]
+  simp [h]
 
 namespace Finite
 
 variable [Finite α]
 
-theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [IsIrrefl α r] :
+theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [Std.Irrefl r] :
     WellFounded r := by
   classical
   cases nonempty_fintype α
@@ -428,11 +436,8 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
   exact Subrelation.wf (this _ _) (measure _).wf
 
 -- See note [lower instance priority]
+@[to_dual]
 instance (priority := 100) to_wellFoundedLT [Preorder α] : WellFoundedLT α :=
-  ⟨wellFounded_of_trans_of_irrefl _⟩
-
--- See note [lower instance priority]
-instance (priority := 100) to_wellFoundedGT [Preorder α] : WellFoundedGT α :=
   ⟨wellFounded_of_trans_of_irrefl _⟩
 
 end Finite
@@ -468,7 +473,7 @@ theorem Fintype.induction_subsingleton_or_nontrivial {P : ∀ (α) [Fintype α],
       (∀ (β) [Fintype β], Fintype.card β < Fintype.card α → P β) → P α) :
     P α := by
   obtain ⟨n, hn⟩ : ∃ n, Fintype.card α = n := ⟨Fintype.card α, rfl⟩
-  induction' n using Nat.strong_induction_on with n ih generalizing α
+  induction n using Nat.strong_induction_on generalizing α with | _ n ih
   rcases subsingleton_or_nontrivial α with hsing | hnontriv
   · apply hbase
   · apply hstep

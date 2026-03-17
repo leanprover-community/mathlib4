@@ -3,10 +3,10 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
+module
 
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Combinatorics.Quiver.Path
-import Mathlib.Tactic.Cases
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Combinatorics.Quiver.Path
 
 /-!
 # Path Decomposition and Boundary Crossing
@@ -14,6 +14,8 @@ import Mathlib.Tactic.Cases
 This section provides lemmas for decomposing non-empty paths and for reasoning about paths that
 cross the boundary of a given set of vertices `S`.
 -/
+
+public section
 namespace Quiver.Path
 
 section BoundaryEdges
@@ -25,10 +27,12 @@ theorem exists_notMem_mem_hom_path_path_of_notMem_mem {a b : V} (p : Path a b) (
     (ha_not_in_S : a ∉ S) (hb_in_S : b ∈ S) :
     ∃ᵉ (u ∉ S) (v ∈ S) (e : u ⟶ v) (p₁ : Path a u) (p₂ : Path v b),
       p = p₁.comp (e.toPath.comp p₂) := by
-  induction' h_len : p.length with n ih generalizing a b S ha_not_in_S hb_in_S
-  · obtain rfl := eq_of_length_zero p h_len
+  induction h_len : p.length generalizing a b S ha_not_in_S hb_in_S with
+  | zero =>
+    obtain rfl := eq_of_length_zero p h_len
     exact (ha_not_in_S hb_in_S).elim
-  · have h_pos : 0 < p.length := by simp [h_len]
+  | succ n ih =>
+    have h_pos : 0 < p.length := by simp [h_len]
     obtain ⟨c, p', e, rfl⟩ := (length_ne_zero_iff_eq_cons p).mp h_pos.ne'
     by_cases hc_in_S : c ∈ S
     · have p'_len : p'.length = n := by simp_all

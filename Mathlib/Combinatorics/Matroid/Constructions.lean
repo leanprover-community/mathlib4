@@ -3,7 +3,9 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Minor.Restrict
+module
+
+public import Mathlib.Combinatorics.Matroid.Minor.Restrict
 
 /-!
 # Some constructions of matroids
@@ -28,6 +30,8 @@ we bootstrap the definitions starting with `emptyOn α` (which `simp` can prove 
 and then construct the other examples using duality and restriction.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -196,7 +200,7 @@ end FreeOn
 section uniqueBaseOn
 
 /-- The matroid on `E` whose unique base is the subset `I` of `E`.
-Intended for use when `I ⊆ E`; if this not not the case, then the base is `I ∩ E`. -/
+Intended for use when `I ⊆ E`; if this is not the case, then the base is `I ∩ E`. -/
 def uniqueBaseOn (I E : Set α) : Matroid α := freeOn I ↾ E
 
 @[simp] theorem uniqueBaseOn_ground : (uniqueBaseOn I E).E = E :=

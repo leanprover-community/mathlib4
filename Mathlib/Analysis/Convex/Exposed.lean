@@ -3,10 +3,12 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Analysis.Convex.Extreme
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.Topology.Order.OrderClosed
+module
+
+public import Mathlib.Analysis.Convex.Extreme
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Order.OrderClosed
 
 /-!
 # Exposed sets
@@ -38,6 +40,8 @@ See chapter 8 of [Barry Simon, *Convexity*][simon2011]
 
 Prove lemmas relating exposed sets and points to the intrinsic frontier.
 -/
+
+@[expose] public section
 
 open Affine Set
 
@@ -87,6 +91,7 @@ protected theorem antisymm (hB : IsExposed 𝕜 A B) (hA : IsExposed 𝕜 B A) :
 `A₀₀₀, ..., A₁₁₁` and add to it the triangle `A₀₀₀A₀₀₁A₀₁₀`. Then `A₀₀₁A₀₁₀` is an exposed subset
 of `A₀₀₀A₀₀₁A₀₁₀` which is an exposed subset of the cube, but `A₀₀₁A₀₁₀` is not itself an exposed
 subset of the cube. -/
+
 protected theorem mono (hC : IsExposed 𝕜 A C) (hBA : B ⊆ A) (hCB : C ⊆ B) : IsExposed 𝕜 B C := by
   rintro ⟨w, hw⟩
   obtain ⟨l, rfl⟩ := hC ⟨w, hw⟩
@@ -102,6 +107,7 @@ theorem eq_inter_halfSpace' {A B : Set E} (hAB : IsExposed 𝕜 A B) (hB : B.Non
   obtain ⟨w, hw⟩ := hB
   exact ⟨l, l w, Subset.antisymm (fun x hx => ⟨hx.1, hx.2 w hw.1⟩) fun x hx =>
     ⟨hx.1, fun y hy => (hw.2 y hy).trans hx.2⟩⟩
+
 /-- For nontrivial `𝕜`, if `B` is an exposed subset of `A`, then `B` is the intersection of `A` with
 some closed half-space. The converse is *not* true. It would require that the corresponding open
 half-space doesn't intersect `A`. -/
@@ -115,6 +121,7 @@ theorem eq_inter_halfSpace [IsOrderedRing 𝕜] [Nontrivial 𝕜] {A B : Set E} 
     have : ¬(1 : 𝕜) ≤ 0 := not_le_of_gt zero_lt_one
     contradiction
   exact hAB.eq_inter_halfSpace' hB
+
 protected theorem inter [IsOrderedRing 𝕜] [ContinuousAdd 𝕜] {A B C : Set E} (hB : IsExposed 𝕜 A B)
     (hC : IsExposed 𝕜 A C) : IsExposed 𝕜 A (B ∩ C) := by
   rintro ⟨w, hwB, hwC⟩
@@ -221,11 +228,9 @@ protected theorem isExtreme (hAB : IsExposed 𝕜 A B) : IsExtreme 𝕜 A B := b
   have hl : ConvexOn 𝕜 univ l := l.toLinearMap.convexOn convex_univ
   have hlx₁ := hxB.2 x₁ hx₁A
   have hlx₂ := hxB.2 x₂ hx₂A
-  refine ⟨⟨hx₁A, fun y hy => ?_⟩, ⟨hx₂A, fun y hy => ?_⟩⟩
-  · rw [hlx₁.antisymm (hl.le_left_of_right_le (mem_univ _) (mem_univ _) hx hlx₂)]
-    exact hxB.2 y hy
-  · rw [hlx₂.antisymm (hl.le_right_of_left_le (mem_univ _) (mem_univ _) hx hlx₁)]
-    exact hxB.2 y hy
+  refine ⟨hx₁A, fun y hy => ?_⟩
+  rw [hlx₁.antisymm (hl.le_left_of_right_le (mem_univ _) (mem_univ _) hx hlx₂)]
+  exact hxB.2 y hy
 
 end IsExposed
 

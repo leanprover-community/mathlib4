@@ -3,8 +3,10 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Fourier.AddCircle
-import Mathlib.MeasureTheory.Integral.Pi
+module
+
+public import Mathlib.Analysis.Fourier.AddCircle
+public import Mathlib.MeasureTheory.Integral.Pi
 
 /-!
 # Multivariate Fourier series
@@ -14,15 +16,15 @@ show that it converges to the function in the L² norm. We also prove uniform co
 Fourier series if `f` is continuous and the sequence of its Fourier coefficients is summable.
 -/
 
+@[expose] public section
+
 noncomputable section
 
-open scoped BigOperators ComplexConjugate ENNReal
+open scoped ComplexConjugate ENNReal
 
 open Set Algebra Submodule MeasureTheory
 
 -- some instances for unit circle
-
-attribute [local instance] Real.fact_zero_lt_one
 
 /-- In this file we normalise the measure on `ℝ / ℤ` to have total volume 1. -/
 local instance : MeasureSpace UnitAddCircle := ⟨AddCircle.haarAddCircle⟩
@@ -49,8 +51,7 @@ variable (n : d → ℤ)
 /-- Exponential monomials in `d` variables. -/
 def mFourier : C(UnitAddTorus d, ℂ) where
   toFun x := ∏ i : d, fourier (n i) (x i)
-  continuous_toFun := continuous_finset_prod _
-    fun i _ ↦ (fourier (n i)).continuous.comp (continuous_apply i)
+  continuous_toFun := by fun_prop
 
 variable {n} {x : UnitAddTorus d}
 
@@ -171,7 +172,7 @@ theorem orthonormal_mFourier : Orthonormal ℂ (mFourierLp (d := d) 2) := by
   intro m n
   simp only [ContinuousMap.inner_toLp, ← mFourier_neg, ← mFourier_add]
   split_ifs with h
-  · simpa only [h, add_neg_cancel, mFourier_zero, measureReal_univ_eq_one, one_smul] using
+  · simpa only [h, add_neg_cancel, mFourier_zero, probReal_univ, one_smul] using
       integral_const (α := UnitAddTorus d) (μ := volume) (1 : ℂ)
   rw [mFourier, ContinuousMap.coe_mk, MeasureTheory.integral_fintype_prod_volume_eq_prod]
   obtain ⟨i, hi⟩ := Function.ne_iff.mp h
@@ -183,7 +184,7 @@ end Lp
 
 section fourierCoeff
 
-variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-- The `n`-th Fourier coefficient of a function `UnitAddTorus d → E`, for `E` a complete normed
 `ℂ`-vector space, defined as the integral over `UnitAddTorus d` of `mFourier (-n) t • f t`. -/
@@ -206,6 +207,7 @@ monomials `mFourier n` on `UnitAddTorus d` considered as elements of `L²`. -/
 @[simp]
 theorem coe_mFourierBasis : ⇑(mFourierBasis (d := d)) = mFourierLp 2 := HilbertBasis.coe_mk _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Under the isometric isomorphism `mFourierBasis` from `L²(UnitAddTorus d)` to `ℓ²(ℤᵈ, ℂ)`,
 the `i`-th coefficient is `mFourierCoeff f i`. -/
 theorem mFourierBasis_repr (f : L²(UnitAddTorus d)) (i : d → ℤ) :
@@ -231,6 +233,7 @@ theorem hasSum_prod_mFourierCoeff (f g : L²(UnitAddTorus d)) :
   simp only [← mFourierBasis_repr, HilbertBasis.repr_apply_apply, inner_conj_symm,
     mul_comm (inner ℂ f _)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Parseval's identity** for norms: for an `L²` function `f` on `UnitAddTorus d`, the sum of the
 squared norms of the Fourier coefficients equals the `L²` norm of `f`. -/
 theorem hasSum_sq_mFourierCoeff (f : L²(UnitAddTorus d)) :
@@ -250,6 +253,7 @@ theorem mFourierCoeff_toLp (n : d → ℤ) :
 
 variable {f}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the sequence of Fourier coefficients of `f` is summable, then the Fourier series converges
 uniformly to `f`. -/
 theorem hasSum_mFourier_series_of_summable (h : Summable (mFourierCoeff f)) :

@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Restriction
-import Mathlib.Algebra.Homology.Embedding.Extend
-import Mathlib.Algebra.Homology.Embedding.Boundary
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.Algebra.Homology.Embedding.Restriction
+public import Mathlib.Algebra.Homology.Embedding.Extend
+public import Mathlib.Algebra.Homology.Embedding.Boundary
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Relations between `extend` and `restriction`
@@ -22,12 +24,14 @@ condition `e.HasLift φ`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category Limits
 
 namespace ComplexShape
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'} (e : Embedding c c')
-  {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+  {C : Type*} [Category* C] [HasZeroMorphisms C] [HasZeroObject C]
 
 namespace Embedding
 
@@ -62,9 +66,9 @@ lemma f_eq {i' : ι'} {i : ι} (hi : e.f i = i') :
     f φ i' = (K.restrictionXIso e hi).inv ≫ φ.f i ≫ (L.extendXIso e hi).inv := by
   have hi' : ∃ k, e.f k = i' := ⟨i, hi⟩
   have : hi'.choose = i := e.injective_f (by rw [hi'.choose_spec, hi])
-  dsimp [f]
   grind [f]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma comm (hφ : e.HasLift φ) (i' j' : ι') :
     f φ i' ≫ (L.extend e).d i' j' = K.d i' j' ≫ f φ j' := by
@@ -154,6 +158,7 @@ lemma comm (i j : ι) :
 
 end homRestrict
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `K.restriction e ⟶ L` induced by a morphism `K ⟶ L.extend e`. -/
 noncomputable def homRestrict (ψ : K ⟶ L.extend e) : K.restriction e ⟶ L where
   f i := homRestrict.f ψ i
@@ -162,6 +167,7 @@ lemma homRestrict_f (ψ : K ⟶ L.extend e) {i : ι} {i' : ι'} (h : e.f i = i')
     (e.homRestrict ψ).f i = (K.restrictionXIso e h).hom ≫ ψ.f i' ≫ (L.extendXIso e h).hom :=
   homRestrict.f_eq ψ h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homRestrict_hasLift (ψ : K ⟶ L.extend e) :
     e.HasLift (e.homRestrict ψ) := by
   intro j hj i' hij'

@@ -2,17 +2,17 @@ import Mathlib.Tactic.Widget.Calc
 
 /-!
 Note that while the suggestions look incorrectly indented here,
-this is an artifact of the rendering to a string for `guard_msgs` (leanprover/lean4#7191).
+this is an artifact of the rendering to a string for `guard_msgs` (https://github.com/leanprover/lean4/issues/7191).
 
 When used from the widget that appears in VSCode, they insert correctly-indented code.
 -/
 
 /--
 info: Create calc tactic:
-• calc
+  [apply] calc
     1 = 1 := by sorry
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example : 1 = 1 := by
@@ -22,10 +22,10 @@ example : 1 = 1 := by
 
 /--
 info: Create calc tactic:
-• calc
+  [apply] calc
     a ≤ a := by sorry
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example (a : Nat) : a ≤ a := by
@@ -35,10 +35,10 @@ example (a : Nat) : a ≤ a := by
 
 /--
 info: Create calc tactic:
-• calc
+  [apply] calc
     a ≤ a := by sorry
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example (a : Nat) : a ≤ a := by
@@ -48,7 +48,7 @@ example (a : Nat) : a ≤ a := by
 -- a deliberately long line
 /--
 info: Create calc tactic:
-• calc
+  [apply] calc
     1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
               1 +
             1 +
@@ -56,7 +56,7 @@ info: Create calc tactic:
         8 + 8 + 8 + 8 :=
       by sorry
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example :

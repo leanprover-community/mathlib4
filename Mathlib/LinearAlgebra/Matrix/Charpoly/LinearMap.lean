@@ -3,8 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.LinearAlgebra.Matrix.ToLin
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 
@@ -19,6 +21,8 @@ ideal `I`, we may furthermore obtain a matrix representation whose entries fall 
 
 This is used to conclude the Cayley-Hamilton theorem for f.g. modules over arbitrary rings.
 -/
+
+@[expose] public section
 
 
 variable {ι : Type*} [Fintype ι]
@@ -95,6 +99,7 @@ theorem Matrix.represents_iff' {A : Matrix ι ι R} {f : Module.End R M} :
       PiToModule.fromMatrix_apply_single_one]
     apply h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
     (h' : Matrix.Represents b A' f') : (A * A').Represents b (f * f') := by
   delta Matrix.Represents PiToModule.fromMatrix
@@ -104,6 +109,7 @@ theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h
   rw [← h'.congr_fun, ← h.congr_fun]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Matrix.Represents.one : (1 : Matrix ι ι R).Represents b 1 := by
   delta Matrix.Represents PiToModule.fromMatrix
   rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, map_one]
@@ -208,14 +214,15 @@ theorem LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_s
     · exact ⟨0, Polynomial.monic_of_subsingleton _, by simp⟩
     obtain ⟨s : Finset M, hs : Submodule.span R (s : Set M) = ⊤⟩ :=
       Module.Finite.fg_top (R := R) (M := M)
+    have : Submodule.span R (Set.range ((↑) : { x // x ∈ s } → M)) = ⊤ := by
+      rw [Subtype.range_coe_subtype, Finset.setOf_mem, hs]
     obtain ⟨A, rfl, h⟩ :=
-      Matrix.isRepresentation.toEnd_exists_mem_ideal R ((↑) : s → M)
-        (by rw [Subtype.range_coe_subtype, Finset.setOf_mem, hs]) f I hI
+      Matrix.isRepresentation.toEnd_exists_mem_ideal R ((↑) : s → M) this f I hI
     refine ⟨A.1.charpoly, A.1.charpoly_monic, ?_, ?_⟩
     · rw [A.1.charpoly_natDegree_eq_dim]
       exact coeff_charpoly_mem_ideal_pow h
     · rw [Polynomial.aeval_algHom_apply,
-        ← map_zero (Matrix.isRepresentation.toEnd R ((↑) : s → M) _)]
+        ← map_zero (Matrix.isRepresentation.toEnd R ((↑) : s → M) this)]
       congr 1
       ext1
       rw [Polynomial.aeval_subalgebra_coe, Matrix.aeval_self_charpoly, Subalgebra.coe_zero]

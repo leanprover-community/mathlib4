@@ -1,11 +1,13 @@
 /-
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
+Authors: Mario Carneiro, Rudy Peterson
 -/
-import Mathlib.Data.Multiset.MapFold
-import Mathlib.Data.Set.Function
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Data.Multiset.MapFold
+public import Mathlib.Data.Set.Function
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Filtering multisets by a predicate
@@ -15,6 +17,8 @@ import Mathlib.Order.Hom.Basic
 * `Multiset.filter`: `filter p s` is the multiset of elements in `s` that satisfy `p`.
 * `Multiset.filterMap`: `filterMap f s` is the multiset of `b`s where `some b ∈ map f s`.
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid
@@ -194,6 +198,17 @@ theorem filterMap_cons_some (f : α → Option β) (a : α) (s : Multiset α) {b
     (h : f a = some b) : filterMap f (a ::ₘ s) = b ::ₘ filterMap f s :=
   Quot.inductionOn s fun _ => congr_arg ofList <| List.filterMap_cons_some h
 
+theorem filterMap_cons (f : α → Option β) (a : α) (s : Multiset α) :
+    filterMap f (a ::ₘ s) = ((f a).map singleton).getD 0 + filterMap f s := by
+  cases h : f a with
+  | none => simp [filterMap_cons_none a s h]
+  | some b => simp [filterMap_cons_some f a s h]
+
+@[simp]
+theorem filterMap_add (f : α → Option β) (s t : Multiset α) :
+    filterMap f (s + t) = filterMap f s + filterMap f t :=
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ => congr_arg ofList <| filterMap_append
+
 theorem filterMap_eq_map (f : α → β) : filterMap (some ∘ f) = map f :=
   funext fun s =>
     Quot.inductionOn s fun l => congr_arg ofList <| congr_fun List.filterMap_eq_map l
@@ -241,6 +256,14 @@ theorem map_filterMap_of_inv (f : α → Option β) (g : β → α) (H : ∀ x :
 theorem filterMap_le_filterMap (f : α → Option β) {s t : Multiset α} (h : s ≤ t) :
     filterMap f s ≤ filterMap f t :=
   leInductionOn h fun h => (h.filterMap _).subperm
+
+theorem map_filter_eq_filterMap (f : α → β) (p : α → Prop) [DecidablePred p] (s : Multiset α) :
+    map f (filter p s) = filterMap (fun a => if p a then .some (f a) else .none) s := by
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons a s ih =>
+    simp only [filter_cons, map_add, ih, filterMap_cons, Option.map_if]; clear ih; congr
+    split_ifs <;> simp
 
 /-! ### countP -/
 
@@ -430,8 +453,6 @@ theorem Nodup.mem_erase_iff [DecidableEq α] {a b : α} {l} (d : Nodup l) :
 
 theorem Nodup.notMem_erase [DecidableEq α] {a : α} {s} (h : Nodup s) : a ∉ s.erase a := fun ha =>
   (h.mem_erase_iff.1 ha).1 rfl
-
-@[deprecated (since := "2025-05-23")] alias Nodup.not_mem_erase := Nodup.notMem_erase
 
 end Nodup
 

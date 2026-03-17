@@ -3,10 +3,12 @@ Copyright (c) 2024 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Init
-import Lean.Elab.Tactic.Basic
-import Lean.PrettyPrinter
-import Lean.Elab.SyntheticMVars
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.Tactic.Basic
+public meta import Lean.PrettyPrinter
+public meta import Lean.Elab.SyntheticMVars
 
 /-!
 # `#check` tactic
@@ -16,6 +18,8 @@ While `#check t` is similar to `have := t`, it is a little more convenient
 since it elaborates `t` in a more tolerant way and so it can be possible to get a result.
 For example, `#check` allows metavariables.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 
@@ -45,7 +49,7 @@ def elabCheckTactic (tk : Syntax) (ignoreStuckTC : Bool) (term : Term) : TacticM
     logInfoAt tk m!"{e} : {type}"
 
 /--
-The `#check t` tactic elaborates the term `t` and then pretty prints it with its type as `e : ty`.
+`#check t` elaborates the term `t` and then pretty prints it with its type as `e : ty`.
 
 If `t` is an identifier, then it pretty prints a type declaration form
 for the global constant `t` instead.

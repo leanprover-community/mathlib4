@@ -3,9 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
-import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
+module
+
+public import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
 /-!
 # Stochastic processes satisfying the Kolmogorov condition
@@ -36,6 +38,8 @@ of pairs can be obtained from measurability of each `X t`.
   a process is a Kolmogorov process if each `X t` is measurable and the Kolmogorov condition holds.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory
 open scoped ENNReal NNReal
@@ -147,11 +151,10 @@ section ZeroDist
 lemma IsAEKolmogorovProcess.edist_eq_zero (hX : IsAEKolmogorovProcess X P p q M)
     {s t : T} (h : edist s t = 0) :
     ∀ᵐ ω ∂P, edist (X s ω) (X t ω) = 0 := by
-  suffices ∀ᵐ ω ∂P, edist (X s ω) (X t ω) ^ p = 0 by
+  suffices (fun ω ↦ edist (X s ω) (X t ω) ^ p) =ᵐ[P] 0 by
     filter_upwards [this] with ω hω
     simpa [hX.p_pos, not_lt_of_gt hX.p_pos] using hω
-  refine (lintegral_eq_zero_iff' (hX.aemeasurable_edist.pow_const p)).mp ?_
-  refine le_antisymm ?_ zero_le'
+  rw [← lintegral_eq_zero_iff' (hX.aemeasurable_edist.pow_const p), ← nonpos_iff_eq_zero]
   calc ∫⁻ ω, edist (X s ω) (X t ω) ^ p ∂P
   _ ≤ M * edist s t ^ q := hX.kolmogorovCondition s t
   _ = 0 := by simp [h, hX.q_pos]
@@ -164,11 +167,10 @@ lemma IsKolmogorovProcess.edist_eq_zero (hX : IsKolmogorovProcess X P p q M)
 lemma IsAEKolmogorovProcess.edist_eq_zero_of_const_eq_zero (hX : IsAEKolmogorovProcess X P p q 0)
     (s t : T) :
     ∀ᵐ ω ∂P, edist (X s ω) (X t ω) = 0 := by
-  suffices ∀ᵐ ω ∂P, edist (X s ω) (X t ω) ^ p = 0 by
+  suffices (fun ω ↦ edist (X s ω) (X t ω) ^ p) =ᵐ[P] 0 by
     filter_upwards [this] with ω hω
     simpa [hX.p_pos, not_lt_of_gt hX.p_pos] using hω
-  refine (lintegral_eq_zero_iff' (hX.aemeasurable_edist.pow_const p)).mp ?_
-  refine le_antisymm ?_ zero_le'
+  rw [← lintegral_eq_zero_iff' (hX.aemeasurable_edist.pow_const p), ← nonpos_iff_eq_zero]
   calc ∫⁻ ω, edist (X s ω) (X t ω) ^ p ∂P
   _ ≤ 0 * edist s t ^ q := hX.kolmogorovCondition s t
   _ = 0 := by simp

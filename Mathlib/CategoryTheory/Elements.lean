@@ -3,8 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.Category.Cat
+module
+
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # The category of elements
@@ -29,6 +32,8 @@ more convenient API. We prove the equivalence in
 ## Tags
 category of elements, Grothendieck construction, comma category
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -61,7 +66,7 @@ instance categoryOfElements (F : C ⥤ Type w) : Category.{v} F.Elements where
   id p := ⟨𝟙 p.1, by simp⟩
   comp {X Y Z} f g := ⟨f.val ≫ g.val, by simp [f.2, g.2]⟩
 
-/-- Natural transformations are mapped to functors between category of elements -/
+/-- Natural transformations are mapped to functors between categories of elements. -/
 @[simps]
 def NatTrans.mapElements {F G : C ⥤ Type w} (φ : F ⟶ G) : F.Elements ⥤ G.Elements where
   obj := fun ⟨X, x⟩ ↦ ⟨_, φ.app X x⟩
@@ -71,7 +76,7 @@ def NatTrans.mapElements {F G : C ⥤ Type w} (φ : F ⟶ G) : F.Elements ⥤ G.
 @[simps]
 def Functor.elementsFunctor : (C ⥤ Type w) ⥤ Cat where
   obj F := Cat.of F.Elements
-  map n := NatTrans.mapElements n
+  map n := (NatTrans.mapElements n).toCatHom
 
 namespace CategoryOfElements
 
@@ -83,7 +88,7 @@ def homMk {F : C ⥤ Type w} (x y : F.Elements) (f : x.1 ⟶ y.1) (hf : F.map f 
 
 @[ext]
 theorem ext (F : C ⥤ Type w) {x y : F.Elements} (f g : x ⟶ y) (w : f.val = g.val) : f = g :=
-  Subtype.ext_val w
+  Subtype.ext w
 
 @[simp]
 theorem comp_val {F : C ⥤ Type w} {p q r : F.Elements} {f : p ⟶ q} {g : q ⟶ r} :
@@ -104,6 +109,11 @@ def isoMk {F : C ⥤ Type w} (x y : F.Elements) (e : x.1 ≅ y.1) (he : F.map e.
     x ≅ y where
   hom := homMk x y e.hom he
   inv := homMk y x e.inv (by rw [← he, FunctorToTypes.map_inv_map_hom_apply])
+
+instance [LocallySmall.{w} C] (F : C ⥤ Type w) : LocallySmall.{w} F.Elements where
+  hom_small := by
+    rintro ⟨X, _⟩ ⟨Y, y⟩
+    exact small_of_injective (f := fun g ↦ g.val) (by cat_disch)
 
 end CategoryOfElements
 
@@ -137,6 +147,7 @@ def π : F.Elements ⥤ C where
 
 instance : (π F).Faithful where
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (π F).ReflectsIsomorphisms where
   reflects {X Y} f h := ⟨⟨⟨inv ((π F).map f),
     by rw [← map_snd f, ← FunctorToTypes.map_comp_apply]; simp⟩, by cat_disch⟩⟩
@@ -228,6 +239,7 @@ theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoned
     (fromCostructuredArrow F).obj (op (CostructuredArrow.mk f)) = ⟨op X, yonedaEquiv.1 f⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
 @[simps]
 def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
@@ -266,6 +278,7 @@ def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
     (costructuredArrowYonedaEquivalence F).inverse ⋙ (π F).leftOp ≅ CostructuredArrow.proj _ _ :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The opposite of the category of elements of a presheaf of types
 is equivalent to a category of costructured arrows for the Yoneda embedding functor. -/
 @[simps]
@@ -296,6 +309,32 @@ end CategoryOfElements
 
 namespace Functor
 
+/-- The initial object in `F.Elements` if `F` is representable. -/
+@[simps]
+def Elements.initialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.RepresentableBy X) :
+    F.Elements :=
+  ⟨.op X, h.homEquiv (𝟙 X)⟩
+
+/-- If `F` is represented by `X`, `X` with its universal element is the initial object of
+`F.Elements.` -/
+def Elements.isInitialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.RepresentableBy X) :
+    Limits.IsInitial (initialOfRepresentableBy h) :=
+  .ofUniqueHom (fun Y ↦ ⟨h.homEquiv.symm Y.snd |>.op, by simp [← h.homEquiv_comp]⟩) fun Y m ↦ by
+    simp [← m.2, ← h.homEquiv_unop_comp]
+
+/-- The initial object in `F.Elements` if `F` is corepresentable. -/
+@[simps]
+def Elements.initialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.CorepresentableBy X) :
+    F.Elements :=
+  ⟨X, h.homEquiv (𝟙 X)⟩
+
+/-- If `F` is corepresented by `X`, `X` with its universal element is the initial object of
+`F.Elements.` -/
+def Elements.isInitialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.CorepresentableBy X) :
+    Limits.IsInitial (initialOfCorepresentableBy h) :=
+  .ofUniqueHom (fun Y ↦ ⟨h.homEquiv.symm Y.snd, by simp [← h.homEquiv_comp]⟩) fun Y m ↦ by
+    simp [← m.2, ← h.homEquiv_comp]
+
 /--
 The initial object in the category of elements for a representable functor. In `isInitial` it is
 shown that this is initial.
@@ -305,13 +344,8 @@ def Elements.initial (A : C) : (yoneda.obj A).Elements :=
 
 /-- Show that `Elements.initial A` is initial in the category of elements for the `yoneda` functor.
 -/
-def Elements.isInitial (A : C) : Limits.IsInitial (Elements.initial A) where
-  desc s := ⟨s.pt.2.op, Category.comp_id _⟩
-  uniq s m _ := by
-    simp_rw [← m.2]
-    dsimp [Elements.initial]
-    simp
-  fac := by rintro s ⟨⟨⟩⟩
+def Elements.isInitial (A : C) : Limits.IsInitial (Elements.initial A) :=
+  isInitialOfRepresentableBy (.yoneda A)
 
 end Functor
 

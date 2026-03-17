@@ -3,9 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 
 /-!
 # Epimorphisms and monomorphisms in the category of presheaves of modules
@@ -14,6 +15,8 @@ In this file, we give characterizations of epimorphisms and monomorphisms
 in the category of presheaves of modules.
 
 -/
+
+@[expose] public section
 
 universe v v₁ u₁ u
 

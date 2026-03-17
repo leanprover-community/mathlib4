@@ -3,9 +3,12 @@ Copyright (c) 2021 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
 -/
-import Mathlib.Logic.Encodable.Lattice
-import Mathlib.MeasureTheory.MeasurableSpace.Defs
-import Mathlib.Order.Disjointed
+module
+
+public import Mathlib.Data.Set.Dissipate
+public import Mathlib.Logic.Encodable.Lattice
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+public import Mathlib.Order.Disjointed
 
 /-!
 # Induction principles for measurable sets, related to π-systems and λ-systems.
@@ -49,10 +52,12 @@ import Mathlib.Order.Disjointed
 
 ## Implementation details
 
-* `IsPiSystem` is a predicate, not a type. Thus, we don't explicitly define the galois
+* `IsPiSystem` is a predicate, not a type. Thus, we don't explicitly define the Galois
   insertion, nor do we define a complete lattice. In theory, we could define a complete
-  lattice and galois insertion on the subtype corresponding to `IsPiSystem`.
+  lattice and Galois insertion on the subtype corresponding to `IsPiSystem`.
 -/
+
+@[expose] public section
 
 
 open MeasurableSpace Set
@@ -102,6 +107,17 @@ theorem IsPiSystem.comap {α β} {S : Set (Set β)} (h_pi : IsPiSystem S) (f : �
   rintro _ ⟨s, hs_mem, rfl⟩ _ ⟨t, ht_mem, rfl⟩ hst
   rw [← Set.preimage_inter] at hst ⊢
   exact ⟨s ∩ t, h_pi s hs_mem t ht_mem (nonempty_of_nonempty_preimage hst), rfl⟩
+
+/-- For a `π`-system `C` over `α` and a sequence of sets `s` belonging to `C`,
+`dissipate s n` belongs to `C`. -/
+lemma IsPiSystem.dissipate_mem {s : ℕ → Set α} {C : Set (Set α)}
+    (hC : IsPiSystem C) (h : ∀ n, s n ∈ C) (n : ℕ) (h' : (dissipate s n).Nonempty) :
+    dissipate s n ∈ C := by
+  induction n with
+  | zero => simpa using h 0
+  | succ n hn =>
+    rw [dissipate_succ] at h' ⊢
+    exact hC (dissipate s n) (hn h'.left) (s (n + 1)) (h (n + 1)) h'
 
 theorem isPiSystem_iUnion_of_directed_le {α ι} (p : ι → Set (Set α))
     (hp_pi : ∀ n, IsPiSystem (p n)) (hp_directed : Directed (· ≤ ·) p) :
@@ -407,17 +423,8 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
     rw [ht1_eq, ht2_eq]
     simp_rw [← Set.inf_eq_inter]
     ext1 x
-    simp only [g, inf_eq_inter, mem_inter_iff, mem_iInter, Finset.mem_union]
-    refine ⟨fun h i _ => ?_, fun h => ⟨fun i hi1 => ?_, fun i hi2 => ?_⟩⟩
-    · split_ifs with h_1 h_2 h_2
-      exacts [⟨h.1 i h_1, h.2 i h_2⟩, ⟨h.1 i h_1, Set.mem_univ _⟩, ⟨Set.mem_univ _, h.2 i h_2⟩,
-        ⟨Set.mem_univ _, Set.mem_univ _⟩]
-    · specialize h i (Or.inl hi1)
-      rw [if_pos hi1] at h
-      exact h.1
-    · specialize h i (Or.inr hi2)
-      rw [if_pos hi2] at h
-      exact h.2
+    simp only [inf_eq_inter, mem_inter_iff, mem_iInter]
+    grind
   refine ⟨fun n hn => ?_, h_inter_eq⟩
   simp only [g]
   split_ifs with hn1 hn2 h
@@ -427,8 +434,7 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
       (Set.not_nonempty_iff_eq_empty.mpr h_empty) h_nonempty
     refine le_antisymm (Set.iInter_subset_of_subset n ?_) (Set.empty_subset _)
     refine Set.iInter_subset_of_subset hn ?_
-    simp_rw [g, if_pos hn1, if_pos hn2]
-    exact h.subset
+    grind
   · simp [hf1m n hn1]
   · simp [hf2m n h]
   · exact absurd hn (by simp [hn1, h])
@@ -602,6 +608,7 @@ instance : Inhabited (DynkinSystem α) :=
   ⟨generate univ⟩
 
 /-- If a Dynkin system is closed under binary intersection, then it forms a `σ`-algebra. -/
+@[implicit_reducible]
 def toMeasurableSpace (h_inter : ∀ s₁ s₂, d.Has s₁ → d.Has s₂ → d.Has (s₁ ∩ s₂)) :
     MeasurableSpace α where
   MeasurableSet' := d.Has

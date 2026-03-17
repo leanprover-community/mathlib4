@@ -3,9 +3,11 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.GaloisConnection.Basic
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.WellFounded
+module
+
+public import Mathlib.Order.GaloisConnection.Basic
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.WellFounded
 
 /-!
 # Cofinal sets
@@ -21,6 +23,8 @@ For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofin
 - Deprecate `Order.Cofinal` in favor of this predicate.
 -/
 
+@[expose] public section
+
 variable {α β : Type*}
 
 section LE
@@ -33,8 +37,12 @@ theorem isCofinal_empty_iff : IsCofinal (∅ : Set α) ↔ IsEmpty α := by
   refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ .of_isEmpty _⟩
   simpa using h a
 
-theorem IsCofinal.singleton_top [OrderTop α] : IsCofinal {(⊤ : α)} :=
-  fun _ ↦ ⟨⊤, Set.mem_singleton _, le_top⟩
+@[simp]
+theorem isCofinal_singleton_iff {x : α} : IsCofinal {x} ↔ IsTop x := by
+  simp [IsCofinal, IsTop]
+
+theorem IsCofinal.singleton_top [OrderTop α] : IsCofinal {(⊤ : α)} := by
+  simp
 
 theorem IsCofinal.mono {s t : Set α} (h : s ⊆ t) (hs : IsCofinal s) : IsCofinal t := by
   intro a

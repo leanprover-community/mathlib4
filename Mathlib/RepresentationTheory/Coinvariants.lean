@@ -3,8 +3,10 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.RepresentationTheory.Rep
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.RepresentationTheory.Rep
 
 /-!
 # Coinvariants of a group representation
@@ -35,6 +37,8 @@ left adjoint to the functor equipping a module with the trivial representation.
 
 -/
 
+@[expose] public section
+
 universe u v
 
 namespace Representation
@@ -53,6 +57,8 @@ def Coinvariants := V ⧸ Coinvariants.ker ρ
 namespace Coinvariants
 
 instance : AddCommGroup (Coinvariants ρ) := inferInstanceAs <| AddCommGroup (_ ⧸ _)
+
+set_option backward.isDefEq.respectTransparency false in
 instance : Module k (Coinvariants ρ) := inferInstanceAs <| Module k (_ ⧸ _)
 
 variable {ρ}
@@ -301,6 +307,13 @@ abbrev toCoinvariantsKer : Rep k G := Rep.of (A.ρ.toCoinvariantsKer S)
 the `S`-coinvariants `A_S`. -/
 abbrev toCoinvariants : Rep k G := Rep.of (A.ρ.toCoinvariants S)
 
+/-- The quotient map `A → A_S` as a representation morphism. -/
+def toCoinvariantsMkQ : A ⟶ toCoinvariants A S := mkQ _ _ _
+
+@[simp]
+lemma toCoinvariantsMkQ_hom :
+    (toCoinvariantsMkQ A S).hom.hom = Coinvariants.mk (A.ρ.comp S.subtype) := rfl
+
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the coinvariants of `ρ|_S`. -/
 abbrev quotientToCoinvariants : Rep k (G ⧸ S) := ofQuotient (toCoinvariants A S) S
@@ -314,7 +327,7 @@ def coinvariantsShortComplex : ShortComplex (Rep k G) where
   X₂ := A
   X₃ := toCoinvariants A S
   f := subtype ..
-  g := mkQ ..
+  g := toCoinvariantsMkQ A S
   zero := by ext x; exact (Submodule.Quotient.mk_eq_zero _).2 x.2
 
 lemma coinvariantsShortComplex_shortExact : (coinvariantsShortComplex A S).ShortExact where
@@ -329,6 +342,7 @@ end
 
 variable (k G) [Monoid G] (A B : Rep k G)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor sending a representation to its coinvariants. -/
 @[simps! obj_carrier map_hom]
 noncomputable def coinvariantsFunctor : Rep k G ⥤ ModuleCat k where
@@ -354,6 +368,7 @@ lemma coinvariantsFunctor_hom_ext {M : ModuleCat k} {f g : (coinvariantsFunctor 
     (hfg : (coinvariantsMk k G).app A ≫ f = (coinvariantsMk k G).app A ≫ g) :
     f = g := (cancel_epi _).1 hfg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The linear map underlying a `G`-representation morphism `A ⟶ B`, where `B` has the trivial
 representation, factors through `A_G`. -/
 noncomputable abbrev desc [B.ρ.IsTrivial] (f : A ⟶ B) :
@@ -368,13 +383,14 @@ variable (k G)
 instance : (coinvariantsFunctor k G).Additive where
 instance : (coinvariantsFunctor k G).Linear k where
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the functor sending a representation to its coinvariants and the functor
 equipping a module with the trivial representation. -/
 @[simps]
 noncomputable def coinvariantsAdjunction : coinvariantsFunctor k G ⊣ trivialFunctor k G where
   unit := { app X := {
     hom := (coinvariantsMk k G).app X
-    comm _ := by ext; simp [ModuleCat.endRingEquiv, trivialFunctor] }}
+    comm _ := by ext; simp [ModuleCat.endRingEquiv, trivialFunctor] } }
   counit := { app X := desc (B := trivial k G X) (𝟙 _) }
 
 @[simp]
@@ -383,6 +399,7 @@ theorem coinvariantsAdjunction_homEquiv_apply_hom {X : Rep k G} {Y : ModuleCat k
     ((coinvariantsAdjunction k G).homEquiv X Y f).hom = (coinvariantsMk k G).app X ≫ f := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coinvariantsAdjunction_homEquiv_symm_apply_hom {X : Rep k G} {Y : ModuleCat k}
     (f : X ⟶ (trivialFunctor k G).obj Y) :
@@ -401,6 +418,7 @@ noncomputable abbrev coinvariantsTensor : Rep k G ⥤ Rep k G ⥤ ModuleCat k :=
 
 variable {k G} (A B)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bilinear map sending `a : A, b : B` to `⟦a ⊗ₜ b⟧` in `(A ⊗[k] B)_G`. -/
 noncomputable abbrev coinvariantsTensorMk :
     A →ₗ[k] B →ₗ[k] ((coinvariantsTensor k G).obj A).obj B :=
@@ -424,6 +442,7 @@ section
 
 variable (k : Type u) {G : Type u} [CommRing k] [Group G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a normal subgroup `S ≤ G`, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A_S`. -/
 @[simps obj_V map_hom]
@@ -452,13 +471,13 @@ noncomputable def coinvariantsTensorFreeToFinsupp :
 
 variable {A α}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coinvariantsTensorFreeToFinsupp_mk_tmul_single (x : A) (i : α) (g : G) (r : k) :
     DFunLike.coe (F := (A.ρ.tprod (Representation.free k G α)).Coinvariants →ₗ[k] α →₀ A.V)
       (coinvariantsTensorFreeToFinsupp A α) (Coinvariants.mk _ (x ⊗ₜ single i (single g r))) =
       single i (r • A.ρ g⁻¹ x) := by
-  simp [tensorObj_def, ModuleCat.MonoidalCategory.tensorObj, coinvariantsTensorFreeToFinsupp,
-    Coinvariants.map, finsuppTensorRight, TensorProduct.finsuppRight]
+  simp [tensorObj_carrier, coinvariantsTensorFreeToFinsupp, Coinvariants.map]
 
 variable (A α)
 
@@ -472,20 +491,22 @@ noncomputable def finsuppToCoinvariantsTensorFree :
 
 variable {A α}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma finsuppToCoinvariantsTensorFree_single (i : α) (x : A) :
     DFunLike.coe (F := (α →₀ A.V) →ₗ[k] (A.ρ.tprod (Representation.free k G α)).Coinvariants)
       (finsuppToCoinvariantsTensorFree A α) (single i x) =
       Coinvariants.mk _ (x ⊗ₜ single i (single (1 : G) (1 : k))) := by
-  simp [finsuppToCoinvariantsTensorFree, Coinvariants.map, ModuleCat.MonoidalCategory.tensorObj,
-    tensorObj_def]
+  simp [finsuppToCoinvariantsTensorFree, Coinvariants.map, tensorObj_carrier]
 
 variable (A α)
 
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
+the simpNF linter complains about `@[simps! symm_apply]`, but removing it seems to be harmless. -/
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `(A, ρ)` and a type `α`, this is the linear equivalence
 `(A ⊗ (α →₀ k[G]))_G ≃ₗ[k] (α →₀ A)` sending
 `⟦a ⊗ single x (single g r)⟧ ↦ single x (r • ρ(g⁻¹)(a)).` -/
-@[simps! symm_apply]
 noncomputable abbrev coinvariantsTensorFreeLEquiv :
     Coinvariants (A ⊗ free k G α).ρ ≃ₗ[k] (α →₀ A) :=
   LinearEquiv.ofLinear (coinvariantsTensorFreeToFinsupp A α) (finsuppToCoinvariantsTensorFree A α)

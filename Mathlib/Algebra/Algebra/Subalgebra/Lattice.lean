@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 /-!
 # Complete lattice structure of subalgebras
@@ -13,6 +15,8 @@ In this file we define `Algebra.adjoin` and the complete lattice structure on su
 
 More lemmas about `adjoin` can be found in `Mathlib/RingTheory/Adjoin/Basic.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Polynomial
 
@@ -48,11 +52,17 @@ instance : CompleteLattice (Subalgebra R A) where
   bot := (Algebra.ofId R A).range
   bot_le _S := fun _a ⟨_r, hr⟩ => hr ▸ algebraMap_mem _ _
 
+instance {C : Type*} [CommSemiring C] [Algebra R C] (S₁ S₂ : Subalgebra R C) :
+  Algebra ↑(min S₁ S₂) S₁ := RingHom.toAlgebra (Subalgebra.inclusion inf_le_left).toRingHom
+
+instance {C : Type*} [CommSemiring C] [Algebra R C] (S₁ S₂ : Subalgebra R C) :
+  Algebra ↑(S₁ ⊓ S₂) S₂ := RingHom.toAlgebra (Subalgebra.inclusion inf_le_right).toRingHom
+
 theorem sup_def (S T : Subalgebra R A) : S ⊔ T = adjoin R (S ∪ T : Set A) := rfl
 
 theorem sSup_def (S : Set (Subalgebra R A)) : sSup S = adjoin R (⋃₀ (SetLike.coe '' S)) := rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_top : (↑(⊤ : Subalgebra R A) : Set A) = Set.univ := rfl
 
 @[simp]
@@ -126,6 +136,7 @@ theorem sup_toSubsemiring (S T : Subalgebra R A) :
 theorem coe_sInf (S : Set (Subalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ S, ↑s :=
   sInf_image
 
+@[simp]
 theorem mem_sInf {S : Set (Subalgebra R A)} {x : A} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
   simp only [← SetLike.mem_coe, coe_sInf, Set.mem_iInter₂]
 
@@ -159,7 +170,8 @@ theorem sSup_toSubsemiring (S : Set (Subalgebra R A)) (hS : S.Nonempty) :
 theorem coe_iInf {ι : Sort*} {S : ι → Subalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
   simp [iInf]
 
-theorem mem_iInf {ι : Sort*} {S : ι → Subalgebra R A} {x : A} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[simp]
+theorem mem_iInf {ι : Sort*} {S : ι → Subalgebra R A} {x : A} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 theorem map_iInf {ι : Sort*} [Nonempty ι] (f : A →ₐ[R] B) (hf : Function.Injective f)
@@ -191,16 +203,13 @@ lemma mem_iSup_of_mem {ι : Sort*} {S : ι → Subalgebra R A} (i : ι) {x : A} 
 lemma iSup_induction {ι : Sort*} (S : ι → Subalgebra R A) {motive : A → Prop}
     {x : A} (mem : x ∈ ⨆ i, S i)
     (basic : ∀ i, ∀ a ∈ S i, motive a)
-    (zero : motive 0) (one : motive 1)
     (add : ∀ a b, motive a → motive b → motive (a + b))
     (mul : ∀ a b, motive a → motive b → motive (a * b))
     (algebraMap : ∀ r, motive (algebraMap R A r)) : motive x := by
   let T : Subalgebra R A :=
   { carrier := {x | motive x}
     mul_mem' {a b} := mul a b
-    one_mem' := one
     add_mem' {a b} := add a b
-    zero_mem' := zero
     algebraMap_mem' := algebraMap }
   suffices iSup S ≤ T from this mem
   rwa [iSup_le_iff]
@@ -210,14 +219,13 @@ lemma iSup_induction {ι : Sort*} (S : ι → Subalgebra R A) {motive : A → Pr
 theorem iSup_induction' {ι : Sort*} (S : ι → Subalgebra R A) {motive : ∀ x, (x ∈ ⨆ i, S i) → Prop}
     {x : A} (mem : x ∈ ⨆ i, S i)
     (basic : ∀ (i) (x) (hx : x ∈ S i), motive x (mem_iSup_of_mem i hx))
-    (zero : motive 0 (zero_mem _)) (one : motive 1 (one_mem _))
     (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem ‹_› ‹_›))
     (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem ‹_› ‹_›))
-    (algebraMap : ∀ r, motive (algebraMap R A r) (Subalgebra.algebraMap_mem _ ‹_›)) :
+    (algebraMap : ∀ r, motive (algebraMap R A r) (Subalgebra.algebraMap_mem (⨆ i, S i) ‹_›)) :
     motive x mem := by
   refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, S i) (hc : motive x hx) ↦ hc
   exact iSup_induction S (motive := fun x' ↦ ∃ h, motive x' h) mem
-    (fun _ _ h ↦ ⟨_, basic _ _ h⟩) ⟨_, zero⟩ ⟨_, one⟩ (fun _ _ h h' ↦ ⟨_, add _ _ _ _ h.2 h'.2⟩)
+    (fun _ _ h ↦ ⟨_, basic _ _ h⟩) (fun _ _ h h' ↦ ⟨_, add _ _ _ _ h.2 h'.2⟩)
     (fun _ _ h h' ↦ ⟨_, mul _ _ _ _ h.2 h'.2⟩) fun _ ↦ ⟨_, algebraMap _⟩
 
 instance : Inhabited (Subalgebra R A) := ⟨⊥⟩
@@ -228,8 +236,13 @@ theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (alge
 theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 :=
   Submodule.one_eq_range.symm
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
+
+@[simp]
+theorem toSubring_bot (A : Type*) [CommRing A] (R : Subring A) :
+    (⊥ : Subalgebra R A).toSubring = R := by
+  aesop (add norm Subalgebra.mem_carrier.symm)
 
 theorem eq_top_iff {S : Subalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
   ⟨fun h x => by rw [h]; exact mem_top, fun h => by
@@ -281,7 +294,7 @@ noncomputable def botEquivOfInjective (h : Function.Injective (algebraMap R A)) 
     (⊥ : Subalgebra R A) ≃ₐ[R] R :=
   AlgEquiv.symm <|
     AlgEquiv.ofBijective (Algebra.ofId R _)
-      ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy :), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.eq hx⟩⟩
+      ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy :), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.ext hx⟩⟩
 
 /-- The bottom subalgebra is isomorphic to the field. -/
 @[simps! symm_apply]
@@ -400,6 +413,50 @@ theorem map_comap_eq_self_of_surjective
 end Subalgebra
 
 end MapComap
+
+section saturation
+
+namespace Subalgebra
+
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+  {s : Subalgebra R S} {M : Submonoid S} {H : M ≤ s.toSubmonoid}
+
+/-- The saturation of a subalgebra `s` with respect to a submonoid `M` is the smallest
+subalgebra closed under division by `s`. -/
+def saturation (s : Subalgebra R S) (M : Submonoid S) (H : M ≤ s.toSubmonoid) :
+    Subalgebra R S where
+  carrier := { x | ∃ m ∈ M, m * x ∈ s }
+  mul_mem' := by
+    intro a b ⟨m, hm, ha⟩ ⟨n, hn, hb⟩
+    refine ⟨_, mul_mem hm hn, mul_mul_mul_comm m n a b ▸ mul_mem ha hb⟩
+  add_mem' := by
+    intro a b ⟨m, hm, ha⟩ ⟨n, hn, hb⟩
+    refine ⟨_, mul_mem hn hm, ?_⟩
+    rw [mul_add, mul_assoc, mul_comm n m, mul_assoc]
+    exact add_mem (mul_mem (H hn) ha) (mul_mem (H hm) hb)
+  algebraMap_mem' r := ⟨1, one_mem _, by simp⟩
+
+@[simp] lemma mem_saturation_iff {x : S} :
+    x ∈ s.saturation M H ↔ ∃ m ∈ M, m • x ∈ s := .rfl
+
+lemma le_saturation : s ≤ s.saturation M H :=
+  fun x hx ↦ ⟨1, one_mem M, by simpa⟩
+
+@[simp] lemma saturation_saturation :
+    (s.saturation M H).saturation M (H.trans s.le_saturation) = s.saturation M H :=
+  le_saturation.antisymm' fun x ⟨m, hm, n, hn, h⟩ ↦ ⟨_, M.mul_mem hn hm, mul_assoc n m x ▸ h⟩
+
+lemma mem_saturation_of_mul_mem_left {x y} (hxy : x * y ∈ s.saturation M H)
+    (hx : x ∈ M) : y ∈ s.saturation M H :=
+  saturation_saturation.le ⟨_, hx, hxy⟩
+
+lemma mem_saturation_of_mul_mem_right {x y} (hxy : x * y ∈ s.saturation M H)
+    (hy : y ∈ M) : x ∈ s.saturation M H :=
+  mem_saturation_of_mul_mem_left (mul_comm x y ▸ hxy) hy
+
+end Subalgebra
+
+end saturation
 
 section Adjoin
 
@@ -563,8 +620,9 @@ theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid
   · intro r hr
     rcases Subsemiring.mem_closure_iff_exists_list.1 hr with ⟨L, HL, rfl⟩
     clear hr
-    induction' L with hd tl ih
-    · exact zero_mem _
+    induction L with
+    | nil => exact zero_mem _
+    | cons hd tl ih => ?_
     rw [List.forall_mem_cons] at HL
     rw [List.map_cons, List.sum_cons]
     refine Submodule.add_mem _ ?_ (ih HL.2)
@@ -574,8 +632,9 @@ theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid
       rcases this with ⟨z, r, hr, hzr⟩
       rw [← hzr]
       exact smul_mem _ _ (subset_span hr)
-    induction' hd with hd tl ih
-    · exact ⟨1, 1, (Submonoid.closure s).one_mem', one_smul _ _⟩
+    induction hd with
+    | nil => exact ⟨1, 1, (Submonoid.closure s).one_mem', one_smul _ _⟩
+    | cons hd tl ih => ?_
     rw [List.forall_mem_cons] at HL
     rcases ih HL.2 with ⟨z, r, hr, hzr⟩
     rw [List.prod_cons, ← hzr]
@@ -666,6 +725,7 @@ lemma commute_of_mem_adjoin_self {a b : A} (hb : b ∈ adjoin R {a}) :
 
 variable (R)
 
+@[simp]
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   Algebra.subset_adjoin (Set.mem_singleton_iff.mpr rfl)
 
@@ -742,7 +802,7 @@ theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃φ₁ φ₂ :
     (hs : s.EqOn φ₁ φ₂) : φ₁ = φ₂ :=
   ext fun _x => adjoin_le_equalizer φ₁ φ₂ hs <| h.symm ▸ trivial
 
-/-- Two algebra morphisms are equal on `Algebra.span s`iff they are equal on s -/
+/-- Two algebra morphisms are equal on `Algebra.span s` iff they are equal on `s`. -/
 theorem eqOn_adjoin_iff {φ ψ : A →ₐ[R] B} {s : Set A} :
     Set.EqOn φ ψ (adjoin R s) ↔ Set.EqOn φ ψ s := by
   have (S : Set A) : S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
@@ -758,6 +818,11 @@ theorem ext_of_eq_adjoin {S : Subalgebra R A} {s : Set A} (hS : S = adjoin R s) 
     (h : ∀ x hx, φ₁ ⟨x, hS.ge (subset_adjoin hx)⟩ = φ₂ ⟨x, hS.ge (subset_adjoin hx)⟩) :
     φ₁ = φ₂ := by
   subst hS; exact adjoin_ext h
+
+theorem _root_.Algebra.forall_mem_adjoin_smul_eq_self_iff (S : Set A) {M : Type*} [Monoid M]
+    [MulSemiringAction M A] [SMulCommClass M R A] (m : M) :
+    (∀ x ∈ adjoin R S, m • x = x) ↔ (∀ x ∈ S, m • x = x) :=
+  AlgHom.eqOn_adjoin_iff (φ := MulSemiringAction.toAlgHom R A m) (ψ := .id R A)
 
 end AlgHom
 
@@ -824,6 +889,25 @@ lemma Algebra.adjoin_nonUnitalSubalgebra (s : Set A) :
 end CommSemiring
 
 namespace Subalgebra
+
+section toNonUnitalSubalgebra
+
+variable [CommSemiring R] [Semiring A] [Algebra R A]
+
+/-- The forgetful map from subalgebras to non-unital subalgebras, as an order embedding. -/
+def toNonUnitalSubalgebraOrderEmbedding : Subalgebra R A ↪o NonUnitalSubalgebra R A where
+  toFun := toNonUnitalSubalgebra
+  inj' := toNonUnitalSubalgebra_injective
+  map_rel_iff' := by simp [SetLike.le_def]
+
+@[simp]
+lemma toNonUnitalSubalgebra_le_toNonUnitalSubalgebra {S T : Subalgebra R A} :
+    S.toNonUnitalSubalgebra ≤ T.toNonUnitalSubalgebra ↔ S ≤ T :=
+  toNonUnitalSubalgebraOrderEmbedding.le_iff_le
+
+alias ⟨_, toNonUnitalSubalgebra_mono⟩ := toNonUnitalSubalgebra_le_toNonUnitalSubalgebra
+
+end toNonUnitalSubalgebra
 
 variable [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 

@@ -3,16 +3,20 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.Metrizable.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Metrizable.Basic
 
 /-!
 The subgroup "multiples of `a`" (`zmultiples a`) is a discrete subgroup of `ℝ`, i.e. its
 intersection with compact sets is finite.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -43,7 +47,7 @@ instance {a : ℝ} : DiscreteTopology (AddSubgroup.zmultiples a) := by
 /-- Under the coercion from `ℤ` to `ℝ`, inverse images of compact sets are finite. -/
 theorem tendsto_coe_cofinite : Tendsto ((↑) : ℤ → ℝ) cofinite (cocompact ℝ) := by
   apply (castAddHom ℝ).tendsto_coe_cofinite_of_discrete cast_injective
-  rw [range_castAddHom]
+  rw [range_castAddHom, SetLike.isDiscrete_iff_discreteTopology]
   infer_instance
 
 /-- For nonzero `a`, the "multiples of `a`" map `zmultiplesHom` from `ℤ` to `ℝ` is discrete, i.e.
@@ -51,7 +55,7 @@ inverse images of compact sets are finite. -/
 theorem tendsto_zmultiplesHom_cofinite {a : ℝ} (ha : a ≠ 0) :
     Tendsto (zmultiplesHom ℝ a) cofinite (cocompact ℝ) := by
   apply (zmultiplesHom ℝ a).tendsto_coe_cofinite_of_discrete <| smul_left_injective ℤ ha
-  rw [AddSubgroup.range_zmultiplesHom]
+  rw [AddSubgroup.range_zmultiplesHom, SetLike.isDiscrete_iff_discreteTopology]
   infer_instance
 
 end Int
@@ -61,7 +65,9 @@ namespace AddSubgroup
 /-- The subgroup "multiples of `a`" (`zmultiples a`) is a discrete subgroup of `ℝ`, i.e. its
 intersection with compact sets is finite. -/
 theorem tendsto_zmultiples_subtype_cofinite (a : ℝ) :
-    Tendsto (zmultiples a).subtype cofinite (cocompact ℝ) :=
-  (zmultiples a).tendsto_coe_cofinite_of_discrete
+    Tendsto (zmultiples a).subtype cofinite (cocompact ℝ) := by
+  refine (zmultiples a).tendsto_coe_cofinite_of_discrete ?_
+  rw [SetLike.isDiscrete_iff_discreteTopology]
+  infer_instance
 
 end AddSubgroup

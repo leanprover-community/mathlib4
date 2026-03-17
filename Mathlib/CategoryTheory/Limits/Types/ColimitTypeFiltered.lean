@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.CategoryTheory.Limits.Types.ColimitType
+module
+
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.Limits.Types.ColimitType
 
 /-!
 # Filtered colimits of types
@@ -19,6 +21,8 @@ a concrete condition under which the map
 important step when proving `c.IsColimit`.
 
 -/
+
+public section
 
 universe w₁ w₀ v u
 
@@ -64,7 +68,7 @@ lemma ιColimitType_eq_iff_of_isFiltered {j j' : J} (x : F.obj j) (y : F.obj j')
   rw [ιColimitType_eq_iff, eqvGen_colimitTypeRel_iff_of_isFiltered]
 
 /-- More precise variant of the lemma `ιColimitType_eq_iff_of_isFiltered`
-in the case both `x` and `y` and in the same type `F.obj j`. -/
+in the case both `x` and `y` are in the same type `F.obj j`. -/
 lemma ιColimitType_eq_iff_of_isFiltered' {j : J} (x y : F.obj j) :
     F.ιColimitType j x = F.ιColimitType j y ↔
       ∃ (k : J) (f : j ⟶ k), F.map f x = F.map f y := by

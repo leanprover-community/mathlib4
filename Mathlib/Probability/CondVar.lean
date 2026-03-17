@@ -3,9 +3,11 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
-import Mathlib.MeasureTheory.Integral.Average
-import Mathlib.Probability.Moments.Variance
+module
+
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
+public import Mathlib.MeasureTheory.Integral.Average
+public import Mathlib.Probability.Moments.Variance
 
 /-!
 # Conditional variance
@@ -16,8 +18,10 @@ This file defines the variance of a real-valued random variable conditional to a
 
 Define the Lebesgue conditional variance. See
 [GibbsMeasure](https://github.com/james18lpc/GibbsMeasure) for a definition of the Lebesgue
-conditional expectation).
+conditional expectation.
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter
 open scoped ENNReal
@@ -58,7 +62,7 @@ lemma condVar_of_sigmaFinite [SigmaFinite (μ.trim hm)] :
       else 0 := condExp_of_sigmaFinite _
 
 lemma condVar_of_stronglyMeasurable [SigmaFinite (μ.trim hm)]
-    (hX : StronglyMeasurable[m] X) (hXint : Integrable ((X - μ[X|m]) ^ 2) μ) :
+    (hX : StronglyMeasurable[m] X) (hXint : Integrable ((X - μ[X | m]) ^ 2) μ) :
     Var[X; μ | m] = fun ω ↦ (X ω - (μ[X | m]) ω) ^ 2 :=
   condExp_of_stronglyMeasurable _ ((hX.sub stronglyMeasurable_condExp).pow _) hXint
 
@@ -83,7 +87,7 @@ lemma condVar_congr_ae (h : X =ᵐ[μ] Y) : Var[X; μ | m] =ᵐ[μ] Var[Y; μ | 
   condExp_congr_ae <| by filter_upwards [h, condExp_congr_ae h] with ω hω hω'; dsimp; rw [hω, hω']
 
 lemma condVar_of_aestronglyMeasurable [hμm : SigmaFinite (μ.trim hm)]
-    (hX : AEStronglyMeasurable[m] X μ) (hXint : Integrable ((X - μ[X|m]) ^ 2) μ) :
+    (hX : AEStronglyMeasurable[m] X μ) (hXint : Integrable ((X - μ[X | m]) ^ 2) μ) :
     Var[X; μ | m] =ᵐ[μ] (X - μ[X | m]) ^ 2 :=
   condExp_of_aestronglyMeasurable' _ ((continuous_pow _).comp_aestronglyMeasurable
     (hX.sub stronglyMeasurable_condExp.aestronglyMeasurable)) hXint
@@ -92,7 +96,7 @@ lemma integrable_condVar : Integrable Var[X; μ | m] μ := integrable_condExp
 
 /-- The integral of the conditional variance `Var[X | m]` over an `m`-measurable set is equal to
 the integral of `(X - μ[X | m]) ^ 2` on that set. -/
-lemma setIntegral_condVar [SigmaFinite (μ.trim hm)] (hX : Integrable ((X - μ[X|m]) ^ 2) μ)
+lemma setIntegral_condVar [SigmaFinite (μ.trim hm)] (hX : Integrable ((X - μ[X | m]) ^ 2) μ)
     (hs : MeasurableSet[m] s) :
     ∫ ω in s, (Var[X; μ | m]) ω ∂μ = ∫ ω in s, (X ω - (μ[X | m]) ω) ^ 2 ∂μ :=
   setIntegral_condExp _ hX hs

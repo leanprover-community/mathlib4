@@ -3,11 +3,16 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Batteries.Data.List.Basic
-import Batteries.Tactic.Alias
-import Mathlib.Tactic.TypeStar
+module
+
+public import Batteries.Data.List.Basic
+public import Batteries.Tactic.Alias
+public import Mathlib.Tactic.TypeStar
+import all Init.Data.Array.Basic
 
 /-! ### List.modifyLast -/
+
+public section
 
 variable {α : Type*}
 

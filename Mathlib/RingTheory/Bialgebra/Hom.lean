@@ -3,8 +3,10 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov, Amelia Livingston
 -/
-import Mathlib.RingTheory.Coalgebra.Hom
-import Mathlib.RingTheory.Bialgebra.Basic
+module
+
+public import Mathlib.RingTheory.Coalgebra.Hom
+public import Mathlib.RingTheory.Bialgebra.Basic
 
 /-!
 # Homomorphisms of `R`-bialgebras
@@ -18,11 +20,13 @@ This file defines bundled homomorphisms of `R`-bialgebras. We simply mimic
 * `Bialgebra.counitBialgHom R A : A →ₐc[R] R`: the counit of a bialgebra as a bialgebra
   homomorphism.
 
-## Notations
+## Notation
 
 * `A →ₐc[R] B` : `R`-bialgebra homomorphism from `A` to `B`.
 
 -/
+
+@[expose] public section
 
 open TensorProduct Bialgebra Coalgebra Function
 
@@ -329,6 +333,8 @@ theorem counitBialgHom_apply (x : A) :
 @[simp]
 theorem counitBialgHom_toCoalgHom :
     counitBialgHom R A = Coalgebra.counitCoalgHom R A := rfl
+
+@[simp] lemma counitBialgHom_self : counitBialgHom R R = .id R R := rfl
 
 instance subsingleton_to_ring : Subsingleton (A →ₐc[R] R) :=
   ⟨fun _ _ => BialgHom.coe_coalgHom_injective (Subsingleton.elim _ _)⟩

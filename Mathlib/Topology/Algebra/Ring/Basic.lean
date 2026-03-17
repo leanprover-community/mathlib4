@@ -3,11 +3,13 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Topology.Algebra.Group.GroupTopology
+module
+
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Topology.Algebra.Group.GroupTopology
 
 /-!
 
@@ -25,6 +27,8 @@ of topological (semi)rings.
 - The product of two topological (semi)rings is a topological (semi)ring.
 - The indexed product of topological (semi)rings is a topological (semi)ring.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -61,7 +65,7 @@ is just multiplication with `-1`. -/
 theorem IsTopologicalSemiring.continuousNeg_of_mul [TopologicalSpace R] [NonAssocRing R]
     [ContinuousMul R] : ContinuousNeg R where
   continuous_neg := by
-    simpa using (continuous_const.mul continuous_id : Continuous fun x : R => -1 * x)
+    simpa using (continuous_const.fun_mul continuous_id : Continuous fun x : R => -1 * x)
 
 /-- If `R` is a ring which is a topological semiring, then it is automatically a topological
 ring. This exists so that one can place a topological ring structure on `R` without explicitly
@@ -110,6 +114,11 @@ theorem topologicalClosure_minimal (s : NonUnitalSubsemiring R) {t : NonUnitalSu
     (h : s ≤ t) (ht : IsClosed (t : Set R)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
+@[gcongr]
+theorem topologicalClosure_mono {s t : NonUnitalSubsemiring R} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  _root_.closure_mono h
+
 /-- If a non-unital subsemiring of a non-unital topological semiring is commutative, then so is its
 topological closure.
 
@@ -157,6 +166,11 @@ theorem Subsemiring.topologicalClosure_minimal (s : Subsemiring R) {t : Subsemir
     (ht : IsClosed (t : Set R)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
+@[gcongr]
+theorem Subsemiring.topologicalClosure_mono {s t : Subsemiring R} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  _root_.closure_mono h
+
 /-- If a subsemiring of a topological semiring is commutative, then so is its
 topological closure.
 
@@ -171,12 +185,12 @@ section
 
 variable {S : Type*} [TopologicalSpace R] [TopologicalSpace S]
 
-/-- The product topology on the cartesian product of two topological semirings
+/-- The product topology on the Cartesian product of two topological semirings
   makes the product into a topological semiring. -/
 instance [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] [IsTopologicalSemiring R]
     [IsTopologicalSemiring S] : IsTopologicalSemiring (R × S) where
 
-/-- The product topology on the cartesian product of two topological rings
+/-- The product topology on the Cartesian product of two topological rings
   makes the product into a topological ring. -/
 instance [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] [IsTopologicalRing R]
     [IsTopologicalRing S] : IsTopologicalRing (R × S) where
@@ -298,6 +312,11 @@ theorem topologicalClosure_minimal (s : NonUnitalSubring R) {t : NonUnitalSubrin
     (ht : IsClosed (t : Set R)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
+@[gcongr]
+theorem topologicalClosure_mono {s t : NonUnitalSubring R} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  _root_.closure_mono h
+
 /-- If a non-unital subring of a non-unital topological ring is commutative, then so is its
 topological closure.
 
@@ -332,6 +351,11 @@ theorem Subring.isClosed_topologicalClosure (s : Subring R) :
 theorem Subring.topologicalClosure_minimal (s : Subring R) {t : Subring R} (h : s ≤ t)
     (ht : IsClosed (t : Set R)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
+
+@[gcongr]
+theorem Subring.topologicalClosure_mono {s t : Subring R} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  _root_.closure_mono h
 
 /-- If a subring of a topological ring is commutative, then so is its topological closure.
 
@@ -383,6 +407,7 @@ theorem ext {f g : RingTopology R} (h : f.IsOpen = g.IsOpen) : f = g :=
 instance : PartialOrder (RingTopology R) :=
   PartialOrder.lift RingTopology.toTopologicalSpace toTopologicalSpace_injective
 
+set_option backward.privateInPublic true in
 private def def_sInf (S : Set (RingTopology R)) : RingTopology R :=
   let _ := sInf (toTopologicalSpace '' S)
   { toContinuousAdd := continuousAdd_sInf <| forall_mem_image.2 fun t _ =>
@@ -392,6 +417,8 @@ private def def_sInf (S : Set (RingTopology R)) : RingTopology R :=
     toContinuousNeg := continuousNeg_sInf <| forall_mem_image.2 fun t _ =>
       let _ := t.1; t.toContinuousNeg }
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Ring topologies on `R` form a complete lattice, with `⊥` the discrete topology and `⊤` the
 indiscrete topology.
 
@@ -402,8 +429,7 @@ The supremum of two ring topologies `s` and `t` is the infimum of the family of 
 contained in the intersection of `s` and `t`. -/
 instance : CompleteSemilatticeInf (RingTopology R) where
   sInf := def_sInf
-  sInf_le := fun _ a haS => sInf_le (α := TopologicalSpace R) ⟨a, ⟨haS, rfl⟩⟩
-  le_sInf := fun _ _ h => le_sInf (α := TopologicalSpace R) <| forall_mem_image.2 h
+  isGLB_sInf _ := .of_image (f := toTopologicalSpace) .rfl (isGLB_sInf _)
 
 instance : CompleteLattice (RingTopology R) :=
   completeLatticeOfCompleteSemilatticeInf _

@@ -3,8 +3,10 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.SupIndep
+module
+
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.SupIndep
 
 /-!
 # Partitions
@@ -28,6 +30,8 @@ where `s` is the set of all `x` for which `r x x`.
 * Give API lemmas for the specialization to the `Set` case.
 
 -/
+
+@[expose] public section
 variable {α : Type*} {s x y : α}
 
 open Set
@@ -46,8 +50,6 @@ structure Partition [CompleteLattice α] (s : α) where
 
 namespace Partition
 
-@[deprecated (since := "2025-05-23")] alias bot_not_mem' := bot_notMem'
-
 section Basic
 
 variable [CompleteLattice α] {P : Partition s}
@@ -55,6 +57,8 @@ variable [CompleteLattice α] {P : Partition s}
 instance {s : α} : SetLike (Partition s) α where
   coe := Partition.parts
   coe_injective' p p' h := by cases p; cases p'; simpa using h
+
+instance : PartialOrder (Partition s) := .ofSetLike (Partition s) α
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe {s : α} (P : Partition s) : Set α := P
@@ -95,8 +99,6 @@ lemma parts_nonempty (P : Partition s) (hs : s ≠ ⊥) : (P : Set α).Nonempty 
 @[simp]
 lemma bot_notMem (P : Partition s) : ⊥ ∉ P :=
   P.bot_notMem'
-
-@[deprecated (since := "2025-05-23")] alias bot_not_mem := bot_notMem
 
 lemma ne_bot_of_mem (hx : x ∈ P) : x ≠ ⊥ :=
   fun h ↦ P.bot_notMem <| h ▸ hx

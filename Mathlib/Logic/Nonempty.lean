@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Defs
+module
 
+public import Mathlib.Tactic.TypeStar
 /-!
 # Nonempty types
 
@@ -16,6 +17,8 @@ This file proves a few extra facts about `Nonempty`, which is defined in core Le
 * `Classical.arbitrary`: Extracts a witness of nonemptiness using choice. Takes `Nonempty α` as an
   instance.
 -/
+
+@[expose] public section
 
 section
 variable {α β : Sort*}
@@ -74,6 +77,7 @@ theorem nonempty_plift {α} : Nonempty (PLift α) ↔ Nonempty α :=
 /-- Using `Classical.choice`, lifts a (`Prop`-valued) `Nonempty` instance to a (`Type`-valued)
 `Inhabited` instance. `Classical.inhabited_of_nonempty` already exists, in `Init/Classical.lean`,
 but the assumption is not a type class argument, which makes it unsuitable for some applications. -/
+@[instance_reducible]
 noncomputable def Classical.inhabited_of_nonempty' {α} [h : Nonempty α] : Inhabited α :=
   ⟨Classical.choice h⟩
 

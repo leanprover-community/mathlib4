@@ -3,9 +3,11 @@ Copyright (c) 2025 Sihan Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Sihan Su, Wan Lin, Xiaoyang Su
 -/
-import Mathlib.Algebra.MvPolynomial.Monad
-import Mathlib.Data.List.Indexes
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Monad
+public import Mathlib.Data.List.Indexes
+public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 /-!
 # Noether normalization lemma
 This file contains a proof by Nagata of the Noether normalization lemma.
@@ -22,7 +24,7 @@ First, we construct an algebra equivalence `T` from `k[X_0,...,X_n]` to itself s
 More precisely, `T` maps `X_i` to `X_i + X_0 ^ r_i` when `i ≠ 0`, and `X_0` to `X_0`.
 Here we choose `r_i` to be `up ^ i` where `up` is big enough, so that `T` maps
 different monomials of `f` to polynomials with different degrees in `X_0`.
-See `degreeOf_t_neq_of_neq`.
+See `degreeOf_t_ne_of_ne`.
 
 Secondly, we construct the following maps: let `I` be an ideal containing `f` and
 let `φ : k[X_0,...X_{n-1}] ≃ₐ[k] k[X_1,...X_n][X]` be the natural isomorphism.
@@ -48,7 +50,9 @@ Composing `φ` and `g` we get the desired map since both `φ` and `g` are inject
 ## TODO
 * In the final theorems, consider setting `s` equal to the Krull dimension of `R`.
 -/
-open Polynomial MvPolynomial Ideal BigOperators Nat RingHom List
+
+public section
+open Polynomial MvPolynomial Ideal Nat RingHom List
 
 variable {k : Type*} [Field k] {n : ℕ} (f : MvPolynomial (Fin (n + 1)) k)
 variable (v w : Fin (n + 1) →₀ ℕ)
@@ -62,10 +66,7 @@ local notation3 "up" => 2 + f.totalDegree
 
 variable {f v} in
 private lemma lt_up (vlt : ∀ i, v i < up) : ∀ l ∈ ofFn v, l < up := by
-  intro l h
-  rw [mem_ofFn] at h
-  obtain ⟨y, rfl⟩ := h
-  exact vlt y
+  grind
 
 /-- `r` maps `(i : Fin (n + 1))` to `up ^ i`. -/
 local notation3 "r" => fun (i : Fin (n + 1)) ↦ up ^ i.1
@@ -85,14 +86,14 @@ private lemma t1_comp_t1_neg (c : k) : (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _
 private noncomputable abbrev T := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
   (t1_comp_t1_neg f 1) (by simpa using t1_comp_t1_neg f (-1))
 
-private lemma sum_r_mul_neq (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (neq : v ≠ w) :
+private lemma sum_r_mul_ne (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (ne : v ≠ w) :
     ∑ x : Fin (n + 1), r x * v x ≠ ∑ x : Fin (n + 1), r x * w x := by
   intro h
-  refine neq <| Finsupp.ext <| congrFun <| ofFn_inj.mp ?_
+  refine ne <| Finsupp.ext <| congrFun <| ofFn_inj.mp ?_
   apply ofDigits_inj_of_len_eq (Nat.lt_add_right f.totalDegree one_lt_two)
     (by simp) (lt_up vlt) (lt_up wlt)
   simpa only [ofDigits_eq_sum_mapIdx, mapIdx_eq_ofFn, get_ofFn, length_ofFn,
-    Fin.coe_cast, mul_comm, sum_ofFn] using h
+    Fin.val_cast, mul_comm, sum_ofFn] using h
 
 private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).degreeOf 0 =
     ∑ i : Fin (n + 1), (r i) * v i := by
@@ -111,12 +112,13 @@ private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).de
     rw [add_comm (Polynomial.C _), natDegree_X_pow_add_C, mul_comm])
 
 /- `T` maps different monomials of `f` to polynomials with different degrees in `X_0`. -/
-private lemma degreeOf_t_neq_of_neq (hv : v ∈ f.support) (hw : w ∈ f.support) (neq : v ≠ w) :
+private lemma degreeOf_t_ne_of_ne (hv : v ∈ f.support) (hw : w ∈ f.support) (ne : v ≠ w) :
     (T f <| monomial v <| coeff v f).degreeOf 0 ≠
     (T f <| monomial w <| coeff w f).degreeOf 0 := by
   rw [degreeOf_zero_t _ _ <| mem_support_iff.mp hv, degreeOf_zero_t _ _ <| mem_support_iff.mp hw]
-  refine sum_r_mul_neq f v w (fun i ↦ ?_) (fun i ↦ ?_) neq <;>
-  exact lt_of_le_of_lt ((monomial_le_degreeOf i ‹_›).trans (degreeOf_le_totalDegree f i)) (by omega)
+  refine sum_r_mul_ne f v w (fun i ↦ ?_) (fun i ↦ ?_) ne <;>
+  exact lt_of_le_of_lt ((monomial_le_degreeOf i ‹_›).trans (degreeOf_le_totalDegree f i))
+    (by lia)
 
 private lemma leadingCoeff_finSuccEquiv_t :
     (finSuccEquiv k n ((T f) ((monomial v) (coeff v f)))).leadingCoeff =
@@ -136,6 +138,7 @@ private lemma leadingCoeff_finSuccEquiv_t :
     simp only [this, one_pow, Finset.prod_const_one, mul_one]
   exact fun i ↦ pow_zero _
 
+set_option backward.isDefEq.respectTransparency false in
 /- `T` maps `f` into some polynomial in `X_0` such that the leading coefficient is invertible. -/
 private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
     IsUnit (finSuccEquiv k n (T f f)).leadingCoeff := by
@@ -149,7 +152,7 @@ private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
     obtain ⟨h1, h2⟩ := Finset.mem_sdiff.mp hx
     apply degree_lt_degree <| lt_of_le_of_ne (vs x h1) ?_
     simpa only [natDegree_finSuccEquiv]
-      using degreeOf_t_neq_of_neq f _ _ h1 vin <| ne_of_not_mem_cons h2
+      using degreeOf_t_ne_of_ne f _ _ h1 vin <| ne_of_not_mem_cons h2
   have coeff : (finSuccEquiv k n ((T f) (h v + ∑ x ∈ f.support \ {v}, h x))).leadingCoeff =
       (finSuccEquiv k n ((T f) (h v))).leadingCoeff := by
     simp only [map_add, map_sum]
@@ -160,7 +163,7 @@ private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
       by simpa only [map_eq_zero_iff _ (AlgEquiv.injective _)] using eq
     exact (Finset.sup_lt_iff <| Ne.bot_lt (fun x ↦ h2 <| degree_eq_bot.mp x)).mpr vs
   nth_rw 2 [← f.support_sum_monomial_coeff]
-  rw [Finset.sum_eq_add_sum_diff_singleton vin h]
+  rw [Finset.sum_eq_add_sum_diff_singleton_of_mem vin h]
   rw [leadingCoeff_finSuccEquiv_t] at coeff
   simpa only [coeff, algebraMap_eq] using (mem_support_iff.mp vin).isUnit.map MvPolynomial.C
 
@@ -239,12 +242,12 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
     refine ⟨0, le_rfl, Quotient.mkₐ k I, fun a b hab ↦ ?_,
       isIntegral_of_surjective _ (Quotient.mkₐ_surjective k I)⟩
     rw [Quotient.mkₐ_eq_mk, Ideal.Quotient.eq] at hab
-    by_contra neq
+    by_contra ne
     have eq := eq_C_of_isEmpty (a - b)
-    have ne : coeff 0 (a - b) ≠ 0 := fun h ↦ h ▸ eq ▸ sub_ne_zero_of_ne neq <| map_zero _
+    have ne : coeff 0 (a - b) ≠ 0 := fun h ↦ h ▸ eq ▸ sub_ne_zero_of_ne ne <| map_zero _
     obtain ⟨c, _, eqr⟩ := isUnit_iff_exists.mp ne.isUnit
     have one : c • (a - b) = 1 := by
-      rw [MvPolynomial.smul_eq_C_mul, eq, ← RingHom.map_mul, eqr, MvPolynomial.C_1]
+      rw [MvPolynomial.smul_eq_C_mul, eq, ← map_mul, eqr, MvPolynomial.C_1]
     exact hi ((eq_top_iff_one I).mpr (one ▸ I.smul_of_tower_mem c hab))
   | succ d hd =>
     by_cases eqi : I = 0
@@ -253,12 +256,12 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
       exact ⟨d + 1, le_rfl, _, bij.1, isIntegral_of_surjective _ bij.2⟩
     · obtain ⟨f, fi, fne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot eqi
       set ϕ := kerLiftAlg <| hom2 f I
-      have := Quotient.nontrivial hi
+      have := Quotient.nontrivial_iff.mpr hi
       obtain ⟨s, _, g, injg, intg⟩ := hd (ker <| hom2 f I) (ker_ne_top <| hom2 f I)
       have comp : (kerLiftAlg (hom2 f I)).comp (Quotient.mkₐ k <| ker <| hom2 f I) = (hom2 f I) :=
         AlgHom.ext fun a ↦ by
           simp only [AlgHom.coe_comp, Quotient.mkₐ_eq_mk, Function.comp_apply, kerLiftAlg_mk]
-      exact ⟨s, by omega, ϕ.comp g, (ϕ.coe_comp  g) ▸ (kerLiftAlg_injective _).comp injg,
+      exact ⟨s, by lia, ϕ.comp g, (ϕ.coe_comp  g) ▸ (kerLiftAlg_injective _).comp injg,
         intg.trans _ _ <| (comp ▸ hom2_isIntegral f I fne fi).tower_top _ _⟩
 
 variable (k R : Type*) [Field k] [CommRing R] [Nontrivial R] [a : Algebra k R]

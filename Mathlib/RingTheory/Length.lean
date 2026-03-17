@@ -3,11 +3,13 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.Order.KrullDimension
-import Mathlib.RingTheory.FiniteLength
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.Order.KrullDimension
+public import Mathlib.RingTheory.FiniteLength
+public import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
 
@@ -20,6 +22,8 @@ import Mathlib.RingTheory.FiniteLength
 - `Module.length_eq_add_of_exact`: Length is additive in exact sequences.
 
 -/
+
+@[expose] public section
 
 variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M]
 
@@ -61,6 +65,7 @@ lemma Module.length_pos_iff : 0 < Module.length R M ↔ Nontrivial M := by
 lemma Module.length_pos [Nontrivial M] : 0 < Module.length R M :=
   Module.length_pos_iff.mpr ‹_›
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Module.length_compositionSeries (s : CompositionSeries (Submodule R M)) (h₁ : s.head = ⊥)
     (h₂ : s.last = ⊤) : s.length = Module.length R M := by
   have H := isFiniteLength_of_exists_compositionSeries ⟨s, h₁, h₂⟩
@@ -144,6 +149,7 @@ variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R 
 variable (f : N →ₗ[R] M) (g : M →ₗ[R] P) (hf : Function.Injective f) (hg : Function.Surjective g)
 variable (H : Function.Exact f g)
 
+set_option backward.isDefEq.respectTransparency false in
 include hf hg H in
 /-- Length is additive in exact sequences. -/
 lemma Module.length_eq_add_of_exact :
@@ -254,7 +260,7 @@ variable (R M) in
 lemma Module.length_of_free_of_finite
     [StrongRankCondition R] [Module.Free R M] [Module.Finite R M] :
     Module.length R M = Module.finrank R M * Module.length R R := by
-  rw [length_of_free, Cardinal.toENat_eq_nat.mpr (finrank_eq_rank _ _).symm]
+  rw [length_of_free, Cardinal.toENat_eq_natCast.mpr (finrank_eq_rank _ _).symm]
 
 lemma Module.length_eq_one_iff :
     Module.length R M = 1 ↔ IsSimpleModule R M := by

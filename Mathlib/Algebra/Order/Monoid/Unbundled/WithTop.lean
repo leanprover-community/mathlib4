@@ -3,14 +3,18 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Order.WithBot
+module
+
+public import Mathlib.Algebra.CharZero.Defs
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Order.WithBot
 
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -34,6 +38,8 @@ theorem coe_one : ((1 : α) : WithTop α) = 1 :=
 
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_eq_one : (a : WithTop α) = 1 ↔ a = 1 := coe_eq_coe
+
+@[to_additive] lemma coe_ne_one : (a : WithTop α) ≠ 1 ↔ a ≠ 1 := coe_eq_one.ne
 
 @[to_additive (attr := simp, norm_cast)]
 lemma one_eq_coe : 1 = (a : WithTop α) ↔ a = 1 := eq_comm.trans coe_eq_one
@@ -112,25 +118,41 @@ theorem add_eq_coe :
 lemma add_coe_eq_top_iff : x + b = ⊤ ↔ x = ⊤ := by simp
 lemma coe_add_eq_top_iff : a + y = ⊤ ↔ y = ⊤ := by simp
 
+lemma _root_.IsAddLeftRegular.withTop (ha : IsAddLeftRegular a) :
+    IsAddLeftRegular (a : WithTop α) := by
+  rintro (_ | b) (_ | c) <;> simp [none_eq_top, some_eq_coe, ← coe_add, ha.eq_iff]
+
+lemma _root_.IsAddRightRegular.withTop (ha : IsAddRightRegular a) :
+    IsAddRightRegular (a : WithTop α) := by
+  rintro (_ | b) (_ | c) <;> simp [none_eq_top, some_eq_coe, ← coe_add, ha.eq_iff]
+
+lemma _root_.AddLECancellable.withTop [LE α] (ha : AddLECancellable a) :
+    AddLECancellable (a : WithTop α) := by
+  rintro (_ | b) (_ | c)
+  · simp [none_eq_top]
+  · simp [none_eq_top]
+  · simp [some_eq_coe, ← coe_add, none_eq_top]
+  · simpa [none_eq_top, some_eq_coe, ← coe_add] using fun a ↦ ha a
+
 lemma add_right_inj [IsRightCancelAdd α] (hz : z ≠ ⊤) : x + z = y + z ↔ x = y := by
-  lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]
+  lift z to α using hz; exact (IsAddRightRegular.all _).withTop.eq_iff
 
 lemma add_right_cancel [IsRightCancelAdd α] (hz : z ≠ ⊤) (h : x + z = y + z) : x = y :=
   (WithTop.add_right_inj hz).1 h
 
 lemma add_left_inj [IsLeftCancelAdd α] (hx : x ≠ ⊤) : x + y = x + z ↔ y = z := by
-  lift x to α using hx; cases y <;> cases z <;> simp [← coe_add]
+  lift x to α using hx; exact (IsAddLeftRegular.all _).withTop.eq_iff
 
 lemma add_left_cancel [IsLeftCancelAdd α] (hx : x ≠ ⊤) (h : x + y = x + z) : y = z :=
   (WithTop.add_left_inj hx).1 h
 
 instance addLeftMono [LE α] [AddLeftMono α] : AddLeftMono (WithTop α) where
   elim x y z := by
-    cases x <;> cases y <;> cases z <;> simp [← coe_add]; simpa using (add_le_add_left · _)
+    cases x <;> cases y <;> cases z <;> simp [← coe_add]; simpa using fun _ ↦ by gcongr
 
 instance addRightMono [LE α] [AddRightMono α] : AddRightMono (WithTop α) where
   elim x y z := by
-    cases x <;> cases y <;> cases z <;> simp [← coe_add, swap]; simpa using (add_le_add_right · _)
+    cases x <;> cases y <;> cases z <;> simp [← coe_add, swap]; simpa using fun _ ↦ by gcongr
 
 instance addLeftReflectLT [LT α] [AddLeftReflectLT α] : AddLeftReflectLT (WithTop α) where
   elim x y z := by
@@ -150,17 +172,25 @@ protected lemma le_of_add_le_add_right [LE α] [AddRightReflectLE α] (hz : z �
 
 protected lemma add_lt_add_left [LT α] [AddLeftStrictMono α] (hx : x ≠ ⊤) :
     y < z → x + y < x + z := by
-  lift x to α using hx; cases y <;> cases z <;> simp [← coe_add]; simpa using (add_lt_add_left · _)
+  lift x to α using hx; cases y <;> cases z <;> simp [← coe_add]; simpa using fun _ ↦ by gcongr
 
 protected lemma add_lt_add_right [LT α] [AddRightStrictMono α] (hz : z ≠ ⊤) :
     x < y → x + z < y + z := by
-  lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]; simpa using (add_lt_add_right · _)
+  lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]; simpa using fun _ ↦ by gcongr
+
+@[gcongr]
+protected theorem add_lt_add [Preorder α] [AddLeftStrictMono α] [AddRightStrictMono α]
+    (xz : x < z) (yw : y < w) : x + y < z + w := by
+  apply (WithTop.add_lt_add_left xz.ne_top yw).trans_le
+  cases w
+  · simp
+  · exact (WithTop.add_lt_add_right coe_ne_top xz).le
 
 protected lemma add_le_add_iff_left [LE α] [AddLeftMono α] [AddLeftReflectLE α] (hx : x ≠ ⊤) :
-    x + y ≤ x + z ↔ y ≤ z := ⟨WithTop.le_of_add_le_add_left hx, (add_le_add_left · _)⟩
+    x + y ≤ x + z ↔ y ≤ z := ⟨WithTop.le_of_add_le_add_left hx, fun _ ↦ by gcongr⟩
 
 protected lemma add_le_add_iff_right [LE α] [AddRightMono α] [AddRightReflectLE α] (hz : z ≠ ⊤) :
-    x + z ≤ y + z ↔ x ≤ y := ⟨WithTop.le_of_add_le_add_right hz, (add_le_add_right · _)⟩
+    x + z ≤ y + z ↔ x ≤ y := ⟨WithTop.le_of_add_le_add_right hz, fun _ ↦ by gcongr⟩
 
 protected lemma add_lt_add_iff_left [LT α] [AddLeftStrictMono α] [AddLeftReflectLT α] (hx : x ≠ ⊤) :
     x + y < x + z ↔ y < z := ⟨lt_of_add_lt_add_left, WithTop.add_lt_add_left hx⟩
@@ -171,12 +201,12 @@ protected lemma add_lt_add_iff_right [LT α] [AddRightStrictMono α] [AddRightRe
 protected theorem add_lt_add_of_le_of_lt [Preorder α] [AddLeftStrictMono α]
     [AddRightMono α] (hw : w ≠ ⊤) (hwy : w ≤ y) (hxz : x < z) :
     w + x < y + z :=
-  (WithTop.add_lt_add_left hw hxz).trans_le <| add_le_add_right hwy _
+  (WithTop.add_lt_add_left hw hxz).trans_le <| by gcongr
 
 protected theorem add_lt_add_of_lt_of_le [Preorder α] [AddLeftMono α]
     [AddRightStrictMono α] (hx : x ≠ ⊤) (hwy : w < y) (hxz : x ≤ z) :
     w + x < y + z :=
-  (WithTop.add_lt_add_right hx hwy).trans_le <| add_le_add_left hxz _
+  (WithTop.add_lt_add_right hx hwy).trans_le <| by gcongr
 
 lemma addLECancellable_of_ne_top [LE α] [AddLeftReflectLE α]
     (hx : x ≠ ⊤) : AddLECancellable x := fun _b _c ↦ WithTop.le_of_add_le_add_left hx
@@ -299,7 +329,7 @@ end AddMonoidWithOne
 
 instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
   { cast_injective := Function.Injective.comp (f := Nat.cast (R := α))
-      (fun _ _ => WithTop.coe_eq_coe.1) Nat.cast_injective}
+      (fun _ _ => WithTop.coe_eq_coe.1) Nat.cast_injective }
 
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) :=
   { WithTop.addMonoidWithOne, WithTop.addCommMonoid with }
@@ -400,6 +430,9 @@ theorem one_lt_coe [LT α] : 1 < (a : WithBot α) ↔ 1 < a := coe_lt_coe
 theorem coe_lt_one [LT α] : (a : WithBot α) < 1 ↔ a < 1 := coe_lt_coe
 
 @[to_additive (attr := simp)]
+theorem bot_lt_one [LT α] : ⊥ < (1 : WithBot α) := bot_lt_coe _
+
+@[to_additive (attr := simp)]
 protected theorem map_one {β} (f : α → β) : (1 : WithBot α).map f = (f 1 : WithBot β) :=
   rfl
 
@@ -444,6 +477,22 @@ theorem add_eq_coe :
 lemma add_coe_eq_bot_iff : x + b = ⊥ ↔ x = ⊥ := by simp
 lemma coe_add_eq_bot_iff : a + y = ⊥ ↔ y = ⊥ := by simp
 
+lemma _root_.IsAddLeftRegular.withBot (ha : IsAddLeftRegular a) :
+    IsAddLeftRegular (a : WithBot α) := by
+  rintro (_ | b) (_ | c) <;> simp [none_eq_bot, some_eq_coe, ← coe_add]; simpa using @ha _ _
+
+lemma _root_.IsAddRightRegular.withBot (ha : IsAddRightRegular a) :
+    IsAddRightRegular (a : WithBot α) := by
+  rintro (_ | b) (_ | c) <;> simp [none_eq_bot, some_eq_coe, ← coe_add]; simpa using @ha _ _
+
+lemma _root_.AddLECancellable.withBot [LE α] (ha : AddLECancellable a) :
+    AddLECancellable (a : WithBot α) := by
+  rintro (_ | b) (_ | c)
+  · simp [none_eq_bot]
+  · simp [none_eq_bot]
+  · simp [some_eq_coe, ← coe_add, none_eq_bot]
+  · simpa [none_eq_bot, some_eq_coe, ← coe_add] using fun a ↦ ha a
+
 lemma add_right_inj [IsRightCancelAdd α] (hz : z ≠ ⊥) : x + z = y + z ↔ x = y := by
   lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]
 
@@ -458,11 +507,11 @@ lemma add_left_cancel [IsLeftCancelAdd α] (hx : x ≠ ⊥) (h : x + y = x + z) 
 
 instance addLeftMono [LE α] [AddLeftMono α] : AddLeftMono (WithBot α) where
   elim x y z := by
-    cases x <;> cases y <;> cases z <;> simp [← coe_add]; simpa using (add_le_add_left · _)
+    cases x <;> cases y <;> cases z <;> simp [← coe_add]; simpa using fun _ ↦ by gcongr
 
 instance addRightMono [LE α] [AddRightMono α] : AddRightMono (WithBot α) where
   elim x y z := by
-    cases x <;> cases y <;> cases z <;> simp [← coe_add, swap]; simpa using (add_le_add_right · _)
+    cases x <;> cases y <;> cases z <;> simp [← coe_add, swap]; simpa using fun _ ↦ by gcongr
 
 instance addLeftReflectLT [LT α] [AddLeftReflectLT α] : AddLeftReflectLT (WithBot α) where
   elim x y z := by
@@ -482,17 +531,17 @@ protected lemma le_of_add_le_add_right [LE α] [AddRightReflectLE α] (hz : z �
 
 protected lemma add_lt_add_left [LT α] [AddLeftStrictMono α] (hx : x ≠ ⊥) :
     y < z → x + y < x + z := by
-  lift x to α using hx; cases y <;> cases z <;> simp [← coe_add]; simpa using (add_lt_add_left · _)
+  lift x to α using hx; cases y <;> cases z <;> simp [← coe_add]; simpa using fun _ ↦ by gcongr
 
 protected lemma add_lt_add_right [LT α] [AddRightStrictMono α] (hz : z ≠ ⊥) :
     x < y → x + z < y + z := by
-  lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]; simpa using (add_lt_add_right · _)
+  lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]; simpa using fun _ ↦ by gcongr
 
 protected lemma add_le_add_iff_left [LE α] [AddLeftMono α] [AddLeftReflectLE α] (hx : x ≠ ⊥) :
-    x + y ≤ x + z ↔ y ≤ z := ⟨WithBot.le_of_add_le_add_left hx, (add_le_add_left · _)⟩
+    x + y ≤ x + z ↔ y ≤ z := ⟨WithBot.le_of_add_le_add_left hx, fun _ ↦ by gcongr⟩
 
 protected lemma add_le_add_iff_right [LE α] [AddRightMono α] [AddRightReflectLE α] (hz : z ≠ ⊥) :
-    x + z ≤ y + z ↔ x ≤ y := ⟨WithBot.le_of_add_le_add_right hz, (add_le_add_right · _)⟩
+    x + z ≤ y + z ↔ x ≤ y := ⟨WithBot.le_of_add_le_add_right hz, fun _ ↦ by gcongr⟩
 
 protected lemma add_lt_add_iff_left [LT α] [AddLeftStrictMono α] [AddLeftReflectLT α] (hx : x ≠ ⊥) :
     x + y < x + z ↔ y < z := ⟨lt_of_add_lt_add_left, WithBot.add_lt_add_left hx⟩
@@ -503,12 +552,12 @@ protected lemma add_lt_add_iff_right [LT α] [AddRightStrictMono α] [AddRightRe
 protected theorem add_lt_add_of_le_of_lt [Preorder α] [AddLeftStrictMono α]
     [AddRightMono α] (hw : w ≠ ⊥) (hwy : w ≤ y) (hxz : x < z) :
     w + x < y + z :=
-  (WithBot.add_lt_add_left hw hxz).trans_le <| add_le_add_right hwy _
+  (WithBot.add_lt_add_left hw hxz).trans_le <| by gcongr
 
 protected theorem add_lt_add_of_lt_of_le [Preorder α] [AddLeftMono α]
     [AddRightStrictMono α] (hx : x ≠ ⊥) (hwy : w < y) (hxz : x ≤ z) :
     w + x < y + z :=
-  (WithBot.add_lt_add_right hx hwy).trans_le <| add_le_add_left hxz _
+  (WithBot.add_lt_add_right hx hwy).trans_le <| by gcongr
 
 lemma addLECancellable_of_ne_bot [LE α] [AddLeftReflectLE α]
     (hx : x ≠ ⊥) : AddLECancellable x := fun _b _c ↦ WithBot.le_of_add_le_add_left hx
@@ -622,6 +671,9 @@ lemma map_eq_natCast_iff {f : β → α} {n : ℕ} {a : WithBot β} :
 lemma natCast_eq_map_iff {f : β → α} {n : ℕ} {a : WithBot β} :
     n = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
 
+@[simp] lemma bot_lt_natCast [LT α] (n : ℕ) : (⊥ : WithBot α) < n :=
+  WithBot.bot_lt_coe _
+
 end AddMonoidWithOne
 
 instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithBot α) :=
@@ -650,13 +702,5 @@ protected def _root_.AddHom.withBotMap {M N : Type*} [Add M] [Add N] (f : AddHom
 protected def _root_.AddMonoidHom.withBotMap {M N : Type*} [AddZeroClass M] [AddZeroClass N]
     (f : M →+ N) : WithBot M →+ WithBot N :=
   { ZeroHom.withBotMap f.toZeroHom, AddHom.withBotMap f.toAddHom with toFun := WithBot.map f }
-
--- instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithBot α) :=
---   { WithBot.partialOrder, WithBot.addCommMonoid with
---     add_le_add_left := fun _ _ h c => add_le_add_left h c }
---
--- instance linearOrderedAddCommMonoid [LinearOrderedAddCommMonoid α] :
---     LinearOrderedAddCommMonoid (WithBot α) :=
---   { WithBot.linearOrder, WithBot.orderedAddCommMonoid with }
 
 end WithBot

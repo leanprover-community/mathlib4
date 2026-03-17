@@ -3,14 +3,16 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
-import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Formula
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Formula
 
 /-!
 # Nonsingular points and the group law in Jacobian coordinates
 
 Let `W` be a Weierstrass curve over a field `F`. The nonsingular Jacobian points of `W` can be
-endowed with an group law, which is uniquely determined by the formulae in
+endowed with a group law, which is uniquely determined by the formulae in
 `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Formula.lean` and follows from an equivalence with
 the nonsingular points `W⟮F⟯` in affine coordinates.
 
@@ -42,9 +44,9 @@ the nonsingularity condition already implies `(x, y, z) ≠ (0, 0, 0)`, so a non
 point on `W` can be given by `[x : y : z]` and the nonsingular condition on any representative.
 
 A nonsingular Jacobian point representative can be converted to a nonsingular point in affine
-coordinates using `WeiestrassCurve.Jacobian.Point.toAffine`, which lifts to a map on nonsingular
-Jacobian points using `WeiestrassCurve.Jacobian.Point.toAffineLift`. Conversely, a nonsingular point
-in affine coordinates can be converted to a nonsingular Jacobian point using
+coordinates using `WeierstrassCurve.Jacobian.Point.toAffine`, which lifts to a map on nonsingular
+Jacobian points using `WeierstrassCurve.Jacobian.Point.toAffineLift`. Conversely, a nonsingular
+point in affine coordinates can be converted to a nonsingular Jacobian point using
 `WeierstrassCurve.Jacobian.Point.fromAffine` or `WeierstrassCurve.Affine.Point.toJacobian`.
 
 Whenever possible, all changes to documentation and naming of definitions and theorems should be
@@ -58,6 +60,8 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Point.lean`.
 
 elliptic curve, Jacobian, point, group law
 -/
+
+@[expose] public section
 
 local notation3 "x" => (0 : Fin 3)
 
@@ -390,20 +394,18 @@ lemma mk_ne_zero [Nontrivial R] {X Y : R} (h : W'.NonsingularLift ⟦![X, Y, 1]�
 corresponding nonsingular Jacobian point. -/
 def fromAffine [Nontrivial R] : W'.toAffine.Point → W'.Point
   | 0 => 0
-  | .some h => ⟨(nonsingularLift_some ..).mpr h⟩
+  | .some _ _ h => ⟨(nonsingularLift_some ..).mpr h⟩
 
 lemma fromAffine_zero [Nontrivial R] : fromAffine 0 = (0 : W'.Point) :=
   rfl
 
 lemma fromAffine_some [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
-    fromAffine (.some h) = ⟨(nonsingularLift_some ..).mpr h⟩ :=
+    fromAffine (.some _ _ h) = ⟨(nonsingularLift_some ..).mpr h⟩ :=
   rfl
 
 lemma fromAffine_some_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
-    fromAffine (.some h) ≠ 0 :=
+    fromAffine (.some _ _ h) ≠ 0 :=
   mk_ne_zero <| (nonsingularLift_some ..).mpr h
-
-@[deprecated (since := "2025-03-01")] alias fromAffine_ne_zero := fromAffine_some_ne_zero
 
 /-- The negation of a nonsingular Jacobian point on a Weierstrass curve `W`.
 
@@ -442,7 +444,7 @@ variable (W) in
 /-- The natural map from a nonsingular Jacobian point representative on a Weierstrass curve to its
 corresponding nonsingular point in affine coordinates. -/
 noncomputable def toAffine (P : Fin 3 → F) : W.toAffine.Point :=
-  if hP : W.Nonsingular P ∧ P z ≠ 0 then .some <| (nonsingular_of_Z_ne_zero hP.2).mp hP.1 else 0
+  if hP : W.Nonsingular P ∧ P z ≠ 0 then .some _ _ <| (nonsingular_of_Z_ne_zero hP.2).mp hP.1 else 0
 
 lemma toAffine_of_singular {P : Fin 3 → F} (hP : ¬W.Nonsingular P) : toAffine W P = 0 := by
   rw [toAffine, dif_neg <| not_and_of_not_left _ hP]
@@ -454,11 +456,11 @@ lemma toAffine_zero : toAffine W ![1, 1, 0] = 0 :=
   toAffine_of_Z_eq_zero rfl
 
 lemma toAffine_of_Z_ne_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z ≠ 0) :
-    toAffine W P = .some ((nonsingular_of_Z_ne_zero hPz).mp hP) := by
+    toAffine W P = .some _ _ ((nonsingular_of_Z_ne_zero hPz).mp hP) := by
   rw [toAffine, dif_pos ⟨hP, hPz⟩]
 
 lemma toAffine_some {X Y : F} (h : W.Nonsingular ![X, Y, 1]) :
-    toAffine W ![X, Y, 1] = .some ((nonsingular_some ..).mp h) := by
+    toAffine W ![X, Y, 1] = .some _ _ ((nonsingular_some ..).mp h) := by
   simp only [toAffine_of_Z_ne_zero h one_ne_zero, fin3_def_ext, one_pow, div_one]
 
 lemma toAffine_smul (P : Fin 3 → F) {u : F} (hu : IsUnit u) :
@@ -544,11 +546,11 @@ lemma toAffineLift_zero : toAffineLift (0 : W.Point) = 0 :=
   toAffine_zero
 
 lemma toAffineLift_of_Z_ne_zero {P : Fin 3 → F} {hP : W.NonsingularLift ⟦P⟧} (hPz : P z ≠ 0) :
-    toAffineLift ⟨hP⟩ = .some ((nonsingular_of_Z_ne_zero hPz).mp hP) :=
+    toAffineLift ⟨hP⟩ = .some _ _ ((nonsingular_of_Z_ne_zero hPz).mp hP) :=
   toAffine_of_Z_ne_zero hP hPz
 
 lemma toAffineLift_some {X Y : F} (h : W.NonsingularLift ⟦![X, Y, 1]⟧) :
-    toAffineLift ⟨h⟩ = .some ((nonsingular_some ..).mp h) :=
+    toAffineLift ⟨h⟩ = .some _ _ ((nonsingular_some ..).mp h) :=
   toAffine_some h
 
 lemma toAffineLift_neg (P : W.Point) : (-P).toAffineLift = -P.toAffineLift := by
@@ -560,6 +562,7 @@ lemma toAffineLift_add [DecidableEq F] (P Q : W.Point) :
   rcases P, Q with ⟨@⟨⟨_⟩, hP⟩, @⟨⟨_⟩, hQ⟩⟩
   exact toAffine_add hP hQ
 
+set_option backward.isDefEq.respectTransparency false in
 variable (W) in
 /-- The addition-preserving equivalence between the type of nonsingular Jacobian points on a
 Weierstrass curve `W` and the type of nonsingular points `W⟮F⟯` in affine coordinates. -/
@@ -580,17 +583,29 @@ noncomputable def toAffineAddEquiv [DecidableEq F] : W.Point ≃+ W.toAffine.Poi
     · rw [fromAffine_some, toAffineLift_some]
   map_add' := toAffineLift_add
 
-noncomputable instance [DecidableEq F] : AddCommGroup W.Point where
+noncomputable instance : AddCommGroup W.Point where
   nsmul := nsmulRec
   zsmul := zsmulRec
-  zero_add _ := (toAffineAddEquiv W).injective <| by
+  zero_add _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, zero_add]
-  add_zero _ := (toAffineAddEquiv W).injective <| by
+  add_zero _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, add_zero]
-  neg_add_cancel P := (toAffineAddEquiv W).injective <| by
+  neg_add_cancel P := by
+    classical
+    apply (toAffineAddEquiv W).injective
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, neg_add_cancel, toAffineLift_zero]
-  add_comm _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_comm]
-  add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_assoc]
+  add_comm _ _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
+    simp only [map_add, add_comm]
+  add_assoc _ _ _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
+    simp only [map_add, add_assoc]
 
 end Point
 

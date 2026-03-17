@@ -3,32 +3,37 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.ERealExp
-import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Topology.MetricSpace.Polish
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.ERealExp
+public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.Topology.MetricSpace.Polish
 
 /-!
 # Properties of the extended logarithm and exponential
 
 We prove that `log` and `exp` define order isomorphisms between `ℝ≥0∞` and `EReal`.
-## Main DefinitionsP
+
+## Main Definitions
 - `ENNReal.logOrderIso`: The order isomorphism between `ℝ≥0∞` and `EReal` defined by `log`
-and `exp`.
+  and `exp`.
 - `EReal.expOrderIso`: The order isomorphism between `EReal` and `ℝ≥0∞` defined by `exp`
-and `log`.
+  and `log`.
 - `ENNReal.logHomeomorph`: `log` as a homeomorphism.
 - `EReal.expHomeomorph`: `exp` as a homeomorphism.
 
 ## Main Results
 - `EReal.log_exp`, `ENNReal.exp_log`: `log` and `exp` are inverses of each other.
 - `EReal.exp_nmul`, `EReal.exp_mul`: `exp` satisfies the identities `exp (n * x) = (exp x) ^ n`
-and `exp (x * y) = (exp x) ^ y`.
+  and `exp (x * y) = (exp x) ^ y`.
 - `EReal` is a Polish space.
 
 ## Tags
 ENNReal, EReal, logarithm, exponential
 -/
+
+@[expose] public section
 
 open EReal ENNReal Topology
 section LogExp
@@ -159,18 +164,18 @@ end Continuity
 
 section Measurability
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_log : Measurable log := continuous_log.measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma _root_.EReal.measurable_exp : Measurable exp := continuous_exp.measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma _root_.Measurable.ennreal_log {α : Type*} {_ : MeasurableSpace α}
     {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun x ↦ log (f x) := measurable_log.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma _root_.Measurable.ereal_exp {α : Type*} {_ : MeasurableSpace α}
     {f : α → EReal} (hf : Measurable f) :
     Measurable fun x ↦ exp (f x) := measurable_exp.comp hf

@@ -3,20 +3,25 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.MvPolynomial.Cardinal
-import Mathlib.RingTheory.Algebraic.LinearIndependent
-import Mathlib.RingTheory.Algebraic.MvPolynomial
-import Mathlib.RingTheory.Localization.Cardinality
-import Mathlib.RingTheory.MvPolynomial
+module
+
+public import Mathlib.Algebra.MvPolynomial.Cardinal
+public import Mathlib.RingTheory.Algebraic.LinearIndependent
+public import Mathlib.RingTheory.Algebraic.MvPolynomial
+public import Mathlib.RingTheory.Localization.Cardinality
+public import Mathlib.RingTheory.MvPolynomial
 
 /-!
 # Rank of multivariate rational function field
 -/
 
+public section
+
 noncomputable section
 
 universe u v
 
+set_option backward.isDefEq.respectTransparency false in
 open Cardinal in
 theorem MvRatFunc.rank_eq_max_lift
     {σ : Type u} {F : Type v} [Field F] [Nonempty σ] :

@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.FieldTheory.Finite.Polynomial
-import Mathlib.NumberTheory.Basic
-import Mathlib.RingTheory.WittVector.WittPolynomial
+module
+
+public import Mathlib.FieldTheory.Finite.Polynomial
+public import Mathlib.NumberTheory.Basic
+public import Mathlib.RingTheory.WittVector.WittPolynomial
 
 /-!
 # Witt structure polynomials
@@ -82,6 +84,8 @@ dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} :
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
+
+@[expose] public section
 
 
 open MvPolynomial Set
@@ -218,6 +222,7 @@ theorem bind₁_rename_expand_wittPolynomial (Φ : MvPolynomial idx ℤ) (n : �
   rw [wittPolynomial_vars, Finset.mem_range] at hi
   simp only [IH i hi]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx ℤ) (n : ℕ)
     (IH :
       ∀ m : ℕ,
@@ -228,20 +233,19 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
       bind₁ (fun b : idx => rename (fun i => (b, i)) (wittPolynomial p ℤ n)) Φ -
         ∑ i ∈ range n, C ((p : ℤ) ^ i) * wittStructureInt p Φ i ^ p ^ (n - i) := by
   rcases n with - | n
-  · simp only [isUnit_one, pow_zero, C_1, IsUnit.dvd,
-      Nat.cast_one]
+  · simp
   -- prepare a useful equation for rewriting
   have key := bind₁_rename_expand_wittPolynomial Φ n IH
   apply_fun map (Int.castRingHom (ZMod (p ^ (n + 1)))) at key
   conv_lhs at key => simp only [map_bind₁, map_rename, map_expand, map_wittPolynomial]
   -- clean up and massage
-  rw [C_dvd_iff_zmod, RingHom.map_sub, sub_eq_zero, map_bind₁]
+  rw [C_dvd_iff_zmod, map_sub, sub_eq_zero, map_bind₁]
   simp only [map_rename, map_wittPolynomial, wittPolynomial_zmod_self]
   rw [key]; clear key IH
   rw [bind₁, aeval_wittPolynomial, map_sum, map_sum, Finset.sum_congr rfl]
   intro k hk
   rw [Finset.mem_range, Nat.lt_succ_iff] at hk
-  rw [← sub_eq_zero, ← RingHom.map_sub, ← C_dvd_iff_zmod, C_eq_coe_nat, ← Nat.cast_pow,
+  rw [← sub_eq_zero, ← map_sub, ← C_dvd_iff_zmod, C_eq_coe_nat, ← Nat.cast_pow,
     ← Nat.cast_pow, C_eq_coe_nat, ← mul_sub]
   have : p ^ (n + 1) = p ^ k * p ^ (n - k + 1) := by
     rw [← pow_add, ← add_assoc]; congr 2; rw [add_comm, ← tsub_eq_iff_eq_add_of_le hk]
@@ -252,7 +256,7 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
   rw [pow_mul]
   -- the machine!
   apply dvd_sub_pow_of_dvd_sub
-  rw [← C_eq_coe_nat, C_dvd_iff_zmod, RingHom.map_sub, sub_eq_zero, map_expand, RingHom.map_pow,
+  rw [← C_eq_coe_nat, C_dvd_iff_zmod, map_sub, sub_eq_zero, map_expand, map_pow,
     MvPolynomial.expand_zmod]
 
 variable (p)
@@ -274,10 +278,10 @@ theorem map_wittStructureInt (Φ : MvPolynomial idx ℤ) (n : ℕ) :
     apply Finset.sum_congr rfl
     intro i hi
     rw [Finset.mem_range] at hi
-    simp only [IH i hi, RingHom.map_mul, RingHom.map_pow, map_C]
+    simp only [IH i hi, map_mul, map_pow, map_C]
     rfl
   simp only [← sum_induction_steps, ← map_wittPolynomial p (Int.castRingHom ℚ), ← map_rename, ←
-    map_bind₁, ← RingHom.map_sub, coeff_map]
+    map_bind₁, ← map_sub, coeff_map]
   rw [show (p : ℚ) ^ n = ((↑(p ^ n) : ℤ) : ℚ) by norm_cast]
   rw [← Rat.den_eq_one_iff, eq_intCast, Rat.den_div_intCast_eq_one_iff]
   swap; · exact mod_cast pow_ne_zero n hp.1.ne_zero
@@ -356,8 +360,8 @@ theorem constantCoeff_wittStructureInt (Φ : MvPolynomial idx ℤ) (h : constant
     constantCoeff (wittStructureInt p Φ n) = 0 := by
   have inj : Function.Injective (Int.castRingHom ℚ) := by intro m n; exact Int.cast_inj.mp
   apply inj
-  rw [← constantCoeff_map, map_wittStructureInt, constantCoeff_wittStructureRat, RingHom.map_zero]
-  rw [constantCoeff_map, h, RingHom.map_zero]
+  rw [← constantCoeff_map, map_wittStructureInt, constantCoeff_wittStructureRat, map_zero]
+  rw [constantCoeff_map, h, map_zero]
 
 variable (R)
 

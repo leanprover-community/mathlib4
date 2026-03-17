@@ -3,8 +3,10 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.SuccPred.CompleteLinearOrder
-import Mathlib.Order.SuccPred.InitialSeg
+module
+
+public import Mathlib.Order.SuccPred.CompleteLinearOrder
+public import Mathlib.Order.SuccPred.InitialSeg
 
 /-!
 # Normal functions
@@ -16,13 +18,12 @@ We opt for an equivalent definition that's both simpler and often more convenien
 is a strictly monotonic function `f` such that at successor limits `a`, `f a` is the least upper
 bound of `f b` with `b < a`.
 
-## TODO
-
-* Prove the equivalence with the standard definition (in some other file).
-* Replace `Ordinal.IsNormal` by this more general notion.
+See `Order.isNormal_iff_strictMono_and_continuous` for a proof that these notions are equivalent.
 -/
 
-open Order Set
+public section
+
+open Set
 
 variable {α β γ : Type*} {a b : α} {f : α → β} {g : β → γ}
 
@@ -46,16 +47,14 @@ namespace IsNormal
 section LinearOrder
 variable [LinearOrder α] [LinearOrder β] [LinearOrder γ]
 
+protected theorem monotone {f : α → β} (hf : IsNormal f) : Monotone f :=
+  hf.strictMono.monotone
+
 theorem isLUB_image_Iio_of_isSuccLimit {f : α → β} (hf : IsNormal f) {a : α} (ha : IsSuccLimit a) :
     IsLUB (f '' Iio a) (f a) := by
   refine ⟨?_, hf.2 ha⟩
   rintro - ⟨b, hb, rfl⟩
   exact (hf.1 hb).le
-
-@[deprecated "use the default constructor of `IsNormal` directly" (since := "2025-07-08")]
-theorem of_mem_lowerBounds_upperBounds {f : α → β} (hf : StrictMono f)
-    (hl : ∀ {a}, IsSuccLimit a → f a ∈ lowerBounds (upperBounds (f '' Iio a))) : IsNormal f :=
-  ⟨hf, hl⟩
 
 theorem le_iff_forall_le (hf : IsNormal f) (ha : IsSuccLimit a) {b : β} :
     f a ≤ b ↔ ∀ a' < a, f a' ≤ b := by
@@ -107,6 +106,12 @@ theorem comp (hg : IsNormal g) (hf : IsNormal f) : IsNormal (g ∘ f) := by
   simp_rw [Function.comp_apply, mem_upperBounds, forall_mem_image] at hb
   simpa [hg.le_iff_forall_le (hf.map_isSuccLimit ha), hf.lt_iff_exists_lt ha] using
     fun c d hd hc ↦ (hg.strictMono hc).le.trans (hb hd)
+
+theorem to_Iio (hf : IsNormal f) (a : α) :
+    IsNormal (β := Iio (f a)) fun x : Iio a ↦ ⟨f x.1, hf.strictMono x.2⟩ := by
+  rw [isNormal_iff]
+  refine ⟨fun x y h ↦ hf.strictMono h, fun b hb c hc ↦ hf.2 (hb.subtypeVal (isLowerSet_Iio _)) ?_⟩
+  simpa [upperBounds] using fun d hd ↦ hc ⟨d, hd.trans b.2⟩ hd
 
 section WellFoundedLT
 variable [WellFoundedLT α] [SuccOrder α]
@@ -171,6 +176,17 @@ theorem preimage_Iic (hf : IsNormal f) {x : β}
     apply (csSup_le_csSup bddAbove_Iic _ (image_preimage_subset ..)).trans
     · rw [csSup_Iic]
     · simpa
+
+theorem le_iff_le_sSup (hf : IsNormal f) {x : α} {y : β}
+    (h₁ : (f ⁻¹' Iic y).Nonempty) (h₂ : BddAbove (f ⁻¹' Iic y)) :
+    f x ≤ y ↔ x ≤ sSup (f ⁻¹' Iic y) :=
+  Set.ext_iff.1 (preimage_Iic hf h₁ h₂) x
+
+/-- If `f : α → α` in a well-order, we can infer one of the hypotheses in
+`Order.IsNormal.le_iff_le_sSup`. -/
+theorem le_iff_le_sSup' [WellFoundedLT α] {f : α → α} (hf : IsNormal f) {x y : α}
+    (h : (f ⁻¹' Iic y).Nonempty) : f x ≤ y ↔ x ≤ sSup (f ⁻¹' Iic y) :=
+  hf.le_iff_le_sSup h ⟨y, fun _ ↦ hf.strictMono.le_apply.trans⟩
 
 end ConditionallyCompleteLinearOrder
 

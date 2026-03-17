@@ -3,10 +3,12 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.KummerDedekind
-import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-import Mathlib.RingTheory.Ideal.Int
+module
+
+public import Mathlib.NumberTheory.KummerDedekind
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.NumberTheory.RamificationInertia.Basic
+public import Mathlib.RingTheory.Ideal.Int
 
 /-!
 # Kummer-Dedekind criterion for the splitting of prime numbers
@@ -16,13 +18,36 @@ splitting of rational primes in number fields.
 
 ## Main definitions
 
+Let `K` be a number field and `θ` an algebraic integer of `K`.
+
 * `RingOfIntegers.exponent`: the smallest positive integer `d` contained in the conductor of `θ`.
   It is the smallest integer such that `d • 𝓞 K ⊆ ℤ[θ]`, see `RingOfIntegers.exponent_eq_sInf`.
 
 * `RingOfIntegers.ZModXQuotSpanEquivQuotSpan`: The isomorphism between `(ℤ / pℤ)[X] / (minpoly θ)`
   and `𝓞 K / p(𝓞 K)` for a prime `p` which doesn't divide the exponent of `θ`.
 
+* `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod`: The bijection between the prime ideals
+  of `K` above `p` and the monic irreducible factors of `minpoly ℤ θ` modulo `p` for a prime `p`
+  which doesn't divide the exponent of `θ`.
+
+## Main results
+
+* `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod`: The ideal corresponding to the class
+  of `Q ∈ ℤ[X]` modulo `p` via `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is spanned
+  by `p` and `Q(θ)`.
+
+* `NumberField.Ideal.inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply`: The residual degree
+  of the ideal corresponding to the class of `Q ∈ ℤ[X]` modulo `p` via
+  `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is equal to the degree of `Q mod p`.
+
+* `NumberField.Ideal.ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply`: The
+  ramification index of the ideal corresponding to the class of `Q ∈ ℤ[X]` modulo `p` via
+  `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is equal to the multiplicity of `Q mod p`
+  in `minpoly ℤ θ`.
+
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -55,6 +80,7 @@ theorem exponent_eq_sInf : exponent θ = sInf {d : ℕ | 0 < d ∧ (d : 𝓞 K) 
 
 variable [NumberField K] {θ : 𝓞 K} {p : ℕ} [Fact p.Prime]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `p` doesn't divide the exponent of `θ`, then `(ℤ / pℤ)[X] / (minpoly θ) ≃+* 𝓞 K / p(𝓞 K)`.
 -/
@@ -66,6 +92,7 @@ def ZModXQuotSpanEquivQuotSpan (hp : ¬ p ∣ exponent θ) :
       ((quotMapEquivQuotQuotMap (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral).symm.trans
         (quotientEquivAlgOfEq ℤ (by simp [map_span])).toRingEquiv))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ZModXQuotSpanEquivQuotSpan_mk_apply (hp : ¬ p ∣ exponent θ) (Q : ℤ[X]) :
     (ZModXQuotSpanEquivQuotSpan hp)
       (Ideal.Quotient.mk (span {map (Int.castRingHom (ZMod p)) (minpoly ℤ θ)})
@@ -110,3 +137,130 @@ def ZModXQuotSpanEquivQuotSpanPair (hp : ¬ p ∣ exponent θ) {Q : ℤ[X]}
     (DoubleQuot.quotQuotEquivQuotSup _ _).trans (Ideal.quotEquivOfEq h_eq₂)
 
 end RingOfIntegers
+
+open RingOfIntegers IsDedekindDomain
+namespace NumberField.Ideal
+
+variable {θ : 𝓞 K} {p : ℕ} [Fact (Nat.Prime p)]
+
+attribute [local instance] Int.ideal_span_isMaximal_of_prime Ideal.Quotient.field
+
+set_option backward.privateInPublic true in
+open scoped Classical in
+private def primesOverSpanEquivMonicFactorsModAux (A : ℤ[X]) :
+    {Q // Q ∈ normalizedFactors (map (Ideal.Quotient.mk (span {(p : ℤ)})) A)} ≃
+    (normalizedFactors (map (Int.castRingHom (ZMod p)) A)).toFinset :=
+  (normalizedFactorsEquiv (f := (mapEquiv (Int.quotientSpanNatEquivZMod p)).toMulEquiv)
+    (by simp) (map (Ideal.Quotient.mk (span {(p : ℤ)})) A)).trans
+      (Equiv.subtypeEquivRight (fun _ ↦ by simp [Polynomial.map_map]))
+
+private theorem primesOverSpanEquivMonicFactorsModAux_symm_apply (A : ℤ[X]) {Q : (ZMod p)[X]}
+    (hQ : Q ∈ (normalizedFactors (map (Int.castRingHom (ZMod p)) A)).toFinset) :
+    ((primesOverSpanEquivMonicFactorsModAux A).symm ⟨Q, hQ⟩ : (ℤ ⧸ span {(p : ℤ)})[X]) =
+      Polynomial.map ((Int.quotientSpanNatEquivZMod p).symm) Q := rfl
+
+variable [NumberField K]
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+/--
+If `p` does not divide `exponent θ`, then the prime ideals above `p` in `K` are in bijection
+with the monic irreducible factors of `minpoly ℤ θ` modulo `p`.
+-/
+def primesOverSpanEquivMonicFactorsMod (hp : ¬ p ∣ exponent θ) :
+    primesOver (span {(p : ℤ)}) (𝓞 K) ≃ monicFactorsMod θ p :=
+  have h : span {(p : ℤ)} ≠ ⊥ := by simp [NeZero.ne p]
+  ((Equiv.setCongr (by ext; simp [mem_primesOver_iff_mem_normalizedFactors _ h])).trans
+    (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk
+    (Int.ideal_span_isMaximal_of_prime p) h
+      (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral)).trans <|
+        (primesOverSpanEquivMonicFactorsModAux _)
+
+set_option backward.isDefEq.respectTransparency false in
+theorem primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ)
+    {Q : (ZMod p)[X]} (hQ : Q ∈ monicFactorsMod θ p) :
+    ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ : Ideal (𝓞 K)) =
+      (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk
+        inferInstance (by simp [NeZero.ne p]) (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral).symm
+        ⟨Q.map (Int.quotientSpanNatEquivZMod p).symm, by
+          rw [← primesOverSpanEquivMonicFactorsModAux_symm_apply]
+          exact ((primesOverSpanEquivMonicFactorsModAux _).symm ⟨Q, hQ⟩).coe_prop⟩ := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+The ideal corresponding to the class of `Q ∈ ℤ[X]` modulo `p` via
+`NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is spanned by `p` and `Q(θ)`.
+-/
+theorem primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span (hp : ¬ p ∣ exponent θ) {Q : ℤ[X]}
+    (hQ : Q.map (Int.castRingHom (ZMod p)) ∈ monicFactorsMod θ p) :
+    ((primesOverSpanEquivMonicFactorsMod hp).symm
+      ⟨Q.map (Int.castRingHom (ZMod p)), hQ⟩ : Ideal (𝓞 K)) =
+        span {(p : (𝓞 K)), aeval θ Q} := by
+  simp only [primesOverSpanEquivMonicFactorsMod_symm_apply, Polynomial.map_map,
+    Int.quotientSpanNatEquivZMod_comp_castRingHom]
+  rw [normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span,
+    span_union, span_eq, map_span, Set.image_singleton, map_natCast, ← span_insert]
+
+theorem liesOver_primesOverSpanEquivMonicFactorsMod_symm (hp : ¬ p ∣ exponent θ) {Q : ℤ[X]}
+    (hQ : Q.map (Int.castRingHom (ZMod p)) ∈ monicFactorsMod θ p) :
+    LiesOver (span {(p : (𝓞 K)), aeval θ Q}) (span {(p : ℤ)}) := by
+  rw [← Ideal.primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span hp hQ]
+  exact ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨_, hQ⟩).prop.2
+
+/--
+The residual degree of the ideal corresponding to the class of `Q ∈ ℤ[X]` modulo `p` via
+`NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is equal to the degree of `Q mod p`.
+-/
+theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ)
+    {Q : ℤ[X]} (hQ : Q.map (Int.castRingHom (ZMod p)) ∈ monicFactorsMod θ p) :
+    inertiaDeg (span {(p : ℤ)}) ((primesOverSpanEquivMonicFactorsMod hp).symm
+      ⟨Q.map (Int.castRingHom (ZMod p)), hQ⟩ : Ideal (𝓞 K)) =
+        natDegree (Q.map (Int.castRingHom (ZMod p))) := by
+  -- This is needed for `inertiaDeg_algebraMap` below to work
+  have := liesOver_primesOverSpanEquivMonicFactorsMod_symm hp hQ
+  rw [primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span, inertiaDeg_algebraMap,
+    ← finrank_quotient_span_eq_natDegree]
+  refine Algebra.finrank_eq_of_equiv_equiv (Int.quotientSpanNatEquivZMod p) ?_ (by ext; simp)
+  exact (ZModXQuotSpanEquivQuotSpanPair hp hQ).symm
+
+theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' (hp : ¬ p ∣ exponent θ)
+    {Q : (ZMod p)[X]} (hQ : Q ∈ monicFactorsMod θ p) :
+    inertiaDeg (span {(p : ℤ)})
+      ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ : Ideal (𝓞 K)) = natDegree Q := by
+  obtain ⟨S, rfl⟩ := (map_surjective _ (ZMod.ringHom_surjective (Int.castRingHom (ZMod p)))) Q
+  rw [inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply]
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+The ramification index of the ideal corresponding to the class of `Q ∈ ℤ[X]` modulo `p` via
+`NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is equal to the multiplicity of `Q mod p` in
+`minpoly ℤ θ`.
+-/
+theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ)
+    {Q : ℤ[X]} (hQ : Q.map (Int.castRingHom (ZMod p)) ∈ monicFactorsMod θ p) :
+    ramificationIdx (algebraMap ℤ (𝓞 K)) (span {(p : ℤ)})
+      ((primesOverSpanEquivMonicFactorsMod hp).symm
+        ⟨Q.map (Int.castRingHom (ZMod p)), hQ⟩ : Ideal (𝓞 K)) =
+          multiplicity (Q.map (Int.castRingHom (ZMod p)))
+            ((minpoly ℤ θ).map (Int.castRingHom (ZMod p))) := by
+  rw [ramificationIdx_eq_multiplicity (map_ne_bot_of_ne_bot (by simp [NeZero.ne p])) inferInstance]
+  · apply multiplicity_eq_of_emultiplicity_eq
+    rw [← emultiplicity_map_eq (mapEquiv (Int.quotientSpanNatEquivZMod p).symm),
+      emultiplicity_factors_map_eq_emultiplicity inferInstance (by simp [NeZero.ne p])
+      (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral]
+    · simp only [primesOverSpanEquivMonicFactorsMod_symm_apply,
+        Equiv.apply_symm_apply (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk _ _ _ _),
+        Polynomial.map_map, Int.quotientSpanNatEquivZMod_comp_castRingHom, mapEquiv_apply]
+    · rw [← mem_primesOver_iff_mem_normalizedFactors _ (by simp [NeZero.ne p])]
+      exact ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨_, hQ⟩).coe_prop
+
+theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply' (hp : ¬ p ∣ exponent θ)
+    {Q : (ZMod p)[X]} (hQ : Q ∈ monicFactorsMod θ p) :
+    ramificationIdx (algebraMap ℤ (𝓞 K)) (span {(p : ℤ)})
+      ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ : Ideal (𝓞 K)) =
+        multiplicity Q ((minpoly ℤ θ).map (Int.castRingHom (ZMod p))) := by
+  obtain ⟨S, rfl⟩ := (map_surjective _ (ZMod.ringHom_surjective (Int.castRingHom (ZMod p)))) Q
+  rw [ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply]
+
+end NumberField.Ideal

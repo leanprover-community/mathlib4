@@ -3,9 +3,11 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Data.Nat.Log
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Data.Nat.Log
 
 /-!
 # Integer logarithms in a field with respect to a natural base
@@ -39,13 +41,15 @@ def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
 * For `Int.log`:
   * `Int.zpow_log_le_self`, `Int.lt_zpow_succ_log_self`: the bounds formed by `Int.log`,
     `(b : R) ^ log b r ≤ r < (b : R) ^ (log b r + 1)`.
-  * `Int.zpow_log_gi`: the galois coinsertion between `zpow` and `Int.log`.
+  * `Int.zpow_log_gi`: the Galois coinsertion between `zpow` and `Int.log`.
 * For `Int.clog`:
   * `Int.zpow_pred_clog_lt_self`, `Int.self_le_zpow_clog`: the bounds formed by `Int.clog`,
     `(b : R) ^ (clog b r - 1) < r ≤ (b : R) ^ clog b r`.
-  * `Int.clog_zpow_gi`:  the galois insertion between `Int.clog` and `zpow`.
+  * `Int.clog_zpow_gi`:  the Galois insertion between `Int.clog` and `zpow`.
 * `Int.neg_log_inv_eq_clog`, `Int.neg_clog_inv_eq_log`: the link between the two definitions.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -157,7 +161,7 @@ theorem log_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤
     exact Nat.log_mono_right (Nat.floor_mono h)
 
 variable (R) in
-/-- Over suitable subtypes, `zpow` and `Int.log` form a galois coinsertion -/
+/-- Over suitable subtypes, `zpow` and `Int.log` form a Galois coinsertion -/
 def zpowLogGi {b : ℕ} (hb : 1 < b) :
     GaloisCoinsertion
       (fun z : ℤ =>
@@ -275,7 +279,7 @@ theorem clog_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ �
   exact log_mono_right (inv_pos_of_pos h₀') <| (inv_le_inv₀ h₀' h₀).2 h
 
 variable (R) in
-/-- Over suitable subtypes, `Int.clog` and `zpow` form a galois insertion -/
+/-- Over suitable subtypes, `Int.clog` and `zpow` form a Galois insertion -/
 def clogZPowGi {b : ℕ} (hb : 1 < b) :
     GaloisInsertion (fun r : Set.Ioi (0 : R) => Int.clog b (r : R)) fun z : ℤ =>
       ⟨(b : R) ^ z, zpow_pos (mod_cast zero_lt_one.trans hb) z⟩ :=

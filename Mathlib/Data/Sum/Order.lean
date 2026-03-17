@@ -3,9 +3,12 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Heyting.Basic
-import Mathlib.Order.Hom.Basic
-import Mathlib.Order.WithBot
+module
+
+public import Mathlib.Order.Heyting.Basic
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Lex
+public import Mathlib.Order.WithBot
 
 /-!
 # Orders on a sum type
@@ -26,6 +29,8 @@ type synonym.
 * `α ⊕ₗ β`:  The linear sum of `α` and `β`.
 -/
 
+@[expose] public section
+
 
 variable {α β γ : Type*}
 
@@ -39,14 +44,14 @@ section LiftRel
 variable (r : α → α → Prop) (s : β → β → Prop)
 
 @[refl]
-theorem LiftRel.refl [IsRefl α r] [IsRefl β s] : ∀ x, LiftRel r s x x
+theorem LiftRel.refl [Std.Refl r] [Std.Refl s] : ∀ x, LiftRel r s x x
   | inl a => LiftRel.inl (_root_.refl a)
   | inr a => LiftRel.inr (_root_.refl a)
 
-instance [IsRefl α r] [IsRefl β s] : IsRefl (α ⊕ β) (LiftRel r s) :=
+instance [Std.Refl r] [Std.Refl s] : Std.Refl (LiftRel r s) :=
   ⟨LiftRel.refl _ _⟩
 
-instance [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α ⊕ β) (LiftRel r s) :=
+instance [Std.Irrefl r] [Std.Irrefl s] : Std.Irrefl (LiftRel r s) :=
   ⟨by rintro _ (⟨h⟩ | ⟨h⟩) <;> exact irrefl _ h⟩
 
 @[trans]
@@ -58,7 +63,7 @@ theorem LiftRel.trans [IsTrans α r] [IsTrans β s] :
 instance [IsTrans α r] [IsTrans β s] : IsTrans (α ⊕ β) (LiftRel r s) :=
   ⟨fun _ _ _ => LiftRel.trans _ _⟩
 
-instance [IsAntisymm α r] [IsAntisymm β s] : IsAntisymm (α ⊕ β) (LiftRel r s) :=
+instance [Std.Antisymm r] [Std.Antisymm s] : Std.Antisymm (LiftRel r s) :=
   ⟨by rintro _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hba⟩ | ⟨hba⟩) <;> rw [antisymm hab hba]⟩
 
 end LiftRel
@@ -67,12 +72,12 @@ section Lex
 
 variable (r : α → α → Prop) (s : β → β → Prop)
 
-instance [IsRefl α r] [IsRefl β s] : IsRefl (α ⊕ β) (Lex r s) :=
+instance [Std.Refl r] [Std.Refl s] : Std.Refl (Lex r s) :=
   ⟨by
     rintro (a | a)
     exacts [Lex.inl (refl _), Lex.inr (refl _)]⟩
 
-instance [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α ⊕ β) (Lex r s) :=
+instance [Std.Irrefl r] [Std.Irrefl s] : Std.Irrefl (Lex r s) :=
   ⟨by rintro _ (⟨h⟩ | ⟨h⟩) <;> exact irrefl _ h⟩
 
 instance [IsTrans α r] [IsTrans β s] : IsTrans (α ⊕ β) (Lex r s) :=
@@ -80,10 +85,10 @@ instance [IsTrans α r] [IsTrans β s] : IsTrans (α ⊕ β) (Lex r s) :=
     rintro _ _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hbc⟩ | ⟨hbc⟩)
     exacts [.inl (_root_.trans hab hbc), .sep _ _, .inr (_root_.trans hab hbc), .sep _ _]⟩
 
-instance [IsAntisymm α r] [IsAntisymm β s] : IsAntisymm (α ⊕ β) (Lex r s) :=
+instance [Std.Antisymm r] [Std.Antisymm s] : Std.Antisymm (Lex r s) :=
   ⟨by rintro _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hba⟩ | ⟨hba⟩) <;> rw [antisymm hab hba]⟩
 
-instance [IsTotal α r] [IsTotal β s] : IsTotal (α ⊕ β) (Lex r s) :=
+instance [Std.Total r] [Std.Total s] : Std.Total (Lex r s) :=
   ⟨fun a b =>
     match a, b with
     | inl a, inl b => (total_of r a b).imp Lex.inl Lex.inl
@@ -91,13 +96,8 @@ instance [IsTotal α r] [IsTotal β s] : IsTotal (α ⊕ β) (Lex r s) :=
     | inr _, inl _ => Or.inr (Lex.sep _ _)
     | inr a, inr b => (total_of s a b).imp Lex.inr Lex.inr⟩
 
-instance [IsTrichotomous α r] [IsTrichotomous β s] : IsTrichotomous (α ⊕ β) (Lex r s) :=
-  ⟨fun a b =>
-    match a, b with
-    | inl a, inl b => (trichotomous_of r a b).imp3 Lex.inl (congr_arg _) Lex.inl
-    | inl _, inr _ => Or.inl (Lex.sep _ _)
-    | inr _, inl _ => Or.inr (Or.inr <| Lex.sep _ _)
-    | inr a, inr b => (trichotomous_of s a b).imp3 Lex.inr (congr_arg _) Lex.inr⟩
+instance [Std.Trichotomous r] [Std.Trichotomous s] : Std.Trichotomous (Lex r s) := by
+  grind [Std.Trichotomous, Lex]
 
 instance [IsWellOrder α r] [IsWellOrder β s] :
     IsWellOrder (α ⊕ β) (Sum.Lex r s) where wf := Sum.lex_wf IsWellFounded.wf IsWellFounded.wf
@@ -523,6 +523,7 @@ def sumCongr (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : α₁ ⊕ β₁ �
   toEquiv := .sumCongr ea eb
   map_rel_iff' := by aesop
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sumCongr_trans (e₁ : α₁ ≃o β₁) (e₂ : α₂ ≃o β₂) (f₁ : β₁ ≃o γ₁) (f₂ : β₂ ≃o γ₂) :
     (e₁.sumCongr e₂).trans (f₁.sumCongr f₂) = (e₁.trans f₁).sumCongr (e₂.trans f₂) := by
@@ -533,6 +534,7 @@ theorem sumCongr_symm (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) :
     (ea.sumCongr eb).symm = ea.symm.sumCongr eb.symm :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sumCongr_refl : sumCongr (.refl α) (.refl β) = .refl _ := by
   ext; simp
@@ -612,6 +614,7 @@ def sumLexCongr (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : α₁ ⊕ₗ �
   toEquiv := ofLex.trans ((Equiv.sumCongr ea eb).trans toLex)
   map_rel_iff' := by simp_rw [Lex.forall]; rintro (a | a) (b | b) <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sumLexCongr_trans (e₁ : α₁ ≃o β₁) (e₂ : α₂ ≃o β₂) (f₁ : β₁ ≃o γ₁) (f₂ : β₂ ≃o γ₂) :
     (e₁.sumLexCongr e₂).trans (f₁.sumLexCongr f₂) = (e₁.trans f₁).sumLexCongr (e₂.trans f₂) := by
@@ -622,6 +625,7 @@ theorem sumLexCongr_symm (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) :
     (ea.sumLexCongr eb).symm = ea.symm.sumLexCongr eb.symm :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sumLexCongr_refl : sumLexCongr (.refl α) (.refl β) = .refl _ := by
   ext; simp
@@ -679,8 +683,7 @@ def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ
   { Equiv.sumComm α β with
     map_rel_iff' := fun {a b} => by
       rcases a with (a | a) <;> rcases b with (b | b)
-      · simp only [ge_iff_le]
-        change
+      · change
           toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
             toDual (toLex <| inl a) ≤ toDual (toLex <| inl b)
         simp [toDual_le_toDual]
@@ -713,12 +716,29 @@ theorem sumLexDualAntidistrib_symm_inr :
     (sumLexDualAntidistrib α β).symm (inr (toDual a)) = toDual (inl a) :=
   rfl
 
+/-- `Equiv.sumEmpty` as an `OrderIso` with the lexicographic sum. -/
+def sumLexEmpty [IsEmpty β] : Lex (α ⊕ β) ≃o α :=
+  RelIso.sumLexEmpty ..
+
+/-- `Equiv.emptySum` as an `OrderIso` with the lexicographic sum. -/
+def emptySumLex [IsEmpty β] : Lex (β ⊕ α) ≃o α :=
+  RelIso.emptySumLex ..
+
+@[simp]
+lemma sumLexEmpty_apply_inl [IsEmpty β] (x : α) : sumLexEmpty (β := β) (toLex <| .inl x) = x :=
+  rfl
+
+@[simp]
+lemma emptySumLex_apply_inr [IsEmpty β] (x : α) : emptySumLex (β := β) (toLex <| .inr x) = x :=
+  rfl
+
 end OrderIso
 
 variable [LE α]
 
 namespace WithBot
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `WithBot α` is order-isomorphic to `PUnit ⊕ₗ α`, by sending `⊥` to `Unit` and `↑a` to
 `a`. -/
 def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
@@ -754,6 +774,7 @@ end WithBot
 
 namespace WithTop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `WithTop α` is order-isomorphic to `α ⊕ₗ PUnit`, by sending `⊤` to `Unit` and `↑a` to
 `a`. -/
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=

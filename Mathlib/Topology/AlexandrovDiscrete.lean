@@ -3,10 +3,12 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Image
-import Mathlib.Topology.Bases
-import Mathlib.Topology.Inseparable
-import Mathlib.Topology.Compactness.NhdsKer
+module
+
+public import Mathlib.Data.Set.Image
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.Inseparable
+public import Mathlib.Topology.Compactness.NhdsKer
 
 /-!
 # Alexandrov-discrete topological spaces
@@ -25,6 +27,8 @@ minimal neighborhood, which we call the *neighborhoods kernel* of the set.
 
 Alexandroff, discrete, finitely generated, fg space
 -/
+
+@[expose] public section
 
 open Filter Set TopologicalSpace Topology
 
@@ -120,6 +124,7 @@ lemma Topology.IsInducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β →
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 lemma AlexandrovDiscrete.sup {t₁ t₂ : TopologicalSpace α} (_ : @AlexandrovDiscrete α t₁)
     (_ : @AlexandrovDiscrete α t₂) :
     @AlexandrovDiscrete α (t₁ ⊔ t₂) :=
@@ -140,49 +145,29 @@ variable [TopologicalSpace α] [TopologicalSpace β] [AlexandrovDiscrete α] [Al
 @[simp] lemma isOpen_nhdsKer : IsOpen (nhdsKer s) := by
   rw [nhdsKer_def]; exact isOpen_sInter fun _ ↦ And.left
 
-@[deprecated (since := "2025-07-09")] alias isOpen_exterior := isOpen_nhdsKer
-
 lemma nhdsKer_mem_nhdsSet : nhdsKer s ∈ 𝓝ˢ s := isOpen_nhdsKer.mem_nhdsSet.2 subset_nhdsKer
-
-@[deprecated (since := "2025-07-09")] alias exterior_mem_nhdsSet := nhdsKer_mem_nhdsSet
 
 @[simp] lemma nhdsKer_eq_iff_isOpen : nhdsKer s = s ↔ IsOpen s :=
   ⟨fun h ↦ h ▸ isOpen_nhdsKer, IsOpen.nhdsKer_eq⟩
 
-@[deprecated (since := "2025-07-09")] alias exterior_eq_iff_isOpen := nhdsKer_eq_iff_isOpen
-
 @[simp] lemma nhdsKer_subset_iff_isOpen : nhdsKer s ⊆ s ↔ IsOpen s := by
   simp only [nhdsKer_eq_iff_isOpen.symm, Subset.antisymm_iff, subset_nhdsKer, and_true]
-
-@[deprecated (since := "2025-07-09")] alias exterior_subset_iff_isOpen := nhdsKer_subset_iff_isOpen
 
 lemma nhdsKer_subset_iff : nhdsKer s ⊆ t ↔ ∃ U, IsOpen U ∧ s ⊆ U ∧ U ⊆ t :=
   ⟨fun h ↦ ⟨nhdsKer s, isOpen_nhdsKer, subset_nhdsKer, h⟩,
     fun ⟨_U, hU, hsU, hUt⟩ ↦ (nhdsKer_minimal hsU hU).trans hUt⟩
 
-@[deprecated (since := "2025-07-09")] alias exterior_subset_iff := nhdsKer_subset_iff
-
 lemma nhdsKer_subset_iff_mem_nhdsSet : nhdsKer s ⊆ t ↔ t ∈ 𝓝ˢ s :=
   nhdsKer_subset_iff.trans mem_nhdsSet_iff_exists.symm
-
-@[deprecated (since := "2025-07-09")]
-alias exterior_subset_iff_mem_nhdsSet := nhdsKer_subset_iff_mem_nhdsSet
 
 lemma nhdsKer_singleton_subset_iff_mem_nhds : nhdsKer {a} ⊆ t ↔ t ∈ 𝓝 a := by
   simp [nhdsKer_subset_iff_mem_nhdsSet]
 
-@[deprecated (since := "2025-07-09")]
-alias exterior_singleton_subset_iff_mem_nhds := nhdsKer_singleton_subset_iff_mem_nhds
-
 lemma gc_nhdsKer_interior : GaloisConnection (nhdsKer : Set α → Set α) interior :=
   fun s t ↦ by simp [nhdsKer_subset_iff, subset_interior_iff]
 
-@[deprecated (since := "2025-07-09")] alias gc_exterior_interior := gc_nhdsKer_interior
-
 @[simp] lemma principal_nhdsKer (s : Set α) : 𝓟 (nhdsKer s) = 𝓝ˢ s := by
   rw [← nhdsSet_nhdsKer, isOpen_nhdsKer.nhdsSet_eq]
-
-@[deprecated (since := "2025-07-09")] alias principal_exterior := principal_nhdsKer
 
 lemma principal_nhdsKer_singleton (a : α) : 𝓟 (nhdsKer {a}) = 𝓝 a := by
   rw [principal_nhdsKer, nhdsSet_singleton]
