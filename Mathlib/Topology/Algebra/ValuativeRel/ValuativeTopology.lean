@@ -24,7 +24,7 @@ In this file, we define the non-Archimedean topology induced by a valuation on a
 *NOTE* (2026-03-17): The `Valued` instance on a ring `R` would be
 replaced by `[ValuativeRel R] [UniformSpace R] [IsValuativeTopology R] [IsUniformAddGroup R]`
 (or `[ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]` when the uniformity is
-not relevant). Additional input `(v : Valuation R A) [v.Compatible]` can be introduced whenever
+not relevant). Additional input `(v : Valuation R Γ₀) [v.Compatible]` can be introduced whenever
 a specific compatible valuation is chosen.
 
 The canonical way to introduce the topological structure from a chosen valuation is:
@@ -39,17 +39,15 @@ open Set Filter Valuation ValuativeRel MonoidWithZeroHom ValueGroup₀ ValueGrou
 
 noncomputable section
 
-universe v u
-
-variable (R : Type u) [CommRing R] [ValuativeRel R]
+variable (R : Type*) [CommRing R] [ValuativeRel R]
 
 variable {R} in
-lemma Valuation.exists_setOf_restrict_le_iff {Γ₀ : Type v} [LinearOrderedCommGroupWithZero Γ₀]
+lemma Valuation.exists_setOf_restrict_le_iff {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     (v : Valuation R Γ₀) [v.Compatible] (x : R) (s : Set R) :
     (∃ γ : (ValueGroup₀ v)ˣ, {z | v.restrict (z - x) < γ.val} ⊆ s) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, {a | valuation R (a - x) < γ} ⊆ s := by
-  refine ⟨fun ⟨r, hr⟩ ↦ ⟨r.mapEquiv (ValueGroupWithZero.embed v).symm, ?_⟩,
-    fun ⟨r, hr⟩ ↦ ⟨r.mapEquiv (ValueGroupWithZero.embed v), ?_⟩⟩
+  refine ⟨fun ⟨r, hr⟩ ↦ ⟨r.mapEquiv (orderMonoidIso v).symm, ?_⟩,
+    fun ⟨r, hr⟩ ↦ ⟨r.mapEquiv (orderMonoidIso v), ?_⟩⟩
   all_goals convert hr; simp
 
 /-- We say that a topology on `R` is valuative if the neighborhoods of `0` in `R`
@@ -81,7 +79,7 @@ end ValuativeRel
 
 variable {R}
 
-variable {K : Type u} [Field K] [ValuativeRel K] {Γ₀ : Type v} [LinearOrderedCommGroupWithZero Γ₀]
+variable {K : Type*} [Field K] [ValuativeRel K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 section TopologicalSpace
 
@@ -90,17 +88,15 @@ variable [TopologicalSpace R] [IsValuativeTopology R] (v : Valuation R Γ₀) [v
 namespace IsValuativeTopology
 
 lemma mem_nhds {s : Set R} {x : R} :
-    s ∈ 𝓝 x ↔
-    ∃ γ : (ValueGroupWithZero R)ˣ, { z | valuation R (z - x) < γ } ⊆ s := by
+    s ∈ 𝓝 x ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | valuation R (z - x) < γ } ⊆ s := by
   convert mem_nhds_iff (s := s) using 4
   simp [neg_add_eq_sub]
 
 @[deprecated (since := "2026-03-17")] alias mem_nhds_iff' := mem_nhds
 
-lemma mem_nhds_zero (s : Set R) : s ∈ 𝓝 0 ↔
-    ∃ γ : (ValueGroupWithZero R)ˣ, { x | valuation R x < γ } ⊆ s := by
-  convert mem_nhds (x := (0 : R))
-  rw [sub_zero]
+lemma mem_nhds_zero (s : Set R) :
+    s ∈ 𝓝 0 ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { x | valuation R x < γ } ⊆ s := by
+  simp [mem_nhds]
 
 @[deprecated (since := "2026-03-17")] alias mem_nhds_zero_iff := mem_nhds_zero
 
@@ -139,10 +135,9 @@ lemma mem_nhds {s : Set R} {x : R} : s ∈ 𝓝 x ↔
   convert IsValuativeTopology.mem_nhds_iff (s := s) using 4
   simpa [neg_add_eq_sub] using v.exists_setOf_restrict_le_iff _ _
 
-lemma mem_nhds_zero (s : Set R) : s ∈ 𝓝 0↔
+lemma mem_nhds_zero (s : Set R) : s ∈ 𝓝 0 ↔
     ∃ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ, { x | v.restrict x < γ.val } ⊆ s := by
-  convert v.mem_nhds
-  rw [sub_zero]
+  simp [v.mem_nhds]
 
 alias is_topological_valuation := mem_nhds_zero
 
@@ -204,8 +199,7 @@ theorem toUniformSpace_eq : _u =
     @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ := by
   refine UniformSpace.ext (v.hasBasis_uniformity.eq_of_same_basis ?_)
   convert v.subgroups_basis.hasBasis_nhds_zero.comap _
-  simp_rw [restrict_lt_iff_lt_embedding, sub_eq_add_neg]
-  simp
+  simp [restrict_lt_iff_lt_embedding, sub_eq_add_neg]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔
@@ -289,8 +283,7 @@ theorem isOpen_closedBall {r : ValueGroup₀ v} (hr : r ≠ 0) :
   IsOpen (X := R) {x | v.restrict x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
-  rw [v.mem_nhds]
-  simp only [setOf_subset_setOf]
+  simp only [v.mem_nhds, setOf_subset_setOf]
   exact ⟨Units.mk0 _ hr, fun y hy ↦
     (sub_add_cancel y x).symm ▸ le_trans (v.restrict.map_add _ _) (max_le (le_of_lt hy) hx)⟩
 
