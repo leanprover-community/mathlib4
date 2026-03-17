@@ -5,9 +5,26 @@ Authors: Gaëtan Serré
 -/
 module
 
-public import Mathlib.CategoryTheory.MarkovCategory.Basic
+public import Mathlib.CategoryTheory.Monoidal.Comon_
 public import Mathlib.Probability.Kernel.Composition.KernelLemmas
 public import Mathlib.Probability.Kernel.Category.Tactics
+
+/-!
+# SFinKer
+
+The category of measurable spaces with s-finite kernels is a symmetric monoidal category.
+
+## Main declarations
+
+* `LargeCategory SFinKer`: the categorical structure on `SFinKer`.
+* `MonoidalCategory SFinKer`: `SFinKer` is a monoidal category using the Cartesian product.
+* `SymmetricCategory SFinKer`: `SFinKer` is a symmetric monoidal category.
+
+## References
+* [A synthetic approach to
+Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
+
+-/
 
 @[expose] public section
 
@@ -15,6 +32,7 @@ open CategoryTheory ProbabilityTheory MeasureTheory
 
 universe u
 
+/-- The category of measurable spaces and s-finite kernels. -/
 structure SFinKer : Type (u + 1) where
   of ::
   carrier : Type u
@@ -156,7 +174,7 @@ instance : MonoidalCategory SFinKer.{u} where
       Kernel.deterministic_comp_deterministic]
     congr
 
-instance {X : SFinKer.{u}} : ComonObj X where
+instance {X : SFinKer} : ComonObj X where
   counit := ⟨Kernel.discard X, by kernel_instance⟩
   comul := ⟨Kernel.copy X, by kernel_instance⟩
   counit_comul := by
@@ -177,5 +195,46 @@ instance {X : SFinKer.{u}} : ComonObj X where
     simp [Kernel.copy, Kernel.id, Kernel.deterministic_comp_deterministic,
       Kernel.deterministic_parallelComp_deterministic]
     congr 1
+
+instance : BraidedCategory SFinKer.{u} where
+  braiding X Y := by
+    refine ⟨⟨Kernel.swap _ _, by kernel_instance⟩, ⟨Kernel.swap _ _, by kernel_instance⟩,
+      ?_, ?_⟩
+    · kernel_cat
+      exact Kernel.swap_swap
+    · kernel_cat
+      exact Kernel.swap_swap
+  braiding_naturality_right X Y Z κ := by
+    kernel_cat
+    exact Kernel.swap_parallelComp
+  braiding_naturality_left κ X := by
+    kernel_cat
+    exact Kernel.swap_parallelComp
+  hexagon_forward X Y Z := by
+    kernel_cat
+    repeat rw [Kernel.id_map]
+    · simp only [Kernel.id, Kernel.swap]
+      repeat rw [Kernel.deterministic_parallelComp_deterministic]
+      repeat rw [Kernel.deterministic_comp_deterministic]
+      congr 1
+    all_goals fun_prop
+  hexagon_reverse X Y Z := by
+    kernel_cat
+    repeat rw [Kernel.id_map]
+    · simp only [Kernel.id, Kernel.swap]
+      repeat rw [Kernel.deterministic_parallelComp_deterministic]
+      repeat rw [Kernel.deterministic_comp_deterministic]
+      congr 1
+    all_goals fun_prop
+
+instance : SymmetricCategory SFinKer.{u} where
+  symmetry X Y := by
+    kernel_cat
+    exact Kernel.swap_swap
+
+instance (X : SFinKer) : IsCommComonObj X where
+  comul_comm := by
+    kernel_cat
+    exact Kernel.swap_copy
 
 end

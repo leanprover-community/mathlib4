@@ -5994,6 +5994,9 @@ public import Mathlib.Probability.Independence.Kernel.IndepFun
 public import Mathlib.Probability.Independence.Process
 public import Mathlib.Probability.Independence.ZeroOne
 public import Mathlib.Probability.Kernel.Basic
+public import Mathlib.Probability.Kernel.Category.SFinKer
+public import Mathlib.Probability.Kernel.Category.Stoch
+public import Mathlib.Probability.Kernel.Category.Tactics
 public import Mathlib.Probability.Kernel.CompProdEqIff
 public import Mathlib.Probability.Kernel.Composition.AbsolutelyContinuous
 public import Mathlib.Probability.Kernel.Composition.Comp

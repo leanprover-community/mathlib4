@@ -8,8 +8,21 @@ module
 public import Lean
 public import Mathlib.CategoryTheory.Monoidal.Category
 
+/-!
+# Kernel category tactics
+
+Auxiliary tactics for proofs in kernel-based categories.
+
+## Main declarations
+
+* `kernel_instance`: tries to synthesize kernel instances by exposing subtype fields in context.
+* `kernel_cat`: reduces categorical equalities to equalities of kernels.
+-/
+
 open Lean Meta Elab Tactic CategoryTheory
 
+/-- `kernel_instance` tries to close instance goals by progressively exposing `property` fields
+of subtypes in the local context, then calling typeclass inference. -/
 elab "kernel_instance" : tactic => do
   evalTactic (← `(tactic| try dsimp only [MonoidalCategory.tensorUnit,
     MonoidalCategory.tensorObj]))
@@ -32,6 +45,7 @@ elab "kernel_instance" : tactic => do
       return ()
     throwError "kernel_instance tactic failed."
 
+/-- `kernel_cat` turns a categorical equation into an equation on the underlying kernels. -/
 elab "kernel_cat" : tactic => do
   evalTactic (← `(tactic| try rw [Subtype.ext_iff]))
   evalTactic (← `(tactic| try simp only))
