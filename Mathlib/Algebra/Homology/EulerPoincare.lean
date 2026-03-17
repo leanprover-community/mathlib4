@@ -43,25 +43,12 @@ lemma Int.natAbs_add_one_eq_add_one_or_sub_one (j : ℤ) :
 /-- An interval [a, b+1) can be split as {a} ∪ [a+1, b+1) when a ≤ b. -/
 lemma Finset.Ico_eq_singleton_union_Ico_succ (a b : ℤ) (hab : a ≤ b) :
     Finset.Ico a (b + 1) = {a} ∪ Finset.Ico (a + 1) (b + 1) := by
-  have h1 : Finset.Ico a (b + 1) = Finset.Icc a b := by
-    ext x
-    simp [Finset.mem_Ico, Finset.mem_Icc]
-    omega
-  have h2 : Finset.Ioc a b = Finset.Ico (a + 1) (b + 1) := by
-    ext x
-    simp [Finset.mem_Ioc, Finset.mem_Ico]
-    omega
-  rw [h1, ← Finset.Ioc_insert_left hab, Finset.insert_eq, Finset.union_comm, h2,
-      Finset.union_comm]
+  ext x; simp [Finset.mem_Ico]; omega
 
 /-- An interval [a, b+1) can be split as [a, b) ∪ {b} when a ≤ b. -/
 lemma Finset.Ico_eq_Ico_union_singleton (a b : ℤ) (hab : a ≤ b) :
     Finset.Ico a (b + 1) = Finset.Ico a b ∪ {b} := by
-  have h1 : Finset.Ico a (b + 1) = Finset.Icc a b := by
-    ext x
-    simp [Finset.mem_Ico, Finset.mem_Icc]
-    omega
-  rw [h1, ← Finset.Ico_insert_right hab, Finset.insert_eq, Finset.union_comm]
+  ext x; simp [Finset.mem_Ico]; omega
 
 /-- Alternating sum lemma for integer intervals.
     If a sequence decomposes as `s(k) = h(k) + b(k) + c(k)` where the terms
@@ -135,90 +122,71 @@ private lemma sum_Ico_alternating_shift_decomp {α : Type*} [Ring α] (a b : ℤ
     simp at h
     omega
 
-/-- If the target object is zero, then dFrom is the zero map. -/
-lemma dFrom_eq_zero_of_isZero (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ)
-    (h : IsZero (C.X (i - 1))) : C.dFrom i = 0 := by
-  have next_eq : (ComplexShape.down ℤ).next i = i - 1 := by simp
-  have hzero : IsZero (C.xNext i) := by
-    rw [xNext, next_eq]
-    exact h
-  exact IsZero.eq_zero_of_tgt hzero (C.dFrom i)
+end ChainComplex
 
-/-- If the source object is zero, then dTo is the zero map. -/
-lemma dTo_eq_zero_of_isZero (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ)
-    (h : IsZero (C.X (i + 1))) : C.dTo i = 0 := by
-  have prev_eq : (ComplexShape.down ℤ).prev i = i + 1 := by simp
-  have hzero : IsZero (C.xPrev i) := by
-    rw [xPrev, prev_eq]
-    exact h
-  exact IsZero.eq_zero_of_src hzero (C.dTo i)
+/-! ### Dimension lemmas for homological complex differentials
 
-/-- If the target object is zero, then dFrom has zero range. -/
-lemma dFrom_zero_range (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ)
-    (h : IsZero (C.X (i - 1))) :
+The following lemmas are stated for an arbitrary `HomologicalComplex (ModuleCat k) c`,
+making them applicable to ℕ-indexed, ℤ-indexed, or any other complex shape. -/
+
+namespace HomologicalComplex
+
+variable {ι : Type*} {c : ComplexShape ι}
+
+/-- If `xNext i` is zero, then `dFrom i` has zero range. -/
+lemma dFrom_zero_range (C : HomologicalComplex (ModuleCat k) c) (i : ι)
+    (h : IsZero (C.xNext i)) :
     LinearMap.range (C.dFrom i).hom = ⊥ := by
-  rw [dFrom_eq_zero_of_isZero C i h, ModuleCat.hom_zero, LinearMap.range_zero]
+  rw [h.eq_zero_of_tgt (C.dFrom i), ModuleCat.hom_zero, LinearMap.range_zero]
 
-/-- If the source object is zero, then dTo has zero range. -/
-lemma dTo_zero_range (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ)
-    (h : IsZero (C.X (i + 1))) :
-    LinearMap.range (C.dTo i).hom = ⊥ := by
-  rw [dTo_eq_zero_of_isZero C i h, ModuleCat.hom_zero, LinearMap.range_zero]
+/-- If `xPrev j` is zero, then `dTo j` has zero range. -/
+lemma dTo_zero_range (C : HomologicalComplex (ModuleCat k) c) (j : ι)
+    (h : IsZero (C.xPrev j)) :
+    LinearMap.range (C.dTo j).hom = ⊥ := by
+  rw [h.eq_zero_of_src (C.dTo j), ModuleCat.hom_zero, LinearMap.range_zero]
 
-/-- The range of dFrom has the same dimension as the underlying differential. -/
-lemma dFrom_range_finrank_eq_d (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ) :
-    Module.finrank k (LinearMap.range (C.dFrom (i + 1)).hom) =
-    Module.finrank k (LinearMap.range (C.d (i + 1) i).hom) := by
-  have rel : (ComplexShape.down ℤ).Rel (i + 1) i := by
-    simp [ComplexShape.down, ComplexShape.down']
-  have dFrom_eq : C.dFrom (i + 1) = C.d (i + 1) i ≫ (C.xNextIso rel).inv :=
-    C.dFrom_eq rel
-  rw [dFrom_eq]
-  have : ((C.d (i + 1) i) ≫ (C.xNextIso rel).inv).hom =
-         (C.xNextIso rel).toLinearEquiv.symm.toLinearMap ∘ₗ
-         (C.d (i + 1) i).hom := rfl
-  rw [this, LinearMap.range_comp]
-  rw [← LinearEquiv.finrank_map_eq
-    (C.xNextIso rel).toLinearEquiv.symm]
+/-- The range of `dFrom i` has the same dimension as the range of the underlying
+differential `C.d i j`. -/
+lemma dFrom_range_finrank_eq_d (C : HomologicalComplex (ModuleCat k) c) {i j : ι}
+    (r : c.Rel i j) :
+    Module.finrank k (LinearMap.range (C.dFrom i).hom) =
+    Module.finrank k (LinearMap.range (C.d i j).hom) := by
+  rw [C.dFrom_eq r, show ((C.d i j) ≫ (C.xNextIso r).inv).hom =
+    (C.xNextIso r).toLinearEquiv.symm.toLinearMap ∘ₗ (C.d i j).hom from rfl,
+    LinearMap.range_comp,
+    ← LinearEquiv.finrank_map_eq (C.xNextIso r).toLinearEquiv.symm]
 
-/-- The range of dTo has the same dimension as the underlying differential. -/
-lemma dTo_range_finrank_eq_d (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ) :
-    Module.finrank k (LinearMap.range (C.dTo i).hom) =
-    Module.finrank k (LinearMap.range (C.d (i + 1) i).hom) := by
-  have rel : (ComplexShape.down ℤ).Rel (i + 1) i := by
-    simp [ComplexShape.down, ComplexShape.down']
-  have dTo_eq : C.dTo i = (C.xPrevIso rel).hom ≫ C.d (i + 1) i :=
-    C.dTo_eq rel
-  rw [dTo_eq]
-  have : ((C.xPrevIso rel).hom ≫ C.d (i + 1) i).hom =
-         (C.d (i + 1) i).hom ∘ₗ
-         (C.xPrevIso rel).toLinearEquiv.toLinearMap := rfl
-  rw [this, LinearMap.range_comp]
-  have hsurj : Function.Surjective
-      (C.xPrevIso rel).toLinearEquiv.toLinearMap :=
-    (C.xPrevIso rel).toLinearEquiv.surjective
-  rw [LinearMap.range_eq_top.mpr hsurj, Submodule.map_top]
+/-- The range of `dTo j` has the same dimension as the range of the underlying
+differential `C.d i j`. -/
+lemma dTo_range_finrank_eq_d (C : HomologicalComplex (ModuleCat k) c) {i j : ι}
+    (r : c.Rel i j) :
+    Module.finrank k (LinearMap.range (C.dTo j).hom) =
+    Module.finrank k (LinearMap.range (C.d i j).hom) := by
+  rw [C.dTo_eq r, show ((C.xPrevIso r).hom ≫ C.d i j).hom =
+    (C.d i j).hom ∘ₗ (C.xPrevIso r).toLinearEquiv.toLinearMap from rfl,
+    LinearMap.range_comp_of_range_eq_top _ (LinearEquiv.range _)]
 
+/-- The range of `dTo i` is contained in the kernel of `dFrom i`. -/
+lemma range_dTo_le_ker_dFrom
+    (C : HomologicalComplex (ModuleCat k) c) (i : ι) :
+    LinearMap.range (C.dTo i).hom ≤
+    LinearMap.ker (C.dFrom i).hom := by
+  rw [LinearMap.range_le_ker_iff]
+  exact congr_arg ModuleCat.Hom.hom (C.dTo_comp_dFrom i)
+
+end HomologicalComplex
+
+namespace ChainComplex
+
+/-- The range of `dFrom (i + 1)` has the same dimension as the range of `dTo i`
+for ℤ-indexed chain complexes. -/
 lemma dFrom_succ_range_finrank_eq_dTo
     (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ) :
     Module.finrank k (LinearMap.range (C.dFrom (i + 1)).hom) =
     Module.finrank k (LinearMap.range (C.dTo i).hom) := by
-  rw [dFrom_range_finrank_eq_d, dTo_range_finrank_eq_d]
-
-/-- The range of dTo i is contained in the kernel of dFrom i. -/
-lemma range_dTo_le_ker_dFrom
-    (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ) :
-    LinearMap.range (C.dTo i).hom ≤
-    LinearMap.ker (C.dFrom i).hom := by
-  intro x hx
-  simp only [LinearMap.mem_range] at hx
-  obtain ⟨y, rfl⟩ := hx
-  simp only [LinearMap.mem_ker]
-  change (C.dFrom i).hom ((C.dTo i).hom y) = 0
-  have : (C.dTo i ≫ C.dFrom i) y = 0 := by
-    rw [C.d_comp_d]
-    rfl
-  convert this
+  have rel : (ComplexShape.down ℤ).Rel (i + 1) i := by
+    simp [ComplexShape.down, ComplexShape.down']
+  rw [dFrom_range_finrank_eq_d C rel, dTo_range_finrank_eq_d C rel]
 
 /-- The dimension of the range of moduleCatToCycles equals
 the dimension of the range of dTo. -/
@@ -296,24 +264,11 @@ lemma chain_dimension_decomposition
       (LinearMap.ker (C.dFrom i).hom) : ℤ) +
     (Module.finrank k
       (LinearMap.range (C.dFrom i).hom) : ℤ) := by
-  rw [← LinearMap.finrank_range_add_finrank_ker
-    (C.dFrom i).hom]
-  rw [add_comm]
-  rfl
+  have := LinearMap.finrank_range_add_finrank_ker (C.dFrom i).hom
+  omega
 
-/-- The dimension of cycles decomposes as the sum of homology dimension
-    and dimension of boundaries. -/
-lemma cycles_dimension_decomposition
-    (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ)
-    [C.HasHomology i] [Module.Finite k (C.X i)] :
-    (Module.finrank k
-      (LinearMap.ker (C.dFrom i).hom) : ℤ) =
-    (Module.finrank k (C.homology i) : ℤ) +
-    (Module.finrank k
-      (LinearMap.range (C.dTo i).hom) : ℤ) := by
-  rw [← homology_finrank_formula C i]
-
-/-- `Int.negOnePow n` equals `(-1) ^ n.natAbs` as an integer. -/
+/-- `Int.negOnePow n` equals `(-1) ^ n.natAbs` as an integer.
+This bridges the coercion gap between `Units.val` and `Int.cast ∘ Units.val`. -/
 private lemma negOnePow_val (n : ℤ) :
     (↑(n.negOnePow) : ℤ) = (-1) ^ n.natAbs :=
   Int.coe_negOnePow ℤ n
@@ -321,17 +276,15 @@ private lemma negOnePow_val (n : ℤ) :
 /-- `IsZero` implies `finrank` is zero. -/
 private lemma finrank_eq_zero_of_isZero (M : ModuleCat k)
     (h : IsZero M) : Module.finrank k M = 0 := by
-  haveI : Subsingleton M := by
-    have hid : (𝟙 M : M ⟶ M) = 0 := h.eq_of_tgt _ _
-    constructor; intro a b
-    have ha : ModuleCat.Hom.hom (𝟙 M : M ⟶ M) a =
-      ModuleCat.Hom.hom (0 : M ⟶ M) a := by rw [hid]
-    have hb : ModuleCat.Hom.hom (𝟙 M : M ⟶ M) b =
-      ModuleCat.Hom.hom (0 : M ⟶ M) b := by rw [hid]
-    simp only [ModuleCat.hom_zero, LinearMap.zero_apply,
-      ModuleCat.hom_id, LinearMap.id_apply] at ha hb
-    rw [ha, hb]
+  haveI := ModuleCat.subsingleton_of_isZero h
   exact Module.finrank_zero_of_subsingleton
+
+private lemma isZero_outside_Ico (C : ChainComplex (ModuleCat k) ℤ) (a b i : ℤ)
+    (hi : i ∉ (Finset.Ico a (b + 1) : Set ℤ))
+    (hbelow : ∀ i < a, IsZero (C.X i))
+    (habove : ∀ i > b, IsZero (C.X i)) : IsZero (C.X i) := by
+  simp only [Finset.coe_Ico, Set.mem_Ico, not_and, not_lt] at hi
+  exact if h : i < a then hbelow i h else habove i (by omega)
 
 /-- For bounded chain complexes that vanish outside a finite interval [a,b],
     the Euler characteristic equals the homological Euler characteristic.
@@ -349,31 +302,20 @@ theorem eulerChar_eq_homologyEulerChar
       ↑(Finset.Ico a (b + 1)) := by
     rw [GradedObject.finrankSupport_subset_iff]
     intro i hi
-    simp only [Finset.coe_Ico, Set.mem_Ico] at hi
-    have : IsZero (C.X i) := by
-      by_cases h : i < a
-      · exact hC_bounded_below i h
-      · exact hC_bounded_above i (by omega)
-    exact finrank_eq_zero_of_isZero _ this
+    exact finrank_eq_zero_of_isZero _
+      (isZero_outside_Ico C a b i hi hC_bounded_below hC_bounded_above)
   have h_supp_H : GradedObject.finrankSupport
       (fun i => C.homology i) ⊆
       ↑(Finset.Ico a (b + 1)) := by
     rw [GradedObject.finrankSupport_subset_iff]
     intro i hi
-    simp only [Finset.coe_Ico, Set.mem_Ico] at hi
-    have hiso : IsZero (C.X i) := by
-      by_cases h : i < a
-      · exact hC_bounded_below i h
-      · exact hC_bounded_above i (by omega)
-    have : IsZero (C.homology i) :=
-      ShortComplex.isZero_homology_of_isZero_X₂ _ hiso
-    exact finrank_eq_zero_of_isZero _ this
+    exact finrank_eq_zero_of_isZero _ (ShortComplex.isZero_homology_of_isZero_X₂ _
+      (isZero_outside_Ico C a b i hi hC_bounded_below hC_bounded_above))
   rw [C.eulerChar_eq_sum_finSet_of_finrankSupport_subset
     (Finset.Ico a (b + 1)) h_supp_X]
   rw [C.homologyEulerChar_eq_sum_finSet_of_finrankSupport_subset
     (Finset.Ico a (b + 1)) h_supp_H]
   -- Bridge from (c.χ i : ℤ) to (-1)^i.natAbs
-  -- For chain complexes (down ℤ), χ i = Int.negOnePow i
   simp only [ComplexShape.eulerCharSignsDownInt_χ]
   simp_rw [negOnePow_val]
   -- Now both sides use (-1)^i.natAbs, apply the telescoping argument
@@ -395,7 +337,7 @@ theorem eulerChar_eq_homologyEulerChar
       (Module.finrank k
         (LinearMap.range (C.dTo j).hom) : ℤ)
     rw [chain_dimension_decomposition C j]
-    rw [cycles_dimension_decomposition C j]
+    rw [← homology_finrank_formula C j]
     ring
   -- p(j+1) = c(j)
   · intros j _
@@ -408,20 +350,18 @@ theorem eulerChar_eq_homologyEulerChar
   -- p(a) = 0
   · change (Module.finrank k
         (LinearMap.range (C.dFrom a).hom) : ℤ) = 0
-    have ha_zero : IsZero (C.X (a - 1)) :=
-      hC_bounded_below (a - 1) (by omega)
-    have : LinearMap.range (C.dFrom a).hom = ⊥ :=
-      dFrom_zero_range C a ha_zero
-    rw [this]
-    simp
+    have : LinearMap.range (C.dFrom a).hom = ⊥ := by
+      apply dFrom_zero_range
+      simp only [xNext, show (ComplexShape.down ℤ).next a = a - 1 from by simp]
+      exact hC_bounded_below _ (by omega)
+    rw [this]; simp
   -- c(b) = 0
   · change (Module.finrank k
         (LinearMap.range (C.dTo b).hom) : ℤ) = 0
-    have hb_zero : IsZero (C.X (b + 1)) :=
-      hC_bounded_above (b + 1) (by omega)
-    have : LinearMap.range (C.dTo b).hom = ⊥ :=
-      dTo_zero_range C b hb_zero
-    rw [this]
-    simp
+    have : LinearMap.range (C.dTo b).hom = ⊥ := by
+      apply dTo_zero_range
+      simp only [xPrev, show (ComplexShape.down ℤ).prev b = b + 1 from by simp]
+      exact hC_bounded_above _ (by omega)
+    rw [this]; simp
 
 end ChainComplex
