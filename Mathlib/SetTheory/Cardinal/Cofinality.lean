@@ -93,7 +93,7 @@ theorem cof_eq_one_iff : cof α = 1 ↔ ∃ x : α, IsTop x := by
   · apply le_antisymm
     · apply (cof_le (s := {t}) _).trans_eq (mk_singleton _)
       rwa [isCofinal_singleton_iff]
-    · rw [one_le_iff_ne_zero, cof_ne_zero_iff]
+    · rw [Cardinal.one_le_iff_ne_zero, cof_ne_zero_iff]
       use t
 
 @[simp]
