@@ -29,7 +29,7 @@ is defined via nets over finite subsets (unconditional convergence).
 This file provides a unified structure `GeneralSchauderBasis` that captures both:
 * **Classical Schauder Bases:** Indexed by `ℕ`, using `SummationFilter.conditional`
   to enforce sequential convergence of partial sums.
-* **Unconditional/Extended Bases:** Indexed by an arbitrary types `β`, using
+* **Unconditional/Extended Bases:** Indexed by an arbitrary type `β`, using
   `SummationFilter.unconditional` to enforce convergence of the net of all finite subsets.
 
 ## Main Definitions
@@ -47,6 +47,9 @@ This file provides a unified structure `GeneralSchauderBasis` that captures both
 * `UnconditionalSchauderBasis.enormProjBound`: The supremum of projection norms (`ℝ≥0∞`).
 * `UnconditionalSchauderBasis.nnnormProjBound`: The supremum of projection norms (`ℝ≥0`),
   requires `[CompleteSpace X]`.
+* `RankOneDecompostion 𝕜 X`: Data for constructing a Schauder basis from
+  a sequence of finite-rank projections whose differences are rank one.
+* `RankOneDecompostion.basis`: Constructs a `SchauderBasis` from a `RankOneDecompostion`.
 
 ## Main Results
 
@@ -60,8 +63,6 @@ This file provides a unified structure `GeneralSchauderBasis` that captures both
 * `SchauderBasis.exists_norm_proj_le`: In a Banach space, the projections are uniformly bounded.
 * `UnconditionalSchauderBasis.exists_norm_proj_le`: For unconditional bases, projections
   onto all finite sets are uniformly bounded.
-* `ProjectionData.basis`: Constructs a Schauder basis from projection data.
-
 ## References
 
 * [Albiac, Fernando. and Kalton, Nigel J., Topics in Banach Space Theory][Albiac_Kalton_2016].
@@ -407,16 +408,27 @@ lemma finrank_range_succSub_eq_one {P : ℕ → X →L[𝕜] X}
     simp only [Submodule.mem_bot]
     calc x = (P n) x := by rw [← hz, ContinuousLinearMap.coe_coe, hcomp, min_self]
          _ = 0       := by rw [← hy, ContinuousLinearMap.coe_coe]; simp [succSub, map_sub, hcomp]
-  haveI : FiniteDimensional 𝕜 W := .of_finrank_pos (by rw [hrank]; exact Nat.succ_pos n)
-  haveI : FiniteDimensional 𝕜 U := Submodule.finiteDimensional_of_le hUW
-  haveI : FiniteDimensional 𝕜 V := Submodule.finiteDimensional_of_le hV
+  have : FiniteDimensional 𝕜 W := .of_finrank_pos (by rw [hrank]; exact Nat.succ_pos n)
+  have : FiniteDimensional 𝕜 U := Submodule.finiteDimensional_of_le hUW
+  have : FiniteDimensional 𝕜 V := Submodule.finiteDimensional_of_le hV
   have h_dim := Submodule.finrank_sup_add_finrank_inf_eq U V
   rw [hdisj, finrank_bot, add_zero, ← hW, hrank, hrank, Nat.add_comm] at h_dim
   exact Nat.add_right_cancel h_dim.symm
 
 variable (𝕜 X) in
-/-- Data for constructing a Schauder basis from a sequence of finite-rank projections. -/
-structure ProjectionData where
+/-- Data for constructing a Schauder basis from a sequence of finite-rank projections.
+
+Given a sequence of continuous linear maps `P n : X →L[𝕜] X` satisfying:
+* `P 0 = 0` and `finrank(range(P n)) = n`,
+* `P n ∘ P m = P (min n m)` (the projections are nested and commute),
+* `P n x → x` for every `x` (pointwise convergence to the identity),
+
+the differences `succSub P n = P (n+1) - P n` are rank-one operators
+(see `finrank_range_succSub_eq_one`). Choosing a nonzero vector `e n` in the range of each
+`succSub P n` yields a Schauder basis for `X`.
+
+Use `RankOneDecompostion.basis` to construct the `SchauderBasis` from this data. -/
+structure RankOneDecompostion where
   /-- The sequence of finite-rank projections. -/
   P : ℕ → X →L[𝕜] X
   /-- The sequence of candidate basis vectors. -/
@@ -434,9 +446,9 @@ structure ProjectionData where
   /-- The vector `e_n` is non-zero. -/
   e_ne_zero (n : ℕ) : e n ≠ 0
 
-namespace ProjectionData
+namespace RankOneDecompostion
 
-variable (D : ProjectionData 𝕜 X)
+variable (D : RankOneDecompostion 𝕜 X)
 
 /-- There exists a coefficient scaling `e n` to match `(succSub D.P n) x`. -/
 lemma exists_coeff (n : ℕ) (x : X) :
@@ -444,7 +456,7 @@ lemma exists_coeff (n : ℕ) (x : X) :
   let S := (succSub D.P n).toLinearMap
   have hrank : Module.finrank 𝕜 S.range = 1 :=
     finrank_range_succSub_eq_one D.finrank_range D.proj_comp n
-  haveI : FiniteDimensional 𝕜 S.range := .of_finrank_pos (hrank.symm ▸ zero_lt_one)
+  have : FiniteDimensional 𝕜 S.range := .of_finrank_pos (hrank.symm ▸ zero_lt_one)
   have hspan : Submodule.span 𝕜 {D.e n} = S.range := by
     apply Submodule.eq_of_le_of_finrank_eq
     · exact (Submodule.span_singleton_le_iff_mem _ _).mpr (D.e_mem_range n)
@@ -461,7 +473,7 @@ lemma basisCoeff_spec (n : ℕ) (x : X) :
     basisCoeff D n x • D.e n = (succSub D.P n) x :=
   Classical.choose_spec (exists_coeff D n x)
 
-/-- Constructs a Schauder basis from projection data. -/
+/-- Constructs a Schauder basis from rank one decomposition. -/
 def basis : SchauderBasis 𝕜 X :=
   let coeff := basisCoeff D
   have hcoeff : ∀ n x, (succSub D.P n) x = coeff n x • D.e n := fun n x ↦
@@ -508,6 +520,6 @@ theorem basis_proj : (basis D).proj = D.P := by
 theorem basis_coe : ⇑(basis D) = D.e :=
   rfl
 
-end ProjectionData
+end RankOneDecompostion
 
 end SchauderBasis
