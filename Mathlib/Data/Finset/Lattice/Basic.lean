@@ -245,7 +245,8 @@ theorem inter_union_self (s t : Finset α) : s ∩ (t ∪ s) = s := by
   rw [inter_comm, union_inter_cancel_right]
 
 @[mono, gcongr]
-theorem inter_subset_inter {x y s t : Finset α} (h : x ⊆ y) (h' : s ⊆ t) : x ∩ s ⊆ y ∩ t := by grind
+theorem inter_subset_inter {x y s t : Finset α} (h : x ⊆ y) (h' : s ⊆ t) : x ∩ s ⊆ y ∩ t :=
+  inf_le_inf h h'
 
 theorem inter_subset_inter_left (h : t ⊆ u) : s ∩ t ⊆ s ∩ u :=
   inter_subset_inter Subset.rfl h
