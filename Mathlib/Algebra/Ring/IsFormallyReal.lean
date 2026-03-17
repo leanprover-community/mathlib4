@@ -124,7 +124,7 @@ theorem of_eq_zero_of_eq_zero_of_mul_self_add [NonUnitalNonAssocSemiring R]
     intro x hx
     induction hx with
     | sq ha => exact fun hc ↦ ha (h IsSumSq.zero (by simpa using hc))
-    | sq_add ha hs ih => grind [IsSumSq.isSumNonzeroSq hs]
+    | sq_add ha hs ih => grind [hs.isSumSq]
 
 instance [Ring R] [LinearOrder R] [IsStrictOrderedRing R] : IsFormallyReal R :=
   of_eq_zero_of_mul_self_of_eq_zero_of_add mul_self_eq_zero.mp <|
