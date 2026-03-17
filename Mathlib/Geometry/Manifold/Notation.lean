@@ -122,28 +122,29 @@ private def findSomeLocalHyp? {α} (p : Expr → Expr → MetaM (Option α)) : M
     p decl.toExpr type
 
 /-- Given `V : Expr` representing `E : B → Type*`, try to find a model fiber for `E`
-by searching in local context for either a `FiberBundle F E` instance or
-`TopologicalSpace (TotalSpace F E)`. We could try a more systematic search of
-`TotalSpace F E` anywhere in the local context, but the current heuristic is faster
-and sufficient so far. -/
+by searching in local context for either a `FiberBundle F E` or
+`TopologicalSpace (TotalSpace F E)` instance.
+
+We could try a more systematic search of `TotalSpace F E` anywhere in the local context,
+but the current heuristic is faster and sufficient so far. -/
 private def findModelFiber? (V : Expr) : MetaM (Option Expr) := do
   withTraceNode `Elab.DiffGeo.TotalSpaceMk
     (fun _ ↦ do return m!"Searching for a model fiber for {← ppExpr V}") do
-  trace[Elab.DiffGeo.TotalSpaceMk] "Searching for relevant `FiberBundle` instance in context "
+  trace[Elab.DiffGeo.TotalSpaceMk] "Searching for relevant `FiberBundle` instance in context"
   let f? ← findSomeLocalInstanceOf? `FiberBundle fun _ declType ↦ do
     /- Note: we do not use `match_expr` here since that would require importing
     `Mathlib.Topology.FiberBundle.Basic` to resolve `FiberBundle`. -/
     match declType with
     | mkApp7 (.const `FiberBundle _) _ F _ _ E _ _ => do
       if ← withReducible (pureIsDefEq E V) then
-        trace[Elab.DiffGeo.TotalSpaceMk] "It worked! model fiber is {← ppExpr F}"
+        trace[Elab.DiffGeo.TotalSpaceMk] "found `FiberBundle` instance for model fiber {← ppExpr F}"
         return some F
       else return none
     | _ => return none
   if f?.isSome then
     return f?
   else
-    trace[Elab.DiffGeo.TotalSpaceMk] "Could not find a relevant `FiberBundle` instance in context "
+    trace[Elab.DiffGeo.TotalSpaceMk] "Could not find a relevant `FiberBundle` instance in context"
     trace[Elab.DiffGeo.TotalSpaceMk] "Searching for a relevant \
       `TopologicalSpace (Bundle.TotalSpace _ _)` instance in context"
     return ← findSomeLocalInstanceOf? `TopologicalSpace fun _ declType ↦ do
