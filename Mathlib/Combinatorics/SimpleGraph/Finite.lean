@@ -341,7 +341,7 @@ theorem neighborFinset_compl [DecidableEq V] [DecidableRel G.Adj] (v : V) :
 -- The following theorem proves that if degree>=2 then there is a neighbor different from v.
 theorem exists_neighbor_ne_of_one_lt_degree {V : Type*} [Fintype V] {G : SimpleGraph V}
   [DecidableRel G.Adj] {u : V} (h_ge_2 : 2 ≤ G.degree u) (v : V) :
-    ∃ (w : V), G.Adj u w ∧ w ≠ v := by
+    ∃ w, G.Adj u w ∧ w ≠ v := by
   have h_card : 2 ≤ (G.neighborFinset u).card := by
     rw [SimpleGraph.card_neighborFinset_eq_degree G u]
     exact h_ge_2

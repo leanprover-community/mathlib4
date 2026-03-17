@@ -514,7 +514,7 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
 /-- A nontrivial tree has at least two leaves. -/
 theorem IsTree_exists_atleast_two_leaves [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
     (hTree : G.IsTree) :
-    ∃ (v1 v2: V), v1 ≠ v2 ∧ G.degree v1 = 1 ∧ G.degree v2 = 1 := by
+    ∃ v1 v2, v1 ≠ v2 ∧ G.degree v1 = 1 ∧ G.degree v2 = 1 := by
   have ⟨u, v, p, hp_isPath, hp_max⟩ := exists_isPath_forall_isPath_length_le_length G
   obtain ⟨x, y, hxy⟩ := exists_pair_ne V
   have ⟨walk_xy, h_walk_is_path⟩ := hTree.isConnected.exists_isPath x y
@@ -546,7 +546,7 @@ theorem IsTree_exists_atleast_two_leaves [Fintype V] [Nontrivial V] [DecidableRe
       let path1 : G.Path v1 w := ⟨p1, hp1_path⟩
       let path2 : G.Path v1 w := ⟨p2, hp2_path⟩
       have h_ne : p1 ≠ p2 := by
-        intro h_eq
+        rintro rfl
         have h_len : p1.length = p2.length := by rw [h_eq]
         simp only [length_cons, length_nil, zero_add, p1] at h_len
         have h1 : w = path.getVert 1 := by
