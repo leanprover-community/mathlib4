@@ -294,7 +294,8 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1
     ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, counitApp_app]
   apply presheaf_ext.{u, u + 1} (X := X) (Y := X) (f := f)
   intro x
-  erw [incl_of_counitAppApp]
+  dsimp [toProfinite_obj]
+  rw [incl_of_counitAppApp.{u, u + 1}]
   simp only [counitAppAppImage]
   have : Finite (fiber.{u, u + 1} f x) :=
     Finite.of_injective (sigmaIncl.{u, u + 1} f x).1 Subtype.val_injective
@@ -302,9 +303,10 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1
   ext y
   simp only [toProfinite_obj, isoFinYonedaComponents_hom, ConcreteCategory.hom_ofHom,
     TypeCat.Fun.mk_apply, ← Functor.map_comp_apply, ← op_comp]
-  rw [show (Profinite.of PUnit.{u + 1}).const y ≫ IsTerminal.from _ (fiber f x) = 𝟙 _ from rfl]
+  rw [show (Profinite.of PUnit.{u + 1}).const y ≫
+    IsTerminal.from _ (fiber.{u, u + 1} f x) = 𝟙 _ from rfl]
   simp only [op_comp, Functor.map_comp_apply, op_id, Functor.map_id_apply]
-  erw [← isoFinYonedaComponents_inv_comp X _ (sigmaIncl.{u, u + 1} f x)]
+  rw [← dsimp% isoFinYonedaComponents_inv_comp X _ (sigmaIncl.{u, u + 1} f x)]
   simpa [← isoFinYonedaComponents_hom_apply, -isoFinYonedaComponents_hom] using x.map_eq_image f y
 
 end Condensed
@@ -579,16 +581,19 @@ lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u
   simp only [counitApp_app]
   apply presheaf_ext.{u, u} (X := X) (Y := X) (f := f)
   intro x
-  erw [incl_of_counitAppApp]
+  dsimp [toLightProfinite_obj]
+  rw [incl_of_counitAppApp]
   simp only [counitAppAppImage]
   have : Finite (fiber.{u, u} f x) :=
     Finite.of_injective (sigmaIncl.{u, u} f x).1 Subtype.val_injective
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u} f x)).hom
   ext y
-  simp only [isoFinYonedaComponents_hom_apply, ← Functor.map_comp_apply, ← op_comp]
-  rw [show (LightProfinite.of PUnit.{u + 1}).const y ≫ IsTerminal.from _ (fiber f x) = 𝟙 _ from rfl]
+  simp only [toLightProfinite_obj, isoFinYonedaComponents_hom, TypeCat.hom_ofHom,
+    TypeCat.Fun.mk_apply, ← map_comp_apply, ← op_comp]
+  rw [show (LightProfinite.of PUnit.{u + 1}).const y ≫
+    IsTerminal.from _ (fiber.{u, u} f x) = 𝟙 _ from rfl]
   simp only [op_comp, Functor.map_comp_apply, op_id, Functor.map_id_apply]
-  erw [← isoFinYonedaComponents_inv_comp X _ (sigmaIncl.{u, u} f x)]
+  rw [← dsimp% isoFinYonedaComponents_inv_comp X _ (sigmaIncl.{u, u} f x)]
   simpa [← isoFinYonedaComponents_hom_apply, -isoFinYonedaComponents_hom] using x.map_eq_image f y
 
 end LightCondensed
