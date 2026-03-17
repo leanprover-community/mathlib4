@@ -438,6 +438,7 @@ theorem bddBelow_coe (s : Set ℝ≥0) : BddBelow (((↑) : ℝ≥0 → ℝ) '' 
 noncomputable instance : ConditionallyCompleteLinearOrderBot ℝ≥0 :=
   Nonneg.conditionallyCompleteLinearOrderBot 0
 
+set_option backward.isDefEq.respectTransparency false in
 @[norm_cast]
 theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥0 → ℝ) '' s) := by
   rcases Set.eq_empty_or_nonempty s with rfl | hs
@@ -823,6 +824,7 @@ variable {ι : Sort*} {f : ι → ℝ≥0}
 theorem le_toNNReal_of_coe_le {x : ℝ≥0} {y : ℝ} (h : ↑x ≤ y) : x ≤ y.toNNReal :=
   (le_toNNReal_iff_coe_le <| x.2.trans h).2 h
 
+set_option backward.isDefEq.respectTransparency false in
 nonrec theorem sSup_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupSet.sSup s = 0 := by
   grind [csSup_of_not_bddAbove, _root_.sSup_empty, bot_eq_zero']
 

@@ -111,6 +111,7 @@ private lemma Walk.exists_mem_contains_edges_of_directed (Hs : Set <| SimpleGrap
     obtain ⟨H, hH, h₁, h₂⟩ := h_dir H₁ hH₁ H₂ hH₂
     simpa using ⟨H, hH, (le_iff_adj.mp h₂) _ _ h_adj, fun a ha => edgeSet_mono h₁ (ih a ha)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The directed supremum of acyclic graphs is acylic. -/
 lemma isAcyclic_sSup_of_isAcyclic_directedOn (Hs : Set <| SimpleGraph V)
     (h_acyc : ∀ H ∈ Hs, H.IsAcyclic) (h_dir : DirectedOn (· ≤ ·) Hs) : IsAcyclic (sSup Hs) := by
