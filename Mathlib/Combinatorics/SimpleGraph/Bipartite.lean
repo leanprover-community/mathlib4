@@ -472,7 +472,7 @@ theorem bipartiteDoubleCover_le : G.bipartiteDoubleCover ≤ completeBipartiteGr
   | .inl _, .inl _ | .inr _, .inr _ => by simp at hadj
 
 /-- The bipartite double cover of `G` has twice the number of edges as `G`. -/
-theorem bipartiteDoubleCover_card_edgeFinset [Fintype V] [DecidableRel G.Adj] :
+theorem card_edgeFinset_bipartiteDoubleCover [Fintype V] [DecidableRel G.Adj] :
     #G.bipartiteDoubleCover.edgeFinset = 2 * #G.edgeFinset := by
   rw [two_mul_card_edgeFinset, eq_comm]
   apply card_bij (fun (v, w) _ ↦ s(.inl v, .inr w))
@@ -486,50 +486,57 @@ theorem bipartiteDoubleCover_card_edgeFinset [Fintype V] [DecidableRel G.Adj] :
 
 /-- If the double cover of `G` contains `completeBipartiteGraph α β`, then `G` also
 contains `completeBipartiteGraph α β`. -/
-theorem bipartiteDoubleCover_completeBipartiteGraph_isContained
-    {α β : Type*} [Finite α] [Finite β] [Nonempty α] [Nonempty β]
-    (h : completeBipartiteGraph α β ⊑ G.bipartiteDoubleCover) :
-    completeBipartiteGraph α β ⊑ G := by
-  have : Fintype α := ofFinite α
-  have : Fintype β := ofFinite β
-  rw [completeBipartiteGraph_isContained_iff] at h ⊢
-  obtain ⟨left, right, card_left, card_right, h⟩ := h
-  simp_rw [← card_left, ← card_right]
-  obtain ⟨l, hl⟩ : left.Nonempty := card_pos.mp <| card_pos.trans_le card_left.ge
-  obtain ⟨r, hr⟩ : right.Nonempty := card_pos.mp <| card_pos.trans_le card_right.ge
-  have hmem_left {l'} (hl' : l' ∈ left) : (l.isLeft → l'.isLeft) ∧ (l.isRight → l'.isRight) := by
-    rcases l with l | l <;> rcases r with r | r <;> rcases l' with l' | l'
-    all_goals solve | simp | simpa using h hl hr | simpa using h hl' hr
-  have hmem_right {r'} (hr' : r' ∈ right) : (r.isLeft → r'.isLeft) ∧ (r.isRight → r'.isRight) := by
-    rcases l with l | l <;> rcases r with r | r <;> rcases r' with r' | r'
-    all_goals solve | simp | simpa using h hl hr | simpa using h hl hr'
-  rcases l with l | l <;> rcases r with r | r
-  · simpa using h hl hr
-  · refine ⟨left.toLeft, right.toRight, ?_, ?_, fun i hi j hj ↦ ?_⟩
-    · exact card_bij (fun i _ ↦ .inl i) (fun i hi ↦ by simpa using hi) (fun i hi j hj ↦ by simp)
-        (fun i hi ↦ ⟨i.getLeft <| (hmem_left hi).left Sum.isLeft_inl, by simp [hi]⟩)
-    · exact card_bij (fun j hj ↦ .inr j) (fun j hj ↦ by simpa using hj) (fun i hi j hj ↦ by simp)
-        (fun j hj ↦ ⟨j.getRight <| (hmem_right hj).right Sum.isRight_inr, by simp [hj]⟩)
-    · rw [mem_coe, mem_toLeft] at hi
-      rw [mem_coe, mem_toRight] at hj
-      simpa using h hi hj
-  · refine ⟨left.toRight, right.toLeft, ?_, ?_, fun i hi j hj ↦ ?_⟩
-    · exact card_bij (fun i _ ↦ .inr i) (fun i hi ↦ by simpa using hi) (fun i hi j hj ↦ by simp)
-        (fun i hi ↦ ⟨i.getRight <| (hmem_left hi).right Sum.isRight_inr, by simp [hi]⟩)
-    · exact card_bij (fun j hj ↦ .inl j) (fun j hj ↦ by simpa using hj) (fun i hi j hj ↦ by simp)
-        (fun j hj ↦ ⟨j.getLeft <| (hmem_right hj).left Sum.isLeft_inl, by simp [hj]⟩)
-    · rw [mem_coe, mem_toRight] at hi
-      rw [mem_coe, mem_toLeft] at hj
-      simpa using h hi hj
-  · simpa using h hl hr
+theorem completeBipartiteGraph_isContained_bipartiteDoubleCover
+    {α β : Type*} [Fintype α] [Fintype β] [Nonempty α] [Nonempty β] :
+    completeBipartiteGraph α β ⊑ G.bipartiteDoubleCover ↔ completeBipartiteGraph α β ⊑ G := by
+  simp_rw [completeBipartiteGraph_isContained_iff]
+  refine ⟨fun ⟨left, right, card_left, card_right, h⟩ ↦ ?_,
+    fun ⟨left, right, card_left, card_right, h⟩ ↦ ?_⟩
+  · simp_rw [← card_left, ← card_right]
+    obtain ⟨l, hl⟩ : left.Nonempty := card_pos.mp <| card_pos.trans_le card_left.ge
+    obtain ⟨r, hr⟩ : right.Nonempty := card_pos.mp <| card_pos.trans_le card_right.ge
+    have hmem_left {l'} (hl' : l' ∈ left) :
+        (l.isLeft → l'.isLeft) ∧ (l.isRight → l'.isRight) := by
+      rcases l with l | l <;> rcases r with r | r <;> rcases l' with l' | l'
+      all_goals solve | simp | simpa using h hl hr | simpa using h hl' hr
+    have hmem_right {r'} (hr' : r' ∈ right) :
+        (r.isLeft → r'.isLeft) ∧ (r.isRight → r'.isRight) := by
+      rcases l with l | l <;> rcases r with r | r <;> rcases r' with r' | r'
+      all_goals solve | simp | simpa using h hl hr | simpa using h hl hr'
+    rcases l with l | l <;> rcases r with r | r
+    · simpa using h hl hr
+    · refine ⟨left.toLeft, right.toRight, ?_, ?_, fun i hi j hj ↦ ?_⟩
+      · exact card_bij (fun i _ ↦ .inl i) (fun i hi ↦ by simpa using hi) (fun i hi j hj ↦ by simp)
+          (fun i hi ↦ ⟨i.getLeft <| (hmem_left hi).left Sum.isLeft_inl, by simp [hi]⟩)
+      · exact card_bij (fun j hj ↦ .inr j) (fun j hj ↦ by simpa using hj) (fun i hi j hj ↦ by simp)
+          (fun j hj ↦ ⟨j.getRight <| (hmem_right hj).right Sum.isRight_inr, by simp [hj]⟩)
+      · rw [mem_coe, mem_toLeft] at hi
+        rw [mem_coe, mem_toRight] at hj
+        simpa using h hi hj
+    · refine ⟨left.toRight, right.toLeft, ?_, ?_, fun i hi j hj ↦ ?_⟩
+      · exact card_bij (fun i _ ↦ .inr i) (fun i hi ↦ by simpa using hi) (fun i hi j hj ↦ by simp)
+          (fun i hi ↦ ⟨i.getRight <| (hmem_left hi).right Sum.isRight_inr, by simp [hi]⟩)
+      · exact card_bij (fun j hj ↦ .inl j) (fun j hj ↦ by simpa using hj) (fun i hi j hj ↦ by simp)
+          (fun j hj ↦ ⟨j.getLeft <| (hmem_right hj).left Sum.isLeft_inl, by simp [hj]⟩)
+      · rw [mem_coe, mem_toRight] at hi
+        rw [mem_coe, mem_toLeft] at hj
+        simpa using h hi hj
+    · simpa using h hl hr
+  · simp_rw [← card_left, ← card_right]
+    refine ⟨left.map .inl, right.map .inr, card_map _, card_map _, fun i hi j hj ↦ ?_⟩
+    simp_rw [mem_coe, mem_map, Function.Embedding.inl_apply,
+      Function.Embedding.inr_apply] at hi hj
+    obtain ⟨i', hi', hi⟩ := hi
+    obtain ⟨j', hj', hj⟩ := hj
+    simpa [← hi, ← hj] using h hi' hj'
 
-theorem bipartiteDoubleCover_isBipartiteWith :
+theorem isBipartiteWith_bipartiteDoubleCover :
     G.bipartiteDoubleCover.IsBipartiteWith {v | v.isLeft} {w | w.isRight} where
   disjoint := by simp [Set.disjoint_iff_forall_ne]
   mem_of_adj := by simp
 
-theorem bipartiteDoubleCover_isBipartite : G.bipartiteDoubleCover.IsBipartite :=
-  bipartiteDoubleCover_isBipartiteWith.isBipartite
+theorem isBipartite_bipartiteDoubleCover : G.bipartiteDoubleCover.IsBipartite :=
+  isBipartiteWith_bipartiteDoubleCover.isBipartite
 
 end BipartiteDoubleCover
 
