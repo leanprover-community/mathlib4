@@ -420,12 +420,9 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot
 self-adjoint operator are finite-dimensional. -/
 theorem finite_dimensional_eigenspace (hT : IsCompactOperator T) (μ : 𝕜) (hμ : μ ≠ 0) :
     FiniteDimensional 𝕜 (eigenspace T.toLinearMap μ) := by
-  have inv : ∀ x ∈ eigenspace T.toLinearMap μ, T x ∈ eigenspace T.toLinearMap μ := by simp_all
-  replace hT := hT.restrict' inv
-  have hx : T.restrict inv = μ • 1 := by
-    ext x
-    exact mem_eigenspace_iff.mp x.2
-  rw [hx, LinearMap.coe_smul, IsCompactOperator.smul_iff₀ hμ] at hT
+  replace hT := hT.restrict'
+    ((mem_invtSubmodule_iff_forall_mem_of_mem _).mp (eigenspace_mem_invtSubmodule T.toLinearMap μ))
+  rw [restrict_eigenspace, LinearMap.coe_smul, IsCompactOperator.smul_iff₀ hμ] at hT
   rwa [← isCompactOperator_id_iff_finiteDimensional]
 
 end ContinuousLinearMap
