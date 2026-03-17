@@ -357,7 +357,7 @@ theorem leftInverse_ofObjects_extent : LeftInverse (ofObjects r) extent :=
   fun _ ↦ ofObjects_extent
 
 theorem leftInvOn_extent_ofObjects : Set.LeftInvOn extent (ofObjects r) {s | IsExtent r s} :=
-  fun _ ↦ isExtent_iff.1
+  fun _ ↦ IsExtent.eq
 
 theorem surjective_ofObjects : Surjective (ofObjects r) :=
   leftInverse_ofObjects_extent.surjective
