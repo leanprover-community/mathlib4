@@ -282,6 +282,11 @@ lemma Cotangent.equivOfEq_toCotangent (I J : Ideal R) (hIJ : I = J) (x : I) :
     Cotangent.equivOfEq I J hIJ (I.toCotangent x) = J.toCotangent (LinearEquiv.ofEq I J hIJ x) :=
   rfl
 
+@[simp]
+lemma Cotangent.equivOfEq_symm (I J : Ideal R) (hIJ : I = J) :
+    (Cotangent.equivOfEq I J hIJ).symm = Cotangent.equivOfEq J I hIJ.symm :=
+  rfl
+
 end Ideal
 
 namespace IsLocalRing
