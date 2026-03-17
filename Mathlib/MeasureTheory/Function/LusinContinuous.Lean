@@ -28,8 +28,24 @@ open Set Filter TopologicalSpace
 variable {α β ι : Type*} {m : MeasurableSpace α} [TopologicalSpace α] [TopologicalSpace β]
   {μ : Measure α}
 
-theorem SimpleFunc.exists_continuous_restrict {p : Set α → Prop} [IsFiniteMeasure μ]
-    (hμ : μ.InnerRegularWRT p MeasurableSet) (f : SimpleFunc α β) {ε : ℝ} (hε : 0 < ε) :
+theorem SimpleFunc.exists_continuous_restrict  [IsFiniteMeasure μ] {p : Set α → Prop}
+    (hp : ∀ {ι} [Finite ι] {t : ι → Set α}, (∀ i : ι, p (t i)) → p (⋃ i, t i)) {ε : ℝ} (hε : 0 < ε)
+    (hμ : μ.InnerRegularWRT p MeasurableSet) (f : SimpleFunc α β) :
+    ∃ s, p s ∧ (μ.real sᶜ < ε) ∧ ContinuousOn f s := by
+  sorry
+
+theorem StronglyMeasurable.exists_continuous_restrict [IsFiniteMeasure μ] {p : Set α → Prop}
+    (hp : ∀ {ι} [Finite ι] {t : ι → Set α}, (∀ i : ι, p (t i)) → p (⋃ i, t i)) {ε : ℝ} (hε : 0 < ε)
+    (hμ : μ.InnerRegularWRT p MeasurableSet) {f : α → β} (hf : StronglyMeasurable f) :
+    ∃ s, p s ∧ (μ.real sᶜ < ε) ∧ ContinuousOn f s := by
+  obtain ⟨g, hg⟩ := hf
+  choose t ht using fun n => (g n).exists_continuous_restrict hp hε hμ
+  sorry
+
+theorem NullMeasurable.exists_continuous_restrict [IsFiniteMeasure μ] {p : Set α → Prop}
+    (hp : ∀ {ι} [Finite ι] {t : ι → Set α}, (∀ i : ι, p (t i)) → p (⋃ i, t i)) {ε : ℝ} (hε : 0 < ε)
+    (hμ : μ.InnerRegularWRT p MeasurableSet) {f : α → β} [MeasurableSpace β]
+    (hf : NullMeasurable f μ) :
     ∃ s, p s ∧ (μ.real sᶜ < ε) ∧ ContinuousOn f s := by
   sorry
 
