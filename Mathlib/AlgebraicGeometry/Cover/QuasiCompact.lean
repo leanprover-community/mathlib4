@@ -148,6 +148,11 @@ instance [IsAffine S] {P : MorphismProperty Scheme.{u}} (𝒰 : S.AffineCover P)
   haveI : Finite 𝒰.cover.I₀ := ‹_›
   .of_finite
 
+instance [IsEmpty S] : QuasiCompactCover 𝒰 where
+  isCompactOpenCovered_of_isAffineOpen {U} hU := by
+    convert IsCompactOpenCovered.empty
+    simp [eq_bot_iff]
+
 variable {P : MorphismProperty Scheme.{u}}
 
 instance homCover {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f) [Surjective f]
