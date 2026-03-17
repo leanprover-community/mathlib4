@@ -226,7 +226,6 @@ noncomputable abbrev toField : Field K where
   qsmul := _
   qsmul_def := fun _ _ => rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where
   mp h := (RingEquiv.ofBijective (algebraMap R K)
       ⟨IsFractionRing.injective R K, h⟩).toMulEquiv.isField (IsFractionRing.toField R).toIsField
