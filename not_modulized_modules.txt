@@ -23,8 +23,11 @@ not modulized: MathlibTest/Constructor.lean
 not modulized: MathlibTest/Continuity.lean
 not modulized: MathlibTest/Contrapose.lean
 not modulized: MathlibTest/CountHeartbeats.lean
+not modulized: MathlibTest/DSimpPercent.lean
+not modulized: MathlibTest/DefEqAbuse.lean
 not modulized: MathlibTest/DefEqTransformations.lean
 not modulized: MathlibTest/Delab/Abs.lean
+not modulized: MathlibTest/Delab/ConcreteCategories.lean
 not modulized: MathlibTest/Delab/FinsetBuilder.lean
 not modulized: MathlibTest/Delab/Scheme.lean
 not modulized: MathlibTest/DeprecateTo.lean
@@ -33,9 +36,10 @@ not modulized: MathlibTest/DeprecatedModuleTest.lean
 not modulized: MathlibTest/DeprecatedSyntaxLinter.lean
 not modulized: MathlibTest/DeriveFintype.lean
 not modulized: MathlibTest/DeriveToExpr.lean
-not modulized: MathlibTest/DifferentialGeometry/Notation.lean
-not modulized: MathlibTest/DifferentialGeometry/NotationAdvanced.lean
-not modulized: MathlibTest/DifferentialGeometry/NotationSphere.lean
+not modulized: MathlibTest/DifferentialGeometry/Notation/Advanced.lean
+not modulized: MathlibTest/DifferentialGeometry/Notation/Basic.lean
+not modulized: MathlibTest/DifferentialGeometry/Notation/Delaborators.lean
+not modulized: MathlibTest/DifferentialGeometry/Notation/Sphere.lean
 not modulized: MathlibTest/DirectoryDependencyLinter/Test.lean
 not modulized: MathlibTest/DocPrime.lean
 not modulized: MathlibTest/DocString.lean
@@ -69,6 +73,7 @@ not modulized: MathlibTest/HeaderFail.lean
 not modulized: MathlibTest/HigherOrder.lean
 not modulized: MathlibTest/ImplicitUniverses.lean
 not modulized: MathlibTest/ImportHeavyFlexibleLinter.lean
+not modulized: MathlibTest/InferInstanceAsPercent.lean
 not modulized: MathlibTest/InferParam.lean
 not modulized: MathlibTest/Inhabit.lean
 not modulized: MathlibTest/InstanceTransparency.lean
@@ -77,6 +82,8 @@ not modulized: MathlibTest/LibraryRewrite.lean
 not modulized: MathlibTest/LibrarySearch/IsCompact.lean
 not modulized: MathlibTest/LibrarySearch/basic.lean
 not modulized: MathlibTest/LibrarySearch/observe.lean
+not modulized: MathlibTest/Linarith/Basic.lean
+not modulized: MathlibTest/Linarith/NNReal.lean
 not modulized: MathlibTest/Lint.lean
 not modulized: MathlibTest/LongFile.lean
 not modulized: MathlibTest/MathlibTestExecutable.lean
@@ -106,6 +113,7 @@ not modulized: MathlibTest/SimpRw.lean
 not modulized: MathlibTest/Simproc/Divisors.lean
 not modulized: MathlibTest/Simproc/ExistsAndEq.lean
 not modulized: MathlibTest/Simproc/ProdUnivMany.lean
+not modulized: MathlibTest/Simproc/VecPerm.lean
 not modulized: MathlibTest/Simps.lean
 not modulized: MathlibTest/Split.lean
 not modulized: MathlibTest/SplitIfs.lean (cannot use `#print axioms` in a `module`)
@@ -179,12 +187,14 @@ not modulized: MathlibTest/globalAttributeIn.lean
 not modulized: MathlibTest/grind/ac.lean
 not modulized: MathlibTest/grind/cc.lean
 not modulized: MathlibTest/grind/field_instance.lean
+not modulized: MathlibTest/grind/natCast_instance.lean
 not modulized: MathlibTest/grind/ordered_ring.lean
 not modulized: MathlibTest/grind/panic.lean
 not modulized: MathlibTest/grind/ring.lean
 not modulized: MathlibTest/hint.lean
 not modulized: MathlibTest/import_all.lean
 not modulized: MathlibTest/instance_diamonds.lean
+not modulized: MathlibTest/instance_diamonds/Analysis/Normed/Field/WithAbs.lean
 not modulized: MathlibTest/instance_diamonds/Data/Complex/Module.lean
 not modulized: MathlibTest/instance_diamonds/FieldTheory/IsAlgClosed/AlgebraicClosure.lean
 not modulized: MathlibTest/instance_diamonds/FieldTheory/SplittingField/Construction.lean
@@ -195,7 +205,6 @@ not modulized: MathlibTest/irreducibleDef.lean
 not modulized: MathlibTest/itauto.lean
 not modulized: MathlibTest/jacobiSym.lean
 not modulized: MathlibTest/lift.lean
-not modulized: MathlibTest/linarith.lean
 not modulized: MathlibTest/linear_combination'.lean
 not modulized: MathlibTest/linear_combination.lean
 not modulized: MathlibTest/matrix.lean
