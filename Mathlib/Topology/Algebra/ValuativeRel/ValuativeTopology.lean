@@ -54,40 +54,34 @@ lemma Valuation.exists_setOf_restrict_le_iff {Γ₀ : Type v} [LinearOrderedComm
 
 /-- We say that a topology on `R` is valuative if the neighborhoods of `0` in `R`
 are determined by the relation `· ≤ᵥ ·`. -/
-class IsValuativeTopology (R : Type*) [CommRing R] [ValuativeRel R] [TopologicalSpace R] where
+class IsValuativeTopology [TopologicalSpace R] where
   mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 (x : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, (x + ·) '' { z | valuation _ z < γ } ⊆ s
 
 namespace ValuativeRel
 
-variable (R : Type u) [CommRing R] [ValuativeRel R]
-
 /-- The topology induced by a valuative relation. -/
-@[implicit_reducible]
-def topologicalSpace : TopologicalSpace R := (valuation R).subgroups_basis.topology
+local instance topologicalSpace : TopologicalSpace R := (valuation R).subgroups_basis.topology
 
-instance nonarchimedeanRing : @NonarchimedeanRing R _ (topologicalSpace R) :=
+instance nonarchimedeanRing : NonarchimedeanRing R :=
   (valuation R).subgroups_basis.nonarchimedean
 
 /-- The uniform space induced by a valuative relation. -/
-@[implicit_reducible]
-def uniformSpace : UniformSpace R :=
-  @IsTopologicalAddGroup.rightUniformSpace R _ (topologicalSpace R) _
+local instance uniformSpace : UniformSpace R := IsTopologicalAddGroup.rightUniformSpace R
 
-instance isUniformAddGroup : @IsUniformAddGroup R (uniformSpace R) _ :=
-  @isUniformAddGroup_of_addCommGroup _ _ (topologicalSpace R) _
+instance isUniformAddGroup : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
 
-instance isValuativeTopology : @IsValuativeTopology R _ _ (topologicalSpace R) :=
-  letI := topologicalSpace R
-  { mem_nhds_iff {s x} := by
-      rw [Filter.hasBasis_iff.mp ((valuation R).subgroups_basis.hasBasis_nhds x) s]
-      simp [neg_add_eq_sub, ← (valuation R).exists_setOf_restrict_le_iff,
-        ← restrict_lt_iff_lt_embedding] }
+instance isValuativeTopology : IsValuativeTopology R where
+  mem_nhds_iff {s x} := by
+    rw [Filter.hasBasis_iff.mp ((valuation R).subgroups_basis.hasBasis_nhds x) s]
+    simp [neg_add_eq_sub, ← (valuation R).exists_setOf_restrict_le_iff,
+      ← restrict_lt_iff_lt_embedding]
 
 end ValuativeRel
 
-variable {R K : Type u} [CommRing R] [Field K] {Γ₀ : Type v} [LinearOrderedCommGroupWithZero Γ₀]
-  [ValuativeRel R] [ValuativeRel K]
+variable {R}
+
+variable {K : Type u} [Field K] [ValuativeRel K] {Γ₀ : Type v} [LinearOrderedCommGroupWithZero Γ₀]
 
 section TopologicalSpace
 
@@ -96,19 +90,23 @@ variable [TopologicalSpace R] [IsValuativeTopology R] (v : Valuation R Γ₀) [v
 namespace IsValuativeTopology
 
 lemma mem_nhds {s : Set R} {x : R} :
-    s ∈ 𝓝 (x : R) ↔
+    s ∈ 𝓝 x ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, { z | valuation R (z - x) < γ } ⊆ s := by
   convert mem_nhds_iff (s := s) using 4
   simp [neg_add_eq_sub]
 
-lemma mem_nhds_zero (s : Set R) : s ∈ 𝓝 (0 : R) ↔
+@[deprecated (since := "2026-03-17")] alias mem_nhds_iff' := mem_nhds
+
+lemma mem_nhds_zero (s : Set R) : s ∈ 𝓝 0 ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, { x | valuation R x < γ } ⊆ s := by
-  convert IsValuativeTopology.mem_nhds (x := (0 : R))
+  convert mem_nhds (x := (0 : R))
   rw [sub_zero]
 
+@[deprecated (since := "2026-03-17")] alias mem_nhds_zero_iff := mem_nhds_zero
+
 theorem hasBasis_nhds (x : R) :
-    (𝓝 x).HasBasis (fun _ => True)
-      fun γ : (ValueGroupWithZero R)ˣ => { z | valuation R (z - x) < γ } := by
+    (𝓝 x).HasBasis (fun _ ↦ True)
+      fun γ : (ValueGroupWithZero R)ˣ ↦ { z | valuation R (z - x) < γ } := by
   simp [Filter.hasBasis_iff, mem_nhds]
 
 /-- A variant of `hasBasis_nhds` where `· ≠ 0` is unbundled. -/
@@ -119,8 +117,8 @@ lemma hasBasis_nhds' (x : R) :
 
 variable (R) in
 theorem hasBasis_nhds_zero :
-    (𝓝 (0 : R)).HasBasis (fun _ => True)
-      fun γ : (ValueGroupWithZero R)ˣ => { x | valuation R x < γ } := by
+    (𝓝 0).HasBasis (fun _ ↦ True)
+      fun γ : (ValueGroupWithZero R)ˣ ↦ { x | valuation R x < γ } := by
   convert hasBasis_nhds (0 : R); rw [sub_zero]
 
 variable (R) in
@@ -136,26 +134,26 @@ open IsValuativeTopology
 
 namespace Valuation
 
-lemma mem_nhds {s : Set R} {x : R} : s ∈ 𝓝 (x : R) ↔
+lemma mem_nhds {s : Set R} {x : R} : s ∈ 𝓝 x ↔
     ∃ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ, { z | v.restrict (z - x) < γ.val } ⊆ s := by
   convert IsValuativeTopology.mem_nhds_iff (s := s) using 4
   simpa [neg_add_eq_sub] using v.exists_setOf_restrict_le_iff _ _
 
-lemma mem_nhds_zero (s : Set R) : s ∈ 𝓝 (0 : R) ↔
+lemma mem_nhds_zero (s : Set R) : s ∈ 𝓝 0↔
     ∃ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ, { x | v.restrict x < γ.val } ⊆ s := by
-  convert v.mem_nhds (x := (0 : R))
+  convert v.mem_nhds
   rw [sub_zero]
 
 alias is_topological_valuation := mem_nhds_zero
 
 theorem hasBasis_nhds (x : R) :
-    (𝓝 x).HasBasis (fun _ => True)
-      fun γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ => { z | v.restrict (z - x) < γ.val } := by
+    (𝓝 x).HasBasis (fun _ ↦ True)
+      fun γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ ↦ { z | v.restrict (z - x) < γ.val } := by
   simp [Filter.hasBasis_iff, v.mem_nhds]
 
 theorem hasBasis_nhds_zero :
-    (𝓝 (0 : R)).HasBasis (fun _ => True)
-      fun γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ => { x | v.restrict x < γ.val } := by
+    (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
+      fun γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ ↦ { x | v.restrict x < γ.val } := by
   simp [Filter.hasBasis_iff, v.is_topological_valuation]
 
 theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
@@ -366,3 +364,16 @@ theorem isClopen_valuationSubring (v : Valuation K Γ₀) [v.Compatible] :
 end TopologicalSpace
 
 end Valuation
+
+namespace IsValuativeTopology
+
+@[deprecated (since := "2026-03-17")] alias isOpen_ball := Valuation.isOpen_ball
+@[deprecated (since := "2026-03-17")] alias isClosed_ball := Valuation.isClosed_ball
+@[deprecated (since := "2026-03-17")] alias isClopen_ball := Valuation.isClopen_ball
+@[deprecated (since := "2026-03-17")] alias isOpen_closedBall := Valuation.isOpen_closedBall
+@[deprecated (since := "2026-03-17")] alias isClosed_closedBall := Valuation.isClosed_closedBall
+@[deprecated (since := "2026-03-17")] alias isClopen_closedBall := Valuation.isClopen_closedBall
+@[deprecated (since := "2026-03-17")] alias isClopen_sphere := Valuation.isClopen_sphere
+@[deprecated (since := "2026-03-17")] alias isOpen_sphere := Valuation.isOpen_sphere
+
+end IsValuativeTopology
