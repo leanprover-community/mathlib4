@@ -208,7 +208,7 @@ lemma normal_hasDerivAt_aux {I : Set ℝ} [I.OrdConnected] (hI : IsOpen I)
   HasDerivAt (normal c) (deriv (normal c) t) t := by
   have hd : ContDiffOn ℝ 1 (deriv c) I := hc.deriv_of_isOpen hI (by norm_num)
   have h_diff : DifferentiableOn ℝ (deriv c) I := hd.differentiableOn (by norm_num)
-  unfold normal 
+  unfold normal
   simp only [Fin.isValue, hasDerivAt_deriv_iff]
   have h : DifferentiableOn ℝ (fun t ↦ !₂[-(deriv c t) 1, (deriv c t) 0]) I := by
     rw [differentiableOn_piLp] at *
