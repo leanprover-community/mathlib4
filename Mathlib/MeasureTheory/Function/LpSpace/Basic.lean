@@ -591,8 +591,8 @@ theorem compMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ} {μc 
 
 theorem compMeasurePreserving_comp' {γ : Type*} {mγ : MeasurableSpace γ} {μc : Measure γ}
     {f : β → γ} (hf : MeasurePreserving f μb μc) {f' : α → β} (hf' : MeasurePreserving f' μ μb) :
-    (compMeasurePreserving (E:=E) (p:=p) (f ∘ f') (hf.comp hf')) =
-    ((compMeasurePreserving f' hf').comp (compMeasurePreserving f hf)) := by
+    compMeasurePreserving (E := E) (p := p) (f ∘ f') (hf.comp hf') =
+    (compMeasurePreserving f' hf').comp (compMeasurePreserving f hf) := by
   ext g
   rw [compMeasurePreserving_comp g hf hf']
   rfl
