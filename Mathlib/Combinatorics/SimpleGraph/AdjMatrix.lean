@@ -164,7 +164,7 @@ theorem adjMatrix_bot [Zero α] [One α] :
   ext; simp
 
 @[simp]
-theorem adjMatrix_top_eq [DecidableEq V] [Ring α] :
+theorem adjMatrix_top [DecidableEq V] [Ring α] :
     (⊤ : SimpleGraph V).adjMatrix α = .of (fun i j ↦ if i = j then 0 else 1) := by
   ext i j
   cases eq_or_ne i j <;> simp [‹_›]
