@@ -207,9 +207,11 @@ def lt_sum_eq_of_le [DecidableLE α] {a b : α} (hab : a ≤ b) :
     a < b ⊕' a = b :=
   if hba : b ≤ a then PSum.inr (le_antisymm hab hba) else PSum.inl (lt_of_le_not_ge hab hba)
 
+set_option warn.classDefReducibility false in
 @[to_dual DecidableLE1_dual]
 def DecidableLE1 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := fun a b ↦ h a b
 
+set_option warn.classDefReducibility false in
 @[to_dual DecidableLE2_dual]
 def DecidableLE2 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := id h
 
@@ -339,7 +341,23 @@ inductive WithTop.LE : WithTop α → WithTop α → Prop where
   | le_top (x : WithTop α) : WithTop.LE x .top
   | coe_le_coe {a b : α} : a ≤ b → WithTop.LE (.coe a) (.coe b)
 
+attribute [to_dual existing] WithTop.LE.le_top
+
 @[to_dual]
 instance WithBot.instLE : _root_.LE (WithBot α) := ⟨WithBot.LE⟩
 
 example (a : α) : WithTop.coe a ≤ .top := .le_top (WithTop.coe a)
+
+-- The namespace is translated correctly for private names:
+@[to_dual]
+private theorem WithBot.coe_le_top : WithTop.coe a ≤ .top := .le_top (WithTop.coe a)
+
+run_meta guard <| (← getEnv).contains ``WithTop.coe_le_bot
+
+@[to_dual]
+private abbrev WithBotPrivate := WithBot
+
+@[to_dual]
+private theorem WithBotPrivate.coe_le_top : WithTop.coe a ≤ .top := .le_top (WithTop.coe a)
+
+run_meta guard <| (← getEnv).contains ``WithTopPrivate.coe_le_bot

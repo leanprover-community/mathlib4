@@ -20,7 +20,7 @@ This file is a home for results about unions of submodules.
 
 ## Main results:
 * `Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt`: a finite union of proper submodules is
-a proper subset, provided the coefficients are a sufficiently large field.
+  a proper subset, provided the coefficients are a sufficiently large field.
 
 -/
 

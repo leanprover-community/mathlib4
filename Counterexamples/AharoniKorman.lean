@@ -578,7 +578,6 @@ lemma image_chainBetween_isChain {a b c d n : ℕ} :
     IsChain (· ≤ ·) ((chainBetween a b c d).image (embed n) : Set Hollom) := by
   rw [coe_image]
   apply chainBetween_isChain.image
-  simp
 
 open Finset in
 lemma card_chainBetween {a b c d : ℕ} (hac : a ≤ c) (hbd : b ≤ d) :
@@ -715,7 +714,7 @@ lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
     refine f.injOn_of_isChain ?_
     simp only [B]
     rw [coe_image]
-    refine IsChain.image (· ≤ ·) _ (embed n) (by simp) ?_
+    refine IsChain.image ?_ (embed n)
     rw [coe_union, isChain_union]
     refine ⟨chainBetween_isChain, chainBetween_isChain, ?_⟩
     simp [chainBetween, *]

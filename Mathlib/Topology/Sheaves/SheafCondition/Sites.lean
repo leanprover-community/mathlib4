@@ -217,12 +217,12 @@ variable {X : TopCat.{w}} {ι : Type*} {B : ι → Opens X}
 variable (F : X.Presheaf C) (F' : Sheaf C X)
 
 /-- The empty component of a sheaf is terminal. -/
-def isTerminalOfEmpty (F : Sheaf C X) : Limits.IsTerminal (F.val.obj (op ⊥)) :=
+def isTerminalOfEmpty (F : Sheaf C X) : Limits.IsTerminal (F.obj.obj (op ⊥)) :=
   F.isTerminalOfBotCover ⊥ (fun _ h => h.elim)
 
 /-- A variant of `isTerminalOfEmpty` that is easier to `apply`. -/
 def isTerminalOfEqEmpty (F : X.Sheaf C) {U : Opens X} (h : U = ⊥) :
-    Limits.IsTerminal (F.val.obj (op U)) := by
+    Limits.IsTerminal (F.obj.obj (op U)) := by
   convert F.isTerminalOfEmpty
 
 /-- If a family `B` of open sets forms a basis of the topology on `X`, and if `F'`
