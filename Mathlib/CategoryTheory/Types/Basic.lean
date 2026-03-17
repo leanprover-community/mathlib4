@@ -62,6 +62,10 @@ lemma Fun.mk_as {X Y : Type*} (f : X → Y) : (Fun.mk f).as = f :=
 lemma Fun.mk_apply {X Y : Type*} (f : X → Y) (x : X) : (Fun.mk f) x = f x :=
   rfl
 
+@[simp]
+lemma Fun.coe_mk {X Y : Type*} (f : X → Y) : (Fun.mk f : X → Y) = f :=
+  rfl
+
 @[simps!]
 def Fun.id (X : Type*) : Fun X X := Fun.mk _root_.id
 
