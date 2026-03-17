@@ -142,6 +142,6 @@ This is preferred over `inferInstanceAs` when the instance can be reduced to
 constructor applications. In that case, the parameters of the constructors will be filled in
 using the expected type, so that the instance will unfold nicely during unification. -/
 macro "inferInstanceAs% " source:term : term =>
-  `(fast_instance% inferInstanceAs $source)
+  `(fast_instance% inferInstanceAs <| $source)
 
 end Mathlib.Elab.FastInstance
