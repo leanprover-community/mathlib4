@@ -203,12 +203,25 @@ protected theorem ext [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : IsNo
     convert hg.isLUB_image_Iio_of_isSuccLimit ha using 1
     aesop
 
-theorem exists_btwn [NoMaxOrder α] [OrderBot α] {f : α → α} {x : α}
-    (hf : Order.IsNormal f) (hx : f ⊥ ≤ x) : ∃ a, f a ≤ x ∧ x < f (Order.succ a) := by
+set_option backward.isDefEq.respectTransparency false in
+theorem exists_btwn_of_exists_ge [NoMaxOrder α] [OrderBot α] [WellFoundedLT β]
+    {f : α → β} {x : β} (hf : Order.IsNormal f) (hf' : ∃ y, x ≤ f y) (hx : f ⊥ ≤ x) :
+    ∃ a, f a ≤ x ∧ x < f (Order.succ a) := by
+  have : Nonempty β := ⟨x⟩
+  let := WellFoundedLT.toOrderBot β
   let := WellFoundedLT.conditionallyCompleteLinearOrderBot α
+  let := WellFoundedLT.conditionallyCompleteLinearOrderBot β
+  have H : BddAbove (f ⁻¹' Iic x) :=
+    have ⟨y, hy⟩ := hf'
+    ⟨y, fun z hz ↦ hf.strictMono.le_iff_le.1 <| hz.trans hy⟩
   refine ⟨sSup (f ⁻¹' Set.Iic x), ?_, ?_⟩
-  · rw [hf.le_iff_le_sSup' ⟨⊥, hx⟩]
-  · rw [← not_le, hf.le_iff_le_sSup' ⟨⊥, hx⟩, not_le, Order.lt_succ_iff]
+  · rw [hf.le_iff_le_sSup ⟨⊥, hx⟩ H]
+  · rw [← not_le, hf.le_iff_le_sSup ⟨⊥, hx⟩ H, not_le, Order.lt_succ_iff]
+
+/-- If `f : α → α`, we can infer one of the hypothesis in `exists_btwn_of_exists_ge`. -/
+theorem exists_btwn [NoMaxOrder α] [OrderBot α] {f : α → α} {x : α}
+    (hf : Order.IsNormal f) (hx : f ⊥ ≤ x) : ∃ a, f a ≤ x ∧ x < f (Order.succ a) :=
+  exists_btwn_of_exists_ge hf ⟨x, hf.strictMono.le_apply⟩ hx
 
 end WellFoundedLT
 end IsNormal
