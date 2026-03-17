@@ -595,7 +595,7 @@ theorem compMeasurePreserving_comp' {γ : Type*} {mγ : MeasurableSpace γ} {μc
   simp [compMeasurePreserving_comp hf hf']
 
 theorem compMeasurePreserving_iterate {f : α → α} (hf : MeasurePreserving f μ μ) (n : ℕ) :
-    (compMeasurePreserving (E:=E) (p:=p) f hf)^[n] =
+    (compMeasurePreserving ( E:=E ) ( p:=p ) f hf)^[n] =
     compMeasurePreserving f^[n] (MeasurePreserving.iterate hf n) := by
   funext
   induction n with
