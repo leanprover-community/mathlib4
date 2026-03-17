@@ -24,13 +24,10 @@ variable {ι 𝕜 R E F : Type*} [Semiring R] [NontriviallyNormedField 𝕜] [Co
 theorem Module.Basis.continuous_constrL [Finite ι] (b : Basis ι 𝕜 E) :
     Continuous (b.constrL : (ι → F) → (E →L[𝕜] F)) := by
   rcases nonempty_fintype ι
-  let coord (i : ι) : E →L[𝕜] 𝕜 := (.proj i ∘L (b.equivFunL : E →L[𝕜] (ι → 𝕜)))
-  let Φ (i : ι) : F →L[𝕜] E →L[𝕜] F :=
-    precomp F (coord i) ∘L (toSpanSingletonCLE : F ≃L[𝕜] 𝕜 →L[𝕜] F)
-  have key : b.constrL = ∑ i : ι, Φ i ∘L (.proj i) := by
-    ext
-    simp [Φ, coord]
-  exact key ▸ map_continuous _
+  letI Φ : (ι → F) →ₗ[𝕜] (E →L[𝕜] F) := ⟨⟨b.constrL, by simp [constrL]⟩, by simp [constrL]⟩
+  apply continuous_of_uncurry Φ
+  simp only [LinearMap.coe_mk, AddHom.coe_mk, b.constrL_apply, equivFun_apply, Φ, ← equivFunL_apply]
+  fun_prop
 
 variable (R) in
 protected noncomputable def Module.Basis.constrLCLE [Finite ι] (b : Basis ι 𝕜 E) :
