@@ -201,6 +201,7 @@ public def replaceDisallowed : Char → Option String
 | '\u2008' => " " -- replace "PUNCTUATION SPACE" by normal space
 | '\u2009' => " " -- replace "THIN SPACE" by normal space
 | '\u200A' => " " -- replace "HAIR SPACE" by normal space
+| '\u200b' => "" -- replace "ZERO WIDTH SPACE" by nothing.
 | _ => none
 
 
