@@ -694,17 +694,15 @@ section DedekindDomain
 
 variable [IsDedekindDomain R]
 
+/-- See also `Ideal.IsMaximal.mul_mem_pow` for maximal ideal. -/
 theorem Ideal.IsPrime.mul_mem_pow (I : Ideal R) [hI : I.IsPrime] {a b : R} {n : ℕ}
     (h : a * b ∈ I ^ n) : a ∈ I ∨ b ∈ I ^ n := by
   cases n; · simp
   by_cases hI0 : I = ⊥; · simpa [pow_succ, hI0] using h
-  simp only [← Submodule.span_singleton_le_iff_mem, Ideal.submodule_span_eq, ← Ideal.dvd_iff_le, ←
-    Ideal.span_singleton_mul_span_singleton] at h ⊢
-  by_cases ha : I ∣ span {a}
-  · exact Or.inl ha
-  rw [mul_comm] at h
-  exact Or.inr (Prime.pow_dvd_of_dvd_mul_right ((Ideal.prime_iff_isPrime hI0).mpr hI) _ ha h)
+  have : I.IsMaximal := hI.isMaximal hI0
+  exact IsMaximal.mul_mem_pow I h
 
+/-- See also `Ideal.IsMaximal.mem_pow_mul` for maximal ideal. -/
 theorem Ideal.IsPrime.mem_pow_mul (I : Ideal R) [hI : I.IsPrime] {a b : R} {n : ℕ}
     (h : a * b ∈ I ^ n) : a ∈ I ^ n ∨ b ∈ I := by
   rw [mul_comm] at h
@@ -1065,6 +1063,14 @@ noncomputable def equivPrimesOver (hp : p ≠ 0) :
 theorem equivPrimesOver_apply (hp : p ≠ 0)
     (v : {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p}) :
     equivPrimesOver B hp v = v.1.asIdeal := rfl
+
+variable (A) {B} in
+/-- The pullback of a height one prime in `B` to `A`. -/
+@[simps]
+def under [Algebra.IsIntegral A B] (w : HeightOneSpectrum B) : HeightOneSpectrum A where
+  asIdeal := w.asIdeal.under A
+  isPrime := .under A w.asIdeal
+  ne_bot := mt Ideal.eq_bot_of_comap_eq_bot w.ne_bot
 
 end IsDedekindDomain.HeightOneSpectrum
 
