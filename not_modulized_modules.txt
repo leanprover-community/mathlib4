@@ -135,11 +135,9 @@ not modulized: MathlibTest/apply_fun.lean
 not modulized: MathlibTest/apply_rules.lean
 not modulized: MathlibTest/apply_with.lean
 not modulized: MathlibTest/basicTactics.lean
-not modulized: MathlibTest/borelize.lean
 not modulized: MathlibTest/byContra.lean
 not modulized: MathlibTest/cancel_denoms.lean
 not modulized: MathlibTest/cases.lean
-not modulized: MathlibTest/casesm.lean
 not modulized: MathlibTest/choose_reduction.lean
 not modulized: MathlibTest/coe.lean
 not modulized: MathlibTest/congr.lean
@@ -207,7 +205,6 @@ not modulized: MathlibTest/norm_num_rpow.lean
 not modulized: MathlibTest/notation3.lean
 not modulized: MathlibTest/observe.lean
 not modulized: MathlibTest/oldObtain.lean
-not modulized: MathlibTest/order.lean
 not modulized: MathlibTest/positivity.lean
 not modulized: MathlibTest/push.lean
 not modulized: MathlibTest/push_neg.lean
