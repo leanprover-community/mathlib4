@@ -217,7 +217,7 @@ theorem exists_btwn_of_exists_ge [NoMaxOrder α] [OrderBot α] [WellFoundedLT β
   · rw [hf.le_iff_le_sSup ⟨⊥, hx⟩ H]
   · rw [← not_le, hf.le_iff_le_sSup ⟨⊥, hx⟩ H, not_le, Order.lt_succ_iff]
 
-/-- If `f : α → α`, we can infer one of the hypothesis in `exists_btwn_of_exists_ge`. -/
+/-- If `f : α → α`, we can infer one of the hypotheses in `exists_btwn_of_exists_ge`. -/
 theorem exists_btwn [NoMaxOrder α] [OrderBot α] {f : α → α} {x : α}
     (hf : Order.IsNormal f) (hx : f ⊥ ≤ x) : ∃ a, f a ≤ x ∧ x < f (Order.succ a) :=
   exists_btwn_of_exists_ge hf ⟨x, hf.strictMono.le_apply⟩ hx
