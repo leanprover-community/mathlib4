@@ -1460,7 +1460,7 @@ meta def evalIntegral : PositivityExt where eval {u α} _ _ e := do
     let i : Q($i) ← mkFreshExprMVarQ q($i) .syntheticOpaque
     have body : Q(ℝ) := .betaRev f #[i]
     let rbody ← core q(inferInstance) (some q(inferInstance)) body
-    let pbody ← rbody.toNonneg
+    let pbody ← rbody.toNonneg _ q(inferInstance)
     let pr : Q(∀ x, 0 ≤ $f x) ← mkLambdaFVars #[i] pbody
     assertInstancesCommute
     return .nonnegative q(integral_nonneg $pr)
