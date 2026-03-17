@@ -325,12 +325,8 @@ lemma lequivCongrLeft_lof [DecidableEq ι] [DecidableEq κ] {e : ι ≃ κ}
     lequivCongrLeft R e (lof R ι M i x) = lof R _ _ k y := by
   subst hik hxy
   ext j
-  simp_rw [lequivCongrLeft_apply, lof_eq_of, of_apply]
-  by_cases eq : k = j
-  · subst eq
-    rw [dif_pos rfl, dif_pos rfl]
-    rfl
-  · rw [dif_neg (by aesop), dif_neg eq]
+  simp only [lequivCongrLeft_apply, lof_eq_of, of_apply, EmbeddingLike.apply_eq_iff_eq]
+  lia
 
 lemma lequivCongrLeft_symm_lof [DecidableEq ι] [DecidableEq κ] {h : ι ≃ κ}
     {k : κ} {x : M (h.symm k)} :

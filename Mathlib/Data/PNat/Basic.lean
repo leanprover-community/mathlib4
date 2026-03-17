@@ -305,13 +305,8 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
   split_ifs with h
   · have hm : (m : ℕ) > 0 := m.pos
     rw [← Nat.mod_add_div (m : ℕ) (k : ℕ), h, zero_add] at hm ⊢
-    by_cases h₁ : (m : ℕ) / (k : ℕ) = 0
-    · rw [h₁, mul_zero] at hm
-      exact (lt_irrefl _ hm).elim
-    · let h₂ : (k : ℕ) * 1 ≤ k * (m / k) :=
-        Nat.mul_le_mul_left (k : ℕ) (Nat.succ_le_of_lt (Nat.pos_of_ne_zero h₁))
-      rw [mul_one] at h₂
-      exact ⟨h₂, le_refl (k : ℕ)⟩
+    simp only [pos, le_mul_iff_one_le_right]
+    lia
   · exact ⟨Nat.mod_le (m : ℕ) (k : ℕ), (Nat.mod_lt (m : ℕ) k.pos).le⟩
 
 theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by

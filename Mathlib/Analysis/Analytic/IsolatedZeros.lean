@@ -355,12 +355,7 @@ theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {
   simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_diff] at *
   intro x hx
   apply mem_of_superset ((hfU x hx).preimage_of_nhdsNE (h₂f x hx) (hs (f x) (by tauto)))
-  rw [preimage_union, preimage_compl]
-  apply union_subset_union_right (f ⁻¹' s)
-  intro x hx
-  push _ ∈ _ at hx ⊢
-  push Not at hx
-  tauto
+  grind
 
 /-- Preimages of codiscrete sets, filter version: if `f` is analytic on a neighbourhood of `U` and
 not locally constant, then the push-forward of the filter of sets codiscrete within `U` is less
