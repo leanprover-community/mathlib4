@@ -119,6 +119,7 @@ theorem length_cons (h : dart G u v) (p : Walk G v w) :
 theorem eq_of_length_eq_zero : ∀ {p : Walk G u v}, p.length = 0 → u = v
   | nil, _ => rfl
 
+/-- If `u` and `v` connected by one-edge walk, then there exists a dart between them. -/
 def dart_of_length_eq_one : ∀ {p : Walk G u v}, p.length = 1 → dart G u v
   | cons h nil, _ => h
 
