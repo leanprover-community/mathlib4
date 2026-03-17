@@ -38,7 +38,7 @@ namespace Truncated
 
 /-- The identity natural transformation exhibits a simplicial set as a right extension of its
 restriction along `(Truncated.inclusion (n := n)).op`. -/
-@[simps!]
+@[simps! left right_as hom_app]
 def rightExtensionInclusion (X : SSet.{u}) (n : ℕ) :
     RightExtension (Truncated.inclusion (n := n)).op
       ((Truncated.inclusion n).op ⋙ X) := RightExtension.mk _ (𝟙 _)
@@ -111,8 +111,8 @@ lemma fac_aux₂ {n : ℕ}
       let α : (strArrowMk₂ (⦋0⦌.const ⦋n⦌ ⟨i, Nat.lt_add_one_of_le hj⟩)) ⟶
         (strArrowMk₂ (⦋1⦌.const ⦋0⦌ 0 ≫ ⦋0⦌.const ⦋n⦌ ⟨i, Nat.lt_add_one_of_le hj⟩)) :=
             StructuredArrow.homMk ((Hom.tr (⦋1⦌.const ⦋0⦌ 0)).op) (by simp; rfl)
-      have nat := ConcreteCategory.congr_hom (s.π.naturality α) x
-      erw [nat, op_comp, Functor.map_comp]
+      conv_rhs => dsimp; rw [dsimp% s.π.naturality_apply α x]
+      rw [op_comp, Functor.map_comp]
       simp only [types_comp_apply]
       refine congrArg (X.map (⦋1⦌.const ⦋0⦌ 0).op) ?_
       unfold strArrowMk₂
@@ -142,21 +142,27 @@ lemma fac_aux₂ {n : ℕ}
         apply sx.spineInjective
         apply Path.ext'
         intro t
-        dsimp only [spineEquiv]
-        erw [Equiv.coe_fn_mk, spine_arrow, spine_arrow,
-            ← Functor.map_comp_apply]
+        -- have : X.obj (op ((unop α.right).obj (P := fun a ↦ a.len ≤ 2))) = X _⦋2⦌ := rfl
+        dsimp [spineEquiv, α]
+        rw [← Functor.map_comp_apply]
         match t with
         | 0 =>
             have : α.hom ≫ (mkOfSucc 0).op = α₂.hom :=
               Quiver.Hom.unop_inj (by ext x; fin_cases x <;> rfl)
-            erw [this, h₂, ← ConcreteCategory.congr_hom (s.w β₂) x]
+            rw [dsimp% [α] this]
+            dsimp [α₂] at h₂ ⊢
+            rw [h₂, ← dsimp% [α₂] ConcreteCategory.congr_hom (s.w β₂) x]
             rfl
         | 1 =>
             have : α.hom ≫ (mkOfSucc 1).op = α₀.hom :=
               Quiver.Hom.unop_inj (by ext x; fin_cases x <;> rfl)
-            erw [this, h₀, ← ConcreteCategory.congr_hom (s.w β₀) x]
+            rw [dsimp% [α] this]
+            dsimp [α₀] at h₀ ⊢
+            rw [h₀, ← dsimp% [α₀] ConcreteCategory.congr_hom (s.w β₀) x]
             rfl
-      erw [← StructuredArrow.w β₁, Functor.map_comp_apply, this, ← s.w β₁]
+      rw [← StructuredArrow.w β₁, Functor.map_comp_apply]
+      dsimp [fromPUnit] at this ⊢
+      rw [this, ← s.w β₁]
       dsimp
 
 lemma fac_aux₃ {n : ℕ}
@@ -186,13 +192,13 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     dsimp
     ext k
     · dsimp only [spineEquiv, Equiv.coe_fn_mk]
-      erw [show op f = f.op from rfl]
-      erw [spine_map_vertex, spine_spineToSimplex_apply, spine_vertex]
+      rw [dsimp% show op f = f.op from rfl]
+      rw [spine_map_vertex, spine_spineToSimplex_apply, spine_vertex]
       let α : strArrowMk₂ f hi ⟶ strArrowMk₂ (⦋0⦌.const ⦋n⦌ (f.toOrderHom k)) :=
         StructuredArrow.homMk ((Hom.tr (⦋0⦌.const _ (by exact k))).op) (by simp; rfl)
       exact ConcreteCategory.congr_hom (s.w α).symm x
     · dsimp only [spineEquiv, Equiv.coe_fn_mk, spine_arrow]
-      erw [← Functor.map_comp_apply]
+      rw [← Functor.map_comp_apply]
       let α : strArrowMk₂ f ⟶ strArrowMk₂ (mkOfSucc k ≫ f) :=
         StructuredArrow.homMk (Hom.tr (mkOfSucc k)).op (by simp)
       exact (isPointwiseRightKanExtensionAt.fac_aux₃ _ _ _ _).trans
@@ -200,8 +206,11 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
   uniq s m hm := by
     ext x
     apply sx.spineInjective (X := X)
-    dsimp [spineEquiv]
-    erw [sx.spine_spineToSimplex_apply]
+    -- simp? [spineEquiv] says:
+    simp only [spineEquiv, RightExtension.coneAt_pt, rightExtensionInclusion_left,
+      TypeCat.Fun.as_apply, Equiv.coe_fn_mk, lift, Nat.reduceAdd, ObjectProperty.ι_obj,
+      const_obj_obj, comp_obj, proj_obj, mk_right, op_obj, TypeCat.hom_ofHom, TypeCat.Fun.mk_apply,
+      spine_spineToSimplex_apply]
     ext i
     · exact ConcreteCategory.congr_hom (hm (StructuredArrow.mk
         (Y := op ⦋0⦌₂) (⦋0⦌.const ⦋n⦌ i).op)) x
