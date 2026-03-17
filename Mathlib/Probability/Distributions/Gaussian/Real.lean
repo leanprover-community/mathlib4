@@ -331,6 +331,13 @@ set_option backward.isDefEq.respectTransparency false in
 lemma gaussianReal_map_neg : (gaussianReal μ v).map (fun x ↦ -x) = gaussianReal (-μ) v := by
   simpa using gaussianReal_map_const_mul (μ := μ) (v := v) (-1)
 
+/-- The map of a Gaussian distribution by multiplication by a constant is a Gaussian. -/
+lemma gaussianReal_map_div_const (c : ℝ) :
+    (gaussianReal μ v).map (· / c) = gaussianReal (μ / c) (v / ⟨c ^ 2, sq_nonneg _⟩) := by
+  simp_rw [div_eq_mul_inv]
+  convert gaussianReal_map_mul_const c⁻¹ using 2 <;> rw [mul_comm]
+  ext; simp
+
 lemma gaussianReal_map_sub_const (y : ℝ) :
     (gaussianReal μ v).map (· - y) = gaussianReal (μ - y) v := by
   simp_rw [sub_eq_add_neg, gaussianReal_map_add_const]
@@ -378,6 +385,12 @@ lemma gaussianReal_neg (hX : HasLaw X (gaussianReal μ v) P) :
     HasLaw (-X) (gaussianReal (-μ) v) P := by
   rw [Pi.neg_def, ← Function.comp_def]
   exact HasLaw.comp ⟨by fun_prop, gaussianReal_map_neg⟩ hX
+
+/-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X * c`
+has Gaussian law with mean `c * μ` and variance `c ^ 2 * v`. -/
+lemma gaussianReal_div_const (hX : HasLaw X (gaussianReal μ v) P) (c : ℝ) :
+    HasLaw (fun ω ↦ X ω / c) (gaussianReal (μ / c) (v / ⟨c ^ 2, sq_nonneg _⟩)) P :=
+  HasLaw.comp ⟨by fun_prop, gaussianReal_map_div_const c⟩ hX
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `y - X`
 has Gaussian law with mean `y - μ` and variance `v`. -/

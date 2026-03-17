@@ -47,6 +47,7 @@ section GroupWithZero
 variable [GroupWithZero α]
 
 /-- `a⁻¹` is an inverse of `a` if `a ≠ 0` -/
+@[implicit_reducible]
 def invertibleOfNonzero {a : α} (h : a ≠ 0) : Invertible a :=
   ⟨a⁻¹, inv_mul_cancel₀ h, mul_inv_cancel₀ h⟩
 
@@ -79,6 +80,7 @@ theorem div_self_of_invertible (a : α) [Invertible a] : a / a = 1 :=
   div_self (Invertible.ne_zero a)
 
 /-- `b / a` is the inverse of `a / b` -/
+@[implicit_reducible]
 def invertibleDiv (a b : α) [Invertible a] [Invertible b] : Invertible (a / b) :=
   ⟨b / a, by simp [← mul_div_assoc], by simp [← mul_div_assoc]⟩
 
