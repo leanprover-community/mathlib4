@@ -41,10 +41,9 @@ is `withReducible` with some exceptions.
 -/
 partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #[]) :
     MetaM Expr := withReducible do
-  let ty ← inferType provided
-  withTraceNode `Elab.fast_instance (fun _ => return m!"type: {ty}") do
-  let some className ← isClass? ty
-    | error trace m!"Can only be used for classes, but term has type{indentExpr ty}"
+  withTraceNode `Elab.fast_instance (fun _ => return m!"type: {expectedType}") do
+  let some className ← isClass? expectedType
+    | error trace m!"Can only be used for classes, but type is{indentExpr expectedType}"
   trace[Elab.fast_instance] "class is {className}"
   if ← isProp expectedType then
     logWarning m!"Provided instance{indentExpr inst}\n\
