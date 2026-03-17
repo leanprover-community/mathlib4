@@ -80,23 +80,13 @@ lemma ihom_map_val_app (A B P : LightCondMod.{u} R) (S : LightProfinite) (e : A 
   rw [GrothendieckTopology.yonedaEquiv_comp]
   simp
 
--- set_option trace.Meta.isDefEq true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ihomPoints_symm_comp (B P : LightCondMod.{u} R) (S S' : LightProfinite) (π : S ⟶ S')
     (f : P ⊗ (free R).obj S'.toCondensed ⟶ B) :
     (ihomPoints R P B S).symm (P ◁ (free R).map (lightProfiniteToLightCondSet.map π) ≫ f) =
       ((P ⟶[LightCondMod R] B).obj.map π.op) ((ihomPoints R P B S').symm f) := by
-  have : ((lightProfiniteToLightCondSet.map π).hom.app (Opposite.op S)) (𝟙 S) =
-      S'.toCondensed.obj.map π.op (𝟙 S') := rfl
-  -- simp? [ihomPoints_symm_apply, MonoidalClosed.curry_natural_left, Adjunction.homEquiv_apply,
-  --   GrothendieckTopology.yonedaEquiv_apply] says:
-  simp only [ihomPoints_symm_apply, MonoidalClosed.curry_natural_left, Adjunction.homEquiv_apply,
-    comp_obj, map_comp, Adjunction.unit_naturality_assoc, GrothendieckTopology.yonedaEquiv_apply,
-    GrothendieckTopology.yoneda_obj_obj, yoneda_obj_obj, comp_hom, NatTrans.comp_app, comp_apply,
-    forget_map_hom_app_hom_apply]
-  erw [this] -- why?
-  simp
-  rfl
+  simpa [ihomPoints_symm_apply, MonoidalClosed.curry_natural_left, Adjunction.homEquiv_apply] using
+    (GrothendieckTopology.yonedaEquiv_naturality _ _ _).symm
 
 /--
 `P : LightCondMod R` is internally projective if and
