@@ -731,8 +731,7 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     · exact FiberBundle.mdifferentiableAt_extend ..
     · exact FiberBundle.mdifferentiableAt_extend ..
   leibniz {Y f x} hY hf _ := by
-    unfold lcAux
-    dsimp
+    dsimp [lcAux]
     rw [dif_pos hY, dif_pos]
     · unfold lcAux₁
       dsimp
@@ -746,16 +745,14 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
         LinearIsometryEquiv.coe_symm_toContinuousLinearEquiv, comp_apply,
         LinearIsometryEquiv.apply_symm_apply, ContinuousLinearMap.comp_smulₛₗ, RingHom.id_apply,
         ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply,
-        ContinuousLinearMap.toSpanSingleton_apply, map_add, map_smul]
+        map_add, map_smul]
       ext Z₀
       simp only [lcAux₀, lcAux₀', TensorialAt.mkHom₂_apply_eq_extend,
         ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul]
       rw [if_pos, if_pos, if_pos, if_pos]
-      · convert leviCivitaRhs_smulY_apply I (Z := FiberBundle.extend E Z₀) (x := x)
-          hf (FiberBundle.mdifferentiableAt_extend I E X₀) hY
+      · convert leviCivitaRhs_smulY_apply I hf (FiberBundle.mdifferentiableAt_extend I E X₀) hY
           (FiberBundle.mdifferentiableAt_extend I E Z₀)
-        · simp
-        · simp [Φ, product]
+        simp [Φ, product]
       · exact FiberBundle.mdifferentiableAt_extend ..
       · exact FiberBundle.mdifferentiableAt_extend ..
       · exact FiberBundle.mdifferentiableAt_extend ..
