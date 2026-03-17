@@ -398,7 +398,7 @@ lemma second_deriv_of_initialCurve_of_orientedCurvature {I : Set ℝ} [hIoC : I.
   (p₀ : EuclideanSpace ℝ (Fin 2)) (θ₀ : ℝ) {t : ℝ} (ht : t ∈ I) :
   iteratedDeriv 2 (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀) t =
     !₂[-(κ t)*Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ), (κ t)*Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ)] := by
-  rw [iteratedDeriv_succ, iteratedDeriv_one, 
+  rw [iteratedDeriv_succ, iteratedDeriv_one,
       (HasDerivAt.deriv_initialCurve_of_orientedCurvature hI hκ ht₀ p₀ θ₀ ht).deriv]
 
 set_option backward.isDefEq.respectTransparency false in
