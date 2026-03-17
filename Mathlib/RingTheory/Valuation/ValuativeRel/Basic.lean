@@ -1096,13 +1096,16 @@ lemma uniformizer_inv_le_iff [IsDiscrete R] [IsNontrivial R] {a : ValueGroupWith
 variable {R Γ : Type*} [CommRing R] [ValuativeRel R] [LinearOrderedCommGroupWithZero Γ]
   (v : Valuation R Γ)
 
-open MonoidWithZeroHom
+open MonoidWithZeroHom ValueGroup₀
+
+namespace ValueGroupWithZero
 
 /-- Any valuation compatible with the valuative relation can be factored through
-the value group. This is the auxiliary construction used in `ValueGroupWithZero.embed`. -/
+the value group. This construction will be further upgraded to `ValueGroupWithZero.orderMonoidIso`
+later. -/
 noncomputable
-def ValueGroupWithZero.embedAux [h : v.Compatible] : ValueGroupWithZero R →*₀ ValueGroup₀ v where
-  toFun := ValuativeRel.ValueGroupWithZero.lift
+def embed [h : v.Compatible] : ValueGroupWithZero R →*₀ ValueGroup₀ v where
+  toFun := ValueGroupWithZero.lift
     (fun r s ↦ (ValueGroup₀.restrict₀ v r / (ValueGroup₀.restrict₀ v (s : R)))) <| by
     intro x y r s
     simp only [h.vle_iff_le, map_mul, ← and_imp, ← le_antisymm_iff]
@@ -1113,10 +1116,10 @@ def ValueGroupWithZero.embedAux [h : v.Compatible] : ValueGroupWithZero R →*�
       all_goals try simp_all [← WithZero.coe_mul, ← Units.val_inj]
     · simp [ValueGroup₀.restrict₀]
     · simp [ValueGroup₀.restrict₀]
-  map_zero' := by simp [ValueGroupWithZero.lift_zero, ValueGroup₀.restrict₀]
+  map_zero' := by simp [lift_zero, ValueGroup₀.restrict₀]
   map_one' := by simp [ValueGroup₀.restrict₀]
   map_mul' _ _ := by
-    apply ValuativeRel.ValueGroupWithZero.lift_mul
+    apply lift_mul
     simp only [map_mul, ValueGroup₀.restrict₀_apply, mul_dite, mul_zero, dite_mul, zero_mul,
       Submonoid.coe_mul, Valuation.apply_posSubmonoid_ne_zero, ↓reduceDIte, Subtype.forall,
       posSubmonoid_def]
@@ -1126,111 +1129,106 @@ def ValueGroupWithZero.embedAux [h : v.Compatible] : ValueGroupWithZero R →*�
     simp [field, ← WithZero.coe_mul, ← Units.val_inj]
 
 @[simp]
-lemma ValueGroupWithZero.embedAux_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
-    embedAux v (.mk x s) = (ValueGroup₀.restrict₀ v x / (ValueGroup₀.restrict₀ v (s : R))) :=
+lemma embed_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
+    embed v (.mk x s) = (restrict₀ v x / (restrict₀ v (s : R))) :=
   rfl
 
 @[simp]
-lemma ValueGroupWithZero.embedAux_valuation [v.Compatible] (x : R) :
-    embedAux v (valuation R x) = ValueGroup₀.restrict₀ v x := by
-  convert ValueGroupWithZero.embedAux_mk v x 1
+lemma embed_valuation [v.Compatible] (x : R) :
+    embed v (valuation R x) = ValueGroup₀.restrict₀ v x := by
+  convert embed_mk v x 1
   simp
 
 @[simp]
-lemma ValueGroupWithZero.embedding_embedAux_valuation (γ : ValueGroupWithZero R) :
-    ValueGroup₀.embedding (embedAux (valuation R) γ) = γ := by
+lemma embedding_embed_valuation (γ : ValueGroupWithZero R) :
+    embedding (embed (valuation R) γ) = γ := by
   induction γ using ValueGroupWithZero.ind
   simp [mk_eq_div]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma ValueGroupWithZero.embedAux_strictMono [v.Compatible] : StrictMono (embedAux v) := by
+lemma embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   intro a b h
   obtain ⟨a, r, rfl⟩ := exists_valuation_div_valuation_eq a
   obtain ⟨b, s, rfl⟩ := exists_valuation_div_valuation_eq b
-  rw [← ValueGroup₀.embedding_strictMono.lt_iff_lt]
+  rw [← embedding_strictMono.lt_iff_lt]
   simp only [map_div₀]
   rw [div_lt_div_iff₀] at h ⊢
   any_goals simp only [zero_lt_iff, ne_eq, Valuation.apply_posSubmonoid_ne_zero, not_false_eq_true]
   · rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
-    simp only [embedAux, coe_mk, ZeroHom.coe_mk, lift_valuation,
+    simp only [embed, coe_mk, ZeroHom.coe_mk, lift_valuation,
       OneMemClass.coe_one, map_one, div_one]
-    erw [ValueGroup₀.embedding_restrict₀ a, ValueGroup₀.embedding_restrict₀ b,
-      ValueGroup₀.embedding_restrict₀ r.1, ValueGroup₀.embedding_restrict₀ s.1]
+    erw [embedding_restrict₀ a, embedding_restrict₀ b, embedding_restrict₀ r.1,
+      embedding_restrict₀ s.1]
     simpa using h
-  · simp [ValueGroup₀.restrict₀_apply, embedAux]
-  · simp [ValueGroup₀.restrict₀_apply, embedAux]
+  · simp [restrict₀_apply, embed]
+  · simp [restrict₀_apply, embed]
 
 @[simp]
-theorem orderMonoidIso_embedAux [v.Compatible] {Γ' : Type*} [LinearOrderedCommGroupWithZero Γ']
+theorem orderMonoidIso_embed [v.Compatible] {Γ' : Type*} [LinearOrderedCommGroupWithZero Γ']
     (w : Valuation R Γ') [w.Compatible] (x : ValueGroupWithZero R) (h : w.IsEquiv v) :
     h.orderMonoidIso
-    (ValueGroupWithZero.embedAux w x) = ValueGroupWithZero.embedAux v x := by
-simp only [ValueGroupWithZero.embedAux, ← Valuation.restrict_def, coe_mk, ZeroHom.coe_mk]
-induction x using ValuativeRel.ValueGroupWithZero.ind with
+    (embed w x) = embed v x := by
+simp only [embed, ← Valuation.restrict_def, coe_mk, ZeroHom.coe_mk]
+induction x using ValueGroupWithZero.ind with
 | mk r s =>
   simp
 
 /-- If a valuation `v` is compatible with the valuative relation, then its value group
 is isomorphic (as an ordered group with zero) to `ValueGroupWithZero R`. -/
 noncomputable
-def ValueGroupWithZero.embed [h : v.Compatible] : ValueGroupWithZero R ≃*o ValueGroup₀ v where
-  __ := embedAux v
-  invFun x := ValueGroup₀.embedding ((isEquiv v (valuation R)).orderMonoidIso x)
+def orderMonoidIso [h : v.Compatible] : ValueGroupWithZero R ≃*o ValueGroup₀ v where
+  __ := embed v
+  invFun x := embedding ((isEquiv v (valuation R)).orderMonoidIso x)
   left_inv x := by simp
   right_inv := Function.rightInverse_of_injective_of_leftInverse
       (by rw [← Function.comp_def, EquivLike.injective_comp]
-          exact ValueGroup₀.embedding_strictMono.injective) (fun x ↦ by simp)
-  map_le_map_iff' := (embedAux_strictMono v).le_iff_le
+          exact embedding_strictMono.injective) (fun x ↦ by simp)
+  map_le_map_iff' := (embed_strictMono v).le_iff_le
 
 @[simp]
-lemma ValueGroupWithZero.embed_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
-    embed v (.mk x s) = (ValueGroup₀.restrict₀ v x / (ValueGroup₀.restrict₀ v (s : R))) :=
+lemma orderMonoidIso_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
+    orderMonoidIso v (.mk x s) = (restrict₀ v x / (restrict₀ v (s : R))) :=
   rfl
 
 @[simp]
-lemma ValueGroupWithZero.embed_valuation [v.Compatible] (x : R) :
-    embed v (valuation R x) = ValueGroup₀.restrict₀ v x :=
-  ValueGroupWithZero.embedAux_valuation v x
+lemma orderMonoidIso_valuation [v.Compatible] (x : R) :
+    orderMonoidIso v (valuation R x) = restrict₀ v x :=
+  embed_valuation v x
 
 @[simp]
-lemma ValueGroupWithZero.embedding_embed_valuation (γ : ValueGroupWithZero R) :
-    ValueGroup₀.embedding (embed (valuation R) γ) = γ :=
-  ValueGroupWithZero.embedding_embedAux_valuation γ
+lemma embedding_orderMonoidIso_valuation (γ : ValueGroupWithZero R) :
+    embedding (orderMonoidIso (valuation R) γ) = γ :=
+  embedding_embed_valuation γ
 
-lemma ValueGroupWithZero.embed_strictMono [v.Compatible] : StrictMono (embed v) :=
-  ValueGroupWithZero.embedAux_strictMono v
+lemma orderMonoidIso_strictMono [v.Compatible] : StrictMono (orderMonoidIso v) :=
+  embed_strictMono v
 
-lemma leftInverse_embedding_embed : Function.LeftInverse (ValueGroup₀.embedding)
-    (ValueGroupWithZero.embed (valuation R)) := by
+lemma leftInverse_embedding_orderMonoidIso : Function.LeftInverse embedding
+    (orderMonoidIso (valuation R)) := by
   intro x
   induction x using ValueGroupWithZero.ind
-  simp only [ValueGroup₀.embedding, WithZero.toMonoidWithZeroHom_withZeroUnitsEquiv,
-    ValueGroupWithZero.embed, ValueGroupWithZero.embedAux, ValueGroup₀.restrict₀_apply,
-    Valuation.apply_posSubmonoid_ne_zero, ZeroHom.toFun_eq_coe, ZeroHom.coe_mk,
-    Valuation.IsEquiv.orderMonoidIso_eq_refl, OrderMonoidIso.coe_refl, id_eq, coe_comp,
-    Function.comp_apply, OrderMonoidIso.coe_mk, MulEquiv.coe_mk, Equiv.coe_fn_mk, ↓reduceDIte,
-    ValueGroupWithZero.lift_mk, map_div₀, WithZero.map'_coe, Subgroup.subtype_apply,
-    WithZero.lift'_coe, Units.coeHom_apply, Units.val_mk0]
-  split_ifs <;> simp_all [ValueGroupWithZero.mk_eq_div]
+  aesop (add norm ValueGroupWithZero.mk_eq_div)
 
 /-- The isomorphism between `ValueGroupWithZero R` and `ValueGroup₀ (valuation R)`. -/
 @[deprecated "use ValueGroupWithZero.embed (valuation R) instead" (since := "2026-03-17")]
-def valueGroupWithZero_equiv_valueGroup₀ := ValueGroupWithZero.embed (valuation R)
+def valueGroupWithZero_equiv_valueGroup₀ := orderMonoidIso (valuation R)
+
+end ValueGroupWithZero
 
 open ValueGroupWithZero
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma valuation_lt_symm_embed [v.Compatible] (γ : ValueGroup₀ v) (x : R) :
-    valuation R x < (embed v).symm γ ↔ v.restrict x < γ :=
+lemma valuation_lt_symm_orderMonoidIso [v.Compatible] (γ : ValueGroup₀ v) (x : R) :
+    valuation R x < (orderMonoidIso v).symm γ ↔ v.restrict x < γ :=
   calc
-    _ ↔ embed v _ < embed v _ := (map_lt_map_iff (embed v)).symm
-    _ ↔ _ := by simp [← v.restrict_def]
+    _ ↔ orderMonoidIso v _ < orderMonoidIso v _ := (map_lt_map_iff (orderMonoidIso v)).symm
+    _ ↔ _ := by simp [v.restrict_def x]
 
 @[simp]
-lemma restrict_lt_embed [v.Compatible] (γ : ValueGroupWithZero R) (x : R) :
-    v.restrict x < (embed v) γ ↔ (valuation R) x < γ := by
-  simpa using (valuation_lt_symm_embed v (embed v γ) x).symm
+lemma restrict_lt_orderMonoidIso [v.Compatible] (γ : ValueGroupWithZero R) (x : R) :
+    v.restrict x < (orderMonoidIso v) γ ↔ (valuation R) x < γ := by
+  simpa using (valuation_lt_symm_orderMonoidIso v (orderMonoidIso v γ) x).symm
 
 /-- For any `x ∈ posSubmonoid R`, the trivial valuation `1 : Valuation R Γ` sends `x` to `1`.
 In fact, this is true for any `x ≠ 0`. This lemma is a special case useful for shorthand of
@@ -1250,7 +1248,7 @@ class ValuativeExtension (A B : Type*) [CommRing A] [CommRing B] [ValuativeRel A
 
 namespace ValuativeExtension
 
-open ValuativeRel
+open ValuativeRel ValueGroupWithZero MonoidWithZeroHom ValueGroup₀
 
 variable {A B : Type*} [CommRing A] [CommRing B] [ValuativeRel A] [ValuativeRel B] [Algebra A B]
   [ValuativeExtension A B]
@@ -1281,13 +1279,12 @@ variable (A B) in
 /-- The map on value groups-with-zero associated to the structure morphism of an algebra. -/
 def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B :=
   have := compatible_comap A (valuation B)
-  MonoidWithZeroHom.ValueGroup₀.embedding.comp
-    (ValueGroupWithZero.embed ((valuation B).comap (algebraMap A B))).toMonoidWithZeroHom
+  embedding.comp (orderMonoidIso ((valuation B).comap (algebraMap A B))).toMonoidWithZeroHom
 
 @[simp]
 lemma mapValueGroupWithZero_mk (r : A) (s : posSubmonoid A) :
     mapValueGroupWithZero A B (.mk r s) = .mk (algebraMap A B r) (mapPosSubmonoid A B s) := by
-  simp [mapValueGroupWithZero, ValueGroupWithZero.mk_eq_div (R := B)]
+  simp [mapValueGroupWithZero, mk_eq_div (R := B)]
 
 @[simp]
 lemma mapValueGroupWithZero_valuation (a : A) :
@@ -1295,8 +1292,7 @@ lemma mapValueGroupWithZero_valuation (a : A) :
   simp [valuation]
 
 lemma mapValueGroupWithZero_strictMono : StrictMono (mapValueGroupWithZero A B) :=
-  MonoidWithZeroHom.ValueGroup₀.embedding_strictMono.comp
-    (ValueGroupWithZero.embed_strictMono _)
+  embedding_strictMono.comp (embed_strictMono _)
 
 variable (B) in
 lemma _root_.ValuativeRel.IsRankLeOne.of_valuativeExtension [IsRankLeOne B] : IsRankLeOne A := by

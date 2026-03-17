@@ -71,10 +71,10 @@ lemma continuous_valuation : Continuous v := by
   rintro x
   by_cases hx : v x = 0
   · simpa [hx, ((valuation R).hasBasis_nhds _).tendsto_iff WithZeroTopology.hasBasis_nhds_zero]
-      using fun i hi ↦ ⟨(Units.mk0 i hi).mapEquiv (ValueGroupWithZero.embed (valuation R)),
+      using fun i hi ↦ ⟨(Units.mk0 i hi).mapEquiv (ValueGroupWithZero.orderMonoidIso (valuation R)),
         fun y ↦ by simp [Valuation.map_sub_of_right_eq_zero _ hx]⟩
   · simpa [((valuation R).hasBasis_nhds _).tendsto_iff (hasBasis_nhds_of_ne_zero hx)]
-      using ⟨(Units.mk0 (v x) hx).mapEquiv (ValueGroupWithZero.embed (valuation R)),
+      using ⟨(Units.mk0 (v x) hx).mapEquiv (ValueGroupWithZero.orderMonoidIso (valuation R)),
         fun _ ↦ by simpa [← (valuation R).restrict_def] using Valuation.map_eq_of_sub_lt _⟩
 
 end IsValuativeTopology
