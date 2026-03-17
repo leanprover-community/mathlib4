@@ -211,15 +211,15 @@ theorem inertiaDegIn_mul_inertiaDegIn [p.IsMaximal] [P.IsMaximal] :
     inertiaDegIn_eq_inertiaDeg P Q GBC, inertiaDeg_algebra_tower p P Q]
 
 variable {p} in
+omit hp in
 include G GAC GBC in
-theorem ramificationIdxIn_mul_ramificationIdxIn [IsDedekindDomain B] [IsDedekindDomain C]
-    (hp : map (algebraMap A C) p ≠ ⊥) (hP : map (algebraMap B C) P ≠ ⊥) :
+theorem ramificationIdxIn_mul_ramificationIdxIn [IsDomain A] [IsTorsionFree A B]
+    [IsDedekindDomain B] [IsDedekindDomain C] [P.LiesOver p] :
     p.ramificationIdxIn B * P.ramificationIdxIn C = p.ramificationIdxIn C := by
   obtain ⟨⟨Q, _, hQ⟩⟩ := P.nonempty_primesOver (S := C)
   have : Q.LiesOver p := LiesOver.trans Q P p
   rw [ramificationIdxIn_eq_ramificationIdx p P G, ramificationIdxIn_eq_ramificationIdx p Q GAC,
-    ramificationIdxIn_eq_ramificationIdx P Q GBC, ramificationIdx_algebra_tower hP hp]
-  exact over_def Q P ▸ map_comap_le
+    ramificationIdxIn_eq_ramificationIdx P Q GBC, ramificationIdx_algebra_tower' p P Q]
 
 variable {p} in
 omit hp in
