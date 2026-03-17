@@ -115,7 +115,7 @@ lemma differentiableAt_star_conj_iff {f : 𝕜 → F} :
 
 /-- If `f` is differentiable at `conj z`, then `conj ∘ f ∘ conj` is differentiable at `z`. -/
 lemma DifferentiableAt.conj_conj {f : 𝕜 → 𝕜} (hf : DifferentiableAt 𝕜 f x) :
-    DifferentiableAt 𝕜 (star ∘ f ∘ conj) (conj x) :=
+    DifferentiableAt 𝕜 (conj ∘ f ∘ conj) (conj x) :=
   hf.star_star
 
 /-- A function `f` is differentiable at `conj z` iff `conj ∘ f ∘ conj` is differentiable at `z`. -/
