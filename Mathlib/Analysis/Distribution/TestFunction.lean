@@ -52,7 +52,7 @@ distributions, test function
 @[expose] public section
 
 open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
-open scoped BoundedContinuousFunction NNReal Topology
+open scoped BoundedContinuousFunction NNReal Topology ContDiff
 
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω Ω₁ Ω₂ : Opens E}
@@ -478,5 +478,55 @@ lemma monoCLM_eq_of_scalars (𝕜' : Type*)
   rfl
 
 end Monotone
+
+section FDerivCLM
+
+variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
+
+variable (𝕜 n k) in
+/-- `fderivCLM 𝕜 n k` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.
+This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map. -/
+noncomputable def fderivCLM :
+    𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, E →L[ℝ] F) :=
+  letI Φ (f : 𝓓^{n}(Ω, F)) : 𝓓^{k}(Ω, E →L[ℝ] F) :=
+    if hk : k + 1 ≤ n then
+      ⟨fderiv ℝ f, f.contDiff.fderiv_right (mod_cast hk),
+        f.hasCompactSupport.fderiv ℝ, tsupport_fderiv_subset ℝ |>.trans f.tsupport_subset⟩
+    else 0
+  TestFunction.limitCLM 𝕜 Φ
+    (fun K K_sub_Ω ↦ ofSupportedInCLM 𝕜 K_sub_Ω ∘L ContDiffMapSupportedIn.fderivCLM 𝕜 n k)
+    (fun _ _ _ ↦ by ext; dsimp [Φ]; split_ifs with h <;> simp [h])
+
+@[simp]
+lemma fderivCLM_apply (f : 𝓓^{n}(Ω, F)) :
+    fderivCLM 𝕜 n k f = if k + 1 ≤ n then fderiv ℝ f else 0 := by
+  rw [fderivCLM]
+  split_ifs <;> rfl
+
+lemma fderivCLM_apply_of_le (f : 𝓓^{n}(Ω, F)) (hk : k + 1 ≤ n) :
+    fderivCLM 𝕜 n k f = fderiv ℝ f := by
+  simp [hk]
+
+lemma fderivCLM_apply_of_gt (f : 𝓓^{n}(Ω, F)) (hk : n < k + 1) :
+    fderivCLM 𝕜 n k f = 0 := by
+  ext : 1
+  simp [not_le_of_gt hk]
+
+variable (𝕜) in
+lemma fderivCLM_ofSupportedIn {K : Compacts E}
+    (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}_{K}(E, F)) :
+    fderivCLM 𝕜 n k (ofSupportedIn K_sub_Ω f) =
+      ofSupportedIn K_sub_Ω (ContDiffMapSupportedIn.fderivCLM 𝕜 n k f) := by
+  ext
+  simp
+
+variable (𝕜) in
+lemma fderivCLM_eq_of_scalars (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [Algebra ℝ 𝕜'] [IsScalarTower ℝ 𝕜' F] :
+    (fderivCLM 𝕜 n k : 𝓓^{n}(Ω, F) → _) = fderivCLM 𝕜' n k :=
+  rfl
+
+end FDerivCLM
 
 end TestFunction
