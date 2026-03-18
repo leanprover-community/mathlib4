@@ -263,13 +263,13 @@ public inductive CheckInstanceResult where
 /-- Format a `CheckInstanceResult` as `MessageData` for user display. -/
 public def CheckInstanceResult.toMessageData (name : Name) : CheckInstanceResult → MessageData
   | .canonical =>
-    m!"✅ '{name}': canonical (re-inferred form agrees at instances transparency)"
+    m!"✅️ '{name}': canonical (re-inferred form agrees at instances transparency)"
   | .leaky detail =>
-    m!"❌ '{name}': leaky binder types detected.{detail}\n  \
+    m!"❌️ '{name}': leaky binder types detected.{detail}\n  \
       The `fast_instance%` elaborator may be useful as a repair or band-aid:\n  \
       `instance : ... := fast_instance% <body>`"
   | .unverifiable err =>
-    m!"❌ '{name}': cannot be verified (fast_instance% fails).\
+    m!"❌️ '{name}': cannot be verified (fast_instance% fails).\
       \n  {err}\
       \n  The `fast_instance%` elaborator may be useful as a repair or band-aid:\
       \n  `instance : ... := fast_instance% <body>`"
@@ -352,7 +352,7 @@ An instance has leaky binder types when a data field (e.g. `smul`) uses a binder
 (e.g. `M`) that differs from the expected type (e.g. `RestrictScalars R S M`) at instance
 transparency. This causes `rw` failures with `set_option backward.isDefEq.respectTransparency true`.
 
-Reports `✅` if canonical (the body already has the correct binder types) or `❌` if leaky.
+Reports `✅️` if canonical (the body already has the correct binder types) or `❌️` if leaky.
 -/
 elab "#check_instance " n:ident : command => do
   let name ← liftTermElabM <| resolveGlobalConstNoOverload n

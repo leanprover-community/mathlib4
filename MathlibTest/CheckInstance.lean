@@ -16,7 +16,7 @@ and ❌ if there is a "leak" (a data field uses a coercion-equivalent but not
 -/
 
 /--
-info: ❌ 'RestrictScalars.module': leaky binder types detected.
+info: ❌️ 'RestrictScalars.module': leaky binder types detected.
   The data field `smul` differs from the re-inferred canonical form at instances transparency.
   Other data fields may also be leaky.
   The `fast_instance%` elaborator may be useful as a repair or band-aid:
@@ -32,6 +32,6 @@ info: ❌ 'RestrictScalars.module': leaky binder types detected.
 def MyNat := ℕ
 instance myNatInstAdd : Add MyNat := fast_instance% ⟨Nat.add⟩
 
-/-- info: ✅ 'myNatInstAdd': canonical (re-inferred form agrees at instances transparency) -/
+/-- info: ✅️ 'myNatInstAdd': canonical (re-inferred form agrees at instances transparency) -/
 #guard_msgs in
 #check_instance myNatInstAdd

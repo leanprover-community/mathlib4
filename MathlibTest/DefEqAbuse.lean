@@ -69,7 +69,7 @@ The following isDefEq checks are the root causes of the failure:
   ❌️ (i : ℕ) → (fun a => Prop) i =?= MyPred ℕ
 ---
 info: The following instances may have leaky binder types:
-  ❌ 'myPredCompleteLattice': leaky binder types detected.
+  ❌️ 'myPredCompleteLattice': leaky binder types detected.
   The data field `le` has binder type (i : ℕ) → (fun a => Prop) i where MyPred ℕ is expected.
   Other data fields may also be leaky.
   The `fast_instance%` elaborator may be useful as a repair or band-aid:
