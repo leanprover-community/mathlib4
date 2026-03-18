@@ -127,8 +127,7 @@ instance : NeZero (1 : α) :=
   ⟨fun h ↦ not_succ_le_self ⌊(0 : α)⌋₊ <|
     (le_floor_iff (le_refl 0)).mpr (eq_zero_of_zero_eq_one h.symm _).le⟩
 
-instance : Nontrivial α :=
-  ⟨⟨1, 0, one_ne_zero⟩⟩
+instance : Nontrivial α := NeZero.toNontrivial 1
 
 end OrderedSemiring
 
@@ -267,8 +266,7 @@ instance : NeZero (1 : α) :=
   ⟨fun h ↦ (Int.lt_succ ⌊(0 : α)⌋).not_ge <|
     (FloorRing.gc_coe_floor _ _).mp (eq_zero_of_zero_eq_one h.symm _).le⟩
 
-instance : Nontrivial α :=
-  ⟨⟨1, 0, one_ne_zero⟩⟩
+instance : Nontrivial α := NeZero.toNontrivial 1
 
 /-! #### Floor -/
 
