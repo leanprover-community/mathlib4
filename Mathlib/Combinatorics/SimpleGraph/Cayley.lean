@@ -49,7 +49,7 @@ lemma mulCayley_le_iff (G : SimpleGraph M) :
   constructor
   · intro h g hg a ha
     exact (h (a * g) a ha g hg (Or.inr rfl))
-  · rintro h v w hvw g hg (rfl|rfl)
+  · rintro h v w hvw g hg (rfl | rfl)
     · exact (h g hg v (hvw ·.symm)).symm
     · exact h g hg w hvw
 
@@ -73,20 +73,19 @@ theorem mulCayley_mono ⦃U V : Set M⦄ (hUV : U ⊆ V) : mulCayley U ≤ mulCa
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
-theorem mulCayley_empty : mulCayley (∅ : Set M) = ⊥ := by
-  exact (mulCayley_gc M).l_bot
+theorem mulCayley_empty : mulCayley (∅ : Set M) = ⊥ := (mulCayley_gc M).l_bot
 
 @[to_additive (attr := simp)]
-theorem mulCayley_union (s₁ s₂ : Set M) : mulCayley (s₁ ∪ s₂) = mulCayley s₁ ⊔ mulCayley s₂ := by
-  exact (mulCayley_gc M).l_sup
+theorem mulCayley_union (s₁ s₂ : Set M) : mulCayley (s₁ ∪ s₂) = mulCayley s₁ ⊔ mulCayley s₂ :=
+  (mulCayley_gc M).l_sup
 
 end Mul
 section Semigroup
 variable [Semigroup M]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem mulCayley_adj_mul_left_iff [IsLeftCancelMul M] {s : Set M} {u v d : M} :
-    (mulCayley s).Adj u v ↔ (mulCayley s).Adj (d * u) (d * v) := by
+    (mulCayley s).Adj (d * u) (d * v) ↔ (mulCayley s).Adj u v := by
   simp [mulCayley_adj', mul_assoc]
 
 end Semigroup
