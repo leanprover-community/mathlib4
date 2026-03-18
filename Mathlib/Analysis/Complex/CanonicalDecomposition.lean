@@ -50,6 +50,19 @@ setting where `w ∈ ball 0 R`.
 noncomputable def CanonicalFactor (R : ℝ) (w : ℂ) : ℂ → ℂ :=
   fun z ↦ (R ^ 2 - (conj w) * z) / (R * (z - w))
 
+lemma CanonicalFactor_def (R : ℝ) (w : ℂ) :
+    CanonicalFactor R w = fun z ↦ (R ^ 2 - (conj w) * z) / (R * (z - w)) :=
+  rfl
+
+lemma CanonicalFactor_apply (R : ℝ) (w z : ℂ) :
+    CanonicalFactor R w z = (R ^ 2 - (conj w) * z) / (R * (z - w)) :=
+  rfl
+
+@[simp]
+lemma CanonicalFactor_apply_self (R : ℝ) (w : ℂ) :
+    CanonicalFactor R w w = 0 := by
+  simp [CanonicalFactor_apply]
+
 /-!
 ### Regularity properties
 -/
@@ -63,6 +76,7 @@ theorem meromorphicOn_canonicalFactor : MeromorphicOn (CanonicalFactor R w) Set.
   unfold CanonicalFactor
   fun_prop
 
+open scoped ComplexOrder in
 variable (R w) in
 /--
 The canonical factor `CanonicalFactor R w` is analytic on the complement of `w`.
@@ -111,6 +125,7 @@ theorem meromorphicNFOn_canonicalFactor (h : w ∈ ball 0 R) :
 ### Values of Canonical Factors
 -/
 
+open scoped ComplexOrder in
 /--
 The canonical factor `CanonicalFactor R w` has no zeros inside the ball of radius `R`.
 -/
@@ -134,6 +149,7 @@ The canonical factor `CanonicalFactor R w` evalues to zero at `z = w`.
 theorem canonicalFactor_eval_center (R : ℝ) (w : ℂ) : CanonicalFactor R w w = 0 := by
   simp [CanonicalFactor]
 
+open scoped ComplexOrder in
 /--
 The canonical factor `CanonicalFactor R w` takes values of norm one on `sphere 0 R`.
 -/
