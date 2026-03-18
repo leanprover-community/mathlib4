@@ -6,6 +6,7 @@ Authors: Martin Dvorak
 module
 
 public import Mathlib.Computability.Language
+public import Mathlib.Data.List.Lemmas
 
 /-!
 # Context-Free Grammars
@@ -236,32 +237,6 @@ lemma language_eq_zero_of_forall_input_ne_initial (hg : ∀ r ∈ g.rules, r.inp
 
 end ContextFreeGrammar
 
-namespace List
-
-/--
-If a list can be split as `x ++ mid ++ y` and also as `x' ++ [a] ++ y'`, and `a` is not in `mid`,
-then the two splits are disjoint (one is strictly before or after the other).
--/
-lemma split_commute_of_not_mem {α : Type} (x y x' y' : List α) (mid : List α) (a : α)
-    (h : x ++ mid ++ y = x' ++ [a] ++ y')
-    (h_not_mem : a ∉ mid) :
-    (∃ z, x' = x ++ mid ++ z ∧ y = z ++ [a] ++ y') ∨
-    (∃ z, x = x' ++ [a] ++ z ∧ y' = z ++ mid ++ y) := by
-      revert x y x' y' mid a h h_not_mem
-      intros x y x' y' mid a h1 h2
-      induction x generalizing y x' y' mid a with
-      | nil =>
-        simp_all only [nil_append, append_assoc, cons_append, nil_eq, append_eq_nil_iff,
-            reduceCtorEq, and_false, false_and, exists_const, or_false]
-        rcases List.append_eq_append_iff.mp h1 with h | h
-        · aesop ( simp_config := { singlePass := true } )
-        rcases h with ⟨ bs, rfl, h ⟩
-        rcases bs with ( _ | ⟨ b, bs ⟩ ) <;> simp_all [ List.append_assoc ]
-      | cons hd tl ih =>
-        rcases x' with ( _ | ⟨ b, x' ⟩ ) <;> simp_all  [ List.append_assoc ]
-
-end List
-
 namespace ContextFreeRule
 
 namespace Rewrites
@@ -360,10 +335,11 @@ lemma commute_of_not_mem_output {T N : Type}
       have h_split :
           ∃ z, p2 = p1 ++ r1.output ++ z ∧ q1 = z ++ [Symbol.nonterminal r2.input] ++ q2 ∨
                p1 = p2 ++ [Symbol.nonterminal r2.input] ++ z ∧ q2 = z ++ r1.output ++ q1 := by
-        have h_split : p1 ++ r1.output ++ q1 = p2 ++ [Symbol.nonterminal r2.input] ++ q2 := by
-          rw [ ← hv1, hp2 ]
+        have h_split : p1 ++ r1.output ++ q1 = p2 ++ Symbol.nonterminal r2.input :: q2 := by
+          simpa [List.cons_append] using (show p1 ++ r1.output ++ q1 =
+              p2 ++ [Symbol.nonterminal r2.input] ++ q2 by rw [ ← hv1, hp2 ])
         have := List.split_commute_of_not_mem p1 q1 p2 q2 r1.output
-          ( Symbol.nonterminal r2.input ) h_split h3
+          (Symbol.nonterminal r2.input) h_split h3
         aesop
       rcases h_split with ⟨ z, h | h ⟩ <;> simp_all only [List.append_assoc, List.cons_append,
         List.nil_append, rewrites_iff, ↓existsAndEq, and_true]

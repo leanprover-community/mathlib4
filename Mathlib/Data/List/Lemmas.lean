@@ -73,6 +73,29 @@ theorem foldl_range_eq_of_range_eq {f : α → β → α} {g : α → γ → α}
   (foldl_range_subset_of_range_subset hfg.le a).antisymm
     (foldl_range_subset_of_range_subset hfg.ge a)
 
+/--
+If a list can be split as `x ++ mid ++ y` and also as `x' ++ a :: y'`, and `a` is not in `mid`,
+then the distinguished occurrence of `a` lies entirely to the right of `mid` or entirely to the
+left of `mid`.
+-/
+lemma split_commute_of_not_mem {α : Type*} (x y x' y' : List α) (mid : List α) (a : α)
+    (h : x ++ mid ++ y = x' ++ a :: y')
+    (h_not_mem : a ∉ mid) :
+    (∃ z, x' = x ++ mid ++ z ∧ y = z ++ a :: y') ∨
+    (∃ z, x = x' ++ a :: z ∧ y' = z ++ mid ++ y) := by
+  revert x y x' y' mid a h h_not_mem
+  intros x y x' y' mid a h1 h2
+  induction x generalizing y x' y' mid a with
+  | nil =>
+    simp_all only [nil_append, append_assoc, nil_eq, append_eq_nil_iff,
+      reduceCtorEq, and_false, false_and, exists_const, or_false]
+    rcases List.append_eq_append_iff.mp h1 with h | h
+    · aesop (simp_config := { singlePass := true })
+    rcases h with ⟨bs, rfl, h⟩
+    rcases bs with (_ | ⟨b, bs⟩) <;> simp_all [List.append_assoc]
+  | cons hd tl ih =>
+    rcases x' with (_ | ⟨b, x'⟩) <;> simp_all [List.append_assoc]
+
 
 
 /-!
