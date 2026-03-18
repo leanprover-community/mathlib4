@@ -50,7 +50,7 @@ satisfying compatibility conditions with respect to face and degeneracy maps -/
 structure Homotopy
     {X Y : SimplicialObject C} (f g : X ⟶ Y) where
   /-- Basic data: `h i : Xₙ ⟶ Yₙ₊₁` for `i : Fin (n + 1)`. -/
-  h {n : ℕ} (i : Fin (n + 1)) : X _⦋n⦌ ⟶ Y _⦋n+1⦌
+  h {n : ℕ} (i : Fin (n + 1)) : X _⦋n⦌ ⟶ Y _⦋n + 1⦌
   h_zero_comp_δ_zero (n : ℕ) : h 0 ≫ Y.δ 0 = g.app (op ⦋n⦌)
   h_last_comp_δ_last (n : ℕ) : h (Fin.last n) ≫ Y.δ (Fin.last (n + 1)) = f.app (op ⦋n⦌)
   h_succ_comp_δ_castSucc_of_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (hij : i ≤ j.castSucc) :
