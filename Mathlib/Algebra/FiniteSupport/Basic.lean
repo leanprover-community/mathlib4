@@ -66,15 +66,11 @@ lemma HasFiniteMulSupport.mul {M : Type*} [MulOneClass M] {f g : α → M}
     HasFiniteMulSupport (f * g) :=
   (hf.union hg).subset <| mulSupport_mul ..
 
-attribute [to_additive existing] HasFiniteMulSupport.fun_mul
-
 @[to_additive (attr := to_fun (attr := fun_prop))]
 lemma HasFiniteMulSupport.inv {M : Type*} [DivisionMonoid M] {f : α → M}
     (hf : HasFiniteMulSupport f) :
     HasFiniteMulSupport f⁻¹ :=
   hf.comp inv_one
-
-attribute [to_additive existing] HasFiniteMulSupport.fun_inv
 
 @[to_additive (attr := fun_prop)]
 lemma HasFiniteMulSupport.prod {M : Type*} [CommMonoid M] {ι : Type*} {f : ι → α → M}
@@ -88,23 +84,17 @@ lemma HasFiniteMulSupport.div {M : Type*} [DivisionMonoid M] {f g : α → M}
     HasFiniteMulSupport (f / g) :=
   (hf.union hg).subset <| mulSupport_div ..
 
-attribute [to_additive existing] HasFiniteMulSupport.fun_div
-
 @[to_additive (attr := to_fun (attr := fun_prop))]
 lemma HasFiniteMulSupport.pow {M : Type*} [Monoid M] {f : α → M} (hf : HasFiniteMulSupport f)
     (n : ℕ) :
     HasFiniteMulSupport (f ^ n) :=
   hf.comp (one_pow n)
 
-attribute [to_additive existing] HasFiniteMulSupport.fun_pow
-
 @[to_additive (attr := to_fun (attr := fun_prop))]
 lemma HasFiniteMulSupport.zpow {M : Type*} [DivisionMonoid M] {f : α → M}
     (hf : HasFiniteMulSupport f) (n : ℤ) :
     HasFiniteMulSupport (f ^ n) :=
   hf.comp (one_zpow n)
-
-attribute [to_additive existing] HasFiniteMulSupport.fun_zpow
 
 @[to_additive (attr := fun_prop)]
 lemma HasFiniteMulSupport.max [LinearOrder M] {f g : α → M} (hf : HasFiniteMulSupport f)
