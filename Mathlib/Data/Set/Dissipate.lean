@@ -28,9 +28,12 @@ def dissipate [LE α] (s : α → Set β) (x : α) : Set β :=
 
 theorem dissipate_def [LE α] {x : α} : dissipate s x = ⋂ y ≤ x, s y := rfl
 
+<<<<<<< HEAD
 theorem dissipate_eq_biInter_lt {s : ℕ → Set β} {n : ℕ} : dissipate s n = ⋂ k < n + 1, s k := by
   simp_rw [Nat.lt_add_one_iff, dissipate]
 
+=======
+>>>>>>> master
 @[simp]
 theorem mem_dissipate [LE α] {x : α} {z : β} : z ∈ dissipate s x ↔ ∀ y ≤ x, z ∈ s y := by
   simp [dissipate_def]
@@ -83,6 +86,7 @@ theorem dissipate_succ (s : ℕ → Set α) (n : ℕ) :
   simp_all only [dissipate_def, mem_iInter, mem_inter_iff]
   grind
 
+<<<<<<< HEAD
 /-- For a directed set of sets `s : ℕ → Set α` and `n : ℕ`, there exists `m : ℕ` (maybe
 larger than `n`) such that `s m ⊆ dissipate s n`. -/
 lemma exists_subset_dissipate_of_directed {s : ℕ → Set α}
@@ -105,4 +109,6 @@ lemma exists_dissipate_eq_empty_iff_of_directed {s : ℕ → Set α} (hd : Direc
   obtain ⟨m, hm⟩ := exists_subset_dissipate_of_directed hd n
   exact (h m).mono hm
 
+=======
+>>>>>>> master
 end Set
