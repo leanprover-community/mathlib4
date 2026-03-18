@@ -104,7 +104,7 @@ theorem rule_mem_subst {α β : Type} [DecidableEq α] [DecidableEq β]
     (f : α → ContextFreeGrammar β) [∀ a, DecidableEq (f a).NT]
     (r : ContextFreeRule α g.NT) (hr : r ∈ g.rules) :
     { input := Sum.inl r.input, output := r.output.map (g.liftSymbolG f) } ∈ (g.subst f).rules := by
-  unfold ContextFreeGrammar.subst; unfold ContextFreeGrammar.subst_rules_g; aesop;
+  unfold subst; unfold subst_rules_g; aesop;
 
 /-
 If `g` produces `v` from `u` in one step, then `g.subst f` produces the lifted version of `v`
@@ -134,7 +134,7 @@ theorem produces_lift_g {α β : Type} [DecidableEq α] [DecidableEq β]
       (List.map (g.liftSymbolG f) r.output ++ List.map (g.liftSymbolG f) ρ) := by
     constructor;
     constructor;
-    · convert ContextFreeGrammar.rule_mem_subst g f r hr using 1;
+    · convert rule_mem_subst g f r hr using 1;
     · constructor;
   exact Produces.append_left h_subst (List.map (g.liftSymbolG f) l)
 
@@ -211,16 +211,16 @@ lemma subst_derives_prod {α β : Type} [DecidableEq α] [DecidableEq β]
       have h_distrib : (g.subst f).Derives
           (List.map (fun a => g.liftSymbolG f (Symbol.terminal a)) u)
           (List.flatten (List.map (fun w => List.map Symbol.terminal w) W)) := by
-        apply ContextFreeGrammar.Derives.distrib_prod;
+        apply Derives.distrib_prod;
         rw [ List.forall₂_iff_get ] at *;
         simp_all only [List.get_eq_getElem, mem_language_iff, List.length_map, List.getElem_map,
           forall_true_left, true_and];
         intro i hi; specialize h
         have := h.2 i ( by linarith ) hi
         simp_all only [Derives, forall_true_left, true_and]
-        convert ContextFreeGrammar.derives_lift_f g f (u[i])
+        convert derives_lift_f g f (u[i])
             (hu _ (by simp)) (h _ hi) using 1
-        unfold ContextFreeGrammar.liftSymbolF; aesop;
+        unfold liftSymbolF; aesop;
       grind
 
 /-
@@ -247,7 +247,7 @@ lemma terminals_of_produces {α : Type} [DecidableEq α]
       exact Classical.or_iff_not_imp_left.2 fun h => by
         have := ContextFreeRule.Rewrites.mem_terminal_of_mem_target r u v hr.2 a ha
         exact this.resolve_left h |> fun h =>
-          ContextFreeGrammar.mem_usedTerminals_of_rule_output g r hr.1 a h
+          mem_usedTerminals_of_rule_output g r hr.1 a h
 
 /-
 If `g` derives `v` from `u`, then any terminal in `v` is either in `u` or is a used terminal
@@ -260,7 +260,7 @@ lemma terminals_of_derives {α : Type} [DecidableEq α]
       induction h with
       | refl => exact Or.inl ha
       | tail _ h_step ih =>
-        have := ContextFreeGrammar.terminals_of_produces g h_step a ha; aesop;
+        have := terminals_of_produces g h_step a ha; aesop;
 
 /-
 Any terminal in a string in the language of `g` must be a used terminal of `g`.
@@ -272,7 +272,7 @@ lemma usedTerminals_of_mem_language {α : Type} [DecidableEq α]
         exact (mem_language_iff g w).mp hw;
       intro a ha
       have h_term : a ∈ g.usedTerminals := by
-        have := ContextFreeGrammar.terminals_of_derives g h_deriv a (by
+        have := terminals_of_derives g h_deriv a (by
         exact List.mem_map.mpr ⟨ a, ha, rfl ⟩) ; aesop;
       exact h_term
 
@@ -290,12 +290,12 @@ theorem subst_language_subset_1 {α β : Type} [DecidableEq α] [DecidableEq β]
       have h_derives_lift_g : (g.subst f).Derives
           [Symbol.nonterminal (Sum.inl g.initial)]
           (u.map (fun a => g.liftSymbolG f (Symbol.terminal a))) := by
-        convert ContextFreeGrammar.derives_lift_g g f hu using 1;
+        convert derives_lift_g g f hu using 1;
           simp only [List.map_map]; rfl
       have h_subst_derives_prod : (g.subst f).Derives
           (u.map (fun a => g.liftSymbolG f (Symbol.terminal a)))
           (W.flatten.map Symbol.terminal) := by
-        apply ContextFreeGrammar.subst_derives_prod g f u W;
+        apply subst_derives_prod g f u W;
         · rw [ List.forall₂_iff_get ] at * ; aesop;
         · exact fun a a_1 ↦ usedTerminals_of_mem_language g u hu a a_1;
       convert h_derives_lift_g.trans h_subst_derives_prod using 1 ; aesop
@@ -314,7 +314,7 @@ lemma mem_liftSymbolF_nonterminal_iff {α β : Type}
       | nil => simp
       | cons hd tl ih =>
         simp_all  [ List.map ];
-        cases hd <;> simp_all  [ ContextFreeGrammar.liftSymbolF ]
+        cases hd <;> simp_all  [ liftSymbolF ]
 
 /-
 A rule is a G-rule if its input non-terminal comes from G (left side of the sum).
@@ -343,7 +343,7 @@ lemma input_eq_of_rewrites_lifted {α β : Type}
     (r : ContextFreeRule β (g.NT ⊕ (Σ a, (f a).NT)))
     (v : List (Symbol β (g.NT ⊕ (Σ a, (f a).NT))))
     (h : r.Rewrites (u.map (g.liftSymbolF f a)) v) : ∃ n, r.input = Sum.inr ⟨a, n⟩ := by
-  apply ContextFreeGrammar.mem_liftSymbolF_nonterminal_iff;
+  apply mem_liftSymbolF_nonterminal_iff;
   swap;
   · haveI : DecidablePred (fun s => Symbol.nonterminal (r.input) = g.liftSymbolF f a s) :=
       fun s => Classical.dec _
@@ -371,9 +371,9 @@ lemma rule_of_input_inr {α β : Type} [DecidableEq α] [DecidableEq β]
     (a : α) (n : (f a).NT) (h_input : r.input = Sum.inr ⟨a, n⟩) :
     ∃ r' ∈ (f a).rules, r.output = r'.output.map (g.liftSymbolF f a) := by
       contrapose! hr;
-      unfold ContextFreeGrammar.subst;
+      unfold subst;
       rw [ Finset.mem_union ]
-      simp  [ ContextFreeGrammar.subst_rules_g, ContextFreeGrammar.subst_rules_f ]
+      simp  [ subst_rules_g, subst_rules_f ]
       aesop
 
 /-
@@ -383,7 +383,7 @@ lemma liftSymbolF_injective {α β : Type}
     (g : ContextFreeGrammar α) (f : α → ContextFreeGrammar β) (a : α) :
     Function.Injective (g.liftSymbolF f a) := by
       intro x y hxy
-      cases x <;> cases y <;> simp_all only [ContextFreeGrammar.liftSymbolF, Symbol.terminal.injEq,
+      cases x <;> cases y <;> simp_all only [liftSymbolF, Symbol.terminal.injEq,
           Symbol.nonterminal.injEq, Sum.inr.injEq, reduceCtorEq, Sigma.mk.injEq, heq_iff_eq];
 
 /-
@@ -402,7 +402,7 @@ lemma produces_lift_f_inv {α β : Type} [DecidableEq α] [DecidableEq β]
             r ∈ (g.subst f).rules ∧ r.Rewrites (u.map (g.liftSymbolF f a)) v' := by
         cases h ; aesop;
       obtain ⟨n, hn⟩ : ∃ n : (f a).NT, r.input = Sum.inr ⟨a, n⟩ := by
-        apply ContextFreeGrammar.input_eq_of_rewrites_lifted g f a u r v' hr.2;
+        apply input_eq_of_rewrites_lifted g f a u r v' hr.2;
       obtain ⟨r', hr', hr''⟩ :
           ∃ r' ∈ (f a).rules,
             r.output = r'.output.map (g.liftSymbolF f a) ∧ r'.input = n := by
@@ -410,15 +410,15 @@ lemma produces_lift_f_inv {α β : Type} [DecidableEq α] [DecidableEq β]
           have h_rule_in_f : r ∈ g.subst_rules_f f ∪ g.subst_rules_g f := by
             convert hr.1 using 1;
             exact Finset.union_comm _ _;
-          unfold ContextFreeGrammar.subst_rules_g at h_rule_in_f; aesop;
-        unfold ContextFreeGrammar.subst_rules_f at h_rule_in_f; simp_all  ;
+          unfold subst_rules_g at h_rule_in_f; aesop;
+        unfold subst_rules_f at h_rule_in_f; simp_all  ;
         obtain ⟨ a', ha', r', hr', rfl ⟩ := h_rule_in_f;
         cases hn ; tauto;
       obtain ⟨v, hv⟩ :
           ∃ v : List (Symbol β (f a).NT),
             v' = v.map (g.liftSymbolF f a) ∧ r'.Rewrites u v := by
         apply ContextFreeRule.Rewrites.map_inv (g.liftSymbolF f a)
-          (ContextFreeGrammar.liftSymbolF_injective g f a) r' r u v' hr.2 (by
+          (liftSymbolF_injective g f a) r' r u v' hr.2 (by
         aesop) (by
         exact hr''.1);
       exact ⟨ v, hv.1, by exact ⟨ r', hr', hv.2 ⟩ ⟩
@@ -444,11 +444,11 @@ lemma derives_of_subst_derives_f {α β : Type} [DecidableEq α] [DecidableEq β
         | refl => exact ⟨ u, rfl, by constructor ⟩
         | tail _ h_step ih =>
           obtain ⟨ w, rfl, hw ⟩ := ih;
-          obtain ⟨ w', rfl, hw' ⟩ := ContextFreeGrammar.produces_lift_f_inv g f a w _ h_step;
+          obtain ⟨ w', rfl, hw' ⟩ := produces_lift_f_inv g f a w _ h_step;
           exact ⟨ w', rfl, hw.trans ( Relation.ReflTransGen.single hw' ) ⟩;
       obtain ⟨ w, hw₁, hw₂ ⟩ := h_ind _ h;
       convert hw₂ using 1;
-      exact List.map_injective_iff.mpr ( ContextFreeGrammar.liftSymbolF_injective g f a ) hw₁
+      exact List.map_injective_iff.mpr ( liftSymbolF_injective g f a ) hw₁
 
 /-
 Definitions of single-step productions using only G-rules or only F-rules.
@@ -473,10 +473,10 @@ lemma is_F_rule_output_no_inl {α β : Type} [DecidableEq α] [DecidableEq β]
     (f : α → ContextFreeGrammar β) [∀ a, DecidableEq (f a).NT]
     (r : ContextFreeRule β (g.NT ⊕ (Σ a, (f a).NT))) (hr : r ∈ (g.subst f).rules) :
     g.is_F_rule f r → ∀ s ∈ r.output, ∀ n, s ≠ Symbol.nonterminal (Sum.inl n) := by
-      intro hr' s hs n hn; simp_all only [ContextFreeGrammar.is_F_rule] ;
-      unfold ContextFreeGrammar.subst at hr; simp_all only [Finset.mem_union] ;
+      intro hr' s hs n hn; simp_all only [is_F_rule] ;
+      unfold subst at hr; simp_all only [Finset.mem_union] ;
       rcases hr with ( hr | hr ) <;>
-        simp_all [ ContextFreeGrammar.subst_rules_g, ContextFreeGrammar.subst_rules_f ]
+        simp_all [ subst_rules_g, subst_rules_f ]
       · grind +ring;
       · rcases hr with ⟨ a, ha, r', hr', rfl ⟩ ; simp_all  [ List.mem_map ] ;
         rcases hs with ⟨ s, hs, hs' ⟩ ; cases s <;> cases hs' ;
@@ -527,14 +527,14 @@ lemma produces_subst_iff {α β : Type} [DecidableEq α] [DecidableEq β]
     (u v : List (Symbol β (g.NT ⊕ (Σ a, (f a).NT)))) :
     (g.subst f).Produces u v ↔ g.ProducesG f u v ∨ g.ProducesF f u v := by
       constructor <;> intro h;
-      · unfold ContextFreeGrammar.ProducesG ContextFreeGrammar.ProducesF at *;
+      · unfold ProducesG ProducesF at *;
         obtain ⟨ r, hr, h ⟩ := h;
-        unfold ContextFreeGrammar.subst at hr; aesop;
+        unfold subst at hr; aesop;
       · rcases h with h | h;
         · obtain ⟨ r, hr, h ⟩ := h
-          exact ⟨ r, by simp only [ContextFreeGrammar.subst]; exact Finset.mem_union_left _ hr, h ⟩
+          exact ⟨ r, by simp only [subst]; exact Finset.mem_union_left _ hr, h ⟩
         · obtain ⟨ r, hr, h ⟩ := h
-          exact ⟨ r, by simp only [ContextFreeGrammar.subst]; exact Finset.mem_union_right _ hr, h ⟩
+          exact ⟨ r, by simp only [subst]; exact Finset.mem_union_right _ hr, h ⟩
 
 /-
 Any derivation in the substitution grammar can be rearranged into a sequence of G-rules followed by
@@ -557,9 +557,9 @@ lemma derives_split_G_F {α β : Type} [DecidableEq α] [DecidableEq β]
             Relation.ReflTransGen.single h_case |> Relation.ReflTransGen.trans <| hv₁,
             hv₂ ⟩
         · obtain ⟨ v', hv'₁, hv'₂ ⟩ :=
-            ContextFreeGrammar.derivesF_derivesG_commute g f u_start u_mid v
+            derivesF_derivesG_commute g f u_start u_mid v
               (Relation.ReflTransGen.single
-                (by rw [ ContextFreeGrammar.produces_subst_iff ] at h'; aesop))
+                (by rw [ produces_subst_iff ] at h'; aesop))
               hv₁
           exact ⟨ v', hv'₁, hv'₂.trans hv₂ ⟩
 
@@ -597,7 +597,7 @@ lemma producesF_lift_f {α β : Type} [DecidableEq α] [DecidableEq β]
       obtain ⟨ r, hr, h ⟩ := h;
       refine ⟨ ?_, ?_, ?_ ⟩;
       · exact ⟨ Sum.inr ⟨ a, r.input ⟩, r.output.map ( g.liftSymbolF f a ) ⟩;
-      · unfold ContextFreeGrammar.subst_rules_f; aesop;
+      · unfold subst_rules_f; aesop;
       · apply_rules [ ContextFreeRule.Rewrites.map ]
 
 /-
@@ -625,11 +625,11 @@ lemma producesG_unlift {α β : Type} [DecidableEq β]
     (h : g.ProducesG f (u.map (g.liftSymbolG f)) v') :
     ∃ v, v' = v.map (g.liftSymbolG f) ∧ g.Produces u v := by
       obtain ⟨ r, hr, h ⟩ := h;
-      unfold ContextFreeGrammar.subst_rules_g at hr; simp_all only [Finset.mem_map] ;
+      unfold subst_rules_g at hr; simp_all only [Finset.mem_map] ;
       rcases hr with ⟨ r, hr, rfl ⟩;
       obtain ⟨v, hv⟩ : ∃ v, v' = v.map (g.liftSymbolG f) ∧ r.Rewrites u v := by
         apply_rules [ ContextFreeRule.Rewrites.map_inv ];
-        intro x y; cases x <;> cases y <;> simp  [ ContextFreeGrammar.liftSymbolG ] ; tauto;
+        intro x y; cases x <;> cases y <;> simp  [ liftSymbolG ] ; tauto;
       exact ⟨ v, hv.1, ⟨ r, hr, hv.2 ⟩ ⟩
 
 /-
@@ -646,7 +646,7 @@ lemma derivesG_unlift {α β : Type} [DecidableEq β]
       | refl => exact ⟨ u, rfl, by rfl ⟩
       | tail _ h_step ih =>
         obtain ⟨ v, rfl, hv ⟩ := ih;
-        obtain ⟨ v', rfl, hv' ⟩ := ContextFreeGrammar.producesG_unlift g f v _ h_step;
+        obtain ⟨ v', rfl, hv' ⟩ := producesG_unlift g f v _ h_step;
         exact ⟨ v', rfl, hv.trans ( Relation.ReflTransGen.single hv' ) ⟩
 
 /-
@@ -672,9 +672,9 @@ lemma producesF_unlift {α β : Type} [DecidableEq α] [DecidableEq β]
     (h : g.ProducesF f (u.map (g.liftSymbolF f a)) v') :
     ∃ v, v' = v.map (g.liftSymbolF f a) ∧ (f a).Produces u v := by
       have h' : (g.subst f).Produces (u.map (g.liftSymbolF f a)) v' := by
-        apply (ContextFreeGrammar.produces_subst_iff g f (List.map (g.liftSymbolF f a) u) v').mpr;
+        apply (produces_subst_iff g f (List.map (g.liftSymbolF f a) u) v').mpr;
         exact Or.inr h
-      exact ContextFreeGrammar.produces_lift_f_inv g f a u v' h'
+      exact produces_lift_f_inv g f a u v' h'
 
 /-
 If `g.subst f` derives `v'` from a lifted `u` (from component `a`) using only F-rules, then `v'`
@@ -692,7 +692,7 @@ lemma derivesF_unlift {α β : Type} [DecidableEq α] [DecidableEq β]
       | refl => exact ⟨ u, rfl, by rfl ⟩
       | tail _ h_step ih =>
         obtain ⟨ v, rfl, hv ⟩ := ih;
-        obtain ⟨ w, rfl, hw ⟩ := ContextFreeGrammar.producesF_unlift g f a v _ h_step;
+        obtain ⟨ w, rfl, hw ⟩ := producesF_unlift g f a v _ h_step;
         exact ⟨ w, rfl, hv.trans ( Relation.ReflTransGen.single hw ) ⟩
 
 /-
@@ -711,7 +711,7 @@ lemma not_mem_inl_of_producesF {α β : Type} [DecidableEq α] [DecidableEq β]
           ∃ x y, u = x ++ [Symbol.nonterminal r.input] ++ y ∧ v = x ++ r.output ++ y := by
         exact ContextFreeRule.Rewrites.exists_parts hr.2;
       cases h : r.input <;> simp_all ;
-      · unfold ContextFreeGrammar.subst_rules_f at hr; aesop;
+      · unfold subst_rules_f at hr; aesop;
       · grind +ring
 
 /-
@@ -721,7 +721,7 @@ theorem subst_language_subset_1' {α β : Type} [DecidableEq α] [DecidableEq β
     (g : ContextFreeGrammar α) [DecidableEq g.NT]
     (f : α → ContextFreeGrammar β) [∀ a, DecidableEq (f a).NT] :
     ∀ w, w ∈ g.language.subst (fun a => (f a).language) → w ∈ (g.subst f).language := by
-      apply_rules [ ContextFreeGrammar.subst_language_subset_1 ]
+      apply_rules [ subst_language_subset_1 ]
 
 /-
 If an F-derivation results in a string with no `Sum.inl` non-terminals, then the input string also
@@ -736,7 +736,7 @@ lemma not_mem_inl_of_derivesF {α β : Type} [DecidableEq α] [DecidableEq β]
     ∀ s ∈ u, ∀ n, s ≠ Symbol.nonterminal (Sum.inl n) := by
       induction h with
       | refl => assumption
-      | tail _ h_step ih => apply_rules [ ContextFreeGrammar.not_mem_inl_of_producesF ]
+      | tail _ h_step ih => apply_rules [ not_mem_inl_of_producesF ]
 
 /-
 If `ProducesF` transforms `u ++ v` to `w`, then the transformation occurs entirely within `u`
@@ -769,7 +769,7 @@ lemma DerivesF.split_append {α β : Type} [DecidableEq α] [DecidableEq β]
       | refl => exact ⟨ u, v, by constructor, by constructor, rfl ⟩
       | tail _ h_step ih =>
         obtain ⟨u', v', hu', hv', rfl⟩ := ih;
-        rcases ContextFreeGrammar.ProducesF.split_append g f u' v' _ h_step
+        rcases ProducesF.split_append g f u' v' _ h_step
           with ⟨ u'', hu'', rfl ⟩ | ⟨ v'', hv'', rfl ⟩
         · exact ⟨ u'', v', hu'.trans ( Relation.ReflTransGen.single hu'' ), hv', rfl ⟩;
         · exact ⟨ u', v'', hu', hv'.trans ( Relation.ReflTransGen.single hv'' ), rfl ⟩ ;
@@ -800,7 +800,7 @@ lemma DerivesF_distrib {α β : Type} [DecidableEq α] [DecidableEq β]
         intro h
         obtain ⟨w1, w2, hw1, hw2, hw⟩ :
             ∃ w1 w2, g.DerivesF f [s] w1 ∧ g.DerivesF f us w2 ∧ w = w1 ++ w2 := by
-          have := @ContextFreeGrammar.DerivesF.split_append α β _ _ g _ f _ [s] us w h; aesop;
+          have := @DerivesF.split_append α β _ _ g _ f _ [s] us w h; aesop;
         obtain ⟨ W, rfl, hW ⟩ := ih _ hw2; use w1 :: W; aesop;
 
 /-
@@ -818,7 +818,7 @@ lemma DerivesF_terminal_of_lift {α β : Type} [DecidableEq α] [DecidableEq β]
       · exact fun a_1 ↦ ((fun a ↦ h) ∘ f) a;
       · intro hw;
         obtain ⟨ v, hv₁, hv₂ ⟩ :=
-          ContextFreeGrammar.derivesF_unlift g f a
+          derivesF_unlift g f a
             [Symbol.nonterminal (f a).initial] (List.map Symbol.terminal w) hw
         have h_eq :
             ∀ {l1 l2 : List (Symbol β (f a).NT)},
@@ -827,7 +827,7 @@ lemma DerivesF_terminal_of_lift {α β : Type} [DecidableEq α] [DecidableEq β]
           intros l1 l2 hl1 hl2;
           have h_eq : List.map (g.liftSymbolF f a) l1 = List.map (g.liftSymbolF f a) l2 := by
             rw [ ← hl1, ← hl2 ];
-          exact List.map_injective_iff.mpr ( ContextFreeGrammar.liftSymbolF_injective g f a ) h_eq;
+          exact List.map_injective_iff.mpr ( liftSymbolF_injective g f a ) h_eq;
         contrapose! h_eq;
         use v, List.map Symbol.terminal w;
         simp only [hv₁, List.map_map, ne_eq, true_and];
@@ -851,7 +851,7 @@ lemma mem_subst_of_derivesF {α β : Type} [DecidableEq α] [DecidableEq β]
             g.DerivesF f
               (List.map (fun a => Symbol.nonterminal (Sum.inr ⟨a, (f a).initial⟩)) [a])
               (List.map Symbol.terminal w_part)) W u := by
-        have := @ContextFreeGrammar.DerivesF_distrib α β _ _ g _ f _
+        have := @DerivesF_distrib α β _ _ g _ f _
           ( List.map ( fun a => Symbol.nonterminal ( Sum.inr ⟨ a, ( f a ).initial ⟩ ) ) u )
           ( List.map Symbol.terminal w ) h
         obtain ⟨ W, hW₁, hW₂ ⟩ := this;
@@ -900,14 +900,14 @@ theorem subst_language_subset_2 {α β : Type} [DecidableEq α] [DecidableEq β]
     (f : α → ContextFreeGrammar β) [∀ a, DecidableEq (f a).NT] :
     ∀ w, w ∈ (g.subst f).language → w ∈ g.language.subst (fun a => (f a).language) := by
       intro w hw;
-      obtain ⟨ v, hv ⟩ := ContextFreeGrammar.derives_split_G_F g f
+      obtain ⟨ v, hv ⟩ := derives_split_G_F g f
         [Symbol.nonterminal (Sum.inl g.initial)] ( w.map Symbol.terminal ) hw
       obtain ⟨ u, hu ⟩ :=
-        ContextFreeGrammar.derivesG_unlift g f [Symbol.nonterminal g.initial] v hv.1
+        derivesG_unlift g f [Symbol.nonterminal g.initial] v hv.1
       have hu_terminals : ∀ s ∈ u, ∃ a, s = Symbol.terminal a := by
-        apply ContextFreeGrammar.is_terminal_of_lift_no_inl g f u;
+        apply is_terminal_of_lift_no_inl g f u;
         intro s hs n
-        have := ContextFreeGrammar.not_mem_inl_of_derivesF g f v
+        have := not_mem_inl_of_derivesF g f v
           ( List.map Symbol.terminal w ) hv.2
         aesop
       obtain ⟨ u_str, hu_str ⟩ : ∃ u_str : List α, u = u_str.map Symbol.terminal := by
@@ -924,7 +924,7 @@ theorem subst_language_subset_2 {α β : Type} [DecidableEq α] [DecidableEq β]
             exact ⟨ a :: u_str, by simp [ hu_str ] ⟩
         exact hu_str hu_terminals;
       have hw_prod : w ∈ (u_str.map (fun a => (f a).language)).prod := by
-        apply ContextFreeGrammar.mem_subst_of_derivesF g f u_str w;
+        apply mem_subst_of_derivesF g f u_str w;
         aesop;
       exact ⟨ u_str, by aesop ⟩
 
@@ -982,6 +982,7 @@ theorem isContextFree_singleton {α : Type} (w : List α) :
     exact Relation.ReflTransGen.single ⟨⟨(), u.map Symbol.terminal⟩, Finset.mem_singleton_self _,
       by convert ContextFreeRule.Rewrites.head
            (r := ContextFreeRule.mk () (u.map Symbol.terminal)) [] using 1; simp⟩
+
 /-! ### Finite language {[false], [true]} is context-free -/
 theorem isContextFree_pair_bool :
     IsContextFree ({[false], [true]} : Language Bool) := by
