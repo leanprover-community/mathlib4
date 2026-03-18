@@ -105,8 +105,9 @@ theorem IsCountablyCompact.elim_directed_cover [Countable ι] [Nonempty ι]
       principal_mono.mpr <| diff_subset_diff_right hj⟩
   have : NeBot (⨅ i, 𝓟 (A \ U i)) :=
     iInf_neBot_of_directed' hdir fun i => (diff_nonempty.mpr (h i)).principal_neBot
-  rcases hA (show (⨅ i, 𝓟 (A \ U i)) ≤ 𝓟 A from
-    iInf_le_of_le ‹Nonempty ι›.some <| principal_mono.mpr diff_subset) with ⟨a, ha, hac⟩
+  have hle : (⨅ i, 𝓟 (A \ U i)) ≤ 𝓟 A :=
+    iInf_le_of_le ‹Nonempty ι›.some <| principal_mono.mpr diff_subset
+  rcases hA hle with ⟨a, ha, hac⟩
   rcases mem_iUnion.mp (hAU ha) with ⟨k, hk⟩
   exact closure_minimal (fun _ hx => hx.2) (hUo k).isClosed_compl
     (hac.mono (iInf_le _ k)).mem_closure hk
