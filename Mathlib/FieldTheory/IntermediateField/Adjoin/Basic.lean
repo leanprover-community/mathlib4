@@ -291,14 +291,16 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem rank_bot' : Module.rank (⊥ : IntermediateField F E) E = Module.rank F E := by
   rw [← rank_mul_rank F (⊥ : IntermediateField F E) E, IntermediateField.rank_bot, one_mul]
 
-@[simp] theorem finrank_bot' : finrank (⊥ : IntermediateField F E) E = finrank F E :=
+@[simp, nolint simpNF] -- `simpNF` hits a (deterministic) timeout at `typeclass`
+theorem finrank_bot' : finrank (⊥ : IntermediateField F E) E = finrank F E :=
   congr(Cardinal.toNat $(rank_bot'))
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp] protected theorem rank_top : Module.rank (⊤ : IntermediateField F E) E = 1 :=
   Subalgebra.bot_eq_top_iff_rank_eq_one.mp <| top_le_iff.mp fun x _ ↦ ⟨⟨x, trivial⟩, rfl⟩
 
-@[simp] protected theorem finrank_top : finrank (⊤ : IntermediateField F E) E = 1 :=
+@[simp, nolint simpNF] -- `simpNF` hits a (deterministic) timeout at `typeclass`
+protected theorem finrank_top : finrank (⊤ : IntermediateField F E) E = 1 :=
   rank_eq_one_iff_finrank_eq_one.mp IntermediateField.rank_top
 
 @[simp] theorem rank_top' : Module.rank F (⊤ : IntermediateField F E) = Module.rank F E :=
@@ -610,7 +612,6 @@ lemma algHomAdjoinIntegralEquiv_symm_apply_gen (h : IsIntegral F α)
 noncomputable def fintypeOfAlgHomAdjoinIntegral (h : IsIntegral F α) : Fintype (F⟮α⟯ →ₐ[F] K) :=
   PowerBasis.AlgHom.fintype (adjoin.powerBasis h)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F α)
     (h_splits : ((minpoly F α).map (algebraMap F K)).Splits) :
     Nat.card (F⟮α⟯ →ₐ[F] K) = (minpoly F α).natDegree := by
