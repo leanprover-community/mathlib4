@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 public import Mathlib.Analysis.Calculus.Deriv.Prod
+public import Mathlib.Analysis.Calculus.ContDiff.WithLp
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-!
@@ -147,13 +148,16 @@ lemma velocity_hasDerivAt_aux {I : Set ℝ} (hI : IsOpen I) {ι : Type u} [Finty
   simpa [iteratedDeriv_succ] using hd.differentiableOn (by norm_num)
     |> DifferentiableOn.hasDerivAt <| hI.mem_nhds ht
 
-/-- For any twice continuously differentiable parametrized curve with constant speed, at any given
-point the velocity vector is perpendicular to the acceleration vector. -/
-theorem inner_of_accel_velocity_of_const_speed_eq_zero {I : Set ℝ} (hI : IsOpen I) {ι : Type u}
-  [Fintype ι] {c : ℝ → EuclideanSpace ℝ ι} (hc₁ : ContDiffOn ℝ 2 c I) {r : ℝ}
-  (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = r) {t : ℝ} (ht : t ∈ I) :
-  inner ℝ (iteratedDeriv 2 c t) (deriv c t) = 0 := by
-  let f (x : ℝ) := inner ℝ (deriv c x) (deriv c x)
+
+/-- Given a continuously differentiable parametrized curve whose position has the same magnitude at
+all time, i.e, at constant radius distance from the origin (the curve `c` is contained in a sphere 
+of radius `r` from the origin), then the velocity vector is always perpendicular to the position 
+vector of the curve at every point (in other words their dot product is zero). -/
+theorem inner_of_deriv_curve_eq_zero_of_const_magnitude_curve {I : Set ℝ} (hI : IsOpen I) 
+  {ι : Type u} [Fintype ι] {c : ℝ → EuclideanSpace ℝ ι} (hc₁ : ContDiffOn ℝ 1 c I) {r : ℝ}
+  (hc₂ : ∀ t ∈ I, ‖c t‖ = r) {t : ℝ} (ht : t ∈ I) :
+  inner ℝ (deriv c t) (c t) = 0 := by
+  let f (x : ℝ) := inner ℝ (c x) (c x)
   have h₁ : ∀ x ∈ I, f x = r^2 := by
     intro τ hτ
     unfold f
@@ -172,14 +176,23 @@ theorem inner_of_accel_velocity_of_const_speed_eq_zero {I : Set ℝ} (hI : IsOpe
   calc
     (0 : ℝ) = 0 / 2 := by norm_num
     _ = (deriv f t) / 2 := by symm; simp [h₅]
-    _ = ((inner ℝ (deriv c t) (iteratedDeriv 2 c t)) +
-         (inner ℝ (iteratedDeriv 2 c t) (deriv c t))) / 2 := by
+    _ = ((inner ℝ (c t) (deriv c t)) + (inner ℝ (deriv c t) (c t))) / 2 := by
       simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, div_left_inj']; unfold f
-      have hd : HasDerivAt (deriv c) (iteratedDeriv 2 c t) t := velocity_hasDerivAt_aux hI hc₁ ht
+      have hd : HasDerivAt c (deriv c t) t := 
+        (hc₁.contDiffAt (hI.mem_nhds ht)).differentiableAt_one.hasDerivAt
       apply (HasDerivAt.inner ℝ hd hd).deriv
-    _ = inner ℝ (iteratedDeriv 2 c t) (deriv c t) := by
-      rw [real_inner_comm (iteratedDeriv 2 c t)]
-      ring
+    _ = inner ℝ (deriv c t) (c t) := by rw [real_inner_comm (deriv c t)]; ring
+
+/-- For any twice continuously differentiable parametrized curve with constant speed, at any given
+point the velocity vector is perpendicular to the acceleration vector. -/
+theorem inner_of_accel_velocity_of_const_speed_eq_zero {I : Set ℝ} (hI : IsOpen I) {ι : Type u}
+  [Fintype ι] {c : ℝ → EuclideanSpace ℝ ι} (hc₁ : ContDiffOn ℝ 2 c I) {r : ℝ}
+  (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = r) {t : ℝ} (ht : t ∈ I) :
+  inner ℝ (iteratedDeriv 2 c t) (deriv c t) = 0 := by 
+  rw [iteratedDeriv_succ, iteratedDeriv_one]
+  have h : ContDiffOn ℝ (1+1) c I := by assumption
+  have h' := ((contDiffOn_succ_iff_deriv_of_isOpen hI).mp h).2.2
+  exact inner_of_deriv_curve_eq_zero_of_const_magnitude_curve hI h' hc₂ ht
 
 /-- The first Frenet equation for plane curves: For any twice continously differentiable plane curve
 parametrized by arc-length (i.e., with unit speed), the second derivative, i.e. acceleration vector
@@ -215,40 +228,25 @@ lemma normal_hasDerivAt_aux {I : Set ℝ} (hI : IsOpen I) {c : ℝ → Euclidean
     fin_cases i <;> simp [h_diff]
   exact h.differentiableAt (hI.mem_nhds ht)
 
+lemma _root_.ContDiffOn.normal_of_twice_contDiffOn_curve {I : Set ℝ} (hI : IsOpen I) 
+  {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc : ContDiffOn ℝ 2 c I) : ContDiffOn ℝ 1 (normal c) I := by
+  have hd : ContDiffOn ℝ 1 (deriv c) I := hc.deriv_of_isOpen hI (by norm_num)
+  unfold normal
+  rw [contDiffOn_piLp] at * 
+  intro i
+  fin_cases i
+  · simp [ContDiffOn.neg, hd 1]
+  · simp [hd 0]
+
 /-- For any twice continuously differentiable plane curve with constant speed, at any given point
 the normal vector is perpendicular to the derivative of the normal vector. -/
-theorem inner_of_normal_deriv_normal_of_unit_speed_eq_zero {I : Set ℝ} (hI : IsOpen I)
+theorem inner_of_deriv_normal_normal_of_unit_speed_eq_zero {I : Set ℝ} (hI : IsOpen I)
   {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc₁ : ContDiffOn ℝ 2 c I) (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1)
-  {t : ℝ} (ht : t ∈ I) : inner ℝ (normal c t) (deriv (normal c) t) = 0 := by
-  let f (x : ℝ) := inner ℝ (normal c x) (normal c x)
-  have h₁ : ∀ x ∈ I, f x = 1 := by
-    intro τ hτ
-    unfold f
-    rw [real_inner_self_eq_norm_sq, norm_normal_eq_one_of_unit_speed hc₂ hτ]
-    ring
-  let g : ℝ → ℝ := fun x ↦  1
-  have h₂ : derivWithin g I t = 0 := by
-    unfold g
-    simp
-  have h₃ : Set.EqOn f g I := by
-    intro x hx
-    rw [h₁ x hx]
-  have h₄ : f t = g t := h₃ ht
-  have h₅ : deriv f t = 0 := by
-    rw [← derivWithin_of_isOpen hI ht, derivWithin_congr h₃ h₄, h₂]
-  symm
-  calc
-    (0 : ℝ) = 0 / 2 := by norm_num
-    _ = (deriv f t) / 2 := by symm; simp [h₅]
-    _ = ((inner ℝ (normal c t) (deriv (normal c) t)) +
-         (inner ℝ (deriv (normal c) t) (normal c t))) / 2 := by
-      simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, div_left_inj']; unfold f
-      have hn : HasDerivAt (normal c) (deriv (normal c) t) t := normal_hasDerivAt_aux hI hc₁ ht
-      apply (HasDerivAt.inner ℝ hn hn).deriv
-    _ = inner ℝ (normal c t) (deriv (normal c) t) := by
-      rw [real_inner_comm (deriv (normal c) t)]
-      ring
-
+  {t : ℝ} (ht : t ∈ I) : inner ℝ  (deriv (normal c) t) (normal c t) = 0 :=  
+  inner_of_deriv_curve_eq_zero_of_const_magnitude_curve hI 
+    (ContDiffOn.normal_of_twice_contDiffOn_curve hI hc₁) 
+    (fun _ ht ↦  norm_normal_eq_one_of_unit_speed hc₂ ht) ht
+ 
 /-- The second Frenet equation for plane curves: For any twice continously differentiable plane
 curve parametrized by arc-length (i.e., with unit speed), the derivative of the normal vector is
 equal to minus the curvature times the velocity vector (first derivative). -/
@@ -259,7 +257,8 @@ theorem deriv_normal_eq_minus_orientedCurvature_times_deriv {I : Set ℝ} (hI : 
   simp only [frameAt, Nat.succ_eq_add_one, Nat.reduceAdd, OrthonormalBasis.coe_mk,
              Fin.sum_univ_two, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
              Matrix.cons_val_fin_one, neg_smul]
-  rw [inner_of_normal_deriv_normal_of_unit_speed_eq_zero hI hc₁ hc₂ ht]; simp
+  rw [real_inner_comm (deriv (normal c) t) (normal c t), 
+      inner_of_deriv_normal_normal_of_unit_speed_eq_zero hI hc₁ hc₂ ht]; simp
   have h : inner ℝ (deriv c t) (deriv (normal c) t) = - orientedCurvature c t := by
     have h' : inner ℝ (deriv c t) (deriv (normal c) t) + orientedCurvature c t = 0 := by
       symm
