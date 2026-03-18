@@ -6,7 +6,10 @@ import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 /-!
 # Context-Free Languages are Closed Under Substitution
 
-The main theorem is `IsContextFree.subst`.
+The main theorem is `IsContextFree.subst`: Context-Free Grammars are closed under substitution.
+
+From this follow as simple corollaries that Context Free Gramamrs are closed under
+addition (mul), union (add) and Kleene Star.
 -/
 
 noncomputable section
@@ -122,9 +125,10 @@ theorem produces_lift_g {α β : Type} [DecidableEq α] [DecidableEq β]
         ∃ l ρ : List (Symbol α g.NT),
           u = l ++ [Symbol.nonterminal r.input] ++ ρ ∧ v = l ++ r.output ++ ρ := by
       have := hr.right
-      exact?;
+      exact ContextFreeRule.Rewrites.exists_parts this;
     exact h r hr.1 l ρ hu hv;
-  simp  [ *, List.map_append ];
+  simp only [List.append_assoc, List.cons_append, List.nil_append, List.map_append, List.map_cons,
+    hu, hv];
   have h_subst : (g.subst f).Produces
       (g.liftSymbolG f (Symbol.nonterminal r.input) :: List.map (g.liftSymbolG f) ρ)
       (List.map (g.liftSymbolG f) r.output ++ List.map (g.liftSymbolG f) ρ) := by
@@ -132,7 +136,7 @@ theorem produces_lift_g {α β : Type} [DecidableEq α] [DecidableEq β]
     constructor;
     · convert ContextFreeGrammar.rule_mem_subst g f r hr using 1;
     · constructor;
-  exact?
+  exact Produces.append_left h_subst (List.map (g.liftSymbolG f) l)
 
 /-
 If `g` derives `v` from `u`, then `g.subst f` derives the lifted version of `v` from the
@@ -242,8 +246,8 @@ theorem Derives.distrib_prod {T : Type} {g : ContextFreeGrammar T}
             | tail _ h_step' ih_inner => exact ih_inner.tail ( by exact? )
           exact h_trans h_sw;
         have h_trans : g.Derives (w ++ S) (w ++ W.flatten) := by
-          exact?;
-        exact?
+          exact append_left ih w;
+        (expose_names; exact trans h_trans_1 h_trans)
 
 /-
 If each `W[i]` is in `(f u[i]).language`, then `g.subst f` derives the concatenation of `W`
@@ -263,10 +267,11 @@ lemma subst_derives_prod {α β : Type} [DecidableEq α] [DecidableEq β]
           (List.flatten (List.map (fun w => List.map Symbol.terminal w) W)) := by
         apply ContextFreeGrammar.Derives.distrib_prod;
         rw [ List.forall₂_iff_get ] at *;
-        simp_all  [ List.length_map, List.get_eq_getElem, List.getElem_map ];
+        simp_all only [List.get_eq_getElem, mem_language_iff, List.length_map, List.getElem_map,
+          forall_true_left, true_and];
         intro i hi; specialize h
         have := h.2 i ( by linarith ) hi
-        simp_all  [ ContextFreeGrammar.Derives ]
+        simp_all only [Derives, forall_true_left, true_and]
         convert ContextFreeGrammar.derives_lift_f g f (u[i])
             (hu _ (by simp)) (h _ hi) using 1
         unfold ContextFreeGrammar.liftSymbolF; aesop;
@@ -298,7 +303,7 @@ lemma mem_terminal_of_mem_target {T N : Type} (r : ContextFreeRule T N)
     Symbol.terminal a ∈ u ∨ Symbol.terminal a ∈ r.output := by
       have h_rewrite : ∃ x y : List (Symbol T N),
           u = x ++ [Symbol.nonterminal r.input] ++ y ∧ v = x ++ r.output ++ y := by
-        exact?;
+        exact exists_parts h;
       grind +ring
 
 end Rewrites
@@ -316,7 +321,7 @@ lemma terminals_of_produces {α : Type} [DecidableEq α]
     ∀ a, Symbol.terminal a ∈ v → Symbol.terminal a ∈ u ∨ a ∈ g.usedTerminals := by
       intro a ha;
       obtain ⟨r, hr⟩ : ∃ r ∈ g.rules, r.Rewrites u v := by
-        exact?;
+        exact Set.inter_nonempty.mp h;
       exact Classical.or_iff_not_imp_left.2 fun h => by
         have := ContextFreeRule.Rewrites.mem_terminal_of_mem_target r u v hr.2 a ha
         exact this.resolve_left h |> fun h =>
@@ -342,7 +347,7 @@ lemma usedTerminals_of_mem_language {α : Type} [DecidableEq α]
     (g : ContextFreeGrammar α) (w : List α) (hw : w ∈ g.language) :
     ∀ a ∈ w, a ∈ g.usedTerminals := by
       have h_deriv : g.Derives [Symbol.nonterminal g.initial] (w.map Symbol.terminal) := by
-        exact?;
+        exact (mem_language_iff g w).mp hw;
       intro a ha
       have h_term : a ∈ g.usedTerminals := by
         have := ContextFreeGrammar.terminals_of_derives g h_deriv a (by
@@ -370,7 +375,7 @@ theorem subst_language_subset_1 {α β : Type} [DecidableEq α] [DecidableEq β]
           (W.flatten.map Symbol.terminal) := by
         apply ContextFreeGrammar.subst_derives_prod g f u W;
         · rw [ List.forall₂_iff_get ] at * ; aesop;
-        · exact?;
+        · exact fun a a_1 ↦ usedTerminals_of_mem_language g u hu a a_1;
       convert h_derives_lift_g.trans h_subst_derives_prod using 1 ; aesop
 
 /-
@@ -475,7 +480,7 @@ lemma map_inv {T N T' N'} (f : Symbol T N → Symbol T' N')
             ∃ x' y' : List (Symbol T' N'),
               List.map f u = x' ++ [Symbol.nonterminal r'.input] ++ y' ∧
               v' = x' ++ r'.output ++ y' := by
-          exact?;
+          exact exists_parts h;
         obtain ⟨x, y, hx, hy, hv'⟩ :
             ∃ x y : List (Symbol T N),
               u = x ++ [Symbol.nonterminal r.input] ++ y ∧
@@ -496,7 +501,7 @@ lemma map_inv {T N T' N'} (f : Symbol T N → Symbol T' N')
             simp_all [ List.drop_append ]
         aesop;
       use x ++ r.output ++ y;
-      exact ⟨ by simp , by rw [ hx ] ; exact? ⟩
+      exact ⟨ by simp , by rw [ hx ] ; exact rewrites_of_exists_parts r x y ⟩
 
 end Rewrites
 
@@ -511,9 +516,8 @@ lemma liftSymbolF_injective {α β : Type}
     (g : ContextFreeGrammar α) (f : α → ContextFreeGrammar β) (a : α) :
     Function.Injective (g.liftSymbolF f a) := by
       intro x y hxy
-      cases x <;> cases y <;> simp_all only [ContextFreeGrammar.liftSymbolF,
-          Symbol.terminal.injEq, Symbol.nonterminal.injEq, Sum.inr.injEq,
-          reduceCtorEq, Sigma.mk.injEq, heq_iff_eq];
+      cases x <;> cases y <;> simp_all only [ContextFreeGrammar.liftSymbolF, Symbol.terminal.injEq,
+          Symbol.nonterminal.injEq, Sum.inr.injEq, reduceCtorEq, Sigma.mk.injEq, heq_iff_eq];
 
 /-
 If `g.subst f` produces `v'` from a lifted string of `f a` symbols, then `v'` is a lifting of
@@ -602,8 +606,8 @@ lemma is_F_rule_output_no_inl {α β : Type} [DecidableEq α] [DecidableEq β]
     (f : α → ContextFreeGrammar β) [∀ a, DecidableEq (f a).NT]
     (r : ContextFreeRule β (g.NT ⊕ (Σ a, (f a).NT))) (hr : r ∈ (g.subst f).rules) :
     g.is_F_rule f r → ∀ s ∈ r.output, ∀ n, s ≠ Symbol.nonterminal (Sum.inl n) := by
-      intro hr' s hs n hn; simp_all  [ ContextFreeGrammar.is_F_rule ] ;
-      unfold ContextFreeGrammar.subst at hr; simp_all  [ Finset.mem_union ] ;
+      intro hr' s hs n hn; simp_all only [ContextFreeGrammar.is_F_rule] ;
+      unfold ContextFreeGrammar.subst at hr; simp_all only [Finset.mem_union] ;
       rcases hr with ( hr | hr ) <;>
         simp_all [ ContextFreeGrammar.subst_rules_g, ContextFreeGrammar.subst_rules_f ]
       · grind +ring;
@@ -642,7 +646,8 @@ lemma split_commute_of_not_mem {α : Type} (x y x' y' : List α) (mid : List α)
       intros x y x' y' mid a h1 h2;
       induction x generalizing y x' y' mid a with
       | nil =>
-        simp_all  [ List.append_assoc ] ;
+        simp_all only [nil_append, append_assoc, cons_append, nil_eq, append_eq_nil_iff,
+            reduceCtorEq, and_false, false_and, exists_const, or_false] ;
         rcases List.append_eq_append_iff.mp h1 with h | h
         · aesop ( simp_config := { singlePass := true } )
         rcases h with ⟨ bs, rfl, h ⟩
@@ -680,7 +685,8 @@ lemma commute_of_not_mem_output {T N : Type}
         have := List.split_commute_of_not_mem p1 q1 p2 q2 r1.output
           ( Symbol.nonterminal r2.input ) h_split h3
         aesop
-      rcases h_split with ⟨ z, h | h ⟩ <;> simp_all  [ ContextFreeRule.rewrites_iff ];
+      rcases h_split with ⟨ z, h | h ⟩ <;> simp_all only [List.append_assoc, List.cons_append,
+        List.nil_append, rewrites_iff, ↓existsAndEq, and_true];
       · grind;
       · exact ⟨ p2, z ++ Symbol.nonterminal r1.input :: q1, rfl,
           p2 ++ r2.output ++ z, q1,
@@ -766,9 +772,9 @@ lemma produces_subst_iff {α β : Type} [DecidableEq α] [DecidableEq β]
         unfold ContextFreeGrammar.subst at hr; aesop;
       · rcases h with h | h;
         · obtain ⟨ r, hr, h ⟩ := h
-          exact ⟨ r, by simp [ContextFreeGrammar.subst]; exact Finset.mem_union_left _ hr, h ⟩
+          exact ⟨ r, by simp only [ContextFreeGrammar.subst]; exact Finset.mem_union_left _ hr, h ⟩
         · obtain ⟨ r, hr, h ⟩ := h
-          exact ⟨ r, by simp [ContextFreeGrammar.subst]; exact Finset.mem_union_right _ hr, h ⟩
+          exact ⟨ r, by simp only [ContextFreeGrammar.subst]; exact Finset.mem_union_right _ hr, h ⟩
 
 /-
 Any derivation in the substitution grammar can be rearranged into a sequence of G-rules followed by
@@ -859,7 +865,7 @@ lemma producesG_unlift {α β : Type} [DecidableEq β]
     (h : g.ProducesG f (u.map (g.liftSymbolG f)) v') :
     ∃ v, v' = v.map (g.liftSymbolG f) ∧ g.Produces u v := by
       obtain ⟨ r, hr, h ⟩ := h;
-      unfold ContextFreeGrammar.subst_rules_g at hr; simp_all  [ Finset.mem_map ] ;
+      unfold ContextFreeGrammar.subst_rules_g at hr; simp_all only [Finset.mem_map] ;
       rcases hr with ⟨ r, hr, rfl ⟩;
       obtain ⟨v, hv⟩ : ∃ v, v' = v.map (g.liftSymbolG f) ∧ r.Rewrites u v := by
         apply_rules [ ContextFreeRule.Rewrites.map_inv ];
@@ -989,7 +995,7 @@ lemma split_append {T N : Type} (r : ContextFreeRule T N)
       obtain ⟨s, t, hs, ht⟩ :
           ∃ s t : List (Symbol T N),
             u ++ v = s ++ [Symbol.nonterminal r.input] ++ t ∧ w = s ++ r.output ++ t := by
-        exact?;
+        exact exists_parts h;
       rcases Classical.em (s.length < u.length) with h_cases | h_cases
       · -- Since $s$ is a prefix of $u$, we can split $u$ into $s$ and some $u'$.
         obtain ⟨u', hu'⟩ :
@@ -1044,7 +1050,7 @@ lemma Produces.split_append {T : Type} {g : ContextFreeGrammar T}
               | inl h_ih =>
                 simp_all only [List.cons_append, List.cons.injEq, true_and];
                 obtain ⟨ u', hu', rfl ⟩ := h_ih
-                exact Or.inl ⟨ hd :: u', by exact?, by simp ⟩
+                exact Or.inl ⟨ hd :: u', by exact ContextFreeRule.Rewrites.cons hd hu', by simp ⟩
               | inr h_ih => simp_all
         exact h_split r u v w h;
       exact Or.imp
@@ -1148,7 +1154,7 @@ lemma DerivesF_terminal_of_lift {α β : Type} [DecidableEq α] [DecidableEq β]
     w ∈ (f a).language := by
       convert h using 1;
       constructor;
-      · exact?;
+      · exact fun a_1 ↦ ((fun a ↦ h) ∘ f) a;
       · intro hw;
         obtain ⟨ v, hv₁, hv₂ ⟩ :=
           ContextFreeGrammar.derivesF_unlift g f a
@@ -1163,7 +1169,7 @@ lemma DerivesF_terminal_of_lift {α β : Type} [DecidableEq α] [DecidableEq β]
           exact List.map_injective_iff.mpr ( ContextFreeGrammar.liftSymbolF_injective g f a ) h_eq;
         contrapose! h_eq;
         use v, List.map Symbol.terminal w;
-        simp  [hv₁];
+        simp only [hv₁, List.map_map, ne_eq, true_and];
         exact ⟨ hv₁.symm, fun h => h_eq <| by simpa [ h ] using hv₂ ⟩
 
 /-
@@ -1207,10 +1213,13 @@ lemma mem_subst_of_derivesF {α β : Type} [DecidableEq α] [DecidableEq β]
           choose! W' hW' using hW_each;
           use List.map W' W;
           refine List.ext_get ?_ ?_ <;> simp  [ ← hW' ];
-        refine ⟨ W', ?_, ?_ ⟩ <;> simp_all;
+        refine ⟨ W', ?_, ?_ ⟩ <;> simp_all only [List.forall₂_map_right_iff,
+          List.forall₂_map_left_iff, List.mem_map, forall_exists_index, and_imp,
+          forall_apply_eq_imp_iff₂, Symbol.terminal.injEq, exists_eq', implies_true,
+          exists_apply_eq_apply'];
         · exact List.map_injective_iff.mpr ( by aesop_cat )
             ( hW₁.trans ( by simp [ List.map_flatten ] ) )
-        · exact?;
+        · exact List.Forall₂.flip hW₂;
       rw [ hW.1, Language.mem_list_prod_iff_forall2 ];
       refine ⟨ W, rfl, ?_ ⟩;
       have hW_lifted :
@@ -1218,7 +1227,7 @@ lemma mem_subst_of_derivesF {α β : Type} [DecidableEq α] [DecidableEq β]
           g.DerivesF f
             (List.map (fun a => Symbol.nonterminal (Sum.inr ⟨a, (f a).initial⟩)) [a])
             (List.map Symbol.terminal w_part) → w_part ∈ (f a).language := by
-        exact?;
+        exact fun {w_part} {a} a_1 ↦ DerivesF_terminal_of_lift g f a w_part a_1;
       rw [ List.forall₂_iff_get ] at *;
       grind
 
@@ -1268,8 +1277,8 @@ theorem subst_language_eq {α β : Type} [DecidableEq α] [DecidableEq β]
     (g.subst f).language = g.language.subst (fun a => (f a).language) := by
       ext w;
       constructor;
-      · exact?;
-      · exact?
+      · exact fun a ↦ subst_language_subset_2 g f w a;
+      · exact fun a ↦ subst_language_subset_1 g f w a
 
 end ContextFreeGrammar
 
@@ -1294,16 +1303,17 @@ theorem Language.subst_pair_eq_mul {β : Type} (f : Bool → Language β) :
       -- To prove equality of sets, we show each set is a subset of the other.
       apply Set.ext
       intro u
-      simp [Language.subst, Language.mul_def];
-      simp  [ List.prod ];
+      simp only [subst, Set.mem_setOf_eq, mul_def, Set.mem_image2]
+      simp only [List.prod]
       apply Iff.intro;
       · simp [Language.mul_def, Language.one_def] at *;
         grind;
       · intro h
         obtain ⟨a, ha, b, hb, hab⟩ := h
         use [false, true]
-        simp;
+        simp only [List.map_cons, List.map_nil, List.foldr_cons, List.foldr_nil, mul_one];
         exact ⟨ rfl, ⟨ a, ha, b, hb, hab ⟩ ⟩
+
 /-! ### Substitution equals union -/
 theorem Language.subst_singletons_eq_add {β : Type}
     (f : Bool → Language β) :
@@ -1311,7 +1321,8 @@ theorem Language.subst_singletons_eq_add {β : Type}
       ext u;
       constructor;
       · rintro ⟨ w, hw, hu ⟩;
-        rcases hw with ( rfl | rfl ) <;> simp_all  [ List.prod ];
+        rcases hw with ( rfl | rfl ) <;> simp_all only [List.prod, List.map_cons, List.map_nil,
+          List.foldr_cons, List.foldr_nil, mul_one];
         · exact Or.inl hu;
         · exact Or.inr hu;
       · intro hu
@@ -1335,7 +1346,9 @@ theorem Language.subst_univ_unit_eq_kstar {β : Type} (f : Unit → Language β)
         exact ⟨ [ u₁ ] ++ L, by aesop ⟩, by
         rintro ⟨ L, rfl, hL ⟩;
         use List.replicate L.length ();
-        induction L <;> simp_all  [ List.prod ];
+        induction L <;> simp_all only [List.not_mem_nil, IsEmpty.forall_iff, implies_true,
+          List.length_nil, List.replicate_zero, List.prod, List.map_nil, List.foldr_nil,
+          List.flatten_nil, mem_one, and_true];
         · trivial;
         · exact ⟨ Set.mem_univ _, Set.mem_image2_of_mem hL.1 ( by aesop ) ⟩⟩;
 /-! ### Helper: no rewrites on terminal-only strings -/
@@ -1429,8 +1442,10 @@ theorem isContextFree_univ_unit : IsContextFree (Set.univ : Language Unit) := by
   intro x
   induction x with
   | nil =>
-    constructor ; tauto;
-    constructor ; tauto;
+    constructor
+    · tauto
+    · constructor
+      tauto
   | cons x ih =>
     rename_i h;
     have h_add_terminal : ∀ (u : List (Symbol Unit Unit)),
@@ -1456,11 +1471,13 @@ theorem isContextFree_univ_unit : IsContextFree (Set.univ : Language Unit) := by
         | refl => constructor;
         | tail _ ih => exact .trans ‹_› ( .single <| by
             obtain ⟨ r, hr, h ⟩ := ih; use r;
-            simp_all;
+            simp_all only [List.cons_append, List.nil_append, Finset.mem_insert,
+              Finset.mem_singleton, true_and];
             exact ContextFreeRule.Rewrites.cons (Symbol.terminal ()) h );
       exact Relation.ReflTransGen.trans h_step1 (h_prepend _ _ hu);
     convert h_add_terminal _ h using 1
-/-! ### Main corollaries -/
+
+/-! ### Main corollaries: Closure under addition, union, and Kleene star -/
 theorem IsContextFree.mul {α : Type} {L₁ L₂ : Language α}
     (h₁ : IsContextFree L₁) (h₂ : IsContextFree L₂) :
     IsContextFree (L₁ * L₂) := by
@@ -1495,5 +1512,4 @@ theorem IsContextFree.kstar {α : Type} {L : Language α}
       have := IsContextFree.subst (Set.univ : Language Unit) (fun _ => L)
           isContextFree_univ_unit (fun _ => h)
       rwa [Language.subst_univ_unit_eq_kstar] at this
-
 end
