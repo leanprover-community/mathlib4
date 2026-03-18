@@ -62,28 +62,16 @@ variable [FiniteDimensional 𝕜 E] [T2Space E]
 
 /-- The `topDualPairing` is a continuous perfect pairing for finite-dimensional
 Hausdorff spaces over complete nontrivially normed fields. -/
-private theorem topDualPairing_isContPerfPair : (topDualPairing 𝕜 E).IsContPerfPair where
+theorem topDualPairing_isContPerfPair : (topDualPairing 𝕜 E).IsContPerfPair where
   continuous_uncurry := by
     haveI : IsModuleTopology 𝕜 E := isModuleTopologyOfFiniteDimensional
     haveI : IsModuleTopology 𝕜 (E →L[𝕜] 𝕜) := isModuleTopologyOfFiniteDimensional
     exact IsModuleTopology.continuous_bilinear_of_finite_left (topDualPairing 𝕜 E)
-  bijective_left :=
-    ⟨fun _ _ h => ContinuousLinearMap.coe_injective (congrArg _ h), fun g => ⟨g, rfl⟩⟩
+  bijective_left := Function.bijective_id
   bijective_right := by
-    change Function.Bijective (LinearMap.toContinuousLinearMap ∘ (topDualPairing 𝕜 E).flip)
-    refine LinearMap.toContinuousLinearMap.bijective.comp ⟨?_, ?_⟩
-    · intro x y h
-      apply (evalEquiv 𝕜 E).injective
-      ext f
-      simpa [evalEquiv_apply, Dual.eval_apply] using
-        LinearMap.congr_fun h (LinearMap.toContinuousLinearMap f)
-    · intro g
-      refine ⟨(evalEquiv 𝕜 E).symm (g.comp LinearMap.toContinuousLinearMap.toLinearMap), ?_⟩
-      ext f
-      simpa only [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap,
-        LinearEquiv.apply_symm_apply] using apply_evalEquiv_symm_apply 𝕜 E
-          (LinearMap.toContinuousLinearMap.symm f)
-          (g.comp LinearMap.toContinuousLinearMap.toLinearMap)
+    refine LinearMap.toContinuousLinearMap.bijective.comp ?_
+    rw [LinearMap.flip_bijective_iff₁]
+    exact LinearMap.toContinuousLinearMap.symm.bijective
 
 end TopDualPairingContPerfPair
 
@@ -100,7 +88,7 @@ open Module
 
 /-- If a pointed cone `C` is contained in the conic span of a basis `b`, then the coordinate
 functionals of `b` lie in the dual cone of `C`. -/
-private lemma basis_coord_mem_dual {ι : Type*} (b : Basis ι R M) (C : PointedCone R M)
+lemma basis_coord_mem_dual {ι : Type*} (b : Basis ι R M) (C : PointedCone R M)
     (hC : (C : Set M) ⊆ (span R (Set.range b) : Set M)) (i : ι) :
     b.coord i ∈ dual (dualPairing R M).flip (C : Set M) := by
   classical
@@ -125,15 +113,13 @@ theorem minTensorProduct_eq_max_of_simplicial_generating_left (C₁ : PointedCon
     minTensorProduct C₁ C₂.toPointedCone = maxTensorProduct C₁ C₂.toPointedCone := by
   classical
   letI : (topDualPairing ℝ F).IsContPerfPair := topDualPairing_isContPerfPair
-  haveI : Fintype h₁_simp.choose := h₁_simp.choose_spec.1.fintype
+  obtain ⟨s, hs_fin, hs_lin, hs_span⟩ := h₁_simp
+  haveI : Fintype s := hs_fin.fintype
   -- Extract basis from `C₁.IsSimplicial` + generating
-  let b := Basis.mk h₁_simp.choose_spec.2.1 <| by
-    simpa [← Submodule.span_span_of_tower {c : ℝ // 0 ≤ c} ℝ h₁_simp.choose,
-      h₁_simp.choose_spec.2.2] using h₁_gen.ge
+  let b := Basis.mk hs_lin <| by simp [← h₁_gen, ← hs_span]
   -- Dual basis elements are in C₁*
-  have h_coord_dual : ∀ i, b.coord i ∈ dual (dualPairing ℝ E).flip C₁ := by
-    apply basis_coord_mem_dual
-    rw [show Set.range b = h₁_simp.choose by ext; simp [b], h₁_simp.choose_spec.2.2]
+  have h_coord_dual : ∀ i, b.coord i ∈ dual (dualPairing ℝ E).flip C₁ :=
+    basis_coord_mem_dual _ _ (hs_span ▸ (Submodule.span_mono <| by simp [b]))
   -- Reduce to proving z ∈ max → z ∈ min
   apply le_antisymm (minTensorProduct_le_maxTensorProduct C₁ C₂.toPointedCone)
   intro z hz
@@ -142,20 +128,16 @@ theorem minTensorProduct_eq_max_of_simplicial_generating_left (C₁ : PointedCon
     TensorProduct.equivFinsuppOfBasisLeft_symm_apply, Finsupp.sum_fintype _ _ (by simp)]
   -- Show z ∈ min by showing b_i ∈ C₁ and y_i ∈ C₂
   refine Submodule.sum_mem _ fun i _ => tmul_mem_minTensorProduct ?_ ?_
-  · simp only [b, Basis.coe_mk]
-    exact (h₁_simp.choose_spec.2.2 ▸ subset_span) i.prop
+  · simpa only [b, Basis.coe_mk] using (hs_span ▸ subset_span) i.prop
   · simp only [equivFinsuppOfBasisLeft_apply]
     rw [← ProperCone.dual_dual_flip (topDualPairing ℝ F) C₂]
-    intro f hf
-    simp only [topDualPairing_apply]
-    have hf_dual : (f : F →ₗ[ℝ] ℝ) ∈ dual (dualPairing ℝ F).flip (C₂ : Set F) := hf
+    intro f (hf : (f : F →ₗ[ℝ] ℝ) ∈ dual (dualPairing ℝ F).flip (C₂ : Set F))
     simp only [mem_maxTensorProduct] at hz
-    have h_nonneg := hz (b.coord i) (h_coord_dual i) (f : F →ₗ[ℝ] ℝ) hf_dual
+    have h_nonneg := hz (b.coord i) (h_coord_dual i) (f : F →ₗ[ℝ] ℝ) hf
     have h_eq : dualDistrib ℝ E F ((b.coord i) ⊗ₜ[ℝ] (f : F →ₗ[ℝ] ℝ)) =
         (f : F →ₗ[ℝ] ℝ) ∘ₗ (TensorProduct.lid ℝ F) ∘ₗ (b.coord i).rTensor F := by
-      ext; simp [dualDistrib_apply, mul_comm]
-    simp only [h_eq, LinearMap.comp_apply, LinearEquiv.coe_coe] at h_nonneg
-    exact h_nonneg
+      ext; simp [mul_comm]
+    simpa only [h_eq, LinearMap.comp_apply, LinearEquiv.coe_coe] using h_nonneg
 
 /-- If `C₁` is a proper cone and `C₂` is a simplicial and generating cone, then their minimal
 and maximal tensor products are equal. -/
