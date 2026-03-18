@@ -48,11 +48,13 @@ def yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁ where
   map f :=
     { app _ := TypeCat.ofHom fun g ↦ g ≫ f }
 
+/-- Unification hint for `(yoneda.obj X).obj (op Y) = Y ⟶ X`. -/
 unif_hint yoneda_obj_obj_eq_hom (X X' Y Y' : C) where
   X ≟ X'
   Y ≟ Y' ⊢
   (yoneda.obj X).obj (op Y) ≟ Y' ⟶ X'
 
+/-- Unification hint for `(yoneda.obj X).obj Y = unop Y ⟶ X`. -/
 unif_hint yoneda_obj_obj_eq_hom' (X X' : C) (Y Y' : Cᵒᵖ) where
   X ≟ X'
   Y ≟ Y' ⊢
@@ -64,11 +66,13 @@ for the category of types. -/
 def uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
   yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{w}
 
+/-- Unification hint for `(uliftYoneda.obj X).obj (op Y) ≃ ULift (Y ⟶ X)`. -/
 unif_hint uliftYoneda_obj_obj_eq_hom (X X' Y Y' : C) where
   X ≟ X'
   Y ≟ Y' ⊢
   (uliftYoneda.{w}.obj X).obj (op Y) ≟ ULift (Y' ⟶ X')
 
+/-- Unification hint for `(uliftYoneda.obj X).obj Y = ULift (unop Y ⟶ X)`. -/
 unif_hint uliftYoneda_obj_obj_eq_hom' (X X' : C) (Y Y' : Cᵒᵖ) where
   X ≟ X'
   Y ≟ Y' ⊢
@@ -85,11 +89,13 @@ def uliftYonedaIsoYoneda {C : Type u₁} [Category.{max w v₁} C] :
 -/
 abbrev coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁ := yoneda.flip
 
+/-- Unification hint for `(coyoneda.obj (op X)).obj Y = X ⟶ Y`. -/
 unif_hint coyoneda_obj_obj_eq_hom (X X' Y Y' : C) where
   X ≟ X'
   Y ≟ Y' ⊢
   (coyoneda.obj (op X)).obj Y ≟ X' ⟶ Y'
 
+/-- Unification hint for `(coyoneda.obj Y).obj X = unop Y ⟶ X`. -/
 unif_hint coyoneda_obj_obj_eq_hom' (X X' : C) (Y Y' : Cᵒᵖ) where
   X ≟ X'
   Y ≟ Y' ⊢
@@ -100,11 +106,13 @@ for the category of types. -/
 @[pp_with_univ]
 abbrev uliftCoyoneda : Cᵒᵖ ⥤ C ⥤ Type (max w v₁) := uliftYoneda.{w}.flip
 
+/-- Unification hint for `(uliftCoyoneda.{w}.obj (op X)).obj Y = ULift (Y ⟶ X)`. -/
 unif_hint uliftCoyoneda_obj_obj_eq_hom (X X' Y Y' : C) where
   X ≟ X'
   Y ≟ Y' ⊢
   (uliftCoyoneda.{w}.obj (op X)).obj Y ≟ ULift (Y' ⟶ X')
 
+/-- Unification hint for `(uliftCoyoneda.{w}.obj X).obj Y = ULift (unop Y ⟶ X)`. -/
 unif_hint uliftCoyoneda_obj_obj_eq_hom' (X X' : Cᵒᵖ) (Y Y' : C) where
   X ≟ X'
   Y ≟ Y' ⊢
@@ -724,14 +732,13 @@ theorem yonedaEquiv_apply {X : C} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj X 
     yonedaEquiv f = f.app (op X) (𝟙 X) :=
   rfl
 
--- @[simp]
--- theorem yonedaEquiv_symm_app_apply {X : C} {F : Cᵒᵖ ⥤ Type v₁} (x : F.obj (op X)) (Y : Cᵒᵖ)
---     (f : Y.unop ⟶ X) : (yonedaEquiv.symm x).app Y f = F.map f.op x :=
---   rfl
-
 @[simp]
 theorem yonedaEquiv_symm_app {X : C} {F : Cᵒᵖ ⥤ Type v₁} (x : F.obj (op X)) (Y : Cᵒᵖ) :
     (yonedaEquiv.symm x).app Y = TypeCat.ofHom fun f ↦ F.map f.op x :=
+  rfl
+
+theorem yonedaEquiv_symm_app_apply {X : C} {F : Cᵒᵖ ⥤ Type v₁} (x : F.obj (op X)) (Y : Cᵒᵖ)
+    (f : Y.unop ⟶ X) : (yonedaEquiv.symm x).app Y f = F.map f.op x :=
   rfl
 
 /-- See also `yonedaEquiv_naturality'` for a more general version. -/
@@ -1210,7 +1217,7 @@ def yonedaMap (X : C) : yoneda.obj X ⟶ F.op ⋙ yoneda.obj (F.obj X) where
 
 @[simp]
 lemma yonedaMap_app_apply {Y : C} {X : Cᵒᵖ} (f : X.unop ⟶ Y) :
-    (yonedaMap F Y).app X f = F.map f := rfl
+    dsimp% (yonedaMap F Y).app X f = F.map f := rfl
 
 end
 
@@ -1227,7 +1234,7 @@ def uliftYonedaMap (X : C) :
 
 @[simp]
 lemma uliftYonedaMap_app_apply {Y : C} {X : Cᵒᵖ} (f : X.unop ⟶ Y) :
-    (uliftYonedaMap.{w} F Y).app X (ULift.up f) = ULift.up (F.map f) := rfl
+    dsimp% (uliftYonedaMap.{w} F Y).app X (ULift.up f) = ULift.up (F.map f) := rfl
 
 end
 
@@ -1265,9 +1272,9 @@ lemma Functor.sectionsEquivHom_naturality_symm {F G : C ⥤ Type u₂} (f : F �
       (sectionsFunctor C).map f ((F.sectionsEquivHom X).symm τ) := by
   rfl
 
-/-- A natural isomorphism between the sections functor `(C ⥤ TypeCat) ⥤ TypeCat` and the co-Yoneda
+/-- A natural isomorphism between the sections functor `(C ⥤ Type) ⥤ Type` and the co-Yoneda
 embedding of a terminal functor, specifically a constant functor on a given singleton type `X`. -/
-@[simps!]
+@[simps! (config := { dsimpLhs := true })]
 noncomputable def sectionsFunctorNatIsoCoyoneda (X : Type (max u₁ u₂)) [Unique X] :
     Functor.sectionsFunctor.{v₁, max u₁ u₂} C ≅ coyoneda.obj (op ((Functor.const C).obj X)) :=
   NatIso.ofComponents fun F ↦ (F.sectionsEquivHom X).toIso
@@ -1287,7 +1294,7 @@ def homNatIso {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D} (hF : F.FullyFai
     (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
 
 /-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
-@[simps!, deprecated homNatIso (since := "2025-10-28")]
+@[deprecated homNatIso (since := "2025-10-28")]
 def homNatIsoMaxRight {D : Type u₂} [Category.{max v₁ v₂} D] {F : C ⥤ D} (hF : F.FullyFaithful)
     (X : C) : F.op ⋙ yoneda.obj (F.obj X) ≅ uliftYoneda.obj.{v₂} X :=
   isoWhiskerLeft F.op (uliftYonedaIsoYoneda.symm.app _) ≪≫ hF.homNatIso _ ≪≫
@@ -1295,7 +1302,7 @@ def homNatIsoMaxRight {D : Type u₂} [Category.{max v₁ v₂} D] {F : C ⥤ D}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
-@[simps!]
+@[simps! (config := { dsimpLhs := true })]
 def compUliftYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D}
     (hF : F.FullyFaithful) :
     F ⋙ uliftYoneda.{v₁} ⋙ (whiskeringLeft _ _ _).obj F.op ≅ uliftYoneda.{v₂} :=
@@ -1306,7 +1313,7 @@ def compUliftYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C
   compUliftYonedaCompWhiskeringLeft
 
 /-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
-@[simps!, deprecated compUliftYonedaCompWhiskeringLeft (since := "2025-10-28")]
+@[deprecated compUliftYonedaCompWhiskeringLeft (since := "2025-10-28")]
 def compYonedaCompWhiskeringLeftMaxRight {D : Type u₂} [Category.{max v₁ v₂} D] {F : C ⥤ D}
     (hF : F.FullyFaithful) : F ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj F.op ≅ uliftYoneda.{v₂} := by
   refine isoWhiskerLeft F (isoWhiskerRight uliftYonedaIsoYoneda.symm.{v₁} _) ≪≫
@@ -1324,7 +1331,7 @@ def homNatIso' {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D} (hF : F.FullyFa
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `FullyFaithful.homEquiv` as a natural isomorphism, using coyoneda. -/
-@[simps!]
+@[simps! (config := { dsimpLhs := true })]
 def compUliftCoyonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D}
     (hF : F.FullyFaithful) :
     F.op ⋙ uliftCoyoneda.{v₁} ⋙ (whiskeringLeft _ _ _).obj F ≅ uliftCoyoneda.{v₂} :=

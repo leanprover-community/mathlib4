@@ -901,6 +901,8 @@ structure Config where
   current declaration name, or the empty string if the declaration is an instance and the instance
   is named according to the `inst` convention. -/
   nameStem : Option String := none
+  /-- Apply `dsimp%` to the left-hand side of the generated lemma. -/
+  dsimpLhs := false
   deriving Inhabited
 
 /-- Function elaborating `Config` -/
@@ -986,6 +988,11 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
       trace[simps.debug] "`simp` failed to simplify rhs"
     rhs := result.expr
     prf := result.proof?.getD prf
+  let mut lhs := lhs
+  if cfg.dsimpLhs then
+    let ctx ← mkSimpContext
+    let (result, _) ← dsimp lhs ctx
+    lhs := result
   let eqAp := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
   let declType ← mkForallFVars args eqAp
   let declValue ← mkLambdaFVars args prf

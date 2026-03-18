@@ -29,7 +29,7 @@ def CommGrpCat.coyoneda : CommGrpCatᵒᵖ ⥤ CommGrpCat ⥤ CommGrpCat where
 
 /-- The `CommGrpCat`-valued coyoneda embedding composed with the forgetful functor is the usual
 coyoneda embedding. -/
-@[to_additive (attr := simps!)
+@[to_additive (attr := simps! (config := { dsimpLhs := true }))
 /-- The `AddCommGrpCat`-valued coyoneda embedding composed with the forgetful functor is the usual
 coyoneda embedding. -/]
 def CommGrpCat.coyonedaForget :

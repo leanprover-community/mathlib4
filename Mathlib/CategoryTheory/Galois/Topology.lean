@@ -62,6 +62,7 @@ lemma obj_discreteTopology (X : C) : DiscreteTopology (F.obj X) := ⟨rfl⟩
 /-- We put the discrete topology on `Aut (F.obj X)`. -/
 scoped instance (X : C) : TopologicalSpace (Aut (F.obj X)) := ⊥
 
+/-- We give `F.obj X  ⟶ F.obj Y` the product topology. -/
 scoped instance {X Y : C} : TopologicalSpace (F.obj X  ⟶ F.obj Y) :=
   .induced (fun f ↦ (f : F.obj X → F.obj Y)) inferInstance
 

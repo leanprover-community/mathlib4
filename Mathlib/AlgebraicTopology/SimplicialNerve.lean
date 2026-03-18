@@ -53,6 +53,7 @@ section SimplicialNerve
 @[nolint unusedArguments]
 def SimplicialThickening (J : Type*) [LinearOrder J] : Type _ := J
 
+/-- Typecheck a term of `SimplicialThickening J` as a term of `J`. -/
 def SimplicialThickening.as {J : Type*} [LinearOrder J] (i : SimplicialThickening J) : J := i
 
 namespace SimplicialThickening

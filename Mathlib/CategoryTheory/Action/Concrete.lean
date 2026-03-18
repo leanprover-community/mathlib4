@@ -30,6 +30,7 @@ namespace TypeCat
 
 instance (X : Type u) : CoeFun (End X) (fun _ ↦ X → X) := inferInstanceAs <| CoeFun (X ⟶ X) _
 
+/-- The group isomorphism between `Function.End X` and `CategoryTheory.End X`. -/
 @[simps apply symm_apply]
 def endEquiv (X : Type u) : Function.End X ≃* End X where
   toFun f := TypeCat.ofHom (f)
