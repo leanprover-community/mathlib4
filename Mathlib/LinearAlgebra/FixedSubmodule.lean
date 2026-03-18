@@ -52,19 +52,12 @@ theorem fixedSubmodule_eq_top_iff {f : V →ₗ[R] V} :
     f.fixedSubmodule = ⊤ ↔ f = id (R := R) := by
   simp [LinearMap.ext_iff, Submodule.ext_iff]
 
-theorem inf_fixedSubmodule_le_fixedSubmodule_mul (e f : V →ₗ[R] V) :
-    e.fixedSubmodule ⊓ f.fixedSubmodule ≤ (e * f).fixedSubmodule := by
+theorem fixedSubmodule_inf_fixedSubmodule_le_comp (f g : V →ₗ[R] V) :
+    f.fixedSubmodule ⊓ g.fixedSubmodule ≤ (f ∘ₗ g).fixedSubmodule := by
   intro; simp_all
 
-theorem fixedSubmodule_mul_inf_fixedSubmodule_le_fixedSubmodule (e f : V →ₗ[R] V) :
-    (e ∘ₗ f).fixedSubmodule ⊓ f.fixedSubmodule ≤ e.fixedSubmodule := by
-  intro; aesop
-
-theorem fixedSubmodule_mul_inf_fixedSubmodule_le_fixedSubmodule' (e f : V →ₗ[R] V) :
-    (f ∘ₗ e).fixedSubmodule ⊓ e.fixedSubmodule ≤ f.fixedSubmodule := by
-  intro x
-  simp only [mem_inf, mem_fixedSubmodule_iff, coe_comp, Function.comp_apply, and_imp]
-  grind
+theorem fixedSubmodule_comp_inf_fixedSubmodule_le (f g : V →ₗ[R] V) :
+    (f ∘ₗ g).fixedSubmodule ⊓ g.fixedSubmodule ≤ f.fixedSubmodule := by  intro; aesop
 
 end LinearMap
 

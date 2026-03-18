@@ -409,7 +409,7 @@ theorem mem_transvections_iff_mem_dilatransvections_and_fixedReduce_eq_one
       rw [← f.finrank_ker_add_one_of_ne_zero, add_comm]
       aesop
     have eq_top : e.fixedSubmodule ⊔ Submodule.span K {w} = ⊤ := by
-      rw [Submodule.sup_span_eq_top_iff hw]
+      rw [Submodule.sup_span_singleton_eq_top_iff hw]
       apply le_antisymm he
       apply Nat.one_le_of_lt
       rw [← Nat.ne_zero_iff_zero_lt]
