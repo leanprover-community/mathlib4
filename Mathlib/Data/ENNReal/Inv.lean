@@ -189,11 +189,11 @@ protected theorem mul_comm_div : a / b * c = a * (c / b) := by
 protected theorem mul_div_right_comm : a * b / c = a / c * b := by
   simp only [div_eq_mul_inv, mul_right_comm]
 
-/-- Division decomposition: `a / c = a / b * (b / c)` when `b` is finite and nonzero. -/
-protected theorem div_mul_div_cancel {a b c : ℝ≥0∞}
+/-- Division-cancellation: `a / b * (b / c) = a / c` when `b` is finite and nonzero. -/
+protected theorem div_mul_div_cancel {b : ℝ≥0∞} (a c : ℝ≥0∞)
     (hb0 : b ≠ 0) (hbt : b ≠ ⊤) :
-    a / c = a / b * (b / c) := by
-  rw [← mul_div_assoc, ENNReal.div_mul_cancel hb0 hbt]
+    a / b * (b / c) = a / c := by
+  rw [mul_div_assoc, ENNReal.div_mul_cancel hb0 hbt]
 
 instance : InvolutiveInv ℝ≥0∞ where
   inv_inv a := by
