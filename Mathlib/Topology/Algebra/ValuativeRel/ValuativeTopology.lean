@@ -148,6 +148,10 @@ theorem hasBasis_nhds_zero :
       fun γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ ↦ { x | v.restrict x < γ.val } := by
   simp [Filter.hasBasis_iff, v.is_topological_valuation]
 
+/-- The set `{ y : R | v y = v x }` is a neighbourhood of `x`.
+This does not imply `v` is locally constant everywhere (since `v ⁻¹' {0}` is not open),
+but it is equivalent to the restriction of `v` to the complement of its support being
+locally constant. -/
 theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
   rw [v.mem_nhds_iff]
   have h' : v.restrict x ≠ 0 := by simp [h]
