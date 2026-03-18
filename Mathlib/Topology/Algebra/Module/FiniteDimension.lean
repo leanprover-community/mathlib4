@@ -597,25 +597,21 @@ theorem FiniteDimensional.of_totallyBounded_nhds_zero {U : Set E} (hU_nhds : U �
     (c • U) ((set_smul_mem_nhds_zero_iff hc_ne).mpr hU_nhds)
   let M : Submodule 𝕜 E := Submodule.span 𝕜 F
   letI : FiniteDimensional 𝕜 M := Finite.span_of_finite 𝕜 hF_finite
-  have h_cover : U ⊆ (M : Set E) + c • U := by
-    intro x hx
-    have hx' := hF_cover hx
-    simp only [Set.mem_iUnion] at hx'
-    rcases hx' with ⟨f, hf, y, hy, rfl⟩
+  have h_cover : U ⊆ (M : Set E) + c • U := fun x hx ↦ by
+    obtain ⟨f, hf, y, hy, rfl⟩ := Set.mem_iUnion₂.mp <| hF_cover hx
     exact ⟨f, Submodule.subset_span hf, y, hy, rfl⟩
-  have h_ind : ∀ n : ℕ, U ⊆ (M : Set E) + c ^ n • U := by
-    intro n
+  have h_ind (n : ℕ) : U ⊆ (M : Set E) + c ^ n • U := by
     induction n with
-    | zero =>
-      intro x hx
-      rw [pow_zero, one_smul]
-      exact ⟨0, M.zero_mem, x, hx, zero_add x⟩
+    | zero => simpa using fun x hx ↦ ⟨0, M.zero_mem, x, hx, zero_add x⟩
     | succ n ih =>
-      intro x hx
-      rcases ih hx with ⟨m, hm, y, ⟨u, hu, rfl⟩, rfl⟩
-      rcases h_cover hu with ⟨f, hf, y', ⟨v, hv, rfl⟩, rfl⟩
-      refine ⟨m + c ^ n • f, M.add_mem hm (M.smul_mem _ hf), c ^ (n + 1) • v, ⟨v, hv, rfl⟩, ?_⟩
-      simp [smul_add, smul_smul, pow_succ, add_assoc]
+      calc
+        U ⊆ M + c ^ n • U := ih
+        _ ⊆ M + c ^ n • (M + c • U) := by gcongr
+        _ ⊆ M + c ^ (n + 1) • U := by
+          rw [smul_add, smul_smul, pow_succ, ← add_assoc]
+          congr!
+          lift c to 𝕜ˣ using isUnit_iff_ne_zero.mpr hc_ne
+          simp [← Units.val_pow_eq_pow_val, ← Units.smul_def]
   have h_small : Filter.Tendsto (fun n ↦ c ^ n • U) Filter.atTop (𝓝 0).smallSets :=
     (TotallyBounded.isVonNBounded 𝕜 hU_tb).tendsto_smallSets_nhds.comp
     (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc1)
@@ -626,41 +622,22 @@ theorem FiniteDimensional.of_totallyBounded_nhds_zero {U : Set E} (hU_nhds : U �
       intro W hW
       exact (Filter.tendsto_smallSets_iff.mp h_small W hW).mono fun n hn ↦ hn (hu n)
     have hm_tendsto : Filter.Tendsto m Filter.atTop (𝓝 x) := by
-      have : m = fun n ↦ x - u n := funext fun n ↦ eq_sub_of_add_eq (h_eq n)
-      rw [this]
-      simpa using tendsto_const_nhds.sub hu_tendsto
+      simpa [show m = fun n ↦ x - u n by grind] using tendsto_const_nhds.sub hu_tendsto
     exact M.closed_of_finiteDimensional.mem_of_tendsto hm_tendsto (Filter.Eventually.of_forall hm)
-  have hM_top : M = ⊤ := eq_top_iff.mpr fun z _ ↦ by
-    have h_z_tendsto : Filter.Tendsto (fun n : ℕ ↦ c ^ n • z) Filter.atTop (𝓝 0) := by
-      simpa only [zero_smul] using (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc1).smul_const z
-    have h_ev : ∀ᶠ n in Filter.atTop, c ^ n • z ∈ U := h_z_tendsto hU_nhds
-    obtain ⟨N, hN⟩ := h_ev.exists
-    have h_smul : (c ^ N)⁻¹ • c ^ N • z ∈ M := M.smul_mem _ (hU_sub_M hN)
-    rwa [smul_smul, inv_mul_cancel₀ (pow_ne_zero N hc_ne), one_smul] at h_smul
+  have hM_top : M = ⊤ := absorbent_nhds_zero (𝕜 := 𝕜) hU_nhds |>.mono hU_sub_M |>.submodule_eq_top
   exact FiniteDimensional.of_surjective M.subtype fun x ↦ ⟨⟨x, by simp [hM_top]⟩, rfl⟩
 
+open scoped Pointwise in
 /-- **Riesz's theorem**: if a T2 topological vector space over a complete non-trivial
 normed field admits a totally bounded neighborhood of some point, then it is
 finite-dimensional. -/
 theorem FiniteDimensional.of_totallyBounded_nhds {x : E} {U : Set E} (hU_nhds : U ∈ 𝓝 x)
     (hU_tb : TotallyBounded U) : FiniteDimensional 𝕜 E := by
-  let V : Set E := (fun y : E => y - x) '' U
-  have hV_eq : V = (fun y : E => y + x) ⁻¹' U := by
-    ext z
-    constructor
-    · rintro ⟨u, hu, rfl⟩
-      simpa [sub_eq_add_neg, add_assoc] using hu
-    · intro hz
-      exact ⟨z + x, hz, by simp [sub_eq_add_neg, add_assoc]⟩
-  have h_add : Filter.Tendsto (fun y : E => y + x) (𝓝 0) (𝓝 x) := by
-    simpa using ((continuous_id.add (continuous_const : Continuous fun _ :
-      E => x)).continuousAt.tendsto : Filter.Tendsto (fun y : E => y + x) (𝓝 0) (𝓝 (0 + x)))
-  have hV_nhds : V ∈ 𝓝 0 := by
-    rw [hV_eq]
-    exact h_add hU_nhds
-  have hV_tb : TotallyBounded V := by
-    simpa [V] using hU_tb.image (uniformContinuous_id.sub uniformContinuous_const)
-  exact FiniteDimensional.of_totallyBounded_nhds_zero (𝕜 := 𝕜) hV_nhds hV_tb
+  replace hU_nhds : x +ᵥ (-x) +ᵥ U ∈ 𝓝 x := by simpa
+  rw [vadd_mem_nhds_self] at hU_nhds
+  refine .of_totallyBounded_nhds_zero _ hU_nhds ?_
+  have : -x +ᵥ U = (· - x) '' U := by simp [← Set.image_vadd, neg_add_eq_sub]
+  exact this ▸ hU_tb.image (uniformContinuous_id.sub uniformContinuous_const)
 
 /-- **Riesz's theorem**: in a T2 topological vector space over a complete non-trivial normed field,
 if there exists a totally bounded neighborhood of some point, then the space is finite-dimensional.
