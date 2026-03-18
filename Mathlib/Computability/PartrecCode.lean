@@ -459,7 +459,7 @@ end
   * If `n = succ k`, returns `eval cg (pair a (pair k (eval (prec cf cg) (pair a k))))`
 * `Nat.Partrec.Code.rfind'`: Minimization starting at a provided value. Given an argument of the
   form `Nat.pair a m`, returns the least `n ≥ m` such that `eval cf (pair a n) = 0`, if such an `n`
-  exists and if `eval cf (pair a k)` terminates for `m ≤ k ≤ n`.
+  exists and if `eval cf (pair a k)` terminates for all `m ≤ k ≤ n`.
 -/
 def eval : Code → ℕ →. ℕ
   | zero => pure 0
