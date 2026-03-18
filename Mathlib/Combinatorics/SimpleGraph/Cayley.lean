@@ -33,7 +33,7 @@ def mulCayley {M : Type*} (s : Set M) [Mul M] : SimpleGraph M :=
 
 variable {M : Type*} (s : Set M)
 
-section mul
+section Mul
 variable [Mul M]
 
 @[to_additive]
@@ -80,8 +80,8 @@ theorem mulCayley_empty : mulCayley (∅ : Set M) = ⊥ := by
 theorem mulCayley_union (s₁ s₂ : Set M) : mulCayley (s₁ ∪ s₂) = mulCayley s₁ ⊔ mulCayley s₂ := by
   exact (mulCayley_gc M).l_sup
 
-end mul
-section semigroup
+end Mul
+section Semigroup
 variable [Semigroup M]
 
 @[to_additive]
@@ -89,8 +89,8 @@ theorem mulCayley_adj_mul_left_iff [IsLeftCancelMul M] {s : Set M} {u v d : M} :
     (mulCayley s).Adj u v ↔ (mulCayley s).Adj (d * u) (d * v) := by
   simp [mulCayley_adj', mul_assoc]
 
-end semigroup
-section muloneclass
+end Semigroup
+section MulOneClass
 variable [MulOneClass M]
 
 @[to_additive (attr := simp)]
@@ -108,8 +108,8 @@ theorem mulCayley_union_one : mulCayley (s ∪ {1}) = mulCayley s := by
 theorem mulCayley_singleton_one : mulCayley ({1} : Set M) = ⊥ := by
   rw [← mulCayley_erase_one, Set.diff_self, mulCayley_empty]
 
-end muloneclass
-section group
+end MulOneClass
+section Group
 variable [Group M]
 
 @[to_additive]
@@ -140,6 +140,6 @@ theorem mulCayley_univ : mulCayley (Set.univ : Set M) = ⊤ := by
 theorem mulCayley_compl_singleton_one : mulCayley ({1}ᶜ : Set M) = ⊤ := by
   simp [Set.compl_eq_univ_diff]
 
-end group
+end Group
 
 end SimpleGraph
