@@ -831,9 +831,9 @@ variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Modul
 def toSpanSingletonCLE : E ≃L[𝕜] (𝕜 →L[𝕜] E) where
   toLinearEquiv := toSpanSingletonLE ..
   continuous_toFun := by
-    apply continuous_of_continuousAt_zero (toSpanSingletonLE _ _ _)
+    apply continuous_of_tendsto_nhds_zero (toSpanSingletonLE _ _ _)
     suffices ∀ s : Set 𝕜, IsVonNBounded 𝕜 s → ∀ U ∈ 𝓝 0, ∀ᶠ (a : E) in 𝓝 0, ∀ x ∈ s, x • a ∈ U by
-      simpa [ContinuousAt, ContinuousLinearMap.nhds_zero_eq, MapsTo]
+      simpa [ContinuousLinearMap.nhds_zero_eq, MapsTo]
     intro s hsb U hU
     rcases mem_nhds_prod_iff.mp <| continuous_smul.tendsto' (0 : 𝕜 × E) 0 (by simp) hU
       with ⟨V, hV, W, hW, hVW⟩

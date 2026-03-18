@@ -114,42 +114,40 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
 
 theorem lfpApprox_mono_left : Monotone (lfpApprox : (α →o α) → _) := by
   intro f g h x a
-  induction a using Ordinal.induction with
-  | h i ih =>
-    rw [lfpApprox, lfpApprox]
-    apply sSup_le
-    simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, sSup_insert,
-      forall_eq_or_imp, le_sup_left, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
-      true_and]
-    intro i' h_lt
-    apply le_sup_of_le_right
-    apply le_sSup_of_le
-    · use i'
-    · apply le_trans (h _)
-      simp only [OrderHom.toFun_eq_coe]
-      exact g.monotone (ih i' h_lt)
+  induction a using WellFoundedLT.induction with | ind i ih
+  rw [lfpApprox, lfpApprox]
+  apply sSup_le
+  simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, sSup_insert,
+    forall_eq_or_imp, le_sup_left, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+    true_and]
+  intro i' h_lt
+  apply le_sup_of_le_right
+  apply le_sSup_of_le
+  · use i'
+  · apply le_trans (h _)
+    simp only [OrderHom.toFun_eq_coe]
+    exact g.monotone (ih i' h_lt)
 
 theorem lfpApprox_mono_mid : Monotone (lfpApprox f) := by
   intro x₁ x₂ h a
-  induction a using Ordinal.induction with
-  | h i ih =>
-    rw [lfpApprox, lfpApprox]
-    apply sSup_le
-    simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, sSup_insert,
-      forall_eq_or_imp, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-    constructor
-    · exact le_sup_of_le_left h
-    · intro i' h_i'
-      apply le_sup_of_le_right
-      apply le_sSup_of_le
-      · use i'
-      · exact f.monotone (ih i' h_i')
+  induction a using WellFoundedLT.induction with | ind i ih
+  rw [lfpApprox, lfpApprox]
+  apply sSup_le
+  simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, sSup_insert,
+    forall_eq_or_imp, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+  constructor
+  · exact le_sup_of_le_left h
+  · intro i' h_i'
+    apply le_sup_of_le_right
+    apply le_sSup_of_le
+    · use i'
+    · exact f.monotone (ih i' h_i')
 
 /-- The approximations of the least fixed point stabilize at a fixed point of `f` -/
 theorem lfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : x ≤ f x) (h_ab : a ≤ b)
     (h : lfpApprox f x a ∈ fixedPoints f) : lfpApprox f x b = lfpApprox f x a := by
   rw [mem_fixedPoints_iff] at h
-  induction b using Ordinal.induction with | h b IH =>
+  induction b using WellFoundedLT.induction with | ind b IH
   apply le_antisymm
   · conv => left; rw [lfpApprox]
     apply sSup_le
@@ -208,21 +206,20 @@ theorem lfpApprox_ord_mem_fixedPoint (h_init : x ≤ f x) :
 greater or equal than the initial value -/
 theorem lfpApprox_le_of_mem_fixedPoints {a : α}
     (h_a : a ∈ fixedPoints f) (h_le_init : x ≤ a) (i : Ordinal) : lfpApprox f x i ≤ a := by
-  induction i using Ordinal.induction with
-  | h i IH =>
-    rw [lfpApprox]
-    apply sSup_le
-    simp only [exists_prop]
-    intro y h_y
-    simp only [Set.mem_union, Set.mem_setOf_eq, Set.mem_singleton_iff] at h_y
-    cases h_y with
-    | inl h_y =>
-      let ⟨j, h_j_lt, h_j⟩ := h_y
-      rw [← h_j, ← h_a]
-      exact f.monotone' (IH j h_j_lt)
-    | inr h_y =>
-      rw [h_y]
-      exact h_le_init
+  induction i using WellFoundedLT.induction with | ind i IH
+  rw [lfpApprox]
+  apply sSup_le
+  simp only [exists_prop]
+  intro y h_y
+  simp only [Set.mem_union, Set.mem_setOf_eq, Set.mem_singleton_iff] at h_y
+  cases h_y with
+  | inl h_y =>
+    let ⟨j, h_j_lt, h_j⟩ := h_y
+    rw [← h_j, ← h_a]
+    exact f.monotone' (IH j h_j_lt)
+  | inr h_y =>
+    rw [h_y]
+    exact h_le_init
 
 /-- The approximation sequence converges at the successor of the domain's cardinality
 to the least fixed point if starting from `⊥` -/

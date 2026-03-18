@@ -691,9 +691,11 @@ theorem closedBall_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H :
   | cons _ _ _ hs ih =>
     simp only [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup, inf_eq_inter, ih]
 
+@[gcongr]
 theorem ball_mono {p : Seminorm 𝕜 E} {r₁ r₂ : ℝ} (h : r₁ ≤ r₂) : p.ball x r₁ ⊆ p.ball x r₂ :=
   fun _ (hx : _ < _) => hx.trans_le h
 
+@[gcongr]
 theorem closedBall_mono {p : Seminorm 𝕜 E} {r₁ r₂ : ℝ} (h : r₁ ≤ r₂) :
     p.closedBall x r₁ ⊆ p.closedBall x r₂ := fun _ (hx : _ ≤ _) => hx.trans h
 
@@ -766,12 +768,10 @@ theorem closedBall_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E
 
 variable (p : Seminorm 𝕜 E)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem preimage_metric_ball {r : ℝ} : p ⁻¹' Metric.ball 0 r = { x | p x < r } := by
   ext x
   simp only [mem_setOf, mem_preimage, mem_ball_zero_iff, Real.norm_of_nonneg (apply_nonneg p _)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem preimage_metric_closedBall {r : ℝ} : p ⁻¹' Metric.closedBall 0 r = { x | p x ≤ r } := by
   ext x
   simp only [mem_setOf, mem_preimage, mem_closedBall_zero_iff,
@@ -823,13 +823,11 @@ theorem closedBall_finset_sup_eq_iInter (p : ι → Seminorm 𝕜 E) (s : Finset
   simp_rw [closedBall, iInter_setOf, finset_sup_apply, NNReal.coe_le_coe, Finset.sup_le_iff, ←
     NNReal.coe_le_coe, NNReal.coe_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ball_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ} (hr : 0 < r) :
     ball (s.sup p) x r = s.inf fun i => ball (p i) x r := by
   rw [Finset.inf_eq_iInf]
   exact ball_finset_sup_eq_iInter _ _ _ hr
 
-set_option backward.isDefEq.respectTransparency false in
 theorem closedBall_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ} (hr : 0 ≤ r) :
     closedBall (s.sup p) x r = s.inf fun i => closedBall (p i) x r := by
   rw [Finset.inf_eq_iInf]
@@ -1085,8 +1083,8 @@ theorem continuousAt_zero' [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p 
     rcases le_or_gt r 0 with hr | hr
     · use 1; simpa using hr.trans_lt hε
     · simpa [lt_div_iff₀ hr] using exists_norm_lt 𝕜 (div_pos hε hr)
-  rw [← set_smul_mem_nhds_zero_iff (norm_pos_iff.1 hk₀), smul_closedBall_zero hk₀] at hp
-  exact mem_of_superset hp <| p.closedBall_mono hk.le
+  grw [← hk]
+  rwa [← set_smul_mem_nhds_zero_iff (norm_pos_iff.1 hk₀), smul_closedBall_zero hk₀] at hp
 
 /-- A seminorm is continuous at `0` if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true

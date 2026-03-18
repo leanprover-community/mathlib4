@@ -840,7 +840,6 @@ instance isAbsoluteValue : IsAbsoluteValue fun a : ℚ_[p] ↦ ‖a‖ where
   abv_add' := norm_add_le
   abv_mul' := by simp [Norm.norm, map_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem rat_dense (q : ℚ_[p]) {ε : ℝ} (hε : 0 < ε) : ∃ r : ℚ, ‖q - r‖ < ε :=
   let ⟨ε', hε'l, hε'r⟩ := exists_rat_btwn hε
   let ⟨r, hr⟩ := rat_dense' q (ε := ε') (by simpa using hε'l)
@@ -1117,7 +1116,7 @@ lemma valuation_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 @[simp]
 lemma valuation_one : valuation (1 : ℚ_[p]) = 0 := by
-  rw [← Nat.cast_one, valuation_natCast, padicValNat.one, cast_zero]
+  rw [← Nat.cast_one, valuation_natCast, padicValNat_one_right, cast_zero]
 
 -- not @[simp], since simp can prove it
 lemma valuation_p : valuation (p : ℚ_[p]) = 1 := by
@@ -1190,7 +1189,6 @@ theorem AddValuation.map_mul (x y : ℚ_[p]) :
     · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← WithTop.coe_add, WithTop.coe_eq_coe,
         valuation_mul hx hy]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem AddValuation.map_add (x y : ℚ_[p]) :
     min (addValuationDef x) (addValuationDef y) ≤ addValuationDef (x + y : ℚ_[p]) := by
   simp only [addValuationDef]

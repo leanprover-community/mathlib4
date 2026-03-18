@@ -71,7 +71,7 @@ def toProdl : (K ⋊⁅ψ⁆ L) ≃ₗ[R] K × L :=
     map_smul' _ _ := rfl }
 
 instance : Bracket (K ⋊⁅ψ⁆ L) (K ⋊⁅ψ⁆ L) where
-  bracket x y :=  ⟨⁅x.left, y.left⁆ + ψ x.right y.left - ψ y.right x.left, ⁅x.right, y.right⁆⟩
+  bracket x y := ⟨⁅x.left, y.left⁆ + ψ x.right y.left - ψ y.right x.left, ⁅x.right, y.right⁆⟩
 
 @[simp] lemma zero_eq_mk : (0 : K ⋊⁅ψ⁆ L) = ⟨0, 0⟩ := rfl
 @[simp] lemma add_eq_mk (x y : K ⋊⁅ψ⁆ L) : x + y = ⟨x.left + y.left, x.right + y.right⟩ := rfl
@@ -84,7 +84,7 @@ instance : Bracket (K ⋊⁅ψ⁆ L) (K ⋊⁅ψ⁆ L) where
 
 instance : LieRing (K ⋊⁅ψ⁆ L) where
   add_lie _ _ _ := by simp; abel
-  lie_add _ _ _:= by simp; abel
+  lie_add _ _ _ := by simp; abel
   lie_self _ := by simp
   leibniz_lie _ _ _ := by simp; grind [lie_skew]
 
