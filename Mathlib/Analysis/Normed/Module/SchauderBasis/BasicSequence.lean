@@ -37,14 +37,10 @@ sequences, where subsets replace initial segments, is called the **Nikolskii con
   is a basic sequence, with an explicit bound on the basis constant.
 * `isUnconditionalBasicSequence_of_Nikolskii`: The analogous result for unconditional basic
   sequences under the Nikolskii condition.
-* `functional_vanishes_on_set_of_bound`: A functional with a lower bound on a scaling-closed set
-  containing 0 must vanish on that set.
-* `exists_functional_neg_one_and_vanishes_on_closed_submodule`: Hahn-Banach separation for
-  a point outside a closed submodule.
 
 ## References
 
-* [F. Albiac, N.J. Kalton, *Topics in Banach Space Theory*][albiac2016]
+* [Albiac, Fernando. and Kalton, Nigel J., Topics in Banach Space Theory][Albiac_Kalton_2016].
 -/
 
 @[expose] public section
@@ -81,27 +77,10 @@ def SatisfiesGrunblumCondition (𝕜 : Type*) {X : Type*} [RCLike 𝕜]
 
 /-- The Grünblum condition is monotone in the constant. -/
 theorem SatisfiesGrunblumCondition.mono {e : ℕ → X} {K K' : ℝ}
-    (h : SatisfiesGrunblumCondition 𝕜 e K) (hKK' : K ≤ K') :
-    SatisfiesGrunblumCondition 𝕜 e K' :=
+    (h : SatisfiesGrunblumCondition 𝕜 e K) (hKK' : K ≤ K') : SatisfiesGrunblumCondition 𝕜 e K' :=
   fun n m a hmn => (h n m a hmn).trans (mul_le_mul_of_nonneg_right hKK' (norm_nonneg _))
 
 namespace BasicSequence
-
-/-- A sequence `e` is a basic sequence if there exists a `BasicSequence` structure
-    whose underlying sequence is equal to `e` and whose projection bound is finite. -/
-def IsBasicSequence (𝕜 : Type*) {X : Type*} [RCLike 𝕜]
-    [NormedAddCommGroup X] [NormedSpace 𝕜 X] (e : ℕ → X) : Prop :=
-  ∃ b : BasicSequence 𝕜 X, ⇑b = e
-
-/-- A `BasicSequence` satisfies the `IsBasicSequence` predicate. -/
-theorem isBasicSequence (b : BasicSequence 𝕜 X) : IsBasicSequence 𝕜 b := ⟨b, rfl⟩
-
-/-- Extract a `BasicSequence` from a proof of `IsBasicSequence`. -/
-noncomputable def IsBasicSequence.toBasicSequence {e : ℕ → X}
-    (h : IsBasicSequence 𝕜 e) : BasicSequence 𝕜 X := h.choose
-
-@[simp] theorem IsBasicSequence.coe_toBasicSequence {e : ℕ → X}
-    (h : IsBasicSequence 𝕜 e) : ⇑h.toBasicSequence = e := h.choose_spec
 
 variable (bs : BasicSequence 𝕜 X)
 
@@ -117,7 +96,8 @@ theorem basicSequence_satisfiesGrunblum :
   have hsum_mem (k : ℕ) : ∑ i ∈ Finset.range k, a i • bs i ∈ Y :=
     Submodule.sum_mem _ (fun i _ => Submodule.smul_mem _ _ (Submodule.subset_span ⟨i, rfl⟩))
   have h_proj_bound : ‖bs.basis.proj m‖ ≤ bs.basicSequenceConstant := by
-    have h := bs.basis.norm_proj_le_enormProjBound m
+    have h := bs.basis.enorm_proj_le_enormProjBound m
+    rw [enorm_eq_nnnorm] at h
     rw [← ENNReal.toReal_le_toReal ENNReal.coe_ne_top hK_lt_top] at h
     simp only [ENNReal.coe_toReal, coe_nnnorm] at h
     exact h
@@ -208,7 +188,8 @@ theorem isBasicSequence_of_Grunblum_with_bound {e : ℕ → X} {K : ℝ}
   let S := Submodule.span 𝕜 (Set.range e)
   let b_S := Module.Basis.span h_indep
   let e_Y : ℕ → S := b_S
-  have hbS : ∀ n, (b_S n : X) = e n := Module.Basis.span_apply h_indep
+  have hbS : ∀ n, (b_S n : X) = e n :=
+    fun n => congrArg Subtype.val (Module.Basis.span_apply h_indep n)
   let P_span (k : ℕ) : S →ₗ[𝕜] S := b_S.constr 𝕜 (fun i => if i < k then b_S i else 0)
   have h_P_span_apply (k : ℕ) (x : S) :
       P_span k x = ∑ i ∈ Finset.range k, b_S.repr x i • b_S i := by
@@ -235,29 +216,30 @@ theorem isBasicSequence_of_Grunblum_with_bound {e : ℕ → X} {K : ℝ}
     simp_rw [Submodule.coe_sum, Submodule.coe_smul, hbS]
     exact h_grunblum N k (b_S.repr x) hk_le_N
   let P (k : ℕ) : S →L[𝕜] S := LinearMap.mkContinuous (P_span k) K (h_P_span_bound k)
+  have hP_apply : ∀ k (x : S), P k x = P_span k x := fun _ _ => rfl
   have h0 : P 0 = 0 := by
-    ext x; simp only [P, ContinuousLinearMap.zero_apply, LinearMap.mkContinuous_apply,
+    ext1 x; simp only [hP_apply, ContinuousLinearMap.zero_apply,
       h_P_span_apply, Finset.range_zero, Finset.sum_empty]
   have hdim (n : ℕ) : Module.finrank 𝕜 (LinearMap.range (P n).toLinearMap) = n := by
     let W := Submodule.span 𝕜 (Set.range (fun i : Fin n ↦ b_S i))
     have h_range : LinearMap.range (P n).toLinearMap = W := by
       apply le_antisymm
       · rintro _ ⟨x, rfl⟩
-        simp only [ContinuousLinearMap.coe_coe, P, LinearMap.mkContinuous_apply]
+        simp only [ContinuousLinearMap.coe_coe, hP_apply]
         rw [h_P_span_apply]
         refine Submodule.sum_mem _ (fun i hi ↦ ?_)
         apply Submodule.smul_mem
         apply Submodule.subset_span
         exact ⟨⟨i, Finset.mem_range.mp hi⟩, rfl⟩
       · rw [Submodule.span_le]; rintro _ ⟨i, rfl⟩; use b_S i
-        simp only [ContinuousLinearMap.coe_coe]; dsimp only [P]
-        simp only [LinearMap.mkContinuous_apply]; dsimp only [P_span]
+        simp only [ContinuousLinearMap.coe_coe, hP_apply]
+        dsimp only [P_span]
         rw [b_S.constr_basis, if_pos i.isLt]
     rw [h_range, finrank_span_eq_card]
     · exact Fintype.card_fin n
     · exact b_S.linearIndependent.comp (fun i : Fin n => i.val) Fin.val_injective
   have hcomp (n m : ℕ) (y : S) : P n (P m y) = P (min n m) y := by
-    simp only [P, LinearMap.mkContinuous_apply]
+    simp only [hP_apply]
     conv_lhs => rw [h_P_span_apply m y, h_P_span_apply]
     rw [h_P_span_apply]
     simp only [map_sum, map_smul, Module.Basis.repr_self]
@@ -265,122 +247,63 @@ theorem isBasicSequence_of_Grunblum_with_bound {e : ℕ → X} {K : ℝ}
              smul_eq_mul, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq', Finset.mem_range,
              ite_smul, zero_smul, ← Finset.sum_filter]
     congr 1; ext j; simp only [Finset.mem_filter, Finset.mem_range, lt_min_iff]
+  letI : Norm (S →L[𝕜] S) := ContinuousLinearMap.hasOpNorm
   have h_bound_P : ∀ n, ‖P n‖ ≤ K := fun n ↦
     ContinuousLinearMap.opNorm_le_bound _ hK (h_P_span_bound n)
   have hlim (x : S) : Filter.Tendsto (fun n ↦ P n x) Filter.atTop (nhds x) := by
-    rw [Metric.tendsto_atTop]; intro ε hε
-    use (b_S.repr x).support.sup id + 1; intro n hn
-    simp only [P, LinearMap.mkContinuous_apply, dist_eq_norm]
-    have h_eq : P_span n x = x := by
-      rw [h_P_span_apply]
-      conv_rhs => rw [← b_S.linearCombination_repr x, Finsupp.linearCombination_apply]
-      exact (Finset.sum_subset (fun i hi => Finset.mem_range.mpr
-        ((Finset.le_sup hi (f := id)).trans_lt (Nat.lt_succ_self _) |>.trans_le hn))
-        (fun i _ hi => by simp [Finsupp.notMem_support_iff.mp hi])).symm
-    rw [h_eq, sub_self, norm_zero]; exact hε
+    rw [show (fun n ↦ P n x) = fun n ↦ P_span n x from funext (hP_apply · x)]
+    refine tendsto_atTop_of_eventually_const
+      (i₀ := (b_S.repr x).support.sup id + 1) fun n hn ↦ ?_
+    rw [h_P_span_apply]
+    conv_rhs => rw [← b_S.linearCombination_repr x, Finsupp.linearCombination_apply]
+    exact (Finset.sum_subset (fun i hi => Finset.mem_range.mpr
+      ((Finset.le_sup hi (f := id)).trans_lt (Nat.lt_succ_self _) |>.trans_le hn))
+      (fun i _ hi => by simp [Finsupp.notMem_support_iff.mp hi])).symm
   have hbS_eq : ∀ n, b_S n = ⟨e n, subset_span (mem_range_self n)⟩ := fun n ↦
     Subtype.ext (hbS n)
   have he_in_range : ∀ n, ⟨e n, subset_span (mem_range_self n)⟩ ∈
       LinearMap.range (SchauderBasis.succSub P n).toLinearMap := fun n ↦ by
     rw [← hbS_eq, LinearMap.mem_range]
     use b_S n
-    simp only [SchauderBasis.succSub, ContinuousLinearMap.coe_sub, P,
-               LinearMap.mkContinuous_coe, LinearMap.sub_apply]
-    rw [h_P_span_apply, h_P_span_apply, Finset.sum_range_succ, add_sub_cancel_left]
+    change P (n + 1) (b_S n) - P n (b_S n) = b_S n
+    simp only [hP_apply, h_P_span_apply, Finset.sum_range_succ, add_sub_cancel_left]
     simp only [Module.Basis.repr_self, Finsupp.single_eq_same, one_smul]
   have he_ne : ∀ n, (⟨e n, subset_span (mem_range_self n)⟩ : S) ≠ 0 := fun n h ↦
     h_nz n (by simpa using congrArg Subtype.val h)
-  let D : SchauderBasis.ProjectionData 𝕜 S := {
+  let D : SchauderBasis.RankOneDecomposition 𝕜 S := {
     P := P
     e := e_Y
-    projZero := h0
-    finrankRange := hdim
-    hcomp := hcomp
-    hlim := hlim
-    heInRange := fun n ↦ by dsimp only [e_Y]; rw [hbS_eq]; exact he_in_range n
-    heNe := fun n ↦ by dsimp only [e_Y]; rw [hbS_eq]; exact he_ne n
+    proj_zero := h0
+    finrank_range := hdim
+    proj_comp := hcomp
+    proj_tendsto := hlim
+    e_mem_range := fun n ↦ by dsimp only [e_Y]; rw [hbS_eq]; exact he_in_range n
+    e_ne_zero := fun n ↦ by dsimp only [e_Y]; rw [hbS_eq]; exact he_ne n
   }
   let b_basis := D.basis
   have h_lt_top : b_basis.enormProjBound < ⊤ :=
-    b_basis.enormProjBound_lt_top_of_bound (fun n ↦ by
+    (iSup_le fun n => by
+      rw [enorm_eq_nnnorm, ← ENNReal.ofReal_coe_nnreal,
+        ENNReal.ofReal_le_ofReal_iff hK, coe_nnnorm]
       change ‖D.basis.proj n‖ ≤ K
-      rw [SchauderBasis.ProjectionData.basis_proj D]; exact h_bound_P n)
+      rw [SchauderBasis.RankOneDecomposition.basis_proj D]; exact h_bound_P n).trans_lt
+      ENNReal.ofReal_lt_top
   let seq : BasicSequence 𝕜 X := {
     toFun := e
     basis := b_basis
     basis_eq := fun n => by
-      rw [SchauderBasis.ProjectionData.basis_coe D]; exact hbS n
+      rw [SchauderBasis.RankOneDecomposition.basis_coe D]; exact hbS n
     basisConstant_lt_top := h_lt_top
   }
   refine ⟨seq, rfl, ?_⟩
   dsimp only [basicSequenceConstant]
   have h_bound_ennreal : b_basis.enormProjBound ≤ ENNReal.ofReal K :=
     iSup_le fun n => by
-      rw [← ENNReal.ofReal_coe_nnreal, ENNReal.ofReal_le_ofReal_iff hK, coe_nnnorm,
-        SchauderBasis.ProjectionData.basis_proj D]
+      rw [enorm_eq_nnnorm, ← ENNReal.ofReal_coe_nnreal, ENNReal.ofReal_le_ofReal_iff hK,
+        coe_nnnorm, SchauderBasis.RankOneDecomposition.basis_proj D]
       exact h_bound_P n
   exact (ENNReal.toReal_mono ENNReal.ofReal_ne_top h_bound_ennreal).trans_eq
     (ENNReal.toReal_ofReal hK)
-
-/-- Convenience wrapper: the Grünblum criterion as a predicate. -/
-theorem isBasicSequence_of_Grunblum {e : ℕ → X} {K : ℝ} (h_nz : ∀ n, e n ≠ 0)
-    (h : SatisfiesGrunblumCondition 𝕜 e K) : IsBasicSequence 𝕜 e := by
-  obtain ⟨b, hb_eq, _⟩ := isBasicSequence_of_Grunblum_with_bound h h_nz
-  exact ⟨b, hb_eq⟩
-
-/-- The tail of a basic sequence (starting from index N) is also a basic sequence. -/
-theorem tail_basic_sequence (bs : BasicSequence 𝕜 X) (N : ℕ) :
-    IsBasicSequence 𝕜 (fun n => bs (n + N)) := by
-  have hK_bound := basicSequence_satisfiesGrunblum bs
-  have h_nz : ∀ n, bs (n + N) ≠ 0 := fun n => bs.ne_zero (n + N)
-  refine isBasicSequence_of_Grunblum (K := bs.basicSequenceConstant) h_nz ?_
-  intro n m a hnm
-  let a' : ℕ → 𝕜 := fun i => if N ≤ i then a (i - N) else 0
-  have h_sum_eq (k : ℕ) : ∑ i ∈ Finset.range k, a i • bs (i + N) =
-      ∑ i ∈ Finset.range (k + N), a' i • bs i := by
-    rw [← Finset.sum_range_add_sum_Ico (f := fun i => a' i • bs i) (Nat.le_add_left N k),
-      show ∑ i ∈ Finset.range N, a' i • bs i = 0 from
-        Finset.sum_eq_zero fun i hi => by
-          simp [a', not_le.mpr (Finset.mem_range.mp hi)],
-      zero_add, show Finset.Ico N (k + N) = (Finset.range k).map
-        ⟨(· + N), fun _ _ h => Nat.add_right_cancel h⟩ from by
-          ext j; simp only [Finset.mem_map, Finset.mem_range, Finset.mem_Ico,
-            Function.Embedding.coeFn_mk]
-          exact ⟨fun ⟨hN, hk⟩ => ⟨j - N, by omega, by omega⟩,
-            fun ⟨i, hi, hij⟩ => by omega⟩,
-      Finset.sum_map]
-    exact Finset.sum_congr rfl fun i _ => by
-      simp [Function.Embedding.coeFn_mk, a']
-  rw [h_sum_eq m, h_sum_eq n]
-  exact hK_bound (n + N) (m + N) a' (by omega)
-
-/-- Pull back a basic sequence through a norm-preserving linear map.
-    If every element of `b` in `Y` lies in `J '' S` for some set `S ⊆ X`
-    and norm-preserving `J`, then `S` contains a basic sequence with
-    the same basis constant bound. -/
-lemma pullback
-    {Y : Type*} [NormedAddCommGroup Y] [NormedSpace 𝕜 Y]
-    (b : BasicSequence 𝕜 Y) {S : Set X} (J : X →L[𝕜] Y)
-    (hJ_iso : ∀ y : X, ‖J y‖ = ‖y‖) (hb_mem : ∀ n, b n ∈ J '' S) :
-    ∃ (b' : BasicSequence 𝕜 X), (∀ n, b' n ∈ S) ∧
-      b'.basicSequenceConstant ≤ b.basicSequenceConstant := by
-  choose seq hseq_S hseq_J using hb_mem
-  have h_nz : ∀ n, seq n ≠ 0 := fun n h =>
-    b.ne_zero n (by rw [← hseq_J n, h, map_zero])
-  have h_grunblum : SatisfiesGrunblumCondition 𝕜 seq b.basicSequenceConstant :=
-    fun n m a hmn => b.Grunblum_bound_transfer seq J hJ_iso hseq_J n m a hmn
-  obtain ⟨b', hb'_eq, hb'_bound⟩ := isBasicSequence_of_Grunblum_with_bound h_grunblum h_nz
-  exact ⟨b', fun n => (congrFun hb'_eq n).symm ▸ hseq_S n, hb'_bound⟩
-
-/-- Pull back through a norm-preserving linear map (predicate version). -/
-lemma IsBasicSequence.pullback
-    {Y : Type*} [NormedAddCommGroup Y] [NormedSpace 𝕜 Y]
-    {e : ℕ → Y} (he : IsBasicSequence 𝕜 e) {S : Set X} (J : X →L[𝕜] Y)
-    (hJ_iso : ∀ y : X, ‖J y‖ = ‖y‖) (he_mem : ∀ n, e n ∈ J '' S) :
-    ∃ (seq : ℕ → X), (∀ n, seq n ∈ S) ∧ IsBasicSequence 𝕜 seq := by
-  obtain ⟨b, hb_eq⟩ := he
-  obtain ⟨b', hb'_S, _⟩ := b.pullback J hJ_iso (fun n => hb_eq ▸ he_mem n)
-  exact ⟨⇑b', hb'_S, ⟨b', rfl⟩⟩
 
 end BasicSequence
 
@@ -430,20 +353,6 @@ variable (ubs : UnconditionalBasicSequence β 𝕜 X)
 /-- The **Basis Constant** of a general basic sequence. -/
 def unconditionalBasicSequenceConstant : ℝ := ubs.basis.enormProjBound.toReal
 
-/-- A sequence `e : β → X` is an unconditional basic sequence if there exists a
-    `UnconditionalBasicSequence` structure whose underlying sequence equals `e`
-    and whose projection bound is finite. -/
-def IsUnconditionalBasicSequence (β : Type*) (𝕜 : Type*) {X : Type*}
-    [NontriviallyNormedField 𝕜] [NormedAddCommGroup X] [NormedSpace 𝕜 X]
-    (e : β → X) : Prop :=
-  ∃ b : UnconditionalBasicSequence β 𝕜 X, b.toFun = e
-
-/-- An ℕ-indexed unconditional basic sequence is also a basic sequence. -/
-theorem IsUnconditionalBasicSequence.toIsBasicSequence {e : ℕ → X}
-    (h : IsUnconditionalBasicSequence ℕ 𝕜 e) : BasicSequence.IsBasicSequence 𝕜 e := by
-  obtain ⟨b, rfl⟩ := h
-  exact ⟨b.toBasicSequence, rfl⟩
-
 /-- A general basic sequence with finite projection bound satisfies the
     generalized Grünblum condition. -/
 theorem unconditional_satisfiesNikolskii :
@@ -454,7 +363,7 @@ theorem unconditional_satisfiesNikolskii :
   have hsum_mem (S : Finset β) : ∑ i ∈ S, a i • ubs i ∈ Y :=
     Submodule.sum_mem _ (fun i _ => Submodule.smul_mem _ _ (Submodule.subset_span ⟨i, rfl⟩))
   have h_proj_bound : ‖ubs.basis.proj A‖ ≤ ubs.unconditionalBasicSequenceConstant := by
-    have h := ubs.basis.norm_proj_le_enormProjBound A
+    have h := ubs.basis.enorm_proj_le_enormProjBound A
     rw [enorm_eq_nnnorm] at h
     rw [← ENNReal.toReal_le_toReal ENNReal.coe_ne_top hK_lt_top] at h
     simp only [ENNReal.coe_toReal, coe_nnnorm] at h
@@ -467,7 +376,7 @@ theorem unconditional_satisfiesNikolskii :
     simp only [sum_B, Submodule.coe_sum, Submodule.coe_smul, h_basis_eq]
   have h_proj_eq : ubs.basis.proj A sum_B = sum_A := by
     rw [h_sum_B_basis]
-    simp_rw [map_sum, map_smul, GeneralSchauderBasis.proj_apply_basis]
+    simp_rw [map_sum, map_smul, GeneralSchauderBasis.proj_apply_basis_mem]
     classical
     have : B.filter (· ∈ A) = A := by
       ext i; simp only [Finset.mem_filter]; exact ⟨And.right, fun h => ⟨hAB h, h⟩⟩
@@ -495,16 +404,19 @@ lemma linearIndependent_of_Nikolskii (hN : SatisfiesNikolskiiCondition 𝕜 e K)
 
 open scoped Classical in
 theorem isUnconditionalBasicSequence_of_Nikolskii {e : β → X} {K : ℝ}
-    (h : SatisfiesNikolskiiCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) :
-    IsUnconditionalBasicSequence β 𝕜 e := by
+    (h : SatisfiesNikolskiiCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) (hK : 0 ≤ K) :
+    ∃ (b : UnconditionalBasicSequence β 𝕜 X),
+      ⇑b = e ∧ b.unconditionalBasicSequenceConstant ≤ K := by
   set K' := max K 0 with hK'_def
+  have hK'_eq : K' = K := max_eq_left hK
   have hK'_nonneg : 0 ≤ K' := le_max_right _ _
   have h' : SatisfiesNikolskiiCondition 𝕜 e K' := fun A B a hAB => by
     exact (h A B a hAB).trans (mul_le_mul_of_nonneg_right (le_max_left _ _) (norm_nonneg _))
   have h_indep := linearIndependent_of_Nikolskii h h_nz
   let S := Submodule.span 𝕜 (Set.range e)
   let b_S := Module.Basis.span h_indep
-  have hbS : ∀ n, (b_S n : X) = e n := Module.Basis.span_apply h_indep
+  have hbS : ∀ n, (b_S n : X) = e n :=
+    fun n => congrArg Subtype.val (Module.Basis.span_apply h_indep n)
   let coord_linear (j : β) : S →ₗ[𝕜] 𝕜 := (Finsupp.lapply j).comp b_S.repr.toLinearMap
   have h_coord_bound (j : β) (y : S) : ‖coord_linear j y‖ ≤ (K' / ‖e j‖) * ‖y‖ := by
     simp only [coord_linear, LinearMap.comp_apply, Finsupp.lapply_apply]
@@ -527,14 +439,15 @@ theorem isUnconditionalBasicSequence_of_Nikolskii {e : β → X} {K : ℝ}
       _ = K' * ‖y‖ := by rw [norm_coe]
   let coord (j : β) : StrongDual 𝕜 S :=
     LinearMap.mkContinuous (coord_linear j) (K' / ‖e j‖) (h_coord_bound j)
+  have hcoord_apply : ∀ i (x : S), coord i x = coord_linear i x := fun _ _ => rfl
   have h_ortho (i j : β) : coord i (b_S j) = (Pi.single j 1 : β → 𝕜) i := by
-    simp only [coord, LinearMap.mkContinuous_apply, coord_linear, LinearMap.comp_apply,
+    simp only [hcoord_apply, coord_linear, LinearMap.comp_apply,
       Finsupp.lapply_apply, Pi.single_apply]
     have : (b_S.repr : S →ₗ[𝕜] (β →₀ 𝕜)) (b_S j) = Finsupp.single j 1 := b_S.repr_self j
     rw [this, Finsupp.single_apply]; simp [eq_comm]
   have h_coord_eq (i : β) (x : S) :
       coord i x = (b_S.repr x : β →₀ 𝕜) i := by
-    simp only [coord, LinearMap.mkContinuous_apply, coord_linear, LinearMap.comp_apply,
+    simp only [hcoord_apply, coord_linear, LinearMap.comp_apply,
       Finsupp.lapply_apply]; rfl
   have h_sum_eq (x : S) (A : Finset β) (hA : (b_S.repr x).support ⊆ A) :
       ∑ i ∈ A, coord i x • b_S i = x := by
@@ -557,6 +470,7 @@ theorem isUnconditionalBasicSequence_of_Nikolskii {e : β → X} {K : ℝ}
     have h_proj_coe : (ubs_basis.proj A y : X) = ∑ i ∈ A, (b_S.repr y : β →₀ 𝕜) i • e i := by
       simp only [GeneralSchauderBasis.proj_apply, Submodule.coe_sum, Submodule.coe_smul]
       apply Finset.sum_congr rfl; intro i _
+      change (coord i y) • (b_S i : X) = _
       rw [h_coord_eq, hbS]
     rw [← norm_coe, h_proj_coe]
     have h_union_eq : ∑ i ∈ A ∪ (b_S.repr y).support, (b_S.repr y) i • e i = (y : X) := by
@@ -570,8 +484,17 @@ theorem isUnconditionalBasicSequence_of_Nikolskii {e : β → X} {K : ℝ}
         ENNReal.ofReal_le_ofReal_iff hK'_nonneg, coe_nnnorm]
       exact ContinuousLinearMap.opNorm_le_bound _ hK'_nonneg (h_proj_bound A)).trans_lt
       ENNReal.ofReal_lt_top
-  exact ⟨{ toFun := e, basis := ubs_basis, basis_eq := hbS,
-           basisConstant_lt_top := h_lt_top }, rfl⟩
+  let seq : UnconditionalBasicSequence β 𝕜 X :=
+    { toFun := e, basis := ubs_basis, basis_eq := hbS, basisConstant_lt_top := h_lt_top }
+  refine ⟨seq, rfl, ?_⟩
+  dsimp only [unconditionalBasicSequenceConstant]
+  have h_bound_ennreal : ubs_basis.enormProjBound ≤ ENNReal.ofReal K :=
+    hK'_eq ▸ iSup_le fun A => by
+      rw [enorm_eq_nnnorm, ← ENNReal.ofReal_coe_nnreal,
+        ENNReal.ofReal_le_ofReal_iff hK'_nonneg, coe_nnnorm]
+      exact ContinuousLinearMap.opNorm_le_bound _ hK'_nonneg (h_proj_bound A)
+  exact (ENNReal.toReal_mono ENNReal.ofReal_ne_top h_bound_ennreal).trans_eq
+    (ENNReal.toReal_ofReal hK)
 
 theorem SatisfiesNikolskiiCondition.toSatisfiesGrunblumCondition {e : ℕ → X} {K : ℝ}
     (h : SatisfiesNikolskiiCondition 𝕜 e K) :
@@ -581,74 +504,3 @@ theorem SatisfiesNikolskiiCondition.toSatisfiesGrunblumCondition {e : ℕ → X}
 end UnconditionalBasicSequence
 
 end -- public section
-
-/-! ### Hahn-Banach separation lemmas -/
-
-noncomputable section
-
-variable {𝕜 : Type*} [RCLike 𝕜]
-
-namespace BasicSequence
-
-/-- A continuous linear functional with a lower bound on a set closed under 𝕜-scaling and
-  containing 0 must vanish on that set.
-  If u < re(g y) for all y ∈ S, 0 ∈ S, and c • y ∈ S for all c : 𝕜, y ∈ S, then g = 0 on S. -/
-lemma functional_vanishes_on_set_of_bound {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    {S : Set E} (h0 : (0 : E) ∈ S) (hS_smul : ∀ (c : 𝕜) (y : E), y ∈ S → c • y ∈ S)
-    (g : E →L[𝕜] 𝕜) (u : ℝ) (hg_bound : ∀ y ∈ S, u < RCLike.re (g y)) :
-    ∀ y ∈ S, g y = 0 := by
-  intro y hy
-  by_contra h_ne
-  let gy : 𝕜 := g y
-  have hnorm_pos : 0 < ‖gy‖ := norm_pos_iff.mpr h_ne
-  have hnorm_ne : ‖gy‖ ≠ 0 := ne_of_gt hnorm_pos
-  have hu_neg : u < 0 := by simpa using hg_bound 0 h0
-  let c : 𝕜 := -star gy / ‖gy‖
-  have hcy_mem : c • y ∈ S := hS_smul c y hy
-  have h_gc : g (c • y) = c * gy := by simp [gy, smul_eq_mul]
-  have h_re : RCLike.re (c * gy) = -‖gy‖ := by
-    simp only [c, neg_div, neg_mul, div_mul_eq_mul_div]
-    simp only [map_neg, neg_inj]
-    have h_conj : star gy * gy = (‖gy‖ : 𝕜)^2 := by
-      rw [RCLike.star_def, RCLike.conj_mul, sq]
-    rw [h_conj, sq]
-    have h_simpl : (‖gy‖ : 𝕜) * ‖gy‖ / (‖gy‖ : 𝕜) = ‖gy‖ := by field_simp
-    rw [h_simpl, RCLike.ofReal_re]
-  let t : ℝ := (|u| + 1) / ‖gy‖ + 1
-  have ht_pos : 0 < t := by positivity
-  have htcy_mem : (t : 𝕜) • (c • y) ∈ S := hS_smul (t : 𝕜) (c • y) hcy_mem
-  have h_gtc : g ((t : 𝕜) • (c • y)) = (t : 𝕜) * (c * gy) := by
-    simp only [map_smul, smul_eq_mul, h_gc]
-  have h_re_t : RCLike.re ((t : 𝕜) * (c * gy)) = t * (-‖gy‖) := by
-    rw [RCLike.re_ofReal_mul, h_re]
-  have h_bound' := hg_bound ((t : 𝕜) • (c • y)) htcy_mem
-  rw [h_gtc, h_re_t] at h_bound'
-  have : t * (-‖gy‖) = -(|u| + 1 + ‖gy‖) := by
-    simp only [t]; field_simp
-  linarith [neg_abs_le u]
-
-/-- Given a point outside a closed submodule over 𝕜, there exists a continuous linear functional
-    that equals -1 on the point and vanishes on the submodule. This follows from geometric
-    Hahn-Banach separation applied to normed spaces. -/
-lemma exists_functional_neg_one_and_vanishes_on_closed_submodule
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    (M : Submodule 𝕜 E) (hM_closed : IsClosed (M : Set E))
-    (u : E) (hu : u ∉ M) :
-    ∃ f : E →L[𝕜] 𝕜, f u = -1 ∧ ∀ m ∈ (M : Set E), f m = 0 := by
-  haveI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
-  have hM_convex : Convex ℝ (M : Set E) := Submodule.convex (M.restrictScalars ℝ)
-  obtain ⟨g, s, hg_u, hg_M⟩ := @RCLike.geometric_hahn_banach_point_closed 𝕜 E _ _ _
-    (M : Set E) u _ _ _ _ _ _ hM_convex hM_closed hu
-  have h0_in_M : (0 : E) ∈ M := M.zero_mem
-  have hs_neg : s < 0 := by simpa using hg_M 0 h0_in_M
-  have hg_vanish : ∀ m ∈ (M : Set E), g m = 0 :=
-    functional_vanishes_on_set_of_bound h0_in_M (fun c y hy => M.smul_mem c hy) g s hg_M
-  have hg_u_ne : g u ≠ 0 := by
-    intro h; simp [h] at hg_u; linarith
-  use (-(g u)⁻¹) • g
-  constructor
-  · simp only [ContinuousLinearMap.smul_apply, smul_eq_mul, neg_mul, inv_mul_cancel₀ hg_u_ne]
-  · intro m hm
-    simp only [ContinuousLinearMap.smul_apply, hg_vanish m hm, smul_zero]
-
-end BasicSequence

@@ -258,6 +258,14 @@ theorem norm_proj_le_nnnormProjBound [CompleteSpace X] (A : Finset β) :
     ‖b.proj A‖ ≤ b.nnnormProjBound :=
   mod_cast b.nnnorm_proj_le_nnnormProjBound A
 
+/-- Convert an ℕ-indexed unconditional Schauder basis to a conditional (classical) Schauder
+    basis. Every unconditionally convergent series is also conditionally convergent. -/
+def toSchauderBasis (b : UnconditionalSchauderBasis ℕ 𝕜 X) : SchauderBasis 𝕜 X where
+  basis := b.basis
+  coord := b.coord
+  ortho := b.ortho
+  expansion := fun x => (b.expansion x).mono_left SummationFilter.le_atTop
+
 end UnconditionalSchauderBasis
 
 /-! ### ℕ-indexed Schauder bases with conditional convergence -/
@@ -305,6 +313,16 @@ theorem proj_comp (n m : ℕ) (x : X) : b.proj n (b.proj m x) = b.proj (min n m)
   congr 2
   ext _
   simp only [Finset.mem_inter, Finset.mem_range]
+  omega
+
+/-- The projection of a finite sum of basis vectors onto an initial segment. -/
+theorem proj_sum_range (m n : ℕ) (a : ℕ → 𝕜) (hmn : m ≤ n) :
+    b.proj m (∑ j ∈ Finset.range n, a j • b j) = ∑ j ∈ Finset.range m, a j • b j := by
+  simp only [map_sum, map_smul, proj_apply_basis_mem, smul_ite, smul_zero]
+  rw [← Finset.sum_filter]
+  congr 1
+  ext _
+  simp only [Finset.mem_filter, Finset.mem_range]
   omega
 
 /-- The projections are uniformly bounded. -/
@@ -523,3 +541,15 @@ theorem basis_coe : ⇑(basis D) = D.e :=
 end RankOneDecomposition
 
 end SchauderBasis
+
+namespace UnconditionalSchauderBasis
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
+
+/-- The projection bound of the conditional basis is at most that of the unconditional one. -/
+theorem toSchauderBasis_enormProjBound_le (b : UnconditionalSchauderBasis ℕ 𝕜 X) :
+    b.toSchauderBasis.enormProjBound ≤ b.enormProjBound :=
+  iSup_le fun n => le_iSup (fun A : Finset ℕ => ‖b.proj A‖ₑ) (Finset.range n)
+
+end UnconditionalSchauderBasis
