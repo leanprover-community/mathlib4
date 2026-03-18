@@ -511,8 +511,6 @@ lemma rpow_neg_one_eq_inverse {a : A} (ha : IsStrictlyPositive a := by cfc_tac) 
   obtain ⟨ax, hax⟩ := ha.isUnit
   simp only [← hax, Ring.inverse_invertible, invOf_units, CFC.rpow_neg_one_eq_inv ax]
 
-grind_pattern CFC.rpow_neg_one_eq_inverse => Ring.inverse a, a ^ (-1 : ℝ)
-
 lemma rpow_neg [IsTopologicalRing A] [T2Space A] (a : Aˣ) (x : ℝ)
     (ha' : (0 : A) ≤ a := by cfc_tac) : (a : A) ^ (-x) = (↑a⁻¹ : A) ^ x := by
   suffices h₁ : ContinuousOn (fun z ↦ z ^ x) (Inv.inv '' (spectrum ℝ≥0 (a : A))) by
