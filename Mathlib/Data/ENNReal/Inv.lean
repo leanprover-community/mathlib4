@@ -193,7 +193,7 @@ protected theorem mul_div_right_comm : a * b / c = a / c * b := by
 protected theorem div_mul_div_cancel {b : ℝ≥0∞} (a c : ℝ≥0∞)
     (hb0 : b ≠ 0) (hbt : b ≠ ⊤) :
     a / b * (b / c) = a / c := by
-  rw [mul_div_assoc, ENNReal.div_mul_cancel hb0 hbt]
+  symm; rw [← mul_div_assoc, ENNReal.div_mul_cancel hb0 hbt]
 
 instance : InvolutiveInv ℝ≥0∞ where
   inv_inv a := by
