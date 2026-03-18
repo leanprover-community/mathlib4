@@ -374,6 +374,12 @@ theorem topologicalSpace_mono [TopologicalSpace F] [IsTopologicalAddGroup F] (h 
 
 variable {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {σ : 𝕜₁ →+* 𝕜₂} [Module 𝕜₁ E] in
 variable {F} in
+/-- Let `𝔖` be a family of bounded subsets of `F`, and `B : E × F → G` a bilinear map.
+If `B` is (jointly) continuous, then it is `𝔖`-**hypocontinuous**:
+in curried form, it defines a continuous linear map `E →L[𝕜] (UniformConvergenceCLM (.id 𝕜) G 𝔖)`.
+
+Note that, in full generality, the converse is not true.
+See also `ContinuousLinearMap.continuous_of_continuous_uncurry`. -/
 protected theorem continuous_of_continuous_uncurry [AddCommGroup G]
     {𝕜₃ : Type*} [NormedField 𝕜₃] [Module 𝕜₃ G]
     {τ : 𝕜₃ →+* 𝕜₂} [RingHomSurjective τ]
@@ -654,6 +660,11 @@ lemma toUniformConvergenceCLM_continuous [IsTopologicalAddGroup F]
     Continuous (ContinuousLinearMap.toUniformConvergenceCLM σ F 𝔖) :=
   continuous_id_of_le <| UniformConvergenceCLM.topologicalSpace_mono _ _ h
 
+/-- A bilinear map `B : E × F → G` which is (jointly) continuous is **hypocontinuous**:
+in curried form, it defines a continuous linear map `E →L[𝕜] F →L[𝕜] G`.
+
+In the normed setting, the converse is true, see `ContinuousLinearMap.continuous₂`.
+In general, however, hypocontinuity is a strictly weaker condition than joint continuity. -/
 theorem continuous_of_continuous_uncurry
     {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {σ : 𝕜₁ →+* 𝕜₂} [Module 𝕜₁ E]
     {τ : 𝕜₃ →+* 𝕜₂} [RingHomSurjective τ]
