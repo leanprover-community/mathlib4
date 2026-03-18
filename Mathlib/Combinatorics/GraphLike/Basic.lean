@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Fintype.Sigma
+public import Mathlib.Data.Sym.Sym2
 
 /-!
 # Typeclass for different kinds of graphs
@@ -23,6 +24,8 @@ of graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
   the field `dart` gives the type of darts, which is an oriented edge, of a graph-like structure,
   and the field `Adj` gives the adjacency relation between vertices.
 * `SymmGraphLike`: extends `GraphLike` for graph-like structures with symmetric darts.
+* `darts G` is the direct generalization of `Dart` in `SimpleGraph`. A couple functions, `dartSym2`
+   and `dartSymm`, are generalized from `SimpleGraph.Dart` to here.
 
 ## Notes
 
@@ -84,7 +87,6 @@ class SymmGraphLike (α β : outParam Type*) [SymmDartLike α β] (Gr : Type*)
 attribute [simp] SymmGraphLike.inv_mem_darts_iff
 
 open DartLike SymmDartLike GraphLike SymmGraphLike
-
 namespace GraphLike
 
 @[inherit_doc verts]
@@ -164,10 +166,12 @@ lemma step.adj (h : step G u v) : Adj G u v := by
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact ⟨d, hd, rfl, rfl⟩
 
+@[ext] theorem darts_ext (d₁ d₂ : darts G) (h : d₁.val = d₂.val) : d₁ = d₂ := Subtype.ext h
+
 /-- Two darts are said to be adjacent if they could be consecutive
 darts in a walk -- that is, the first dart's second vertex is equal to
 the second dart's first vertex. -/
-def DartAdj (α : Type*) [DartLike α β] (d d' : β) : Prop := (snd d : α) = (fst d' : α)
+def DartAdj (d d' : darts G) : Prop := (snd d.val : α) = (fst d'.val : α)
 
 end GraphLike
 
@@ -200,6 +204,48 @@ lemma Adj.symm (h : Adj G v w) : Adj G w v := symm_of (Adj G) h
 
 lemma adj_comm : Adj G v w ↔ Adj G w v := ⟨symm_of (Adj G), symm_of (Adj G)⟩
 
+/-- The two vertices of the dart as an unordered pair. -/
+def dartSym2 (d : darts G) : Sym2 α := s(fst d.val, snd d.val)
+
+@[simp]
+theorem dartSym2_mk {p : β} (h : p ∈ darts G) : dartSym2 (⟨p, h⟩ : darts G) = s(fst p, snd p) :=
+  rfl
+
+/-- The dart with reversed orientation from a given dart. -/
+def dartSymm (d : darts G) : darts G := ⟨inv α d.val, inv_mem_darts_iff.mpr d.prop⟩
+
+@[simp]
+theorem dartSymm_mk {p : β} (h : p ∈ darts G) :
+    dartSymm (⟨p, h⟩) = ⟨inv α p, inv_mem_darts_iff.mpr h⟩ :=
+  rfl
+
+@[simp]
+theorem dartSym2_symm (d : darts G) : dartSym2 (dartSymm d) = dartSym2 d := by
+  simp [dartSym2, dartSymm]
+
+@[simp]
+theorem dartSym2_comp_symm : dartSym2 ∘ dartSymm = (dartSym2 : darts G → Sym2 α) :=
+  funext dartSym2_symm
+
+@[simp]
+theorem dartSymm_dartSymm (d : darts G) : dartSymm (dartSymm d) = d :=
+  darts_ext _ _ <| inv_invol
+
+@[simp]
+theorem dartSymm_involutive : Function.Involutive (dartSymm : darts G → darts G) :=
+  dartSymm_dartSymm
+
+theorem dartSym2_eq_mk'_iff {d : darts G} :
+    dartSym2 d = s(u, v) ↔ toProd d.val = (u, v) ∨ toProd d.val = (v, u) := by
+  obtain ⟨p, hp⟩ := d
+  simp [toProd]
+
+theorem dartSym2_eq_mk'_iff' {d : darts G} :
+    dartSym2 d = s(u, v) ↔ fst d.val = u ∧ snd d.val = v ∨ fst d.val = v ∧ snd d.val = u := by
+  obtain ⟨p, hp⟩ := d
+  rw [dartSym2_eq_mk'_iff]
+  simp [toProd]
+
 end SymmGraphLike
 
 section GraphLikeProd
@@ -211,6 +257,8 @@ Some graph-like structures, such as `SimpleGraph` and `Digraph`, have `α × α`
 This section assumes `GraphLike α (α × α) Gr` to proves lemmas for `α × α`-valued darts.
 -/
 
+variable {d : α × α}
+
 instance : SymmDartLike α (α × α) where
   fst := Prod.fst
   snd := Prod.snd
@@ -219,19 +267,25 @@ instance : SymmDartLike α (α × α) where
   inv_fst := Prod.fst_swap
   inv_snd := Prod.snd_swap
 
-@[simp] lemma fst_eq {d : α × α} : fst d = d.fst := rfl
+@[simp] lemma fst_eq : fst d = d.fst := rfl
 
-@[simp] lemma snd_eq {d : α × α} : snd d = d.snd := rfl
+@[simp] lemma snd_eq : snd d = d.snd := rfl
 
-@[simp] lemma toProd_eq {d : α × α} : toProd d = d := rfl
+@[simp] lemma toProd_eq : toProd d = d := rfl
 
-@[simp] lemma inv_eq {d : α × α} : inv α d = d.swap := rfl
+@[simp] lemma inv_eq : inv α d = d.swap := rfl
 
 variable [GraphLike α (α × α) Gr]
 
 @[simp]
-lemma mem_darts_iff_adj : (u, v) ∈ darts G ↔ Adj G u v := by
+lemma mem_darts_iff_adj : d ∈ darts G ↔ Adj G d.fst d.snd := by
   simp [← exists_darts_iff_adj, fst, snd]
+
+instance [DecidableRel (Adj G)] : DecidablePred (· ∈ darts G) :=
+  fun d => decidable_of_iff (Adj G (fst d) (snd d)) (mem_darts_iff_adj.symm)
+
+/-- If `u` and `v` are adjacent, then there exists a step from `u` to `v`. -/
+def Adj.toStep (h : Adj G u v) : step G u v := ⟨(u, v), mem_darts_iff_adj.mpr h, rfl, rfl⟩
 
 instance : Subsingleton (step G u v) where
   allEq := by
@@ -239,5 +293,16 @@ instance : Subsingleton (step G u v) where
     obtain rfl := Prod.ext h1 h2
     exact Subtype.ext rfl
 
+@[simp]
+lemma step_val_eq {s : step G u v} : s.val = (u, v) := by
+  rw [Subsingleton.elim s s.adj.toStep]
+  rfl
+
 end GraphLikeProd
+
+theorem dartSym2_eq_iff [SymmGraphLike α (α × α) Gr] :
+    ∀ d₁ d₂ : darts G, dartSym2 d₁ = dartSym2 d₂ ↔ d₁ = d₂ ∨ d₁ = dartSymm d₂ := by
+  rintro ⟨p, hp⟩ ⟨q, hq⟩
+  simp
+
 end GraphLike
