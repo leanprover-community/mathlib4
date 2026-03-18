@@ -887,7 +887,6 @@ end Adjunction
 
 namespace Equivalence
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of categories lifts to an equivalence of their monoid objects. -/
 @[simps]
 def mapMon (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal] [e.IsMonoidal] :
