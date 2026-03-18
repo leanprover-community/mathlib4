@@ -38,8 +38,6 @@ public section
 
 noncomputable section
 
-set_option backward.isDefEq.respectTransparency false
-
 open Submodule Finsupp
 
 variable {R : Type*} [CommRing R] (I : Ideal R)
@@ -47,12 +45,14 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 
 namespace AdicCompletion
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- The canonical inclusion from the adic completion of `I ^ n • M` to
 the adic completion of `M`. -/
 def ofPowSMul (n : ℕ) : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)
     →ₗ[AdicCompletion I R] AdicCompletion I M := map I (I ^ n • ⊤ : Submodule R M).subtype
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofPowSMul_val_apply {a b c : ℕ} (h : c = b + a)
     {x : AdicCompletion I ↥(I ^ a • ⊤ : Submodule R M)} : (ofPowSMul I M a x).val c =
       powSMulQuotInclusion I M h ⊤ (x.val b) := by
@@ -60,12 +60,14 @@ theorem ofPowSMul_val_apply {a b c : ℕ} (h : c = b + a)
   refine Quotient.induction_on _ (x.val c) fun z ↦ ?_
   simp [powSMulQuotInclusion]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofPowSMul_val_apply_eq_zero {n i : ℕ} (h : i ≤ n)
     {x : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)} : (ofPowSMul I M n x).val i = 0 := by
   rw [ofPowSMul, map_val_apply]
   refine Quotient.induction_on _ (x.val i) fun z ↦ ?_
   simpa using pow_smul_top_le _ _ h z.prop
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofPowSMul_injective (n : ℕ) : Function.Injective (ofPowSMul I M n) := by
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
   intro x hx; ext i
@@ -75,21 +77,25 @@ theorem ofPowSMul_injective (n : ℕ) : Function.Injective (ofPowSMul I M n) := 
     LinearMap.map_eq_zero_iff _ (powSMulQuotInclusion_injective ..)] at hx
   simp [hx]
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma liftOfValZeroAux_exists {a b c : ℕ} {x : AdicCompletion I M} (h : c = b + a)
     (ha : x.val a = 0) : ∃ t, powSMulQuotInclusion I M h ⊤ t = x.val c := by
   simpa [← LinearMap.mem_range, range_powSMulQuotInclusion] using
     (val_apply_mem_smul_top_iff I (show a ≤ c by lia)).mpr ha
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxillary lift function used in the definition of `liftOfValZero`.
 Use `liftOfValZero` instead. -/
 def liftOfValZeroAux {a b c : ℕ} {x : AdicCompletion I M} (h : c = b + a) (ha : x.val a = 0) :
     ↥(I ^ a • ⊤ : Submodule R M) ⧸ I ^ b • (⊤ : Submodule R ↥(I ^ a • ⊤ : Submodule R M)) :=
   Exists.choose (liftOfValZeroAux_exists I h ha)
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma liftOfValZeroAux_prop {a b c : ℕ} {x : AdicCompletion I M} (h : c = b + a)
     (ha : x.val a = 0) : (powSMulQuotInclusion I M h ⊤) (liftOfValZeroAux I h ha) = x.val c :=
   Exists.choose_spec (liftOfValZeroAux_exists I h ha)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an element `x` in the adic completion of `M` whose projection to `M / I ^ n • M` is zero,
 `liftOfValZero` constructs the corresponding element in the adic completion of `I ^ n • M`. -/
 @[no_expose]
@@ -103,6 +109,7 @@ def liftOfValZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
       (show i + k + n = k + (i + n) by ring), LinearMap.comp_apply, liftOfValZeroAux_prop]
     exact x.prop (by lia)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofPowSMul_liftOfValZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
     ofPowSMul I M n (liftOfValZero I hxn) = x := by
@@ -112,6 +119,7 @@ theorem ofPowSMul_liftOfValZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val 
   replace h : i ≤ n := by lia
   rw [ofPowSMul_val_apply_eq_zero _ h, ← x.prop h, hxn, _root_.map_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem restrictScalars_ofPowSMul_range_eq_eval_ker {n : ℕ} :
     (ofPowSMul I M n).range.restrictScalars R = (eval I M n).ker := by
   refine le_antisymm (fun x hx ↦ ?_) (fun x hx ↦ ?_)
@@ -120,18 +128,21 @@ theorem restrictScalars_ofPowSMul_range_eq_eval_ker {n : ℕ} :
   simp only [LinearMap.mem_ker, coe_eval] at hx
   use liftOfValZero I hx; simp
 
-lemma map_lsum_smul_comp_finsuppSum {ι : Type*} (f : ι → R) :
-    map I (lsum R fun i ↦ f i • .id) ∘ₗ (finsuppSum I M ι) =
-      (lsum (AdicCompletion I R)) fun i ↦ ((of I R) (f i) • .id :
-    AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I M) := by
+set_option backward.isDefEq.respectTransparency false in
+lemma lsum_smul_comp_finsuppLEquivDirectSum_symm {ι : Type*} [DecidableEq ι] (f : ι → R) :
+    ((lsum (AdicCompletion I R)) fun i ↦
+      ((of I R) (f i) • .id : AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I M)) ∘ₗ
+        (finsuppLEquivDirectSum (AdicCompletion I R) (AdicCompletion I M) ι).symm.toLinearMap =
+    (map I (lsum R fun i ↦ f i • .id) ∘ₗ map I (finsuppLEquivDirectSum R M ι).symm.toLinearMap) ∘ₗ
+      (sum I (fun _ : ι ↦ M)) := by
   ext
-  -- simp [finsuppSum]
-  simp only [finsuppSum, LinearMap.coe_comp, coe_lsum, Function.comp_apply, lsingle_apply,
-    _root_.map_zero, sum_single_index, map_mk, mk_apply_coe, AdicCauchySequence.map_apply_coe,
-    LinearMap.smul_apply, LinearMap.id_coe, id_eq, map_smul, mkQ_apply, lsum_comp_lsingle,
-    smul_eval, smul_eq_mul, of_apply, Ideal.Quotient.mk_eq_mk]
+  simp only [LinearMap.coe_comp, coe_lsum, LinearEquiv.coe_coe, Function.comp_apply,
+    finsuppLEquivDirectSum_symm_lof, LinearMap.smul_apply, LinearMap.id_coe, id_eq, smul_zero,
+    sum_single_index, smul_eval, smul_eq_mul, of_apply, mkQ_apply, Ideal.Quotient.mk_eq_mk,
+    mk_apply_coe, sum_lof, map_mk, AdicCauchySequence.map_apply_coe, map_smul]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable {I} in
 @[stacks 05GG "(2)"]
 theorem pow_smul_top_eq_eval_ker {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I M n).ker := by
@@ -145,10 +156,15 @@ theorem pow_smul_top_eq_eval_ker {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I 
     ⇑(algebraMap R (AdicCompletion I R)) = of I R by rfl,
     ← restrictScalars_ofPowSMul_range_eq_eval_ker, restrictScalars_le,
     image_smul_top_eq_range_lsum]
-  simp only [SetLike.coe_sort_coe, ← map_lsum_smul_comp_finsuppSum]
-  rw [LinearMap.range_comp_of_range_eq_top _ (LinearMap.range_eq_top_of_surjective _ <|
-    Function.RightInverse.surjective (g := finsuppSumInv ..) (fun _ ↦ by
-      rw [← LinearMap.comp_apply, finsuppSum_comp_sumInv, LinearMap.id_apply]))]
+  simp only [SetLike.coe_sort_coe]
+  rw [← LinearMap.range_comp_of_range_eq_top (f := (finsuppLEquivDirectSum ..).symm.toLinearMap)
+    _ (by simp), lsum_smul_comp_finsuppLEquivDirectSum_symm,
+    LinearMap.range_comp_of_range_eq_top _ (LinearMap.range_eq_top_of_surjective _ <|
+      Function.RightInverse.surjective (g := sumInv ..) (fun _ ↦ by
+      rw [← LinearMap.comp_apply, sum_comp_sumInv, LinearMap.id_apply])),
+    LinearMap.range_comp_of_range_eq_top _ (LinearMap.range_eq_top_of_surjective _ <|
+      Function.RightInverse.surjective (g := map I (finsuppLEquivDirectSum R M s)) (fun _ ↦ by
+      simp [← LinearMap.comp_apply, map_comp]))]
   rintro _ ⟨x, rfl⟩
   have : Function.Surjective ((lsum R fun i : s ↦ i.val • (LinearMap.id : M →ₗ[R] M)).codRestrict
     (I ^ n • ⊤) (fun _ ↦ by simp [← hs, span_smul_eq, smul_top_eq_range_lsum])) := by
