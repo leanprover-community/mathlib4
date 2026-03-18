@@ -486,8 +486,10 @@ theorem card_edgeFinset_bipartiteDoubleCover [Fintype V] [DecidableRel G.Adj] :
 /-- If the double cover of `G` contains `completeBipartiteGraph α β`, then `G` also
 contains `completeBipartiteGraph α β`. -/
 theorem completeBipartiteGraph_isContained_bipartiteDoubleCover
-    {α β : Type*} [Fintype α] [Fintype β] [Nonempty α] [Nonempty β] :
+    {α β : Type*} [Finite α] [Finite β] [Nonempty α] [Nonempty β] :
     completeBipartiteGraph α β ⊑ G.bipartiteDoubleCover ↔ completeBipartiteGraph α β ⊑ G := by
+  have : Fintype α := .ofFinite α
+  have : Fintype β := .ofFinite β
   simp_rw [completeBipartiteGraph_isContained_iff]
   refine ⟨fun ⟨left, right, card_left, card_right, h⟩ ↦ ?_,
     fun ⟨left, right, card_left, card_right, h⟩ ↦ ?_⟩
