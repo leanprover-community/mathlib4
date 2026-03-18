@@ -115,8 +115,8 @@ theorem ConvexOn.map_condExp_le (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     (hφ_cvx : ConvexOn ℝ s φ) (hφ_cont : LowerSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s)
     (hs : IsClosed s) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
     φ ∘ μ[f | m] ≤ᵐ[μ] μ[φ ∘ f | m] := by
-  refine μ.forall_measure_restrict_isCountablySpanning_eq_zero
-    (isCountablySpanning_spanningSets (μ.trim hm)) (fun t ⟨n, hn⟩ => ?_) fun t ⟨n, hn⟩ => hn ▸ ?_
+  refine (isCountablySpanning_spanningSets (μ.trim hm)).null_of_forall_measure_restrict_null
+    (fun t ⟨n, hn⟩ => ?_) fun t ⟨n, hn⟩ => hn ▸ ?_
   · exact hn ▸ hm _ (measurableSet_spanningSets (μ.trim hm) n)
   have h1 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hf_int
   have h2 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hφ_int
@@ -171,17 +171,17 @@ theorem AEStronglyMeasurable.norm_condExp_le (hf : AEStronglyMeasurable f μ) :
 /-- **Conditional Jensen's inequality**: in a finite dimensional Banach space `X` with a measure
 `μ` that is σ-finite on a sub-σ-algebra `m`, if `φ : X → ℝ` is convex, then for any `f : α → X` such
 that `f` and `φ ∘ f` are integrable, we have `φ (𝔼[f | m]) ≤ᵐ[μ] 𝔼[φ ∘ f | m]`. -/
-theorem ConvexOn.map_condExp_le_finiteDimensional [FiniteDimensional ℝ E] (hm : m ≤ mα)
+theorem ConvexOn.map_condExp_le_of_finiteDimensional [FiniteDimensional ℝ E] (hm : m ≤ mα)
     [SigmaFinite (μ.trim hm)] (hφ_cvx : ConvexOn ℝ univ φ) (hf_int : Integrable f μ)
     (hφ_int : Integrable (φ ∘ f) μ) :
     φ ∘ μ[f | m] ≤ᵐ[μ] μ[φ ∘ f | m] :=
   hφ_cvx.map_condExp_le_univ hm
     (continuousOn_univ.1 (hφ_cvx.continuousOn isOpen_univ)).lowerSemicontinuous hf_int hφ_int
 
-theorem ConcaveOn.condExp_map_le_finiteDimensional [FiniteDimensional ℝ E] (hm : m ≤ mα)
+theorem ConcaveOn.condExp_map_le_of_finiteDimensional [FiniteDimensional ℝ E] (hm : m ≤ mα)
     [SigmaFinite (μ.trim hm)] (hφ_cvx : ConcaveOn ℝ univ φ) (hf_int : Integrable f μ)
     (hφ_int : Integrable (φ ∘ f) μ) :
     μ[φ ∘ f | m] ≤ᵐ[μ] φ ∘ μ[f | m] := by
-  filter_upwards [hφ_cvx.neg.map_condExp_le_finiteDimensional hm hf_int hφ_int.neg,
+  filter_upwards [hφ_cvx.neg.map_condExp_le_of_finiteDimensional hm hf_int hφ_int.neg,
     condExp_neg (φ ∘ f) m] with a h ha
   simp_all [Pi.neg_comp]

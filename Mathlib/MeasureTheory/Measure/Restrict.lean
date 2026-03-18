@@ -112,7 +112,7 @@ theorem restrict_apply' (hs : MeasurableSet s) : μ.restrict s t = μ (t ∩ s) 
     Measure.restrict_toOuterMeasure_eq_toOuterMeasure_restrict hs,
     OuterMeasure.restrict_apply s t _, toOuterMeasure_apply]
 
-theorem IsCountablySpanning.null_of_forall_inter_null {C : Set (Set α)}
+theorem _root_.IsCountablySpanning.null_of_forall_inter_null {C : Set (Set α)}
     (hC : IsCountablySpanning C) (ht : ∀ t ∈ C, μ (s ∩ t) = 0) :
     μ s = 0 := by
   obtain ⟨t, ht1, ht2⟩ := hC
@@ -124,7 +124,7 @@ theorem forall_measure_inter_isCountablySpanning_eq_zero {C : Set (Set α)}
   mp := hC.null_of_forall_inter_null
   mpr h t _ := measure_inter_null_of_null_left t h
 
-theorem IsCountablySpanning.null_of_forall_measure_restrict_null {C : Set (Set α)}
+theorem _root_.IsCountablySpanning.null_of_forall_measure_restrict_null {C : Set (Set α)}
     (hC : IsCountablySpanning C) (hm : C ⊆ MeasurableSet) (ht : ∀ t ∈ C, μ.restrict t s = 0) :
     μ s = 0 := by
   rw [← forall_measure_inter_isCountablySpanning_eq_zero hC]
