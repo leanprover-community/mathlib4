@@ -310,10 +310,10 @@ theorem Copy.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj]
   obtain ⟨v, h⟩ := exists_maximal_degree_vertex G
   grind [degree_le_maxDegree H (f v), f.degree_le v]
 
-theorem IsContained.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj]
-    [DecidableRel H.Adj] (hGH : G ⊑ H) : G.maxDegree ≤ H.maxDegree := by
-  obtain ⟨f⟩ := hGH
-  exact Copy.max_degree_le f
+theorem IsContained.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
+    (h : G ⊑ H) : G.maxDegree ≤ H.maxDegree := by
+  have ⟨f⟩ := h
+  exact f.max_degree_le
 
 end IsContained
 
