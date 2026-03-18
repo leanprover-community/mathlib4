@@ -347,6 +347,7 @@ lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
       indicator_of_notMem (mem_singleton_iff.not.mpr hx'.ne')]
     abel
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Compute the Mellin transform of the modifying term used to kill off the constants at
 `0` and `∞`. -/
 lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :

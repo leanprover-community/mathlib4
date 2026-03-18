@@ -255,6 +255,7 @@ local instances in this section.
 open Classical in
 /-- The distance function on a product space `Π n, E n`, given by `dist x y = (1/2)^n` where `n` is
 the first index at which `x` and `y` differ. -/
+@[instance_reducible]
 protected def dist : Dist (∀ n, E n) :=
   ⟨fun x y => if x ≠ y then (1 / 2 : ℝ) ^ firstDiff x y else 0⟩
 
@@ -396,6 +397,7 @@ Warning: this definition makes sure that the topology is defeq to the original p
 but it does not take care of a possible uniformity. If the `E n` have a uniform structure, then
 there will be two non-defeq uniform structures on `Π n, E n`, the product one and the one coming
 from the metric structure. In this case, use `metricSpaceOfDiscreteUniformity` instead. -/
+@[instance_reducible]
 protected def metricSpace : MetricSpace (∀ n, E n) :=
   MetricSpace.ofDistTopology dist PiNat.dist_self PiNat.dist_comm PiNat.dist_triangle
     isOpen_iff_dist PiNat.eq_of_dist_eq_zero
@@ -403,6 +405,7 @@ protected def metricSpace : MetricSpace (∀ n, E n) :=
 /-- Metric space structure on `Π (n : ℕ), E n` when the spaces `E n` have the discrete uniformity,
 where the distance is given by `dist x y = (1/2)^n`, where `n` is the smallest index where `x` and
 `y` differ. Not registered as a global instance by default. -/
+@[implicit_reducible]
 protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, UniformSpace (E n)]
     (h : ∀ n, uniformity (E n) = 𝓟 SetRel.id) : MetricSpace (∀ n, E n) :=
   haveI : ∀ n, DiscreteTopology (E n) := fun n => discreteTopology_of_discrete_uniformity (h n)
@@ -438,6 +441,7 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
 /-- Metric space structure on `ℕ → ℕ` where the distance is given by `dist x y = (1/2)^n`,
 where `n` is the smallest index where `x` and `y` differ.
 Not registered as a global instance by default. -/
+@[implicit_reducible]
 def metricSpaceNatNat : MetricSpace (ℕ → ℕ) :=
   PiNat.metricSpaceOfDiscreteUniformity fun _ => rfl
 
@@ -795,6 +799,7 @@ one may put an extended distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+@[instance_reducible]
 protected def edist : EDist (∀ i, F i) where
   edist x y := ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (y i))
 
@@ -823,11 +828,13 @@ attribute [scoped instance] PiCountable.edist
 section PseudoEMetricSpace
 variable [∀ i, PseudoEMetricSpace (F i)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a countable family of extended pseudometric spaces,
 one may put an extended distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+@[instance_reducible]
 protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
   edist_self x := by simp [edist_eq_tsum]
   edist_comm x y := by simp [edist_eq_tsum, edist_comm]
@@ -892,6 +899,7 @@ one may put an extended distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+@[instance_reducible]
 protected def emetricSpace : EMetricSpace (∀ i, F i) where
   eq_of_edist_eq_zero := by simp [edist_eq_tsum, funext_iff]
 
@@ -907,6 +915,7 @@ variable [∀ i, PseudoMetricSpace (F i)] {x y : ∀ i, F i} {i : ι}
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
+@[instance_reducible]
 protected def dist : Dist (∀ i, F i) where
   dist x y := ∑' i, min (2⁻¹ ^ encode i) (dist (x i) (y i))
 
@@ -934,6 +943,7 @@ set_option linter.flexible false in
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
+@[instance_reducible]
 protected def pseudoMetricSpace : PseudoMetricSpace (∀ i, F i) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
     (fun x y ↦ by simp [dist_eq_tsum]; positivity) fun x y ↦ by
@@ -953,6 +963,7 @@ variable [∀ i, MetricSpace (F i)]
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+@[implicit_reducible]
 protected def metricSpace : MetricSpace (∀ i, F i) :=
   EMetricSpace.toMetricSpaceOfDist dist (by simp) (by simp [edist_dist])
 

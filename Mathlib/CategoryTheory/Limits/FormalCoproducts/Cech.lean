@@ -36,6 +36,49 @@ noncomputable def power (U : FormalCoproduct.{w} C) (α : Type t)
   I := α → U.I
   obj i := ∏ᶜ (U.obj ∘ i)
 
+section
+
+variable (U : FormalCoproduct.{w} C) (α : Type) [HasProductsOfShape α C]
+
+variable {α} in
+/-- The projection `U.power α ⟶ U` for each `a : α`. -/
+@[simps]
+noncomputable def powerπ (a : α) : U.power α ⟶ U where
+  f i := i a
+  φ _ := Pi.π _ a
+
+/-- The (limit) fan expressing that `U.power α` is a product of copies of
+`U` indexed by `α`. -/
+noncomputable abbrev powerFan :
+    Fan (fun (_ : α) ↦ U) :=
+  Fan.mk (U.power α) U.powerπ
+
+set_option backward.isDefEq.respectTransparency false in
+/-- `U.power α` identifies to the product of copies of `U` indexed by `α`. -/
+noncomputable def isLimitPowerFan : IsLimit (U.powerFan α) :=
+  mkFanLimit _
+    (fun s ↦
+      { f i a := (s.proj a).f i
+        φ i := Pi.lift (fun a ↦ (s.proj a).φ i) })
+    (fun _ _ ↦ by ext <;> simp)
+    (fun s m hm ↦ by
+      obtain ⟨f, φ⟩ := m
+      obtain rfl : f = fun i a ↦ (s.proj a).f i := by
+        ext i
+        dsimp
+        ext a
+        exact congr_fun (congr_arg FormalCoproduct.Hom.f (hm a)) i
+      ext i
+      · rfl
+      · dsimp
+        ext a
+        specialize hm a
+        rw [hom_ext_iff] at hm
+        obtain ⟨_, hm⟩ := hm
+        simpa using hm i)
+
+end
+
 /-- For any morphism `f : U ⟶ V` in `FormalCoproduct C` and a type `α`,
 this is the induced map `U.power α ⟶ V.power α`. -/
 @[simps -fullyApplied]
@@ -45,11 +88,13 @@ noncomputable def powerMap {U V : FormalCoproduct.{w} C} (f : U ⟶ V) (α : Typ
   f i := f.f ∘ i
   φ i := Pi.map (fun a ↦ f.φ (i a))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma powerMap_id (U : FormalCoproduct.{w} C) (α : Type t) [HasProductsOfShape α C] :
     powerMap (𝟙 U) α = 𝟙 _ := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma powerMap_comp {U V W : FormalCoproduct.{w} C} (f : U ⟶ V) (g : V ⟶ W) (α : Type t)
     [HasProductsOfShape α C] :
@@ -80,12 +125,14 @@ noncomputable def mapPower (U : FormalCoproduct.{w} C) {α β : Type t}
   f i := i ∘ f
   φ _ := Pi.lift (fun _ ↦ Pi.π _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mapPower_id (U : FormalCoproduct.{w} C) (α : Type t)
     [HasProductsOfShape α C] :
     U.mapPower (id : α → α) = 𝟙 _ := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapPower_comp (U : FormalCoproduct.{w} C) {α β γ : Type t}
     [HasProductsOfShape α C] [HasProductsOfShape β C] [HasProductsOfShape γ C]
@@ -99,6 +146,7 @@ lemma mapPower_comp (U : FormalCoproduct.{w} C) {α β γ : Type t}
     simp only [Category.comp_id, Category.assoc, Pi.lift_π]
     apply Pi.lift_π
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapPower_powerMap {U V : FormalCoproduct.{w} C} (f : U ⟶ V)
     {α β : Type t} [HasProductsOfShape α C] [HasProductsOfShape β C] (g : α → β) :
@@ -107,12 +155,20 @@ lemma mapPower_powerMap {U V : FormalCoproduct.{w} C} (f : U ⟶ V)
   · cat_disch
   · dsimp
     ext
-    simp only [Function.comp_apply, limit.lift_map, Cones.postcompose, Fan.mk_pt, Category.comp_id,
+    simp only [Function.comp_apply, limit.lift_map, Cone.postcompose, Fan.mk_pt, Category.comp_id,
       Category.assoc, limit.lift_π, Fan.mk_π_app, Pi.map_π]
     apply limit.lift_π
 
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma mapPower_π (U : FormalCoproduct.{w} C) {α β : Type}
+    [HasProductsOfShape α C] [HasProductsOfShape β C] (f : α → β) (a : α) :
+    mapPower U f ≫ U.powerπ a = U.powerπ (f a) := by
+  ext <;> simp
+
 attribute [local simp] mapPower_comp mapPower_powerMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `(Type t)ᵒᵖ ⥤ FormalCoproduct.{w} C ⥤ FormalCoproduct.{max w t} C`
 which sends a type `α` and `U : FormalCoproduct C` to `U.power α`. -/
 @[simps]

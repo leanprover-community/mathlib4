@@ -73,6 +73,7 @@ noncomputable def mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁
   GradedObject.mapMap (((mapBifunctor F I J).map f).app Y₁ ≫
     ((mapBifunctor F I J).obj X₂).map g) p
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁ ⟶ X₂)
     {Y₁ Y₂ : GradedObject J C₂} (g : Y₁ ⟶ Y₂)
@@ -136,6 +137,7 @@ end
 
 attribute [local simp] mapBifunctorMapMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` and a map `p : I × J → K`, this is the
 functor `GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject K C₃` sending
 `X : GradedObject I C₁` and `Y : GradedObject J C₂` to the `K`-graded object sending

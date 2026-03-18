@@ -132,6 +132,7 @@ namespace Partition
 instance : Inhabited (Partition G) := ⟨G.selfColoring.toPartition⟩
 end Partition
 
+set_option backward.isDefEq.respectTransparency false in
 theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorable n := by
   constructor
   · rintro ⟨P, hf, hc⟩

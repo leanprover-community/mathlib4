@@ -90,6 +90,7 @@ variable (β)
 
 /-- The equivalence relation of being almost everywhere equal for almost everywhere strongly
 measurable functions. -/
+@[implicit_reducible]
 def Measure.aeEqSetoid (μ : Measure α) : Setoid { f : α → β // AEStronglyMeasurable f μ } :=
   ⟨fun f g => (f : α → β) =ᵐ[μ] g, fun {f} => ae_eq_refl f.val, fun {_ _} => ae_eq_symm,
     fun {_ _ _} => ae_eq_trans⟩

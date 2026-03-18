@@ -79,8 +79,7 @@ theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
     le_antisymm hdim (finrank_add_finrank_le_of_disjoint hdisjoint)
   rw [hdim]
   convert s.finrank_sup_add_finrank_inf_eq t
-  rw [h_finrank_inf]
-  rfl
+  rw [h_finrank_inf, add_zero]
 
 theorem isCompl_iff_disjoint [FiniteDimensional K V] (s t : Submodule K V)
     (hdim : finrank K V ≤ finrank K s + finrank K t) :

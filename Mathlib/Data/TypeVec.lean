@@ -669,6 +669,7 @@ theorem toSubtype'_of_subtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n 
   <;> dsimp only [id, toSubtype', comp, ofSubtype'] at *
   <;> simp [*]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem subtypeVal_toSubtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n Prop) :
     subtypeVal r ⊚ toSubtype' r = fun i x => prod.mk i x.1.fst x.1.snd := by
   ext i x
