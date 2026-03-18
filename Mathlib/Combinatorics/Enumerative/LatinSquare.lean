@@ -175,7 +175,8 @@ def toLatinSquare : (LatinRectangle n n α) → (LatinSquare n α)
       once_per_row := A.once_per_row,
       m_le_n := A.m_le_n,
       once_per_column j :=
-        Fintype.bijective_iff_injective_and_card _ |>.mpr ⟨A.distinct_col_entries j, A.exactly_n_symbols.symm⟩
+        Fintype.bijective_iff_injective_and_card _ |>.mpr 
+          ⟨A.distinct_col_entries j, A.exactly_n_symbols.symm⟩
       }
 
 instance : Coe (LatinRectangle n n α) (LatinSquare n α) where
