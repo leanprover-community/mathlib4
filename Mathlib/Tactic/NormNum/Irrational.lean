@@ -38,9 +38,6 @@ open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
 section lemmas
 
-set_option backward.isDefEq.respectTransparency false in
--- TODO: fix non-terminal simp (acting on three goals, with different simp sets)
-set_option linter.flexible false in
 private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
     (h : ∀ p : ℚ, q ^ a ≠ p ^ b) (hb : 0 < b) (hq : 0 ≤ q) :
     Irrational (Real.rpow q (a / b : ℚ)) := by
@@ -49,9 +46,8 @@ private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
   intro x hx
   absurd h x
   rify
-  rw [hx, ← Real.rpow_mul_natCast, div_mul_cancel₀] <;> simp
-  · lia
-  · assumption
+  rw [hx, ← Real.rpow_mul_natCast (by simpa), div_mul_cancel₀ _ (by simp; lia)]
+  simp
 
 private theorem not_power_nat_pow {n p q : ℕ}
     (h_coprime : p.Coprime q)
@@ -222,7 +218,6 @@ private theorem irrational_rpow_nat_rat {x y : ℝ} {x_num y_num y_den k : ℕ}
     Irrational (x ^ y) :=
   irrational_rpow_rat_rat_of_num hx_isNat.to_isNNRat hy_isNNRat (by simp) hy_coprime hn1 hn2
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
     (hx_isNNRat : IsNNRat x num den)
     (hx_coprime : Nat.Coprime num den)
@@ -234,7 +229,6 @@ private theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
     hn1 hn2
   exact ⟨Invertible.mk (1/2) (by simp) (by simp), by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem irrational_sqrt_rat_of_den {x : ℝ} {num den den_k : ℕ}
     (hx_isNNRat : IsNNRat x num den)
     (hx_coprime : Nat.Coprime num den)

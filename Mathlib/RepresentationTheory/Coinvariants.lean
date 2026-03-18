@@ -299,7 +299,6 @@ noncomputable section
 
 variable [Group G] (A : Rep k G) (S : Subgroup G) [S.Normal]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` restricts to a `G`-representation on
 the kernel of the quotient map to the `S`-coinvariants `A_S`. -/
 abbrev toCoinvariantsKer : Rep k G := Rep.of (A.ρ.toCoinvariantsKer S)
@@ -319,7 +318,6 @@ lemma toCoinvariantsMkQ_hom :
 the coinvariants of `ρ|_S`. -/
 abbrev quotientToCoinvariants : Rep k (G ⧸ S) := ofQuotient (toCoinvariants A S) S
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` induces a short exact sequence of
 `G`-representations `0 ⟶ Ker(mk) ⟶ A ⟶ A_S ⟶ 0` where `mk` is the quotient map to the
 `S`-coinvariants `A_S`. -/

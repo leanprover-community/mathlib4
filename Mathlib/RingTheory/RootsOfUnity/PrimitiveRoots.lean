@@ -699,7 +699,6 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
     rcases hξ with ⟨i, hin, hi, H⟩
     exact ⟨i, ⟨hin, hi.symm⟩, H⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence of coprime powers of primitive roots. If a * b ≡ 1 (mod n), then x ↦ x ^ a and
     x ↦ x ^ b restricts to a bijection on the n-th primitive roots. -/
 @[simps]

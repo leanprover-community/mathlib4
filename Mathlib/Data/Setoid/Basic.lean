@@ -70,6 +70,7 @@ theorem comm' (s : Setoid α) {x y} : s x y ↔ s y x :=
 open scoped Function -- required for scoped `on` notation
 
 /-- The kernel of a function is an equivalence relation. -/
+@[implicit_reducible]
 def ker (f : α → β) : Setoid α :=
   ⟨(· = ·) on f, eq_equivalence.comap f⟩
 
@@ -88,6 +89,7 @@ theorem ker_def {f : α → β} {x y : α} : ker f x y ↔ f x = f y :=
 /-- Given types `α`, `β`, the product of two equivalence relations `r` on `α` and `s` on `β`:
 `(x₁, x₂), (y₁, y₂) ∈ α × β` are related by `r.prod s` iff `x₁` is related to `y₁`
 by `r` and `x₂` is related to `y₂` by `s`. -/
+@[implicit_reducible]
 protected def prod (r : Setoid α) (s : Setoid β) :
     Setoid (α × β) where
   r x y := r x.1 y.1 ∧ s x.2 y.2
@@ -196,15 +198,12 @@ theorem top_def : ⇑(⊤ : Setoid α) = ⊤ :=
 theorem bot_def : ⇑(⊥ : Setoid α) = (· = ·) :=
   rfl
 
-set_option backward.whnf.reducibleClassField false in
 @[simp] lemma mk_eq_top {r : α → α → Prop} (iseqv) : mk r iseqv = ⊤ ↔ r = ⊤ := by
   simp [eq_iff_rel_eq]
 
-set_option backward.whnf.reducibleClassField false in
 @[simp] lemma mk_eq_bot {r : α → α → Prop} (iseqv) : mk r iseqv = ⊥ ↔ r = (· = ·) := by
   simp [eq_iff_rel_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s x y := by
   rw [_root_.eq_top_iff, Setoid.le_def, Setoid.top_def]
   simp only [Pi.top_apply, Prop.top_eq_true, forall_true_left]
@@ -305,7 +304,6 @@ end EqvGen
 
 open Function
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A function from α to β is injective iff its kernel is the bottom element of the complete lattice
 of equivalence relations on α. -/
 theorem injective_iff_ker_bot (f : α → β) : Injective f ↔ ker f = ⊥ :=
@@ -394,12 +392,14 @@ variable {r f}
 /-- Given a function `f : α → β` and equivalence relation `r` on `α`, the equivalence
 closure of the relation on `f`'s image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are
 related to the elements of `f⁻¹(y)` by `r`.' -/
+@[implicit_reducible]
 def map (r : Setoid α) (f : α → β) : Setoid β :=
   Relation.EqvGen.setoid (Relation.Map r f f)
 
 /-- Given a surjective function f whose kernel is contained in an equivalence relation r, the
 equivalence relation on f's codomain defined by x ≈ y ↔ the elements of f⁻¹(x) are related to
 the elements of f⁻¹(y) by r. -/
+@[implicit_reducible]
 def mapOfSurjective (r : Setoid α) (f : α → β) (h : ker f ≤ r) (hf : Surjective f) : Setoid β :=
   ⟨Relation.Map r f f, Relation.map_equivalence r.iseqv f hf h⟩
 
@@ -473,7 +473,6 @@ def sigmaQuotientEquivOfLe {r s : Setoid α} (hle : r ≤ s) :
 
 end Setoid
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) ↔ s = ⊤ := by
   simp only [_root_.subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply]

@@ -35,14 +35,14 @@ Throughout this file, `F : C ⥤ D` is a functor between categories `C` and `D`.
 * `Functor.relativelyRepresentable`: A morphism `f : X ⟶ Y` in `D` is said to be relatively
   representable with respect to `F`, if for any `g : F.obj a ⟶ Y`, there exists a pullback square
   of the following form
-```
+  ```
   F.obj b --F.map snd--> F.obj a
       |                     |
      fst                    g
       |                     |
       v                     v
       X ------- f --------> Y
-```
+  ```
 
 * `MorphismProperty.relative`: Given a morphism property `P` in `C`, a morphism `f : X ⟶ Y` in `D`
   satisfies `P.relative F` if it is relatively representable and for any `g : F.obj a ⟶ Y`, the
@@ -322,6 +322,7 @@ category `Cᵒᵖ ⥤ Type v` satisfies the morphism property `P.presheaf` iff:
 * The morphism is representable.
 * For any morphism `g : F.obj a ⟶ G`, the property `P` holds for any represented pullback of
   `f` by `g`.
+
 This is implemented as a special case of the more general notion of `P.relative`, to the case when
 the functor `F` is `yoneda`. -/
 abbrev presheaf : MorphismProperty (Cᵒᵖ ⥤ Type v₁) := P.relative yoneda
@@ -574,6 +575,7 @@ set_option backward.isDefEq.respectTransparency false in
 1. `C` has binary products,
 2. `D` has pullbacks, binary products and a terminal object, and
 3. `F : C ⥤ D` is full and preserves binary products.
+
 For an object `X` in a category `D`, if the diagonal morphism `X ⟶ X × X` is relatively
 representable, then every morphism of the form `F.obj a ⟶ X` is relatively representable with
 respect to `F`.
@@ -599,6 +601,7 @@ lemma of_diag {X : D} (h : F.relativelyRepresentable (Limits.diag X))
 1. `C` has binary products and pullbacks,
 2. `D` has pullbacks, binary products and a terminal object, and
 3. `F : C ⥤ D` is full and preserves binary products and pullbacks.
+
 For a morphism `g : F.obj a ⟶ pullback (terminal.from X) (terminal.from X)`,
 the canonical morphism from `F.obj a` to
 `pullback ((g ≫ pullback.fst _ _) ≫ terminal.from X) ((g ≫ pullback.snd _ _) ≫ terminal.from X)`
@@ -623,6 +626,7 @@ set_option backward.isDefEq.respectTransparency false in
 1. `C` has binary products and pullbacks,
 2. `D` has pullbacks, binary products and a terminal object, and
 3. `F : C ⥤ D` is full and preserves binary products and pullbacks.
+
 For an object `X` in a category `D`, if every morphism of the form `F.obj a ⟶ X` is relatively
 representable with respect to `F`, so is the diagonal morphism `X ⟶ X × X`.
 -/
@@ -653,6 +657,7 @@ lemma diag_of_map_from_obj [HasPullbacks C] [PreservesLimitsOfShape WalkingCospa
 1. `C` has binary products and pullbacks,
 2. `D` has pullbacks, binary products and a terminal object, and
 3. `F : C ⥤ D` is full and preserves binary products and pullbacks.
+
 For an object `X` in a category `D`, the diagonal morphism `X ⟶ X × X` is relatively representable
 with respect to `F` if and only if so is every morphism of the form `F.obj a ⟶ X`.
 -/

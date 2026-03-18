@@ -66,7 +66,8 @@ end Monoid
 open Monoid
 
 /-- Torsion monoids are really groups. -/
-@[to_additive /-- Torsion additive monoids are really additive groups -/]
+@[to_additive (attr := implicit_reducible)
+  /-- Torsion additive monoids are really additive groups -/]
 noncomputable def IsTorsion.group [Monoid G] (tG : IsTorsion G) : Group G :=
   { ‹Monoid G› with
     inv := fun g => g ^ (orderOf g - 1)
@@ -298,11 +299,18 @@ theorem torsion_eq_torsion_submonoid : CommMonoid.torsion G = (torsion G).toSubm
 @[to_additive]
 theorem mem_torsion (g : G) : g ∈ torsion G ↔ IsOfFinOrder g := Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma isMulTorsionFree_iff_torsion_eq_bot : IsMulTorsionFree G ↔ CommGroup.torsion G = ⊥ := by
   rw [isMulTorsionFree_iff_not_isOfFinOrder, eq_bot_iff, SetLike.le_def]
   simp [not_imp_not, CommGroup.mem_torsion]
+
+@[to_additive]
+lemma isTorsion_quotient_range_powMonoidHom {n : ℕ} (hn : n ≠ 0) :
+    Monoid.IsTorsion (G ⧸ (powMonoidHom (α := G) n).range) := by
+  simp only [Monoid.IsTorsion, isOfFinOrder_iff_pow_eq_one]
+  refine fun g ↦ QuotientGroup.induction_on g fun a ↦ ⟨n, hn.pos, ?_⟩
+  rw [← QuotientGroup.mk_pow, QuotientGroup.eq_one_iff]
+  simp
 
 variable (p : ℕ) [hp : Fact p.Prime]
 

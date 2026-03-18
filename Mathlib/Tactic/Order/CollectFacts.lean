@@ -60,7 +60,7 @@ abbrev CollectFactsM := StateT CollectFactsState AtomM
 
 /-- Adds `type` to the state. It checks if the type has already been added up to
 `reducible_and_instances` transparency. Returns the type that is added to the state and
-defenitionally equal (but may be not syntactically equal) to `type`. -/
+definitionally equal (but may be not syntactically equal) to `type`. -/
 def addType {u : Level} (type : Q(Type u)) : CollectFactsM Q(Type u) := do
   match ← (← get).keys.findM? (withReducibleAndInstances <| isDefEq type ·) with
   | none =>

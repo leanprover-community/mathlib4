@@ -79,7 +79,6 @@ set_option backward.isDefEq.respectTransparency false in
   rw [← Submodule.neg_mem_iff]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma orthRadius_le_orthRadius_iff {s : Sphere P} {p q : P} :
     s.orthRadius p ≤ s.orthRadius q ↔ p = q ∨ q = s.center := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
