@@ -47,7 +47,7 @@ lemma Convex.condExp_mem [IsFiniteMeasure μ] [HereditarilyLindelofSpace E] (hm 
   exact hb
 
 /-- Conditional Jensen's inequality for hereditarily Lindelof Spaces. -/
-private lemma ConvexOn.map_condExp_le_hereditarilyLindelof [IsFiniteMeasure μ]
+private lemma ConvexOn.map_condExp_le_of_hereditarilyLindelofSpace [IsFiniteMeasure μ]
     [HereditarilyLindelofSpace E] (hm : m ≤ mα) (hφ_cvx : ConvexOn ℝ s φ)
     (hφ_cont : LowerSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s) (hs : IsClosed s)
     (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
@@ -64,7 +64,7 @@ private lemma ConvexOn.map_condExp_le_hereditarilyLindelof [IsFiniteMeasure μ]
 
 set_option backward.isDefEq.respectTransparency false
 /-- Conditional Jensen's inequality for finite measures. -/
-private theorem ConvexOn.map_condExp_le_finiteMeasure [IsFiniteMeasure μ] (hm : m ≤ mα)
+private theorem ConvexOn.map_condExp_le_of_isFiniteMeasure [IsFiniteMeasure μ] (hm : m ≤ mα)
     (hφ_cvx : ConvexOn ℝ s φ) (hφ_cont : LowerSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s)
     (hs : IsClosed s) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
     φ ∘ μ[f | m] ≤ᵐ[μ] μ[φ ∘ f | m] := by
@@ -99,7 +99,7 @@ private theorem ConvexOn.map_condExp_le_finiteMeasure [IsFiniteMeasure μ] (hm :
     φ ∘ μ[f | m]
       =ᵐ[μ] φY ∘ μ[fY | m] := by filter_upwards [lem2] with a ha; simp [φY, ha]
     _ ≤ᵐ[μ] μ[φY ∘ fY | m] := by
-      refine (hφ_cvx.comp_linearMap Y.subtype).map_condExp_le_hereditarilyLindelof
+      refine (hφ_cvx.comp_linearMap Y.subtype).map_condExp_le_of_hereditarilyLindelofSpace
         (s := Y.subtypeL ⁻¹' s) hm ?_ ?_ ?_ hfY_int (Integrable.congr hφ_int lem3)
       · exact hφ_cont.comp (by fun_prop) fun x => by grind
       · filter_upwards [lem0, hf] with a ha hb
@@ -122,8 +122,8 @@ theorem ConvexOn.map_condExp_le (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
   have h2 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hφ_int
   have : IsFiniteMeasure (μ.restrict (spanningSets (μ.trim hm) n)) := isFiniteMeasure_restrict.2
     ((le_trim hm).trans_lt (measure_spanningSets_lt_top (μ.trim hm) n)).ne
-  have h3 := hφ_cvx.map_condExp_le_finiteMeasure (μ := μ.restrict (spanningSets (μ.trim hm) n)) hm
-    hφ_cont (ae_restrict_of_ae hf) hs hf_int.restrict hφ_int.restrict
+  have h3 := hφ_cvx.map_condExp_le_of_isFiniteMeasure (μ := μ.restrict (spanningSets (μ.trim hm) n))
+    hm hφ_cont (ae_restrict_of_ae hf) hs hf_int.restrict hφ_int.restrict
   filter_upwards [h1, h2, h3] with a ha hb hc
   simpa [← ha, ← hb]
 

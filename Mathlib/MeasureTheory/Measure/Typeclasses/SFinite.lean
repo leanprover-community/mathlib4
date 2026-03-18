@@ -210,10 +210,9 @@ some member of the countable family of finite measure spanning sets has positive
 theorem exists_measure_inter_spanningSets_pos [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
     (s : Set α) : (∃ n, 0 < μ (s ∩ spanningSets μ n)) ↔ 0 < μ s := by
   contrapose!
-  simp only [nonpos_iff_eq_zero]
-  exact ⟨fun h => forall_measure_inter_isCountablySpanning_eq_zero
-    (isCountablySpanning_spanningSets μ) fun t ⟨n, hn⟩ => hn ▸ h n,
-    fun h n => measure_mono_null inter_subset_left h⟩
+  rw [nonpos_iff_eq_zero, ← forall_measure_inter_isCountablySpanning_eq_zero
+    (isCountablySpanning_spanningSets μ)]
+  simp
 
 /-- If the union of a.e.-disjoint null-measurable sets has finite measure, then there are only
 finitely many members of the union whose measure exceeds any given positive number. -/
