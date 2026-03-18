@@ -7,6 +7,10 @@ module
 
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.FieldTheory.Separable
+public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+public import Mathlib.RingTheory.Length
+
+import Mathlib.RingTheory.Finiteness.Quotient
 
 /-! # Instances on residue fields -/
 
@@ -61,3 +65,43 @@ instance [p.IsPrime] [q.IsPrime] [Algebra.IsIntegral A B] :
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
     simp [RingHom.algebraMap_toAlgebra, ← IsScalarTower.algebraMap_apply]
   refine .extendScalars (Ideal.injective_algebraMap_quotient_residueField p)
+
+namespace IsLocalRing
+
+instance ResidueField.algebraOfIsIntegral {k : Type*} [IsLocalRing R] [Field k]
+    [Algebra R k] [Algebra.IsIntegral R k] : Algebra (ResidueField R) k :=
+  (Ideal.Quotient.lift (maximalIdeal R) (algebraMap R k)
+    (by simp [← eq_maximalIdeal (RingHom.ker_isMaximal_of_isIntegral R k)])).toAlgebra
+
+instance ResidueField.isScalarTowerOfIsIntegral {k : Type*} [IsLocalRing R]
+    [Field k] [Algebra R k] [Algebra.IsIntegral R k] : IsScalarTower R (ResidueField R) k :=
+  .of_algebraMap_eq fun _ ↦ rfl
+
+instance {k : Type*} [IsLocalRing R] [Field k] [Algebra R k] [Module.Finite R k] :
+    Module.Finite (ResidueField R) k := .of_equiv_equiv
+  (Ideal.quotEquivOfEq (show Ideal.comap (algebraMap R k) ⊥ = maximalIdeal R by
+    rw [← eq_maximalIdeal (RingHom.ker_isMaximal_of_isIntegral R k), RingHom.ker]))
+  (RingEquiv.quotientBot k) (by ext; rfl)
+
+theorem ResidueField.finrank_eq_length {k : Type*} [IsLocalRing R] [Field k] [Algebra R k]
+    [Module.Finite R k] : Module.finrank (ResidueField R) k = Module.length R k := by
+  rw [← Module.length_eq_finrank, ← WithBot.coe_inj, Module.coe_length, Module.coe_length]
+  let e_aux : Submodule (ResidueField R) k ↪o Submodule R k :=
+    Submodule.restrictScalarsEmbedding R (ResidueField R) k
+  have : Function.Surjective e_aux := fun p ↦ by
+    let q : Submodule (𝓀 R) k := {
+      carrier := p
+      add_mem' := p.add_mem
+      zero_mem' := p.zero_mem
+      smul_mem' r a a_in := by
+        induction r using Submodule.Quotient.induction_on (maximalIdeal R) with
+        | H r =>
+          change residue R r • a ∈ p
+          rw [Algebra.smul_def, ← ResidueField.algebraMap_eq, ← IsScalarTower.algebraMap_apply,
+            ← Algebra.smul_def]
+          exact Submodule.smul_mem p r a_in
+    }
+    exact ⟨q, rfl⟩
+  rw [Order.krullDim_eq_of_orderIso (RelIso.ofSurjective e_aux this)]
+
+end IsLocalRing
