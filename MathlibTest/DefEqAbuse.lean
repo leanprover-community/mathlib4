@@ -81,3 +81,122 @@ noncomputable example (s : MyPred ℕ) (a : ℕ) (ha : a ∉ s) : Disjoint s {a}
   exact ha
 
 end SetAliasAbuse
+
+section VirtualParentAbuse
+/-! ### Virtual parent `def` causing synthesis failure
+
+In Mathlib, `Submodule.toAddSubgroup` is a plain `def` that acts as a "virtual parent"
+projection. Because it's opaque at instance transparency, synthesis of `Module ℝ ↥l`
+for `l : Submodule ℝ V` failed when the `AddCommMonoid` instances arrived through
+different paths (`toAddSubgroup` vs `toAddSubmonoid`). Detecting it with `#defeq_abuse`
+looked like:
+
+```lean
+#defeq_abuse in
+instance {V : Type} [AddCommGroup V] [Module ℝ V] {l : Submodule ℝ V} :
+    Module.Free ℝ l := Module.Free.of_divisionRing ℝ l
+-- reported:
+--   ❌️ apply @Submodule.module to Module ℝ ↥l
+--     ❌️ l.toAddSubgroup =?= l.toAddSubmonoid
+```
+
+The test below reproduces this pattern with `MySub₂`, a structure extending `AddSubmonoid`
+with a plain `def MySub₂.toAddSubgroup` as a virtual parent. -/
+
+structure MySub₂ (G : Type) [AddCommGroup G] extends AddSubmonoid G where
+  neg_closed : ∀ {x}, x ∈ carrier → -x ∈ carrier
+
+def MySub₂.toAddSubgroup {G : Type} [AddCommGroup G] (s : MySub₂ G) : AddSubgroup G :=
+  { s.toAddSubmonoid with neg_mem' := s.neg_closed }
+
+instance {G : Type} [AddCommGroup G] : CoeSort (MySub₂ G) Type where
+  coe s := {x : G // x ∈ s.carrier}
+
+instance mySub₂AddCommMonoid {G : Type} [AddCommGroup G] (s : MySub₂ G) :
+    AddCommMonoid s :=
+  s.toAddSubmonoid.toAddCommMonoid
+
+instance mySub₂AddCommGroup {G : Type} [AddCommGroup G] (s : MySub₂ G) :
+    AddCommGroup s := fast_instance%
+  { s.toAddSubgroup.toAddCommGroup with }
+
+class MyAction (R α : Type) [AddCommMonoid α] where
+  mySmul : R → α → α
+
+instance mySub₂MyAction {G : Type} [AddCommGroup G] (s : MySub₂ G) :
+    MyAction ℕ s where
+  mySmul _n x := x
+
+def myOp {α : Type} [AddCommGroup α] [MyAction ℕ α] (x : α) : α :=
+  -(MyAction.mySmul (R := ℕ) 1 x)
+
+#guard_msgs in
+def testVirtualParent {G : Type} [AddCommGroup G] (s : MySub₂ G) (x : s) : s :=
+  myOp x
+
+-- The fix: marking the virtual parent `def` as `@[implicit_reducible]` makes it
+-- transparent enough for instance synthesis to unify the two `AddCommMonoid` paths.
+attribute [implicit_reducible] MySub₂.toAddSubgroup
+
+/-- info: #defeq_abuse: command succeeds with `backward.isDefEq.respectTransparency true`. No abuse detected. -/
+#guard_msgs in
+#defeq_abuse in
+def testVirtualParentFixed {G : Type} [AddCommGroup G] (s : MySub₂ G) (x : s) : s :=
+  myOp x
+
+end VirtualParentAbuse
+
+section IdenticalSidesAbuse
+/-! ### Identical-sides disambiguation
+
+In real Mathlib, instance diamonds sometimes produce isDefEq failures like `⊤ =?= ⊤` or
+`Quiver C =?= Quiver C` where both sides render identically at default pp settings (the
+difference is only in hidden instance arguments or universe levels). `#defeq_abuse`
+automatically escalates pp options (`pp.explicit`) to disambiguate these.
+
+The test below reproduces this pattern. `ZoC` has two fields: `zo` (projected value) and
+`extra` (differentiator). Two `def`-level instances have the same `zo` value but different
+`extra`, so:
+- The instance sub-check `zoDirectC =?= zoFromGrC` fails at ALL transparencies
+  (structurally different due to `extra`), so it's NOT a transition point.
+- The parent check `@ZoC.zo Int inst₁ =?= @ZoC.zo Int inst₂` fails at instance
+  transparency (defs don't unfold) but succeeds at default transparency (both project
+  to `0` via WHNF), making it the deepest transition point.
+- At default pp, both sides render as `ZoC.zo` (identical sides).
+- `disambiguateFailures` detects identical sides and escalates to `pp.explicit`,
+  revealing the different instance arguments. -/
+
+class ZoC (α : Type _) where
+  extra : Prop
+  zo : α
+
+class GrC (α : Type _) extends ZoC α where
+  add : α → α → α
+
+set_option warn.classDefReducibility false in
+def zoDirectC : ZoC Int := ⟨True, 0⟩
+set_option warn.classDefReducibility false in
+def zoFromGrC : ZoC Int := ⟨False, 0⟩
+
+instance instZoCInt : ZoC Int := zoDirectC
+instance instGrCInt : GrC Int where
+  toZoC := zoFromGrC
+  add a b := a + b
+
+class NumC (α : Type _) (n : Nat) where fromNat : α
+instance {α} [ZoC α] : NumC α 0 where fromNat := ZoC.zo
+
+theorem zoC_eq_iff {α} [GrC α] (a : α) : NumC.fromNat 0 = a ↔ a = GrC.add a a := test_sorry
+
+-- Without disambiguation, the failure would render as "ZoC.zo =?= ZoC.zo" (unhelpful).
+-- With disambiguation (pp.explicit), the different instances are revealed.
+/--
+warning: #defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
+The following isDefEq checks are the root causes of the failure:
+  ❌️ @ZoC.zo Int instZoCInt =?= @ZoC.zo Int (@GrC.toZoC Int ?m.11)
+-/
+#guard_msgs in
+example (a : Int) : NumC.fromNat 0 = a ↔ a = GrC.add a a := by
+  #defeq_abuse in rw [zoC_eq_iff]
+
+end IdenticalSidesAbuse
