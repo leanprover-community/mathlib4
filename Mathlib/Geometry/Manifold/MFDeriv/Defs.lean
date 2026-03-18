@@ -46,9 +46,9 @@ Let `f` be a map between manifolds. The following definitions follow the `fderiv
 Various related results are proven in separate files: see
 - `Basic.lean` for basic properties of the `mfderiv`, mimicking the API of the Fréchet derivative,
 - `FDeriv.lean` for the equivalence of the manifold notions with the usual Fréchet derivative
-for functions between vector spaces,
+  for functions between vector spaces,
 - `SpecificFunctions.lean` for results on the differential of the identity, constant functions,
-products and arithmetic operators (like addition or scalar multiplication),
+  products and arithmetic operators (like addition or scalar multiplication),
 - `Atlas.lean` for differentiability of charts, models with corners and extended charts,
 - `UniqueDifferential.lean` for various properties of unique differentiability sets in manifolds.
 
