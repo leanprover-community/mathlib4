@@ -515,11 +515,11 @@ lemma fdo_subset_fd : 𝒟ᵒ ⊆ 𝒟 := fun _ ⟨hx, hx'⟩ ↦ ⟨hx.le, hx'.
 
 lemma isClosed_fd : IsClosed 𝒟 := by
   refine .inter (.preimage (by fun_prop) isClosed_Ici) ?_
-  exact isClosed_le (f := fun z : ℍ ↦ |z.re|) (by fun_prop) continuous_const
+  exact isClosed_le (f := fun z : ℍ ↦ |z.re|) (by fun_prop) .const
 
 lemma isOpen_fdo : IsOpen 𝒟ᵒ := by
   refine .inter (.preimage (by fun_prop) isOpen_Ioi) ?_
-  exact isOpen_lt (f := fun z : ℍ ↦ |z.re|) (by fun_prop) continuous_const
+  exact isOpen_lt (f := fun z : ℍ ↦ |z.re|) (by fun_prop) .const
 
 /-- Explicit formula for the image of `ModularGroup.fdo` in `ℂ`. -/
 lemma coe_fdo : (↑) '' 𝒟ᵒ = {z : ℂ | 0 < z.im ∧ 1 < ‖z‖ ∧ |z.re| < 1/2} := by
@@ -544,9 +544,9 @@ lemma isClosed_coe_fd : IsClosed ((↑) '' 𝒟 : Set ℂ) := by
   rw [coe_fd]
   have : IsClosed {z : ℂ | 0 ≤ z.im ∧ 1 ≤ ‖z‖ ∧ |z.re| ≤ 1/2} := by
     refine .inter ?_ (.inter ?_ ?_)
-    · exact isClosed_le continuous_const Complex.continuous_im
-    · exact isClosed_le continuous_const continuous_norm
-    · exact isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const
+    · exact isClosed_le .const Complex.continuous_im
+    · exact isClosed_le .const continuous_norm
+    · exact isClosed_le (continuous_abs.comp Complex.continuous_re) .const
   convert this using 1
   ext x
   refine ⟨fun ⟨him, hre, hnorm⟩ ↦ ⟨him.le, hre, hnorm⟩, fun ⟨him, hre, hnorm⟩ ↦ ⟨?_, hre, hnorm⟩⟩

@@ -25,6 +25,6 @@ section DivisionRing
 /-- The action induced by `DivisionRing.toRatAlgebra` is continuous. -/
 instance DivisionRing.continuousConstSMul_rat {A} [DivisionRing A] [TopologicalSpace A]
     [SeparatelyContinuousMul A] [CharZero A] : ContinuousConstSMul ℚ A :=
-  ⟨fun r => by simpa only [Algebra.smul_def] using Continuous.id.const_mul _⟩
+  ⟨fun r => by simpa only [Algebra.smul_def] using continuous_id.const_mul _⟩
 
 end DivisionRing

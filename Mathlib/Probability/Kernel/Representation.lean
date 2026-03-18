@@ -87,7 +87,7 @@ private lemma exists_measurable_map_eq_unitInterval_aux (κ : Kernel X I) [IsMar
       refine nhdsGT_neBot_of_exists_gt ?_
       use 1
       exact lt_of_le_of_ne x.2.2 hx
-    refine le_of_tendsto_of_tendsto (b := 𝓝[>] x) (g := g) continuousWithinAt_const ?_ ?_
+    refine le_of_tendsto_of_tendsto (b := 𝓝[>] x) (g := g) ContinuousWithinAt.const ?_ ?_
     · let h := cdf ((κ a).map Subtype.val)
       have h_continuousWithinAt := continuousWithinAt_Ioi_iff_Ici.mpr (h.right_continuous x)
       simp_rw [g, ← unitInterval.cdf_eq_real (κ a)]

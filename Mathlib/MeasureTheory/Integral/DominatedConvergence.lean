@@ -676,7 +676,7 @@ theorem continuousOn_Ici_primitive_Ioi [NoAtoms μ] {a₀ : ℝ} (hf : Integrabl
       simp [← integral_Ioi_sub_Ioi hf hb.1]
     have h_cwa : ContinuousWithinAt (fun b ↦ ∫ x in a₀..b, f x ∂μ) (Icc a₀ a) a :=
       continuousWithinAt_primitive (measure_singleton a) (by simpa [ha])
-    exact (continuousWithinAt_const.sub h_cwa).congr h_split (h_split a (right_mem_Icc.2 ha))
+    exact (ContinuousWithinAt.const.sub h_cwa).congr h_split (h_split a (right_mem_Icc.2 ha))
   · simpa [ha] using (hf.mono_set (Ioi_subset_Ioi ha)).continuousWithinAt_Ici_primitive_Ioi
 
 theorem continuousWithinAt_Iic_primitive_Iio {a₀ : ℝ} (hf : IntegrableOn f (Iio a₀) μ) :
@@ -712,7 +712,7 @@ theorem continuousOn_Iic_primitive_Iio [NoAtoms μ] {a₀ : ℝ} (hf : Integrabl
       simp [integral_symm b a₀, ← integral_Iio_sub_Iio' hf (hf.mono_set (Iio_subset_Iio hb.2))]
     have h_cwa : ContinuousWithinAt (fun b ↦ ∫ x in a₀..b, f x ∂μ) (Icc a a₀) a :=
       continuousWithinAt_primitive (measure_singleton a) (by simpa [ha])
-    exact (continuousWithinAt_const.add h_cwa).congr h_split (h_split a (left_mem_Icc.2 ha))
+    exact (ContinuousWithinAt.const.add h_cwa).congr h_split (h_split a (left_mem_Icc.2 ha))
 
 theorem continuousOn_Ici_primitive_Ici [NoAtoms μ] {a₀ : ℝ} (hf : IntegrableOn f (Ici a₀) μ) :
     ContinuousOn (fun b ↦ ∫ x in Ici b, f x ∂μ) (Ici a₀) := by
