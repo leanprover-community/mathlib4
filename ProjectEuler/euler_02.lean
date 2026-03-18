@@ -8,47 +8,17 @@ By considering the terms in the Fibonacci sequence whose values
 do not exceed four million, find the sum of the even-valued terms.
 -/
 
-import Init.Data.Stream
+import Mathlib.Data.Stream.Defs
+import Mathlib.Data.Nat.Fib.Basic
 
--- Define the Fibonacci stream by providing a next? function
--- State: (a, b) where 'a' is the current number and 'b' is the next.
-instance : Std.Stream (Nat × Nat) Nat where
-  next? | (a, b) => some (a, (b, a + b))
+def fibStream : Stream' Nat := fun n  => Nat.fib n
 
--- Usage: Start the stream with the initial state (0, 1)
-def fibInit : Nat × Nat := (0, 1)
+partial def takeWhile (α : Type) (s : Stream' α) (p : α -> Bool) (accum : List α := []): List α :=
+  let x  := s.head
+  if p x then takeWhile α (s.tail) p (x :: accum) else accum
 
--- A helper to get the first 'n' elements for testing
-def takeN {ρ α : Type} [Std.Stream ρ α] (n : Nat) (s : ρ) : List α :=
-  match n, Std.Stream.next? s with
+def euler_04 :=
+  let list := takeWhile Nat fibStream (fun x => x < 4_000_000)
+  list.filter (fun x => x % 2 == 0) |>.sum
 
-  | 0, _ => []
-  | _, none => []
-  | n+1, some (val, nextS) => val :: takeN n nextS
-
--- Usage
-#eval takeN 10 fibInit
--- [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
-
-def takeWhile {ρ α : Type} [Std.Stream ρ α] (p : α → Bool) (s : ρ) (fuel : Nat := 1000) : List α :=
-  match fuel with
-
-  | 0 => [] -- Stop if we run out of fuel
-  | n+1 =>
-    match Stream.next? s with
-
-    | none => []
-    | some (val, nextS) =>
-      if p val then val :: takeWhile p nextS n else []
-
--- Usage
-#eval takeWhile (· < 100) (0, 1)
- -- [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
-
-
-def sumEvenFibs (limit : Nat) : Nat :=
-  takeWhile (fun n => n < limit) fibInit
-  |> List.filter (fun n => n % 2 == 0)
-  |> List.sum
-
-#eval sumEvenFibs 4000000
+#eval euler_04
