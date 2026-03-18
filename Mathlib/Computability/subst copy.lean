@@ -49,9 +49,14 @@ def ContextFreeGrammar.subst_rules_f {α β : Type} [DecidableEq α] [DecidableE
       match s with
       | Symbol.nonterminal n => Symbol.nonterminal (Sum.inr ⟨a, n⟩)
       | Symbol.terminal b => Symbol.terminal b)), by
-        intro r s h;
-        cases r ; cases s ; simp +decide at h ⊢;
-        exact ⟨ h.1, by simpa using List.map_injective_iff.mpr ( by rintro ( _ | _ ) ( _ | _ ) <;> simp +decide ) h.2 ⟩⟩)
+        intro r s h
+        cases r
+        cases s
+        simp only [ContextFreeRule.mk.injEq, Sum.inr.injEq, Sigma.mk.injEq, heq_eq_eq, true_and]
+          at h ⊢
+        exact ⟨ h.1, by simpa using List.map_injective_iff.mpr (by
+          rintro ( _ | _ ) ( _ | _ ) <;> simp) h.2 ⟩⟩
+        )
 
 /-
 The rules of the original grammar `g` are transformed. Non-terminals `n` become `Sum.inl n`, and terminals `a` are replaced by the start symbol of the substituting grammar `f a`, which is `Sum.inr ⟨a, (f a).initial⟩`.
