@@ -105,19 +105,19 @@ variable [Semiring R] {x y : R[M]} {r r₁ r₂ : R} {m m' m₁ m₂ : M}
 
 /-- Construct an element of the monoid algebra `R[M]` from its coefficients `M →₀ R`. -/
 @[to_additive
-/-- Construct an element of the additive monoid algebra `R[M]` from its coefficients `M →₀ R`. -/ ]
-def ofCoeff : (M →₀ R) → R[M] := id
+/-- Construct an element of the additive monoid algebra `R[M]` from its coefficients `M →₀ R`. -/]
+def ofCoeff (x : M →₀ R) : R[M] := x
 
 /-- The coefficients `M →₀ R` of an element of the monoid algebra `R[M]`. -/
 @[to_additive
 /-- The coefficients `M →₀ R` of an element of the additive monoid algebra `R[M]`. -/]
-def coeff : R[M] → M →₀ R := id
+def coeff (x : R[M]) : M →₀ R := x
 
 @[to_additive (attr := simp)] lemma coeff_ofCoeff (x : M →₀ R) : coeff (ofCoeff x) = x := rfl
 @[to_additive (attr := simp)] lemma ofCoeff_coeff (x : R[M]) : ofCoeff x.coeff = x := rfl
 
 /-- `MonoidAlgebra.coeff` as an equiv. -/
-@[to_additive (attr := simps! apply symm_apply)
+@[to_additive (attr := simps apply symm_apply)
 /-- `AddMonoidAlgebra.coeff` as an equiv. -/]
 def coeffEquiv : R[M] ≃ (M →₀ R) where
   toFun := coeff
@@ -158,6 +158,7 @@ lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoef
 @[to_additive] instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd R[M] :=
   inferInstanceAs <| IsCancelAdd <| M →₀ R
 
+-- TODO: Replace this with `coeff`. See https://github.com/leanprover-community/mathlib4/pull/36746
 @[to_additive] instance instCoeFun : CoeFun R[M] fun _ ↦ M → R :=
   inferInstanceAs <| CoeFun (M →₀ R) fun _ ↦ M → R
 
@@ -222,7 +223,13 @@ variable {A : Type*} [SMulZeroClass A R]
 instance smulZeroClass : SMulZeroClass A R[M] :=
   Finsupp.smulZeroClass
 
-@[to_additive (attr := simp) (dont_translate := A) coeff_smul]
+@[to_additive (dont_translate := A) (attr := simp) coeff_smul]
+lemma coeff_smul (a : A) (x : R[M]) : coeff (a • x) = a • coeff x := rfl
+
+@[to_additive (dont_translate := A) (attr := simp) ofCoeff_smul]
+lemma ofCoeff_smul (a : A) (x : M →₀ R) : ofCoeff (a • x) = a • ofCoeff x := rfl
+
+@[to_additive (attr := simp) (dont_translate := A) smul_apply]
 lemma smul_apply (a : A) (x : R[M]) (m : M) : (a • x) m = a • x m := rfl
 
 @[to_additive (attr := simp) (dont_translate := A) smul_single]
@@ -666,6 +673,18 @@ variable [Ring R]
 @[to_additive (dont_translate := R)]
 instance addCommGroup : AddCommGroup R[M] :=
   inferInstanceAs <| AddCommGroup <| M →₀ R
+
+@[to_additive (attr := simp)]
+lemma coeff_neg (x : R[M]) : coeff (-x) = -coeff x := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_neg (x : M →₀ R) : ofCoeff (-x) = -ofCoeff x := rfl
+
+@[to_additive (attr := simp)]
+lemma coeff_sub (x y : R[M]) : coeff (x - y) = coeff x - coeff y := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_sub (x y : M →₀ R) : ofCoeff (x - y) = ofCoeff x - ofCoeff y := rfl
 
 @[to_additive (attr := simp) (dont_translate := R)]
 lemma neg_apply (m : M) (x : R[M]) : (-x) m = -x m := rfl
