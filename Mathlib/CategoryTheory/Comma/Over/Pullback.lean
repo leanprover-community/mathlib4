@@ -127,7 +127,7 @@ noncomputable def isoOverPullback {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
 
 /-- An isomorphism `Over.mk p ≅ (Over.pullback f).obj (Over.mk g)` in `Over X` yields
 an `IsPullback` square. -/
-noncomputable lemma ofIsoOverPullback {P : C} {p : P ⟶ X}
+lemma ofIsoOverPullback {P : C} {p : P ⟶ X}
     (e : Over.mk p ≅ (Over.pullback f).obj (Over.mk g)) :
     IsPullback p (e.hom.left ≫ pullback.fst g f) f g :=
   (IsPullback.of_hasPullback g f).flip.of_iso'
