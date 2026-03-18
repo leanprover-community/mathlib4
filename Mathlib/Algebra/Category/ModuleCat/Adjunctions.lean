@@ -110,7 +110,6 @@ variable [CommRing R]
 
 namespace FreeMonoidal
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism `𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u))`.
 (This should not be used directly: it is part of the implementation of the
 monoidal structure on the functor `free R`.) -/
@@ -129,7 +128,6 @@ def εIso : 𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u)) where
 @[simp]
 lemma εIso_hom_one : (εIso R).hom 1 = freeMk PUnit.unit := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma εIso_inv_freeMk (x : PUnit) : (εIso R).inv (freeMk x) = 1 := by
   dsimp [εIso, freeMk]

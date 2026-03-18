@@ -119,7 +119,6 @@ theorem disjoint_toFinset [Fintype s] [Fintype t] :
 theorem toFinset_nontrivial [Fintype s] : s.toFinset.Nontrivial ↔ s.Nontrivial := by
   rw [Finset.Nontrivial, coe_toFinset]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem subsingleton_toFinset_iff [Fintype s] : Subsingleton s.toFinset ↔ s.Subsingleton := by
   simp
 
@@ -265,6 +264,8 @@ theorem Fintype.univ_Prop : (Finset.univ : Finset Prop) = {True, False} :=
 instance Subtype.fintype (p : α → Prop) [DecidablePred p] [Fintype α] : Fintype { x // p x } :=
   Fintype.subtype (univ.filter p) (by simp)
 
+-- adding `@[implicit_reducible]` causes downstream breakage
+set_option warn.classDefReducibility false in
 /-- A set on a fintype, when coerced to a type, is a fintype. -/
 def setFintype [Fintype α] (s : Set α) [DecidablePred (· ∈ s)] : Fintype s :=
   Subtype.fintype fun x => x ∈ s

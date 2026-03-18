@@ -162,7 +162,7 @@ theorem cyclotomic_mul_prime_pow_eq (R : Type*) {p m : ℕ} [Fact (Nat.Prime p)]
     have hdiv : p ∣ p ^ a.succ * m := ⟨p ^ a * m, by rw [← mul_assoc, pow_succ']⟩
     rw [pow_succ', mul_assoc, mul_comm, cyclotomic_mul_prime_dvd_eq_pow R hdiv,
       cyclotomic_mul_prime_pow_eq _ _ a.succ_pos, ← pow_mul]
-    · simp only [Nat.succ_sub_succ_eq_sub]
+    · simp only [Nat.succ_sub_succ_eq_sub, Nat.sub_zero]
       rw [Nat.mul_sub_right_distrib, mul_comm, pow_succ]
     · assumption
 

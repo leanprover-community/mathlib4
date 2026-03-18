@@ -70,7 +70,6 @@ We then show that for a quadratic character `χ`, this arithmetic function is mu
 and takes nonnegative real values.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The complex-valued arithmetic function that is the convolution of the constant
 function `1` with `χ`. -/
 noncomputable def zetaMul (χ : DirichletCharacter ℂ N) : ArithmeticFunction ℂ :=
@@ -87,7 +86,6 @@ lemma LSeriesSummable_zetaMul (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 
   simpa only [toArithmeticFunction, coe_mk, hn, ↓reduceIte]
   using norm_le_one χ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma zetaMul_prime_pow_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1) {p : ℕ}
     (hp : p.Prime) (k : ℕ) :
     0 ≤ zetaMul χ (p ^ k) := by
@@ -196,7 +194,6 @@ private lemma F_neg_two (B : BadChar N) : B.F (-2 : ℝ) = 0 := by
 
 end BadChar
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `χ` is a nontrivial quadratic Dirichlet character, then `L(χ, 1) ≠ 0`. This is private
 since it is later superseded by `LFunction_apply_one_ne_zero`. -/
 private theorem LFunction_apply_one_ne_zero_of_quadratic {χ : DirichletCharacter ℂ N}
@@ -233,7 +230,7 @@ private lemma re_log_comb_nonneg' {a : ℝ} (ha₀ : 0 ≤ a) (ha₁ : a < 1) {z
   simp only [← ofReal_pow, div_natCast_re, ofReal_re, mul_pow, mul_re, ofReal_im, zero_mul,
     sub_zero]
   rcases n.eq_zero_or_pos with rfl | hn
-  · simp only [pow_zero, Nat.cast_zero, div_zero, mul_zero, one_re, mul_one, add_zero, le_refl]
+  · simp
   · simp only [← mul_div_assoc, ← add_div]
     refine div_nonneg ?_ n.cast_nonneg
     rw [← pow_mul, pow_mul', sq, mul_re, ← sq, ← sq, ← sq_norm_sub_sq_re, norm_pow, hz]
