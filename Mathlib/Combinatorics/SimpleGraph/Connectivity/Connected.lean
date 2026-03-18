@@ -197,7 +197,7 @@ lemma not_reachable_of_neighborSet_left_eq_empty {G : SimpleGraph V} {u v : V} (
     (hu : G.neighborSet u = ∅) : ¬G.Reachable u v :=
   (Reachable.nonempty_neighborSet_left huv).mt (Set.not_nonempty_iff_eq_empty.mpr hu)
 
-lemma not_reachable_of_right_neighborSet_eq_empty {G : SimpleGraph V} {u v : V} (huv : u ≠ v)
+lemma not_reachable_of_neighborSet_right_eq_empty {G : SimpleGraph V} {u v : V} (huv : u ≠ v)
     (hv : G.neighborSet v = ∅) : ¬G.Reachable u v :=
   fun r ↦ not_reachable_of_neighborSet_left_eq_empty huv.symm hv r.symm
 
