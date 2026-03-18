@@ -978,14 +978,10 @@ theorem val_eq_one : ∀ {n : ℕ} (_ : 1 < n) (a : ZMod n), a.val = 1 ↔ a = 1
   | 1, hn, _ => by simp at hn
   | n + 2, _, _ => by simp only [val, ZMod, Fin.ext_iff, Fin.val_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val = n := by
   rw [neg_eq_iff_add_eq_zero, ← two_mul]
   cases n
-  · rw [@mul_eq_zero ℤ, @mul_eq_zero ℕ, val_eq_zero]
-    exact
-      ⟨fun h => h.elim (by simp) Or.inl, fun h =>
-        Or.inr (h.elim id fun h => h.elim (by simp) id)⟩
+  · simp
   conv_lhs =>
     rw [← a.natCast_zmod_val, ← Nat.cast_two, ← Nat.cast_mul, natCast_eq_zero_iff]
   constructor
@@ -1176,7 +1172,6 @@ theorem lift_comp_coe : ZMod.lift n f ∘ ((↑) : ℤ → _) = f :=
 theorem lift_comp_castAddHom : (ZMod.lift n f).comp (Int.castAddHom (ZMod n)) = f :=
   AddMonoidHom.ext <| lift_castAddHom _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lift_injective {f : {f : ℤ →+ A // f n = 0}} :
     Injective (lift n f) ↔ ∀ m, f.1 m = 0 → (m : ZMod n) = 0 := by
   simp only [← AddMonoidHom.ker_eq_bot_iff, eq_bot_iff, SetLike.le_def,

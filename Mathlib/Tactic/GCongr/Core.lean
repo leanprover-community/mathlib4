@@ -440,17 +440,17 @@ either with such a hypothesis directly or by a limited palette of relational for
 these hypotheses. -/
 def _root_.Lean.MVarId.gcongrForward (hs : Array Expr) (g : MVarId) : MetaM Bool :=
   withReducible do
-    let s ← saveState
     withTraceNode `Meta.gcongr (fun _ => return m!"gcongr_forward: ⊢ {← g.getType}") do
     -- Iterate over a list of terms
     let tacs := (forwardExt.getState (← getEnv)).2
+    let mctx ← getMCtx
     for h in hs do
       try
         tacs.firstM fun (n, tac) =>
           withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
             tac.eval h g
         return true
-      catch _ => s.restore
+      catch _ => setMCtx mctx
     return false
 
 /--
@@ -493,8 +493,8 @@ def elabCHoleExpand : Term.TermElab := fun stx expectedType? => do
 section Trans
 
 /-!
-The lemmas `rel_imp_rel`, `rel_trans` and `rel_trans'` are too general to be tagged with
-`@[gcongr]`, so instead we use `getTransLemma?` to look up these lemmas.
+The lemma `rel_imp_rel` is too general to be tagged with `@[gcongr]`,
+so instead we use `relImpRelLemma` to look it up.
 -/
 
 variable {α : Sort*} {r : α → α → Prop} [IsTrans α r] {a b c d : α}
@@ -554,26 +554,73 @@ def _root_.Lean.MVarId.applyWithArity (mvarId : MVarId) (e : Expr) (arity : Nat)
     result.forM (·.headBetaType)
     return result
 
+/-- The state used by `GCongrM`. -/
+structure State where
+  /-- The new goals produced by `gcongr`. This includes side-goals and main goals.
+  TODO?: split this into separate side and main goals, so that the side goals can be
+  discharged using a nested `gcongr by ...` syntax. -/
+  newGoals : Array MVarId := #[]
+  /-- Patterns to use when doing intro.
+  TODO: change this to ``TSyntax `rcasesPat`` to allow `rintro` patterns. -/
+  patterns : List (TSyntax ``binderIdent) := []
+
+/-- The context used by `GCongrM`. -/
+structure Context where
+  /-- The discharger for main goals. -/
+  mainGoalDischarger : MVarId → MetaM Bool
+  /-- The discharger for side goals. -/
+  sideGoalDischarger : MVarId → MetaM Unit
+
+/-- The monad used internally in the `gcongr` tactic. -/
+abbrev GCongrM := ReaderT Context <| StateRefT State MetaM
+
+/-- Run a `GCongrM` computation in `MetaM`. -/
+def GCongrM.run {α} (x : GCongrM α) (patterns : List (TSyntax ``binderIdent) := [])
+    (mainGoalDischarger : MVarId → MetaM Bool := gcongrForwardDischarger)
+    (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
+    MetaM (α × Array MVarId) := do
+  let (a, s) ← (x { mainGoalDischarger, sideGoalDischarger }).run { patterns }
+  return (a, s.newGoals)
+
+/-- Add an unsolved goal to the `newGoals` array in the state. -/
+private def pushNewGoal (g : MVarId) : GCongrM Unit :=
+  modify fun s ↦ { s with newGoals := s.newGoals.push g}
+
+/-- Run the `intro` tactic `n` times on the given goal. -/
+private def introN (goal : MVarId) (n : Nat) : GCongrM MVarId := do
+  let (patterns, _, goal) ← goal.introsWithBinderIdents (← get).patterns n
+  modify ({· with patterns})
+  return goal
+
+/-- Run the discharger for main goals. -/
+private def dischargeMain (mvarId : MVarId) : GCongrM Bool := do
+  (← read).mainGoalDischarger mvarId
+
+/-- Run the discharger for side goals. -/
+private def dischargeSide (mvarId : MVarId) : GCongrM Unit := do
+  let mctx ← getMCtx
+  try (← read).sideGoalDischarger (← mvarId.intros).2
+  catch _ => setMCtx mctx; pushNewGoal mvarId
+
 /-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
 look up any relevant `@[gcongr]` lemmas, try to apply them, recursively run the tactic itself on
 "main" goals which are generated, and run the discharger on side goals which are generated. If there
 is a user-provided template, first check that the template asks us to descend this far into the
 match. -/
 partial def _root_.Lean.MVarId.gcongr
-    (g : MVarId) (mdataLhs? : Option Bool) (names : List (TSyntax ``binderIdent))
-    (depth : Nat := 1000000)
-    (mainGoalDischarger : MVarId → MetaM Bool := gcongrForwardDischarger)
-    (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
-    MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
+    (g : MVarId) (mdataLhs? : Option Bool)
+    (depth : Nat := 1000000) :
+    GCongrM Bool := g.withContext do
   withTraceNode `Meta.gcongr (fun _ => return m!"gcongr: ⊢ {← g.getType}") do
   if mdataLhs?.isNone then
     -- A. If there is no pattern annotation, try to resolve the goal by reflexivity, or
     -- by the provided tactic `mainGoalDischarger`, and continue on if this fails.
-    let success ← try withReducible g.applyRfl; pure true catch _ => mainGoalDischarger g
-    if success then
-      return (true, names, #[])
+    try withReducible g.applyRfl; return true
+    catch _ =>
+      if ← dischargeMain g then
+        return true
   -- If we have reached the depth limit, return the unsolved goal
-  let depth + 1 := depth | return (false, names, #[g]) -- we know that there is no mdata to remove
+  let depth + 1 := depth | pushNewGoal g; return false -- we know that there is no mdata to remove
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← withReducible g.getType'
   let some (relName, lhs, rhs) := getRel rel | throwTacticEx `gcongr g m!"{rel} is not a relation"
@@ -584,16 +631,15 @@ partial def _root_.Lean.MVarId.gcongr
     -- then try to resolve the goal by the provided tactic `mainGoalDischarger`;
     -- if this fails, stop and report the existing goal.
     if hasHoleAnnotation mdataExpr then
-      if ← mainGoalDischarger g then
-        return (true, names, #[])
-      else
-        -- clear the mdata from the goal
-        let g ← g.replaceTargetDefEq (updateRel rel mdataExpr.mdataExpr! mdataLhs)
-        return (false, names, #[g])
+      if ← dischargeMain g then
+        return true
+      -- clear the mdata from the goal
+      pushNewGoal <| ← g.replaceTargetDefEq (updateRel rel mdataExpr.mdataExpr! mdataLhs)
+      return false
     -- If there are no annotations at all, we close the goal with `rfl`. Otherwise,
     -- we report that the provided pattern doesn't apply.
     unless containsHoleAnnotation mdataExpr do
-      try withDefault g.applyRfl; return (true, names, #[])
+      try withDefault g.applyRfl; return true
       catch _ => throwTacticEx `gcongr g m!"\
         subgoal {← withReducible g.getType'} is not allowed by the provided pattern \
         and is not closed by `rfl`"
@@ -602,15 +648,15 @@ partial def _root_.Lean.MVarId.gcongr
   let lhs ← if relName == `_Implies then whnfR lhs else pure lhs
   let rhs ← if relName == `_Implies then whnfR rhs else pure rhs
   let some (lhsHead, lhsArgs) := getCongrAppFnArgs lhs |
-    if mdataLhs?.isNone then return (false, names, #[g])
+    if mdataLhs?.isNone then pushNewGoal g; return false
     throwTacticEx `gcongr g m!"the head of {lhs} is not a constant"
   let some (rhsHead, rhsArgs) := getCongrAppFnArgs rhs |
-    if mdataLhs?.isNone then return (false, names, #[g])
+    if mdataLhs?.isNone then pushNewGoal g; return false
     throwTacticEx `gcongr g m!"the head of {rhs} is not a constant"
   unless lhsHead == rhsHead && lhsArgs.size == rhsArgs.size do
-    if mdataLhs?.isNone then return (false, names, #[g])
+    if mdataLhs?.isNone then pushNewGoal g; return false
     throwTacticEx `gcongr g m!"{lhs} and {rhs} are not of the same shape"
-  let s ← saveState
+  let mctx ← getMCtx
   -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
   -- the goal
   let key := { relName, head := lhsHead, arity := lhsArgs.size }
@@ -623,42 +669,32 @@ partial def _root_.Lean.MVarId.gcongr
       let const ← mkConstWithFreshMVarLevels lem.declName
       withReducible (g.applyWithArity const lem.numHyps { synthAssignedInstances := false })
     catch _ =>
-      s.restore
+      setMCtx mctx
       continue
     let some e ← getExprMVarAssignment? g | panic! "unassigned?"
     let args := e.getAppArgs
-    let mut subgoals := #[]
-    let mut names := names
-    -- If the `apply` succeeds, iterate over the lemma's `mainSubgoals` list.
-    for (i, numHyps, isContra) in lem.mainSubgoals do
+    -- Map over the lemma's `mainSubgoals` list to find the recursive `gcongr` goals.
+    let mainSubgoals := lem.mainSubgoals.map fun (i, numHyps, isContra) ↦
       -- We anticipate that such a "main" subgoal should not have been solved by the `apply` by
       -- unification ...
-      let some (.mvar mvarId) := args[i]? | panic! "what kind of lemma is this?"
-      -- Introduce all variables and hypotheses in this subgoal.
-      let (names2, _vs, mvarId) ← mvarId.introsWithBinderIdents names (maxIntros? := numHyps)
-      -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
-      -- appropriate template
-      let mdataLhs?' := mdataLhs?.map (· != isContra)
-      let (_, names2, subgoals2) ← mvarId.gcongr mdataLhs?' names2 depth mainGoalDischarger
-        sideGoalDischarger
-      (names, subgoals) := (names2, subgoals ++ subgoals2)
-    let mut out := #[]
-    -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
-    -- by the `apply`.
+      if let some (.mvar mvarId) := args[i]? then
+        (mvarId, numHyps, isContra)
+      else
+        panic! "what kind of lemma is this?"
+    -- Try the discharger on any side goals which were not resolved by the `apply`.
     for g in gs do
-      if !(← g.isAssigned) && !subgoals.contains g then
-        let s ← saveState
-        try
-          sideGoalDischarger (← g.intros).2
-        catch _ =>
-          s.restore
-          out := out.push g
-    -- Return all unresolved subgoals, "main" or "side"
-    return (true, names, out ++ subgoals)
+      if !(← g.isAssigned) && !mainSubgoals.any (·.1 == g) then
+        dischargeSide g
+    for (mvarId, numHyps, isContra) in mainSubgoals do
+      let mvarId ← introN mvarId numHyps
+      -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal
+      let mdataLhs?' := mdataLhs?.map (· != isContra)
+      discard <| mvarId.gcongr mdataLhs?' depth
+    return true
   -- A. If there is no template, and there was no `@[gcongr]` lemma which matched the goal,
   -- report this goal back.
   if mdataLhs?.isNone then
-    return (false, names, #[g])
+    pushNewGoal g; return false
   -- B. If there is a template, and there was no `@[gcongr]` lemma which matched the template,
   -- fail.
   if lemmas.isEmpty then
@@ -723,10 +759,10 @@ elab "gcongr" template:(ppSpace colGt term)?
   -- Get the names from the `with x y z` list
   let names := (withArg.raw[1].getArgs.map TSyntax.mk).toList
   -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-  let (progress, _, unsolvedGoalStates) ← do
-    let some e := template | g.gcongr none names
+  let (progress, unsolvedGoals) ← do
+    let some e := template | g.gcongr none |>.run names
     if let some depth := e.raw.isNatLit? then
-      g.gcongr none names (depth := depth)
+      g.gcongr none depth |>.run names
     else
       -- Elaborate the template (e.g. `x * ?_ + _`)
       -- First, we replace occurrences of `?_` with `gcongrHole% ?_`
@@ -740,9 +776,9 @@ elab "gcongr" template:(ppSpace colGt term)?
         throwError "invalid pattern {patt}, it does not match with {lhs}"
       let patt ← instantiateMVars patt
       let g ← g.replaceTargetDefEq (updateRel type patt true)
-      g.gcongr true names
+      g.gcongr true |>.run names
   if progress then
-    replaceMainGoal unsolvedGoalStates.toList
+    replaceMainGoal unsolvedGoals.toList
   else
     throwError "gcongr did not make progress"
 
@@ -784,13 +820,13 @@ elab_rules : tactic
     -- forward-reasoning on that term) on each of the listed terms.
     let assum g := g.gcongrForward hyps
     -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-    let (_, _, unsolvedGoalStates) ← g.gcongr none [] (mainGoalDischarger := assum)
-    match unsolvedGoalStates.toList with
+    let (_, unsolvedGoals) ← g.gcongr none |>.run [] assum
+    match unsolvedGoals.toList with
     -- if all goals are solved, succeed!
     | [] => pure ()
     -- if not, fail and report the unsolved goals
-    | unsolvedGoalStates => do
-      let unsolvedGoals ← liftMetaM <| List.mapM MVarId.getType unsolvedGoalStates
+    | unsolvedGoals => do
+      let unsolvedGoals ← liftMetaM <| List.mapM MVarId.getType unsolvedGoals
       let g := Lean.MessageData.joinSep (unsolvedGoals.map Lean.MessageData.ofExpr) Format.line
       throwError "rel failed, cannot prove goal by 'substituting' the listed relationships. \
         The steps which could not be automatically justified were:\n{g}"

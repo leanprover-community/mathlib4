@@ -345,7 +345,6 @@ lemma measurableAtom_eq_of_mem {x y : β} (hx : x ∈ measurableAtom y) :
   specialize hx sᶜ hys hs.compl
   exact hx hxs
 
-set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_measurableAtom_of_notMem {x y : β} (hx : x ∉ measurableAtom y) :
     Disjoint (measurableAtom x) (measurableAtom y) := by
   rw [Set.disjoint_iff_inter_eq_empty]
@@ -362,6 +361,7 @@ end Atoms
 section Prod
 
 /-- A `MeasurableSpace` structure on the product of two measurable spaces. -/
+@[implicit_reducible]
 def MeasurableSpace.prod {α β} (m₁ : MeasurableSpace α) (m₂ : MeasurableSpace β) :
     MeasurableSpace (α × β) :=
   m₁.comap Prod.fst ⊔ m₂.comap Prod.snd
@@ -699,6 +699,10 @@ protected theorem MeasurableSet.pi {s : Set δ} {t : ∀ i : δ, Set (X i)} (hs 
 protected theorem MeasurableSet.univ_pi [Countable δ] {t : ∀ i : δ, Set (X i)}
     (ht : ∀ i, MeasurableSet (t i)) : MeasurableSet (pi univ t) :=
   MeasurableSet.pi (to_countable _) fun i _ => ht i
+
+theorem MeasurableSet.univ_pi' [Countable δ] {t : ∀ i : δ, Set (X i)}
+    (ht : ∀ i, MeasurableSet (t i)) : MeasurableSet {f : ∀ i : δ, X i | ∀ i : δ, f i ∈ t i} :=
+  (MeasurableSet.univ_pi ht).congr (by grind)
 
 theorem measurableSet_pi_of_nonempty {s : Set δ} {t : ∀ i, Set (X i)} (hs : s.Countable)
     (h : (pi s t).Nonempty) : MeasurableSet (pi s t) ↔ ∀ i ∈ s, MeasurableSet (t i) := by
