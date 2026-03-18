@@ -32,11 +32,12 @@ namespace Lean.MessageData
 `withTraceNode` prepends `checkEmoji`/`crossEmoji`/`bombEmoji`
 (defined in `Lean.Util.Trace`) to trace headers to indicate outcomes.
 
-Prefer `td.result?` when the `TraceData` is available. -/
+The `TraceResult` will be recorded in trace messages directly in [lean4#12698](https://github.com/leanprover/lean4/pull/12698).
+Once that PR is available, callers should prefer `td.result?` over calling this function. -/
 def traceResultOf (headerStr : String) : Option TraceResult :=
-  if headerStr.startsWith "✅" then some .success
-  else if headerStr.startsWith "❌" then some .failure
-  else if headerStr.startsWith "💥" then some .error
+  if headerStr.startsWith "✅️" then some .success
+  else if headerStr.startsWith "❌️" then some .failure
+  else if headerStr.startsWith "💥️" then some .error
   else none
 
 /-- Strip the leading status emoji and space from a trace header string,
