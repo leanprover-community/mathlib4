@@ -3,8 +3,11 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Nilpotent
-import Mathlib.Algebra.Lie.Normalizer
+module
+
+public import Mathlib.Algebra.Lie.AdjointAction.Basic
+public import Mathlib.Algebra.Lie.Nilpotent
+public import Mathlib.Algebra.Lie.Normalizer
 
 /-!
 # Engel's theorem
@@ -64,6 +67,8 @@ into a single statement about nilpotency of Lie modules. This is not usually emp
 
 -/
 
+@[expose] public section
+
 
 universe u₁ u₂ u₃ u₄
 
@@ -75,7 +80,7 @@ namespace LieSubmodule
 
 open LieModule
 
-variable {I : LieIdeal R L} {x : L} (hxI : (R ∙ x) ⊔ I = ⊤)
+variable {I : LieIdeal R L} {x : L} (hxI : R ∙ x ⊔ I = ⊤)
 include hxI
 
 theorem exists_smul_add_of_span_sup_eq_top (y : L) : ∃ t : R, ∃ z ∈ I, y = t • x + z := by
@@ -119,9 +124,10 @@ theorem lcs_le_lcs_of_is_nilpotent_span_sup_eq_top {n i j : ℕ}
     refine ⟨(Submodule.map_mono ih).trans ?_, le_sup_of_le_right ?_⟩
     · rw [Submodule.map_sup, ← Submodule.map_comp, ← Module.End.mul_eq_comp, ← pow_succ', ←
         I.lcs_succ]
-      exact sup_le_sup_left coe_map_toEnd_le _
-    · refine le_trans (mono_lie_right I ?_) (mono_lie_right I hIM)
-      exact antitone_lowerCentralSeries R L M le_self_add
+      grw [coe_map_toEnd_le]
+    · norm_cast
+      gcongr
+      exact le_trans (antitone_lowerCentralSeries R L M le_self_add) hIM
 
 theorem isNilpotentOfIsNilpotentSpanSupEqTop (hnp : IsNilpotent <| toEnd R L M x)
     (hIM : IsNilpotent I M) : IsNilpotent L M := by
@@ -142,8 +148,6 @@ end LieSubmodule
 
 section LieAlgebra
 
--- Porting note: somehow this doesn't hide `LieModule.IsNilpotent`, so `_root_.IsNilpotent` is used
--- a number of times below.
 open LieModule hiding IsNilpotent
 
 variable (R L)
@@ -155,7 +159,7 @@ Engel's theorem `LieAlgebra.isEngelian_of_isNoetherian` states that any Noetheri
 Engelian. -/
 def LieAlgebra.IsEngelian : Prop :=
   ∀ (M : Type u₄) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M],
-    (∀ x : L, _root_.IsNilpotent (toEnd R L M x)) → LieModule.IsNilpotent L M
+    (∀ x : L, IsNilpotent (toEnd R L M x)) → LieModule.IsNilpotent L M
 
 variable {R L}
 
@@ -195,7 +199,7 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
   intro M _i1 _i2 _i3 _i4 h
   obtain ⟨I, hI₁ : (I : LieSubalgebra R K') = LieSubalgebra.ofLe hKK'⟩ :=
     LieSubalgebra.exists_nested_lieIdeal_ofLe_normalizer hKK' hK'
-  have hI₂ : (R ∙ (⟨x, hxK'⟩ : K')) ⊔ (LieSubmodule.toSubmodule I) = ⊤ := by
+  have hI₂ : R ∙ (⟨x, hxK'⟩ : K') ⊔ LieSubmodule.toSubmodule I = ⊤ := by
     rw [← LieIdeal.toLieSubalgebra_toSubmodule R K' I, hI₁]
     apply Submodule.map_injective_of_injective (K' : Submodule R L).injective_subtype
     simp only [LieSubalgebra.coe_ofLe, Submodule.map_sup, Submodule.map_subtype_range_inclusion,
@@ -218,7 +222,7 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
   intro M _i1 _i2 _i3 _i4 h
   rw [← isNilpotent_range_toEnd_iff R]
   let L' := (toEnd R L M).range
-  replace h : ∀ y : L', _root_.IsNilpotent (y : Module.End R M) := by
+  replace h : ∀ y : L', IsNilpotent (y : Module.End R M) := by
     rintro ⟨-, ⟨y, rfl⟩⟩
     simp [h]
   change LieModule.IsNilpotent L' M
@@ -234,12 +238,7 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
     apply lt_of_le_of_ne K.le_normalizer
     rw [Ne, eq_comm, K.normalizer_eq_self_iff, ← Ne, ←
       LieSubmodule.nontrivial_iff_ne_bot R K]
-    have : Nontrivial (L' ⧸ K.toLieSubmodule) := by
-      replace hK₂ : K.toLieSubmodule ≠ ⊤ := by
-        rwa [Ne, ← LieSubmodule.toSubmodule_inj, K.coe_toLieSubmodule,
-          LieSubmodule.top_toSubmodule, ← LieSubalgebra.top_toSubmodule,
-          K.toSubmodule_inj]
-      exact Submodule.Quotient.nontrivial_of_lt_top _ hK₂.lt_top
+    have : Nontrivial (L' ⧸ K.toLieSubmodule) := Submodule.Quotient.nontrivial_iff.2 <| by simpa
     have : LieModule.IsNilpotent K (L' ⧸ K.toLieSubmodule) := by
       refine hK₁ _ fun x => ?_
       have hx := LieAlgebra.isNilpotent_ad_of_isNilpotent (h x)
@@ -251,15 +250,12 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
       exact LieSubalgebra.lie_mem K x.prop HX
     exact nontrivial_max_triv_of_isNilpotent R K (L' ⧸ K.toLieSubmodule)
   haveI _i5 : IsNoetherian R L' := by
-    refine isNoetherian_of_surjective L (LieHom.rangeRestrict (toEnd R L M)) ?_
+    refine isNoetherian_of_surjective (LieHom.rangeRestrict (toEnd R L M)).toLinearMap ?_
     simp only [LinearMap.range_eq_top]
     exact LieHom.surjective_rangeRestrict (toEnd R L M)
   obtain ⟨K, hK₁, hK₂⟩ := (LieSubalgebra.wellFoundedGT_of_noetherian R L').wf.has_min s hs
-  have hK₃ : K = ⊤ := by
-    by_contra contra
-    obtain ⟨K', hK'₁, hK'₂⟩ := this K hK₁ contra
-    exact hK₂ K' hK'₁ hK'₂
-  exact hK₃ ▸ hK₁
+  obtain rfl : K = ⊤ := by grind
+  exact hK₁
 
 /-- Engel's theorem.
 
@@ -276,7 +272,7 @@ theorem LieModule.isNilpotent_iff_forall' [IsNoetherian R M] :
 
 /-- Engel's theorem. -/
 theorem LieAlgebra.isNilpotent_iff_forall [IsNoetherian R L] :
-    LieRing.IsNilpotent L ↔ ∀ x, _root_.IsNilpotent <| LieAlgebra.ad R L x :=
+    LieRing.IsNilpotent L ↔ ∀ x, IsNilpotent <| LieAlgebra.ad R L x :=
   LieModule.isNilpotent_iff_forall
 
 end LieAlgebra

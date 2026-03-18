@@ -3,10 +3,12 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Lie.Ideal
-import Mathlib.Algebra.Lie.Basic
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.Lie.Ideal
+public import Mathlib.Algebra.Lie.Basic
 
 /-!
 # Direct sums of Lie algebras and Lie modules
@@ -17,6 +19,8 @@ Direct sums of Lie algebras and Lie modules carry natural algebra and module str
 
 lie algebra, lie module, direct sum
 -/
+
+@[expose] public section
 
 
 universe u v w w₁
@@ -56,6 +60,7 @@ instance : LieRingModule L (⨁ i, M i) where
 theorem lie_module_bracket_apply (x : L) (m : ⨁ i, M i) (i : ι) : ⁅x, m⁆ i = ⁅x, m i⁆ :=
   mapRange_apply _ _ m i
 
+set_option backward.isDefEq.respectTransparency false in
 instance : LieModule R L (⨁ i, M i) where
   smul_lie t x m := by
     ext
@@ -66,6 +71,7 @@ instance : LieModule R L (⨁ i, M i) where
 
 variable (R ι L M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion of each component into a direct sum as a morphism of Lie modules. -/
 def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
   { lof R ι M j with
@@ -81,6 +87,7 @@ def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
         erw [AddHom.coe_mk]
         simp [h] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The projection map onto one component, as a morphism of Lie modules. -/
 def lieModuleComponent (j : ι) : (⨁ i, M i) →ₗ⁅R,L⁆ M j :=
   { component R ι M j with
@@ -125,8 +132,8 @@ theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : i ≠ j) (x : L i) (y : 
     ⁅of L i x, of L j y⁆ = 0 := by
   ext k
   rw [bracket_apply]
-  obtain rfl | hik := Decidable.eq_or_ne i k
-  · rw [of_eq_of_ne _ _ _ hij.symm, lie_zero, zero_apply]
+  obtain rfl | hik := Decidable.eq_or_ne k i
+  · rw [of_eq_of_ne _ _ _ hij, lie_zero, zero_apply]
   · rw [of_eq_of_ne _ _ _ hik, zero_lie, zero_apply]
 
 @[simp]
@@ -151,6 +158,7 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
     toFun := of L j
     map_lie' := fun {x y} => (lie_of_same L x y).symm }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The projection map onto one component, as a morphism of Lie algebras. -/
 @[simps]
 def lieAlgebraComponent (j : ι) : (⨁ i, L i) →ₗ⁅R⁆ L j :=
@@ -166,6 +174,7 @@ theorem lieAlgebra_ext {x y : ⨁ i, L i}
 
 variable {R L ι}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a family of Lie algebras `L i`, together with a family of morphisms of Lie algebras
 `f i : L i →ₗ⁅R⁆ L'` into a fixed Lie algebra `L'`, we have a natural linear map:
 `(⨁ i, L i) →ₗ[R] L'`. If in addition `⁅f i x, f j y⁆ = 0` for any `x ∈ L i` and `y ∈ L j` (`i ≠ j`)
@@ -192,7 +201,7 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
             ⁅toModule R ι L' f' (of L j x), toModule R ι L' f' (of L i y)⁆ by
         intro i y
         rw [← lie_skew x, ← lie_skew (toModule R ι L' f' x)]
-        simp only [LinearMap.map_neg, neg_inj, ← LieAlgebra.ad_apply R]
+        simp only [map_neg, neg_inj, ← LieAlgebra.ad_apply R]
         rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
         congr; clear x; ext j x; exact this j i x y
       intro i j y x

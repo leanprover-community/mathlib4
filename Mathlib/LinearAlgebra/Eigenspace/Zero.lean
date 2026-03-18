@@ -3,12 +3,14 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.Artinian.Module
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Results on the eigenvalue 0
@@ -29,6 +31,8 @@ such as being nilpotent, having determinant equal to 0, having a non-trivial ker
   is the trailing degree of its characteristic polynomial
 
 -/
+
+public section
 
 variable {R K M : Type*} [CommRing R] [IsDomain R] [Field K] [AddCommGroup M]
 variable [Module R M] [Module.Finite R M] [Module.Free R M]
@@ -134,7 +138,7 @@ lemma not_hasEigenvalue_zero_tfae (φ : Module.End K M) :
   simpa only [aux₁, aux₂] using this
 
 open Module.Free in
-lemma finrank_maxGenEigenspace (φ : Module.End K M) :
+lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
     finrank K (φ.maxGenEigenspace 0) = natTrailingDegree (φ.charpoly) := by
   set V := φ.maxGenEigenspace 0
   have hV : V = ⨆ (n : ℕ), ker (φ ^ n) := by
@@ -194,5 +198,22 @@ lemma finrank_maxGenEigenspace (φ : Module.End K M) :
   generalize_proofs h'
   clear hx
   induction n <;> simp [pow_succ', *]
+
+@[deprecated (since := "2025-09-07")] alias finrank_maxGenEigenspace :=
+  finrank_maxGenEigenspace_zero_eq
+
+lemma finrank_maxGenEigenspace_eq (φ : Module.End K M) (μ : K) :
+    finrank K (φ.maxGenEigenspace μ) = φ.charpoly.rootMultiplicity μ := by
+  rw [φ.maxGenEigenspace_eq_maxGenEigenspace_zero, finrank_maxGenEigenspace_zero_eq,
+    Polynomial.rootMultiplicity_eq_natTrailingDegree, LinearMap.charpoly_sub_smul]
+
+lemma finrank_genEigenspace_le (φ : Module.End K M) (μ : K) (k : ℕ) :
+    finrank K (φ.genEigenspace μ k) ≤ φ.charpoly.rootMultiplicity μ := by
+  grw [Submodule.finrank_mono (φ.genEigenspace_le_maximal μ k), finrank_maxGenEigenspace_eq]
+
+/-- The geometric multiplicity of an eigenvalue is at most the algebraic multiplicity. -/
+lemma finrank_eigenspace_le (φ : Module.End K M) (μ : K) :
+    finrank K (φ.eigenspace μ) ≤ φ.charpoly.rootMultiplicity μ :=
+  finrank_genEigenspace_le ..
 
 end LinearMap

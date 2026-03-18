@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.Category
-import Mathlib.CategoryTheory.Functor.Trifunctor
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Category
+public import Mathlib.CategoryTheory.Functor.Trifunctor
 
 /-!
 
@@ -27,23 +29,22 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 ## TODOs/Projects
 * Equivalence between actions of `C` on `D` and pseudofunctors from the
   classifying bicategory of `C` to `Cat`.
-* Left actions as monoidal functors C ⥤ (D ⥤ D)ᴹᵒᵖ.
-* Right actions as monoidal functors C ⥤ D ⥤ D.
-* (Right) Action of `(C ⥤ C)` on `C`.
 * Left/Right Modules in `D` over a monoid object in `C`.
   Equivalence with `Mod_` when `D` is `C`. Bimodules objects.
 * Given a monad `M` on `C`, equivalence between `Algebra M`, and modules in `C`
-  on `M.toMon : Mon_ (C ⥤ C)`.
+  on `M.toMon : Mon (C ⥤ C)`.
 * Canonical left action of `Type u` on `u`-small cocomplete categories via the
   copower.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.MonoidalCategory
 
 variable (C D : Type*)
 
-variable [Category C] [Category D]
+variable [Category* C] [Category* D]
 /-- A class that carries the non-Prop data required to define a left action of a
 monoidal category `C` on a category `D`, to set up notations. -/
 class MonoidalLeftActionStruct [MonoidalCategoryStruct C] where
@@ -51,12 +52,12 @@ class MonoidalLeftActionStruct [MonoidalCategoryStruct C] where
   actionObj : C → D → D
   /-- The left action of a map `f : c ⟶ c'` in `C` on an object `d` in `D`.
   If we are to consider the action as a functor `Α : C ⥤ D ⥤ D`,
-  this is (Α.map f).app d`. This is denoted `f ⊵ₗ d` -/
+  this is `(Α.map f).app d`. This is denoted `f ⊵ₗ d`. -/
   actionHomLeft {c c' : C} (f : c ⟶ c') (d : D) :
     actionObj c d ⟶ actionObj c' d
   /-- The action of an object `c : C` on a map `f : d ⟶ d'` in `D`.
   If we are to consider the action as a functor `Α : C ⥤ D ⥤ D`,
-  this is (Α.obj c).map f`. This is denoted `c ⊴ₗ f`. -/
+  this is `(Α.obj c).map f`. This is denoted `c ⊴ₗ f`. -/
   actionHomRight (c : C) {d d' : D} (f : d ⟶ d') :
     actionObj c d ⟶ actionObj c d'
   /-- The action of a pair of maps `f : c ⟶ c'` and `d ⟶ d'`. By default,
@@ -103,7 +104,7 @@ scoped notation "λₗ["J"]" => MonoidalLeftActionStruct.actionUnitIso (C := J)
 end MonoidalLeftAction
 
 open scoped MonoidalLeftAction in
-/-- A `MonoidalLeftAction C D` is is the data of:
+/-- A `MonoidalLeftAction C D` is the data of:
 - For every object `c : C` and `d : D`, an object `c ⊙ₗ d` of `D`.
 - For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
   `f ⊵ₗ d : c ⊙ₗ d ⟶ c' ⊙ₗ d`.
@@ -113,6 +114,7 @@ open scoped MonoidalLeftAction in
   `f : (d : D) ⟶ d'`, a morphism `f ⊙ₗ f' : c ⊙ₗ d ⟶ c' ⊙ₗ d'`.
 - A structure isomorphism `αₗ c c' d : c ⊗ c' ⊙ₗ d ≅ c ⊙ₗ c' ⊙ₗ d`.
 - A structure isomorphism `λₗ d : (𝟙_ C) ⊙ₗ d ≅ d`.
+
 Furthermore, we require identities that turn `- ⊙ₗ -` into a bifunctor,
 ensure naturality of `αₗ` and `λₗ`, and ensure compatibilities with
 the associator and unitor isomorphisms in `C`. -/
@@ -120,40 +122,40 @@ class MonoidalLeftAction [MonoidalCategory C] extends
     MonoidalLeftActionStruct C D where
   actionHom_def {c c' : C} {d d' : D} (f : c ⟶ c') (g : d ⟶ d') :
       f ⊙ₗₘ g = f ⊵ₗ d ≫ c' ⊴ₗ g := by
-    aesop_cat
-  actionHomRight_id (c : C) (d : D) : c ⊴ₗ 𝟙 d = 𝟙 (c ⊙ₗ d) := by aesop_cat
-  id_actionHomLeft (c : C) (d : D) : 𝟙 c ⊵ₗ d = 𝟙 (c ⊙ₗ d) := by aesop_cat
+    cat_disch
+  actionHomRight_id (c : C) (d : D) : c ⊴ₗ 𝟙 d = 𝟙 (c ⊙ₗ d) := by cat_disch
+  id_actionHomLeft (c : C) (d : D) : 𝟙 c ⊵ₗ d = 𝟙 (c ⊙ₗ d) := by cat_disch
   actionHom_comp
       {c c' c'' : C} {d d' d'' : D} (f₁ : c ⟶ c') (f₂ : c' ⟶ c'')
       (g₁ : d ⟶ d') (g₂ : d' ⟶ d'') :
       (f₁ ≫ f₂) ⊙ₗₘ (g₁ ≫ g₂) = (f₁ ⊙ₗₘ g₁) ≫ (f₂ ⊙ₗₘ g₂) := by
-    aesop_cat
+    cat_disch
   actionAssocIso_hom_naturality
       {c₁ c₂ c₃ c₄ : C} {d₁ d₂ : D} (f : c₁ ⟶ c₂) (g : c₃ ⟶ c₄) (h : d₁ ⟶ d₂) :
       ((f ⊗ₘ g) ⊙ₗₘ h) ≫ (αₗ c₂ c₄ d₂).hom =
         (αₗ c₁ c₃ d₁).hom ≫ (f ⊙ₗₘ g ⊙ₗₘ h) := by
-    aesop_cat
+    cat_disch
   actionUnitIso_hom_naturality {d d' : D} (f : d ⟶ d') :
       (λₗ d).hom ≫ f = (𝟙_ C) ⊴ₗ f ≫ (λₗ d').hom := by
-    aesop_cat
+    cat_disch
   whiskerLeft_actionHomLeft (c : C) {c' c'' : C} (f : c' ⟶ c'') (d : D) :
       (c ◁ f) ⊵ₗ d = (αₗ _ _ _).hom ≫ c ⊴ₗ f ⊵ₗ d ≫ (αₗ _ _ _).inv := by
-    aesop_cat
+    cat_disch
   whiskerRight_actionHomLeft {c c' : C} (c'' : C) (f : c ⟶ c') (d : D) :
       (f ▷ c'') ⊵ₗ d = (αₗ c c'' d).hom ≫
         f ⊵ₗ (c'' ⊙ₗ d : D) ≫ (αₗ c' c'' d).inv := by
-    aesop_cat
+    cat_disch
   associator_actionHom (c₁ c₂ c₃ : C) (d : D) :
       (α_ c₁ c₂ c₃).hom ⊵ₗ d ≫ (αₗ c₁ (c₂ ⊗ c₃) d).hom ≫
         c₁ ⊴ₗ (αₗ c₂ c₃ d).hom =
       (αₗ (c₁ ⊗ c₂ : C) c₃ d).hom ≫ (αₗ c₁ c₂ (c₃ ⊙ₗ d)).hom := by
-    aesop_cat
+    cat_disch
   leftUnitor_actionHom (c : C) (d : D) :
       (λ_ c).hom ⊵ₗ d = (αₗ _ _ _).hom ≫ (λₗ _).hom := by
-    aesop_cat
+    cat_disch
   rightUnitor_actionHom (c : C) (d : D) :
       (ρ_ c).hom ⊵ₗ d = (αₗ _ _ _).hom ≫ c ⊴ₗ (λₗ _).hom := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc] MonoidalLeftAction.actionHom_def
 attribute [reassoc, simp] MonoidalLeftAction.id_actionHomLeft
@@ -179,15 +181,13 @@ instance selfLeftAction [MonoidalCategory C] : MonoidalLeftAction C C where
   actionHomRight x _ _ f := x ◁ f
   actionHom_def := by simp [tensorHom_def]
 
-@[deprecated (since := "2025-06-13")] alias selfAction := selfLeftAction
-
 namespace MonoidalLeftAction
 
 open Category
 
 variable {C D} [MonoidalCategory C] [MonoidalLeftAction C D]
 
--- Simp normal forms are aligned with the ones in `MonoidalCateogry`.
+-- Simp normal forms are aligned with the ones in `MonoidalCategory`.
 
 @[simp]
 lemma id_actionHom (c : C) {d d' : D} (f : d ⟶ d') :
@@ -334,12 +334,12 @@ def curriedAction : C ⥤ D ⥤ D where
 variable {C} in
 /-- Bundle `d ↦ c ⊙ₗ d` as a functor. -/
 @[simps!]
-abbrev actionLeft (c : C) : D ⥤ D := curriedAction C D|>.obj c
+abbrev actionLeft (c : C) : D ⥤ D := curriedAction C D |>.obj c
 
 variable {D} in
 /-- Bundle `c ↦ c ⊙ₗ d` as a functor. -/
 @[simps!]
-abbrev actionRight (d : D) : C ⥤ D := curriedAction C D|>.flip.obj d
+abbrev actionRight (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
 /-- Bundle `αₗ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
@@ -365,12 +365,12 @@ class MonoidalRightActionStruct [MonoidalCategoryStruct C] where
   actionObj : D → C → D
   /-- The right action of a map `f : c ⟶ c'` in `C` on an object `d` in `D`.
   If we are to consider the action as a functor `Α : C ⥤ D ⥤ D`,
-  this is (Α.map f).app d`. This is denoted `d ⊴ᵣ f` -/
+  this is `(Α.map f).app d`. This is denoted `d ⊴ᵣ f`. -/
   actionHomRight (d : D) {c c' : C} (f : c ⟶ c') :
     actionObj d c ⟶ actionObj d c'
   /-- The action of an object `c : C` on a map `f : d ⟶ d'` in `D`.
   If we are to consider the action as a functor `Α : C ⥤ D ⥤ D`,
-  this is (Α.obj c).map f`. This is denoted `f ⊵ᵣ c`. -/
+  this is `(Α.obj c).map f`. This is denoted `f ⊵ᵣ c`. -/
   actionHomLeft {d d' : D} (f : d ⟶ d') (c : C) :
     actionObj d c ⟶ actionObj d' c
   /-- The action of a pair of maps `f : c ⟶ c'` and `d ⟶ d'`. By default,
@@ -412,12 +412,12 @@ scoped notation "αᵣ " => MonoidalRightActionStruct.actionAssocIso
 scoped notation "ρᵣ " => MonoidalRightActionStruct.actionUnitIso
 /-- Notation for `actionUnitIso`, the structural isomorphism `- ⊙ᵣ 𝟙_ C  ≅ -`,
 allowing one to specify the acting category. -/
-scoped notation "ρᵣ["J"]" => MonoidalRightActionStruct.actionUnitIso (C := J)
+scoped notation "ρᵣ[" J "]" => MonoidalRightActionStruct.actionUnitIso (C := J)
 
 end MonoidalRightAction
 
 open scoped MonoidalRightAction in
-/-- A `MonoidalRightAction C D` is is the data of:
+/-- A `MonoidalRightAction C D` is the data of:
 - For every object `c : C` and `d : D`, an object `c ⊙ᵣ d` of `D`.
 - For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
   `f ⊵ᵣ d : c ⊙ᵣ d ⟶ c' ⊙ᵣ d`.
@@ -427,6 +427,7 @@ open scoped MonoidalRightAction in
   `f : (d : D) ⟶ d'`, a morphism `f ⊙ᵣₘ f' : c ⊙ᵣ d ⟶ c' ⊙ᵣ d'`.
 - A structure isomorphism `αᵣ c c' d : c ⊗ c' ⊙ᵣ d ≅ c ⊙ᵣ c' ⊙ᵣ d`.
 - A structure isomorphism `ρᵣ d : (𝟙_ C) ⊙ᵣ d ≅ d`.
+
 Furthermore, we require identities that turn `- ⊙ᵣ -` into a bifunctor,
 ensure naturality of `αᵣ` and `ρᵣ`, and ensure compatibilities with
 the associator and unitor isomorphisms in `C`. -/
@@ -434,39 +435,39 @@ class MonoidalRightAction [MonoidalCategory C] extends
     MonoidalRightActionStruct C D where
   actionHom_def {c c' : C} {d d' : D} (f : d ⟶ d') (g : c ⟶ c') :
       f ⊙ᵣₘ g = f ⊵ᵣ c ≫ d' ⊴ᵣ g := by
-    aesop_cat
-  actionHomRight_id (c : C) (d : D) : d ⊴ᵣ 𝟙 c = 𝟙 (d ⊙ᵣ c) := by aesop_cat
-  id_actionHomLeft (c : C) (d : D) : 𝟙 d ⊵ᵣ c = 𝟙 (d ⊙ᵣ c) := by aesop_cat
+    cat_disch
+  actionHomRight_id (c : C) (d : D) : d ⊴ᵣ 𝟙 c = 𝟙 (d ⊙ᵣ c) := by cat_disch
+  id_actionHomLeft (c : C) (d : D) : 𝟙 d ⊵ᵣ c = 𝟙 (d ⊙ᵣ c) := by cat_disch
   actionHom_comp
       {c c' c'' : C} {d d' d'' : D} (f₁ : d ⟶ d') (f₂ : d' ⟶ d'')
       (g₁ : c ⟶ c') (g₂ : c' ⟶ c'') :
       (f₁ ≫ f₂) ⊙ᵣₘ (g₁ ≫ g₂) = (f₁ ⊙ᵣₘ g₁) ≫ (f₂ ⊙ᵣₘ g₂) := by
-    aesop_cat
+    cat_disch
   actionAssocIso_hom_naturality
       {d₁ d₂ : D} {c₁ c₂ c₃ c₄ : C} (f : d₁ ⟶ d₂) (g : c₁ ⟶ c₂) (h : c₃ ⟶ c₄) :
       (f ⊙ᵣₘ g ⊗ₘ h) ≫ (αᵣ d₂ c₂ c₄).hom =
         (αᵣ d₁ c₁ c₃).hom ≫ ((f ⊙ᵣₘ g) ⊙ᵣₘ h) := by
-    aesop_cat
+    cat_disch
   actionUnitIso_hom_naturality {d d' : D} (f : d ⟶ d') :
       (ρᵣ d).hom ≫ f = f ⊵ᵣ (𝟙_ C) ≫ (ρᵣ d').hom := by
-    aesop_cat
+    cat_disch
   actionHomRight_whiskerRight {c' c'' : C} (f : c' ⟶ c'') (c : C) (d : D) :
      d ⊴ᵣ (f ▷ c) = (αᵣ _ _ _).hom ≫ ((d ⊴ᵣ f) ⊵ᵣ c) ≫ (αᵣ _ _ _).inv := by
-    aesop_cat
+    cat_disch
   whiskerRight_actionHomLeft (c : C) {c' c'' : C} (f : c' ⟶ c'') (d : D) :
      d ⊴ᵣ (c ◁ f) = (αᵣ d c c').hom ≫ (d ⊙ᵣ c) ⊴ᵣ f ≫ (αᵣ d c c'').inv := by
-    aesop_cat
+    cat_disch
   actionHom_associator (c₁ c₂ c₃ : C) (d : D) :
       d ⊴ᵣ (α_ c₁ c₂ c₃).hom ≫ (αᵣ d c₁ (c₂ ⊗ c₃)).hom ≫
         (αᵣ (d ⊙ᵣ c₁ : D) c₂ c₃).hom =
       (αᵣ d (c₁ ⊗ c₂ : C) c₃).hom ≫ (αᵣ d c₁ c₂).hom ⊵ᵣ c₃ := by
-    aesop_cat
+    cat_disch
   actionHom_leftUnitor (c : C) (d : D) :
       d ⊴ᵣ (λ_ c).hom = (αᵣ _ _ _).hom ≫ (ρᵣ _).hom ⊵ᵣ c := by
-    aesop_cat
+    cat_disch
   actionHom_rightUnitor (c : C) (d : D) :
       d ⊴ᵣ (ρ_ c).hom = (αᵣ _ _ _).hom ≫ (ρᵣ _).hom := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc] MonoidalRightAction.actionHom_def
 attribute [reassoc, simp] MonoidalRightAction.id_actionHomLeft
@@ -485,7 +486,7 @@ instance selRightfAction [MonoidalCategory C] : MonoidalRightAction C C where
   actionObj x y := x ⊗ y
   actionHom f g := f ⊗ₘ g
   actionUnitIso x := ρ_ x
-  actionAssocIso x y z := α_ x y z|>.symm
+  actionAssocIso x y z := α_ x y z |>.symm
   actionHomLeft f x := f ▷ x
   actionHomRight x _ _ f := x ◁ f
   actionHom_def := by simp [tensorHom_def]
@@ -496,7 +497,7 @@ open Category
 
 variable {C D} [MonoidalCategory C] [MonoidalRightAction C D]
 
--- Simp normal forms are aligned with the ones in `MonoidalCateogry`.
+-- Simp normal forms are aligned with the ones in `MonoidalCategory`.
 
 @[simp]
 lemma actionHom_id {d d' : D} (f : d ⟶ d') (c : C) :
@@ -644,12 +645,12 @@ def curriedAction : C ⥤ D ⥤ D where
 variable {C} in
 /-- Bundle `d ↦ d ⊙ᵣ c` as a functor. -/
 @[simps!]
-abbrev actionRight (c : C) : D ⥤ D := curriedAction C D|>.obj c
+abbrev actionRight (c : C) : D ⥤ D := curriedAction C D |>.obj c
 
 variable {D} in
 /-- Bundle `c ↦ d ⊙ᵣ c` as a functor. -/
 @[simps!]
-abbrev actionLeft (d : D) : C ⥤ D := curriedAction C D|>.flip.obj d
+abbrev actionLeft (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
 /-- Bundle `αᵣ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]

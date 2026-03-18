@@ -3,12 +3,13 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Batteries.Logic
-import Batteries.Tactic.Init
-import Mathlib.Data.Int.Notation
-import Mathlib.Data.Nat.Notation
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
+module
+
+public import Batteries.Logic
+public import Mathlib.Data.Int.Notation
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Basic operations on the integers
@@ -21,6 +22,8 @@ This file should not depend on anything defined in Mathlib (except for notation)
 upstreamed to Batteries easily.
 -/
 
+@[expose] public section
+
 open Nat
 
 namespace Int
@@ -28,8 +31,6 @@ namespace Int
 variable {a b c d m n : ℤ}
 
 protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 h
-
-@[deprecated (since := "2025-03-07")] alias neg_nonpos_iff_nonneg := Int.neg_nonpos_iff
 
 /-! ### succ and pred -/
 
@@ -59,11 +60,11 @@ lemma neg_nat_succ (n : ℕ) : -(Nat.succ n : ℤ) = pred (-n) := neg_succ n
 lemma succ_neg_natCast_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
 
 @[norm_cast] lemma natCast_pred_of_pos {n : ℕ} (h : 0 < n) : ((n - 1 : ℕ) : ℤ) = (n : ℤ) - 1 := by
-  cases n; cases h; simp [natCast_succ]
+  grind
 
-lemma lt_succ_self (a : ℤ) : a < succ a := by unfold succ; omega
+lemma lt_succ_self (a : ℤ) : a < succ a := by unfold succ; lia
 
-lemma pred_self_lt (a : ℤ) : pred a < a := by unfold pred; omega
+lemma pred_self_lt (a : ℤ) : pred a < a := by unfold pred; lia
 
 /--
 Induction on integers: prove a proposition `p i` by proving the base case `p 0`,
@@ -101,14 +102,14 @@ where
   /-- The positive case of `Int.inductionOn'`. -/
   pos : ∀ n : ℕ, motive (b + n)
   | 0 => cast (by simp) zero
-  | n+1 => cast (by rw [Int.add_assoc]; rfl) <|
+  | n + 1 => cast (by rw [Int.add_assoc]; rfl) <|
     succ _ (Int.le_add_of_nonneg_right (natCast_nonneg _)) (pos n)
   /-- The negative case of `Int.inductionOn'`. -/
   neg : ∀ n : ℕ, motive (b + -[n+1])
   | 0 => pred _ Int.le_rfl zero
-  | n+1 => by
-    refine cast (by rw [Int.add_sub_assoc]; rfl) (pred _ (Int.le_of_lt ?_) (neg n))
-    omega
+  | n + 1 => by
+    refine cast (by lia) (pred _ (Int.le_of_lt ?_) (neg n))
+    lia
 
 variable {z b zero succ pred}
 
@@ -118,18 +119,18 @@ lemma inductionOn'_self : b.inductionOn' b zero succ pred = zero :=
 lemma inductionOn'_sub_one (hz : z ≤ b) :
     (z - 1).inductionOn' b zero succ pred = pred z hz (z.inductionOn' b zero succ pred) := by
   apply cast_eq_iff_heq.mpr
-  obtain ⟨n, hn⟩ := Int.eq_negSucc_of_lt_zero (show z - 1 - b < 0 by omega)
+  obtain ⟨n, hn⟩ := Int.eq_negSucc_of_lt_zero (show z - 1 - b < 0 by lia)
   rw [hn]
-  obtain _|n := n
+  obtain _ | n := n
   · change _ = -1 at hn
-    have : z = b := by omega
+    have : z = b := by lia
     subst this; rw [inductionOn'_self]; exact heq_of_eq rfl
-  · have : z = b + -[n+1] := by rw [Int.negSucc_eq] at hn ⊢; omega
+  · have : z = b + -[n+1] := by rw [Int.negSucc_eq] at hn ⊢; lia
     subst this
     refine (cast_heq _ _).trans ?_
     congr
     symm
-    rw [Int.inductionOn', cast_eq_iff_heq, show b + -[n+1] - b = -[n+1] by omega]
+    rw [Int.inductionOn', cast_eq_iff_heq, show b + -[n+1] - b = -[n+1] by lia]
 
 end inductionOn'
 
@@ -143,19 +144,13 @@ end inductionOn'
 @[elab_as_elim]
 protected lemma le_induction {m : ℤ} {motive : ∀ n, m ≤ n → Prop} (base : motive m m.le_refl)
     (succ : ∀ n hmn, motive n hmn → motive (n + 1) (le_add_one hmn)) : ∀ n hmn, motive n hmn := by
-  refine fun n ↦ Int.inductionOn' n m ?_ ?_ ?_
-  · intro
-    exact base
-  · intro k hle hi _
-    exact succ k hle (hi hle)
-  · intro k hle _ hle'
-    omega
+  refine fun n ↦ Int.inductionOn' n m ?_ ?_ ?_ <;> grind
 
 /-- See `Int.inductionOn'` for an induction in both directions. -/
 @[elab_as_elim]
 protected lemma le_induction_down {m : ℤ} {motive : ∀ n, n ≤ m → Prop} (base : motive m m.le_refl)
-    (pred : ∀ n hmn, motive n hmn → motive (n - 1) (by omega)) : ∀ n hmn, motive n hmn := fun n ↦
-  Int.inductionOn' n m (fun _ ↦ base) (fun k hle _ hle' ↦ by omega)
+    (pred : ∀ n hmn, motive n hmn → motive (n - 1) (by lia)) : ∀ n hmn, motive n hmn := fun n ↦
+  Int.inductionOn' n m (fun _ ↦ base) (fun k hle _ hle' ↦ by lia)
     fun k hle hi _ ↦ pred k hle (hi hle)
 
 section strongRec
@@ -166,10 +161,10 @@ variable {motive : ℤ → Sort*} (lt : ∀ n < m, motive n)
 /-- A strong recursor for `Int` that specifies explicit values for integers below a threshold,
 and is analogous to `Nat.strongRec` for integers on or above the threshold. -/
 @[elab_as_elim] protected def strongRec (n : ℤ) : motive n := by
-  refine if hnm : n < m then lt n hnm else ge n (by omega) (n.inductionOn' m lt ?_ ?_)
+  refine if hnm : n < m then lt n hnm else ge n (by lia) (n.inductionOn' m lt ?_ ?_)
   · intro _n _ ih l _
-    exact if hlm : l < m then lt l hlm else ge l (by omega) fun k _ ↦ ih k (by omega)
-  · exact fun n _ hn l _ ↦ hn l (by omega)
+    exact if hlm : l < m then lt l hlm else ge l (by lia) fun k _ ↦ ih k (by lia)
+  · exact fun n _ hn l _ ↦ hn l (by lia)
 
 variable {lt ge}
 lemma strongRec_of_lt (hn : n < m) : m.strongRec lt ge n = lt n hn := dif_pos _
@@ -197,8 +192,6 @@ lemma ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -((-
 /-! ### mod -/
 
 @[simp, norm_cast] lemma natCast_mod (m n : ℕ) : (↑(m % n) : ℤ) = ↑m % ↑n := rfl
-
-@[deprecated (since := "2025-04-16")] alias add_emod_eq_add_mod_right := add_emod_eq_add_emod_right
 
 lemma div_le_iff_of_dvd_of_pos (hb : 0 < b) (hba : b ∣ a) : a / b ≤ c ↔ a ≤ b * c :=
   ediv_le_iff_of_dvd_of_pos hb hba
@@ -306,8 +299,7 @@ lemma le_add_iff_lt_of_dvd_sub (ha : 0 < a) (hab : a ∣ c - b) : a + b ≤ c �
 /-! ### sign -/
 
 lemma sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by
-  have : (1 : ℤ) ≠ -1 := by decide
-  rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm] <;> omega
+  lia
 
 /-! ### toNat -/
 
@@ -323,18 +315,20 @@ Therefore we mark this lemma as `@[simp high]`.
 lemma toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) = i - 1 := by
   simp only [lt_toNat, Int.cast_ofNat_Int, h, natCast_pred_of_pos, Int.le_of_lt h, toNat_of_nonneg]
 
-lemma toNat_lt_of_ne_zero {n : ℕ} (hn : n ≠ 0) : m.toNat < n ↔ m < n := by omega
-
-@[deprecated (since := "2025-05-24")]
-alias toNat_lt'' := toNat_lt_of_ne_zero
+lemma toNat_lt_of_ne_zero {n : ℕ} (hn : n ≠ 0) : m.toNat < n ↔ m < n := by lia
 
 /-- The modulus of an integer by another as a natural. Uses the E-rounding convention. -/
 def natMod (m n : ℤ) : ℕ := (m % n).toNat
 
 lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
-  (toNat_lt_of_ne_zero hn).2 <| emod_lt_of_pos _ <| by omega
+  (toNat_lt_of_ne_zero hn).2 <| emod_lt_of_pos _ <| by lia
 
 /-- For use in `Mathlib/Tactic/NormNum/Pow.lean` -/
 @[simp] lemma pow_eq (m : ℤ) (n : ℕ) : m.pow n = m ^ n := rfl
+
+@[simp] lemma gcd_ofNat_negSucc (m n : ℕ) : gcd m (negSucc n) = m.gcd (n + 1) := by simp [gcd]
+@[simp] lemma gcd_negSucc_ofNat (m n : ℕ) : gcd (negSucc m) n = (m + 1).gcd n := by simp [gcd]
+@[simp] lemma gcd_negSucc_negSucc (m n : ℕ) :
+    (negSucc m).gcd (negSucc n) = (m + 1).gcd (n + 1) := by simp [gcd]
 
 end Int

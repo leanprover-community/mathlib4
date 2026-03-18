@@ -3,10 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Data.Set.Card
-import Mathlib.Data.Setoid.Partition
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Data.Set.Card
+public import Mathlib.Data.Setoid.Partition
 
 /-! # Cardinality of parts of partitions
 
@@ -15,9 +16,9 @@ import Mathlib.Data.Setoid.Partition
 
 -/
 
-section Finite
+public section
 
-open scoped BigOperators
+section Finite
 
 /-- Given a partition of the ambient type, the cardinal of a finite set
   is the `finsum` of the cardinalities of its traces on the parts of the partition -/
@@ -30,7 +31,7 @@ theorem Setoid.IsPartition.ncard_eq_finsum {α : Type*} {P : Set (Set α)}
     Nat.card_eq_card_finite_toFinset (hst t)
   suffices hs' : _ by
     rw [finsum_def, dif_pos hs']
-    simp only [← Set.Nat.card_coe_set_eq, Nat.card_eq_card_finite_toFinset hs]
+    simp only [← Nat.card_coe_set_eq, Nat.card_eq_card_finite_toFinset hs]
     rw [Finset.sum_congr rfl (fun t ht ↦ by exact hst' ↑t)]
     rw [← Finset.card_sigma, eq_comm]
     apply Finset.card_nbij' (fun ⟨t, x⟩ ↦ x)

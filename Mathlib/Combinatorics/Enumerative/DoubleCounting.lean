@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Nat
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
 # Double countings
@@ -19,9 +21,9 @@ between `s : Finset α` and `t : Finset β` by the minimum/maximum of edges over
 size of `s`. Similarly for `t`. Combining those two yields inequalities between the sizes of `s`
 and `t`.
 
-* `bipartiteBelow`: `s.bipartiteBelow r b` are the elements of `s` below `b` wrt to `r`. Its size
+* `bipartiteBelow`: `s.bipartiteBelow r b` are the elements of `s` below `b` w.r.t. `r`. Its size
   is the number of edges of `b` in `s`.
-* `bipartiteAbove`: `t.bipartite_Above r a` are the elements of `t` above `a` wrt to `r`. Its size
+* `bipartiteAbove`: `t.bipartite_Above r a` are the elements of `t` above `a` w.r.t. `r`. Its size
   is the number of edges of `a` in `t`.
 * `card_mul_le_card_mul`, `card_mul_le_card_mul'`: Double counting the edges of a bipartite graph
   from below and from above.
@@ -32,6 +34,8 @@ and `t`.
 For the formulation of double-counting arguments where a bipartite graph is considered as a
 bipartite simple graph `G : SimpleGraph V`, see `Mathlib/Combinatorics/SimpleGraph/Bipartite.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

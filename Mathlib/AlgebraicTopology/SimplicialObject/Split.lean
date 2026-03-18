@@ -3,9 +3,11 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.Data.Fintype.Sigma
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.Data.Fintype.Sigma
 
 /-!
 
@@ -32,6 +34,8 @@ Simplicial objects equipped with a splitting form a category
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -41,7 +45,7 @@ open Simplicial
 
 universe u
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace SimplicialObject
 
@@ -49,7 +53,7 @@ namespace Splitting
 
 /-- The index set which appears in the definition of split simplicial objects. -/
 def IndexSet (Δ : SimplexCategoryᵒᵖ) :=
-  ΣΔ' : SimplexCategoryᵒᵖ, { α : Δ.unop ⟶ Δ'.unop // Epi α }
+  Σ Δ' : SimplexCategoryᵒᵖ, { α : Δ.unop ⟶ Δ'.unop // Epi α }
 
 namespace IndexSet
 
@@ -81,13 +85,11 @@ theorem ext (A₁ A₂ : IndexSet Δ) (h₁ : A₁.1 = A₂.1) (h₂ : A₁.e �
 instance : Fintype (IndexSet Δ) :=
   Fintype.ofInjective
     (fun A =>
-      ⟨⟨A.1.unop.len, Nat.lt_succ_iff.mpr (len_le_of_epi (inferInstance : Epi A.e))⟩,
+      ⟨⟨A.1.unop.len, Nat.lt_succ_iff.mpr (len_le_of_epi A.e)⟩,
         A.e.toOrderHom⟩ :
       IndexSet Δ → Sigma fun k : Fin (Δ.unop.len + 1) => Fin (Δ.unop.len + 1) → Fin (k + 1))
     (by
-      rintro ⟨Δ₁, α₁⟩ ⟨Δ₂, α₂⟩ h₁
-      induction' Δ₁ using Opposite.rec with Δ₁
-      induction' Δ₂ using Opposite.rec with Δ₂
+      rintro ⟨⟨Δ₁⟩, α₁⟩ ⟨⟨Δ₂⟩, α₂⟩ h₁
       simp only [unop_op, Sigma.mk.inj_iff, Fin.mk.injEq] at h₁
       have h₂ : Δ₁ = Δ₂ := by
         ext1
@@ -116,6 +118,7 @@ element `Splitting.IndexSet.Id Δ`. -/
 def EqId : Prop :=
   A = id _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eqId_iff_eq : A.EqId ↔ A.1 = Δ := by
   constructor
   · intro h
@@ -145,7 +148,7 @@ theorem eqId_iff_len_le : A.EqId ↔ Δ.unop.len ≤ A.1.unop.len := by
   constructor
   · intro h
     rw [h]
-  · exact le_antisymm (len_le_of_epi (inferInstance : Epi A.e))
+  · exact le_antisymm (len_le_of_epi A.e)
 
 theorem eqId_iff_mono : A.EqId ↔ Mono A.e := by
   constructor
@@ -154,9 +157,9 @@ theorem eqId_iff_mono : A.EqId ↔ Mono A.e := by
     subst h
     dsimp only [id, e]
     infer_instance
-  · intro h
+  · intro
     rw [eqId_iff_len_le]
-    exact len_le_of_mono h
+    exact len_le_of_mono A.e
 
 /-- Given `A : IndexSet Δ₁`, if `p.unop : unop Δ₂ ⟶ unop Δ₁` is an epi, this
 is the obvious element in `A : IndexSet Δ₂` associated to the composition
@@ -223,7 +226,7 @@ def isColimit (Δ : SimplexCategoryᵒᵖ) : IsColimit (s.cofan Δ) := s.isColim
 
 @[reassoc]
 theorem cofan_inj_eq {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
-    (s.cofan Δ).inj  A = s.ι A.1.unop.len ≫ X.map A.e.op := rfl
+    (s.cofan Δ).inj A = s.ι A.1.unop.len ≫ X.map A.e.op := rfl
 
 theorem cofan_inj_id (n : ℕ) : (s.cofan _).inj (IndexSet.id (op ⦋n⦌)) = s.ι n := by
   simp [IndexSet.id, IndexSet.e, cofan_inj_eq]
@@ -235,6 +238,7 @@ simplicial object to any simplicial object is determined by its restrictions
 def φ (f : X ⟶ Y) (n : ℕ) : s.N n ⟶ Y _⦋n⦌ :=
   s.ι n ≫ f.app (op ⦋n⦌)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem cofan_inj_comp_app (f : X ⟶ Y) {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
     (s.cofan Δ).inj A ≫ f.app Δ = s.φ f A.1.unop.len ≫ Y.map A.e.op := by
@@ -245,12 +249,12 @@ theorem hom_ext' {Z : C} {Δ : SimplexCategoryᵒᵖ} (f g : X.obj Δ ⟶ Z)
     (h : ∀ A : IndexSet Δ, (s.cofan Δ).inj A ≫ f = (s.cofan Δ).inj A ≫ g) : f = g :=
   Cofan.IsColimit.hom_ext (s.isColimit Δ) _ _ h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hom_ext (f g : X ⟶ Y) (h : ∀ n : ℕ, s.φ f n = s.φ g n) : f = g := by
-  ext Δ
+  ext ⟨Δ⟩
   apply s.hom_ext'
   intro A
-  induction' Δ using Opposite.rec with Δ
-  induction' Δ using SimplexCategory.rec with n
+  induction Δ using SimplexCategory.rec with | _ n
   dsimp
   simp only [s.cofan_inj_comp_app, h]
 
@@ -270,7 +274,7 @@ theorem ι_desc {Z : C} (Δ : SimplexCategoryᵒᵖ) (F : ∀ A : IndexSet Δ, s
 def ofIso (e : X ≅ Y) : Splitting Y where
   N := s.N
   ι n := s.ι n ≫ e.hom.app (op ⦋n⦌)
-  isColimit' Δ := IsColimit.ofIsoColimit (s.isColimit Δ ) (Cofan.ext (e.app Δ)
+  isColimit' Δ := IsColimit.ofIsoColimit (s.isColimit Δ) (Cofan.ext (e.app Δ)
     (fun A => by simp [cofan, cofan']))
 
 @[reassoc]
@@ -311,7 +315,7 @@ structure Hom (S₁ S₂ : Split C) where
   F : S₁.X ⟶ S₂.X
   /-- the morphism between the "nondegenerate" `n`-simplices for all `n : ℕ` -/
   f : ∀ n : ℕ, S₁.s.N n ⟶ S₂.s.N n
-  comm : ∀ n : ℕ, S₁.s.ι n ≫ F.app (op ⦋n⦌) = f n ≫ S₂.s.ι n := by aesop_cat
+  comm : ∀ n : ℕ, S₁.s.ι n ≫ F.app (op ⦋n⦌) = f n ≫ S₂.s.ι n := by cat_disch
 
 @[ext]
 theorem Hom.ext {S₁ S₂ : Split C} (Φ₁ Φ₂ : Hom S₁ S₂) (h : ∀ n : ℕ, Φ₁.f n = Φ₂.f n) : Φ₁ = Φ₂ := by
@@ -374,6 +378,7 @@ theorem comp_f {S₁ S₂ S₃ : Split C} (Φ₁₂ : S₁ ⟶ S₂) (Φ₂₃ :
     (Φ₁₂ ≫ Φ₂₃).f n = Φ₁₂.f n ≫ Φ₂₃.f n :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 -- This is not a `@[simp]` lemma as it can later be proved by `simp`.
 @[reassoc]
 theorem cofan_inj_naturality_symm {S₁ S₂ : Split C} (Φ : S₁ ⟶ S₂) {Δ : SimplexCategoryᵒᵖ}

@@ -3,21 +3,26 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.LinearAlgebra.Span.Basic
+
 
 /-!
 # Towers of algebras
 
-In this file we prove basic facts about towers of algebra.
+In this file we prove basic facts about towers of algebras.
 
 An algebra tower A/S/R is expressed by having instances of `Algebra A S`,
-`Algebra R S`, `Algebra R A` and `IsScalarTower R S A`, the later asserting the
+`Algebra R S`, `Algebra R A` and `IsScalarTower R S A`, the latter asserting the
 compatibility condition `(r • s) • a = r • (s • a)`.
 
 An important definition is `toAlgHom R S A`, the canonical `R`-algebra homomorphism `S →ₐ[R] A`.
 
 -/
+
+@[expose] public section
 
 
 open Pointwise
@@ -37,7 +42,7 @@ variable {A}
 /-- The `R`-algebra morphism `A → End (M)` corresponding to the representation of the algebra `A`
 on the `B`-module `M`.
 
-This is a stronger version of `DistribMulAction.toLinearMap`, and could also have been
+This is a stronger version of `DistribSMul.toLinearMap`, and could also have been
 called `Algebra.toModuleEnd`.
 
 The typeclasses correspond to the situation where the types act on each other as
@@ -61,7 +66,7 @@ example : Aᵐᵒᵖ →ₐ[R] Module.End A A := Algebra.lsmul R A A
 respectively; though `LinearMap.mulLeft` and `LinearMap.mulRight` can also be used here.
 -/
 def lsmul : A →ₐ[R] Module.End B M where
-  toFun := DistribMulAction.toLinearMap B M
+  toFun := DistribSMul.toLinearMap B M
   map_one' := LinearMap.ext fun _ => one_smul A _
   map_mul' a b := LinearMap.ext <| smul_assoc a b
   map_zero' := LinearMap.ext fun _ => zero_smul A _
@@ -104,7 +109,7 @@ variable {R S A}
 
 theorem of_algebraMap_eq [Algebra R A]
     (h : ∀ x, algebraMap R A x = algebraMap S A (algebraMap R S x)) : IsScalarTower R S A :=
-  ⟨fun x y z => by simp_rw [Algebra.smul_def, RingHom.map_mul, mul_assoc, h]⟩
+  ⟨fun x y z => by simp_rw [Algebra.smul_def, map_mul, mul_assoc, h]⟩
 
 /-- See note [partially-applied ext lemmas]. -/
 theorem of_algebraMap_eq' [Algebra R A]
@@ -202,6 +207,25 @@ theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A →ₐ[S] B) → A →ₐ[R] B) := fun _ _ h =>
   AlgHom.ext (AlgHom.congr_fun h :)
 
+section
+
+variable {R}
+
+/-- Any `f : A →ₐ[R] B` is also an `R ⧸ I`-algebra homomorphism if the `R`-algebra structure on
+`A` and `B` factors via `R ⧸ I`. -/
+@[simps! apply]
+def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : A →ₐ[R] B) : A →ₐ[S] B where
+  toRingHom := f
+  commutes' := by simp [h.forall, ← IsScalarTower.algebraMap_apply]
+
+@[simp]
+lemma restrictScalars_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : A →ₐ[R] B) :
+    (f.extendScalarsOfSurjective h).restrictScalars R = f := rfl
+
+end
+
 end AlgHom
 
 namespace AlgEquiv
@@ -224,6 +248,41 @@ theorem coe_restrictScalars' (f : A ≃ₐ[S] B) : (restrictScalars R f : A → 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A ≃ₐ[S] B) → A ≃ₐ[R] B) := fun _ _ h =>
   AlgEquiv.ext (AlgEquiv.congr_fun h :)
+
+lemma restrictScalars_symm_apply (f : A ≃ₐ[S] B) (x : B) :
+    (f.restrictScalars R).symm x = f.symm x := rfl
+
+@[simp]
+lemma coe_restrictScalars_symm (f : A ≃ₐ[S] B) :
+    ((f.restrictScalars R).symm : B ≃+* A) = f.symm := rfl
+
+@[simp]
+lemma coe_restrictScalars_symm' (f : A ≃ₐ[S] B) :
+    ((restrictScalars R f).symm : B → A) = f.symm := rfl
+
+section
+
+variable {R}
+
+/-- Any `f : A ≃ₐ[R] B` is also an `R ⧸ I`-algebra isomorphism if the `R`-algebra structure on
+`A` and `B` factors via `R ⧸ I`. -/
+@[simps! apply]
+def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : A ≃ₐ[R] B) : A ≃ₐ[S] B where
+  toRingEquiv := f
+  commutes' := (f.toAlgHom.extendScalarsOfSurjective h).commutes'
+
+@[simp]
+lemma restrictScalars_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : A ≃ₐ[R] B) :
+    (f.extendScalarsOfSurjective h).restrictScalars R = f := rfl
+
+@[simp]
+lemma extendScalarsOfSurjective_symm (h : Function.Surjective (algebraMap R S))
+    (f : A ≃ₐ[R] B) :
+    (f.extendScalarsOfSurjective h).symm = f.symm.extendScalarsOfSurjective h := rfl
+
+end
 
 end AlgEquiv
 
@@ -326,14 +385,24 @@ section Ring
 
 namespace Algebra
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [CommSemiring R] [Semiring A] [IsDomain A] [Semiring B] [Algebra R A] [Algebra R B]
 variable [AddCommGroup M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 
-theorem lsmul_injective [NoZeroSMulDivisors A M] {x : A} (hx : x ≠ 0) :
+theorem lsmul_injective [Module.IsTorsionFree A M] {x : A} (hx : x ≠ 0) :
     Function.Injective (lsmul R B M x) :=
   smul_right_injective M hx
 
 end Algebra
 
 end Ring
+
+section Algebra.algebraMapSubmonoid
+
+@[simp]
+theorem Algebra.algebraMapSubmonoid_map_map {R A B : Type*} [CommSemiring R] [CommSemiring A]
+    [Algebra R A] (M : Submonoid R) [CommRing B] [Algebra R B] [Algebra A B] [IsScalarTower R A B] :
+    algebraMapSubmonoid B (algebraMapSubmonoid A M) = algebraMapSubmonoid B M :=
+  algebraMapSubmonoid_map_eq _ (IsScalarTower.toAlgHom R A B)
+
+end Algebra.algebraMapSubmonoid

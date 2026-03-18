@@ -3,7 +3,9 @@ Copyright (c) 2025 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
-import Mathlib.CategoryTheory.Sites.ConstantSheaf
+module
+
+public import Mathlib.CategoryTheory.Sites.ConstantSheaf
 
 /-!
 # Global sections of sheaves
@@ -41,6 +43,8 @@ on a terminal object and `Functor.sectionsFunctor`.
   `instHasSheafifyOfHasFiniteLimits`.
 
 -/
+
+@[expose] public section
 
 universe u v w u₂ v₂
 
@@ -97,13 +101,13 @@ variable {J A}
 /-- Natural transformations from a constant presheaf into a sheaf correspond to morphisms to its
 global sections. -/
 noncomputable def Sheaf.ΓHomEquiv [HasGlobalSectionsFunctor J A] {X : A} {F : Sheaf J A} :
-    ((Functor.const _).obj X ⟶ F.val) ≃ (X ⟶ (Γ J A).obj F) :=
+    ((Functor.const _).obj X ⟶ F.obj) ≃ (X ⟶ (Γ J A).obj F) :=
   ((sheafificationAdjunction J A).homEquiv _ _).symm.trans
     ((constantSheafΓAdj J A).homEquiv _ _)
 
 /-- Naturality lemma for `ΓHomEquiv` analogous to `Adjunction.homEquiv_naturality_left`. -/
 lemma Sheaf.ΓHomEquiv_naturality_left [HasGlobalSectionsFunctor J A] {X' X : A} {F : Sheaf J A}
-    (f : X' ⟶ X) (g : (Functor.const _).obj X ⟶ F.val) :
+    (f : X' ⟶ X) (g : (Functor.const _).obj X ⟶ F.obj) :
     ΓHomEquiv ((Functor.const _).map f ≫ g) = f ≫ ΓHomEquiv g :=
   (congrArg _ ((sheafificationAdjunction J A).homEquiv_naturality_left_symm _ _)).trans
     ((constantSheafΓAdj J A).homEquiv_naturality_left _ _)
@@ -117,22 +121,22 @@ lemma Sheaf.ΓHomEquiv_naturality_left_symm [HasGlobalSectionsFunctor J A] {X' X
 
 /-- Naturality lemma for `ΓHomEquiv` analogous to `Adjunction.homEquiv_naturality_right`. -/
 lemma Sheaf.ΓHomEquiv_naturality_right [HasGlobalSectionsFunctor J A] {X : A} {F F' : Sheaf J A}
-    (f : (Functor.const _).obj X ⟶ F.val) (g : F ⟶ F') :
-    ΓHomEquiv (f ≫ g.val) = ΓHomEquiv f ≫ (Γ J A).map g :=
+    (f : (Functor.const _).obj X ⟶ F.obj) (g : F ⟶ F') :
+    ΓHomEquiv (f ≫ g.hom) = ΓHomEquiv f ≫ (Γ J A).map g :=
   (congrArg _ ((sheafificationAdjunction J A).homEquiv_naturality_right_symm _ _)).trans
     ((constantSheafΓAdj J A).homEquiv_naturality_right _ _)
 
 /-- Naturality lemma for `ΓHomEquiv` analogous to `Adjunction.homEquiv_naturality_right_symm`. -/
 lemma Sheaf.ΓHomEquiv_naturality_right_symm [HasGlobalSectionsFunctor J A] {X : A}
     {F F' : Sheaf J A} (f : X ⟶ (Γ J A).obj F) (g : F ⟶ F') :
-    ΓHomEquiv.symm (f ≫ (Γ J A).map g) = ΓHomEquiv.symm f ≫ g.val :=
+    ΓHomEquiv.symm (f ≫ (Γ J A).map g) = ΓHomEquiv.symm f ≫ g.hom :=
   (congrArg _ ((constantSheafΓAdj J A).homEquiv_naturality_right_symm _ _)).trans
     ((sheafificationAdjunction J A).homEquiv_naturality_right _ _)
 
-/-- The cone over a given sheaf whose cone point are the global sections and whose components are
+/-- The cone over a given sheaf whose cone point is the global sections and whose components are
 the restriction maps. -/
 @[simps pt]
-noncomputable def Sheaf.coneΓ [HasGlobalSectionsFunctor J A] (F : Sheaf J A) : Cone F.val where
+noncomputable def Sheaf.coneΓ [HasGlobalSectionsFunctor J A] (F : Sheaf J A) : Cone F.obj where
   pt := (Γ J A).obj F
   π := ΓHomEquiv.symm (𝟙 _)
 
@@ -150,12 +154,12 @@ noncomputable def Sheaf.isLimitConeΓ [HasGlobalSectionsFunctor J A] (F : Sheaf 
 
 /-- The restriction map from global sections of `F` to sections on `U`. -/
 noncomputable def Sheaf.ΓRes [HasGlobalSectionsFunctor J A] (F : Sheaf J A) (U : Cᵒᵖ) :
-    (Γ J A).obj F ⟶ F.val.obj U :=
+    (Γ J A).obj F ⟶ F.obj.obj U :=
   F.coneΓ.π.app U
 
 @[reassoc (attr := simp)]
 lemma Sheaf.ΓRes_map [HasGlobalSectionsFunctor J A] (F : Sheaf J A) {V U : Cᵒᵖ} (f : U ⟶ V) :
-    F.ΓRes U ≫ F.val.map f = F.ΓRes V :=
+    F.ΓRes U ≫ F.obj.map f = F.ΓRes V :=
   F.coneΓ.w f
 
 @[simp]
@@ -163,7 +167,7 @@ lemma Sheaf.coneΓ_π_app [HasGlobalSectionsFunctor J A] (F : Sheaf J A) (U : C�
     F.coneΓ.π.app U = F.ΓRes U := rfl
 
 lemma Sheaf.ΓRes_naturality [HasGlobalSectionsFunctor J A] {F G : Sheaf J A} (f : F ⟶ G) (U : Cᵒᵖ) :
-    (Γ J A).map f ≫ ΓRes G U = ΓRes F U ≫ f.val.app U := by
+    (Γ J A).map f ≫ ΓRes G U = ΓRes F U ≫ f.hom.app U := by
   refine .trans ?_ <| congr_app (ΓHomEquiv_naturality_right_symm _ _) U
   exact (congr_app (ΓHomEquiv_naturality_left_symm ((Γ J A).map f) (𝟙 _)) U).symm.trans (by simp)
 
@@ -184,23 +188,23 @@ attribute [local instance] CategoryTheory.Types.instFunLike
 /-- Global sections of a sheaf of types correspond to sections of the underlying presheaf. -/
 noncomputable def Sheaf.ΓObjEquivSections [HasWeakSheafify J (Type w)]
     [HasGlobalSectionsFunctor J (Type w)] (F : Sheaf J (Type w)) :
-      (Γ J (Type w)).obj F ≃ F.val.sections :=
+      (Γ J (Type w)).obj F ≃ F.obj.sections :=
   (Equiv.trans (by exact (Equiv.funUnique PUnit _).symm) ΓHomEquiv.symm).trans
-    (F.val.sectionsEquivHom PUnit).symm
+    (F.obj.sectionsEquivHom PUnit).symm
 
 lemma Sheaf.ΓObjEquivSections_naturality [HasWeakSheafify J (Type w)]
     [HasGlobalSectionsFunctor J (Type w)] {F G : Sheaf J (Type w)} (f : F ⟶ G) (x : (Γ J _).obj F) :
     (ΓObjEquivSections J G) ((Γ J _).map f x) =
-      (Functor.sectionsFunctor _).map f.val ((ΓObjEquivSections J F) x) := by
+      (Functor.sectionsFunctor _).map f.hom ((ΓObjEquivSections J F) x) := by
   dsimp [ΓObjEquivSections]
   exact (congr_arg _ (ΓHomEquiv_naturality_right_symm _ _)).trans
     (Functor.sectionsEquivHom_naturality_symm _ _ _)
 
 lemma Sheaf.ΓObjEquivSections_naturality_symm [HasWeakSheafify J (Type w)]
     [HasGlobalSectionsFunctor J (Type w)] {F G : Sheaf J (Type w)} (f : F ⟶ G)
-    (x : F.val.sections) : (ΓObjEquivSections J G).symm ((Functor.sectionsFunctor _).map f.val x) =
+    (x : F.obj.sections) : (ΓObjEquivSections J G).symm ((Functor.sectionsFunctor _).map f.hom x) =
       (Γ J _).map f ((ΓObjEquivSections J F).symm x) :=
-  congr_fun (ΓHomEquiv_naturality_right (F.val.sectionsEquivHom _ x) f) _
+  congr_fun (ΓHomEquiv_naturality_right (F.obj.sectionsEquivHom _ x) f) _
 
 /-- For sheaves of types, the global sections functor is isomorphic to the sections functor
 on presheaves. -/

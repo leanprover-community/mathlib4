@@ -3,13 +3,17 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Sums.Basic
+module
+
+public import Mathlib.CategoryTheory.Sums.Basic
 
 /-!
 # Associator for binary disjoint union of categories.
 
 The associator functor `((C ⊕ D) ⊕ E) ⥤ (C ⊕ (D ⊕ E))` and its inverse form an equivalence.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -45,12 +49,14 @@ theorem associator_map_inl_inl {X Y : C} (f : X ⟶ Y) :
     (associator C D E).map ((inl_ _ _).map ((inl_ _ _).map f)) = (inl_ _ _).map f :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem associator_map_inl_inr {X Y : D} (f : X ⟶ Y) :
     (associator C D E).map ((inl_ _ _).map ((inr_ _ _).map f)) =
     (inr_ _ _).map ((inl_ _ _).map f) := by
   simp [associator]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem associator_map_inr {X Y : E} (f : X ⟶ Y) :
     (associator C D E).map ((inr_ _ _).map f) = (inr_ _ _).map ((inr_ _ _).map f) := by
@@ -96,11 +102,13 @@ theorem inverseAssociator_obj_inr_inl (X) :
 theorem inverseAssociator_obj_inr_inr (X) : (inverseAssociator C D E).obj (inr (inr X)) = inr X :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inverseAssociator_map_inl {X Y : C} (f : X ⟶ Y) :
     (inverseAssociator C D E).map ((inl_ _ _).map f) = (inl_ _ _).map ((inl_ _ _).map f) := by
   simp [inverseAssociator]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inverseAssociator_map_inr_inl {X Y : D} (f : X ⟶ Y) :
     (inverseAssociator C D E).map ((inr_ _ _).map ((inl_ _ _).map f)) =

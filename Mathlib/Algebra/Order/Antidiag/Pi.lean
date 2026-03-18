@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, Bhavik Mehta,
   Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-import Mathlib.Data.Fin.Tuple.NatAntidiagonal
-import Mathlib.Data.Finset.Sym
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+public import Mathlib.Data.Fin.Tuple.NatAntidiagonal
+public import Mathlib.Data.Finset.Sym
 
 /-!
 # Antidiagonal of functions as finsets
@@ -39,6 +41,8 @@ identification. See `Finset.finAntidiag` for the details.
 `Finset.finsuppAntidiag` for the `Finset (ι →₀ μ)`-valued version of `Finset.piAntidiag`.
 -/
 
+@[expose] public section
+
 open Function
 
 variable {ι μ μ' : Type*}
@@ -54,6 +58,7 @@ In this section, we define the antidiagonals in `Fin d → μ` by recursion on `
 computationally efficient, although probably not as efficient as `Finset.Nat.antidiagonalTuple`.
 -/
 
+set_option backward.proofsInPublic true in
 /-- `finAntidiagonal d n` is the type of `d`-tuples with sum `n`.
 
 TODO: deduplicate with the less general `Finset.Nat.antidiagonalTuple`. -/
@@ -116,20 +121,20 @@ def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
     simp only [mem_map, mem_finAntidiagonal]
     refine Equiv.exists_congr ((e₁.symm.trans e₂).arrowCongr <| .refl _) fun g ↦ ?_
     have := Fintype.sum_equiv (e₂.symm.trans e₁) _ g fun _ ↦ rfl
-    aesop
+    simp_all
 
 variable {s : Finset ι} {n : μ} {f : ι → μ}
 
 @[simp] lemma mem_piAntidiag : f ∈ piAntidiag s n ↔ s.sum f = n ∧ ∀ i, f i ≠ 0 → i ∈ s := by
   rw [piAntidiag]
-  induction' Fintype.truncEquivFinOfCardEq (Fintype.card_coe s) using Trunc.ind with e
+  induction Fintype.truncEquivFinOfCardEq (Fintype.card_coe s) using Trunc.ind with | _ e
   simp only [Trunc.lift_mk, mem_map, mem_finAntidiagonal, Embedding.coeFn_mk]
   constructor
   · rintro ⟨f, ⟨hf, rfl⟩, rfl⟩
     rw [sum_dite_of_true fun _ ↦ id]
     exact ⟨Fintype.sum_equiv e _ _ (by simp), by simp +contextual⟩
   · rintro ⟨rfl, hf⟩
-    refine ⟨f ∘ (↑) ∘ e.symm, ?_, by ext i; have := not_imp_comm.1 (hf i); aesop⟩
+    refine ⟨f ∘ (↑) ∘ e.symm, ?_, by grind⟩
     rw [← sum_attach s]
     exact Fintype.sum_equiv e.symm _ _ (by simp)
 
@@ -201,7 +206,7 @@ variable [DecidableEq ι]
 
 /-- Local notation for the pointwise operation `n • s := {n • a | a ∈ s}` to avoid conflict with the
 pointwise operation `n • s := s + ... + s` (`n` times). -/
-local infixr:73 "•ℕ" => @SMul.smul _ _ Finset.smulFinset
+local infixr:73 " •ℕ " => @SMul.smul _ _ Finset.smulFinset
 
 lemma piAntidiag_univ_fin_eq_antidiagonalTuple (n k : ℕ) :
     piAntidiag univ n = Nat.antidiagonalTuple k n := by
@@ -223,7 +228,7 @@ lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n :
       exact dvd_zero _
   refine ⟨fun i ↦ f i / n, ?_⟩
   simp [funext_iff, Nat.mul_div_cancel', ← Nat.sum_div, *]
-  aesop
+  grind
 
 lemma map_nsmul_piAntidiag (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     (piAntidiag s m).map

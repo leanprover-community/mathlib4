@@ -1,6 +1,8 @@
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Fintype.Sigma
+import Mathlib.Data.Fintype.Sum
 
 set_option autoImplicit true
 namespace tests
@@ -132,14 +134,17 @@ inductive I' {α : Type _}
 `derive_fintype%`
 -/
 
+set_option warn.classDefReducibility false in
 def myBoolInst := derive_fintype% Bool
 
 example : Fintype Bool := myBoolInst
 
+set_option warn.classDefReducibility false in
 def myBoolInst' : Fintype Bool := derive_fintype% _
 
 example : Fintype Bool := myBoolInst'
 
+set_option warn.classDefReducibility false in
 def myProdInst [Fintype α] [Fintype β] : Fintype (α × β) := derive_fintype% _
 
 structure MySubtype (s : Set α) where

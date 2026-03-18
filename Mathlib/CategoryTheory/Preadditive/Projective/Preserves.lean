@@ -3,7 +3,9 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 
 /-!
 # Preservation of projective objects
@@ -14,6 +16,8 @@ We restate the existing result that if `F ⊣ G` is an adjunction and `G` preser
 then `F` preserves projective objects. We show that the converse is true if the domain of `F` has
 enough projectives.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -51,12 +55,12 @@ instance (priority := low) Functor.preservesProjectiveObjects_of_isEquivalence {
     [IsEquivalence F] : F.PreservesProjectiveObjects :=
   preservesProjectiveObjects_of_adjunction_of_preservesEpimorphisms F.asEquivalence.toAdjunction
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Functor.preservesEpimorphisms_of_adjunction_of_preservesProjectiveObjects
     [EnoughProjectives C] {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.PreservesProjectiveObjects] :
     G.PreservesEpimorphisms where
   preserves {X Y} f _ := by
     suffices ∃ h, h ≫ G.map f = Projective.π (G.obj Y) from epi_of_epi_fac this.choose_spec
-    have : Projective (F.obj (Projective.over (G.obj Y))) := F.projective_obj _
     refine ⟨adj.unit.app (Projective.over (G.obj Y)) ≫
       G.map (Projective.factorThru (F.map (Projective.π _) ≫ adj.counit.app Y) f), ?_⟩
     rw [Category.assoc, ← Functor.map_comp]

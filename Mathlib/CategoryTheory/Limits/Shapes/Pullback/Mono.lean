@@ -3,8 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
 /-!
 # Pullbacks and monomorphisms
@@ -14,8 +15,8 @@ the dual statements between pushouts and epimorphisms.
 
 ## Main results
 * Monomorphisms are stable under pullback. This is available using the `PullbackCone` API as
-`mono_fst_of_is_pullback_of_mono` and `mono_snd_of_is_pullback_of_mono`, and using the `pullback`
-API as `pullback.fst_of_mono` and `pullback.snd_of_mono`.
+  `mono_fst_of_is_pullback_of_mono` and `mono_snd_of_is_pullback_of_mono`, and using the `pullback`
+  API as `pullback.fst_of_mono` and `pullback.snd_of_mono`.
 
 * A pullback cone is a limit iff its composition with a monomorphism is a limit. This is available
   as `IsLimitOfCompMono` and `pullbackIsPullbackOfCompMono` respectively.
@@ -24,6 +25,8 @@ API as `pullback.fst_of_mono` and `pullback.snd_of_mono`.
 
 The dual notions for pushouts are also available.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -76,10 +79,10 @@ theorem mono_of_isLimitMkIdId (f : X ⟶ Y) (t : IsLimit (mk (𝟙 X) (𝟙 X) r
     rcases PullbackCone.IsLimit.lift' t _ _ eq with ⟨_, rfl, rfl⟩
     rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `f` and `g` are two morphisms with a common codomain and `s` is a limit cone over the
-    diagram formed by `f` and `g`. Suppose `f` and `g` both factor through a monomorphism `h` via
-    `x` and `y`, respectively.  Then `s` is also a limit cone over the diagram formed by `x` and
-    `y`. -/
+diagram formed by `f` and `g`. Suppose `f` and `g` both factor through a monomorphism `h` via
+`x` and `y`, respectively.  Then `s` is also a limit cone over the diagram formed by `x` and `y`. -/
 def isLimitOfFactors (f : X ⟶ Z) (g : Y ⟶ Z) (h : W ⟶ Z) [Mono h] (x : X ⟶ W) (y : Y ⟶ W)
     (hxh : x ≫ h = f) (hyh : y ≫ h = g) (s : PullbackCone f g) (hs : IsLimit s) :
     IsLimit
@@ -128,8 +131,9 @@ instance pullback.snd_of_mono {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullba
     Mono (pullback.snd f g) :=
   PullbackCone.mono_snd_of_is_pullback_of_mono (limit.isLimit _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `X ×[Z] Y ⟶ X × Y` is mono. -/
-instance mono_pullback_to_prod {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+instance mono_pullback_to_prod {C : Type*} [Category* C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasPullback f g] [HasBinaryProduct X Y] :
     Mono (prod.lift (pullback.fst f g) (pullback.snd f g)) :=
   ⟨fun {W} i₁ i₂ h => by
@@ -141,7 +145,7 @@ instance mono_pullback_to_prod {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z
 noncomputable def pullbackIsPullbackOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i]
     [HasPullback f g] : IsLimit (PullbackCone.mk (pullback.fst f g) (pullback.snd f g)
       -- Porting note: following used to be _
-      (show (pullback.fst f g) ≫ f ≫ i = (pullback.snd f g) ≫ g ≫ i from by
+      (show (pullback.fst f g) ≫ f ≫ i = (pullback.snd f g) ≫ g ≫ i by
         simp only [← Category.assoc]; rw [cancel_mono]; apply pullback.condition)) :=
   PullbackCone.isLimitOfCompMono f g i _ (limit.isLimit (cospan f g))
 
@@ -251,10 +255,11 @@ theorem epi_of_isColimitMkIdId (f : X ⟶ Y)
     rcases PushoutCocone.IsColimit.desc' t _ _ eq with ⟨_, rfl, rfl⟩
     rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `f` and `g` are two morphisms with a common domain and `s` is a colimit cocone over the
-    diagram formed by `f` and `g`. Suppose `f` and `g` both factor through an epimorphism `h` via
-    `x` and `y`, respectively. Then `s` is also a colimit cocone over the diagram formed by `x` and
-    `y`. -/
+diagram formed by `f` and `g`. Suppose `f` and `g` both factor through an epimorphism `h` via
+`x` and `y`, respectively. Then `s` is also a colimit cocone over the diagram formed by `x` and
+`y`. -/
 def isColimitOfFactors (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) [Epi h] (x : W ⟶ Y) (y : W ⟶ Z)
     (hhx : h ≫ x = f) (hhy : h ≫ y = g) (s : PushoutCocone f g) (hs : IsColimit s) :
     have reassoc₁ : h ≫ x ≫ inl s = f ≫ inl s := by  -- Porting note: working around reassoc
@@ -305,8 +310,9 @@ instance pushout.inr_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout 
     Epi (pushout.inr _ _ : Z ⟶ pushout f g) :=
   PushoutCocone.epi_inr_of_is_pushout_of_epi (colimit.isColimit _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `X ⨿ Y ⟶ X ⨿[Z] Y` is epi. -/
-instance epi_coprod_to_pushout {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
+instance epi_coprod_to_pushout {C : Type*} [Category* C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
     [HasPushout f g] [HasBinaryCoproduct Y Z] :
     Epi (coprod.desc (pushout.inl f g) (pushout.inr f g)) :=
   ⟨fun {W} i₁ i₂ h => by
@@ -334,6 +340,7 @@ variable (f : X ⟶ Z) (h : W ⟶ X) [Epi h]
 instance hasPushout_of_right_factors_epi : HasPushout h (h ≫ f) := by
   simpa only [Category.comp_id] using hasPushout_of_epi_comp (𝟙 X) f h
 
+set_option backward.isDefEq.respectTransparency false in
 instance pushout_inr_iso_of_right_factors_epi :
     IsIso (pushout.inr _ _ : _ ⟶ pushout h (h ≫ f)) := by
   convert (congrArg IsIso (show pushout.inr _ _ ≫ _ = _ from colimit.isoColimitCocone_ι_inv
@@ -347,6 +354,7 @@ attribute [local instance] hasPushout_of_right_iso
 instance hasPushout_of_left_factors_epi (f : X ⟶ Y) : HasPushout (h ≫ f) h := by
   simpa only [Category.comp_id] using hasPushout_of_epi_comp f (𝟙 X) h
 
+set_option backward.isDefEq.respectTransparency false in
 instance pushout_inl_iso_of_left_factors_epi (f : X ⟶ Y) :
     IsIso (pushout.inl _ _ : _ ⟶ pushout (h ≫ f) h) := by
   convert (congrArg IsIso (show pushout.inl _ _ ≫ _ = _ from colimit.isoColimitCocone_ι_inv

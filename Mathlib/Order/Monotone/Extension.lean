@@ -3,8 +3,10 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Monotone
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+module
+
+public import Mathlib.Data.Set.Monotone
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Extension of a monotone function from a set to the whole space
@@ -12,6 +14,8 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 In this file we prove that if a function is monotone and is bounded on a set `s`, then it admits a
 monotone extension to the whole space.
 -/
+
+public section
 
 
 open Set
@@ -27,12 +31,12 @@ theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow
       of `f` to the left of `x` for `x ≥ a`. -/
     rcases hl with ⟨a, ha⟩
     have hu' : ∀ x, BddAbove (f '' (Iic x ∩ s)) := fun x =>
-      hu.mono (image_subset _ inter_subset_right)
+      hu.mono (image_mono inter_subset_right)
     let g : α → β := fun x => if Disjoint (Iic x) s then a else sSup (f '' (Iic x ∩ s))
     have hgs : EqOn f g s := by
       intro x hx
       simp only [g]
-      have : IsGreatest (Iic x ∩ s) x := ⟨⟨right_mem_Iic, hx⟩, fun y hy => hy.1⟩
+      have : IsGreatest (Iic x ∩ s) x := ⟨⟨self_mem_Iic, hx⟩, fun y hy => hy.1⟩
       rw [if_neg this.nonempty.not_disjoint,
         ((h.mono inter_subset_right).map_isGreatest this).csSup_eq]
     refine ⟨g, fun x y hxy => ?_, hgs⟩
@@ -41,9 +45,8 @@ theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow
     · rcases not_disjoint_iff_nonempty_inter.1 hy with ⟨z, hz⟩
       exact le_csSup_of_le (hu' _) (mem_image_of_mem _ hz) (ha <| mem_image_of_mem _ hz.2)
     · exact (hx <| hy.mono_left <| Iic_subset_Iic.2 hxy).elim
-    · rw [not_disjoint_iff_nonempty_inter] at hx hy
-      refine csSup_le_csSup (hu' _) (hx.image _) (image_subset _ ?_)
-      exact inter_subset_inter_left _ (Iic_subset_Iic.2 hxy)
+    · rw [not_disjoint_iff_nonempty_inter] at hx
+      gcongr; exacts [hu' _, hx.image _]
 
 /-- If a function is antitone and is bounded on a set `s`, then it admits an antitone extension to
 the whole space. -/

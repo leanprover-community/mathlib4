@@ -3,10 +3,13 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Module.OrderedSMul
-import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Order.Monotone.Monovary
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Order.Module.Synonym
+public import Mathlib.Algebra.Order.Monoid.OrderDual
+public import Mathlib.Order.Monotone.Monovary
 
 /-!
 # Monovarying functions and algebraic operations
@@ -19,6 +22,8 @@ of functions.
 `Mathlib.Algebra.Order.Rearrangement` for the n-ary rearrangement inequality
 -/
 
+public section
+
 variable {ι α β : Type*}
 
 /-! ### Algebraic operations on monovarying functions -/
@@ -26,7 +31,7 @@ variable {ι α β : Type*}
 section OrderedCommGroup
 
 section
-variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] [PartialOrder β]
+variable [CommGroup α] [Preorder α] [IsOrderedMonoid α] [PartialOrder β]
   {s : Set ι} {f f₁ f₂ : ι → α} {g : ι → β}
 
 @[to_additive (attr := simp)]
@@ -133,7 +138,7 @@ end
 end OrderedCommGroup
 
 section LinearOrderedCommGroup
-variable [PartialOrder α] [CommGroup β] [LinearOrder β] [IsOrderedMonoid β] {s : Set ι} {f : ι → α}
+variable [Preorder α] [CommGroup β] [LinearOrder β] [IsOrderedMonoid β] {s : Set ι} {f : ι → α}
   {g g₁ g₂ : ι → β}
 
 @[to_additive] lemma MonovaryOn.mul_right (h₁ : MonovaryOn f g₁ s) (h₂ : MonovaryOn f g₂ s) :
@@ -359,13 +364,14 @@ end LinearOrderedSemifield
 section LinearOrderedAddCommGroup
 variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
   [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] [Module α β]
-  [OrderedSMul α β] {f : ι → α} {g : ι → β} {s : Set ι}
+  [IsStrictOrderedModule α β] {f : ι → α} {g : ι → β} {s : Set ι}
 
 lemma monovaryOn_iff_forall_smul_nonneg :
     MonovaryOn f g s ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → 0 ≤ (f j - f i) • (g j - g i) := by
   simp_rw [smul_nonneg_iff_pos_imp_nonneg, sub_pos, sub_nonneg, forall_and]
   exact (and_iff_right_of_imp MonovaryOn.symm).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma antivaryOn_iff_forall_smul_nonpos :
     AntivaryOn f g s ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → (f j - f i) • (g j - g i) ≤ 0 :=
   monovaryOn_toDual_right.symm.trans <| by rw [monovaryOn_iff_forall_smul_nonneg]; rfl
@@ -374,6 +380,7 @@ lemma monovary_iff_forall_smul_nonneg : Monovary f g ↔ ∀ i j, 0 ≤ (f j - f
   monovaryOn_univ.symm.trans <| monovaryOn_iff_forall_smul_nonneg.trans <| by
     simp only [Set.mem_univ, forall_true_left]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma antivary_iff_forall_smul_nonpos : Antivary f g ↔ ∀ i j, (f j - f i) • (g j - g i) ≤ 0 :=
 monovary_toDual_right.symm.trans <| by rw [monovary_iff_forall_smul_nonneg]; rfl
 
@@ -385,6 +392,7 @@ lemma monovaryOn_iff_smul_rearrangement :
     simp [smul_sub, sub_smul, ← add_sub_right_comm, le_sub_iff_add_le, add_comm (f i • g i),
       add_comm (f i • g j)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two functions antivary iff the rearrangement inequality holds. -/
 lemma antivaryOn_iff_smul_rearrangement :
     AntivaryOn f g s ↔
@@ -397,6 +405,7 @@ lemma monovary_iff_smul_rearrangement :
   monovaryOn_univ.symm.trans <| monovaryOn_iff_smul_rearrangement.trans <| by
     simp only [Set.mem_univ, forall_true_left]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two functions antivary iff the rearrangement inequality holds. -/
 lemma antivary_iff_smul_rearrangement :
     Antivary f g ↔ ∀ i j, f i • g i + f j • g j ≤ f i • g j + f j • g i :=

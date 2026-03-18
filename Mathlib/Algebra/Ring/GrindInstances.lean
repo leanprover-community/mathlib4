@@ -3,12 +3,16 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Int.Cast.Basic
+module
+
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Instances for `grind`.
 -/
+
+@[expose] public section
 
 open Lean
 
@@ -20,13 +24,14 @@ instance (priority := 100) Semiring.toGrindSemiring [s : Semiring α] :
     Grind.Semiring α :=
   { s with
     nsmul := ⟨s.nsmul⟩
+    npow := ⟨fun a n => a^n⟩
     ofNat | 0 | 1 | n + 2 => inferInstance
     natCast := inferInstance
     add_zero := by simp [add_zero]
     mul_one := by simp [mul_one]
     zero_mul := by simp [zero_mul]
-    pow_zero := by simp
-    pow_succ := by simp [pow_succ]
+    pow_zero a := by simp
+    pow_succ a n := by simp [pow_succ]
     ofNat_eq_natCast
     | 0 => Nat.cast_zero.symm
     | 1 => Nat.cast_one.symm
@@ -51,6 +56,7 @@ instance (priority := 100) Ring.toGrindRing [s : Ring α] :
     Grind.Ring α :=
   { s, Semiring.toGrindSemiring α with
     nsmul := ⟨s.nsmul⟩
+    npow := ⟨fun a n => a^n⟩
     zsmul := ⟨s.zsmul⟩
     natCast := inferInstance
     intCast := inferInstance
@@ -88,8 +94,9 @@ example (s : Grind.CommRing α) : CommRing α :=
     one_mul := Grind.Semiring.one_mul
     nsmul := nsmulRec
     zsmul := zsmulRec
+    npow := npowRec
     natCast := Nat.cast
-    natCast_zero :=  Grind.Semiring.natCast_zero
+    natCast_zero := Grind.Semiring.natCast_zero
     natCast_succ n := Grind.Semiring.natCast_succ n
     intCast := Int.cast
     intCast_ofNat := Grind.Ring.intCast_natCast

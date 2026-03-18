@@ -3,8 +3,9 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 /-!
 
@@ -29,7 +30,7 @@ Lean to try harder to close the goal.
 
 See the doc-strings for more details.
 
-##  Future work
+## Future work
 
 * Currently, `compute_degree` does not deal correctly with some edge cases.  For instance,
   ```lean
@@ -44,7 +45,7 @@ See the doc-strings for more details.
 * Add support for proving goals of the from `natDegree f ≠ 0` and `degree f ≠ 0`.
 * Make sure that `degree`, `natDegree` and `coeff` are equally supported.
 
-##  Implementation details
+## Implementation details
 
 Assume that `f : R[X]` is a polynomial with coefficients in a semiring `R` and
 `d` is either in `ℕ` or in `WithBot ℕ`.
@@ -78,13 +79,15 @@ The leaves of the process are
 * `fvar`s `f`, to which we tautologically assign degree `natDegree f`.
 -/
 
+public meta section
+
 open Polynomial
 
 namespace Mathlib.Tactic.ComputeDegree
 
 section recursion_lemmas
 /-!
-###  Simple lemmas about `natDegree`
+### Simple lemmas about `natDegree`
 
 The lemmas in this section all have the form `natDegree <some form of cast> ≤ 0`.
 Their proofs are weakenings of the stronger lemmas `natDegree <same> = 0`.
@@ -112,7 +115,7 @@ theorem coeff_mul_add_of_le_natDegree_of_eq_ite {d df dg : ℕ} {a b : R} {f g :
     (f * g).coeff d = if d = df + dg then a * b else 0 := by
   split_ifs with h
   · subst h_mul_left h_mul_right h
-    exact coeff_mul_of_natDegree_le ‹_› ‹_›
+    exact coeff_mul_add_eq_of_natDegree_le ‹_› ‹_›
   · apply coeff_eq_zero_of_natDegree_lt
     apply lt_of_le_of_lt ?_ (lt_of_le_of_ne ddf ?_)
     · exact natDegree_mul_le_of_le ‹_› ‹_›
@@ -169,7 +172,7 @@ theorem degree_eq_of_le_of_coeff_ne_zero' {deg m o : WithBot ℕ} {c : R} {p : R
     (coeff_ne_zero : c ≠ 0) (deg_eq_deg : m = deg) (coeff_eq_deg : o = deg) :
     degree p = deg := by
   subst coeff_eq coeff_eq_deg deg_eq_deg
-  rcases eq_or_ne m ⊥ with rfl|hh
+  rcases eq_or_ne m ⊥ with rfl | hh
   · exact bot_unique h_deg_le
   · obtain ⟨m, rfl⟩ := WithBot.ne_bot_iff_exists.mp hh
     exact degree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
@@ -409,7 +412,7 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
 
 /-- `miscomputedDegree? deg false_goals` takes as input
 *  an `Expr`ession `deg`, representing the degree of a polynomial
-  (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
+   (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
 *  a list of `MVarId`s `false_goals`.
 
 Although inconsequential for this function, the list of goals `false_goals` reduces to `False`
@@ -461,7 +464,7 @@ syntax (name := computeDegree) "compute_degree" "!"? : tactic
 
 initialize registerTraceClass `Tactic.compute_degree
 
-@[inherit_doc computeDegree]
+@[tactic_alt computeDegree]
 macro "compute_degree!" : tactic => `(tactic| compute_degree !)
 
 elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMainContext do
@@ -514,7 +517,7 @@ The variant `monicity!` starts like `monicity`, but calls `compute_degree!` on t
 macro (name := monicityMacro) "monicity" : tactic =>
   `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree))
 
-@[inherit_doc monicityMacro]
+@[tactic_alt monicityMacro]
 macro "monicity!" : tactic =>
   `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree!))
 
@@ -525,4 +528,5 @@ end Mathlib.Tactic.ComputeDegree
 /-!
  We register `compute_degree` with the `hint` tactic.
  -/
-register_hint compute_degree
+register_hint 1000 compute_degree
+register_try?_tactic (priority := 1000) compute_degree

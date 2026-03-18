@@ -3,20 +3,23 @@ Copyright (c) 2023 Yael Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yael Dillies
 -/
-import Batteries.Tactic.Init
-import Mathlib.Tactic.ToAdditive
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
-import Mathlib.Util.AssertExists
+module
+
+public import Batteries.Tactic.Init
+public import Mathlib.Tactic.ToAdditive
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
 
 /-! # Lemmas about inequalities with `1`. -/
+
+public section
 
 assert_not_exists Monoid
 
 variable {α : Type*}
 
 section dite
-variable [One α] {p : Prop} [Decidable p] {a : p → α} {b : ¬ p → α}
+variable [One α] {p : Prop} [Decidable p] {a : p → α} {b : ¬p → α}
 
 @[to_additive dite_nonneg]
 lemma one_le_dite [LE α] (ha : ∀ h, 1 ≤ a h) (hb : ∀ h, 1 ≤ b h) : 1 ≤ dite p a b := by

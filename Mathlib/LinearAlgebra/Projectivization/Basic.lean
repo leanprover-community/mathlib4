@@ -3,8 +3,10 @@ Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+module
+
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
 /-!
 
@@ -32,9 +34,12 @@ We have three ways to construct terms of `ℙ K V`:
 
 -/
 
+@[expose] public section
+
 variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- The setoid whose quotient is the projectivization of `V`. -/
+@[implicit_reducible]
 def projectivizationSetoid : Setoid { v : V // v ≠ 0 } :=
   (MulAction.orbitRel Kˣ V).comap (↑)
 
@@ -191,7 +196,7 @@ def map {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) : �
       rintro ⟨u, hu⟩ ⟨v, hv⟩ ⟨a, ha⟩
       use Units.map σ.toMonoidHom a
       dsimp at ha ⊢
-      erw [← f.map_smulₛₗ, ha])
+      simp [f.map_smulₛₗ, ← ha, Units.smul_def])
 
 theorem map_mk {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) (v : V) (hv : v ≠ 0) :
     map f hf (mk K v hv) = mk L (f v) (map_zero f ▸ hf.ne hv) :=

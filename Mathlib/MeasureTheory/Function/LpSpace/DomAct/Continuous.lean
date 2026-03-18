@@ -3,9 +3,11 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
-import Mathlib.MeasureTheory.Function.LpSpace.ContinuousCompMeasurePreserving
-import Mathlib.Topology.Algebra.Constructions.DomMulAct
+module
+
+public import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
+public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousCompMeasurePreserving
+public import Mathlib.Topology.Algebra.Constructions.DomMulAct
 
 /-!
 # Continuity of the action of `Mᵈᵐᵃ` on `MeasureSpace.Lp E p μ`
@@ -15,7 +17,7 @@ the action of `Mᵈᵐᵃ` on `MeasureTheory.Lp E p μ` is continuous in both va
 
 Recall that `Mᵈᵐᵃ` acts on `MeasureTheory.Lp E p μ`
 by `mk c • f = MeasureTheory.Lp.compMeasurePreserving (c • ·) _ f`.
-This action is defined, if `M` acts on `X` by mesaure preserving maps.
+This action is defined, if `M` acts on `X` by measure-preserving maps.
 
 If `M` acts on `X` by continuous maps
 preserving a locally finite measure
@@ -30,6 +32,8 @@ and `μ` is the Haar measure.
 
 measure theory, group action, domain action, continuous action, Lp space
 -/
+
+@[expose] public section
 
 open scoped ENNReal
 open DomMulAct

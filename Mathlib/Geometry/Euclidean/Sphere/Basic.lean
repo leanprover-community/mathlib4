@@ -3,10 +3,12 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Convex.StrictConvexBetween
-import Mathlib.Analysis.InnerProductSpace.Convex
-import Mathlib.Analysis.Normed.Affine.Convex
-import Mathlib.Geometry.Euclidean.Basic
+module
+
+public import Mathlib.Analysis.Convex.StrictConvexBetween
+public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.Normed.Affine.Convex
+public import Mathlib.Geometry.Euclidean.Basic
 
 /-!
 # Spheres
@@ -31,6 +33,8 @@ Euclidean affine spaces.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -48,7 +52,7 @@ be positive; that should be given as a hypothesis to lemmas that require it. -/
 structure Sphere [MetricSpace P] where
   /-- center of this sphere -/
   center : P
-  /-- radius of the sphere: not required to be positive -/
+  /-- radius of the sphere; not required to be positive -/
   radius : ℝ
 
 variable {P}
@@ -76,15 +80,11 @@ theorem Sphere.mk_radius (c : P) (r : ℝ) : (⟨c, r⟩ : Sphere P).radius = r 
 theorem Sphere.mk_center_radius (s : Sphere P) : (⟨s.center, s.radius⟩ : Sphere P) = s := by
   ext <;> rfl
 
-/- Porting note: is a syntactic tautology
-theorem Sphere.coe_def (s : Sphere P) : (s : Set P) = Metric.sphere s.center s.radius :=
-  rfl -/
-
 @[simp]
 theorem Sphere.coe_mk (c : P) (r : ℝ) : ↑(⟨c, r⟩ : Sphere P) = Metric.sphere c r :=
   rfl
 
--- @[simp] -- Porting note: simp-normal form is `Sphere.mem_coe'`
+-- simp-normal form is `Sphere.mem_coe'`
 theorem Sphere.mem_coe {p : P} {s : Sphere P} : p ∈ (s : Set P) ↔ p ∈ s :=
   Iff.rfl
 
@@ -386,6 +386,51 @@ theorem inner_vsub_vsub_of_mem_sphere_of_mem_sphere {p₁ p₂ : P} {s₁ s₂ :
   inner_vsub_vsub_of_dist_eq_of_dist_eq (dist_center_eq_dist_center_of_mem_sphere hp₁s₁ hp₂s₁)
     (dist_center_eq_dist_center_of_mem_sphere hp₁s₂ hp₂s₂)
 
+/-- The vector from the midpoint of a chord to the center of the sphere is
+orthogonal to the chord. -/
+theorem Sphere.inner_vsub_center_midpoint_vsub {p₁ p₂ : P} {s : Sphere P}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) :
+    ⟪s.center -ᵥ midpoint ℝ p₁ p₂, p₂ -ᵥ p₁⟫ = 0 :=
+  inner_vsub_vsub_of_dist_eq_of_dist_eq
+    (dist_left_midpoint_eq_dist_right_midpoint p₁ p₂)
+    (dist_center_eq_dist_center_of_mem_sphere hp₁ hp₂)
+
+/-- The distance from the center of a sphere to any point strictly between
+two points on the sphere is strictly less than the radius. -/
+theorem Sphere.dist_center_lt_radius_of_sbtw {p₁ p₂ p : P} {s : Sphere P}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp : Sbtw ℝ p₁ p p₂) :
+    dist s.center p < s.radius := by
+  set o := s.center
+  obtain ⟨⟨t, ⟨ht₀, ht₁⟩, hpt⟩, hne₁, hne₂⟩ := hp
+  have ht₀' : 0 < t := lt_of_le_of_ne ht₀ fun h => hne₁ <| by
+    rw [← hpt, ← h, AffineMap.lineMap_apply_zero]
+  have ht₁' : t < 1 := lt_of_le_of_ne ht₁ fun h => hne₂ <| by
+    rw [← hpt, h, AffineMap.lineMap_apply_one]
+  set u := p₁ -ᵥ o; set v := p₂ -ᵥ o
+  have hu : ‖u‖ = s.radius := by rw [← dist_eq_norm_vsub]; exact mem_sphere.mp hp₁
+  have hv : ‖v‖ = s.radius := by rw [← dist_eq_norm_vsub]; exact mem_sphere.mp hp₂
+  have huv : u ≠ v := fun h => hne₁ <| by
+    rw [← hpt, vsub_left_cancel h, AffineMap.lineMap_same, AffineMap.const_apply]
+  have hpo : p -ᵥ o = (1 - t) • u + t • v := by
+    rw [show p = (AffineMap.lineMap p₁ p₂) t from hpt.symm, AffineMap.lineMap_apply,
+      vadd_vsub_assoc, show (p₂ -ᵥ p₁ : V) = v - u from
+      (vsub_sub_vsub_cancel_right p₂ p₁ o).symm]
+    module
+  rw [dist_comm, dist_eq_norm_vsub, hpo]
+  have hmem := (strictConvex_closedBall ℝ (0 : V) s.radius)
+    (by simp [Metric.mem_closedBall, hu]) (by simp [Metric.mem_closedBall, hv])
+    huv (sub_pos.mpr ht₁') ht₀' (sub_add_cancel 1 t)
+  rwa [interior_closedBall _ (fun h : s.radius = 0 => huv <|
+      (norm_eq_zero.mp (hu.trans h)).trans (norm_eq_zero.mp (hv.trans h)).symm),
+    Metric.mem_ball, dist_zero_right] at hmem
+
+/-- The distance from the center of a sphere to the midpoint of a chord
+with distinct endpoints is strictly less than the radius. -/
+theorem Sphere.dist_center_midpoint_lt_radius {p₁ p₂ : P} {s : Sphere P}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₁p₂ : p₁ ≠ p₂) :
+    dist s.center (midpoint ℝ p₁ p₂) < s.radius :=
+  s.dist_center_lt_radius_of_sbtw hp₁ hp₂ (sbtw_midpoint_of_ne ℝ hp₁p₂)
+
 /-- Two spheres intersect in at most two points in a two-dimensional subspace containing their
 centers; this is a version of `eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two` for bundled
 spheres. -/
@@ -452,6 +497,19 @@ theorem inner_pos_of_dist_lt_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁
     exact False.elim (hp₂.ne hp₁)
   exact (inner_pos_or_eq_of_dist_le_radius hp₁ hp₂.le).resolve_right h
 
+/-- Given two distinct points on a sphere, the inner product of the chord with
+the radius vector at one endpoint is negative. -/
+theorem inner_vsub_center_vsub_pos {p₁ p₂ : P} {s : Sphere P}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₁p₂ : p₁ ≠ p₂) :
+    0 < ⟪p₂ -ᵥ p₁, s.center -ᵥ p₁⟫ := by
+  have hp₁' : ‖p₁ -ᵥ s.center‖ = s.radius := by rw [← dist_eq_norm_vsub']; exact mem_sphere'.mp hp₁
+  have hp₂' : ‖p₂ -ᵥ s.center‖ = s.radius := by rw [← dist_eq_norm_vsub']; exact mem_sphere'.mp hp₂
+  have hd : ‖p₂ -ᵥ s.center‖ ^ 2 =
+      ‖p₂ -ᵥ p₁‖ ^ 2 + 2 * ⟪p₂ -ᵥ p₁, p₁ -ᵥ s.center⟫ + ‖p₁ -ᵥ s.center‖ ^ 2 := by
+    rw [← vsub_add_vsub_cancel p₂ p₁ s.center, norm_add_sq_real]
+  rw [hp₂', hp₁', ← neg_vsub_eq_vsub_rev s.center p₁, inner_neg_right] at hd
+  nlinarith [sq_pos_of_pos (norm_pos_iff.mpr (vsub_ne_zero.mpr hp₁p₂.symm))]
+
 /-- Given three collinear points, two on a sphere and one not outside it, the one not outside it
 is weakly between the other two points. -/
 theorem wbtw_of_collinear_of_dist_center_le_radius {s : Sphere P} {p₁ p₂ p₃ : P}
@@ -480,7 +538,7 @@ lemma isDiameter_iff_mem_and_mem_and_dist :
     rw [dist_comm, hr, two_mul]
 
 lemma isDiameter_iff_mem_and_mem_and_wbtw :
-    s.IsDiameter p₁ p₂ ↔ p₁ ∈ s ∧ p₂ ∈ s ∧ Wbtw ℝ p₁ s.center p₂:= by
+    s.IsDiameter p₁ p₂ ↔ p₁ ∈ s ∧ p₂ ∈ s ∧ Wbtw ℝ p₁ s.center p₂ := by
   refine ⟨fun h ↦ ⟨h.left_mem, h.right_mem, h.wbtw⟩, fun ⟨h₁, h₂, hr⟩ ↦ ?_⟩
   have hd := hr.dist_add_dist
   rw [mem_sphere.1 h₁, mem_sphere'.1 h₂, ← two_mul, eq_comm] at hd

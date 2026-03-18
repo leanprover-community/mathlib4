@@ -3,10 +3,12 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Bundled non-unital subsemirings
@@ -15,9 +17,33 @@ We define bundled non-unital subsemirings and some standard constructions:
 `subtype` and `inclusion` ring homomorphisms.
 -/
 
+@[expose] public section
+
 assert_not_exists RelIso
 
 universe u v w
+
+section neg_mul
+
+variable {R S : Type*} [Mul R] [HasDistribNeg R] [SetLike S R] [MulMemClass S R] {s : S}
+
+/-- This lemma exists for `aesop`, as `aesop` simplifies `-x * y` to `-(x * y)` before applying
+unsafe rules like `mul_mem`, leading to a dead end in cases where `neg_mem` does not hold. -/
+@[aesop unsafe 80% (rule_sets := [SetLike])]
+theorem neg_mul_mem {x y : R} (hx : -x ∈ s) (hy : y ∈ s) : -(x * y) ∈ s := by
+  simpa using mul_mem hx hy
+
+/-- This lemma exists for `aesop`, as `aesop` simplifies `x * -y` to `-(x * y)` before applying
+unsafe rules like `mul_mem`, leading to a dead end in cases where `neg_mem` does not hold. -/
+@[aesop unsafe 80% (rule_sets := [SetLike])]
+theorem mul_neg_mem {x y : R} (hx : x ∈ s) (hy : -y ∈ s) : -(x * y) ∈ s := by
+  simpa using mul_mem hx hy
+
+-- doesn't work without the above `aesop` lemmas
+example {x y z : R} (hx : x ∈ s) (hy : -y ∈ s) (hz : z ∈ s) :
+    x * (-y) * z ∈ s := by aesop
+
+end neg_mul
 
 variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocSemiring R]
 
@@ -69,9 +95,6 @@ theorem subtype_injective : Function.Injective (subtype s) :=
 theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-
 /-- A non-unital subsemiring of a `NonUnitalSemiring` is a `NonUnitalSemiring`. -/
 instance toNonUnitalSemiring {R} [NonUnitalSemiring R] [SetLike S R]
     [NonUnitalSubsemiringClass S R] : NonUnitalSemiring s := fast_instance%
@@ -84,7 +107,6 @@ instance toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R] [SetLike S R]
     fun _ _ => rfl
 
 /-! Note: currently, there are no ordered versions of non-unital rings. -/
-
 
 end NonUnitalSubsemiringClass
 
@@ -101,9 +123,22 @@ add_decl_doc NonUnitalSubsemiring.toAddSubmonoid
 
 namespace NonUnitalSubsemiring
 
+lemma toAddSubmonoid_injective :
+    (toAddSubmonoid : NonUnitalSubsemiring R → AddSubmonoid R).Injective :=
+  fun ⟨s, hs⟩ t ↦ by congr!
+
+@[simp] lemma toAddSubmonoid_inj {s t : NonUnitalSubsemiring R} :
+    s.toAddSubmonoid = t.toAddSubmonoid ↔ s = t := toAddSubmonoid_injective.eq_iff
+
 instance : SetLike (NonUnitalSubsemiring R) R where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+  coe_injective' := SetLike.coe_injective.comp toAddSubmonoid_injective
+
+lemma toSubsemigroup_injective :
+    Function.Injective (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R)
+  | _, _, h => SetLike.ext (SetLike.ext_iff.mp h :)
+
+instance : PartialOrder (NonUnitalSubsemiring R) := .ofSetLike (NonUnitalSubsemiring R) R
 
 /-- The actual `NonUnitalSubsemiring` obtained from an element of a `NonUnitalSubsemiringClass`. -/
 @[simps]
@@ -150,14 +185,6 @@ theorem coe_copy (S : NonUnitalSubsemiring R) (s : Set R) (hs : s = ↑S) :
 
 theorem copy_eq (S : NonUnitalSubsemiring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
-
-theorem toSubsemigroup_injective :
-    Function.Injective (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R)
-  | _, _, h => ext (SetLike.ext_iff.mp h :)
-
-theorem toAddSubmonoid_injective :
-    Function.Injective (toAddSubmonoid : NonUnitalSubsemiring R → AddSubmonoid R)
-  | _, _, h => ext (SetLike.ext_iff.mp h :)
 
 /-- Construct a `NonUnitalSubsemiring R` from a set `s`, a subsemigroup `sg`, and an additive
 submonoid `sa` such that `x ∈ s ↔ x ∈ sg ↔ x ∈ sa`. -/
@@ -238,17 +265,13 @@ theorem mem_top (x : R) : x ∈ (⊤ : NonUnitalSubsemiring R) :=
 theorem coe_top : ((⊤ : NonUnitalSubsemiring R) : Set R) = Set.univ :=
   rfl
 
+@[simp] lemma toAddSubmonoid_top : (⊤ : NonUnitalSubsemiring R).toAddSubmonoid = ⊤ := rfl
+
+@[simp]
+lemma toAddSubmonoid_eq_top {S : NonUnitalSubsemiring R} : S.toAddSubmonoid = ⊤ ↔ S = ⊤ := by
+  simp [← SetLike.coe_set_eq]
+
 end NonUnitalSubsemiring
-
-namespace NonUnitalRingHom
-
-open NonUnitalSubsemiring
-
-variable [NonUnitalNonAssocSemiring S]
-variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
-variable (f : F)
-
-end NonUnitalRingHom
 
 namespace NonUnitalSubsemiring
 
@@ -299,9 +322,9 @@ open NonUnitalSubsemiringClass NonUnitalSubsemiring
 /-- Restriction of a non-unital ring homomorphism to a non-unital subsemiring of the codomain. -/
 def codRestrict (f : F) (s : S') (h : ∀ x, f x ∈ s) : R →ₙ+* s where
   toFun n := ⟨f n, h n⟩
-  map_mul' x y := Subtype.eq (map_mul f x y)
-  map_add' x y := Subtype.eq (map_add f x y)
-  map_zero' := Subtype.eq (map_zero f)
+  map_mul' x y := Subtype.ext (map_mul f x y)
+  map_add' x y := Subtype.ext (map_add f x y)
+  map_zero' := Subtype.ext (map_zero f)
 
 /-- The non-unital subsemiring of elements `x : R` such that `f x = g x` -/
 def eqSlocus (f g : F) : NonUnitalSubsemiring R :=

@@ -3,9 +3,11 @@ Copyright (c) 2019 mathlib community. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki
 -/
-import Mathlib.Data.Num.Basic
-import Mathlib.Data.Ordering.Basic
-import Mathlib.Data.Tree.Basic
+module
+
+public import Mathlib.Data.Num.Basic
+public import Mathlib.Data.Ordering.Basic
+public import Mathlib.Data.Tree.Basic
 
 /-!
 # Binary tree get operation
@@ -17,6 +19,8 @@ These definitions were moved from the main file to avoid a dependency on `Num`.
 
 <https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html#170999997>
 -/
+
+@[expose] public section
 
 namespace Tree
 

@@ -3,8 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 
 /-!
 # Associativity of pullbacks
@@ -12,6 +13,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 This file shows that pullbacks (and pushouts) are associative up to natural isomorphism.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -100,6 +103,7 @@ local notation "l₁'" =>
 
 local notation "l₂'" => (pullback.snd f₁ (g₃ ≫ f₂))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `(X₁ ×[Y₁] X₂) ×[Y₂] X₃` is the pullback `(X₁ ×[Y₁] X₂) ×[X₂] (X₂ ×[Y₂] X₃)`. -/
 def pullbackPullbackLeftIsPullback [HasPullback (g₂ ≫ f₃) f₄] : IsLimit (PullbackCone.mk l₁ l₂
     (show l₁ ≫ g₂ = l₂ ≫ g₃ from (pullback.lift_fst _ _ _).symm)) := by
@@ -118,6 +122,7 @@ def pullbackAssocIsPullback [HasPullback (g₂ ≫ f₃) f₄] :
 theorem hasPullback_assoc [HasPullback (g₂ ≫ f₃) f₄] : HasPullback f₁ (g₃ ≫ f₂) :=
   ⟨⟨⟨_, pullbackAssocIsPullback f₁ f₂ f₃ f₄⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)` is the pullback `(X₁ ×[Y₁] X₂) ×[X₂] (X₂ ×[Y₂] X₃)`. -/
 def pullbackPullbackRightIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
     IsLimit (PullbackCone.mk l₁' l₂' (show l₁' ≫ g₂ = l₂' ≫ g₃ from pullback.lift_snd _ _ _)) := by
@@ -269,6 +274,7 @@ local notation "l₂'" =>
       (Eq.trans (Eq.symm (Category.assoc _ _ _)) pushout.condition) :
     Y₂ ⟶ W')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃` is the pushout `(X₁ ⨿[Z₁] X₂) ×[X₂] (X₂ ⨿[Z₂] X₃)`. -/
 def pushoutPushoutLeftIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
     IsColimit
@@ -289,6 +295,7 @@ def pushoutAssocIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
 theorem hasPushout_assoc [HasPushout (g₃ ≫ f₂) g₄] : HasPushout g₁ (g₂ ≫ f₃) :=
   ⟨⟨⟨_, pushoutAssocIsPushout g₁ g₂ g₃ g₄⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)` is the pushout `(X₁ ⨿[Z₁] X₂) ×[X₂] (X₂ ⨿[Z₂] X₃)`. -/
 def pushoutPushoutRightIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
     IsColimit (PushoutCocone.mk l₁ l₂ (show f₂ ≫ l₁ = f₃ ≫ l₂ from pushout.inr_desc _ _ _)) := by
@@ -305,9 +312,6 @@ def pushoutAssocSymmIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
 
 theorem hasPushout_assoc_symm [HasPushout g₁ (g₂ ≫ f₃)] : HasPushout (g₃ ≫ f₂) g₄ :=
   ⟨⟨⟨_, pushoutAssocSymmIsPushout g₁ g₂ g₃ g₄⟩⟩⟩
-
--- Porting note: these are not propagating so moved into statements
--- variable [HasPushout (g₃ ≫ f₂) g₄] [HasPushout g₁ (g₂ ≫ f₃)]
 
 /-- The canonical isomorphism `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃ ≅ X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)`. -/
 noncomputable def pushoutAssoc [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ ⟶ Y₁)) g₄]

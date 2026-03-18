@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Pi
-import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Finset.Sum
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Data.Finset.Pi
+public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.Finset.Sum
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Preimage of a `Finset` under an injective map.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset.sum
 
@@ -45,6 +49,12 @@ theorem preimage_empty {f : α → β} : preimage ∅ f (by simp [InjOn]) = ∅ 
 @[simp]
 theorem preimage_univ {f : α → β} [Fintype α] [Fintype β] (hf) : preimage univ f hf = univ :=
   Finset.coe_injective (by simp)
+
+@[simp]
+theorem disjoint_preimage {f : α → β} {s t : Finset β}
+    {hs : Set.InjOn f (f ⁻¹' ↑s)} {ht : Set.InjOn f (f ⁻¹' ↑t)} (hd : Disjoint s t) :
+    Disjoint (s.preimage f hs) (t.preimage f ht) := by
+  grind [not_disjoint_iff, mem_preimage]
 
 @[simp]
 theorem preimage_inter [DecidableEq α] [DecidableEq β] {f : α → β} {s t : Finset β}
@@ -154,6 +164,7 @@ def restrictPreimageFinset (e : α ≃ β) (s : Finset β) : (s.preimage e e.inj
 
 end Equiv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reindexing and then restricting to a `Finset` is the same as first restricting to the preimage
 of this `Finset` and then reindexing. -/
 lemma Finset.restrict_comp_piCongrLeft {π : β → Type*} (s : Finset β) (e : α ≃ β) :

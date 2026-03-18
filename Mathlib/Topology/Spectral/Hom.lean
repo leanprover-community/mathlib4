@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Tactic.StacksAttribute
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.Maps.Proper.Basic
+module
+
+public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # Spectral maps
@@ -24,6 +26,8 @@ compact open set is compact open.
 Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib/Topology/Spectral/Basic.lean`.
 -/
 
+@[expose] public section
+
 
 open Function OrderDual
 
@@ -38,7 +42,7 @@ compact open set is compact open. -/
 @[stacks 005A, stacks 08YG]
 structure IsSpectralMap (f : α → β) : Prop extends Continuous f where
   /-- A function between topological spaces is spectral if it is continuous and the preimage of
-   every compact open set is compact open. -/
+  every compact open set is compact open. -/
   isCompact_preimage_of_isOpen ⦃s : Set β⦄ : IsOpen s → IsCompact s → IsCompact (f ⁻¹' s)
 
 theorem IsCompact.preimage_of_isOpen (hf : IsSpectralMap f) (h₀ : IsCompact s) (h₁ : IsOpen s) :
@@ -165,7 +169,7 @@ theorem comp_apply (f : SpectralMap β γ) (g : SpectralMap α β) (a : α) : (f
 
 theorem coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
     f ∘ g = (f : ContinuousMap β γ) ∘ (g : ContinuousMap α β) :=
-   rfl
+  rfl
 
 @[simp]
 theorem coe_comp_continuousMap' (f : SpectralMap β γ) (g : SpectralMap α β) :

@@ -3,13 +3,17 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Sym.Sym2.Order
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Sym
+public import Mathlib.Data.Sym.Sym2.Order
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Lemmas on `Finset.sum` and `Finset.prod` involving `Finset.sym2` or `Finset.sym`.
 -/
+
+public section
 
 namespace Finset
 
@@ -25,8 +29,6 @@ theorem sum_sym2_filter_not_isDiag {ι M} [LinearOrder ι] [AddCommMonoid M]
 
 theorem sum_count_of_mem_sym {α} [DecidableEq α] {m : ℕ} {k : Sym α m} {s : Finset α}
     (hk : k ∈ s.sym m) : (∑ i ∈ s, count i k) = m := by
-  simp_rw [← k.prop, ← toFinset_sum_count_eq, eq_comm]
-  refine sum_subset_zero_on_sdiff (fun _ _ ↦ ?_) ?_ (fun _ _ ↦ rfl)
-  all_goals aesop
+  simp_all
 
 end Finset

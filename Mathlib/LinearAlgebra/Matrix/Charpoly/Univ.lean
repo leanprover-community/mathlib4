@@ -3,15 +3,17 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
+module
+
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-!
 # The universal characteristic polynomial
 
 In this file we define the universal characteristic polynomial `Matrix.charpoly.univ`,
-which is the charactistic polynomial of the matrix with entries `Xᵢⱼ`,
+which is the characteristic polynomial of the matrix with entries `Xᵢⱼ`,
 and hence has coefficients that are multivariate polynomials.
 
 It is universal in the sense that one obtains the characteristic polynomial of a matrix `M`
@@ -29,6 +31,8 @@ of a matrix are homogeneous polynomials in the matrix entries.
   the `i`-th coefficient of `univ` is a homogeneous polynomial of degree `n - i`.
 -/
 
+@[expose] public section
+
 namespace Matrix.charpoly
 
 variable {R S : Type*} (n : Type*) [CommRing R] [CommRing S] [Fintype n] [DecidableEq n]
@@ -36,7 +40,7 @@ variable (f : R →+* S)
 
 variable (R) in
 /-- The universal characteristic polynomial for `n × n`-matrices,
-is the charactistic polynomial of `Matrix.mvPolynomialX n n ℤ` with entries `Xᵢⱼ`.
+is the characteristic polynomial of `Matrix.mvPolynomialX n n ℤ` with entries `Xᵢⱼ`.
 
 Its `i`-th coefficient is a homogeneous polynomial of degree `n - i`,
 see `Matrix.charpoly.univ_coeff_isHomogeneous`.
@@ -55,6 +59,7 @@ lemma univ_map_eval₂Hom (M : n × n → S) :
   rw [univ, ← charpoly_map, coe_eval₂Hom, ← mvPolynomialX_map_eval₂ f (Matrix.of M.curry)]
   simp only [of_apply, Function.curry_apply, Prod.mk.eta]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma univ_map_map :
     (univ R n).map (MvPolynomial.map f) = univ S n := by
   rw [MvPolynomial.map, univ_map_eval₂Hom]; rfl
