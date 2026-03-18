@@ -107,7 +107,7 @@ lemma HasTemperateGrowth.of_fderiv {f : E → F}
 lemma HasTemperateGrowth.zero :
     Function.HasTemperateGrowth (fun _ : E ↦ (0 : F)) := by
   refine ⟨contDiff_const, fun n ↦ ⟨0, 0, fun x ↦ ?_⟩⟩
-  simpiteratedFDeriv_zero
+  simp
 
 @[fun_prop, simp]
 lemma HasTemperateGrowth.const (c : F) :
