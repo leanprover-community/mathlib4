@@ -81,22 +81,10 @@ We use this in combination with `fullyFaithfulCancelRight` to show left adjoints
 -/
 @[deprecated "No replacement." (since := "2026-03-03")]
 def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G) :
-    F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda := by
-  refine NatIso.ofComponents (fun X =>
+    F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda :=
+  NatIso.ofComponents (fun X =>
     (NatIso.ofComponents (fun Y =>
-      ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso) (by cat_disch))) ?_
-  intros
-  ext
-  simp only [Functor.comp_obj, Functor.op_obj, Functor.flip_obj_obj, yoneda_obj_obj,
-    Functor.comp_map, Functor.op_map, NatTrans.comp_app, Functor.flip_map_app, yoneda_obj_map,
-    Quiver.Hom.unop_op, NatIso.ofComponents_hom_app, Equiv.toIso_hom, Equiv.trans_apply,
-    homEquiv_unit, homEquiv_counit, Functor.map_comp, Category.assoc, counit_naturality,
-    Functor.id_obj, TypeCat.Fun.as_apply, comp_apply, ConcreteCategory.hom_ofHom,
-    TypeCat.Fun.mk_apply]
-  simp only [← Category.assoc, ← Functor.map_comp, ← unit_naturality, Functor.id_obj,
-    Functor.comp_obj]
-  simp only [Functor.map_comp, Category.assoc]
-  simp
+      ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso) (by cat_disch)))
 
 set_option linter.deprecated false in
 /-- Deprecated: prefer `(Adjunction.conjugateIsoEquiv adj1 adj2).symm`. -/

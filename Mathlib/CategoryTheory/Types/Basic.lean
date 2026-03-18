@@ -45,20 +45,20 @@ namespace TypeCat
 structure Fun (X Y : Type*) where
   mk' ::
   /-- The underlying function. -/
-  protected as : X → Y
+  toFun : X → Y
 
 instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
-  coe f x := f.as x
+  coe f x := f.toFun x
   coe_injective' _ := by aesop
 
-initialize_simps_projections Fun (as → apply)
+initialize_simps_projections Fun (toFun → apply)
 
 /-- Construct a `Fun` from a function between types. -/
 def Fun.mk {X Y : Type*} (f : X → Y) : Fun X Y where
-  as := f
+  toFun := f
 
 -- @[simp]
-lemma Fun.mk_as {X Y : Type*} (f : X → Y) : (Fun.mk f).as = f :=
+lemma Fun.mk_as {X Y : Type*} (f : X → Y) : (Fun.mk f).toFun = f :=
   rfl
 
 @[simp]
@@ -75,7 +75,7 @@ def Fun.id (X : Type*) : Fun X X := Fun.mk _root_.id
 
 /-- Composition of `Fun`s. -/
 @[simps!]
-def Fun.comp {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) : Fun X Z := mk (f.as ∘ g.as)
+def Fun.comp {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) : Fun X Z := mk (f.toFun ∘ g.toFun)
 
 /-- The equivalence between `Fun`s and functions between types. -/
 def Fun.homEquiv (X Y : Type u) : (Fun X Y) ≃ (X → Y) where
@@ -144,11 +144,11 @@ def Hom.Simps.hom (X Y : Type u) (f : X ⟶ Y) :=
 initialize_simps_projections Hom (hom' → hom)
 
 @[simp]
-lemma Fun.as_apply {X Y : Type u} (f : Fun X Y) (x : X) : f.as x = f x :=
+lemma Fun.as_apply {X Y : Type u} (f : Fun X Y) (x : X) : f.toFun x = f x :=
   rfl
 
 -- @[simp]
-lemma hom_as_apply {X Y : Type u} (f : X ⟶ Y) (x : X) : (ConcreteCategory.hom f).as x =
+lemma hom_as_apply {X Y : Type u} (f : X ⟶ Y) (x : X) : (ConcreteCategory.hom f).toFun x =
     ConcreteCategory.hom f x :=
   rfl
 
@@ -421,7 +421,7 @@ variable {X Y : Type u}
 /-- Any equivalence between types in the same universe gives
 a categorical isomorphism between those types.
 -/
-@[simps]
+@[simps!]
 def toIso (e : X ≃ Y) : X ≅ Y where
   hom := ofHom fun x ↦ e x
   inv := ofHom fun x ↦ e.symm x
@@ -445,7 +445,7 @@ def toEquiv (i : X ≅ Y) : X ≃ Y where
 theorem toEquiv_fun (i : X ≅ Y) : (i.toEquiv : X → Y) = i.hom :=
   rfl
 
-theorem toEquiv_symm_fun (i : X ≅ Y) : (i.toEquiv.symm :) = (ConcreteCategory.hom i.inv).as :=
+theorem toEquiv_symm_fun (i : X ≅ Y) : (i.toEquiv.symm :) = (ConcreteCategory.hom i.inv).toFun :=
   rfl
 
 @[simp]
