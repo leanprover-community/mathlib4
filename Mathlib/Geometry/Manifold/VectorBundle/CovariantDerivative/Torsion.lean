@@ -25,7 +25,7 @@ bundle `TM` of some manifold `M`.
 
 -/
 
-@[expose] public noncomputable section
+public noncomputable section
 
 open Bundle Set NormedSpace FiberBundle
 open scoped Manifold ContDiff
@@ -40,7 +40,7 @@ namespace IsCovariantDerivativeOn
 
 /-- The torsion of a covariant derivative on the tangent bundle `TM`, as a bare function.
 Prefer to use `IsCovariantDerivativeOn.torsion` (which is a 2-tensor) instead. -/
-def torsionAux
+private def torsionAux
     (cov : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[𝕜] TangentSpace I x)) :
     (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
   fun X Y x ↦ cov Y x (X x) - cov X x (Y x) - VectorField.mlieBracket I X Y x
@@ -49,7 +49,7 @@ variable [IsManifold I 2 M] [CompleteSpace E]
   {cov cov' : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[𝕜] TangentSpace I x)}
   {X X' Y : Π x : M, TangentSpace I x}
 
-theorem torsionAux_tensorial₁ (hcov : IsCovariantDerivativeOn E cov) (x : M)
+private theorem torsionAux_tensorial₁ (hcov : IsCovariantDerivativeOn E cov) (x : M)
     (Y : Π x, TangentSpace I x) :
     TensorialAt I E (torsionAux cov · Y x) x where
   smul hf hX := by
@@ -59,7 +59,7 @@ theorem torsionAux_tensorial₁ (hcov : IsCovariantDerivativeOn E cov) (x : M)
     simp [torsionAux, hcov.add hX hX', VectorField.mlieBracket_add_left hX hX']
     module
 
-theorem torsionAux_tensorial₂ (hcov : IsCovariantDerivativeOn E cov) (x : M)
+private theorem torsionAux_tensorial₂ (hcov : IsCovariantDerivativeOn E cov) (x : M)
     (X : Π x, TangentSpace I x) :
     TensorialAt I E (torsionAux cov X · x) x where
   smul hf hY := by
