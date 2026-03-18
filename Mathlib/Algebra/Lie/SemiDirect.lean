@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Lie.Derivation.Basic
 public import Mathlib.Algebra.Lie.Extension
+public import Mathlib.Algebra.Lie.DirectSum
 
 /-!
 # Semi-direct products
@@ -50,6 +51,8 @@ namespace SemiDirectSum
 variable {R : Type*} [CommRing R]
 variable {K : Type*} [LieRing K] [LieAlgebra R K]
 variable {L : Type*} [LieRing L] [LieAlgebra R L]
+
+section
 variable (ψ : L →ₗ⁅R⁆ LieDerivation R K K)
 
 variable {ψ} in
@@ -60,6 +63,8 @@ def toProd : K ⋊⁅ψ⁆ L ≃ K × L where
   left_inv _ := rfl
   right_inv _ := rfl
 
+@[simp] lemma toProd_apply (x : K ⋊⁅ψ⁆ L) : toProd (x) = ⟨x.left, x.right⟩ := rfl
+
 instance : AddCommGroup (K ⋊⁅ψ⁆ L) := toProd.addCommGroup
 
 instance : Module R (K ⋊⁅ψ⁆ L) := toProd.module R
@@ -69,6 +74,8 @@ def toProdl : (K ⋊⁅ψ⁆ L) ≃ₗ[R] K × L :=
   { __ := toProd
     map_add' _ _ := rfl
     map_smul' _ _ := rfl }
+
+@[simp] lemma toProdl_coe (x : K ⋊⁅ψ⁆ L) : toProdl ψ x = toProd x := rfl
 
 instance : Bracket (K ⋊⁅ψ⁆ L) (K ⋊⁅ψ⁆ L) where
   bracket x y := ⟨⁅x.left, y.left⁆ + ψ x.right y.left - ψ y.right x.left, ⁅x.right, y.right⁆⟩
@@ -142,22 +149,13 @@ instance : LieAlgebra.IsExtension (inl ψ) (projr ψ) where
   range_eq_top := by simp [LieHom.range_eq_top]
   exact := by ext ⟨x, y⟩; aesop
 
-section DirectSum
+end
 
 variable (R K L) in
-/-- The direct sum of two Lie algebras realized through a semidirect sum with trivial `ψ` -/
-abbrev DirectLieSum := K ⋊⁅(0 : L→ₗ⁅R⁆ (LieDerivation R K K))⁆ L
-
-@[inherit_doc]
-notation:35 K " ⊕⁅" R "⁆" L:35 => DirectLieSum R K L
-
-/-- When a semidirect sum is a direct sum, the projection to the left component is a Lie algebra
-homomorphism -/
-def projl' : (K ⊕⁅R⁆ L →ₗ⁅R⁆ K) where
-  __ := projl 0
-  map_lie' := by simp
-
-end DirectSum
+/-- The product of two Lie algebras realized through a semidirect sum with trivial `ψ` -/
+def prod_iso: (K ⋊⁅(0 : L→ₗ⁅R⁆ (LieDerivation R K K))⁆ L) ≃ₗ⁅R⁆ (K × L) where
+  __ := toProdl 0
+  map_lie' {_ _} := by simp
 
 end SemiDirectSum
 end LieAlgebra
