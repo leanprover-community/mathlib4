@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Slope
+public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 public import Mathlib.MeasureTheory.Function.Jacobian
 
 /-!
@@ -306,6 +307,35 @@ theorem integral_image_eq_integral_deriv_smul_of_monotoneOn (hs : MeasurableSet 
   rw [this]
   exact integral_image_eq_integral_abs_det_fderiv_smul _ hc hF' inj_c _
 
+theorem integral_Icc_deriv_smul_of_deriv_nonneg {a b : ℝ} {g : ℝ → F}
+    (hf : ContinuousOn f (Icc a b))
+    (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x)
+    (hf' : ∀ x ∈ Ioo a b, 0 ≤ f' x) (hab : a ≤ b) :
+    ∫ x in Icc a b, f' x • g (f x) = ∫ u in Icc (f a) (f b), g u := by
+  have M : MonotoneOn f (Icc a b) := by
+    apply monotoneOn_of_deriv_nonneg (convex_Icc a b) hf
+    · rw [interior_Icc]
+      exact fun z hz ↦ (hff' z hz).differentiableAt.differentiableWithinAt
+    · rw [interior_Icc]
+      intro z hz
+      simpa [(hff' z hz).deriv] using hf' z hz
+  have A : ∫ x in Icc a b, f' x • g (f x) = ∫ x in Ioo a b, f' x • g (f x) :=
+    setIntegral_congr_set Ioo_ae_eq_Icc.symm
+  have B : ∫ u in Icc (f a) (f b), g u = ∫ u in f '' (Ioo a b), g u := by
+    apply setIntegral_congr_set
+    have : Icc (f a) (f b) = f '' (Icc a b) := (ContinuousOn.image_Icc_of_monotoneOn hab hf M).symm
+    rw [this]
+    refine ae_eq_set.2 ⟨?_, by simp [show f '' Ioo a b \ f '' Icc a b = ∅ by grind]⟩
+    have : f '' (Icc a b) \ f '' Ioo a b ⊆ {f a, f b} := by
+      rw [← image_pair f a b]
+      exact (subset_image_diff _ _ _).trans (image_mono (by grind))
+    apply measure_mono_null this
+    apply Finite.measure_zero (by simp)
+  symm
+  rw [A, B, integral_image_eq_integral_deriv_smul_of_monotoneOn measurableSet_Ioo]
+  · exact fun z hz ↦ (hff' z hz).hasDerivWithinAt
+  · exact M.mono Ioo_subset_Icc_self
+
 /- Change of variable formula for differentiable functions: if a real function `f` is
 antitone and differentiable on a measurable set `s`, then the Lebesgue integral of a function
 `u : ℝ → ℝ≥0∞` on `f '' s` coincides with the integral of `(-f' x) * u ∘ f` on `s`.
@@ -356,7 +386,7 @@ theorem integrableOn_image_iff_integrableOn_deriv_smul_of_antitoneOn (hs : Measu
 /-- Change of variable formula for differentiable functions: if a real function `f` is
 antitone and differentiable on a measurable set `s`, then the Bochner integral of a function
 `g : ℝ → F` on `f '' s` coincides with the integral of `(-f' x) • g ∘ f` on `s` . -/
-theorem integral_image_eq_integral_deriv_smul_of_antitone (hs : MeasurableSet s)
+theorem integral_image_eq_integral_deriv_smul_of_antitoneOn (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf : AntitoneOn f s) (g : ℝ → F) :
     ∫ x in f '' s, g x = ∫ x in s, (-f' x) • g (f x) := by
   let n : ℝ → ℝ := (fun x ↦ -x)
@@ -370,6 +400,36 @@ theorem integral_image_eq_integral_deriv_smul_of_antitone (hs : MeasurableSet s)
   simp only [abs_neg, abs_one, one_smul] at B
   rw [A, ← image_comp] at B
   convert B using 3 with x hx x <;> simp [n, e]
+
+theorem integral_Icc_deriv_smul_of_deriv_nonpos {a b : ℝ} {g : ℝ → F}
+    (hf : ContinuousOn f (Icc a b))
+    (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x)
+    (hf' : ∀ x ∈ Ioo a b, f' x ≤ 0) (hab : a ≤ b) :
+    ∫ x in Icc a b, f' x • g (f x) = - ∫ u in Icc (f b) (f a), g u := by
+  have M : AntitoneOn f (Icc a b) := by
+    apply antitoneOn_of_deriv_nonpos (convex_Icc a b) hf
+    · rw [interior_Icc]
+      exact fun z hz ↦ (hff' z hz).differentiableAt.differentiableWithinAt
+    · rw [interior_Icc]
+      intro z hz
+      simpa [(hff' z hz).deriv] using hf' z hz
+  have A : ∫ x in Icc a b, f' x • g (f x) = ∫ x in Ioo a b, f' x • g (f x) :=
+    setIntegral_congr_set Ioo_ae_eq_Icc.symm
+  have B : ∫ u in Icc (f b) (f a), g u = ∫ u in f '' (Ioo a b), g u := by
+    apply setIntegral_congr_set
+    have : Icc (f b) (f a) = f '' (Icc a b) := (ContinuousOn.image_Icc_of_antitoneOn hab hf M).symm
+    rw [this]
+    refine ae_eq_set.2 ⟨?_, by simp [show f '' Ioo a b \ f '' Icc a b = ∅ by grind]⟩
+    have : f '' (Icc a b) \ f '' Ioo a b ⊆ {f a, f b} := by
+      rw [← image_pair f a b]
+      exact (subset_image_diff _ _ _).trans (image_mono (by grind))
+    apply measure_mono_null this
+    apply Finite.measure_zero (by simp)
+  symm
+  rw [A, B, integral_image_eq_integral_deriv_smul_of_antitoneOn measurableSet_Ioo (f' := f')]
+  · simp [integral_neg]
+  · exact fun z hz ↦ (hff' z hz).hasDerivWithinAt
+  · exact M.mono Ioo_subset_Icc_self
 
 section WithDensity
 

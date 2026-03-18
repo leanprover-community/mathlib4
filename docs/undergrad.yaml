@@ -339,7 +339,7 @@ Single Variable Real Analysis:
     integral over a segment of piecewise continuous functions: ''
     Riemann sums: 'BoxIntegral.integralSum'
     antiderivative of a continuous function: 'Continuous.deriv_integral'
-    change of variable: 'intervalIntegral.integral_comp_smul_deriv'
+    change of variable: 'intervalIntegral.integral_deriv_smul_comp'
     integration by parts: 'intervalIntegral.integral_mul_deriv_eq_deriv_mul'
     improper integrals: 'https://en.wikipedia.org/wiki/Improper_integral'
     absolute vs conditional convergence of improper integrals: 'https://en.wikipedia.org/wiki/Conditional_convergence'
