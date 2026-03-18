@@ -167,7 +167,7 @@ lemma continuousOn_oddKernel (a : UnitAddCircle) : ContinuousOn (oddKernel a) (I
     apply ContinuousAt.add
     · exact ((continuousAt_jacobiTheta₂' (a * I * x) (by rwa [I_mul_im, ofReal_re])).comp
         (f := fun u : ℝ ↦ (a * I * u, I * u)) hf.continuousAt).div_const _
-    · exact continuousAt_const.mul <| (continuousAt_jacobiTheta₂ (a * I * x)
+    · exact ContinuousAt.const.mul <| (continuousAt_jacobiTheta₂ (a * I * x)
         (by rwa [I_mul_im, ofReal_re])).comp (f := fun u : ℝ ↦ (a * I * u, I * u)) hf.continuousAt
 
 lemma continuousOn_sinKernel (a : UnitAddCircle) : ContinuousOn (sinKernel a) (Ioi 0) := by

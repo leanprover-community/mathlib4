@@ -65,7 +65,7 @@ private lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s
   have h₀ : Summable (fun n ↦ ‖term f x n‖) := summable_norm_iff.mpr hf
   have h₁ (n) : DifferentiableOn ℂ (term f · n) S :=
     fun z _ ↦ (hasDerivAt_term f n _).differentiableAt.differentiableWithinAt
-  have h₂ : IsOpen S := isOpen_lt continuous_const continuous_re
+  have h₂ : IsOpen S := isOpen_lt .const continuous_re
   have h₃ (n z) (hz : z ∈ S) : ‖term f z n‖ ≤ ‖term f x n‖ :=
     norm_term_le_of_re_le_re f (by simpa using (hxy.trans hz).le) n
   have H := hasSum_deriv_of_summable_norm h₀ h₁ h₂ h₃ hys

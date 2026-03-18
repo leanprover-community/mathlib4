@@ -1143,7 +1143,7 @@ theorem ofRealCLM_apply : (ofRealCLM : ℝ → K) = ofReal :=
 theorem continuous_ofReal : Continuous (ofReal : ℝ → K) :=
   ofRealLI.continuous
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
   (continuous_re.mul continuous_re).add (continuous_im.mul continuous_im)
 
@@ -1183,7 +1183,7 @@ lemma instOrderClosedTopology : OrderClosedTopology K where
   isClosed_le' := by
     conv in _ ≤ _ => rw [RCLike.le_iff_re_im]
     simp_rw [Set.setOf_and]
-    refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> continuity
+    refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> fun_prop
 
 scoped[ComplexOrder] attribute [instance] RCLike.instOrderClosedTopology
 

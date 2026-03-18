@@ -234,7 +234,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
   rcases Metric.mem_nhdsWithin_iff.1 (hx εpos) with ⟨δ, δpos, sδ⟩
   have E1 : ∀ᶠ h in 𝓝[>] (0 : ℝ), h * (‖v‖ + ‖w‖) < δ := by
     have : Filter.Tendsto (fun h => h * (‖v‖ + ‖w‖)) (𝓝[>] (0 : ℝ)) (𝓝 (0 * (‖v‖ + ‖w‖))) :=
-      (continuous_id.mul continuous_const).continuousWithinAt
+      (continuous_id.mul .const).continuousWithinAt
     apply (tendsto_order.1 this).2 δ
     simpa only [zero_mul] using δpos
   have E2 : ∀ᶠ h in 𝓝[>] (0 : ℝ), (h : ℝ) < 1 :=
@@ -407,7 +407,7 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
     have : x + (4 : ℝ) • (z + (0 : ℝ) • m) = y := by simp [hz]
     rw [← this]
     refine tendsto_const_nhds.add <| tendsto_const_nhds.smul <| tendsto_const_nhds.add ?_
-    exact continuousAt_id.smul continuousAt_const
+    exact continuousAt_id.smul .const
   have B : ∀ m : E, ∀ᶠ t in 𝓝[>] (0 : ℝ), x + (4 : ℝ) • (z + t • m) ∈ interior s := by
     intro m
     apply nhdsWithin_le_nhds

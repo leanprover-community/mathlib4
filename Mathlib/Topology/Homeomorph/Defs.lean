@@ -328,8 +328,8 @@ variable (X Y) in
 @[simps!]
 def homeomorphOfUnique [Unique X] [Unique Y] : X ≃ₜ Y :=
   { Equiv.ofUnique X Y with
-    continuous_toFun := continuous_const
-    continuous_invFun := continuous_const }
+    continuous_toFun := .const
+    continuous_invFun := .const }
 
 @[simp]
 theorem map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝 x) = 𝓝 (h x) :=

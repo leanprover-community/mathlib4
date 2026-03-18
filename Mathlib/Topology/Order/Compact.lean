@@ -478,7 +478,7 @@ theorem IsCompact.continuous_sSup {f : γ → β → α} {K : Set β} (hK : IsCo
     (hf : Continuous ↿f) : Continuous fun x => sSup (f x '' K) := by
   rcases eq_empty_or_nonempty K with (rfl | h0K)
   · simp_rw [image_empty]
-    exact continuous_const
+    exact Continuous.const
   rw [continuous_iff_continuousAt]
   intro x
   obtain ⟨y, hyK, h2y, hy⟩ :=

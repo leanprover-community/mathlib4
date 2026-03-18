@@ -217,7 +217,7 @@ variable (M I) in
 def toPUnit : SingularManifold PUnit k I where
   M := M
   f := fun _ ↦ PUnit.unit
-  hf := continuous_const
+  hf := .const
 
 variable {I' : ModelWithCorners ℝ E' H'} [FiniteDimensional ℝ E']
 
@@ -240,7 +240,7 @@ def prod (s : SingularManifold PUnit k I) (t : SingularManifold PUnit k I') :
     SingularManifold PUnit k (I.prod I') where
   M := s.M × t.M
   f := fun _ ↦ PUnit.unit
-  hf := continuous_const
+  hf := .const
 
 variable (s t : SingularManifold X k I)
 

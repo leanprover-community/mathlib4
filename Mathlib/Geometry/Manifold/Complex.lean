@@ -129,8 +129,7 @@ theorem apply_eq_of_isPreconnected_isCompact_isOpen {f : M → F} {U : Set M} {a
   -- Subtract `f b` to avoid the assumption `[StrictConvexSpace ℝ F]`
   wlog hb₀ : f b = 0 generalizing f
   -- TODO: Add `MDifferentiableOn.sub` etc
-  · have hd' : MDiff[U] (f · - f b) := fun x hx ↦
-      ⟨(hd x hx).1.sub continuousWithinAt_const, (hd x hx).2.sub_const _⟩
+  · have hd' : MDiff[U] (f · - f b) := fun x hx ↦ ⟨(hd x hx).1.sub_const _, (hd x hx).2.sub_const _⟩
     simpa [sub_eq_zero] using this hd' (sub_self _)
   rcases hc.exists_isMaxOn ⟨a, ha⟩ hd.continuousOn.norm with ⟨c, hcU, hc⟩
   have : ∀ x ∈ U, ‖f x‖ = ‖f c‖ :=

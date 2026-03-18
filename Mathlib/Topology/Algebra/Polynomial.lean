@@ -51,7 +51,7 @@ variable {R S : Type*} [Semiring R] [TopologicalSpace R] [IsTopologicalSemiring 
 protected theorem continuous_eval₂ [Semiring S] (p : S[X]) (f : S →+* R) :
     Continuous fun x => p.eval₂ f x := by
   simp only [eval₂_eq_sum]
-  exact continuous_finset_sum _ fun c _ => continuous_const.mul (continuous_pow _)
+  exact continuous_finset_sum _ fun c _ => Continuous.const.mul (continuous_pow _)
 
 @[continuity, fun_prop]
 protected theorem continuous : Continuous fun x => p.eval x :=

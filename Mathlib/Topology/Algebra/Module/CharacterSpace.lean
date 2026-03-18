@@ -172,7 +172,7 @@ theorem eq_set_map_one_map_mul [Nontrivial 𝕜] :
 protected theorem isClosed [Nontrivial 𝕜] [T2Space 𝕜] [ContinuousMul 𝕜] :
     IsClosed (characterSpace 𝕜 A) := by
   rw [eq_set_map_one_map_mul, Set.setOf_and]
-  refine IsClosed.inter (isClosed_eq (eval_continuous _) continuous_const) ?_
+  refine IsClosed.inter (isClosed_eq (eval_continuous _) .const) ?_
   simpa only [(union_zero 𝕜 A).symm] using union_zero_isClosed _ _
 
 end Unital

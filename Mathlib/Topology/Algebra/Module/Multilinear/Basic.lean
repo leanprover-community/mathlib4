@@ -121,7 +121,7 @@ theorem map_zero [Nonempty ι] : f 0 = 0 :=
   f.toMultilinearMap.map_zero
 
 instance : Zero (ContinuousMultilinearMap R M₁ M₂) :=
-  ⟨{ (0 : MultilinearMap R M₁ M₂) with cont := continuous_const }⟩
+  ⟨{ (0 : MultilinearMap R M₁ M₂) with cont := .const }⟩
 
 instance : Inhabited (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨0⟩
@@ -213,7 +213,7 @@ linear map obtained by fixing all coordinates but `i` equal to those of `m`, and
 `i`-th coordinate. -/
 @[simps!] def toContinuousLinearMap [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : M₁ i →L[R] M₂ :=
   { f.toMultilinearMap.toLinearMap m i with
-    cont := f.cont.comp (continuous_const.update i continuous_id) }
+    cont := f.cont.comp (Continuous.const.update i continuous_id) }
 
 /-- The Cartesian product of two continuous multilinear maps, as a continuous multilinear map. -/
 def prod (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMultilinearMap R M₁ M₃) :
@@ -272,7 +272,7 @@ variable (M₁) {M₂}
 @[simps! toMultilinearMap apply]
 def constOfIsEmpty [IsEmpty ι] (m : M₂) : ContinuousMultilinearMap R M₁ M₂ where
   toMultilinearMap := MultilinearMap.constOfIsEmpty R _ m
-  cont := continuous_const
+  cont := Continuous.const
 
 end
 
@@ -652,7 +652,7 @@ continuous multilinear map sending `m` to `f m • z`. -/
 @[simps! toMultilinearMap apply]
 def smulRight : ContinuousMultilinearMap R M₁ M₂ where
   toMultilinearMap := f.toMultilinearMap.smulRight z
-  cont := f.cont.smul continuous_const
+  cont := f.cont.smul .const
 
 end SMulRight
 

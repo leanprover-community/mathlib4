@@ -643,8 +643,7 @@ theorem continuousAt_arg_coe_angle (h : x ≠ 0) : ContinuousAt ((↑) ∘ arg :
     replace hs := mem_slitPlane_iff.mpr.mt hs
     push_neg at hs
     refine
-      (Real.Angle.continuous_coe.continuousAt.comp (continuousAt_arg (Or.inl ?_))).add
-        continuousAt_const
+      (Real.Angle.continuous_coe.continuousAt.comp (continuousAt_arg (Or.inl ?_))).add .const
     rw [neg_re, neg_pos]
     exact hs.1.lt_of_ne fun h0 => h (Complex.ext_iff.2 ⟨h0, hs.2⟩)
 

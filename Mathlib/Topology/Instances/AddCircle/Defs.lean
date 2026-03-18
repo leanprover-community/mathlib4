@@ -96,16 +96,14 @@ theorem continuousWithinAt_toIocDiv_Iic : ContinuousWithinAt (toIocDiv hp a) (Ii
 
 /-- `toIcoMod` is continuous on the right at every point. -/
 theorem continuousWithinAt_toIcoMod_Ici : ContinuousWithinAt (toIcoMod hp a) (Ici x) x :=
-  continuousWithinAt_id.sub <|
-    (continuousWithinAt_toIcoDiv_Ici hp a x).smul continuousWithinAt_const
+  continuousWithinAt_id.sub <| (continuousWithinAt_toIcoDiv_Ici hp a x).smul .const
 
 @[deprecated (since := "2026-01-04")]
 alias continuous_right_toIcoMod := continuousWithinAt_toIcoMod_Ici
 
 /-- `toIocMod` is continuous on the right at every point. -/
 theorem continuousWithinAt_toIocMod_Iic : ContinuousWithinAt (toIocMod hp a) (Iic x) x :=
-  continuousWithinAt_id.sub <|
-    (continuousWithinAt_toIocDiv_Iic hp a x).smul continuousWithinAt_const
+  continuousWithinAt_id.sub <| (continuousWithinAt_toIocDiv_Iic hp a x).smul .const
 
 @[deprecated (since := "2026-01-04")]
 alias continuous_left_toIocMod := continuousWithinAt_toIocMod_Iic

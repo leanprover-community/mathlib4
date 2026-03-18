@@ -67,7 +67,7 @@ variable [Semiring R] [TopologicalSpace R] [TopologicalSpace M] [AddCommMonoid M
 
 theorem HasSum.smul_const {r : R} (hf : HasSum f r L) (a : M) :
     HasSum (fun z ↦ f z • a) (r • a) L :=
-  hf.map ((smulAddHom R M).flip a) (continuous_id.smul continuous_const)
+  hf.map ((smulAddHom R M).flip a) (continuous_id.smul Continuous.const)
 
 theorem Summable.smul_const (hf : Summable f L) (a : M) : Summable (fun z ↦ f z • a) L :=
   (hf.hasSum.smul_const _).summable

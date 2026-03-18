@@ -28,7 +28,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [Preorder Y]
 
 protected theorem IsMaxOn.closure (h : IsMaxOn f s a) (hc : ContinuousOn f (closure s)) :
     IsMaxOn f (closure s) a := fun x hx =>
-  ContinuousWithinAt.closure_le hx ((hc x hx).mono subset_closure) continuousWithinAt_const h
+  ContinuousWithinAt.closure_le hx ((hc x hx).mono subset_closure) ContinuousWithinAt.const h
 
 protected theorem IsMinOn.closure (h : IsMinOn f s a) (hc : ContinuousOn f (closure s)) :
     IsMinOn f (closure s) a :=
@@ -43,7 +43,7 @@ protected theorem IsLocalMaxOn.closure (h : IsLocalMaxOn f s a) (hc : Continuous
   rcases mem_nhdsWithin.1 h with ⟨U, Uo, aU, hU⟩
   refine mem_nhdsWithin.2 ⟨U, Uo, aU, ?_⟩
   rintro x ⟨hxU, hxs⟩
-  refine ContinuousWithinAt.closure_le ?_ ?_ continuousWithinAt_const hU
+  refine ContinuousWithinAt.closure_le ?_ ?_ ContinuousWithinAt.const hU
   · rwa [mem_closure_iff_nhdsWithin_neBot, nhdsWithin_inter_of_mem, ←
       mem_closure_iff_nhdsWithin_neBot]
     exact nhdsWithin_le_nhds (Uo.mem_nhds hxU)

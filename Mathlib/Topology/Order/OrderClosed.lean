@@ -604,10 +604,10 @@ theorem isClosed_le [TopologicalSpace β] {f g : β → α} (hf : Continuous f) 
   continuous_iff_isClosed.mp (hf.prodMk hg) _ isClosed_le_prod
 
 instance : ClosedIicTopology α where
-  isClosed_Iic _ := isClosed_le continuous_id continuous_const
+  isClosed_Iic _ := isClosed_le continuous_id .const
 
 instance : ClosedIciTopology α where
-  isClosed_Ici _ := isClosed_le continuous_const continuous_id
+  isClosed_Ici _ := isClosed_le .const continuous_id
 
 instance : OrderClosedTopology αᵒᵈ :=
   ⟨(OrderClosedTopology.isClosed_le' (α := α)).preimage continuous_swap⟩
@@ -771,7 +771,7 @@ theorem frontier_le_subset_eq (hf : Continuous f) (hg : Continuous g) :
   convert hb₂ using 2; simp only [not_le.symm]; rfl
 
 theorem frontier_Iic_subset (a : α) : frontier (Iic a) ⊆ {a} :=
-  frontier_le_subset_eq (@continuous_id α _) continuous_const
+  frontier_le_subset_eq (@continuous_id α _) .const
 
 theorem frontier_Ici_subset (a : α) : frontier (Ici a) ⊆ {a} :=
   frontier_Iic_subset (α := αᵒᵈ) _

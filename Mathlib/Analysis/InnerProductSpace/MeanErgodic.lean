@@ -62,7 +62,7 @@ theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace �
   By assumption, `LinearMap.range (f - 1)` is dense in the kernel of `g`,
   so it suffices to prove the theorem for `y = f x - x`. -/
   have : IsClosed {x | Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop (𝓝 0)} :=
-    isClosed_setOf_tendsto_birkhoffAverage 𝕜 hf uniformContinuous_id continuous_const
+    isClosed_setOf_tendsto_birkhoffAverage 𝕜 hf uniformContinuous_id .const
   refine closure_minimal (Set.forall_mem_range.2 fun x ↦ ?_) this (hg_ker hy)
   /- Finally, for `y = f x - x` the average is equal to the difference between averages
   along the orbits of `f x` and `x`, and most of the terms cancel. -/

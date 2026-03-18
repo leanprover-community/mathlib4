@@ -72,7 +72,7 @@ theorem integral_circleTransform (f : ℂ → E) :
 theorem continuous_circleTransform {R : ℝ} (hR : 0 < R) {f : ℂ → E} {z w : ℂ}
     (hf : ContinuousOn f <| sphere z R) (hw : w ∈ ball z R) :
     Continuous (circleTransform R z w f) := by
-  apply_rules [Continuous.smul, continuous_const]
+  apply_rules [Continuous.smul, Continuous.const]
   · rw [funext <| deriv_circleMap _ _]
     fun_prop
   · exact continuous_circleMap_inv hw
@@ -93,7 +93,7 @@ theorem continuousOn_prod_circle_transform_function {R r : ℝ} (hr : r < R) {z 
     ContinuousOn (fun w : ℂ × ℝ => (circleMap z R w.snd - w.fst)⁻¹ ^ 2)
       (closedBall z r ×ˢ univ) := by
   simp_rw [← one_div]
-  apply_rules [ContinuousOn.pow, ContinuousOn.div, continuousOn_const]
+  apply_rules [ContinuousOn.pow, ContinuousOn.div, ContinuousOn.const]
   · exact ((continuous_circleMap z R).comp_continuousOn continuousOn_snd).sub continuousOn_fst
   · rintro ⟨a, b⟩ ⟨ha, -⟩
     have ha2 : a ∈ ball z R := closedBall_subset_ball hr ha
@@ -102,10 +102,10 @@ theorem continuousOn_prod_circle_transform_function {R r : ℝ} (hr : r < R) {z 
 theorem continuousOn_norm_circleTransformBoundingFunction {R r : ℝ} (hr : r < R) (z : ℂ) :
     ContinuousOn ((‖·‖) ∘ circleTransformBoundingFunction R z) (closedBall z r ×ˢ univ) := by
   have : ContinuousOn (circleTransformBoundingFunction R z) (closedBall z r ×ˢ univ) := by
-    apply_rules [ContinuousOn.smul, continuousOn_const]
+    apply_rules [ContinuousOn.smul, ContinuousOn.const]
     · simp only [deriv_circleMap]
       apply_rules [ContinuousOn.mul, (continuous_circleMap 0 R).comp_continuousOn continuousOn_snd,
-        continuousOn_const]
+        ContinuousOn.const]
     · simpa only [inv_pow] using continuousOn_prod_circle_transform_function hr
   exact this.norm
 

@@ -227,7 +227,7 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
         apply sum_congr rfl fun j hj => ?_
         rw [intervalIntegral.sum_integral_adjacent_intervals_Ico ((mem_range.1 hj).le.trans hKN)]
         intro k _
-        exact continuous_const.intervalIntegrable _ _
+        exact Continuous.const.intervalIntegrable _ _
       _ = ∑ i ∈ range N, ∑ j ∈ range (min (i + 1) K), ∫ _ in i..(i + 1 : ℕ), (1 : ℝ) ∂ρ := by
         simp_rw [sum_sigma']
         refine sum_nbij' (fun p ↦ ⟨p.2, p.1⟩) (fun p ↦ ⟨p.2, p.1⟩) ?_ ?_ ?_ ?_ ?_ <;>
@@ -245,8 +245,8 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
           simp only [Nat.cast_add, Nat.cast_one, le_add_iff_nonneg_right, zero_le_one]
         simp_rw [intervalIntegral.integral_of_le I, ← integral_const_mul]
         apply setIntegral_mono_on
-        · exact continuous_const.integrableOn_Ioc
-        · exact (continuous_id.add continuous_const).integrableOn_Ioc
+        · exact Continuous.const.integrableOn_Ioc
+        · exact (continuous_id.add .const).integrableOn_Ioc
         · exact measurableSet_Ioc
         · intro x hx
           simp only [Nat.cast_add, Nat.cast_one, Set.mem_Ioc] at hx
@@ -254,11 +254,11 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
       _ = ∫ x in 0..N, x + 1 ∂ρ := by
         rw [intervalIntegral.sum_integral_adjacent_intervals fun k _ => ?_]
         · norm_cast
-        · exact (continuous_id.add continuous_const).intervalIntegrable _ _
+        · exact (continuous_id.add .const).intervalIntegrable _ _
       _ = ∫ x in 0..N, x ∂ρ + ∫ x in 0..N, 1 ∂ρ := by
         rw [intervalIntegral.integral_add]
         · exact continuous_id.intervalIntegrable _ _
-        · exact continuous_const.intervalIntegrable _ _
+        · exact Continuous.const.intervalIntegrable _ _
       _ = 𝔼[truncation X N] + ∫ x in 0..N, 1 ∂ρ := by
         rw [integral_truncation_eq_intervalIntegral_of_nonneg hint.1 hnonneg]
       _ ≤ 𝔼[X] + ∫ x in 0..N, 1 ∂ρ := by
@@ -354,7 +354,7 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
           _ = 2 * x := by rw [one_mul]
     _ = 2 * ∫ x in (0 : ℝ)..K, x ∂ρ := by
       rw [intervalIntegral.sum_integral_adjacent_intervals fun k _ => ?_]
-      swap; · exact (continuous_const.mul continuous_id').intervalIntegrable _ _
+      swap; · exact (Continuous.const.mul continuous_id').intervalIntegrable _ _
       rw [intervalIntegral.integral_const_mul]
       norm_cast
     _ ≤ 2 * 𝔼[X] := mul_le_mul_of_nonneg_left (by

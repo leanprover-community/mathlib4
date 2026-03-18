@@ -43,7 +43,7 @@ lemma MemLp.isProbabilityMeasure_of_indepFun
     simpa using ge_of_tendsto' u_lim (fun i ↦ (hω i).le)
   have h'c : μ {ω | c ≤ ‖f ω‖₊} < ∞ := hℒp.meas_ge_lt_top hp hp' c_pos.ne'
   have := hindep.measure_inter_preimage_eq_mul {x | c ≤ ‖x‖₊} Set.univ
-    (isClosed_le continuous_const continuous_nnnorm).measurableSet MeasurableSet.univ
+    (isClosed_le .const continuous_nnnorm).measurableSet MeasurableSet.univ
   simp only [Set.preimage_setOf_eq, Set.preimage_univ, Set.inter_univ] at this
   exact ⟨(ENNReal.mul_eq_left hc.ne' h'c.ne).1 this.symm⟩
 

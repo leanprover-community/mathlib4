@@ -140,7 +140,7 @@ theorem meromorphicOrderAt_ne_top_iff_eventually_ne_zero {f : 𝕜 → E} (hf : 
   · intro h
     obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff hf).1 h
     filter_upwards [h₃g, self_mem_nhdsWithin, eventually_nhdsWithin_of_eventually_nhds
-      ((h₁g.continuousAt.ne_iff_eventually_ne continuousAt_const).mp h₂g)]
+      ((h₁g.continuousAt.ne_iff_eventually_ne .const).mp h₂g)]
     simp_all [zpow_ne_zero, sub_ne_zero]
   · simp_all [meromorphicOrderAt_eq_top_iff, Eventually.frequently]
 
@@ -302,7 +302,7 @@ protected theorem MeromorphicAt.analyticAt {f : 𝕜 → E} {x : 𝕜}
     it also vanishes at `x`.-/
     have : AnalyticAt 𝕜 (fun _ ↦ (0 : E)) x := analyticAt_const
     apply this.congr
-    rw [← ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE continuousAt_const h']
+    rw [← ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE .const h']
     filter_upwards [meromorphicOrderAt_eq_top_iff.1 ho] with y hy using by simp [hy]
   | coe n =>
     /- If the order is finite, then the order has to be nonnegative, as otherwise the norm of `f`

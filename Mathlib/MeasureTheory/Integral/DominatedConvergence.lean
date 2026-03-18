@@ -346,7 +346,7 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
       · exact ⟨min_le_of_left_le (min_le_right _ _),
           le_max_of_le_right (h₁.trans <| h₂.trans (le_max_right a b₂))⟩
     apply ContinuousWithinAt.congr _ this (this _ h₀); clear this
-    refine continuousWithinAt_const.add ?_
+    refine ContinuousWithinAt.const.add ?_
     have :
       (fun b => ∫ x in b₁..b, f x ∂μ) =ᶠ[𝓝[Icc b₁ b₂] b₀] fun b =>
         ∫ x in b₁..b₂, indicator {x | x ≤ b} f x ∂μ := by
@@ -376,14 +376,14 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
           apply Eventually.mono (Ioi_mem_nhds hx₀)
           intro x hx
           simp [hx.le]
-        apply continuousWithinAt_const.congr_of_eventuallyEq this
+        apply ContinuousWithinAt.const.congr_of_eventuallyEq this
         simp [hx₀.le]
       · have : ∀ᶠ x in 𝓝[Icc b₁ b₂] b₀, {t : ℝ | t ≤ x}.indicator f x₀ = 0 := by
           apply mem_nhdsWithin_of_mem_nhds
           apply Eventually.mono (Iio_mem_nhds hx₀)
           intro x hx
           simp [hx]
-        apply continuousWithinAt_const.congr_of_eventuallyEq this
+        apply ContinuousWithinAt.const.congr_of_eventuallyEq this
         simp [hx₀]
   · apply continuousWithinAt_of_notMem_closure
     rwa [closure_Icc]
@@ -601,7 +601,7 @@ theorem continuous_parametric_primitive_of_continuous
   _ ≤ ∫ t in Icc (b₀ - δ) (b₀ + δ), M + 1 ∂μ + ∫ _t in Icc a b, δ ∂μ := by
       gcongr with x hx x hx
       · exact (hf.uncurry_left _).norm.integrableOn_Icc
-      · exact continuous_const.integrableOn_Icc
+      · exact Continuous.const.integrableOn_Icc
       · exact nullMeasurableSet_Icc
       · calc ‖f p x‖ = ‖f q x + (f p x - f q x)‖ := by congr; abel
         _ ≤ ‖f q x‖ + ‖f p x - f q x‖ := norm_add_le _ _
@@ -615,7 +615,7 @@ theorem continuous_parametric_primitive_of_continuous
             · exact le_of_lt (hv _ hp _ (h'δ hx))
         _ ≤ M + 1 := by linarith
       · exact ((hf.uncurry_left _).sub (hf.uncurry_left _)).norm.integrableOn_Icc
-      · exact continuous_const.integrableOn_Icc
+      · exact Continuous.const.integrableOn_Icc
       · exact nullMeasurableSet_Icc
       · exact le_of_lt (hv _ hp _ hx)
   _ = (M + 1) * μ.real (Icc (b₀ - δ) (b₀ + δ)) + δ * μ.real (Icc a b) := by simp [mul_comm]

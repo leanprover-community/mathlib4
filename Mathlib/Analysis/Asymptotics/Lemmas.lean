@@ -50,7 +50,7 @@ theorem isLittleO_principal {s : Set α} : f'' =o[𝓟 s] g' ↔ ∀ x ∈ s, f'
   refine ⟨fun h x hx ↦ norm_le_zero_iff.1 ?_, fun h ↦ ?_⟩
   · simp only [isLittleO_iff] at h
     have : Tendsto (fun c : ℝ => c * ‖g' x‖) (𝓝[>] 0) (𝓝 0) :=
-      ((continuous_id.mul continuous_const).tendsto' _ _ (zero_mul _)).mono_left
+      ((continuous_id.mul .const).tendsto' _ _ (zero_mul _)).mono_left
         inf_le_left
     apply le_of_tendsto_of_tendsto tendsto_const_nhds this
     apply eventually_nhdsWithin_iff.2 (Eventually.of_forall (fun c hc ↦ ?_))

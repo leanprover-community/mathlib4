@@ -35,22 +35,22 @@ def effectiveEpiStructOfQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) (hπ : IsQ
   /- `IsQuotientMap.lift` gives the required morphism -/
   desc e h := ofHom <| hπ.lift e.hom fun a b hab ↦
     CategoryTheory.congr_fun (h
-      (ofHom ⟨fun _ ↦ a, continuous_const⟩)
-      (ofHom ⟨fun _ ↦ b, continuous_const⟩)
+      (ofHom ⟨fun _ ↦ a, .const⟩)
+      (ofHom ⟨fun _ ↦ b, .const⟩)
     (by ext; exact hab)) a
   /- `IsQuotientMap.lift_comp` gives the factorisation -/
   fac e h := hom_ext (hπ.lift_comp e.hom
     fun a b hab ↦ CategoryTheory.congr_fun (h
-      (ofHom ⟨fun _ ↦ a, continuous_const⟩)
-      (ofHom ⟨fun _ ↦ b, continuous_const⟩)
+      (ofHom ⟨fun _ ↦ a, .const⟩)
+      (ofHom ⟨fun _ ↦ b, .const⟩)
     (by ext; exact hab)) a)
   /- Uniqueness follows from the fact that `IsQuotientMap.lift` is an equivalence (given by
   `IsQuotientMap.liftEquiv`). -/
   uniq e h g hm := by
     suffices g = ofHom (hπ.liftEquiv ⟨e.hom,
       fun a b hab ↦ CategoryTheory.congr_fun (h
-          (ofHom ⟨fun _ ↦ a, continuous_const⟩)
-          (ofHom ⟨fun _ ↦ b, continuous_const⟩)
+          (ofHom ⟨fun _ ↦ a, .const⟩)
+          (ofHom ⟨fun _ ↦ b, .const⟩)
           (by ext; exact hab))
         a⟩) by assumption
     apply hom_ext

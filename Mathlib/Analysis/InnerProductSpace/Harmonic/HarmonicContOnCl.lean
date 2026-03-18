@@ -47,7 +47,7 @@ theorem IsClosed.harmonicContOnCl_iff (hs : IsClosed s) :
     exact h.harmonicContOnCl
 
 theorem harmonicContOnCl_const {c : F} : HarmonicContOnCl (fun _ : E ↦ c) s :=
-  ⟨harmonicOnNhd_const c, continuousOn_const⟩
+  ⟨harmonicOnNhd_const c, .const⟩
 
 namespace HarmonicContOnCl
 

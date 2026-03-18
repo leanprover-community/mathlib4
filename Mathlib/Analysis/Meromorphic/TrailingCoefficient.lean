@@ -122,7 +122,7 @@ lemma MeromorphicAt.tendsto_nhds_meromorphicTrailingCoeffAt (h : MeromorphicAt f
     apply Tendsto.congr' (f₁ := 0)
     · filter_upwards [meromorphicOrderAt_eq_top_iff.1 h₂] with y hy
       simp_all
-    · apply Tendsto.congr' (f₁ := 0) (by rfl) continuousWithinAt_const.tendsto
+    · apply Tendsto.congr' (f₁ := 0) (by rfl) ContinuousWithinAt.const.tendsto
   obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff h).1 h₂
   apply Tendsto.congr' (f₁ := g)
   · filter_upwards [h₃g, self_mem_nhdsWithin] with y h₁y h₂y

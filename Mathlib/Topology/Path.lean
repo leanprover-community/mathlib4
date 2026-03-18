@@ -278,7 +278,7 @@ def trans (γ : Path x y) (γ' : Path y z) : Path x z where
   toFun := (fun t : ℝ => if t ≤ 1 / 2 then γ.extend (2 * t) else γ'.extend (2 * t - 1)) ∘ (↑)
   continuous_toFun := by
     refine
-      (Continuous.if_le ?_ ?_ continuous_id continuous_const (by simp)).comp
+      (Continuous.if_le ?_ ?_ continuous_id .const (by simp)).comp
         continuous_subtype_val <;>
     fun_prop
   source' := by simp
@@ -448,7 +448,7 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
   have h₁' := Path.continuous_uncurry_extend_of_continuous_family γ₁ h₁
   have h₂' := Path.continuous_uncurry_extend_of_continuous_family γ₂ h₂
   simp only [HasUncurry.uncurry, Path.trans]
-  refine Continuous.if_le ?_ ?_ (continuous_subtype_val.comp continuous_snd) continuous_const ?_
+  refine Continuous.if_le ?_ ?_ (continuous_subtype_val.comp continuous_snd) .const ?_
   · change
       Continuous ((fun p : ι × ℝ => (γ₁ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x : I → ℝ))
     exact h₁'.comp (by fun_prop)

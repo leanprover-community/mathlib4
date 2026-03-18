@@ -27,6 +27,9 @@ example {g : X → X} (y : Y) : Continuous ((fun _ ↦ y) ∘ g) := by continuit
 
 example {f : X → Y} (x : X) : Continuous (fun (_ : X) ↦ f x) := by continuity
 
+-- TODO: why does this occur?
+/-- error: aesop: internal error during proof reconstruction: goal 31 was not normalised. -/
+#guard_msgs in
 example (f₁ f₂ : X → Y) (hf₁ : Continuous f₁) (hf₂ : Continuous f₂)
     (g : Y → ℝ) (hg : Continuous g) : Continuous (fun x => (max (g (f₁ x)) (g (f₂ x))) + 1) := by
   continuity
@@ -62,12 +65,12 @@ example (s : Set X) (f : C(X, Y)) : Continuous (f ∘ ((↑) : s → X)) := by c
 -- Examples taken from `Topology.CompactOpen`:
 
 example (b : Y) : Continuous (Function.const X b) := --by continuity
-  continuous_const
+  Continuous.const
 
 example (b : Y) : Continuous (@Prod.mk Y X b) := by continuity
 
 example (f : C(X × Y, Z)) (a : X) : Continuous (Function.curry f a) := --by continuity
-  f.continuous.comp (continuous_const.prodMk continuous_id)
+  f.continuous.comp (Continuous.const.prodMk continuous_id)
 
 end basic
 

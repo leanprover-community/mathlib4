@@ -412,9 +412,7 @@ theorem sin_pos_of_mem_Ioo {x : ℝ} (hx : x ∈ Ioo 0 π) : 0 < sin x :=
 
 theorem sin_nonneg_of_mem_Icc {x : ℝ} (hx : x ∈ Icc 0 π) : 0 ≤ sin x := by
   rw [← closure_Ioo pi_ne_zero.symm] at hx
-  exact
-    closure_lt_subset_le continuous_const continuous_sin
-      (closure_mono (fun y => sin_pos_of_mem_Ioo) hx)
+  exact closure_lt_subset_le .const continuous_sin (closure_mono (fun y ↦ sin_pos_of_mem_Ioo) hx)
 
 theorem sin_nonneg_of_nonneg_of_le_pi {x : ℝ} (h0x : 0 ≤ x) (hxp : x ≤ π) : 0 ≤ sin x :=
   sin_nonneg_of_mem_Icc ⟨h0x, hxp⟩

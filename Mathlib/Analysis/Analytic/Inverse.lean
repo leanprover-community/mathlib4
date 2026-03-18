@@ -620,7 +620,7 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
     ∀ᶠ y in 𝓝 0, HasSum (fun n : ℕ => q n fun _ : Fin n => (f (x + y) - f x)) (g (f (x + y))) := by
   have : ∀ᶠ y in 𝓝 (0 : E), f (x + y) - f x ∈ Metric.eball 0 q.radius := by
     have A : ContinuousAt (fun y ↦ f (x + y) - f x) 0 := by
-      apply ContinuousAt.sub _ continuousAt_const
+      apply ContinuousAt.sub _ .const
       exact hf.continuousAt.comp_of_eq (by fun_prop) (by simp)
     have B : Metric.eball 0 q.radius ∈ 𝓝 (f (x + 0) - f x) := by
       simpa using Metric.eball_mem_nhds _ hq

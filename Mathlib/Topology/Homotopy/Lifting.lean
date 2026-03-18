@@ -96,18 +96,18 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
     change g' (t n, a) ∈ (q e).source; rw [g'_a _ le_rfl]
     exact h_sub ⟨le_rfl, t_mono n.le_succ⟩
   · rw [← t_0]; exact ⟨t_mono n.zero_le, le_rfl⟩
-  · have ht := Set.mem_setOf.mp (frontier_le_subset_eq continuous_fst continuous_const hfr)
+  · have ht := Set.mem_setOf.mp (frontier_le_subset_eq continuous_fst .const hfr)
     have : f ta ∈ (q e).target := huv ⟨hu (by rw [ht]; exact ⟨le_rfl, t_mono n.le_succ⟩), hav⟩
     rw [if_pos this]
     -- here we use that {tₙ} × Nₙ₊₁ is mapped to the domain of `q e`
     apply (q e).injOn (by rwa [← ta.eta, ht]) ((q e).map_target this)
     rw [(q e).right_inv this, ← hpq e]; exact congr_fun g'_lifts ta
-  · rw [closure_le_eq continuous_fst continuous_const] at ht
+  · rw [closure_le_eq continuous_fst .const] at ht
     exact ⟨⟨hta.1.1, ht⟩, hta.2.2.1⟩
   · simp_rw [not_le]; exact (ContinuousOn.congr ((q e).continuousOn_invFun.comp f.2.continuousOn
       fun _ h ↦ huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩)
       fun _ h ↦ if_pos <| huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩).mono
-        (Set.inter_subset_inter_right _ <| closure_lt_subset_le continuous_const continuous_fst)
+        (Set.inter_subset_inter_right _ <| closure_lt_subset_le .const continuous_fst)
   · ext ta; rw [Function.comp_apply]; split_ifs with _ hv
     · exact congr_fun g'_lifts ta
     · rw [hpq e, (q e).right_inv hv]
@@ -156,7 +156,7 @@ theorem monodromy_theorem {γ₀ γ₁ : C(I, X)} (γ : γ₀.HomotopyRel γ₁ 
   · apply sep.const_of_comp homeo.isLocallyInjective (this.comp (.prodMk_right 1))
     intro t t'; change p (Γ _ _) = p (Γ _ _); simp_rw [Γ_lifts, γ.eq_fst _ (.inr rfl)]
   · ext; apply Γ_lifts
-  · simp_rw [Γ_0]; exact continuous_const
+  · simp_rw [Γ_0]; exact .const
   · exact fun t ↦ (Γ t).2
 
 omit sep
@@ -229,7 +229,7 @@ theorem exists_path_lifts : ∃ Γ : C(I, E), p ∘ Γ = γ ∧ Γ 0 = e := by
   intro n
   induction n with
   | zero =>
-    refine ⟨fun _ ↦ e, continuous_const.continuousOn, fun t ht ↦ ?_, rfl⟩
+    refine ⟨fun _ ↦ e, .const, fun t ht ↦ ?_, rfl⟩
     rw [t_0, Set.Icc_self, Set.mem_singleton_iff] at ht; subst ht; exact γ_0.symm
   | succ n ih => ?_
   obtain ⟨Γ, cont, eqOn, Γ_0⟩ := ih
@@ -245,10 +245,10 @@ theorem exists_path_lifts : ∃ Γ : C(I, E), p ∘ Γ = γ ∧ Γ 0 = e := by
     refine (q.symm_apply_mk_proj ?_).symm
     rw [q.mem_source, pΓtn]
     exact t_sub ⟨le_rfl, t_mono n.le_succ⟩
-  · rw [closure_le_eq continuous_id' continuous_const] at h; exact ⟨h.1.1, h.2⟩
+  · rw [closure_le_eq continuous_id' .const] at h; exact ⟨h.1.1, h.2⟩
   · apply q.continuousOn_invFun.comp ((Continuous.prodMk_left _).comp γ.2).continuousOn
     simp_rw [not_le, q.target_eq]; intro s h
-    exact ⟨t_sub ⟨closure_lt_subset_le continuous_const continuous_subtype_val h.2, h.1.2⟩, ⟨⟩⟩
+    exact ⟨t_sub ⟨closure_lt_subset_le .const continuous_subtype_val h.2, h.1.2⟩, ⟨⟩⟩
   · rw [Function.comp_apply]; split_ifs with h
     exacts [eqOn ⟨hs.1, h⟩, q.proj_symm_apply' (t_sub ⟨le_of_not_ge h, hs.2⟩)]
   · dsimp only; rwa [if_pos (t_0 ▸ t_mono n.zero_le)]

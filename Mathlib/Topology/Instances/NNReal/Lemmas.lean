@@ -56,7 +56,7 @@ open Filter Finset
 
 @[fun_prop]
 theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
-  (continuous_id.max continuous_const).subtype_mk _
+  (continuous_id.max Continuous.const).subtype_mk _
 
 /-- `Real.toNNReal` bundled as a continuous map for convenience. -/
 @[simps -fullyApplied]

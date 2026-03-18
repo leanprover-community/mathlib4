@@ -398,7 +398,7 @@ theorem iInter_countable_halfSpaces_eq [HereditarilyLindelofSpace E]
   have : ⋂ i : ι, { x | re (l i x) ≤ c i } = s := by
     simpa only [ι, iInter_sigma, iInter_subtype, l, c] using iInter_halfSpaces_eq' hs₁ hs₂
   obtain ⟨k, hk⟩ := eq_closed_inter_nat (fun i : ι ↦ { x | re (l i x) ≤ c i })
-    (fun i ↦ isClosed_le (continuous_re.comp (l i).continuous) continuous_const)
+    (fun i ↦ isClosed_le (continuous_re.comp (l i).continuous) .const)
   exact ⟨l ∘ k, c ∘ k, hk.trans this⟩
 
 end RCLike

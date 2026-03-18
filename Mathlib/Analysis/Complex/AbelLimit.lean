@@ -115,7 +115,7 @@ lemma nhdsWithin_stolzCone_le_nhdsWithin_stolzSet {s : ℝ} (hs : 0 < s) :
   obtain ⟨M, ε, _, hε, H⟩ := stolzCone_subset_stolzSet_aux hs
   use M
   rw [nhdsWithin_le_iff, mem_nhdsWithin]
-  refine ⟨{w | 1 - ε < w.re}, isOpen_lt continuous_const continuous_re, ?_, H⟩
+  refine ⟨{w | 1 - ε < w.re}, isOpen_lt .const continuous_re, ?_, H⟩
   simp only [Set.mem_setOf_eq, one_re, sub_lt_self_iff, hε]
 
 end StolzSet
