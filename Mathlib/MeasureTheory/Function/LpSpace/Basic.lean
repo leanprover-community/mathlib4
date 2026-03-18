@@ -578,7 +578,7 @@ theorem compMeasurePreserving_id :
   ext
   simp
 
-theorem compMeasurePreserving_id' (g : Lp E p μb) :
+theorem compMeasurePreserving_id_apply (g : Lp E p μb) :
     compMeasurePreserving id (MeasurePreserving.id μb) g = g := by simp
 
 theorem compMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ} {μc : Measure γ}
