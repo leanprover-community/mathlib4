@@ -229,7 +229,7 @@ theorem Indep.coindep (hI : M.Indep I) : M✶.Coindep I :=
   dual_coindep_iff.2 hI
 
 theorem coindep_iff_exists' : M.Coindep X ↔ (∃ B, M.IsBase B ∧ B ⊆ M.E \ X) ∧ X ⊆ M.E := by
-  simp_rw [Coindep, dual_indep_iff_exists', @and_comm _ (∃ _, _), and_congr_left_iff, subset_diff]
+  simp_rw [Coindep, dual_indep_iff_exists', and_comm (a := _ ≤ _), and_congr_left_iff, subset_diff]
   exact fun _ ↦ ⟨fun ⟨B, hB, hXB⟩ ↦ ⟨B, hB, hB.subset_ground, hXB.symm⟩,
     fun ⟨B, hB, _, hBX⟩ ↦ ⟨B, hB, hBX.symm⟩⟩
 

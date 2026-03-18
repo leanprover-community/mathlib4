@@ -120,14 +120,12 @@ protected def Subset (x y : PSet) : Prop :=
 instance : LE PSet :=
   ⟨PSet.Subset⟩
 
-instance : @Std.Refl PSet (· ⊆ ·) :=
-  ⟨fun _ a => ⟨a, Equiv.refl _⟩⟩
-
-instance : IsTrans PSet (· ⊆ ·) :=
-  ⟨fun x y z hxy hyz a => by
+instance : Preorder PSet where
+  le_refl _ a := ⟨a, Equiv.refl _⟩
+  le_trans x y z hxy hyz a := by
     obtain ⟨b, hb⟩ := hxy a
     obtain ⟨c, hc⟩ := hyz b
-    exact ⟨c, hb.trans hc⟩⟩
+    exact ⟨c, hb.trans hc⟩
 
 theorem Equiv.ext : ∀ x y : PSet, Equiv x y ↔ x ⊆ y ∧ y ⊆ x
   | ⟨_, _⟩, ⟨_, _⟩ =>
@@ -162,20 +160,13 @@ theorem Subset.congr_right : ∀ {x y z : PSet}, Equiv x y → (z ⊆ x ↔ z �
       let ⟨a, ab⟩ := βα b
       ⟨a, cb.trans (Equiv.symm ab)⟩⟩
 
-instance : Preorder PSet where
-  le_refl := refl_of (· ≤ ·)
-  le_trans _ _ _ := trans_of (· ≤ ·)
-
-@[simp]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-18")]
 theorem le_def (x y : PSet) : x ≤ y ↔ x ⊆ y :=
   Iff.rfl
 
-@[simp]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-18")]
 theorem lt_def (x y : PSet) : x < y ↔ x ⊂ y :=
   Iff.rfl
-
-instance : IsNonstrictStrictOrder PSet (· ⊆ ·) (· ⊂ ·) :=
-  ⟨fun _ _ ↦ Iff.rfl⟩
 
 /-- `x ∈ y` as pre-sets if `x` is extensionally equivalent to a member of the family `y`. -/
 protected def Mem (y x : PSet.{u}) : Prop :=

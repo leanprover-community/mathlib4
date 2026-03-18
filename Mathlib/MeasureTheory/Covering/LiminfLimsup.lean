@@ -169,7 +169,6 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le (p : ℕ → Prop) {s : �
   simp_rw [← cthickening_max_zero (r₁ _), ← cthickening_max_zero (r₂ _)]
   rcases le_or_gt 1 M with hM' | hM'
   · apply LE.le.eventuallyLE
-    change _ ≤ _
     refine mono_blimsup' (hMr.mono fun i hi _ => cthickening_mono ?_ (s i))
     exact (le_mul_of_one_le_left (hRp i) hM').trans hi
   · simp only [← @cthickening_closure _ _ _ (s _)]
@@ -231,11 +230,10 @@ theorem blimsup_cthickening_ae_eq_blimsup_thickening {p : ℕ → Prop} {s : ℕ
     (hr : Tendsto r atTop (𝓝 0)) (hr' : ∀ᶠ i in atTop, p i → 0 < r i) :
     (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α) =ᵐ[μ]
       (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α) := by
-  refine eventuallyLE_antisymm_iff.mpr ⟨?_, LE.le.eventuallyLE (?_ : _ ≤ _)⟩
+  refine eventuallyLE_antisymm_iff.mpr ⟨?_, LE.le.eventuallyLE ?_⟩
   · rw [eventuallyLE_congr (blimsup_cthickening_mul_ae_eq μ p s (one_half_pos (α := ℝ)) r hr).symm
       EventuallyEq.rfl]
     apply LE.le.eventuallyLE
-    change _ ≤ _
     refine mono_blimsup' (hr'.mono fun i hi pi => cthickening_subset_thickening' (hi pi) ?_ (s i))
     nlinarith [hi pi]
   · exact mono_blimsup fun i _ => thickening_subset_cthickening _ _
