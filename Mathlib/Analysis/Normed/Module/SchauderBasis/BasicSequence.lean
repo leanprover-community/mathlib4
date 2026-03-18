@@ -144,26 +144,22 @@ theorem basicSequenceConstant_ge_one : 1 ≤ bs.basicSequenceConstant :=
   Grunblum_const_ge_1 (basicSequence_satisfiesGrunblum bs) bs.ne_zero
 
 /-- A nonzero sequence satisfying the Grünblum condition is linearly independent. -/
-lemma linearIndependent_of_Grunblum {e : ℕ → X} {K : ℝ}
-    (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K)
-    (h_nz : ∀ n, e n ≠ 0) : LinearIndependent 𝕜 e := by
+lemma linearIndependent_of_Grunblum {e : ℕ → X} {K : ℝ} (h_nz : ∀ n, e n ≠ 0)
+    (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K) : LinearIndependent 𝕜 e := by
   rw [linearIndependent_iff']
-  intros s g hg_sum i hi_s
-  let c := fun j ↦ if j ∈ s then g j else 0
+  intro s g hg i hi
+  let c j := if j ∈ s then g j else 0
   let N := s.sup id + 1
-  have h_bound : ∀ j ∈ s, j < N := fun j hj ↦ Nat.lt_succ_of_le (Finset.le_sup hj (f := id))
-  have h_total : ∑ j ∈ Finset.range N, c j • e j = 0 := by
-    rw [← Finset.sum_subset (fun j hj ↦ Finset.mem_range.2 (h_bound j hj))
-      (fun x _ hj ↦ by simp [c, hj])]
-    convert hg_sum using 1
-    exact Finset.sum_congr rfl (fun j hj ↦ by simp [c, hj])
-  have h_partial : ∀ m ≤ N, ∑ j ∈ Finset.range m, c j • e j = 0 := fun m hm ↦
-    norm_le_zero_iff.1 <| by simpa [h_total] using h_grunblum N m c hm
-  have h_term : c i • e i = 0 := by
+  have hb (j : ℕ) (hj : j ∈ s) : j < N := Nat.lt_succ_of_le (Finset.le_sup (f := id) hj)
+  have h_tot : ∑ j ∈ Finset.range N, c j • e j = 0 := by
+    rw [← Finset.sum_subset (fun j hj ↦ Finset.mem_range.mpr (hb j hj)) (fun _ _ hx ↦ by simp [c, hx])]
+    exact (Finset.sum_congr rfl (fun j hj ↦ by simp [c, hj])).trans hg
+  have h_part (m : ℕ) (hm : m ≤ N) : ∑ j ∈ Finset.range m, c j • e j = 0 :=
+    norm_le_zero_iff.mp <| by simpa [h_tot] using h_grunblum N m c hm
+  have hc : c i • e i = 0 := by
     rw [← Finset.sum_range_succ_sub_sum (fun j ↦ c j • e j),
-        h_partial (i + 1) (h_bound i hi_s),
-        h_partial i (le_of_lt (h_bound i hi_s)), sub_zero]
-  simpa [c, hi_s, h_nz i] using h_term
+        h_part (i + 1) (hb i hi), h_part i (hb i hi).le, sub_zero]
+  simpa [c, hi, h_nz i] using hc
 
 /-- A version of `isBasicSequence_of_Grunblum` that also provides an explicit bound
     on the basis constant. If a sequence satisfies the Grünblum condition with constant K,
@@ -171,7 +167,7 @@ lemma linearIndependent_of_Grunblum {e : ℕ → X} {K : ℝ}
 theorem isBasicSequence_of_Grunblum_with_bound {e : ℕ → X} {K : ℝ}
     (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) :
     ∃ (b : BasicSequence 𝕜 X), ⇑b = e ∧ b.basicSequenceConstant ≤ K := by
-  have h_indep := linearIndependent_of_Grunblum h_grunblum h_nz
+  have h_indep := linearIndependent_of_Grunblum h_nz h_grunblum
   have hK : 0 ≤ K := zero_le_one.trans (Grunblum_const_ge_1 h_grunblum h_nz)
   let S := Submodule.span 𝕜 (Set.range e)
   let b_S := Module.Basis.span h_indep
