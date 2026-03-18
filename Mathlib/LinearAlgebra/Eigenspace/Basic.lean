@@ -476,11 +476,9 @@ theorem genEigenspace_mem_invtSubmodule (f : End R M) (μ : R) (n : ℕ∞) :
   simp only [Submodule.mem_comap, mem_genEigenspace, LinearMap.mem_ker] at hx ⊢
   obtain ⟨k, hk, hx⟩ := hx
   refine ⟨k, hk, ?_⟩
-  revert x
-  induction k
+  induction k generalizing x
   case zero => simp_all
   case succ k ih =>
-    intro x hx
     rw [pow_succ, mul_apply] at hx ⊢
     simpa using ih (le_trans (by simp) hk) hx
 
