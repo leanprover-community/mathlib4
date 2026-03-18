@@ -1113,7 +1113,8 @@ theorem valuation_compare (f : K⸨X⸩) :
   rw [← valuation_LaurentSeries_equal_extension, ← compare_comp_eq_compare ratfuncAdicComplPkg _]
   · exact congr_fun (ratfuncAdicComplPkg.isDenseInducing.extend_unique
       Valued.valuedCompletion_apply (Valued.continuous_valuation_of_surjective
-        (valuedAdicCompletion_surjective _ _))).symm _
+      (K := (UniformSpace.Completion (WithVal (polynomialValuationX K))))
+      (valuedAdicCompletion_surjective K⟮X⟯ (idealX K)))).symm _
   · refine Valued.continuous_valuation_of_surjective (fun x ↦ ?_)
     obtain ⟨y, rfl⟩ := RatFunc.valuation_surjective K x
     exact ⟨.toVal _ y, rfl⟩
