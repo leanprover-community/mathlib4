@@ -79,6 +79,8 @@ structure IsPath {u v : V} (p : G.Walk u v) : Prop extends isTrail : IsTrail p w
 structure IsCircuit {u : V} (p : G.Walk u u) : Prop extends isTrail : IsTrail p where
   ne_nil : p ≠ nil
 
+attribute [simp] IsCircuit.ne_nil
+
 /-- A *cycle* at `u : V` is a circuit at `u` whose only repeating vertex
 is `u` (which appears exactly twice). -/
 structure IsCycle {u : V} (p : G.Walk u u) : Prop extends isCircuit : IsCircuit p where
@@ -563,25 +565,21 @@ lemma IsTrail.disjoint_edges_takeUntil_dropUntil {x : V} {w : G.Walk u v} (hw : 
     (hx : x ∈ w.support) : (w.takeUntil x hx).edges.Disjoint (w.dropUntil x hx).edges :=
   List.disjoint_of_nodup_append <| by simpa [← edges_append] using hw.edges_nodup
 
-protected theorem IsTrail.rotate {u v : V} {c : G.Walk v v} (hc : c.IsTrail) (h : u ∈ c.support) :
-    (c.rotate u h).IsTrail := by
-  rw [isTrail_def, (c.rotate_edges u h).perm.nodup_iff]
-  exact hc.edges_nodup
+variable {c : G.Walk v v}
+
+protected lemma IsTrail.rotate (hc : c.IsTrail) : (c.rotate u).IsTrail := by
+  by_cases hu : u ∈ c.support
+  · rw [isTrail_def, (c.rotate_edges hu).perm.nodup_iff]
+    exact hc.edges_nodup
+  · simp [*]
 
 protected theorem IsCircuit.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCircuit)
-    (h : u ∈ c.support) : (c.rotate u h).IsCircuit := by
-  refine ⟨hc.isTrail.rotate _, ?_⟩
-  cases c
-  · exact (hc.ne_nil rfl).elim
-  · intro hn
-    have hn' := congr_arg length hn
-    rw [rotate, length_append, add_comm, ← length_append, take_spec] at hn'
-    simp at hn'
+    (h : u ∈ c.support) : (c.rotate u).IsCircuit := ⟨hc.isTrail.rotate, by simp [*]⟩
 
 protected theorem IsCycle.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCycle) (h : u ∈ c.support) :
-    (c.rotate u h).IsCycle := by
-  refine ⟨hc.isCircuit.rotate _, ?_⟩
-  rw [(support_rotate ..).nodup_iff]
+    (c.rotate u).IsCycle := by
+  refine ⟨hc.isCircuit.rotate h, ?_⟩
+  rw [(support_rotate h).nodup_iff]
   exact hc.support_nodup
 
 lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.support) :

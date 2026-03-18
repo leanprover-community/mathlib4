@@ -112,6 +112,9 @@ theorem nil_append {u v : V} (p : G.Walk u v) : nil.append p = p :=
 theorem append_nil {u v : V} (p : G.Walk u v) : p.append nil = p := by
   induction p <;> simp [*]
 
+@[simp] lemma append_eq_nil {u v : V} {p : G.Walk u v} {q : G.Walk v u} :
+    p.append q = nil ↔ p.Nil ∧ q.Nil := by induction p <;> simp [*, nil_iff_eq_nil]
+
 theorem append_assoc {u v w x : V} (p : G.Walk u v) (q : G.Walk v w) (r : G.Walk w x) :
     p.append (q.append r) = (p.append q).append r := by
   induction p <;> simp [*]

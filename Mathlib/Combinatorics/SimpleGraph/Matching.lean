@@ -528,9 +528,9 @@ lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp [Finite V
       rw [← hc', Walk.mem_verts_toSubgraph]
       exact hvp
     simp_all
-  use p.rotate v hvp
+  use p.rotate v
   rw [← this]
-  exact ⟨hp.1.rotate _, by simp⟩
+  exact ⟨hp.1.rotate hvp, by simp [hvp]⟩
 
 /--
 A graph `G` is alternating with respect to some other graph `G'`, if exactly every other edge in
