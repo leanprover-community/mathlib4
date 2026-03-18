@@ -43,11 +43,10 @@ theorem Ideal.ufd_iff_height_one_primes_principal :
       exact mul_mem_right b p hxp
     obtain ⟨a, ha, hap⟩ : ∃ a ∈ s, a ∈ p :=
       (IsPrime.multiset_prod_mem_iff_exists_mem hp s).1 hsprod_mem
-    let I : Ideal R := span {a}
     have hsap : (span {a}).IsPrime :=
       (span_singleton_prime (Prime.ne_zero (hps a ha))).mpr (hps a ha)
     by_cases hpa : p = span {a}
-    · simpa [hpa] using instIsPrincipalSpanSingletonSet
+    · simpa [hpa] using ⟨a, rfl⟩
     let l1 : LTSeries (PrimeSpectrum R) := by
       refine (RelSeries.singleton _ (⊥ : PrimeSpectrum R)).append
         (RelSeries.singleton _ ⟨span {a}, hsap⟩) ?_
@@ -71,9 +70,8 @@ theorem Ideal.ufd_iff_height_one_primes_principal :
       have hq0 : q ≠ 0 := Irreducible.ne_zero hqirr
       have hspan_ne_top : (span {q}) ≠ ⊤ :=
         fun htop => hqirr.not_isUnit ((span_singleton_eq_top).1 htop)
-      rcases exists_le_maximal (span {q}) hspan_ne_top with
-        ⟨M, hMmax, hspan_le_M⟩
-      rcases exists_minimalPrimes_le hspan_le_M with ⟨p, hpmin, -⟩
+      rcases exists_le_maximal (span {q}) hspan_ne_top with ⟨M, _, hspan_le_M⟩
+      rcases exists_minimalPrimes_le hspan_le_M with ⟨p, hpmin, _⟩
       have hpp : p.IsPrime := minimalPrimes_isPrime hpmin
       have hq_mem_p : q ∈ p := hpmin.1.2 (subset_span (by simp))
       have hp_ne_bot : p ≠ ⊥ := fun hpbot => hq0 (by simpa [hpbot] using hq_mem_p)
