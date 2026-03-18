@@ -45,6 +45,7 @@ class DartLike (α β : Type*) where
 
 def DartLike.toProd {α β : Type*} [DartLike α β] (d : β) : α × α := (DartLike.fst d, DartLike.snd d)
 
+/-- The typeclass `SymmDartLike α β` captures the common structure of darts with symmetry. -/
 class SymmDartLike (α β : Type*) extends DartLike α β where
   inv : β → β
   inv_invol {d : β} : inv (inv d) = d
@@ -53,7 +54,7 @@ class SymmDartLike (α β : Type*) extends DartLike α β where
 
 attribute [simp] SymmDartLike.inv_invol SymmDartLike.inv_fst SymmDartLike.inv_snd
 
-/-- The `HasDart` typeclass abstracts over graph-like structures by encoding the minimal structure
+/-- The `GraphLike` typeclass abstracts over graph-like structures by encoding the minimal structure
 required to reason about directed edges ("darts") and adjacency. This terminology comes from
 combinatorial maps, and they are also known as "half-edges" or "bonds." -/
 class GraphLike (α β : outParam Type*) [DartLike α β] (Gr : Type*) where
@@ -64,12 +65,11 @@ class GraphLike (α β : outParam Type*) [DartLike α β] (Gr : Type*) where
   fst_mem_of_darts : ∀ {G : Gr} {d : β}, d ∈ darts G → DartLike.fst d ∈ verts G
   snd_mem_of_darts : ∀ {G : Gr} {d : β}, d ∈ darts G → DartLike.snd d ∈ verts G
   /-- The adjacency relation of a graph-like structure. -/
-  Adj : Gr → α → α → Prop := fun G u v ↦
-    Nonempty ({d : β // d ∈ darts G ∧ DartLike.fst d = u ∧ DartLike.snd d = v})
+  Adj : Gr → α → α → Prop := fun G u v ↦ ∃ d ∈ darts G, DartLike.fst d = u ∧ DartLike.snd d = v
   exists_darts_iff_adj {G : Gr} {u v : α} :
     (∃ d ∈ darts G, DartLike.fst d = u ∧ DartLike.snd d = v) ↔ Adj G u v
 
-/-- `HasSymmDart` extends `HasDart` for graph-like structures where darts are symmetric. -/
+/-- `SymmGraphLike` extends `GraphLike` for graph-like structures where darts are symmetric. -/
 class SymmGraphLike (α β : outParam Type*) [SymmDartLike α β] (Gr : Type*)
     extends GraphLike α β Gr where
   inv_mem_darts_iff {G : Gr} {d : β} : SymmDartLike.inv α d ∈ darts G ↔ d ∈ darts G
@@ -200,7 +200,7 @@ section GraphLikeProd
 ### For `HasDart α (α × α) Gr`
 
 Some graph-like structures, such as `SimpleGraph` and `Digraph`, have `α × α`-valued darts.
-This section assumes `HasDart α (α × α) Gr` to proves lemmas for `α × α`-valued darts.
+This section assumes `GraphLike α (α × α) Gr` to proves lemmas for `α × α`-valued darts.
 -/
 
 instance : SymmDartLike α (α × α) where
