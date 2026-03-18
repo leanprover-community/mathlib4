@@ -144,15 +144,12 @@ theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     this (getLast_digit_ne_zero _ hm)
   rw [ofDigits_digits]
 
--- TODO: fix the non-terminal simp_all; it runs on three goals, leaving only one
-set_option linter.flexible false in
 /-- Any non-zero natural number `m` is greater than
 b^((number of digits in the base b representation of m) - 1)
 -/
 theorem base_pow_length_digits_le (b m : ℕ) (hb : 1 < b) :
     m ≠ 0 → b ^ (digits b m).length ≤ b * m := by
-  rcases b with (_ | _ | b) <;> try simp_all
-  exact base_pow_length_digits_le' b m
+  rcases b with (_ | _ | b) <;> simp_all [base_pow_length_digits_le']
 
 open Finset
 

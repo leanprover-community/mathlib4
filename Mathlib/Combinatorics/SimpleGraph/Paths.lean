@@ -486,7 +486,7 @@ lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
     (p.not_nil_of_tail_not_nil (not_nil_of_isCycle_cons hpc)), Set.mem_setOf] at hn hm
   have := ((Walk.cons_isCycle_iff _ _).mp hpc).1.getVert_injOn
     (by lia : n - 1 ≤ p.tail.length) (by lia : m - 1 ≤ p.tail.length)
-    (by simp_all [SimpleGraph.Walk.getVert_tail, Nat.sub_add_cancel hn.1, Nat.sub_add_cancel hm.1])
+    (by simp_all)
   lia
 
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :

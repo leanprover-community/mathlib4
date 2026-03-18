@@ -125,8 +125,7 @@ theorem isCompactElement_iff_exists_le_sSup_of_le_sSup (k : α) :
       have Sne : S.Nonempty := by
         suffices ⊥ ∈ S from Set.nonempty_of_mem this
         use ∅
-        simp only [Set.empty_subset, Finset.coe_empty, Finset.sup_empty,
-          and_self_iff]
+        simp
       -- Now apply the defn of compact and finish.
       obtain ⟨j, ⟨hjS, hjk⟩⟩ := hk S Sne dir_US (le_trans hsup sup_S)
       obtain ⟨t, ⟨htS, htsup⟩⟩ := hjS
