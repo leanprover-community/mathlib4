@@ -43,7 +43,7 @@ theorem HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul
   obtain ⟨e, h₁e, h₂e⟩ := (isCompact_closedBall c R).exists_thickening_subset_open
     (isOpen_setOf_harmonicAt f) (by aesop)
   rw [thickening_closedBall h₁e (pos_of_mem_ball hw).le] at h₂e
-  obtain ⟨F, h₁F, h₂F⟩ := h₂e.exists_analyticOnNhd_ball_re_eq 
+  obtain ⟨F, h₁F, h₂F⟩ := h₂e.exists_analyticOnNhd_ball_re_eq
   have h₃F : DifferentiableOn ℂ F (closure (ball c R)) := by
     intro x hx
     apply (h₁F x _).differentiableWithinAt
