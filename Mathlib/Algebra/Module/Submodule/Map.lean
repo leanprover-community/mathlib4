@@ -726,30 +726,6 @@ theorem submoduleMap_symm_apply (p : Submodule R M)
 
 end
 
-/-
-section restrict
-
-variable {R U V : Type*} [Semiring R] [AddCommMonoid U] [AddCommMonoid V] [Module R U] [Module R V]
-  {P : Submodule R U} {Q : Submodule R V}
-
-/-- The restriction of a linear equivalence to appropriate submodules.
-
-This is a variant of `LinearEquiv.submoduleMap` -/
-def restrict (e : U ≃ₗ[R] V) (h : P.map e.toLinearMap = Q) :
-    P ≃ₗ[R] Q where
-  toLinearMap := e.toLinearMap.restrict (by aesop)
-  invFun := e.symm.toLinearMap.restrict (by aesop)
-  left_inv x := by simp [← Subtype.coe_inj]
-  right_inv x := by simp [← Subtype.coe_inj]
-
-@[simp]
-theorem coe_restrict (e : U ≃ₗ[R] V) (h : P.map e.toLinearMap = Q) :
-    (restrict e h).toLinearMap = e.toLinearMap.restrict (by aesop) :=
-  rfl
-
-end restrict
--/
-
 end AddCommMonoid
 
 end LinearEquiv
