@@ -728,6 +728,7 @@ lemma Preconnected.exists_adj_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (
 /-! ### Bridge edges -/
 
 section BridgeEdges
+variable {u v : V}
 
 /-- An edge of a graph is a *bridge* if, after removing it, its incident vertices
 are no longer reachable from one another. -/
@@ -737,6 +738,9 @@ def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
 
 theorem isBridge_iff {u v : V} :
     G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {s(u, v)}).Reachable u v := Iff.rfl
+
+lemma IsBridge.nontrivial {e : Sym2 V} (he : G.IsBridge e) : Nontrivial V := by
+  induction e with | h u v; exact ⟨u, v, by rintro rfl; simp [IsBridge] at he⟩
 
 set_option backward.isDefEq.respectTransparency false in
 theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
