@@ -13,7 +13,7 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.NumberTheory.Padics.PadicNorm
 
 /-!
-# Ostrowski's Theorem
+# Ostrowski’s Theorem
 
 Ostrowski's Theorem for the field `ℚ`: every absolute value on `ℚ` is equivalent to either a
 `p`-adic absolute value or to the standard Archimedean (Euclidean) absolute value.
@@ -327,7 +327,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
     _ = n₀ * (Nat.log n₀ m + 1) := by
       rw [List.mapIdx_eq_zipIdx_map, List.eq_replicate_of_mem (a := (n₀ : ℝ)) (l := L.zipIdx.map _),
         List.sum_replicate, List.length_map, List.length_zipIdx, nsmul_eq_mul, mul_comm,
-        Nat.length_digits n₀ m hn₀ (ne_zero_of_lt hm), Nat.cast_add_one]
+        Nat.digits_len n₀ m hn₀ (ne_zero_of_lt hm), Nat.cast_add_one]
       simp +contextual
     _ ≤ n₀ * (logb n₀ m + 1) := by gcongr; exact natLog_le_logb ..
   -- For h_ineq2 we need to exclude the case n = 0.
@@ -379,7 +379,7 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
     _ = m * ((Nat.digits m n).mapIdx fun i _ ↦ f m ^ i).sum := list_mul_sum (m.digits n) (f m) m
     _ = m * ((f m ^ (d + 1) - 1) / (f m - 1)) := by
       rw [list_geom _ (ne_of_gt (one_lt_of_not_bounded notbdd hm)),
-        ← Nat.length_digits m n hm (ne_zero_of_lt hn)]
+        ← Nat.digits_len m n hm (ne_zero_of_lt hn)]
     _ ≤ m * ((f m ^ (d + 1)) / (f m - 1)) := by
       gcongr
       · linarith only [one_lt_of_not_bounded notbdd hm]

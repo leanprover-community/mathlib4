@@ -50,7 +50,8 @@ theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
 This section contains various lemmas of properties relating to `digits` and `ofDigits`.
 -/
 
-theorem length_digits (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length = b.log n + 1 := by
+theorem length_digits (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) :
+    (b.digits n).length = b.log n + 1 := by
   induction n using Nat.strong_induction_on with | _ n IH
   rw [digits_eq_cons_digits_div hb hn, List.length]
   by_cases h : n / b = 0
@@ -122,7 +123,8 @@ theorem length_digits_le_length_digits_succ (b n : ℕ) :
   · interval_cases b <;> simp +arith [digits_zero_succ', hn]
   simpa [length_digits, hb, hn] using log_mono_right (le_succ _)
 
-@[deprecated (since := "2026-03-18")] alias digits_len_le_digits_len_succ := length_digits_le_length_digits_succ
+@[deprecated (since := "2026-03-18")]
+alias digits_len_le_digits_len_succ := length_digits_le_length_digits_succ
 
 theorem le_length_digits_le (b n m : ℕ) (h : n ≤ m) : (digits b n).length ≤ (digits b m).length :=
   monotone_nat_of_le_succ (length_digits_le_length_digits_succ b) h
