@@ -35,7 +35,7 @@ open Real Polynomial Finset
 open Complex (exp I)
 
 private lemma exp_sub_one_ne_zero {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk : ¬ (2 * n : ℤ) ∣ k) :
-  exp (k / n * π * I) ≠ 1 := by
+    exp (k / n * π * I) ≠ 1 := by
   contrapose! hk
   obtain ⟨m, hx⟩ := Complex.exp_eq_one_iff.mp hk
   have h : k = 2 * n * m := by
