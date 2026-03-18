@@ -215,7 +215,11 @@ theorem eulerChar_eq_homologyEulerChar
   -- p(a) = 0 and c(b) = 0: boundary ranges vanish at the edges
   have hp_a : (Module.finrank k
       ↥(LinearMap.range (C.dFrom a).hom) : ℤ) = 0 := by
-    rw [dFrom_zero_range C a (by simp [xNext]; exact hC_bounded_below _ (by omega))]
+    rw [dFrom_zero_range C a (by
+      simp only [xNext]
+      rw [(ComplexShape.down ℤ).next_eq'
+        (ComplexShape.down_mk a (a - 1) (by omega))]
+      exact hC_bounded_below _ (by omega))]
     simp
   have hp_split : ∑ x ∈ Finset.Ico a (b + 1),
       (-1 : ℤ) ^ x.natAbs *
@@ -228,7 +232,11 @@ theorem eulerChar_eq_homologyEulerChar
       hp_a, mul_zero, zero_add]
   have hc_b : (Module.finrank k
       ↥(LinearMap.range (C.dTo b).hom) : ℤ) = 0 := by
-    rw [dTo_zero_range C b (by simp [xPrev]; exact hC_bounded_above _ (by omega))]
+    rw [dTo_zero_range C b (by
+      simp only [xPrev]
+      rw [(ComplexShape.down ℤ).prev_eq'
+        (ComplexShape.down_mk (b + 1) b (by omega))]
+      exact hC_bounded_above _ (by omega))]
     simp
   have hc_split : ∑ x ∈ Finset.Ico a (b + 1),
       (-1 : ℤ) ^ x.natAbs *
