@@ -307,7 +307,8 @@ theorem compMeasurePreserving_id (g : β →ₘ[ν] γ) :
 
 theorem compMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ}
     {ξ : Measure γ} (g : γ →ₘ[ξ] δ) {f : β → γ} (hf : MeasurePreserving f ν ξ) {f' : α → β}
-    (hf' : MeasurePreserving f' μ ν) : compMeasurePreserving g (f ∘ f') (hf.comp hf') =
+    (hf' : MeasurePreserving f' μ ν) :
+    compMeasurePreserving g (f ∘ f') (hf.comp hf') =
     compMeasurePreserving (compMeasurePreserving g f hf) f' hf' :=
   compQuasiMeasurePreserving_comp _ _ _
 
