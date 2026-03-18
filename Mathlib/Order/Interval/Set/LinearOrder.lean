@@ -565,6 +565,10 @@ theorem compl_Ioc : (Ioc a b)ᶜ = Iic a ∪ Ioi b := by
 theorem Iic_diff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
   grind
 
+@[simp]
+theorem Ioi_diff_Ioc : Ioi a \ Ioc a b = Ioi (max a b) := by
+  grind
+
 theorem Iic_diff_Ioc_self_of_le (hab : a ≤ b) : Iic b \ Ioc a b = Iic a := by
   grind
 
