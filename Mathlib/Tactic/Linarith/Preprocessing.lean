@@ -55,6 +55,7 @@ where
 
 /--
 Removes any expressions that are not proofs of inequalities, equalities, or negations thereof.
+Negations are pushed into inequalities when possible.
 -/
 partial def filterComparisons : Preprocessor where
   description := "filter terms that are not proofs of comparisons"
