@@ -96,6 +96,7 @@ lemma isDenseInducing_cast_withVal : IsDenseInducing ((Rat.castHom ℚ_[p]).comp
   -- nhds_discrete causes timeouts on TC search
   simpa [-nhds_discrete] using Padic.denseRange_ratCast p _
 
+set_option backward.isDefEq.respectTransparency false in
 open Completion in
 open scoped Valued in
 /-- The `p`-adic numbers are isomorphic as a field to the completion of the rationals at
