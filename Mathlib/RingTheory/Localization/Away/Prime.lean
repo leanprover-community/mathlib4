@@ -15,16 +15,13 @@ This file proves a criterion for primality in localization.
 
 ## Main results
 
-* `prime_of_prime_in_localization`: If `p` is prime, `x` is irreducible, and
+* `IsLocalization.Away.prime_of_prime_in_localization`: If `p` is prime, `x` is irreducible, and
   `algebraMap R (Away p) x` is prime, then `x` is prime. Also known as Nagata's criterion.
 
 ## References
 
-See <https://stacks.math.columbia.edu/tag/0afu> for reference for `prime_of_prime_in_localization`
-
-## Acknowledgements
-
-Thanks to Dora Kassabova and Leopold Mayer for edit suggestions.
+See <https://stacks.math.columbia.edu/tag/0afu> for reference for
+`IsLocalization.Away.prime_of_prime_in_localization`.
 -/
 
 @[expose] public section
@@ -32,6 +29,8 @@ Thanks to Dora Kassabova and Leopold Mayer for edit suggestions.
 open Localization Ideal
 
 variable {R : Type*} [CommRing R] [IsDomain R]
+
+namespace IsLocalization.Away
 
 /-- If `p` is prime, `p ∤ x`, and the image of `c` in `R[1/p]` lies in the span of the image
 of `x`, then `x ∣ c`. -/
@@ -68,3 +67,5 @@ theorem prime_of_prime_in_localization
   exact (hax_prime.mem_or_mem habp).elim
     (Or.inl <| dvd_of_mem_span_singleton_localization hp_prime hpx ·)
     (Or.inr <| dvd_of_mem_span_singleton_localization hp_prime hpx ·)
+
+end IsLocalization.Away
