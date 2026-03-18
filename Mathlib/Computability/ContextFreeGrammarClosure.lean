@@ -497,50 +497,10 @@ def DerivesF {α β : Type} [DecidableEq α] [DecidableEq β]
   Relation.ReflTransGen (g.ProducesF f) u v
 
 /-
-If a derivation step using an F-rule is followed by a step using a G-rule, they can be swapped to
-perform the G-rule first.
--/
-lemma produces_F_commutes_G {α β : Type} [DecidableEq α] [DecidableEq β]
-    (g : ContextFreeGrammar α) [DecidableEq g.NT]
-    (f : α → ContextFreeGrammar β) [∀ a, DecidableEq (f a).NT]
-    (u v w : List (Symbol β (g.NT ⊕ (Σ a, (f a).NT))))
-    (h_F : g.ProducesF f u v)
-    (h_G : g.ProducesG f v w) :
-    ∃ v', g.ProducesG f u v' ∧ g.ProducesF f v' w := by
-      obtain ⟨ rF, hrF, hv ⟩ := h_F
-      obtain ⟨ rG, hrG, hw ⟩ := h_G
-      have h_comm : Symbol.nonterminal rG.input ∉ rF.output := by
-        obtain ⟨ a, ha, hrF ⟩ := Finset.mem_sup.mp hrF;
-        obtain ⟨ rF', hrF', hrF ⟩ := Finset.mem_map.mp hrF;
-        obtain ⟨ rG', hrG', hrG ⟩ := Finset.mem_map.mp hrG;
-        rw [ ← hrG, ← hrF ];
-        simp only [Function.Embedding.coeFn_mk, List.mem_map, not_exists, not_and];
-        intro x hx; cases x <;> simp  ;
-      obtain ⟨ v', hv', hw' ⟩ :=
-        ContextFreeRule.Rewrites.commute_of_not_mem_output rF rG u v w hv hw h_comm
-      exact ⟨ v', ⟨ rG, hrG, hv' ⟩, ⟨ rF, hrF, hw' ⟩ ⟩
-
-/-
-If we have an F-production followed by a sequence of G-productions, we can move the F-production
-to the end of the sequence.
--/
-lemma producesF_derivesG_commute {α β : Type} [DecidableEq α] [DecidableEq β]
-    (g : ContextFreeGrammar α) [DecidableEq g.NT]
-    (f : α → ContextFreeGrammar β) [∀ a, DecidableEq (f a).NT]
-    (u v w : List (Symbol β (g.NT ⊕ (Σ a, (f a).NT))))
-    (h_F : g.ProducesF f u v)
-    (h_G : g.DerivesG f v w) :
-    ∃ v', g.DerivesG f u v' ∧ g.ProducesF f v' w := by
-      induction h_G with
-      | refl => exact ⟨ u, by tauto, by tauto ⟩
-      | tail _ h_step ih =>
-        rcases ih with ⟨ v', hv₁, hv₂ ⟩;
-        have := ContextFreeGrammar.produces_F_commutes_G g f _ _ _ hv₂ h_step;
-        obtain ⟨ v'', hv₃, hv₄ ⟩ := this; exact ⟨ v'', hv₁.tail hv₃, hv₄ ⟩ ;
-
-/-
 If we have a sequence of F-productions followed by a sequence of G-productions, we can move all
-F-productions to the end.
+F-productions to the end. This is a corollary of `derives_commute_of_not_mem_output`:
+F-rules output only `Sum.inr` nonterminals, so they never introduce the `Sum.inl` inputs that
+G-rules target.
 -/
 lemma derivesF_derivesG_commute {α β : Type} [DecidableEq α] [DecidableEq β]
     (g : ContextFreeGrammar α) [DecidableEq g.NT]
@@ -548,13 +508,15 @@ lemma derivesF_derivesG_commute {α β : Type} [DecidableEq α] [DecidableEq β]
     (u v w : List (Symbol β (g.NT ⊕ (Σ a, (f a).NT))))
     (h_F : g.DerivesF f u v)
     (h_G : g.DerivesG f v w) :
-    ∃ v', g.DerivesG f u v' ∧ g.DerivesF f v' w := by
-      induction h_F generalizing w with
-      | refl => exact ⟨ w, h_G, by exact Relation.ReflTransGen.refl ⟩
-      | tail _ h_step ih =>
-        obtain ⟨ v', hv' ⟩ := ContextFreeGrammar.producesF_derivesG_commute g f _ _ w h_step h_G;
-        exact Exists.elim ( ih v' hv'.1 ) fun x hx =>
-          ⟨ x, hx.1, hx.2.trans ( Relation.ReflTransGen.single hv'.2 ) ⟩
+    ∃ v', g.DerivesG f u v' ∧ g.DerivesF f v' w :=
+  derives_commute_of_not_mem_output
+    (fun rF hrF rG hrG => by
+      obtain ⟨a, _, hrF'⟩ := Finset.mem_sup.mp hrF
+      obtain ⟨rF', _, rfl⟩ := Finset.mem_map.mp hrF'
+      obtain ⟨rG', _, rfl⟩ := Finset.mem_map.mp hrG
+      simp only [Function.Embedding.coeFn_mk, List.mem_map, not_exists, not_and]
+      intro x hx; cases x <;> simp)
+    h_F h_G
 
 /-
 A production in the substitution grammar is either a G-production or an F-production.

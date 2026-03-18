@@ -517,6 +517,53 @@ lemma derives_of_all_terminal {T : Type} (g : ContextFreeGrammar T)
   | refl => rfl
   | tail _ h2 ih => subst ih; exact absurd h2 (no_produces_of_all_terminal g w _)
 
+/-
+If the rules in `R₁` never produce the input nonterminal of any rule in `R₂`,
+then a single `R₁`-step followed by any number of `R₂`-steps can be reordered
+to put the `R₂`-steps first.
+-/
+private lemma produces_commute_derives_of_not_mem_output {T N : Type}
+    {R₁ R₂ : Finset (ContextFreeRule T N)}
+    (h : ∀ r₁ ∈ R₁, ∀ r₂ ∈ R₂, Symbol.nonterminal r₂.input ∉ r₁.output)
+    (r₁ : ContextFreeRule T N) (hr₁ : r₁ ∈ R₁)
+    {u v : List (Symbol T N)} (hrew₁ : r₁.Rewrites u v)
+    {w : List (Symbol T N)}
+    (h₂ : Relation.ReflTransGen (fun u v => ∃ r ∈ R₂, r.Rewrites u v) v w) :
+    ∃ v', Relation.ReflTransGen (fun u v => ∃ r ∈ R₂, r.Rewrites u v) u v' ∧
+          ∃ r ∈ R₁, r.Rewrites v' w := by
+  induction h₂ with
+  | refl => exact ⟨u, Relation.ReflTransGen.refl, r₁, hr₁, hrew₁⟩
+  | tail _ hstep ih =>
+    obtain ⟨v'', hv''₁, r₁', hr₁', hrew₁'⟩ := ih
+    obtain ⟨r₂, hr₂, hrew₂⟩ := hstep
+    obtain ⟨x, hrew₂', hrew₁''⟩ :=
+      ContextFreeRule.Rewrites.commute_of_not_mem_output r₁' r₂ v'' _ _ hrew₁' hrew₂
+        (h r₁' hr₁' r₂ hr₂)
+    exact ⟨x, hv''₁.tail ⟨r₂, hr₂, hrew₂'⟩, r₁', hr₁', hrew₁''⟩
+
+/-
+If the rules in `R₁` never produce the input nonterminal of any rule in `R₂`,
+then any `R₁`-derivation followed by any `R₂`-derivation can be reordered to
+put all `R₂`-steps first.
+-/
+theorem derives_commute_of_not_mem_output {T N : Type}
+    {R₁ R₂ : Finset (ContextFreeRule T N)}
+    (h : ∀ r₁ ∈ R₁, ∀ r₂ ∈ R₂, Symbol.nonterminal r₂.input ∉ r₁.output)
+    {u v w : List (Symbol T N)}
+    (h₁ : Relation.ReflTransGen (fun u v => ∃ r ∈ R₁, r.Rewrites u v) u v)
+    (h₂ : Relation.ReflTransGen (fun u v => ∃ r ∈ R₂, r.Rewrites u v) v w) :
+    ∃ v',
+      Relation.ReflTransGen (fun u v => ∃ r ∈ R₂, r.Rewrites u v) u v' ∧
+      Relation.ReflTransGen (fun u v => ∃ r ∈ R₁, r.Rewrites u v) v' w := by
+  induction h₁ generalizing w with
+  | refl => exact ⟨w, h₂, Relation.ReflTransGen.refl⟩
+  | tail _ hstep ih =>
+    obtain ⟨r_step, hr_step, hrew_step⟩ := hstep
+    obtain ⟨v', hv'₁, r', hr', hrew'⟩ :=
+      produces_commute_derives_of_not_mem_output h r_step hr_step hrew_step h₂
+    obtain ⟨x, hx₁, hx₂⟩ := ih hv'₁
+    exact ⟨x, hx₁, hx₂.tail ⟨r', hr', hrew'⟩⟩
+
 end ContextFreeGrammar
 
 /-- Context-free languages are defined by context-free grammars. -/
