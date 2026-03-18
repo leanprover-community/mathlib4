@@ -150,7 +150,7 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
   rw [eval_geom_sum, one_geom_sum, eval_prod, eq_comm, ←
     Finset.prod_sdiff <| @range_pow_padicValNat_subset_divisors' p _ _, Finset.prod_image] at this
   · simp_rw [eval_one_cyclotomic_prime_pow, Finset.prod_const, Finset.card_range, mul_comm] at this
-    rw [← Finset.prod_sdiff <| show {n} ⊆ _ from _] at this
+    rw [← Finset.prod_sdiff (s₁ := {n})] at this
     swap
     · simp only [singleton_subset_iff, mem_sdiff, mem_erase, Ne, mem_divisors, dvd_refl,
         true_and, mem_image, mem_range, not_exists, not_and]
