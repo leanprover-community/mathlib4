@@ -249,8 +249,6 @@ instance : @Trans R R R veq vle vle where
 instance : @Trans R R R vle veq vle where
   trans := vle_of_vle_of_veq
 
-
-
 lemma vlt_of_vlt_of_vle {x y z : R} (h1 : x <ᵥ y) (h2 : y ≤ᵥ z) : x <ᵥ z :=
   fun h ↦ (h1 (vle_trans h2 h)).elim
 
