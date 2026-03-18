@@ -797,8 +797,9 @@ lemma dropLast_eq_reverse_tail_reverse {u v} (p : G.Walk u v) :
   cases p
   · simp
   refine ext_getVert fun k ↦ ?_
-  grind [reverse_copy, getVert_copy, dropLast, take_getVert, getVert_reverse, getVert_tail,
-    length_tail_sub_one, length_reverse]
+  rw [reverse_copy, getVert_copy, dropLast, take_getVert, getVert_reverse,
+    getVert_tail, Nat.eq_sub_of_add_eq (length_tail_add_one (by simp))]
+  grind [length_reverse, getVert_reverse]
 
 end Walk
 
