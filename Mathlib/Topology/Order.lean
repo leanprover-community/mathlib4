@@ -113,7 +113,7 @@ theorem nhds_mkOfNhds_of_hasBasis {n : α → Filter α} {ι : α → Sort*} {p 
     replace hpure : pure ≤ n := fun x ↦ (hb x).ge_iff.2 (hpure x)
     refine mem_nhds_iff.2 ⟨{x | U ∈ n x}, fun x hx ↦ hpure x hx, fun x hx ↦ ?_, hU⟩
     rcases (hb x).mem_iff.1 hx with ⟨i, hpi, hi⟩
-    exact (hopen x i hpi).mono fun y hy ↦ mem_of_superset hy hi
+    exact (hopen x i hpi).mono fun y ↦ by gcongr
   · exact (nhds_basis_opens a).ge_iff.2 fun U ⟨haU, hUo⟩ ↦ hUo a haU
 
 theorem nhds_mkOfNhds (n : α → Filter α) (a : α) (h₀ : pure ≤ n)
