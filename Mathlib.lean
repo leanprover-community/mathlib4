@@ -5132,6 +5132,7 @@ public import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 public import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.AEMeasurable
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
