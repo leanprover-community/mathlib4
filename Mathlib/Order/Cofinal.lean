@@ -76,12 +76,18 @@ theorem GaloisConnection.isCofinal_range {f : β → α} {g : α → β} (h : Ga
     IsCofinal (.range g) :=
   fun a ↦ ⟨_, Set.mem_range_self _, le_u_l h a⟩
 
-theorem GaloisConnection.map_cofinal {f : β → α} {g : α → β}
+theorem GaloisConnection.map_isCofinal {f : β → α} {g : α → β}
     (h : GaloisConnection f g) {s : Set α} (hs : IsCofinal s) : IsCofinal (g '' s) :=
   hs.image h.monotone_u h.isCofinal_range
 
-theorem OrderIso.map_cofinal (e : α ≃o β) {s : Set α} (hs : IsCofinal s) : IsCofinal (e '' s) :=
-  e.symm.to_galoisConnection.map_cofinal hs
+@[deprecated (since := "2026-03-15")]
+alias GaloisConnection.map_cofinal := GaloisConnection.map_isCofinal
+
+theorem OrderIso.map_isCofinal (e : α ≃o β) {s : Set α} (hs : IsCofinal s) : IsCofinal (e '' s) :=
+  e.symm.to_galoisConnection.map_isCofinal hs
+
+@[deprecated (since := "2026-03-15")]
+alias OrderIso.map_cofinal := OrderIso.map_isCofinal
 
 end Preorder
 
