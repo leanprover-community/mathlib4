@@ -18,11 +18,11 @@ This file contains the conditional Jensen's inequality. We follow the proof in
 
 ## Main Statement
 
-* `condExp_mem_convex`: in a Banach space `E` with a finite measure `μ`, if `f` lies in a
+* `Convex.condExp_mem `: in a Banach space `E` with a finite measure `μ`, if `f` lies in a
   closed convex set `s` a.e., then `μ[f | m]` lies in `s` a.e.
-* `conditional_jensen_univ`: in a Banach space `E` with a sigma finite measure `μ`, if `φ : E → ℝ`
-  is a convex lower-semicontinuous function, then for any `f : α → E` such that `f` and `φ ∘ f` are
-  integrable, we have `φ (𝔼[f | m]) ≤ 𝔼[φ ∘ f | m]` a.e.
+* `ConvexOn.map_condExp_le_univ`: in a Banach space `E` with a sigma finite measure `μ`, if
+  `φ : E → ℝ` is a convex lower-semicontinuous function, then for any `f : α → E` such that `f` and
+  `φ ∘ f` are integrable, we have `φ (𝔼[f | m]) ≤ 𝔼[φ ∘ f | m]` a.e.
 
 -/
 
@@ -98,7 +98,7 @@ lemma Convex.condExp_mem (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
   simp_all
 
 /-- Conditional Jensen's inequality for hereditarily Lindelof Spaces. -/
-private lemma ConvexOn.map_condExp_le_hereditarilyLindelof [IsFiniteMeasure μ]
+private lemma ConvexOn.map_condExp_le_of_hereditarilyLindelofSpace [IsFiniteMeasure μ]
     [HereditarilyLindelofSpace E] (hm : m ≤ mα) (hφ_cvx : ConvexOn ℝ s φ)
     (hφ_cont : LowerSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s) (hs : IsClosed s)
     (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
@@ -115,7 +115,7 @@ private lemma ConvexOn.map_condExp_le_hereditarilyLindelof [IsFiniteMeasure μ]
 
 set_option backward.isDefEq.respectTransparency false
 /-- Conditional Jensen's inequality for finite measures. -/
-private theorem ConvexOn.map_condExp_le_finiteMeasure [IsFiniteMeasure μ] (hm : m ≤ mα)
+private theorem ConvexOn.map_condExp_le_of_isFiniteMeasure [IsFiniteMeasure μ] (hm : m ≤ mα)
     (hφ_cvx : ConvexOn ℝ s φ) (hφ_cont : LowerSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s)
     (hs : IsClosed s) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
     φ ∘ μ[f | m] ≤ᵐ[μ] μ[φ ∘ f | m] := by
@@ -150,7 +150,7 @@ private theorem ConvexOn.map_condExp_le_finiteMeasure [IsFiniteMeasure μ] (hm :
     φ ∘ μ[f | m]
       =ᵐ[μ] φY ∘ μ[fY | m] := by filter_upwards [lem2] with a ha; simp [φY, ha]
     _ ≤ᵐ[μ] μ[φY ∘ fY | m] := by
-      refine (hφ_cvx.comp_linearMap Y.subtype).map_condExp_le_hereditarilyLindelof
+      refine (hφ_cvx.comp_linearMap Y.subtype).map_condExp_le_of_hereditarilyLindelofSpace
         (s := Y.subtypeL ⁻¹' s) hm ?_ ?_ ?_ hfY_int (Integrable.congr hφ_int lem3)
       · exact hφ_cont.comp (by fun_prop) fun x => by grind
       · filter_upwards [lem0, hf] with a ha hb
@@ -158,23 +158,23 @@ private theorem ConvexOn.map_condExp_le_finiteMeasure [IsFiniteMeasure μ] (hm :
       · exact hs.preimage Y.subtypeL.continuous
     _ =ᵐ[μ] μ[φ ∘ f | m] := condExp_congr_ae lem3.symm
 
-/-- **Conditional Jensen's inequality**: in a Banach space `X` with a measure `μ` that is σ-finite
-on a sub-σ-algebra `m`, if `φ : X → ℝ` is convex and lower-semicontinuous on a closed set `s`, then
-for any `f : α → X` such that `f` and `φ ∘ f` are integrable, and `f` lies in `s` a.e., we have
+/-- **Conditional Jensen's inequality**: in a Banach space `E` with a measure `μ` that is σ-finite
+on a sub-σ-algebra `m`, if `φ : E → ℝ` is convex and lower-semicontinuous on a closed set `s`, then
+for any `f : α → E` such that `f` and `φ ∘ f` are integrable, and `f` lies in `s` a.e., we have
 `φ (𝔼[f | m]) ≤ᵐ[μ] 𝔼[φ ∘ f | m]`. -/
 theorem ConvexOn.map_condExp_le (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     (hφ_cvx : ConvexOn ℝ s φ) (hφ_cont : LowerSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s)
     (hs : IsClosed s) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
     φ ∘ μ[f | m] ≤ᵐ[μ] μ[φ ∘ f | m] := by
-  refine μ.forall_measure_restrict_isCountablySpanning_eq_zero
-    (isCountablySpanning_spanningSets (μ.trim hm)) (fun t ⟨n, hn⟩ => ?_) fun t ⟨n, hn⟩ => hn ▸ ?_
+  refine (isCountablySpanning_spanningSets (μ.trim hm)).null_of_forall_restrict_null
+    (fun t ⟨n, hn⟩ => ?_) fun t ⟨n, hn⟩ => hn ▸ ?_
   · exact hn ▸ hm _ (measurableSet_spanningSets (μ.trim hm) n)
   have h1 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hf_int
   have h2 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hφ_int
   have : IsFiniteMeasure (μ.restrict (spanningSets (μ.trim hm) n)) := isFiniteMeasure_restrict.2
     ((le_trim hm).trans_lt (measure_spanningSets_lt_top (μ.trim hm) n)).ne
-  have h3 := hφ_cvx.map_condExp_le_finiteMeasure (μ := μ.restrict (spanningSets (μ.trim hm) n)) hm
-    hφ_cont (ae_restrict_of_ae hf) hs hf_int.restrict hφ_int.restrict
+  have h3 := hφ_cvx.map_condExp_le_of_isFiniteMeasure (μ := μ.restrict (spanningSets (μ.trim hm) n))
+    hm hφ_cont (ae_restrict_of_ae hf) hs hf_int.restrict hφ_int.restrict
   filter_upwards [h1, h2, h3] with a ha hb hc
   simpa [← ha, ← hb]
 
@@ -186,8 +186,8 @@ theorem ConcaveOn.condExp_map_le (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     condExp_neg (φ ∘ f) m] with a h ha
   simp_all [Pi.neg_comp]
 
-/-- **Conditional Jensen's inequality**: in a Banach space `X` with a measure `μ` that is σ-finite
-on a sub-σ-algebra `m`, if `φ : X → ℝ` is convex and lower-semicontinuous, then for any `f : α → X`
+/-- **Conditional Jensen's inequality**: in a Banach space `E` with a measure `μ` that is σ-finite
+on a sub-σ-algebra `m`, if `φ : E → ℝ` is convex and lower-semicontinuous, then for any `f : α → E`
 such that `f` and `φ ∘ f` are integrable, we have `φ (𝔼[f | m]) ≤ᵐ[μ] 𝔼[φ ∘ f | m]`. -/
 theorem ConvexOn.map_condExp_le_univ (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     (hφ_cvx : ConvexOn ℝ univ φ) (hφ_cont : LowerSemicontinuous φ)
@@ -204,8 +204,8 @@ theorem ConcaveOn.condExp_map_le_univ (hm : m ≤ mα) [SigmaFinite (μ.trim hm)
     condExp_neg (φ ∘ f) m] with a h ha
   simp_all [Pi.neg_comp]
 
-/-- In a Banach space `X` with a measure `μ`, then for any `μ`-a.e. strongly measurable function
-`f : α → X`, we have `‖𝔼[f | m])‖ ≤ᵐ[μ] 𝔼[‖f‖ | m]`. -/
+/-- In a Banach space `E` with a measure `μ`, then for any `μ`-a.e. strongly measurable function
+`f : α → E`, we have `‖𝔼[f | m])‖ ≤ᵐ[μ] 𝔼[‖f‖ | m]`. -/
 theorem AEStronglyMeasurable.norm_condExp_le (hf : AEStronglyMeasurable f μ) :
     (‖μ[f | m] ·‖) ≤ᵐ[μ] μ[(‖f ·‖) | m] := by
   by_cases! hm : ¬ m ≤ mα
@@ -219,20 +219,20 @@ theorem AEStronglyMeasurable.norm_condExp_le (hf : AEStronglyMeasurable f μ) :
   exact convexOn_univ_norm.map_condExp_le_univ hm continuous_norm.lowerSemicontinuous hf_int
     hf_int.norm
 
-/-- **Conditional Jensen's inequality**: in a finite dimensional Banach space `X` with a measure
-`μ` that is σ-finite on a sub-σ-algebra `m`, if `φ : X → ℝ` is convex, then for any `f : α → X` such
+/-- **Conditional Jensen's inequality**: in a finite dimensional Banach space `E` with a measure
+`μ` that is σ-finite on a sub-σ-algebra `m`, if `φ : E → ℝ` is convex, then for any `f : α → E` such
 that `f` and `φ ∘ f` are integrable, we have `φ (𝔼[f | m]) ≤ᵐ[μ] 𝔼[φ ∘ f | m]`. -/
-theorem ConvexOn.map_condExp_le_finiteDimensional [FiniteDimensional ℝ E] (hm : m ≤ mα)
+theorem ConvexOn.map_condExp_le_of_finiteDimensional [FiniteDimensional ℝ E] (hm : m ≤ mα)
     [SigmaFinite (μ.trim hm)] (hφ_cvx : ConvexOn ℝ univ φ) (hf_int : Integrable f μ)
     (hφ_int : Integrable (φ ∘ f) μ) :
     φ ∘ μ[f | m] ≤ᵐ[μ] μ[φ ∘ f | m] :=
   hφ_cvx.map_condExp_le_univ hm
     (continuousOn_univ.1 (hφ_cvx.continuousOn isOpen_univ)).lowerSemicontinuous hf_int hφ_int
 
-theorem ConcaveOn.condExp_map_le_finiteDimensional [FiniteDimensional ℝ E] (hm : m ≤ mα)
+theorem ConcaveOn.condExp_map_le_of_finiteDimensional [FiniteDimensional ℝ E] (hm : m ≤ mα)
     [SigmaFinite (μ.trim hm)] (hφ_cvx : ConcaveOn ℝ univ φ) (hf_int : Integrable f μ)
     (hφ_int : Integrable (φ ∘ f) μ) :
     μ[φ ∘ f | m] ≤ᵐ[μ] φ ∘ μ[f | m] := by
-  filter_upwards [hφ_cvx.neg.map_condExp_le_finiteDimensional hm hf_int hφ_int.neg,
+  filter_upwards [hφ_cvx.neg.map_condExp_le_of_finiteDimensional hm hf_int hφ_int.neg,
     condExp_neg (φ ∘ f) m] with a h ha
   simp_all [Pi.neg_comp]

@@ -155,8 +155,8 @@ variable {F J K}
 
 /-- If `F` is cover-preserving and compatible-preserving, then `F` is a continuous functor. -/
 @[stacks 00WW "This is basically this Stacks entry."]
-lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{w} K F)
-    (hF₂ : CoverPreserving J K F) : Functor.IsContinuous.{w} F J K where
+lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{max u₁ v₁ u₂ v₂} K F)
+    (hF₂ : CoverPreserving J K F) : Functor.IsContinuous F J K where
   op_comp_isSheaf_of_types G X S hS x hx := by
     apply existsUnique_of_exists_of_unique
     · have H := (isSheaf_iff_isSheaf_of_type _ _).1 G.2 _ (hF₂.cover_preserve hS)
