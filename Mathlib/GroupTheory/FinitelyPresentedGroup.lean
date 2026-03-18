@@ -46,8 +46,6 @@ finitely presented group, finitely generated normal closure
 
 variable {G H α β : Type*} [Group G] [Group H]
 
-open Subgroup
-
 /-- Definition of subgroup that is given by the normal closure of finitely many elements. -/
 def IsNormalClosureFG (K : Subgroup G) : Prop :=
   ∃ S : Set G, S.Finite ∧ Subgroup.normalClosure S = K
@@ -143,7 +141,7 @@ IsFinitelyPresented G ↔ ∃ (α : Type) (_ : Finite α) (f : (FreeGroup α) �
     unfold PresentedGroup
     let iso1 : FreeGroup α ⧸ f.ker ≃* G :=
       QuotientGroup.quotientKerEquivOfSurjective (φ := f) hfsurj
-    have iso2 : FreeGroup α ⧸ normalClosure S ≃* FreeGroup α ⧸ f.ker :=
+    have iso2 : FreeGroup α ⧸ Subgroup.normalClosure S ≃* FreeGroup α ⧸ f.ker :=
       QuotientGroup.quotientMulEquivOfEq hSnormalClosure
     exact iso1.symm.trans iso2.symm
 
