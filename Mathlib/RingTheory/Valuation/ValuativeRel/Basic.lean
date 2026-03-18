@@ -56,6 +56,9 @@ axioms, opting to make these mixins instead.
 The `ValuativeRel` class should eventually replace the existing `Valued` typeclass.
 Once such a refactor happens, `ValuativeRel` could be renamed to `Valued`.
 
+## TODO
+Split this file. For instance, the universal properties of `ValueGroupWithZero` and definition of
+`IsRankLeOne` could be separated out.
 -/
 
 @[expose] public section
@@ -1100,11 +1103,11 @@ namespace ValueGroupWithZero
 the value group. This construction will be further upgraded to `ValueGroupWithZero.orderMonoidIso`
 later. -/
 noncomputable
-def embed [h : v.Compatible] : ValueGroupWithZero R →*₀ ValueGroup₀ v where
+def embed [v.Compatible] : ValueGroupWithZero R →*₀ ValueGroup₀ v where
   toFun := ValueGroupWithZero.lift
     (fun r s ↦ (ValueGroup₀.restrict₀ v r / (ValueGroup₀.restrict₀ v (s : R)))) <| by
     intro x y r s
-    simp only [h.vle_iff_le, map_mul, ← and_imp, ← le_antisymm_iff]
+    simp only [Valuation.Compatible.vle_iff_le (v := v), map_mul, ← and_imp, ← le_antisymm_iff]
     rw [div_eq_div_iff]
     · simp only [ValueGroup₀.restrict₀_apply, Valuation.apply_posSubmonoid_ne_zero, ↓reduceDIte,
       dite_mul, zero_mul]
@@ -1172,7 +1175,7 @@ induction x using ValueGroupWithZero.ind with
 /-- If a valuation `v` is compatible with the valuative relation, then its value group
 is isomorphic (as an ordered group with zero) to `ValueGroupWithZero R`. -/
 noncomputable
-def orderMonoidIso [h : v.Compatible] : ValueGroupWithZero R ≃*o ValueGroup₀ v where
+def orderMonoidIso [v.Compatible] : ValueGroupWithZero R ≃*o ValueGroup₀ v where
   __ := embed v
   invFun x := embedding ((isEquiv v (valuation R)).orderMonoidIso x)
   left_inv x := by simp

@@ -104,9 +104,7 @@ end
 
 namespace Valuation
 
-variable {Γ₀ : Type*}
-variable {Γ'₀ : Type*}
-variable {Γ''₀ : Type*}
+variable {Γ₀ : Type*} {Γ'₀ : Type*} {Γ''₀ : Type*}
 
 section Basic
 

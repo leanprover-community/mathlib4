@@ -57,7 +57,7 @@ instance (priority := low) {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpa
   «v» := valuation R
   is_topological_valuation := by
     simp_rw [Valuation.restrict_lt_iff_lt_embedding]
-    convert mem_nhds_zero (R := R)
+    convert mem_nhds_zero_iff (R := R)
     simpa [← Valuation.restrict_lt_iff_lt_embedding] using
         (valuation R).exists_setOf_restrict_le_iff 0 _
 
