@@ -698,35 +698,36 @@ theorem indepFun_iff_map_prod_eq_prod_map_map' {mβ : MeasurableSpace β} {mβ' 
   · intro h s t hs ht
     rw [(h₀ hs ht).1, (h₀ hs ht).2, h, Measure.prod_prod]
 
+/-- If `Y` is independent of itself under a probability measure, then for any
+measurable set `s`, the measure `μ (Y ⁻¹' s)` is either `0` or `1`. -/
+theorem IndepFun.measure_preimage_eq_zero_or_one
+    {Ω B : Type*} [MeasurableSpace Ω] [MeasurableSpace B]
+    {μ : Measure Ω} [IsProbabilityMeasure μ] {Y : Ω → B}
+    (hY : IndepFun Y Y μ) {s : Set B} (hs : MeasurableSet s) :
+    μ (Y ⁻¹' s) = 0 ∨ μ (Y ⁻¹' s) = 1 := by
+  have h_eq : μ (Y ⁻¹' s) = μ (Y ⁻¹' s) * μ (Y ⁻¹' s) := by
+    have := (indepFun_iff_measure_inter_preimage_eq_mul.mp hY) s s hs hs
+    rwa [Set.inter_self] at this
+  rcases eq_or_ne (μ (Y ⁻¹' s)) 0 with h0 | h0
+  · exact Or.inl h0
+  · exact Or.inr ((ENNReal.mul_eq_right h0 (measure_ne_top _ _)).mp h_eq.symm)
+
 /-- If `Y` is independent of itself under a probability measure, then `X` and `Y`
 are independent. Self-independence implies `Y` is a.e. constant. -/
 theorem IndepFun.of_self {Ω A B : Type*} [MeasurableSpace Ω]
     [MeasurableSpace A] [MeasurableSpace B] {μ : Measure Ω}
     [IsProbabilityMeasure μ] {X : Ω → A} {Y : Ω → B}
     (hY : IndepFun Y Y μ) : IndepFun X Y μ := by
-  rw [indepFun_iff_measure_inter_preimage_eq_mul] at *
-  have hY_const : ∀ s : Set B, MeasurableSet s →
-      μ (Y ⁻¹' s) = 0 ∨ μ (Y ⁻¹' s) = 1 := by
-    intro s hs
-    have h_eq : μ (Y ⁻¹' s) = μ (Y ⁻¹' s) * μ (Y ⁻¹' s) := by
-      specialize hY s s hs hs
-      rwa [Set.inter_self] at hY
-    by_cases h0 : μ (Y ⁻¹' s) = 0
-    · left; exact h0
-    · right
-      have h_ne_top : μ (Y ⁻¹' s) ≠ ⊤ := measure_ne_top _ _
-      rw [eq_comm] at h_eq
-      rw [ENNReal.mul_eq_right h0 h_ne_top] at h_eq
-      exact h_eq
+  rw [indepFun_iff_measure_inter_preimage_eq_mul]
   intro s t hs ht
-  cases hY_const t ht with
+  cases hY.measure_preimage_eq_zero_or_one ht with
   | inl h_zero =>
     rw [h_zero, mul_zero]
     exact measure_mono_null Set.inter_subset_right h_zero
   | inr h_one =>
     rw [h_one, mul_one]
     have hY_compl : μ (Y ⁻¹' tᶜ) = 0 := by
-      have key := hY t tᶜ ht ht.compl
+      have key := (indepFun_iff_measure_inter_preimage_eq_mul.mp hY) t tᶜ ht ht.compl
       rw [show Y ⁻¹' t ∩ Y ⁻¹' tᶜ = ∅ from by
         rw [← Set.preimage_inter, Set.inter_compl_self, Set.preimage_empty]] at key
       rw [measure_empty, h_one, one_mul] at key
