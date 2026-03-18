@@ -885,9 +885,6 @@ instance : (supp R).IsTwoSided where
 @[simp]
 lemma supp_def (x : R) : x ∈ supp R ↔ x ≤ᵥ 0 := Iff.refl _
 
-@[simp]
-lemma not_mem_supp (x : R) : x ∉ supp R ↔ 0 <ᵥ x := Iff.refl _
-
 lemma supp_eq_valuation_supp {R : Type*} [CommRing R] [ValuativeRel R] :
     supp R = (valuation R).supp := by
   ext
