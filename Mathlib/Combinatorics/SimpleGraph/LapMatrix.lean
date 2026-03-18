@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
 
 /-!
 # Laplacian Matrix
