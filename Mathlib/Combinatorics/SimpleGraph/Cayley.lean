@@ -84,7 +84,7 @@ section Semigroup
 variable [Semigroup M]
 
 @[to_additive (attr := simp)]
-theorem mulCayley_adj_mul_left_iff [IsLeftCancelMul M] {s : Set M} {u v d : M} :
+theorem mulCayley_adj_mul_iff_right [IsLeftCancelMul M] {s : Set M} {u v d : M} :
     (mulCayley s).Adj (d * u) (d * v) ↔ (mulCayley s).Adj u v := by
   simp [mulCayley_adj', mul_assoc]
 
@@ -118,12 +118,12 @@ lemma mulCayley_adj (u v : M) :
     and_or_left, exists_or]
 
 @[to_additive (attr := simp)]
-theorem mulCayley_inv_eq : mulCayley s⁻¹ = mulCayley s := by
+theorem mulCayley_inv : mulCayley s⁻¹ = mulCayley s := by
   ext u v
   simp [mulCayley_adj, or_comm]
 
 @[to_additive]
-theorem mulCayley_eq_symm : mulCayley s = mulCayley (s ∪ (s⁻¹)) := by
+theorem mulCayley_union_inv : mulCayley (s ∪ (s⁻¹)) = mulCayley s := by
   simpa using mulCayley_mono (Set.Subset.refl s)
 
 @[to_additive]
