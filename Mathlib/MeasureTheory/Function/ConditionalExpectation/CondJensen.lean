@@ -33,7 +33,7 @@ open MeasureTheory Function Set Filter
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   {α : Type*} {f : α → E} {φ : E → ℝ} {m mα : MeasurableSpace α} {μ : Measure α} {s : Set E}
 
-private lemma Convex.condExp_mem_hereditarilyLindelof [IsFiniteMeasure μ]
+private lemma Convex.condExp_mem_of_hereditarilyLindelofSpace [IsFiniteMeasure μ]
     [HereditarilyLindelofSpace E] (hm : m ≤ mα) (hf_int : Integrable f μ) (hs : IsClosed s)
     (hc : Convex ℝ s) (hf : ∀ᵐ a ∂μ, f a ∈ s) :
     ∀ᵐ a ∂μ, μ[f | m] a ∈ s := by
@@ -47,7 +47,7 @@ private lemma Convex.condExp_mem_hereditarilyLindelof [IsFiniteMeasure μ]
   exact hb
 
 set_option backward.isDefEq.respectTransparency false
-private lemma Convex.condExp_mem_finiteMeasure [IsFiniteMeasure μ] (hm : m ≤ mα)
+private lemma Convex.condExp_mem_of_isFiniteMeasure [IsFiniteMeasure μ] (hm : m ≤ mα)
     (hf_int : Integrable f μ) (hs : IsClosed s) (hc : Convex ℝ s) (hf : ∀ᵐ a ∂μ, f a ∈ s) :
     ∀ᵐ a ∂μ, μ[f | m] a ∈ s := by
   borelize E
@@ -78,8 +78,8 @@ private lemma Convex.condExp_mem_finiteMeasure [IsFiniteMeasure μ] (hm : m ≤ 
   have lem3 : μ[f | m] =ᵐ[μ] Y.subtypeL ∘ μ[fY | m] := calc
     _ =ᵐ[μ] μ[fX | m] := condExp_congr_ae lem1
     _ =ᵐ[μ] _ := (Y.subtypeL.comp_condExp_comm hfY_int).symm
-  filter_upwards [(hc.linear_preimage Y.subtype).condExp_mem_hereditarilyLindelof hm hfY_int
-    (hs.preimage Y.subtypeL.continuous) lem2, lem3] with a ha hb
+  filter_upwards [(hc.linear_preimage Y.subtype).condExp_mem_of_hereditarilyLindelofSpace 
+    hm hfY_int (hs.preimage Y.subtypeL.continuous) lem2, lem3] with a ha hb
   simp_all
 
 /-- If `f` lies in a closed convex set `s` a.e., then `μ[f | m]` lies in `s` a.e. -/
@@ -92,7 +92,7 @@ lemma Convex.condExp_mem (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
   have h1 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hf_int
   have : IsFiniteMeasure (μ.restrict (spanningSets (μ.trim hm) n)) := isFiniteMeasure_restrict.2
     ((le_trim hm).trans_lt (measure_spanningSets_lt_top (μ.trim hm) n)).ne
-  have h2 := hc.condExp_mem_finiteMeasure (μ := μ.restrict (spanningSets (μ.trim hm) n)) hm
+  have h2 := hc.condExp_mem_of_isFiniteMeasure (μ := μ.restrict (spanningSets (μ.trim hm) n)) hm
     hf_int.restrict hs (ae_restrict_of_ae hf)
   filter_upwards [h1, h2] with a ha hb
   simp_all
