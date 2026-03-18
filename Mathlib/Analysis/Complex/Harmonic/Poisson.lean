@@ -25,6 +25,8 @@ open Complex InnerProductSpace Metric Real Topology
 variable
   {f : ℂ → ℝ} {c w : ℂ} {R : ℝ}
 
+namespace InnerProductSpace
+
 private lemma continuousOn_herglotz_riesz (_ : w ∈ ball c R) :
     ContinuousOn (fun x ↦ ((x - c + (w - c)) / (x - c - (w - c))).re)
       {z | ‖z - c‖ ∈ Set.Ioc ‖w - c‖ R} := by
@@ -91,7 +93,7 @@ formulated with the Poisson kernel of integration.
 theorem HarmonicOnNhd.circleAverage_poissonKernel_smul
     (hf : HarmonicOnNhd f (closedBall c R)) (hw : w ∈ ball c R) :
     Real.circleAverage (poissonKernel c w • f) c R = f w := by
-  rw [← HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul hf hw]
+  rw [← hf.circleAverage_re_herglotzRieszKernel_smul hw]
   apply circleAverage_congr_sphere
     (fun _ _ ↦ by simp_rw [← poissonKernel_eq_re_herglotzRieszKernel])
 
@@ -102,6 +104,8 @@ formulated with the Poisson kernel of integration.
 theorem HarmonicContOnCl.circleAverage_poissonKernel_smul
     (hf : HarmonicContOnCl f (ball c R)) (hw : w ∈ ball c R) :
     Real.circleAverage (poissonKernel c w • f) c R = f w := by
-  rw [← HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul hf hw]
+  rw [← hf.circleAverage_re_herglotzRieszKernel_smul hw]
   apply circleAverage_congr_sphere
     (fun _ _ ↦ by simp_rw [← poissonKernel_eq_re_herglotzRieszKernel])
+
+end InnerProductSpace
