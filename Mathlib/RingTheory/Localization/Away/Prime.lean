@@ -26,8 +26,6 @@ See <https://stacks.math.columbia.edu/tag/0afu> for reference for
 
 @[expose] public section
 
-open Localization Ideal
-
 variable {R : Type*} [CommRing R] [IsDomain R]
 
 namespace IsLocalization.Away
@@ -36,11 +34,12 @@ namespace IsLocalization.Away
 of `x`, then `x ∣ c`. -/
 lemma dvd_of_mem_span_singleton_localization
     {p : R} (hp_prime : Prime p) {x : R} (hpx : ¬(p ∣ x))
-    {c : R} (hc : algebraMap R (Away p) c ∈ Ideal.span {algebraMap R (Away p) x}) :
+    {c : R} (hc : algebraMap R (Localization.Away p) c ∈
+      Ideal.span {algebraMap R (Localization.Away p) x}) :
     x ∣ c := by
   obtain ⟨q, hq⟩ := Ideal.mem_span_singleton'.mp hc
   obtain ⟨n, y, hqpn⟩ := IsLocalization.Away.surj p q
-  have hcy : c * p ^ n = x * y := IsLocalization.injective (Away p)
+  have hcy : c * p ^ n = x * y := IsLocalization.injective (Localization.Away p)
     (powers_le_nonZeroDivisors_of_noZeroDivisors hp_prime.ne_zero)
     (by simp only [map_mul, map_pow]; rw [← hq, ← hqpn]; ring)
   obtain ⟨z, rfl⟩ := hp_prime.pow_dvd_of_dvd_mul_left (n := n) hpx
@@ -52,11 +51,12 @@ lemma dvd_of_mem_span_singleton_localization
 is prime, then `x` is prime. -/
 theorem prime_of_prime_in_localization
     (p : R) (hp_prime : Prime p) (x : R) (hx_irred : Irreducible x)
-    (hax_prime : Prime (algebraMap R (Away p) x)) : Prime x := by
+    (hax_prime : Prime (algebraMap R (Localization.Away p) x)) : Prime x := by
   have hxp_ne := hax_prime.ne_zero
   have hx_ne : x ≠ 0 := fun hx => hxp_ne (by simp [hx])
   refine ⟨hx_ne, hx_irred.not_isUnit, fun a b h => ?_⟩
-  have habp : algebraMap R (Away p) (a * b) ∈ Ideal.span {algebraMap R (Away p) x} := by
+  have habp : algebraMap R (Localization.Away p) (a * b) ∈
+      Ideal.span {algebraMap R (Localization.Away p) x} := by
     rw [← Set.image_singleton, ← Ideal.map_span]
     exact Ideal.mem_map_of_mem _ (Ideal.mem_span_singleton.mpr h)
   rw [map_mul] at habp
