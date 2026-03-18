@@ -44,6 +44,8 @@ weak Markov property: if `B` is a pre-Brownian motion and `t₀ : ℝ≥0`, then
 
 * `IsGaussianProcess.isPreBrownian_of_covariance`: A centered Gaussian process with the right
   covariance is a pre-Brownian motion.
+* `HasIndepIncrements.isPreBrownian_of_hasLaw`: A stochastic process `X` with independent increments
+  and such that for all `t`, `X t` has law `gaussianReal 0 t` is a pre-Brownian motion.
 * `IsPreBrownian.indepFun_shift`: The weak Markov property: If `B` is a pre-Brownian motion, then
   `B (t₀ + t) - B t₀` is a pre-Brownian motion which is independent from `(B t, t ≤ t₀)`.
 
@@ -169,6 +171,35 @@ lemma IsPreBrownian.hasIndepIncrements (hB : IsPreBrownian B P) : HasIndepIncrem
     simp
   all_goals exact (hB.isGaussianProcess.hasGaussianLaw_eval _).memLp_two
 
+/-- A stochastic process `X` with independent increments and such that for all `t`, `X t`
+has law `gaussianReal 0 t` is a pre-Brownian motion. -/
+theorem HasIndepIncrements.isPreBrownian_of_hasLaw
+    (law : ∀ t, HasLaw (X t) (gaussianReal 0 t) P) (incr : HasIndepIncrements X P) :
+    IsPreBrownian X P := by
+  refine IsGaussianProcess.isPreBrownian_of_covariance ?_ (fun t ↦ ?_) (fun s t hst ↦ ?_)
+  · exact incr.isGaussianProcess (fun t ↦ (law t).hasGaussianLaw)
+      (law 0).ae_eq_const_of_gaussianReal
+  · rw [(law t).integral_eq, integral_id_gaussianReal]
+  have h1 := incr.indepFun_eval_sub (zero_le s) hst (law 0).ae_eq_const_of_gaussianReal
+  have := (law 0).isProbabilityMeasure
+  have h2 : X t = X t - X s + X s := by simp
+  rw [h2, covariance_add_right, h1.covariance_eq_zero, covariance_self, (law s).variance_eq,
+    variance_id_gaussianReal]
+  · simp
+  · exact (law s).aemeasurable
+  · exact (law s).hasGaussianLaw.memLp_two
+  · exact (law t).hasGaussianLaw.memLp_two.sub (law s).hasGaussianLaw.memLp_two
+  · exact (law s).hasGaussianLaw.memLp_two
+  · exact (law t).hasGaussianLaw.memLp_two.sub (law s).hasGaussianLaw.memLp_two
+  · exact (law s).hasGaussianLaw.memLp_two
+
+lemma IsPreBrownian.neg (hB : IsPreBrownian B P) : IsPreBrownian (-B) P := by
+  refine HasIndepIncrements.isPreBrownian_of_hasLaw (fun t ↦ ?_) (fun n t ht ↦ ?_)
+  · simpa using gaussianReal_neg (hB.hasLaw_eval t)
+  convert (hB.hasIndepIncrements n t ht).comp (fun _ x ↦ -x) (by fun_prop)
+  simp
+  grind
+
 set_option backward.isDefEq.respectTransparency false in
 /-- If `B` is a pre-Brownian motion and `c > 0`, then
 `t ↦ 1/√c B (c t)` is a pre-Brownian motion. -/
@@ -250,6 +281,8 @@ end IsPreBrownian
 
 section IsBrownian
 
+/-! ### Brownian motion -/
+
 variable {B X : ℝ≥0 → Ω → ℝ}
 
 /-- A stochastic process is called **Brownian** if its finite-dimensional laws are those
@@ -257,6 +290,11 @@ of the Brownian motion, see `IsPreBrownian`, and if it has almost-surely continu
 structure IsBrownian (X : ℝ≥0 → Ω → ℝ) (P : Measure Ω := by volume_tac) : Prop
     extends IsPreBrownian X P where
   cont : ∀ᵐ ω ∂P, Continuous (X · ω)
+
+lemma IsBrownian.neg (hB : IsBrownian B P) :
+    IsBrownian (-B) P where
+  toIsPreBrownian := hB.toIsPreBrownian.neg
+  cont := hB.cont.mono (fun _ _ ↦ by simpa [← Pi.neg_def, continuous_neg_iff])
 
 /-- If `B` is a Brownian motion and `c > 0`, then `t ↦ 1/√c B (c t)` is a Brownian motion. -/
 lemma IsBrownian.smul (hB : IsBrownian B P) {c : ℝ≥0} (hc : c ≠ 0) :
