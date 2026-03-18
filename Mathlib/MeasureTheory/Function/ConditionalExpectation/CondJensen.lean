@@ -18,11 +18,11 @@ This file contains the conditional Jensen's inequality. We follow the proof in
 
 ## Main Statement
 
-* `condExp_mem_convex`: in a Banach space `E` with a finite measure `μ`, if `f` lies in a
+* `Convex.condExp_mem `: in a Banach space `E` with a finite measure `μ`, if `f` lies in a
   closed convex set `s` a.e., then `μ[f | m]` lies in `s` a.e.
-* `conditional_jensen_univ`: in a Banach space `E` with a sigma finite measure `μ`, if `φ : E → ℝ`
-  is a convex lower-semicontinuous function, then for any `f : α → E` such that `f` and `φ ∘ f` are
-  integrable, we have `φ (𝔼[f | m]) ≤ 𝔼[φ ∘ f | m]` a.e.
+* `ConvexOn.map_condExp_le_univ`: in a Banach space `E` with a sigma finite measure `μ`, if
+  `φ : E → ℝ` is a convex lower-semicontinuous function, then for any `f : α → E` such that `f` and
+  `φ ∘ f` are integrable, we have `φ (𝔼[f | m]) ≤ 𝔼[φ ∘ f | m]` a.e.
 
 -/
 
@@ -107,9 +107,9 @@ private theorem ConvexOn.map_condExp_le_of_isFiniteMeasure [IsFiniteMeasure μ] 
       · exact hs.preimage Y.subtypeL.continuous
     _ =ᵐ[μ] μ[φ ∘ f | m] := condExp_congr_ae lem3.symm
 
-/-- **Conditional Jensen's inequality**: in a Banach space `X` with a measure `μ` that is σ-finite
-on a sub-σ-algebra `m`, if `φ : X → ℝ` is convex and lower-semicontinuous on a closed set `s`, then
-for any `f : α → X` such that `f` and `φ ∘ f` are integrable, and `f` lies in `s` a.e., we have
+/-- **Conditional Jensen's inequality**: in a Banach space `E` with a measure `μ` that is σ-finite
+on a sub-σ-algebra `m`, if `φ : E → ℝ` is convex and lower-semicontinuous on a closed set `s`, then
+for any `f : α → E` such that `f` and `φ ∘ f` are integrable, and `f` lies in `s` a.e., we have
 `φ (𝔼[f | m]) ≤ᵐ[μ] 𝔼[φ ∘ f | m]`. -/
 theorem ConvexOn.map_condExp_le (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     (hφ_cvx : ConvexOn ℝ s φ) (hφ_cont : LowerSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s)
@@ -135,8 +135,8 @@ theorem ConcaveOn.condExp_map_le (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     condExp_neg (φ ∘ f) m] with a h ha
   simp_all [Pi.neg_comp]
 
-/-- **Conditional Jensen's inequality**: in a Banach space `X` with a measure `μ` that is σ-finite
-on a sub-σ-algebra `m`, if `φ : X → ℝ` is convex and lower-semicontinuous, then for any `f : α → X`
+/-- **Conditional Jensen's inequality**: in a Banach space `E` with a measure `μ` that is σ-finite
+on a sub-σ-algebra `m`, if `φ : E → ℝ` is convex and lower-semicontinuous, then for any `f : α → E`
 such that `f` and `φ ∘ f` are integrable, we have `φ (𝔼[f | m]) ≤ᵐ[μ] 𝔼[φ ∘ f | m]`. -/
 theorem ConvexOn.map_condExp_le_univ (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     (hφ_cvx : ConvexOn ℝ univ φ) (hφ_cont : LowerSemicontinuous φ)
@@ -153,8 +153,8 @@ theorem ConcaveOn.condExp_map_le_univ (hm : m ≤ mα) [SigmaFinite (μ.trim hm)
     condExp_neg (φ ∘ f) m] with a h ha
   simp_all [Pi.neg_comp]
 
-/-- In a Banach space `X` with a measure `μ`, then for any `μ`-a.e. strongly measurable function
-`f : α → X`, we have `‖𝔼[f | m])‖ ≤ᵐ[μ] 𝔼[‖f‖ | m]`. -/
+/-- In a Banach space `E` with a measure `μ`, then for any `μ`-a.e. strongly measurable function
+`f : α → E`, we have `‖𝔼[f | m])‖ ≤ᵐ[μ] 𝔼[‖f‖ | m]`. -/
 theorem AEStronglyMeasurable.norm_condExp_le (hf : AEStronglyMeasurable f μ) :
     (‖μ[f | m] ·‖) ≤ᵐ[μ] μ[(‖f ·‖) | m] := by
   by_cases! hm : ¬ m ≤ mα
@@ -168,8 +168,8 @@ theorem AEStronglyMeasurable.norm_condExp_le (hf : AEStronglyMeasurable f μ) :
   exact convexOn_univ_norm.map_condExp_le_univ hm continuous_norm.lowerSemicontinuous hf_int
     hf_int.norm
 
-/-- **Conditional Jensen's inequality**: in a finite dimensional Banach space `X` with a measure
-`μ` that is σ-finite on a sub-σ-algebra `m`, if `φ : X → ℝ` is convex, then for any `f : α → X` such
+/-- **Conditional Jensen's inequality**: in a finite dimensional Banach space `E` with a measure
+`μ` that is σ-finite on a sub-σ-algebra `m`, if `φ : E → ℝ` is convex, then for any `f : α → E` such
 that `f` and `φ ∘ f` are integrable, we have `φ (𝔼[f | m]) ≤ᵐ[μ] 𝔼[φ ∘ f | m]`. -/
 theorem ConvexOn.map_condExp_le_of_finiteDimensional [FiniteDimensional ℝ E] (hm : m ≤ mα)
     [SigmaFinite (μ.trim hm)] (hφ_cvx : ConvexOn ℝ univ φ) (hf_int : Integrable f μ)
