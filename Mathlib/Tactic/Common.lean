@@ -123,6 +123,8 @@ public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
 
 /-!
+# Common tactics, linters, and utilities
+
 This file imports all tactics which do not have significant theory imports,
 and hence can be imported very low in the theory import hierarchy,
 thereby making tactics widely available without needing specific imports.
