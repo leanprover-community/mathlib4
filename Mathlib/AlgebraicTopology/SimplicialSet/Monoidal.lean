@@ -32,44 +32,44 @@ namespace SSet
 
 @[simp]
 lemma leftUnitor_hom_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x : (𝟙_ _ ⊗ K).obj Δ) :
-    (λ_ K).hom.app Δ x = x.2 := rfl
+    dsimp% (λ_ K).hom.app Δ x = x.2 := rfl
 
 @[simp]
 lemma leftUnitor_inv_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x : K.obj Δ) :
-    (λ_ K).inv.app Δ x = ⟨PUnit.unit, x⟩ := rfl
+    dsimp% (λ_ K).inv.app Δ x = ⟨PUnit.unit, x⟩ := rfl
 
 @[simp]
 lemma rightUnitor_hom_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x : (K ⊗ 𝟙_ _).obj Δ) :
-    (ρ_ K).hom.app Δ x = x.1 := rfl
+    dsimp% (ρ_ K).hom.app Δ x = x.1 := rfl
 
 @[simp]
 lemma rightUnitor_inv_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x : K.obj Δ) :
-    (ρ_ K).inv.app Δ x = ⟨x, PUnit.unit⟩ := rfl
+    dsimp% (ρ_ K).inv.app Δ x = ⟨x, PUnit.unit⟩ := rfl
 
 @[simp]
 lemma tensorHom_app_apply {K K' L L' : SSet.{u}} (f : K ⟶ K') (g : L ⟶ L')
     {Δ : SimplexCategoryᵒᵖ} (x : (K ⊗ L).obj Δ) :
-    (f ⊗ₘ g).app Δ x = ⟨f.app Δ x.1, g.app Δ x.2⟩ := rfl
+    dsimp% (f ⊗ₘ g).app Δ x = ⟨f.app Δ x.1, g.app Δ x.2⟩ := rfl
 
 @[simp]
 lemma whiskerLeft_app_apply (K : SSet.{u}) {L L' : SSet.{u}} (g : L ⟶ L')
     {Δ : SimplexCategoryᵒᵖ} (x : (K ⊗ L).obj Δ) :
-    (K ◁ g).app Δ x = ⟨x.1, g.app Δ x.2⟩ := rfl
+    dsimp% (K ◁ g).app Δ x = ⟨x.1, g.app Δ x.2⟩ := rfl
 
 @[simp]
 lemma whiskerRight_app_apply {K K' : SSet.{u}} (f : K ⟶ K') (L : SSet.{u})
     {Δ : SimplexCategoryᵒᵖ} (x : (K ⊗ L).obj Δ) :
-    (f ▷ L).app Δ x = ⟨f.app Δ x.1, x.2⟩ := rfl
+    dsimp% (f ▷ L).app Δ x = ⟨f.app Δ x.1, x.2⟩ := rfl
 
 @[simp]
 lemma associator_hom_app_apply (K L M : SSet.{u}) {Δ : SimplexCategoryᵒᵖ}
     (x : ((K ⊗ L) ⊗ M).obj Δ) :
-    (α_ K L M).hom.app Δ x = ⟨x.1.1, x.1.2, x.2⟩ := rfl
+    dsimp% (α_ K L M).hom.app Δ x = ⟨x.1.1, x.1.2, x.2⟩ := rfl
 
 @[simp]
 lemma associator_inv_app_apply (K L M : SSet.{u}) {Δ : SimplexCategoryᵒᵖ}
     (x : (K ⊗ L ⊗ M).obj Δ) :
-    (α_ K L M).inv.app Δ x = ⟨⟨x.1, x.2.1⟩, x.2.2⟩ := rfl
+    dsimp% (α_ K L M).inv.app Δ x = ⟨⟨x.1, x.2.1⟩, x.2.2⟩ := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `(𝟙_ SSet ⟶ K) ≃ K _⦋0⦌`. -/
@@ -154,7 +154,7 @@ lemma ι₀_fst (X : SSet.{u}) : ι₀ ≫ fst X _ = 𝟙 X := rfl
 lemma ι₀_snd (X : SSet.{u}) : ι₀ ≫ snd X _ = const (stdSimplex.obj₀Equiv.{u}.symm 0) := rfl
 
 @[simp]
-lemma ι₀_app_fst {X : SSet.{u}} {m} (x : X.obj m) : (ι₀.app _ x).1 = x := rfl
+lemma ι₀_app_fst {X : SSet.{u}} {m} (x : X.obj m) : dsimp% (ι₀.app _ x).1 = x := rfl
 
 /-- The inclusion `X ⟶ X ⊗ Δ[1]` which is `1` on the second factor. -/
 noncomputable def ι₁ {X : SSet.{u}} : X ⟶ X ⊗ Δ[1] :=
@@ -171,7 +171,7 @@ lemma ι₁_comp {X Y : SSet.{u}} (f : X ⟶ Y) :
     ι₁ ≫ f ▷ _ = f ≫ ι₁ := rfl
 
 @[simp]
-lemma ι₁_app_fst {X : SSet.{u}} {m} (x : X.obj m) : (ι₁.app _ x).1 = x := rfl
+lemma ι₁_app_fst {X : SSet.{u}} {m} (x : X.obj m) : dsimp% (ι₁.app _ x).1 = x := rfl
 
 namespace Truncated
 
@@ -187,12 +187,12 @@ variable {n} {X Y : Truncated.{u} n}
 @[simp]
 lemma tensor_map_apply_fst {d e : (SimplexCategory.Truncated n)ᵒᵖ}
     (f : d ⟶ e) (x : (X ⊗ Y : Truncated _).obj d) :
-    ((X ⊗ Y : Truncated _).map f x).1 = X.map f x.1 := rfl
+    dsimp% ((X ⊗ Y : Truncated _).map f x).1 = X.map f x.1 := rfl
 
 @[simp]
 lemma tensor_map_apply_snd {d e : (SimplexCategory.Truncated n)ᵒᵖ}
     (f : d ⟶ e) (x : (X ⊗ Y : Truncated _).obj d) :
-    ((X ⊗ Y : Truncated _).map f x).2 = Y.map f x.2 := rfl
+    dsimp% ((X ⊗ Y : Truncated _).map f x).2 = Y.map f x.2 := rfl
 
 end Truncated
 

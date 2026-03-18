@@ -45,7 +45,7 @@ instance categoryObjects {F : J ⥤ Cat.{u, u}} {j} :
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition:
 the diagram whose limit gives the morphism space between two objects of the limit category. -/
-@[simps obj map]
+@[simps]
 def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : (limit (F ⋙ Cat.objects.{v, v}) :)) :
     J ⥤ Type v where
   obj j := limit.π (F ⋙ Cat.objects) j X ⟶ limit.π (F ⋙ Cat.objects) j Y
@@ -124,7 +124,6 @@ def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=
         rw [Functor.congr_hom this f]
         simp }
 
-@[simp]
 theorem limit_π_homDiagram_eqToHom {F : J ⥤ Cat.{v, v}} (X Y : (limit (F ⋙ Cat.objects.{v, v}) :))
     (j : J) (h : X = Y) :
     limit.π (homDiagram X Y) j (eqToHom h) =
@@ -150,8 +149,7 @@ def limitConeIsLimit (F : J ⥤ Cat.{v, v}) : IsLimit (limitCone F) where
       simp [← comp_apply, ← w j]
     · intro X Y f
       have := fun j => Functor.congr_hom congr($((w j).symm).toFunctor) f
-      simp [this, -homDiagram_obj]
-
+      simp [this, -homDiagram_obj, limit_π_homDiagram_eqToHom]
 
 end HasLimits
 

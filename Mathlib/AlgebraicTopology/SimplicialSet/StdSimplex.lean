@@ -301,12 +301,12 @@ def isoNerve (n : ℕ) :
 @[simp]
 lemma isoNerve_hom_app_apply {n d : ℕ}
     (s : (Δ[n] _⦋d⦌)) (i : Fin (d + 1)) :
-    ((isoNerve.{u} n).hom.app _ s).obj i = ULift.up (s i) := rfl
+    dsimp% ((isoNerve.{u} n).hom.app _ s).obj i = ULift.up (s i) := rfl
 
 @[simp]
 lemma isoNerve_inv_app_apply {n d : ℕ}
     (F : (nerve (ULift.{u} (Fin (n + 1)))) _⦋d⦌) (i : Fin (d + 1)) :
-    (isoNerve.{u} n).inv.app _ F i = (F.obj i).down := rfl
+    dsimp% (isoNerve.{u} n).inv.app _ F i = (F.obj i).down := rfl
 
 lemma mem_nonDegenerate_iff_strictMono {n d : ℕ} (s : (Δ[n] : SSet.{u}) _⦋d⦌) :
     s ∈ Δ[n].nonDegenerate d ↔ StrictMono s := by

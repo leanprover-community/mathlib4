@@ -22,14 +22,15 @@ open CategoryTheory
 universe u
 
 /-- The `CommMonCat`-valued coyoneda embedding. -/
-@[to_additive (attr := simps) /-- The `AddCommMonCat`-valued coyoneda embedding. -/]
+@[to_additive (attr := simps)
+/-- The `AddCommMonCat`-valued coyoneda embedding. -/]
 def CommMonCat.coyoneda : CommMonCatᵒᵖ ⥤ CommMonCat ⥤ CommMonCat where
   obj M := { obj N := of (M.unop →* N), map f := ofHom (.compHom f.hom) }
   map f := { app N := ofHom (.compHom' f.unop.hom) }
 
 /-- The `CommMonCat`-valued coyoneda embedding composed with the forgetful functor is the usual
 coyoneda embedding. -/
-@[to_additive (attr := simps!)
+@[to_additive (attr := simps! (config := { dsimpLhs := true }))
 /-- The `AddCommMonCat`-valued coyoneda embedding composed with the forgetful functor is the usual
 coyoneda embedding. -/]
 def CommMonCat.coyonedaForget :

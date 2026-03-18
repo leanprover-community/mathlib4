@@ -83,7 +83,7 @@ lemma homOfLE_refl : homOfLE (by rfl : S₁ ≤ S₁) = 𝟙 _ := rfl
 
 @[simp]
 lemma homOfLE_app_val (Δ : SimplexCategoryᵒᵖ) (x : S₁.obj Δ) :
-    ((homOfLE h).app Δ x).val = x.val := rfl
+    dsimp% ((homOfLE h).app Δ x).val = x.val := rfl
 
 @[simp, reassoc]
 lemma homOfLE_ι : homOfLE h ≫ S₂.ι = S₁.ι := rfl
@@ -174,7 +174,7 @@ lemma toRange_ι : toRange f ≫ (Subcomplex.range f).ι = f := rfl
 
 @[simp]
 lemma toRange_app_val {Δ : SimplexCategoryᵒᵖ} (x : X.obj Δ) :
-    ((toRange f).app Δ x).val = f.app Δ x := rfl
+    dsimp% ((toRange f).app Δ x).val = f.app Δ x := rfl
 
 instance : Epi (toRange f) :=
   inferInstanceAs (Epi (Subfunctor.toRange f))
@@ -209,7 +209,7 @@ lemma lift_ι : lift f hf ≫ B.ι = f := rfl
 
 @[simp]
 lemma lift_app_coe {n : SimplexCategoryᵒᵖ} (x : X.obj n) :
-    ((lift f hf).app _ x).1 = f.app _ x := rfl
+    dsimp% ((lift f hf).app _ x).1 = f.app _ x := rfl
 
 end
 
@@ -287,7 +287,7 @@ lemma image_ofSimplex {n : ℕ} (x : X _⦋n⦌) (f : X ⟶ Y) :
 
 /-- Given a morphism of simplicial sets `f : X ⟶ Y` and a subcomplex `A` of `X`,
 this is the induced morphism from `A` to `A.image f`. -/
-@[simps!]
+@[simps! (config := { dsimpLhs := true })]
 def toImage : (A : SSet) ⟶ (A.image f : SSet) :=
   (A.image f).lift (A.ι ≫ f) (by rw [image_eq_range])
 

@@ -249,7 +249,7 @@ variable {G}
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) → G) :
-    (diagonalSuccIsoTensorTrivial G n).hom.hom f =
+    dsimp% (diagonalSuccIsoTensorTrivial G n).hom.hom f =
       (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
   induction n with
   | zero => exact Prod.ext rfl (funext fun x => Fin.elim0 x)
@@ -262,7 +262,7 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) �
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n → G) :
-    (diagonalSuccIsoTensorTrivial G n).inv.hom (g, f) =
+    dsimp% (diagonalSuccIsoTensorTrivial G n).inv.hom (g, f) =
       (g • Fin.partialProd f : Fin (n + 1) → G) := by
   induction n generalizing g with
   | zero =>

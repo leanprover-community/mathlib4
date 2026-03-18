@@ -630,7 +630,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem CostructuredArrow.overEquivPresheafCostructuredArrow_inverse_map_toOverCompYoneda
     {A : Cᵒᵖ ⥤ Type v} {T : Over A} {X : CostructuredArrow yoneda A}
     (f : (CostructuredArrow.toOver yoneda A).obj X ⟶ T) :
-    (overEquivPresheafCostructuredArrow A).inverse.map
+    dsimp% (overEquivPresheafCostructuredArrow A).inverse.map
       (((CostructuredArrow.toOverCompYoneda A T).hom.app (op X) f)) =
       (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).isoCompInverse.inv.app X ≫
         f ≫ (overEquivPresheafCostructuredArrow A).unit.app T := by
@@ -641,7 +641,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem CostructuredArrow.overEquivPresheafCostructuredArrow_functor_map_toOverCompYoneda
     {A : Cᵒᵖ ⥤ Type v} {T : Over A} {X : CostructuredArrow yoneda A}
     (f : yoneda.obj X ⟶ (overEquivPresheafCostructuredArrow A).functor.obj T) :
-    (overEquivPresheafCostructuredArrow A).functor.map
+    dsimp% (overEquivPresheafCostructuredArrow A).functor.map
       (((CostructuredArrow.toOverCompYoneda A T).inv.app (op X) f)) =
       (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).hom.app X ≫ f := by
   simp [CostructuredArrow.toOverCompYoneda]
@@ -666,7 +666,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem CostructuredArrow.overEquivPresheafCostructuredArrow_inverse_map_toOverCompCoyoneda
     {A : Cᵒᵖ ⥤ Type v} {T : Over A} {X : CostructuredArrow yoneda A}
     (f : (CostructuredArrow.toOver yoneda A).obj X ⟶ T) :
-    (overEquivPresheafCostructuredArrow A).inverse.map
+    dsimp% (overEquivPresheafCostructuredArrow A).inverse.map
       (((CostructuredArrow.toOverCompCoyoneda A).hom.app (op X)).app T f) =
       (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).isoCompInverse.inv.app X ≫
         f ≫ (overEquivPresheafCostructuredArrow A).unit.app T := by
@@ -677,7 +677,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem CostructuredArrow.overEquivPresheafCostructuredArrow_functor_map_toOverCompCoyoneda
     {A : Cᵒᵖ ⥤ Type v} {T : Over A} {X : CostructuredArrow yoneda A}
     (f : yoneda.obj X ⟶ (overEquivPresheafCostructuredArrow A).functor.obj T) :
-    (overEquivPresheafCostructuredArrow A).functor.map
+    dsimp% (overEquivPresheafCostructuredArrow A).functor.map
       (((CostructuredArrow.toOverCompCoyoneda A).inv.app (op X)).app T f) =
       (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).hom.app X ≫ f := by
   simp [CostructuredArrow.toOverCompCoyoneda]

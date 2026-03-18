@@ -245,7 +245,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma homEquiv_edgeMk_map_nerveMap {D : Type u} [Category.{v} D] {x y : C}
     (f : x ⟶ y) (F : C ⥤ D) :
-    homEquiv ((edgeMk f).map (nerveMap F)) = F.map f := by
+    dsimp% homEquiv ((edgeMk f).map (nerveMap F)) = F.map f := by
   simp [homEquiv, nerveMap_app]
 
 end
