@@ -150,10 +150,10 @@ lemma velocity_hasDerivAt_aux {I : Set ℝ} (hI : IsOpen I) {ι : Type u} [Finty
 
 
 /-- Given a continuously differentiable parametrized curve whose position has the same magnitude at
-all time, i.e, at constant radius distance from the origin (the curve `c` is contained in a sphere 
-of radius `r` from the origin), then the velocity vector is always perpendicular to the position 
+all time, i.e, at constant radius distance from the origin (the curve `c` is contained in a sphere
+of radius `r` from the origin), then the velocity vector is always perpendicular to the position
 vector of the curve at every point (in other words their dot product is zero). -/
-theorem inner_of_deriv_curve_eq_zero_of_const_magnitude_curve {I : Set ℝ} (hI : IsOpen I) 
+theorem inner_of_deriv_curve_eq_zero_of_const_magnitude_curve {I : Set ℝ} (hI : IsOpen I)
   {ι : Type u} [Fintype ι] {c : ℝ → EuclideanSpace ℝ ι} (hc₁ : ContDiffOn ℝ 1 c I) {r : ℝ}
   (hc₂ : ∀ t ∈ I, ‖c t‖ = r) {t : ℝ} (ht : t ∈ I) :
   inner ℝ (deriv c t) (c t) = 0 := by
@@ -178,7 +178,7 @@ theorem inner_of_deriv_curve_eq_zero_of_const_magnitude_curve {I : Set ℝ} (hI 
     _ = (deriv f t) / 2 := by symm; simp [h₅]
     _ = ((inner ℝ (c t) (deriv c t)) + (inner ℝ (deriv c t) (c t))) / 2 := by
       simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, div_left_inj']; unfold f
-      have hd : HasDerivAt c (deriv c t) t := 
+      have hd : HasDerivAt c (deriv c t) t :=
         (hc₁.contDiffAt (hI.mem_nhds ht)).differentiableAt_one.hasDerivAt
       apply (HasDerivAt.inner ℝ hd hd).deriv
     _ = inner ℝ (deriv c t) (c t) := by rw [real_inner_comm (deriv c t)]; ring
@@ -188,7 +188,7 @@ point the velocity vector is perpendicular to the acceleration vector. -/
 theorem inner_of_accel_velocity_of_const_speed_eq_zero {I : Set ℝ} (hI : IsOpen I) {ι : Type u}
   [Fintype ι] {c : ℝ → EuclideanSpace ℝ ι} (hc₁ : ContDiffOn ℝ 2 c I) {r : ℝ}
   (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = r) {t : ℝ} (ht : t ∈ I) :
-  inner ℝ (iteratedDeriv 2 c t) (deriv c t) = 0 := by 
+  inner ℝ (iteratedDeriv 2 c t) (deriv c t) = 0 := by
   rw [iteratedDeriv_succ, iteratedDeriv_one]
   have h : ContDiffOn ℝ (1+1) c I := by assumption
   have h' := ((contDiffOn_succ_iff_deriv_of_isOpen hI).mp h).2.2
@@ -228,11 +228,11 @@ lemma normal_hasDerivAt_aux {I : Set ℝ} (hI : IsOpen I) {c : ℝ → Euclidean
     fin_cases i <;> simp [h_diff]
   exact h.differentiableAt (hI.mem_nhds ht)
 
-lemma _root_.ContDiffOn.normal_of_twice_contDiffOn_curve {I : Set ℝ} (hI : IsOpen I) 
+lemma _root_.ContDiffOn.normal_of_twice_contDiffOn_curve {I : Set ℝ} (hI : IsOpen I)
   {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc : ContDiffOn ℝ 2 c I) : ContDiffOn ℝ 1 (normal c) I := by
   have hd : ContDiffOn ℝ 1 (deriv c) I := hc.deriv_of_isOpen hI (by norm_num)
   unfold normal
-  rw [contDiffOn_piLp] at * 
+  rw [contDiffOn_piLp] at *
   intro i
   fin_cases i
   · simp [ContDiffOn.neg, hd 1]
@@ -242,11 +242,11 @@ lemma _root_.ContDiffOn.normal_of_twice_contDiffOn_curve {I : Set ℝ} (hI : IsO
 the normal vector is perpendicular to the derivative of the normal vector. -/
 theorem inner_of_deriv_normal_normal_of_unit_speed_eq_zero {I : Set ℝ} (hI : IsOpen I)
   {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc₁ : ContDiffOn ℝ 2 c I) (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1)
-  {t : ℝ} (ht : t ∈ I) : inner ℝ  (deriv (normal c) t) (normal c t) = 0 :=  
-  inner_of_deriv_curve_eq_zero_of_const_magnitude_curve hI 
-    (ContDiffOn.normal_of_twice_contDiffOn_curve hI hc₁) 
+  {t : ℝ} (ht : t ∈ I) : inner ℝ  (deriv (normal c) t) (normal c t) = 0 :=
+  inner_of_deriv_curve_eq_zero_of_const_magnitude_curve hI
+    (ContDiffOn.normal_of_twice_contDiffOn_curve hI hc₁)
     (fun _ ht ↦  norm_normal_eq_one_of_unit_speed hc₂ ht) ht
- 
+
 /-- The second Frenet equation for plane curves: For any twice continously differentiable plane
 curve parametrized by arc-length (i.e., with unit speed), the derivative of the normal vector is
 equal to minus the curvature times the velocity vector (first derivative). -/
@@ -257,7 +257,7 @@ theorem deriv_normal_eq_minus_orientedCurvature_times_deriv {I : Set ℝ} (hI : 
   simp only [frameAt, Nat.succ_eq_add_one, Nat.reduceAdd, OrthonormalBasis.coe_mk,
              Fin.sum_univ_two, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
              Matrix.cons_val_fin_one, neg_smul]
-  rw [real_inner_comm (deriv (normal c) t) (normal c t), 
+  rw [real_inner_comm (deriv (normal c) t) (normal c t),
       inner_of_deriv_normal_normal_of_unit_speed_eq_zero hI hc₁ hc₂ ht]; simp
   have h : inner ℝ (deriv c t) (deriv (normal c) t) = - orientedCurvature c t := by
     have h' : inner ℝ (deriv c t) (deriv (normal c) t) + orientedCurvature c t = 0 := by
