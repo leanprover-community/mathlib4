@@ -38,7 +38,7 @@ noncomputable def jointlyReflectsLimit
     IsLimit c := by
   suffices IsIso (limit.lift _ c) from
     IsLimit.ofIsoLimit (limit.isLimit _)
-      (Cones.ext (asIso (limit.lift _ c) :)).symm
+      (Cone.ext (asIso (limit.lift _ c) :)).symm
   rw [hF.isIso_iff]
   intro i
   let H := isLimitOfPreserves (F i) (limit.isLimit G)
@@ -62,7 +62,7 @@ noncomputable def jointlyReflectsColimit
     IsColimit c := by
   suffices IsIso (colimit.desc _ c) from
     IsColimit.ofIsoColimit (colimit.isColimit _)
-      (Cocones.ext (asIso (colimit.desc _ c) :))
+      (Cocone.ext (asIso (colimit.desc _ c) :))
   rw [hF.isIso_iff]
   intro i
   let H := isColimitOfPreserves (F i) (colimit.isColimit G)

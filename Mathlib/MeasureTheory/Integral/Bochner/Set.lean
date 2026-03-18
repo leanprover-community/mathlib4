@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Combinatorics.Enumerative.InclusionExclusion
 public import Mathlib.MeasureTheory.Function.LocallyIntegrable
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.MetricSpace.ThickenedIndicator
 
@@ -692,6 +692,9 @@ theorem integral_Ioc_eq_integral_Ioo : ∫ t in Ioc x y, f t ∂μ = ∫ t in Io
 
 theorem integral_Ico_eq_integral_Ioo : ∫ t in Ico x y, f t ∂μ = ∫ t in Ioo x y, f t ∂μ :=
   integral_Ico_eq_integral_Ioo' <| measure_singleton x
+
+theorem integral_Ico_eq_integral_Ioc : ∫ t in Ico x y, f t ∂μ = ∫ t in Ioc x y, f t ∂μ := by
+  rw [integral_Ico_eq_integral_Ioo, integral_Ioc_eq_integral_Ioo]
 
 theorem integral_Icc_eq_integral_Ioo : ∫ t in Icc x y, f t ∂μ = ∫ t in Ioo x y, f t ∂μ := by
   rw [integral_Icc_eq_integral_Ico, integral_Ico_eq_integral_Ioo]

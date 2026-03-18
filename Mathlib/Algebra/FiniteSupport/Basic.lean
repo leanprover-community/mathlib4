@@ -66,15 +66,11 @@ lemma HasFiniteMulSupport.mul {M : Type*} [MulOneClass M] {f g : α → M}
     HasFiniteMulSupport (f * g) :=
   (hf.union hg).subset <| mulSupport_mul ..
 
-attribute [to_additive existing] HasFiniteMulSupport.fun_mul
-
 @[to_additive (attr := to_fun (attr := fun_prop))]
 lemma HasFiniteMulSupport.inv {M : Type*} [DivisionMonoid M] {f : α → M}
     (hf : HasFiniteMulSupport f) :
     HasFiniteMulSupport f⁻¹ :=
   hf.comp inv_one
-
-attribute [to_additive existing] HasFiniteMulSupport.fun_inv
 
 @[to_additive (attr := fun_prop)]
 lemma HasFiniteMulSupport.prod {M : Type*} [CommMonoid M] {ι : Type*} {f : ι → α → M}
@@ -88,23 +84,17 @@ lemma HasFiniteMulSupport.div {M : Type*} [DivisionMonoid M] {f g : α → M}
     HasFiniteMulSupport (f / g) :=
   (hf.union hg).subset <| mulSupport_div ..
 
-attribute [to_additive existing] HasFiniteMulSupport.fun_div
-
 @[to_additive (attr := to_fun (attr := fun_prop))]
 lemma HasFiniteMulSupport.pow {M : Type*} [Monoid M] {f : α → M} (hf : HasFiniteMulSupport f)
     (n : ℕ) :
     HasFiniteMulSupport (f ^ n) :=
   hf.comp (one_pow n)
 
-attribute [to_additive existing] HasFiniteMulSupport.fun_pow
-
 @[to_additive (attr := to_fun (attr := fun_prop))]
 lemma HasFiniteMulSupport.zpow {M : Type*} [DivisionMonoid M] {f : α → M}
     (hf : HasFiniteMulSupport f) (n : ℤ) :
     HasFiniteMulSupport (f ^ n) :=
   hf.comp (one_zpow n)
-
-attribute [to_additive existing] HasFiniteMulSupport.fun_zpow
 
 @[to_additive (attr := fun_prop)]
 lemma HasFiniteMulSupport.max [LinearOrder M] {f g : α → M} (hf : HasFiniteMulSupport f)
@@ -183,6 +173,13 @@ lemma HasFiniteMulSupport.comp_of_injective (hg : Injective g) (hf : f.HasFinite
 lemma HasFiniteMulSupport.fun_comp_of_injective (hg : Injective g) (hf : f.HasFiniteMulSupport) :
     (fun a ↦ f (g a)).HasFiniteMulSupport :=
   hf.comp_of_injective hg
+
+@[to_additive]
+lemma HasFiniteMulSupport.of_comp [One β] (hfg : (f ∘ g).HasFiniteMulSupport) (h : f 1 = 1)
+    (hf : Injective f) :
+    g.HasFiniteMulSupport := by
+  refine Set.Finite.subset hfg fun _ ha ↦ Set.mem_setOf.mpr fun H ↦ Set.mem_setOf.mp ha ?_
+  grind
 
 end Function
 

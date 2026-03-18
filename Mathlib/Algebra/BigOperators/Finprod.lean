@@ -1334,6 +1334,17 @@ lemma Nat.cast_finprod [Finite ι] {R : Type*} [CommSemiring R] (f : ι → ℕ)
     ↑(∏ᶠ x, f x : ℕ) = ∏ᶠ x, (f x : R) :=
   (Nat.castRingHom R).map_finprod f.mulSupport.toFinite
 
+/-- This version does not assume that `ι` is finite (compare `Nat.cast_finprod`), but instead needs
+to assume characteristic zero to deal with the infinite case. -/
+@[simp, norm_cast]
+lemma Nat.cast_finprod' {R : Type*} [CommSemiring R] [CharZero R] (f : ι → ℕ) :
+    (∏ᶠ (x : ι), f x : ℕ) = ∏ᶠ (x : ι), (f x : R) := by
+  by_cases hf : f.HasFiniteMulSupport
+  · exact map_finprod (Nat.castRingHom R) hf
+  · have H : ¬ (fun i ↦ (f i : R)).HasFiniteMulSupport :=
+      fun h ↦ hf <| h.of_comp cast_one cast_injective
+    rw [finprod_of_not_hasFiniteMulSupport hf, finprod_of_not_hasFiniteMulSupport H, cast_one]
+
 @[simp, norm_cast]
 lemma Nat.cast_finprod_mem {s : Set ι} (hs : s.Finite) {R : Type*} [CommSemiring R] (f : ι → ℕ) :
     ↑(∏ᶠ x ∈ s, f x : ℕ) = ∏ᶠ x ∈ s, (f x : R) :=
