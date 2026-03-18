@@ -43,7 +43,7 @@ theorem HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul
   obtain ⟨e, h₁e, h₂e⟩ := (isCompact_closedBall c R).exists_thickening_subset_open
     (isOpen_setOf_harmonicAt f) (by aesop)
   rw [thickening_closedBall h₁e (pos_of_mem_ball hw).le] at h₂e
-  obtain ⟨F, h₁F, h₂F⟩ := h₂e.exists_analyticOnNhd_ball_re_eq
+  obtain ⟨F, h₁F, h₂F⟩ := HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq h₂e
   have h₃F : DifferentiableOn ℂ F (closure (ball c R)) := by
     intro x hx
     apply (h₁F x _).differentiableWithinAt
@@ -65,7 +65,6 @@ theorem HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul
   · apply (h₁F.mono _).continuousOn (𝕜 := ℂ)
     grind [mem_sphere, mem_ball, (pos_of_mem_ball hw)]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 **Poisson integral formula** for harmonic functions on arbitrary disks in the complex plane,
 formulated with the real part of the Herglotz–Riesz kernel of integration.
@@ -84,7 +83,6 @@ theorem HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul
     rw [HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul
       (hf.1.mono (closedBall_subset_ball hr.2)) (by grind [mem_ball_iff_norm])]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 **Poisson integral formula** for harmonic functions on arbitrary disks in the complex plane,
 formulated with the Poisson kernel of integration.
@@ -92,11 +90,10 @@ formulated with the Poisson kernel of integration.
 theorem HarmonicOnNhd.circleAverage_poissonKernel_smul
     (hf : HarmonicOnNhd f (closedBall c R)) (hw : w ∈ ball c R) :
     Real.circleAverage (poissonKernel c w • f) c R = f w := by
-  rw [← hf.circleAverage_re_herglotzRieszKernel_smul hw]
+  rw [← HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul hf hw]
   apply circleAverage_congr_sphere
     (fun _ _ ↦ by simp_rw [← poissonKernel_eq_re_herglotzRieszKernel])
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 **Poisson integral formula** for harmonic functions on arbitrary disks in the complex plane,
 formulated with the Poisson kernel of integration.
@@ -104,6 +101,6 @@ formulated with the Poisson kernel of integration.
 theorem HarmonicContOnCl.circleAverage_poissonKernel_smul
     (hf : HarmonicContOnCl f (ball c R)) (hw : w ∈ ball c R) :
     Real.circleAverage (poissonKernel c w • f) c R = f w := by
-  rw [← hf.circleAverage_re_herglotzRieszKernel_smul hw]
+  rw [← HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul hf hw]
   apply circleAverage_congr_sphere
     (fun _ _ ↦ by simp_rw [← poissonKernel_eq_re_herglotzRieszKernel])
