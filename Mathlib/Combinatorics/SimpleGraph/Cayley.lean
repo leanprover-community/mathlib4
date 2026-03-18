@@ -101,8 +101,8 @@ theorem mulCayley_erase_one : mulCayley (s \ {1}) = mulCayley s := by
   simp +contextual [mulCayley_adj']
 
 @[to_additive (attr := simp)]
-theorem mulCayley_union_one : mulCayley (s ∪ {1}) = mulCayley s := by
-  simp [-Set.union_singleton, ← mulCayley_erase_one]
+theorem mulCayley_insert_one : mulCayley (insert 1 s) = mulCayley s := by
+  simp [← Set.union_singleton, ← mulCayley_erase_one]
 
 @[to_additive (attr := simp)]
 theorem mulCayley_singleton_one : mulCayley ({1} : Set M) = ⊥ := by
