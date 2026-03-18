@@ -568,7 +568,9 @@ variable {G : Type*} (M : Type*)
 Each element of the scalars defines a continuous additive monoid homomorphism.
 
 This is a continuous version of `DistribSMul.toAddMonoidHom`. -/
-@[simps! toFun toAddMonoidHom]
+@[simps! toFun]
+-- TODO: Add `toAddMonoidHom` to `simps`, once we stop the simpNF being
+-- `AddMonoidHomClass.toAddMonoidHom`
 def DistribSMul.toContinuousAddMonoidHom
     [AddMonoid M] [DistribSMul G M] [TopologicalSpace M] [ContinuousConstSMul G M] (g : G) :
     M →ₜ+ M where
@@ -579,7 +581,8 @@ def DistribSMul.toContinuousAddMonoidHom
 Each element of the scalars defines a continuous monoid homomorphism.
 
 This is a continuous version of `MulDistribMulAction.toMonoidHom`. -/
-@[simps! toFun toMonoidHom]
+@[simps! toFun]
+-- TODO: Add `toMonoidHom` to `simps`, once we stop the simpNF being `MonoidHomClass.toMonoidHom`
 def MulDistribMulAction.toContinuousMonoidHom
     [Monoid G] [Monoid M] [MulDistribMulAction G M] [TopologicalSpace M] [ContinuousConstSMul G M]
     (g : G) : M →ₜ* M where
@@ -590,7 +593,8 @@ def MulDistribMulAction.toContinuousMonoidHom
 Each element of the group defines a continuous additive monoid isomorphism.
 
 This is a continuous version of `DistribMulAction.toAddEquiv`. -/
-@[simps! apply symm_apply toAddEquiv]
+@[simps! apply symm_apply]
+-- TODO: Add `toAddEquiv` to `simps`, once we stop the simpNF being `AddEquivClass.toAddEquiv`
 def DistribMulAction.toContinuousAddEquiv
     [Group G] [AddMonoid M] [DistribMulAction G M] [TopologicalSpace M] [ContinuousConstSMul G M]
     (g : G) : M ≃ₜ+ M where
@@ -602,7 +606,8 @@ def DistribMulAction.toContinuousAddEquiv
 Each element of the group defines a continuous monoid isomorphism.
 
 This is a continuous version of `MulDistribMulAction.toMulEquiv`. -/
-@[simps! apply symm_apply toMulEquiv]
+@[simps! apply symm_apply]
+-- TODO: Add `toMulEquiv` to `simps`, once we stop the simpNF being `MulEquivClass.toMulEquiv`
 def MulDistribMulAction.toContinuousMulEquiv
     [Group G] [Monoid M] [MulDistribMulAction G M] [TopologicalSpace M] [ContinuousConstSMul G M]
     (g : G) : M ≃ₜ* M where
