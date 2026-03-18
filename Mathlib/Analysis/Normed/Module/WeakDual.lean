@@ -107,8 +107,11 @@ def toWeakDual : StrongDual R M ≃ₗ[R] WeakDual R M :=
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.Dual.toWeakDual := toWeakDual
 
-@[simp]
 theorem coe_toWeakDual (x' : StrongDual R M) : toWeakDual x' = x' :=
+  rfl
+
+@[simp]
+theorem toWeakDual_apply (x' : StrongDual R M) (y : M) : (toWeakDual x') y = x' y :=
   rfl
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.Dual.coe_toWeakDual := coe_toWeakDual
@@ -134,10 +137,10 @@ equivalence `StrongDual.toWeakDual` in the other direction. -/
 def toStrongDual : WeakDual 𝕜 E ≃ₗ[𝕜] StrongDual 𝕜 E :=
   StrongDual.toWeakDual.symm
 
+@[simp]
 theorem toStrongDual_apply (x : WeakDual 𝕜 E) (y : E) : (toStrongDual x) y = x y :=
   rfl
 
-@[simp]
 theorem coe_toStrongDual (x' : WeakDual 𝕜 E) : toStrongDual x' = x' :=
   rfl
 
