@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.Localization.Ideal
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 
 /-!
 # Localizations of commutative rings at the complement of a prime ideal
@@ -507,6 +508,43 @@ theorem equivQuotMaximalIdeal_symm_apply_mk (x : R) (s : p.primeCompl) :
 
 @[deprecated (since := "2025-11-13")] alias _root_.equivQuotMaximalIdealOfIsLocalization :=
   equivQuotMaximalIdeal
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The isomorphism `R ⧸ p ^ n ≃+* Rₚ ⧸ maximalIdeal Rₚ ^ n`, where `Rₚ` satisfies
+`IsLocalization.AtPrime Rₚ p`. -/
+noncomputable
+def equivQuotMaximalIdealPow (n : ℕ) : R ⧸ p ^ n ≃+* Rₚ ⧸ IsLocalRing.maximalIdeal Rₚ ^ n := by
+  refine Subring.topEquiv.symm.trans <| -- R ⧸ p ^ n ≃ (⊤ : Subring (R ⧸ p ^ n))
+    (RingEquiv.subringCongr ?_).trans <| -- ⊤ = (R ⧸ p ^ n ← Rₚ / ker).range
+    (IsLocalization.lift fun (u : p.primeCompl) ↦ -- (R ⧸ p ^ n ← Rₚ) => R ⧸ p ^ n ← Rₚ / ker
+      Ideal.Quotient.notMem_of_isUnit_mk_pow _
+      (mem_primeCompl_iff.mp u.prop)).quotientKerEquivRange.symm.trans <|
+    quotEquivOfEq ?_ -- ker = maximalIdeal ^ n
+  · symm
+    rw [RingHom.range_eq_top, IsLocalization.lift_surjective_iff]
+    intro u
+    obtain ⟨x, hx⟩ := Ideal.Quotient.mk_surjective u
+    exact ⟨⟨x, 1⟩, by simp [hx]⟩
+  · ext x
+    obtain ⟨a, b, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
+    suffices a ∈ p ^ n ↔ algebraMap R Rₚ a ∈ IsLocalRing.maximalIdeal Rₚ ^ n by
+      simpa [Ideal.Quotient.eq_zero_iff_mem, IsLocalization.mk'_mem_iff]
+    rw [← map_eq_maximalIdeal p Rₚ, ← Ideal.map_pow,
+      algebraMap_mem_map_algebraMap_iff p.primeCompl Rₚ]
+    refine ⟨fun h ↦ ⟨1, by simp, by simp [h]⟩, fun ⟨m, hm, h⟩ ↦ ?_⟩
+    exact (IsMaximal.mul_mem_pow _ h).resolve_left (mem_primeCompl_iff.mp hm)
+
+@[simp]
+theorem equivQuotMaximalIdealPow_apply_mk (n : ℕ) (x : R) :
+    equivQuotMaximalIdealPow p Rₚ n (Ideal.Quotient.mk _ x) =
+    Ideal.Quotient.mk _ (algebraMap R Rₚ x) := by
+  simp only [equivQuotMaximalIdealPow, RingEquiv.coe_trans, Function.comp_apply]
+  rw [← RingEquiv.eq_symm_apply, RingEquiv.symm_apply_eq]
+  simp only [RingHom.quotientKerEquivRange, Ideal.quotEquivOfEq_symm, Ideal.quotEquivOfEq_mk,
+    RingEquiv.coe_trans, Function.comp_apply, RingHom.quotientKerEquivOfSurjective_apply_mk]
+  rw [← RingEquiv.eq_symm_apply]
+  ext
+  simp
 
 variable {Sₚ : Type*} [CommRing S] [Algebra R S] [CommRing Sₚ] [Algebra S Sₚ] [Algebra R Sₚ]
 variable [Algebra Rₚ Sₚ] [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
