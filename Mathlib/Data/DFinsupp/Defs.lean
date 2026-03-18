@@ -1050,7 +1050,7 @@ theorem comapDomain_single [DecidableEq ι] [DecidableEq κ] [∀ i, Zero (β i)
   · rw [single_eq_same, single_eq_same]
   · rw [single_eq_of_ne hik, single_eq_of_ne (hh.ne hik)]
 
-/-- A computable version of comap_domain when an explicit left inverse is provided. -/
+/-- A computable version of `comapDomain` when an explicit left inverse is provided. -/
 def comapDomain' [∀ i, Zero (β i)] (h : κ → ι) {h' : ι → κ} (hh' : Function.LeftInverse h' h)
     (f : Π₀ i, β i) : Π₀ k, β (h k) where
   toFun x := f (h x)

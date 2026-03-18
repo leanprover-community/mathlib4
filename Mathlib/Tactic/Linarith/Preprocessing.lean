@@ -139,7 +139,7 @@ def mk_natCast_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
 @[deprecated
   "Use `Expr.lt` and `Expr.equal` or `Expr.eqv` directly. \
   If you need to order expressions, consider ordering them by order seen, with AtomM."
-  (since := "2025-08-31")]
+  (since := "2025-08-31"), implicit_reducible]
 def Expr.Ord : Ord Expr :=
 ⟨fun a b => if Expr.lt a b then .lt else if a.equal b then .eq else .gt⟩
 
@@ -363,12 +363,13 @@ end nlinarith
 section removeNe
 /--
 `removeNe_aux` case splits on any proof `h : a ≠ b` in the input,
-turning it into `a < b ∨ a > b`.
+turning it into `a < b ∨ a > b`, provided the type has a `LinearOrder` instance.
 This produces `2^n` branches when there are `n` such hypotheses in the input.
 -/
 partial def removeNe_aux : MVarId → List Expr → MetaM (List Branch) := fun g hs => do
   let some (e, α, a, b) ← hs.findSomeM? (fun e : Expr => do
     let some (α, a, b) := (← instantiateMVars (← inferType e)).ne?' | return none
+    unless (← synthInstance? (← mkAppM ``LinearOrder #[α])).isSome do return none
     return some (e, α, a, b)) | return [(g, hs)]
   let [ng1, ng2] ← g.apply (← mkAppOptM ``Or.elim #[none, none, ← g.getType,
       ← mkAppOptM ``lt_or_gt_of_ne #[α, none, a, b, e]]) | failure
@@ -381,7 +382,7 @@ partial def removeNe_aux : MVarId → List Expr → MetaM (List Branch) := fun g
 
 /--
 `removeNe` case splits on any proof `h : a ≠ b` in the input, turning it into `a < b ∨ a > b`,
-by calling `linarith.removeNe_aux`.
+by calling `linarith.removeNe_aux`, provided the type has a `LinearOrder` instance.
 This produces `2^n` branches when there are `n` such hypotheses in the input.
 -/
 def removeNe : GlobalBranchingPreprocessor where
