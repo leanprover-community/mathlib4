@@ -74,7 +74,8 @@ theorem HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul
     Real.circleAverage ((re ∘ herglotzRieszKernel c w) • f) c R = f w := by
   apply ContinuousOn.eq_of_eqOn_Ioo (r := ‖w - c‖)
   · apply ContinuousOn.circleAverage
-    · apply (continuousOn_herglotz_riesz hw).smul (hf.2.mono _)
+    · rw [herglotzRieszKernel_fun_def]
+      apply (continuousOn_herglotz_riesz hw).smul (hf.2.mono _)
       grind [closure_ball c (pos_of_mem_ball hw).ne', mem_closedBall_iff_norm]
     · simp only [Set.mem_Ioc, and_imp]
       grind [norm_nonneg (w - c)]
