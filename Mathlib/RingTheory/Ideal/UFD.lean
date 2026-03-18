@@ -129,23 +129,19 @@ theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
       rcases hgJ with ⟨t, ht, hat⟩
       refine ⟨t * a, hat, show J = span {algebraMap R (Localization.Away x) (t * a)} from ?_⟩
       rw [← span_singleton_generator J]
+      have hg_eq :
+          g * (algebraMap R (Localization.Away x) s) = algebraMap R (Localization.Away x) a := by
+        simpa [hgs] using (IsLocalization.mk'_spec (Localization.Away x) a s)
       have hy_eq : algebraMap R (Localization.Away x) (t * a) = Submodule.IsPrincipal.generator J *
           ((algebraMap R (Localization.Away x) t) * (algebraMap R (Localization.Away x) s)) := by
-        calc
-          _ = (algebraMap R (Localization.Away x) t) * (algebraMap R (Localization.Away x) a) := by
-            rw [map_mul]
-          _ = (algebraMap R (Localization.Away x) t) *
-              (g * (algebraMap R (Localization.Away x) s)) := by
-            rw [← hgs, IsLocalization.mk'_spec]
-          _ = _ := by ring
+        rw [map_mul]
+        simpa [mul_assoc, mul_left_comm, mul_comm] using
+          congrArg ((algebraMap R (Localization.Away x) t) * ·) hg_eq.symm
       refine span_singleton_eq_span_singleton.2 <| associated_of_dvd_dvd
         ⟨(algebraMap R (Localization.Away x) t) * (algebraMap R (Localization.Away x) s), hy_eq⟩ ?_
       rcases (IsLocalization.map_units (Localization.Away x) ⟨t, ht⟩).mul
         (IsLocalization.map_units (Localization.Away x) s) with ⟨u, hu⟩
-      refine ⟨u⁻¹.1, Eq.symm ?_⟩
-      rw [hy_eq]
-      calc _ = Submodule.IsPrincipal.generator J * (u * u⁻¹.1) := by simp [hu, mul_assoc]
-          _ = Submodule.IsPrincipal.generator J := by simp
+      exact ⟨u⁻¹.1, by simp [hy_eq, ← hu, mul_assoc]⟩
     rcases hex with ⟨y, hyp, hy⟩
     refine ⟨span {y}, ⟨(span_singleton_le_iff_mem p).2 hyp, inferInstance, ?_⟩⟩
     rw [map_span, Set.image_singleton, hy]
@@ -185,18 +181,10 @@ theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
         apply associated_of_dvd_dvd
         · rcases IsLocalization.map_units (Localization.Away x)
             ⟨x, by exact (Submonoid.mem_powers_iff x x).2 ⟨1, by simp⟩⟩ with ⟨u, hu⟩
-          refine ⟨u⁻¹.1, Eq.symm ?_⟩
-          calc
-            _ = algebraMap R (Localization.Away x) b * (u * u⁻¹.1) := by
-              simp [hu, mul_left_comm, mul_comm]
-            _ = algebraMap R (Localization.Away x) b := by simp
+          exact ⟨u⁻¹.1, by simp [← hu, mul_left_comm, mul_comm]⟩
         · exact ⟨algebraMap R (Localization.Away x) x, by rw [map_mul, mul_comm]⟩
-      calc
-        _ = span {algebraMap R (Localization.Away x) (x * b)} := by
-          rw [map_span, Set.image_singleton, ← span_singleton_eq_span_singleton.2 hassoc]
-        _ = map (algebraMap R (Localization.Away x)) I := by
-          rw [← hIspan, hb, map_span, Set.image_singleton]
-        _ = map (algebraMap R (Localization.Away x)) p := hIS.2.2
+      rw [map_span, Set.image_singleton, ← span_singleton_eq_span_singleton.2 hassoc]
+      rw [← hIS.2.2, ← hIspan, hb, map_span, Set.image_singleton]
     have hI_le_spanb : I ≤ span {b} := by
       simpa [← hIspan, hb] using (span_singleton_le_span_singleton).2 ⟨x, by rw [mul_comm]⟩
     have hb_ne_zero : b ≠ 0 := fun hb0 => hy_ne_zero <| by simp [hb, hb0]
@@ -207,11 +195,9 @@ theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
         exact subset_span (by simp)
       rw [← hIspan, mem_span_singleton] at hb_mem_I
       rcases hb_mem_I with ⟨c, hc⟩
-      have hmul : (x * c) * b = 1 * b := by
-        calc _ = x * b * c := by ring
-          _ = b := by rw [← hb, hc]
-          _ = 1 * b := by simp
-      exact hx.not_unit <| IsUnit.of_mul_eq_one c (mul_right_cancel₀ hb_ne_zero hmul)
+      have hc' : (x * b) * c = b := by simpa [hb, mul_assoc] using hc.symm
+      exact hx.not_unit <| IsUnit.of_mul_eq_one c <| mul_right_cancel₀ hb_ne_zero
+        (by simpa [one_mul, mul_assoc, mul_left_comm, mul_comm] using hc')
     exact hImax (span {b}) hspanb_mem (lt_of_le_of_ne hI_le_spanb hI_ne_spanb)
   refine ⟨y, ?_⟩
   change p = span _
