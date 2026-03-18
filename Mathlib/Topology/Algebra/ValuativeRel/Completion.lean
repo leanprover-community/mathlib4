@@ -32,7 +32,7 @@ variable [Ring R] [UniformSpace R] [IsTopologicalRing R] [IsUniformAddGroup R] [
 
 -- restrict surjective, continuous
 -- extends restrict
--- back to Gamma 0 
+-- back to Gamma 0
 def Valuation.completion (v : Valuation R Γ₀) [v.Compatible] :
     Valuation (Completion R) Γ₀ := by sorry
 
