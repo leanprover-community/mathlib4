@@ -118,8 +118,8 @@ instance (H K : Subgroup G) : Inhabited (Quotient (H : Set G) K) :=
 
 lemma eq (H K : Subgroup G) (a b : G) :
     mk H K a = mk H K b ↔ ∃ h ∈ H, ∃ k ∈ K, b = h * a * k := by
-  rw [Quotient.eq'']
-  apply rel_iff
+  erw [Quotient.eq'']
+  exact rel_iff
 
 lemma out_eq' (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out = q :=
   Quotient.out_eq' q
