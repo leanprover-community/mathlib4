@@ -79,7 +79,7 @@ end ValuativeRel
 
 variable {R}
 
-variable {K : Type*} [Field K] [ValuativeRel K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+variable {K : Type*} [DivisionRing K] [ValuativeRel K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 section TopologicalSpace
 
@@ -148,6 +148,10 @@ theorem hasBasis_nhds_zero :
       fun γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ ↦ { x | v.restrict x < γ.val } := by
   simp [Filter.hasBasis_iff, v.is_topological_valuation]
 
+/-- The set `{ y : R | v y = v x }` is a neighbourhood of `x`.
+This does not imply `v` is locally constant everywhere (since `v ⁻¹' {0}` is not open),
+but it is equivalent to the restriction of `v` to the complement of its support being
+locally constant. -/
 theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
   rw [v.mem_nhds_iff]
   have h' : v.restrict x ≠ 0 := by simp [h]
@@ -226,7 +230,7 @@ theorem toTopologicalSpace_eq :
   letI := isUniformAddGroup_of_addCommGroup (G := R)
   exact congrArg (fun u ↦ @UniformSpace.toTopologicalSpace R u) v.toUniformSpace_eq
 
-instance (priority := low) isTopologicalRing : IsTopologicalRing R := by
+instance (priority := low) : IsTopologicalRing R := by
   convert (ValuativeRel.nonarchimedeanRing R).toIsTopologicalRing
   exact toTopologicalSpace_eq _
 
@@ -336,6 +340,10 @@ theorem isClosed_integer : IsClosed (v.integer : Set R) := by
 theorem isClopen_integer : IsClopen (v.integer : Set R) :=
   ⟨isClosed_integer, isOpen_integer⟩
 
+section Field
+
+variable {K : Type*} [Field K] [ValuativeRel K] [TopologicalSpace K] [IsValuativeTopology K]
+
 /-- The valuation subring of a valued field is open. -/
 theorem isOpen_valuationSubring (v : Valuation K Γ₀) [v.Compatible] :
     IsOpen (v.valuationSubring : Set K) :=
@@ -350,6 +358,8 @@ theorem isClosed_valuationSubring (v : Valuation K Γ₀) [v.Compatible] :
 theorem isClopen_valuationSubring (v : Valuation K Γ₀) [v.Compatible] :
     IsClopen (v.valuationSubring : Set K) :=
   isClopen_integer
+
+end Field
 
 end TopologicalSpace
 
