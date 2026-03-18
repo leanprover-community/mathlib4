@@ -115,7 +115,7 @@ theorem ConvexOn.map_condExp_le (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     (hφ_cvx : ConvexOn ℝ s φ) (hφ_cont : LowerSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s)
     (hs : IsClosed s) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
     φ ∘ μ[f | m] ≤ᵐ[μ] μ[φ ∘ f | m] := by
-  refine (isCountablySpanning_spanningSets (μ.trim hm)).null_of_forall_measure_restrict_null
+  refine (isCountablySpanning_spanningSets (μ.trim hm)).null_of_forall_restrict_null
     (fun t ⟨n, hn⟩ => ?_) fun t ⟨n, hn⟩ => hn ▸ ?_
   · exact hn ▸ hm _ (measurableSet_spanningSets (μ.trim hm) n)
   have h1 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hf_int
