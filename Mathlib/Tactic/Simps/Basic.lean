@@ -901,7 +901,7 @@ structure Config where
   current declaration name, or the empty string if the declaration is an instance and the instance
   is named according to the `inst` convention. -/
   nameStem : Option String := none
-  /-- Apply `dsimp%` to the left-hand side of the generated lemma. -/
+  /-- simplify the left-hand side of the generated lemmas using `dsimp` -/
   dsimpLhs := false
   deriving Inhabited
 
