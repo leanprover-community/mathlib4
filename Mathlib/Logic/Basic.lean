@@ -32,6 +32,7 @@ section CommSimproc
 
 open Lean Meta Simp
 
+/-- Run `e` while `declName` is erased from the default `simp` set. -/
 meta def Lean.Meta.Simp.withoutTheorem {α} (declName : Name) (e : SimpM α) : SimpM α := do
   let theorems := (← getSimpTheorems).eraseTheorem (.decl declName)
   let procs := (← getSimprocs).erase declName
@@ -42,9 +43,10 @@ meta def Lean.Meta.Simp.withoutTheorem {α} (declName : Name) (e : SimpM α) : S
     set s
     return x
 
-def eq_comm_eq {α : Sort*} (a b : α) : (a = b) = (b = a) := by rw [@eq_comm _ a b]
-def iff_comm_eq (a b : Prop) : (a ↔ b) = (b ↔ a) := by rw [@iff_comm a b]
+theorem eq_comm_eq {α : Sort*} (a b : α) : (a = b) = (b = a) := by rw [@eq_comm _ a b]
+theorem iff_comm_eq (a b : Prop) : (a ↔ b) = (b ↔ a) := by rw [@iff_comm a b]
 
+/-- On a goal of the form of `x = y`, first tries to apply lemmas to `y = x`. -/
 simproc eqComm (_ = _) := fun e => do
   let_expr Eq x y := e | return .continue
   let symmExpr ← mkEq y x
@@ -58,7 +60,7 @@ simproc eqComm (_ = _) := fun e => do
       { expr := ← mkEq x' y', proof? := ← mkAppM ``eq_comm_eq #[y', x'] })
   | _ => return .done symmR
 
-open Lean Meta Simp in
+/-- On a goal of the form of `x ↔ y`, first tries to apply lemmas to `y ↔ x`. -/
 simproc ↓ iffComm (_ ↔ _) := fun e => do
   let_expr Iff x y := e | return .continue
   let symmExpr := .app (.app (.const ``Iff []) y) x
