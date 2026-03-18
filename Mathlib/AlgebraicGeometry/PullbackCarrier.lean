@@ -402,6 +402,14 @@ lemma pullbackComparison_forget_surjective {X Y S : Scheme.{u}} (f : X ⟶ S) (g
 @[deprecated (since := "2025-10-06")]
 alias Pullback.forget_comparison_surjective := pullbackComparison_forget_surjective
 
+instance {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) :
+    Epi (pullbackComparison Scheme.forgetToTop f g) := by
+  refine (CategoryTheory.forget TopCat).epi_of_epi_map ?_
+  rw [← CategoryTheory.epi_comp_iff_of_isIso _
+    (pullbackComparison (CategoryTheory.forget TopCat) (forgetToTop.map f) (forgetToTop.map g)),
+    ← _root_.CategoryTheory.Limits.pullbackComparison_comp, epi_iff_surjective]
+  apply Scheme.pullbackComparison_forget_surjective _ _
+
 lemma exists_preimage_of_isPullback {P X Y Z : Scheme.{u}} {fst : P ⟶ X} {snd : P ⟶ Y}
     {f : X ⟶ Z} {g : Y ⟶ Z} (h : IsPullback fst snd f g) (x : X) (y : Y)
     (hxy : f.base x = g.base y) :

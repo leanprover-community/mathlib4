@@ -1229,30 +1229,13 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
   if attrs.size > 0 then
     trace[translate_detail] "Applying attributes {attrs.map (·.stx)} to {allDecls}"
   for attr in attrs do
-    withRef attr.stx do withLogging do
     if attr.name == `simps then
-      translateLemmas t allDecls reorder relevantArg "simps lemmas" cfg.ref
-        (simpsTacFromSyntax · attr.stx)
-      return
-    let env ← getEnv
-    match getAttributeImpl env attr.name with
-    | Except.error errMsg => throwError errMsg
-    | Except.ok attrImpl =>
-      let runAttr := do
-        for decl in allDecls do
-          attrImpl.add decl attr.stx attr.kind
-      -- not truly an elaborator, but a sensible target for go-to-definition
-      let elaborator := attrImpl.ref
-      if (← getInfoState).enabled && (← getEnv).contains elaborator then
-        withInfoContext (mkInfo := return .ofCommandInfo { elaborator, stx := attr.stx }) do
-          try runAttr
-          finally if attr.stx[0].isIdent || attr.stx[0].isAtom then
-            -- Add an additional node over the leading identifier if there is one
-            -- to make it look more function-like.
-            -- Do this last because we want user-created infos to take precedence
-            pushInfoLeaf <| .ofCommandInfo { elaborator, stx := attr.stx[0] }
-      else
-        runAttr
+      withRef attr.stx do withLogging do
+        translateLemmas t allDecls reorder relevantArg "simps lemmas" cfg.ref
+          (simpsTacFromSyntax · attr.stx)
+    else
+      for decl in allDecls do
+        Term.applyAttributes decl #[attr]
   return nestedDecls
 
 /--

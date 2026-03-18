@@ -21,6 +21,7 @@ presieve `R` on `X`:
 * An *amalgamation* `t` for the family is an element of `P X` such that for every `f : Y ⟶ X` in
   `R`, the restriction of `t` on `f` is `x_f`.
   See `FamilyOfElements.IsAmalgamation`.
+
 We then say `P` is *separated* for `R` if every compatible family has at most one amalgamation,
 and it is a *sheaf* for `R` if every compatible family has a unique amalgamation.
 See `IsSeparatedFor` and `IsSheafFor`.
@@ -28,13 +29,13 @@ See `IsSeparatedFor` and `IsSheafFor`.
 In the special case where `R` is a sieve, the compatibility condition can be simplified:
 * The family `x` is *compatible* if, for any `f : Y ⟶ X` in `R` and `g : Z ⟶ Y`, the restriction of
   `x_f` along `g` agrees with `x_(g ≫ f)` (which is well defined since `g ≫ f` is in `R`).
-See `FamilyOfElements.SieveCompatible` and `compatible_iff_sieveCompatible`.
+  See `FamilyOfElements.SieveCompatible` and `compatible_iff_sieveCompatible`.
 
 In the special case where `C` has pullbacks, the compatibility condition can be simplified:
 * The family `x` is *compatible* if, for any `f : Y ⟶ X` and `g : Z ⟶ X` both in `R`,
   the restriction of `x_f` along `π₁ : pullback f g ⟶ Y` agrees with the restriction of `x_g`
   along `π₂ : pullback f g ⟶ Z`.
-See `FamilyOfElements.PullbackCompatible` and `pullbackCompatible_iff`.
+  See `FamilyOfElements.PullbackCompatible` and `pullbackCompatible_iff`.
 
 We also provide equivalent conditions to satisfy alternate definitions given in the literature.
 

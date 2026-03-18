@@ -36,6 +36,49 @@ noncomputable def power (U : FormalCoproduct.{w} C) (α : Type t)
   I := α → U.I
   obj i := ∏ᶜ (U.obj ∘ i)
 
+section
+
+variable (U : FormalCoproduct.{w} C) (α : Type) [HasProductsOfShape α C]
+
+variable {α} in
+/-- The projection `U.power α ⟶ U` for each `a : α`. -/
+@[simps]
+noncomputable def powerπ (a : α) : U.power α ⟶ U where
+  f i := i a
+  φ _ := Pi.π _ a
+
+/-- The (limit) fan expressing that `U.power α` is a product of copies of
+`U` indexed by `α`. -/
+noncomputable abbrev powerFan :
+    Fan (fun (_ : α) ↦ U) :=
+  Fan.mk (U.power α) U.powerπ
+
+set_option backward.isDefEq.respectTransparency false in
+/-- `U.power α` identifies to the product of copies of `U` indexed by `α`. -/
+noncomputable def isLimitPowerFan : IsLimit (U.powerFan α) :=
+  mkFanLimit _
+    (fun s ↦
+      { f i a := (s.proj a).f i
+        φ i := Pi.lift (fun a ↦ (s.proj a).φ i) })
+    (fun _ _ ↦ by ext <;> simp)
+    (fun s m hm ↦ by
+      obtain ⟨f, φ⟩ := m
+      obtain rfl : f = fun i a ↦ (s.proj a).f i := by
+        ext i
+        dsimp
+        ext a
+        exact congr_fun (congr_arg FormalCoproduct.Hom.f (hm a)) i
+      ext i
+      · rfl
+      · dsimp
+        ext a
+        specialize hm a
+        rw [hom_ext_iff] at hm
+        obtain ⟨_, hm⟩ := hm
+        simpa using hm i)
+
+end
+
 /-- For any morphism `f : U ⟶ V` in `FormalCoproduct C` and a type `α`,
 this is the induced map `U.power α ⟶ V.power α`. -/
 @[simps -fullyApplied]
@@ -115,6 +158,13 @@ lemma mapPower_powerMap {U V : FormalCoproduct.{w} C} (f : U ⟶ V)
     simp only [Function.comp_apply, limit.lift_map, Cones.postcompose, Fan.mk_pt, Category.comp_id,
       Category.assoc, limit.lift_π, Fan.mk_π_app, Pi.map_π]
     apply limit.lift_π
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma mapPower_π (U : FormalCoproduct.{w} C) {α β : Type}
+    [HasProductsOfShape α C] [HasProductsOfShape β C] (f : α → β) (a : α) :
+    mapPower U f ≫ U.powerπ a = U.powerπ (f a) := by
+  ext <;> simp
 
 attribute [local simp] mapPower_comp mapPower_powerMap
 

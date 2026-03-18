@@ -188,6 +188,7 @@ theorem encard_pi_eq_prod_encard [h : Fintype α] {ι : α → Type*} {s : ∀ i
 
 section Lattice
 
+@[gcongr]
 theorem encard_le_encard (h : s ⊆ t) : s.encard ≤ t.encard := by
   rw [← union_diff_cancel h, encard_union_eq disjoint_sdiff_right]; exact le_self_add
 
@@ -296,7 +297,7 @@ theorem one_le_encard_insert (s : Set α) : 1 ≤ (insert a s).encard :=
   ENat.one_le_iff_ne_zero.mpr <| encard_ne_zero_of_mem (mem_insert a s)
 
 theorem encard_singleton_inter (s : Set α) (x : α) : ({x} ∩ s).encard ≤ 1 := by
-  rw [← encard_singleton x]; exact encard_le_encard inter_subset_left
+  grw [← encard_singleton x, inter_subset_left]
 
 theorem encard_diff_singleton_add_one (h : a ∈ s) :
     (s \ {a}).encard + 1 = s.encard := by
@@ -485,9 +486,7 @@ theorem _root_.Function.Embedding.encard_le (e : s ↪ t) : s.encard ≤ t.encar
 theorem encard_image_le (f : α → β) (s : Set α) : (f '' s).encard ≤ s.encard := by
   obtain (h | h) := isEmpty_or_nonempty α
   · rw [s.eq_empty_of_isEmpty]; simp
-  rw [← (f.invFunOn_injOn_image s).encard_image]
-  apply encard_le_encard
-  exact f.invFunOn_image_image_subset s
+  grw [← (f.invFunOn_injOn_image s).encard_image, f.invFunOn_image_image_subset s]
 
 theorem Finite.injOn_of_encard_image_eq (hs : s.Finite) (h : (f '' s).encard = s.encard) :
     InjOn f s := by
@@ -506,7 +505,7 @@ lemma encard_preimage_of_bijective (hf : f.Bijective) (t : Set β) : (f ⁻¹' t
 
 theorem encard_le_encard_of_injOn (hf : MapsTo f s t) (f_inj : InjOn f s) :
     s.encard ≤ t.encard := by
-  rw [← f_inj.encard_image]; apply encard_le_encard; rintro _ ⟨x, hx, rfl⟩; exact hf hx
+  grw [← f_inj.encard_image, hf.image_subset]
 
 open Notation in
 lemma encard_preimage_val_le_encard_left (P Q : Set α) : (P ↓∩ Q).encard ≤ P.encard :=

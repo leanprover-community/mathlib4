@@ -60,13 +60,13 @@ theorem contDiffOn_fderiv_coord_change [IsManifold I (n + 1) M]
     ContDiffOn 𝕜 n (fderivWithin 𝕜 (j.1.extend I ∘ (i.1.extend I).symm) (range I))
       ((i.1.extend I).symm ≫ j.1.extend I).source := by
   have h : ((i.1.extend I).symm ≫ j.1.extend I).source ⊆ range I := by
-    rw [i.1.extend_coord_change_source]; apply image_subset_range
+    refine I.extendCoordChange_source.trans_subset ?_; apply image_subset_range
   intro x hx
   refine (ContDiffWithinAt.fderivWithin_right ?_ I.uniqueDiffOn le_rfl
     <| h hx).mono h
-  refine (OpenPartialHomeomorph.contDiffOn_extend_coord_change (subset_maximalAtlas j.2)
-    (subset_maximalAtlas i.2) x hx).mono_of_mem_nhdsWithin ?_
-  exact i.1.extend_coord_change_source_mem_nhdsWithin j.1 hx
+  refine (I.contDiffOn_extendCoordChange (subset_maximalAtlas i.2)
+    (subset_maximalAtlas j.2) x hx).mono_of_mem_nhdsWithin ?_
+  exact I.extendCoordChange_source_mem_nhdsWithin hx
 
 open IsManifold
 
@@ -101,7 +101,7 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
     refine (contDiffOn_fderiv_coord_change (n := 0) i j).continuousOn.comp
       (i.1.continuousOn_extend.mono ?_) ?_
     · rw [i.1.extend_source]; exact inter_subset_left
-    simp_rw [← i.1.extend_image_source_inter, mapsTo_image]
+    exact mapsTo_iff_image_subset.2 (i.1.extend_image_source_inter j.1).subset
   coordChange_comp := by
     have : IsManifold I (0 + 1) M := by simpa
     rintro i j k x ⟨⟨hxi, hxj⟩, hxk⟩ v
@@ -110,10 +110,10 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
       filter_upwards [nhdsWithin_le_nhds this] with y hy
       simp_rw [Function.comp_apply, (j.1.extend I).left_inv hy]
     · simp_rw [Function.comp_apply, i.1.extend_left_inv hxi, j.1.extend_left_inv hxj]
-    · exact (contDiffWithinAt_extend_coord_change' (subset_maximalAtlas k.2)
-        (subset_maximalAtlas j.2) hxk hxj).differentiableWithinAt one_ne_zero
-    · exact (contDiffWithinAt_extend_coord_change' (subset_maximalAtlas j.2)
-        (subset_maximalAtlas i.2) hxj hxi).differentiableWithinAt one_ne_zero
+    · exact (I.contDiffWithinAt_extendCoordChange' (subset_maximalAtlas j.2)
+        (subset_maximalAtlas k.2) hxj hxk).differentiableWithinAt one_ne_zero
+    · exact (I.contDiffWithinAt_extendCoordChange' (subset_maximalAtlas i.2)
+        (subset_maximalAtlas j.2) hxi hxj).differentiableWithinAt one_ne_zero
     · intro x _; exact mem_range_self _
     · exact I.uniqueDiffWithinAt_image
     · rw [Function.comp_apply, i.1.extend_left_inv hxi]

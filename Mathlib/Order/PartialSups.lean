@@ -277,7 +277,7 @@ section Set
 ### Functions into `Set α`
 -/
 
-lemma partialSups_eq_sUnion_image [DecidableEq (Set α)] (s : ℕ → Set α) (n : ℕ) :
+lemma partialSups_eq_sUnion_image (s : ℕ → Set α) (n : ℕ) :
     partialSups s n = ⋃₀ ↑((Finset.range (n + 1)).image s) := by
   simp [partialSups_eq_biSup, Nat.lt_succ_iff]
 

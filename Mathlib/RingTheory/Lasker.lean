@@ -42,7 +42,7 @@ variable {R M}
 
 namespace Submodule
 
-lemma decomposition_erase_inf [DecidableEq (Submodule R M)] {N : Submodule R M}
+lemma decomposition_erase_inf {N : Submodule R M}
     {s : Finset (Submodule R M)} (hs : s.inf id = N) :
     ∃ t : Finset (Submodule R M), t ⊆ s ∧ t.inf id = N ∧
       ∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J := by
@@ -89,7 +89,7 @@ lemma isPrimary_decomposition_pairwise_ne_radical {N : Submodule R M}
         radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
 
 lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
-    [DecidableEq (Submodule R M)] {N : Submodule R M} {s : Finset (Submodule R M)}
+    {N : Submodule R M} {s : Finset (Submodule R M)}
     (hs : s.inf id = N) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :
     ∃ t : Finset (Submodule R M), t.inf id = N ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
       ((t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical)) ∧
@@ -100,14 +100,14 @@ lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
 
 /-- A `Finset` of submodules is a minimal primary decomposition of `N` if the submodules `Nᵢ`
 intersect to `N`, are primary, the `√Ann(M/Nᵢ)` are distinct, and each `Nᵢ` is necessary. -/
-structure IsMinimalPrimaryDecomposition [DecidableEq (Submodule R M)]
+structure IsMinimalPrimaryDecomposition
     (N : Submodule R M) (t : Finset (Submodule R M)) where
   inf_eq : t.inf id = N
   primary : ∀ ⦃J⦄, J ∈ t → J.IsPrimary
   distinct : (t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical)
   minimal : ∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J
 
-lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)]
+lemma IsLasker.exists_isMinimalPrimaryDecomposition
     (h : IsLasker R M) (N : Submodule R M) :
     ∃ t : Finset (Submodule R M), N.IsMinimalPrimaryDecomposition t := by
   obtain ⟨s, hs1, hs2⟩ := h N
@@ -118,7 +118,7 @@ lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)
 /-- The first uniqueness theorem for primary decomposition, Theorem 4.5 in Atiyah-Macdonald:
 In any minimal primary decomposition `I = ⨅ i, q_i`, the ideals `radical (q_i.colon M)` are exactly
 the associated primes of `I`. -/
-lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes [DecidableEq (Submodule R M)]
+lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes
     {N : Submodule R M} {t : Finset (Submodule R M)} (ht : IsMinimalPrimaryDecomposition N t) :
     (fun J : Submodule R M ↦ (J.colon Set.univ).radical) '' t = N.associatedPrimes := by
   classical
@@ -148,7 +148,6 @@ alias IsMinimalPrimaryDecomposition.mem_image_radical_colon_iff :=
 end Submodule
 
 lemma Ideal.IsMinimalPrimaryDecomposition.minimalPrimes_subset_image_radical
-    [DecidableEq (Ideal R)]
     {I : Ideal R} {t : Finset (Ideal R)} (ht : I.IsMinimalPrimaryDecomposition t) :
     I.minimalPrimes ⊆ radical '' t := by
   intro p hp

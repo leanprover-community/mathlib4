@@ -227,7 +227,7 @@ variable (K L : Type*) [Field K] [Field L]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A technical lemma for `fixed_of_fixed1`. -/
-private theorem fixed_of_fixed1_aux1 [DecidableEq (Ideal B)] :
+private theorem fixed_of_fixed1_aux1 :
     ∃ a b : B, (∀ g : G, g • a = a) ∧ a ∉ Q ∧
     ∀ g : G, algebraMap B (B ⧸ Q) (g • b) = algebraMap B (B ⧸ Q) (if g • Q = Q then a else 0) := by
   obtain ⟨_⟩ := nonempty_fintype G
@@ -284,7 +284,7 @@ private theorem fixed_of_fixed1_aux1 [DecidableEq (Ideal B)] :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A technical lemma for `fixed_of_fixed1`. -/
-private theorem fixed_of_fixed1_aux2 [DecidableEq (Ideal B)] (b₀ : B)
+private theorem fixed_of_fixed1_aux2 (b₀ : B)
     (hx : ∀ g : G, g • Q = Q → algebraMap B (B ⧸ Q) (g • b₀) = algebraMap B (B ⧸ Q) b₀) :
     ∃ a b : B, (∀ g : G, g • a = a) ∧ a ∉ Q ∧
     (∀ g : G, algebraMap B (B ⧸ Q) (g • b) =

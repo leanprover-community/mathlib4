@@ -123,7 +123,7 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
     (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j) (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) (hg : ∀ i ∈ s, 0 ≤ g i)
     (hh : ∀ i ∈ s, 0 ≤ h i) : ((∏ i ∈ s, g i) + ∏ i ∈ s, h i) ≤ ∏ i ∈ s, f i := by
   classical
-  simp_rw [prod_eq_mul_prod_diff_singleton hi]
+  simp_rw [prod_eq_mul_prod_diff_singleton_of_mem hi]
   refine le_trans ?_ (mul_le_mul_of_nonneg_right h2i ?_)
   · rw [right_distrib]
     gcongr with j hj <;> aesop
@@ -181,7 +181,7 @@ variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
 lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j)
     (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) : ((∏ i ∈ s, g i) + ∏ i ∈ s, h i) ≤ ∏ i ∈ s, f i := by
   classical
-  simp_rw [prod_eq_mul_prod_diff_singleton hi]
+  simp_rw [prod_eq_mul_prod_diff_singleton_of_mem hi]
   grw [← h2i, right_distrib]
   gcongr with j hj j hj <;> simp_all
 

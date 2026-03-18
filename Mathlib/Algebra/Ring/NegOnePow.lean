@@ -78,7 +78,6 @@ lemma negOnePow_eq_neg_one_iff (n : ℤ) : n.negOnePow = -1 ↔ Odd n := by
     contradiction
   · exact negOnePow_odd n
 
-@[simp]
 theorem abs_negOnePow (n : ℤ) : |(n.negOnePow : ℤ)| = 1 := by
   rw [abs_eq_natAbs, Int.units_natAbs, Nat.cast_one]
 
@@ -114,5 +113,13 @@ lemma cast_negOnePow_natCast (R : Type*) [Ring R] (n : ℕ) : negOnePow n = (-1 
   obtain ⟨k, rfl | rfl⟩ := Nat.even_or_odd' n <;> simp [pow_succ, pow_mul]
 
 lemma coe_negOnePow_natCast (n : ℕ) : negOnePow n = (-1 : ℤ) ^ n := cast_negOnePow_natCast ..
+
+/-- The cast of `negOnePow n` to a ring equals `(-1) ^ n.natAbs`. -/
+@[simp]
+lemma coe_negOnePow (R : Type*) [Ring R] (n : ℤ) :
+    (n.negOnePow : R) = (-1 : R) ^ n.natAbs := by
+  cases n with
+  | ofNat n => exact cast_negOnePow_natCast R n
+  | negSucc n => simp [negOnePow_def, Units.val_pow_eq_pow_val]
 
 end Int

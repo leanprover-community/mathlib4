@@ -293,6 +293,21 @@ variable {K : Type*} [Field K] [LieAlgebra K L]
 variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
 variable [LieModule.IsTriangularizable K H L]
 
+lemma lieIdeal_eq_iSup_inf_genWeightSpace (I : LieIdeal K L) :
+    I.restr H = ⨆ χ : Weight K H L, I.restr H ⊓ genWeightSpace L χ :=
+  eq_iSup_inf_genWeightSpace (N := I.restr H)
+
+lemma lieIdeal_eq_inf_cartan_sup_biSup_inf_rootSpace (I : LieIdeal K L) :
+    I.restr H = (I.restr H ⊓ H.toLieSubmodule) ⊔
+      ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), I.restr H ⊓ rootSpace H α := by
+  refine le_antisymm ?_ (sup_le inf_le_left (iSup₂_le fun _ _ ↦ inf_le_left))
+  conv_lhs => rw [lieIdeal_eq_iSup_inf_genWeightSpace]
+  exact iSup_le fun α ↦ by
+    by_cases hα : α.IsZero
+    · rw [show genWeightSpace L (α : H → K) = H.toLieSubmodule from by ext; simp [hα.eq]]
+      exact le_sup_left
+    · exact le_sup_of_le_right (le_iSup₂_of_le α hα le_rfl)
+
 lemma cartan_sup_iSup_rootSpace_eq_top :
     H.toLieSubmodule ⊔ ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), rootSpace H α = ⊤ := by
   rw [eq_top_iff, ← LieModule.iSup_genWeightSpace_eq_top', iSup_le_iff]
