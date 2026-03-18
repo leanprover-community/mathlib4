@@ -240,17 +240,15 @@ def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Alge
   S.toSubsemiring.toAddSubmonoid
 
 /-- A subalgebra over a ring is also a `Subring`. -/
-@[simps toSubsemiring]
+@[reducible]
 def toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) :
     Subring A :=
   { S.toSubsemiring with neg_mem' := S.neg_mem }
 
-@[simp]
 theorem mem_toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     {S : Subalgebra R A} {x} : x ∈ S.toSubring ↔ x ∈ S :=
   Iff.rfl
 
-@[simp]
 theorem coe_toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     (S : Subalgebra R A) : (↑S.toSubring : Set A) = S :=
   rfl
@@ -289,6 +287,7 @@ instance toCommRing {R A} [CommRing R] [CommRing A] [Algebra R A] (S : Subalgebr
 end
 
 /-- The forgetful map from `Subalgebra` to `Submodule` as an `OrderEmbedding` -/
+@[implicit_reducible] -- Not `@[reducible]` because it is an order embedding rather than a function.
 def toSubmodule : Subalgebra R A ↪o Submodule R A where
   toEmbedding :=
     { toFun := fun S =>
