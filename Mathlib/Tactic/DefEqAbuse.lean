@@ -132,6 +132,25 @@ produce `empty` and `combine` from `{}` and `(· ++ ·)` or `(· ∪ ·)`, then 
   if arr.isEmpty then return .ascend else
     return .ascend <|← visitWithM arr visitM empty combine
 
+/-- Recursively modify the pp options captured in `MessageData.withContext` nodes.
+Used to re-render `X =?= X` failures with `pp.universes` or `pp.explicit` to show
+the difference between LHS and RHS without re-running the full analysis. -/
+partial def withPPOptions (msg : MessageData) (modify : Options → Options) : MessageData :=
+  match msg with
+  | .withContext ctx d =>
+    .withContext { ctx with opts := modify ctx.opts } (withPPOptions d modify)
+  | .compose a b => .compose (withPPOptions a modify) (withPPOptions b modify)
+  | .nest n m => .nest n (withPPOptions m modify)
+  | .group m => .group (withPPOptions m modify)
+  | .tagged t m => .tagged t (withPPOptions m modify)
+  | .withNamingContext nc m => .withNamingContext nc (withPPOptions m modify)
+  | .trace td header children =>
+    .trace td (withPPOptions header modify) (children.map (withPPOptions · modify))
+  | .ofWidget w m => .ofWidget w (withPPOptions m modify)
+  | other@(.ofLazy _ _)
+  | other@(.ofFormatWithInfos _)
+  | other@(.ofGoal _) => other
+
 end Lean.MessageData
 
 namespace Mathlib.Tactic.DefEqAbuse
@@ -146,7 +165,7 @@ namespace Mathlib.Tactic.DefEqAbuse
     f td header children
 
 /-- Find the deepest failing `Meta.isDefEq` trace nodes (leaf failures).
-Skips `onFailure` retry nodes and ignores ✅ branches (recovered failures aren't root causes).
+Skips `onFailure` retry nodes and ignores ✅️ branches (recovered failures aren't root causes).
 Note: status is currently determined by parsing emoji from the rendered header string.
 Once https://github.com/leanprover/lean4/pull/12698 is available, use `td.result?` instead. -/
 partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
@@ -154,7 +173,7 @@ partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
     unless traceResultOf (← header.toString) matches some .failure do
       return .ascend
     let childFailures ← visitWithM children findLeafFailures
-    -- Leaf failure: deepest `❌` node with no deeper `❌` children
+    -- Leaf failure: deepest `❌️` node with no deeper `❌️` children
     return .ascend <| if childFailures.isEmpty then #[header] else childFailures
 
 /-- Collect rendered check strings from `Meta.isDefEq` trace nodes matching a status predicate.
@@ -273,6 +292,45 @@ def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool
   let dedupedResults ← filteredResults.mapM fun (app, failures) => do
     return (app, ← dedupByString failures)
   return (uniqueFailures, dedupedResults)
+
+/-- Check whether a rendered isDefEq check string has syntactically identical LHS and RHS
+(e.g. `"❌️ ⊤ =?= ⊤"` or `"Quiver C =?= Quiver C"`).
+Comparison is whitespace-insensitive to handle cases where LHS and RHS are semantically identical
+but rendered with different line breaks or spacing.
+TODO: once https://github.com/leanprover/lean4/pull/12698 is available, refactor to use
+`TraceData.result?` and compare the LHS/RHS `Expr`s structurally instead of string-matching. -/
+private def isIdenticalSidesStr (raw : String) : Bool :=
+  if let [lhsRaw, rhs] := raw.splitOn " =?= " then
+    -- Strip the leading status emoji/word (first whitespace-delimited token).
+    let lhs := match lhsRaw.splitOn " " with
+      | _ :: rest => " ".intercalate rest
+      | _ => lhsRaw
+    -- Compare up to whitespace so that line-break differences don't cause false negatives.
+    let tokenize (s : String) : List String :=
+      (s.split Char.isWhitespace).toList.map (·.toString) |>.filter (· ≠ "")
+    tokenize lhs == tokenize rhs
+  else false
+
+/-- PP option escalation levels for disambiguating `X =?= X` failures.
+Each level adds more detail to pretty-printed expressions.
+We prefer symmetric options (`pp.universes`, `pp.explicit`) over `pp.analyze`,
+which is context-dependent and can add annotations to only one side. -/
+private def ppEscalations : List (Options → Options) :=
+  [ fun o => o.setBool `pp.universes true
+  , fun o => o.setBool `pp.explicit true
+  ]
+
+/-- For failures with syntactically identical LHS and RHS (e.g. `⊤ =?= ⊤`), re-render with
+progressively more verbose pp settings to disambiguate. This modifies only the rendering
+of the `MessageData` (via `withPPOptions`), not the analysis — the captured `MetavarContext`
+and trace structure are preserved, so transition-point detection remains correct. -/
+def disambiguateFailures (failures : Array MessageData) : BaseIO (Array MessageData) :=
+  failures.mapM fun f => do
+    unless isIdenticalSidesStr (← f.toString) do return f
+    for ppLevel in ppEscalations do
+      let escalated := f.withPPOptions ppLevel
+      unless isIdenticalSidesStr (← escalated.toString) do return escalated
+    return f
 
 /-- Format and log the `#defeq_abuse` diagnostic report.
 `kind` is `"tactic"` or `"command"`. -/
@@ -510,7 +568,8 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
         let strictMsgs := strictTraces.toArray.map (·.msg)
         let permMsgs := permTraces.toArray.map (·.msg)
         let (uniqueFailures, _) ← analyzeTraces strictMsgs permMsgs
-        reportDefEqAbuse "tactic" uniqueFailures #[]
+        let disambiguated ← disambiguateFailures uniqueFailures
+        reportDefEqAbuse "tactic" disambiguated #[]
         -- Attempt to find minimal @[implicit_reducible] workaround
         try logAnnotationSuggestions (← suggestAnnotationsTac tac) catch _ => pure ()
         -- Pass 3: run the tactic with permissive setting so it actually succeeds
@@ -587,7 +646,10 @@ elab_rules : command
         let permMsgData := permissiveMsgs.map (·.data) |>.toArray
         let (uniqueFailures, synthResults) ←
           analyzeTraces strictMsgData permMsgData (includeSynth := true)
-        reportDefEqAbuse "command" uniqueFailures synthResults
+        let disambiguatedFailures ← disambiguateFailures uniqueFailures
+        let disambiguatedSynth ← synthResults.mapM fun (app, failures) => do
+          return (app, ← disambiguateFailures failures)
+        reportDefEqAbuse "command" disambiguatedFailures disambiguatedSynth
         -- Attempt to find minimal @[implicit_reducible] workaround
         try logAnnotationSuggestions (← suggestAnnotationsCmd cmd) catch _ => pure ()
         -- Pass 3: run the command with permissive setting so it actually takes effect
