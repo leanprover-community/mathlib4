@@ -38,7 +38,7 @@ lemma integral_of_ae_eq_zero_or_one (hXmeas : AEMeasurable X μ) (hX : ∀ᵐ ω
 
 /-- If a random variable is ae equal to `0` or `1`, then one minus its expectation is equal to the
 probability that it equals `0`. -/
-lemma integral_one_sub_of_ae_eq_zero_or_one [IsProbabilityMeasure μ] (hXmeas : AEMeasurable X μ)
+lemma integral_one_sub_of_ae_eq_zero_or_one (hXmeas : AEMeasurable X μ)
     (hX : ∀ᵐ ω ∂μ, X ω = 0 ∨ X ω = 1) : ∫ ω, 1 - X ω ∂μ = μ.real {ω | X ω = 0} := by
   calc
     _ = μ.real {ω | 1 - X ω = 1} :=
