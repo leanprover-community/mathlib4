@@ -666,7 +666,6 @@ lemma ValueGroupWithZero.mk_eq_div (r : R) (s : posSubmonoid R) :
   rw [eq_div_iff (valuation_posSubmonoid_ne_zero _)]
   simp [valuation, mk_eq_mk]
 
-set_option linter.flexible false in -- simp followed by gcongr
 /-- Construct a valuative relation on a ring using a valuation. -/
 @[implicit_reducible]
 def ofValuation
@@ -677,7 +676,7 @@ def ofValuation
   vle_total x y := le_total (v x) (v y)
   vle_trans := le_trans
   vle_add hab hbc := (map_add_le_max v _ _).trans (sup_le hab hbc)
-  mul_vle_mul_left _ h := by simp [map_mul]; gcongr
+  mul_vle_mul_left _ h := by simp only [map_mul]; gcongr
   vle_mul_cancel h0 h := by
     rw [map_zero, le_zero_iff] at h0
     simp only [map_mul] at h

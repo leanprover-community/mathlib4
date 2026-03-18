@@ -73,7 +73,6 @@ lemma cohomologyFunctor_obj (n : ℕ) (F : Sheaf J AddCommGrpCat.{w}) :
     (cohomologyFunctor J n).obj F = F.H n :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : (cohomologyFunctor J n).Additive := by
   dsimp [cohomologyFunctor]
   infer_instance
