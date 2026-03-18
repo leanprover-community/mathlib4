@@ -103,11 +103,9 @@ lemma hasInjectiveDimensionLE_iff_forall_maximalSpectrum [Small.{v, u} R] [IsNoe
         (M.localizedModuleMkLinearMap m.1.primeCompl)
     · rw [← Module.injective_iff_injective_object]
       apply Module.injective_of_localization_maximal (fun p hp ↦ ?_)
-      let _ : Small.{v} (Localization.AtPrime p) :=
-        small_of_surjective Localization.mkHom_surjective
+      let : Small.{v} (Localization.AtPrime p) := small_of_surjective Localization.mkHom_surjective
       have : Module.Injective (Localization.AtPrime p) (M.localizedModule p.primeCompl) := by
-        rw [Module.injective_iff_injective_object]
-        exact h ⟨p, hp⟩
+        simpa [Module.injective_iff_injective_object] using h ⟨p, hp⟩
       rw [← Module.Baer.iff_injective] at this ⊢
       exact Module.Baer.of_equiv (LinearEquiv.extendScalarsOfIsLocalization p.primeCompl
         (Localization.AtPrime p) (IsLocalizedModule.linearEquiv p.primeCompl

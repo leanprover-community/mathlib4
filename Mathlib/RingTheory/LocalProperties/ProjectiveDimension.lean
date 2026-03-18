@@ -86,7 +86,7 @@ lemma hasProjectiveDimensionLE_iff_forall_maximalSpectrum (n : ℕ) [Small.{v} R
   | zero =>
     simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
     refine ⟨fun h p ↦ ?_, fun h ↦ ?_⟩
-    · have : Small.{v} (Localization p.asIdeal.primeCompl) :=
+    · let : Small.{v} (Localization p.asIdeal.primeCompl) :=
         small_of_surjective Localization.mkHom_surjective
       rw [← IsProjective.iff_projective]
       exact Module.projective_of_isLocalizedModule p.1.primeCompl
@@ -95,7 +95,7 @@ lemma hasProjectiveDimensionLE_iff_forall_maximalSpectrum (n : ℕ) [Small.{v} R
       have : Module.FinitePresentation R M := Module.finitePresentation_of_finite R M
       apply Module.projective_of_localization_maximal (fun p hp ↦ ?_)
       have : Module.Projective (Localization.AtPrime p) (M.localizedModule p.primeCompl) := by
-        have : Small.{v} (Localization.AtPrime p) :=
+        let : Small.{v} (Localization.AtPrime p) :=
           small_of_surjective Localization.mkHom_surjective
         simpa [IsProjective.iff_projective] using h ⟨p, hp⟩
       exact Module.Projective.of_equiv (LinearEquiv.extendScalarsOfIsLocalization p.primeCompl
