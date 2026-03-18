@@ -17,6 +17,8 @@ Ordinals have an addition (corresponding to the disjoint union) that turns them 
 monoid, and a multiplication (corresponding to the lexicographic order on the product) that turns
 them into a monoid. One can also define (truncated) subtraction and division operators.
 
+Ordinal powers and logarithms are defined in `Mathlib.SetTheory.Ordinal.Exponential`.
+
 ## Main definitions and results
 
 * `a + b` is the order type of the lexicographic sum `a ⊕ₗ b`.
