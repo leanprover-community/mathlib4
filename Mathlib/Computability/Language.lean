@@ -43,6 +43,7 @@ with respect to other language operations.
 * `Language α`: a set of strings over the alphabet `α`
 * `l.map f`: transform a language `l` over `α` into a language over `β`
   by translating through `f : α → β`
+* `l.subst f`: substitution; replace each symbol `a` with a string from `f a`
 
 ## Main theorems
 
@@ -439,7 +440,7 @@ def subst {α β : Type} (L : Language α) (f : α → Language β) : Language �
 
 /-- We can model concatenation / multiplication of languages using substitution -/
 theorem subst_pair_eq_mul {β : Type} (f : Bool → Language β) :
-    Language.subst ({[false, true]} : Language Bool) f = f false * f true := by
+    ({[false, true]} : Language Bool).subst f = f false * f true := by
       -- To prove equality of sets, we show each set is a subset of the other.
       apply Set.ext
       intro u
@@ -457,7 +458,7 @@ theorem subst_pair_eq_mul {β : Type} (f : Bool → Language β) :
 /-- We can model union / addition of languages using substitution -/
 theorem subst_singletons_eq_add {β : Type}
     (f : Bool → Language β) :
-    Language.subst ({[false], [true]} : Language Bool) f = f false + f true := by
+    ({[false], [true]} : Language Bool).subst f = f false + f true := by
       ext u;
       constructor;
       · rintro ⟨ w, hw, hu ⟩;

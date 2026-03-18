@@ -23,6 +23,10 @@ nonterminal symbols that are referred to by its finitely many rules.
 
 ## Main theorems
 * `Language.IsContextFree.reverse`: The class of context-free languages is closed under reversal.
+
+## Related files
+* `Mathlib.Computability.ContextFreeGrammarClosure`: Closure under substitution, concatenation,
+  union, and Kleene star.
 -/
 
 @[expose] public section

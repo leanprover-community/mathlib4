@@ -4,12 +4,29 @@ import Mathlib.Tactic
 import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 
 /-!
-# Context-Free Languages are Closed Under Substitution
+# Context-Free Language Closure Properties
 
-The main theorem is `IsContextFree.subst`: Context-Free Grammars are closed under substitution.
+This file proves that context-free languages are closed under substitution, and derives closure
+under concatenation, union, and Kleene star as corollaries.
 
-From this follow as simple corollaries that Context Free Gramamrs are closed under
-addition (mul), union (add) and Kleene Star.
+The substitution grammar `ContextFreeGrammar.subst g f` is constructed by replacing each terminal
+`a` in `g` with the start symbol of `f a`, and adding all rules from every `f a` (for terminals
+actually used in `g`). The key technical lemma is that derivation steps from the two components
+commute: since F-rules (from the substituting grammars) never introduce nonterminals targeted by
+G-rules (from the original grammar), any mixed derivation can be reordered into a G-phase followed
+by an F-phase (`ContextFreeGrammar.derives_commute_of_not_mem_output`).
+
+## Main definitions
+
+* `ContextFreeGrammar.subst`: The substitution of a context-free grammar `g` by a family of
+  context-free grammars `f`.
+
+## Main theorems
+
+* `Language.IsContextFree.subst`: Context-free languages are closed under substitution.
+* `Language.IsContextFree.mul`: Context-free languages are closed under concatenation.
+* `Language.IsContextFree.add`: Context-free languages are closed under union.
+* `Language.IsContextFree.kstar`: Context-free languages are closed under Kleene star.
 -/
 
 noncomputable section
@@ -943,15 +960,11 @@ theorem subst_language_eq {α β : Type} [DecidableEq α] [DecidableEq β]
 
 end ContextFreeGrammar
 
-/-- A language is context-free if it is the language of some context-free grammar. -/
-def IsContextFree {α : Type} (L : Language α) : Prop :=
-  ∃ g : ContextFreeGrammar α, g.language = L
-
 /-- Context-free languages are closed under substitution. -/
-theorem IsContextFree.subst {α β : Type}
+theorem Language.IsContextFree.subst {α β : Type}
     (L : Language α) (f : α → Language β)
-    (hL : IsContextFree L) (hf : ∀ a, IsContextFree (f a)) :
-    IsContextFree (L.subst f) := by
+    (hL : L.IsContextFree) (hf : ∀ a, (f a).IsContextFree) :
+    (L.subst f).IsContextFree := by
       obtain ⟨ g, hg ⟩ := hL
       obtain ⟨ F, hF ⟩ : ∃ F : α → ContextFreeGrammar β, ∀ a, (F a).language = f a := by
         exact ⟨ fun a => Classical.choose ( hf a ), fun a => Classical.choose_spec ( hf a ) ⟩
@@ -960,7 +973,7 @@ theorem IsContextFree.subst {α β : Type}
 
 /-! ### Singleton language is context-free -/
 theorem isContextFree_singleton {α : Type} (w : List α) :
-    IsContextFree ({w} : Language α) := by
+    ({w} : Language α).IsContextFree := by
   use ContextFreeGrammar.mk Unit () ({ContextFreeRule.mk () (w.map Symbol.terminal)})
   ext u; constructor
   · intro hd
@@ -985,7 +998,7 @@ theorem isContextFree_singleton {α : Type} (w : List α) :
 
 /-! ### Finite language {[false], [true]} is context-free -/
 theorem isContextFree_pair_bool :
-    IsContextFree ({[false], [true]} : Language Bool) := by
+    ({[false], [true]} : Language Bool).IsContextFree := by
   use ContextFreeGrammar.mk Unit () ({ContextFreeRule.mk () [Symbol.terminal false],
     ContextFreeRule.mk () [Symbol.terminal true]})
   ext u; constructor
@@ -1021,8 +1034,9 @@ theorem isContextFree_pair_bool :
     · exact Relation.ReflTransGen.single ⟨⟨(), [Symbol.terminal true]⟩,
         Finset.mem_insert_of_mem (Finset.mem_singleton_self _),
         ContextFreeRule.Rewrites.head []⟩
+
 /-! ### The universal language over Unit is context-free -/
-theorem isContextFree_univ_unit : IsContextFree (Set.univ : Language Unit) := by
+theorem isContextFree_univ_unit : Language.IsContextFree (Set.univ : Language Unit) := by
   use ⟨Unit, (), {⟨(), []⟩, ⟨(), [Symbol.terminal (), Symbol.nonterminal ()]⟩}⟩;
   refine Set.eq_univ_of_forall ?_;
   intro x
@@ -1063,39 +1077,41 @@ theorem isContextFree_univ_unit : IsContextFree (Set.univ : Language Unit) := by
       exact Relation.ReflTransGen.trans h_step1 (h_prepend _ _ hu);
     convert h_add_terminal _ h using 1
 
-/-! ### Main corollaries: Closure under addition, union, and Kleene star -/
-theorem IsContextFree.mul {α : Type} {L₁ L₂ : Language α}
-    (h₁ : IsContextFree L₁) (h₂ : IsContextFree L₂) :
-    IsContextFree (L₁ * L₂) := by
-      have h_subst : IsContextFree
-          (Language.subst ({[false, true]} : Language Bool) (fun b => if b then L₂ else L₁)) := by
+/-! ### Main corollaries: Closure under concatenation, union, and Kleene star -/
+theorem Language.IsContextFree.mul {α : Type} {L₁ L₂ : Language α}
+    (h₁ : L₁.IsContextFree) (h₂ : L₂.IsContextFree) :
+    (L₁ * L₂).IsContextFree := by
+      have h_subst : (({[false, true]} : Language Bool).subst
+          (fun b => if b then L₂ else L₁)).IsContextFree := by
         classical
-        apply IsContextFree.subst;
+        apply Language.IsContextFree.subst;
         · exact isContextFree_singleton [false, true];
         · grind;
       convert h_subst using 1;
       exact Eq.symm ( by simpa using
         Language.subst_pair_eq_mul ( fun b => if b = true then L₂ else L₁ ) )
-theorem IsContextFree.add {α : Type} {L₁ L₂ : Language α}
-    (h₁ : IsContextFree L₁) (h₂ : IsContextFree L₂) :
-    IsContextFree (L₁ + L₂) := by
+
+theorem Language.IsContextFree.add {α : Type} {L₁ L₂ : Language α}
+    (h₁ : L₁.IsContextFree) (h₂ : L₂.IsContextFree) :
+    (L₁ + L₂).IsContextFree := by
       classical
       obtain ⟨ g₁, hg₁ ⟩ := h₁
       obtain ⟨ g₂, hg₂ ⟩ := h₂
       set f : Bool → Language α := fun b => if b then g₂.language else g₁.language
-      have h_subst : IsContextFree (Language.subst ({[false], [true]} : Language Bool) f) := by
+      have h_subst : (({[false], [true]} : Language Bool).subst f).IsContextFree := by
         classical
-        apply_rules [ IsContextFree.subst, isContextFree_pair_bool ];
+        apply_rules [ Language.IsContextFree.subst, isContextFree_pair_bool ];
         exact fun a => by cases a <;> [ exact ⟨ g₁, rfl ⟩ ; exact ⟨ g₂, rfl ⟩ ] ;
       exact (by
         convert h_subst using 1
         rw [ ← hg₁, ← hg₂, Language.subst_singletons_eq_add ]
         aesop
       )
-theorem IsContextFree.kstar {α : Type} {L : Language α}
-    (h : IsContextFree L) :
-    IsContextFree (KStar.kstar L) := by
-      have := IsContextFree.subst (Set.univ : Language Unit) (fun _ => L)
+
+theorem Language.IsContextFree.kstar {α : Type} {L : Language α}
+    (h : L.IsContextFree) :
+    (KStar.kstar L).IsContextFree := by
+      have := Language.IsContextFree.subst (Set.univ : Language Unit) (fun _ => L)
           isContextFree_univ_unit (fun _ => h)
       rwa [Language.subst_univ_unit_eq_kstar] at this
 end
