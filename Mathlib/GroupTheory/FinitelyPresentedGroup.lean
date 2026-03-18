@@ -54,8 +54,8 @@ namespace IsNormalClosureFG
 
 /-- `IsNormalClosureFG` is invariant under surjective homomorphism. -/
 theorem map
-  (f : G →* H) (hf : Function.Surjective f) (K : Subgroup G) (hK : IsNormalClosureFG K)
-  : IsNormalClosureFG (K.map f) := by
+    (f : G →* H) (hf : Function.Surjective f) (K : Subgroup G) (hK : IsNormalClosureFG K) :
+    IsNormalClosureFG (K.map f) := by
   obtain ⟨ S, hSfinite, hSclosure ⟩ := hK
   use f '' S
   constructor
@@ -119,8 +119,8 @@ lemma exists_reindex_freeGroup_hom
 /-- A group is finitely presented if and only if there exists a surjective homomorphism from
 a free group on a `Finite` type such that the kernel is finitely generated as a normal subgroup. -/
 theorem iff_hom_surj_finite :
-IsFinitelyPresented G ↔ ∃ (α : Type) (_ : Finite α) (f : (FreeGroup α) →* G),
-  Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)  := by
+    IsFinitelyPresented G ↔ ∃ (α : Type) (_ : Finite α) (f : (FreeGroup α) →* G),
+      Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f) := by
   constructor
   · intro ⟨α, hα, rels, hrels, ⟨iso⟩⟩
     unfold PresentedGroup at iso
@@ -148,8 +148,8 @@ IsFinitelyPresented G ↔ ∃ (α : Type) (_ : Finite α) (f : (FreeGroup α) �
 /-- A group is finitely presented if and only if there exists a surjective homomorphism from
 a free group on a `Fintype` type such that the kernel is finitely generated as a normal subgroup. -/
 theorem iff_hom_surj_fintype :
-IsFinitelyPresented G ↔ ∃ (α : Type) (_ : Fintype α) (f : (FreeGroup α) →* G),
-  Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)  := by
+    IsFinitelyPresented G ↔ ∃ (α : Type) (_ : Fintype α) (f : (FreeGroup α) →* G),
+      Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f) := by
   rw [iff_hom_surj_finite]
   constructor
   · intro ⟨α, _, f, hfsurj, hfker⟩
@@ -161,8 +161,8 @@ IsFinitelyPresented G ↔ ∃ (α : Type) (_ : Fintype α) (f : (FreeGroup α) �
 /-- A group is finitely presented if and only if there exists a surjective homomorphism from
 a free group on `Fin n` such that the kernel is finitely generated as a normal subgroup. -/
 theorem iff_hom_surj_fin_n :
-IsFinitelyPresented G ↔ ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
-  Function.Surjective f ∧ IsNormalClosureFG f.ker  := by
+    IsFinitelyPresented G ↔ ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
+      Function.Surjective f ∧ IsNormalClosureFG f.ker := by
   rw [iff_hom_surj_finite]
   constructor
   · intro ⟨α, hα, f, hfsurj, hfker⟩
@@ -178,8 +178,8 @@ IsFinitelyPresented G ↔ ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
 a free group on an arbitrary `Finite type` such that the kernel is finitely generated as
 a normal subgroup. -/
 theorem if_hom_surj_finite :
-(∃ (α : Type*) (_ : Finite α) (f : (FreeGroup α) →* G),
-  Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)) → IsFinitelyPresented G := by
+    (∃ (α : Type*) (_ : Finite α) (f : (FreeGroup α) →* G),
+      Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)) → IsFinitelyPresented G := by
   rintro ⟨α, hα, f, hfsurj, hfker⟩
   rw [iff_hom_surj_fin_n]
   let n := Nat.card α
@@ -241,8 +241,8 @@ normal closure, one can choose a finite generating set of the target and recover
 surjective map from the free group on that set, with kernel still finitely generated in the
 normal closure. -/
 lemma exists_set_hom_surj_and_normalClosureFG_ker_of_freeGroup_hom
-  [Finite α] (h : FreeGroup α →* G) (hhsurj : Function.Surjective h)
-  (hhker : IsNormalClosureFG h.ker) :
+    [Finite α] (h : FreeGroup α →* G) (hhsurj : Function.Surjective h)
+    (hhker : IsNormalClosureFG h.ker) :
     ∃ (S : Set G) (_ : S.Finite),
       Function.Surjective (FreeGroup.lift (fun s : S ↦ (s : G))) ∧
       IsNormalClosureFG (FreeGroup.lift (fun s : S ↦ (s : G))).ker := by
@@ -256,10 +256,10 @@ lemma exists_set_hom_surj_and_normalClosureFG_ker_of_freeGroup_hom
 /-- A group is finitely presented if there exists a `Set G` such that the canonical inclusion map
 is surjective and the kernel is finitely generated as a normal subgroup. -/
 theorem iff_hom_surj_set_G :
-  IsFinitelyPresented G ↔
-    ∃ (S : Set G) (_ : S.Finite),
-      Function.Surjective (FreeGroup.lift (fun s : S ↦ (s : G))) ∧
-      IsNormalClosureFG (FreeGroup.lift (fun s : S ↦ (s : G))).ker := by
+    IsFinitelyPresented G ↔
+      ∃ (S : Set G) (_ : S.Finite),
+        Function.Surjective (FreeGroup.lift (fun s : S ↦ (s : G))) ∧
+        IsNormalClosureFG (FreeGroup.lift (fun s : S ↦ (s : G))).ker := by
   constructor
   · intro hfp
     obtain ⟨α, hα, h, hhsurj, hhker⟩ := (iff_hom_surj_finite (G := G)).1 hfp
@@ -275,10 +275,10 @@ theorem iff_hom_surj_set_G :
 /-- A group is finitely presented if there exists a `Finset G` such that the canonical inclusion map
 is surjective and the kernel is finitely generated as a normal subgroup. -/
 theorem iff_hom_surj_finset_G :
-  IsFinitelyPresented G ↔
+    IsFinitelyPresented G ↔
       ∃ (S : Finset G),
-      Function.Surjective (FreeGroup.lift (fun s : S ↦ (s : G))) ∧
-      IsNormalClosureFG (FreeGroup.lift (fun s : S ↦ (s : G))).ker := by
+        Function.Surjective (FreeGroup.lift (fun s : S ↦ (s : G))) ∧
+        IsNormalClosureFG (FreeGroup.lift (fun s : S ↦ (s : G))).ker := by
     rw [iff_hom_surj_set_G]
     constructor
     · intro ⟨S, hS, hfsurj, hfker⟩
