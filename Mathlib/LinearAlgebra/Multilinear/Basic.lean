@@ -178,7 +178,6 @@ theorem map_zero [Nonempty ι] : f 0 = 0 := by
   obtain ⟨i, _⟩ : ∃ i : ι, i ∈ Set.univ := Set.exists_mem_of_nonempty ι
   exact map_coord_zero f i rfl
 
-@[simp]
 theorem map_zero_of_pos {n : ℕ} (D : MultilinearMap R (fun (_ : Fin n) ↦ M₂) M₃) (hn : 0 < n) :
     D 0 = 0 :=
   D.map_coord_zero ⟨0, hn⟩ rfl

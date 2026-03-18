@@ -52,13 +52,13 @@ theorem iteratedFDerivWithin_zero {i : ℕ} :
   | zero => ext; simp
   | succ i => apply iteratedFDerivWithin_succ_const
 
-@[deprecated (since := "2026-03-18")]
-alias iteratedFDerivWithin_zero_fun := iteratedFDerivWithin_zero
-
 @[simp]
 theorem iteratedFDerivWithin_fun_zero {i : ℕ} :
     iteratedFDerivWithin 𝕜 i (fun (_ : E) ↦ (0 : F)) s = 0 := by
   apply iteratedFDerivWithin_zero
+
+@[deprecated (since := "2026-03-18")]
+alias iteratedFDerivWithin_zero_fun := iteratedFDerivWithin_fun_zero
 
 @[simp]
 theorem ftaylorSeriesWithin_zero :
