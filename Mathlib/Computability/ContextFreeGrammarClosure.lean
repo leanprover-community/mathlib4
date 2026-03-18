@@ -165,10 +165,6 @@ theorem rule_mem_subst_f {α β : Type} [DecidableEq α] [DecidableEq β]
   · assumption;
   · exact Finset.mem_map.mpr ⟨ r, hr, rfl ⟩
 
-end ContextFreeGrammar
-
-namespace ContextFreeGrammar
-
 /-
 If a substituting grammar `f a` produces `v` from `u`, then the substitution grammar `g.subst f`
 produces the lifted version of `v` from the lifted version of `u`.
@@ -380,10 +376,6 @@ lemma rule_of_input_inr {α β : Type} [DecidableEq α] [DecidableEq β]
       simp  [ ContextFreeGrammar.subst_rules_g, ContextFreeGrammar.subst_rules_f ]
       aesop
 
-end ContextFreeGrammar
-
-namespace ContextFreeGrammar
-
 /-
 The function `liftSymbolF` is injective.
 -/
@@ -503,10 +495,6 @@ def DerivesF {α β : Type} [DecidableEq α] [DecidableEq β]
     (f : α → ContextFreeGrammar β) [∀ a, DecidableEq (f a).NT]
     (u v : List (Symbol β (g.NT ⊕ (Σ a, (f a).NT)))) : Prop :=
   Relation.ReflTransGen (g.ProducesF f) u v
-
-end ContextFreeGrammar
-
-namespace ContextFreeGrammar
 
 /-
 If a derivation step using an F-rule is followed by a step using a G-rule, they can be swapped to
