@@ -38,15 +38,9 @@ lemma integral_of_ae_eq_zero_or_one (hXmeas : AEMeasurable X μ) (hX : ∀ᵐ ω
 
 /-- If a random variable is ae equal to `0` or `1`, then one minus its expectation is equal to the
 probability that it equals `0`. -/
-lemma one_sub_integral_of_ae_eq_zero_or_one [IsProbabilityMeasure μ] (hXmeas : AEMeasurable X μ)
-    (hX : ∀ᵐ ω ∂μ, X ω = 0 ∨ X ω = 1) : 1 - μ[X] = μ.real {ω | X ω = 0} := by
+lemma integral_one_sub_of_ae_eq_zero_or_one [IsProbabilityMeasure μ] (hXmeas : AEMeasurable X μ)
+    (hX : ∀ᵐ ω ∂μ, X ω = 0 ∨ X ω = 1) : ∫ ω, 1 - X ω ∂μ = μ.real {ω | X ω = 0} := by
   calc
-    _ = μ[1 - X] := by
-      rw [integral_sub' _ <| .of_bound hXmeas.aestronglyMeasurable 1 ?_]
-      · simp
-      · exact integrable_const _
-      · filter_upwards [hX]
-        rintro ω (hω | hω) <;> simp [hω]
     _ = μ.real {ω | 1 - X ω = 1} :=
       integral_of_ae_eq_zero_or_one (aemeasurable_const (b := 1).sub hXmeas)
         (by simpa [sub_eq_zero, or_comm, eq_comm (a := (1 : ℝ))] using hX)
@@ -57,41 +51,6 @@ end MeasureTheory
 
 namespace ProbabilityTheory
 variable {Ω : Type*} {m : MeasurableSpace Ω} {X Y : Ω → ℝ} {μ : Measure ℝ} {P : Measure Ω}
-
-/-- If a random variable is ae equal to `0` or `1`, then its variance is the product of
-the probabilities that it's equal to `0` and that it's equal to `1`. -/
-lemma variance_of_ae_eq_zero_or_one {μ : Measure Ω} [IsZeroOrProbabilityMeasure μ]
-    (hXmeas : AEMeasurable X μ) (hX : ∀ᵐ ω ∂μ, X ω = 0 ∨ X ω = 1) :
-    Var[X; μ] = μ.real {ω | X ω = 0} * μ.real {ω | X ω = 1} := by
-  wlog hXmeas : Measurable X
-  · obtain ⟨Y, hYmeas, hXY⟩ := ‹AEMeasurable X μ›
-    calc
-      Var[X; μ]
-      _ = Var[Y; μ] := variance_congr hXY
-      _ = μ.real {ω | Y ω = 0} * μ.real {ω | Y ω = 1} := by
-        refine this hYmeas.aemeasurable ?_ hYmeas
-        filter_upwards [hX, hXY] with ω hXω hXYω
-        simp [hXω, ← hXYω]
-      _ = μ.real {ω | X ω = 0} * μ.real {ω | X ω = 1} := by
-        congr 1 <;> exact measureReal_congr <| by filter_upwards [hXY] with ω hω; simp [hω, setOf]
-  obtain rfl | hμ := eq_zero_or_isProbabilityMeasure μ
-  · simp
-  calc
-    _ = μ[X ^ 2] - μ[X] ^ 2 := variance_eq_sub <| .of_bound hXmeas.aestronglyMeasurable 1 <| by
-        filter_upwards [hX]; rintro ω (hω | hω) <;> simp [hω]
-    _ = μ[X] - μ[X] ^ 2 := by
-      congr! 1
-      exact integral_congr_ae <| by filter_upwards [hX]; rintro ω (hω | hω) <;> simp [hω]
-    _ = μ.real {ω | X ω = 0} * μ.real {ω | X ω = 1} := by
-      rw [sq, ← one_sub_mul, integral_of_ae_eq_zero_or_one hXmeas.aemeasurable hX]
-      congr
-      rw [← probReal_compl_eq_one_sub (by exact hXmeas <| .singleton _)]
-      refine measureReal_congr ?_
-      filter_upwards [hX]
-      -- FIXME: The following change is due to the measure theory library abusing the defeq
-      -- `Set Ω = (Ω → Prop)`
-      change ∀ ω _, (_ ≠ _) = (_ = _)
-      rintro ω (hω | hω) <;> simp [hω]
 
 /-- If a random variable is ae equal to `0` or `1`, then its conditional variance is the product of
 the conditional probabilities that it's equal to `0` and that it's equal to `1`. -/
@@ -128,5 +87,15 @@ lemma condVar_of_ae_eq_zero_or_one {m₀ : MeasurableSpace Ω} (hm : m ≤ m₀)
             (.of_bound (C := 1) hXmeas.aestronglyMeasurable ?_) _).symm
           filter_upwards [hX]
           rintro ω (hω | hω) <;> simp [hω]
+
+/-- If a random variable is ae equal to `0` or `1`, then its variance is the product of
+the probabilities that it's equal to `0` and that it's equal to `1`. -/
+lemma variance_of_ae_eq_zero_or_one {μ : Measure Ω} [IsZeroOrProbabilityMeasure μ]
+    (hXmeas : AEMeasurable X μ) (hX : ∀ᵐ ω ∂μ, X ω = 0 ∨ X ω = 1) :
+    Var[X; μ] = μ.real {ω | X ω = 0} * μ.real {ω | X ω = 1} := by
+  obtain rfl | hμ := eq_zero_or_isProbabilityMeasure μ
+  · simp
+  simpa [Pi.mul_def, integral_of_ae_eq_zero_or_one, integral_one_sub_of_ae_eq_zero_or_one, mul_comm,
+    *] using condVar_of_ae_eq_zero_or_one bot_le hXmeas hX
 
 end ProbabilityTheory
