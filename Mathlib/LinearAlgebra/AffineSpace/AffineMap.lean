@@ -620,7 +620,7 @@ lemma lineMap_antitone [LinearOrder k] [Preorder V1] [AddLeftMono V1] [SMulPosMo
   gcongr
   simpa
 
-@[deprecated (since := "2025-07-08")] alias lineMap_anti := lineMap_antitone
+@[deprecated (since :="2026-03-18")] alias lineMap_anti := lineMap_antitone
 
 /-- Decomposition of an affine map in the special case when the point space and vector space
 are the same. -/

@@ -52,7 +52,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma egirth_antitone : Antitone (egirth : SimpleGraph α → ℕ∞) :=
   fun G H h ↦ iInf_mono fun a ↦ iInf₂_mono' fun w hw ↦ ⟨w.mapLe h, hw.mapLe _, by simp⟩
 
-@[deprecated (since := "2025-07-08")] alias egirth_anti := egirth_antitone
+@[deprecated (since :="2026-03-18")] alias egirth_anti := egirth_antitone
 
 lemma exists_egirth_eq_length :
     (∃ (a : α) (w : G.Walk a a), w.IsCycle ∧ G.egirth = w.length) ↔ ¬ G.IsAcyclic := by

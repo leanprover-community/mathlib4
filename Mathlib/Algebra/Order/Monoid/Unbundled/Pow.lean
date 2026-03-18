@@ -173,8 +173,8 @@ theorem Monotone.pow_const {f : β → M} (hf : Monotone f) : ∀ n : ℕ, Monot
 @[to_additive nsmul_right_monotone]
 theorem pow_left_monotone (n : ℕ) : Monotone fun a : M => a ^ n := monotone_id.pow_const _
 
-@[deprecated (since := "2025-07-08")] alias nsmul_right_mono := nsmul_right_monotone
-@[deprecated (since := "2025-07-08")] alias pow_left_mono := pow_left_monotone
+@[deprecated (since :="2026-03-18")] alias nsmul_right_mono := nsmul_right_monotone
+@[deprecated (since :="2026-03-18")] alias pow_left_mono := pow_left_monotone
 
 @[to_additive (attr := gcongr)]
 lemma pow_le_pow {a b : M} (hab : a ≤ b) (ht : 1 ≤ b) {m n : ℕ} (hmn : m ≤ n) : a ^ m ≤ b ^ n :=

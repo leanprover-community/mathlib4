@@ -268,13 +268,13 @@ lemma coheight_eq_index_of_length_eq_head_coheight {p : LTSeries α} (h : p.leng
 lemma height_monotone : Monotone (α := α) height :=
   fun _ _ hab ↦ biSup_mono (fun _ hla => hla.trans hab)
 
-@[deprecated (since := "2025-07-08")] alias height_mono := height_monotone
+@[deprecated (since :="2026-03-18")] alias height_mono := height_monotone
 
 @[gcongr]
 lemma coheight_antitone : Antitone (α := α) coheight :=
   (height_monotone (α := αᵒᵈ)).dual_left
 
-@[deprecated (since := "2025-07-08")] alias coheight_anti := coheight_antitone
+@[deprecated (since :="2026-03-18")] alias coheight_anti := coheight_antitone
 
 private lemma height_add_const (a : α) (n : ℕ∞) :
     height a + n = ⨆ (p : LTSeries α) (_ : p.last = a), p.length + n := by

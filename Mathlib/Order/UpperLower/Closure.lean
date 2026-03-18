@@ -147,12 +147,12 @@ def giLowerClosureCoe : GaloisInsertion (lowerClosure : Set α → LowerSet α) 
 theorem upperClosure_antitone : Antitone (upperClosure : Set α → UpperSet α) :=
   gc_upperClosure_coe.monotone_l
 
-@[deprecated (since := "2025-07-08")] alias upperClosure_anti := upperClosure_antitone
+@[deprecated (since :="2026-03-18")] alias upperClosure_anti := upperClosure_antitone
 
 theorem lowerClosure_monotone : Monotone (lowerClosure : Set α → LowerSet α) :=
   gc_lowerClosure_coe.monotone_l
 
-@[deprecated (since := "2025-07-08")] alias lowerClosure_mono := lowerClosure_monotone
+@[deprecated (since :="2026-03-18")] alias lowerClosure_mono := lowerClosure_monotone
 
 @[simp]
 theorem upperClosure_empty : upperClosure (∅ : Set α) = ⊤ :=

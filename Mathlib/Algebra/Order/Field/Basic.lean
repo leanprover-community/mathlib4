@@ -208,7 +208,7 @@ theorem one_div_pow_lt_one_div_pow_of_lt (a1 : 1 < a) {m n : ℕ} (mn : m < n) :
 theorem one_div_pow_antitone (a1 : 1 ≤ a) : Antitone fun n : ℕ => 1 / a ^ n := fun _ _ =>
   one_div_pow_le_one_div_pow_of_le a1
 
-@[deprecated (since := "2025-07-08")] alias one_div_pow_anti := one_div_pow_antitone
+@[deprecated (since :="2026-03-18")] alias one_div_pow_anti := one_div_pow_antitone
 
 theorem one_div_pow_strictAnti (a1 : 1 < a) : StrictAnti fun n : ℕ => 1 / a ^ n := fun _ _ =>
   one_div_pow_lt_one_div_pow_of_lt a1
@@ -226,7 +226,7 @@ theorem inv_pow_lt_inv_pow_of_lt (a1 : 1 < a) {m n : ℕ} (mn : m < n) : (a ^ n)
 theorem inv_pow_antitone (a1 : 1 ≤ a) : Antitone fun n : ℕ => (a ^ n)⁻¹ := fun _ _ =>
   inv_pow_le_inv_pow_of_le a1
 
-@[deprecated (since := "2025-07-08")] alias inv_pow_anti := inv_pow_antitone
+@[deprecated (since :="2026-03-18")] alias inv_pow_anti := inv_pow_antitone
 
 theorem inv_pow_strictAnti (a1 : 1 < a) : StrictAnti fun n : ℕ => (a ^ n)⁻¹ := fun _ _ =>
   inv_pow_lt_inv_pow_of_lt a1

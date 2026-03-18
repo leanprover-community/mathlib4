@@ -319,7 +319,7 @@ lemma rev_strictAnti : StrictAnti (@rev n) := fun _ _ ↦ rev_lt_rev.mpr
 
 lemma rev_antitone : Antitone (@rev n) := rev_strictAnti.antitone
 
-@[deprecated (since := "2025-07-08")] alias rev_anti := rev_antitone
+@[deprecated (since :="2026-03-18")] alias rev_anti := rev_antitone
 
 /-! #### Order embeddings -/
 

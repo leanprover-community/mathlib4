@@ -383,7 +383,7 @@ lemma ConcaveOn.slope_antitoneOn (hfc : ConcaveOn 𝕜 s f) (hx : x ∈ s) :
   rw [← neg_neg f, slope_neg_fun]
   exact (ConvexOn.slope_mono hfc.neg hx).neg
 
-@[deprecated (since := "2025-07-08")] alias ConcaveOn.slope_anti := ConcaveOn.slope_antitoneOn
+@[deprecated (since :="2026-03-18")] alias ConcaveOn.slope_anti := ConcaveOn.slope_antitoneOn
 
 lemma ConcaveOn.antitoneOn_slope_gt (hfc : ConcaveOn 𝕜 s f) (hxs : x ∈ s) :
     AntitoneOn (slope f x) {y ∈ s | x < y} :=

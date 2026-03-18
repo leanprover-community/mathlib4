@@ -47,8 +47,8 @@ lemma zpow_right_monotone (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := by
   rw [zpow_add_one]
   exact le_mul_of_one_le_right' ha
 
-@[deprecated (since := "2025-07-08")] alias zsmul_left_mono := zsmul_left_monotone
-@[deprecated (since := "2025-07-08")] alias zpow_right_mono := zpow_right_monotone
+@[deprecated (since :="2026-03-18")] alias zsmul_left_mono := zsmul_left_monotone
+@[deprecated (since :="2026-03-18")] alias zpow_right_mono := zpow_right_monotone
 
 @[to_additive (attr := gcongr) zsmul_le_zsmul_left]
 lemma zpow_le_zpow_right (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := zpow_right_monotone ha h
@@ -74,8 +74,8 @@ lemma zpow_left_strictMono (hn : 0 < n) : StrictMono ((· ^ n) : α → α) := f
 lemma zpow_left_monotone (hn : 0 ≤ n) : Monotone ((· ^ n) : α → α) := fun a b hab => by
   rw [← one_le_div', ← div_zpow]; exact one_le_zpow (one_le_div'.2 hab) hn
 
-@[deprecated (since := "2025-07-08")] alias zsmul_mono_right := zsmul_right_monotone
-@[deprecated (since := "2025-07-08")] alias zpow_left_mono := zpow_left_monotone
+@[deprecated (since :="2026-03-18")] alias zsmul_mono_right := zsmul_right_monotone
+@[deprecated (since :="2026-03-18")] alias zpow_left_mono := zpow_left_monotone
 
 variable {α}
 

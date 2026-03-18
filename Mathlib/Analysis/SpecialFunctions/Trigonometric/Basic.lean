@@ -675,7 +675,7 @@ theorem sqrtTwoAddSeries_mono_left {x y : ℝ} (h : x ≤ y) :
   | n + 1 => by
     rw [sqrtTwoAddSeries, sqrtTwoAddSeries]; gcongr; exact sqrtTwoAddSeries_mono_left h _
 
-@[deprecated (since := "2025-07-08")]
+@[deprecated (since :="2026-03-18")]
 alias sqrtTwoAddSeries_monotone_left := sqrtTwoAddSeries_mono_left
 
 @[simp]

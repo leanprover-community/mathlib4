@@ -722,7 +722,7 @@ theorem le_compl_compl : a ≤ aᶜᶜ :=
 theorem compl_antitone : Antitone (compl : α → α) := fun _ _ h =>
   le_compl_comm.1 <| h.trans le_compl_compl
 
-@[deprecated (since := "2025-07-08")] alias compl_anti := compl_antitone
+@[deprecated (since :="2026-03-18")] alias compl_anti := compl_antitone
 
 @[gcongr]
 theorem compl_le_compl (h : a ≤ b) : bᶜ ≤ aᶜ :=
@@ -865,7 +865,7 @@ theorem hnot_hnot_le : ￢￢a ≤ a :=
 theorem hnot_antitone : Antitone (hnot : α → α) :=
   fun _ _ h => hnot_le_comm.1 <| hnot_hnot_le.trans h
 
-@[deprecated (since := "2025-07-08")] alias hnot_anti := hnot_antitone
+@[deprecated (since :="2026-03-18")] alias hnot_anti := hnot_antitone
 
 @[gcongr]
 theorem hnot_le_hnot (h : a ≤ b) : ￢b ≤ ￢a :=

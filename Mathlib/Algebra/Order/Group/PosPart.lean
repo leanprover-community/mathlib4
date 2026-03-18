@@ -70,7 +70,7 @@ instance instLeOnePart : LeOnePart α where
 @[to_additive] lemma oneLePart_monotone : Monotone (·⁺ᵐ : α → α) :=
   fun _a _b hab ↦ sup_le_sup_right hab _
 
-@[deprecated (since := "2025-07-08")] alias oneLePart_mono := oneLePart_monotone
+@[deprecated (since :="2026-03-18")] alias oneLePart_mono := oneLePart_monotone
 
 @[to_additive (attr := simp high)] lemma oneLePart_one : (1 : α)⁺ᵐ = 1 := sup_idem _
 
@@ -158,7 +158,7 @@ variable [MulRightMono α]
 @[to_additive] lemma leOnePart_antitone : Antitone (leOnePart : α → α) :=
   fun _a _b hab ↦ sup_le_sup_right (inv_le_inv_iff.2 hab) _
 
-@[deprecated (since := "2025-07-08")] alias leOnePart_anti := leOnePart_antitone
+@[deprecated (since :="2026-03-18")] alias leOnePart_anti := leOnePart_antitone
 
 @[to_additive]
 lemma leOnePart_eq_inv_inf_one (a : α) : a⁻ᵐ = (a ⊓ 1)⁻¹ := by
