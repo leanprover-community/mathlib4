@@ -59,7 +59,7 @@ protected theorem id (μ : Measure α) : MeasurePreserving id μ μ :=
 protected theorem aemeasurable {f : α → β} (hf : MeasurePreserving f μa μb) : AEMeasurable f μa :=
   hf.1.aemeasurable
 
-theorem congr {f : α → β} (hf : MeasurePreserving f μa μb) {f' : α → β} (hf' : Measurable f')
+protected theorem congr {f f' : α → β} (hf : MeasurePreserving f μa μb) (hf' : Measurable f')
     (h : f =ᵐ[μa] f') : MeasurePreserving f' μa μb := by
   refine ⟨hf', ?_⟩
   rw [Measure.map_congr h.symm]
