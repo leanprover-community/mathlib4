@@ -79,7 +79,8 @@ end ValuativeRel
 
 variable {R}
 
-variable {K : Type*} [DivisionRing K] [ValuativeRel K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+variable {K : Type*} [DivisionRing K] [ValuativeRel K] {Γ₀ : Type*}
+  [LinearOrderedCommGroupWithZero Γ₀]
 
 section TopologicalSpace
 
