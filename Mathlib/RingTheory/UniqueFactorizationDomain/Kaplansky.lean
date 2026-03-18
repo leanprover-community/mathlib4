@@ -33,6 +33,16 @@ every prime ideal of height one is principal.
 
 See <https://stacks.math.columbia.edu/tag/0AFT> for reference for `iff_height_one_prime_principal`
 
+## Acknowledgements
+
+The proof of `height_one_prime_principal` is based on work by Bianca Viray, Bryan Boehnke,
+Grant Yang, George Peykanu, and Tianshuo Wang; see
+<https://github.com/uw-math-ai/monogenic-extensions/blob/9a46c352a33af11818cc10f474b383f0a2d6dcac/Monogenic/MonogenicOfNonEtale.lean#L93>.
+
+The proof of `height_ge_one_of_prime_ne_bot` is based on work by Brian Nugent.
+
+Thanks to Dora Kassabova and Leopold Mayer for edit suggestions.
+
 -/
 
 variable {R : Type*}
@@ -132,7 +142,7 @@ variable [CommRing R]
 /-- Given a prime `P` of finite height ≥ 1, there exists a prime `Q` of height one contained
 in `P`. -/
 lemma exists_height_one_le_of_finite_height {P : Ideal R} (h_prime : P.IsPrime)
-    (h_fin : P.FiniteHeight) (hP : P.primeHeight ≥ 1) : ∃ Q ≤ P, Q.IsPrime ∧ Q.height = 1 := by
+    (h_fin : P.FiniteHeight) (hP : 1 ≤ P.primeHeight) : ∃ Q ≤ P, Q.IsPrime ∧ Q.height = 1 := by
   by_cases h1 : P.primeHeight = 1
   · exact ⟨P, le_rfl, h_prime, P.height_eq_primeHeight ▸ h1⟩
   · obtain ⟨Q, hQ⟩ := (Order.coe_lt_height_iff P.primeHeight_lt_top).mp (hP.lt_of_ne' h1)
@@ -144,19 +154,15 @@ variable [IsDomain R]
 lemma ne_bot_of_height_one {I : Ideal R} (h : I.height = 1) : I ≠ ⊥ := by
   rintro rfl; simp [Ideal.height_bot] at h
 
-/-This following lemma is edited down from proof provided by Brian Nugent -/
 /-- Height of a nonzero prime ideal in a domain is at least one. -/
 public lemma height_ge_one_of_prime_ne_bot {P : Ideal R} (h_prime : P.IsPrime) (h_ne : P ≠ ⊥) :
-    P.height ≥ 1 := by
+    1 ≤ P.height := by
   by_contra hC
   push_neg at hC
   rw [ENat.lt_one_iff_eq_zero, P.height_eq_primeHeight, Ideal.primeHeight_eq_zero_iff,
       IsDomain.minimalPrimes_eq_singleton_bot, Set.mem_singleton_iff] at hC
   exact h_ne hC
 
-/- This following lemma is edited down and refactored from proof first shown kindly to us by
-Bianca Viray, Bryan Boehnke, Grant Yang, George Peykanu, and Tianshuo Wang, see
-<https://github.com/uw-math-ai/monogenic-extensions/blob/9a46c352a33af11818cc10f474b383f0a2d6dcac/Monogenic/MonogenicOfNonEtale.lean#L93> -/
 /-- UFD implies every prime ideal of height one is principal. -/
 lemma height_one_prime_principal [UniqueFactorizationMonoid R] (q : Ideal R) [hq_prime : q.IsPrime]
     (hq_height : q.height = 1) : ∃ q₀ : R, q = Ideal.span {q₀} := by
@@ -187,7 +193,7 @@ theorem of_height_one_prime_principal : (∀ (I : Ideal R), I.IsPrime →
   intro h
   rw [iff_exists_prime_mem_of_isPrime]
   intro I hI_ne hI_prime
-  have hIge1 : I.height ≥ 1 := height_ge_one_of_prime_ne_bot hI_prime hI_ne
+  have hIge1 : 1 ≤ I.height := height_ge_one_of_prime_ne_bot hI_prime hI_ne
   obtain ⟨J, hJI, hJprime, h_height⟩ :=
     exists_height_one_le_of_finite_height hI_prime (Ideal.finiteHeight_of_isNoetherianRing I)
       (I.height_eq_primeHeight ▸ hIge1)
