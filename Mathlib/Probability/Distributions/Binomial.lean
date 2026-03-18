@@ -38,82 +38,8 @@ open MeasureTheory
 open scoped NNReal ProbabilityTheory unitInterval
 
 namespace ProbabilityTheory
-variable {Ω : Type*} {m : MeasurableSpace Ω} {X Y : Ω → ℝ} {μ : Measure ℝ} {P : Measure Ω}
-
-/-- If a random variable is ae equal to `0` or `1`, then its variance is the product of
-the probabilities that it's equal to `0` and that it's equal to `1`. -/
-lemma variance_of_ae_eq_zero_or_one {μ : Measure Ω} [IsZeroOrProbabilityMeasure μ]
-    (hXmeas : AEMeasurable X μ) (hX : ∀ᵐ ω ∂μ, X ω = 0 ∨ X ω = 1) :
-    Var[X; μ] = μ.real {ω | X ω = 0} * μ.real {ω | X ω = 1} := by
-  wlog hXmeas : Measurable X
-  · obtain ⟨Y, hYmeas, hXY⟩ := ‹AEMeasurable X μ›
-    calc
-      Var[X; μ]
-      _ = Var[Y; μ] := variance_congr hXY
-      _ = μ.real {ω | Y ω = 0} * μ.real {ω | Y ω = 1} := by
-        refine this hYmeas.aemeasurable ?_ hYmeas
-        filter_upwards [hX, hXY] with ω hXω hXYω
-        simp [hXω, ← hXYω]
-      _ = μ.real {ω | X ω = 0} * μ.real {ω | X ω = 1} := by
-        congr 1 <;> exact measureReal_congr <| by filter_upwards [hXY] with ω hω; simp [hω, setOf]
-  obtain rfl | hμ := eq_zero_or_isProbabilityMeasure μ
-  · simp
-  calc
-    _ = μ[X ^ 2] - μ[X] ^ 2 := variance_eq_sub <| .of_bound hXmeas.aestronglyMeasurable 1 <| by
-        filter_upwards [hX]; rintro ω (hω | hω) <;> simp [hω]
-    _ = μ[X] - μ[X] ^ 2 := by
-      congr! 1
-      exact integral_congr_ae <| by filter_upwards [hX]; rintro ω (hω | hω) <;> simp [hω]
-    _ = μ.real {ω | X ω = 0} * μ.real {ω | X ω = 1} := by
-      rw [sq, ← one_sub_mul, integral_of_ae_eq_zero_or_one hXmeas.aemeasurable hX]
-      congr
-      rw [← probReal_compl_eq_one_sub (by exact hXmeas <| .singleton _)]
-      refine measureReal_congr ?_
-      filter_upwards [hX]
-      -- FIXME: The following change is due to the measure theory library abusing the defeq
-      -- `Set Ω = (Ω → Prop)`
-      change ∀ ω _, (_ ≠ _) = (_ = _)
-      rintro ω (hω | hω) <;> simp [hω]
-
-/-- If a random variable is ae equal to `0` or `1`, then its conditional variance is the product of
-the conditional probabilities that it's equal to `0` and that it's equal to `1`. -/
-lemma condVar_of_ae_eq_zero_or_one {m₀ : MeasurableSpace Ω} (hm : m ≤ m₀) {μ : Measure[m₀] Ω}
-    [IsFiniteMeasure μ] (hXmeas : AEMeasurable[m₀] X μ) (hX : ∀ᵐ ω ∂μ, X ω = 0 ∨ X ω = 1) :
-    Var[X; μ | m] =ᵐ[μ] μ[X | m] * μ[1 - X | m] := by
-  wlog hXmeas : Measurable[m₀] X
-  · obtain ⟨Y, hYmeas, hXY⟩ := ‹AEMeasurable[m₀] X μ›
-    calc
-      Var[X; μ | m]
-      _ =ᵐ[μ] Var[Y; μ | m] := condVar_congr_ae hXY
-      _ =ᵐ[μ] μ[Y | m] * μ[1 - Y | m] := by
-        refine this hm hYmeas.aemeasurable ?_ hYmeas
-        filter_upwards [hX, hXY] with ω hXω hXYω
-        simp [hXω, ← hXYω]
-      _ =ᵐ[μ] μ[X | m] * μ[1 - X | m] := by
-        refine .mul ?_ ?_ <;>
-          exact condExp_congr_ae <| by filter_upwards [hXY] with ω hω; simp [hω]
-  calc
-    _ =ᵐ[μ] μ[X ^ 2 | m] - μ[X | m] ^ 2 :=
-      condVar_ae_eq_condExp_sq_sub_sq_condExp hm <| .of_bound hXmeas.aestronglyMeasurable 1 <| by
-        filter_upwards [hX]; rintro ω (hω | hω) <;> simp [hω]
-    _ =ᵐ[μ] μ[X | m] - μ[X | m] ^ 2 := by
-      refine .sub ?_ ae_eq_rfl
-      exact condExp_congr_ae <| by filter_upwards [hX]; rintro ω (hω | hω) <;> simp [hω]
-    _ =ᵐ[μ] μ[X | m] * μ[1 - X | m] := by
-      rw [sq, ← one_sub_mul, mul_comm]
-      refine .mul ae_eq_rfl ?_
-      calc
-        1 - μ[X | m]
-        _ = μ[1 | m] - μ[X | m] := by simp [Pi.one_def, hm]
-        _ =ᵐ[μ] μ[1 - X | m] := by
-          refine (condExp_sub (integrable_const _)
-            (.of_bound (C := 1) hXmeas.aestronglyMeasurable ?_) _).symm
-          filter_upwards [hX]
-          rintro ω (hω | hω) <;> simp [hω]
-
-/-! ### Binomial distribution -/
-
-variable {R : Type*} [MeasurableSpace R] [AddMonoidWithOne R] {X : Ω → R} {n : ℕ} {p : I}
+variable {R Ω : Type*} [MeasurableSpace R] [AddMonoidWithOne R] {m : MeasurableSpace Ω}
+  {P : Measure Ω} {X : Ω → R} {n : ℕ} {p : I}
 
 /-- The binomial probability distribution with parameter `p`.
 
@@ -173,7 +99,7 @@ proof_wanted variance_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) :
 The conditional variance of a binomial random variable is the product of the conditional
 probabilities that it's equal to `0` and that it's equal to `1`. -/
 proof_wanted condVar_of_hasLaw_binomial {m₀ : MeasurableSpace Ω} (hm : m ≤ m₀) {P : Measure[m₀] Ω}
-    (hX : HasLaw X μ P) :
+    (hX : HasLaw X Bin(ℝ, n, p) P) :
     Var[X; P | m] =ᵐ[P] P[X | m] * P[1 - X | m]
 
 end ProbabilityTheory
