@@ -99,7 +99,6 @@ lemma Subcomplex.hasDimensionLT_of_le
     HasDimensionLT A d :=
   hasDimensionLT_of_mono (Subcomplex.homOfLE h) d
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasDimensionLT_of_epi {X Y : SSet.{u}} (f : X ⟶ Y) [Epi f] (d : ℕ)
     [X.HasDimensionLT d] : Y.HasDimensionLT d where
   degenerate_eq_top n hn := by
