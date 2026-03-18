@@ -528,7 +528,7 @@ lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp [Finite V
       rw [← hc', Walk.mem_verts_toSubgraph]
       exact hvp
     simp_all
-  use p.rotate hvp
+  use p.rotate v hvp
   rw [← this]
   exact ⟨hp.1.rotate _, by simp⟩
 
