@@ -10,4 +10,4 @@ def sumMultiples (n : Nat) : Nat :=
   |> List.filter (fun x => x % 3 == 0 || x % 5 == 0)
   |> List.sum
 
-#eval sumMultiples 1_000
+#eval sumMultiples 1_000 -- 233168
