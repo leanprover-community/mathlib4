@@ -111,7 +111,7 @@ def frameAt {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc : ∀ t �
         have h : j=1 := Fin.eq_one_of_ne_zero j fun a ↦ hinej (id (Eq.symm a))
         simp only [h, Fin.isValue]; exact inner_of_velocity_normal_eq_zero c t
       · simp at hinej
-        have h : j=0 := by 
+        have h : j=0 := by
           fin_cases j
           · simp
           · trivial
@@ -675,7 +675,7 @@ theorem initialCurve_of_orientedCurvature_is_unique {I : Set ℝ} [hIoC : I.OrdC
     · simp [heqd₀ s hs]
     · simp [heqd₁ s hs]
   have hct₀eq : c t₀ = (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀) t₀ := by simp [hc₄, α, hα₄]
-  exact hI.eqOn_of_deriv_eq hIoC.isPreconnected (hc₁.differentiableOn (by norm_num)) 
+  exact hI.eqOn_of_deriv_eq hIoC.isPreconnected (hc₁.differentiableOn (by norm_num))
     (hα₁.differentiableOn (by norm_num)) heqd ht₀ hct₀eq
 
 end PlaneCurve
