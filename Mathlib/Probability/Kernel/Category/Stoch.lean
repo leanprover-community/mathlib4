@@ -61,7 +61,7 @@ noncomputable section
 macro "stoch_ext" : tactic =>
   `(tactic| (rw [Subtype.ext_iff]; try simp only [WideSubcategory.comp_def]))
 
-instance : MonoidalCategory Stoch.{u} where
+instance : MonoidalCategoryStruct Stoch.{u} where
   tensorObj X Y := ⟨X.obj ⊗ Y.obj⟩
   whiskerLeft X Y Z κ := by
     refine ⟨X.obj ◁ κ.1, ?_⟩
@@ -103,28 +103,50 @@ instance : MonoidalCategory Stoch.{u} where
     all_goals
     stoch_ext
     simp
-  id_tensorHom_id X Y := by
-    kernel_cat
-    simp
-  tensorHom_comp_tensorHom κ₁ κ₂ η₁ η₂ := by
-    stoch_ext
-    simp only [← MonoidalCategory.tensorHom_def]
-    exact MonoidalCategory.tensorHom_comp_tensorHom _ _ _ _
-  associator_naturality κ₁ κ₂ η := by
-    stoch_ext
-    exact MonoidalCategory.associator_naturality _ _ _
-  pentagon W X Y Z := by
-    stoch_ext
-    exact MonoidalCategory.pentagon _ _ _ _
-  leftUnitor_naturality κ := by
-    stoch_ext
-    exact MonoidalCategory.leftUnitor_naturality _
-  rightUnitor_naturality κ := by
-    stoch_ext
-    exact MonoidalCategory.rightUnitor_naturality _
-  triangle X Y := by
-    stoch_ext
-    exact MonoidalCategory.triangle _ _
+
+instance : MonoidalCategory Stoch.{u} := by
+  refine Monoidal.induced (wideSubcategoryInclusion StochHom) ?_
+  refine ⟨fun X Y ↦ ?_, fun X Y Z κ ↦ ?_, fun κ Z ↦ ?_, fun κ η ↦ ?_, ?_, fun X Y Z ↦ ?_,
+    fun X ↦ ?_, fun X ↦ ?_⟩
+  · rfl
+  · simp only [wideSubcategoryInclusion.obj, wideSubcategoryInclusion.map, Iso.refl_inv,
+    Iso.refl_hom, Category.comp_id]
+    rw [Category.id_comp <| X.obj ◁ κ.1]
+    rfl
+  · simp only [wideSubcategoryInclusion.obj, wideSubcategoryInclusion.map, Iso.refl_inv,
+      Iso.refl_hom, Category.comp_id]
+    rw [Category.id_comp <| κ.1 ▷ Z.obj]
+    rfl
+  · simp only [wideSubcategoryInclusion.obj, wideSubcategoryInclusion.map, Iso.refl_inv,
+    Iso.refl_hom, Category.comp_id]
+    rw [Category.id_comp <| κ.1 ⊗ₘ η.1]
+    rfl
+  · rfl
+  · simp only [wideSubcategoryInclusion.obj, wideSubcategoryInclusion.map, Iso.refl_symm,
+    Iso.trans_refl, Iso.trans_assoc, Iso.trans_hom, Iso.refl_hom,
+    MonoidalCategory.tensorIso_hom, MonoidalCategory.tensorHom_id,
+    MonoidalCategory.whiskerRight_tensor, MonoidalCategory.id_whiskerRight, Category.id_comp,
+    Iso.inv_hom_id, Category.comp_id]
+    rw [MonoidalCategory.id_whiskerRight <| X.obj ⊗ Y.obj,
+      Category.id_comp <| (α_ X.obj Y.obj Z.obj).hom]
+    rw [show 𝟙 ((X ⊗ Y).obj ⊗ Z.obj) = 𝟙 ((X.obj ⊗ Y.obj) ⊗ Z.obj) by rfl,
+      Category.id_comp <| (α_ X.obj Y.obj Z.obj).hom]
+    rfl
+  · simp only [wideSubcategoryInclusion.obj, wideSubcategoryInclusion.map, Iso.refl_symm,
+    Iso.trans_assoc, Iso.trans_hom, Iso.refl_hom, MonoidalCategory.tensorIso_hom,
+    MonoidalCategory.tensorHom_id]
+    rw [MonoidalCategory.id_whiskerRight <| (𝟙_ SFinKer)]
+    rw [Category.id_comp (λ_ X.obj).hom]
+    rw [show 𝟙 ((𝟙_ Stoch).obj ⊗ X.obj) = 𝟙 (𝟙_ SFinKer ⊗ X.obj) by rfl,
+      Category.id_comp (λ_ X.obj).hom]
+    rfl
+  · simp only [wideSubcategoryInclusion.obj, wideSubcategoryInclusion.map, Iso.refl_symm,
+    Iso.trans_assoc, Iso.trans_hom, Iso.refl_hom, MonoidalCategory.tensorIso_hom,
+    MonoidalCategory.id_tensorHom]
+    rw [MonoidalCategory.whiskerLeft_id X.obj <| 𝟙_ SFinKer, Category.id_comp (ρ_ X.obj).hom]
+    rw [show 𝟙 (X.obj ⊗ (𝟙_ Stoch).obj) = 𝟙 (X.obj ⊗ 𝟙_ SFinKer) by rfl,
+      Category.id_comp (ρ_ X.obj).hom]
+    rfl
 
 open scoped ComonObj in
 instance {X : Stoch} : ComonObj X where
