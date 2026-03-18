@@ -8,6 +8,7 @@ module
 public import Mathlib.FieldTheory.Finite.GaloisField
 public import Mathlib.RingTheory.Ideal.Galois
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
+public import Mathlib.FieldTheory.IntermediateField.ExtendTop
 
 /-!
 
@@ -42,7 +43,7 @@ degree            ramif. index   inertia deg.
 @[expose] public section
 
 variable (A K L : Type*) {B : Type*} [Field K] [Field L] [Algebra K L] [CommRing A] [CommRing B]
-  [Algebra A B] {p : Ideal A} (P : Ideal B) [P.LiesOver p]
+  [Algebra A B] {p : Ideal A} (P : Ideal B)
 
 open MulAction Pointwise Ideal
 
@@ -160,7 +161,7 @@ section rank
 
 attribute [local instance] Ideal.Quotient.field
 
-variable [FiniteDimensional K L] [MulSemiringAction Gal(L/K) B]
+variable [P.LiesOver p] [FiniteDimensional K L] [MulSemiringAction Gal(L/K) B]
   [IsGaloisGroup Gal(L/K) A B] [IsDedekindDomain A] [IsDedekindDomain B] [Module.Finite A B]
   [Module.IsTorsionFree A B] [Ring.HasFiniteQuotients A] [P.IsMaximal]
 
@@ -231,7 +232,7 @@ namespace IsDecompositionField
 
 variable (D 𝓞D : Type*) [Field D] [Algebra D L] [IsDecompositionField K L P D] [CommRing 𝓞D]
   [Algebra 𝓞D D] [IsFractionRing 𝓞D D] [Algebra 𝓞D B] [Algebra 𝓞D L] [IsScalarTower 𝓞D D L]
-  [IsScalarTower 𝓞D B L] (𝓟D : Ideal 𝓞D) [hD : P.LiesOver 𝓟D]
+  [IsScalarTower 𝓞D B L] (𝓟D : Ideal 𝓞D) [hD : P.LiesOver 𝓟D] [P.LiesOver p]
 
 include K L D in
 /--
@@ -413,7 +414,7 @@ then the inertia degree of `𝓟E` over `K` is equal to the inertia degree of `p
 -/
 theorem inertiaDeg_eq [IsIntegrallyClosed A] [Ring.HasFiniteQuotients B] [IsIntegrallyClosed 𝓞E]
     [Algebra A 𝓞E] [IsScalarTower A 𝓞E B] [𝓟E.LiesOver p] [P.IsMaximal] [𝓟E.IsMaximal]
-    [p.IsMaximal] (hP : P ≠ ⊥) :
+    [p.IsMaximal] [P.LiesOver p] (hP : P ≠ ⊥) :
     inertiaDeg p 𝓟E = p.inertiaDegIn B := by
   have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
   have : IsGaloisGroup (inertia Gal(L/K) P) 𝓞E B := .of_isFractionRing _ _ _ E L
@@ -431,7 +432,7 @@ Let `E` be the inertia field of `P` in `L/K`. Let `𝓟E` be a prime ideal of `E
 then the ramification index of `𝓟E` in `L` is equal to the ramification index of `p` in `L`.
 -/
 theorem ramificationIdxIn_eq [Ring.HasFiniteQuotients A] [Ring.HasFiniteQuotients B] [p.IsMaximal]
-    [P.IsMaximal] [𝓟E.IsMaximal] (hp : p ≠ ⊥) :
+    [P.IsMaximal] [𝓟E.IsMaximal] [P.LiesOver p] (hp : p ≠ ⊥) :
     ramificationIdxIn 𝓟E B = p.ramificationIdxIn B := by
   have hP : P ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp P
   have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
@@ -452,7 +453,7 @@ Let `E` be the inertia field of `P` in `L/K`. Let `𝓟E` be a prime ideal of `E
 then `𝓟E` is unramified over `K`.
 -/
 theorem ramificationIdx_eq [Ring.HasFiniteQuotients A] [Ring.HasFiniteQuotients B] [𝓟E.IsMaximal]
-    [P.IsMaximal] [p.IsMaximal] (hp : p ≠ ⊥) :
+    [P.IsMaximal] [p.IsMaximal] [P.LiesOver p] (hp : p ≠ ⊥) :
     ramificationIdx (algebraMap A 𝓞E) p 𝓟E = 1 := by
   have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
   have : IsGaloisGroup (inertia Gal(L/K) P) 𝓞E B := .of_isFractionRing _ _ _ E L
@@ -469,9 +470,9 @@ end IsInertiaField
 
 end splitting
 
-section IntermediateField
+namespace IntermediateField
 
-open IntermediateField
+section results
 
 variable [MulSemiringAction Gal(L/K) B] [FiniteDimensional K L] [IsGalois K L]
   {F : IntermediateField K L}
@@ -632,7 +633,7 @@ Then, `E` is a subfield of `F` iff `𝓟F` is totally ramified in `L` where `�
 prime of `F` below `P`.
 -/
 theorem isInertiaField_le_iff [IsFractionRing 𝓞F F] [P.IsMaximal] [IsInertiaField K L P E]
-    (hp : p ≠ ⊥) :
+    [P.LiesOver p] (hp : p ≠ ⊥) :
     E ≤ F ↔ ramificationIdx (algebraMap 𝓞F B) 𝓟F P = Module.finrank F L := by
   let := IsIntegralClosure.MulSemiringAction 𝓞F F L B
   have : IsGaloisGroup Gal(L/F) 𝓞F B := .of_isFractionRing _ _ _ F L
@@ -656,7 +657,7 @@ Let `D` be the decomposition field of `P` in `L/K` and let `F` be a subextension
 Then, `F` is a subfield of `D` iff `p` is totally split in `F`.
 -/
 theorem le_isDecompositionField_iff [IsFractionRing 𝓞F F] [IsDecompositionField K L P D]
-    [p.IsMaximal] [P.IsMaximal] [𝓟F.IsMaximal] (hp : p ≠ ⊥) :
+    [p.IsMaximal] [P.IsMaximal] [𝓟F.IsMaximal] [P.LiesOver p] (hp : p ≠ ⊥) :
     F ≤ D ↔ ramificationIdx (algebraMap A 𝓞F) p 𝓟F = 1 ∧ inertiaDeg p 𝓟F = 1 := by
   have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
   let := IsIntegralClosure.MulSemiringAction 𝓞F F L B
@@ -682,7 +683,7 @@ Let `E` be the inertia field of `P` in `L/K` and let `F` be a subextension of `L
 Then, `F` is a subfield of `E` iff `p` is unramified in `F`.
 -/
 theorem le_isInertiaField_iff [IsFractionRing 𝓞F F] [IsInertiaField K L P E] [P.IsMaximal]
-    (hp : p ≠ ⊥) :
+    [P.LiesOver p] (hp : p ≠ ⊥) :
     F ≤ E ↔ ramificationIdx (algebraMap A 𝓞F) p 𝓟F = 1 := by
   have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
   let := IsIntegralClosure.MulSemiringAction 𝓞F F L B
@@ -696,5 +697,107 @@ theorem le_isInertiaField_iff [IsFractionRing 𝓞F F] [IsInertiaField K L P E] 
     ramificationIdxIn_eq_ramificationIdx p P Gal(L/K),
     ramificationIdxIn_eq_ramificationIdx 𝓟F P Gal(L/F), ramificationIdx_algebra_tower' p 𝓟F P,
     mul_eq_right₀ (IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver P hPF)]
+
+end results
+
+section applications
+
+set_option backward.isDefEq.respectTransparency false
+
+variable [FiniteDimensional K L] [IsDedekindDomain A] [Ring.HasFiniteQuotients A]
+    [Algebra A K] [IsFractionRing A K] [Algebra A L] [IsScalarTower A K L] [IsDedekindDomain B]
+    [Ring.HasFiniteQuotients B] [Algebra B L]
+    {C : Type*} [CommRing C] [IsDedekindDomain C] [Algebra A C] [Module.Finite A C]
+    [Module.IsTorsionFree A C] [Algebra B C] [FaithfulSMul B C] [Algebra C L] [IsFractionRing C L]
+    [IsScalarTower A B C] [IsScalarTower A C L] (F₁ F₂ : IntermediateField K L)
+    {B₁ B₂ : Type*} [CommRing B₁] [CommRing B₂] [IsDedekindDomain B₁] [IsDedekindDomain B₂]
+    [Ring.HasFiniteQuotients B₁] [Ring.HasFiniteQuotients B₂] [Algebra A B₁] [Algebra A B₂]
+    [Algebra B₁ C] [FaithfulSMul B₁ C] [Algebra B₂ C] [FaithfulSMul B₂ C] [Algebra B ↥(F₁ ⊔ F₂)]
+    [IsFractionRing B ↥(F₁ ⊔ F₂)] [Algebra B₁ F₁] [Algebra B₂ F₂] [IsFractionRing B₁ F₁]
+    [IsFractionRing B₂ F₂] [Algebra B₁ L] [Algebra B₂ L] [IsScalarTower A B₁ C]
+    [IsScalarTower A B₂ C] [IsScalarTower B C L] [IsScalarTower B₁ C L] [IsScalarTower B₂ C L]
+    [IsScalarTower B ↥(F₁ ⊔ F₂) L] [IsScalarTower B₁ F₁ L] [IsScalarTower B₂ F₂ L]
+    {P₁ : Ideal B₁} {P₂ : Ideal B₂} {Q : Ideal C}
+    [Q.IsMaximal] [Q.LiesOver p] [Q.LiesOver P₁] [Q.LiesOver P₂] [Q.LiesOver P]
+
+include F₁ F₂ Q in
+theorem Ideal.ramificationIdx_sup_eq_one_of_isGalois [IsGalois K L] [MulSemiringAction Gal(L/K) C]
+    [SMulDistribClass Gal(L/K) C L]
+    (h₁ : ramificationIdx (algebraMap A B₁) p P₁ = 1)
+    (h₂ : ramificationIdx (algebraMap A B₂) p P₂ = 1) (hp : p ≠ ⊥) :
+    ramificationIdx (algebraMap A B) p P = 1 := by
+  have : Module.Finite B₁ C := Module.Finite.right A B₁ C
+  have : Module.Finite B₂ C := Module.Finite.right A B₂ C
+  have : Module.Finite B C := Module.Finite.right A B C
+  let E : IntermediateField K L := FixedPoints.intermediateField (inertia Gal(L/K) Q)
+  simpa [IntermediateField.le_isInertiaField_iff A K L Q (F₁ ⊔ F₂) E B P hp] using
+    sup_le ((le_isInertiaField_iff A K L Q F₁ E _ _ hp).mpr h₁)
+      ((le_isInertiaField_iff A K L Q F₂ E _ _ hp).mpr h₂)
+
+set_option maxHeartbeats 600000 in
+-- This result needs some help to compile
+include F₁ F₂ C Q in
+theorem Ideal.ramificationIdx_sup_eq_one [PerfectField K] [PerfectField L]
+    [IsScalarTower A B ↥(F₁ ⊔ F₂)]
+    [Ring.HasFiniteQuotients C] (h₁ : ramificationIdx (algebraMap A B₁) p P₁ = 1)
+    (h₂ : ramificationIdx (algebraMap A B₂) p P₂ = 1) (hp : p ≠ ⊥) :
+    ramificationIdx (algebraMap A B) p P = 1 := by
+  let F : IntermediateField K L := F₁ ⊔ F₂
+  let N := IntermediateField.normalClosure K L (AlgebraicClosure L)
+  let : Algebra L N := normalClosure.algebra K L (AlgebraicClosure L)
+  algebraize [(algebraMap L N).comp (algebraMap C L)]
+  have : FiniteDimensional L N := Module.Finite.right K L N
+  let C₀ := integralClosure C N
+  have : Module.Finite C C₀ := IsIntegralClosure.finite C L N _
+  have : FaithfulSMul C N := (faithfulSMul_iff_algebraMap_injective C N).mpr <|
+      (FaithfulSMul.algebraMap_injective L N).comp (FaithfulSMul.algebraMap_injective C L)
+  have : IsDedekindDomain C₀ := integralClosure.isDedekindDomain C L N
+  have : IsFractionRing C₀ N := integralClosure.isFractionRing_of_finite_extension L N
+  have : FaithfulSMul C C₀ := Module.IsTorsionFree.to_faithfulSMul
+  let : Algebra C C₀ := by exact C₀.algebra'
+  algebraize [(algebraMap C C₀).comp (algebraMap A C)]
+  algebraize [(algebraMap C C₀).comp (algebraMap B C)]
+  algebraize [(algebraMap C C₀).comp (algebraMap B₁ C)]
+  algebraize [(algebraMap C C₀).comp (algebraMap B₂ C)]
+  algebraize [(algebraMap F N).comp (algebraMap B F)]
+  algebraize [(algebraMap F₁ N).comp (algebraMap B₁ F₁)]
+  algebraize [(algebraMap F₂ N).comp (algebraMap B₂ F₂)]
+  have : Module.IsTorsionFree A C₀ := Module.IsTorsionFree.trans_faithfulSMul _ C C₀
+  have : IsScalarTower A L N := IsScalarTower.to₁₃₄ A K L N
+  have : IsScalarTower A C N := IsScalarTower.to₁₂₄ A C L N
+  have : IsScalarTower A C₀ N := IsScalarTower.to₁₃₄ A C C₀ N
+  have : IsScalarTower A F N := IsScalarTower.to₁₃₄ A K F N
+  have : IsScalarTower A B N := IsScalarTower.to₁₂₄ A B F N
+  have : Module.Finite A C₀ := Module.Finite.trans C C₀
+  let : MulSemiringAction Gal(N/K) C₀ := IsIntegralClosure.MulSemiringAction A K N C₀
+  let F' := (F₁.extendTop N) ⊔ (F₂.extendTop N)
+  let e : (F.extendTop N) ≃ₐ[K] F' := equivOfEq <| F₁.map_sup F₂ (Algebra.algHom K L N)
+  algebraize [e.toRingHom.comp (algebraMap B (F.extendTop N))]
+  have : IsFractionRing B F' :=
+    .of_algEquiv B (F.extendTop N) _ <| (e.restrictScalars A).extendScalars B
+  have : IsScalarTower B F' N := IsScalarTower.of_algebraMap_eq' rfl
+  have : IsScalarTower B L N := IsScalarTower.to₁₃₄ B F L N
+  have : IsScalarTower B C N := IsScalarTower.to₁₂₄ B C L N
+  have : IsScalarTower B C₀ N := IsScalarTower.to₁₃₄ B C C₀ N
+  have : IsScalarTower B₁ L N := IsScalarTower.to₁₃₄ B₁ F₁ L N
+  have : IsScalarTower B₁ C N := IsScalarTower.to₁₂₄ B₁ C L N
+  have : IsScalarTower B₁ C₀ N := IsScalarTower.to₁₃₄ B₁ C C₀ N
+  have : IsScalarTower B₂ L N := IsScalarTower.to₁₃₄ B₂ F₂ L N
+  have : IsScalarTower B₂ C N := IsScalarTower.to₁₂₄ B₂ C L N
+  have : IsScalarTower B₂ C₀ N := IsScalarTower.to₁₃₄ B₂ C C₀ N
+  have : IsScalarTower A B C₀ := IsScalarTower.to₁₂₄ A B C C₀
+  have : IsScalarTower A B₁ C₀ := IsScalarTower.to₁₂₄ A B₁ C C₀
+  have : IsScalarTower A B₂ C₀ := IsScalarTower.to₁₂₄ A B₂ C C₀
+  have : Module.IsTorsionFree B C₀ := Module.IsTorsionFree.trans_faithfulSMul _ C C₀
+  have : Module.IsTorsionFree B₁ C₀ := Module.IsTorsionFree.trans_faithfulSMul _ C C₀
+  have : Module.IsTorsionFree B₂ C₀ := Module.IsTorsionFree.trans_faithfulSMul _ C C₀
+  obtain ⟨Q₀, _, _⟩ := Ideal.exists_maximal_ideal_liesOver_of_isIntegral (S := C₀) Q
+  have : Q₀.LiesOver p := LiesOver.trans Q₀ Q p
+  have : Q₀.LiesOver P₁ := LiesOver.trans Q₀ Q P₁
+  have : Q₀.LiesOver P₂ := LiesOver.trans Q₀ Q P₂
+  have : Q₀.LiesOver P := LiesOver.trans Q₀ Q P
+  exact ramificationIdx_sup_eq_one_of_isGalois K N (F₁.extendTop N) (F₂.extendTop N) P Q₀ h₁ h₂ hp
+
+end applications
 
 end IntermediateField
