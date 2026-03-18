@@ -40,16 +40,23 @@ of graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
 
 /-- The typeclass `DartLike α β` captures the common structure of darts. -/
 class DartLike (α β : Type*) where
+  /-- The first vertex of a dart. -/
   fst : β → α
+  /-- The second vertex of a dart. -/
   snd : β → α
 
+/-- Convert a dart to a pair of vertices. -/
 def DartLike.toProd {α β : Type*} [DartLike α β] (d : β) : α × α := (DartLike.fst d, DartLike.snd d)
 
 /-- The typeclass `SymmDartLike α β` captures the common structure of darts with symmetry. -/
 class SymmDartLike (α β : Type*) extends DartLike α β where
+  /-- The inverse of a dart. -/
   inv : β → β
+  /-- The inverse of the inverse of a dart is the dart itself. -/
   inv_invol {d : β} : inv (inv d) = d
+  /-- The first vertex of the inverse of a dart is the second vertex of the dart. -/
   inv_fst {d : β} : fst (inv d) = snd d
+  /-- The second vertex of the inverse of a dart is the first vertex of the dart. -/
   inv_snd {d : β} : snd (inv d) = fst d
 
 attribute [simp] SymmDartLike.inv_invol SymmDartLike.inv_fst SymmDartLike.inv_snd
@@ -171,6 +178,7 @@ variable [SymmDartLike α β] [SymmGraphLike α β Gr]
 lemma inv_mem_darts (hd : d ∈ darts G) : inv α d ∈ darts G :=
   inv_mem_darts_iff.mpr hd
 
+/-- The inverse of a step. -/
 def step.inv (h : step G u v) : step G v u := by
   obtain ⟨d, hd, hu, hv⟩ := h
   use SymmDartLike.inv α d, inv_mem_darts hd, hv ▸ inv_fst, hu ▸ inv_snd
