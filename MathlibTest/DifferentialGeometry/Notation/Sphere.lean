@@ -78,44 +78,44 @@ variable {G : Type*} [NormedAddCommGroup G] [InnerProductSpace ℝ G]
 -- The tests for the standard notation passes.
 
 variable [Fact (Module.finrank ℝ G = 3)] in
-/-- info: MDifferentiable (𝓡 2) 𝓘(ℝ, E'') f : Prop -/
+/-- info: MDiff f : Prop -/
 #guard_msgs in
 #check MDifferentiable (𝓡 2) 𝓘(ℝ, E'') f
 
 variable [Fact (Module.finrank ℝ G = 2 + 1)] in
-/-- info: MDifferentiable (𝓡 2) 𝓘(ℝ, E'') f : Prop -/
+/-- info: MDiff f : Prop -/
 #guard_msgs in
 #check MDifferentiable (𝓡 2) 𝓘(ℝ, E'') f
 
 variable [Fact (Module.finrank ℝ G = 4 + 1)] in
-/-- info: MDifferentiable 𝓘(ℝ, ℝ) (𝓡 4) g : Prop -/
+/-- info: MDiff g : Prop -/
 #guard_msgs in
 #check MDifferentiable 𝓘(ℝ) (𝓡 4) g
 
 variable [Fact (Module.finrank ℝ G = 3)] in
-/-- info: MDifferentiable (𝓡 2) 𝓘(ℝ, E'') f : Prop -/
+/-- info: MDiff f : Prop -/
 #guard_msgs in
 #check MDiff f
 
 variable [Fact (Module.finrank ℝ G = 2 + 1)] in
-/-- info: MDifferentiable (𝓡 2) 𝓘(ℝ, E'') f : Prop -/
+/-- info: MDiff f : Prop -/
 #guard_msgs in
 #check MDiff f
 
 -- The following two tests are variants of the previous tests with target an inner product space
 -- and not a normed space: this used to fail in the past.
 variable {f' : (Metric.sphere (0 : G) 1) → E'} [Fact (Module.finrank ℝ G = 3)] in
-/-- info: MDifferentiable (𝓡 2) 𝓘(ℝ, E') f' : Prop -/
+/-- info: MDiff f' : Prop -/
 #guard_msgs in
 #check MDiff f'
 
 variable {f' : (Metric.sphere (0 : G) 1) → E'} [Fact (Module.finrank ℝ G = 2 + 1)] in
-/-- info: MDifferentiable (𝓡 2) 𝓘(ℝ, E') f' : Prop -/
+/-- info: MDiff f' : Prop -/
 #guard_msgs in
 #check MDiff f'
 
 variable [Fact (Module.finrank ℝ G = 4 + 1)] in
-/-- info: MDifferentiable 𝓘(ℝ, ℝ) (𝓡 4) g : Prop -/
+/-- info: MDiff g : Prop -/
 #guard_msgs in
 #check MDiff g
 
@@ -174,7 +174,7 @@ end
 
 -- This matching is not too clever, though. 2 + 4 is unified as (2 + 3) + 1 (not 5 + 1).
 variable [Fact (Module.finrank ℝ E'' = 2 + 4)] in
-/-- info: MDifferentiable (𝓡 2 + 3) 𝓘(ℝ, ℝ) f : Prop -/
+/-- info: MDiff f : Prop -/
 #guard_msgs in
 #check MDiff f
 
