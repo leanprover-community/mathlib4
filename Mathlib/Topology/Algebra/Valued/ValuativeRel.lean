@@ -28,7 +28,7 @@ section
 
 /-! ### Alternate constructors -/
 
-variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
+variable {R : Type*} [Ring R] [ValuativeRel R] [TopologicalSpace R]
 
 open ValuativeRel TopologicalSpace Filter Topology Set
 
@@ -45,7 +45,7 @@ theorem of_zero [ContinuousConstVAdd R R]
 
 end
 
-variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]
+variable {R : Type*} [Ring R] [ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]
 
 open ValuativeRel TopologicalSpace Filter Topology Set
 
@@ -65,7 +65,7 @@ lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 (0 : R) ↔
 
 /-- Helper `Valued` instance when `ValuativeTopology R` over a `UniformSpace R`,
 for use in porting files from `Valued` to `ValuativeRel`. -/
-instance (priority := low) {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
+instance (priority := low) {R : Type*} [Ring R] [ValuativeRel R] [UniformSpace R]
     [IsUniformAddGroup R] [IsValuativeTopology R] :
     Valued R (ValueGroupWithZero R) where
   «v» := valuation R
@@ -77,7 +77,7 @@ instance (priority := low) {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpa
     convert hγ
     simp [valueGroupWithZero_equiv_valueGroup₀ ]
 
-lemma v_eq_valuation {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
+lemma v_eq_valuation {R : Type*} [Ring R] [ValuativeRel R] [UniformSpace R]
     [IsUniformAddGroup R] [IsValuativeTopology R] :
     Valued.v = valuation R := rfl
 

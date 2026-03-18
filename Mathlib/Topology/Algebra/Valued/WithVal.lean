@@ -182,18 +182,19 @@ theorem val_apply_equiv (r : WithVal v) : v (equiv v r) = Valued.v r := rfl
 instance [CharZero R] : CharZero (WithVal v) :=
   .of_addMonoidHom (equiv v).symm.toAddMonoidHom (by simp) (equiv v).symm.injective
 
+instance : Ring (WithVal v) := fast_instance% (equiv v).ring
+
+instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
+
+instance : (valuation v).Compatible := .ofValuation (valuation v)
+
 end Ring
 
 section CommRing
 
 variable [CommRing R] (v : Valuation R Γ₀)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : CommRing (WithVal v) := fast_instance% (equiv v).commRing
-
-instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
-
-instance : (valuation v).Compatible := .ofValuation (valuation v)
 
 end CommRing
 
@@ -294,8 +295,6 @@ theorem algebraMap_right_apply (r : R) :
 theorem algebraMap_right_injective (h : Function.Injective (algebraMap R S)) :
     Function.Injective (algebraMap R (WithVal v)) := (toVal_injective v).comp h
 
-variable {R : Type*} [CommRing R] (v : Valuation R Γ₀) (w : Valuation S Γ₀) [Algebra R S]
-
 end right
 
 variable [CommSemiring R] [Ring S] [Algebra R S] (v : Valuation S Γ₀)
@@ -316,12 +315,13 @@ end Algebra
 
 section Field
 
+instance [DivisionRing R] (v : Valuation R Γ₀) : DivisionRing (WithVal v) :=
+  fast_instance% (equiv v).divisionRing
+
 variable [Field R] (v : Valuation R Γ₀)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Field (WithVal v) := fast_instance% (equiv v).field
 
-set_option backward.isDefEq.respectTransparency false in
 instance [NumberField R] : NumberField (WithVal v) where
 
 @[simp] lemma toVal_div (x y : R) : toVal v (x / y) = toVal v x / toVal v y := rfl
@@ -572,13 +572,13 @@ def _root_.WithVal.uniformEquiv [Valued R Γ₀'] (hV : Valued.v = w) (h : v.IsE
   uniformContinuous_toFun := h.uniformContinuous_equiv hV
   uniformContinuous_invFun := h.symm.uniformContinuous_equiv_symm hV
 
-theorem exists_div_eq_of_surjective {K : Type*} [Field K] {Γ₀ : Type*}
+theorem exists_div_eq_of_surjective {K : Type*} [DivisionRing K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (hv : Function.Surjective v)
     (γ : Γ₀ˣ) : ∃ r s, 0 < v r ∧ 0 < v s ∧ v r / v s = γ := by
   obtain ⟨r, hr⟩ := hv γ
   exact ⟨r, 1, by simp [hr]⟩
 
-theorem restrict_exists_div_eq {K : Type*} [Field K] {Γ₀ : Type*}
+theorem restrict_exists_div_eq {K : Type*} [DivisionRing K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
     (γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
