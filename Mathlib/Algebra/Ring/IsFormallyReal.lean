@@ -97,8 +97,7 @@ end AddSubsemigroup
 
 end IsSumNonzeroSq
 
-variable (R)
-
+variable (R) in
 /--
 A ring is formally real if, whenever `∑ i, x i ^ 2 = 0`, we in fact have `x i = 0` for all `i`.
 -/
