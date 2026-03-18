@@ -26,8 +26,8 @@ properties to computational properties of the matrix.
   (2) `A` is symmetric,
   (3) every diagonal entry of `A` is `0`.
 
-* `Matrix.IsAdjMatrix.to_graph`: for `A : Matrix V V α` and `h : A.IsAdjMatrix`,
-  `h.to_graph` is the simple graph induced by `A`.
+* `Matrix.IsAdjMatrix.toGraph`: for `A : Matrix V V α` and `h : A.IsAdjMatrix`,
+  `h.toGraph` is the simple graph induced by `A`.
 
 * `Matrix.compl`: for `A : Matrix V V α`, `A.compl` is supposed to be
   the adjacency matrix of the complement graph of the graph induced by `A`.
