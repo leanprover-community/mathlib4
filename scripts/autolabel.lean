@@ -166,6 +166,10 @@ structure LabelData (label : Label) where
   /-- Array of paths which should be excluded.
   Any modifications to a file in an excluded path are ignored for the purposes of labelling. -/
   exclusions : Array FilePath := #[]
+  /-- Labels which are "lower" in the Mathlib import order. These labels will not be added
+  alongside the label. For example any PR to `t-ring-theory` might modify files from `t-algebra`
+  but should only get the former label -/
+  dependencies : Array Label := #[]
   deriving BEq, Hashable
 
 /-- Mathlib labels and their corresponding folders -/
@@ -175,7 +179,8 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Algebra",
       "Mathlib" / "FieldTheory",
       "Mathlib" / "RepresentationTheory",
-      "Mathlib" / "LinearAlgebra"] }
+      "Mathlib" / "LinearAlgebra"],
+    dependencies := #[.«t-data»] }
   | .«t-algebraic-geometry» => {
     dirs := #[
       "Mathlib" / "AlgebraicGeometry",
@@ -193,13 +198,18 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Control",
       "Mathlib" / "Data"] }
   | .«t-differential-geometry» => {
-    dirs := #["Mathlib" / "Geometry" / "Manifold"] }
+    dirs := #[
+      "Mathlib" / "Geometry" / "Diffeology",
+      "Mathlib" / "Geometry" / "Manifold"] }
   | .«t-dynamics» => {}
   | .«t-euclidean-geometry» => {
-    dirs := #["Mathlib" / "Geometry" / "Euclidean"] }
+    dirs := #[
+      "Mathlib" / "Geometry" / "Euclidean",
+      "Mathlib" / "Geometry" / "Polygon"] }
   | .«t-geometric-group-theory» => {
     dirs := #["Mathlib" / "Geometry" / "Group"] }
-  | .«t-group-theory» => {}
+  | .«t-group-theory» => {
+    dependencies := #[.«t-algebra»] }
   | .«t-linter» => {
     dirs := #[
       "Mathlib" / "Tactic" / "Linter",
@@ -224,12 +234,14 @@ def mathlibLabelData : (l : Label) → LabelData l
     exclusions := #["Mathlib" / "Tactic" / "Linter"] }
   | .«t-number-theory» => {}
   | .«t-order» => {}
-  | .«t-ring-theory» => {}
+  | .«t-ring-theory» => {
+    dependencies := #[.«t-algebra», .«t-group-theory»] }
   | .«t-set-theory» => {}
   | .«t-topology» => {}
   | .«CI» => {
     dirs := #[
       ".github",
+      "Cache",
       "scripts",
       "scripts" / "nolints.json",
       "scripts" / "nolints-style.txt",
@@ -276,6 +288,18 @@ def getMatchingLabels (files : Array FilePath) : Array Label :=
     data.dirs.any (fun dir ↦ notExcludedFiles.any (dir.isPrefixOf ·))
   -- return sorted list of labels
   applicable |>.qsort (·.toString < ·.toString)
+
+/-- Helper function: union of all labels an all their dependent labels -/
+partial def collectLabelsAndDependentLabels (labels: Array Label) : Array Label :=
+  labels.flatMap fun label ↦
+    (collectLabelsAndDependentLabels (mathlibLabelData label).dependencies).push label
+
+/-- Reduce a list of labels to not include any which are dependencies of other
+labels in the list -/
+def dropDependentLabels (labels: Array Label) : Array Label :=
+  let dependentLabels := labels.flatMap fun label ↦
+    (mathlibLabelData label).dependencies
+  labels.filter (!dependentLabels.contains ·)
 
 /-!
 Testing the functionality of the declarations defined in this script
@@ -414,8 +438,7 @@ unsafe def main (args : List String): IO UInt32 := do
   let modifiedFiles : Array FilePath := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
 
   -- find labels covering the modified files
-  let labels := getMatchingLabels modifiedFiles
-
+  let labels := dropDependentLabels <| getMatchingLabels modifiedFiles
   println s!"::notice::Applicable labels: {labels}"
 
   match labels with

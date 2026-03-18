@@ -169,7 +169,6 @@ theorem two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add [IsCommJordan A] (a b :
     (commute_lmul_lmul_sq a).lie_eq, (commute_lmul_lmul_sq b).lie_eq, zero_add, add_zero, two_smul]
   abel
 
-set_option backward.isDefEq.respectTransparency false in
 -- Porting note: the monolithic `calc`-based proof of `two_nsmul_lie_lmul_lmul_add_add_eq_zero`
 -- has had four auxiliary parts `aux{0,1,2,3}` split off from it.
 private theorem aux0 {a b c : A} : ⁅L (a + b + c), L ((a + b + c) * (a + b + c))⁆ =
@@ -180,8 +179,8 @@ private theorem aux0 {a b c : A} : ⁅L (a + b + c), L ((a + b + c) * (a + b + c
   iterate 10 rw [map_add]
   rw [mul_comm b a, mul_comm c a, mul_comm c b]
   iterate 3 rw [two_smul]
-  simp only [lie_add, add_lie]
-  abel
+  simp only [add_lie]
+  abel_nf
 
 set_option backward.isDefEq.respectTransparency false in
 private theorem aux1 {a b c : A} :

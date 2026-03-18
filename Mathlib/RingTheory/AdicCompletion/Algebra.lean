@@ -69,7 +69,6 @@ def transitionMapₐ {m n : ℕ} (hmn : m ≤ n) :
     R ⧸ (I ^ n • ⊤ : Ideal R) →ₐ[R] R ⧸ (I ^ m • ⊤ : Ideal R) :=
   AlgHom.ofLinearMap (transitionMap I R hmn) rfl (transitionMap_map_mul I hmn)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `AdicCompletion I R` is an `R`-subalgebra of `∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)`. -/
 def subalgebra : Subalgebra R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
   Submodule.toSubalgebra (submodule I R) (fun _ ↦ by simp [transitionMap_map_one I])
@@ -114,6 +113,9 @@ instance [Algebra S R] : Algebra S (AdicCompletion I R) where
     map_add' x y := Subtype.ext <| map_add _ x y }
   commutes' r x := Subtype.ext <| Algebra.commutes' r x.val
   smul_def' r x := Subtype.ext <| Algebra.smul_def' r x.val
+
+theorem algebraMap_apply [Algebra S R] (s : S) :
+    algebraMap S (AdicCompletion I R) s = of I R (algebraMap S R s) := rfl
 
 @[simp]
 theorem val_one (n : ℕ) : (1 : AdicCompletion I R).val n = 1 :=
@@ -187,7 +189,7 @@ lemma evalOneₐ_surjective : Function.Surjective (evalOneₐ I) := by
 /-- `AdicCauchySequence I R` is an `R`-subalgebra of `ℕ → R`. -/
 def AdicCauchySequence.subalgebra : Subalgebra R (ℕ → R) :=
   Submodule.toSubalgebra (AdicCauchySequence.submodule I R)
-    (fun {m n} _ ↦ by simp; rfl)
+    (fun {m n} _ ↦ by simp)
     (fun x y hx hy {m n} hmn ↦ by
       simp only [Pi.mul_apply]
       exact SModEq.mul (hx hmn) (hy hmn))

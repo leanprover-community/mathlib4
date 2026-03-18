@@ -101,16 +101,12 @@ theorem intCast_def' {n : Nat} [NeZero n] (x : Int) :
     (x : Fin n) = if 0 ≤ x then ↑x.natAbs else -↑x.natAbs :=
   Fin.intCast_def _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coe_sub_one (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a - 1 := by
   cases n
   · simp
   split_ifs with h
   · simp [h]
-  rw [sub_eq_add_neg, val_add_eq_ite, coe_neg_one, if_pos, Nat.add_comm, Nat.add_sub_add_left]
-  conv_rhs => rw [Nat.add_comm]
-  rw [Nat.add_le_add_iff_left, Nat.one_le_iff_ne_zero]
-  rwa [Fin.ext_iff] at h
+  exact val_sub_one_of_ne_zero h
 
 @[simp]
 lemma lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by

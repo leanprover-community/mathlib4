@@ -262,6 +262,7 @@ theorem submodule_map_mul_reverse (p q : Submodule R (CliffordAlgebra Q)) :
         p.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) := by
   simp_rw [reverse, Submodule.map_comp, Submodule.map_mul, Submodule.map_unop_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem submodule_comap_mul_reverse (p q : Submodule R (CliffordAlgebra Q)) :
     (p * q).comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) =
       q.comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) *
@@ -275,6 +276,7 @@ theorem submodule_map_pow_reverse (p : Submodule R (CliffordAlgebra Q)) (n : ℕ
       p.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) ^ n := by
   simp_rw [reverse, Submodule.map_comp, Submodule.map_pow, Submodule.map_unop_pow]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem submodule_comap_pow_reverse (p : Submodule R (CliffordAlgebra Q)) (n : ℕ) :
     (p ^ n).comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) =
       p.comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) ^ n := by
