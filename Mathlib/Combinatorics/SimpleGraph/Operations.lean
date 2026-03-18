@@ -177,6 +177,8 @@ variable {s t}
 
 lemma edgeSet_edge_of_ne (h : s ≠ t) : (edge s t).edgeSet = {s(s, t)} := by simpa [edge]
 
+@[deprecated (since := "2026-03-18")] alias edge_edgeSet_of_ne := edgeSet_edge_of_ne
+
 lemma sup_edge_of_adj (h : G.Adj s t) : G ⊔ edge s t = G := by
   rwa [sup_eq_left, ← edgeSet_subset_edgeSet, edgeSet_edge_of_ne h.ne, Set.singleton_subset_iff,
     mem_edgeSet]

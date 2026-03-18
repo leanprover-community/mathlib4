@@ -372,6 +372,9 @@ theorem IsAcyclic.sup_edge_of_not_reachable {u v : V} (hnreach : ¬G.Reachable u
     IsBridge.sup_edge_of_not_reachable_of_isBridge,
     edgeSet_sup, edgeSet_edge, IsBridge.of_not_reachable]
 
+@[deprecated (since := "2026-03-18")]
+alias IsAcyclic.isAcyclic_sup_fromEdgeSet_of_not_reachable := IsAcyclic.sup_edge_of_not_reachable
+
 theorem isAcyclic_add_edge_iff_of_not_reachable (x y : V) (hxy : ¬ G.Reachable x y) :
     (G ⊔ edge x y).IsAcyclic ↔ IsAcyclic G :=
   ⟨.anti le_sup_left, .sup_edge_of_not_reachable hxy⟩
