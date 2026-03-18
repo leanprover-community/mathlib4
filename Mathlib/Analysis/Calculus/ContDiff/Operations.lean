@@ -388,7 +388,6 @@ theorem ContDiff.sum {ι : Type*} {f : ι → E → F} {s : Finset ι}
     (h : ∀ i ∈ s, ContDiff 𝕜 n fun x => f i x) : ContDiff 𝕜 n fun x => ∑ i ∈ s, f i x := by
   simp only [← contDiffOn_univ] at *; exact ContDiffOn.sum h
 
-@[to_fun]
 theorem iteratedFDerivWithin_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ} {x : E}
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : ∀ j ∈ u, ContDiffWithinAt 𝕜 i (f j) s x) :
     iteratedFDerivWithin 𝕜 i (∑ j ∈ u, f j) s x =
@@ -401,7 +400,13 @@ theorem iteratedFDerivWithin_sum_apply {ι : Type*} {f : ι → E → F} {u : Fi
     simp only [Finset.sum_cons]
     rw [fun_iteratedFDerivWithin_add_apply h.1 (ContDiffWithinAt.sum h.2) hs hx, IH h.2]
 
-@[to_fun]
+theorem iteratedFDerivWithin_fun_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ}
+    {x : E} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : ∀ j ∈ u, ContDiffWithinAt 𝕜 i (f j) s x) :
+    iteratedFDerivWithin 𝕜 i (fun z ↦ ∑ j ∈ u, f j z) s x =
+      ∑ j ∈ u, iteratedFDerivWithin 𝕜 i (f j) s x := by
+  convert iteratedFDerivWithin_sum_apply hs hx h
+  rw [Finset.sum_apply]
+
 theorem iteratedFDeriv_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {n : ℕ} {x : E}
     (h : ∀ j ∈ u, ContDiffAt 𝕜 n (f j) x) :
     iteratedFDeriv 𝕜 n (∑ j ∈ u, f j) x = ∑ j ∈ u, iteratedFDeriv 𝕜 n (f j) x := by
@@ -409,11 +414,17 @@ theorem iteratedFDeriv_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset �
   apply iteratedFDerivWithin_sum_apply uniqueDiffOn_univ (Set.mem_univ x)
     (h · · |>.contDiffWithinAt)
 
+theorem iteratedFDeriv_fun_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {n : ℕ} {x : E}
+    (h : ∀ j ∈ u, ContDiffAt 𝕜 n (f j) x) :
+    iteratedFDeriv 𝕜 n (fun z ↦ ∑ j ∈ u, f j z) x = ∑ j ∈ u, iteratedFDeriv 𝕜 n (f j) x := by
+  convert iteratedFDeriv_sum_apply h
+  rw [Finset.sum_apply]
+
 theorem iteratedFDeriv_sum {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ}
     (h : ∀ j ∈ u, ContDiff 𝕜 i (f j)) :
     iteratedFDeriv 𝕜 i (∑ j ∈ u, f j ·) = ∑ j ∈ u, iteratedFDeriv 𝕜 i (f j) :=
   funext fun x ↦ by simpa [iteratedFDerivWithin_univ] using
-    fun_iteratedFDerivWithin_sum_apply uniqueDiffOn_univ (mem_univ x) (h · · |>.contDiffWithinAt)
+    iteratedFDerivWithin_fun_sum_apply uniqueDiffOn_univ (mem_univ x) (h · · |>.contDiffWithinAt)
 
 /-! ### Product of two functions -/
 

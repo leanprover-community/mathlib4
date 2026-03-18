@@ -46,23 +46,26 @@ theorem iteratedFDerivWithin_succ_const (n : ℕ) (c : F) :
     simp only [Pi.zero_def, comp_def, fderivWithin_fun_const, map_zero]
 
 @[simp]
-theorem iteratedFDerivWithin_zero_fun {i : ℕ} :
+theorem iteratedFDerivWithin_zero {i : ℕ} :
     iteratedFDerivWithin 𝕜 i (0 : E → F) s = 0 := by
   cases i with
   | zero => ext; simp
   | succ i => apply iteratedFDerivWithin_succ_const
+
+@[deprecated (since := "2026-03-18")]
+alias iteratedFDerivWithin_zero_fun := iteratedFDerivWithin_zero
 
 /--
 Eta-expanded version of `iteratedFDerivWithin_zero_fun`. Deviating from the standard naming
 convention because there is already a `_fun` in the title (which refers to the zero function).
 -/
 @[simp]
-theorem iteratedFDerivWithin_zero_fun' {i : ℕ} :
+theorem iteratedFDerivWithin_fun_zero_fun {i : ℕ} :
     iteratedFDerivWithin 𝕜 i (fun (_ : E) ↦ (0 : F)) s = 0 := by
-  apply iteratedFDerivWithin_zero_fun
+  apply iteratedFDerivWithin_zero
 
 @[simp]
-theorem ftaylorSeriesWithin_zero_fun :
+theorem ftaylorSeriesWithin_zero :
     ftaylorSeriesWithin 𝕜 (0 : E → F) = 0 := by
   ext
   simp [ftaylorSeriesWithin]
@@ -72,26 +75,26 @@ Eta-expanded version of `ftaylorSeriesWithin_zero_fun`. Deviating from the stand
 convention because there is already a `_fun` in the title (which refers to the zero function).
 -/
 @[simp]
-theorem ftaylorSeriesWithin_zero_fun' :
+theorem ftaylorSeriesWithin_fun_zero :
     ftaylorSeriesWithin 𝕜 (fun (_ : E) ↦ (0 : F)) = 0 := by
-  apply ftaylorSeriesWithin_zero_fun
+  apply ftaylorSeriesWithin_zero
 
 @[simp]
-theorem iteratedFDeriv_zero_fun {n : ℕ} :
+theorem iteratedFDeriv_zero {n : ℕ} :
     iteratedFDeriv 𝕜 n (0 : E → F) = 0 :=
-  funext fun x ↦ by simp only [← iteratedFDerivWithin_univ, iteratedFDerivWithin_zero_fun]
+  funext fun x ↦ by simp only [← iteratedFDerivWithin_univ, iteratedFDerivWithin_zero]
 
 /--
 Eta-expanded version of `iteratedFDeriv_zero_fun`. Deviating from the standard naming convention
 because there is already a `_fun` in the title (which refers to the zero function).
 -/
 @[simp]
-theorem iteratedFDeriv_zero_fun' {n : ℕ} :
+theorem iteratedFDeriv_fun_zero {n : ℕ} :
     iteratedFDeriv 𝕜 n (fun (_ : E) ↦ (0 : F)) = 0 := by
-  apply iteratedFDeriv_zero_fun
+  apply iteratedFDeriv_zero
 
 @[simp]
-theorem ftaylorSeries_zero_fun :
+theorem ftaylorSeries_zero :
     ftaylorSeries 𝕜 (0 : E → F) = 0 := by
   ext
   simp [ftaylorSeries]
@@ -101,10 +104,12 @@ Eta-expanded version of `ftaylorSeries_zero_fun`. Deviating from the standard na
 because there is already a `_fun` in the title (which refers to the zero function).
 -/
 @[simp]
-theorem ftaylorSeries_zero_fun' :
+theorem ftaylorSeries_fun_zero :
     ftaylorSeries 𝕜 (fun (_ : E) ↦ (0 : F)) = 0 := by
   ext
   simp [ftaylorSeries]
+
+@[deprecated (since := "2026-03-18")] alias iteratedFDeriv_zero_fun := ftaylorSeries_fun_zero
 
 theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
   analyticOnNhd_const.contDiff
