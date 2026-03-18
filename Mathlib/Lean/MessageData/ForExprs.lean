@@ -85,7 +85,8 @@ where
     | .text _ | .align _ | .line | .nil => return .yield s
 
 /-- Find the expression in a message on which `f` does not return `none`. -/
-partial def Lean.MessageData.firstExpr? {α} (msg : MessageData) (f : Expr → MetaM (Option α)) : IO (Option α) :=
+partial def Lean.MessageData.firstExpr? {α} (msg : MessageData) (f : Expr → MetaM (Option α)) :
+    IO (Option α) :=
   msg.forExprs none fun s e => do
     if let .some a ← f e then
       return .done (some a)
