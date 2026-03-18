@@ -102,6 +102,11 @@ instance IsCyclic.commutative [Group α] [IsCyclic α] :
     let ⟨_, hy⟩ := hg y
     hy ▸ hx ▸ zpow_mul_comm _ _ _
 
+@[to_additive]
+instance IsCyclic.isMulCommutative [Group α] [IsCyclic α] :
+    IsMulCommutative α :=
+  ⟨⟨IsCyclic.commutative.comm⟩⟩
+
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
 proof of `CommGroup`. -/
 @[to_additive (attr := implicit_reducible)

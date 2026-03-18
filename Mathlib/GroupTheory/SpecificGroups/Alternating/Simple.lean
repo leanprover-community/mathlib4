@@ -9,6 +9,7 @@ module
 public import Mathlib.GroupTheory.GroupAction.Iwasawa
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.Combination
 public import Mathlib.GroupTheory.SpecificGroups.Alternating.KleinFour
+public import Mathlib.GroupTheory.SpecificGroups.Alternating.SmallCard
 
 /-! # The alternating group is simple
 
@@ -60,11 +61,8 @@ def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
     IwasawaStructure (Perm α) (Set.powersetCard α 2) where
   T s := (ofSubtype : Perm (s : Set α) →* Perm α).range
   is_comm s := by
-    suffices IsCyclic (Perm s) by
-      let _ : CommGroup (Perm s) := IsCyclic.commGroup
-      apply MonoidHom.range_isMulCommutative
-    apply isCyclic_of_prime_card (p := 2)
-    rw [Nat.card_perm, Nat.card_eq_finsetCard, s.prop, Nat.factorial_two]
+    have : IsMulCommutative (Perm s) := isMulCommutative_of_card_le_two (by simp)
+    apply MonoidHom.range_isMulCommutative
   is_conj g s := by
     convert (conj_smul_range_ofSubtype g s).symm
   is_generator := by
@@ -97,15 +95,8 @@ variable {α : Type*} [DecidableEq α] [Fintype α]
 def iwasawaStructure_three : IwasawaStructure (alternatingGroup α) (Set.powersetCard α 3) where
   T s := (alternatingGroup.ofSubtype s).range
   is_comm s := by
-    suffices IsCyclic (alternatingGroup s) by
-      let _ : CommGroup (alternatingGroup s) := IsCyclic.commGroup
-      exact MonoidHom.range_isMulCommutative (ofSubtype (s : Finset α))
-    apply isCyclic_of_prime_card (p := 3)
-    have : Nontrivial s := by
-      rw [← Fintype.one_lt_card_iff_nontrivial, Fintype.card_coe, s.prop]
-      norm_num
-    rw [nat_card_alternatingGroup, Nat.card_eq_finsetCard, s.prop]
-    norm_num [Nat.factorial]
+    have : IsMulCommutative (alternatingGroup s) := isMulCommutative_of_card_le_three (by simp)
+    apply MonoidHom.range_isMulCommutative
   is_conj g s := (conj_smul_range_ofSubtype s g).symm
   is_generator := by
     rw [eq_top_iff, ← closure_isThreeCycles_eq_top, Subgroup.closure_le]
