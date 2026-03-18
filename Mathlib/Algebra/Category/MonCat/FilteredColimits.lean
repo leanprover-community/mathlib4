@@ -232,7 +232,6 @@ noncomputable def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι := { app := coconeMorphism F }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a cocone `t` of `F`, the induced monoid homomorphism from the colimit to the cocone point.
 As a function, this is simply given by the induced map of the corresponding cocone in `Type`.
 The only thing left to see is that it is a monoid homomorphism.
