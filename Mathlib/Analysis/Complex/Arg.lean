@@ -41,7 +41,7 @@ theorem sameRay_iff : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg := b
   rcases eq_or_ne y 0 with (rfl | hy)
   · simp
   simp only [hx, hy, sameRay_iff_norm_smul_eq, arg_eq_arg_iff hx hy]
-  simp [field, hx]
+  simp [field, hx, -iffComm, fieldEq]
   rw [mul_comm, eq_comm]
 
 theorem sameRay_iff_arg_div_eq_zero : SameRay ℝ x y ↔ arg (x / y) = 0 := by

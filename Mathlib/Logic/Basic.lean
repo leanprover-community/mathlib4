@@ -28,6 +28,10 @@ open Function
 
 section Miscellany
 
+section CommSimproc
+
+open Lean Meta Simp
+
 meta def Lean.Meta.Simp.withoutTheorem {α} (declName : Name) (e : SimpM α) : SimpM α := do
   let theorems := (← getSimpTheorems).eraseTheorem (.decl declName)
   let procs := (← getSimprocs).erase declName
@@ -41,8 +45,7 @@ meta def Lean.Meta.Simp.withoutTheorem {α} (declName : Name) (e : SimpM α) : S
 def eq_comm_eq {α : Sort*} (a b : α) : (a = b) = (b = a) := by rw [@eq_comm _ a b]
 def iff_comm_eq (a b : Prop) : (a ↔ b) = (b ↔ a) := by rw [@iff_comm a b]
 
-open Lean Meta Simp in
-simproc ↓ eqComm (_ = _) := fun e => do
+simproc eqComm (_ = _) := fun e => do
   let_expr Eq x y := e | return .continue
   let symmExpr ← mkEq y x
   let r ← withoutTheorem `eqComm <| simp symmExpr
@@ -51,7 +54,7 @@ simproc ↓ eqComm (_ = _) := fun e => do
   let symmR ← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``eq_comm_eq #[x, y] } r
   -- If we go `x = y` --symm-> `y = x` --simp--> `y' = x'`, then we want to end up with `x' = y'`.
   match_expr r.expr with
-  | Eq y' x' => return .done (← symmR.mkEqTrans
+  | Eq y' x' => return .visit (← symmR.mkEqTrans
       { expr := ← mkEq x' y', proof? := ← mkAppM ``eq_comm_eq #[y', x'] })
   | _ => return .done symmR
 
@@ -65,9 +68,11 @@ simproc ↓ iffComm (_ ↔ _) := fun e => do
   let symmR ← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``iff_comm_eq #[x, y] } r
   -- If we go `x ↔ y` --symm-> `y ↔ x` --simp--> `y' ↔ x'`, then we want to end up with `x' ↔ y'`.
   match_expr r.expr with
-  | Iff y' x' => return .done (← symmR.mkEqTrans
+  | Iff y' x' => return .visit (← symmR.mkEqTrans
       { expr := .app (.app (.const ``Iff []) x') y', proof? := ← mkAppM ``iff_comm_eq #[y', x'] })
   | _ => return .done symmR
+
+end CommSimproc
 
 -- attribute [refl] HEq.refl -- FIXME This is still rejected after https://github.com/leanprover-community/mathlib4/pull/857
 
