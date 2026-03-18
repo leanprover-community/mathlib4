@@ -46,6 +46,8 @@ instance : SetLike (Subalgebra R A) A where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+instance : PartialOrder (Subalgebra R A) := .ofSetLike (Subalgebra R A) A
+
 initialize_simps_projections Subalgebra (carrier → coe, as_prefix coe)
 
 @[simp]
@@ -197,6 +199,20 @@ def toNonUnitalSubalgebra (S : Subalgebra R A) : NonUnitalSubalgebra R A where
 lemma one_mem_toNonUnitalSubalgebra (S : Subalgebra R A) : (1 : A) ∈ S.toNonUnitalSubalgebra :=
   S.one_mem
 
+@[simp]
+lemma mem_toNonUnitalSubalgebra {S : Subalgebra R A} {x : A} :
+    x ∈ S.toNonUnitalSubalgebra ↔ x ∈ S :=
+  Iff.rfl
+
+lemma toNonUnitalSubalgebra_injective : Function.Injective
+    (toNonUnitalSubalgebra : Subalgebra R A → NonUnitalSubalgebra R A) :=
+  fun _ _ ↦ by simp [SetLike.ext_iff]
+
+@[simp]
+lemma toNonUnitalSubalgebra_inj {S U : Subalgebra R A} :
+    S.toNonUnitalSubalgebra = U.toNonUnitalSubalgebra ↔ S = U :=
+  toNonUnitalSubalgebra_injective.eq_iff
+
 instance {R A : Type*} [CommRing R] [Ring A] [Algebra R A] : SubringClass (Subalgebra R A) A :=
   { Subalgebra.instSubsemiringClass with
     neg_mem := fun {S x} hx => neg_one_smul R x ▸ S.smul_mem hx _ }
@@ -224,17 +240,15 @@ def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Alge
   S.toSubsemiring.toAddSubmonoid
 
 /-- A subalgebra over a ring is also a `Subring`. -/
-@[simps toSubsemiring]
+@[reducible]
 def toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) :
     Subring A :=
   { S.toSubsemiring with neg_mem' := S.neg_mem }
 
-@[simp]
 theorem mem_toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     {S : Subalgebra R A} {x} : x ∈ S.toSubring ↔ x ∈ S :=
   Iff.rfl
 
-@[simp]
 theorem coe_toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     (S : Subalgebra R A) : (↑S.toSubring : Set A) = S :=
   rfl
@@ -273,6 +287,7 @@ instance toCommRing {R A} [CommRing R] [CommRing A] [Algebra R A] (S : Subalgebr
 end
 
 /-- The forgetful map from `Subalgebra` to `Submodule` as an `OrderEmbedding` -/
+@[implicit_reducible] -- Not `@[reducible]` because it is an order embedding rather than a function.
 def toSubmodule : Subalgebra R A ↪o Submodule R A where
   toEmbedding :=
     { toFun := fun S =>

@@ -90,7 +90,7 @@ noncomputable def subalgebra (hS : S ≤ A⁰) : Subalgebra A K :=
 namespace subalgebra
 
 instance isLocalization_subalgebra : IsLocalization S (subalgebra K S hS) := by
-  dsimp only [Localization.subalgebra]
+  dsimp +instances only [Localization.subalgebra]
   rw [Subalgebra.copy_eq]
   infer_instance
 

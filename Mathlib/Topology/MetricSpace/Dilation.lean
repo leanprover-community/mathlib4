@@ -233,7 +233,7 @@ theorem mk_coe_of_dist_eq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] 
 
 end Setup
 
-section PseudoEmetricDilation
+section PseudoEMetricDilation
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
 variable [FunLike F α β] [DilationClass F α β]
@@ -393,14 +393,20 @@ theorem ediam_range : ediam (range (f : α → β)) = ratio f * ediam (univ : Se
   rw [← image_univ]; exact ediam_image f univ
 
 /-- A dilation maps balls to balls and scales the radius by `ratio f`. -/
-theorem mapsTo_emetric_ball (x : α) (r : ℝ≥0∞) :
-    MapsTo (f : α → β) (EMetric.ball x r) (EMetric.ball (f x) (ratio f * r)) :=
-  fun y (hy : _ < r) ↦ by rw [EMetric.mem_ball, edist_eq f y x]; gcongr <;> simp [ratio_ne_zero, *]
+theorem mapsTo_eball (x : α) (r : ℝ≥0∞) :
+    MapsTo (f : α → β) (Metric.eball x r) (Metric.eball (f x) (ratio f * r)) :=
+  fun y (hy : _ < r) ↦ by rw [Metric.mem_eball, edist_eq f y x]; gcongr <;> simp [ratio_ne_zero, *]
+
+@[deprecated (since := "2026-01-24")]
+alias mapsTo_emetric_ball := mapsTo_eball
 
 /-- A dilation maps closed balls to closed balls and scales the radius by `ratio f`. -/
-theorem mapsTo_emetric_closedBall (x : α) (r' : ℝ≥0∞) :
-    MapsTo (f : α → β) (EMetric.closedBall x r') (EMetric.closedBall (f x) (ratio f * r')) :=
+theorem mapsTo_closedEBall (x : α) (r' : ℝ≥0∞) :
+    MapsTo (f : α → β) (Metric.closedEBall x r') (Metric.closedEBall (f x) (ratio f * r')) :=
   fun y hy => (edist_eq f y x).trans_le <| by gcongr; exact hy
+
+@[deprecated (since := "2026-01-24")]
+alias mapsTo_emetric_closedBall := mapsTo_closedEBall
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] {g : γ → α} {s : Set γ} :
     ContinuousOn ((f : α → β) ∘ g) s ↔ ContinuousOn g s :=
@@ -410,9 +416,9 @@ theorem comp_continuous_iff {γ} [TopologicalSpace γ] {g : γ → α} :
     Continuous ((f : α → β) ∘ g) ↔ Continuous g :=
   (Dilation.isUniformInducing f).isInducing.continuous_iff.symm
 
-end PseudoEmetricDilation
+end PseudoEMetricDilation
 
-section EmetricDilation
+section EMetricDilation
 
 variable [EMetricSpace α]
 variable [FunLike F α β]
@@ -432,7 +438,7 @@ lemma isClosedEmbedding [CompleteSpace α] [EMetricSpace β] [DilationClass F α
     IsClosedEmbedding f :=
   (antilipschitz f).isClosedEmbedding (lipschitz f).uniformContinuous
 
-end EmetricDilation
+end EMetricDilation
 
 /-- Ratio of the composition `g.comp f` of two dilations is the product of their ratios. We assume
 that the domain `α` of `f` is a nontrivial metric space, otherwise

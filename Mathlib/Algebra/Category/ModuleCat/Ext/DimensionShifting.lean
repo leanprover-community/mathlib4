@@ -5,14 +5,12 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Zero
-public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.LinearAlgebra.Dimension.Finite
-public import Mathlib.RingTheory.Noetherian.Basic
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.Rat.Floor
+public import Mathlib.Tactic.Continuity
 
 /-!
 

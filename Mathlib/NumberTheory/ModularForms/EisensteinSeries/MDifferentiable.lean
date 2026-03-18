@@ -9,6 +9,7 @@ public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConverge
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Holomorphicity of Eisenstein series
@@ -49,15 +50,18 @@ lemma eisSummand_extension_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
   apply comp_ofComplex
 
 /-- Eisenstein series are MDifferentiable (i.e. holomorphic functions from `ℍ → ℂ`). -/
-theorem eisensteinSeries_SIF_MDifferentiable {k : ℤ} {N : ℕ} (hk : 3 ≤ k) (a : Fin 2 → ZMod N) :
-    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (eisensteinSeries_SIF a k) := by
+theorem eisensteinSeriesSIF_mdifferentiable {k : ℤ} {N : ℕ} (hk : 3 ≤ k) (a : Fin 2 → ZMod N) :
+    MDiff (eisensteinSeriesSIF a k) := by
   intro τ
-  suffices DifferentiableAt ℂ (↑ₕeisensteinSeries_SIF a k) τ.1 by
+  suffices DifferentiableAt ℂ (↑ₕeisensteinSeriesSIF a k) τ.1 by
     convert MDifferentiableAt.comp τ (DifferentiableAt.mdifferentiableAt this) τ.mdifferentiable_coe
-    exact funext fun z ↦ (comp_ofComplex (eisensteinSeries_SIF a k) z).symm
+    exact funext fun z ↦ (comp_ofComplex (eisensteinSeriesSIF a k) z).symm
   refine DifferentiableOn.differentiableAt ?_ (isOpen_upperHalfPlaneSet.mem_nhds τ.2)
   exact (eisensteinSeries_tendstoLocallyUniformlyOn hk a).differentiableOn
     (Eventually.of_forall fun s ↦ DifferentiableOn.fun_sum
     fun _ _ ↦ eisSummand_extension_differentiableOn _ _) isOpen_upperHalfPlaneSet
+
+@[deprecated (since := "2026-02-09")]
+alias eisensteinSeries_SIF_MDifferentiable := eisensteinSeriesSIF_mdifferentiable
 
 end EisensteinSeries

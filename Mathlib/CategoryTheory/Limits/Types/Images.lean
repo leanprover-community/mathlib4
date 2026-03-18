@@ -71,6 +71,7 @@ instance : HasImage f :=
 instance : HasImages (Type u) where
   has_image := by infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : HasImageMaps (Type u) where
   has_image_map {f g} st :=
     HasImageMap.transport st (monoFactorisation f.hom) (isImage g.hom)
@@ -106,6 +107,7 @@ lemma surjective_π_app_zero_of_surjective_map_aux :
       types_comp_apply, (hF p _).choose_spec]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given surjections `⋯ ⟶ Xₙ₊₁ ⟶ Xₙ ⟶ ⋯ ⟶ X₀`, the projection map `lim Xₙ ⟶ X₀` is surjective.
 -/

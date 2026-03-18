@@ -197,6 +197,7 @@ lemma not_reachable_of_right_degree_zero {G : SimpleGraph V} {u v : V} [Fintype 
   exact not_reachable_of_left_degree_zero huv.symm hu
 
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
+@[implicit_reducible]
 def reachableSetoid : Setoid V := Setoid.mk _ G.reachable_is_equivalence
 
 /-- A graph is preconnected if every pair of vertices is reachable from one another. -/
@@ -663,6 +664,22 @@ lemma connected_toSimpleGraph (C : ConnectedComponent G) : (C.toSimpleGraph).Con
     exact C.reachable_toSimpleGraph hu hv
   nonempty := ⟨C.out, C.out_eq⟩
 
+theorem maximal_connected_induce_supp (C : G.ConnectedComponent) :
+    Maximal (G.induce · |>.Connected) C.supp := by
+  refine C.ind fun v ↦ ?_
+  refine ⟨connected_toSimpleGraph _, fun s hconn hle u hu ↦ ConnectedComponent.sound ?_⟩
+  exact hconn.preconnected ⟨u, hu⟩ ⟨v, hle rfl⟩ |>.map <| Embedding.induce s |>.toHom
+
+theorem maximal_connected_induce_iff (s : Set V) :
+    Maximal (G.induce · |>.Connected) s ↔ ∃ C : G.ConnectedComponent, C.supp = s := by
+  refine ⟨fun ⟨hconn, h⟩ ↦ ?_, fun ⟨C, h⟩ ↦ ?_⟩
+  · have ⟨v, hv⟩ := hconn.nonempty
+    suffices s ≤ (G.connectedComponentMk v).supp from
+      ⟨G.connectedComponentMk v, le_antisymm (h (connected_toSimpleGraph _) this) this⟩
+    exact fun u hu ↦ ConnectedComponent.sound <|
+      hconn.preconnected ⟨u, hu⟩ ⟨v, hv⟩ |>.map <| Embedding.induce s |>.toHom
+  · exact h ▸ maximal_connected_induce_supp _
+
 end ConnectedComponent
 
 /-- Given graph homomorphisms from each connected component of `G` to `H`, this is the graph
@@ -721,6 +738,7 @@ def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
 theorem isBridge_iff {u v : V} :
     G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {s(u, v)}).Reachable u v := Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
     (G \ fromEdgeSet {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', s(v, w) ∉ p.edges := by
   constructor
@@ -777,7 +795,7 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
       rw [Sym2.eq_swap]
       intro h
       cases hp (Walk.edges_toPath_subset p h)
-    · simp only [Sym2.eq_swap, Walk.edges_cons, List.mem_cons, true_or]
+    · simp
   · rintro ⟨u, c, hc, he⟩
     refine ⟨c.adj_of_mem_edges he, ?_⟩
     by_contra! hb
@@ -785,9 +803,9 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
       intro p
       simpa [Sym2.eq_swap] using hb p.reverse
     have hvc : v ∈ c.support := Walk.fst_mem_support_of_mem_edges c he
-    refine reachable_deleteEdges_iff_exists_cycle.aux hb' (c.rotate hvc) (hc.isTrail.rotate hvc)
+    refine reachable_deleteEdges_iff_exists_cycle.aux hb' (c.rotate v hvc) (hc.isTrail.rotate hvc)
       ?_ (Walk.start_mem_support _)
-    rwa [(Walk.rotate_edges c hvc).mem_iff, Sym2.eq_swap]
+    rwa [(c.rotate_edges v hvc).mem_iff, Sym2.eq_swap]
 
 theorem isBridge_iff_adj_and_forall_cycle_notMem {v w : V} : G.IsBridge s(v, w) ↔
     G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → s(v, w) ∉ p.edges := by
@@ -801,6 +819,7 @@ theorem isBridge_iff_mem_and_forall_cycle_notMem {e : Sym2 V} :
     G.IsBridge e ↔ e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
   Sym2.ind (fun _ _ => isBridge_iff_adj_and_forall_cycle_notMem) e
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
 lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}
     (h : ¬ G.IsBridge s(x, y)) : (G.deleteEdges {s(x, y)}).Connected := by
@@ -811,12 +830,12 @@ lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : 
   refine (connected_iff_exists_forall_reachable _).2 ⟨x, fun w ↦ ?_⟩
   obtain ⟨P, hP⟩ := hG.exists_isPath w x
   obtain heP | heP := em' <| s(x, y) ∈ P.edges
-  · exact ⟨(P.toDeleteEdges {s(x, y)} (by aesop)).reverse⟩
+  · exact ⟨(P.toDeleteEdges {s(x, y)} (by grind)).reverse⟩
   have hyP := P.snd_mem_support_of_mem_edges heP
   let P₁ := P.takeUntil y hyP
   have hxP₁ := Walk.endpoint_notMem_support_takeUntil hP hyP hxy.ne
   have heP₁ : s(x, y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
-  exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x, y)} (by aesop)⟩)
+  exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x, y)} (by grind)⟩)
 
 /-- If `e` is an edge in `G` and is a bridge in a larger graph `G'`, then it's a bridge in `G`. -/
 theorem IsBridge.anti_of_mem_edgeSet {G' : SimpleGraph V} {e : Sym2 V} (hle : G ≤ G')
@@ -824,6 +843,24 @@ theorem IsBridge.anti_of_mem_edgeSet {G' : SimpleGraph V} {e : Sym2 V} (hle : G 
   isBridge_iff_mem_and_forall_cycle_notMem.mpr ⟨h, fun _ p hp hpe ↦
     isBridge_iff_mem_and_forall_cycle_notMem.mp h' |>.right
       (p.mapLe hle) (Walk.IsCycle.mapLe hle hp) (p.edges_mapLe_eq_edges hle ▸ hpe)⟩
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Connecting two unreachable vertices by an edge creates a bridge. -/
+theorem IsBridge.sup_fromEdgeSet_of_not_reachable {u v : V} (h : ¬G.Reachable u v) :
+    (G ⊔ fromEdgeSet {s(u, v)}).IsBridge s(u, v) := by
+  refine isBridge_iff.mpr ⟨.inr ⟨Set.mem_singleton _, mt (· ▸ .rfl) h⟩, ?_⟩
+  exact fun h' ↦ h <| .mono (sdiff_le_iff'.mpr <| refl _) h'
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Connecting two unreachable vertices by an edge preserves existing bridges. -/
+theorem IsBridge.sup_fromEdgeSet_of_not_reachable_of_isBridge {u v : V} {e : Sym2 V}
+    (h : ¬G.Reachable u v) (h' : G.IsBridge e) : (G ⊔ fromEdgeSet {s(u, v)}).IsBridge e := by
+  refine isBridge_iff_mem_and_forall_cycle_notMem.mpr ⟨edgeSet_mono le_sup_left h'.left, ?_⟩
+  refine fun _ p hp hpe ↦ isBridge_iff_mem_and_forall_cycle_notMem.mp h' |>.right
+    (p.transfer G fun e' he' ↦ ?_) (hp.transfer _) (Walk.edges_transfer p _ ▸ hpe)
+  refine edgeSet_sup .. ▸ Walk.edges_subset_edgeSet _ he' |>.elim id fun h' ↦ h ?_ |>.elim
+  exact .mono (sdiff_le_iff'.mpr <| refl _) <|
+    adj_and_reachable_delete_edges_iff_exists_cycle.mpr (by grind [edgeSet_fromEdgeSet]) |>.right
 
 end BridgeEdges
 
