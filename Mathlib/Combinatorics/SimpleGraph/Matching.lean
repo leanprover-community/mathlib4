@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Operations
 public import Mathlib.Data.Set.Card.Arithmetic

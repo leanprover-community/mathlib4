@@ -3454,8 +3454,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Represents
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.Dart
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
@@ -3507,6 +3505,8 @@ public import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
 public import Mathlib.Combinatorics.SimpleGraph.VertexCover
 public import Mathlib.Combinatorics.SimpleGraph.Walk
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Counting
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Decomp
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Operations
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
