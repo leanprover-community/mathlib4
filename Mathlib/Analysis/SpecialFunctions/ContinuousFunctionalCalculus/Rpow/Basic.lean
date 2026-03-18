@@ -506,8 +506,8 @@ lemma rpow_neg_one_eq_cfc_inv {A : Type*} [PartialOrder A] [NormedRing A] [StarR
     a ^ (-1 : ℝ) = cfc (·⁻¹ : ℝ≥0 → ℝ≥0) a :=
   cfc_congr fun x _ ↦ NNReal.rpow_neg_one x
 
-lemma rpow_neg_one_eq_inverse {a : A} (ha : IsStrictlyPositive a := by cfc_tac) :
-    a ^ (-1 : ℝ) = Ring.inverse a := by
+lemma inverse_eq_rpow_neg_one {a : A} (ha : IsStrictlyPositive a := by cfc_tac) :
+    Ring.inverse a = a ^ (-1 : ℝ) := by
   obtain ⟨ax, hax⟩ := ha.isUnit
   simp only [← hax, Ring.inverse_invertible, invOf_units, CFC.rpow_neg_one_eq_inv ax]
 
@@ -744,7 +744,7 @@ lemma inverse_rpow (a : A) (x : ℝ) (hx : x ≠ 0) (ha : IsStrictlyPositive a :
   have : a ^ (-x) = (a ^ x) ^ (-1 : ℝ) := by
     rw [rpow_rpow (hx := hx) (ha := by grind)]
     simp
-  rw [CFC.rpow_neg_one_eq_inverse (by grind)] at this
+  rw [← inverse_eq_rpow_neg_one (by grind)] at this
   rw [this]
 
 /-- For an element `a` in a C⋆-algebra, TFAE:
