@@ -89,7 +89,7 @@ protected theorem iterate {f : α → α} (hf : QuasiMeasurePreserving f μa μa
 protected theorem aemeasurable (hf : QuasiMeasurePreserving f μa μb) : AEMeasurable f μa :=
   hf.1.aemeasurable
 
-theorem congr (hf : QuasiMeasurePreserving f μa μb) {f' : α → β} (hf' : Measurable f')
+protected theorem congr (hf : QuasiMeasurePreserving f μa μb) {f' : α → β} (hf' : Measurable f')
     (h : f =ᵐ[μa] f') : QuasiMeasurePreserving f' μa μb := by
   refine ⟨hf', ?_⟩
   rw [Measure.map_congr h.symm]
