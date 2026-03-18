@@ -25,7 +25,7 @@ bundle `TM` of some manifold `M`.
 
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 open Bundle Set NormedSpace FiberBundle
 open scoped Manifold ContDiff
@@ -40,7 +40,7 @@ namespace IsCovariantDerivativeOn
 
 /-- The torsion of a covariant derivative on the tangent bundle `TM`, as a bare function.
 Prefer to use `IsCovariantDerivativeOn.torsion` (which is a 2-tensor) instead. -/
-noncomputable def torsionAux
+def torsionAux
     (cov : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[𝕜] TangentSpace I x)) :
     (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
   fun X Y x ↦ cov Y x (X x) - cov X x (Y x) - VectorField.mlieBracket I X Y x
@@ -87,8 +87,8 @@ theorem torsion_apply (hcov : IsCovariantDerivativeOn E cov univ) {x}
 theorem torsion_apply_eq_extend (hcov : IsCovariantDerivativeOn E cov univ) {x}
     (X₀ Y₀ : TangentSpace I x) :
     torsion hcov x X₀ Y₀ =
-      cov (extend E Y₀) x X₀ - cov (extend E X₀) x Y₀
-      - VectorField.mlieBracket I (extend E X₀) (extend E Y₀) x := by
+      cov (extend E Y₀) x X₀ - cov (extend E X₀) x Y₀ -
+        VectorField.mlieBracket I (extend E X₀) (extend E Y₀) x := by
   simp [torsion, torsionAux, TensorialAt.mkHom₂_apply_eq_extend]
 
 variable (X) in
@@ -112,15 +112,13 @@ namespace CovariantDerivative
 
 open VectorField
 
-variable
-  {cov cov' : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[𝕜] TangentSpace I x)}
-  {X X' Y : Π x : M, TangentSpace I x}
-
 variable [CompleteSpace 𝕜] [CompleteSpace E] [FiniteDimensional 𝕜 E] [IsManifold I 2 M]
-variable (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
+  (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
+  {X Y : Π x : M, TangentSpace I x}
 
 /-- The torsion tensor of a covariant derivative on the tangent bundle of a manifold. -/
-noncomputable def torsion := cov.isCovariantDerivativeOn.torsion
+def torsion (x : M) : TangentSpace I x →L[𝕜] TangentSpace I x →L[𝕜] TangentSpace I x :=
+  cov.isCovariantDerivativeOn.torsion x
 
 lemma torsion_apply (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
     cov.torsion x (X x) (Y x) = cov Y x (X x) - cov X x (Y x) - mlieBracket I X Y x := by
@@ -130,8 +128,8 @@ lemma torsion_apply (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
 
 lemma torsion_apply_eq_extend (X₀ Y₀ : TangentSpace I x) :
     cov.torsion x X₀ Y₀ =
-      cov (extend E Y₀) x (extend E X₀ x) - cov (extend E X₀) x (extend E Y₀ x)
-        - mlieBracket I (extend E X₀) (extend E Y₀) x := by
+      cov (extend E Y₀) x (extend E X₀ x) - cov (extend E X₀) x (extend E Y₀ x) -
+        mlieBracket I (extend E X₀) (extend E Y₀) x := by
   unfold torsion IsCovariantDerivativeOn.torsion
   apply TensorialAt.mkHom₂_apply_eq_extend
 
