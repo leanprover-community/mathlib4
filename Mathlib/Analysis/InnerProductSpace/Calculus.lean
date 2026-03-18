@@ -318,6 +318,16 @@ theorem hasFDerivWithinAt_euclidean :
       ∀ i, HasFDerivWithinAt (fun x => f x i) (PiLp.proj _ _ i ∘L f') t y :=
   hasFDerivWithinAt_piLp _
 
+theorem hasDerivWithinAt_pi_euclidean {f : 𝕜 → EuclideanSpace 𝕜 ι}
+    {f' : EuclideanSpace 𝕜 ι} {s : Set 𝕜} {x : 𝕜} :
+    letI : Fintype ι := Fintype.ofFinite ι
+    HasDerivWithinAt f f' s x ↔ ∀ i, HasDerivWithinAt (fun x ↦  f x i) (f' i) s x := by
+  letI : Fintype ι := Fintype.ofFinite ι
+  have hd : HasDerivWithinAt f f' s x ↔ HasFDerivWithinAt f (ContinuousLinearMap.smulRight
+                 (1 : 𝕜 →L[𝕜] 𝕜) f') s x := hasDerivWithinAt_iff_hasFDerivWithinAt
+  rw [hd]
+  exact hasFDerivWithinAt_euclidean
+
 end finite
 
 section fintype
