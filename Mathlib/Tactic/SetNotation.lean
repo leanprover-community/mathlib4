@@ -62,8 +62,7 @@ def elabSubsetLike (x y : Term) (le leCls sub subCls : Name) (expectedType? : Op
     TermElabM Expr := do
   let rel ← `(SubsetElabAux $x $y)
   let e ← elabApp rel expectedType?
-  -- use `whnfCore` because `e` may contain `mdata`.
-  let mkApp3 (.const ``SubsetElabAux [u]) α x y ← whnfCore e
+  let mkApp3 (.const ``SubsetElabAux [u]) α x y := e
     | throwError "unexpected result {e} when elaborating {rel}"
   -- If the type cannot be determined yet, we postpone elaboration until it is known.
   -- This behaviour is inspired by `resolveLValLoop`.
