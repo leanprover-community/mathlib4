@@ -43,7 +43,7 @@ theorem HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul
   obtain ⟨e, h₁e, h₂e⟩ := (isCompact_closedBall c R).exists_thickening_subset_open
     (isOpen_setOf_harmonicAt f) (by aesop)
   rw [thickening_closedBall h₁e (pos_of_mem_ball hw).le] at h₂e
-  obtain ⟨F, h₁F, h₂F⟩ := InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq h₂e
+  obtain ⟨F, h₁F, h₂F⟩ := h₂e.exists_analyticOnNhd_ball_re_eq 
   have h₃F : DifferentiableOn ℂ F (closure (ball c R)) := by
     intro x hx
     apply (h₁F x _).differentiableWithinAt
@@ -52,7 +52,7 @@ theorem HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul
       (reCLM ∘ (fun z ↦ ((z - c + (w - c)) / (z - c - (w - c))).re • F z))
       (sphere c R) := by
     intro x hx
-    simp [h₂F (sphere_subset_ball (lt_add_of_pos_left R h₁e) hx),herglotzRieszKernel_def]
+    simp [h₂F (sphere_subset_ball (lt_add_of_pos_left R h₁e) hx), herglotzRieszKernel_def]
   rw [← abs_of_pos (pos_of_mem_ball hw)] at h₄F
   rw [circleAverage_congr_sphere h₄F, reCLM.circleAverage_comp_comm,
     h₃F.diffContOnCl.circleAverage_re_herglotzRieszKernel_smul' hw]
@@ -92,7 +92,7 @@ formulated with the Poisson kernel of integration.
 theorem HarmonicOnNhd.circleAverage_poissonKernel_smul
     (hf : HarmonicOnNhd f (closedBall c R)) (hw : w ∈ ball c R) :
     Real.circleAverage (poissonKernel c w • f) c R = f w := by
-  rw [← HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul hf hw]
+  rw [← hf.circleAverage_re_herglotzRieszKernel_smul hw]
   apply circleAverage_congr_sphere
     (fun _ _ ↦ by simp_rw [← poissonKernel_eq_re_herglotzRieszKernel])
 
@@ -104,6 +104,6 @@ formulated with the Poisson kernel of integration.
 theorem HarmonicContOnCl.circleAverage_poissonKernel_smul
     (hf : HarmonicContOnCl f (ball c R)) (hw : w ∈ ball c R) :
     Real.circleAverage (poissonKernel c w • f) c R = f w := by
-  rw [← HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul hf hw]
+  rw [← hf.circleAverage_re_herglotzRieszKernel_smul hw]
   apply circleAverage_congr_sphere
     (fun _ _ ↦ by simp_rw [← poissonKernel_eq_re_herglotzRieszKernel])
