@@ -53,6 +53,48 @@ def useSetNotationFor (type : Expr) : MetaM Bool := do
   let .const n _ := (← whnfR type).getAppFn | return false
   return setNotationExt.isTagged (← getEnv) n
 
+/-! ## Delaboration -/
+
+/-- Delaborate `x ≤ y` into `x ⊆ y` if the type is tagged with `@[use_set_notation]`. -/
+@[app_delab LE.le]
+def delabLe : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
+  let_expr LE.le α _ _ _ := ← getExpr | failure
+  guard <| ← useSetNotationFor α
+  let x ← withNaryArg 2 delab
+  let y ← withNaryArg 3 delab
+  let stx ← `($x ⊆ $y)
+  annotateGoToDef stx `Mathlib.Meta.delabLe
+
+/-- Delaborate `x < y` into `x ⊂ y` if the type is tagged with `@[use_set_notation]`. -/
+@[app_delab LT.lt]
+def delabLt : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
+  let_expr LT.lt α _ _ _ := ← getExpr | failure
+  guard <| ← useSetNotationFor α
+  let x ← withNaryArg 2 delab
+  let y ← withNaryArg 3 delab
+  let stx ← `($x ⊂ $y)
+  annotateGoToDef stx `Mathlib.Meta.delabLt
+
+/-- Delaborate `x ≥ y` into `x ⊇ y` if the type is tagged with `@[use_set_notation]`. -/
+@[app_delab GE.ge]
+def delabGe : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
+  let_expr GE.ge α _ _ _ := ← getExpr | failure
+  guard <| ← useSetNotationFor α
+  let x ← withNaryArg 2 delab
+  let y ← withNaryArg 3 delab
+  let stx ← `($x ⊇ $y)
+  annotateGoToDef stx `Mathlib.Meta.delabGe
+
+/-- Delaborate `x > y` into `x ⊃ y` if the type is tagged with `@[use_set_notation]`. -/
+@[app_delab GT.gt]
+def delabGt : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
+  let_expr GT.gt α _ _ _ := ← getExpr | failure
+  guard <| ← useSetNotationFor α
+  let x ← withNaryArg 2 delab
+  let y ← withNaryArg 3 delab
+  let stx ← `($x ⊃ $y)
+  annotateGoToDef stx `Mathlib.Meta.delabGt
+
 /-! ## Elaboration -/
 
 /-- This relation is an implementation detail of the `⊆` elatorator. -/
@@ -77,13 +119,24 @@ def elabSubsetLike (x y : Term) (le leCls sub subCls : Name) (expectedType? : Op
     let inst ← mkInstMVar <| .app (.const subCls [u]) α
     return mkApp4 (.const sub [u]) α inst x y
 
-/-- Subset relation: `a ⊆ b`, but overwritten  -/
+/-- Subset relation: `a ⊆ b`.
+
+For types tagged with `@[use_set_notation]`, this elaborates to `a ≤ b`. -/
 syntax:50 (name := subsetStx') (priority := high) term:51 " ⊆ " term:51 : term
-/-- Strict subset relation: `a ⊂ b`  -/
+
+/-- Strict subset relation: `a ⊂ b`.
+
+For types tagged with `@[use_set_notation]`, this elaborates to `a < b`. -/
 syntax:50 (name := ssubsetStx') (priority := high) term:51 " ⊂ " term:51 : term
-/-- Superset relation: `a ⊇ b`  -/
+
+/-- Superset relation: `a ⊇ b`.
+
+For types tagged with `@[use_set_notation]`, this elaborates to `a ≥ b`. -/
 syntax:50 (name := supsetStx') (priority := high) term:51 " ⊇ " term:51 : term
-/-- Strict superset relation: `a ⊃ b`  -/
+
+/-- Strict superset relation: `a ⊃ b`.
+
+For types tagged with `@[use_set_notation]`, this elaborates to `a > b`. -/
 syntax:50 (name := ssupsetStx') (priority := high) term:51 " ⊃ " term:51 : term
 
 /-- Elaborator for `x ⊆ y` notation. -/
@@ -129,48 +182,5 @@ binder_predicate (priority := high) x " ⊇ " y:term => `($x ⊇ $y)
 /-- Declare `∀ x ⊃ y, ...` as syntax for `∀ x, x ⊃ y → ...` and `∃ x ⊃ y, ...` as syntax for
 `∃ x, x ⊃ y ∧ ...` -/
 binder_predicate (priority := high) x " ⊃ " y:term => `($x ⊃ $y)
-
-
-/-! ## Delaboration -/
-
-/-- Delaborate `x ≤ y` into `x ⊆ y` if the type is tagged with `@[use_set_notation]`. -/
-@[app_delab LE.le]
-def delabLe : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
-  let_expr LE.le α _ _ _ := ← getExpr | failure
-  guard <| ← useSetNotationFor α
-  let x ← withNaryArg 2 delab
-  let y ← withNaryArg 3 delab
-  let stx ← `($x ⊆ $y)
-  annotateGoToDef stx `Mathlib.Meta.delabLe
-
-/-- Delaborate `x < y` into `x ⊂ y` if the type is tagged with `@[use_set_notation]`. -/
-@[app_delab LT.lt]
-def delabLt : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
-  let_expr LT.lt α _ _ _ := ← getExpr | failure
-  guard <| ← useSetNotationFor α
-  let x ← withNaryArg 2 delab
-  let y ← withNaryArg 3 delab
-  let stx ← `($x ⊂ $y)
-  annotateGoToDef stx `Mathlib.Meta.delabLt
-
-/-- Delaborate `x ≥ y` into `x ⊇ y` if the type is tagged with `@[use_set_notation]`. -/
-@[app_delab GE.ge]
-def delabGe : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
-  let_expr GE.ge α _ _ _ := ← getExpr | failure
-  guard <| ← useSetNotationFor α
-  let x ← withNaryArg 2 delab
-  let y ← withNaryArg 3 delab
-  let stx ← `($x ⊇ $y)
-  annotateGoToDef stx `Mathlib.Meta.delabGe
-
-/-- Delaborate `x > y` into `x ⊃ y` if the type is tagged with `@[use_set_notation]`. -/
-@[app_delab GT.gt]
-def delabGt : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
-  let_expr GT.gt α _ _ _ := ← getExpr | failure
-  guard <| ← useSetNotationFor α
-  let x ← withNaryArg 2 delab
-  let y ← withNaryArg 3 delab
-  let stx ← `($x ⊃ $y)
-  annotateGoToDef stx `Mathlib.Meta.delabGt
 
 end Mathlib.Meta
