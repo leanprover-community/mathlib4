@@ -133,3 +133,6 @@ instance : Nontrivial Bool :=
   ⟨⟨true, false, nofun⟩⟩
 
 end Bool
+
+theorem NeZero.toNontrivial {α : Type*} [Zero α] (a : α) [NeZero a] : Nontrivial α :=
+  ⟨⟨a, 0, NeZero.ne a⟩⟩
