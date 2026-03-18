@@ -150,7 +150,6 @@ lemma chain_dimension_decomposition
   have := LinearMap.finrank_range_add_finrank_ker (C.dFrom i).hom
   omega
 
-/-- `IsZero` implies `finrank` is zero. -/
 private lemma finrank_eq_zero_of_isZero (M : ModuleCat k)
     (h : IsZero M) : Module.finrank k M = 0 := by
   haveI := ModuleCat.subsingleton_of_isZero h
@@ -163,9 +162,8 @@ private lemma isZero_outside_Ico (C : ChainComplex (ModuleCat k) ℤ) (a b i : �
   simp only [Finset.coe_Ico, Set.mem_Ico, not_and, not_lt] at hi
   exact if h : i < a then hbelow i h else habove i (by omega)
 
-/-- For bounded chain complexes that vanish outside a finite interval [a,b],
-    the Euler characteristic equals the homological Euler characteristic.
-    This is the Euler-Poincaré formula. -/
+/-- **Euler-Poincaré formula**: for bounded chain complexes that vanish outside `[a, b]`,
+the Euler characteristic equals the homological Euler characteristic. -/
 theorem eulerChar_eq_homologyEulerChar
     (C : ChainComplex (ModuleCat k) ℤ)
     (a b : ℤ) (hab : a ≤ b)
@@ -195,7 +193,6 @@ theorem eulerChar_eq_homologyEulerChar
   simp only [ComplexShape.eulerCharSignsDownInt_χ]
   simp_rw [show ∀ n : ℤ, (n.negOnePow : ℤ) = (-1) ^ n.natAbs
     from Int.coe_negOnePow ℤ]
-  -- Decompose finrank(X i) = finrank(homology i) + finrank(range dFrom i) + finrank(range dTo i)
   rw [show ∑ x ∈ Finset.Ico a (b + 1),
         (-1 : ℤ) ^ x.natAbs * ↑(Module.finrank k ↑(C.X x)) =
       ∑ x ∈ Finset.Ico a (b + 1), (-1 : ℤ) ^ x.natAbs *
@@ -207,7 +204,6 @@ theorem eulerChar_eq_homologyEulerChar
         ← homology_finrank_formula C x]; ring]
   simp_rw [mul_add]
   rw [Finset.sum_add_distrib, Finset.sum_add_distrib]
-  -- Suffices to show the p-sum and c-sum cancel
   suffices h_cancel :
       ∑ x ∈ Finset.Ico a (b + 1),
         (-1 : ℤ) ^ x.natAbs *
@@ -216,15 +212,11 @@ theorem eulerChar_eq_homologyEulerChar
         (-1 : ℤ) ^ x.natAbs *
           ↑(Module.finrank k ↥(LinearMap.range (C.dTo x).hom)) = 0 by
     linarith
-  -- Split first element from p-sum: p(a) = 0
+  -- p(a) = 0 and c(b) = 0: boundary ranges vanish at the edges
   have hp_a : (Module.finrank k
       ↥(LinearMap.range (C.dFrom a).hom) : ℤ) = 0 := by
-    have : LinearMap.range (C.dFrom a).hom = ⊥ := by
-      apply dFrom_zero_range
-      simp only [xNext,
-        show (ComplexShape.down ℤ).next a = a - 1 from by simp]
-      exact hC_bounded_below _ (by omega)
-    rw [this]; simp
+    rw [dFrom_zero_range C a (by simp [xNext]; exact hC_bounded_below _ (by omega))]
+    simp
   have hp_split : ∑ x ∈ Finset.Ico a (b + 1),
       (-1 : ℤ) ^ x.natAbs *
         ↑(Module.finrank k ↥(LinearMap.range (C.dFrom x).hom)) =
@@ -234,15 +226,10 @@ theorem eulerChar_eq_homologyEulerChar
     rw [← Finset.insert_Ico_add_one_left_eq_Ico (show a < b + 1 by omega),
       Finset.sum_insert (by simp [Finset.mem_Ico]),
       hp_a, mul_zero, zero_add]
-  -- Split last element from c-sum: c(b) = 0
   have hc_b : (Module.finrank k
       ↥(LinearMap.range (C.dTo b).hom) : ℤ) = 0 := by
-    have : LinearMap.range (C.dTo b).hom = ⊥ := by
-      apply dTo_zero_range
-      simp only [xPrev,
-        show (ComplexShape.down ℤ).prev b = b + 1 from by simp]
-      exact hC_bounded_above _ (by omega)
-    rw [this]; simp
+    rw [dTo_zero_range C b (by simp [xPrev]; exact hC_bounded_above _ (by omega))]
+    simp
   have hc_split : ∑ x ∈ Finset.Ico a (b + 1),
       (-1 : ℤ) ^ x.natAbs *
         ↑(Module.finrank k ↥(LinearMap.range (C.dTo x).hom)) =
@@ -253,7 +240,6 @@ theorem eulerChar_eq_homologyEulerChar
       Finset.sum_insert Finset.right_notMem_Ico,
       hc_b, mul_zero, zero_add]
   rw [hp_split, hc_split]
-  -- Rewrite c(k) = p(k+1) via dFrom_succ_range_finrank_eq_dTo
   rw [show ∑ x ∈ Finset.Ico a b,
         (-1 : ℤ) ^ x.natAbs *
           ↑(Module.finrank k ↥(LinearMap.range (C.dTo x).hom)) =
@@ -262,7 +248,6 @@ theorem eulerChar_eq_homologyEulerChar
           ↑(Module.finrank k ↥(LinearMap.range (C.dFrom (x + 1)).hom))
     from Finset.sum_congr rfl fun x _ => by
       rw [dFrom_succ_range_finrank_eq_dTo C x]]
-  -- Apply the general alternating cancellation lemma
   exact Finset.sum_Ico_add_sum_Ico_shift_neg_cancel _ _ a b 1
     (fun j => by simp [← Int.coe_negOnePow, Int.negOnePow_succ])
 

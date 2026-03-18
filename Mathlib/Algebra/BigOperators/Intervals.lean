@@ -242,13 +242,12 @@ end Group
 
 end Nat
 
-section AlternatingCancellation
+section TelescopingSum
 
 variable {R : Type*} [Ring R]
 
 /-- If `w` alternates sign under a shift by `c` (i.e., `w (k + c) = -w k`), then the shifted
-pair of sums over adjacent `Ico` intervals cancels. This is the key cancellation underlying
-alternating-sign telescoping arguments such as the Euler-Poincaré formula. -/
+pair of sums over adjacent `Ico` intervals cancels. -/
 theorem sum_Ico_add_sum_Ico_shift_neg_cancel
     [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     [ExistsAddOfLE α] [LocallyFiniteOrder α]
@@ -259,7 +258,7 @@ theorem sum_Ico_add_sum_Ico_shift_neg_cancel
   rw [← sum_Ico_add' (fun x => w x * f x) a b c]
   simp_rw [hw, neg_mul, sum_neg_distrib, neg_add_cancel]
 
-end AlternatingCancellation
+end TelescopingSum
 
 end Finset
 
