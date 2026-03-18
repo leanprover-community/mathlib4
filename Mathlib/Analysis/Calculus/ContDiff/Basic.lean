@@ -55,12 +55,8 @@ theorem iteratedFDerivWithin_zero {i : ℕ} :
 @[deprecated (since := "2026-03-18")]
 alias iteratedFDerivWithin_zero_fun := iteratedFDerivWithin_zero
 
-/--
-Eta-expanded version of `iteratedFDerivWithin_zero_fun`. Deviating from the standard naming
-convention because there is already a `_fun` in the title (which refers to the zero function).
--/
 @[simp]
-theorem iteratedFDerivWithin_fun_zero_fun {i : ℕ} :
+theorem iteratedFDerivWithin_fun_zero {i : ℕ} :
     iteratedFDerivWithin 𝕜 i (fun (_ : E) ↦ (0 : F)) s = 0 := by
   apply iteratedFDerivWithin_zero
 
@@ -70,10 +66,6 @@ theorem ftaylorSeriesWithin_zero :
   ext
   simp [ftaylorSeriesWithin]
 
-/--
-Eta-expanded version of `ftaylorSeriesWithin_zero_fun`. Deviating from the standard naming
-convention because there is already a `_fun` in the title (which refers to the zero function).
--/
 @[simp]
 theorem ftaylorSeriesWithin_fun_zero :
     ftaylorSeriesWithin 𝕜 (fun (_ : E) ↦ (0 : F)) = 0 := by
@@ -84,10 +76,6 @@ theorem iteratedFDeriv_zero {n : ℕ} :
     iteratedFDeriv 𝕜 n (0 : E → F) = 0 :=
   funext fun x ↦ by simp only [← iteratedFDerivWithin_univ, iteratedFDerivWithin_zero]
 
-/--
-Eta-expanded version of `iteratedFDeriv_zero_fun`. Deviating from the standard naming convention
-because there is already a `_fun` in the title (which refers to the zero function).
--/
 @[simp]
 theorem iteratedFDeriv_fun_zero {n : ℕ} :
     iteratedFDeriv 𝕜 n (fun (_ : E) ↦ (0 : F)) = 0 := by
@@ -99,10 +87,6 @@ theorem ftaylorSeries_zero :
   ext
   simp [ftaylorSeries]
 
-/--
-Eta-expanded version of `ftaylorSeries_zero_fun`. Deviating from the standard naming convention
-because there is already a `_fun` in the title (which refers to the zero function).
--/
 @[simp]
 theorem ftaylorSeries_fun_zero :
     ftaylorSeries 𝕜 (fun (_ : E) ↦ (0 : F)) = 0 := by
