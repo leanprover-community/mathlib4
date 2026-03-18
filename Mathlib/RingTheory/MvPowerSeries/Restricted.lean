@@ -66,26 +66,6 @@ lemma isRestricted.neg (c : σ → ℝ) {f : MvPowerSeries σ R} (hf : IsRestric
   rw [← isRestricted_abs_iff, IsRestricted] at *
   simpa [IsRestricted] using hf
 
-lemma isRestricted.smul (c : σ → ℝ) {f : MvPowerSeries σ R} (hf : IsRestricted c f) (r : R) :
-    IsRestricted c (r • f) := by
-  rw [← isRestricted_abs_iff, IsRestricted] at *
-  refine tendsto_const_nhds.squeeze ((hf.const_mul ‖r‖).trans_eq (by simp)) (fun n ↦ ?_) fun n ↦ ?_
-  · dsimp [Finsupp.prod]; positivity
-  simp only [map_smul, smul_eq_mul, Pi.abs_apply, ← mul_assoc]
-  exact mul_le_mul_of_nonneg_right (norm_mul_le _ _) (by dsimp [Finsupp.prod]; positivity)
-
-lemma isRestricted.nsmul (c : σ → ℝ) (n : ℕ) (f : MvPowerSeries σ R) (hf : IsRestricted c f) :
-    IsRestricted c (n • f) := by
-  convert isRestricted.smul c hf (n : R)
-  ext _ _
-  simp_rw [map_smul, smul_eq_mul, map_nsmul, nsmul_eq_mul]
-
-lemma isRestricted.zsmul (c : σ → ℝ) (n : ℤ) (f : MvPowerSeries σ R) (hf : IsRestricted c f) :
-    IsRestricted c (n • f) := by
-  convert isRestricted.smul c hf (n : R)
-  ext _ _
-  simp_rw [map_smul, smul_eq_mul, map_zsmul, zsmul_eq_mul]
-
 open IsUltrametricDist
 
 lemma isRestricted.mul [IsUltrametricDist R] (c : σ → ℝ) {f g : MvPowerSeries σ R}
@@ -93,5 +73,23 @@ lemma isRestricted.mul [IsUltrametricDist R] (c : σ → ℝ) {f g : MvPowerSeri
   classical
   rw [← isRestricted_abs_iff, IsRestricted] at *
   exact tendsto_antidiagonal (by simp [Finsupp.prod_add_index', pow_add]) hf hg
+
+instance isAddSubgroup (c : σ → ℝ) : AddSubgroup (MvPowerSeries σ R) where
+  carrier := IsRestricted c
+  zero_mem' := isRestricted_zero c
+  add_mem' := isRestricted.add c
+  neg_mem' := isRestricted.neg c
+
+instance isSubring [IsUltrametricDist R] (c : σ → ℝ) : Subring (MvPowerSeries σ R) where
+  __ := isAddSubgroup c
+  one_mem' := isRestricted_one c
+  mul_mem' := isRestricted.mul c
+
+variable (R) in
+def Restricted [IsUltrametricDist R] (c : σ → ℝ) : Type _ := isSubring (R := R) c
+
+noncomputable
+instance [IsUltrametricDist R] (c : σ → ℝ) : Ring (Restricted R c) :=
+  Subring.toRing (isSubring c)
 
 end MvPowerSeries
