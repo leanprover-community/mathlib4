@@ -116,6 +116,7 @@ instance instLinearOrderedAddCommMonoidWithTopOrderDualAdditive :
     LinearOrderedAddCommMonoidWithTop (Additive α)ᵒᵈ where
   top_add' a := by ext; simp; simp [bot_eq_zero'' (α := α)]
   isAddLeftRegular_of_ne_top := by simp; simp +contextual [bot_eq_zero'', IsRegular.of_ne_zero]
+  add_le_add_left _ _ := add_le_add_left
 
 variable [NoZeroDivisors α]
 

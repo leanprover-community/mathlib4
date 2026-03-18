@@ -23,8 +23,8 @@ variable {M S : Type*} [SetLike S M]
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of an ordered monoid is an ordered monoid. -/
 @[to_additive /-- An `AddSubmonoid` of an ordered additive monoid is an ordered additive monoid. -/]
-instance (priority := 75) toIsOrderedMonoid [CommMonoid M] [Preorder M] [IsOrderedMonoid M]
-    [SubmonoidClass S M] (s : S) : IsOrderedMonoid s :=
+instance (priority := 75) toIsOrderedMonoid [CommSemigroup M] [Preorder M] [IsOrderedMonoid M]
+    [MulMemClass S M] (s : S) : IsOrderedMonoid s :=
   Function.Injective.isOrderedMonoid Subtype.val (fun _ _ => rfl) .rfl
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
@@ -33,12 +33,32 @@ instance (priority := 75) toIsOrderedMonoid [CommMonoid M] [Preorder M] [IsOrder
       /-- An `AddSubmonoid` of an ordered cancellative additive monoid is an ordered cancellative
       additive monoid. -/]
 instance (priority := 75) toIsOrderedCancelMonoid
-    [CommMonoid M] [Preorder M] [IsOrderedCancelMonoid M]
-    [SubmonoidClass S M] (s : S) : IsOrderedCancelMonoid s :=
+    [CommSemigroup M] [Preorder M] [IsOrderedCancelMonoid M]
+    [MulMemClass S M] (s : S) : IsOrderedCancelMonoid s :=
   Function.Injective.isOrderedCancelMonoid Subtype.val (fun _ _ => rfl) .rfl
 
 
 end SubmonoidClass
+
+namespace Subsemigroup
+variable {M : Type*}
+
+/-- A subsemigroup of an ordered semigroup is an ordered semigroup. -/
+@[to_additive /-- An `AddSubsemigroup` of an ordered additive semigroup is an ordered additive
+semigroup. -/]
+instance toIsOrderedMonoid [CommSemigroup M] [Preorder M] [IsOrderedMonoid M]
+    (S : Subsemigroup M) : IsOrderedMonoid S :=
+  Function.Injective.isOrderedMonoid Subtype.val (fun _ _ => rfl) .rfl
+
+/-- A subsemigroup of an ordered cancellative semigroup is an ordered cancellative semigroup. -/
+@[to_additive AddSubsemigroup.toIsOrderedCancelAddMonoid
+/-- An `AddSubsemigroup` of an ordered cancellative additive semigroup is an ordered cancellative
+additive semigroup. -/]
+instance toIsOrderedCancelMonoid [CommSemigroup M] [Preorder M] [IsOrderedCancelMonoid M]
+    (S : Subsemigroup M) : IsOrderedCancelMonoid S :=
+  Function.Injective.isOrderedCancelMonoid Subtype.val (fun _ _ => rfl) .rfl
+
+end Subsemigroup
 
 namespace Submonoid
 variable {M : Type*}
