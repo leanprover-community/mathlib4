@@ -39,7 +39,7 @@ open Set Filter Valuation ValuativeRel MonoidWithZeroHom ValueGroup₀ ValueGrou
 
 noncomputable section
 
-variable (R : Type*) [CommRing R] [ValuativeRel R]
+variable (R : Type*) [Ring R] [ValuativeRel R]
 
 variable {R} in
 lemma Valuation.exists_setOf_restrict_le_iff {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
@@ -79,7 +79,7 @@ end ValuativeRel
 
 variable {R}
 
-variable {K : Type*} [Field K] [ValuativeRel K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+variable {K : Type*} [DivisionRing K] [ValuativeRel K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 section TopologicalSpace
 
