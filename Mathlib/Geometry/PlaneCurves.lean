@@ -101,7 +101,7 @@ each point form an orthonormal basis of the plane, which is sometimes called the
 curve or the Frenet frame, which we call `frameAt`. -/
 def frameAt (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
     OrthonormalBasis (Fin 2) ℝ (EuclideanSpace ℝ (Fin 2)) :=
-  let B := ![(deriv c t), (normal c t)]
+  let B := ![deriv c t, normal c t]
   have hBon : Orthonormal ℝ B := by
     constructor
     · intro i
