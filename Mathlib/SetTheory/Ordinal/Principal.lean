@@ -216,7 +216,7 @@ theorem isPrincipal_add_iff_add_left_eq_self : IsPrincipal (· + ·) o ↔ ∀ a
   · rcases lt_or_ge 1 o with ho₁ | ho₁
     · exact op_eq_self_of_isPrincipal hao (isNormal_add_right a) ho
         (isSuccLimit_of_isPrincipal_add ho₁ ho)
-    · obtain (_ | _) := le_one_iff.1 ho₁ <;> simp_all
+    · cases le_one_iff.1 ho₁ <;> simp_all
   · rw [← h a hao]
     exact (isNormal_add_right a).strictMono hbo
 
