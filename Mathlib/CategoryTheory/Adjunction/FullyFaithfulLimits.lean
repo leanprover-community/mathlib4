@@ -46,10 +46,10 @@ lemma preservesColimitsOfShape_iff (J : Type u) [Category.{v} J]
     ((IsColimit.precomposeInvEquiv iso _).symm
       (isColimitOfPreserves F (colimit.isColimit (K ⋙ G)))) ?_
   exact IsColimit.ofIsoColimit
-    ((IsColimit.precomposeInvEquiv ((Functor.associator _ _ _).symm ≪≫
-      Functor.isoWhiskerRight iso H) _).symm
-      (isColimitOfPreserves (F ⋙ H) (colimit.isColimit (K ⋙ G))))
-      (Cocone.ext (Iso.refl _))
+    ((IsColimit.precomposeInvEquiv
+      ((Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight iso H) _).symm
+        (isColimitOfPreserves (F ⋙ H) (colimit.isColimit (K ⋙ G))))
+          (Cocone.ext (Iso.refl _))
 
 lemma preservesColimitsOfSize_iff
     [HasColimitsOfSize.{v, u} C] [G.Full] [G.Faithful] :
