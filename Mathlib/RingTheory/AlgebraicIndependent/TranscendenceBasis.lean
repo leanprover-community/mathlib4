@@ -423,7 +423,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem isAlgebraic_iff_exists_isTranscendenceBasis_subset
     [IsDomain A] [FaithfulSMul R A] {s : Set A} :
     Algebra.IsAlgebraic (adjoin R s) A ↔ ∃ t, t ⊆ s ∧ IsTranscendenceBasis R ((↑) : t → A) := by
-  simp_rw [← matroid_spanning_iff, ← matroid_isBase_iff, and_comm (a := _ ⊆ _)]
+  simp_rw [← matroid_spanning_iff, ← matroid_isBase_iff, and_comm (a := _ ⊆ s)]
   exact Matroid.spanning_iff_exists_isBase_subset (subset_univ _)
 
 open Cardinal AlgebraicIndependent

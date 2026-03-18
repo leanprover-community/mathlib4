@@ -62,7 +62,8 @@ variable [MulLeftMono M] {a : M} {n : ℕ}
 theorem pow_right_monotone (ha : 1 ≤ a) : Monotone fun n : ℕ ↦ a ^ n :=
   monotone_nat_of_le_succ fun n ↦ by rw [pow_succ]; exact le_mul_of_one_le_right' ha
 
-@[to_additive (attr := gcongr) nsmul_le_nsmul_left]
+-- `gcongr low` so that we prefer `Set.pow_subset_pow` and `Finset.pow_subset_pow`
+@[to_additive (attr := gcongr low) nsmul_le_nsmul_left]
 theorem pow_le_pow_right' {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m :=
   pow_right_monotone ha h
 
