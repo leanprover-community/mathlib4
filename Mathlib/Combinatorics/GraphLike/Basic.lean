@@ -89,7 +89,8 @@ lemma Adj.right_mem (h : Adj G v w) : w ∈ V(G) := by
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact snd_mem_of_darts hd
 
-/-- The step from `u` to `v` is a dart from `u` to `v`. -/
+/-- The step is a subtype for darts between two fixed vertices. It has `fst` and `snd` vertices
+  specified in the type. It is used to build walks. -/
 def step (G : Gr) (u v : α) := {d : β // d ∈ darts G ∧ fst d = u ∧ snd d = v}
 
 instance [DecidableEq β] : DecidableEq (step G u v) := Subtype.instDecidableEq
