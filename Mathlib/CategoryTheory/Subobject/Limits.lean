@@ -450,9 +450,7 @@ theorem imageSubobjectMap_arrow {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y 
     imageSubobjectMap sq ≫ (imageSubobject g).arrow = (imageSubobject f).arrow ≫ sq.right := by
   simp only [imageSubobjectMap, Category.assoc, Arrow.mk_left, Functor.id_obj, Arrow.mk_right,
     Arrow.mk_hom, imageSubobject_arrow']
-  have := image.map_ι sq
-  simp only [Arrow.mk_left, Functor.id_obj, Arrow.mk_right, Arrow.mk_hom] at this
-  rw [this]
+  rw [dsimp% image.map_ι sq]
   simp
 
 theorem image_map_comp_imageSubobjectIso_inv {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z}
