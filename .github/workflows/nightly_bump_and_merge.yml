@@ -341,7 +341,7 @@ jobs:
             MESSAGE+=$'wget -qO "$tmpscript" https://raw.githubusercontent.com/leanprover-community/mathlib-ci/${{ steps.get_mathlib_ci.outputs.ref }}/scripts/nightly/merge-lean-testing-pr.sh\n'
             MESSAGE+=$'chmod +x "$tmpscript"\n'
             MESSAGE+=$'tmpdir=$(mktemp -d)\n'
-            MESSAGE+=$'git clone https://github.com/leanprover-community/mathlib4 "$tmpdir"\n'
+            MESSAGE+=$'git clone --depth=1 --filter=blob:none https://github.com/leanprover-community/mathlib4 "$tmpdir"\n'
             MESSAGE+=$'cd "$tmpdir"\n'
             MESSAGE+="\"\$tmpscript\" ${PR_NUMBER}"$'\n'
             MESSAGE+=$'```\n\n'
