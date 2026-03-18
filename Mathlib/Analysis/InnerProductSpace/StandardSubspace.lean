@@ -83,7 +83,8 @@ noncomputable scoped instance : InnerProductSpace ℝ H where
 lemma inner_real_eq_re_inner (x y : H) : inner ℝ x y = ⟪x, y⟫.re := rfl
 
 /-- The imaginary unit as an invertible element. -/
-abbrev _root_.Complex.UnitI : ℂˣ where
+@[simps]
+def _root_.Complex.unitI : ℂˣ where
   val := I
   inv := -I
   val_inv := by simp
