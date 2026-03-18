@@ -619,6 +619,8 @@ end ENat
 
 namespace ENat.WithBot
 
+lemma coe_eq_natCast (n : ℕ) : (n : ℕ∞) = (n : WithBot ℕ∞) := rfl
+
 lemma lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
   rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
   cases n
@@ -632,6 +634,18 @@ lemma add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n < m := b
   · simp
   · rw [WithBot.coe_le_coe, ENat.coe_add, ENat.coe_one, ENat.add_one_le_iff (ENat.coe_ne_top n),
       ← WithBot.coe_lt_coe, WithBot.coe_natCast]
+
+lemma add_one_le_natCast_iff (n : WithBot ℕ∞) (m : ℕ) : n + 1 ≤ m ↔ n < m := by
+  induction n with
+  | bot => simp
+  | coe n =>
+    by_cases eq : n = ⊤
+    · simpa [eq] using WithBot.coe_lt_coe.mpr (ENat.coe_lt_top m)
+    · rw [← ENat.WithBot.coe_eq_natCast, ← WithBot.coe_one, ← WithBot.coe_add, WithBot.coe_le_coe,
+        WithBot.coe_lt_coe, ENat.add_one_le_iff eq]
+
+lemma add_one_le_zero_iff (n : WithBot ℕ∞) : n + 1 ≤ 0 ↔ n = ⊥ :=
+  (add_one_le_natCast_iff n 0).trans (WithBot.lt_zero_iff_eq_bot n)
 
 @[simp]
 lemma add_natCast_cancel {a b : WithBot ℕ∞} {c : ℕ} : a + c = b + c ↔ a = b :=
