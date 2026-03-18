@@ -315,8 +315,8 @@ end Algebra
 
 section Field
 
-instance [DivisionRing R] (v : Valuation R Γ₀) : DivisionRing (WithVal v) :=
-  fast_instance% (equiv v).divisionRing
+instance [DivisionRing R] (v : Valuation R Γ₀) : DivisionRing (WithVal v) := fast_instance%
+  (equiv v).divisionRing
 
 variable [Field R] (v : Valuation R Γ₀)
 
