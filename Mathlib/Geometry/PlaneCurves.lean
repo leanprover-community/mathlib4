@@ -86,9 +86,7 @@ theorem norm_normal_eq_one_of_unit_speed {I : Set ℝ} {c : ℝ → EuclideanSpa
   simp only [norm, OfNat.ofNat_ne_zero, ↓reduceIte, ENNReal.ofNat_ne_top, normal, Fin.isValue,
              ENNReal.toReal_ofNat,Real.rpow_ofNat, sq_abs, Fin.sum_univ_two, Matrix.cons_val_zero,
              even_two, Even.neg_pow, Matrix.cons_val_one,Matrix.cons_val_fin_one, one_div]
-  rw [add_comm]
-  symm
-  rw [← hc t ht]
+  rw [add_comm, ← hc t ht]
   simp [norm]
 
 /-- For every plane curve parametrized by arc-length, the velocity vector and the normal vector at
@@ -219,13 +217,13 @@ lemma normal_hasDerivAt_aux {I : Set ℝ} (hI : IsOpen I) {c : ℝ → Euclidean
     (hc : ContDiffOn ℝ 2 c I) {t : ℝ} (ht : t ∈ I) :
     HasDerivAt (normal c) (deriv (normal c) t) t := by
   have hd : ContDiffOn ℝ 1 (deriv c) I := hc.deriv_of_isOpen hI (by norm_num)
-  have h_diff : DifferentiableOn ℝ (deriv c) I := hd.differentiableOn (by norm_num)
+  have hD : DifferentiableOn ℝ (deriv c) I := hd.differentiableOn (by norm_num)
   unfold normal
   simp only [Fin.isValue, hasDerivAt_deriv_iff]
   have h : DifferentiableOn ℝ (fun t ↦ !₂[-(deriv c t) 1, (deriv c t) 0]) I := by
     rw [differentiableOn_piLp] at *
     intro i
-    fin_cases i <;> simp [h_diff]
+    fin_cases i <;> simp [hD]
   exact h.differentiableAt (hI.mem_nhds ht)
 
 lemma _root_.ContDiffOn.normal_of_twice_contDiffOn_curve {I : Set ℝ} (hI : IsOpen I)
@@ -265,8 +263,7 @@ theorem deriv_normal_eq_minus_orientedCurvature_times_deriv {I : Set ℝ} (hI : 
       let f (x : ℝ) := inner ℝ (normal c x) (deriv c x)
       let g : ℝ → ℝ := fun x ↦  0
       have h₂ : derivWithin g I t = 0 := by
-        unfold g
-        simp
+        simp [g]
       have h₃ : Set.EqOn f g I := by
         intro x hx
         simp only [f, g]
@@ -331,17 +328,17 @@ protected lemma _root_.HasDerivAt.initialCurve_of_orientedCurvature {I : Set ℝ
   apply HasDerivWithinAt.hasDerivAt (s := I)
   · rw [hasDerivWithinAt_pi_euclidean]
     unfold initialCurve_of_orientedCurvature
-    have h₀ := continuousOn_angle_fun_aux hI hκ ht₀ θ₀
+    have h := continuousOn_angle_fun_aux hI hκ ht₀ θ₀
     intro i
     fin_cases i
     · simp only [Fin.zero_eta, Fin.isValue, Matrix.cons_val_zero, hasDerivWithinAt_const_add_iff]
       have h' : ContinuousOn (fun x ↦  Real.cos (θ₀ + ∫ (ξ : ℝ) in t₀..x, κ ξ)) I := by
-        exact Real.continuous_cos.comp_continuousOn' h₀
+        exact Real.continuous_cos.comp_continuousOn' h
       exact intervalIntegral.hasDerivWithinAt_of_continuousOn_interval h' ht₀ ht
     · simp only [Fin.mk_one, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one,
                  hasDerivWithinAt_const_add_iff]
       have h' : ContinuousOn (fun x ↦  Real.sin (θ₀ + ∫ (ξ : ℝ) in t₀..x, κ ξ)) I := by
-        exact Real.continuous_sin.comp_continuousOn' h₀
+        exact Real.continuous_sin.comp_continuousOn' h
       exact intervalIntegral.hasDerivWithinAt_of_continuousOn_interval h' ht₀ ht
   · exact hI.mem_nhds ht
 
