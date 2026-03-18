@@ -20,7 +20,9 @@ over appropriate evaluations of the polynomial.
 
 ## Main statements
 
-* integral_eq_sumZeroes: Statement of the Chebyshev–Gauss property
+* integral_eq_sumZeroes: The integral of a polynomial of degree `< 2 * n` with respect to the weight
+  function `√(1 - x ^ 2)⁻¹` supported on `[-1, 1]` is equal to `π` times the average of its values
+  on the points `cos ((2 * i + 1) / (2 * n) * π)` for `0 ≤ i < n`.
 
 ## Implementation
 
@@ -145,6 +147,9 @@ theorem poly_eq_sum_of_deg {F : Type*} [Field F] {n : ℕ} {P : F[X]} {Q : Fin n
         rw [sum_add_distrib, ← hc, hcγ]
         grind
 
+/-- The integral of a polynomial of degree `< 2 * n` with respect to the weight function
+  `√(1 - x ^ 2)⁻¹` supported on `[-1, 1]` is equal to `π` times the average of its values
+  on the points `cos ((2 * i + 1) / (2 * n) * π)` for `0 ≤ i < n`. -/
 theorem integral_eq_sumZeroes {n : ℕ} {P : ℝ[X]} (hn : n ≠ 0) (hP : P.degree < 2 * n) :
     ∫ x, P.eval x ∂measureT = sumZeroes n P := by
   obtain ⟨c, rfl⟩ := poly_eq_sum_of_deg hP (fun i => show (T ℝ i).degree = i by simp; rfl)
