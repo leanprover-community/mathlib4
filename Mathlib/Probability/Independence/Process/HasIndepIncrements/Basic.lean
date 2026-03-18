@@ -48,7 +48,12 @@ section Def
 variable [Sub E]
 
 /-- A stochastic process `X : T → Ω → E` has independent increments if for any `n ≥ 1` and
-`t₁ ≤ ... ≤ tₙ`, the random variables `X t₂ - X t₁, ..., X tₙ - X tₙ₋₁` are independent. -/
+`t₁ ≤ ... ≤ tₙ`, the random variables `X t₂ - X t₁, ..., X tₙ - X tₙ₋₁` are independent.
+
+Although this corresponds to the standard definition, dealing with `Fin` might make things
+complicated in some cases. Therefore we provide `HasIndepIncrements.of_nat` which instead requires
+to prove that for any monotone sequence `(tₙ)` that is eventually constant,
+the random variables `X tₙ₊₁ - X tₙ` are independent. -/
 def HasIndepIncrements (X : T → Ω → E) (P : Measure Ω := by volume_tac) : Prop :=
   ∀ n, ∀ t : Fin (n + 1) → T, Monotone t →
     iIndepFun (fun (i : Fin n) ω ↦ X (t i.succ) ω - X (t i.castSucc) ω) P
