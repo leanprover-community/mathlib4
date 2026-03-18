@@ -116,7 +116,6 @@ theorem toWeakDual_apply (x' : StrongDual R M) (y : M) : (toWeakDual x') y = x' 
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.Dual.coe_toWeakDual := coe_toWeakDual
 
-@[simp]
 theorem toWeakDual_inj (x' y' : StrongDual R M) : toWeakDual x' = toWeakDual y' ↔ x' = y' :=
   (LinearEquiv.injective toWeakDual).eq_iff
 
@@ -144,7 +143,6 @@ theorem toStrongDual_apply (x : WeakDual 𝕜 E) (y : E) : (toStrongDual x) y = 
 theorem coe_toStrongDual (x' : WeakDual 𝕜 E) : toStrongDual x' = x' :=
   rfl
 
-@[simp]
 theorem toStrongDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongDual y' ↔ x' = y' :=
   (LinearEquiv.injective toStrongDual).eq_iff
 
