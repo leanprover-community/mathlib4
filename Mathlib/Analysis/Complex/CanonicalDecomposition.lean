@@ -13,8 +13,8 @@ public import Mathlib.Analysis.Meromorphic.FactorizedRational
 If a function `f` is meromorphic on a compact set `U`, then it has only finitely many zeros and
 poles on the disk, and the theorem `MeromorphicOn.extract_zeros_poles` can be used to re-write `f`
 as `(∏ᶠ u, (· - u) ^ divisor f U u) • g`, where `g` is analytic without zeros on `U`. In case where
-`U` is a disk, one consider a similar decomposition, called "Canonical Decomposition" or "Blaschke
-Product" that replaces the factors `(· - u)` by "canonical factors" that take only values of norm
+`U` is a disk, one consider a similar decomposition, called *Canonical Decomposition* or *Blaschke
+Product* that replaces the factors `(· - u)` by canonical factors that take only values of norm
 one on the boundary of the circle. This file introduces the canonical factors.
 
 See Page 160f of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] for a detailed
@@ -69,15 +69,11 @@ The canonical factor `CanonicalFactor R w` is analytic on the complement of `w`.
 -/
 theorem analyticOnNhd_canonicalFactor : AnalyticOnNhd ℂ (CanonicalFactor R w) {w}ᶜ := by
   intro x hx
-  by_cases h : R = 0
-  · subst h
-    unfold CanonicalFactor
-    simp only [ofReal_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_sub,
-      zero_mul, div_zero]
-    fun_prop
-  have : R * (x - w) ≠ 0 := mul_ne_zero (ofReal_ne_zero.2 h) (sub_ne_zero_of_ne hx)
-  unfold CanonicalFactor
-  fun_prop (disch := aesop)
+  rw [CanonicalFactor_def]
+  obtain (rfl | h) := eq_or_ne R 0
+  · simpa using analyticAt_const
+  have : x - w ≠ 0 := by grind
+  fun_prop (disch := positivity)
 
 /--
 The canonical factor `CanonicalFactor R w` has a simple pole at `z = w`.
@@ -104,14 +100,11 @@ Canonical factors are meromorphic in normal form.
 theorem meromorphicNFOn_canonicalFactor (h : w ∈ ball 0 R) :
     MeromorphicNFOn (CanonicalFactor R w) Set.univ := by
   intro z hz
-  by_cases h₁ : z = w
+  obtain (rfl | h₁) := eq_or_ne z w
   · rw [meromorphicNFAt_iff_analyticAt_or]
     right
-    use (meromorphicOn_canonicalFactor R w z (Set.mem_univ z))
-    constructor
-    · simp_all only [Set.mem_univ, meromorphicOrderAt_canonicalFactor h]
-      exact sign_eq_neg_one_iff.1 rfl
-    simp_all [CanonicalFactor]
+    refine ⟨meromorphicOn_canonicalFactor R z z (Set.mem_univ z), ?_, by simp⟩
+    simpa [meromorphicOrderAt_canonicalFactor h] using WithTop.coe_lt_zero.mpr (by lia : -1 < 0)
   apply (analyticOnNhd_canonicalFactor R w z h₁).meromorphicNFAt
 
 /-!
@@ -124,22 +117,15 @@ The canonical factor `CanonicalFactor R w` has no zeros inside the ball of radiu
 theorem canonicalFactor_ne_zero {z : ℂ} (hw : w ∈ ball 0 R) (h₁z : z ∈ closedBall 0 R)
     (h₂z : z ≠ w) :
     CanonicalFactor R w z ≠ 0 := by
-  have h_denom_ne_zero : R * (z - w) ≠ 0 := by
-    apply mul_ne_zero _ (sub_ne_zero.2 h₂z)
-    rw [ne_eq, ofReal_eq_zero]
-    by_contra hCon
-    subst hCon
-    simp_all
-  have h_num_ne_zero : R^2 - (conj w) * z ≠ 0 := by
-    by_cases hz : z = 0
-    · simp_all
-    by_contra h
-    rw [sub_eq_zero] at h
-    have : ‖(starRingEnd ℂ) w * z‖ < R ^ 2 := by
-      simpa [pow_two] using mul_lt_mul (mem_ball_zero_iff.mp hw) (mem_closedBall_zero_iff.mp h₁z)
-        (norm_pos_iff.mpr hz) (pos_of_mem_ball hw).le
-    simp [← h] at this
-  exact div_ne_zero h_num_ne_zero h_denom_ne_zero
+  obtain ⟨hR, hzw⟩ : 0 < R ∧ z - w ≠ 0 := by grind [mem_ball_zero_iff, norm_nonneg]
+  simp only [mem_ball, dist_zero_right, mem_closedBall] at hw h₁z
+  have h_num_ne_zero : R ^ 2 - conj w * z ≠ 0 := by
+    suffices ‖conj w * z‖ < ‖(R : ℂ) ^ 2‖ by grind
+    suffices ‖w‖ * ‖z‖ < R * R by simpa [sq]
+    grw [h₁z]
+    gcongr
+  rw [CanonicalFactor_apply]
+  positivity
 
 /--
 The canonical factor `CanonicalFactor R w` evalues to zero at `z = w`.
@@ -153,19 +139,9 @@ The canonical factor `CanonicalFactor R w` takes values of norm one on `sphere 0
 -/
 theorem norm_canonicalFactor_eval_circle_eq_one {z : ℂ} (hw : w ∈ ball 0 R) (hz : z ∈ sphere 0 R) :
     ‖CanonicalFactor R w z‖ = 1 := by
-  rw [CanonicalFactor, norm_div, div_eq_iff, one_mul]
-  · rw [mem_sphere_zero_iff_norm] at hz
-    have : (starRingEnd ℂ) z * z = R ^ 2 := by
-      rw [← hz]
-      exact conj_mul' z
-    rw [← this, ← mul_sub_right_distrib, norm_mul, norm_mul, hz, ← (starRingEnd ℂ).map_sub,
-      RCLike.norm_conj, mul_comm]
-    congr
-    simp [abs_of_pos (pos_of_mem_ball hw)]
-  · simp only [Complex.norm_mul, norm_real, norm_eq_abs, ne_eq, mul_eq_zero, abs_eq_zero,
-      norm_eq_zero, not_or]
-    constructor
-    · linarith [pos_of_mem_ball hw]
-    · by_contra hCon
-      rw [sub_eq_zero] at hCon
-      simp_all
+  obtain ⟨hR, hzw⟩ : 0 < R ∧ z - w ≠ 0 := by
+    grind [mem_ball_zero_iff, norm_nonneg, mem_sphere_zero_iff_norm]
+  rw [CanonicalFactor, norm_div, div_eq_iff (by rw [ne_eq, norm_eq_zero]; positivity), one_mul]
+  obtain rfl := by simpa [mem_sphere_zero_iff_norm] using hz
+  rw [← ofReal_pow, ← normSq_eq_norm_sq, normSq_eq_conj_mul_self, ← sub_mul, mul_comm _ z]
+  simp [← map_sub]
