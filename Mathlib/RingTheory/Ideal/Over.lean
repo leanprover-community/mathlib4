@@ -55,11 +55,7 @@ theorem comap_eq_of_scalar_tower_quotient [Algebra R S] [Algebra (R ⧸ p) (S �
   ext x
   rw [mem_comap, ← Quotient.eq_zero_iff_mem, ← Quotient.eq_zero_iff_mem, Quotient.mk_algebraMap,
     IsScalarTower.algebraMap_apply R (R ⧸ p) (S ⧸ P), Quotient.algebraMap_eq]
-  constructor
-  · intro hx
-    exact (injective_iff_map_eq_zero (algebraMap (R ⧸ p) (S ⧸ P))).mp h _ hx
-  · intro hx
-    rw [hx, map_zero]
+  exact map_eq_zero_iff _ h
 
 variable [Algebra R S]
 
@@ -333,7 +329,6 @@ lemma ker_stabilizerHom :
   ext σ
   simp [DFunLike.ext_iff, mk_surjective.forall, Quotient.eq]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_ker_stabilizer_subtype :
     (stabilizerHom P p G).ker.map (Subgroup.subtype _) = P.inertia G := by
   simp [ker_stabilizerHom, Ideal.inertia_le_stabilizer]

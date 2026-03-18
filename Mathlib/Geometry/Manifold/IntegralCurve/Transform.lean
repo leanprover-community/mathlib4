@@ -43,7 +43,7 @@ lemma IsMIntegralCurveOn.comp_add (hγ : IsMIntegralCurveOn γ v s) (dt : ℝ) :
   intro t ht
   rw [comp_apply, ← ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
   apply HasMFDerivWithinAt.comp t (hγ (t + dt) ht) _ subset_rfl
-  refine ⟨(continuous_add_right _).continuousWithinAt, ?_⟩
+  refine ⟨(continuous_add_const _).continuousWithinAt, ?_⟩
   simp only [mfld_simps]
   exact (hasFDerivWithinAt_id _ _).add_const _
 
@@ -108,7 +108,7 @@ lemma IsMIntegralCurveOn.comp_mul (hγ : IsMIntegralCurveOn γ v s) (a : ℝ) :
   rw [comp_apply, Pi.smul_apply, ← ContinuousLinearMap.one_apply (R₁ := ℝ) a,
     ← ContinuousLinearMap.smulRight_comp_smulRight]
   refine HasMFDerivWithinAt.comp t (hγ (t * a) ht)
-    ⟨(continuous_mul_right _).continuousWithinAt, ?_⟩ subset_rfl
+    ⟨(continuous_mul_const _).continuousWithinAt, ?_⟩ subset_rfl
   simp only [mfld_simps]
   exact HasFDerivWithinAt.mul_const' (hasFDerivWithinAt_id _ _) _
 

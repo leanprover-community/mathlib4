@@ -466,6 +466,7 @@ instance (priority := low) toSymmetricCategory : SymmetricCategory C where
 
 /-- `CartesianMonoidalCategory` implies `BraidedCategory`.
 This is not an instance to prevent diamonds. -/
+@[implicit_reducible]
 def _root_.CategoryTheory.BraidedCategory.ofCartesianMonoidalCategory : BraidedCategory C where
   braiding X Y := { hom := lift (snd _ _) (fst _ _), inv := lift (snd _ _) (fst _ _) }
 
@@ -783,7 +784,6 @@ open Limits
 
 variable {P : ObjectProperty C}
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: Introduce `ClosedUnderFiniteProducts`?
 /-- The restriction of a Cartesian-monoidal category along an object property that's closed under
 finite products is Cartesian-monoidal. -/

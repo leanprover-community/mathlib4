@@ -9,6 +9,8 @@ public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Pow
 public meta import Mathlib.Tactic.NormNum.Result
 
+meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+
 /-!
 # `ring` tactic
 
@@ -76,7 +78,7 @@ This feature wasn't needed yet, so it's not implemented yet.
 ring, semiring, exponent, power
 -/
 
-@[expose] public meta section
+public meta section
 
 assert_not_exists IsOrderedMonoid
 
@@ -170,10 +172,6 @@ def ExSum.eq
   | .add a₁ a₂, .add b₁ b₂ => a₁.eq b₁ && a₂.eq b₂
   | _, _ => false
 end
-
--- TODO: this should be somewhere else
-instance : Ord Rat where
-  compare a b := if a ≤ b then if b ≤ a then .eq else .lt else .gt
 
 mutual
 /--
@@ -680,7 +678,6 @@ end
 
 theorem smul_int {a b c : ℤ} (h : (a * b : ℤ) = c) : a • b = c := h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem smul_eq_intCast {R} [CommRing R] {a' b c : R} {a : ℤ} (_ : ((a : ℤ) : R) = a')
     (_ : a' * b = c) : a • b = c := by
   subst_vars; simp
@@ -902,7 +899,6 @@ theorem mul_pow {ea₁ b c₁ : ℕ} {xa₁ : R}
     (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂) : (xa₁ ^ ea₁ * a₂ : R) ^ b = xa₁ ^ c₁ * c₂ := by
   subst_vars; simp [_root_.mul_pow, pow_mul]
 
-set_option backward.privateInPublic true in
 -- needed to lift from `OptionT CoreM` to `OptionT MetaM`
 private local instance {m m'} [Monad m] [Monad m'] [MonadLiftT m m'] :
     MonadLiftT (OptionT m) (OptionT m') where
@@ -1066,12 +1062,10 @@ theorem cast_neg {n : ℕ} {R} [Ring R] {a : R} :
     IsInt a (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
   | ⟨e⟩ => by simp [e]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cast_nnrat {n : ℕ} {d : ℕ} {R} [DivisionSemiring R] {a : R} :
     IsNNRat a n d → a = NNRat.rawCast n d + 0
   | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cast_rat {n : ℤ} {d : ℕ} {R} [DivisionRing R] {a : R} :
     IsRat a n d → a = Rat.rawCast n d + 0
   | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]

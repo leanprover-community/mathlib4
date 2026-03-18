@@ -244,6 +244,24 @@ theorem ordCompl_eq_self_iff_zero_or_not_dvd (n : ℕ) {p : ℕ} (hp : Prime p) 
     · simp [n_eq_zero]
     · simp [Nat.factorization_eq_zero_of_not_dvd not_dvd]
 
+theorem ordCompl_pow_mul_of_not_dvd {m : ℕ} (k : ℕ) {p : ℕ} (hp : p.Prime) (hm : ¬p ∣ m) :
+    ordCompl[p] (p ^ k * m) = m := by
+  rw [ordCompl_self_pow_mul m k hp]
+  exact (ordCompl_eq_self_iff_zero_or_not_dvd m hp).mpr (Or.inr hm)
+
+theorem ordCompl_pow_mul_eq_self_iff (k m : ℕ) {p : ℕ} (hp : p.Prime) :
+    ordCompl[p] (p ^ k * m) = m ↔ m = 0 ∨ ¬p ∣ m := by
+  rw [ordCompl_self_pow_mul m k hp, ordCompl_eq_self_iff_zero_or_not_dvd m hp]
+
+theorem ordCompl_div_pow_of_dvd (k : ℕ) {x p : ℕ} (hp : p.Prime) (hx : p ^ k ∣ x) :
+    ordCompl[p] (x / p ^ k) = ordCompl[p] x := by
+  obtain ⟨m, rfl⟩ := hx
+  rw [Nat.mul_div_cancel_left m (pow_pos hp.pos k), ← ordCompl_self_pow_mul m k hp]
+
+theorem ordCompl_div_of_dvd {x : ℕ} {p : ℕ} (hp : p.Prime) (hx : p ∣ x) :
+    ordCompl[p] (x / p) = ordCompl[p] x := by
+  simpa [pow_one] using ordCompl_div_pow_of_dvd 1 hp (show p ^ 1 ∣ x by simpa)
+
 -- `ordCompl[p] n` is the largest divisor of `n` not divisible by `p`.
 theorem dvd_ordCompl_of_dvd_not_dvd {p d n : ℕ} (hdn : d ∣ n) (hpd : ¬p ∣ d) :
     d ∣ ordCompl[p] n := by
@@ -320,7 +338,6 @@ theorem ordCompl_dvd_ordCompl_iff_dvd (a b : ℕ) :
   rw [← Nat.dvd_one, ← Nat.mul_dvd_mul_iff_left hb0.bot_lt, mul_one]
   simpa [Prime.factorization_self pb, Prime.factorization pa, hab] using h b
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dvd_iff_prime_pow_dvd_dvd (n d : ℕ) :
     d ∣ n ↔ ∀ p k : ℕ, Prime p → p ^ k ∣ d → p ^ k ∣ n := by
   rcases eq_or_ne n 0 with (rfl | hn)
@@ -340,7 +357,6 @@ theorem prod_primeFactors_dvd (n : ℕ) : ∏ p ∈ n.primeFactors, p ∣ n := b
     simp
   · simpa [prod_primeFactorsList hn] using (n.primeFactorsList : Multiset ℕ).toFinset_prod_dvd_prod
 
-set_option backward.isDefEq.respectTransparency false in
 theorem factorization_gcd {a b : ℕ} (ha_pos : a ≠ 0) (hb_pos : b ≠ 0) :
     (gcd a b).factorization = a.factorization ⊓ b.factorization := by
   let dfac := a.factorization ⊓ b.factorization
@@ -412,7 +428,6 @@ theorem Ico_filter_pow_dvd_eq {n p b : ℕ} (pp : p.Prime) (hn : n ≠ 0) (hb : 
   exact iff_of_true (lt_of_pow_dvd_right hn pp.two_le h1) <|
     (Nat.pow_le_pow_iff_right pp.one_lt).1 <| (le_of_dvd hn.bot_lt h1).trans hb
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Ico_pow_dvd_eq_Ico_of_lt {n p b : ℕ} (pp : p.Prime) (hn : n ≠ 0) (hb : n < p ^ b) :
     {i ∈ Ico 1 n | p ^ i ∣ n} = {i ∈ Ico 1 b | p ^ i ∣ n} := by
   ext i
@@ -516,7 +531,6 @@ lemma card_multiples' (N n : ℕ) : #{k ∈ range N.succ | k ≠ 0 ∧ n ∣ k} 
     · simp [h, succ_div_of_dvd, ih]
     · simp [h, succ_div_of_not_dvd, ih]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_eq_pow_of_exponent_coprime_of_pow_eq_pow
     {a b m n : ℕ} (hmn : m.Coprime n) (h : a ^ m = b ^ n) :
     ∃ c, a = c ^ n ∧ b = c ^ m := by

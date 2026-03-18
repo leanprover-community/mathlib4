@@ -65,6 +65,7 @@ theorem galois_poly_separable {K : Type*} [CommRing K] (p q : ℕ) [CharP K p] (
 
 variable (p : ℕ) [Fact p.Prime] (n : ℕ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A finite field with `p ^ n` elements.
 Every field with the same cardinality is (non-canonically)
 isomorphic to this field. -/
@@ -129,6 +130,7 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
     intro x y _ _ hx hy
     rw [hx, hy]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
   let b := IsNoetherian.finsetBasis (ZMod p) (GaloisField p n)
   haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)

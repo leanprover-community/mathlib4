@@ -95,7 +95,6 @@ theorem ratLt_bddAbove (x : M) : BddAbove (ratLt x) := by
   intro h
   exact num_le_nat_mul_den h.le (by simpa using hn)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ratLt_nonempty (x : M) : (ratLt x).Nonempty := by
   obtain hneg | rfl | hxpos := lt_trichotomy x 0
   · obtain ⟨n, hn⟩ := Archimedean.arch (-x - x) zero_lt_one

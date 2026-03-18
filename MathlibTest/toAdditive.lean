@@ -20,6 +20,27 @@ def foo0 {α} [Mul α] [One α] (x y : α) : α := x * y * 1
 
 theorem bar0_works : bar0 3 4 = 7 := by decide
 
+run_meta guard <| (← getConstInfo `Test.bar0).all == [`Test.bar0]
+
+/--
+error: `to_additive` does not support mutually recursive declarations.
+-/
+#guard_msgs (error) in
+mutual
+
+@[to_additive bar0a]
+theorem foo0a {α} [Monoid α] (n : ℕ) : True := by
+  cases n with
+  | zero => trivial
+  | succ n => exact foo0b (α := α) n
+
+theorem foo0b {α} [Monoid α] (n : ℕ) : True := by
+  cases n with
+  | zero => trivial
+  | succ n => exact foo0a (α := α) n
+
+end
+
 class my_has_pow (α : Type u) (β : Type v) where
   pow : α → β → α
 
@@ -138,6 +159,8 @@ example [Group α] (x : α) : foo17 x = x := by simp
 example [AddGroup α] (x : α) : bar17 x = 0 + x := by simp
 example [AddGroup α] (x : α) : bar17 x = x := by simp
 
+run_meta guard <| (← getConstInfo `Test.bar18).all == [`Test.bar18]
+
 /- Testing nested to_additive calls -/
 @[to_additive (attr := simp, to_additive baz19) bar19]
 def foo19 := 1
@@ -157,7 +180,7 @@ example {x} (h : 1 = x) : baz20 = x := by simp; guard_target = 1 = x; exact h
 @[to_additive bar21]
 def foo21 {N} {A} [Pow A N] (a : A) (n : N) : A := a ^ n
 
-run_meta guard <| translations.find? (← getEnv) `Test.foo21 matches some ⟨`Test.bar21, [], .arg 1⟩
+run_meta guard <| translations.find? (← getEnv) `Test.foo21 matches some ⟨`Test.bar21, {}, .arg 1⟩
 
 @[to_additive bar22]
 abbrev foo22 {α} [Monoid α] (a : α) : ℕ → α
@@ -172,6 +195,7 @@ run_meta do
   -- some auxiliary definitions are also `abbrev` but not `reducible`
   guard <| (← getReducibilityStatus `Test.bar22.match_1) != .reducible
   guard <| (Compiler.getInlineAttribute? (← getEnv) `Test.bar22.match_1) == some .inline
+  guard <| (← getConstInfo `Test.bar22.match_1).all == [`Test.bar22.match_1]
 
 run_cmd do
   -- test that we cannot transport a declaration to itself
@@ -243,9 +267,11 @@ def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f 
 instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One <| f i] : One ((i : I) → f i) :=
   ⟨fun _ => 1⟩
 
+set_option warn.classDefReducibility false in
 @[to_additive]
 def nat_pi_has_one {α : Type} [One α] : One ((x : Nat) → α) := by infer_instance
 
+set_option warn.classDefReducibility false in
 @[to_additive]
 def pi_nat_has_one {I : Type} : One ((x : I) → Nat)  := pi.has_one
 
@@ -325,20 +351,42 @@ alias reorderMulThree_alias' := reorderMulThree
 def reorderMulThree_alias'' {α : Type _} [Mul α] (x y : α) : α → α := reorderMulThree x y
 
 /--
-error: invalid cycle `04`, a cycle must have at least 2 elements.
-`(reorder := ...)` uses cycle notation to specify a permutation.
-For example `(reorder := 1 2, 5 6)` swaps the first two arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move the fifth argument before the third argument.
+error: Invalid cycle `04`, a cycle must have at least 2 elements.
+See the docstring of `reorder` for how to specify reorders.
 -/
 #guard_msgs in
 @[to_additive (reorder := 04)]
-example : True := trivial
+example (a b c d e : Nat) : True := trivial
+
+/--
+error: Please remove the duplicate entries from the disjoint cycle representation.
+See the docstring of `reorder` for how to specify reorders.
+-/
+#guard_msgs in
+@[to_additive (reorder := 1 2, 2 3)]
+example (a b c d e : Nat) : True := trivial
+
+/--
+error: Please remove the duplicate entries from the disjoint cycle representation.
+See the docstring of `reorder` for how to specify reorders.
+-/
+#guard_msgs in
+@[to_additive (reorder := 1 2 2 3)]
+example (a b c d e : Nat) : True := trivial
+
+/--
+error: The reorder within argument 1 has been set to both `3 4` and `1 2`. Please specify it only once.
+-/
+#guard_msgs in
+@[to_additive (reorder := 1 (1 2), 1 (3 4))]
+example (h : ∀ a b c d : Nat, True) : True := trivial
 
 /-- error: invalid index `00`, arguments are counted starting from 1. -/
 #guard_msgs in
 @[to_additive (reorder := 00 100 200)]
 example : True := trivial
 
-/-- error: invalid argument 'x', it is not an argument of '_example'. -/
+/-- error: invalid argument `x`, it is not an argument of `_example`. -/
 #guard_msgs in
 @[to_additive (reorder := x y z)]
 example : True := trivial
@@ -650,7 +698,7 @@ noncomputable def mulMarkedNoncomputable : Nat := 0
 
 noncomputable section
 
-/- Compilation should succeed despite `noncomputable` -/
+/- Compilation should succeed despite `noncomputable section` -/
 
 @[to_additive]
 def mulComputableTest' : Nat := 0
@@ -670,22 +718,14 @@ noncomputable def mulMarkedNoncomputable' : Nat := 0
 /-- info: `addMarkedNoncomputable'` is marked noncomputable -/
 #guard_msgs in #computability addMarkedNoncomputable'
 
-/-
-Compilation should fail silently.
-
-If `mulNoExec` ever becomes marked noncomputable (meaning Lean's handling of
-`noncomputable section` has changed), then the check for executable code in
-`Mathlib.Tactic.ToAdditive.Frontend` should be replaced with a simple `isNoncomputable` check and
-mark `addNoExec` `noncomputable` as well (plus a check for whether the original declaration is an
-axiom, if `to_additive` ever handles axioms).
--/
+/- Both should be marked noncomputable -/
 
 @[to_additive]
 def mulNoExec {G} (n : Nonempty G) : G := Classical.choice n
 
-/-- info: `mulNoExec` has no executable code -/
+/-- info: `mulNoExec` is marked noncomputable -/
 #guard_msgs in #computability mulNoExec
-/-- info: `addNoExec` has no executable code -/
+/-- info: `addNoExec` is marked noncomputable -/
 #guard_msgs in #computability addNoExec
 
 end
@@ -797,7 +837,7 @@ def monoidAlgebraFoo {k G : Type} [Inhabited k] : MonoidAlgebra k G × Nat :=
   (⟨fun _ ↦ default⟩, 2)
 
 run_meta guard <|
-  translations.find? (← getEnv) ``monoidAlgebraFoo matches some ⟨``addMonoidAlgebraFoo, [], .arg 1⟩
+  translations.find? (← getEnv) ``monoidAlgebraFoo matches some ⟨``addMonoidAlgebraFoo, {}, .arg 1⟩
 
 /--
 warning: `to_additive` correctly autogenerated `(relevant_arg := 2)` for `monoidAlgebraFoo₁`.
@@ -847,3 +887,21 @@ attribute [to_additive someOtherTranslation] abstractMul
 -- Test that we don't blindly translate the prefix of a name.
 def Mul.test : Nat := 5
 @[to_additive] def Mul.test' := Mul.test
+
+-- Test that arguments of free variables aren't considered by `shouldTranslate`
+@[to_additive_dont_translate]
+def dontTranslateId {α} : α → α := id
+
+@[to_additive]
+theorem functionTypeMonoid {ι : Type*} {R : ι → Type*} [(i : ι) → Monoid (R i)] (i : ι)
+  (a : R (dontTranslateId i)) : a * a = a * a := rfl
+
+class AddClass (α : Type) extends Add α where
+class MulClass (α : Type) extends Mul α where
+-- Test that the reserved `MulClass.mk.congr_simp` can be translated to `AddClass.mk.congr_cimp`
+attribute [to_additive existing] MulClass MulClass.mk.congr_simp
+
+/-- error: `to_additive` cannot translate `MulAxiom` because it has no value. -/
+#guard_msgs in
+@[to_additive]
+axiom MulAxiom {α} : Mul α

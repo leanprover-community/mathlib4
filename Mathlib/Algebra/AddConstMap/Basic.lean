@@ -168,7 +168,6 @@ theorem map_sub_nsmul [AddGroup G] [AddGroup H] [AddConstMapClass F G H a b]
     (f : F) (x : G) (n : ℕ) : f (x - n • a) = f x - n • b := by
   conv_rhs => rw [← sub_add_cancel x (n • a), map_add_nsmul, add_sub_cancel_right]
 
-set_option backward.isDefEq.respectTransparency false in
 @[scoped simp]
 theorem map_sub_const [AddGroup G] [AddGroup H] [AddConstMapClass F G H a b]
     (f : F) (x : G) : f (x - a) = f x - b := by
@@ -239,7 +238,6 @@ theorem map_fract {R : Type*} [Ring R] [LinearOrder R] [FloorRing R] [AddGroup H
     f (Int.fract x) = f x - ⌊x⌋ • b :=
   map_sub_int' ..
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Relator in
 /-- Auxiliary lemmas for the "monotonicity on a fundamental interval implies monotonicity" lemmas.
 We formulate it for any relation so that the proof works both for `Monotone` and `StrictMono`. -/
