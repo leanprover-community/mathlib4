@@ -337,7 +337,6 @@ open Module
 
 variable {F E : Type*} [Field F] [Ring E] [Algebra F E]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Subalgebra.isSimpleOrder_of_finrank (hr : finrank F E = 2) :
     IsSimpleOrder (Subalgebra F E) :=
   let i := nontrivial_of_finrank_pos (zero_lt_two.trans_eq hr.symm)
