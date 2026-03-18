@@ -21,18 +21,17 @@ equivalent to the epsilon numbers given by `Ordinal.epsilon`.
 
 ## Main definitions and results
 
-* `Principal`: A principal or indecomposable ordinal under some binary operation. We include 0 and
+* `Principal`: A principal or indecomposable ordinal under some binary operation. We include `0` and
   other typically excluded edge cases for simplicity.
 * `not_bddAbove_principal`: Principal ordinals (under any operation) are unbounded.
-* `principal_add_iff_zero_or_omega0_opow`: The additive principal ordinals are 0 and the powers of
-  ω.
-* `principal_mul_iff_le_two_or_omega0_opow_opow`: The multiplicative principal ordinals are 0, 1, 2,
-  and the ordinals `ω ^ ω ^ x`.
+* `principal_add_iff_zero_or_omega0_opow`: The additive principal ordinals are
+  `0` and the ordinal powers of `ω`.
+* `principal_mul_iff_le_two_or_omega0_opow_opow`: The multiplicative principal ordinals are
+  `0`, `1`, `2`, and the ordinals `ω ^ ω ^ x`.
 
 ## TODO
 
-* Prove that exponential principal ordinals are 0, 1, 2, ω, or epsilon numbers, i.e. fixed points of
-  `(ω ^ ·)`.
+* Prove that exponential principal ordinals are `0`, `1`, `2`, `ω`, or `ε_ x`.
 -/
 
 @[expose] public section
