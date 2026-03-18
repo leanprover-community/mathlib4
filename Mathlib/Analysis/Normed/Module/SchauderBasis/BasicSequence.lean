@@ -104,42 +104,12 @@ theorem basicSequence_satisfiesGrunblum :
       simp only [coe_norm, AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, bs.basis_eq]
       exact mul_le_mul_of_nonneg_right h_bound (norm_nonneg (∑ i ∈ Finset.range n, a i • bs i))
 
-/-- The Grünblum bound transfers through a norm-preserving map: if `b` is a basic sequence
-    in `Y` and `J : X →L[𝕜] Y` satisfies `‖J y‖ = ‖y‖` with `J (x n) = b n`, then `x`
-    satisfies the same Grünblum bound as `b`. -/
-theorem Grunblum_bound_transfer {Y : Type*}
-    [NormedAddCommGroup Y] [NormedSpace 𝕜 Y]
-    (b : BasicSequence 𝕜 Y) (x : ℕ → X) (J : X →L[𝕜] Y)
-    (hJ_iso : ∀ y, ‖J y‖ = ‖y‖) (hx_J : ∀ n, J (x n) = b n)
-    (n m : ℕ) (a : ℕ → 𝕜) (hmn : m ≤ n) :
-    ‖∑ i ∈ Finset.range m, a i • x i‖ ≤
-      b.basicSequenceConstant * ‖∑ i ∈ Finset.range n, a i • x i‖ := by
-  have h_sum_eq : ∀ k, J (∑ i ∈ Finset.range k, a i • x i) =
-      ∑ i ∈ Finset.range k, a i • b i := by
-    intro k; simp only [map_sum, ContinuousLinearMap.map_smul, hx_J]
-  rw [← hJ_iso, h_sum_eq]
-  exact (basicSequence_satisfiesGrunblum b n m a hmn).trans_eq (by rw [← h_sum_eq, hJ_iso])
-
-/-- Elements of a basic sequence are nonzero. -/
-lemma ne_zero (b : BasicSequence 𝕜 X) (n : ℕ) : b n ≠ 0 := fun h =>
-  b.basis.linearIndependent.ne_zero n (Subtype.ext ((b.basis_eq n).trans h))
-
-/-- The underlying function of a basic sequence is injective. -/
-lemma injective (b : BasicSequence 𝕜 X) : Function.Injective ⇑b := by
-  intro i j hij
-  exact b.basis.linearIndependent.injective
-    (Subtype.ext ((b.basis_eq i).trans (hij.trans (b.basis_eq j).symm)))
-
 /-- The Grünblum constant must be at least 1 for any nonzero sequence. -/
 theorem Grunblum_const_ge_1 {e : ℕ → X} {K : ℝ}
     (h : SatisfiesGrunblumCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) : 1 ≤ K := by
   have h0 := h 1 1 (fun _ => 1) le_rfl
   simp only [Finset.range_one, one_smul, sum_singleton] at h0
   exact le_of_mul_le_mul_right ((one_mul _).le.trans h0) (norm_pos_iff.mpr (h_nz 0))
-
-/-- The basis constant of a basic sequence is at least 1. -/
-theorem basicSequenceConstant_ge_one : 1 ≤ bs.basicSequenceConstant :=
-  Grunblum_const_ge_1 (basicSequence_satisfiesGrunblum bs) bs.ne_zero
 
 /-- A nonzero sequence satisfying the Grünblum condition is linearly independent. -/
 lemma linearIndependent_of_Grunblum {e : ℕ → X} {K : ℝ} (h_nz : ∀ n, e n ≠ 0)
