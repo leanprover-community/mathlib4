@@ -10,6 +10,7 @@ public import Mathlib.Topology.Separation.Basic
 public import Mathlib.Topology.Compactness.Lindelof
 
 import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Topology.Perfect
 
 /-!
 # Countably compact sets
@@ -226,14 +227,9 @@ theorem isCountablyCompact_iff_infinite_subset_has_accPt [T1Space E] {A : Set E}
         exact ((Set.finite_Iio N).image x).union hf)
       refine ⟨a, haA, mapClusterPt_iff_frequently.mpr fun U hU =>
         Nat.frequently_atTop_iff_infinite.mpr ?_⟩
-      suffices h_inf : (U ∩ x '' Set.Ici N).Infinite from
-        (h_inf.preimage <| inter_subset_right.trans <| Set.image_subset_range x _).mono <|
-          preimage_mono inter_subset_left
-      by_contra hF
-      have hcl := ((Set.not_infinite.mp hF).subset (diff_subset (t := {a}))).isClosed
-      obtain ⟨y, ⟨hya, hyr⟩, hyU, hyFc⟩ := ((accPt_iff_frequently.mp hacc).and_eventually
-        (Filter.inter_mem hU <| hcl.isOpen_compl.mem_nhds fun h => h.2 rfl)).exists
-      exact hyFc ⟨⟨hyU, hyr⟩, hya⟩
+      exact ((Set.Infinite.of_accPt (hacc.nhds_inter hU)).preimage
+        (inter_subset_right.trans <| Set.image_subset_range x _)).mono
+        (preimage_mono inter_subset_left)
 
 /-- A countably compact Lindelöf set is compact. -/
 theorem IsLindelof.isCompact (hA : IsCountablyCompact A) (hl : IsLindelof A) :
