@@ -900,9 +900,9 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Iic
 
 variable [CompleteSpace E]
 
-/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
+/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a]`.
 When a function has a limit `m` at `-∞`, and its derivative is integrable, then the
-integral of the derivative on `(-∞, a)` is `f a - m`. Version assuming differentiability
+integral of the derivative on `(-∞, a]` is `f a - m`. Version assuming differentiability
 on `(-∞, a)` and continuity at `a⁻`.
 
 Note that such a function always has a limit at minus infinity,
@@ -924,9 +924,9 @@ theorem integral_Iic_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Iic
   rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hx]
   exact f'int.mono (fun y hy => hy.2) le_rfl
 
-/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
+/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a]`.
 When a function has a limit `m` at `-∞`, and its derivative is integrable, then the
-integral of the derivative on `(-∞, a)` is `f a - m`. Version assuming differentiability
+integral of the derivative on `(-∞, a]` is `f a - m`. Version assuming differentiability
 on `(-∞, a]`.
 
 Note that such a function always has a limit at minus infinity,
