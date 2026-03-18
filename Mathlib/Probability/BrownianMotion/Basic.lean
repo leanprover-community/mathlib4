@@ -7,12 +7,15 @@ module
 
 public import Mathlib.Probability.BrownianMotion.GaussianProjectiveFamily
 public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Def
+public import Mathlib.Probability.Independence.Process.HasIndepIncrements.Basic
 
 import Mathlib.Probability.Distributions.Gaussian.CharFun
 import Mathlib.Probability.Distributions.Gaussian.Fernique
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
+import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Independence
 import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Basic
 import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Independence
+import Mathlib.Probability.Independence.Process.HasIndepIncrements.IsGaussianProcess
 
 /-!
 # Brownian motion
@@ -60,6 +63,8 @@ variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {B X : ℝ≥0 → Ω → ℝ} 
 namespace ProbabilityTheory
 
 section IsPreBrownian
+
+/-! ### Pre-Brownian motion -/
 
 /-- A stochastic process is called **pre-Brownian** if its finite-dimensional laws are those
 of the Brownian motion, see `gaussianProjectiveFamily`. -/
@@ -145,6 +150,24 @@ theorem IsGaussianProcess.isPreBrownian_of_covariance (h1 : IsGaussianProcess X 
         exact aemeasurable_pi_lambda _ (fun _ ↦ h1.aemeasurable _)
       · exact fun i ↦ (IsGaussian.hasGaussianLaw_id.eval i).memLp_two
       · exact fun i ↦ ((h1.hasGaussianLaw I).isGaussian_map.hasGaussianLaw_id.eval i).memLp_two
+
+set_option backward.isDefEq.respectTransparency false in
+/-- A pre-Brownian motion has independent increments. -/
+lemma IsPreBrownian.hasIndepIncrements (hB : IsPreBrownian B P) : HasIndepIncrements B P := by
+  have : IsProbabilityMeasure P := hB.isGaussianProcess.isProbabilityMeasure
+  refine fun n t ht ↦ hB.isGaussianProcess.hasGaussianLaw_increments.iIndepFun_of_covariance_eq_zero
+    fun i j hij ↦ ?_
+  rw [covariance_fun_sub_fun_sub]
+  · simp_rw [hB.covariance_fun_eval]
+    wlog h' : i < j generalizing i j
+    · simp_rw [← this j i hij.symm (by grind), min_comm]
+      grind
+    have h1 : i.succ ≤ j.succ := Fin.strictMono_succ h' |>.le
+    have h2 : i.castSucc ≤ j.succ := Fin.le_of_lt h1
+    have h3 : i.castSucc ≤ j.castSucc := Fin.le_castSucc_iff.mpr h1
+    rw [min_eq_left (ht h1), min_eq_left (ht h'), min_eq_left (ht h2), min_eq_left (ht h3)]
+    simp
+  all_goals exact (hB.isGaussianProcess.hasGaussianLaw_eval _).memLp_two
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `B` is a pre-Brownian motion and `c > 0`, then
