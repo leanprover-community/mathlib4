@@ -46,8 +46,7 @@ there exists an element in the maximal ideal not in its square. -/
 theorem exists_mem_maximalIdeal_not_mem_sq
     [IsNoetherianRing R] (h : 0 < ringKrullDim R) :
     ∃ x ∈ maximalIdeal R, x ∉ (maximalIdeal R) ^ 2 := by
-  by_contra h_contra
-  push_neg at h_contra
+  by_contra! h_contra
   have := le_antisymm h_contra (Ideal.pow_le_self two_ne_zero)
   exact h.ne' (ringKrullDim_eq_zero_of_maximalIdeal_eq_bot
     (Submodule.eq_bot_of_le_smul_of_le_jacobson_bot _ _
