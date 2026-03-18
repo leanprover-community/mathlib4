@@ -298,40 +298,25 @@ def unconditionalBasicSequenceConstant : ℝ := ubs.basis.enormProjBound.toReal
 /-- A general basic sequence with finite projection bound satisfies the
     generalized Grünblum condition. -/
 theorem unconditional_satisfiesNikolskii :
-    SatisfiesNikolskiiCondition 𝕜 ubs ubs.unconditionalBasicSequenceConstant := by
-  have hK_lt_top : ubs.basis.enormProjBound ≠ ⊤ := ubs.basisConstant_lt_top.ne
-  refine fun A B a hAB => ?_
-  let Y := Submodule.span 𝕜 (Set.range ubs.toFun)
-  have hsum_mem (S : Finset β) : ∑ i ∈ S, a i • ubs i ∈ Y :=
-    Submodule.sum_mem _ (fun i _ => Submodule.smul_mem _ _ (Submodule.subset_span ⟨i, rfl⟩))
-  have h_proj_bound : ‖ubs.basis.proj A‖ ≤ ubs.unconditionalBasicSequenceConstant := by
+    SatisfiesNikolskiiCondition 𝕜 ubs ubs.unconditionalBasicSequenceConstant := fun A B a hAB ↦ by
+  have h_bound : ‖ubs.basis.proj A‖ ≤ ubs.unconditionalBasicSequenceConstant := by
     have h := ubs.basis.enorm_proj_le_enormProjBound A
-    rw [enorm_eq_nnnorm] at h
-    rw [← ENNReal.toReal_le_toReal ENNReal.coe_ne_top hK_lt_top] at h
-    simp only [ENNReal.coe_toReal, coe_nnnorm] at h
-    exact h
-  let sum_B : Y := ⟨∑ i ∈ B, a i • ubs i, hsum_mem B⟩
-  let sum_A : Y := ⟨∑ i ∈ A, a i • ubs i, hsum_mem A⟩
-  have h_basis_eq : ∀ i, (ubs.basis i : X) = ubs i := ubs.basis_eq
-  have h_sum_B_basis : sum_B = ∑ j ∈ B, a j • ubs.basis j := by
-    apply Subtype.ext
-    simp only [sum_B, Submodule.coe_sum, Submodule.coe_smul, h_basis_eq]
-  have h_proj_eq : ubs.basis.proj A sum_B = sum_A := by
-    rw [h_sum_B_basis]
-    simp_rw [map_sum, map_smul, GeneralSchauderBasis.proj_apply_basis_mem]
-    classical
-    have : B.filter (· ∈ A) = A := by
-      ext i; simp only [Finset.mem_filter]; exact ⟨And.right, fun h => ⟨hAB h, h⟩⟩
-    simp_rw [smul_ite, smul_zero, Finset.sum_ite, Finset.sum_const_zero, add_zero, this]
-    apply Subtype.ext; simp only [sum_A, Submodule.coe_sum, Submodule.coe_smul, h_basis_eq]
+    rwa [enorm_eq_nnnorm, ← ENNReal.toReal_le_toReal ENNReal.coe_ne_top ubs.basisConstant_lt_top.ne,
+      ENNReal.coe_toReal, coe_nnnorm] at h
+  have h_eq (S : Finset β) : ‖∑ i ∈ S, a i • ubs.basis i‖ = ‖∑ i ∈ S, a i • ubs i‖ := by
+    simp [ubs.basis_eq]
   calc ‖∑ i ∈ A, a i • ubs i‖
-    _ = ‖sum_A‖ := (norm_coe sum_A).symm
-    _ = ‖ubs.basis.proj A sum_B‖ := by rw [h_proj_eq]
-    _ ≤ ‖ubs.basis.proj A‖ * ‖sum_B‖ := ContinuousLinearMap.le_opNorm _ _
-    _ ≤ ubs.unconditionalBasicSequenceConstant * ‖∑ i ∈ B, a i • ubs i‖ :=
-       (mul_le_mul_of_nonneg_right h_proj_bound (norm_nonneg _)).trans_eq
-         (congr_arg _ (norm_coe sum_B))
-
+    _ = ‖∑ i ∈ A, a i • ubs.basis i‖ := (h_eq A).symm
+    _ = ‖ubs.basis.proj A (∑ i ∈ B, a i • ubs.basis i)‖ := by
+      congr 1
+      simp_rw [map_sum, map_smul, GeneralSchauderBasis.proj_apply_basis_mem, smul_ite, smul_zero]
+      exact (Finset.sum_subset (f := fun i ↦ if i ∈ A then a i • ubs.basis i else 0)
+        hAB fun _ _ h ↦ if_neg h).symm.trans
+        (Finset.sum_congr rfl fun _ h ↦ if_pos h)
+    _ ≤ ‖ubs.basis.proj A‖ * ‖∑ i ∈ B, a i • ubs.basis i‖ := ContinuousLinearMap.le_opNorm _ _
+    _ ≤ ubs.unconditionalBasicSequenceConstant * ‖∑ i ∈ B, a i • ubs i‖ := by
+      rw [h_eq B]
+      exact mul_le_mul_of_nonneg_right h_bound (norm_nonneg _)
 variable {e : β → X} {K : ℝ}
 
 /-- A nonzero sequence satisfying the Nikolskii condition is linearly independent. -/
