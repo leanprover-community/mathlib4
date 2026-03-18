@@ -644,6 +644,9 @@ lemma add_one_le_natCast_iff (n : WithBot ℕ∞) (m : ℕ) : n + 1 ≤ m ↔ n 
     · rw [← ENat.WithBot.coe_eq_natCast, ← WithBot.coe_one, ← WithBot.coe_add, WithBot.coe_le_coe,
         WithBot.coe_lt_coe, ENat.add_one_le_iff eq]
 
+lemma add_one_le_zero_iff (n : WithBot ℕ∞) : n + 1 ≤ 0 ↔ n = ⊥ :=
+  (add_one_le_natCast_iff n 0).trans (WithBot.lt_zero_iff_eq_bot n)
+
 @[simp]
 lemma add_natCast_cancel {a b : WithBot ℕ∞} {c : ℕ} : a + c = b + c ↔ a = b :=
   (IsAddRightRegular.all c).withTop.withBot.eq_iff
