@@ -46,6 +46,8 @@ the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
 
 * `StrongDual.toWeakDual` and `WeakDual.toStrongDual`: Linear equivalences between the dual types.
 * `WeakDual.instBornology`: The norm bornology on `WeakDual 𝕜 E`.
+* `WeakDual.seminormFamily`: The family of seminorms `fun x f ↦ ‖f x‖` generating the weak-*
+  topology.
 * `WeakDual.polar`: The polar set of `s : Set E` viewed as a subset of `WeakDual 𝕜 E`.
 
 ## Main results
@@ -248,8 +250,11 @@ Uniform Boundedness Principle, it coincides with the von Neumann bornology whene
 $E$ is a Banach space.
 -/
 
+
 set_option backward.isDefEq.respectTransparency false in
 variable (𝕜 E) in
+/-- The family of seminorms on `WeakDual 𝕜 E` given by `fun x f ↦ ‖f x‖`, indexed by `E`.
+This is the seminorm family associated to the weak-* topology via `topDualPairing`. -/
 def seminormFamily : SeminormFamily 𝕜 (WeakDual 𝕜 E) E :=
   (topDualPairing 𝕜 E).toSeminormFamily
 set_option backward.isDefEq.respectTransparency false in
