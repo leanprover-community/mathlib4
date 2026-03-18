@@ -81,6 +81,8 @@ theorem iteratedFDeriv_fun_zero {n : ℕ} :
     iteratedFDeriv 𝕜 n (fun (_ : E) ↦ (0 : F)) = 0 := by
   apply iteratedFDeriv_zero
 
+@[deprecated (since := "2026-03-18")] alias iteratedFDeriv_zero_fun := iteratedFDeriv_fun_zero
+
 @[simp]
 theorem ftaylorSeries_zero :
     ftaylorSeries 𝕜 (0 : E → F) = 0 := by
@@ -92,8 +94,6 @@ theorem ftaylorSeries_fun_zero :
     ftaylorSeries 𝕜 (fun (_ : E) ↦ (0 : F)) = 0 := by
   ext
   simp [ftaylorSeries]
-
-@[deprecated (since := "2026-03-18")] alias iteratedFDeriv_zero_fun := ftaylorSeries_fun_zero
 
 theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
   analyticOnNhd_const.contDiff
