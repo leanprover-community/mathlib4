@@ -25,15 +25,6 @@ and computes their expectation and variance.
 
 * `ProbabilityTheory.binomial`:
   Binomial distribution on an arbitrary semiring with parameters `n` and `p`.
-* `ProbabilityTheory.IsBinomial`:
-  Predicate for a random variable to be binomial with parameters `n` and `p`.
-
-## Main statements
-
-* `ProbabilityTheory.IsBinomial.integral_eq`: Computation of the expectation of a binomial r.v.
-* `ProbabilityTheory.IsBinomial.variance_eq`: Computation of the variance of a binomial r.v.
-* `ProbabilityTheory.IsBinomial.condVar_eq`:
-  Computation of the conditional variance of a binomial r.v.
 
 ## Notation
 
@@ -146,27 +137,21 @@ instance isProbabilityMeasure_binomial : IsProbabilityMeasure Bin(R, n, p) :=
   -- See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/fun_prop.20fails.20Nat.2Ecast.20.E2.88.98.20Set.2Encard.20.3A.20Set.20.E2.84.95.20.E2.86.92.20.E2.84.95.20measurable/
   Measure.map_map (by fun_prop) (.comp (by fun_prop) (by fun_prop))
 
-variable (X n p) in
-/-- A random variable is binomial if it is distributed following the binomial distribution. -/
-abbrev IsBinomial (P : Measure Ω := by volume_tac) := HasLaw X Bin(R, n, p) P
-
-lemma IsBinomial.id_binomial : IsBinomial id n p Bin(R, n, p) := .id
-
-lemma IsBinomial.natCast_binomial : IsBinomial (Nat.cast : ℕ → R) n p Bin(n, p) where
+lemma hasLaw_binomial_natCast : HasLaw (Nat.cast : ℕ → R) Bin(R, n, p) Bin(n, p) where
   map_eq := by simp
   -- FIXME: Why doesn't `fun_prop` apply `Measurable.aemeasurable` itself?
   aemeasurable := by refine Measurable.aemeasurable ?_; fun_prop
 
-lemma IsBinomial.ae_mem_image_natCast_Iic [MeasurableSingletonClass R]
-    (hX : IsBinomial X n p P) : ∀ᵐ ω ∂P, X ω ∈ Nat.cast '' Set.Iic n := by
+lemma ae_mem_image_natCast_Iic_of_hasLaw_binomial [MeasurableSingletonClass R]
+    (hX : HasLaw X Bin(R, n, p) P) : ∀ᵐ ω ∂P, X ω ∈ Nat.cast '' Set.Iic n := by
   have : MeasurableSet (Nat.cast (R := R) '' Set.Iic n) :=
     ((Set.finite_Iic _).image _).measurableSet
   rw [hX.ae_iff <| by simpa, binomial, ae_map_iff (by fun_prop) <| by exact this]
   filter_upwards [setBernoulli_ae_subset] with s hs
   exact Set.mem_image_of_mem _ <| by simpa using Set.ncard_le_ncard hs
 
-lemma IsBinomial.ae_le {X : Ω → ℕ} (hX : IsBinomial X n p P) : ∀ᵐ ω ∂P, X ω ≤ n := by
-  simpa using hX.ae_mem_image_natCast_Iic
+lemma ae_le_of_hasLaw_binomial {X : Ω → ℕ} (hX : HasLaw X Bin(n, p) P) : ∀ᵐ ω ∂P, X ω ≤ n := by
+  simpa using ae_mem_image_natCast_Iic_of_hasLaw_binomial hX
 
 /-! ### Binomial random variables -/
 
@@ -175,18 +160,19 @@ variable {X : Ω → ℝ}
 /-- **Expectation of a binomial random variable**.
 
 The expectation of a binomial random variable with parameters `n` and `p` is `pn`. -/
-proof_wanted IsBinomial.integral_eq (hX : IsBinomial X n p P) : P[X] = p.val * n
+proof_wanted integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.val * n
 
 /-- **Variance of a binomial random variable**.
 
 The variance of a binomial random variable with parameters `n` and `p` is `p(1 - p)n`. -/
-proof_wanted IsBinomial.variance_eq (hX : HasLaw X μ P) : Var[X; P] = p * (1 - p) * n
+proof_wanted variance_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) :
+    Var[X; P] = p * (1 - p) * n
 
 /-- **Conditional variance of a binomial random variable**.
 
 The conditional variance of a binomial random variable is the product of the conditional
 probabilities that it's equal to `0` and that it's equal to `1`. -/
-proof_wanted IsBinomial.condVar_eq {m₀ : MeasurableSpace Ω} (hm : m ≤ m₀) {P : Measure[m₀] Ω}
+proof_wanted condVar_of_hasLaw_binomial {m₀ : MeasurableSpace Ω} (hm : m ≤ m₀) {P : Measure[m₀] Ω}
     (hX : HasLaw X μ P) :
     Var[X; P | m] =ᵐ[P] P[X | m] * P[1 - X | m]
 
