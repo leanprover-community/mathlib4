@@ -151,10 +151,10 @@ theorem lowerPolar_anti : Antitone (lowerPolar r) :=
   upperPolar_anti _
 
 theorem lowerPolar_upperPolar_monotone : Monotone (lowerPolar r ∘ upperPolar r) :=
-  (lowerPolar_anti r).comp (upperPolar_anti r)
+  (gc_upperPolar_lowerPolar r).monotone_u_comp_l
 
 theorem upperPolar_lowerPolar_monotone : Monotone (upperPolar r ∘ lowerPolar r) :=
-  (upperPolar_anti r).comp (lowerPolar_anti r)
+  (gc_lowerPolar_upperPolar r).monotone_u_comp_l
 
 /-- The `extentClosure` of a set is the smallest extent containing it. See
 `IsExtent.lowerPolar_upperPolar_subset` for this proof. -/
