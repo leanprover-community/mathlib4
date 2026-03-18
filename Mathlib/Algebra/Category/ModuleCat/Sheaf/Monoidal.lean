@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithfulLimits
 public import Mathlib.CategoryTheory.Localization.Monoidal.Braided
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.ColimitFunctorMonoidal
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
@@ -113,31 +114,15 @@ section
 variable (F : (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R)))
 
 set_option backward.isDefEq.respectTransparency false in
-instance : PreservesColimitsOfSize.{w, w} (tensorLeft F) where
-  preservesColimitsOfShape {K _}:= ⟨fun {G} ↦ by
-    let R' := (sheafCompose J (forget₂ _ RingCat)).obj R
-    let α : R.obj ⋙ forget₂ CommRingCat RingCat ⟶ R'.obj := 𝟙 _
-    let S := PresheafOfModules.sheafification.{w} α
-    let T : SheafOfModules.{w} R' ⥤ PresheafOfModules (R.obj ⋙ forget₂ _ _) := forget R'
-    let adj : S ⊣ T := PresheafOfModules.sheafificationAdjunction.{w} α
-    suffices PreservesColimit (G ⋙ forget R') (S ⋙ tensorLeft F) by
-      let iso : (G ⋙ forget R') ⋙ S ≅ G :=
-        Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ (asIso adj.counit) ≪≫
-          G.rightUnitor
-      let hc := colimit.isColimit (G ⋙ forget R')
-      refine preservesColimit_of_preserves_colimit_cocone
-        ((IsColimit.precomposeInvEquiv iso _).2
-          (isColimitOfPreserves S hc)) ?_
-      refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1
-        (isColimitOfPreserves (S ⋙ tensorLeft F) hc)
-      · exact Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _
-          ((Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight (asIso adj.counit) _ ≪≫
-          Functor.leftUnitor _)
-      · exact Cocone.ext (Iso.refl _)
-    let e : S ⋙ tensorLeft F ≅ tensorLeft (T.obj F) ⋙ S :=
-      Functor.isoWhiskerLeft _ ((curriedTensor _).mapIso
-        (asIso (adj.counit.app F)).symm) ≪≫ Functor.Monoidal.commTensorLeft S _
-    apply preservesColimit_of_natIso _ e.symm⟩
+instance : PreservesColimitsOfSize.{w, w} (tensorLeft F) := by
+  let R' := (sheafCompose J (forget₂ _ RingCat)).obj R
+  let α : R.obj ⋙ forget₂ CommRingCat RingCat ⟶ R'.obj := 𝟙 _
+  let S := PresheafOfModules.sheafification.{w} α
+  let adj := PresheafOfModules.sheafificationAdjunction.{w} α
+  rw [adj.preservesColimitsOfSize_iff]
+  apply preservesColimits_of_natIso ((Functor.Monoidal.commTensorLeft S _).symm ≪≫
+    Functor.isoWhiskerLeft _ ((curriedTensor _).mapIso
+      (asIso (adj.counit.app F))))
 
 instance : PreservesColimitsOfSize.{w, w} (tensorRight F) :=
   preservesColimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight F)
