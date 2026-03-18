@@ -56,14 +56,6 @@ private lemma comm_zero :
     f.app (op ⦋0⦌) = hom H 0 1 ≫ d + g.app (op ⦋0⦌) := by
   simp [← H.h_last_comp_δ_last 0]
 
-lemma Finset.compl_eq_of_disjoint_of_card_add_eq
-    {ι : Type*} [DecidableEq ι] [Fintype ι] {S₁ S₂ : Finset ι} (h : Disjoint S₁ S₂)
-    (h' : S₁.card + S₂.card = Finset.card (.univ : Finset ι)) :
-    S₁ᶜ = S₂ :=
-  (Finset.eq_of_subset_of_card_le
-    (by rwa [Finset.subset_compl_iff_disjoint_left])
-    (by simp [← add_le_add_iff_left S₁.card, h'])).symm
-
 private lemma comm_succ (n : ℕ) :
     letI α : X _⦋n + 1⦌ ⟶ Y _⦋n + 1⦌ :=
       ((alternatingFaceMapComplex C).obj X).d (n + 1) n ≫ ToChainHomotopy.hom H n (n + 1)
