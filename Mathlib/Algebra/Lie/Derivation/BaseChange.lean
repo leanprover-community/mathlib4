@@ -68,52 +68,47 @@ def ofDerivation : Derivation R A A →ₗ⁅R⁆ LieDerivation R (A ⊗[R] L) (
     abel
 
 @[simp]
-lemma BaseChangeDerHom_apply (d : Derivation R A A) (x : A ⊗[R] L) :
-  (BaseChangeDerHom R A L d) x = d.toLinearMap.rTensor L x := rfl
+lemma ofDerivation_apply (d : Derivation R A A) (x : A ⊗[R] L) :
+  (ofDerivation L d) x = d.toLinearMap.rTensor L x := rfl
 
 variable (A) in
-/-- The Lie Derivation of `A ⊗[R] L` induced by a Lie derivation of `L` -/
-def BaseChangeLieDer (d : LieDerivation R L L) : LieDerivation R (A ⊗[R] L) (A ⊗[R] L) where
-  toFun := d.toLinearMap.lTensor A
-  map_add' := by simp
-  map_smul' := by simp
-  leibniz' x y:= by
-    simp only [LinearMap.coe_mk, AddHom.coe_mk]
-    refine x.induction_on (by simp) ?_ ?_
-    · intros _ _
-      refine y.induction_on (by simp) ?_ ?_
-      · intros _ _
-        simp [LieAlgebra.ExtendScalars.bracket_tmul, tmul_sub, mul_comm]
-      · intros _ _ h1 h2
-        simp [h1, h2]
-        abel_nf
-    · intros _ _ h1 h2
-      simp [h1, h2]
-      abel_nf
-
-@[simp]
-lemma BaseChangeLieDer_apply (d : LieDerivation R L L) (x : A ⊗[R] L) :
-  (BaseChangeLieDer A d) x = d.toLinearMap.lTensor A x := rfl
-
-variable (R A L) in
-/-- The assignment `BaseChangeLieDer` is a Lie algebra homomorphism -/
-def BaseChangeLieDerHom : (LieDerivation R L L) →ₗ⁅R⁆ (LieDerivation R (A ⊗[R] L) (A ⊗[R] L)) where
-  toFun := BaseChangeLieDer A
+/-- A Lie derivation of an `R-`Lie algebra `L`, induces a Lie derivation of `A ⊗[R] L` for any
+Algebra `A` over `R`. -/
+def ofLieDerivation : (LieDerivation R L L) →ₗ⁅R⁆ (LieDerivation R (A ⊗[R] L) (A ⊗[R] L)) where
+  toFun d :=
+    { toFun := d.toLinearMap.lTensor A
+      map_add' := by simp
+      map_smul' := by simp
+      leibniz' x y:= by
+        simp only [LinearMap.coe_mk, AddHom.coe_mk]
+        refine x.induction_on (by simp) ?_ ?_
+        · intros _ _
+          refine y.induction_on (by simp) ?_ ?_
+          · intros _ _
+            simp [LieAlgebra.ExtendScalars.bracket_tmul, tmul_sub, mul_comm]
+          · intros _ _ h1 h2
+            simp [h1, h2]
+            abel_nf
+        · intros _ _ h1 h2
+          simp [h1, h2]
+          abel_nf }
   map_add' _ _ := by ext _; simp
   map_smul' _ _ := by ext _; simp
   map_lie' {_ _} := by
     ext z
-    simp only [BaseChangeLieDer_apply, LieDerivation.commutator_coe_linear_map,
+    simp only [LieDerivation.commutator_coe_linear_map,
       LieDerivation.lie_apply]
     refine z.induction_on (by simp) ?_ ?_
     · intros a l
-      simp_rw [LinearMap.lTensor_tmul, LieHom.lie_apply, LieDerivation.coeFn_coe,
-        Module.End.lie_apply]
-      rw [← sub_eq_zero, tmul_sub]
-      simp
+      simp [LieHom.lie_apply, LieDerivation.coeFn_coe, Module.End.lie_apply, tmul_sub]
     · intros _ _ hx hy
+      simp at hx hy
       simp [hx, hy]
       abel_nf
+
+@[simp]
+lemma ofLieDerivation_apply (d : LieDerivation R L L) (x : A ⊗[R] L) :
+  (ofLieDerivation A d) x = d.toLinearMap.lTensor A x := rfl
 
 end Lie.Derivation
 end
