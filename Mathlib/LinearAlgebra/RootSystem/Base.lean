@@ -559,7 +559,6 @@ lemma IsPos.reflectionPerm {i j : ι} (hi : b.IsPos i) (hj : j ∈ b.support) (h
     rw [root_reflectionPerm, neg_smul, reflection_apply_root' ℤ, sub_eq_add_neg]
   exact hi.add_zsmul hij hj this
 
-set_option backward.isDefEq.respectTransparency false in
 omit [P.IsReduced] in
 lemma IsPos.induction_on_add
     {i : ι} (h₀ : b.IsPos i)
@@ -615,7 +614,6 @@ lemma induction_add (i : ι) {p : ι → Prop}
   · suffices p (-i) by rw [← neg_neg i]; exact h₀ (-i) this
     exact hi.induction_on_add h₁ h₂
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsPos.induction_on_reflect
     {i : ι} (h₀ : b.IsPos i)
     {p : ι → Prop}
