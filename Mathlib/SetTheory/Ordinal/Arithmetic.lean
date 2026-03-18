@@ -1100,7 +1100,7 @@ theorem typein_lt_nat (x : ℕ) : typein LT.lt x = x := by
 @[simp]
 theorem typein_lt_fin {n : ℕ} (x : Fin n) : typein LT.lt x = x := by
   rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
-  exact Fintype.card_fin_lt_of_le x.is_le'
+  convert Fintype.card_fin_lt_of_le x.is_le'
 
 @[simp]
 theorem enum_lt_fin {n : ℕ} (x : Fin n) : enum LT.lt ⟨x, by simp⟩ = x := by
