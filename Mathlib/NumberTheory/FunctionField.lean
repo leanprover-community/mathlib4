@@ -222,6 +222,9 @@ theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
 
 instance : Valuation.IsNontrivial (inftyValuation Fq) := ⟨RatFunc.X, by simp⟩
 
+instance : Valuation.IsTrivialOn Fq (inftyValuation Fq) :=
+  ⟨fun _ hx ↦ by simp [inftyValuation.C _ hx]⟩
+
 /-- The valued field `Fq(t)` with the valuation at infinity. -/
 @[implicit_reducible]
 def inftyValuedFqt : Valued (RatFunc Fq) ℤᵐ⁰ :=
