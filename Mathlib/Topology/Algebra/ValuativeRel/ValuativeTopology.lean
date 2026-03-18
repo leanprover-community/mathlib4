@@ -87,23 +87,20 @@ variable [TopologicalSpace R] [IsValuativeTopology R] (v : Valuation R Γ₀) [v
 
 namespace IsValuativeTopology
 
-lemma mem_nhds {s : Set R} {x : R} :
+/-- A variant of `IsValuativeTopology.mem_nhds_iff` using subtraction. -/
+lemma mem_nhds_iff' {s : Set R} {x : R} :
     s ∈ 𝓝 x ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | valuation R (z - x) < γ } ⊆ s := by
   convert mem_nhds_iff (s := s) using 4
   simp [neg_add_eq_sub]
 
-@[deprecated (since := "2026-03-17")] alias mem_nhds_iff' := mem_nhds
-
-lemma mem_nhds_zero (s : Set R) :
+lemma mem_nhds_zero_iff (s : Set R) :
     s ∈ 𝓝 0 ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { x | valuation R x < γ } ⊆ s := by
-  simp [mem_nhds]
-
-@[deprecated (since := "2026-03-17")] alias mem_nhds_zero_iff := mem_nhds_zero
+  simp [mem_nhds_iff']
 
 theorem hasBasis_nhds (x : R) :
     (𝓝 x).HasBasis (fun _ ↦ True)
       fun γ : (ValueGroupWithZero R)ˣ ↦ { z | valuation R (z - x) < γ } := by
-  simp [Filter.hasBasis_iff, mem_nhds]
+  simp [Filter.hasBasis_iff, mem_nhds_iff']
 
 /-- A variant of `hasBasis_nhds` where `· ≠ 0` is unbundled. -/
 lemma hasBasis_nhds' (x : R) :
@@ -130,21 +127,21 @@ open IsValuativeTopology
 
 namespace Valuation
 
-lemma mem_nhds {s : Set R} {x : R} : s ∈ 𝓝 x ↔
+lemma mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 x ↔
     ∃ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ, { z | v.restrict (z - x) < γ.val } ⊆ s := by
   convert IsValuativeTopology.mem_nhds_iff (s := s) using 4
   simpa [neg_add_eq_sub] using v.exists_setOf_restrict_le_iff _ _
 
-lemma mem_nhds_zero (s : Set R) : s ∈ 𝓝 0 ↔
+lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 0 ↔
     ∃ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ, { x | v.restrict x < γ.val } ⊆ s := by
-  simp [v.mem_nhds]
+  simp [v.mem_nhds_iff]
 
-alias is_topological_valuation := mem_nhds_zero
+alias is_topological_valuation := mem_nhds_zero_iff
 
 theorem hasBasis_nhds (x : R) :
     (𝓝 x).HasBasis (fun _ ↦ True)
       fun γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ ↦ { z | v.restrict (z - x) < γ.val } := by
-  simp [Filter.hasBasis_iff, v.mem_nhds]
+  simp [Filter.hasBasis_iff, v.mem_nhds_iff]
 
 theorem hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
@@ -152,7 +149,7 @@ theorem hasBasis_nhds_zero :
   simp [Filter.hasBasis_iff, v.is_topological_valuation]
 
 theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
-  rw [v.mem_nhds]
+  rw [v.mem_nhds_iff]
   have h' : v.restrict x ≠ 0 := by simp [h]
   use Units.mk0 _ h'
   rw [Units.val_mk0]
@@ -164,7 +161,7 @@ end Valuation
 namespace IsValuativeTopology
 
 variable (R) in
-instance (priority := low) isTopologicalAddGroup : IsTopologicalAddGroup R := by
+instance (priority := low) : IsTopologicalAddGroup R := by
   have cts_add : ContinuousConstVAdd R R :=
     ⟨fun x ↦ continuous_iff_continuousAt.2 fun z ↦
       (((valuation R).hasBasis_nhds z).tendsto_iff ((valuation R).hasBasis_nhds (x + z))).2
@@ -175,7 +172,7 @@ instance (priority := low) isTopologicalAddGroup : IsTopologicalAddGroup R := by
       ⟨γ, trivial, fun ⟨_, _⟩ hx ↦ (valuation R).restrict.map_add_lt hx.left hx.right⟩
   · exact (basis.tendsto_iff basis).2 fun γ _ ↦ ⟨γ, trivial, fun y hy ↦ by simpa using hy⟩
   · ext; simp
-  · simpa [ContinuousAt] using (cts_add.1 x₀).continuousAt (x := (0 : R))
+  · simpa [ContinuousAt] using (cts_add.1 x₀).continuousAt (x := 0)
   · simpa [ContinuousAt] using (cts_add.1 (-x₀)).continuousAt (x := x₀)
 
 end IsValuativeTopology
@@ -238,7 +235,7 @@ section Discrete
 lemma discreteTopology_of_forall_map_eq_one (h : ∀ x : R, x ≠ 0 → v x = 1) :
     DiscreteTopology R := by
   simp only [discreteTopology_iff_isOpen_singleton_zero, isOpen_iff_mem_nhds, mem_singleton_iff,
-    forall_eq, v.mem_nhds_zero, subset_singleton_iff, mem_setOf_eq]
+    forall_eq, v.mem_nhds_zero_iff, subset_singleton_iff, mem_setOf_eq]
   use 1
   contrapose! h
   obtain ⟨x, hx, hx'⟩ := h
@@ -261,7 +258,7 @@ theorem isOpen_ball (r : ValueGroup₀ v) : IsOpen (X := R) {x | v.restrict x < 
   rcases eq_or_ne r 0 with rfl | hr
   · simp
   intro x hx
-  rw [v.mem_nhds]
+  rw [v.mem_nhds_iff]
   simp only [setOf_subset_setOf]
   exact ⟨Units.mk0 _ hr,
     fun y hy ↦ (sub_add_cancel y x).symm ▸ (v.restrict.map_add _ x).trans_lt (max_lt hy hx)⟩
@@ -283,7 +280,7 @@ theorem isOpen_closedBall {r : ValueGroup₀ v} (hr : r ≠ 0) :
   IsOpen (X := R) {x | v.restrict x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
-  simp only [v.mem_nhds, setOf_subset_setOf]
+  simp only [v.mem_nhds_iff, setOf_subset_setOf]
   exact ⟨Units.mk0 _ hr, fun y hy ↦
     (sub_add_cancel y x).symm ▸ le_trans (v.restrict.map_add _ _) (max_le (le_of_lt hy) hx)⟩
 
@@ -292,7 +289,7 @@ theorem isClosed_closedBall (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.res
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro x hx
   simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
-  rw [v.mem_nhds]
+  rw [v.mem_nhds_iff]
   have hx' : v.restrict x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| hx
   exact ⟨Units.mk0 _ hx', fun y hy hy' ↦ ne_of_lt hy <| map_sub_swap v.restrict x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
