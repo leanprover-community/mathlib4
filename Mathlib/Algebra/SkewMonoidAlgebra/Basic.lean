@@ -25,7 +25,7 @@ yields a not-necessarily-unital, not-necessarily-associative algebra.
 
 ## Main Definitions
 - `SkewMonoidAlgebra k G`: the skew monoid algebra of `G` over `k` is the type of finite formal
-`k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
+  `k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
 
 -/
 
@@ -835,6 +835,7 @@ def comapMulAction : MulAction G (SkewMonoidAlgebra M α) where
 attribute [local instance] comapMulAction
 /-- This is not an instance as it conflicts with `SkewMonoidAlgebra.distribMulAction`
   when `G = kˣ`. -/
+@[implicit_reducible]
 def comapDistribMulActionSelf [AddCommMonoid k] :
     DistribMulAction G (SkewMonoidAlgebra k G) where
   smul_zero g := by
