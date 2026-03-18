@@ -22,7 +22,7 @@ by radicals, then its minimal polynomial has solvable Galois group.
 
 ## Main results
 
-* The Abel-Ruffini Theorem `isSolvable_gal_of_irreducible` : An irreducible polynomial with a root
+* The Abel-Ruffini Theorem `isSolvable_gal_of_irreducible`: An irreducible polynomial with a root
   that is solvable by radicals has a solvable Galois group.
 -/
 
@@ -289,7 +289,7 @@ private theorem induction_rad {x : E} (hx : x ∈ solvableByRad F E) {n : ℕ} (
 
 open IntermediateField
 
-private theorem induction_two {x y z : E}
+private theorem induction_step {x y z : E}
     (hx : x ∈ solvableByRad F E) (hy : y ∈ solvableByRad F E) (hz : z ∈ solvableByRad F E)
     (hx' : IsSolvable (minpoly F x).Gal) (hy' : IsSolvable (minpoly F y).Gal) (hz' : z ∈ F⟮x, y⟯) :
     IsSolvable (minpoly F z).Gal := by
@@ -320,9 +320,9 @@ theorem isSolvable_gal_minpoly {x : E} (hx : x ∈ solvableByRad F E) :
   induction hx using solvableByRad.induction with
   | mem y => rw [minpoly.eq_X_sub_C E]; infer_instance
   | add y z hy hz hy' hz' =>
-    apply induction_two hy hz (add_mem hy hz) hy' hz' (add_mem ..) <;> apply subset_adjoin <;> simp
+    apply induction_step hy hz (add_mem hy hz) hy' hz' (add_mem ..) <;> apply subset_adjoin <;> simp
   | mul y z hy hz hy' hz' =>
-    apply induction_two hy hz (mul_mem hy hz) hy' hz' (mul_mem ..) <;> apply subset_adjoin <;> simp
+    apply induction_step hy hz (mul_mem hy hz) hy' hz' (mul_mem ..) <;> apply subset_adjoin <;> simp
   | rad n y hn hy hy' => exact induction_rad (solvableByRad.rad_mem hn hy) hn hy'
 
 @[deprecated (since := "2026-02-28")]
