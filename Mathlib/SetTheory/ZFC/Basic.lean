@@ -215,8 +215,10 @@ theorem nonempty_of_mem {x u : ZFSet} (h : x ∈ u) : u.Nonempty :=
 
 @[deprecated (since := "2025-11-05")] alias nonempty_toSet_iff := nonempty_coe
 
-@[simp] lemma le_def : x ≤ y ↔ x ⊆ y := .rfl
-@[simp] lemma lt_def : x < y ↔ x ⊂ y := .rfl
+@[deprecated "This is now a syntactic equality" (since := "2026-03-18")]
+lemma le_def : x ≤ y ↔ x ⊆ y := .rfl
+@[deprecated "This is now a syntactic equality" (since := "2026-03-18")]
+lemma lt_def : x < y ↔ x ⊂ y := .rfl
 
 theorem subset_def {x y : ZFSet.{u}} : x ⊆ y ↔ ∀ ⦃z⦄, z ∈ x → z ∈ y :=
   Iff.rfl
