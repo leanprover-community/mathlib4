@@ -491,7 +491,7 @@ lemma edgeSet_eq_empty_iff : E(G) = ∅ ↔ G = Graph.noEdge V(G) β := by
 /-- A graph with exactly two vertices and no loops. -/
 @[simps (attr := grind =)]
 def banana (u v : α) (edgeSet : Set β) : Graph α β where
-  vertexSet := {u,v}
+  vertexSet := {u, v}
   edgeSet := edgeSet
   IsLink e x y := e ∈ edgeSet ∧ ((x = u ∧ y = v) ∨ (x = v ∧ y = u))
   isLink_symm _ _ _ := by aesop
