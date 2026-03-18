@@ -21,23 +21,12 @@ Finally, I used the construction of the substitution grammar to prove `IsContext
 -/
 
 
-import Mathlib
+import Mathlib.Computability.ContextFreeGrammar
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Tactic
+import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 
-set_option linter.mathlibStandardSet false
-
-open scoped BigOperators
-open scoped Real
-open scoped Nat
 open scoped Classical
-open scoped Pointwise
-
-set_option maxHeartbeats 0
-set_option maxRecDepth 4000
-set_option synthInstance.maxHeartbeats 20000
-set_option synthInstance.maxSize 128
-
-set_option relaxedAutoImplicit false
-set_option autoImplicit false
 
 noncomputable section
 
@@ -48,13 +37,13 @@ noncomputable section
 The set of terminals used in a context-free grammar `g` is the set of all terminals appearing in the right-hand side of any rule in `g`.
 -/
 def ContextFreeGrammar.usedTerminals {α : Type} (g : ContextFreeGrammar α) : Finset α :=
-  g.rules.biUnion (fun r => r.output.foldr (fun s acc => match s with | Symbol.terminal a => insert a acc | _ => acc) ∅)
+  g.rules.sup (fun r => r.output.foldr (fun s acc => match s with | Symbol.terminal a => insert a acc | _ => acc) ∅)
 
 /-
 The rules from the substituting grammars `f a` are lifted to the combined non-terminal type `g.NT ⊕ (Σ a, (f a).NT)`. We only include rules for terminals `a` that are actually used in `g`.
 -/
 def ContextFreeGrammar.subst_rules_f {α β : Type} (g : ContextFreeGrammar α) (f : α → ContextFreeGrammar β) : Finset (ContextFreeRule β (g.NT ⊕ (Σ a, (f a).NT))) :=
-  g.usedTerminals.biUnion (fun a =>
+  g.usedTerminals.sup (fun a =>
     (f a).rules.map ⟨fun r => ContextFreeRule.mk (Sum.inr ⟨a, r.input⟩) (r.output.map (fun s =>
       match s with
       | Symbol.nonterminal n => Symbol.nonterminal (Sum.inr ⟨a, n⟩)
@@ -147,7 +136,7 @@ If `a` is a used terminal in `g` and `r` is a rule in `f a`, then the lifted rul
 theorem ContextFreeGrammar.rule_mem_subst_f {α β : Type} (g : ContextFreeGrammar α) (f : α → ContextFreeGrammar β)
     (a : α) (ha : a ∈ g.usedTerminals) (r : ContextFreeRule β (f a).NT) (hr : r ∈ (f a).rules) :
     { input := Sum.inr ⟨a, r.input⟩, output := r.output.map (g.liftSymbolF f a) } ∈ (g.subst f).rules := by
-  convert Finset.mem_union_right _ ( Finset.mem_biUnion.mpr ⟨ a, _, ?_ ⟩ );
+  convert Finset.mem_union_right _ ( Finset.mem_sup.mpr ⟨ a, _, ?_ ⟩ );
   · assumption;
   · exact Finset.mem_map.mpr ⟨ r, hr, rfl ⟩
 
@@ -253,7 +242,7 @@ lemma ContextFreeGrammar.mem_usedTerminals_of_rule_output {α : Type} (g : Conte
       -- Since `a` is a terminal in `r.output`, it must be inserted into the set during the foldr.
       have h_insert : ∀ {l : List (Symbol α g.NT)}, Symbol.terminal a ∈ l → a ∈ List.foldr (fun (s : Symbol α g.NT) (acc : Finset α) => match s with | Symbol.terminal a => Insert.insert a acc | x => acc) ∅ l := by
         intro l hl; induction l <;> aesop;
-      exact Finset.mem_biUnion.mpr ⟨ r, hr, h_insert ha ⟩
+      exact Finset.mem_sup.mpr ⟨ r, hr, h_insert ha ⟩
 
 /-
 If a rule rewrites `u` to `v`, then any terminal in `v` is either in `u` or in the output of the rule.
@@ -541,7 +530,7 @@ lemma ContextFreeGrammar.produces_F_commutes_G {α β : Type} (g : ContextFreeGr
       obtain ⟨ rF, hrF, hv ⟩ := h_F
       obtain ⟨ rG, hrG, hw ⟩ := h_G
       have h_comm : Symbol.nonterminal rG.input ∉ rF.output := by
-        obtain ⟨ a, ha, hrF ⟩ := Finset.mem_biUnion.mp hrF;
+        obtain ⟨ a, ha, hrF ⟩ := Finset.mem_sup.mp hrF;
         obtain ⟨ rF', hrF', hrF ⟩ := Finset.mem_map.mp hrF;
         obtain ⟨ rG', hrG', hrG ⟩ := Finset.mem_map.mp hrG;
         rw [ ← hrG, ← hrF ];
