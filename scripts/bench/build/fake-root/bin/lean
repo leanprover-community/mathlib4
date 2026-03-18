@@ -50,6 +50,7 @@ def count_lines(module: str, path: Path) -> None:
 def run_lean(module: str) -> None:
     stderr = run_stderr(
         f"{BENCH}/measure.py",
+        "--append",
         *("-t", f"{NAME}/module/{module}"),
         *("-m", "instructions"),
         "--",
