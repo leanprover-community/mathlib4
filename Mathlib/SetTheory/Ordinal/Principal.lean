@@ -8,15 +8,15 @@ module
 public import Mathlib.SetTheory.Ordinal.FixedPoint
 
 /-!
-# IsPrincipal ordinals
+# Principal ordinals
 
 We define principal or indecomposable ordinals, and we prove the standard properties about them.
 
 ## Main definitions and results
 
-* `Principal`: A principal or indecomposable ordinal under some binary operation. We include 0 and
+* `IsPrincipal`: A principal or indecomposable ordinal under some binary operation. We include 0 and
   any other typically excluded edge cases for simplicity.
-* `not_bddAbove_isPrincipal`: Principal ordinals (under any operation) are unbounded.
+* `not_bddAbove_setOf_isPrincipal`: Principal ordinals (under any operation) are unbounded.
 * `isPrincipal_add_iff_zero_or_omega0_opow`: The main characterization theorem for additive
   principal ordinals.
 * `isPrincipal_mul_iff_le_two_or_omega0_opow_opow`: The main characterization theorem for
