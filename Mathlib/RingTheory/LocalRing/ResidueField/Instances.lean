@@ -89,7 +89,7 @@ theorem ResidueField.finrank_eq_length {k : Type*} [IsLocalRing R] [Field k] [Al
   let e_aux : Submodule (ResidueField R) k ↪o Submodule R k :=
     Submodule.restrictScalarsEmbedding R (ResidueField R) k
   have : Function.Surjective e_aux := fun p ↦ by
-    let q : Submodule (𝓀 R) k := {
+    let q : Submodule (ResidueField R) k := {
       carrier := p
       add_mem' := p.add_mem
       zero_mem' := p.zero_mem
