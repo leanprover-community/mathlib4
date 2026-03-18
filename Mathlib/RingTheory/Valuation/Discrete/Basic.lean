@@ -126,7 +126,7 @@ noncomputable def generator' : valueGroup v := ⟨generator v, generator_mem_val
 lemma embedding_generator' : ValueGroup₀.embedding (f := v) (generator' v) = generator v := rfl
 
 lemma generator'_zpowers_eq_top : (zpowers (generator' v)) = ⊤ := by
-  rw [← (Subgroup.map_injective (valueGroup v).subtype_injective).eq_iff, MonoidHom.map_zpowers,
+  rw [← map_subtype_inj, MonoidHom.map_zpowers,
     subtype_apply, ← MonoidHom.range_eq_map, Subgroup.subtype_range]
   apply generator_zpowers_eq_valueGroup
 

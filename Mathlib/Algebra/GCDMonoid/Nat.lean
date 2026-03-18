@@ -131,6 +131,9 @@ theorem natAbs_gcd (i j : ℤ) : natAbs (GCDMonoid.gcd i j) = Int.gcd i j :=
 theorem natAbs_lcm (i j : ℤ) : natAbs (GCDMonoid.lcm i j) = Int.lcm i j :=
   rfl
 
+lemma gcd_nonneg (i j : ℤ) : 0 ≤ GCDMonoid.gcd i j := by simp [← coe_gcd]
+lemma lcm_nonneg (i j : ℤ) : 0 ≤ GCDMonoid.lcm i j := by simp [← coe_lcm]
+
 end GCDMonoid
 
 theorem exists_unit_of_abs (a : ℤ) : ∃ (u : ℤ) (_ : IsUnit u), (Int.natAbs a : ℤ) = u * a := by
