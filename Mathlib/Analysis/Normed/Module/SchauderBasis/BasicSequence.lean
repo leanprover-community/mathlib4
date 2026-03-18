@@ -26,8 +26,6 @@ sequences, where subsets replace initial segments, is called the **Nikolskii con
 
 * `BasicSequence`: A bundled ℕ-indexed sequence that forms a Schauder basis for its closed span.
 * `UnconditionalBasicSequence`: A bundled sequence forming an unconditional Schauder basis.
-* `IsBasicSequence`: Predicate for a sequence being a basic sequence.
-* `IsUnconditionalBasicSequence`: Predicate for an unconditional basic sequence.
 * `SatisfiesGrunblumCondition`: The Grünblum condition with constant `K`.
 * `SatisfiesNikolskiiCondition`: The Nikolskii condition with constant `K`.
 
@@ -183,13 +181,12 @@ theorem isBasicSequence_of_Grunblum_with_bound {e : ℕ → X} {K : ℝ}
     exact (Finset.sum_subset
       (fun i hi ↦ Finset.mem_range.2 ((Finset.le_sup (f := id) hi).trans_lt hN))
       (fun i _ hi ↦ by simp [Finsupp.notMem_support_iff.mp hi])).symm
-  have h_partial_bound (k : ℕ) (y : S) : ‖∑ i ∈ Finset.range k, b_S.repr y i • e i‖ ≤ K * ‖y‖ := by
+  have h_partial_bound (k : ℕ) (y : S) :
+      ‖∑ i ∈ Finset.range k, b_S.repr y i • e i‖ ≤ K * ‖y‖ := by
     let N := max k ((b_S.repr y).support.sup id + 1)
-    have hy : (y : X) = ∑ i ∈ Finset.range N, b_S.repr y i • e i := by
-      have := congrArg Subtype.val
-        (h_sum y ((Nat.lt_succ_self _).trans_le (le_max_right k _))).symm
-      rwa [coe_sum] at this
-    rw [← norm_coe, hy]
+    have hN : (b_S.repr y).support.sup id < N :=
+      (Nat.lt_succ_self _).trans_le (le_max_right k _)
+    conv_rhs => rw [← norm_coe (x := y), ← h_sum y hN, coe_sum]
     exact h_grunblum N k (b_S.repr y) (le_max_left _ _)
   let coord (j : ℕ) : StrongDual 𝕜 S := LinearMap.mkContinuous
     ((Finsupp.lapply j).comp b_S.repr.toLinearMap) ((2 * K) / ‖e j‖) <| fun y ↦ by
@@ -206,7 +203,7 @@ theorem isBasicSequence_of_Grunblum_with_bound {e : ℕ → X} {K : ℝ}
       simp only [coord, LinearMap.mkContinuous_apply, LinearMap.comp_apply,
         LinearEquiv.coe_toLinearMap, Finsupp.lapply_apply, b_S.repr_self,
         Finsupp.single_apply, Pi.single_apply]
-      split_ifs with h <;> simp_all
+      split_ifs <;> simp_all
     expansion := fun x ↦ by
       rw [HasSum, SummationFilter.conditional_filter_eq_map_range, tendsto_map'_iff]
       exact tendsto_atTop_of_eventually_const (i₀ := (b_S.repr x).support.sup id + 1)
@@ -215,7 +212,7 @@ theorem isBasicSequence_of_Grunblum_with_bound {e : ℕ → X} {K : ℝ}
   have h_bound : cond_basis.enormProjBound ≤ ENNReal.ofReal K := iSup_le fun n ↦ by
     rw [enorm_eq_nnnorm, ← ENNReal.ofReal_coe_nnreal, ENNReal.ofReal_le_ofReal_iff hK, coe_nnnorm]
     refine ContinuousLinearMap.opNorm_le_bound _ hK fun y ↦ ?_
-    conv_lhs => rw [← norm_coe, SchauderBasis.proj_apply, coe_sum]
+    rw [← norm_coe, SchauderBasis.proj_apply, coe_sum]
     exact h_partial_bound n y
   refine ⟨⟨e, cond_basis, hbS, h_bound.trans_lt ENNReal.ofReal_lt_top⟩, rfl, ?_⟩
   exact (ENNReal.toReal_mono ENNReal.ofReal_ne_top h_bound).trans_eq (ENNReal.toReal_ofReal hK)
