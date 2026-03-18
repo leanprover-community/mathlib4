@@ -31,7 +31,7 @@ def Char.isAscii (c : Char) : Bool := c.toNat < 128
 /-- We deliberately exclude some characters. -/
 def Char.allowedNonAscii (c : Char) : Bool :=
     !c.isAscii
-    && c != '\u2001' -- \quad (U+2001) (due to being non-strandard whitespace)
+    && c != '\u2001' -- \quad (U+2001) (due to being non-standard whitespace)
     && c != '\uFDFC' -- RIAL sign (U+FDFC) (due to triggering right-aligned text).
     && c != '\u060B' -- AFGHANI sign (U+060B) (due to triggering right-aligned text)
     && c != '\u0332' -- COMBINING LOW LINE (U+0332) (due to modifying characters around it)
