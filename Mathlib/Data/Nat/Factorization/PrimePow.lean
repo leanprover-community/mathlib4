@@ -131,7 +131,7 @@ theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn
       Finset.mem_inter]
     intro t
     simpa using hab.disjoint_primeFactors.le_bot t
-  rcases this with h | h <;> simp [h, imp_or]
+  rcases this with h | h <;> simp [h]
 
 theorem Nat.mul_divisors_filter_prime_pow {a b : ℕ} (hab : a.Coprime b) :
     {d ∈ (a * b).divisors | IsPrimePow d} = {d ∈ a.divisors ∪ b.divisors | IsPrimePow d} := by
