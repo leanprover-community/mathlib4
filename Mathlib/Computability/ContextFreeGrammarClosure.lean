@@ -149,7 +149,7 @@ theorem derives_lift_g {α β : Type} [DecidableEq α] [DecidableEq β]
     (g.subst f).Derives (u.map (g.liftSymbolG f)) (v.map (g.liftSymbolG f)) := by
       induction h with
       | refl => constructor
-      | tail _ h_step ih => exact Relation.ReflTransGen.tail ih ( by exact? )
+      | tail _ h_step ih => exact Relation.ReflTransGen.tail ih (produces_lift_g g f h_step)
 
 /-
 If `a` is a used terminal in `g` and `r` is a rule in `f a`, then the lifted rule (where
@@ -223,7 +223,7 @@ theorem derives_lift_f {α β : Type} [DecidableEq α] [DecidableEq β]
     (g.subst f).Derives (u.map (g.liftSymbolF f a)) (v.map (g.liftSymbolF f a)) := by
       induction h with
       | refl => constructor
-      | tail _ h_step ih => exact Relation.ReflTransGen.tail ih ( by exact? )
+      | tail _ h_step ih => exact Relation.ReflTransGen.tail ih (produces_lift_f g f a ha h_step)
 
 /-
 If a grammar derives `w_i` from `s_i` for each `i`, then it derives the concatenation of `w_i`s
@@ -243,7 +243,7 @@ theorem Derives.distrib_prod {T : Type} {g : ContextFreeGrammar T}
             intro u v h S;
             induction h with
             | refl => exact Relation.ReflTransGen.refl
-            | tail _ h_step' ih_inner => exact ih_inner.tail ( by exact? )
+            | tail _ h_step' ih_inner => exact ih_inner.tail (Produces.append_right h_step' S)
           exact h_trans h_sw;
         have h_trans : g.Derives (w ++ S) (w ++ W.flatten) := by
           exact append_left ih w;
@@ -852,7 +852,7 @@ lemma derivesF_lift_f {α β : Type} [DecidableEq α] [DecidableEq β]
     g.DerivesF f (u.map (g.liftSymbolF f a)) (v.map (g.liftSymbolF f a)) := by
       induction h with
       | refl => constructor
-      | tail _ h_step ih => exact Relation.ReflTransGen.tail ih ( by exact? )
+      | tail _ h_step ih => exact Relation.ReflTransGen.tail ih (producesF_lift_f g f a ha h_step)
 
 /-
 If `g.subst f` produces `v'` from a lifted `u` via a G-rule, then `v'` is a lifting of some `v`
@@ -1001,18 +1001,22 @@ lemma split_append {T N : Type} (r : ContextFreeRule T N)
         obtain ⟨u', hu'⟩ :
             ∃ u' : List (Symbol T N), u = s ++ [Symbol.nonterminal r.input] ++ u' := by
           rw [ List.append_eq_append_iff ] at hs;
-          rcases hs with ( ⟨ as, hs, ht ⟩ | ⟨ bs, rfl, ht ⟩ ) <;> simp_all  [ List.append_assoc ];
-          replace hs := congr_arg List.length hs ; simp_all +arith ;
-          cases as <;> simp_all +arith ;
+          rcases hs with ( ⟨ as, hs, ht ⟩ | ⟨ bs, rfl, ht ⟩ )
+          · simp_all only [List.append_assoc]
+            replace hs := congr_arg List.length hs ; simp_all +arith ;
+            cases as <;> simp_all +arith ;
+          · exact ⟨bs, rfl⟩
         exact Or.inl ⟨ s ++ r.output ++ u', by
           rw [ ContextFreeRule.rewrites_iff ];
           exact ⟨ s, u', hu', rfl ⟩, by
           aesop ⟩;
       · -- Since $s.length \geq u.length$, we have $s = u ++ s'$ for some $s'$.
         obtain ⟨s', hs'⟩ : ∃ s', s = u ++ s' := by
-          simp +zetaDelta at *;
+          simp only [List.append_assoc, List.singleton_append, not_lt] at hs h_cases;
           rw [ List.append_eq_append_iff ] at hs ; aesop;
-        simp_all  [ List.append_assoc ];
+        simp_all only [List.append_assoc, List.cons_append, List.nil_append,
+          List.append_cancel_left_eq, List.length_append, add_lt_iff_neg_left, not_lt_zero,
+          not_false_eq_true, exists_eq_right'];
         exact Or.inr <| by rw [ ContextFreeRule.rewrites_iff ] ; aesop;
 
 end Rewrites
@@ -1350,7 +1354,8 @@ theorem Language.subst_univ_unit_eq_kstar {β : Type} (f : Unit → Language β)
           List.length_nil, List.replicate_zero, List.prod, List.map_nil, List.foldr_nil,
           List.flatten_nil, mem_one, and_true];
         · trivial;
-        · exact ⟨ Set.mem_univ _, Set.mem_image2_of_mem hL.1 ( by aesop ) ⟩⟩;
+        · exact ⟨ Set.mem_univ _,
+            Set.mem_image2_of_mem (List.forall_mem_cons.mp hL).1 (by aesop) ⟩⟩;
 /-! ### Helper: no rewrites on terminal-only strings -/
 lemma no_rewrites_of_all_terminal {T N : Type} (r : ContextFreeRule T N)
     (w : List T) (v : List (Symbol T N)) :
