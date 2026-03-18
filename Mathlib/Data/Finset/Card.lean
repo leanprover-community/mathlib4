@@ -153,7 +153,9 @@ theorem card_erase_lt_of_mem : a ∈ s → #(s.erase a) < #s :=
 theorem card_erase_le : #(s.erase a) ≤ #s :=
   Multiset.card_erase_le
 
-theorem pred_card_le_card_erase : #s - 1 ≤ #(s.erase a) := by grind
+theorem sub_one_card_le_card_erase : #s - 1 ≤ #(s.erase a) := by grind
+
+@[deprecated (since := "2026-03-18")] alias pred_card_le_card_erase := sub_one_card_le_card_erase
 
 /-- If `a ∈ s` is known, see also `Finset.card_erase_of_mem` and `Finset.erase_eq_of_notMem`. -/
 theorem card_erase_eq_ite : #(s.erase a) = if a ∈ s then #s - 1 else #s :=
