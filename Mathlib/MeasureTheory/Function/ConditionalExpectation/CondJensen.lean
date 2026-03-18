@@ -78,7 +78,7 @@ private lemma Convex.condExp_mem_of_isFiniteMeasure [IsFiniteMeasure μ] (hm : m
   have lem3 : μ[f | m] =ᵐ[μ] Y.subtypeL ∘ μ[fY | m] := calc
     _ =ᵐ[μ] μ[fX | m] := condExp_congr_ae lem1
     _ =ᵐ[μ] _ := (Y.subtypeL.comp_condExp_comm hfY_int).symm
-  filter_upwards [(hc.linear_preimage Y.subtype).condExp_mem_of_hereditarilyLindelofSpace 
+  filter_upwards [(hc.linear_preimage Y.subtype).condExp_mem_of_hereditarilyLindelofSpace
     hm hfY_int (hs.preimage Y.subtypeL.continuous) lem2, lem3] with a ha hb
   simp_all
 
