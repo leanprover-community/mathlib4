@@ -601,15 +601,13 @@ abbrev closureCommRingOfComm {s : Set R} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * 
       have := closure_le_centralizer_centralizer s
       Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
 
--- TODO: find a good way to fix the non-terminal simp
-set_option linter.flexible false in
 theorem exists_list_of_mem_closure {s : Set R} {x : R} (hx : x ∈ closure s) :
     ∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s ∨ y = (-1 : R)) ∧ (L.map List.prod).sum = x := by
   rw [mem_closure_iff] at hx
   induction hx using AddSubgroup.closure_induction with
   | mem _ hx =>
     obtain ⟨l, hl, h⟩ := Submonoid.exists_list_of_mem_closure hx
-    exact ⟨[l], by simp [h]; clear_aux_decl; tauto⟩
+    exact ⟨[l], by simp_all⟩
   | zero => exact ⟨[], List.forall_mem_nil _, rfl⟩
   | add _ _ _ _ hL hM =>
     obtain ⟨⟨L, HL1, HL2⟩, ⟨M, HM1, HM2⟩⟩ := And.intro hL hM

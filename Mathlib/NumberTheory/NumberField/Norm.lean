@@ -107,7 +107,6 @@ theorem norm_norm [Algebra F L] [FiniteDimensional F L] [IsScalarTower K F L] (x
 
 variable {F}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isUnit_norm [CharZero K] {x : 𝓞 F} : IsUnit (norm K x) ↔ IsUnit x := by
   letI : Algebra K (AlgebraicClosure K) := AlgebraicClosure.instAlgebra K
   let L := normalClosure K F (AlgebraicClosure F)
