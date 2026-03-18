@@ -41,21 +41,21 @@ lemma doubleCoset_eq_image2 (a : α) (s t : Set α) :
     doubleCoset a s t = Set.image2 (· * a * ·) s t := by
   simp_rw [doubleCoset, Set.mul_singleton, ← Set.image2_mul, Set.image2_image_left]
 
-theorem mem_doubleCoset {s t : Set α} {a b : α} :
+lemma mem_doubleCoset {s t : Set α} {a b : α} :
     b ∈ doubleCoset a s t ↔ ∃ x ∈ s, ∃ y ∈ t, b = x * a * y := by
   simp only [doubleCoset_eq_image2, Set.mem_image2, eq_comm]
 
-theorem mem_doubleCoset_self (H K : Subgroup G) (a : G) : a ∈ doubleCoset a H K :=
+lemma mem_doubleCoset_self (H K : Subgroup G) (a : G) : a ∈ doubleCoset a H K :=
   mem_doubleCoset.mpr ⟨1, H.one_mem, 1, K.one_mem, (one_mul a).symm.trans (mul_one (1 * a)).symm⟩
 
-theorem doubleCoset_eq_of_mem {H K : Subgroup G} {a b : G} (hb : b ∈ doubleCoset a H K) :
+lemma doubleCoset_eq_of_mem {H K : Subgroup G} {a b : G} (hb : b ∈ doubleCoset a H K) :
     doubleCoset b H K = doubleCoset a H K := by
   obtain ⟨h, hh, k, hk, rfl⟩ := mem_doubleCoset.1 hb
   rw [doubleCoset, doubleCoset, ← Set.singleton_mul_singleton, ← Set.singleton_mul_singleton,
     mul_assoc, mul_assoc, Subgroup.singleton_mul_subgroup hk, ← mul_assoc, ← mul_assoc,
     Subgroup.subgroup_mul_singleton hh]
 
-theorem mem_doubleCoset_of_not_disjoint {H K : Subgroup G} {a b : G}
+lemma mem_doubleCoset_of_not_disjoint {H K : Subgroup G} {a b : G}
     (h : ¬Disjoint (doubleCoset a H K) (doubleCoset b H K)) : b ∈ doubleCoset a H K := by
   rw [Set.not_disjoint_iff] at h
   simp only [mem_doubleCoset] at *
@@ -63,7 +63,7 @@ theorem mem_doubleCoset_of_not_disjoint {H K : Subgroup G} {a b : G}
   refine ⟨y⁻¹ * l, H.mul_mem (H.inv_mem hy) hl, r * r'⁻¹, K.mul_mem hr (K.inv_mem hr'), ?_⟩
   rwa [mul_assoc, mul_assoc, eq_inv_mul_iff_mul_eq, ← mul_assoc, ← mul_assoc, eq_mul_inv_iff_mul_eq]
 
-theorem eq_of_not_disjoint {H K : Subgroup G} {a b : G}
+lemma eq_of_not_disjoint {H K : Subgroup G} {a b : G}
     (h : ¬Disjoint (doubleCoset a H K) (doubleCoset b H K)) :
     doubleCoset a H K = doubleCoset b H K := by
   rw [disjoint_comm] at h
@@ -78,13 +78,13 @@ def setoid (H K : Set G) : Setoid G :=
 def Quotient (H K : Set G) : Type _ :=
   _root_.Quotient (setoid H K)
 
-theorem rel_iff {H K : Subgroup G} {x y : G} :
+lemma rel_iff {H K : Subgroup G} {x y : G} :
     setoid ↑H ↑K x y ↔ ∃ a ∈ H, ∃ b ∈ K, y = a * x * b :=
   Iff.trans
     ⟨fun (hxy : doubleCoset x H K = doubleCoset y H K) => hxy ▸ mem_doubleCoset_self H K y,
       fun hxy => (doubleCoset_eq_of_mem hxy).symm⟩ mem_doubleCoset
 
-theorem bot_rel_eq_leftRel (H : Subgroup G) :
+lemma bot_rel_eq_leftRel (H : Subgroup G) :
     ⇑(setoid ↑(⊥ : Subgroup G) ↑H) = ⇑(QuotientGroup.leftRel H) := by
   ext a b
   rw [rel_iff, QuotientGroup.leftRel_apply]
@@ -94,7 +94,7 @@ theorem bot_rel_eq_leftRel (H : Subgroup G) :
   · rintro (h : a⁻¹ * b ∈ H)
     exact ⟨1, rfl, a⁻¹ * b, h, by rw [one_mul, mul_inv_cancel_left]⟩
 
-theorem rel_bot_eq_right_group_rel (H : Subgroup G) :
+lemma rel_bot_eq_right_group_rel (H : Subgroup G) :
     ⇑(setoid ↑H ↑(⊥ : Subgroup G)) = ⇑(QuotientGroup.rightRel H) := by
   ext a b
   rw [rel_iff, QuotientGroup.rightRel_apply]
@@ -115,15 +115,15 @@ abbrev mk (H K : Subgroup G) (a : G) : Quotient (H : Set G) K :=
 instance (H K : Subgroup G) : Inhabited (Quotient (H : Set G) K) :=
   ⟨mk H K (1 : G)⟩
 
-theorem eq (H K : Subgroup G) (a b : G) :
+lemma eq (H K : Subgroup G) (a b : G) :
     mk H K a = mk H K b ↔ ∃ h ∈ H, ∃ k ∈ K, b = h * a * k := by
   rw [Quotient.eq'']
   apply rel_iff
 
-theorem out_eq' (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out = q :=
+lemma out_eq' (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out = q :=
   Quotient.out_eq' q
 
-theorem mk_out_eq_mul (H K : Subgroup G) (g : G) :
+lemma mk_out_eq_mul (H K : Subgroup G) (g : G) :
     ∃ h k : G, h ∈ H ∧ k ∈ K ∧ (mk H K g : Quotient ↑H ↑K).out = h * g * k := by
   have := eq H K (mk H K g : Quotient ↑H ↑K).out g
   rw [out_eq'] at this
@@ -131,24 +131,24 @@ theorem mk_out_eq_mul (H K : Subgroup G) (g : G) :
   refine ⟨h⁻¹, k⁻¹, H.inv_mem h_h, K.inv_mem hk, eq_mul_inv_of_mul_eq (eq_inv_mul_of_mul_eq ?_)⟩
   rw [← mul_assoc, ← T]
 
-theorem mk_eq_of_doubleCoset_eq {H K : Subgroup G} {a b : G}
+lemma mk_eq_of_doubleCoset_eq {H K : Subgroup G} {a b : G}
     (h : doubleCoset a H K = doubleCoset b H K) : mk H K a = mk H K b := by
   rw [eq]
   exact mem_doubleCoset.mp (h.symm ▸ mem_doubleCoset_self H K b)
 
-theorem mem_quotToDoubleCoset_iff {H K : Subgroup G} (i : Quotient (H : Set G) K) (a : G) :
+lemma mem_quotToDoubleCoset_iff {H K : Subgroup G} (i : Quotient (H : Set G) K) (a : G) :
     a ∈ quotToDoubleCoset H K i ↔ mk H K a = i := by
   refine ⟨fun hg ↦ by simp [mk_eq_of_doubleCoset_eq (doubleCoset_eq_of_mem hg)], fun hg ↦ ?_⟩
   rw [← out_eq' _ _ i] at hg
   exact mem_doubleCoset.mpr ((eq _ _ _ a).mp hg.symm)
 
-theorem disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
+lemma disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
     a ≠ b → Disjoint (doubleCoset a.out H K) (doubleCoset b.out (H : Set G) K) := by
   contrapose!
   intro h
   simpa [out_eq'] using mk_eq_of_doubleCoset_eq (eq_of_not_disjoint h)
 
-theorem iUnion_quotToDoubleCoset (H K : Subgroup G) : ⋃ q, quotToDoubleCoset H K q = Set.univ := by
+lemma iUnion_quotToDoubleCoset (H K : Subgroup G) : ⋃ q, quotToDoubleCoset H K q = Set.univ := by
   ext x
   simp only [Set.mem_iUnion, quotToDoubleCoset, mem_doubleCoset, SetLike.mem_coe, Set.mem_univ,
     iff_true]
@@ -157,7 +157,7 @@ theorem iUnion_quotToDoubleCoset (H K : Subgroup G) : ⋃ q, quotToDoubleCoset H
   refine ⟨h⁻¹, H.inv_mem h3, k⁻¹, K.inv_mem h4, ?_⟩
   simp only [h5, ← mul_assoc, one_mul, inv_mul_cancel, mul_inv_cancel_right]
 
-theorem doubleCoset_union_rightCoset (H K : Subgroup G) (a : G) :
+lemma doubleCoset_union_rightCoset (H K : Subgroup G) (a : G) :
     ⋃ k : K, op (a * k) • ↑H = doubleCoset a H K := by
   ext x
   simp only [mem_rightCoset_iff, mul_inv_rev, Set.mem_iUnion, mem_doubleCoset,
@@ -170,7 +170,7 @@ theorem doubleCoset_union_rightCoset (H K : Subgroup G) (a : G) :
     refine ⟨⟨y, hy⟩, ?_⟩
     simp only [hxy, ← mul_assoc, hx, mul_inv_cancel_right]
 
-theorem doubleCoset_union_leftCoset (H K : Subgroup G) (a : G) :
+lemma doubleCoset_union_leftCoset (H K : Subgroup G) (a : G) :
     ⋃ h : H, (h * a : G) • ↑K = doubleCoset a H K := by
   ext x
   simp only [mem_leftCoset_iff, mul_inv_rev, Set.mem_iUnion, mem_doubleCoset]
@@ -184,21 +184,21 @@ theorem doubleCoset_union_leftCoset (H K : Subgroup G) (a : G) :
 
 open Quotient QuotientGroup
 
-theorem left_bot_eq_left_quot (H : Subgroup G) :
+lemma left_bot_eq_left_quot (H : Subgroup G) :
     Quotient (⊥ : Subgroup G) (H : Set G) = (G ⧸ H) := by
   unfold Quotient
   congr
   ext
   simp_rw [← bot_rel_eq_leftRel H]
 
-theorem right_bot_eq_right_quot (H : Subgroup G) :
+lemma right_bot_eq_right_quot (H : Subgroup G) :
     Quotient (H : Set G) (⊥ : Subgroup G) = _root_.Quotient (rightRel H) := by
   unfold Quotient
   congr
   ext
   simp_rw [← rel_bot_eq_right_group_rel H]
 
-theorem finite_quotient_iff_exists_finset_iUnion_eq_univ (H K : Subgroup G) :
+lemma finite_quotient_iff_exists_finset_iUnion_eq_univ (H K : Subgroup G) :
     Finite (Quotient (H : Set G) K) ↔
     ∃ I : Finset (Quotient (H : Set G) K), ⋃ i ∈ I, quotToDoubleCoset H K i = .univ := by
   constructor
@@ -213,11 +213,8 @@ theorem finite_quotient_iff_exists_finset_iUnion_eq_univ (H K : Subgroup G) :
     obtain ⟨_, ⟨i, _, rfl⟩, T, ⟨hi, rfl⟩, hT : g ∈ quotToDoubleCoset H K i⟩ := hI g
     simpa [← (mem_quotToDoubleCoset_iff _ _).mp hT] using hi
 
-private theorem iUnion_image_mk {H K : Subgroup G} :
-    ⋃ q : Quotient H K, Quot.mk (leftRel K) '' doubleCoset (out q : G) H K = Set.univ ∧
-    ⋃ q : Quotient H K, Quot.mk (rightRel H) '' doubleCoset (out q : G) H K = Set.univ := by
-  constructor
-  all_goals
+lemma iUnion_image_mk_leftRel {H K : Subgroup G} :
+    ⋃ q : Quotient H K, Quot.mk (leftRel K) '' doubleCoset (out q : G) H K = Set.univ := by
   have cover := iUnion_quotToDoubleCoset H K
   rw [Set.iUnion_eq_univ_iff]
   intro x
@@ -227,15 +224,18 @@ private theorem iUnion_image_mk {H K : Subgroup G} :
     exact (Set.ne_univ_iff_exists_notMem _).mpr ⟨y, by simpa using cover⟩
   exact ⟨i, y, hi, hy⟩
 
-theorem iUnion_image_mk_leftRel (H K : Subgroup G) :
-    ⋃ q : Quotient H K, Quot.mk (leftRel K) '' doubleCoset (out q : G) H K = Set.univ :=
-  iUnion_image_mk.1
+lemma iUnion_image_mk_rightRel {H K : Subgroup G} :
+    ⋃ q : Quotient H K, Quot.mk (rightRel H) '' doubleCoset (out q : G) H K = Set.univ := by
+  have cover := iUnion_quotToDoubleCoset H K
+  rw [Set.iUnion_eq_univ_iff]
+  intro x
+  obtain ⟨y, hy⟩ := exists_rep x
+  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (out i) H K  := by
+    contrapose cover
+    exact (Set.ne_univ_iff_exists_notMem _).mpr ⟨y, by simpa using cover⟩
+  exact ⟨i, y, hi, hy⟩
 
-theorem iUnion_image_mk_rightRel (H K : Subgroup G) :
-    ⋃ q : Quotient H K, Quot.mk (rightRel H) '' doubleCoset (out q : G) H K = Set.univ :=
-  iUnion_image_mk.2
-
-theorem iUnion_finset_leftRel_eq_univ_of_leftRel {H K : Subgroup G} {t : Finset (Quotient H K)}
+lemma iUnion_finset_leftRel_eq_univ_of_leftRel {H K : Subgroup G} {t : Finset (Quotient H K)}
     (ht : Set.univ ⊆ ⋃ i ∈ t, Quot.mk (leftRel K) '' doubleCoset (out i) H K) :
     ⋃ q ∈ t, doubleCoset (out q) H K = Set.univ := by
   contrapose ht
@@ -252,7 +252,7 @@ theorem iUnion_finset_leftRel_eq_univ_of_leftRel {H K : Subgroup G} {t : Finset 
   exact ⟨1, one_mem H, MulOpposite.unop a'⁻¹, Subgroup.mem_op.mp (by simp), by simpa
     using (eq_mul_inv_of_mul_eq ha')⟩
 
-theorem iUnion_finset_rightRel_eq_univ_of_rightRel {H K : Subgroup G} {t : Finset (Quotient H K)}
+lemma iUnion_finset_rightRel_eq_univ_of_rightRel {H K : Subgroup G} {t : Finset (Quotient H K)}
     (ht : Set.univ ⊆ ⋃ i ∈ t, Quot.mk (rightRel H) '' doubleCoset (out i) H K) :
     ⋃ q ∈ t, doubleCoset (out q) H K = Set.univ := by
   contrapose ht
