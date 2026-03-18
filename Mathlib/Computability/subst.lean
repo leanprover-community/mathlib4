@@ -1006,3 +1006,361 @@ theorem IsContextFree.subst {α β : Type} (L : Language α) (f : α → Languag
       have hG : G.language = (L.subst f) := by
         rw [ ← hg, ← funext hF, ContextFreeGrammar.subst_language_eq ]
       exact ⟨ G, hG ⟩
+
+/-
+Closure properties of context-free languages derived as corollaries of closure under substitution.
+We prove:
+1. `IsContextFree.mul` — CFLs are closed under concatenation.
+2. `IsContextFree.add` — CFLs are closed under union.
+3. `IsContextFree.kstar` — CFLs are closed under Kleene star.
+Each is derived from `IsContextFree.subst` (proved in `subst.lean`) by constructing a simple
+context-free language and an appropriate substitution function.
+-/
+/-! ### Substitution equals concatenation -/
+/-
+PROBLEM
+Show that `Language.subst {[false, true]} f = f false * f true` where `Language.subst` is defined
+as `{ u | ∃ w ∈ L, u ∈ (w.map f).prod }` and `*` on `Language` is `Set.image2 (· ++ ·)`.
+PROVIDED SOLUTION
+If `u ∈ Language.subst {[false, true]} f`, then the only `w` is `[false, true]`, so
+`u ∈ ([f false, f true]).prod = f false * f true`. Conversely, any `u ∈ f false * f true`
+witnesses `w = [false, true]`.
+Key: `List.prod_cons`, `List.prod_nil`, `Language.mul_def`, `Language.one_def`.
+-/
+theorem Language.subst_pair_eq_mul {β : Type} (f : Bool → Language β) :
+    Language.subst ({[false, true]} : Language Bool) f = f false * f true := by
+      -- To prove equality of sets, we show each set is a subset of the other.
+      apply Set.ext
+      intro u
+      simp [Language.subst, Language.mul_def];
+      simp +decide [ List.prod ];
+      -- To prove equality of sets, we show each set is a subset of the other. We start with the forward direction.
+      apply Iff.intro;
+      · simp [Language.mul_def, Language.one_def] at *;
+        grind;
+      · -- If there exist $a \in f(\text{false})$ and $b \in f(\text{true})$ such that $a ++ b = u$, then $u$ is in the concatenation of $f(\text{false})$ and $f(\text{true})$, which is exactly what the foldr operation computes.
+        intro h
+        obtain ⟨a, ha, b, hb, hab⟩ := h
+        use [false, true]
+        simp [ha, hb, hab];
+        exact ⟨ rfl, ⟨ a, ha, b, hb, hab ⟩ ⟩
+/-! ### Substitution equals union -/
+/-
+PROBLEM
+Show that `Language.subst {[false], [true]} f = f false + f true`.
+Here `+` on `Language` is union (by `Language.add_def`).
+PROVIDED SOLUTION
+Unfold `Language.subst`. We need `{ u | ∃ w ∈ {[false], [true]}, u ∈ (w.map f).prod } = f false + f true`.
+Case on `w ∈ {[false], [true]}`: either `w = [false]` giving `u ∈ [f false].prod = f false`
+(since `List.prod [x] = x` in a monoid), or `w = [true]` giving `u ∈ f true`.
+Thus the set is `f false ∪ f true = f false + f true`.
+Key: `Language.add_def`, `List.prod_cons`, `List.prod_nil`.
+-/
+theorem Language.subst_singletons_eq_add {β : Type} (f : Bool → Language β) :
+    Language.subst ({[false], [true]} : Language Bool) f = f false + f true := by
+      ext u;
+      constructor;
+      · rintro ⟨ w, hw, hu ⟩;
+        rcases hw with ( rfl | rfl ) <;> simp_all +decide [ List.prod ];
+        · exact Or.inl hu;
+        · exact Or.inr hu;
+      · intro hu
+        cases' hu with hu_false hu_true;
+        · use [false]
+          constructor
+          · tauto
+          · simp only [List.map_cons, List.map_nil, List.prod_cons, List.prod_nil, mul_one]
+            exact hu_false
+        · -- For the case when `u ∈ f true`, we can use the fact that `[true]` is in the input language and `u` is in `f true`.
+          use [true]
+          constructor
+          · tauto
+          · simp only [List.map_cons, List.map_nil, List.prod_cons, List.prod_nil, mul_one]
+            exact hu_true
+/-! ### Substitution equals Kleene star -/
+/-
+PROBLEM
+Show that `Language.subst (Set.univ : Language Unit) f = KStar.kstar (f ())`.
+Here `Language.subst L f = { u | ∃ w ∈ L, u ∈ (w.map f).prod }` and
+`Language.kstar_def` says `KStar.kstar l = {x | ∃ L, x = L.flatten ∧ ∀ y ∈ L, y ∈ l}`.
+PROVIDED SOLUTION
+(→) Given `w ∈ Set.univ` of length `n`, every element of `w` is `()`, so `w.map f = List.replicate n (f ())`.
+Then `u ∈ (List.replicate n (f ())).prod = (f ())^n`. Any element of `⋃ₙ (f ())^n` is in `(f ())*`.
+Use `Language.kstar_def` and show that membership in `(f ())^n` means `u` is a concatenation of
+strings from `f ()`.
+(←) Given `u ∈ (f ())*`, by `Language.kstar_def`, there exist `s₁, ..., sₙ ∈ f ()` with `u = s₁ ++ ... ++ sₙ`.
+Take `w = List.replicate n ()`. Then `w.map f = List.replicate n (f ())` and
+`u ∈ (List.replicate n (f ())).prod`.
+-/
+theorem Language.subst_univ_unit_eq_kstar {β : Type} (f : Unit → Language β) :
+    Language.subst (Set.univ : Language Unit) f = KStar.kstar (f ()) := by
+      ext u; exact ⟨by
+      rintro ⟨ w, hw, hu ⟩;
+      -- By induction on the length of the list `w`, we can show that `u` is in the kstar of `f ()`.
+      induction' w with w ih generalizing u;
+      · exact ⟨ [ ], by simpa using hu ⟩;
+      · rcases hu with ⟨ u₁, hu₁, u₂, hu₂, rfl ⟩;
+        rename_i h;
+        obtain ⟨ L, hL₁, hL₂ ⟩ := h u₂ ( Set.mem_univ _ ) hu₂;
+        exact ⟨ [ u₁ ] ++ L, by aesop ⟩, by
+        rintro ⟨ L, rfl, hL ⟩;
+        use List.replicate L.length ();
+        induction L <;> simp_all +decide [ List.prod ];
+        · trivial;
+        · exact ⟨ Set.mem_univ _, Set.mem_image2_of_mem hL.1 ( by aesop ) ⟩⟩;
+/-! ### Helper: no rewrites on terminal-only strings -/
+lemma no_rewrites_of_all_terminal {T N : Type} (r : ContextFreeRule T N) (w : List T) (v : List (Symbol T N)) :
+    ¬ r.Rewrites (w.map Symbol.terminal) v := by
+  intro h
+  rw [ContextFreeRule.rewrites_iff] at h
+  obtain ⟨p, q, hp, _⟩ := h
+  have : Symbol.nonterminal r.input ∈ w.map Symbol.terminal := by
+    rw [hp]; simp
+  simp at this
+lemma no_produces_of_all_terminal {T : Type} (g : ContextFreeGrammar T) (w : List T) (v : List (Symbol T g.NT)) :
+    ¬ g.Produces (w.map Symbol.terminal) v := by
+  rintro ⟨r, _, hr⟩
+  exact no_rewrites_of_all_terminal r w v hr
+lemma derives_of_all_terminal {T : Type} (g : ContextFreeGrammar T) (w : List T) (v : List (Symbol T g.NT)) :
+    g.Derives (w.map Symbol.terminal) v → v = w.map Symbol.terminal := by
+  intro h
+  induction h with
+  | refl => rfl
+  | tail _ h2 ih => subst ih; exact absurd h2 (no_produces_of_all_terminal g w _)
+/-! ### Singleton language is context-free -/
+/-
+PROBLEM
+Show that for any word `w`, the singleton language `{w}` is context-free.
+PROVIDED SOLUTION
+Construct a CFG `g` with nonterminal type `Unit`, initial = `()`, and a single rule
+`() → w.map Symbol.terminal`.
+Forward (g.language ⊆ {w}): If `u ∈ g.language`, then `g.Derives [S] (u.map Symbol.terminal)`.
+The only rule has input `()` = S. So the first step gives `[S] → w.map Symbol.terminal`.
+Since `w.map Symbol.terminal` is all terminals, `derives_of_all_terminal` shows no further
+derivation steps are possible. So `u.map Symbol.terminal = w.map Symbol.terminal`, hence `u = w`.
+Backward ({w} ⊆ g.language): Apply the single rule to get
+`[S] → w.map Symbol.terminal`. This is one derivation step, so `w ∈ g.language`.
+Use `no_produces_of_all_terminal` and `derives_of_all_terminal` as helper lemmas.
+Use `ContextFreeGrammar.mk Unit () {⟨(), w.map Symbol.terminal⟩}`.
+-/
+/-
+PROBLEM
+Prove `isContextFree_singleton`.
+PROVIDED SOLUTION
+Let `g := ContextFreeGrammar.mk Unit () {⟨(), w.map Symbol.terminal⟩}`.
+We show `g.language = {w}` by `Set.ext`.
+Backward (`w ∈ g.language`): We need `g.Derives [Symbol.nonterminal ()] (w.map Symbol.terminal)`.
+Apply `Relation.ReflTransGen.single`. The single step uses `⟨(), w.map Symbol.terminal⟩` from the
+rules (by `Finset.mem_singleton_self`) with `ContextFreeRule.Rewrites.head []`, converting
+`r.output ++ [] = r.output` by `simp`.
+Forward (`u ∈ g.language → u = w`): We have `g.Derives [Symbol.nonterminal ()] (u.map Symbol.terminal)`.
+We need to show this forces `u = w`.
+First step: any `g.Produces [Symbol.nonterminal ()] v` forces `v = w.map Symbol.terminal`.
+Proof: `rintro ⟨r, hr, hrw⟩; simp [singleton_grammar] at hr; subst hr; cases hrw` with
+- `head s`: gives `v = w.map Symbol.terminal ++ s`, but `s = []` since `[S]` has length 1.
+- `cons x h`: impossible since `[S]` has no preceding element.
+Actually: the only rule has `input = ()`. So from `[S]` (length 1 list with S = ()), the only
+Rewrite gives `w.map Symbol.terminal ++ []`.
+Then: since `v = w.map Symbol.terminal` is all terminals, `derives_of_all_terminal` gives
+`u.map Symbol.terminal = w.map Symbol.terminal`, so `u = w` by `List.map_injective_iff` with
+`Symbol.terminal.injective` (i.e., `Symbol.terminal_injective`).
+-/
+theorem isContextFree_singleton {α : Type} (w : List α) :
+    IsContextFree ({w} : Language α) := by
+  use ContextFreeGrammar.mk Unit () ({ContextFreeRule.mk () (w.map Symbol.terminal)})
+  ext u; constructor
+  · intro hd
+    rcases Relation.ReflTransGen.cases_head hd with h | ⟨mid, hstep, hrest⟩
+    · exfalso
+      have : Symbol.nonterminal () ∈ u.map (Symbol.terminal (N := Unit)) := by rw [← h]; simp
+      simp [List.mem_map] at this
+    · have hmid : mid = w.map Symbol.terminal := by
+        obtain ⟨r, hr, hrw⟩ := hstep
+        have := Finset.mem_singleton.mp hr; subst this
+        cases hrw with | head s => simp | cons x h => cases h
+      rw [hmid] at hrest
+      have heq := derives_of_all_terminal _ w _ hrest
+      show u = w
+      exact ((Function.Injective.list_map (f := Symbol.terminal (N := Unit))
+        (by intro a b hab; simpa using hab)) heq.symm).symm
+  · intro (hu : u = w)
+    subst hu
+    exact Relation.ReflTransGen.single ⟨⟨(), u.map Symbol.terminal⟩, Finset.mem_singleton_self _,
+      by convert ContextFreeRule.Rewrites.head (r := ContextFreeRule.mk () (u.map Symbol.terminal)) [] using 1; simp⟩
+/-! ### Finite language {[false], [true]} is context-free -/
+/-
+PROBLEM
+Show that `{[false], [true]} : Language Bool` is context-free.
+PROVIDED SOLUTION
+Construct a CFG `g` with nonterminal type `Unit`, initial = `()`, and two rules:
+`() → [Symbol.terminal false]` and `() → [Symbol.terminal true]`.
+Forward: If `u ∈ g.language`, then `g.Derives [S] (u.map Symbol.terminal)`.
+Since both rules produce all-terminal strings, after one step we get either
+`[Symbol.terminal false]` or `[Symbol.terminal true]`, and no further derivation
+is possible (by `no_produces_of_all_terminal`). So `u` is either `[false]` or `[true]`.
+Backward: Apply the appropriate rule.
+Use `no_produces_of_all_terminal` and `derives_of_all_terminal`.
+Use `ContextFreeGrammar.mk Unit () {⟨(), [Symbol.terminal false]⟩, ⟨(), [Symbol.terminal true]⟩}`.
+-/
+/-
+PROBLEM
+Prove `isContextFree_pair_bool`.
+PROVIDED SOLUTION
+Let `g := ContextFreeGrammar.mk Unit () {⟨(), [Symbol.terminal false]⟩, ⟨(), [Symbol.terminal true]⟩}`.
+We show `g.language = {[false], [true]}` by `Set.ext`.
+Backward: For `[false]`, apply rule `⟨(), [Symbol.terminal false]⟩` (one step).
+  For `[true]`, apply rule `⟨(), [Symbol.terminal true]⟩` (one step).
+  Both use `Relation.ReflTransGen.single`, `ContextFreeRule.Rewrites.head []`.
+Forward: If `u ∈ g.language`, then `g.Derives [Symbol.nonterminal ()] (u.map Symbol.terminal)`.
+  Any `g.Produces [Symbol.nonterminal ()] v` uses one of the two rules, giving either
+  `v = [Symbol.terminal false]` or `v = [Symbol.terminal true]`.
+  Proof: `rintro ⟨r, hr, hrw⟩`, then `hr : r ∈ {rule1, rule2}`, case split.
+  In each case, `hrw` has form `Rewrites.head []`, so `v` is determined.
+  After one step, `v` is all terminals, so `derives_of_all_terminal` shows
+  `u.map Symbol.terminal = v`, hence `u = [false]` or `u = [true]`.
+-/
+theorem isContextFree_pair_bool :
+    IsContextFree ({[false], [true]} : Language Bool) := by
+  use ContextFreeGrammar.mk Unit () ({ContextFreeRule.mk () [Symbol.terminal false], ContextFreeRule.mk () [Symbol.terminal true]})
+  ext u; constructor
+  · intro hd
+    rcases Relation.ReflTransGen.cases_head hd with h | ⟨mid, hstep, hrest⟩
+    · exfalso
+      have : Symbol.nonterminal () ∈ u.map (Symbol.terminal (N := Unit)) := by rw [← h]; simp
+      simp [List.mem_map] at this
+    · obtain ⟨r, hr, hrw⟩ := hstep
+      rcases Finset.mem_insert.mp hr with h1 | h1
+      · subst h1
+        have hmid : mid = [Symbol.terminal false] := by
+          cases hrw with | head s => simp | cons x h => cases h
+        rw [hmid] at hrest
+        have := derives_of_all_terminal _ [false] _ hrest
+        show u ∈ ({[false], [true]} : Set (List Bool))
+        left
+        exact ((Function.Injective.list_map (f := Symbol.terminal (N := Unit))
+          (by intro a b hab; simpa using hab)) this.symm).symm
+      · have h2 := Finset.mem_singleton.mp h1; subst h2
+        have hmid : mid = [Symbol.terminal true] := by
+          cases hrw with | head s => simp | cons x h => cases h
+        rw [hmid] at hrest
+        have := derives_of_all_terminal _ [true] _ hrest
+        show u ∈ ({[false], [true]} : Set (List Bool))
+        right
+        exact ((Function.Injective.list_map (f := Symbol.terminal (N := Unit))
+          (by intro a b hab; simpa using hab)) this.symm).symm
+  · intro hu
+    rcases hu with rfl | rfl
+    · exact Relation.ReflTransGen.single ⟨⟨(), [Symbol.terminal false]⟩,
+        Finset.mem_insert_self _ _, ContextFreeRule.Rewrites.head []⟩
+    · exact Relation.ReflTransGen.single ⟨⟨(), [Symbol.terminal true]⟩,
+        Finset.mem_insert_of_mem (Finset.mem_singleton_self _),
+        ContextFreeRule.Rewrites.head []⟩
+/-! ### The universal language over Unit is context-free -/
+/-
+PROBLEM
+Show that `Set.univ : Language Unit` (all strings over a single-symbol alphabet) is context-free.
+PROVIDED SOLUTION
+Construct a grammar `g` with one nonterminal type `Unit`, initial = `()`, and rules:
+  `S → ε` (output = [])
+  `S → () · S` (output = [Symbol.terminal (), Symbol.nonterminal ()])
+Forward: trivial since `Set.univ` contains everything.
+Backward: given `w : List Unit`, show `g.Generates (w.map Symbol.terminal)` by induction on `w`.
+- Base case `w = []`: apply rule `S → ε` to get `[S] → []`. Done.
+- Inductive case `w = () :: w'`:
+  Apply rule `S → () · S` to get `[S] → [terminal (), nonterminal ()]`.
+  Then by the induction hypothesis, `nonterminal ()` derives `w'.map Symbol.terminal`.
+  So overall `[S] → [terminal ()] ++ w'.map Symbol.terminal = w.map Symbol.terminal`.
+For the derivation step, use `ContextFreeGrammar.Produces` and `Relation.ReflTransGen`.
+Use `ContextFreeGrammar.mk Unit () {⟨(), []⟩, ⟨(), [Symbol.terminal (), Symbol.nonterminal ()]⟩}`.
+-/
+theorem isContextFree_univ_unit : IsContextFree (Set.univ : Language Unit) := by
+  -- Let's choose the context-free grammar with the initial symbol `S` and the rules `S → ε` and `S → aS`.
+  use ⟨Unit, (), {⟨(), []⟩, ⟨(), [Symbol.terminal (), Symbol.nonterminal ()]⟩}⟩;
+  refine' Set.eq_univ_of_forall _;
+  intro x
+  induction' x with x ih;
+  · constructor ; tauto;
+    constructor ; tauto;
+  · rename_i h;
+    -- Apply the rule that adds a terminal symbol to the front of the list.
+    have h_add_terminal : ∀ (u : List (Symbol Unit Unit)), (ContextFreeGrammar.mk Unit () {⟨(), []⟩, ⟨(), [Symbol.terminal (), Symbol.nonterminal ()]⟩}).Derives [Symbol.nonterminal ()] u → (ContextFreeGrammar.mk Unit () {⟨(), []⟩, ⟨(), [Symbol.terminal (), Symbol.nonterminal ()]⟩}).Derives [Symbol.nonterminal ()] ([Symbol.terminal ()] ++ u) := by
+      intro u hu
+      have h_add_terminal : (ContextFreeGrammar.mk Unit () {⟨(), []⟩, ⟨(), [Symbol.terminal (), Symbol.nonterminal ()]⟩}).Derives [Symbol.nonterminal ()] ([Symbol.terminal ()] ++ u) := by
+        have h_step : (ContextFreeGrammar.mk Unit () {⟨(), []⟩, ⟨(), [Symbol.terminal (), Symbol.nonterminal ()]⟩}).Derives [Symbol.nonterminal ()] ([Symbol.terminal (), Symbol.nonterminal ()]) := by
+          apply_rules [ Relation.ReflTransGen.single ];
+          exact ⟨ _, Finset.mem_insert_of_mem ( Finset.mem_singleton_self _ ), by tauto ⟩
+        have h_step : (ContextFreeGrammar.mk Unit () {⟨(), []⟩, ⟨(), [Symbol.terminal (), Symbol.nonterminal ()]⟩}).Derives ([Symbol.terminal (), Symbol.nonterminal ()]) ([Symbol.terminal ()] ++ u) := by
+          have h_step : ∀ (u v : List (Symbol Unit Unit)), (ContextFreeGrammar.mk Unit () {⟨(), []⟩, ⟨(), [Symbol.terminal (), Symbol.nonterminal ()]⟩}).Derives u v → (ContextFreeGrammar.mk Unit () {⟨(), []⟩, ⟨(), [Symbol.terminal (), Symbol.nonterminal ()]⟩}).Derives ([Symbol.terminal ()] ++ u) ([Symbol.terminal ()] ++ v) := by
+            intros u v huv
+            induction' huv with u v huv ih;
+            · constructor;
+            · exact .trans ‹_› ( .single <| by
+                obtain ⟨ r, hr, h ⟩ := ih;
+                use r;
+                simp_all +decide [ ContextFreeRule.Rewrites ];
+                exact ContextFreeRule.Rewrites.cons (Symbol.terminal ()) h );
+          exact h_step _ _ hu;
+        exact Relation.ReflTransGen.trans ‹_› ‹_›;
+      exact h_add_terminal;
+    convert h_add_terminal _ h using 1
+/-! ### Main corollaries -/
+/-
+PROBLEM
+Show: if `L₁` and `L₂` are context-free, then `L₁ * L₂` is context-free.
+PROVIDED SOLUTION
+Define `f : Bool → Language α` by `f false = L₁`, `f true = L₂`.
+The language `{[false, true]}` is context-free by `isContextFree_singleton`.
+By `Language.subst_pair_eq_mul`, `Language.subst {[false, true]} f = f false * f true = L₁ * L₂`.
+By `IsContextFree.subst`, the result follows.
+Use `isContextFree_singleton`, `Language.subst_pair_eq_mul`, `IsContextFree.subst`.
+-/
+theorem IsContextFree.mul {α : Type} {L₁ L₂ : Language α}
+    (h₁ : IsContextFree L₁) (h₂ : IsContextFree L₂) :
+    IsContextFree (L₁ * L₂) := by
+      have h_subst : IsContextFree (Language.subst ({[false, true]} : Language Bool) (fun b => if b then L₂ else L₁)) := by
+        apply IsContextFree.subst;
+        · exact isContextFree_singleton [false, true];
+        · grind;
+      convert h_subst using 1;
+      exact Eq.symm ( by simpa using Language.subst_pair_eq_mul ( fun b => if b = true then L₂ else L₁ ) )
+/-
+PROBLEM
+Show: if `L₁` and `L₂` are context-free, then `L₁ + L₂` (= `L₁ ∪ L₂`) is context-free.
+PROVIDED SOLUTION
+Define `f : Bool → Language α` by `f false = L₁`, `f true = L₂`.
+The language `{[false], [true]}` is context-free by `isContextFree_pair_bool`.
+By `Language.subst_singletons_eq_add`, `Language.subst {[false], [true]} f = f false + f true = L₁ + L₂`.
+By `IsContextFree.subst`, the result follows.
+Use `isContextFree_pair_bool`, `Language.subst_singletons_eq_add`, `IsContextFree.subst`.
+-/
+theorem IsContextFree.add {α : Type} {L₁ L₂ : Language α}
+    (h₁ : IsContextFree L₁) (h₂ : IsContextFree L₂) :
+    IsContextFree (L₁ + L₂) := by
+      obtain ⟨ g₁, hg₁ ⟩ := h₁
+      obtain ⟨ g₂, hg₂ ⟩ := h₂
+      set f : Bool → Language α := fun b => if b then g₂.language else g₁.language
+      have h_subst : IsContextFree (Language.subst ({[false], [true]} : Language Bool) f) := by
+        apply_rules [ IsContextFree.subst, isContextFree_pair_bool ];
+        exact fun a => by cases a <;> [ exact ⟨ g₁, rfl ⟩ ; exact ⟨ g₂, rfl ⟩ ] ;
+      exact (by
+      convert h_subst using 1;
+      rw [ ← hg₁, ← hg₂, Language.subst_singletons_eq_add ] ; aesop;)
+/-
+PROBLEM
+Show: if `L` is context-free, then `KStar.kstar L` is context-free.
+PROVIDED SOLUTION
+Define `f : Unit → Language α` by `f () = L`.
+The language `Set.univ : Language Unit` is context-free by `isContextFree_univ_unit`.
+By `Language.subst_univ_unit_eq_kstar`, `Language.subst Set.univ f = KStar.kstar (f ()) = KStar.kstar L`.
+By `IsContextFree.subst`, the result follows.
+Use `isContextFree_univ_unit`, `Language.subst_univ_unit_eq_kstar`, `IsContextFree.subst`.
+-/
+theorem IsContextFree.kstar {α : Type} {L : Language α}
+    (h : IsContextFree L) :
+    IsContextFree (KStar.kstar L) := by
+      convert IsContextFree.subst _ _ _ _;
+      convert Language.subst_univ_unit_eq_kstar ( fun _ => L ) |> Eq.symm;
+      · exact isContextFree_univ_unit;
+      · exact fun _ => h
+
+end
