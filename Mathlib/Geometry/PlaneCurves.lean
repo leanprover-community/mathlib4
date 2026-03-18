@@ -186,7 +186,7 @@ theorem inner_of_deriv_curve_eq_zero_of_const_magnitude_curve {I : Set ℝ} (hI 
 point the velocity vector is perpendicular to the acceleration vector. -/
 theorem inner_of_accel_velocity_of_const_speed_eq_zero {I : Set ℝ} (hI : IsOpen I) {ι : Type u}
     [Fintype ι] {c : ℝ → EuclideanSpace ℝ ι} (hc₁ : ContDiffOn ℝ 2 c I) {r : ℝ}
-    (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = r) {t : ℝ} (ht : t ∈ I) : 
+    (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = r) {t : ℝ} (ht : t ∈ I) :
     inner ℝ (iteratedDeriv 2 c t) (deriv c t) = 0 := by
   rw [iteratedDeriv_succ, iteratedDeriv_one]
   have h : ContDiffOn ℝ (1+1) c I := by assumption
@@ -215,7 +215,7 @@ theorem second_deriv_eq_orientedCurvature_times_normal {I : Set ℝ} (hI : IsOpe
 /-- Auxiliary lemma: If `c` is a twice continuously differentiable plane curve on an interval `I`,
 then the normal has a derivative at every point of `I`. -/
 lemma normal_hasDerivAt_aux {I : Set ℝ} (hI : IsOpen I) {c : ℝ → EuclideanSpace ℝ (Fin 2)}
-    (hc : ContDiffOn ℝ 2 c I) {t : ℝ} (ht : t ∈ I) : 
+    (hc : ContDiffOn ℝ 2 c I) {t : ℝ} (ht : t ∈ I) :
     HasDerivAt (normal c) (deriv (normal c) t) t := by
   have hd : ContDiffOn ℝ 1 (deriv c) I := hc.deriv_of_isOpen hI (by norm_num)
   have h_diff : DifferentiableOn ℝ (deriv c) I := hd.differentiableOn (by norm_num)
@@ -500,7 +500,7 @@ theorem orientedCurvature_initialCurve_of_orientedCurvature {I : Set ℝ} [I.Ord
 
 /-- The plane curve we construct is at the point p₀ at time t₀ (position initial condition). -/
 theorem position_initial_condition_initialCurve_of_orientedCurvature (κ : ℝ → ℝ) (t₀ : ℝ)
-    (p₀ : EuclideanSpace ℝ (Fin 2)) (θ₀ : ℝ) : 
+    (p₀ : EuclideanSpace ℝ (Fin 2)) (θ₀ : ℝ) :
     (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀) t₀ = p₀ := by
   unfold initialCurve_of_orientedCurvature
   ext i
@@ -518,8 +518,8 @@ theorem velocity_initial_condition_initialCurve_of_orientedCurvature {I : Set �
   rw [(HasDerivAt.initialCurve_of_orientedCurvature hI hκ ht₀ p₀ θ₀ ht₀).deriv]
   simp
 
-lemma deriv_differentiableAt_of_2_contDiffOn_open {I : Set ℝ} (hI : IsOpen I) {ι : Type u} 
-    [Fintype ι] {c : ℝ → EuclideanSpace ℝ ι} (hc₁ : ContDiffOn ℝ 2 c I) (i : ι) {s : ℝ} 
+lemma deriv_differentiableAt_of_2_contDiffOn_open {I : Set ℝ} (hI : IsOpen I) {ι : Type u}
+    [Fintype ι] {c : ℝ → EuclideanSpace ℝ ι} (hc₁ : ContDiffOn ℝ 2 c I) (i : ι) {s : ℝ}
     (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦  (deriv c t) i) s := by
   apply (differentiableAt_piLp 2).mp
   have h : I.EqOn (deriv c) (iteratedDerivWithin 1 c I) := by
