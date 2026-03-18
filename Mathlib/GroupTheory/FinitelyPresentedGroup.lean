@@ -46,6 +46,20 @@ finitely presented group, finitely generated normal closure
 
 variable {G H α β : Type*} [Group G] [Group H]
 
+/-- The canonical map from the free group on the range of free generators is surjective. -/
+theorem surjective_lift_range_freeGroupOf
+    (h : FreeGroup α →* G) (hhsurj : Function.Surjective h) :
+    Function.Surjective (FreeGroup.lift
+      (fun s : Set.range (fun a : α ↦ h (FreeGroup.of a)) ↦ (s : G))) := by
+  set S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
+  set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
+  let g := Set.rangeFactorization (fun a : α ↦ h (FreeGroup.of a))
+  have hh_fcompg : f.comp (FreeGroup.map g) = h := by ext a; simp [f, g]
+  have hfsurj : Function.Surjective f := by
+    intro y; obtain ⟨x, rfl⟩ := hhsurj y
+    exact ⟨FreeGroup.map g x, by rw [← MonoidHom.comp_apply, hh_fcompg]⟩
+  simpa [S, f]
+
 /-- Definition of subgroup that is given by the normal closure of finitely many elements. -/
 def IsNormalClosureFG (K : Subgroup G) : Prop :=
   ∃ S : Set G, S.Finite ∧ Subgroup.normalClosure S = K
@@ -74,30 +88,37 @@ lemma ker_comp_freeGroupCongr
 
 /-- The kernel of the canonical map from the free group on the range of free generators is
 finitely generated in normal closure, provided this holds for the original kernel. -/
-theorem ker_lift_range_freeGroupOf
-    (h : FreeGroup α →* G) (hhker : IsNormalClosureFG h.ker) :
+theorem ker_lift_range_freeGroupOf (h : FreeGroup α →* G) (hhker : IsNormalClosureFG h.ker) :
     IsNormalClosureFG (FreeGroup.lift
       (fun s : Set.range (fun a : α ↦ h (FreeGroup.of a)) ↦ (s : G))).ker := by
   set S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
   set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
-  let g : α → S := fun a ↦ ⟨h (FreeGroup.of a), ⟨a, rfl⟩⟩
-  have hgsurj : Function.Surjective g := by
-    intro s
-    rcases s with ⟨y, ⟨a, rfl⟩⟩
-    exact ⟨a, rfl⟩
-  have hh_fcompg : f.comp (FreeGroup.map g) = h := by
-    ext a
-    simp [f, g]
+  let g := Set.rangeFactorization (fun a : α ↦ h (FreeGroup.of a))
+  have hh_fcompg : f.comp (FreeGroup.map g) = h := by ext a; simp [f, g]
   let g' : FreeGroup α →* FreeGroup S := FreeGroup.map g
-  have hg'_surj : Function.Surjective g' := FreeGroup.map_surjective hgsurj
-  have hhker' : h.ker = (f.ker).comap g' := by
-    simpa [g'] using congrArg MonoidHom.ker hh_fcompg.symm
+  have hg'_surj : Function.Surjective g' :=
+    FreeGroup.map_surjective Set.rangeFactorization_surjective
   have hmap : Subgroup.map g' (h.ker) = f.ker := by
-    simpa [hhker'] using
-      (Subgroup.map_comap_eq_self_of_surjective (f := g') (H := f.ker) hg'_surj)
-  have hfker_map : IsNormalClosureFG (Subgroup.map g' (h.ker)) :=
-    IsNormalClosureFG.map g' hg'_surj h.ker hhker
-  simpa [S, f, hmap] using hfker_map
+    have : h.ker = (f.ker).comap g' := by simpa [g'] using congrArg MonoidHom.ker hh_fcompg.symm
+    simpa [this] using Subgroup.map_comap_eq_self_of_surjective (f := g') (H := f.ker) hg'_surj
+  simpa [S, f, hmap] using IsNormalClosureFG.map g' hg'_surj h.ker hhker
+
+/-- Given a surjective homomorphism from a free group with kernel finitely generated in the
+normal closure, one can choose a finite generating set of the target and recover the canonical
+surjective map from the free group on that set, with kernel still finitely generated in the
+normal closure. -/
+lemma exists_finite_set_lift_surjective_ker
+    [Finite α] (h : FreeGroup α →* G) (hhsurj : Function.Surjective h)
+    (hhker : IsNormalClosureFG h.ker) :
+    ∃ (S : Set G) (_ : S.Finite),
+      Function.Surjective (FreeGroup.lift (fun s : S ↦ (s : G))) ∧
+      IsNormalClosureFG (FreeGroup.lift (fun s : S ↦ (s : G))).ker := by
+  let S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
+  have hS : S.Finite := by
+    simpa [S] using (Set.finite_range (fun a : α ↦ h (FreeGroup.of a)))
+  refine ⟨S, hS, ?_, ?_⟩
+  · simpa [S] using surjective_lift_range_freeGroupOf (G := G) (α := α) h hhsurj
+  · simpa [S] using IsNormalClosureFG.ker_lift_range_freeGroupOf (G := G) (α := α) h hhker
 
 end IsNormalClosureFG
 
@@ -192,46 +213,6 @@ theorem if_hom_surj_finite :
     hfsurj.comp (FreeGroup.freeGroupCongr e.symm).surjective,
     IsNormalClosureFG.ker_comp_freeGroupCongr e f hfker⟩
 
-/-- The canonical map from the free group on the range of free generators is surjective. -/
-theorem surjective_lift_range_freeGroupOf
-    (h : FreeGroup α →* G) (hhsurj : Function.Surjective h) :
-    Function.Surjective (FreeGroup.lift
-      (fun s : Set.range (fun a : α ↦ h (FreeGroup.of a)) ↦ (s : G))) := by
-  set S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
-  set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
-  let g : α → S := fun a ↦ ⟨h (FreeGroup.of a), ⟨a, rfl⟩⟩
-  have hgsurj : Function.Surjective g := by
-    intro s
-    rcases s with ⟨y, ⟨a, rfl⟩⟩
-    exact ⟨a, rfl⟩
-  have hh_fcompg : f.comp (FreeGroup.map g) = h := by
-    ext a
-    simp [f, g]
-  have hfsurj : Function.Surjective f := by
-    intro y
-    obtain ⟨x, rfl⟩ := hhsurj y
-    refine ⟨FreeGroup.map g x, ?_⟩
-    simpa [MonoidHom.comp_apply] using congrArg (fun m ↦ m x) hh_fcompg
-  simpa [S, f]
-
-
-/-- Given a surjective homomorphism from a free group with kernel finitely generated in the
-normal closure, one can choose a finite generating set of the target and recover the canonical
-surjective map from the free group on that set, with kernel still finitely generated in the
-normal closure. -/
-lemma exists_set_hom_surj_and_normalClosureFG_ker_of_freeGroup_hom
-    [Finite α] (h : FreeGroup α →* G) (hhsurj : Function.Surjective h)
-    (hhker : IsNormalClosureFG h.ker) :
-    ∃ (S : Set G) (_ : S.Finite),
-      Function.Surjective (FreeGroup.lift (fun s : S ↦ (s : G))) ∧
-      IsNormalClosureFG (FreeGroup.lift (fun s : S ↦ (s : G))).ker := by
-  let S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
-  have hS : S.Finite := by
-    simpa [S] using (Set.finite_range (fun a : α ↦ h (FreeGroup.of a)))
-  refine ⟨S, hS, ?_, ?_⟩
-  · simpa [S] using surjective_lift_range_freeGroupOf (G := G) (α := α) h hhsurj
-  · simpa [S] using IsNormalClosureFG.ker_lift_range_freeGroupOf (G := G) (α := α) h hhker
-
 /-- A group is finitely presented if there exists a `Set G` such that the canonical inclusion map
 is surjective and the kernel is finitely generated as a normal subgroup. -/
 theorem iff_hom_surj_set_G :
@@ -243,7 +224,7 @@ theorem iff_hom_surj_set_G :
   · intro hfp
     obtain ⟨α, hα, h, hhsurj, hhker⟩ := (iff_hom_surj_finite (G := G)).1 hfp
     let _ : Finite α := hα
-    exact exists_set_hom_surj_and_normalClosureFG_ker_of_freeGroup_hom
+    exact exists_finite_set_lift_surjective_ker
       (G := G) (α := α) h hhsurj hhker
   · intro ⟨S, hS, hfsurj, hfker⟩
     set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
