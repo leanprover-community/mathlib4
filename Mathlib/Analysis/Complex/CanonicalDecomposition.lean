@@ -40,7 +40,7 @@ has a single pole at `w`, no zeros, and takes values of norm one on the circle o
 
 /--
 Given `R : ℝ` and `w : ℂ`, the canonical factor is the function
-`fun z ↦ (R ^ 2 - (conj w) * z) / (R * (z - w))`. In applications, on will typically consider a
+`fun z ↦ (R ^ 2 - (conj w) * z) / (R * (z - w))`. In applications, one will typically consider a
 setting where `w ∈ ball 0 R`.
 -/
 noncomputable def canonicalFactor (R : ℝ) (w : ℂ) : ℂ → ℂ :=
