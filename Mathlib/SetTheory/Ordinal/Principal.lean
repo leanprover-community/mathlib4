@@ -10,9 +10,9 @@ public import Mathlib.SetTheory.Ordinal.FixedPoint
 /-!
 # Principal ordinals
 
-If `op` is a binary operation on ordinals, we say that an ordinal `o` is `op`-principal when the set
-`Iio o` is closed under the operation `op`. Most commonly, one talks of additive and multiplicative
-principal ordinals.
+If `op` is a binary operation on ordinals, we say that an ordinal `o` is `op`-principal or
+`op`-indecomposable when the set `Iio o` is closed under the operation `op`. Most commonly, one
+talks of additive and multiplicative principal ordinals.
 
 Additive principal ordinals were originally called "gamma numbers" by Cantor, but this term now more
 commonly refers to the values given by `Ordinal.gamma`. Likewise, multiplicative principal ordinals
@@ -21,17 +21,21 @@ equivalent to the epsilon numbers given by `Ordinal.epsilon`.
 
 ## Main definitions and results
 
-* `Principal`: A principal or indecomposable ordinal under some binary operation. We include `0` and
-  other typically excluded edge cases for simplicity.
+* `Principal`: A principal (or indecomposable) ordinal under some binary operation. We include `0`
+  and other typically excluded edge cases for simplicity.
 * `not_bddAbove_principal`: Principal ordinals (under any operation) are unbounded.
 * `principal_add_iff_zero_or_omega0_opow`: The additive principal ordinals are
   `0` and the ordinal powers of `ω`.
 * `principal_mul_iff_le_two_or_omega0_opow_opow`: The multiplicative principal ordinals are
   `0`, `1`, `2`, and the ordinals `ω ^ ω ^ x`.
 
-## TODO
+## Todo
 
-* Prove that exponential principal ordinals are `0`, `1`, `2`, `ω`, or `ε_ x`.
+* Prove that the exponential principal ordinals are `0`, `1`, `2`, `ω`, or `ε_ x`.
+
+## Tags
+
+additively indecomposable, multiplicatively indecomposable
 -/
 
 @[expose] public section
@@ -50,7 +54,7 @@ variable {op : Ordinal → Ordinal → Ordinal}
 
 /-! ### Principal ordinals under an arbitrary operation -/
 
-/-- An ordinal `o` is said to be principal or indecomposable under an operation when `Iio o` is
+/-- An ordinal `o` is said to be principal (or indecomposable) under an operation when `Iio o` is
 closed under that operation.
 
 For simplicity, we break usual convention and regard `0` and other edge cases as principal. -/
