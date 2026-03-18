@@ -274,7 +274,7 @@ theorem sndₛₗ_surjective : Function.Surjective (sndₛₗ σ E F) :=
 
 section prodₛₗ
 
-variable {E F}
+variable {σ E F}
 
 /-- Combine a linear map `f : M →ₗ[R] E` and a semilinear map
 `g : M →ₛₗ[σ] F` into a linear map with target `E ×[σ] F`. -/
@@ -284,42 +284,130 @@ def prodₛₗ (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) : M →ₗ[R] E ×[σ
   map_smul' c x := by ext <;> simp
 
 @[simp] lemma prodₛₗ_apply (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) (x : M) :
-    prodₛₗ σ f g x = SemilinearProdModule.mk (f x) (g x) := rfl
+    prodₛₗ f g x = SemilinearProdModule.mk (f x) (g x) := rfl
 
-@[simp] lemma fst_prodₛₗ (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) :
-    (fstₛₗ σ E F).comp (prodₛₗ σ f g) = f := by ext x; rfl
+@[simp] lemma fstₛₗ_prodₛₗ (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) :
+    (fstₛₗ σ E F).comp (prodₛₗ f g) = f := by ext x; rfl
 
-@[simp] lemma snd_prodₛₗ (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) :
-    (sndₛₗ σ E F).comp (prodₛₗ σ f g) = g := by ext x; rfl
+@[simp] lemma sndₛₗ_prodₛₗ (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) :
+    (sndₛₗ σ E F).comp (prodₛₗ f g) = g := by ext x; rfl
 
 end prodₛₗ
 
+section
+
+variable {R S : Type*} [Semiring R] [Semiring S] (σ : R ≃+* S)
+  (E : Type*) [AddCommGroup E] [Module R E]
+  (F : Type*) [AddCommGroup F] [Module S F]
+  {M : Type*} [AddCommGroup M] [Module R M]
+
+/-- The left injection into a product is a linear map. -/
+def inlₛₗ : E →ₗ[R] E ×[(σ : R →+* S)] F :=
+  prodₛₗ LinearMap.id 0
+
+@[simp]
+lemma inlₛₗ_apply (v : E) : inlₛₗ σ E F v = SemilinearProdModule.mk v 0 := rfl
+
+/-- The right injection into a product is a linear map. -/
+def inrₛₗ : F →ₛₗ[(σ.symm : S →+* R)] E ×[(σ : R →+* S)] F where
+  toFun v := SemilinearProdModule.mk 0 v
+  map_add' v w := by ext <;> simp
+  map_smul' c v := by ext <;> simp
+
+@[simp]
+lemma inrₛₗ_apply (v : F) : inrₛₗ σ E F v = SemilinearProdModule.mk 0 v := rfl
+
+theorem range_inlₛₗ : range (inlₛₗ σ E F) = ker (sndₛₗ (σ : R →+* S) E F) := by
+  ext x
+  simp only [mem_ker, mem_range]
+  constructor
+  · rintro ⟨y, rfl⟩
+    rfl
+  · intro h
+    refine ⟨x.fst, by ext <;> simp_all⟩
+
+theorem ker_sndₛₗ : ker (sndₛₗ (σ : R →+* S) E F) = range (inlₛₗ σ E F) :=
+  Eq.symm <| range_inlₛₗ σ E F
+
+theorem range_inrₛₗ : range (inrₛₗ σ E F) = ker (fstₛₗ (σ : R →+* S) E F) := by
+  ext x
+  simp only [mem_ker, mem_range]
+  constructor
+  · rintro ⟨y, rfl⟩
+    rfl
+  · intro h
+    refine ⟨x.snd, by ext <;> simp_all⟩
+
+theorem ker_fstₛₗ : ker (fstₛₗ (σ : R →+* S) E F) = range (inrₛₗ σ E F) :=
+  Eq.symm <| range_inrₛₗ σ E F
+
+abbrev comp_symm_eq_id : RingHomCompTriple (σ.symm : S →+* R) (σ : R →+* S) (RingHom.id S) where
+  comp_eq := by simp
+
+@[simp] theorem fstₛₗ_comp_inlₛₗ : fstₛₗ (σ : R →+* S) E F ∘ₛₗ inlₛₗ σ E F = id := rfl
+
+@[simp] theorem sndₛₗ_comp_inlₛₗ : sndₛₗ (σ : R →+* S) E F ∘ₛₗ inlₛₗ σ E F = 0 := rfl
+
+@[simp] theorem fstₛₗ_comp_inrₛₗ : fstₛₗ (σ : R →+* S) E F ∘ₛₗ inrₛₗ σ E F = 0 := rfl
+
+@[simp] theorem sndₛₗ_comp_inrₛₗ :
+    @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (comp_symm_eq_id σ)
+      (sndₛₗ (σ : R →+* S) E F) (inrₛₗ σ E F) = id := by ext; simp
+
+
+@[simp]
+theorem coe_inlₛₗ :
+    (inlₛₗ σ E F : E → E ×[(σ : R →+* S)] F) = fun x => SemilinearProdModule.mk x 0 := rfl
+
+@[simp]
+theorem coe_inrₛₗ :
+    (inrₛₗ σ E F : F → E ×[(σ : R →+* S)] F) = fun x => SemilinearProdModule.mk 0 x := by
+  ext <;> rfl
+
+theorem inlₛₗ_eq_prodₛₗ : inlₛₗ σ E F = prodₛₗ LinearMap.id 0 :=
+  rfl
+
+theorem inlₛₗ_injective : Function.Injective (inlₛₗ σ E F) := fun _ => by simp
+
+theorem inrₛₗ_injective : Function.Injective (inrₛₗ σ E F) := fun _ => by simp
+
+end
+
 section coprodₛₗ
 
-variable {M : Type*} [AddCommGroup M] [Module S M]
+variable {M : Type*} [AddCommGroup M] [Module S M] (σ : R →+* S)
 
-variable {E F}
+variable {σ E F}
 
 /-- The coprod function `x : M × M₂ ↦ f x.1 + g x.2` is a linear map. -/
 def coprodₛₗ (f : E →ₛₗ[σ] M) (g : F →ₗ[S] M) : E ×[σ] F →ₛₗ[σ] M :=
   f.comp (fstₛₗ _ _ _) + g.comp (sndₛₗ _ _ _)
 
 @[simp]
-theorem coprodₛₗ_apply (f : E →ₛₗ[σ] F) (g : F →ₗ[S] F) (x : E ×[σ] F) :
-    coprodₛₗ σ f g x = f x.1 + g x.2 := rfl
+theorem coprodₛₗ_apply (f : E →ₛₗ[σ] M) (g : F →ₗ[S] M) (x : E ×[σ] F) :
+    coprodₛₗ f g x = f x.1 + g x.2 := rfl
 
--- @[simp]
--- theorem coprod_inl (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) : (coprod f g).comp (inl R M M₂) = f := by
---   ext; simp only [map_zero, add_zero, coprod_apply, inl_apply, comp_apply]
+variable {R S : Type*} [Semiring R] [Semiring S] (σ : R ≃+* S)
+  (E : Type*) [AddCommGroup E] [Module R E]
+  (F : Type*) [AddCommGroup F] [Module S F]
+  {M : Type*} [AddCommGroup M] [Module S M]
 
--- @[simp]
--- theorem coprod_inr (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) : (coprod f g).comp (inr R M M₂) = g := by
---   ext; simp only [map_zero, coprod_apply, inr_apply, zero_add, comp_apply]
+abbrev comp_id_eq : RingHomCompTriple (RingHom.id R) (σ : R →+* S) (σ : R →+* S) where
+  comp_eq := by simp
 
--- @[simp]
--- theorem coprod_inl_inr : coprod (inl R M M₂) (inr R M M₂) = LinearMap.id := by
---   ext <;>
---     simp only [Prod.mk_add_mk, add_zero, id_apply, coprod_apply, inl_apply, inr_apply, zero_add]
+@[simp]
+theorem coprodₛₗ_inlₛₗ (f : E →ₛₗ[(σ : R →+* S)] M) (g : F →ₗ[S] M) :
+    @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (comp_id_eq σ) (coprodₛₗ f g) (inlₛₗ σ E F)
+    = f := by ext; simp
+
+abbrev id_comp_eq : RingHomCompTriple ((σ.symm : S →+* R)) (σ : R →+* S) (RingHom.id S) where
+  comp_eq := by simp
+
+@[simp]
+theorem coprodₛₗ_inrₛₗ (f : E →ₛₗ[(σ : R →+* S)] M) (g : F →ₗ[S] M) :
+    @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (id_comp_eq σ) (coprodₛₗ f g) (inrₛₗ σ E F)
+      = g := by
+  ext; simp
 
 -- theorem coprod_zero_left (g : M₂ →ₗ[R] M₃) : (0 : M →ₗ[R] M₃).coprod g = g.comp (snd R M M₂) :=
 --   zero_add _
@@ -399,12 +487,12 @@ def graphₛₗ : Submodule R (E ×[σ] F) where
 theorem mem_graphₛₗ_iff (x : E ×[σ] F) : x ∈ f.graphₛₗ ↔ x.2 = f x.1 :=
   Iff.rfl
 
-theorem graphₛₗ_eq_ker_coprodₛₗ : f.graphₛₗ = ker (coprodₛₗ σ (-f) LinearMap.id) := by
+theorem graphₛₗ_eq_ker_coprodₛₗ : f.graphₛₗ = ker (coprodₛₗ (-f) LinearMap.id) := by
   ext x
   change _ = _ ↔ -f x.1 + x.2 = _
   rw [add_comm, add_neg_eq_zero]
 
-theorem graphₛₗ_eq_range_prodₛₗ : f.graphₛₗ = range (prodₛₗ σ LinearMap.id f) := by
+theorem graphₛₗ_eq_range_prodₛₗ : f.graphₛₗ = range (prodₛₗ LinearMap.id f) := by
   ext x
   refine ⟨fun hx => ⟨x.1, ?_⟩, fun ⟨u, hu⟩ => hu ▸ rfl⟩
   ext
