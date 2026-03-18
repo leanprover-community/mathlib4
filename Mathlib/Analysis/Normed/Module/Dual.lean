@@ -12,6 +12,7 @@ public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
 public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 
 /-!
 # Polar sets in the strong dual of a normed space
@@ -172,3 +173,24 @@ theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
 end NormedField
 
 end LinearMap
+
+section Deprecated
+
+variable (𝕜 : Type*) [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+
+@[deprecated SeparatingDual.eq_zero_of_forall_dual_eq_zero (since := "2026-03-18")]
+theorem NormedSpace.eq_zero_of_forall_dual_eq_zero {x : E}
+    (h : ∀ f : StrongDual 𝕜 E, f x = 0) : x = 0 :=
+  SeparatingDual.eq_zero_of_forall_dual_eq_zero h
+
+@[deprecated SeparatingDual.eq_zero_iff_forall_dual_eq_zero (since := "2026-03-18")]
+theorem NormedSpace.eq_zero_iff_forall_dual_eq_zero (x : E) :
+    x = 0 ↔ ∀ g : StrongDual 𝕜 E, g x = 0 :=
+  SeparatingDual.eq_zero_iff_forall_dual_eq_zero x
+
+@[deprecated SeparatingDual.eq_iff_forall_dual_eq (since := "2026-03-18")]
+theorem NormedSpace.eq_iff_forall_dual_eq {x y : E} :
+    x = y ↔ ∀ g : StrongDual 𝕜 E, g x = g y :=
+  SeparatingDual.eq_iff_forall_dual_eq
+
+end Deprecated
