@@ -295,6 +295,7 @@ variable (ubs : UnconditionalBasicSequence β 𝕜 X)
 /-- The **Basis Constant** of a general basic sequence. -/
 def unconditionalBasicSequenceConstant : ℝ := ubs.basis.enormProjBound.toReal
 
+open scoped Classical in
 /-- A general basic sequence with finite projection bound satisfies the
     generalized Grünblum condition. -/
 theorem unconditional_satisfiesNikolskii :
@@ -310,9 +311,9 @@ theorem unconditional_satisfiesNikolskii :
     _ = ‖ubs.basis.proj A (∑ i ∈ B, a i • ubs.basis i)‖ := by
       congr 1
       simp_rw [map_sum, map_smul, GeneralSchauderBasis.proj_apply_basis_mem, smul_ite, smul_zero]
-      exact (Finset.sum_subset (f := fun i ↦ if i ∈ A then a i • ubs.basis i else 0)
-        hAB fun _ _ h ↦ if_neg h).symm.trans
-        (Finset.sum_congr rfl fun _ h ↦ if_pos h)
+      exact (Finset.sum_congr rfl fun _ h ↦ if_pos h).symm.trans
+        (Finset.sum_subset (f := fun i ↦ if i ∈ A then a i • ubs.basis i else 0)
+          hAB fun _ _ h ↦ if_neg h)
     _ ≤ ‖ubs.basis.proj A‖ * ‖∑ i ∈ B, a i • ubs.basis i‖ := ContinuousLinearMap.le_opNorm _ _
     _ ≤ ubs.unconditionalBasicSequenceConstant * ‖∑ i ∈ B, a i • ubs i‖ := by
       rw [h_eq B]
@@ -329,99 +330,69 @@ lemma linearIndependent_of_Nikolskii (hN : SatisfiesNikolskiiCondition 𝕜 e K)
   simp [hsg] at h1
   exact h1.resolve_right (h_nz i)
 
+-- The proof constructs an `UnconditionalSchauderBasis` inline with a tight bound;
 open scoped Classical in
 theorem isUnconditionalBasicSequence_of_Nikolskii {e : β → X} {K : ℝ}
     (h : SatisfiesNikolskiiCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) (hK : 0 ≤ K) :
     ∃ (b : UnconditionalBasicSequence β 𝕜 X),
       ⇑b = e ∧ b.unconditionalBasicSequenceConstant ≤ K := by
-  set K' := max K 0 with hK'_def
-  have hK'_eq : K' = K := max_eq_left hK
-  have hK'_nonneg : 0 ≤ K' := le_max_right _ _
-  have h' : SatisfiesNikolskiiCondition 𝕜 e K' := fun A B a hAB => by
-    exact (h A B a hAB).trans (mul_le_mul_of_nonneg_right (le_max_left _ _) (norm_nonneg _))
   have h_indep := linearIndependent_of_Nikolskii h h_nz
   let S := Submodule.span 𝕜 (Set.range e)
   let b_S := Module.Basis.span h_indep
   have hbS : ∀ n, (b_S n : X) = e n :=
-    fun n => congrArg Subtype.val (Module.Basis.span_apply h_indep n)
-  let coord_linear (j : β) : S →ₗ[𝕜] 𝕜 := (Finsupp.lapply j).comp b_S.repr.toLinearMap
-  have h_coord_bound (j : β) (y : S) : ‖coord_linear j y‖ ≤ (K' / ‖e j‖) * ‖y‖ := by
-    simp only [coord_linear, LinearMap.comp_apply, Finsupp.lapply_apply]
-    have h_norm_ej : 0 < ‖e j‖ := norm_pos_iff.mpr (h_nz j)
-    rw [div_mul_eq_mul_div, le_div_iff₀ h_norm_ej]
-    calc ‖b_S.repr y j‖ * ‖e j‖
-        = ‖b_S.repr y j • e j‖ := by rw [norm_smul]
-      _ = ‖∑ i ∈ {j}, b_S.repr y i • e i‖ := by simp
-      _ ≤ K' * ‖∑ i ∈ {j} ∪ (b_S.repr y).support, b_S.repr y i • e i‖ :=
-          h' {j} ({j} ∪ (b_S.repr y).support) (b_S.repr y) Finset.subset_union_left
-      _ = K' * ‖(y : X)‖ := by
-          congr 1
-          have h_y_eq : (y : X) = ∑ i ∈ (b_S.repr y).support, b_S.repr y i • e i := by
-            conv_lhs => rw [← b_S.linearCombination_repr y, Finsupp.linearCombination_apply,
-              Finsupp.sum]
-            simp_rw [Submodule.coe_sum, Submodule.coe_smul, hbS]
-          rw [h_y_eq]; congr 1
-          exact (Finset.sum_subset Finset.subset_union_right
-            (fun i _ hi => by rw [Finsupp.notMem_support_iff.mp hi, zero_smul])).symm
-      _ = K' * ‖y‖ := by rw [norm_coe]
-  let coord (j : β) : StrongDual 𝕜 S :=
-    LinearMap.mkContinuous (coord_linear j) (K' / ‖e j‖) (h_coord_bound j)
-  have hcoord_apply : ∀ i (x : S), coord i x = coord_linear i x := fun _ _ => rfl
-  have h_ortho (i j : β) : coord i (b_S j) = (Pi.single j 1 : β → 𝕜) i := by
-    simp only [hcoord_apply, coord_linear, LinearMap.comp_apply,
-      Finsupp.lapply_apply, Pi.single_apply]
-    have : (b_S.repr : S →ₗ[𝕜] (β →₀ 𝕜)) (b_S j) = Finsupp.single j 1 := b_S.repr_self j
-    rw [this, Finsupp.single_apply]; simp [eq_comm]
-  have h_coord_eq (i : β) (x : S) :
-      coord i x = (b_S.repr x : β →₀ 𝕜) i := by
-    simp only [hcoord_apply, coord_linear, LinearMap.comp_apply,
-      Finsupp.lapply_apply]; rfl
-  have h_sum_eq (x : S) (A : Finset β) (hA : (b_S.repr x).support ⊆ A) :
-      ∑ i ∈ A, coord i x • b_S i = x := by
-    simp_rw [h_coord_eq]
+    fun n ↦ congrArg Subtype.val (Module.Basis.span_apply h_indep n)
+  have h_sum (x : S) {A : Finset β} (hA : (b_S.repr x).support ⊆ A) :
+      ∑ i ∈ A, b_S.repr x i • b_S i = x := by
     conv_rhs => rw [← b_S.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
-    exact (Finset.sum_subset hA (fun i _ hi => by
-      rw [Finsupp.notMem_support_iff.mp hi, zero_smul])).symm
-  have h_expansion (x : S) :
-      HasSum (fun i ↦ coord i x • b_S i) x (SummationFilter.unconditional β) := by
-    rw [HasSum, SummationFilter.unconditional_filter]
-    exact tendsto_atTop_of_eventually_const (i₀ := (b_S.repr x).support) (h_sum_eq x)
+    exact (Finset.sum_subset hA fun i _ hi ↦ by simp [Finsupp.notMem_support_iff.mp hi]).symm
+  let coord (j : β) : StrongDual 𝕜 S := LinearMap.mkContinuous
+    ((Finsupp.lapply j).comp b_S.repr.toLinearMap) (K / ‖e j‖) <| fun y ↦ by
+      have h_norm_ej : 0 < ‖e j‖ := norm_pos_iff.mpr (h_nz j)
+      rw [div_mul_eq_mul_div, le_div_iff₀ h_norm_ej]
+      calc ‖b_S.repr y j‖ * ‖e j‖ = ‖b_S.repr y j • e j‖ := (norm_smul _ _).symm
+        _ = ‖∑ i ∈ {j}, b_S.repr y i • e i‖ := by simp
+        _ ≤ K * ‖∑ i ∈ {j} ∪ (b_S.repr y).support, b_S.repr y i • e i‖ :=
+            h {j} _ _ Finset.subset_union_left
+        _ = K * ‖y‖ := by
+          congr 2
+          have key : (∑ i ∈ {j} ∪ (b_S.repr y).support, b_S.repr y i • b_S i : S) = y :=
+            h_sum y Finset.subset_union_right
+          have key' : (↑(∑ i ∈ {j} ∪ (b_S.repr y).support, b_S.repr y i • b_S i) : X) = ↑y :=
+            congrArg (Subtype.val) key
+          simp only [Submodule.coe_sum, Submodule.coe_smul, hbS] at key'
+          exact key'
   let ubs_basis : UnconditionalSchauderBasis β 𝕜 S := {
-    basis := b_S, coord := coord, ortho := h_ortho, expansion := h_expansion
+    basis := b_S
+    coord := coord
+    ortho := fun i j ↦ by
+      simp only [coord, LinearMap.mkContinuous_apply, LinearMap.comp_apply,
+        LinearEquiv.coe_toLinearMap, Finsupp.lapply_apply, b_S.repr_self,
+        Finsupp.single_apply, Pi.single_apply, eq_comm]
+    expansion := fun x ↦ by
+      rw [HasSum, SummationFilter.unconditional_filter]
+      change Filter.Tendsto (fun A ↦ ∑ i ∈ A, b_S.repr x i • b_S i) atTop (𝓝 x)
+      exact tendsto_atTop_of_eventually_const (i₀ := (b_S.repr x).support)
+        (fun A hA ↦ h_sum x hA)
   }
-  have h_y_as_sum (y : S) :
-      (y : X) = ∑ i ∈ (b_S.repr y).support, (b_S.repr y : β →₀ 𝕜) i • e i := by
-    conv_lhs => rw [← b_S.linearCombination_repr y, Finsupp.linearCombination_apply, Finsupp.sum]
-    simp_rw [Submodule.coe_sum, Submodule.coe_smul, hbS]
-  have h_proj_bound (A : Finset β) (y : S) : ‖ubs_basis.proj A y‖ ≤ K' * ‖y‖ := by
-    have h_proj_coe : (ubs_basis.proj A y : X) = ∑ i ∈ A, (b_S.repr y : β →₀ 𝕜) i • e i := by
-      simp only [GeneralSchauderBasis.proj_apply, Submodule.coe_sum, Submodule.coe_smul]
-      apply Finset.sum_congr rfl; intro i _
-      change (coord i y) • (b_S i : X) = _
-      rw [h_coord_eq, hbS]
-    rw [← norm_coe, h_proj_coe]
-    have h_union_eq : ∑ i ∈ A ∪ (b_S.repr y).support, (b_S.repr y) i • e i = (y : X) := by
-      rw [h_y_as_sum y]
-      exact (Finset.sum_subset Finset.subset_union_right (fun i _ hi =>
-        by rw [Finsupp.notMem_support_iff.mp hi, zero_smul])).symm
-    exact (h' A _ _ Finset.subset_union_left).trans_eq (by rw [h_union_eq, norm_coe])
-  have h_lt_top : ubs_basis.enormProjBound < ⊤ :=
-    (iSup_le fun A => by
-      rw [enorm_eq_nnnorm, ← ENNReal.ofReal_coe_nnreal,
-        ENNReal.ofReal_le_ofReal_iff hK'_nonneg, coe_nnnorm]
-      exact ContinuousLinearMap.opNorm_le_bound _ hK'_nonneg (h_proj_bound A)).trans_lt
-      ENNReal.ofReal_lt_top
-  let seq : UnconditionalBasicSequence β 𝕜 X :=
-    { toFun := e, basis := ubs_basis, basis_eq := hbS, basisConstant_lt_top := h_lt_top }
-  refine ⟨seq, rfl, ?_⟩
-  dsimp only [unconditionalBasicSequenceConstant]
-  have h_bound_ennreal : ubs_basis.enormProjBound ≤ ENNReal.ofReal K :=
-    hK'_eq ▸ iSup_le fun A => by
-      rw [enorm_eq_nnnorm, ← ENNReal.ofReal_coe_nnreal,
-        ENNReal.ofReal_le_ofReal_iff hK'_nonneg, coe_nnnorm]
-      exact ContinuousLinearMap.opNorm_le_bound _ hK'_nonneg (h_proj_bound A)
-  exact (ENNReal.toReal_mono ENNReal.ofReal_ne_top h_bound_ennreal).trans_eq
-    (ENNReal.toReal_ofReal hK)
+  have h_bound : ubs_basis.enormProjBound ≤ ENNReal.ofReal K := iSup_le fun A ↦ by
+    rw [enorm_eq_nnnorm, ← ENNReal.ofReal_coe_nnreal, ENNReal.ofReal_le_ofReal_iff hK, coe_nnnorm]
+    refine ContinuousLinearMap.opNorm_le_bound _ hK fun y ↦ ?_
+    have h_proj : (ubs_basis.proj A y : X) = ∑ i ∈ A, b_S.repr y i • e i := by
+      have heq : ubs_basis.proj A y = ∑ i ∈ A, b_S.repr y i • b_S i := by
+        simp only [GeneralSchauderBasis.proj_apply]
+        congr 1
+      rw [heq]
+      simp only [Submodule.coe_sum, Submodule.coe_smul, hbS]
+    rw [← norm_coe, h_proj]
+    have key := h A (A ∪ (b_S.repr y).support) (b_S.repr y) Finset.subset_union_left
+    have key2 : ‖∑ i ∈ A ∪ (b_S.repr y).support, (b_S.repr y) i • e i‖ = ‖y‖ := by
+      have hval := congrArg Subtype.val (h_sum y (A := A ∪ (b_S.repr y).support)
+        Finset.subset_union_right)
+      simp only [Submodule.coe_sum, Submodule.coe_smul, hbS] at hval
+      rw [hval, norm_coe]
+    linarith [key2 ▸ key]
+  refine ⟨⟨e, ubs_basis, hbS, h_bound.trans_lt ENNReal.ofReal_lt_top⟩, rfl, ?_⟩
+  exact (ENNReal.toReal_mono ENNReal.ofReal_ne_top h_bound).trans_eq (ENNReal.toReal_ofReal hK)
 
 theorem SatisfiesNikolskiiCondition.toSatisfiesGrunblumCondition {e : ℕ → X} {K : ℝ}
     (h : SatisfiesNikolskiiCondition 𝕜 e K) :
