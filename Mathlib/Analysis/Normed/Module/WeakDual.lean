@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Normed.Operator.Completeness
 public import Mathlib.Topology.Algebra.Module.WeakDual
 public import Mathlib.Topology.MetricSpace.PiNat
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
+public import Mathlib.Analysis.LocallyConvex.WeakDual
 
 /-!
 # Weak dual of normed space
@@ -50,13 +51,11 @@ the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
 ## Main results
 
 ### Topology comparison
-* `dual_norm_topology_le_weak_dual_topology`: The weak-* topology is coarser than the norm topology.
+* `NormedSpace.Dual.toWeakDual_continuous`: The weak-* topology is coarser than the norm topology.
 
 ### Bornology and pointwise bounds
-* `WeakDual.isVonNBounded_iff_pointwise_bounded`: Characterization of weak-* boundedness.
 * `WeakDual.isBounded_iff_isVonNBounded`: Equivalence of norm and weak-* boundedness for
   Banach spaces.
-* `WeakDual.isBounded_iff_pointwise_bounded`: Equivalence of norm and pointwise boundedness.
 
 ### Compactness and Banach-Alaoglu
 * `WeakDual.isCompact_polar`: Polars of neighborhoods of the origin are weak-* compact.
@@ -244,41 +243,25 @@ open NormedSpace
 This section relates the inherited norm bornology (`IsBounded`) to the intrinsic
 von Neumann bornology of the weak-* topology (`IsVonNBounded`).
 
-We characterize the von Neumann bornology as pointwise boundedness
-(`isVonNBounded_iff_pointwise_bounded`). The following results justify using the norm
-bornology as the default instance: by the Uniform Boundedness Principle, it coincides
-with the von Neumann bornology whenever $E$ is a Banach space.
+The following results justify using the norm bornology as the default instance: by the
+Uniform Boundedness Principle, it coincides with the von Neumann bornology whenever
+$E$ is a Banach space.
 -/
 
-/-- A set in the weak dual is von Neumann bounded iff it is pointwise bounded. -/
-theorem isVonNBounded_iff_pointwise_bounded {s : Set (WeakDual 𝕜 E)} :
-    Bornology.IsVonNBounded 𝕜 s ↔ ∀ x : E, ∃ r : ℝ, ∀ f ∈ s, ‖f x‖ ≤ r := by
-  constructor
-  · intro h_vN x
-    have hU : (· x) ⁻¹' Metric.ball 0 1 ∈ 𝓝 (0 : WeakDual 𝕜 E) :=
-      (eval_continuous x).continuousAt.preimage_mem_nhds (Metric.ball_mem_nhds 0 one_pos)
-    obtain ⟨r, _, hab⟩ := (h_vN hU).exists_pos
-    obtain ⟨a, ha⟩ := NormedField.exists_lt_norm 𝕜 r
-    refine ⟨‖a‖, fun f hf => ?_⟩
-    obtain ⟨g, hg, rfl⟩ := (hab a ha.le) hf
-    simp only [Set.mem_preimage, Metric.mem_ball, dist_zero_right] at hg
-    change ‖a * g x‖ ≤ ‖a‖
-    rw [norm_mul]
-    exact mul_le_of_le_one_right (norm_nonneg _) hg.le
-  · intro h V hV
-    have h_nhds : 𝓝 (0 : WeakDual 𝕜 E) = Filter.comap (fun f x ↦ f x) (𝓝 0) := nhds_induced _ _
-    rw [h_nhds] at hV
-    obtain ⟨W, hW, hWV⟩ := hV
-    have hpi : Bornology.IsVonNBounded 𝕜 ((fun f x ↦ f x) '' s) :=
-      isVonNBounded_pi_iff.mpr fun x ↦ let ⟨C, hC⟩ := h x
-        (NormedSpace.isVonNBounded_iff' 𝕜).mpr
-          ⟨C, by rintro _ ⟨_, ⟨f, hf, rfl⟩, rfl⟩; exact hC f hf⟩
-    obtain ⟨r, hr, hab⟩ := (hpi hW).exists_pos
-    refine Absorbs.mono_left (Absorbs.of_norm ⟨r, fun c hc f hf ↦ ?_⟩) hWV
-    have hc0 : c ≠ 0 := norm_pos_iff.mp (hr.trans_le hc)
-    have hmem := hab c hc (Set.mem_image_of_mem (fun f x ↦ f x) hf)
-    rwa [Set.mem_smul_set_iff_inv_smul_mem₀ hc0] at hmem ⊢
+set_option backward.isDefEq.respectTransparency false in
+variable (𝕜 E) in
+def seminormFamily : SeminormFamily 𝕜 (WeakDual 𝕜 E) E :=
+  (topDualPairing 𝕜 E).toSeminormFamily
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma seminormFamily_apply (x : E) (f : WeakDual 𝕜 E) : seminormFamily 𝕜 E x f = ‖f x‖ :=
+  rfl
+set_option backward.isDefEq.respectTransparency false in
+variable (𝕜 E) in
+lemma withSeminorms : WithSeminorms (seminormFamily 𝕜 E) :=
+  (topDualPairing 𝕜 E).weakBilin_withSeminorms
 
+set_option backward.isDefEq.respectTransparency false in
 /-- By the Uniform Boundedness Principle, norm-boundedness (the default bornology)
 and pointwise-boundedness (`IsVonNBounded`) coincide on the weak dual of a Banach space. -/
 theorem isBounded_iff_isVonNBounded [CompleteSpace E] {s : Set (WeakDual 𝕜 E)} :
@@ -287,18 +270,12 @@ theorem isBounded_iff_isVonNBounded [CompleteSpace E] {s : Set (WeakDual 𝕜 E)
   · exact fun h => ((NormedSpace.isVonNBounded_iff 𝕜).mpr h).of_topologicalSpace_le
       Dual.dual_norm_topology_le_weak_dual_topology
   · intro h_vN
-    have h_ptwise := isVonNBounded_iff_pointwise_bounded.mp h_vN
+    have h_ptwise := (withSeminorms 𝕜 E).isVonNBounded_iff_seminorm_bounded.mp h_vN
     obtain ⟨C, hC⟩ := banach_steinhaus (g := fun i : s ↦ WeakDual.toStrongDual i.val) fun x ↦
-      let ⟨M, hM⟩ := h_ptwise x
-      ⟨M, fun i ↦ hM i.val i.property⟩
+      let ⟨M, _, hM⟩ := h_ptwise x
+      ⟨M, fun i ↦ le_of_lt (hM i.val i.property)⟩
     rw [← isBounded_toWeakDual_preimage_iff_isBounded, isBounded_iff_forall_norm_le]
     exact ⟨C, fun f hf ↦ hC ⟨StrongDual.toWeakDual f, hf⟩⟩
-
-/-- By the Uniform Boundedness Principle, a set in the weak dual of a Banach space
-is norm-bounded if and only if it is pointwise bounded. -/
-theorem isBounded_iff_pointwise_bounded [CompleteSpace E] {s : Set (WeakDual 𝕜 E)} :
-    IsBounded s ↔ ∀ x : E, ∃ C : ℝ, ∀ f ∈ s, ‖f x‖ ≤ C := by
-  rw [isBounded_iff_isVonNBounded, isVonNBounded_iff_pointwise_bounded]
 
 /-!
 ### Compactness of bounded closed sets
@@ -334,8 +311,6 @@ theorem isBounded_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
     IsBounded (toStrongDual ⁻¹' closedBall x' r) :=
   isBounded_toStrongDual_preimage_iff_isBounded.mpr Metric.isBounded_closedBall
 
-variable (𝕜)
-
 /-- The **Banach-Alaoglu theorem**: closed balls of the dual of a normed space `E` are compact in
 the weak-star topology. -/
 theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : ℝ) :
@@ -345,6 +320,9 @@ theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : �
 /-!
 ### Polar sets in the weak dual space
 -/
+
+section PolarSets
+variable (𝕜)
 
 /-- The polar set `polar 𝕜 s` of `s : Set E` seen as a subset of the dual of `E` with the
 weak-star topology is `WeakDual.polar 𝕜 s`. -/
@@ -381,6 +359,8 @@ normed space `E` is a compact subset of `WeakDual 𝕜 E`. -/
 theorem isCompact_polar [ProperSpace 𝕜] {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E)) :
     IsCompact (polar 𝕜 s) :=
   isCompact_of_bounded_of_closed (isBounded_polar 𝕜 s_nhds) (isClosed_polar _ _)
+
+end PolarSets
 
 /-!
 ### Sequential compactness
