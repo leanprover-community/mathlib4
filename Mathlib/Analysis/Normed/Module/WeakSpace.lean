@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Normed.Module.HahnBanach
 public import Mathlib.Analysis.Normed.Module.WeakDual
 
 /-!
-# Normed space instances for `WeakSpace`
+# `WeakSpace` in the context of normed spaces
 
 This file provides basic instances for `WeakSpace 𝕜 E` in the setting of normed spaces.
 
