@@ -16,8 +16,8 @@ Given a simplicial homotopy between morphisms of simplicial objects in a preaddi
 we construct a chain homotopy between the induced morphisms on the alternating face map complexes.
 
 Concretely, if `H : Homotopy f g` gives maps
-`H.h i : X _⦋n⦌ ⟶ Y _⦋n+1⦌` indexed by `i : Fin (n+1)`, we define the degree-`n` component
-of the chain homotopy as the alternating sum `∑ i, (-1)^i • H.h i`.
+`H.h i : X _⦋n⦌ ⟶ Y _⦋n+1⦌` indexed by `i : Fin (n + 1)`, we define the degree-`n` component
+of the chain homotopy as the opposite of alternating sum `∑ i, (-1)^i • H.h i`.
 -/
 
 @[expose] public section
