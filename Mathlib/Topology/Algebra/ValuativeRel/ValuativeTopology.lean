@@ -226,7 +226,7 @@ theorem toTopologicalSpace_eq :
   letI := isUniformAddGroup_of_addCommGroup (G := R)
   exact congrArg (fun u ↦ @UniformSpace.toTopologicalSpace R u) v.toUniformSpace_eq
 
-instance (priority := low) isTopologicalRing : IsTopologicalRing R := by
+instance (priority := low) : IsTopologicalRing R := by
   convert (ValuativeRel.nonarchimedeanRing R).toIsTopologicalRing
   exact toTopologicalSpace_eq _
 
@@ -336,6 +336,10 @@ theorem isClosed_integer : IsClosed (v.integer : Set R) := by
 theorem isClopen_integer : IsClopen (v.integer : Set R) :=
   ⟨isClosed_integer, isOpen_integer⟩
 
+section Field
+
+variable {K : Type*} [Field K] [ValuativeRel K] [TopologicalSpace K] [IsValuativeTopology K]
+
 /-- The valuation subring of a valued field is open. -/
 theorem isOpen_valuationSubring (v : Valuation K Γ₀) [v.Compatible] :
     IsOpen (v.valuationSubring : Set K) :=
@@ -350,6 +354,8 @@ theorem isClosed_valuationSubring (v : Valuation K Γ₀) [v.Compatible] :
 theorem isClopen_valuationSubring (v : Valuation K Γ₀) [v.Compatible] :
     IsClopen (v.valuationSubring : Set K) :=
   isClopen_integer
+
+end Field
 
 end TopologicalSpace
 
