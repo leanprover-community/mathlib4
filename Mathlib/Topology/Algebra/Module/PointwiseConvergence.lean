@@ -14,21 +14,21 @@ public import Mathlib.Topology.Algebra.Module.WeakDual
 ## Main definitions
 
 * `PointwiseConvergenceCLM`: Type synonym of `E →SL[σ] F` equipped with the uniform convergence
-topology on finite sets.
+  topology on finite sets.
 * `PointwiseConvergenceCLM.evalCLM`: The evaluation map `(f : E →SLₚₜ[σ] F) ↦ f a` for fixed `a : E`
-as a continuous linear map.
+  as a continuous linear map.
 * `ContinuousLinearMap.toPointwiseConvergenceCLM`: The canonical map from `E →SL[σ] F` to
-`E →SLₚₜ[σ] F` as a continuous linear map. This is the statement that bounded convergence is
-stronger than pointwise convergence.
+  `E →SLₚₜ[σ] F` as a continuous linear map. This is the statement that bounded convergence is
+  stronger than pointwise convergence.
 * `PointwiseConvergenceCLM.equivWeakDual`: The continuous equivalence between `E →Lₚₜ[𝕜] 𝕜` and
-`WeakDual 𝕜 E`.
+  `WeakDual 𝕜 E`.
 
 ## Main statements
 
 * `PointwiseConvergenceCLM.tendsto_iff_forall_tendsto`: In the topology of pointwise convergence,
-`a` converges to `a₀` iff for every `x : E` the map `a · x` converges to `a₀ x`.
+  `a` converges to `a₀` iff for every `x : E` the map `a · x` converges to `a₀ x`.
 * `PointwiseConvergenceCLM.continuous_of_continuous_eval`: A map to `g : α → E →SLₚₜ[σ] F` is
-continuous if for every `x : E` the evaluation `g · x` is continuous.
+  continuous if for every `x : E` the evaluation `g · x` is continuous.
 
 ## Notation
 
@@ -135,7 +135,7 @@ convergence topology. -/
 def precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) :
     (F →SLₚₜ[τ] G) →L[𝕜₃] E →SLₚₜ[ρ] G where
   toFun f := f.comp L
-  __ := ContinuousLinearMap.precomp_uniformConvergenceCLM G {(S : Set E) | Finite S}
+  __ := ContinuousLinearMap.precompUniformConvergenceCLM G {(S : Set E) | Finite S}
     {(S : Set F) | Finite S} L (fun S hS ↦ letI : Finite S := hS; Finite.Set.finite_image _ _)
 
 variable (E) in
@@ -145,7 +145,7 @@ convergence topology. -/
 def postcomp [ContinuousConstSMul 𝕜₂ F] [ContinuousConstSMul 𝕜₃ G] (L : F →SL[τ] G) :
     (E →SLₚₜ[σ] F) →SL[τ] E →SLₚₜ[ρ] G where
   toFun f := L.comp f
-  __ := ContinuousLinearMap.postcomp_uniformConvergenceCLM {(S : Set E) | Finite S} L
+  __ := ContinuousLinearMap.postcompUniformConvergenceCLM {(S : Set E) | Finite S} L
 
 variable (𝕜₂ σ E F) in
 /-- The topology of bounded convergence is stronger than the topology of pointwise convergence. -/

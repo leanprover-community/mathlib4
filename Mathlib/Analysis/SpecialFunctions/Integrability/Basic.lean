@@ -253,9 +253,8 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
 
 theorem intervalIntegrable_one_div_one_add_sq :
     IntervalIntegrable (fun x : ℝ => 1 / (↑1 + x ^ 2)) μ a b := by
-  refine (continuous_const.div ?_ fun x => ?_).intervalIntegrable a b
-  · fun_prop
-  · nlinarith
+  apply Continuous.intervalIntegrable
+  fun_prop (discharger := intro; nlinarith)
 
 @[simp]
 theorem intervalIntegrable_inv_one_add_sq :

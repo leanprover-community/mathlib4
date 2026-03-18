@@ -57,6 +57,24 @@ lemma takeUntil_first (p : G.Walk u v) :
 lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
     (p.takeUntil w hwp).Nil ↔ u = w := ⟨Nil.eq, (by cases ·; simp)⟩
 
+lemma takeUntil_eq_take (p : G.Walk u v) (h : w ∈ p.support) :
+    p.takeUntil w h = (p.take <| p.support.idxOf w).copy rfl (p.getVert_support_idxOf h) := by
+  apply ext_support
+  induction p with
+  | nil =>
+    simp only [takeUntil, eq_mpr_eq_cast, support_nil, getVert_nil, take, support_copy]
+    grind [mem_support_nil_iff, support_nil]
+  | @cons a _ _ _ p ih =>
+    by_cases! h' : w = a
+    · grind [List.idxOf_cons_self, take_zero, copy_rfl_rfl, support_nil, takeUntil_first]
+    · rw [take_cons_eq _ _ _ (by grind), takeUntil_cons (List.mem_of_ne_of_mem h' h) h'.symm,
+        support_cons, support_copy, ih (by grind)]
+      grind
+
+lemma length_takeUntil (p : G.Walk u v) (h : w ∈ p.support) :
+    (p.takeUntil w h).length = p.support.idxOf w := by
+  simp [takeUntil_eq_take, Nat.le_iff_lt_add_one, ← length_support, List.idxOf_lt_length_of_mem h]
+
 /-- Given a vertex in the support of a path, give the path from (and including) that vertex to
 the end. In other words, drop vertices from the front of a path until (and not including)
 that vertex. -/
@@ -84,6 +102,29 @@ theorem take_spec {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     · simp!
     · simp! only
       split_ifs with h' <;> subst_vars <;> simp [*]
+
+@[simp]
+lemma dropUntil_first (p : G.Walk u v) (h : u ∈ p.support) : p.dropUntil u h = p := by
+  unfold dropUntil
+  split <;> simp
+
+lemma dropUntil_eq_drop (p : G.Walk u v) (h : w ∈ p.support) :
+    p.dropUntil w h = (p.drop <| p.support.idxOf w).copy (p.getVert_support_idxOf h) rfl := by
+  apply ext_support
+  induction p with
+  | nil =>
+    simp only [dropUntil, eq_mpr_eq_cast, support_nil, getVert_nil, drop, support_copy]
+    grind [mem_support_nil_iff, support_nil]
+  | @cons a _ _ _ p ih =>
+    by_cases! h' : w = a
+    · subst h'
+      simp [dropUntil_first, drop_support_eq_support_drop_min]
+    · rw [drop_cons_eq _ _ _ (by grind), support_copy, dropUntil]
+      grind
+
+lemma length_dropUntil (p : G.Walk u v) (h : w ∈ p.support) :
+    (p.dropUntil w h).length = p.length - p.support.idxOf w := by
+  simp [dropUntil_eq_drop]
 
 theorem isSubwalk_takeUntil (p : G.Walk u v) (h : w ∈ p.support) : (p.takeUntil w h).IsSubwalk p :=
   ⟨nil, p.dropUntil w h, by simp⟩
@@ -256,30 +297,28 @@ lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {w x : 
   lia
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
-def rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) : G.Walk u u :=
+def rotate (c : G.Walk v v) (u : V) (h : u ∈ c.support) : G.Walk u u :=
   (c.dropUntil u h).append (c.takeUntil u h)
 
 @[simp]
-theorem support_rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
-    (c.rotate h).support.tail ~r c.support.tail := by
+theorem support_rotate (c : G.Walk v v) (u : V) (h) :
+    (c.rotate u h).support.tail ~r c.support.tail := by
   simp only [rotate, tail_support_append]
   apply List.IsRotated.trans List.isRotated_append
   rw [← tail_support_append, take_spec]
 
 @[simp]
-theorem mem_support_rotate_iff (c : G.Walk v v) (h : u ∈ c.support) :
-    w ∈ (c.rotate h).support ↔ w ∈ c.support := by
+theorem mem_support_rotate_iff (c : G.Walk v v) (u : V) (h) :
+    w ∈ (c.rotate u h).support ↔ w ∈ c.support := by
   grind [rotate, take_spec, mem_support_append_iff]
 
-theorem rotate_darts {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
-    (c.rotate h).darts ~r c.darts := by
+theorem rotate_darts (c : G.Walk v v) (u : V) (h) : (c.rotate u h).darts ~r c.darts := by
   simp only [rotate, darts_append]
   apply List.IsRotated.trans List.isRotated_append
   rw [← darts_append, take_spec]
 
-theorem rotate_edges {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
-    (c.rotate h).edges ~r c.edges :=
-  (rotate_darts c h).map _
+theorem rotate_edges (c : G.Walk v v) (u : V) (h) : (c.rotate u h).edges ~r c.edges :=
+  (rotate_darts c u h).map _
 
 end WalkDecomp
 

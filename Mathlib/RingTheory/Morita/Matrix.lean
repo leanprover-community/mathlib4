@@ -76,7 +76,7 @@ variable {R} in
   from `M` to `N`. -/
 @[simps!]
 def fromMatrixLinear {N : Type*} [AddCommGroup N] [Module (Matrix ι ι R) N] (i : ι)
-    [Module R N] [IsScalarTower R (Matrix ι ι R) N] [Module R M] [IsScalarTower R (Matrix ι ι R) M]
+    [Module R N] [IsScalarTower R (Matrix ι ι R) N] [IsScalarTower R (Matrix ι ι R) M]
     (f : M →ₗ[Matrix ι ι R] N) : toModuleCatObj R M i →ₗ[R] toModuleCatObj R N i :=
   f.restrictScalars R |>.restrict fun x hx => by
     obtain ⟨y, rfl⟩ := mem_toModuleCatObj i |>.1 hx
@@ -91,7 +91,7 @@ lemma MatrixModCat.isScalarTower_toModuleCat (M : ModuleCat (Matrix ι ι R)) :
     IsScalarTower R (Matrix ι ι R) M :=
   letI := Module.compHom M (Matrix.scalar (α := R) ι)
   { smul_assoc r m x := show _ = Matrix.scalar ι r • (m • x) by
-      rw [← SemigroupAction.mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul]}
+      rw [← SemigroupAction.mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul] }
 
 /-- The functor from the category of modules over `Mₙ(R)` to the category of modules over `R`
   induced by sending `M` to the image of `Eᵢᵢ • ·` where `Eᵢᵢ` is the elementary matrix. -/
@@ -128,6 +128,8 @@ def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M
     simp [← hy]
   right_inv x := by simp
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism showing that `toModuleCat` is the left inverse of `toMatrixModCat`. -/
 def MatrixModCat.unitIso (i : ι) :
     ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R i ≅ 𝟭 (ModuleCat R) :=
@@ -144,7 +146,7 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
     M ≃ₗ[Matrix ι ι R] (ι → MatrixModCat.toModuleCatObj R M j) where
   toFun m i := ⟨single j i (1 : R) • m, single j i (1 : R) • m, by
     simp [← SemigroupAction.mul_smul]⟩
-  map_add' _ _ := by simpa using funext fun _ ↦ by rfl
+  map_add' _ _ := by ext; simp
   map_smul' x m := funext fun i ↦ Subtype.ext <| by
     letI := Module.compHom M (Matrix.scalar (α := R) ι)
     haveI := MatrixModCat.isScalarTower_toModuleCat R M
@@ -163,10 +165,11 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
     ext i
     simp only [Finset.smul_sum]
     rw [Finset.sum_eq_single i (fun b _ hb ↦ by
-      simp [← SemigroupAction.mul_smul, single_mul_single_of_ne _ _ _ _ (Ne.symm hb)]) (by simp)]
+      simp [← SemigroupAction.mul_smul, single_mul_single_of_ne _ _ _ _ hb.symm]) (by simp)]
     obtain ⟨y, hy⟩ := by simpa [-SetLike.coe_mem] using (v i).2
     simp [← SemigroupAction.mul_smul, ← hy]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism showing that `toMatrixModCat` is the right inverse of `toModuleCat`. -/
 def MatrixModCat.counitIso (i : ι) :
     MatrixModCat.toModuleCat R i ⋙ ModuleCat.toMatrixModCat R ι ≅ 𝟭 (ModuleCat (Matrix ι ι R)) :=
@@ -175,6 +178,8 @@ def MatrixModCat.counitIso (i : ι) :
     ext
     simp [toModuleCatFromModuleCatLinearEquiv]
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
+set_option backward.isDefEq.respectTransparency false in
 /-- `ModuleCat.toMatrixModCat R ι` and `MatrixModCat.toModuleCat R i` together form
   an equivalence of categories. -/
 @[simps, stacks 074D "(1)"]
@@ -192,6 +197,7 @@ def ModuleCat.matrixEquivalence (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι 
     simp [unitIso, toModuleCatFromModuleCatLinearEquiv, fromModuleCatToModuleCatLinearEquiv,
       fromModuleCatToModuleCatLinearEquivtoModuleCatObj, Finset.univ_sum_single]
 
+set_option backward.isDefEq.respectTransparency false in
 open ModuleCat.Algebra in
 /-- Moreover `ModuleCat.matrixEquivalence` is a `MoritaEquivalence`. -/
 @[simps]
@@ -201,7 +207,6 @@ def moritaEquivalenceMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i :
   linear.map_smul {X Y} f r := by
     ext (v : ι → X)
     simp only [ModuleCat.matrixEquivalence_functor, ModuleCat.toMatrixModCat_obj_carrier,
-      ModuleCat.toMatrixModCat_obj_isAddCommGroup, ModuleCat.toMatrixModCat_obj_isModule,
       ModuleCat.toMatrixModCat_map, ModuleCat.hom_smul, ModuleCat.hom_ofHom, LinearMap.smul_apply]
     ext i
     simp only [LinearMap.mapMatrixModule_apply, LinearMap.compLeft_apply, Function.comp_apply,

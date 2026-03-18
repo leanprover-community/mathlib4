@@ -161,6 +161,18 @@ theorem dense_iff (hf : IsInducing f) {s : Set X} :
 theorem of_subsingleton [Subsingleton X] (f : X → Y) : IsInducing f :=
   ⟨Subsingleton.elim _ _⟩
 
+theorem indiscreteTopology [IndiscreteTopology Y] {f : X → Y} (hf : IsInducing f) :
+    IndiscreteTopology X where
+  eq_top := by
+    cases IndiscreteTopology.eq_top Y
+    letI : TopologicalSpace Y := ⊤
+    rw [hf.eq_induced, induced_top]
+
+theorem nontrivialTopology [NontrivialTopology X] {f : X → Y} (hf : IsInducing f) :
+    NontrivialTopology Y :=
+  not_imp_not.1
+    (by simpa using (fun _ : IndiscreteTopology Y => hf.indiscreteTopology)) ‹NontrivialTopology X›
+
 end IsInducing.IsInducing
 
 namespace IsEmbedding

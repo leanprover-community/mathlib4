@@ -40,22 +40,22 @@ open Set
 
 /-- A submodule of `M` is finitely generated if it is the span of a finite subset of `M`. -/
 def FG (N : Submodule R M) : Prop :=
-  ∃ S : Finset M, Submodule.span R ↑S = N
+  ∃ S : Finset M, span R ↑S = N
 
-theorem fg_def {N : Submodule R M} : N.FG ↔ ∃ S : Set M, S.Finite ∧ span R S = N :=
-  ⟨fun ⟨t, h⟩ => ⟨_, Finset.finite_toSet t, h⟩, by
-    rintro ⟨t', h, rfl⟩
-    rcases Finite.exists_finset_coe h with ⟨t, rfl⟩
-    exact ⟨t, rfl⟩⟩
+theorem fg_def {N : Submodule R M} : N.FG ↔ ∃ S : Set M, S.Finite ∧ span R S = N := by
+  refine ⟨fun ⟨t, h⟩ => ⟨_, t.finite_toSet, h⟩, ?_⟩
+  rintro ⟨t', h, rfl⟩
+  have := h.exists_finset_coe
+  tauto
 
 theorem fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ P.toAddSubmonoid.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure] using hS⟩, fun ⟨S, hS⟩ =>
-    ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure] using hS⟩⟩
+  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure]⟩,
+    fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure] using hS⟩⟩
 
 theorem fg_iff_addSubgroup_fg {G : Type*} [AddCommGroup G] (P : Submodule ℤ G) :
     P.FG ↔ P.toAddSubgroup.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroupClosure] using hS⟩, fun ⟨S, hS⟩ =>
-    ⟨S, by simpa [← span_int_eq_addSubgroupClosure] using hS⟩⟩
+  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroupClosure]⟩,
+    fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroupClosure] using hS⟩⟩
 
 @[deprecated (since := "2025-08-20")] alias fg_iff_add_subgroup_fg := fg_iff_addSubgroup_fg
 
@@ -72,28 +72,27 @@ theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
 universe w v u in
 lemma fg_iff_exists_finite_generating_family {A : Type u} [Semiring A] {M : Type v}
     [AddCommMonoid M] [Module A M] {N : Submodule A M} :
-    N.FG ↔ ∃ (G : Type w) (_ : Finite G) (g : G → M), Submodule.span A (Set.range g) = N := by
+    N.FG ↔ ∃ (G : Type w) (_ : Finite G) (g : G → M), span A (range g) = N := by
   constructor
   · intro hN
-    obtain ⟨n, f, h⟩ := Submodule.fg_iff_exists_fin_generating_family.1 hN
+    obtain ⟨n, f, h⟩ := fg_iff_exists_fin_generating_family.mp hN
     refine ⟨ULift (Fin n), inferInstance, f ∘ ULift.down, ?_⟩
     convert h
-    ext x
-    simp only [Set.mem_range, Function.comp_apply, ULift.exists]
+    ext
+    simp
   · rintro ⟨G, _, g, hg⟩
     have := Fintype.ofFinite (range g)
-    exact ⟨(range g).toFinset, by simpa using hg⟩
+    exact ⟨(range g).toFinset, by simpa⟩
 
 theorem fg_span_iff_fg_span_finset_subset (s : Set M) :
     (span R s).FG ↔ ∃ s' : Finset M, ↑s' ⊆ s ∧ span R s = span R s' := by
-  unfold FG
   constructor
   · intro ⟨s'', hs''⟩
     obtain ⟨s', hs's, hss'⟩ := subset_span_finite_of_subset_span <| hs'' ▸ subset_span
     refine ⟨s', hs's, ?_⟩
     apply le_antisymm
-    · rwa [← hs'', Submodule.span_le]
-    · rw [Submodule.span_le]
+    · rwa [← hs'', span_le]
+    · rw [span_le]
       exact le_trans hs's subset_span
   · intro ⟨s', _, h⟩
     exact ⟨s', h.symm⟩
@@ -108,7 +107,7 @@ variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 This is defeq to `Submodule.FG`, but unfolds more nicely. -/
 def FG (I : Ideal R) : Prop :=
-  ∃ S : Finset R, Ideal.span ↑S = I
+  ∃ S : Finset R, span ↑S = I
 
 end Ideal
 
@@ -137,18 +136,18 @@ namespace Finite
 open Submodule Set
 
 theorem iff_addMonoid_fg {M : Type*} [AddCommMonoid M] : Module.Finite ℕ M ↔ AddMonoid.FG M :=
-  ⟨fun h => AddMonoid.fg_def.2 <| (Submodule.fg_iff_addSubmonoid_fg ⊤).1 h.fg_top, fun h =>
-    .of_fg_top <| (Submodule.fg_iff_addSubmonoid_fg ⊤).2 (AddMonoid.fg_def.1 h)⟩
+  ⟨fun h => AddMonoid.fg_def.mpr <| (fg_iff_addSubmonoid_fg ⊤).mp h.fg_top,
+    fun h => of_fg_top <| (fg_iff_addSubmonoid_fg ⊤).mpr (AddMonoid.fg_def.mp h)⟩
 
 theorem iff_addGroup_fg {G : Type*} [AddCommGroup G] : Module.Finite ℤ G ↔ AddGroup.FG G :=
-  ⟨fun h => AddGroup.fg_def.2 <| (Submodule.fg_iff_addSubgroup_fg ⊤).1 h.fg_top, fun h =>
-    .of_fg_top <| (Submodule.fg_iff_addSubgroup_fg ⊤).2 (AddGroup.fg_def.1 h)⟩
+  ⟨fun h => AddGroup.fg_def.mpr <| (fg_iff_addSubgroup_fg ⊤).mp h.fg_top,
+    fun h => of_fg_top <| (fg_iff_addSubgroup_fg ⊤).mpr (AddGroup.fg_def.mp h)⟩
 
 variable {R M N}
 
 /-- See also `Module.Finite.exists_fin'`. -/
-lemma exists_fin [Module.Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodule.span R (range s) = ⊤ :=
-  Submodule.fg_iff_exists_fin_generating_family.mp fg_top
+lemma exists_fin [Module.Finite R M] : ∃ (n : ℕ) (s : Fin n → M), span R (range s) = ⊤ :=
+  fg_iff_exists_fin_generating_family.mp fg_top
 
 end Finite
 
@@ -177,7 +176,7 @@ def Finite (f : A →+* B) : Prop :=
 @[simp]
 lemma finite_algebraMap [Algebra A B] :
     (algebraMap A B).Finite ↔ Module.Finite A B := by
-  rw [RingHom.Finite, toAlgebra_algebraMap]
+  rw [Finite, toAlgebra_algebraMap]
 
 end RingHom
 
