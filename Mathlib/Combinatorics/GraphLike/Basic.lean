@@ -17,7 +17,7 @@ of graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
 ## Main definitions
 
 * `DartLike`: is the typeclass for capturing the common structure of darts.
-* `GraphLike`: is the main typeclass for capturing the common structure of graph-like structures.
+* `GraphLike`: is the main typeclass for capturing the common notion of graphs.
   The field `verts` gives the set of vertices of a graph-like structure,
   the field `dart` gives the type of darts, which is an oriented edge, of a graph-like structure,
   and the field `Adj` gives the adjacency relation between vertices.
