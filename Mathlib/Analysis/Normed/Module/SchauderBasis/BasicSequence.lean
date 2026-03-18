@@ -90,33 +90,21 @@ def basicSequenceConstant : ℝ := bs.basis.enormProjBound.toReal
 /-- A basic sequence with finite projection bound satisfies the Grünblum condition. -/
 theorem basicSequence_satisfiesGrunblum :
     SatisfiesGrunblumCondition 𝕜 bs bs.basicSequenceConstant := by
-  have hK_lt_top : bs.basis.enormProjBound ≠ ⊤ := bs.basisConstant_lt_top.ne
-  refine fun n m a hmn => ?_
-  let Y := Submodule.span 𝕜 (Set.range bs.toFun)
-  have hsum_mem (k : ℕ) : ∑ i ∈ Finset.range k, a i • bs i ∈ Y :=
-    Submodule.sum_mem _ (fun i _ => Submodule.smul_mem _ _ (Submodule.subset_span ⟨i, rfl⟩))
-  have h_proj_bound : ‖bs.basis.proj m‖ ≤ bs.basicSequenceConstant := by
+  intro n m a hmn
+  have h_bound : ‖bs.basis.proj m‖ ≤ bs.basicSequenceConstant := by
     have h := bs.basis.enorm_proj_le_enormProjBound m
-    rw [enorm_eq_nnnorm] at h
-    rw [← ENNReal.toReal_le_toReal ENNReal.coe_ne_top hK_lt_top] at h
-    simp only [ENNReal.coe_toReal, coe_nnnorm] at h
-    exact h
-  let sum_n : Y := ⟨∑ i ∈ Finset.range n, a i • bs i, hsum_mem n⟩
-  let sum_m : Y := ⟨∑ i ∈ Finset.range m, a i • bs i, hsum_mem m⟩
-  have h_basis_eq : ∀ i, (bs.basis i : X) = bs i := bs.basis_eq
-  have h_sum_n_basis : sum_n = ∑ j ∈ Finset.range n, a j • bs.basis j := by
-    apply Subtype.ext
-    simp only [sum_n, Submodule.coe_sum, Submodule.coe_smul, h_basis_eq]
-  have h_proj_eq : bs.basis.proj m sum_n = sum_m := by
-    rw [h_sum_n_basis, SchauderBasis.proj_sum_range bs.basis m n a hmn]
-    apply Subtype.ext; simp only [sum_m, Submodule.coe_sum, Submodule.coe_smul, h_basis_eq]
+    rwa [enorm_eq_nnnorm, ← ENNReal.toReal_le_toReal ENNReal.coe_ne_top bs.basisConstant_lt_top.ne,
+      ENNReal.coe_toReal, coe_nnnorm] at h
   calc ‖∑ i ∈ Finset.range m, a i • bs i‖
-    _ = ‖sum_m‖ := (norm_coe sum_m).symm
-    _ = ‖bs.basis.proj m sum_n‖ := by rw [h_proj_eq]
-    _ ≤ ‖bs.basis.proj m‖ * ‖sum_n‖ := ContinuousLinearMap.le_opNorm _ _
-    _ ≤ bs.basicSequenceConstant * ‖∑ i ∈ Finset.range n, a i • bs i‖ :=
-       (mul_le_mul_of_nonneg_right h_proj_bound (norm_nonneg _)).trans_eq
-         (congr_arg _ (norm_coe sum_n))
+    _ = ‖∑ i ∈ Finset.range m, a i • bs.basis i‖ := by
+      simp only [coe_norm, AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, bs.basis_eq]
+    _ = ‖bs.basis.proj m (∑ i ∈ Finset.range n, a i • bs.basis i)‖ := by
+      rw [SchauderBasis.proj_sum_range bs.basis m n a hmn]
+    _ ≤ ‖bs.basis.proj m‖ * ‖∑ i ∈ Finset.range n, a i • bs.basis i‖ :=
+      ContinuousLinearMap.le_opNorm _ _
+    _ ≤ bs.basicSequenceConstant * ‖∑ i ∈ Finset.range n, a i • bs i‖ := by
+      simp only [coe_norm, AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, bs.basis_eq]
+      exact mul_le_mul_of_nonneg_right h_bound (norm_nonneg (∑ i ∈ Finset.range n, a i • bs i))
 
 /-- The Grünblum bound transfers through a norm-preserving map: if `b` is a basic sequence
     in `Y` and `J : X →L[𝕜] Y` satisfies `‖J y‖ = ‖y‖` with `J (x n) = b n`, then `x`
