@@ -140,11 +140,31 @@ theorem mem_add (l m : Language α) (x : List α) : x ∈ l + m ↔ x ∈ l ∨ 
 theorem mem_sub (l m : Language α) (x : List α) : x ∈ l - m ↔ x ∈ l ∧ x ∉ m :=
   Iff.rfl
 
+/-- A string is in the product of two languages iff it is the concatenation of strings drawn
+from both languages -/
 theorem mem_mul : x ∈ l * m ↔ ∃ a ∈ l, ∃ b ∈ m, a ++ b = x :=
   mem_image2
 
 theorem append_mem_mul : a ∈ l → b ∈ m → a ++ b ∈ l * m :=
   mem_image2_of_mem
+
+/-- A string is in the product of a list of languages iff it is the concatenation of strings drawn
+from each language in the list. -/
+theorem mem_list_prod_iff_forall2 (S : List (Language α)) (w : List α) :
+    w ∈ S.prod ↔ ∃ W : List (List α), w = W.flatten ∧ List.Forall₂ (fun w s => w ∈ s) W S := by
+  induction S generalizing w with
+  | nil => simp
+  | cons s S ih =>
+    constructor
+    · rintro ⟨u, hu, v, hv, rfl⟩
+      obtain ⟨W, rfl, hW⟩ := (ih v).mp hv
+      use u :: W
+      aesop
+    · rintro ⟨_ | ⟨w, W⟩, rfl, h⟩
+      · simp at h
+      · rw [List.forall₂_cons] at h
+        exact ⟨w, h.1, W.flatten, (ih _).mpr ⟨W, rfl, h.2⟩, rfl⟩
+
 
 theorem mem_kstar : x ∈ l∗ ↔ ∃ L : List (List α), x = L.flatten ∧ ∀ y ∈ L, y ∈ l :=
   Iff.rfl
@@ -411,6 +431,12 @@ lemma mem_inf {x : List α} {l m : Language α} : x ∈ l ⊓ m ↔ x ∈ l ∧ 
 
 lemma compl_compl (l : Language α) : lᶜᶜ = l := by
   simp [compl]
+
+/-- The substitution of a language `L` by a map `f` is the set of all strings `u` that can be formed
+by taking a string `w` in `L` and replacing each symbol `a` in `w` with a string from `f a`. -/
+def subst {α β : Type} (L : Language α) (f : α → Language β) : Language β :=
+  { u | ∃ w ∈ L, u ∈ (w.map f).prod }
+
 
 end Language
 

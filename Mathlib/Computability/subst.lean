@@ -84,12 +84,6 @@ def ContextFreeGrammar.subst {α β : Type} (g : ContextFreeGrammar α) (f : α 
   ContextFreeGrammar.mk (g.NT ⊕ (Σ a, (f a).NT)) (Sum.inl g.initial) (g.subst_rules_g f ∪ g.subst_rules_f f)
 
 /-
-The substitution of a language `L` by a map `f` is the set of all strings `u` that can be formed by taking a string `w` in `L` and replacing each symbol `a` in `w` with a string from `f a`.
--/
-def Language.subst {α β : Type} (L : Language α) (f : α → Language β) : Language β :=
-  { u | ∃ w ∈ L, u ∈ (w.map f).prod }
-
-/-
 `liftSymbolG` maps symbols from `g` to the substitution grammar. Non-terminals are mapped to the left component of the sum, and terminals are mapped to the start symbol of the corresponding substituting grammar. `liftSymbolF` maps symbols from `f a` to the substitution grammar. Non-terminals are mapped to the right component of the sum, and terminals are kept as terminals.
 -/
 def ContextFreeGrammar.liftSymbolG {α β : Type} (g : ContextFreeGrammar α) (f : α → ContextFreeGrammar β) (s : Symbol α g.NT) : Symbol β (g.NT ⊕ (Σ a, (f a).NT)) :=
@@ -231,19 +225,6 @@ theorem ContextFreeGrammar.Derives.distrib_prod {T : Type u} {g : ContextFreeGra
         exact?
 
 #check Set.mem_list_prod
-
-/-
-A string is in the product of a list of languages iff it is the concatenation of strings drawn from each language in the list.
--/
-theorem Language.mem_list_prod_iff_forall2 {α : Type u} (S : List (Language α)) (w : List α) :
-    w ∈ S.prod ↔ ∃ W : List (List α), w = W.flatten ∧ List.Forall₂ (fun w s => w ∈ s) W S := by
-      induction' S with s S ih generalizing w;
-      · simp +decide [ List.prod ];
-      · constructor;
-        · rintro ⟨ u, v, hu, hv, rfl ⟩ ; obtain ⟨ W, rfl, hW ⟩ := ih _ |>.1 hv; use u :: W; aesop;
-        · rintro ⟨ W, rfl, h ⟩;
-          rcases W with ( _ | ⟨ w, W ⟩ ) <;> simp_all +decide [ List.forall₂_cons ];
-          exact ⟨ w, h.1, W.flatten, ih _ |>.2 ⟨ W, rfl, h.2 ⟩, rfl ⟩
 
 /-
 If `u` is a list of used terminals and `W` is a list of strings such that each string in `W` is in the language of the corresponding terminal in `u`, then the substitution grammar derives the concatenation of `W` from the lifted terminals of `u`.
