@@ -952,8 +952,8 @@ section delaborators
 /-!
 ### Delaborators
 
-In this section we make sure the info view also uses those notations. Not all notations are
-supported so far.
+In this section we make sure the infoview also uses those notations.
+Not all notations are supported yet.
 -/
 open Bundle PrettyPrinter Delaborator SubExpr
 
@@ -992,6 +992,27 @@ arguments that can use the `T%` elaborator. -/
     let fs ← withAppArg delab
     `(mfderiv% $fs) >>= annotateGoToSyntaxDef
 
+-- TODO: add a delaborator for mfderivWithin (with a test)
+
+/-- Delaborator for `MDifferentiable` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab MDifferentiable] meta def delabMDifferentiable : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 21 do
+  try
+    let fe := (← getExpr).appArg!
+    let .lam n _ b _ := fe | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withAppArg do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(MDiffAt $Tσs) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withAppArg delab
+    `(MDiff $fs) >>= annotateGoToSyntaxDef
+
 /-- Delaborator for `MDifferentiableAt` using the custom elaborator, and special-casing
 arguments that can use the `T%` elaborator. -/
 @[app_delab MDifferentiableAt] meta def delabMDifferentiableAt : Delab := do
@@ -1011,6 +1032,26 @@ arguments that can use the `T%` elaborator. -/
     let fs ← withAppArg delab
     `(MDiffAt $fs) >>= annotateGoToSyntaxDef
 
+/-- Delaborator for `MDifferentiableOn` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab MDifferentiableOn] meta def delabMDifferentiableOn : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 22 do
+  let ss ← withAppArg delab
+  try
+    let f := (← getExpr).getAppArgs[20]!
+    let .lam n _ b _ := f | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withNaryArg 20 do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(MDiff[$ss] $Tσs) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withNaryArg 20 <| delab
+    `(MDiff[$ss] $fs) >>= annotateGoToSyntaxDef
+
 /-- Delaborator for `MDifferentiableWithinAt` using the custom elaborator, and special-casing
 arguments that can use the `T%` elaborator. -/
 @[app_delab MDifferentiableWithinAt] meta def delabMDifferentiableWithinAt : Delab := do
@@ -1023,12 +1064,17 @@ arguments that can use the `T%` elaborator. -/
     guard <| b.isAppOf ``Bundle.TotalSpace.mk'
     let s := b.getAppArgs[4]!.getAppFn
     guard <| s.isFVar
-    let fs ← withNaryArg 20 do
-      let fs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
-      `((T% $fs)) >>= annotateGoToSyntaxDef
-    `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
+    let Tσs ← withNaryArg 20 do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(MDiffAt[$ss] $Tσs) >>= annotateGoToSyntaxDef
   catch _ =>
     let fs ← withNaryArg 20 <| delab
     `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
+
+-- TODO: add more delaborators (and tests) for
+-- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt, HasMFDerivAt, HasMFDerivWithinAt
+
+-- TODO: when adding more elaborators, also add the corresponding delaborators
 
 end delaborators

@@ -96,11 +96,14 @@ protected def involutivePointwiseNeg : InvolutiveNeg (Submodule R M) where
 scoped[Pointwise] attribute [instance] Submodule.involutivePointwiseNeg
 
 @[simp]
-theorem neg_le_neg (S T : Submodule R M) : -S ≤ -T ↔ S ≤ T :=
+theorem neg_le_neg {S T : Submodule R M} : -S ≤ -T ↔ S ≤ T :=
   SetLike.coe_subset_coe.symm.trans Set.neg_subset_neg
 
-theorem neg_le (S T : Submodule R M) : -S ≤ T ↔ S ≤ -T :=
+theorem neg_le {S T : Submodule R M} : -S ≤ T ↔ S ≤ -T :=
   SetLike.coe_subset_coe.symm.trans Set.neg_subset
+
+theorem neg_eq_self_iff_neg_le {S : Submodule R M} : -S = S ↔ -S ≤ S :=
+  ⟨le_of_eq, fun h => antisymm h <| neg_le.mp h⟩
 
 /-- `Submodule.pointwiseNeg` as an order isomorphism. -/
 def negOrderIso : Submodule R M ≃o Submodule R M where
