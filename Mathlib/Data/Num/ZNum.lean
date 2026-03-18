@@ -157,7 +157,6 @@ theorem cast_to_znum : ∀ n : PosNum, (n : ZNum) = ZNum.pos n
       have := congr_arg ZNum.bit1 (cast_to_znum p)
       rwa [← ZNum.bit1_of_bit1] at this
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cast_sub' [AddGroupWithOne α] : ∀ m n : PosNum, (sub' m n : α) = m - n
   | a, 1 => by
     rw [sub'_one, Num.cast_toZNum, ← Num.cast_to_nat, pred'_to_nat, ← Nat.sub_one]
@@ -327,7 +326,7 @@ theorem cmp_to_int : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℤ) < n) (m = n
   | 0, 0 => rfl
   | pos a, pos b => by
     have := PosNum.cmp_to_nat a b; revert this; dsimp [cmp]
-    cases PosNum.cmp a b <;> [simp; exact congr_arg pos; simp]
+    simp
   | neg a, neg b => by
     have := PosNum.cmp_to_nat b a; revert this; dsimp [cmp]
     cases PosNum.cmp b a <;> [simp; simp +contextual; simp]
@@ -516,7 +515,6 @@ end ZNum
 
 namespace PosNum
 
-set_option backward.isDefEq.respectTransparency false in
 theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * ((q : ℕ) + q) = n)
     (h₂ : (r : ℕ) < 2 * d) :
     ((divModAux d q r).2 + d * (divModAux d q r).1 : ℕ) = ↑n ∧ ((divModAux d q r).2 : ℕ) < d := by
@@ -602,7 +600,6 @@ theorem mod_to_nat : ∀ n d, ((n % d : Num) : ℕ) = n % d
   | pos _, 0 => (Nat.mod_zero _).symm
   | pos _, pos _ => PosNum.mod'_to_nat _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem gcd_to_nat_aux :
     ∀ {n} {a b : Num}, a ≤ b → (a * b).natSize ≤ n → (gcdAux n a b : ℕ) = Nat.gcd a b
   | 0, 0, _, _ab, _h => (Nat.gcd_zero_left _).symm

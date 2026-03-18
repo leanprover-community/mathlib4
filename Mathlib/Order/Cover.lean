@@ -743,12 +743,10 @@ variable [Preorder α] {a b : α}
   Set.OrdConnected.apply_covBy_apply_iff WithTop.coeOrderHom <| by
     simp [WithTop.range_coe, ordConnected_Iio]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coe_covBy_top : (a : WithTop α) ⋖ ⊤ ↔ IsMax a := by
   simp only [covBy_iff_Ioo_eq, ← image_coe_Ioi, coe_lt_top, image_eq_empty,
     true_and, Ioi_eq_empty_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coe_wcovBy_top : (a : WithTop α) ⩿ ⊤ ↔ IsMax a := by
   simp only [wcovBy_iff_Ioo_eq, ← image_coe_Ioi, le_top, image_eq_empty, true_and, Ioi_eq_empty_iff]
 
@@ -783,6 +781,6 @@ variable [Preorder α]
 lemma exists_covBy_of_wellFoundedLT [wf : WellFoundedLT α] ⦃a : α⦄ (h : ¬ IsMax a) :
     ∃ a', a ⋖ a' := by
   rw [not_isMax_iff] at h
-  exact ⟨_, wellFounded_lt.min_mem _ h, fun a' ↦ wf.wf.not_lt_min _ h⟩
+  exact ⟨_, wellFounded_lt.min_mem (Ioi a) h, fun a' ↦ wf.wf.not_lt_min (Ioi a)⟩
 
 end WellFounded

@@ -5,7 +5,7 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.Data.Nat.Factorization.Basic
 public import Mathlib.NumberTheory.Divisors
@@ -86,7 +86,6 @@ theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
     lia
   rw [factorization_eq_zero_of_not_prime _ hp, factorization_eq_zero_of_not_prime _ hp]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem squarefree_pow_iff {n k : ℕ} (hn : n ≠ 1) (hk : k ≠ 0) :
     Squarefree (n ^ k) ↔ Squarefree n ∧ k = 1 := by
   refine ⟨fun h => ?_, by rintro ⟨hn, rfl⟩; simpa⟩
