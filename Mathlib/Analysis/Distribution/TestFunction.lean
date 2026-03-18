@@ -55,10 +55,10 @@ open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
 open scoped BoundedContinuousFunction NNReal Topology ContDiff
 
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω Ω₁ Ω₂ : Opens E}
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
   {F' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F']
-  {n k : ℕ∞}
+  {n n₁ n₂ k : ℕ∞}
 
 variable (Ω F n) in
 /-- The type of bundled `n`-times continuously differentiable maps with compact support -/
@@ -434,6 +434,50 @@ lemma postcompCLM_apply (T : F →L[𝕜] F')
   rfl
 
 end postcomp
+
+section Monotone
+
+variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
+
+variable (𝕜) in
+/-- If `n₁ ≥ n₂` and `Ω₁ ⊆ Ω₂`, `monoCLM 𝕜` is the continuous `𝕜`-linear inclusion of
+`𝓓^{n₁}(Ω₁, F)` inside `𝓓^{n₂}(Ω₂, F)`. Otherwise, this is the zero map.
+
+This is in fact a topological embedding when `n₁ = n₂` and `Ω₁ ⊆ Ω₂` (not in Mathlib as of
+March 2026).
+
+The parameters `n₁, n₂, Ω₁, Ω₂` are implicit as they can often be inferred from context, or
+specified by a type ascription. -/
+noncomputable def monoCLM :
+    𝓓^{n₁}(Ω₁, F) →L[𝕜] 𝓓^{n₂}(Ω₂, F) :=
+  open scoped Classical in
+  letI Φ (f : 𝓓^{n₁}(Ω₁, F)) : 𝓓^{n₂}(Ω₂, F) :=
+    if h : n₂ ≤ n₁ ∧ Ω₁ ≤ Ω₂ then
+      ⟨f, f.contDiff.of_le (mod_cast h.1), f.hasCompactSupport, f.tsupport_subset.trans h.2⟩
+    else 0
+  TestFunction.limitCLM 𝕜 Φ
+    (fun K K_sub_Ω₁ ↦ if h : n₂ ≤ n₁ ∧ Ω₁ ≤ Ω₂
+      then ofSupportedInCLM 𝕜 (K_sub_Ω₁.trans h.2) ∘L ContDiffMapSupportedIn.monoCLM 𝕜
+      else 0)
+    (fun _ _ _ ↦ by ext; dsimp [Φ]; split_ifs with h <;> simp [h])
+
+open scoped Classical in
+@[simp]
+lemma monoCLM_apply (f : 𝓓^{n₁}(Ω₁, F)) :
+    ((monoCLM 𝕜 f : 𝓓^{n₂}(Ω₂, F)) : E → F) = if n₂ ≤ n₁ ∧ Ω₁ ≤ Ω₂ then f else 0 := by
+  rw [monoCLM]
+  split_ifs <;> rfl
+
+lemma monoCLM_eq_zero (H : ¬ (n₂ ≤ n₁ ∧ Ω₁ ≤ Ω₂)) :
+    (monoCLM 𝕜 : 𝓓^{n₁}(Ω₁, F) →L[𝕜] 𝓓^{n₂}(Ω₂, F)) = 0 := by
+  ext; simp [H]
+
+lemma monoCLM_eq_of_scalars (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [Algebra ℝ 𝕜'] [IsScalarTower ℝ 𝕜' F] :
+    (monoCLM 𝕜 : 𝓓^{n₁}(Ω₁, F) → 𝓓^{n₂}(Ω₂, F)) = monoCLM 𝕜' :=
+  rfl
+
+end Monotone
 
 section FDerivCLM
 
