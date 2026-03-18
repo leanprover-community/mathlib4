@@ -47,13 +47,11 @@ local notation "K[f]" => Algebra.adjoin K {(f : K⟮X⟯)}
 theorem adjoin_X : K⟮(X : K⟮X⟯)⟯ = ⊤ :=
   eq_top_iff.mpr fun g _ ↦ (mem_adjoin_simple_iff _ _).mpr ⟨g.num, g.denom, by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IntermediateField.adjoin_X (E : IntermediateField K K⟮X⟯) :
     E⟮(X : K⟮X⟯)⟯ = ⊤ := by
   rw [← restrictScalars_eq_top_iff (K := K), restrictScalars_adjoin, eq_top_iff]
   exact le_trans (le_of_eq RatFunc.adjoin_X.symm) (IntermediateField.adjoin.mono _ _ _ (by simp))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between `E⟮X⟯` and `K⟮X⟯` as `E`-algebras. -/
 noncomputable def IntermediateField.adjoinXEquiv (E : IntermediateField K K⟮X⟯) :
     E⟮(X : K⟮X⟯)⟯ ≃ₐ[E] K⟮X⟯ :=
@@ -76,7 +74,6 @@ theorem minpolyX_map (A : Type*) [CommRing A] [Algebra K A] [Algebra (Algebra.ad
 theorem C_minpolyX (x : K) : (C x).minpolyX K⟮C x⟯ = 0 := by
   simp [minpolyX, sub_eq_zero, Subtype.ext_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem minpolyX_aeval_X : (f.minpolyX K⟮f⟯).aeval (X : K⟮X⟯) = 0 := by
   simp only [aeval_sub, aeval_map_algebraMap, aeval_X_left_eq_algebraMap, map_mul, aeval_C,
     IntermediateField.algebraMap_apply, coe_algebraMap]
@@ -84,7 +81,6 @@ theorem minpolyX_aeval_X : (f.minpolyX K⟮f⟯).aeval (X : K⟮X⟯) = 0 := by
   rw [div_mul_cancel₀ _ (algebraMap_ne_zero f.denom_ne_zero)]
   exact sub_self _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_C_of_minpolyX_coeff_eq_zero
   (hf : (f.minpolyX K⟮f⟯).coeff f.denom.natDegree = (0 : K⟮X⟯)) : ∃ c, f = C c := by
   use f.num.coeff f.denom.natDegree / f.denom.leadingCoeff
@@ -92,15 +88,12 @@ theorem eq_C_of_minpolyX_coeff_eq_zero
     (leadingCoeff_ne_zero.mpr f.denom_ne_zero)), eq_comm]
   simpa [sub_eq_zero] using hf
 
-set_option backward.isDefEq.respectTransparency false in
 theorem minpolyX_eq_zero_iff : (f.minpolyX K⟮f⟯) = 0 ↔ ∃ c, f = C c :=
   ⟨fun h ↦ f.eq_C_of_minpolyX_coeff_eq_zero (by simp [h]), by rintro ⟨c, rfl⟩; simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isAlgebraic_adjoin_simple_X (hf : ¬∃ c, f = C c) : IsAlgebraic K⟮f⟯ (X : K⟮X⟯) :=
    ⟨f.minpolyX K⟮f⟯, fun H ↦ hf (f.minpolyX_eq_zero_iff.mp H), f.minpolyX_aeval_X⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isAlgebraic_adjoin_simple_X' (hf : ¬∃ c, f = C c) :
     Algebra.IsAlgebraic K⟮f⟯ K⟮X⟯ := by
   have : Algebra.IsAlgebraic K⟮f⟯ K⟮f⟯⟮(X : K⟮X⟯)⟯ :=
@@ -141,7 +134,6 @@ theorem natDegree_minpolyX :
   · exact max_le (natDegree_num_le_natDegree_minpolyX f hf) <| le_natDegree_of_ne_zero
       fun H ↦ hf (f.eq_C_of_minpolyX_coeff_eq_zero congr($(H).val))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transcendental_of_ne_C (hf : ¬∃ c, f = C c) : Transcendental K f := by
   intro H
   have := IntermediateField.isAlgebraic_adjoin_simple H.isIntegral
@@ -149,7 +141,6 @@ theorem transcendental_of_ne_C (hf : ¬∃ c, f = C c) : Transcendental K f := b
   rw [Algebra.transcendental_iff_not_isAlgebraic] at tr
   exact tr <| Algebra.IsAlgebraic.trans _ _ _ (alg := f.isAlgebraic_adjoin_simple_X' hf)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_minpolyX' (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX K[f]) := by
   let e := Polynomial.algEquivOfTranscendental K f (f.transcendental_of_ne_C hf)
   let φ : K[X][X] := f.num.map (algebraMap ..) -
@@ -174,7 +165,6 @@ theorem irreducible_minpolyX' (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX 
   rw [add_comm, X_mul_C, map_neg, neg_mul]
   exact sub_eq_add_neg (Polynomial.C f.num) (Polynomial.C f.denom * Polynomial.X)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_minpolyX (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX K⟮f⟯) := by
   haveI : UniqueFactorizationMonoid K[f] :=
     (f.transcendental_of_ne_C hf).uniqueFactorizationMonoid_adjoin
@@ -188,7 +178,6 @@ theorem irreducible_minpolyX (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX K
       Nat.max_eq_zero_iff, ← f.eq_C_iff] at this
     exact hf this
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finrank_eq_max_natDegree :
     Module.finrank K⟮f⟯ K⟮X⟯ = max f.num.natDegree f.denom.natDegree := by
   by_cases hf : ∃ c, f = C c
@@ -203,7 +192,6 @@ theorem finrank_eq_max_natDegree :
     natDegree_C_mul <| inv_ne_zero <| leadingCoeff_ne_zero.mpr fun H ↦
     hf ((minpolyX_eq_zero_iff f).mp H), natDegree_minpolyX]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IntermediateField.isAlgebraic_X {E : IntermediateField K K⟮X⟯} (hE : E ≠ ⊥) :
     IsAlgebraic E (X : K⟮X⟯) := by
   rw [ne_eq, ← le_bot_iff, SetLike.not_le_iff_exists] at hE
@@ -223,25 +211,20 @@ variable {E : IntermediateField K K⟮X⟯}
 -- The proof of Lüroth's theorem begins here. We follow the approach from
 -- [Cohn, Basic Algebra: Groups, Rings and Fields][cohn_2003].
 
-set_option backward.isDefEq.respectTransparency false in
 variable (E) in
 /-- The minimal polynomial of `X` with coefficients in `E`. -/
 abbrev φ : E[X] := minpoly E (X : K⟮X⟯)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma φ_ne_zero (h : E ≠ ⊥) : φ E ≠ 0 :=
   minpoly.ne_zero (IntermediateField.isAlgebraic_X h).isIntegral
 
-set_option backward.isDefEq.respectTransparency false in
 lemma φ_monic (h : E ≠ ⊥) : (φ E).Monic :=
   minpoly.monic (IntermediateField.isAlgebraic_X h).isIntegral
 
-set_option backward.isDefEq.respectTransparency false in
 lemma φ_natDegree (h : E ≠ ⊥) : (φ E).natDegree = Module.finrank E K⟮X⟯ := by
   rw [← (IntermediateField.adjoinXEquiv E).toLinearEquiv.finrank_eq,
     adjoin.finrank (IntermediateField.isAlgebraic_X h).isIntegral]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Since `X` is transcendental over `K`, not all coefficients of `φ` can be in `K`. -/
 lemma exists_φ_coeff_not_mem (h : E ≠ ⊥) :
     ∃ i, (φ E).coeff i ∉ (algebraMap K E).range := by
@@ -345,7 +328,6 @@ open Classical in
 /-- The primitive part of `Φ'`. -/
 abbrev Φ : K[X][Y] := (Φ' E).primPart
 
-set_option backward.isDefEq.respectTransparency false in
 /-- We have `c * φ = Φ` as polynomials with coefficients in `Ratfunc K`. See Equation
   (11.3.5) in Cohn's proof. -/
 lemma C_c_mul_φ (h : E ≠ ⊥) :
@@ -364,7 +346,6 @@ lemma Φ_natDegree_eq_φ_natDegree (h : E ≠ ⊥) : (Φ E).natDegree = (φ E).n
     natDegree_mul (C_ne_zero.mpr (c_ne_zero h)) (map_ne_zero (φ_ne_zero h)), natDegree_C,
     natDegree_map, zero_add]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Φ_coeff_φ_natDegree (h : E ≠ ⊥) :
     algebraMap K[X] K⟮X⟯ ((Φ E).coeff (φ E).natDegree) = c E := by
   have := congr($(C_c_mul_φ h).coeff (φ E).natDegree)
@@ -387,7 +368,6 @@ lemma Φ_coeff_φ_natDegree_ne_zero (h : E ≠ ⊥) :
   rw [Φ_coeff_φ_natDegree' h]
   exact num_ne_zero (c_ne_zero h)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Φ_coeff_generatorIndex (h : E ≠ ⊥) :
     algebraMap K[X] K⟮X⟯ ((Φ E).coeff (generatorIndex h)) =
     algebraMap K[X] K⟮X⟯ (c E).num * generator E := by
@@ -462,7 +442,6 @@ lemma m_le_swap_Φ_natDegree (h : E ≠ ⊥) :
 instance : Algebra K⟮generator E⟯ E :=
   (IntermediateField.inclusion adjoin_generator_le).toAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Since `minpolyX` of our `generator` annihilates `X`, the minimal polynomial `φ`
 must divide it. -/
 lemma φ_dvd_generator_minpolyX :
@@ -520,7 +499,6 @@ lemma θ_natDegree_le (h : E ≠ ⊥) : (θ E).natDegree ≤ m E := by
   · rw [natDegree_mul (C_ne_zero.mpr (num_ne_zero (generator_ne_zero h)))
       (Polynomial.map_ne_zero (generator E).denom_ne_zero), natDegree_C, zero_add, natDegree_map]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equation (11.3.8) from Cohns proof, viewed as an equation of polynomials with coefficients
 in `K⟮X⟯`. -/
 lemma Q₀_mul_Φ (h : E ≠ ⊥) :
