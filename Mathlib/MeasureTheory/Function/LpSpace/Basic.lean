@@ -586,7 +586,7 @@ theorem compMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ} {μc 
   ext g
   simp [AEEqFun.compMeasurePreserving_comp _ hf hf']
 
-theorem compMeasurePreserving_comp' {γ : Type*} {mγ : MeasurableSpace γ} {μc : Measure γ}
+theorem compMeasurePreserving_comp_apply {γ : Type*} {mγ : MeasurableSpace γ} {μc : Measure γ}
     (g : Lp E p μc) {f : β → γ} (hf : MeasurePreserving f μb μc) {f' : α → β}
     (hf' : MeasurePreserving f' μ μb) :
     (compMeasurePreserving (f ∘ f') (hf.comp hf')) g =
