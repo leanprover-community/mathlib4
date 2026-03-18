@@ -303,7 +303,6 @@ lemma linearIndependent_of_Nikolskii (hN : SatisfiesNikolskiiCondition 𝕜 e K)
   simp [hsg] at h1
   exact h1.resolve_right (h_nz i)
 
--- The proof constructs an `UnconditionalSchauderBasis` inline with a tight bound;
 open scoped Classical in
 theorem isUnconditionalBasicSequence_of_Nikolskii {e : β → X} {K : ℝ}
     (h : SatisfiesNikolskiiCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) (hK : 0 ≤ K) :
@@ -314,26 +313,25 @@ theorem isUnconditionalBasicSequence_of_Nikolskii {e : β → X} {K : ℝ}
   let b_S := Module.Basis.span h_indep
   have hbS : ∀ n, (b_S n : X) = e n :=
     fun n ↦ congrArg Subtype.val (Module.Basis.span_apply h_indep n)
+  have coe_sum (A : Finset β) (c : β → 𝕜) :
+      (↑(∑ i ∈ A, c i • b_S i) : X) = ∑ i ∈ A, c i • e i := by
+    simp [AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, hbS]
   have h_sum (x : S) {A : Finset β} (hA : (b_S.repr x).support ⊆ A) :
       ∑ i ∈ A, b_S.repr x i • b_S i = x := by
     conv_rhs => rw [← b_S.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
     exact (Finset.sum_subset hA fun i _ hi ↦ by simp [Finsupp.notMem_support_iff.mp hi]).symm
+  have norm_sum_eq (y : S) {A : Finset β} (hA : (b_S.repr y).support ⊆ A) :
+      ‖∑ i ∈ A, b_S.repr y i • e i‖ = ‖y‖ := by
+    rw [← coe_sum, congrArg Subtype.val (h_sum y hA), norm_coe]
   let coord (j : β) : StrongDual 𝕜 S := LinearMap.mkContinuous
     ((Finsupp.lapply j).comp b_S.repr.toLinearMap) (K / ‖e j‖) <| fun y ↦ by
-      have h_norm_ej : 0 < ‖e j‖ := norm_pos_iff.mpr (h_nz j)
-      rw [div_mul_eq_mul_div, le_div_iff₀ h_norm_ej]
-      calc ‖b_S.repr y j‖ * ‖e j‖ = ‖b_S.repr y j • e j‖ := (norm_smul _ _).symm
-        _ = ‖∑ i ∈ {j}, b_S.repr y i • e i‖ := by simp
-        _ ≤ K * ‖∑ i ∈ {j} ∪ (b_S.repr y).support, b_S.repr y i • e i‖ :=
-            h {j} _ _ Finset.subset_union_left
-        _ = K * ‖y‖ := by
-          congr 2
-          have key : (∑ i ∈ {j} ∪ (b_S.repr y).support, b_S.repr y i • b_S i : S) = y :=
-            h_sum y Finset.subset_union_right
-          have key' : (↑(∑ i ∈ {j} ∪ (b_S.repr y).support, b_S.repr y i • b_S i) : X) = ↑y :=
-            congrArg (Subtype.val) key
-          simp only [Submodule.coe_sum, Submodule.coe_smul, hbS] at key'
-          exact key'
+      rw [div_mul_eq_mul_div, le_div_iff₀ (norm_pos_iff.mpr (h_nz j))]
+      change ‖b_S.repr y j‖ * ‖e j‖ ≤ K * ‖y‖
+      calc ‖b_S.repr y j‖ * ‖e j‖
+          = ‖∑ i ∈ {j}, b_S.repr y i • e i‖ := by simp [norm_smul]
+          _ ≤ K * ‖∑ i ∈ {j} ∪ (b_S.repr y).support, b_S.repr y i • e i‖ :=
+              h {j} _ _ Finset.subset_union_left
+          _ = K * ‖y‖ := by congr 1; exact norm_sum_eq y Finset.subset_union_right
   let ubs_basis : UnconditionalSchauderBasis β 𝕜 S := {
     basis := b_S
     coord := coord
@@ -351,19 +349,14 @@ theorem isUnconditionalBasicSequence_of_Nikolskii {e : β → X} {K : ℝ}
     rw [enorm_eq_nnnorm, ← ENNReal.ofReal_coe_nnreal, ENNReal.ofReal_le_ofReal_iff hK, coe_nnnorm]
     refine ContinuousLinearMap.opNorm_le_bound _ hK fun y ↦ ?_
     have h_proj : (ubs_basis.proj A y : X) = ∑ i ∈ A, b_S.repr y i • e i := by
-      have heq : ubs_basis.proj A y = ∑ i ∈ A, b_S.repr y i • b_S i := by
-        simp only [GeneralSchauderBasis.proj_apply]
-        congr 1
-      rw [heq]
-      simp only [Submodule.coe_sum, Submodule.coe_smul, hbS]
+      have : ubs_basis.proj A y = ∑ i ∈ A, b_S.repr y i • b_S i := by
+        simp only [GeneralSchauderBasis.proj_apply]; congr 1
+      rw [this]; exact coe_sum _ _
     rw [← norm_coe, h_proj]
-    have key := h A (A ∪ (b_S.repr y).support) (b_S.repr y) Finset.subset_union_left
-    have key2 : ‖∑ i ∈ A ∪ (b_S.repr y).support, (b_S.repr y) i • e i‖ = ‖y‖ := by
-      have hval := congrArg Subtype.val (h_sum y (A := A ∪ (b_S.repr y).support)
-        Finset.subset_union_right)
-      simp only [Submodule.coe_sum, Submodule.coe_smul, hbS] at hval
-      rw [hval, norm_coe]
-    linarith [key2 ▸ key]
+    calc ‖∑ i ∈ A, b_S.repr y i • e i‖
+        ≤ K * ‖∑ i ∈ A ∪ (b_S.repr y).support, (b_S.repr y) i • e i‖ :=
+          h A _ _ Finset.subset_union_left
+        _ = K * ‖y‖ := by congr 1; exact norm_sum_eq y Finset.subset_union_right
   refine ⟨⟨e, ubs_basis, hbS, h_bound.trans_lt ENNReal.ofReal_lt_top⟩, rfl, ?_⟩
   exact (ENNReal.toReal_mono ENNReal.ofReal_ne_top h_bound).trans_eq (ENNReal.toReal_ofReal hK)
 
