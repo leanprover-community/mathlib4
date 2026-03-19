@@ -109,7 +109,7 @@ private lemma comm_succ (n : ℕ) :
     rw [mul_comm]
   have eq₅ : ∑ x, β (γ₄ x) = - ∑ x, β (γ₃ x) := by
     rw [← Finset.sum_neg_distrib]
-    exact Finset.sum_congr rfl (fun x hx ↦ by simp [β, γ₃, γ₄])
+    exact Finset.sum_congr rfl (fun x hx ↦ by simp [h_succ_comp_δ_castSucc_succ, β, γ₃, γ₄])
   have h₁ : Disjoint (Finset.image γ₁ Sᶜ) (Finset.image γ₂ S) := by
     rw [Finset.disjoint_iff_ne]
     simp only [Finset.compl_filter, not_lt, Finset.mem_image, Finset.mem_filter, Finset.mem_univ,
