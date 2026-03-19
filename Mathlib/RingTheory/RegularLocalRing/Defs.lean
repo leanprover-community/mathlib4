@@ -5,8 +5,8 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Module.SpanRankOperations
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
-public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 public import Mathlib.RingTheory.KrullDimension.Field
 public import Mathlib.RingTheory.KrullDimension.PID

@@ -6,6 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Module.SpanRank
+public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.LocalRing.Module
 
 /-!
@@ -81,3 +82,12 @@ lemma spanFinrank_eq_finrank_quotient (N : Submodule R M) (fg : N.FG) :
   let e : 𝓀 ⊗[R] N ≃ₗ[𝓀] N ⧸ (maximalIdeal R) • (⊤ : Submodule R N) :=
     (quotTensorEquivQuotSMul N (maximalIdeal R)).extendScalarsOfSurjective residue_surjective
   exact e.finrank_eq
+
+lemma spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg (fg : (maximalIdeal R).FG) :
+    (maximalIdeal R).spanFinrank = Module.finrank (ResidueField R) (CotangentSpace R) :=
+  spanFinrank_eq_finrank_quotient _ fg
+
+variable (R) in
+lemma spanFinrank_maximalIdeal_eq_finrank_cotangentSpace [IsNoetherianRing R] :
+    (maximalIdeal R).spanFinrank = Module.finrank (ResidueField R) (CotangentSpace R) :=
+  spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg (maximalIdeal R).fg_of_isNoetherianRing
