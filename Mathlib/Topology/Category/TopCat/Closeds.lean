@@ -52,57 +52,6 @@ lemma id_apply (f : U ⟶ U) (x : U) : f x = x := rfl
 
 @[simp] lemma comp_apply (f : U ⟶ V) (g : V ⟶ W) (x : U) : (f ≫ g) x = g (f x) := rfl
 
-/-!
-We now construct as morphisms various inclusions of closed sets.
--/
-
-
--- This is tedious, but necessary because we decided not to allow Prop as morphisms in a category...
-/-- The inclusion `U ⊓ V ⟶ U` as a morphism in the category of closed sets.
--/
-abbrev infLELeft (U V : Closeds X) : U ⊓ V ⟶ U :=
-  inf_le_left.hom
-
-/-- The inclusion `U ⊓ V ⟶ V` as a morphism in the category of closed sets.
--/
-abbrev infLERight (U V : Closeds X) : U ⊓ V ⟶ V :=
-  inf_le_right.hom
-
-/-- The inclusion `U i ⟶ iSup U` as a morphism in the category of closed sets.
--/
-abbrev leSupr {ι : Type*} (U : ι → Closeds X) (i : ι) : U i ⟶ iSup U :=
-  (le_iSup U i).hom
-
-/-- The inclusion `iInf U ⟶ U i` as a morphism in the category of closed sets.
--/
-abbrev leInfr {ι : Type*} (U : ι → Closeds X) (i : ι) : iInf U ⟶ U i :=
-  (iInf_le U i).hom
-
-/-- The inclusion `⊥ ⟶ U` as a morphism in the category of closed sets.
--/
-abbrev botLE (U : Closeds X) : ⊥ ⟶ U :=
-  bot_le.hom
-
-/-- The inclusion `U ⟶ ⊤` as a morphism in the category of closed sets.
--/
-abbrev leTop (U : Closeds X) : U ⟶ ⊤ :=
-  le_top.hom
-
--- We do not mark this as a simp lemma because it breaks open `x`.
--- Nevertheless, it is useful in `SheafOfFunctions`.
-theorem infLELeft_apply (U V : Closeds X) (x) :
-    (infLELeft U V) x = ⟨x.1, (@inf_le_left _ _ U V : _ ≤ _) x.2⟩ :=
-  rfl
-
-@[simp]
-theorem infLELeft_apply_mk (U V : Closeds X) (x) (m) :
-    (infLELeft U V) ⟨x, m⟩ = ⟨x, (@inf_le_left _ _ U V : _ ≤ _) m⟩ :=
-  rfl
-
-@[simp]
-theorem leSupr_apply_mk {ι : Type*} (U : ι → Closeds X) (i : ι) (x) (m) :
-    (leSupr U i) ⟨x, m⟩ = ⟨x, (le_iSup U i :) m⟩ :=
-  rfl
 
 /-- The functor from closed sets in `X` to `TopCat`,
 realising each closed set as a topological space itself.
