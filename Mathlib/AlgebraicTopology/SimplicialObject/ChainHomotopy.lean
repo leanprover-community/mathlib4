@@ -154,6 +154,7 @@ private lemma comm_succ (n : ℕ) :
 
 end ToChainHomotopy
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A simplicial homotopy between `f` and `g` induces a chain homotopy
 between the induced morphisms on the alternating face map complexes. -/
 noncomputable def toChainHomotopy (H : Homotopy f g) :
