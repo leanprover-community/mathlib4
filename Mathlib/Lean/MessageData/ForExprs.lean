@@ -46,8 +46,7 @@ where
     | .ofLazy f _ => do
       let ppCtx? := ctx?.map (mkPPContext nctx)
       let dyn ← f ppCtx?
-      let some innerMsg := dyn.get? MessageData |
-        return .yield s
+      let some innerMsg := dyn.get? MessageData | return .yield s
       go nctx ctx? s innerMsg
     | .nest _ m | .group m | .tagged _ m => go nctx ctx? s m
     | .ofWidget _ alt => go nctx ctx? s alt
