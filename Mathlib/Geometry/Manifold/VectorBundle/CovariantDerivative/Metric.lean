@@ -85,6 +85,11 @@ noncomputable abbrev product (σ τ : Π x : M, V x) : M → ℝ :=
 
 -- `product` is C^k if σ and τ are: this is shown in `Riemannian.lean`
 
+-- Performance hack: TODO find a better fix, see
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Slow.20Riemannian.20geometry/with/580396376
+attribute [instance 900] NormedAddGroup.toAddGroup SeminormedAddGroup.toAddGroup
+  NormedAlgebra.toAlgebra
+
 local notation "⟪" σ ", " τ "⟫" => product σ τ
 
 -- Basic API for the product of two sections.
