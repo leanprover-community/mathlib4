@@ -155,7 +155,7 @@ lemma quotSMulTop_isCohenMacaulay_iff_isCohenMacaulay (M : ModuleCat.{v} R) [Mod
       (Submodule.mkQ_surjective _)
     simp [ntr, this]
   · have ntr1 : Nontrivial M := not_subsingleton_iff_nontrivial.mp ntr
-    have ntr2 : Nontrivial (QuotSMulTop r M) := quotSMulTop_nontrivial mem M
+    have ntr2 : Nontrivial (QuotSMulTop r M) := nontrivial_quotSMulTop_of_mem_maximalIdeal M mem
     simp [not_subsingleton_iff_nontrivial.mpr ntr2, false_or, ntr,
       ← Module.supportDim_quotSMulTop_succ_eq_supportDim reg mem,
       ← IsLocalRing.depth_quotSMulTop_succ_eq_moduleDepth M r reg mem, ENat.WithBot.add_one_cancel]
@@ -356,7 +356,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
       (((Shrink.linearEquiv R (R ⧸ p)).congrLeft M R).symm.subsingleton) with ⟨a, mem, reg⟩
     rw [Ideal.annihilator_quotient] at mem
     let M' := ModuleCat.of R (QuotSMulTop a M)
-    have : Nontrivial M' := quotSMulTop_nontrivial (le_maximalIdeal_of_isPrime p mem) M
+    have := nontrivial_quotSMulTop_of_mem_maximalIdeal M (le_maximalIdeal_of_isPrime p mem)
     have : M'.IsCohenMacaulay := (quotSMulTop_isCohenMacaulay_iff_isCohenMacaulay M a reg
       (le_maximalIdeal_of_isPrime p mem)).mp ‹_›
     have netop' : p.depth M' ≠ ⊤ :=
@@ -367,7 +367,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
     let M'ₚ := ModuleCat.of Rₚ (QuotSMulTop ((algebraMap R Rₚ) a) Mₚ)
     have map_mem : (algebraMap R Rₚ) a ∈ maximalIdeal Rₚ :=
       ((IsLocalization.AtPrime.to_map_mem_maximal_iff Rₚ p a _).mpr mem)
-    have : Nontrivial M'ₚ := quotSMulTop_nontrivial map_mem Mₚ
+    have := nontrivial_quotSMulTop_of_mem_maximalIdeal Mₚ map_mem
     have eq_succ : Module.supportDim Rₚ M'ₚ + 1 = Module.supportDim Rₚ Mₚ :=
       Module.supportDim_quotSMulTop_succ_eq_supportDim
         (reg.of_isLocalizedModule Rₚ p.primeCompl f) map_mem
