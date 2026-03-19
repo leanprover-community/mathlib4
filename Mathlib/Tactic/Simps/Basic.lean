@@ -883,7 +883,7 @@ structure Config where
   attrs : Array Attribute := #[]
   /-- simplify the right-hand side of generated simp-lemmas using `dsimp, simp`. -/
   simpRhs := false
-  /-- simplify the left-hand side of the generated lemmas using `dsimp` -/
+  /-- simplify the left-hand side of the generated lemmas using `dsimp`. -/
   dsimpLhs := false
   /-- TransparencyMode used to reduce the type in order to detect whether it is a structure. -/
   typeMd := TransparencyMode.instances
