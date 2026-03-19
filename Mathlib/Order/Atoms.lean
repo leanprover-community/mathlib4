@@ -490,7 +490,7 @@ theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → 
     refine ⟨WellFounded.min h (Set.Ioc a b) ⟨b, hab,rfl.le⟩, ?_⟩
     have hmem := (WellFounded.min_mem h (Set.Ioc a b) ⟨b, hab,rfl.le⟩)
     exact ⟨⟨hmem.1,fun c hac hlt ↦ WellFounded.not_lt_min h
-      (Set.Ioc a b) ⟨b, hab,rfl.le⟩ ⟨hac, hlt.le.trans hmem.2⟩ hlt ⟩, hmem.2⟩
+      (Set.Ioc a b) ⟨hac, hlt.le.trans hmem.2⟩ hlt⟩, hmem.2⟩
 
 theorem IsStronglyCoatomic.of_wellFounded_gt (h : WellFounded ((· > ·) : α → α → Prop)) :
     IsStronglyCoatomic α :=
@@ -920,7 +920,6 @@ protected noncomputable def completeLattice : CompleteLattice α :=
           intro con
           exact top_ne_bot (eq_bot_iff.2 (h con)) }
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
 @[implicit_reducible]
@@ -928,7 +927,6 @@ protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :
   { __ := IsSimpleOrder.completeLattice
     __ := IsSimpleOrder.booleanAlgebra }
 
-set_option backward.isDefEq.respectTransparency false in
 instance : ComplementedLattice α :=
   letI := IsSimpleOrder.completeBooleanAlgebra (α := α); inferInstance
 
