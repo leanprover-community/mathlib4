@@ -175,7 +175,7 @@ theorem IsAcyclic.coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsAcyclic) (
       have hp' : ∀ u ∈ p'.support, u.val ∈ G₂.verts := fun u hu ↦ by
         obtain ⟨u', hu', rfl⟩ := p.support.mem_map.mp <| p.support_map _ ▸ hu
         exact hp'₂ u' hu'
-      exact this h₂ h₁ (Set.inter_comm G₁.verts G₂.verts ▸ h) ⟨v, sup_comm G₁ G₂ ▸ v.prop⟩ p'
+      exact this h₂ h₁ (Set.inter_comm G₁.verts G₂.verts ▸ h) p'
         (hp.map <| Subgraph.inclusion.injective _) (.inl hp') hp'
     -- Then it must be induced from a walk in the first graph
     let p' := p.map (G₁ ⊔ G₂).hom
