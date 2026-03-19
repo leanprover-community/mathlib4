@@ -1003,6 +1003,85 @@ instance isMonoidal_comp {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G')
 
 end LaxMonoidal
 
+section OplaxMonoidal
+variable [G.LaxMonoidal]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The left adjoint of a lax monoidal functor is oplax monoidal. -/
+@[simps, implicit_reducible]
+def leftAdjointOplaxMonoidal : F.OplaxMonoidal where
+  η := (adj.homEquiv _ _).symm (ε G)
+  δ X Y := (adj.homEquiv _ _).symm ((adj.unit.app X ⊗ₘ adj.unit.app Y) ≫ μ G _ _)
+  δ_natural_left _ _ := by
+    rw [← Adjunction.homEquiv_naturality_right_symm,
+      ← Adjunction.homEquiv_naturality_left_symm, assoc, ← μ_natural_left]
+    simp [← tensorHom_id]
+  δ_natural_right _ _ := by
+    rw [← Adjunction.homEquiv_naturality_right_symm,
+      ← Adjunction.homEquiv_naturality_left_symm, assoc, ← μ_natural_right]
+    simp [← id_tensorHom]
+  oplax_associativity X Y Z := (adj.homEquiv _ _).injective (by
+    rw [← Adjunction.homEquiv_naturality_right_symm,
+      ← Adjunction.homEquiv_naturality_right_symm,
+      ← Adjunction.homEquiv_naturality_left_symm,
+      Equiv.apply_symm_apply, Equiv.apply_symm_apply, assoc, assoc]
+    conv_lhs =>
+      rw [homEquiv_counit, map_comp_assoc, map_comp,
+        ← μ_natural_left_assoc, map_comp, map_comp, tensorHom_def'_assoc]
+      dsimp
+      rw [← comp_whiskerRight_assoc]
+    conv_rhs =>
+      rw [← μ_natural_right, homEquiv_counit, map_comp_assoc,
+        map_comp, tensorHom_def_assoc, ← associator_naturality_left_assoc]
+      dsimp
+      rw [← MonoidalCategory.whiskerLeft_comp_assoc, map_comp,
+        unit_naturality_assoc, MonoidalCategory.whiskerLeft_comp,
+        unit_naturality_assoc, right_triangle_components, comp_id, assoc,
+        tensorHom_def, MonoidalCategory.whiskerLeft_comp_assoc,
+        ← associator_naturality_middle_assoc, ← associator_naturality_right_assoc,
+        ← associativity G, ← comp_whiskerRight_assoc, ← tensorHom_def,
+        ← whisker_exchange_assoc, ← comp_whiskerRight_assoc]
+    simp)
+  oplax_left_unitality _ := (adj.homEquiv _ _).injective (by
+    rw [Adjunction.homEquiv_naturality_left, Adjunction.homEquiv_naturality_right,
+      Equiv.apply_symm_apply, assoc, ← μ_natural_left, ← tensorHom_id,
+      tensorHom_comp_tensorHom_assoc]
+    simp [tensorHom_def', homEquiv_unit, homEquiv_counit])
+  oplax_right_unitality _ := (adj.homEquiv _ _).injective (by
+    rw [Adjunction.homEquiv_naturality_left, Adjunction.homEquiv_naturality_right,
+      Equiv.apply_symm_apply, assoc, ← μ_natural_right, ← id_tensorHom,
+      tensorHom_comp_tensorHom_assoc]
+    simp [tensorHom_def, homEquiv_unit, homEquiv_counit])
+
+set_option backward.isDefEq.respectTransparency false in
+instance :
+    letI := adj.leftAdjointOplaxMonoidal
+    adj.IsMonoidal := by
+  letI := adj.leftAdjointOplaxMonoidal
+  refine ⟨?_, fun X Y ↦ ?_⟩
+  · simp [homEquiv_counit]
+  · simp [homEquiv_counit, ← μ_natural]
+
+end OplaxMonoidal
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If `F ⊣ G` is an adjunction, the `G` is lax monoidal iff `F` is oplax monoidal.
+It is advisable to use `Adjunction.leftAdjointOplaxMonoidal` and
+`Adjunction.rightAdjointLaxMonoidal`, because compatibilities between
+the oplax monoidal left adjoint and the lax monoidal right adjoint
+(`Adjunction.IsMonoidal`) have been stated for these definitions. -/
+def laxMonoidalEquivOplaxMonoidal : G.LaxMonoidal ≃ F.OplaxMonoidal where
+  toFun _ := adj.leftAdjointOplaxMonoidal
+  invFun _ := adj.rightAdjointLaxMonoidal
+  left_inv _ := by
+    ext
+    · simp
+    · simp [homEquiv_counit, homEquiv_unit, ← μ_natural]
+  right_inv _ := by
+    ext
+    · simp
+    · simp [homEquiv_counit, homEquiv_unit, ← δ_natural_assoc]
+
 section Monoidal
 variable [F.Monoidal] [G.Monoidal] [adj.IsMonoidal]
 

@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 module
 
 public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.TypeStar
 public import Mathlib.Tactic.ToAdditive
 

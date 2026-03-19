@@ -138,3 +138,18 @@ info: @Dec.mk It dec2 : Dec It
 #guard_msgs in
 set_option pp.explicit true in
 #check fast_instance% { dec := dec2 : Dec It }
+
+/-!
+Checking that proof fields whose types already match at instances transparency
+are used directly, without wrapping in an auxiliary theorem.
+-/
+
+class Pointed (α : Type) where
+  val : α
+  h : True
+
+abbrev myPointed : Pointed Nat := ⟨0, trivial⟩
+
+/-- info: { val := 0, h := trivial } : Pointed Nat -/
+#guard_msgs in
+#check fast_instance% (myPointed : Pointed Nat)
