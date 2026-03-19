@@ -50,7 +50,7 @@ lemma corootSubmodule_le_lieIdeal (I : LieIdeal K L) {α : Weight K H L}
   exact lie_mem_left K L I y _ (hα hy)
 
 /-- The set of roots whose root space is contained in a given Lie ideal. -/
-def lieIdealRootSet (I : LieIdeal K L) : Set H.root :=
+def _root_.LieIdeal.rootSet (I : LieIdeal K L) : Set H.root :=
   { α | rootSpace H α.1 ≤ I.restr H }
 
 @[simp]
