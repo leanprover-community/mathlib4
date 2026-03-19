@@ -572,7 +572,7 @@ add_decl_doc DistribMulActionHom.toAddMonoidHom
 /-- Reinterpret an equivariant additive monoid homomorphism as an equivariant function. -/
 add_decl_doc DistribMulActionHom.toMulActionHom
 
-/-- Reinterpret an equivariant monoid homomorphism as an monoid homomorphism. -/
+/-- Reinterpret an equivariant monoid homomorphism as a monoid homomorphism. -/
 add_decl_doc MulDistribMulActionHom.toMonoidHom
 
 /-- Reinterpret an equivariant monoid homomorphism as an equivariant function. -/
