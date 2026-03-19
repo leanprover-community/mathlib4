@@ -156,7 +156,7 @@ theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |
   have : _ = _ := p.adj_penultimate <| nil_iff_eq_nil.not.mpr hp.ne_nil
   grind [Sym2.eq_iff, IsCycle.snd_ne_penultimate]
 
-/-- The union of two acyclic graphs that share at most one vertex is acyclic -/
+/-- The union of two acyclic graphs that share at most one vertex is acyclic. -/
 theorem IsAcyclic.coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsAcyclic) (h₂ : G₂.coe.IsAcyclic)
     (h : (G₁.verts ∩ G₂.verts).Subsingleton) : (G₁ ⊔ G₂).coe.IsAcyclic := by
   intro v p hp
@@ -211,7 +211,7 @@ theorem IsAcyclic.coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsAcyclic) (
   -- so `v₂` is in both subgraphs and in particular it is in `G₁`, contradiction
   exact hnv₂ <| (hpd ▸ rfl : v₂ = d₂.fst) ▸ hd₂₁'.left
 
-/-- The union of two trees that share exactly one vertex is a tree -/
+/-- The union of two trees that share exactly one vertex is a tree. -/
 theorem IsTree.coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsTree) (h₂ : G₂.coe.IsTree) {v : V}
     (h : G₁.verts ∩ G₂.verts = {v}) : (G₁ ⊔ G₂).coe.IsTree :=
   ⟨Subgraph.connected_sup ⟨h₁.isConnected.preconnected⟩ ⟨h₂.isConnected.preconnected⟩
