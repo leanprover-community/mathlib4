@@ -481,32 +481,6 @@ theorem abs_c_le_one (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) : |g 1 0| ≤ 1 :
     _ = c ^ 4 * z.im ^ 4 / normSq (denom g z) ^ 2 * 16 := by grind [im_smul_eq_div_normSq]
     _ ≤ 16 := by rw [← mul_pow]; linarith
 
-/-- An auxiliary result en route to `ModularGroup.eq_smul_self_of_mem_fdo_mem_fdo`.
-
-TODO: The proof of `ModularGroup.eq_smul_self_of_mem_fdo_mem_fdo` no longer uses this.
-Is it needed? -/
-theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : g 1 0 = 0 := by
-  have hp : ∀ {g' : SL(2, ℤ)}, g' • z ∈ 𝒟ᵒ → g' 1 0 ≠ 1 := by
-    intro g' hg'
-    by_contra hc
-    let a := g' 0 0
-    let d := g' 1 1
-    have had : T ^ (-a) * g' = S * T ^ d := by
-      rw [g_eq_of_c_eq_one hc]
-      dsimp [a, d]
-      group
-    let w := T ^ (-a) • g' • z
-    have h₁ : w = S • T ^ d • z := by simp only [w, ← mul_smul, had]
-    replace h₁ : normSq w < 1 := h₁.symm ▸ normSq_S_smul_lt_one (one_lt_normSq_T_zpow_smul hz d)
-    have h₂ : 1 < normSq w := one_lt_normSq_T_zpow_smul hg' (-a)
-    linarith
-  have hn : g 1 0 ≠ -1 := by
-    intro hc
-    replace hc : (-g) 1 0 = 1 := by simp [← neg_eq_iff_eq_neg.mpr hc]
-    replace hg : -g • z ∈ 𝒟ᵒ := (SL_neg_smul g z).symm ▸ hg
-    exact hp hg hc
-  grind [abs_c_le_one (fdo_subset_fd hz) (fdo_subset_fd hg)]
-
 /-- Classify cases when `z ∈ 𝒟` and `g • z ∈ 𝒟` such that `c = 0`. -/
 private lemma cases_c_zero (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) (hc : g 1 0 = 0) :
     ((g = T ∨ g = -T) ∧ z.re = -1/2) ∨
@@ -816,6 +790,13 @@ theorem eq_one_or_neg_one_of_mem_fdo_mem_fd (hz : z ∈ 𝒟ᵒ) (hg : g • z �
 where `z : ℍ` and `g : SL(2, ℤ)`, then `g = ±1`. -/
 theorem eq_one_or_neg_one_of_mem_fdo_mem_fdo (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : g = 1 ∨ g = -1 :=
   eq_one_or_neg_one_of_mem_fdo_mem_fd hz (fdo_subset_fd hg)
+
+/-- This was previously an auxiliary result en route to
+`ModularGroup.eq_smul_self_of_mem_fdo_mem_fdo`. It is now deprecated, since the proof has been
+refactored so this step is no longer needed. -/
+@[deprecated eq_one_or_neg_one_of_mem_fdo_mem_fdo (since := "2026-03-19")]
+theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : g 1 0 = 0 := by
+  rcases eq_one_or_neg_one_of_mem_fdo_mem_fdo hz hg with rfl | rfl <;> rfl
 
 /-- Second Fundamental Domain Lemma: if both `z` and `g • z` are in the open domain `𝒟ᵒ`,
 where `z : ℍ` and `g : SL(2, ℤ)`, then `z = g • z`. -/

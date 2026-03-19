@@ -44,9 +44,7 @@ def I : ℍ := ⟨Complex.I, zero_lt_one⟩
 def ρ : ℍ := ⟨⟨-1 / 2, Real.sqrt 3 / 2⟩, by positivity⟩
 
 lemma ρ_sq : (ρ : ℂ) ^ 2 = -ρ - 1 := by
-  rw [ρ, Complex.ext_iff]
-  simp [pow_two (M := ℂ), mul_re, sub_re, neg_re, one_re, mul_im, sub_im, neg_im, one_im,
-    sub_zero, ← pow_two (M := ℝ), div_pow]
+  simp [Complex.ext_iff, pow_two, ρ]
   grind
 
 lemma norm_ρ : ‖(ρ : ℂ)‖ = 1 := by norm_num [norm_def, normSq, ← pow_two, ρ, div_pow]
@@ -138,10 +136,9 @@ lemma mem_slitPlane (z : ℍ) : (z : ℂ) ∈ Complex.slitPlane := by
 geometry of the fundamental domain. -/
 lemma eq_of_re_of_norm {τ τ' : ℍ} (hre : τ.re = τ'.re) (hnorm : ‖(τ : ℂ)‖ = ‖(τ' : ℂ)‖) :
     τ = τ' := by
-  simp [UpperHalfPlane.ext_iff, Complex.ext_iff, coe_re, coe_im, hre]
   apply_fun (· ^ 2) at hnorm
-  simpa [← Complex.normSq_eq_norm_sq, Complex.normSq, ← pow_two, hre,
-    pow_left_inj₀ τ.im_pos.le τ'.im_pos.le (show 2 ≠ 0 by norm_num)] using hnorm
+  simpa [UpperHalfPlane.ext_iff, Complex.ext_iff, hre, Complex.normSq, Complex.sq_norm,
+    ← pow_two, pow_left_inj₀ τ.im_pos.le τ'.im_pos.le two_ne_zero] using hnorm
 
 end UpperHalfPlane
 
