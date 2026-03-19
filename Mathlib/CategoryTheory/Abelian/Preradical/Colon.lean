@@ -78,11 +78,9 @@ noncomputable def shortComplex : ShortComplex (C ⥤ C) where
 instance : Mono Φ.shortComplex.f := by dsimp; infer_instance
 instance : Epi Φ.shortComplex.g := by dsimp; infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma shortExact_shortComplex : Φ.shortComplex.ShortExact where
   exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The kernel fork `KernelFork.ofι Φ.ι Φ.ι_π` exhibits `Φ.ι : Φ.r ⟶ 𝟭 C` as the kernel
 of the canonical projection `Φ.π : 𝟭 C ⟶ Φ.quotient`. -/
 noncomputable def isLimitKernelFork : IsLimit (KernelFork.ofι _ Φ.ι_π) :=
