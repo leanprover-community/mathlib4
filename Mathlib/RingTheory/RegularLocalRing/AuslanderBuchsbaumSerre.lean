@@ -323,9 +323,8 @@ lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE_aux [IsLocalRing R] 
       ((projectiveDimension_le_iff _ _).mpr projdim))
   have : projectiveDimension (ModuleCat.of R (Shrink.{v, u} (R ⧸ maximalIdeal R))) ≤ 0 := by
     simpa [← WithBot.coe_zero, ← eq0, ← eq] using WithBot.le_self_add WithBot.coe_ne_bot _
-  let _ := (projective_iff_hasProjectiveDimensionLT_one _).mpr
-    ((projectiveDimension_le_iff _ _).mp this)
-  let _ : Module.Projective R (Shrink.{v} (R ⧸ maximalIdeal R)) :=
+  let := projective_iff_hasProjectiveDimensionLT_one.mpr ((projectiveDimension_le_iff _ _).mp this)
+  let : Module.Projective R (Shrink.{v} (R ⧸ maximalIdeal R)) :=
     ModuleCat.projective_of_module_projective (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R)))
   have : Module.Projective R (R ⧸ maximalIdeal R) :=
     Module.Projective.of_equiv (Shrink.linearEquiv.{v} R (R ⧸ maximalIdeal R))
