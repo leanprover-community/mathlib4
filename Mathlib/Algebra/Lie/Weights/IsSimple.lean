@@ -24,7 +24,6 @@ simple Lie algebras.
   submodule of the dual space
 
 ## Main results
-* `LieIdeal.rootSpan_mem_invtRootSubmodule`: `rootSpan` is an invariant submodule.
 * `LieAlgebra.IsKilling.instIsIrreducible`: the root system of a simple Lie algebra is irreducible
 -/
 
@@ -96,7 +95,10 @@ lemma rootSpan_mem_invtRootSubmodule (I : LieIdeal K L) :
   rw [SetLike.mem_coe, Submodule.mem_comap, LinearEquiv.coe_coe, ← RootPairing.root_reflectionPerm]
   exact Submodule.subset_span ⟨_, (I.reflectionPerm_mem_rootSet_iff α β).mpr hα, rfl⟩
 
-/-- The invariant root submodule corresponding to a Lie ideal. -/
+/-- The invariant root submodule corresponding to a Lie ideal.
+
+Given a Lie ideal `I`, this produces an invariant root submodule by taking the span of all
+roots whose root spaces are contained in `I`. -/
 noncomputable def toInvtRootSubmodule (I : LieIdeal K L) :
     (rootSystem H).invtRootSubmodule :=
   ⟨I.rootSpan, I.rootSpan_mem_invtRootSubmodule⟩
