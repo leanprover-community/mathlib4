@@ -42,14 +42,15 @@ open Function
 
 assert_not_exists Field
 
-deriving instance Zero, Nontrivial,
+deriving instance Nontrivial,
   LinearOrder, Bot, Sub,
   LinearOrderedAddCommMonoidWithTop,
   IsOrderedRing, CanonicallyOrderedAdd,
   OrderBot, OrderTop, OrderedSub, SuccOrder,
   WellFoundedLT,
   CharZero,
-  NoZeroDivisors
+  NoZeroDivisors,
+  ZeroLEOneClass
   for ENat
 
 #adaptation_note /-- Upon bumping to v4.29.0-rc3, we write out the `CommSemiring` instance rather
@@ -62,6 +63,9 @@ instance : CommSemiring ENat := {
   __ := (inferInstance : CommSemiring (WithTop ℕ))
   toNatCast := inferInstance
 }
+
+-- Moving this before `CommSemiring ENat` causes a failure later.
+deriving instance CanonicallyOrderedAdd for ENat
 
 namespace ENat
 
