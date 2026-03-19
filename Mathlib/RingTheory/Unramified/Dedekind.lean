@@ -17,6 +17,56 @@ We prove that a domain finite and unramified over a Dedekind domain is a Dedekin
 
 @[expose] public section
 
+section temp
+
+variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*)
+  [CommSemiring S] [Algebra R S] [IsLocalization M S]
+
+include M in
+theorem IsLocalization.comap_le_comap_iff {I J : Ideal S} :
+    I.comap (algebraMap R S) ≤ J.comap (algebraMap R S) ↔ I ≤ J := by
+  exact (IsLocalization.orderEmbedding M S).le_iff_le
+
+include M in
+theorem IsLocalization.comap_lt_comap_iff {I J : Ideal S} :
+    I.comap (algebraMap R S) < J.comap (algebraMap R S) ↔ I < J := by
+  exact (IsLocalization.orderEmbedding M S).lt_iff_lt
+
+include M in
+theorem IsLocalization.isMaximal_of_isMaximal_comap
+    {I : Ideal S} (h : (I.comap (algebraMap R S)).IsMaximal) :
+    I.IsMaximal := by
+  rw [Ideal.isMaximal_def, isCoatom_iff_ge_of_le] at h ⊢
+  obtain ⟨h1, h2⟩ := h
+  refine ⟨by simpa using h1, fun J h3 h4 ↦ ?_⟩
+  specialize h2 (J.comap (algebraMap R S)) (by simpa)
+  simp_rw [IsLocalization.comap_le_comap_iff M S] at h2
+  exact h2 h4
+
+end temp
+
+theorem isReduced_quotient_iff_isRadical (R : Type*) [CommRing R] (I : Ideal R) :
+    IsReduced (R ⧸ I) ↔ I.IsRadical := by
+  rw [← I.mk_ker, RingHom.ker_isRadical_iff_reduced_of_surjective, I.mk_ker]
+  · rfl
+  · exact Ideal.Quotient.mk_surjective
+
+theorem map_isMaximal_isRadical_of_formallyUnramified
+    (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
+    [IsNoetherianRing A] [Algebra.FormallyUnramified A B]
+    (p : Ideal A) [p.IsMaximal] : (p.map (algebraMap A B)).IsRadical := by
+  let : Field (A ⧸ p) := Ideal.Quotient.field p
+  let p' := p.map (algebraMap A B)
+  let Q := B ⧸ p'
+  have : IsArtinianRing Q := IsArtinianRing.of_finite (A ⧸ p) Q
+  rw [← isReduced_quotient_iff_isRadical]
+  let Q' := TensorProduct A (A ⧸ p) B
+  let e : Q ≃+* Q' := (Algebra.TensorProduct.quotIdealMapEquivTensorQuot B p).toRingEquiv.trans
+    (Algebra.TensorProduct.comm A B (A ⧸ p)).toRingEquiv
+  have : Algebra.FormallyUnramified (A ⧸ p) Q' := Algebra.FormallyUnramified.base_change (A ⧸ p)
+  have : IsReduced Q' := Algebra.FormallyUnramified.isReduced_of_field (A ⧸ p) Q'
+  exact isReduced_of_injective e e.injective
+
 /-- A domain finite and unramified over a Dedekind domain is a Dedekind domain. -/
 theorem isDedekindDomain.of_formallyUnramified
     (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
@@ -48,16 +98,7 @@ theorem isDedekindDomain.of_formallyUnramified
       infer_instance
     let Q := B ⧸ p'
     have : IsArtinianRing Q := IsArtinianRing.of_finite (A ⧸ p) Q
-    have : IsReduced Q := by
-      let Q' := TensorProduct A (A ⧸ p) B
-      let e : Q ≃+* Q' := (Algebra.TensorProduct.quotIdealMapEquivTensorQuot B p).toRingEquiv.trans
-        (Algebra.TensorProduct.comm A B (A ⧸ p)).toRingEquiv
-      have : Algebra.FormallyUnramified (A ⧸ p) Q' := Algebra.FormallyUnramified.base_change (A ⧸ p)
-      have : IsReduced Q' := Algebra.FormallyUnramified.isReduced_of_field (A ⧸ p) Q'
-      exact isReduced_of_injective e e.injective
-    have h : p'.IsRadical := by
-      rwa [← p'.mk_ker, RingHom.ker_isRadical_iff_reduced_of_surjective]
-      exact Ideal.Quotient.mk_surjective
+    have h : p'.IsRadical := map_isMaximal_isRadical_of_formallyUnramified A B p
     replace h : p''.IsRadical := by
       rw [← Ideal.radical_eq_iff] at h ⊢
       rw [← IsLocalization.map_radical q.primeCompl, h]
@@ -78,3 +119,5 @@ theorem isDedekindDomain.of_formallyUnramified
       replace hs : s.IsMaximal := IsArtinianRing.isMaximal_of_isPrime s
       rw [← hs']
       exact Ideal.comap_isMaximal_of_surjective (Ideal.Quotient.mk p') Ideal.Quotient.mk_surjective
+
+#lint

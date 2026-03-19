@@ -19,7 +19,7 @@ public import Mathlib.Algebra.Algebra.Tower
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## TODO
-Restate the file in terms of `Ideal.under` and `Ideal.over`.
+Restate the file in terms of `Ideal.under`.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
