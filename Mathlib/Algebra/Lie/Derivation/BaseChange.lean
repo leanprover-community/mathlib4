@@ -40,25 +40,12 @@ def ofDerivation : Derivation R A A →ₗ⁅R⁆ LieDerivation R (A ⊗[R] L) (
       map_add' := by simp
       map_smul' := by simp
       leibniz' x y := by
-        -- Probably the below can be golfed (low priority)
         simp only [LinearMap.coe_mk, AddHom.coe_mk]
-        refine x.induction_on (by simp) ?_ ?_
-        · intros _ l
-          refine y.induction_on (by simp) ?_ ?_
-          · intros _ l'
-            rw [←sub_eq_zero]
-            simp only [LieAlgebra.ExtendScalars.bracket_tmul, LinearMap.rTensor_tmul,
-              Derivation.coeFn_coe, Derivation.leibniz, smul_eq_mul, add_tmul]
-            rw [←(lie_skew l' l), tmul_neg]
-            abel_nf
-          · intros _ _ h1 h2
-            rw [←sub_eq_zero]
-            simp [h1, h2]
-            abel_nf
-        · intros _ _ h1 h2
-          rw [←sub_eq_zero]
-          simp [h1, h2]
-          abel_nf }
+        refine x.induction_on (by simp) (fun _ l ↦ ?_) (fun _ _ h1 h2 ↦ ?_)
+        · refine y.induction_on (by simp) (fun _ l' ↦ ?_) (fun _ _ h1 h2 ↦ ?_)
+          · simp [← lie_skew l' l, -lie_skew, add_tmul, tmul_neg]
+          · simp [h1, h2, sub_add_sub_comm]
+        · simp [h1, h2, sub_add_sub_comm] }
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
   map_lie' {_ _} := by
