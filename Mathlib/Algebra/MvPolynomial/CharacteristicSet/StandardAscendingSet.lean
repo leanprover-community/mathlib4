@@ -75,23 +75,20 @@ end AscendingSet
 
 variable (l : List (MvPolynomial σ R))
 
-/-- The recursive algorithm for computing the Standard Basic Set. -/
 noncomputable def basicSet.go (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
     (hl1 : ∀ p ∈ l, p ≠ 0) : TriangularSet σ R :=
-  if h : l = [] then BS
-  else
-    let B : MvPolynomial σ R := l.head h
+  match l with
+  | [] => BS
+  | B :: tail =>
     let BS' := BS.takeConcat B
-    let l' := l.filter (reducedToSet · BS')
+    let l' := (B :: tail).filter (reducedToSet · BS')
     go l' BS' (fun p hp ↦ hl1 p <| List.mem_of_mem_filter hp)
   termination_by l.length
   decreasing_by
-    have : B ∈ l := List.head_mem h
-    refine List.length_filter_lt_length_iff_exists.mpr ⟨B, this, ?_⟩
+    refine List.length_filter_lt_length_iff_exists.mpr ⟨B, by simp, ?_⟩
     refine ne_true_of_eq_false <| decide_eq_false ?_
-    change ¬B.reducedToSet (BS.takeConcat B)
     simp only [reducedToSet, not_forall]
-    have : B ≠ 0 := hl1 B this
+    have : B ≠ 0 := by by_contra! rfl; simp at hl1
     exact ⟨B, mem_takeConcat BS this, not_reduceTo_self this⟩
 
 /--
@@ -105,60 +102,57 @@ The algorithm works by:
 noncomputable def basicSet : TriangularSet σ R :=
   basicSet.go (l.mergeSort.filter (· ≠ 0)) ∅ (fun _ h ↦ of_decide_eq_true (List.mem_filter.mp h).2)
 
-lemma basicSetGo_lt : ∀ (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
-    (hl1 : ∀ p ∈ l, p ≠ 0) (h : l ≠ []), (l.head h).reducedToSet BS → basicSet.go l BS hl1 < BS :=
-  basicSet.go.induct _ (by simp)
-    (fun l BS hl1 h ih _ hl2 ↦ by
-      let B : MvPolynomial σ R := l.head h
-      let BS' := BS.takeConcat B
-      let l' := l.filter (reducedToSet · BS')
-      rewrite [basicSet.go, dif_neg h]
-      change basicSet.go l' BS' _ < BS
-      have : BS' < BS := takeConcat_lt_of_reducedToSet (hl1 _ <| List.head_mem h) hl2
-      if h' : l' = [] then
-        rewrite [basicSet.go, dif_pos h']
-        exact this
-      else
-        exact lt_trans (ih h' <| of_decide_eq_true (List.mem_filter.mp <| List.head_mem h').2) this)
+lemma basicSetGo_lt (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
+    (hl1 : ∀ p ∈ l, p ≠ 0) (h : l ≠ []) (hl2 : (l.head h).reducedToSet BS) :
+    basicSet.go l BS hl1 < BS := by
+  induction l, BS, hl1 using basicSet.go.induct with
+  | case1 => simp at h
+  | case2 BS B tail hl1 BS' l' _ ih =>
+    rewrite [basicSet.go]
+    change basicSet.go l' BS' _ < BS
+    have : BS' < BS := takeConcat_lt_of_reducedToSet (hl1 _ <| List.head_mem h) hl2
+    by_cases h' : l' = []
+    · rw! [h', basicSet.go]
+      exact this
+    · exact lt_trans (ih h' <| of_decide_eq_true (List.mem_filter.mp <| List.head_mem h').2) this
 
-lemma basicSetGo_le : ∀ (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
-    (hl1 : ∀ p ∈ l, p ≠ 0), l.head?.all (fun p ↦ p.reducedToSet BS) → basicSet.go l BS hl1 ≤ BS :=
-  basicSet.go.induct _ (by unfold basicSet.go; simp)
-    (fun l BS hl1 h ih hl2 ↦ by
-      rewrite [List.head?_eq_some_head h, Option.all_some, decide_eq_true_eq] at hl2
-      exact le_of_lt <| basicSetGo_lt l BS hl1 h hl2)
+lemma basicSetGo_le (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
+    (hl1 : ∀ p ∈ l, p ≠ 0) (hl2 : l.head?.all (fun p ↦ p.reducedToSet BS)) :
+    basicSet.go l BS hl1 ≤ BS := by
+  induction l, BS, hl1 using basicSet.go.induct with
+  | case1 => simp [basicSet.go]
+  | case2 BS B tail hl1 _ _ _ =>
+    rewrite [List.head?_cons, Option.all_some, decide_eq_true_eq] at hl2
+    exact le_of_lt <| basicSetGo_lt (B :: tail) BS hl1 (by simp) hl2
 
-lemma mem_of_mem_basicSetGo : ∀ (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
-    (hl1 : ∀ p ∈ l, p ≠ 0), ∀ p, p ∉ BS → p ∈ basicSet.go l BS hl1 → p ∈ l :=
-  basicSet.go.induct _ (by simp [basicSet.go])
-    (fun l BS hl1 h ih p hp1 hp2 ↦ by
-      let B : MvPolynomial σ R := l.head h
-      let BS' := BS.takeConcat B
-      let l' := l.filter (reducedToSet · BS')
-      rewrite [basicSet.go, dif_neg h] at hp2
+lemma mem_of_mem_basicSetGo (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
+    (hl1 : ∀ p ∈ l, p ≠ 0) : ∀ p, p ∉ BS → p ∈ basicSet.go l BS hl1 → p ∈ l := by
+  induction l, BS, hl1 using basicSet.go.induct with
+  | case1 => simp only [basicSet.go, List.not_mem_nil, imp_false, imp_self, implies_true]
+  | case2 BS B tail hl1 BS' l' h ih =>
+      intro p hp1 hp2
+      rewrite [basicSet.go] at hp2
       change p ∈ basicSet.go l' BS' _ at hp2
       have hnotMem : p = B ∨ p ∉ BS' :=
         or_not_of_imp fun h ↦ not_not.mp <| ne_eq _ _ ▸ (mt <| takeConcat_subset p h) hp1
       match hnotMem with
-      | .inl hm => exact hm ▸ List.head_mem h
-      | .inr hm => exact List.mem_of_mem_filter <| ih p hm hp2)
+      | .inl hm => exact List.mem_cons.mpr <| Or.inl hm
+      | .inr hm => exact List.mem_of_mem_filter <| ih p hm hp2
 
-lemma basicSetGo_isAscendingSet : ∀ (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
-    (hl1 : ∀ p ∈ l, p ≠ 0), l.head?.all (fun p ↦ p.reducedToSet BS) → BS.isAscendingSet →
-    (basicSet.go l BS hl1).isAscendingSet :=
-  basicSet.go.induct _ (fun BS _ _ ↦ by unfold basicSet.go; simp)
-    (fun l BS hl1 h ih hBS1 hBS2 ↦ by
-      let B : MvPolynomial σ R := l.head h
-      let BS' := BS.takeConcat B
-      let l' := l.filter (reducedToSet · BS')
-      rewrite [basicSet.go, dif_neg h]
-      rewrite [List.head?_eq_some_head h, Option.all_some, decide_eq_true_eq] at hBS1
-      refine ih (?_ : l'.head?.all (reducedToSet · BS')) <|
-        isAscendingSet_takeConcat hBS1 hBS2
+lemma basicSetGo_isAscendingSet (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
+    (hl1 : ∀ p ∈ l, p ≠ 0) : l.head?.all (fun p ↦ p.reducedToSet BS) → BS.isAscendingSet →
+    (basicSet.go l BS hl1).isAscendingSet := by
+  induction l, BS, hl1 using basicSet.go.induct with
+  | case1 => unfold basicSet.go; simp
+  | case2 BS B tail hl1 BS' l' h ih =>
+      intro hBS1 hBS2
+      rewrite [basicSet.go]
+      rewrite [List.head?_cons, Option.all_some, decide_eq_true_eq] at hBS1
+      refine ih ?_ <| isAscendingSet_takeConcat hBS1 hBS2
       if l'_nil : l' = [] then simp [l'_nil]
       else
         simp only [List.head?_eq_some_head l'_nil, Option.all_some, decide_eq_true_eq]
-        exact of_decide_eq_true (List.mem_filter.mp <| List.head_mem l'_nil).2)
+        exact of_decide_eq_true (List.mem_filter.mp <| List.head_mem l'_nil).2
 
 /-- The core lemma proving that the computed Basic Set is indeed minimal
 among all ascending sets contained in `l`. -/
@@ -170,21 +164,21 @@ lemma basicSetGo_le_ascendingSet (l : List (MvPolynomial σ R)) (BS : Triangular
   induction l, BS, hl1 using basicSet.go.induct with
   | case1 BS hl1 =>
     intro _ _ _ T _ _ hT4
-    rewrite [basicSet.go, dif_pos rfl]
+    rewrite [basicSet.go]
     refine ge_of_forall_equiv fun n hn ↦ ?_
     simpa using hT4 _ (apply_mem hn)
-  | case2 l BS hl1 h B BS' l' ih =>
+  | case2 BS B tail hl1 BS' l' _ ih =>
     intro hl2 hBS1 hBS2 T hT1 ⟨hT2, hT3⟩ hT4
-    have hB1 := hBS1 B <| List.head_mem h
-    have hB2 : ∀ ⦃q⦄, q ∈ l → B ≤ q := fun _ ↦ List.Pairwise.rel_head hl2
-    rewrite [List.head?_eq_some_head h, Option.all_some, decide_eq_true_eq] at hBS2
+    have hB1 := hBS1 B List.mem_cons_self
+    have hB2 : ∀ ⦃q⦄, q ∈ B :: tail → B ≤ q := fun _ ↦ List.Pairwise.rel_head hl2
+    rewrite [List.head?_cons, Option.all_some, decide_eq_true_eq] at hBS2
     have heq : BS' = BS.concat B := takeConcat_eq_concat_of_canConcat hB1
     by_cases hL : T.length = BS.length
     · have : BS ≈ T := equiv_iff'.mpr ⟨hL.symm, hT3⟩
       refine le_of_lt <| TriangularSet.lt_of_lt_of_equiv ?_ this
-      exact basicSetGo_lt l BS hl1 h hBS2
+      exact basicSetGo_lt (B :: tail) BS hl1 (by simp) hBS2
     have hL : BS.length < T.length := Nat.lt_of_le_of_ne hT2 (Ne.symm hL)
-    rewrite [basicSet.go, dif_neg h]
+    rewrite [basicSet.go]
     change basicSet.go l' BS' _ ≤ T
     let q := T BS.length
     have Bleq : B ≤ q := by

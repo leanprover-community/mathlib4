@@ -79,13 +79,13 @@ variable (l : List (MvPolynomial σ R))
 /-- The recursive algorithm for computing the Weak Basic Set. -/
 noncomputable def basicSet.go (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
     (hl1 : ∀ p ∈ l, p ≠ 0) (hl2 : ∀ p ∈ l, BS.canConcat p) : TriangularSet σ R :=
-  if h : l = [] then BS
-  else
-    let B : MvPolynomial σ R := l.head h
-    have hB : BS.canConcat B := hl2 B (List.head_mem h)
+  match l with
+  | [] => BS
+  | B :: tail =>
+    have hB : BS.canConcat B := hl2 B List.mem_cons_self
     let BS' := BS.concat B
     -- Explicitly check main variable ordering here:
-    let l' := l.filter fun p ↦ B.vars.max < p.vars.max ∧ p.initial.reducedToSet BS'
+    let l' := (B :: tail).filter fun p ↦ B.vars.max < p.vars.max ∧ p.initial.reducedToSet BS'
     have hl1' : ∀ p ∈ l', p ≠ 0 := fun p hp ↦ hl1 p (List.mem_of_mem_filter hp)
     have hl2' : ∀ p ∈ l', BS'.canConcat p := fun p hp ↦
       have := List.mem_filter.mp hp
@@ -96,7 +96,7 @@ noncomputable def basicSet.go (l : List (MvPolynomial σ R)) (BS : TriangularSet
     go l' BS' hl1' hl2'
   termination_by l.length
   decreasing_by
-    refine List.length_filter_lt_length_iff_exists.mpr ⟨B, List.head_mem h, ?_⟩
+    refine List.length_filter_lt_length_iff_exists.mpr ⟨B, List.mem_cons_self, ?_⟩
     refine ne_true_of_eq_false <| decide_eq_false ?_
     rewrite [not_and_or, not_lt]
     exact Or.inl (le_refl _)
@@ -118,14 +118,14 @@ lemma basicSetGo_lt (BS : TriangularSet σ R) (hl1 : ∀ p ∈ l, p ≠ 0)
     (hl2 : ∀ p ∈ l, BS.canConcat p) : (h : l ≠ []) →
     (l.head h).initial.reducedToSet BS → basicSet.go l BS hl1 hl2 < BS := by
   induction l, BS, hl1, hl2 using basicSet.go.induct with
-  | case1 BS hl1 hl2 => simp
-  | case2 l BS hl1 hl2 h B hB BS' l' hl1' hl2' ih =>
-    intro _ hl3
-    rewrite [basicSet.go, dif_neg h]
+  | case1 _ _ _ => simp
+  | case2 BS B tail _ _ hB BS' l' hl1' hl2' _ _ ih =>
+    intro _ _
+    rewrite [basicSet.go]
     change basicSet.go l' BS' hl1' hl2' < BS
     have : BS' < BS := concat_lt hB
     if h' : l' = [] then
-      rewrite [basicSet.go, dif_pos h']
+      simp only [h', basicSet.go, gt_iff_lt]
       exact concat_lt hB
     else
       have := ih h' (of_decide_eq_true (List.mem_filter.mp <| List.head_mem h').2).2
@@ -135,25 +135,25 @@ lemma basicSetGo_le (BS : TriangularSet σ R) (hl1 : ∀ p ∈ l, p ≠ 0)
     (hl2 : ∀ p ∈ l, BS.canConcat p) :
     l.head?.all (fun p ↦ p.initial.reducedToSet BS) → basicSet.go l BS hl1 hl2 ≤ BS := by
   induction l, BS, hl1, hl2 using basicSet.go.induct with
-  | case1 BS hl1 hl2 => unfold basicSet.go; simp
-  | case2 l BS hl1 hl2 h B hB BS' l' hl1' hl2' ih =>
+  | case1 _ _ _ => unfold basicSet.go; simp
+  | case2 BS B tail hl1 hl2 _ _ _ _ _ _ _ _ =>
     intro hl3
-    rewrite [List.head?_eq_some_head h, Option.all_some, decide_eq_true_eq] at hl3
-    exact le_of_lt <| basicSetGo_lt l BS hl1 hl2 h hl3
+    rewrite [List.head?_cons, Option.all_some, decide_eq_true_eq] at hl3
+    exact le_of_lt <| basicSetGo_lt (B :: tail) BS hl1 hl2 (by simp) hl3
 
 lemma mem_of_mem_basicSetGo (BS : TriangularSet σ R) (hl1 : ∀ p ∈ l, p ≠ 0)
     (hl2 : ∀ p ∈ l, BS.canConcat p) :
     ∀ p, p ∉ BS → p ∈ basicSet.go l BS hl1 hl2 → p ∈ l := by
   induction l, BS, hl1, hl2 using basicSet.go.induct with
-  | case1 BS hl1 hl2 => unfold basicSet.go; simp
-  | case2 l BS hl1 hl2 h B hB BS' l' hl1' hl2' ih =>
+  | case1 _ _ _ => unfold basicSet.go; simp
+  | case2 BS B tail _ _ hB BS' l' hl1' hl2' _ _ ih =>
     intro p hp1 hp2
-    rewrite [basicSet.go, dif_neg h] at hp2
+    rewrite [basicSet.go] at hp2
     change p ∈ basicSet.go l' BS' hl1' hl2' at hp2
     have hnotMem : p = B ∨ p ∉ BS' :=
       or_not_of_imp fun h ↦ or_iff_not_imp_right.mp ((mem_concat_iff hB).mp h) hp1
     match hnotMem with
-    | .inl hm => exact hm ▸ List.head_mem h
+    | .inl hm => exact List.mem_cons.mpr <| Or.inl hm
     | .inr hm => exact List.mem_of_mem_filter <| ih p hm hp2
 
 lemma basicSetGo_isAscendingSet (BS : TriangularSet σ R)
@@ -161,14 +161,13 @@ lemma basicSetGo_isAscendingSet (BS : TriangularSet σ R)
     l.head?.all (fun p ↦ p.initial.reducedToSet BS) → BS.isAscendingSet →
     (basicSet.go l BS hl1 hl2).isAscendingSet := by
   induction l, BS, hl1, hl2 using basicSet.go.induct with
-  | case1 BS hl1 hl2 => unfold basicSet.go; simp
-  | case2 l BS hl1 hl2 h B hB BS' l' hl1' hl2' =>
+  | case1 _ _ _ => unfold basicSet.go; simp
+  | case2 BS B tail _ _ hB BS' l' hl1' hl2' _ _ ih =>
     expose_names
     intro hl3 hBS
-    rewrite [basicSet.go, dif_neg h]
-    rewrite [List.head?_eq_some_head h, Option.all_some, decide_eq_true_eq] at hl3
-    refine ih1 (?_ : l'.head?.all (fun p ↦ p.initial.reducedToSet BS')) <|
-      isAscendingSet_concat hB hl3 hBS
+    rewrite [basicSet.go]
+    rewrite [List.head?_cons, Option.all_some, decide_eq_true_eq] at hl3
+    refine ih ?_ <| isAscendingSet_concat hB hl3 hBS
     if l'_nil : l' = [] then simp [l'_nil]
     else
       simp only [List.head?_eq_some_head l'_nil, Option.all_some, decide_eq_true_eq]
@@ -182,20 +181,20 @@ lemma basicSetGo_le_ascendingSet (BS : TriangularSet σ R) (hl1 : ∀ p ∈ l, p
   induction l, BS, hl1, hl2 using basicSet.go.induct with
   | case1 BS hl1 hl2 =>
     intro _ _ T _ _ hT4
-    rewrite [basicSet.go, dif_pos rfl]
+    rewrite [basicSet.go]
     refine ge_of_forall_equiv fun n hn ↦ ?_
     simpa using hT4 _ (apply_mem hn)
-  | case2 l BS hl1 hl2 h B hB BS' l' hl1' hl2' ih =>
+  | case2 BS B tail hl1 hl2 hB BS' l' hl1' hl2' _ _ ih =>
     intro hl3 hBS T hT1 ⟨hT2, hT3⟩ hT4
-    have hB1 := hl1 B <| List.head_mem h
-    have hB2 : ∀ ⦃q⦄, q ∈ l → B ≤ q := fun _ ↦ List.Pairwise.rel_head hl3
-    rewrite [List.head?_eq_some_head h, Option.all_some, decide_eq_true_eq] at hBS
+    have hB1 := hl1 B List.mem_cons_self
+    have hB2 : ∀ ⦃q⦄, q ∈ B :: tail → B ≤ q := fun _ ↦ List.Pairwise.rel_head hl3
+    rewrite [List.head?_cons, Option.all_some, decide_eq_true_eq] at hBS
     by_cases hL : T.length = BS.length
     · have : BS ≈ T := equiv_iff'.mpr ⟨hL.symm, hT3⟩
       refine le_of_lt <| TriangularSet.lt_of_lt_of_equiv ?_ this
-      exact basicSetGo_lt l BS hl1 hl2 h hBS
+      exact basicSetGo_lt (B :: tail) BS hl1 hl2 (by simp) hBS
     have hL : BS.length < T.length := Nat.lt_of_le_of_ne hT2 (Ne.symm hL)
-    rewrite [basicSet.go, dif_neg h]
+    rewrite [basicSet.go]
     change basicSet.go l' BS' hl1' hl2' ≤ T
     let q := T BS.length
     have Bleq : B ≤ q := by
