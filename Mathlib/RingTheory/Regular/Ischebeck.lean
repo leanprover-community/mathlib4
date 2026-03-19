@@ -26,13 +26,6 @@ universe u v
 
 variable {R : Type u} [CommRing R]
 
-lemma quotSMulTop_nontrivial [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
-    (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L] :
-    Nontrivial (QuotSMulTop x L) := by
-  apply Submodule.Quotient.nontrivial_iff.mpr (Ne.symm _)
-  apply Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator
-  exact IsLocalRing.maximalIdeal_le_jacobson _ mem
-
 set_option backward.isDefEq.respectTransparency false in
 theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : ModuleCat.{v} R)
     [Module.Finite R M] [Nfin : Module.Finite R N] [Nontrivial M] [Nntr : Nontrivial N]
@@ -97,7 +90,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
       apply le_sSup
       intro i hi
       have : Subsingleton (Ext (ModuleCat.of R (QuotSMulTop x L)) M (i + 1)) := by
-        have ntr : Nontrivial (QuotSMulTop x L) := quotSMulTop_nontrivial (Set.mem_of_mem_diff hx) L
+        have ntr := nontrivial_quotSMulTop_of_mem_maximalIdeal L (Set.mem_of_mem_diff hx)
         have dimlt' : (Module.supportDim R (QuotSMulTop x L)).unbot
           (Module.supportDim_ne_bot_of_nontrivial R (QuotSMulTop x L)) < r := by
           have : (Module.supportDim R (QuotSMulTop x L)) + 1 ≤ Module.supportDim R L := by
@@ -192,16 +185,8 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           rcases lt_or_eq_of_le (ENat.toNat_le_of_le_coe dimle3') with lt|eq
           · exact ihr _ lt (ModuleCat.of.{v} R L3) rfl
           · exact ih3' ntr.2 eq
-        let S : ShortComplex (ModuleCat.{v} R) := {
-          f := ModuleCat.ofHom f
-          g := ModuleCat.ofHom g
-          zero := by
-            ext
-            simp [exac.apply_apply_eq_zero] }
-        have hS : S.ShortExact := {
-          exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr exac
-          mono_f := (ModuleCat.mono_iff_injective S.f).mpr inj
-          epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surj }
+        let S := ModuleCat.shortComplexOfCompEqZero f g exac.linearMap_comp_eq_zero
+        have hS := ModuleCat.shortComplex_shortExact S exac inj surj
         exact ge_trans (moduleDepth_ge_min_of_shortExact_snd_fst S hS M) (le_inf_iff.mpr
           ⟨le_trans (tsub_le_tsub_left dimle1' _) ge1, le_trans (tsub_le_tsub_left dimle3' _) ge3⟩)
       · have : Subsingleton L1 ∨ Subsingleton L3 := by
