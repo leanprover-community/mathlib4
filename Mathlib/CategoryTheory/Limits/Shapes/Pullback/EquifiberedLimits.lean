@@ -24,6 +24,7 @@ open Limits Functor ObjectProperty
 
 variable {J K C D ι : Type*} [Category* J] [Category* C] [Category* K] [Category* D]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (F : C ⥤ D) [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D] :
     IsClosedUnderLimitsOfShape (fun f : Over F ↦ f.hom.Equifibered) J := by
   wlog hJ : IsConnected J generalizing J
@@ -36,7 +37,7 @@ instance (F : C ⥤ D) [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D] :
       refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ (WithTerminal.isLimitEquiv.symm hc)
       · exact NatIso.ofComponents (fun i ↦ i.casesOn (fun _ ↦ .refl _) (.refl _)) <| by
           rintro (i | _) (j | _) <;> (try rintro ⟨⟩) <;> simp
-      · exact Cones.ext (.refl _) (by rintro ⟨⟩ <;> simp))⟩, fun i ↦
+      · exact Cone.ext (.refl _) (by rintro ⟨⟩ <;> simp))⟩, fun i ↦
         i.casesOn H (.of_isIso (𝟙 F))⟩ f
   refine ⟨fun G ⟨⟨c, α, hc⟩, H⟩ i j f ↦ ⟨⟨by simp⟩, ⟨Limits.PullbackCone.isLimitAux' _ fun s ↦ ?_⟩⟩⟩
   let hcᵢ := isLimitOfPreserves (Over.forget _ ⋙ (evaluation _ _).obj i) hc
@@ -57,6 +58,7 @@ instance (F : C ⥤ D) [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D] :
     simp [← NatTrans.naturality, reassoc_of% hm₁]
   · simpa [← NatTrans.comp_app]
 
+set_option backward.isDefEq.respectTransparency false in
 open Over in
 instance (F : C ⥤ D) [∀ a b : C, HasProductsOfShape (a ⟶ b) D] :
     IsClosedUnderColimitsOfShape (fun f : Under F ↦ f.hom.Coequifibered) J := by

@@ -354,6 +354,7 @@ instance [NonUnitalCommRing β] [IsTopologicalRing β] :
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     [IsTopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [IsScalarTower R β β] :
     IsScalarTower R C_c(α, β) C_c(α, β) where
@@ -362,6 +363,7 @@ instance {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     simp only [smul_eq_mul, coe_mul, coe_smul, Pi.mul_apply, Pi.smul_apply]
     rw [← smul_eq_mul, ← smul_eq_mul, smul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     [IsTopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [SMulCommClass R β β] :
     SMulCommClass R C_c(α, β) C_c(α, β) where
@@ -749,6 +751,7 @@ noncomputable def toReal (f : C_c(α, ℝ≥0)) : C_c(α, ℝ) :=
 lemma nnrealPart_sub_nnrealPart_neg (f : C_c(α, ℝ)) :
     (nnrealPart f).toReal - (nnrealPart (-f)).toReal = f := by ext x; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `toReal` defined as a `ℝ≥0`-linear map. -/
 noncomputable def toRealLinearMap : C_c(α, ℝ≥0) →ₗ[ℝ≥0] C_c(α, ℝ) where
   toFun := toReal
@@ -771,6 +774,7 @@ lemma nnrealPart_neg_toReal_eq (f : C_c(α, ℝ≥0)) : nnrealPart (-toReal f) =
 
 section toNNRealLinear
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a positive linear functional `Λ : C_c(α, ℝ) → ℝ`, define a `ℝ≥0`-linear map. -/
 noncomputable def toNNRealLinear (Λ : C_c(α, ℝ) →ₚ[ℝ] ℝ) :
     C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0 where
@@ -832,23 +836,34 @@ lemma eq_toNNRealLinear_toRealPositiveLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ�
   ext f
   simp
 
-@[deprecated (since := "2025-08-08")]
-alias toRealLinear := toRealPositiveLinear
-
-@[deprecated (since := "2025-08-08")]
-alias toRealLinear_apply := toRealPositiveLinear_apply
-
-@[deprecated map_nonneg (since := "2025-08-08")]
-lemma toRealLinear_nonneg (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) (g : C_c(α, ℝ)) (hg : 0 ≤ g) :
-    0 ≤ toRealPositiveLinear Λ g := map_nonneg _ hg
-
-@[deprecated (since := "2025-08-08")]
-alias eq_toRealLinear_toReal := eq_toRealPositiveLinear_toReal
-
-@[deprecated (since := "2025-08-08")]
-alias eq_toNNRealLinear_toRealLinear := eq_toNNRealLinear_toRealPositiveLinear
-
 end toRealPositiveLinear
+
+section pullback
+
+variable [R1Space α] [Group α] [TopologicalSpace β] [R1Space β] [Group β] [ContinuousMul β]
+  [NormedAddCommGroup γ] {φ : α →* β} (hφ : Topology.IsClosedEmbedding φ)
+
+open scoped Pointwise in
+/-- Pull back a continuous compactly supported function `f` on `β` along a closed embedding
+`φ : α →* β` to the continuous compactly supported function `a ↦ f (b * φ a)` on `A`. -/
+@[to_additive /-- Pull back a continuous compactly supported function `f` on `β` along a closed
+embedding `φ : α →+ β` to the continuous compactly supported function `a ↦ f (b + φ a)` on `A`. -/]
+noncomputable def pullback_monoidHom (f : CompactlySupportedContinuousMap β γ) (b : β) :
+    CompactlySupportedContinuousMap α γ where
+  toFun a := f (b * φ a)
+  hasCompactSupport' := by
+    obtain ⟨K, hK, hf⟩ := exists_compact_iff_hasCompactSupport.mpr f.hasCompactSupport
+    refine exists_compact_iff_hasCompactSupport.mp ⟨φ ⁻¹' (b⁻¹ • K),
+      hφ.isCompact_preimage (hK.smul b⁻¹), fun x hx ↦ hf _ ?_⟩
+    simpa [Set.mem_smul_set_iff_inv_smul_mem] using hx
+  continuous_toFun := by fun_prop
+
+@[to_additive]
+theorem pullback_monoidHom_def (f : CompactlySupportedContinuousMap β γ) (b : β) (a : α) :
+    pullback_monoidHom hφ f b a = f (b * φ a) :=
+  rfl
+
+end pullback
 
 end CompactlySupportedContinuousMap
 

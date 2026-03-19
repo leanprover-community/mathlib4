@@ -59,6 +59,7 @@ lemma LSeriesSummable.abscissaOfAbsConv_le {f : ℕ → ℂ} {s : ℂ} (h : LSer
     abscissaOfAbsConv f ≤ s.re :=
   sInf_le <| by simpa using h.of_re_le_re (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma LSeries.abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable {f : ℕ → ℂ} {x : ℝ}
     (h : ∀ y : ℝ, x < y → LSeriesSummable f y) :
     abscissaOfAbsConv f ≤ x := by

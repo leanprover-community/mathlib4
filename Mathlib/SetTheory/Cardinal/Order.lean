@@ -119,7 +119,7 @@ theorem mk_subtype_le {α : Type u} (p : α → Prop) : #(Subtype p) ≤ #α :=
   ⟨Embedding.subtype p⟩
 
 theorem mk_set_le (s : Set α) : #s ≤ #α :=
-  mk_subtype_le s
+  mk_subtype_le (· ∈ s)
 
 theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.out) := by
   conv_lhs => rw [← Cardinal.mk_out c, ← Cardinal.mk_out c', le_def]
@@ -260,7 +260,8 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
 theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
 
 @[simp]
-theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [← one_add_one_eq_two, Set]
+theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by
+  simp [← mk_congr (Equiv.ofBijective _ Set.setOf_bijective), ← one_add_one_eq_two]
 
 /-- A variant of `Cardinal.mk_set` expressed in terms of a `Set` instead of a `Type`. -/
 @[simp]
