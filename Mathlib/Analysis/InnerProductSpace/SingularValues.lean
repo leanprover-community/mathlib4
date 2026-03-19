@@ -160,11 +160,9 @@ theorem injective_iff_forall_lt_rank_singularValues_pos :
     use i, i.isLt
     simp [RCLike.ofReal_eq_zero.mp hi, T.singularValues_fin rfl]
   · intro ⟨i, h, hz⟩
-    suffices h₁ : (0 : 𝕜) = T.isSymmetric_adjoint_comp_self.eigenvalues rfl ⟨i, h⟩ from
-      h₁ ▸ T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨i, h⟩
-    rw [← sq_singularValues_of_lt]
-    rw [nonpos_iff_eq_zero] at hz
-    simp [hz]
+    convert T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨i, h⟩
+    rw [← sq_singularValues_of_lt, nonpos_iff_eq_zero.mp hz]
+    simp
 
 /--
 7.68(b) from [axler2024]. See also `LinearMap.support_singularValues` for a stronger statement.
