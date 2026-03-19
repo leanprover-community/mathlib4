@@ -73,9 +73,8 @@ lemma rootSpace_le_ideal_of_apply_coroot_ne_zero (I : LieIdeal K L)
     exact lie_mem_left K L I _ y (corootSubmodule_le_lieIdeal I hα (coroot_mem_corootSubmodule α))
   exact I.toSubmodule.smul_mem_iff hγ_ne |>.mp this
 
-lemma reflectionPerm_mem_lieIdealRootSet (I : LieIdeal K L) (i : H.root)
-    {α : H.root} (hα : α ∈ lieIdealRootSet I) :
-    (rootSystem H).reflectionPerm i α ∈ lieIdealRootSet I := by
+lemma reflectionPerm_mem_lieIdeal_rootSet_iff (I : LieIdeal K L) (α β : H.root) :
+    (rootSystem H).reflectionPerm β α ∈ I.rootSet ↔ α ∈ I.rootSet := by
   let S := rootSystem H
   simp only [mem_lieIdealRootSet] at hα ⊢
   by_cases hp : S.pairing α i = 0
