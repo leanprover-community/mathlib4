@@ -87,7 +87,8 @@ theorem IsMatching.toEdge.surjective (h : M.IsMatching) : Surjective h.toEdge :=
 
 theorem IsMatching.toEdge_preimage (h : M.IsMatching) (huv : M.Adj u v) :
     h.toEdge⁻¹' {⟨s(u, v), huv⟩} = {⟨u, M.edge_vert huv⟩, ⟨v, M.edge_vert huv.symm⟩} := by
-  ext w; refine ⟨fun hw ↦ ?_, fun hw ↦ ?_⟩
+  ext w
+  refine ⟨fun hw ↦ ?_, fun hw ↦ ?_⟩
   · simp only [Set.mem_preimage, toEdge, Set.mem_singleton_iff, Subtype.mk.injEq, Sym2.eq,
      Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at hw
     obtain h|h := hw
