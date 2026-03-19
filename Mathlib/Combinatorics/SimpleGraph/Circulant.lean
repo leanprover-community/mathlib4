@@ -191,7 +191,7 @@ theorem cycleGraph.getVert_cycle {m : ℕ} (hm : m ≤ n + 3) :
     (cycleGraph.cycle n).getVert m = ⟨(n + 3 - m) % (n + 3), Nat.mod_lt _ (by lia)⟩ := by
   cases m
   · simp
-  · grind +locals [getVert_cons_succ, Fin.eq_mk_iff_val_eq, cycleGraph.getVert_cycleCons]
+  · grind +locals [getVert_cons_succ, cycleGraph.getVert_cycleCons]
 
 theorem cycleGraph.isPath_tail_cycle : (cycleGraph.cycle n).tail.IsPath := by
   refine isPath_iff_injective_get_support _ |>.mpr fun ⟨i, hi⟩ ⟨j, hj⟩ hij ↦ ?_
