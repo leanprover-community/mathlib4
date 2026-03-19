@@ -195,21 +195,22 @@ theorem support_singularValues : T.singularValues.support = Finset.range (finran
     apply_fun Finset.card at hn
     simpa [card_support_singularValues] using hn
 
-theorem singularValues_lt_rank {n : ℕ} (hn : n < finrank 𝕜 (range T)) : 0 < T.singularValues n := by
+theorem singularValues_pos_of_lt_rank {n : ℕ} (hn : n < finrank 𝕜 (range T)) :
+    0 < T.singularValues n := by
   rwa [zero_lt_iff, ← Finsupp.mem_support_iff, support_singularValues, Finset.mem_range]
 
 theorem singularValues_rank : T.singularValues (finrank 𝕜 (range T)) = 0 := by
   rw [← Finsupp.notMem_support_iff, support_singularValues]
   exact Finset.notMem_range_self
 
-theorem singularValues_le_rank {n : ℕ}
-    (hn : finrank 𝕜 (range T) ≤ n) : T.singularValues n = 0 := by
+theorem singularValues_of_le_rank {n : ℕ} (hn : finrank 𝕜 (range T) ≤ n) :
+    T.singularValues n = 0 := by
   rw [← Finsupp.notMem_support_iff, support_singularValues, Finset.mem_range]
   order
 
 @[simp]
 theorem singularValues_zero (i : ℕ) : (0 : E →ₗ[𝕜] F).singularValues i = 0 := by
-  apply singularValues_le_rank
+  apply singularValues_of_le_rank
   trans 0 <;> simp
 
 end LinearMap
