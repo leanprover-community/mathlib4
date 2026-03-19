@@ -216,6 +216,13 @@ lemma lineDerivCLM_add {v₁ v₂ : E} :
   -- Why `(v := _)` ???
   simp [lineDerivCLM_apply (v := _), TestFunction.lineDerivCLM_add, neg_add, -neg_add_rev]
 
+lemma lineDerivCLM_smul {c : ℝ} {v : E} :
+    (lineDerivCLM (c • v) : 𝓓'^{k}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F)) =
+      c • lineDerivCLM v := by
+  ext T f
+  -- Why `(v := _)` ???
+  simp [lineDerivCLM_apply (v := _), TestFunction.lineDerivCLM_smul]
+
 open LineDeriv
 
 /-- Note: we cannot express the full generality of `lineDerivCLM` purely in terms of this typeclass,
@@ -244,5 +251,44 @@ lemma lineDerivOpCLM_eq_lineDerivCLM {v : E} :
   rfl
 
 end LineDerivCLM
+
+variable [FiniteDimensional ℝ E]
+
+section FDerivCLM
+-- TODO: generalize this section to `𝕜` linearity
+-- by generalizing `ContinuousLinearMap.precompCompactConvergenceCLM`
+
+noncomputable def fderivCLM :
+    𝓓'^{k}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, E →L[ℝ] F) :=
+  let step1 (T : 𝓓'^{k}(Ω, F)) (f : 𝓓^{n}(Ω, ℝ)) : E →L[ℝ] F := LinearMap.toContinuousLinearMap
+    { toFun v := lineDerivCLM v T f
+      map_add' _ _ := by simp [lineDerivCLM_add]
+      map_smul' _ _ := by simp [lineDerivCLM_smul] }
+  have step1_def (T : 𝓓'^{k}(Ω, F)) (f : 𝓓^{n}(Ω, ℝ)) (v : E) :
+    step1 T f v = lineDerivCLM v T f := rfl
+  have step1_cont (T : 𝓓'^{k}(Ω, F)) : Continuous (step1 T) :=
+    sorry
+  let step2 (T : 𝓓'^{k}(Ω, F)) : 𝓓'^{n}(Ω, E →L[ℝ] F) :=
+    { toFun := step1 T
+      map_add' _ _ := by ext; simp [step1_def]
+      map_smul' _ _ := by ext; simp [step1_def] }
+  have step2_def (T : 𝓓'^{k}(Ω, F)) (f : 𝓓^{n}(Ω, ℝ)) (v : E) :
+    step2 T f v = lineDerivCLM v T f := rfl
+  have step2_cont : Continuous step2 :=
+    sorry
+  { toFun := step2
+    map_add' _ _ := by ext; simp [step2_def]
+    map_smul' _ _ := by ext; simp [step2_def] }
+
+lemma fderivCLM_eq_lineDerivCLM {T : 𝓓'^{k}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} {v : E} :
+    fderivCLM T f v = lineDerivCLM v T f :=
+  rfl
+
+@[simp]
+lemma fderivCLM_apply {T : 𝓓'^{k}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} {v : E} :
+    fderivCLM T f v = - T (TestFunction.lineDerivCLM ℝ v f) :=
+  rfl
+
+end FDerivCLM
 
 end Distribution

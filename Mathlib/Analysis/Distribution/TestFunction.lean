@@ -586,6 +586,12 @@ lemma lineDerivCLM_add {v₁ v₂ : E} :
   ext
   simp [-lineDerivCLM_apply, lineDerivCLM_eq_fderivCLM]
 
+lemma lineDerivCLM_smul {c : ℝ} {v : E} :
+    (lineDerivCLM 𝕜 (c • v) : 𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, F)) =
+      c • lineDerivCLM 𝕜 v := by
+  ext
+  simp [-lineDerivCLM_apply, lineDerivCLM_eq_fderivCLM]
+
 open LineDeriv
 
 /-- Note: we cannot express the full generality of `lineDerivCLM` purely in terms of this typeclass,
