@@ -19,10 +19,10 @@ endomorphisms.
 
 * `Module.End.IsFinitelySemisimple.genEigenspace_eq_eigenspace`: for a semisimple endomorphism,
   a generalized eigenspace is an eigenspace.
-* `Module.End.IsFinitelySemisimple.iSup_eigenspace_eq_top`: over an algebraically closed field,
+* `Module.End.IsSemisimple.iSup_eigenspace_eq_top`: over an algebraically closed field,
   the eigenspaces of a semisimple endomorphism span the whole space.
-* `Module.End.IsFinitelySemisimple.eq_zero_of_forall_eigenvalue_eq_zero`: a semisimple endomorphism
-  over an algebraically closed field with all eigenvalues equal to zero must be zero.
+* `Module.End.IsSemisimple.eq_zero_iff_forall_eigenvalue`: a semisimple endomorphism over
+  an algebraically closed field is zero iff all eigenvalues are zero.
 
 -/
 
@@ -83,13 +83,20 @@ lemma IsSemisimple.iSup_eigenspace_eq_top (hf : f.IsSemisimple) :
 
 lemma IsSemisimple.eq_zero_iff_forall_eigenvalue (hf : f.IsSemisimple) :
     f = 0 ↔ ∀ μ : K, f.HasEigenvalue μ → μ = 0 := by
-  suffices f.eigenspace 0 = ⊤ by rwa [eigenspace_zero, LinearMap.ker_eq_top] at this
-  rw [← hf.iSup_eigenspace_eq_top]
-  refine le_antisymm (le_iSup _ 0) (iSup_le fun μ ↦ ?_)
-  rcases eq_or_ne μ 0 with rfl | hμ
-  · exact le_refl _
-  · have : f.eigenspace μ = ⊥ := not_not.mp (hasEigenvalue_iff.not.mp fun he ↦ hμ (h μ he))
-    simp [this]
+  constructor
+  · rintro rfl μ hμ
+    by_contra hμ0
+    obtain ⟨x, hx, hx_ne⟩ := (Submodule.ne_bot_iff _).mp hμ
+    rw [mem_eigenspace_iff] at hx
+    exact hx_ne ((smul_eq_zero.mp hx.symm).resolve_left hμ0)
+  · intro h
+    suffices f.eigenspace 0 = ⊤ by rwa [eigenspace_zero, LinearMap.ker_eq_top] at this
+    rw [← hf.iSup_eigenspace_eq_top]
+    refine le_antisymm (le_iSup _ 0) (iSup_le fun μ ↦ ?_)
+    rcases eq_or_ne μ 0 with rfl | hμ
+    · exact le_refl _
+    · have : f.eigenspace μ = ⊥ := not_not.mp (hasEigenvalue_iff.not.mp fun he ↦ hμ (h μ he))
+      simp [this]
 
 end AlgClosed
 
