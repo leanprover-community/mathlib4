@@ -317,8 +317,6 @@ lemma mem_lineal {C : PointedCone R E} {x : E} : x ∈ C.lineal ↔ x ∈ C ∧ 
 theorem support_eq {C : PointedCone R E} : C.support = C.lineal.toAddSubgroup :=
   rfl
 
-lemma lineal_le (C : PointedCone R E) : C.lineal ≤ C := by simp
-
 /-- The lineality space of a cone is the largest submodule contained in the cone. -/
 theorem gc_ofSubmodule_lineal :
     GaloisConnection (α := Submodule R E) ofSubmodule lineal :=
