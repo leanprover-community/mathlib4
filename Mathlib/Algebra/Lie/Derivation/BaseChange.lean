@@ -32,7 +32,7 @@ variable {A : Type*} [CommRing A] [Algebra R A]
 variable {L : Type*} [LieRing L] [LieAlgebra R L]
 
 variable (L) in
-/-- A derivation of an associative `R-`algebra `A`, induces a Lie derivation of `A ⊗[R] L` for any
+/-- A derivation of an associative `R`-algebra `A`, induces a Lie derivation of `A ⊗[R] L` for any
 Lie algebra `L` over `R`. -/
 def ofDerivation : Derivation R A A →ₗ⁅R⁆ LieDerivation R (A ⊗[R] L) (A ⊗[R] L) where
   toFun d :=
