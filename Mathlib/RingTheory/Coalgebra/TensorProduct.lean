@@ -101,8 +101,8 @@ private lemma coassoc :
         (AlgebraTensorModule.tensorTensorTensorComm _ _ _ _ _ _ _ _)
   let F' : A ⊗[S] (A ⊗[S] A) ⊗[R] (B ⊗[R] (B ⊗[R] B)) →ₗ[S]
       A ⊗[R] B ⊗[S] (A ⊗[R] B ⊗[S] (A ⊗[R] B)) :=
-    TensorProduct.mapOfCompatibleSMul _ _ _ _ ∘ₗ
-        TensorProduct.map .id (TensorProduct.mapOfCompatibleSMul _ _ _ _) ∘ₗ F.toLinearMap
+    TensorProduct.mapOfCompatibleSMul .. ∘ₗ
+        TensorProduct.map .id (TensorProduct.mapOfCompatibleSMul ..) ∘ₗ F.toLinearMap
   convert congr(F ($(Coalgebra.coassoc_apply x) ⊗ₜ[R] $(Coalgebra.coassoc_apply y))) using 1
   · dsimp
     hopf_tensor_induction comul (R := S) x with x₁ x₂
@@ -196,7 +196,6 @@ theorem map_toLinearMap (f : M →ₗc[S] N) (g : P →ₗc[R] Q) :
 
 variable (R S M N P)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The associator for tensor products of R-coalgebras, as a coalgebra equivalence. -/
 protected noncomputable def assoc :
     (M ⊗[S] N) ⊗[R] P ≃ₗc[S] M ⊗[S] (N ⊗[R] P) :=
@@ -228,7 +227,6 @@ theorem assoc_toLinearEquiv :
 
 variable (R P)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The base ring is a left identity for the tensor product of coalgebras, up to
 coalgebra equivalence. -/
 protected noncomputable def lid : R ⊗[R] P ≃ₗc[R] P :=

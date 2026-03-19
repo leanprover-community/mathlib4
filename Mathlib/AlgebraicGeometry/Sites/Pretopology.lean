@@ -102,15 +102,16 @@ section
 /-- The jointly surjective topology on `Scheme` is defined by the same condition as the jointly
 surjective pretopology. -/
 def jointlySurjectiveTopology : GrothendieckTopology Scheme.{u} :=
-  jointlySurjectivePretopology.toGrothendieck.copy (fun X s ↦ jointlySurjectivePretopology X ↑s) <|
+  jointlySurjectivePretopology.toGrothendieck.copy
+    (fun X ↦ {s | ↑s ∈ jointlySurjectivePretopology X}) <|
     funext fun _ ↦ Set.ext fun s ↦
       ⟨fun ⟨_, hp, hps⟩ x ↦ let ⟨Y, u, hu, hmem⟩ := hp x;
-        ⟨Y, u, Presieve.map_monotone hps _ hu, hmem⟩,
+        ⟨Y, u, Presieve.map_monotone hps _ _ hu, hmem⟩,
       fun hs ↦ ⟨s, hs, le_rfl⟩⟩
 
 theorem mem_jointlySurjectiveTopology_iff_jointlySurjectivePretopology
     {X : Scheme.{u}} {s : Sieve X} :
-    s ∈ jointlySurjectiveTopology X ↔ jointlySurjectivePretopology X ↑s :=
+    s ∈ jointlySurjectiveTopology X ↔ ↑s ∈ jointlySurjectivePretopology X :=
   Iff.rfl
 
 lemma jointlySurjectiveTopology_eq_toGrothendieck_jointlySurjectivePretopology :

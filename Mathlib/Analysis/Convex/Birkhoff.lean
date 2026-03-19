@@ -161,6 +161,7 @@ lemma exists_eq_sum_perm_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R 
     rw [sum_row_of_mem_doublyStochastic hM]
   simpa [sum_comm (γ := n), Equiv.toPEquiv_apply] using this
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 **Birkhoff's theorem**
 The set of doubly stochastic matrices is the convex hull of the permutation matrices.  Note

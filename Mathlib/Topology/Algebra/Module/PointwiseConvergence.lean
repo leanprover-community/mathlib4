@@ -14,21 +14,21 @@ public import Mathlib.Topology.Algebra.Module.WeakDual
 ## Main definitions
 
 * `PointwiseConvergenceCLM`: Type synonym of `E →SL[σ] F` equipped with the uniform convergence
-topology on finite sets.
+  topology on finite sets.
 * `PointwiseConvergenceCLM.evalCLM`: The evaluation map `(f : E →SLₚₜ[σ] F) ↦ f a` for fixed `a : E`
-as a continuous linear map.
+  as a continuous linear map.
 * `ContinuousLinearMap.toPointwiseConvergenceCLM`: The canonical map from `E →SL[σ] F` to
-`E →SLₚₜ[σ] F` as a continuous linear map. This is the statement that bounded convergence is
-stronger than pointwise convergence.
+  `E →SLₚₜ[σ] F` as a continuous linear map. This is the statement that bounded convergence is
+  stronger than pointwise convergence.
 * `PointwiseConvergenceCLM.equivWeakDual`: The continuous equivalence between `E →Lₚₜ[𝕜] 𝕜` and
-`WeakDual 𝕜 E`.
+  `WeakDual 𝕜 E`.
 
 ## Main statements
 
 * `PointwiseConvergenceCLM.tendsto_iff_forall_tendsto`: In the topology of pointwise convergence,
-`a` converges to `a₀` iff for every `x : E` the map `a · x` converges to `a₀ x`.
+  `a` converges to `a₀` iff for every `x : E` the map `a · x` converges to `a₀ x`.
 * `PointwiseConvergenceCLM.continuous_of_continuous_eval`: A map to `g : α → E →SLₚₜ[σ] F` is
-continuous if for every `x : E` the evaluation `g · x` is continuous.
+  continuous if for every `x : E` the evaluation `g · x` is continuous.
 
 ## Notation
 
