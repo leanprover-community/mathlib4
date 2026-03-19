@@ -24,12 +24,12 @@ This means the positive singular values occur at `0 ≤ i < rank(T)` and not `1 
 ## Main definition
 
 - `LinearMap.singularValues`: The infinite but finitely supported sequence of the singular values of
-a linear map.
+  a linear map.
 
 ## Main statements
 
 - `LinearMap.support_singularValues`: The first rank(T) many singular values are positive, and the
-rest are zero.
+  rest are zero.
 
 ## Implementation notes
 
@@ -43,12 +43,12 @@ In mathematical literature, the number of singular values varies, with popular c
 We take the last approach for the following reasons:
 - It avoid unnecessary dependent typing.
 - You can easily convert this definition to the other three by composing with `Fin.val`, but
-converting between any two of the other definitions is more inconvenient because it involves
-multiple `Fin` types.
+  converting between any two of the other definitions is more inconvenient because it involves
+  multiple `Fin` types.
 - If you prefer a definition where there are `k` singular values, you can treat the singular values
-after `k` as junk values.
-Not having to prove that `i < k` when getting the `i`th singular value has similar advantages to not
-having to prove that `y ≠ 0` when calculating `x / y`.
+  after `k` as junk values.
+  Not having to prove that `i < k` when getting the `i`th singular value has similar advantages to not
+  having to prove that `y ≠ 0` when calculating `x / y`.
 - This API coincides with a potential future API for approximation numbers, which are a
   generalization of singular values to continuous linear maps between possibly-infinite-dimensional
   normed vector spaces.
@@ -58,8 +58,8 @@ having to prove that `y ≠ 0` when calculating `x / y`.
 - Implement singular vectors and the singular value decomposition
 - Define singular values and singular value decomposition for matrices
 - Generalize singular values to the approximation numbers for maps between
-possibly-infinite-dimensional normed vector spaces
-  - This will likely have a similar type signature to the current singular values definition, except
+  possibly-infinite-dimensional normed vector spaces.
+  This will likely have a similar type signature to the current singular values definition, except
   it will take in a `ContinuousLinearMap` and will not be finitely supported.
 
 ## References
