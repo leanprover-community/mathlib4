@@ -449,27 +449,6 @@ theorem exists_primeCompl_mul_eq_of_integer (x : K) (hv : v.valuation K x ≤ 1)
     rw [← (v.intValuation_eq_one_iff_mem_primeCompl d).mpr d.prop,
       ← valuation_of_algebraMap (K := K), ← valuation_of_algebraMap (K := K), ← map_mul, hnd]
 
-variable (K)
-
-open MonoidWithZeroHom ValueGroup₀
-
-/-- The order isomorphism between the value group of the `v`-adic valuation on `K` and `ℤᵐ⁰`. -/
-@[simps!]
-def valueGroupOrderIso₀ : ValueGroup₀ (v.valuation K) ≃*o ℤᵐ⁰ :=
-  valueGroupOrderIsoOfSurjective₀ _ (v.valuation_surjective K)
-
-theorem valueGroupOrderIso₀_restrict (b : K) :
-    v.valueGroupOrderIso₀ K ((v.valuation K).restrict b) = v.valuation K b := by
-  rw [(v.valuation K).restrict_def, restrict₀_apply]
-  rcases eq_or_ne (v.valuation K b) 0 with (hb | hb) <;> simp [hb]
-
-theorem valueGroupOrderIso₀_symm_restrict (b : K) :
-    (v.valueGroupOrderIso₀ K).symm (v.valuation K b) = (v.valuation K).restrict b := by
-  apply_fun (v.valueGroupOrderIso₀ K)
-  rw [v.valueGroupOrderIso₀_restrict K, (v.valueGroupOrderIso₀ K).apply_symm_apply]
-
-variable {K}
-
 /-! ### Completions with respect to adic valuations
 
 Given a Dedekind domain `R` with field of fractions `K` and a maximal ideal `v` of `R`, we define
