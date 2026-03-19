@@ -114,7 +114,8 @@ partial def firstExpr? {α} (msg : MessageData) (f : Expr → MetaM (Option α))
 
 /-- Get all the expressions in a message, in order.
 
-If you need the context of the expressions, prefer to use `forExprs` directly. -/
+If you need the context of the expressions, prefer iterating over the expressions via
+`for (ppCtx, e) in msg.exprs do` directly. -/
 partial def getExprs (msg : MessageData) : m (Array Expr) := do
   let mut arr := #[]
   for (_, e) in msg.exprs do
