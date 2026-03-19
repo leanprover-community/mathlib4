@@ -10,6 +10,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Orthogonality
 public import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Topology.Algebra.Polynomial
+import Mathlib.Algebra.Polynomial.Sequence
 
 /-!
 # Chebyshev polynomials over the reals: Chebyshev–Gauss
@@ -103,68 +104,28 @@ theorem sumZeroes_T_of_not_dvd {n : ℕ} {k : ℤ} (hk : ¬ (2 * n : ℤ) ∣ k)
   field [show z ≠ 0 by grind [Complex.exp_ne_zero],
     show (z ^ 2 - 1 ≠ 0) ∧ (1 - z ^ 2 ≠ 0) by grind [exp_sub_one_ne_zero]]
 
--- This probably belongs somewhere else
-theorem poly_eq_sum_of_deg {F : Type*} [Field F] {n : ℕ} {P : F[X]} {Q : Fin n → F[X]}
-    (hP : P.degree < n) (hQ : ∀ i, (Q i).degree = i) :
-    ∃ c : Fin n → F, P = ∑ i, c i • Q i := by
-  cases hd : P.degree
-  case bot => exact ⟨fun _ => 0, by simp [P.degree_eq_bot.mp hd]⟩
-  case coe d =>
-    replace hP : d < n := by rw [hd] at hP; exact WithBot.coe_lt_coe.mp hP
-    induction d using Nat.strong_induction_on generalizing P
-    case h d hind =>
-      let γ := P.coeff d / (Q ⟨d, hP⟩).coeff d
-      let cγ (i : Fin n) := if i = d then γ else 0
-      have hcγ : ∑ i, cγ i • Q i = γ • Q ⟨d, hP⟩ := by
-        rw [sum_eq_single ⟨d, hP⟩ (by aesop) (by simp)]
-        simp [cγ]
-      let P' := P - γ • Q ⟨d, hP⟩
-      have hP' : P'.degree < d := by
-        refine (degree_lt_iff_coeff_zero _ _).mpr (fun m hm => ?_)
-        by_cases! m = d
-        case pos hm' =>
-          have : (Q ⟨d, hP⟩).coeff d ≠ 0 := coeff_ne_zero_of_eq_degree (hQ ⟨d, hP⟩)
-          simp [hm', P', γ]; field
-        case neg hm' =>
-          have : P'.degree < d + 1 := by
-            suffices P'.degree ≤ d by
-              grw [this, ← Nat.cast_one, ← Nat.cast_add]
-              norm_cast; simp
-            have := degree_sub_le P (γ • Q ⟨d, hP⟩)
-            grw [this, hd, degree_smul_le, hQ]
-            simp; rfl
-          apply (degree_lt_iff_coeff_zero _ _).mp this
-          grind
-      cases hd' : P'.degree
-      case bot =>
-        use cγ
-        suffices P = γ • Q ⟨d, hP⟩ by rw [this, hcγ]
-        grind [P'.degree_eq_bot.mp hd']
-      case coe d' =>
-        have : d' < d := by rw [hd'] at hP'; exact WithBot.coe_lt_coe.mp hP'
-        obtain ⟨c, hc⟩ := hind d' this hd' (by grind)
-        use fun i => c i + cγ i
-        simp_rw [add_smul]
-        rw [sum_add_distrib, ← hc, hcγ]
-        grind
-
 /-- The integral of a polynomial of degree `< 2 * n` with respect to the weight function
   `√(1 - x ^ 2)⁻¹` supported on `[-1, 1]` is equal to `π` times the average of its values
   on the points `cos ((2 * i + 1) / (2 * n) * π)` for `0 ≤ i < n`. -/
 theorem integral_eq_sumZeroes {n : ℕ} {P : ℝ[X]} (hn : n ≠ 0) (hP : P.degree < 2 * n) :
     ∫ x, P.eval x ∂measureT = sumZeroes n P := by
-  obtain ⟨c, rfl⟩ := poly_eq_sum_of_deg hP (fun i => show (T ℝ i).degree = i by simp; rfl)
+  have hmem : P ∈ degreeLT ℝ (2 * n) := by rwa [mem_degreeLT]
+  rw [← Sequence.span_degreeLT (m := 2 * n) (chebyshevTsequence ℝ) (by simp),
+    show Set.Iio (2 * n) = Finset.range (2 * n) by simp, ← Finset.coe_image] at hmem
+  obtain ⟨c, rfl⟩ := Submodule.mem_span_finset'.mp hmem
   simp_rw [eval_finset_sum, eval_smul]
   rw [MeasureTheory.integral_finset_sum, sumZeroes_sum]
   · simp_rw [sumZeroes_smul, smul_eq_mul, MeasureTheory.integral_const_mul]
-    congr! with i hi
-    by_cases i.val = 0
+    congr! with t _
+    obtain ⟨i, hrange, ht⟩ := mem_image.mp t.prop
+    simp_rw [← ht, chebyshevTsequence]
+    by_cases i = 0
     case pos hi => rw [hi, Nat.cast_zero, integral_eval_T_real_measureT_zero, sumZeroes_T_zero hn]
     case neg hi =>
       have : ¬ (2 * n : ℤ) ∣ i := by
         refine (Int.not_dvd_iff_lt_mul_succ _ (by grind)).mpr ⟨0, ⟨by grind, ?_⟩⟩
         rw_mod_cast [zero_add, mul_one]
-        exact i.isLt
+        exact mem_range.mp hrange
       rw [integral_eval_T_real_measureT_of_ne_zero (by grind), sumZeroes_T_of_not_dvd this]
   · simp_rw [← eval_smul]
     exact fun i hi => integrable_measureT (by fun_prop)
