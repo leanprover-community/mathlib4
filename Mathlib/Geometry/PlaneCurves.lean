@@ -394,8 +394,8 @@ lemma _root_.ContinuousOn.initialCurve_of_orientedCurvature (hI : IsOpen I) (hκ
   exact fun _ h ↦  HasDerivAt.initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ h
 
 @[fun_prop]
-lemma _root_.ContinuousOn.deriv_initialCurve_of_orientedCurvature (hI : IsOpen I) 
-    (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) : 
+lemma _root_.ContinuousOn.deriv_initialCurve_of_orientedCurvature (hI : IsOpen I)
+    (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) :
     ContinuousOn (deriv (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) I := by
   apply HasDerivAt.continuousOn
   exact fun _ h ↦  HasDerivAt.deriv_initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ h
@@ -444,7 +444,7 @@ protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature (hI : IsOp
         intro i
         fin_cases i
         all_goals
-          simp only [neg_mul, Fin.zero_eta, Fin.mk_one, Fin.isValue, Matrix.cons_val_zero, 
+          simp only [neg_mul, Fin.zero_eta, Fin.mk_one, Fin.isValue, Matrix.cons_val_zero,
                        Matrix.cons_val_one, Matrix.cons_val_fin_one]
           rw [contDiffWithinAt_zero ht]
           use I
