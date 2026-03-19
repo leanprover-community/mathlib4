@@ -87,8 +87,8 @@ If `T : E →ₗ[𝕜] F` is a linear map between finite dimensional inner produ
 `T.singularValues` is the infinite sequence where the first dim(E) elements are the square roots of
 eigenvalues of `T.adjoint ∘ₗ T` (which are guaranteed to be nonnegative real numbers), arranged
 in descending order and repeated according to their multiplicity, and the rest of the elements in
-the infinite sequence are zero. Please see this file's module docstring for an explanation of this
-design decision.
+the infinite sequence are zero. Please see the module docstring of
+`Mathlib/Analysis/InnerProductSpace/SingularValues.lean` for an explanation of this design decision.
 
 The singular values are zero-indexed, so `T.singularValues 0` refers to the first singular value.
 This means the positive singular values occur at `0 ≤ i < rank(T)` and not `1 ≤ i ≤ rank(T)`.
