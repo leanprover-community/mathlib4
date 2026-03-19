@@ -326,14 +326,6 @@ theorem setNormalizer_empty : setNormalizer (∅ : Set G) = ⊤ :=
   ext fun _ ↦ ⟨fun _ ↦ trivial, fun _ _ ↦ .rfl⟩
 
 @[to_additive]
-theorem normalizer_bot : (⊥ : Subgroup G).normalizer = ⊤ :=
-  ext fun _ ↦ ⟨fun _ ↦ trivial, fun _ _ ↦ by simp⟩
-
-@[to_additive]
-theorem normalizer_top : (⊤ : Subgroup G).normalizer = ⊤ :=
-  ext fun _ ↦ ⟨fun _ ↦ trivial, fun _ _ ↦ .rfl⟩
-
-@[to_additive]
 theorem setNormalizer_eq_top {G : Type*} [CommGroup G] (s : Set G) : setNormalizer s = ⊤ := by
   ext
   simp [mem_setNormalizer_iff_conj_mem]
