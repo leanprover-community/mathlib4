@@ -675,3 +675,23 @@ lemma _root_.IsLocalRing.isRegular_of_perm [IsLocalRing R] [IsNoetherian R M]
     exact Set.ext fun _ => h2.mem_iff
 
 end RingTheory.Sequence
+
+section IsLocalRing
+
+variable {R : Type*} [CommRing R] [IsLocalRing R]
+variable (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L]
+
+open IsLocalRing
+
+lemma nontrivial_quotSMulTop_of_mem_maximalIdeal {x : R} (mem : x ∈ maximalIdeal R) :
+    Nontrivial (QuotSMulTop x L) := by
+  apply Submodule.Quotient.nontrivial_iff.mpr (Ne.symm _)
+  exact Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator (maximalIdeal_le_jacobson _ mem)
+
+lemma RingTheory.Sequence.IsRegular.of_isWeaklyRegular_of_mem_maximalIdeal {rs : List R}
+    (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) (reg : IsWeaklyRegular L rs) :
+    IsRegular L rs :=
+  ⟨reg, Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
+    ((Ideal.span_le.mpr mem).trans (maximalIdeal_le_jacobson _))⟩
+
+end IsLocalRing
