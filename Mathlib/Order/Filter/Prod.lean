@@ -10,7 +10,7 @@ public import Mathlib.Order.Filter.Tendsto
 /-!
 # Product and coproduct filters
 
-In this file we define `Filter.prod f g` (notation: `f ×ˢ g`) and `Filter.coprod f g`. The product
+In this file we prove some basic properties of `f ×ˢ g` and `Filter.coprod f g`. The product
 of two filters is the largest filter `l` such that `Filter.Tendsto Prod.fst l f` and
 `Filter.Tendsto Prod.snd l g`.
 
@@ -29,10 +29,6 @@ s ∈ G  ↔  ∀ i:ℕ, ∃ n, [n..∞] × {i} ⊆ s
 ```
 Now `⋃ i, [i..∞] × {i}` is in `G` but not in `F`.
 As product filter we want to have `F` as result.
-
-## Notation
-
-* `f ×ˢ g` : `Filter.prod f g`, localized in `Filter`.
 
 -/
 
@@ -482,6 +478,7 @@ theorem coprod_neBot_left [NeBot f] [Nonempty β] : (f.coprod g).NeBot :=
 theorem coprod_neBot_right [NeBot g] [Nonempty α] : (f.coprod g).NeBot :=
   coprod_neBot_iff.2 (Or.inr ⟨‹_›, ‹_›⟩)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem coprod_inf_prod_le (f₁ f₂ : Filter α) (g₁ g₂ : Filter β) :
     f₁.coprod g₁ ⊓ f₂ ×ˢ g₂ ≤ f₁ ×ˢ g₂ ⊔ f₂ ×ˢ g₁ := calc
   f₁.coprod g₁ ⊓ f₂ ×ˢ g₂

@@ -5,10 +5,11 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public meta import Batteries.Data.List.Pairwise
-public meta import Mathlib.Tactic.Order.CollectFacts
-public meta import Batteries.Tactic.GeneralizeProofs
-public meta import Mathlib.Util.Qq
+public import Batteries.Data.List
+public import Batteries.Tactic.GeneralizeProofs
+public import Mathlib.Tactic.Order.CollectFacts
+public meta import Mathlib.Util.AtomM
+public import Mathlib.Util.Qq
 
 /-!
 # Translating linear orders to ℤ

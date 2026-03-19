@@ -72,12 +72,12 @@ noncomputable def nonDegenerateEquiv₁ :
 
 @[simp]
 lemma nonDegenerateEquiv₁_fst (i : Fin (p + 1)) :
-    (nonDegenerateEquiv₁ i).1.1 =
+    dsimp% (nonDegenerateEquiv₁ i).1.1 =
       (stdSimplex.objEquiv (m := (op ⦋p + 1⦌))).symm (SimplexCategory.σ i) := rfl
 
 @[simp]
 lemma nonDegenerateEquiv₁_snd (i : Fin (p + 1)) :
-    (nonDegenerateEquiv₁ i).1.2 =
+    dsimp% (nonDegenerateEquiv₁ i).1.2 =
       stdSimplex.objMk₁ i.succ.castSucc := rfl
 
 end prodStdSimplex

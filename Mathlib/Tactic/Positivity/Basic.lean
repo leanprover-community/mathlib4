@@ -5,15 +5,16 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 module
 
-public meta import Mathlib.Algebra.Order.Group.PosPart
-public meta import Mathlib.Algebra.Order.Ring.Basic
-public meta import Mathlib.Algebra.Order.Hom.Basic
-public meta import Mathlib.Data.Int.CharZero
-public meta import Mathlib.Data.Nat.Factorial.Basic
-public meta import Mathlib.Data.NNRat.Defs
-public meta import Mathlib.Data.PNat.Defs
-public meta import Mathlib.Tactic.Positivity.Core
 public meta import Qq
+public import Mathlib.Algebra.Order.Group.PosPart  -- shake: keep (Qq dependency)
+public import Mathlib.Data.Nat.Factorial.Basic  -- shake: keep (Qq dependency)
+public import Mathlib.Data.Int.CharZero  -- shake: keep (Qq dependency)
+public import Mathlib.Data.PNat.Defs  -- shake: keep (Qq dependency)
+public import Mathlib.Algebra.Order.Ring.Basic  -- shake: keep (Qq dependency)
+public meta import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Data.NNRat.Defs
+public import Mathlib.Tactic.Positivity.Core
 
 /-!
 ## `positivity` core extensions
@@ -162,8 +163,8 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
   | .positive pa, .positive pb =>
-    let _a ← synthInstanceQ q(AddLeftStrictMono $α)
-    pure (.positive q(add_pos $pa $pb))
+    let _a ← synthInstanceQ q(AddLeftMono $α)
+    pure (.positive q(add_pos' $pa $pb))
   | .positive pa, .nonnegative pb =>
     let _a ← synthInstanceQ q(AddLeftMono $α)
     pure (.positive q(add_pos_of_pos_of_nonneg $pa $pb))
@@ -330,7 +331,7 @@ meta def evalAbs : PositivityExt where eval {_u} (α zα pα) (e : Q($α)) := do
     | .nonzero pa =>
       let pa' ← mkAppM ``abs_pos_of_ne_zero #[pa]
       pure (.positive pa')
-    | _ => pure .none
+    | _ => throwError "goto catch"
   catch _ => do
     let pa' ← mkAppM ``abs_nonneg #[a]
     pure (.nonnegative pa')

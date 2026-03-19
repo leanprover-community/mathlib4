@@ -7,7 +7,6 @@ Amelia Livingston, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Action.Faithful
-public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.Submonoid.Basic
@@ -92,7 +91,7 @@ def Submonoid.toAddSubmonoid : Submonoid M ≃o AddSubmonoid (Additive M) where
   invFun S :=
     { carrier := Additive.ofMul ⁻¹' S
       one_mem' := S.zero_mem'
-      mul_mem' := fun ha hb => S.add_mem' ha hb}
+      mul_mem' := fun ha hb => S.add_mem' ha hb }
   left_inv x := by cases x; rfl
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
@@ -134,7 +133,7 @@ def AddSubmonoid.toSubmonoid : AddSubmonoid A ≃o Submonoid (Multiplicative A) 
   invFun S :=
     { carrier := Multiplicative.ofAdd ⁻¹' S
       zero_mem' := S.one_mem'
-      add_mem' := fun ha hb => S.mul_mem' ha hb}
+      add_mem' := fun ha hb => S.mul_mem' ha hb }
   left_inv x := by cases x; rfl
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
@@ -601,8 +600,7 @@ lemma closure_prod_one (s : Set M) : closure (s ×ˢ ({1} : Set N)) = (closure s
   le_antisymm
     (closure_le.2 <| Set.prod_subset_prod_iff.2 <| .inl ⟨subset_closure, .rfl⟩)
     (prod_le_iff.2 ⟨
-      map_le_of_le_comap _ <| closure_le.2 fun _x hx => subset_closure ⟨hx, rfl⟩,
-      by simp⟩)
+      map_le_of_le_comap _ <| closure_le.2 fun _x hx => subset_closure ⟨hx, rfl⟩, by simp⟩)
 
 @[to_additive (attr := simp) closure_zero_prod]
 lemma closure_one_prod (t : Set N) : closure (({1} : Set M) ×ˢ t) = .prod ⊥ (closure t) :=
@@ -619,7 +617,7 @@ variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F M N]
 
 open Submonoid
 
-library_note2 «range copy pattern» /--
+library_note «range copy pattern» /--
 For many categories (monoids, modules, rings, ...) the set-theoretic image of a morphism `f` is
 a subobject of the codomain. When this is the case, it is useful to define the range of a morphism
 in such a way that the underlying carrier set of the range subobject is definitionally
@@ -719,8 +717,24 @@ theorem restrict_apply {N S : Type*} [MulOneClass N] [SetLike S M] [SubmonoidCla
   rfl
 
 @[to_additive (attr := simp)]
+theorem restrict_eq_one_iff {N S : Type*} [MulOneClass N] {f : M →* N} [SetLike S M]
+    [SubmonoidClass S M] {s : S} :
+    f.restrict s = 1 ↔ ∀ x ∈ s, f x = 1 := by
+  simp [MonoidHom.ext_iff]
+
+@[to_additive (attr := simp)]
 theorem restrict_mrange (f : M →* N) : mrange (f.restrict S) = S.map f := by
   simp [SetLike.ext_iff]
+
+/--
+A version of `MonoidHom.restrict` as an homomorphism.
+-/
+@[to_additive (attr := simps apply) /-- A version of `AddMonoidHom.restrict` as an homomorphism. -/]
+def restrictHom {S : Type*} [SetLike S M] [SubmonoidClass S M] (M' : S) (A : Type*)
+    [CommMonoid A] : (M →* A) →* (M' →* A) where
+  toFun f := f.restrict M'
+  map_one' := by ext; simp
+  map_mul' _ _ := by ext; simp
 
 /-- Restriction of a monoid hom to a submonoid of the codomain. -/
 @[to_additive (attr := simps apply)
@@ -1048,11 +1062,11 @@ def submonoidCongr (h : S = T) : S ≃* T :=
 -- this name is primed so that the version to `f.range` instead of `f.mrange` can be unprimed.
 /-- A monoid homomorphism `f : M →* N` with a left-inverse `g : N → M` defines a multiplicative
 equivalence between `M` and `f.mrange`.
-This is a bidirectional version of `MonoidHom.mrange_restrict`. -/
+This is a bidirectional version of `MonoidHom.mrangeRestrict`. -/
 @[to_additive (attr := simps +simpRhs)
   /-- An additive monoid homomorphism `f : M →+ N` with a left-inverse `g : N → M` defines an
   additive equivalence between `M` and `f.mrange`. This is a bidirectional version of
-  `AddMonoidHom.mrange_restrict`. -/]
+  `AddMonoidHom.mrangeRestrict`. -/]
 def ofLeftInverse' (f : M →* N) {g : N → M} (h : Function.LeftInverse g f) :
     M ≃* MonoidHom.mrange f :=
   { f.mrangeRestrict with
@@ -1118,19 +1132,6 @@ noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] : Mˣ ≃* IsUnit.sub
 end Submonoid
 
 end Units
-
-open AddSubmonoid Set
-
-namespace Nat
-
-@[simp] lemma addSubmonoidClosure_one : closure ({1} : Set ℕ) = ⊤ := by
-  refine (eq_top_iff' _).2 <| Nat.rec (zero_mem _) ?_
-  simp_rw [Nat.succ_eq_add_one]
-  exact fun n hn ↦ AddSubmonoid.add_mem _ hn <| subset_closure <| Set.mem_singleton _
-
-@[deprecated (since := "2025-08-14")] alias addSubmonoid_closure_one := addSubmonoidClosure_one
-
-end Nat
 
 namespace Submonoid
 

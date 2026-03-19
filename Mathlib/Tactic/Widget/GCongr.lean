@@ -5,8 +5,11 @@ Authors: Patrick Massot
 -/
 module
 
-public meta import Mathlib.Tactic.Widget.SelectPanelUtils
-public meta import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Widget.SelectPanelUtils
+public import ProofWidgets.Component.Basic
+public import ProofWidgets.Component.OfRpcMethod
 
 /-! # GCongr widget
 
@@ -42,7 +45,7 @@ return (res, res, none)
 @[server_rpc_method]
 def GCongrSelectionPanel.rpc := mkSelectionPanelRPC makeGCongrString
   "Use shift-click to select sub-expressions in the goal that should become holes in gcongr."
-  "GCongr 🔍"
+  "GCongr 🔍️"
 
 /-- The gcongr widget. -/
 @[widget_module]

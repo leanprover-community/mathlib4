@@ -83,7 +83,7 @@ attribute [local simp] FunctorToTypes.naturality
 
 /-- Via the Yoneda lemma, `u : F.obj (op X)` defines a natural transformation `yoneda.obj X ⟶ F`
 and via the element `η.app (op X) u` also a morphism `yoneda.obj X ⟶ A`. This structure
-witnesses the fact that these morphisms from a commutative triangle with `η : F ⟶ A`, i.e.,
+witnesses the fact that these morphisms form a commutative triangle with `η : F ⟶ A`, i.e.,
 that `yoneda.obj X ⟶ F` lifts to a morphism in `Over A`. -/
 structure MakesOverArrow {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) {X : C} (s : yoneda.obj X ⟶ A)
     (u : F.obj (op X)) : Prop where
@@ -94,14 +94,16 @@ namespace MakesOverArrow
 /-- "Functoriality" of `MakesOverArrow η s` in `η`. -/
 lemma map₁ {F G : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {μ : G ⟶ A} {ε : F ⟶ G}
     (hε : ε ≫ μ = η) {X : C} {s : yoneda.obj X ⟶ A} {u : F.obj (op X)}
-    (h : MakesOverArrow η s u) : MakesOverArrow μ s (ε.app _ u) :=
-  ⟨by rw [← elementwise_of% NatTrans.comp_app ε μ, hε, h.app]⟩
+    (h : MakesOverArrow η s u) : MakesOverArrow μ s (ε.app _ u) := by
+  have := elementwise_of% NatTrans.comp_app ε μ
+  dsimp only [Types.hom_eq_coe] at this
+  exact ⟨by rw [← this, hε, h.app]⟩
 
-/-- "Functoriality of `MakesOverArrow η s` in `s`. -/
+/-- Functoriality of `MakesOverArrow η s` in `s`. -/
 lemma map₂ {F : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {X Y : C} (f : X ⟶ Y)
     {s : yoneda.obj X ⟶ A} {t : yoneda.obj Y ⟶ A} (hst : yoneda.map f ≫ t = s)
     {u : F.obj (op Y)} (h : MakesOverArrow η t u) : MakesOverArrow η s (F.map f.op u) :=
-  ⟨by rw [elementwise_of% η.naturality, h.app, yonedaEquiv_naturality, hst]⟩
+  ⟨by simp [h.app, yonedaEquiv_naturality, hst]⟩
 
 lemma of_arrow {F : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {X : C} {s : yoneda.obj X ⟶ A}
     {f : yoneda.obj X ⟶ F} (hf : f ≫ η = s) : MakesOverArrow η s (yonedaEquiv f) :=
@@ -292,6 +294,7 @@ lemma mk_snd (s : yoneda.obj X ⟶ A) (x : F.obj (op (CostructuredArrow.mk s))) 
     (mk s x).snd = F.map (eqToHom <| by rw [YonedaCollection.mk_fst]) x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[ext (iff := false)]
 lemma ext {p q : YonedaCollection F X} (h : p.fst = q.fst)
     (h' : F.map (eqToHom <| by rw [h]) q.snd = p.snd) : p = q := by
@@ -438,6 +441,7 @@ lemma app_unitForward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : Cᵒᵖ)
     η.app X (unitForward η X.unop p) = p.yonedaEquivFst := by
   simpa [unitForward] using p.snd.app_val
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Backward direction of the unit. -/
 def unitBackward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
     F.obj (op X) → YonedaCollection (restrictedYonedaObj η) X :=
@@ -447,6 +451,7 @@ lemma unitForward_unitBackward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
     unitForward η X ∘ unitBackward η X = id :=
   funext fun x => by simp [unitForward, unitBackward]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma unitBackward_unitForward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
     unitBackward η X ∘ unitForward η X = id := by
   refine funext fun p => YonedaCollection.ext ?_ (OverArrows.ext ?_)
@@ -499,6 +504,7 @@ lemma counitForward_val_fst (s : CostructuredArrow yoneda A) (x : F.obj (op s)) 
     (counitForward F s x).val.fst = s.hom := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma counitForward_val_snd (s : CostructuredArrow yoneda A) (x : F.obj (op s)) :
     (counitForward F s x).val.snd = F.map (eqToHom (by simp [← CostructuredArrow.eq_mk])) x :=
@@ -510,6 +516,7 @@ lemma counitForward_naturality₁ {G : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Ty
       OverArrows.map₁ (counitForward F s.unop x) (yonedaCollectionPresheafMap₁ η) (by cat_disch) :=
   OverArrows.ext <| YonedaCollection.ext (by simp) (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma counitForward_naturality₂ (s t : (CostructuredArrow yoneda A)ᵒᵖ) (f : t ⟶ s) (x : F.obj t) :
     counitForward F s.unop (F.map f x) =
@@ -521,6 +528,7 @@ lemma counitForward_naturality₂ (s t : (CostructuredArrow yoneda A)ᵒᵖ) (f 
     simp
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Backward direction of the counit. -/
 def counitBackward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) (s : CostructuredArrow yoneda A) :
     OverArrows (yonedaCollectionPresheafToA F) s.hom → F.obj (op s) :=

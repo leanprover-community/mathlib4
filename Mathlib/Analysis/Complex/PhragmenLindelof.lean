@@ -678,7 +678,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
       bot_sup_eq]
     exact (hre.norm.eventually <| ge_mem_nhds hlt).filter_mono inf_le_left
   rcases le_or_gt ‖f x₀‖ C with h | h
-  ·-- If `‖f x₀‖ ≤ C`, then `hle` implies the required estimate
+  · -- If `‖f x₀‖ ≤ C`, then `hle` implies the required estimate
     simpa only [max_eq_left h] using hle _ hmax
   · -- Otherwise, `‖f z‖ ≤ ‖f x₀‖` for all `z` in the right half-plane due to `hle`.
     replace hmax : IsMaxOn (norm ∘ f) {z | 0 < z.re} x₀ := by
@@ -722,8 +722,7 @@ theorem right_half_plane_of_bounded_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.
   -- Taking the limit as `ε → 0`, we obtain the required inequality.
   suffices ∀ᶠ ε : ℝ in 𝓝[<] 0, ‖exp (ε * z) • f z‖ ≤ C by
     refine le_of_tendsto (Tendsto.mono_left ?_ nhdsWithin_le_nhds) this
-    apply ((continuous_ofReal.mul continuous_const).cexp.smul continuous_const).norm.tendsto'
-    simp
+    exact Continuous.tendsto' (by fun_prop) _ _ (by simp)
   filter_upwards [self_mem_nhdsWithin] with ε ε₀; change ε < 0 at ε₀
   set g : ℂ → E := fun z => exp (ε * z) • f z; change ‖g z‖ ≤ C
   replace hd : DiffContOnCl ℂ g {z : ℂ | 0 < z.re} :=

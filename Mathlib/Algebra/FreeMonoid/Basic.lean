@@ -7,8 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Units.Defs
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.List.Basic
+public import Mathlib.Tactic.ToDual
 
 /-!
 # Free monoid over a given alphabet
@@ -340,7 +344,8 @@ theorem hom_map_lift (g : M →* N) (f : α → M) (x : FreeMonoid α) : g (lift
   DFunLike.ext_iff.1 (comp_lift g f) x
 
 /-- Define a multiplicative action of `FreeMonoid α` on `β`. -/
-@[to_additive /-- Define an additive action of `FreeAddMonoid α` on `β`. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- Define an additive action of `FreeAddMonoid α` on `β`. -/]
 def mkMulAction (f : α → β → β) : MulAction (FreeMonoid α) β where
   smul l b := l.toList.foldr f b
   one_smul _ := rfl

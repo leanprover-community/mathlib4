@@ -1,3 +1,4 @@
+module
 import Mathlib.CategoryTheory.Monoidal.Mon_
 
 open CategoryTheory MonoidalCategory

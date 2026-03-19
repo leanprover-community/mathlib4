@@ -5,7 +5,8 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Instances.Real
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 /-!
 ## (Unoriented) bordism theory
@@ -24,7 +25,7 @@ and is called the `n`-th (unoriented) bordism group.
 
 This construction can be generalised one step further, to produce an extraordinary homology theory.
 Given a topological space `X`, a **singular manifold** on `X` is a closed smooth manifold `M`
-together with a continuous map `M → F`. (The word *singular* does not refer to singularities,
+together with a continuous map `M → X`. (The word *singular* does not refer to singularities,
 but is by analogy to singular chains in the definition of singular homology.)
 
 Given two `n`-dimensional singular manifolds `s` and `t`, an (oriented) bordism between `s` and `t`

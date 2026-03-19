@@ -32,156 +32,272 @@ universe u₁ u₂ u₃ u₄
 
 open scoped NNReal
 
-/-- The perfection of a monoid `M`, defined to be the projective limit of `M`
-using the `p`-th power maps `M → M` indexed by the natural numbers, implemented as
-`{ f : ℕ → M | ∀ n, f (n + 1) ^ p = f n }`. -/
-def Monoid.perfection (M : Type u₁) [CommMonoid M] (p : ℕ) : Submonoid (ℕ → M) where
-  carrier := { f | ∀ n, f (n + 1) ^ p = f n }
-  one_mem' _ := one_pow _
-  mul_mem' hf hg n := (mul_pow _ _ _).trans <| congr_arg₂ _ (hf n) (hg n)
+/-- The perfection of a monoid `α`, defined to be the projective limit of `α` using the `p`-th
+power maps `α → α` indexed by the natural numbers, implemented as
+`{ f : ℕ → M | ∀ n, f (n + 1) ^ p = f n }`.
 
-/-- The perfection of a ring `R` with characteristic `p`, as a subsemiring,
-defined to be the projective limit of `R` using the Frobenius maps `R → R`
-indexed by the natural numbers, implemented as `{ f : ℕ → R | ∀ n, f (n + 1) ^ p = f n }`. -/
-def Ring.perfectionSubsemiring (R : Type u₁) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime]
-    [CharP R p] : Subsemiring (ℕ → R) :=
-  { Monoid.perfection R p with
-    zero_mem' := fun _ ↦ zero_pow hp.1.ne_zero
-    add_mem' := fun hf hg n => (map_add (frobenius R p) _ _).trans <| congr_arg₂ _ (hf n) (hg n) }
+If `α` is a ring with characteristic `p` and `p` is prime, `Perfection α p` is also a ring. -/
+def Perfection (α : Type u₁) [Pow α ℕ] (p : ℕ) : Type u₁ :=
+  { f : ℕ → α // ∀ n, f (n + 1) ^ p = f n }
 
-/-- The perfection of a ring `R` with characteristic `p`, as a subring,
-defined to be the projective limit of `R` using the Frobenius maps `R → R`
-indexed by the natural numbers, implemented as `{ f : ℕ → R | ∀ n, f (n + 1) ^ p = f n }`. -/
-def Ring.perfectionSubring (R : Type u₁) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p] :
-    Subring (ℕ → R) :=
-  (Ring.perfectionSubsemiring R p).toSubring fun n => by
-    simp_rw [← frobenius_def, Pi.neg_apply, Pi.one_apply, map_neg, map_one]
-
-/-- The perfection of a ring `R` with characteristic `p`,
-defined to be the projective limit of `R` using the Frobenius maps `R → R`
-indexed by the natural numbers, implemented as `{f : ℕ → R // ∀ n, f (n + 1) ^ p = f n}`. -/
-def Ring.Perfection (R : Type u₁) [CommSemiring R] (p : ℕ) : Type u₁ :=
-  { f // ∀ n : ℕ, (f : ℕ → R) (n + 1) ^ p = f n }
+@[deprecated (since := "2026-03-03")] alias Ring.Perfection := Perfection
 
 namespace Perfection
 
-variable (R : Type u₁) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
+section CommMonoid
 
-instance commSemiring : CommSemiring (Ring.Perfection R p) :=
-  (Ring.perfectionSubsemiring R p).toCommSemiring
+/-- `Perfection M p` as a submonoid of `ℕ → M`. -/
+def submonoid (M : Type*) [CommMonoid M] (p : ℕ) : Submonoid (ℕ → M) where
+  carrier := { f | ∀ n, f (n + 1) ^ p = f n }
+  one_mem' _ := one_pow _
+  mul_mem' hf hg n := (mul_pow _ _ _).trans congr($(hf n) * $(hg n))
 
-instance charP : CharP (Ring.Perfection R p) p :=
-  CharP.subsemiring (ℕ → R) p (Ring.perfectionSubsemiring R p)
+@[deprecated (since := "2026-03-03")]
+alias _root_.Monoid.perfection := submonoid
 
-instance ring (R : Type u₁) [CommRing R] [CharP R p] : Ring (Ring.Perfection R p) :=
-  (Ring.perfectionSubring R p).toRing
+instance (M : Type*) [CommMonoid M] (p : ℕ) : CommMonoid (Perfection M p) :=
+  (submonoid M p).toCommMonoid
 
-instance commRing (R : Type u₁) [CommRing R] [CharP R p] : CommRing (Ring.Perfection R p) :=
-  (Ring.perfectionSubring R p).toCommRing
-
-instance : Inhabited (Ring.Perfection R p) := ⟨0⟩
+variable (M : Type*) [CommMonoid M] (p : ℕ)
 
 /-- The `n`-th coefficient of an element of the perfection. -/
-def coeff (n : ℕ) : Ring.Perfection R p →+* R where
+def coeffMonoidHom (n : ℕ) : Perfection M p →* M where
   toFun f := f.1 n
   map_one' := rfl
   map_mul' _ _ := rfl
+
+/-- The `p`-th root of an element of the perfection. -/
+def pthRootMonoidHom : Perfection M p →* Perfection M p where
+  toFun f := ⟨fun n => coeffMonoidHom M p (n + 1) f, fun _ => f.2 _⟩
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
+variable {M p}
+
+-- To prioritize `Perfection.ext` for the ring case.
+@[ext low]
+theorem extMonoid {f g : Perfection M p}
+    (h : ∀ n, coeffMonoidHom M p n f = coeffMonoidHom M p n g) :
+    f = g :=
+  Subtype.ext <| funext h
+
+@[simp]
+theorem coeffMonoidHom_mk (f : ℕ → M) (hf) (n : ℕ) : coeffMonoidHom M p n ⟨f, hf⟩ = f n := rfl
+
+theorem coeffMonoidHom_pthRootMonoidHom (f : Perfection M p) (n : ℕ) :
+    coeffMonoidHom M p n (pthRootMonoidHom M p f) = coeffMonoidHom M p (n + 1) f := rfl
+attribute [local simp] coeffMonoidHom_pthRootMonoidHom
+
+theorem coeffMonoidHom_pow_p (f : Perfection M p) (n : ℕ) :
+    coeffMonoidHom M p (n + 1) (f ^ p) = coeffMonoidHom M p n f := by
+  rw [map_pow]; exact f.2 n
+
+@[simp]
+theorem coeffMonoidHom_pow_p' (f : Perfection M p) (n : ℕ) :
+    coeffMonoidHom M p (n + 1) f ^ p = coeffMonoidHom M p n f :=
+  f.2 n
+
+instance : PerfectRing (Perfection M p) p where
+  bijective_frobenius := Function.bijective_iff_has_inverse.mpr
+    ⟨pthRootMonoidHom M p, fun x ↦ by ext; simp, fun x ↦ by ext; simp⟩
+
+@[simp]
+theorem pthRootMonoidHom_eq_powMulEquiv_symm :
+    pthRootMonoidHom M p = (powMulEquiv (Perfection M p) p).symm :=
+  MonoidHom.ext fun x ↦ (MulEquiv.eq_symm_apply _).mpr <| by ext; simp
+
+theorem coe_pthRootMonoidHom_eq_powMulEquiv_symm :
+    ⇑(pthRootMonoidHom M p) = (powMulEquiv (Perfection M p) p).symm :=
+  congr($pthRootMonoidHom_eq_powMulEquiv_symm)
+
+@[simp] theorem coeffMonoidHom_symm_powMulEquiv (f : Perfection M p) (n : ℕ) :
+    coeffMonoidHom M p n ((powMulEquiv _ p).symm f) = coeffMonoidHom M p (n + 1) f := by
+  rw [← coe_pthRootMonoidHom_eq_powMulEquiv_symm]; rfl
+
+@[simp] theorem coeffMonoidHom_iterate_symm_powMulEquiv (f : Perfection M p) (n m : ℕ) :
+    coeffMonoidHom M p n ((powMulEquiv _ p).symm^[m] f) = coeffMonoidHom M p (n + m) f := by
+  induction m generalizing n with
+  | zero => rfl
+  | succ m ih =>
+    rw [Function.iterate_succ_apply', coeffMonoidHom_symm_powMulEquiv, ih]
+    grind
+
+theorem coeffMonoidHom_pow_p_pow (f : Perfection M p) (m n : ℕ) :
+    coeffMonoidHom M p (m + n) (f ^ p ^ n) = coeffMonoidHom M p m f :=
+  n.recOn (by simp) fun n ih ↦ by rw [pow_succ, pow_mul, Nat.add_succ, coeffMonoidHom_pow_p, ih]
+
+@[simp]
+theorem coeffMonoidHom_pow_p_pow' (f : Perfection M p) (m n : ℕ) :
+    coeffMonoidHom M p (m + n) f ^ p ^ n = coeffMonoidHom M p m f := by
+  rw [← map_pow, coeffMonoidHom_pow_p_pow]
+
+@[simp]
+theorem coeffMonoidHom_pow_p_pow_self (f : Perfection M p) (n : ℕ) :
+    coeffMonoidHom M p n f ^ p ^ n = coeffMonoidHom M p 0 f := by
+  rw [← coeffMonoidHom_pow_p_pow' _ 0 n, zero_add]
+
+theorem coeffMonoidHom_powMonoidHom (f : Perfection M p) (n : ℕ) :
+    coeffMonoidHom M p (n + 1) (powMonoidHom p f) = coeffMonoidHom M p n f :=
+  coeffMonoidHom_pow_p f n
+
+theorem coeffMonoidHom_iterate_powMonoidHom (f : Perfection M p) (n m : ℕ) :
+    coeffMonoidHom M p (n + m) ((powMonoidHom p)^[m] f) = coeffMonoidHom M p n f :=
+  m.recOn rfl fun m ih ↦ by
+    rw [Function.iterate_succ_apply', Nat.add_succ, coeffMonoidHom_powMonoidHom, ih]
+
+theorem coeffMonoidHom_iterate_powMonoidHom' (f : Perfection M p) (n m : ℕ) (hmn : m ≤ n) :
+    coeffMonoidHom M p n ((powMonoidHom p)^[m] f) = coeffMonoidHom M p (n - m) f := by
+  rw [← coeffMonoidHom_iterate_powMonoidHom f (n - m) m, Nat.sub_add_cancel hmn]
+
+/-- Given monoids `M` and `N`, with `M` being perfect,
+any homomorphism `M →+* N` can be lifted uniquely to a homomorphism `M →* Perfection N p`. -/
+@[simps! symm_apply]
+noncomputable def liftMonoidHom (p : ℕ) (M : Type*) [CommMonoid M] [PerfectRing M p]
+    (N : Type*) [CommMonoid N] : (M →* N) ≃* (M →* Perfection N p) where
+  toFun f :=
+    { toFun r := ⟨fun n ↦ f ((powMulEquiv M (p ^ n)).symm r), fun n ↦ by
+        rw [← map_pow, powMulEquiv_pow, pow_succ, MulAut.mul_def, MulEquiv.symm_trans_apply,
+          powMulEquiv_symm_pow_p, ← powMulEquiv_pow]⟩
+      map_one' := extMonoid fun _ ↦ by simp_rw [coeffMonoidHom_mk, map_one]
+      map_mul' x y := extMonoid fun _ ↦ by simp_rw [map_mul, coeffMonoidHom_mk] }
+  invFun := (coeffMonoidHom N p 0).comp
+  left_inv f := by ext; simp
+  right_inv f := by
+    ext m n
+    simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.coe_mk, OneHom.coe_mk,
+      coeffMonoidHom_mk]
+    rw [← coeffMonoidHom_pow_p_pow _ 0 n, ← map_pow, powMulEquiv_symm_pow_p, zero_add]
+  map_mul' _ _ := by ext; simp
+
+@[simp] lemma coeffMonoidHom_zero_liftMonoidHom
+    (p : ℕ) {M N : Type*} [CommMonoid M] [PerfectRing M p] [CommMonoid N] (e : M →* N) (x : M) :
+    coeffMonoidHom N p 0 (liftMonoidHom p M N e x) = e x := by simp [liftMonoidHom]
+
+/-- A monoid homomorphism `M →* N` induces `Perfection M p →* Perfection N p`. -/
+def mapMonoidHom (p : ℕ) {M N : Type*} [CommMonoid M] [CommMonoid N] (φ : M →* N) :
+    Perfection M p →* Perfection N p where
+  toFun f := ⟨fun n ↦ φ (f.coeffMonoidHom M p n), fun n ↦ by rw [← map_pow, coeffMonoidHom_pow_p']⟩
+  map_one' := by ext; simp
+  map_mul' _ _ := by ext; simp
+
+@[simp]
+theorem coeffMonoidHom_mapMonoidHom (p : ℕ) {M N : Type*} [CommMonoid M] [CommMonoid N]
+    (φ : M →* N) (f : Perfection M p) (n : ℕ) :
+    coeffMonoidHom N p n (mapMonoidHom p φ f) = φ (coeffMonoidHom M p n f) := rfl
+
+end CommMonoid
+
+section CommSemiring
+
+/-- `Perfection R p` as a subsemiring of `ℕ → R`. -/
+def subsemiring (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [CharP R p] :
+    Subsemiring (ℕ → R) where
+  __ := submonoid R p
+  zero_mem' _ := zero_pow hp.1.ne_zero
+  add_mem' hf hg n := (map_add (frobenius R p) _ _).trans congr($(hf n) + $(hg n))
+
+@[deprecated (since := "2026-03-03")]
+alias _root_.Ring.perfectionSubsemiring := subsemiring
+
+variable (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
+
+instance : CommSemiring (Perfection R p) :=
+  (subsemiring R p).toCommSemiring
+
+instance : CharP (Perfection R p) p :=
+  CharP.subsemiring _ _ (subsemiring R p)
+
+/-- The `n`-th coefficient of an element of the perfection. -/
+def coeff (n : ℕ) : Perfection R p →+* R where
+  __ := coeffMonoidHom R p n
+  map_zero' := rfl
+  map_add' _ _ := rfl
+
+/-- The `p`-th root of an element of the perfection.
+
+The preferred way to use this is `(frobeniusEquiv (Perfection R p) p).symm`. -/
+def pthRoot : Perfection R p →+* Perfection R p where
+  __ := pthRootMonoidHom R p
   map_zero' := rfl
   map_add' _ _ := rfl
 
 variable {R p}
 
 @[ext]
-theorem ext {f g : Ring.Perfection R p} (h : ∀ n, coeff R p n f = coeff R p n g) : f = g :=
-  Subtype.ext <| funext h
+theorem ext {f g : Perfection R p} (h : ∀ n, coeff R p n f = coeff R p n g) : f = g :=
+  extMonoid h
 
-variable (R p)
+set_option backward.isDefEq.respectTransparency false in
+@[simp] lemma pthRoot_eq_symm_frobeniusEquiv :
+    pthRoot R p = RingHomClass.toRingHom (frobeniusEquiv _ p).symm := by
+  ext : 1
+  simpa [RingEquiv.eq_symm_apply] using ext <| coeffMonoidHom_pow_p' _
 
-/-- The `p`-th root of an element of the perfection. -/
-def pthRoot : Ring.Perfection R p →+* Ring.Perfection R p where
-  toFun f := ⟨fun n => coeff R p (n + 1) f, fun _ => f.2 _⟩
-  map_one' := rfl
-  map_mul' _ _ := rfl
-  map_zero' := rfl
-  map_add' _ _ := rfl
+set_option backward.isDefEq.respectTransparency false in
+lemma coe_pthRoot_eq_symm_frobeniusEquiv : ⇑(pthRoot R p) = (frobeniusEquiv _ p).symm :=
+  congr($pthRoot_eq_symm_frobeniusEquiv)
 
-variable {R p}
+@[simp] lemma coeffMonoidHom_eq_coeff (n : ℕ) : ⇑(coeffMonoidHom R p n) = coeff R p n := rfl
+
+lemma pthRootMonoidHom_eq_pthRoot : ⇑(pthRootMonoidHom R p) = pthRoot R p := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+lemma pthRootMonoidHom_eq_symm_frobeniusEquiv :
+    ⇑(pthRootMonoidHom R p) = RingHomClass.toRingHom (frobeniusEquiv _ p).symm := by
+  simp; rfl
+
+lemma coeff_toMonoidHom (n : ℕ) : (coeff R p n).toMonoidHom = coeffMonoidHom R p n := rfl
 
 @[simp]
 theorem coeff_mk (f : ℕ → R) (hf) (n : ℕ) : coeff R p n ⟨f, hf⟩ = f n := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem coeff_pthRoot (f : Ring.Perfection R p) (n : ℕ) :
-    coeff R p n (pthRoot R p f) = coeff R p (n + 1) f := rfl
+theorem coeff_symm_frobeniusEquiv (f : Perfection R p) (n : ℕ) :
+    coeff R p n ((frobeniusEquiv _ p).symm f) = coeff R p (n + 1) f :=
+  coeffMonoidHom_symm_powMulEquiv ..
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem coeff_iterate_symm_frobeniusEquiv (f : Perfection R p) (n m : ℕ) :
+    coeff R p n ((frobeniusEquiv _ p).symm^[m] f) = coeff R p (n + m) f :=
+  coeffMonoidHom_iterate_symm_powMulEquiv ..
+
+theorem coeff_pow_p (f : Perfection R p) (n : ℕ) :
+    coeff R p (n + 1) (f ^ p) = coeff R p n f := coeffMonoidHom_pow_p f n
 
 @[simp]
-theorem coeff_pow_p (f : Ring.Perfection R p) (n : ℕ) :
-    coeff R p (n + 1) (f ^ p) = coeff R p n f := by rw [map_pow]; exact f.2 n
-
-@[simp]
-theorem coeff_pow_p' (f : Ring.Perfection R p) (n : ℕ) : coeff R p (n + 1) f ^ p = coeff R p n f :=
+theorem coeff_pow_p' (f : Perfection R p) (n : ℕ) : coeff R p (n + 1) f ^ p = coeff R p n f :=
   f.2 n
 
 @[simp]
-theorem coeff_frobenius (f : Ring.Perfection R p) (n : ℕ) :
-    coeff R p (n + 1) (frobenius _ p f) = coeff R p n f := by apply coeff_pow_p f n
+theorem coeff_frobenius (f : Perfection R p) (n : ℕ) :
+    coeff R p (n + 1) (frobenius _ p f) = coeff R p n f := coeffMonoidHom_powMonoidHom f n
 
--- `coeff_pow_p f n` also works but is slow!
 @[simp]
-theorem coeff_iterate_frobenius (f : Ring.Perfection R p) (n m : ℕ) :
+theorem coeff_iterate_frobenius (f : Perfection R p) (n m : ℕ) :
     coeff R p (n + m) ((frobenius _ p)^[m] f) = coeff R p n f :=
-  Nat.recOn m rfl fun m ih => by
-    rw [Function.iterate_succ_apply', Nat.add_succ, coeff_frobenius, ih]
+  coeffMonoidHom_iterate_powMonoidHom ..
 
-theorem coeff_iterate_frobenius' (f : Ring.Perfection R p) (n m : ℕ) (hmn : m ≤ n) :
+theorem coeff_iterate_frobenius' (f : Perfection R p) (n m : ℕ) (hmn : m ≤ n) :
     coeff R p n ((frobenius _ p)^[m] f) = coeff R p (n - m) f :=
-  Eq.symm <| (coeff_iterate_frobenius _ _ m).symm.trans <| (tsub_add_cancel_of_le hmn).symm ▸ rfl
+  coeffMonoidHom_iterate_powMonoidHom' _ _ _ hmn
 
-@[simp]
-theorem pthRoot_frobenius : (pthRoot R p).comp (frobenius _ p) = RingHom.id _ :=
-  RingHom.ext fun x =>
-    ext fun n => by rw [RingHom.comp_apply, RingHom.id_apply, coeff_pthRoot, coeff_frobenius]
+theorem pthRoot_frobenius : (pthRoot R p).comp (frobenius _ p) = RingHom.id _ := by
+  ext; simp
 
-@[simp]
-theorem frobenius_pthRoot : (frobenius _ p).comp (pthRoot R p) = RingHom.id _ :=
-  RingHom.ext fun x =>
-    ext fun n => by
-      rw [RingHom.comp_apply, RingHom.id_apply, RingHom.map_frobenius, coeff_pthRoot,
-        ← @RingHom.map_frobenius (Ring.Perfection R p) _ R, coeff_frobenius]
+theorem frobenius_pthRoot : (frobenius _ p).comp (pthRoot R p) = RingHom.id _ := pthRoot_frobenius
 
-theorem coeff_add_ne_zero {f : Ring.Perfection R p} {n : ℕ} (hfn : coeff R p n f ≠ 0) (k : ℕ) :
+theorem coeff_add_ne_zero {f : Perfection R p} {n : ℕ} (hfn : coeff R p n f ≠ 0) (k : ℕ) :
     coeff R p (n + k) f ≠ 0 :=
   Nat.recOn k hfn fun k ih h => ih <| by
     rw [Nat.add_succ] at h
     rw [← coeff_pow_p, map_pow, h, zero_pow hp.1.ne_zero]
 
-theorem coeff_ne_zero_of_le {f : Ring.Perfection R p} {m n : ℕ} (hfm : coeff R p m f ≠ 0)
+theorem coeff_ne_zero_of_le {f : Perfection R p} {m n : ℕ} (hfm : coeff R p m f ≠ 0)
     (hmn : m ≤ n) : coeff R p n f ≠ 0 :=
   let ⟨k, hk⟩ := Nat.exists_eq_add_of_le hmn
   hk.symm ▸ coeff_add_ne_zero hfm k
-
-variable (R p) in
-instance perfectRing : PerfectRing (Ring.Perfection R p) p where
-  bijective_frobenius := Function.bijective_iff_has_inverse.mpr
-    ⟨pthRoot R p,
-     DFunLike.congr_fun <| @frobenius_pthRoot R _ p _ _,
-     DFunLike.congr_fun <| @pthRoot_frobenius R _ p _ _⟩
-
-@[simp]
-theorem coeff_frobeniusEquiv_symm (f : Ring.Perfection R p) (n : ℕ) :
-    Perfection.coeff R p n ((frobeniusEquiv (Ring.Perfection R p) p).symm f) =
-    Perfection.coeff R p (n + 1) f := by
-  nth_rw 2 [← frobenius_apply_frobeniusEquiv_symm _ p f]
-  rw [coeff_frobenius]
-
-@[simp]
-theorem coeff_iterate_frobeniusEquiv_symm (f : Ring.Perfection R p) (n m : ℕ) :
-    Perfection.coeff _ p n ((frobeniusEquiv _ p).symm^[m] f) =
-    Perfection.coeff _ p (n + m) f := by
-  induction m generalizing f n with
-  | zero => simp
-  | succ m ih =>
-    simp [ih, ← add_assoc]
 
 theorem coeff_surjective (h : Function.Surjective (frobenius R p)) (n : ℕ) :
     Function.Surjective (Perfection.coeff R p n) := by
@@ -211,7 +327,7 @@ variable (R p)
 any homomorphism `R →+* S` can be lifted to a homomorphism `R →+* Perfection S p`. -/
 @[simps]
 noncomputable def lift (R : Type u₁) [CommSemiring R] [CharP R p] [PerfectRing R p]
-    (S : Type u₂) [CommSemiring S] [CharP S p] : (R →+* S) ≃ (R →+* Ring.Perfection S p) where
+    (S : Type u₂) [CommSemiring S] [CharP S p] : (R →+* S) ≃ (R →+* Perfection S p) where
   toFun f :=
     { toFun := fun r => ⟨fun n => f (((frobeniusEquiv R p).symm : R →+* R)^[n] r),
         fun n => by rw [← f.map_pow, Function.iterate_succ_apply', RingHom.coe_coe,
@@ -229,23 +345,51 @@ noncomputable def lift (R : Type u₁) [CommSemiring R] [CharP R p] [PerfectRing
         Function.RightInverse.iterate (frobenius_apply_frobeniusEquiv_symm R p) n]
 
 theorem hom_ext {R : Type u₁} [CommSemiring R] [CharP R p] [PerfectRing R p] {S : Type u₂}
-    [CommSemiring S] [CharP S p] {f g : R →+* Ring.Perfection S p}
+    [CommSemiring S] [CharP S p] {f g : R →+* Perfection S p}
     (hfg : ∀ x, coeff S p 0 (f x) = coeff S p 0 (g x)) : f = g :=
   (lift p R S).symm.injective <| RingHom.ext hfg
 
 variable {R} {S : Type u₂} [CommSemiring S] [CharP S p]
 
 /-- A ring homomorphism `R →+* S` induces `Perfection R p →+* Perfection S p`. -/
-@[simps]
-def map (φ : R →+* S) : Ring.Perfection R p →+* Ring.Perfection S p where
-  toFun f := ⟨fun n => φ (coeff R p n f), fun n => by rw [← φ.map_pow, coeff_pow_p']⟩
-  map_one' := Subtype.ext <| funext fun _ => φ.map_one
-  map_mul' _ _ := Subtype.ext <| funext fun _ => φ.map_mul _ _
+def map (φ : R →+* S) : Perfection R p →+* Perfection S p where
+  __ := mapMonoidHom p (φ : R →* S)
   map_zero' := Subtype.ext <| funext fun _ => φ.map_zero
   map_add' _ _ := Subtype.ext <| funext fun _ => φ.map_add _ _
 
-theorem coeff_map (φ : R →+* S) (f : Ring.Perfection R p) (n : ℕ) :
+@[simp] theorem coeff_map (φ : R →+* S) (f : Perfection R p) (n : ℕ) :
     coeff S p n (map p φ f) = φ (coeff R p n f) := rfl
+
+end CommSemiring
+
+section CommRing
+
+/-- `Perfection R p` as a semiring of `ℕ → R`. -/
+def subring (R : Type*) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p] :
+    Subring (ℕ → R) where
+  __ := subsemiring R p
+  neg_mem' hf n := (map_neg (frobenius R p) _).trans congr(-$(hf n))
+
+@[deprecated (since := "2026-03-03")]
+alias _root_.Ring.perfectionSubring := subring
+
+variable (R : Type*) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
+
+instance : Ring (Perfection R p) :=
+  (subring R p).toRing
+
+instance : CommRing (Perfection R p) :=
+  (subring R p).toCommRing
+
+end CommRing
+
+section CommMonoid_CommRing
+
+@[simp] theorem coeff_mapMonoidHom {p : ℕ} [Fact p.Prime] {M N : Type*} [CommMonoid M] [CommRing N]
+    [CharP N p] (e : M →* N) (n : ℕ) (x : Perfection M p) :
+    coeff N p n (mapMonoidHom p e x) = e (coeffMonoidHom M p n x) := rfl
+
+end CommMonoid_CommRing
 
 end Perfection
 
@@ -265,7 +409,7 @@ variable {R : Type u₁} [CommSemiring R] [CharP R p]
 variable {P : Type u₃} [CommSemiring P] [CharP P p] [PerfectRing P p]
 
 /-- Create a `PerfectionMap` from an isomorphism to the perfection. -/
-theorem mk' {f : P →+* R} (g : P ≃+* Ring.Perfection R p) (hfg : Perfection.lift p P R f = g) :
+theorem mk' {f : P →+* R} (g : P ≃+* Perfection R p) (hfg : Perfection.lift p P R f = g) :
     PerfectionMap p f :=
   { injective := fun x y hxy =>
       g.injective <|
@@ -279,6 +423,7 @@ theorem mk' {f : P →+* R} (g : P ≃+* Ring.Perfection R p) (hfg : Perfection.
 
 variable (p R P)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical perfection map from the perfection of a ring. -/
 theorem of : PerfectionMap p (Perfection.coeff R p 0) :=
   mk' (RingEquiv.refl _) <| (Equiv.apply_eq_iff_eq_symm_apply _).2 rfl
@@ -295,7 +440,7 @@ theorem id [PerfectRing R p] : PerfectionMap p (RingHom.id R) :=
 variable {p R P}
 
 /-- A perfection map induces an isomorphism to the perfection. -/
-noncomputable def equiv {π : P →+* R} (m : PerfectionMap p π) : P ≃+* Ring.Perfection R p :=
+noncomputable def equiv {π : P →+* R} (m : PerfectionMap p π) : P ≃+* Perfection R p :=
   RingEquiv.ofBijective (Perfection.lift p P R π)
     ⟨fun _ _ hxy => m.injective fun n => (congr_arg (Perfection.coeff R p n) hxy :), fun f =>
       let ⟨x, hx⟩ := m.surjective f.1 f.2
@@ -311,7 +456,7 @@ theorem comp_equiv' {π : P →+* R} (m : PerfectionMap p π) :
     (Perfection.coeff R p 0).comp ↑m.equiv = π :=
   RingHom.ext fun _ => rfl
 
-theorem comp_symm_equiv {π : P →+* R} (m : PerfectionMap p π) (f : Ring.Perfection R p) :
+theorem comp_symm_equiv {π : P →+* R} (m : PerfectionMap p π) (f : Perfection R p) :
     π (m.equiv.symm f) = Perfection.coeff R p 0 f :=
   (m.comp_equiv _).symm.trans <| congr_arg _ <| m.equiv.apply_symm_apply f
 
@@ -363,6 +508,7 @@ theorem map_map {π : P →+* R} (m : PerfectionMap p π) {σ : Q →+* S} (n : 
     (φ : R →+* S) (x : P) : σ (map p m n φ x) = φ (π x) :=
   RingHom.ext_iff.1 (comp_map p m n φ) x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_eq_map (φ : R →+* S) : map p (of p R) (of p S) φ = Perfection.map p φ :=
   hom_ext _ (of p S) fun f => by rw [map_map, Perfection.coeff_map]
 
@@ -378,13 +524,10 @@ abbrev ModP :=
 
 namespace ModP
 
-instance commRing : CommRing (ModP O p) :=
-  Ideal.Quotient.commRing (Ideal.span {(p : O)} : Ideal O)
-
-instance charP [Fact p.Prime] [hvp : Fact (¬ IsUnit (p : O))] : CharP (ModP O p) p :=
+instance [Fact p.Prime] [hvp : Fact (¬ IsUnit (p : O))] : CharP (ModP O p) p :=
   CharP.quotient O p <| hvp.1
 
-instance nontrivial [hp : Fact p.Prime] [Fact (¬ IsUnit (p : O))] : Nontrivial (ModP O p) :=
+instance [hp : Fact p.Prime] [Fact (¬ IsUnit (p : O))] : Nontrivial (ModP O p) :=
   CharP.nontrivial_of_char_ne_one hp.1.ne_one
 
 end ModP
@@ -424,6 +567,7 @@ theorem preVal_mk {x : O} (hx : (Ideal.Quotient.mk _ x : ModP O p) ≠ 0) :
   exact fun hprx =>
     hx (Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.mem_span_singleton.2 <| dvd_of_mul_left_dvd hprx)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem preVal_mul {x y : ModP O p} (hxy0 : x * y ≠ 0) :
     preVal K v O p (x * y) = preVal K v O p x * preVal K v O p y := by
   have hx0 : x ≠ 0 := mt (by rintro rfl; rw [zero_mul]) hxy0
@@ -433,6 +577,7 @@ theorem preVal_mul {x y : ModP O p} (hxy0 : x * y ≠ 0) :
   rw [← map_mul (Ideal.Quotient.mk (Ideal.span {↑p})) r s] at hxy0 ⊢
   rw [preVal_mk hv hx0, preVal_mk hv hy0, preVal_mk hv hxy0, map_mul, v.map_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem preVal_add (x y : ModP O p) :
     preVal K v O p (x + y) ≤ max (preVal K v O p x) (preVal K v O p y) := by
   by_cases hx0 : x = 0
@@ -494,20 +639,22 @@ end ModP
 
 /-- Perfection of `O/(p)` where `O` is the ring of integers of `K`. -/
 def PreTilt :=
-  Ring.Perfection (ModP O p) p
+  Perfection (ModP O p) p
 
 namespace PreTilt
 
 variable [Fact p.Prime] [Fact (¬ IsUnit (p : O))]
 
 instance : CommRing (PreTilt O p) :=
-  Perfection.commRing p _
+  inferInstanceAs <| CommRing <| Perfection _ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance : CharP (PreTilt O p) p :=
-  Perfection.charP (ModP O p) p
+  inferInstanceAs <| CharP (Perfection _ _) _
 
+set_option backward.isDefEq.respectTransparency false in
 instance : PerfectRing (PreTilt O p) p :=
-  Perfection.perfectRing (ModP O p) p
+  inferInstanceAs <| PerfectRing (Perfection _ _) p
 
 section coeff
 
@@ -519,11 +666,13 @@ def coeff (n : ℕ) : PreTilt O p →+* ModP O p := Perfection.coeff (ModP O p) 
 theorem coeff_def (n : ℕ) (x : PreTilt O p) : coeff n x = Perfection.coeff _ _ n x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_frobenius (n : ℕ) (x : PreTilt O p) :
     (coeff (n + 1) (frobenius _ p x)) = coeff n x := by
   simp [PreTilt, coeff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_iterate_frobenius (m n : ℕ) (x : PreTilt O p) :
     (coeff (m + n) ((frobenius _ p)^[n] x)) = coeff m x := by
@@ -538,11 +687,13 @@ theorem coeff_iterate_frobenius' (x : PreTilt O p) {m n : ℕ} (hmn : m ≤ n) :
 theorem coeff_pow_p (x : PreTilt O p) (n : ℕ) : coeff (n + 1) x ^ p = coeff n x :=
   Perfection.coeff_pow_p x n
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_frobeniusEquiv_symm (n : ℕ) (x : PreTilt O p) :
     (coeff n (((frobeniusEquiv _ p).symm) x)) = coeff (n + 1) x := by
   simp [PreTilt, coeff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_iterate_frobeniusEquiv_symm (m n : ℕ) (x : PreTilt O p) :
     (coeff m (((frobeniusEquiv _ p).symm^[n]) x)) = coeff (m + n) x := by
@@ -592,6 +743,7 @@ theorem valAux_eq {f : PreTilt O p} {n : ℕ} (hfn : coeff n f ≠ 0) :
   rw [ih (coeff_nat_find_add_ne_zero k), ← add_assoc, ← hx, ← coeff_pow_p, ← hx, ← map_pow,
     ModP.preVal_mk hv h1, ModP.preVal_mk hv h2, map_pow, v.map_pow, ← pow_mul, pow_succ']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem valAux_one : valAux K v O p 1 = 1 :=
   (valAux_eq (hv := hv) <| show coeff 0 1 ≠ 0 from one_ne_zero).trans <| by
     rw [pow_zero, pow_one, map_one, ← (Ideal.Quotient.mk _).map_one, ModP.preVal_mk hv,
@@ -618,6 +770,7 @@ theorem valAux_mul (f g : PreTilt O p) :
       valAux_eq hv (coeff_add_ne_zero hn 1), valAux_eq hv hfg]
   rw [map_mul] at hfg ⊢; rw [ModP.preVal_mul hv hfg, mul_pow]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem valAux_add (f g : PreTilt O p) :
     valAux K v O p (f + g) ≤ max (valAux K v O p f) (valAux K v O p g) := by
   by_cases hf : f = 0

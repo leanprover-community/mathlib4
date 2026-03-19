@@ -22,6 +22,7 @@ namespace SSet
 
 namespace stdSimplex
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `i : Fin (n + 2)`, this is the `n`-simplex of `Δ[1]` which corresponds
 to the monotone map `Fin (n + 1) → Fin 2` which takes `i` times the value `0`. -/
 def objMk₁ {n : ℕ} (i : Fin (n + 2)) : Δ[1] _⦋n⦌ :=
@@ -33,24 +34,26 @@ def objMk₁ {n : ℕ} (i : Fin (n + 2)) : Δ[1] _⦋n⦌ :=
         · dsimp
           rw [if_neg hi, if_neg (fun hj' ↦ hi (lt_of_le_of_lt (by simpa using h) hj'))] }
 
+set_option backward.isDefEq.respectTransparency false in
 lemma objMk₁_apply_eq_zero_iff {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) :
-    objMk₁ i j = 0 ↔ j.castSucc < i := by
+    dsimp% objMk₁ i j = 0 ↔ j.castSucc < i := by
   by_cases hj : j.castSucc < i
   · simpa [objMk₁, if_pos hj]
   · simpa [objMk₁, if_neg hj] using hj
 
 lemma objMk₁_of_castSucc_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : j.castSucc < i) :
-    objMk₁ i j = 0 := by
+    dsimp% objMk₁ i j = 0 := by
   simpa [objMk₁_apply_eq_zero_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma objMk₁_apply_eq_one_iff {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) :
-    objMk₁ i j = 1 ↔ i ≤ j.castSucc := by
+    dsimp% objMk₁ i j = 1 ↔ i ≤ j.castSucc := by
   by_cases hj : j.castSucc < i
   · simpa [objMk₁, if_pos hj]
   · simpa [objMk₁, if_neg hj] using hj
 
 lemma objMk₁_of_le_castSucc {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : i ≤ j.castSucc) :
-    objMk₁ i j = 1 := by
+    dsimp% objMk₁ i j = 1 := by
   simpa [objMk₁_apply_eq_one_iff]
 
 -- to be moved
@@ -132,6 +135,7 @@ lemma σ_objMk₁_of_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : j.cas
       rw [Fin.predAbove_of_le_castSucc _ _ hk']
       exact lt_of_le_of_lt (by simpa) h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma objMk₁_injective {n : ℕ} : Function.Injective (objMk₁ (n := n)) := by
   intro i j h
   wlog hij : i < j generalizing i j
@@ -143,6 +147,7 @@ lemma objMk₁_injective {n : ℕ} : Function.Injective (objMk₁ (n := n)) := b
     ⟨i.1, lt_of_lt_of_le hij (by dsimp; lia)⟩
   simp [if_pos hij] at this
 
+set_option backward.isDefEq.respectTransparency false in
 lemma objMk₁_surjective {n : ℕ} : Function.Surjective (objMk₁ (n := n)) := by
   intro f
   let S : Finset (Fin (n + 1)) := { i | f i = 1}

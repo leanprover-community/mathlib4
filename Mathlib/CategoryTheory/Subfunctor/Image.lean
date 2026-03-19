@@ -81,6 +81,7 @@ lemma toRange_app_val {i : C} (x : F'.obj i) :
     ((toRange p).app i x).val = p.app i x := by
   simp [toRange]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma range_toRange : range (toRange p) = ⊤ := by
   ext i ⟨x, hx⟩
