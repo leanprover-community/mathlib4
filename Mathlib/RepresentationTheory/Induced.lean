@@ -108,12 +108,6 @@ noncomputable def indMap {A B : Rep k G} (f : A ⟶ B) : ind φ A ⟶ ind φ B :
   ⟨Representation.Coinvariants.map _ _ (f.hom.toLinearMap.lTensor _) (by
     simp [LinearMap.lTensor_comp_map, f.hom.2, LinearMap.map_comp_lTensor]),
     fun g ↦ by ext; simp⟩
---where
-  -- hom := ModuleCat.ofHom <| Representation.Coinvariants.map _ _
-  --   (LinearMap.lTensor (H →₀ k) f.hom.hom) fun g => by ext; simp [hom_comm_apply]
-  -- comm _ := by
-  --   ext
-  --   simp [ModuleCat.endRingEquiv]
 
 variable (k) in
 /-- Given a group homomorphism `φ : G →* H`, this is the functor sending a `G`-representation `A`
@@ -132,7 +126,6 @@ open Representation
 
 variable (B : Rep k H)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
 `A`, there is a `k`-linear equivalence between the `H`-representation morphisms `ind φ A ⟶ B` and
 the `G`-representation morphisms `A ⟶ B`. -/
@@ -185,8 +178,6 @@ noncomputable instance : (resFunctor.{max u v' w} (k := k) φ).IsRightAdjoint :=
 end Adjunction
 
 section
-
--- variable (H : Type v) [Monoid H] (A : Rep.{u} k G) (B : Rep k H) (φ : G →* H)
 
 variable {G H : Type u} [Group G] [Group H] (φ : G →* H) (A : Rep k G) (B : Rep k H)
 

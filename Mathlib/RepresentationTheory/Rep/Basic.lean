@@ -70,7 +70,7 @@ lemma of_ρ : (of ρ).ρ = ρ := by with_reducible rfl
 set_option backward.privateInPublic true in
 /-- The type of morphisms in `Rep.{w} k G`. -/
 @[ext]
-structure Hom (A B : Rep.{w} k G) where
+structure Hom where
   private mk ::
   /-- The underlying `G`-equivariant linear map. -/
   hom' : A.ρ.IntertwiningMap B.ρ
@@ -98,7 +98,7 @@ abbrev ofHom (f : ρ.IntertwiningMap σ) : of ρ ⟶ of σ :=
   ConcreteCategory.ofHom (C := Rep.{w} k G) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (A B : Rep.{w} k G) (f : Hom A B) := f.hom
+def Hom.Simps.hom (f : Hom A B) := f.hom
 
 initialize_simps_projections Hom (hom' → hom)
 
@@ -108,7 +108,7 @@ The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep 
 @[simp] lemma hom_id : (𝟙 A : A ⟶ A).hom = .id A.ρ := rfl
 
 /- Provided for rewriting. -/
-lemma id_apply (A : Rep k G) (a : A) : (𝟙 A : A ⟶ A) a = a := by
+lemma id_apply (a : A) : (𝟙 A : A ⟶ A) a = a := by
   simp [Representation.IntertwiningMap.id]
 
 @[simp] lemma hom_comp (f : A ⟶ B) (g : B ⟶ C) : (f ≫ g).hom = g.hom.comp f.hom := rfl
@@ -143,7 +143,7 @@ lemma hom_inv_apply (e : A ≅ B) (x : B) : e.hom.hom (e.inv.hom x) = x := by si
 
 instance : Inhabited (Rep.{u} k G) := ⟨of (Representation.trivial k G PUnit)⟩
 
-lemma forget_obj (A : Rep.{w} k G) : (forget (Rep.{w} k G)).obj A = A := rfl
+lemma forget_obj : (forget (Rep.{w} k G)).obj A = A := rfl
 
 lemma forget_map (f : A ⟶ B) : (forget (Rep.{w} k G)).map f = (f : _ → _) := rfl
 
@@ -212,8 +212,7 @@ def homEquiv : (A ⟶ B) ≃ (A.ρ.IntertwiningMap B.ρ) where
   toFun := Hom.hom
   invFun := ofHom
 
-instance : Add (A ⟶ B) where
-  add f g := ofHom (f.hom + g.hom)
+instance : Add (A ⟶ B) where add f g := ofHom (f.hom + g.hom)
 
 lemma ofHom_add (f g : ρ.IntertwiningMap σ) :
     ofHom (f + g) = ofHom f + ofHom g := rfl
@@ -253,7 +252,7 @@ instance : Neg (A ⟶ B) where neg f := ofHom (-f.hom)
 
 lemma ofHom_neg (f : ρ.IntertwiningMap σ) : ofHom (-f) = -ofHom f := rfl
 
-lemma neg_hom {M N : Rep k G} (f : M ⟶ N) : (-f).hom = -f.hom := rfl
+lemma neg_hom (f : A ⟶ B) : (-f).hom = -f.hom := rfl
 
 instance : Sub (A ⟶ B) where sub f g := ofHom (f.hom - g.hom)
 
@@ -444,7 +443,7 @@ end Commutative
 variable (k G) in
 /-- The functor equipping a module with the trivial representation. -/
 @[simps! obj_V map_hom]
-def trivialFunctor : ModuleCat k ⥤ Rep k G where
+def trivialFunctor : ModuleCat.{w} k ⥤ Rep.{w} k G where
   obj V := trivial k G V
   map f := ofHom ⟨f.hom, fun _ ↦ rfl⟩
 
@@ -453,15 +452,15 @@ abbrev IsTrivial (A : Rep k G) := A.ρ.IsTrivial
 
 instance (X : ModuleCat k) : ((trivialFunctor k G).obj X).IsTrivial where
 
-instance {V : Type u} [AddCommGroup V] [Module k V] :
+instance {V : Type w} [AddCommGroup V] [Module k V] :
     IsTrivial (Rep.trivial k G V) where
 
-instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
+instance {V : Type w} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
     IsTrivial (Rep.of ρ) where
   out := Representation.isTrivial_def ρ
 
-instance {H V : Type u} [Group H] [AddCommGroup V] [Module k V] (ρ : Representation k H V)
-    (f : G →* H) [Representation.IsTrivial (ρ.comp f)] :
+instance {H : Type u'} {V : Type w} [Group H] [AddCommGroup V] [Module k V]
+    (ρ : Representation k H V) (f : G →* H) [Representation.IsTrivial (ρ.comp f)] :
     Representation.IsTrivial ((Rep.of ρ).ρ.comp f) := ‹_›
 
 variable {A B C : Rep.{w} k G}
@@ -545,20 +544,20 @@ instance preservesColimits_forget :
     Limits.PreservesColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
   Limits.preservesColimits_of_natIso (forgetNatIsoActionForget k G).symm
 
-theorem epi_iff_surjective {A B : Rep k G} (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=
+theorem epi_iff_surjective (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=
   ⟨fun _ => (ModuleCat.epi_iff_surjective ((forget₂ _ _).map f)).1 inferInstance,
   fun h => (forget₂ _ _).epi_of_epi_map ((ModuleCat.epi_iff_surjective <|
     (forget₂ _ _).map f).2 h)⟩
 
-theorem mono_iff_injective {A B : Rep k G} (f : A ⟶ B) : Mono f ↔ Function.Injective f.hom :=
+theorem mono_iff_injective (f : A ⟶ B) : Mono f ↔ Function.Injective f.hom :=
   ⟨fun _ => (ModuleCat.mono_iff_injective ((forget₂ _ _).map f)).1 inferInstance,
   fun h => (forget₂ _ _).mono_of_mono_map ((ModuleCat.mono_iff_injective <|
     (forget₂ _ _).map f).2 h)⟩
 
-instance {A B : Rep k G} (f : A ⟶ B) [Mono f] : Mono f.toModuleCatHom :=
+instance (f : A ⟶ B) [Mono f] : Mono f.toModuleCatHom :=
   inferInstanceAs <| Mono ((forget₂ _ _).map f)
 
-instance {A B : Rep k G} (f : A ⟶ B) [Epi f] : Epi f.toModuleCatHom :=
+instance (f : A ⟶ B) [Epi f] : Epi f.toModuleCatHom :=
   inferInstanceAs <| Epi ((forget₂ _ _).map f)
 
 end Action
@@ -697,17 +696,13 @@ instance : BraidedCategory (Rep.{u} k G) where
   braiding_naturality_left _ _ := by ext1; simp [comm_comp_rTensor]
   hexagon_forward _ _ _ := by
     ext : 2
-    simp only [tensor_V, tensor_ρ, hom_comp, hom_hom_associator, mkIso_hom_hom, comp_toLinearMap,
-      toLinearMap_assoc, toLinearMap_comm, LinearEquiv.comp_coe, hom_whiskerLeft, hom_whiskerRight,
-      toLinearMap_lTensor, toLinearMap_rTensor]
-    ext; simp
+    exact TensorProduct.ext_threefold <| fun _ _ _ ↦ by simp
   hexagon_reverse X Y Z := by
     ext : 2
     simp only [tensor_V, tensor_ρ, hom_comp, hom_inv_associator, mkIso_hom_hom, comp_toLinearMap,
       assoc_symm_toLinearMap, toLinearMap_comm, LinearEquiv.comp_coe, hom_whiskerRight,
-      hom_whiskerLeft, toLinearMap_rTensor, toLinearMap_lTensor, LinearMap.comp_assoc]
-    ext
-    simp
+      hom_whiskerLeft, toLinearMap_rTensor, toLinearMap_lTensor]
+    ext; simp
 
 @[simp]
 lemma hom_braiding {X Y : Rep k G} : (β_ X Y).hom.hom =
@@ -725,12 +720,11 @@ open MonoidalCategory Action
 
 variable {G : Type v} [Group G] (A B C : Rep.{w} k G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `(A, ρ₁)`, this is the 'internal Hom' functor sending
 `(B, ρ₂)` to the representation `Homₖ(A, B)` that maps `g : G` and `f : A →ₗ[k] B` to
 `(ρ₂ g) ∘ₗ f ∘ₗ (ρ₁ g⁻¹)`. -/
 @[simps]
-protected noncomputable def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
+protected noncomputable def ihom : Rep k G ⥤ Rep k G where
   obj B := Rep.of (Representation.linHom A.ρ B.ρ)
   map {X} {Y} f := Rep.ofHom ⟨LinearMap.llcomp k _ _ _ f.hom.toLinearMap, fun g ↦ by
     ext; simp [Representation.IntertwiningMap.toLinearMap_apply, ← hom_comm_apply]⟩
@@ -807,7 +801,6 @@ def MonoidalClosed.linearHomEquivComm (A B C : Rep.{u} k G) : (A ⊗ B ⟶ C) �
     ⟶[Rep k G] C :=
   Linear.homCongr k (β_ A B) (Iso.refl _) ≪≫ₗ MonoidalClosed.linearHomEquiv _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem MonoidalClosed.linearHomEquiv_hom (A B C : Rep.{u} k G) (f : A ⊗ B ⟶ C) :
     (MonoidalClosed.linearHomEquiv A B C f).hom.toLinearMap =
@@ -837,7 +830,6 @@ section
 
 variable {G : Type v} [Group G] [Fintype G] (A : Rep.{w} k G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a representation `A` of a finite group `G`, `norm A` is the representation morphism
 `A ⟶ A` defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/
 def norm : End A := Rep.ofHom (σ := A.ρ) (ρ := A.ρ) ⟨Representation.norm A.ρ,
@@ -846,11 +838,9 @@ def norm : End A := Rep.ofHom (σ := A.ρ) (ρ := A.ρ) ⟨Representation.norm A
 @[simp]
 lemma norm_apply {x : A} : (norm A).hom x = A.ρ.norm x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 lemma norm_comm {A B : Rep k G} (f : A ⟶ B) : f ≫ norm B = norm A ≫ f := by
-  ext
-  simp [Representation.norm, hom_comm_apply]
+  ext; simp [Representation.norm, hom_comm_apply]
 
 /-- Given a representation `A` of a finite group `G`, the norm map `A ⟶ A` defined by
 `x ↦ ∑ A.ρ g x` for `g` in `G` defines a natural endomorphism of the identity functor. -/
@@ -878,11 +868,9 @@ abbrev finsupp : Rep k G :=
 
 @[simp] lemma finsupp_V : (finsupp α A).V = (α →₀ A.V) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation on
 `k[G]`. -/
-abbrev free : Rep k G :=
-  Rep.of (Representation.free k G α)
+abbrev free : Rep k G := Rep.of (Representation.free k G α)
 
 variable {α}
 
@@ -909,14 +897,12 @@ open MonoidalCategory
 
 variable (A B : Rep.{u} k G) (α : Type u) [DecidableEq α]
 
-set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
 `(α →₀ A) ⊗ B ≅ (A ⊗ B) →₀ α` sending `single x a ⊗ₜ b ↦ single x (a ⊗ₜ b)`. -/
 abbrev finsuppTensorLeft : A.finsupp α ⊗ B ≅ (A ⊗ B).finsupp α :=
   mkIso (Representation.finsuppTensorLeft A.ρ B.ρ α)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
 `A ⊗ (α →₀ B) ≅ (A ⊗ B) →₀ α` sending `a ⊗ₜ single x b ↦ single x (a ⊗ₜ b)`. -/
 abbrev finsuppTensorRight : A ⊗ B.finsupp α ≅ (A ⊗ B).finsupp α :=
@@ -1011,13 +997,11 @@ abbrev linearizationOfMulActionIso (H : Type u) [MulAction G H] :
     (linearization k G).obj (Action.ofMulAction G H) ≅ ofMulAction k G H :=
   Rep.mkIso (Representation.linearizeOfMulActionIso k G H)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
 representation morphisms `Hom(k[G], A)` and `A`. -/
 abbrev leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) ≃ₗ[k] A :=
   homLinearEquiv _ _ ≪≫ₗ Representation.leftRegularMapEquiv A.ρ
 
-set_option backward.isDefEq.respectTransparency false in
 theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
     ((leftRegularHomEquiv A).symm x).hom (.single g 1) = A.ρ g x := by
   simp [homEquiv]

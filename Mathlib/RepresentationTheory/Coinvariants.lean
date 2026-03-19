@@ -59,8 +59,7 @@ namespace Coinvariants
 
 instance : AddCommGroup (Coinvariants ρ) := inferInstanceAs <| AddCommGroup (_ ⧸ _)
 
-set_option backward.isDefEq.respectTransparency false in
-instance : Module k (Coinvariants ρ) := inferInstanceAs <| Module k (_ ⧸ _)
+instance : Module k (Coinvariants ρ) := inferInstanceAs <| Module k (V ⧸ Coinvariants.ker ρ)
 
 variable {ρ}
 
@@ -317,10 +316,6 @@ abbrev toCoinvariants : Rep k G := Rep.of (A.ρ.toCoinvariants S)
 abbrev toCoinvariantsMkQ : A ⟶ toCoinvariants A S :=
   Rep.ofHom (Representation.toCoinvariantsMkQ _ _)
 
--- @[simp]
--- lemma toCoinvariantsMkQ_hom :
---     (toCoinvariantsMkQ A S).hom = Coinvariants.mk (A.ρ.comp S.subtype) := rfl
-
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the coinvariants of `ρ|_S`. -/
 abbrev quotientToCoinvariants : Rep k (G ⧸ S) := Rep.ofQuotient (Rep.toCoinvariants A S) S
@@ -374,7 +369,6 @@ lemma coinvariantsFunctor_hom_ext {M : ModuleCat k} {f g : (coinvariantsFunctor 
     (hfg : (coinvariantsMk k G).app A ≫ f = (coinvariantsMk k G).app A ≫ g) :
     f = g := (cancel_epi _).1 hfg
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The linear map underlying a `G`-representation morphism `A ⟶ B`, where `B` has the trivial
 representation, factors through `A_G`. -/
 noncomputable abbrev desc [B.ρ.IsTrivial] (f : A ⟶ B) :
@@ -420,11 +414,10 @@ noncomputable abbrev coinvariantsTensor : Rep k G ⥤ Rep k G ⥤ ModuleCat k :=
 
 variable {k G} (A B)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The bilinear map sending `a : A, b : B` to `⟦a ⊗ₜ b⟧` in `(A ⊗[k] B)_G`. -/
 noncomputable abbrev coinvariantsTensorMk (A B : Rep.{u} k G) :
     A →ₗ[k] B →ₗ[k] ((coinvariantsTensor k G).obj A).obj B :=
-  (TensorProduct.mk k A B).compr₂ (Coinvariants.mk _)
+  (TensorProduct.mk k A B).compr₂ (Coinvariants.mk (A.ρ.tprod B.ρ))
 
 variable {A B}
 
@@ -506,7 +499,6 @@ variable (A α)
 
 #adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
 the simpNF linter complains about `@[simps! symm_apply]`, but removing it seems to be harmless. -/
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `(A, ρ)` and a type `α`, this is the linear equivalence
 `(A ⊗ (α →₀ k[G]))_G ≃ₗ[k] (α →₀ A)` sending
 `⟦a ⊗ single x (single g r)⟧ ↦ single x (r • ρ(g⁻¹)(a)).` -/
