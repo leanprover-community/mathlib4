@@ -162,6 +162,7 @@ theorem FiniteMultiplicity.lt_multiplicity_of_lt_emultiplicity (hfin : FiniteMul
   rw [emultiplicity_eq_multiplicity hfin] at h
   assumption_mod_cast
 
+set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_pos_iff :
     0 < emultiplicity a b ↔ 0 < multiplicity a b := by
   simp [pos_iff_ne_zero, pos_iff_ne_zero, emultiplicity_eq_zero_iff_multiplicity_eq_zero]

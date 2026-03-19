@@ -18,6 +18,7 @@ assert_not_exists Field
 
 namespace ENat
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℕ∞}
     (hf : ∀ i j, ∃ k, ∀ a, f a i ≤ f a k ∧ f a j ≤ f a k) :
     ∑ a ∈ s, ⨆ i, f a i = ⨆ i, ∑ a ∈ s, f a i := by

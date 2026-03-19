@@ -64,11 +64,13 @@ theorem length_eq_zero {s : Seq α} {h : s.Terminates} :
     s.length h = 0 ↔ s = nil := by
   simp [length, TerminatedAt]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem length'_eq_zero_iff_nil (s : Seq α) :
     s.length' = 0 ↔ s = nil := by
   cases s <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem length'_ne_zero_iff_cons (s : Seq α) :
     s.length' ≠ 0 ↔ ∃ x s', s = cons x s' := by
   cases s <;> simp
@@ -909,6 +911,7 @@ theorem Pairwise_drop {R : α → α → Prop} {s : Seq α} (h : s.Pairwise R) {
 
 end Pairwise
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Coinductive principle for proving `b.length' ≤ a.length'` for two sequences `a` and `b`. -/
 theorem at_least_as_long_as_coind {a : Seq α} {b : Seq β}
     (motive : Seq α → Seq β → Prop) (base : motive a b)

@@ -286,6 +286,7 @@ private lemma height_add_const (a : α) (n : ℕ∞) :
   have := length_le_height_last (p := p.snoc y (by simp [*]))
   simpa using this
 
+set_option backward.isDefEq.respectTransparency false in
 lemma height_add_one_le {a b : α} (hab : a < b) : height a + 1 ≤ height b := by
   cases hfin : height a with
   | top =>
@@ -304,6 +305,7 @@ lemma height_add_one_le {a b : α} (hab : a < b) : height a + 1 ≤ height b := 
     coheight x < coheight y :=
   height_strictMono (α := αᵒᵈ) hyx hfin
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coheight_add_one_le {a b : α} (hab : b < a) : coheight a + 1 ≤ coheight b := by
   cases hfin : coheight a with
   | top =>
@@ -459,11 +461,13 @@ protected alias ⟨_, IsMax.coheight_eq_zero⟩ := coheight_eq_zero
 
 lemma height_ne_zero {x : α} : height x ≠ 0 ↔ ¬ IsMin x := height_eq_zero.not
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma height_pos {x : α} : 0 < height x ↔ ¬ IsMin x := by
   simp [pos_iff_ne_zero]
 
 lemma coheight_ne_zero {x : α} : coheight x ≠ 0 ↔ ¬ IsMax x := coheight_eq_zero.not
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coheight_pos {x : α} : 0 < coheight x ↔ ¬ IsMax x := by
   simp [pos_iff_ne_zero]
 
@@ -591,6 +595,7 @@ lemma krullDim_eq_bot_iff : krullDim α = ⊥ ↔ IsEmpty α := by
   simp only [le_bot_iff, WithBot.natCast_ne_bot, isEmpty_iff]
   exact ⟨fun H x ↦ H ⟨0, fun _ ↦ x, by simp⟩, (· <| · 1)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma krullDim_nonneg_iff : 0 ≤ krullDim α ↔ Nonempty α := by
   contrapose!
   rw [← krullDim_eq_bot_iff, ← WithBot.lt_coe_bot, bot_eq_zero, WithBot.coe_zero]
@@ -608,6 +613,7 @@ theorem bot_lt_krullDim_iff : ⊥ < krullDim α ↔ Nonempty α := by
 theorem bot_lt_krullDim [Nonempty α] : ⊥ < krullDim α :=
   bot_lt_krullDim_iff.mpr ‹_›
 
+set_option backward.isDefEq.respectTransparency false in
 lemma krullDim_nonpos_iff_forall_isMax : krullDim α ≤ 0 ↔ ∀ x : α, IsMax x := by
   simp only [krullDim, iSup_le_iff, isMax_iff_forall_not_lt]
   refine ⟨fun H x y h ↦ (H ⟨1, ![x, y],
@@ -635,6 +641,7 @@ lemma krullDim_pos_iff : 0 < krullDim α ↔ ∃ x y : α, x < y := by
   contrapose!
   simp_rw [← isMax_iff_forall_not_lt, ← krullDim_nonpos_iff_forall_isMax]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma one_le_krullDim_iff : 1 ≤ krullDim α ↔ ∃ x y : α, x < y := by
   rw [← krullDim_pos_iff, ← Nat.cast_zero, ← ENat.WithBot.add_one_le_iff, Nat.cast_zero, zero_add]
 
@@ -936,6 +943,7 @@ end typeclass
 
 section calculations
 
+set_option backward.isDefEq.respectTransparency false in
 lemma krullDim_eq_one_iff_of_boundedOrder {α : Type*} [PartialOrder α] [BoundedOrder α] :
     krullDim α = 1 ↔ IsSimpleOrder α := by
   rw [le_antisymm_iff, krullDim_le_one_iff_of_boundedOrder, WithBot.one_le_iff_pos,
@@ -1075,6 +1083,7 @@ set_option backward.isDefEq.respectTransparency false in
   conv_rhs => rw [← krullDim_orderDual]
   exact krullDim_WithTop (α := αᵒᵈ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma krullDim_enat : krullDim ℕ∞ = ⊤ := by
   change (krullDim (WithTop ℕ) = ⊤)
@@ -1086,6 +1095,7 @@ lemma height_enat (n : ℕ∞) : height n = n := by
   | top => simp only [← WithBot.coe_eq_coe, height_top_eq_krullDim, krullDim_enat, WithBot.coe_top]
   | coe n => exact (height_coe_withTop _).trans (height_nat _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coheight_coe_enat (n : ℕ) : coheight (n : ℕ∞) = ⊤ := by
   apply (coheight_coe_withTop _).trans

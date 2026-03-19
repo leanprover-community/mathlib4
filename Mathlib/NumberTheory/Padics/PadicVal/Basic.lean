@@ -273,6 +273,7 @@ theorem padicValRat_le_padicValRat_iff {n₁ n₂ d₁ d₂ : ℤ} (hn₁ : n₁
         ← multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1) hf2,
         hf1.multiplicity_le_multiplicity_iff hf2]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Sufficient conditions to show that the `p`-adic valuation of `q` is less than or equal to the
 `p`-adic valuation of `q + r`. -/
 theorem le_padicValRat_add_of_le {q r : ℚ} (hqr : q + r ≠ 0)

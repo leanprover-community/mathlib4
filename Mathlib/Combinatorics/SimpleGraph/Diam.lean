@@ -73,6 +73,7 @@ lemma eccent_eq_zero_iff (u : α) : G.eccent u = 0 ↔ Subsingleton α := by
   contrapose! h
   exact eccent_ne_zero u
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eccent_pos_iff (u : α) : 0 < G.eccent u ↔ Nontrivial α := by
   rw [pos_iff_ne_zero, ← not_subsingleton_iff_nontrivial, ← eccent_eq_zero_iff]
 
@@ -80,6 +81,7 @@ lemma eccent_pos_iff (u : α) : 0 < G.eccent u ↔ Nontrivial α := by
 lemma eccent_bot [Nontrivial α] (u : α) : (⊥ : SimpleGraph α).eccent u = ⊤ :=
   eccent_eq_top_of_not_connected not_connected_bot u
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma eccent_top [Nontrivial α] (u : α) : (⊤ : SimpleGraph α).eccent u = 1 := by
   apply le_antisymm ?_ <| Order.one_le_iff_pos.mpr <| pos_iff_ne_zero.mpr <| eccent_ne_zero u
@@ -87,6 +89,7 @@ lemma eccent_top [Nontrivial α] (u : α) : (⊤ : SimpleGraph α).eccent u = 1 
   intro v
   cases eq_or_ne u v <;> simp_all [edist_top_of_ne]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_top_iff_forall_eccent_eq_one [Nontrivial α] :
     G = ⊤ ↔ ∀ u, G.eccent u = 1 := by
   refine ⟨fun h ↦ h ▸ eccent_top, fun h ↦ ?_⟩
@@ -100,6 +103,7 @@ lemma eq_top_iff_forall_eccent_eq_one [Nontrivial α] :
 lemma eccent_le_iff (u : α) (k : ℕ∞) : G.eccent u ≤ k ↔ ∀ v, G.edist u v ≤ k :=
   iSup_le_iff
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eccent_le_one_iff (u : α) : G.eccent u ≤ 1 ↔ ∀ v, u ≠ v → G.Adj u v := by
   constructor
   · intro h v huv
@@ -237,6 +241,7 @@ lemma ediam_bot [Nontrivial α] : (⊥ : SimpleGraph α).ediam = ⊤ :=
 lemma ediam_top [Nontrivial α] : (⊤ : SimpleGraph α).ediam = 1 := by
   simp [ediam]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ediam_eq_one [Nontrivial α] : G.ediam = 1 ↔ G = ⊤ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h ▸ ediam_top⟩
@@ -246,6 +251,7 @@ lemma ediam_eq_one [Nontrivial α] : G.ediam = 1 ↔ G = ⊤ := by
   rw [Order.one_le_iff_pos, pos_iff_ne_zero]
   exact eccent_ne_zero u
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ediam_le_two_mul_eccent (u : α) : G.ediam ≤ 2 * G.eccent u := by
   refine ediam_le_of_edist_le fun v w ↦ ?_
   calc
@@ -276,6 +282,7 @@ lemma nontrivial_of_diam_ne_zero (h : G.diam ≠ 0) : Nontrivial α := by
   contrapose! h
   simp [diam, h]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma diam_eq_zero_of_not_connected (h : ¬ G.Connected) : G.diam = 0 := by
   cases isEmpty_or_nonempty α
   · rw [diam, ediam, ciSup_of_empty, bot_eq_zero']; rfl

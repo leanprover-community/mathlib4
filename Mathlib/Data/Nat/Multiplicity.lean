@@ -219,6 +219,7 @@ theorem emultiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb
   · rw [this]
   exact this.symm ▸ hnb
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A lower bound on the multiplicity of `p` in `choose n k`. -/
 theorem emultiplicity_le_emultiplicity_choose_add {p : ℕ} (hp : p.Prime) :
     ∀ n k : ℕ, emultiplicity p n ≤ emultiplicity p (choose n k) + emultiplicity p k
@@ -263,6 +264,7 @@ theorem emultiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤
   norm_cast
   rw [Nat.add_sub_cancel_right]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣ (p ^ n).choose k := by
   obtain hkp | hkp := hkp.symm.lt_or_gt
   · simp [choose_eq_zero_of_lt hkp]
