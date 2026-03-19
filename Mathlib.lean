@@ -4816,6 +4816,7 @@ public import Mathlib.LinearAlgebra.Finsupp.Span
 public import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.LinearAlgebra.Finsupp.Supported
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+public import Mathlib.LinearAlgebra.FixedSubmodule
 public import Mathlib.LinearAlgebra.FreeAlgebra
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Determinant
