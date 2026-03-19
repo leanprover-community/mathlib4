@@ -297,7 +297,7 @@ theorem isMatching.encard_eq_twice_edgeSet_encard (h : M.IsMatching) :
     use s(⟨x, M.edge_vert hxy⟩, ⟨y, M.edge_vert hxy.symm⟩)
     simp only [edgeSet_coe, Set.mem_preimage, Sym2.map_mk, and_true, hxy]
   rw [← this, Set.encard_eq_coe_toFinset_card M.verts,
-   Set.encard_eq_coe_toFinset_card M.coe.edgeSet]
+  rw [← this, M.verts.encard_eq_coe_toFinset_card, M.coe.edgeSet.encard_eq_coe_toFinset_card]
   rw [isMatching_iff_forall_degree] at h
   have := M.coe.sum_degrees_eq_twice_card_edges
   simp only [coe_degree, Subtype.coe_prop, h, Finset.sum_const, Finset.card_univ, smul_eq_mul,
