@@ -196,8 +196,8 @@ theorem IsAcyclic.coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsAcyclic) (
   have hv₂ := v₂.prop.resolve_left hnv₂
   classical
   -- Consider the walk `pt` from `v₁` to `v₂` and the walk `pd` from `v₂` back to `v₁`
-  let p' := p.rotate hpv₁
-  have hp'v₂ := p.mem_support_rotate_iff hpv₁ |>.mpr hpv₂
+  let p' := p.rotate v₁ hpv₁
+  have hp'v₂ := p.mem_support_rotate_iff v₁ hpv₁ |>.mpr hpv₂
   let pt := p'.takeUntil v₂ hp'v₂
   let pd := p'.dropUntil v₂ hp'v₂
   -- Each must have a dart that crosses to the other subgraph
