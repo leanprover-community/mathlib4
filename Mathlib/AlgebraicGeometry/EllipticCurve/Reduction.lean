@@ -329,9 +329,9 @@ theorem HasMultiplicativeReduction.not_hasGoodReduction (hW : W.HasMultiplicativ
     ¬ W.HasGoodReduction R :=
   fun h ↦ hW.badReduction.ne h.goodReduction
 
-theorem HasAdditiveReduction.not_hasGoodReduction (hW : W.HasGoodReduction R) :
-    ¬ W.HasAdditiveReduction R :=
-  fun h ↦ h.badReduction.ne hW.goodReduction
+theorem HasAdditiveReduction.not_hasGoodReduction (hW : W.HasAdditiveReduction R) :
+    ¬ W.HasGoodReduction R :=
+  fun h ↦ hW.badReduction.ne h.goodReduction
 
 theorem HasMultiplicativeReduction.not_hasAdditiveReduction (hW : W.HasMultiplicativeReduction R) :
     ¬ W.HasAdditiveReduction R :=
