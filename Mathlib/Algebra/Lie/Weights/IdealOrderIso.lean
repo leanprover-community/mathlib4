@@ -102,6 +102,7 @@ noncomputable def lieIdealToInvtRootSubmodule (I : LieIdeal K L) :
     (rootSystem H).invtRootSubmodule :=
   ⟨lieIdealRootSpan I, lieIdealRootSpan_mem_invtRootSubmodule I⟩
 
+@[gcongr]
 lemma lieIdealToInvtRootSubmodule_mono {I J : LieIdeal K L} (h : I ≤ J) :
     lieIdealToInvtRootSubmodule (H := H) I ≤ lieIdealToInvtRootSubmodule J :=
   Submodule.span_mono (Set.image_mono
