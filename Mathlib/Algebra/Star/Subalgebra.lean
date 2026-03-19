@@ -111,6 +111,20 @@ def toNonUnitalStarSubalgebra (S : StarSubalgebra R A) : NonUnitalStarSubalgebra
 lemma one_mem_toNonUnitalStarSubalgebra (S : StarSubalgebra R A) :
     1 ∈ S.toNonUnitalStarSubalgebra := S.one_mem'
 
+@[simp]
+lemma mem_toNonUnitalStarSubalgebra {S : StarSubalgebra R A} {x : A} :
+    x ∈ S.toNonUnitalStarSubalgebra ↔ x ∈ S :=
+  Iff.rfl
+
+lemma toNonUnitalStarSubalgebra_injective : Function.Injective
+    (toNonUnitalStarSubalgebra : StarSubalgebra R A → NonUnitalStarSubalgebra R A) :=
+  fun _ _ ↦ by simp [SetLike.ext_iff]
+
+@[simp]
+lemma toNonUnitalStarSubalgebra_inj {S U : StarSubalgebra R A} :
+    S.toNonUnitalStarSubalgebra = U.toNonUnitalStarSubalgebra ↔ S = U :=
+  toNonUnitalStarSubalgebra_injective.eq_iff
+
 theorem mem_carrier {s : StarSubalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 

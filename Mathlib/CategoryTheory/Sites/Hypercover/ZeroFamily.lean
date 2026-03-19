@@ -50,7 +50,7 @@ inductive PreZeroHypercoverFamily.presieve (P : PreZeroHypercoverFamily C) {X : 
 /-- The associated precoverage to a pre-`0`-hypercover family. -/
 def PreZeroHypercoverFamily.precoverage (P : PreZeroHypercoverFamily C) :
     Precoverage C where
-  coverings _ R := P.presieve R
+  coverings _ := {R | P.presieve R}
 
 lemma PreZeroHypercoverFamily.mem_precoverage_iff {P : PreZeroHypercoverFamily C} {X : C}
     {R : Presieve X} :

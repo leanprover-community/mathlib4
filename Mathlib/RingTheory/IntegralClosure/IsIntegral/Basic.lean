@@ -94,7 +94,7 @@ theorem Submodule.span_range_natDegree_eq_adjoin {R A} [CommRing R] [Semiring A]
     exact (Algebra.adjoin R {x}).pow_mem (Algebra.subset_adjoin rfl) k
   rw [Subalgebra.mem_toSubmodule, Algebra.adjoin_singleton_eq_range_aeval] at hr
   rcases (aeval x).mem_range.mp hr with ⟨p, rfl⟩
-  rw [← modByMonic_add_div p hf, map_add, map_mul, hfx,
+  rw [← modByMonic_add_div p f, map_add, map_mul, hfx,
       zero_mul, add_zero, ← sum_C_mul_X_pow_eq (p %ₘ f), aeval_def, eval₂_sum, sum_def]
   refine sum_mem fun k hkq ↦ ?_
   rw [C_mul_X_pow_eq_monomial, eval₂_monomial, ← Algebra.smul_def]
@@ -223,17 +223,14 @@ theorem fg_adjoin_of_finite {s : Set A} (hfs : s.Finite) (his : ∀ x ∈ s, IsI
       (ih fun i hi => his i <| Set.mem_insert_of_mem a hi)
       (his a <| Set.mem_insert a s).fg_adjoin_singleton
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Algebra.finite_adjoin_of_finite_of_isIntegral {s : Set A} (hf : s.Finite)
     (hi : ∀ x ∈ s, IsIntegral R x) : Module.Finite R (adjoin R s) :=
   .of_fg <| fg_adjoin_of_finite hf hi
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Algebra.finite_adjoin_simple_of_isIntegral {x : B} (hi : IsIntegral R x) :
     Module.Finite R (adjoin R {x}) :=
   .of_fg hi.fg_adjoin_singleton
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isNoetherian_adjoin_finset [IsNoetherianRing R] (s : Finset A)
     (hs : ∀ x ∈ s, IsIntegral R x) : IsNoetherian R (Algebra.adjoin R (s : Set A)) :=
   isNoetherian_of_fg_of_noetherian _ (fg_adjoin_of_finite s.finite_toSet hs)
