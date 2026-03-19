@@ -70,7 +70,7 @@ lemma isWellOrderContinuous_of_iso {F G : J ⥤ C} (e : F ≅ G) [F.IsWellOrderC
   nonempty_isColimit (m : J) (hm : Order.IsSuccLimit m) :=
     ⟨(IsColimit.precomposeHomEquiv (isoWhiskerLeft _ e) _).1
       (IsColimit.ofIsoColimit (F.isColimitOfIsWellOrderContinuous m hm)
-        (Cocones.ext (e.app _)))⟩
+        (Cocone.ext (e.app _)))⟩
 
 instance (F : J ⥤ C) {J' : Type w'} [PartialOrder J'] (f : J' ≤i J)
     [F.IsWellOrderContinuous] :

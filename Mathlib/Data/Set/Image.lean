@@ -273,6 +273,10 @@ theorem image_eq_empty {α β} {f : α → β} {s : Set α} : f '' s = ∅ ↔ s
   simp only [eq_empty_iff_forall_notMem]
   exact ⟨fun H a ha => H _ ⟨_, ha, rfl⟩, fun H b ⟨_, ha, _⟩ => H _ ha⟩
 
+@[simp, mfld_simps]
+theorem empty_eq_image {α β} {f : α → β} {s : Set α} : ∅ = f '' s ↔ s = ∅ := by
+  rw [eq_comm, image_eq_empty]
+
 theorem preimage_compl_eq_image_compl [BooleanAlgebra α] (s : Set α) :
     Compl.compl ⁻¹' s = Compl.compl '' s :=
   Set.ext fun x =>
@@ -943,6 +947,12 @@ theorem rightInverse_rangeSplitting {f : α → β} (h : Injective f) :
     RightInverse (rangeFactorization f) (rangeSplitting f) :=
   (leftInverse_rangeSplitting f).rightInverse_of_injective fun _ _ hxy =>
     h <| Subtype.ext_iff.1 hxy
+
+@[simp]
+lemma leftInverse_rangeFactorization_iff_injective (f : α → β) :
+    LeftInverse (rangeSplitting f) (rangeFactorization f) ↔ f.Injective :=
+  ⟨(rangeFactorization_injective.mp ·.injective),
+    fun h ↦ congrFun' (rightInverse_rangeSplitting h).id⟩
 
 theorem preimage_rangeSplitting {f : α → β} (hf : Injective f) :
     preimage (rangeSplitting f) = image (rangeFactorization f) :=

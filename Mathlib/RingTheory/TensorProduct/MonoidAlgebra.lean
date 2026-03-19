@@ -74,7 +74,6 @@ noncomputable def tensorEquiv : A ⊗[R] B[M] ≃ₐ[A] (A ⊗[R] B)[M] := by
     ext
     simp
   · ext : 1
-    · ext
     apply AlgHom.toLinearMap_injective
     ext
     simp
