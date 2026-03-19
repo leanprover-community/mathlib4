@@ -316,6 +316,30 @@ theorem hasGoodReduction_or_hasMultiplicativeReduction_or_hasAdditiveReduction
     ← integralModel_Δ_eq R W, ← integralModel_c₄_eq R W]
   grind [valuation_le_one]
 
+theorem HasGoodReduction.not_hasMultiplicativeReduction {W : WeierstrassCurve K} [IsMinimal R W]
+    (hW : W.HasGoodReduction R) : ¬ W.HasMultiplicativeReduction R :=
+  fun h ↦ h.badReduction.ne hW.goodReduction
+
+theorem HasGoodReduction.not_hasAdditiveReduction {W : WeierstrassCurve K} [IsMinimal R W]
+    (hW : W.HasGoodReduction R) : ¬ W.HasAdditiveReduction R :=
+  fun h ↦ h.badReduction.ne hW.goodReduction
+
+theorem HasMultiplicativeReduction.not_hasGoodReduction {W : WeierstrassCurve K} [IsMinimal R W]
+    (hW : W.HasMultiplicativeReduction R) : ¬ W.HasGoodReduction R :=
+  fun h ↦ hW.badReduction.ne h.goodReduction
+
+theorem HasAdditiveReduction.not_hasGoodReduction {W : WeierstrassCurve K} [IsMinimal R W]
+    (hW : W.HasGoodReduction R) : ¬ W.HasAdditiveReduction R :=
+  fun h ↦ h.badReduction.ne hW.goodReduction
+
+theorem HasMultiplicativeReduction.not_hasAdditiveReduction {W : WeierstrassCurve K} [IsMinimal R W]
+    (hW : W.HasMultiplicativeReduction R) : ¬ W.HasAdditiveReduction R :=
+  fun h ↦ h.additiveReduction.ne hW.multiplicativeReduction
+
+theorem HasAdditiveReduction.not_hasMultiplicativeReduction {W : WeierstrassCurve K} [IsMinimal R W]
+    (hW : W.HasAdditiveReduction R) : ¬ W.HasMultiplicativeReduction R :=
+  fun h ↦ hW.additiveReduction.ne h.multiplicativeReduction
+
 end Reduction
 
 end WeierstrassCurve
