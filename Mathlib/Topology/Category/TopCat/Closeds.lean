@@ -130,8 +130,8 @@ lemma map_top (f : X ⟶ Y) : (Closeds.map f).obj ⊤ = ⊤ := rfl
 
 /-- The inclusion `U ⟶ (map f).obj ⊤` as a morphism in the category of closed sets.
 -/
-noncomputable def leMapTop (f : X ⟶ Y) (U : Closeds X) : U ⟶ (map f).obj ⊤ :=
-  leTop U
+def leMapTop (f : X ⟶ Y) (U : Closeds X) : U ⟶ (map f).obj ⊤ :=
+  le_top.hom
 
 @[simp]
 theorem map_comp_obj (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
