@@ -215,6 +215,13 @@ lemma lineDerivCLM_add {v₁ v₂ : E} :
   -- Why `(v := _)` ???
   simp [lineDerivCLM_apply (v := _), TestFunction.lineDerivCLM_add, neg_add, -neg_add_rev]
 
+lemma lineDerivCLM_smul {c : ℝ} {v : E} :
+    (lineDerivCLM (c • v) : 𝓓'^{k}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F)) =
+      c • lineDerivCLM v := by
+  ext T f
+  -- Why `(v := _)` ???
+  simp [lineDerivCLM_apply (v := _), TestFunction.lineDerivCLM_smul]
+
 open LineDeriv
 
 /-- Note: we cannot express the full generality of `lineDerivCLM` purely in terms of this typeclass,
@@ -234,6 +241,9 @@ noncomputable instance : LineDerivAdd E 𝓓'(Ω, F) 𝓓'(Ω, F) where
 
 noncomputable instance : LineDerivSMul ℝ E 𝓓'(Ω, F) 𝓓'(Ω, F) where
   lineDerivOp_smul v := map_smul (lineDerivCLM v)
+
+noncomputable instance : LineDerivLeftSMul ℝ E 𝓓'(Ω, F) 𝓓'(Ω, F) where
+  lineDerivOp_left_smul _ _ T := congr($lineDerivCLM_smul T)
 
 noncomputable instance : ContinuousLineDeriv E 𝓓'(Ω, F) 𝓓'(Ω, F) where
   continuous_lineDerivOp v := (lineDerivCLM v).continuous
