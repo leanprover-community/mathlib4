@@ -89,11 +89,11 @@ instance : ConcreteCategory (Rep k G) (fun A B ↦ A.ρ.IntertwiningMap B.ρ) wh
 variable (A B C : Rep.{w} k G)
 
 variable {A B} in
-/-- Turn a morphism in `CommAlgCat` back into an `AlgHom`. -/
+/-- Turn a morphism in `Rep` back into an `IntertwiningMap`. -/
 abbrev Hom.hom (f : Hom A B) := ConcreteCategory.hom (C := Rep k G) f
 
 variable {A B} in
-/-- Typecheck an `AlgHom` as a morphism in `CommAlgCat`. -/
+/-- Typecheck an `IntertwiningMap` as a morphism in `Rep`. -/
 abbrev ofHom {X Y : Type w} [AddCommGroup X] [AddCommGroup Y] [Module k X] [Module k Y]
   {σ : Representation k G X} {ρ : Representation k G Y}
   (f : σ.IntertwiningMap ρ) : of σ ⟶ of ρ :=
@@ -293,10 +293,8 @@ lemma zsmul_hom {M N : Rep k G} (f : M ⟶ N) (n : ℤ) : (n • f).hom = n • 
 
 instance : Preadditive (Rep k G) where
   homGroup A B :=
-    -- hom_injective.addCommGroup _ zero_hom add_hom neg_hom sub_hom nsmul_hom zsmul_hom
     @Function.Injective.addCommGroup (A ⟶ B) (A.ρ.IntertwiningMap B.ρ) _ _ _ _ _ _ _
       Rep.Hom.hom hom_injective zero_hom add_hom neg_hom sub_hom nsmul_hom zsmul_hom
-    -- sorry
   add_comp _ _ _ := add_comp
   comp_add _ _ _ := comp_add
 
@@ -365,41 +363,6 @@ variable (k G)
 abbrev ofMulAction (H : Type w') [MulAction G H] : Rep k G :=
   of <| Representation.ofMulAction k G H
 
--- def ofMulAction.equivFinsupp (H : Type w') [MulAction G H] :
---   ofMulAction k G H ≃ₗ[k] (H →₀ k) := .refl _ _
-
--- variable {k} in
--- def ofMulAction.single {H : Type w'} [MulAction G H] (g : H) :
---     k →ₗ[k] ofMulAction k G H := Finsupp.lsingle g
-
--- lemma ofMulAction.single_def {H : Type w'} [MulAction G H] (g : H) (x : k) :
---     ofMulAction.single G g x = Finsupp.single g x := rfl
-
--- set_option backward.isDefEq.respectTransparency false in
--- @[simp]
--- lemma ofMulAction.ρ_single (H : Type w') [MulAction G H] (g : G) (h : H) (x : k) :
---     (ofMulAction k G H).ρ g (ofMulAction.single G h x) = ofMulAction.single G (g • h) x := by
---   simp [ofMulAction, ofMulAction.single]
-
--- @[simp]
--- lemma ofMulAction.ρ_comp_single (H : Type w') [MulAction G H] (g : G) (h : H) :
---     (ofMulAction k G H).ρ g ∘ₗ ofMulAction.single G h = ofMulAction.single G (g • h) :=
---   LinearMap.ext (by simp)
-
--- @[simp]
--- lemma ofMulAction.equivFinsupp_single (H : Type w') [MulAction G H] (h : H) (x : k) :
---     ofMulAction.equivFinsupp k G H (ofMulAction.single G h x) = .single h x := rfl
-
--- @[simp]
--- lemma ofMulAction.equivFinsupp_symm_single (H : Type w') [MulAction G H] (h : H) (x : k) :
---     (ofMulAction.equivFinsupp k G H).symm (.single h x) = ofMulAction.single G h x := rfl
-
--- @[ext high]
--- lemma ofMulAction.hom_ext {H : Type w'} [MulAction G H]
---     {M : Type*} [AddCommGroup M] [Module k M]
---     (l₁ l₂ : ofMulAction k G H →ₗ[k] M) (heq : ∀ g, l₁ ∘ₗ single G g = l₂ ∘ₗ single G g) :
---     l₁ = l₂ := Finsupp.lhom_ext' heq
-
 /-- The `k`-linear `G`-representation on `k[G]`, induced by left multiplication. -/
 abbrev leftRegular : Rep k G :=
   ofMulAction k G G
@@ -412,8 +375,6 @@ abbrev diagonal (n : ℕ) : Rep k G :=
 multiplication in `G`. -/
 abbrev diagonalOneIsoLeftRegular :
     diagonal k G 1 ≅ leftRegular k G := Rep.mkIso (Representation.diagonalOneEquivLeftRegular k G)
-  -- .mk' (ofMulAction.equivFinsupp _ _ _ ≪≫ₗ Finsupp.domLCongr (Equiv.funUnique (Fin 1) G) ≪≫ₗ
-  --   (ofMulAction.equivFinsupp _ _ _).symm) fun g ↦ by ext; simp
 
 
 set_option backward.isDefEq.respectTransparency false in
@@ -691,7 +652,6 @@ instance : MonoidalCategory (Rep.{u} k G) where
   rightUnitor_naturality _ := by ext; simp [trivial_V]
   pentagon _ _ _ _ := by ext; simp
   triangle X Y := by ext; simp
-  -- __ := Monoidal.transport (repIsoAction k G).symm
 
 @[simp]
 lemma tensorUnit_V : (𝟙_ (Rep.{u} k G)).V = k := rfl
@@ -760,17 +720,6 @@ instance : MonoidalLinear k (Rep.{u} k G) where
   whiskerLeft_smul _ _ _ _ _ := by ext1; simp [smul_hom]
   smul_whiskerRight _ _ _ _ _ := by ext1; simp [smul_hom]
 
--- instance : (repIsoAction k G).functor.Monoidal :=
---   Monoidal.instMonoidalTransportedInverseEquivalenceTransported (e := (repIsoAction k G).symm) ..
-
--- -- set_option maxHeartbeats 4000000 in
--- set_option backward.isDefEq.respectTransparency false in
--- instance : (repIsoAction k G).inverse.Monoidal :=
---   Monoidal.instMonoidalTransportedFunctorEquivalenceTransported (e := (repIsoAction k G).symm) ..
-
--- lemma repIsoAction_δ (X Y) : Functor.OplaxMonoidal.δ (repIsoAction k G).functor X Y = 𝟙 _ := rfl
-
-
 instance : BraidedCategory (Rep.{u} k G) where
   braiding X Y := Rep.mkIso (Representation.TensorProduct.comm X.ρ Y.ρ)
   braiding_naturality_right _ _ _ _ := by ext1; simp [comm_comp_lTensor]
@@ -786,7 +735,6 @@ instance : BraidedCategory (Rep.{u} k G) where
     simp only [tensor_V, tensor_ρ, hom_comp, hom_inv_associator, mkIso_hom_hom, comp_toLinearMap,
       assoc_symm_toLinearMap, toLinearMap_comm, LinearEquiv.comp_coe, hom_whiskerRight,
       hom_whiskerLeft, toLinearMap_rTensor, toLinearMap_lTensor, LinearMap.comp_assoc]
-      -- why doesn't lTensor_toLinearMap work here?
     ext
     simp
 
@@ -798,8 +746,6 @@ open Representation.Equiv in
 instance : SymmetricCategory (Rep.{u} k G) where
   symmetry X Y := by ext1; simp [← comm_symm Y.ρ X.ρ, ← toIntertwiningMap_trans,
     trans_symm, toIntertwiningMap_refl]
-
-
 
 end monoidal
 
@@ -994,7 +940,6 @@ variable (A B : Rep.{u} k G) (α : Type u) [DecidableEq α]
 
 set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
--- the proof below can be simplified after https://github.com/leanprover-community/mathlib4/issues/24823 is merged
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
 `(α →₀ A) ⊗ B ≅ (A ⊗ B) →₀ α` sending `single x a ⊗ₜ b ↦ single x (a ⊗ₜ b)`. -/
 abbrev finsuppTensorLeft : A.finsupp α ⊗ B ≅ (A ⊗ B).finsupp α :=
@@ -1010,7 +955,6 @@ section
 
 variable (k G α : Type u) [DecidableEq α] [CommRing k] [Monoid G]
 
--- set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism sending `single g r₁ ⊗ single a r₂ ↦ single a (single g r₁r₂)`. -/
 abbrev leftRegularTensorTrivialIsoFree :
     leftRegular k G ⊗ trivial k G (α →₀ k) ≅ free k G α :=
