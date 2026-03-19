@@ -125,6 +125,12 @@ noncomputable def isoOverPullback {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
     Over.mk fst ≅ (Over.pullback f).obj (Over.mk g) :=
   Over.isoMk (h.flip.isoIsPullback _ _ (IsPullback.of_hasPullback g f)) (by simp)
 
+@[simp]
+lemma isoOverPullback_hom_left_comp_fst {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
+    (h : IsPullback fst snd f g) :
+    h.isoOverPullback.hom.left ≫ pullback.fst g f = snd :=
+  h.flip.isoIsPullback_hom_fst _ _ (IsPullback.of_hasPullback g f)
+
 /-- An isomorphism `Over.mk p ≅ (Over.pullback f).obj (Over.mk g)` in `Over X` yields
 an `IsPullback` square. -/
 lemma ofIsoOverPullback {P : C} {p : P ⟶ X}
@@ -143,8 +149,7 @@ theorem overPullback_iff {P : C} {p : P ⟶ X} {q : P ⟶ Y} :
       q = e.hom.left ≫ pullback.fst g f := by
   constructor
   · intro h
-    exact ⟨h.isoOverPullback, (h.flip.isoIsPullback_hom_fst _ _
-      (IsPullback.of_hasPullback g f)).symm⟩
+    exact ⟨h.isoOverPullback, h.isoOverPullback_hom_left_comp_fst.symm⟩
   · rintro ⟨e, rfl⟩
     exact ofIsoOverPullback e
 
