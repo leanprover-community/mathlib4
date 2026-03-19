@@ -151,8 +151,8 @@ then the velocity vector `deriv γ` has a derivative at every point of `I`. -/
 lemma velocity_hasDerivAt_aux (hI : IsOpen I) (hγ : ContDiffOn ℝ 2 γ I)
     (ht : t ∈ I) : HasDerivAt (deriv γ) (iteratedDeriv 2 γ t) t := by
   have hd : ContDiffOn ℝ 1 (deriv γ) I := hγ.deriv_of_isOpen hI (by norm_num)
-  simpa [iteratedDeriv_succ] using hd.differentiableOn (by norm_num)
-    |> DifferentiableOn.hasDerivAt <| hI.mem_nhds ht
+  rw [iteratedDeriv_succ, iteratedDeriv_one]
+  exact (hd.differentiableOn (by norm_num)).hasDerivAt (hI.mem_nhds ht)
 
 /-- Given a continuously differentiable parametrized curve whose position has the same magnitude at
 all time, i.e, at constant radius distance from the origin (the curve `γ` is contained in a sphere
@@ -338,16 +338,10 @@ protected lemma _root_.HasDerivAt.initialCurve_of_orientedCurvature (hI : IsOpen
     unfold initialCurve_of_orientedCurvature
     have h := continuousOn_angle_fun_aux θ₀ hI hκ ht₀
     intro i
-    fin_cases i
-    · simp only [Fin.zero_eta, Fin.isValue, Matrix.cons_val_zero, hasDerivWithinAt_const_add_iff]
-      have h' : ContinuousOn (fun x ↦  Real.cos (θ₀ + ∫ (ξ : ℝ) in t₀..x, κ ξ)) I := by
-        exact Real.continuous_cos.comp_continuousOn' h
-      exact intervalIntegral.hasDerivWithinAt_of_continuousOn_interval h' ht₀ ht
-    · simp only [Fin.mk_one, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one,
-                 hasDerivWithinAt_const_add_iff]
-      have h' : ContinuousOn (fun x ↦  Real.sin (θ₀ + ∫ (ξ : ℝ) in t₀..x, κ ξ)) I := by
-        exact Real.continuous_sin.comp_continuousOn' h
-      exact intervalIntegral.hasDerivWithinAt_of_continuousOn_interval h' ht₀ ht
+    fin_cases i 
+      <;> simp only [Fin.zero_eta,Fin.mk_one, Fin.isValue, Matrix.cons_val_zero, 
+                     Matrix.cons_val_one, hasDerivWithinAt_const_add_iff]
+      <;> exact intervalIntegral.hasDerivWithinAt_of_continuousOn_interval (by fun_prop) ht₀ ht
   · exact hI.mem_nhds ht
 
 lemma _root_.HasDerivAt.deriv_initialCurve_of_orientedCurvature (hI : IsOpen I)
@@ -472,6 +466,7 @@ protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature (hI : IsOp
       intro t ht
       exact (HasDerivAt.deriv_initialCurve_of_orientedCurvature
              θ₀ p₀ hI hκ ht₀ ht).differentiableAt.differentiableWithinAt
+
 variable {t : ℝ}
 
 /-- The plane curve we construct from the given curvature function κ is parametrized by
@@ -504,9 +499,7 @@ theorem position_initial_condition_initialCurve_of_orientedCurvature (κ : ℝ �
   unfold initialCurve_of_orientedCurvature
   ext i
   simp only [Fin.isValue, intervalIntegral.integral_same, add_zero]
-  fin_cases i
-  · simp
-  · simp
+  fin_cases i <;> simp
 
 /-- The plane curve we construct has unit velocity vector at the direction of the angle θ₀ at time
 t₀ (velocity initial condition). -/
@@ -561,12 +554,12 @@ theorem initialCurve_of_orientedCurvature_is_unique (hI : IsOpen I) (hκ : Conti
   let f (s : ℝ) := (deriv c s) 0 - (deriv α s) 0
   let g (s : ℝ) := (deriv c s) 1 - (deriv α s) 1
   let h (s : ℝ) := (f s)^2 + (g s)^2
-  have hDdc {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (deriv c) s := by
+  have hDdc {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (deriv c) s :=
     have help := (hc₁.deriv_of_isOpen hI (m:=1) (by norm_num)).differentiableOn_one
-    exact (help s hs).differentiableAt (hI.mem_nhds hs)
-  have hDdα {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (deriv α) s := by
+    (help s hs).differentiableAt (hI.mem_nhds hs)
+  have hDdα {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (deriv α) s :=
     have help := (hα₁.deriv_of_isOpen hI (m:=1) (by norm_num)).differentiableOn_one
-    exact (help s hs).differentiableAt (hI.mem_nhds hs)
+    (help s hs).differentiableAt (hI.mem_nhds hs)
   have hDdc₀ {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦  (deriv c t) 0) s :=
     deriv_differentiableAt_of_2_contDiffOn_open hI hc₁ 0 hs
   have hDdα₀ {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦  (deriv α t) 0) s :=
