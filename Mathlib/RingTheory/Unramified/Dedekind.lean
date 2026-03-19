@@ -37,7 +37,7 @@ theorem isDedekindDomainDvr.of_formallyUnramified : IsDedekindDomainDvr B where
         IsScalarTower.algebraMap_eq A (Localization.AtPrime p) (Localization.AtPrime q),
         ← Ideal.map_map]
       infer_instance
-    rw [← (Algebra.FormallyUnramified.map_isMaximal_isRadical A B p).radical,
+    rw [← (Algebra.FormallyUnramified.isRadical_map_isMaximal A B p).radical,
       IsLocalization.map_radical q.primeCompl,
       IsLocalization.AtPrime.radical_map_of_mem_minimalPrimes (Localization.AtPrime q) q,
       Localization.AtPrime.map_eq_maximalIdeal]
