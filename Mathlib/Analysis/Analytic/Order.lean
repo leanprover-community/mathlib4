@@ -322,7 +322,6 @@ theorem AnalyticAt.analyticOrderAt_sub_eq_one_of_deriv_ne_zero {x : 𝕜} (hf : 
       rw [EventuallyEq.deriv_eq hfF, deriv_add_const, deriv_fun_smul (by fun_prop) (by fun_prop),
         deriv_fun_pow (by fun_prop), sub_self, zero_pow (by lia), zero_pow (by lia),
         mul_zero, zero_mul, zero_smul, zero_smul, add_zero]
-
 /-- At a zero with nonvanishing derivative, the analytic order is 1.
 This is a variant of `analyticOrderAt_sub_eq_one_of_deriv_ne_zero` with `f z₀ = 0`
 replacing the subtraction. -/
@@ -330,6 +329,19 @@ theorem AnalyticAt.analyticOrderAt_eq_one_of_zero_deriv_ne_zero {x : 𝕜}
     (hf : AnalyticAt 𝕜 f x) (hfx : f x = 0) (hf' : deriv f x ≠ 0) :
     analyticOrderAt f x = 1 := by
   simpa [hfx] using hf.analyticOrderAt_sub_eq_one_of_deriv_ne_zero hf'
+
+
+/-- If `f` is analytic at `x` and `f'(x) ≠ 0`, then `f(w) ≠ f(x)` in a punctured
+neighborhood of `x`. No hypothesis on `f x` is needed. -/
+theorem AnalyticAt.eventually_ne_nhdsWithin_of_deriv_ne_zero {x : 𝕜}
+    (hf : AnalyticAt 𝕜 f x) (hf' : deriv f x ≠ 0) :
+    ∀ᶠ w in 𝓝[≠] x, f w ≠ f x := by
+  have hg : AnalyticAt 𝕜 (f · - f x) x := hf.sub analyticAt_const
+  rcases hg.eventually_eq_zero_or_eventually_ne_zero with h | h
+  · have h1 := hf.analyticOrderAt_sub_eq_one_of_deriv_ne_zero hf'
+    rw [analyticOrderAt_eq_top.mpr h] at h1
+    simp at h1
+  · exact h.mono fun w hw => sub_ne_zero.mp hw
 
 lemma natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero [CharZero 𝕜] [CompleteSpace E]
     (hf : AnalyticAt 𝕜 f z₀) :
