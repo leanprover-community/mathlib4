@@ -61,7 +61,8 @@ where
       return .yield s'
     | .ofGoal m => do
       if let some ppCtx := ctx?.map (mkPPContext nctx) then
-        f (ppCtx, .mvar m) s
+        -- See below; `.goal`s also go through `ctx.runMetaM` when being displayed.
+        f ({ ppCtx with env := ppCtx.env.setExporting false }, .mvar m) s
       else
         return .yield s
     | .ofFormatWithInfos fwi => do
