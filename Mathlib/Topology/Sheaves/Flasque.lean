@@ -87,14 +87,11 @@ lemma structured_arrows_elements_sheaf_chains_bounded (c : Set (Under g s))
   let f : c → (Opens X) := fun x => x.1.right.1.unop
   obtain ⟨t, ht, _⟩ : ∃! s_1, IsGluing F.obj f (fun x => x.val.right.2) s_1 := by
     refine Sheaf.existsUnique_gluing F _ _ (fun i j ↦ ?_)
-    by_cases hij : i = j
-    · subst hij; rfl
-    obtain h₁ | h₁ := h i.property j.property (fun h ↦ hij (SetCoe.ext_iff.mp h))
-    · simp only [← CategoryOfElements.map_snd h₁.some.2, Functor.comp_obj,
-        Functor.comp_map, ConcreteCategory.forget_map_eq_coe,
-        ← CategoryTheory.comp_apply, ← Functor.map_comp]
-      rfl
-    · simp only [← CategoryOfElements.map_snd h₁.some.2, Functor.comp_obj,
+    obtain (rfl | h₁ | h₁) : i = j ∨ Nonempty (i.val ⟶ j.val) ∨ Nonempty (j.val ⟶ i.val) := by
+      grind [h i.property j.property]
+    · rfl
+    all_goals
+      simp only [← CategoryOfElements.map_snd h₁.some.2, Functor.comp_obj,
         Functor.comp_map, ConcreteCategory.forget_map_eq_coe, ← CategoryTheory.comp_apply,
         ← Functor.map_comp]
       rfl
