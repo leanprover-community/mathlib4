@@ -66,26 +66,32 @@ where
         return .yield s
     | .ofFormatWithInfos fwi => do
       let some ppCtx := ctx?.map (mkPPContext nctx) | return .yield s
-      goFmt fwi.infos s (fun s' i => do
-        match fwi.infos.get? i with
-        | some (.ofTermInfo { expr .. })
-        | some (.ofDelabTermInfo { expr .. }) => return (← f (ppCtx, expr) s', true)
-        | _ => return (.yield s', false)
-      ) fwi.fmt
-  /-- Iterate over the tags of a `Format` using `f`. If `f` returns `true` as its second piece,
-  do not recurse further into the tag.  -/
-  goFmt {σ} (infos) (s : σ) (f : σ → Nat → m (ForInStep σ × Bool)) : Format → m (ForInStep σ)
+      goFmt ppCtx fwi.infos s fwi.fmt
+  /-- Iterate over the tags of a `Format` using `f`. -/
+  goFmt (ppCtx : PPContext) (infos) (s : σ) : Format → m (ForInStep σ)
     | .tag n fmt => do
-      let (rn, b) ← f s n
-      if b then return rn
-      let .yield s := rn | return rn
-      goFmt infos s f fmt
-    | .group fmt _ => goFmt infos s f fmt
-    | .nest _ fmt => goFmt infos s f fmt
+      match infos.get? n with
+      | some (.ofTermInfo { expr, lctx .. })
+      | some (.ofDelabTermInfo { expr, lctx .. }) => do
+        /- When displaying interactive expressions, lean creates a `ctx : Elab.ContextInfo` from
+        the surrounding `ppCtx`, abandoning the `ppCtx`'s `lctx` and using whatever `lctx` is
+        provided by the info. But we want to expose a uniform interface, so we try to create a
+        `ppCtx` such that `ppCtx.runMetaM` behaves the same as `ctx.runMetaM info.lctx`. This means
+        passing in the `lctx` from the info node and setting exporting to `false` (see
+        `ContextInfo.runCoreM`). We regard the other differences (e.g. `ngen`, `diag`) as
+        too minor to change.
+
+        See `Lean.Widget.Interactive` and `msgToInteractiveAux` to see how lean handles
+        `FormatWithInfos` in the language server. -/
+        let ppCtx := { ppCtx with lctx, env := ppCtx.env.setExporting false }
+        f (ppCtx, expr) s
+      | _ => goFmt ppCtx infos s fmt
+    | .group fmt _ => goFmt ppCtx infos s fmt
+    | .nest _ fmt => goFmt ppCtx infos s fmt
     | .append fmt1 fmt2 => do
-      let r1 ← goFmt infos s f fmt1
+      let r1 ← goFmt ppCtx infos s fmt1
       let .yield s := r1 | return r1
-      goFmt infos s f fmt2
+      goFmt ppCtx infos s fmt2
     | .text _ | .align _ | .line | .nil => return .yield s
 
 /-- A wrapper structure for `MessageData` to enable `for (ppCtx, e) in msg.exprs do` notation. -/
