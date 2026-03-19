@@ -343,7 +343,7 @@ lemma isLeftKanExtension_along_uliftYoneda_iff :
         (Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight (Iso.refl _) L
     refine (IsColimit.precomposeHomEquiv e.symm _).1 ?_
     exact IsColimit.ofIsoColimit (isColimitOfPreserves L (colimitOfRepresentable.{max w v₂} P))
-      (Cocones.ext (Iso.refl _))
+      (Cocone.ext (Iso.refl _))
 
 lemma isLeftKanExtension_of_preservesColimits
     (L : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ ℰ) (e : A ≅ uliftYoneda.{max w v₂} ⋙ L)
@@ -812,6 +812,20 @@ lemma shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply
       colimit.ι ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj u.fst) (op u) :=
     IsColimit.comp_coconePointUniqueUpToIso_inv (colimit.isColimit _) _ (op u)
   simpa using congr_fun this (shrinkYonedaObjObjEquiv.symm (𝟙 _))
+
+/-- The object of the category of elements `shrinkYoneda.{w}.flip.obj (op X)`
+corresponding to the identity of `X` is initial. -/
+noncomputable def isInitialElementsMkShrinkYonedaObjObjEquivId (X : C) :
+    IsInitial (Functor.elementsMk (shrinkYoneda.{w}.flip.obj (op X)) X
+      (shrinkYonedaObjObjEquiv.symm (𝟙 X))) :=
+  IsInitial.ofUniqueHom (fun u ↦ ⟨shrinkYonedaObjObjEquiv.{w} u.2, by
+    simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}]⟩) (by
+    rintro u ⟨m, hm⟩
+    ext
+    simp [← hm, shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}])
+
+instance (X : C) : HasInitial (shrinkYoneda.{w}.flip.obj (op X)).Elements :=
+  (isInitialElementsMkShrinkYonedaObjObjEquivId X).hasInitial
 
 end Functor.Elements
 

@@ -135,10 +135,16 @@ lemma IsAcyclic.isTree_connectedComponent (h : G.IsAcyclic) (c : G.ConnectedComp
   isConnected := c.connected_toSimpleGraph
   IsAcyclic := h.comap c.toSimpleGraph_hom <| by simp [ConnectedComponent.toSimpleGraph_hom]
 
+set_option backward.isDefEq.respectTransparency false in
+theorem IsAcyclic.of_card_le_two (h : ENat.card V ≤ 2) : G.IsAcyclic := by
+  intro v p hp
+  have := hp.three_le_length
+  have := Nat.cast_le.mp <| hp.support_nodup.length_le_enatCard.trans h
+  rw [List.length_tail, p.length_support] at this
+  lia
+
 lemma IsAcyclic.of_subsingleton [Subsingleton V] {G : SimpleGraph V} : G.IsAcyclic :=
-  fun v p hp ↦ hp.ne_nil <| match p with
-    | nil => rfl
-    | cons hadj _ => (G.irrefl <| Subsingleton.elim v _ ▸ hadj).elim
+  .of_card_le_two <| ENat.card_le_one.trans one_le_two
 
 lemma Subgraph.isAcyclic_coe_bot (G : SimpleGraph V) : (⊥ : G.Subgraph).coe.IsAcyclic :=
   @IsAcyclic.of_subsingleton _ (Set.isEmpty_coe_sort.mpr rfl).instSubsingleton _
@@ -615,5 +621,21 @@ noncomputable def IsAcyclic.coloringTwo (hG : G.IsAcyclic) : G.Coloring (Fin 2) 
 
 lemma IsAcyclic.isBipartite (hG : G.IsAcyclic) : G.IsBipartite :=
   ⟨hG.coloringTwo⟩
+
+/-- An acyclic graph (forest) is 2-colorable. -/
+lemma IsAcyclic.colorable_two (hG : G.IsAcyclic) : G.Colorable 2 :=
+  hG.isBipartite
+
+/-- A tree is 2-colorable. -/
+lemma IsTree.colorable_two (hG : G.IsTree) : G.Colorable 2 :=
+  hG.IsAcyclic.colorable_two
+
+/-- The chromatic number of an acyclic graph (forest) is at most 2. -/
+lemma IsAcyclic.chromaticNumber_le_two (hG : G.IsAcyclic) : G.chromaticNumber ≤ 2 :=
+  hG.colorable_two.chromaticNumber_le
+
+/-- The chromatic number of a tree is at most 2. -/
+lemma IsTree.chromaticNumber_le_two (hG : G.IsTree) : G.chromaticNumber ≤ 2 :=
+  hG.colorable_two.chromaticNumber_le
 
 end SimpleGraph
