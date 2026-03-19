@@ -84,15 +84,9 @@ def ofLieDerivation : (LieDerivation R L L) →ₗ⁅R⁆ (LieDerivation R (A �
   map_smul' _ _ := by ext _; simp
   map_lie' {_ _} := by
     ext z
-    simp only [LieDerivation.commutator_coe_linear_map,
-      LieDerivation.lie_apply]
-    refine z.induction_on (by simp) ?_ ?_
-    · intros a l
-      simp [LieHom.lie_apply, LieDerivation.coeFn_coe, Module.End.lie_apply, tmul_sub]
-    · intros _ _ hx hy
-      simp at hx hy
-      simp [hx, hy]
-      abel_nf
+    refine z.induction_on (by simp) (fun a l ↦ ?_) (fun _ _ hx hy ↦ ?_)
+    · simp [tmul_sub]
+    · simp_all [sub_add_sub_comm]
 
 @[simp]
 lemma ofLieDerivation_apply (d : LieDerivation R L L) (x : A ⊗[R] L) :
