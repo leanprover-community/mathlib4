@@ -149,20 +149,22 @@ theorem singularValues_antitone : Antitone T.singularValues := by
 are only dim(domain(T)) singular values in [axler2024], so we modify the statement to account for
 this.
 -/
-theorem injective_iff_not_mem_image_range_singularValues :
-    Function.Injective T ↔ 0 ∉ (Finset.range (finrank 𝕜 E)).image T.singularValues := by
+theorem injective_iff_forall_lt_rank_singularValues_pos :
+    Function.Injective T ↔ ∀ i < finrank 𝕜 E, 0 < T.singularValues i := by
   have := (adjoint T ∘ₗ T).not_hasEigenvalue_zero_tfae.out 0 4
-  rw [← adjoint_comp_self_injective_iff, ← coe_comp, ← ker_eq_bot, ← this, not_iff_not,
-    Finset.mem_image]
+  rw [← not_iff_not, ← adjoint_comp_self_injective_iff, ← coe_comp, ← ker_eq_bot, ← this.not_right]
+  push Not
   constructor
   · intro h
     obtain ⟨i, hi⟩ := T.isSymmetric_adjoint_comp_self.exists_eigenvalues_eq rfl h
-    use i, Finset.mem_range.mpr i.isLt
+    use i, i.isLt
     simp [RCLike.ofReal_eq_zero.mp hi, T.singularValues_fin rfl]
   · intro ⟨i, h, hz⟩
-    rw [show (0 : 𝕜) = T.isSymmetric_adjoint_comp_self.eigenvalues rfl ⟨i, Finset.mem_range.mp h⟩ by
-      simp [hz, ←T.sq_singularValues_of_lt rfl (Finset.mem_range.mp h)]]
-    exact T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨i, Finset.mem_range.mp h⟩
+    suffices h₁ : (0 : 𝕜) = T.isSymmetric_adjoint_comp_self.eigenvalues rfl ⟨i, h⟩ from
+      h₁ ▸ T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨i, h⟩
+    rw [← sq_singularValues_of_lt]
+    rw [nonpos_iff_eq_zero] at hz
+    simp [hz]
 
 /--
 7.68(b) from [axler2024]. See also `LinearMap.support_singularValues` for a stronger statement.
