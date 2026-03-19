@@ -530,7 +530,7 @@ theorem IsTree.exists_ne_degree_eq_one [Fintype V] [Nontrivial V] [DecidableRel 
       have h_pos : 0 < G.degree v1 := G.degree_pos_iff_exists_adj v1 |>.mpr
         ⟨_, path.adj_snd <| not_nil_iff_lt_length.mpr <| by lia⟩
       lia
-    obtain ⟨w, hw_adj, hw_not_next⟩ := exists_neighbor_ne_of_one_lt_degree h_ge_2 (path.getVert 1)
+    obtain ⟨w, hw_not_next, hw_adj⟩ := exists_neighbor_ne_of_one_lt_degree h_ge_2 (path.getVert 1)
     have hw_not_in_p: w ∉ path.support := by
       by_contra hw_in_p
       have h_acyclic := hTree.IsAcyclic
