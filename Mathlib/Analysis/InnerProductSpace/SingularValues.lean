@@ -185,7 +185,7 @@ theorem isLowerSet_support_singularValues : IsLowerSet (T.singularValues.support
   order [T.singularValues_antitone hl]
 
 @[simp]
-theorem support_singularValues : T.singularValues.support = Finset.range (finrank 𝕜 (range T)) := by
+theorem support_singularValues : T.singularValues.support = Finset.range (finrank 𝕜 T.range) := by
   obtain h | ⟨n, hn⟩ := T.isLowerSet_support_singularValues.eq_univ_or_Iio
   · have : (Set.univ : Set ℕ).Finite := h ▸ Finset.finite_toSet _
     have : (Set.univ : Set ℕ).Infinite := Set.infinite_univ
@@ -196,15 +196,15 @@ theorem support_singularValues : T.singularValues.support = Finset.range (finran
     simpa [card_support_singularValues] using hn
 
 theorem singularValues_pos_iff_lt_rank {n : ℕ} :
-    0 < T.singularValues n ↔ n < finrank 𝕜 (range T) := by
+    0 < T.singularValues n ↔ n < finrank 𝕜 T.range := by
   rw [zero_lt_iff, ← Finsupp.mem_support_iff, support_singularValues, Finset.mem_range]
 
-theorem singularValues_rank : T.singularValues (finrank 𝕜 (range T)) = 0 := by
+theorem singularValues_rank : T.singularValues (finrank 𝕜 T.range) = 0 := by
   rw [← Finsupp.notMem_support_iff, support_singularValues]
   exact Finset.notMem_range_self
 
 theorem singularValues_eq_zero_iff_le_rank {n : ℕ} :
-    T.singularValues n = 0 ↔ finrank 𝕜 (range T) ≤ n := by
+    T.singularValues n = 0 ↔ finrank 𝕜 T.range ≤ n := by
   rw [← Finsupp.notMem_support_iff, support_singularValues, Finset.mem_range, not_lt]
 
 @[simp]
