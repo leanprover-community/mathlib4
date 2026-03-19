@@ -168,6 +168,26 @@ def orderEmbedding : Ideal S ↪o Ideal R where
     · exact fun hJ => (map_comap M S) J₁ ▸ (map_comap M S) J₂ ▸ Ideal.map_mono hJ
     · exact fun hJ => Ideal.comap_mono hJ
 
+include M in
+theorem comap_le_comap_iff {I J : Ideal S} :
+    I.comap (algebraMap R S) ≤ J.comap (algebraMap R S) ↔ I ≤ J := by
+  exact (IsLocalization.orderEmbedding M S).le_iff_le
+
+include M in
+theorem comap_lt_comap_iff {I J : Ideal S} :
+    I.comap (algebraMap R S) < J.comap (algebraMap R S) ↔ I < J := by
+  exact (IsLocalization.orderEmbedding M S).lt_iff_lt
+
+include M in
+theorem isMaximal_of_isMaximal_comap {I : Ideal S} (h : (I.comap (algebraMap R S)).IsMaximal) :
+    I.IsMaximal := by
+  rw [Ideal.isMaximal_def, isCoatom_iff_ge_of_le] at h ⊢
+  obtain ⟨h1, h2⟩ := h
+  refine ⟨by simpa using h1, fun J h3 h4 ↦ ?_⟩
+  specialize h2 (J.comap (algebraMap R S)) (by simpa)
+  simp_rw [IsLocalization.comap_le_comap_iff M S] at h2
+  exact h2 h4
+
 /-- If `R` is a ring, then prime ideals in the localization at `M`
 correspond to prime ideals in the original ring `R` that are disjoint from `M`.
 This lemma gives the particular case for an ideal and its comap,
