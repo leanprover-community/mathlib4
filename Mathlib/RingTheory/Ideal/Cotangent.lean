@@ -5,8 +5,15 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Module.SpanRankOperations
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.Algebra.Ring.Idempotent
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.RingTheory.Filtration
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.Nakayama
 
 /-!
 # The module `I ⧸ I ^ 2`
@@ -320,22 +327,3 @@ theorem finrank_cotangentSpace_le_one_iff [IsNoetherianRing R] :
   exact ⟨fun ⟨x, h⟩ ↦ ⟨_, h⟩, fun ⟨x, h⟩ ↦ ⟨⟨x, h ▸ subset_span (Set.mem_singleton x)⟩, h⟩⟩
 
 end IsLocalRing
-
-section spanRank
-
-namespace IsLocalRing
-
-variable {R : Type*} [CommRing R] [IsLocalRing R]
-
-lemma spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg (fg : (maximalIdeal R).FG) :
-    (maximalIdeal R).spanFinrank = Module.finrank (ResidueField R) (CotangentSpace R) :=
-  spanFinrank_eq_finrank_quotient _ fg
-
-variable (R) in
-lemma spanFinrank_maximalIdeal_eq_finrank_cotangentSpace [IsNoetherianRing R] :
-    (maximalIdeal R).spanFinrank = Module.finrank (ResidueField R) (CotangentSpace R) :=
-  spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg (maximalIdeal R).fg_of_isNoetherianRing
-
-end IsLocalRing
-
-end spanRank
