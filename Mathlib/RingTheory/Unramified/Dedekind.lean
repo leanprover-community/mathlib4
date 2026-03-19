@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Unramified.Field
 /-!
 # Unramified algebras over Dedekind domains
 
-We prove that a domain finite and unramified algebra over a Dedekind domain is a Dedekind domain.
+We prove that a domain finite and unramified over a Dedekind domain is a Dedekind domain.
 -/
 
 @[expose] public section
