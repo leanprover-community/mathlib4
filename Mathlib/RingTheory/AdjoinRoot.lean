@@ -783,7 +783,6 @@ variable [CommRing R] [CommRing S] [Algebra R S] (x : S) (R)
 
 open Algebra Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The surjective algebra morphism `R[X]/(minpoly R x) → R[x]`.
 If `R` is an integrally closed domain and `x` is integral, this is an isomorphism,
 see `minpoly.equivAdjoin`. -/
@@ -793,7 +792,6 @@ def Minpoly.toAdjoin : AdjoinRoot (minpoly R x) →ₐ[R] adjoin R ({x} : Set S)
 
 variable {R x}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Minpoly.coe_toAdjoin :
     ⇑(Minpoly.toAdjoin R x) = liftAlgHom (minpoly R x) (Algebra.ofId R <| adjoin R {x})
@@ -993,7 +991,7 @@ theorem quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk (p : R[X]) :
     quotMapCMapSpanMkEquivQuotMapCQuotMapMk_symm_quotQuotMk,
     quotMapOfEquivQuotMapCMapMk_symm_mk]
 
-/-- Promote `AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot` to an alg_equiv. -/
+/-- Promote `AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot` to an `AlgEquiv`. -/
 @[simps!]
 noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
     (AdjoinRoot f ⧸ Ideal.map (of f) I) ≃ₐ[R]

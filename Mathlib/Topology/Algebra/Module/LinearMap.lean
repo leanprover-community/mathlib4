@@ -118,6 +118,10 @@ theorem coe_mk' (f : M₁ →ₛₗ[σ₁₂] M₂) (h) : (mk f h : M₁ → M�
 protected theorem continuous (f : M₁ →SL[σ₁₂] M₂) : Continuous f :=
   f.2
 
+@[continuity, fun_prop]
+protected theorem continuous_toLinearMap (f : M₁ →SL[σ₁₂] M₂) : Continuous f.toLinearMap :=
+  f.2
+
 @[simp]
 protected theorem uniformContinuous {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
     [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂] [IsUniformAddGroup E₁]
@@ -600,6 +604,18 @@ theorem ofNat_apply [ContinuousAdd M₁] (n : ℕ) [n.AtLeastTwo] (m : M₁) :
     (ofNat(n) : M₁ →L[R₁] M₁) m = OfNat.ofNat n • m :=
   rfl
 
+/-- Construct a homeomorphism from an invertible continuous linear map. -/
+@[simps]
+def homeomorphOfUnit (T : (M₁ →L[R₁] M₁)ˣ) : M₁ ≃ₜ M₁ where
+  toFun := T.1
+  invFun := T⁻¹.1
+  left_inv x := by rw [← mul_apply, Units.inv_mul, one_apply]
+  right_inv x := by rw [← mul_apply, Units.mul_inv, one_apply]
+
+theorem isHomeomorph_of_isUnit {T : M₁ →L[R₁] M₁} (hT : IsUnit T) : IsHomeomorph T := by
+  obtain ⟨T, rfl⟩ := hT
+  exact (homeomorphOfUnit T).isHomeomorph
+
 section ApplyAction
 
 variable [ContinuousAdd M₁]
@@ -720,6 +736,12 @@ def smulRight (c : M₁ →L[R] S) (f : M₂) : M₁ →L[R] M₂ :=
 theorem smulRight_apply {c : M₁ →L[R] S} {f : M₂} {x : M₁} :
     (smulRight c f : M₁ → M₂) x = c x • f :=
   rfl
+
+@[simp]
+lemma smulRight_zero (f : M₁ →L[R] S) : f.smulRight (0 : M₂) = 0 := by ext; simp
+
+@[simp]
+theorem zero_smulRight {x : M₂} : (0 : M₁ →L[R] S).smulRight x = 0 := by ext; simp
 
 end
 
