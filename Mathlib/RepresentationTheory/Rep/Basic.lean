@@ -13,7 +13,7 @@ public import Mathlib.RepresentationTheory.Equiv
 /-!
 # `Rep k G` is the category of `k`-linear representations of `G`.
 
-Given a `G`-representaiton `ρ` on a module `V`, you can construct the bundled representation as
+Given a `G`-representation `ρ` on a module `V`, you can construct the bundled representation as
 `Rep.of ρ`. Conversely, given a bundled representation `A : Rep k G`, you can get the underlying
 module as `A.V` and the representation on it as `A.ρ`.
 
