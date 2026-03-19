@@ -34,9 +34,9 @@ namespace Lean.MessageData
 
 Prefer `td.result?` when the `TraceData` is available. -/
 def traceResultOf (headerStr : String) : Option TraceResult :=
-  if headerStr.startsWith "✅" then some .success
-  else if headerStr.startsWith "❌" then some .failure
-  else if headerStr.startsWith "💥" then some .error
+  if headerStr.startsWith "✅️" then some .success
+  else if headerStr.startsWith "❌️" then some .failure
+  else if headerStr.startsWith "💥️" then some .error
   else none
 
 /-- Strip the leading status emoji and space from a trace header string,

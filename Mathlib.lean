@@ -185,6 +185,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Monoidal
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.PushforwardZeroMonoidal
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafify
 public import Mathlib.Algebra.Category.ModuleCat.Products
@@ -674,6 +675,7 @@ public import Mathlib.Algebra.Homology.SpectralObject.Cycles
 public import Mathlib.Algebra.Homology.SpectralObject.Differentials
 public import Mathlib.Algebra.Homology.SpectralObject.EpiMono
 public import Mathlib.Algebra.Homology.SpectralObject.HasSpectralSequence
+public import Mathlib.Algebra.Homology.SpectralObject.Homology
 public import Mathlib.Algebra.Homology.SpectralObject.Page
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
 public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
@@ -878,6 +880,7 @@ public import Mathlib.Algebra.Order.AddGroupWithTop
 public import Mathlib.Algebra.Order.AddTorsor
 public import Mathlib.Algebra.Order.Algebra
 public import Mathlib.Algebra.Order.Antidiag.Finsupp
+public import Mathlib.Algebra.Order.Antidiag.FinsuppEquiv
 public import Mathlib.Algebra.Order.Antidiag.Nat
 public import Mathlib.Algebra.Order.Antidiag.Pi
 public import Mathlib.Algebra.Order.Antidiag.Prod
@@ -1612,6 +1615,7 @@ public import Mathlib.Analysis.CStarAlgebra.Projection
 public import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
 public import Mathlib.Analysis.CStarAlgebra.Spectrum
 public import Mathlib.Analysis.CStarAlgebra.Unitary.Connected
+public import Mathlib.Analysis.CStarAlgebra.Unitary.Maps
 public import Mathlib.Analysis.CStarAlgebra.Unitary.Span
 public import Mathlib.Analysis.CStarAlgebra.Unitization
 public import Mathlib.Analysis.CStarAlgebra.lpSpace
@@ -2065,6 +2069,7 @@ public import Mathlib.Analysis.Normed.Module.Ball.Action
 public import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 public import Mathlib.Analysis.Normed.Module.Ball.RadialEquiv
+public import Mathlib.Analysis.Normed.Module.Bases
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Module.Complemented
 public import Mathlib.Analysis.Normed.Module.Completion
@@ -3060,6 +3065,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLim
 public import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
 public import Mathlib.CategoryTheory.ObjectProperty.Ind
 public import Mathlib.CategoryTheory.ObjectProperty.InheritedFromHom
+public import Mathlib.CategoryTheory.ObjectProperty.Kernels
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.Local
@@ -6209,6 +6215,7 @@ public import Mathlib.RingTheory.Etale.QuasiFinite
 public import Mathlib.RingTheory.Etale.StandardEtale
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.Extension.Basic
+public import Mathlib.RingTheory.Extension.Cotangent.BaseChange
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
 public import Mathlib.RingTheory.Extension.Cotangent.Basis
 public import Mathlib.RingTheory.Extension.Cotangent.Free
