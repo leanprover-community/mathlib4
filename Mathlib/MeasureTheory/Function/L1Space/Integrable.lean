@@ -407,11 +407,16 @@ theorem Integrable.add' {f g : α → ε'} (hf : Integrable f μ) (hg : Integrab
     _ = _ := lintegral_enorm_add_left hf.aestronglyMeasurable _
     _ < ∞ := add_lt_top.2 ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩
 
-@[to_fun (attr := fun_prop)]
+@[fun_prop]
 theorem Integrable.add [ContinuousAdd ε']
     {f g : α → ε'} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (f + g) μ :=
   ⟨hf.aestronglyMeasurable.add hg.aestronglyMeasurable, hf.add' hg⟩
+
+@[fun_prop]
+theorem Integrable.add'' [ContinuousAdd ε']
+    {f g : α → ε'} (hf : Integrable f μ) (hg : Integrable g μ) :
+    Integrable (fun x ↦ f x + g x) μ := hf.add hg
 
 @[simp]
 lemma Integrable.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
@@ -437,29 +442,54 @@ theorem integrable_finset_sum {ι} (s : Finset ι) {f : ι → α → ε'}
 
 end ESeminormedAddCommMonoid
 
-/-- If `f` is integrable, then so is `-f`. -/
-@[to_fun (attr := fun_prop)]
+/-- If `f` is integrable, then so is `-f`.
+See `Integrable.neg'` for the same statement, but formulated with `x ↦ - f x` instead of `-f`. -/
+@[fun_prop]
 theorem Integrable.neg {f : α → β} (hf : Integrable f μ) : Integrable (-f) μ :=
   ⟨hf.aestronglyMeasurable.neg, by fun_prop⟩
 
-@[to_fun (attr := simp)]
+/-- If `f` is integrable, then so is `fun x ↦ - f x`.
+See `Integrable.neg` for the same statement, but formulated with `-f` instead of `fun x ↦ - f x`. -/
+@[fun_prop]
+theorem Integrable.neg' {f : α → β} (hf : Integrable f μ) : Integrable (fun x ↦ - f x) μ :=
+  ⟨hf.aestronglyMeasurable.neg, hf.hasFiniteIntegral.neg⟩
+
+@[simp]
 theorem integrable_neg_iff {f : α → β} : Integrable (-f) μ ↔ Integrable f μ :=
   ⟨fun h => neg_neg f ▸ h.neg, Integrable.neg⟩
 
-/-- if `f` is integrable, then `f + g` is integrable iff `g` is. -/
-@[to_fun (attr := simp)]
+/-- if `f` is integrable, then `f + g` is integrable iff `g` is.
+See `integrable_add_iff_integrable_right'` for the same statement with `fun x ↦ f x + g x` instead
+of `f + g`. -/
+@[simp]
 lemma integrable_add_iff_integrable_right {f g : α → β} (hf : Integrable f μ) :
     Integrable (f + g) μ ↔ Integrable g μ :=
   ⟨fun h ↦ show g = f + g + (-f) by simp only [add_neg_cancel_comm] ▸ h.add hf.neg,
     fun h ↦ hf.add h⟩
 
+/-- if `f` is integrable, then `fun x ↦ f x + g x` is integrable iff `g` is.
+See `integrable_add_iff_integrable_right` for the same statement with `f + g` instead
+of `fun x ↦ f x + g x`. -/
+@[simp]
+lemma integrable_add_iff_integrable_right' {f g : α → β} (hf : Integrable f μ) :
+    Integrable (fun x ↦ f x + g x) μ ↔ Integrable g μ :=
+  integrable_add_iff_integrable_right hf
+
 /-- if `f` is integrable, then `g + f` is integrable iff `g` is.
 See `integrable_add_iff_integrable_left'` for the same statement with `fun x ↦ g x + f x` instead
 of `g + f`. -/
-@[to_fun (attr := simp)]
+@[simp]
 lemma integrable_add_iff_integrable_left {f g : α → β} (hf : Integrable f μ) :
     Integrable (g + f) μ ↔ Integrable g μ := by
   rw [add_comm, integrable_add_iff_integrable_right hf]
+
+/-- if `f` is integrable, then `fun x ↦ g x + f x` is integrable iff `g` is.
+See `integrable_add_iff_integrable_left'` for the same statement with `g + f` instead
+of `fun x ↦ g x + f x`. -/
+@[simp]
+lemma integrable_add_iff_integrable_left' {f g : α → β} (hf : Integrable f μ) :
+    Integrable (fun x ↦ g x + f x) μ ↔ Integrable g μ :=
+  integrable_add_iff_integrable_left hf
 
 lemma integrable_left_of_integrable_add_of_nonneg {f g : α → ℝ}
     (h_meas : AEStronglyMeasurable f μ) (hf : 0 ≤ᵐ[μ] f) (hg : 0 ≤ᵐ[μ] g)
@@ -475,14 +505,12 @@ lemma integrable_right_of_integrable_add_of_nonneg {f g : α → ℝ}
     ((AEStronglyMeasurable.add_iff_right h_meas).mp h_int.aestronglyMeasurable)
       hg hf (add_comm f g ▸ h_int)
 
-@[to_fun]
 lemma integrable_add_iff_of_nonneg {f g : α → ℝ} (h_meas : AEStronglyMeasurable f μ)
     (hf : 0 ≤ᵐ[μ] f) (hg : 0 ≤ᵐ[μ] g) :
     Integrable (f + g) μ ↔ Integrable f μ ∧ Integrable g μ :=
   ⟨fun h ↦ ⟨integrable_left_of_integrable_add_of_nonneg h_meas hf hg h,
     integrable_right_of_integrable_add_of_nonneg h_meas hf hg h⟩, fun ⟨hf, hg⟩ ↦ hf.add hg⟩
 
-@[to_fun]
 lemma integrable_add_iff_of_nonpos {f g : α → ℝ} (h_meas : AEStronglyMeasurable f μ)
     (hf : f ≤ᵐ[μ] 0) (hg : g ≤ᵐ[μ] 0) :
     Integrable (f + g) μ ↔ Integrable f μ ∧ Integrable g μ := by
@@ -499,9 +527,13 @@ lemma integrable_const_add_iff [IsFiniteMeasure μ] {f : α → β} {c : β} :
   integrable_add_iff_integrable_right (integrable_const _)
 
 -- TODO: generalise these lemmas to an `ENormedAddCommSubMonoid`
-@[to_fun (attr := fun_prop)]
+@[fun_prop]
 theorem Integrable.sub {f g : α → β} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (f - g) μ := by simpa only [sub_eq_add_neg] using hf.add hg.neg
+
+@[fun_prop]
+theorem Integrable.sub' {f g : α → β} (hf : Integrable f μ) (hg : Integrable g μ) :
+    Integrable (fun a ↦ f a - g a) μ := by simpa only [sub_eq_add_neg] using hf.add hg.neg
 
 @[fun_prop]
 theorem Integrable.enorm {f : α → ε} (hf : Integrable f μ) : Integrable (‖f ·‖ₑ) μ := by
@@ -511,7 +543,7 @@ theorem Integrable.enorm {f : α → ε} (hf : Integrable f μ) : Integrable (�
 theorem Integrable.norm {f : α → β} (hf : Integrable f μ) : Integrable (fun a => ‖f a‖) μ := by
   constructor <;> fun_prop
 
-@[to_fun (attr := fun_prop)]
+@[fun_prop]
 theorem Integrable.inf {β}
     [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
     {f g : α → β} (hf : Integrable f μ)
@@ -519,7 +551,7 @@ theorem Integrable.inf {β}
   rw [← memLp_one_iff_integrable] at hf hg ⊢
   exact hf.inf hg
 
-@[to_fun (attr := fun_prop)]
+@[fun_prop]
 theorem Integrable.sup {β}
     [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
     {f g : α → β} (hf : Integrable f μ)
