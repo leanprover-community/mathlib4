@@ -124,7 +124,6 @@ theorem ofDigits_digits_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hx : x ∈ Set.Ic
     rw [← Nat.cast_mul_floor_div_cancel (a := y) (show b ≠ 0 by lia),
       Fin.val_ofNat, Nat.div_add_mod]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_sum_ofDigitsTerm_digits {x : ℝ} {b : ℕ} [NeZero b]
     (hx : x ∈ Set.Ico 0 1) (n : ℕ) :
     x - (b⁻¹ : ℝ) ^ n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (digits x b) i := by
@@ -136,7 +135,6 @@ theorem le_sum_ofDigitsTerm_digits {x : ℝ} {b : ℕ} [NeZero b]
     mul_sub, inv_pow, mul_inv_cancel₀ (by positivity)]
   linarith
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sum_ofDigitsTerm_digits_le {x : ℝ} {b : ℕ} [NeZero b]
     (hx : x ∈ Set.Ico 0 1) (n : ℕ) :
     ∑ i ∈ Finset.range n, ofDigitsTerm (digits x b) i ≤ x := by

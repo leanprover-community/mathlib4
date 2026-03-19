@@ -99,3 +99,13 @@ lemma LinearEquiv.isScalarTower [Module R α] [Module R β] [IsScalarTower R A �
   intro x y z
   simp only [Equiv.smul_def, smul_assoc]
   apply e.symm.map_smul
+
+/-- When `α` is equipped with the `A`-module structure transferred via `e : α ≃+ β`,
+this isomorphism is `A`-linear. -/
+@[simps]
+def AddEquiv.linearEquiv (e : α ≃+ β) :
+    letI := e.module A
+    α ≃ₗ[A] β :=
+  letI := e.module A
+  { __ := e
+    map_smul' _ _ := e.apply_symm_apply _ }

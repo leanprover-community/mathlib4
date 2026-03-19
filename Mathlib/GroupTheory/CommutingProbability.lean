@@ -89,7 +89,6 @@ theorem commProb_eq_one_iff [h : Nonempty M] :
 
 variable (G : Type*) [Group G]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
   rw [commProb, card_comm_eq_card_conjClasses_mul_card, Nat.cast_mul, sq]
   by_cases h : (Nat.card G : ℚ) = 0

@@ -21,7 +21,6 @@ that `Data.PNat.Defs` can have very few imports.
 
 @[expose] public section
 
-set_option backward.isDefEq.respectTransparency false in
 deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
   Add, Mul, Distrib for PNat
 
@@ -111,7 +110,7 @@ subtraction, division and powers.
 -/
 @[simp, norm_cast]
 theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
-  SetCoe.ext_iff
+  Subtype.ext_iff.symm
 
 @[simp, norm_cast]
 theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=

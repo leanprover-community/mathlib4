@@ -157,7 +157,6 @@ namespace NonUnitalSubsemiring
 
 variable {R S : Type*} [Semiring R] [SetLike S R] [hSR : NonUnitalSubsemiringClass S R] (s : S)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural `ℕ`-algebra homomorphism from the unitization of a non-unital subsemiring to
 its `Subsemiring.closure`. -/
 def unitization : Unitization ℕ s →ₐ[ℕ] R :=
@@ -167,7 +166,6 @@ def unitization : Unitization ℕ s →ₐ[ℕ] R :=
 theorem unitization_apply (x : Unitization ℕ s) : unitization s x = x.fst + x.snd :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem unitization_range :
     (unitization s).range = subalgebraOfSubsemiring (.closure s) := by
   have := AddSubmonoidClass.nsmulMemClass (S := S)

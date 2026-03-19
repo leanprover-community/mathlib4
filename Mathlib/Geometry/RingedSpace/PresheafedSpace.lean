@@ -39,8 +39,8 @@ variable (C : Type*) [Category* C]
 namespace AlgebraicGeometry
 
 /-- A `PresheafedSpace C` is a topological space equipped with a presheaf of `C`s. -/
-structure PresheafedSpace where
-  carrier : TopCat
+structure PresheafedSpace.{u} where
+  carrier : TopCat.{u}
   protected presheaf : carrier.Presheaf C
 
 variable {C}
@@ -264,7 +264,7 @@ section Restrict
 def restrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
     (h : IsOpenEmbedding f) : PresheafedSpace C where
   carrier := U
-  presheaf := h.isOpenMap.functor.op ⋙ X.presheaf
+  presheaf := h.functor.op ⋙ X.presheaf
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The map from the restriction of a presheafed space.
@@ -292,14 +292,14 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
     rw [cancel_mono] at this
     exact this
   · ext V
-    have hV : (Opens.map (X.ofRestrict hf).base).obj (hf.isOpenMap.functor.obj V) = V := by
+    have hV : (Opens.map (X.ofRestrict hf).base).obj (hf.functor.obj V) = V := by
       ext1
       exact Set.preimage_image_eq _ hf.injective
     haveI :
-      IsIso (hf.isOpenMap.adjunction.counit.app (unop (op (hf.isOpenMap.functor.obj V)))) :=
+      IsIso (hf.isOpenMap.adjunction.counit.app (unop (op (hf.functor.obj V)))) :=
         NatIso.isIso_app_of_isIso
-          (whiskerLeft hf.isOpenMap.functor hf.isOpenMap.adjunction.counit) V
-    have := PresheafedSpace.congr_app eq (op (hf.isOpenMap.functor.obj V))
+          (whiskerLeft hf.functor hf.isOpenMap.adjunction.counit) V
+    have := PresheafedSpace.congr_app eq (op (hf.functor.obj V))
     rw [PresheafedSpace.comp_c_app, PresheafedSpace.comp_c_app,
       PresheafedSpace.ofRestrict_c_app, Category.assoc, cancel_epi] at this
     have h : _ ≫ _ = _ ≫ _ ≫ _ :=
