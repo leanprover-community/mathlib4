@@ -401,7 +401,6 @@ instance [Semiring X] [MulSemiringAction L X] (F : IntermediateField K L) : MulS
 instance toAlgebra : Algebra S L :=
   inferInstanceAs (Algebra S.toSubalgebra L)
 
-set_option backward.isDefEq.respectTransparency false in
 instance module' {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] : Module R S :=
   inferInstanceAs (Module R S.toSubalgebra)
 
@@ -724,7 +723,6 @@ theorem restrictScalars_inj {E E' : IntermediateField L' L} :
 
 end RestrictScalars
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This was formerly an instance called `lift2_alg`, but an instance above already provides it. -/
 example {F : IntermediateField K L} {E : IntermediateField F L} : Algebra K E := by infer_instance
 
@@ -821,7 +819,6 @@ namespace IntermediateField
 
 variable {F E E' : IntermediateField K L} (h : F ≤ E) (h' : F ≤ E') {x : L}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F ≤ E` are two intermediate fields of `L / K`, then `E` is also an intermediate field of
 `L / F`. It can be viewed as an inverse to `IntermediateField.restrictScalars`. -/
 def extendScalars : IntermediateField F L :=
@@ -830,7 +827,6 @@ def extendScalars : IntermediateField F L :=
 @[simp]
 theorem coe_extendScalars : (extendScalars h : Set L) = (E : Set L) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem extendScalars_toSubfield : (extendScalars h).toSubfield = E.toSubfield :=
   SetLike.coe_injective rfl
@@ -838,23 +834,19 @@ theorem extendScalars_toSubfield : (extendScalars h).toSubfield = E.toSubfield :
 @[simp]
 theorem mem_extendScalars : x ∈ extendScalars h ↔ x ∈ E := Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem extendScalars_restrictScalars : (extendScalars h).restrictScalars K = E := rfl
 
 theorem extendScalars_le_extendScalars_iff : extendScalars h ≤ extendScalars h' ↔ E ≤ E' := Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem extendScalars_le_iff (E' : IntermediateField F L) :
     extendScalars h ≤ E' ↔ E ≤ E'.restrictScalars K := Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_extendScalars_iff (E' : IntermediateField F L) :
     E' ≤ extendScalars h ↔ E'.restrictScalars K ≤ E := Iff.rfl
 
 variable (F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `IntermediateField.extendScalars.orderIso` bundles `IntermediateField.extendScalars`
 into an order isomorphism from
 `{ E : IntermediateField K L // F ≤ E }` to `IntermediateField F L`. Its inverse is

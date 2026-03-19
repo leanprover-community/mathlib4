@@ -497,7 +497,6 @@ variable (P : Cᵒᵖ ⥤ A) (P' : Cᵒᵖ ⥤ A')
 
 section MultiequalizerConditions
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When `P` is a sheaf and `S` is a cover, the associated multifork is a limit. -/
 def isLimitOfIsSheaf {X : C} (S : J.Cover X) (hP : IsSheaf J P) : IsLimit (S.multifork P) where
   lift := fun E : Multifork _ => hP.amalgamate S (fun _ => E.ι _)
@@ -517,7 +516,6 @@ def isLimitOfIsSheaf {X : C} (S : J.Cover X) (hP : IsSheaf J P) : IsLimit (S.mul
     symm
     apply hP.amalgamate_map
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isSheaf_iff_multifork :
     IsSheaf J P ↔ ∀ (X : C) (S : J.Cover X), Nonempty (IsLimit (S.multifork P)) := by
   refine ⟨fun hP X S => ⟨isLimitOfIsSheaf _ _ _ hP⟩, ?_⟩

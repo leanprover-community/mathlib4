@@ -61,12 +61,10 @@ instance [MulSemiringAction Gal(L/K) B] [h : IsGaloisGroup (inertia Gal(L/K) P) 
 
 variable [MulSemiringAction Gal(L/K) B]
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsGalois K L] : IsDecompositionField K L P
     (FixedPoints.intermediateField (stabilizer Gal(L/K) P) : IntermediateField K L) where
   toIsGaloisGroup := IsGaloisGroup.subgroup Gal(L/K) K L (stabilizer Gal(L/K) P)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsGalois K L] : IsInertiaField K L P
     (FixedPoints.intermediateField (inertia Gal(L/K) P) : IntermediateField K L) where
   toIsGaloisGroup := IsGaloisGroup.subgroup Gal(L/K) K L (inertia Gal(L/K) P)
@@ -84,7 +82,7 @@ theorem IsDecompositionField.of_isGaloisGroup [h : IsGaloisGroup (stabilizer G P
   · refine (stabilizerEquiv _ (IsGaloisGroup.mulEquivAlgEquiv G K L) fun _ _ ↦ ?_).symm
     apply FaithfulSMul.algebraMap_injective B L
     simp [algebraMap.smul']
-  · obtain ⟨y, z, _, rfl⟩ := IsFractionRing.div_surjective (A := B) x
+  · obtain ⟨y, z, _, rfl⟩ := IsFractionRing.div_surjective B x
     simp_rw [smul_div₀', subgroup_smul_def, ← algebraMap.smul', ← subgroup_smul_def,
       stabilizerEquiv_symm_apply_smul]
 
@@ -94,7 +92,7 @@ theorem IsInertiaField.of_isGaloisGroup [h : IsGaloisGroup (inertia G P) D L] :
   · refine (inertiaEquiv _ (IsGaloisGroup.mulEquivAlgEquiv G K L) fun _ _ ↦ ?_).symm
     apply FaithfulSMul.algebraMap_injective B L
     simp [algebraMap.smul']
-  · obtain ⟨y, z, _, rfl⟩ := IsFractionRing.div_surjective (A := B) x
+  · obtain ⟨y, z, _, rfl⟩ := IsFractionRing.div_surjective B x
     simp_rw [smul_div₀', subgroup_smul_def, ← algebraMap.smul', ← subgroup_smul_def,
       inertiaEquiv_symm_apply_smul]
 
