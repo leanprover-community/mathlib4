@@ -56,8 +56,9 @@ def gaussNorm : ℝ := if h : p.support.Nonempty then p.support.sup' h fun i ↦
 @[simp]
 lemma gaussNorm_zero : gaussNorm v c 0 = 0 := by simp [gaussNorm]
 
-theorem exists_eq_gaussNorm [ZeroHomClass F R ℝ] :
-    ∃ i, p.gaussNorm v c = v (p.coeff i) * c ^ i := by
+variable [ZeroHomClass F R ℝ]
+
+theorem exists_eq_gaussNorm : ∃ i, p.gaussNorm v c = v (p.coeff i) * c ^ i := by
   by_cases h_supp : p.support.Nonempty
   · simp only [gaussNorm, h_supp]
     obtain ⟨i, hi1, hi2⟩ := Finset.exists_mem_eq_sup' h_supp fun i ↦ (v (p.coeff i) * c ^ i)
@@ -65,16 +66,17 @@ theorem exists_eq_gaussNorm [ZeroHomClass F R ℝ] :
   · simp_all
 
 @[simp]
-lemma gaussNorm_C [ZeroHomClass F R ℝ] (r : R) : (C r).gaussNorm v c = v r := by
+lemma gaussNorm_C (r : R) : (C r).gaussNorm v c = v r := by
   by_cases hr : r = 0 <;> simp [gaussNorm, support_C, hr]
 
 @[simp]
-theorem gaussNorm_monomial [ZeroHomClass F R ℝ] (n : ℕ) (r : R) :
+theorem gaussNorm_monomial (n : ℕ) (r : R) :
     (monomial n r).gaussNorm v c = v r * c ^ n := by
   by_cases hr : r = 0 <;> simp [gaussNorm, support_monomial, hr]
 
 variable {c}
 
+omit [ZeroHomClass F R ℝ] in
 private lemma sup'_nonneg_of_ne_zero [NonnegHomClass F R ℝ] {p : R[X]} (h : p.support.Nonempty)
     (hc : 0 ≤ c) : 0 ≤ p.support.sup' h fun i ↦ (v (p.coeff i) * c ^ i) := by
   simp only [Finset.le_sup'_iff, mem_support_iff]
@@ -83,7 +85,7 @@ private lemma sup'_nonneg_of_ne_zero [NonnegHomClass F R ℝ] {p : R[X]} (h : p.
     true_and]
   positivity
 
-private lemma aux_bdd [ZeroHomClass F R ℝ] : BddAbove {x | ∃ i, v (p.coeff i) * c ^ i = x} := by
+private lemma aux_bdd : BddAbove {x | ∃ i, v (p.coeff i) * c ^ i = x} := by
   let f : p.support → ℝ := fun i ↦ v (p.coeff i) * c ^ i.val
   have h_fin : (f '' ⊤ ∪ {0}).Finite := by
     apply Set.Finite.union _ <| Set.finite_singleton 0
@@ -95,11 +97,13 @@ private lemma aux_bdd [ZeroHomClass F R ℝ] : BddAbove {x | ∃ i, v (p.coeff i
     Set.mem_range, Subtype.exists, mem_support_iff]
   grind
 
+variable [NonnegHomClass F R ℝ]
+
 /-- If `v` is a nonnegative function with `v 0 = 0` and `c` is nonnegative, the Gauss norm of a
 polynomial is equal to its Gauss norm as a power series. -/
 @[simp]
-theorem gaussNorm_coe_powerSeries [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
-    (hc : 0 ≤ c) : (p.toPowerSeries).gaussNorm v c = p.gaussNorm v c := by
+theorem gaussNorm_coe_powerSeries (hc : 0 ≤ c) :
+    (p.toPowerSeries).gaussNorm v c = p.gaussNorm v c := by
   by_cases hp : p = 0
   · simp [hp]
   · simp only [PowerSeries.gaussNorm, coeff_coe, gaussNorm, support_nonempty, ne_eq, hp,
@@ -118,26 +122,25 @@ theorem gaussNorm_coe_powerSeries [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ
 /-- If `v x = 0 → x = 0` for all `x : R` and `v` is nonnegative, then the Gauss norm is zero if and
 only if the polynomial is zero. -/
 @[simp]
-theorem gaussNorm_eq_zero_iff [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
-    (h_eq_zero : ∀ x : R, v x = 0 → x = 0) (hc : 0 < c) : p.gaussNorm v c = 0 ↔ p = 0 := by
+theorem gaussNorm_eq_zero_iff (h_eq_zero : ∀ x : R, v x = 0 → x = 0) (hc : 0 < c) :
+    p.gaussNorm v c = 0 ↔ p = 0 := by
   rw [← gaussNorm_coe_powerSeries _ _ (le_of_lt hc),
     PowerSeries.gaussNorm_eq_zero_iff h_eq_zero hc (by simpa only [coeff_coe] using aux_bdd v p),
     coe_eq_zero_iff]
 
+omit [ZeroHomClass F R ℝ] in
 /-- If `v` is a nonnegative function, then the Gauss norm is nonnegative. -/
-theorem gaussNorm_nonneg (hc : 0 ≤ c) [NonnegHomClass F R ℝ] : 0 ≤ p.gaussNorm v c := by
+theorem gaussNorm_nonneg (hc : 0 ≤ c) : 0 ≤ p.gaussNorm v c := by
   by_cases hp : p.support.Nonempty <;>
   simp_all [gaussNorm, sup'_nonneg_of_ne_zero, -Finset.le_sup'_iff]
 
-lemma le_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (hc : 0 ≤ c) (i : ℕ) :
-    v (p.coeff i) * c ^ i ≤ p.gaussNorm v c := by
+lemma le_gaussNorm (hc : 0 ≤ c) (i : ℕ) : v (p.coeff i) * c ^ i ≤ p.gaussNorm v c := by
   rw [← gaussNorm_coe_powerSeries _ _ hc, ← coeff_coe]
   apply PowerSeries.le_gaussNorm
   simpa using aux_bdd v p
 
 @[simp]
-lemma gaussNorm_zero_right [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] :
-    p.gaussNorm v 0 = v (p.coeff 0) := by
+lemma gaussNorm_zero_right : p.gaussNorm v 0 = v (p.coeff 0) := by
   have : (fun i ↦ v (p.coeff i) * 0 ^ i) = fun i ↦ if i = 0 then v (p.coeff 0) else 0 := by
     aesop
   rcases eq_or_ne (p.coeff 0) 0 with _ | hcoeff0
@@ -148,7 +151,7 @@ lemma gaussNorm_zero_right [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] :
 
 /-- If `v` is a nonnegative function with `v 0 = 0` and `c` is nonnegative, there exists a minimal
 index `i` such that the Gauss norm of `p` at `c` is attained at `i`. -/
-lemma exists_min_eq_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (p : R[X]) (hc : 0 ≤ c) :
+lemma exists_min_eq_gaussNorm (p : R[X]) (hc : 0 ≤ c) :
     ∃ i, p.gaussNorm v c = v (p.coeff i) * c ^ i ∧
     ∀ j, j < i → v (p.coeff j) * c ^ j < p.gaussNorm v c := by
   have h_nonempty : {i | gaussNorm v c p = v (p.coeff i) * c ^ i}.Nonempty := by
@@ -161,8 +164,8 @@ lemma exists_min_eq_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (p
 
 /-- If `v` is a nonnegative nonarchimedean function with `v 0 = 0` and `c` is nonnegative, the
 Gauss norm is nonarchimedean. -/
-theorem isNonarchimedean_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
-    (hna : IsNonarchimedean v) {c : ℝ} (hc : 0 ≤ c) : IsNonarchimedean (gaussNorm v c) := by
+theorem isNonarchimedean_gaussNorm (hna : IsNonarchimedean v) {c : ℝ} (hc : 0 ≤ c) :
+    IsNonarchimedean (gaussNorm v c) := by
   intro p q
   rcases eq_or_ne p 0 with hp | _
   · simp [hp]
@@ -188,8 +191,7 @@ theorem isNonarchimedean_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F R �
 open Finset in
 /-- If `v` is a nonnegative nonarchimedean multiplicative function with `v 0 = 0` and `c` is
 nonnegative, then the Gauss norm is submultiplicative. -/
-theorem gaussNorm_mul_le [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
-    [MulHomClass F R ℝ] (hna : IsNonarchimedean v) (p q : R[X]) (hc : 0 ≤ c) :
+theorem gaussNorm_mul_le [MulHomClass F R ℝ] (hna : IsNonarchimedean v) (p q : R[X]) (hc : 0 ≤ c) :
     (p * q).gaussNorm v c ≤ p.gaussNorm v c * q.gaussNorm v c := by
   rcases eq_or_ne (p * q) 0 with hpq | hpq
   · simp [hpq, hc, gaussNorm_nonneg, mul_nonneg]
