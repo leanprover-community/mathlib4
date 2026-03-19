@@ -159,7 +159,7 @@ theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |
 /-- The union of two acyclic graphs that share at most one vertex is acyclic -/
 theorem IsAcyclic.coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsAcyclic) (h₂ : G₂.coe.IsAcyclic)
     (h : (G₁.verts ∩ G₂.verts).Subsingleton) : (G₁ ⊔ G₂).coe.IsAcyclic := by
-  refine fun v p hp ↦ ?_
+  intro v p hp
   -- If the cycle is entirely contained within one of the subgraphs
   by_cases! hp' : (∀ u ∈ p.support, u.val ∈ G₁.verts) ∨ (∀ u ∈ p.support, u.val ∈ G₂.verts)
   · -- WLOG it's contained in the first one
