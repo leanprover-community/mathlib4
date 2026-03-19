@@ -28,7 +28,7 @@ counterparts in [Chou1994].
 * `GraphLike.Walk.Nil`: A predicate for the empty walk
 * `GraphLike.Walk.length`: The length of a walk
 * `GraphLike.Walk.support`: The list of vertices a walk visits in order
-* `GraphLike.Walk.dartsList`: The list of `Dart`s a walk visits in order
+* `GraphLike.Walk.darts`: The list of darts a walk visits in order
 
 ## Tags
 walks
@@ -83,7 +83,7 @@ attribute [refl] Walk.nil
 @[simps]
 instance instInhabited (G : Gr) (v : α) : Inhabited (Walk G v v) := ⟨Walk.nil⟩
 
-/-- The one-edge walk associated to a pair of adjacent vertices. -/
+/-- The one-edge walk associated to a single step, which is a dart from `u` to `v`. -/
 @[match_pattern, reducible]
 def _root_.GraphLike.step.toWalk (s : step G u v) : Walk G u v :=
   Walk.cons s Walk.nil
@@ -116,7 +116,7 @@ theorem length_cons (s : step G u v) (p : Walk G v w) :
 theorem eq_of_length_eq_zero : ∀ {p : Walk G u v}, p.length = 0 → u = v
   | nil, _ => rfl
 
-/-- If `u` and `v` connected by one-edge walk, then there exists a dart between them. -/
+/-- If `u` and `v` connected by one-edge walk, then there exists a step between them. -/
 def step_of_length_eq_one : ∀ {p : Walk G u v}, p.length = 1 → step G u v
   | cons s nil, _ => s
 
@@ -287,7 +287,7 @@ theorem darts_injective {u v : α} : Function.Injective (Walk.darts : Walk G u v
 
 /-- Predicate for the empty walk.
 
-Solves the dependent type problem where `p = Walk G.nil` typechecks
+Solves the dependent type problem where `p = Walk.nil` typechecks
 only if `p` has defeq endpoints. -/
 inductive Nil : {u v : α} → Walk G u v → Prop
   | nil {w : α} : Nil (nil : Walk G w w)
@@ -308,7 +308,7 @@ lemma not_nil_of_ne : u ≠ v → ¬ p.Nil := mt Nil.eq
 lemma nil_iff_support_eq : p.Nil ↔ p.support = [v] := by
   cases p <;> simp
 
-@[simp]
+@[simp, grind =]
 lemma darts_eq_nil : p.darts = [] ↔ p.Nil := by
   cases p <;> simp
 
@@ -346,7 +346,7 @@ theorem end_mem_tail_support (h : ¬ p.Nil) : v ∈ p.support.tail :=
   p.notNilRec (by simp) h
 
 /-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
-there exists a dart in the walk whose start is in `S` but whose end is not. -/
+there exists a step in the walk whose start is in `S` but whose end is not. -/
 theorem exists_boundary_dart (p : Walk G u v) (S : Set α) (uS : u ∈ S) (vS : v ∉ S) :
     ∃ d : GraphLike.darts G, d ∈ p.darts ∧ fst d.val ∈ S ∧ snd d.val ∉ S := by
   induction p with
