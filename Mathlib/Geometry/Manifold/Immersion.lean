@@ -87,7 +87,7 @@ This shortens the overall argument, as the definition of submersions has the sam
 
 ## References
 
-* [Juan Margalef-Roig and Enrique Outerelo Dominguez, *Differential topology*][roigdomingues1992]
+* [Juan Margalef Roig and Enrique Outerelo Domínguez, *Differential topology*][roigdominguez1992]
 
 -/
 
@@ -274,7 +274,7 @@ lemma property (h : IsImmersionAtOfComplement F I J n f x) :
 If `f` is an immersion at `x`, it maps its domain chart's target `(h.domChart.extend I).target`
 to its codomain chart's target `(h.domChart.extend J).target`.
 
-Roig and Domingues' [roigdomingues1992] definition of immersions only asks for this inclusion
+Roig and Domínguez's [roigdominguez1992] definition of immersions only asks for this inclusion
 between the targets of the local charts: using mathlib's formalisation conventions, that condition
 is *slightly* weaker than `source_subset_preimage_source`: the latter implies that
 `h.codChart.extend J ∘ f` maps `h.domChart.source` to
@@ -516,7 +516,7 @@ lemma property (h : IsImmersionAt I J n f x) :
 If `f` is an immersion at `x`, it maps its domain chart's target to its codomain chart's target:
 `(h.domChart.extend I).target` to `(h.domChart.extend J).target`.
 
-Roig and Domingues' [roigdomingues1992] definition of immersions only asks for this inclusion
+Roig and Domínguez's [roigdominguez1992] definition of immersions only asks for this inclusion
 between the targets of the local charts: using mathlib's formalisation conventions, that condition
 is *slightly* weaker than `source_subset_preimage_source`: the latter implies that
 `h.codChart.extend J ∘ f` maps `h.domChart.source` to
