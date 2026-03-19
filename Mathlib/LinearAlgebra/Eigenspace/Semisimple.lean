@@ -81,8 +81,8 @@ lemma IsSemisimple.iSup_eigenspace_eq_top (hf : f.IsSemisimple) :
   simpa only [(isFinitelySemisimple_iff_isSemisimple.mpr hf).maxGenEigenspace_eq_eigenspace] using
     iSup_maxGenEigenspace_eq_top f
 
-lemma IsFinitelySemisimple.eq_zero_of_forall_eigenvalue_eq_zero (hf : f.IsFinitelySemisimple)
-    (h : ∀ μ : K, f.HasEigenvalue μ → μ = 0) : f = 0 := by
+lemma IsSemisimple.eq_zero_iff_forall_eigenvalue (hf : f.IsSemisimple) :
+    f = 0 ↔ ∀ μ : K, f.HasEigenvalue μ → μ = 0 := by
   suffices f.eigenspace 0 = ⊤ by rwa [eigenspace_zero, LinearMap.ker_eq_top] at this
   rw [← hf.iSup_eigenspace_eq_top]
   refine le_antisymm (le_iSup _ 0) (iSup_le fun μ ↦ ?_)
