@@ -306,8 +306,8 @@ theorem csInf_pair (a b : α) : sInf {a, b} = a ⊓ b :=
 
 /-- If a set is bounded below and above, and nonempty, its infimum is less than or equal to
 its supremum. -/
-theorem csInf_le_csSup (hb : BddBelow s := by bddDefault) (ha : BddAbove s := by bddDefault)
-    (ne : s.Nonempty) : sInf s ≤ sSup s :=
+theorem csInf_le_csSup (ne : s.Nonempty) (hb : BddBelow s := by bddDefault)
+    (ha : BddAbove s := by bddDefault) : sInf s ≤ sSup s :=
   isGLB_le_isLUB (isGLB_csInf ne hb) (isLUB_csSup ne ha) ne
 
 theorem csInf_le_csSup_of_nonempty_inter (h : (s ∩ t).Nonempty) (hs : BddBelow s := by bddDefault)
