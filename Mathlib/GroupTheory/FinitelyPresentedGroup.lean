@@ -277,3 +277,16 @@ theorem of_mulEquiv {H : Type*} [Group H]
     exact ⟨α, hα, rels, hrels, ⟨ iso.symm.trans iso' ⟩⟩
 
 end IsFinitelyPresented
+
+/-- Quotienting a group by the normal closure of the empty set gives back the group. -/
+def quotient_normalClosure_empty_mulEquiv (G : Type*) [Group G] :
+    G ⧸ Subgroup.normalClosure (∅ : Set G) ≃* G := by
+  exact (QuotientGroup.quotientMulEquivOfEq (Subgroup.normalClosure_empty (G := G))).trans
+    (QuotientGroup.quotientBot (G := G))
+
+/- FreeGroup over `a : Type*` on finitely many generators is finitely presented -/
+instance {α : Type*} [Finite α] : IsFinitelyPresented (FreeGroup α) := by
+  rw [isFinitelyPresented_iff]
+  refine ⟨Fin (Nat.card α), inferInstance, ∅, Set.finite_empty, ?_⟩
+  exact ⟨(FreeGroup.freeGroupCongr (Finite.equivFin α)).trans
+    (quotient_normalClosure_empty_mulEquiv (FreeGroup (Fin (Nat.card α)))).symm⟩
