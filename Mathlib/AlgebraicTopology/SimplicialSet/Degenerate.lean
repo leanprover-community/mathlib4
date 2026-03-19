@@ -357,7 +357,6 @@ lemma degenerate_iff_of_mono {Y : SSet.{u}} (f : X ⟶ Y) [Mono f] (x : X _⦋n�
   rw [← degenerate_iff_of_isIso (Subcomplex.toRange f) x,
     Subcomplex.mem_degenerate_iff]
   simp
-  rfl
 
 variable {X} in
 lemma nonDegenerate_iff_of_mono {Y : SSet.{u}} (f : X ⟶ Y) [Mono f] (x : X _⦋n⦌) :
