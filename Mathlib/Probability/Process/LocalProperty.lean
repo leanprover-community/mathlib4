@@ -205,8 +205,9 @@ lemma IsPreLocalizingSequence.isLocalizingSequence_biInf
     simp [iInf_le_iff]
     grind
 
-/-- A process `X` satisfies a stable property `p` locally if there exists a pre-localizing sequence `τ`
-for which the stopped processes of `fun i ↦ {ω | ⊥ < τ n ω}.indicator (X i)` satisfy `p`. -/
+/-- A process `X` satisfies a stable property `p` locally if there exists a pre-localizing
+sequence `τ` for which the stopped processes of `fun i ↦ {ω | ⊥ < τ n ω}.indicator (X i)` satisfy
+`p`. -/
 lemma locally_of_isPreLocalizingSequence
     [Zero E] [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι] {τ : ℕ → Ω → WithTop ι}
     (hp : IsStable 𝓕 p) [IsRightContinuous 𝓕] (hτ : IsPreLocalizingSequence 𝓕 τ P)
