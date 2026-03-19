@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Wanyi He, Jiedong Jiang, Haoming Ning, Jingting Wang, Andrew Yang, Shouxin Zhang
+Authors: Wanyi He, Jiedong Jiang, Jingting Wang, Andrew Yang, Shouxin Zhang
 -/
 module
 
@@ -134,10 +134,15 @@ lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
     have : I < K := lt_of_lt_of_le h hK.1.2
     exact Ideal.primeHeight_add_one_le_of_lt this
 
+/-- A prime ideal of finite height is equal to any ideal that contains it with no greater height. -/
+lemma Ideal.eq_of_le_of_height_le [I.IsPrime] [I.FiniteHeight]
+    (J : Ideal R) (h : I ≤ J) (h_height : J.height ≤ I.height) : I = J :=
+  eq_of_le_of_not_lt h fun hlt => not_le.mpr (Ideal.height_strict_mono_of_is_prime hlt) h_height
+
 /-- A prime ideal of finite height is equal to any ideal of the same height that contains it. -/
 lemma Ideal.eq_of_le_of_height_eq [I.IsPrime] [I.FiniteHeight]
     (J : Ideal R) (h : I ≤ J) (hIJ : I.height = J.height) : I = J :=
-  eq_of_le_of_not_lt h fun hlt => (Ideal.height_strict_mono_of_is_prime hlt).ne hIJ
+  I.eq_of_le_of_height_le J h hIJ.ge
 
 lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
     I.primeHeight ≤ ringKrullDim R := Order.height_le_krullDim _
