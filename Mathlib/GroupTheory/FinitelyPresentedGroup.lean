@@ -290,3 +290,8 @@ instance {α : Type*} [Finite α] : IsFinitelyPresented (FreeGroup α) := by
   refine ⟨Fin (Nat.card α), inferInstance, ∅, Set.finite_empty, ?_⟩
   exact ⟨(FreeGroup.freeGroupCongr (Finite.equivFin α)).trans
     (quotient_normalClosure_empty_mulEquiv (FreeGroup (Fin (Nat.card α)))).symm⟩
+
+/-- ℤ is finitely presented -/
+instance : IsFinitelyPresented (Multiplicative ℤ) :=
+IsFinitelyPresented.of_mulEquiv
+    (FreeGroup.mulEquivIntOfUnique : FreeGroup Unit ≃* Multiplicative ℤ) inferInstance
