@@ -58,7 +58,7 @@ private theorem not_power_nat_pow {n p q : ℕ} (h_coprime : p.Coprime q) (hq : 
   suffices hf : n.factorization = q • f by
     have hf0 : f 0 = 0 := by simpa [hq.ne'] using congr($hf 0)
     refine ⟨f.prod (· ^ ·), Nat.factorization_inj hn (by simp [hf0]) ?_⟩
-    rwa [Nat.factorization_pow, n.prod_pow_factorization_eq_self_of_le_factorization ?_]
+    rwa [Nat.factorization_pow, n.factorization_prod_pow_eq_self_of_le_factorization ?_]
     exact hf ▸ le_self_nsmul (zero_le f) (by lia)
   ext z
   rw [Finsupp.smul_apply, smul_eq_mul, Finsupp.mapRange_apply, Nat.mul_div_cancel']

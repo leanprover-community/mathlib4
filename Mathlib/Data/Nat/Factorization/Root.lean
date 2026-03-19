@@ -80,7 +80,7 @@ lemma floorRoot_ne_zero : floorRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   rw [floorRoot_def]
   split_ifs with h
   · obtain rfl | rfl := h <;> simp
-  apply a.prod_pow_factorization_eq_self_of_le_factorization
+  apply a.factorization_prod_pow_eq_self_of_le_factorization
   exact le_self_nsmul (by simp) (by lia) |>.trans <| smul_floorDiv_le (by lia)
 
 /-- Galois connection between `a ↦ a ^ n : ℕ → ℕ` and `floorRoot n : ℕ → ℕ` where `ℕ` is ordered

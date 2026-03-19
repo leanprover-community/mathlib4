@@ -233,14 +233,14 @@ theorem eq_factorization_iff (hn : n ≠ 0) (hf : ∀ p ∈ f.support, Prime p) 
   constructor <;> rintro rfl
   exacts [factorization_prod_pow_eq_self hn, prod_pow_factorization_eq_self hf |>.symm]
 
-theorem prod_pow_factorization_eq_self_of_le_factorization (hf : f ≤ n.factorization) :
+theorem factorization_prod_pow_eq_self_of_le_factorization (hf : f ≤ n.factorization) :
     (f.prod (· ^ ·)).factorization = f :=
   prod_pow_factorization_eq_self fun _ hp ↦ prime_of_mem_primeFactors <| support_mono hf hp
 
 theorem prod_pow_dvd_of_le_factorization (hf : f ≤ n.factorization) : f.prod (· ^ ·) ∣ n := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
-  rwa [← factorization_le_iff_dvd ?_ hn, prod_pow_factorization_eq_self_of_le_factorization hf]
+  rwa [← factorization_le_iff_dvd ?_ hn, factorization_prod_pow_eq_self_of_le_factorization hf]
   refine f.prod_ne_zero_iff.mpr fun _ hp ↦ ?_
   exact pow_ne_zero _ (prime_of_mem_primeFactors <| support_mono hf hp).ne_zero
 
@@ -254,7 +254,7 @@ theorem dvd_iff_exists_le_factorization {d : ℕ} (hd : d ≠ 0) (hn : n ≠ 0) 
     d ∣ n ↔ ∃ f ≤ n.factorization, d = f.prod (· ^ ·) := by
   rw [← factorization_le_iff_dvd hd hn]
   refine ⟨fun h ↦ ⟨_, h, factorization_prod_pow_eq_self hd |>.symm⟩, fun ⟨f, hle, hprod⟩ ↦ ?_⟩
-  rwa [hprod, prod_pow_factorization_eq_self_of_le_factorization hle]
+  rwa [hprod, factorization_prod_pow_eq_self_of_le_factorization hle]
 
 /-- The equiv between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 @[simps]

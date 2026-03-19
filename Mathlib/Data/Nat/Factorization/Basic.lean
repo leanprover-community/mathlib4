@@ -356,7 +356,7 @@ theorem prod_primeFactors_dvd (n : ℕ) : ∏ p ∈ n.primeFactors, p ∣ n := b
 theorem factorization_gcd {a b : ℕ} (ha_pos : a ≠ 0) (hb_pos : b ≠ 0) :
     (gcd a b).factorization = a.factorization ⊓ b.factorization := by
   suffices (a.factorization ⊓ b.factorization).prod (· ^ ·) = gcd a b by
-    rw [← this, prod_pow_factorization_eq_self_of_le_factorization inf_le_left]
+    rw [← this, factorization_prod_pow_eq_self_of_le_factorization inf_le_left]
   apply gcd_greatest
   · exact prod_pow_dvd_of_le_factorization inf_le_left
   · exact prod_pow_dvd_of_le_factorization inf_le_right

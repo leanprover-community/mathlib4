@@ -35,7 +35,7 @@ theorem divisors_eq_image_Iic_factorization_prod_pow {n : ℕ} (hn : n ≠ 0) :
 
 theorem Iic_factorization_prod_pow_injective (n : ℕ) :
     (·.val.prod (· ^ ·) : Finset.Iic n.factorization → _).Injective := by
-  grind [Function.Injective, prod_pow_factorization_eq_self_of_le_factorization]
+  grind [Function.Injective, factorization_prod_pow_eq_self_of_le_factorization]
 
 theorem divisors_eq_map_attach_Iic_factorization_prod_pow {n : ℕ} (hn : n ≠ 0) :
     n.divisors = (Finset.Iic n.factorization).attach.map
@@ -61,7 +61,7 @@ theorem coe_properDivisors_eq_prod_pow_lt_factorization {n : ℕ} :
       exact fun p _ ↦ Nat.pow_dvd_pow p <| hlt.le p
     refine mem_properDivisors.mpr ⟨this, lt_of_le_of_ne (le_of_dvd (Nat.pos_of_ne_zero hn) this) ?_⟩
     suffices k.factorization = f from (this ▸ hlt.ne <| congrArg _ ·)
-    exact h ▸ prod_pow_factorization_eq_self_of_le_factorization hlt.le
+    exact h ▸ factorization_prod_pow_eq_self_of_le_factorization hlt.le
 
 theorem properDivisors_eq_image_Iio_factorization_prod_pow {n : ℕ} :
     n.properDivisors = (Finset.Iio n.factorization).image (·.prod (· ^ ·)) := by
@@ -70,7 +70,7 @@ theorem properDivisors_eq_image_Iio_factorization_prod_pow {n : ℕ} :
 
 theorem Iio_factorization_prod_pow_injective (n : ℕ) :
     (·.val.prod (· ^ ·) : Finset.Iio n.factorization → _).Injective := by
-  grind [Function.Injective, prod_pow_factorization_eq_self_of_le_factorization]
+  grind [Function.Injective, factorization_prod_pow_eq_self_of_le_factorization]
 
 theorem properDivisors_eq_map_attach_Iio_factorization_prod_pow {n : ℕ} :
     n.properDivisors = (Finset.Iio n.factorization).attach.map
