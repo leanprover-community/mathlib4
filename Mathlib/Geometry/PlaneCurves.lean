@@ -116,8 +116,7 @@ def frameAt (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
         have h : j=1 := Fin.eq_one_of_ne_zero j fun a ↦ hinej (id (Eq.symm a))
         simp only [h, Fin.isValue]; exact inner_of_velocity_normal_eq_zero c t
       · simp at hinej
-        have h : j=0 := by
-          fin_cases j <;> trivial
+        have h : j=0 := by fin_cases j <;> trivial
         simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.mk_one, Fin.isValue, h]
         rw [real_inner_comm]; exact inner_of_velocity_normal_eq_zero c t
   have hBsp : ⊤ ≤ Submodule.span ℝ (Set.range B) := by
@@ -330,9 +329,10 @@ protected lemma _root_.HasDerivAt.initialCurve_of_orientedCurvature (hI : IsOpen
     have h := continuousOn_angle_fun_aux θ₀ hI hκ ht₀
     intro i
     fin_cases i
-      <;> simp only [Fin.zero_eta,Fin.mk_one, Fin.isValue, Matrix.cons_val_zero,
-                     Matrix.cons_val_one, hasDerivWithinAt_const_add_iff]
-      <;> exact intervalIntegral.hasDerivWithinAt_of_continuousOn_interval (by fun_prop) ht₀ ht
+    all_goals
+      simp only [Fin.zero_eta,Fin.mk_one, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
+                 hasDerivWithinAt_const_add_iff]
+      exact intervalIntegral.hasDerivWithinAt_of_continuousOn_interval (by fun_prop) ht₀ ht
   · exact hI.mem_nhds ht
 
 lemma _root_.HasDerivAt.deriv_initialCurve_of_orientedCurvature (hI : IsOpen I)
@@ -428,10 +428,7 @@ protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature (hI : IsOp
     rw [continuousOn_congr help]
     have hm' : m ≤ 2 := by simp_all
     interval_cases m
-    · rw [iteratedDeriv_zero]
-      fun_prop (disch := assumption)
-    · rw [iteratedDeriv_one]
-      fun_prop (disch := assumption)
+    pick_goal 3
     · intro t ht
       have h' : ∀ y ∈ I, (iteratedDeriv 2 (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) y
                        = (fun t ↦ !₂[-(κ t)*Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ),
@@ -453,6 +450,9 @@ protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature (hI : IsOp
           · simp only [Set.inter_self]
             fun_prop (disch := assumption)
       exact hcd.continuousWithinAt
+    all_goals
+      simp only [iteratedDeriv_zero, iteratedDeriv_one]
+      fun_prop (disch := assumption)
   · intro m hm
     have help := iteratedDerivWithin_of_isOpen (n:=m)
                  (f:=(initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) hI
