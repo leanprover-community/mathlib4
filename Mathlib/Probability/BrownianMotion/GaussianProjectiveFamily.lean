@@ -66,7 +66,7 @@ lemma measurePreserving_ofLp_multivariateGaussian (I : Finset ℝ≥0) :
   measurable := by fun_prop
   map_eq := rfl
 
-lemma measurePreserving_equiv_gaussianProjectiveFamily (I : Finset ℝ≥0) :
+lemma measurePreserving_toLp_gaussianProjectiveFamily (I : Finset ℝ≥0) :
     MeasurePreserving (toLp 2) (gaussianProjectiveFamily I)
       (multivariateGaussian 0 (brownianCovMatrix I)) where
   measurable := by fun_prop
