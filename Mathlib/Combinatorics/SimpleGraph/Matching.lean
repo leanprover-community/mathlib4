@@ -88,17 +88,9 @@ theorem IsMatching.toEdge.surjective (h : M.IsMatching) : Surjective h.toEdge :=
 theorem IsMatching.toEdge_preimage (h : M.IsMatching) (huv : M.Adj u v) :
     h.toEdge⁻¹' {⟨s(u, v), huv⟩} = {⟨u, M.edge_vert huv⟩, ⟨v, M.edge_vert huv.symm⟩} := by
   ext w
-  refine ⟨fun hw ↦ ?_, fun hw ↦ ?_⟩
-  · simp only [Set.mem_preimage, toEdge, Set.mem_singleton_iff, Subtype.mk.injEq, Sym2.eq,
-     Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at hw
-    obtain h|h := hw
-    · left; ext; simp only [h.1]
-    · right; ext; simp only [h.1]
+  refine ⟨fun hw ↦ by grind [toEdge], fun hw ↦ ?_⟩
   simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hw
-  obtain hw|hw := hw <;> simp only [hw, Set.mem_preimage, toEdge, Set.mem_singleton_iff,
-    Subtype.mk.injEq, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, true_and, Prod.swap_prod_mk]
-  · simp only [(ExistsUnique.choose_eq_iff _).2 huv, true_or]
-  simp only [(ExistsUnique.choose_eq_iff _).2 huv.symm, or_true]
+  obtain hw | hw := hw <;> simp [hw, toEdge, ExistsUnique.choose_eq_iff, huv, huv.symm]
 
 theorem IsMatching.toEdge_eq_toEdge_of_adj (h : M.IsMatching)
     (hv : v ∈ M.verts) (hw : w ∈ M.verts) (ha : M.Adj v w) :
@@ -264,10 +256,13 @@ private lemma helper (f : V → W) (hf : ∀ y : W, (f⁻¹' {y}).Finite) (hW : 
     · exact fun _ ↦ Set.mem_iUnion_of_mem (f x) rfl
     exact fun _ ↦ Set.mem_univ x
   apply Set.finite_univ_iff.mp
-  rw [this]
-  simpa using Set.finite_iUnion (fun y => hf y)
+  simpa [this] using Set.finite_iUnion (fun y => hf y)
 
-theorem isMatching.encard_eq_twice_edgeSet_encard (h : M.IsMatching) :
+theorem encard_edgeSet_coe : M.coe.edgeSet.encard = M.edgeSet.encard := by
+  rw [← M.image_coe_edgeSet_coe]
+  exact Sym2.map.injective Subtype.val_injective |>.encard_image _ |>.symm
+
+theorem IsMatching.encard_verts (h : M.IsMatching) :
     M.verts.encard = 2 * M.edgeSet.encard := by
   classical
   by_cases! hMf : ¬ Finite M.verts
@@ -285,19 +280,8 @@ theorem isMatching.encard_eq_twice_edgeSet_encard (h : M.IsMatching) :
     rw [this, h.toEdge_preimage]
     simp only [Set.finite_insert, Set.finite_singleton]
   have : Fintype M.verts := Set.Finite.fintype hMf
-  have : M.coe.edgeSet.encard = M.edgeSet.encard := by
-    refine Set.encard_congr ?_
-    refine Set.BijOn.equiv (Sym2.map fun a ↦ a.1) <| Set.BijOn.mk ?_ ?_ ?_
-    · refine Sym2.ind fun x y hxy ↦ ?_
-      exact Set.mem_preimage.mp (by simpa using hxy)
-    · refine Sym2.ind fun _ _ _ ↦ Sym2.ind fun _ _ _ hf ↦ ?_
-      simp [Subtype.val_inj] at hf
-      simpa
-    refine Sym2.ind fun x y hxy ↦ ?_
-    use s(⟨x, M.edge_vert hxy⟩, ⟨y, M.edge_vert hxy.symm⟩)
-    simp only [edgeSet_coe, Set.mem_preimage, Sym2.map_mk, and_true, hxy]
-  rw [← this, Set.encard_eq_coe_toFinset_card M.verts,
-  rw [← this, M.verts.encard_eq_coe_toFinset_card, M.coe.edgeSet.encard_eq_coe_toFinset_card]
+  rw [← encard_edgeSet_coe, M.verts.encard_eq_coe_toFinset_card,
+   M.coe.edgeSet.encard_eq_coe_toFinset_card]
   rw [isMatching_iff_forall_degree] at h
   have := M.coe.sum_degrees_eq_twice_card_edges
   simp only [coe_degree, Subtype.coe_prop, h, Finset.sum_const, Finset.card_univ, smul_eq_mul,
@@ -812,8 +796,7 @@ lemma matchingNumber.isAttained (G : SimpleGraph V) :
         exact Sym2.congr_right.mpr <| Subgraph.IsMatching.eq_of_adj_left hN.1 hab.symm hcd.symm
     have := by calc
       _ ≤ _ := Embedding.encard_le ⟨N.edgeSet.restrict f, Set.injOn_iff_injective.mp hf⟩
-      _ = 2 * k := by rw [(hM.1).support_eq_verts,
-       Subgraph.isMatching.encard_eq_twice_edgeSet_encard hM.1, hk]
+      _ = 2 * k := by rw [hM.1.support_eq_verts, hM.1.encard_verts, hk]
       _ < N.edgeSet.encard := hN.2
     simp only [lt_self_iff_false] at this
   let M' := M  ⊔ (subgraphOfAdj G (N.adj_sub huv.1))
