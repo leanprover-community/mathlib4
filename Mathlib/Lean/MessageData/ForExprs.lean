@@ -66,16 +66,17 @@ where
         return .yield s
     | .ofFormatWithInfos fwi => do
       let some ppCtx := ctx?.map (mkPPContext nctx) | return .yield s
-      goFmt fwi.infos s (fun s' i _ => do
-        let some (.ofTermInfo i) := fwi.infos.get? i | return (.yield s', false)
-        return (← f (ppCtx, i.expr) s', true)
+      goFmt fwi.infos s (fun s' i => do
+        match fwi.infos.get? i with
+        | some (.ofTermInfo { expr .. })
+        | some (.ofDelabTermInfo { expr .. }) => return (← f (ppCtx, expr) s', true)
+        | _ => return (.yield s', false)
       ) fwi.fmt
   /-- Iterate over the tags of a `Format` using `f`. If `f` returns `true` as its second piece,
   do not recurse further into the tag.  -/
-  goFmt {σ} (infos) (s : σ) (f : σ → Nat → Format → m (ForInStep σ × Bool)) :
-      Format → m (ForInStep σ)
+  goFmt {σ} (infos) (s : σ) (f : σ → Nat → m (ForInStep σ × Bool)) : Format → m (ForInStep σ)
     | .tag n fmt => do
-      let (rn, b) ← f s n fmt
+      let (rn, b) ← f s n
       if b then return rn
       let .yield s := rn | return rn
       goFmt infos s f fmt
