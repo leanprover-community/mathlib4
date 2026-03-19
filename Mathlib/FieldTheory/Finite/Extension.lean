@@ -146,7 +146,7 @@ theorem Irreducible.natDegree_dvd_of_dvd_X_pow_card_pow_sub_X {n : ℕ} {f : K[X
     (hi : Irreducible f) (h : f ∣ X ^ (Nat.card K) ^ n - X) : f.natDegree ∣ n := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp
-  cases fintypeOrInfinite K; swap
+  cases finite_or_infinite K; swap
   · rw [Nat.card_eq_zero_of_infinite, zero_pow hn, pow_zero, ← dvd_neg, neg_sub] at h
     rw [((Splits.X_sub_C 1).of_dvd (X_sub_C_ne_zero 1) h).natDegree_eq_one_of_irreducible hi]
     exact one_dvd n
