@@ -48,4 +48,3 @@ def minus (n : Nat) (k : Nat) : Nat :=
   match k with
   | Nat.zero => n
   | Nat.succ k' => pred (minus n k')
-
