@@ -224,7 +224,7 @@ theorem iff_hom_surj_set_G :
   · intro hfp
     obtain ⟨α, hα, h, hhsurj, hhker⟩ := (iff_hom_surj_finite (G := G)).1 hfp
     let _ : Finite α := hα
-    exact exists_finite_set_lift_surjective_ker
+    exact IsNormalClosureFG.exists_finite_set_lift_surjective_ker
       (G := G) (α := α) h hhsurj hhker
   · intro ⟨S, hS, hfsurj, hfker⟩
     set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
