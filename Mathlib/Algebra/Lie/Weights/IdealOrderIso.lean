@@ -89,13 +89,11 @@ lemma reflectionPerm_mem_lieIdeal_rootSet_iff (I : LieIdeal K L) (α β : H.root
 lemma lieIdealRootSpan_mem_invtRootSubmodule (I : LieIdeal K L) :
     lieIdealRootSpan I ∈ (rootSystem H).invtRootSubmodule := by
   rw [RootPairing.mem_invtRootSubmodule_iff]
-  intro i; rw [Module.End.mem_invtSubmodule]
-  apply Submodule.span_le.mpr
-  rintro _ ⟨α, hα, rfl⟩
-  simp only [SetLike.mem_coe, Submodule.mem_comap]
-  change (rootSystem H).reflection i ((rootSystem H).root α) ∈ _
-  rw [← (rootSystem H).root_reflectionPerm i α]
-  exact Submodule.subset_span ⟨_, reflectionPerm_mem_lieIdealRootSet I i hα, rfl⟩
+  intro β
+  rw [Module.End.mem_invtSubmodule, lieIdealRootSpan, Submodule.span_le]
+  rintro - ⟨α, hα, rfl⟩
+  rw [SetLike.mem_coe, Submodule.mem_comap, LinearEquiv.coe_coe, ← RootPairing.root_reflectionPerm]
+  exact Submodule.subset_span ⟨_, reflectionPerm_mem_lieIdealRootSet I β hα, rfl⟩
 
 /-- The invariant root submodule corresponding to a Lie ideal. -/
 noncomputable def lieIdealToInvtRootSubmodule (I : LieIdeal K L) :
