@@ -129,13 +129,14 @@ lemma inner_toEuclideanCLM (A : Matrix n n ℝ) (x y : EuclideanSpace ℝ n) :
     toLin_apply, mulVec_eq_sum, OrthonormalBasis.coe_toBasis_repr_apply,
     EuclideanSpace.basisFun_repr, op_smul_eq_smul, Finset.sum_apply, Pi.smul_apply, transpose_apply,
     smul_eq_mul, OrthonormalBasis.coe_toBasis, EuclideanSpace.basisFun_apply, PiLp.inner_apply,
-    ofLp_sum, ofLp_smul, EuclideanSpace.ofLp_single, RCLike.inner_apply, conj_trivial, dotProduct]
+    ofLp_sum, ofLp_smul, PiLp.ofLp_single, RCLike.inner_apply, conj_trivial, dotProduct]
   congr with i
   rw [mul_comm (x.ofLp i)]
   simp [Pi.single_apply]
 
 /-- An auxiliary definition used only to construct the true `NormedAddCommGroup` (and `Metric`)
 structure provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedAddCommGroupL2Op`. -/
+@[implicit_reducible]
 def l2OpNormedAddCommGroupAux : NormedAddCommGroup (Matrix m n 𝕜) :=
   @NormedAddCommGroup.induced ((Matrix m n 𝕜) ≃ₗ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m)) _
     _ _ _ ContinuousLinearMap.toNormedAddCommGroup.toNormedAddGroup _ _ <|
@@ -143,6 +144,7 @@ def l2OpNormedAddCommGroupAux : NormedAddCommGroup (Matrix m n 𝕜) :=
 
 /-- An auxiliary definition used only to construct the true `NormedRing` (and `Metric`) structure
 provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedRingL2Op`. -/
+@[implicit_reducible]
 def l2OpNormedRingAux : NormedRing (Matrix n n 𝕜) :=
   @NormedRing.induced ((Matrix n n 𝕜) ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n)) _
     _ _ _ ContinuousLinearMap.toNormedRing _ _ toEuclideanCLM.injective
