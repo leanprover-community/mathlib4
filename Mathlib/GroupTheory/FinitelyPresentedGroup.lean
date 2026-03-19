@@ -47,14 +47,15 @@ finitely presented group, finitely generated normal closure
 variable {G H α β : Type*} [Group G] [Group H]
 
 /-- The canonical map from the free group on the range of free generators is surjective. -/
-theorem surjective_lift_range_freeGroupOf
+theorem FreeGroup.lift_range_surjective
     (h : FreeGroup α →* G) (hhsurj : Function.Surjective h) :
     Function.Surjective (FreeGroup.lift
       (fun s : Set.range (fun a : α ↦ h (FreeGroup.of a)) ↦ (s : G))) := by
   set S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
   set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
   let g := Set.rangeFactorization (fun a : α ↦ h (FreeGroup.of a))
-  have hh_fcompg : f.comp (FreeGroup.map g) = h := by ext a; simp [f, g]
+  have hh_fcompg : f.comp (FreeGroup.map g) = h
+    := by ext a; simp [f, g]
   have hfsurj : Function.Surjective f := by
     intro y; obtain ⟨x, rfl⟩ := hhsurj y
     exact ⟨FreeGroup.map g x, by rw [← MonoidHom.comp_apply, hh_fcompg]⟩
@@ -88,7 +89,7 @@ lemma ker_comp_freeGroupCongr
 
 /-- The kernel of the canonical map from the free group on the range of free generators is
 finitely generated in normal closure, provided this holds for the original kernel. -/
-theorem ker_lift_range_freeGroupOf (h : FreeGroup α →* G) (hhker : IsNormalClosureFG h.ker) :
+theorem ker_lift_range (h : FreeGroup α →* G) (hhker : IsNormalClosureFG h.ker) :
     IsNormalClosureFG (FreeGroup.lift
       (fun s : Set.range (fun a : α ↦ h (FreeGroup.of a)) ↦ (s : G))).ker := by
   set S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
@@ -117,8 +118,8 @@ lemma exists_finite_set_lift_surjective_ker
   have hS : S.Finite := by
     simpa [S] using (Set.finite_range (fun a : α ↦ h (FreeGroup.of a)))
   refine ⟨S, hS, ?_, ?_⟩
-  · simpa [S] using surjective_lift_range_freeGroupOf (G := G) (α := α) h hhsurj
-  · simpa [S] using IsNormalClosureFG.ker_lift_range_freeGroupOf (G := G) (α := α) h hhker
+  · simpa [S] using FreeGroup.lift_range_surjective (G := G) (α := α) h hhsurj
+  · simpa [S] using IsNormalClosureFG.ker_lift_range (G := G) (α := α) h hhker
 
 end IsNormalClosureFG
 
