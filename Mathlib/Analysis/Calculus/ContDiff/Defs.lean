@@ -435,7 +435,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt' (hn : n ≠ ∞) :
     · intro h
       apply (f_an h).mono hwu
     · refine ((huf' y <| hwu hy).mono hwu).mono_of_mem_nhdsWithin ?_
-      refine mem_of_superset ?_ (inter_subset_inter_left _ (subset_insert _ _))
+      grw [← subset_insert]
       exact inter_mem_nhdsWithin _ (hw.mem_nhds hy.2)
     · exact hf'.mono_of_mem_nhdsWithin (nhdsWithin_mono _ (subset_insert _ _) hu)
   · rw [← contDiffWithinAt_insert, contDiffWithinAt_succ_iff_hasFDerivWithinAt hn,
@@ -1124,6 +1124,7 @@ theorem ContDiff.of_succ (h : ContDiff 𝕜 (n + 1) f) : ContDiff 𝕜 n f :=
 theorem ContDiff.one_of_succ (h : ContDiff 𝕜 (n + 1) f) : ContDiff 𝕜 1 f := by
   apply h.of_le le_add_self
 
+@[fun_prop]
 theorem ContDiff.continuous (h : ContDiff 𝕜 n f) : Continuous f :=
   contDiff_zero.1 (h.of_le bot_le)
 
@@ -1132,6 +1133,7 @@ theorem ContDiff.continuous_zero (h : ContDiff 𝕜 0 f) : Continuous f :=
   contDiff_zero.1 (h.of_le bot_le)
 
 /-- If a function is `C^n` with `n ≥ 1`, then it is differentiable. -/
+@[fun_prop]
 theorem ContDiff.differentiable (h : ContDiff 𝕜 n f) (hn : n ≠ 0) : Differentiable 𝕜 f :=
   differentiableOn_univ.1 <| (contDiffOn_univ.2 h).differentiableOn hn
 
