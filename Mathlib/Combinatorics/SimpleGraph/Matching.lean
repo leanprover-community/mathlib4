@@ -247,45 +247,45 @@ theorem IsMatching.even_card [Fintype M.verts] (h : M.IsMatching) : Even M.verts
   rw [← two_mul, ← M.coe.sum_degrees_eq_twice_card_edges]
   simp [h, Finset.card_univ]
 
-private lemma helper (f : V → W) (hf : ∀ y : W, (f⁻¹' {y}).Finite) (hW : Finite W) :
-    Finite V := by
-  have : (Set.univ : Set V) = ⋃ y : W, (f⁻¹' {y}) := by
-    ext x; constructor
-    · exact fun _ ↦ Set.mem_iUnion_of_mem (f x) rfl
-    exact fun _ ↦ Set.mem_univ x
-  apply Set.finite_univ_iff.mp
-  simpa [this] using Set.finite_iUnion (fun y => hf y)
+-- private lemma helper (f : V → W) (hf : ∀ y : W, (f⁻¹' {y}).Finite) (hW : Finite W) :
+--     Finite V := by
+--   have : (Set.univ : Set V) = ⋃ y : W, (f⁻¹' {y}) := by
+--     ext x; constructor
+--     · exact fun _ ↦ Set.mem_iUnion_of_mem (f x) rfl
+--     exact fun _ ↦ Set.mem_univ x
+--   apply Set.finite_univ_iff.mp
+--   simpa [this] using Set.finite_iUnion (fun y => hf y)
 
-theorem encard_edgeSet_coe : M.coe.edgeSet.encard = M.edgeSet.encard := by
-  rw [← M.image_coe_edgeSet_coe]
-  exact Sym2.map.injective Subtype.val_injective |>.encard_image _ |>.symm
+-- theorem encard_edgeSet_coe : M.coe.edgeSet.encard = M.edgeSet.encard := by
+--   rw [← M.image_coe_edgeSet_coe]
+--   exact Sym2.map.injective Subtype.val_injective |>.encard_image _ |>.symm
 
-theorem IsMatching.encard_verts (h : M.IsMatching) :
-    M.verts.encard = 2 * M.edgeSet.encard := by
-  classical
-  by_cases! hMf : ¬ Finite M.verts
-  · suffices M.edgeSet.Infinite by
-      simp [Set.encard_eq_top_iff.mpr hMf, this, Set.Infinite.encard_eq]
-      rfl
-    by_contra!
-    refine hMf <| helper h.toEdge (fun y ↦ ?_) this
-    obtain ⟨x, hx⟩ : ∃ x : V × V, s(x.1, x.2) = y.1 := Sym2.mk_surjective _
-    have : M.Adj x.1 x.2 := by
-      refine Subgraph.mem_edgeSet.mp ?_
-      rw [hx]
-      exact Subtype.coe_prop y
-    have : y = ⟨s(x.1, x.2), this⟩ := SetCoe.ext hx.symm
-    rw [this, h.toEdge_preimage]
-    simp only [Set.finite_insert, Set.finite_singleton]
-  have : Fintype M.verts := Set.Finite.fintype hMf
-  rw [← encard_edgeSet_coe, M.verts.encard_eq_coe_toFinset_card,
-   M.coe.edgeSet.encard_eq_coe_toFinset_card]
-  rw [isMatching_iff_forall_degree] at h
-  have := M.coe.sum_degrees_eq_twice_card_edges
-  simp only [coe_degree, Subtype.coe_prop, h, Finset.sum_const, Finset.card_univ, smul_eq_mul,
-    mul_one] at this
-  rw [Set.toFinset_card M.verts, this]
-  rfl
+-- theorem IsMatching.encard_verts (h : M.IsMatching) :
+--     M.verts.encard = 2 * M.edgeSet.encard := by
+--   classical
+--   by_cases! hMf : ¬ Finite M.verts
+--   · suffices M.edgeSet.Infinite by
+--       simp [Set.encard_eq_top_iff.mpr hMf, this, Set.Infinite.encard_eq]
+--       rfl
+--     by_contra!
+--     refine hMf <| helper h.toEdge (fun y ↦ ?_) this
+--     obtain ⟨x, hx⟩ : ∃ x : V × V, s(x.1, x.2) = y.1 := Sym2.mk_surjective _
+--     have : M.Adj x.1 x.2 := by
+--       refine Subgraph.mem_edgeSet.mp ?_
+--       rw [hx]
+--       exact Subtype.coe_prop y
+--     have : y = ⟨s(x.1, x.2), this⟩ := SetCoe.ext hx.symm
+--     rw [this, h.toEdge_preimage]
+--     simp only [Set.finite_insert, Set.finite_singleton]
+--   have : Fintype M.verts := Set.Finite.fintype hMf
+--   rw [← encard_edgeSet_coe, M.verts.encard_eq_coe_toFinset_card,
+--    M.coe.edgeSet.encard_eq_coe_toFinset_card]
+--   rw [isMatching_iff_forall_degree] at h
+--   have := M.coe.sum_degrees_eq_twice_card_edges
+--   simp only [coe_degree, Subtype.coe_prop, h, Finset.sum_const, Finset.card_univ, smul_eq_mul,
+--     mul_one] at this
+--   rw [Set.toFinset_card M.verts, this]
+--   rfl
 
 theorem isPerfectMatching_iff : M.IsPerfectMatching ↔ ∀ v, ∃! w, M.Adj v w := by
   refine ⟨?_, fun hm => ⟨fun v _ => hm v, fun v => ?_⟩⟩
