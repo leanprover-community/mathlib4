@@ -73,9 +73,8 @@ variable {a b c d m n : ℕ∞}
 
 theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
-set_option backward.isDefEq.respectTransparency false in
 instance : SuccAddOrder ℕ∞ where
-  succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ]
+  succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ, instSuccOrderENat._aux_1] <;> rfl
 
 theorem coe_zero : ((0 : ℕ) : ℕ∞) = 0 :=
   rfl
