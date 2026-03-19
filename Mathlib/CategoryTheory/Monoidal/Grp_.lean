@@ -666,7 +666,6 @@ end Adjunction
 namespace Equivalence
 variable (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of categories lifts to an equivalence of their group objects. -/
 @[simps] def mapGrp : Grp C ≌ Grp D where
   functor := e.functor.mapGrp
