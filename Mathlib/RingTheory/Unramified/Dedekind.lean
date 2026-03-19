@@ -41,8 +41,7 @@ theorem isDedekindDomainDvr.of_formallyUnramified : IsDedekindDomainDvr B where
       infer_instance
     let Q := B ⧸ p'
     have : IsArtinianRing Q := IsArtinianRing.of_finite (A ⧸ p) Q
-    have h (I : Ideal Q) [I.IsPrime] : I.IsMaximal := IsArtinianRing.isMaximal_of_isPrime I
-    replace h {I : Ideal B} (hp : p' ≤ I) [I.IsPrime] : I.IsMaximal := by
+    have h {I : Ideal B} (hp : p' ≤ I) [I.IsPrime] : I.IsMaximal := by
       rw [← Ideal.comap_map_mk hp]
       have := Ideal.isPrime_map_quotientMk_of_isPrime hp
       exact Ideal.comap_isMaximal_of_surjective (Ideal.Quotient.mk p') Ideal.Quotient.mk_surjective
@@ -57,11 +56,9 @@ theorem isDedekindDomainDvr.of_formallyUnramified : IsDedekindDomainDvr B where
       rw [Set.nonempty_iff_ne_empty, ne_eq, Ideal.minimalPrimes_eq_empty_iff]
       exact (IsLocalization.map_algebraMap_ne_top_iff_disjoint q.primeCompl _ p').mpr
         (Set.disjoint_compl_left_iff_subset.mpr Ideal.map_comap_le)
-    have hp' : p'.IsRadical := Algebra.FormallyUnramified.map_isMaximal_isRadical A B p
-    have hp'' : p''.IsRadical := by
-      rw [← Ideal.radical_eq_iff] at hp' ⊢
-      rw [← IsLocalization.map_radical q.primeCompl, hp']
-    rw [← hp''.radical, ← Ideal.sInf_minimalPrimes, h, sInf_singleton]
+    dsimp only [p'', p']
+    rw [← (Algebra.FormallyUnramified.map_isMaximal_isRadical A B p).radical,
+      IsLocalization.map_radical q.primeCompl, ← Ideal.sInf_minimalPrimes, h, sInf_singleton]
 
 include A in
 /-- A domain finite and unramified over a Dedekind domain is a Dedekind domain. -/
