@@ -205,7 +205,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
       ⟨LinearMap.ker_eq_bot.mp Submodule.eq_bot_of_subsingleton, surjf⟩
     obtain ⟨⟨B⟩⟩ := Module.Free.of_equiv ef
     absurd nle0
-    exact (projective_iff_hasProjectiveDimensionLT_one M).mp (ModuleCat.projective_of_free B.2)
+    exact projective_iff_hasProjectiveDimensionLT_one.mp (ModuleCat.projective_of_free B.2)
   have ker_free : Module.Free R (LinearMap.ker f) := by
     apply @(ModuleCat.of R (LinearMap.ker f)).free_of_projective_of_isLocalRing _ _ _ _ _ ?_
     rw [projective_iff_hasProjectiveDimensionLT_one]
@@ -295,7 +295,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
     induction n generalizing M
     · simp only [hn, CharP.cast_eq_zero, IsLocalRing.depth, Ideal.depth, zero_add, WithBot.coe_inj]
       have : HasProjectiveDimensionLE M 0 := by simp [← projectiveDimension_le_iff, hn]
-      have := (projective_iff_hasProjectiveDimensionLT_one M).mpr this
+      have := projective_iff_hasProjectiveDimensionLT_one.mpr this
       let _ : Module.Free R M := M.free_of_projective_of_isLocalRing
       exact free_depth_eq_ring_depth M _
     · rename_i n ih _ _
