@@ -286,20 +286,8 @@ instance base_change [FormallyUnramified R A] :
 
 open Algebra TensorProduct in
 instance quotient_map [FormallyUnramified R B] (p : Ideal R) :
-    FormallyUnramified (R ⧸ p) (B ⧸ p.map (algebraMap R B)) := by
-  let q := p.map (algebraMap R B)
-  let Q := B ⧸ q
-  let Q' := TensorProduct R (R ⧸ p) B
-  let e0 := quotIdealMapEquivTensorQuot B p
-  let e1 := Algebra.TensorProduct.comm R B (R ⧸ p)
-  let e2 : Q ≃ₐ[R] Q' :=
-  { __ := e0.toRingEquiv.trans e1.toRingEquiv
-    commutes' x := by
-      suffices e1 (e0 (Ideal.Quotient.mk q (algebraMap R B x))) = (algebraMap R Q') x by simpa
-      rw [quotIdealMapEquivTensorQuot_mk, tmul_one_eq_one_tmul]
-      simp [e1, Q'] }
-  let e3 : Q ≃ₐ[R ⧸ p] Q' := e2.extendScalarsOfSurjective Ideal.Quotient.mk_surjective
-  exact (Algebra.FormallyUnramified.base_change (R ⧸ p)).of_equiv e3.symm
+    FormallyUnramified (R ⧸ p) (B ⧸ p.map (algebraMap R B)) :=
+  .of_equiv (quotIdealMapEquivQuotTensor B p).symm
 
 end BaseChange
 

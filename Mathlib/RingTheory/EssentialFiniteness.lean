@@ -6,7 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.FiniteType
-public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.TensorProduct.Quotient
 
@@ -248,20 +247,9 @@ lemma EssFiniteType.algHom_ext [EssFiniteType R S]
 
 open Algebra TensorProduct in
 instance EssFiniteType.quotient_map [EssFiniteType R S] (p : Ideal R) :
-    EssFiniteType (R ⧸ p) (S ⧸ p.map (algebraMap R S)) := by
-  let q := p.map (algebraMap R S)
-  let Q := S ⧸ q
-  let Q' := TensorProduct R (R ⧸ p) S
-  let e0 := quotIdealMapEquivTensorQuot S p
-  let e1 := Algebra.TensorProduct.comm R S (R ⧸ p)
-  let e2 : Q ≃ₐ[R] Q' :=
-  { __ := e0.toRingEquiv.trans e1.toRingEquiv
-    commutes' x := by
-      suffices e1 (e0 (Ideal.Quotient.mk q (algebraMap R S x))) = (algebraMap R Q') x by simpa
-      rw [quotIdealMapEquivTensorQuot_mk, tmul_one_eq_one_tmul]
-      simp [e1, Q'] }
-  let e3 : Q ≃ₐ[R ⧸ p] Q' := e2.extendScalarsOfSurjective Ideal.Quotient.mk_surjective
-  exact .of_surjective e3.symm.toAlgHom e3.symm.surjective
+    EssFiniteType (R ⧸ p) (S ⧸ p.map (algebraMap R S)) :=
+  .of_surjective (quotIdealMapEquivQuotTensor S p).symm.toAlgHom
+    (quotIdealMapEquivQuotTensor S p).symm.surjective
 
 end Algebra
 
