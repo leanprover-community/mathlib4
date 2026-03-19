@@ -203,15 +203,20 @@ theorem singularValues_rank : T.singularValues (finrank 𝕜 (range T)) = 0 := b
   rw [← Finsupp.notMem_support_iff, support_singularValues]
   exact Finset.notMem_range_self
 
-theorem singularValues_of_le_rank {n : ℕ} (hn : finrank 𝕜 (range T) ≤ n) :
-    T.singularValues n = 0 := by
-  rw [← Finsupp.notMem_support_iff, support_singularValues, Finset.mem_range]
-  order
+theorem singularValues_eq_zero_iff_le_rank {n : ℕ} :
+    T.singularValues n = 0 ↔ finrank 𝕜 (range T) ≤ n := by
+  rw [← Finsupp.notMem_support_iff, support_singularValues, Finset.mem_range, not_lt]
 
 @[simp]
 theorem singularValues_zero : (0 : E →ₗ[𝕜] F).singularValues = 0 := by
   ext1 i
-  apply singularValues_of_le_rank
-  trans 0 <;> simp
+  rw [Finsupp.zero_apply, singularValues_eq_zero_iff_le_rank, range_zero]
+  simp
+
+theorem singularValues_eq_zero_iff : T.singularValues = 0 ↔ T = 0 := by
+  constructor <;> intro h
+  · rw [← range_eq_bot, ← Submodule.finrank_eq_zero, ← Nat.le_zero,
+      ← singularValues_eq_zero_iff_le_rank, h, Finsupp.zero_apply]
+  · exact h ▸ singularValues_zero
 
 end LinearMap
