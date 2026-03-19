@@ -202,7 +202,7 @@ theorem IsLocalization.minimalPrimes_comap [IsLocalization S A] (J : Ideal A) :
   exact subset_trans (Ideal.minimalPrimes_comap_subset (algebraMap R A) J) (by simp)
 
 theorem IsLocalization.AtPrime.radical_map_of_mem_minimalPrimes
-    (q : Ideal R) [hqp : q.IsPrime] [IsLocalization q.primeCompl A]
+    (q : Ideal R) [hqp : q.IsPrime] [IsLocalization.AtPrime A q]
     (I : Ideal R) (hIq : q ∈ I.minimalPrimes) :
     (I.map (algebraMap R A)).radical = q.map (algebraMap R A) := by
   have : IsLocalRing A := AtPrime.isLocalRing A q
