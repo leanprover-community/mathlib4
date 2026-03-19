@@ -4317,6 +4317,7 @@ public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 public import Mathlib.FieldTheory.IntermediateField.Algebraic
 public import Mathlib.FieldTheory.IntermediateField.Basic
+public import Mathlib.FieldTheory.IntermediateField.ExtendTop
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.FieldTheory.IsAlgClosed.Classification
@@ -6323,6 +6324,7 @@ public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.Ideal.CotangentBaseChange
 public import Mathlib.RingTheory.Ideal.Defs
+public import Mathlib.RingTheory.Ideal.Galois
 public import Mathlib.RingTheory.Ideal.GoingDown
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Ideal.Height
