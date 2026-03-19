@@ -95,6 +95,12 @@ theorem Integrable.mono' {f : α → β} {g : α → ℝ} (hg : Integrable g μ)
     (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ g a) : Integrable f μ :=
   ⟨hf, hg.hasFiniteIntegral.mono' h⟩
 
+theorem Integrable.mono_nonneg [Lattice β] [HasSolidNorm β] [AddLeftMono β] {f g : α → β}
+    (hg : Integrable g μ) (hf : AEStronglyMeasurable f μ) (hnonneg : ∀ᵐ a ∂μ, 0 ≤ f a)
+    (h : ∀ᵐ a ∂μ, f a ≤ g a) :
+    Integrable f μ :=
+  ⟨hf, hg.hasFiniteIntegral.mono_nonneg hnonneg h⟩
+
 theorem Integrable.congr'_enorm {f : α → ε} {g : α → ε'} (hf : Integrable f μ)
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) : Integrable g μ :=
   ⟨hg, hf.hasFiniteIntegral.congr'_enorm h⟩
