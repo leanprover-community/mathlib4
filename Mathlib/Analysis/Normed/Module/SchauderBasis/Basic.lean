@@ -365,6 +365,19 @@ theorem norm_proj_le_nnnormProjBound [CompleteSpace X] (n : ℕ) :
     ‖b.proj n‖ ≤ b.nnnormProjBound :=
   mod_cast b.nnnorm_proj_le_nnnormProjBound n
 
+end SchauderBasis
+
+namespace UnconditionalSchauderBasis
+
+/-- The projection bound of the conditional basis is at most that of the unconditional one. -/
+theorem toSchauderBasis_enormProjBound_le (b : UnconditionalSchauderBasis ℕ 𝕜 X) :
+    b.toSchauderBasis.enormProjBound ≤ b.enormProjBound :=
+  iSup_le fun n => le_iSup (fun A : Finset ℕ => ‖b.proj A‖ₑ) (Finset.range n)
+
+end UnconditionalSchauderBasis
+
+namespace SchauderBasis
+
 /-!
 ### Construction of Schauder basis
 
@@ -541,15 +554,3 @@ theorem basis_coe : ⇑(basis D) = D.e :=
 end RankOneDecomposition
 
 end SchauderBasis
-
-namespace UnconditionalSchauderBasis
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
-
-/-- The projection bound of the conditional basis is at most that of the unconditional one. -/
-theorem toSchauderBasis_enormProjBound_le (b : UnconditionalSchauderBasis ℕ 𝕜 X) :
-    b.toSchauderBasis.enormProjBound ≤ b.enormProjBound :=
-  iSup_le fun n => le_iSup (fun A : Finset ℕ => ‖b.proj A‖ₑ) (Finset.range n)
-
-end UnconditionalSchauderBasis

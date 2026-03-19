@@ -17,17 +17,17 @@ its linear span. Basic sequences are a central tool in the structural theory of 
 every infinite-dimensional Banach space contains a basic sequence (the Bessaga–Pełczyński theorem),
 and many constructions in the theory reduce to manipulations of basic sequences.
 
-The key criterion for recognizing basic sequences is the **Grünblum condition**: a sequence `(eₙ)`
-is basic if and only if all partial sums `∑_{i<m} aᵢeᵢ` are bounded by a constant `K` times the
-full sum `∑_{i<n} aᵢeᵢ` whenever `m ≤ n`. The analogous condition for unconditional basic
+The key criterion for recognizing basic sequences is the **Grünblum condition**: a sequence `e` is
+basic if and only if all partial sums `∑ i < m, a i · e i` are bounded by a constant `K` times the
+full sum `∑ i < n, a i · e i` whenever `m ≤ n`. The analogous condition for unconditional basic
 sequences, where subsets replace initial segments, is called the **Nikolskii condition**.
 
 ## Main Definitions
 
-* `BasicSequence`: A bundled ℕ-indexed sequence that forms a Schauder basis for its closed span.
+* `BasicSequence`: A bundled ℕ-indexed sequence that forms a Schauder basis for its span.
 * `UnconditionalBasicSequence`: A bundled sequence forming an unconditional Schauder basis.
-* `SatisfiesGrunblumCondition`: The Grünblum condition with constant `K`.
-* `SatisfiesNikolskiiCondition`: The Nikolskii condition with constant `K`.
+* `SatisfiesGrunblumCondition`: The Grünblum condition with a constant.
+* `SatisfiesNikolskiiCondition`: The Nikolskii condition with a constant.
 
 ## Main Results
 
@@ -35,6 +35,20 @@ sequences, where subsets replace initial segments, is called the **Nikolskii con
   is a basic sequence, with an explicit bound on the basis constant.
 * `isUnconditionalBasicSequence_of_Nikolskii`: The analogous result for unconditional basic
   sequences under the Nikolskii condition.
+
+## Implementation Notes
+
+In the literature, a basic sequence is defined as a sequence that forms a Schauder basis for the
+closure of its linear span. In this file, the `SchauderBasis` in `BasicSequence` and
+`UnconditionalBasicSequence` lives on the algebraic span `Submodule.span 𝕜 (Set.range e)` rather
+than its topological closure, and we additionally bundle a finite projection bound
+(`SchauderBasis.enormProjBound < ⊤`). These two conditions are equivalent: a Schauder basis with
+finite projection bound on the algebraic span extends to a Schauder basis for the topological
+closure of the span. Our formulation is easier to verify:
+the projection bound only needs to be checked on elements of the algebraic span, which are finite
+linear combinations, so the Grünblum and Nikolskii conditions apply directly without density or
+extension arguments. Working with the topological closure would also require cumbersome coercions
+between elements of the closed subspace and the ambient space throughout the proofs.
 
 ## References
 
@@ -50,21 +64,21 @@ open Submodule Set WeakDual Metric Filter Topology Finset
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
 
-/-- A **basic sequence** in a normed space `X` over `𝕜` is an ℕ-indexed sequence that forms a
-    Schauder basis for its closed linear span, with finite projection bound. -/
+/-- A **basic sequence** in a normed space `X` over `𝕜` is an `ℕ`-indexed sequence that forms a
+    Schauder basis for its linear span, with finite projection bound. -/
 structure BasicSequence (𝕜 : Type*) (X : Type*) [RCLike 𝕜]
     [NormedAddCommGroup X] [NormedSpace 𝕜 X] where
   /-- The underlying sequence. -/
-  toFun : ℕ → X
-  /-- The Schauder basis for the closed span of the sequence. -/
-  basis : SchauderBasis 𝕜 (Submodule.span 𝕜 (Set.range toFun))
+  e : ℕ → X
+  /-- The Schauder basis for the span of the sequence. -/
+  basis : SchauderBasis 𝕜 (Submodule.span 𝕜 (Set.range e))
   /-- The basis vectors coincide with the sequence elements. -/
-  basis_eq : ∀ i, (basis i : X) = toFun i
+  basis_eq : ∀ i, (basis i : X) = e i
   /-- The basis constant is finite. -/
   basisConstant_lt_top : basis.enormProjBound < ⊤
 
 instance : CoeFun (BasicSequence 𝕜 X) (fun _ ↦ ℕ → X) where
-  coe b := b.toFun
+  coe b := b.e
 
 /-- A sequence satisfies the **Grünblum Condition** with constant `K` if partial sums
     over initial segments are bounded by `K` times the full sum. -/
@@ -104,16 +118,18 @@ theorem basicSequence_satisfiesGrunblum :
       simp only [coe_norm, AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, bs.basis_eq]
       exact mul_le_mul_of_nonneg_right h_bound (norm_nonneg (∑ i ∈ Finset.range n, a i • bs i))
 
-/-- The Grünblum constant must be at least 1 for any nonzero sequence. -/
-theorem Grunblum_const_ge_1 {e : ℕ → X} {K : ℝ}
-    (h : SatisfiesGrunblumCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) : 1 ≤ K := by
+variable {e : ℕ → X} {K : ℝ}
+
+/-- The Grünblum constant must be at least `1` for any nonzero sequence. -/
+theorem Grunblum_const_ge_1 (h : SatisfiesGrunblumCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) :
+    1 ≤ K := by
   have h0 := h 1 1 (fun _ => 1) le_rfl
   simp only [Finset.range_one, one_smul, sum_singleton] at h0
   exact le_of_mul_le_mul_right ((one_mul _).le.trans h0) (norm_pos_iff.mpr (h_nz 0))
 
 /-- A nonzero sequence satisfying the Grünblum condition is linearly independent. -/
-lemma linearIndependent_of_Grunblum {e : ℕ → X} {K : ℝ} (h_nz : ∀ n, e n ≠ 0)
-    (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K) : LinearIndependent 𝕜 e := by
+lemma linearIndependent_of_Grunblum (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K)
+    (h_nz : ∀ n, e n ≠ 0) : LinearIndependent 𝕜 e := by
   rw [linearIndependent_iff']
   intro s g hg i hi
   let c j := if j ∈ s then g j else 0
@@ -130,18 +146,16 @@ lemma linearIndependent_of_Grunblum {e : ℕ → X} {K : ℝ} (h_nz : ∀ n, e n
         h_part (i + 1) (hb i hi), h_part i (hb i hi).le, sub_zero]
   simpa [c, hi, h_nz i] using hc
 
-/-- A version of `isBasicSequence_of_Grunblum` that also provides an explicit bound
-    on the basis constant. If a sequence satisfies the Grünblum condition with constant K,
-    the resulting basic sequence has basis constant at most K. -/
-theorem isBasicSequence_of_Grunblum_with_bound {e : ℕ → X} {K : ℝ}
-    (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) :
-    ∃ (b : BasicSequence 𝕜 X), ⇑b = e ∧ b.basicSequenceConstant ≤ K := by
-  have h_indep := linearIndependent_of_Grunblum h_nz h_grunblum
+/-- A version of `isBasicSequence_of_Grunblum` that provides an explicit bound
+    on the basis constant. If a sequence satisfies the Grünblum condition with constant `K`,
+    the resulting basic sequence has basis constant at most `K`. -/
+theorem isBasicSequence_of_Grunblum_with_bound (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K)
+    (h_nz : ∀ n, e n ≠ 0) : ∃ (b : BasicSequence 𝕜 X), ⇑b = e ∧ b.basicSequenceConstant ≤ K := by
+  have h_indep := linearIndependent_of_Grunblum h_grunblum h_nz
   have hK : 0 ≤ K := zero_le_one.trans (Grunblum_const_ge_1 h_grunblum h_nz)
   let S := Submodule.span 𝕜 (Set.range e)
   let b_S := Module.Basis.span h_indep
-  have hbS : ∀ n, (b_S n : X) = e n :=
-    fun n ↦ congrArg Subtype.val (Module.Basis.span_apply h_indep n)
+  have hbS (n : ℕ) : (b_S n : X) = e n := congrArg Subtype.val (Module.Basis.span_apply h_indep n)
   have coe_sum (A : Finset ℕ) (c : ℕ → 𝕜) :
       (↑(∑ i ∈ A, c i • b_S i) : X) = ∑ i ∈ A, c i • e i := by
     simp [AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, hbS]
@@ -151,22 +165,26 @@ theorem isBasicSequence_of_Grunblum_with_bound {e : ℕ → X} {K : ℝ}
     exact (Finset.sum_subset
       (fun i hi ↦ Finset.mem_range.2 ((Finset.le_sup (f := id) hi).trans_lt hN))
       (fun i _ hi ↦ by simp [Finsupp.notMem_support_iff.mp hi])).symm
-  have h_partial_bound (k : ℕ) (y : S) :
-      ‖∑ i ∈ Finset.range k, b_S.repr y i • e i‖ ≤ K * ‖y‖ := by
+  have h_partial_bound (k : ℕ) (y : S) : ‖∑ i ∈ Finset.range k, b_S.repr y i • e i‖ ≤ K * ‖y‖ := by
     let N := max k ((b_S.repr y).support.sup id + 1)
     have hN : (b_S.repr y).support.sup id < N :=
       (Nat.lt_succ_self _).trans_le (le_max_right k _)
     conv_rhs => rw [← norm_coe (x := y), ← h_sum y hN, coe_sum]
     exact h_grunblum N k (b_S.repr y) (le_max_left _ _)
   let coord (j : ℕ) : StrongDual 𝕜 S := LinearMap.mkContinuous
-    ((Finsupp.lapply j).comp b_S.repr.toLinearMap) ((2 * K) / ‖e j‖) <| fun y ↦ by
+    ((Finsupp.lapply j).comp b_S.repr.toLinearMap)
+    (2 * K / ‖e j‖)
+    fun y ↦ by
       rw [div_mul_eq_mul_div, le_div_iff₀ (norm_pos_iff.mpr (h_nz j))]
       change ‖b_S.repr y j‖ * ‖e j‖ ≤ 2 * K * ‖y‖
-      have := (norm_sub_le (∑ i ∈ Finset.range (j + 1), b_S.repr y i • e i)
-        (∑ i ∈ Finset.range j, b_S.repr y i • e i)).trans
-        (add_le_add (h_partial_bound (j + 1) y) (h_partial_bound j y))
-      rw [Finset.sum_range_succ_sub_sum, norm_smul] at this; linarith
-  let cond_basis : SchauderBasis 𝕜 S := {
+      have := h_partial_bound (j + 1) y
+      have := h_partial_bound j y
+      have hsub := norm_sub_le
+        (∑ i ∈ Finset.range (j + 1), b_S.repr y i • e i)
+        (∑ i ∈ Finset.range j, b_S.repr y i • e i)
+      rw [Finset.sum_range_succ_sub_sum, norm_smul] at hsub
+      linarith
+  let basis : SchauderBasis 𝕜 S := {
     basis := b_S
     coord := coord
     ortho := fun i j ↦ by
@@ -179,12 +197,12 @@ theorem isBasicSequence_of_Grunblum_with_bound {e : ℕ → X} {K : ℝ}
       exact tendsto_atTop_of_eventually_const (i₀ := (b_S.repr x).support.sup id + 1)
         fun n hn ↦ h_sum x (Nat.lt_of_succ_le hn)
   }
-  have h_bound : cond_basis.enormProjBound ≤ ENNReal.ofReal K := iSup_le fun n ↦ by
+  have h_bound : basis.enormProjBound ≤ ENNReal.ofReal K := iSup_le fun n ↦ by
     rw [enorm_eq_nnnorm, ← ENNReal.ofReal_coe_nnreal, ENNReal.ofReal_le_ofReal_iff hK, coe_nnnorm]
     refine ContinuousLinearMap.opNorm_le_bound _ hK fun y ↦ ?_
     rw [← norm_coe, SchauderBasis.proj_apply, coe_sum]
     exact h_partial_bound n y
-  refine ⟨⟨e, cond_basis, hbS, h_bound.trans_lt ENNReal.ofReal_lt_top⟩, rfl, ?_⟩
+  refine ⟨⟨e, basis, hbS, h_bound.trans_lt ENNReal.ofReal_lt_top⟩, rfl, ?_⟩
   exact (ENNReal.toReal_mono ENNReal.ofReal_ne_top h_bound).trans_eq (ENNReal.toReal_ofReal hK)
 
 end BasicSequence
@@ -195,20 +213,19 @@ end BasicSequence
 structure UnconditionalBasicSequence (β : Type*) (𝕜 : Type*) (X : Type*)
     [NontriviallyNormedField 𝕜] [NormedAddCommGroup X] [NormedSpace 𝕜 X] where
   /-- The underlying sequence. -/
-  toFun : β → X
-  /-- The unconditional Schauder basis for the closed span of the sequence. -/
-  basis : UnconditionalSchauderBasis β 𝕜 (Submodule.span 𝕜 (Set.range toFun))
+  e : β → X
+  /-- The unconditional Schauder basis for the span of the sequence. -/
+  basis : UnconditionalSchauderBasis β 𝕜 (Submodule.span 𝕜 (Set.range e))
   /-- The basis vectors coincide with the sequence elements. -/
-  basis_eq : ∀ i, (basis i : X) = toFun i
+  basis_eq : ∀ i, (basis i : X) = e i
   /-- The basis constant is finite. -/
   basisConstant_lt_top : basis.enormProjBound < ⊤
 
 instance {β : Type*} : CoeFun (UnconditionalBasicSequence β 𝕜 X) (fun _ ↦ β → X) where
-  coe b := b.toFun
+  coe b := b.e
 
-/-- A sequence satisfies the **General Grünblum Condition** with constant `K`
-    if partial sums over subsets are bounded by `K` times any larger
-    sum. -/
+/-- A sequence satisfies the **Nikolskii Condition** with constant `K`
+    if partial sums over subsets are bounded by `K` times any larger sum. -/
 def SatisfiesNikolskiiCondition (𝕜 : Type*) {X : Type*} [RCLike 𝕜] [NormedAddCommGroup X]
     [NormedSpace 𝕜 X] {β : Type*} (e : β → X) (K : ℝ) : Prop :=
     ∀ (A B : Finset β) (a : β → 𝕜), A ⊆ B → ‖∑ i ∈ A, a i • e i‖ ≤ K * ‖∑ i ∈ B, a i • e i‖
@@ -217,9 +234,9 @@ namespace UnconditionalBasicSequence
 
 variable (ubs : UnconditionalBasicSequence ℕ 𝕜 X)
 
-/-- Convert an ℕ-indexed unconditional basic sequence to a (conditional) basic sequence. -/
+/-- Convert an `ℕ`-indexed unconditional basic sequence to a (conditional) basic sequence. -/
 def toBasicSequence : BasicSequence 𝕜 X := {
-  toFun := ubs.toFun,
+  e := ubs.e,
   basis := ubs.basis.toSchauderBasis,
   basis_eq := fun i => ubs.basis_eq i,
   basisConstant_lt_top :=
@@ -227,17 +244,17 @@ def toBasicSequence : BasicSequence 𝕜 X := {
 }
 
 /-- The coercion of `toBasicSequence` equals the original coercion. -/
-@[simp] lemma coe_toBasicSequence : ⇑(ubs.toBasicSequence) = ⇑ubs := rfl
+@[simp]
+lemma coe_toBasicSequence : ⇑(ubs.toBasicSequence) = ⇑ubs := rfl
 
 variable {β : Type*}
 variable (ubs : UnconditionalBasicSequence β 𝕜 X)
 
-/-- The **Basis Constant** of a general basic sequence. -/
+/-- The **Basis Constant** of an unconditional basic sequence. -/
 def unconditionalBasicSequenceConstant : ℝ := ubs.basis.enormProjBound.toReal
 
 open scoped Classical in
-/-- A general basic sequence with finite projection bound satisfies the
-    generalized Grünblum condition. -/
+/-- An unconditional basic sequence satisfies the Nikolskii condition. -/
 theorem unconditional_satisfiesNikolskii :
     SatisfiesNikolskiiCondition 𝕜 ubs ubs.unconditionalBasicSequenceConstant := fun A B a hAB ↦ by
   have h_bound : ‖ubs.basis.proj A‖ ≤ ubs.unconditionalBasicSequenceConstant := by
@@ -250,38 +267,44 @@ theorem unconditional_satisfiesNikolskii :
     _ = ‖∑ i ∈ A, a i • ubs.basis i‖ := (h_eq A).symm
     _ = ‖ubs.basis.proj A (∑ i ∈ B, a i • ubs.basis i)‖ := by
       congr 1
-      simp_rw [map_sum, map_smul, GeneralSchauderBasis.proj_apply_basis_mem, smul_ite, smul_zero]
-      exact (Finset.sum_congr rfl fun _ h ↦ if_pos h).symm.trans
-        (Finset.sum_subset (f := fun i ↦ if i ∈ A then a i • ubs.basis i else 0)
-          hAB fun _ _ h ↦ if_neg h)
+      rw [map_sum]
+      simp only [map_smul, GeneralSchauderBasis.proj_apply_basis_mem, smul_ite, smul_zero]
+      rw [← Finset.sum_subset hAB fun _ _ h ↦ if_neg h,
+          Finset.sum_congr rfl fun _ h ↦ (if_pos h).symm]
     _ ≤ ‖ubs.basis.proj A‖ * ‖∑ i ∈ B, a i • ubs.basis i‖ := ContinuousLinearMap.le_opNorm _ _
     _ ≤ ubs.unconditionalBasicSequenceConstant * ‖∑ i ∈ B, a i • ubs i‖ := by
       rw [h_eq B]
       exact mul_le_mul_of_nonneg_right h_bound (norm_nonneg _)
+
 variable {e : β → X} {K : ℝ}
+
+/-- The Nikolskii constant must be at least `1` for any nonzero sequence. -/
+theorem Nikolskii_const_ge_1 [Nonempty β] (h : SatisfiesNikolskiiCondition 𝕜 e K)
+    (h_nz : ∀ n, e n ≠ 0) : 1 ≤ K := by
+  have h0 := h {Classical.arbitrary β} {Classical.arbitrary β} (fun _ => 1) Finset.Subset.rfl
+  simp only [sum_singleton, one_smul] at h0
+  exact le_of_mul_le_mul_right ((one_mul _).le.trans h0) (norm_pos_iff.mpr (h_nz _))
 
 /-- A nonzero sequence satisfying the Nikolskii condition is linearly independent. -/
 lemma linearIndependent_of_Nikolskii (hN : SatisfiesNikolskiiCondition 𝕜 e K)
     (h_nz : ∀ n, e n ≠ 0) : LinearIndependent 𝕜 e := by
   rw [linearIndependent_iff']
   intro s g hsg i hi
-  have h1 : ‖∑ j ∈ {i}, g j • e j‖ ≤ K * ‖∑ j ∈ s, g j • e j‖ :=
-    hN {i} s g (Finset.singleton_subset_iff.mpr hi)
-  simp [hsg] at h1
-  exact h1.resolve_right (h_nz i)
+  simpa [hsg, h_nz i] using hN {i} s g (Finset.singleton_subset_iff.mpr hi)
 
 open scoped Classical in
-theorem isUnconditionalBasicSequence_of_Nikolskii {e : β → X} {K : ℝ}
-    (h : SatisfiesNikolskiiCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) (hK : 0 ≤ K) :
+/-- A nonzero sequence satisfying the Nikolskii condition is an unconditional basic sequence,
+    with basis constant at most `K`. -/
+theorem isUnconditionalBasicSequence_of_Nikolskii [Nonempty β]
+    (h : SatisfiesNikolskiiCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) :
     ∃ (b : UnconditionalBasicSequence β 𝕜 X),
-      ⇑b = e ∧ b.unconditionalBasicSequenceConstant ≤ K := by
+    ⇑b = e ∧ b.unconditionalBasicSequenceConstant ≤ K := by
+  have hK : 0 ≤ K := zero_le_one.trans (Nikolskii_const_ge_1 h h_nz)
   have h_indep := linearIndependent_of_Nikolskii h h_nz
   let S := Submodule.span 𝕜 (Set.range e)
   let b_S := Module.Basis.span h_indep
-  have hbS : ∀ n, (b_S n : X) = e n :=
-    fun n ↦ congrArg Subtype.val (Module.Basis.span_apply h_indep n)
-  have coe_sum (A : Finset β) (c : β → 𝕜) :
-      (↑(∑ i ∈ A, c i • b_S i) : X) = ∑ i ∈ A, c i • e i := by
+  have hbS (n : β) : (b_S n : X) = e n := congrArg Subtype.val (Module.Basis.span_apply h_indep n)
+  have coe_sum (A : Finset β) (c : β → 𝕜) : (↑(∑ i ∈ A, c i • b_S i) : X) = ∑ i ∈ A, c i • e i := by
     simp [AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, hbS]
   have h_sum (x : S) {A : Finset β} (hA : (b_S.repr x).support ⊆ A) :
       ∑ i ∈ A, b_S.repr x i • b_S i = x := by
@@ -291,7 +314,9 @@ theorem isUnconditionalBasicSequence_of_Nikolskii {e : β → X} {K : ℝ}
       ‖∑ i ∈ A, b_S.repr y i • e i‖ = ‖y‖ := by
     rw [← coe_sum, congrArg Subtype.val (h_sum y hA), norm_coe]
   let coord (j : β) : StrongDual 𝕜 S := LinearMap.mkContinuous
-    ((Finsupp.lapply j).comp b_S.repr.toLinearMap) (K / ‖e j‖) <| fun y ↦ by
+    ((Finsupp.lapply j).comp b_S.repr.toLinearMap)
+    (K / ‖e j‖)
+    fun y ↦ by
       rw [div_mul_eq_mul_div, le_div_iff₀ (norm_pos_iff.mpr (h_nz j))]
       change ‖b_S.repr y j‖ * ‖e j‖ ≤ K * ‖y‖
       calc ‖b_S.repr y j‖ * ‖e j‖
@@ -309,16 +334,16 @@ theorem isUnconditionalBasicSequence_of_Nikolskii {e : β → X} {K : ℝ}
     expansion := fun x ↦ by
       rw [HasSum, SummationFilter.unconditional_filter]
       change Filter.Tendsto (fun A ↦ ∑ i ∈ A, b_S.repr x i • b_S i) atTop (𝓝 x)
-      exact tendsto_atTop_of_eventually_const (i₀ := (b_S.repr x).support)
-        (fun A hA ↦ h_sum x hA)
+      exact tendsto_atTop_of_eventually_const (i₀ := (b_S.repr x).support) (fun A hA ↦ h_sum x hA)
   }
   have h_bound : ubs_basis.enormProjBound ≤ ENNReal.ofReal K := iSup_le fun A ↦ by
     rw [enorm_eq_nnnorm, ← ENNReal.ofReal_coe_nnreal, ENNReal.ofReal_le_ofReal_iff hK, coe_nnnorm]
     refine ContinuousLinearMap.opNorm_le_bound _ hK fun y ↦ ?_
     have h_proj : (ubs_basis.proj A y : X) = ∑ i ∈ A, b_S.repr y i • e i := by
       have : ubs_basis.proj A y = ∑ i ∈ A, b_S.repr y i • b_S i := by
-        simp only [GeneralSchauderBasis.proj_apply]; congr 1
-      rw [this]; exact coe_sum _ _
+        simp only [GeneralSchauderBasis.proj_apply]
+        congr 1
+      rw [this, coe_sum]
     rw [← norm_coe, h_proj]
     calc ‖∑ i ∈ A, b_S.repr y i • e i‖
         ≤ K * ‖∑ i ∈ A ∪ (b_S.repr y).support, (b_S.repr y) i • e i‖ :=
@@ -328,10 +353,9 @@ theorem isUnconditionalBasicSequence_of_Nikolskii {e : β → X} {K : ℝ}
   exact (ENNReal.toReal_mono ENNReal.ofReal_ne_top h_bound).trans_eq (ENNReal.toReal_ofReal hK)
 
 theorem SatisfiesNikolskiiCondition.toSatisfiesGrunblumCondition {e : ℕ → X} {K : ℝ}
-    (h : SatisfiesNikolskiiCondition 𝕜 e K) :
-    SatisfiesGrunblumCondition 𝕜 e K :=
+    (h : SatisfiesNikolskiiCondition 𝕜 e K) : SatisfiesGrunblumCondition 𝕜 e K :=
   fun _ _ a hmn => h _ _ a (Finset.range_subset_range.mpr hmn)
 
 end UnconditionalBasicSequence
 
-end -- public section
+end
