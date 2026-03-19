@@ -1030,7 +1030,6 @@ theorem infinitesimal_sub_st {x : ℝ*} (hx : ¬Infinite x) : Infinitesimal (x -
   (isSt_st' hx).infinitesimal_sub
 
 set_option linter.deprecated false in
-set_option backward.isDefEq.respectTransparency false in
 @[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitePos_iff_infinitesimal_inv_pos {x : ℝ*} :
     InfinitePos x ↔ Infinitesimal x⁻¹ ∧ 0 < x⁻¹ := by
@@ -1050,7 +1049,6 @@ theorem infinitesimal_inv_of_infinite {x : ℝ*} : Infinite x → Infinitesimal 
   Or.casesOn hi (fun hip => (infinitePos_iff_infinitesimal_inv_pos.mp hip).1) fun hin =>
     (infiniteNeg_iff_infinitesimal_inv_neg.mp hin).1
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinite_of_infinitesimal_inv {x : ℝ*} (h0 : x ≠ 0) (hi : Infinitesimal x⁻¹) :
@@ -1081,7 +1079,6 @@ set_option linter.deprecated false in
 theorem infinitesimal_iff_infinite_inv {x : ℝ*} (h : x ≠ 0) : Infinitesimal x ↔ Infinite x⁻¹ :=
   Iff.trans (by rw [inv_inv]) (infinite_iff_infinitesimal_inv (inv_ne_zero h)).symm
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated stdPart_inv (since := "2026-01-05")]
 theorem IsSt.inv {x : ℝ*} {r : ℝ} (hi : ¬Infinitesimal x) (hr : IsSt x r) : IsSt x⁻¹ r⁻¹ :=

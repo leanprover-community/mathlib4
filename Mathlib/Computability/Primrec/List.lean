@@ -35,6 +35,7 @@ variable (H : Nat.Primrec fun n => Encodable.encode (@decode (List β) _ n))
 open Primrec
 
 set_option backward.privateInPublic true in
+@[implicit_reducible]
 private def prim : Primcodable (List β) := ⟨H⟩
 
 private theorem list_casesOn' {f : α → List β} {g : α → σ} {h : α → β × List β → σ}
@@ -371,6 +372,26 @@ theorem nat_omega_rec (f : α → β → σ) {m : α → β → ℕ}
       (list_map (hl.comp fst snd) (Primrec₂.pair.comp₂ (fst.comp₂ .left) .right))
       (hg.comp₂ (fst.comp₂ .left) (Primrec₂.pair.comp₂ (snd.comp₂ .left) .right))
       (by simpa using Ord) (by simpa [Function.comp] using H)
+
+/-- `List.drop` is primitive recursive. -/
+theorem list_drop : Primrec₂ (List.drop : ℕ → List α → List α) :=
+  (nat_iterate fst snd (list_tail.comp₂ .right)).to₂.of_eq fun n l => l.tail_iterate n
+
+/-- `List.take` is primitive recursive. -/
+theorem list_take : Primrec₂ (List.take : ℕ → List α → List α) :=
+  (list_reverse.comp (list_drop.comp (nat_sub.comp (list_length.comp snd) fst)
+    (list_reverse.comp snd))).of_eq fun ⟨n, l⟩ => by
+    rw [← List.reverse_reverse (l.take n), List.reverse_take]
+
+/-- `List.takeWhile` is primitive recursive. -/
+theorem list_takeWhile {p : α → Bool} (hp : Primrec p) : Primrec (List.takeWhile p) :=
+  (list_take.comp (list_findIdx Primrec.id (Primrec.not.comp (hp.comp snd)).to₂)
+    Primrec.id).of_eq fun _ => List.takeWhile_eq_take_findIdx_not.symm
+
+/-- `List.dropWhile` is primitive recursive. -/
+theorem list_dropWhile {p : α → Bool} (hp : Primrec p) : Primrec (List.dropWhile p) :=
+  (list_drop.comp (list_findIdx Primrec.id (Primrec.not.comp (hp.comp snd)).to₂)
+    Primrec.id).of_eq fun _ => List.dropWhile_eq_drop_findIdx_not.symm
 
 end Primrec
 
