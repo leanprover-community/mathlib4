@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 Niels Mündler. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Niels Mündler
+-/
 import Mathlib.Computability.ContextFreeGrammar
 import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Tactic
