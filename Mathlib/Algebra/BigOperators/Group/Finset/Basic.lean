@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.Finset.Sum
+public import Mathlib.Data.Fintype.Prod
 
 /-!
 # Big operators
@@ -983,6 +984,163 @@ theorem card_eq_sum_card_fiberwise [DecidableEq M] {f : ι → M} {s : Finset ι
 theorem card_eq_sum_card_image [DecidableEq M] (f : ι → M) (s : Finset ι) :
     #s = ∑ b ∈ s.image f, #{a ∈ s | f a = b} :=
   card_eq_sum_card_fiberwise fun _ => mem_image_of_mem _
+
+/-- Given a finite collection of finite subsets $B_1, \ldots, B_k$ and, for every
+$x \in \bigcup_i B_i$, let $C_x$ be the set of indices of the $B_i$'s that contain $x$.
+Then, $\sum_i |B_i| = \sum_x |C_x|$. -/
+lemma count_by_group_or_element_indicator
+    {α : Type*} [DecidableEq α]
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (B : ι → Finset α)
+    (s : Finset ι) :
+    ∑ j ∈ s, (Finset.card (B j)) =
+    ∑ x ∈ (s.biUnion B), Finset.card {j | j ∈ s ∧ x ∈ B j} := by
+  let E : Finset (ι × (s.biUnion B)) := {b | b.1 ∈ s ∧ ↑(b.2) ∈ (B b.1)}
+  let amb : E → ι × (s.biUnion B) := fun b => (b : ι × (s.biUnion B))
+  let p1 : E → ι := Prod.fst ∘ amb
+  have hp1 : Set.MapsTo p1 (Finset.univ : Finset E) (Finset.univ : Finset ι) := by simp
+  have h₁ := Finset.card_eq_sum_card_fiberwise hp1
+  have j_not_in_s_zero_summand : ∀ j ∈ sᶜ, Finset.card {a | p1 a = j} = 0 := by
+    intro j hjc
+    rw [Finset.card_eq_zero]
+    ext b
+    constructor
+    · intro hm
+      simp only [Function.comp_apply, Finset.univ_eq_attach, Finset.mem_filter,
+                 Finset.mem_attach, true_and, p1, amb] at hm
+      have hb := b.property
+      simp only [E] at hb
+      rw [Finset.mem_def] at hb
+      simp only [Finset.filter_val, Multiset.mem_filter, Finset.mem_val,
+                 Finset.mem_univ, true_and] at hb
+      have hj := hb.1
+      rw [hm] at hj
+      simp at hjc
+      contradiction
+    · simp
+  have s_s_complement_disj : Disjoint s (sᶜ) := by
+    simp only [Disjoint, Finset.le_eq_subset, Finset.bot_eq_empty, Finset.subset_empty]
+    intro x hx hxc
+    have h := Finset.subset_inter hx hxc
+    simp only [Finset.inter_compl, Finset.subset_empty] at h
+    exact h
+  have h₁_split := Finset.sum_union s_s_complement_disj (f := fun j => Finset.card {a | p1 a = j})
+  replace j_not_in_s_zero_summand := Finset.sum_congr (by rfl) j_not_in_s_zero_summand
+  conv at j_not_in_s_zero_summand =>
+    rhs
+    simp
+  rw [j_not_in_s_zero_summand] at h₁_split
+  simp only [Finset.union_compl, Finset.univ_eq_attach, add_zero] at h₁_split
+  simp only [Finset.univ_eq_attach, Finset.card_attach] at h₁
+  rw [h₁_split] at h₁
+  have p1_im : ∀ j ∈ s, {a | p1 a = j} ≃ B j := by
+    intro j hj
+    refine ⟨fun x => ⟨x.val.1.2.val, by
+              have h := x.val.property
+              unfold E at h
+              rw [Finset.mem_def] at h
+              simp only [Finset.filter_val, Set.mem_setOf_eq, Multiset.mem_filter,
+                         Finset.mem_val, Finset.mem_univ, true_and]at h
+              replace h := h.right
+              have j' := x.property
+              dsimp [p1,amb] at j'
+              rw [j'] at h
+              exact h⟩,
+            fun x => ⟨⟨(j, ⟨x.val, by
+              have h := x.property
+              rw [Finset.mem_biUnion]
+              use j ⟩), by
+                simp only [Finset.mem_filter, Finset.mem_univ,
+                           SetLike.coe_mem, and_true, true_and, E]; exact hj ⟩,
+            by simp [p1,amb]⟩,
+            ?left_inv,
+            ?right_inv⟩
+    · simp only [Function.LeftInverse, Set.coe_setOf, Set.mem_setOf_eq, Subtype.coe_eta,
+                 Subtype.forall, Subtype.mk.injEq, Prod.forall, Prod.mk.injEq, and_true,
+                 Finset.mem_biUnion, forall_exists_index, forall_and_index]
+      intros _ _ _ _ _ _ hp1
+      simp [p1,amb] at hp1
+      exact hp1.symm
+    · simp [Function.RightInverse, Function.LeftInverse]
+  have h₁'set (j : ι) (hj : j ∈ s) : Finset.card {a | p1 a = j} = (B j).card :=
+    Finset.card_eq_of_equiv (by simpa using p1_im j hj)
+  have h₁'' := Finset.sum_congr rfl h₁'set
+    (f := fun j => Finset.card {a | p1 a = j}) (g := fun j => Finset.card (B j))
+  rw [← h₁'']
+  simp only [Finset.univ_eq_attach]
+  rw [← h₁]
+  -- Second half is E.card
+  clear h₁ h₁'' hp1 h₁_split p1_im h₁'set s_s_complement_disj j_not_in_s_zero_summand
+  let p2 : E → s.biUnion B := Prod.snd ∘ amb
+  have hp2 : Set.MapsTo p2 (Finset.univ : Finset E)
+    (Finset.univ : Finset (s.biUnion B)) := by simp
+  have h₂ := Finset.card_eq_sum_card_fiberwise hp2
+  have h₂' : ∀ x ∈ (s.biUnion B), {a | p2 a = x} ≃ {j | j ∈ s ∧ ↑x ∈ B j} := by
+    intro x hx
+    simp only [Function.comp_apply, Set.coe_setOf, p2, amb]
+    refine ⟨fun a => ⟨a.val.val.1, by
+              have h := a.val.property
+              unfold E at h
+              rw [Finset.mem_def] at h
+              simp only [Finset.filter_val, Multiset.mem_filter,
+                         Finset.mem_val, Finset.mem_univ, true_and] at h
+              have a' := a.property
+              rw [a'] at h
+              exact h⟩,
+            fun j => ⟨⟨(j.val, ⟨x,hx⟩), by
+              simp only [Finset.mem_filter, Finset.mem_univ, true_and, E]
+              exact j.property⟩, by simp⟩, ?_, ?_⟩
+    · simp only [Function.LeftInverse, Subtype.forall,
+                 Subtype.mk.injEq, Prod.forall, Prod.mk.injEq, true_and,
+                 Finset.mem_biUnion, forall_exists_index, forall_and_index]
+      intro _ _ _ _ _ _ ha
+      exact ha.symm
+    · simp[Function.RightInverse, Function.LeftInverse]
+  have h₂'set : ∀ x ∈ (s.biUnion B),
+    Finset.card {a | p2 a = x} = Finset.card {j | j ∈ s ∧ ↑x ∈ B j} := by
+      intro x hx
+      apply Finset.card_eq_of_equiv
+      specialize h₂' x hx
+      simp only [Set.coe_setOf] at h₂'
+      simp only [Finset.univ_eq_attach, Finset.mem_filter,
+                 Finset.mem_attach, true_and, Finset.mem_univ]
+      exact h₂'
+  have h₂'' := Finset.sum_congr
+    (s₁ := s.biUnion B) (s₂ := s.biUnion B) (by rfl) h₂'set
+    (f := fun x => Finset.card  {a | p2 a = x})
+    (g := fun x => Finset.card  {j | j ∈ s ∧ ↑x ∈ B j})
+  rw [← h₂'']
+  simp only [Finset.univ_eq_attach]
+  simp only [Finset.univ_eq_attach, Finset.card_attach] at h₂
+  have hfin : ∑ x ∈ (s.biUnion B).attach, {a ∈ E.attach | p2 a = x}.card =
+              ∑ x ∈ s.biUnion B, {a ∈ E.attach | ↑(p2 a) = x}.card := by
+       have h := Finset.sum_attach (s.biUnion B) (fun x => {a ∈ E.attach | p2 a = x}.card )
+       rw [<- h]
+       congr
+       ext x
+       congr
+       ext a
+       rw [SetCoe.ext_iff]
+  rw [← hfin]
+  exact h₂
+
+-- lemma biunion_fixed_card_card 
+--     {n : Type*} [DecidableEq n] [Fintype n]
+--     {α : Type*} [DecidableEq α]
+--     {B : n → Finset α}
+--     {s : Finset n}
+--     {k : Nat} [nek : NeZero k]
+--     (h₁ : ∀ j, Finset.card (B j) = k)
+--     (h₂ : (s.biUnion B).card < (s.card)) :
+--     ∃ x ∈ s.biUnion B, k < (Finset.card {j | j ∈ s ∧ x ∈ B j}) := by
+--   by_contra! hc
+--   have hc' := Finset.sum_le_sum  (s := s.biUnion B) (ι := α)
+--     (f := fun x => Finset.card {j | j ∈ s ∧ x ∈ B j})
+--     (g := fun _ => k) (by grind)
+--   have : (Finset.card (s.biUnion B))*k < s.card*k :=
+--     Nat.mul_lt_mul_right (Nat.ne_zero_iff_zero_lt.mp nek.out) |>.mpr (by lia)
+--   simp at hc'
+--   simpa [← count_by_group_or_element_indicator B s, h₁] using Nat.lt_of_le_of_lt hc' this
 
 end Nat
 end Finset
