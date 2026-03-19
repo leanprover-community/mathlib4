@@ -93,6 +93,7 @@ theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) 
 /-! ### Basic facts about factorization -/
 
 
+-- TODO: Rename to `prod_factorization_pow_eq_self`
 @[simp]
 theorem factorization_prod_pow_eq_self {n : ℕ} (hn : n ≠ 0) : n.factorization.prod (· ^ ·) = n := by
   rw [factorization_eq_primeFactorsList_multiset n]
