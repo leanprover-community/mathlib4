@@ -135,6 +135,7 @@ lemma IsAcyclic.isTree_connectedComponent (h : G.IsAcyclic) (c : G.ConnectedComp
   isConnected := c.connected_toSimpleGraph
   IsAcyclic := h.comap c.toSimpleGraph_hom <| by simp [ConnectedComponent.toSimpleGraph_hom]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsAcyclic.of_card_le_two (h : ENat.card V ≤ 2) : G.IsAcyclic := by
   intro v p hp
   have := hp.three_le_length
