@@ -12,6 +12,8 @@ import Mathlib.Topology.Algebra.Module.FiniteDimension
 When `E` is a finite dimensional T2 vector space over a complete nontrivially normed field,
 then the topology of bounded convergence on `E →L[𝕜] F` coincides with the toplogy of
 pointwise convergence.
+
+TODO: Generalize this to `UniformConvergenceCLM`.
 -/
 
 open Module ContinuousLinearMap LinearMap Topology
@@ -25,12 +27,15 @@ theorem Module.Basis.continuous_constrL [Finite ι] (b : Basis ι 𝕜 E) :
     Continuous (b.constrL : (ι → F) → (E →L[𝕜] F)) := by
   rcases nonempty_fintype ι
   letI Φ : (ι → F) →ₗ[𝕜] (E →L[𝕜] F) := ⟨⟨b.constrL, by simp [constrL]⟩, by simp [constrL]⟩
-  apply continuous_of_uncurry Φ
+  apply continuous_of_continuous_uncurry Φ
   simp only [LinearMap.coe_mk, AddHom.coe_mk, b.constrL_apply, equivFun_apply, Φ, ← equivFunL_apply]
   fun_prop
 
 variable (R) in
-protected noncomputable def Module.Basis.constrLCLE [Finite ι] (b : Basis ι 𝕜 E) :
+/-- `Basis.constrL` upgraded to a `ContinuousLinearEquiv`, where `E →L[𝕜] F` is endowed with
+the topology of bounded convergence. -/
+@[simps]
+protected noncomputable def Module.Basis.constrCLE [Finite ι] (b : Basis ι 𝕜 E) :
     (ι → F) ≃L[R] (E →L[𝕜] F) :=
   { toFun := b.constrL
     invFun f i := f (b i)
@@ -41,9 +46,11 @@ protected noncomputable def Module.Basis.constrLCLE [Finite ι] (b : Basis ι �
     continuous_toFun := b.continuous_constrL
     continuous_invFun := continuous_pi fun i ↦ continuous_eval_const (b i) }
 
+/-- If `E` is finite dimensional, the topology of bounded convergence on `E →L[𝕜] F`
+identifies with the product topology. -/
 theorem ContinuousLinearMap.isEmbedding_coeFn_of_finiteDimensional
     [FiniteDimensional 𝕜 E] :
     IsEmbedding ((↑) : (E →L[𝕜] F) → (E → F)) := by
   let b : Basis _ 𝕜 E := Free.chooseBasis 𝕜 E
   have : Continuous (fun (f : E → F) i ↦ f (b i)) := continuous_pi fun i ↦ continuous_apply _
-  exact .of_comp continuous_coeFun this (b.constrLCLE 𝕜).symm.toHomeomorph.isEmbedding
+  exact .of_comp continuous_coeFun this (b.constrCLE 𝕜).symm.toHomeomorph.isEmbedding
