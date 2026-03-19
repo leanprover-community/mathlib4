@@ -5,6 +5,7 @@ Authors: Zhouhang Zhou
 -/
 module
 
+public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 public import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Norm
