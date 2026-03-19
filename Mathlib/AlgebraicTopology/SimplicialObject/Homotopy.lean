@@ -69,8 +69,10 @@ namespace Homotopy
 variable {X Y : SimplicialObject C} {f g : X ⟶ Y}
 
 attribute [reassoc (attr := simp)]
-  h_zero_comp_δ_zero h_last_comp_δ_last h_succ_comp_δ_castSucc_of_lt h_succ_comp_δ_castSucc_succ
+  h_zero_comp_δ_zero h_last_comp_δ_last h_succ_comp_δ_castSucc_of_lt
   h_castSucc_comp_δ_succ_of_lt h_comp_σ_castSucc_of_le h_comp_σ_succ_of_lt
+
+attribute [reassoc] h_succ_comp_δ_castSucc_succ
 
 /-- The constant homotopy from `f` to `f`. -/
 @[simps]
@@ -135,7 +137,7 @@ def postcomp (H : Homotopy f g) {Y' : SimplicialObject C} (p : Y ⟶ Y') :
   h_succ_comp_δ_castSucc_of_lt i j hij := by
     simpa using H.h_succ_comp_δ_castSucc_of_lt i j hij =≫ p.app _
   h_succ_comp_δ_castSucc_succ j := by
-    simpa [-h_succ_comp_δ_castSucc_succ] using H.h_succ_comp_δ_castSucc_succ j =≫ p.app _
+    simpa using H.h_succ_comp_δ_castSucc_succ j =≫ p.app _
   h_castSucc_comp_δ_succ_of_lt i j hji := by
     simpa using H.h_castSucc_comp_δ_succ_of_lt i j hji =≫ p.app _
   h_comp_σ_castSucc_of_le i j hij := by
@@ -155,7 +157,7 @@ def precomp (H : Homotopy f g) {X' : SimplicialObject C} (p : X' ⟶ X) :
   h_succ_comp_δ_castSucc_of_lt i j hij := by
     simpa using p.app _ ≫= H.h_succ_comp_δ_castSucc_of_lt i j hij
   h_succ_comp_δ_castSucc_succ j := by
-    simpa [-h_succ_comp_δ_castSucc_succ] using p.app _ ≫= H.h_succ_comp_δ_castSucc_succ j
+    simpa using p.app _ ≫= H.h_succ_comp_δ_castSucc_succ j
   h_castSucc_comp_δ_succ_of_lt i j hji := by
     simpa using p.app _ ≫= H.h_castSucc_comp_δ_succ_of_lt i j hji
   h_comp_σ_castSucc_of_le i j hij := by
