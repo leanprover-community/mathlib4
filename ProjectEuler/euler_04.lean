@@ -31,7 +31,7 @@ products
     |> List.filter isPalindrome
     |> List.foldl max 0
 
-#eval largestPalindromeProduct 1_000
+#eval largestPalindromeProduct 1_000 --  906609
 
 def ls := [1,2,3]
 
