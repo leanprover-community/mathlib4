@@ -289,8 +289,7 @@ theorem isMatching.encard_eq_twice_edgeSet_encard (h : M.IsMatching) :
     refine Set.encard_congr ?_
     refine Set.BijOn.equiv (Sym2.map fun a ↦ a.1) <| Set.BijOn.mk ?_ ?_ ?_
     · refine Sym2.ind fun x y hxy ↦ ?_
-      simp only [edgeSet_coe, Set.mem_preimage] at hxy
-      exact Set.mem_preimage.mp hxy
+      exact Set.mem_preimage.mp (by simpa using hxy)
     · refine Sym2.ind fun _ _ _ ↦ Sym2.ind fun _ _ _ hf ↦ ?_
       simp [Subtype.val_inj] at hf
       simpa
