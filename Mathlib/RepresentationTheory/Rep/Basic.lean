@@ -42,7 +42,9 @@ noncomputable section
 
 section semiring
 
-variable {k : Type u} {G : Type v} [Semiring k] [Monoid G]
+variable {k : Type u} {G : Type v} [Semiring k] [Monoid G] {X Y : Type w} [AddCommGroup X]
+  [AddCommGroup Y] [Module k X] [Module k Y] {ρ : Representation k G X} {σ : Representation k G Y}
+  (A B C : Rep.{w} k G)
 
 attribute [instance] hV1 hV2
 
@@ -52,18 +54,18 @@ instance : CoeSort (Rep k G) (Type w) := ⟨Rep.V⟩
 
 attribute [coe] V
 
+variable (ρ) in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The object in the category of representations associated to a type equipped a representation.
 This is the preferred way to construct a term of `Rep k G`. -/
-abbrev of {X : Type w} [AddCommGroup X] [Module k X] (ρ : Representation k G X) :
-  Rep.{w} k G := ⟨X, ρ⟩
+abbrev of : Rep.{w} k G := ⟨X, ρ⟩
 
-lemma of_V (X : Type w) [AddCommGroup X] [Module k X] (ρ : Representation k G X) :
-  (of ρ).V = X := by with_reducible rfl
+variable (X ρ) in
+lemma of_V : (of ρ).V = X := by with_reducible rfl
 
-lemma of_ρ (X : Type w) [AddCommGroup X] [Module k X] (ρ : Representation k G X) :
-  (of ρ).ρ = ρ := by with_reducible rfl
+variable (X ρ) in
+lemma of_ρ : (of ρ).ρ = ρ := by with_reducible rfl
 
 set_option backward.privateInPublic true in
 /-- The type of morphisms in `Rep.{w} k G`. -/
@@ -82,11 +84,9 @@ instance : Category (Rep.{w} k G) where
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-instance : ConcreteCategory (Rep k G) (fun A B ↦ A.ρ.IntertwiningMap B.ρ) where
+instance : ConcreteCategory (Rep.{w} k G) (fun A B ↦ A.ρ.IntertwiningMap B.ρ) where
   hom := Hom.hom'
   ofHom := Hom.mk
-
-variable (A B C : Rep.{w} k G)
 
 variable {A B} in
 /-- Turn a morphism in `Rep` back into an `IntertwiningMap`. -/
@@ -94,9 +94,7 @@ abbrev Hom.hom (f : Hom A B) := ConcreteCategory.hom (C := Rep k G) f
 
 variable {A B} in
 /-- Typecheck an `IntertwiningMap` as a morphism in `Rep`. -/
-abbrev ofHom {X Y : Type w} [AddCommGroup X] [AddCommGroup Y] [Module k X] [Module k Y]
-  {σ : Representation k G X} {ρ : Representation k G Y}
-  (f : σ.IntertwiningMap ρ) : of σ ⟶ of ρ :=
+abbrev ofHom (f : ρ.IntertwiningMap σ) : of ρ ⟶ of σ :=
   ConcreteCategory.ofHom (C := Rep.{w} k G) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
@@ -104,10 +102,9 @@ def Hom.Simps.hom (A B : Rep.{w} k G) (f : Hom A B) := f.hom
 
 initialize_simps_projections Hom (hom' → hom)
 
-/-!
+/-
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
-
 @[simp] lemma hom_id : (𝟙 A : A ⟶ A).hom = .id A.ρ := rfl
 
 /- Provided for rewriting. -/
@@ -127,20 +124,18 @@ variable {A B} in
 lemma hom_comm_apply (f : A ⟶ B) (g : G) (a : A) : f.hom (A.ρ g a) = B.ρ g (f.hom a) := by
   simpa using congr($(f.hom.2 g) a)
 
-variable {X Y Z : Type w} [AddCommGroup X] [AddCommGroup Y] [AddCommGroup Z] [Module k X]
-  [Module k Y] [Module k Z] {σ : Representation k G X} {ρ : Representation k G Y}
-  {τ : Representation k G Z}
+variable {Z : Type w} [AddCommGroup Z] [Module k Z] {τ : Representation k G Z}
 
-@[simp] lemma hom_ofHom (f : σ.IntertwiningMap ρ) : (ofHom f).hom = f := rfl
+@[simp] lemma hom_ofHom (f : ρ.IntertwiningMap σ) : (ofHom f).hom = f := rfl
 @[simp] lemma ofHom_hom (f : A ⟶ B) : ofHom f.hom = f := rfl
 
 @[simp] lemma ofHom_id : ofHom (.id σ) = 𝟙 (of σ) := rfl
 
 @[simp]
-lemma ofHom_comp (f : σ.IntertwiningMap ρ) (g : ρ.IntertwiningMap τ) :
+lemma ofHom_comp (f : ρ.IntertwiningMap σ) (g : σ.IntertwiningMap τ) :
   ofHom (g.comp f) = ofHom f ≫ ofHom g := rfl
 
-lemma ofHom_apply (f : σ.IntertwiningMap ρ) (x : X) : ofHom f x = f x := rfl
+lemma ofHom_apply (f : ρ.IntertwiningMap σ) (x : X) : ofHom f x = f x := rfl
 
 lemma inv_hom_apply (e : A ≅ B) (x : A) : e.inv.hom (e.hom.hom x) = x := by simp
 
@@ -154,37 +149,32 @@ lemma forget_map (f : A ⟶ B) : (forget (Rep.{w} k G)).map f = (f : _ → _) :=
 
 /-- An equiv between the underlying representations induce isomorphism between objects in
   `Rep k G`. -/
-def mkIso {X Y : Type w} [AddCommGroup X] [AddCommGroup Y] [Module k X] [Module k Y]
-    {σ : Representation k G X} {ρ : Representation k G Y} (e : σ.Equiv ρ) : of σ ≅ of ρ where
+def mkIso (e : ρ.Equiv σ) : of ρ ≅ of σ where
   hom := ofHom e.toIntertwiningMap
   inv := ofHom e.symm.toIntertwiningMap
 
 @[simp]
-lemma mkIso_hom_hom_apply {X Y : Type w} [AddCommGroup X] [AddCommGroup Y] [Module k X] [Module k Y]
-    {σ : Representation k G X} {ρ : Representation k G Y} (e : σ.Equiv ρ) (x : X) :
+lemma mkIso_hom_hom_apply (e : ρ.Equiv σ) (x : X) :
     (mkIso e).hom.hom x = e.toLinearMap x := rfl
 
 @[simp]
-lemma mkIso_hom_hom_toLinearMap {X Y : Type w} [AddCommGroup X] [AddCommGroup Y] [Module k X]
-    [Module k Y] {σ : Representation k G X} {ρ : Representation k G Y} (e : σ.Equiv ρ) :
+lemma mkIso_hom_hom_toLinearMap (e : ρ.Equiv σ) :
     (mkIso e).hom.hom.toLinearMap = e.toLinearMap := rfl
 
 @[simp]
-lemma mkIso_inv_hom_toLinearMap {X Y : Type w} [AddCommGroup X] [AddCommGroup Y] [Module k X]
-    [Module k Y] {σ : Representation k G X} {ρ : Representation k G Y} (e : σ.Equiv ρ) :
+lemma mkIso_inv_hom_toLinearMap (e : ρ.Equiv σ) :
     (mkIso e).inv.hom.toLinearMap = e.symm.toIntertwiningMap.toLinearMap := rfl
 
 @[simp]
-lemma mkIso_inv_hom_apply {X Y : Type w} [AddCommGroup X] [AddCommGroup Y] [Module k X] [Module k Y]
-    {σ : Representation k G X} {ρ : Representation k G Y} (e : σ.Equiv ρ) (y : Y) :
+lemma mkIso_inv_hom_apply (e : ρ.Equiv σ) (y : Y) :
     (mkIso e).inv.hom y = e.symm y := rfl
 
 @[simp]
-lemma mkIso_hom_hom {X Y : Type w} [AddCommGroup X] [AddCommGroup Y] [Module k X] [Module k Y]
-    {σ : Representation k G X} {ρ : Representation k G Y} (e : σ.Equiv ρ) :
+lemma mkIso_hom_hom (e : ρ.Equiv σ) :
     (mkIso e).hom.hom = e.toIntertwiningMap := rfl
 
-variable {A B} in
+variable {A B C}
+
 /-- The equivalence between representations induced from iso between objects in `Rep k G`. -/
 @[simps]
 def _root_.Representation.equivOfIso (i : A ≅ B) : A.ρ.Equiv B.ρ where
@@ -200,105 +190,90 @@ instance reflectsIsomorphisms_forget : (forget (Rep.{w} k G)).ReflectsIsomorphis
     let e : X.ρ.Equiv Y.ρ := { f.hom, i.toEquiv with }
     exact (mkIso e).isIso_hom
 
-lemma hom_bijective {M N : Rep k G} :
-    Function.Bijective (Rep.Hom.hom : (M ⟶ N) → (M.ρ.IntertwiningMap N.ρ)) where
+lemma hom_bijective :
+    Function.Bijective (Rep.Hom.hom : (A ⟶ B) → (A.ρ.IntertwiningMap B.ρ)) where
   left _ _ h := Rep.hom_ext h
   right f := ⟨Rep.ofHom f, Rep.hom_ofHom f⟩
 
 /-- Convenience shortcut for `Rep.hom_bijective.injective`. -/
-lemma hom_injective {M N : Rep k G} :
-    Function.Injective (Hom.hom : (M ⟶ N) → (M.ρ.IntertwiningMap N.ρ)) :=
+lemma hom_injective :
+    Function.Injective (Hom.hom : (A ⟶ B) → (A.ρ.IntertwiningMap B.ρ)) :=
   hom_bijective.injective
 
 /-- Convenience shortcut for `Rep.hom_bijective.surjective`. -/
-lemma hom_surjective {M N : Rep k G} :
-    Function.Surjective (Hom.hom : (M ⟶ N) → (M.ρ.IntertwiningMap N.ρ)) :=
+lemma hom_surjective :
+    Function.Surjective (Hom.hom : (A ⟶ B) → (A.ρ.IntertwiningMap B.ρ)) :=
   hom_bijective.surjective
 
 /-- The morphisms between two objects in `Rep k G` has an equivalence to the intertwining maps
   between their underlying representations. -/
 @[simps]
-def homEquiv {M N : Rep k G} : (M ⟶ N) ≃ (M.ρ.IntertwiningMap N.ρ) where
+def homEquiv : (A ⟶ B) ≃ (A.ρ.IntertwiningMap B.ρ) where
   toFun := Hom.hom
   invFun := ofHom
 
-instance {M N : Rep k G} : Add (M ⟶ N) where
+instance : Add (A ⟶ B) where
   add f g := ofHom (f.hom + g.hom)
 
-lemma ofHom_add {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
-    {σ : Representation k G M} {ρ : Representation k G N} (f g : σ.IntertwiningMap ρ) :
+lemma ofHom_add (f g : ρ.IntertwiningMap σ) :
     ofHom (f + g) = ofHom f + ofHom g := rfl
 
-lemma add_hom {M N : Rep k G} (f g : M ⟶ N) : (f + g).hom = f.hom + g.hom := rfl
+lemma add_hom (f g : A ⟶ B) : (f + g).hom = f.hom + g.hom := rfl
 
-lemma hom_comp_toLinearMap {M N O : Rep k G} (f : M ⟶ N) (g : N ⟶ O) :
+lemma hom_comp_toLinearMap (f : A ⟶ B) (g : B ⟶ C) :
     (f ≫ g).hom.toLinearMap = g.hom.toLinearMap ∘ₗ f.hom.toLinearMap := rfl
 
-lemma add_comp {M N O : Rep k G} (f₁ f₂ : M ⟶ N) (g : N ⟶ O) :
+lemma add_comp (f₁ f₂ : A ⟶ B) (g : B ⟶ C) :
     (f₁ + f₂) ≫ g = f₁ ≫ g + f₂ ≫ g := by
   ext1
   simp [add_hom, Representation.IntertwiningMap.add_comp]
 
-lemma comp_add {M N O : Rep k G} (f : M ⟶ N) (g₁ g₂ : N ⟶ O) :
+lemma comp_add (f : A ⟶ B) (g₁ g₂ : B ⟶ C) :
     f ≫ (g₁ + g₂) = f ≫ g₁ + f ≫ g₂ := by
   ext1
   simp [add_hom, Representation.IntertwiningMap.comp_add]
 
-instance {M N : Rep k G} : Zero (M ⟶ N) where
-  zero := ofHom (0 : M.ρ.IntertwiningMap N.ρ)
+instance : Zero (A ⟶ B) where
+  zero := ofHom (0 : A.ρ.IntertwiningMap B.ρ)
 
 @[simp]
-lemma ofHom_zero {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
-    {σ : Representation k G M} {ρ : Representation k G N} :
-    ofHom (0 : σ.IntertwiningMap ρ) = 0 := rfl
+lemma ofHom_zero : ofHom (0 : ρ.IntertwiningMap σ) = 0 := rfl
 
 @[simp]
-lemma zero_hom {M N : Rep k G} : (0 : M ⟶ N).hom = 0 := rfl
+lemma zero_hom : (0 : A ⟶ B).hom = 0 := rfl
 
-instance {M N : Rep k G} : SMul ℕ (M ⟶ N) where
-  smul n f := ofHom (n • f.hom)
+instance : SMul ℕ (A ⟶ B) where smul n f := ofHom (n • f.hom)
 
-lemma ofHom_nsmul {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
-    {σ : Representation k G M} {ρ : Representation k G N} (f : σ.IntertwiningMap ρ) (n : ℕ) :
+lemma ofHom_nsmul (f : ρ.IntertwiningMap σ) (n : ℕ) :
     ofHom (n • f) = n • ofHom f := rfl
 
-lemma nsmul_hom {M N : Rep k G} (f : M ⟶ N) (n : ℕ) : (n • f).hom = n • f.hom := rfl
+lemma nsmul_hom (f : A ⟶ B) (n : ℕ) : (n • f).hom = n • f.hom := rfl
 
-instance {M N : Rep k G} : Neg (M ⟶ N) where
-  neg f := ofHom (-f.hom)
+instance : Neg (A ⟶ B) where neg f := ofHom (-f.hom)
 
-lemma ofHom_neg {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
-    {σ : Representation k G M} {ρ : Representation k G N} (f : σ.IntertwiningMap ρ) :
-    ofHom (-f) = -ofHom f := rfl
+lemma ofHom_neg (f : ρ.IntertwiningMap σ) : ofHom (-f) = -ofHom f := rfl
 
 lemma neg_hom {M N : Rep k G} (f : M ⟶ N) : (-f).hom = -f.hom := rfl
 
-instance {M N : Rep k G} : Sub (M ⟶ N) where
-  sub f g := ofHom (f.hom - g.hom)
+instance : Sub (A ⟶ B) where sub f g := ofHom (f.hom - g.hom)
 
-lemma ofHom_sub {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
-    {σ : Representation k G M} {ρ : Representation k G N} (f g : σ.IntertwiningMap ρ) :
-    ofHom (f - g) = ofHom f - ofHom g := rfl
+lemma ofHom_sub (f g : ρ.IntertwiningMap σ) : ofHom (f - g) = ofHom f - ofHom g := rfl
 
-lemma sub_hom {M N : Rep k G} (f g : M ⟶ N) : (f - g).hom = f.hom - g.hom := rfl
+lemma sub_hom (f g : A ⟶ B) : (f - g).hom = f.hom - g.hom := rfl
 
-instance {M N : Rep k G} : SMul ℤ (M ⟶ N) where
-  smul n f := ofHom (n • f.hom)
+instance : SMul ℤ (A ⟶ B) where smul n f := ofHom (n • f.hom)
 
-lemma ofHom_zsmul {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
-    {σ : Representation k G M} {ρ : Representation k G N} (f : σ.IntertwiningMap ρ) (n : ℤ) :
-    ofHom (n • f) = n • ofHom f := rfl
+lemma ofHom_zsmul (f : ρ.IntertwiningMap σ) (n : ℤ) : ofHom (n • f) = n • ofHom f := rfl
 
-lemma zsmul_hom {M N : Rep k G} (f : M ⟶ N) (n : ℤ) : (n • f).hom = n • f.hom := rfl
+lemma zsmul_hom (f : A ⟶ B) (n : ℤ) : (n • f).hom = n • f.hom := rfl
 
-instance : Preadditive (Rep k G) where
-  homGroup A B :=
-    @Function.Injective.addCommGroup (A ⟶ B) (A.ρ.IntertwiningMap B.ρ) _ _ _ _ _ _ _
-      Rep.Hom.hom hom_injective zero_hom add_hom neg_hom sub_hom nsmul_hom zsmul_hom
+instance : Preadditive (Rep.{w} k G) where
+  homGroup _ _ := hom_injective.addCommGroup Rep.Hom.hom zero_hom add_hom neg_hom sub_hom
+    nsmul_hom zsmul_hom
   add_comp _ _ _ := add_comp
   comp_add _ _ _ := comp_add
 
-lemma sum_hom {ι : Type u'} {M N : Rep.{w} k G} (f : ι → (M ⟶ N)) (s : Finset ι) :
+lemma sum_hom {ι : Type u'} (f : ι → (A ⟶ B)) (s : Finset ι) :
     (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom := by
   classical induction s using Finset.induction with
   | empty => simp
@@ -428,15 +403,11 @@ end
 
 variable {k G}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an element `x : A`, there is a natural morphism of representations `k[G] ⟶ A` sending
 `g ↦ A.ρ(g)(x).` -/
 abbrev leftRegularHom (A : Rep k G) (x : A) : leftRegular k G ⟶ A :=
-  Rep.ofHom (σ := (leftRegular k G).ρ) (ρ := A.ρ)
-    ⟨Finsupp.lift A k G fun g ↦ A.ρ g x, fun g ↦ by ext; simp⟩
+  Rep.ofHom ⟨Finsupp.lift A k G fun g ↦ A.ρ g x, fun g ↦ by ext; simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
--- @[simp]
 theorem leftRegularHom_hom_single {A : Rep k G} (g : G) (x : A) (r : k) :
     (leftRegularHom A x).hom (.single g r) = r • A.ρ g x := by
   simp [leftRegularHom]
@@ -785,7 +756,7 @@ def tensorHomEquiv (A B C : Rep.{u} k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom 
       Representation.linHom_apply]
     have := by simpa using (hom_comm_apply f g (A.ρ g⁻¹ y ⊗ₜ[k] x)).symm
     simp [this]⟩
-  invFun f := Rep.ofHom (σ := (A ⊗ B).ρ) (ρ := C.ρ) ⟨TensorProduct.uncurry (.id k) _ _ _
+  invFun f := Rep.ofHom ⟨TensorProduct.uncurry (.id k) _ _ _
     f.hom.toLinearMap.flip, fun g ↦ TensorProduct.ext' fun x y => by
     simpa using LinearMap.ext_iff.1 (hom_comm_apply f g y) (A.ρ g x)⟩
   left_inv _ := Rep.Hom.ext <| Representation.IntertwiningMap.ext <|
