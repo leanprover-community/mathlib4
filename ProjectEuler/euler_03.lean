@@ -3,6 +3,24 @@ The prime factors of 13195 are 5, 7, 13 and 29.
 What is the largest prime factor of the number 600851475143 ?
  -/
 
+
+import Mathlib.Data.Nat.PrimeFin
+import Mathlib.Data.Finset.Basic
+
+import Mathlib.Data.Finset.Sort
+
+def getValues (s : Finset ℕ) : List ℕ :=
+  s.sort (· ≤ ·)
+
+def solution : Nat :=
+  let factors := getValues (Nat.primeFactors 600_851_475_143)
+  factors.max?.getD 0
+
+#eval solution
+
+---
+
+
 def primeFactors (n : Nat) : List Nat :=
   let rec factors (fuel n d : Nat) : List Nat :=
     match fuel with
@@ -21,13 +39,8 @@ def primeFactors (n : Nat) : List Nat :=
 
 
 def largestPrimeFactor (n : Nat) : Option Nat :=
-  (primeFactors n).reverse.head?
+  (primeFactors n).max?.getD 1
 
-#eval (largestPrimeFactor 600851475143)
+#eval (primeFactors 600851475143).max (by decide)
 
-def solution (opt : Option Nat) : Nat :=
-match opt with
-| some x => x   -- use x here
-| none   => 0      -- provide a fallback
-
-#eval solution (largestPrimeFactor 600851475143)
+#eval largestPrimeFactor 600851475143
