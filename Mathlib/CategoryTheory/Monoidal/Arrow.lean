@@ -87,7 +87,7 @@ variable [MonoidalCategory C] (X₁ X₂ X₃ : Arrow C) {W : C}
   pushout-product of `W ◁ X₁` and `X₂`. -/
 @[simps!]
 noncomputable
-def whiskerLeft_iso
+def whiskerLeftIso
     [PreservesColimit (span (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom)) (tensorLeft W)] :
     Arrow.mk (W ◁ (X₁ □ X₂).hom) ≅ (W ◁ X₁.hom) □ X₂ :=
   Arrow.isoMk
@@ -103,7 +103,7 @@ def whiskerLeft_iso
   pushout-product of `X₁` and `X₂ ▷ W`. -/
 @[simps!]
 noncomputable
-def whiskerRight_iso
+def whiskerRightIso
     [PreservesColimit (span (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom)) (tensorRight W)] :
     Arrow.mk ((X₁ □ X₂).hom ▷ W) ≅ X₁ □ (X₂.hom ▷ W) :=
   Arrow.isoMk
@@ -139,13 +139,13 @@ def associator
   refine Arrow.isoMk ?_ (α_ _ _ _) ?_
   · refine Iso.mk ?_ ?_ ?_ ?_
     · exact pushout.desc ((α_ _ _ _).hom ≫ _ ◁ pushout.inl _ _ ≫ pushout.inl _ _)
-        ((whiskerRight_iso _ _).hom.left ≫
+        ((whiskerRightIso _ _).hom.left ≫
           pushout.desc (_ ◁ pushout.inr _ _ ≫ pushout.inl _ _) (pushout.inr _ _)
           (by simp [Limits.pushout.associator_naturality_left_condition]))
         (((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
           (by simp [Limits.pushout.whiskerLeft_condition_assoc, ← whisker_exchange_assoc])
           (by simp [← whisker_exchange_assoc, Limits.pushout.associator_naturality_left_condition]))
-    · exact pushout.desc ((whiskerLeft_iso _ _).hom.left ≫
+    · exact pushout.desc ((whiskerLeftIso _ _).hom.left ≫
           pushout.desc (pushout.inl _ _) ((pushout.inl _ _ ▷ _) ≫ pushout.inr _ _)
           (by simp [Limits.pushout.associator_inv_naturality_right_condition]))
         ((α_ _ _ _).inv ≫ (pushout.inr _ _) ▷ _ ≫ pushout.inr _ _)
