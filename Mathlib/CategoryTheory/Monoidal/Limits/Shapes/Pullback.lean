@@ -12,8 +12,9 @@ public import Mathlib.CategoryTheory.Monoidal.Category
 # Pullbacks and pushouts in a monoidal category
 
 For numerous simp lemmas of the form `f ≫ g = h`, we add accompanying simp lemmas of the form
-`Q ◁ f ≫ Q ◁ g = Q ◁ h` and `f ▷ Q ≫ g ▷ Q = h ▷ Q`. These are needed to define a monoidal
-category structure in `Mathlib.CategoryTheory.Monoidal.Arrow`.
+`Q ◁ f ≫ Q ◁ g = Q ◁ h` and `f ▷ Q ≫ g ▷ Q = h ▷ Q`. This file and
+`Mathlib.CategoryTheory.Monoidal.Limits.HasLimits` are needed to define a monoidal category
+structure in `Mathlib.CategoryTheory.Monoidal.Arrow`.
 
 ## TODO
 An attribute should be developed to automatically generate lemmas of this form.
@@ -164,31 +165,5 @@ lemma Limits.inr_comp_pushoutSymmetry_hom_whiskerRight (f : X ⟶ Y) (g : X ⟶ 
   simp [← comp_whiskerRight]
 
 end Pushout
-
-@[reassoc (attr := simp)]
-lemma Limits.HasColimit.whiskerLeft_isoOfNatIso_ι_hom {J : Type u₁} [Category.{v₁} J]
-    {F G : J ⥤ C} [HasColimit F] [HasColimit G] (w : F ≅ G) (j : J) {Q : C} :
-    Q ◁ colimit.ι F j ≫ Q ◁ (HasColimit.isoOfNatIso w).hom =
-      Q ◁ w.hom.app j ≫ Q ◁ colimit.ι G j := by
-  simp [← MonoidalCategory.whiskerLeft_comp]
-
-@[reassoc (attr := simp)]
-lemma Limits.HasColimit.isoOfNatIso_ι_hom_whiskerRight {J : Type u₁} [Category.{v₁} J]
-    {F G : J ⥤ C} [HasColimit F] [HasColimit G] (w : F ≅ G) (j : J) {Q : C} :
-    colimit.ι F j ▷ Q ≫ (HasColimit.isoOfNatIso w).hom ▷ Q =
-      w.hom.app j ▷ Q ≫ colimit.ι G j ▷ Q := by
-  simp [← MonoidalCategory.comp_whiskerRight]
-
-@[reassoc (attr := simp)]
-lemma Limits.colimit.whiskerLeft_ι_desc {J : Type u₁} [Category.{v₁} J]
-    {F : J ⥤ C} [HasColimit F] (c : Cocone F) (j : J) {Q : C} :
-    Q ◁ colimit.ι F j ≫ Q ◁ colimit.desc F c = Q ◁ c.ι.app j := by
-  simp [← MonoidalCategory.whiskerLeft_comp]
-
-@[reassoc (attr := simp)]
-lemma Limits.colimit.ι_desc_whiskerRight {J : Type u₁} [Category.{v₁} J]
-    {F : J ⥤ C} [HasColimit F] (c : Cocone F) (j : J) {Q : C} :
-    colimit.ι F j ▷ Q ≫ colimit.desc F c ▷ Q = c.ι.app j ▷ Q := by
-  simp [← comp_whiskerRight]
 
 end CategoryTheory.MonoidalCategory
