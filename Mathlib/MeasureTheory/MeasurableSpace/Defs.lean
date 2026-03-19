@@ -289,6 +289,7 @@ namespace MeasurableSpace
 
 /-- Copy of a `MeasurableSpace` with a new `MeasurableSet` equal to the old one. Useful to fix
 definitional equalities. -/
+@[implicit_reducible]
 protected def copy (m : MeasurableSpace α) (p : Set α → Prop) (h : ∀ s, p s ↔ MeasurableSet[m] s) :
     MeasurableSpace α where
   MeasurableSet' := p
@@ -325,6 +326,7 @@ inductive GenerateMeasurable (s : Set (Set α)) : Set α → Prop
       GenerateMeasurable s (⋃ i, f i)
 
 /-- Construct the smallest measure space containing a collection of basic sets -/
+@[implicit_reducible]
 def generateFrom (s : Set (Set α)) : MeasurableSpace α where
   MeasurableSet' := GenerateMeasurable s
   measurableSet_empty := .empty
@@ -371,6 +373,7 @@ theorem forall_generateFrom_mem_iff_mem_iff {S : Set (Set α)} {x y : α} :
 
 /-- If `g` is a collection of subsets of `α` such that the `σ`-algebra generated from `g` contains
 the same sets as `g`, then `g` was already a `σ`-algebra. -/
+@[implicit_reducible]
 protected def mkOfClosure (g : Set (Set α)) (hg : { t | MeasurableSet[generateFrom g] t } = g) :
     MeasurableSpace α :=
   (generateFrom g).copy (· ∈ g) <| Set.ext_iff.1 hg.symm

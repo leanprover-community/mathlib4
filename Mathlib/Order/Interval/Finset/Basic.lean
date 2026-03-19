@@ -264,6 +264,7 @@ theorem Ioo_self : Ioo a a = ∅ :=
 variable {a}
 
 /-- A set with upper and lower bounds in a locally finite order is a fintype -/
+@[implicit_reducible]
 def _root_.Set.fintypeOfMemBounds {s : Set α} [DecidablePred (· ∈ s)] (ha : a ∈ lowerBounds s)
     (hb : b ∈ upperBounds s) : Fintype s :=
   Set.fintypeSubset (Set.Icc a b) fun _ hx => ⟨ha hx, hb hx⟩

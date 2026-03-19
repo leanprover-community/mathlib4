@@ -153,7 +153,7 @@ theorem mem_span_iff_continuous {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[
     continuousSMul_iInf fun _ ↦ continuousSMul_induced _
   have t₂_smul (s : Finset ι) : @ContinuousSMul 𝕜 E _ _ (t₂ s) :=
     continuousSMul_iInf fun _ ↦ continuousSMul_induced _
-  simp_rw [Seminorm.continuous_iff_continuous_comp (norm_withSeminorms 𝕜 𝕜), forall_const]
+  simp_rw [WithSeminorms.continuous_iff_continuous_comp (norm_withSeminorms 𝕜 𝕜), forall_const]
   conv in Continuous _ => rw [Seminorm.continuous_iff one_pos, nhds_iInf]
   conv in Continuous _ =>
     rw [letI := t₂ s; Seminorm.continuous_iff one_pos, nhds_iInf, iInf_subtype]
@@ -172,10 +172,10 @@ theorem mem_span_iff_bound {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜]
     rfl
   rw [LinearMap.mem_span_iff_continuous]
   constructor <;> intro H
-  · rw [Seminorm.continuous_iff_continuous_comp (norm_withSeminorms 𝕜 𝕜), forall_const] at H
+  · rw [WithSeminorms.continuous_iff_continuous_comp (norm_withSeminorms 𝕜 𝕜), forall_const] at H
     rcases Seminorm.bound_of_continuous this _ H with ⟨s, C, -, hC⟩
     exact ⟨s, C, hC⟩
-  · exact Seminorm.cont_withSeminorms_normedSpace _ this _ H
+  · exact WithSeminorms.continuous_normedSpace_rng _ this _ H
 
 variable [AddCommGroup F] [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
