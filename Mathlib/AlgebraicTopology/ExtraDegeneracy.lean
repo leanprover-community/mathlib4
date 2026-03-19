@@ -79,6 +79,8 @@ namespace ExtraDegeneracy
 attribute [reassoc] s₀_comp_δ₁ s_comp_δ s_comp_σ
 attribute [reassoc (attr := simp)] s'_comp_ε s_comp_δ₀
 
+attribute [local simp← ]Functor.map_comp in
+attribute [local simp] s₀_comp_δ₁ s_comp_δ s_comp_σ in
 /-- If `ed` is an extra degeneracy for `X : SimplicialObject.Augmented C` and
 `F : C ⥤ D` is a functor, then `ed.map F` is an extra degeneracy for the
 augmented simplicial object in `D` obtained by applying `F` to `X`. -/
@@ -86,21 +88,6 @@ def map {D : Type*} [Category* D] {X : SimplicialObject.Augmented C} (ed : Extra
     (F : C ⥤ D) : ExtraDegeneracy (((whiskering _ _).obj F).obj X) where
   s' := F.map ed.s'
   s n := F.map (ed.s n)
-  s'_comp_ε := by
-    dsimp
-    rw [comp_id, ← F.map_comp, ed.s'_comp_ε, F.map_id]
-  s₀_comp_δ₁ := by
-    dsimp
-    rw [comp_id, ← F.map_comp, ← F.map_comp, ed.s₀_comp_δ₁]
-  s_comp_δ₀ n := by
-    dsimp
-    rw [← F.map_comp, ed.s_comp_δ₀, F.map_id]
-  s_comp_δ n i := by
-    dsimp
-    rw [← F.map_comp, ← F.map_comp, ed.s_comp_δ]
-  s_comp_σ n i := by
-    dsimp
-    rw [← F.map_comp, ← F.map_comp, ed.s_comp_σ]
 
 /-- If `X` and `Y` are isomorphic augmented simplicial objects, then an extra
 degeneracy for `X` gives also an extra degeneracy for `Y` -/
