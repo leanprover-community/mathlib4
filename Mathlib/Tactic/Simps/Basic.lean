@@ -988,7 +988,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
       trace[simps.debug] "`simp` failed to simplify rhs"
     rhs := result.expr
     prf := result.proof?.getD prf
-  -- dsimplify `lhs` if `cfg.dsimpRhs` is true
+  -- dsimplify `lhs` if `cfg.dsimpLhs` is true
   let mut lhs := lhs
   if cfg.dsimpLhs then
     let ctx ← mkSimpContext
