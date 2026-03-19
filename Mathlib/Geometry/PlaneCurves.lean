@@ -117,9 +117,7 @@ def frameAt (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
         simp only [h, Fin.isValue]; exact inner_of_velocity_normal_eq_zero c t
       · simp at hinej
         have h : j=0 := by
-          fin_cases j
-          · simp
-          · trivial
+          fin_cases j <;> trivial
         simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.mk_one, Fin.isValue, h]
         rw [real_inner_comm]; exact inner_of_velocity_normal_eq_zero c t
   have hBsp : ⊤ ≤ Submodule.span ℝ (Set.range B) := by
@@ -146,8 +144,8 @@ universe u
 
 variable {ι : Type u} [Fintype ι] {γ : ℝ → EuclideanSpace ℝ ι}
 
-/-- Auxiliary lemma: If `γ` is a twice continuously differentiable plane curve on an interval `I`,
-then the velocity vector `deriv γ` has a derivative at every point of `I`. -/
+/-- Auxiliary lemma: If `γ` is a twice continuously differentiable parametrized curve on an interval
+`I`, then the velocity vector `deriv γ` has a derivative at every point of `I`. -/
 lemma velocity_hasDerivAt_aux (hI : IsOpen I) (hγ : ContDiffOn ℝ 2 γ I)
     (ht : t ∈ I) : HasDerivAt (deriv γ) (iteratedDeriv 2 γ t) t := by
   have hd : ContDiffOn ℝ 1 (deriv γ) I := hγ.deriv_of_isOpen hI (by norm_num)
@@ -162,26 +160,18 @@ theorem inner_of_deriv_curve_eq_zero_of_const_magnitude_curve (hI : IsOpen I)
     (hγ₁ : ContDiffOn ℝ 1 γ I) {r : ℝ} (hγ₂ : ∀ t ∈ I, ‖γ t‖ = r) (ht : t ∈ I) :
     inner ℝ (deriv γ t) (γ t) = 0 := by
   let f (x : ℝ) := inner ℝ (γ x) (γ x)
-  have h₁ : ∀ x ∈ I, f x = r^2 := by
-    intro τ hτ
-    unfold f
-    rw [real_inner_self_eq_norm_sq, hγ₂ τ hτ]
-  let g : ℝ → ℝ := fun x ↦  r^2
-  have h₂ : derivWithin g I t = 0 := by
-    unfold g
-    simp
-  have h₃ : Set.EqOn f g I := by
+  have h₁ : derivWithin (fun x ↦  r^2) I t = 0 := by simp
+  have h₂ : Set.EqOn f (fun x ↦  r^2) I := by
     intro x hx
-    rw [h₁ x hx]
-  have h₄ : f t = g t := h₃ ht
-  have h₅ : deriv f t = 0 := by
-    rw [← derivWithin_of_isOpen hI ht, derivWithin_congr h₃ h₄, h₂]
+    simp [f, hγ₂ x hx]
+  have h₃ : deriv f t = 0 := by
+    rw [← derivWithin_of_isOpen hI ht, derivWithin_congr h₂ (h₂ ht), h₁]
   symm
   calc
     (0 : ℝ) = 0 / 2 := by norm_num
-    _ = (deriv f t) / 2 := by symm; simp [h₅]
+    _ = (deriv f t) / 2 := by simp [h₃]
     _ = ((inner ℝ (γ t) (deriv γ t)) + (inner ℝ (deriv γ t) (γ t))) / 2 := by
-      simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, div_left_inj']; unfold f
+      simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, div_left_inj', f]
       have hd : HasDerivAt γ (deriv γ t) t :=
         (hγ₁.contDiffAt (hI.mem_nhds ht)).differentiableAt_one.hasDerivAt
       apply (HasDerivAt.inner ℝ hd hd).deriv
@@ -230,6 +220,7 @@ lemma normal_hasDerivAt_aux (hI : IsOpen I) (hc : ContDiffOn ℝ 2 c I) (ht : t 
     fin_cases i <;> simp [hD]
   exact h.differentiableAt (hI.mem_nhds ht)
 
+@[fun_prop]
 lemma _root_.ContDiffOn.normal_of_twice_contDiffOn_curve (hI : IsOpen I) (hc : ContDiffOn ℝ 2 c I) :
     ContDiffOn ℝ 1 (normal c) I := by
   have hd : ContDiffOn ℝ 1 (deriv c) I := hc.deriv_of_isOpen hI (by norm_num)
@@ -245,8 +236,7 @@ the normal vector is perpendicular to the derivative of the normal vector. -/
 theorem inner_of_deriv_normal_normal_of_unit_speed_eq_zero (hI : IsOpen I)
     (hc₁ : ContDiffOn ℝ 2 c I) (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
     inner ℝ  (deriv (normal c) t) (normal c t) = 0 :=
-  inner_of_deriv_curve_eq_zero_of_const_magnitude_curve hI
-    (ContDiffOn.normal_of_twice_contDiffOn_curve hI hc₁)
+  inner_of_deriv_curve_eq_zero_of_const_magnitude_curve hI (by fun_prop (disch := assumption))
     (fun _ ht ↦  norm_normal_eq_one_of_unit_speed hc₂ ht) ht
 
 /-- The second Frenet equation for plane curves: For any twice continously differentiable plane
@@ -313,6 +303,7 @@ variable [hIoC : I.OrdConnected]
 
 /-- Auxiliary lemma which says that the angle function (fun x ↦ θ₀ + ∫ξ in t₀..x, κ ξ) is continuous
 on the interval I. -/
+@[fun_prop]
 lemma continuousOn_angle_fun_aux (hI : IsOpen I) (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) :
     ContinuousOn (fun x ↦ θ₀ + ∫ (ξ : ℝ) in t₀..x, κ ξ) I := by
   have h₁ : ContinuousOn (fun x ↦ θ₀) I := continuousOn_const
@@ -396,9 +387,37 @@ lemma second_deriv_of_initialCurve_of_orientedCurvature (hI : IsOpen I) (hκ : C
   rw [iteratedDeriv_succ, iteratedDeriv_one,
       (HasDerivAt.deriv_initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ ht).deriv]
 
+@[fun_prop]
+lemma _root_.ContinuousOn.initialCurve_of_orientedCurvature (hI : IsOpen I) (hκ : ContinuousOn κ I)
+    (ht₀ : t₀ ∈ I) : ContinuousOn (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀) I := by
+  apply HasDerivAt.continuousOn
+  exact fun _ h ↦  HasDerivAt.initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ h
+
+@[fun_prop]
+lemma _root_.ContinuousOn.deriv_initialCurve_of_orientedCurvature (hI : IsOpen I) 
+    (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) : 
+    ContinuousOn (deriv (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) I := by
+  apply HasDerivAt.continuousOn
+  exact fun _ h ↦  HasDerivAt.deriv_initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ h
+
+@[fun_prop]
+lemma _root_.DifferentiableOn.initialCurve_of_orientedCurvature (hI : IsOpen I)
+    (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) :
+    DifferentiableOn ℝ (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀) I :=
+  fun _ h ↦  (HasDerivAt.initialCurve_of_orientedCurvature
+              θ₀ p₀ hI hκ ht₀ h).differentiableAt.differentiableWithinAt
+
+@[fun_prop]
+lemma _root_.DifferentiableOn.deriv_initialCurve_of_orientedCurvature (hI : IsOpen I)
+    (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) :
+    DifferentiableOn ℝ (deriv (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) I :=
+  fun _ h ↦  (HasDerivAt.deriv_initialCurve_of_orientedCurvature
+              θ₀ p₀ hI hκ ht₀ h).differentiableAt.differentiableWithinAt
+
 set_option backward.isDefEq.respectTransparency false in
 /-- The plane curve we construct from the given orientedCurvature function κ is twice continuously
 differentiable on the given interval I. -/
+@[fun_prop]
 protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature (hI : IsOpen I)
     (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) :
     ContDiffOn ℝ 2 (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀) I := by
@@ -410,13 +429,9 @@ protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature (hI : IsOp
     have hm' : m ≤ 2 := by simp_all
     interval_cases m
     · rw [iteratedDeriv_zero]
-      apply HasDerivAt.continuousOn
-      · intro t ht
-        exact HasDerivAt.initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ ht
+      fun_prop (disch := assumption)
     · rw [iteratedDeriv_one]
-      apply HasDerivAt.continuousOn
-      · intro t ht
-        exact HasDerivAt.deriv_initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ ht
+      fun_prop (disch := assumption)
     · intro t ht
       have h' : ∀ y ∈ I, (iteratedDeriv 2 (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) y
                        = (fun t ↦ !₂[-(κ t)*Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ),
@@ -428,29 +443,15 @@ protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature (hI : IsOp
         apply contDiffWithinAt_piLp'
         intro i
         fin_cases i
-        · simp only [neg_mul, Fin.zero_eta, Fin.isValue, Matrix.cons_val_zero]
+        all_goals
+          simp only [neg_mul, Fin.zero_eta, Fin.mk_one, Fin.isValue, Matrix.cons_val_zero, 
+                       Matrix.cons_val_one, Matrix.cons_val_fin_one]
           rw [contDiffWithinAt_zero ht]
           use I
-          · constructor
-            · exact self_mem_nhdsWithin
-            · simp only [Set.inter_self]
-              apply ContinuousOn.neg
-              apply ContinuousOn.mul
-              · exact hκ
-              · apply Continuous.comp_continuousOn'
-                · exact Real.continuous_sin
-                · exact continuousOn_angle_fun_aux θ₀ hI hκ ht₀
-        · simp only [neg_mul, Fin.mk_one, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one]
-          rw [contDiffWithinAt_zero ht]
-          use I
-          · constructor
-            · exact self_mem_nhdsWithin
-            · simp only [Set.inter_self]
-              apply ContinuousOn.mul
-              · exact hκ
-              · apply Continuous.comp_continuousOn'
-                · exact Real.continuous_cos
-                · exact continuousOn_angle_fun_aux θ₀ hI hκ ht₀
+          constructor
+          · exact self_mem_nhdsWithin
+          · simp only [Set.inter_self]
+            fun_prop (disch := assumption)
       exact hcd.continuousWithinAt
   · intro m hm
     have help := iteratedDerivWithin_of_isOpen (n:=m)
@@ -458,14 +459,9 @@ protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature (hI : IsOp
     rw [differentiableOn_congr help]
     have hm' : m < 2 := by simp_all
     interval_cases m
-    · rw [iteratedDeriv_zero]
-      intro t ht
-      exact (HasDerivAt.initialCurve_of_orientedCurvature
-             θ₀ p₀ hI hκ ht₀ ht).differentiableAt.differentiableWithinAt
-    · rw [iteratedDeriv_one]
-      intro t ht
-      exact (HasDerivAt.deriv_initialCurve_of_orientedCurvature
-             θ₀ p₀ hI hκ ht₀ ht).differentiableAt.differentiableWithinAt
+    all_goals
+      simp only [iteratedDeriv_zero, iteratedDeriv_one]
+      fun_prop (disch := assumption)
 
 variable {t : ℝ}
 
