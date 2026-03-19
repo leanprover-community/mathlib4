@@ -687,7 +687,7 @@ noncomputable abbrev corootSubmodule (α : Weight K H L) : LieSubmodule K H L :=
   LieSubmodule.map H.toLieSubmodule.incl (corootSpace α)
 
 omit [CharZero K] in
-lemma coroot_mem_corootSubmodule (α : Weight K H L) :
+lemma coe_coroot_mem_corootSubmodule (α : Weight K H L) :
     (coroot α : L) ∈ corootSubmodule α :=
   (LieSubmodule.mem_map _).mpr
     ⟨⟨coroot α, (coroot α).property⟩, coroot_mem_corootSpace α, rfl⟩
