@@ -4521,11 +4521,8 @@ public import Mathlib.GroupTheory.EckmannHilton
 public import Mathlib.GroupTheory.Exponent
 public import Mathlib.GroupTheory.FiniteAbelian.Basic
 public import Mathlib.GroupTheory.FiniteAbelian.Duality
-<<<<<<< HEAD
-public import Mathlib.GroupTheory.FinitelyPresentedGroup
-=======
 public import Mathlib.GroupTheory.FiniteIndexNormalSubgroup
->>>>>>> upstream/master
+public import Mathlib.GroupTheory.FinitelyPresentedGroup
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.GroupTheory.FixedPointFree
 public import Mathlib.GroupTheory.Focal
