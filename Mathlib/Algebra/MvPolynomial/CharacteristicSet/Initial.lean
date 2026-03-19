@@ -66,8 +66,8 @@ theorem initialOf_def {p : MvPolynomial σ R} {i : σ} :
   rewrite [Finsupp.support_single_ne_zero s r_zero, Finset.sum_singleton, Finset.sup_singleton]
   rw [if_pos rfl, coeff, Finsupp.single_eq_same]
 
-@[simp] theorem initialOf_C (r : R) : (C r : MvPolynomial σ R).initialOf i = C r :=
-  by rw [C_apply, initialOf_monomial, Finsupp.erase_zero]
+@[simp] theorem initialOf_C (r : R) : (C r : MvPolynomial σ R).initialOf i = C r := by
+  rw [C_apply, initialOf_monomial, Finsupp.erase_zero]
 
 @[simp] theorem initialOf_one : (1 : MvPolynomial σ R).initialOf i = 1 := by rw [← C_1, initialOf_C]
 
@@ -93,14 +93,14 @@ theorem initialOf_mul_X_pow_of_ne {i j : σ} (k : ℕ) (h : i ≠ j) :
   | zero => rw [pow_zero, mul_one, mul_one]
   | succ k hk => rw [pow_add, pow_one, ← mul_assoc, initialOf_mul_X_of_ne _ h, hk, mul_assoc]
 
-@[simp] theorem initialOf_X_self : (X i).initialOf i = (1 : MvPolynomial σ R) :=
-  by rw [← one_mul (X i), initialOf_mul_X_self, initialOf_one]
+@[simp] theorem initialOf_X_self : (X i).initialOf i = (1 : MvPolynomial σ R) := by
+  rw [← one_mul (X i), initialOf_mul_X_self, initialOf_one]
 
-@[simp] theorem initialOf_X_self_pow (k : ℕ) : (X i ^ k).initialOf i = (1 : MvPolynomial σ R) :=
-  by rw [← one_mul (X i ^ k), initialOf_mul_X_self_pow, initialOf_one]
+@[simp] theorem initialOf_X_self_pow (k : ℕ) : (X i ^ k).initialOf i = (1 : MvPolynomial σ R) := by
+  rw [← one_mul (X i ^ k), initialOf_mul_X_self_pow, initialOf_one]
 
-theorem initialOf_X_of_ne {i j : σ} (h : i ≠ j) : (X j).initialOf i = (X j : MvPolynomial σ R) :=
-  by rw [← one_mul (X j), initialOf_mul_X_of_ne _ h, initialOf_one]
+theorem initialOf_X_of_ne {i j : σ} (h : i ≠ j) : (X j).initialOf i = (X j : MvPolynomial σ R) := by
+  rw [← one_mul (X j), initialOf_mul_X_of_ne _ h, initialOf_one]
 
 theorem initialOf_X_pow_of_ne {i j : σ} (k : ℕ) (h : i ≠ j) :
     (X j ^ k).initialOf i = (X j : MvPolynomial σ R) ^ k := by
@@ -513,8 +513,8 @@ section CommRing
 
 variable {R σ : Type*} [CommRing R] {p q : MvPolynomial σ R}
 
-@[simp] theorem initialOf_neg (i : σ) : (-p).initialOf i = -p.initialOf i :=
-  by classical simp [initialOf_eq_leadingCoeff]
+@[simp] theorem initialOf_neg (i : σ) : (-p).initialOf i = -p.initialOf i := by
+  classical simp [initialOf_eq_leadingCoeff]
 
 theorem degreeOf_sub_lt_of_initialOf_eq {i : σ} (hi : p.initialOf i = q.initialOf i)
     (hd : p.degreeOf i = q.degreeOf i) : (p - q).degreeOf i ≤ p.degreeOf i - 1 :=

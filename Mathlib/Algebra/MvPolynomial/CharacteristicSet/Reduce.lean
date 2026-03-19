@@ -73,18 +73,19 @@ theorem reducedTo_of_max_vars_lt (h : q.vars.max < p.vars.max) : q.reducedTo p :
       Finset.notMem_of_max_lt_coe (hc ▸ h)]
     exact Nat.pos_of_ne_zero <| degreeOf_max_vars_ne_zero hc.symm
 
-theorem reducedTo_congr_right : p ≈ q → (r.reducedTo p ↔ r.reducedTo q) := fun h ↦
-  have (p q : MvPolynomial σ R) (h : p ≈ q) : r.reducedTo p → r.reducedTo q := by
-    have : p.vars.max = q.vars.max ∧ p.mainDegree = q.mainDegree := equiv_iff.mp h
-    simp only [reducedTo, if_true_left]
-    intro hr1 hr2
-    match hc : q.vars.max with
-    | none => simp [hr2, hc ▸ this.1] at hr1
-    | some c =>
-      have hc' := hc ▸ this.1
-      simp [hr2, hc', mainDegree_of_max_vars_isSome hc' ▸ this.2] at hr1
-      simp only [mainDegree_of_max_vars_isSome hc ▸ hr1]
-  ⟨this p q h, this q p h.symm⟩
+theorem reducedTo_congr_right (h : p ≈ q) : (r.reducedTo p ↔ r.reducedTo q) := by
+  suffices ∀ (p q : MvPolynomial σ R) (h : p ≈ q), r.reducedTo p → r.reducedTo q from
+    ⟨this p q h, this q p h.symm⟩
+  intro p q h
+  have : p.vars.max = q.vars.max ∧ p.mainDegree = q.mainDegree := equiv_iff.mp h
+  simp only [reducedTo, if_true_left]
+  intro hr1 hr2
+  match hc : q.vars.max with
+  | none => simp [hr2, hc ▸ this.1] at hr1
+  | some c =>
+    have hc' := hc ▸ this.1
+    simp [hr2, hc', mainDegree_of_max_vars_isSome hc' ▸ this.2] at hr1
+    simp only [mainDegree_of_max_vars_isSome hc ▸ hr1]
 
 theorem reducedTo_iff_gt_of_max_vars_eq (hq : q ≠ 0) (h : q.vars.max = p.vars.max) :
     q.reducedTo p ↔ q < p where
