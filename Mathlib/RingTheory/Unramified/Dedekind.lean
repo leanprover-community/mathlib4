@@ -139,12 +139,18 @@ theorem isDedekindDomainDvr.of_formallyUnramified
         ← Ideal.map_map]
       apply Submodule.IsPrincipal.map_ringHom
       infer_instance
+    -- suffices p''.IsMaximal from (IsLocalRing.eq_maximalIdeal this).symm
     let Q := B ⧸ p'
     have : IsArtinianRing Q := IsArtinianRing.of_finite (A ⧸ p) Q
     have h : p'.IsRadical := map_isMaximal_isRadical_of_formallyUnramified A B p
     replace h : p''.IsRadical := by
       rw [← Ideal.radical_eq_iff] at h ⊢
       rw [← IsLocalization.map_radical q.primeCompl, h]
+    -- have : IsArtinianRing (B ⧸ q) := by
+    --   have h : p' ≤ q := Ideal.map_comap_le
+    --   exact Function.Surjective.isArtinianRing (Ideal.Quotient.factor_surjective h)
+    -- have : IsArtinianRing (Localization.AtPrime q ⧸ q') :=
+    --   (IsLocalization.AtPrime.equivQuotMaximalIdeal q (Localization.AtPrime q)).isArtinianRing
     suffices p''.minimalPrimes = {q'} by
       rw [← h.radical, ← Ideal.sInf_minimalPrimes, this, sInf_singleton]
     exact IsLocalization.minimalPrimes_map_of_isArtinian (Localization.AtPrime q) q p'
