@@ -115,7 +115,7 @@ theorem gaussNorm_coe_powerSeries [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ
       rw [hi]
       exact le_ciSup (aux_bdd v p) i
 
-/-- If `v x = 0 ↔ x = 0` for all `x : R` and `v` is nonnegative, then the Gauss norm is zero if and
+/-- If `v x = 0 → x = 0` for all `x : R` and `v` is nonnegative, then the Gauss norm is zero if and
 only if the polynomial is zero. -/
 @[simp]
 theorem gaussNorm_eq_zero_iff [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
