@@ -336,7 +336,7 @@ theorem integral_Icc_deriv_smul_of_deriv_nonneg {a b : ℝ} {g : ℝ → F}
   · exact fun z hz ↦ (hff' z hz).hasDerivWithinAt
   · exact M.mono Ioo_subset_Icc_self
 
-theorem integrableOn_Icc_deriv_smul_of_deriv_nonneg {a b : ℝ} {g : ℝ → F}
+theorem integrableOn_Icc_deriv_smul_iff_of_deriv_nonneg {a b : ℝ} {g : ℝ → F}
     (hf : ContinuousOn f (Icc a b))
     (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x)
     (hf' : ∀ x ∈ Ioo a b, 0 ≤ f' x) (hab : a ≤ b) :
@@ -461,7 +461,7 @@ theorem integral_Icc_deriv_smul_of_deriv_nonpos {a b : ℝ} {g : ℝ → F}
   · exact fun z hz ↦ (hff' z hz).hasDerivWithinAt
   · exact M.mono Ioo_subset_Icc_self
 
-theorem integrableOn_Icc_deriv_smul_of_deriv_nonpos {a b : ℝ} {g : ℝ → F}
+theorem integrableOn_Icc_deriv_smul_iff_of_deriv_nonpos {a b : ℝ} {g : ℝ → F}
     (hf : ContinuousOn f (Icc a b))
     (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x)
     (hf' : ∀ x ∈ Ioo a b, f' x ≤ 0) (hab : a ≤ b) :
@@ -492,8 +492,6 @@ theorem integrableOn_Icc_deriv_smul_of_deriv_nonpos {a b : ℝ} {g : ℝ → F}
   · simp
   · exact fun z hz ↦ (hff' z hz).hasDerivWithinAt
   · exact M.mono Ioo_subset_Icc_self
-
-#exit
 
 section WithDensity
 
