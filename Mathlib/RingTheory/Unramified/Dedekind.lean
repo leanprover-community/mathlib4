@@ -19,34 +19,6 @@ We prove that a domain finite and unramified over a Dedekind domain is a Dedekin
 
 section temp
 
-variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S] [Algebra R S]
-  [IsLocalization M S]
-
-include M in
-theorem IsLocalization.comap_le_comap_iff {I J : Ideal S} :
-    I.comap (algebraMap R S) ≤ J.comap (algebraMap R S) ↔ I ≤ J := by
-  exact (IsLocalization.orderEmbedding M S).le_iff_le
-
-include M in
-theorem IsLocalization.comap_lt_comap_iff {I J : Ideal S} :
-    I.comap (algebraMap R S) < J.comap (algebraMap R S) ↔ I < J := by
-  exact (IsLocalization.orderEmbedding M S).lt_iff_lt
-
-include M in
-theorem IsLocalization.isMaximal_of_isMaximal_comap
-    {I : Ideal S} (h : (I.comap (algebraMap R S)).IsMaximal) :
-    I.IsMaximal := by
-  rw [Ideal.isMaximal_def, isCoatom_iff_ge_of_le] at h ⊢
-  obtain ⟨h1, h2⟩ := h
-  refine ⟨by simpa using h1, fun J h3 h4 ↦ ?_⟩
-  specialize h2 (J.comap (algebraMap R S)) (by simpa)
-  simp_rw [IsLocalization.comap_le_comap_iff M S] at h2
-  exact h2 h4
-
-end temp
-
-section temp
-
 variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S] [Algebra R S]
 
 theorem IsLocalization.minimalPrimes_map_of_isArtinian (q : Ideal R) [q.IsPrime]
@@ -72,50 +44,13 @@ theorem IsLocalization.minimalPrimes_map_of_isArtinian (q : Ideal R) [q.IsPrime]
 
 end temp
 
-theorem isReduced_quotient_iff_isRadical (R : Type*) [CommRing R] (I : Ideal R) :
-    IsReduced (R ⧸ I) ↔ I.IsRadical := by
-  rw [← I.mk_ker, RingHom.ker_isRadical_iff_reduced_of_surjective, I.mk_ker]
-  · rfl
-  · exact Ideal.Quotient.mk_surjective
-
-theorem formallyUnramified_quotient (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
-    [Module.Finite A B] [Algebra.FormallyUnramified A B]
-    (p : Ideal A) :
-    Algebra.FormallyUnramified (A ⧸ p) (B ⧸ p.map (algebraMap A B)) := by
-  let q := p.map (algebraMap A B)
-  let Q := B ⧸ q
-  let Q' := TensorProduct A (A ⧸ p) B
-  let e1 : Q ≃+* Q' := (Algebra.TensorProduct.quotIdealMapEquivTensorQuot B p).toRingEquiv.trans
-    (Algebra.TensorProduct.comm A B (A ⧸ p)).toRingEquiv
-  let e2 : Q ≃ₐ[A] Q' :=
-  { __ := e1
-    commutes' x := by
-      rw [IsScalarTower.algebraMap_apply A B Q]
-      simp [e1, Q, -Ideal.Quotient.mk_algebraMap]
-      rw [Algebra.TensorProduct.quotIdealMapEquivTensorQuot_mk]
-      simp [Q', ← Algebra.TensorProduct.tmul_one_eq_one_tmul]
-       }
-  let e3: Q ≃ₐ[A ⧸ p] Q' := e2.extendScalarsOfSurjective (by
-    rw [Ideal.Quotient.algebraMap_eq]
-    exact Ideal.Quotient.mk_surjective)
-  have : Algebra.FormallyUnramified (A ⧸ p) Q' := Algebra.FormallyUnramified.base_change (A ⧸ p)
-  exact this.of_equiv e3.symm
-
 theorem map_isMaximal_isRadical_of_formallyUnramified
-    (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
-    [Algebra.FormallyUnramified A B]
-    (p : Ideal A) [p.IsMaximal] : (p.map (algebraMap A B)).IsRadical := by
+    (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Algebra.EssFiniteType A B]
+    [Algebra.FormallyUnramified A B] (p : Ideal A) [p.IsMaximal] :
+    (p.map (algebraMap A B)).IsRadical := by
   let : Field (A ⧸ p) := Ideal.Quotient.field p
-  let p' := p.map (algebraMap A B)
-  let Q := B ⧸ p'
-  rw [← isReduced_quotient_iff_isRadical]
-  -- todo: golf with formallyUnramified_quotient
-  let Q' := TensorProduct A (A ⧸ p) B
-  let e : Q ≃+* Q' := (Algebra.TensorProduct.quotIdealMapEquivTensorQuot B p).toRingEquiv.trans
-    (Algebra.TensorProduct.comm A B (A ⧸ p)).toRingEquiv
-  have : Algebra.FormallyUnramified (A ⧸ p) Q := formallyUnramified_quotient A B p
-  have : IsReduced Q' := Algebra.FormallyUnramified.isReduced_of_field (A ⧸ p) Q'
-  exact isReduced_of_injective e e.injective
+  rw [Ideal.isRadical_iff_quotient_reduced]
+  exact Algebra.FormallyUnramified.isReduced_of_field (A ⧸ p) (B ⧸ p.map (algebraMap A B))
 
 theorem isDedekindDomainDvr.of_formallyUnramified
     (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
@@ -146,11 +81,6 @@ theorem isDedekindDomainDvr.of_formallyUnramified
     replace h : p''.IsRadical := by
       rw [← Ideal.radical_eq_iff] at h ⊢
       rw [← IsLocalization.map_radical q.primeCompl, h]
-    -- have : IsArtinianRing (B ⧸ q) := by
-    --   have h : p' ≤ q := Ideal.map_comap_le
-    --   exact Function.Surjective.isArtinianRing (Ideal.Quotient.factor_surjective h)
-    -- have : IsArtinianRing (Localization.AtPrime q ⧸ q') :=
-    --   (IsLocalization.AtPrime.equivQuotMaximalIdeal q (Localization.AtPrime q)).isArtinianRing
     suffices p''.minimalPrimes = {q'} by
       rw [← h.radical, ← Ideal.sInf_minimalPrimes, this, sInf_singleton]
     exact IsLocalization.minimalPrimes_map_of_isArtinian (Localization.AtPrime q) q p'

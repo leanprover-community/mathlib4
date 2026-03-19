@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.RingTheory.Kaehler.Basic
 public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+public import Mathlib.RingTheory.TensorProduct.Quotient
 public import Mathlib.Algebra.Algebra.Shrink
 
 /-!
@@ -282,6 +283,23 @@ instance base_change [FormallyUnramified R A] :
   haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
   ext : 1
   exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => AlgHom.congr_fun e (1 ⊗ₜ x)
+
+open Algebra TensorProduct in
+instance quotient_map [FormallyUnramified R B] (p : Ideal R) :
+    FormallyUnramified (R ⧸ p) (B ⧸ p.map (algebraMap R B)) := by
+  let q := p.map (algebraMap R B)
+  let Q := B ⧸ q
+  let Q' := TensorProduct R (R ⧸ p) B
+  let e0 := quotIdealMapEquivTensorQuot B p
+  let e1 := Algebra.TensorProduct.comm R B (R ⧸ p)
+  let e2 : Q ≃ₐ[R] Q' :=
+  { __ := e0.toRingEquiv.trans e1.toRingEquiv
+    commutes' x := by
+      suffices e1 (e0 (Ideal.Quotient.mk q (algebraMap R B x))) = (algebraMap R Q') x by simpa
+      rw [quotIdealMapEquivTensorQuot_mk, tmul_one_eq_one_tmul]
+      simp [e1, Q'] }
+  let e3 : Q ≃ₐ[R ⧸ p] Q' := e2.extendScalarsOfSurjective Ideal.Quotient.mk_surjective
+  exact (Algebra.FormallyUnramified.base_change (R ⧸ p)).of_equiv e3.symm
 
 end BaseChange
 
