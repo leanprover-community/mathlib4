@@ -14,11 +14,17 @@ public import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Ideals in localizations of commutative rings
+
 ## Implementation notes
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
+
+## TODO
+Restate the file in terms of `Ideal.under` and `Ideal.over`.
+
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
+
 -/
 
 @[expose] public section

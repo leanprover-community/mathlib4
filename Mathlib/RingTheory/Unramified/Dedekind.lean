@@ -12,16 +12,16 @@ public import Mathlib.RingTheory.Unramified.Field
 /-!
 # Unramified algebras over Dedekind domains
 
-We prove that a finite formally unramified algebra over a Dedekind domain is a Dedekind domain.
+We prove that a domain finite and unramified algebra over a Dedekind domain is a Dedekind domain.
 -/
 
 @[expose] public section
 
-/-- A finite formally unramified algebra over a Dedekind domain is a Dedekind domain. -/
+/-- A domain finite and unramified over a Dedekind domain is a Dedekind domain. -/
 theorem isDedekindDomain.of_formallyUnramified
     (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
     [IsDedekindDomain A] [IsDomain B] [Algebra.FormallyUnramified A B] : IsDedekindDomain B where
-  noetherian := (isNoetherianRing_iff_ideal_fg B).mp (IsNoetherianRing.of_finite A B)
+  __ := IsNoetherianRing.of_finite A B
   maximalOfPrime := by
     intro q hq0 hq
     have : (q.under A).IsMaximal := (hq.under A).isMaximal (q.under_ne_bot A hq0)
