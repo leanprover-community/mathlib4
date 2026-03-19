@@ -74,6 +74,7 @@ lemma card_pos : 0 < Nat.card (R ⧸ Q.under R) :=
   have := H.finite_quotient
   Nat.card_pos
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_comap : Q ≤ Q.comap φ := by
   intro x hx
   simp_all only [Ideal.mem_comap, ← Ideal.Quotient.eq_zero_iff_mem (I := Q), H.mk_apply,
@@ -143,6 +144,7 @@ lemma localize_algebraMap [Q.IsPrime] (x : S) :
 
 open IsLocalRing nonZeroDivisors
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isArithFrobAt_localize [Q.IsPrime] : H.localize.IsArithFrobAt (maximalIdeal _) := by
   have h : Nat.card (R ⧸ (maximalIdeal _).comap (algebraMap R (Localization.AtPrime Q))) =
       Nat.card (R ⧸ Q.under R) := by
@@ -164,8 +166,6 @@ lemma eq_of_isUnramifiedAt
     (H' : ψ.IsArithFrobAt Q) [Q.IsPrime] (hQ : Q.primeCompl ≤ S⁰)
     [Algebra.IsUnramifiedAt R Q] [IsNoetherianRing S] : φ = ψ := by
   have : H.localize = H'.localize := by
-    have : IsNoetherianRing (Localization.AtPrime Q) :=
-      IsLocalization.isNoetherianRing Q.primeCompl _ inferInstance
     apply Algebra.FormallyUnramified.ext_of_iInf _
       (Ideal.iInf_pow_eq_bot_of_isLocalRing (maximalIdeal _) Ideal.IsPrime.ne_top')
     intro x
@@ -193,7 +193,7 @@ variable {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
 variable {Q : Ideal S} {σ σ' : G}
 
 lemma mul_inv_mem_inertia (H : IsArithFrobAt R σ Q) (H' : IsArithFrobAt R σ' Q) :
-    σ * σ'⁻¹ ∈ Q.toAddSubgroup.inertia G := by
+    σ * σ'⁻¹ ∈ Q.inertia G := by
   intro x
   simpa [mul_smul] using sub_mem (H (σ'⁻¹ • x)) (H' (σ'⁻¹ • x))
 
@@ -217,7 +217,6 @@ lemma exists_of_isInvariant [Q.IsPrime] [Finite (S ⧸ Q)] : ∃ σ : G, IsArith
   let P := Q.under R
   have := Algebra.IsInvariant.isIntegral R S G
   have : Q.IsMaximal := Ideal.Quotient.maximal_of_isField _ (Finite.isField_of_domain (S ⧸ Q))
-  have : P.IsMaximal := Ideal.isMaximal_comap_of_isIntegral_of_isMaximal Q
   obtain ⟨p, hc⟩ := CharP.exists (R ⧸ P)
   have : Finite (R ⧸ P) := .of_injective _ Ideal.algebraMap_quotient_injective
   cases nonempty_fintype (R ⧸ P)

@@ -5,7 +5,8 @@ Authors: Damiano Testa
 -/
 
 module
-public meta import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Parser.Command
 
 /-!
 # The "emptyLine" linter

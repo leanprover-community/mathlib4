@@ -22,7 +22,7 @@ This file contains miscellaneous lemmas about lattices with top or bottom elemen
   Typical examples include `Prop` and `Set α`.
 -/
 
-@[expose] public section
+public section
 
 open Function OrderDual
 
@@ -71,7 +71,7 @@ theorem min_eq_bot {a b : α} : min a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := by
 
 @[to_dual (attr := aesop (rule_sets := [finiteness]) safe apply)]
 lemma min_ne_bot {a b : α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : min a b ≠ ⊥ := by
-  grind [max_eq_top]
+  grind
 
 end LinearOrder
 

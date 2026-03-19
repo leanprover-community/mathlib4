@@ -176,12 +176,11 @@ theorem unique_irreducible (hR : HasUnitMulPowIrreducibleFactorization R)
     · rw [add_comm, pow_succ'] at H0
       exact (hϖ.not_isUnit (isUnit_of_mul_isUnit_left H0)).elim
 
-variable [IsDomain R]
-
 /-- An integral domain in which there is an irreducible element `p`
 such that every nonzero element is associated to a power of `p` is a unique factorization domain.
 See `IsDiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization`. -/
-theorem toUniqueFactorizationMonoid (hR : HasUnitMulPowIrreducibleFactorization R) :
+theorem toUniqueFactorizationMonoid [IsCancelMulZero R]
+    (hR : HasUnitMulPowIrreducibleFactorization R) :
     UniqueFactorizationMonoid R :=
   let p := Classical.choose hR
   let spec := Classical.choose_spec hR
@@ -231,7 +230,7 @@ theorem of_ufd_of_unique_irreducible [UniqueFactorizationMonoid R] (h₁ : ∃ p
 
 end HasUnitMulPowIrreducibleFactorization
 
-theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R] [IsDomain R]
+theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R]
     [UniqueFactorizationMonoid R] (h₁ : ∃ p : R, Irreducible p)
     (h₂ : ∀ ⦃p q : R⦄, Irreducible p → Irreducible q → Associated p q) :
     IsPrincipalIdealRing R := by
@@ -462,6 +461,7 @@ lemma addVal_eq_zero_of_unit (u : Rˣ) :
   rw [addVal_def (u : R) u hϖ 0] <;>
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma addVal_eq_zero_iff {x : R} :
     addVal R x = 0 ↔ IsUnit x := by
   rcases eq_or_ne x 0 with rfl | hx
@@ -472,6 +472,7 @@ lemma addVal_eq_zero_iff {x : R} :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 instance (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
     IsHausdorff (maximalIdeal R) R where
   haus' x hx := by
@@ -533,6 +534,7 @@ variable (R) in
 only takes two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one
 step; otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case.
 See `EuclideanDomain.to_principal_ideal_domain` for EuclideanDomain ⇒ PID. -/
+@[implicit_reducible]
 def toEuclideanDomain : EuclideanDomain R where
   quotient := quotient
   quotient_zero x := by simp [quotient]

@@ -149,6 +149,7 @@ theorem rev_involutive {n} : Function.Involutive (@rev n) := rev_rev
 instance : Inhabited (Fin2 1) :=
   ⟨fz⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance instFintype : ∀ n, Fintype (Fin2 n)
   | 0 => ⟨∅, Fin2.elim0⟩
   | n + 1 =>

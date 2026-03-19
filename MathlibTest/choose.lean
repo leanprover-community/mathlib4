@@ -82,3 +82,84 @@ example {α : Type u} (p : α → Prop) (h : ∀ i : α, p i → ∃ j : α × �
   guard_hyp f : α → α × α
   guard_hyp h : ∀ (i : α), p i → p (f i).1
   trivial
+
+/-! ## Type annotation tests -/
+
+-- Basic type annotation for witness and property
+example (h : ∃ n : Nat, n > 0) : True := by
+  choose (n : Nat) (hn : n > 0) using h
+  guard_hyp n : Nat
+  guard_hyp hn : n > 0
+  trivial
+
+-- Type annotation with forall binders
+example (h : ∀ m : Nat, ∃ n : Nat, m < n) : True := by
+  choose (f : Nat → Nat) (hf : ∀ m, m < f m) using h
+  guard_hyp f : Nat → Nat
+  guard_hyp hf : ∀ (m : Nat), m < f m
+  trivial
+
+-- Mixing annotated and non-annotated arguments
+example (h : ∀ m : Nat, ∃ n k : Nat, m < n ∧ n < k) : True := by
+  choose f (g : Nat → Nat) hf hg using h
+  guard_hyp f : Nat → Nat
+  guard_hyp g : Nat → Nat
+  guard_hyp hf : ∀ (m : Nat), m < f m
+  guard_hyp hg : ∀ (m : Nat), f m < g m
+  trivial
+
+-- Type annotation with choose!
+example (h : ∀ i : Nat, i < 7 → ∃ j, i < j ∧ j < i+i) : True := by
+  choose! (f : Nat → Nat) (h : ∀ i, i < 7 → i < f i) h' using h
+  guard_hyp f : Nat → Nat
+  guard_hyp h : ∀ (i : Nat), i < 7 → i < f i
+  guard_hyp h' : ∀ (i : Nat), i < 7 → f i < i + i
+  trivial
+
+-- Test that user-specified type annotation is preserved (matching `intro` behavior)
+example (h : ∃ n : Nat, n > 0) : True := by
+  choose (n : Nat) (hn : n > 0 + 0) using h
+  guard_hyp n : Nat
+  guard_hyp hn : n > 0 + 0  -- user-specified type is preserved
+  trivial
+
+-- Type annotation with wildcard
+example (h : ∃ n : Nat, n > 0) : True := by
+  choose n (hn : n > _) using h
+  guard_hyp n : Nat
+  guard_hyp hn : n > 0
+  trivial
+
+-- Type annotation mismatch should fail (using fail_if_success)
+/--
+error: type mismatch for 'n'
+has type
+  Nat
+but is expected to have type
+  Int
+-/
+#guard_msgs in
+example (h : ∃ n : Nat, n > 0) : True := by
+  choose (n : Int) hn using h
+  trivial
+
+/--
+error: type mismatch for 'hn'
+has type
+  n > 0
+but is expected to have type
+  n < 0
+-/
+#guard_msgs in
+example (h : ∃ n : Nat, n > 0) : True := by
+  choose n (hn : n < 0) using h
+  trivial
+
+-- Binder predicates are not supported
+/--
+error: binder predicates like '< n' are not supported by choose; use a type annotation like '(h : x < n)' instead
+-/
+#guard_msgs in
+example (h : ∃ n : Nat, n > 0) : True := by
+  choose (n > 0) using h
+  trivial

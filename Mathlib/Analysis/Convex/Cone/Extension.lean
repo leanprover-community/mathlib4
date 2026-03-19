@@ -27,7 +27,7 @@ We prove two extension theorems:
 
 -/
 
-@[expose] public section
+public section
 
 open Set LinearMap
 

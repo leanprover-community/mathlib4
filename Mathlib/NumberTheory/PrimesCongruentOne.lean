@@ -14,7 +14,7 @@ We prove that, for any positive `k : ℕ`, there are infinitely many primes `p` 
 `p ≡ 1 [MOD k]`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Nat

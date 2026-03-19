@@ -127,6 +127,11 @@ theorem disjiUnion_map {s : Finset α} {t : α → Finset β} {f : β ↪ γ} {h
       s.disjiUnion (fun a => (t a).map f) (h.mono' fun _ _ ↦ (disjoint_map _).2) :=
   eq_of_veq <| Multiset.map_bind _ _ _
 
+@[simp]
+theorem disjiUnion_singleton_eq_self (s : Finset α) :
+    s.disjiUnion singleton (fun _ _ => by simp) = s := by
+  grind
+
 variable {f : α → β} {op : β → β → β} [hc : Std.Commutative op] [ha : Std.Associative op]
 
 theorem fold_disjiUnion {ι : Type*} {s : Finset ι} {t : ι → Finset α} {b : ι → β} {b₀ : β} (h) :
@@ -140,6 +145,41 @@ lemma pairwiseDisjoint_filter {f : α → Finset β} (h : Set.PairwiseDisjoint �
 theorem filter_disjiUnion (s : Finset α) (f : α → Finset β) (h) (p : β → Prop) [DecidablePred p] :
     (s.disjiUnion f h).filter p
       = s.disjiUnion (fun a ↦ (f a).filter p) (pairwiseDisjoint_filter h p) := by grind
+
+theorem disjiUnion_singleton {f : α → β} (hf : f.Injective) :
+    s.disjiUnion (fun a ↦ {f a}) (fun _ _ _ _ ↦ disjoint_singleton.mpr ∘ hf.ne) =
+      s.map ⟨f, hf⟩ := by
+  ext; simp [eq_comm]
+
+lemma disjoint_disjiUnion_left
+    (s : Finset α) (f : α → Finset β) (hf : Set.PairwiseDisjoint s f) (t : Finset β) :
+    Disjoint (s.disjiUnion f hf) t ↔ ∀ i ∈ s, Disjoint (f i) t := by
+  induction s using Finset.cons_induction <;> simp_all
+
+lemma disjoint_disjiUnion_right
+    (s : Finset β) (t : Finset α) (f : α → Finset β) (hf : Set.PairwiseDisjoint t f) :
+    Disjoint s (t.disjiUnion f hf) ↔ ∀ i ∈ t, Disjoint s (f i) := by
+  simpa only [_root_.disjoint_comm] using disjoint_disjiUnion_left t f hf s
+
+theorem pairwiseDisjoint_disjUnion {f g : α → Finset β}
+    (hfg : ∀ a, Disjoint (f a) (g a))
+    (hfg' : Set.Pairwise s fun a₁ a₂ ↦ Disjoint (f a₁) (g a₂))
+    (hf : Set.PairwiseDisjoint s f) (hg : Set.PairwiseDisjoint s g) :
+    Set.PairwiseDisjoint s (fun a ↦ (f a).disjUnion (g a) (hfg a)) := by
+  intros i hi j hj hij
+  simp [hf hi hj hij, hg hi hj hij, hfg' hi hj hij, (hfg' hj hi hij.symm).symm]
+
+theorem disjiUnion_disjUnion {f g : α → Finset β} (hfg : ∀ a, Disjoint (f a) (g a))
+    (hfg' : Set.Pairwise s fun a₁ a₂ ↦ Disjoint (f a₁) (g a₂))
+    (hf : Set.PairwiseDisjoint s f) (hg : Set.PairwiseDisjoint s g) :
+    s.disjiUnion (fun a ↦ (f a).disjUnion (g a) (hfg a))
+        (pairwiseDisjoint_disjUnion hfg hfg' hf hg) =
+      (s.disjiUnion f hf).disjUnion (s.disjiUnion g hg) (by
+        simp_rw [disjoint_disjiUnion_left, disjoint_disjiUnion_right]
+        intros i hi j hj
+        specialize hfg' hi hj
+        grind) := by
+  grind
 
 end DisjiUnion
 
@@ -170,7 +210,7 @@ lemma biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a �
 
 lemma biUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) :
     s₁.biUnion t₁ = s₂.biUnion t₂ := by
-  aesop
+  grind
 
 @[simp]
 lemma disjiUnion_eq_biUnion (s : Finset α) (f : α → Finset β) (hf) :
@@ -253,6 +293,11 @@ theorem biUnion_image [DecidableEq γ] {s : Finset α} {t : α → Finset β} {f
 theorem image_biUnion_filter_eq [DecidableEq α] (s : Finset β) (g : β → α) :
     ((s.image g).biUnion fun a => s.filter fun c => g c = a) = s :=
   biUnion_filter_eq_of_maps_to fun _ => mem_image_of_mem g
+
+lemma union_biUnion [DecidableEq α] : (s₁ ∪ s₂).biUnion t = s₁.biUnion t ∪ s₂.biUnion t := by
+  grind
+
+lemma biUnion_union : s.biUnion (fun x ↦ t₁ x ∪ t₂ x) = s.biUnion t₁ ∪ s.biUnion t₂ := by grind
 
 theorem biUnion_singleton {f : α → β} : (s.biUnion fun a => {f a}) = s.image f := by grind
 

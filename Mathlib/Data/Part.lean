@@ -502,7 +502,7 @@ instance : LawfulMonad
     (by simp [Seq.seq, Part.bind, assert, (· <$> ·), pure])
     (fun _ _ => rfl)
   bind_map x y := ext'
-    (by simp [(· >>= ·), Part.bind, assert, Seq.seq, (· <$> ·)] )
+    (by simp [(· >>= ·), Part.bind, assert, Seq.seq, (· <$> ·)])
     (fun _ _ => rfl)
 
 theorem map_id' {f : α → α} (H : ∀ x : α, f x = x) (o) : map f o = o := by

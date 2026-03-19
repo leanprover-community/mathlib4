@@ -157,12 +157,6 @@ end Diag
 
 open Matrix
 
-section AddCommMonoid
-
-variable [AddCommMonoid α] [Mul α]
-
-end AddCommMonoid
-
 section NonAssocSemiring
 
 variable [NonAssocSemiring α]
@@ -351,6 +345,7 @@ lemma entryLinearMap_eq_comp {i : m} {j : n} :
     LinearMap.proj i ∘ₗ diagLinearMap m R α = entryLinearMap R α i i := by
   simp [LinearMap.ext_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma entryLinearMap_toAddMonoidHom {i : m} {j : n} :
     (entryLinearMap R α i j : _ →+ _) = entryAddMonoidHom α i j := rfl
 
@@ -422,18 +417,22 @@ theorem mapMatrix_zero : (0 : α →+ β).mapMatrix = (0 : Matrix m n α →+ _)
 
 end AddZeroClass
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapMatrix_add [AddZeroClass α] [AddCommMonoid β] (f g : α →+ β) :
     (f + g).mapMatrix = (f.mapMatrix + g.mapMatrix : Matrix m n α →+ _) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapMatrix_sub [AddZeroClass α] [AddCommGroup β] (f g : α →+ β) :
     (f - g).mapMatrix = (f.mapMatrix - g.mapMatrix : Matrix m n α →+ _) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapMatrix_neg [AddZeroClass α] [AddCommGroup β] (f : α →+ β) :
     (-f).mapMatrix = (-f.mapMatrix : Matrix m n α →+ _) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapMatrix_smul [Monoid A] [AddZeroClass α] [AddMonoid β] [DistribMulAction A β]
     (a : A) (f : α →+ β) :
@@ -531,10 +530,12 @@ section
 variable [AddCommMonoid α] [AddCommGroup β]
 variable [Module R α] [Module S β]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapMatrix_sub (f g : α →ₛₗ[σᵣₛ] β) :
     (f - g).mapMatrix = (f.mapMatrix - g.mapMatrix : Matrix m n α →ₛₗ[σᵣₛ] _) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapMatrix_neg (f : α →ₛₗ[σᵣₛ] β) :
     (-f).mapMatrix = (-f.mapMatrix : Matrix m n α →ₛₗ[σᵣₛ] _) := rfl
@@ -660,8 +661,8 @@ def mopMatrix {α} [Mul α] [AddCommMonoid α] : Matrix m m αᵐᵒᵖ ≃+* (M
 end RingEquiv
 
 instance (α) [MulOne α] [AddCommMonoid α] [IsStablyFiniteRing α] : IsStablyFiniteRing αᵐᵒᵖ where
-  isDedekindFiniteMonoid n := let f := MonoidHom.mk ⟨RingEquiv.mopMatrix, by simp⟩ (map_mul _)
-    .of_injective f RingEquiv.mopMatrix.injective
+  isDedekindFiniteMonoid n := .of_injective (MonoidHom.mk
+    ⟨RingEquiv.mopMatrix, by simp⟩ RingEquiv.mopMatrix.map_mul) (RingEquiv.injective _)
 
 open MulOpposite in
 theorem MulOpposite.isStablyFiniteRing_iff (α) [MulOne α] [AddCommMonoid α] :
@@ -933,8 +934,6 @@ def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableE
     toFun := fun M => MulOpposite.op Mᵀ
     commutes' := fun r => by
       simp only [algebraMap_eq_diagonal, diagonal_transpose, MulOpposite.algebraMap_apply] }
-
-variable {R m α}
 
 end Transpose
 

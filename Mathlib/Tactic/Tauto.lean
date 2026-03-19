@@ -5,11 +5,11 @@ Authors: Simon Hudon, David Renshaw
 -/
 module
 
-public meta import Mathlib.Tactic.CasesM
-public meta import Mathlib.Tactic.Core
-public meta import Mathlib.Lean.Elab.Tactic.Basic
-public meta import Mathlib.Logic.Basic
+public import Mathlib.Logic.Basic  -- shake: keep (dependency of tactic output)
 public meta import Qq
+public meta import Mathlib.Lean.Meta
+public import Mathlib.Tactic.CasesM
+public import Mathlib.Tactic.Core
 
 /-!
 The `tauto` tactic.

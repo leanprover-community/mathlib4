@@ -26,7 +26,7 @@ As opposed to `List.inter`, `List.bagInter` copes well with multiplicity. For ex
 `bagInter [0, 1, 2, 3, 2, 1, 0] [1, 0, 1, 4, 3] = [0, 1, 3, 1]`.
 -/
 
-@[expose] public section
+public section
 
 
 open Nat

@@ -16,7 +16,7 @@ In this file we prove that rotation of `AddCircle p` by `a` is ergodic
 if and only if `a` has infinite order (in other words, if `a / p` is irrational).
 -/
 
-@[expose] public section
+public section
 
 open Metric MeasureTheory AddSubgroup
 open scoped Pointwise

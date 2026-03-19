@@ -15,7 +15,7 @@ public import Mathlib.NumberTheory.ModularForms.Cusps
 Collection of useful identities of modular forms.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

@@ -39,6 +39,7 @@ theorem baseChangeAux_surj {σ : Type*} {f : MvPolynomial σ R →ₐ[R] A} (hf 
   · exact Function.RightInverse.surjective (congrFun rfl)
   · exact hf
 
+set_option backward.isDefEq.respectTransparency false in
 instance baseChange [hfa : FiniteType R A] : Algebra.FiniteType B (B ⊗[R] A) := by
   rw [iff_quotient_mvPolynomial''] at *
   obtain ⟨n, f, hf⟩ := hfa
@@ -52,6 +53,7 @@ end FiniteType
 
 namespace FinitePresentation
 
+set_option backward.isDefEq.respectTransparency false in
 instance baseChange [FinitePresentation R A] : FinitePresentation B (B ⊗[R] A) := by
   obtain ⟨n, f, hsurj, hfg⟩ := ‹FinitePresentation R A›
   let g : B ⊗[R] MvPolynomial (Fin n) R →ₐ[B] B ⊗[R] A :=

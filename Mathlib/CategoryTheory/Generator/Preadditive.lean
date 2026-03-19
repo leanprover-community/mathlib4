@@ -16,7 +16,7 @@ preadditive categories.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe v u

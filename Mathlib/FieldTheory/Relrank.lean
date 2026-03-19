@@ -39,6 +39,7 @@ variable {E : Type v} [Field E] {L : Type w} [Field L]
 
 variable (A B C : Subfield E)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Subfield.relrank A B` is defined to be `[B : A ⊓ B]` as a `Cardinal`, in particular,
 when `A ≤ B` it is `[B : A]`, the degree of the field extension `B / A`.
 This is similar to `Subgroup.relIndex` but it is `Cardinal` valued. -/
@@ -59,6 +60,7 @@ theorem relrank_eq_of_inf_eq (h : A ⊓ C = B ⊓ C) : relrank A C = relrank B C
 theorem relfinrank_eq_of_inf_eq (h : A ⊓ C = B ⊓ C) : relfinrank A C = relfinrank B C :=
   congr(toNat $(relrank_eq_of_inf_eq h))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `A ≤ B`, then `Subfield.relrank A B` is `[B : A]`. -/
 theorem relrank_eq_rank_of_le (h : A ≤ B) : relrank A B = Module.rank A (extendScalars h) := by
   rw [relrank]
@@ -83,6 +85,7 @@ theorem inf_relrank_left : relrank (A ⊓ B) A = relrank B A := by
 theorem inf_relfinrank_left : relfinrank (A ⊓ B) A = relfinrank B A :=
   congr(toNat $(inf_relrank_left A B))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem relrank_self : relrank A A = 1 := by
   rw [relrank_eq_rank_of_le (le_refl A), extendScalars_self, IntermediateField.rank_bot]
@@ -91,24 +94,31 @@ theorem relrank_self : relrank A A = 1 := by
 theorem relfinrank_self : relfinrank A A = 1 := by
   simp [relfinrank_eq_toNat_relrank]
 
-variable {A B} in
-theorem relrank_eq_one_of_le (h : B ≤ A) : relrank A B = 1 := by
-  rw [← inf_relrank_right, inf_eq_right.2 h, relrank_self]
+variable {A B}
 
-variable {A B} in
-theorem relfinrank_eq_one_of_le (h : B ≤ A) : relfinrank A B = 1 := by
-  simp [relfinrank_eq_toNat_relrank, relrank_eq_one_of_le h]
+set_option backward.isDefEq.respectTransparency false in
+theorem relrank_eq_one_iff : relrank A B = 1 ↔ B ≤ A := by
+  rw [relrank, IntermediateField.rank_eq_one_iff, ← IntermediateField.toSubfield_inj,
+    extendScalars_toSubfield, IntermediateField.bot_toSubfield, algebraMap_ofSubfield,
+    fieldRange_subtype, right_eq_inf]
 
-variable {A B} in
+theorem relfinrank_eq_one_iff : relfinrank A B = 1 ↔ B ≤ A := by
+  rw [relfinrank_eq_toNat_relrank, toNat_eq_one, relrank_eq_one_iff]
+
+alias ⟨_, relrank_eq_one_of_le⟩ := relrank_eq_one_iff
+
+alias ⟨_, relfinrank_eq_one_of_le⟩ := relfinrank_eq_one_iff
+
 theorem relrank_mul_rank_top (h : A ≤ B) : relrank A B * Module.rank B E = Module.rank A E := by
   rw [relrank_eq_rank_of_le h]
   letI : Algebra A B := (inclusion h).toAlgebra
   haveI : IsScalarTower A B E := IsScalarTower.of_algebraMap_eq' rfl
   exact rank_mul_rank A B E
 
-variable {A B} in
 theorem relfinrank_mul_finrank_top (h : A ≤ B) : relfinrank A B * finrank B E = finrank A E := by
   simpa using congr(toNat $(relrank_mul_rank_top h))
+
+variable (A B)
 
 @[simp]
 theorem relrank_top_left : relrank ⊤ A = 1 := relrank_eq_one_of_le le_top
@@ -116,6 +126,7 @@ theorem relrank_top_left : relrank ⊤ A = 1 := relrank_eq_one_of_le le_top
 @[simp]
 theorem relfinrank_top_left : relfinrank ⊤ A = 1 := relfinrank_eq_one_of_le le_top
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem relrank_top_right : relrank A ⊤ = Module.rank A E := by
   let _ : AddCommMonoid (⊤ : IntermediateField A E) := inferInstance
@@ -328,13 +339,19 @@ theorem relrank_self : relrank A A = 1 := A.toSubfield.relrank_self
 @[simp]
 theorem relfinrank_self : relfinrank A A = 1 := A.toSubfield.relfinrank_self
 
-variable {A B} in
-theorem relrank_eq_one_of_le (h : B ≤ A) : relrank A B = 1 := by
-  rw [← inf_relrank_right, inf_eq_right.2 h, relrank_self]
+variable {A B}
 
-variable {A B} in
-theorem relfinrank_eq_one_of_le (h : B ≤ A) : relfinrank A B = 1 := by
-  simp [relfinrank_eq_toNat_relrank, relrank_eq_one_of_le h]
+theorem relrank_eq_one_iff : relrank A B = 1 ↔ B ≤ A :=
+  Subfield.relrank_eq_one_iff
+
+theorem relfinrank_eq_one_iff : relfinrank A B = 1 ↔ B ≤ A :=
+  Subfield.relfinrank_eq_one_iff
+
+alias ⟨_, relrank_eq_one_of_le⟩ := relrank_eq_one_iff
+
+alias ⟨_, relfinrank_eq_one_of_le⟩ := relfinrank_eq_one_iff
+
+variable (A B)
 
 theorem lift_rank_comap (f : L →ₐ[F] E) :
     Cardinal.lift.{v} (Module.rank (A.comap f) L) = Cardinal.lift.{w} (relrank A f.fieldRange) :=
@@ -425,7 +442,6 @@ variable {A B} in
 theorem rank_bot_mul_relrank (h : A ≤ B) : Module.rank F A * relrank A B = Module.rank F B := by
   rw [relrank_eq_rank_of_le h]
   letI : Algebra A B := (inclusion h).toAlgebra
-  haveI : IsScalarTower F A B := IsScalarTower.of_algebraMap_eq' rfl
   exact rank_mul_rank F A B
 
 variable {A B} in

@@ -42,7 +42,7 @@ section Zero
 variable [Zero α]
 
 section OrderedAddCommMonoid
-variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β] {f : ι →₀ α} {h₁ h₂ : ι → α → β}
+variable [AddCommMonoid β] [Preorder β] [IsOrderedAddMonoid β] {f : ι →₀ α} {h₁ h₂ : ι → α → β}
 
 @[gcongr]
 lemma sum_le_sum (h : ∀ i ∈ f.support, h₁ i (f i) ≤ h₂ i (f i)) : f.sum h₁ ≤ f.sum h₂ :=
@@ -58,7 +58,7 @@ end OrderedAddCommMonoid
 
 section IsOrderedCancelAddMonoid
 
-variable [AddCommMonoid β] [PartialOrder β] [IsOrderedCancelAddMonoid β]
+variable [AddCommMonoid β] [Preorder β] [IsOrderedCancelAddMonoid β] [AddLeftStrictMono β]
 variable {f : ι →₀ α} {g : ι → α → β}
 
 theorem sum_pos (h : ∀ i ∈ f.support, 0 < g i (f i)) (hf : f ≠ 0) : 0 < f.sum g :=
@@ -72,17 +72,15 @@ end IsOrderedCancelAddMonoid
 section Preorder
 variable [Preorder α] {f g : ι →₀ α} {i : ι} {a b : α}
 
-@[simp] lemma single_le_single : single i a ≤ single i b ↔ a ≤ b := by
+@[simp, gcongr] lemma single_le_single : single i a ≤ single i b ↔ a ≤ b := by
   classical exact Pi.single_le_single
 
 lemma single_mono : Monotone (single i : α → ι →₀ α) := fun _ _ ↦ single_le_single.2
 
-@[gcongr] protected alias ⟨_, GCongr.single_mono⟩ := single_le_single
-
 @[simp] lemma single_nonneg : 0 ≤ single i a ↔ 0 ≤ a := by classical exact Pi.single_nonneg
 @[simp] lemma single_nonpos : single i a ≤ 0 ↔ a ≤ 0 := by classical exact Pi.single_nonpos
 
-variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
+variable [AddCommMonoid β] [Preorder β] [IsOrderedAddMonoid β]
 
 lemma sum_le_sum_index [DecidableEq ι] {f₁ f₂ : ι →₀ α} {h : ι → α → β} (hf : f₁ ≤ f₂)
     (hh : ∀ i ∈ f₁.support ∪ f₂.support, Monotone (h i))
@@ -98,7 +96,7 @@ end Zero
 /-! ### Algebraic order structures -/
 
 section OrderedAddCommMonoid
-variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
+variable [AddCommMonoid α] [Preorder α] [IsOrderedAddMonoid α]
   {i : ι} {f : ι → κ} {g g₁ g₂ : ι →₀ α}
 
 instance isOrderedAddMonoid : IsOrderedAddMonoid (ι →₀ α) :=
@@ -111,13 +109,30 @@ lemma mapDomain_mono : Monotone (mapDomain f : (ι →₀ α) → (κ →₀ α)
 lemma mapDomain_nonneg (hg : 0 ≤ g) : 0 ≤ g.mapDomain f := by simpa using mapDomain_mono hg
 lemma mapDomain_nonpos (hg : g ≤ 0) : g.mapDomain f ≤ 0 := by simpa using mapDomain_mono hg
 
+theorem single_le_sum {α M N : Type*} [Zero M] [AddCommMonoid N]
+    [PartialOrder N] [IsOrderedAddMonoid N] (f : α →₀ M) {g : α → M → N}
+    (h : 0 ≤ (g · ·)) (a : α) :
+    ((single a (f a)).sum g) ≤ f.sum g := by
+  rcases eq_or_ne (f a) 0 with H | H
+  · rw [H, single_zero, sum_zero_index]
+    exact sum_nonneg' (fun i ↦ h i (f i))
+  · rw [sum, support_single_ne_zero _ H, sum_singleton, single_eq_same]
+    apply Finset.single_le_sum (fun i hi ↦ h i (f i))
+    simpa [mem_support_iff, ne_eq] using H
+
+lemma single_eval_le_sum {α M N : Type*} [Zero M] [AddCommMonoid N] [PartialOrder N]
+    [IsOrderedAddMonoid N] (f : α →₀ M) {g : M → N} (hg : g 0 = 0) (h : 0 ≤ (g ·)) (a : α) :
+    g (f a) ≤ f.sum fun _ m ↦ g m := by
+  simp only [← sum_single_index (h := fun (_ : α) m ↦ g m) (a := a) (b := f a) hg]
+  apply single_le_sum _ (fun _ m ↦ h m)
+
 end OrderedAddCommMonoid
 
-instance isOrderedCancelAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] :
+instance isOrderedCancelAddMonoid [AddCommMonoid α] [Preorder α] [IsOrderedCancelAddMonoid α] :
     IsOrderedCancelAddMonoid (ι →₀ α) :=
   { le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
 
-instance addLeftReflectLE [AddCommMonoid α] [PartialOrder α] [AddLeftReflectLE α] :
+instance addLeftReflectLE [AddCommMonoid α] [Preorder α] [AddLeftReflectLE α] :
     AddLeftReflectLE (ι →₀ α) :=
   ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
 
@@ -227,6 +242,18 @@ theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
     f1.support \ f2.support ⊆ (f1 - f2).support := by
   simp +contextual [subset_iff]
 
+lemma mapDomain_tsub {f : ι → κ} (h : f.Injective) (f1 f2 : ι →₀ α) :
+    (f1 - f2).mapDomain f = f1.mapDomain f - f2.mapDomain f := by
+  ext y
+  by_cases! hy : y ∉ Set.range f
+  · simp [mapDomain_notin_range _ _ hy]
+  · obtain ⟨x, rfl⟩ := hy
+    simp [mapDomain_apply h]
+
+lemma embDomain_tsub (f : ι ↪ κ) (f1 f2 : ι →₀ α) :
+    (f1 - f2).embDomain f = f1.embDomain f - f2.embDomain f := by
+  simp_rw [embDomain_eq_mapDomain, mapDomain_tsub f.injective]
+
 end PartialOrder
 
 section LinearOrder
@@ -270,6 +297,15 @@ theorem add_sub_single_one {a : ι} {u u' : ι →₀ ℕ} (h : u' a ≠ 0) :
 lemma sub_add_single_one_cancel {u : ι →₀ ℕ} {i : ι} (h : u i ≠ 0) :
     u - single i 1 + single i 1 = u := by
   rw [sub_single_one_add h, add_tsub_cancel_right]
+
+theorem isLowerSet_range_embDomain (f : α ↪ β) :
+    IsLowerSet ((Set.range (embDomain f)) : Set (β →₀ ℕ)) := by
+  rintro _ y h ⟨z, rfl⟩
+  obtain ⟨w, hw⟩ := exists_add_of_le h
+  rw [mem_range_embDomain_iff]
+  trans ↑(y + w).support
+  · exact fun _ ↦ by simp; grind
+  · simp [← hw]
 
 end Nat
 

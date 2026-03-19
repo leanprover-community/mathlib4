@@ -23,7 +23,9 @@ chain rule, manifolds, higher derivative
 
 -/
 
-@[expose] public section
+public section
+
+assert_not_exists mfderiv
 
 open Filter Function Set Topology
 open scoped Manifold ContDiff
@@ -188,7 +190,7 @@ variable {c : M'}
 
 theorem contMDiff_const : ContMDiff I I' n fun _ : M => c := by
   intro x
-  refine ⟨continuousWithinAt_const, ?_⟩
+  refine ⟨by fun_prop, ?_⟩
   simp only [ContDiffWithinAtProp, Function.comp_def]
   exact contDiffWithinAt_const
 

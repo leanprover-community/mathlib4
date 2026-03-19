@@ -15,7 +15,7 @@ the other files in this directory, because they involve several types of composi
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory ProbabilityTheory
 

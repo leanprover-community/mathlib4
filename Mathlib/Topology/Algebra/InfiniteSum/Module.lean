@@ -18,12 +18,12 @@ open Filter Finset Function
 
 section ConstSMul
 
-variable [Monoid γ] [TopologicalSpace α] [AddCommMonoid α] [DistribMulAction γ α]
+variable [TopologicalSpace α] [AddCommMonoid α] [DistribSMul γ α]
   [ContinuousConstSMul γ α] {f : β → α} {L : SummationFilter β}
 
 theorem HasSum.const_smul {a : α} (b : γ) (hf : HasSum f a L) :
     HasSum (fun i ↦ b • f i) (b • a) L :=
-  hf.map (DistribMulAction.toAddMonoidHom α _) <| continuous_const_smul _
+  hf.map (DistribSMul.toAddMonoidHom α _) <| continuous_const_smul _
 
 theorem Summable.const_smul (b : γ) (hf : Summable f L) : Summable (fun i ↦ b • f i) L :=
   (hf.hasSum.const_smul _).summable
@@ -40,8 +40,9 @@ lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [Continu
     [T2Space α] (g : γ) :
     ∑'[L] (i : β), g • f i = g • ∑'[L] (i : β), f i :=
   ((Homeomorph.smul g).isClosedEmbedding.map_tsum f (g := show α ≃+ α from
-    { AddMonoidHom.smulLeft g with
-      invFun := AddMonoidHom.smulLeft g⁻¹, left_inv a := by simp, right_inv a := by simp })).symm
+    { DistribSMul.toAddMonoidHom _ g with
+      invFun := DistribSMul.toAddMonoidHom _ g⁻¹
+      left_inv a := by simp, right_inv a := by simp })).symm
 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a
   `DivisionSemiring`; no summability hypothesis. This could be made to work for a
