@@ -461,7 +461,7 @@ def mulEquivPiModRangePowMonoidHom {ι : Type*} (A : ι → Type*) [∀ i, CommG
     map_mul' x y := by simp [Pi.mul_def]
   }
   liftEquiv (φ := φ) _ (fun y ↦ ⟨fun i ↦ Quotient.out (y i), by simp [φ]⟩) <| by
-    ext1 x
+    ext x : 1
     simpa [φ, funext_iff] using (Classical.skolem (p := fun i a ↦ a ^ n = x i)).symm
 
 end powMonoidHom

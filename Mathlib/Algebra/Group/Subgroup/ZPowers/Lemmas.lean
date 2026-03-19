@@ -65,7 +65,7 @@ open AddSubgroup
   simp_rw [AddMonoidHom.mem_range, Int.coe_castAddHom, AddSubgroup.mem_zmultiples_iff, zsmul_one]
 
 lemma range_nsmulAddMonoidHom (n : ℕ) : (nsmulAddMonoidHom n).range = zmultiples (n : ℤ) := by
-  ext1 m
+  ext m : 1
   simp [mem_zmultiples_iff, dvd_def]
   grind
 
