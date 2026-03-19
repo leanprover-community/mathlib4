@@ -213,8 +213,9 @@ variable (C)
 
 section
 
-variable (D : Type*) [Category* D]
+variable {D : Type*} [Category* D]
 
+variable (D) in
 /-- Functor composition induces a functor on simplicial objects. -/
 @[simps!]
 def whiskering : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
