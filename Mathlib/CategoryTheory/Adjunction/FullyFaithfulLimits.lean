@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
-# Preservations of colimits and adjunctions
+# Preservations of colimits and reflective adjunctions
 
 Let `adj : F ⊣ G` be an adjunction with `G : D ⥤ C` full and faithful.
 We show that if colimits of shape `J` exists in `C`, then a functor
