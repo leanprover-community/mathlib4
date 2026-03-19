@@ -249,9 +249,9 @@ theorem summable_condensed_iff_of_eventually_nonneg {f : ℕ → ℝ} (h_nonneg 
     filter_upwards [h_pow.eventually_ge_atTop (n + m)] with _ hk using by simp [max_eq_left hk]
   · rw [summable_congr_atTop]
     filter_upwards [Filter.eventually_ge_atTop (n + m)] with _ hk using by simp [max_eq_left hk]
-  · bound
+  · simp_all
   · intro _ _ _ _
-    exact antitoneOn_nat_Ici_of_succ_le (k := n + m) (by bound) (by aesop) (by aesop) (by bound)
+    exact antitoneOn_nat_Ici_of_succ_le (k := n + m) (by grind) (by simp) (by simp) (by grind)
 
 section p_series
 
