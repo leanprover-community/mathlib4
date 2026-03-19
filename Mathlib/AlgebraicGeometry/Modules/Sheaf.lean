@@ -65,7 +65,7 @@ def fullyFaithfulToPresheafOfModules : (Modules.toPresheafOfModules X).FullyFait
 instance : (toPresheafOfModules X).Full := fullyFaithfulToPresheafOfModules.full
 instance : (toPresheafOfModules X).Faithful := fullyFaithfulToPresheafOfModules.faithful
 instance : (toPresheafOfModules X).IsRightAdjoint :=
-  (PresheafOfModules.sheafificationAdjunction (𝟙 X.ringCatSheaf.val)).isRightAdjoint
+  (PresheafOfModules.sheafificationAdjunction (𝟙 X.ringCatSheaf.obj)).isRightAdjoint
 
 variable (X) in
 /-- The forgetful functor from `𝒪ₓ`-modules to presheaves of abelian groups. -/

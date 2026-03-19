@@ -37,6 +37,10 @@ finite-dimensional spaces.
 * The continuous conjugate-linear version `adjointAux` is only an intermediate
   definition and is not meant to be used outside this file.
 
+## References
+
+* [Sheldon Axler, *Linear Algebra Done Right*][axler2024]
+
 ## Tags
 
 adjoint
@@ -202,6 +206,34 @@ theorem ker_le_ker_iff_range_le_range [FiniteDimensional 𝕜 E] {T U : E →L[�
   refine ⟨fun h ↦ ?_, LinearMap.ker_le_ker_of_range hT hU⟩
   have := FiniteDimensional.complete 𝕜 E
   simpa [orthogonal_ker, hT, hU] using Submodule.orthogonal_le h
+
+/-- Infinite-dimensional version of 7.64(b) in [axler2024]. -/
+theorem ker_adjoint_comp_self (T : E →L[𝕜] F) : (T† ∘L T).ker = T.ker := by
+  refine le_antisymm (fun _ _ ↦ ?_) fun _ _ ↦ by simp_all
+  rw [LinearMap.mem_ker, ← inner_self_eq_zero (𝕜 := 𝕜), coe_coe, ← adjoint_inner_left]
+  simp_all
+
+theorem ker_self_comp_adjoint (T : E →L[𝕜] F) : (T ∘L T†).ker = T†.ker := by
+  simpa using T†.ker_adjoint_comp_self
+
+/--
+This lemma uses the simp-normal form `⇑(T†) ∘ ⇑T` instead of `⇑(T† ∘L T)`
+(note the difference between `∘` and `∘L`).
+You may need to rewrite with `ContinuousLinearMap.coe_comp'` before applying this lemma.
+-/
+lemma adjoint_comp_self_injective_iff (T : E →L[𝕜] F) :
+    Function.Injective (T† ∘ T) ↔ Function.Injective T := by
+  rw [← coe_comp', ← coe_coe, ← LinearMap.ker_eq_bot, ← coe_coe, ← LinearMap.ker_eq_bot,
+    ker_adjoint_comp_self]
+
+/--
+This lemma uses the simp-normal form `⇑T ∘ ⇑(T†)` instead of `⇑(T ∘L T†)`
+(note the difference between `∘` and `∘L`).
+You may need to rewrite with `ContinuousLinearMap.coe_comp'` before applying this lemma.
+-/
+lemma self_comp_adjoint_injective_iff (T : E →L[𝕜] F) :
+    Function.Injective (T ∘ T†) ↔ Function.Injective (T†) := by
+  simpa using T†.adjoint_comp_self_injective_iff
 
 /-- `E →L[𝕜] E` is a star algebra with the adjoint as the star operation. -/
 instance : Star (E →L[𝕜] E) :=
@@ -539,6 +571,64 @@ theorem IsSymmetric.adjoint_eq {A : E →ₗ[𝕜] E} (hA : A.IsSymmetric) :
 
 theorem adjoint_id : (LinearMap.id (R := 𝕜) (M := E)).adjoint = LinearMap.id := by
   simp
+
+/-- 7.6(b) from [axler2024].
+See `ContinuousLinearMap.orthogonal_ker` for the infinite-dimensional version. -/
+lemma orthogonal_ker (A : E →ₗ[𝕜] F) : A.kerᗮ = A.adjoint.range := by
+  haveI := FiniteDimensional.complete 𝕜 E
+  haveI := FiniteDimensional.complete 𝕜 F
+  simpa using A.toContinuousLinearMap.orthogonal_ker
+
+/-- 7.6(a) from [axler2024].
+See `ContinuousLinearMap.orthogonal_range` for the infinite-dimensional version. -/
+lemma orthogonal_range (A : E →ₗ[𝕜] F) : A.rangeᗮ = A.adjoint.ker := by
+  haveI := FiniteDimensional.complete 𝕜 E
+  haveI := FiniteDimensional.complete 𝕜 F
+  simpa using A.toContinuousLinearMap.orthogonal_range
+
+/-- 7.64(b) in [axler2024] -/
+lemma ker_adjoint_comp_self (A : E →ₗ[𝕜] F) : (A.adjoint ∘ₗ A).ker = A.ker := by
+  haveI := FiniteDimensional.complete 𝕜 E
+  haveI := FiniteDimensional.complete 𝕜 F
+  simpa using A.toContinuousLinearMap.ker_adjoint_comp_self
+
+lemma ker_self_comp_adjoint (A : E →ₗ[𝕜] F) : (A ∘ₗ A.adjoint).ker = A.adjoint.ker := by
+  simpa using A.adjoint.ker_adjoint_comp_self
+
+/--
+This lemma uses the simp-normal form `⇑(A.adjoint) ∘ ⇑A` instead of `⇑(A.adjoint ∘ₗ A)`
+(note the difference between `∘` and `∘ₗ`).
+You may need to rewrite with `LinearMap.coe_comp` before applying this lemma.
+-/
+lemma adjoint_comp_self_injective_iff (A : E →ₗ[𝕜] F) :
+    Function.Injective (A.adjoint ∘ A) ↔ Function.Injective A := by
+  rw [← coe_comp, ← ker_eq_bot, ← ker_eq_bot, ker_adjoint_comp_self]
+
+/--
+This lemma uses the simp-normal form `⇑A ∘ ⇑(A.adjoint)` instead of `⇑(A ∘ₗ A.adjoint)`
+(note the difference between `∘` and `∘ₗ`).
+You may need to rewrite with `LinearMap.coe_comp` before applying this lemma.
+-/
+lemma self_comp_adjoint_injective_iff (A : E →ₗ[𝕜] F) :
+    Function.Injective (A ∘ A.adjoint) ↔ Function.Injective A.adjoint := by
+  simpa using A.adjoint.adjoint_comp_self_injective_iff
+
+/-- 7.64(c) in [axler2024]. -/
+lemma range_adjoint_comp_self (A : E →ₗ[𝕜] F) : (A.adjoint ∘ₗ A).range = A.adjoint.range :=
+  calc
+    (A.adjoint ∘ₗ A).range = (A.adjoint ∘ₗ A).kerᗮ := by simp [orthogonal_ker]
+    _ = A.adjoint.range := by rw [ker_adjoint_comp_self, orthogonal_ker]
+
+lemma range_self_comp_adjoint (A : E →ₗ[𝕜] F) : (A ∘ₗ A.adjoint).range = A.range := by
+  simpa using A.adjoint.range_adjoint_comp_self
+
+/-- Part of 7.64(d) in [axler2024]. -/
+theorem finrank_range_adjoint (A : E →ₗ[𝕜] F) :
+    Module.finrank 𝕜 A.adjoint.range = Module.finrank 𝕜 A.range := calc
+  _ = Module.finrank 𝕜 F - Module.finrank 𝕜 A.adjoint.ker := by
+    simp [← A.adjoint.finrank_range_add_finrank_ker]
+  _ = _ := by rw [← A.adjoint.ker.finrank_add_finrank_orthogonal,
+    orthogonal_ker, adjoint_adjoint]; simp
 
 /-- The adjoint is unique: a map `A` is the adjoint of `B` iff it satisfies `⟪A x, y⟫ = ⟪x, B y⟫`
 for all basis vectors `x` and `y`. -/
