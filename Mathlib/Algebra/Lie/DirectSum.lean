@@ -151,7 +151,6 @@ def inr : L₂ →ₗ⁅R⁆ L₁ × L₂ where
   toLinearMap := LinearMap.inr R L₁ L₂
   map_lie' := by simp
 
-
 theorem inl_apply (x : L₁) : inl R L₁ L₂ x = (x, 0) := rfl
 
 theorem inr_apply (x : L₂) : inr R L₁ L₂ x = (0, x) := rfl
