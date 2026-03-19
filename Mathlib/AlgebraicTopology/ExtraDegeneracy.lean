@@ -102,7 +102,6 @@ def map {D : Type*} [Category* D] {X : SimplicialObject.Augmented C} (ed : Extra
     dsimp
     rw [← F.map_comp, ← F.map_comp, ed.s_comp_σ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `X` and `Y` are isomorphic augmented simplicial objects, then an extra
 degeneracy for `X` gives also an extra degeneracy for `Y` -/
 def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegeneracy X) :
@@ -272,84 +271,51 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
       cases i using Fin.cases <;> simp
 
 set_option backward.isDefEq.respectTransparency false in
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as the linter complains the LHS is not in normal form
--- The problem is that the type of `ExtraDegeneracy.s` is not in normal form, this causes the `erw`
--- in the proofs below.
+@[reassoc (attr := simp)]
 theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
-    ExtraDegeneracy.s f S n ≫ WidePullback.π _ 0 =
-      @WidePullback.base _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ ≫
-        S.section_ := by
-  dsimp [ExtraDegeneracy.s]
-  simp
-
-set_option backward.isDefEq.respectTransparency false in
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as the linter complains the LHS is not in normal form
-theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
-    ExtraDegeneracy.s f S n ≫ WidePullback.π _ i.succ =
-      @WidePullback.π _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ i := by
+    dsimp% ExtraDegeneracy.s f S n ≫ WidePullback.π _ 0 =
+      WidePullback.base (B := f.right) (objs := fun _ ↦ f.left)
+        (arrows := fun _ ↦ f.hom) ≫ S.section_ := by
   simp [ExtraDegeneracy.s]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as the linter complains the LHS is not in normal form
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
+    dsimp% ExtraDegeneracy.s f S n ≫ WidePullback.π _ i.succ =
+      WidePullback.π (B := f.right) (objs := fun _ ↦ f.left)
+        (arrows := fun _ ↦ f.hom) i := by
+  simp [ExtraDegeneracy.s]
+
+@[reassoc (attr := simp)]
 theorem ExtraDegeneracy.s_comp_base (n : ℕ) :
-    ExtraDegeneracy.s f S n ≫ WidePullback.base _ = WidePullback.base _ := by
-  apply WidePullback.lift_base
+    dsimp% ExtraDegeneracy.s f S n ≫ WidePullback.base _ = WidePullback.base _ :=
+  WidePullback.lift_base ..
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech nerve associated to a split epimorphism has an extra degeneracy. -/
 noncomputable def extraDegeneracy :
     SimplicialObject.Augmented.ExtraDegeneracy f.augmentedCechNerve where
-  s' := S.section_ ≫ WidePullback.lift f.hom (fun _ => 𝟙 _) fun i => by rw [id_comp]
+  s' := S.section_ ≫ WidePullback.lift f.hom (fun _ ↦ 𝟙 _) (by simp)
   s n := ExtraDegeneracy.s f S n
-  s'_comp_ε := by
-    dsimp
-    simp only [assoc, WidePullback.lift_base, SplitEpi.id]
   s₀_comp_δ₁ := by
-    dsimp [cechNerve, SimplicialObject.δ, SimplexCategory.δ]
+    dsimp [SimplicialObject.δ, SimplexCategory.δ]
     ext j
     · fin_cases j
-      simpa only [assoc, WidePullback.lift_π, comp_id] using ExtraDegeneracy.s_comp_π_0 f S 0
-    · simpa only [assoc, WidePullback.lift_base, SplitEpi.id, comp_id] using
-        ExtraDegeneracy.s_comp_base f S 0
+      simp
+    · simp
   s_comp_δ₀ n := by
-    dsimp [cechNerve, SimplicialObject.δ, SimplexCategory.δ]
-    ext j
-    · simpa only [assoc, WidePullback.lift_π, id_comp] using ExtraDegeneracy.s_comp_π_succ f S n j
-    · simpa only [assoc, WidePullback.lift_base, id_comp] using ExtraDegeneracy.s_comp_base f S n
+    dsimp [SimplicialObject.δ, SimplexCategory.δ]
+    cat_disch
   s_comp_δ n i := by
     dsimp [SimplicialObject.δ, SimplexCategory.δ]
     ext j
-    · simp only [assoc, WidePullback.lift_π]
-      cases j using Fin.cases with
-      | zero =>
-        rw [Fin.succ_succAbove_zero]
-        erw [ExtraDegeneracy.s_comp_π_0, ExtraDegeneracy.s_comp_π_0]
-        dsimp
-        simp only [WidePullback.lift_base_assoc]
-      | succ k =>
-        erw [Fin.succ_succAbove_succ, ExtraDegeneracy.s_comp_π_succ,
-          ExtraDegeneracy.s_comp_π_succ]
-        simp only [WidePullback.lift_π]
-    · simp only [assoc, WidePullback.lift_base]
-      erw [ExtraDegeneracy.s_comp_base, ExtraDegeneracy.s_comp_base]
-      dsimp
-      simp only [WidePullback.lift_base]
+    · induction j using Fin.cases <;> simp
+    · simp
   s_comp_σ n i := by
-    dsimp [cechNerve, SimplicialObject.σ, SimplexCategory.σ]
+    dsimp [SimplicialObject.σ, SimplexCategory.σ]
     ext j
-    · simp only [assoc, WidePullback.lift_π]
-      cases j using Fin.cases with
-      | zero =>
-        erw [ExtraDegeneracy.s_comp_π_0, ExtraDegeneracy.s_comp_π_0]
-        dsimp
-        simp only [WidePullback.lift_base_assoc]
-      | succ k =>
-        erw [Fin.succ_predAbove_succ, ExtraDegeneracy.s_comp_π_succ,
-          ExtraDegeneracy.s_comp_π_succ]
-        simp only [WidePullback.lift_π]
-    · simp only [assoc, WidePullback.lift_base]
-      erw [ExtraDegeneracy.s_comp_base, ExtraDegeneracy.s_comp_base]
-      dsimp
-      simp only [WidePullback.lift_base]
+    · induction j using Fin.cases <;> simp
+    · simp
 
 end AugmentedCechNerve
 
@@ -382,23 +348,17 @@ noncomputable def homotopyEquiv [Preadditive C] [HasZeroObject C]
   inv := (ChainComplex.fromSingle₀Equiv _ _).symm (by exact ed.s')
   homotopyInvHomId := Homotopy.ofEq (by
     ext
-    dsimp
-    rw [AlternatingFaceMapComplex.ε_app_f_zero]
-    dsimp
-    erw [ChainComplex.fromSingle₀Equiv_symm_apply_f_zero]
-    simp)
+    simp [dsimp% ChainComplex.fromSingle₀Equiv_symm_apply_f_zero
+      (C := AlternatingFaceMapComplex.obj X.left)])
   homotopyHomInvId :=
     { hom i := Pi.single (i + 1) (-ed.s i)
       zero i j hij := Pi.single_eq_of_ne (Ne.symm hij) _
       comm i := by
         cases i with
         | zero =>
-          rw [Homotopy.prevD_chainComplex, Homotopy.dNext_zero_chainComplex, zero_add]
-          dsimp
-          erw [ChainComplex.fromSingle₀Equiv_symm_apply_f_zero]
-          simp only [AlternatingFaceMapComplex.obj_d_eq]
-          rw [Fin.sum_univ_two]
-          simp [s_comp_δ₀, s₀_comp_δ₁]
+          rw [Homotopy.prevD_chainComplex, Homotopy.dNext_zero_chainComplex]
+          simp [dsimp% ChainComplex.fromSingle₀Equiv_symm_apply_f_zero
+            (C := AlternatingFaceMapComplex.obj X.left), s_comp_δ₀, s₀_comp_δ₁]
         | succ i =>
           rw [Homotopy.prevD_chainComplex, Homotopy.dNext_succ_chainComplex]
           simp [Fin.sum_univ_succ (n := i + 2), s_comp_δ₀, Preadditive.sum_comp,
