@@ -5,7 +5,7 @@ Authors: Niels Mündler
 -/
 import Mathlib.Computability.ContextFreeGrammar
 import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Tactic
+import Mathlib.Tactic.Linarith
 import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 
 /-!
@@ -944,8 +944,8 @@ lemma mem_subst_of_derivesF {α β : Type} [DecidableEq α] [DecidableEq β]
           List.forall₂_map_left_iff, List.mem_map, forall_exists_index, and_imp,
           forall_apply_eq_imp_iff₂, Symbol.terminal.injEq, exists_eq', implies_true,
           exists_apply_eq_apply']
-        · exact List.map_injective_iff.mpr ( by aesop_cat )
-            ( hW₁.trans ( by simp [ List.map_flatten ] ) )
+        · exact List.map_injective_iff.mpr (fun _ _ h => Symbol.terminal.inj h)
+            ( hW₁.trans List.map_flatten.symm )
         · exact List.Forall₂.flip hW₂
       rw [ hW.1, Language.mem_list_prod_iff_forall2 ]
       refine ⟨ W, rfl, ?_ ⟩
