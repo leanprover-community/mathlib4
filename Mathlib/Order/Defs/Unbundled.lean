@@ -6,8 +6,12 @@ Authors: Leonardo de Moura
 module
 
 public import Mathlib.Data.Set.Defs
-import Mathlib.Tactic.ToDual
 public import Batteries.Tactic.Alias
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.ExtendDoc
+
+import Mathlib.Tactic.ToDual
 
 /-!
 # Orders

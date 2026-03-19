@@ -199,7 +199,7 @@ lemma Submonoid.mem_closure_image_one_lt_iff [CommMonoid S] [IsOrderedCancelMono
     v i ∈ closure (v '' {i | 1 < f (v i)}) ↔ 1 < f (v i) := by
   refine ⟨fun hi ↦ ?_, fun hi ↦ subset_closure <| mem_image_of_mem v hi⟩
   suffices v i = 1 ∨ 1 < f (v i) from this.resolve_left hv_one
-  refine closure_induction (by aesop) (by simp) (fun x y _ _ hx hy ↦ ?_) hi
+  refine closure_induction (by grind) (by simp) (fun x y _ _ hx hy ↦ ?_) hi
   rcases hx with rfl | hx; · simpa
   rcases hy with rfl | hy; · right; simpa
   right
