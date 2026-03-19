@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Lie.Derivation.Basic
 public import Mathlib.Algebra.Lie.Extension
-public import Mathlib.Algebra.Lie.DirectSum
+public import Mathlib.Algebra.Lie.Prod
 
 /-!
 # Semi-direct products
