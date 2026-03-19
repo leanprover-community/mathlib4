@@ -33,6 +33,7 @@ variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
 open TopologicalSpace Topology
 
 /-- The topology coinduced by all maps from ℝⁿ into a space. -/
+@[implicit_reducible]
 def TopologicalSpace.deltaGenerated (X : Type*) [TopologicalSpace X] : TopologicalSpace X :=
   ⨆ f : (n : ℕ) × C(((Fin n) → ℝ), X), coinduced f.2 inferInstance
 
