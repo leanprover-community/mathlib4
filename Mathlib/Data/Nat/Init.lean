@@ -480,10 +480,24 @@ theorem mkDivMod_def {n i j : ℕ} : n.mkDivMod i j = n * i + j := rfl
 
 @[simp] theorem div_mkDivMod_of_lt {n i j : ℕ} (hj : j < n) :
     (n.mkDivMod i j) / n = i := (Nat.mul_add_div (zero_lt_of_lt hj) _ _).trans <|
-  Nat.add_eq_left.mpr <| Nat.div_eq_of_lt hj
+  congrArg _ (Nat.div_eq_of_lt hj)
 
 @[simp] theorem mod_mkDivMod_of_lt {n i j : ℕ} (hj : j < n) :
-    (n.mkDivMod i j) % n = j := (Nat.mul_add_mod _ _ _).trans <| Nat.mod_eq_of_lt hj
+    (n.mkDivMod i j) % n = j := (Nat.mul_add_mod _ _ _).trans (Nat.mod_eq_of_lt hj)
+
+@[simp] theorem mkDivMod_inj_of_lt_of_lt {n i₁ j₁ i₂ j₂ : ℕ} (hj₁ : j₁ < n) (hj₂ : j₂ < n) :
+    n.mkDivMod i₁ j₁ = n.mkDivMod i₂ j₂ ↔ i₁ = i₂ ∧ j₁ = j₂ :=
+  (n.ext_div_mod_iff _ _).trans <| by simp [hj₁, hj₂]
+
+theorem div_mkDivMod_fin {n i : ℕ} {j : Fin n} :
+    (n.mkDivMod i j) / n = i := div_mkDivMod_of_lt j.is_lt
+
+theorem mod_mkDivMod_fin {n i : ℕ} {j : Fin n} :
+    (n.mkDivMod i j) % n = j := mod_mkDivMod_of_lt j.is_lt
+
+@[simp] theorem mkDivMod_inj_fin {n i₁ i₂ : ℕ} {j₁ : Fin n} {j₂ : Fin n} :
+    n.mkDivMod i₁ j₁ = n.mkDivMod i₂ j₂ ↔ i₁ = i₂ ∧ j₁ = j₂ :=
+  (mkDivMod_inj_of_lt_of_lt j₁.is_lt j₂.is_lt).trans <| and_congr_right (fun _ => Fin.val_inj)
 
 @[simp] theorem mkDivMod_div_mod {n k : ℕ} :
     n.mkDivMod (k / n) (k % n) = k := Nat.div_add_mod _ _

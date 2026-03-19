@@ -123,12 +123,10 @@ theorem hasSum_arctan {z : ℂ} (hz : ‖z‖ < 1) :
     (hasSum_taylorSeries_neg_log (z := z * I) (by simpa))).mul_left (-I / 2)
   simp_rw [← add_div, ← add_one_mul, hasSum_arctan_aux hz] at this
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
-  dsimp [Function.comp_def] at this
-  simp_rw [← mul_comm 2 _] at this
   refine this.prod_fiberwise fun k => ?_
-  dsimp only
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
-  rw [Fin.sum_univ_two, Fin.val_zero, Fin.val_one, Odd.neg_one_pow (n := 2 * k + 0 + 1) (by simp),
+  simp_rw [Fin.sum_univ_two, Function.comp_def, Nat.divModEquiv_symm_apply, Fin.val_zero,
+    Fin.val_one, Nat.mkDivMod_def, Odd.neg_one_pow (n := 2 * k + 0 + 1) (by simp),
     neg_add_cancel, zero_mul, zero_div, mul_zero, zero_add,
     show 2 * k + 1 + 1 = 2 * (k + 1) by ring, Even.neg_one_pow (n := 2 * (k + 1)) (by simp),
     ← mul_div_assoc (_ / _), ← mul_assoc, show -I / 2 * (1 + 1) = -I by ring]
