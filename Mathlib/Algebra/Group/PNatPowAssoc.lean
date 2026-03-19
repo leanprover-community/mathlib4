@@ -68,11 +68,13 @@ theorem ppow_mul_assoc (k m n : ℕ+) (x : M) :
 theorem ppow_mul_comm (m n : ℕ+) (x : M) :
     x ^ m * x ^ n = x ^ n * x ^ m := by simp only [← ppow_add, add_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ppow_mul (x : M) (m n : ℕ+) : x ^ (m * n) = (x ^ m) ^ n := by
   induction n with
   | one => rw [ppow_one, mul_one]
   | succ k hk => rw [ppow_add, ppow_one, mul_add, ppow_add, mul_one, hk]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ppow_mul' (x : M) (m n : ℕ+) : x ^ (m * n) = (x ^ n) ^ m := by
   rw [mul_comm]
   exact ppow_mul x n m
