@@ -212,7 +212,7 @@ theorem isCountablyCompact_iff_infinite_subset_has_accPt [T1Space E] {A : Set E}
     refine isCountablyCompact_iff_seq_clusterPt.mpr fun x hx => ?_
     obtain ⟨N, hN⟩ := eventually_atTop.mp hx
     by_cases hfin : (Set.range x).Finite
-    · -- Case 1: Finite range — some value appears frequently
+    · -- Case 1: Finite range
       have := hfin.to_subtype
       obtain ⟨⟨a, _⟩, ha_inf⟩ := Finite.exists_infinite_fiber (Set.rangeFactorization x)
       have hfreq : ∃ᶠ n in atTop, x n = a := Nat.frequently_atTop_iff_infinite.mpr (by
@@ -221,7 +221,7 @@ theorem isCountablyCompact_iff_infinite_subset_has_accPt [T1Space E] {A : Set E}
       obtain ⟨n, hnA, hna⟩ := (hx.and_frequently hfreq).exists
       exact ⟨a, hna ▸ hnA, mapClusterPt_iff_frequently.mpr fun U hU =>
         hfreq.mono fun _ hn => hn.symm ▸ mem_of_mem_nhds hU⟩
-    · -- Case 2: Infinite range — use hypothesis to get an accumulation point
+    · -- Case 2: Infinite range
       have hIciA : x '' Set.Ici N ⊆ A := Set.image_subset_iff.mpr hN
       have hIciInf : (x '' Set.Ici N).Infinite := fun hf => hfin <| by
         rw [← Set.image_univ, ← Set.Iio_union_Ici (a := N), Set.image_union]
@@ -230,8 +230,9 @@ theorem isCountablyCompact_iff_infinite_subset_has_accPt [T1Space E] {A : Set E}
       refine ⟨a, haA, mapClusterPt_iff_frequently.mpr fun U hU =>
         Nat.frequently_atTop_iff_infinite.mpr ?_⟩
       have h_inf : (U ∩ x '' Set.Ici N).Infinite := .of_accPt (hacc.nhds_inter hU)
-      exact (h_inf.preimage (inter_subset_right.trans <| Set.image_subset_range x _)).mono
-        (preimage_mono inter_subset_left)
+      have : (x ⁻¹' (U ∩ x '' Set.Ici N)).Infinite :=
+        h_inf.preimage (inter_subset_right.trans <| Set.image_subset_range x _)
+      exact this.mono (preimage_mono inter_subset_left)
 
 /-- A countably compact Lindelöf set is compact. -/
 theorem IsLindelof.isCompact (hA : IsCountablyCompact A) (hl : IsLindelof A) :
