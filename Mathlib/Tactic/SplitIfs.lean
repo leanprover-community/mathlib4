@@ -8,7 +8,7 @@ module
 public meta import Lean.Elab.Tactic.Location
 public meta import Lean.Meta.Tactic.SplitIf
 public meta import Lean.Elab.Tactic.Simp
-public meta import Mathlib.Tactic.Core
+public import Mathlib.Tactic.Core
 
 /-!
 Tactic to split if-then-else expressions.

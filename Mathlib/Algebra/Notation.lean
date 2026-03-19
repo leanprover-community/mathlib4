@@ -6,7 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Tactic.TypeStar
-public import Mathlib.Tactic.ToAdditive
+public import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Notations for operations involving order and algebraic structure

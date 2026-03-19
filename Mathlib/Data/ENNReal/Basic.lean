@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Ring.WithTop
 public import Mathlib.Algebra.Order.Sub.WithTop
 public import Mathlib.Data.NNReal.Defs
 public import Mathlib.Order.Interval.Set.WithBotTop
-public import Mathlib.Tactic.Finiteness
 
 /-!
 # Extended non-negative reals
@@ -105,16 +104,23 @@ def ENNReal := WithTop ℝ≥0
 @[inherit_doc]
 scoped[ENNReal] notation "ℝ≥0∞" => ENNReal
 
+-- note: using notation3 rather than notation means that `∞` pretty-prints
+-- as `∞` rather than `top`. Despite this, we still use `top` in the names of lemmas.
 /-- Notation for infinity as an `ENNReal` number. -/
-scoped[ENNReal] notation "∞" => (⊤ : ENNReal)
+scoped[ENNReal] notation3 "∞" => (⊤ : ENNReal)
 
 namespace ENNReal
 
 instance : OrderBot ℝ≥0∞ := inferInstanceAs (OrderBot (WithTop ℝ≥0))
+
 instance : OrderTop ℝ≥0∞ := inferInstanceAs (OrderTop (WithTop ℝ≥0))
+
 instance : BoundedOrder ℝ≥0∞ := inferInstanceAs (BoundedOrder (WithTop ℝ≥0))
+
 instance : CharZero ℝ≥0∞ := inferInstanceAs (CharZero (WithTop ℝ≥0))
+
 instance : Min ℝ≥0∞ := SemilatticeInf.toMin
+
 instance : Max ℝ≥0∞ := SemilatticeSup.toMax
 
 noncomputable instance : CommSemiring ℝ≥0∞ :=
@@ -147,6 +153,7 @@ instance : IsOrderedAddMonoid ℝ≥0∞ :=
   inferInstanceAs (IsOrderedAddMonoid (WithTop ℝ≥0))
 
 instance instSub : Sub ℝ≥0∞ := inferInstanceAs (Sub (WithTop ℝ≥0))
+
 instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0))
 
 noncomputable instance : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
@@ -159,17 +166,12 @@ noncomputable instance : DivInvMonoid ℝ≥0∞ where
 
 variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0} {n : ℕ}
 
--- TODO: add a `WithTop` instance and use it here
-noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
-  { inferInstanceAs (LinearOrderedAddCommMonoidWithTop ℝ≥0∞),
-      inferInstanceAs (CommSemiring ℝ≥0∞) with
-    bot_le _ := bot_le
-    mul_le_mul_left _ _ := mul_le_mul_left
-    zero_le_one := zero_le 1 }
+instance : IsOrderedMonoid ℝ≥0∞ where
+  mul_le_mul_left _ _ := mul_le_mul_left
 
 instance : Unique (AddUnits ℝ≥0∞) where
   default := 0
-  uniq a := AddUnits.ext <| le_zero_iff.1 <| by rw [← a.add_neg]; exact le_self_add
+  uniq a := AddUnits.ext <| nonpos_iff_eq_zero.1 <| by rw [← a.add_neg]; exact le_self_add
 
 instance : Inhabited ℝ≥0∞ := ⟨0⟩
 
@@ -306,6 +308,7 @@ theorem toNNReal_ne_zero : a.toNNReal ≠ 0 ↔ a ≠ 0 ∧ a ≠ ∞ :=
 theorem toReal_ne_zero : a.toReal ≠ 0 ↔ a ≠ 0 ∧ a ≠ ∞ :=
   a.toReal_eq_zero_iff.not.trans not_or
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toNNReal_eq_one_iff (x : ℝ≥0∞) : x.toNNReal = 1 ↔ x = 1 :=
   WithTop.untopD_eq_iff.trans <| by simp
 
@@ -458,7 +461,7 @@ theorem iSup_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
   @iInf_ennreal αᵒᵈ _ _
 
 /-- Coercion `ℝ≥0 → ℝ≥0∞` as a `RingHom`. -/
-def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
+noncomputable def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
   toFun := WithTop.some
   map_one' := coe_one
   map_mul' _ _ := coe_mul _ _

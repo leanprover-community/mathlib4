@@ -184,7 +184,7 @@ lemma exists_clopen_partition_of_clopen_cover
     have V_subset_D0 : V ⊆ D none := subset_trans V_subset_U diff_subset
     -- choose `Z' i ⊆ C' i ⊆ D' i = D i.succ \ V` using the inductive hypothesis
     let D' : I → Set X := fun i ↦ D (some i) \ V
-    have D'_clopen (i : I): IsClopen (D' i) := (D_clopen (some i)).diff V_clopen
+    have D'_clopen (i : I) : IsClopen (D' i) := (D_clopen (some i)).diff V_clopen
     have Z'_subset_D' (i : I) : Z' i ⊆ D' i := by
       rw [subset_diff]
       refine ⟨by grind, Disjoint.mono_right V_subset_U ?_⟩
@@ -196,7 +196,7 @@ lemma exists_clopen_partition_of_clopen_cover
     have : IsClopen C0 := (D_clopen none).diff (isClopen_iUnion_of_finite C'_clopen)
     have : Z none ⊆ C0 := by
       simp only [C0, subset_diff]
-      exact ⟨by grind, Disjoint.mono_left Z0_subset_V (by simpa using by grind)⟩
+      exact ⟨by grind, Disjoint.mono_left Z0_subset_V (by simp; grind)⟩
     -- patch together to define `C none := C0`, `C (some i) := C' i`
     -- and verify the needed properties
     let C : Option I → Set X := fun i ↦ Option.casesOn i C0 C'

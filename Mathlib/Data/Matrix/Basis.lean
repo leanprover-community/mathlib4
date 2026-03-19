@@ -208,7 +208,7 @@ variable (R)
 def singleLinearMap [Semiring R] [AddCommMonoid α] [Module R α] (i : m) (j : n) :
     α →ₗ[R] Matrix m n α where
   __ := singleAddMonoidHom i j
-  map_smul' _ _:= smul_single _ _ _ _ |>.symm
+  map_smul' _ _ := smul_single _ _ _ _ |>.symm
 
 section ext
 
@@ -262,8 +262,6 @@ theorem liftLinear_single (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a :
     liftLinear S f (Matrix.single i j a) = f i j a := by
   dsimp [liftLinear, -LinearMap.lsum_apply, LinearEquiv.congrLeft, LinearEquiv.piCongrRight]
   simp_rw [of_symm_single, LinearMap.lsum_piSingle]
-
-@[deprecated (since := "2025-08-13")] alias liftLinear_piSingle := liftLinear_single
 
 @[simp]
 theorem liftLinear_comp_singleLinearMap (f : m → n → α →ₗ[R] β) (i : m) (j : n) :

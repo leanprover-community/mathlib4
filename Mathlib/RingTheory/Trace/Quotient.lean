@@ -26,7 +26,7 @@ public section
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-open IsLocalRing FiniteDimensional Submodule IsLocalization.AtPrime
+open IsLocalRing FiniteDimensional Module Submodule IsLocalization.AtPrime
 
 section IsLocalRing
 
@@ -88,7 +88,7 @@ lemma trace_quotient_eq_trace_localization_quotient (x) :
 open nonZeroDivisors in
 /-- The trace map on `B → A` coincides with the trace map on `B⧸pB → A⧸p`. -/
 lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [IsDomain S]
-    [NoZeroSMulDivisors R S] [Module.Finite R S] [IsIntegrallyClosed S] :
+    [Module.IsTorsionFree R S] [Module.Finite R S] [IsIntegrallyClosed S] :
     Algebra.trace (R ⧸ p) (S ⧸ pS) (Ideal.Quotient.mk pS x) =
       Ideal.Quotient.mk p (Algebra.intTrace R S x) := by
   let Rₚ := Localization.AtPrime p
@@ -103,8 +103,8 @@ lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [Is
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
         (FaithfulSMul.algebraMap_injective _ _))
   haveI : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors _ e
-  haveI : NoZeroSMulDivisors Rₚ Sₚ := by
-    rw [NoZeroSMulDivisors.iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
+  haveI : IsTorsionFree Rₚ Sₚ := by
+    rw [isTorsionFree_iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
       RingHom.ker_eq_bot_iff_eq_zero]
     simp
   haveI : Module.Finite Rₚ Sₚ := .of_isLocalization R S p.primeCompl

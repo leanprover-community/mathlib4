@@ -116,10 +116,7 @@ lemma lieCharpoly_coeff_natDegree [Nontrivial R] (i j : ℕ) (hij : i + j = finr
   apply MvPolynomial.aeval_natDegree_le
   · apply (polyCharpoly_coeff_isHomogeneous φ (chooseBasis R L) _ _ hij).totalDegree_le
   intro k
-  apply Polynomial.natDegree_add_le_of_degree_le
-  · apply (Polynomial.natDegree_C_mul_le _ _).trans
-    simp only [natDegree_X, le_rfl]
-  · simp only [natDegree_C, zero_le]
+  exact natDegree_linear_le
 
 end engel_isBot_of_isMin
 
@@ -131,6 +128,7 @@ variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L
 
 open Module LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_isBot_of_isMin
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
 Given a Lie subalgebra `U` of `L`, and an element `x ∈ U` such that `U ≤ engel K x`.
 Suppose that `engel K x` is minimal amongst the Engel subalgebras `engel K y` for `y ∈ U`.
@@ -377,7 +375,7 @@ lemma exists_isCartanSubalgebra_engel_of_finrank_le_card (h : finrank K L ≤ #K
 lemma exists_isCartanSubalgebra_engel [Infinite K] :
     ∃ x : L, IsCartanSubalgebra (engel K x) := by
   apply exists_isCartanSubalgebra_engel_of_finrank_le_card
-  exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite K›
+  exact natCast_le_aleph0.trans <| Cardinal.infinite_iff.mp ‹Infinite K›
 
 end Field
 

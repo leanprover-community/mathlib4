@@ -372,14 +372,14 @@ section MetrizableSpaceSeqCompact
 
 variable [TopologicalSpace X] [PseudoMetrizableSpace X] {s : Set X}
 
-/-- If `𝓤 β` is countably generated, then any sequentially compact set is compact. -/
+/-- In a (pseudo)metrizable space, any sequentially compact set is compact. -/
 protected theorem IsSeqCompact.isCompact (hs : IsSeqCompact s) : IsCompact s :=
   letI := pseudoMetrizableSpaceUniformity X
   haveI := pseudoMetrizableSpaceUniformity_countably_generated X
   isCompact_iff_totallyBounded_isComplete.2 ⟨hs.totallyBounded, hs.isComplete⟩
 
-/-- A version of Bolzano-Weierstrass: in a uniform space with countably generated uniformity filter
-(e.g., in a metric space), a set is compact if and only if it is sequentially compact. -/
+/-- A version of **Bolzano-Weierstrass**: in a (pseudo)metrizable space, a set is compact if and
+only if it is sequentially compact. -/
 theorem isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
   ⟨fun H => H.isSeqCompact, fun H => H.isCompact⟩
 

@@ -71,6 +71,7 @@ theorem not_isField_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] :
 
 open Classical in
 /-- Transferring from `IsField` to `Semifield`. -/
+@[implicit_reducible]
 noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) : Semifield R where
   __ := ‹Semiring R›
   __ := h
@@ -81,8 +82,9 @@ noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) 
   nnqsmul_def _ _ := rfl
 
 /-- Transferring from `IsField` to `Field`. -/
+@[implicit_reducible]
 noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field R where
-  __ := (‹Ring R›:) -- this also works without the `( :)`, but it's slow
+  __ := (‹Ring R› :) -- this also works without the `( :)`, but it's slow
   __ := h.toSemifield
   qsmul := _
   qsmul_def := fun _ _ => rfl

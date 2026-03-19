@@ -94,12 +94,14 @@ def const : 𝟭 _ ⟶ I R G where
 
 namespace MultiInd
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The n-th functor taking `M` to `C(G, C(G,...,C(G, M)))` (with n `G`s).
 These functors form a complex, see `MultiInd.complex`. -/
 def functor : ℕ → Action (TopModuleCat R) G ⥤ Action (TopModuleCat R) G
   | 0     => 𝟭 _
   | n + 1 => functor n ⋙ I R G
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The differential map in `MultiInd.complex`. -/
 def d : ∀ n : ℕ, functor R G n ⟶ functor R G (n + 1)
   | 0     => const R G
@@ -111,6 +113,7 @@ lemma d_succ (n : ℕ) :
     d R G (n + 1) = whiskerLeft (functor R G (n + 1)) (const R G) -
       (by exact whiskerRight (d R G n) (I R G)) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma d_comp_d (n : ℕ) :
     d R G n ≫ d R G (n + 1) = 0 := by
@@ -160,6 +163,7 @@ noncomputable
 def _root_.continuousCohomology (n : ℕ) : Action (TopModuleCat R) G ⥤ TopModuleCat R :=
   homogeneousCochains R G ⋙ HomologicalComplex.homologyFunctor _ _ n
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `0`-homogeneous cochains are isomorphic to `Xᴳ`. -/
 def kerHomogeneousCochainsZeroEquiv
     (X : Action (TopModuleCat R) G) (n : ℕ) (hn : n = 1) :
@@ -195,6 +199,8 @@ def kerHomogeneousCochainsZeroEquiv
   continuous_invFun := continuous_induced_rng.mpr
     (continuous_induced_rng.mpr ((ContinuousLinearMap.const R G).cont.comp continuous_subtype_val))
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
+set_option backward.isDefEq.respectTransparency false in
 open ShortComplex HomologyData in
 /-- `H⁰_cont(G, X) ≅ Xᴳ`. -/
 noncomputable
