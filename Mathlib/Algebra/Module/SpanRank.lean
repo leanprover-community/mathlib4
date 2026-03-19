@@ -382,6 +382,7 @@ lemma Ideal.lift_spanRank_map_eq_of_ringEquiv (f : R ≃+* T) (I : Ideal R) :
 lemma Ideal.spanRank_map_le (f : R →+* S) (I : Ideal R) : (I.map f).spanRank ≤ I.spanRank := by
   simpa using I.lift_spanRank_map_le f
 
+@[simp]
 lemma Ideal.spanRank_map_eq_of_ringEquiv (f : R ≃+* S) (I : Ideal R) :
     (I.map f).spanRank = I.spanRank := by
   simpa using I.lift_spanRank_map_eq_of_ringEquiv f
@@ -392,6 +393,7 @@ lemma Ideal.spanFinrank_map_le_of_fg (f : R →+* T) {I : Ideal R} (hI : I.FG) :
     ← Cardinal.lift_natCast.{v}, ← Submodule.FG.spanRank_eq_spanFinrank hI]
   exact I.lift_spanRank_map_le f
 
+@[simp]
 lemma Ideal.spanFinrank_map_eq_of_ringEquiv (f : R ≃+* T) (I : Ideal R) :
     (I.map f).spanFinrank = I.spanFinrank := by
   rw [Submodule.spanFinrank, Submodule.spanFinrank, ← Cardinal.toNat_lift.{u, v},
