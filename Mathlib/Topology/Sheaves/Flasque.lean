@@ -171,8 +171,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
     have : Nonempty (t₆ ⟶ t) := Nonempty.intro (StructuredArrow.homMk (CategoryOfElements.homMk _ _
       (homOfLE (le_iSup f 0)).op (ht₅ 0)) (by cat_disch))
     exact leOfHom ((ht t₆) this).some.right.1.unop ((le_iSup f 1) hW)
-  use t.right.2 |_ U
-  simp [map_restrict, ← tcomp, restrict_restrict]
+  exact ⟨t.right.2 |_ U, by simp [map_restrict, ← tcomp, restrict_restrict]⟩
 
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque,
 then `𝓗` is flasque. -/
