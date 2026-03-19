@@ -124,30 +124,37 @@ namespace SatisfiesGrunblumCondition
 variable {e : ℕ → X} {K : ℝ}
 
 /-- The Grünblum constant must be at least `1` for any nonzero sequence. -/
-theorem one_le (h : SatisfiesGrunblumCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) :
-    1 ≤ K := by
-  have h0 := h 1 1 (fun _ => 1) le_rfl
-  simp only [Finset.range_one, one_smul, sum_singleton] at h0
-  exact le_of_mul_le_mul_right ((one_mul _).le.trans h0) (norm_pos_iff.mpr (h_nz 0))
+theorem one_le (h : SatisfiesGrunblumCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) : 1 ≤ K := by
+  have := h 1 1 (fun _ => 1) le_rfl
+  simp only [Finset.range_one, one_smul, sum_singleton] at this
+  exact le_of_mul_le_mul_right ((one_mul _).le.trans this) (norm_pos_iff.mpr (h_nz 0))
 
 /-- A nonzero sequence satisfying the Grünblum condition is linearly independent. -/
-lemma linearIndependent (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K)
-    (h_nz : ∀ n, e n ≠ 0) : LinearIndependent 𝕜 e := by
+lemma linearIndependent (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) :
+    LinearIndependent 𝕜 e := by
   rw [linearIndependent_iff']
   intro s g hg i hi
   let c j := if j ∈ s then g j else 0
   let N := s.sup id + 1
-  have hb (j : ℕ) (hj : j ∈ s) : j < N := Nat.lt_succ_of_le (Finset.le_sup (f := id) hj)
-  have h_total : ∑ j ∈ Finset.range N, c j • e j = 0 := by
-    rw [← Finset.sum_subset (fun j hj ↦ Finset.mem_range.mpr (hb j hj))
+  have hltN (j : ℕ) (hj : j ∈ s) : j < N := Nat.lt_succ_of_le (Finset.le_sup (f := id) hj)
+  have h_zero : ∑ j ∈ Finset.range N, c j • e j = 0 := by
+    rw [← Finset.sum_subset (fun j hj ↦ Finset.mem_range.mpr (hltN j hj))
       (fun x _ hx ↦ by simp only [c, hx, ite_false, zero_smul])]
     exact (Finset.sum_congr rfl (fun j hj ↦ by simp [c, hj])).trans hg
   have h_part (m : ℕ) (hm : m ≤ N) : ∑ j ∈ Finset.range m, c j • e j = 0 :=
-    norm_le_zero_iff.mp <| by simpa [h_total] using h_grunblum N m c hm
+    norm_le_zero_iff.mp <| by simpa [h_zero] using h_grunblum N m c hm
   have hc : c i • e i = 0 := by
     rw [← Finset.sum_range_succ_sub_sum (fun j ↦ c j • e j),
-        h_part (i + 1) (hb i hi), h_part i (hb i hi).le, sub_zero]
+        h_part (i + 1) (hltN i hi), h_part i (hltN i hi).le, sub_zero]
   simpa [c, hi, h_nz i] using hc
+
+private lemma sum_repr_eq_of_sup_lt {M : Type*} [AddCommGroup M] [Module 𝕜 M]
+    (b : Module.Basis ℕ 𝕜 M) (x : M) {N : ℕ} (hN : (b.repr x).support.sup id < N) :
+    ∑ i ∈ Finset.range N, b.repr x i • b i = x := by
+  conv_rhs => rw [← b.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
+  exact (Finset.sum_subset
+    (fun i hi ↦ Finset.mem_range.2 ((Finset.le_sup (f := id) hi).trans_lt hN))
+    (fun i _ hi ↦ by simp [Finsupp.notMem_support_iff.mp hi])).symm
 
 /-- A nonzero sequence satisfying the Grünblum condition with constant `K` is a basic sequence,
     with basis constant at most `K`. -/
@@ -158,54 +165,74 @@ theorem basicSequence (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K)
   let S := Submodule.span 𝕜 (Set.range e)
   let b_S := Module.Basis.span h_indep
   have hbS (n : ℕ) : (b_S n : X) = e n := congrArg Subtype.val (Module.Basis.span_apply h_indep n)
-  have coe_sum (A : Finset ℕ) (c : ℕ → 𝕜) :
-      (↑(∑ i ∈ A, c i • b_S i) : X) = ∑ i ∈ A, c i • e i := by
-    simp [AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, hbS]
   have h_sum (x : S) {N : ℕ} (hN : (b_S.repr x).support.sup id < N) :
-      ∑ i ∈ Finset.range N, b_S.repr x i • b_S i = x := by
-    conv_rhs => rw [← b_S.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
-    exact (Finset.sum_subset
-      (fun i hi ↦ Finset.mem_range.2 ((Finset.le_sup (f := id) hi).trans_lt hN))
-      (fun i _ hi ↦ by simp [Finsupp.notMem_support_iff.mp hi])).symm
-  have h_partial_bound (k : ℕ) (y : S) : ‖∑ i ∈ Finset.range k, b_S.repr y i • e i‖ ≤ K * ‖y‖ := by
-    let N := max k ((b_S.repr y).support.sup id + 1)
-    have hN : (b_S.repr y).support.sup id < N :=
-      (Nat.lt_succ_self _).trans_le (le_max_right k _)
-    conv_rhs => rw [← norm_coe (x := y), ← h_sum y hN, coe_sum]
-    exact h_grunblum N k (b_S.repr y) (le_max_left _ _)
-  let coord (j : ℕ) : StrongDual 𝕜 S := LinearMap.mkContinuous
-    ((Finsupp.lapply j).comp b_S.repr.toLinearMap)
-    (2 * K / ‖e j‖)
-    fun y ↦ by
-      rw [div_mul_eq_mul_div, le_div_iff₀ (norm_pos_iff.mpr (h_nz j))]
-      change ‖b_S.repr y j‖ * ‖e j‖ ≤ 2 * K * ‖y‖
-      have := h_partial_bound (j + 1) y
-      have := h_partial_bound j y
-      have hsub := norm_sub_le
-        (∑ i ∈ Finset.range (j + 1), b_S.repr y i • e i)
-        (∑ i ∈ Finset.range j, b_S.repr y i • e i)
-      rw [Finset.sum_range_succ_sub_sum, norm_smul] at hsub
-      linarith
-  let basis : SchauderBasis 𝕜 S := {
-    basis := b_S
-    coord := coord
-    ortho := fun i j ↦ by
-      simp only [coord, LinearMap.mkContinuous_apply, LinearMap.comp_apply,
-        LinearEquiv.coe_toLinearMap, Finsupp.lapply_apply, b_S.repr_self,
-        Finsupp.single_apply, Pi.single_apply]
-      split_ifs <;> simp_all
-    expansion := fun x ↦ by
-      rw [HasSum, SummationFilter.conditional_filter_eq_map_range, tendsto_map'_iff]
+      ∑ i ∈ Finset.range N, b_S.repr x i • b_S i = x := sum_repr_eq_of_sup_lt b_S x hN
+  let P_span (k : ℕ) : S →ₗ[𝕜] S :=
+    ∑ i ∈ Finset.range k, ((Finsupp.lapply i).comp b_S.repr.toLinearMap).smulRight (b_S i)
+  have h_P_apply (k : ℕ) (x : S) : P_span k x = ∑ i ∈ Finset.range k, b_S.repr x i • b_S i := by
+    simp [P_span]
+  have coe_sum (A : Finset ℕ) (c : ℕ → 𝕜) : (↑(∑ i ∈ A, c i • b_S i) : X) = ∑ i ∈ A, c i • e i := by
+    simp [AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, hbS]
+  have h_P_bound (k : ℕ) (x : S) : ‖P_span k x‖ ≤ K * ‖x‖ := by
+    let a := b_S.repr x
+    let N := max k (a.support.sup id + 1)
+    have hN := (Nat.lt_succ_self _).trans_le (le_max_right k (a.support.sup id + 1))
+    calc ‖P_span k x‖
+      _ = ‖∑ i ∈ Finset.range k, a i • e i‖ := by rw [← norm_coe, h_P_apply, coe_sum]
+      _ ≤ K * ‖∑ i ∈ Finset.range N, a i • e i‖ := h_grunblum N k a (le_max_left _ _)
+      _ = K * ‖x‖ := by rw [← norm_coe, ← coe_sum, congrArg Subtype.val (h_sum x hN)]
+  let P (k : ℕ) : S →L[𝕜] S := (P_span k).mkContinuous K (h_P_bound k)
+  have hP (k : ℕ) (x : S) : P k x = P_span k x := rfl
+  let D : SchauderBasis.RankOneDecomposition 𝕜 S := {
+    P, e := b_S,
+    proj_zero := by
+      ext x; change (P 0 x : X) = (0 : S)
+      simp [hP, h_P_apply]
+    finrank_range := fun n ↦ by
+      have h_range : (P n).toLinearMap.range =
+          Submodule.span 𝕜 (Set.range (fun i : Fin n ↦ b_S i)) := by
+        apply le_antisymm
+        · rintro _ ⟨x, rfl⟩
+          rw [ContinuousLinearMap.coe_coe, hP, h_P_apply]
+          exact Submodule.sum_mem _ fun i hi ↦
+            Submodule.smul_mem _ _ (Submodule.subset_span ⟨⟨i, Finset.mem_range.mp hi⟩, rfl⟩)
+        · rw [Submodule.span_le]
+          rintro _ ⟨i, rfl⟩
+          refine ⟨b_S i, ?_⟩
+          change P n (b_S i) = b_S i
+          have : (b_S.repr (b_S i)).support.sup id < n := by
+            rw [b_S.repr_self]
+            simp only [Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sup_singleton, id]
+            exact i.isLt
+          rw [hP, h_P_apply]
+          exact h_sum (b_S i) this
+      rw [h_range, finrank_span_eq_card]
+      · exact Fintype.card_fin n
+      · exact b_S.linearIndependent.comp _ Fin.val_injective
+    proj_comp := fun n m y ↦ by
+      change P n (P m y) = P (min n m) y
+      simp only [hP, h_P_apply, map_sum, map_smul, b_S.repr_self,
+        Finsupp.finset_sum_apply, Finsupp.smul_apply, Finsupp.single_apply,
+        smul_eq_mul, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq', Finset.mem_range,
+        ite_smul, zero_smul, ← Finset.sum_filter]
+      congr 1; ext _; simp
+    proj_tendsto := fun x ↦ by
+      change Filter.Tendsto (fun n ↦ P n x) Filter.atTop (nhds x)
+      simp_rw [show ∀ n, P n x = ∑ i ∈ Finset.range n, b_S.repr x i • b_S i from
+        fun n ↦ by rw [hP, h_P_apply]]
       exact tendsto_atTop_of_eventually_const (i₀ := (b_S.repr x).support.sup id + 1)
-        fun n hn ↦ h_sum x (Nat.lt_of_succ_le hn)
-  }
-  have h_bound : basis.enormProjBound ≤ ENNReal.ofReal K := iSup_le fun n ↦ by
-    rw [enorm_eq_nnnorm, ← ENNReal.ofReal_coe_nnreal, ENNReal.ofReal_le_ofReal_iff hK, coe_nnnorm]
-    refine ContinuousLinearMap.opNorm_le_bound _ hK fun y ↦ ?_
-    rw [← norm_coe, SchauderBasis.proj_apply, coe_sum]
-    exact h_partial_bound n y
-  refine ⟨⟨e, basis, hbS, h_bound.trans_lt ENNReal.ofReal_lt_top⟩, rfl, ?_⟩
-  exact (ENNReal.toReal_mono ENNReal.ofReal_ne_top h_bound).trans_eq (ENNReal.toReal_ofReal hK)
+        fun n hn ↦ h_sum x ((Nat.lt_succ_self _).trans_le hn)
+    e_mem_range := fun n ↦ ⟨b_S n, by
+      change P (n + 1) (b_S n) - P n (b_S n) = b_S n
+      simp [hP, h_P_apply, Finset.sum_range_succ]⟩
+    e_ne_zero := fun n h ↦ h_nz n (by simpa [hbS] using congrArg Subtype.val h) }
+  have h_bound : D.basis.enormProjBound ≤ ENNReal.ofReal K := iSup_le fun n ↦ by
+    rw [enorm_eq_nnnorm, ← ENNReal.ofReal_coe_nnreal, ENNReal.ofReal_le_ofReal_iff hK,
+      coe_nnnorm, SchauderBasis.RankOneDecomposition.basis_proj D]
+    exact ContinuousLinearMap.opNorm_le_bound _ hK (h_P_bound n)
+  refine ⟨⟨e, D.basis, fun n ↦ ?_, h_bound.trans_lt ENNReal.ofReal_lt_top⟩, rfl, ?_⟩
+  · rw [SchauderBasis.RankOneDecomposition.basis_coe D]; exact hbS n
+  · exact (ENNReal.toReal_mono ENNReal.ofReal_ne_top h_bound).trans_eq (ENNReal.toReal_ofReal hK)
 
 end SatisfiesGrunblumCondition
 
