@@ -112,7 +112,7 @@ variable [Semiring R] {x y : R[M]} {r r₁ r₂ : R} {m m' m₁ m₂ : M}
   inferInstanceAs <| IsCancelAdd <| M →₀ R
 
 @[to_additive] instance instCoeFun : CoeFun R[M] fun _ ↦ M → R :=
-  inferInstanceAs <| CoeFun (M →₀ R) fun _ ↦ M → R
+  _root_.inferInstanceAs <| CoeFun (M →₀ R) fun _ ↦ M → R
 
 /-- A copy of `Finsupp.ext` for `MonoidAlgebra`. -/
 @[to_additive (attr := ext) /-- A copy of `Finsupp.ext` for `AddMonoidAlgebra`. -/]
@@ -147,7 +147,8 @@ lemma smul_apply (a : A) (x : R[M]) (m : M) : (a • x) m = a • x m := rfl
 
 @[to_additive (attr := simp) (dont_translate := A) smul_single]
 lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r) := by
-  ext; simp [single, ← Finsupp.smul_single]
+  ext
+  simp [single, ← Finsupp.smul_single]
 
 @[to_additive (dont_translate := R) smul_single']
 lemma smul_single' (r' : R) (m : M) (r : R) : r' • single m r = single m (r' * r) := smul_single ..
@@ -378,6 +379,7 @@ end Mul
 section Semigroup
 variable [Semigroup M]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
 instance nonUnitalSemiring : NonUnitalSemiring R[M] where
   mul_assoc := by simp [mul_def]; simp [MonoidAlgebra, sum_sum_index, mul_add, add_mul, mul_assoc]
@@ -489,6 +491,7 @@ instance isLocalHom_singleOneRingHom : IsLocalHom (singleOneRingHom (R := R) (M 
     · simpa [single_one_mul_apply, one_def] using congr($hax 1)
     · simpa [mul_single_one_apply, one_def] using congr($hxa 1)
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- The trivial monoid algebra is the base ring. -/
 @[to_additive (dont_translate := R) (attr := simps! apply symm_apply)
