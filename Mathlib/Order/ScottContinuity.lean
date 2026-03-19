@@ -101,7 +101,7 @@ theorem ScottContinuousOn.image_comp {g : β → γ}
     (hg : ScottContinuousOn ((f '' ·) '' D) g)
     (hf : ScottContinuousOn D f) :
     ScottContinuousOn D (g ∘ f) :=
-  ScottContinuousOn.comp hD (Set.mapsTo_image  (f '' ·) D) hg hf
+  ScottContinuousOn.comp hD (Set.mapsTo_image (f '' ·) D) hg hf
 
 @[fun_prop]
 lemma ScottContinuousOn.prodMk {g : α → γ} (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)

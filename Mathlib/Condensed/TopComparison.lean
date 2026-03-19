@@ -56,6 +56,7 @@ theorem factorsThrough_of_pullbackCondition {Z B : C} {π : Z ⟶ B} [HasPullbac
     TopCat.pullbackIsoProdSubtype_inv_snd_apply] at ha'
   simpa using ha'
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `G` preserves the relevant pullbacks and every effective epi in `C` is a quotient map (which is
 the case when `C` is `CompHaus` or `Profinite`), then `yonedaPresheaf` satisfies the equalizer
@@ -103,12 +104,12 @@ variable (P : TopCat.{u} → Prop) (X : TopCat.{max u w})
 /--
 The sheaf on `CompHausLike P` of continuous maps to a topological space.
 -/
-@[simps! val_obj val_map]
+@[simps! obj_obj obj_map]
 def TopCat.toSheafCompHausLike :
     have := CompHausLike.preregular hs
     Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) where
-  val := yonedaPresheaf.{u, max u w} (CompHausLike.compHausLikeToTop.{u} P) X
-  cond := by
+  obj := yonedaPresheaf.{u, max u w} (CompHausLike.compHausLikeToTop.{u} P) X
+  property := by
     have := CompHausLike.preregular hs
     rw [Presheaf.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
     refine ⟨inferInstance, ?_⟩

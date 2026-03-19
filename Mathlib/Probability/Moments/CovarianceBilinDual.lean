@@ -174,6 +174,7 @@ def uncenteredCovarianceBilinDual (μ : Measure E) : StrongDual ℝ E →L[ℝ] 
 @[deprecated (since := "2025-10-10")] alias uncenteredCovarianceBilin :=
   uncenteredCovarianceBilinDual
 
+set_option backward.isDefEq.respectTransparency false in
 lemma uncenteredCovarianceBilinDual_apply (h : MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
     uncenteredCovarianceBilinDual μ L₁ L₂ = ∫ x, L₁ x * L₂ x ∂μ := by
   simp only [uncenteredCovarianceBilinDual, ContinuousLinearMap.bilinearComp_apply,
@@ -358,9 +359,6 @@ lemma covarianceBilinDual_eq_covariance (h : MemLp id 2 μ) (L₁ L₂ : StrongD
 lemma covarianceBilinDual_self_eq_variance (h : MemLp id 2 μ) (L : StrongDual ℝ E) :
     covarianceBilinDual μ L L = Var[L; μ] := by
   rw [covarianceBilinDual_eq_covariance h, covariance_self (by fun_prop)]
-
-@[deprecated (since := "2025-07-16")] alias covarianceBilin_same_eq_variance :=
-  covarianceBilinDual_self_eq_variance
 
 end Covariance
 
