@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Adjunction.Limits
 # Preservation of colimits and reflective adjunctions
 
 Let `adj : F ⊣ G` be an adjunction with `G : D ⥤ C` full and faithful.
-We show that if colimits of shape `J` exists in `C`, then a functor
+We show that if colimits of shape `J` exist in `C`, then a functor
 `H : D ⥤ E` preserves colimits of shape `J` iff `F ⋙ H` does.
 
 In particular, a functor from a category of sheaves preserves colimits
