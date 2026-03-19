@@ -196,6 +196,9 @@ class NormedGroup (E : Type*) extends Norm E, Group E, MetricSpace E where
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x⁻¹ * y‖ := by aesop
 
+/- TODO: comment on this change! -/
+attribute [instance 900] NormedAddGroup.toAddGroup SeminormedAddGroup.toAddGroup
+
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖-x + y‖`
 defines a pseudometric space structure. -/
 class SeminormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E,

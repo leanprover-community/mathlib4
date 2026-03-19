@@ -271,6 +271,9 @@ class NormedAlgebra (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [Seminorme
   Algebra 𝕜 𝕜' where
   norm_smul_le : ∀ (r : 𝕜) (x : 𝕜'), ‖r • x‖ ≤ ‖r‖ * ‖x‖
 
+/- TODO comment on this change! -/
+attribute [instance 900] NormedAlgebra.toAlgebra
+
 attribute [inherit_doc NormedAlgebra] NormedAlgebra.norm_smul_le
 
 variable (𝕜')
