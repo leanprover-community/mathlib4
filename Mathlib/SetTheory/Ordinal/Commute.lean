@@ -5,7 +5,7 @@ Authors: Snir Broshi
 -/
 module
 
-public import Mathlib.SetTheory.Ordinal.Principal
+public import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-!
 # Ordinal arithmetic commutativity
