@@ -8,9 +8,9 @@ module
 public import Mathlib.SetTheory.Ordinal.Principal
 
 /-!
-# Analyzing ordinal arithmetic
+# Ordinal arithmetic commutativity
 
-We analyze arithmetic operations on ordinals and prove various properties about them.
+Results on the commutativity of ordinal arithmetic operations.
 -/
 
 public section
