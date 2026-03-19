@@ -512,7 +512,7 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
   exact h.minDegree_eq_one_of_nontrivial
 
 /-- A nontrivial tree has at least two leaves. -/
-theorem IsTree_exists_atleast_two_leaves [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
+theorem IsTree.exists_ne_degree_eq_one [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
     (hTree : G.IsTree) :
     ∃ v1 v2, v1 ≠ v2 ∧ G.degree v1 = 1 ∧ G.degree v2 = 1 := by
   have ⟨u, v, p, hp_isPath, hp_max⟩ := exists_isPath_forall_isPath_length_le_length G
@@ -529,10 +529,7 @@ theorem IsTree_exists_atleast_two_leaves [Fintype V] [Nontrivial V] [DecidableRe
     have h_ge_2 : 2 ≤ G.degree v1 := by
       have h_pos : 0 < G.degree v1 := G.degree_pos_iff_exists_adj v1 |>.mpr
         ⟨_, path.adj_snd <| not_nil_iff_lt_length.mpr <| by lia⟩
-      match h_val : G.degree v1 with
-      | 0 => exact (Nat.not_lt_zero 0 (h_val ▸ h_pos)).elim
-      | 1 => exact (h_deg_not_1 h_val).elim
-      | n + 2 => exact Nat.le_add_left 2 n
+      lia
     obtain ⟨w, hw_adj, hw_not_next⟩ := exists_neighbor_ne_of_one_lt_degree h_ge_2 (path.getVert 1)
     have hw_not_in_p: w ∉ path.support := by
       by_contra hw_in_p
