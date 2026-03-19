@@ -209,7 +209,8 @@ theorem singularValues_of_le_rank {n : ℕ} (hn : finrank 𝕜 (range T) ≤ n) 
   order
 
 @[simp]
-theorem singularValues_zero (i : ℕ) : (0 : E →ₗ[𝕜] F).singularValues i = 0 := by
+theorem singularValues_zero : (0 : E →ₗ[𝕜] F).singularValues = 0 := by
+  ext1 i
   apply singularValues_of_le_rank
   trans 0 <;> simp
 
