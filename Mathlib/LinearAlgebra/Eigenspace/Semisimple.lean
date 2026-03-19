@@ -76,11 +76,10 @@ section AlgClosed
 variable {K V : Type*} [Field K] [IsAlgClosed K] [AddCommGroup V] [Module K V]
   [FiniteDimensional K V] {f : End K V}
 
-lemma IsFinitelySemisimple.iSup_eigenspace_eq_top (hf : f.IsFinitelySemisimple) :
+lemma IsSemisimple.iSup_eigenspace_eq_top (hf : f.IsSemisimple) :
     ⨆ μ : K, f.eigenspace μ = ⊤ := by
-  have := iSup_maxGenEigenspace_eq_top f
-  simp_rw [hf.maxGenEigenspace_eq_eigenspace] at this
-  exact this
+  simpa only [(isFinitelySemisimple_iff_isSemisimple.mpr hf).maxGenEigenspace_eq_eigenspace] using
+    iSup_maxGenEigenspace_eq_top f
 
 lemma IsFinitelySemisimple.eq_zero_of_forall_eigenvalue_eq_zero (hf : f.IsFinitelySemisimple)
     (h : ∀ μ : K, f.HasEigenvalue μ → μ = 0) : f = 0 := by
