@@ -10,7 +10,7 @@ public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 
 /-!
-# The topology on a valued ring
+# The topology on a ring induced by a valuation
 
 In this file, we define the non-Archimedean topology induced by a valuation on a ring.
 
