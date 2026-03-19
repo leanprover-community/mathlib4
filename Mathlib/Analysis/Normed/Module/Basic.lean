@@ -511,22 +511,6 @@ variable (𝕜 𝕜' E)
 variable [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
   [SeminormedRing E] [NormedAlgebra 𝕜' E]
 
-/-- If `E` is a normed algebra over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
-`RestrictScalars.module` is additionally a `NormedAlgebra`. -/
-instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
-  { RestrictScalars.algebra 𝕜 𝕜' E with
-    norm_smul_le := norm_smul_le }
-
--- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
--- appropriately modified here.
-/-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
-This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
--/
-@[implicit_reducible]
-def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
-    [SeminormedRing E] [I : NormedAlgebra 𝕜' E] : NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
-  I
-
 /-- Warning: This declaration should be used judiciously.
 Please consider using `IsScalarTower` instead.
 
@@ -539,6 +523,21 @@ See Note [reducible non-instances].
 @[implicit_reducible]
 def NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
   { NormedSpace.restrictScalars 𝕜 𝕜' E, Algebra.restrictScalars 𝕜 𝕜' E with }
+
+/-- If `E` is a normed algebra over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
+`RestrictScalars.module` is additionally a `NormedAlgebra`. -/
+instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
+  NormedAlgebra.restrictScalars 𝕜 𝕜' E
+
+-- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
+-- appropriately modified here.
+/-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
+This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
+-/
+@[implicit_reducible]
+def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
+    [SeminormedRing E] [I : NormedAlgebra 𝕜' E] : NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
+  I
 end NormedAlgebra
 
 end RestrictScalars
