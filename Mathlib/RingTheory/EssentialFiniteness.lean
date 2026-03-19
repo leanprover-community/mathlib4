@@ -245,11 +245,10 @@ lemma EssFiniteType.algHom_ext [EssFiniteType R S]
   · exact adjoin_mem_finset R S
   · rintro ⟨x, hx⟩ hx'; exact H x hx'
 
-open Algebra TensorProduct in
 instance EssFiniteType.quotient_map [EssFiniteType R S] (p : Ideal R) :
     EssFiniteType (R ⧸ p) (S ⧸ p.map (algebraMap R S)) :=
-  .of_surjective (quotIdealMapEquivQuotTensor S p).symm.toAlgHom
-    (quotIdealMapEquivQuotTensor S p).symm.surjective
+  .of_surjective (Algebra.TensorProduct.quotIdealMapEquivQuotTensor S p).symm.toAlgHom
+    (Algebra.TensorProduct.quotIdealMapEquivQuotTensor S p).symm.surjective
 
 end Algebra
 

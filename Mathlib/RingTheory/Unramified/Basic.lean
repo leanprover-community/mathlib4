@@ -284,10 +284,9 @@ instance base_change [FormallyUnramified R A] :
   ext : 1
   exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => AlgHom.congr_fun e (1 ⊗ₜ x)
 
-open Algebra TensorProduct in
 instance quotient_map [FormallyUnramified R B] (p : Ideal R) :
     FormallyUnramified (R ⧸ p) (B ⧸ p.map (algebraMap R B)) :=
-  .of_equiv (quotIdealMapEquivQuotTensor B p).symm
+  .of_equiv (Algebra.TensorProduct.quotIdealMapEquivQuotTensor B p).symm
 
 end BaseChange
 
