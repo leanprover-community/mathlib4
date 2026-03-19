@@ -8,7 +8,29 @@ module
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 
 /-!
-# API for the long exact sequence for sheaf cohomology
+# Long exact sequence for sheaf cohomology
+
+We obtain the long exact sequence on sheaf cohomology coming from a short exact sequence
+of sheaves. We also show it is functorial. In practice, it is often best to work with
+cohomology as a Type (the long sequence necessarily takes values in the category `AddCommGrpCat`,
+so the objects in it are really `AddCommGrpCat.of (H F n)`). To do this, you can use the lemmas
+`CategoryTheory.Sheaf.H.longSequence_exact₁`, `CategoryTheory.Sheaf.H.longSequence_exact₂` and
+`CategoryTheory.Sheaf.H.longSequence_exact₃`.
+
+## Main definitions
+
+* `CategoryTheory.Sheaf.H.connectingHom`: Given a short exact sequence of sheaves `S`,
+  this is the connecting homomorphism `Hⁿ(S.X₃) ⟶ Hⁿ⁺¹(S.X₁)`.
+* `CategoryTheory.Sheaf.H.longSequence`: Given a short exact sequence of sheaves `S`, this
+  is the long exact sequence:
+  `Hⁿ(S.X₁) ⟶ Hⁿ(S.X₂) ⟶ Hⁿ(S.X₃) ⟶ Hⁿ⁺¹(S.X₁) ⟶ Hⁿ⁺¹(S.X₂) ⟶ Hⁿ⁺¹(S.X₃)`
+
+* `CategoryTheory.Sheaf.H.longSequence_hom`: Given a morphism of short exact sequence of sheaves
+  `f : S₁ ⟶ S₂`, this is the induced morphism between their long exact sequences. On each object,
+  it is just `CategoryTheory.Sheaf.H.map` applied to the corresponding morphism in `f`. E.g. the
+  first morphism if `H.map` applied to `f.τ₁`.
+* `CategoryTheory.Sheaf.H.longSequenceFunctor`: This is the functor that sends a short exact
+  sequence to its long exact sequence on cohomology and sends morphisms to `longSequence_hom`.
 
 -/
 
@@ -33,7 +55,8 @@ variable {S : ShortComplex (Sheaf J AddCommGrpCat.{w})} (hS : S.ShortExact) (n�
 
 namespace H
 
-/-- The connecting homomorphism from `Hⁿ(S.X₃)` to `Hⁿ⁺¹(S.X₁)` -/
+/-- Given a short exact sequence of sheaves `S`, this is the connecting homomorphism
+`Hⁿ(S.X₃) ⟶ Hⁿ⁺¹(S.X₁)`. -/
 noncomputable def connectingHom : H S.X₃ n₀ →+ H S.X₁ n₁ :=
   hS.extClass.postcomp _ h
 
@@ -47,7 +70,9 @@ theorem connectingHom_naturality (x : H S₁.X₃ n₀) :
   delta connectingHom H map
   simp [ShortComplex.ShortExact.extClass_naturality h₁ h₂ f]
 
-/-- The long exact sequence on sheaf cohomology. -/
+/-- this is the long exact sequence:
+`Hⁿ(S.X₁) ⟶ Hⁿ(S.X₂) ⟶ Hⁿ(S.X₃) ⟶ Hⁿ⁺¹(S.X₁) ⟶ Hⁿ⁺¹(S.X₂) ⟶ Hⁿ⁺¹(S.X₃)`. -/
+@[simps!]
 noncomputable def longSequence :
     ComposableArrows AddCommGrpCat.{w'} 5 := ComposableArrows.mk₅
   (ofHom (map S.f n₀))
@@ -59,7 +84,7 @@ noncomputable def longSequence :
 theorem longSequence_exact : (longSequence hS n₀ n₁ h).Exact :=
   Ext.covariantSequence_exact _ hS n₀ n₁ h
 
-/-- The induced homomorphism of long exact equences -/
+/-- The induced homomorphism of long exact equences obtained by applying `H.map` everywhere. -/
 noncomputable def longSequence_hom :
     longSequence h₁ n₀ n₁ h ⟶ longSequence h₂ n₀ n₁ h := ComposableArrows.homMk₅
   (ofHom (map f.τ₁ n₀))
@@ -87,30 +112,6 @@ noncomputable def longSequence_hom :
     have := congr_arg (functorH J n₁).map f.5
     repeat rw [Functor.map_comp] at this
     exact this.symm)
-
-@[simp]
-lemma longSequence_hom_app_zero :
-  (longSequence_hom n₀ n₁ h h₁ h₂ f).app 0 = ofHom (map f.τ₁ n₀) := rfl
-
-@[simp]
-lemma longSequence_hom_app_one :
-  (longSequence_hom n₀ n₁ h h₁ h₂ f).app 1 = ofHom (map f.τ₂ n₀) := rfl
-
-@[simp]
-lemma longSequence_hom_app_two :
-  (longSequence_hom n₀ n₁ h h₁ h₂ f).app 2 = ofHom (map f.τ₃ n₀) := rfl
-
-@[simp]
-lemma longSequence_hom_app_three :
-  (longSequence_hom n₀ n₁ h h₁ h₂ f).app 3 = ofHom (map f.τ₁ n₁) := rfl
-
-@[simp]
-lemma longSequence_hom_app_four :
-  (longSequence_hom n₀ n₁ h h₁ h₂ f).app 4 = ofHom (map f.τ₂ n₁) := rfl
-
-@[simp]
-lemma longSequence_hom_app_five :
-  (longSequence_hom n₀ n₁ h h₁ h₂ f).app 5 = ofHom (map f.τ₃ n₁) := rfl
 
 /-- The long exact sequence of cohomology is functorial -/
 @[simps]
