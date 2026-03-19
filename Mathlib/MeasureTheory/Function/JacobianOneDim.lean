@@ -490,7 +490,6 @@ theorem integrableOn_Icc_deriv_smul_of_deriv_nonpos {a b : ℝ} {g : ℝ → F}
   rw [A, B,
       integrableOn_image_iff_integrableOn_deriv_smul_of_antitoneOn measurableSet_Ioo (f' := f')]
   · simp
-    rw [fun_integrable_neg_iff]
   · exact fun z hz ↦ (hff' z hz).hasDerivWithinAt
   · exact M.mono Ioo_subset_Icc_self
 

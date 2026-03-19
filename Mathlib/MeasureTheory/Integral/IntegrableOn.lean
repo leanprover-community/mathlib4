@@ -277,6 +277,15 @@ theorem IntegrableOn.neg {f : α → E} (hf : IntegrableOn f s μ) : IntegrableO
   Integrable.neg hf
 
 @[simp]
+theorem integrableOn_neg_iff {f : α → E} : IntegrableOn (-f) s μ ↔ IntegrableOn f s μ :=
+  integrable_neg_iff
+
+@[simp]
+theorem integrableOn_fun_neg_iff {f : α → E} :
+    IntegrableOn (fun x ↦ -f x) s μ ↔ IntegrableOn f s μ :=
+  integrable_neg_iff
+
+@[simp]
 theorem integrableOn_add_measure [PseudoMetrizableSpace ε] :
     IntegrableOn f s (μ + ν) ↔ IntegrableOn f s μ ∧ IntegrableOn f s ν :=
   ⟨fun h =>
