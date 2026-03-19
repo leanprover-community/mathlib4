@@ -63,11 +63,11 @@ structure formally behave like extra degeneracies `σ (-1)`. -/
 @[ext]
 structure ExtraDegeneracy (X : SimplicialObject.Augmented C) where
   /-- a section of the augmentation in dimension `0` -/
-  s' : point.obj X ⟶ drop.obj X _⦋0⦌
+  s' : X.right ⟶ X.left _⦋0⦌
   /-- the extra degeneracy -/
-  s : ∀ n : ℕ, drop.obj X _⦋n⦌ ⟶ drop.obj X _⦋n + 1⦌
-  s'_comp_ε : s' ≫ X.hom.app (op ⦋0⦌) = 𝟙 _ := by cat_disch
-  s₀_comp_δ₁ : s 0 ≫ X.left.δ 1 = X.hom.app (op ⦋0⦌) ≫ s' := by cat_disch
+  s : ∀ n : ℕ, X.left _⦋n⦌ ⟶ X.left _⦋n + 1⦌
+  s'_comp_ε : dsimp% s' ≫ X.hom.app (op ⦋0⦌) = 𝟙 X.right := by cat_disch
+  s₀_comp_δ₁ : dsimp% s 0 ≫ X.left.δ 1 = X.hom.app (op ⦋0⦌) ≫ s' := by cat_disch
   s_comp_δ₀ : ∀ n : ℕ, s n ≫ X.left.δ 0 = 𝟙 _ := by cat_disch
   s_comp_δ :
     ∀ (n : ℕ) (i : Fin (n + 2)), s (n + 1) ≫ X.left.δ i.succ = X.left.δ i ≫ s n := by cat_disch
@@ -77,10 +77,8 @@ structure ExtraDegeneracy (X : SimplicialObject.Augmented C) where
 namespace ExtraDegeneracy
 
 attribute [reassoc] s₀_comp_δ₁ s_comp_δ s_comp_σ
-set_option backward.isDefEq.respectTransparency false in -- This is needed below.
 attribute [reassoc (attr := simp)] s'_comp_ε s_comp_δ₀
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `ed` is an extra degeneracy for `X : SimplicialObject.Augmented C` and
 `F : C ⥤ D` is a functor, then `ed.map F` is an extra degeneracy for the
 augmented simplicial object in `D` obtained by applying `F` to `X`. -/
@@ -90,31 +88,19 @@ def map {D : Type*} [Category* D] {X : SimplicialObject.Augmented C} (ed : Extra
   s n := F.map (ed.s n)
   s'_comp_ε := by
     dsimp
-    rw [comp_id, ← F.map_comp, ed.s'_comp_ε]
-    dsimp only [point_obj]
-    rw [F.map_id]
+    rw [comp_id, ← F.map_comp, ed.s'_comp_ε, F.map_id]
   s₀_comp_δ₁ := by
     dsimp
-    rw [comp_id, ← F.map_comp]
-    dsimp [SimplicialObject.whiskering, SimplicialObject.δ]
-    rw [← F.map_comp]
-    erw [ed.s₀_comp_δ₁]
+    rw [comp_id, ← F.map_comp, ← F.map_comp, ed.s₀_comp_δ₁]
   s_comp_δ₀ n := by
-    dsimp [SimplicialObject.δ]
-    rw [← F.map_comp]
-    erw [ed.s_comp_δ₀]
     dsimp
-    rw [F.map_id]
+    rw [← F.map_comp, ed.s_comp_δ₀, F.map_id]
   s_comp_δ n i := by
-    dsimp [SimplicialObject.δ]
-    rw [← F.map_comp, ← F.map_comp]
-    erw [ed.s_comp_δ]
-    rfl
+    dsimp
+    rw [← F.map_comp, ← F.map_comp, ed.s_comp_δ]
   s_comp_σ n i := by
-    dsimp [SimplicialObject.whiskering, SimplicialObject.σ]
-    rw [← F.map_comp, ← F.map_comp]
-    erw [ed.s_comp_σ]
-    rfl
+    dsimp
+    rw [← F.map_comp, ← F.map_comp, ed.s_comp_σ]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `X` and `Y` are isomorphic augmented simplicial objects, then an extra
@@ -124,26 +110,45 @@ def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegenera
   s' := (point.mapIso e).inv ≫ ed.s' ≫ (drop.mapIso e).hom.app (op ⦋0⦌)
   s n := (drop.mapIso e).inv.app (op ⦋n⦌) ≫ ed.s n ≫ (drop.mapIso e).hom.app (op ⦋n + 1⦌)
   s'_comp_ε := by
-    simpa only [Functor.mapIso, assoc, w₀, ed.s'_comp_ε_assoc] using (point.mapIso e).inv_hom_id
+    simpa [w₀, ed.s'_comp_ε_assoc] using (point.mapIso e).inv_hom_id
   s₀_comp_δ₁ := by
-    have h := w₀ e.inv
-    dsimp at h ⊢
-    simp only [assoc, ← SimplicialObject.δ_naturality, ed.s₀_comp_δ₁_assoc, reassoc_of% h]
+    simp [← SimplicialObject.δ_naturality, s₀_comp_δ₁_assoc, w₀_assoc]
   s_comp_δ₀ n := by
-    have h := ed.s_comp_δ₀
-    dsimp at h ⊢
-    simpa only [assoc, ← SimplicialObject.δ_naturality, reassoc_of% h] using
+    simpa [← SimplicialObject.δ_naturality] using
       congr_app (drop.mapIso e).inv_hom_id (op ⦋n⦌)
   s_comp_δ n i := by
-    have h := ed.s_comp_δ n i
-    dsimp at h ⊢
-    simp only [assoc, ← SimplicialObject.δ_naturality, reassoc_of% h,
+    simp [← SimplicialObject.δ_naturality, s_comp_δ_assoc,
       ← SimplicialObject.δ_naturality_assoc]
   s_comp_σ n i := by
-    have h := ed.s_comp_σ n i
-    dsimp at h ⊢
-    simp only [assoc, ← SimplicialObject.σ_naturality, reassoc_of% h,
+    simp [← SimplicialObject.σ_naturality, s_comp_σ_assoc,
       ← SimplicialObject.σ_naturality_assoc]
+
+variable {X : SimplicialObject.Augmented C} (ed : ExtraDegeneracy X)
+
+attribute [local simp← ] Functor.map_comp in
+/-- The section of the augmentation that is induced by the extradegeneracy. -/
+def section_ : (SimplicialObject.const C).obj X.right ⟶ X.left where
+  app n := ed.s' ≫ X.left.map (SimplexCategory.isTerminalZero.from _).op
+
+@[simp]
+lemma section_app_op_mk_zero :
+    ed.section_.app (op ⦋0⦌) = ed.s' := by
+  simp [section_]
+
+@[reassoc (attr := simp)]
+lemma section_app_comp_hom_app (n : SimplexCategoryᵒᵖ) :
+    dsimp% ed.section_.app n ≫ X.hom.app n = 𝟙 _ := by
+  dsimp [section_]
+  rw [assoc, dsimp% X.hom.naturality, comp_id]
+  exact ed.s'_comp_ε
+
+@[simp]
+lemma section_comp_hom : ed.section_ ≫ X.hom = 𝟙 _ := by cat_disch
+
+/-- If an augmented simplicial object has an extradegeneracy, then
+then augmentation is a split epimorphism. -/
+def splitEpi : SplitEpi X.hom where
+  section_ := ed.section_
 
 end ExtraDegeneracy
 
@@ -378,9 +383,10 @@ noncomputable def homotopyEquiv [Preadditive C] [HasZeroObject C]
   homotopyInvHomId := Homotopy.ofEq (by
     ext
     dsimp
-    erw [AlternatingFaceMapComplex.ε_app_f_zero,
-      ChainComplex.fromSingle₀Equiv_symm_apply_f_zero, s'_comp_ε]
-    rfl)
+    rw [AlternatingFaceMapComplex.ε_app_f_zero]
+    dsimp
+    erw [ChainComplex.fromSingle₀Equiv_symm_apply_f_zero]
+    simp)
   homotopyHomInvId :=
     { hom i := Pi.single (i + 1) (-ed.s i)
       zero i j hij := Pi.single_eq_of_ne (Ne.symm hij) _
