@@ -56,7 +56,8 @@ def ofDerivation : Derivation R A A →ₗ⁅R⁆ LieDerivation R (A ⊗[R] L) (
 
 @[simp]
 lemma ofDerivation_apply (d : Derivation R A A) (x : A ⊗[R] L) :
-  (ofDerivation L d) x = d.toLinearMap.rTensor L x := rfl
+    ofDerivation L d x = d.toLinearMap.rTensor L x :=
+  rfl
 
 variable (A) in
 /-- A Lie derivation of an `R-`Lie algebra `L`, induces a Lie derivation of `A ⊗[R] L` for any
