@@ -183,7 +183,7 @@ theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing
           ← (isMaximalCohenMacaulay_def M).mp ‹_›, WithBot.coe_inj,
           ← depth_quotSMulTop_succ_eq_moduleDepth M x reg xmem]
         congr 1
-        have : Nontrivial (QuotSMulTop x M) := quotSMulTop_nontrivial xmem M
+        have := nontrivial_quotSMulTop_of_mem_maximalIdeal M xmem
         apply (depth_eq_of_algebraMap_surjective _ _).symm
         simpa only [Ideal.Quotient.algebraMap_eq] using Ideal.Quotient.mk_surjective
       have free := ih (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) dim
