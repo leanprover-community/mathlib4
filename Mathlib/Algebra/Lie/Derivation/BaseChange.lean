@@ -12,8 +12,8 @@ public import Mathlib.RingTheory.Derivation.Lie
 /-!
 # LieDerivations of a Lie algebra created through BaseChange
 
-When, given an `R`-algebra `A` and an `R`-Lie algebra `L` the (Lie algebra) basechange `A⊗[R] L`,
-both derivations of `A` and Lie derivations of `L` induce Lie derivations of `A⊗[R] L`. Moreover,
+When, given an `R`-algebra `A` and an `R`-Lie algebra `L` the (Lie algebra) basechange `A ⊗[R] L`,
+both derivations of `A` and Lie derivations of `L` induce Lie derivations of `A ⊗[R] L`. Moreover,
 both these procedures are Lie algebra homomorphisms themselves.
 
 
