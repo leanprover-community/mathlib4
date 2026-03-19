@@ -351,6 +351,13 @@ theorem integral_deriv_smul_comp_of_deriv_nonneg (hf : ContinuousOn f [[a, b]])
     · grind
     · exact hab.le
 
+lemma integrable_deriv_smul_comp_iff_of_deriv_nonneg (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
+    (hf' : ∀ x ∈ Ioo (min a b) (max a b), 0 ≤ f' x) :
+    IntervalIntegrable (fun x ↦ f' x • (g ∘ f) x) volume a b ↔
+      IntervalIntegrable g volume (f a) (f b) := by
+
+
 /-- Change of variables for antitone functions.
 If `f` is continuous on `[a, b]` and has a nonpositive derivative `f'` in `(a, b)`,
 then we can substitute `u = f x` to get `∫ x in a..b, f' x • (g ∘ f) x = ∫ u in f a..f b, g u`. -/
