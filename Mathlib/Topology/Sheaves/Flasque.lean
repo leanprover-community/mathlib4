@@ -52,7 +52,7 @@ namespace IsFlasque
 
 attribute [instance low] IsFlasque.epi
 
-theorem pushforward_isFlasque {Y : TopCat.{u}} [IsFlasque F] (f : X ⟶ Y) :
+instance pushforward_isFlasque {Y : TopCat.{u}} [IsFlasque F] (f : X ⟶ Y) :
     IsFlasque (f _* F) where
   epi {U V} i := by
     simp only [pushforward_obj_obj, pushforward_obj_map]
@@ -69,7 +69,7 @@ abbrev IsFlasque {C : Type v} [Category.{w} C] (F : Sheaf C X) := Presheaf.IsFla
 
 namespace IsFlasque
 
-theorem pushforward_isFlasque {C : Type v} [Category.{w} C] {Y : TopCat.{u}} (F : Sheaf C X)
+instance pushforward_isFlasque {C : Type v} [Category.{w} C] {Y : TopCat.{u}} (F : Sheaf C X)
     [IsFlasque F] (f : X ⟶ Y) : IsFlasque ((pushforward C f).obj F) :=
   Presheaf.IsFlasque.pushforward_isFlasque F.1 f
 
