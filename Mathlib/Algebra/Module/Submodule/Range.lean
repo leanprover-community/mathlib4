@@ -145,13 +145,11 @@ end
 @[simps]
 def iterateRange (f : M →ₗ[R] M) : ℕ →o (Submodule R M)ᵒᵈ where
   toFun n := LinearMap.range (f ^ n)
-  monotone' n m w x h := by
-    obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le w
-    rw [LinearMap.mem_range] at h
-    obtain ⟨m, rfl⟩ := h
-    rw [LinearMap.mem_range]
-    use (f ^ c) m
-    rw [pow_add, Module.End.mul_apply]
+  monotone' := monotone_nat_of_le_succ fun | n, _, ⟨x, rfl⟩ => ⟨f x, rfl⟩
+
+lemma iterateRange_succ {f : M →ₗ[R] M} {n : ℕ} :
+    iterateRange f (n + 1) = (iterateRange f n).map f := by
+  simp only [iterateRange_coe, range_eq_map, ← map_comp, Module.End.iterate_succ']
 
 /-- Restrict the codomain of a linear map `f` to `f.range`.
 
@@ -208,12 +206,23 @@ theorem comap_le_comap_iff {f : M →ₛₗ[τ₁₂] M₂} (hf : range f = ⊤)
 theorem comap_injective {f : M →ₛₗ[τ₁₂] M₂} (hf : range f = ⊤) : Injective (comap f) := fun _ _ h =>
   le_antisymm ((comap_le_comap_iff hf).1 (le_of_eq h)) ((comap_le_comap_iff hf).1 (ge_of_eq h))
 
--- TODO (?): generalize to semilinear maps with `f ∘ₗ g` bijective.
+-- TODO (?): generalize the next two lemmas to semilinear maps with `f ∘ₗ g` bijective.
+
 theorem ker_eq_range_of_comp_eq_id {M P} [AddCommGroup M] [Module R M]
     [AddCommGroup P] [Module R P] {f : M →ₗ[R] P} {g : P →ₗ[R] M} (h : f ∘ₗ g = .id) :
     ker f = range (LinearMap.id - g ∘ₗ f) :=
   le_antisymm (fun x hx ↦ ⟨x, show x - g (f x) = x by rw [hx, map_zero, sub_zero]⟩) <|
     range_le_ker_iff.mpr <| by rw [comp_sub, comp_id, ← comp_assoc, h, id_comp, sub_self]
+
+/-- If `f : E →ₗ[R] F` has a left inverse `g`, then `range f = ker (f ∘ g - id)`.
+
+This is the dual version of `LinearMap.ker_eq_range_of_comp_eq_id`. -/
+lemma range_eq_ker_of_leftInverse {M P} [AddCommGroup M] [Module R M]
+    [AddCommGroup P] [Module R P] {f : M →ₗ[R] P} {g : P →ₗ[R] M}
+    (h : LeftInverse g f) : f.range = ker ((f.comp g) - LinearMap.id) :=
+  -- If `y = f x ∈ range f`, we have `(f ∘ g) y = f (g (f x)) = f x = y` by hypothesis `h`.
+  -- Conversely, f g z - z = 0 implies z = f (g z) ∈ range f.
+  le_antisymm (by rintro y ⟨x, rfl⟩; simp [h x]) (fun x hx ↦ ⟨g x, by simpa [sub_eq_zero] using hx⟩)
 
 end
 

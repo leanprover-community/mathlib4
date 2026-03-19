@@ -348,6 +348,7 @@ theorem le_solvable_ideal_solvable {I J : LieIdeal R L} (h₁ : I ≤ J) (_ : Is
 
 variable (R L)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) ofAbelianIsSolvable [IsLieAbelian L] : IsSolvable L := by
   use 1
   rw [← abelian_iff_derived_one_eq_bot, lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv]
@@ -371,6 +372,7 @@ theorem LieIdeal.solvable_iff_le_radical [IsNoetherian R L] (I : LieIdeal R L) :
     IsSolvable I ↔ I ≤ radical R L :=
   ⟨fun h => le_sSup h, fun h => le_solvable_ideal_solvable h inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem center_le_radical : center R L ≤ radical R L :=
   have h : IsSolvable (center R L) := inferInstance
   le_sSup h
@@ -433,7 +435,7 @@ instance : Unique {x // x ∈ (⊥ : LieIdeal R L)} :=
 
 theorem abelian_derivedAbelianOfIdeal (I : LieIdeal R L) :
     IsLieAbelian (derivedAbelianOfIdeal I) := by
-  dsimp only [derivedAbelianOfIdeal]
+  dsimp +instances only [derivedAbelianOfIdeal]
   rcases h : derivedLengthOfIdeal R L I with - | k
   · dsimp; infer_instance
   · rw [derivedSeries_of_derivedLength_succ] at h; exact h.1

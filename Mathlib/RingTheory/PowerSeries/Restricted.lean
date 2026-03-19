@@ -74,6 +74,7 @@ lemma add {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
        _ < ε / 2 + ε / 2 := by gcongr <;> grind
        _ = ε := by ring
 
+set_option backward.isDefEq.respectTransparency false in
 lemma neg {f : PowerSeries R} (hf : IsRestricted c f) : IsRestricted c (-f) := by
   simpa [isRestricted_iff] using hf
 

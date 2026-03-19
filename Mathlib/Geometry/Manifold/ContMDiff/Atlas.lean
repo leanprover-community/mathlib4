@@ -22,8 +22,9 @@ appropriate models with corners. This is not a definition, so technically deviat
 convention.
 
 `isLocalStructomorphOn` is another made-up name.
-
 -/
+
+assert_not_exists mfderiv
 
 public section
 
@@ -88,6 +89,10 @@ theorem contMDiffOn_chart_symm : ContMDiffOn I I n (chartAt H x).symm (chartAt H
 theorem contMDiffAt_extend {x : M} (he : e ∈ maximalAtlas I n M) (hx : x ∈ e.source) :
     ContMDiffAt I 𝓘(𝕜, E) n (e.extend I) x :=
   (contMDiff_model _).comp x <| contMDiffAt_of_mem_maximalAtlas he hx
+
+theorem contMDiffOn_extend (he : e ∈ maximalAtlas I n M) :
+    ContMDiffOn I 𝓘(𝕜, E) n (e.extend I) e.source :=
+  fun _x' hx' ↦ (contMDiffAt_extend he hx').contMDiffWithinAt
 
 theorem contMDiffAt_extChartAt' {x' : M} (h : x' ∈ (chartAt H x).source) :
     ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x' :=
@@ -312,7 +317,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [To
   {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph N G}
 
 /-- This is a smooth analogue of `OpenPartialHomeomorph.continuousWithinAt_writtenInExtend_iff`. -/
-theorem contMDiffWithinAt_writtenInExtend_iff {y : M}
+theorem OpenPartialHomeomorph.contMDiffWithinAt_writtenInExtend_iff {y : M}
     (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
     (hy : y ∈ φ.source) (hgy : f y ∈ ψ.source) (hmaps : MapsTo f s ψ.source) :
     ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm)
@@ -325,7 +330,8 @@ theorem contMDiffWithinAt_writtenInExtend_iff {y : M}
   · rw [contMDiffWithinAt_iff_contDiffWithinAt]
     exact h.2
 
-theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
+theorem OpenPartialHomeomorph.contMDiffOn_writtenInExtend_iff
+    (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
     (hs : s ⊆ φ.source) (hmaps : MapsTo f s ψ.source) :
     ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm) (φ.extend I '' s) ↔
       ContMDiffOn I J n f s := by

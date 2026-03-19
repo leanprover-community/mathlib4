@@ -22,7 +22,7 @@ not.
 ## References
 
 - *An introduction to real algebra*, by T.Y. Lam. Rocky Mountain J. Math. 14(4): 767-814 (1984).
-[lam_1984](https://doi.org/10.1216/RMJ-1984-14-4-767)
+  [lam_1984](https://doi.org/10.1216/RMJ-1984-14-4-767)
 -/
 
 @[expose] public section
@@ -57,3 +57,12 @@ are semireal.
 instance [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [ExistsAddOfLE R] : IsSemireal R where
   one_add_ne_zero hs amo := zero_ne_one' R (le_antisymm zero_le_one
                               (le_of_le_of_eq (le_add_of_nonneg_right hs.nonneg) amo))
+
+instance (priority := 90) [NonAssocRing R] [IsSemireal R] : CharZero R :=
+  charZero_of_inj_zero fun n hn ↦ by
+    cases n with
+    | zero => rfl
+    | succ n =>
+      rw [add_comm] at hn
+      push_cast at hn
+      simpa using IsSemireal.one_add_ne_zero (by simp) hn

@@ -130,34 +130,33 @@ theorem r_pow (i : ZMod n) (k : ℕ) : (r i) ^ k = r (i * k : ZMod n) := by
 theorem r_zpow (i : ZMod n) (k : ℤ) : (r i) ^ k = r (i * k : ZMod n) := by
   cases k <;> simp [r_pow, neg_mul_eq_mul_neg]
 
-set_option backward.privateInPublic true in
-private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
-  invFun
+/-- The equivalence between the dihedral group and the sum of `ZMod`s. -/
+@[simps]
+def equivSum : DihedralGroup n ≃ (ZMod n) ⊕ (ZMod n) where
+  toFun
     | r j => .inl j
     | sr j => .inr j
-  toFun
+  invFun
     | .inl j => r j
     | .inr j => sr j
   left_inv := by rintro (x | x) <;> rfl
   right_inv := by rintro (x | x) <;> rfl
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `0 < n`, then `DihedralGroup n` is a finite group.
 -/
 instance [NeZero n] : Fintype (DihedralGroup n) :=
-  Fintype.ofEquiv _ fintypeHelper
+  Fintype.ofEquiv _ equivSum.symm
 
 instance : Infinite (DihedralGroup 0) :=
-  DihedralGroup.fintypeHelper.infinite_iff.mp inferInstance
+  equivSum.symm.infinite_iff.mp inferInstance
 
 instance : Nontrivial (DihedralGroup n) :=
-  ⟨⟨r 0, sr 0, by simp_rw [ne_eq, reduceCtorEq, not_false_eq_true]⟩⟩
+  ⟨⟨r 0, sr 0, by by_contra h; injection h⟩⟩
 
 /-- If `0 < n`, then `DihedralGroup n` has `2n` elements.
 -/
 theorem card [NeZero n] : Fintype.card (DihedralGroup n) = 2 * n := by
-  rw [← Fintype.card_eq.mpr ⟨fintypeHelper⟩, Fintype.card_sum, ZMod.card, two_mul]
+  rw [← Fintype.card_eq.mpr ⟨equivSum.symm⟩, Fintype.card_sum, ZMod.card, two_mul]
 
 theorem nat_card : Nat.card (DihedralGroup n) = 2 * n := by
   cases n
@@ -273,10 +272,10 @@ def oddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
     left_inv := fun
       | ⟨⟨r _, r _⟩, _⟩ => rfl
       | ⟨⟨r i, sr j⟩, h⟩ => by
-        simpa [- r_zero, sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)]
+        simpa [-r_zero, sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)]
           using h.eq
       | ⟨⟨sr i, r j⟩, h⟩ => by
-        simpa [- r_zero, sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)]
+        simpa [-r_zero, sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)]
           using h.eq
       | ⟨⟨sr i, sr j⟩, h⟩ => by
         replace h := r.inj h
@@ -302,5 +301,14 @@ lemma card_conjClasses_odd (hn : Odd n) :
   rw [← Nat.mul_div_mul_left _ 2 hn.pos, ← card_commute_odd hn, mul_comm,
     card_comm_eq_card_conjClasses_mul_card, nat_card, Nat.mul_div_left _ (mul_pos two_pos hn.pos)]
 
+theorem center_eq_bot_of_odd_ne_one (hodd : Odd n) (hne1 : n ≠ 1) :
+    Subgroup.center (DihedralGroup n) = ⊥ := by
+  simp only [Subgroup.eq_bot_iff_forall, Subgroup.mem_center_iff]
+  rintro (i | i) h
+  · have heq := sr.inj (h (sr i))
+    simp_all
+  · have heq := sr.inj (h (r 1))
+    have : Fact (1 < n) := ⟨by grind⟩
+    simp [sub_eq_iff_eq_add, add_assoc, ZMod.add_self_eq_zero_iff_eq_zero hodd] at heq
 
 end DihedralGroup
