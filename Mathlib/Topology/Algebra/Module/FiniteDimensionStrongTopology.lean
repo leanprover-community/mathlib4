@@ -3,8 +3,10 @@ Copyright (c) 2026 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.Algebra.Module.StrongTopology
-import Mathlib.Topology.Algebra.Module.FiniteDimension
+module
+
+public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Topology on `E →L[𝕜] F` when `E` is finite dimensional
@@ -15,6 +17,8 @@ pointwise convergence.
 
 TODO: Generalize this to `UniformConvergenceCLM`.
 -/
+
+@[expose] public section
 
 open Module ContinuousLinearMap LinearMap Topology
 
