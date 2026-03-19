@@ -25,40 +25,25 @@ theorem isDedekindDomainDvr.of_formallyUnramified : IsDedekindDomainDvr B where
   __ := IsNoetherianRing.of_finite A B
   is_dvr_at_nonzero_prime := by
     intro q hq hqp
-    have : (q.under A).IsMaximal := (hqp.under A).isMaximal (q.under_ne_bot A hq)
-    have : q.IsMaximal := Ideal.IsMaximal.of_liesOver_isMaximal q (q.under A)
     let q' := IsLocalRing.maximalIdeal (Localization.AtPrime q)
     suffices q'.IsPrincipal from ((IsDiscreteValuationRing.TFAE (Localization.AtPrime q)
       (IsLocalization.AtPrime.not_isField B hq (Localization.AtPrime q))).out 4 0).mp this
     let p := q.under A
+    have : p.IsMaximal := (hqp.under A).isMaximal (q.under_ne_bot A hq)
     let : Field (A ⧸ p) := Ideal.Quotient.field p
-    let p' := p.map (algebraMap A B)
-    let p'' := p'.map (algebraMap B (Localization.AtPrime q))
-    suffices q' = p'' by
-      simp_rw [this, p'', p', Ideal.map_map, ← IsScalarTower.algebraMap_eq,
+    have := IsArtinianRing.of_finite (A ⧸ p) (B ⧸ p.map (algebraMap A B))
+    suffices q' = (p.map (algebraMap A B)).map (algebraMap B (Localization.AtPrime q)) by
+      rw [this, Ideal.map_map, ← IsScalarTower.algebraMap_eq,
         IsScalarTower.algebraMap_eq A (Localization.AtPrime p) (Localization.AtPrime q),
         ← Ideal.map_map]
       infer_instance
-    let Q := B ⧸ p'
-    have : IsArtinianRing Q := IsArtinianRing.of_finite (A ⧸ p) Q
-    have h {I : Ideal B} (hp : p' ≤ I) [I.IsPrime] : I.IsMaximal := by
-      rw [← Ideal.comap_map_mk hp]
-      have := Ideal.isPrime_map_quotientMk_of_isPrime hp
-      exact Ideal.comap_isMaximal_of_surjective (Ideal.Quotient.mk p') Ideal.Quotient.mk_surjective
-    replace h {I} (hp : p' ≤ I) (hq : I ≤ q) [I.IsPrime] : I = q := (h hp).eq_of_le hqp.ne_top hq
-    replace h {I} (hp : p'' ≤ I) (hq : I ≤ q') [I.IsPrime] : I = q' := by
-      rw [← Localization.AtPrime.eq_maximalIdeal_iff_comap_eq]
-      exact h (Ideal.map_le_iff_le_comap.mp hp)
-        ((Ideal.comap_mono hq).trans_eq Localization.AtPrime.comap_maximalIdeal)
-    replace h : p''.minimalPrimes = {q'} := by
-      rw [Set.eq_singleton_iff_nonempty_unique_mem]
-      refine ⟨?_, fun r hr ↦ have := hr.1.1; h hr.1.2 (IsLocalRing.le_maximalIdeal_of_isPrime r)⟩
-      rw [Set.nonempty_iff_ne_empty, ne_eq, Ideal.minimalPrimes_eq_empty_iff]
-      exact (IsLocalization.map_algebraMap_ne_top_iff_disjoint q.primeCompl _ p').mpr
-        (Set.disjoint_compl_left_iff_subset.mpr Ideal.map_comap_le)
-    dsimp only [p'', p']
     rw [← (Algebra.FormallyUnramified.map_isMaximal_isRadical A B p).radical,
-      IsLocalization.map_radical q.primeCompl, ← Ideal.sInf_minimalPrimes, h, sInf_singleton]
+      IsLocalization.map_radical q.primeCompl,
+      IsLocalization.AtPrime.radical_map_of_mem_minimalPrimes (Localization.AtPrime q) q,
+      Localization.AtPrime.map_eq_maximalIdeal]
+    rw [Ideal.minimalPrimes_eq_comap]
+    exact ⟨q.map (Ideal.Quotient.mk (p.map (algebraMap A B))),
+      IsArtinianRing.mem_minimalPrimes bot_le, Ideal.comap_map_mk Ideal.map_comap_le⟩
 
 include A in
 /-- A domain finite and unramified over a Dedekind domain is a Dedekind domain. -/

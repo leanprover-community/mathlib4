@@ -175,6 +175,11 @@ def orderEmbedding : Ideal S ↪o Ideal R where
     · exact fun hJ => Ideal.comap_mono hJ
 
 include M in
+theorem comap_inj {I J : Ideal S} :
+    I.comap (algebraMap R S) = J.comap (algebraMap R S) ↔ I = J := by
+  exact (IsLocalization.orderEmbedding M S).eq_iff_eq
+
+include M in
 theorem comap_le_comap_iff {I J : Ideal S} :
     I.comap (algebraMap R S) ≤ J.comap (algebraMap R S) ↔ I ≤ J := by
   exact (IsLocalization.orderEmbedding M S).le_iff_le
