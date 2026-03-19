@@ -54,15 +54,15 @@ theorem FreeGroup.lift_range_surjective
     (h : FreeGroup α →* G) (hhsurj : Function.Surjective h) :
     Function.Surjective (FreeGroup.lift
       (fun s : Set.range (fun a : α ↦ h (FreeGroup.of a)) ↦ (s : G))) := by
-  set S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
-  set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
+  set f : FreeGroup (Set.range (fun a : α ↦ h (FreeGroup.of a))) →* G :=
+    FreeGroup.lift (fun s ↦ (s : G))
   let g := Set.rangeFactorization (fun a : α ↦ h (FreeGroup.of a))
   have hh_fcompg : f.comp (FreeGroup.map g) = h
     := by ext a; simp [f, g]
   have hfsurj : Function.Surjective f := by
     intro y; obtain ⟨x, rfl⟩ := hhsurj y
     exact ⟨FreeGroup.map g x, by rw [← MonoidHom.comp_apply, hh_fcompg]⟩
-  simpa [S, f]
+  simpa [f] using hfsurj
 
 /-- The canonical map from the free group on a subset `S : Set G` is surjective if and only if
 `S` generates `G` as a subgroup. -/
