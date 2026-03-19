@@ -1194,7 +1194,7 @@ lemma quotient_smul_top_lt_of_le_smul_top {R : Type*} [Ring R] (I : Ideal R) {M 
   rw [lt_top_iff_ne_top]
   by_contra eq
   absurd lt_top_iff_ne_top.mp h
-  have := Submodule.smul_top_eq_comap_smul_top_of_surjective I p.mkQ p.mkQ_surjective
+  have := Submodule.comap_smul_top_of_surjective I p.mkQ p.mkQ_surjective
   simpa [eq, le] using this
 
 end Submodule
