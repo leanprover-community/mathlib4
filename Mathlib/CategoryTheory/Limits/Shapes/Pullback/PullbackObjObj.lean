@@ -512,11 +512,11 @@ def preserves_pushouts [HasPushouts C₃]
   · refine IsPushout.of_left ?_ (by cat_disch) ((ofHasPushout F ι.hom g).isPushout)
     simpa using (h.map (F.obj ι.left)).paste_horiz ((ofHasPushout F ι.hom f).isPushout)
 
+/-
 open MorphismProperty in
 lemma temp [HasPushouts C₃] (W : MorphismProperty C₂) [IsStableUnderCobaseChange W]
     (ι : Arrow C₁) : IsStableUnderCobaseChange (W.map (F.leibnizPushout.obj ι)) := sorry
 
-/-
 if `f` is a pushout of `g` in `C₂`, then ∀ `ι` in `Arrow C₁`, `(F.leibnizPushout.obj ι).obj f`
   is a pushout of `(F.leibnizPushout.obj ι).obj g`
 

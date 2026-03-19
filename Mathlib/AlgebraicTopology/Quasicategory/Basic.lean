@@ -6,6 +6,8 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Arrow
 
 /-!
 # Quasicategories
@@ -71,5 +73,87 @@ lemma quasicategory_of_filler (S : SSet)
     intro j hj
     rw [← h j hj, NatTrans.comp_app]
     rfl
+
+open MonoidalCategory
+
+variable {X Y : SSet} (S : X.Subcomplex) (T : Y.Subcomplex)
+
+def Subcomplex.unionProd {X Y : SSet} (S : X.Subcomplex) (T : Y.Subcomplex) :
+    (X ⊗ Y).Subcomplex := ((⊤ : X.Subcomplex).prod T) ⊔ (S.prod ⊤)
+
+noncomputable def Subcomplex.prodIso (S : X.Subcomplex) (T : Y.Subcomplex) :
+    (S.prod T : SSet) ≅ (S : SSet) ⊗ (T : SSet) where
+  hom := CartesianMonoidalCategory.lift
+    (lift ((S.prod T).ι ≫ CartesianMonoidalCategory.fst _ _) (by
+      intro _ _ ⟨⟨_, ⟨_, _⟩⟩, _⟩
+      cat_disch))
+    (lift ((S.prod T).ι ≫ CartesianMonoidalCategory.snd _ _) (by
+      intro _ _ ⟨⟨_, ⟨_, _⟩⟩, _⟩
+      cat_disch))
+  inv := lift (S.ι ⊗ₘ T.ι) (by
+    intro n ⟨x, y⟩ ⟨⟨x', y'⟩, h⟩
+    refine ⟨sorry, sorry⟩)
+
+noncomputable def Subcomplex.unionProd.ι₁ : X ⊗ T ⟶ unionProd S T :=
+  lift (X ◁ T.ι) (by
+    intro n ⟨x₁, x₂⟩ h
+    simp [unionProd, Set.prod]
+    apply Or.inl
+    have := h.2
+    rw [← this]
+    simp at h
+    sorry
+    )
+
+noncomputable def ι₂ : (S : SSet.{u}) ⊗ Y ⟶ (unionProd S T : SSet.{u}) :=
+  lift (S.ι ▷ Y) (by
+    ext m ⟨x₁, x₂⟩
+    simp [unionProd, Set.prod]
+    exact Or.inr x₁.2)
+
+@[reassoc (attr := simp)]
+lemma ι₁_ι : ι₁ S T ≫ (unionProd S T).ι = X ◁ T.ι := rfl
+
+@[reassoc (attr := simp)]
+lemma ι₂_ι : ι₂ S T ≫ (unionProd S T).ι = S.ι ▷ Y := rfl
+
+lemma sq : Sq (S.prod T) ((⊤ : X.Subcomplex).prod T) (S.prod ⊤) (unionProd S T) where
+  max_eq := rfl
+  min_eq := by
+    ext n ⟨x, y⟩
+    change _ ∧ _ ↔ _
+    simp [prod, Set.prod, Membership.mem, Set.Mem, setOf]
+    tauto
+
+lemma isPushout : IsPushout (S.ι ▷ (T : SSet)) ((S : SSet) ◁ T.ι)
+    (unionProd.ι₁ S T) (unionProd.ι₂ S T) :=
+  (sq S T).isPushout.of_iso
+    (Subcomplex.prodIso _ _)
+    (Subcomplex.prodIso _ _ ≪≫ MonoidalCategory.whiskerRightIso (topIso X) _)
+    (Subcomplex.prodIso _ _ ≪≫ MonoidalCategory.whiskerLeftIso _ (topIso Y))
+    (Iso.refl _) rfl rfl rfl rfl
+
+noncomputable
+def Subcomplex.unionProdtoSSetIso : (S.unionProd T).toSSet ≅
+    (Functor.PushoutObjObj.ofHasPushout (curriedTensor SSet) S.ι T.ι).pt where
+  hom := by
+
+    sorry
+  inv := by
+    refine Limits.pushout.desc ?_ ?_ ?_
+    . simp [unionProd]
+      sorry
+    . simp
+      sorry
+    . sorry
+  hom_inv_id := sorry
+  inv_hom_id := sorry
+
+noncomputable
+def Subcomplex.unionProdιIso : Arrow.mk (S.unionProd T).ι ≅ (S.ι □ T.ι) := by
+  refine Arrow.isoMk' _ _ (unionProdtoSSetIso S T) (Iso.refl _) ?_
+  · simp
+    sorry
+
 
 end SSet
