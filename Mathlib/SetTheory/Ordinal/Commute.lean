@@ -20,14 +20,14 @@ namespace Ordinal
 /-- Ordinal addition annihilates the terms in the left-summand which are smaller than the most
 significant term of the right-summand -/
 theorem omega0_opow_log_mul_div_add (a b : Ordinal) :
-    (ω ^ log ω b) * (a / (ω ^ log ω b)) + b = a + b := by
-  have : (a % (ω ^ log ω b)) + b = b :=
+    ω ^ log ω b * (a / ω ^ log ω b) + b = a + b := by
+  have : a % ω ^ log ω b + b = b :=
     add_absorp_of_lt_omega0_opow_log <| mod_lt a <| opow_ne_zero _ omega0_ne_zero
   nth_rw 3 [← this]
   rw [← add_assoc, div_add_mod]
 
 theorem addCommute_omega0_opow_log_add_mod (o : Ordinal) :
-    AddCommute o ((ω ^ log ω o) + o % (ω ^ log ω o)) := by
+    AddCommute o <| ω ^ log ω o + o % ω ^ log ω o := by
   rcases eq_or_ne o 0 with (rfl | h0)
   · simp
   nth_rw 1 [← div_add_mod o <| ω ^ log ω o]
@@ -40,7 +40,7 @@ theorem addCommute_omega0_opow_log_add_mod (o : Ordinal) :
   simp [hn]
 
 theorem add_lt_add_of_lt_omega0_opow_log_add_mod {a b : Ordinal} (hle : ω ^ log ω a ≤ b)
-    (hlt : b < (ω ^ log ω a) + a % (ω ^ log ω a)) : a + b < b + a := by
+    (hlt : b < ω ^ log ω a + a % ω ^ log ω a) : a + b < b + a := by
   rcases eq_or_ne b 0 with (rfl | h0')
   · simp at hle
   rcases eq_or_ne a 0 with (rfl | h0)
@@ -63,20 +63,20 @@ theorem add_lt_add_of_lt_omega0_opow_log_add_mod {a b : Ordinal} (hle : ω ^ log
   nth_rw 2 [← div_add_mod b <| ω ^ log ω a]
   grw [← le_mul_left _ <| (div_pos <| opow_ne_zero _ omega0_ne_zero).mpr hle]
 
-theorem omega0_opow_log_add_mod_le_of_addCommute {a b : Ordinal} (h0 : b ≠ 0)
-    (h : AddCommute a b) : (ω ^ log ω a) + a % (ω ^ log ω a) ≤ b := by
+theorem omega0_opow_log_add_mod_le_of_addCommute {a b : Ordinal} (h0 : b ≠ 0) (h : AddCommute a b) :
+    ω ^ log ω a + a % ω ^ log ω a ≤ b := by
   rw [addCommute_iff_eq] at h
   contrapose! h
-  rcases lt_or_ge b (ω ^ log ω a) with (h' | h')
+  rcases lt_or_ge b <| ω ^ log ω a with (h' | h')
   · grind [add_ne_left, add_absorp_of_lt_omega0_opow_log]
   have := add_lt_add_of_lt_omega0_opow_log_add_mod h' h
   grind
 
-/-- `(ω ^ log ω o) + o % (ω ^ log ω o)` is the smallest nonzero ordinal that add-commutes with `o`.
+/-- `ω ^ log ω o + o % ω ^ log ω o` is the smallest nonzero ordinal that add-commutes with `o`.
 This value can also be calculated by considering the CNF of `o` with base `ω` and changing the first
 coefficient to `1`. -/
 theorem minimal_addCommute_omega0_opow_log_add_mod (o : Ordinal) :
-    Minimal (fun x ↦ x ≠ 0 ∧ AddCommute o x) ((ω ^ log ω o) + o % (ω ^ log ω o)) := by
+    Minimal (fun x ↦ x ≠ 0 ∧ AddCommute o x) <| ω ^ log ω o + o % ω ^ log ω o := by
   refine ⟨?_, fun x ⟨h0, h⟩ hle ↦ omega0_opow_log_add_mod_le_of_addCommute h0 h⟩
   simpa using o.addCommute_omega0_opow_log_add_mod
 
