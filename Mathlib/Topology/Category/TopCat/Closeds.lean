@@ -30,10 +30,8 @@ namespace TopologicalSpace.Closeds
 variable {X Y Z : TopCat.{u}} {U V W : Closeds X}
 
 /-!
-Since `Closeds X` has a partial order, it automatically receives a `Category` instance.
-Unfortunately, because we do not allow morphisms in `Prop`,
-the morphisms `U ⟶ V` are not just proofs `U ≤ V`, but rather
-`ULift (PLift (U ≤ V))`.
+Since `Closeds X` has a partial order, it automatically receives a `SmallCategory` instance, see
+`Preorder.smallCategory` in the file `Mathlib/CategoryTheory/Category/Preorder.lean`
 -/
 
 instance closedsHom.instFunLike : FunLike (U ⟶ V) U V where
