@@ -96,7 +96,6 @@ theorem compatibility_N₂_N₁_karoubi :
       karoubiChainComplexEquivalence_functor_obj_X_p, N₂_obj_p_f, eqToHom_refl,
       PInfty_f_naturality_assoc, app_comp_p, PInfty_f_idem_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- We deduce that `N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)`
 reflects isomorphisms from the fact that
 `N₁ : SimplicialObject (Karoubi C) ⥤ Karoubi (ChainComplex (Karoubi C) ℕ)` does. -/
@@ -112,10 +111,6 @@ instance : (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)
     let F₄ := Functor.mapHomologicalComplex (KaroubiKaroubi.equivalence C).inverse
       (ComplexShape.down ℕ)
     let F := F₁ ⋙ F₂ ⋙ F₃ ⋙ F₄
-    -- Porting note: we have to help Lean4 find the `ReflectsIsomorphisms` instances
-    -- could this be fixed by setting better instance priorities?
-    haveI : F₁.ReflectsIsomorphisms := reflectsIsomorphisms_of_full_and_faithful _
-    haveI : F₂.ReflectsIsomorphisms := by infer_instance
     have : IsIso (F.map f) := by
       simp only [F, F₁]
       rw [← compatibility_N₂_N₁_karoubi, Functor.comp_map]
