@@ -17,9 +17,11 @@ We prove that a domain finite and unramified over a Dedekind domain is a Dedekin
 
 @[expose] public section
 
-theorem isDedekindDomainDvr.of_formallyUnramified
-    (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
-    [IsDedekindDomain A] [IsDomain B] [h0 : Algebra.FormallyUnramified A B] : IsDedekindDomainDvr B where
+variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
+    [IsDedekindDomain A] [IsDomain B] [Algebra.FormallyUnramified A B]
+
+include A in
+theorem isDedekindDomainDvr.of_formallyUnramified : IsDedekindDomainDvr B where
   __ := IsNoetherianRing.of_finite A B
   is_dvr_at_nonzero_prime := by
     intro q hq hqp
@@ -61,9 +63,8 @@ theorem isDedekindDomainDvr.of_formallyUnramified
       rw [← IsLocalization.map_radical q.primeCompl, hp']
     rw [← hp''.radical, ← Ideal.sInf_minimalPrimes, h, sInf_singleton]
 
+include A in
 /-- A domain finite and unramified over a Dedekind domain is a Dedekind domain. -/
-theorem isDedekindDomain.of_formallyUnramified
-    (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
-    [IsDedekindDomain A] [IsDomain B] [Algebra.FormallyUnramified A B] : IsDedekindDomain B :=
+theorem isDedekindDomain.of_formallyUnramified : IsDedekindDomain B :=
   have := isDedekindDomainDvr.of_formallyUnramified A B
   inferInstance
