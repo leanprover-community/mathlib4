@@ -28,9 +28,11 @@ This is notably useful for local martingales.
 
 * `ProbabilityTheory.IsStable.isStable_locally`: If a property `p` is stable, then the property
   "satisfies `p` locally" is also stable.
-* `ProbabilityTheory.isLocalizingSequence_of_isPreLocalizingSequence`: Given a
+* `ProbabilityTheory.IsPreLocalizingSequence.isLocalizingSequence_biInf`: Given a
   pre-localizing sequence `(τ n)`, the sequence `⊓ j ≥ n, τ j` is a localizing sequence.
-* `ProbabilityTheory.locally_of_isPreLocalizingSequence`: If a property `p` is stable, then to prove that `X` satisfies `p` locally, one can replace the localizing sequence in the definition of "locally" by a pre-localizing sequence.
+* `ProbabilityTheory.locally_of_isPreLocalizingSequence`: If a property `p` is stable, then to prove
+  that `X` satisfies `p` locally, one can replace the localizing sequence in the definition of
+  "locally" by a pre-localizing sequence.
 * `ProbabilityTheory.locally_locally`: For stable properties, locally is idempotent.
 * `ProbabilityTheory.locally_induction`: If `q` is a stable property, and `p` implies locally `q`,
   then locally `p` implies locally `q`.
@@ -210,12 +212,12 @@ lemma locally_of_isPreLocalizingSequence
     (hp : IsStable 𝓕 p) [IsRightContinuous 𝓕] (hτ : IsPreLocalizingSequence 𝓕 τ P)
     (hpτ : ∀ n, p (stoppedProcess (fun i ↦ {ω | ⊥ < τ n ω}.indicator (X i)) (τ n))) :
     Locally p 𝓕 X P := by
-  refine ⟨_, isLocalizingSequence_of_isPreLocalizingSequence hτ, fun n ↦ ?_⟩
+  refine ⟨_, hτ.isLocalizingSequence_biInf, fun n ↦ ?_⟩
   rw [stoppedProcess_indicator_comm', ← stoppedProcess_stoppedProcess_of_le_right
     (τ := fun ω ↦ τ n ω) (fun _ ↦ (iInf_le _ n).trans <| iInf_le _ le_rfl),
     ← stoppedProcess_indicator_comm']
   convert hp _ (hpτ n) (fun ω ↦ ⨅ j ≥ n, τ j ω) <|
-    (isLocalizingSequence_of_isPreLocalizingSequence hτ).isStoppingTime n using 2
+    hτ.isLocalizingSequence_biInf.isStoppingTime n using 2
   ext i ω
   rw [stoppedProcess_indicator_comm', Set.indicator_indicator]
   congr with ω
@@ -350,7 +352,7 @@ lemma locally_induction₂ {r : (ι → Ω → E) → Prop} [IsRightContinuous �
     (hrX : Locally r 𝓕 X P) (hpX : Locally p 𝓕 X P) :
     Locally q 𝓕 X P :=
   locally_induction (p := fun Y ↦ r Y ∧ p Y) (and_imp.2 <| hrpq ·) hq
-    <| (locally_and hr hp).2 ⟨hrX, hpX⟩
+    <| (hr.locally_and_iff hp).2 ⟨hrX, hpX⟩
 
 end
 
