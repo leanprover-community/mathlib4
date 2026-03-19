@@ -175,8 +175,7 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x 
     intro i j
     exact (f i j).property
   rintro ⟨a, f₀, f₁, xeq, yeq, h⟩
-  use ⟨a, fun i j => ⟨(f₀ i j, f₁ i j), h i j⟩⟩
-  exact ⟨xeq.symm, yeq.symm⟩
+  use ⟨a, fun i j => ⟨(f₀ i j, f₁ i j), h i j⟩⟩, xeq.symm, yeq.symm
 
 open Set
 
