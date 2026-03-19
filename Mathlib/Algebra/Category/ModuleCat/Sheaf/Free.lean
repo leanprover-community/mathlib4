@@ -113,7 +113,7 @@ lemma sectionsMap_freeHomEquiv_symm_freeSection
     {M : SheafOfModules.{u} R} (f : I → M.sections) (i : I) :
     sectionsMap ((freeHomEquiv M).symm f) (freeSection i) = f i := by
   obtain ⟨f, rfl⟩ := (freeHomEquiv M).surjective f
-  rw [Equiv.symm_apply_apply, freeHomEquiv_apply]
+  cat_disch
 
 @[reassoc (attr := simp)]
 lemma ιFree_freeMap (i : I) :
