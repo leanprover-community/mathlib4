@@ -90,7 +90,8 @@ def ofLieDerivation : (LieDerivation R L L) →ₗ⁅R⁆ (LieDerivation R (A �
 
 @[simp]
 lemma ofLieDerivation_apply (d : LieDerivation R L L) (x : A ⊗[R] L) :
-  (ofLieDerivation A d) x = d.toLinearMap.lTensor A x := rfl
+    ofLieDerivation A d x = d.toLinearMap.lTensor A x :=
+  rfl
 
 end Lie.Derivation
 end
