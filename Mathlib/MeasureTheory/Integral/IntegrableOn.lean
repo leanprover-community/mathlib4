@@ -368,6 +368,10 @@ theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} 
     integrable_const_iff, isFiniteMeasure_restrict]
   exact .inr hμs
 
+theorem integrableOn_indicator_iff (hs : MeasurableSet s) :
+    IntegrableOn (indicator s f) t μ ↔ IntegrableOn f (s ∩ t) μ := by
+  simp_rw [IntegrableOn, integrable_indicator_iff hs, IntegrableOn, Measure.restrict_restrict hs]
+
 end indicator
 
 /-- If a function is integrable on a set `s` and nonzero there, then the measurable hull of `s` is
