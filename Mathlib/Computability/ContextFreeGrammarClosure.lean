@@ -807,8 +807,7 @@ lemma ProducesF.split_append {α β : Type} [DecidableEq α] [DecidableEq β]
         have := ContextFreeRule.Rewrites.split_append r u v w h
         aesop
       rcases h_split with ⟨ u', v', h | h ⟩ <;>
-        [ exact Or.inl ⟨ u', ⟨ r, hr, h.1 ⟩, h.2 ⟩
-        ; exact Or.inr ⟨ v', ⟨ r, hr, h.1 ⟩, h.2 ⟩ ]
+        [ exact Or.inl ⟨ u', ⟨ r, hr, h.1 ⟩, h.2 ⟩; exact Or.inr ⟨ v', ⟨ r, hr, h.1 ⟩, h.2 ⟩ ]
 
 /--
 If `DerivesF` transforms `u ++ v` to `w`, then `w` splits into `u'` and `v'` such that `u`
