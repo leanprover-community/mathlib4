@@ -502,6 +502,7 @@ theorem extension_map [CompleteSpace γ] [T0Space γ] {f : β → γ} {g : α �
   Completion.ext (continuous_extension.comp continuous_map) continuous_extension <| by
     simp [hf, hg, hf.comp hg, map_coe, extension_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_comp {g : β → γ} {f : α → β} (hg : UniformContinuous g) (hf : UniformContinuous f) :
     Completion.map g ∘ Completion.map f = Completion.map (g ∘ f) :=
   extension_map ((uniformContinuous_coe _).comp hg) hf

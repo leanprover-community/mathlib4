@@ -47,6 +47,7 @@ theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set
   simp only [image_univ]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `K` a subfield of `ℂ` and let `ψ : K →+* ℂ` a ring homomorphism. Assume that `ψ` is uniform
 continuous, then `ψ` is either the inclusion map or the composition of the inclusion map with the
 complex conjugation. -/
@@ -107,14 +108,14 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
         ext1 z
         convert RingHom.congr_fun h z using 1
         exact (IsDenseInducing.extend_eq di hc.continuous z).symm
-  · let j : { x // x ∈ closure (id '' { x | (K : Set ℂ) x }) } → (K.topologicalClosure : Set ℂ) :=
+  · let j : { x // x ∈ closure (id '' K) } → (K.topologicalClosure : Set ℂ) :=
       fun x =>
       ⟨x, by
         convert x.prop
         simp only [id, Set.image_id']
         rfl ⟩
     convert DenseRange.comp (Function.Surjective.denseRange _)
-      (IsDenseEmbedding.id.subtype (K : Set ℂ)).dense (by fun_prop : Continuous j)
+      (IsDenseEmbedding.id.subtype (· ∈ K)).dense (by fun_prop : Continuous j)
     rintro ⟨y, hy⟩
     use
       ⟨y, by

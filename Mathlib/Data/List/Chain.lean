@@ -41,8 +41,6 @@ theorem isChain_singleton (a : α) : IsChain R [a] := .singleton _
 @[deprecated (since := "2025-09-24")] alias chain'_nil := isChain_nil
 @[deprecated (since := "2025-09-24")] alias chain'_singleton := isChain_singleton
 @[deprecated (since := "2025-09-24")] alias chain'_cons_cons := isChain_cons_cons
-@[deprecated (since := "2025-08-12")] alias chain'_cons := isChain_cons_cons
-
 @[deprecated (since := "2025-09-24"), nolint defLemma] alias Chain'.cons_cons := IsChain.cons_cons
 @[deprecated (since := "2025-09-24"), nolint defLemma] alias Chain'.cons := IsChain.cons_cons
 
@@ -575,11 +573,7 @@ theorem IsChain.cons_of_le [LinearOrder α] {a : α} {as m : List α}
       refine lt_of_le_of_lt ?_ ha.1
       rw [le_iff_lt_or_eq] at hmas
       rcases hmas with hmas | hmas
-      · by_contra! hh
-        rw [← not_le] at hmas
-        apply hmas
-        apply le_of_lt
-        exact (List.lt_iff_lex_lt _ _).mp (List.Lex.rel hh)
+      · exact head_le_of_lt hmas
       · simp_all only [List.cons.injEq, le_refl]
 
 @[deprecated (since := "2025-09-24")] alias Chain'.cons_of_le := IsChain.cons_of_le

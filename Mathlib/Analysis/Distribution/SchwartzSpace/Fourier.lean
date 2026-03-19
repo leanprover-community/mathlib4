@@ -162,6 +162,7 @@ variable {𝕜' : Type*} [NormedField 𝕜']
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜') in
 theorem fourier_evalCLM_eq (f : 𝓢(V, F →L[ℝ] G)) (m : F) :
     𝓕 (SchwartzMap.evalCLM 𝕜' V G m f) = SchwartzMap.evalCLM 𝕜' V G m (𝓕 f) := by
@@ -171,6 +172,8 @@ theorem fourier_evalCLM_eq (f : 𝓢(V, F →L[ℝ] G)) (m : F) :
 end eval
 
 section deriv
+
+set_option backward.isDefEq.respectTransparency false
 
 /-- The derivative of the Fourier transform is given by the Fourier transform of the multiplication
 with `-(2 * π * Complex.I) • innerSL ℝ`. -/
@@ -294,6 +297,28 @@ theorem integral_sesq_fourier_fourier (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E �
   simpa using integral_sesq_fourier_eq f (𝓕 g) M
 
 end fubini
+
+section L1
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
+
+theorem norm_fourier_apply_le_toLp_one (f : 𝓢(V, F)) (x : V) :
+    ‖𝓕 f x‖ ≤ ‖f.toLp 1‖ := calc
+  _ = ‖∫ (v : V), 𝐞 (-inner ℝ v x) • f v‖ := by rw [fourier_coe, Real.fourier_eq]
+  _ ≤ ∫ (v : V), ‖𝐞 (-inner ℝ v x) • f v‖ := norm_integral_le_integral_norm _
+  _ = _ := by simp [norm_toLp_one]
+
+theorem norm_fourier_toBoundedContinuousFunction_le_toLp_one (f : 𝓢(V, F)) :
+    ‖(𝓕 f).toBoundedContinuousFunction‖ ≤ ‖f.toLp 1‖ := by
+  rw [BoundedContinuousFunction.norm_le (by positivity)]
+  simpa using norm_fourier_apply_le_toLp_one f
+
+theorem norm_fourier_Lp_top_leq_toLp_one (f : 𝓢(V, F)) :
+    ‖(𝓕 f).toLp ⊤‖ ≤ ‖f.toLp 1‖ :=
+  norm_toLp_top_le.trans (seminorm_le_bound ℝ 0 0 _ (by positivity)
+    (by simpa using norm_fourier_apply_le_toLp_one f))
+
+end L1
 
 section L2
 

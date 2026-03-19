@@ -25,7 +25,7 @@ noncomputable section
 
 namespace Complex
 
-/-- The complex unit disc, denoted as `𝔻` withinin the Complex namespace -/
+/-- The complex unit disc, denoted as `𝔻` within the Complex namespace -/
 def UnitDisc : Type :=
   ball (0 : ℂ) 1 deriving TopologicalSpace
 
@@ -38,9 +38,15 @@ namespace UnitDisc
 @[coe] protected def coe : 𝔻 → ℂ := Subtype.val
 
 instance instCommSemigroup : CommSemigroup UnitDisc := by unfold UnitDisc; infer_instance
+
 instance instSemigroupWithZero : SemigroupWithZero UnitDisc := by unfold UnitDisc; infer_instance
+
+set_option backward.isDefEq.respectTransparency false in
 instance instIsCancelMulZero : IsCancelMulZero UnitDisc := by unfold UnitDisc; infer_instance
+
+set_option backward.isDefEq.respectTransparency false in
 instance instHasDistribNeg : HasDistribNeg UnitDisc := by unfold UnitDisc; infer_instance
+
 instance instCoe : Coe UnitDisc ℂ := ⟨UnitDisc.coe⟩
 
 @[ext]
@@ -136,6 +142,7 @@ theorem coe_eq_zero {z : 𝔻} : (z : ℂ) = 0 ↔ z = 0 :=
   coe_injective.eq_iff' coe_zero
 
 @[simp] theorem mk_zero : mk 0 (by simp) = 0 := rfl
+
 @[simp] theorem mk_eq_zero {z : ℂ} (hz : ‖z‖ < 1) : mk z hz = 0 ↔ z = 0 := by simp [← coe_inj]
 
 instance : Inhabited 𝔻 :=
@@ -288,6 +295,7 @@ alias re_conj := UnitDisc.re_star
 instance : StarMul 𝔻 where
   star_mul z w := coe_injective <| by simp [mul_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated star_mul' (since := "2026-01-06")]
 theorem conj_mul (z w : 𝔻) : star (z * w) = star z * star w :=
   star_mul' z w

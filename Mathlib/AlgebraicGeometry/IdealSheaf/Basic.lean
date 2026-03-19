@@ -89,6 +89,7 @@ instance : PartialOrder (IdealSheafData X) := PartialOrder.lift ideal fun _ _ �
 
 lemma le_def {I J : IdealSheafData X} : I ≤ J ↔ ∀ U, I.ideal U ≤ J.ideal U := .rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : CompleteSemilatticeSup (IdealSheafData X) where
   sSup s :=
   { ideal := sSup (ideal '' s),
@@ -97,8 +98,7 @@ instance : CompleteSemilatticeSup (IdealSheafData X) where
         conv_lhs => rw [← Subtype.range_val (s := s), ← Set.range_comp]
         rfl
       simp only [this, iSup_apply, Ideal.map_iSup, map_ideal_basicOpen, implies_true] }
-  le_sSup s x hxs := le_sSup (s := ideal '' s) ⟨_, hxs, rfl⟩
-  sSup_le s i hi := sSup_le (s := ideal '' s) (Set.forall_mem_image.mpr hi)
+  isLUB_sSup _ := .of_image (f := ideal) le_def (isLUB_sSup _)
 
 /-- The largest ideal sheaf contained in a family of ideals. -/
 def ofIdeals (I : ∀ U : X.affineOpens, Ideal Γ(X, U)) : IdealSheafData X :=
@@ -125,6 +125,7 @@ lemma ofIdeals_ideal (I : IdealSheafData X) : ofIdeals I.ideal = I := IdealSheaf
 lemma le_ofIdeals_iff {I : IdealSheafData X} {J} : I ≤ ofIdeals J ↔ I.ideal ≤ J :=
   IdealSheafData.gci.gc.le_iff_le.symm
 
+set_option backward.isDefEq.respectTransparency false in
 instance : OrderTop (IdealSheafData X) where
   top.ideal := ⊤
   top.map_ideal_basicOpen := by simp [Ideal.map_top]
@@ -134,6 +135,7 @@ instance : OrderTop (IdealSheafData X) where
     simpa using X.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
   le_top I U := le_top
 
+set_option backward.isDefEq.respectTransparency false in
 instance : OrderBot (IdealSheafData X) where
   bot.ideal := ⊥
   bot.map_ideal_basicOpen := by simp
@@ -141,6 +143,7 @@ instance : OrderBot (IdealSheafData X) where
   bot.supportSet_eq_iInter_zeroLocus := by ext; simp
   bot_le I U := bot_le
 
+set_option backward.isDefEq.respectTransparency false in
 instance : SemilatticeInf (IdealSheafData X) where
   inf I J :=
   { ideal := I.ideal ⊓ J.ideal
@@ -213,6 +216,7 @@ private lemma map_ideal_basicOpen_of_eq
       I.ideal V := by
   subst hV; exact I.map_ideal_basicOpen _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_ideal {U V : X.affineOpens} (h : U ≤ V) :
     (I.ideal V).map (X.presheaf.map (homOfLE h).op).hom = I.ideal U := by
   rw [U.2.ideal_ext_iff]
@@ -252,7 +256,7 @@ lemma le_of_iSup_eq_top {I J : X.IdealSheafData} {ι : Type*}
     (fun i ↦ Algebra.linearMap Γ(X, V.1) Γ(X, X.basicOpen i.1)) ?_
   rintro ⟨_, j, rfl⟩
   dsimp
-  simp only [← Submodule.restrictScalars_localized' Γ(X, X.basicOpen (r j)),
+  simp +instances only [← Submodule.restrictScalars_localized' Γ(X, X.basicOpen (r j)),
     Ideal.localized'_eq_map, RingHom.algebraMap_toAlgebra]
   erw [I.map_ideal (U := ⟨_, V.2.basicOpen _⟩) (X.basicOpen_le (r j)),
     J.map_ideal (U := ⟨_, V.2.basicOpen _⟩) (X.basicOpen_le (r j))]
@@ -278,6 +282,7 @@ lemma supportSet_subset_zeroLocus (I : IdealSheafData X) (U : X.affineOpens) :
     I.supportSet ⊆ X.zeroLocus (U := U.1) (I.ideal U) :=
   I.supportSet_eq_iInter_zeroLocus.trans_subset (Set.iInter_subset _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma zeroLocus_inter_subset_supportSet (I : IdealSheafData X) (U : X.affineOpens) :
     X.zeroLocus (U := U.1) (I.ideal U) ∩ U ⊆ I.supportSet := by
   rw [I.supportSet_eq_iInter_zeroLocus]
@@ -399,11 +404,13 @@ instance : Zero X.IdealSheafData where zero := ⊥
 instance : One X.IdealSheafData where one := ⊤
 instance : Add X.IdealSheafData where add := (· ⊔ ·)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Mul X.IdealSheafData where
   mul I J := mkOfMemSupportIff (I.ideal * J.ideal) (by simp [Ideal.map_mul, map_ideal_basicOpen])
     (I.supportSet ∪ J.supportSet) fun U x hxU ↦ by
     simp [-mem_zeroLocus_iff, zeroLocus_mul, mem_support_iff_of_mem hxU]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Pow X.IdealSheafData ℕ where
   pow I n := mkOfMemSupportIff (I.ideal ^ n) (by simp [Ideal.map_pow, map_ideal_basicOpen])
     (if n = 0 then ∅ else I.supportSet) fun U x hxU ↦ .symm <| by
@@ -437,7 +444,8 @@ instance : IdemCommSemiring X.IdealSheafData where
   nsmul := nsmulRec
   left_distrib := mul_inf
   right_distrib := inf_mul
-  npow_zero _ := by ext; rfl
+  npow n I := I ^ n
+  npow_zero _ := by ext; simp [show (1 : X.IdealSheafData) = ⊤ from rfl]
   npow_succ _ _ := by ext; rfl
   bot_le _ := bot_le
 
@@ -452,6 +460,7 @@ end Semiring
 
 section IsAffine
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The ideal sheaf induced by an ideal of the global sections. -/
 @[simps! ideal coe_support]
 def ofIdealTop (I : Ideal Γ(X, ⊤)) : IdealSheafData X :=
@@ -463,6 +472,7 @@ def ofIdealTop (I : Ideal Γ(X, ⊤)) : IdealSheafData X :=
       simp only [Ideal.map, zeroLocus_span, zeroLocus_map, Set.mem_union, Set.mem_compl_iff,
         SetLike.mem_coe, hxU, not_true_eq_false, iff_self_or, IsEmpty.forall_iff])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_of_isAffine [IsAffine X] {I J : IdealSheafData X}
     (H : I.ideal ⟨⊤, isAffineOpen_top X⟩ ≤ J.ideal ⟨⊤, isAffineOpen_top X⟩) : I ≤ J := by
   intro U
@@ -497,9 +507,6 @@ end IsAffine
 section ofIsClosed
 
 open _root_.PrimeSpectrum TopologicalSpace
-
-@[deprecated (since := "2025-08-10")] alias Scheme.zeroLocus_radical :=
-  AlgebraicGeometry.Scheme.zeroLocus_radical
 
 /-- The radical of an ideal sheaf. -/
 @[simps! ideal]
@@ -551,11 +558,12 @@ lemma radical_mul {I J : IdealSheafData X} :
   ext U : 2
   simp only [radical_ideal, ideal_mul, Pi.mul_apply, Ideal.radical_mul, ideal_inf, Pi.inf_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The vanishing ideal sheaf of a closed set,
 which is the largest ideal sheaf whose support is equal to it.
 The reduced induced scheme structure on the closed set is the quotient of this ideal. -/
 @[simps! ideal coe_support]
-nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
+noncomputable nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
   mkOfMemSupportIff
     (fun U ↦ vanishingIdeal (U.2.fromSpec ⁻¹' Z))
     (fun U f ↦ by
@@ -600,6 +608,7 @@ nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
         simp [hxU]
       · simp [hxU])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_support_iff_le_vanishingIdeal {I : X.IdealSheafData} {Z : Closeds X} :
     Z ≤ I.support ↔ I ≤ vanishingIdeal Z := by
   simp only [le_def, vanishingIdeal_ideal, ← PrimeSpectrum.subset_zeroLocus_iff_le_vanishingIdeal]
@@ -621,6 +630,7 @@ lemma gc : @GaloisConnection X.IdealSheafData (Closeds X)ᵒᵈ _ _ (support ·)
 lemma vanishingIdeal_antimono {S T : Closeds X} (h : S ≤ T) : vanishingIdeal T ≤ vanishingIdeal S :=
   gc.monotone_u h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma vanishingIdeal_support {I : IdealSheafData X} :
     vanishingIdeal I.support = I.radical := by
   ext U : 2
@@ -631,6 +641,7 @@ lemma vanishingIdeal_support {I : IdealSheafData X} :
   rw [Set.image_preimage_eq_inter_range, IsAffineOpen.range_fromSpec,
     IsAffineOpen.fromSpec_image_zeroLocus, coe_support_inter]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma vanishingIdeal_bot : vanishingIdeal (X := X) ⊥ = ⊤ := gc.u_top
 
 @[simp] lemma vanishingIdeal_top : vanishingIdeal (X := X) ⊤ = X.nilradical := by
@@ -663,6 +674,7 @@ section IsReduced
 lemma nilradical_eq_bot [IsReduced X] : X.nilradical = ⊥ := by
   ext; simp [nilradical, Ideal.radical_eq_iff.mpr (Ideal.isRadical_bot)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IdealSheafData.support_eq_top_iff [IsReduced X] {I : X.IdealSheafData} :
     I.support = ⊤ ↔ I = ⊥ := by
   rw [← top_le_iff, le_support_iff_le_vanishingIdeal,
@@ -686,6 +698,7 @@ lemma Hom.ideal_ker_le (f : X.Hom Y) (U : Y.affineOpens) :
     f.ker.ideal U ≤ RingHom.ker (f.app U).hom :=
   ideal_ofIdeals_le _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Hom.ker_apply (f : X.Hom Y) [QuasiCompact f] (U : Y.affineOpens) :
     f.ker.ideal U = RingHom.ker (f.app U).hom := by
@@ -716,6 +729,7 @@ lemma Hom.ker_apply (f : X.Hom Y) [QuasiCompact f] (U : Y.affineOpens) :
         rw [← IsLocalization.mk'_spec' (M := .powers s), map_mul, hx, mul_zero]
     rwa [f.naturality] at hx
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Hom.le_ker_comp (f : X ⟶ Y) (g : Y.Hom Z) : g.ker ≤ (f ≫ g).ker := by
   refine ofIdeals_mono fun U ↦ ?_
   rw [Scheme.Hom.comp_app f g U, CommRingCat.hom_comp, ← RingHom.comap_ker]
@@ -732,6 +746,7 @@ lemma Hom.ker_eq_bot_of_isIso (f : X ⟶ Y) [IsIso f] : f.ker = ⊥ := by
 lemma Hom.ker_comp_of_isIso (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] : (f ≫ g).ker = g.ker :=
   (f.le_ker_comp g).antisymm' (((inv f).le_ker_comp _).trans (by simp))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ker_of_isAffine {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :
     f.ker = ofIdealTop (RingHom.ker f.appTop.hom) := by
   refine (le_of_isAffine ((f.ideal_ker_le _).trans (by simp))).antisymm
@@ -801,8 +816,6 @@ lemma Hom.iUnion_support_ker_openCover_map_comp
 lemma ker_morphismRestrict_ideal (f : X.Hom Y) [QuasiCompact f]
     (U : Y.Opens) (V : U.toScheme.affineOpens) :
     (f ∣_ U).ker.ideal V = f.ker.ideal ⟨U.ι ''ᵁ V, V.2.image_of_isOpenImmersion _⟩ := by
-  have inst : QuasiCompact (f ∣_ U) := MorphismProperty.of_isPullback
-      (isPullback_morphismRestrict _ _).flip inferInstance
   ext x
   simpa [Scheme.Hom.appLE] using map_eq_zero_iff _
     (ConcreteCategory.bijective_of_isIso
