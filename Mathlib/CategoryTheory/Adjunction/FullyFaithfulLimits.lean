@@ -16,7 +16,7 @@ We show that if colimits of shape `J` exists in `C`, then a functor
 `H : D ⥤ E` preserves colimits of shape `J` iff `F ⋙ H` does.
 
 In particular, a functor from a category of sheaves preserves colimits
-iff it is so after precomposition with the sheafification functor.
+iff it does so after precomposition with the sheafification functor.
 
 -/
 
