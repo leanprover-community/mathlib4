@@ -181,6 +181,7 @@ lemma mapDomainRingHom_comp (f : N →* O) (g : M →* N) :
     mapDomainRingHom R (f.comp g) = (mapDomainRingHom R f).comp (mapDomainRingHom R g) := by
   ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- The ring homomorphism of monoid algebras induced by a homomorphism of the base rings. -/
 @[to_additive (dont_translate := R S)

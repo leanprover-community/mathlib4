@@ -76,6 +76,7 @@ theorem trinomial_natDegree (hkm : k < m) (hmn : m < n) (hw : w ≠ 0) :
   · exact WithBot.coe_le_coe.mpr hmn.le
   · exact le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem trinomial_natTrailingDegree (hkm : k < m) (hmn : m < n) (hu : u ≠ 0) :
     (trinomial k m n u v w).natTrailingDegree = k := by
   refine

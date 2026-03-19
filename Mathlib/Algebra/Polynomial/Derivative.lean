@@ -339,6 +339,7 @@ theorem iterate_derivative_eq_sum (p : R[X]) (k : ℕ) :
   refine sum_congr rfl fun i _ ↦ ?_
   rw [coeff_iterate_derivative, Nat.descFactorial_eq_factorial_mul_choose]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iterate_derivative_eq_factorial_smul_sum (p : R[X]) (k : ℕ) :
     derivative^[k] p = k ! •
       ∑ x ∈ (derivative^[k] p).support, C ((x + k).choose k • p.coeff (x + k)) * X ^ x := by
@@ -347,6 +348,7 @@ theorem iterate_derivative_eq_factorial_smul_sum (p : R[X]) (k : ℕ) :
   refine sum_congr rfl fun i _ ↦ ?_
   rw [← smul_mul_assoc, smul_C, smul_smul, Nat.descFactorial_eq_factorial_mul_choose]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iterate_derivative_mul {n} (p q : R[X]) :
     derivative^[n] (p * q) =
       ∑ k ∈ range n.succ, (n.choose k • (derivative^[n - k] p * derivative^[k] q)) := by
@@ -509,6 +511,7 @@ theorem derivative_X_add_C_pow (c : R) (m : ℕ) :
 theorem derivative_X_add_C_sq (c : R) : derivative ((X + C c) ^ 2) = C 2 * (X + C c) := by
   rw [derivative_sq, derivative_X_add_C, mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iterate_derivative_X_add_pow (n k : ℕ) (c : R) :
     derivative^[k] ((X + C c) ^ n) = Nat.descFactorial n k • (X + C c) ^ (n - k) := by
   induction k with
@@ -694,6 +697,7 @@ theorem iterate_derivative_eq_zero_of_degree_lt {k : ℕ} {P : R[X]} (h : P.degr
         refine ind <| (natDegree_lt_iff_degree_lt hP').mp ?_
         linarith [(natDegree_lt_iff_degree_lt hP).mpr h, natDegree_derivative_lt hP'']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iterate_derivative_prod_X_sub_C {k : ℕ} {S : Finset R} (hk : k ≤ #S) :
     derivative^[k] (∏ a ∈ S, (X - C a)) =
     k.factorial * ∑ T ∈ S.powersetCard (#S - k), ∏ a ∈ T, (X - C a) := by

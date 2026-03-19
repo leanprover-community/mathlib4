@@ -415,6 +415,7 @@ section NoZeroDivisors
 
 variable [Semiring R] [NoZeroDivisors R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The order of the product of two formal power series over an integral domain
 is the sum of their orders. -/
 theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := by
