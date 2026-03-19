@@ -32,7 +32,6 @@ open Nat
 
 variable {p : ℕ}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem padicValNat_eq_emultiplicity_of_ne_one (hp : p ≠ 1) {n : ℕ} (hn : n ≠ 0) :
     padicValNat p n = emultiplicity p n := by
   rw [eq_comm, emultiplicity_eq_coe, pow_dvd_iff_le_padicValNat hp hn,

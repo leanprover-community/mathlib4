@@ -744,7 +744,6 @@ namespace Equivalence
 
 variable {D : Type u₂} [Category.{v₂} D]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence between categories gives an equivalence between the opposite categories.
 -/
 @[simps]
@@ -757,7 +756,6 @@ def op (e : C ≌ D) : Cᵒᵖ ≌ Dᵒᵖ where
     apply Quiver.Hom.unop_inj
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence between opposite categories gives an equivalence between the original categories.
 -/
 @[simps]
