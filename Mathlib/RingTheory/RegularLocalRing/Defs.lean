@@ -5,8 +5,8 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Module.SpanRankOperations
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
-public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 public import Mathlib.RingTheory.KrullDimension.Field
 public import Mathlib.RingTheory.KrullDimension.PID
@@ -56,8 +56,8 @@ lemma of_ringEquiv [IsRegularLocalRing R] {R' : Type*} [CommRing R']
     (e : R ≃+* R') : IsRegularLocalRing R' := by
   let _ := e.isLocalRing
   let _ := isNoetherianRing_of_ringEquiv R e
-  rw [isRegularLocalRing_def, ← spanFinrank_eq_of_ringEquiv e, ← ringKrullDim_eq_of_ringEquiv e]
-  exact (isRegularLocalRing_def R).mp ‹_›
+  rwa [isRegularLocalRing_def, ← ringKrullDim_eq_of_ringEquiv e, ← map_ringEquiv_maximalIdeal e,
+    Ideal.spanFinrank_map_eq_of_ringEquiv, ← isRegularLocalRing_def]
 
 lemma iff_finrank_cotangentSpace [IsLocalRing R] [IsNoetherianRing R] :
     IsRegularLocalRing R ↔ Module.finrank (ResidueField R) (CotangentSpace R) = ringKrullDim R := by

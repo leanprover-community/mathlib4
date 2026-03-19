@@ -670,6 +670,9 @@ theorem map_eq_bot_iff : map m f = ⊥ ↔ f = ⊥ :=
     rw [← empty_mem_iff_bot, ← empty_mem_iff_bot]
     exact id, fun h => by simp only [h, map_bot]⟩
 
+@[simp]
+theorem bot_eq_map_iff : ⊥ = map m f ↔ f = ⊥ := by rw [eq_comm, map_eq_bot_iff]
+
 theorem map_neBot_iff (f : α → β) {F : Filter α} : NeBot (map f F) ↔ NeBot F := by
   simp only [neBot_iff, Ne, map_eq_bot_iff]
 
@@ -886,11 +889,11 @@ theorem seq_assoc (x : Filter α) (g : Filter (α → β)) (h : Filter (β → �
   refine le_antisymm (le_seq fun s hs t ht => ?_) (le_seq fun s hs t ht => ?_)
   · rcases mem_seq_iff.1 hs with ⟨u, hu, v, hv, hs⟩
     rcases mem_map_iff_exists_image.1 hu with ⟨w, hw, hu⟩
-    refine mem_of_superset ?_ (Set.seq_mono ((Set.seq_mono hu Subset.rfl).trans hs) Subset.rfl)
+    grw [← hs, ← hu]
     rw [← Set.seq_seq]
     exact seq_mem_seq hw (seq_mem_seq hv ht)
   · rcases mem_seq_iff.1 ht with ⟨u, hu, v, hv, ht⟩
-    refine mem_of_superset ?_ (Set.seq_mono Subset.rfl ht)
+    grw [← ht]
     rw [Set.seq_seq]
     exact seq_mem_seq (seq_mem_seq (image_mem_map hs) hu) hv
 
@@ -898,11 +901,11 @@ theorem prod_map_seq_comm (f : Filter α) (g : Filter β) :
     (map Prod.mk f).seq g = seq (map (fun b a => (a, b)) g) f := by
   refine le_antisymm (le_seq fun s hs t ht => ?_) (le_seq fun s hs t ht => ?_)
   · rcases mem_map_iff_exists_image.1 hs with ⟨u, hu, hs⟩
-    refine mem_of_superset ?_ (Set.seq_mono hs Subset.rfl)
+    grw [← hs]
     rw [← Set.prod_image_seq_comm]
     exact seq_mem_seq (image_mem_map ht) hu
   · rcases mem_map_iff_exists_image.1 hs with ⟨u, hu, hs⟩
-    refine mem_of_superset ?_ (Set.seq_mono hs Subset.rfl)
+    grw [← hs]
     rw [Set.prod_image_seq_comm]
     exact seq_mem_seq (image_mem_map ht) hu
 
