@@ -31,10 +31,10 @@ sequences, where subsets replace initial segments, is called the **Nikolskii con
 
 ## Main Results
 
-* `isBasicSequence_of_Grunblum_with_bound`: A nonzero sequence satisfying the Grünblum condition
+* `SatisfiesGrunblumCondition.basicSequence`: A nonzero sequence satisfying the Grünblum condition
   is a basic sequence, with an explicit bound on the basis constant.
-* `isUnconditionalBasicSequence_of_Nikolskii`: The analogous result for unconditional basic
-  sequences under the Nikolskii condition.
+* `SatisfiesNikolskiiCondition.unconditionalBasicSequence`: The analogous result for unconditional
+  basic sequences under the Nikolskii condition.
 
 ## Implementation Notes
 
@@ -100,8 +100,7 @@ variable (bs : BasicSequence 𝕜 X)
 def basicSequenceConstant : ℝ := bs.basis.enormProjBound.toReal
 
 /-- A basic sequence with finite projection bound satisfies the Grünblum condition. -/
-theorem basicSequence_satisfiesGrunblum :
-    SatisfiesGrunblumCondition 𝕜 bs bs.basicSequenceConstant := by
+theorem satisfiesGrunblumCondition : SatisfiesGrunblumCondition 𝕜 bs bs.basicSequenceConstant := by
   intro n m a hmn
   have h_bound : ‖bs.basis.proj m‖ ≤ bs.basicSequenceConstant := by
     have h := bs.basis.enorm_proj_le_enormProjBound m
@@ -118,17 +117,21 @@ theorem basicSequence_satisfiesGrunblum :
       simp only [coe_norm, AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, bs.basis_eq]
       exact mul_le_mul_of_nonneg_right h_bound (norm_nonneg (∑ i ∈ Finset.range n, a i • bs i))
 
+end BasicSequence
+
+namespace SatisfiesGrunblumCondition
+
 variable {e : ℕ → X} {K : ℝ}
 
 /-- The Grünblum constant must be at least `1` for any nonzero sequence. -/
-theorem Grunblum_const_ge_1 (h : SatisfiesGrunblumCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) :
+theorem one_le (h : SatisfiesGrunblumCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) :
     1 ≤ K := by
   have h0 := h 1 1 (fun _ => 1) le_rfl
   simp only [Finset.range_one, one_smul, sum_singleton] at h0
   exact le_of_mul_le_mul_right ((one_mul _).le.trans h0) (norm_pos_iff.mpr (h_nz 0))
 
 /-- A nonzero sequence satisfying the Grünblum condition is linearly independent. -/
-lemma linearIndependent_of_Grunblum (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K)
+lemma linearIndependent (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K)
     (h_nz : ∀ n, e n ≠ 0) : LinearIndependent 𝕜 e := by
   rw [linearIndependent_iff']
   intro s g hg i hi
@@ -146,13 +149,12 @@ lemma linearIndependent_of_Grunblum (h_grunblum : SatisfiesGrunblumCondition �
         h_part (i + 1) (hb i hi), h_part i (hb i hi).le, sub_zero]
   simpa [c, hi, h_nz i] using hc
 
-/-- A version of `isBasicSequence_of_Grunblum` that provides an explicit bound
-    on the basis constant. If a sequence satisfies the Grünblum condition with constant `K`,
-    the resulting basic sequence has basis constant at most `K`. -/
-theorem isBasicSequence_of_Grunblum_with_bound (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K)
+/-- A nonzero sequence satisfying the Grünblum condition with constant `K` is a basic sequence,
+    with basis constant at most `K`. -/
+theorem basicSequence (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K)
     (h_nz : ∀ n, e n ≠ 0) : ∃ (b : BasicSequence 𝕜 X), ⇑b = e ∧ b.basicSequenceConstant ≤ K := by
-  have h_indep := linearIndependent_of_Grunblum h_grunblum h_nz
-  have hK : 0 ≤ K := zero_le_one.trans (Grunblum_const_ge_1 h_grunblum h_nz)
+  have h_indep := h_grunblum.linearIndependent h_nz
+  have hK : 0 ≤ K := zero_le_one.trans (h_grunblum.one_le h_nz)
   let S := Submodule.span 𝕜 (Set.range e)
   let b_S := Module.Basis.span h_indep
   have hbS (n : ℕ) : (b_S n : X) = e n := congrArg Subtype.val (Module.Basis.span_apply h_indep n)
@@ -205,7 +207,7 @@ theorem isBasicSequence_of_Grunblum_with_bound (h_grunblum : SatisfiesGrunblumCo
   refine ⟨⟨e, basis, hbS, h_bound.trans_lt ENNReal.ofReal_lt_top⟩, rfl, ?_⟩
   exact (ENNReal.toReal_mono ENNReal.ofReal_ne_top h_bound).trans_eq (ENNReal.toReal_ofReal hK)
 
-end BasicSequence
+end SatisfiesGrunblumCondition
 
 /-- An **unconditional basic sequence** indexed by `β` in a normed space `X` over `𝕜` is a
     sequence that forms an unconditional Schauder basis for its span, with finite projection
@@ -255,7 +257,7 @@ def unconditionalBasicSequenceConstant : ℝ := ubs.basis.enormProjBound.toReal
 
 open scoped Classical in
 /-- An unconditional basic sequence satisfies the Nikolskii condition. -/
-theorem unconditional_satisfiesNikolskii :
+theorem satisfiesNikolskiiCondition :
     SatisfiesNikolskiiCondition 𝕜 ubs ubs.unconditionalBasicSequenceConstant := fun A B a hAB ↦ by
   have h_bound : ‖ubs.basis.proj A‖ ≤ ubs.unconditionalBasicSequenceConstant := by
     have h := ubs.basis.enorm_proj_le_enormProjBound A
@@ -276,17 +278,21 @@ theorem unconditional_satisfiesNikolskii :
       rw [h_eq B]
       exact mul_le_mul_of_nonneg_right h_bound (norm_nonneg _)
 
-variable {e : β → X} {K : ℝ}
+end UnconditionalBasicSequence
+
+namespace SatisfiesNikolskiiCondition
+
+variable {β : Type*} {e : β → X} {K : ℝ}
 
 /-- The Nikolskii constant must be at least `1` for any nonzero sequence. -/
-theorem Nikolskii_const_ge_1 [Nonempty β] (h : SatisfiesNikolskiiCondition 𝕜 e K)
+theorem one_le [Nonempty β] (h : SatisfiesNikolskiiCondition 𝕜 e K)
     (h_nz : ∀ n, e n ≠ 0) : 1 ≤ K := by
   have h0 := h {Classical.arbitrary β} {Classical.arbitrary β} (fun _ => 1) Finset.Subset.rfl
   simp only [sum_singleton, one_smul] at h0
   exact le_of_mul_le_mul_right ((one_mul _).le.trans h0) (norm_pos_iff.mpr (h_nz _))
 
 /-- A nonzero sequence satisfying the Nikolskii condition is linearly independent. -/
-lemma linearIndependent_of_Nikolskii (hN : SatisfiesNikolskiiCondition 𝕜 e K)
+lemma linearIndependent (hN : SatisfiesNikolskiiCondition 𝕜 e K)
     (h_nz : ∀ n, e n ≠ 0) : LinearIndependent 𝕜 e := by
   rw [linearIndependent_iff']
   intro s g hsg i hi
@@ -295,12 +301,12 @@ lemma linearIndependent_of_Nikolskii (hN : SatisfiesNikolskiiCondition 𝕜 e K)
 open scoped Classical in
 /-- A nonzero sequence satisfying the Nikolskii condition is an unconditional basic sequence,
     with basis constant at most `K`. -/
-theorem isUnconditionalBasicSequence_of_Nikolskii [Nonempty β]
+theorem unconditionalBasicSequence [Nonempty β]
     (h : SatisfiesNikolskiiCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) :
     ∃ (b : UnconditionalBasicSequence β 𝕜 X),
     ⇑b = e ∧ b.unconditionalBasicSequenceConstant ≤ K := by
-  have hK : 0 ≤ K := zero_le_one.trans (Nikolskii_const_ge_1 h h_nz)
-  have h_indep := linearIndependent_of_Nikolskii h h_nz
+  have hK : 0 ≤ K := zero_le_one.trans (h.one_le h_nz)
+  have h_indep := h.linearIndependent h_nz
   let S := Submodule.span 𝕜 (Set.range e)
   let b_S := Module.Basis.span h_indep
   have hbS (n : β) : (b_S n : X) = e n := congrArg Subtype.val (Module.Basis.span_apply h_indep n)
@@ -352,10 +358,10 @@ theorem isUnconditionalBasicSequence_of_Nikolskii [Nonempty β]
   refine ⟨⟨e, ubs_basis, hbS, h_bound.trans_lt ENNReal.ofReal_lt_top⟩, rfl, ?_⟩
   exact (ENNReal.toReal_mono ENNReal.ofReal_ne_top h_bound).trans_eq (ENNReal.toReal_ofReal hK)
 
-theorem SatisfiesNikolskiiCondition.toSatisfiesGrunblumCondition {e : ℕ → X} {K : ℝ}
+theorem toSatisfiesGrunblumCondition {e : ℕ → X}
     (h : SatisfiesNikolskiiCondition 𝕜 e K) : SatisfiesGrunblumCondition 𝕜 e K :=
   fun _ _ a hmn => h _ _ a (Finset.range_subset_range.mpr hmn)
 
-end UnconditionalBasicSequence
+end SatisfiesNikolskiiCondition
 
 end
