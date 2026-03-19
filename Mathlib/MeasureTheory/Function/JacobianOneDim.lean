@@ -431,6 +431,9 @@ theorem integral_image_eq_integral_deriv_smul_of_antitoneOn (hs : MeasurableSet 
   rw [A, ← image_comp] at B
   convert B using 3 with x hx x <;> simp [n, e]
 
+@[deprecated (since := "2026-03-19")] alias integral_image_eq_integral_deriv_smul_of_antitone :=
+  integral_image_eq_integral_deriv_smul_of_antitoneOn
+
 theorem integral_Icc_deriv_smul_of_deriv_nonpos {a b : ℝ} {g : ℝ → F}
     (hf : ContinuousOn f (Icc a b))
     (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x)
