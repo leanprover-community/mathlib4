@@ -144,7 +144,7 @@ theorem degrees_eq_zero_iff_support_subset_zero : p.degrees = 0 ↔ p.support �
   refine ⟨fun h s hs ↦ ?_, fun h i hi ↦ ?_⟩
   · apply Finsupp.support_eq_empty.mp
     refine Finset.eq_empty_of_forall_notMem fun i ↦ ?_
-    have := (not_iff_not.mpr mem_degrees).mp (h i)
+    have := mem_degrees.not.mp (h i)
     have := not_and.mp <| not_exists.mp this s
     exact this (mem_support_iff.mp hs)
   rcases mem_degrees.mp hi with ⟨s, hs1, hs2⟩
@@ -374,10 +374,9 @@ theorem degreeOf_mul_X_self_pow_eq_add_of_ne_zero (i : σ) (k : ℕ) (h : p ≠ 
     have : p * X i ^ k ≠ 0 := by
       rcases ne_zero_iff.mp h with ⟨s, hs⟩
       refine ne_zero_iff.mpr ⟨s + Finsupp.single i k, ?_⟩
-      rewrite [X_pow_eq_monomial, coeff_mul_monomial, mul_one]
-      exact hs
-    rewrite [pow_add, pow_one, ← mul_assoc]
-    rw [(degreeOf_mul_X_eq_degreeOf_add_one_iff i _).mpr this, hk, add_assoc]
+      rwa [X_pow_eq_monomial, coeff_mul_monomial, mul_one]
+    rw [pow_add, pow_one, ← mul_assoc,
+      (degreeOf_mul_X_eq_degreeOf_add_one_iff i _).mpr this, hk, add_assoc]
 
 theorem degreeOf_mul_X_pow_of_ne {i j : σ} (k : ℕ) (h : i ≠ j) :
     (p * X j ^ k).degreeOf i = p.degreeOf i := by
@@ -396,8 +395,7 @@ theorem degreeOf_add_eq_of_degreeOf_lt {i : σ} (h : q.degreeOf i < p.degreeOf i
   refine ⟨s, ?_, by rw [hs2]⟩
   have : s ∉ q.support := by contrapose! h; exact hs2 ▸ le_degreeOf_of_mem_support i h
   simp only [mem_support_iff, ne_eq, coeff_add, not_not] at hs1 ⊢ this
-  rewrite [this, add_zero]
-  exact hs1
+  rwa [this, add_zero]
 
 theorem degreeOf_eq_of_degreeOf_add_lt {i : σ} (h : (p + q).degreeOf i < p.degreeOf i) :
     p.degreeOf i = q.degreeOf i := by
