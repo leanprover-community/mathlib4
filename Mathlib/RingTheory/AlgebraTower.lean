@@ -42,6 +42,7 @@ variable [IsScalarTower R S A] [IsScalarTower R S B]
 
 /-- Suppose that `R → S → A` is a tower of algebras.
 If an element `r : R` is invertible in `S`, then it is invertible in `A`. -/
+@[implicit_reducible]
 def Invertible.algebraTower (r : R) [Invertible (algebraMap R S r)] :
     Invertible (algebraMap R A r) :=
   Invertible.copy (Invertible.map (algebraMap S A) (algebraMap R S r)) (algebraMap R A r)
@@ -49,6 +50,7 @@ def Invertible.algebraTower (r : R) [Invertible (algebraMap R S r)] :
 
 /-- A natural number that is invertible when coerced to `R` is also invertible
 when coerced to any `R`-algebra. -/
+@[implicit_reducible]
 def invertibleAlgebraCoeNat (n : ℕ) [inv : Invertible (n : R)] : Invertible (n : A) :=
   haveI : Invertible (algebraMap ℕ R n) := inv
   Invertible.algebraTower ℕ R A n

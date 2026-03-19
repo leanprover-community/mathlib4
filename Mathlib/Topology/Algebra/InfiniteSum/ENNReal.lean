@@ -387,6 +387,7 @@ theorem hasSum_iff_tendsto_nat {f : ℕ → ℝ≥0} {r : ℝ≥0} :
   simp only [← ENNReal.coe_finset_sum]
   exact ENNReal.tendsto_coe
 
+set_option backward.isDefEq.respectTransparency false in
 theorem not_summable_iff_tendsto_nat_atTop {f : ℕ → ℝ≥0} :
     ¬Summable f ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop atTop := by
   constructor
@@ -574,7 +575,7 @@ theorem ENNReal.multipliable_of_le_one {f : α → ℝ≥0∞} (h₀ : ∀ i, f 
 
 theorem ENNReal.hasProd_iInf_prod {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
     HasProd f (⨅ s : Finset α, ∏ i ∈ s, f i) :=
-  tendsto_atTop_iInf (Finset.prod_anti_set_of_le_one h₀)
+  tendsto_atTop_iInf (Finset.prod_anti_set_of_le_one' h₀)
 
 theorem ENNReal.tprod_eq_iInf_prod {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
     ∏' i, f i = ⨅ s : Finset α, ∏ i ∈ s, f i :=
@@ -584,6 +585,7 @@ end tprod
 
 variable [PseudoEMetricSpace α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the extended distance between consecutive points of a sequence is estimated
 by a summable series of `NNReal`s, then the original sequence is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_of_summable {f : ℕ → α} (d : ℕ → ℝ≥0)

@@ -136,7 +136,7 @@ of the cone points and check it commutes with the legs to `left` and `right`. -/
 def WalkingCospan.ext {F : WalkingCospan ⥤ C} {s t : Cone F} (i : s.pt ≅ t.pt)
     (w₁ : s.π.app WalkingCospan.left = i.hom ≫ t.π.app WalkingCospan.left)
     (w₂ : s.π.app WalkingCospan.right = i.hom ≫ t.π.app WalkingCospan.right) : s ≅ t := by
-  apply Cones.ext i _
+  apply Cone.ext i _
   rintro (⟨⟩ | ⟨⟨⟩⟩)
   · have h₁ := s.π.naturality WalkingCospan.Hom.inl
     dsimp at h₁
@@ -148,13 +148,14 @@ def WalkingCospan.ext {F : WalkingCospan ⥤ C} {s t : Cone F} (i : s.pt ≅ t.p
   · exact w₁
   · exact w₂
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To construct an isomorphism of cocones over the walking span,
 it suffices to construct an isomorphism
 of the cocone points and check it commutes with the legs from `left` and `right`. -/
 def WalkingSpan.ext {F : WalkingSpan ⥤ C} {s t : Cocone F} (i : s.pt ≅ t.pt)
     (w₁ : s.ι.app WalkingCospan.left ≫ i.hom = t.ι.app WalkingCospan.left)
     (w₂ : s.ι.app WalkingCospan.right ≫ i.hom = t.ι.app WalkingCospan.right) : s ≅ t := by
-  apply Cocones.ext i _
+  apply Cocone.ext i _
   rintro (⟨⟩ | ⟨⟨⟩⟩)
   · have h₁ := s.ι.naturality WalkingSpan.Hom.fst
     dsimp at h₁

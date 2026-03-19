@@ -97,6 +97,7 @@ end
 variable (𝕜 : Type*) [Field 𝕜]
 variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 
+set_option backward.isDefEq.respectTransparency false in
 -- We prove this with the explicit `isIso_iff_nonzero` assumption,
 -- rather than just `[Simple X]`, as this form is useful for
 -- Müger's formulation of semisimplicity.
@@ -134,6 +135,7 @@ theorem endomorphism_simple_eq_smul_id {X : C} [Simple X] [FiniteDimensional �
 /-- Endomorphisms of a simple object form a field if they are finite dimensional.
 This can't be an instance as `𝕜` would be undetermined.
 -/
+@[implicit_reducible]
 noncomputable def fieldEndOfFiniteDimensional (X : C) [Simple X] [I : FiniteDimensional 𝕜 (X ⟶ X)] :
     Field (End X) := by
   classical exact

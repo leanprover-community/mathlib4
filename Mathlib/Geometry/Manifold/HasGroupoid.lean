@@ -201,6 +201,7 @@ variable (e : OpenPartialHomeomorph α H)
 whole space `α`, then that open partial homeomorphism induces an `H`-charted space structure on `α`.
 (This condition is equivalent to `e` being an open embedding of `α` into `H`; see
 `IsOpenEmbedding.singletonChartedSpace`.) -/
+@[implicit_reducible]
 def singletonChartedSpace (h : e.source = Set.univ) : ChartedSpace H α where
   atlas := {e}
   chartAt _ := e
@@ -242,6 +243,7 @@ variable [Nonempty α]
 
 /-- An open embedding of `α` into `H` induces an `H`-charted space structure on `α`.
 See `OpenPartialHomeomorph.singletonChartedSpace`. -/
+@[implicit_reducible]
 def singletonChartedSpace {f : α → H} (h : IsOpenEmbedding f) : ChartedSpace H α :=
   (h.toOpenPartialHomeomorph f).singletonChartedSpace (toOpenPartialHomeomorph_source _ _)
 
