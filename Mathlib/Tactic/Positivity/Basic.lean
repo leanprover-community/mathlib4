@@ -190,10 +190,10 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let some pα := pα? | pure .none
   match ra, rb with
   | .positive (ltα := ltα) pa, .positive pb =>
-    let _a ← synthInstanceQ q(AddLeftStrictMono $α)
+    let _a ← synthInstanceQ q(AddLeftMono $α)
     haveI' : $ltα =Q ($pα).toLT := ⟨⟩
     assumeInstancesCommute
-    pure (.positive q(add_pos $pa $pb))
+    pure (.positive q(add_pos' $pa $pb))
   | .positive pa, .nonnegative pb =>
     let _a ← synthInstanceQ q(AddLeftMono $α)
     assumeInstancesCommute
@@ -290,7 +290,7 @@ theorem pow_zero_pos [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontriv
     (a : α) : 0 < a ^ 0 :=
   zero_lt_one.trans_le (pow_zero a).ge
 
-private theorem pow_zero_ne_zero [Semiring α] [Nontrivial α] (a : α) : a ^ 0 ≠ 0 :=
+theorem pow_zero_ne_zero [Semiring α] [Nontrivial α] (a : α) : a ^ 0 ≠ 0 :=
   pow_zero a ▸ one_ne_zero
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0 : ℕ)`.
@@ -319,15 +319,15 @@ meta def evalPow : PositivityExt where eval {u α} zα pα? e := do
     let .nonzero nza ← core zα .none a | pure .none
     pure (.nonzero q(pow_ne_zero $b $nza))
   let result ← catchNone do
-    let _a ← synthInstanceQ q(Ring $α)
-    let _a ← synthInstanceQ q(LinearOrder $α)
-    let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
-    assumeInstancesCommute
     let .true := b.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ n where n is a literal"
     let some n := (b.getRevArg! 1).rawNatLit? | throwError "not a ^ n where n is a literal"
     guard (n % 2 = 0)
     have m : Q(ℕ) := mkRawNatLit (n / 2)
     haveI' : $b =Q 2 * $m := ⟨⟩
+    let _a ← synthInstanceQ q(Ring $α)
+    let _a ← synthInstanceQ q(LinearOrder $α)
+    let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
+    assumeInstancesCommute
     haveI' : $e =Q $a ^ $b := ⟨⟩
     pure (.nonnegative q((even_two_mul $m).pow_nonneg $a))
   orElse pα result do
@@ -604,7 +604,6 @@ meta def evalNNRatNum : PositivityExt where eval {u α} _ _ e := do
   | 0, ~q(ℕ), ~q(NNRat.num $a) =>
     let zα : Q(Zero ℚ≥0) := q(inferInstance)
     let pα : Q(PartialOrder ℚ≥0) := q(inferInstance)
-    trace[Tactic.positivity] "I'm evalNNRatNum: {e}"
     assumeInstancesCommute
     match ← core zα pα a with
     | .positive pa =>
