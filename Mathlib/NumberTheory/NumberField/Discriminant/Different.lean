@@ -35,6 +35,7 @@ variable [Module.Finite ℤ 𝒪]
 
 open nonZeroDivisors IntermediateField Module
 
+set_option backward.isDefEq.respectTransparency false in
 lemma absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (discr K).natAbs := by
   refine (differentIdeal ℤ 𝒪).toAddSubgroup.relIndex_top_right.symm.trans ?_
   rw [← Submodule.comap_map_eq_of_injective (f := Algebra.linearMap 𝒪 K)
@@ -99,6 +100,7 @@ theorem natAbs_discr_eq_absNorm_differentIdeal_mul_natAbs_discr_pow (L 𝒪' : T
 
 variable (L : Type*) [Field L]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isCoprime_differentIdeal_of_isCoprime_discr {K₁ K₂ : Type*} [Field K₁]
     [NumberField K₁] [Field K₂] [NumberField K₂] [Algebra K₁ L] [Algebra K₂ L]
     (h : IsCoprime (discr K₁) (discr K₂)) :
@@ -125,6 +127,7 @@ theorem discr_dvd_discr [Algebra K L] :
     mul_comm _ (discr K ^ _), mul_assoc]
   exact Int.dvd_mul_right _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `K₁` and `K₂` be two number fields and assume that `K₁/ℚ` is Galois. If `discr K₁` and
 `discr K₂` are coprime, then they are linear disjoint over `ℚ`.
@@ -143,6 +146,7 @@ theorem linearDisjoint_of_isGalois_isCoprime_discr (K₁ K₂ : IntermediateFiel
 
 open IntermediateField IsDedekindDomain
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `K₁` and `K₂` be two number fields and assume that their different ideals (over ℤ) are coprime.
 Then, the absolute value of the discriminant of their compositum is equal to

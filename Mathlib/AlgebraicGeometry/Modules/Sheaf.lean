@@ -45,7 +45,8 @@ instance : Category X.Modules where
   Hom := Modules.Hom
   __ := inferInstanceAs (Category (SheafOfModules.{u} X.ringCatSheaf))
 
-instance : Abelian X.Modules := inferInstanceAs (Abelian (SheafOfModules.{u} X.ringCatSheaf))
+noncomputable instance : Abelian X.Modules :=
+  inferInstanceAs (Abelian (SheafOfModules.{u} X.ringCatSheaf))
 instance : HasLimits X.Modules := inferInstanceAs (HasLimits (SheafOfModules X.ringCatSheaf))
 instance : HasColimits X.Modules := inferInstanceAs (HasColimits (SheafOfModules X.ringCatSheaf))
 
@@ -64,7 +65,7 @@ def fullyFaithfulToPresheafOfModules : (Modules.toPresheafOfModules X).FullyFait
 instance : (toPresheafOfModules X).Full := fullyFaithfulToPresheafOfModules.full
 instance : (toPresheafOfModules X).Faithful := fullyFaithfulToPresheafOfModules.faithful
 instance : (toPresheafOfModules X).IsRightAdjoint :=
-  (PresheafOfModules.sheafificationAdjunction (𝟙 X.ringCatSheaf.val)).isRightAdjoint
+  (PresheafOfModules.sheafificationAdjunction (𝟙 X.ringCatSheaf.obj)).isRightAdjoint
 
 variable (X) in
 /-- The forgetful functor from `𝒪ₓ`-modules to presheaves of abelian groups. -/
@@ -127,6 +128,7 @@ lemma isSheaf (M : X.Modules) : M.presheaf.IsSheaf := SheafOfModules.isSheaf M
 @[simp] lemma toPresheaf_obj : (toPresheaf X).obj M = M.presheaf := rfl
 @[simp] lemma toPresheaf_map : (toPresheaf X).map φ = φ.mapPresheaf := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Hom.isIso_iff_isIso_app {M N : X.Modules} {φ : M ⟶ N} :
     IsIso φ ↔ ∀ U, IsIso (φ.app U) := by
   rw [← isIso_iff_of_reflects_iso _ (toPresheaf X), NatTrans.isIso_iff_isIso_app]
@@ -239,6 +241,7 @@ lemma conjugateEquiv_pullbackComp_inv :
     (pushforwardComp f g).hom :=
   SheafOfModules.conjugateEquiv_pullbackComp_inv _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma pseudofunctor_associativity :
     (pullbackComp f (g ≫ h)).inv ≫
@@ -255,6 +258,7 @@ lemma pseudofunctor_associativity :
       h.toRingCatSheafHom g.toRingCatSheafHom f.toRingCatSheafHom)
   simp [this]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma pseudofunctor_left_unitality :
     (pullbackComp f (𝟙 Y)).inv ≫
@@ -268,6 +272,7 @@ lemma pseudofunctor_left_unitality :
     congr_arg Iso.hom (SheafOfModules.pullback_id_comp.{u} f.toRingCatSheafHom)
   simp [← this]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma pseudofunctor_right_unitality :
     (pullbackComp (𝟙 X) f).inv ≫
@@ -281,6 +286,7 @@ lemma pseudofunctor_right_unitality :
     congr_arg Iso.hom (SheafOfModules.pullback_comp_id.{u} f.toRingCatSheafHom)
   simp [← this]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] pseudofunctor_associativity pseudofunctor_left_unitality
   pseudofunctor_right_unitality Bicategory.toNatTrans_conjugateEquiv
   conjugateEquiv_pullbackId_hom Adjunction.ofCat_comp conjugateEquiv_pullbackComp_inv in
@@ -421,21 +427,22 @@ lemma restrictFunctorCongr_inv_app_app {f g : X ⟶ Y} (hf : f = g) [IsOpenImmer
 def restrictStalkNatIso (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
     restrictFunctor f ⋙ toPresheaf _ ⋙ TopCat.Presheaf.stalkFunctor _ x ≅
     toPresheaf _ ⋙ TopCat.Presheaf.stalkFunctor _ (f x) :=
-  haveI := Functor.initial_of_adjunction (f.isOpenEmbedding.isOpenMap.adjunctionNhds x)
+  haveI := Functor.initial_of_adjunction (f.isOpenEmbedding.adjunctionNhds x)
   (toPresheaf _ ⋙ (Functor.whiskeringLeft (OpenNhds (f x))ᵒᵖ Y.Opensᵒᵖ Ab).obj
       (OpenNhds.inclusion (f x)).op).isoWhiskerLeft
-      (Functor.Final.colimIso (f.isOpenEmbedding.isOpenMap.functorNhds x).op)
+      (Functor.Final.colimIso (f.isOpenEmbedding.functorNhds x).op)
 
 @[simp]
 lemma germ_restrictStalkNatIso_hom_app (f : X ⟶ Y) [IsOpenImmersion f]
     (x : X) (M : Y.Modules) (hxU : x ∈ U) :
     ((restrictFunctor f).obj M).presheaf.germ U _ hxU ≫
       (restrictStalkNatIso f x).hom.app M = M.presheaf.germ _ _ (by simpa) :=
-  haveI := Functor.initial_of_adjunction (f.isOpenEmbedding.isOpenMap.adjunctionNhds x)
+  haveI := Functor.initial_of_adjunction (f.isOpenEmbedding.adjunctionNhds x)
   Functor.Final.ι_colimitIso_hom
-    (f.isOpenEmbedding.isOpenMap.functorNhds x).op
+    (f.isOpenEmbedding.functorNhds x).op
     ((OpenNhds.inclusion ((ConcreteCategory.hom f.base) x)).op ⋙ M.presheaf) _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma germ_restrictStalkNatIso_inv_app (f : X ⟶ Y) [IsOpenImmersion f]
     (x : X) (M : Y.Modules) (hxU : x ∈ U) :

@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Separated
+public import Mathlib.AlgebraicGeometry.Morphisms.Proper
 public import Mathlib.RingTheory.Ideal.IdempotentFG
 public import Mathlib.RingTheory.RingHom.Unramified
 public import Mathlib.RingTheory.Unramified.LocalRing
@@ -46,7 +46,10 @@ namespace AlgebraicGeometry
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 /-- A morphism of schemes `f : X ⟶ Y` is formally unramified if for each affine `U ⊆ Y` and
-`V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is formally unramified. -/
+`V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is formally unramified.
+
+See `FormallyUnramified.hom_ext` and `FormallyUnramified.of_hom_ext`
+for the infinitesimal lifting criterion. -/
 @[mk_iff]
 class FormallyUnramified (f : X ⟶ Y) : Prop where
   formallyUnramified_appLE (f) :
@@ -150,6 +153,7 @@ lemma stalkMap [FormallyUnramified f] (x : X) : (f.stalkMap x).hom.FormallyUnram
         RingHom.FormallyUnramified.stableUnderComposition
         RingHom.FormallyUnramified.isStableUnderBaseChange.localizationPreserves _ hf) ‹_› x
 
+set_option backward.isDefEq.respectTransparency false in
 instance [FormallyUnramified f] [LocallyOfFiniteType f] (x : X) :
     letI : Algebra (Y.residueField (f.base x)) (X.residueField x) :=
       (f.residueFieldMap x).hom.toAlgebra
@@ -171,6 +175,86 @@ instance [FormallyUnramified f] [LocallyOfFiniteType f] (x : X) :
     rw [← RingHom.formallyUnramified_algebraMap, RingHom.algebraMap_toAlgebra]
     exact stalkMap f x
   infer_instance
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+Given any commuting diagram
+```
+Z' --→ X
+|      |
+↓      ↓
+Z  --→ Y
+```
+With `X ⟶ Y` formally unramified and `Z' ⟶ Z` an infinitesimal thickening, there exists at most
+one arrow `Z ⟶ X` making the diagram commute.
+-/
+@[stacks 04F1]
+protected lemma hom_ext {Z' Z : Scheme} (i : Z' ⟶ Z) (hi : IsNilpotent i.ker) [IsClosedImmersion i]
+    (f : X ⟶ Y) [FormallyUnramified f]
+    {g₁ g₂ : Z ⟶ X} (hig : i ≫ g₁ = i ≫ g₂) (hgf : g₁ ≫ f = g₂ ≫ f) : g₁ = g₂ := by
+  have : IsDominant i := by
+    obtain ⟨n, hn⟩ := hi
+    rw [isDominant_iff, denseRange_iff_closure_range, ← i.support_ker,
+      ← i.ker.support_pow (n + 1) (by simp), pow_succ, hn]
+    simp
+  refine Scheme.hom_ext_of_forall _ _ fun x ↦ ?_
+  obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
+    Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f (g₁ x))) isOpen_univ
+  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU : V ≤ f ⁻¹ᵁ U⟩ :=
+    X.isBasis_affineOpens.exists_subset_of_mem_open hxU (f ⁻¹ᵁ U).isOpen
+  have : g₁.base = g₂.base := by ext x; obtain ⟨x, rfl⟩ := i.surjective x; exact congr($hig x)
+  obtain ⟨_, ⟨W, hW, rfl⟩, hxW, hWV : W ≤ _⟩ := Z.isBasis_affineOpens.exists_subset_of_mem_open
+    (And.intro hxV (by simpa [← this])) (g₁ ⁻¹ᵁ V ⊓ g₂ ⁻¹ᵁ V).isOpen
+  refine ⟨W, hxW, ?_⟩
+  have := f.formallyUnramified_appLE hU hV hVU
+  algebraize [(f.appLE U V hVU).hom,
+    ((g₁ ≫ f).appLE U W (by grw [hWV, inf_le_left, hVU]; rfl)).hom]
+  let ψ₁ : Γ(X, V) →ₐ[Γ(Y, U)] Γ(Z, W) := ⟨(g₁.appLE _ _ (hWV.trans inf_le_left)).hom, fun r ↦ by
+    simp [RingHom.algebraMap_toAlgebra, ← CategoryTheory.comp_apply, -CommRingCat.hom_comp,
+      Scheme.Hom.appLE_comp_appLE]⟩
+  let ψ₂ : Γ(X, V) →ₐ[Γ(Y, U)] Γ(Z, W) := ⟨(g₂.appLE _ _ (hWV.trans inf_le_right)).hom, fun r ↦ by
+    simp [RingHom.algebraMap_toAlgebra, ← CategoryTheory.comp_apply, -CommRingCat.hom_comp,
+      Scheme.Hom.appLE_comp_appLE, hgf, - Scheme.Hom.comp_appLE]⟩
+  suffices ψ₁ = ψ₂ by
+    simpa [ψ₁, ψ₂, -Iso.cancel_iso_hom_left, IsAffineOpen.isoSpec_hom] using
+      congr(hW.isoSpec.hom ≫ Spec.map (CommRingCat.ofHom ($this).toRingHom) ≫ hV.fromSpec)
+  refine Algebra.FormallyUnramified.ext' (i.app W).hom ?_ ψ₁ ψ₂ ?_
+  · obtain ⟨n, hn⟩ := hi
+    exact ⟨n, by simpa using congr(($hn).ideal ⟨W, hW⟩)⟩
+  · simp [ψ₁, ψ₂, ← CategoryTheory.comp_apply, -CommRingCat.hom_comp, hig,
+      Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE, - Scheme.Hom.comp_appLE]
+
+/--
+To show that `f : X ⟶ Y` is formally unramified,
+it suffices to check for that every following commuting diagram
+```
+Spec R --→ X
+  |        |
+  ↓        ↓
+Spec S --→ Y
+```
+with `S = R/I` for some `I² = 0`, there exists at most one arrow `Spec S ⟶ X` making
+the diagram commute.
+-/
+protected lemma of_hom_ext (f : X ⟶ Y)
+    (H : ∀ (R S : CommRingCat) (φ : R ⟶ S) (_ : Function.Surjective φ)
+      (_ : RingHom.ker φ.hom ^ 2 = ⊥) (g₁ g₂ : Spec R ⟶ X)
+      (_ : Spec.map φ ≫ g₁ = Spec.map φ ≫ g₂) (_ : g₁ ≫ f = g₂ ≫ f), g₁ = g₂) :
+    FormallyUnramified f := by
+  refine ⟨fun {U hU V hV hVU} ↦ ?_⟩
+  letI := (f.appLE U V hVU).hom.toAlgebra
+  refine Algebra.FormallyUnramified.iff_comp_injective.mpr fun R _ _ I hI g₁ g₂ hg₁g₂ ↦ ?_
+  have hg₁ : f.appLE U V hVU ≫ CommRingCat.ofHom g₁ = CommRingCat.ofHom (algebraMap _ R) :=
+    CommRingCat.hom_ext g₁.comp_algebraMap
+  have hg₂ : f.appLE U V hVU ≫ CommRingCat.ofHom g₂ = CommRingCat.ofHom (algebraMap _ R) :=
+    CommRingCat.hom_ext g₂.comp_algebraMap
+  have := H (.of R) (.of (R ⧸ I)) (CommRingCat.ofHom (Ideal.Quotient.mkₐ Γ(Y, U) I))
+    Ideal.Quotient.mk_surjective (by simpa)
+    (Spec.map (CommRingCat.ofHom g₁) ≫ hV.fromSpec) (Spec.map (CommRingCat.ofHom g₂) ≫ hV.fromSpec)
+    (by simp only [← Spec.map_comp_assoc, ← CommRingCat.ofHom_comp, ← AlgHom.comp_toRingHom, *])
+    (by simp only [Category.assoc, ← hU.SpecMap_appLE_fromSpec f hV hVU, ← Spec.map_comp_assoc, *])
+  rw [cancel_mono, Spec.map_inj] at this
+  exact AlgHom.ext fun x ↦ congr($this x)
 
 end FormallyUnramified
 

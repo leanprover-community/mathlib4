@@ -358,7 +358,8 @@ theorem measure_iUnion_congr_of_subset {ι : Sort*} [Countable ι] {s : ι → S
       exact htop b
   calc
     μ (⋃ b, t b) ≤ μ (⋃ b, M (t b)) := measure_mono (iUnion_mono fun b => subset_toMeasurable _ _)
-    _ = μ (⋃ b, M (t b) ∩ M (⋃ b, s b)) := measure_congr (EventuallyEq.countable_iUnion H).symm
+    _ = μ (⋃ b, M (t b) ∩ M (⋃ b, s b)) :=
+      measure_congr (Filter.EventuallyEq.countable_iUnion H).symm
     _ ≤ μ (M (⋃ b, s b)) := measure_mono (iUnion_subset fun b => inter_subset_right)
     _ = μ (⋃ b, s b) := measure_toMeasurable _
 
@@ -871,6 +872,9 @@ theorem coe_smul {_m : MeasurableSpace α} (c : R) (μ : Measure α) : ⇑(c •
   rfl
 
 @[simp]
+lemma coe_nnreal_smul (c : ℝ≥0) (μ : Measure α) : (c : ℝ≥0∞) • μ = c • μ := rfl
+
+@[simp]
 theorem smul_apply {_m : MeasurableSpace α} (c : R) (μ : Measure α) (s : Set α) :
     (c • μ) s = c • μ s :=
   rfl
@@ -1072,11 +1076,9 @@ private theorem measure_le_sInf (h : ∀ μ' ∈ m, μ ≤ μ') : μ ≤ sInf m 
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-instance instCompleteSemilatticeInf {_ : MeasurableSpace α} : CompleteSemilatticeInf (Measure α) :=
-  { (by infer_instance : PartialOrder (Measure α)),
-    (by infer_instance : InfSet (Measure α)) with
-    sInf_le := fun _s _a => measure_sInf_le
-    le_sInf := fun _s _a => measure_le_sInf }
+instance instCompleteSemilatticeInf {_ : MeasurableSpace α} :
+    CompleteSemilatticeInf (Measure α) where
+  isGLB_sInf _ := ⟨fun x ↦ measure_sInf_le, fun _ ↦ by exact measure_le_sInf⟩
 
 instance instCompleteLattice {_ : MeasurableSpace α} : CompleteLattice (Measure α) :=
   { completeLatticeOfCompleteSemilatticeInf (Measure α) with

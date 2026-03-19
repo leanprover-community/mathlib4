@@ -17,9 +17,9 @@ Each of the six boxes $B_1, B_2, B_3, B_4, B_5, B_6$ initially contains one coin
 The following two types of operations are allowed:
 
 1. Choose a non-empty box $B_j, 1 ≤ j ≤ 5$, remove one coin from $B_j$ and
-add two coins to $B_{j+1}$;
+   add two coins to $B_{j+1}$;
 2. Choose a non-empty box $B_k, 1 ≤ k ≤ 4$, remove one coin from $B_k$ and swap
-the contents (possibly empty) of the boxes $B_{k+1}$ and $B_{k+2}$.
+   the contents (possibly empty) of the boxes $B_{k+1}$ and $B_{k+2}$.
 
 Determine if there exists a finite sequence of operations of the allowed types, such
 that the five boxes $B_1, B_2, B_3, B_4, B_5$ become empty, while box $B_6$ contains exactly
@@ -118,14 +118,14 @@ lemma double {B : Fin 6 → ℕ} {i : Fin 6}
   ext k; simp only [comp_apply, add_apply, sub_apply]
   have (j : Fin 6) : j + 1 + 1 = j + 2 := by grind
   rcases eq_or_ne k i with rfl | hk
-  · rw [swap_apply_of_ne_of_ne (by simp) (by simp), single_succ, this, single_add_two]; grind
+  · rw [swap_apply_of_ne_of_ne (by simp) (by simp), single_succ, this, single_add_two, Nat.sub_zero]
   · rcases eq_or_ne k (i + 1) with rfl | hk'
     · grind [swap_apply_left, single_eq_same]
     · rw [single_eq_of_ne hk']
       rcases eq_or_ne k (i + 2) with rfl | hk''
       · grind [swap_apply_right, single_eq_same, single_succ]
-      · rw [swap_apply_of_ne_of_ne hk' hk'', single_eq_of_ne hk', this, single_eq_of_ne hk'']
-        grind
+      · rw [swap_apply_of_ne_of_ne hk' hk'', single_eq_of_ne hk', this, single_eq_of_ne hk'',
+          tsub_zero]
 
 /-- `double` as many times as possible, emptying $B_i$ and doubling $B_{i+1}$ that many times. -/
 lemma doubles {B : Fin 6 → ℕ} {i : Fin 6} (rB : Reachable B) (hi : i < 4) (zB : B (i + 2) = 0) :

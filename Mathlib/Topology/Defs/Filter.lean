@@ -224,12 +224,14 @@ def Inseparable (x y : X) : Prop :=
 variable (X)
 
 /-- Specialization forms a preorder on the topological space. -/
+@[instance_reducible]
 def specializationPreorder : Preorder X :=
   { Preorder.lift (OrderDual.toDual ∘ 𝓝) with
     le := fun x y => y ⤳ x
     lt := fun x y => y ⤳ x ∧ ¬x ⤳ y }
 
 /-- A `setoid` version of `Inseparable`, used to define the `SeparationQuotient`. -/
+@[implicit_reducible]
 def inseparableSetoid : Setoid X := { Setoid.comap 𝓝 ⊥ with r := Inseparable }
 
 /-- The quotient of a topological space by its `inseparableSetoid`. Also called the Kolmogorov
@@ -242,12 +244,12 @@ section Lim
 
 
 /-- If `f` is a filter, then `Filter.lim f` is a limit of the filter, if it exists. -/
-noncomputable def lim [Nonempty X] (f : Filter X) : X :=
+noncomputable def Filter.lim [Nonempty X] (f : Filter X) : X :=
   Classical.epsilon fun x => f ≤ 𝓝 x
 
-/-- If `f` is a filter in `α` and `g : α → X` is a function, then `limUnder f g` is a limit of `g`
-at `f`, if it exists. -/
-noncomputable def limUnder {α : Type*} [Nonempty X] (f : Filter α) (g : α → X) : X :=
+/-- If `f` is a filter in `α` and `g : α → X` is a function, then `Filter.limUnder f g` is a limit
+of `g` at `f`, if it exists. -/
+noncomputable def Filter.limUnder {α : Type*} [Nonempty X] (f : Filter α) (g : α → X) : X :=
   lim (f.map g)
 
 end Lim
