@@ -240,7 +240,6 @@ partial def discharge (e : Expr) : SimpM (Option Expr) := do
 
 end
 
-
 open Tactic in
 /-- Constructs a simp context from the simp argument syntax. -/
 def getSimpContext (cfg args : Syntax) (simpOnly := false) : TacticM Simp.Context := do
