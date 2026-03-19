@@ -142,13 +142,15 @@ longer true for general filters.
 
 @[expose] public section
 
-open Set TopologicalSpace
+open Set TopologicalSpace Topology
 open scoped Distributions CompactConvergenceCLM
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
   {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
+  {Fᵤ : Type*} [AddCommGroup Fᵤ] [Module ℝ Fᵤ] [UniformSpace Fᵤ]
   {F' : Type*} [AddCommGroup F'] [Module ℝ F'] [TopologicalSpace F']
+  {Fᵤ' : Type*} [AddCommGroup Fᵤ'] [Module ℝ Fᵤ'] [UniformSpace Fᵤ']
   {n k : ℕ∞}
 
 -- TODO: def or abbrev?
@@ -169,7 +171,9 @@ is a bit abusive since this is no longer a dual space unless `F = 𝕜`. -/
 scoped[Distributions] notation "𝓓'(" Ω ", " F ")" => Distribution Ω F ⊤
 
 variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
+variable [IsUniformAddGroup Fᵤ] [ContinuousSMul ℝ Fᵤ]
 variable [IsTopologicalAddGroup F'] [ContinuousSMul ℝ F']
+variable [IsUniformAddGroup Fᵤ'] [ContinuousSMul ℝ Fᵤ']
 
 namespace Distribution
 
@@ -186,6 +190,19 @@ noncomputable def mapCLM (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'
 @[simp]
 lemma mapCLM_apply {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
     mapCLM A T f = A (T f) := rfl
+
+lemma isUniformEmbedding_mapCLM {A : Fᵤ →L[ℝ] Fᵤ'} (hA : IsUniformEmbedding A) :
+    IsUniformEmbedding (mapCLM A : 𝓓'^{n}(Ω, Fᵤ) →L[ℝ] 𝓓'^{n}(Ω, Fᵤ')) :=
+  UniformConvergenceCLM.isUniformEmbedding_postcomp _ A hA _
+
+-- TODO: add `UniformConvergenceCLM.isEmbedding_postcomp`
+lemma isEmbedding_mapCLM {A : F →L[ℝ] F'} (hA : IsEmbedding A) :
+    IsEmbedding (mapCLM A : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F')) :=
+  letI := IsTopologicalAddGroup.rightUniformSpace F
+  haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
+  letI := IsTopologicalAddGroup.rightUniformSpace F'
+  haveI : IsUniformAddGroup F' := isUniformAddGroup_of_addCommGroup
+  isUniformEmbedding_mapCLM (AddMonoidHom.isUniformEmbedding_of_isEmbedding hA) |>.isEmbedding
 
 end mapCLM
 
@@ -258,22 +275,61 @@ section FDerivCLM
 -- TODO: generalize this section to `𝕜` linearity
 -- by generalizing `ContinuousLinearMap.precompCompactConvergenceCLM`
 
-noncomputable def fderivCLM :
+open ContinuousLinearMap Topology
+
+noncomputable def fderivCLM_v2 :
     𝓓'^{k}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, E →L[ℝ] F) :=
+  letI := IsTopologicalAddGroup.rightUniformSpace F
+  haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   let step1 (T : 𝓓'^{k}(Ω, F)) (f : 𝓓^{n}(Ω, ℝ)) : E →L[ℝ] F := LinearMap.toContinuousLinearMap
     { toFun v := lineDerivCLM v T f
       map_add' _ _ := by simp [lineDerivCLM_add]
       map_smul' _ _ := by simp [lineDerivCLM_smul] }
   have step1_def (T : 𝓓'^{k}(Ω, F)) (f : 𝓓^{n}(Ω, ℝ)) (v : E) :
     step1 T f v = lineDerivCLM v T f := rfl
-  have step1_cont (T : 𝓓'^{k}(Ω, F)) : Continuous (step1 T) :=
-    sorry
+  have emb1 : IsEmbedding ((↑) : (E →L[ℝ] F) → (E → F)) :=
+    ContinuousLinearMap.isEmbedding_coeFn_of_finiteDimensional
+  have step1_cont (T : 𝓓'^{k}(Ω, F)) : Continuous (step1 T) := by
+    rw [emb1.continuous_iff, continuous_pi_iff]
+    exact fun v ↦ (lineDerivCLM v T).continuous
   let step2 (T : 𝓓'^{k}(Ω, F)) : 𝓓'^{n}(Ω, E →L[ℝ] F) :=
     { toFun := step1 T
       map_add' _ _ := by ext; simp [step1_def]
       map_smul' _ _ := by ext; simp [step1_def] }
   have step2_def (T : 𝓓'^{k}(Ω, F)) (f : 𝓓^{n}(Ω, ℝ)) (v : E) :
     step2 T f v = lineDerivCLM v T f := rfl
+  let Φ (T : 𝓓'^{n}(Ω, E →L[ℝ] F)) : E →L[ℝ] 𝓓'^{n}(Ω, F) := LinearMap.toContinuousLinearMap
+    sorry
+  have step2_cont : Continuous step2 :=
+    sorry
+  { toFun := step2
+    map_add' _ _ := by ext; simp [step2_def]
+    map_smul' _ _ := by ext; simp [step2_def] }
+
+
+noncomputable def fderivCLM :
+    𝓓'^{k}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, E →L[ℝ] F) :=
+  letI := IsTopologicalAddGroup.rightUniformSpace F
+  haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
+  let step1 (T : 𝓓'^{k}(Ω, F)) (f : 𝓓^{n}(Ω, ℝ)) : E →L[ℝ] F := LinearMap.toContinuousLinearMap
+    { toFun v := lineDerivCLM v T f
+      map_add' _ _ := by simp [lineDerivCLM_add]
+      map_smul' _ _ := by simp [lineDerivCLM_smul] }
+  have step1_def (T : 𝓓'^{k}(Ω, F)) (f : 𝓓^{n}(Ω, ℝ)) (v : E) :
+    step1 T f v = lineDerivCLM v T f := rfl
+  have emb1 : IsEmbedding ((↑) : (E →L[ℝ] F) → (E → F)) :=
+    ContinuousLinearMap.isEmbedding_coeFn_of_finiteDimensional
+  have step1_cont (T : 𝓓'^{k}(Ω, F)) : Continuous (step1 T) := by
+    rw [emb1.continuous_iff, continuous_pi_iff]
+    exact fun v ↦ (lineDerivCLM v T).continuous
+  let step2 (T : 𝓓'^{k}(Ω, F)) : 𝓓'^{n}(Ω, E →L[ℝ] F) :=
+    { toFun := step1 T
+      map_add' _ _ := by ext; simp [step1_def]
+      map_smul' _ _ := by ext; simp [step1_def] }
+  have step2_def (T : 𝓓'^{k}(Ω, F)) (f : 𝓓^{n}(Ω, ℝ)) (v : E) :
+    step2 T f v = lineDerivCLM v T f := rfl
+  let Φ (T : 𝓓'^{n}(Ω, E →L[ℝ] F)) : E →L[ℝ] 𝓓'^{n}(Ω, F) := LinearMap.toContinuousLinearMap
+    sorry
   have step2_cont : Continuous step2 :=
     sorry
   { toFun := step2
