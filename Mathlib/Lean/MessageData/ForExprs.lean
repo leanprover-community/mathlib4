@@ -29,9 +29,8 @@ universe u
 variable {m : Type → Type u} [Monad m] [MonadLiftT BaseIO m]
 
 /-- Iterate over all the expressions in a `MessageData`. Used to implement
-`for (ppCtx, e) in msg.exprs do` notation.
-
-`f` is run with `PPContext.runMetaM` with the appropriate context. -/
+`for (ppCtx, e) in msg.exprs do` notation, which should be preferred over using this declaration
+directly. -/
 partial def forExprsIn {σ} (msg : MessageData) (s : σ)
     (f : PPContext × Expr → σ → m (ForInStep σ)) : m σ := do
   return (← go ⟨.anonymous, []⟩ none s msg).value
