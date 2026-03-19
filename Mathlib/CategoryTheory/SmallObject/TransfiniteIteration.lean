@@ -86,7 +86,7 @@ instance : (Φ.iterationFunctor J).IsWellOrderContinuous where
         simpa using Φ.arrowMk_iterationFunctor_map k₁ k₂ (leOfHom f) (Φ.iter i) h₂.le)
     refine (IsColimit.precomposeInvEquiv e _).1 ?_
     refine IsColimit.ofIsoColimit ((Φ.iter i).isColimit i hi (by simp)) ?_
-    refine Cocones.ext (eqToIso (Φ.iterationFunctor_obj i (Φ.iter i) (by simp)).symm) ?_
+    refine Cocone.ext (eqToIso (Φ.iterationFunctor_obj i (Φ.iter i) (by simp)).symm) ?_
     rintro ⟨k, hk⟩
     apply Arrow.mk_injective
     simp [Φ.arrowMk_iterationFunctor_map k i hk.le (Φ.iter i) (by simp), e]⟩
