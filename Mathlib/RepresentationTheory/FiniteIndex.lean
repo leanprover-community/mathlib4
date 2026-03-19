@@ -241,7 +241,6 @@ theorem instIsLeftAdjointSubtypeMemSubgroupCoindFunctorSubtype :
     (coindFunctor.{u} k S.subtype).IsLeftAdjoint :=
   open scoped Classical in (coindResAdjunction k S).isLeftAdjoint
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coindResAdjunction_counit_app (B : Rep.{u} k G) :
     (coindResAdjunction k S).counit.app B =
@@ -249,7 +248,6 @@ lemma coindResAdjunction_counit_app (B : Rep.{u} k G) :
       (indResAdjunction k S.subtype).counit.app B := by
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coindResAdjunction_unit_app (A : Rep k S) :
     (coindResAdjunction k S).unit.app A = (indResAdjunction k S.subtype).unit.app A ≫

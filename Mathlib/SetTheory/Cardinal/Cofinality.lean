@@ -110,7 +110,7 @@ theorem GaloisConnection.cof_le_lift {f : β → α} {g : α → β} (h : Galois
   simp_rw [Order.cof, lift_iInf, le_ciInf_iff']
   rintro ⟨s, hs⟩
   apply (csInf_le' _).trans (mk_image_le_lift (f := g))
-  exact ⟨⟨g '' s, h.map_cofinal hs⟩, rfl⟩
+  exact ⟨⟨g '' s, h.map_isCofinal hs⟩, rfl⟩
 
 theorem GaloisConnection.cof_le {f : γ → α} {g : α → γ} (h : GaloisConnection f g) :
     Order.cof γ ≤ Order.cof α := by
