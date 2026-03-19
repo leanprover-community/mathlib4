@@ -99,75 +99,6 @@ section Algebras
 
 /-! The direct sum of Lie algebras carries a natural Lie algebra structure. -/
 
-namespace Binary
-
-variable (R L₁ L₂ : Type*)
-  [CommRing R] [LieRing L₁] [LieAlgebra R L₁] [LieRing L₂] [LieAlgebra R L₂]
-
-instance : LieRing (L₁ × L₂) where
-  bracket x y := ⟨⁅x.1, y.1⁆, ⁅x.2, y.2⁆⟩
-  add_lie := by simp
-  lie_add := by simp
-  lie_self := by simp
-  leibniz_lie := by simp
-
-@[simp]
-theorem bracket_apply (x y : L₁ × L₂) : ⁅x, y⁆ = ⟨⁅x.1, y.1⁆, ⁅x.2, y.2⁆⟩ := rfl
-
-instance : LieAlgebra R (L₁ × L₂) where
-  __ := inferInstanceAs (Module R (L₁ × L₂))
-  lie_smul _ _ _ := by simp
-
-/-- The first projection of a product is a Lie algebra map. -/
-def fst : L₁ × L₂ →ₗ⁅R⁆ L₁ where
-  toLinearMap := LinearMap.fst R L₁ L₂
-  map_lie' := by simp
-
-/-- The second projection of a product is a Lie algebra map. -/
-def snd : L₁ × L₂ →ₗ⁅R⁆ L₂ where
-  toLinearMap := LinearMap.snd R L₁ L₂
-  map_lie' := by simp
-
-@[simp] theorem fst_apply (x : L₁ × L₂) : fst R L₁ L₂ x = x.1 := rfl
-
-@[simp] theorem snd_apply (x : L₁ × L₂) : snd R L₁ L₂ x = x.2 := rfl
-
-@[simp, norm_cast] lemma coe_fst : ⇑(fst R L₁ L₂) = Prod.fst := rfl
-
-@[simp, norm_cast] lemma coe_snd : ⇑(snd R L₁ L₂) = Prod.snd := rfl
-
-theorem fst_surjective : Function.Surjective (fst R L₁ L₂) := fun x => ⟨(x, 0), rfl⟩
-
-theorem snd_surjective : Function.Surjective (snd R L₁ L₂) := fun x => ⟨(0, x), rfl⟩
-
-
-/-- The left injection into a product is a Lie algebra map. -/
-def inl : L₁ →ₗ⁅R⁆ L₁ × L₂ where
-  toLinearMap := LinearMap.inl R L₁ L₂
-  map_lie' := by simp
-
-/-- The right injection into a product is a Lie algebra map. -/
-def inr : L₂ →ₗ⁅R⁆ L₁ × L₂ where
-  toLinearMap := LinearMap.inr R L₁ L₂
-  map_lie' := by simp
-
-
-theorem inl_apply (x : L₁) : inl R L₁ L₂ x = (x, 0) := rfl
-
-theorem inr_apply (x : L₂) : inr R L₁ L₂ x = (0, x) := rfl
-
-@[simp] theorem coe_inl : (inl R L₁ L₂ : L₁ → L₁ × L₂) = fun x => (x, 0) := rfl
-
-@[simp] theorem coe_inr : (inr R L₁ L₂ : L₂ → L₁ × L₂) = Prod.mk 0 := rfl
-
-theorem inl_injective : Function.Injective (inl R L₁ L₂) := fun _ => by simp
-
-theorem inr_injective : Function.Injective (inr R L₁ L₂) := fun _ => by simp
-
-end Binary
-
-section Families
-
 variable (L : ι → Type w)
 variable [∀ i, LieRing (L i)] [∀ i, LieAlgebra R (L i)]
 
@@ -281,7 +212,6 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
       · simp_rw [lie_of_of_ne _ hij.symm, map_zero, LinearMap.toAddMonoidHom_coe,
           LieHom.coe_toLinearMap, hf hij.symm x y] }
 
-end Families
 end Algebras
 
 section Ideals
