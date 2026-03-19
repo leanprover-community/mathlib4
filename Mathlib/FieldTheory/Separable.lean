@@ -595,7 +595,6 @@ lemma IsSeparable.map [Ring L] [Algebra F L] {x : K} (f : K →ₐ[F] L) (hf : F
     (H : IsSeparable F x) : IsSeparable F (f x) :=
   (isSeparable_map_iff f hf).mpr H
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Subalgebra.isSeparable_iff [Ring L] [Algebra F L] {S : Subalgebra F L} :
     Algebra.IsSeparable F S ↔ ∀ x ∈ S, IsSeparable F x := by
   simp_rw [Algebra.isSeparable_def, Subtype.forall,
@@ -656,7 +655,7 @@ variable [Ring K] [Algebra F K]
 variable {F} in
 theorem isSeparable_algebraMap (x : F) : IsSeparable F (algebraMap F K x) :=
   Polynomial.Separable.of_dvd (Polynomial.separable_X_sub_C (x := x))
-    (minpoly.dvd F (algebraMap F K x) (by simp only [map_sub, aeval_X, aeval_C, sub_self]))
+    (minpoly.dvd F (algebraMap F K x) (by simp))
 
 instance Algebra.isSeparable_self : Algebra.IsSeparable F F :=
   ⟨isSeparable_algebraMap⟩
@@ -718,11 +717,9 @@ namespace IntermediateField
 
 variable [Field K] [Algebra F K] (M : IntermediateField F K)
 
-set_option backward.isDefEq.respectTransparency false in
 instance isSeparable_tower_bot [Algebra.IsSeparable F K] : Algebra.IsSeparable F M :=
   Algebra.isSeparable_tower_bot_of_isSeparable F M K
 
-set_option backward.isDefEq.respectTransparency false in
 instance isSeparable_tower_top [Algebra.IsSeparable F K] : Algebra.IsSeparable M K :=
   Algebra.isSeparable_tower_top_of_isSeparable F M K
 
