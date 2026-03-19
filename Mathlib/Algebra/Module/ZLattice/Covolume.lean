@@ -28,7 +28,7 @@ Let `L` be a `ℤ`-lattice `L` defined as a discrete `ℤ`-submodule of `E` that
   value of the determinant of any `ℤ`-basis of `L`.
 
 * `ZLattice.covolume_div_covolume_eq_relIndex`: Let `L₁` be a sub-`ℤ`-lattice of `L₂`. Then the
-index of `L₁` inside `L₂` is equal to `covolume L₁ / covolume L₂`.
+  index of `L₁` inside `L₂` is equal to `covolume L₁ / covolume L₂`.
 
 * `ZLattice.covolume.tendsto_card_div_pow`: Let `s` be a bounded measurable set of `ι → ℝ`, then
   the number of points in `s ∩ n⁻¹ • L` divided by `n ^ card ι` tends to `volume s / covolume L`
