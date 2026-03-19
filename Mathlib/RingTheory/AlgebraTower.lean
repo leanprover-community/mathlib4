@@ -199,6 +199,30 @@ def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ (f.restrictDomain B).toRingHom.
   commutes' := fun _ ↦ rfl
   __ := (f.restrictDomain B).toRingHom.toAlgebra
 
+@[simp]
+theorem AlgHom.extendScalars_apply (x : C) :
+    f.extendScalars B x = f x := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Extend the scalars of an `AlgEquiv`. -/
+def AlgEquiv.extendScalars (e : C ≃ₐ[A] D) :
+     @AlgEquiv B C D _ _ _ _ (e.toAlgHom.restrictDomain B).toRingHom.toAlgebra :=
+  letI : Algebra B D := (e.toAlgHom.restrictDomain B).toRingHom.toAlgebra
+  { __ := e.toAlgHom.extendScalars B
+    invFun := e.symm
+    left_inv _ := by simp only [toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe,
+      RingHom.toMonoidHom_eq_coe, AlgHom.toRingHom_toMonoidHom, OneHom.toFun_eq_coe,
+      MonoidHom.toOneHom_coe, MonoidHom.coe_coe, AlgHom.extendScalars_apply, AlgHom.coe_coe,
+      symm_apply_apply]
+    right_inv _ := by simp only [toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe,
+      RingHom.toMonoidHom_eq_coe, AlgHom.toRingHom_toMonoidHom, OneHom.toFun_eq_coe,
+      MonoidHom.toOneHom_coe, MonoidHom.coe_coe, AlgHom.extendScalars_apply, AlgHom.coe_coe,
+      apply_symm_apply] }
+
+@[simp]
+theorem AlgEquiv.extendScalars_apply (e : C ≃ₐ[A] D) (x : C) :
+    e.extendScalars B x = e x := rfl
+
 variable {B}
 
 /-- `AlgHom`s from the top of a tower are equivalent to a pair of `AlgHom`s. -/
