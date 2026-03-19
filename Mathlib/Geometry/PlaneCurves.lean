@@ -338,8 +338,8 @@ protected lemma _root_.HasDerivAt.initialCurve_of_orientedCurvature (hI : IsOpen
     unfold initialCurve_of_orientedCurvature
     have h := continuousOn_angle_fun_aux θ₀ hI hκ ht₀
     intro i
-    fin_cases i 
-      <;> simp only [Fin.zero_eta,Fin.mk_one, Fin.isValue, Matrix.cons_val_zero, 
+    fin_cases i
+      <;> simp only [Fin.zero_eta,Fin.mk_one, Fin.isValue, Matrix.cons_val_zero,
                      Matrix.cons_val_one, hasDerivWithinAt_const_add_iff]
       <;> exact intervalIntegral.hasDerivWithinAt_of_continuousOn_interval (by fun_prop) ht₀ ht
   · exact hI.mem_nhds ht
