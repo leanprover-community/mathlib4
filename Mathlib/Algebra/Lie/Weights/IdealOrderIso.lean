@@ -97,7 +97,7 @@ lemma lieIdealRootSpan_mem_invtRootSubmodule (I : LieIdeal K L) :
   rw [← (rootSystem H).root_reflectionPerm i α]
   exact Submodule.subset_span ⟨_, reflectionPerm_mem_lieIdealRootSet I i hα, rfl⟩
 
-/-- Maps a Lie ideal to its corresponding invariant root submodule. -/
+/-- The invariant root submodule corresponding to a Lie ideal. -/
 noncomputable def lieIdealToInvtRootSubmodule (I : LieIdeal K L) :
     (rootSystem H).invtRootSubmodule :=
   ⟨lieIdealRootSpan I, lieIdealRootSpan_mem_invtRootSubmodule I⟩
