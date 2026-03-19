@@ -75,6 +75,7 @@ end AscendingSet
 
 variable (l : List (MvPolynomial σ R))
 
+/-- The recursive algorithm for computing the Standard Basic Set. -/
 noncomputable def basicSet.go (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
     (hl1 : ∀ p ∈ l, p ≠ 0) : TriangularSet σ R :=
   match l with
