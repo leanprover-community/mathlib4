@@ -280,13 +280,17 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[simps -isSimp toSemigroup_toMul_mul toOne_one]
+instance : One (A →ₐc[R] A) where one := BialgHom.id R A
+instance : Mul (A →ₐc[R] A) where mul := comp
+instance : Pow (A →ₐc[R] A) ℕ where
+  pow f n := npowRec n f |>.copy f^[n] (Nat.rec rfl (fun _ => congrArg (· ∘ f)) n)
+
+@[simps! -isSimp toSemigroup_toMul_mul toOne_one]
 instance End : Monoid (A →ₐc[R] A) where
-  mul := comp
   mul_assoc _ _ _ := rfl
-  one := BialgHom.id R A
   one_mul _ := ext fun _ => rfl
   mul_one _ := ext fun _ => rfl
+  npow n f := f ^ n
 
 @[simp]
 theorem one_apply (x : A) : (1 : A →ₐc[R] A) x = x :=

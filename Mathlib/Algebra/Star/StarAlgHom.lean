@@ -206,12 +206,24 @@ theorem id_comp (f : A →⋆ₙₐ[R] B) : (NonUnitalStarAlgHom.id _ _).comp f 
 theorem comp_id (f : A →⋆ₙₐ[R] B) : f.comp (NonUnitalStarAlgHom.id _ _) = f :=
   ext fun _ => rfl
 
+instance : One (A →⋆ₙₐ[R] A) where one := .id R A
+instance : Mul (A →⋆ₙₐ[R] A) where mul := comp
+instance : Pow (A →⋆ₙₐ[R] A) Nat where
+  pow f n :=
+    { toFun := f^[n]
+      map_mul' := by simp
+      map_zero' := by simp
+      map_add' := by simp
+      map_star' := Nat.rec (fun _ => rfl)
+        (fun n ih a => (congrArg f^[n] (map_star f a)).trans (ih (f a))) n
+      map_smul' m := Nat.rec (fun _ => rfl)
+        (fun n ih x => (congrArg f^[n] (map_smul f m x)).trans (ih (f x))) n }
+
 instance : Monoid (A →⋆ₙₐ[R] A) where
-  mul := comp
   mul_assoc := comp_assoc
-  one := NonUnitalStarAlgHom.id R A
   one_mul := id_comp
   mul_one := comp_id
+  npow n f := f ^ n
 
 @[simp]
 theorem coe_one : ((1 : A →⋆ₙₐ[R] A) : A → A) = id :=
@@ -927,15 +939,25 @@ end Bijective
 section Group
 variable {S R : Type*} [Mul R] [Add R] [Star R] [SMul S R]
 
-@[simps -isSimp one mul]
+instance : One (R ≃⋆ₐ[S] R) where one := refl
+instance : Mul (R ≃⋆ₐ[S] R) where mul a b := b.trans a
+instance : Inv (R ≃⋆ₐ[S] R) where inv := symm
+instance : Pow (R ≃⋆ₐ[S] R) Nat where
+  pow f n :=
+    { toRingEquiv := f.toRingEquiv ^ n
+      map_star' := Nat.rec (fun _ => rfl)
+        (fun n ih a => (congrArg f^[n] (map_star f a)).trans (ih (f a))) n
+      map_smul' m := Nat.rec (fun _ => rfl)
+        (fun n ih x => (congrArg f^[n] (map_smul f m x)).trans (ih (f x))) n }
+
+@[simps! -isSimp one mul]
 instance aut : Group (R ≃⋆ₐ[S] R) where
-  one := refl
-  mul a b := b.trans a
   one_mul _ := rfl
   mul_one _ := rfl
   mul_assoc _ _ _ := rfl
-  inv f := f.symm
   inv_mul_cancel f := ext <| symm_apply_apply f
+  npow n f := f ^ n
+  zpow := zpowRec fun n f => f ^ n
 
 @[simp] theorem mul_apply (f g : R ≃⋆ₐ[S] R) (x : R) : (f * g) x = f (g x) := rfl
 
