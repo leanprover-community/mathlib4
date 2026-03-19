@@ -3384,8 +3384,9 @@ public import Mathlib.Combinatorics.Enumerative.Stirling
 public import Mathlib.Combinatorics.Extremal.RuzsaSzemeredi
 public import Mathlib.Combinatorics.Graph.Basic
 public import Mathlib.Combinatorics.GraphLike.Basic
-public import Mathlib.Combinatorics.GraphLike.Walks.Basic
 public import Mathlib.Combinatorics.GraphLike.Symm
+public import Mathlib.Combinatorics.GraphLike.Walks.Basic
+public import Mathlib.Combinatorics.GraphLike.Walks.Prod
 public import Mathlib.Combinatorics.HalesJewett
 public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Combinatorics.Hall.Finite

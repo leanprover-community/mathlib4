@@ -21,8 +21,7 @@ we can prove some useful lemmas that characterize `p.darts` in terms of `p.suppo
 
 open GraphLike DartLike
 
-variable {α Gr : Type*} [GraphLike α (α × α) Gr] {u v w : α} {G : Gr}
-  {p : Walk G u v}
+variable {α Gr : Type*} [GraphLike α (α × α) Gr] {u v w : α} {G : Gr} {p : Walk G u v}
 
 namespace GraphLike.Walk
 
