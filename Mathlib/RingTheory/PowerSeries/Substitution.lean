@@ -241,6 +241,28 @@ theorem constantCoeff_subst (ha : HasSubst a) (f : PowerSeries R) :
       finsum (fun d ↦ coeff d f • MvPowerSeries.constantCoeff (a ^ d)) := by
   simp only [← MvPowerSeries.coeff_zero_eq_constantCoeff_apply, coeff_subst ha f 0]
 
+@[simp]
+theorem coeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) (n : ℕ) :
+    coeff n (subst (X ^ k) f) = ite (k ∣ n) (algebraMap R S (coeff (n / k) f)) 0 := by
+  split_ifs with h
+  · rw [coeff_subst' (.X_pow hk), finsum_eq_single _ (n / k), ← pow_mul, Nat.mul_div_cancel' h,
+      coeff_X_pow_self, Algebra.algebraMap_eq_smul_one]
+    intro j hj
+    rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
+    contrapose! hj
+    rw [hj, Nat.mul_div_cancel_left j hk.pos]
+  · rw [coeff_subst' (.X_pow hk), finsum_eq_zero_of_forall_eq_zero]
+    intro j
+    rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
+    contrapose! h
+    use j
+
+@[simp]
+theorem constantCoeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
+    constantCoeff (subst (X ^ k) f) = algebraMap R S f.constantCoeff := by
+  rw [← coeff_zero_eq_constantCoeff, coeff_subst_X_pow hk, if_pos (dvd_zero k),
+    Nat.zero_div, coeff_zero_eq_constantCoeff]
+
 theorem constantCoeff_subst_eq_zero (ha : a.constantCoeff = 0) (f : PowerSeries R)
     (hf : f.constantCoeff = 0) : MvPowerSeries.constantCoeff (subst a f) = 0 := by
   rw [constantCoeff_subst (HasSubst.of_constantCoeff_zero ha), finsum_eq_zero_of_forall_eq_zero]

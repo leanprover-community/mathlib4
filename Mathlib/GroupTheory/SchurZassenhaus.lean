@@ -222,8 +222,7 @@ private theorem step3 (K : Subgroup N) [(K.map N.subtype).Normal] : K = ⊥ ∨ 
     rhs
     rhs
     rw [← N.range_subtype, N.subtype.range_eq_map]
-  have inj := map_injective N.subtype_injective
-  rwa [inj.eq_iff, inj.eq_iff] at key
+  rwa [map_subtype_inj, map_subtype_inj] at key
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step4 : (Nat.card N).minFac.Prime :=
