@@ -221,6 +221,7 @@ lemma factorization_minFac_ne_zero {n : ℕ} (hn : 1 < n) :
 
 variable {f : ℕ →₀ ℕ}
 
+-- TODO: Rename to `factorization_prod_pow_eq_self`
 /-- Any Finsupp `f : ℕ →₀ ℕ` whose support is in the primes is equal to the factorization of
 the product `∏ (a : ℕ) ∈ f.support, a ^ f a`. -/
 theorem prod_pow_factorization_eq_self (hf : ∀ p ∈ f.support, Prime p) :
