@@ -313,7 +313,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [To
   {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph N G}
 
 /-- This is a smooth analogue of `OpenPartialHomeomorph.continuousWithinAt_writtenInExtend_iff`. -/
-theorem contMDiffWithinAt_writtenInExtend_iff {y : M}
+theorem OpenPartialHomeomorph.contMDiffWithinAt_writtenInExtend_iff {y : M}
     (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
     (hy : y ∈ φ.source) (hgy : f y ∈ ψ.source) (hmaps : MapsTo f s ψ.source) :
     ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm)
@@ -326,7 +326,8 @@ theorem contMDiffWithinAt_writtenInExtend_iff {y : M}
   · rw [contMDiffWithinAt_iff_contDiffWithinAt]
     exact h.2
 
-theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
+theorem OpenPartialHomeomorph.contMDiffOn_writtenInExtend_iff
+    (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
     (hs : s ⊆ φ.source) (hmaps : MapsTo f s ψ.source) :
     ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm) (φ.extend I '' s) ↔
       ContMDiffOn I J n f s := by
