@@ -23,6 +23,9 @@ residue field is exactly its span rank.
 * `TensorProduct.spanFinrank_top_eq_of_residueField` : for finitely generated module over
   local ring, dimension of base change by residue field is equal to its span rank.
 
+* `spanFinrank_maximalIdeal_eq_finrank_cotangentSpace` : the minimal number of generators of
+  the unique maximal ideal is equal to the dimension of cotangent space
+
 -/
 
 @[expose] public section
