@@ -356,7 +356,31 @@ lemma integrable_deriv_smul_comp_iff_of_deriv_nonneg (hf : ContinuousOn f [[a, b
     (hf' : ∀ x ∈ Ioo (min a b) (max a b), 0 ≤ f' x) :
     IntervalIntegrable (fun x ↦ f' x • (g ∘ f) x) volume a b ↔
       IntervalIntegrable g volume (f a) (f b) := by
-
+  have M : MonotoneOn f (uIcc a b) := by
+    apply monotoneOn_of_deriv_nonneg (convex_uIcc a b) hf
+    · rw [uIcc, interior_Icc]
+      exact fun z hz ↦ (hff' z hz).differentiableAt.differentiableWithinAt
+    · rw [uIcc, interior_Icc]
+      intro z hz
+      simpa [(hff' z hz).deriv] using hf' z hz
+  simp only [Function.comp_apply]
+  rcases le_or_gt a b with hab | hab
+  · rw [intervalIntegrable_iff_integrableOn_Icc_of_le hab,
+      integrableOn_Icc_deriv_smul_iff_of_deriv_nonneg,
+      intervalIntegrable_iff_integrableOn_Icc_of_le]
+    · apply M left_mem_uIcc right_mem_uIcc hab
+    · rwa [uIcc_of_le hab] at hf
+    · grind
+    · grind
+    · exact hab
+  · rw [IntervalIntegrable.symm_iff, intervalIntegrable_iff_integrableOn_Icc_of_le hab.le,
+      integrableOn_Icc_deriv_smul_iff_of_deriv_nonneg,
+      IntervalIntegrable.symm_iff, intervalIntegrable_iff_integrableOn_Icc_of_le]
+    · apply M right_mem_uIcc left_mem_uIcc hab.le
+    · rwa [uIcc_of_ge hab.le] at hf
+    · grind
+    · grind
+    · exact hab.le
 
 /-- Change of variables for antitone functions.
 If `f` is continuous on `[a, b]` and has a nonpositive derivative `f'` in `(a, b)`,
@@ -384,6 +408,37 @@ theorem integral_deriv_smul_comp_of_deriv_nonpos (hf : ContinuousOn f [[a, b]])
   · rw [integral_of_ge hab.le, ← integral_Icc_eq_integral_Ioc,
       integral_Icc_deriv_smul_of_deriv_nonpos, integral_of_le, ← integral_Icc_eq_integral_Ioc,
       neg_neg]
+    · apply M right_mem_uIcc left_mem_uIcc hab.le
+    · rwa [uIcc_of_ge hab.le] at hf
+    · grind
+    · grind
+    · exact hab.le
+
+lemma integrable_deriv_smul_comp_iff_of_deriv_nonpos (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
+    (hf' : ∀ x ∈ Ioo (min a b) (max a b), f' x ≤ 0) :
+    IntervalIntegrable (fun x ↦ f' x • (g ∘ f) x) volume a b ↔
+      IntervalIntegrable g volume (f a) (f b) := by
+  have M : AntitoneOn f (uIcc a b) := by
+    apply antitoneOn_of_deriv_nonpos (convex_uIcc a b) hf
+    · rw [uIcc, interior_Icc]
+      exact fun z hz ↦ (hff' z hz).differentiableAt.differentiableWithinAt
+    · rw [uIcc, interior_Icc]
+      intro z hz
+      simpa [(hff' z hz).deriv] using hf' z hz
+  simp only [Function.comp_apply]
+  rcases le_or_gt a b with hab | hab
+  · rw [intervalIntegrable_iff_integrableOn_Icc_of_le hab,
+      integrableOn_Icc_deriv_smul_iff_of_deriv_nonpos,
+      IntervalIntegrable.symm_iff, intervalIntegrable_iff_integrableOn_Icc_of_le]
+    · apply M left_mem_uIcc right_mem_uIcc hab
+    · rwa [uIcc_of_le hab] at hf
+    · grind
+    · grind
+    · exact hab
+  · rw [IntervalIntegrable.symm_iff, intervalIntegrable_iff_integrableOn_Icc_of_le hab.le,
+      integrableOn_Icc_deriv_smul_iff_of_deriv_nonpos,
+      intervalIntegrable_iff_integrableOn_Icc_of_le]
     · apply M right_mem_uIcc left_mem_uIcc hab.le
     · rwa [uIcc_of_ge hab.le] at hf
     · grind
@@ -459,6 +514,38 @@ theorem integral_comp_mul_deriv {f f' g : ℝ → ℝ} (h : ∀ x ∈ uIcc a b, 
     (h' : ContinuousOn f' (uIcc a b)) (hg : Continuous g) :
     (∫ x in a..b, (g ∘ f) x * f' x) = ∫ x in f a..f b, g x :=
   integral_comp_mul_deriv' h h' hg.continuousOn
+
+/-- Change of variables for monotone functions.
+If `f` is continuous on `[a, b]` and has a nonnegative derivative `f'` in `(a, b)`,
+then we can substitute `u = f x` to get `∫ x in a..b, (g ∘ f) x * f' x = ∫ u in f a..f b, g u`. -/
+theorem integral_comp_mul_deriv_of_deriv_nonneg {f f' g : ℝ → ℝ} (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
+    (hf' : ∀ x ∈ Ioo (min a b) (max a b), 0 ≤ f' x) :
+    (∫ x in a..b, (g ∘ f) x * f' x) = ∫ u in f a..f b, g u := by
+  simpa [mul_comm] using integral_deriv_smul_comp_of_deriv_nonneg hf hff' hf'
+
+/-- Change of variables for monotone functions.
+If `f` is continuous on `[a, b]` and has a nonnegative derivative `f'` in `(a, b)`,
+then we can substitute `u = f x` to get `∫ x in a..b, (g ∘ f) x * f' x = ∫ u in f a..f b, g u`. -/
+theorem integral_comp_mul_deriv_of_deriv_nonpos {f f' g : ℝ → ℝ} (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
+    (hf' : ∀ x ∈ Ioo (min a b) (max a b), f' x ≤ 0) :
+    (∫ x in a..b, (g ∘ f) x * f' x) = ∫ u in f a..f b, g u := by
+  simpa [mul_comm] using integral_deriv_smul_comp_of_deriv_nonpos hf hff' hf'
+
+lemma integrable_comp_mul_deriv_iff_of_deriv_nonneg {f f' g : ℝ → ℝ} (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
+    (hf' : ∀ x ∈ Ioo (min a b) (max a b), 0 ≤ f' x) :
+    IntervalIntegrable (fun x ↦ (g ∘ f) x * f' x) volume a b ↔
+      IntervalIntegrable g volume (f a) (f b) := by
+  simpa [mul_comm] using integrable_deriv_smul_comp_iff_of_deriv_nonneg hf hff' hf'
+
+lemma integrable_comp_mul_deriv_iff_of_deriv_nonpos {f f' g : ℝ → ℝ} (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
+    (hf' : ∀ x ∈ Ioo (min a b) (max a b), f' x ≤ 0) :
+    IntervalIntegrable (fun x ↦ (g ∘ f) x * f' x) volume a b ↔
+      IntervalIntegrable g volume (f a) (f b) := by
+  simpa [mul_comm] using integrable_deriv_smul_comp_iff_of_deriv_nonpos hf hff' hf'
 
 theorem integral_deriv_comp_mul_deriv' {f f' g g' : ℝ → ℝ} (hf : ContinuousOn f [[a, b]])
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt f (f' x) (Ioi x) x)
