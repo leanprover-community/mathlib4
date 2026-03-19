@@ -309,35 +309,36 @@ class HasAdditiveReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W
   badReduction : valuation K (maximalIdeal R) W.Δ < 1
   additiveReduction : valuation K (maximalIdeal R) W.c₄ < 1
 
-theorem hasGoodReduction_or_hasMultiplicativeReduction_or_hasAdditiveReduction
-    {W : WeierstrassCurve K} [IsMinimal R W] :
+variable {W : WeierstrassCurve K}
+
+theorem hasGoodReduction_or_hasMultiplicativeReduction_or_hasAdditiveReduction [IsMinimal R W] :
     W.HasGoodReduction R ∨ W.HasMultiplicativeReduction R ∨ W.HasAdditiveReduction R := by
   rw [hasGoodReduction_iff, hasMultiplicativeReduction_iff, hasAdditiveReduction_iff,
     ← integralModel_Δ_eq R W, ← integralModel_c₄_eq R W]
   grind [valuation_le_one]
 
-theorem HasGoodReduction.not_hasMultiplicativeReduction {W : WeierstrassCurve K} [IsMinimal R W]
-    (hW : W.HasGoodReduction R) : ¬ W.HasMultiplicativeReduction R :=
+theorem HasGoodReduction.not_hasMultiplicativeReduction (hW : W.HasGoodReduction R) :
+    ¬ W.HasMultiplicativeReduction R :=
   fun h ↦ h.badReduction.ne hW.goodReduction
 
-theorem HasGoodReduction.not_hasAdditiveReduction {W : WeierstrassCurve K} [IsMinimal R W]
-    (hW : W.HasGoodReduction R) : ¬ W.HasAdditiveReduction R :=
+theorem HasGoodReduction.not_hasAdditiveReduction (hW : W.HasGoodReduction R) :
+    ¬ W.HasAdditiveReduction R :=
   fun h ↦ h.badReduction.ne hW.goodReduction
 
-theorem HasMultiplicativeReduction.not_hasGoodReduction {W : WeierstrassCurve K} [IsMinimal R W]
-    (hW : W.HasMultiplicativeReduction R) : ¬ W.HasGoodReduction R :=
+theorem HasMultiplicativeReduction.not_hasGoodReduction (hW : W.HasMultiplicativeReduction R) :
+    ¬ W.HasGoodReduction R :=
   fun h ↦ hW.badReduction.ne h.goodReduction
 
-theorem HasAdditiveReduction.not_hasGoodReduction {W : WeierstrassCurve K} [IsMinimal R W]
-    (hW : W.HasGoodReduction R) : ¬ W.HasAdditiveReduction R :=
+theorem HasAdditiveReduction.not_hasGoodReduction (hW : W.HasGoodReduction R) :
+    ¬ W.HasAdditiveReduction R :=
   fun h ↦ h.badReduction.ne hW.goodReduction
 
-theorem HasMultiplicativeReduction.not_hasAdditiveReduction {W : WeierstrassCurve K} [IsMinimal R W]
-    (hW : W.HasMultiplicativeReduction R) : ¬ W.HasAdditiveReduction R :=
+theorem HasMultiplicativeReduction.not_hasAdditiveReduction (hW : W.HasMultiplicativeReduction R) :
+    ¬ W.HasAdditiveReduction R :=
   fun h ↦ h.additiveReduction.ne hW.multiplicativeReduction
 
-theorem HasAdditiveReduction.not_hasMultiplicativeReduction {W : WeierstrassCurve K} [IsMinimal R W]
-    (hW : W.HasAdditiveReduction R) : ¬ W.HasMultiplicativeReduction R :=
+theorem HasAdditiveReduction.not_hasMultiplicativeReduction (hW : W.HasAdditiveReduction R) :
+    ¬ W.HasMultiplicativeReduction R :=
   fun h ↦ hW.additiveReduction.ne h.multiplicativeReduction
 
 end Reduction
