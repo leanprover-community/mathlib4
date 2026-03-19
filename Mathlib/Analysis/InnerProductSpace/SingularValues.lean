@@ -151,8 +151,8 @@ this.
 -/
 theorem injective_iff_forall_lt_rank_singularValues_pos :
     Function.Injective T ↔ ∀ i < finrank 𝕜 E, 0 < T.singularValues i := by
-  have := (adjoint T ∘ₗ T).not_hasEigenvalue_zero_tfae.out 0 4
-  rw [← not_iff_not, ← adjoint_comp_self_injective_iff, ← coe_comp, ← ker_eq_bot, ← this.not_right]
+  have := (adjoint T ∘ₗ T).not_hasEigenvalue_zero_tfae.out 4 0
+  rw [← adjoint_comp_self_injective_iff, ← coe_comp, ← ker_eq_bot, ← not_iff_not, this.not_left]
   push Not
   constructor
   · intro h
