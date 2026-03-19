@@ -40,7 +40,9 @@ universe v u u' v'
 
 namespace CategoryTheory.Abelian
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+open CategoryTheory.Limits
+
+variable {C : Type u} [Category.{v} C] [Abelian C] -- [HasCoproducts C]
 
 /-- A Torsion Theory in an abelian category consists of two classes, `T` and `F`, of
 torsion and torsion-free objects, respectively, such that `T` is the left orthogonal
@@ -123,40 +125,46 @@ instance instTorsionTheoryCogeneratedBy (P : ObjectProperty C) :
         intro F hF
         exact (ObjectProperty.rightOrthogonal_iff P.leftOrthogonal F).mpr hF
 
+lemma isClosedUnderQuotients_of_torsionTheory {T F : ObjectProperty C} (hTF : TorsionTheory T F) :
+    T.IsClosedUnderQuotients where
+      prop_of_epi := fun f _ hPX ↦ hTF.torsion_of_epi hPX f
+
+lemma isClosedUnderExtensions_of_torsionTheory {T F : ObjectProperty C} (hTF : TorsionTheory T F):
+    T.IsClosedUnderExtensions where
+      prop_X₂_of_shortExact := by
+        intro S hs hX₁ hX₃
+        apply hTF.mem_torsion_iff.mpr
+        intro Z k hZ
+        let t : Limits.CokernelCofork S.f :=
+          Limits.CokernelCofork.ofπ k  (hTF.mem_torsion_iff.mp hX₁ (S.f ≫ k) hZ)
+        let l : S.X₃ ⟶ Z := hs.gIsCokernel.desc t
+        have hl: l = 0 := hTF.mem_free_iff.mp hZ l hX₃
+        have hfac : S.g ≫ l = k :=
+          hs.gIsCokernel.fac t Limits.WalkingParallelPair.one
+        simp [← hfac, hl]
+
+lemma isClosedUnderCoproducts_of_torsionTheory {T F : ObjectProperty C} (hTF : TorsionTheory T F) :
+    ∀ {J : Type u}, T.IsClosedUnderColimitsOfShape (Discrete J) := by
+  intro J
+  refine { colimitsOfShape_le := ?_}
+  intro X ⟨hX⟩
+  apply hTF.mem_torsion_iff.mpr
+  intro Y f hY
+  apply hX.isColimit.hom_ext
+  intro j
+  simpa [comp_zero] using hTF.mem_torsion_iff.mp (hX.prop_diag_obj j) (hX.ι.app j ≫ f) hY
+
 theorem isTorsionClass_iff {P : ObjectProperty C} : (∃ F : ObjectProperty C, TorsionTheory P F) ↔
     (P.IsClosedUnderQuotients ∧ P.IsClosedUnderExtensions ∧
     ∀ {J : Type u}, P.IsClosedUnderColimitsOfShape (Discrete J)) := by
-  constructor
-  · rintro ⟨F, hPF⟩
-    refine ⟨?quotients, ?extensions, ?coproducts⟩
-    · refine { prop_of_epi := ?_ }
-      intro X Y f hEpif hPX
-      exact hPF.torsion_of_epi hPX f
-    · refine { prop_X₂_of_shortExact := ?_ }
-      intro S hs hX₁ hX₃
-      apply hPF.mem_torsion_iff.mpr
-      intro Z k hZ
-      let t : Limits.CokernelCofork S.f :=
-        Limits.CokernelCofork.ofπ k  (hPF.mem_torsion_iff.mp hX₁ (S.f ≫ k) hZ)
-      let l : S.X₃ ⟶ Z := hs.gIsCokernel.desc t
-      have hl: l = 0 := hPF.mem_free_iff.mp hZ l hX₃
-      have hfac : S.g ≫ l = k :=
-        hs.gIsCokernel.fac t Limits.WalkingParallelPair.one
-      simp [← hfac, hl]
-    · intro J
-      refine { colimitsOfShape_le := ?_}
-      intro X ⟨hX⟩
-      apply hPF.mem_torsion_iff.mpr
-      intro Y f hY
-      apply hX.isColimit.hom_ext
-      intro j
-      simpa [Limits.comp_zero] using
-        hPF.mem_torsion_iff.mp (hX.prop_diag_obj j) (hX.ι.app j ≫ f) hY
-  · rintro ⟨hquot, hext, hcoprod⟩
-    refine ⟨P.leftOrthogonal.rightOrthogonal, ?_⟩
-    refine { torsion_eq_leftOrthogonal := ?_, free_eq_rightOrthogonal := ?_ }
-    · sorry
-    · sorry
+  refine ⟨fun ⟨F, hPF⟩ ↦ ⟨isClosedUnderQuotients_of_torsionTheory hPF,
+      isClosedUnderExtensions_of_torsionTheory hPF,
+      isClosedUnderCoproducts_of_torsionTheory hPF⟩, ?_⟩
+  rintro ⟨hquot, hext, hcoprod⟩
+  refine ⟨P.leftOrthogonal.rightOrthogonal, ?_⟩
+  refine { torsion_eq_leftOrthogonal := ?_, free_eq_rightOrthogonal := ?_ }
+  · sorry
+  · sorry
 
 end TorsionTheory
 
