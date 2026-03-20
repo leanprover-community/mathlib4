@@ -149,13 +149,13 @@ noncomputable instance instRankOneAdicCompletion :
     (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).RankOne :=
   rankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) (one_lt_absNorm_nnreal v)
 
-/-- The `v`-adic completion of `K` is a normed field. -/
-noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
-  Valued.toNormedField (adicCompletion K v) ℤᵐ⁰
-
 lemma rankOne_hom'_def :
     (instRankOneAdicCompletion K v).hom' = (toNNReal (absNorm_ne_zero v)).comp
       (valueGroup₀_equiv_withZeroMulInt Valued.v).toMonoidWithZeroHom := rfl
+
+/-- The `v`-adic completion of `K` is a normed field. -/
+noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
+  Valued.toNormedField (adicCompletion K v) ℤᵐ⁰
 
 lemma toNNReal_valued_eq_adicAbv (x : WithVal (v.valuation K)) :
     toNNReal (absNorm_ne_zero v) (Valued.v x) = adicAbv K v (WithVal.equiv _ x) := rfl
