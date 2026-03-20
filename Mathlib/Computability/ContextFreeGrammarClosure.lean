@@ -3,10 +3,12 @@ Copyright (c) 2026 Niels Mündler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Niels Mündler
 -/
-import Mathlib.Computability.ContextFreeGrammar
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Tactic.Linarith
-import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
+module
+
+public import Mathlib.Computability.ContextFreeGrammar
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 
 /-!
 # Context-Free Language Closure Properties
@@ -35,8 +37,7 @@ by an F-phase (`ContextFreeGrammar.derives_commute_of_not_mem_output`).
 * `Language.IsContextFree.add`: Context-free languages are closed under union.
 * `Language.IsContextFree.kstar`: Context-free languages are closed under Kleene star.
 -/
-
-noncomputable section
+@[expose] public section
 
 namespace ContextFreeGrammar
 
