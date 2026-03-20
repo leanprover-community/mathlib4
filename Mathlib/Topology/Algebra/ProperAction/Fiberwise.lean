@@ -25,19 +25,45 @@ open scoped Pointwise
 
 public section
 
+variable {G X : Type*} [Group G] [MulAction G X] [TopologicalSpace G] [TopologicalSpace X]
+
+/-- If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
+the set of `g` such that `U` intersects `g • V` is compact.
+
+See `MulAction.properSMul_iff_isCompact_setOf_inter_nonempty` for the two-way implication
+under additional conditions on `G` and `X`. -/
+@[to_additive /-- If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
+the set of `g` such that `U` intersects `g +ᵥ V` is compact.
+
+See `AddAction.properVAdd_iff_isCompact_setOf_inter_nonempty` for the two-way implication
+under additional conditions on `G` and `X`. -/]
+lemma ProperSMul.isCompact_setOf_inter_nonempty [ProperSMul G X]
+    {U V : Set X} (hU : IsCompact U) (hV : IsCompact V) :
+    IsCompact {g : G | (U ∩ g • V).Nonempty} := by
+  convert ((ProperSMul.isProperMap_smul_pair (G := G)).isCompact_preimage
+    (hU.prod hV)).image continuous_fst
+  ext x
+  suffices (∃ u ∈ U, u ∈ x • V) ↔ ∃ v, x • v ∈ U ∧ v ∈ V by simpa
+  rw [← (MulAction.toPerm x).exists_congr_right]
+  simp
+
+variable [ContinuousSMul G X] [T2Space X] [CompactlyCoherentSpace (X × X)]
+
 namespace MulAction
 
-variable {G X : Type*} [Group G] [MulAction G X] [TopologicalSpace G] [TopologicalSpace X]
-  [ContinuousSMul G X] [T2Space X] [CompactlyCoherentSpace (X × X)]
+/-- The `G`-action on `X` is proper iff, for each pair of compacts `U, V` in `X`, the set of `g`
+such that `U` intersects `g • V` is compact.
 
-/-- If, for each pair of compacts `U, V` in `X`, the set of `g` such that `U` intersects `g • V` is
-compact, then the `G`-action on `X` is proper. -/
-@[to_additive /-- If, for each pair of compacts `U, V` in `X`, the set of `g` such that `U`
-intersects `g +ᵥ V` is compact, then the `G`-action on `X` is proper. -/]
-lemma properSMul_of_isCompact_setOf_inter_nonempty
-    (h : ∀ {U V : Set X}, IsCompact U → IsCompact V → IsCompact {g : G | (U ∩ g • V).Nonempty}) :
-    ProperSMul G X := by
-  constructor
+See `ProperSMul.isCompact_setOf_inter_nonempty` for a one-way implication with fewer
+conditions. -/
+@[to_additive /-- The `G`-action on `X` is proper iff, for each pair of compacts `U, V` in `X`,
+the set of `g` such that `U` intersects `g +ᵥ V` is compact.
+
+See `ProperVAdd.isCompact_setOf_inter_nonempty` for a one-way implication with fewer
+conditions. -/]
+lemma properSMul_iff_isCompact_setOf_inter_nonempty : ProperSMul G X ↔
+    (∀ {U V : Set X}, IsCompact U → IsCompact V → IsCompact {g : G | (U ∩ g • V).Nonempty}) := by
+  refine ⟨fun h ↦ ProperSMul.isCompact_setOf_inter_nonempty, fun h ↦ ⟨?_⟩⟩
   refine isProperMap_iff_isCompact_preimage.mpr ⟨by fun_prop, fun {K} hK ↦ ?_⟩
   -- First reduce to the case `K = U × V`.
   let U := Prod.fst '' K
@@ -56,7 +82,7 @@ action is proper. -/
 @[to_additive]
 lemma properSMul_of_proper_orbitMap [IsTopologicalGroup G] [MulAction.IsPretransitive G X]
     {x : X} (hx : IsProperMap fun g : G ↦ g • x) : ProperSMul G X := by
-  apply properSMul_of_isCompact_setOf_inter_nonempty
+  rw [properSMul_iff_isCompact_setOf_inter_nonempty]
   intro U V hU hV
   let U' := {g : G | g • x ∈ U}
   let V' := {g : G | g • x ∈ V}
