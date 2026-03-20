@@ -60,6 +60,7 @@ lemma mapWhiskerRight_whiskerLeft (F : A ⥤ B) {G H : B ⥤ C} (η : G ⟶ H) :
       (mapCompLeft D F H).inv := by
   apply natTrans_ext <;> ext <;> simp [mapCompLeft]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 @[reassoc]
 lemma mapWhiskerLeft_whiskerRight {F G : B ⥤ C} (η : F ⟶ G) (H : C ⥤ D) :
@@ -68,6 +69,7 @@ lemma mapWhiskerLeft_whiskerRight {F G : B ⥤ C} (η : F ⟶ G) (H : C ⥤ D) :
       (mapCompRight A G H).inv := by
   apply natTrans_ext <;> ext <;> simp [mapCompRight]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (D) in
 @[reassoc]
 lemma mapWhiskerRight_whiskerRight {F G : A ⥤ B} (η : F ⟶ G) (H : B ⥤ C) :

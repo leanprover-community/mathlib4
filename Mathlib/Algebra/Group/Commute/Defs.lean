@@ -50,7 +50,7 @@ section Mul
 variable [Mul S]
 
 /-- Equality behind `Commute a b`; useful for rewriting. -/
-@[to_additive /-- Equality behind `AddCommute a b`; useful for rewriting. -/]
+@[to_additive (attr := grind →) /-- Equality behind `AddCommute a b`; useful for rewriting. -/]
 protected theorem eq {a b : S} (h : Commute a b) : a * b = b * a :=
   h
 

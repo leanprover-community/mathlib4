@@ -189,7 +189,7 @@ theorem ascPochhammer_smeval_cast (R : Type*) [Semiring R] {S : Type*} [NonAssoc
     [Pow S ℕ] [Module R S] [IsScalarTower R S S] [NatPowAssoc S]
     (x : S) (n : ℕ) : (ascPochhammer R n).smeval x = (ascPochhammer ℕ n).smeval x := by
   induction n with
-  | zero => simp only [ascPochhammer_zero, smeval_one, one_smul]
+  | zero => simp only [ascPochhammer_zero, smeval_one]
   | succ n hn =>
     simp only [ascPochhammer_succ_right, mul_add, smeval_add, smeval_mul_X, ← Nat.cast_comm]
     simp only [← C_eq_natCast, smeval_C_mul, hn, Nat.cast_smul_eq_nsmul R n]
@@ -274,6 +274,7 @@ instance Int.instBinomialRing : BinomialRing ℤ where
 
 attribute [local instance] IsAddTorsionFree.of_module_nnrat
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R ℕ] : BinomialRing R where
   multichoose r n := (n.factorial : ℚ≥0)⁻¹ • Polynomial.smeval (ascPochhammer ℕ n) r
   factorial_nsmul_multichoose r n := by

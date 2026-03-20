@@ -34,7 +34,7 @@ a big enough `q` will be contained in the normalized subcomplex. This
 construction is done in `Projections.lean`.
 
 It would be easy to define the `P q` degreewise (similarly as it is done
-in *Simplicial Homotopy Theory* by Goerrs-Jardine p. 149), but then we would
+in *Simplicial Homotopy Theory* by Goerss-Jardine p. 149), but then we would
 have to prove that they are compatible with the differential (i.e. they
 are chain complex maps), and also that they are homotopic to the identity.
 These two verifications are quite technical. In order to reduce the number
@@ -49,7 +49,7 @@ are obtained in `Faces.lean`.
 
 In this file `Homotopies.lean`, we define the null homotopic maps
 `Hσ q : K[X] ⟶ K[X]`, show that they are natural (see `natTransHσ`) and
-compatible the application of additive functors (see `map_Hσ`).
+compatible with the application of additive functors (see `map_Hσ`).
 
 ## References
 * [Albrecht Dold, *Homology of Symmetric Products and Other Functors of Complexes*][dold1958]
@@ -110,6 +110,7 @@ theorem hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
         eqToHom (by congr) := by
   grind [hσ', hσ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hσ'_eq' {q n a : ℕ} (ha : n = a + q) :
     (hσ' q n (n + 1) rfl : X _⦋n⦌ ⟶ X _⦋n + 1⦌) =
       (-1 : ℤ) ^ a • X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro (Eq.symm ha))⟩ := by
@@ -123,6 +124,7 @@ def Hσ (q : ℕ) : K[X] ⟶ K[X] :=
 def homotopyHσToZero (q : ℕ) : Homotopy (Hσ q : K[X] ⟶ K[X]) 0 :=
   nullHomotopy' (hσ' q)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In degree `0`, the null homotopic map `Hσ` is zero. -/
 theorem Hσ_eq_zero (q : ℕ) : (Hσ q : K[X] ⟶ K[X]).f 0 = 0 := by
   unfold Hσ
@@ -137,6 +139,7 @@ theorem Hσ_eq_zero (q : ℕ) : (Hσ q : K[X] ⟶ K[X]).f 0 = 0 := by
       ← Fin.succ_zero_eq_one, δ_comp_σ_succ, δ_comp_σ_self' X (by rw [Fin.castSucc_zero'])]
   · rw [hσ'_eq_zero (Nat.succ_pos q) (c_mk 1 0 rfl), zero_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The maps `hσ' q n m hnm` are natural on the simplicial object -/
 theorem hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op ⦋n⦌) ≫ hσ' q n m hnm = hσ' q n m hnm ≫ f.app (op ⦋m⦌) := by
@@ -148,6 +151,7 @@ theorem hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : Simplicia
   · rw [zero_comp, comp_zero]
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For each q, `Hσ q` is a natural transformation. -/
 def natTransHσ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
   app _ := Hσ q
@@ -158,6 +162,7 @@ def natTransHσ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapCo
     ext n m hnm
     simp only [alternatingFaceMapComplex_map_f, hσ'_naturality]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The maps `hσ' q n m hnm` are compatible with the application of additive functors. -/
 theorem map_hσ' {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n m : ℕ) (hnm : c.Rel m n) :
