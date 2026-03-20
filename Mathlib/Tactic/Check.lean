@@ -49,7 +49,7 @@ partial def checkCoreAux (tk : Syntax) (term : Term) (showImplicit : Bool) : Ter
           pure <| m!"{.ofConstName c}{delabSignatureWithoutImplicit (← getConstInfo c).type}"
         return
     catch _ => pure ()  -- identifier might not be a constant but constant + projection
-  -- TODO: handle expressions. Currently this does not do anything differently from `#check`.
+  -- TODO: handle expressions in `#check'`. Currently it behaves the same as `#check` here.
   let e ← Term.elabTerm term none
   Term.synthesizeSyntheticMVarsNoPostponing (ignoreStuckTC := true)
   -- Users might be testing out buggy elaborators. Let's typecheck before proceeding:
