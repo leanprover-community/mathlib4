@@ -9,6 +9,8 @@ public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.Extensions
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+public import Mathlib.CategoryTheory.Subobject.WellPowered
+public import Mathlib.CategoryTheory.Subobject.Lattice
 --public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 
@@ -36,7 +38,7 @@ category theory, preradical, torsion theory
 
 @[expose] public section
 
-universe v u u' v'
+universe w v u
 
 namespace CategoryTheory.Abelian
 
@@ -145,7 +147,7 @@ lemma isClosedUnderExtensions_of_torsionTheory {T F : ObjectProperty C} (hTF : T
         simp [← hfac, hl]
 
 lemma isClosedUnderCoproducts_of_torsionTheory {T F : ObjectProperty C} (hTF : TorsionTheory T F) :
-    ∀ {J : Type u}, T.IsClosedUnderColimitsOfShape (Discrete J) := by
+    ∀ {J : Type w}, T.IsClosedUnderColimitsOfShape (Discrete J) := by
   intro J
   refine { colimitsOfShape_le := ?_}
   intro X ⟨hX⟩
@@ -155,9 +157,10 @@ lemma isClosedUnderCoproducts_of_torsionTheory {T F : ObjectProperty C} (hTF : T
   intro j
   simpa [comp_zero] using hTF.mem_torsion_iff.mp (hX.prop_diag_obj j) (hX.ι.app j ≫ f) hY
 
-theorem isTorsionClass_iff {P : ObjectProperty C} : (∃ F : ObjectProperty C, TorsionTheory P F) ↔
+theorem isTorsionClass_iff {P : ObjectProperty C} [LocallySmall.{w} C] [WellPowered.{w} C]
+    [HasCoproducts.{w} C] : (∃ F : ObjectProperty C, TorsionTheory P F) ↔
     (P.IsClosedUnderQuotients ∧ P.IsClosedUnderExtensions ∧
-    ∀ {J : Type u}, P.IsClosedUnderColimitsOfShape (Discrete J)) := by
+    ∀ {J : Type w}, P.IsClosedUnderColimitsOfShape (Discrete J)) := by
   refine ⟨fun ⟨F, hPF⟩ ↦ ⟨isClosedUnderQuotients_of_torsionTheory hPF,
       isClosedUnderExtensions_of_torsionTheory hPF,
       isClosedUnderCoproducts_of_torsionTheory hPF⟩, ?_⟩
@@ -166,6 +169,8 @@ theorem isTorsionClass_iff {P : ObjectProperty C} : (∃ F : ObjectProperty C, T
   refine { torsion_eq_leftOrthogonal := ?_, free_eq_rightOrthogonal := rfl }
   · refine le_antisymm (le_rightOrthogonal_leftOrthogonal P) ?_
     · intro X hPX
+      let Y := CategoryTheory.Subobject.sSup {A : Subobject X | P (A : C)}
+      /- TODO: Prove that X/Y has property P. -/
       sorry
 
 
