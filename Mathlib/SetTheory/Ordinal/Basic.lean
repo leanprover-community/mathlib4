@@ -66,6 +66,8 @@ noncomputable section
 open Function Cardinal Set Equiv Order
 open scoped Cardinal InitialSeg
 
+set_option linter.style.longFile 1700
+
 universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}
