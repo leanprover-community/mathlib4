@@ -398,7 +398,9 @@ A similar statement holds for the logarithmic height.
 Note that we only require the polynomial relations `∑ j, q (k, j) * p j = X k ^ (M + N)`
 to hold after evaluating at `x`. In this way, we can apply the result to points on some
 subvariety of projective space when the map given by `p` is a morphism on that subvariety,
-but not necessarily on all of the ambient space.
+but not necessarily on all of the ambient space. In fact, the proof does not even need that
+`p j` is homogeneous (of fixed degree). In applications, this will be the case, however,
+and if the third condition above holds on the level of polynomials, then it follows.
 
 The main idea is to reduce this to a combination of `mulHeight_linearMap_apply_le`
 and `mulHeight_eval_le`.
