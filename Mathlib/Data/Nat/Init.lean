@@ -6,10 +6,10 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 module
 
 public import Batteries.Tactic.Alias
+public import Batteries.Util.LibraryNote
 public import Mathlib.Init
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.Basic
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.TypeStar
 
