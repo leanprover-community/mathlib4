@@ -56,8 +56,8 @@ class GraphLike (α β : outParam Type*) [DartLike α β] (Gr : Type*) where
   verts : Gr → Set α
   /-- The type of darts (oriented edges) of a graph-like structure. -/
   darts : Gr → Set β
-  fst_mem_of_darts : ∀ {G : Gr} {d : β}, d ∈ darts G → DartLike.fst d ∈ verts G
-  snd_mem_of_darts : ∀ {G : Gr} {d : β}, d ∈ darts G → DartLike.snd d ∈ verts G
+  fst_mem_of_darts {G : Gr} {d : β} : d ∈ darts G → DartLike.fst d ∈ verts G
+  snd_mem_of_darts {G : Gr} {d : β} : d ∈ darts G → DartLike.snd d ∈ verts G
   /-- The adjacency relation of a graph-like structure. -/
   Adj : Gr → α → α → Prop := fun G u v ↦ ∃ d ∈ darts G, DartLike.fst d = u ∧ DartLike.snd d = v
   exists_darts_iff_adj {G : Gr} {u v : α} :
@@ -89,8 +89,7 @@ lemma Adj.right_mem (h : Adj G v w) : w ∈ V(G) := by
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact snd_mem_of_darts hd
 
-/-- The step is a subtype for darts between two fixed vertices. It has `fst` and `snd` vertices
-  specified in the type. It is used to build walks. -/
+/-- The step from `u` to `v` is a dart from `u` to `v`. -/
 def step (G : Gr) (u v : α) := {d : β // d ∈ darts G ∧ fst d = u ∧ snd d = v}
 
 instance [DecidableEq β] : DecidableEq (step G u v) := Subtype.instDecidableEq
@@ -139,6 +138,21 @@ lemma step.ext_HEq {u' v'} {s₁ : step G u v} {s₂ : step G u' v'} (h : s₁.v
   obtain rfl : d₁ = d₂ := h
   rfl
 
+def step.todart (h : step G u v) : darts G := ⟨h.val, h.prop.1⟩
+
+@[simp]
+lemma step.todart_val (h : step G u v) : h.todart.val = h.val := rfl
+
+@[simp]
+lemma step.todart_fst (s : step G u v) : DartLike.fst s.todart.val = u := by
+  obtain ⟨d, hd, rfl, rfl⟩ := s
+  rfl
+
+@[simp]
+lemma step.todart_snd (s : step G u v) : DartLike.snd s.todart.val = v := by
+  obtain ⟨d, hd, rfl, rfl⟩ := s
+  rfl
+
 lemma step.adj (h : step G u v) : Adj G u v := by
   rw [← exists_darts_iff_adj]
   obtain ⟨d, hd, rfl, rfl⟩ := h
@@ -146,9 +160,61 @@ lemma step.adj (h : step G u v) : Adj G u v := by
 
 @[ext] theorem darts_ext (d₁ d₂ : darts G) (h : d₁.val = d₂.val) : d₁ = d₂ := Subtype.ext h
 
+def dartStep (d : darts G) : step G (fst d.val) (snd d.val) :=
+  ⟨d.val, d.prop, rfl, rfl⟩
+
+@[simp]
+lemma dartStep_val (d : darts G) : (dartStep d).val = d.val := rfl
+
 /-- Two darts are said to be adjacent if they could be consecutive
 darts in a walk -- that is, the first dart's second vertex is equal to
 the second dart's first vertex. -/
 def DartAdj (d d' : darts G) : Prop := (snd d.val : α) = (fst d'.val : α)
+
+section GraphLikeProd
+
+/-
+### For `GraphLike α (α × α) Gr`
+
+Some graph-like structures, such as `SimpleGraph` and `Digraph`, have `α × α`-valued darts.
+This section assumes `GraphLike α (α × α) Gr` to proves lemmas for `α × α`-valued darts.
+-/
+
+variable {d : α × α}
+
+instance : DartLike α (α × α) where
+  fst := Prod.fst
+  snd := Prod.snd
+
+@[simp, grind =] lemma fst_eq : fst d = d.fst := rfl
+
+@[simp, grind =] lemma snd_eq : snd d = d.snd := rfl
+
+@[simp] lemma toProd_eq : toProd d = d := rfl
+
+variable [GraphLike α (α × α) Gr]
+
+@[simp]
+lemma mem_darts_iff_adj : d ∈ darts G ↔ Adj G d.fst d.snd := by
+  simp [← exists_darts_iff_adj, fst, snd]
+
+instance [DecidableRel (Adj G)] : DecidablePred (· ∈ darts G) :=
+  fun d => decidable_of_iff (Adj G (fst d) (snd d)) (mem_darts_iff_adj.symm)
+
+/-- If `u` and `v` are adjacent, then there exists a step from `u` to `v`. -/
+def Adj.toStep (h : Adj G u v) : step G u v := ⟨(u, v), mem_darts_iff_adj.mpr h, rfl, rfl⟩
+
+instance : Subsingleton (step G u v) where
+  allEq := by
+    rintro ⟨p₁, h₁, rfl, rfl⟩ ⟨p₂, h₂, h1, h2⟩
+    obtain rfl := Prod.ext h1 h2
+    exact Subtype.ext rfl
+
+@[simp]
+lemma step_val_eq {s : step G u v} : s.val = (u, v) := by
+  rw [Subsingleton.elim s s.adj.toStep]
+  rfl
+
+end GraphLikeProd
 
 end GraphLike.GraphLike
