@@ -54,13 +54,13 @@ def cof : Cardinal :=
 theorem cof_le {s : Set α} (h : IsCofinal s) : cof α ≤ #s :=
   ciInf_le' (ι := {s : Set α // IsCofinal s}) _ ⟨s, h⟩
 
-theorem le_lift_cof_iff {c : Cardinal.{v}} :
-    lift.{u} c ≤ lift.{v} (cof α) ↔ ∀ s : Set α, IsCofinal s → lift.{u} c ≤ lift.{v} (#s) := by
+theorem le_lift_cof_iff {c : Cardinal.{max u v}} :
+    c ≤ lift.{v} (cof α) ↔ ∀ s : Set α, IsCofinal s → c ≤ lift.{v} #s := by
   rw [cof, lift_iInf, le_ciInf_iff']
   simp
 
 theorem le_cof_iff {c : Cardinal} : c ≤ cof α ↔ ∀ s : Set α, IsCofinal s → c ≤ #s := by
-  simpa using @le_lift_cof_iff α _ c
+  simpa using @le_lift_cof_iff.{u, u} α _ c
 
 @[deprecated (since := "2026-02-18")] alias le_cof := le_cof_iff
 
