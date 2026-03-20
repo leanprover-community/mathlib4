@@ -39,7 +39,6 @@ public def String.printCodepointHex (s : String) : String :=
   -- note: must not contain spaces because of the error message parsing below!
   ";".intercalate <| s.toList.map Char.printCodepointHex
 
-
 /-- Blocklist: If `false`, the character is not allowed in Mathlib.
 Note: if `true`, a character might still not be allowed depending on context
 (e.g. misplaced variant selectors).
@@ -48,7 +47,7 @@ public def isAllowedCharacter (c : Char) : Bool := !#[
 '\u0009',     -- "TAB"
 '\u000B',     -- "LINE TABULATION"
 '\u000C',     -- "FORM FEED"
--- '\u000D',  -- "CARRIAGE RETURN" **TODO** is taken care of by git?
+'\u000D',     -- "CARRIAGE RETURN" (note: CRLF is treated separately before `unicodeLinter` starts)
 '\u001F',     -- "INFORMATION SEPARATOR ONE"
 '\u00A0',     -- "NO-BREAK SPACE"
 '\u1680',     -- "OGHAM SPACE MARK"
@@ -99,7 +98,7 @@ public def replaceDisallowed : Char → Option String
 | '\u0009' => "  "    -- "TAB" => "2 spaces"
 | '\u000B' => "\n"    -- "LINE TABULATION" => "Line Feed"
 | '\u000C' => "\n"    -- "FORM FEED" => "Line Feed"
--- | '\u000D' => "\n" -- "CARRIAGE RETURN"
+| '\u000D' => "\n"    -- "CARRIAGE RETURN" => "Line Feed"
 | '\u001F' => ""      -- "INFORMATION SEPARATOR ONE" => "nothing"
 | '\u00A0' => " "     -- "NO-BREAK SPACE" => "1 space"
 | '\u1680' => " "     -- "OGHAM SPACE MARK" => "1 space"
