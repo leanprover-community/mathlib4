@@ -134,7 +134,6 @@ private theorem nvector_two_prod (ms : Fin 2 → M) :
 
 /-- A product $\iota(m_1) \cdot \iota(m_2)$ lies in the
 bivector submodule. -/
-@[simp]
 theorem ι_mul_ι_mem_bivector (m₁ m₂ : M) :
     ι Q m₁ * ι Q m₂ ∈ bivector Q := by
   have : ι Q m₁ * ι Q m₂ =
