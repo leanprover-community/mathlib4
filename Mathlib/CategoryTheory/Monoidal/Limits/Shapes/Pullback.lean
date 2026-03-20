@@ -22,7 +22,7 @@ An attribute should be developed to automatically generate lemmas of this form.
 
 @[expose] public section
 
-universe v v₁ u u₁
+universe v u
 
 namespace CategoryTheory.MonoidalCategory
 

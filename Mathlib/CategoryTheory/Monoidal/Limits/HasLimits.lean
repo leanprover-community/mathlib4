@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Monoidal.Category
 
 /-!
-# Existence of limits and colimits in a monoidal category
+# Compatibility lemmas for limits and colimits in a monoidal category
 
 For numerous simp lemmas of the form `f ≫ g = h`, we add accompanying simp lemmas of the form
 `Q ◁ f ≫ Q ◁ g = Q ◁ h` and `f ▷ Q ≫ g ▷ Q = h ▷ Q`. This file and
