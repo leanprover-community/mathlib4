@@ -189,7 +189,7 @@ theorem inner_of_accel_velocity_of_const_speed_eq_zero (hI : IsOpen I) (hγ₁ :
     inner ℝ (iteratedDeriv 2 γ t) (deriv γ t) = 0 := by
   rw [iteratedDeriv_succ, iteratedDeriv_one]
   have h : ContDiffOn ℝ (1+1) γ I := by assumption
-  exact inner_of_deriv_curve_eq_zero_of_const_magnitude_curve hI 
+  exact inner_of_deriv_curve_eq_zero_of_const_magnitude_curve hI
         ((contDiffOn_succ_iff_deriv_of_isOpen hI).mp h).2.2 hγ₂ ht
 
 /-- The first Frenet equation for plane curves: For any twice continously differentiable plane curve
@@ -260,7 +260,7 @@ theorem deriv_normal_eq_minus_orientedCurvature_times_deriv (hI : IsOpen I)
       calc
         (0 : ℝ) = (orientedCurvature c t)•(inner ℝ (normal c t) (normal c t))
                   + inner ℝ (deriv (normal c) t) (deriv c t) := by
-          rw [← inners_sum_eq_zero_of_const_inner_on_open hI ht (normal_hasDerivAt_aux hI hc₁ ht) 
+          rw [← inners_sum_eq_zero_of_const_inner_on_open hI ht (normal_hasDerivAt_aux hI hc₁ ht)
                 (velocity_hasDerivAt_aux hI hc₁ ht) hci,
               second_deriv_eq_orientedCurvature_times_normal hI hc₁ hc₂ ht,
               real_inner_comm (orientedCurvature c t • normal c t),
@@ -415,7 +415,7 @@ protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature (hI : IsOp
     interval_cases m
     pick_goal 3
     · intro t ht
-      rw [continuousWithinAt_congr_of_mem 
+      rw [continuousWithinAt_congr_of_mem
           (fun y hy ↦  second_deriv_of_initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ hy) ht]
       have hcd : ContDiffWithinAt ℝ 0 (fun t ↦ !₂[-κ t * Real.sin (θ₀+∫ξ in t₀..t, κ ξ),
         κ t * Real.cos (θ₀+∫ξ in t₀..t, κ ξ)]) I t := by
