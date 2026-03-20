@@ -350,7 +350,6 @@ namespace Equivalence
 variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Assemble an `I`-indexed family of equivalences of categories
 into a single equivalence. -/
 @[simps]

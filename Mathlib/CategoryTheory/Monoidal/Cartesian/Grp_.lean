@@ -31,6 +31,7 @@ variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
+@[implicit_reducible]
 def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
     GrpObj X where
   __ := MonObj.ofRepresentableBy X (F ⋙ forget₂ GrpCat MonCat) α

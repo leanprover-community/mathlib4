@@ -69,12 +69,11 @@ theorem StronglyMeasurable.exists_eq_measurable_comp [Nonempty Z] [TopologicalSp
     exact ⟨t.piecewise h₁ h₂, mh₁.piecewise ht mh₂, by rw [piecewise_comp]⟩
   | @lim g i hg hi h₁ h₂ =>
     choose h mh hh using h₁
-    refine ⟨fun y ↦ _root_.limUnder atTop (h · y), StronglyMeasurable.limUnder mh, ?_⟩
+    refine ⟨fun y ↦ limUnder atTop (h · y), StronglyMeasurable.limUnder mh, ?_⟩
     ext x
     rw [Function.comp_apply, Tendsto.limUnder_eq]
     simp_all
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a function `g` is measurable with respect to the pullback along some function `f`,
 then there exists some measurable function `h : Y → Z` such that `g = h ∘ f`. -/
 theorem _root_.Measurable.exists_eq_measurable_comp [Nonempty Z] [MeasurableSpace Z]
