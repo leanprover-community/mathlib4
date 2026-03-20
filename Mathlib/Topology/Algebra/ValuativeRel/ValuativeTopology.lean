@@ -10,7 +10,7 @@ public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 
 /-!
-# The topology on a valued ring
+# The topology on a ring induced by a valuation
 
 In this file, we define the non-Archimedean topology induced by a valuation on a ring.
 
@@ -19,7 +19,7 @@ In this file, we define the non-Archimedean topology induced by a valuation on a
 * If we have both `[ValuativeRel R]` and `[TopologicalSpace R]`, then writing
   `[IsValuativeTopology R]` ensures that the topology on `R` agrees with the one induced by the
   valuation.
-* `ValuativeRel.uniformSpace`: The uniform space introduced by a `ValuativeRel`.
+* `ValuativeRel.uniformSpace`: The uniform structure introduced by a `ValuativeRel`.
 
 *NOTE* (2026-03-17): The `Valued` instance on a ring `R` would be
 replaced by `[ValuativeRel R] [UniformSpace R] [IsValuativeTopology R] [IsUniformAddGroup R]`
@@ -51,29 +51,36 @@ lemma Valuation.exists_setOf_restrict_le_iff {Γ₀ : Type*} [LinearOrderedCommG
   all_goals convert hr; simp
 
 /-- We say that a topology on `R` is valuative if the neighborhoods of `0` in `R`
-are determined by the relation `· ≤ᵥ ·`. -/
+are determined by the valuative relation `· ≤ᵥ ·`. -/
 class IsValuativeTopology [TopologicalSpace R] where
   mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 (x : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, (x + ·) '' { z | valuation _ z < γ } ⊆ s
 
 namespace ValuativeRel
 
-/-- The topology induced by a valuative relation. -/
+/-- The topology induced by a valuative relation. Note that this is not made into a global instance
+to avoid diamonds. If desired, one can equip a ring with a topological space from a valuative
+relation by hand. But as long as they do so, the the fact that the topology is valuative and
+nonarchemidean can be automatically inferred. -/
 local instance topologicalSpace : TopologicalSpace R := (valuation R).subgroups_basis.topology
 
 instance nonarchimedeanRing : NonarchimedeanRing R :=
   (valuation R).subgroups_basis.nonarchimedean
-
-/-- The uniform space induced by a valuative relation. -/
-local instance uniformSpace : UniformSpace R := IsTopologicalAddGroup.rightUniformSpace R
-
-instance isUniformAddGroup : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
 
 instance isValuativeTopology : IsValuativeTopology R where
   mem_nhds_iff {s x} := by
     rw [Filter.hasBasis_iff.mp ((valuation R).subgroups_basis.hasBasis_nhds x) s]
     simp [neg_add_eq_sub, ← (valuation R).exists_setOf_restrict_le_iff,
       ← restrict_lt_iff_lt_embedding]
+
+/-- The uniform structure induced by a valuative relation. Note that this is not made into a
+global instance to avoid diamonds. If desired, one can equip a ring with a uniform space
+from a valuative relation by hand. But as long as they do so, the fact that the topology is
+valuative and nonarchimedean, and the addition is uniformly continuous,
+can be automatically inferred. -/
+local instance uniformSpace : UniformSpace R := IsTopologicalAddGroup.rightUniformSpace R
+
+instance isUniformAddGroup : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
 
 end ValuativeRel
 
@@ -113,7 +120,8 @@ variable (R) in
 theorem hasBasis_nhds_zero :
     (𝓝 0).HasBasis (fun _ ↦ True)
       fun γ : (ValueGroupWithZero R)ˣ ↦ { x | valuation R x < γ } := by
-  convert hasBasis_nhds (0 : R); rw [sub_zero]
+  convert hasBasis_nhds (0 : R)
+  rw [sub_zero]
 
 variable (R) in
 /-- A variant of `hasBasis_nhds_zero` where `· ≠ 0` is unbundled. -/
@@ -150,10 +158,10 @@ theorem hasBasis_nhds_zero :
   simp [Filter.hasBasis_iff, v.is_topological_valuation]
 
 /-- The set `{ y : R | v y = v x }` is a neighbourhood of `x`.
-This does not imply `v` is locally constant everywhere (since `v ⁻¹' {0}` is not open),
+This does not imply that `v` is locally constant everywhere (since `v ⁻¹' {0}` is not open),
 but it is equivalent to the restriction of `v` to the complement of its support being
 locally constant. -/
-theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
+theorem locally_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
   rw [v.mem_nhds_iff]
   have h' : v.restrict x ≠ 0 := by simp [h]
   use Units.mk0 _ h'
@@ -257,7 +265,8 @@ end Discrete
 variable {v}
 
 set_option backward.isDefEq.respectTransparency false in
-/-- An open ball centred at the origin in a valued ring is open. -/
+/-- For any valuation `v` compatible with the valuative relation on `R`, the open `r`-ball
+around zero `{x | v.restrict x < r}` is open in the valuative topology. -/
 theorem isOpen_ball (r : ValueGroup₀ v) : IsOpen (X := R) {x | v.restrict x < r} := by
   rw [isOpen_iff_mem_nhds]
   rcases eq_or_ne r 0 with rfl | hr
@@ -269,18 +278,21 @@ theorem isOpen_ball (r : ValueGroup₀ v) : IsOpen (X := R) {x | v.restrict x < 
     fun y hy ↦ (sub_add_cancel y x).symm ▸ (v.restrict.map_add _ x).trans_lt (max_lt hy hx)⟩
 
 set_option backward.isDefEq.respectTransparency false in
-/-- An open ball centred at the origin in a valued ring is closed. -/
+/-- For any valuation `v` compatible with the valuative relation on `R`, the open `r`-ball
+around zero `{x | v.restrict x < r}` is closed in the valuative topology. -/
 theorem isClosed_ball (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.restrict x < r} := by
   rcases eq_or_ne r 0 with rfl | hr
   · simp
   exact AddSubgroup.isClosed_of_isOpen (Valuation.ltAddSubgroup v.restrict (Units.mk0 r hr))
     (isOpen_ball _)
 
-/-- An open ball centred at the origin in a valued ring is clopen. -/
+/-- For any valuation `v` compatible with the valuative relation on `R`, the open `r`-ball
+around zero `{x | v.restrict x < r}` is clopen in the valuative topology. -/
 theorem isClopen_ball (r : ValueGroup₀ v) : IsClopen (X := R) {x | v.restrict x < r} :=
   ⟨isClosed_ball _, isOpen_ball _⟩
 
-/-- A closed ball centred at the origin in a valued ring is open. -/
+/-- For any valuation `v` compatible with the valuative relation on `R`, the closed `r`-ball
+around zero `{x | v.restrict x ≤ r}` is open in the valuative topology. -/
 theorem isOpen_closedBall {r : ValueGroup₀ v} (hr : r ≠ 0) :
   IsOpen (X := R) {x | v.restrict x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
@@ -289,7 +301,8 @@ theorem isOpen_closedBall {r : ValueGroup₀ v} (hr : r ≠ 0) :
   exact ⟨Units.mk0 _ hr, fun y hy ↦
     (sub_add_cancel y x).symm ▸ le_trans (v.restrict.map_add _ _) (max_le (le_of_lt hy) hx)⟩
 
-/-- A closed ball centred at the origin in a valued ring is closed. -/
+/-- For any valuation `v` compatible with the valuative relation on `R`, the closed `r`-ball
+around zero `{x | v.restrict x ≤ r}` is closed in the valuative topology. -/
 theorem isClosed_closedBall (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.restrict x ≤ r} := by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro x hx
@@ -299,12 +312,14 @@ theorem isClosed_closedBall (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.res
   exact ⟨Units.mk0 _ hx', fun y hy hy' ↦ ne_of_lt hy <| map_sub_swap v.restrict x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
 
-/-- A closed ball centred at the origin in a valued ring is clopen. -/
+/-- For any valuation `v` compatible with the valuative relation on `R`, the closed `r`-ball
+around zero `{x | v.restrict x ≤ r}` is clopen in the valuative topology. -/
 theorem isClopen_closedBall {r : ValueGroup₀ v} (hr : r ≠ 0) :
     IsClopen (X := R) {x | v.restrict x ≤ r} :=
   ⟨isClosed_closedBall _, isOpen_closedBall hr⟩
 
-/-- A sphere centred at the origin in a valued ring is clopen. -/
+/-- For any valuation `v` compatible with the valuative relation on `R`, the sphere of radius `r`
+around zero `{x | v.restrict x = r}` is clopen in the valuative topology. -/
 theorem isClopen_sphere {r : ValueGroup₀ v} (hr : r ≠ 0) :
     IsClopen (X := R) {x | v.restrict x = r} := by
   have h : {x : R | v.restrict x = r} = {x | v.restrict x ≤ r} \ {x | v.restrict x < r} := by
@@ -313,31 +328,36 @@ theorem isClopen_sphere {r : ValueGroup₀ v} (hr : r ≠ 0) :
   rw [h]
   exact IsClopen.diff (isClopen_closedBall hr) (isClopen_ball _)
 
-/-- A sphere centred at the origin in a valued ring is open. -/
+/-- For any valuation `v` compatible with the valuative relation on `R`, the sphere of radius `r`
+around zero `{x | v.restrict x = r}` is open in the valuative topology. -/
 theorem isOpen_sphere {r : ValueGroup₀ v} (hr : r ≠ 0) :
     IsOpen (X := R) {x | v.restrict x = r} :=
   isClopen_sphere hr |>.isOpen
 
-/-- A sphere centred at the origin in a valued ring is closed. -/
+/-- For any valuation `v` compatible with the valuative relation on `R`, the sphere of radius `r`
+around zero `{x | v.restrict x = r}` is closed in the valuative topology. -/
 theorem isClosed_sphere (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.restrict x = r} := by
   rcases eq_or_ne r 0 with rfl | hr
   · convert v.isClosed_closedBall 0 using 3
     exact le_zero_iff.symm
   exact isClopen_sphere hr |>.isClosed
 
-/-- The closed unit ball in a valued ring is open. -/
+/-- For any valuation `v` compatible with the valuative relation on `R`, the closed unit ball
+around zero `{x | v x ≤ 1}` is open in the valuative topology. -/
 theorem isOpen_integer : IsOpen (v.integer : Set R) := by
   simp only [integer, Subring.coe_set_mk, Subsemiring.coe_set_mk, Submonoid.coe_set_mk,
     Subsemigroup.coe_set_mk, ← v.restrict_le_one_iff]
   apply isOpen_closedBall one_ne_zero
 
-/-- The closed unit ball of a valued ring is closed. -/
+/-- For any valuation `v` compatible with the valuative relation on `R`, the closed unit ball
+around zero `{x | v x ≤ 1}` is closed in the valuative topology. -/
 theorem isClosed_integer : IsClosed (v.integer : Set R) := by
   simp only [integer, Subring.coe_set_mk, Subsemiring.coe_set_mk, Submonoid.coe_set_mk,
     Subsemigroup.coe_set_mk, ← v.restrict_le_one_iff]
   exact isClosed_closedBall _
 
-/-- The closed unit ball of a valued ring is clopen. -/
+/-- For any valuation `v` compatible with the valuative relation on `R`, the closed unit ball
+around zero `{x | v x ≤ 1}` is clopen in the valuative topology. -/
 theorem isClopen_integer : IsClopen (v.integer : Set R) :=
   ⟨isClosed_integer, isOpen_integer⟩
 
@@ -345,17 +365,20 @@ section Field
 
 variable {K : Type*} [Field K] [ValuativeRel K] [TopologicalSpace K] [IsValuativeTopology K]
 
-/-- The valuation subring of a valued field is open. -/
+/-- For any valuation `v` compatible with the valuative relation on a field `K`, the valuation
+subring defined by `v` is open in the valuative topology. -/
 theorem isOpen_valuationSubring (v : Valuation K Γ₀) [v.Compatible] :
     IsOpen (v.valuationSubring : Set K) :=
   isOpen_integer
 
-/-- The valuation subring of a valued field is closed. -/
+/-- For any valuation `v` compatible with the valuative relation on a field `K`, the valuation
+subring defined by `v` is closed in the valuative topology. -/
 theorem isClosed_valuationSubring (v : Valuation K Γ₀) [v.Compatible] :
     IsClosed (v.valuationSubring : Set K) :=
   isClosed_integer
 
-/-- The valuation subring of a valued field is clopen. -/
+/-- For any valuation `v` compatible with the valuative relation on a field `K`, the valuation
+subring defined by `v` is clopen in the valuative topology. -/
 theorem isClopen_valuationSubring (v : Valuation K Γ₀) [v.Compatible] :
     IsClopen (v.valuationSubring : Set K) :=
   isClopen_integer

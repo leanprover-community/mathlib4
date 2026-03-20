@@ -183,10 +183,10 @@ theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔
   simp only [mem_nhds, sub_zero]
 
 /-- The set `{ y : R | v y = v x }` is a neighbourhood of `x`.
-This does not imply `v` is locally constant everywhere (since `v ⁻¹' {0}` is not open),
+This does not imply that `v` is locally constant everywhere (since `v ⁻¹' {0}` is not open),
 but it is equivalent to the restriction of `v` to the complement of its support being
 locally constant. -/
-theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
+theorem locally_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
   rw [mem_nhds]
   have h' : v.restrict x ≠ 0 := by simp [h]
   use Units.mk0 _ h'
