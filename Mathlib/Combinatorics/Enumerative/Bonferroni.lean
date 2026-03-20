@@ -3,7 +3,9 @@ Copyright (c) 2026 Louis (Yiyang) Liu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis (Yiyang) Liu
 -/
-import Mathlib.Data.Nat.Choose.Sum
+module
+
+public import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Bonferroni inequalities
@@ -22,6 +24,8 @@ by truncating the inclusion–exclusion formula for a finite union of sets.
 * `Finset.bonferroniCard_le_card_biUnion_of_even`: for even `k`, the truncated sum is at most
   the cardinality of the union.
 -/
+
+@[expose] public section
 
 open Nat Int Set
 
