@@ -104,16 +104,17 @@ noncomputable def subgroupGalEquivSubgroupChar :
 @[simp]
 theorem mem_subgroupGalEquivSubgroupChar_iff (χ : DirichletCharacter R n) (H : Subgroup Gal(K/ℚ)) :
     χ ∈ (subgroupGalEquivSubgroupChar n K R H).ofDual ↔
-      ∀ σ ∈ H, χ (galEquivZMod n K σ) = 1 := by simp [subgroupGalEquivSubgroupChar]
+      ∀ σ ∈ H, χ (galEquivZMod n K σ) = 1 := by
+  simp [subgroupGalEquivSubgroupChar]
 
 @[simp]
 theorem mem_subgroupGalEquivSubgroupChar_symm_iff (σ : Gal(K/ℚ))
     (Y : Subgroup (DirichletCharacter R n)) :
     σ ∈ (subgroupGalEquivSubgroupChar n K R).symm (OrderDual.toDual Y) ↔
       ∀ χ ∈ Y, χ (galEquivZMod n K σ) = 1 := by
-  unfold subgroupGalEquivSubgroupChar
-  simp only [OrderIso.symm_trans_apply, MulEquiv.symm_mapSubgroup, MulEquiv.coe_mapSubgroup,
-    Subgroup.mem_map_equiv, MulEquiv.symm_symm, mem_subgroupOrderIsoSubgroupMulChar_symm_iff]
+  simp only [subgroupGalEquivSubgroupChar, OrderIso.symm_trans_apply, MulEquiv.symm_mapSubgroup,
+    MulEquiv.coe_mapSubgroup, Subgroup.mem_map_equiv, MulEquiv.symm_symm,
+    mem_subgroupOrderIsoSubgroupMulChar_symm_iff]
 
 variable [IsGalois ℚ K]
 
@@ -143,9 +144,9 @@ theorem intermediateFieldEquivSubgroupChar_of_isCyclotomicExtension (F : Interme
     intermediateFieldEquivSubgroupChar n K R F =
       (MulChar.subgroupOrderIsoSubgroupMulChar (ZMod n) R (ZMod.unitsMap hdiv).ker).ofDual := by
   ext χ
-  simp_rw [mem_intermediateFieldEquivSubgroupChar, mem_subgroupOrderIsoSubgroupMulChar_iff,
+  simp only [mem_intermediateFieldEquivSubgroupChar, mem_subgroupOrderIsoSubgroupMulChar_iff,
     MonoidHom.mem_ker, ← (galEquivZMod n K).forall_congr_right, MulEquiv.toEquiv_eq_coe,
-    EquivLike.coe_coe, (galEquivZMod_restrictNormal_apply n K F hdiv _).symm,
+    EquivLike.coe_coe, ← (galEquivZMod_restrictNormal_apply n K F hdiv _),
     EmbeddingLike.map_eq_one_iff, AlgEquiv.restrictNormal_eq_one_iff]
   simp
 
