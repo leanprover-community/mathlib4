@@ -1016,8 +1016,7 @@ theorem Language.IsContextFree.subst {α β : Type}
     (hL : L.IsContextFree) (hf : ∀ a, (f a).IsContextFree) :
     (L.subst f).IsContextFree := by
       obtain ⟨ g, hg ⟩ := hL
-      obtain ⟨ F, hF ⟩ : ∃ F : α → ContextFreeGrammar β, ∀ a, (F a).language = f a := by
-        exact ⟨ fun a => Classical.choose ( hf a ), fun a => Classical.choose_spec ( hf a ) ⟩
+      choose F hF using hf
       classical
       exact ⟨ g.subst F, by rw [ ← hg, ← funext hF, ContextFreeGrammar.subst_language_eq ] ⟩
 
@@ -1140,9 +1139,9 @@ theorem isContextFree_univ_unit : Language.IsContextFree (Set.univ : Language Un
 theorem Language.IsContextFree.mul {α : Type} {L₁ L₂ : Language α}
     (h₁ : L₁.IsContextFree) (h₂ : L₂.IsContextFree) :
     (L₁ * L₂).IsContextFree := by
+      classical
       have h_subst : (({[false, true]} : Language Bool).subst
           (fun b => if b then L₂ else L₁)).IsContextFree := by
-        classical
         apply Language.IsContextFree.subst
         · exact isContextFree_singleton [false, true]
         · grind
@@ -1158,7 +1157,6 @@ theorem Language.IsContextFree.add {α : Type} {L₁ L₂ : Language α}
       obtain ⟨ g₂, hg₂ ⟩ := h₂
       set f : Bool → Language α := fun b => if b then g₂.language else g₁.language
       have h_subst : (({[false], [true]} : Language Bool).subst f).IsContextFree := by
-        classical
         apply_rules [ Language.IsContextFree.subst, isContextFree_pair_bool ]
         exact fun a => by
           cases a with
@@ -1173,6 +1171,7 @@ theorem Language.IsContextFree.add {α : Type} {L₁ L₂ : Language α}
 theorem Language.IsContextFree.kstar {α : Type} {L : Language α}
     (h : L.IsContextFree) :
     (KStar.kstar L).IsContextFree := by
+      classical
       have := Language.IsContextFree.subst (Set.univ : Language Unit) (fun _ => L)
           isContextFree_univ_unit (fun _ => h)
       rwa [Language.subst_univ_unit_eq_kstar] at this
