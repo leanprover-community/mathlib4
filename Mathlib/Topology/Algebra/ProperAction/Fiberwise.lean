@@ -15,11 +15,6 @@ public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 In this file we show that if `G` acts continuously and transitively on `X` and the orbit map
 of some point in `X` is proper (and suitable auxiliary conditions hold), then the action is a
 proper action.
-
-**Note**: We assume `CompactlyCoherentSpace (X × X)` as this is the minimal assumption needed to
-make the proof work; but this follows from various more familiar conditions, such as
-`FirstCountableTopology X`. Importing `Mathlib.Topology.Sequences` makes this implication
-available.
 -/
 open scoped Pointwise
 
@@ -47,21 +42,49 @@ lemma ProperSMul.isCompact_setOf_inter_nonempty [ProperSMul G X]
   rw [← (MulAction.toPerm x).exists_congr_right]
   simp
 
-variable [ContinuousSMul G X] [T2Space X] [CompactlyCoherentSpace (X × X)]
-
 namespace MulAction
 
-/-- The `G`-action on `X` is proper iff, for each pair of compacts `U, V` in `X`, the set of `g`
-such that `U` intersects `g • V` is compact.
+variable [ContinuousSMul G X]
 
-See `ProperSMul.isCompact_setOf_inter_nonempty` for a one-way implication with fewer
-conditions. -/
-@[to_additive /-- The `G`-action on `X` is proper iff, for each pair of compacts `U, V` in `X`,
+/-- If `G` acts transitively on `X`, and the orbit map of a point in `X` is a proper map, then the
+action is proper. -/
+@[to_additive]
+lemma properSMul_of_proper_orbitMap [IsTopologicalGroup G] [MulAction.IsPretransitive G X]
+    {x : X} (hx : IsProperMap fun g : G ↦ g • x) : ProperSMul G X := by
+  constructor
+  let f : G × G → G × X := Prod.map id (fun g ↦ g • x)
+  have hfsurj : f.Surjective := Function.surjective_id.prodMap (surjective_smul G x)
+  refine isProperMap_of_comp_of_surj (by fun_prop) (by fun_prop) ?_ hfsurj
+  simpa [Function.comp_def, Prod.map_apply, mul_smul]
+    using (hx.prodMap hx).comp (ProperSMul.isProperMap_smul_pair (G := G))
+
+/-- The `G`-action on `X` is proper iff, for each pair of compacts `U, V` in `X`,
+the set of `g` such that `U` intersects `g • V` is compact.
+
+See `ProperSMul.isCompact_setOf_inter_nonempty`
+for a one-way implication with fewer conditions.
+
+**Note**: We assume `CompactlyCoherentSpace (X × X)`
+as this is the minimal assumption needed to make the proof work;
+but this follows from various more familiar conditions,
+such as `FirstCountableTopology X`.
+Importing `Mathlib.Topology.Sequences` makes this implication available.
+-/
+@[to_additive /--
+The `G`-action on `X` is proper iff, for each pair of compacts `U, V` in `X`,
 the set of `g` such that `U` intersects `g +ᵥ V` is compact.
 
-See `ProperVAdd.isCompact_setOf_inter_nonempty` for a one-way implication with fewer
-conditions. -/]
-lemma properSMul_iff_isCompact_setOf_inter_nonempty : ProperSMul G X ↔
+See `ProperVAdd.isCompact_setOf_inter_nonempty`
+for a one-way implication with fewer conditions.
+
+**Note**: We assume `CompactlyCoherentSpace (X × X)`
+as this is the minimal assumption needed to make the proof work;
+but this follows from various more familiar conditions,
+such as `FirstCountableTopology X`.
+Importing `Mathlib.Topology.Sequences` makes this implication available.
+-/]
+lemma properSMul_iff_isCompact_setOf_inter_nonempty [T2Space X] [CompactlyCoherentSpace (X × X)] :
+    ProperSMul G X ↔
     (∀ {U V : Set X}, IsCompact U → IsCompact V → IsCompact {g : G | (U ∩ g • V).Nonempty}) := by
   refine ⟨fun h ↦ ProperSMul.isCompact_setOf_inter_nonempty, fun h ↦ ⟨?_⟩⟩
   refine isProperMap_iff_isCompact_preimage.mpr ⟨by fun_prop, fun {K} hK ↦ ?_⟩
@@ -76,27 +99,6 @@ lemma properSMul_iff_isCompact_setOf_inter_nonempty : ProperSMul G X ↔
   apply ((h hU hV).prod hV).of_isClosed_subset
   · exact (hU.isClosed.preimage <| by fun_prop).inter (hV.isClosed.preimage continuous_snd)
   · exact fun ⟨g, x⟩ ⟨hgx, hgx'⟩ ↦ ⟨⟨g • x, hgx, Set.smul_mem_smul_set hgx'⟩, hgx'⟩
-
-/-- If `G` acts transitively on `X`, and the orbit map of a point in `X` is a proper map, then the
-action is proper. -/
-@[to_additive]
-lemma properSMul_of_proper_orbitMap [IsTopologicalGroup G] [MulAction.IsPretransitive G X]
-    {x : X} (hx : IsProperMap fun g : G ↦ g • x) : ProperSMul G X := by
-  rw [properSMul_iff_isCompact_setOf_inter_nonempty]
-  intro U V hU hV
-  let U' := {g : G | g • x ∈ U}
-  let V' := {g : G | g • x ∈ V}
-  suffices {g | (U ∩ g • V).Nonempty} = (fun x ↦ x.1 * x.2⁻¹) '' (U' ×ˢ V') from
-    this ▸ ((hx.isCompact_preimage hU).prod (hx.isCompact_preimage hV)).image (by fun_prop)
-  ext w
-  constructor
-  · rintro ⟨τ, ⟨hτ, hτ'⟩⟩
-    obtain ⟨g, rfl⟩ := MulAction.IsPretransitive.exists_smul_eq (M := G) x τ
-    use (g, w⁻¹ * g)
-    simpa [U', V', hτ, mul_smul, ← V.mem_smul_set_iff_inv_smul_mem]
-  · rintro ⟨⟨g, h⟩, ⟨hg, hh⟩, rfl⟩
-    refine ⟨g • x, hg, ?_⟩
-    simpa [mul_smul, Set.mem_inv_smul_set_iff]
 
 end MulAction
 
