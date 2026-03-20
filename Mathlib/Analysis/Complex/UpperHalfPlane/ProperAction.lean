@@ -3,10 +3,11 @@ Copyright (c) 2026 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
-import Mathlib.Topology.Algebra.ProperAction.Fiberwise
-import Mathlib.Topology.Instances.Matrix
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.Topology.Algebra.ProperAction.Fiberwise
+public import Mathlib.Topology.Instances.Matrix
 
 /-!
 # Transitivity and properness of actions
