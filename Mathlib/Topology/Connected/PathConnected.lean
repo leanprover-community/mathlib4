@@ -99,6 +99,7 @@ theorem Joined.inv {G : Type*} [Inv G] [TopologicalSpace G] [ContinuousInv G]
 variable (X)
 
 /-- The setoid corresponding the equivalence relation of being joined by a continuous path. -/
+@[implicit_reducible]
 def pathSetoid : Setoid X where
   r := Joined
   iseqv := Equivalence.mk Joined.refl Joined.symm Joined.trans

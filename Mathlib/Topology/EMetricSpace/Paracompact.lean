@@ -57,7 +57,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   let ind (x : α) : ι := wellFounded_lt.min { i : ι | x ∈ s i } (hcov x)
   have mem_ind (x) : x ∈ s (ind x) := wellFounded_lt.min_mem _ (hcov x)
   have notMem_of_lt_ind {x i} (hlt : i < ind x) (hxi : x ∈ s i) : False :=
-    wellFounded_lt.not_lt_min _ (hcov x) hxi hlt
+    wellFounded_lt.not_lt_min {i | x ∈ s i} hxi hlt
   /- The refinement `D : ℕ → ι → Set α` is defined recursively. For each `n` and `i`, `D n i`
     is the union of balls `ball x (1 / 2 ^ n)` over all points `x` such that
 

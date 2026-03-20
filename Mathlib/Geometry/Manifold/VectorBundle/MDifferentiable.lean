@@ -665,3 +665,56 @@ lemma MDifferentiableAt.clm_apply_of_inCoordinates
   exact MDifferentiableWithinAt.clm_apply_of_inCoordinates hϕ hv hb₂
 
 end
+
+section extend
+
+namespace FiberBundle
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  (F : Type*) [NormedAddCommGroup F]
+  {V : M → Type*} [TopologicalSpace (TotalSpace F V)] [(x : M) → AddCommGroup (V x)]
+  [(x : M) → TopologicalSpace (V x)]
+  [FiberBundle F V] [NormedSpace 𝕜 F] {k : WithTop ℕ∞}
+
+lemma exists_contMDiffOn_extend [(x : M) → Module 𝕜 (V x)] [VectorBundle 𝕜 F V]
+    [ContMDiffVectorBundle k F V I] {x₀ : M} (σ₀ : V x₀) :
+    ∃ s ∈ 𝓝 x₀, ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (T% (extend F σ₀)) s := by
+  set t := trivializationAt F V x₀
+  refine ⟨t.baseSet, ?_, ?_⟩
+  · refine t.open_baseSet.mem_nhds ?_
+    exact FiberBundle.mem_baseSet_trivializationAt' x₀
+  suffices ContMDiffOn I 𝓘(𝕜, F) k (fun x ↦ (t ⟨x, extend F σ₀ x⟩).2) t.baseSet by
+    intro x hx
+    rw [t.contMDiffWithinAt_section _ hx]
+    exact this x hx
+  let w : F := (t ⟨x₀, σ₀⟩).2
+  have : ContMDiffOn I 𝓘(𝕜, F) k (fun _x ↦ w) t.baseSet := contMDiffOn_const
+  exact this.congr (fun x hx ↦ by simp [extend, t, w, hx])
+
+lemma contMDiffAt_extend' {x : M} (σ₀ : V x) :
+    CMDiffAt k (T% (extend F σ₀)) x := by
+  rw [contMDiffAt_section]
+  set t := trivializationAt F V x
+  let w : F := (t ⟨x, σ₀⟩).2
+  have : CMDiffAt k (fun (_x : M) ↦ w) x := contMDiffAt_const
+  refine this.congr_of_eventuallyEq ?_
+  apply eventually_nhds_iff.mpr
+  refine ⟨t.baseSet, ?_, t.open_baseSet, ?_⟩
+  · intro x hx
+    simp [extend, t, hx, w]
+  · exact FiberBundle.mem_baseSet_trivializationAt' x
+
+lemma exists_mdifferentiableOn_extend [∀ x, Module 𝕜 (V x)] [VectorBundle 𝕜 F V]
+    [ContMDiffVectorBundle 1 F V I] {x₀ : M} (σ₀ : V x₀) :
+    ∃ s ∈ 𝓝 x₀, MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (T% (extend F σ₀)) s := by
+  obtain ⟨s, hs, hsσ⟩ := exists_contMDiffOn_extend (k := 1) I F σ₀
+  exact ⟨s, hs, hsσ.mdifferentiableOn one_ne_zero⟩
+
+lemma mdifferentiableAt_extend {x : M} (σ₀ : V x) :
+    MDiffAt (T% (extend F σ₀)) x :=
+  (contMDiffAt_extend' (k := 1) I F σ₀).mdifferentiableAt one_ne_zero
+
+end FiberBundle
+end extend

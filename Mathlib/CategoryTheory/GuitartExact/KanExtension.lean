@@ -70,7 +70,7 @@ noncomputable def isPointwiseLeftKanExtensionAtCompTwoSquareEquiv
     (E.compTwoSquare w).IsPointwiseLeftKanExtensionAt X₃ ≃
       E.IsPointwiseLeftKanExtensionAt (B.obj X₃) := by
   refine Equiv.trans ?_ (Final.isColimitWhiskerEquiv (w.costructuredArrowRightwards X₃) _)
-  exact IsColimit.equivIsoColimit (Cocones.ext (Iso.refl _))
+  exact IsColimit.equivIsoColimit (Cocone.ext (Iso.refl _))
 
 lemma nonempty_isPointwiseLeftKanExtensionAt_compTwoSquare_iff
     (w : TwoSquare T L R B) (X₃ : C₃) [Final (w.costructuredArrowRightwards X₃)] :
