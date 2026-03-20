@@ -273,6 +273,9 @@ theorem isPrincipal_add_omega0_opow (o : Ordinal) : IsPrincipal (· + ·) (ω ^ 
     rw [← mul_add, ← Nat.cast_add]
     exact (omega0_opow_mul_nat_lt hc _).le
 
+@[deprecated (since := "2026-03-17")]
+alias principal_add_omega0_opow := isPrincipal_add_omega0_opow
+
 theorem add_omega0_opow (h : a < ω ^ b) : a + ω ^ b = ω ^ b :=
   (isPrincipal_add_omega0_opow b).add_eq_right h
 
@@ -281,9 +284,6 @@ theorem add_omega0_opow_of_le (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c 
 
 @[deprecated (since := "2026-03-18")]
 alias add_absorp := add_omega0_opow_of_le
-
-@[deprecated (since := "2026-03-17")]
-alias principal_add_omega0_opow := isPrincipal_add_omega0_opow
 
 /-- The main characterization theorem for additive principal ordinals. -/
 theorem isPrincipal_add_iff_zero_or_omega0_opow :
