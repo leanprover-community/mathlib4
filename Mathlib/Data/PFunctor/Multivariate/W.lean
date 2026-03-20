@@ -139,11 +139,13 @@ theorem wpRec_eq {α : TypeVec n} {C : Sort*}
 
 /-- Induction principle for an unfolded `W` -/
 @[elab_as_elim]
-def wp_ind {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Sort v}
+def wpInd {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Sort v}
     (ih : ∀ (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α),
         (∀ i : P.last.B a, C (f i) (P.wPathDestRight f' i)) → C ⟨a, f⟩ f') :
     ∀ (x : P.last.W) (f' : P.WPath x ⟹ α), C x f'
-  | ⟨a, f⟩, f' => ih a f f' fun _i => wp_ind ih _ _
+  | ⟨a, f⟩, f' => ih a f f' fun _i => wpInd ih _ _
+
+@[deprecated (since := "2026-03-20")] alias wp_ind := wpInd
 
 /-!
 Now think of W as defined inductively by the data ⟨a, f', f⟩ where
@@ -180,7 +182,7 @@ def wInd {α : TypeVec n} {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
         (∀ i, C (f i)) → C (P.wMk a f' f)) :
     ∀ x, C x := fun ⟨hd, ch⟩ =>
-  wp_ind P (fun head f f' ih' =>
+  wpInd P (fun head f f' ih' =>
     cast
       (congr rfl <| Sigma.mk.inj_iff.mpr ⟨rfl, heq_of_eq <| wPathCasesOn_eta P f'⟩)
       <| ih head (P.wPathDestLeft f') (fun i => ⟨f i, P.wPathDestRight f' i⟩) ih') hd ch
