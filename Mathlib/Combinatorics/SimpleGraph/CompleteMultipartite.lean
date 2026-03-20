@@ -71,6 +71,7 @@ theorem bot_isCompleteMultipartite : (⊥ : SimpleGraph α).IsCompleteMultiparti
 
 variable {G : SimpleGraph α}
 /-- The setoid given by non-adjacency -/
+@[implicit_reducible]
 def IsCompleteMultipartite.setoid (h : G.IsCompleteMultipartite) : Setoid α :=
     ⟨(¬ G.Adj · ·), ⟨G.loopless.irrefl, fun h' ↦ by rwa [adj_comm] at h', fun h1 h2 ↦ h h1 h2⟩⟩
 
