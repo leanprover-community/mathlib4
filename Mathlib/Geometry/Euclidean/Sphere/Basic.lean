@@ -365,9 +365,8 @@ theorem Cospherical.subtype_val_iff {S : AffineSubspace ℝ P} [Nonempty S]
 
 /-- A set of points is cospherical in an affine subspace `S₁` if and only if its image under the
 inclusion into a larger affine subspace `S₂` is cospherical. -/
-theorem Cospherical.inclusion_iff
-    {S₁ S₂ : AffineSubspace ℝ P} [Nonempty S₁] [S₁.direction.HasOrthogonalProjection]
-    [S₂.direction.HasOrthogonalProjection] {ps : Set S₁} (hS : S₁ ≤ S₂) :
+theorem Cospherical.inclusion_iff {S₁ S₂ : AffineSubspace ℝ P} [Nonempty S₁] {ps : Set S₁}
+    [S₁.direction.HasOrthogonalProjection] [S₂.direction.HasOrthogonalProjection] (hS : S₁ ≤ S₂) :
     Cospherical (AffineSubspace.inclusion hS '' ps) ↔ Cospherical ps := by
   haveI : Nonempty S₂ := by obtain ⟨p⟩ := ‹Nonempty S₁›;exact ⟨⟨p, hS p.property⟩⟩
   simp [(Cospherical.subtype_val_iff (S := S₂) (ps := AffineSubspace.inclusion hS '' ps)).symm,
