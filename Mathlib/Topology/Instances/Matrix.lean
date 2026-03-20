@@ -482,6 +482,10 @@ topology. -/
 instance [DiscreteTopology R] : DiscreteTopology (SL n R) :=
   instDiscreteTopologySubtype
 
+lemma isClosedEmbedding_val [T1Space R] :
+    Topology.IsClosedEmbedding ((↑) : SL n R → Matrix n n R) :=
+  (isClosed_singleton.preimage continuous_id.matrix_det).isClosedEmbedding_subtypeVal
+
 set_option backward.isDefEq.respectTransparency false in
 /-- The special linear group over a topological ring is a topological group. -/
 instance topologicalGroup : IsTopologicalGroup (SL n R) where
