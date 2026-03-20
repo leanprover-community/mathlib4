@@ -94,8 +94,6 @@ end Preorder
 
 section EmbDomain
 
-variable {ι : Type*} {κ : Type*} {α : Type*} [Zero α]
-
 @[gcongr]
 lemma embDomain_le_embDomain_iff_le [LE α] [@Std.Refl α LE.le]
     (f : ι ↪ κ) (g₁ g₂ : ι →₀ α) : g₁.embDomain f ≤ g₂.embDomain f ↔ g₁ ≤ g₂ := by
@@ -116,9 +114,11 @@ lemma embDomain_lt_embDomain_iff_lt [Preorder α] (f : ι ↪ κ) (g₁ g₂ : �
 
 end EmbDomain
 
+end Zero
+
 section MapDomain
 
-variable {ι : Type*} {κ : Type*} {α : Type*} [AddCommMonoid α]
+variable [AddCommMonoid α]
 
 lemma mapDomain_le_mapDomain_iff_le [LE α] [@Std.Refl α LE.le] {f : ι → κ} (h : f.Injective)
     (g₁ g₂ : ι →₀ α) : g₁.mapDomain f ≤ g₂.mapDomain f ↔ g₁ ≤ g₂ := by
@@ -129,8 +129,6 @@ lemma mapDomain_lt_mapDomain_iff_lt [Preorder α] {f : ι → κ} (h : f.Injecti
   simpa [Finsupp.embDomain_eq_mapDomain] using Finsupp.embDomain_lt_embDomain_iff_lt ⟨f, h⟩ g₁ g₂
 
 end MapDomain
-
-end Zero
 
 /-! ### Algebraic order structures -/
 
