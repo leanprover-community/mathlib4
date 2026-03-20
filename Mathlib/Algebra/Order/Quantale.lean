@@ -100,6 +100,8 @@ theorem sSup_mul_distrib : sSup s * x = ⨆ y ∈ s, y * x := IsQuantale.sSup_mu
 
 end
 
+section Residuation
+
 namespace AddQuantale
 
 variable {α : Type*} {ι : Type*} {x y z : α} {s : Set α} {f : ι → α}
@@ -192,7 +194,13 @@ theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z whe
       iSup_le_iff, implies_true]
   mpr h1 := le_sSup h1
 
+end Quantale
+
+end Residuation
+
 section Zero
+
+namespace Quantale
 
 variable {α : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
 variable {x : α}
@@ -207,6 +215,89 @@ theorem mul_bot : x * ⊥ = ⊥ := by
   rw [← sSup_empty, mul_sSup_distrib]
   simp only [Set.mem_empty_iff_false, not_false_eq_true, iSup_neg, iSup_bot, sSup_empty]
 
+end Quantale
+
 end Zero
 
+section Idempotency
+
+namespace AddQuantale
+
+variable {α : Type*} [AddSemigroup α] [CompleteLattice α] [IsAddQuantale α]
+
+/-- An idempotent element of a quantale is an element `x` such that `x + x = x`. -/
+def isAddIdempotent (x : α) := x + x = x
+
+end AddQuantale
+
+namespace Quantale
+
+variable {α : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
+
+/-- An idempotent element of a quantale is an element `x` such that `x * x = x`. -/
+@[to_additive existing]
+def isMulIdempotent (x : α) := x * x = x
+
 end Quantale
+
+end Idempotency
+
+section Twosidedness
+
+namespace AddQuantale
+
+variable {α : Type*} [AddSemigroup α] [CompleteLattice α] [IsAddQuantale α]
+
+/-- A left-sided element of a quantale is an element `x` such that `⊤ + x ≤ x`. -/
+def isAddLeftsided (x : α) := ⊤ + x ≤ x
+
+/-- A strict left-sided element of a quantale is an element `x` such that `⊤ + x = x`. -/
+def isStrictAddLeftsided (x : α) := ⊤ + x = x
+
+/-- A right-sided element of a quantale is an element `x` such that `x + ⊤ ≤ x`. -/
+def isAddRightsided (x : α) := x + ⊤ ≤ x
+
+/-- A strict right-sided element of a quantale is an element `x` such that `x + ⊤ = x`. -/
+def isStrictAddRightsided (x : α) := x + ⊤ = x
+
+/-- A two-sided element of a quantale is an element `x` that is both left- and right-sided. -/
+def isAddTwosided (x : α) := isAddLeftsided x ∧ isAddRightsided x
+
+/-- A strict two-sided element of a quantale is an element `x` that is both strict left-
+and strict right-sided. -/
+def isStrictAddTwosided (x : α) := isStrictAddLeftsided x ∧ isStrictAddRightsided x
+
+end AddQuantale
+
+namespace Quantale
+
+variable {α : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
+
+/-- A left-sided element of a quantale is an element `x` such that `⊤ * x ≤ x`. -/
+@[to_additive existing]
+def isMulLeftsided (x : α) := ⊤ * x ≤ x
+
+/-- A strict left-sided element of a quantale is an element `x` such that `⊤ * x = x`. -/
+@[to_additive existing]
+def isStrictMulLeftsided (x : α) := ⊤ * x = x
+
+/-- A right-sided element of a quantale is an element `x` such that `x * ⊤ ≤ x`. -/
+@[to_additive existing]
+def isMulRightsided (x : α) := x * ⊤ ≤ x
+
+/-- A strict right-sided element of a quantale is an element `x` such that `x * ⊤ = x`. -/
+@[to_additive existing]
+def isStrictMulRightsided (x : α) := x * ⊤ = x
+
+/-- A two-sided element of a quantale is an element `x` that is both left- and right-sided. -/
+@[to_additive existing]
+def isMulTwosided (x : α) := isMulLeftsided x ∧ isMulRightsided x
+
+/-- A strict two-sided element of a quantale is an element `x` that is both strict left-
+and strict right-sided. -/
+@[to_additive existing]
+def isStrictMulTwosided (x : α) := isStrictMulLeftsided x ∧ isStrictMulRightsided x
+
+end Quantale
+
+end Twosidedness
