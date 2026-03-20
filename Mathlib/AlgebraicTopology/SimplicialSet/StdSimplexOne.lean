@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 
 /-!
 # Simplices in `Δ[1]`
+
+We define a bijection `SSet.objMk₁` between `Fin (n + 2)` and `Δ[1] _⦋n⦌`
+for any `n : ℕ`.
 
 -/
 
@@ -25,7 +28,7 @@ namespace stdSimplex
 set_option backward.isDefEq.respectTransparency false in
 /-- Given `i : Fin (n + 2)`, this is the `n`-simplex of `Δ[1]` which corresponds
 to the monotone map `Fin (n + 1) → Fin 2` which takes `i` times the value `0`. -/
-def objMk₁ {n : ℕ} (i : Fin (n + 2)) : Δ[1] _⦋n⦌ :=
+def objMk₁ {n : ℕ} (i : Fin (n + 2)) : (Δ[1] _⦋n⦌ : Type u) :=
   objMk
     { toFun j := if j.castSucc < i then 0 else 1
       monotone' j₁ j₂ h := by
@@ -36,24 +39,24 @@ def objMk₁ {n : ℕ} (i : Fin (n + 2)) : Δ[1] _⦋n⦌ :=
 
 set_option backward.isDefEq.respectTransparency false in
 lemma objMk₁_apply_eq_zero_iff {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) :
-    dsimp% objMk₁ i j = 0 ↔ j.castSucc < i := by
+    dsimp% objMk₁.{u} i j = 0 ↔ j.castSucc < i := by
   by_cases hj : j.castSucc < i
   · simpa [objMk₁, if_pos hj]
   · simpa [objMk₁, if_neg hj] using hj
 
 lemma objMk₁_of_castSucc_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : j.castSucc < i) :
-    dsimp% objMk₁ i j = 0 := by
+    dsimp% objMk₁.{u} i j = 0 := by
   simpa [objMk₁_apply_eq_zero_iff]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma objMk₁_apply_eq_one_iff {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) :
-    dsimp% objMk₁ i j = 1 ↔ i ≤ j.castSucc := by
+    dsimp% objMk₁.{u} i j = 1 ↔ i ≤ j.castSucc := by
   by_cases hj : j.castSucc < i
   · simpa [objMk₁, if_pos hj]
   · simpa [objMk₁, if_neg hj] using hj
 
 lemma objMk₁_of_le_castSucc {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : i ≤ j.castSucc) :
-    dsimp% objMk₁ i j = 1 := by
+    dsimp% objMk₁.{u} i j = 1 := by
   simpa [objMk₁_apply_eq_one_iff]
 
 -- to be moved
@@ -75,11 +78,8 @@ lemma δ_objMk₁_of_le {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : i ≤
   · rw [Fin.succAbove_of_castSucc_lt _ _ hk]
   · simp only [not_lt] at hk
     rw [Fin.succAbove_of_le_castSucc _ _ hk]
-    constructor
-    · intro h'
-      have := lt_of_le_of_lt ((h.trans hk).trans k.castSucc_le_succ) h'
-      simp at this
-    · lia
+    exact ⟨fun h' ↦ (Fin.lt_irrefl _
+      (lt_of_le_of_lt ((h.trans hk).trans k.castSucc_le_succ) h')).elim, by lia⟩
 
 lemma δ_objMk₁_of_lt {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : j.castSucc < i) :
     Δ[1].δ j (objMk₁.{u} i) = objMk₁.{u} (i.pred (Fin.ne_zero_of_lt h)) := by
@@ -136,7 +136,7 @@ lemma σ_objMk₁_of_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : j.cas
       exact lt_of_le_of_lt (by simpa) h
 
 set_option backward.isDefEq.respectTransparency false in
-lemma objMk₁_injective {n : ℕ} : Function.Injective (objMk₁ (n := n)) := by
+lemma objMk₁_injective {n : ℕ} : Function.Injective (objMk₁.{u} (n := n)) := by
   intro i j h
   wlog hij : i < j generalizing i j
   · simp only [not_lt] at hij
@@ -148,7 +148,7 @@ lemma objMk₁_injective {n : ℕ} : Function.Injective (objMk₁ (n := n)) := b
   simp [if_pos hij] at this
 
 set_option backward.isDefEq.respectTransparency false in
-lemma objMk₁_surjective {n : ℕ} : Function.Surjective (objMk₁ (n := n)) := by
+lemma objMk₁_surjective {n : ℕ} : Function.Surjective (objMk₁.{u} (n := n)) := by
   intro f
   let S : Finset (Fin (n + 1)) := { i | f i = 1}
   by_cases hS : S.Nonempty
@@ -181,7 +181,7 @@ lemma objMk₁_surjective {n : ℕ} : Function.Surjective (objMk₁ (n := n)) :=
     · simp [hj]
     · exact (hS ⟨i, by simpa [S]⟩).elim
 
-lemma objMk₁_bijective {n : ℕ} : Function.Bijective (objMk₁ (n := n)) :=
+lemma objMk₁_bijective {n : ℕ} : Function.Bijective (objMk₁.{u} (n := n)) :=
   ⟨objMk₁_injective, objMk₁_surjective⟩
 
 end stdSimplex
