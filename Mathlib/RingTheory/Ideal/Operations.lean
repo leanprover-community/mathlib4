@@ -1452,11 +1452,8 @@ lemma smul_top_le_comap_smul_top [AddCommMonoid M] [AddCommMonoid N] [Module R M
 
 lemma comap_smul_top_of_surjective [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
     (I : Ideal R) (f : M →ₗ[R] N) (h : Function.Surjective f) :
-    I • ⊤ ⊔ (LinearMap.ker f) = comap f (I • ⊤) := by
-  refine le_antisymm (sup_le (smul_top_le_comap_smul_top I f) (LinearMap.ker_le_comap f)) ?_
-  rw [← Submodule.comap_map_eq f (I • (⊤ : Submodule R M)),
-    Submodule.comap_le_comap_iff_of_surjective h,
-    Submodule.map_smul'', Submodule.map_top, LinearMap.range_eq_top.mpr h]
+    comap f (I • ⊤) = I • ⊤ ⊔ (LinearMap.ker f) := by
+  rw [← Submodule.comap_map_eq f, Submodule.map_smul'', map_top, LinearMap.range_eq_top.mpr h]
 
 end Submodule
 
