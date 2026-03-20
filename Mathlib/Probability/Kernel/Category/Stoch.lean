@@ -7,7 +7,7 @@ Authors: Gaëtan Serré
 module
 
 public import Mathlib.CategoryTheory.MarkovCategory.Basic
-public import Mathlib.CategoryTheory.Widesubcategory
+public import Mathlib.CategoryTheory.Monoidal.Widesubcategory
 public import Mathlib.MeasureTheory.Measure.WithDensity
 public import Mathlib.Probability.Kernel.Category.SFinKer
 public import Mathlib.Topology.Connected.Separation
