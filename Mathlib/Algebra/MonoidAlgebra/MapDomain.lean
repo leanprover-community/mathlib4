@@ -102,20 +102,34 @@ Coefficients not in the range of `f` are dropped. -/
 
 Coefficients not in the range of `f` are dropped. -/]
 def comapDomain (f : M → N) (hf : Injective f) (x : R[N]) : R[M] :=
-  .ofCoeff <| .comapDomain f x.coeff hf.injOn
+  .ofCoeff <| x.coeff.comapDomain f hf.injOn
 
 @[to_additive (attr := simp)]
-lemma comapDomain_zero (f : M → N) (hf) : comapDomain f hf (0 : R[N]) = 0 :=
-  Finsupp.comapDomain_zero _
+lemma coeff_comapDomain (f : M → N) (hf) (x : R[N]) :
+    (comapDomain f hf x).coeff = x.coeff.comapDomain f hf.injOn := by simp [comapDomain]
+
+@[to_additive (attr := simp)]
+lemma comapDomain_zero (f : M → N) (hf) : comapDomain f hf (0 : R[N]) = 0 := by simp [comapDomain]
 
 @[to_additive (attr := simp)]
 lemma comapDomain_add (f : M → N) (hf) (x y : R[N]) :
-    comapDomain f hf (x + y) = comapDomain f hf x + comapDomain f hf y :=
-  comapDomain_add_of_injective hf ..
+    comapDomain f hf (x + y) = comapDomain f hf x + comapDomain f hf y := by
+  simp [comapDomain, comapDomain_add_of_injective hf]
+
+@[simp]
+lemma comapDomain_single_of_not_mem_range {r : R} {n : N} (hn : n ∉ Set.range f) (hf) :
+    comapDomain f hf (single n r) = 0 := by simp [comapDomain, coeff, single, *]
+
+/-- `comapDomain` as an `AddMonoidHom. -/
+@[to_additive (attr := simps) comapDomainAddMonoidHom /-- `comapDomain` as an `AddMonoidHom. -/]
+def comapDomainAddMonoidHom (f : M → N) (hf : Injective f) : R[N] →+ R[M] where
+  toFun := comapDomain f hf
+  map_zero' := by simp
+  map_add' := by simp
 
 @[to_additive (attr := simp)]
 lemma comapDomain_single_map (f : M → N) (hf) (m : M) (r : R) :
-    comapDomain f hf (single (f m) r) = single m r := by simp [comapDomain, ofCoeff, coeff]
+    comapDomain f hf (single (f m) r) = single m r := by simp [comapDomain, single, coeff, ofCoeff]
 
 @[to_additive]
 lemma mapDomain_comapDomain {f : M → N} {x : R[N]} (hx : ↑x.coeff.support ⊆ Set.range f) (hf) :
