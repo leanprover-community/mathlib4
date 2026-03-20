@@ -225,6 +225,21 @@ theorem TopologicalSpace.IsTopologicalBasis.open_eq_sUnion_of_closure_subset {B 
     hB.nhds_basis_closure x |>.mem_iff.1 <| hU.mem_nhds hx
   exact ⟨v, ⟨hv2, hv3⟩, hv1⟩
 
+/-- In a regular space with a topological basis `B`, any open set `U` can be written as the union
+of the closures of the sets in `B` whose closures are contained in `U`. -/
+theorem TopologicalSpace.IsTopologicalBasis.open_eq_sUnion_closure
+    {B : Set (Set X)} (hB : IsTopologicalBasis B) {U : Set X} (hU : IsOpen U) :
+    U = ⋃₀ {v | ∃ u ∈ B, closure u ⊆ U ∧ v = closure u} := by
+  ext x
+  rw [Set.mem_sUnion]
+  constructor
+  · intro hx
+    obtain ⟨u, ⟨hu1, hu2⟩, hu3⟩ : ∃ u, (x ∈ u ∧ u ∈ B) ∧ closure u ⊆ U :=
+      hB.nhds_basis_closure x |>.mem_iff.1 <| hU.mem_nhds hx
+    exact ⟨closure u, ⟨u, hu2, hu3, rfl⟩, subset_closure hu1⟩
+  · rintro ⟨-, ⟨t, ht1, ht2, rfl⟩, hx⟩
+    exact ht2 hx
+
 protected theorem Topology.IsInducing.regularSpace [TopologicalSpace Y] {f : Y → X}
     (hf : IsInducing f) : RegularSpace Y :=
   .of_hasBasis
