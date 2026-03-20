@@ -13,29 +13,27 @@ public import Mathlib.SetTheory.Ordinal.Basic
 /-!
 # Ordinal arithmetic
 
-Ordinals have an addition (corresponding to disjoint union) that turns them into an additive
+Ordinals have an addition (corresponding to the disjoint union) that turns them into an additive
 monoid, and a multiplication (corresponding to the lexicographic order on the product) that turns
-them into a monoid. One can also define correspondingly a subtraction, a division, a successor
-function, a power function and a logarithm function.
+them into a monoid. One can also define (truncated) subtraction and division operators.
 
-We also define limit ordinals and prove the basic induction principle on ordinals separating
-successor ordinals and limit ordinals, in `limitRecOn`.
+Ordinal powers and logarithms are defined in `Mathlib.SetTheory.Ordinal.Exponential`.
 
 ## Main definitions and results
 
-* `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
-  every element of `o₁` is smaller than every element of `o₂`.
-* `o₁ - o₂` is the unique ordinal `o` such that `o₂ + o = o₁`, when `o₂ ≤ o₁`.
-* `o₁ * o₂` is the lexicographic order on `o₂ × o₁`.
-* `o₁ / o₂` is the ordinal `o` such that `o₁ = o₂ * o + o'` with `o' < o₂`. We also define the
+* `a + b` is the order type of the lexicographic sum `a ⊕ₗ b`.
+* `a - b` is the unique ordinal `c` such that `b + c = a`, when `b ≤ a`.
+* `a * b` is the order type of the lexicographic product `b ×ₗ a`.
+* `a / b` is the ordinal `q` such that `a = b * q + r` with `r < b`. We also define the
   divisibility predicate, and a modulo operation.
-* `limitRecOn` is the main induction principle of ordinals: if one can prove a property by
-  induction at successor ordinals and at limit ordinals, then it holds for all ordinals.
+* `limitRecOn` is limit recursion on ordinals, i.e. well-founded recursion separating out the zero,
+  successor, and limit cases.
 
 We discuss the properties of casts of natural numbers of and of `ω` with respect to these
 operations.
 
-Note that some basic functions and properties of ordinals have been generalized to other orders:
+Note that some basic functions and properties of ordinals have been generalized to other orders, and
+exist on other files:
 
 * `Order.succ o = o + 1` is the successor of `o`.
 * `Order.IsSuccLimit o`: an ordinal is a limit ordinal if it is neither `0` nor a successor.
@@ -46,14 +44,11 @@ Note that some basic functions and properties of ordinals have been generalized 
 Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 assert_not_exists Field Module
 
-noncomputable section
-
 open Function Cardinal Set Equiv Order
-open scoped Ordinal
 
 universe u v w
 
@@ -252,8 +247,9 @@ theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSu
 @[simp]
 theorem typein_ordinal (o : Ordinal.{u}) :
     @typein Ordinal (· < ·) _ o = Ordinal.lift.{u + 1} o := by
-  refine Quotient.inductionOn o ?_
-  rintro ⟨α, r, wo⟩; apply Quotient.sound
+  induction o using Quotient.inductionOn with | _ w
+  obtain ⟨α, r, wo⟩ := w
+  apply Quotient.sound
   constructor; refine ((RelIso.preimage Equiv.ulift r).trans (enum r).symm).symm
 
 theorem mk_Iio_ordinal (o : Ordinal.{u}) :
@@ -263,7 +259,7 @@ theorem mk_Iio_ordinal (o : Ordinal.{u}) :
 
 /-! ### The predecessor of an ordinal -/
 
-/-- The ordinal predecessor of `o` is `o'` if `o = succ o'`, and `o` otherwise. -/
+/-- The ordinal predecessor of `a` is `b` if `a = succ b`, and `a` otherwise. -/
 def pred (o : Ordinal) : Ordinal :=
   isSuccPrelimitRecOn o (fun a _ ↦ a) (fun a _ ↦ a)
 
@@ -536,8 +532,8 @@ theorem isSuccLimit_sub {a b : Ordinal} (ha : IsSuccPrelimit a) (h : b < a) :
 
 /-! ### Multiplication of ordinals -/
 
-/-- The multiplication of ordinals `o₁` and `o₂` is the (well-founded) lexicographic order on
-`o₂ × o₁`. -/
+/-- The multiplication of ordinals `a` and `b` is the order type of the lexicographic order on
+`b × a`. -/
 instance monoid : Monoid Ordinal.{u} where
   mul a b :=
     Quotient.liftOn₂ a b
@@ -723,6 +719,9 @@ theorem le_of_mul_le_mul_left {a b c : Ordinal} (h : c * a ≤ c * b) (h0 : 0 < 
 @[deprecated mul_left_cancel_iff_of_pos (since := "2025-08-26")]
 theorem mul_right_inj {a b c : Ordinal} (a0 : 0 < a) : a * b = a * c ↔ b = c :=
   mul_left_cancel_iff_of_pos a0
+
+instance : IsLeftCancelMulZero Ordinal where
+  mul_left_cancel_of_ne_zero h0 _ _ := mul_left_cancel_iff_of_pos h0.pos |>.mp
 
 theorem isSuccLimit_mul_right {a b : Ordinal} (a0 : 0 < a) (l : IsSuccLimit b) :
     IsSuccLimit (a * b) :=
