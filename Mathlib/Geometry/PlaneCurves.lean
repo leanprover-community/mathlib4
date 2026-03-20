@@ -506,6 +506,28 @@ lemma right_eq_zero_of_sum_sq_eq_zero {x y : ℝ} (h : x ^ 2 + y ^ 2 = 0) : y = 
   have : y ^ 2 = 0 := by linarith [pow_two_nonneg x, pow_two_nonneg y]
   simpa
 
+omit hIoC in
+@[fun_prop]
+lemma _root_.DifferentiableAt.deriv_parametrized_curve_of_contDiffOn_open (hI : IsOpen I)
+    (ht : t ∈ I) (hγ : ContDiffOn ℝ 2 γ I) : DifferentiableAt ℝ (deriv γ) t :=
+  ((hγ.deriv_of_isOpen hI (m:=1) (by norm_num)).differentiableOn_one t ht).differentiableAt 
+    (hI.mem_nhds ht)
+
+@[fun_prop]
+lemma _root_.DifferentiableAt.deriv_initialCurve_of_orientedCurvature (hI : IsOpen I) (ht : t ∈ I)
+    (ht₀ : t₀ ∈ I) (hκ : ContinuousOn κ I) : 
+    DifferentiableAt ℝ (deriv (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) t := by
+  have := ContDiffOn.initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀
+  fun_prop (disch := assumption)
+
+omit hIoC in
+lemma deriv_fun_proj_deriv_eq_proj_deriv_deriv (i : ι) (hI : IsOpen I) (ht : t ∈ I)
+    (hγ : ContDiffOn ℝ 2 γ I) : deriv (fun x ↦ (deriv γ x) i) t = (deriv (deriv γ) t) i := by
+  change deriv (EuclideanSpace.proj i ∘ deriv γ) t = _
+  rw [fderiv_comp_deriv t (by fun_prop) (by fun_prop (disch := assumption)),
+      ContinuousLinearMap.fderiv]
+  simp
+
 set_option backward.isDefEq.respectTransparency false in
 /-- This is the uniqueness part of the fundamental theorem of plane curves: given a curvature
 function κ and initial conditions (position p₀ at some time t₀ and unit velocity vector at time t₀
@@ -539,12 +561,8 @@ theorem initialCurve_of_orientedCurvature_is_unique (hI : IsOpen I) (hκ : Conti
   let f (s : ℝ) := (deriv c s) 0 - (deriv α s) 0
   let g (s : ℝ) := (deriv c s) 1 - (deriv α s) 1
   let h (s : ℝ) := (f s)^2 + (g s)^2
-  have hDdc {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (deriv c) s :=
-    have help := (hc₁.deriv_of_isOpen hI (m:=1) (by norm_num)).differentiableOn_one
-    (help s hs).differentiableAt (hI.mem_nhds hs)
-  have hDdα {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (deriv α) s :=
-    have help := (hα₁.deriv_of_isOpen hI (m:=1) (by norm_num)).differentiableOn_one
-    (help s hs).differentiableAt (hI.mem_nhds hs)
+  have hDdc {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (deriv c) s := by fun_prop (disch:=assumption)
+  have hDdα {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (deriv α) s := by fun_prop (disch:=assumption)
   have hDdc₀ {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦  (deriv c t) 0) s := by
     fun_prop (disch := assumption)
   have hDdα₀ {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦  (deriv α t) 0) s := by
@@ -553,63 +571,43 @@ theorem initialCurve_of_orientedCurvature_is_unique (hI : IsOpen I) (hκ : Conti
     fun_prop (disch := assumption)
   have hDdα₁ {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦  (deriv α t) 1) s := by
     fun_prop (disch := assumption)
-  have hDf {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ f s := by simp [f, hDdc₀ hs, hDdα₀ hs]
-  have hDff {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦ (f t)^2) s := by simp [hDf hs]
-  have hDg {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ g s := by simp [g, hDdc₁ hs, hDdα₁ hs]
-  have hDgg {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦ (g t)^2) s := by simp [hDg hs]
-  have hDh {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ h s := by simp [h, hDff hs, hDgg hs]
-  have hDOnh : DifferentiableOn ℝ h I := fun s hs ↦  (hDh hs).differentiableWithinAt
+  have hDf {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ f s := by fun_prop (disch := assumption) 
+  have hDg {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ g s := by fun_prop (disch := assumption)
+  have hDh {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ h s := by fun_prop (disch := assumption)
   have hdf : ∀s ∈ I, deriv f s = - κ s * g s := by
     intro s hs
     simp only [Fin.isValue, neg_mul, f, g]
     rw [deriv_fun_sub (hDdc₀ hs) (hDdα₀ hs)]
     have hddc₀s : deriv (fun t ↦ (deriv c t) 0) s = - κ s * (deriv c s) 1 := by
-      have help₁ : deriv (fun t ↦ (deriv c t) 0) s = (deriv (deriv c) s) 0 := by
-        change deriv (EuclideanSpace.proj 0 ∘ deriv c) s = _
-        have hproj : DifferentiableAt ℝ (EuclideanSpace.proj 0) (deriv c s) := by fun_prop
-        rw [fderiv_comp_deriv s hproj (hDdc hs), ContinuousLinearMap.fderiv]
-        simp
-      have help₂ := PiLp.ext_iff.mp (hcFre₁ hs) 0
-      simp [help₁, help₂, normal]
+      simp [deriv_fun_proj_deriv_eq_proj_deriv_deriv 0 hI hs hc₁, PiLp.ext_iff.mp (hcFre₁ hs) 0,
+            normal]
     have hddα₀s : deriv (fun t ↦ (deriv α t) 0) s = - κ s * (deriv α s) 1 := by
-      have help₁ : deriv (fun t ↦ (deriv α t) 0) s = (deriv (deriv α) s) 0 := by
-        change deriv (EuclideanSpace.proj 0 ∘ deriv α) s = _
-        have hproj : DifferentiableAt ℝ (EuclideanSpace.proj 0) (deriv α s) := by fun_prop
-        rw [fderiv_comp_deriv s hproj (hDdα hs), ContinuousLinearMap.fderiv]
-        simp
-      have help₂ := PiLp.ext_iff.mp (hαFre₁ hs) 0
-      simp [help₁, help₂, normal]
-    rw [hddc₀s, hddα₀s]
-    ring
+      simp [deriv_fun_proj_deriv_eq_proj_deriv_deriv 0 hI hs hα₁, α, PiLp.ext_iff.mp (hαFre₁ hs) 0,
+            normal]
+    rw [hddc₀s, hddα₀s]; ring
   have hdg : ∀s ∈ I, deriv g s = κ s * f s := by
     intro s hs
     simp only [Fin.isValue, g, f]
     rw [deriv_fun_sub (hDdc₁ hs) (hDdα₁ hs)]
     have hddc₁s : deriv (fun t ↦ (deriv c t) 1) s = κ s * (deriv c s) 0 := by
-      have help : deriv (fun t ↦ (deriv c t) 1) s = (deriv (deriv c) s) 1 := by
-        change deriv (EuclideanSpace.proj 1 ∘ deriv c) s = _
-        rw [fderiv_comp_deriv s (by fun_prop) (hDdc hs), ContinuousLinearMap.fderiv]
-        simp
-      simp [help, PiLp.ext_iff.mp (hcFre₁ hs) 1, normal]
+      simp [deriv_fun_proj_deriv_eq_proj_deriv_deriv 1 hI hs hc₁, PiLp.ext_iff.mp (hcFre₁ hs) 1,
+            normal]
     have hddα₁s : deriv (fun t ↦ (deriv α t) 1) s = κ s * (deriv α s) 0 := by
-      have help : deriv (fun t ↦ (deriv α t) 1) s = (deriv (deriv α) s) 1 := by
-        change deriv (EuclideanSpace.proj 1 ∘ deriv α) s = _
-        rw [fderiv_comp_deriv s (by fun_prop) (hDdα hs), ContinuousLinearMap.fderiv]
-        simp
-      simp [help, PiLp.ext_iff.mp (hαFre₁ hs) 1, normal]
-    rw [hddc₁s, hddα₁s]
-    ring
+      simp [deriv_fun_proj_deriv_eq_proj_deriv_deriv 1 hI hs hα₁, α, PiLp.ext_iff.mp (hαFre₁ hs) 1,
+            normal]
+    rw [hddc₁s, hddα₁s]; ring
   have hdh : Set.EqOn (deriv h) 0 I := by
     intro s hs
     unfold h
     calc
        deriv (fun s ↦ f s ^ 2 + g s ^ 2) s = 2*((f s)*(deriv f s)+(g s)*(deriv g s)) := by
-         rw [deriv_fun_add (hDff hs) (hDgg hs), deriv_fun_pow (hDf hs) 2, deriv_fun_pow (hDg hs) 2]
-         ring
+         rw [deriv_fun_add (by fun_prop (disch := assumption)) (by fun_prop (disch := assumption)),
+             deriv_fun_pow (hDf hs) 2, deriv_fun_pow (hDg hs) 2]; ring
        _ = 2*((f s)*(- κ s * g s)+(g s)*(κ s * f s)) := by rw [hdf s hs, hdg s hs]
        _ = 0 := by ring
   have hh : ∀s ∈ I, h s = 0 := by
-    let ⟨a, ha⟩ := hI.exists_is_const_of_deriv_eq_zero hIoC.isPreconnected hDOnh hdh
+    let ⟨a, ha⟩ := hI.exists_is_const_of_deriv_eq_zero hIoC.isPreconnected
+                   (fun s hs ↦  (hDh hs).differentiableWithinAt) hdh
     intro s hs
     rw [ha s hs, ← ha t₀ ht₀]
     simp [h, f, g, hc₅, hα₅]
