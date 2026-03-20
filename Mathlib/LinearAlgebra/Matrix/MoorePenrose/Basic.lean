@@ -7,10 +7,12 @@ import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.LinearAlgebra.Matrix.MoorePenrose.Defs
 
 /-!
-# The Moore-Penrose Pseudo-Inverse for Matrices
+# The Moore-Penrose pseudo-inverse for matrices
 
-Constructs the Moore-Penrose pseudo-inverse for matrices over `ℝ` or `ℂ` and proves
-basic properties.
+The Moore-Penrose pseudo-inverse `A⁺` of a matrix `A` over an `RCLike` field
+is the unique matrix satisfying the four Penrose conditions
+(`IsMoorePenroseInverse`). It is constructed via the restricted isomorphism
+`ker(f)ᗮ ≃ₗ range(f)` and orthogonal projections.
 
 ## Main definitions
 
@@ -18,22 +20,21 @@ basic properties.
 
 ## Main results
 
-* `Matrix.exists_isMoorePenroseInverse`: existence of the Moore-Penrose inverse for matrices
-  over `RCLike` fields, via orthogonal projection and the restricted isomorphism
-  `ker(A)ᗮ ≃ₗ range(A)`.
-* `Matrix.isMoorePenroseInverse_unique`: uniqueness for rectangular matrices (the semigroup
-  version `IsMoorePenroseInverse.unique` only covers square matrices).
+* `Matrix.isMoorePenroseInverse_moorePenroseInverse`:
+  `moorePenroseInverse A` satisfies the four Penrose conditions.
+* `Matrix.isMoorePenroseInverse_unique`: uniqueness for rectangular matrices.
 * `Matrix.moorePenroseInverse_conjTranspose`: `(Aᴴ)⁺ = (A⁺)ᴴ`.
-* `Matrix.moorePenroseInverse_eq_nonsing_inv`: for invertible matrices, `A⁺ = A⁻¹`.
-
-## References
-
-* <https://github.com/leanprover-community/mathlib4/issues/24787>
+* `Matrix.moorePenroseInverse_eq_nonsing_inv`: for invertible matrices,
+  `A⁺ = A⁻¹`.
 -/
+
 noncomputable section
+
 namespace Matrix
+
 variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 variable {𝕜 : Type*} [RCLike 𝕜]
+
 omit [DecidableEq m] [DecidableEq n] in
 /-- Heterogeneous uniqueness for matrices. -/
 lemma isMoorePenroseInverse_unique {A : Matrix m n 𝕜} {B C : Matrix n m 𝕜}
@@ -71,120 +72,140 @@ lemma isMoorePenroseInverse_unique {A : Matrix m n 𝕜} {B C : Matrix n m 𝕜}
     _ = C * A * C := (Matrix.mul_assoc _ _ _).symm
     _ = C := hC.mul_mul_cancel_right
 
-/-- Every matrix over an `RCLike` field has a Moore-Penrose inverse.
-The construction uses the restricted isomorphism `ker(f)ᗮ ≃ₗ range(f)`
-and orthogonal projections. -/
-theorem exists_isMoorePenroseInverse (A : Matrix m n 𝕜) :
-    ∃ (As : Matrix n m 𝕜), IsMoorePenroseInverse A As := by
-  -- 1. Setup via toEuclideanLin (= toLpLin 2 2)
+/-- The Moore-Penrose pseudo-inverse of a matrix, constructed via the restricted
+isomorphism `ker(f)ᗮ ≃ₗ range(f)` and orthogonal projection. -/
+def moorePenroseInverse (A : Matrix m n 𝕜) : Matrix n m 𝕜 :=
   let f := Matrix.toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n) A
-  -- 2. Orthogonal decomposition
   let K := LinearMap.ker f
   let W := LinearMap.range f
-  have h_compl : IsCompl (Kᗮ) K :=
-    (Submodule.isCompl_orthogonal_of_hasOrthogonalProjection (K := K)).symm
-  -- 3. Restricted isomorphism
+  let h_compl : IsCompl Kᗮ K :=
+    (Submodule.isCompl_orthogonal_of_hasOrthogonalProjection
+      (K := K)).symm
+  let e := LinearMap.kerComplementEquivRange f h_compl
+  (Matrix.toEuclideanLin (𝕜 := 𝕜) (m := n) (n := m)).symm
+    (Kᗮ.subtype ∘ₗ e.symm.toLinearMap ∘ₗ
+      (Submodule.orthogonalProjection W : _ →L[𝕜] _).toLinearMap)
+
+/-- `moorePenroseInverse A` satisfies the four Penrose conditions
+with respect to `A`. -/
+lemma isMoorePenroseInverse_moorePenroseInverse (A : Matrix m n 𝕜) :
+    IsMoorePenroseInverse A (moorePenroseInverse A) := by
+  let f := Matrix.toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n) A
+  let K := LinearMap.ker f
+  let W := LinearMap.range f
+  let h_compl : IsCompl Kᗮ K :=
+    (Submodule.isCompl_orthogonal_of_hasOrthogonalProjection
+      (K := K)).symm
   let e : Kᗮ ≃ₗ[𝕜] W := LinearMap.kerComplementEquivRange f h_compl
-  -- 4. Build pseudo-inverse
   let g : EuclideanSpace 𝕜 m →ₗ[𝕜] EuclideanSpace 𝕜 n :=
     Kᗮ.subtype ∘ₗ e.symm.toLinearMap ∘ₗ
       (Submodule.orthogonalProjection W : _ →L[𝕜] _).toLinearMap
-  let As : Matrix n m 𝕜 :=
-    (Matrix.toEuclideanLin (𝕜 := 𝕜) (m := n) (n := m)).symm g
-  use As
-  -- toEuclideanLin As = g
-  have hAs : Matrix.toEuclideanLin As = g := LinearEquiv.apply_symm_apply _ g
-  -- ↑(e x) = f (Kᗮ.subtype x)
+  have hAs : Matrix.toEuclideanLin (moorePenroseInverse A) = g :=
+    LinearEquiv.apply_symm_apply _ g
   have key_e : ∀ x : ↥Kᗮ,
       (e x : EuclideanSpace 𝕜 m) = f (Kᗮ.subtype x) := by
     intro x
-    simp only [e, LinearMap.kerComplementEquivRange, LinearEquiv.ofBijective_apply,
+    simp only [e, LinearMap.kerComplementEquivRange,
+      LinearEquiv.ofBijective_apply,
       LinearMap.comp_apply, LinearMap.codRestrict_apply]
-  -- 1: f ∘ g = W.starProjection
   have fg_eq : ∀ w, f (g w) = Submodule.starProjection W w := by
     intro w
-    show f (Kᗮ.subtype (e.symm ((Submodule.orthogonalProjection W) w))) =
+    change f (Kᗮ.subtype
+      (e.symm ((Submodule.orthogonalProjection W) w))) =
       Submodule.starProjection W w
     rw [← key_e, LinearEquiv.apply_symm_apply]
     exact (Submodule.starProjection_apply W w).symm
-  -- 2: g ∘ f = Kᗮ.starProjection
-  have gf_eq : ∀ v, g (f v) = Submodule.starProjection Kᗮ v := by
+  have gf_eq :
+      ∀ v, g (f v) = Submodule.starProjection Kᗮ v := by
     intro v
     symm
     have hgfv_mem : g (f v) ∈ Kᗮ := SetLike.coe_mem _
     have hv_sub_mem : v - g (f v) ∈ (Kᗮ)ᗮ := by
       apply Submodule.le_orthogonal_orthogonal K
       rw [LinearMap.mem_ker, map_sub, fg_eq,
-        Submodule.starProjection_eq_self_iff.mpr (LinearMap.mem_range_self f v)]
+        Submodule.starProjection_eq_self_iff.mpr
+          (LinearMap.mem_range_self f v)]
       exact sub_self _
-    exact Submodule.eq_starProjection_of_mem_orthogonal' hgfv_mem hv_sub_mem
+    exact Submodule.eq_starProjection_of_mem_orthogonal'
+      hgfv_mem hv_sub_mem
       (by rw [add_comm, sub_add_cancel])
-  -- Verify the 4 Penrose conditions
   refine ⟨?_, ?_, ?_, ?_⟩
   · -- Condition 1: A * As * A = A
     apply Matrix.toEuclideanLin.injective
     simp only [Matrix.toLpLin_mul_same, hAs]
     refine LinearMap.ext fun v => ?_
     simp only [LinearMap.comp_apply]
-    rw [fg_eq, Submodule.starProjection_eq_self_iff.mpr (LinearMap.mem_range_self f v)]
+    rw [fg_eq,
+      Submodule.starProjection_eq_self_iff.mpr
+        (LinearMap.mem_range_self f v)]
   · -- Condition 2: As * A * As = As
     apply Matrix.toEuclideanLin.injective
     simp only [Matrix.toLpLin_mul_same, hAs]
     refine LinearMap.ext fun w => ?_
     simp only [LinearMap.comp_apply]
     rw [gf_eq]
-    exact Submodule.starProjection_eq_self_iff.mpr (SetLike.coe_mem _)
+    exact Submodule.starProjection_eq_self_iff.mpr
+      (SetLike.coe_mem _)
   · -- Condition 3: star (A * As) = A * As
-    show (A * As)ᴴ = A * As
+    change (A * moorePenroseInverse A)ᴴ = A * moorePenroseInverse A
     apply Matrix.toEuclideanLin.injective
     rw [Matrix.toEuclideanLin_conjTranspose_eq_adjoint]
     simp only [Matrix.toLpLin_mul_same, hAs]
     exact LinearMap.IsSymmetric.adjoint_eq (fun u v => by
       simp only [LinearMap.comp_apply]
-      change @inner 𝕜 _ _ (f (g u)) v = @inner 𝕜 _ _ u (f (g v))
+      change @inner 𝕜 _ _ (f (g u)) v =
+        @inner 𝕜 _ _ u (f (g v))
       rw [fg_eq, fg_eq]
-      exact Submodule.inner_starProjection_left_eq_right W u v)
+      exact Submodule.inner_starProjection_left_eq_right
+        W u v)
   · -- Condition 4: star (As * A) = As * A
-    show (As * A)ᴴ = As * A
+    change (moorePenroseInverse A * A)ᴴ = moorePenroseInverse A * A
     apply Matrix.toEuclideanLin.injective
     rw [Matrix.toEuclideanLin_conjTranspose_eq_adjoint]
     simp only [Matrix.toLpLin_mul_same, hAs]
     exact LinearMap.IsSymmetric.adjoint_eq (fun u v => by
       simp only [LinearMap.comp_apply]
-      change @inner 𝕜 _ _ (g (f u)) v = @inner 𝕜 _ _ u (g (f v))
+      change @inner 𝕜 _ _ (g (f u)) v =
+        @inner 𝕜 _ _ u (g (f v))
       rw [gf_eq, gf_eq]
-      exact Submodule.inner_starProjection_left_eq_right Kᗮ u v)
+      exact Submodule.inner_starProjection_left_eq_right
+        Kᗮ u v)
 
-/-- The Moore-Penrose pseudo-inverse of a matrix. -/
-def moorePenroseInverse (A : Matrix m n 𝕜) : Matrix n m 𝕜 :=
-  (exists_isMoorePenroseInverse A).choose
+omit [DecidableEq m] [DecidableEq n] in
+/-- Every matrix over an `RCLike` field has a Moore-Penrose inverse. -/
+theorem exists_isMoorePenroseInverse (A : Matrix m n 𝕜) :
+    ∃ As : Matrix n m 𝕜, IsMoorePenroseInverse A As := by
+  classical
+  exact ⟨moorePenroseInverse A,
+    isMoorePenroseInverse_moorePenroseInverse A⟩
 
-/-- `moorePenroseInverse A` satisfies the four Penrose conditions
-with respect to `A`. -/
-lemma isMoorePenroseInverse_moorePenroseInverse (A : Matrix m n 𝕜) :
-    IsMoorePenroseInverse A (moorePenroseInverse A) :=
-  (exists_isMoorePenroseInverse A).choose_spec
+/-- If `B` satisfies the Penrose conditions for `A`, then
+`moorePenroseInverse A = B`. -/
+lemma _root_.IsMoorePenroseInverse.eq_moorePenroseInverse
+    {A : Matrix m n 𝕜} {B : Matrix n m 𝕜}
+    (h : IsMoorePenroseInverse A B) :
+    moorePenroseInverse A = B :=
+  isMoorePenroseInverse_unique
+    (isMoorePenroseInverse_moorePenroseInverse A) h
 
 @[simp]
-lemma moorePenroseInverse_zero : moorePenroseInverse (0 : Matrix m n 𝕜) = 0 := by
-  have h_zero : IsMoorePenroseInverse (0 : Matrix m n 𝕜) (0 : Matrix n m 𝕜) :=
-    ⟨by simp, by simp, by simp, by simp⟩
-  exact isMoorePenroseInverse_unique
-    (isMoorePenroseInverse_moorePenroseInverse 0) h_zero
+lemma moorePenroseInverse_zero :
+    moorePenroseInverse (0 : Matrix m n 𝕜) = 0 :=
+  (⟨by simp, by simp, by simp, by simp⟩ :
+    IsMoorePenroseInverse (0 : Matrix m n 𝕜)
+      (0 : Matrix n m 𝕜)).eq_moorePenroseInverse
 
 @[simp]
 lemma moorePenroseInverse_moorePenroseInverse (A : Matrix m n 𝕜) :
-    moorePenroseInverse (moorePenroseInverse A) = A := by
-  have h1 := isMoorePenroseInverse_moorePenroseInverse A
-  have h2 := isMoorePenroseInverse_moorePenroseInverse (moorePenroseInverse A)
-  exact isMoorePenroseInverse_unique h2 h1.symm
+    moorePenroseInverse (moorePenroseInverse A) = A :=
+  (isMoorePenroseInverse_moorePenroseInverse A).symm.eq_moorePenroseInverse
 
 @[simp]
 lemma moorePenroseInverse_conjTranspose (A : Matrix m n 𝕜) :
     moorePenroseInverse (Aᴴ) = (moorePenroseInverse A)ᴴ := by
   set B := moorePenroseInverse A
   have hB := isMoorePenroseInverse_moorePenroseInverse A
-  apply isMoorePenroseInverse_unique (isMoorePenroseInverse_moorePenroseInverse Aᴴ)
+  apply IsMoorePenroseInverse.eq_moorePenroseInverse
   refine ⟨?_, ?_, ?_, ?_⟩
   · calc Aᴴ * Bᴴ * Aᴴ
         = (A * B * A)ᴴ := by
@@ -216,7 +237,7 @@ lemma moorePenroseInverse_eq_nonsing_inv
     (A : Matrix n' n' 𝕜) (hA : IsUnit A) :
     moorePenroseInverse A = A⁻¹ := by
   have hdet : IsUnit A.det := isUnit_iff_isUnit_det _ |>.mp hA
-  apply isMoorePenroseInverse_unique (isMoorePenroseInverse_moorePenroseInverse A)
+  apply IsMoorePenroseInverse.eq_moorePenroseInverse
   refine ⟨?_, ?_, ?_, ?_⟩
   · simp [mul_nonsing_inv _ hdet]
   · simp [nonsing_inv_mul _ hdet]
@@ -224,26 +245,30 @@ lemma moorePenroseInverse_eq_nonsing_inv
   · rw [nonsing_inv_mul _ hdet, star_one]
 
 @[simp]
-lemma moorePenroseInverse_one {n' : Type*} [Fintype n'] [DecidableEq n'] :
-    moorePenroseInverse (1 : Matrix n' n' 𝕜) = 1 := by
-  apply isMoorePenroseInverse_unique (isMoorePenroseInverse_moorePenroseInverse 1)
-  exact ⟨by simp, by simp, by simp, by simp⟩
+lemma moorePenroseInverse_one
+    {n' : Type*} [Fintype n'] [DecidableEq n'] :
+    moorePenroseInverse (1 : Matrix n' n' 𝕜) = 1 :=
+  (⟨by simp, by simp, by simp, by simp⟩ :
+    IsMoorePenroseInverse (1 : Matrix n' n' 𝕜)
+      (1 : Matrix n' n' 𝕜)).eq_moorePenroseInverse
 
-/-- The four Penrose conditions hold for `A` and `moorePenroseInverse A`. -/
 lemma mul_moorePenroseInverse_mul (A : Matrix m n 𝕜) :
     A * moorePenroseInverse A * A = A :=
   (isMoorePenroseInverse_moorePenroseInverse A).mul_mul_cancel_left
 
 lemma moorePenroseInverse_mul_self_mul (A : Matrix m n 𝕜) :
-    moorePenroseInverse A * A * moorePenroseInverse A = moorePenroseInverse A :=
+    moorePenroseInverse A * A * moorePenroseInverse A =
+      moorePenroseInverse A :=
   (isMoorePenroseInverse_moorePenroseInverse A).mul_mul_cancel_right
 
 lemma star_mul_moorePenroseInverse (A : Matrix m n 𝕜) :
-    star (A * moorePenroseInverse A) = A * moorePenroseInverse A :=
+    star (A * moorePenroseInverse A) =
+      A * moorePenroseInverse A :=
   (isMoorePenroseInverse_moorePenroseInverse A).star_mul_self
 
 lemma star_moorePenroseInverse_mul (A : Matrix m n 𝕜) :
-    star (moorePenroseInverse A * A) = moorePenroseInverse A * A :=
+    star (moorePenroseInverse A * A) =
+      moorePenroseInverse A * A :=
   (isMoorePenroseInverse_moorePenroseInverse A).star_self_mul
 
 end Matrix

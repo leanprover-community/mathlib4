@@ -23,7 +23,6 @@ so it applies to non-square matrices and linear maps between different spaces.
 
 ## References
 
-* <https://github.com/leanprover-community/mathlib4/issues/24787>
 * "The Moore-Penrose inverse over a commutative ring"
   (Dec 1992, Linear Algebra and its Applications)
 -/
@@ -33,9 +32,17 @@ so it applies to non-square matrices and linear maps between different spaces.
 2. `As * A * As = As`
 3. `A * As` is self-adjoint (`star (A * As) = A * As`)
 4. `As * A` is self-adjoint (`star (As * A) = As * A`) -/
-def IsMoorePenroseInverse {α β γ δ} [HMul α β γ] [HMul β α δ] [HMul γ α α]
-    [HMul δ β β] [Star γ] [Star δ] (A : α) (As : β) : Prop :=
-  A * As * A = A ∧ As * A * As = As ∧ star (A * As) = A * As ∧ star (As * A) = As * A
+structure IsMoorePenroseInverse {α β γ δ} [HMul α β γ] [HMul β α δ] [HMul γ α α]
+    [HMul δ β β] [Star γ] [Star δ] (A : α) (As : β) : Prop where
+  mul_mul_cancel_left : A * As * A = A
+  mul_mul_cancel_right : As * A * As = As
+  star_mul_self : star (A * As) = A * As
+  star_self_mul : star (As * A) = As * A
+
+attribute [simp] IsMoorePenroseInverse.mul_mul_cancel_left
+  IsMoorePenroseInverse.mul_mul_cancel_right
+  IsMoorePenroseInverse.star_mul_self
+  IsMoorePenroseInverse.star_self_mul
 
 namespace IsMoorePenroseInverse
 
@@ -45,21 +52,13 @@ variable {α β γ δ : Type*} [HMul α β γ] [HMul β α δ] [HMul γ α α] [
     [Star γ] [Star δ]
 variable {A : α} {As : β}
 
-@[simp]
-lemma mul_mul_cancel_left (h : IsMoorePenroseInverse A As) : A * As * A = A := h.1
-
-@[simp]
-lemma mul_mul_cancel_right (h : IsMoorePenroseInverse A As) : As * A * As = As := h.2.1
-
-@[simp]
-lemma star_mul_self (h : IsMoorePenroseInverse A As) : star (A * As) = A * As := h.2.2.1
-
-@[simp]
-lemma star_self_mul (h : IsMoorePenroseInverse A As) : star (As * A) = As * A := h.2.2.2
-
-/-- If `As` is a Moore-Penrose inverse of `A`, then `A` is a Moore-Penrose inverse of `As`. -/
-lemma symm (h : IsMoorePenroseInverse A As) : IsMoorePenroseInverse As A :=
-  ⟨h.2.1, h.1, h.2.2.2, h.2.2.1⟩
+/-- If `As` is a Moore-Penrose inverse of `A`, then `A` is a Moore-Penrose
+inverse of `As`. -/
+lemma symm (h : IsMoorePenroseInverse A As) : IsMoorePenroseInverse As A where
+  mul_mul_cancel_left := h.mul_mul_cancel_right
+  mul_mul_cancel_right := h.mul_mul_cancel_left
+  star_mul_self := h.star_self_mul
+  star_self_mul := h.star_mul_self
 
 lemma isSelfAdjoint_mul (h : IsMoorePenroseInverse A As) : IsSelfAdjoint (A * As) :=
   h.star_mul_self
