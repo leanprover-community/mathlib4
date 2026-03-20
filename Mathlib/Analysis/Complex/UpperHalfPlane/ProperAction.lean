@@ -48,9 +48,9 @@ noncomputable def toSL2R (z : ℍ) : SL(2, ℝ) :=
 
 lemma toSL2R_apply (z : ℍ) : z.toSL2R =
   ⟨!![√z.im, z.re / √z.im; 0, 1 / √z.im], by
-    simp [mul_inv_cancel₀ (Real.sqrt_ne_zero'.mpr z.im_pos)]⟩ := rfl
+    simp [mul_inv_cancel₀ (Real.sqrt_ne_zero'.mpr z.im_pos)]⟩ := (rfl)
 
-@[simp] lemma coe_toSL2R (z : ℍ) : z.toSL2R = !![√z.im, z.re / √z.im; 0, 1 / √z.im] := rfl
+@[simp] lemma coe_toSL2R (z : ℍ) : z.toSL2R = !![√z.im, z.re / √z.im; 0, 1 / √z.im] := (rfl)
 
 @[simp] lemma toSL2R_smul_I (z : ℍ) : z.toSL2R • I = z := by
   have : √z.im ≠ (0 : ℂ) := by simpa [Real.sqrt_ne_zero'] using z.im_pos
