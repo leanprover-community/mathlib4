@@ -62,25 +62,20 @@ lemma Functor.mapTriangleOfSESδ [HasDerivedCategory.{t} C] [HasDerivedCategory.
     triangleOfSESδ (hS.map_of_exact (F.mapHomologicalComplex (ComplexShape.up ℤ))) ≫
     ((shiftFunctor (DerivedCategory D) (1 : ℤ)).map (F.mapDerivedCategoryFactors.inv.app S.X₁)) ≫
     ((F.mapDerivedCategory.commShiftIso (1 : ℤ)).inv.app (Q.obj S.X₁)) := by
-  rw [← Iso.app_inv, ← Iso.app_hom, ← Functor.mapIso_inv, ← Iso.app_inv,
-    ← Category.assoc, ← Category.assoc, Iso.eq_comp_inv, Iso.eq_comp_inv]
-  simp only [ShortComplex.map_X₁, comp_obj, triangleOfSESδ,
-    CochainComplex.mappingCone.triangle_obj₁, map_comp, map_inv, Iso.app_hom, Category.assoc,
-    ← commShiftIso_comp_hom_app, mapIso_hom, NatTrans.shift_app_comm, ShortComplex.map_X₃,
-    ShortComplex.map_X₂, ShortComplex.map_f, IsIso.inv_comp_eq]
-  simp only [commShiftIso_comp_hom_app, ← Category.assoc]
-  rw [← (commShiftIso Q 1).app_hom, Iso.cancel_iso_hom_right]
-  conv_rhs =>
-    rw [← Functor.comp_map, ← NatIso.naturality_2 F.mapDerivedCategoryFactors]
-    simp only [comp_obj, comp_map, Category.assoc, Iso.inv_hom_id_app, Category.comp_id]
-  conv_lhs =>
-    rw [← Functor.comp_map, ← NatIso.naturality_2 F.mapDerivedCategoryFactors]
-    simp only [comp_obj, comp_map, Category.assoc, Iso.inv_hom_id_app, Category.comp_id]
-  simp only [← F.mapDerivedCategoryFactors.app_hom, Iso.cancel_iso_hom_left]
-  rw [← Q.map_comp, CochainComplex.mappingCone.map_δ, ← Category.assoc, Q.map_comp]
-  congr 1
-  rw [IsIso.eq_comp_inv, ← Q.map_comp,
-    CochainComplex.mappingCone.descShortComplex_mapHomologicalComplex]
+  have := CochainComplex.mappingCone.quasiIso_descShortComplex hS
+  rw [← cancel_epi (F.mapDerivedCategory.map
+    (Q.map (CochainComplex.mappingCone.descShortComplex S))), ← map_comp,
+    descShortComplex_triangleOfSESδ,
+    reassoc_of% F.mapDerivedCategoryFactors.hom.naturality_assoc,
+    ← CochainComplex.mappingCone.mapHomologicalComplexIso_hom_descShortComplex,
+    Functor.map_comp_assoc, descShortComplex_triangleOfSESδ_assoc, Category.assoc,
+    ← Functor.map_comp_assoc]
+  dsimp
+  rw [← CochainComplex.mappingCone.map_δ, Functor.map_comp_assoc,
+    ← reassoc_of% dsimp% F.mapDerivedCategoryFactors.hom.naturality,
+    Functor.map_comp]
+  simp [NatTrans.shift_app, commShiftIso_comp_hom_app, commShiftIso_comp_inv_app,
+    ← Functor.map_comp_assoc]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma Functor.mapShiftedHom_singleδ [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
