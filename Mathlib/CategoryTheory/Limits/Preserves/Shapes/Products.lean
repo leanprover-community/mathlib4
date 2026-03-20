@@ -102,9 +102,10 @@ instance : IsIso (piComparison G f) := by
   rw [← PreservesProduct.iso_hom]
   infer_instance
 
-instance {I : Type w} (F : C ⥤ D) [PreservesLimitsOfShape (Discrete I) F] :
-    PreservesLimitsOfShape (Discrete I)ᵒᵖ F :=
-  preservesLimitsOfShape_of_equiv (Discrete.opposite I).symm F
+instance {I : Type*} [Category* I] [IsGroupoid I] (F : C ⥤ D) [PreservesLimitsOfShape I F] :
+    PreservesLimitsOfShape Iᵒᵖ F :=
+  letI : Groupoid I := Groupoid.ofIsGroupoid
+  preservesLimitsOfShape_of_equiv (Groupoid.invEquivalence I) F
 
 end
 
