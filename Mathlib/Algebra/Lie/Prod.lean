@@ -37,7 +37,7 @@ variable {R L₁ L₂ L L₃ L₄ L₅ L₆ : Type*}
   [LieRing L] [LieAlgebra R L] [LieRing L₃] [LieAlgebra R L₃] [LieRing L₄] [LieAlgebra R L₄]
   [LieRing L₅] [LieAlgebra R L₅] [LieRing L₆] [LieAlgebra R L₆]
 
-namespace Prod
+namespace LieAlgebra.Prod
 
 instance instLieRing : LieRing (L₁ × L₂) where
   bracket x y := ⟨⁅x.1, y.1⁆, ⁅x.2, y.2⁆⟩
@@ -52,7 +52,7 @@ theorem bracket_apply (x y : L₁ × L₂) : ⁅x, y⁆ = ⟨⁅x.1, y.1⁆, ⁅
 instance instLieAlgebra : LieAlgebra R (L₁ × L₂) where
   lie_smul _ _ _ := by simp
 
-end Prod
+end LieAlgebra.Prod
 
 namespace LieHom
 
