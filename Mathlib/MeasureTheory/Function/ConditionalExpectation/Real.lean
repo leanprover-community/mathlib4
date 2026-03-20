@@ -75,7 +75,7 @@ theorem integral_norm_rpow_condExp_le {p : ℝ} (hp : 1 ≤ p) {f : α → E}
   _ ≤ ∫ x, μ[(fun x => ‖f x‖ ^ p) | m] x ∂μ := by
     refine integral_mono_of_nonneg ?_ integrable_condExp ?_
     · filter_upwards with a; positivity
-    · sorry
+    · exact AEStronglyMeasurable.norm_rpow_condExp_le hp hfint.1 hf
   _ = _ := integral_condExp hm
 
 theorem eLpNorm_condExp_le_eLpNorm (f : α → E) {p : ℝ≥0∞} (hp : 1 ≤ p) (hpt : p < ⊤)
