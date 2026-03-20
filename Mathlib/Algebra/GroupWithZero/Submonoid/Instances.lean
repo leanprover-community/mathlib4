@@ -18,31 +18,27 @@ assert_not_exists Ring
 
 namespace MonoidWithZeroHom
 
-variable {G H F : Type*}
+variable {G H : Type*}
 
-instance [MulZeroOneClass G] [MulZeroOneClass H] [FunLike F G H] [MonoidWithZeroHomClass F G H]
-    (f : F) : MulZeroOneClass (MonoidHom.mrange (f : G →* H)) where
+instance [MulZeroOneClass G] [MulZeroOneClass H] (f : G →*₀ H) :
+    MulZeroOneClass (MonoidHom.mrange f) where
   zero := ⟨0, 0, by simp⟩
   zero_mul _ := Subtype.ext (zero_mul _)
   mul_zero _ := Subtype.ext (mul_zero _)
 
 @[simp]
-lemma val_mrange_zero [MulZeroOneClass G] [MulZeroOneClass H] [FunLike F G H]
-    [MonoidWithZeroHomClass F G H] (f : F) :
-    ((0 : MonoidHom.mrange (f : G →* H)) : H) = 0 :=
+lemma val_mrange_zero [MulZeroOneClass G] [MulZeroOneClass H] (f : G →*₀ H) :
+    ((0 : MonoidHom.mrange f) : H) = 0 :=
   rfl
 
-instance [MulZeroOneClass G] [MonoidWithZero H] [FunLike F G H]
-    [MonoidWithZeroHomClass F G H] (f : F) :
-    MonoidWithZero (MonoidHom.mrange (f : G →* H)) where
+instance [MulZeroOneClass G] [MonoidWithZero H] (f : G →*₀ H) :
+    MonoidWithZero (MonoidHom.mrange f) where
 
-instance [MulZeroOneClass G] [CommMonoidWithZero H] [FunLike F G H]
-    [MonoidWithZeroHomClass F G H] (f : F) :
-    CommMonoidWithZero (MonoidHom.mrange (f : G →* H)) where
+instance [MulZeroOneClass G] [CommMonoidWithZero H] (f : G →*₀ H) :
+    CommMonoidWithZero (MonoidHom.mrange f) where
 
-instance [GroupWithZero G] [GroupWithZero H] [FunLike F G H]
-    [MonoidWithZeroHomClass F G H] (f : F) :
-    GroupWithZero (MonoidHom.mrange (f : G →* H)) where
+instance [GroupWithZero G] [GroupWithZero H] (f : G →*₀ H) :
+    GroupWithZero (MonoidHom.mrange f) where
   inv := fun x ↦ ⟨x⁻¹, by
     obtain ⟨y, hy⟩ := x.prop
     use y⁻¹
@@ -54,8 +50,7 @@ instance [GroupWithZero G] [GroupWithZero H] [FunLike F G H]
     simp only [ne_eq, Subtype.ext_iff] at h
     simpa using mul_inv_cancel₀ h
 
-instance [GroupWithZero G] [CommGroupWithZero H] [FunLike F G H]
-    [MonoidWithZeroHomClass F G H] (f : F) :
-    CommGroupWithZero (MonoidHom.mrange (f : G →* H)) where
+instance [GroupWithZero G] [CommGroupWithZero H] (f : G →*₀ H) :
+    CommGroupWithZero (MonoidHom.mrange f) where
 
 end MonoidWithZeroHom
