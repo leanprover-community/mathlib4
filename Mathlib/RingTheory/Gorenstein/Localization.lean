@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.LocalProperties.InjectiveDimension
 
 /-!
 
-# Basic Properties of Gorenstein Local Ring
+# Localization of Gorenstein Local Ring
 
 -/
 
