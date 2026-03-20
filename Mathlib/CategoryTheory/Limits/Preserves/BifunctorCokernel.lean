@@ -37,18 +37,18 @@ variable {X₁ Y₁ : C₁} {f₁ : X₁ ⟶ Y₁} {c₁ : CokernelCofork f₁} 
   [F.PreservesZeroMorphisms]
 
 set_option backward.isDefEq.respectTransparency false in
-variable (c₁ c₂) [HasBinaryCoproduct ((F.obj X₁).obj Y₂) ((F.obj Y₁).obj X₂)] in
-/-- The action of a bifunctor on a pair of cokernel coforks. -/
-noncomputable abbrev mapBifunctor :
+variable (c₁ c₂) in
+/-- Let `c₁` (resp. `c₂`) be a cokernel cofork for a morphism `f₁ : X₁ ⟶ Y₁`
+in a category `C₁` (resp. `f₂ : X₂ ⟶ Y₂` in `C₂`). Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C`,
+this is the cokernel cofork with point `(F.obj c₁.pt).obj c₂.pt` for
+the obvious morphism `(F.obj X₁).obj Y₂ ⨿ (F.obj Y₁).obj X₂ ⟶ (F.obj Y₁).obj Y₂`. -/
+noncomputable abbrev mapBifunctor [HasBinaryCoproduct ((F.obj X₁).obj Y₂) ((F.obj Y₁).obj X₂)] :
     CokernelCofork (coprod.desc ((F.map f₁).app Y₂) ((F.obj Y₁).map f₂)) :=
   CokernelCofork.ofπ (Z := (F.obj c₁.pt).obj c₂.pt)
     ((F.map c₁.π).app Y₂ ≫ (F.obj c₁.pt).map c₂.π) (by
-      dsimp
       ext
-      · rw [comp_zero, coprod.inl_desc_assoc, ← NatTrans.comp_app_assoc, ← Functor.map_comp]
-        simp
-      · rw [comp_zero, coprod.inr_desc_assoc, NatTrans.naturality_assoc, ← Functor.map_comp]
-        simp)
+      · simp [← NatTrans.comp_app_assoc, ← Functor.map_comp]
+      · simp [← Functor.map_comp])
 
 variable [PreservesColimit (parallelPair f₂ 0) (F.obj c₁.pt)]
   [PreservesColimit (parallelPair f₁ 0) (F.flip.obj Y₂)]
@@ -87,7 +87,12 @@ variable [HasBinaryCoproduct ((F.obj X₁).obj Y₂) ((F.obj Y₁).obj X₂)]
   [PreservesColimit (parallelPair f₁ 0) (F.flip.obj X₂)]
 
 open isColimitMapBifunctor in
-/-- The action of a bifunctor on a pair of colimit cokernel coforks. -/
+/-- Let `c₁` (resp. `c₂`) be a colimit cokernel cofork for a morphism `f₁ : X₁ ⟶ Y₁`
+in a category `C₁` (resp. `f₂ : X₂ ⟶ Y₂` in `C₂`). If `F : C₁ ⥤ C₂ ⥤ C` is a bifunctor,
+then `(F.obj c₁.pt).obj c₂.pt` identifies to the cokernel of the morphism
+`(F.obj X₁).obj Y₂ ⨿ (F.obj Y₁).obj X₂ ⟶ (F.obj Y₁).obj Y₂`
+when the cokernel of `f₁` is preserved by `F.obj c₁.pt` and the cokernel of `f₂`
+is preserved by `F.flip.obj X₁` and `F.flip.obj Y₁`. -/
 noncomputable def isColimitMapBifunctor :
     IsColimit (mapBifunctor c₁ c₂ F) :=
   Cofork.IsColimit.mk _

@@ -1067,6 +1067,8 @@ end OplaxMonoidal
 attribute [local simp] rightAdjointLaxMonoidal_ε rightAdjointLaxMonoidal_μ
   leftAdjointOplaxMonoidal_η leftAdjointOplaxMonoidal_δ in
 set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] leftAdjointOplaxMonoidal_η leftAdjointOplaxMonoidal_δ
+  rightAdjointLaxMonoidal_ε rightAdjointLaxMonoidal_μ in
 /-- If `F ⊣ G` is an adjunction, the `G` is lax monoidal iff `F` is oplax monoidal.
 It is advisable to use `Adjunction.leftAdjointOplaxMonoidal` and
 `Adjunction.rightAdjointLaxMonoidal`, because compatibilities between
