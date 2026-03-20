@@ -534,6 +534,7 @@ public lemma algebraMap_obj_top_bijective :
     Function.Bijective (algebraMap R Γ(R, (⊤ : Opens (PrimeSpectrum.Top R)))) :=
   toOpenₗ_top_bijective
 
+set_option backward.isDefEq.respectTransparency false in
 public instance (f : R) : IsLocalization.Away f Γ(R, basicOpen f) :=
   (isLocalizedModule_iff_isLocalization' _ _).mp <|
     inferInstanceAs (IsLocalizedModule (.powers f) (toOpenₗ R R (basicOpen f)))
