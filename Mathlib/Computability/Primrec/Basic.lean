@@ -437,14 +437,20 @@ section Comp
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.comp (since := "2026-03-20")]
 theorem Primrec.comp₂ {f : γ → σ} {g : α → β → γ} (hf : Primrec f) (hg : Primrec₂ g) :
     Primrec₂ fun a b => f (g a b) :=
   hf.comp hg
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.comp (since := "2026-03-20")]
 theorem Primrec₂.comp {f : β → γ → σ} {g : α → β} {h : α → γ} (hf : Primrec₂ f) (hg : Primrec g)
     (hh : Primrec h) : Primrec fun a => f (g a) (h a) :=
   Primrec.comp hf (hg.pair hh)
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.comp (since := "2026-03-20")]
 theorem Primrec₂.comp₂ {f : γ → δ → σ} {g : α → β → γ} {h : α → β → δ} (hf : Primrec₂ f)
     (hg : Primrec₂ g) (hh : Primrec₂ h) : Primrec₂ fun a b => f (g a b) (h a b) :=
   hf.comp hg hh
