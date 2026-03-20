@@ -157,23 +157,8 @@ lemma isProperMap_smul_I : IsProperMap fun g : SL(2, ℝ) ↦ g • I := by
   · refine le_trans ?_ <| le_max_right √A √A'
     exact Real.le_sqrt_of_sq_le <| le_trans (by fin_cases j <;> simp [sq_nonneg]) (hA' g hg)
 
-instance instProperSMul : ProperSMul SL(2, ℝ) ℍ := by
-  rw [MulAction.properSMul_iff_isCompact_setOf_inter_nonempty]
-  intro U V hU hV
-  let U' := {g : SL(2, ℝ) | g • I ∈ U}
-  let V' := {g : SL(2, ℝ) | g • I ∈ V}
-  have hU' : IsCompact U' := isProperMap_smul_I.isCompact_preimage hU
-  have hV' : IsCompact V' := isProperMap_smul_I.isCompact_preimage hV
-  suffices {g | (U ∩ g • V).Nonempty} = (fun x ↦ x.1 * x.2⁻¹) '' (U' ×ˢ V') from
-    this ▸ (hU'.prod hV').image (by fun_prop)
-  ext w
-  constructor
-  · rintro ⟨τ, ⟨hτ, hτ'⟩⟩
-    use (τ.toSL2R, w⁻¹ * τ.toSL2R)
-    simpa [U', V', hτ, mul_smul, ← V.mem_smul_set_iff_inv_smul_mem]
-  · rintro ⟨⟨g, h⟩, ⟨hg, hh⟩, rfl⟩
-    refine ⟨g • I, hg, ?_⟩
-    simpa [mul_smul, Set.mem_inv_smul_set_iff]
+instance instProperSMul : ProperSMul SL(2, ℝ) ℍ :=
+  MulAction.properSMul_of_proper_orbitMap isProperMap_smul_I
 
 end proper_orbit_map
 
