@@ -31,9 +31,8 @@ namespace Mathlib.Tactic
 
 open Command PrettyPrinter Delaborator in
 /-- Like `checkCore`, but logs different messages depending on whether `showImplicit` is
-true. Note that this differs from `checkCore` in making sure terms are always elaborated without
-implicit arguments inserted, modifies the constructed message, lowers to `TermElabM`, and always
-takes `ignoreStuckTC := true` (as `#check` does).
+true. Note that this differs from `checkCore` only in that it modifies the constructed message,
+lowers to `TermElabM`, and always takes `ignoreStuckTC := true` (as `#check` does).
 
 This declaration may realize constants, and so should be run without modifying the environment.
 
@@ -50,8 +49,8 @@ partial def checkCoreAux (tk : Syntax) (term : Term) (showImplicit : Bool) : Ter
           pure <| m!"{.ofConstName c}{delabSignatureWithoutImplicit (← getConstInfo c).type}"
         return
     catch _ => pure ()  -- identifier might not be a constant but constant + projection
-  -- Elaborate without inserting implicit arguments
-  let e ← Term.elabTerm (← `(term|@$term)) none
+  -- TODO: handle expressions. Currently this does not do anything differently from `#check`.
+  let e ← Term.elabTerm term none
   Term.synthesizeSyntheticMVarsNoPostponing (ignoreStuckTC := true)
   -- Users might be testing out buggy elaborators. Let's typecheck before proceeding:
   withRef tk <| Meta.check e
@@ -59,7 +58,6 @@ partial def checkCoreAux (tk : Syntax) (term : Term) (showImplicit : Bool) : Ter
   if e.isSyntheticSorry then
     return
   let type ← inferType e
-  -- TODO: handle expressions
   logInfoAt tk m!"{e} : {type}"
 where
   /-- Delaborates `type` as ` binders* : returnType`. Note the leading space; this means that we
