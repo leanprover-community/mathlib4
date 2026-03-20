@@ -410,7 +410,7 @@ namespace Height
 
 variable {K : Type*} [Field K] {ι ι' : Type*} [Fintype ι']
 
-private lemma mulHeight_eval_ge_aux {M N : ℕ} {q : ι × ι' → MvPolynomial ι K} (hι' : IsEmpty ι')
+private lemma mulHeight_eval_ge_aux {M N : ℕ} {q : ι × ι' → MvPolynomial ι K} [IsEmpty ι']
     (p : ι' → MvPolynomial ι K) {x : ι → K}
     (h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)) :
     x = 0 := by
@@ -435,9 +435,9 @@ theorem mulHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
     (h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)) :
     (Nat.card ι' ^ totalWeight K * max (mulHeightBound q) 1)⁻¹ * mulHeight x ^ N ≤
       mulHeight (fun j ↦ (p j).eval x) := by
-  rcases isEmpty_or_nonempty ι' with hι' | _
+  rcases isEmpty_or_nonempty ι'
   · simp [show q = 0 from Subsingleton.elim .., max_mulHeightBound_zero_one_eq_one K ι (ι × ι'),
-      mulHeight_eval_ge_aux hι' p h]
+      mulHeight_eval_ge_aux p h]
     grind [zero_pow_eq]
   -- case `ι'` nonempty
   let q' : ι × ι' → K := fun a ↦ (q a).eval x
@@ -467,8 +467,8 @@ theorem mulHeight_eval_ge' {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
     ∃ C > 0, ∀ (p : ι' → MvPolynomial ι K) {x : ι → K}
       (_h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)),
       C * mulHeight x ^ N ≤ mulHeight (fun j ↦ (p j).eval x) := by
-  rcases isEmpty_or_nonempty ι' with hι' | _
-  · exact ⟨1, zero_lt_one, fun p _ h ↦ by simp [mulHeight_eval_ge_aux hι' p h]⟩
+  rcases isEmpty_or_nonempty ι'
+  · exact ⟨1, zero_lt_one, fun p _ h ↦ by simp [mulHeight_eval_ge_aux p h]⟩
   have : 0 < Nat.card ι' := Nat.card_pos
   exact ⟨_, by positivity, mulHeight_eval_ge hq⟩
 
@@ -487,8 +487,8 @@ theorem logHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
     -log (Nat.card ι' ^ totalWeight K * max (mulHeightBound q) 1) + N * logHeight x ≤
       logHeight (fun j ↦ (p j).eval x) := by
   simp only [logHeight_eq_log_mulHeight]
-  rcases isEmpty_or_nonempty ι' with hι' | _
-  · simp [show q = 0 from Subsingleton.elim .., mulHeight_eval_ge_aux hι' p h,
+  rcases isEmpty_or_nonempty ι'
+  · simp [show q = 0 from Subsingleton.elim .., mulHeight_eval_ge_aux p h,
       max_mulHeightBound_zero_one_eq_one K ι (ι × ι')]
   have : (Nat.card ι' : ℝ) ^ totalWeight K ≠ 0 := by simp
   pull (disch := first | assumption | positivity) log
