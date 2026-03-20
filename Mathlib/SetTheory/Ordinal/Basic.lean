@@ -106,7 +106,7 @@ def Ordinal : Type (u + 1) :=
   Quotient Ordinal.isEquivalent
 
 /-- A "canonical" type order-isomorphic to the ordinal `o`, living in the same universe. This is
-defined through the axiom of choice.
+defined through the axiom of choice; in particular, it has no useful def-eqs, and it is not exposed.
 
 Use this over `Iio o` only when it is paramount to have a `Type u` rather than a `Type (u + 1)`,
 and convert using
@@ -116,23 +116,26 @@ Ordinal.ToType.mk : Iio o → o.ToType
 Ordinal.ToType.toOrd : o.ToType → Iio o
 ```
 -/
+@[no_expose]
 def Ordinal.ToType (o : Ordinal.{u}) : Type u :=
   o.out.α
 
 @[deprecated (since := "2025-12-04")]
 alias Ordinal.toType := Ordinal.ToType
 
-instance hasWellFounded_toType (o : Ordinal) : WellFoundedRelation o.ToType :=
-  ⟨o.out.r, o.out.wo.wf⟩
-
+@[no_expose]
 instance linearOrder_toType (o : Ordinal) : LinearOrder o.ToType :=
   @IsWellOrder.linearOrder _ o.out.r o.out.wo
 
 instance wellFoundedLT_toType (o : Ordinal) : WellFoundedLT o.ToType :=
   o.out.wo.toIsWellFounded
 
+instance hasWellFounded_toType (o : Ordinal) : WellFoundedRelation o.ToType :=
+  WellFoundedLT.toWellFoundedRelation
+
 namespace Ordinal
 
+@[no_expose]
 noncomputable instance (o : Ordinal) : SuccOrder o.ToType :=
   .ofLinearWellFoundedLT _
 
@@ -612,7 +615,7 @@ theorem card_one : card 1 = 1 := mk_eq_one _
 
 variable (r) in
 /-- The cardinality of a set is an upper-bound for the cardinality of the order type of the set's
-mex (minimum excluded value) -/
+mex (minimum excluded value). See `not_lt_enum_ord_mk_min_compl` for the `α` version. -/
 theorem card_typein_min_le_mk [IsWellOrder α r] {s : Set α} (hs : sᶜ.Nonempty) :
     (typein r <| IsWellFounded.wf.min (r := r) sᶜ hs).card ≤ #s :=
   IsWellFounded.wf.cardinalMk_subtype_lt_min_compl_le hs
@@ -1079,6 +1082,7 @@ theorem mk_toType (o : Ordinal) : #o.ToType = o.card :=
 
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal
   whose cardinal is `c`. For the order-embedding version, see `ord.order_embedding`. -/
+@[no_expose]
 def ord (c : Cardinal) : Ordinal :=
   Quot.liftOn c (fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2) <| by
   rintro α β ⟨f⟩
@@ -1087,8 +1091,10 @@ def ord (c : Cardinal) : Ordinal :=
     refine ⟨⟨_, RelIso.IsWellOrder.preimage r ?_⟩, type_preimage _ _⟩
   exacts [f.symm, f]
 
-theorem ord_eq_Inf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
-  rfl
+theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
+  (rfl)
+
+@[deprecated (since := "2026-03-15")] alias ord_eq_Inf := ord_eq_iInf
 
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord #α = @type α r wo :=
@@ -1440,11 +1446,32 @@ theorem card_eq_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
     card o = ofNat(n) ↔ o = OfNat.ofNat n :=
   card_eq_nat
 
+variable (r) in
 @[simp]
-theorem type_fintype (r : α → α → Prop) [IsWellOrder α r] [Fintype α] :
+theorem type_fintype [IsWellOrder α r] [Fintype α] :
     type r = Fintype.card α := by rw [← card_eq_nat, card_type, mk_fintype]
 
 theorem type_fin (n : ℕ) : typeLT (Fin n) = n := by simp
+
+variable (r) in
+theorem ord_mk_le_type [IsWellOrder α r] (s : Set α) : (#s).ord ≤ type r := by
+  grw [← ord_le_type, ord_le_ord, le_mk_iff_exists_set]
+  use s
+
+variable (r) in
+theorem ord_mk_lt_type [IsWellOrder α r] {s : Set α} (hfin : s.Finite) (h : sᶜ.Nonempty) :
+    (#s).ord < type r := by
+  grw [← ord_le_type, ord_lt_ord, ← mk_univ (α := α)]
+  exact card_lt_card_of_left_finite hfin h.ssubset_univ
+
+variable (r) in
+/-- The `#s`-th element of `α` is an upper-bound for the set's mex (minimum excluded value),
+ordered by `r`, when `s` is finite. See `card_typein_min_le_mk` for the `Ordinal` version. -/
+theorem not_lt_enum_ord_mk_min_compl [IsWellOrder α r] {s : Set α} (hfin : s.Finite)
+    (h : sᶜ.Nonempty) :
+    ¬r (enum r ⟨#s |>.ord, ord_mk_lt_type r hfin h⟩) (IsWellFounded.wf.min (r := r) sᶜ h) := by
+  grw [← typein_le_typein, typein_enum, Cardinal.le_ord_iff_card_le_of_lt_aleph0 _ hfin.lt_aleph0,
+    card_typein_min_le_mk]
 
 end Ordinal
 
