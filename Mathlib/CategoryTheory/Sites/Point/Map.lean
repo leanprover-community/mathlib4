@@ -136,7 +136,7 @@ variable (A) in
 /-- Relation between the fiber functors on presheaves for the points `Φ.map F K`
 and `Φ` when `F : C ⥤ D` is a cocontinuous and continuous functor between
 sites `(C, J)` and `(D, K)`. -/
-noncomputable def sheafFiberMapIso [Functor.IsContinuous.{v''} F J K] :
+noncomputable def sheafFiberMapIso [Functor.IsContinuous F J K] :
     (Φ.map F K).sheafFiber ≅
       F.sheafPushforwardContinuous A J K ⋙ Φ.sheafFiber :=
   Functor.isoWhiskerLeft (sheafToPresheaf K A) (Φ.presheafFiberMapIso F K A) ≪≫
