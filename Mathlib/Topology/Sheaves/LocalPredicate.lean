@@ -282,8 +282,9 @@ end subpresheafToTypes
 def subsheafToTypes (P : LocalPredicate T) : Sheaf (Type _) X :=
   ⟨subpresheafToTypes P.toPrelocalPredicate, subpresheafToTypes.isSheaf P⟩
 
+/-- Auxiliary definition for `stalkToFiber`. -/
 def LocalPredicate.cocone (P : LocalPredicate T) (x : X) :
-  Cocone ((OpenNhds.inclusion x).op ⋙ subpresheafToTypes P.toPrelocalPredicate) where
+    Cocone ((OpenNhds.inclusion x).op ⋙ subpresheafToTypes P.toPrelocalPredicate) where
   pt := (T x)
   ι := { app U := TypeCat.ofHom (fun f ↦ f.1 ⟨x, (unop U).2⟩) }
 

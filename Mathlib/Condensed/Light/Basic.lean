@@ -64,19 +64,9 @@ end LightCondensed
 
 namespace LightCondSet
 
--- @[ext high]
--- lemma hom_ext {X Y : LightCondSet.{u}} (f g : X ⟶ Y)
---     (h : ∀ (S : LightProfiniteᵒᵖ) (x : X.obj.obj S), f.hom.app S x = g.hom.app S x) :
---     f = g := by
---   apply Sheaf.hom_ext
---   ext
---   exact h _ _
-
--- Note: `simp` can prove this when stated for `LightCondensed C` for a concrete category `C`.
--- However, it doesn't seem to see through the abbreviation `LightCondSet`
-@[simp]
+@[deprecated NatTrans.naturality_apply (since := "2026-03-19")]
 lemma hom_naturality_apply {X Y : LightCondSet.{u}} (f : X ⟶ Y) {S T : LightProfiniteᵒᵖ}
-    (g : S ⟶ T) (x : X.obj.obj S) : f.hom.app T (X.obj.map g x) = Y.obj.map g (f.hom.app S x) :=
-  NatTrans.naturality_apply f.hom g x
+    (g : S ⟶ T) (x : X.obj.obj S) : f.hom.app T (X.obj.map g x) = Y.obj.map g (f.hom.app S x) := by
+  simp
 
 end LightCondSet

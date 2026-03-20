@@ -41,7 +41,7 @@ theorem yonedaEquiv_apply {X : C} {F : Sheaf J (Type v)} (f : J.yoneda.obj X ⟶
 
 @[simp]
 theorem yonedaEquiv_symm_app_apply {X : C} {F : Sheaf J (Type v)} (x : F.obj.obj (op X))
-    (Y : Cᵒᵖ) (f : Y.unop ⟶ X) : (J.yonedaEquiv.symm x).hom.app Y f = F.obj.map f.op x :=
+    (Y : Cᵒᵖ) (f : Y.unop ⟶ X) : dsimp% (J.yonedaEquiv.symm x).hom.app Y f = F.obj.map f.op x :=
   rfl
 
 /-- See also `yonedaEquiv_naturality'` for a more general version. -/
@@ -72,8 +72,9 @@ lemma yonedaEquiv_symm_naturality_left {X X' : C} (f : X' ⟶ X) (F : Sheaf J (T
     (x : F.obj.obj ⟨X⟩) : J.yoneda.map f ≫ J.yonedaEquiv.symm x = J.yonedaEquiv.symm
       ((F.obj.map f.op) x) := by
   apply J.yonedaEquiv.injective
-  simp only [yonedaEquiv_comp, yonedaEquiv_symm_app_apply, Equiv.apply_symm_apply]
-  rw [yonedaEquiv_yoneda_map]
+  rw [yonedaEquiv_comp, yonedaEquiv_yoneda_map]
+  simp
+  rfl
 
 lemma yonedaEquiv_symm_naturality_right (X : C) {F F' : Sheaf J (Type v)} (f : F ⟶ F')
     (x : F.obj.obj ⟨X⟩) : J.yonedaEquiv.symm x ≫ f = J.yonedaEquiv.symm (f.hom.app ⟨X⟩ x) := by
@@ -111,7 +112,7 @@ lemma hom_ext_yoneda {P Q : Sheaf J (Type v)} {f g : P ⟶ Q}
     using congr_arg (J.yonedaEquiv) (h _ (J.yonedaEquiv.symm x))
 
 /-- The Yoneda lemma for sheaves. -/
-@[simps! hom_app_app_hom_apply_down inv_app_app]
+@[simps! +dsimpLhs hom_app_app_hom_apply_down inv_app_app]
 def yonedaOpCompCoyoneda :
     J.yoneda.op ⋙ coyoneda ≅
       evaluation Cᵒᵖ (Type v) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙
@@ -137,7 +138,7 @@ theorem uliftYonedaEquiv_apply {X : C} {F : Sheaf J (Type (max v v'))}
 @[simp]
 theorem uliftYonedaEquiv_symm_app_apply {X : C} {F : Sheaf J (Type (max v v'))}
     (x : F.obj.obj (op X)) (Y : Cᵒᵖ) (f : Y.unop ⟶ X) :
-    (J.uliftYonedaEquiv.symm x).hom.app Y ⟨f⟩ = F.obj.map f.op x :=
+    dsimp% (J.uliftYonedaEquiv.symm x).hom.app Y ⟨f⟩ = F.obj.map f.op x :=
   rfl
 
 @[deprecated (since := "2025-11-10")] alias yonedaULiftEquiv_symm_app_apply :=
@@ -240,7 +241,7 @@ lemma hom_ext_uliftYoneda {P Q : Sheaf J (Type (max v v'))} {f g : P ⟶ Q}
 @[deprecated (since := "2025-11-10")] alias hom_ext_yonedaULift := hom_ext_uliftYoneda
 
 /-- A variant of the Yoneda lemma for sheaves with a raise in the universe level. -/
-@[simps! -isSimp]
+@[simps! +dsimpLhs -isSimp]
 def uliftYonedaOpCompCoyoneda :
     J.uliftYoneda.op ⋙ coyoneda ≅
       evaluation Cᵒᵖ (Type (max v v')) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙
@@ -254,10 +255,10 @@ def uliftYonedaOpCompCoyoneda :
 
 attribute [simp] uliftYonedaOpCompCoyoneda_hom_app_app_hom_apply_down
 
-@[simp]
+-- @[simp]
 lemma uliftYonedaOpCompCoyoneda_inv_app_app (X : Cᵒᵖ) (F : Sheaf J (Type (max v v')))
     (s : ULift.{u} (F.obj.obj X)) :
-    (J.uliftYonedaOpCompCoyoneda.inv.app X).app F s = J.uliftYonedaEquiv.symm s.down :=
+    dsimp% (J.uliftYonedaOpCompCoyoneda.inv.app X).app F s = J.uliftYonedaEquiv.symm s.down :=
   rfl
 
 lemma uliftYonedaOpCompCoyoneda_app_app (X : Cᵒᵖ) (F : Sheaf J (Type (max v v'))) :

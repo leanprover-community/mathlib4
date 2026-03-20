@@ -292,7 +292,7 @@ def CoconePt.desc (s : Cocone F) : CoconePt hc ↪o s.pt where
 
 @[simp]
 lemma CoconePt.fac_apply (s : Cocone F) (j : J) (x : F.obj j) :
-    CoconePt.desc hc s (c.ι.app j x) = s.ι.app j x :=
+    dsimp% CoconePt.desc hc s (c.ι.app j x) = s.ι.app j x :=
   ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) x
 
 set_option backward.isDefEq.respectTransparency false in

@@ -159,16 +159,15 @@ variable (J : GrothendieckTopology C)
 If `J` is subcanonical, we obtain a "Yoneda" functor from the defining site
 into the sheaf category.
 -/
-@[simps]
-def yoneda [J.Subcanonical] : C ⥤ Sheaf J (Type v) where
-  obj X := ⟨CategoryTheory.yoneda.obj X, by
+@[simps! obj_obj map_hom]
+def yoneda [J.Subcanonical] : C ⥤ Sheaf J (Type v) :=
+  ObjectProperty.lift _ CategoryTheory.yoneda <| fun X ↦ by
     rw [isSheaf_iff_isSheaf_of_type]
-    apply Subcanonical.isSheaf_of_isRepresentable⟩
-  map f := ⟨CategoryTheory.yoneda.map f⟩
+    apply Subcanonical.isSheaf_of_isRepresentable
 
 /-- Variant of the Yoneda embedding which allows a raise in the universe level
 for the category of types. -/
-@[pp_with_univ, simps!]
+@[pp_with_univ, simps! +dsimpLhs]
 def uliftYoneda [J.Subcanonical] : C ⥤ Sheaf J (Type (max v w)) :=
   J.yoneda ⋙ sheafCompose J uliftFunctor.{w}
 
@@ -176,7 +175,7 @@ def uliftYoneda [J.Subcanonical] : C ⥤ Sheaf J (Type (max v w)) :=
 
 /-- If `C` is a category with `[Category.{max w v} C]`, this is the isomorphism
 `uliftYoneda.{w} (C := C) ≅ yoneda`. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def uliftYonedaIsoYoneda {C : Type u} [Category.{max w v} C] (J : GrothendieckTopology C)
     [J.Subcanonical] :
     GrothendieckTopology.uliftYoneda.{w} J ≅ J.yoneda :=
@@ -194,7 +193,7 @@ def yonedaCompSheafToPresheaf :
   Iso.refl _
 
 /-- A variant of `yonedaCompSheafToPresheaf` with a raise in the universe level. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def uliftYonedaCompSheafToPresheaf :
     GrothendieckTopology.uliftYoneda.{w} J ⋙ sheafToPresheaf J (Type (max v w)) ≅
       CategoryTheory.uliftYoneda.{w} :=

@@ -105,7 +105,7 @@ lemma binaryProductIso_inv_comp_fst :
 
 @[simp]
 lemma binaryProductIso_inv_comp_fst_apply (a : C) (z : (prod F G).obj a) :
-    (Limits.prod.fst (X := F)).app a ((binaryProductIso F G).inv.app a z) = z.1 :=
+    dsimp% (Limits.prod.fst (X := F)).app a ((binaryProductIso F G).inv.app a z) = z.1 :=
   congr_hom (congr_app (binaryProductIso_inv_comp_fst F G) a) z
 
 set_option backward.isDefEq.respectTransparency false in
@@ -116,7 +116,7 @@ lemma binaryProductIso_inv_comp_snd :
 
 @[simp]
 lemma binaryProductIso_inv_comp_snd_apply (a : C) (z : (prod F G).obj a) :
-    (Limits.prod.snd (X := F)).app a ((binaryProductIso F G).inv.app a z) = z.2 :=
+    dsimp% (Limits.prod.snd (X := F)).app a ((binaryProductIso F G).inv.app a z) = z.2 :=
   congr_hom (congr_app (binaryProductIso_inv_comp_snd F G) a) z
 
 variable {F G}
@@ -130,12 +130,12 @@ def prodMk {a : C} (x : F.obj a) (y : G.obj a) : (F ⨯ G).obj a :=
 @[simp]
 lemma prodMk_fst {a : C} (x : F.obj a) (y : G.obj a) :
     (Limits.prod.fst (X := F)).app a (prodMk x y) = x := by
-  simp only [prodMk, binaryProductIso_inv_comp_fst_apply]
+  simp [prodMk]
 
 @[simp]
 lemma prodMk_snd {a : C} (x : F.obj a) (y : G.obj a) :
     (Limits.prod.snd (X := F)).app a (prodMk x y) = y := by
-  simp only [prodMk, binaryProductIso_inv_comp_snd_apply]
+  simp [prodMk]
 
 @[ext]
 lemma prod_ext {a : C} (z w : (prod F G).obj a) (h1 : z.1 = w.1) (h2 : z.2 = w.2) :
@@ -234,7 +234,7 @@ lemma inl_comp_binaryCoproductIso_hom :
 
 @[simp]
 lemma inl_comp_binaryCoproductIso_hom_apply (a : C) (x : F.obj a) :
-    (binaryCoproductIso F G).hom.app a ((Limits.coprod.inl (X := F)).app a x) = .inl x :=
+    dsimp% (binaryCoproductIso F G).hom.app a ((Limits.coprod.inl (X := F)).app a x) = .inl x :=
   congr_hom (congr_app (inl_comp_binaryCoproductIso_hom F G) a) x
 
 set_option backward.isDefEq.respectTransparency false in
@@ -246,7 +246,7 @@ lemma inr_comp_binaryCoproductIso_hom :
 
 @[simp]
 lemma inr_comp_binaryCoproductIso_hom_apply (a : C) (x : G.obj a) :
-    (binaryCoproductIso F G).hom.app a ((Limits.coprod.inr (X := F)).app a x) = .inr x :=
+    dsimp% (binaryCoproductIso F G).hom.app a ((Limits.coprod.inr (X := F)).app a x) = .inr x :=
   congr_hom (congr_app (inr_comp_binaryCoproductIso_hom F G) a) x
 
 @[simp]
@@ -255,7 +255,7 @@ lemma inl_comp_binaryCoproductIso_inv :
 
 @[simp]
 lemma inl_comp_binaryCoproductIso_inv_apply (a : C) (x : F.obj a) :
-    (binaryCoproductIso F G).inv.app a (.inl x) = (Limits.coprod.inl (X := F)).app a x := rfl
+    dsimp% (binaryCoproductIso F G).inv.app a (.inl x) = (Limits.coprod.inl (X := F)).app a x := rfl
 
 @[simp]
 lemma inr_comp_binaryCoproductIso_inv :
@@ -263,7 +263,7 @@ lemma inr_comp_binaryCoproductIso_inv :
 
 @[simp]
 lemma inr_comp_binaryCoproductIso_inv_apply (a : C) (x : G.obj a) :
-    (binaryCoproductIso F G).inv.app a (.inr x) = (Limits.coprod.inr (X := F)).app a x := rfl
+    dsimp% (binaryCoproductIso F G).inv.app a (.inr x) = (Limits.coprod.inr (X := F)).app a x := rfl
 
 variable {F G}
 

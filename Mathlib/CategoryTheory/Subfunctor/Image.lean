@@ -32,7 +32,7 @@ namespace Subfunctor
 section range
 
 /-- The range of a morphism of type-valued functors, as a subfunctor of the target. -/
-@[simps obj map]
+@[simps]
 def range (p : F' ⟶ F) : Subfunctor F where
   obj U := Set.range (p.app U)
   map := by

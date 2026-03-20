@@ -319,7 +319,7 @@ lemma image_preimage_le (B : X.Subcomplex) (f : Y ⟶ X) :
 /-- Given a morphism of simplicial sets `p : Y ⟶ X` and
 `A : X.Subcomplex`, this is the induced morphism
 `(A.preimage p : SSet) ⟶ (A : SSet)`. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def fromPreimage (A : X.Subcomplex) (p : Y ⟶ X) :
     (A.preimage p : SSet) ⟶ (A : SSet) :=
   lift (Subcomplex.ι _ ≫ p) (by simp [range_comp])

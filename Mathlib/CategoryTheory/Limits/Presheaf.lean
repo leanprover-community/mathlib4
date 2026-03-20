@@ -204,7 +204,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma uliftYonedaAdjunction_unit_app_app (P : Cᵒᵖ ⥤ Type (max w v₁ v₂))
     {Z : Cᵒᵖ} (z : P.obj Z) :
-    ((uliftYonedaAdjunction.{w} L α).unit.app P).app Z z =
+    dsimp% ((uliftYonedaAdjunction.{w} L α).unit.app P).app Z z =
       ULift.up (α.app Z.unop ≫ L.map (uliftYonedaEquiv.symm z)) := by
   have h₁ := (uliftYonedaAdjunction.{w} L α).homEquiv_unit P _ (𝟙 _)
   simp only [Functor.comp_obj, Functor.map_id, comp_id] at h₁
@@ -467,7 +467,7 @@ noncomputable def compULiftYonedaIsoULiftYonedaCompLan :
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma compULiftYonedaIsoULiftYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
-    ((compULiftYonedaIsoULiftYonedaCompLan.{w} F).inv.app X).app (op (F.obj X))
+    dsimp% ((compULiftYonedaIsoULiftYonedaCompLan.{w} F).inv.app X).app (op (F.obj X))
           ((F.op.lanUnit.app ((uliftYoneda.{max w v₂}).obj X)).app (op X)
         (ULift.up (𝟙 X))) = ULift.up (𝟙 (F.obj X)) := by
   exact (ConcreteCategory.congr_hom (CC := fun X ↦ X) (Functor.descOfIsLeftKanExtension_fac_app _
@@ -769,7 +769,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma shrinkYoneda_map_app_coconeπOpCompShrinkYonedaObj_ι_app
     {X₁ X₂ : C} (f : X₁ ⟶ X₂) (u : F.Elements) :
-    (shrinkYoneda.{w}.map f).app (op u.fst) ≫
+    dsimp% (shrinkYoneda.{w}.map f).app (op u.fst) ≫
       (coconeπOpCompShrinkYonedaObj F X₂).ι.app (op u) =
     (coconeπOpCompShrinkYonedaObj F X₁).ι.app (op u) ≫ F.map f := by
   ext g
@@ -787,7 +787,7 @@ noncomputable def coconeπOpCompShrinkYonedaFlip :
       naturality {X Y} f := by
         ext x
         obtain ⟨x, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective x
-        simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}] }
+        simp }
   ι.naturality u v g := by
     ext X x
     obtain ⟨x, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective x
@@ -809,8 +809,7 @@ noncomputable def shrinkYonedaCompWhiskeringLeftObjπCompColimIso
   NatIso.ofComponents (fun X ↦
     IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
       (isColimitCoconeπOpCompShrinkYonedaObj F X)) (fun {X₁ X₂} f ↦ colimit.hom_ext (by
-        intro u
-        simpa using shrinkYoneda_map_app_coconeπOpCompShrinkYonedaObj_ι_app F f u.unop))
+        cat_disch))
 
 set_option backward.isDefEq.respectTransparency false in
 lemma shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply

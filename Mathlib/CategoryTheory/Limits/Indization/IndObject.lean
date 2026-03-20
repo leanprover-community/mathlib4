@@ -98,7 +98,7 @@ def coconeIsColimit : IsColimit P.cocone :=
 set_option backward.isDefEq.respectTransparency false in
 /-- If `A` and `B` are isomorphic, then an ind-object presentation of `A` can be extended to an
 ind-object presentation of `B`. -/
-@[simps!]
+@[simps! +dsimpLhs]
 noncomputable def extend {A B : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) (η : A ⟶ B)
     [IsIso η] : IndObjectPresentation B :=
   .ofCocone (P.cocone.extend η) (P.coconeIsColimit.extendIso η)

@@ -88,7 +88,7 @@ lemma isFiltered_of_aleph0_le (hκ : Cardinal.aleph0 ≤ κ) :
 
 /-- The functor `HasCardinalLT.Set X κ ⥤ Type u` which sends a subset of `X`
 of cardinality `κ` to the corresponding subtype. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def functor : HasCardinalLT.Set X κ ⥤ Type u :=
   Monotone.functor (f := Subtype.val) (by tauto) ⋙ Set.functorToTypes (X := X)
 

@@ -90,7 +90,7 @@ def functorToInterchangeIso : functorToInterchange A K ≅
 association because the type of `Presheaf.tautologicalCocone` is
 `Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda)`, so this association will show up in the
 proof. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def flipFunctorToInterchange : (functorToInterchange A K).flip ≅
     ((CostructuredArrow.proj yoneda A ⋙ yoneda) ⋙ (whiskeringLeft J Cᵒᵖ (Type u)).obj K) :=
   Iso.refl _

@@ -153,7 +153,7 @@ def homOver {ℱ : Dᵒᵖ ⥤ A} {ℱ' : Sheaf K A} (α : G.op ⋙ ℱ ⟶ G.op
 /-- (Implementation). Given an iso between the pullbacks of two sheaves, we can whisker it with
 `coyoneda` to obtain an iso between the pullbacks of the sheaves of maps from `X`.
 -/
-@[simps!]
+@[simps! +dsimpLhs]
 def isoOver {ℱ ℱ' : Sheaf K A} (α : G.op ⋙ ℱ.obj ≅ G.op ⋙ ℱ'.obj) (X : A) :
     G.op ⋙ (sheafOver ℱ X).obj ≅ G.op ⋙ (sheafOver ℱ' X).obj :=
   isoWhiskerRight α (coyoneda.obj (op X))
@@ -239,13 +239,11 @@ theorem appHom_valid_glue {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) :
   ext
   apply appHom_restrict
 
-unif_hint Functor.comp_op_obj {J J' C : Type*} [Category* J] [Category* J'] [Category* C]
+unif_hint {J J' C : Type*} [Category* J] [Category* J'] [Category* C]
     (G G' : J' ⥤ J) (F F' : Jᵒᵖ ⥤ C) (j j' : J') where
   G ≟ G'
   F ≟ F'
-  j ≟ j'
-  ⊢ (G.op ⋙ F).obj (op j) ≟ F'.obj (op (G'.obj j'))
-
+  j ≟ j' ⊢ (G.op ⋙ F).obj (op j) ≟ F'.obj (op (G'.obj j')) in
 /--
 (Implementation). The maps given in `appIso` is inverse to each other and gives a `ℱ(X) ≅ ℱ'(X)`.
 -/
@@ -280,8 +278,6 @@ noncomputable def presheafHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) : ℱ �
     simp only [TypeCat.Fun.as_apply, types_comp_apply, ← map_comp_apply]
     rw [appHom_restrict, appHom_restrict]
     simp
-
-    -- simp only [appHom_restrict, types_comp_apply, ← FunctorToTypes.map_comp_apply]
 
 /--
 Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of types,

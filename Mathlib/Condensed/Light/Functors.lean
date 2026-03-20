@@ -50,7 +50,7 @@ instance : lightProfiniteToLightCondSet.Faithful :=
 /--
 The functor from `LightProfinite` to `LightCondSet` factors through `TopCat`.
 -/
-@[simps!]
+@[simps! +dsimpLhs]
 noncomputable def lightProfiniteToLightCondSetIsoTopCatToLightCondSet :
     lightProfiniteToLightCondSet.{u} ≅ LightProfinite.toTopCat.{u} ⋙ topCatToLightCondSet.{u} :=
   NatIso.ofComponents fun X ↦ FullyFaithful.preimageIso (fullyFaithfulSheafToPresheaf _ _) <|

@@ -70,7 +70,7 @@ lemma presheafHom_map_app {X Y Z : C} (f : Z ⟶ Y) (g : Y ⟶ X) (h : Z ⟶ X) 
 @[simp]
 lemma presheafHom_map_app_op_mk_id {X Y : C} (g : Y ⟶ X)
     (α : (presheafHom F G).obj (op X)) :
-    ((presheafHom F G).map g.op α).app (op (Over.mk (𝟙 Y))) =
+    dsimp% ((presheafHom F G).map g.op α).app (op (Over.mk (𝟙 Y))) =
       α.app (op (Over.mk g)) :=
   presheafHom_map_app (𝟙 Y) g g (by simp) α
 
@@ -85,7 +85,9 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
         dsimp
         refine Eq.trans ?_ ((s.1 ⟨X₁⟩).naturality
           (Over.homMk f : Over.mk f ⟶ Over.mk (𝟙 X₁)).op)
-        rw [← s.2 f.op, presheafHom_map_app_op_mk_id]
+        rw [← s.2 f.op]
+        dsimp
+        rw [presheafHom_map_app_op_mk_id]
         rfl }
   invFun f := ⟨fun _ => Functor.whiskerLeft _ f, fun _ => rfl⟩
   left_inv s := by
@@ -106,7 +108,9 @@ lemma PresheafHom.isAmalgamation_iff {X : C} (S : Sieve X)
       y.app (op (Over.mk g)) = (x g hg).app (op (Over.mk (𝟙 Y))) := by
   constructor
   · intro h Y g hg
-    rw [← h g hg, presheafHom_map_app_op_mk_id]
+    rw [← h g hg]
+    dsimp
+    rw [presheafHom_map_app_op_mk_id]
   · intro h Y g hg
     dsimp
     ext ⟨W : Over Y⟩

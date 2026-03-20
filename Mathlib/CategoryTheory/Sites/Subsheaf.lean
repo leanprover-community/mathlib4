@@ -217,7 +217,7 @@ section Image
 
 variable (J) in
 /-- A morphism factors through the sheafification of the image presheaf. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def Subfunctor.toRangeSheafify (f : F' ⟶ F) : F' ⟶ ((Subfunctor.range f).sheafify J).toFunctor :=
   toRange f ≫ Subfunctor.homOfLe ((range f).le_sheafify J)
 

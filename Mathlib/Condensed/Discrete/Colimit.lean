@@ -65,7 +65,7 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
 lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
     (s : Cocone ((F ⋙ toProfinite).op ⋙ locallyConstantPresheaf X))
     (i : I) (f : LocallyConstant (toProfinite.obj (F.obj i)) X) :
-    (isColimitLocallyConstantPresheaf c X hc).desc s (f.comap (c.π.app i).hom.hom) =
+    dsimp% (isColimitLocallyConstantPresheaf c X hc).desc s (f.comap (c.π.app i).hom.hom) =
       s.ι.app ⟨i⟩ f := by
   change ((((locallyConstantPresheaf X).mapCocone c.op).ι.app ⟨i⟩) ≫
     (isColimitLocallyConstantPresheaf c X hc).desc s) _ = _
@@ -81,7 +81,7 @@ noncomputable def isColimitLocallyConstantPresheafDiagram (S : Profinite) :
 lemma isColimitLocallyConstantPresheafDiagram_desc_apply (S : Profinite)
     (s : Cocone (S.diagram.op ⋙ locallyConstantPresheaf X))
     (i : DiscreteQuotient S) (f : LocallyConstant (S.diagram.obj i) X) :
-    (isColimitLocallyConstantPresheafDiagram X S).desc s
+    dsimp% (isColimitLocallyConstantPresheafDiagram X S).desc s
       (f.comap (S.asLimitCone.π.app i).hom.hom) = s.ι.app ⟨i⟩ f :=
   isColimitLocallyConstantPresheaf_desc_apply S.asLimitCone X S.asLimit s i f
 
@@ -108,7 +108,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma lanPresheafExt_hom {F G : Profinite.{u}ᵒᵖ ⥤ Type (u + 1)} (S : Profinite.{u}ᵒᵖ)
     (i : toProfinite.op ⋙ F ≅ toProfinite.op ⋙ G) : (lanPresheafExt i).hom.app S =
       colimMap (whiskerLeft (CostructuredArrow.proj toProfinite.op S) i.hom) := by
-  simp only [lanPresheaf, pointwiseLeftKanExtension_obj, lanPresheafExt,
+  simp only [lanPresheaf, lanPresheafExt,
     leftKanExtensionUniqueOfIso_hom, pointwiseLeftKanExtension_desc_app]
   apply colimit.hom_ext
   aesop
@@ -250,7 +250,7 @@ set_option backward.isDefEq.respectTransparency false in
 The restriction of a finite-product-preserving presheaf `F` on `Profinite` to the category of
 finite sets is isomorphic to `finYoneda F`.
 -/
-@[simps!]
+@[simps! +dsimpLhs]
 def isoFinYoneda : toProfinite.op ⋙ F ≅ finYoneda F :=
   NatIso.ofComponents (fun X ↦ isoFinYonedaComponents F (toProfinite.obj X.unop)) fun _ ↦ by
     simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]
@@ -350,7 +350,7 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
 lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
     (s : Cocone ((F ⋙ toLightProfinite).op ⋙ locallyConstantPresheaf X))
     (n : ℕᵒᵖ) (f : LocallyConstant (toLightProfinite.obj (F.obj n)) X) :
-    (isColimitLocallyConstantPresheaf c X hc).desc s (f.comap (c.π.app n).hom.hom) =
+    dsimp% (isColimitLocallyConstantPresheaf c X hc).desc s (f.comap (c.π.app n).hom.hom) =
       s.ι.app ⟨n⟩ f := by
   change ((((locallyConstantPresheaf X).mapCocone c.op).ι.app ⟨n⟩) ≫
     (isColimitLocallyConstantPresheaf c X hc).desc s) _ = _
@@ -367,7 +367,7 @@ noncomputable def isColimitLocallyConstantPresheafDiagram (S : LightProfinite) :
 lemma isColimitLocallyConstantPresheafDiagram_desc_apply (S : LightProfinite)
     (s : Cocone (S.diagram.rightOp ⋙ locallyConstantPresheaf X))
     (n : ℕ) (f : LocallyConstant (S.diagram.obj ⟨n⟩) X) :
-    (isColimitLocallyConstantPresheafDiagram X S).desc s
+    dsimp% (isColimitLocallyConstantPresheafDiagram X S).desc s
       (f.comap (S.asLimitCone.π.app ⟨n⟩).hom.hom) = s.ι.app n f := by
   change ((((locallyConstantPresheaf X).mapCocone (coconeRightOpOfCone S.asLimitCone)).ι.app n) ≫
     (isColimitLocallyConstantPresheafDiagram X S).desc s) _ = _
@@ -537,7 +537,7 @@ attribute [local simp] toLightProfinite_obj
 The restriction of a finite-product-preserving presheaf `F` on `Profinite` to the category of
 finite sets is isomorphic to `finYoneda F`.
 -/
-@[simps!]
+@[simps! +dsimpLhs]
 def isoFinYoneda : toLightProfinite.op ⋙ F ≅ finYoneda F :=
   NatIso.ofComponents (fun X ↦ isoFinYonedaComponents F (toLightProfinite.obj X.unop)) fun _ ↦ by
     simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]

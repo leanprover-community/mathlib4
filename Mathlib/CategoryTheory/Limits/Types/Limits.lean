@@ -72,7 +72,7 @@ theorem isLimitEquivSections_apply {c : Cone F} (t : IsLimit c) (j : J)
 @[simp]
 theorem isLimitEquivSections_symm_apply {c : Cone F} (t : IsLimit c)
     (x : F.sections) (j : J) :
-    c.π.app j ((isLimitEquivSections t).symm x) = (x : ∀ j, F.obj j) j := by
+    dsimp% c.π.app j ((isLimitEquivSections t).symm x) = (x : ∀ j, F.obj j) j := by
   conv_rhs => rw [← (isLimitEquivSections t).right_inv x]
   rfl
 
@@ -222,7 +222,7 @@ theorem Limit.π_mk (x : ∀ j, F.obj j) (h : ∀ (j j') (f : j ⟶ j'), F.map f
     limit.π F j (Limit.mk F x h) = x j := by
   dsimp [Limit.mk]
   simp
-
+#lint
 -- PROJECT: prove this for concrete categories where the forgetful functor preserves limits
 @[ext]
 theorem limit_ext (x y : (limit F : Type u)) (w : ∀ j, limit.π F j x = limit.π F j y) :

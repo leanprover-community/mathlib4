@@ -53,7 +53,7 @@ noncomputable def liftedConeElement' : limit ((F ⋙ π A) ⋙ A) :=
 
 @[simp]
 lemma π_liftedConeElement' (i : I) :
-    limit.π ((F ⋙ π A) ⋙ A) i (liftedConeElement' F) = (F.obj i).2 :=
+    dsimp% limit.π ((F ⋙ π A) ⋙ A) i (liftedConeElement' F) = (F.obj i).2 :=
   Types.Limit.π_mk _ _ _ _
 
 variable [HasLimitsOfShape I C] [PreservesLimitsOfShape I A]
@@ -66,24 +66,22 @@ noncomputable def liftedConeElement : A.obj (limit (F ⋙ π A)) :=
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_lift_mapCone (c : Cone F) :
-    A.map (limit.lift (F ⋙ π A) ((π A).mapCone c)) c.pt.snd = liftedConeElement F := by
+    dsimp% A.map (limit.lift (F ⋙ π A) ((π A).mapCone c)) c.pt.snd = liftedConeElement F := by
   apply (preservesLimitIso A (F ⋙ π A)).toEquiv.injective
   ext i
   have h₁ := congr_hom (preservesLimitIso_hom_π A (F ⋙ π A) i)
     (A.map (limit.lift (F ⋙ π A) ((π A).mapCone c)) c.pt.snd)
   have h₂ := (c.π.app i).property
   simpa [-Functor.comp_obj, ← comp_apply, ← Functor.map_comp, liftedConeElement, liftedConeElement']
-
 set_option backward.isDefEq.respectTransparency false in
+
 @[simp]
 lemma map_π_liftedConeElement (i : I) :
-    A.map (limit.π (F ⋙ π A) i) (liftedConeElement F) = (F.obj i).snd := by
+    dsimp% A.map (limit.π (F ⋙ π A) i) (liftedConeElement F) = (F.obj i).snd := by
   have := congr_hom
     (preservesLimitIso_inv_π A (F ⋙ π A) i) (liftedConeElement' F)
-  simpa [liftedConeElement, ← comp_apply] using
-    Types.Limit.π_mk _ _ _ _
+  simp [liftedConeElement, ← comp_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (implementation) The constructed limit cone. -/
 @[simps]
 noncomputable def liftedCone : Cone F where
@@ -99,7 +97,7 @@ noncomputable def isValidLift : (π A).mapCone (liftedCone F) ≅ limit.cone (F 
 set_option backward.isDefEq.respectTransparency false in
 /-- (implementation) The constructed limit cone is a limit cone. -/
 noncomputable def isLimit : IsLimit (liftedCone F) where
-  lift s := ⟨limit.lift (F ⋙ π A) ((π A).mapCone s), by simpa using map_lift_mapCone _ _⟩
+  lift s := ⟨limit.lift (F ⋙ π A) ((π A).mapCone s), by simp⟩
   uniq s m h := ext _ _ _ <| limit.hom_ext
     fun i => by simpa using congrArg Subtype.val (h i)
 

@@ -230,7 +230,7 @@ def corepresentableBy₂' :
 `((F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ -)` and
 `(F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -)` that corresponds to the associator
 isomorphism for Day convolution through `corepresentableBy₂` and `corepresentableBy₂`. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def associatorCorepresentingIso :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((tensor C).prod (𝟭 C)) ⋙
@@ -310,7 +310,7 @@ lemma associator_inv_unit_unit (x y z : C) :
   simp only [whiskerRight_tensor, id_whiskerRight, Category.id_comp, Iso.inv_hom_id] at this
   simp only [this]
   dsimp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
-  erw [id_apply]
+  erw [id_apply] -- regression
   simp
 
 
@@ -479,7 +479,7 @@ def corepresentableByRight [DayConvolution F U] :
 
 /-- The isomorphism of corepresentable functors that defines the left unitor for
 Day convolution. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def leftUnitorCorepresentingIso :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((Functor.fromPUnit.{0} (𝟙_ C)).prod (𝟭 C)) ⋙
@@ -507,7 +507,7 @@ def leftUnitorCorepresentingIso :
 
 /-- The isomorphism of corepresentable functors that defines the right unitor for
 Day convolution. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def rightUnitorCorepresentingIso :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((𝟭 C).prod (Functor.fromPUnit.{0} (𝟙_ C))) ⋙

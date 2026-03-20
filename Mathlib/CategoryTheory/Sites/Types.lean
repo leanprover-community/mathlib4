@@ -162,7 +162,7 @@ theorem eval_app (S₁ S₂ : Sheaf typesGrothendieckTopology (Type u)) (f : S�
 set_option backward.isDefEq.respectTransparency false in
 /-- `yoneda'` induces an equivalence of categories between `Type u` and
 `Sheaf typesGrothendieckTopology (Type u)`. -/
-@[simps!]
+@[simps! +dsimpLhs]
 noncomputable def typeEquiv : Type u ≌ Sheaf typesGrothendieckTopology (Type u) where
   functor := yoneda'
   inverse := sheafToPresheaf _ _ ⋙ (evaluation _ _).obj (op (PUnit))
