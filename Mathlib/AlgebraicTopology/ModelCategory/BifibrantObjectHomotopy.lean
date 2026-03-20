@@ -195,7 +195,7 @@ lemma HoCat.ιFibrantObject_map_toHoCat_map {X Y : BifibrantObject C} (f : X ⟶
       FibrantObject.toHoCat.map (FibrantObject.homMk f.hom) :=
   rfl
 
-/-- The isomomorphism `toHoCat ⋙ HoCat.ιFibrantObject ≅ ιFibrantObject ⋙ FibrantObject.toHoCat`
+/-- The isomorphism `toHoCat ⋙ HoCat.ιFibrantObject ≅ ιFibrantObject ⋙ FibrantObject.toHoCat`
 between functors `BifibrantObject C ⥤ FibrantObject.HoCat C`. -/
 def toHoCatCompιFibrantObject :
     toHoCat (C := C) ⋙ HoCat.ιFibrantObject ≅
@@ -219,7 +219,7 @@ lemma HoCat.ιCofibrantObject_map_toHoCat_map {X Y : BifibrantObject C} (f : X �
       CofibrantObject.toHoCat.map (CofibrantObject.homMk f.hom) :=
   rfl
 
-/-- The isomomorphism
+/-- The isomorphism
 `toHoCat ⋙ HoCat.ιCofibrantObject ≅ ιCofibrantObject ⋙ CofibrantObject.toHoCat`
 between functors `BifibrantObject C ⥤ CofibrantObject.HoCat C`. -/
 def toHoCatCompιCofibrantObject :
