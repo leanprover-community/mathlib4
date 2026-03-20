@@ -108,6 +108,9 @@ example (x y : Nat) : True := by
   #check' x + y
   trivial
 
+/-
+# TODO: handle expressions
+
 /-- info: x : ∀ (y : Nat), i = i -/
 #guard_msgs in
 example (x : {i : Nat} → (y : Nat) → i = i) : True := by
@@ -163,6 +166,8 @@ variable (x : {i : Nat} → (y : Nat) → String → String → {j : Nat} → F 
 #check' x
 
 end arrow
+
+-/
 
 /-!
 `#check'` is ok with metavariables

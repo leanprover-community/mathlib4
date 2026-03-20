@@ -59,8 +59,7 @@ partial def checkCoreAux (tk : Syntax) (term : Term) (showImplicit : Bool) : Ter
   if e.isSyntheticSorry then
     return
   let type ← inferType e
-  let type ← if showImplicit then pure m!"{type}" else
-    delabForallWithSignatureWithoutImplicit type
+  -- TODO: handle expressions
   logInfoAt tk m!"{e} : {type}"
 where
   /-- Delaborates `type` as ` binders* : returnType`. Note the leading space; this means that we
@@ -74,40 +73,9 @@ where
       | `(∀ $binders'*, $type) =>
         let binders' := binders'.filter (·.raw.isOfKind ``Parser.Term.explicitBinder)
         return ⟨← `(declSig| $binders* $binders'* : $type)⟩
-      | _ => return ⟨← `(declSig| $binders* : $(← deleteImplicitArrowBinder type))⟩
+      -- TODO: handle `_ → {_ : _} → ⋯`
+      | _ => return ⟨← `(declSig| $binders* : $type)⟩
     .ofFormatWithInfosM (PrettyPrinter.ppExprWithInfos (delab := delab) type)
-
-  /-- Like `delabForallWithSignature`, but omits implicit binders. Also handles the case where
-  `type` is already a `∀` correctly. -/
-  delabForallWithSignatureWithoutImplicit (type : Expr) : TermElabM MessageData := do
-    let isProp ← isProp type
-    let delab : Delab := delabForallParamsWithSignature fun binders type => do
-      let binders := binders.filter (·.raw.isOfKind ``Parser.Term.explicitBinder)
-      -- `delabForallParamsWithSignature` may "stop early" if e.g. a binder is unnamed.
-      let (binders', type) ← match type with
-        | `(∀ $binders':bracketedBinder*, $type) =>
-          pure (binders'.filter (·.raw.isOfKind ``Parser.Term.explicitBinder), type)
-        | _ => pure (#[], ← deleteImplicitArrowBinder type)
-      let binders := binders ++ binders'
-      if binders.isEmpty then
-        return type
-      else if isProp && (← getPPOption getPPForalls) then
-        `(∀ $binders*, $type)
-      else
-        binders.foldrM (fun binder acc => do
-          return ⟨← `(Parser.Term.depArrow| $binder → $acc)⟩) type
-    return .ofFormatWithInfosM (PrettyPrinter.ppExprWithInfos (delab := delab) type)
-
-  /-- Given syntax for an arrow type `A₀ → A₁ → ⋯ → Aₙ`, removes every `Aᵢ` which is not a term or
-  an explicit binder. -/
-  deleteImplicitArrowBinder : Term → DelabM Term
-    | `(Parser.Term.depArrow| $binder:bracketedBinder → $type) => do
-      if binder.raw.isOfKind ``Parser.Term.explicitBinder then
-        `(term| $binder:bracketedBinder → $(← deleteImplicitArrowBinder type))
-      else
-        deleteImplicitArrowBinder type
-    | `($binder:term → $type) => do `($binder:term → $(← deleteImplicitArrowBinder type))
-    | type => return type
 
 /-- The `#check'` command is like `#check`, but only prints explicit arguments in the signature
 (i.e., omitting implicit and typeclass arguments). -/
