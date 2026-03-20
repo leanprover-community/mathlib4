@@ -272,7 +272,7 @@ non-definitionally) equal to some given edistance. We also provide convenience v
 PseudoEMetric, PseudoMetric and Metric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
-abbrev replaceEDist : EMetricSpace X where
+noncomputable abbrev replaceEDist : EMetricSpace X where
   edist := d
   edist_self := by simp [hd]
   edist_comm := by simp [hd, edist_comm]
