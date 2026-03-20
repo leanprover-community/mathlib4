@@ -185,7 +185,7 @@ lemma factorPowSucc.isUnit_of_isUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I
 
 section powSMulQuotInclusion
 
-variable {M : Type*} [AddCommGroup M] [Module R M]
+variable {M : Type*} [AddCommGroup M] [Module R M] {a b c : ℕ}
 
 namespace Submodule
 
@@ -193,13 +193,13 @@ set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- The canonical inclusion from `I ^ a • N ⧸ I ^ b • (I ^ a • N)` to `M ⧸ I ^ c • N`
 when `c = b + a`. -/
-def powSMulQuotInclusion {a b c : ℕ} (h : c = b + a) (N : Submodule R M) :
+def powSMulQuotInclusion (h : c = b + a) (N : Submodule R M) :
     ↑(I ^ a • N) ⧸ (I ^ b • ⊤ : Submodule R ↑(I ^ a • N)) →ₗ[R] M ⧸ (I ^ c • N) :=
   mapQ _ _ (I ^ a • N).subtype <| by simp [← map_le_iff_le_comap, h, pow_add, mul_smul]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem powSMulQuotInclusion_mk {a b c : ℕ} (h : c = b + a) (N : Submodule R M)
+theorem powSMulQuotInclusion_mk (h : c = b + a) (N : Submodule R M)
     (x : ↑(I ^ a • N)) : powSMulQuotInclusion I M h N (Quotient.mk x) = Quotient.mk (x : M) := rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -210,7 +210,7 @@ theorem powSMulQuotInclusion_injective {a b c : ℕ} (h : c = b + a) (N : Submod
     map_le_iff_le_comap, ← Submodule.map_le_map_iff_of_injective (I ^ a • N).subtype_injective, h]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem factorPow_comp_powSMulQuotInclusion {a b c d e : ℕ} (h : c = b + a) (h' : e = d + c) :
+theorem factorPow_comp_powSMulQuotInclusion {d e : ℕ} (h : c = b + a) (h' : e = d + c) :
     factorPow I M (show c ≤ e by lia) ∘ₗ
       powSMulQuotInclusion I M (show e = (b + d) + a by lia) ⊤ =
     powSMulQuotInclusion I M h ⊤ ∘ₗ
@@ -218,7 +218,7 @@ theorem factorPow_comp_powSMulQuotInclusion {a b c d e : ℕ} (h : c = b + a) (h
   ext; rfl
 
 set_option backward.isDefEq.respectTransparency false in
-theorem range_powSMulQuotInclusion {a b c : ℕ} (h : c = b + a) (N : Submodule R M) :
+theorem range_powSMulQuotInclusion (h : c = b + a) (N : Submodule R M) :
     (powSMulQuotInclusion I M h N).range = (I ^ a • N).map (mkQ (I ^ c • N)) := by
   simp [powSMulQuotInclusion, mapQ, range_liftQ, LinearMap.range_comp]
 
