@@ -95,7 +95,7 @@ variable (R A) in
 @[to_additive (dont_translate := R A)
 /-- The base change of `R[M]` to an `R`-algebra `A` is isomorphic to `A[M]` as an `A`-algebra. -/]
 noncomputable def scalarTensorEquiv : A ⊗[R] R[M] ≃ₐ[A] A[M] :=
-  (tensorEquiv ..).trans <| mapRangeAlgEquiv A M <| Algebra.TensorProduct.rid R A A
+  (tensorEquiv ..).trans <| mapCoeffAlgEquiv A M <| Algebra.TensorProduct.rid R A A
 
 @[to_additive (dont_translate := R A) (attr := simp)]
 lemma scalarTensorEquiv_tmul (a : A) (p : R[M]) :
@@ -115,7 +115,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R S B)]
 instance instIsPushout [IsPushout R S A B] : IsPushout R S A[M] B[M] where
   out := .of_equiv ((tensorEquiv (M := M) R S A).trans <|
-      mapRangeAlgEquiv S M <| IsPushout.equiv R S A B).toLinearEquiv fun x ↦ by
+      mapCoeffAlgEquiv S M <| IsPushout.equiv R S A B).toLinearEquiv fun x ↦ by
     induction x using induction_linear <;> simp_all [IsPushout.equiv_tmul]
 
 @[to_additive (dont_translate := R)]

@@ -387,20 +387,20 @@ variable (R M) in
 @[to_additive (attr := simps apply)
 /-- The algebra isomorphism of additive monoid algebras induced by an isomorphism of the base
 algebras. -/]
-noncomputable def mapRangeAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
+noncomputable def mapCoeffAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
   __ := mapCoeffAlgHom M e
   invFun := mapCoeffAlgHom M (e.symm : B →ₐ[R] A)
   left_inv _ := by aesop
   right_inv _ := by aesop
 
 @[to_additive (attr := simp)]
-lemma symm_mapRangeAlgEquiv (e : A ≃ₐ[R] B) :
-    (mapRangeAlgEquiv R M e).symm = mapRangeAlgEquiv R M e.symm := rfl
+lemma symm_mapCoeffAlgEquiv (e : A ≃ₐ[R] B) :
+    (mapCoeffAlgEquiv R M e).symm = mapCoeffAlgEquiv R M e.symm := rfl
 
 @[to_additive (attr := simp)]
 lemma mapRangeAlgEquiv_trans (e₁ : A ≃ₐ[R] B) (e₂ : B ≃ₐ[R] C) :
-    mapRangeAlgEquiv R M (e₁.trans e₂) =
-      (mapRangeAlgEquiv R M e₁).trans (mapRangeAlgEquiv R M e₂) := by ext; simp
+    mapCoeffAlgEquiv R M (e₁.trans e₂) =
+      (mapCoeffAlgEquiv R M e₁).trans (mapCoeffAlgEquiv R M e₂) := by ext; simp
 
 end mapRange
 
