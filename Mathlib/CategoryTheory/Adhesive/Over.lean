@@ -9,9 +9,7 @@ public import Mathlib.CategoryTheory.Adhesive.Basic
 public import Mathlib.CategoryTheory.Limits.Over
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 
-/-!
-
-# Adhesive structure on slice categories
+/-! # Adhesive structure on slice categories
 
 The slice category `Over B` inherits the property of being adhesive from the
 base category.
@@ -30,9 +28,7 @@ namespace CategoryTheory
 
 open Limits
 
-universe v u
-
-variable {C : Type u} [Category.{v} C]
+variable {C : Type*} [Category* C]
 
 /-- Slices of adhesive categories are adhesive. See [adhesive2004], Proposition 8 (ii). -/
 instance adhesive_over [Adhesive C] [HasPullbacks C] [HasPushouts C] (B : C) :
