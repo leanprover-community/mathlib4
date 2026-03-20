@@ -1035,6 +1035,8 @@ def coneLeftOpOfCoconeEquiv {F : J ⥤ Cᵒᵖ} : (Cocone F)ᵒᵖ ≌ Cone F.le
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
+end
+
 section
 
 variable {F : Jᵒᵖ ⥤ C}
@@ -1082,8 +1084,6 @@ def coneRightOpOfCoconeEquiv {F : Jᵒᵖ ⥤ C} : (Cocone F)ᵒᵖ ≌ Cone F.r
   inverse.map f := ⟨{ hom := f.hom.unop, w j := congr($(f.w j.unop).unop) }⟩
   unitIso := Iso.refl _
   counitIso := Iso.refl _
-
-end
 
 end
 
