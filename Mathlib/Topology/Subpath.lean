@@ -53,8 +53,8 @@ alias subpathAux_continuous := Icc.continuous_convexCombo_prod
 /-- The subpath of `γ` from `t₀` to `t₁`. -/
 def subpath (γ : Path a b) (t₀ t₁ : I) : Path (γ t₀) (γ t₁) where
   toFun := γ ∘ Icc.convexCombo t₀ t₁
-  source' := by simp
-  target' := by simp
+  source' := by rw [comp_apply, Icc.convexCombo_zero]
+  target' := by rw [comp_apply, Icc.convexCombo_one]
 
 /-- Reversing `γ.subpath t₀ t₁` results in `γ.subpath t₁ t₀`. -/
 @[simp]

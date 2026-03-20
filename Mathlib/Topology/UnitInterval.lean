@@ -352,8 +352,7 @@ theorem convexCombo_le {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterv
   nlinarith [t.2.1, t.2.2]
 
 @[continuity, fun_prop]
-theorem continuous_convexCombo {a b : ℝ} (x y : Icc a b) :
-    Continuous (convexCombo x y) := by
+theorem continuous_convexCombo {a b : ℝ} (x y : Icc a b) : Continuous (convexCombo x y) := by
   unfold Icc.convexCombo
   fun_prop
 
