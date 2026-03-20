@@ -132,28 +132,18 @@ theorem inr_injective : Function.Injective (inr R L₁ L₂) := fun _ => by simp
 section
 variable (R L₁ L₂)
 
--- TODO: This probably is easier using existing linearMap statement
 theorem range_inl : range (inl R L₁ L₂) = ker (snd R L₁ L₂) := by
-  ext x
-  simp only [mem_range]
-  constructor
-  · rintro ⟨y, rfl⟩
-    rfl
-  · intro h
-    exact ⟨x.fst, Prod.ext rfl h.symm⟩
+  rw [← LieSubalgebra.toSubmodule_inj, range_toSubmodule, LieIdeal.toLieSubalgebra_toSubmodule,
+   ker_toSubmodule]
+  exact LinearMap.range_inl R L₁ L₂
 
 theorem ker_snd : ker (snd R L₁ L₂) = range (inl R L₁ L₂) :=
   Eq.symm <| range_inl R L₁ L₂
 
--- TODO: This probably is easier using existing linearMap statement
 theorem range_inr : range (inr R L₁ L₂) = ker (fst R L₁ L₂) := by
-  ext x
-  simp only [mem_range]
-  constructor
-  · rintro ⟨y, rfl⟩
-    rfl
-  · intro h
-    exact ⟨x.snd, Prod.ext h.symm rfl⟩
+  rw [← LieSubalgebra.toSubmodule_inj, range_toSubmodule, LieIdeal.toLieSubalgebra_toSubmodule,
+   ker_toSubmodule]
+  exact LinearMap.range_inr R L₁ L₂
 
 theorem ker_fst : ker (fst R L₁ L₂) = range (inr R L₁ L₂) :=
   Eq.symm <| range_inr R L₁ L₂
@@ -172,21 +162,12 @@ theorem inl_eq_prod : inl R L₁ L₂ = prod LieHom.id 0 :=
 theorem inr_eq_prod : inr R L₁ L₂ = prod 0 LieHom.id :=
   rfl
 
---TODO: this needs to be improved
 theorem prod_ext_iff {f g : L₁ × L₂ →ₗ⁅R⁆ L} :
     f = g ↔ f.comp (inl _ _ _) = g.comp (inl _ _ _) ∧ f.comp (inr _ _ _) = g.comp (inr _ _ _) := by
-  constructor
-  · exact fun a ↦
-    ⟨congrFun (congrArg comp a) (inl R L₁ L₂), congrFun (congrArg comp a) (inr R L₁ L₂)⟩
-  · intro h
-    obtain ⟨h1,h2⟩ := h
-    refine LieHom.ext_iff.mpr ?_
-    intro x
-    have h1 := congrArg (fun φ => φ x.1) h1
-    have h2 := congrArg (fun φ => φ x.2) h2
-    simp only [coe_comp, coe_inl, Function.comp_apply, coe_inr] at h1 h2
-    have h : x = (x.1,0)+(0,x.2) := by simp
-    rw [h, _root_.map_add,  _root_.map_add, h1, h2]
+  simp_rw [LieHom.ext_iff]
+  have h := LinearMap.prod_ext_iff (f:=f.toLinearMap) (g:= g.toLinearMap)
+  simp_rw [LinearMap.ext_iff] at h
+  exact h
 
 /--
 Split equality of Lie algebra homomorphisms from a product into Lie algebra homomorphism over
