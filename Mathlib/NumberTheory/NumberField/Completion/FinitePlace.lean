@@ -97,7 +97,6 @@ theorem FinitePlace.embedding_apply (x : K) : embedding K v x = ↑x := rfl
 
 section AbsoluteValue
 
-
 noncomputable instance : ((Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰)).IsRankOneDiscrete where
   exists_generator_lt_one' := by
     have h : (v.valuation K).IsRankOneDiscrete := Valuation.IsRankOneDiscrete.mk' (valuation K v)
@@ -128,7 +127,8 @@ lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
 lemma one_lt_absNorm_nnreal : 1 < (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `≠ 0` -/
-lemma absNorm_ne_zero : (absNorm v.asIdeal : ℝ≥0) ≠ 0 := ne_zero_of_lt (one_lt_absNorm_nnreal v)
+lemma absNorm_ne_zero : (absNorm v.asIdeal : ℝ≥0) ≠ 0 :=
+  ne_zero_of_lt (one_lt_absNorm_nnreal v)
 
 /-- The `v`-adic absolute value on `K` defined as the norm of `v` raised to negative `v`-adic
 valuation -/
@@ -149,10 +149,9 @@ noncomputable instance instRankOneAdicCompletion :
     (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).RankOne :=
   rankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) (one_lt_absNorm_nnreal v)
 
-
 /-- The `v`-adic completion of `K` is a normed field. -/
-noncomputable instance instNormedFieldValuedAdicCompletion :
-    NormedField (adicCompletion K v) := Valued.toNormedField (adicCompletion K v) ℤᵐ⁰
+noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
+  Valued.toNormedField (adicCompletion K v) ℤᵐ⁰
 
 lemma rankOne_hom'_def :
     (instRankOneAdicCompletion K v).hom' = (toNNReal (absNorm_ne_zero v)).comp
