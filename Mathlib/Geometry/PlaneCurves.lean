@@ -510,12 +510,12 @@ omit hIoC in
 @[fun_prop]
 lemma _root_.DifferentiableAt.deriv_parametrized_curve_of_contDiffOn_open (hI : IsOpen I)
     (ht : t ∈ I) (hγ : ContDiffOn ℝ 2 γ I) : DifferentiableAt ℝ (deriv γ) t :=
-  ((hγ.deriv_of_isOpen hI (m:=1) (by norm_num)).differentiableOn_one t ht).differentiableAt 
+  ((hγ.deriv_of_isOpen hI (m:=1) (by norm_num)).differentiableOn_one t ht).differentiableAt
     (hI.mem_nhds ht)
 
 @[fun_prop]
 lemma _root_.DifferentiableAt.deriv_initialCurve_of_orientedCurvature (hI : IsOpen I) (ht : t ∈ I)
-    (ht₀ : t₀ ∈ I) (hκ : ContinuousOn κ I) : 
+    (ht₀ : t₀ ∈ I) (hκ : ContinuousOn κ I) :
     DifferentiableAt ℝ (deriv (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) t := by
   have := ContDiffOn.initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀
   fun_prop (disch := assumption)
@@ -571,7 +571,7 @@ theorem initialCurve_of_orientedCurvature_is_unique (hI : IsOpen I) (hκ : Conti
     fun_prop (disch := assumption)
   have hDdα₁ {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦  (deriv α t) 1) s := by
     fun_prop (disch := assumption)
-  have hDf {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ f s := by fun_prop (disch := assumption) 
+  have hDf {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ f s := by fun_prop (disch := assumption)
   have hDg {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ g s := by fun_prop (disch := assumption)
   have hDh {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ h s := by fun_prop (disch := assumption)
   have hdf : ∀s ∈ I, deriv f s = - κ s * g s := by
