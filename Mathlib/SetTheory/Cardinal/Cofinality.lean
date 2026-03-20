@@ -253,7 +253,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     sInf { a : Cardinal | ∃ (ι : Type u) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = a } := by
   refine le_antisymm (le_csInf (cof_lsub_def_nonempty o) ?_) (csInf_le' ?_)
   · rintro a ⟨ι, f, hf, rfl⟩
-    rw [← type_toType o]
+    rw [← type_toType o, cof_type]
     refine
       (cof_le fun a => ?_).trans
         (@mk_le_of_injective _ _
@@ -281,6 +281,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     rw [← not_lt, ← typein_le_typein, typein_enum] at hb'
     exact hb'.trans_lt (lt_lsub.{u, u} f ⟨b, hb⟩)
 
+#exit
 theorem exists_lsub_cof (o : Ordinal) :
     ∃ (ι : _) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = cof o := by
   rw [cof_eq_sInf_lsub]
