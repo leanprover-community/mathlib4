@@ -326,7 +326,7 @@ theorem hasFiniteMulSupport_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
 @[fun_prop]
 theorem hasFiniteMulSupport {x : K} (h_x_nezero : x ≠ 0) :
     (fun w : FinitePlace K ↦ w x).HasFiniteMulSupport := by
-  rcases IsFractionRing.div_surjective (A := 𝓞 K) x with ⟨a, b, hb, rfl⟩
+  rcases IsFractionRing.div_surjective (𝓞 K) x with ⟨a, b, hb, rfl⟩
   simp_all only [ne_eq, div_eq_zero_iff, FaithfulSMul.algebraMap_eq_zero_iff, not_or, map_div₀]
   obtain ⟨ha, hb⟩ := h_x_nezero
   simp_rw [← RingOfIntegers.coe_eq_algebraMap]
