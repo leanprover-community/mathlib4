@@ -330,10 +330,24 @@ alias ⟨_, Generates.reverse⟩ := generates_reverse
 
 @[simp] lemma language_reverse : g.reverse.language = g.language.reverse := by ext; simp
 
+
 end ContextFreeGrammar
 
+lemma Language.IsContextFree.reverse_impl (L : Language T) :
+  L.IsContextFree → L.reverse.IsContextFree := by
+  rintro ⟨g, rfl⟩
+  exact ⟨g.reverse, by simp⟩
+
 /-- The class of context-free languages is closed under reversal. -/
+@[simp]
 theorem Language.IsContextFree.reverse (L : Language T) :
-    L.IsContextFree → L.reverse.IsContextFree := by rintro ⟨g, rfl⟩; exact ⟨g.reverse, by simp⟩
+    L.reverse.IsContextFree ↔ L.IsContextFree := by
+      constructor
+      · intro h
+        have hL : L.reverse.reverse.IsContextFree := by
+          exact reverse_impl L.reverse h
+        simp only [reverse_reverse] at h hL
+        exact hL
+      · exact reverse_impl L
 
 end closure_reversal
