@@ -71,7 +71,7 @@ theorem recF_eq' {α : TypeVec n} {β : Type u} (g : F (α.append1 β) → β) (
     recF g x = g (abs (appendFun id (recF g) <$$> q.P.wDest' x)) := by
   induction x using  q.P.w_cases
   case ih a f' f =>
-  rw [recF_eq, q.P.wDest'_wMk, MvPFunctor.map_eq, appendFun_comp_splitFun, TypeVec.id_comp]
+    rw [recF_eq, q.P.wDest'_wMk, MvPFunctor.map_eq, appendFun_comp_splitFun, TypeVec.id_comp]
 
 /-- Equivalence relation on W-types that represent the same `Fix F`
 value -/
@@ -88,15 +88,15 @@ theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type u} (u : F (α.append1 β) 
     WEquiv x y → recF u x = recF u y := by
   induction x using q.P.w_cases
   case ih a₀ f'₀ f₀ =>
-  induction y using q.P.w_cases
-  case ih a₁ f'₁ f₁ =>
-  intro h
-  -- Porting note: induction on h doesn't work.
-  refine @WEquiv.recOn _ _ _ _ (fun a a' _ ↦ recF u a = recF u a') _ _ h ?_ ?_ ?_
-  · intro a f' f₀ f₁ _h ih; simp only [recF_eq]
-    congr 4; funext; apply ih
-  · intro a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
-  · intro x y z _e₁ _e₂ ih₁ ih₂; exact Eq.trans ih₁ ih₂
+    induction y using q.P.w_cases
+    case ih a₁ f'₁ f₁ =>
+      intro h
+      -- Porting note: induction on h doesn't work.
+      refine @WEquiv.recOn _ _ _ _ (fun a a' _ ↦ recF u a = recF u a') _ _ h ?_ ?_ ?_
+      · intro a f' f₀ f₁ _h ih; simp only [recF_eq]
+        congr 4; funext; apply ih
+      · intro a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
+      · intro x y z _e₁ _e₂ ih₁ ih₂; exact Eq.trans ih₁ ih₂
 
 theorem wEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
     (h : MvQPF.abs (q.P.wDest' x) = MvQPF.abs (q.P.wDest' y)) :
@@ -104,8 +104,8 @@ theorem wEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
   revert h
   induction x using q.P.w_cases
   case ih a₀ f'₀ f₀ =>
-  induction y using q.P.w_cases
-  apply WEquiv.abs
+    induction y using q.P.w_cases
+    apply WEquiv.abs
 
 theorem wEquiv.refl {α : TypeVec n} (x : q.P.W α) : WEquiv x x := abs' x x rfl
 
@@ -129,11 +129,11 @@ set_option backward.isDefEq.respectTransparency false in
 theorem wrepr_equiv {α : TypeVec n} (x : q.P.W α) : WEquiv (wrepr x) x := by
   induction x using q.P.w_ind
   case ih a f' f ih =>
-  apply WEquiv.trans _ (q.P.wMk' (appendFun id wrepr <$$> ⟨a, q.P.appendContents f' f⟩))
-  · apply wEquiv.abs'
-    rw [wrepr_wMk, q.P.wDest'_wMk', q.P.wDest'_wMk', abs_repr]
-  rw [q.P.map_eq, MvPFunctor.wMk', appendFun_comp_splitFun, id_comp]
-  apply WEquiv.ind; exact ih
+    apply WEquiv.trans _ (q.P.wMk' (appendFun id wrepr <$$> ⟨a, q.P.appendContents f' f⟩))
+    · apply wEquiv.abs'
+      rw [wrepr_wMk, q.P.wDest'_wMk', q.P.wDest'_wMk', abs_repr]
+    rw [q.P.map_eq, MvPFunctor.wMk', appendFun_comp_splitFun, id_comp]
+    apply WEquiv.ind; exact ih
 
 theorem wEquiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
     WEquiv x y → WEquiv (g <$$> x) (g <$$> y) := by
@@ -233,16 +233,16 @@ theorem Fix.ind_rec {β : Type u} (g₁ g₂ : Fix F α → β)
   intro x
   induction x using q.P.w_ind
   case ih a f' f ih =>
-  change g₁ ⟦q.P.wMk a f' f⟧ = g₂ ⟦q.P.wMk a f' f⟧
-  rw [← Fix.ind_aux a f' f]
-  apply h
-  rw [← abs_map, ← abs_map, MvPFunctor.map_eq, MvPFunctor.map_eq]
-  congr 2
-  rw [MvPFunctor.appendContents, appendFun, appendFun, ← splitFun_comp, ← splitFun_comp]
-  have : (g₁ ∘ fun x => ⟦f x⟧) = g₂ ∘ fun x => ⟦f x⟧ := by
-    ext x
-    exact ih x
-  rw [this]
+    change g₁ ⟦q.P.wMk a f' f⟧ = g₂ ⟦q.P.wMk a f' f⟧
+    rw [← Fix.ind_aux a f' f]
+    apply h
+    rw [← abs_map, ← abs_map, MvPFunctor.map_eq, MvPFunctor.map_eq]
+    congr 2
+    rw [MvPFunctor.appendContents, appendFun, appendFun, ← splitFun_comp, ← splitFun_comp]
+    have : (g₁ ∘ fun x => ⟦f x⟧) = g₂ ∘ fun x => ⟦f x⟧ := by
+      ext x
+      exact ih x
+    rw [this]
 
 theorem Fix.rec_unique {β : Type u} (g : F (append1 α β) → β) (h : Fix F α → β)
     (hyp : ∀ x, h (Fix.mk x) = g (appendFun id h <$$> x)) : Fix.rec g = h := by
@@ -278,15 +278,15 @@ theorem Fix.ind {α : TypeVec n} (p : Fix F α → Prop)
   intro x
   induction x using q.P.w_ind
   case ih a f' f ih =>
-  change p ⟦q.P.wMk a f' f⟧
-  rw [← Fix.ind_aux a f' f]
-  apply h
-  rw [MvQPF.liftP_iff]
-  refine ⟨_, _, rfl, ?_⟩
-  intro i j
-  cases i
-  · apply ih
-  · trivial
+    change p ⟦q.P.wMk a f' f⟧
+    rw [← Fix.ind_aux a f' f]
+    apply h
+    rw [MvQPF.liftP_iff]
+    refine ⟨_, _, rfl, ?_⟩
+    intro i j
+    cases i
+    · apply ih
+    · trivial
 
 instance mvqpfFix : MvQPF (Fix F) where
   P := q.P.wp
