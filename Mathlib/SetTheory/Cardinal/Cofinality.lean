@@ -137,7 +137,7 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 theorem GaloisConnection.cof_le_lift {f : β → α} {g : α → β} (h : GaloisConnection f g) :
     Cardinal.lift.{u} (Order.cof β) ≤ Cardinal.lift.{v} (Order.cof α) := by
   rw [le_lift_cof_iff]
-  exact fun s hs ↦ (lift_le.2 <| cof_le (h.map_cofinal hs)).trans mk_image_le_lift
+  exact fun s hs ↦ (lift_le.2 <| cof_le (h.map_isCofinal hs)).trans mk_image_le_lift
 
 theorem GaloisConnection.cof_le {f : γ → α} {g : α → γ} (h : GaloisConnection f g) :
     Order.cof γ ≤ Order.cof α := by
