@@ -267,6 +267,14 @@ theorem ideal_eq_iInf_comap_map_away {S : Finset R} (hS : Ideal.span (α := R) S
     rw [pow_add, mul_assoc, ← mul_comm x, e]
     exact I.mul_mem_left _ y.2
 
+lemma map_eq_top_of_not_subset {I : Ideal R} (hle : ¬ (I : Set R) ⊆ Mᶜ) :
+    Ideal.map (algebraMap R S) I = ⊤ := by
+  simp only [Set.not_subset_iff_exists_mem_notMem, Set.mem_compl_iff, not_not] at hle
+  obtain ⟨y, hy, hny⟩ := hle
+  apply Ideal.eq_top_of_isUnit_mem
+  · exact Ideal.mem_map_of_mem (algebraMap R _) hy
+  · exact IsLocalization.map_units _ (⟨y, hny⟩ : M)
+
 end CommSemiring
 
 section CommRing
@@ -274,6 +282,7 @@ section CommRing
 variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
 variable [Algebra R S] [IsLocalization M S]
 
+set_option backward.isDefEq.respectTransparency false in
 include M in
 /-- `quotientMap` applied to maximal ideals of a localization is `surjective`.
   The quotient by a maximal ideal is a field, so inverses to elements already exist,

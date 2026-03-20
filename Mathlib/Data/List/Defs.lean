@@ -468,4 +468,11 @@ theorem length_mapAccumr₂ :
 
 end MapAccumr
 
+section consecutivePairs
+
+/-- `consecutivePairs [a, b, c, d]` is `[(a, b), (b, c), (c, d)]`. -/
+abbrev consecutivePairs (l : List α) : List (α × α) := l.zip l.tail
+
+end consecutivePairs
+
 end List

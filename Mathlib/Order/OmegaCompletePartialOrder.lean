@@ -235,6 +235,7 @@ lemma ωSup_eq_of_isLUB {c : Chain α} {a : α} (h : IsLUB (Set.range c) a) : a 
 
 /-- A subset `p : α → Prop` of the type closed under `ωSup` induces an
 `OmegaCompletePartialOrder` on the subtype `{a : α // p a}`. -/
+@[implicit_reducible]
 def subtype {α : Type*} [OmegaCompletePartialOrder α] (p : α → Prop)
     (hp : ∀ c : Chain α, (∀ i ∈ c, p i) → p (ωSup c)) : OmegaCompletePartialOrder (Subtype p) :=
   OmegaCompletePartialOrder.lift (OrderHom.Subtype.val p)
@@ -343,6 +344,7 @@ theorem mem_chain_of_mem_ωSup {c : Chain (Part α)} {a : α} (h : a ∈ Part.ω
     exact h'
   · rcases h with ⟨⟨⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance omegaCompletePartialOrder :
     OmegaCompletePartialOrder (Part α) where
   ωSup := Part.ωSup
@@ -365,14 +367,7 @@ section Inst
 theorem mem_ωSup (x : α) (c : Chain (Part α)) : x ∈ ωSup c ↔ some x ∈ c := by
   simp only [ωSup, Part.ωSup]
   constructor
-  · split_ifs with h
-    swap
-    · rintro ⟨⟨⟩⟩
-    intro h'
-    have hh := Classical.choose_spec h
-    simp only [mem_some_iff] at h'
-    subst x
-    exact hh
+  · exact fun a ↦ mem_chain_of_mem_ωSup a
   · intro h
     have h' : ∃ a : α, some a ∈ c := ⟨_, h⟩
     rw [dif_pos h']

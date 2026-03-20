@@ -28,7 +28,7 @@ We provide the natural inclusion from multivariate polynomials to multivariate f
 - `MvPowerSeries.X`: the indeterminates
 
 - `MvPowerSeries.coeff`, `MvPowerSeries.constantCoeff`:
-the coefficients of a `MvPowerSeries`, its constant coefficient
+  the coefficients of a `MvPowerSeries`, its constant coefficient
 
 - `MvPowerSeries.monomial`: the monomials
 
@@ -39,12 +39,12 @@ the coefficients of a `MvPowerSeries`, its constant coefficient
 - `MvPowerSeries.coeff_pow` : computes the coefficients of powers of a `MvPowerSeries`
 
 - `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`: if the constant coefficient
-of a `MvPowerSeries` is nilpotent, then some coefficients of its powers are automatically zero
+  of a `MvPowerSeries` is nilpotent, then some coefficients of its powers are automatically zero
 
 - `MvPowerSeries.map`: apply a `RingHom` to the coefficients of a `MvPowerSeries` (as a `RingHom`).
 
 - `MvPowerSeries.X_pow_dvd_iff`, `MvPowerSeries.X_dvd_iff`: equivalent
-conditions for (a power of) an indeterminate to divide a `MvPowerSeries`
+  conditions for (a power of) an indeterminate to divide a `MvPowerSeries`
 
 - `MvPolynomial.toMvPowerSeries`: the canonical coercion from `MvPolynomial` to `MvPowerSeries`
 
@@ -149,12 +149,14 @@ theorem ext {φ ψ : MvPowerSeries σ R} (h : ∀ n : σ →₀ ℕ, coeff n φ 
 if and only if all their coefficients are equal. -/
 add_decl_doc MvPowerSeries.ext_iff
 
+set_option backward.isDefEq.respectTransparency false in
 theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
     monomial n = LinearMap.single R (fun _ ↦ R) n := by
   rw [monomial]
   -- unify the `Decidable` arguments
   convert rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
     coeff m (monomial n a) = if m = n then a else 0 := by
   dsimp only [coeff, MvPowerSeries]
@@ -392,7 +394,7 @@ theorem commute_X_pow (φ : MvPowerSeries σ R) (s : σ) (n : ℕ) : Commute φ 
 theorem X_pow_mul {φ : MvPowerSeries σ R} {s : σ} {n : ℕ} : X s ^ n * φ = φ * X s ^ n :=
   φ.commute_X_pow s n |>.symm.eq
 
-theorem X_def (s : σ) : X s = monomial (single s 1) 1 :=
+theorem X_def (s : σ) : X s = monomial (single s 1) (1 : R) :=
   rfl
 
 theorem X_pow_eq (s : σ) (n : ℕ) : (X s : MvPowerSeries σ R) ^ n = monomial (single s n) 1 := by

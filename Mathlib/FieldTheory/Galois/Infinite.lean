@@ -234,6 +234,7 @@ lemma normalAutEquivQuotient_apply [IsGalois k K]
     (H : ClosedSubgroup Gal(K/k)) [H.Normal] (σ : Gal(K/k)) :
     normalAutEquivQuotient H σ = restrictNormalHom (fixedField H.1) σ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 theorem isOpen_iff_finite (L : IntermediateField k K) [IsGalois k K] :
     IsOpen L.fixingSubgroup.carrier ↔ FiniteDimensional k L := by
