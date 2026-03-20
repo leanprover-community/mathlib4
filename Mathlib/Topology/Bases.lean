@@ -290,8 +290,7 @@ protected theorem IsTopologicalBasis.continuous_iff {β : Type*} [TopologicalSpa
   mp h := by simpa using h.sUnion_eq.symm
   mpr h := ⟨by simp, by simp [Set.univ_eq_empty_iff.2], Subsingleton.elim ..⟩
 
-section sUnion
-
+/-- For a topological basis `B`, the finite unions of sets in `B` also form a topological basis. -/
 lemma IsTopologicalBasis.finite_sUnion (hB : IsTopologicalBasis B) :
     IsTopologicalBasis (sUnion '' {f : Set (Set α) | f.Finite ∧ f ⊆ B}) where
   exists_subset_inter := by
@@ -314,13 +313,6 @@ lemma IsTopologicalBasis.finite_sUnion (hB : IsTopologicalBasis B) :
     rw [← hB.eq_generateFrom]
     rintro - ⟨f, ⟨ff, hf⟩, rfl⟩
     exact isOpen_sUnion (fun s hs ↦ hB.isOpen (hf hs))
-
-lemma test {α : Type*} (s : Set (Set α)) :
-    DirectedOn (· ⊆ ·) (sUnion '' {f : Set (Set α) | f.Finite ∧ f ⊆ s}) := by
-  rintro - ⟨f₁, ⟨ff₁, hf₁⟩, rfl⟩ - ⟨f₂, ⟨ff₂, hf₂⟩, rfl⟩
-  exact ⟨⋃₀ (f₁ ∪ f₂), ⟨f₁ ∪ f₂, ⟨ff₁.union ff₂, by grind⟩, rfl⟩, by grind, by grind⟩
-
-end sUnion
 
 variable (α)
 
