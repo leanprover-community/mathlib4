@@ -1,12 +1,12 @@
 /-
-Copyright (c) 2025 William Weishuhn. All rights reserved.
+Copyright (c) 2026 William Weishuhn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: William Weishuhn
 -/
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Star.SelfAdjoint
 
-/-! # Moore-Penrose Pseudo-Inverse
+/-! # Moore-Penrose pseudo-inverse
 
 This file defines `IsMoorePenroseInverse`, a predicate stating that one element is the
 Moore-Penrose pseudo-inverse of another. The definition uses heterogeneous multiplication
