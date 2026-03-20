@@ -11,9 +11,6 @@ variable (E) in class BrouwerFixedPoint : Prop where
     (hf : Continuous f) : ∃ x, f x = x
 variable [BrouwerFixedPoint E]
 
--- theorem interior_iff_of_subsingleton :
-
-
 /-- Let `B^n` be the closed unit ball (closedBall 0 1).
 Let `f : B^n → ℝ^n` be an continuous injective map.
 Then `f(0)` lies in the interior of `f(B^n)`. -/
@@ -24,37 +21,11 @@ theorem invariance_of_domain_interior (f : E → E)
 
   -- nontriviality E
   cases subsingleton_or_nontrivial E
-  ·
-    have :  DiscreteTopology E := by infer_instance
-    have : Set.Nonempty (interior (f '' closedBall 0 1)) := by
-      -- simp
-      -- refine ⟨f 0, ?_⟩
-
-      -- rw [mem_interior]
-
-      -- use ball 0 0.5
-      -- -- constructor
-
-
-      -- rw [nonempty_def]
-      -- apply?
-    -- have : Set.Nonempty {f 0} := by exact Set.singleton_nonempty (f 0)
-    -- have := Set.Nonempty.eq_univ this
-
-
-
-  -- ·
-  -- · have : f '' closedBall 0 1 = {f 0} := by
-  --     ext y
-  --     constructor
-  --     · rintro ⟨x, hx, rfl⟩
-  --       simp [Set.mem_singleton_iff, (Subsingleton.eq_zero x)]
-  --     · intro rfl
-  --       exact ⟨0, by simp, rfl⟩
-  --   have h_univ : {f 0} = (Set.univ : Set E) :=
-  --   Set.ext fun x => ⟨fun _ => trivial, fun _ => Subsingleton.elim x (f 0)⟩
-  --   rw [this, h_univ, interior_univ]
-  --   exact Set.mem_univ (f 0)
+  · have :  DiscreteTopology E := by infer_instance
+    have : Set.Nonempty (interior (f '' closedBall 0 1)) := by simp
+    have := Set.Nonempty.eq_univ this
+    rw [this]
+    exact Set.mem_univ (f 0)
   -- The equivalence between `B^n` and `f(B^n)`.
   let FEquiv := Equiv.Set.imageOfInjOn f (closedBall 0 1) hf_inj
   -- The inverse map of `f` is continuous.
