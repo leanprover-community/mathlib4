@@ -168,6 +168,14 @@ instance bool : Primcodable Bool :=
     | 1 => rfl
     | (n + 2) => by rw [decode_ge_two] <;> simp⟩
 
+instance prod {α β} [Primcodable α] [Primcodable β] : Primcodable (α × β) :=
+  ⟨((casesOn' zero ((casesOn' zero .succ).comp (pair right ((Primcodable.prim β).comp left)))).comp
+          (pair right ((Primcodable.prim α).comp left))).of_eq
+      fun n => by
+      simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
+      cases @decode α _ n.unpair.1; · simp
+      cases @decode β _ n.unpair.2 <;> simp⟩
+
 end Primcodable
 
 /-- `Primrec f` means `f` is primitive recursive (after
@@ -260,29 +268,7 @@ theorem of_equiv_symm_iff {β} (e : β ≃ α) {f : σ → α} :
   letI := Primcodable.ofEquiv α e
   ⟨fun h => (of_equiv.comp h).of_eq fun a => by simp, of_equiv_symm.comp⟩
 
-end Primrec
-
-namespace Primcodable
-
-open Nat.Primrec
-
-instance prod {α β} [Primcodable α] [Primcodable β] : Primcodable (α × β) :=
-  ⟨((casesOn' zero ((casesOn' zero .succ).comp (pair right ((Primcodable.prim β).comp left)))).comp
-          (pair right ((Primcodable.prim α).comp left))).of_eq
-      fun n => by
-      simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
-      cases @decode α _ n.unpair.1; · simp
-      cases @decode β _ n.unpair.2 <;> simp⟩
-
-end Primcodable
-
-namespace Primrec
-
-variable {α : Type*} [Primcodable α]
-
-open Nat.Primrec
-
-theorem fst {α β} [Primcodable α] [Primcodable β] : Primrec (@Prod.fst α β) :=
+theorem fst : Primrec (@Prod.fst α β) :=
   ((casesOn' zero
             ((casesOn' zero (Nat.Primrec.succ.comp left)).comp
               (pair right ((Primcodable.prim β).comp left)))).comp
@@ -292,7 +278,7 @@ theorem fst {α β} [Primcodable α] [Primcodable β] : Primrec (@Prod.fst α β
     cases @decode α _ n.unpair.1 <;> simp
     cases @decode β _ n.unpair.2 <;> simp
 
-theorem snd {α β} [Primcodable α] [Primcodable β] : Primrec (@Prod.snd α β) :=
+theorem snd : Primrec (@Prod.snd α β) :=
   ((casesOn' zero
             ((casesOn' zero (Nat.Primrec.succ.comp right)).comp
               (pair right ((Primcodable.prim β).comp left)))).comp
@@ -302,7 +288,7 @@ theorem snd {α β} [Primcodable α] [Primcodable β] : Primrec (@Prod.snd α β
     cases @decode α _ n.unpair.1 <;> simp
     cases @decode β _ n.unpair.2 <;> simp
 
-theorem pair {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ] {f : α → β} {g : α → γ}
+theorem pair {f : α → β} {g : α → σ}
     (hf : Primrec f) (hg : Primrec g) : Primrec fun a => (f a, g a) :=
   ((casesOn1 0
             (Nat.Primrec.succ.comp <|
