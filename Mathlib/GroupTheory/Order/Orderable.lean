@@ -32,4 +32,4 @@ abbrev IsLeftOrderedGroup (G : Type*) [Group G] [LT G] [IsStrictTotalOrder G (·
 
 /-- A group is left-orderable if it admits some left-invariant strict total order. -/
 def IsLeftOrderableGroup (G : Type*) [Group G] : Prop :=
-  ∃ h : LT G, letI := h; ∃ _ : IsStrictTotalOrder G (· < ·), IsLeftOrderedGroup G
+  ∃ ord : LT G, letI := ord; ∃ _ : IsStrictTotalOrder G (· < ·), IsLeftOrderedGroup G
