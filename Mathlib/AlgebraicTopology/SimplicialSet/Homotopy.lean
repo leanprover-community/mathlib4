@@ -73,15 +73,15 @@ variable {f g : X ⟶ Y}
 
 section
 
-variable (h : Homotopy f g)
+variable (H : Homotopy f g)
 
 @[reassoc (attr := simp high)]
-lemma h₀ : ι₀ ≫ h.h = f :=
-  RelativeMorphism.Homotopy.h₀ h
+lemma h₀ : ι₀ ≫ H.h = f :=
+  RelativeMorphism.Homotopy.h₀ H
 
 @[reassoc (attr := simp high)]
-lemma h₁ : ι₁ ≫ h.h = g :=
-  RelativeMorphism.Homotopy.h₁ h
+lemma h₁ : ι₁ ≫ H.h = g :=
+  RelativeMorphism.Homotopy.h₁ H
 
 end
 
