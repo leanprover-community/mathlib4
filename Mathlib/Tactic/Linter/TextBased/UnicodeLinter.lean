@@ -45,7 +45,7 @@ Note: if `true`, a character might still not be allowed depending on context
 (e.g. misplaced variant selectors).
 -/
 public def isAllowedCharacter (c : Char) : Bool := !#[
--- '\u0009',  -- "TAB" is already disallowed by the **TODO**-linter
+'\u0009',     -- "TAB"
 '\u000B',     -- "LINE TABULATION"
 '\u000C',     -- "FORM FEED"
 -- '\u000D',  -- "CARRIAGE RETURN" **TODO** is taken care of by git?
@@ -96,10 +96,10 @@ public def isAllowedCharacter (c : Char) : Bool := !#[
 
 /-- Provide default replacement (`String`) for a blocklisted character, or `none` if none defined -/
 public def replaceDisallowed : Char → Option String
--- | '\u0009' => "  " -- "TAB" is already disallowed by the **TODO**-linter
+| '\u0009' => "  "    -- "TAB" => "2 spaces"
 | '\u000B' => "\n"    -- "LINE TABULATION" => "Line Feed"
 | '\u000C' => "\n"    -- "FORM FEED" => "Line Feed"
--- | '\u000D' => "\n" -- "CARRIAGE RETURN" **TODO** is taken care of by git?
+-- | '\u000D' => "\n" -- "CARRIAGE RETURN"
 | '\u001F' => ""      -- "INFORMATION SEPARATOR ONE" => "nothing"
 | '\u00A0' => " "     -- "NO-BREAK SPACE" => "1 space"
 | '\u1680' => " "     -- "OGHAM SPACE MARK" => "1 space"
