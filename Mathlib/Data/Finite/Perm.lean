@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Data.Fintype.Perm
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.SetTheory.Cardinal.Finite
 
 /-! # Properties of `Equiv.Perm` on `Finite` types
@@ -15,7 +14,7 @@ public import Mathlib.SetTheory.Cardinal.Finite
 
 public section
 
--- assert_not_exists Field
+assert_not_exists Field
 
 variable {α : Type*} [Finite α]
 
@@ -27,17 +26,3 @@ theorem card_perm : Nat.card (Equiv.Perm α) = (Nat.card α)! := by
   rw [card_eq_fintype_card, card_eq_fintype_card, Fintype.card_perm]
 
 end Nat
-
-namespace Equiv.Perm
-
-theorem isCyclic_of_card_le_two (hα : Nat.card α ≤ 2) :
-    IsCyclic (Perm α) := by
-  apply isCyclic_of_card_dvd_prime (p := 2)
-  rw [Nat.card_perm]
-  interval_cases (Nat.card α) <;> simp
-
-theorem isMulCommutative_of_card_le_two (hα : Nat.card α ≤ 2) :
-    IsMulCommutative (Perm α) :=
-  (isCyclic_of_card_le_two hα).isMulCommutative
-
-end Equiv.Perm

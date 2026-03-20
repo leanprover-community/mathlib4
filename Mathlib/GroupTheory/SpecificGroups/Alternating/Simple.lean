@@ -9,7 +9,6 @@ module
 public import Mathlib.GroupTheory.GroupAction.Iwasawa
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.Combination
 public import Mathlib.GroupTheory.SpecificGroups.Alternating.KleinFour
-public import Mathlib.GroupTheory.SpecificGroups.Alternating.SmallCard
 
 /-! # The alternating group is simple
 
@@ -54,7 +53,19 @@ open MulAction Equiv.Perm Equiv Set.powersetCard
 
 namespace Equiv.Perm
 
-variable {α : Type*} [DecidableEq α] [Finite α]
+variable {α : Type*} [Finite α]
+
+theorem isCyclic_of_card_le_two (hα : Nat.card α ≤ 2) :
+    IsCyclic (Perm α) := by
+  apply isCyclic_of_card_dvd_prime (p := 2)
+  rw [Nat.card_perm]
+  interval_cases (Nat.card α) <;> simp
+
+theorem isMulCommutative_of_card_le_two (hα : Nat.card α ≤ 2) :
+    IsMulCommutative (Perm α) :=
+  (isCyclic_of_card_le_two hα).isMulCommutative
+
+variable [DecidableEq α]
 
 /-- The Iwasawa structure of `Perm α` acting on `Set.powersetCard α 2`. -/
 def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
