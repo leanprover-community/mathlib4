@@ -38,7 +38,7 @@ private lemma trunc_choose_sum_eq_one_sub (m k : ℕ) (hk : k < m) :
     1 - ((-1 : ℤ) ^ k) * (choose (m - 1) k) := by
   simp only [show ∀ j : ℕ, ((-1 : ℤ) ^ (j + 1)) = -((-1 : ℤ) ^ j) from fun j ↦ by ring,
     neg_mul, sum_neg_distrib]
-  simp [neg_eq_iff_eq_neg]
+  simp only [reduceNeg, neg_eq_iff_eq_neg, neg_sub]
   have insert_eq : range (k + 1) = insert 0 (Finset.Icc 1 k) := by grind
   calc
     _ = (∑ j ∈ range (k + 1), ((-1 : ℤ) ^ j) * (choose m j)) - 1 := by simp [insert_eq]
