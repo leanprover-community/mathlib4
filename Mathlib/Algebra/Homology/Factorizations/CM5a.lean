@@ -85,7 +85,7 @@ instance (F : (cofFib f).FullSubcategory) : Mono F.obj.ι :=
   F.property.1
 
 variable {f} in
-/-- The property that the first morphism of the factorisation is
+/-- The property that the first morphism of a factorisation is
 a quasi-isomorphisms in degrees `≤ n`. -/
 public def quasiIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
   fun F ↦ ∀ i ≤ n, QuasiIsoAt F.obj.ι i
