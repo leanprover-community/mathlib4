@@ -674,7 +674,7 @@ theorem fromRel_toRel (s : Set (Sym2 α)) : fromRel (toRel_symmetric s) = s :=
   Set.ext fun z => Sym2.ind (fun _ _ => Iff.rfl) z
 
 theorem toRel_mono_iff (s₁ s₂ : Set (Sym2 α)) : ToRel s₁ ≤ ToRel s₂ ↔ s₁ ⊆ s₂ :=
-  ⟨fun hle ↦ Sym2.ind hle, fun hle a b ↦ @hle s(a, b)⟩
+  ⟨(Sym2.ind ·), (@· s(·, ·))⟩
 
 @[gcongr]
 alias ⟨_, toRel_mono⟩ := toRel_mono_iff
