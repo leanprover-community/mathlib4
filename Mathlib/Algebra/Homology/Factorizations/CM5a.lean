@@ -51,23 +51,7 @@ lemma `cm5a_cof` (TODO).
 
 open CategoryTheory Limits Opposite Abelian HomologicalComplex Pretriangulated
 
-variable {C : Type*} [Category* C]
-
-namespace HomologicalComplex
-
-instance [HasZeroMorphisms C] [HasZeroObject C]
-    {ι : Type*} [DecidableEq ι] (c : ComplexShape ι) (i j : ι) (I : C)
-    [Injective I] :
-    Injective (((single C c i).obj I).X j) := by
-  by_cases hij : j = i
-  · subst hij
-    simp only [single_obj_X_self]
-    infer_instance
-  · exact (isZero_single_obj_X _ _ _ _ hij).injective
-
-end HomologicalComplex
-
-variable [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 namespace CochainComplex.Plus.modelCategoryQuillen
 
