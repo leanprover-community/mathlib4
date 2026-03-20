@@ -182,9 +182,11 @@ def liftOfStrictSegal : X ⟶ Y where
     (liftOfStrictSegal.naturalityProperty_eq_top f₀ f₁ hδ₁ hδ₀ H hσ hY).symm.le
       φ.unop (by simp)
 
+@[simp]
 lemma liftOfStrictSegal_app_0 :
     (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋0⦌₂) = TypeCat.ofHom f₀ := rfl
 
+@[simp]
 lemma liftOfStrictSegal_app_1 :
     (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋1⦌₂) = TypeCat.ofHom f₁ := rfl
 
