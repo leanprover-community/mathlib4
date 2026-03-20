@@ -91,7 +91,7 @@ public def quasiIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
   fun F ↦ ∀ i ≤ n, QuasiIsoAt F.obj.ι i
 
 variable {f} in
-/-- The property that the second morphism of the factorisation is
+/-- The property that the second morphism of a factorisation is
 an isomorphism in degrees `≤ n`. -/
 public def isIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
   fun F ↦ ∀ i ≤ n, IsIso (F.obj.π.f i)
