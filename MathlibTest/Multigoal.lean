@@ -193,12 +193,6 @@ example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
     next => finish
     finish
 
--- Exclude `fail_if_success` from linting.
-example (hx : x = 0 ∨ x = 1) : x ≤ 1 := by
-  grind =>
-    fail_if_success cases #1234
-    finish
-
 -- Exclude `skip` from linting.
 example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
   grind =>
@@ -240,6 +234,18 @@ example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) (hz : z = 0 ∨ z = 1) :
     cases #484a <;> cases #01c5
 
 -- excluded tactics
+
+example (hx : x = 0 ∨ x = 1) : x ≤ 1 := by
+  grind =>
+    fail_if_success cases #1234
+    finish
+
+example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
+  grind =>
+    first (cases #484a) (cases #01c5)
+    first (cases #484a) (cases #01c5)
+    first (cases #484a) (cases #01c5)
+
 example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
   grind =>
     cases #484a
