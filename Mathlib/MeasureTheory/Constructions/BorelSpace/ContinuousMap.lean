@@ -116,7 +116,7 @@ theorem borel_eq_iSup_comap_eval :
   -- Consider now `v ∈ V` such that `closure v ⊆ U`.
   rintro - ⟨v, hv1, hv2, rfl⟩
   -- Consider `Q` a countable dense subset of `K`, which exists by second-countability assumption.
-  obtain ⟨Q, cQ, hQ, dQ⟩ := exists_countable_dense_subset X K
+  obtain ⟨Q, cQ, hQ, dQ⟩ := exists_countable_dense_subset K
   -- Because `f` is continuous and `closure v` is closed and `Q` is dense in `K`, having
   -- `f '' K ⊆ closure v` is the same as `f '' Q ⊆ closure v`.
   have : {f : C(X, Y) | K.MapsTo f (closure v)} = {f : C(X, Y) | Q.MapsTo f (closure v)} := by
