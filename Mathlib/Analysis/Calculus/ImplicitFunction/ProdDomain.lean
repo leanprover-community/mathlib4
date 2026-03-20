@@ -92,7 +92,7 @@ theorem implicitFunctionOfProdDomain_def
       fun x => ((dfu.implicitFunctionDataOfProdDomain if₂).implicitFunction (f u) x).2 := by
   rfl
 
-theorem image_eq_iff_implicitFunctionOfProdDomain
+theorem eventually_apply_eq_iff_implicitFunctionOfProdDomain
     (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     ∀ᶠ v in 𝓝 u, f v = f u ↔ dfu.implicitFunctionOfProdDomain if₂ v.1 = v.2 := by
   let φ := dfu.implicitFunctionDataOfProdDomain if₂
@@ -116,7 +116,7 @@ theorem tendsto_implicitFunctionOfProdDomain
   have := (dfu.hasStrictFDerivAt_implicitFunctionOfProdDomain if₂).continuousAt.tendsto
   rwa [(dfu.image_eq_iff_implicitFunctionOfProdDomain if₂).self_of_nhds.mp rfl] at this
 
-theorem image_implicitFunctionOfProdDomain
+theorem eventually_apply_implicitFunctionOfProdDomain
     (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     ∀ᶠ x in 𝓝 u.1, f (x, dfu.implicitFunctionOfProdDomain if₂ x) = f u := by
   have hψ := dfu.tendsto_implicitFunctionOfProdDomain if₂

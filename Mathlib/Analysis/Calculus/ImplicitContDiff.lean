@@ -69,12 +69,12 @@ theorem implicitFunction_apply_self
   eq_of_tendsto_nhds ((cdf.hasStrictFDerivAt pn).tendsto_implicitFunctionOfProdDomain if₂)
 
 /-- `implicitFunction` is indeed the (local) implicit function defined by `f`. -/
-theorem image_implicitFunction
+theorem eventually_apply_implicitFunction
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     ∀ᶠ x in 𝓝 u.1, f (x, cdf.implicitFunction pn if₂ x) = f u :=
   (cdf.hasStrictFDerivAt pn).image_implicitFunctionOfProdDomain if₂
 
-theorem image_eq_iff_implicitFunction
+theorem eventually_apply_eq_iff_implicitFunction
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     ∀ᶠ v in 𝓝 u, f v = f u ↔ cdf.implicitFunction pn if₂ v.1 = v.2 :=
   (cdf.hasStrictFDerivAt pn).image_eq_iff_implicitFunctionOfProdDomain if₂
