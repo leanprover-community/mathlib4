@@ -73,6 +73,8 @@ lemma TensorProduct.spanFinrank_top_eq_of_residueField (fg : N.FG) :
     ← hs₁, Set.ncard_image_le hs₃]
   rfl
 
+namespace IsLocalRing
+
 set_option backward.isDefEq.respectTransparency false in
 lemma spanFinrank_eq_finrank_quotient (N : Submodule R M) (fg : N.FG) :
     N.spanFinrank =
@@ -94,3 +96,5 @@ variable (R) in
 lemma spanFinrank_maximalIdeal_eq_finrank_cotangentSpace [IsNoetherianRing R] :
     (maximalIdeal R).spanFinrank = Module.finrank (ResidueField R) (CotangentSpace R) :=
   spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg (maximalIdeal R).fg_of_isNoetherianRing
+
+end IsLocalRing
