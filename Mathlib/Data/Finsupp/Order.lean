@@ -95,7 +95,7 @@ end Preorder
 section EmbDomain
 
 @[gcongr]
-lemma embDomain_le_embDomain_iff_le [LE α] [@Std.Refl α LE.le]
+lemma embDomain_le_embDomain_iff_le [LE α] [@Std.Refl α (· ≤ ·)]
     (f : ι ↪ κ) (g₁ g₂ : ι →₀ α) : g₁.embDomain f ≤ g₂.embDomain f ↔ g₁ ≤ g₂ := by
   constructor
   · rw [Finsupp.le_def]
@@ -120,7 +120,7 @@ section MapDomain
 
 variable [AddCommMonoid α]
 
-lemma mapDomain_le_mapDomain_iff_le [LE α] [@Std.Refl α LE.le] {f : ι → κ} (h : f.Injective)
+lemma mapDomain_le_mapDomain_iff_le [LE α] [@Std.Refl α (· ≤ ·)] {f : ι → κ} (h : f.Injective)
     (g₁ g₂ : ι →₀ α) : g₁.mapDomain f ≤ g₂.mapDomain f ↔ g₁ ≤ g₂ := by
   simpa [Finsupp.embDomain_eq_mapDomain] using Finsupp.embDomain_le_embDomain_iff_le ⟨f, h⟩ g₁ g₂
 
