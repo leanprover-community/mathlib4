@@ -90,8 +90,7 @@ theorem alternatingGroup_of_le_of_normal
     alternatingGroup α ≤ N := by
   rw [← alternatingGroup.commutator_perm_eq hα]
   have : IsPreprimitive (Perm α) (Set.powersetCard α 2) := by
-    apply Set.powersetCard.isPreprimitive_perm (by norm_num) (lt_of_lt_of_le (by norm_num) hα)
-    aesop
+    apply Set.powersetCard.isPreprimitive_perm <;> grind
   classical
   apply iwasawaStructure_two.commutator_le
   exact fixedPoints_ne_univ_of_faithfulSMul 2 (by norm_num) (by grind)
@@ -138,25 +137,16 @@ theorem mem_map_kleinFour_ofSubtype (s : Finset α) (hs : s.card = 4) (k : alter
     k ∈ (kleinFour s).map (ofSubtype s) ↔
       (k : Perm α).support ⊆ s ∧ ((k : Perm α) = 1 ∨ (k : Perm α).cycleType = {2, 2}) := by
   have hs : Nat.card s = 4 := by aesop
-  constructor
-  · rintro ⟨k, hk, rfl⟩
-    rw [coe_kleinFour_of_card_eq_four hs,
-      Set.mem_union, Set.mem_singleton_iff, Set.mem_setOf_eq] at hk
-    simp only [ofSubtype, MonoidHom.coe_mk, OneHom.coe_mk, cycleType_ofSubtype,
-      map_eq_one_iff _ ofSubtype_injective, OneMemClass.coe_eq_one]
-    refine ⟨?_, by convert hk⟩
-    intro x
-    rw [mem_support_ofSubtype]
-    exact Exists.choose
-  · rintro ⟨hk, hk'⟩
-    rw [← mem_range_ofSubtype_iff] at hk
-    obtain ⟨k, rfl⟩ := hk
-    apply Subgroup.mem_map_of_mem
-    rw [← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hs,
-      Set.mem_union, Set.mem_singleton_iff, Set.mem_setOf_eq]
-    simp only [ofSubtype, MonoidHom.coe_mk, OneHom.coe_mk, cycleType_ofSubtype,
-      map_eq_one_iff _ ofSubtype_injective, OneMemClass.coe_eq_one] at hk'
-    convert hk'
+  by_cases hk : (k : Perm α).support ⊆ s
+  · obtain ⟨σ, rfl⟩ := (mem_range_ofSubtype_iff s k).mpr hk
+    simp_rw [and_iff_right hk, Subgroup.mem_map, ofSubtype_inj, existsAndEq, and_true,
+      ← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hs]
+    simp only [Set.singleton_union, Set.mem_insert_iff, Set.mem_setOf_eq, OneMemClass.coe_eq_one,
+      cycleType_ofSubtype, coe_ofSubtype, map_eq_one_iff _ Perm.ofSubtype_injective]
+    convert Iff.rfl
+  · simp_rw [hk, false_and, iff_false]
+    contrapose! hk
+    exact (mem_range_ofSubtype_iff s k).mp (Subgroup.map_le_range _ _ hk)
 
 theorem map_kleinFour_conj (s : Finset α) (hs : s.card = 4) (g : alternatingGroup α) :
     (kleinFour _).map (ofSubtype (g • s)) =
@@ -208,11 +198,8 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight
   rw [or_iff_not_imp_left]
   intro hN
   have : IsPreprimitive (alternatingGroup α) (Set.powersetCard α 4) := by
-    refine Set.powersetCard.isPreprimitive_alternatingGroup (by norm_num) ?_ ?_
-    · apply lt_of_lt_of_le (by norm_num) hα
-    · simpa using hα'
-  rw [eq_top_iff, ← commutator_alternatingGroup_eq_top
-    (by simpa using hα)]
+    apply Set.powersetCard.isPreprimitive_alternatingGroup (by norm_num) <;> grind
+  rw [eq_top_iff, ← commutator_alternatingGroup_eq_top hα]
   apply (iwasawaStructure_four hα).commutator_le
   rw [← ne_eq, ← Subgroup.nontrivial_iff_ne_bot] at hN
   exact fixedPoints_ne_univ_of_faithfulSMul 4 (by norm_num) (by grind)

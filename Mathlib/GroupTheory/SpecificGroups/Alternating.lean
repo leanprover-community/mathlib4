@@ -488,6 +488,18 @@ def ofSubtype (s : Finset α) : alternatingGroup s →* alternatingGroup α wher
   map_mul' := by simp
   map_one' := by simp
 
+theorem ofSubtype_injective {s : Finset α} : Function.Injective (ofSubtype s) := by
+  rw [← Function.Injective.of_comp_iff (alternatingGroup α).subtype_injective]
+  exact Perm.ofSubtype_injective.comp (alternatingGroup s).subtype_injective
+
+theorem ofSubtype_inj {s : Finset α} {g h : alternatingGroup s} :
+    ofSubtype s g = ofSubtype s h ↔ g = h :=
+  ofSubtype_injective.eq_iff
+
+theorem coe_ofSubtype (s : Finset α) (k : alternatingGroup s) :
+    (ofSubtype s k : Equiv.Perm α) = Equiv.Perm.ofSubtype k.1 := by
+  rfl
+
 theorem map_ofSubtype (s : Finset α) :
     (alternatingGroup s).map (Perm.ofSubtype : Perm s →* Perm α) =
       (Perm.ofSubtype : Perm s →* Perm α).range ⊓ (alternatingGroup α) := by
