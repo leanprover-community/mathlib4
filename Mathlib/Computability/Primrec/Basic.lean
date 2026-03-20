@@ -476,6 +476,10 @@ theorem PrimrecPred.comp {p : β → Prop} {f : α → β} :
     (hp : PrimrecPred p) → (hf : Primrec f) → PrimrecPred fun a => p (f a)
   | ⟨_i, hp⟩, hf => hp.comp hf |>.primrecPred
 
+@[fun_prop]
+lemma PrimrecPred.const {p : Prop} : PrimrecPred (fun _ : α ↦ p) := by
+  classical rw [primrecPred_iff_primrec_decide]; fun_prop
+
 protected lemma PrimrecRel.decide {R : α → β → Prop} [DecidableRel R] (hR : PrimrecRel R) :
     Primrec₂ (fun a b => decide (R a b)) :=
   PrimrecPred.decide hR
