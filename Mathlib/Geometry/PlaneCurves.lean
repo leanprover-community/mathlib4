@@ -123,7 +123,7 @@ def frameAt (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, top_le_iff]
     apply hBon.linearIndependent.span_eq_top_of_card_eq_finrank
     simp
-  OrthonormalBasis.mk (v:=B) (hon:=hBon) (hsp:=hBsp)
+  OrthonormalBasis.mk (v := B) (hon := hBon) (hsp := hBsp)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A simpler formula for the curvature of a plane curve parametrized by arc-length, or in other
@@ -155,14 +155,12 @@ lemma inners_sum_eq_zero_of_const_inner_on_open {α β : ℝ → EuclideanSpace 
     {s : ℝ} (ht : t ∈ I) {α' β' : EuclideanSpace ℝ ι} (hdα : HasDerivAt α α' t)
     (hdβ : HasDerivAt β β' t) (hci : Set.EqOn (fun t ↦ inner ℝ (α t) (β t)) (fun _ ↦ s) I) :
     inner ℝ (α t) β' + inner ℝ α' (β t) = 0 := by
-  let f := fun t ↦  inner ℝ (α t) (β t)
   symm
   calc
-    (0 : ℝ) = deriv f t := by
+    (0 : ℝ) = deriv (fun t ↦  inner ℝ (α t) (β t)) t := by
       rw [← derivWithin_of_isOpen hI ht, derivWithin_congr hci (hci ht)]
       simp
     _ = inner ℝ (α t) β' + inner ℝ α' (β t) := by
-      unfold f
       apply (HasDerivAt.inner ℝ hdα hdβ).deriv
 
 /-- Given a continuously differentiable parametrized curve whose position has the same magnitude at
@@ -191,8 +189,8 @@ theorem inner_of_accel_velocity_of_const_speed_eq_zero (hI : IsOpen I) (hγ₁ :
     inner ℝ (iteratedDeriv 2 γ t) (deriv γ t) = 0 := by
   rw [iteratedDeriv_succ, iteratedDeriv_one]
   have h : ContDiffOn ℝ (1+1) γ I := by assumption
-  have h' := ((contDiffOn_succ_iff_deriv_of_isOpen hI).mp h).2.2
-  exact inner_of_deriv_curve_eq_zero_of_const_magnitude_curve hI h' hγ₂ ht
+  exact inner_of_deriv_curve_eq_zero_of_const_magnitude_curve hI 
+        ((contDiffOn_succ_iff_deriv_of_isOpen hI).mp h).2.2 hγ₂ ht
 
 /-- The first Frenet equation for plane curves: For any twice continously differentiable plane curve
 parametrized by arc-length (i.e., with unit speed), the second derivative, i.e. acceleration vector
@@ -214,8 +212,7 @@ lemma normal_hasDerivAt_aux (hI : IsOpen I) (hc : ContDiffOn ℝ 2 c I) (ht : t 
     HasDerivAt (normal c) (deriv (normal c) t) t := by
   have hd : ContDiffOn ℝ 1 (deriv c) I := hc.deriv_of_isOpen hI (by norm_num)
   have hD : DifferentiableOn ℝ (deriv c) I := hd.differentiableOn (by norm_num)
-  unfold normal
-  simp only [Fin.isValue, hasDerivAt_deriv_iff]
+  simp only [hasDerivAt_deriv_iff]
   have h : DifferentiableOn ℝ (fun t ↦ !₂[-(deriv c t) 1, (deriv c t) 0]) I := by
     rw [differentiableOn_piLp] at *
     intro i
@@ -253,8 +250,6 @@ theorem deriv_normal_eq_minus_orientedCurvature_times_deriv (hI : IsOpen I)
              Matrix.cons_val_fin_one, neg_smul]
   rw [real_inner_comm (deriv (normal c) t) (normal c t),
       inner_of_deriv_normal_normal_of_unit_speed_eq_zero hI hc₁ hc₂ ht]; simp
-  have hdn : HasDerivAt (normal c) (deriv (normal c) t) t := normal_hasDerivAt_aux hI hc₁ ht
-  have hddc : HasDerivAt (deriv c) (iteratedDeriv 2 c t) t := velocity_hasDerivAt_aux hI hc₁ ht
   have h : inner ℝ (deriv c t) (deriv (normal c) t) = - orientedCurvature c t := by
     have h' : inner ℝ (deriv c t) (deriv (normal c) t) + orientedCurvature c t = 0 := by
       symm
@@ -265,7 +260,8 @@ theorem deriv_normal_eq_minus_orientedCurvature_times_deriv (hI : IsOpen I)
       calc
         (0 : ℝ) = (orientedCurvature c t)•(inner ℝ (normal c t) (normal c t))
                   + inner ℝ (deriv (normal c) t) (deriv c t) := by
-          rw [← inners_sum_eq_zero_of_const_inner_on_open hI ht hdn hddc hci,
+          rw [← inners_sum_eq_zero_of_const_inner_on_open hI ht (normal_hasDerivAt_aux hI hc₁ ht) 
+                (velocity_hasDerivAt_aux hI hc₁ ht) hci,
               second_deriv_eq_orientedCurvature_times_normal hI hc₁ hc₂ ht,
               real_inner_comm (orientedCurvature c t • normal c t),
               inner_smul_left_eq_smul (normal c t) (normal c t)]
@@ -332,11 +328,10 @@ lemma _root_.HasDerivAt.deriv_initialCurve_of_orientedCurvature (hI : IsOpen I)
     !₂[-(κ t)*Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ), (κ t)*Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ)] t := by
   have h₀ : HasDerivWithinAt (fun x ↦  θ₀ + ∫ξ in t₀..x, κ ξ) (κ t) I t := by
     have hyp₁ : HasDerivWithinAt (fun x ↦ θ₀) 0 I t := by apply hasDerivWithinAt_const
-    have hyp₂ :=  intervalIntegral.hasDerivWithinAt_of_continuousOn_interval hκ ht₀ ht
-    have hyp₃ := hyp₁.add hyp₂
+    have hyp₂ := hyp₁.add (intervalIntegral.hasDerivWithinAt_of_continuousOn_interval hκ ht₀ ht)
     have help : (fun x↦ θ₀)+(fun t↦ ∫τ in t₀..t, κ τ) = fun x↦ θ₀+∫ξ in t₀..x, κ ξ := by rfl
-    rw [help, zero_add] at hyp₃
-    exact hyp₃
+    rw [help, zero_add] at hyp₂
+    exact hyp₂
   have h : I.EqOn (deriv (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀))
            (fun x ↦  !₂[Real.cos (θ₀+∫ξ in t₀..x, κ ξ), Real.sin (θ₀+∫ξ in t₀..x, κ ξ)]) :=
     fun x hx ↦  (HasDerivAt.initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ hx).deriv
@@ -414,18 +409,14 @@ protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature (hI : IsOp
     ContDiffOn ℝ 2 (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀) I := by
   apply contDiffOn_of_continuousOn_differentiableOn_deriv
   · intro m hm
-    have help := iteratedDerivWithin_of_isOpen (n:=m)
-                 (f:=(initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) hI
-    rw [continuousOn_congr help]
+    rw [continuousOn_congr (iteratedDerivWithin_of_isOpen (n:=m)
+                            (f:=(initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) hI)]
     have hm' : m ≤ 2 := by simp_all
     interval_cases m
     pick_goal 3
     · intro t ht
-      have h' : ∀ y ∈ I, (iteratedDeriv 2 (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) y
-                       = (fun t ↦ !₂[-(κ t)*Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ),
-                         (κ t)*Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ)]) y :=
-        fun y hy ↦  second_deriv_of_initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ hy
-      rw [continuousWithinAt_congr_of_mem h' ht]
+      rw [continuousWithinAt_congr_of_mem 
+          (fun y hy ↦  second_deriv_of_initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ hy) ht]
       have hcd : ContDiffWithinAt ℝ 0 (fun t ↦ !₂[-κ t * Real.sin (θ₀+∫ξ in t₀..t, κ ξ),
         κ t * Real.cos (θ₀+∫ξ in t₀..t, κ ξ)]) I t := by
         apply contDiffWithinAt_piLp'
@@ -445,9 +436,8 @@ protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature (hI : IsOp
       simp only [iteratedDeriv_zero, iteratedDeriv_one]
       fun_prop (disch := assumption)
   · intro m hm
-    have help := iteratedDerivWithin_of_isOpen (n:=m)
-                 (f:=(initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) hI
-    rw [differentiableOn_congr help]
+    rw [differentiableOn_congr (iteratedDerivWithin_of_isOpen (n:=m)
+                                (f:=(initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) hI)]
     have hm' : m < 2 := by simp_all
     interval_cases m
     all_goals
