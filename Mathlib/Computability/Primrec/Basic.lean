@@ -190,6 +190,45 @@ variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 open Nat.Primrec
 
+protected theorem id : Primrec (@id α) :=
+  (Primcodable.prim α).of_eq <| by simp
+
+theorem const (x : σ) : Primrec fun _ : α => x :=
+  ((casesOn1 0 (.const (encode x).succ)).comp (Primcodable.prim α)).of_eq fun n => by
+    cases @decode α _ n <;> rfl
+
+theorem comp {f : β → σ} {g : α → β} (hf : Primrec f) (hg : Primrec g) : Primrec fun a => f (g a) :=
+  ((casesOn1 0 (.comp hf (pred.comp hg))).comp (Primcodable.prim α)).of_eq fun n => by
+    cases @decode α _ n <;> simp [encodek]
+
+theorem fst : Primrec (@Prod.fst α β) :=
+  ((casesOn' zero
+            ((casesOn' zero (Nat.Primrec.succ.comp left)).comp
+              (pair right ((Primcodable.prim β).comp left)))).comp
+        (pair right ((Primcodable.prim α).comp left))).of_eq
+    fun n => by
+    simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
+    cases @decode α _ n.unpair.1 <;> simp
+    cases @decode β _ n.unpair.2 <;> simp
+
+theorem snd : Primrec (@Prod.snd α β) :=
+  ((casesOn' zero
+            ((casesOn' zero (Nat.Primrec.succ.comp right)).comp
+              (pair right ((Primcodable.prim β).comp left)))).comp
+        (pair right ((Primcodable.prim α).comp left))).of_eq
+    fun n => by
+    simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
+    cases @decode α _ n.unpair.1 <;> simp
+    cases @decode β _ n.unpair.2 <;> simp
+
+theorem pair {f : α → β} {g : α → σ}
+    (hf : Primrec f) (hg : Primrec g) : Primrec fun a => (f a, g a) :=
+  ((casesOn1 0
+            (Nat.Primrec.succ.comp <|
+              .pair (Nat.Primrec.pred.comp hf) (Nat.Primrec.pred.comp hg))).comp
+        (Primcodable.prim α)).of_eq
+    fun n => by cases @decode α _ n <;> simp [encodek]
+
 protected theorem encode : Primrec (@encode α _) :=
   (Primcodable.prim α).of_eq fun n => by cases @decode α _ n <;> rfl
 
@@ -213,17 +252,6 @@ theorem option_some : Primrec (@some α) :=
 
 theorem of_eq {f g : α → σ} (hf : Primrec f) (H : ∀ n, f n = g n) : Primrec g :=
   (funext H : f = g) ▸ hf
-
-theorem const (x : σ) : Primrec fun _ : α => x :=
-  ((casesOn1 0 (.const (encode x).succ)).comp (Primcodable.prim α)).of_eq fun n => by
-    cases @decode α _ n <;> rfl
-
-protected theorem id : Primrec (@id α) :=
-  (Primcodable.prim α).of_eq <| by simp
-
-theorem comp {f : β → σ} {g : α → β} (hf : Primrec f) (hg : Primrec g) : Primrec fun a => f (g a) :=
-  ((casesOn1 0 (.comp hf (pred.comp hg))).comp (Primcodable.prim α)).of_eq fun n => by
-    cases @decode α _ n <;> simp [encodek]
 
 theorem succ : Primrec Nat.succ :=
   nat_iff.2 Nat.Primrec.succ
@@ -267,34 +295,6 @@ theorem of_equiv_symm_iff {β} (e : β ≃ α) {f : σ → α} :
     (Primrec fun a => e.symm (f a)) ↔ Primrec f :=
   letI := Primcodable.ofEquiv α e
   ⟨fun h => (of_equiv.comp h).of_eq fun a => by simp, of_equiv_symm.comp⟩
-
-theorem fst : Primrec (@Prod.fst α β) :=
-  ((casesOn' zero
-            ((casesOn' zero (Nat.Primrec.succ.comp left)).comp
-              (pair right ((Primcodable.prim β).comp left)))).comp
-        (pair right ((Primcodable.prim α).comp left))).of_eq
-    fun n => by
-    simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
-    cases @decode α _ n.unpair.1 <;> simp
-    cases @decode β _ n.unpair.2 <;> simp
-
-theorem snd : Primrec (@Prod.snd α β) :=
-  ((casesOn' zero
-            ((casesOn' zero (Nat.Primrec.succ.comp right)).comp
-              (pair right ((Primcodable.prim β).comp left)))).comp
-        (pair right ((Primcodable.prim α).comp left))).of_eq
-    fun n => by
-    simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
-    cases @decode α _ n.unpair.1 <;> simp
-    cases @decode β _ n.unpair.2 <;> simp
-
-theorem pair {f : α → β} {g : α → σ}
-    (hf : Primrec f) (hg : Primrec g) : Primrec fun a => (f a, g a) :=
-  ((casesOn1 0
-            (Nat.Primrec.succ.comp <|
-              .pair (Nat.Primrec.pred.comp hf) (Nat.Primrec.pred.comp hg))).comp
-        (Primcodable.prim α)).of_eq
-    fun n => by cases @decode α _ n <;> simp [encodek]
 
 theorem unpair : Primrec Nat.unpair :=
   (pair (nat_iff.2 .left) (nat_iff.2 .right)).of_eq fun n => by simp
