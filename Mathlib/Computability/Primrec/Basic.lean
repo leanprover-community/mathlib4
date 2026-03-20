@@ -480,23 +480,33 @@ theorem PrimrecPred.comp {p : β → Prop} {f : α → β} :
 lemma PrimrecPred.const {p : Prop} : PrimrecPred (fun _ : α ↦ p) := by
   classical rw [primrecPred_iff_primrec_decide]; fun_prop
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated PrimrecPred.decide (since := "2026-03-20")]
 protected lemma PrimrecRel.decide {R : α → β → Prop} [DecidableRel R] (hR : PrimrecRel R) :
     Primrec₂ (fun a b => decide (R a b)) :=
   PrimrecPred.decide hR
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.primrecPred (since := "2026-03-20")]
 lemma Primrec₂.primrecRel {R : α → β → Prop} [DecidableRel R]
     (hp : Primrec₂ (fun a b => decide (R a b))) : PrimrecRel R :=
   Primrec.primrecPred hp
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated primrecPred_iff_primrec_decide (since := "2026-03-20")]
 lemma primrecRel_iff_primrec_decide {R : α → β → Prop} [DecidableRel R] :
     PrimrecRel R ↔ Primrec₂ (fun a b => decide (R a b)) where
   mp := PrimrecRel.decide
   mpr := Primrec₂.primrecRel
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated PrimrecPred.comp (since := "2026-03-20")]
 theorem PrimrecRel.comp {R : β → γ → Prop} {f : α → β} {g : α → γ}
     (hR : PrimrecRel R) (hf : Primrec f) (hg : Primrec g) : PrimrecPred fun a => R (f a) (g a) :=
   PrimrecPred.comp hR (hf.pair hg)
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated PrimrecPred.comp (since := "2026-03-20")]
 theorem PrimrecRel.comp₂ {R : γ → δ → Prop} {f : α → β → γ} {g : α → β → δ} :
     PrimrecRel R → Primrec₂ f → Primrec₂ g → PrimrecRel fun a b => R (f a b) (g a b) :=
   PrimrecRel.comp
@@ -507,6 +517,8 @@ theorem PrimrecPred.of_eq {α} [Primcodable α] {p q : α → Prop}
     (hp : PrimrecPred p) (H : ∀ a, p a ↔ q a) : PrimrecPred q :=
   funext (fun a => propext (H a)) ▸ hp
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated PrimrecPred.of_eq (since := "2026-03-20")]
 theorem PrimrecRel.of_eq {α β} [Primcodable α] [Primcodable β] {r s : α → β → Prop}
     (hr : PrimrecRel r) (H : ∀ a b, r a b ↔ s a b) : PrimrecRel s :=
   funext₂ (fun a b => propext (H a b)) ▸ hr
