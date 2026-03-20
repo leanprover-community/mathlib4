@@ -124,13 +124,13 @@ theorem IsGaloisGroup.to_isFractionRing [Finite G] [hGAB : IsGaloisGroup G A B] 
   refine ⟨⟨fun h ↦ ?_⟩, ⟨fun g x y ↦ ?_⟩, ⟨fun x h ↦ ?_⟩⟩
   · have := hGAB.faithful
     exact eq_of_smul_eq_smul fun y ↦ by simpa [← algebraMap.coe_smul'] using h (algebraMap B L y)
-  · obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective (A := A) x
-    obtain ⟨c, d, hd, rfl⟩ := IsFractionRing.div_surjective (A := B) y
+  · obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective A x
+    obtain ⟨c, d, hd, rfl⟩ := IsFractionRing.div_surjective B y
     simp [Algebra.smul_def, smul_mul', smul_div₀', hc, ← algebraMap.coe_smul']
   · have := hGAB.isInvariant.isIntegral
     have : Nontrivial A := (IsFractionRing.nontrivial_iff_nontrivial A K).mpr inferInstance
     have : Nontrivial B := (IsFractionRing.nontrivial_iff_nontrivial B L).mpr inferInstance
-    obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := B) x
+    obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective B x
     have hy' : algebraMap B L y ≠ 0 := by simpa using nonZeroDivisors.ne_zero hy
     obtain ⟨b, a, ha, hb⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A) y).exists_smul_eq_mul x hy
     rw [mul_comm, Algebra.smul_def, mul_comm] at hb
@@ -152,7 +152,7 @@ theorem IsGaloisGroup.of_isFractionRing [hGKL : IsGaloisGroup G K L]
   refine ⟨⟨fun h ↦ ?_⟩, ⟨fun g x y ↦ IsFractionRing.injective B L ?_⟩, ⟨fun x h ↦ ?_⟩⟩
   · have := hGKL.faithful
     refine eq_of_smul_eq_smul fun (y : L) ↦ ?_
-    obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective (A := B) y
+    obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective B y
     simp only [smul_div₀', ← algebraMap.coe_smul', h]
   · simp [Algebra.smul_def, algebraMap.coe_smul', ← hc]
   · obtain ⟨b, hb⟩ := hGKL.isInvariant.isInvariant (algebraMap B L x)
@@ -288,7 +288,6 @@ instance subgroup [hGKL : IsGaloisGroup G K L] :
   commutes := inferInstanceAs <| SMulCommClass H (FixedPoints.subfield H L) L
   isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 theorem fixedPoints_of_isGaloisGroup [hGKL : IsGaloisGroup G K L] [hHFL : IsGaloisGroup H F L] :
     FixedPoints.intermediateField H = F := by
@@ -324,7 +323,6 @@ theorem smul_mem_of_normal (N : Subgroup G) [hN : N.Normal] [hF : IsGaloisGroup 
   obtain ⟨y, hy⟩ := hF.isInvariant.isInvariant (g • x) this
   simp [← hy]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem finrank_fixedPoints_eq_card_subgroup [IsGaloisGroup G K L] :
     Module.finrank (FixedPoints.intermediateField H : IntermediateField K L) L = Nat.card H :=
@@ -338,7 +336,6 @@ instance fixedPoints [Finite G] [FaithfulSMul G L] :
     IsGaloisGroup G (FixedPoints.subfield G L) L :=
   of_mulEquiv_algEquiv (FixedPoints.toAlgAutMulEquiv _ _) fun _ _ ↦ rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance intermediateField [Finite G] [hGKL : IsGaloisGroup G K L] :
     IsGaloisGroup (fixingSubgroup G (F : Set L)) F L :=
   let e := ((mulEquivAlgEquiv G K L).subgroupMap (fixingSubgroup G (F : Set L))).trans <|
@@ -347,7 +344,6 @@ instance intermediateField [Finite G] [hGKL : IsGaloisGroup G K L] :
   have := hGKL.isGalois
   .of_mulEquiv_algEquiv e fun _ _ ↦ rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem card_fixingSubgroup_eq_finrank [Finite G] [IsGaloisGroup G K L] :
     Nat.card (fixingSubgroup G (F : Set L)) = Module.finrank F L :=
@@ -452,7 +448,6 @@ instance : SMul (G ⧸ N) F where
 lemma coe_quotient_smul (g : G) (x : F) :
     ((g : G ⧸ N) • x : F) = g • (x : L) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance : MulSemiringAction (G ⧸ N) F where
   one_smul _ := Subtype.ext <| by rw [← QuotientGroup.mk_one, coe_quotient_smul, one_smul]
   smul_zero g := Quotient.inductionOn' g fun g ↦ Subtype.ext <| by simp
@@ -462,13 +457,11 @@ instance : MulSemiringAction (G ⧸ N) F where
   smul_one g := Quotient.inductionOn' g fun g ↦ Subtype.ext <| by simp
   smul_mul g x y := Quotient.inductionOn' g fun g ↦ Subtype.ext <| by simp [smul_mul']
 
-set_option backward.isDefEq.respectTransparency false in
 instance [SMulCommClass G K L] : SMulCommClass (G ⧸ N) K F :=
   ⟨fun g k x ↦ Quotient.inductionOn' g fun g ↦ Subtype.ext <| by simp [smul_comm]⟩
 
 variable [hK : IsGaloisGroup G K L] [Finite G]
 
-set_option backward.isDefEq.respectTransparency false in
 instance quotient : IsGaloisGroup (G ⧸ N) K F where
   faithful.eq_of_smul_eq_smul := fun {g₁} {g₂} ↦ Quotient.inductionOn₂' g₁ g₂ fun g₁ g₂ h ↦ by
     rw [QuotientGroup.eq, ← fixingSubgroup_fixedPoints G K L N, subgroup_iff.mp hF,
@@ -486,7 +479,6 @@ instance quotient : IsGaloisGroup (G ⧸ N) K F where
 
 variable (E : IntermediateField K L) (H : Subgroup G) [hE : IsGaloisGroup H E L]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem quotientMap (h : E ≤ F) :
     letI : Algebra E F := (IntermediateField.inclusion h).toAlgebra
     IsGaloisGroup (H.map (QuotientGroup.mk' N)) E F :=
