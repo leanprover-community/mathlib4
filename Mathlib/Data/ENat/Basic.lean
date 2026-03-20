@@ -77,8 +77,14 @@ variable {a b c d m n : ℕ∞}
 
 theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
+@[simp] theorem succ_coe (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := by
+  simp [SuccOrder.succ]
+  rfl
+
+@[simp] theorem succ_top : SuccOrder.succ (⊤ : ℕ∞) = ⊤ := rfl
+
 instance : SuccAddOrder ℕ∞ where
-  succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ, instSuccOrderENat._aux_1] <;> rfl
+  succ_eq_add_one x := by cases x <;> simp
 
 theorem coe_zero : ((0 : ℕ) : ℕ∞) = 0 :=
   rfl
