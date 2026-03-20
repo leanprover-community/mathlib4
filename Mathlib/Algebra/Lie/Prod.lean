@@ -54,7 +54,6 @@ instance instLieAlgebra : LieAlgebra R (L₁ × L₂) where
 
 end Prod
 
-
 namespace LieHom
 
 section
@@ -128,7 +127,6 @@ theorem inl_injective : Function.Injective (inl R L₁ L₂) := fun _ => by simp
 
 theorem inr_injective : Function.Injective (inr R L₁ L₂) := fun _ => by simp
 
-
 section
 variable (R L₁ L₂)
 
@@ -199,7 +197,6 @@ theorem prodMap_id : (id : L →ₗ⁅R⁆ L).prodMap (id : L₁ →ₗ⁅R⁆ L
 @[simp]
 theorem prodMap_one : (1 : L →ₗ⁅R⁆ L).prodMap (1 : L₁ →ₗ⁅R⁆ L₁) = 1 :=
   rfl
-
 
 theorem prodMap_comp (f₁₂ : L₁ →ₗ⁅R⁆ L₂) (f₂₃ : L₂ →ₗ⁅R⁆ L₃) (g₁₂ : L₄ →ₗ⁅R⁆ L₅)
     (g₂₃ : L₅ →ₗ⁅R⁆ L₆) :

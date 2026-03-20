@@ -89,8 +89,7 @@ def CompatibleDerivations : LieSubalgebra R  ( (Derivation R A' A') × (Derivati
     have hxx (a : A) := congrArg (fun f => f a) hx
     have hyy (a : A) := congrArg (fun f => f a) hy
     ext z
-    simp at hxx hyy
-    simp [Derivation.commutator_apply, hxx, hyy]
+    simp_all [Derivation.commutator_apply]
 end CompatibleDerivations
 
 end LieStructures
