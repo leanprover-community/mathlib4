@@ -528,7 +528,7 @@ theorem isTree_iff_isAcyclic_and_card_edgeSet_add_one_eq_card [Finite V] :
     G.IsTree ↔ G.IsAcyclic ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
   have := Fintype.ofFinite V
   have := Fintype.ofFinite G.edgeSet
-  refine ⟨fun h ↦ ⟨h.IsAcyclic, by simpa using h.card_edgeFinset⟩, fun ⟨h, _⟩ ↦ ⟨?_, h⟩⟩
+  refine ⟨fun h ↦ ⟨h.isAcyclic, by simpa using h.card_edgeFinset⟩, fun ⟨h, _⟩ ↦ ⟨?_, h⟩⟩
   refine { preconnected a b := ?_, nonempty := by grind [Nat.card_pos_iff] }
   suffices G.Reachable = ⊤ by simp [this]
   rw [← G.reachable_is_equivalence.eqvGen_eq]
