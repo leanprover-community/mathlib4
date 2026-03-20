@@ -62,28 +62,42 @@ universe v
 variable {α β γ : Type*}
 
 /-- A language is a set of strings over an alphabet. -/
-def Language (α) :=
-  Set (List α)
+structure Language α where ofSet ::
+  /-- The set of all words in this language -/
+  toSet : Set (List α)
+deriving Inhabited
 
 namespace Language
 
-instance : Membership (List α) (Language α) := ⟨Set.Mem⟩
-instance : Singleton (List α) (Language α) := ⟨Set.singleton⟩
-instance : Insert (List α) (Language α) := ⟨Set.insert⟩
-instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Language α) :=
-  Set.instCompleteAtomicBooleanAlgebra
+@[simp] lemma ofSet_toSet (l : Language α) : ofSet l.toSet = l := rfl
+lemma toSet_ofSet (s : Set (List α)) : (ofSet s).toSet = s := rfl
+
+instance : Membership (List α) (Language α) where
+  mem l w := w ∈ l.toSet
+
+instance : Singleton (List α) (Language α) where
+  singleton a := ofSet {a}
+
+instance : Insert (List α) (Language α) where
+  insert w l := ofSet (insert w l.toSet)
+
+@[ext]
+theorem ext {l m : Language α} (h : ∀ w, w ∈ l ↔ w ∈ m) : l = m := by
+  rw [← l.ofSet_toSet, ← m.ofSet_toSet]
+  congr 1
+  exact Set.ext h
+
+instance : CompleteAtomicBooleanAlgebra (Language α) where
 
 variable {l m : Language α} {a b x : List α}
 
 /-- Zero language has no elements. -/
 instance : Zero (Language α) :=
-  ⟨(∅ : Set _)⟩
+  ⟨ofSet ∅⟩
 
 /-- `1 : Language α` contains only one element `[]`. -/
 instance : One (Language α) :=
   ⟨{[]}⟩
-
-instance : Inhabited (Language α) := ⟨(∅ : Set _)⟩
 
 /-- The sum of two languages is their union. -/
 instance : Add (Language α) :=
@@ -119,10 +133,6 @@ instance : KStar (Language α) := ⟨fun l ↦ {x | ∃ L : List (List α), x = 
 
 lemma kstar_def (l : Language α) : l∗ = {x | ∃ L : List (List α), x = L.flatten ∧ ∀ y ∈ L, y ∈ l} :=
   rfl
-
-@[ext]
-theorem ext {l m : Language α} (h : ∀ (x : List α), x ∈ l ↔ x ∈ m) : l = m :=
-  Set.ext h
 
 @[simp]
 theorem notMem_zero (x : List α) : x ∉ (0 : Language α) :=
