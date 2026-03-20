@@ -92,6 +92,9 @@ theorem eLpNorm_condExp_le_eLpNorm (f : α → E) {p : ℝ≥0∞} (hp : 1 ≤ p
     have : 1 ≤ p.toReal := by sorry
     rw [ENNReal.rpow_le_rpow_iff]
     have := integral_norm_rpow_condExp_le (m := m) this hf
+    rw [← ENNReal.toReal_le_toReal]
+    sorry
+    sorry
     sorry
     sorry
 
