@@ -180,6 +180,7 @@ end Primcodable
 
 /-- `Primrec f` means `f` is primitive recursive (after
   encoding its input and output as natural numbers). -/
+@[fun_prop]
 def Primrec {α β} [Primcodable α] [Primcodable β] (f : α → β) : Prop :=
   Nat.Primrec fun n => encode ((@decode α _ n).map f)
 
@@ -190,17 +191,21 @@ variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 open Nat.Primrec
 
+@[fun_prop]
 protected theorem id : Primrec (@id α) :=
   (Primcodable.prim α).of_eq <| by simp
 
+@[fun_prop]
 theorem const (x : σ) : Primrec fun _ : α => x :=
   ((casesOn1 0 (.const (encode x).succ)).comp (Primcodable.prim α)).of_eq fun n => by
     cases @decode α _ n <;> rfl
 
+@[fun_prop]
 theorem comp {f : β → σ} {g : α → β} (hf : Primrec f) (hg : Primrec g) : Primrec fun a => f (g a) :=
   ((casesOn1 0 (.comp hf (pred.comp hg))).comp (Primcodable.prim α)).of_eq fun n => by
     cases @decode α _ n <;> simp [encodek]
 
+@[fun_prop]
 theorem fst : Primrec (@Prod.fst α β) :=
   ((casesOn' zero
             ((casesOn' zero (Nat.Primrec.succ.comp left)).comp
@@ -211,6 +216,7 @@ theorem fst : Primrec (@Prod.fst α β) :=
     cases @decode α _ n.unpair.1 <;> simp
     cases @decode β _ n.unpair.2 <;> simp
 
+@[fun_prop]
 theorem snd : Primrec (@Prod.snd α β) :=
   ((casesOn' zero
             ((casesOn' zero (Nat.Primrec.succ.comp right)).comp
@@ -221,6 +227,7 @@ theorem snd : Primrec (@Prod.snd α β) :=
     cases @decode α _ n.unpair.1 <;> simp
     cases @decode β _ n.unpair.2 <;> simp
 
+@[fun_prop]
 theorem pair {f : α → β} {g : α → σ}
     (hf : Primrec f) (hg : Primrec g) : Primrec fun a => (f a, g a) :=
   ((casesOn1 0
