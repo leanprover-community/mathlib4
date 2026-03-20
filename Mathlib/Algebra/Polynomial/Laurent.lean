@@ -308,7 +308,7 @@ theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (mon
   split_ifs with n0
   · rw [toFinsupp_monomial]
     lift n to ℕ using n0
-    apply comapDomain_single
+    apply Finsupp.comapDomain_single
   · rw [toFinsupp_inj]
     ext a
     have : a ≠ n := by lia

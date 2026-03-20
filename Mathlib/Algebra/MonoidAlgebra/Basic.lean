@@ -253,10 +253,10 @@ theorem lift_unique (F : R[M] →ₐ[R] A) (f : R[M]) :
     simp [lift_apply]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem lift_mapRangeRingHom_algebraMap [CommSemiring S] [Algebra S A]
+theorem lift_mapCoeffRingHom_algebraMap [CommSemiring S] [Algebra S A]
     [Algebra R S] [IsScalarTower R S A]
     (f : M →* A) (x : R[M]) :
-    lift _ _ _ f (mapRangeRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
+    lift _ _ _ f (mapCoeffRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
   induction x using Finsupp.induction with
   | zero => simp
   | single_add a b f _ _ ih => simp [ih]
@@ -342,8 +342,8 @@ lemma mapDomainRingHom_comp_algebraMap (f : M →* N) :
     (mapDomainRingHom A f).comp (algebraMap R A[M]) = algebraMap R A[N] := by ext; simp
 
 @[to_additive (attr := simp)]
-lemma mapRangeRingHom_comp_algebraMap (f : R →+* S) :
-    (mapRangeRingHom (M := M) f).comp (algebraMap _ _) = (algebraMap _ _).comp f := by ext; simp
+lemma mapCoeffRingHom_comp_algebraMap (f : R →+* S) :
+    (mapCoeffRingHom (M := M) f).comp (algebraMap _ _) = (algebraMap _ _).comp f := by ext; simp
 
 variable (M) in
 /-- The algebra homomorphism of monoid algebras induced by a homomorphism of the base algebras. -/
@@ -351,17 +351,17 @@ variable (M) in
 /-- The algebra homomorphism of additive monoid algebras induced by a homomorphism of the base
 algebras. -/]
 noncomputable def mapRangeAlgHom (f : A →ₐ[R] B) : A[M] →ₐ[R] B[M] where
-  __ := mapRangeRingHom M f
+  __ := mapCoeffRingHom M f
   commutes' := by simp
 
 variable (M) in
 @[to_additive (attr := simp)]
 lemma toRingHom_mapRangeAlgHom (f : A →ₐ[R] B) :
-    mapRangeAlgHom M f = mapRangeRingHom M f.toRingHom := rfl
+    mapRangeAlgHom M f = mapCoeffRingHom M f.toRingHom := rfl
 
 @[to_additive (attr := simp)]
 lemma mapRangeAlgHom_apply (f : A →ₐ[R] B) (x : A[M]) (m : M) :
-    mapRangeAlgHom M f x m = f (x m) := mapRangeRingHom_apply f.toRingHom x m
+    mapRangeAlgHom M f x m = f (x m) := mapCoeffRingHom_apply f.toRingHom x m
 
 @[to_additive (attr := simp)]
 lemma mapRangeAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
@@ -447,7 +447,7 @@ That's why it is not a global instance. -/
 Warning: This produces a diamond for `Algebra R[M] S[M][M]` and another one for `Algebra R[M] R[M]`.
 That's why it is not a global instance. -/]
 noncomputable abbrev algebraMonoidAlgebra : Algebra R[M] S[M] :=
-  (mapRangeRingHom M (algebraMap R S)).toAlgebra
+  (mapCoeffRingHom M (algebraMap R S)).toAlgebra
 
 scoped[AlgebraMonoidAlgebra] attribute [instance] MonoidAlgebra.algebraMonoidAlgebra
   AddMonoidAlgebra.algebraAddMonoidAlgebra
@@ -455,7 +455,7 @@ scoped[AlgebraMonoidAlgebra] attribute [instance] MonoidAlgebra.algebraMonoidAlg
 open scoped AlgebraMonoidAlgebra
 
 @[to_additive (attr := simp)]
-lemma algebraMap_def : algebraMap R[M] S[M] = mapRangeRingHom M (algebraMap R S) := rfl
+lemma algebraMap_def : algebraMap R[M] S[M] = mapCoeffRingHom M (algebraMap R S) := rfl
 
 @[to_additive (dont_translate := R)]
 lemma isScalarTower_monoidAlgebra [CommSemiring T] [Algebra R T] [Algebra S T]
@@ -568,10 +568,10 @@ theorem lift_unique (F : R[M] →ₐ[R] A) (f : R[M]) :
     simp [lift_apply]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem lift_mapRangeRingHom_algebraMap [CommSemiring S] [Algebra S A]
+theorem lift_mapCoeffRingHom_algebraMap [CommSemiring S] [Algebra S A]
     [Algebra R S] [IsScalarTower R S A]
     (f : Multiplicative M →* A) (x : R[M]) :
-    lift _ _ _ f (mapRangeRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
+    lift _ _ _ f (mapCoeffRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
   induction x using Finsupp.induction with
   | zero => simp
   | single_add a b f _ _ ih => simp [ih]
