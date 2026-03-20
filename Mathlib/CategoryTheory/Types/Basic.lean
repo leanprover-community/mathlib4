@@ -512,13 +512,13 @@ theorem equivEquivIso_inv {X Y : Type u} (e : X ≅ Y) : equivEquivIso.symm e = 
 
 section unif_hints
 
-/-- Unification hint for `(𝟭 _).obj X = X`. -/
-unif_hint id_obj_eq_self (X X' : Type u) where
-  X ≟ X' ⊢ (𝟭 _).obj X ≟ X'
+-- /-- Unification hint for `(𝟭 _).obj X = X`. -/
+-- unif_hint id_obj_eq_self (X X' : Type u) where
+--   X ≟ X' ⊢ (𝟭 _).obj X ≟ X'
 
-/-- Unification hint for `(F ⋙ G).obj X = G.obj (F.obj X)`. -/
-unif_hint comp_map_eq_comp {C D : Type*} [Category* C] [Category* D]
-    (F : C ⥤ D) (G : D ⥤ Type*) (X X' : C) where
-  X ≟ X' ⊢ (F ⋙ G).obj X ≟ (G.obj (F.obj X))
+-- /-- Unification hint for `(F ⋙ G).obj X = G.obj (F.obj X)`. -/
+-- unif_hint comp_map_eq_comp {C D : Type*} [Category* C] [Category* D]
+--     (F : C ⥤ D) (G : D ⥤ Type*) (X X' : C) where
+--   X ≟ X' ⊢ (F ⋙ G).obj X ≟ (G.obj (F.obj X))
 
 end unif_hints
