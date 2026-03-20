@@ -99,7 +99,7 @@ lemma mem (x : (Derivation R A' A') × (Derivation R A A)) :
   · intro hx; ext a; exact congrArg (· a) hx
   · intro hx; ext a; exact congrArg (· a) hx
 
-/- Generate an element of `Compatible` from `x y` satisfying the compatibility equation-/
+/-- Generate an element of `Compatible` from `x y` satisfying the compatibility equation. -/
 def mk (x : Derivation R A' A') (y : Derivation R A A)
   (h : x ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ y) : Compatible R A A' :=
 ⟨(x, y), (Compatible.mem _).mpr h⟩
