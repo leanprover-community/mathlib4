@@ -78,7 +78,7 @@ theorem indicator_indicator [DecidableEq ι] :
   grind [indicator_apply]
 
 theorem eq_indicator_iff {g : ι → α} :
-    g = indicator s f ↔ g.support ⊆ s ∧ ∀ i (hi : i ∈ s), f i hi = g i := by
+    g = indicator s f ↔ g.support ⊆ s ∧ ∀ ⦃i⦄ (hi : i ∈ s), f i hi = g i := by
   classical
   suffices g.support ⊆ s ∧ (∀ i (hi : i ∈ s), f i hi = g i) ↔
       (∀ i , if hi : i ∈ s then f i hi = g i else g i = 0) by
