@@ -63,7 +63,6 @@ lemma glueDataObjι_ι (U : X.affineOpens) : I.glueDataObjι U ≫ U.1.ι =
     Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk _)) ≫ U.2.fromSpec := by
   rw [glueDataObjι, Category.assoc]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ker_glueDataObjι_appTop (U : X.affineOpens) :
     RingHom.ker (I.glueDataObjι U).appTop.hom = (I.ideal U).comap U.1.topIso.hom.hom := by
   let φ : Γ(X, U) ⟶ CommRingCat.of (Γ(X, U) ⧸ I.ideal U) :=

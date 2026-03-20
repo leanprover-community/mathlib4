@@ -297,13 +297,13 @@ Galois objects. -/
 noncomputable def endEquivSectionsFibers : End F ≃ (incl F ⋙ F').sections :=
   let i1 : End F ≃ End F' :=
     (FullyFaithful.whiskeringRight (FullyFaithful.ofFullyFaithful FintypeCat.incl) C).homEquiv
-  let i2 : (End F') ≅ (colimit ((incl F).op ⋙ coyoneda) ⟶ F') :=
+  let i2 : End F' ≅ (colimit ((incl F).op ⋙ coyoneda) ⟶ F') :=
     (yoneda.obj (F ⋙ FintypeCat.incl)).mapIso (colimit.isoColimitCocone ⟨cocone F, isColimit F⟩).op
   let i3 : (colimit ((incl F).op ⋙ coyoneda) ⟶ F') ≅
       limit ((incl F ⋙ F') ⋙ uliftFunctor.{u₁}) :=
     colimitCoyonedaHomIsoLimit' (incl F) F'
   let i4 : limit (incl F ⋙ F' ⋙ uliftFunctor.{u₁}) ≃
-      (((incl F ⋙ F') ⋙ uliftFunctor.{u₁}).sections) :=
+      ((incl F ⋙ F') ⋙ uliftFunctor.{u₁}).sections :=
     Types.limitEquivSections (incl F ⋙ (F ⋙ FintypeCat.incl) ⋙ uliftFunctor.{u₁, u₂})
   let i5 : ((incl F ⋙ F') ⋙ uliftFunctor.{u₁}).sections ≃ (incl F ⋙ F').sections :=
     (Types.sectionsEquiv (incl F ⋙ F')).symm

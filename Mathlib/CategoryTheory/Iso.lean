@@ -510,6 +510,7 @@ theorem map_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] : F.map (inv f) 
 theorem map_hom_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] :
     F.map f ≫ F.map (inv f) = 𝟙 (F.obj X) := by simp
 
+-- The following two lemmas are needed to generate good elementwise lemmas
 @[reassoc]
 theorem map_hom_inv' (F : C ⥤ D) {X Y : C} (f : X ≅ Y) :
     F.map f.hom ≫ F.map f.inv = 𝟙 (F.obj X) := by simp

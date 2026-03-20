@@ -202,10 +202,10 @@ end OverArrows
 /-- This is basically just `yoneda.obj η : (Over A)ᵒᵖ ⥤ Type (max u v)` restricted along the
 forgetful functor `CostructuredArrow yoneda A ⥤ Over A`, but done in a way that we land in a
 smaller universe. -/
-@[simps obj map]
+@[simps]
 def restrictedYonedaObj {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) :
     (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v where
-  obj s := (OverArrows η s.unop.hom)
+  obj s := OverArrows η s.unop.hom
   map f := TypeCat.ofHom (fun u ↦ u.map₂ f.unop.left f.unop.w)
 
 /-- Functoriality of `restrictedYonedaObj η` in `η`. -/
@@ -220,7 +220,7 @@ argument along the forgetful functor `CostructuredArrow yoneda A ⥤ Over A`, bu
 that we land in a smaller universe.
 
 This is one direction of the equivalence we're constructing. -/
-@[simps obj map]
+@[simps]
 def restrictedYoneda (A : Cᵒᵖ ⥤ Type v) :
     Over A ⥤ (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v where
   obj η := restrictedYonedaObj η.hom
@@ -470,7 +470,7 @@ lemma unitBackward_unitForward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
 /-- Intermediate stage of assembling the unit. -/
 @[simps]
 def unitAuxAuxAux {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
-    (YonedaCollection (restrictedYonedaObj η) X) ≅ F.obj (op X) where
+    YonedaCollection (restrictedYonedaObj η) X ≅ F.obj (op X) where
   hom := TypeCat.ofHom (unitForward η X)
   inv := TypeCat.ofHom (unitBackward η X)
   hom_inv_id := ConcreteCategory.ext (TypeCat.Fun.ext (unitBackward_unitForward η X))
@@ -540,8 +540,8 @@ lemma counitForward_naturality₂ (s t : (CostructuredArrow yoneda A)ᵒᵖ) (f 
       f ≫ eqToHom (by simp [← CostructuredArrow.eq_mk]) := by
     apply Quiver.Hom.unop_inj
     simp
-  have : (F.map (CostructuredArrow.mkPrecomp
-      (YonedaCollection.fst (counitForward F (unop t) x).val) f.unop.left).op)
+  have : F.map (CostructuredArrow.mkPrecomp
+      (YonedaCollection.fst (counitForward F (unop t) x).val) f.unop.left).op
       (((F.map (eqToHom (by simp; rfl)))) x) = _ :=
     map_mkPrecomp_eqToHom (h := by simp)
   cat_disch
@@ -566,7 +566,7 @@ lemma counitBackward_counitForward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ T
 @[simps]
 def counitAuxAux (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v)
     (s : CostructuredArrow yoneda A) :
-    (F.obj (op s)) ≅ (OverArrows (yonedaCollectionPresheafToA F) s.hom) where
+    F.obj (op s) ≅ OverArrows (yonedaCollectionPresheafToA F) s.hom where
   hom := TypeCat.ofHom (counitForward F s)
   inv := TypeCat.ofHom (counitBackward F s)
   hom_inv_id := ConcreteCategory.ext (TypeCat.Fun.ext (counitBackward_counitForward F s))
@@ -631,7 +631,7 @@ theorem CostructuredArrow.overEquivPresheafCostructuredArrow_inverse_map_toOverC
     {A : Cᵒᵖ ⥤ Type v} {T : Over A} {X : CostructuredArrow yoneda A}
     (f : (CostructuredArrow.toOver yoneda A).obj X ⟶ T) :
     dsimp% (overEquivPresheafCostructuredArrow A).inverse.map
-      (((CostructuredArrow.toOverCompYoneda A T).hom.app (op X) f)) =
+      ((CostructuredArrow.toOverCompYoneda A T).hom.app (op X) f) =
       (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).isoCompInverse.inv.app X ≫
         f ≫ (overEquivPresheafCostructuredArrow A).unit.app T := by
   simp [CostructuredArrow.toOverCompYoneda]

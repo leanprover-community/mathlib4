@@ -46,7 +46,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition:
 the diagram whose limit gives the morphism space between two objects of the limit category. -/
 @[simps]
-def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : (limit (F ⋙ Cat.objects.{v, v}) :)) :
+def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v})) :
     J ⥤ Type v where
   obj j := limit.π (F ⋙ Cat.objects) j X ⟶ limit.π (F ⋙ Cat.objects) j Y
   map f := TypeCat.ofHom fun g ↦ by
@@ -65,7 +65,7 @@ def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : (limit (F ⋙ Cat.objects.{v, v}) :
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance (F : J ⥤ Cat.{v, v}) : Category (limit (F ⋙ Cat.objects) :) where
-  Hom X Y := (limit (homDiagram X Y) :)
+  Hom X Y := limit (homDiagram X Y)
   id X := Types.Limit.mk.{v, v} (homDiagram X X) (fun _ => 𝟙 _) fun j j' f => by simp
   comp {X Y Z} f g := Types.Limit.mk.{v, v} (homDiagram X Z)
     (fun j => limit.π (homDiagram X Y) j f ≫ limit.π (homDiagram Y Z) j g) fun j j' h => by
@@ -83,7 +83,7 @@ instance (F : J ⥤ Cat.{v, v}) : Category (limit (F ⋙ Cat.objects) :) where
 
 /-- Auxiliary definition: the limit category. -/
 @[simps]
-def limitConeX (F : J ⥤ Cat.{v, v}) : Cat.{v, v} where α := (limit (F ⋙ Cat.objects) :)
+def limitConeX (F : J ⥤ Cat.{v, v}) : Cat.{v, v} where α := limit (F ⋙ Cat.objects)
 
 attribute [-simp] homDiagram_obj in
 /-- Auxiliary definition: the cone over the limit category. -/
@@ -108,7 +108,7 @@ def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=
       limit.lift (F ⋙ Cat.objects)
         { pt := s.pt
           π :=
-            { app := fun j => TypeCat.ofHom ((s.π.app j).toFunctor.obj)
+            { app := fun j => TypeCat.ofHom (s.π.app j).toFunctor.obj
               naturality := fun _ _ f => objects.congr_map (s.π.naturality f) } }
     map f := by
       fapply Types.Limit.mk.{v, v}
@@ -124,7 +124,7 @@ def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=
         rw [Functor.congr_hom this f]
         simp }
 
-theorem limit_π_homDiagram_eqToHom {F : J ⥤ Cat.{v, v}} (X Y : (limit (F ⋙ Cat.objects.{v, v}) :))
+theorem limit_π_homDiagram_eqToHom {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v}))
     (j : J) (h : X = Y) :
     limit.π (homDiagram X Y) j (eqToHom h) =
       eqToHom (ConcreteCategory.congr_arg (limit.π (F ⋙ Cat.objects.{v, v}) j) h) := by

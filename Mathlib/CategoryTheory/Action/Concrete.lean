@@ -67,7 +67,7 @@ def ofMulAction (G : Type*) (H : Type u) [Monoid G] [MulAction G H] :
 
 @[simp]
 theorem ofMulAction_apply {G : Type*} {H : Type*} [Monoid G] [MulAction G H] (g : G) (x : H) :
-    ConcreteCategory.hom ((ofMulAction G H).ρ g) x = (g • x : H) :=
+    (ofMulAction G H).ρ g x = (g • x : H) :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -75,9 +75,9 @@ set_option backward.isDefEq.respectTransparency false in
 product of `F` as types is a product in the category of `G`-sets. -/
 def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι → Type max v u)
     [∀ i : ι, MulAction G (F i)] :
-    LimitCone (Discrete.functor fun i : ι => Action.ofMulAction G ((F i))) where
+    LimitCone (Discrete.functor fun i : ι => Action.ofMulAction G (F i)) where
   cone :=
-    { pt := Action.ofMulAction G ((∀ i : ι, F i))
+    { pt := Action.ofMulAction G (∀ i : ι, F i)
       π := Discrete.natTrans (fun i => ⟨TypeCat.ofHom (fun x => x i.as), fun _ => rfl⟩) }
   isLimit :=
     { lift := fun s =>
@@ -98,11 +98,11 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
 
 /-- The `G`-set `G`, acting on itself by left multiplication. -/
 abbrev leftRegular (G : Type u) [Monoid G] : Action (Type u) G :=
-  Action.ofMulAction G (G)
+  Action.ofMulAction G G
 
 /-- The `G`-set `Gⁿ`, acting on itself by left multiplication. -/
 abbrev diagonal (G : Type u) [Monoid G] (n : ℕ) : Action (Type u) G :=
-  Action.ofMulAction G ((Fin n → G))
+  Action.ofMulAction G (Fin n → G)
 
 /-- We have `Fin 1 → G ≅ G` as `G`-sets, with `G` acting by left multiplication. -/
 def diagonalOneIsoLeftRegular (G : Type*) [Monoid G] : diagonal G 1 ≅ leftRegular G :=
@@ -113,7 +113,7 @@ namespace FintypeCat
 /-- If `X` is a type with `[Fintype X]` and `G` acts on `X`, then `G` also acts on
 `FintypeCat.of X`. -/
 instance (G : Type*) (X : Type*) [Monoid G] [MulAction G X] [Fintype X] :
-    MulAction G (FintypeCat.of (X)) :=
+    MulAction G (FintypeCat.of X) :=
   inferInstanceAs <| MulAction G X
 
 /-- Bundles a finite type `H` with a multiplicative action of `G` as an `Action`. -/
@@ -131,8 +131,7 @@ theorem ofMulAction_apply {G : Type*} {H : FintypeCat.{u}} [Monoid G] [MulAction
 section
 
 /-- Shorthand notation for the quotient of `G` by `H` as a finite `G`-set. -/
-notation:10 G:10 " ⧸ₐ " H:10 => Action.FintypeCat.ofMulAction G
-  (FintypeCat.of <| (G ⧸ H))
+notation:10 G:10 " ⧸ₐ " H:10 => Action.FintypeCat.ofMulAction G (FintypeCat.of <| G ⧸ H)
 
 variable {G : Type*} [Group G] (H N : Subgroup G) [Fintype (G ⧸ N)]
 

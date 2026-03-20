@@ -82,7 +82,7 @@ open Opposite
 /-- Given a presheaf `P` on the category of types, construct
 a map `P(α) → (α → P(*))` for all type `α`. -/
 def eval (P : Type uᵒᵖ ⥤ Type u) (α : Type u) (s : P.obj (op α)) :
-  α ⟶ P.obj (op (PUnit)) :=
+  α ⟶ P.obj (op PUnit) :=
   TypeCat.ofHom (fun x ↦ P.map (TypeCat.ofHom (fun _ => x)).op s)
 
 open Presieve
@@ -92,7 +92,7 @@ set_option backward.isDefEq.respectTransparency false in
 `(α → S(*)) → S(α)` that is inverse to `eval`. -/
 noncomputable def typesGlue (S : Type uᵒᵖ ⥤ Type u)
     (hs : IsSheaf typesGrothendieckTopology S) (α : Type u)
-    (f : α → S.obj (op (PUnit))) : S.obj (op α) :=
+    (f : α → S.obj (op PUnit)) : S.obj (op α) :=
   (hs.isSheafFor _ (generate_discretePresieve_mem α)).amalgamate
     (fun _ g hg => S.map (TypeCat.ofHom (fun _ => PUnit.unit)).op <| f <| g <| Classical.choose hg)
     fun β γ δ g₁ g₂ f₁ f₂ hf₁ hf₂ h =>
@@ -156,7 +156,7 @@ noncomputable def equivYoneda' (S : Sheaf typesGrothendieckTopology (Type u)) :
 
 theorem eval_app (S₁ S₂ : Sheaf typesGrothendieckTopology (Type u)) (f : S₁ ⟶ S₂)
     (α : Type u) (s : S₁.1.obj (op α)) (x : α) :
-    eval S₂.1 α (f.hom.app (op α) s) x = f.hom.app (op (PUnit)) (eval S₁.1 α s x) :=
+    eval S₂.1 α (f.hom.app (op α) s) x = f.hom.app (op PUnit) (eval S₁.1 α s x) :=
   (ConcreteCategory.congr_hom (f.hom.naturality (TypeCat.ofHom (fun _ => x)).op) s).symm
 
 set_option backward.isDefEq.respectTransparency false in
@@ -189,13 +189,13 @@ instance subcanonical_typesGrothendieckTopology : typesGrothendieckTopology.{u}.
 theorem typesGrothendieckTopology_eq_canonical :
     typesGrothendieckTopology.{u} = Sheaf.canonicalTopology (Type u) := by
   refine le_antisymm typesGrothendieckTopology.le_canonical (sInf_le ?_)
-  refine ⟨yoneda.obj ((ULift Bool)), ⟨_, rfl⟩, GrothendieckTopology.ext ?_⟩
+  refine ⟨yoneda.obj (ULift Bool), ⟨_, rfl⟩, GrothendieckTopology.ext ?_⟩
   funext α
   ext S
   refine ⟨fun hs x => ?_, fun hs β f => Presieve.isSheaf_yoneda' _ fun y => hs (f y)⟩
   by_contra hsx
-  have : TypeCat.ofHom ((fun _ => ULift.up true)) = TypeCat.ofHom ((fun _ => ULift.up false)) :=
-    (hs (PUnit) (TypeCat.ofHom (fun _ => x))).isSeparatedFor.ext
+  have : TypeCat.ofHom (fun _ => ULift.up true) = TypeCat.ofHom (fun _ => ULift.up false) :=
+    (hs PUnit (TypeCat.ofHom (fun _ => x))).isSeparatedFor.ext
       fun β f hf => by
         dsimp
         ext y

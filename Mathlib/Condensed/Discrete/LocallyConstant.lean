@@ -94,7 +94,7 @@ topology
 -/
 @[simps]
 def locallyConstantIsoContinuousMap (Y X : Type*) [TopologicalSpace Y] :
-    (LocallyConstant Y X) ≅ C(Y, TopCat.discrete.obj (X)) :=
+    LocallyConstant Y X ≅ C(Y, TopCat.discrete.obj (X)) :=
   letI : TopologicalSpace X := ⊥
   haveI : DiscreteTopology X := ⟨rfl⟩
   { hom := TypeCat.ofHom fun f ↦ (f : C(Y, X))
@@ -125,7 +125,7 @@ noncomputable def sigmaIso [HasExplicitFiniteCoproducts.{u} P] : (finiteCoproduc
 lemma sigmaComparison_comp_sigmaIso [HasExplicitFiniteCoproducts.{u} P]
     (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type (max u w)) :
     (X.mapIso (sigmaIso r).op).hom ≫ sigmaComparison X (fun a ↦ (fiber r a).1) ≫
-      (TypeCat.ofHom (fun g ↦ g a)) = X.map (sigmaIncl r a).op := by
+      TypeCat.ofHom (fun g ↦ g a) = X.map (sigmaIncl r a).op := by
   ext
   simp only [Functor.mapIso_hom, Iso.op_hom, sigmaComparison, TypeCat.Fun.toFun_apply,
     CategoryTheory.comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply,
@@ -151,8 +151,8 @@ the value of `f` on `Sᵢ`. Our desired element is the image of `yᵢ` under the
 noncomputable def counitAppApp (S : CompHausLike.{u} P)
     (Y : (CompHausLike.{u} P)ᵒᵖ ⥤ Type (max u w))
     [PreservesFiniteProducts Y] [HasExplicitFiniteCoproducts.{u} P] :
-    (LocallyConstant S (Y.obj (op (CompHausLike.of P PUnit.{u + 1})))) ⟶ Y.obj ⟨S⟩ :=
-  TypeCat.ofHom fun r ↦ ((inv (sigmaComparison Y (fun a ↦ (fiber r a).1))) ≫
+    LocallyConstant S (Y.obj (op (CompHausLike.of P PUnit.{u + 1}))) ⟶ Y.obj ⟨S⟩ :=
+  TypeCat.ofHom fun r ↦ (inv (sigmaComparison Y (fun a ↦ (fiber r a).1)) ≫
     (Y.mapIso (sigmaIso r).op).inv) (counitAppAppImage r)
 
 -- This is the key lemma to prove naturality of the counit:
@@ -241,6 +241,9 @@ def functor :
   ObjectProperty.lift _ (functorToPresheaves.{u, w}) (fun X ↦ by
     rw [Presheaf.isSheaf_of_iso_iff (functorToPresheavesIso P hs X)]
     exact ((TopCat.discrete.obj X).toSheafCompHausLike P hs).property)
+
+@[deprecated (since := "2026-03-20")] alias functor_obj_obj := functor_obj_obj_obj
+@[deprecated (since := "2026-03-20")] alias functor_map_hom := functor_map_hom_app
 
 /--
 `CompHausLike.LocallyConstant.functor` is naturally isomorphic to the restriction of

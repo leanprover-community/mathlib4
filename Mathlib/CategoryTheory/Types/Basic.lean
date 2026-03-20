@@ -91,7 +91,6 @@ def Fun.homEquiv (X Y : Type u) : (Fun X Y) ≃ (X → Y) where
   left_inv := by intro; rfl
   right_inv := by intro; rfl
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `Type`. -/
 @[ext]
 structure Hom (X Y : Type u) where
@@ -104,7 +103,6 @@ end TypeCat
 open TypeCat CategoryTheory
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive_do_translate] -- Expressions involving this instance can still be additivized.
 instance CategoryTheory.types : Category.{u} (Type u) where
   Hom := Hom
@@ -211,6 +209,7 @@ lemma types_comp_apply {X Y Z : Type u} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g) x = g (f x) :=
   rfl
 
+@[congr]
 lemma types_congr_hom {X Y : Type u} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x :=
   ConcreteCategory.congr_hom h x
 
@@ -242,7 +241,7 @@ lemma sections_ext_iff {F : J ⥤ Type w} {x y : F.sections} : x = y ↔ ∀ j, 
 variable (J)
 
 /-- The functor which sends a functor to types to its sections. -/
-@[simps obj map]
+@[simps]
 def sectionsFunctor : (J ⥤ Type w) ⥤ Type (max u w) where
   obj F := F.sections
   map {F G} φ := TypeCat.ofHom fun x ↦ ⟨fun j => φ.app j (x.1 j), fun {j j'} f =>
@@ -297,8 +296,7 @@ attribute [elementwise (attr := simp)] Iso.hom_inv_id_app Iso.inv_hom_id_app
 @[deprecated (since := "2026-02-09")] alias hom_inv_id_app_apply := Iso.hom_inv_id_app_apply
 @[deprecated (since := "2026-02-09")] alias inv_hom_id_app_apply := Iso.inv_hom_id_app_apply
 
--- TODO: spell the assumptions as `{F G : C ⥤ Type*`}
-lemma naturality_symm {F : C ⥤ Type w} {G : C ⥤ Type u'} (e : ∀ j, F.obj j ≃ G.obj j)
+lemma naturality_symm {F G : C ⥤ Type*} (e : ∀ j, F.obj j ≃ G.obj j)
     (naturality : ∀ {j j'} (f : j ⟶ j'), e j' ∘ F.map f = G.map f ∘ e j) {j j' : C}
     (f : j ⟶ j') :
     (e j').symm ∘ G.map f = F.map f ∘ (e j).symm := by
@@ -314,7 +312,7 @@ end FunctorToTypes
 /-- The isomorphism between a `Type` which has been `ULift`ed to the same universe,
 and the original type.
 -/
-def uliftTrivial (V : Type u) : (ULift.{u} V) ≅ V where
+def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where
   hom := ofHom fun a ↦ a.1
   inv := ofHom fun a ↦ .up a
 
@@ -323,7 +321,7 @@ Write this as `uliftFunctor.{5, 2}` to get `Type 2 ⥤ Type 5`.
 -/
 @[pp_with_univ, simps obj map]
 def uliftFunctor : Type u ⥤ Type (max u v) where
-  obj X := (ULift.{v} X)
+  obj X := ULift.{v} X
   map {X} {_} f := ofHom fun x : ULift.{v} X => ULift.up (f x.down)
 
 /-- `uliftFunctor : Type u ⥤ Type max u v` is fully faithful. -/
@@ -410,8 +408,6 @@ def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] :
     ext x
     exact comp_map (f := m) f.hom g.hom x
 
-variable (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m]
-
 end
 
 end CategoryTheory
@@ -428,6 +424,9 @@ a categorical isomorphism between those types.
 def toIso (e : X ≃ Y) : X ≅ Y where
   hom := ofHom fun x ↦ e x
   inv := ofHom fun x ↦ e.symm x
+
+@[deprecated (since := "2026-03-20")] alias toIso_hom := toIso_hom_hom_apply
+@[deprecated (since := "2026-03-20")] alias toIso_inv := toIso_inv_hom_apply
 
 end Equiv
 
@@ -486,13 +485,6 @@ theorem isSplitEpi_iff_surjective {X Y : Type u} (f : X ⟶ Y) :
     IsSplitEpi f ↔ Function.Surjective f :=
   Iff.intro (fun _ => surjective_of_epi _)
     fun hf => (by simp only [(epi_iff_surjective f).mpr hf, isSplitEpi_of_epi])
-
--- unif_hint Functor.comp_obj_types {J J' : Type*} [Category* J] [Category* J']
---     (G G' : J' ⥤ J) (F F' : J ⥤ Type u) (j j' : J') where
---   G ≟ G'
---   F ≟ F'
---   j ≟ j'
---   ⊢ (G ⋙ F).obj j ≟ F'.obj (G'.obj j')
 
 end CategoryTheory
 

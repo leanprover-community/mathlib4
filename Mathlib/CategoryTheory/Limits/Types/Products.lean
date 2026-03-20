@@ -46,20 +46,20 @@ theorem pi_lift_π_apply {β : Type v} [Small.{u} β] (f : β → Type u) {P : T
 with specialized universes. -/
 theorem pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
     (s : ∀ b, P ⟶ f b) (b : β) (x : P) :
-    (Pi.π f b) (@Pi.lift β _ _ f _ P s x) = s b x := by
+    Pi.π f b (@Pi.lift β _ _ f _ P s x) = s b x := by
   simp
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`. -/
 -- Not `@[simp]` since `simp` can prove it.
 theorem pi_map_π_apply {β : Type v} [Small.{u} β] {f g : β → Type u}
     (α : ∀ j, f j ⟶ g j) (b : β) (x) :
-    (Pi.π g b) (Pi.map α x) = α b ((Pi.π f b) x) :=
+    Pi.π g b (Pi.map α x) = α b ((Pi.π f b) x) :=
   limMap_π_apply _ _ _
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`,
 with specialized universes. -/
 theorem pi_map_π_apply' {β : Type v} {f g : β → Type v} (α : ∀ j, f j ⟶ g j) (b : β) (x) :
-    (Pi.π g b) (Pi.map α x) = α b ((Pi.π f b) x) := by
+    Pi.π g b (Pi.map α x) = α b ((Pi.π f b) x) := by
   simp [pi_map_π_apply]
 
 /-- The category of types has `PUnit` as a terminal object. -/
@@ -83,7 +83,7 @@ noncomputable def isTerminalPUnit : IsTerminal (PUnit : Type u) :=
 @[deprecated (since := "2026-02-08")] alias isTerminalPunit := isTerminalPUnit
 
 noncomputable instance : Inhabited (⊤_ (Type u)) :=
-  ⟨@terminal.from (Type u) _ _ ((ULift (Fin 1))) (ULift.up 0)⟩
+  ⟨@terminal.from (Type u) _ _ (ULift (Fin 1)) (ULift.up 0)⟩
 
 instance : Subsingleton (⊤_ (Type u)) where
   allEq a b := terminalIso.toEquiv.injective (by subsingleton)
@@ -91,12 +91,10 @@ instance : Subsingleton (⊤_ (Type u)) where
 noncomputable instance : Unique (⊤_ (Type u)) := Unique.mk' _
 
 /-- A type is terminal if and only if it contains exactly one element. -/
-noncomputable def isTerminalEquivUnique (X : Type u) : IsTerminal X ≃ Unique X := by
-  refine equivOfSubsingletonOfSubsingleton
+noncomputable def isTerminalEquivUnique (X : Type u) : IsTerminal X ≃ Unique X :=
+  equivOfSubsingletonOfSubsingleton
     (fun h => ((Iso.toEquiv (terminalIsoIsTerminal h).symm).unique))
-    (fun _ => IsTerminal.ofIso terminalIsTerminal (Equiv.toIso (@Equiv.ofUnique _ _ ?_ _)))
-  dsimp
-  infer_instance
+    (fun _ => IsTerminal.ofIso terminalIsTerminal (Equiv.toIso (Equiv.ofUnique _ _)))
 
 /-- A type is terminal if and only if it is isomorphic to `PUnit`. -/
 noncomputable def isTerminalEquivIsoPUnit (X : Type u) :
@@ -113,16 +111,16 @@ open CategoryTheory.Limits.WalkingPair
 /-- The product type `X × Y` forms a cone for the binary product of `X` and `Y`. -/
 @[simps! pt]
 def binaryProductCone (X Y : Type u) : BinaryFan X Y :=
-  BinaryFan.mk (TypeCat.ofHom (_root_.Prod.fst)) (TypeCat.ofHom (_root_.Prod.snd))
+  BinaryFan.mk (TypeCat.ofHom _root_.Prod.fst) (TypeCat.ofHom _root_.Prod.snd)
 
 @[simp]
 theorem binaryProductCone_fst (X Y : Type u) :
-    (binaryProductCone X Y).fst = TypeCat.ofHom (_root_.Prod.fst) :=
+    (binaryProductCone X Y).fst = TypeCat.ofHom _root_.Prod.fst :=
   rfl
 
 @[simp]
 theorem binaryProductCone_snd (X Y : Type u) :
-    (binaryProductCone X Y).snd = TypeCat.ofHom (_root_.Prod.snd) :=
+    (binaryProductCone X Y).snd = TypeCat.ofHom _root_.Prod.snd :=
   rfl
 
 /-- The product type `X × Y` is a binary product for `X` and `Y`. -/
@@ -133,8 +131,7 @@ def binaryProductLimit (X Y : Type u) : IsLimit (binaryProductCone X Y) where
   uniq _ _ w := by
     ext x
     apply Prod.ext
-    · exact ConcreteCategory.congr_hom (w ⟨left⟩) x
-    · exact ConcreteCategory.congr_hom (w ⟨right⟩) x
+    exacts [ConcreteCategory.congr_hom (w ⟨left⟩) x, ConcreteCategory.congr_hom (w ⟨right⟩) x]
 
 /-- The category of types has `X × Y`, the usual Cartesian product,
 as the binary product of `X` and `Y`.
@@ -144,40 +141,40 @@ def binaryProductLimitCone (X Y : Type u) : Limits.LimitCone (pair X Y) :=
   ⟨_, binaryProductLimit X Y⟩
 
 /-- The categorical binary product in `Type u` is Cartesian product. -/
-noncomputable def binaryProductIso (X Y : Type u) : Limits.prod X Y ≅ (X × Y) :=
+noncomputable def binaryProductIso (X Y : Type u) : Limits.prod X Y ≅ X × Y :=
   limit.isoLimitCone (binaryProductLimitCone X Y)
 
 @[elementwise (attr := simp)]
 theorem binaryProductIso_hom_comp_fst (X Y : Type u) :
-    (binaryProductIso X Y).hom ≫ TypeCat.ofHom (_root_.Prod.fst) = Limits.prod.fst :=
+    (binaryProductIso X Y).hom ≫ TypeCat.ofHom _root_.Prod.fst = Limits.prod.fst :=
   limit.isoLimitCone_hom_π (binaryProductLimitCone X Y) ⟨WalkingPair.left⟩
 
 @[elementwise (attr := simp)]
 theorem binaryProductIso_hom_comp_snd (X Y : Type u) :
-    (binaryProductIso X Y).hom ≫ TypeCat.ofHom (_root_.Prod.snd) = Limits.prod.snd :=
+    (binaryProductIso X Y).hom ≫ TypeCat.ofHom _root_.Prod.snd = Limits.prod.snd :=
   limit.isoLimitCone_hom_π (binaryProductLimitCone X Y) ⟨WalkingPair.right⟩
 
 @[elementwise (attr := simp)]
 theorem binaryProductIso_inv_comp_fst (X Y : Type u) :
-    (binaryProductIso X Y).inv ≫ Limits.prod.fst = TypeCat.ofHom (_root_.Prod.fst) :=
+    (binaryProductIso X Y).inv ≫ Limits.prod.fst = TypeCat.ofHom _root_.Prod.fst :=
   limit.isoLimitCone_inv_π (binaryProductLimitCone X Y) ⟨WalkingPair.left⟩
 
 @[elementwise (attr := simp)]
 theorem binaryProductIso_inv_comp_snd (X Y : Type u) :
-    (binaryProductIso X Y).inv ≫ Limits.prod.snd = TypeCat.ofHom (_root_.Prod.snd) :=
+    (binaryProductIso X Y).inv ≫ Limits.prod.snd = TypeCat.ofHom _root_.Prod.snd :=
   limit.isoLimitCone_inv_π (binaryProductLimitCone X Y) ⟨WalkingPair.right⟩
 
 /-- The functor which sends `X, Y` to the product type `X × Y`. -/
 @[simps]
 def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u where
   obj X :=
-    { obj := fun Y => (X × Y)
+    { obj := fun Y => X × Y
       map := fun {_ Y₂} f => (binaryProductLimit X Y₂).lift
-        (BinaryFan.mk (TypeCat.ofHom (_root_.Prod.fst)) (TypeCat.ofHom (_root_.Prod.snd) ≫ f)) }
+        (BinaryFan.mk (TypeCat.ofHom _root_.Prod.fst) (TypeCat.ofHom _root_.Prod.snd ≫ f)) }
   map {X₁ X₂} f :=
     { app := fun Y =>
-      (binaryProductLimit X₂ Y).lift (BinaryFan.mk (TypeCat.ofHom (_root_.Prod.fst) ≫ f)
-      (TypeCat.ofHom (_root_.Prod.snd))) }
+      (binaryProductLimit X₂ Y).lift (BinaryFan.mk (TypeCat.ofHom _root_.Prod.fst ≫ f)
+      (TypeCat.ofHom _root_.Prod.snd)) }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The product functor given by the instance `HasBinaryProducts (Type u)` is isomorphic to the
@@ -213,7 +210,7 @@ noncomputable def productIso {J : Type v} (F : J → Type (max v u)) :
 
 @[elementwise (attr := simp)]
 theorem productIso_hom_comp_eval {J : Type v} (F : J → Type (max v u)) (j : J) :
-    ((productIso.{v, u} F).hom ≫ TypeCat.ofHom (fun f => f j)) = Pi.π F j := by
+    (productIso.{v, u} F).hom ≫ TypeCat.ofHom (fun f => f j) = Pi.π F j := by
   rfl
 
 -- -- Used to be generated by `elementwise`
@@ -223,8 +220,8 @@ theorem productIso_hom_comp_eval {J : Type v} (F : J → Type (max v u)) (j : J)
 --   rfl
 
 @[elementwise (attr := simp)]
-theorem productIso_inv_comp_π {J : Type v} (F : J → Type (max v u)) (j : J) :
-    (productIso.{v, u} F).inv ≫ Pi.π F j = TypeCat.ofHom (fun f => f j) :=
+theorem productIso_inv_comp_π {J : Type v} (F : J → Type max v u) (j : J) :
+    (productIso.{v, u} F).inv ≫ Pi.π F j = TypeCat.ofHom fun f => f j :=
   limit.isoLimitCone_inv_π (productLimitCone.{v, u} F) ⟨j⟩
 
 namespace Small
@@ -237,7 +234,7 @@ A variant of `productLimitCone` using a `Small` hypothesis rather than a functio
 noncomputable def productLimitCone :
     Limits.LimitCone (Discrete.functor F) where
   cone :=
-    { pt := (Shrink (∀ j, F j))
+    { pt := Shrink (∀ j, F j)
       π := Discrete.natTrans (fun ⟨j⟩ =>
         TypeCat.ofHom (fun f => (equivShrink (∀ j, F j)).symm f j)) }
   isLimit :=
@@ -249,12 +246,12 @@ noncomputable def productLimitCone :
 /-- The categorical product in `Type u` indexed in `Type v`
 is the type-theoretic product `Π j, F j`, after shrinking back to `Type u`. -/
 noncomputable def productIso :
-    (∏ᶜ F : Type u) ≅ (Shrink (∀ j, F j)) :=
+    (∏ᶜ F : Type u) ≅ Shrink (∀ j, F j) :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
 
 @[elementwise (attr := simp)]
 theorem productIso_hom_comp_eval (j : J) :
-    ((productIso.{v, u} F).hom ≫ TypeCat.ofHom (fun f => (equivShrink (∀ j, F j)).symm f j)) =
+    (productIso.{v, u} F).hom ≫ TypeCat.ofHom (fun f => (equivShrink (∀ j, F j)).symm f j) =
       Pi.π F j :=
   limit.isoLimitCone_hom_π (productLimitCone.{v, u} F) ⟨j⟩
 

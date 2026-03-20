@@ -566,7 +566,7 @@ namespace CategoryTheory.Aut
 
 /-- The (bundled) group of automorphisms of a type is isomorphic to the (bundled) group
 of permutations. -/
-def isoPerm {α : Type u} : GrpCat.of (Aut (α)) ≅ GrpCat.of (Equiv.Perm α) where
+def isoPerm {α : Type u} : GrpCat.of (Aut α) ≅ GrpCat.of (Equiv.Perm α) where
   hom := GrpCat.ofHom
     { toFun := fun g => g.toEquiv
       map_one' := by aesop
@@ -578,7 +578,7 @@ def isoPerm {α : Type u} : GrpCat.of (Aut (α)) ≅ GrpCat.of (Equiv.Perm α) w
 
 /-- The (unbundled) group of automorphisms of a type is `MulEquiv` to the (unbundled) group
 of permutations. -/
-def mulEquivPerm {α : Type u} : Aut (α) ≃* Equiv.Perm α :=
+def mulEquivPerm {α : Type u} : Aut α ≃* Equiv.Perm α :=
   isoPerm.groupIsoToMulEquiv
 
 end CategoryTheory.Aut

@@ -111,7 +111,7 @@ noncomputable def uniqueOfTerminalOfPreserves [PreservesLimit (Functor.empty.{0}
 noncomputable def terminalOfUniqueOfReflects [ReflectsLimit (Functor.empty.{0} C) (forget C)]
     (X : C) (h : Unique (ToType X)) : IsTerminal X :=
   IsTerminal.isTerminalOfObj (forget C) X <|
-    (Types.isTerminalEquivUnique ((ToType X))).symm h
+    (Types.isTerminalEquivUnique (ToType X)).symm h
 
 /-- The equivalence `IsTerminal X ≃ Unique (ToType X)` if the forgetful functor
 preserves and reflects terminals. -/
@@ -148,7 +148,7 @@ lemma empty_of_initial_of_preserves [PreservesColimit (Functor.empty.{0} C) (for
 lemma initial_of_empty_of_reflects [ReflectsColimit (Functor.empty.{0} C) (forget C)] (X : C)
     (h : IsEmpty (ToType X)) : Nonempty (IsInitial X) :=
   Nonempty.map (IsInitial.isInitialOfObj (forget C) _) <|
-    (Types.initial_iff_empty ((ToType X))).mpr h
+    (Types.initial_iff_empty (ToType X)).mpr h
 
 /-- If `forget C` preserves and reflects initials, then `X` is initial if and only if
 `ToType X` is empty. -/
@@ -223,13 +223,13 @@ lemma pullbackMk_surjective (x : ToType (pullback f₁ f₂)) :
 lemma pullbackMk_fst (x₁ : ToType X₁) (x₂ : ToType X₂) (h : f₁ x₁ = f₂ x₂) :
     pullback.fst f₁ f₂ (pullbackMk f₁ f₂ x₁ x₂ h) = x₁ :=
   (congr_hom (PreservesPullback.iso_inv_fst (forget C) f₁ f₂) _).trans
-    (congr_hom (Types.pullbackIsoPullback_inv_fst (TypeCat.ofHom (f₁)) (TypeCat.ofHom (f₂))) _)
+    (congr_hom (Types.pullbackIsoPullback_inv_fst (TypeCat.ofHom f₁) (TypeCat.ofHom f₂)) _)
 
 @[simp]
 lemma pullbackMk_snd (x₁ : ToType X₁) (x₂ : ToType X₂) (h : f₁ x₁ = f₂ x₂) :
     pullback.snd f₁ f₂ (pullbackMk f₁ f₂ x₁ x₂ h) = x₂ :=
   (congr_hom (PreservesPullback.iso_inv_snd (forget C) f₁ f₂) _).trans
-    (congr_hom (Types.pullbackIsoPullback_inv_snd (TypeCat.ofHom (f₁)) (TypeCat.ofHom (f₂))) _)
+    (congr_hom (Types.pullbackIsoPullback_inv_snd (TypeCat.ofHom f₁) (TypeCat.ofHom f₂)) _)
 
 end Pullbacks
 

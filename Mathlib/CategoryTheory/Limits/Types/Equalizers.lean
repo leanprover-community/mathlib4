@@ -64,7 +64,7 @@ theorem type_equalizer_iff_unique :
 
 /-- Show that the subtype `{x : Y // g x = h x}` is an equalizer for the pair `(g,h)`. -/
 def equalizerLimit : Limits.LimitCone (parallelPair g h) where
-  cone := Fork.ofι (TypeCat.ofHom ((Subtype.val : { x : Y // g x = h x } → Y)))
+  cone := Fork.ofι (TypeCat.ofHom (Subtype.val : { x : Y // g x = h x } → Y))
     (by ext x; exact x.prop)
   isLimit :=
     Fork.IsLimit.mk' _ fun s =>
@@ -79,12 +79,12 @@ noncomputable def equalizerIso : equalizer g h ≅ { x : Y // g x = h x } :=
 
 @[elementwise (attr := simp)]
 theorem equalizerIso_hom_comp_subtype :
-    (equalizerIso g h).hom ≫ TypeCat.ofHom (Subtype.val) = equalizer.ι g h := by
+    (equalizerIso g h).hom ≫ TypeCat.ofHom Subtype.val = equalizer.ι g h := by
   rfl
 
 @[elementwise (attr := simp)]
 theorem equalizerIso_inv_comp_ι : (equalizerIso g h).inv ≫ equalizer.ι g h =
-    TypeCat.ofHom (Subtype.val) :=
+    TypeCat.ofHom Subtype.val :=
   limit.isoLimitCone_inv_π equalizerLimit WalkingParallelPair.zero
 
 end CategoryTheory.Limits.Types

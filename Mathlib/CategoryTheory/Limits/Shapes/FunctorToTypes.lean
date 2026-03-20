@@ -169,8 +169,8 @@ section coprod
 def coprod : C ⥤ Type w where
   obj a := F.obj a ⊕ G.obj a
   map f := TypeCat.ofHom (Sum.map (F.map f) (G.map f))
-  map_id _ := by ext ⟨⟩<;> simp
-  map_comp _ _ := by ext ⟨⟩<;> simp
+  map_id _ := by ext ⟨⟩ <;> simp
+  map_comp _ _ := by ext ⟨⟩ <;> simp
 
 variable {F G}
 
@@ -190,7 +190,7 @@ a natural transformation `coprod F₁ F₂ ⟶ F`. -/
 def coprod.desc {F₁ F₂ : C ⥤ Type w} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
     coprod F₁ F₂ ⟶ F where
   app a := TypeCat.ofHom (Sum.elim (τ₁.app a) (τ₂.app a))
-  naturality _ _ _ := by ext ⟨⟩<;> simp
+  naturality _ _ _ := by ext ⟨⟩ <;> simp
 
 @[simp]
 lemma coprod.desc_inl {F₁ F₂ : C ⥤ Type w} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :

@@ -423,10 +423,10 @@ def typeToCat : Type u ⥤ Cat where
 instance : Functor.Faithful typeToCat.{u} where
   map_injective {_X} {_Y} _f _g h := by
     ext x
-    exact congrArg (Discrete.as) (Functor.congr_obj congr(($h).toFunctor) ⟨x⟩)
+    exact congrArg Discrete.as (Functor.congr_obj congr(($h).toFunctor) ⟨x⟩)
 
 instance : Functor.Full typeToCat.{u} where
-  map_surjective F := ⟨TypeCat.ofHom ((Discrete.as ∘ F.toFunctor.obj ∘ Discrete.mk)), by
+  map_surjective F := ⟨TypeCat.ofHom (Discrete.as ∘ F.toFunctor.obj ∘ Discrete.mk), by
     ext
     refine Functor.ext (by cat_disch) ?_
     intro x y f

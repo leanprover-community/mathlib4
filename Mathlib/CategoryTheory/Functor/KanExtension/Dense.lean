@@ -144,9 +144,8 @@ lemma IsDense.of_fullyFaithful_restrictedULiftYoneda [F.Full]
       ⟨{desc s := (h.preimage (φ s))
         fac s j := h.map_injective (by simp [hφ])
         uniq s m hm := h.map_injective (by
-          ext
-          simp [φ, ← hm]
-          rfl)}⟩
+          ext ⟨_⟩ ⟨_⟩
+          simp [φ, ← hm]) }⟩
 
 lemma isDense_iff_fullyFaithful_restrictedULiftYoneda [F.Full] :
     F.IsDense ↔ Nonempty (restrictedULiftYoneda.{w} F).FullyFaithful :=

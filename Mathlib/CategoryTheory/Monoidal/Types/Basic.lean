@@ -24,11 +24,6 @@ namespace CategoryTheory
 instance typesCartesianMonoidalCategory : CartesianMonoidalCategory (Type u) :=
   .ofChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
 
--- unif_hint tensor_eq_prod {X X' Y Y' : Type u} where
---   X ≟ X'
---   Y ≟ Y' ⊢
---   X ⊗ Y ≟ X × Y
-
 instance : BraidedCategory (Type u) := .ofCartesianMonoidalCategory
 
 theorem types_tensorObj_def {X Y : Type u} : X ⊗ Y = (X × Y) := rfl
@@ -52,7 +47,7 @@ theorem whiskerRight_apply {Y Z : Type u} (f : Y ⟶ Z) (X : Type u)
 
 @[simp]
 theorem leftUnitor_hom_apply {X : Type u} {x : X} {p : PUnit} :
-    ((λ_ X).hom : 𝟙_ (Type u) ⊗ X ⟶ X) (p, x) = x :=
+    (λ_ X).hom (p, x) = x :=
   rfl
 
 @[simp]
@@ -62,7 +57,7 @@ theorem leftUnitor_inv_apply {X : Type u} {x : X} :
 
 @[simp]
 theorem rightUnitor_hom_apply {X : Type u} {x : X} {p : PUnit} :
-    ((ρ_ X).hom : X ⊗ 𝟙_ (Type u) ⟶ X) (x, p) = x :=
+    (ρ_ X).hom (x, p) = x :=
   rfl
 
 @[simp]
@@ -72,46 +67,46 @@ theorem rightUnitor_inv_apply {X : Type u} {x : X} :
 
 @[simp]
 theorem associator_hom_apply {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
-    ((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z ⟶ X ⊗ Y ⊗ Z) ((x, y), z) = (x, (y, z)) :=
+    (α_ X Y Z).hom ((x, y), z) = (x, (y, z)) :=
   rfl
 
 @[simp]
 theorem associator_inv_apply {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
-    ((α_ X Y Z).inv : X ⊗ Y ⊗ Z ⟶ (X ⊗ Y) ⊗ Z) (x, (y, z)) = ((x, y), z) :=
+    (α_ X Y Z).inv (x, (y, z)) = ((x, y), z) :=
   rfl
 
-@[simp] theorem associator_hom_apply_1 {X Y Z : Type u} {x} :
-    (((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z ⟶ X ⊗ Y ⊗ Z) x).1 = x.1.1 :=
+@[simp] theorem associator_hom_apply_1 {X Y Z : Type u} {x : (X ⊗ Y) ⊗ Z} :
+    ((α_ X Y Z).hom x).1 = x.1.1 :=
   rfl
 
-@[simp] theorem associator_hom_apply_2_1 {X Y Z : Type u} {x} :
-    (((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z ⟶ X ⊗ Y ⊗ Z) x).2.1 = x.1.2 :=
+@[simp] theorem associator_hom_apply_2_1 {X Y Z : Type u} {x : (X ⊗ Y) ⊗ Z} :
+    ((α_ X Y Z).hom x).2.1 = x.1.2 :=
   rfl
 
-@[simp] theorem associator_hom_apply_2_2 {X Y Z : Type u} {x} :
-    (((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z ⟶ X ⊗ Y ⊗ Z) x).2.2 = x.2 :=
+@[simp] theorem associator_hom_apply_2_2 {X Y Z : Type u} {x : (X ⊗ Y) ⊗ Z} :
+    ((α_ X Y Z).hom x).2.2 = x.2 :=
   rfl
 
-@[simp] theorem associator_inv_apply_1_1 {X Y Z : Type u} {x} :
-    (((α_ X Y Z).inv : X ⊗ Y ⊗ Z ⟶ (X ⊗ Y) ⊗ Z) x).1.1 = x.1 :=
+@[simp] theorem associator_inv_apply_1_1 {X Y Z : Type u} {x : X ⊗ Y ⊗ Z} :
+    ((α_ X Y Z).inv x).1.1 = x.1 :=
   rfl
 
-@[simp] theorem associator_inv_apply_1_2 {X Y Z : Type u} {x} :
-    (((α_ X Y Z).inv : X ⊗ Y ⊗ Z ⟶ (X ⊗ Y) ⊗ Z) x).1.2 = x.2.1 :=
+@[simp] theorem associator_inv_apply_1_2 {X Y Z : Type u} {x : X ⊗ Y ⊗ Z} :
+    ((α_ X Y Z).inv x).1.2 = x.2.1 :=
   rfl
 
-@[simp] theorem associator_inv_apply_2 {X Y Z : Type u} {x} :
-    (((α_ X Y Z).inv : X ⊗ Y ⊗ Z ⟶ (X ⊗ Y) ⊗ Z) x).2 = x.2.2 :=
+@[simp] theorem associator_inv_apply_2 {X Y Z : Type u} {x : X ⊗ Y ⊗ Z} :
+    ((α_ X Y Z).inv x).2 = x.2.2 :=
   rfl
 
 @[simp]
 theorem braiding_hom_apply {X Y : Type u} {x : X} {y : Y} :
-    ((β_ X Y).hom : X ⊗ Y ⟶ Y ⊗ X) (x, y) = (y, x) :=
+    (β_ X Y).hom (x, y) = (y, x) :=
   rfl
 
 @[simp]
 theorem braiding_inv_apply {X Y : Type u} {x : X} {y : Y} :
-    ((β_ X Y).inv : Y ⊗ X ⟶ X ⊗ Y) (y, x) = (x, y) :=
+    (β_ X Y).inv (y, x) = (x, y) :=
   rfl
 
 @[simp]
@@ -125,8 +120,7 @@ theorem CartesianMonoidalCategory.lift_apply {X Y Z : Type u} {f : X ⟶ Y} {g :
 of a type to the image of that type, tensored with the image of the nth Cartesian power. -/
 noncomputable def MonoidalFunctor.mapPi {C : Type*} [Category* C] [MonoidalCategory C]
     (F : Type _ ⥤ C) [F.Monoidal] (n : ℕ) (β : Type*) :
-    F.obj ((Fin (n + 1) → β)) ≅ F.obj (β) ⊗ F.obj ((Fin n → β)) :=
-  Functor.mapIso _ (Fin.consEquiv _).symm.toIso ≪≫
-    (Functor.Monoidal.μIso F (β) ((Fin n → β))).symm
+    F.obj (Fin (n + 1) → β) ≅ F.obj β ⊗ F.obj (Fin n → β) :=
+  Functor.mapIso _ (Fin.consEquiv _).symm.toIso ≪≫ (Functor.Monoidal.μIso F β (Fin n → β)).symm
 
 end CategoryTheory

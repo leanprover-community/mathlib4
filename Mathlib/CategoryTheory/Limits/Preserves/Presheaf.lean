@@ -161,8 +161,7 @@ theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limi
   dsimp only [yoneda_obj_obj, Functor.const_obj_obj] at this
   rw [← this]
   ext
-  simp
-  rfl
+  simp [flipFunctorToInterchange, functorToInterchangeIso, functorToInterchange]
 
 theorem isIso_post [IsFiltered (CostructuredArrow yoneda A)] : IsIso (limit.post K A) :=
   iso_hom A K ▸ inferInstance

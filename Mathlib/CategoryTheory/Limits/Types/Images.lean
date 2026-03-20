@@ -29,7 +29,7 @@ section
 -- implementation of `HasImage`
 /-- the image of a morphism in Type is just `Set.range f` -/
 def Image : Type u :=
-  (Set.range f)
+  Set.range f
 
 instance [Inhabited α] : Inhabited (Image f) where default := ⟨f default, ⟨_, rfl⟩⟩
 
@@ -44,7 +44,7 @@ variable {f}
 
 /-- the universal property for the image factorisation -/
 noncomputable def Image.lift (F' : MonoFactorisation f) : Image f ⟶ F'.I :=
-  TypeCat.ofHom ((fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : Image f → F'.I))
+  TypeCat.ofHom (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : Image f → F'.I)
 
 theorem Image.lift_fac (F' : MonoFactorisation f) : Image.lift F' ≫ F'.m = Image.ι f := by
   ext x

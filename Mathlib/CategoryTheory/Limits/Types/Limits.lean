@@ -105,9 +105,9 @@ variable [Small.{u} F.sections]
 /-- (internal implementation) the limit cone of a functor,
 implemented as flat sections of a pi type
 -/
-@[simps pt π_app]
+@[simps]
 noncomputable def limitCone : Cone F where
-  pt := (Shrink F.sections)
+  pt := Shrink F.sections
   π :=
     { app j := TypeCat.ofHom (fun u => ((equivShrink F.sections).symm u).val j) }
 
@@ -191,11 +191,11 @@ variable (F : J ⥤ Type u) [HasLimit F]
 /-- The equivalence between the abstract limit of `F` in `Type max v u`
 and the "concrete" definition as the sections of `F`.
 -/
-noncomputable def limitEquivSections : (limit F : Type u) ≃ F.sections :=
+noncomputable def limitEquivSections : limit F ≃ F.sections :=
   isLimitEquivSections (limit.isLimit F)
 
 @[simp]
-theorem limitEquivSections_apply (x : (limit F :)) (j : J) :
+theorem limitEquivSections_apply (x : limit F) (j : J) :
     dsimp% ((limitEquivSections F) x : ∀ j, F.obj j) j = limit.π F j x :=
   rfl
 
@@ -214,7 +214,7 @@ noncomputable def limNatIsoSectionsFunctor :
 which are "coherent": `∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j'`.
 -/
 noncomputable def Limit.mk (x : ∀ j, F.obj j) (h : ∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j') :
-    (limit F : Type u) :=
+    limit F :=
   (limitEquivSections F).symm ⟨x, h _ _⟩
 
 @[simp]
@@ -225,22 +225,23 @@ theorem Limit.π_mk (x : ∀ j, F.obj j) (h : ∀ (j j') (f : j ⟶ j'), F.map f
 
 -- PROJECT: prove this for concrete categories where the forgetful functor preserves limits
 @[ext]
-theorem limit_ext (x y : (limit F : Type u)) (w : ∀ j, limit.π F j x = limit.π F j y) :
+theorem limit_ext (x y : limit F) (w : ∀ j, limit.π F j x = limit.π F j y) :
     x = y := by
   apply (limitEquivSections F).injective
   ext j
   simp [w j]
 
 @[ext]
-theorem limit_ext' (F' : J ⥤ Type v) (x y : (limit F' : Type v))
+theorem limit_ext' (F' : J ⥤ Type v) (x y : limit F')
     (w : ∀ j, limit.π F' j x = limit.π F' j y) : x = y :=
   limit_ext F' x y w
 
-theorem limit_ext_iff' (F' : J ⥤ Type v) (x y : (limit F' : Type v)) :
+theorem limit_ext_iff' (F' : J ⥤ Type v) (x y : limit F') :
     x = y ↔ ∀ j, limit.π F' j x = limit.π F' j y :=
   ⟨fun t _ => t ▸ rfl, limit_ext' _ _ _⟩
 
-attribute [elementwise (attr := simp)] limit.lift_π limMap_π limit.w
+attribute [elementwise] limit.lift_π limMap_π limit.w
+attribute [simp] limit.lift_π_apply limMap_π_apply limit.w_apply
 
 variable {F} in
 @[deprecated limit.w_apply (since := "2026-02-17")]
@@ -255,7 +256,7 @@ theorem Limit.lift_π_apply (s : Cone F) (j : J) (x : s.pt) :
 
 @[deprecated limMap_π_apply (since := "2026-02-17")]
 theorem Limit.map_π_apply {F G : J ⥤ Type u} [HasLimit F] [HasLimit G] (α : F ⟶ G) (j : J)
-    (x : (limit F : Type u)) : limit.π G j (limMap α x) = α.app j (limit.π F j x) :=
+    (x : limit F) : limit.π G j (limMap α x) = α.app j (limit.π F j x) :=
   limMap_π_apply _ _ _
 
 @[deprecated limit.w_apply (since := "2026-02-17")]

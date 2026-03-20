@@ -469,8 +469,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma compULiftYonedaIsoULiftYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
     dsimp% ((compULiftYonedaIsoULiftYonedaCompLan.{w} F).inv.app X).app (op (F.obj X))
           ((F.op.lanUnit.app ((uliftYoneda.{max w v₂}).obj X)).app (op X)
-        (ULift.up (𝟙 X))) = ULift.up (𝟙 (F.obj X)) := by
-  exact (ConcreteCategory.congr_hom (CC := fun X ↦ X) (Functor.descOfIsLeftKanExtension_fac_app _
+        (ULift.up (𝟙 X))) = ULift.up (𝟙 (F.obj X)) :=
+        (ConcreteCategory.congr_hom (CC := fun X ↦ X) (Functor.descOfIsLeftKanExtension_fac_app _
     (F.op.lanUnit.app ((uliftYoneda.{max w v₂}).obj X)) _
     (uliftYonedaMap.{w} F X) (op X)) (ULift.up (𝟙 X))).trans (by simp [uliftYonedaMap])
 

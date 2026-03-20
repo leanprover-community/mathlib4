@@ -181,7 +181,7 @@ The functor which takes a finite set to the set of maps into `F(*)` for a preshe
 -/
 @[simps obj map]
 abbrev finYoneda : FintypeCat.{u}ᵒᵖ ⥤ Type (u + 1) where
-  obj X := (X.unop → F.obj (toProfinite.op.obj ⟨of <| PUnit.{u + 1}⟩))
+  obj X := X.unop → F.obj (toProfinite.op.obj ⟨of <| PUnit.{u + 1}⟩)
   map f := TypeCat.ofHom (fun g ↦ g ∘ f.unop)
 
 /-- `locallyConstantPresheaf` restricted to finite sets is isomorphic to `finYoneda F`. -/
@@ -245,7 +245,6 @@ lemma isoFinYonedaComponents_inv_comp {X Y : Profinite.{u}} [Finite X] [Finite Y
 
 attribute [local simp] toProfinite_obj
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The restriction of a finite-product-preserving presheaf `F` on `Profinite` to the category of
 finite sets is isomorphic to `finYoneda F`.
@@ -266,7 +265,7 @@ colimit, is isomorphic to the presheaf `LocallyConstant - F(*)`.
 -/
 def isoLocallyConstantOfIsColimit
     (hF : ∀ S : Profinite, IsColimit <| F.mapCocone S.asLimitCone.op) :
-    F ≅ (locallyConstantPresheaf (F.obj (toProfinite.op.obj ⟨of <| PUnit.{u + 1}⟩))) :=
+    F ≅ locallyConstantPresheaf (F.obj (toProfinite.op.obj ⟨of <| PUnit.{u + 1}⟩)) :=
   (lanPresheafNatIso hF).symm ≪≫
     lanPresheafExt (isoFinYoneda F ≪≫ (locallyConstantIsoFinYoneda F).symm) ≪≫
       lanPresheafNatIso fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _

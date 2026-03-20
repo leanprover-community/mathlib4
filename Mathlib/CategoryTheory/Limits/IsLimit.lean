@@ -435,7 +435,7 @@ def mapConeEquiv {D : Type u₄} [Category.{v₄} D] {K : J ⥤ C} {F G : C ⥤ 
 there is a unique cone morphism from any other cone.
 -/
 def isoUniqueConeMorphism {t : Cone F} :
-    (IsLimit t) ≅ (∀ s, Unique (s ⟶ t)) where
+    IsLimit t ≅ ∀ s, Unique (s ⟶ t) where
   hom := TypeCat.ofHom fun h s ↦
     { default := h.liftConeMorphism s
       uniq := fun _ => h.uniq_cone_morphism }
@@ -884,7 +884,7 @@ lemma homEquiv_symm_naturality (h : IsColimit t) {W W' : C}
 /-- The universal property of a colimit cocone: a map `X ⟶ W` is the same as
   a cocone on `F` with cone point `W`. -/
 def homIso (h : IsColimit t) (W : C) :
-    (ULift.{u₁} (t.pt ⟶ W : Type v₃)) ≅ (F ⟶ (const J).obj W) :=
+    ULift.{u₁} (t.pt ⟶ W : Type v₃) ≅ (F ⟶ (const J).obj W) :=
   Equiv.toIso (Equiv.ulift.trans h.homEquiv)
 
 @[simp]
@@ -937,7 +937,7 @@ set_option backward.isDefEq.respectTransparency false in
 there is a unique cocone morphism from any other cocone.
 -/
 def isoUniqueCoconeMorphism {t : Cocone F} :
-    (IsColimit t) ≅ (∀ s, Unique (t ⟶ s)) where
+    IsColimit t ≅ ∀ s, Unique (t ⟶ s) where
   hom := TypeCat.ofHom fun h s ↦
     { default := h.descCoconeMorphism s
       uniq := fun _ => h.uniq_cocone_morphism }

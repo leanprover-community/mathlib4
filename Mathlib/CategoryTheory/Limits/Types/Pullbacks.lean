@@ -72,14 +72,14 @@ noncomputable def equivPullbackObj : c.pt ≃ Types.PullbackObj f g :=
   (IsLimit.conePointUniqueUpToIso hc (Types.pullbackLimitCone f g).isLimit).toEquiv
 
 @[simp]
-lemma equivPullbackObj_apply_fst (x : c.pt) : (equivPullbackObj hc x).1.1 = c.fst x := by
-  exact congr_hom (IsLimit.conePointUniqueUpToIso_hom_comp hc
-    (Types.pullbackLimitCone f g).isLimit .left) x
+lemma equivPullbackObj_apply_fst (x : c.pt) : (equivPullbackObj hc x).1.1 = c.fst x :=
+  (congr_hom (IsLimit.conePointUniqueUpToIso_hom_comp hc
+    (Types.pullbackLimitCone f g).isLimit .left)) x
 
 @[simp]
-lemma equivPullbackObj_apply_snd (x : c.pt) : (equivPullbackObj hc x).1.2 = c.snd x := by
-  exact congr_hom (IsLimit.conePointUniqueUpToIso_hom_comp hc
-    (Types.pullbackLimitCone f g).isLimit .right) x
+lemma equivPullbackObj_apply_snd (x : c.pt) : (equivPullbackObj hc x).1.2 = c.snd x :=
+  (congr_hom (IsLimit.conePointUniqueUpToIso_hom_comp hc
+    (Types.pullbackLimitCone f g).isLimit .right)) x
 
 @[simp]
 lemma equivPullbackObj_symm_apply_fst (x : Types.PullbackObj f g) :
@@ -133,12 +133,12 @@ noncomputable def pullbackIsoPullback : pullback f g ≅ PullbackObj f g :=
   (PullbackCone.IsLimit.equivPullbackObj (pullbackIsPullback f g)).toIso
 
 @[simp]
-theorem pullbackIsoPullback_hom_fst (p : (pullback f g :)) :
+theorem pullbackIsoPullback_hom_fst (p : pullback f g) :
     ((pullbackIsoPullback f g).hom p : X × Y).fst = (pullback.fst f g) p :=
   PullbackCone.IsLimit.equivPullbackObj_apply_fst (pullbackIsPullback f g) p
 
 @[simp]
-theorem pullbackIsoPullback_hom_snd (p : (pullback f g :)) :
+theorem pullbackIsoPullback_hom_snd (p : pullback f g) :
     ((pullbackIsoPullback f g).hom p : X × Y).snd = (pullback.snd f g) p :=
   PullbackCone.IsLimit.equivPullbackObj_apply_snd (pullbackIsPullback f g) p
 

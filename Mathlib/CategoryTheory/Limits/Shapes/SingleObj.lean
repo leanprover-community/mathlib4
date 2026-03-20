@@ -68,7 +68,7 @@ def Types.sections.equivFixedPoints :
 induced action on `J.obj (SingleObj.star M)`. -/
 @[simps!]
 noncomputable def Types.limitEquivFixedPoints :
-    (limit J :) ≃ MulAction.fixedPoints M (J.obj (SingleObj.star M)) :=
+    limit J ≃ MulAction.fixedPoints M (J.obj (SingleObj.star M)) :=
   (Types.limitEquivSections J).trans (Types.sections.equivFixedPoints J)
 
 end Limits
@@ -102,7 +102,7 @@ def colimitTypeRelEquivOrbitRelQuotient :
 `J.obj (SingleObj.star G)` by the induced action. -/
 @[simps!]
 noncomputable def Types.colimitEquivQuotient :
-    (colimit J :) ≃ MulAction.orbitRel.Quotient G (J.obj (SingleObj.star G)) :=
+    colimit J ≃ MulAction.orbitRel.Quotient G (J.obj (SingleObj.star G)) :=
   (Types.colimitEquivColimitType J).trans (colimitTypeRelEquivOrbitRelQuotient J)
 
 end Colimits

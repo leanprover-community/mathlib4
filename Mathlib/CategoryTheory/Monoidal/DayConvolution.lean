@@ -41,6 +41,7 @@ a monoidal structure.
 - Type alias for `C ⥤ V` with a `LawfulDayConvolutionMonoidalCategoryStruct`.
 - Characterization of lax monoidal functors out of a Day convolution monoidal category.
 - Case `V = Type u` and its universal property.
+- Fix the abuse of functor associativity that causes `erw [id_apply]` in a few places in this file.
 
 -/
 

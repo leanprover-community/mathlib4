@@ -242,13 +242,13 @@ theorem jointly_surjective (F : J ⥤ Type u) {t : Cocone F} (h : IsColimit t) (
 
 variable {F} in
 /-- A variant of `jointly_surjective` for `x : colimit F`. -/
-theorem jointly_surjective' (x : (colimit F : Type u)) :
+theorem jointly_surjective' (x : colimit F) :
     ∃ (j : J) (y : F.obj j), colimit.ι F j y = x :=
   jointly_surjective F (colimit.isColimit F) x
 
 /-- If a colimit is nonempty, also its index category is nonempty. -/
 theorem nonempty_of_nonempty_colimit {F : J ⥤ Type u} [HasColimit F] :
-    Nonempty (colimit F : Type u) → Nonempty J :=
+    Nonempty (colimit F) → Nonempty J :=
   Nonempty.map <| Sigma.fst ∘ Quot.out ∘ (colimitEquivColimitType F).toFun
 
 end CategoryTheory.Limits.Types

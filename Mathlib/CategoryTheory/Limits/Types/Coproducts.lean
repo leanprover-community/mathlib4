@@ -45,7 +45,7 @@ variable (F) in
 /-- The cofan given by a sigma type. -/
 @[simps]
 def sigma : CofanTypes F where
-  pt := (Σ (i : C), F i)
+  pt := Σ (i : C), F i
   ι := fun ⟨i⟩ x ↦ ⟨i, x⟩
   ι_naturality := by
     rintro ⟨i⟩ ⟨j⟩ f
@@ -206,7 +206,7 @@ noncomputable def isInitialPEmpty : IsInitial (PEmpty : Type u) :=
 lemma initial_iff_empty (X : Type u) : Nonempty (IsInitial X) ↔ IsEmpty X := by
   constructor
   · intro ⟨h⟩
-    exact Function.isEmpty (IsInitial.to h (PEmpty))
+    exact Function.isEmpty (IsInitial.to h PEmpty)
   · intro h
     exact ⟨IsInitial.ofIso Types.isInitialPEmpty <| Equiv.toIso <| Equiv.equivOfIsEmpty PEmpty X⟩
 
@@ -214,7 +214,7 @@ lemma initial_iff_empty (X : Type u) : Nonempty (IsInitial X) ↔ IsEmpty X := b
 /-- The sum type `X ⊕ Y` forms a cocone for the binary coproduct of `X` and `Y`. -/
 @[simps!]
 def binaryCoproductCocone (X Y : Type u) : Cocone (pair X Y) :=
-  BinaryCofan.mk (TypeCat.ofHom (Sum.inl)) (TypeCat.ofHom (Sum.inr))
+  BinaryCofan.mk (TypeCat.ofHom Sum.inl) (TypeCat.ofHom Sum.inr)
 
 open CategoryTheory.Limits.WalkingPair
 
@@ -234,29 +234,29 @@ def binaryCoproductColimitCocone (X Y : Type u) : Limits.ColimitCocone (pair X Y
   ⟨_, binaryCoproductColimit X Y⟩
 
 /-- The categorical binary coproduct in `Type u` is the sum `X ⊕ Y`. -/
-noncomputable def binaryCoproductIso (X Y : Type u) : Limits.coprod X Y ≅ (X ⊕ Y) :=
+noncomputable def binaryCoproductIso (X Y : Type u) : Limits.coprod X Y ≅ X ⊕ Y :=
   colimit.isoColimitCocone (binaryCoproductColimitCocone X Y)
 
 --open CategoryTheory.Type
 
 @[elementwise (attr := simp)]
 theorem binaryCoproductIso_inl_comp_hom (X Y : Type u) :
-    Limits.coprod.inl ≫ (binaryCoproductIso X Y).hom = TypeCat.ofHom (Sum.inl) :=
+    Limits.coprod.inl ≫ (binaryCoproductIso X Y).hom = TypeCat.ofHom Sum.inl :=
   colimit.isoColimitCocone_ι_hom (binaryCoproductColimitCocone X Y) ⟨WalkingPair.left⟩
 
 @[elementwise (attr := simp)]
 theorem binaryCoproductIso_inr_comp_hom (X Y : Type u) :
-    Limits.coprod.inr ≫ (binaryCoproductIso X Y).hom = TypeCat.ofHom (Sum.inr) :=
+    Limits.coprod.inr ≫ (binaryCoproductIso X Y).hom = TypeCat.ofHom Sum.inr :=
   colimit.isoColimitCocone_ι_hom (binaryCoproductColimitCocone X Y) ⟨WalkingPair.right⟩
 
 @[elementwise (attr := simp)]
 theorem binaryCoproductIso_inl_comp_inv (X Y : Type u) :
-    TypeCat.ofHom (Sum.inl) ≫ (binaryCoproductIso X Y).inv = Limits.coprod.inl :=
+    TypeCat.ofHom Sum.inl ≫ (binaryCoproductIso X Y).inv = Limits.coprod.inl :=
   colimit.isoColimitCocone_ι_inv (binaryCoproductColimitCocone X Y) ⟨WalkingPair.left⟩
 
 @[elementwise (attr := simp)]
 theorem binaryCoproductIso_inr_comp_inv (X Y : Type u) :
-    TypeCat.ofHom (Sum.inr) ≫ (binaryCoproductIso X Y).inv = Limits.coprod.inr :=
+    TypeCat.ofHom Sum.inr ≫ (binaryCoproductIso X Y).inv = Limits.coprod.inr :=
   colimit.isoColimitCocone_ι_inv (binaryCoproductColimitCocone X Y) ⟨WalkingPair.right⟩
 
 open Function (Injective)
@@ -313,7 +313,7 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
 
 /-- Any monomorphism in `Type` is a coproduct injection. -/
 noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
-    IsColimit (BinaryCofan.mk f (TypeCat.ofHom ((Subtype.val : ↑(Set.range f)ᶜ → Y)))) := by
+    IsColimit (BinaryCofan.mk f (TypeCat.ofHom (Subtype.val : ↑(Set.range f)ᶜ → Y))) := by
   apply Nonempty.some
   rw [binaryCofan_isColimit_iff]
   refine ⟨(mono_iff_injective f).mp inferInstance, Subtype.val_injective, ?_⟩
@@ -326,7 +326,7 @@ noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
 def coproductColimitCocone {J : Type v} (F : J → Type (max v u)) :
     Limits.ColimitCocone (Discrete.functor F) where
   cocone :=
-    { pt := (Σ j, F j)
+    { pt := Σ j, F j
       ι := Discrete.natTrans (fun ⟨j⟩ => TypeCat.ofHom fun x => ⟨j, x⟩) }
   isColimit :=
     { desc := fun s => TypeCat.ofHom fun x => s.ι.app ⟨x.1⟩ x.2

@@ -104,7 +104,7 @@ instance : (free.{u}).PreservesMonomorphisms where
         ((Types.initial_iff_empty X).2 hX).some).isZero.eq_of_tgt
     · have hf : Function.Injective f := by rwa [← mono_iff_injective]
       obtain ⟨g, hg⟩ := hf.hasLeftInverse
-      have : IsSplitMono f := IsSplitMono.mk' { retraction := TypeCat.ofHom (g) }
+      have : IsSplitMono f := IsSplitMono.mk' { retraction := TypeCat.ofHom g }
       infer_instance
 
 end AddCommGrpCat
@@ -121,9 +121,9 @@ def free : Type u ⥤ GrpCat where
 -/
 def adj : free ⊣ forget GrpCat.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv X Y := by
-        refine ConcreteCategory.homEquiv.trans (Equiv.trans ?_ TypeCat.homEquiv.symm)
-        exact FreeGroup.lift.symm
+    { homEquiv X Y :=
+        ConcreteCategory.homEquiv.trans
+          (Equiv.trans (FreeGroup.lift.symm) TypeCat.homEquiv.symm)
       homEquiv_naturality_left_symm := by
         intros
         ext : 1

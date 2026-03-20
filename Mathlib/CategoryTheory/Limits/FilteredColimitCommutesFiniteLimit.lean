@@ -83,8 +83,8 @@ theorem colimitLimitToLimitColimit_injective :
     -- Since the images of `x` and `y` are equal in a limit, they are equal componentwise
     -- (indexed by `j : J`),
     have h (j : J) :
-      (colimit.ι ((curry.obj F).obj j) kx)
-        ((limit.π ((curry.obj (swap K J ⋙ F)).obj kx) j) x) =
+        (colimit.ι ((curry.obj F).obj j) kx)
+          ((limit.π ((curry.obj (swap K J ⋙ F)).obj kx) j) x) =
         (colimit.ι ((curry.obj F).obj j) ky)
           ((limit.π ((curry.obj (swap K J ⋙ F)).obj ky) j) y) := by
       simpa using ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h

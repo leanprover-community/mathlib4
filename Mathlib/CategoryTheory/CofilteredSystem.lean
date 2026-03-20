@@ -162,9 +162,9 @@ theorem isMittagLeffler_of_surjective (h : ∀ ⦃i j : J⦄ (f : i ⟶ j), Func
   fun j => ⟨j, 𝟙 j, fun k g => by rw [map_id, types_id, range_id, (h g).range_eq]⟩
 
 /-- The subfunctor of `F` obtained by restricting to the preimages of a set `s ∈ F.obj i`. -/
-@[simps obj map]
+@[simps]
 def toPreimages : J ⥤ Type v where
-  obj j := (⋂ f : j ⟶ i, F.map f ⁻¹' s)
+  obj j := ⋂ f : j ⟶ i, F.map f ⁻¹' s
   map g := TypeCat.ofHom (MapsTo.restrict (F.map g) _ _ fun x h => by
     rw [mem_iInter] at h ⊢
     intro f
