@@ -28,7 +28,7 @@ This file contains the conditional Jensen's inequality. We follow the proof in
 
 public section
 
-open MeasureTheory Function Set Filter
+open MeasureTheory Function Set Filter Real
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   {α : Type*} {f : α → E} {φ : E → ℝ} {m mα : MeasurableSpace α} {μ : Measure α} {s : Set E}
@@ -158,7 +158,7 @@ theorem ConcaveOn.condExp_map_le_univ (hm : m ≤ mα) [SigmaFinite (μ.trim hm)
 theorem AEStronglyMeasurable.norm_condExp_le (hf : AEStronglyMeasurable f μ) :
     (‖μ[f | m] ·‖) ≤ᵐ[μ] μ[(‖f ·‖) | m] := by
   by_cases! hm : ¬ m ≤ mα
-  · simp_all [condExp_of_not_le hm]; aesop
+  · simp [condExp_of_not_le hm]; aesop
   by_cases! hμm : ¬ SigmaFinite (μ.trim hm)
   · simp [condExp_of_not_sigmaFinite hm hμm]; aesop
   by_cases! hf_int : ¬ Integrable f μ
@@ -167,6 +167,25 @@ theorem AEStronglyMeasurable.norm_condExp_le (hf : AEStronglyMeasurable f μ) :
     aesop
   exact convexOn_univ_norm.map_condExp_le_univ hm continuous_norm.lowerSemicontinuous hf_int
     hf_int.norm
+
+theorem AEStronglyMeasurable.norm_rpow_condExp_le {p : ℝ} (hp : 1 ≤ p)
+    (hf : AEStronglyMeasurable f μ) (hfint : Integrable (fun x => ‖f x‖ ^ p) μ) :
+    (‖μ[f | m] ·‖ ^ p) ≤ᵐ[μ] μ[(‖f ·‖ ^ p) | m] := by
+  have hp' : 0 < p := by linarith
+  by_cases! hm : ¬ m ≤ mα
+  · simp [condExp_of_not_le hm, zero_rpow hp'.ne.symm]; aesop
+  by_cases! hμm : ¬ SigmaFinite (μ.trim hm)
+  · simp [condExp_of_not_sigmaFinite hm hμm, zero_rpow hp'.ne.symm]; aesop
+  by_cases! hf_int : ¬ Integrable f μ
+  · have : ¬ Integrable (‖f ·‖) μ := by simpa [integrable_norm_iff hf]
+    simp only [condExp_of_not_integrable hf_int, Pi.zero_apply, norm_zero, zero_rpow hp'.ne.symm]
+    apply condExp_nonneg
+    filter_upwards with a using by positivity
+  have hl := (continuous_rpow_const hp'.le).lowerSemicontinuous.lowerSemicontinuousOn (Ici 0)
+  have := (convexOn_rpow hp).map_condExp_le hm hl ?_ isClosed_Ici hf_int.norm hfint
+  · filter_upwards [AEStronglyMeasurable.norm_condExp_le (m := m) hf, this] with a ha hb
+    exact (rpow_le_rpow (norm_nonneg _) ha hp'.le).trans hb
+  · filter_upwards with a; simp
 
 /-- **Conditional Jensen's inequality**: in a finite dimensional Banach space `E` with a measure
 `μ` that is σ-finite on a sub-σ-algebra `m`, if `φ : E → ℝ` is convex, then for any `f : α → E` such

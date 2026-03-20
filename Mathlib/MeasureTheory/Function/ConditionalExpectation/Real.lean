@@ -29,7 +29,7 @@ public section
 
 noncomputable section
 
-open TopologicalSpace MeasureTheory.Lp Filter ContinuousLinearMap Real
+open TopologicalSpace MeasureTheory.Lp Filter ContinuousLinearMap
 
 open scoped NNReal ENNReal Topology MeasureTheory
 
@@ -55,35 +55,45 @@ theorem rnDeriv_ae_eq_condExp {hm : m ≤ m0} [hμm : SigmaFinite (μ.trim hm)] 
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
-theorem eLpNorm_condExp_le_eLpNorm (f : α → E) {p : ℝ≥0∞} (hp : 1 ≤ p) :
+theorem integral_norm_rpow_condExp_le {p : ℝ} (hp : 1 ≤ p) {f : α → E}
+    (hf : Integrable (fun x => ‖f x‖ ^ p) μ) :
+    ∫ x, ‖(μ[f | m]) x‖ ^ p ∂μ ≤ ∫ x, ‖f x‖ ^ p ∂μ := by
+  have hp' : 0 < p := by linarith
+  by_cases! hm : ¬ m ≤ m0
+  · simp only [condExp_of_not_le hm, Pi.zero_apply, _root_.norm_zero,
+      Real.zero_rpow hp'.ne.symm, integral_zero]
+    positivity
+  by_cases! hfint : ¬ Integrable f μ
+  · simp only [condExp_of_not_integrable hfint, Pi.zero_apply, _root_.norm_zero,
+      Real.zero_rpow hp'.ne.symm, integral_zero]
+    positivity
+  by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
+  · simp only [condExp_of_not_sigmaFinite hm hsig, Pi.zero_apply, _root_.norm_zero,
+      Real.zero_rpow hp'.ne.symm, integral_zero]
+    positivity
+  calc
+  _ ≤ ∫ x, μ[(fun x => ‖f x‖ ^ p) | m] x ∂μ := by
+    refine integral_mono_of_nonneg ?_ integrable_condExp ?_
+    · filter_upwards with a; positivity
+    · sorry
+  _ = _ := integral_condExp hm
+
+theorem eLpNorm_condExp_le_eLpNorm (f : α → E) {p : ℝ≥0∞} (hp : 1 ≤ p) (hpt : p < ⊤)
+    (hf : Integrable (fun x => ‖f x‖ ^ p.toReal) μ) :
     eLpNorm (μ[f | m]) p μ ≤ eLpNorm f p μ := by
+  have hp' : 0 < p := by sorry
   by_cases! hm : ¬ m ≤ m0
   · simp [condExp_of_not_le hm]
   by_cases! hfint : ¬ Integrable f μ
   · simp [condExp_of_not_integrable hfint]
   by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
   · simp [condExp_of_not_sigmaFinite hm hsig]
-  by_cases! hp_ne_top : p ≠ ⊤
-  · sorry
-  · sorry
-
-theorem integral_norm_rpow_condExp_le (f : α → E) {p : ℝ} (hp : 1 ≤ p) :
-    ∫ x, ‖(μ[f | m]) x‖ ^ p ∂μ ≤ ∫ x, ‖f x‖ ^ p ∂μ := by
-  have hp' : p ≠ 0 := by linarith
-  by_cases! hm : ¬ m ≤ m0
-  · simp only [condExp_of_not_le hm, Pi.zero_apply, _root_.norm_zero, zero_rpow hp', integral_zero]
-    positivity
-  by_cases! hfint : ¬ Integrable f μ
-  · simp only [condExp_of_not_integrable hfint, Pi.zero_apply, _root_.norm_zero, zero_rpow hp',
-      integral_zero]
-    positivity
-  by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
-  · simp only [condExp_of_not_sigmaFinite hm hsig, Pi.zero_apply, _root_.norm_zero,
-      zero_rpow hp', integral_zero]
-    positivity
-  calc
-  _ ≤ ∫ x, μ[(fun x => ‖f x‖ ^ p) | m] x ∂μ := by sorry
-  _ = _ := integral_condExp hm
+  · simp_all [eLpNorm_eq_lintegral_rpow_enorm_toReal hp'.ne.symm hpt.ne]
+    have : 1 ≤ p.toReal := by sorry
+    rw [ENNReal.rpow_le_rpow_iff]
+    have := integral_norm_rpow_condExp_le (m := m) this hf
+    sorry
+    sorry
 
 theorem integral_norm_condExp_le (f : α → E) : ∫ x, ‖(μ[f | m]) x‖ ∂μ ≤ ∫ x, ‖f x‖ ∂μ := by
   by_cases! hm : ¬ m ≤ m0
