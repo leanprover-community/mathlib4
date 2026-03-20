@@ -223,7 +223,7 @@ section Idempotency
 
 namespace AddQuantale
 
-variable {α : Type*} [AddSemigroup α] [CompleteLattice α] [IsAddQuantale α]
+variable {α : Type*} [AddSemigroup α]
 
 /-- An idempotent element of a quantale is an element `x` such that `x + x = x`. -/
 def isAddIdempotent (x : α) := x + x = x
@@ -232,7 +232,7 @@ end AddQuantale
 
 namespace Quantale
 
-variable {α : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
+variable {α : Type*} [Semigroup α]
 
 /-- An idempotent element of a quantale is an element `x` such that `x * x = x`. -/
 @[to_additive existing]
@@ -246,7 +246,7 @@ section Twosidedness
 
 namespace AddQuantale
 
-variable {α : Type*} [AddSemigroup α] [CompleteLattice α] [IsAddQuantale α]
+variable {α : Type*} [AddSemigroup α] [CompleteLattice α]
 
 /-- A left-sided element of a quantale is an element `x` such that `⊤ + x ≤ x`. -/
 def isAddLeftsided (x : α) := ⊤ + x ≤ x
@@ -271,7 +271,7 @@ end AddQuantale
 
 namespace Quantale
 
-variable {α : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
+variable {α : Type*} [Semigroup α] [CompleteLattice α]
 
 /-- A left-sided element of a quantale is an element `x` such that `⊤ * x ≤ x`. -/
 @[to_additive existing]
