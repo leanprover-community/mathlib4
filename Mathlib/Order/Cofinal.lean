@@ -52,7 +52,7 @@ theorem IsCofinal.mono {s t : Set α} (h : s ⊆ t) (hs : IsCofinal s) : IsCofin
 end LE
 
 section Preorder
-variable [Preorder α]
+variable [Preorder α] [Preorder β]
 
 theorem IsCofinal.univ : IsCofinal (@Set.univ α) :=
   fun a ↦ ⟨a, ⟨⟩, le_rfl⟩
@@ -60,23 +60,34 @@ theorem IsCofinal.univ : IsCofinal (@Set.univ α) :=
 instance : Inhabited {s : Set α // IsCofinal s} :=
   ⟨_, .univ⟩
 
+theorem IsCofinal.image {f : α → β} {s : Set α} (hs : IsCofinal s)
+    (hf : Monotone f) (hf' : IsCofinal (.range f)) : IsCofinal (f '' s) := by
+  intro a
+  obtain ⟨_, ⟨b, rfl⟩, hb⟩ := hf' a
+  obtain ⟨c, hc, hc'⟩ := hs b
+  exact ⟨_, Set.mem_image_of_mem f hc, hb.trans (hf hc')⟩
+
 /-- A cofinal subset of a cofinal subset is cofinal. -/
 theorem IsCofinal.trans {s : Set α} {t : Set s} (hs : IsCofinal s) (ht : IsCofinal t) :
-    IsCofinal (Subtype.val '' t) := by
-  intro a
-  obtain ⟨b, hb, hb'⟩ := hs a
-  obtain ⟨c, hc, hc'⟩ := ht ⟨b, hb⟩
-  exact ⟨c, Set.mem_image_of_mem _ hc, hb'.trans hc'⟩
+    IsCofinal (Subtype.val '' t) :=
+  ht.image (Subtype.mono_coe _) (by simpa)
 
-theorem GaloisConnection.map_cofinal [Preorder β] {f : β → α} {g : α → β}
-    (h : GaloisConnection f g) {s : Set α} (hs : IsCofinal s) : IsCofinal (g '' s) := by
-  intro a
-  obtain ⟨b, hb, hb'⟩ := hs (f a)
-  exact ⟨g b, Set.mem_image_of_mem _ hb, h.le_iff_le.1 hb'⟩
+theorem GaloisConnection.isCofinal_range {f : β → α} {g : α → β} (h : GaloisConnection f g) :
+    IsCofinal (.range g) :=
+  fun a ↦ ⟨_, Set.mem_range_self _, le_u_l h a⟩
 
-theorem OrderIso.map_cofinal [Preorder β] (e : α ≃o β) {s : Set α} (hs : IsCofinal s) :
-    IsCofinal (e '' s) :=
-  e.symm.to_galoisConnection.map_cofinal hs
+theorem GaloisConnection.map_isCofinal {f : β → α} {g : α → β}
+    (h : GaloisConnection f g) {s : Set α} (hs : IsCofinal s) : IsCofinal (g '' s) :=
+  hs.image h.monotone_u h.isCofinal_range
+
+@[deprecated (since := "2026-03-15")]
+alias GaloisConnection.map_cofinal := GaloisConnection.map_isCofinal
+
+theorem OrderIso.map_isCofinal (e : α ≃o β) {s : Set α} (hs : IsCofinal s) : IsCofinal (e '' s) :=
+  e.symm.to_galoisConnection.map_isCofinal hs
+
+@[deprecated (since := "2026-03-15")]
+alias OrderIso.map_cofinal := OrderIso.map_isCofinal
 
 end Preorder
 
