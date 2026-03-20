@@ -107,7 +107,7 @@ lemma embDomain_le_embDomain_iff_le [LE α] [@Std.Refl α LE.le]
   simp [Finsupp.le_def, embDomain_apply, apply_dite₂, Finsupp.le_def.mp h]
 
 lemma embDomain_mono [Preorder α] (f : ι ↪ κ) : Monotone (embDomain f : (ι →₀ α) → (κ →₀ α)) :=
-  fun _ _↦ (embDomain_le_embDomain_iff_le f _ _).mpr
+  fun _ _ ↦ (embDomain_le_embDomain_iff_le f _ _).mpr
 
 @[gcongr]
 lemma embDomain_lt_embDomain_iff_lt [Preorder α] (f : ι ↪ κ) (g₁ g₂ : ι →₀ α) :
