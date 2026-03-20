@@ -474,7 +474,8 @@ theorem mulHeight_eval_ge' {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
 
 open Real in
 /-- If
-* `p : ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `N`,
+* `p : ι' → MvPolynomial ι K` is a family of polynomials (which in practice will be homogeneous
+  of the same degree `N`),
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
@@ -494,7 +495,8 @@ theorem logHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
   exact (log_le_log <| by positivity) <| mulHeight_eval_ge hq p h
 
 /-- If
-* `p : ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `N`,
+* `p : ι' → MvPolynomial ι K` is a family of polynomials (which in practice will be homogeneous
+  of the same degree `N`),
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
