@@ -203,6 +203,8 @@ theorem countPerms_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
 theorem countPerms_zero [DecidableEq α] : countPerms (0 : Multiset α) = 1 := by
   simp [countPerms, Finsupp.multinomial]
 
+@[deprecated (since := "2025-03-13")] alias multinomial_zero := countPerms_zero
+
 end Multiset
 
 namespace Finset
@@ -340,7 +342,7 @@ namespace Sym
 
 variable {n : ℕ} {α : Type*} [DecidableEq α]
 
-theorem multinomial_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
+theorem countPerms_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
     (fill x m s : Multiset α).countPerms = n.choose m * (s : Multiset α).countPerms := by
   rw [Multiset.countPerms_filter_ne x]
   rw [← mem_coe] at hx
@@ -353,5 +355,8 @@ theorem multinomial_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x
       rw [Multiset.filter_eq_nil]
       exact fun j hj ↦ by simp [Multiset.mem_replicate.mp hj]
     · exact fun j hj h ↦ hx <| by simpa [h] using hj
+
+@[deprecated (since := "2025-03-13")] alias multinomial_coe_fill_of_notMemal_filter_ne :=
+  countPerms_coe_fill_of_notMem
 
 end Sym
