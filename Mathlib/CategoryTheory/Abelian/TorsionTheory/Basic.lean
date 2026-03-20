@@ -44,17 +44,52 @@ open CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C] [Abelian C] -- [HasCoproducts C]
 
+lemma gc_rightOrthogonal_leftOrthogonal :
+    GaloisConnection (OrderDual.toDual (α := ObjectProperty C) ∘ ObjectProperty.rightOrthogonal)
+  (ObjectProperty.leftOrthogonal ∘ OrderDual.ofDual) :=
+  fun _ _ ↦ ⟨fun h _ hX _ _ hY ↦ h _ hY _ hX, fun h _ hX _ _ hY ↦ h _ hY _ hX⟩
+
+@[simp]
+lemma leftOrthogonal_rightOrthogonal_leftOrthogonal_eq_leftOrthogonal (P : ObjectProperty C) :
+    P.leftOrthogonal.rightOrthogonal.leftOrthogonal = P.leftOrthogonal := by
+  simpa [Function.comp] using
+    gc_rightOrthogonal_leftOrthogonal.u_l_u_eq_u (OrderDual.toDual P)
+
+@[simp]
+lemma leftOrthogonal_rightOrthogonal_leftOrthogonal_eq_rightOrthogonal (P : ObjectProperty C) :
+    P.rightOrthogonal.leftOrthogonal.rightOrthogonal = P.rightOrthogonal := by
+  simpa [Function.comp] using
+    gc_rightOrthogonal_leftOrthogonal.l_u_l_eq_l (OrderDual.toDual P)
+
+lemma le_rightOrthogonal_leftOrthogonal (P : ObjectProperty C) :
+    P ≤ P.rightOrthogonal.leftOrthogonal := by
+  simpa [Function.comp] using gc_rightOrthogonal_leftOrthogonal.le_u_l P
+
+lemma le_leftOrthogonal_rightOrthogonal (P : ObjectProperty C) :
+    P ≤ P.leftOrthogonal.rightOrthogonal := by
+  simpa [Function.comp] using gc_rightOrthogonal_leftOrthogonal.l_u_le (OrderDual.toDual P)
+
+/-
+def PretorsionClass (Φ : Preradical C) : ObjectProperty C :=
+  fun X ↦ IsIso (Φ.ι.app X)
+
+def PretorsionFreeClass (Φ : Preradical C) : ObjectProperty C :=
+  fun X ↦ CategoryTheory.Limits.IsZero (Φ.r.obj X)
+
+example (X : C) (P : ObjectProperty C) : C := by
+  haveI : Limits.HasCoproducts C := by infer_instance
+  let f := fun Y : {Y : Subobject X // P Y} ↦ (Y.1 : C)
+  #check ∐ f
+  sorry
+-/
+
 /-- A Torsion Theory in an abelian category consists of two classes, `T` and `F`, of
 torsion and torsion-free objects, respectively, such that `T` is the left orthogonal
 of `F` and `F` is the right orthogonal of `T`. -/
 structure TorsionTheory (T F : ObjectProperty C) : Prop where
   torsion_eq_leftOrthogonal : T = F.leftOrthogonal
   free_eq_rightOrthogonal : F = T.rightOrthogonal
-  /- T_leftOrthogonal : T ≤ F.leftOrthogonal
-  F_rightOrthogonal : F ≤ T.rightOrthogonal
-  le_leftOrthogonal : F.leftOrthogonal ≤ T
-  le_rightOrthogonal : T.rightOrthogonal ≤ F
- -/
+
 namespace TorsionTheory
 
 lemma mem_torsion_iff {X : C} {T F : ObjectProperty C} (hTF : TorsionTheory T F) :
@@ -81,55 +116,21 @@ lemma torsion_of_epi {T F : ObjectProperty C} (hTF : TorsionTheory T F)
   have hfg : f ≫ g = 0 := (hTF.mem_torsion_iff.mp hX (f ≫ g) hZ)
   exact Limits.zero_of_epi_comp f hfg
 
-/- /-- Given a class, `P`, of objects in `C`, define its free closure to be the the right orthogonal
-to `P`. -/
-abbrev freeClosure (P : ObjectProperty C) : ObjectProperty C := P.rightOrthogonal
-
-/-- Given a class, `P`, of objects in `C`, define its torsion closure to be the left orthogonal of
-the free closure. -/
-def torsionClosure (P : ObjectProperty C) : ObjectProperty C := (freeClosure P).leftOrthogonal -/
-
-instance instTorsionTheoryGeneratedBy (P : ObjectProperty C) :
+lemma torsionTheoryGeneratedBy (P : ObjectProperty C) :
     TorsionTheory P.rightOrthogonal.leftOrthogonal P.rightOrthogonal where
-      torsion_eq_leftOrthogonal := by
-        refine le_antisymm (le_refl P.rightOrthogonal.leftOrthogonal) ?_
-        intro F hF
-        exact (ObjectProperty.leftOrthogonal_iff P.rightOrthogonal F).mpr hF
-      free_eq_rightOrthogonal := by
-        refine le_antisymm ?_ ?_
-        · intro F hF
-          exact
-            (ObjectProperty.rightOrthogonal_iff P.rightOrthogonal.leftOrthogonal F).mpr
-              fun X f a ↦ a f hF
-        · intro F hF
-          apply (P.rightOrthogonal_iff F).mpr
-          intro X f hX
-          apply ((P.rightOrthogonal.leftOrthogonal).rightOrthogonal_iff F).mp hF f
-          exact (ObjectProperty.leftOrthogonal_iff P.rightOrthogonal X).mpr fun Y f a ↦ a f hX
+      torsion_eq_leftOrthogonal := rfl
+      free_eq_rightOrthogonal := by simp
 
-instance instTorsionTheoryCogeneratedBy (P : ObjectProperty C) :
+lemma torsionTheoryCogeneratedBy (P : ObjectProperty C) :
     TorsionTheory P.leftOrthogonal P.leftOrthogonal.rightOrthogonal where
-      torsion_eq_leftOrthogonal := by
-        refine le_antisymm ?_ ?_
-        · intro T hT
-          apply ((P.leftOrthogonal.rightOrthogonal).leftOrthogonal_iff T).mpr
-          intro Y f hY
-          exact hY f hT
-        · intro F hF
-          apply (P.leftOrthogonal_iff F).mpr
-          intro Y f hY
-          apply ((P.leftOrthogonal.rightOrthogonal).leftOrthogonal_iff F).mp hF f
-          exact (ObjectProperty.rightOrthogonal_iff P.leftOrthogonal Y).mpr fun X f a ↦ a f hY
-      free_eq_rightOrthogonal := by
-        refine le_antisymm (le_refl P.leftOrthogonal.rightOrthogonal) ?_
-        intro F hF
-        exact (ObjectProperty.rightOrthogonal_iff P.leftOrthogonal F).mpr hF
+      torsion_eq_leftOrthogonal := by simp
+      free_eq_rightOrthogonal := rfl
 
 lemma isClosedUnderQuotients_of_torsionTheory {T F : ObjectProperty C} (hTF : TorsionTheory T F) :
     T.IsClosedUnderQuotients where
       prop_of_epi := fun f _ hPX ↦ hTF.torsion_of_epi hPX f
 
-lemma isClosedUnderExtensions_of_torsionTheory {T F : ObjectProperty C} (hTF : TorsionTheory T F):
+lemma isClosedUnderExtensions_of_torsionTheory {T F : ObjectProperty C} (hTF : TorsionTheory T F) :
     T.IsClosedUnderExtensions where
       prop_X₂_of_shortExact := by
         intro S hs hX₁ hX₃
@@ -161,10 +162,13 @@ theorem isTorsionClass_iff {P : ObjectProperty C} : (∃ F : ObjectProperty C, T
       isClosedUnderExtensions_of_torsionTheory hPF,
       isClosedUnderCoproducts_of_torsionTheory hPF⟩, ?_⟩
   rintro ⟨hquot, hext, hcoprod⟩
-  refine ⟨P.leftOrthogonal.rightOrthogonal, ?_⟩
-  refine { torsion_eq_leftOrthogonal := ?_, free_eq_rightOrthogonal := ?_ }
-  · sorry
-  · sorry
+  refine ⟨P.rightOrthogonal, ?_⟩
+  refine { torsion_eq_leftOrthogonal := ?_, free_eq_rightOrthogonal := rfl }
+  · refine le_antisymm (le_rightOrthogonal_leftOrthogonal P) ?_
+    · intro X hPX
+      sorry
+
+
 
 end TorsionTheory
 
