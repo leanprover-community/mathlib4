@@ -375,7 +375,10 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("subNegZeroAddMonoid", "SubNegZeroMonoid"),
   ("modularCharacter", "AddModularCharacter"),
   ("isQuotientCoveringMap", "IsAddQuotientCoveringMap"),
-  ("addExact", "exact")]
+  ("addExact", "exact"),
+  ("isMonHom", "IsAddMonHom"),
+  ("mapMon", "mapAddMon"),
+  ("monObj", "addMonObj")]
 
 /-- The bundle of environment extensions for `to_additive` -/
 def data : TranslateData where
