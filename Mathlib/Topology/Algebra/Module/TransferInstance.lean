@@ -66,17 +66,13 @@ section ContinuousLinearEquiv
 
 variable [Semiring R]
 
--- While this lemma would apply to `ContinuousAddEquiv`s unchanged, that phrasing would be less
--- ergonomic: in practice, it is only applies to a continuous linear equivalence (so far).
--- As there is no direct project ContinuousLinearEquiv.toContinuousAddEquiv, applying the changed
--- lemma would be additional burden for no gain.
-/-- Given a continuous linear equivalence `e : α ≃L[R] β`, if `β` is a topological additive group,
+/-- Given a continuous additive equivalence `e : α ≃ₜ+ β`, if `β` is a topological additive group,
 then so is `α`. -/
 @[implicit_reducible]
-def ContinuousLinearEquiv.isTopologicalAddGroup
+def ContinuousAddEquiv.isTopologicalAddGroup
     [TopologicalSpace β] [AddCommGroup β] [IsTopologicalAddGroup β] [Module R β]
     [TopologicalSpace α] [AddCommGroup α] [Module R α]
-    (e : α ≃L[R] β) : IsTopologicalAddGroup α where
+    (e : α ≃ₜ+ β) : IsTopologicalAddGroup α where
   continuous_add := by
     let f := (fun q ↦ q.1 + q.2 : β × β → β)
     have : Continuous (fun p ↦ e.symm <| f (e p.1, e p.2) : (α × α → α)) := by fun_prop
@@ -85,8 +81,15 @@ def ContinuousLinearEquiv.isTopologicalAddGroup
     have : Continuous (e.symm ∘ (fun q ↦ -q) ∘ e) := by fun_prop
     exact this.congr (fun p ↦ by simp)
 
--- TODO: should this take an `Equiv` instead, deducing the typeclass hypotheses on `α`
--- from the ones on `β`?
+/-- Given a continuous linear equivalence `e : α ≃L[R] β`, if `β` is a topological additive group,
+then so is `α`. -/
+@[implicit_reducible]
+def ContinuousLinearEquiv.isTopologicalAddGroup
+    [TopologicalSpace β] [AddCommGroup β] [IsTopologicalAddGroup β] [Module R β]
+    [TopologicalSpace α] [AddCommGroup α] [Module R α]
+    (e : α ≃L[R] β) : IsTopologicalAddGroup α :=
+  (e.toContinuousAddEquiv fun _ ↦ e.toHomeomorph.isOpen_preimage).isTopologicalAddGroup (R := R)
+
 /-- Given a continuous linear equivalence `e : α ≃L[R] β`, if scalar multiplication on `β` is
 continuous, then so is it for `α`. -/
 @[implicit_reducible]
