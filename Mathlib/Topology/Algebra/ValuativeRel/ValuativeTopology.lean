@@ -239,7 +239,7 @@ theorem toTopologicalSpace_eq :
   letI := isUniformAddGroup_of_addCommGroup (G := R)
   exact congrArg (fun u ↦ @UniformSpace.toTopologicalSpace R u) v.toUniformSpace_eq
 
-instance (priority := low) : IsTopologicalRing R := by
+instance (priority := low) _root_.IsValuativeTopology.isTopologicalRing : IsTopologicalRing R := by
   convert (ValuativeRel.nonarchimedeanRing R).toIsTopologicalRing
   exact toTopologicalSpace_eq _
 
