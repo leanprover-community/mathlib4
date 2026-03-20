@@ -257,7 +257,7 @@ theorem FinitePlace.norm_lt_one_iff_mem (x : R) :
   exact v.adicAbv_coe_lt_one_iff (one_lt_absNorm_nnreal v) x
 
 set_option backward.isDefEq.respectTransparency false in
-lemma embedding_mul_absNorm {x : R} (h_x_nezero : x ≠ 0) :
+lemma HeightOneSpectrum.embedding_mul_absNorm {x : R} (h_x_nezero : x ≠ 0) :
     ‖embedding v (algebraMap _ K x)‖ * absNorm (v.maxPowDividing (span {x})) = 1 := by
   rw [maxPowDividing, map_pow, Nat.cast_pow, norm_embedding, adicAbv_def,
     WithZeroMulInt.toNNReal_neg_apply _ ((v.valuation K).ne_zero_iff.mpr
