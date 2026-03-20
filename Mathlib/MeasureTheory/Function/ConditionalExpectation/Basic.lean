@@ -459,15 +459,6 @@ lemma condExp_mono (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ
   exact (condExp_ae_eq_condExpL1 hm _).trans_le
     ((condExpL1_mono hf hg hfg).trans_eq (condExp_ae_eq_condExpL1 hm _).symm)
 
-lemma condExp_le_nonneg_const {c : E} (hc : 0 ≤ c) (hfg : ∀ᵐ x ∂μ, f x ≤ c) :
-    ∀ᵐ x ∂μ, μ[f | m] x ≤ c := by
-  by_cases! hm : ¬ m ≤ m₀
-  · simp_all [condExp_of_not_le hm]
-  by_cases! hfint : ¬ Integrable f μ
-  · simp_all [condExp_of_not_integrable hfint]
-  by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
-  · simp_all [condExp_of_not_sigmaFinite hm hsig]
-
 lemma condExp_nonneg (hf : 0 ≤ᵐ[μ] f) : 0 ≤ᵐ[μ] μ[f | m] := by
   by_cases hfint : Integrable f μ
   · rw [(condExp_zero.symm : (0 : α → E) = μ[0 | m])]
