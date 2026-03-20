@@ -16,12 +16,12 @@ In this file we show how operations on submodules interact with `Submodule.spanR
 
 # Main Results
 
-* `Submodule.spanRank_baseChange_le` : base change doesn't increase span rank.
+* `Submodule.spanRank_baseChange_le`: Base change doesn't increase the span rank.
 
-* `TensorProduct.spanFinrank_top_eq_of_residueField` : for finitely generated module over
-  local ring, dimension of base change by residue field is equal to its span rank.
+* `TensorProduct.spanFinrank_top_eq_of_residueField`: For a finitely generated module over
+  a local ring, the dimension of the base change to the residue field is equal to its span rank.
 
-* `IsLocalRing.spanFinrank_maximalIdeal_eq_finrank_cotangentSpace` : The minimal number of
+* `IsLocalRing.spanFinrank_maximalIdeal_eq_finrank_cotangentSpace`: The minimal number of
   generators of the unique maximal ideal is equal to the dimension of the cotangent space.
 
 -/
