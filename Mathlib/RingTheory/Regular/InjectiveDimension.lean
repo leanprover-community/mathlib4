@@ -50,14 +50,6 @@ variable (R : Type u) [CommRing R]
 
 open IsLocalRing
 
-variable {R} in
-lemma quotSMulTop_nontrivial'' [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
-    (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L] :
-    Nontrivial (QuotSMulTop x L) := by
-  apply Submodule.Quotient.nontrivial_iff.mpr (Ne.symm _)
-  apply Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator
-  exact IsLocalRing.maximalIdeal_le_jacobson _ mem
-
 lemma exist_nat_eq' [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n := by
   have : (ringKrullDim R).unbot ringKrullDim_ne_bot ≠ ⊤ := by
     by_contra eq
@@ -111,16 +103,8 @@ lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nfin : Module.
     simpa [← this] using h mem
   · intro N₁ _ _ _ N₂ _ _ _ N₃ _ _ _ f g inj surj exac h1 h3 h2
     simp only [Module.support_of_exact exac inj surj, Set.union_subset_iff] at h2
-    let S : ShortComplex (ModuleCat.{v} R) := {
-      f := ModuleCat.ofHom f
-      g := ModuleCat.ofHom g
-      zero := by
-        rw [← ModuleCat.ofHom_comp, exac.linearMap_comp_eq_zero]
-        rfl }
-    have S_exact : S.ShortExact := {
-      exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr exac
-      mono_f := (ModuleCat.mono_iff_injective S.f).mpr inj
-      epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surj }
+    let S  := ModuleCat.shortComplexOfCompEqZero f g exac.linearMap_comp_eq_zero
+    have S_exact : S.ShortExact := ModuleCat.shortComplex_shortExact S exac inj surj
     have := (Ext.contravariant_sequence_exact₂' S_exact M n).isZero_X₂
       ((@AddCommGrpCat.isZero_of_subsingleton _ (h3 h2.2)).eq_zero_of_src _)
       ((@AddCommGrpCat.isZero_of_subsingleton _ (h1 h2.1)).eq_zero_of_tgt _)
@@ -135,10 +119,7 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
   obtain ⟨x, hx, nmem⟩ : ∃ x ∈ maximalIdeal R, x ∉ p := Set.exists_of_ssubset plt
   let _ : Small.{v} (QuotSMulTop x (R ⧸ p)) :=
     small_of_surjective (Submodule.Quotient.mk_surjective _)
-  let fin : Module.Finite R (Shrink.{v, u} (R ⧸ p)) :=
-    Module.Finite.equiv (Shrink.linearEquiv R _).symm
-  let _ : Nontrivial (QuotSMulTop x (Shrink.{v, u} (R ⧸ p))) :=
-    quotSMulTop_nontrivial'' hx _
+  let  := nontrivial_quotSMulTop_of_mem_maximalideal (Shrink.{v} (R ⧸ p)) hx
   have : Subsingleton (Ext (ModuleCat.of R (QuotSMulTop x (Shrink.{v, u} (R ⧸ p)))) M (n + 1)) := by
     apply ext_subsingleton_of_support_subset
     intro q hq
@@ -148,8 +129,8 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
     have : q.asIdeal ≠ p := ne_of_mem_of_not_mem' hq.2 nmem
     apply lt_of_le_of_ne _ (ne_of_mem_of_not_mem' hq.2 nmem).symm
     apply le_of_eq_of_le Ideal.annihilator_quotient.symm (Module.annihilator_le_of_mem_support hq.1)
-  let S := (ModuleCat.of R (Shrink.{v, u} (R ⧸ p))).smulShortComplex x
-  have reg : IsSMulRegular (Shrink.{v, u} (R ⧸ p)) x := by
+  let S := (ModuleCat.of R (Shrink.{v} (R ⧸ p))).smulShortComplex x
+  have reg : IsSMulRegular (Shrink.{v} (R ⧸ p)) x := by
     rw [(Shrink.linearEquiv.{v} R _).isSMulRegular_congr, isSMulRegular_iff_right_eq_zero_of_smul]
     intro r hr
     simpa [Algebra.smul_def, Ideal.Quotient.eq_zero_iff_mem, nmem] using hr
@@ -497,7 +478,7 @@ theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension [Small.{v} R] 
   have sub : Subsingleton M ↔ Subsingleton (QuotSMulTop x M) := by
     refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
     by_contra!
-    exact (not_subsingleton_iff_nontrivial.mpr (quotSMulTop_nontrivial'' mem M)) h
+    exact (not_subsingleton_iff_nontrivial.mpr (nontrivial_quotSMulTop_of_mem_maximalideal M mem)) h
   have aux (n : ℕ) :
     injectiveDimension (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) + 1 ≤ n ↔
     injectiveDimension M ≤ n := by
