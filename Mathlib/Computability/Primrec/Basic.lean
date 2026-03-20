@@ -320,12 +320,27 @@ theorem list_getElem?₁ : ∀ l : List α, Primrec (l[·]? : ℕ → Option α)
       (casesOn1 (encode a).succ <| dom_denumerable.1 <| list_getElem?₁ l).of_eq fun n => by
         cases n <;> simp
 
+@[fun_prop]
+theorem natPair : Primrec (uncurry Nat.pair) := by simp [Primrec, uncurry]; constructor
+
+-- This can't be `fun_prop` because `Nat.unpaired` is reducible.
+theorem unpaired {f : ℕ → ℕ → α} : Primrec (Nat.unpaired f) ↔ Primrec (uncurry f) :=
+  ⟨fun h => by simpa [uncurry] using h.comp natPair, fun h => h.comp Primrec.unpair⟩
+
+theorem unpaired' {f : ℕ → ℕ → ℕ} : Nat.Primrec (Nat.unpaired f) ↔ Primrec (uncurry f) :=
+  Primrec.nat_iff.symm.trans unpaired
+
+theorem ofNat_iff₂ {α β σ} [Denumerable α] [Denumerable β] [Primcodable σ] {f : α × β → σ} :
+    Primrec f ↔ Primrec fun p : ℕ × ℕ => f (ofNat α p.1, ofNat β p.2) := by
+  rw [ofNat_iff (α := α × β), ofNat_iff (α := ℕ × ℕ)]; simp
+
 end Primrec
 
 /-- `Primrec₂ f` means `f` is a binary primitive recursive function.
   This is technically unnecessary since we can always curry all
   the arguments together, but there are enough natural two-arg
   functions that it is convenient to express this directly. -/
+--Komyyy0 @[deprecated Primrec "Use `Primrec (uncurry f)` instead." (since := "2026-03-20")]
 def Primrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f : α → β → σ) :=
   Primrec fun p : α × β => f p.1 p.2
 
@@ -346,44 +361,72 @@ namespace Primrec₂
 variable {α : Type*} {β : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated id (since := "2026-03-20")]
 theorem mk {f : α → β → σ} (hf : Primrec fun p : α × β => f p.1 p.2) : Primrec₂ f := hf
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.of_eq (since := "2026-03-20")]
 theorem of_eq {f g : α → β → σ} (hg : Primrec₂ f) (H : ∀ a b, f a b = g a b) : Primrec₂ g :=
   (by funext a b; apply H : f = g) ▸ hg
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.const (since := "2026-03-20")]
 theorem const (x : σ) : Primrec₂ fun (_ : α) (_ : β) => x :=
   Primrec.const _
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.pair (since := "2026-03-20")]
 protected theorem pair : Primrec₂ (@Prod.mk α β) :=
   Primrec.pair .fst .snd
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.fst (since := "2026-03-20")]
 theorem left : Primrec₂ fun (a : α) (_ : β) => a :=
   .fst
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.snd (since := "2026-03-20")]
 theorem right : Primrec₂ fun (_ : α) (b : β) => b :=
   .snd
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.natPair (since := "2026-03-20")]
 theorem natPair : Primrec₂ Nat.pair := by simp [Primrec₂, Primrec]; constructor
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.unpaired (since := "2026-03-20")]
 theorem unpaired {f : ℕ → ℕ → α} : Primrec (Nat.unpaired f) ↔ Primrec₂ f :=
   ⟨fun h => by simpa using h.comp natPair, fun h => h.comp Primrec.unpair⟩
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.unpaired' (since := "2026-03-20")]
 theorem unpaired' {f : ℕ → ℕ → ℕ} : Nat.Primrec (Nat.unpaired f) ↔ Primrec₂ f :=
   Primrec.nat_iff.symm.trans unpaired
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.encode_iff (since := "2026-03-20")]
 theorem encode_iff {f : α → β → σ} : (Primrec₂ fun a b => encode (f a b)) ↔ Primrec₂ f :=
   Primrec.encode_iff
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.option_some_iff (since := "2026-03-20")]
 theorem option_some_iff {f : α → β → σ} : (Primrec₂ fun a b => some (f a b)) ↔ Primrec₂ f :=
   Primrec.option_some_iff
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.ofNat_iff₂ (since := "2026-03-20")]
 theorem ofNat_iff {α β σ} [Denumerable α] [Denumerable β] [Primcodable σ] {f : α → β → σ} :
     Primrec₂ f ↔ Primrec₂ fun m n : ℕ => f (ofNat α m) (ofNat β n) :=
   (Primrec.ofNat_iff.trans <| by simp).trans unpaired
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated id (since := "2026-03-20")]
 theorem uncurry {f : α → β → σ} : Primrec (Function.uncurry f) ↔ Primrec₂ f := by
   rw [show Function.uncurry f = fun p : α × β => f p.1 p.2 from funext fun ⟨a, b⟩ => rfl]; rfl
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated id (since := "2026-03-20")]
 theorem curry {f : α × β → σ} : Primrec₂ (Function.curry f) ↔ Primrec f := by
   rw [← uncurry, Function.uncurry_curry]
 
