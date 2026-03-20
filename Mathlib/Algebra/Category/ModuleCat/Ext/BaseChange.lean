@@ -14,9 +14,9 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.GroupTheory.MonoidLocalization.Basic
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
-public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeRightExact
 
 /-!
 
