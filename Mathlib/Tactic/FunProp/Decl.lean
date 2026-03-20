@@ -32,7 +32,7 @@ structure FunPropDecl where
   /-- argument index of a function this function property talks about.
   For example, this would be 4 for `@Continuous α β _ _ f` -/
   funArgId : Nat
-  deriving Inhabited, BEq
+  deriving Inhabited, BEq, Hashable
 
 /-- Discrimination tree for function properties. -/
 structure FunPropDecls where

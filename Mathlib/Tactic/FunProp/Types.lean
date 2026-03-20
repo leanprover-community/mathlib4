@@ -7,6 +7,7 @@ module
 
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 public import Mathlib.Tactic.FunProp.FunctionData
+public import Mathlib.Tactic.FunProp.Decl
 
 /-!
 ## `funProp`
@@ -117,11 +118,63 @@ structure GeneralTheorems where
   theorems : RefinedDiscrTree GeneralTheorem := {}
   deriving Inhabited
 
+/-- Goal of `fun_prop` like `Continuous (fun x => exp x + x)`
+
+The need for this structure is because the goal can have metavariables/output parameters.
+
+Without output parameters:
+  `numOutParams` = 0
+  `goal` is just something like `Continuous (fun x => exp x + x)`
+
+With output parameters:
+  `numOutParams` = 1
+  `goal` each output parameter is abstracted into a binder like
+    `fun f' => HasFDerivAt ℝ (fun x => expr x + x) f' x₀` -/
+structure Goal where
+  /-- Number of output parameters -/
+  numOutParams : Nat
+  /-- Goal expression with potential binders for ever output parameters. -/
+  expr : Expr
+  /-- Function property declaration -/
+  decl : FunPropDecl
+  /-- Main function in the fun_prop goal -/
+  mainFun : Expr
+deriving BEq, Hashable
+
+/-- Return goal expression with fresh metavariables for every output parameters. -/
+def Goal.mkFreshExpr (goal : Goal) : MetaM (Array Expr × Expr) := do
+  let (xs, _, b) ← lambdaMetaTelescope goal.expr
+  return (xs, b)
+
+-- e.setArg funPropDecl.funArgId b
+def Goal.updateMainFun (goal : Goal) (f : Expr) : Goal :=
+  { goal with
+    expr := goal.expr.setArg goal.decl.funArgId f
+    mainFun := f }
+
+def getFunPropGoal? (e : Expr) : MetaM (Option Goal) := do
+  -- todo: correct implementation
+  let some (decl, f) ← getFunProp? e | return none
+  return some {
+    numOutParams := 0
+    expr := e
+    decl := decl
+    mainFun := f
+  }
+
+set_option linter.style.docString.empty false in
+/-- Result of `funProp`, it is a proof of function property `P f` -/
+structure Result where
+  /-- -/
+  proof : Expr
+  /-- Concrete values for output parameters -/
+  outputs : Array Expr
+
 /-- `fun_prop` state -/
 structure State where
   /-- Simp's cache is used as the `fun_prop` tactic is designed to be used inside of simp and
   utilize its cache. It holds successful goals. -/
-  cache : Simp.Cache := {}
+  cache : Std.HashMap Goal Result := {}
   /-- Cache storing failed goals such that they are not tried again. -/
   failureCache : ExprSet := {}
   /-- Count the number of steps and stop when maxSteps is reached. -/
@@ -139,12 +192,6 @@ def Context.increaseTransitionDepth (ctx : Context) : Context :=
 
 /-- Monad to run `fun_prop` tactic in. -/
 abbrev FunPropM := ReaderT FunProp.Context <| StateT FunProp.State MetaM
-
-set_option linter.style.docString.empty false in
-/-- Result of `funProp`, it is a proof of function property `P f` -/
-structure Result where
-  /-- -/
-  proof : Expr
 
 /-- Default names to unfold -/
 def defaultUnfoldPred : Name → Bool :=
@@ -192,6 +239,15 @@ def logError (msg : String) : FunPropM Unit := do
           s.msgLog
         else
           msg::s.msgLog}
+
+/-- Forward declaration of main `funProp` function -/
+initialize funPropImplRef : IO.Ref (Expr → FunPropM (Option Expr)) ←
+  .mkRef fun _ => return none
+
+/-- Solve fun_prop goal like `Continuous f` or `Differentiable ℝ fun x : ℝ => exp x + x` -/
+def funProp (goal : Expr) : FunPropM (Option Expr) := do
+  let impl ← funPropImplRef.get
+  impl goal
 
 end Meta.FunProp
 
