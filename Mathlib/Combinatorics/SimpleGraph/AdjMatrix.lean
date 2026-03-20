@@ -171,6 +171,17 @@ theorem adjMatrix_apply (v w : V) [Zero α] [One α] :
   rfl
 
 @[simp]
+theorem adjMatrix_bot [Zero α] [One α] :
+    (⊥ : SimpleGraph V).adjMatrix α = 0 := by
+  ext; simp
+
+@[simp]
+theorem adjMatrix_top [DecidableEq V] [Ring α] :
+    (⊤ : SimpleGraph V).adjMatrix α = .of (fun i j ↦ if i = j then 0 else 1) := by
+  ext i j
+  cases eq_or_ne i j <;> simp [‹_›]
+
+@[simp]
 theorem transpose_adjMatrix [Zero α] [One α] : (G.adjMatrix α)ᵀ = G.adjMatrix α := by
   ext
   simp [adj_comm]
