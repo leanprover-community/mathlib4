@@ -105,7 +105,7 @@ noncomputable instance : ((Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰))
 
 section FiniteFree
 
-/-! In this section we assume we assume further that `Module.Finite ℤ R` and `Module.Free ℤ R`.
+/-! In this section we assume further that `Module.Finite ℤ R` and `Module.Free ℤ R`.
 This characterises `R` as being isomorphic to `𝓞 K` without explicitly requiring that type.
 As a result, if `F = ℚ`, then we can use `ℤ` and `𝓞 ℚ` interchangeably. -/
 
