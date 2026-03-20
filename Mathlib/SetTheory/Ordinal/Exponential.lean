@@ -149,6 +149,18 @@ theorem one_lt_opow {a b : Ordinal} : 1 < a ^ b ↔ 1 < a ∧ b ≠ 0 := by
 theorem one_lt_pow {a : Ordinal} {n : ℕ} : 1 < a ^ n ↔ 1 < a ∧ n ≠ 0 :=
   mod_cast one_lt_opow (b := n)
 
+@[simp]
+theorem opow_eq_one {a b : Ordinal} : a ^ b = 1 ↔ a = 1 ∨ b = 0 := by
+  refine ⟨fun h ↦ ?_, by simp +contextual [or_imp]⟩
+  contrapose! h
+  obtain ha | ha := le_or_gt a 1
+  · simp_all [le_one_iff]
+  · simpa using ((opow_lt_opow_iff_right ha).2 h.2.pos).ne'
+
+@[simp]
+theorem pow_eq_one {a : Ordinal} {n : ℕ} : a ^ n = 1 ↔ a = 1 ∨ n = 0 :=
+  mod_cast opow_eq_one (b := n)
+
 theorem isSuccLimit_opow {a b : Ordinal} (a1 : 1 < a) : IsSuccLimit b → IsSuccLimit (a ^ b) :=
   (isNormal_opow a1).map_isSuccLimit
 
@@ -247,7 +259,7 @@ theorem opow_mul (a b c : Ordinal) : a ^ (b * c) = (a ^ b) ^ c := by
 theorem opow_mul_add_pos {b v : Ordinal} (hb : b ≠ 0) (u : Ordinal) (hv : v ≠ 0) (w : Ordinal) :
     0 < b ^ u * v + w :=
   (opow_pos u <| pos_iff_ne_zero.2 hb).trans_le <|
-    (le_mul_left _ <| pos_iff_ne_zero.2 hv).trans le_self_add
+    (le_mul_of_pos_right _ <| pos_iff_ne_zero.2 hv).trans le_self_add
 
 theorem opow_mul_add_lt_opow_mul {b u w x : Ordinal} {v : Ordinal} (hw : w < b ^ u) (hv : v < x) :
     b ^ u * v + w < b ^ u * x := by

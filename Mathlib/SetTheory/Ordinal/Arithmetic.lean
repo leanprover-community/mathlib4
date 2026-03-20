@@ -617,13 +617,15 @@ instance mulRightMono : MulRightMono Ordinal.{u} :=
       · exact Prod.Lex.left _ _ h'
       · exact Prod.Lex.right _ (f.toRelEmbedding.map_rel_iff.2 h')⟩
 
-theorem le_mul_left (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ a * b := by
-  convert mul_le_mul_right (one_le_iff_pos.2 hb) a
-  rw [mul_one a]
+theorem le_mul_of_pos_left (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ b * a := by
+  simpa using mul_le_mul_left (one_le_iff_pos.2 hb) a
 
-theorem le_mul_right (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ b * a := by
-  convert mul_le_mul_left (one_le_iff_pos.2 hb) a
-  rw [one_mul a]
+@[deprecated (since := "2026-03-20")] alias le_mul_right := le_mul_of_pos_left
+
+theorem le_mul_of_pos_right (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ a * b := by
+  simpa using mul_le_mul_right (one_le_iff_pos.2 hb) a
+
+@[deprecated (since := "2026-03-20")] alias le_mul_left := le_mul_of_pos_right
 
 private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder β s] {c}
     (h : IsSuccLimit (type s)) (H : ∀ b' < type s, type r * b' ≤ c) (l : c < type r * type s) :
@@ -1172,6 +1174,11 @@ theorem natCast_add_of_omega0_le {o} (h : ω ≤ o) (n : ℕ) : n + o = o := by
 @[simp]
 theorem one_add_of_omega0_le {o} (h : ω ≤ o) : 1 + o = o :=
   mod_cast natCast_add_of_omega0_le h 1
+
+theorem exists_omega0_mul_add_natCast (o : Ordinal) :
+    ∃ a b, ω * a + Nat.cast b = o :=
+  have ⟨b, hb⟩ := lt_omega0.1 (mod_lt o omega0_ne_zero)
+  ⟨_, b, hb ▸ div_add_mod ..⟩
 
 open Ordinal
 
