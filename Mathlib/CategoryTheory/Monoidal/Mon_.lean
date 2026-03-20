@@ -70,7 +70,7 @@ class AddMonObj (X : C) where
 
 When the monoidal category is preadditive, this is also sometimes called an "algebra object".
 -/
-@[to_additive AddMonObj]
+@[to_additive]
 class MonObj (X : C) where
   /-- The unit morphism of a monoid object. -/
   one : 𝟙_ C ⟶ X
@@ -1174,7 +1174,7 @@ class IsCommAddMonObj (X : C) [AddMonObj X] where
   add_comm (X) : (β_ X X).hom ≫ σ = σ := by cat_disch
 
 /-- Predicate for a monoid object to be commutative. -/
-@[to_additive IsCommAddMonObj]
+@[to_additive]
 class IsCommMonObj (X : C) [MonObj X] where
   mul_comm (X) : (β_ X X).hom ≫ μ = μ := by cat_disch
 

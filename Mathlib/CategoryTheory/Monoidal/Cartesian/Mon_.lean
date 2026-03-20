@@ -233,7 +233,7 @@ open scoped Obj
 protected lemma map_mul (f g : X ⟶ M) : F.map (f * g) = F.map f * F.map g := by
   simp [Hom.mul_def]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) map_zero']
 protected lemma map_one : F.map (1 : X ⟶ M) = 1 := by simp [Hom.one_def]
 
 /-- `Functor.map` of a monoidal functor as a `MonoidHom`. -/

@@ -554,11 +554,11 @@ instance instCartesianMonoidalCategory : CartesianMonoidalCategory (Grp C) where
   fst_def G H := by ext; apply fst_def
   snd_def G H := by ext; apply snd_def
 
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma lift_hom (f : G ⟶ H₁) (g : G ⟶ H₂) : (lift f g).hom = (lift f.hom g.hom) := rfl
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma fst_hom_hom (G H : Grp C) : (fst G H).hom.hom = fst G.X H.X := rfl
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma snd_hom_hom (G H : Grp C) : (snd G H).hom.hom = snd G.X H.X := rfl
 
 @[deprecated (since := "2025-12-18")] alias fst_hom := fst_hom_hom
