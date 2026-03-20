@@ -104,13 +104,15 @@ theorem ker_lift_range (h : FreeGroup α →* G) (hhker : IsNormalClosureFG h.ke
   set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
   let g := Set.rangeFactorization (fun a : α ↦ h (FreeGroup.of a))
   have hh_fcompg : f.comp (FreeGroup.map g) = h := by ext a; simp [f, g]
-  let g' : FreeGroup α →* FreeGroup S := FreeGroup.map g
-  have hg'_surj : Function.Surjective g' :=
+  have hg'_surj : Function.Surjective (FreeGroup.map g) :=
     FreeGroup.map_surjective Set.rangeFactorization_surjective
-  have hmap : Subgroup.map g' (h.ker) = f.ker := by
-    have : h.ker = (f.ker).comap g' := by simpa [g'] using congrArg MonoidHom.ker hh_fcompg.symm
-    simpa [this] using Subgroup.map_comap_eq_self_of_surjective (f := g') (H := f.ker) hg'_surj
-  simpa [S, f, hmap] using IsNormalClosureFG.map g' hg'_surj h.ker hhker
+  have hmap : Subgroup.map (FreeGroup.map g) (h.ker) = f.ker := by
+    have : h.ker = (f.ker).comap (FreeGroup.map g) := by
+      simpa using congrArg MonoidHom.ker hh_fcompg.symm
+    simpa [this] using
+      Subgroup.map_comap_eq_self_of_surjective (f := FreeGroup.map g) (H := f.ker) hg'_surj
+  simpa [S, f, hmap] using
+    IsNormalClosureFG.map (FreeGroup.map g) hg'_surj h.ker hhker
 
 /-- Given a surjective homomorphism from a free group with kernel finitely generated in the
 normal closure, one can choose a finite generating set of the target and recover the canonical
