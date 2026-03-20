@@ -265,41 +265,77 @@ lemma exists_primitiveVector (t : IsSl2Triple h e f)
   -- Get an eigenvalue μ₀ and eigenvector m₀ for h.
   obtain ⟨μ₀, hμ₀⟩ := Module.End.exists_eigenvalue (toEnd ℂ L M h)
   obtain ⟨m₀, hm₀⟩ := hμ₀.exists_hasEigenvector
-  -- prove that e^k(m₀) vanishes at some k then use ℕ properties to conclude
-  have e_iter_k_zero : ∃ (k : Nat), k ≠ 0 ∧ ((toEnd ℂ L M e)^k) m₀ = 0  := by
-    by_contra!
-    let evals : ℕ → ℂ := fun n ↦ μ₀ + 2 * (n : ℂ)
-    let e_vecs : ℕ → M := fun n ↦ ((toEnd ℂ L M e)^n) m₀
-    -- prove that the span of {e^k(m₀)} is of infinite dim, contradicting the fin dim hypothesis
-    have h_infty : (Set.range fun n ↦ μ₀ + 2 * (n : ℂ)).Infinite := sorry
+  have h_m₀_ne : m₀ ≠ 0 := by
+    exact hm₀.2
+  let evals : ℕ → ℂ := fun n ↦ μ₀ + 2 * (n : ℂ)
+  let e_vecs : ℕ → M := fun n ↦ ((toEnd ℂ L M e)^n) m₀
+  -- prove that e_vecs vanishes at some k
+  have e_exists_k_zero : ∃ (k : Nat), k ≠ 0 ∧ ((toEnd ℂ L M e)^k) m₀ = 0  := by
+    by_contra! contra
+    -- contradiction :
     have h_indep :=
       Module.End.eigenvectors_linearIndependent
       (toEnd ℂ L M h)
       (Set.range evals)
       (fun ⟨μ, hμ⟩ ↦ e_vecs (Classical.choose hμ))
-      --obtain the n associated to μ
       (by
         rintro ⟨μ, hμ⟩
         dsimp only
         rw [Module.End.hasEigenvector_iff, Module.End.mem_eigenspace_iff]
         let v := e_vecs (Classical.choose hμ)
+        --obtain the n such that μ = μ₀ + 2n and v = e^n m₀
         let n := Classical.choose hμ
+        have h_n_def : Classical.choose hμ = n := by rfl
         have h_μ_μ0 : μ₀ + 2 * (n : ℂ) = μ := Classical.choose_spec hμ
-        constructor
-        -- prove that e_vecs (Classical.choose hμ) is the eigen vector for μ
-        · have h_v_μ : ⁅h, v⁆ = μ•v := by
-            unfold v e_vecs
-            have h_lie := t.lie_h_pow_toEnd_e hm₀.apply_eq_smul n
-            rw [h_μ_μ0] at h_lie
-            unfold n at h_lie
-            exact h_lie
-          exact h_v_μ
-        · have h_v_ne : v ≠ 0 := sorry
-          exact h_v_ne
+        -- prove that v = e_vecs (Classical.choose hμ) is the eigen vector for μ
+        have h_v_μ : ⁅h, v⁆ = μ•v := by
+          unfold v e_vecs
+          have h_lie := t.lie_h_pow_toEnd_e hm₀.apply_eq_smul n
+          rw [h_μ_μ0] at h_lie
+          unfold n at h_lie
+          exact h_lie
+        -- prove that v ≠ 0
+        have h_v_ne : v ≠ 0 := by
+          by_cases h_n : n = 0
+          · unfold v
+            rw [h_n_def, h_n]
+            simp [e_vecs]
+            push_neg
+            exact h_m₀_ne
+          · apply contra
+            exact h_n
+        exact ⟨h_v_μ,h_v_ne⟩
       )
-    sorry
-  -- find the n such that e^n(m) is primitive
-  sorry
+    have h_inj : Function.Injective evals := by
+      intro a b hab
+      dsimp only [evals] at hab
+      aesop
+    have h_infty : (Set.range evals).Infinite := Set.infinite_range_of_injective h_inj
+    have := h_indep.finite
+    exact h_infty (Set.toFinite _)
+  -- use the well-ordering principle of ℕ to find the primitive vector
+  have h_exists_zero : ∃ (n : ℕ), e_vecs n = 0 := by
+      rcases e_exists_k_zero with ⟨k, _, hk⟩
+      exact ⟨k, hk⟩
+  classical
+  let N := Nat.find h_exists_zero
+  have hN_zero : e_vecs N = 0 := Nat.find_spec h_exists_zero
+  have hN_min : ∀ m < N, e_vecs m ≠ 0 := fun m hm ↦ Nat.find_min h_exists_zero hm
+  -- verify that N-1 corresponds to the primitive vector
+  let n_prim := N - 1
+  let m_prim := e_vecs n_prim
+  let μ_prim := evals n_prim
+  have : n_prim < N := by aesop
+  have m_prim_ne : m_prim ≠ 0 := hN_min n_prim this
+  have m_prim_eq : t.HasPrimitiveVectorWith m_prim μ_prim := by
+    refine ⟨m_prim_ne, ?_, ?_⟩
+    · dsimp only [m_prim, μ_prim, evals, e_vecs]
+      exact t.lie_h_pow_toEnd_e hm₀.apply_eq_smul n_prim
+    · simp only [m_prim, e_vecs]
+      have h_eq : n_prim + 1 = N := by omega
+      rw [lie_e_pow_toEnd_e hm₀.apply_eq_smul n_prim, h_eq]
+      exact hN_zero
+  exact ⟨μ_prim, m_prim, m_prim_ne, m_prim_eq⟩
 
 --The ℂ span of the f-tower {f^k(m) | k ∈ ℕ} for a primitive vector m.
 def fTowerSubmodule (t : IsSl2Triple h e f)
