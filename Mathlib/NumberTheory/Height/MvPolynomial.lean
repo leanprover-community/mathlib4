@@ -240,7 +240,7 @@ lemma max_mulHeightBound_zero_one_eq_one :
   simp only [mulHeightBound_eq, Pi.zero_apply, support_zero, coeff_zero, AbsoluteValue.map_zero,
     Real.iSup_of_isEmpty, zero_le_one, sup_of_le_right]
   set_option backward.isDefEq.respectTransparency false in -- temporary measure
-  simp only [Finsupp.sum_zero_index]
+  simp only [Finsupp.sum_zero_index] -- singling this out for needing the above
   simp only [Real.iSup_const_zero, Multiset.map_const', Multiset.prod_replicate, zero_pow_eq]
   rcases isEmpty_or_nonempty ι'
   · split_ifs
