@@ -718,9 +718,7 @@ theorem inv_zero : ∀ n : ℕ, (0 : ZMod n)⁻¹ = 0
   | 0 => Int.sign_zero
   | n + 1 =>
     show (Nat.gcdA _ (n + 1) : ZMod (n + 1)) = 0 by
-      rw [val_zero]
-      unfold Nat.gcdA Nat.xgcd Nat.xgcdAux
-      rfl
+      simp [Nat.gcdA, Nat.xgcd, Nat.xgcdAux, Nat.strongRec_eq]
 
 theorem mul_inv_eq_gcd {n : ℕ} (a : ZMod n) : a * a⁻¹ = Nat.gcd a.val n := by
   rcases n with - | n

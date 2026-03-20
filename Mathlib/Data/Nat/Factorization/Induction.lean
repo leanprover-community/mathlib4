@@ -25,9 +25,9 @@ variable {a b m n p : ℕ}
 we can define `P` for all natural numbers. -/
 @[elab_as_elim]
 def recOnPrimePow {motive : ℕ → Sort*} (zero : motive 0) (one : motive 1)
-    (prime_pow_mul : ∀ a p n : ℕ, p.Prime → ¬p ∣ a → 0 < n → motive a → motive (p ^ n * a))
-    (a : ℕ) : motive a :=
-  Nat.strongRecOn' a fun n =>
+    (prime_pow_mul : ∀ a p n : ℕ, p.Prime → ¬p ∣ a → 0 < n → motive a → motive (p ^ n * a)) :
+    ∀ a, motive a :=
+  Nat.strongRec fun n ↦
     match n with
     | 0 => fun _ => zero
     | 1 => fun _ => one

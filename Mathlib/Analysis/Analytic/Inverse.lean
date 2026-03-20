@@ -85,7 +85,7 @@ series. -/
 theorem leftInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) :
     p.removeZero.leftInv i x = p.leftInv i x := by
   ext1 n
-  induction n using Nat.strongRec' with | _ n IH
+  induction n using Nat.strong_induction_on with | _ n IH
   match n with
   | 0 => simp -- if one replaces `simp` with `refl`, the proof times out in the kernel.
   | 1 => simp -- TODO: why?
@@ -190,7 +190,7 @@ series. -/
 theorem rightInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) :
     p.removeZero.rightInv i x = p.rightInv i x := by
   ext1 n
-  induction n using Nat.strongRec' with | _ n IH
+  induction n using Nat.strong_induction_on with | _ n IH
   match n with
   | 0 => simp only [rightInv_coeff_zero]
   | 1 => simp only [rightInv_coeff_one]
