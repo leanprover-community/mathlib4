@@ -55,9 +55,6 @@ class ContMDiffSMul (IΓ : ModelWithCorners 𝕜 EΓ HΓ) (J : ModelWithCorners 
     [TopologicalSpace N] [ChartedSpace H' N] [SMul Γ N] : Prop where
   contMDiff_smul : ContMDiff (IΓ.prod J) J n (fun p : Γ × N ↦ p.1 • p.2)
 
-export ContMDiffConstSMul (contMDiff_const_smul)
-export ContMDiffSMul (contMDiff_smul)
-
 section Main
 
 section Instances
@@ -69,7 +66,7 @@ variable {Γ' : Type*} [TopologicalSpace Γ'] [ChartedSpace H' Γ']
 instance (priority := 100) ContMDiffSMul.contMDiffConstSMul :
     ContMDiffConstSMul J n Γ' N' where
   contMDiff_const_smul c :=
-    (contMDiff_smul (IΓ := J) (J := J) (n := n) (Γ := Γ') (N := N')).comp
+    (ContMDiffSMul.contMDiff_smul (IΓ := J) (J := J) (n := n) (Γ := Γ') (N := N')).comp
       ((contMDiff_const : ContMDiff J J n fun _ : N' ↦ c).prodMk
         (contMDiff_id : ContMDiff J J n fun y : N' ↦ y))
 
@@ -83,8 +80,9 @@ variable [SMul Γ N] [ContMDiffSMul IΓ J n Γ N]
 set at this point. -/
 theorem ContMDiffWithinAt.smul {f : M → Γ} {g : M → N} (hf : ContMDiffWithinAt I IΓ n f s x)
     (hg : ContMDiffWithinAt I J n g s x) : ContMDiffWithinAt I J n (f • g) s x :=
-  (contMDiff_smul (IΓ := IΓ) (J := J) (n := n) (Γ := Γ) (N := N)).contMDiffAt.comp_contMDiffWithinAt
-    x (hf.prodMk hg)
+  (ContMDiffSMul.contMDiff_smul
+      (IΓ := IΓ) (J := J) (n := n) (Γ := Γ) (N := N)).contMDiffAt.comp_contMDiffWithinAt x
+    (hf.prodMk hg)
 
 /-- The scalar multiplication of two `C^n` functions at a point is `C^n` at this point. -/
 theorem ContMDiffAt.smul {f : M → Γ} {g : M → N} (hf : ContMDiffAt I IΓ n f x)
@@ -100,7 +98,7 @@ theorem ContMDiffOn.smul {f : M → Γ} {g : M → N} (hf : ContMDiffOn I IΓ n 
 /-- The scalar multiplication of two `C^n` functions is `C^n`. -/
 theorem ContMDiff.smul {f : M → Γ} {g : M → N} (hf : ContMDiff I IΓ n f) (hg : ContMDiff I J n g) :
     ContMDiff I J n (f • g) :=
-  (contMDiff_smul (IΓ := IΓ) (J := J) (n := n) (Γ := Γ) (N := N)).comp (hf.prodMk hg)
+  (ContMDiffSMul.contMDiff_smul (IΓ := IΓ) (J := J) (n := n) (Γ := Γ) (N := N)).comp (hf.prodMk hg)
 
 end SMul
 
@@ -113,8 +111,8 @@ within this set at this point. -/
 theorem ContMDiffWithinAt.const_smul {f : M → N} (c : R) (hf : ContMDiffWithinAt I J n f s x) :
     ContMDiffWithinAt I J n (c • f) s x := by
   simpa using
-    (contMDiff_const_smul (J := J) (n := n) (Γ := R) (N := N) c).contMDiffAt.comp_contMDiffWithinAt
-      x hf
+    (ContMDiffConstSMul.contMDiff_const_smul
+        (J := J) (n := n) (Γ := R) (N := N) c).contMDiffAt.comp_contMDiffWithinAt x hf
 
 /-- The scalar multiplication of a constant and a `C^n` function at a point is `C^n` at this
 point. -/
