@@ -207,8 +207,9 @@ theorem of_height_one_prime_principal : (∀ (I : Ideal R), I.IsPrime →
 /-- Factoriality criterion: a Noetherian integral domain is a UFD
 if and only if every height one prime is principal. -/
 public theorem iff_height_one_prime_principal : UniqueFactorizationMonoid R ↔
-    (∀ (I : Ideal R), I.IsPrime → I.height = 1 → ∃ x : R, I = Ideal.span {x}) :=
-  ⟨fun _ I _ hI_height => height_one_prime_principal I hI_height, of_height_one_prime_principal⟩
+    (∀ (I : Ideal R), I.IsPrime → I.height = 1 → I.IsPrincipal) :=
+  ⟨fun _ I _ hI_height => ⟨height_one_prime_principal I hI_height⟩,
+    fun h => of_height_one_prime_principal (fun I hI hH => (h I hI hH).principal)⟩
 
 end IsNoetherianDomain
 
