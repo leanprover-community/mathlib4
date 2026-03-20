@@ -559,10 +559,9 @@ variable (F) [HasColimitsOfShape J C] [HasColimitsOfShape K C]
 noncomputable def colimitFlipCompColimIsoColimitCompColim :
     colimit (F.flip ⋙ colim) ≅ colimit (F ⋙ colim) :=
   (colimitUncurryIsoColimitCompColim _).symm ≪≫
-    HasColimit.isoOfNatIso (uncurryObjFlip _) ≪≫
-      HasColimit.isoOfEquivalence (Prod.braiding _ _)
-          (NatIso.ofComponents fun _ => by rfl) ≪≫
-        colimitUncurryIsoColimitCompColim _
+    HasColimit.isoOfEquivalence (Prod.braiding _ _)
+        (NatIso.ofComponents fun _ => by rfl) ≪≫
+      colimitUncurryIsoColimitCompColim _
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
@@ -570,9 +569,11 @@ theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_hom (j) (k) :
     colimit.ι (F.flip.obj k) j ≫ colimit.ι (F.flip ⋙ colim) k ≫
       (colimitFlipCompColimIsoColimitCompColim F).hom =
         (colimit.ι _ k ≫ colimit.ι (F ⋙ colim) j : _ ⟶ colimit (F ⋙ colim)) := by
-  dsimp [colimitFlipCompColimIsoColimitCompColim]
-  slice_lhs 1 3 => simp only []
-  simp [Equivalence.unit]
+  have := HasColimit.isoOfEquivalence_hom_π (e := Prod.braiding K J) (F := uncurry.obj F.flip)
+    (G := uncurry.obj F) (w := NatIso.ofComponents fun _ => .refl _) (k, j)
+  dsimp at this
+  simp [colimitFlipCompColimIsoColimitCompColim, colimitUncurryIsoColimitCompColim_ι_ι_inv_assoc,
+    reassoc_of% this, Equivalence.unit]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
@@ -580,9 +581,11 @@ theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_inv (k) (j) :
     colimit.ι (F.obj j) k ≫ colimit.ι (F ⋙ colim) j ≫
       (colimitFlipCompColimIsoColimitCompColim F).inv =
         (colimit.ι _ j ≫ colimit.ι (F.flip ⋙ colim) k : _ ⟶ colimit (F.flip ⋙ colim)) := by
-  dsimp [colimitFlipCompColimIsoColimitCompColim]
-  slice_lhs 1 3 => simp only []
-  simp [Equivalence.counitInv]
+  have := HasColimit.isoOfEquivalence_inv_π (e := Prod.braiding K J) (F := uncurry.obj F.flip)
+    (G := uncurry.obj F) (w := NatIso.ofComponents fun _ => .refl _) (j, k)
+  dsimp at this
+  simp [colimitFlipCompColimIsoColimitCompColim, reassoc_of% this,
+    colimitUncurryIsoColimitCompColim_ι_ι_inv_assoc, Equivalence.counitInv]
 
 end
 
@@ -712,8 +715,10 @@ theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_hom {j} {k} :
         (colimit.ι _ k ≫ colimit.ι (curry.obj G ⋙ colim) j :
           _ ⟶ colimit (curry.obj G ⋙ colim)) := by
   dsimp [colimitCurrySwapCompColimIsoColimitCurryCompColim]
-  slice_lhs 1 3 => simp only []
-  simp
+  have := HasColimit.isoOfEquivalence_hom_π (F := Prod.swap K J ⋙ G) (e := Prod.braiding K J)
+    (G := G) (w := .refl _) (k, j)
+  dsimp at this
+  simp [colimitIsoColimitCurryCompColim_ι_ι_inv_assoc, reassoc_of% this, Equivalence.unit]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -724,11 +729,8 @@ theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
           colimit.ι (curry.obj _ ⋙ colim) k :
             _ ⟶ colimit (curry.obj (Prod.swap K J ⋙ G) ⋙ colim)) := by
   dsimp [colimitCurrySwapCompColimIsoColimitCurryCompColim]
-  slice_lhs 1 3 => simp only []
-  rw [colimitIsoColimitCurryCompColim_ι_ι_inv, HasColimit.isoOfEquivalence_inv_π]
-  dsimp [Equivalence.counitInv]
-  rw [CategoryTheory.Bifunctor.map_id]
-  simp
+  simp [reassoc_of% colimitIsoColimitCurryCompColim_ι_ι_inv,
+    reassoc_of% HasColimit.isoOfEquivalence_inv_π, Equivalence.counitInv]
 
 end
 

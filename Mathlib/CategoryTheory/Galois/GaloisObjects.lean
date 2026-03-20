@@ -155,7 +155,7 @@ noncomputable def autMap {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (�
     Aut B :=
   (exists_autMap f σ).choose
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma comp_autMap {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ : Aut A) :
     f ≫ (autMap f σ).hom = σ.hom ≫ f :=
   (exists_autMap f σ).choose_spec.left

@@ -406,7 +406,7 @@ theorem image.lift_mk_factorThruImage :
     image.lift { I := image f, m := ι f, e := factorThruImage f } ≫ image.ι f = image.ι f :=
   (Image.isImage f).lift_fac _
 
-@[reassoc (attr := simp)]
+@[simp, reassoc]
 theorem image.lift_mk_comp {C : Type u} [Category.{v} C] {X Y Z : C}
     (f : X ⟶ Y) (g : Y ⟶ Z) [HasImage g] [HasImage (f ≫ g)]
     (h : Y ⟶ image g) (H : (f ≫ h) ≫ image.ι g = f ≫ g) :

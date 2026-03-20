@@ -447,8 +447,9 @@ theorem hasInitial_of_isCoseparating [LocallySmall.{w} C] [WellPowered.{w} C]
     intro g
     suffices IsSplitEpi (equalizer.ι f g) by exact eq_of_epi_equalizer
     exact IsSplitEpi.mk' ⟨Subobject.ofLEMk _ (equalizer.ι f g ≫ Subobject.arrow _) bot_le, by
-      ext
-      simp⟩
+      ext b
+      have := Subobject.ofLEMk_comp (X := ⊥) (f := equalizer.ι f g ≫ (⊥ : Subobject _).arrow)
+      simp [reassoc_of% this] ⟩
 
 /-- An ingredient of the proof of the Special Adjoint Functor Theorem: a cocomplete well-copowered
     category with a small separating set has a terminal object.

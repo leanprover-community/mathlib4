@@ -136,7 +136,7 @@ lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
       ext X₁
       simp? [w'', α, β] says
         simp only [Functor.comp_obj, vComp'_app, Iso.trans_inv, Functor.isoWhiskerLeft_inv,
-          Iso.symm_inv, assoc, NatTrans.comp_app, Functor.id_obj, Functor.rightUnitor_inv_app,
+          Iso.symm_inv, ↓assoc, NatTrans.comp_app, Functor.id_obj, Functor.rightUnitor_inv_app,
           Functor.whiskerLeft_app, Functor.associator_inv_app, comp_id, id_comp, vComp_app,
           Functor.map_comp, Equivalence.inv_fun_map, CatCommSq.vInv_iso_hom_app, Iso.trans_hom,
           Functor.isoWhiskerLeft_hom, Iso.symm_hom, Functor.associator_hom_app,

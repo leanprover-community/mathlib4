@@ -295,9 +295,8 @@ def biproduct.reindex {β γ : Type} [Finite β] (ε : β ≃ γ)
     cases nonempty_fintype β
     ext g g'
     by_cases h : g' = g <;>
-      simp [Preadditive.sum_comp, biproduct.lift_desc,
-        biproduct.ι_π, comp_dite, Equiv.apply_eq_iff_eq_symm_apply,
-        h]
+      simp [Preadditive.sum_comp, biproduct.ι_π, comp_dite, Equiv.apply_eq_iff_eq_symm_apply,
+        h, desc_eq]
 
 /-- In a preadditive category, we can construct a binary biproduct for `X Y : C` from
 any binary bicone `b` satisfying `total : b.fst ≫ b.inl + b.snd ≫ b.inr = 𝟙 b.X`.
@@ -680,12 +679,12 @@ def Biprod.ofComponents : X₁ ⊞ X₂ ⟶ Y₁ ⊞ Y₂ :=
   biprod.fst ≫ f₁₁ ≫ biprod.inl + biprod.fst ≫ f₁₂ ≫ biprod.inr + biprod.snd ≫ f₂₁ ≫ biprod.inl +
     biprod.snd ≫ f₂₂ ≫ biprod.inr
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem Biprod.inl_ofComponents :
     biprod.inl ≫ Biprod.ofComponents f₁₁ f₁₂ f₂₁ f₂₂ = f₁₁ ≫ biprod.inl + f₁₂ ≫ biprod.inr := by
   simp [Biprod.ofComponents]
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem Biprod.inr_ofComponents :
     biprod.inr ≫ Biprod.ofComponents f₁₁ f₁₂ f₂₁ f₂₂ = f₂₁ ≫ biprod.inl + f₂₂ ≫ biprod.inr := by
   simp [Biprod.ofComponents]

@@ -45,8 +45,9 @@ def rightAdj_map {F G H : C ⥤ Type max w v u} (f : G ⟶ H) (c : C) (a : (F.fu
   app d b := a.app d b ≫ f.app d
   naturality g h := by
     have := a.naturality g h
+    dsimp at this
     change (F.map g ≫ a.app _ (h ≫ g)) ≫ _ = _
-    aesop
+    simp [reassoc_of% this]
 
 /-- A right adjoint of `tensorLeft F`. -/
 @[simps!]

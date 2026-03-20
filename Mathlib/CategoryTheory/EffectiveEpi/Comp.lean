@@ -43,8 +43,7 @@ def effectiveEpiFamilyStructCompOfEffectiveEpiSplitEpi' {α : Type*} {B : C} {X 
     simp only [Category.assoc, EffectiveEpiFamily.fac]
     rw [← Category.id_comp (e a), ← Category.assoc, ← Category.assoc]
     apply w
-    simp only [Category.comp_id, Category.id_comp, ← Category.assoc]
-    aesop
+    simp [reassoc_of% hi a]
   uniq _ _ _ hm := by
     apply EffectiveEpiFamily.uniq _ f
     intro a

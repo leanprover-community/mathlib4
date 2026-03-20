@@ -75,8 +75,8 @@ public lemma faithful_pullFunctor :
       obtain rfl : g = Over.homMk Z.hom := by cat_disch
       have := ψ.comm _ Z.hom (p ≫ p' j) rfl (by grind)
       dsimp [presheafHomObjHomEquiv, pullHom] at this ⊢
-      simp [mapComp'_inv_naturality, Cat.Hom.comp_toFunctor,
-        Functor.comp_obj, Cat.Hom.hom_inv_id_toNatTrans_app_assoc, ← reassoc_of% this,
+      simp [mapComp'_inv_naturality_assoc, Cat.Hom.comp_toFunctor,
+        Cat.Hom.hom_inv_id_toNatTrans_app_assoc, ← reassoc_of% this,
         D₂.hom_self _ _ rfl, F.mapComp'_id_comp_inv_app, ← Functor.map_comp,
         F.mapComp'_id_comp_hom_app_assoc]
     replace hφ := congr_fun (congr_arg DescentData.Hom.hom hφ) j
