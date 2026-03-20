@@ -172,6 +172,7 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
   suffices P ∈ span R (S '' Set.Iio (P.natDegree + 1)) from (span_mono (by simp)) this
   rw [span_degreeLT _ (by grind), Polynomial.mem_degreeLT, ← natDegree_lt_iff_degree_lt p_ne_zero]
   simp
+
 section IsDomain
 
 variable [IsDomain R]
