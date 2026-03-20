@@ -23,11 +23,11 @@ public import Mathlib.RingTheory.KrullDimension.Zero
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.Noetherian.Basic
 public import Mathlib.RingTheory.Regular.Category
-public import Mathlib.RingTheory.Regular.IsSMulRegular
+public import Mathlib.RingTheory.Regular.RegularSequence
 
 /-!
 
-# The Definition of Gorenstein (Local) Ring
+# Injective Dimension of Quotient Regular Sequence
 
 -/
 
@@ -119,7 +119,7 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
   obtain ⟨x, hx, nmem⟩ : ∃ x ∈ maximalIdeal R, x ∉ p := Set.exists_of_ssubset plt
   let _ : Small.{v} (QuotSMulTop x (R ⧸ p)) :=
     small_of_surjective (Submodule.Quotient.mk_surjective _)
-  let  := nontrivial_quotSMulTop_of_mem_maximalideal (Shrink.{v} (R ⧸ p)) hx
+  let  := nontrivial_quotSMulTop_of_mem_maximalIdeal (Shrink.{v} (R ⧸ p)) hx
   have : Subsingleton (Ext (ModuleCat.of R (QuotSMulTop x (Shrink.{v, u} (R ⧸ p)))) M (n + 1)) := by
     apply ext_subsingleton_of_support_subset
     intro q hq
@@ -145,6 +145,7 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
     (IsLocalRing.maximalIdeal_le_jacobson _) hx
   by_contra ntr
   let _ : Nontrivial (Ext S.X₂ M n) := not_subsingleton_iff_nontrivial.mp ntr
+  let fin : Module.Finite R (Shrink.{v, u} (R ⧸ p)) := inferInstance
   let _ : Module.Finite R S.X₂ := fin
   absurd Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator this
   rw [eq_comm, eq_top_iff]
@@ -478,7 +479,7 @@ theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension [Small.{v} R] 
   have sub : Subsingleton M ↔ Subsingleton (QuotSMulTop x M) := by
     refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
     by_contra!
-    exact (not_subsingleton_iff_nontrivial.mpr (nontrivial_quotSMulTop_of_mem_maximalideal M mem)) h
+    exact (not_subsingleton_iff_nontrivial.mpr (nontrivial_quotSMulTop_of_mem_maximalIdeal M mem)) h
   have aux (n : ℕ) :
     injectiveDimension (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) + 1 ≤ n ↔
     injectiveDimension M ≤ n := by
