@@ -335,17 +335,12 @@ end ContextFreeGrammar
 
 protected theorem Language.IsContextFree.reverse (L : Language T) (h : L.IsContextFree) :
   L.reverse.IsContextFree := by
-  rw [IsContextFree] at h
-  rcases h with ⟨g, gh⟩
-  rw [IsContextFree]
-  refine ⟨g.reverse, by simp [gh.symm]⟩
+  rcases h with ⟨g, rfl⟩
+  exact ⟨g.reverse, by simp⟩
 
 protected theorem Language.IsContextFree.of_reverse (L : Language T) (h : L.reverse.IsContextFree) :
   L.IsContextFree := by
-  have hL : L.reverse.reverse.IsContextFree := by
-    exact IsContextFree.reverse L.reverse h
-  rw [reverse_reverse] at hL
-  exact hL
+  simpa [reverse_reverse] using IsContextFree.reverse L.reverse h
 
 /-- The class of context-free languages is closed under reversal. -/
 @[simp]
