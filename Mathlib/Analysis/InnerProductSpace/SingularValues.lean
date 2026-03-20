@@ -73,7 +73,7 @@ singular values
 
 @[expose] public section
 
-open NNReal Module InnerProductSpace
+open Module InnerProductSpace
 
 namespace LinearMap
 
@@ -93,11 +93,18 @@ the infinite sequence are zero. Please see the module docstring of
 The singular values are zero-indexed, so `T.singularValues 0` refers to the first singular value.
 This means the positive singular values occur at `0 ≤ i < rank(T)` and not `1 ≤ i ≤ rank(T)`.
 -/
-@[no_expose] noncomputable def singularValues : ℕ →₀ ℝ≥0 :=
+@[no_expose] noncomputable def singularValues : ℕ →₀ ℝ :=
   Finsupp.embDomain Fin.valEmbedding <|
     Finsupp.ofSupportFinite
-      (fun i ↦ Real.toNNReal √(T.isSymmetric_adjoint_comp_self.eigenvalues rfl i))
+      (fun i ↦ √(T.isSymmetric_adjoint_comp_self.eigenvalues rfl i))
       (Set.toFinite _)
+
+theorem singularValues_nonneg (i : ℕ) : 0 ≤ T.singularValues i := by
+  rw [singularValues, Finsupp.embDomain_apply, Finsupp.ofSupportFinite_coe]
+  split_ifs <;> positivity
+
+theorem singularValues_pos_iff_ne_zero (i : ℕ) : 0 < T.singularValues i ↔ T.singularValues i ≠ 0 :=
+  by grind [T.singularValues_nonneg i]
 
 /--
 Connection between `LinearMap.singularValues` and `LinearMap.IsSymmetric.eigenvalues`.
@@ -107,12 +114,12 @@ Because of the square root, you probably need to use
 `T.isPositive_adjoint_comp_self.nonneg_eigenvalues` to make effective use of this theorem.
 -/
 theorem singularValues_fin {n : ℕ} (hn : finrank 𝕜 E = n) (i : Fin n) :
-    T.singularValues i = Real.toNNReal √(T.isSymmetric_adjoint_comp_self.eigenvalues hn i) := by
+    T.singularValues i = √(T.isSymmetric_adjoint_comp_self.eigenvalues hn i) := by
   subst hn
   exact Finsupp.embDomain_apply_self _ _ i
 
 theorem singularValues_of_lt {n : ℕ} (hn : finrank 𝕜 E = n) {i : ℕ} (hi : i < n) :
-    T.singularValues i = Real.toNNReal √(T.isSymmetric_adjoint_comp_self.eigenvalues hn ⟨i, hi⟩) :=
+    T.singularValues i = √(T.isSymmetric_adjoint_comp_self.eigenvalues hn ⟨i, hi⟩) :=
   T.singularValues_fin hn ⟨i, hi⟩
 
 theorem singularValues_of_finrank_le {i : ℕ} (hi : finrank 𝕜 E ≤ i) : T.singularValues i = 0 := by
@@ -128,7 +135,7 @@ theorem sq_singularValues_of_lt {n : ℕ} (hn : finrank 𝕜 E = n) {i : ℕ} (h
   T.sq_singularValues_fin hn ⟨i, hi⟩
 
 theorem hasEigenvalue_adjoint_comp_self_sq_singularValues {n : ℕ} (hn : n < finrank 𝕜 E) :
-    End.HasEigenvalue (adjoint T ∘ₗ T) ((T.singularValues n).toReal ^ 2) := by
+    End.HasEigenvalue (adjoint T ∘ₗ T) (T.singularValues n ^ 2) := by
   have hT := T.isSymmetric_adjoint_comp_self
   convert hT.hasEigenvalue_eigenvalues rfl ⟨n, hn⟩ using 1
   simp [← T.sq_singularValues_fin]
@@ -138,11 +145,11 @@ theorem singularValues_antitone : Antitone T.singularValues := by
   by_cases! hi : finrank 𝕜 E ≤ i
   · rw [T.singularValues_of_finrank_le hi, T.singularValues_of_finrank_le (hi.trans hij)]
   by_cases! hj : finrank 𝕜 E ≤ j
-  · simp [T.singularValues_of_finrank_le hj]
+  · simpa [T.singularValues_of_finrank_le hj] using T.singularValues_nonneg i
   have : (T.singularValues j : ℝ) ^ 2 ≤ (T.singularValues i : ℝ) ^ 2 := by
     rw [T.sq_singularValues_fin rfl ⟨j, hj⟩, T.sq_singularValues_fin rfl ⟨i, hi⟩]
     exact T.isSymmetric_adjoint_comp_self.eigenvalues_antitone rfl hij
-  simpa using Real.sqrt_le_sqrt this
+  exact le_of_sq_le_sq this (T.singularValues_nonneg i)
 
 /--
 7.68(a) from [axler2024]. Note that we have countably infinitely many singular values whereas there
@@ -161,7 +168,7 @@ theorem injective_iff_forall_lt_rank_singularValues_pos :
     simp [RCLike.ofReal_eq_zero.mp hi, T.singularValues_fin rfl]
   · intro ⟨i, h, hz⟩
     convert T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨i, h⟩
-    rw [← sq_singularValues_of_lt, nonpos_iff_eq_zero.mp hz]
+    rw [← sq_singularValues_of_lt, le_antisymm hz (T.singularValues_nonneg i)]
     simp
 
 /--
@@ -172,8 +179,7 @@ theorem card_support_singularValues : T.singularValues.support.card = finrank �
     grind [singularValues_of_finrank_le]
   have hT := T.isSymmetric_adjoint_comp_self
   have : T.singularValues.support.attachFin hS = ({i | hT.eigenvalues rfl i = (0 : 𝕜)} : Finset _)ᶜ
-    := by ext i; simpa [T.singularValues_fin rfl] using
-      (T.isPositive_adjoint_comp_self.nonneg_eigenvalues rfl i).lt_iff_ne'
+    := by ext i; simp [T.singularValues_fin, T.isPositive_adjoint_comp_self.nonneg_eigenvalues]
   rw [← T.singularValues.support.card_attachFin hS, this, Finset.card_compl, Fintype.card_fin,
     hT.card_filter_eigenvalues_eq rfl 0, Module.End.eigenspace_zero,
     ← (T.adjoint ∘ₗ T).finrank_range_add_finrank_ker, add_tsub_cancel_right,
@@ -181,7 +187,7 @@ theorem card_support_singularValues : T.singularValues.support.card = finrank �
 
 theorem isLowerSet_support_singularValues : IsLowerSet (T.singularValues.support : Set ℕ) := by
   intro a b hl ha
-  rw [Finset.mem_coe, Finsupp.mem_support_iff, ← zero_lt_iff] at ⊢ ha
+  rw [Finset.mem_coe, Finsupp.mem_support_iff, ← singularValues_pos_iff_ne_zero] at ⊢ ha
   order [T.singularValues_antitone hl]
 
 @[simp]
@@ -197,7 +203,8 @@ theorem support_singularValues : T.singularValues.support = Finset.range (finran
 
 theorem singularValues_pos_iff_lt_rank {n : ℕ} :
     0 < T.singularValues n ↔ n < finrank 𝕜 T.range := by
-  rw [zero_lt_iff, ← Finsupp.mem_support_iff, support_singularValues, Finset.mem_range]
+  rw [singularValues_pos_iff_ne_zero, ← Finsupp.mem_support_iff, support_singularValues,
+    Finset.mem_range]
 
 theorem singularValues_rank : T.singularValues (finrank 𝕜 T.range) = 0 := by
   rw [← Finsupp.notMem_support_iff, support_singularValues]
