@@ -261,6 +261,9 @@ theorem lift_mapCoeffRingHom_algebraMap [CommSemiring S] [Algebra S A]
   | zero => simp
   | single_add a b f _ _ ih => simp [ih]
 
+@[deprecated (since := "2026-03-20")]
+alias lift_mapRangeRingHom_algebraMap := lift_mapCoeffRingHom_algebraMap
+
 variable (R A) in
 /-- If `f : M → N` is a monoid homomorphism, then `MonoidAlgebra.mapDomain f` is an algebra
 homomorphism between their monoid algebras. -/
@@ -345,6 +348,9 @@ lemma mapDomainRingHom_comp_algebraMap (f : M →* N) :
 lemma mapCoeffRingHom_comp_algebraMap (f : R →+* S) :
     (mapCoeffRingHom (M := M) f).comp (algebraMap _ _) = (algebraMap _ _).comp f := by ext; simp
 
+@[deprecated (since := "2026-03-20")]
+alias mapRangeRingHom_comp_algebraMap := mapCoeffRingHom_comp_algebraMap
+
 variable (M) in
 /-- The algebra homomorphism of monoid algebras induced by a homomorphism of the base algebras. -/
 @[to_additive
@@ -354,19 +360,27 @@ noncomputable def mapCoeffAlgHom (f : A →ₐ[R] B) : A[M] →ₐ[R] B[M] where
   __ := mapCoeffRingHom M f
   commutes' := by simp
 
+@[deprecated (since := "2026-03-20")] alias mapRangeAlgHom := mapCoeffAlgHom
+
 variable (M) in
 @[to_additive (attr := simp)]
 lemma toRingHom_mapCoeffAlgHom (f : A →ₐ[R] B) :
     mapCoeffAlgHom M f = mapCoeffRingHom M f.toRingHom := rfl
 
+@[deprecated (since := "2026-03-20")] alias toRingHom_mapRangeAlgHom := toRingHom_mapCoeffAlgHom
+
 @[to_additive (attr := simp)]
 lemma mapCoeffAlgHom_apply (f : A →ₐ[R] B) (x : A[M]) (m : M) :
     mapCoeffAlgHom M f x m = f (x m) := mapCoeffRingHom_apply f.toRingHom x m
+
+@[deprecated (since := "2026-03-20")] alias mapRangeAlgHom_apply := mapCoeffAlgHom_apply
 
 @[to_additive (attr := simp)]
 lemma mapCoeffAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
     mapCoeffAlgHom M f (single m a) = single m (f a) := by
   classical ext; simp [single_apply, apply_ite f]
+
+@[deprecated (since := "2026-03-20")] alias mapRangeAlgHom_single := mapCoeffAlgHom_single
 
 variable (R M) in
 /-- The algebra isomorphism of monoid algebras induced by an isomorphism of the base algebras. -/
@@ -575,6 +589,9 @@ theorem lift_mapCoeffRingHom_algebraMap [CommSemiring S] [Algebra S A]
   induction x using Finsupp.induction with
   | zero => simp
   | single_add a b f _ _ ih => simp [ih]
+
+@[deprecated (since := "2026-03-20")]
+alias lift_mapRangeRingHom_algebraMap := lift_mapCoeffRingHom_algebraMap
 
 lemma algHom_ext_iff {φ₁ φ₂ : R[M] →ₐ[R] A} : (∀ x, φ₁ (single x 1) = φ₂ (single x 1)) ↔ φ₁ = φ₂ :=
   ⟨fun h => algHom_ext h, by rintro rfl _; rfl⟩
