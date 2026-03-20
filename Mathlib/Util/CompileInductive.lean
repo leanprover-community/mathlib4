@@ -25,11 +25,13 @@ Similarly, `compile_def% Foo.foo` adds compiled code for definitions when missin
 This can be the case for type class projections, or definitions like `List._sizeOf_1`.
 -/
 
-public meta section
+public section
 
 namespace Mathlib.Util
 
 open Lean Meta
+
+meta section
 
 private def replaceConst (repl : AssocList Name Name) (e : Expr) : Expr :=
   e.replace fun | .const n us => repl.find? n |>.map (.const · us) | _ => none
@@ -233,6 +235,8 @@ elab tk:"compile_inductive% " i:ident : command => Command.liftTermElabM do
   let n ← realizeGlobalConstNoOverloadWithInfo i
   let iv ← withRef i <| getConstInfoInduct n
   withRef tk <| compileInductive iv
+
+end
 
 end Mathlib.Util
 
