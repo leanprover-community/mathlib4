@@ -290,6 +290,38 @@ protected theorem IsTopologicalBasis.continuous_iff {β : Type*} [TopologicalSpa
   mp h := by simpa using h.sUnion_eq.symm
   mpr h := ⟨by simp, by simp [Set.univ_eq_empty_iff.2], Subsingleton.elim ..⟩
 
+section sUnion
+
+lemma IsTopologicalBasis.finite_sUnion (hB : IsTopologicalBasis B) :
+    IsTopologicalBasis (sUnion '' {f : Set (Set α) | f.Finite ∧ f ⊆ B}) where
+  exists_subset_inter := by
+    rintro - ⟨f₁, ⟨ff₁, hf₁⟩, rfl⟩ - ⟨f₂, ⟨ff₂, hf₂⟩, rfl⟩ x hx
+    simp only [mem_inter_iff, mem_sUnion] at hx
+    obtain ⟨⟨t₁, ht₁, hx₁⟩, ⟨t₂, ht₂, hx₂⟩⟩ := hx
+    obtain ⟨t₃, ht₃, hx₃, st₃⟩ := hB.exists_subset_inter t₁ (hf₁ ht₁) t₂ (hf₂ ht₂) x ⟨hx₁, hx₂⟩
+    exact ⟨t₃, ⟨{t₃}, ⟨by simp, by grind⟩, by simp⟩, hx₃, by grind⟩
+  sUnion_eq := by
+    simp only [sUnion_image, mem_setOf_eq, eq_univ_iff_forall, mem_iUnion, mem_sUnion, exists_prop]
+    intro x
+    have := hB.sUnion_eq
+    simp only [eq_univ_iff_forall, mem_sUnion] at this
+    obtain ⟨t, ht, hx⟩ := this x
+    exact ⟨{t}, ⟨by simp, by grind⟩, by grind⟩
+  eq_generateFrom := by
+    rw [hB.eq_generateFrom]
+    refine le_antisymm (le_generateFrom ?_)
+      (generateFrom_anti fun s hs ↦ ⟨{s}, ⟨by simp, by grind⟩, by simp⟩)
+    rw [← hB.eq_generateFrom]
+    rintro - ⟨f, ⟨ff, hf⟩, rfl⟩
+    exact isOpen_sUnion (fun s hs ↦ hB.isOpen (hf hs))
+
+lemma test {α : Type*} (s : Set (Set α)) :
+    DirectedOn (· ⊆ ·) (sUnion '' {f : Set (Set α) | f.Finite ∧ f ⊆ s}) := by
+  rintro - ⟨f₁, ⟨ff₁, hf₁⟩, rfl⟩ - ⟨f₂, ⟨ff₂, hf₂⟩, rfl⟩
+  exact ⟨⋃₀ (f₁ ∪ f₂), ⟨f₁ ∪ f₂, ⟨ff₁.union ff₂, by grind⟩, rfl⟩, by grind, by grind⟩
+
+end sUnion
+
 variable (α)
 
 /-- A separable space is one with a countable dense subset, available through
@@ -310,6 +342,12 @@ latter should be used as a typeclass argument in theorems because Lean can autom
 
 theorem exists_countable_dense [SeparableSpace α] : ∃ s : Set α, s.Countable ∧ Dense s :=
   SeparableSpace.exists_countable_dense
+
+variable {α} in
+theorem exists_countable_dense_subset (s : Set α) [SeparableSpace s] :
+    ∃ t : Set α, t.Countable ∧ t ⊆ s ∧ s ⊆ closure t := by
+  obtain ⟨t, ct, dt⟩ := exists_countable_dense s
+  exact ⟨Subtype.val '' t, ct.image _, by simp, fun x hx ↦ closure_subtype.1 (dt ⟨x, hx⟩)⟩
 
 /-- A nonempty separable space admits a sequence with dense range. Instead of running `cases` on the
 conclusion of this lemma, you might want to use `TopologicalSpace.denseSeq` and

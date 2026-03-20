@@ -67,115 +67,76 @@ theorem borel_eq_iSup_comap_eval :
   apply le_antisymm
   swap
   · refine iSup_le fun x ↦ ?_
-    simp_rw [← measurable_iff_comap_le]
-    rw [← BorelSpace.measurable_eq, ← BorelSpace.measurable_eq]
+    rw [← measurable_iff_comap_le, ← BorelSpace.measurable_eq, ← BorelSpace.measurable_eq]
     exact Continuous.measurable (by fun_prop)
   -- Denote `M(K, U)` the set of functions `f` such that `Set.MapsTo f K U`. These form a
   -- basis for the compact-open topology when `K` is compact and `U` is open.
   -- Because `C(X, Y)` is second-countable, it suffices to prove that those sets are measurable.
   -- Let therefore `K` be a compact set of `X` and `U` an open set of `Y`.
   rw [borel_eq_generateFrom_of_subbasis compactOpen_eq]
-  refine generateFrom_le fun s hs ↦ ?_
-  obtain ⟨K, hK, U, hU, rfl⟩ := hs
-  -- Consider `V` a countable basis of the topology on Y.
-  let V := countableBasis Y
-  have hV : IsTopologicalBasis V := isBasis_countableBasis Y
-  have cV : V.Countable := countable_countableBasis Y
-  let W₁ := {v | v ∈ V ∧ closure v ⊆ U}
-  -- Consider `W` the set of `closure v`, where `v ∈ V` and `closure v ⊆ U`.
-  let W := {v | ∃ u ∈ V, v ⊆ U ∧ v = closure u}
-  -- Because `V` is countable, so is `W`.
-  have cW : W.Countable := by
-    apply (cV.image closure).mono
-    rintro - ⟨u, hu, -, rfl⟩
-    exact ⟨u, hu, rfl⟩
-  -- Because `Y` is regular, we can write that `U = ⋃_{v ∈ W} v`.
-  have U_eq_sUnion_W : U = ⋃₀ W := by
-    ext x
-    rw [Set.mem_sUnion]
-    constructor
-    · intro hx
-      obtain ⟨v, ⟨hv1, hv2⟩, hv3⟩ : ∃ v, (x ∈ v ∧ v ∈ V) ∧ closure v ⊆ U :=
-        hV.nhds_basis_closure x |>.mem_iff.1 <| hU.mem_nhds hx
-      exact ⟨closure v, ⟨v, hv2, hv3, rfl⟩, subset_closure hv1⟩
-    · rintro ⟨-, ⟨t, ht1, ht2, rfl⟩, hx⟩
-      exact ht2 hx
-  -- Similarly, we can write that `U = ⋃_{v ∈ V, closure v ⊆ U} v`.
-  have U_eq_sUnion_W₁ : U = ⋃₀ W₁ := by
-    ext x
-    rw [Set.mem_sUnion]
-    refine ⟨fun hx ↦ ?_, fun ⟨t, ⟨ht1, ht2⟩, hx⟩ ↦ ht2 <| subset_closure hx⟩
-    obtain ⟨v, ⟨hv1, hv2⟩, hv3⟩ := hV.nhds_basis_closure x |>.mem_iff.1 <| hU.mem_nhds hx
-    exact ⟨v, ⟨hv2, hv3⟩, hv1⟩
+  apply generateFrom_le
+  rintro - ⟨K, hK, U, hU, rfl⟩
+  obtain rfl | ⟨x, hx⟩ := U.eq_empty_or_nonempty
+  · simp
+  -- Consider `V` a countable basis of the topology on `Y` obtained by taking the finite unions
+  -- of sets of `countableBasis Y`.
+  let V := Set.sUnion '' {f : Set (Set Y) | f.Finite ∧ f ⊆ countableBasis Y}
+  have hV : IsTopologicalBasis V := (isBasis_countableBasis Y).finite_sUnion
+  have cV : V.Countable :=
+    (Set.countable_setOf_finite_subset (countable_countableBasis Y)).image _
+  -- Because `Y` is regular, we have `U = ⋃_{v ∈ V, closure v ⊆ U} v`.
   -- For any continuous `f` such that `f '' K ⊆ U`, because `K` is compact, `f '' K` is compact.
-  -- But we just proved that `U = ⋃_{v ∈ V, closure v ⊆ U} v`, and each `v ∈ V` is open,
-  -- so there exists `J` a finite set of `v ∈ V` such that `closure v ⊆ U` and
-  -- `f '' K ⊆ ⋃ v ∈ J, v`. We thus have `f '' K ⊆ ⋃ v ∈ J, closure v`. This is equivalent to
-  -- having `I` a finite subset of `W` such that `f '' K ⊆ ⋃ v ∈ I, v`.
-  have (f : C(X, Y)) (hf : K.MapsTo f U) : ∃ I, I.Finite ∧ I ⊆ W ∧ K.MapsTo f (⋃₀ I) := by
+  -- Because the set `{v ∈ V, closure v ⊆ U}` is a directed set of open sets that covers `f '' K`,
+  -- we deduce that there exists `v ∈ V` such that `f '' K ⊆ closure v`.
+  have (f : C(X, Y)) (hf : K.MapsTo f U) : ∃ v ∈ V, closure v ⊆ U ∧ K.MapsTo f (closure v) := by
     simp_rw [Set.mapsTo_iff_image_subset] at hf ⊢
-    rw [U_eq_sUnion_W₁, Set.sUnion_eq_biUnion] at hf
-    have : ∀ i ∈ W₁, IsOpen i := fun x ⟨hx, _⟩ ↦ hV.isOpen hx
-    obtain ⟨b, hb1, hb2, hb3⟩ := (hK.image f.continuous).elim_finite_subcover_image this hf
-    refine ⟨closure '' b, hb2.image _, ?_, ?_⟩
-    · rintro - ⟨v, hv, rfl⟩
-      exact ⟨v, (hb1 hv).1, (hb1 hv).2, rfl⟩
-    rw [← Set.sUnion_eq_biUnion] at hb3
-    exact hb3.trans <| Set.sUnion_mono_subsets fun _ ↦ subset_closure
+    rw [hV.open_eq_sUnion_of_closure_subset hU] at hf
+    obtain ⟨b, ⟨hb1, hb2⟩, hb3⟩ : ∃ b ∈ {v | v ∈ V ∧ closure v ⊆ U}, f '' K ⊆ b := by
+      refine (hK.image f.continuous).elim_directedOn_cover _
+        (fun v hv ↦ hV.isOpen hv.1) hf ?_ ?_
+      · rintro - ⟨⟨f, ⟨hf1, hf2⟩, rfl⟩, hf3⟩ - ⟨⟨g, ⟨hg1, hg2⟩, rfl⟩, hg3⟩
+        exact ⟨⋃₀ (f ∪ g), ⟨⟨f ∪ g, ⟨hf1.union hg1, by grind⟩, rfl⟩,
+          by simp_all [Set.sUnion_union]⟩, by grind, by grind⟩
+      obtain ⟨v, ⟨hv1, hv2⟩, hv3⟩ := hV.nhds_basis_closure x |>.mem_iff.1 <| hU.mem_nhds hx
+      exact ⟨v, hv2, hv3⟩
+    exact ⟨b, hb1, hb2, hb3.trans subset_closure⟩
   -- Therefore, we obtain that
-  -- `M(K, U) = ⋃_{I ⊆ W, I finite}, M(K, ⋃ v ∈ I, v)`.
+  -- `M(K, U) = ⋃_{u ∈ V, closure u ⊆ U}, M(K, closure u)`.
   have : {f : C(X, Y) | K.MapsTo f U} =
-      ⋃₀ {v | ∃ I, I.Finite ∧ I ⊆ W ∧ v = {f : C(X, Y) | K.MapsTo f (⋃₀ I)}} := by
+      ⋃₀ {v | ∃ u ∈ V, closure u ⊆ U ∧ v = {f : C(X, Y) | K.MapsTo f (closure u)}} := by
     ext f
-    rw [Set.mem_sUnion]
-    refine ⟨fun h ↦ ?_, ?_⟩
-    · obtain ⟨I, hI1, hI2, hI3⟩ := this f h
-      exact ⟨{f : C(X, Y) | K.MapsTo f (⋃₀ I)}, ⟨I, hI1, hI2, rfl⟩, hI3⟩
-    · rintro ⟨-, ⟨I, hI1, hI2, rfl⟩, h⟩
-      simp only [Set.mapsTo_iff_image_subset] at h ⊢
-      rw [U_eq_sUnion_W]
-      exact h.trans <| Set.sUnion_subset_sUnion hI2
-  simp only
-  rw [this]
-  -- In particular, because `W` is countable, this is a countable union.
+    simp only [Set.mem_setOf_eq, Set.mem_sUnion, ↓existsAndEq, and_true]
+    exact ⟨by grind, fun ⟨u, ⟨hu1, hu2⟩, hu3⟩ ↦ hu3.mono_right hu2⟩
+  simp_rw [this]
+  -- In particular, because `V` is countable, this is a countable union.
   -- To show measurability it is therefore enough to show the measurability of each term.
   apply MeasurableSet.sUnion
-  · let f : Set (Set Y) → Set C(X, Y) := fun I ↦ {f : C(X, Y) | Set.MapsTo (⇑f) K (⋃₀ I)}
-    refine ((Set.countable_setOf_finite_subset cW).image f).mono ?_
-    rintro - ⟨I, hI1, hI2, rfl⟩
-    exact ⟨I, ⟨hI1, hI2⟩, rfl⟩
-  -- Consider now `I` a finite subset of `W`.
-  rintro - ⟨I, hI1, hI2, rfl⟩
-  -- First, `⋃ v ∈ I, v` is closed as a finite union of closed sets.
-  have hI : IsClosed (⋃₀ I) := by
-    refine hI1.isClosed_sUnion fun x hx ↦ ?_
-    obtain ⟨u, -, -, rfl⟩ := hI2 hx
-    exact isClosed_closure
+  · let f : (Set Y) → Set C(X, Y) := fun v ↦ {f : C(X, Y) | Set.MapsTo (⇑f) K (closure v)}
+    exact (cV.image f).mono (by grind)
+  -- Consider now `v ∈ V` such that `closure v ⊆ U`.
+  rintro - ⟨v, hv1, hv2, rfl⟩
   -- Consider `Q` a countable dense subset of `K`, which exists by second-countability assumption.
-  obtain ⟨Q, cQ, dQ⟩ := exists_countable_dense K
-  -- Because `f` is continuous and `⋃ v ∈ I, v` is closed and `Q` is dense in `K`, having
-  -- `f '' K ⊆ ⋃ v ∈ I, v` is the same as `f '' Q ⊆ ⋃ v ∈ I, v`.
-  have : {f : C(X, Y) | K.MapsTo f (⋃₀ I)} =
-      {f : C(X, Y) | (Subtype.val '' Q).MapsTo f (⋃₀ I)} := by
+  obtain ⟨Q, cQ, hQ, dQ⟩ := exists_countable_dense_subset X K
+  -- Because `f` is continuous and `closure v` is closed and `Q` is dense in `K`, having
+  -- `f '' K ⊆ closure v` is the same as `f '' Q ⊆ closure v`.
+  have : {f : C(X, Y) | K.MapsTo f (closure v)} = {f : C(X, Y) | Q.MapsTo f (closure v)} := by
     ext f
-    refine ⟨fun h x hx ↦ h (Subtype.coe_image_subset K Q hx), fun h x hx ↦ ?_⟩
-    obtain ⟨u, hu1, hu2⟩ := mem_closure_iff_seq_limit.1 <| Subtype.dense_iff.1 dQ hx
-    exact hI.mem_of_tendsto ((f.continuous.tendsto x).comp hu2)
-      (Filter.Eventually.of_forall fun n ↦ h (hu1 n))
-  -- We can write `M(Q, ⋃ v ∈ I, v) = ⋂ q ∈ Q, (fun f ↦ f q) ⁻¹' (⋃ v ∈ I, v)`.
-  have : {f : C(X, Y) | K.MapsTo f (⋃₀ I)} =
-      ⋂ q ∈ Subtype.val '' Q, (fun f ↦ f q) ⁻¹' (⋃₀ I) := by
+    refine ⟨fun h ↦ h.mono_left hQ, fun h x hx ↦ ?_⟩
+    obtain ⟨u, hu1, hu2⟩ := mem_closure_iff_seq_limit.1 <| dQ hx
+    exact isClosed_closure.mem_of_tendsto ((f.continuous.tendsto x).comp hu2)
+      (.of_forall fun n ↦ h (hu1 n))
+  -- We can write `M(Q, closure v) = ⋂ q ∈ Q, (fun f ↦ f q) ⁻¹' (closure v)`.
+  have : {f : C(X, Y) | K.MapsTo f (closure v)} = ⋂ q ∈ Q, (fun f ↦ f q) ⁻¹' (closure v) := by
     ext f
     rw [this, Set.mem_iInter₂]
     exact ⟨fun h x hx ↦ h hx, fun h x hx ↦ h x hx⟩
   rw [this]
   -- This is a countable intersection, so it suffices to prove that each term is measurable.
-  -- Because `⋃ v ∈ I, v` is closed, it is measurable, so it suffices to prove that
+  -- Because `closure v` is closed, it is measurable, so it suffices to prove that
   -- for any `q ∈ Q`, `fun f ↦ f q` is measurable for the product σ-algebra.
   -- The latter is the coarsest σ-algebra which makes the maps `fun f ↦ f x` measurable,
   -- so we are done.
-  refine MeasurableSet.biInter (cQ.image _)
-    fun q hq ↦ MeasurableSet.preimage hI.measurableSet (Measurable.le (le_iSup _ q) ?_)
+  refine .biInter cQ fun q hq ↦ .preimage measurableSet_closure (.le (le_iSup _ q) ?_)
   rw [BorelSpace.measurable_eq (α := Y)]
   exact comap_measurable _
 
