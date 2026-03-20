@@ -154,15 +154,22 @@ hint: you may be missing suitable typeclass assumptions
 #guard_msgs in
 #check (T% (T% X)) x
 
+section
+-- Check minimal assumptions to find a model fiber.
+
+variable {B F Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] (σ : (b : B) → E b)
+/-- info: fun b ↦ ⟨b, σ b⟩ : B → TotalSpace F E -/
+#guard_msgs in
+#check T% σ
+
+end
 -- Error message when missing typeclass assumptions for sections of a fiber bundle.
 -- This used to silently do nothing; now there is a helpful error.
 section
 
 variable {B F Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
-  {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
-  (e : Trivialization F (π F E)) [(x : B) → Zero (E x)]
-
-variable (σ : (b : B) → E b) in
+  {E : B → Type*} (σ : (b : B) → E b)
 /--
 error: could not find a `FiberBundle` instance on `E`:
 `σ` is a function into `E`
@@ -174,7 +181,7 @@ hint: you may be missing suitable typeclass assumptions
 
 /-- info: fun b ↦ ⟨b, σ b⟩ : B → TotalSpace F E -/
 #guard_msgs in
-variable [(b : B) → TopologicalSpace (E b)] [FiberBundle F E] (σ : (b : B) → E b) in
+variable [TopologicalSpace (TotalSpace F E)] [(b : B) → TopologicalSpace (E b)] [FiberBundle F E] in
 #check T% σ
 
 end

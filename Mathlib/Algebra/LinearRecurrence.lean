@@ -112,14 +112,12 @@ theorem eq_mk_of_is_sol_of_eq_init' {u : ℕ → R} {init : Fin E.order → R} (
     (heq : ∀ n : Fin E.order, u n = init n) : u = E.mkSol init :=
   funext (E.eq_mk_of_is_sol_of_eq_init h heq)
 
--- TODO: there's a non-terminal simp here
-set_option linter.flexible false in
 /-- The space of solutions of `E`, as a `Submodule` over `R` of the module `ℕ → R`. -/
 def solSpace : Submodule R (ℕ → R) where
   carrier := { u | E.IsSolution u }
   zero_mem' n := by simp
   add_mem' {u v} hu hv n := by simp [mul_add, sum_add_distrib, hu n, hv n]
-  smul_mem' a u hu n := by simp [hu n, mul_sum]; congr; ext; ac_rfl
+  smul_mem' a u hu n := by simp [hu n, mul_sum]; ac_rfl
 
 /-- Defining property of the solution space : `u` is a solution
   iff it belongs to the solution space. -/
