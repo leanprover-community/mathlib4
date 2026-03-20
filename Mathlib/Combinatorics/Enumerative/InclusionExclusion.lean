@@ -37,10 +37,6 @@ Per the above explanation, this file contains the following variants of inclusio
 
 See also `MeasureTheory.integral_biUnion_eq_sum_powerset` for the version with integrals, and
 `MeasureTheory.measureReal_biUnion_eq_sum_powerset` for the version with measures.
-
-## TODO
-
-* Prove that truncating the series alternatively gives an upper/lower bound to the true value.
 -/
 
 public section
