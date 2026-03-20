@@ -264,6 +264,18 @@ theorem ext₁ [TopologicalSpace R₁] {f g : R₁ ≃L[R₁] M₁} (h : f 1 = g
 
 section
 
+variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R₁ M]
+
+def toContinuousAddEquiv (e : M₁ ≃L[R₁] M) : M₁ ≃ₜ+ M :=
+  e.toAddEquiv.toContinuousAddEquiv fun _ ↦ e.toHomeomorph.isOpen_preimage
+
+@[simp]
+lemma toContinuousAddEquiv_coe (e : M₁ ≃L[R₁] M) : ⇑e.toContinuousAddEquiv = e := rfl
+
+end
+
+section
+
 variable (R₁ M₁)
 
 /-- The identity map as a continuous linear equivalence. -/

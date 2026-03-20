@@ -80,16 +80,18 @@ lemma ContinuousMulEquiv.isTopologicalGroup
     have : Continuous (e.symm ∘ (fun q ↦ q⁻¹) ∘ e) := by fun_prop
     exact this.congr (fun p ↦ by simp)
 
+/-
 /-- Given a continuous linear equivalence `e : α ≃L[R] β`, if `β` is a topological additive group,
 then so is `α`. -/
 lemma ContinuousLinearEquiv.isTopologicalAddGroup
     [TopologicalSpace β] [AddCommGroup β] [IsTopologicalAddGroup β] [Module R β]
     [TopologicalSpace α] [AddCommGroup α] [Module R α]
     (e : α ≃L[R] β) : IsTopologicalAddGroup α :=
-  (e.toContinuousAddEquiv fun _ ↦ e.toHomeomorph.isOpen_preimage).isTopologicalAddGroup
+  e.toContinuousAddEquiv.isTopologicalAddGroup
 
 -- TODO linter bug: making the above an @[implicit_reducible] def does not lint,
 -- making it a plain def does. making a lemma is correct
+-/
 
 /-- Given a continuous linear equivalence `e : α ≃L[R] β`, if scalar multiplication on `β` is
 continuous, then so is it for `α`. -/

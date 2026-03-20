@@ -185,7 +185,7 @@ noncomputable def mkHom
   have : T2Space (V x) := FiberBundle.t2Space F V x
   have : FiniteDimensional 𝕜 (V x) := VectorBundle.finiteDimensional 𝕜 F V x
   have : IsTopologicalAddGroup (V x) :=
-    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).isTopologicalAddGroup
+    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).toContinuousAddEquiv.isTopologicalAddGroup
   have (x : M) : ContinuousSMul 𝕜 (V x) :=
     (VectorBundle.continuousLinearEquivAt 𝕜 F V x).continuousSMul
   LinearMap.toContinuousLinearMap {
@@ -225,9 +225,9 @@ noncomputable def mkHom₂
   have : T2Space (V' x) := FiberBundle.t2Space F' V' x
   have : FiniteDimensional 𝕜 (V' x) := VectorBundle.finiteDimensional 𝕜 F' V' x
   have : IsTopologicalAddGroup (V x) :=
-    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).isTopologicalAddGroup
+    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).toContinuousAddEquiv.isTopologicalAddGroup
   have : IsTopologicalAddGroup (V' x) :=
-    (VectorBundle.continuousLinearEquivAt 𝕜 F' V' x).isTopologicalAddGroup
+    (VectorBundle.continuousLinearEquivAt 𝕜 F' V' x).toContinuousAddEquiv.isTopologicalAddGroup
   have (x : M) : ContinuousSMul 𝕜 (V x) :=
     (VectorBundle.continuousLinearEquivAt 𝕜 F V x).continuousSMul
   have (x : M) : ContinuousSMul 𝕜 (V' x) :=
