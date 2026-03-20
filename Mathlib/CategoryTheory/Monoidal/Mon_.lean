@@ -958,7 +958,7 @@ protected def FullyFaithful.mapAddMon (hF : F.FullyFaithful) : F.mapAddMon.Fully
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `Mon(F) : Mon C ⥤ Mon D` is fully
 faithful too. -/
-@[to_additive existing]
+@[to_additive existing (attr := simps)]
 protected def FullyFaithful.mapMon (hF : F.FullyFaithful) : F.mapMon.FullyFaithful where
   preimage {X Y} f := .mk' <| hF.preimage f.hom
 
