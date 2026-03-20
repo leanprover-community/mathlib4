@@ -66,8 +66,6 @@ section ContinuousLinearEquiv
 
 variable [Semiring R]
 
--- TODO: should this take an `Equiv` instead, deducing the typeclass hypotheses on `α`
--- from the ones on `β`?
 -- While this lemma would apply to `ContinuousAddEquiv`s unchanged, that phrasing would be less
 -- ergonomic: in practice, it is only applies to a continuous linear equivalence (so far).
 -- As there is no direct project ContinuousLinearEquiv.toContinuousAddEquiv, applying the changed
