@@ -32,12 +32,12 @@ namespace Mathlib.Tactic
 open Command PrettyPrinter Delaborator in
 /-- Like `checkCore`, but logs different messages depending on whether `showImplicit` is
 true. Note that this differs from `checkCore` only in that it modifies the constructed message,
-lowers to `TermElabM`, and always takes `ignoreStuckTC := true` (as `#check` does).
+lowers to `TermElabM`, and always takes `ignoreStuckTC := true` (as `#check` ultimately does).
 
 This declaration may realize constants, and so should be run without modifying the environment.
 
-Info messages are placed at `tk`. In case there are several resolved names for `term`, show
-information for the first of them. -/
+Info messages are placed at `tk`. If there are several resolved names for `term`, shows
+information only for the first of them instead of failing. -/
 partial def checkCoreAux (tk : Syntax) (term : Term) (showImplicit : Bool) : TermElabM Unit :=
   Term.withDeclName `_check do
   -- show signature for `#check id`/`#check @id`
