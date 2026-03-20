@@ -3763,6 +3763,7 @@ public import Mathlib.Data.Multiset.UnionInter
 public import Mathlib.Data.Multiset.ZeroCons
 public import Mathlib.Data.NNRat.BigOperators
 public import Mathlib.Data.NNRat.Defs
+public import Mathlib.Data.NNRat.Encodable
 public import Mathlib.Data.NNRat.Floor
 public import Mathlib.Data.NNRat.Lemmas
 public import Mathlib.Data.NNRat.Order
