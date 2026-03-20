@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Data.Set.Lattice
 public import Mathlib.Order.Filter.Defs
+public import Mathlib.Tactic.ToFun
 
 /-!
 # Theory of filters on sets
@@ -169,7 +170,7 @@ lemma mem_generate_of_mem {s : Set <| Set α} {U : Set α} (h : U ∈ s) :
 
 theorem le_generate_iff {s : Set (Set α)} {f : Filter α} : f ≤ generate s ↔ s ⊆ f.sets :=
   Iff.intro (fun h _ hu => h <| GenerateSets.basic <| hu) fun h _ hu =>
-    hu.recOn (fun h' => h h') univ_mem (fun _ hxy hx => mem_of_superset hx hxy) fun _ _ hx hy =>
+    hu.recOn (fun h' => h h') univ_mem (fun _ hxy ↦ by gcongr) fun _ _ hx hy =>
       inter_mem hx hy
 
 @[simp] lemma generate_singleton (s : Set α) : generate {s} = 𝓟 s :=
@@ -226,6 +227,12 @@ theorem mem_sdiff_iff_union {f g : Filter α} {s : Set α} :
 
 section CompleteLattice
 
+protected lemma isLUB_sSup (s : Set (Filter α)) : IsLUB s (sSup s) :=
+  ⟨fun _ h₁ _ h₂ ↦ h₂ h₁, fun _ h₁ _ h₂ _ h₃ ↦ h₁ h₃ h₂⟩
+
+protected lemma isGLB_sInf (s : Set (Filter α)) : IsGLB s (sInf s) :=
+  isLUB_lowerBounds.mp (Filter.sSup_lowerBounds _ ▸ Filter.isLUB_sSup _)
+
 /-- Complete lattice structure on `Filter α`. -/
 instance instCompleteLatticeFilter : CompleteLattice (Filter α) where
   inf a b := min a b
@@ -236,10 +243,8 @@ instance instCompleteLatticeFilter : CompleteLattice (Filter α) where
   inf_le_left _ _ _ := mem_inf_of_left
   inf_le_right _ _ _ := mem_inf_of_right
   le_inf := fun _ _ _ h₁ h₂ _s ⟨_a, ha, _b, hb, hs⟩ => hs.symm ▸ inter_mem (h₁ ha) (h₂ hb)
-  le_sSup _ _ h₁ _ h₂ := h₂ h₁
-  sSup_le _ _ h₁ _ h₂ _ h₃ := h₁ _ h₃ h₂
-  sInf_le _ _ h₁ _ h₂ := by rw [← Filter.sSup_lowerBounds]; exact fun _ h₃ ↦ h₃ h₁ h₂
-  le_sInf _ _ h₁ _ h₂ := by rw [← Filter.sSup_lowerBounds] at h₂; exact h₂ h₁
+  isLUB_sSup := Filter.isLUB_sSup
+  isGLB_sInf := Filter.isGLB_sInf
   le_top _ _ := univ_mem'
   bot_le _ _ _ := trivial
 
@@ -987,16 +992,10 @@ theorem EventuallyEq.comp₂ {δ} {f f' : α → β} {g g' : α → γ} {l} (Hf 
     (Hg : g =ᶠ[l] g') : (fun x => h (f x) (g x)) =ᶠ[l] fun x => h (f' x) (g' x) :=
   (Hf.prodMk Hg).fun_comp (uncurry h)
 
--- TODO: can't use `to_additive` and `to_fun` simultaneously?
-@[to_additive (attr := gcongr)]
+@[to_additive (attr := gcongr, to_fun)]
 theorem EventuallyEq.mul [Mul β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
     (h' : f' =ᶠ[l] g') : f * f' =ᶠ[l] g * g' :=
   h.comp₂ (· * ·) h'
-
-@[to_additive]
-theorem EventuallyEq.fun_mul [Mul β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
-    (h' : f' =ᶠ[l] g') : (fun x => f x * f' x) =ᶠ[l] fun x => g x * g' x :=
-  h.mul h'
 
 @[to_additive]
 lemma EventuallyEq.mul_left [Mul β] {f₁ f₂ f₃ : α → β} (h : f₁ =ᶠ[l] f₂) :
@@ -1006,46 +1005,26 @@ lemma EventuallyEq.mul_left [Mul β] {f₁ f₂ f₃ : α → β} (h : f₁ =ᶠ
 lemma EventuallyEq.mul_right [Mul β] {f₁ f₂ f₃ : α → β} (h : f₁ =ᶠ[l] f₂) :
     f₁ * f₃ =ᶠ[l] f₂ * f₃ := EventuallyEq.mul h (by rfl)
 
--- TODO: can't use `to_additive` and `to_fun` simultaneously?
-@[to_additive (attr := gcongr, to_additive) const_smul]
+@[to_additive (attr := gcongr, to_fun, to_additive) const_smul]
 theorem EventuallyEq.pow_const {γ} [Pow β γ] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) (c : γ) :
     f ^ c =ᶠ[l] g ^ c :=
   h.fun_comp (· ^ c)
 
-@[to_additive (attr := to_additive) fun_const_smul]
-theorem EventuallyEq.fun_pow_const {γ} [Pow β γ] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g)
-    (c : γ) : (fun x => f x ^ c) =ᶠ[l] fun x => g x ^ c :=
-  h.pow_const c
-
-@[to_additive (attr := gcongr)]
+@[to_additive (attr := gcongr, to_fun)]
 theorem EventuallyEq.inv [Inv β] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) : f⁻¹ =ᶠ[l] g⁻¹ :=
   h.fun_comp Inv.inv
 
-@[to_additive]
-theorem EventuallyEq.fun_inv [Inv β] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) :
-    (fun x => (f x)⁻¹) =ᶠ[l] fun x => (g x)⁻¹ :=
-  h.inv
-
-@[to_additive (attr := gcongr)]
+@[to_additive (attr := gcongr, to_fun)]
 theorem EventuallyEq.div [Div β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
     (h' : f' =ᶠ[l] g') : f / f' =ᶠ[l] g / g' :=
   h.comp₂ (· / ·) h'
-
-@[to_additive]
-theorem EventuallyEq.fun_div [Div β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
-    (h' : f' =ᶠ[l] g') : (fun x => f x / f' x) =ᶠ[l] fun x => g x / g' x :=
-  h.div h'
 
 @[to_additive]
 theorem EventuallyEq.smul {𝕜} [SMul 𝕜 β] {l : Filter α} {f f' : α → 𝕜} {g g' : α → β}
     (hf : f =ᶠ[l] f') (hg : g =ᶠ[l] g') : (fun x => f x • g x) =ᶠ[l] fun x => f' x • g' x :=
   hf.comp₂ (· • ·) hg
 
-protected theorem EventuallyEq.fun_star {R : Type*} [Star R] {f g : α → R}
-    {l : Filter α} (h : f =ᶠ[l] g) : (fun x ↦ star (f x)) =ᶠ[l] fun x ↦ star (g x) :=
-  h.fun_comp Star.star
-
-@[gcongr]
+@[gcongr, to_fun]
 protected theorem EventuallyEq.star {R : Type*} [Star R]
     {f g : α → R} {l : Filter α} (h : f =ᶠ[l] g) : star f =ᶠ[l] star g := h.fun_comp Star.star
 

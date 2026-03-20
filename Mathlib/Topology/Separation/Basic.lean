@@ -314,6 +314,7 @@ variable (X) in
 /-- In an R₀ space, relatively compact sets form a bornology.
 Its cobounded filter is `Filter.coclosedCompact`.
 See also `Bornology.inCompact` the bornology of sets contained in a compact set. -/
+@[implicit_reducible]
 def Bornology.relativelyCompact : Bornology X where
   cobounded := Filter.coclosedCompact X
   le_cofinite := Filter.coclosedCompact_le_cofinite
