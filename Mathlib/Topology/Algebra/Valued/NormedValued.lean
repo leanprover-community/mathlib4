@@ -261,6 +261,10 @@ theorem one_lt_norm_iff : 1 < ‖x‖ ↔ 1 < val.v x := by
   rw [← map_one val.v, ← v.restrict_lt_iff]
   simpa only [map_one] using (Valuation.RankOne.strictMono val.v).lt_iff_lt (a := 1)
 
+theorem norm_eq_one_iff : ‖x‖ = 1 ↔ val.v x = 1 := by
+  simp only [norm_def, NNReal.coe_eq_one, ← v.restrict_eq_one_iff]
+  exact map_one (RankOne.hom val.v) ▸ (Valuation.RankOne.strictMono val.v).injective.eq_iff
+
 lemma setOf_mem_integer_eq_closedBall :
     { x : L | x ∈ Valued.v.integer } = Metric.closedBall 0 1 := by
   ext x

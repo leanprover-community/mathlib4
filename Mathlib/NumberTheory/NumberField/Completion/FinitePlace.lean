@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
+public import Mathlib.RingTheory.Ideal.Int
 public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 
 import Mathlib.Algebra.FiniteSupport.Basic
@@ -83,15 +84,11 @@ instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
 
 end DVR
 
-variable {K : Type*} [Field K] [NumberField K]
-
-namespace NumberField
-
-variable (v : HeightOneSpectrum (𝓞 K))
-
-namespace RingOfIntegers.HeightOneSpectrum
+namespace NumberField.RingOfIntegers.HeightOneSpectrum
 
 section AbsoluteValue
+
+variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
 
 /-- The norm of a maximal ideal is `> 1` -/
 lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
@@ -103,8 +100,16 @@ lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
     exact v.asIdeal.finiteQuotientOfFreeOfNeBot v.ne_bot
   lia
 
+lemma two_le_absNorm : 2 ≤ absNorm v.asIdeal :=
+  have : v.asIdeal.IsPrime := v.isPrime
+  have : NeZero v.asIdeal := ⟨v.ne_bot⟩
+  have h : 2 ≤ (v.asIdeal.under ℤ).absNorm := by simp [(Nat.absNorm_under_prime v.asIdeal).two_le]
+  h.trans (Nat.le_of_dvd (by grind [one_lt_absNorm v]) (Int.absNorm_under_dvd_absNorm v.asIdeal))
+
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1` -/
 lemma one_lt_absNorm_nnreal : 1 < (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v
+
+lemma two_le_absNorm_nnreal : 2 ≤ (absNorm v.asIdeal : ℝ≥0) := mod_cast two_le_absNorm v
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `≠ 0` -/
 lemma absNorm_ne_zero : (absNorm v.asIdeal : ℝ≥0) ≠ 0 :=
@@ -125,6 +130,7 @@ end AbsoluteValue
 end RingOfIntegers.HeightOneSpectrum
 
 section FinitePlace
+variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
 
 open RingOfIntegers.HeightOneSpectrum
 
@@ -240,9 +246,20 @@ theorem FinitePlace.norm_lt_one_iff_mem (x : 𝓞 K) :
   rw [norm_embedding]
   exact v.adicAbv_coe_lt_one_iff (one_lt_absNorm_nnreal v) x
 
+lemma FinitePlace.two_le_norm_of_one_lt_norm {v : HeightOneSpectrum (𝓞 K)}
+    (x : v.adicCompletion K) (h : 1 < ‖x‖) :
+    2 ≤ ‖x‖ := by
+  rw [FinitePlace.norm_def, WithZeroMulInt.toNNReal_neg_apply (absNorm_ne_zero v) (by aesop)]
+  apply (two_le_absNorm_nnreal v).trans
+  conv_lhs => rw [← zpow_one (v.asIdeal.absNorm : NNReal)]
+  apply zpow_le_zpow_right₀ (one_lt_absNorm_nnreal v).le
+  simpa [← Int.sub_one_lt_iff, sub_self, ← toAdd_one, Multiplicative.toAdd_lt,
+    WithZero.lt_unzero_iff] using Valued.toNormedField.one_lt_norm_iff.1 h
+
 end FinitePlace
 
 namespace FinitePlace
+variable {K : Type*} [Field K] [NumberField K]
 
 instance : FunLike (FinitePlace K) K ℝ where
   coe w x := w.1 x
@@ -352,6 +369,8 @@ end NumberField
 
 namespace IsDedekindDomain.HeightOneSpectrum
 
+variable {K : Type*} [Field K] [NumberField K]
+
 open NumberField.FinitePlace NumberField.RingOfIntegers
   NumberField.RingOfIntegers.HeightOneSpectrum
 open scoped NumberField
@@ -378,7 +397,7 @@ section LiesOver
 
 namespace NumberField.HeightOneSpectrum
 
-variable {L : Type*} [Field L] [NumberField L] [Algebra K L]
+variable {K L : Type*} [Field K] [NumberField K] [Field L] [NumberField L] [Algebra K L]
 variable (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L))
 variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
