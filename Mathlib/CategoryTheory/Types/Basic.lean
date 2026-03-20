@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl
+Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Dagur Asgeirsson
 -/
 module
 
@@ -14,14 +14,22 @@ public import Mathlib.Tactic.ToAdditive
 /-!
 # The category `Type`.
 
-In this section we set up the theory so that Lean's types and functions between them
-can be viewed as a `LargeCategory` in our framework.
+In this section we define a `LargeCategory` structure on `Type u`, in such a way that it becomes a
+`ConcreteCategory`.
 
-Lean cannot transparently view a function as a morphism in this category, and needs a hint in
-order to be able to type check. We provide the abbreviation `asHom f` to guide type checking,
+## Implementation
+
+We define the one-field structure `TypeCat.Fun` to wrap a function between types, and a `FunLike`
+instance on it. Then we define a one-field structure `TypeCat.Hom` which wraps a `Fun`. The
+morphisms in the category `Type u` are defined to be `TypeCat.Hom`, and the `FC` parameter of
+the `ConcreteCategory` instance is `TypeCat.Fun`. This double nesting allows us to avoid defining a
+`FunLike` instance on bare functions, which would give two non-reducibly-defeq coercions from
+morphisms in `Type u` to functions.
+
+To promote a function to a morphism in this category, we provode the abbreviation `TypeCat.ofHom f`,
 as well as a corresponding notation `↾ f`. (Entered as `\upr `.)
 
-We provide various simplification lemmas for functors and natural transformations valued in `Type`.
+## Main definitions
 
 We define `uliftFunctor`, from `Type u` to `Type (max u v)`, and show that it is fully faithful
 (but not, of course, essentially surjective).
@@ -36,7 +44,7 @@ We prove some basic facts about the category `Type`:
 @[expose] public section
 
 -- morphism levels before object levels. See note [category theory universes].
-universe v v' w u u'
+universe v w u u'
 
 namespace TypeCat
 
@@ -57,7 +65,6 @@ initialize_simps_projections Fun (toFun → apply)
 def Fun.mk {X Y : Type*} (f : X → Y) : Fun X Y where
   toFun := f
 
--- @[simp]
 lemma Fun.mk_as {X Y : Type*} (f : X → Y) : (Fun.mk f).toFun = f :=
   rfl
 
@@ -70,11 +77,11 @@ lemma Fun.coe_mk {X Y : Type*} (f : X → Y) : (Fun.mk f : X → Y) = f :=
   rfl
 
 /-- The identity function as a `Fun`. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def Fun.id (X : Type*) : Fun X X := Fun.mk _root_.id
 
 /-- Composition of `Fun`s. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def Fun.comp {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) : Fun X Z := mk (f.toFun ∘ g.toFun)
 
 /-- The equivalence between `Fun`s and functions between types. -/
@@ -136,6 +143,9 @@ abbrev Hom.hom {X Y : Type u} (f : Hom X Y) : Fun X Y :=
 /-- Typecheck a function as a morphism in `Type`. -/
 abbrev ofHom {X Y : Type u} (f : X → Y) : X ⟶ Y :=
   ConcreteCategory.ofHom (Fun.mk f)
+
+@[inherit_doc]
+scoped notation "↾" f:200 => TypeCat.ofHom f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
 def Hom.Simps.hom (X Y : Type u) (f : X ⟶ Y) :=
@@ -368,13 +378,11 @@ theorem ofHom_epi_iff_surjective {X Y : Type u} (f : X → Y) :
   · rintro ⟨H⟩
     refine Function.surjective_of_right_cancellable_Prop fun g₁ g₂ hg => ?_
     rw [← Equiv.ulift.{u}.symm.injective.comp_left.eq_iff]
-    suffices ofHom (Equiv.ulift.symm ∘ g₁) = ofHom (Equiv.ulift.symm ∘ g₂) by
-      exact TypeCat.homEquiv.symm.injective this
+    apply TypeCat.homEquiv.symm.injective
     apply H
     apply ConcreteCategory.hom_ext
     intro x
-    change (ULift.up ∘ g₁ ∘ f) _ = (ULift.up ∘ g₂ ∘ f) _
-    rw [hg]
+    simp [dsimp% congrFun hg x]
   · refine fun H => ⟨fun g g' h =>  ConcreteCategory.hom_ext _ _ fun x ↦
       congrFun (H.injective_comp_right ?_) x⟩
     ext y
