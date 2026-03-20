@@ -49,6 +49,12 @@ class ConditionallyCompleteLattice (α : Type*) extends Lattice α, SupSet α, I
   /-- Every nonempty subset which is bounded below has a greatest lower bound. -/
   isGLB_csInf : ∀ s : Set α, s.Nonempty → BddBelow s → IsGLB s (sInf s)
 
+attribute [to_dual existing] ConditionallyCompleteLattice.toInfSet
+attribute [to_dual existing ConditionallyCompleteLattice.csInf_le]
+  ConditionallyCompleteLattice.le_csSup
+attribute [to_dual existing ConditionallyCompleteLattice.le_csInf]
+  ConditionallyCompleteLattice.csSup_le
+
 /-- A conditionally complete linear order is a linear order in which
 every nonempty subset which is bounded above has a supremum, and
 every nonempty subset which is bounded below has an infimum.
@@ -76,6 +82,9 @@ class ConditionallyCompleteLinearOrder (α : Type*)
   /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
   compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
     compareOfLessAndEq_rfl
+
+attribute [to_dual existing]
+  ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove
 
 /-- A conditionally complete linear order with `Bot` is a linear order with least element, in which
 every nonempty subset which is bounded above has a supremum, and every nonempty subset (necessarily
