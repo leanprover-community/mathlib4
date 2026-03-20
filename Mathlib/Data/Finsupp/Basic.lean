@@ -1325,24 +1325,6 @@ theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [A
 
 end Sigma
 
-section Div
-
-/-- Given a finitely supported function `d` where every value is divisible by `p`,
-`d.divConst h` is the finitely supported function scaled down by `p`. -/
-def divConst {p : ℕ} {d : α →₀ ℕ} (h : ∀ (i : α), p ∣ d i) : α →₀ ℕ where
-  support := d.support
-  toFun i := d i / p
-  mem_support_toFun i := by
-    refine ⟨fun hi ↦ ?_, by aesop⟩
-    obtain ⟨j, hj⟩ := h i
-    simp only [mem_support_iff, hj, ne_eq, mul_eq_zero, not_or, Nat.div_eq_zero_iff, not_lt] at hi ⊢
-    exact ⟨hi.1, Nat.le_mul_of_pos_right _ (Nat.pos_of_ne_zero hi.2)⟩
-
-theorem smul_divConst_cancel' {p : ℕ} {d : α →₀ ℕ} (h : ∀ (i : α), p ∣ d i) :
-    p • divConst h = d := by ext i; simp [divConst, (Nat.mul_div_cancel' (h i))]
-
-end Div
-
 lemma mem_range_embDomain_iff [AddCommMonoid M] (f : α ↪ β) (x : β →₀ M) :
     x ∈ Set.range (embDomain f) ↔ ↑x.support ⊆ Set.range f := by
   convert mem_range_mapDomain_iff _ f.injective _
