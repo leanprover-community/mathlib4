@@ -37,10 +37,10 @@ namespace ImplicitFunctionData
 /-- The implicit function defined by a $C^n$ implicit equation is $C^n$. This applies to the general
 form of the implicit function theorem. -/
 theorem contDiffAt_implicitFunction {φ : ImplicitFunctionData 𝕜 E₁ E₂ F} {n : WithTop ℕ∞}
-    (hl : ContDiffAt 𝕜 n φ.leftFun φ.pt) (hr : ContDiffAt 𝕜 n φ.rightFun φ.pt) (hn : n ≠ 0) :
+    (hl : ContDiffAt 𝕜 n φ.leftFun φ.pt) (hr : ContDiffAt 𝕜 n φ.rightFun φ.pt) (pn : n ≠ 0) :
     ContDiffAt 𝕜 n φ.implicitFunction.uncurry (φ.prodFun φ.pt) := by
   rw [implicitFunction_def, Function.uncurry_curry, ← HasStrictFDerivAt.localInverse_def]
-  refine ContDiffAt.to_localInverse ?_ (φ.hasStrictFDerivAt.hasFDerivAt) hn
+  refine ContDiffAt.to_localInverse ?_ (φ.hasStrictFDerivAt.hasFDerivAt) pn
   convert hl.prodMk hr <;> simp
 
 end ImplicitFunctionData
@@ -72,12 +72,12 @@ theorem implicitFunction_apply_self
 theorem eventually_apply_implicitFunction
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     ∀ᶠ x in 𝓝 u.1, f (x, cdf.implicitFunction pn if₂ x) = f u :=
-  (cdf.hasStrictFDerivAt pn).image_implicitFunctionOfProdDomain if₂
+  (cdf.hasStrictFDerivAt pn).eventually_apply_implicitFunctionOfProdDomain if₂
 
 theorem eventually_apply_eq_iff_implicitFunction
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     ∀ᶠ v in 𝓝 u, f v = f u ↔ cdf.implicitFunction pn if₂ v.1 = v.2 :=
-  (cdf.hasStrictFDerivAt pn).image_eq_iff_implicitFunctionOfProdDomain if₂
+  (cdf.hasStrictFDerivAt pn).eventually_apply_eq_iff_implicitFunctionOfProdDomain if₂
 
 theorem hasStrictFDerivAt_implicitFunction
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
@@ -118,10 +118,10 @@ alias implicitFunction := ContDiffAt.implicitFunction
 alias implicitFunction_def := ContDiffAt.implicitFunction_def
 
 @[deprecated (since := "2026-01-27")]
-alias apply_implicitFunction := ContDiffAt.image_implicitFunction
+alias apply_implicitFunction := ContDiffAt.eventually_apply_implicitFunction
 
 @[deprecated (since := "2026-01-27")]
-alias eventually_implicitFunction_apply_eq := ContDiffAt.image_eq_iff_implicitFunction
+alias eventually_implicitFunction_apply_eq := ContDiffAt.eventually_apply_eq_iff_implicitFunction
 
 @[deprecated (since := "2026-01-27")]
 alias contDiffAt_implicitFunction := ContDiffAt.contDiffAt_implicitFunction
