@@ -6,8 +6,8 @@ Authors: Rémy Degenne, Kexing Ying
 module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
-public import Mathlib.MeasureTheory.Function.UniformIntegrable
 public import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
+public import Mathlib.MeasureTheory.Function.UniformIntegrable
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
 
 /-!
@@ -76,7 +76,7 @@ theorem integral_norm_rpow_condExp_le {p : ℝ} (hp : 1 ≤ p) {f : α → E}
   _ ≤ ∫ x, μ[(fun x => ‖f x‖ ^ p) | m] x ∂μ := by
     refine integral_mono_of_nonneg ?_ integrable_condExp ?_
     · filter_upwards with a; positivity
-    · exact AEStronglyMeasurable.norm_rpow_condExp_le hp hfint.1 hf
+    · exact AEStronglyMeasurable.norm_rpow_condExp_le hp hf
   _ = _ := integral_condExp hm
 
 theorem integral_norm_condExp_le (f : α → E) : ∫ x, ‖(μ[f | m]) x‖ ∂μ ≤ ∫ x, ‖f x‖ ∂μ := by
