@@ -236,9 +236,11 @@ theorem pair {f : α → β} {g : α → σ}
         (Primcodable.prim α)).of_eq
     fun n => by cases @decode α _ n <;> simp [encodek]
 
+@[fun_prop]
 protected theorem encode : Primrec (@encode α _) :=
   (Primcodable.prim α).of_eq fun n => by cases @decode α _ n <;> rfl
 
+@[fun_prop]
 protected theorem decode : Primrec (@decode α _) :=
   Nat.Primrec.succ.comp (Primcodable.prim α)
 
@@ -260,9 +262,11 @@ theorem option_some : Primrec (@some α) :=
 theorem of_eq {f g : α → σ} (hf : Primrec f) (H : ∀ n, f n = g n) : Primrec g :=
   (funext H : f = g) ▸ hf
 
+@[fun_prop]
 theorem succ : Primrec Nat.succ :=
   nat_iff.2 Nat.Primrec.succ
 
+@[fun_prop]
 theorem pred : Primrec Nat.pred :=
   nat_iff.2 Nat.Primrec.pred
 
@@ -273,6 +277,7 @@ theorem ofNat_iff {α β} [Denumerable α] [Primcodable β] {f : α → β} :
     Primrec f ↔ Primrec fun n => f (ofNat α n) :=
   dom_denumerable.trans <| nat_iff.symm.trans encode_iff
 
+@[fun_prop]
 protected theorem ofNat (α) [Denumerable α] : Primrec (ofNat α) :=
   ofNat_iff.1 Primrec.id
 
@@ -303,9 +308,11 @@ theorem of_equiv_symm_iff {β} (e : β ≃ α) {f : σ → α} :
   letI := Primcodable.ofEquiv α e
   ⟨fun h => (of_equiv.comp h).of_eq fun a => by simp, of_equiv_symm.comp⟩
 
+@[fun_prop]
 theorem unpair : Primrec Nat.unpair :=
   (pair (nat_iff.2 .left) (nat_iff.2 .right)).of_eq fun n => by simp
 
+-- Instead of this, we make `list_getElem?` a `fun_prop` lemma later.
 theorem list_getElem?₁ : ∀ l : List α, Primrec (l[·]? : ℕ → Option α)
   | [] => dom_denumerable.2 zero
   | a :: l =>
