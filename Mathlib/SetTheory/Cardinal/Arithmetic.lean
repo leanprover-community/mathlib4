@@ -189,7 +189,7 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
       use ha
       constructor
       · rw [← not_lt]
-        exact fun hb => ne_of_gt (hb.trans_le (le_mul_left this)) h
+        exact fun hb => ne_of_gt (hb.trans_le (le_mul_of_pos_left this.pos)) h
       · rintro rfl
         apply this
         rw [mul_zero] at h
@@ -382,10 +382,10 @@ end add
 
 protected theorem ciSup_mul (c : Cardinal.{v}) : (⨆ i, f i) * c = ⨆ i, f i * c := by
   cases isEmpty_or_nonempty ι; · simp
-  obtain rfl | h0 := eq_or_ne c 0; · simp
+  obtain rfl | h0 := eq_zero_or_pos c; · simp
   by_cases hf : BddAbove (range f); swap
   · have hfc : ¬ BddAbove (range (f · * c)) := fun bdd ↦ hf
-      ⟨⨆ i, f i * c, forall_mem_range.mpr fun i ↦ (le_mul_right h0).trans (le_ciSup bdd i)⟩
+      ⟨⨆ i, f i * c, forall_mem_range.mpr fun i ↦ (le_mul_of_pos_right h0).trans (le_ciSup bdd i)⟩
     simp [iSup, csSup_of_not_bddAbove, hf, hfc]
   have (i : ι) : f i * c ≤ (⨆ i, f i) * c := by grw [← le_ciSup hf i]
   refine le_antisymm ?_ (ciSup_le' this)
@@ -394,10 +394,10 @@ protected theorem ciSup_mul (c : Cardinal.{v}) : (⨆ i, f i) * c = ⨆ i, f i *
   · obtain ⟨i, hi⟩ := exists_eq_of_iSup_eq_of_not_isSuccLimit
       f hf (not_isSuccLimit_of_lt_aleph0 hs) rfl
     exact hi ▸ le_ciSup bdd i
-  rw [mul_eq_max_of_aleph0_le_left hs h0, max_le_iff]
+  rw [mul_eq_max_of_aleph0_le_left hs h0.ne', max_le_iff]
   obtain ⟨i, hi⟩ := exists_lt_of_lt_ciSup' (one_lt_aleph0.trans_le hs)
-  exact ⟨ciSup_mono bdd fun i ↦ le_mul_right h0,
-    (le_mul_left (zero_lt_one.trans hi).ne').trans (le_ciSup bdd i)⟩
+  exact ⟨ciSup_mono bdd fun i ↦ le_mul_of_pos_right h0,
+    (le_mul_of_pos_left hi.pos).trans (le_ciSup bdd i)⟩
 
 protected theorem mul_ciSup (c : Cardinal.{v}) : c * (⨆ i, f i) = ⨆ i, c * f i := by
   rw [mul_comm, Cardinal.ciSup_mul f]; simp_rw [mul_comm]
