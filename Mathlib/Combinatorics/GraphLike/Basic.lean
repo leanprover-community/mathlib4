@@ -138,17 +138,16 @@ lemma step.ext_HEq {u' v'} {s₁ : step G u v} {s₂ : step G u' v'} (h : s₁.v
   obtain rfl : d₁ = d₂ := h
   rfl
 
+/-- Convert a step to a dart. -/
 def step.todart (h : step G u v) : darts G := ⟨h.val, h.prop.1⟩
 
 @[simp]
 lemma step.todart_val (h : step G u v) : h.todart.val = h.val := rfl
 
-@[simp]
 lemma step.todart_fst (s : step G u v) : DartLike.fst s.todart.val = u := by
   obtain ⟨d, hd, rfl, rfl⟩ := s
   rfl
 
-@[simp]
 lemma step.todart_snd (s : step G u v) : DartLike.snd s.todart.val = v := by
   obtain ⟨d, hd, rfl, rfl⟩ := s
   rfl
@@ -160,6 +159,7 @@ lemma step.adj (h : step G u v) : Adj G u v := by
 
 @[ext] theorem darts_ext (d₁ d₂ : darts G) (h : d₁.val = d₂.val) : d₁ = d₂ := Subtype.ext h
 
+/-- Convert a dart to a step. -/
 def dartStep (d : darts G) : step G (fst d.val) (snd d.val) :=
   ⟨d.val, d.prop, rfl, rfl⟩
 
