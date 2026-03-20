@@ -30,12 +30,6 @@ open Simplicial CategoryTheory MonoidalCategory CartesianMonoidalCategory
 
 namespace SSet
 
-instance : CartesianMonoidalCategory SSet.{u} :=
-  (inferInstance : CartesianMonoidalCategory (SimplexCategoryᵒᵖ ⥤ Type u))
-
-instance : MonoidalClosed (SSet.{u}) :=
-  inferInstanceAs (MonoidalClosed (SimplexCategoryᵒᵖ ⥤ Type u))
-
 @[simp]
 lemma leftUnitor_hom_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x : (𝟙_ _ ⊗ K).obj Δ) :
     (λ_ K).hom.app Δ x = x.2 := rfl
@@ -184,13 +178,6 @@ variable (n : ℕ)
 
 open MonoidalCategory
 
-instance : CartesianMonoidalCategory (Truncated.{u} n) :=
-  (inferInstance : CartesianMonoidalCategory (_ ⥤ Type u))
-
-instance : MonoidalClosed (Truncated.{u} n) :=
-  inferInstanceAs (MonoidalClosed (_ ⥤ Type u))
-
-set_option backward.isDefEq.respectTransparency false in
 instance : (truncation.{u} n).Monoidal :=
   inferInstanceAs ((Functor.whiskeringLeft _ _ _).obj _).Monoidal
 

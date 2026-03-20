@@ -72,13 +72,13 @@ theorem edgeSet_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s
     G.edgeSet \ G.incidenceSet t ∪ (s(·, t)) '' (G.neighborSet s) := by
   ext e; refine e.inductionOn ?_
   simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_diff, mk'_mem_incidenceSet_iff]
-  intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by aesop]
+  intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by grind]
 
 theorem edgeSet_replaceVertex_of_adj (ha : G.Adj s t) : (G.replaceVertex s t).edgeSet =
     (G.edgeSet \ G.incidenceSet t ∪ (s(·, t)) '' (G.neighborSet s)) \ {s(t, t)} := by
   ext e; refine e.inductionOn ?_
   simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_diff, mk'_mem_incidenceSet_iff]
-  intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by aesop]
+  intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by grind]
 
 variable [Fintype V] [DecidableRel G.Adj]
 
