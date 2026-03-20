@@ -70,7 +70,7 @@ general `QuadraticMap`.
 Clifford algebra, multivector, bivector, Lie algebra, orthogonal
 -/
 
-noncomputable section
+@[expose] public section
 
 namespace CliffordAlgebra
 
