@@ -477,7 +477,7 @@ theorem PrimrecPred.comp {p : β → Prop} {f : α → β} :
   | ⟨_i, hp⟩, hf => hp.comp hf |>.primrecPred
 
 @[fun_prop]
-lemma PrimrecPred.const {p : Prop} : PrimrecPred (fun _ : α ↦ p) := by
+protected lemma PrimrecPred.const {p : Prop} : PrimrecPred (fun _ : α ↦ p) := by
   classical rw [primrecPred_iff_primrec_decide]; fun_prop
 
 --Komyyy0 set_option linter.deprecated false in
