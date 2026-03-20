@@ -103,7 +103,7 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
 
 -- This set_option is needed to avoid an error in `RingTheory.MvPowerSeries.NeZeroDivisors`.
 -- This is almost certainly a bug in leanprover/lean4#12897
-set_option backward.inferInstanceAs.normalForm false in
+set_option backward.inferInstanceAs.wrap false in
 /-- The opposite linear order to a given linear order -/
 @[implicit_reducible]
 def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=

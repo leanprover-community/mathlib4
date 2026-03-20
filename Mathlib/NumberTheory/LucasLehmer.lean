@@ -461,7 +461,7 @@ lemma ω_pow_trace [Fact q.Prime] (odd : Odd q)
 
 variable [NeZero q]
 
-set_option backward.inferInstanceAs.normalForm false in
+set_option backward.inferInstanceAs.wrap false in
 instance : Fintype (X q) := inferInstanceAs (Fintype (ZMod q × ZMod q))
 
 /-- The cardinality of `X` is `q^2`. -/

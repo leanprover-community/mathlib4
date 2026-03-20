@@ -32,7 +32,7 @@ universe u v w u₁
 
 variable (ι : Type v) (β : ι → Type w)
 
-set_option backward.deriving.normalForm false in
+set_option backward.deriving.wrap false in
 /-- `DirectSum ι β` is the direct sum of a family of additive commutative monoids `β i`.
 
 Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι β`. -/

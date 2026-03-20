@@ -56,7 +56,7 @@ open Function
 
 -- This is needed here or we get errors in `Mathlib/Data/ENNReal/Basic.lean`.
 -- We should find exactly which declarations need this, and then diagnose the problem.
-set_option backward.deriving.normalForm false in
+set_option backward.deriving.wrap false in
 -- to ensure these instances are computable
 /-- Nonnegative real numbers, denoted as `ℝ≥0` within the NNReal namespace -/
 def NNReal := { r : ℝ // 0 ≤ r } deriving

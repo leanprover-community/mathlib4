@@ -60,7 +60,7 @@ end TensorAlgebra
 
 -- This is needed or we get errors in `Mathlib/Algebra/Lie/UniversalEnveloping.lean`.
 -- We should localize this and diagnose!
-set_option backward.deriving.normalForm false in
+set_option backward.deriving.wrap false in
 /-- The tensor algebra of the module `M` over the commutative semiring `R`.
 -/
 def TensorAlgebra :=
