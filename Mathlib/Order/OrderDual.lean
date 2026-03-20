@@ -101,7 +101,7 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
     simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
     rfl
 
-set_option backward.inferInstanceAs.wrap.reuseInstances false in  -- otherwise we get an identity!
+set_option backward.inferInstanceAs.wrap.reuseSubInstances false in  -- otherwise we get an identity!
 /-- The opposite linear order to a given linear order -/
 @[implicit_reducible]
 def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
