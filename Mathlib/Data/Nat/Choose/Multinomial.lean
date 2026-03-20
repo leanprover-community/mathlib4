@@ -199,6 +199,8 @@ theorem countPerms_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
     · rw [Function.update_of_ne h.symm, toFinsupp_apply]
     · rw [not_ne_iff.1 h, Function.update_self]
 
+@[deprecated (since := "2025-03-13")] alias multinomial_filter_ne := countPerms_filter_ne
+
 @[simp]
 theorem countPerms_zero [DecidableEq α] : countPerms (0 : Multiset α) = 1 := by
   simp [countPerms, Finsupp.multinomial]
