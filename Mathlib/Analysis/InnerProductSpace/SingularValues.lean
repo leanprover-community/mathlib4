@@ -71,7 +71,7 @@ We take the last approach for the following reasons:
 singular values
 -/
 
-@[expose] public section
+public section
 
 open Module InnerProductSpace
 
@@ -93,7 +93,7 @@ the infinite sequence are zero. Please see the module docstring of
 The singular values are zero-indexed, so `T.singularValues 0` refers to the first singular value.
 This means the positive singular values occur at `0 ≤ i < rank(T)` and not `1 ≤ i ≤ rank(T)`.
 -/
-@[no_expose] noncomputable def singularValues : ℕ →₀ ℝ :=
+noncomputable def singularValues : ℕ →₀ ℝ :=
   Finsupp.embDomain Fin.valEmbedding <|
     Finsupp.ofSupportFinite
       (fun i ↦ √(T.isSymmetric_adjoint_comp_self.eigenvalues rfl i))
