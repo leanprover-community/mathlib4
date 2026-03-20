@@ -87,16 +87,15 @@ theorem multinomial_congr_of_eq_on_inter [DecidableEq α] {f g : α → ℕ} {s 
     (hf : ∀ a ∈ s \ t, f a = 0) (hg : ∀ a ∈ t \ s, g a = 0) (hfg : ∀ a ∈ s ∩ t, f a = g a) :
     multinomial s f = multinomial t g := by
   rw [← Nat.mul_right_inj (prod_ne_zero_iff.mpr (fun x _ ↦ factorial_ne_zero (g x))),
-    multinomial_spec]
-  rw [prod_congr_of_eq_on_inter (g := fun a ↦ (f a)!) (s₂ := s) (by aesop) (by aesop) (by aesop),
-      multinomial_spec s f]
+    multinomial_spec, prod_congr_of_eq_on_inter (g := fun a ↦ (f a)!) (s₂ := s) (by aesop)
+    (by aesop) (by aesop), multinomial_spec s f]
   congr 1
   exact sum_congr_of_eq_on_inter (by grind) (by grind) (by grind)
 
 theorem multinomial_congr_of_sdiff [DecidableEq α] {f g : α → ℕ} {s t : Finset α}
     (hst : s ⊆ t) (hg : ∀ a ∈ t \ s, g a = 0) (hfg : ∀ a ∈ s, f a = g a) :
     multinomial s f = multinomial t g :=
-    multinomial_congr_of_eq_on_inter (by grind) hg (by grind)
+  multinomial_congr_of_eq_on_inter (by grind) hg (by grind)
 
 variable (s a) in
 theorem multinomial_single [DecidableEq α] :
