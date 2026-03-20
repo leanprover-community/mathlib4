@@ -25,13 +25,11 @@ sometime soon.
 
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
-universe u v
-
 open Nat
 
-namespace List
+variable {α β : Type*} {R r : α → α → Prop} {l l₁ l₂ : List α} {a b : α}
 
-variable {α : Type u} {β : Type v} {R r : α → α → Prop} {l l₁ l₂ : List α} {a b : α}
+namespace List
 
 mk_iff_of_inductive_prop List.IsChain List.isChain_iff
 
@@ -277,16 +275,21 @@ theorem IsChain.tail {l : List α} (h : IsChain R l) : IsChain R l.tail := by
 
 @[deprecated (since := "2025-09-24")] alias Chain'.tail := IsChain.tail
 
-theorem IsChain.rel_head {x y l} (h : IsChain R (x :: y :: l)) : R x y :=
-  List.rel_of_isChain_cons_cons h
+@[deprecated (since := "2026-03-20")] alias IsChain.rel_head := IsChain.rel
 
 @[deprecated (since := "2025-09-24")] alias Chain'.rel_head := IsChain.rel_head
 
 theorem IsChain.rel_head? {x l} (h : IsChain R (x :: l)) ⦃y⦄ (hy : y ∈ head? l) : R x y := by
   rw [← cons_head?_tail hy] at h
-  exact h.rel_head
+  exact h.rel
 
 @[deprecated (since := "2025-09-24")] alias Chain'.rel_head? := IsChain.rel_head?
+
+theorem IsChain.rel_getLast_dropLast {l : List α} (h : l.IsChain R) (hne : l.dropLast ≠ []) :
+    R (l.dropLast.getLast hne) (l.getLast <| by grind) :=
+  match l with
+  | [_, _] => h.rel
+  | _ :: _ :: _ :: _ => h.tail.rel_getLast_dropLast <| by simp
 
 theorem IsChain.cons {x} : ∀ {l : List α}, IsChain R l → (∀ y ∈ l.head?, R x y) →
     IsChain R (x :: l)
@@ -335,6 +338,12 @@ theorem IsChain.right_of_append (h : IsChain R (l₁ ++ l₂)) : IsChain R l₂ 
 @[deprecated (since := "2025-09-24")] alias Chain'.left_of_append := IsChain.left_of_append
 
 @[deprecated (since := "2025-09-24")] alias Chain'.right_of_append := IsChain.right_of_append
+
+theorem IsChain.rel_getLast_head_of_append {l₁ l₂ : List α} (h : (l₁ ++ l₂).IsChain R)
+    (h₁ : l₁ ≠ []) (h₂ : l₂ ≠ []) : R (l₁.getLast h₁) (l₂.head h₂) :=
+  match l₁, l₂ with
+  | [_], _ :: _ => h.rel
+  | _ :: _ :: _, _ :: _ => h.tail.rel_getLast_head_of_append (by simp) (by simp)
 
 theorem IsChain.infix (h : IsChain R l) (h' : l₁ <:+: l) : IsChain R l₁ := by
   rcases h' with ⟨l₂, l₃, rfl⟩
@@ -622,11 +631,23 @@ alias chain_eq_iff_eq_replicate := isChain_cons_eq_iff_eq_replicate
 
 end List
 
+theorem WellFoundedRelation.asymmetricₙ [WellFoundedRelation α] {l : List α} (hne : l ≠ [])
+    (h : l.IsChain WellFoundedRelation.rel) :
+    ¬WellFoundedRelation.rel (l.getLast hne) (l.head hne) :=
+  match l with
+  | [x] => irrefl x
+  | _ :: _ :: _ =>
+    fun hr ↦ asymmetricₙ (List.cons_ne_nil _ _) (h.dropLast.cons_cons hr) (h.rel_getLast_dropLast _)
+termination_by l.head hne
+
+theorem WellFounded.asymmetricₙ (wf : WellFounded r) (hne : l ≠ []) (h : l.IsChain r) :
+    ¬r (l.getLast hne) (l.head hne) :=
+  @WellFoundedRelation.asymmetricₙ α ⟨r, wf⟩ l hne h
 
 /-! In this section, we consider the type of `r`-decreasing chains (`List.IsChain (flip r)`)
   equipped with lexicographic order `List.Lex r`. -/
 
-variable {α : Type*} (r : α → α → Prop)
+variable (r)
 
 /-- The type of `r`-decreasing chains -/
 abbrev List.chains := { l : List α // l.IsChain (flip r) }
