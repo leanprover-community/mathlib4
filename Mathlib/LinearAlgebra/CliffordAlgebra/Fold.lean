@@ -157,6 +157,7 @@ theorem left_induction {P : CliffordAlgebra Q → Prop} (algebraMap : ∀ r : R,
 /-! ### Versions with extra state -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `CliffordAlgebra.foldr'` -/
 def foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N) :
     M →ₗ[R] Module.End R (CliffordAlgebra Q × N) := by
@@ -200,6 +201,7 @@ theorem foldr'_ι (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
     foldr' Q f hf n (ι Q m) = f m (1, n) :=
   congr_arg Prod.snd (foldr_ι _ _ _ _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem foldr'_ι_mul (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
     (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) (n m) (x) :
     foldr' Q f hf n (ι Q m * x) = f m (x, foldr' Q f hf n x) := by

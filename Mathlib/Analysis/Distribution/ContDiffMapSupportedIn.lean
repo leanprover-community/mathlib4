@@ -450,6 +450,7 @@ lemma structureMapLM_apply {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
     structureMapLM 𝕜 n i f = if i ≤ n then iteratedFDeriv ℝ i f else 0 := by
   simp [structureMapLM]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma structureMapLM_top_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
     structureMapLM 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
   simp [structureMapLM_eq]
@@ -636,6 +637,7 @@ protected theorem seminorm_le_iff {C : ℝ} (hC : 0 ≤ C) (i : ℕ) (f : 𝓓^{
   · push_neg at hi
     simp [hi, ContDiffMapSupportedIn.seminorm_eq_bot_of_gt _ hi, hC]
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem seminorm_top_le_iff {C : ℝ} (hC : 0 ≤ C) (i : ℕ) (f : 𝓓_{K}(E, F)) :
     N[𝕜]_{K, i} f ≤ C ↔ ∀ x ∈ K, ‖iteratedFDeriv ℝ i f x‖ ≤ C := by
   simp_rw [ContDiffMapSupportedIn.seminorm_le_iff 𝕜 hC, le_top, forall_const]
@@ -735,6 +737,7 @@ theorem seminorm_fderivLM_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
       norm_iteratedFDeriv_apply_le_seminorm 𝕜 hi'
   · simp [fderivLM_apply_of_gt 𝕜 f hk]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem seminorm_fderivLM_top {i : ℕ} (f : 𝓓_{K}(E, F)) :
     N[𝕜]_{K, i} (fderivLM 𝕜 ⊤ ⊤ f) = N[𝕜]_{K, i+1} f := by
   simp [ContDiffMapSupportedIn.seminorm_apply, BoundedContinuousFunction.norm_eq_iSup_norm,

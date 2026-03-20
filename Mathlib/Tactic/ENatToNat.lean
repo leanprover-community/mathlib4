@@ -31,6 +31,7 @@ attribute [enat_to_nat_top] OfNat.ofNat_ne_zero ne_eq not_false_eq_true
 attribute [enat_to_nat_top] ENat.coe_ne_top ENat.top_ne_coe ENat.coe_lt_top top_le_iff le_top
 attribute [enat_to_nat_top] top_add ENat.sub_top ENat.top_sub_coe ENat.mul_top ENat.top_mul
 
+set_option backward.isDefEq.respectTransparency false in
 @[enat_to_nat_top] lemma not_lt_top (x : ENat) :
     ¬(⊤ < x) := by cases x <;> simp
 

@@ -144,11 +144,13 @@ def toProd : evenOdd Q₁ ᵍ⊗[R] evenOdd Q₂ →ₐ[R] CliffordAlgebra (Q₁
     fun _i₁ _i₂ x₁ x₂ => map_mul_map_of_isOrtho_of_mem_evenOdd _ _ (QuadraticMap.IsOrtho.inl_inr) _
       _ x₁.prop x₂.prop
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toProd_ι_tmul_one (m₁ : M₁) : toProd Q₁ Q₂ (ι _ m₁ ᵍ⊗ₜ 1) = ι _ (m₁, 0) := by
   rw [toProd, GradedTensorProduct.lift_tmul, map_one, mul_one, map_apply_ι,
     QuadraticMap.Isometry.inl_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toProd_one_tmul_ι (m₂ : M₂) : toProd Q₁ Q₂ (1 ᵍ⊗ₜ ι _ m₂) = ι _ (0, m₂) := by
   rw [toProd, GradedTensorProduct.lift_tmul, map_one, one_mul, map_apply_ι,

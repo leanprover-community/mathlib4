@@ -179,6 +179,7 @@ theorem reverse_prod_map_ι :
   | [] => by simp
   | x::xs => by simp [reverse_prod_map_ι xs]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Taking the involute of the product a list of $n$ vectors lifted via `ι` is equivalent to
 premultiplying by ${-1}^n$. -/
 theorem involute_prod_map_ι :

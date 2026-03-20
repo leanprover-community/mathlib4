@@ -122,6 +122,7 @@ lemma exists_walk_of_edist_eq_coe {k : ℕ} (h : G.edist u v = k) :
   have ⟨p, hp⟩ := exists_walk_of_edist_ne_top this
   ⟨p, Nat.cast_injective (hp.trans h)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma edist_ne_top_iff_reachable : G.edist u v ≠ ⊤ ↔ G.Reachable u v := by
   refine ⟨reachable_of_edist_ne_top, fun h ↦ ?_⟩
   by_contra hx

@@ -53,6 +53,7 @@ We include the unit ideal in order to have the instance `IsNoetherianRing R → 
 class Ideal.FiniteHeight : Prop where
   eq_top_or_height_ne_top : I = ⊤ ∨ I.height ≠ ⊤
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.finiteHeight_iff_lt {I : Ideal R} :
     Ideal.FiniteHeight I ↔ I = ⊤ ∨ I.height < ⊤ := by
   rw [Ideal.finiteHeight_iff, lt_top_iff_ne_top]
@@ -97,10 +98,12 @@ lemma Ideal.primeHeight_add_one_le_of_lt {I J : Ideal R} [I.IsPrime] [J.IsPrime]
   unfold primeHeight
   exact Order.height_add_one_le h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Ideal.height_top : (⊤ : Ideal R).height = ⊤ := by
   simp [height, minimalPrimes_top]
 
+set_option backward.isDefEq.respectTransparency false in
 @[gcongr]
 lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
     (h : I < J) [J.FiniteHeight] :
@@ -157,6 +160,7 @@ lemma Ideal.exists_isMaximal_height [FiniteRingKrullDim R] :
   · norm_cast
     exact height_mono hle
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 900) Ideal.finiteHeight_of_finiteRingKrullDim {I : Ideal R}
     [FiniteRingKrullDim R] : I.FiniteHeight := by
   rw [finiteHeight_iff, or_iff_not_imp_left, ← lt_top_iff_ne_top, ← WithBot.coe_lt_coe]
@@ -165,6 +169,7 @@ instance (priority := 900) Ideal.finiteHeight_of_finiteRingKrullDim {I : Ideal R
   have h2 := Ideal.height_le_ringKrullDim_of_ne_top h
   exact lt_of_le_of_lt h2 h1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If J has finite height and I ≤ J, then I has finite height -/
 lemma Ideal.finiteHeight_of_le {I J : Ideal R} (e : I ≤ J) (hJ : J ≠ ⊤) [FiniteHeight J] :
     FiniteHeight I where

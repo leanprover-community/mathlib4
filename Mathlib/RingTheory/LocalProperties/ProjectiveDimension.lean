@@ -62,6 +62,7 @@ lemma localizedModule_hasProjectiveDimensionLE [Small.{v, u} R] (n : ℕ) (S : S
     have := (T_exact.hasProjectiveDimensionLT_X₃_iff n ‹_›).mp projle
     exact (TS_exact.hasProjectiveDimensionLT_X₃_iff n ‹_›).mpr (ih (kernel f))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma projectiveDimension_le_projectiveDimension_of_isLocalizedModule [Small.{v, u} R]
     (S : Submonoid R) (M : ModuleCat.{v} R) :
     projectiveDimension (M.localizedModule S) ≤ projectiveDimension M := by
@@ -127,6 +128,7 @@ lemma hasProjectiveDimensionLE_iff_forall_primeSpectrum (n : ℕ) [Small.{v} R]
     fun h ↦ (M.hasProjectiveDimensionLE_iff_forall_maximalSpectrum n).mpr
     fun m ↦ h ⟨m.1, Ideal.IsMaximal.isPrime' m.1⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma projectiveDimension_eq_iSup_localizedModule_prime [Small.{v} R]
     [IsNoetherianRing R] (M : ModuleCat.{v} R) [Module.Finite R M] : projectiveDimension M =
     ⨆ (p : PrimeSpectrum R), projectiveDimension (M.localizedModule p.1.primeCompl) := by
@@ -149,6 +151,7 @@ lemma projectiveDimension_eq_iSup_localizedModule_prime [Small.{v} R]
     | top => simp
     | coe n => simpa using aux n
 
+set_option backward.isDefEq.respectTransparency false in
 lemma projectiveDimension_eq_iSup_localizedModule_maximal [Small.{v} R]
     [IsNoetherianRing R] (M : ModuleCat.{v} R) [Module.Finite R M] : projectiveDimension M =
     ⨆ (p : MaximalSpectrum R), projectiveDimension (M.localizedModule p.1.primeCompl) := by

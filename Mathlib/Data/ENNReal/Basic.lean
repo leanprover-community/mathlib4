@@ -96,6 +96,7 @@ open Function Set NNReal
 
 variable {α : Type*}
 
+set_option backward.deriving.normalForm false in
 /-- The extended nonnegative real numbers. This is usually denoted [0, ∞],
   and is relevant as the codomain of a measure. -/
 def ENNReal := WithTop ℝ≥0

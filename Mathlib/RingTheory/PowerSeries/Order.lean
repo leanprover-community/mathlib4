@@ -64,6 +64,7 @@ theorem order_finite_iff_ne_zero : (order φ < ⊤) ↔ φ ≠ 0 := by
   simp only [order]
   split_ifs with h <;> simpa
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `0` power series is the unique power series with infinite order. -/
 @[simp]
 theorem order_eq_top {φ : R⟦X⟧} : φ.order = ⊤ ↔ φ = 0 := by

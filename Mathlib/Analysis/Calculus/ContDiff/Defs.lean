@@ -201,6 +201,7 @@ theorem contDiffWithinAt_iff_forall_nat_le {n : ℕ∞} :
     ContDiffWithinAt 𝕜 n f s x ↔ ∀ m : ℕ, ↑m ≤ n → ContDiffWithinAt 𝕜 m f s x :=
   ⟨fun H _ hm => H.of_le (mod_cast hm), fun H m hm => H m hm _ le_rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffWithinAt_infty :
     ContDiffWithinAt 𝕜 ∞ f s x ↔ ∀ n : ℕ, ContDiffWithinAt 𝕜 n f s x :=
   contDiffWithinAt_iff_forall_nat_le.trans <| by simp only [forall_prop_of_true, le_top]
@@ -531,6 +532,7 @@ theorem contDiffOn_iff_forall_nat_le {n : ℕ∞} :
     ContDiffOn 𝕜 n f s ↔ ∀ m : ℕ, ↑m ≤ n → ContDiffOn 𝕜 m f s :=
   ⟨fun H _ hm => H.of_le (mod_cast hm), fun H x hx m hm => H m hm x hx m le_rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffOn_infty : ContDiffOn 𝕜 ∞ f s ↔ ∀ n : ℕ, ContDiffOn 𝕜 n f s :=
   contDiffOn_iff_forall_nat_le.trans <| by simp only [le_top, forall_prop_of_true]
 

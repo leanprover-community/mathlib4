@@ -311,6 +311,7 @@ theorem ιMulti_succ_apply {n : ℕ} (v : Fin n.succ → M) :
     ιMulti R _ v = ι R (v 0) * ιMulti R _ (Matrix.vecTail v) := by
   simp [ιMulti, Matrix.vecTail]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
     (ιMulti R n.succ).curryLeft m =
       (LinearMap.mulLeft R (ι R m)).compAlternatingMap (ιMulti R n) := by
@@ -330,6 +331,7 @@ lemma ιMulti_mul_ιMulti {m n : ℕ} (a : Fin m → M) (b : Fin n → M) :
 
 variable (R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of `ExteriorAlgebra.ιMulti R n` is contained in the `n`th exterior power. -/
 lemma ιMulti_range (n : ℕ) :
     Set.range (ιMulti R n (M := M)) ⊆ ↑(⋀[R]^n M) := by

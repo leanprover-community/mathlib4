@@ -420,6 +420,7 @@ lemma height_le_coe_iff {x : α} {n : ℕ} : height x ≤ n ↔ ∀ y < x, heigh
 lemma coheight_le_coe_iff {x : α} {n : ℕ} : coheight x ≤ n ↔ ∀ y > x, coheight y < n :=
   height_le_coe_iff (α := αᵒᵈ)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The height of an element is infinite iff there exist series of arbitrary length ending in that
 element.
@@ -717,6 +718,7 @@ lemma krullDim_eq_top [InfiniteDimensionalOrder α] :
       WithTop.some_eq_coe, ← WithTop.coe_natCast, WithTop.coe_lt_coe]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma krullDim_eq_top_iff : krullDim α = ⊤ ↔ InfiniteDimensionalOrder α := by
   refine ⟨fun h ↦ ?_, fun _ ↦ krullDim_eq_top⟩
   cases isEmpty_or_nonempty α
@@ -1089,6 +1091,7 @@ lemma krullDim_enat : krullDim ℕ∞ = ⊤ := by
   change (krullDim (WithTop ℕ) = ⊤)
   simp [← WithBot.coe_top, ← WithBot.coe_one, ← WithBot.coe_add]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma height_enat (n : ℕ∞) : height n = n := by
   cases n with

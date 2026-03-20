@@ -303,6 +303,7 @@ lemma projectiveDimension_eq_bot_iff (X : C) :
   rw [← hasProjectiveDimensionLT_zero_iff_isZero, ← projectiveDimension_lt_iff,
     Nat.cast_zero, ← WithBot.lt_coe_bot, bot_eq_zero', WithBot.coe_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma projectiveDimension_ne_top_iff (X : C) :
     projectiveDimension X ≠ ⊤ ↔ ∃ n, HasProjectiveDimensionLE X n := by
   generalize hd : projectiveDimension X = d

@@ -171,6 +171,7 @@ lemma toENatAux_ofENat : ∀ n : ℕ∞, toENatAux n = n
 
 attribute [local simp] toENatAux_nat toENatAux_zero toENatAux_ofENat
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toENatAux_gc : GaloisConnection (↑) toENatAux := fun n x ↦ by
   cases lt_or_ge x ℵ₀ with
   | inl hx => lift x to ℕ using hx; simp
@@ -301,6 +302,7 @@ lemma toENat_eq_iff_of_le_aleph0 (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) : toE
 
 lemma toENat_ne_top : toENat c ≠ ⊤ ↔ c < ℵ₀ := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma toENat_lt_top : toENat c < ⊤ ↔ c < ℵ₀ := by simp [lt_top_iff_ne_top]
 
 @[simp]

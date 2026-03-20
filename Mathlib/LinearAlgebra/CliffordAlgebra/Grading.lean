@@ -65,6 +65,7 @@ theorem evenOdd_mul_le (i j : ZMod 2) : evenOdd Q i * evenOdd Q j ≤ evenOdd Q 
   simp only [pow_add]
   exact Submodule.mul_mem_mul hx hy
 
+set_option backward.isDefEq.respectTransparency false in
 instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
   one_mem := Submodule.one_le.mp (one_le_evenOdd_zero Q)
   mul_mem _i _j _p _q hp hq := Submodule.mul_le.mp (evenOdd_mul_le Q _ _) _ hp _ hq

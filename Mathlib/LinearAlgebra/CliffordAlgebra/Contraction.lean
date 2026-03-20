@@ -76,6 +76,7 @@ theorem contractLeftAux_contractLeftAux (v : M) (x : CliffordAlgebra Q) (fx : Cl
 
 variable {Q}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Contract an element of the Clifford algebra with an element `d : Module.Dual R M` from the left.
 
 Note that $v ⌋ x$ is spelt `contractLeft (Q.associated v) x`.
@@ -142,6 +143,7 @@ theorem contractLeft_mul_algebraMap (a : CliffordAlgebra Q) (r : R) :
     d⌋(a * algebraMap _ _ r) = d⌋a * algebraMap _ _ r := by
   rw [← Algebra.commutes, contractLeft_algebraMap_mul, Algebra.commutes]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contractRight_algebraMap_mul (r : R) (b : CliffordAlgebra Q) :
     algebraMap _ _ r * b⌊d = algebraMap _ _ r * (b⌊d) := by
   rw [← Algebra.smul_def, LinearMap.map_smul₂, Algebra.smul_def]
@@ -152,6 +154,7 @@ theorem contractRight_mul_algebraMap (a : CliffordAlgebra Q) (r : R) :
 
 variable (Q)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem contractLeft_ι (x : M) : d⌋ι Q x = algebraMap R _ (d x) := by
 -- Porting note: Lean cannot figure out anymore the third argument
@@ -236,6 +239,7 @@ theorem changeFormAux_changeFormAux (B : BilinForm R M) (v : M) (x : CliffordAlg
 variable {Q}
 variable {Q' Q'' : QuadraticForm R M} {B B' : BilinForm R M}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Convert between two algebras of different quadratic forms, sending vectors to vectors, scalars
 to scalars, and adjusting products by a contraction term.
 

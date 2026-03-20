@@ -224,6 +224,7 @@ the valuation of its discriminant is 1. -/
 class IsGoodReduction (W : WeierstrassCurve K) [IsMinimal R W] : Prop where
   goodReduction : valuation K (maximalIdeal R) W.Δ = 1
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [IsMinimal R W] :
     IsGoodReduction R W ↔ (W.reduction R).IsElliptic := by
   refine Iff.trans ?_ (W.reduction R).isElliptic_iff.symm

@@ -42,11 +42,16 @@ open Function
 
 assert_not_exists Field
 
+set_option backward.deriving.normalForm false in
+deriving instance
+  LinearOrderedAddCommMonoidWithTop,
+  SuccOrder
+  for ENat
+
 deriving instance Nontrivial,
   LinearOrder, Bot, Sub,
-  LinearOrderedAddCommMonoidWithTop,
   IsOrderedRing, CanonicallyOrderedAdd,
-  OrderBot, OrderTop, OrderedSub, SuccOrder,
+  OrderBot, OrderTop, OrderedSub,
   WellFoundedLT,
   CharZero,
   NoZeroDivisors,
@@ -78,10 +83,15 @@ variable {a b c d m n : ℕ∞}
 theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
 @[simp] theorem succ_coe (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := by
+  -- We either need `instSuccOrderENat._aux_1` here,
+  -- or `set_option backward.deriving.normalForm false`, ... somewhere?
   simp [SuccOrder.succ]
   rfl
 
 @[simp] theorem succ_top : SuccOrder.succ (⊤ : ℕ∞) = ⊤ := rfl
+
+@[simp] theorem top_add {x : ℕ∞} : ⊤ + x = ⊤ := WithTop.top_add x
+@[simp] theorem add_top {x : ℕ∞} : x + ⊤ = ⊤ := WithTop.add_top x
 
 instance : SuccAddOrder ℕ∞ where
   succ_eq_add_one x := by cases x <;> simp

@@ -43,6 +43,7 @@ lemma le_egirth {n : ℕ∞} : n ≤ G.egirth ↔ ∀ a (w : G.Walk a a), w.IsCy
 lemma egirth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.egirth ≤ w.length :=
   le_egirth.mp le_rfl a w h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma egirth_eq_top : G.egirth = ⊤ ↔ G.IsAcyclic := by simp [egirth, IsAcyclic]
 

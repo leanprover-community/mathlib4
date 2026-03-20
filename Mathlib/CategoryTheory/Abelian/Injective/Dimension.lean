@@ -301,6 +301,7 @@ lemma injectiveDimension_eq_bot_iff (X : C) :
   rw [← hasInjectiveDimensionLT_zero_iff_isZero, ← injectiveDimension_lt_iff,
     Nat.cast_zero, ← WithBot.lt_coe_bot, bot_eq_zero', WithBot.coe_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma injectiveDimension_ne_top_iff (X : C) :
     injectiveDimension X ≠ ⊤ ↔ ∃ n, HasInjectiveDimensionLE X n := by
   generalize hd : injectiveDimension X = d

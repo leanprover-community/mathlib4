@@ -64,6 +64,7 @@ theorem exists_isChain_of_le_chainHeight {r} {s : Set α} (n : ℕ) (h : n ≤ s
     obtain ⟨u, hu₁, hu₂⟩ := exists_subset_encard_eq ht₃
     exact ⟨u, hu₁.trans ht₁, hu₂, ht₂.mono hu₁⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_eq_chainHeight_of_chainHeight_ne_top (h : s.chainHeight r ≠ ⊤) :
     ∃ t ⊆ s, t.encard = s.chainHeight r ∧ IsChain r t := by
   have : Nonempty { t // t ⊆ s ∧ IsChain r t } := ⟨∅, by simp⟩

@@ -484,6 +484,7 @@ variable (I)
 variable [FiniteDimensional ℝ E]
 variable [IsManifold I ∞ M] {n : ℕ∞}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given two disjoint closed sets `s, t` in a Hausdorff σ-compact finite-dimensional manifold,
 there exists an infinitely smooth function that is equal to `0` on `s` and to `1` on `t`.
 See also `exists_contMDiff_zero_iff_one_iff_of_isClosed`, which ensures additionally that

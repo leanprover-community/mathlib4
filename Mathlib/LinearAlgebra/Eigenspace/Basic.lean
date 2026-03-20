@@ -99,6 +99,7 @@ lemma mem_genEigenspace_nat {f : End R M} {μ : R} {k : ℕ} {x : M} :
   · intro hx
     exact ⟨k, le_rfl, hx⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_genEigenspace_top {f : End R M} {μ : R} {x : M} :
     x ∈ f.genEigenspace μ ⊤ ↔ ∃ k : ℕ, x ∈ LinearMap.ker ((f - μ • 1) ^ k) := by
   simp [mem_genEigenspace]
@@ -111,6 +112,7 @@ lemma genEigenspace_eq_iSup_genEigenspace_nat (f : End R M) (μ : R) (k : ℕ∞
     f.genEigenspace μ k = ⨆ l : {l : ℕ // l ≤ k}, f.genEigenspace μ l := by
   simp_rw [genEigenspace_nat, genEigenspace, OrderHom.coe_mk, iSup_subtype]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma genEigenspace_top (f : End R M) (μ : R) :
     f.genEigenspace μ ⊤ = ⨆ k : ℕ, f.genEigenspace μ k := by
   rw [genEigenspace_eq_iSup_genEigenspace_nat, iSup_subtype]
@@ -280,6 +282,7 @@ meaningful. -/
 noncomputable def maxUnifEigenspaceIndex (f : End R M) (μ : R) :=
   monotonicSequenceLimitIndex <| (f.genEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For an endomorphism of a Noetherian module, the maximal eigenspace is always of the form kernel
 `(f - μ • id) ^ k` for some `k`. -/
 lemma genEigenspace_top_eq_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R M) (μ : R) :
@@ -587,6 +590,7 @@ theorem hasGenEigenvalue_iff_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk 
     f.HasGenEigenvalue μ k ↔ f.HasEigenvalue μ := by
   simp [hk]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem maxGenEigenspace_eq_genEigenspace_finrank
     [FiniteDimensional K V] (f : End K V) (μ : K) :
     f.maxGenEigenspace μ = f.genEigenspace μ (finrank K V) := by

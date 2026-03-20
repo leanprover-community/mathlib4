@@ -346,6 +346,7 @@ lemma eRank_ne_top_iff (M : Matroid α) : M.eRank ≠ ⊤ ↔ M.RankFinite := by
 lemma eRank_eq_top_iff (M : Matroid α) : M.eRank = ⊤ ↔ M.RankInfinite := by
   rw [← not_rankFinite_iff, ← eRank_ne_top_iff, not_not]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma eRank_lt_top_iff : M.eRank < ⊤ ↔ M.RankFinite := by
   simp [lt_top_iff_ne_top]
@@ -362,6 +363,7 @@ lemma eRk_eq_top_iff : M.eRk X = ⊤ ↔ ¬ M.IsRkFinite X := by
 lemma eRk_ne_top_iff : M.eRk X ≠ ⊤ ↔ M.IsRkFinite X := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma eRk_lt_top_iff : M.eRk X < ⊤ ↔ M.IsRkFinite X := by
   rw [lt_top_iff_ne_top, eRk_ne_top_iff]

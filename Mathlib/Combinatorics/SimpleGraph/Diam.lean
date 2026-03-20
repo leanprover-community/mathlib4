@@ -51,6 +51,7 @@ lemma exists_edist_eq_eccent_of_finite [Finite α] (u : α) :
   have : Nonempty α := Nonempty.intro u
   exists_eq_ciSup_of_finite
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eccent_eq_top_of_not_connected (h : ¬ G.Connected) (u : α) :
     G.eccent u = ⊤ := by
   rw [connected_iff_exists_forall_reachable] at h
@@ -151,6 +152,7 @@ lemma ediam_le_of_edist_le {k : ℕ∞} (h : ∀ u v, G.edist u v ≤ k) : G.edi
 lemma ediam_le_iff {k : ℕ∞} : G.ediam ≤ k ↔ ∀ u v, G.edist u v ≤ k :=
   iSup₂_le_iff
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ediam_eq_top : G.ediam = ⊤ ↔ ∀ b < ⊤, ∃ u v, b < G.edist u v := by
   simp only [ediam, eccent, iSup_eq_top, lt_iSup_iff]
 
@@ -181,6 +183,7 @@ lemma ediam_eq_zero_iff_subsingleton :
     G.ediam = 0 ↔ Subsingleton α :=
   ⟨subsingleton_of_ediam_eq_zero, fun _ ↦ ediam_eq_zero_of_subsingleton⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ediam_eq_top_of_not_connected [Nonempty α] (h : ¬ G.Connected) : G.ediam = ⊤ := by
   rw [connected_iff_exists_forall_reachable] at h
   push_neg at h
@@ -364,6 +367,7 @@ lemma exists_edist_eq_radius_of_finite [Nonempty α] [Finite α] :
   use w, v
   rw [hv, hw]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma radius_eq_top_of_not_connected (h : ¬ G.Connected) : G.radius = ⊤ := by
   simp [radius, eccent_eq_top_of_not_connected h]
 

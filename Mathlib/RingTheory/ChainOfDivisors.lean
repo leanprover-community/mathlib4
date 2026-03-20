@@ -312,6 +312,7 @@ theorem mem_normalizedFactors_factor_orderIso_of_mem_normalizedFactors {m p : As
   rw [associated_iff_eq] at hq'
   rwa [hq']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_prime_le_emultiplicity_image_by_factor_orderIso {m p : Associates M}
     {n : Associates N} (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
     emultiplicity p m ≤ emultiplicity (↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩)) n := by

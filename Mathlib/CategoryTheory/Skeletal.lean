@@ -70,6 +70,8 @@ variable (C D)
 
 noncomputable section
 
+-- Without this we get errors in Mathlib/RingTheory/PicardGroup.lean
+set_option backward.deriving.normalForm false in
 /-- Construct the skeleton category as the induced category on the isomorphism classes, and derive
 its category structure.
 -/

@@ -68,6 +68,7 @@ lemma le_minOrder_iff_forall_subgroup {n : ℕ∞} :
 lemma minOrder_le_natCard (hs : s ≠ ⊥) (hs' : (s : Set G).Finite) : minOrder G ≤ Nat.card s :=
   le_minOrder_iff_forall_subgroup.1 le_rfl hs hs'
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma minOrder_eq_top [IsMulTorsionFree G] : minOrder G = ⊤ := by
   simpa [minOrder] using fun _ ↦ not_isOfFinOrder_of_isMulTorsionFree
@@ -77,6 +78,7 @@ end Group
 section CommGroup
 variable [CommGroup G] {s : Subgroup G}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma minOrder_eq_top_iff : minOrder G = ⊤ ↔ IsMulTorsionFree G := by
   simp [minOrder, isMulTorsionFree_iff_not_isOfFinOrder]

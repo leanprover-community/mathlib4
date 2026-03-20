@@ -80,6 +80,7 @@ lemma sSup_eq_zero' : sSup s = 0 ↔ s = ∅ ∨ s = {0} :=
 @[simp] lemma iSup_eq_zero : iSup f = 0 ↔ ∀ i, f i = 0 := iSup_eq_bot
 @[simp] lemma iSup_zero : ⨆ _ : ι, (0 : ℕ∞) = 0 := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sSup_eq_top_of_infinite (h : s.Infinite) : sSup s = ⊤ := by
   apply (sSup_eq_top ..).mpr
   intro x hx
@@ -94,6 +95,7 @@ lemma sSup_eq_top_of_infinite (h : s.Infinite) : sSup s = ⊤ := by
     use y.toNat
     simp [toNat_le_of_le_coe h, LT.lt.ne_top hxt]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma finite_of_sSup_lt_top (h : sSup s < ⊤) : s.Finite := by
   contrapose! h
   simp only [top_le_iff]
@@ -158,6 +160,7 @@ lemma mul_iInf [Nonempty ι] : a * ⨅ i, f i = ⨅ i, a * f i := by
 lemma iInf_mul [Nonempty ι] : (⨅ i, f i) * a = ⨅ i, f i * a := by
   simp_rw [mul_comm, mul_iInf]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A version of `mul_iInf` with a slightly more general hypothesis. -/
 lemma mul_iInf' (h₀ : a = 0 → Nonempty ι) : a * ⨅ i, f i = ⨅ i, a * f i := by
   obtain hι | hι := isEmpty_or_nonempty ι

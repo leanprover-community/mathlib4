@@ -30,6 +30,7 @@ open Function ENNReal NNReal Set
 
 noncomputable section
 
+set_option backward.deriving.normalForm false in
 /-- The type of extended real numbers `[-∞, ∞]`, constructed as `WithBot (WithTop ℝ)`. -/
 def EReal := WithBot (WithTop ℝ)
   deriving Bot, Zero, One, Nontrivial, AddMonoid, PartialOrder, AddCommMonoid
