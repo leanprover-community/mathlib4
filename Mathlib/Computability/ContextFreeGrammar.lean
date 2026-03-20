@@ -340,7 +340,7 @@ lemma Language.IsContextFree.reverse (L : Language T) :
 
 /-- The class of context-free languages is closed under reversal. -/
 @[simp]
-theorem Language.IsContextFree.reverse_iff (L : Language T) :
+theorem Language.isContextFree_reverse {L : Language T} :
     L.reverse.IsContextFree ↔ L.IsContextFree := by
       constructor
       · intro h
