@@ -156,7 +156,7 @@ lemma ModuleCat.exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R]
     have ne : I • (⊤ : Submodule R (QuotSMulTop (x ^ k) M)) ≠ ⊤ := by
       by_contra eq
       absurd congrArg (Submodule.comap (Submodule.mkQ _)) eq
-      simpa [← Submodule.comap_smul_top_of_surjective I _ (Submodule.mkQ_surjective _),
+      simpa [Submodule.comap_smul_top_of_surjective I _ (Submodule.mkQ_surjective _),
         Submodule.smul_mono_left ((span_singleton_le_iff_mem I).mpr hk),
         ← Submodule.ideal_span_singleton_smul] using smul_lt.ne
     -- verify that `N` indeed make `M ⧸ xᵏM` satisfy the induction hypothesis
@@ -228,7 +228,7 @@ lemma ModuleCat.subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : I
       have ne : I • (⊤ : Submodule R (QuotSMulTop a M)) ≠ ⊤ := by
         by_contra eq
         absurd congrArg (Submodule.comap (Submodule.mkQ _)) eq
-        simpa [← Submodule.comap_smul_top_of_surjective I _ (Submodule.mkQ_surjective _),
+        simpa [Submodule.comap_smul_top_of_surjective I _ (Submodule.mkQ_surjective _),
           Submodule.smul_mono_left ((span_singleton_le_iff_mem I).mpr mem.1),
           ← Submodule.ideal_span_singleton_smul] using smul_lt.ne
       by_cases eq0 : i = 0
