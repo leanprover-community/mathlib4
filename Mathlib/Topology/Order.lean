@@ -304,7 +304,8 @@ theorem isOpen_discrete (s : Set α) : IsOpen s := (@DiscreteTopology.eq_bot α 
 
 @[simp] theorem isClosed_discrete (s : Set α) : IsClosed s := ⟨isOpen_discrete _⟩
 
-theorem closure_discrete (s : Set α) : closure s = s := (isClosed_discrete _).closure_eq
+@[simp] theorem closure_discrete (s : Set α) : closure s = s := (isClosed_discrete _).closure_eq
+@[simp] theorem interior_discrete (s : Set α) : interior s = s := (isOpen_discrete s).interior_eq
 
 @[simp] theorem dense_discrete {s : Set α} : Dense s ↔ s = univ := by simp [dense_iff_closure_eq]
 

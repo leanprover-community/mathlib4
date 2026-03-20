@@ -1,27 +1,17 @@
-import Mathlib.Analysis.InnerProductSpace.EuclideanDist
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.Topology.TietzeExtension
+import Mathlib.Analysis.Calculus.FDeriv.Mul
 import Mathlib.Analysis.Complex.Tietze
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Topology.ContinuousMap.StoneWeierstrass
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.MeasureTheory.Measure.Haar.Basic
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Function.Jacobian
+import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 open MeasureTheory MeasureTheory.Measure Metric
+open scoped Topology
 variable {E} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
 variable (E) in class BrouwerFixedPoint : Prop where
   brouwer_fixed_point (f : (closedBall (0 : E) 1) → (closedBall 0 1))
     (hf : Continuous f) : ∃ x, f x = x
 variable [BrouwerFixedPoint E]
+
+-- theorem interior_iff_of_subsingleton :
 
 
 /-- Let `B^n` be the closed unit ball (closedBall 0 1).
@@ -31,18 +21,40 @@ theorem invariance_of_domain_interior (f : E → E)
     (hf_cont : ContinuousOn f (closedBall 0 1)) (hf_inj : Set.InjOn f (closedBall 0 1))
     : f 0 ∈ interior (f ''(closedBall 0 1)) := by
   -- In the case where `n = 0`, `ℝ^0` has only a single point.
-  rcases subsingleton_or_nontrivial E with hsubsingleton | hnontrivial
-  · have : f '' closedBall 0 1 = {f 0} := by
-      ext y
-      constructor
-      · rintro ⟨x, hx, rfl⟩
-        simp [Set.mem_singleton_iff, (Subsingleton.eq_zero x)]
-      · intro rfl
-        exact ⟨0, by simp, rfl⟩
-    have h_univ : {f 0} = (Set.univ : Set E) :=
-    Set.ext fun x => ⟨fun _ => trivial, fun _ => Subsingleton.elim x (f 0)⟩
-    rw [this, h_univ, interior_univ]
-    exact Set.mem_univ (f 0)
+
+  -- nontriviality E
+  cases subsingleton_or_nontrivial E
+  ·
+    have :  DiscreteTopology E := by infer_instance
+    have : Set.Nonempty (interior (f '' closedBall 0 1)) := by
+      -- simp
+      -- refine ⟨f 0, ?_⟩
+
+      -- rw [mem_interior]
+
+      -- use ball 0 0.5
+      -- -- constructor
+
+
+      -- rw [nonempty_def]
+      -- apply?
+    -- have : Set.Nonempty {f 0} := by exact Set.singleton_nonempty (f 0)
+    -- have := Set.Nonempty.eq_univ this
+
+
+
+  -- ·
+  -- · have : f '' closedBall 0 1 = {f 0} := by
+  --     ext y
+  --     constructor
+  --     · rintro ⟨x, hx, rfl⟩
+  --       simp [Set.mem_singleton_iff, (Subsingleton.eq_zero x)]
+  --     · intro rfl
+  --       exact ⟨0, by simp, rfl⟩
+  --   have h_univ : {f 0} = (Set.univ : Set E) :=
+  --   Set.ext fun x => ⟨fun _ => trivial, fun _ => Subsingleton.elim x (f 0)⟩
+  --   rw [this, h_univ, interior_univ]
+  --   exact Set.mem_univ (f 0)
   -- The equivalence between `B^n` and `f(B^n)`.
   let FEquiv := Equiv.Set.imageOfInjOn f (closedBall 0 1) hf_inj
   -- The inverse map of `f` is continuous.
@@ -63,7 +75,7 @@ theorem invariance_of_domain_interior (f : E → E)
       Subtype.ext rfl
     simp [this, FInvCmap, fzero', H]
   -- Let `Gtilde : f(B^n) → ℝ^n` be a continuous function such that
-  -- `‖G(y) - Gtilde(y)‖ ≤ 1 ∀ y ∈ f(B^n)`. Then `∃ y ∈ f (B^n)` such that `Gtilde(y) = 0`.
+  -- `‖G(y)-Gtilde(y)‖ ≤ 1 ∀ y ∈ f(B^n)`. Then `∃ y ∈ f (B^n)` such that `Gtilde(y)=0`.
   have hStability_of_zero (Gtilde : E → E) (hGtilde : ContinuousOn Gtilde (f '' closedBall 0 1))
       (hy : ∀ y ∈ (f '' closedBall 0 1), ‖G y - Gtilde y‖ ≤ 1) :
       ∃ y ∈ f '' closedBall 0 1, Gtilde y = 0 := by
@@ -518,9 +530,8 @@ theorem invariance_of_domain_interior (f : E → E)
 
 /-- Let `f : ℝ^n → ℝ^n` be a continuous and injective function.
 Then f is an open mapping.-/
-theorem invariance_of_domain_open_map (f : E → E)
-    (hf_cont : Continuous f) (hf_inj : Function.Injective f) : IsOpenMap f := by
-  intro U hU
+theorem invariance_of_domain_open_map (f : E → E) (U : Set E) (hU : IsOpen U)
+    (hf_cont : ContinuousOn f U) (hf_inj : Set.InjOn f U) : IsOpen (f '' U) := by
   rw [isOpen_iff_forall_mem_open]
   rintro y ⟨x, hxU, hfx⟩
   rw [isOpen_iff] at hU
@@ -537,13 +548,7 @@ theorem invariance_of_domain_open_map (f : E → E)
   -- Define `g` as a scaling and translating function.
   let g := fun (v : E) => ε • v + x
   have hg_cont : Continuous g := ((continuous_const_smul ε).add continuous_const : Continuous g)
-  have hg_inj : Function.Injective g:= by simp [Function.Injective, g, hε.ne']
-  let e := f ∘ g
-  have he_cont : Continuous e := Continuous.comp hf_cont hg_cont
-  have he_inj : Function.Injective e := Function.Injective.comp hf_inj hg_inj
-  -- `e(0)` is in the interior using the prior version.
-  have h_interior : e 0 ∈ interior (e '' closedBall 0 1) :=
-    invariance_of_domain_interior e he_cont.continuousOn he_inj.injOn
+  have hg_inj : Function.Injective g := by simp [Function.Injective, g, hε.ne']
   have h_g_eq : g '' closedBall 0 1 = closedBall x ε := by
     unfold g
     rw [Eq.symm (Set.image_image (fun v ↦ v + x) (fun v ↦ ε • v) (closedBall 0 1)),
@@ -551,6 +556,20 @@ theorem invariance_of_domain_open_map (f : E → E)
     simp only [Real.norm_eq_abs, Set.image_add_right, preimage_add_right_closedBall,
       sub_neg_eq_add, zero_add]
     rw [abs_of_pos hε]
+  let e := f ∘ g
+  have hfconton : ContinuousOn f (g '' closedBall 0 1) := by
+    rw [h_g_eq]
+    exact ContinuousOn.mono hf_cont hclosedball
+  have hfinjon : Set.InjOn f (g '' closedBall 0 1) := by
+    rw [h_g_eq]
+    exact Set.InjOn.mono hclosedball hf_inj
+  have he_cont : ContinuousOn e (closedBall 0 1):= ContinuousOn.image_comp_continuous hfconton hg_cont
+  have he_inj : Set.InjOn e (closedBall 0 1) := by
+    rw [Set.InjOn.comp_iff hg_inj.injOn, h_g_eq]
+    exact Set.InjOn.mono hclosedball hf_inj
+  -- `e(0)` is in the interior using the prior version.
+  have h_interior : e 0 ∈ interior (e '' closedBall 0 1) :=
+    invariance_of_domain_interior e he_cont he_inj
   use interior (f '' U)
   refine ⟨interior_subset, isOpen_interior, ?_⟩
   unfold e g at h_interior
@@ -558,3 +577,19 @@ theorem invariance_of_domain_open_map (f : E → E)
   simp only [Function.comp_apply, smul_zero, zero_add] at h_interior
   grw [hfx, hclosedball] at h_interior
   exact h_interior
+
+
+theorem invariance_of_domain_partial_equiv {x : E} {s : Set E} {f : PartialEquiv E E}
+    (hCont : ContinuousOn f f.source) : s ∈ nhds x → s ⊆ f.source →
+    f '' s ∈ nhds (f x) := by
+  intro hsin hsubset
+  rw [_root_.mem_nhds_iff] at hsin
+  have ⟨a, ha1, ha2, ha3⟩ := hsin
+  have ha4 : a ⊆ f.source := LE.le.subset fun ⦃a_1⦄ a ↦ hsubset (ha1 a)
+  have ha5 : ContinuousOn f a := ContinuousOn.mono hCont ha4
+  have hf : Set.InjOn f f.source := PartialEquiv.injOn f
+  have ha6 : Set.InjOn f a := Set.InjOn.mono ha4 hf
+  have hfimg : IsOpen (f '' a) := invariance_of_domain_open_map (↑f) a ha2 ha5 ha6
+  have hsubst : f '' a ⊆ f '' s := by exact Set.image_mono ha1
+  apply _root_.mem_nhds_iff.mpr
+  refine ⟨f '' a, hsubst, hfimg, Set.mem_image_of_mem (↑f) ha3⟩
