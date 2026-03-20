@@ -173,7 +173,7 @@ private lemma _root_.AddHom.map_smul_top_toAddSubgroup_of_surjective
   | @cons r s _ _ h _ ih =>
     conv => congr <;> rw [Ideal.ofList_cons, sup_smul, sup_toAddSubgroup,
       ideal_span_singleton_smul, pointwise_smul_toAddSubgroup,
-      top_toAddSubgroup, pointwise_smul_def]
+      top_toAddSubgroup, AddSubgroup.pointwise_smul_def]
     apply DFunLike.ext (f.comp (toAddMonoidEnd R M r))
       ((toAddMonoidEnd S M₂ s).comp f) at h
     rw [AddSubgroup.map_sup, ih, map_map, h, ← map_map,
@@ -675,3 +675,23 @@ lemma _root_.IsLocalRing.isRegular_of_perm [IsLocalRing R] [IsNoetherian R M]
     exact Set.ext fun _ => h2.mem_iff
 
 end RingTheory.Sequence
+
+section IsLocalRing
+
+variable {R : Type*} [CommRing R] [IsLocalRing R]
+variable (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L]
+
+open IsLocalRing
+
+lemma nontrivial_quotSMulTop_of_mem_maximalIdeal {x : R} (mem : x ∈ maximalIdeal R) :
+    Nontrivial (QuotSMulTop x L) := by
+  apply Submodule.Quotient.nontrivial_iff.mpr (Ne.symm _)
+  exact Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator (maximalIdeal_le_jacobson _ mem)
+
+lemma RingTheory.Sequence.IsRegular.of_isWeaklyRegular_of_mem_maximalIdeal {rs : List R}
+    (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) (reg : IsWeaklyRegular L rs) :
+    IsRegular L rs :=
+  ⟨reg, Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
+    ((Ideal.span_le.mpr mem).trans (maximalIdeal_le_jacobson _))⟩
+
+end IsLocalRing

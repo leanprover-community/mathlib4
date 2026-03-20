@@ -455,6 +455,16 @@ def sumProdSum (α β γ δ) [MeasurableSpace α] [MeasurableSpace β] [Measurab
 
 variable {π π' : δ' → Type*} [∀ x, MeasurableSpace (π x)] [∀ x, MeasurableSpace (π' x)]
 
+/-- The type of functions `f : ∀ a, β a` such that for all `a` we have `p a (f a)` is measurably
+equivalent to the type of functions `∀ a, {b : β a // p a b}`. -/
+def subtypePiEquivPi {p : (a : δ') → π a → Prop} :
+    { f : (a : δ') → π a // ∀ (a : δ'), p a (f a) } ≃ᵐ ((a : δ') → { b : π a // p a b }) where
+  toEquiv := .subtypePiEquivPi
+  measurable_toFun := measurable_pi_lambda _ (fun a =>
+    ((measurable_pi_apply a).comp measurable_subtype_coe).subtype_mk)
+  measurable_invFun := (measurable_pi_lambda _ (fun a =>
+    measurable_subtype_coe.comp (measurable_pi_apply a))).subtype_mk
+
 /-- A family of measurable equivalences `Π a, β₁ a ≃ᵐ β₂ a` generates a measurable equivalence
   between `Π a, β₁ a` and `Π a, β₂ a`. -/
 def piCongrRight (e : ∀ a, π a ≃ᵐ π' a) : (∀ a, π a) ≃ᵐ ∀ a, π' a where

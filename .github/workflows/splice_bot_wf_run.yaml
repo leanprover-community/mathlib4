@@ -49,6 +49,7 @@ jobs:
         with:
           source_workflow: ${{ github.event.workflow_run.name }}
           push_to_fork: leanprover-community/mathlib4_copy
+          min_repo_permission: 'write'
           allow_pr_author: 'true'
           allowed_teams: |
             leanprover-community/mathlib-reviewers
