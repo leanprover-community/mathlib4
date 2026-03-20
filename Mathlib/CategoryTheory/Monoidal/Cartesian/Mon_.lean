@@ -229,7 +229,7 @@ variable (F : C ⥤ D) [F.Monoidal]
 
 open scoped Obj
 
-@[to_additive]
+@[to_additive map_add']
 protected lemma map_mul (f g : X ⟶ M) : F.map (f * g) = F.map f * F.map g := by
   simp [Hom.mul_def]
 
