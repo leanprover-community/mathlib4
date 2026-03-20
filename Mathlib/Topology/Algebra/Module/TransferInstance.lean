@@ -70,8 +70,8 @@ variable [Semiring R]
 then so is `α`. -/
 @[implicit_reducible]
 def ContinuousAddEquiv.isTopologicalAddGroup
-    [TopologicalSpace β] [AddCommGroup β] [IsTopologicalAddGroup β] [Module R β]
-    [TopologicalSpace α] [AddCommGroup α] [Module R α]
+    [TopologicalSpace β] [AddCommGroup β] [IsTopologicalAddGroup β]
+    [TopologicalSpace α] [AddCommGroup α]
     (e : α ≃ₜ+ β) : IsTopologicalAddGroup α where
   continuous_add := by
     let f := (fun q ↦ q.1 + q.2 : β × β → β)
@@ -88,7 +88,7 @@ def ContinuousLinearEquiv.isTopologicalAddGroup
     [TopologicalSpace β] [AddCommGroup β] [IsTopologicalAddGroup β] [Module R β]
     [TopologicalSpace α] [AddCommGroup α] [Module R α]
     (e : α ≃L[R] β) : IsTopologicalAddGroup α :=
-  (e.toContinuousAddEquiv fun _ ↦ e.toHomeomorph.isOpen_preimage).isTopologicalAddGroup (R := R)
+  (e.toContinuousAddEquiv fun _ ↦ e.toHomeomorph.isOpen_preimage).isTopologicalAddGroup
 
 /-- Given a continuous linear equivalence `e : α ≃L[R] β`, if scalar multiplication on `β` is
 continuous, then so is it for `α`. -/
