@@ -133,7 +133,7 @@ end IsNormalClosureFG
 
 /-- A group is finitely presented if it admits an isomorphism to a finitely presented group. -/
 @[mk_iff]
-class IsFinitelyPresented : Prop where
+class IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out: ∃ (α : Type) (_: Finite α) (rels : Set (FreeGroup α)) (_ : rels.Finite),
   Nonempty (G ≃* (PresentedGroup rels))
 
