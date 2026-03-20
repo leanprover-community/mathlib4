@@ -61,10 +61,8 @@ lemma IsBaseChange.of_right_exact (isb1 : IsBaseChange S h₁) (isb2 : IsBaseCha
     simpa using congr(s • ($comm1 m)).symm
   · ext s m
     simpa using congr(s • ($comm2 m)).symm
-  · simp only [LinearMap.coe_restrictScalars, LinearMap.baseChange_eq_ltensor]
-    exact lTensor_exact S exac1 surj1
-  · simp only [LinearMap.coe_restrictScalars, LinearMap.baseChange_eq_ltensor]
-    exact LinearMap.lTensor_surjective S surj1
+  · simpa [LinearMap.baseChange_eq_ltensor] using lTensor_exact S exac1 surj1
+  · simpa [LinearMap.baseChange_eq_ltensor] using LinearMap.lTensor_surjective S surj1
 
 include comm1 comm2 in
 lemma IsBaseChange.of_left_exact [Module.Flat R S] (isb2 : IsBaseChange S h₂)
@@ -78,10 +76,9 @@ lemma IsBaseChange.of_left_exact [Module.Flat R S] (isb2 : IsBaseChange S h₂)
     simpa using congr(s • ($comm1 m)).symm
   · ext s m
     simpa using congr(s • ($comm2 m)).symm
-  · simp only [LinearMap.coe_restrictScalars, LinearMap.baseChange_eq_ltensor]
-    exact Module.Flat.lTensor_exact S exac1
-  · simp only [LinearMap.coe_restrictScalars, LinearMap.baseChange_eq_ltensor]
-    exact Module.Flat.lTensor_preserves_injective_linearMap f inj1
+  · simpa [LinearMap.baseChange_eq_ltensor] using Module.Flat.lTensor_exact S exac1
+  · simpa [LinearMap.baseChange_eq_ltensor] using
+      Module.Flat.lTensor_preserves_injective_linearMap f inj1
 
 lemma IsBaseChange.of_equiv_left (f : M₁ ≃ₗ[R] M₂) (f' : N₁ ≃ₗ[S] N₂)
     (comm1 : h₂.comp f.toLinearMap = (f'.restrictScalars R).comp h₁)
