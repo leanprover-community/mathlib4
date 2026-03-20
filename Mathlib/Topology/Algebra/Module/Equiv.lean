@@ -266,6 +266,7 @@ section
 
 variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R₁ M]
 
+/-- A continuous linear equivalence seen as a `ContinuousAddEquiv`. -/
 def toContinuousAddEquiv (e : M₁ ≃L[R₁] M) : M₁ ≃ₜ+ M :=
   e.toAddEquiv.toContinuousAddEquiv fun _ ↦ e.toHomeomorph.isOpen_preimage
 
