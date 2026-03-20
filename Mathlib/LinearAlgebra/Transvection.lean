@@ -32,7 +32,7 @@ public import Mathlib.LinearAlgebra.Dual.BaseChange
 
 ## Note on terminology
 
-In the mathematical litterature, linear maps of the form `LinearMap.transvection f v`
+In the mathematical literature, linear maps of the form `LinearMap.transvection f v`
 are only called “transvections” when `f v = 0`. Otherwise, they are sometimes
 called “dilations” (especially if `f v ≠ -1`).
 
@@ -284,7 +284,6 @@ theorem dilatransvections_pow_mono :
     Monotone (fun n : ℕ ↦ (dilatransvections R V) ^ n) :=
   Set.pow_right_monotone one_mem_dilatransvections
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Over a division ring, `dilatransvections` correspond to linear
 equivalences `e` such that the linear map `e - id` has rank at most 1.
 
