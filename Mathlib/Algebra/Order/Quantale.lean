@@ -41,8 +41,21 @@ integral, and involutive quantales easier to add on later.
 * `leftMulResiduation`, `rightMulResiduation`, `leftAddResiduation`, `rightAddResiduation` :
   Defining the left- and right- residuations of the semigroup (see notation below).
 
-* Finally, we provide basic distributivity laws for sSup into iSup and sup, monotonicity of
+* We provide basic distributivity laws for sSup into iSup and sup, monotonicity of
   the semigroup operator, and basic equivalences for left- and right-residuation.
+
+* `isMulIdempotent`, `isAddIdempotent` : Defining idempotent elements of a (additive) quantale.
+
+* `isMulLeftsided`, `isAddLeftsided`, `isMulRightsided`, `isAddRightsided` : Defining left- and
+  right-sided elements of a (additive) quantale.
+
+* `isStrictMulLeftsided`, `isStrictAddLeftsided`, `isStrictMulRightsided`, `isStrictAddRightsided` :
+  Defining strict left- and right-sided elements of a (additive) quantale.
+
+* `isMulTwosided`, `isAddTwosided` : Defining two-sided elements of a (additive) quantale.
+
+* `isStrictMulTwosided`, `isStrictAddTwosided` : Defining strict two-sided elements of a
+  (additive) quantale.
 
 ## Notation
 
