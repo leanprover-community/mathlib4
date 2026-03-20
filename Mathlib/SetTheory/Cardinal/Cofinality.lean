@@ -116,15 +116,19 @@ theorem GaloisConnection.cof_le {f : γ → α} {g : α → γ} (h : GaloisConne
     Order.cof γ ≤ Order.cof α := by
   simpa using h.cof_le_lift
 
-theorem OrderIso.lift_cof_eq (f : α ≃o β) :
+theorem OrderIso.lift_cof_congr (f : α ≃o β) :
     Cardinal.lift.{v} (Order.cof α) = Cardinal.lift.{u} (Order.cof β) :=
   f.to_galoisConnection.cof_le_lift.antisymm (f.symm.to_galoisConnection.cof_le_lift)
 
-theorem OrderIso.cof_eq (f : α ≃o γ) : Order.cof α = Order.cof γ := by
-  simpa using f.lift_cof_eq
+@[deprecated (since := "2026-03-20")] alias OrderIso.lift_cof_eq := OrderIso.lift_cof_congr
 
-@[deprecated (since := "2026-02-18")] alias RelIso.cof_eq_lift := OrderIso.lift_cof_eq
-@[deprecated (since := "2026-02-18")] alias RelIso.cof_eq := OrderIso.cof_eq
+theorem OrderIso.cof_congr (f : α ≃o γ) : Order.cof α = Order.cof γ := by
+  simpa using f.lift_cof_congr
+
+@[deprecated (since := "2026-03-20")] alias OrderIso.cof_eq := OrderIso.cof_congr
+
+@[deprecated (since := "2026-02-18")] alias RelIso.cof_eq_lift := OrderIso.lift_cof_congr
+@[deprecated (since := "2026-02-18")] alias RelIso.cof_eq := OrderIso.cof_congr
 
 end Congr
 
@@ -158,7 +162,7 @@ In particular, `cof 0 = 0` and `cof (succ o) = 1`. -/
 def cof (o : Ordinal.{u}) : Cardinal.{u} :=
   o.liftOnWellOrder (fun α _ _ ↦ Order.cof α) fun _ _ _ _ _ _ h ↦
     let ⟨f⟩ := type_eq.1 h
-    (OrderIso.ofRelIsoLT f).cof_eq
+    (OrderIso.ofRelIsoLT f).cof_congr
 
 @[simp]
 theorem cof_type (α : Type*) [LinearOrder α] [WellFoundedLT α] :
@@ -181,7 +185,7 @@ theorem cof_toType (o : Ordinal) : Order.cof o.ToType = o.cof := by
 theorem lift_cof (o : Ordinal.{u}) : Cardinal.lift.{v} (cof o) = cof (Ordinal.lift.{v} o) := by
   induction o using inductionOnWellOrder with | H α
   rw [cof_type, ← type_lt_ulift, cof_type, ← Cardinal.lift_id'.{u, v} (Order.cof (ULift _)),
-    ← Cardinal.lift_umax, ← ULift.orderIso.lift_cof_eq]
+    ← Cardinal.lift_umax, ← ULift.orderIso.lift_cof_congr]
 
 theorem cof_le_card (o : Ordinal) : cof o ≤ card o := by
   induction o using inductionOnWellOrder with | H α
