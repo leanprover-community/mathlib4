@@ -136,8 +136,8 @@ include hR₁ hR₂
 
 /-- The five lemma. -/
 theorem isIso_of_epi_of_isIso_of_isIso_of_mono (h₀ : Epi (app' φ 0)) (h₁ : IsIso (app' φ 1))
-    (h₂ : IsIso (app' φ 3)) (h₃ : Mono (app' φ 4)) : IsIso (app' φ 2) := by
-  dsimp at h₀ h₁ h₂ h₃
+    (h₃ : IsIso (app' φ 3)) (h₄ : Mono (app' φ 4)) : IsIso (app' φ 2) := by
+  dsimp at h₀ h₁ h₃ h₄
   have : Mono (app' φ 2) := by
     apply mono_of_epi_of_mono_of_mono (δlastFunctor.map φ) (R₁.exact_iff_δlast.1 hR₁).1
       (R₂.exact_iff_δlast.1 hR₂).1 <;> dsimp <;> infer_instance
@@ -145,6 +145,75 @@ theorem isIso_of_epi_of_isIso_of_isIso_of_mono (h₀ : Epi (app' φ 0)) (h₁ : 
     apply epi_of_epi_of_epi_of_mono (δ₀Functor.map φ) (R₁.exact_iff_δ₀.1 hR₁).2
       (R₂.exact_iff_δ₀.1 hR₂).2 <;> dsimp <;> infer_instance
   apply isIso_of_mono_of_epi
+
+end Five
+
+section Four
+
+/-! The following lemmas are a special case of the 4-lemma and 5-lemma applied to sequences of
+with 6 objects. -/
+
+variable {R₁ R₂ : ComposableArrows C 5} (hR₁ : R₁.Exact) (hR₂ : R₂.Exact) (φ : R₁ ⟶ R₂)
+include hR₁ hR₂
+
+theorem mono_of_epi_of_mono_of_mono_five₁ (h₀ : Epi (app' φ 0)) (h₁ : Mono (app' φ 1))
+    (h₃ : Mono (app' φ 3)) : Mono (app' φ 2) :=
+  mono_of_epi_of_mono_of_mono (δlastFunctor.map (δlastFunctor.map φ))
+    ((exact_iff_δlast _).1 (R₁.exact_iff_δlast.1 hR₁).1).1
+    ((exact_iff_δlast _).1 (R₂.exact_iff_δlast.1 hR₂).1).1
+    h₀ h₁ h₃
+
+theorem mono_of_epi_of_mono_of_mono_five₂ (h₁ : Epi (app' φ 1)) (h₂ : Mono (app' φ 2))
+    (h₄ : Mono (app' φ 4)) : Mono (app' φ 3) :=
+  mono_of_epi_of_mono_of_mono (δlastFunctor.map (δ₀Functor.map φ))
+    ((exact_iff_δlast _).1 (R₁.exact_iff_δ₀.1 hR₁).2).1
+    ((exact_iff_δlast _).1 (R₂.exact_iff_δ₀.1 hR₂).2).1
+    h₁ h₂ h₄
+
+theorem mono_of_epi_of_mono_of_mono_five₃ (h₂ : Epi (app' φ 2)) (h₃ : Mono (app' φ 3))
+    (h₅ : Mono (app' φ 5)) : Mono (app' φ 4) :=
+  mono_of_epi_of_mono_of_mono (δ₀Functor.map (δ₀Functor.map φ))
+    ((exact_iff_δ₀ _).1 (R₁.exact_iff_δ₀.1 hR₁).2).2
+    ((exact_iff_δ₀ _).1 (R₂.exact_iff_δ₀.1 hR₂).2).2
+    h₂ h₃ h₅
+
+theorem epi_of_epi_of_epi_of_mono_five₁ (h₀ : Epi (app' φ 0)) (h₂ : Epi (app' φ 2))
+    (h₃ : Mono (app' φ 3)) : Epi (app' φ 1) :=
+  epi_of_epi_of_epi_of_mono (δlastFunctor.map (δlastFunctor.map φ))
+    ((exact_iff_δlast _).1 (R₁.exact_iff_δlast.1 hR₁).1).1
+    ((exact_iff_δlast _).1 (R₂.exact_iff_δlast.1 hR₂).1).1
+    h₀ h₂ h₃
+
+theorem epi_of_epi_of_epi_of_mono_five₂ (h₁ : Epi (app' φ 1)) (h₃ : Epi (app' φ 3))
+    (h₄ : Mono (app' φ 4)) : Epi (app' φ 2) :=
+  epi_of_epi_of_epi_of_mono (δlastFunctor.map (δ₀Functor.map φ))
+    ((exact_iff_δlast _).1 (R₁.exact_iff_δ₀.1 hR₁).2).1
+    ((exact_iff_δlast _).1 (R₂.exact_iff_δ₀.1 hR₂).2).1
+    h₁ h₃ h₄
+
+theorem epi_of_epi_of_epi_of_mono_five₃ (h₂ : Epi (app' φ 2)) (h₄ : Epi (app' φ 4))
+    (h₅ : Mono (app' φ 5)) : Epi (app' φ 3) :=
+  epi_of_epi_of_epi_of_mono (δ₀Functor.map (δ₀Functor.map φ))
+    ((exact_iff_δ₀ _).1 (R₁.exact_iff_δ₀.1 hR₁).2).2
+    ((exact_iff_δ₀ _).1 (R₂.exact_iff_δ₀.1 hR₂).2).2
+    h₂ h₄ h₅
+
+end Four
+
+section Five
+
+variable {R₁ R₂ : ComposableArrows C 5} (hR₁ : R₁.Exact) (hR₂ : R₂.Exact) (φ : R₁ ⟶ R₂)
+include hR₁ hR₂
+
+theorem isIso_of_epi_of_isIso_of_isIso_of_mono_five₁ (h₀ : Epi (app' φ 0)) (h₁ : IsIso (app' φ 1))
+    (h₃ : IsIso (app' φ 3)) (h₄ : Mono (app' φ 4)) : IsIso (app' φ 2) :=
+  isIso_of_epi_of_isIso_of_isIso_of_mono (R₁.exact_iff_δlast.1 hR₁).1
+    (R₂.exact_iff_δlast.1 hR₂).1 (δlastFunctor.map φ) h₀ h₁ h₃ h₄
+
+theorem isIso_of_epi_of_isIso_of_isIso_of_mono_five₂ (h₁ : Epi (app' φ 1)) (h₂ : IsIso (app' φ 2))
+    (h₄ : IsIso (app' φ 4)) (h₅ : Mono (app' φ 5)) : IsIso (app' φ 3) :=
+  isIso_of_epi_of_isIso_of_isIso_of_mono (R₁.exact_iff_δ₀.1 hR₁).2
+    (R₂.exact_iff_δ₀.1 hR₂).2 (δ₀Functor.map φ) h₁ h₂ h₄ h₅
 
 end Five
 
