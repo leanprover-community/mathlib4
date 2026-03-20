@@ -6,7 +6,9 @@ Authors: Joël Riou, Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Limits.EpiMono
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Families of functors which jointly reflect isomorphisms
@@ -25,7 +27,6 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type*} [Category C] {I : Type*} {D : I → Type*} [∀ i, Category (D i)]
-  (F : ∀ i, C ⥤ D i)
 
 /-- A family of functors jointly reflects isomorphisms if for every morphism `f : X ⟶ Y`
 such that the image of `f` under all `F i` is an isomorphism, then `f` is an isomorphism. -/
@@ -42,7 +43,25 @@ such that the image of `f` under all `F i` is an epimorphism, then `f` is an epi
 structure JointlyReflectEpimorphisms (F : ∀ i, C ⥤ D i) : Prop where
   epi {X Y : C} (f : X ⟶ Y) [∀ i, Epi ((F i).map f)] : Epi f
 
-variable {F}
+/-- A family of functors is jointly faithful if whenever two morphisms `f : X ⟶ Y`
+and `g : X ⟶ Y` become equal after applying all functors `F i`, then `f = g`. -/
+structure JointlyFaithful (F : ∀ i, C ⥤ D i) : Prop where
+  map_injective {X Y : C} {f g : X ⟶ Y} (h : ∀ i, (F i).map f = (F i).map g) : f = g
+
+variable {F : ∀ i, C ⥤ D i}
+
+lemma JointlyFaithful.of_jointly_reflects_isIso_of_mono [HasEqualizers C]
+    [∀ i, PreservesLimitsOfShape WalkingParallelPair (F i)]
+    (hF : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) [Mono f],
+      (∀ i, IsIso ((F i).map f)) → IsIso f) :
+    JointlyFaithful F where
+  map_injective {X Y} f g hfg :=
+    have :=
+      hF (equalizer.ι f g) (fun i ↦ by
+        let hc := isLimitForkMapOfIsLimit (F i) _ (equalizerIsEqualizer f g)
+        obtain ⟨l, hl⟩ := Fork.IsLimit.lift' hc (𝟙 _) (by simpa using hfg i)
+        exact ⟨l, Fork.IsLimit.hom_ext hc (by cat_disch), by cat_disch⟩)
+    eq_of_epi_equalizer
 
 namespace JointlyReflectIsomorphisms
 
@@ -81,6 +100,10 @@ lemma jointlyReflectEpimorphisms [∀ i, PreservesColimitsOfShape WalkingSpan (F
     JointlyReflectEpimorphisms F where
   epi f _ := h.epi f
 
+lemma jointlyFaithful [∀ i, PreservesLimitsOfShape WalkingParallelPair (F i)] [HasEqualizers C] :
+    JointlyFaithful F :=
+  .of_jointly_reflects_isIso_of_mono (fun _ _ _ _ _ ↦ h.isIso _)
+
 end JointlyReflectIsomorphisms
 
 lemma JointlyReflectMonomorphisms.mono_iff (h : JointlyReflectMonomorphisms F)
@@ -92,5 +115,26 @@ lemma JointlyReflectEpimorphisms.epi_iff (h : JointlyReflectEpimorphisms F)
     [∀ i, (F i).PreservesEpimorphisms] {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ ∀ i, Epi ((F i).map f) :=
   ⟨fun _ _ ↦ inferInstance, fun _ ↦ h.epi f⟩
+
+namespace JointlyFaithful
+
+lemma jointlyReflectMonomorphisms (h : JointlyFaithful F) :
+    JointlyReflectMonomorphisms F where
+  mono {X Y} f _ := ⟨fun {Z} g₁ g₂ hg ↦ h.map_injective (fun i ↦ by
+    simp only [← cancel_mono ((F i).map f), ← Functor.map_comp, hg])⟩
+
+lemma jointlyReflectEpimorphisms (h : JointlyFaithful F) :
+    JointlyReflectEpimorphisms F where
+  epi {X Y} f _ := ⟨fun {Z} g₁ g₂ hg ↦ h.map_injective (fun i ↦ by
+    simp only [← cancel_epi ((F i).map f), ← Functor.map_comp, hg])⟩
+
+lemma jointlyReflectsIsomorphisms [Balanced C] (h : JointlyFaithful F) :
+    JointlyReflectIsomorphisms F where
+  isIso f _ :=
+    have := h.jointlyReflectMonomorphisms.mono f
+    have := h.jointlyReflectEpimorphisms.epi f
+    Balanced.isIso_of_mono_of_epi f
+
+end JointlyFaithful
 
 end CategoryTheory

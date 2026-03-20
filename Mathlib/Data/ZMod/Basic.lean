@@ -100,6 +100,7 @@ lemma val_ofNat (n a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ZMod n).val = ofNat(a) 
 lemma val_ofNat_of_lt {n a : ℕ} [a.AtLeastTwo] (han : a < n) : (ofNat(a) : ZMod n).val = ofNat(a) :=
   val_natCast_of_lt han
 
+set_option backward.isDefEq.respectTransparency false in
 theorem val_unit' {n : ZMod 0} : IsUnit n ↔ n.val = 1 := by
   simp only [val]
   rw [Int.isUnit_iff, Int.natAbs_eq_iff, Nat.cast_one]
@@ -111,7 +112,7 @@ instance charP (n : ℕ) : CharP (ZMod n) n where
   cast_eq_zero_iff := by
     intro k
     rcases n with - | n
-    · simp [zero_dvd_iff]
+    · simp
     · exact Fin.natCast_eq_zero
 
 -- Verify that `grind` can see that `ZMod n` has characteristic `n`.
@@ -212,6 +213,7 @@ theorem natCast_rightInverse [NeZero n] : Function.RightInverse val ((↑) : ℕ
 theorem natCast_zmod_surjective [NeZero n] : Function.Surjective ((↑) : ℕ → ZMod n) :=
   natCast_rightInverse.surjective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- So-named because the outer coercion is `Int.cast` into `ZMod`. For `Int.cast` into an arbitrary
 ring, see `ZMod.intCast_cast`. -/
 @[norm_cast]
@@ -299,6 +301,7 @@ theorem cast_one (h : m ∣ n) : (cast (1 : ZMod n) : R) = 1 := by
   · exact Nat.cast_one
   exact Nat.lt_of_sub_eq_succ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cast_add (h : m ∣ n) (a b : ZMod n) : (cast (a + b : ZMod n) : R) = cast a + cast b := by
   cases n
@@ -309,6 +312,7 @@ theorem cast_add (h : m ∣ n) (a b : ZMod n) : (cast (a + b : ZMod n) : R) = ca
     @CharP.cast_eq_zero_iff R _ m]
   exact h.trans (Nat.dvd_sub_mod _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cast_mul (h : m ∣ n) (a b : ZMod n) : (cast (a * b : ZMod n) : R) = cast a * cast b := by
   cases n
@@ -422,6 +426,7 @@ noncomputable def ringEquivOfPrime [Fintype R] {p : ℕ} (hp : p.Prime) (hR : Fi
 lemma ringEquivOfPrime_eq_ringEquiv [Fintype R] {p : ℕ} [CharP R p] (hp : p.Prime)
     (hR : Fintype.card R = p) : ringEquivOfPrime R hp hR = ringEquiv R hR := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The identity between `ZMod m` and `ZMod n` when `m = n`, as a ring isomorphism. -/
 def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
   rcases m with - | m <;> rcases n with - | n
@@ -477,6 +482,7 @@ end UniversalProperty
 
 variable {m n : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem val_eq_zero : ∀ {n : ℕ} (a : ZMod n), a.val = 0 ↔ a = 0
   | 0, _ => Int.natAbs_eq_zero
@@ -511,6 +517,7 @@ theorem intCast_eq_intCast_iff_dvd_sub (a b : ℤ) (c : ℕ) : (a : ZMod c) = �
 theorem natCast_eq_zero_iff (a b : ℕ) : (a : ZMod b) = 0 ↔ b ∣ a := by
   rw [← Nat.cast_zero, ZMod.natCast_eq_natCast_iff, Nat.modEq_zero_iff_dvd]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_intCast (a : ℤ) : cast (a : ZMod n) = a % n := by
   cases n
   · rw [Int.ofNat_zero, Int.emod_zero, Int.cast_id]; rfl
@@ -528,6 +535,7 @@ lemma intCast_cast_sub (x y : ZMod n) : (cast (x - y) : ℤ) = (cast x - cast y)
 lemma intCast_cast_neg (x : ZMod n) : (cast (-x) : ℤ) = -cast x % n := by
   rw [← ZMod.coe_intCast, Int.cast_neg, ZMod.intCast_zmod_cast]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
   dsimp [val, Fin.val_neg']
@@ -536,12 +544,14 @@ theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
   · dsimp [ZMod, ZMod.cast]
     rw [Fin.coe_neg_one]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `-1 : ZMod n` lifts to `n - 1 : R`. This avoids the characteristic assumption in `cast_neg`. -/
 theorem cast_neg_one {R : Type*} [Ring R] (n : ℕ) : cast (-1 : ZMod n) = (n - 1 : R) := by
   rcases n with - | n
   · dsimp [ZMod, ZMod.cast]; simp
   · rw [← natCast_val, val_neg_one, Nat.cast_succ, add_sub_cancel_right]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cast_sub_one {R : Type*} [Ring R] {n : ℕ} (k : ZMod n) :
     (cast (k - 1 : ZMod n) : R) = (if k = 0 then (n : R) else cast k) - 1 := by
   split_ifs with hk
@@ -794,6 +804,7 @@ theorem coe_unitOfCoprime {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) :
     (unitOfCoprime x h : ZMod n) = x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem val_coe_unit_coprime {n : ℕ} (u : (ZMod n)ˣ) : Nat.Coprime (u : ZMod n).val n := by
   rcases n with - | n
   · rcases Int.units_eq_one_or u with (rfl | rfl) <;> simp
@@ -942,6 +953,7 @@ theorem ne_neg_self {n : ℕ} (hn : Odd n) {a : ZMod n} (ha : a ≠ 0) : a ≠ -
 theorem neg_one_ne_one {n : ℕ} [Fact (2 < n)] : (-1 : ZMod n) ≠ 1 :=
   CharP.neg_one_ne_one (ZMod n) n
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem neg_eq_self_mod_two (a : ZMod 2) : -a = a := by
   fin_cases a <;> apply Fin.ext <;> simp; rfl
@@ -960,6 +972,7 @@ theorem val_ne_zero {n : ℕ} (a : ZMod n) : a.val ≠ 0 ↔ a ≠ 0 :=
 theorem val_pos {n : ℕ} {a : ZMod n} : 0 < a.val ↔ a ≠ 0 := by
   simp [pos_iff_ne_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem val_eq_one : ∀ {n : ℕ} (_ : 1 < n) (a : ZMod n), a.val = 1 ↔ a = 1
   | 0, hn, _
   | 1, hn, _ => by simp at hn
@@ -968,10 +981,7 @@ theorem val_eq_one : ∀ {n : ℕ} (_ : 1 < n) (a : ZMod n), a.val = 1 ↔ a = 1
 theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val = n := by
   rw [neg_eq_iff_add_eq_zero, ← two_mul]
   cases n
-  · rw [@mul_eq_zero ℤ, @mul_eq_zero ℕ, val_eq_zero]
-    exact
-      ⟨fun h => h.elim (by simp) Or.inl, fun h =>
-        Or.inr (h.elim id fun h => h.elim (by simp) id)⟩
+  · simp
   conv_lhs =>
     rw [← a.natCast_zmod_val, ← Nat.cast_two, ← Nat.cast_mul, natCast_eq_zero_iff]
   constructor
@@ -1106,7 +1116,8 @@ instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
 @[simp]
 theorem ringHom_map_cast [NonAssocRing R] (f : R →+* ZMod n) (k : ZMod n) : f (cast k) = k := by
   cases n
-  · dsimp [ZMod, ZMod.cast] at f k ⊢; simp
+  · dsimp +instances [ZMod, ZMod.cast] at f k ⊢
+    simp
   · dsimp [ZMod.cast]
     rw [map_natCast, natCast_zmod_val]
 

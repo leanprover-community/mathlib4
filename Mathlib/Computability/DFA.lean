@@ -154,6 +154,7 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
   rwa [← hq, ← evalFrom_of_append, ← evalFrom_of_append, ← List.append_assoc,
     List.take_append_drop, List.take_append_drop]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
     (hy : y ∈ ({x} : Language α)∗) : M.evalFrom s y = s := by
   rw [Language.mem_kstar] at hy
@@ -168,6 +169,7 @@ theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
     intro z hz
     exact hS z (List.mem_cons_of_mem a hz)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
     (hlen : Fintype.card σ ≤ List.length x) :
     ∃ a b c,
@@ -213,6 +215,7 @@ theorem evalFrom_comap (f : α' → α) (s : σ) (x : List α') :
 theorem eval_comap (f : α' → α) (x : List α') : (M.comap f).eval x = M.eval (x.map f) := by
   simp [eval]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem accepts_comap (f : α' → α) : (M.comap f).accepts = List.map f ⁻¹' M.accepts := by
   ext x
@@ -296,6 +299,7 @@ def union (M1 : DFA α σ1) (M2 : DFA α σ2) : DFA α (σ1 × σ2) where
   start := (M1.start, M2.start)
   accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∨ s.2 ∈ M2.accept}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem acceptsFrom_union (M1 : DFA α σ1) (M2 : DFA α σ2) (s1 : σ1) (s2 : σ2) :
     (M1.union M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 + M2.acceptsFrom s2 := by
@@ -325,6 +329,7 @@ def inter : DFA α (σ1 × σ2) where
   start := (M1.start, M2.start)
   accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∧ s.2 ∈ M2.accept}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem acceptsFrom_inter (s1 : σ1) (s2 : σ2) :
     (M1.inter M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 ⊓ M2.acceptsFrom s2 := by

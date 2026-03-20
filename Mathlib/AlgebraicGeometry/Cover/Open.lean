@@ -44,6 +44,7 @@ variable [∀ x, HasPullback (𝒰.f x ≫ f) g]
 
 instance (i : 𝒰.I₀) : IsOpenImmersion (𝒰.f i) := 𝒰.map_prop i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The affine cover of a scheme. -/
 def affineCover (X : Scheme.{u}) : OpenCover X := by
   choose U R h using X.local_affine
@@ -129,6 +130,7 @@ def openCover {X : Scheme.{u}} (𝒰 : X.AffineOpenCover) : X.OpenCover :=
 
 end AffineOpenCover
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A choice of an affine open cover of a scheme. -/
 @[simps]
 def affineOpenCover (X : Scheme.{u}) : X.AffineOpenCover where
@@ -142,6 +144,7 @@ def affineOpenCover (X : Scheme.{u}) : X.AffineOpenCover where
 lemma openCover_affineOpenCover (X : Scheme.{u}) : X.affineOpenCover.openCover = X.affineCover :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given any open cover `𝓤`, this is an affine open cover which refines it.
 The morphism in the category of open covers which proves that this is indeed a refinement, see
 `AlgebraicGeometry.Scheme.OpenCover.fromAffineRefinement`.
@@ -153,6 +156,7 @@ def OpenCover.affineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) : X.AffineO
   idx := Cover.idx (𝓤.bind fun j => (𝓤.X j).affineCover)
   covers := Cover.covers (𝓤.bind fun j => (𝓤.X j).affineCover)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pullback of the affine refinement is the pullback of the affine cover. -/
 def OpenCover.pullbackCoverAffineRefinementObjIso (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :
     (𝒰.affineRefinement.openCover.pullback₁ f).X i ≅
@@ -161,6 +165,7 @@ def OpenCover.pullbackCoverAffineRefinementObjIso (f : X ⟶ Y) (𝒰 : Y.OpenCo
     pullbackSymmetry _ _ ≪≫ asIso (pullback.map _ _ _ _ (pullbackSymmetry _ _).hom (𝟙 _) (𝟙 _)
       (by simp [Cover.pullbackHom]) (by simp))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_map (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :
     (𝒰.pullbackCoverAffineRefinementObjIso f i).inv ≫
@@ -177,6 +182,7 @@ lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_map (f : X ⟶ Y) (𝒰 
     ((𝒰.X i.1).affineCover.f i.2) (pullback.fst _ _) _ using 2
   exact pullbackRightPullbackFstIso_hom_snd _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_pullbackHom
     (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :
@@ -280,6 +286,7 @@ theorem affineBasisCover_obj (X : Scheme.{u}) (i : X.affineBasisCover.I₀) :
     X.affineBasisCover.X i = Spec (X.affineBasisCoverRing i) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
     (r : (X.local_affine x).choose_spec.choose) :
     Set.range (X.affineBasisCover.f ⟨x, r⟩) =

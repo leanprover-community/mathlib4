@@ -32,10 +32,8 @@ We define and prove basic properties about Artinian and locally Artinian Schemes
 
 * `AlgebraicGeometry.IsArtinianScheme.finite`: An Artinian scheme is finite.
 
-* `AlgebraicGeometry.Scheme.isArtinianRing_iff_IsArtinianScheme`: A commutative ring R is Artinian
-  if and only if Spec R is Artinian.
-
-TODO(Brian-Nugent): Show that all Artinian schemes are affine.
+* `AlgebraicGeometry.Scheme.isArtinianScheme_Spec`: A commutative ring R is Artinian if and only if
+  Spec R is Artinian.
 
 -/
 
@@ -93,6 +91,7 @@ instance [IsLocallyArtinian X] {U : X.Opens} : IsLocallyArtinian U := .of_isOpen
 instance [IsLocallyArtinian X] {U : X.OpenCover} (i) : IsLocallyArtinian (U.X i) :=
   .of_isOpenImmersion (U.f i)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian X] :
     DiscreteTopology X := by
   apply discreteTopology_iff_isOpen_singleton.mpr

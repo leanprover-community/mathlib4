@@ -285,6 +285,7 @@ theorem pathCast {p q : Path x₀ x₁} (hpq : p.Homotopic q) (hsource : x₂ = 
 The setoid on `Path`s defined by the equivalence relation `Path.Homotopic`. That is, two paths are
 equivalent if there is a `Homotopy` between them.
 -/
+@[instance_reducible]
 protected def setoid (x₀ x₁ : X) : Setoid (Path x₀ x₁) :=
   ⟨Homotopic, equivalence⟩
 

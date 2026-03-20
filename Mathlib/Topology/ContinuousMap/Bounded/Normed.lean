@@ -200,7 +200,7 @@ instance instAddCommGroup : AddCommGroup (α →ᵇ β) := fast_instance%
     fun _ _ => coe_zsmul _ _
 
 instance instSeminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) where
-  dist_eq f g := by simp only [norm_eq, dist_eq, dist_eq_norm, sub_apply]
+  dist_eq f g := by simp only [norm_eq, dist_eq, dist_eq_norm_neg_add, add_apply, neg_apply]
 
 instance instNormedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGroup β] :
     NormedAddCommGroup (α →ᵇ β) :=
@@ -606,7 +606,7 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
     0 ≤ const _ ‖f‖ - f := by
   intro x
   simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, coe_zero, Pi.zero_apply, coe_sub,
-    const_apply, Pi.sub_apply, sub_nonneg]
+    const_apply, Pi.sub_apply]
   linarith [(abs_le.mp (norm_coe_le_norm f x)).2]
 
 end

@@ -43,7 +43,7 @@ set with a topological group structure.
 @[pp_with_univ]
 structure ProfiniteGrp where
   /-- The underlying profinite topological space. -/
-  toProfinite : Profinite
+  toProfinite : Profinite.{u}
   /-- The group structure. -/
   [group : Group toProfinite]
   /-- The above data together form a topological group. -/
@@ -56,7 +56,7 @@ set with a topological additive group structure.
 @[pp_with_univ]
 structure ProfiniteAddGrp where
   /-- The underlying profinite topological space. -/
-  toProfinite : Profinite
+  toProfinite : Profinite.{u}
   /-- The additive group structure. -/
   [addGroup : AddGroup toProfinite]
   /-- The above data together form a topological additive group. -/

@@ -168,6 +168,7 @@ def dual : BddOrd ⥤ BddOrd where
   obj X := of Xᵒᵈ
   map f := ofHom f.hom.dual
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an equivalence between bounded orders from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : BddOrd.{u}} (e : α ≃o β) : α ≅ β where

@@ -55,8 +55,11 @@ theorem fract_mem (x : ℝ) : fract x ∈ I :=
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
 @[norm_cast] theorem coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 := coe_eq_zero.not
+
 @[norm_cast] theorem coe_ne_one {x : I} : (x : ℝ) ≠ 1 ↔ x ≠ 1 := coe_eq_one.not
+
 @[simp, norm_cast] theorem coe_pos {x : I} : (0 : ℝ) < x ↔ 0 < x := Iff.rfl
+
 @[simp, norm_cast] theorem coe_lt_one {x : I} : (x : ℝ) < 1 ↔ x < 1 := Iff.rfl
 
 theorem mul_le_left {x y : I} : x * y ≤ x :=
@@ -543,6 +546,7 @@ open NNReal
 def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
 
 @[simp] lemma toNNReal_zero : toNNReal 0 = 0 := rfl
+
 @[simp] lemma toNNReal_one : toNNReal 1 = 1 := rfl
 
 @[fun_prop] lemma toNNReal_continuous : Continuous toNNReal := by delta toNNReal; fun_prop

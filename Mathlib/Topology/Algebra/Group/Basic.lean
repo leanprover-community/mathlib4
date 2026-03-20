@@ -47,7 +47,7 @@ variable {G : Type w} {H : Type x} {α : Type u} {β : Type v}
 
 /-- In a Hausdorff magma with continuous multiplication, the centralizer of any set is closed. -/
 lemma Set.isClosed_centralizer {M : Type*} (s : Set M) [Mul M] [TopologicalSpace M]
-    [ContinuousMul M] [T2Space M] : IsClosed (centralizer s) := by
+    [SeparatelyContinuousMul M] [T2Space M] : IsClosed (centralizer s) := by
   rw [centralizer, setOf_forall]
   refine isClosed_sInter ?_
   rintro - ⟨m, ht, rfl⟩
@@ -63,7 +63,7 @@ In this section we prove a few statements about groups with continuous `(*)`.
 -/
 
 
-variable [TopologicalSpace G] [Group G] [ContinuousMul G]
+variable [TopologicalSpace G] [Group G] [SeparatelyContinuousMul G]
 
 /-- Multiplication from the left in a topological group as a homeomorphism. -/
 @[to_additive /-- Addition from the left in a topological additive group as a homeomorphism. -/]
@@ -143,6 +143,17 @@ theorem discreteTopology_iff_isOpen_singleton_one : DiscreteTopology G ↔ IsOpe
 theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
     DiscreteTopology G :=
   discreteTopology_iff_isOpen_singleton_one.mpr h
+
+@[to_additive]
+theorem smul_connectedComponent (g h : G) : g • connectedComponent h = connectedComponent (g * h) :=
+  (Homeomorph.mulLeft g).isQuotientMap.image_connectedComponent (by simp [isConnected_singleton]) h
+
+@[to_additive]
+theorem totallyDisconnectedSpace_iff_connectedComponent_one :
+    TotallyDisconnectedSpace G ↔ connectedComponent (1 : G) = {1} :=
+  ⟨fun _ ↦ connectedComponent_eq_singleton 1,
+    fun h ↦ totallyDisconnectedSpace_iff_connectedComponent_singleton.mpr fun g ↦ by
+      rw [← mul_one g, ← smul_connectedComponent, h, Set.smul_set_singleton, smul_eq_mul]⟩
 
 @[to_additive]
 lemma Filter.tendsto_mul_const_iff (b : G) {c : G} {f : α → G} {l : Filter α} :
@@ -400,29 +411,30 @@ instance ConjAct.units_continuousConstSMul {M} [Monoid M] [TopologicalSpace M]
     [ContinuousMul M] : ContinuousConstSMul (ConjAct Mˣ) M :=
   ⟨fun _ => (continuous_const.mul continuous_id).mul continuous_const⟩
 
-variable [TopologicalSpace G] [Inv G] [Mul G] [ContinuousMul G]
+variable [TopologicalSpace G] [Inv G] [Mul G]
 
 /-- Conjugation is jointly continuous on `G × G` when both `mul` and `inv` are continuous. -/
 @[to_additive continuous_addConj_prod
   /-- Conjugation is jointly continuous on `G × G` when both `add` and `neg` are continuous. -/]
-theorem IsTopologicalGroup.continuous_conj_prod [ContinuousInv G] :
+theorem IsTopologicalGroup.continuous_conj_prod [ContinuousMul G] [ContinuousInv G] :
     Continuous fun g : G × G => g.fst * g.snd * g.fst⁻¹ :=
   continuous_mul.mul (continuous_inv.comp continuous_fst)
 
 /-- Conjugation by a fixed element is continuous when `mul` is continuous. -/
-@[to_additive (attr := continuity)
+@[to_additive (attr := continuity, fun_prop)
   /-- Conjugation by a fixed element is continuous when `add` is continuous. -/]
-theorem IsTopologicalGroup.continuous_conj (g : G) : Continuous fun h : G => g * h * g⁻¹ :=
-  (continuous_mul_right g⁻¹).comp (continuous_mul_left g)
+theorem IsTopologicalGroup.continuous_conj [SeparatelyContinuousMul G] (g : G) :
+    Continuous fun h : G => g * h * g⁻¹ :=
+  (continuous_mul_const g⁻¹).comp (continuous_const_mul g)
 
 /-- Conjugation acting on fixed element of the group is continuous when both `mul` and
 `inv` are continuous. -/
-@[to_additive (attr := continuity)
+@[to_additive (attr := continuity, fun_prop)
   /-- Conjugation acting on fixed element of the additive group is continuous when both
     `add` and `neg` are continuous. -/]
-theorem IsTopologicalGroup.continuous_conj' [ContinuousInv G] (h : G) :
+theorem IsTopologicalGroup.continuous_conj' [ContinuousMul G] [ContinuousInv G] (h : G) :
     Continuous fun g : G => g * h * g⁻¹ :=
-  (continuous_mul_right h).mul continuous_inv
+  (continuous_mul_const h).mul continuous_inv
 
 end Conj
 
@@ -666,6 +678,11 @@ theorem Subgroup.topologicalClosure_minimal (s : Subgroup G) {t : Subgroup G} (h
     (ht : IsClosed (t : Set G)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
+@[to_additive (attr := gcongr)]
+theorem Subgroup.topologicalClosure_mono {s t : Subgroup G} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  _root_.closure_mono h
+
 @[to_additive]
 theorem DenseRange.topologicalClosure_map_subgroup [Group H] [TopologicalSpace H]
     [IsTopologicalGroup H] {f : G →* H} (hf : Continuous f) (hf' : DenseRange f) {s : Subgroup G}
@@ -689,7 +706,7 @@ theorem mul_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [MulOneC
     (hh : h ∈ connectedComponent (1 : G)) : g * h ∈ connectedComponent (1 : G) := by
   rw [connectedComponent_eq hg]
   have hmul : g ∈ connectedComponent (g * h) := by
-    apply Continuous.image_connectedComponent_subset (continuous_mul_left g)
+    apply Continuous.image_connectedComponent_subset (continuous_const_mul g)
     rw [← connectedComponent_eq hh]
     exact ⟨(1 : G), mem_connectedComponent, by simp only [mul_one]⟩
   simpa [← connectedComponent_eq hmul] using mem_connectedComponent
@@ -773,6 +790,29 @@ theorem mem_closure_iff_nhds_one {x : G} {s : Set G} :
   rw [mem_closure_iff_nhds_basis ((𝓝 1 : Filter G).basis_sets.nhds_of_one x)]
   simp_rw [Set.mem_setOf, id]
 
+/-- A monoid homomorphism (a bundled morphism of a type that implements `MonoidHomClass`)
+from a topological group to a topological monoid is continuous
+provided that it is continuous at one.
+
+This version assumes that `f x → 1` as `x → 1`,
+saving a rewrite of `f 1 = 1` compared to `continuous_of_continuousAt_one` in some cases.
+See also `uniformContinuous_of_continuousAt_one`. -/
+@[to_additive
+  /-- An additive monoid homomorphism (a bundled morphism of a type that implements
+  `AddMonoidHomClass`) from an additive topological group to an additive topological monoid is
+  continuous provided that it is continuous at zero.
+
+  This version assumes that `f x → 0` as `x → 0`,
+  saving a rewrite of `f 0 = 0` compared to `continuous_of_continuousAt_zero` in some cases.
+  See also `uniformContinuous_of_continuousAt_zero`. -/]
+theorem continuous_of_tendsto_nhds_one {M hom : Type*} [MulOneClass M] [TopologicalSpace M]
+    [ContinuousMul M] [FunLike hom G M] [MonoidHomClass hom G M] (f : hom)
+    (hf : Tendsto f (𝓝 1) (𝓝 1)) :
+    Continuous f :=
+  continuous_iff_continuousAt.2 fun x ↦ by
+    simpa only [ContinuousAt, ← map_mul_left_nhds_one x, tendsto_map'_iff, Function.comp_def,
+      map_mul, mul_one] using hf.const_mul (f x)
+
 /-- A monoid homomorphism (a bundled morphism of a type that implements `MonoidHomClass`) from a
 topological group to a topological monoid is continuous provided that it is continuous at one. See
 also `uniformContinuous_of_continuousAt_one`. -/
@@ -785,9 +825,7 @@ theorem continuous_of_continuousAt_one {M hom : Type*} [MulOneClass M] [Topologi
     [ContinuousMul M] [FunLike hom G M] [MonoidHomClass hom G M] (f : hom)
     (hf : ContinuousAt f 1) :
     Continuous f :=
-  continuous_iff_continuousAt.2 fun x => by
-    simpa only [ContinuousAt, ← map_mul_left_nhds_one x, tendsto_map'_iff, Function.comp_def,
-      map_mul, map_one, mul_one] using hf.tendsto.const_mul (f x)
+  continuous_of_tendsto_nhds_one f <| by simpa using hf.tendsto
 
 @[to_additive continuous_of_continuousAt_zero₂]
 theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [TopologicalSpace M]

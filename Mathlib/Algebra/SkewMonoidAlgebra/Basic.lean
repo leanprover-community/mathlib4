@@ -25,7 +25,7 @@ yields a not-necessarily-unital, not-necessarily-associative algebra.
 
 ## Main Definitions
 - `SkewMonoidAlgebra k G`: the skew monoid algebra of `G` over `k` is the type of finite formal
-`k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
+  `k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
 
 -/
 
@@ -283,7 +283,7 @@ theorem _root_.IsSMulRegular.skewMonoidAlgebra_iff {S : Type*} [Monoid S] [Distr
   inhabit G
   refine ⟨IsSMulRegular.skewMonoidAlgebra, fun ha b₁ b₂ inj ↦ ?_⟩
   rw [← (single_injective _).eq_iff, ← smul_single, ← smul_single] at inj
-  exact single_injective (default) (ha inj)
+  exact single_injective default (ha inj)
 
 end Single
 
@@ -440,6 +440,7 @@ theorem mul_sum {S : Type*} [NonUnitalNonAssocSemiring S] (b : S) (s : SkewMonoi
     {f : G → k → S} : b * s.sum f = s.sum fun a c ↦ b * f a c := by
   simp only [sum, Finsupp.sum, Finset.mul_sum]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Analogue of `Finsupp.sum_ite_eq'` for `SkewMonoidAlgebra`. -/
 @[simp]
 theorem sum_ite_eq' {N : Type*} [AddCommMonoid N] [DecidableEq G] (f : SkewMonoidAlgebra k G)
@@ -813,6 +814,7 @@ variable {M α : Type*} [Monoid G] [AddCommMonoid M] [MulAction G α]
 
 This is not an instance as it would conflict with the action on the range.
 See the file `MathlibTest/instance_diamonds.lean` for examples of such conflicts. -/
+@[instance_reducible]
 def comapSMul : SMul G (SkewMonoidAlgebra M α) where smul g := mapDomain (g • ·)
 
 attribute [local instance] comapSMul
@@ -824,6 +826,7 @@ theorem comapSMul_single (g : G) (a : α) (b : M) : g • single a b = single (g
   mapDomain_single
 
 /-- `comapSMul` is multiplicative -/
+@[instance_reducible]
 def comapMulAction : MulAction G (SkewMonoidAlgebra M α) where
   one_smul f := by rw [comapSMul_def, one_smul_eq_id, mapDomain_id]
   mul_smul g g' f := by
@@ -832,6 +835,7 @@ def comapMulAction : MulAction G (SkewMonoidAlgebra M α) where
 attribute [local instance] comapMulAction
 /-- This is not an instance as it conflicts with `SkewMonoidAlgebra.distribMulAction`
   when `G = kˣ`. -/
+@[implicit_reducible]
 def comapDistribMulActionSelf [AddCommMonoid k] :
     DistribMulAction G (SkewMonoidAlgebra k G) where
   smul_zero g := by
@@ -847,9 +851,9 @@ section coeff_mul
 
 variable [Semiring k]
 
-section Monoid
+section Mul
 
-variable [Monoid G] [MulSemiringAction G k]
+variable [Mul G] [SMulZeroClass G k]
 
 theorem coeff_mul [DecidableEq G] (f g : SkewMonoidAlgebra k G)
     (x : G) : (f * g).coeff x = f.sum fun a₁ b₁ ↦ g.sum fun a₂ b₂ ↦
@@ -915,10 +919,6 @@ theorem coeff_mul_single_aux (f : SkewMonoidAlgebra k G) {r : k} {x y z : G}
     _ = f.coeff y * y • r := by
       split_ifs with h <;> simp [support] at h <;> simp [h]
 
-theorem coeff_mul_single_one (f : SkewMonoidAlgebra k G) (r : k) (x : G) :
-    (f * single 1 r).coeff x = f.coeff x * x • r :=
-  f.coeff_mul_single_aux fun a ↦ by rw [mul_one]
-
 theorem coeff_mul_single_of_not_exists_mul (r : k) {g g' : G} (x : SkewMonoidAlgebra k G)
     (h : ∀ x, ¬g' = x * g) : (x * single g r).coeff g' = 0 := by
   classical
@@ -940,10 +940,6 @@ theorem coeff_single_mul_aux (f : SkewMonoidAlgebra k G) {r : k} {x y z : G}
     _ = if z ∈ f.support then r * x • f.coeff z else 0 := (f.support.sum_ite_eq' _ _)
     _ = _ := by split_ifs with h <;> simp [support] at h <;> simp [h]
 
-theorem coeff_single_one_mul (f : SkewMonoidAlgebra k G) (r : k) (x : G) :
-    (single (1 : G) r * f).coeff x = r * f.coeff x := by
-  simp [coeff_single_mul_aux, one_smul]
-
 theorem coeff_single_mul_of_not_exists_mul (r : k) {g g' : G} (x : SkewMonoidAlgebra k G)
     (h : ¬∃ d, g' = g * d) : (single g r * x).coeff g' = 0 := by
   classical
@@ -953,6 +949,20 @@ theorem coeff_single_mul_of_not_exists_mul (r : k) {g g' : G} (x : SkewMonoidAlg
     rintro g'' _hg'' rfl
     exact absurd ⟨_, rfl⟩ h
   · simp
+
+end Mul
+
+section Monoid
+
+variable [Monoid G] [MulSemiringAction G k]
+
+theorem coeff_mul_single_one (f : SkewMonoidAlgebra k G) (r : k) (x : G) :
+    (f * single 1 r).coeff x = f.coeff x * x • r :=
+  f.coeff_mul_single_aux fun a ↦ by rw [mul_one]
+
+theorem coeff_single_one_mul (f : SkewMonoidAlgebra k G) (r : k) (x : G) :
+    (single (1 : G) r * f).coeff x = r * f.coeff x := by
+  simp [coeff_single_mul_aux, one_smul]
 
 end Monoid
 

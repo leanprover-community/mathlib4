@@ -28,6 +28,7 @@ universe u
 variable {X Y : Scheme.{u}} {K : Type u} [Field K] [IsAlgClosed K]
     (f : X ⟶ Spec (.of K)) [LocallyOfFiniteType f] (x : X) (hx : IsClosed {x})
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `X` is a locally of finite type `k`-scheme and `k` is algebraically closed, then
 the residue field of any closed point of `x` is isomorphic to `k`. -/
 def residueFieldIsoBase : X.residueField x ≅ .of K :=
