@@ -179,7 +179,7 @@ lemma inv_Ioo (a b : α) : (Ioo a b)⁻¹ = Ioo b⁻¹ a⁻¹ := by simp [← Io
 
 @[to_additive (attr := simp)]
 theorem preimage_const_mul_Ici : (fun x => a * x) ⁻¹' Ici b = Ici (b / a) :=
-  ext fun _x => (div_le_iff_le_mul').symm
+  ext fun _x => div_le_iff_le_mul'.symm
 
 @[to_additive (attr := simp)]
 theorem preimage_const_mul_Ioi : (fun x => a * x) ⁻¹' Ioi b = Ioi (b / a) :=

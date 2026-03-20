@@ -58,10 +58,8 @@ instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
 Nevertheless it is sometimes a useful intermediate step in constructions.
 -/
 class CompleteSemilatticeSup (α : Type*) extends PartialOrder α, SupSet α where
-  /-- Any element of a set is less than the set supremum. -/
-  le_sSup : ∀ s, ∀ a ∈ s, a ≤ sSup s
-  /-- Any upper bound is more than the set supremum. -/
-  sSup_le : ∀ s a, (∀ b ∈ s, b ≤ a) → sSup s ≤ a
+  /-- Every set has a least upper bound. -/
+  isLUB_sSup : ∀ s : Set α, IsLUB s (sSup s)
 
 /-- Note that we rarely use `CompleteSemilatticeInf`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
@@ -70,26 +68,24 @@ Nevertheless it is sometimes a useful intermediate step in constructions.
 -/
 @[to_dual]
 class CompleteSemilatticeInf (α : Type*) extends PartialOrder α, InfSet α where
-  /-- Any element of a set is more than the set infimum. -/
-  sInf_le : ∀ s, ∀ a ∈ s, sInf s ≤ a
-  /-- Any lower bound is less than the set infimum. -/
-  le_sInf : ∀ s a, (∀ b ∈ s, a ≤ b) → a ≤ sInf s
+  /-- Every set has a greatest lower bound. -/
+  isGLB_sInf : ∀ s : Set α, IsGLB s (sInf s)
 
 section
 
 variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
 
-@[to_dual sInf_le]
-theorem le_sSup : a ∈ s → a ≤ sSup s :=
-  CompleteSemilatticeSup.le_sSup s a
-
-@[to_dual le_sInf]
-theorem sSup_le : (∀ b ∈ s, b ≤ a) → sSup s ≤ a :=
-  CompleteSemilatticeSup.sSup_le s a
-
 @[to_dual]
 theorem isLUB_sSup (s : Set α) : IsLUB s (sSup s) :=
-  ⟨fun _ ↦ le_sSup, fun _ ↦ sSup_le⟩
+  CompleteSemilatticeSup.isLUB_sSup _
+
+@[to_dual sInf_le]
+theorem le_sSup (h : a ∈ s) : a ≤ sSup s :=
+  (isLUB_sSup s).1 h
+
+@[to_dual le_sInf]
+theorem sSup_le (h : ∀ b ∈ s, b ≤ a) : sSup s ≤ a :=
+  (isLUB_sSup s).2 h
 
 @[to_dual]
 lemma isLUB_iff_sSup_eq : IsLUB s a ↔ sSup s = a :=
@@ -122,8 +118,7 @@ end
 
 @[to_dual]
 instance {α : Type*} [CompleteSemilatticeInf α] : CompleteSemilatticeSup αᵒᵈ where
-  le_sSup := @CompleteSemilatticeInf.sInf_le α _
-  sSup_le := @CompleteSemilatticeInf.le_sInf α _
+  isLUB_sSup := isGLB_sInf (α := α)
 
 /-- A complete lattice is a bounded lattice which has suprema and infima for every subset. -/
 class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
@@ -171,11 +166,9 @@ def completeLatticeOfInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
   sup_le a b c hac hbc := (isGLB_sInf _).1 <| by simp [*]
   le_sup_left _ _ := (isGLB_sInf _).2 fun _ => And.left
   le_sup_right _ _ := (isGLB_sInf _).2 fun _ => And.right
-  le_sInf s _ ha := (isGLB_sInf s).2 ha
-  sInf_le s _ ha := (isGLB_sInf s).1 ha
   sSup s := sInf (upperBounds s)
-  le_sSup s _ ha := (isGLB_sInf (upperBounds s)).2 fun _ hb => hb ha
-  sSup_le s _ ha := (isGLB_sInf (upperBounds s)).1 ha
+  isGLB_sInf := isGLB_sInf
+  isLUB_sSup s := isGLB_upperBounds.mp (isGLB_sInf _)
 
 /-- Any `CompleteSemilatticeInf` is in fact a `CompleteLattice`.
 
@@ -219,10 +212,8 @@ def completeLatticeOfSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
   inf_le_left _ _ := (isLUB_sSup _).2 fun _ => And.left
   inf_le_right _ _ := (isLUB_sSup _).2 fun _ => And.right
   sInf s := sSup (lowerBounds s)
-  sSup_le s _ ha := (isLUB_sSup s).2 ha
-  le_sSup s _ ha := (isLUB_sSup s).1 ha
-  sInf_le s _ ha := (isLUB_sSup (lowerBounds s)).2 fun _ hb => hb ha
-  le_sInf s _ ha := (isLUB_sSup (lowerBounds s)).1 ha
+  isLUB_sSup := isLUB_sSup
+  isGLB_sInf s := isLUB_lowerBounds.mp (isLUB_sSup _)
 
 /-- Any `CompleteSemilatticeSup` is in fact a `CompleteLattice`.
 
@@ -266,10 +257,6 @@ namespace OrderDual
 
 instance instCompleteLattice [CompleteLattice α] : CompleteLattice αᵒᵈ where
   __ := instBoundedOrder α
-  le_sSup := @CompleteLattice.sInf_le α _
-  sSup_le := @CompleteLattice.le_sInf α _
-  sInf_le := @CompleteLattice.le_sSup α _
-  le_sInf := @CompleteLattice.sSup_le α _
 
 instance instCompleteLinearOrder [CompleteLinearOrder α] : CompleteLinearOrder αᵒᵈ where
   __ := instCompleteLattice
