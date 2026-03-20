@@ -80,6 +80,9 @@ theorem diagonal_zero [Zero α] : (diagonal fun _ => 0 : Matrix n n α) = 0 := b
   simp [diagonal]
 
 @[simp]
+theorem diagonal_zero' [Zero α] : (diagonal 0 : Matrix n n α) = 0 := diagonal_zero
+
+@[simp]
 theorem diagonal_transpose [Zero α] (v : n → α) : (diagonal v)ᵀ = diagonal v := by
   ext i j
   by_cases h : i = j

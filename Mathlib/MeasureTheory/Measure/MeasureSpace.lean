@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.MeasurableSpace.MeasurablyGenerated
 public import Mathlib.MeasureTheory.Measure.NullMeasurable
 public import Mathlib.Order.Interval.Set.Monotone
+import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
 # Measure spaces
@@ -357,7 +358,8 @@ theorem measure_iUnion_congr_of_subset {ι : Sort*} [Countable ι] {s : ι → S
       exact htop b
   calc
     μ (⋃ b, t b) ≤ μ (⋃ b, M (t b)) := measure_mono (iUnion_mono fun b => subset_toMeasurable _ _)
-    _ = μ (⋃ b, M (t b) ∩ M (⋃ b, s b)) := measure_congr (EventuallyEq.countable_iUnion H).symm
+    _ = μ (⋃ b, M (t b) ∩ M (⋃ b, s b)) :=
+      measure_congr (Filter.EventuallyEq.countable_iUnion H).symm
     _ ≤ μ (M (⋃ b, s b)) := measure_mono (iUnion_subset fun b => inter_subset_right)
     _ = μ (⋃ b, s b) := measure_toMeasurable _
 
@@ -650,17 +652,21 @@ theorem exists_measure_iInter_lt {α ι : Type*} {_ : MeasurableSpace α} {μ : 
 /-- The measure of the intersection of a decreasing sequence of measurable
 sets indexed by a linear order with first countable topology is the limit of the measures. -/
 theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpace ι]
-    [OrderTopology ι] [DenselyOrdered ι] [FirstCountableTopology ι] {s : ι → Set α}
+    [OrderTopology ι] [FirstCountableTopology ι] {s : ι → Set α}
     {a : ι} (hs : ∀ r > a, NullMeasurableSet (s r) μ) (hm : ∀ i j, a < i → i ≤ j → s i ⊆ s j)
     (hf : ∃ r > a, μ (s r) ≠ ∞) : Tendsto (μ ∘ s) (𝓝[Ioi a] a) (𝓝 (μ (⋂ r > a, s r))) := by
-  have : (atBot : Filter (Ioi a)).IsCountablyGenerated := by
-    rw [← comap_coe_Ioi_nhdsGT]
-    infer_instance
-  simp_rw [← map_coe_Ioi_atBot, tendsto_map'_iff, ← mem_Ioi, biInter_eq_iInter]
-  apply tendsto_measure_iInter_atBot
-  · rwa [Subtype.forall]
-  · exact fun i j h ↦ hm i j i.2 h
-  · simpa only [Subtype.exists, exists_prop]
+  by_cases ha : Order.IsPredPrelimit a
+  · have : (atBot : Filter (Ioi a)).IsCountablyGenerated := by
+      rw [← comap_coe_Ioi_nhdsGT a ha]
+      infer_instance
+    simp_rw [← map_coe_Ioi_atBot a ha, tendsto_map'_iff, ← mem_Ioi, biInter_eq_iInter]
+    apply tendsto_measure_iInter_atBot
+    · rwa [Subtype.forall]
+    · exact fun i j h ↦ hm i j i.2 h
+    · simpa only [Subtype.exists, exists_prop]
+  · rw [Order.not_isPredPrelimit_iff_exists_covBy] at ha
+    rcases ha with ⟨b, hab⟩
+    simp [hab.nhdsGT]
 
 theorem measure_if {x : β} {t : Set β} {s : Set α} [Decidable (x ∈ t)] :
     μ (if x ∈ t then s else ∅) = indicator t (fun _ => μ s) x := by split_ifs with h <;> simp [h]
@@ -866,6 +872,9 @@ theorem coe_smul {_m : MeasurableSpace α} (c : R) (μ : Measure α) : ⇑(c •
   rfl
 
 @[simp]
+lemma coe_nnreal_smul (c : ℝ≥0) (μ : Measure α) : (c : ℝ≥0∞) • μ = c • μ := rfl
+
+@[simp]
 theorem smul_apply {_m : MeasurableSpace α} (c : R) (μ : Measure α) (s : Set α) :
     (c • μ) s = c • μ s :=
   rfl
@@ -1010,6 +1019,12 @@ theorem le_intro (h : ∀ s, MeasurableSet s → s.Nonempty → μ₁ s ≤ μ�
 
 theorem le_iff' : μ₁ ≤ μ₂ ↔ ∀ s, μ₁ s ≤ μ₂ s := .rfl
 
+@[gcongr] theorem measure_mono_left (h : μ ≤ ν) (s : Set α) : μ s ≤ ν s := h s
+
+@[gcongr]
+theorem measure_mono_both (h₁ : μ ≤ ν) (h₂ : s ⊆ t) : μ s ≤ ν t :=
+  (h₁ s).trans (measure_mono h₂)
+
 theorem lt_iff : μ < ν ↔ μ ≤ ν ∧ ∃ s, MeasurableSet s ∧ μ s < ν s :=
   lt_iff_le_not_ge.trans <|
     and_congr Iff.rfl <| by simp only [le_iff, not_forall, not_le, exists_prop]
@@ -1061,11 +1076,9 @@ private theorem measure_le_sInf (h : ∀ μ' ∈ m, μ ≤ μ') : μ ≤ sInf m 
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-instance instCompleteSemilatticeInf {_ : MeasurableSpace α} : CompleteSemilatticeInf (Measure α) :=
-  { (by infer_instance : PartialOrder (Measure α)),
-    (by infer_instance : InfSet (Measure α)) with
-    sInf_le := fun _s _a => measure_sInf_le
-    le_sInf := fun _s _a => measure_le_sInf }
+instance instCompleteSemilatticeInf {_ : MeasurableSpace α} :
+    CompleteSemilatticeInf (Measure α) where
+  isGLB_sInf _ := ⟨fun x ↦ measure_sInf_le, fun _ ↦ by exact measure_le_sInf⟩
 
 instance instCompleteLattice {_ : MeasurableSpace α} : CompleteLattice (Measure α) :=
   { completeLatticeOfCompleteSemilatticeInf (Measure α) with

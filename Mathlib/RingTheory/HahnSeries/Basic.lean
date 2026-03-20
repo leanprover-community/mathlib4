@@ -271,7 +271,9 @@ theorem orderTop_of_ne_zero (hx : x ≠ 0) :
 @[deprecated (since := "2025-08-19")] alias orderTop_of_ne := orderTop_of_ne_zero
 
 @[simp] lemma orderTop_eq_top : orderTop x = ⊤ ↔ x = 0 := by simp [orderTop]
+
 @[simp] lemma orderTop_lt_top : orderTop x < ⊤ ↔ x ≠ 0 := by simp [lt_top_iff_ne_top]
+
 lemma orderTop_ne_top : orderTop x ≠ ⊤ ↔ x ≠ 0 := orderTop_eq_top.not
 
 @[deprecated (since := "2025-08-19")] alias orderTop_eq_top_iff := orderTop_eq_top
@@ -438,7 +440,7 @@ section Finsupp
 
 /-- Create a `HahnSeries` with a `Finsupp` as coefficients. -/
 def ofFinsupp : ZeroHom (Γ →₀ R) R⟦Γ⟧ where
-  toFun f := { coeff := f, isPWO_support' := f.finite_support.isPWO }
+  toFun f := { coeff := f, isPWO_support' := f.hasFiniteSupport.isPWO }
   map_zero' := by simp
 
 @[simp]

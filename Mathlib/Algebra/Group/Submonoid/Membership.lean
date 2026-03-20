@@ -396,6 +396,7 @@ theorem log_pow_eq_self [DecidableEq M] {n : M} (h : Function.Injective fun m : 
     (m : ℕ) : log (pow n m) = m :=
   pow_right_injective_iff_pow_injective.mp h <| pow_log_eq_self _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The exponentiation map is an isomorphism from the additive monoid on natural numbers to powers
 when it is injective. The inverse is given by the logarithms. -/
 @[simps]
@@ -555,6 +556,3 @@ end mul_add
 @[simp] theorem Nat.addSubmonoidClosure_one : AddSubmonoid.closure ({1} : Set ℕ) = ⊤ := by
   ext
   simp [AddSubmonoid.mem_closure_singleton]
-
-@[deprecated (since := "2025-08-14")]
-alias Nat.addSubmonoid_closure_one := Nat.addSubmonoidClosure_one

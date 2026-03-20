@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Data.Set.Card
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Tactic.Bound
 
 /-!
 # Infinite sums in extended nonnegative reals
@@ -116,6 +117,12 @@ protected theorem tsum_le_tsum (h : ∀ a, f a ≤ g a) : ∑' a, f a ≤ ∑' a
 
 protected theorem sum_le_tsum {f : α → ℝ≥0∞} (s : Finset α) : ∑ x ∈ s, f x ≤ ∑' x, f x :=
   ENNReal.summable.sum_le_tsum s (fun _ _ => zero_le _)
+
+protected lemma le_tsum_of_forall_lt_exists_sum
+    (h : ∀ b < a, ∃ I : Finset α, b < ∑ i ∈ I, f i) : a ≤ ∑' i, f i := by
+  refine le_of_forall_lt fun b hb ↦ ?_
+  obtain ⟨I, hI⟩ := h b hb
+  exact lt_of_lt_of_le hI (ENNReal.sum_le_tsum I)
 
 protected theorem tsum_eq_iSup_nat' {f : ℕ → ℝ≥0∞} {N : ℕ → ℕ} (hN : Tendsto N atTop atTop) :
     ∑' i : ℕ, f i = ⨆ i : ℕ, ∑ a ∈ Finset.range (N i), f a :=
@@ -380,6 +387,7 @@ theorem hasSum_iff_tendsto_nat {f : ℕ → ℝ≥0} {r : ℝ≥0} :
   simp only [← ENNReal.coe_finset_sum]
   exact ENNReal.tendsto_coe
 
+set_option backward.isDefEq.respectTransparency false in
 theorem not_summable_iff_tendsto_nat_atTop {f : ℕ → ℝ≥0} :
     ¬Summable f ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop atTop := by
   constructor
@@ -567,7 +575,7 @@ theorem ENNReal.multipliable_of_le_one {f : α → ℝ≥0∞} (h₀ : ∀ i, f 
 
 theorem ENNReal.hasProd_iInf_prod {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
     HasProd f (⨅ s : Finset α, ∏ i ∈ s, f i) :=
-  tendsto_atTop_iInf (Finset.prod_anti_set_of_le_one h₀)
+  tendsto_atTop_iInf (Finset.prod_anti_set_of_le_one' h₀)
 
 theorem ENNReal.tprod_eq_iInf_prod {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
     ∏' i, f i = ⨅ s : Finset α, ∏ i ∈ s, f i :=
@@ -577,6 +585,7 @@ end tprod
 
 variable [PseudoEMetricSpace α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the extended distance between consecutive points of a sequence is estimated
 by a summable series of `NNReal`s, then the original sequence is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_of_summable {f : ℕ → α} (d : ℕ → ℝ≥0)

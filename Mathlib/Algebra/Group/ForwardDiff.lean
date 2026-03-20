@@ -12,7 +12,7 @@ public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Tactic.Abel
 public import Mathlib.Algebra.GroupWithZero.Action.Pi
 public import Mathlib.Algebra.Polynomial.Basic
-public import Mathlib.Algebra.Polynomial.Degree.Definitions
+public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Algebra.Polynomial.Eval.Degree
 
 /-!
