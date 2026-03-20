@@ -151,7 +151,7 @@ lemma velocity_hasDerivAt_aux (hI : IsOpen I) (hγ : ContDiffOn ℝ 2 γ I)
   rw [iteratedDeriv_succ, iteratedDeriv_one]
   exact (hd.differentiableOn (by norm_num)).hasDerivAt (hI.mem_nhds ht)
 
-lemma inners_sum_eqOn_zero_of_const_inner_on_open {α β : ℝ → EuclideanSpace ℝ ι} (hI : IsOpen I)
+lemma inners_sum_eq_zero_of_const_inner_on_open {α β : ℝ → EuclideanSpace ℝ ι} (hI : IsOpen I)
     {s : ℝ} (ht : t ∈ I) {α' β' : EuclideanSpace ℝ ι} (hdα : HasDerivAt α α' t)
     (hdβ : HasDerivAt β β' t) (hci : Set.EqOn (fun t ↦ inner ℝ (α t) (β t)) (fun _ ↦ s) I) :
     inner ℝ (α t) β' + inner ℝ α' (β t) = 0 := by
@@ -175,14 +175,14 @@ theorem inner_of_deriv_curve_eq_zero_of_const_magnitude_curve (hI : IsOpen I)
   have h : Set.EqOn (fun x ↦  inner ℝ (γ x) (γ x)) (fun x ↦  r^2) I := by
     intro x hx
     simp [hγ₂ x hx]
+  have hd : HasDerivAt γ (deriv γ t) t :=
+    (hγ₁.contDiffAt (hI.mem_nhds ht)).differentiableAt_one.hasDerivAt
   symm
   calc
     (0 : ℝ) = 0 / 2 := by norm_num
-    _ = ((inner ℝ (γ t) (deriv γ t)) + (inner ℝ (deriv γ t) (γ t))) / 2 := by
-      have hd : HasDerivAt γ (deriv γ t) t :=
-        (hγ₁.contDiffAt (hI.mem_nhds ht)).differentiableAt_one.hasDerivAt
-      rw [inners_sum_eqOn_zero_of_const_inner_on_open hI ht hd hd h]
-    _ = inner ℝ (deriv γ t) (γ t) := by rw [real_inner_comm (deriv γ t)]; ring
+    _ = inner ℝ (deriv γ t) (γ t) := by
+            rw [← inners_sum_eq_zero_of_const_inner_on_open hI ht hd hd h,
+                real_inner_comm (deriv γ t)]; ring
 
 /-- For any twice continuously differentiable parametrized curve with constant speed, at any given
 point the velocity vector is perpendicular to the acceleration vector. -/
@@ -201,17 +201,12 @@ theorem second_deriv_eq_orientedCurvature_times_normal (hI : IsOpen I) (hc₁ : 
     (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
     iteratedDeriv 2 c t = (orientedCurvature c t)•(normal c t) := by
   rw [orientedCurvature_of_unit_speed_curve hc₂ ht]
-  calc
-    iteratedDeriv 2 c t = inner ℝ (iteratedDeriv 2 c t) (deriv c t) • deriv c t +
-                          inner ℝ (iteratedDeriv 2 c t) (normal c t) • normal c t := by
-      nth_rewrite 1 [← (frameAt hc₂ ht).sum_repr' (iteratedDeriv 2 c t)]
-      simp only [frameAt, Nat.succ_eq_add_one, Nat.reduceAdd, OrthonormalBasis.coe_mk,
-                 Fin.sum_univ_two, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
-                 Matrix.cons_val_fin_one]
-      rw [real_inner_comm (deriv c t) (iteratedDeriv 2 c t),
-          real_inner_comm (iteratedDeriv 2 c t) (normal c t)]
-    _ =  inner ℝ (iteratedDeriv 2 c t) (normal c t) • normal c t := by
-      rw [inner_of_accel_velocity_of_const_speed_eq_zero hI hc₁ hc₂ ht]; simp
+  nth_rewrite 1 [← (frameAt hc₂ ht).sum_repr' (iteratedDeriv 2 c t)]
+  simp only [frameAt, Nat.succ_eq_add_one, Nat.reduceAdd, OrthonormalBasis.coe_mk, Fin.sum_univ_two,
+             Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one]
+  rw [real_inner_comm (iteratedDeriv 2 c t), real_inner_comm (iteratedDeriv 2 c t),
+      inner_of_accel_velocity_of_const_speed_eq_zero hI hc₁ hc₂ ht]
+  simp
 
 /-- Auxiliary lemma: If `c` is a twice continuously differentiable plane curve on an interval `I`,
 then the normal has a derivative at every point of `I`. -/
@@ -246,7 +241,6 @@ theorem inner_of_deriv_normal_normal_of_unit_speed_eq_zero (hI : IsOpen I)
   inner_of_deriv_curve_eq_zero_of_const_magnitude_curve hI (by fun_prop (disch := assumption))
     (fun _ ht ↦  norm_normal_eq_one_of_unit_speed hc₂ ht) ht
 
-
 /-- The second Frenet equation for plane curves: For any twice continously differentiable plane
 curve parametrized by arc-length (i.e., with unit speed), the derivative of the normal vector is
 equal to minus the curvature times the velocity vector (first derivative). -/
@@ -271,7 +265,7 @@ theorem deriv_normal_eq_minus_orientedCurvature_times_deriv (hI : IsOpen I)
       calc
         (0 : ℝ) = (orientedCurvature c t)•(inner ℝ (normal c t) (normal c t))
                   + inner ℝ (deriv (normal c) t) (deriv c t) := by
-          rw [← inners_sum_eqOn_zero_of_const_inner_on_open hI ht hdn hddc hci,
+          rw [← inners_sum_eq_zero_of_const_inner_on_open hI ht hdn hddc hci,
               second_deriv_eq_orientedCurvature_times_normal hI hc₁ hc₂ ht,
               real_inner_comm (orientedCurvature c t • normal c t),
               inner_smul_left_eq_smul (normal c t) (normal c t)]
@@ -514,6 +508,10 @@ lemma deriv_differentiableAt_of_2_contDiffOn_open (hI : IsOpen I) (hγ₁ : Cont
           1 (by norm_num)).differentiableAt (hI.mem_nhds ht)).congr_of_eventuallyEq
   exact Filter.eventuallyEq_of_mem (hI.mem_nhds ht) h
 
+lemma eq_zero_of_sum_sq_eq_zero {x y : ℝ} (h : x ^ 2 + y ^ 2 = 0) : x = 0 ∧ y = 0 := by
+  have : x ^ 2 = 0 ∧ y ^ 2 = 0 := by constructor <;> linarith [pow_two_nonneg x, pow_two_nonneg y]
+  simp_all
+
 set_option backward.isDefEq.respectTransparency false in
 /-- This is the uniqueness part of the fundamental theorem of plane curves: given a curvature
 function κ and initial conditions (position p₀ at some time t₀ and unit velocity vector at time t₀
@@ -547,20 +545,20 @@ theorem initialCurve_of_orientedCurvature_is_unique (hI : IsOpen I) (hκ : Conti
   let f (s : ℝ) := (deriv c s) 0 - (deriv α s) 0
   let g (s : ℝ) := (deriv c s) 1 - (deriv α s) 1
   let h (s : ℝ) := (f s)^2 + (g s)^2
-  have hDdc {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (deriv c) s :=
+  have hDdc {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (deriv c) s := 
     have help := (hc₁.deriv_of_isOpen hI (m:=1) (by norm_num)).differentiableOn_one
     (help s hs).differentiableAt (hI.mem_nhds hs)
   have hDdα {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (deriv α) s :=
     have help := (hα₁.deriv_of_isOpen hI (m:=1) (by norm_num)).differentiableOn_one
     (help s hs).differentiableAt (hI.mem_nhds hs)
-  have hDdc₀ {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦  (deriv c t) 0) s :=
-    deriv_differentiableAt_of_2_contDiffOn_open hI hc₁ 0 hs
-  have hDdα₀ {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦  (deriv α t) 0) s :=
-    deriv_differentiableAt_of_2_contDiffOn_open hI hα₁ 0 hs
-  have hDdc₁ {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦  (deriv c t) 1) s :=
-    deriv_differentiableAt_of_2_contDiffOn_open hI hc₁ 1 hs
-  have hDdα₁ {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦  (deriv α t) 1) s :=
-    deriv_differentiableAt_of_2_contDiffOn_open hI hα₁ 1 hs
+  have hDdc₀ {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦  (deriv c t) 0) s := by
+    fun_prop (disch := assumption)
+  have hDdα₀ {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦  (deriv α t) 0) s := by
+    fun_prop (disch := assumption)
+  have hDdc₁ {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦  (deriv c t) 1) s := by
+    fun_prop (disch := assumption)
+  have hDdα₁ {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦  (deriv α t) 1) s := by
+    fun_prop (disch := assumption)
   have hDf {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ f s := by simp [f, hDdc₀ hs, hDdα₀ hs]
   have hDff {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (fun t ↦ (f t)^2) s := by simp [hDf hs]
   have hDg {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ g s := by simp [g, hDdc₁ hs, hDdα₁ hs]
@@ -625,20 +623,8 @@ theorem initialCurve_of_orientedCurvature_is_unique (hI : IsOpen I) (hκ : Conti
     let ⟨a, ha⟩ := hI.exists_is_const_of_deriv_eq_zero hIoC.isPreconnected hDOnh hdh
     intro s hs
     rw [ha s hs, ← ha t₀ ht₀, hht₀]
-  have hf : ∀s ∈ I, f s = 0 := by
-    intro s hs
-    have help₁ := hh s hs
-    simp only [Fin.isValue] at help₁
-    have help₂ : (f s)^2 = 0 := by
-      linarith [pow_two_nonneg (f s), pow_two_nonneg (g s), help₁]
-    simp_all
-  have hg : ∀s ∈ I, g s = 0 := by
-    intro s hs
-    have help₁ := hh s hs
-    simp only [Fin.isValue, h] at help₁
-    have help₂ : (f s)^2 = 0 := by
-      linarith [pow_two_nonneg (f s), pow_two_nonneg (g s), help₁]
-    simp_all
+  have hf : ∀s ∈ I, f s = 0 := fun s hs ↦  (eq_zero_of_sum_sq_eq_zero (hh s hs)).1
+  have hg : ∀s ∈ I, g s = 0 := fun s hs ↦  (eq_zero_of_sum_sq_eq_zero (hh s hs)).2
   have heqd₀ : ∀s ∈ I, (deriv c s) 0 = (deriv α s) 0 := by
     intro s hs
     have help := hf s hs
