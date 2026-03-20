@@ -163,7 +163,7 @@ example : true ∧ true := by
 
 section grind_interactive
 
-variable {x y z : Nat} 
+variable {x y z : Nat}
 
 /--
 warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
@@ -224,14 +224,14 @@ example (hx : x = 0 ∨ x = 1) : x ≤ 1 := by
       trivial
     cases #01c5
 
--- ignore `cases` 
+-- ignore `cases`
 example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x + y ≤ 2 := by
   grind =>
     cases #484a
     cases #01c5
     cases #01c5
 
--- ignore `<;>` 
+-- ignore `<;>`
 example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) (hz : z = 0 ∨ z = 1) :
     x + y + z ≤ 3 := by
   grind =>
