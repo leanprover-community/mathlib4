@@ -275,7 +275,7 @@ noncomputable def presheafHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) : ℱ �
     ext x
     apply Functor.IsCoverDense.ext G
     intro Y' f'
-    simp only [TypeCat.Fun.as_apply, types_comp_apply, ← map_comp_apply]
+    simp only [TypeCat.Fun.toFun_apply, types_comp_apply, ← map_comp_apply]
     rw [appHom_restrict, appHom_restrict]
     simp
 

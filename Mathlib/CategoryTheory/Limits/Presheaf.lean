@@ -305,7 +305,7 @@ def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type (max w v₁)) :
     ext X x
     simp only [functorToRepresentables_obj, coconeOfRepresentable_pt, Functor.const_obj_obj,
       coconeOfRepresentable_ι_app, Functor.leftOp_obj, CategoryOfElements.π_obj, op_unop,
-      TypeCat.Fun.as_apply, hom_ofHom, TypeCat.Fun.mk_apply] at hm ⊢
+      TypeCat.Fun.toFun_apply, hom_ofHom, TypeCat.Fun.mk_apply] at hm ⊢
     rw [← hm, uliftYonedaEquiv_comp, Equiv.apply_symm_apply]
 
 variable {A : C ⥤ ℰ}

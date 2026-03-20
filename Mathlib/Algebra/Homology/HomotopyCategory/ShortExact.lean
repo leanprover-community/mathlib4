@@ -100,7 +100,7 @@ lemma homologySequenceδ_triangleh (n₀ : ℤ) (n₁ : ℤ) (h : n₀ + 1 = n�
   simp only [HomologicalComplex.homologyFunctor_obj, yoneda_obj_obj, Functor.comp_obj,
     Functor.mapTriangle_obj, triangle_obj₁, triangle_obj₂, triangle_obj₃, triangle_mor₁,
     triangle_mor₂, Triangle.mk_obj₃, Triangle.mk_obj₁, Iso.inv_hom_id_app, Iso.inv_hom_id_app_assoc,
-    Functor.map_comp, NatTrans.comp_app, yoneda_map_app, TypeCat.Fun.as_apply, comp_apply,
+    Functor.map_comp, NatTrans.comp_app, yoneda_map_app, TypeCat.Fun.toFun_apply, comp_apply,
     ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, assoc, comp_id]
   erw [comp_id]
   rw [← cancel_epi π, reassoc_of% hx', reassoc_of% hx',

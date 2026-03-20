@@ -95,7 +95,7 @@ noncomputable def unitIsoAux (F : C ⥤ AddCommGrpCat.{v}) [PreservesFiniteLimit
     Category.assoc, ← Functor.map_comp, Preadditive.comp_add, Functor.Monoidal.μ_fst,
     Functor.Monoidal.μ_snd]
   ext
-  simp only [TypeCat.Fun.as_apply, CategoryTheory.comp_apply, ConcreteCategory.hom_ofHom,
+  simp only [TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply, ConcreteCategory.hom_ofHom,
     TypeCat.Fun.mk_apply, Preadditive.commGrpEquivalence_functor_obj_X, Functor.comp_obj, hom_add,
     tensor_apply, AddMonoidHom.add_apply]
   rw [μ_forget_apply]

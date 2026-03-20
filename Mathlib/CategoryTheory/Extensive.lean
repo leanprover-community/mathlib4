@@ -276,7 +276,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       · rfl
     · intro s m e₁ e₂
       ext x
-      simp only [TypeCat.Fun.as_apply, Types.binaryCoproductCocone_pt, pair_obj_left,
+      simp only [TypeCat.Fun.toFun_apply, Types.binaryCoproductCocone_pt, pair_obj_left,
         Functor.const_obj_obj, pair_obj_right, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply]
       split_ifs
       · rw [← e₁]

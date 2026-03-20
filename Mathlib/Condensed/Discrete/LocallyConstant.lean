@@ -127,7 +127,7 @@ lemma sigmaComparison_comp_sigmaIso [HasExplicitFiniteCoproducts.{u} P]
     (X.mapIso (sigmaIso r).op).hom ≫ sigmaComparison X (fun a ↦ (fiber r a).1) ≫
       (TypeCat.ofHom (fun g ↦ g a)) = X.map (sigmaIncl r a).op := by
   ext
-  simp only [Functor.mapIso_hom, Iso.op_hom, sigmaComparison, TypeCat.Fun.as_apply,
+  simp only [Functor.mapIso_hom, Iso.op_hom, sigmaComparison, TypeCat.Fun.toFun_apply,
     CategoryTheory.comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply,
     ← X.map_comp_apply]
   rfl
@@ -216,7 +216,7 @@ noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
     apply presheaf_ext (f.comap g.unop.hom.hom)
     intro a
     simp only [op_unop, functorToPresheaves_obj_obj, functorToPresheaves_obj_map,
-      TypeCat.Fun.as_apply, CategoryTheory.comp_apply, ConcreteCategory.hom_ofHom,
+      TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply, ConcreteCategory.hom_ofHom,
       TypeCat.Fun.mk_apply]
     rw [incl_of_counitAppApp, ← Functor.map_comp_apply, incl_comap,
       Functor.map_comp_apply, incl_of_counitAppApp]
@@ -268,7 +268,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
       ObjectProperty.ι_map, ObjectProperty.lift_map, ObjectProperty.FullSubcategory.comp_hom,
       ObjectProperty.homMk_hom, Functor.id_map]
     ext S (f : LocallyConstant _ _)
-    simp only [NatTrans.comp_app, counitApp_app, TypeCat.Fun.as_apply, CategoryTheory.comp_apply]
+    simp only [NatTrans.comp_app, counitApp_app, TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply]
     apply presheaf_ext (f.map (g.hom.app (op (CompHausLike.of P PUnit.{u + 1}))))
     intro a
     simp only [functorToPresheaves_obj_obj, functorToPresheaves_map_app, TypeCat.hom_ofHom,
@@ -315,7 +315,7 @@ lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
   ext ⟨S⟩ (f : LocallyConstant _ X)
   simp only [Functor.id_obj, functor_obj_obj_obj, functorToPresheaves_obj_obj, Functor.comp_obj,
     Functor.flip_obj_obj, ObjectProperty.ι_obj, unit_app, NatTrans.comp_app,
-    functorToPresheaves_map_app, ConcreteCategory.hom_ofHom, TypeCat.Fun.as_apply,
+    functorToPresheaves_map_app, ConcreteCategory.hom_ofHom, TypeCat.Fun.toFun_apply,
     CategoryTheory.comp_apply, TypeCat.Fun.mk_apply, NatTrans.id_app, id_apply]
   simp only [counit]
   have := CompHausLike.preregular hs
