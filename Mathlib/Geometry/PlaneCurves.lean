@@ -545,7 +545,7 @@ theorem initialCurve_of_orientedCurvature_is_unique (hI : IsOpen I) (hκ : Conti
   let f (s : ℝ) := (deriv c s) 0 - (deriv α s) 0
   let g (s : ℝ) := (deriv c s) 1 - (deriv α s) 1
   let h (s : ℝ) := (f s)^2 + (g s)^2
-  have hDdc {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (deriv c) s := 
+  have hDdc {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (deriv c) s :=
     have help := (hc₁.deriv_of_isOpen hI (m:=1) (by norm_num)).differentiableOn_one
     (help s hs).differentiableAt (hI.mem_nhds hs)
   have hDdα {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ (deriv α) s :=
