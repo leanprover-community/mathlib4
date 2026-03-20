@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.Calculus.Deriv.ZPow
 public import Mathlib.Analysis.Calculus.MeanValue
 
+import Mathlib.Analysis.Analytic.IsolatedZeros
+import Mathlib.Analysis.Calculus.Deriv.Slope
 /-!
 # Logarithmic Derivatives
 
@@ -137,3 +139,23 @@ lemma logDeriv_eqOn_iff [IsRCLikeNormedField 𝕜] {f g : 𝕜 → 𝕜'} {s : S
     · rintro ⟨z, hz0, hz⟩ x hx
       simp [logDeriv_apply, hz.deriv hs2 hx, hz hx, deriv_const_smul _
         (hg.differentiableAt (hs2.mem_nhds hx)), mul_div_mul_left (deriv g x) (g x) hz0]
+
+
+/-- At a simple zero of an analytic function, the logarithmic residue
+`(w - x) * logDeriv f w` tends to 1. -/
+theorem AnalyticAt.tendsto_mul_logDeriv_simple_zero [CompleteSpace 𝕜]
+    {f : 𝕜 → 𝕜} {x : 𝕜}
+    (hf : AnalyticAt 𝕜 f x) (hfx : f x = 0) (hf' : deriv f x ≠ 0) :
+    Filter.Tendsto (fun w => (w - x) * logDeriv f w)
+      (𝓝[≠] x) (𝓝 1) := by
+  have h_slope := hasDerivAt_iff_tendsto_slope.mp hf.differentiableAt.hasDerivAt
+  have h_deriv : Filter.Tendsto (deriv f) (𝓝[≠] x) (𝓝 (deriv f x)) :=
+    (hf.deriv.continuousAt).mono_left nhdsWithin_le_nhds
+  have h_div : Filter.Tendsto (fun w => deriv f w / slope f x w) (𝓝[≠] x) (𝓝 1) := by
+    have := h_deriv.div h_slope hf'
+    rwa [div_self hf'] at this
+  apply h_div.congr'
+  filter_upwards [self_mem_nhdsWithin] with w hw
+  have hsub : w - x ≠ 0 := sub_ne_zero.mpr hw
+  simp only [logDeriv_apply, slope, vsub_eq_sub, hfx, sub_zero, smul_eq_mul]
+  field_simp [hsub]
