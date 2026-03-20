@@ -5,31 +5,36 @@ Authors: Ian Michael Arnoldy
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
 import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Tactic.NoncommRing
 
 /-!
-# Bivectors in Clifford algebras
+# Multivectors and bivectors in Clifford algebras
 
-The grade-2 elements (bivectors) of a Clifford algebra form a Lie
-subalgebra under the commutator bracket. This gives the standard
+The grade-$n$ elements ($n$-vectors) of a Clifford algebra form a
+submodule. When $n = 2$, these are the bivectors, and they form a
+Lie subalgebra under the commutator bracket. This gives the standard
 construction of the orthogonal Lie algebra $\mathfrak{so}(Q)$
 from the Clifford algebra $\mathrm{Cl}(Q)$.
 
-A bivector is a finite sum of products
-$\iota(m_1) \cdot \iota(m_2)$ for $m_1, m_2 \in M$. The key
-fact is that the commutator of two such products is again a
-linear combination of bivectors, using the Clifford relation
-$\iota(m) \cdot \iota(m) = Q(m)$.
+An $n$-vector is a finite sum of products of $n$ copies of $\iota$:
+$\iota(m_1) \cdots \iota(m_n)$ for $m_1, \ldots, m_n \in M$. The
+key fact for bivectors ($n = 2$) is that the commutator of two such
+products is again a linear combination of bivectors, using the
+Clifford relation $\iota(m) \cdot \iota(m) = Q(m)$.
 
 ## Main definitions
 
-* `CliffordAlgebra.bivector`: the `Submodule R (CliffordAlgebra Q)`
-  spanned by products $\iota(m_1) \cdot \iota(m_2)$.
+* `CliffordAlgebra.nvector`: the `Submodule R (CliffordAlgebra Q)`
+  of grade-$n$ elements, spanned by products
+  $\iota(m_1) \cdots \iota(m_n)$.
+* `CliffordAlgebra.bivector`: abbreviation for `nvector 2 Q`, the
+  submodule spanned by products $\iota(m_1) \cdot \iota(m_2)$.
 * `CliffordAlgebra.bivectorLieSubalgebra`: the `LieSubalgebra`
   of bivectors under the commutator bracket.
 
 ## Main results
 
+* `CliffordAlgebra.mem_nvector`: characterization of membership
+  in `nvector n Q`.
 * `CliffordAlgebra.ι_mul_ι_mem_bivector`: a product
   $\iota(m_1) \cdot \iota(m_2)$ lies in the bivector submodule.
 * `CliffordAlgebra.lie_ι_mul_ι`: the explicit commutator formula
@@ -46,10 +51,12 @@ a `LieRing` instance via `LieRing.ofAssociativeRing` with bracket
 $[x, y] = x y - y x$. Similarly, `Algebra R (CliffordAlgebra Q)`
 gives `LieAlgebra R (CliffordAlgebra Q)` for free.
 
-We define bivectors as a `Submodule` and then upgrade to
-`LieSubalgebra` after proving bracket closure. The closure proof
-reduces to generators via `Submodule.span_induction₂` and then
-applies the explicit commutator formula.
+We define `nvector n Q` as the span of ordered products of `n`
+copies of `ι`, represented via `(List.ofFn f).prod` for
+`f : Fin n → M`. The case `n = 2` recovers the bivector submodule,
+upgraded to a `LieSubalgebra` after proving bracket closure. The
+closure proof reduces to generators via `Submodule.span_induction₂`
+and then applies the explicit commutator formula.
 
 `QuadraticMap.polar` appears in the commutator formula because
 `QuadraticForm R M` is a reducible abbreviation for
@@ -58,7 +65,7 @@ general `QuadraticMap`.
 
 ## Tags
 
-Clifford algebra, bivector, Lie algebra, orthogonal
+Clifford algebra, multivector, bivector, Lie algebra, orthogonal
 -/
 
 noncomputable section
@@ -77,30 +84,82 @@ instance instLieModuleSelf : LieModule R
     (CliffordAlgebra Q) (CliffordAlgebra Q) :=
   lieAlgebraSelfModule
 
-section Bivector
+section NVector
 
-/-- The submodule of bivectors in a Clifford algebra, spanned
-by products $\iota(m_1) \cdot \iota(m_2)$
-for $m_1, m_2 \in M$. -/
-def bivector : Submodule R (CliffordAlgebra Q) :=
+/-- The submodule of grade-$n$ elements ($n$-vectors) in a
+Clifford algebra, spanned by ordered products
+$\iota(m_1) \cdots \iota(m_n)$ for $m_1, \ldots, m_n \in M$. -/
+def nvector (n : ℕ) : Submodule R (CliffordAlgebra Q) :=
   Submodule.span R
     {x : CliffordAlgebra Q |
-      ∃ m₁ m₂ : M, x = ι Q m₁ * ι Q m₂}
+      ∃ ms : Fin n → M,
+        x = (List.ofFn (fun i => ι Q (ms i))).prod}
+
+/-- Characterization of membership in `nvector n Q`. -/
+@[simp]
+theorem mem_nvector (n : ℕ) (x : CliffordAlgebra Q) :
+    x ∈ nvector Q n ↔
+    x ∈ Submodule.span R
+      {y | ∃ ms : Fin n → M,
+        y = (List.ofFn (fun i => ι Q (ms i))).prod} :=
+  Iff.rfl
+
+/-- An ordered product $\iota(m_0) \cdots \iota(m_{n-1})$ lies
+in the $n$-vector submodule. -/
+theorem prod_ι_mem_nvector (n : ℕ) (ms : Fin n → M) :
+    (List.ofFn (fun i => ι Q (ms i))).prod ∈
+    nvector Q n :=
+  Submodule.subset_span ⟨ms, rfl⟩
+
+end NVector
+
+section Bivector
+
+/-- The submodule of bivectors in a Clifford algebra, defined as
+`nvector 2 Q`, spanned by products $\iota(m_1) \cdot \iota(m_2)$
+for $m_1, m_2 \in M$. -/
+def bivector : Submodule R (CliffordAlgebra Q) :=
+  nvector Q 2
+
+/-- A product of two `ι` applications equals the `List.ofFn`
+product for `Fin 2`. Used to convert between pair form and
+`nvector 2` generators. -/
+private theorem nvector_two_prod (ms : Fin 2 → M) :
+    (List.ofFn (fun i : Fin 2 => ι Q (ms i))).prod =
+    ι Q (ms 0) * ι Q (ms 1) := by
+  rw [List.ofFn_succ, List.ofFn_succ, List.ofFn_zero]
+  simp [List.prod_cons, List.prod_nil]
 
 /-- A product $\iota(m_1) \cdot \iota(m_2)$ lies in the
 bivector submodule. -/
 @[simp]
 theorem ι_mul_ι_mem_bivector (m₁ m₂ : M) :
-    ι Q m₁ * ι Q m₂ ∈ bivector Q :=
-  Submodule.subset_span ⟨m₁, m₂, rfl⟩
+    ι Q m₁ * ι Q m₂ ∈ bivector Q := by
+  have : ι Q m₁ * ι Q m₂ =
+      (List.ofFn (fun i : Fin 2 =>
+        ι Q (![m₁, m₂] i))).prod := by
+    rw [nvector_two_prod]
+    simp [Matrix.cons_val_zero, Matrix.cons_val_one]
+  rw [this]
+  exact prod_ι_mem_nvector Q 2 ![m₁, m₂]
 
-/-- Characterization of membership in `bivector Q`. -/
+/-- Characterization of membership in `bivector Q` in terms of
+the pair-form spanning set. -/
 @[simp]
 theorem mem_bivector (x : CliffordAlgebra Q) :
     x ∈ bivector Q ↔
     x ∈ Submodule.span R
-      {y | ∃ m₁ m₂ : M, y = ι Q m₁ * ι Q m₂} :=
-  Iff.rfl
+      {y | ∃ m₁ m₂ : M, y = ι Q m₁ * ι Q m₂} := by
+  constructor
+  · intro hx
+    refine Submodule.span_le.mpr ?_ hx
+    rintro y ⟨ms, rfl⟩
+    rw [nvector_two_prod]
+    exact Submodule.subset_span ⟨ms 0, ms 1, rfl⟩
+  · intro hx
+    refine Submodule.span_le.mpr ?_ hx
+    rintro y ⟨m₁, m₂, rfl⟩
+    exact ι_mul_ι_mem_bivector Q m₁ m₂
 
 /-- Zero lies in the bivector submodule. -/
 theorem zero_mem_bivector :
@@ -112,8 +171,9 @@ algebra, i.e., in `evenOdd Q 0`. -/
 theorem bivector_le_evenOdd_zero :
     bivector Q ≤ evenOdd Q 0 := by
   apply Submodule.span_le.mpr
-  rintro _ ⟨m₁, m₂, rfl⟩
-  exact ι_mul_ι_mem_evenOdd_zero Q m₁ m₂
+  rintro _ ⟨ms, rfl⟩
+  rw [nvector_two_prod]
+  exact ι_mul_ι_mem_evenOdd_zero Q (ms 0) (ms 1)
 
 end Bivector
 
@@ -144,49 +204,17 @@ private theorem mul_ι_mul_ι_left (a b c d : M) :
     algebraMap R _ (QuadraticMap.polar Q a c) *
       (ι Q b * ι Q d) +
     ι Q c * ι Q a * (ι Q b * ι Q d) := by
-  -- Reassociate to get ι b * ι c adjacent
-  conv_lhs => rw [show ι Q a * ι Q b *
-    (ι Q c * ι Q d) =
-    ι Q a * (ι Q b * ι Q c) * ι Q d
-    from by noncomm_ring]
-  -- Substitute ι b * ι c = polar(b,c) - ι c * ι b
-  rw [ι_mul_ι_comm b c]
-  -- Distribute
-  conv_lhs => rw [show ι Q a *
-    (algebraMap R _ (QuadraticMap.polar Q b c) -
-      ι Q c * ι Q b) * ι Q d =
-    ι Q a * algebraMap R _
-      (QuadraticMap.polar Q b c) * ι Q d -
-    ι Q a * (ι Q c * ι Q b) * ι Q d
-    from by noncomm_ring]
-  -- Move algebraMap past ι a (scalars commute)
-  rw [show ι Q a * algebraMap R _
-    (QuadraticMap.polar Q b c) =
-    algebraMap R _
-      (QuadraticMap.polar Q b c) * ι Q a
-    from (Algebra.commutes _ _).symm]
-  -- Reassociate first term
-  rw [show algebraMap R _
-    (QuadraticMap.polar Q b c) * ι Q a * ι Q d =
-    algebraMap R _
-      (QuadraticMap.polar Q b c) *
-      (ι Q a * ι Q d) from by noncomm_ring]
-  -- Get ι a * ι c adjacent
-  rw [show ι Q a * (ι Q c * ι Q b) * ι Q d =
-    (ι Q a * ι Q c) * (ι Q b * ι Q d)
-    from by noncomm_ring]
-  -- Swap ι a * ι c
-  rw [ι_mul_ι_comm a c]
-  -- Distribute and clean up
-  rw [show (algebraMap R _
-    (QuadraticMap.polar Q a c) -
-      ι Q c * ι Q a) * (ι Q b * ι Q d) =
-    algebraMap R _
-      (QuadraticMap.polar Q a c) *
-      (ι Q b * ι Q d) -
-    ι Q c * ι Q a * (ι Q b * ι Q d)
-    from by noncomm_ring]
-  noncomm_ring
+  rw [mul_assoc (ι Q a) (ι Q b),
+      ← mul_assoc (ι Q b) (ι Q c) (ι Q d),
+      ι_mul_ι_comm b c, sub_mul, mul_sub (ι Q a),
+      ← mul_assoc (ι Q a) (algebraMap R _ _) (ι Q d),
+      ← Algebra.commutes
+        (QuadraticMap.polar Q b c) (ι Q a),
+      mul_assoc (algebraMap R _ _) (ι Q a) (ι Q d),
+      ← mul_assoc (ι Q a) (ι Q c * ι Q b) (ι Q d),
+      ← mul_assoc (ι Q a) (ι Q c) (ι Q b),
+      mul_assoc (ι Q a * ι Q c) (ι Q b) (ι Q d),
+      ι_mul_ι_comm a c, sub_mul, ← sub_add]
 
 /-- Expansion of $\iota(c)\iota(d) \cdot \iota(a)\iota(b)$ via
 Clifford swap relations. The residual term
@@ -199,56 +227,20 @@ private theorem mul_ι_mul_ι_right (a b c d : M) :
     algebraMap R _ (QuadraticMap.polar Q b d) *
       (ι Q c * ι Q a) +
     ι Q c * ι Q a * (ι Q b * ι Q d) := by
-  -- Reassociate to get ι d * ι a adjacent
-  conv_lhs => rw [show ι Q c * ι Q d *
-    (ι Q a * ι Q b) =
-    ι Q c * (ι Q d * ι Q a) * ι Q b
-    from by noncomm_ring]
-  -- Substitute ι d * ι a = polar(a,d) - ι a * ι d
-  rw [ι_mul_ι_comm' a d]
-  -- Distribute
-  conv_lhs => rw [show ι Q c *
-    (algebraMap R _ (QuadraticMap.polar Q a d) -
-      ι Q a * ι Q d) * ι Q b =
-    ι Q c * algebraMap R _
-      (QuadraticMap.polar Q a d) * ι Q b -
-    ι Q c * (ι Q a * ι Q d) * ι Q b
-    from by noncomm_ring]
-  -- Move algebraMap past ι c (scalars commute)
-  rw [show ι Q c * algebraMap R _
-    (QuadraticMap.polar Q a d) =
-    algebraMap R _
-      (QuadraticMap.polar Q a d) * ι Q c
-    from (Algebra.commutes _ _).symm]
-  -- Reassociate first term
-  rw [show algebraMap R _
-    (QuadraticMap.polar Q a d) * ι Q c * ι Q b =
-    algebraMap R _
-      (QuadraticMap.polar Q a d) *
-      (ι Q c * ι Q b) from by noncomm_ring]
-  -- Get ι d * ι b adjacent
-  rw [show ι Q c * (ι Q a * ι Q d) * ι Q b =
-    ι Q c * ι Q a * (ι Q d * ι Q b)
-    from by noncomm_ring]
-  -- Swap ι d * ι b
-  rw [ι_mul_ι_comm' b d]
-  -- Distribute and clean up
-  rw [show ι Q c * ι Q a *
-    (algebraMap R _
-      (QuadraticMap.polar Q b d) -
-      ι Q b * ι Q d) =
-    algebraMap R _
-      (QuadraticMap.polar Q b d) *
-      (ι Q c * ι Q a) -
-    ι Q c * ι Q a * (ι Q b * ι Q d) from by
-    rw [mul_sub, show ι Q c * ι Q a *
-      algebraMap R _
-        (QuadraticMap.polar Q b d) =
-      algebraMap R _
-        (QuadraticMap.polar Q b d) *
-        (ι Q c * ι Q a) from
-      (Algebra.commutes _ _).symm]]
-  noncomm_ring
+  rw [mul_assoc (ι Q c) (ι Q d),
+      ← mul_assoc (ι Q d) (ι Q a) (ι Q b),
+      ι_mul_ι_comm' a d, sub_mul, mul_sub (ι Q c),
+      ← mul_assoc (ι Q c) (algebraMap R _ _) (ι Q b),
+      ← Algebra.commutes
+        (QuadraticMap.polar Q a d) (ι Q c),
+      mul_assoc (algebraMap R _ _) (ι Q c) (ι Q b),
+      ← mul_assoc (ι Q c) (ι Q a * ι Q d) (ι Q b),
+      ← mul_assoc (ι Q c) (ι Q a) (ι Q d),
+      mul_assoc (ι Q c * ι Q a) (ι Q d) (ι Q b),
+      ι_mul_ι_comm' b d, mul_sub,
+      ← Algebra.commutes (QuadraticMap.polar Q b d)
+        (ι Q c * ι Q a),
+      ← sub_add]
 
 /-- The commutator of two bivector generators expressed as a
 linear combination of bivectors:
@@ -271,7 +263,7 @@ theorem lie_ι_mul_ι (a b c d : M) :
   simp only [Bracket.bracket]
   rw [mul_ι_mul_ι_left a b c d,
       mul_ι_mul_ι_right a b c d]
-  noncomm_ring
+  abel
 
 /-- The commutator of two bivector generators lies in the
 bivector submodule. Each term in the commutator formula
@@ -305,23 +297,28 @@ and applies `lie_ι_mul_ι_mem_bivector` on each pair. -/
 theorem lie_mem_bivector {x y : CliffordAlgebra Q}
     (hx : x ∈ bivector Q) (hy : y ∈ bivector Q) :
     ⁅x, y⁆ ∈ bivector Q := by
-  induction hx, hy using Submodule.span_induction₂ with
-  | mem_mem _ _ hx hy =>
-    obtain ⟨a, b, rfl⟩ := hx
-    obtain ⟨c, d, rfl⟩ := hy
-    exact lie_ι_mul_ι_mem_bivector a b c d
-  | zero_left _ _ =>
-    rw [zero_lie]; exact (bivector Q).zero_mem
-  | zero_right _ _ =>
-    rw [lie_zero]; exact (bivector Q).zero_mem
-  | add_left _ _ _ _ _ _ h₁ h₂ =>
-    rw [add_lie]; exact (bivector Q).add_mem h₁ h₂
-  | add_right _ _ _ _ _ _ h₁ h₂ =>
-    rw [lie_add]; exact (bivector Q).add_mem h₁ h₂
-  | smul_left r _ _ _ _ h =>
-    rw [smul_lie]; exact (bivector Q).smul_mem r h
-  | smul_right r _ _ _ _ h =>
-    rw [lie_smul]; exact (bivector Q).smul_mem r h
+  rw [mem_bivector] at hx hy
+  have hmem : ⁅x, y⁆ ∈ Submodule.span R
+      {z | ∃ m₁ m₂ : M, z = ι Q m₁ * ι Q m₂} := by
+    induction hx, hy using Submodule.span_induction₂ with
+    | mem_mem _ _ hx hy =>
+      obtain ⟨a, b, rfl⟩ := hx
+      obtain ⟨c, d, rfl⟩ := hy
+      exact (mem_bivector Q _).mp
+        (lie_ι_mul_ι_mem_bivector a b c d)
+    | zero_left _ _ =>
+      rw [zero_lie]; exact Submodule.zero_mem _
+    | zero_right _ _ =>
+      rw [lie_zero]; exact Submodule.zero_mem _
+    | add_left _ _ _ _ _ _ h₁ h₂ =>
+      rw [add_lie]; exact Submodule.add_mem _ h₁ h₂
+    | add_right _ _ _ _ _ _ h₁ h₂ =>
+      rw [lie_add]; exact Submodule.add_mem _ h₁ h₂
+    | smul_left r _ _ _ _ h =>
+      rw [smul_lie]; exact Submodule.smul_mem _ r h
+    | smul_right r _ _ _ _ h =>
+      rw [lie_smul]; exact Submodule.smul_mem _ r h
+  rwa [← mem_bivector] at hmem
 
 variable (Q) in
 /-- The bivectors in a Clifford algebra form a Lie subalgebra
