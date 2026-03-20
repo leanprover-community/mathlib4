@@ -19,8 +19,6 @@ by the property `(opOpEquivalence C).IsTriangulated`.
 
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 @[expose] public section
 
 namespace CategoryTheory
@@ -174,6 +172,7 @@ lemma commShiftIso_unopUnop_inv_app (X : Cᵒᵖᵒᵖ) (n m : ℤ) (hnm : n + m
 instance : (opOpEquivalence C).functor.CommShift ℤ :=
   inferInstanceAs ((unopUnop C).CommShift ℤ)
 
+set_option backward.inferInstanceAs.normalForm false in
 instance : (opOpEquivalence C).inverse.CommShift ℤ :=
   inferInstanceAs ((opOp C).CommShift ℤ)
 

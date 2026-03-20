@@ -21,8 +21,6 @@ morphisms of group objects commute with taking inverses.
 We show that a finite-product-preserving functor takes group objects to group objects.
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 @[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃ u
@@ -77,6 +75,7 @@ abbrev toMon (A : Grp C) : Mon C := ⟨A.X⟩
 
 @[deprecated (since := "2025-09-15")] alias toMon_ := toMon
 
+set_option backward.inferInstanceAs.normalForm false in
 variable (C) in
 /-- The trivial group object. -/
 @[simps!]

@@ -32,8 +32,6 @@ lying over `R`, then
   If `κ(p) = κ(q)` then there exists `r ∉ p` such that `R[1/f] = S[1/f]`.
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 @[expose] public section
 
 open IsLocalRing
@@ -70,6 +68,7 @@ instance [FormallyUnramified R S] :
     Algebra.IsSeparable (ResidueField R) (ResidueField S) :=
   FormallyUnramified.isSeparable _ _
 
+set_option backward.inferInstanceAs.normalForm false in
 set_option backward.isDefEq.respectTransparency false in
 lemma FormallyUnramified.isField_quotient_map_maximalIdeal [FormallyUnramified R S] :
     IsField (S ⧸ (maximalIdeal R).map (algebraMap R S)) := by

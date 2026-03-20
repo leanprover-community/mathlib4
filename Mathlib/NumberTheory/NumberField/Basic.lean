@@ -34,8 +34,6 @@ but are independent of that choice.
 number field, ring of integers
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 @[expose] public section
 
 /-- A number field is a field which has characteristic zero and is finite
@@ -114,6 +112,7 @@ namespace RingOfIntegers
 instance : CommRing (𝓞 K) :=
   inferInstanceAs (CommRing (integralClosure _ _))
 
+set_option backward.inferInstanceAs.normalForm false in
 instance : IsDomain (𝓞 K) :=
   inferInstanceAs (IsDomain (integralClosure _ _))
 
@@ -121,6 +120,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance [NumberField K] : CharZero (𝓞 K) :=
   inferInstanceAs (CharZero (integralClosure _ _))
 
+set_option backward.inferInstanceAs.normalForm false in
 instance : Algebra (𝓞 K) K :=
   inferInstanceAs (Algebra (integralClosure _ _) _)
 
@@ -131,6 +131,7 @@ instance : IsTorsionFree (𝓞 K) K :=
 instance : Nontrivial (𝓞 K) :=
   inferInstanceAs (Nontrivial (integralClosure _ _))
 
+set_option backward.inferInstanceAs.normalForm false in
 instance {L : Type*} [Ring L] [Algebra K L] : Algebra (𝓞 K) L :=
   inferInstanceAs (Algebra (integralClosure _ _) L)
 

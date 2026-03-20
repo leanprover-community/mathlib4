@@ -77,8 +77,6 @@ As a prerequisite, we formalize the proof of [S. Bosch, U. Güntzer, R. Remmert,
 spectral, spectral norm, spectral value, seminorm, norm, nonarchimedean
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 @[expose] public section
 
 open Polynomial
@@ -711,6 +709,7 @@ universe u v
 variable {K : Type u} [NontriviallyNormedField K] {L : Type v} [Field L] [Algebra K L]
   [Algebra.IsAlgebraic K L] [hu : IsUltrametricDist K]
 
+set_option backward.inferInstanceAs.normalForm false in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
   `L/K` is an algebraic extension, then any power-multiplicative `K`-algebra norm on `L` coincides

@@ -19,8 +19,6 @@ We prove basic properties of the residue field of a local ring.
 
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 @[expose] public section
 
 variable {R S T : Type*}
@@ -68,6 +66,7 @@ instance : IsLocalHom (IsLocalRing.residue R) :=
     Classical.not_not.mp (Ideal.Quotient.eq_zero_iff_mem.not.mp (isUnit_iff_ne_zero.mp ha))⟩
 
 #adaptation_note /-- Needed after leanprover/lean4#12564 -/
+set_option backward.inferInstanceAs.normalForm false in
 instance {R₀} [CommRing R₀] [Algebra R₀ R] : Module R₀ (ResidueField R) :=
   inferInstanceAs <| Module R₀ (R ⧸ maximalIdeal R)
 
@@ -206,6 +205,7 @@ instance {R₀ : Type*} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsSca
   simp [← IsScalarTower.algebraMap_apply]
 
 #adaptation_note /-- Needed after leanprover/lean4#12564 -/
+set_option backward.inferInstanceAs.normalForm false in
 instance : Module (ResidueField R) (ResidueField S) :=
   inferInstanceAs <| Module (R ⧸ maximalIdeal R) (S ⧸ maximalIdeal S)
 

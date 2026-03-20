@@ -44,8 +44,6 @@ The notations are scoped to their respective namespaces, and which one `R[M]` re
 depends on which of the two namespaces is open.
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 @[expose] public section
 
 assert_not_exists NonUnitalAlgHom AlgEquiv
@@ -107,12 +105,16 @@ variable [Semiring R] {x y : R[M]} {r r₁ r₂ : R} {m m' m₁ m₂ : M}
 @[to_additive] instance unique [Subsingleton R] : Unique R[M] :=
   inferInstanceAs <| Unique <| M →₀ R
 
+-- This is needed or we get errors in UniversalFactorizationRing.lean
+set_option backward.inferInstanceAs.normalForm false in
 @[to_additive] instance addCommMonoid : AddCommMonoid R[M] :=
   inferInstanceAs <| AddCommMonoid <| M →₀ R
 
 @[to_additive] instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd R[M] :=
   inferInstanceAs <| IsCancelAdd <| M →₀ R
 
+-- This is needed or we get errors in UniversalFactorizationRing.lean
+set_option backward.inferInstanceAs.normalForm false in
 @[to_additive] instance instCoeFun : CoeFun R[M] fun _ ↦ M → R :=
   _root_.inferInstanceAs <| CoeFun (M →₀ R) fun _ ↦ M → R
 

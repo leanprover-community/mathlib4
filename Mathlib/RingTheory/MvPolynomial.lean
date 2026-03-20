@@ -19,8 +19,6 @@ dimension of the space of multivariate polynomials over a field is equal to the 
 finitely supported functions from the indexing set to `ℕ`.
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 public section
 
 
@@ -55,6 +53,7 @@ theorem rank_eq {σ : Type v} : Module.rank K (MvPolynomial σ K) = #(σ →₀ 
   rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank]
 
 #adaptation_note /-- Needed after leanprover/lean4#12564 -/
+set_option backward.inferInstanceAs.normalForm false in
 instance : Module K (MvPolynomial σ K) :=
   inferInstanceAs <| Module K (AddMonoidAlgebra K (σ →₀ ℕ))
 

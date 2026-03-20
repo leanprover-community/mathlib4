@@ -21,8 +21,6 @@ the underlying types are just the limits in the category of types.
 
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 @[expose] public section
 
 open CategoryTheory CategoryTheory.Limits
@@ -76,6 +74,7 @@ noncomputable instance limitGroup :
 instance : Small.{u} (Functor.sections ((F ⋙ forget₂ GrpCat MonCat) ⋙ forget MonCat)) :=
   inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget GrpCat))
 
+set_option backward.inferInstanceAs.normalForm false in
 /-- We show that the forgetful functor `GrpCat ⥤ MonCat` creates limits.
 
 All we need to do is notice that the limit point has a `Group` instance available, and then reuse

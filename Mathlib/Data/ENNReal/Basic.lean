@@ -88,8 +88,6 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 @[expose] public section
 
 assert_not_exists Finset
@@ -129,6 +127,7 @@ instance : Max ℝ≥0∞ := SemilatticeSup.toMax
 noncomputable instance : CommSemiring ℝ≥0∞ :=
   inferInstanceAs (CommSemiring (WithTop ℝ≥0))
 
+set_option backward.inferInstanceAs.normalForm false in
 instance : PartialOrder ℝ≥0∞ :=
   inferInstanceAs (PartialOrder (WithTop ℝ≥0))
 

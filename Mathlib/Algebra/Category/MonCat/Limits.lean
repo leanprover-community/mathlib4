@@ -20,8 +20,6 @@ the underlying types are just the limits in the category of types.
 
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 @[expose] public section
 
 assert_not_exists MonoidWithZero
@@ -59,6 +57,7 @@ instance sectionsMonoid : Monoid (F ⋙ forget MonCat.{u}).sections :=
 
 variable [Small.{u} (Functor.sections (F ⋙ forget MonCat))]
 
+set_option instance.normalForm.wrapFields.data false in
 @[to_additive]
 noncomputable instance limitMonoid :
     Monoid (Types.Small.limitCone.{v, u} (F ⋙ forget MonCat.{u})).pt :=

@@ -30,8 +30,6 @@ disconnected.
 
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 @[expose] public section
 
 universe u v
@@ -321,10 +319,12 @@ def limitConePtAux : Subgroup (Π j : J, F.obj j) where
   one_mem' := by simp only [Set.mem_setOf_eq, Pi.one_apply, map_one, implies_true]
   inv_mem' h _ _ π := by simp only [Pi.inv_apply, map_inv, h π]
 
+set_option backward.inferInstanceAs.normalForm false in
 @[to_additive]
 instance : Group (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
   inferInstanceAs (Group (limitConePtAux F))
 
+set_option backward.inferInstanceAs.normalForm false in
 @[to_additive]
 instance : IsTopologicalGroup (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
   inferInstanceAs (IsTopologicalGroup (limitConePtAux F))
@@ -376,6 +376,7 @@ instance : Limits.PreservesLimits (forget₂ ProfiniteGrp Profinite) where
     preservesLimit := fun {F} ↦ CategoryTheory.Limits.preservesLimit_of_preserves_limit_cone
       (limitConeIsLimit F) (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))) }
 
+set_option backward.inferInstanceAs.normalForm false in
 @[to_additive]
 instance : CompactSpace (limitConePtAux F) :=
   inferInstanceAs (CompactSpace (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt)

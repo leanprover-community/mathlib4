@@ -20,8 +20,6 @@ We provide instances of `𝒰.Over S` for standard constructions on covers.
 
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 @[expose] public section
 
 universe v u
@@ -200,6 +198,7 @@ variable {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (𝒱 : ∀ x, (𝒰.
 instance (j : (𝒰.bind 𝒱).I₀) : ((𝒰.bind 𝒱).X j).Over S :=
   inferInstanceAs <| ((𝒱 j.1).X j.2).Over S
 
+set_option backward.inferInstanceAs.normalForm false in
 instance {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (𝒱 : ∀ x, (𝒰.X x).Cover (precoverage P))
     [X.Over S] [𝒰.Over S] [∀ x, (𝒱 x).Over S] : Cover.Over S (𝒰.bind 𝒱) where
   over := fun ⟨i, j⟩ ↦ inferInstanceAs <| ((𝒱 i).X j).Over S

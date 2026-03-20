@@ -40,8 +40,6 @@ periodic group, aperiodic group, torsion subgroup, torsion abelian group
 * groups which are residually finite p-groups with respect to 2 distinct primes are torsion free
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 @[expose] public section
 
 
@@ -350,6 +348,7 @@ end CommGroup
 
 section AddCommGroup
 
+set_option backward.inferInstanceAs.normalForm false in
 instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
     Module R (M ⧸ AddCommGroup.torsion M) :=
   letI : Submodule R M := { AddCommGroup.torsion M with smul_mem' := fun r m ⟨n, hn, hn'⟩ ↦

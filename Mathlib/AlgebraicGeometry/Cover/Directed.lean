@@ -24,8 +24,6 @@ Many natural covers are naturally directed, most importantly the cover of all af
 opens of a scheme.
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 @[expose] public section
 
 universe u
@@ -318,6 +316,7 @@ def directedAffineCover : X.OpenCover where
       (isBasis_iff_nbhd.mp X.isBasis_affineOpens (mem_top x)).choose_spec.1⟩
     simpa using (isBasis_iff_nbhd.mp X.isBasis_affineOpens (mem_top x)).choose_spec.2.1
 
+set_option backward.inferInstanceAs.normalForm false in
 instance : Preorder X.directedAffineCover.I₀ := inferInstanceAs <| Preorder X.affineOpens
 
 instance : Scheme.Cover.LocallyDirected X.directedAffineCover :=

@@ -32,8 +32,6 @@ This tactic was ported by Thomas Murrills to Lean 4, and then it was converted t
 extension and made to use kernel reductions by Kyle Miller.
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 @[expose] public section
 
 /-- The Mersenne numbers, 2^p - 1. -/
@@ -463,6 +461,7 @@ lemma ω_pow_trace [Fact q.Prime] (odd : Odd q)
 
 variable [NeZero q]
 
+set_option backward.inferInstanceAs.normalForm false in
 instance : Fintype (X q) := inferInstanceAs (Fintype (ZMod q × ZMod q))
 
 /-- The cardinality of `X` is `q^2`. -/

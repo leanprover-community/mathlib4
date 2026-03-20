@@ -45,8 +45,6 @@ Let `R, S` be rings and `f : R →+* S`
   `s ⊗ m : S ⊗[R, f] M`.
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 @[expose] public section
 
 suppress_compilation
@@ -472,6 +470,7 @@ scalar multiplication defined by `s • l := x ↦ l (x • s)` -/
 def obj' : ModuleCat S :=
   of _ ((restrictScalars f).obj (of _ S) →ₗ[R] M)
 
+set_option instance.normalForm.wrapFields.data false in
 instance : CoeFun (obj' f M) fun _ => S → M :=
   inferInstanceAs <| CoeFun ((restrictScalars f).obj (of _ S) →ₗ[R] M) _
 
@@ -502,6 +501,7 @@ namespace CoextendScalars
 
 variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 
+set_option instance.normalForm.wrapFields.data false in
 instance (M : ModuleCat R) : CoeFun ((coextendScalars f).obj M) fun _ => S → M :=
   inferInstanceAs <| CoeFun (CoextendScalars.obj' f M) _
 

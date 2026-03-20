@@ -21,8 +21,6 @@ public import Mathlib.RingTheory.Flat.Localization
   The canonical isomorphism `T ⊗[S] H¹(L_{S⁄R}) ≃ₗ[T] H¹(L_{T⁄R})` for `T` a localization of `S`.
 -/
 
-set_option backward.inferInstanceAs.normalForm false
-
 @[expose] public section
 
 universe u
@@ -273,6 +271,7 @@ end Extension
 
 variable {S}
 
+set_option backward.inferInstanceAs.normalForm false in
 set_option backward.isDefEq.respectTransparency false in
 /-- let `p` be a submonoid of an `R`-algebra `S`. Then `Sₚ ⊗ H¹(L_{S/R}) ≃ H¹(L_{Sₚ/R})`. -/
 noncomputable
