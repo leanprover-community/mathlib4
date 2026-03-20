@@ -136,8 +136,7 @@ theorem sq_singularValues_of_lt {n : ℕ} (hn : finrank 𝕜 E = n) {i : ℕ} (h
 
 theorem hasEigenvalue_adjoint_comp_self_sq_singularValues {n : ℕ} (hn : n < finrank 𝕜 E) :
     End.HasEigenvalue (adjoint T ∘ₗ T) (T.singularValues n ^ 2) := by
-  have hT := T.isSymmetric_adjoint_comp_self
-  convert hT.hasEigenvalue_eigenvalues rfl ⟨n, hn⟩ using 1
+  convert T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨n, hn⟩ using 1
   simp [← T.sq_singularValues_fin]
 
 theorem singularValues_antitone : Antitone T.singularValues := by
