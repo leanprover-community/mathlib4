@@ -350,22 +350,22 @@ variable (M) in
 @[to_additive
 /-- The algebra homomorphism of additive monoid algebras induced by a homomorphism of the base
 algebras. -/]
-noncomputable def mapRangeAlgHom (f : A →ₐ[R] B) : A[M] →ₐ[R] B[M] where
+noncomputable def mapCoeffAlgHom (f : A →ₐ[R] B) : A[M] →ₐ[R] B[M] where
   __ := mapCoeffRingHom M f
   commutes' := by simp
 
 variable (M) in
 @[to_additive (attr := simp)]
-lemma toRingHom_mapRangeAlgHom (f : A →ₐ[R] B) :
-    mapRangeAlgHom M f = mapCoeffRingHom M f.toRingHom := rfl
+lemma toRingHom_mapCoeffAlgHom (f : A →ₐ[R] B) :
+    mapCoeffAlgHom M f = mapCoeffRingHom M f.toRingHom := rfl
 
 @[to_additive (attr := simp)]
-lemma mapRangeAlgHom_apply (f : A →ₐ[R] B) (x : A[M]) (m : M) :
-    mapRangeAlgHom M f x m = f (x m) := mapCoeffRingHom_apply f.toRingHom x m
+lemma mapCoeffAlgHom_apply (f : A →ₐ[R] B) (x : A[M]) (m : M) :
+    mapCoeffAlgHom M f x m = f (x m) := mapCoeffRingHom_apply f.toRingHom x m
 
 @[to_additive (attr := simp)]
-lemma mapRangeAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
-    mapRangeAlgHom M f (single m a) = single m (f a) := by
+lemma mapCoeffAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
+    mapCoeffAlgHom M f (single m a) = single m (f a) := by
   classical ext; simp [single_apply, apply_ite f]
 
 variable (R M) in
@@ -374,8 +374,8 @@ variable (R M) in
 /-- The algebra isomorphism of additive monoid algebras induced by an isomorphism of the base
 algebras. -/]
 noncomputable def mapRangeAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
-  __ := mapRangeAlgHom M e
-  invFun := mapRangeAlgHom M (e.symm : B →ₐ[R] A)
+  __ := mapCoeffAlgHom M e
+  invFun := mapCoeffAlgHom M (e.symm : B →ₐ[R] A)
   left_inv _ := by aesop
   right_inv _ := by aesop
 
@@ -460,7 +460,7 @@ lemma algebraMap_def : algebraMap R[M] S[M] = mapCoeffRingHom M (algebraMap R S)
 @[to_additive (dont_translate := R)]
 lemma isScalarTower_monoidAlgebra [CommSemiring T] [Algebra R T] [Algebra S T]
     [IsScalarTower R S T] : IsScalarTower R S[M] T[M] :=
-  .of_algebraMap_eq' (mapRangeAlgHom _ (IsScalarTower.toAlgHom R S T)).comp_algebraMap.symm
+  .of_algebraMap_eq' (mapCoeffAlgHom _ (IsScalarTower.toAlgHom R S T)).comp_algebraMap.symm
 
 scoped[AlgebraMonoidAlgebra] attribute [instance] MonoidAlgebra.isScalarTower_monoidAlgebra
   AddMonoidAlgebra.vaddAssocClass_addMonoidAlgebra

@@ -68,7 +68,7 @@ noncomputable def tensorEquiv : A ⊗[R] B[M] ≃ₐ[A] (A ⊗[R] B)[M] := by
   refine .ofAlgHom
     (Algebra.TensorProduct.lift
       ((IsScalarTower.toAlgHom A (A ⊗[R] B) _).comp Algebra.TensorProduct.includeLeft)
-      (mapRangeAlgHom _ Algebra.TensorProduct.includeRight) fun p n ↦ .all ..)
+      (mapCoeffAlgHom _ Algebra.TensorProduct.includeRight) fun p n ↦ .all ..)
       tensorEquiv.invFun ?_ ?_
   · apply AlgHom.toLinearMap_injective
     ext
@@ -81,7 +81,7 @@ noncomputable def tensorEquiv : A ⊗[R] B[M] ≃ₐ[A] (A ⊗[R] B)[M] := by
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := A B) (attr := simp)]
 lemma tensorEquiv_tmul (a : A) (p : B[M]) :
-    tensorEquiv R A B (a ⊗ₜ p) = a • mapRangeAlgHom M Algebra.TensorProduct.includeRight p := by
+    tensorEquiv R A B (a ⊗ₜ p) = a • mapCoeffAlgHom M Algebra.TensorProduct.includeRight p := by
   simp [tensorEquiv, Algebra.smul_def]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -99,7 +99,7 @@ noncomputable def scalarTensorEquiv : A ⊗[R] R[M] ≃ₐ[A] A[M] :=
 
 @[to_additive (dont_translate := R A) (attr := simp)]
 lemma scalarTensorEquiv_tmul (a : A) (p : R[M]) :
-    scalarTensorEquiv R A (a ⊗ₜ p) = a • mapRangeAlgHom M (Algebra.ofId ..) p := by
+    scalarTensorEquiv R A (a ⊗ₜ p) = a • mapCoeffAlgHom M (Algebra.ofId ..) p := by
   ext; simp [scalarTensorEquiv]; simp [Algebra.smul_def, Algebra.commutes]
 
 set_option backward.isDefEq.respectTransparency false in
