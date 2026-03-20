@@ -100,6 +100,17 @@ def onHighestNode? {α} (t : InfoTree) (ctx? : Option ContextInfo)
   t.findSome? (ctx? := ctx?) fun ctx i ch => some (f ctx i ch)
 
 /--
+Returns the context and `info` on the outermost `.node info _` which has
+context, having merged and updated contexts appropriately.
+
+If `ctx?` is `some ctx`, `ctx` is used as an initial context. A `ctx?` of `none` should **only** be
+used when operating on the first node of the entire infotree. Otherwise, it is likely that no
+context will be found.
+-/
+def getHighestInfo? (t : InfoTree) (ctx? : Option ContextInfo) : Option (ContextInfo × Info) :=
+  t.onHighestNode? ctx? fun ctx i _ => (ctx, i)
+
+/--
 Get the `parentDecl`s of every elaborated body.
 
 This includes `let rec`/`where` definitions, but excludes decls without "bodies" (such as
@@ -119,6 +130,22 @@ def getDeclsByBody (t : InfoTree) : List Name :=
       else decls
     | _ => decls
 
+/-- Gets the first child info of each `Lean.Elab.BodyInfo`, which should be the only child, and
+should be a `TermInfo`, `PartialTermInfo`, or `TacticInfo`. `getDeclBodyInfos` does not validate
+either of these conditions. -/
+def getDeclBodyInfos (t : InfoTree) : List (ContextInfo × Info) :=
+  t.foldInfoTree (init := []) fun ctx t acc =>
+    match t with
+    | .node (.ofCustomInfo i) body => Id.run do
+      if i.value.typeName == ``Lean.Elab.Term.BodyInfo then
+        if h : 0 < body.size then
+          -- See through `.context`s instead of just matching on `.node`:
+          let result? := body[0].getHighestInfo? ctx
+          if let some result := result? then
+            return result :: acc
+      return acc
+    | _ => acc
+
 /--
 Get the declarations elaborated in the infotree `t` which are theorems according to the
 environment. This includes e.g. `instance`s of `Prop` classes in addition to declarations declared
@@ -127,4 +154,21 @@ using the keyword `theorem` directly.
 def getTheorems (t : InfoTree) (env : Environment) : List ConstantVal :=
   t.getDeclsByBody.filterMap env.findTheoremConstVal?
 
-end Lean.Elab.InfoTree
+end InfoTree
+
+namespace Info
+
+/-- Gets the local context, the local instances if available, and the expected type just before
+`Expr`. Handles `TacticInfo`s (looking at the first goal), `TermInfo`s, and `PartialTermInfo`s.
+Does not get the metavariable context; assumes that the caller has accumulated an ambient
+`ContextInfo` at this point which is sufficient. -/
+def getLCtxBefore? : Info → Option (LocalContext × Option LocalInstances × Option Expr)
+  | .ofTacticInfo i => do
+    let g ← i.goalsBefore.head?
+    let decl ← i.mctxBefore.findDecl? g
+    some (decl.lctx, decl.localInstances, decl.type)
+  | .ofTermInfo i
+  | .ofPartialTermInfo i => some (i.lctx, none, i.expectedType?)
+  | _ => none
+
+end Lean.Elab.Info

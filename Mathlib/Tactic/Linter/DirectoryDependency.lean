@@ -225,6 +225,11 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   -- For more fine-grained exceptions of the next two imports, one needs to rename that file.
   (`Mathlib.Tactic.Linter, `ImportGraph),
   (`Mathlib.Tactic.Linter, `Mathlib.Tactic.MinImports),
+  (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.ContextInfo),
+  (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.Elab.Tactic.Meta),
+  (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.Message),
+  (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.Environment),
+  (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.Elab.InfoTree),
   (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Expr.Basic),
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Environment),
