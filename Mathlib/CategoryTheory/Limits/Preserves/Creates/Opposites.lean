@@ -5,8 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Opposites
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 public import Mathlib.CategoryTheory.Limits.Creates
 
 /-!
@@ -24,74 +23,122 @@ universe w w' v₁ v₂ u₁ u₂
 
 noncomputable section
 
-open CategoryTheory
+open CategoryTheory Limits
 
-namespace CategoryTheory.Limits
+namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 variable {J : Type w} [Category.{w'} J]
 
+namespace Limits
+
+def coconeLeftOpOfConeEquiv {F : C ⥤ Dᵒᵖ} :
+    (Cone F)ᵒᵖ ≌ Cocone F.leftOp where
+  functor.obj c := coconeLeftOpOfCone c.unop
+  functor.map f :=
+    { hom := f.unop.hom.unop
+      w j := congr($(f.unop.w j.unop).unop) }
+  inverse.obj c := .op <| coneOfCoconeLeftOp c
+  inverse.map f :=
+    ⟨{ hom := f.hom.op
+       w j := congr($(f.w (.op j)).op) }⟩
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
+def coneOpEquiv {F : C ⥤ D} :
+    (Cone F)ᵒᵖ ≌ Cocone F.op where
+  functor.obj c := c.unop.op
+  functor.map f :=
+    { hom := f.unop.hom.op
+      w j := congr($(f.unop.w j.unop).op) }
+  inverse.obj c := .op <| c.unop
+  inverse.map f :=
+    ⟨{ hom := f.hom.unop
+       w j := congr($(f.w (.op j)).unop) }⟩
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
+def LiftableCocone.ofLeftOp {K : J ⥤ Cᵒᵖ} {F : C ⥤ D} (c : Cone (K ⋙ F.op))
+    (hc : LiftableCocone K.leftOp F (coconeLeftOpOfCone c)) :
+    LiftableCone K F.op c where
+  liftedCone := coneOfCoconeLeftOp hc.liftedCocone
+  validLift := (coconeLeftOpOfConeEquiv.inverse.mapIso hc.validLift.symm).unop
+
 /-- If `F : C ⥤ D` preserves colimits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves
 limits of `K : J ⥤ Cᵒᵖ`. -/
-lemma preservesLimit_op (K : J ⥤ Cᵒᵖ) (F : C ⥤ D) [CreatesColimit K.leftOp F] :
+@[implicit_reducible]
+def createsLimitOp (K : J ⥤ Cᵒᵖ) (F : C ⥤ D) [CreatesColimit K.leftOp F] :
     CreatesLimit K F.op where
-  preserves {_} hc :=
-    ⟨isLimitConeRightOpOfCocone _ (isColimitOfCreates F (isColimitCoconeLeftOpOfCone _ hc))⟩
+  __ := reflectsLimit_op _ _
+  lifts _ hc :=
+    LiftableCocone.ofLeftOp _ (CreatesColimit.lifts _ (isColimitCoconeLeftOpOfCone _ hc))
+
+def LiftableCocone.ofOp {K : J ⥤ C} {F : C ⥤ D} (c : Cone (K ⋙ F))
+    (hc : LiftableCocone K.op F.op c.op) :
+    LiftableCone K F c where
+  liftedCone := hc.liftedCocone.unop
+  validLift := (coneOpEquiv.inverse.mapIso hc.validLift.symm).unop
 
 /-- If `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves colimits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`, then `F : C ⥤ D` preserves
 limits of `K : J ⥤ C`. -/
-lemma preservesLimit_of_op (K : J ⥤ C) (F : C ⥤ D) [CreatesColimit K.op F.op] :
+@[implicit_reducible]
+def createsLimitOfOp (K : J ⥤ C) (F : C ⥤ D) [CreatesColimit K.op F.op] :
     CreatesLimit K F where
-  preserves {_} hc := ⟨isLimitOfOp (isColimitOfCreates F.op (IsLimit.op hc))⟩
+  __ := reflectsLimit_of_op _ _
+  lifts _ hc := LiftableCocone.ofOp _ (CreatesColimit.lifts _ hc.op)
 
 /-- If `F : C ⥤ Dᵒᵖ` preserves colimits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F.leftOp : Cᵒᵖ ⥤ D`
 preserves limits of `K : J ⥤ Cᵒᵖ`. -/
-lemma preservesLimit_leftOp (K : J ⥤ Cᵒᵖ) (F : C ⥤ Dᵒᵖ) [CreatesColimit K.leftOp F] :
+def createsLimitLeftOp (K : J ⥤ Cᵒᵖ) (F : C ⥤ Dᵒᵖ) [CreatesColimit K.leftOp F] :
     CreatesLimit K F.leftOp where
-  preserves {_} hc :=
-    ⟨isLimitConeUnopOfCocone _ (isColimitOfCreates F (isColimitCoconeLeftOpOfCone _ hc))⟩
+  __ := reflectsLimit_leftOp _ _
+  lifts _ hc := sorry
 
 /-- If `F.leftOp : Cᵒᵖ ⥤ D` preserves colimits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`, then `F : C ⥤ Dᵒᵖ` preserves
 limits of `K : J ⥤ C`. -/
-lemma preservesLimit_of_leftOp (K : J ⥤ C) (F : C ⥤ Dᵒᵖ) [CreatesColimit K.op F.leftOp] :
+def createsLimitOfLeftOp (K : J ⥤ C) (F : C ⥤ Dᵒᵖ) [CreatesColimit K.op F.leftOp] :
     CreatesLimit K F where
-  preserves {_} hc :=
-    ⟨isLimitOfCoconeLeftOpOfCone _ (isColimitOfCreates F.leftOp (IsLimit.op hc))⟩
+  __ := reflectsLimit_of_leftOp _ _
+  lifts _ hc := sorry
 
 /-- If `F : Cᵒᵖ ⥤ D` preserves colimits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`, then `F.rightOp : C ⥤ Dᵒᵖ` preserves
 limits of `K : J ⥤ C`. -/
-lemma preservesLimit_rightOp (K : J ⥤ C) (F : Cᵒᵖ ⥤ D) [CreatesColimit K.op F] :
+@[implicit_reducible]
+def createsLimitRightOp (K : J ⥤ C) (F : Cᵒᵖ ⥤ D) [CreatesColimit K.op F] :
     CreatesLimit K F.rightOp where
-  preserves {_} hc :=
-    ⟨isLimitConeRightOpOfCocone _ (isColimitOfCreates F hc.op)⟩
+  __ := reflectsLimit_rightOp _ _
+  lifts := sorry
 
 /-- If `F.rightOp : C ⥤ Dᵒᵖ` preserves colimits of `K.leftOp : Jᵒᵖ ⥤ Cᵒᵖ`, then `F : Cᵒᵖ ⥤ D`
 preserves limits of `K : J ⥤ Cᵒᵖ`. -/
-lemma preservesLimit_of_rightOp (K : J ⥤ Cᵒᵖ) (F : Cᵒᵖ ⥤ D) [CreatesColimit K.leftOp F.rightOp] :
+@[implicit_reducible]
+def createsLimitOfRightOp (K : J ⥤ Cᵒᵖ) (F : Cᵒᵖ ⥤ D) [CreatesColimit K.leftOp F.rightOp] :
     CreatesLimit K F where
-  preserves {_} hc :=
-    ⟨isLimitOfOp (isColimitOfCreates F.rightOp (isColimitCoconeLeftOpOfCone _ hc))⟩
+  __ := reflectsLimit_of_rightOp _ _
+  lifts := sorry
 
 /-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` preserves colimits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`, then `F.unop : C ⥤ D` preserves
 limits of `K : J ⥤ C`. -/
-lemma preservesLimit_unop (K : J ⥤ C) (F : Cᵒᵖ ⥤ Dᵒᵖ) [CreatesColimit K.op F] :
+@[implicit_reducible]
+def createsLimitUnop (K : J ⥤ C) (F : Cᵒᵖ ⥤ Dᵒᵖ) [CreatesColimit K.op F] :
     CreatesLimit K F.unop where
-  preserves {_} hc :=
-    ⟨isLimitConeUnopOfCocone _ (isColimitOfCreates F hc.op)⟩
+  __ := reflectsLimit_unop _ _
+  lifts := sorry
 
 /-- If `F.unop : C ⥤ D` preserves colimits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F : Cᵒᵖ ⥤ Dᵒᵖ` preserves
 limits of `K : J ⥤ Cᵒᵖ`. -/
-lemma preservesLimit_of_unop (K : J ⥤ Cᵒᵖ) (F : Cᵒᵖ ⥤ Dᵒᵖ) [CreatesColimit K.leftOp F.unop] :
+@[implicit_reducible]
+def createsLimitOfUnop (K : J ⥤ Cᵒᵖ) (F : Cᵒᵖ ⥤ Dᵒᵖ) [CreatesColimit K.leftOp F.unop] :
     CreatesLimit K F where
-  preserves {_} hc :=
-    ⟨isLimitOfCoconeLeftOpOfCone _ (isColimitOfCreates F.unop (isColimitCoconeLeftOpOfCone _ hc))⟩
+  __ := reflectsLimit_of_unop _ _
+  lifts := sorry
 
 /-- If `F : C ⥤ D` preserves limits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves
 colimits of `K : J ⥤ Cᵒᵖ`. -/
-lemma preservesColimit_op (K : J ⥤ Cᵒᵖ) (F : C ⥤ D) [CreatesLimit K.leftOp F] :
+def createsColimitOp (K : J ⥤ Cᵒᵖ) (F : C ⥤ D) [CreatesLimit K.leftOp F] :
     CreatesColimit K F.op where
-  preserves {_} hc :=
-    ⟨isColimitCoconeRightOpOfCone _ (isLimitOfCreates F (isLimitConeLeftOpOfCocone _ hc))⟩
+  __ := reflectsColimit_op _ _
+  lifts := sorry
 
 /-- If `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves limits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`, then `F : C ⥤ D` preserves
 colimits of `K : J ⥤ C`. -/
@@ -147,7 +194,7 @@ variable (J)
 
 /-- If `F : C ⥤ D` preserves colimits of shape `Jᵒᵖ`, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves limits of
 shape `J`. -/
-lemma preservesLimitsOfShape_op (F : C ⥤ D) [CreatesColimitsOfShape Jᵒᵖ F] :
+lemma createsLimitsOfShapeOp (F : C ⥤ D) [CreatesColimitsOfShape Jᵒᵖ F] :
     CreatesLimitsOfShape J F.op where preservesLimit {K} := preservesLimit_op K F
 
 /-- If `F : C ⥤ Dᵒᵖ` preserves colimits of shape `Jᵒᵖ`, then `F.leftOp : Cᵒᵖ ⥤ D` preserves limits
