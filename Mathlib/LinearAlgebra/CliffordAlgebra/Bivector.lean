@@ -3,8 +3,10 @@ Copyright (c) 2026 Ian Michael Arnoldy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ian Michael Arnoldy
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
-import Mathlib.Algebra.Lie.OfAssociative
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
+public import Mathlib.Algebra.Lie.OfAssociative
 
 /-!
 # Multivectors and bivectors in Clifford algebras
