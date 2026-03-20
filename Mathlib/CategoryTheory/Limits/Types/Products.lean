@@ -64,7 +64,7 @@ theorem pi_map_π_apply' {β : Type v} {f g : β → Type v} (α : ∀ j, f j �
 
 /-- The terminal object in `Type u` is `PUnit`. -/
 def isTerminalPUnit : IsTerminal (PUnit : Type u) :=
-  letI (X : Type u) : Unique (X ⟶ PUnit) := inferInstanceAs (Unique (X → PUnit))
+  letI (X : Type u) : Unique (X ⟶ PUnit) := TypeCat.homEquiv.unique
   .ofUnique _
 
 @[simp]
