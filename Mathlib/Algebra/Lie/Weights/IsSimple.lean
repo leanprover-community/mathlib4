@@ -11,15 +11,18 @@ public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 /-!
 # Lie ideals, invariant root submodules, and simple Lie algebras
 
-We construct the forward map `LieIdeal.toInvtRootSubmodule` from Lie ideals of a Killing Lie
-algebra to invariant root submodules of the associated root system, and the reverse map
-`LieAlgebra.IsKilling.invtSubmoduleToLieIdeal`. We show the irreducibility of root systems of
-simple Lie algebras.
+Given a semisimple Lie algebra, the lattice of ideals is order isomorphic to the lattice of
+Weyl-group-invariant submodules of the corresponding root system. In this file we provide
+`LieIdeal.toInvtRootSubmodule`, which constructs the invariant submodule associated to an ideal,
+and `LieAlgebra.IsKilling.invtSubmoduleToLieIdeal`, which constructs the ideal associated to an
+invariant submodule.
+
+As of Mar 2026, the proofs that these maps are part of an order isomorphism is still pending.
 
 ## Main definitions
 * `LieIdeal.rootSet`: the set of roots whose root space is contained in a given Lie ideal.
 * `LieIdeal.rootSpan`: the submodule of `Dual K H` spanned by `LieIdeal.rootSet`.
-* `LieIdeal.toInvtRootSubmodule`: the forward map from Lie ideals to invariant root submodules.
+* `LieIdeal.toInvtRootSubmodule`: the invariant root submodule associated to an ideal.
 * `LieAlgebra.IsKilling.invtSubmoduleToLieIdeal`: constructs a Lie ideal from an invariant
   submodule of the dual space
 
@@ -31,9 +34,10 @@ simple Lie algebras.
 
 namespace LieIdeal
 
-variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
 open LieAlgebra LieAlgebra.IsKilling LieModule Module
-variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra]
+
+variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
+  {H : LieSubalgebra K L} [H.IsCartanSubalgebra]
 
 lemma corootSubmodule_le (I : LieIdeal K L) {α : Weight K H L}
     (hα : rootSpace H α ≤ I.restr H) :
