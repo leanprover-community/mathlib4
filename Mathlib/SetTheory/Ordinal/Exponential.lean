@@ -15,9 +15,7 @@ related by the lemma `Ordinal.opow_le_iff_le_log : b ^ c ≤ x ↔ c ≤ log b x
 `b`, `c`.
 -/
 
-@[expose] public section
-
-noncomputable section
+public noncomputable section
 
 open Function Set Equiv Order
 open scoped Cardinal Ordinal
@@ -29,6 +27,7 @@ namespace Ordinal
 /-- The ordinal exponential, defined by transfinite recursion.
 
 We call this `opow` in theorems in order to disambiguate from other exponentials. -/
+@[no_expose]
 instance instPow : Pow Ordinal Ordinal :=
   ⟨fun a b ↦ if a = 0 then 1 - b else
     limitRecOn b 1 (fun _ x ↦ x * a) fun o _ f ↦ ⨆ x : Iio o, f x.1 x.2⟩
@@ -211,7 +210,7 @@ theorem opow_add (a b c : Ordinal) : a ^ (b + c) = a ^ b * a ^ c := by
   obtain rfl | ha' := (one_le_iff_ne_zero.2 ha.ne').eq_or_lt; · simp
   induction c using limitRecOn with
   | zero => simp
-  | succ c IH => rw [add_succ, opow_succ, IH, opow_succ, mul_assoc]
+  | succ c IH => rw [succ_eq_add_one, ← add_assoc, opow_add_one, IH, opow_add_one, mul_assoc]
   | limit c l IH =>
     refine eq_of_forall_ge_iff fun d ↦
       (((isNormal_opow ha').comp (isNormal_add_right b)).le_iff_forall_le l).trans ?_
@@ -435,9 +434,9 @@ theorem log_opow_mul_add {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hw : w
   · constructor
     · grw [opow_add, opow_log_le_self b hv, ← le_self_add]
     · apply (add_lt_add_right hw _).trans_le
-      rw [← mul_succ, ← add_succ, opow_add]
+      rw [← mul_add_one, succ_eq_add_one, add_assoc, opow_add]
       gcongr
-      rw [succ_le_iff]
+      rw [add_one_le_iff]
       exact lt_opow_succ_log_self hb _
   · exact fun h ↦ mul_ne_zero (opow_ne_zero u (bot_lt_of_lt hb).ne') hv <|
       left_eq_zero_of_add_eq_zero h
@@ -494,7 +493,7 @@ theorem lt_omega0_opow {a b : Ordinal} (hb : b ≠ 0) :
 
 theorem lt_omega0_opow_succ {a b : Ordinal} : a < ω ^ succ b ↔ ∃ n : ℕ, a < ω ^ b * n := by
   refine ⟨fun ha ↦ ?_, fun ⟨n, hn⟩ ↦ hn.trans (omega0_opow_mul_nat_lt (lt_succ b) n)⟩
-  obtain ⟨c, hc, n, hn⟩ := (lt_omega0_opow (succ_ne_zero b)).1 ha
+  obtain ⟨c, hc, n, hn⟩ := (lt_omega0_opow (add_one_ne_zero b)).1 ha
   refine ⟨n, hn.trans_le ?_⟩
   grw [lt_succ_iff.1 hc]
   exact omega0_pos
