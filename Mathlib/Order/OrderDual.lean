@@ -101,6 +101,9 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
     simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
     rfl
 
+-- This set_option is needed to avoid an error in `RingTheory.MvPowerSeries.NeZeroDivisors`.
+-- This is almost certainly a bug in leanprover/lean4#12897
+set_option backward.inferInstanceAs.normalForm false in
 /-- The opposite linear order to a given linear order -/
 @[implicit_reducible]
 def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
