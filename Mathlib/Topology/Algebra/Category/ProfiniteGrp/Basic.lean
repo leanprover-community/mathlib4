@@ -324,7 +324,6 @@ set_option backward.inferInstanceAs.normalForm false in
 instance : Group (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
   inferInstanceAs (Group (limitConePtAux F))
 
-set_option backward.inferInstanceAs.normalForm false in
 @[to_additive]
 instance : IsTopologicalGroup (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
   inferInstanceAs (IsTopologicalGroup (limitConePtAux F))

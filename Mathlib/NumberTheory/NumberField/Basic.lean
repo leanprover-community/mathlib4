@@ -112,7 +112,7 @@ namespace RingOfIntegers
 instance : CommRing (𝓞 K) :=
   inferInstanceAs (CommRing (integralClosure _ _))
 
-set_option backward.inferInstanceAs.normalForm false in
+set_option «instance».normalForm.wrapFields.data false in
 instance : IsDomain (𝓞 K) :=
   inferInstanceAs (IsDomain (integralClosure _ _))
 

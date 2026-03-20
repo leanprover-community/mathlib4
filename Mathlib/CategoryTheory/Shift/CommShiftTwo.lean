@@ -111,7 +111,7 @@ namespace CommShift₂
 attribute [instance_reducible] commShiftObj commShiftFlipObj
 attribute [instance] commShiftObj commShiftFlipObj commShift_map commShift_flip_map
 
-set_option backward.inferInstanceAs.normalForm false in
+set_option «instance».normalForm.wrapFields.data false in
 set_option backward.isDefEq.respectTransparency false in
 instance precomp₁ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₁' M]
     [HasShift C₂ M] [HasShift D M] (F : C₁' ⥤ C₁) [F.CommShift M]
