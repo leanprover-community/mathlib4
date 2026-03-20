@@ -15,7 +15,7 @@ import Mathlib.RingTheory.RootsOfUnity.Minpoly
 
 The main ingredients are:
 
-* `isSolvable_gal_of_irreducible` in `Mathlib/FieldTheory/AbelRuffini.lean` :
+* `isSolvable_gal_of_irreducible` in `Mathlib/FieldTheory/AbelRuffini.lean`:
   an irreducible polynomial with an `IsSolvableByRad` root has solvable Galois group.
 * `galActionHom_bijective_of_prime_degree'` in `Mathlib/FieldTheory/PolynomialGaloisGroup.lean` :
   an irreducible polynomial of prime degree with 1-3 non-real roots has full Galois group.
