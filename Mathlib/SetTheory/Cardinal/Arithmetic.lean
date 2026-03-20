@@ -177,14 +177,6 @@ theorem mul_eq_left {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : b ≤ a) (hb' : b
 theorem mul_eq_right {a b : Cardinal} (hb : ℵ₀ ≤ b) (ha : a ≤ b) (ha' : a ≠ 0) : a * b = b := by
   rw [mul_comm, mul_eq_left hb ha ha']
 
-theorem le_mul_left {a b : Cardinal} (h : b ≠ 0) : a ≤ b * a := by
-  convert mul_le_mul_left (one_le_iff_ne_zero.mpr h) a
-  rw [one_mul]
-
-theorem le_mul_right {a b : Cardinal} (h : b ≠ 0) : a ≤ a * b := by
-  rw [mul_comm]
-  exact le_mul_left h
-
 theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ b ≠ 0 ∨ b = 1 ∨ a = 0 := by
   rw [max_le_iff]
   refine ⟨fun h => ?_, ?_⟩
