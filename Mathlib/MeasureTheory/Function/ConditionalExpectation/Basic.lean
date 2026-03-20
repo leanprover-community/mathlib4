@@ -394,33 +394,6 @@ end RCLike
 
 end NormedSpace
 
-section Real
-variable [InnerProductSpace ℝ E]
-
--- TODO: Generalize via the conditional Jensen inequality
-lemma eLpNorm_condExp_le : eLpNorm (μ[f | m]) 2 μ ≤ eLpNorm f 2 μ := by
-  by_cases hm : m ≤ m₀; swap
-  · simp [condExp_of_not_le hm]
-  by_cases hfμ : SigmaFinite (μ.trim hm); swap
-  · rw [condExp_of_not_sigmaFinite hm hfμ]
-    simp
-  by_cases hfi : Integrable f μ; swap
-  · rw [condExp_of_not_integrable hfi]
-    simp
-  obtain hf | hf := eq_or_ne (eLpNorm f 2 μ) ∞
-  · simp [hf]
-  replace hf : MemLp f 2 μ := ⟨hfi.1, Ne.lt_top' fun a ↦ hf a.symm⟩
-  rw [← eLpNorm_congr_ae (hf.condExpL2_ae_eq_condExp' (𝕜 := ℝ) hm hfi)]
-  refine le_trans (eLpNorm_condExpL2_le hm _) ?_
-  rw [eLpNorm_congr_ae hf.coeFn_toLp]
-
-protected lemma MemLp.condExp (hf : MemLp f 2 μ) : MemLp (μ[f | m]) 2 μ := by
-  by_cases hm : m ≤ m₀
-  · exact ⟨(stronglyMeasurable_condExp.mono hm).aestronglyMeasurable,
-      eLpNorm_condExp_le.trans_lt hf.eLpNorm_lt_top⟩
-  · simp [condExp_of_not_le hm]
-
-end Real
 end NormedAddCommGroup
 
 section NormedRing
@@ -485,6 +458,15 @@ lemma condExp_mono (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ
   swap; · simp_rw [condExp_of_not_sigmaFinite hm hμm]; rfl
   exact (condExp_ae_eq_condExpL1 hm _).trans_le
     ((condExpL1_mono hf hg hfg).trans_eq (condExp_ae_eq_condExpL1 hm _).symm)
+
+lemma condExp_le_nonneg_const {c : E} (hc : 0 ≤ c) (hfg : ∀ᵐ x ∂μ, f x ≤ c) :
+    ∀ᵐ x ∂μ, μ[f | m] x ≤ c := by
+  by_cases! hm : ¬ m ≤ m₀
+  · simp_all [condExp_of_not_le hm]
+  by_cases! hfint : ¬ Integrable f μ
+  · simp_all [condExp_of_not_integrable hfint]
+  by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
+  · simp_all [condExp_of_not_sigmaFinite hm hsig]
 
 lemma condExp_nonneg (hf : 0 ≤ᵐ[μ] f) : 0 ≤ᵐ[μ] μ[f | m] := by
   by_cases hfint : Integrable f μ

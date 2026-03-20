@@ -153,22 +153,21 @@ theorem ConcaveOn.condExp_map_le_univ (hm : m ≤ mα) [SigmaFinite (μ.trim hm)
     condExp_neg (φ ∘ f) m] with a h ha
   simp_all [Pi.neg_comp]
 
-/-- In a Banach space `E` with a measure `μ`, then for any `μ`-a.e. strongly measurable function
-`f : α → E`, we have `‖𝔼[f | m])‖ ≤ᵐ[μ] 𝔼[‖f‖ | m]`. -/
-theorem AEStronglyMeasurable.norm_condExp_le (hf : AEStronglyMeasurable f μ) :
-    (‖μ[f | m] ·‖) ≤ᵐ[μ] μ[(‖f ·‖) | m] := by
+/-- In a Banach space `E` with a measure `μ`, then for any `f : α → E`, we have
+`‖𝔼[f | m])‖ ≤ᵐ[μ] 𝔼[‖f‖ | m]`. -/
+theorem norm_condExp_le : (‖μ[f | m] ·‖) ≤ᵐ[μ] μ[(‖f ·‖) | m] := by
   by_cases! hm : ¬ m ≤ mα
   · simp [condExp_of_not_le hm]; aesop
   by_cases! hμm : ¬ SigmaFinite (μ.trim hm)
   · simp [condExp_of_not_sigmaFinite hm hμm]; aesop
   by_cases! hf_int : ¬ Integrable f μ
-  · have : ¬ Integrable (‖f ·‖) μ := by simpa [integrable_norm_iff hf]
-    simp [condExp_of_not_integrable hf_int, condExp_of_not_integrable this]
-    aesop
+  · simp only [condExp_of_not_integrable hf_int, Pi.zero_apply, norm_zero]
+    apply condExp_nonneg
+    filter_upwards with a; positivity
   exact convexOn_univ_norm.map_condExp_le_univ hm continuous_norm.lowerSemicontinuous hf_int
     hf_int.norm
 
-theorem AEStronglyMeasurable.norm_rpow_condExp_le {p : ℝ} (hp : 1 ≤ p)
+theorem Integrable.norm_rpow_condExp_le {p : ℝ} (hp : 1 ≤ p)
     (hfint : Integrable (fun x => ‖f x‖ ^ p) μ) :
     (‖μ[f | m] ·‖ ^ p) ≤ᵐ[μ] μ[(‖f ·‖ ^ p) | m] := by
   have hp' : 0 < p := by linarith
@@ -183,7 +182,7 @@ theorem AEStronglyMeasurable.norm_rpow_condExp_le {p : ℝ} (hp : 1 ≤ p)
     filter_upwards with a; positivity
   have hl := (Real.continuous_rpow_const hp'.le).lowerSemicontinuous.lowerSemicontinuousOn (Ici 0)
   have := (convexOn_rpow hp).map_condExp_le hm hl ?_ isClosed_Ici hf_int.norm hfint
-  · filter_upwards [AEStronglyMeasurable.norm_condExp_le (m := m) hf_int.1, this] with a ha hb
+  · filter_upwards [norm_condExp_le (f := f), this] with a ha hb
     exact (Real.rpow_le_rpow (norm_nonneg _) ha hp'.le).trans hb
   · filter_upwards with a; simp
 
