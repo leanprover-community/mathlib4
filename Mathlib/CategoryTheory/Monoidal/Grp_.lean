@@ -197,30 +197,45 @@ theorem lift_inv_comp_left [GrpObj A] [GrpObj B] (f : A ⟶ B) [IsMonHom f] :
   have := left_inv A =≫ f
   rwa [assoc, IsMonHom.mul_hom, assoc, IsMonHom.one_hom, lift_map_assoc, id_comp] at this
 
+@[to_additive]
 theorem eq_lift_inv_left [GrpObj B] (f g h : A ⟶ B) :
     f = lift (g ≫ ι) h ≫ μ ↔ lift g f ≫ μ = h := by
   refine ⟨?_, ?_⟩ <;> (rintro rfl; simp [← lift_lift_assoc])
 
+@[to_additive]
 theorem lift_inv_left_eq [GrpObj B] (f g h : A ⟶ B) :
     lift (f ≫ ι) g ≫ μ = h ↔ g = lift f h ≫ μ := by
   rw [eq_comm, eq_lift_inv_left, eq_comm]
 
+@[to_additive]
 theorem eq_lift_inv_right [GrpObj B] (f g h : A ⟶ B) :
     f = lift g (h ≫ ι) ≫ μ ↔ lift f h ≫ μ = g := by
   refine ⟨?_, ?_⟩ <;> (rintro rfl; simp [lift_lift_assoc])
 
+@[to_additive]
 theorem lift_inv_right_eq [GrpObj B] (f g h : A ⟶ B) :
     lift f (g ≫ ι) ≫ μ = h ↔ f = lift h g ≫ μ := by
   rw [eq_comm, eq_lift_inv_right, eq_comm]
 
+@[to_additive]
 theorem lift_left_mul_ext [GrpObj B] {f g : A ⟶ B} (i : A ⟶ B)
     (h : lift f i ≫ μ = lift g i ≫ μ) : f = g := by
   rwa [← eq_lift_inv_right, lift_lift_assoc, lift_comp_inv_right, lift_comp_one_right] at h
 
-@[reassoc (attr := simp)]
+@[to_additive (attr := reassoc (attr := simp))]
 theorem inv_comp_inv (A : C) [GrpObj A] : ι ≫ ι = 𝟙 A := by
   apply lift_left_mul_ext ι[A]
   rw [right_inv, ← comp_toUnit_assoc ι, ← left_inv, comp_lift_assoc, Category.comp_id]
+
+/-- Transfer `AddGrpObj` along an isomorphism. -/
+-- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
+@[simps! -isSimp]
+abbrev _root_.CategoryTheory.AddGrpObj.ofIso {G' X : C} [AddGrpObj G'] (e : G' ≅ X) :
+    AddGrpObj X where
+  toAddMonObj := AddMonObj.ofIso e
+  neg := e.inv ≫ AddGrpObj.neg ≫ e.hom
+  left_neg := by simp +instances [AddMonObj.ofIso]
+  right_neg := by simp +instances [AddMonObj.ofIso]
 
 /-- Transfer `GrpObj` along an isomorphism. -/
 -- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
@@ -231,14 +246,17 @@ abbrev ofIso (e : G ≅ X) : GrpObj X where
   left_inv := by simp +instances [MonObj.ofIso]
   right_inv := by simp +instances [MonObj.ofIso]
 
+attribute [to_additive existing] ofIso
+
+@[to_additive]
 instance (A : C) [GrpObj A] : IsIso ι[A] := ⟨ι, by simp, by simp⟩
 
 /-- For `inv ≫ inv = 𝟙` see `inv_comp_inv`. -/
-@[simp]
+@[to_additive (attr := simp) /-- For `neg ≫ neg = 𝟙` see `neg_comp_neg`. -/]
 theorem inv_inv (A : C) [GrpObj A] : CategoryTheory.inv ι = ι[A] := by
   rw [eq_comm, ← CategoryTheory.inv_comp_eq_id, IsIso.inv_inv, inv_comp_inv]
 
-@[reassoc]
+@[to_additive (attr := reassoc)]
 theorem mul_inv [BraidedCategory C] (A : C) [GrpObj A] :
     μ ≫ ι = (β_ A A).hom ≫ (ι ⊗ₘ ι) ≫ μ := by
   apply lift_left_mul_ext μ
@@ -249,24 +267,24 @@ theorem mul_inv [BraidedCategory C] (A : C) [GrpObj A] :
   rw [← lift_fst_snd, ← lift_lift_assoc (fst A A ≫ _), lift_comp_inv_left, lift_comp_one_left,
     lift_comp_inv_left, comp_toUnit_assoc]
 
-@[reassoc]
+@[to_additive (attr := reassoc)]
 theorem tensorHom_inv_inv_mul [BraidedCategory C] (A : C) [GrpObj A] :
     (ι[A] ⊗ₘ ι[A]) ≫ μ = (β_ A A).hom ≫ μ ≫ ι := by
   rw [mul_inv A, SymmetricCategory.symmetry_assoc]
 
-@[reassoc]
+@[to_additive (attr := reassoc)]
 lemma mul_inv_rev [BraidedCategory C] (G : C) [GrpObj G] :
     μ ≫ ι = (ι[G] ⊗ₘ ι) ≫ (β_ _ _).hom ≫ μ := by simp [tensorHom_inv_inv_mul]
 
 /-- The map `(· * f)`. -/
-@[simps]
+@[to_additive (attr := simps) /-- The map `(· + f)`. -/]
 def mulRight {A : C} [GrpObj A] (f : 𝟙_ C ⟶ A) : A ≅ A where
   hom := lift (𝟙 _) (toUnit _ ≫ f) ≫ μ
   inv := lift (𝟙 _) (toUnit _ ≫ f ≫ ι) ≫ μ
   hom_inv_id := by simp [comp_lift_assoc, lift_lift_assoc, ← comp_lift]
   inv_hom_id := by simp [comp_lift_assoc, lift_lift_assoc, ← comp_lift]
 
-@[simp]
+@[to_additive (attr := simp)]
 lemma mulRight_one (A : C) [GrpObj A] : mulRight η[A] = Iso.refl A := by
   ext; simp
 
@@ -275,6 +293,7 @@ lemma mulRight_one (A : C) [GrpObj A] : mulRight η[A] = Iso.refl A := by
 In fact, any monoid object whose associativity diagram is Cartesian can be made into a group object
 (we do not prove this in this file), so we should expect that many properties of group objects
 follow from this result. -/
+@[to_additive]
 theorem isPullback (A : C) [GrpObj A] :
     IsPullback (μ ▷ A) ((α_ A A A).hom ≫ (A ◁ μ)) μ μ where
   w := by simp
@@ -308,13 +327,15 @@ theorem isPullback (A : C) [GrpObj A] :
       · simpa using hm₁ =≫ snd _ _)
 
 /-- Morphisms of group objects preserve inverses. -/
-@[reassoc (attr := simp)]
+@[to_additive (attr := reassoc (attr := simp))
+/-- Morphisms of group objects preserve negations. -/]
 theorem inv_hom [GrpObj A] [GrpObj B] (f : A ⟶ B) [IsMonHom f] : ι ≫ f = f ≫ ι := by
   suffices lift (lift f (ι ≫ f)) f =
       lift (lift f (f ≫ ι)) f by simpa using (this =≫ fst _ _) =≫ snd _ _
   apply (isPullback B).hom_ext <;> apply CartesianMonoidalCategory.hom_ext <;>
     simp [lift_inv_comp_right, lift_inv_comp_left]
 
+@[to_additive]
 lemma toMonObj_injective {X : C} :
     Function.Injective (@GrpObj.toMonObj C ‹_› ‹_› X) := by
   intro h₁ h₂ e
@@ -326,9 +347,11 @@ lemma toMonObj_injective {X : C} :
 
 @[deprecated (since := "2025-09-09")] alias toMon_Class_injective := toMonObj_injective
 
-@[ext]
+@[to_additive (attr := ext)]
 lemma ext {X : C} (h₁ h₂ : GrpObj X) (H : h₁.toMonObj = h₂.toMonObj) : h₁ = h₂ :=
   GrpObj.toMonObj_injective H
+
+#
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A monoid object with invertible homs is a group object. -/

@@ -110,7 +110,6 @@ attribute [reassoc (attr := simp)] AddMonObj.zero_add AddMonObj.add_zero AddMonO
 set_option linter.existingAttributeWarning false in
 attribute [to_additive existing] one_mul_assoc mul_one_assoc mul_assoc_assoc
 
---set_option trace.translate_detail true in
 /-- Transfer `MonObj` along an isomorphism. -/
 -- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
 @[to_additive (attr := simps! -isSimp, implicit_reducible)]
