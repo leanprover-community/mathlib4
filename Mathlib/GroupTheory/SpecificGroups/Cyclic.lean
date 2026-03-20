@@ -330,7 +330,6 @@ open Finset Nat
 
 section Classical
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 @[to_additive IsAddCyclic.card_nsmul_eq_zero_le]
 theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] {n : ℕ} (hn0 : 0 < n) :
