@@ -153,7 +153,7 @@ lemma velocity_hasDerivAt_aux (hI : IsOpen I) (hγ : ContDiffOn ℝ 2 γ I)
 
 lemma inners_sum_eqOn_zero_of_const_inner_on_open {α β : ℝ → EuclideanSpace ℝ ι} (hI : IsOpen I)
     {s : ℝ} (ht : t ∈ I) {α' β' : EuclideanSpace ℝ ι} (hdα : HasDerivAt α α' t)
-    (hdβ : HasDerivAt β β' t) (hci : Set.EqOn (fun t ↦ inner ℝ (α t) (β t)) (fun _ ↦ s) I) : 
+    (hdβ : HasDerivAt β β' t) (hci : Set.EqOn (fun t ↦ inner ℝ (α t) (β t)) (fun _ ↦ s) I) :
     inner ℝ (α t) β' + inner ℝ α' (β t) = 0 := by
   let f := fun t ↦  inner ℝ (α t) (β t)
   symm
