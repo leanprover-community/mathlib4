@@ -201,6 +201,9 @@ protected def pointwiseDistribMulAction : DistribMulAction α (Submodule R M) wh
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseDistribMulAction
 
+theorem pointwise_smul_def {a : α} {S : Submodule R M} :
+    a • S = S.map (DistribSMul.toLinearMap R M a) := rfl
+
 open Pointwise
 
 @[simp, norm_cast]
@@ -562,5 +565,25 @@ lemma sup_set_smul (s t : Set S) :
     (sup_le (set_smul_mono_left _ le_sup_left) (set_smul_mono_left _ le_sup_right))
 
 end set_acting_on_submodules
+
+section group
+
+variable {R G M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [Group G] [DistribMulAction G M] [SMulCommClass G R M]
+    {S : Submodule R M}
+
+open MulAction
+
+lemma stabilizer_coe :
+    stabilizer G S = stabilizer G (S : Set M) := by
+  ext
+  rw [mem_stabilizer_iff, SetLike.ext'_iff, coe_pointwise_smul,
+    ← mem_stabilizer_iff]
+
+theorem mem_stabilizer_submodule_iff_map_eq {e : G} :
+    e ∈ stabilizer G S ↔ S.map (DistribSMul.toLinearMap R M e) = S := by
+  rfl
+
+end group
 
 end Submodule

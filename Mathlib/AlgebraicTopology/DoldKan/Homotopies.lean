@@ -34,7 +34,7 @@ a big enough `q` will be contained in the normalized subcomplex. This
 construction is done in `Projections.lean`.
 
 It would be easy to define the `P q` degreewise (similarly as it is done
-in *Simplicial Homotopy Theory* by Goerrs-Jardine p. 149), but then we would
+in *Simplicial Homotopy Theory* by Goerss-Jardine p. 149), but then we would
 have to prove that they are compatible with the differential (i.e. they
 are chain complex maps), and also that they are homotopic to the identity.
 These two verifications are quite technical. In order to reduce the number
@@ -49,7 +49,7 @@ are obtained in `Faces.lean`.
 
 In this file `Homotopies.lean`, we define the null homotopic maps
 `Hσ q : K[X] ⟶ K[X]`, show that they are natural (see `natTransHσ`) and
-compatible the application of additive functors (see `map_Hσ`).
+compatible with the application of additive functors (see `map_Hσ`).
 
 ## References
 * [Albrecht Dold, *Homology of Symmetric Products and Other Functors of Complexes*][dold1958]
