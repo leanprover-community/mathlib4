@@ -221,9 +221,9 @@ theorem IsAcyclic.coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsAcyclic) (
 
 /-- The union of two trees that share exactly one vertex is a tree. -/
 theorem IsTree.coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsTree) (h₂ : G₂.coe.IsTree) {v : V}
-    (h : G₁.verts ∩ G₂.verts = {v}) : (G₁ ⊔ G₂).coe.IsTree :=
-  ⟨Subgraph.connected_sup ⟨h₁.isConnected.preconnected⟩ ⟨h₂.isConnected.preconnected⟩
-    <| by simp [h], .coe_sup h₁.IsAcyclic h₂.IsAcyclic <| by simp [h]⟩
+    (h : G₁.verts ∩ G₂.verts = {v}) : (G₁ ⊔ G₂).coe.IsTree where
+  connected := Subgraph.connected_sup ⟨h₁.preconnected⟩ ⟨h₂.preconnected⟩ <| by simp [h]
+  isAcyclic := .coe_sup h₁.isAcyclic h₂.isAcyclic <| by simp [h]
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
