@@ -933,6 +933,10 @@ theorem lt_one_iff_zero {a : Ordinal} : a < 1 ↔ a = 0 := by
 theorem le_one_iff {a : Ordinal} : a ≤ 1 ↔ a = 0 ∨ a = 1 := by
   simpa using @le_succ_bot_iff _ _ _ a _
 
+@[simp]
+theorem lt_two_iff {a : Ordinal} : a < 2 ↔ a ≤ 1 := by
+  rw [← one_add_one_eq_two, lt_add_one_iff]
+
 @[deprecated card_add_one (since := "2026-02-27")]
 theorem card_succ (o : Ordinal) : card (succ o) = card o + 1 := by
   simp
