@@ -69,7 +69,7 @@ theorem recF_eq {α : TypeVec n} {β : Type u} (g : F (α.append1 β) → β) (a
 set_option backward.isDefEq.respectTransparency false in
 theorem recF_eq' {α : TypeVec n} {β : Type u} (g : F (α.append1 β) → β) (x : q.P.W α) :
     recF g x = g (abs (appendFun id (recF g) <$$> q.P.wDest' x)) := by
-  induction x using  q.P.w_cases
+  induction x using  q.P.wCases
   case ih a f' f =>
     rw [recF_eq, q.P.wDest'_wMk, MvPFunctor.map_eq, appendFun_comp_splitFun, TypeVec.id_comp]
 
@@ -86,9 +86,9 @@ inductive WEquiv {α : TypeVec n} : q.P.W α → q.P.W α → Prop
 
 theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type u} (u : F (α.append1 β) → β) (x y : q.P.W α) :
     WEquiv x y → recF u x = recF u y := by
-  induction x using q.P.w_cases
+  induction x using q.P.wCases
   case ih a₀ f'₀ f₀ =>
-    induction y using q.P.w_cases
+    induction y using q.P.wCases
     case ih a₁ f'₁ f₁ =>
       intro h
       -- Porting note: induction on h doesn't work.
@@ -102,9 +102,9 @@ theorem wEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
     (h : MvQPF.abs (q.P.wDest' x) = MvQPF.abs (q.P.wDest' y)) :
     WEquiv x y := by
   revert h
-  induction x using q.P.w_cases
+  induction x using q.P.wCases
   case ih a₀ f'₀ f₀ =>
-    induction y using q.P.w_cases
+    induction y using q.P.wCases
     apply WEquiv.abs
 
 theorem wEquiv.refl {α : TypeVec n} (x : q.P.W α) : WEquiv x x := abs' x x rfl
@@ -127,7 +127,7 @@ theorem wrepr_wMk {α : TypeVec n} (a : q.P.A) (f' : q.P.drop.B a ⟹ α)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem wrepr_equiv {α : TypeVec n} (x : q.P.W α) : WEquiv (wrepr x) x := by
-  induction x using q.P.w_ind
+  induction x using q.P.wInd
   case ih a f' f ih =>
     apply WEquiv.trans _ (q.P.wMk' (appendFun id wrepr <$$> ⟨a, q.P.appendContents f' f⟩))
     · apply wEquiv.abs'
@@ -231,7 +231,7 @@ theorem Fix.ind_rec {β : Type u} (g₁ g₂ : Fix F α → β)
     ∀ x, g₁ x = g₂ x := by
   apply Quot.ind
   intro x
-  induction x using q.P.w_ind
+  induction x using q.P.wInd
   case ih a f' f ih =>
     change g₁ ⟦q.P.wMk a f' f⟧ = g₂ ⟦q.P.wMk a f' f⟧
     rw [← Fix.ind_aux a f' f]
@@ -276,7 +276,7 @@ theorem Fix.ind {α : TypeVec n} (p : Fix F α → Prop)
     (h : ∀ x : F (α.append1 (Fix F α)), LiftP (PredLast α p) x → p (Fix.mk x)) : ∀ x, p x := by
   apply Quot.ind
   intro x
-  induction x using q.P.w_ind
+  induction x using q.P.wInd
   case ih a f' f ih =>
     change p ⟦q.P.wMk a f' f⟧
     rw [← Fix.ind_aux a f' f]

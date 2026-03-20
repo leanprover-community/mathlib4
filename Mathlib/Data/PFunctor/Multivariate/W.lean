@@ -176,7 +176,7 @@ theorem wRec_eq {α : TypeVec n} {C : Sort*}
 
 /-- Induction principle for `W` -/
 @[elab_as_elim]
-def w_ind {α : TypeVec n} {C : P.W α → Sort v}
+def wInd {α : TypeVec n} {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
         (∀ i, C (f i)) → C (P.wMk a f' f)) :
     ∀ x, C x := fun ⟨hd, ch⟩ =>
@@ -185,18 +185,22 @@ def w_ind {α : TypeVec n} {C : P.W α → Sort v}
       (congr rfl <| Sigma.mk.inj_iff.mpr ⟨rfl, heq_of_eq <| wPathCasesOn_eta P f'⟩)
       <| ih head (P.wPathDestLeft f') (fun i => ⟨f i, P.wPathDestRight f' i⟩) ih') hd ch
 
+@[deprecated (since := "2026-03-20")] alias w_ind := wInd
+
 @[simp]
-theorem w_ind_wMk {α : TypeVec n} {C : P.W α → Sort v}
+theorem wInd_wMk {α : TypeVec n} {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
         (∀ i, C (f i)) → C (P.wMk a f' f))
     {a : P.drop.A} {f' : P.drop.B a ⟹ α} {f : P.last.B a → P.W α}
-    : w_ind P ih (wMk P a f' f) = ih a f' f (fun i => w_ind P ih (f i)) := rfl
+    : wInd P ih (wMk P a f' f) = ih a f' f (fun i => wInd P ih (f i)) := rfl
 
 /-- Cases lemma for `W` types -/
 @[elab_as_elim]
-def w_cases {α : TypeVec n} {C : P.W α → Sort v}
+def wCases {α : TypeVec n} {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α), C (P.wMk a f' f)) :
-    ∀ x, C x := P.w_ind fun a f' f _ih' => ih a f' f
+    ∀ x, C x := P.wInd fun a f' f _ih' => ih a f' f
+
+@[deprecated (since := "2026-03-20")] alias w_cases := wCases
 
 /-- W-types are functorial -/
 def wMap {α β : TypeVec n} (g : α ⟹ β) : P.W α → P.W β := fun x => g <$$> x
