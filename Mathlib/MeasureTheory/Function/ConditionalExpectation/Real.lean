@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
 public import Mathlib.MeasureTheory.Function.UniformIntegrable
+public import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
 
 /-!
@@ -78,25 +79,40 @@ theorem integral_norm_rpow_condExp_le {p : ℝ} (hp : 1 ≤ p) {f : α → E}
     · exact AEStronglyMeasurable.norm_rpow_condExp_le hp hfint.1 hf
   _ = _ := integral_condExp hm
 
-theorem eLpNorm_condExp_le_eLpNorm (f : α → E) {p : ℝ≥0∞} (hp : 1 ≤ p) (hpt : p < ⊤)
+theorem lpNorm_condExp_le_lpNorm {f : α → E} {p : ℝ≥0∞} (hp : 1 ≤ p) (hpt : p ≠ ⊤)
     (hf : Integrable (fun x => ‖f x‖ ^ p.toReal) μ) :
-    eLpNorm (μ[f | m]) p μ ≤ eLpNorm f p μ := by
-  have hp' : 0 < p := by sorry
+    lpNorm (μ[f | m]) p μ ≤ lpNorm f p μ := by
+  have hp' : 0 < p := zero_lt_one.trans_le hp
   by_cases! hm : ¬ m ≤ m0
   · simp [condExp_of_not_le hm]
   by_cases! hfint : ¬ Integrable f μ
   · simp [condExp_of_not_integrable hfint]
   by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
   · simp [condExp_of_not_sigmaFinite hm hsig]
-  · simp_all [eLpNorm_eq_lintegral_rpow_enorm_toReal hp'.ne.symm hpt.ne]
-    have : 1 ≤ p.toReal := by sorry
-    rw [ENNReal.rpow_le_rpow_iff]
-    have := integral_norm_rpow_condExp_le (m := m) this hf
-    rw [← ENNReal.toReal_le_toReal]
+  · rw [lpNorm_eq_integral_norm_rpow_toReal hp'.ne.symm hpt hfint.1,
+      lpNorm_eq_integral_norm_rpow_toReal hp'.ne.symm hpt integrable_condExp.1]
+    gcongr ?_ ^ ?_
+    have : 1 ≤ p.toReal := by
+      rwa [← ENNReal.toReal_one, ENNReal.toReal_le_toReal ENNReal.one_ne_top hpt]
+    exact integral_norm_rpow_condExp_le this hf
+
+theorem eLpNorm_condExp_le_eLpNorm {f : α → E} {p : ℝ≥0∞} (hp : 1 ≤ p) (hpt : p ≠ ⊤)
+    (hf : Integrable (fun x => ‖f x‖ ^ p.toReal) μ) :
+    eLpNorm (μ[f | m]) p μ ≤ eLpNorm f p μ := by
+  have hp' : 0 < p := zero_lt_one.trans_le hp
+  by_cases! hfint : ¬ Integrable f μ
+  · simp [condExp_of_not_integrable hfint]
+  rw [← ofReal_lpNorm, ← ofReal_lpNorm]
+  · exact ENNReal.ofReal_le_ofReal (lpNorm_condExp_le_lpNorm hp hpt hf)
+  · exact (integrable_norm_rpow_iff hfint.1 hp'.ne.symm hpt).1 hf
+  · rw [← integrable_norm_rpow_iff integrable_condExp.1 hp'.ne.symm hpt]
     sorry
-    sorry
-    sorry
-    sorry
+
+theorem eLpNorm_one_condExp_le_eLpNorm (f : α → E) : eLpNorm (μ[f | m]) 1 μ ≤ eLpNorm f 1 μ := by
+  by_cases! hfint : ¬ Integrable f μ
+  · simp [condExp_of_not_integrable hfint]
+  refine eLpNorm_condExp_le_eLpNorm (refl 1) ENNReal.one_ne_top ?_
+  simpa using hfint.norm
 
 theorem integral_norm_condExp_le (f : α → E) : ∫ x, ‖(μ[f | m]) x‖ ∂μ ≤ ∫ x, ‖f x‖ ∂μ := by
   by_cases! hm : ¬ m ≤ m0
@@ -232,12 +248,12 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
       hC, Nonneg.inv_mk, ENNReal.coe_mul, ENNReal.coe_toNNReal hg.eLpNorm_lt_top.ne, ← mul_assoc, ←
       ENNReal.ofReal_eq_coe_nnreal, ← ENNReal.ofReal_mul hδ.le, mul_inv_cancel₀ hδ.ne',
       ENNReal.ofReal_one, one_mul, ENNReal.rpow_one]
-    exact eLpNorm_condExp_le_eLpNorm _ (refl 1)
+    exact eLpNorm_one_condExp_le_eLpNorm _
   refine ⟨C, fun n => le_trans ?_ (h {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} (hmeas n C) (this n))⟩
   have hmeasℱ : MeasurableSet[ℱ n] {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} :=
     @measurableSet_le _ _ _ _ _ (ℱ n) _ _ _ _ _ measurable_const
       (@Measurable.nnnorm _ _ _ _ _ (ℱ n) _ stronglyMeasurable_condExp.measurable)
   rw [← eLpNorm_congr_ae (condExp_indicator hint hmeasℱ)]
-  exact eLpNorm_condExp_le_eLpNorm _ (refl 1)
+  exact eLpNorm_one_condExp_le_eLpNorm _
 
 end MeasureTheory

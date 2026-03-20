@@ -182,7 +182,7 @@ theorem AEStronglyMeasurable.norm_rpow_condExp_le {p : ℝ} (hp : 1 ≤ p)
       Real.zero_rpow hp'.ne.symm]
     apply condExp_nonneg
     filter_upwards with a using by positivity
-  have hl := (continuous_rpow_const hp'.le).lowerSemicontinuous.lowerSemicontinuousOn (Ici 0)
+  have hl := (Real.continuous_rpow_const hp'.le).lowerSemicontinuous.lowerSemicontinuousOn (Ici 0)
   have := (convexOn_rpow hp).map_condExp_le hm hl ?_ isClosed_Ici hf_int.norm hfint
   · filter_upwards [AEStronglyMeasurable.norm_condExp_le (m := m) hf, this] with a ha hb
     exact (Real.rpow_le_rpow (norm_nonneg _) ha hp'.le).trans hb
