@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Jun Kwon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jun Kwon, Freddie Nash
+Authors: Jun Kwon, Laura Monk, Freddie Nash
 -/
 module
 
@@ -21,27 +21,27 @@ namespace Graph
 /-- The type of darts in a (multi-)graph. Special care is given to ensure there are two loop darts
 rather than one. -/
 inductive Dart (α β : Type*)
-| Dir (e : β) (x y : α) (hne : x ≠ y) : Dart α β
-| Fwd (e : β) (x : α) : Dart α β
-| Bck (e : β) (x : α) : Dart α β
+| dir (e : β) (x y : α) (hne : x ≠ y) : Dart α β
+| fwd (e : β) (x : α) : Dart α β
+| bck (e : β) (x : α) : Dart α β
 
 /-- The edge of a dart. -/
 def Dart.edge (d : Dart α β) : β := match d with
-| Dart.Dir e _ _ _ => e
-| Dart.Fwd e _ => e
-| Dart.Bck e _ => e
+| Dart.dir e _ _ _ => e
+| Dart.fwd e _ => e
+| Dart.bck e _ => e
 
 /-- The first vertex of a dart. -/
 def Dart.fst (d : Dart α β) : α := match d with
-| Dart.Dir _ x _ _ => x
-| Dart.Fwd _ x => x
-| Dart.Bck _ x => x
+| Dart.dir _ x _ _ => x
+| Dart.fwd _ x => x
+| Dart.bck _ x => x
 
 /-- The second vertex of a dart. -/
 def Dart.snd (d : Dart α β) : α := match d with
-| Dart.Dir _ _ y _ => y
-| Dart.Fwd _ x => x
-| Dart.Bck _ x => x
+| Dart.dir _ _ y _ => y
+| Dart.fwd _ x => x
+| Dart.bck _ x => x
 
 instance : DartLike α (Dart α β) where
   fst d := d.fst
@@ -58,8 +58,8 @@ instance : GraphLike α (Dart α β) (Graph α β) where
     · rintro ⟨d, ha, rfl, rfl⟩
       exact ha.adj
     obtain rfl | hne := eq_or_ne u v
-    · exact ⟨Dart.Fwd e u, he, rfl, rfl⟩
-    exact ⟨Dart.Dir e u v hne, he, rfl, rfl⟩
+    · exact ⟨Dart.fwd e u, he, rfl, rfl⟩
+    exact ⟨Dart.dir e u v hne, he, rfl, rfl⟩
 
 lemma darts_def (G : Graph α β) : GraphLike.darts G = { d | G.IsLink d.edge d.fst d.snd } :=
   rfl
