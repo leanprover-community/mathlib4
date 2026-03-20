@@ -9,6 +9,7 @@ public import Mathlib.Data.Fintype.Units
 public import Mathlib.GroupTheory.IndexNormal
 public import Mathlib.GroupTheory.Perm.ConjAct
 public import Mathlib.GroupTheory.Perm.Fin
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.Tactic.IntervalCases
 
@@ -142,6 +143,19 @@ theorem nat_card_alternatingGroup [Nontrivial α] :
   simp only [Nat.card_eq_fintype_card, card_alternatingGroup]
 
 namespace alternatingGroup
+
+theorem isCyclic_of_card_le_three (hα : Nat.card α ≤ 3) :
+    IsCyclic (alternatingGroup α) := by
+  cases subsingleton_or_nontrivial α
+  · infer_instance
+  have : 1 < Nat.card α := Finite.one_lt_card
+  apply isCyclic_of_card_dvd_prime (p := 3)
+  rw [nat_card_alternatingGroup]
+  interval_cases (Nat.card α) <;> simp [Nat.factorial_succ]
+
+theorem isMulCommutative_of_card_le_three (hα : Nat.card α ≤ 3) :
+    IsMulCommutative (alternatingGroup α) :=
+  (isCyclic_of_card_le_three hα).isMulCommutative
 
 open Equiv.Perm
 
