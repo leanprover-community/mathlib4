@@ -447,12 +447,15 @@ lemma differentiable_completedCosZeta₀ (a : UnitAddCircle) :
     Differentiable ℂ (completedCosZeta₀ a) :=
   ((hurwitzEvenFEPair a).symm.differentiable_Λ₀.comp (differentiable_id.div_const _)).div_const _
 
-attribute [fun_prop] MeromorphicAt.comp_analyticAt
-
 @[fun_prop]
 lemma meromorphicAt_completedHurwitzZetaEven (a s) :
     MeromorphicAt (completedHurwitzZetaEven a) s := by
   unfold completedHurwitzZetaEven; fun_prop
+
+@[fun_prop]
+lemma meromorphic_completedHurwitzZetaEven (a) :
+    Meromorphic (completedHurwitzZetaEven a) :=
+  meromorphicAt_completedHurwitzZetaEven a
 
 private lemma tendsto_div_two_punctured_nhds (a : ℂ) :
     Tendsto (fun s : ℂ ↦ s / 2) (𝓝[≠] a) (𝓝[≠] (a / 2)) :=
@@ -625,6 +628,11 @@ lemma differentiableAt_hurwitzZetaEven (a : UnitAddCircle) {s : ℂ} (hs' : s �
     (completedHurwitzZetaEven_residue_zero a) s hs'
   simp_rw [div_eq_mul_inv, ite_mul, zero_mul, ← div_eq_mul_inv] at this
   exact this
+
+@[fun_prop]
+lemma meromorphicAt_hurwitzZetaEven (a s) :
+    MeromorphicAt (hurwitzZetaEven a) s := by
+  unfold hurwitzZetaEven; fun_prop
 
 lemma hurwitzZetaEven_residue_one (a : UnitAddCircle) :
     Tendsto (fun s ↦ (s - 1) * hurwitzZetaEven a s) (𝓝[≠] 1) (𝓝 1) := by

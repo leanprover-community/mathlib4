@@ -15,8 +15,6 @@ public import Mathlib.NumberTheory.LSeries.RiemannZeta
 ## Main statements
 
 * `MeromorphicOn.Gamma`: The Gamma function is meromorphic.
-* `MeromorphicOn.hurwitzZeta`: The Hurwitz zeta function is meromorphic.
-* `MeromorphicOn.riemannZeta`: The Riemann zeta function is meromorphic.
 -/
 
 
@@ -52,22 +50,3 @@ lemma Meromorphic.Gamma : Meromorphic Gamma :=
 
 lemma MeromorphicOn.Gamma {s} : MeromorphicOn Gamma s :=
   Meromorphic.Gamma.meromorphicOn
-
-/-- The Hurwitz zeta function is meromorphic. -/
-lemma MeromorphicOn.hurwitzZeta (a : UnitAddCircle) : MeromorphicOn (hurwitzZeta a) univ := by
-  simp only [MeromorphicOn, mem_univ, forall_const]
-  intro s
-  by_cases hs : s = 1
-  case neg =>
-    apply AnalyticAt.meromorphicAt
-    rw [analyticAt_iff_eventually_differentiableAt]
-    filter_upwards [eventually_ne_nhds hs] with s hs
-    exact differentiableAt_hurwitzZeta a hs
-  subst hs
-  apply meromorphicAt_of_differentiable_on_punctured_nhds_of_exists_tendsto_sub_pow_smul
-  · filter_upwards [eventually_mem_nhdsWithin] with s hs; exact differentiableAt_hurwitzZeta a hs
-  · use 1, 1; simpa using HurwitzZeta.hurwitzZeta_residue_one a
-
-/-- The Riemann zeta function is meromorphic. -/
-lemma MeromorphicOn.riemannZeta : MeromorphicOn riemannZeta univ :=
-  hurwitzZeta_zero ▸ MeromorphicOn.hurwitzZeta 0
