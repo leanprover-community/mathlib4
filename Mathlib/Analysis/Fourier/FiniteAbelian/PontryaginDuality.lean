@@ -85,6 +85,7 @@ private lemma mkZModAux_injective {ι : Type*} [DecidableEq ι] {n : ι → ℕ}
     Injective (mkZModAux n) :=
   AddChar.directSum_injective.comp fun f g h ↦ by simpa [funext_iff] using h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The circle-valued characters of a finite abelian group are the same as its complex-valued
 characters. -/
 def circleEquivComplex [Finite α] : AddChar α Circle ≃+ AddChar α ℂ where

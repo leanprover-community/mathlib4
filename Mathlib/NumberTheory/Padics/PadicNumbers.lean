@@ -622,6 +622,7 @@ end Completion
 
 end Padic
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The rational-valued `p`-adic norm on `ℚ_[p]` is lifted from the norm on Cauchy sequences. The
 canonical form of this function is the normed space instance, with notation `‖ ‖`. -/
 def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
@@ -635,9 +636,10 @@ def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
     trans
       max ((Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) q)
         ((Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) r)
-    · exact Quotient.inductionOn₂ q r <| PadicSeq.norm_nonarchimedean
-    refine max_le_add_of_nonneg (Quotient.inductionOn q <| PadicSeq.norm_nonneg) ?_
-    exact Quotient.inductionOn r <| PadicSeq.norm_nonneg
+    · induction q, r using Quotient.inductionOn₂; apply PadicSeq.norm_nonarchimedean
+    · apply max_le_add_of_nonneg
+      · induction q using Quotient.inductionOn; apply PadicSeq.norm_nonneg
+      · induction r using Quotient.inductionOn; apply PadicSeq.norm_nonneg
 
 namespace padicNormE
 
@@ -825,7 +827,11 @@ instance : Norm ℚ_[p] :=
 instance normedField : NormedField ℚ_[p] :=
   { Padic.field,
     Padic.metricSpace p with
-    dist_eq := fun _ _ ↦ rfl
+    dist_eq x y := by
+      rw [add_comm, ← sub_eq_add_neg]
+      change ‖x - y‖ = ‖y - x‖
+      have : y - x = (-1) * (x - y) := by ring
+      simp only [this, Norm.norm, map_mul, map_neg_eq_map, AbsoluteValue.map_one, one_mul]
     norm_mul := by simp [Norm.norm, map_mul]
     norm := norm }
 
@@ -1078,7 +1084,8 @@ theorem valuation_zero : valuation (0 : ℚ_[p]) = 0 :=
   dif_pos ((const_equiv p).2 rfl)
 
 theorem norm_eq_zpow_neg_valuation {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.valuation) := by
-  refine Quotient.inductionOn' x fun f hf => ?_
+  induction x using Quotient.inductionOn with | _ f
+  intro hf
   change (PadicSeq.norm _ : ℝ) = (p : ℝ) ^ (-PadicSeq.valuation _)
   rw [PadicSeq.norm_eq_zpow_neg_valuation]
   · rw [Rat.cast_zpow, Rat.cast_natCast]
@@ -1111,7 +1118,7 @@ lemma valuation_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 @[simp]
 lemma valuation_one : valuation (1 : ℚ_[p]) = 0 := by
-  rw [← Nat.cast_one, valuation_natCast, padicValNat.one, cast_zero]
+  rw [← Nat.cast_one, valuation_natCast, padicValNat_one_right, cast_zero]
 
 -- not @[simp], since simp can prove it
 lemma valuation_p : valuation (p : ℚ_[p]) = 1 := by

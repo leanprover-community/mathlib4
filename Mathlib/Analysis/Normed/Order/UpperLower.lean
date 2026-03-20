@@ -38,7 +38,7 @@ open scoped Pointwise
 variable {α ι : Type*}
 
 section NormedOrderedGroup
-variable [NormedCommGroup α] [PartialOrder α] [IsOrderedMonoid α] {s : Set α}
+variable [NormedCommGroup α] [Preorder α] [IsOrderedMonoid α] {s : Set α}
 
 @[to_additive IsUpperSet.thickening]
 protected theorem IsUpperSet.thickening' (hs : IsUpperSet s) (ε : ℝ) :
@@ -126,6 +126,7 @@ lemma dist_inf_sup_pi (x y : ι → ℝ) : dist (x ⊓ y) (x ⊔ y) = dist x y :
   simp only [Real.nndist_eq', max_sub_min_eq_abs, Pi.inf_apply,
     Pi.sup_apply, Real.nnabs_of_nonneg, abs_nonneg, Real.toNNReal_abs]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma dist_mono_left_pi : MonotoneOn (dist · y) (Ici y) := by
   refine fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ ?_)
   rw [Real.nndist_eq, Real.nnabs_of_nonneg (sub_nonneg_of_le (‹y ≤ _› i : y i ≤ y₁ i)),

@@ -6,10 +6,10 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 module
 
 public import Batteries.Tactic.Alias
+public import Batteries.Util.LibraryNote
 public import Mathlib.Init
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.Basic
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.TypeStar
 
@@ -416,12 +416,6 @@ lemma dvd_right_iff_eq : (∀ a : ℕ, m ∣ a ↔ n ∣ a) ↔ m = n :=
 lemma dvd_left_iff_eq : (∀ a : ℕ, a ∣ m ↔ a ∣ n) ↔ m = n :=
   ⟨fun h => Nat.dvd_antisymm ((h _).mp (Nat.dvd_refl _)) ((h _).mpr (Nat.dvd_refl _)),
     fun h n => by rw [h]⟩
-
-theorem ext_div_mod {n a b : ℕ} (H0 : a / n = b / n) (H1 : a % n = b % n) : a = b := by
-  grind [div_add_mod]
-
-theorem ext_div_mod_iff (n a b : ℕ) : a = b ↔ a / n = b / n ∧ a % n = b % n := by
-  grind [ext_div_mod]
 
 /-! ### Decidability of predicates -/
 

@@ -61,7 +61,7 @@ instance : Inhabited (Function.End α) := ⟨1⟩
 
 namespace Equiv.Perm
 
-attribute [to_additive_dont_translate] Perm Equiv
+attribute [to_additive_dont_translate] Perm
 
 instance instOne : One (Perm α) where one := Equiv.refl _
 instance instMul : Mul (Perm α) where mul f g := Equiv.trans g f
@@ -713,16 +713,13 @@ See also the type `ConjAct G` for any group `G`, which has a `MulAction (ConjAct
 where `conj G` acts on `G` by conjugation. -/
 def conj [Group G] : G →* MulAut G where
   toFun g :=
-    { toFun := fun h => g * h * g⁻¹
-      invFun := fun h => g⁻¹ * h * g
-      left_inv := fun _ => by simp only [mul_assoc, inv_mul_cancel_left, inv_mul_cancel, mul_one]
-      right_inv := fun _ => by simp only [mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
-      map_mul' := by simp only [mul_assoc, inv_mul_cancel_left, forall_const] }
-  map_mul' g₁ g₂ := by
-    ext h
-    change g₁ * g₂ * h * (g₁ * g₂)⁻¹ = g₁ * (g₂ * h * g₂⁻¹) * g₁⁻¹
-    simp only [mul_assoc, mul_inv_rev]
-  map_one' := by ext; simp only [one_mul, inv_one, mul_one, one_apply]; rfl
+    { toFun h := g * h * g⁻¹
+      invFun h := g⁻¹ * h * g
+      left_inv _ := by simp [mul_assoc]
+      right_inv _ := by simp [mul_assoc]
+      map_mul' := by simp [mul_assoc] }
+  map_mul' _ _ := by ext; simp [mul_assoc]
+  map_one' := by ext; simp
 
 @[simp]
 theorem conj_apply [Group G] (g h : G) : conj g h = g * h * g⁻¹ :=

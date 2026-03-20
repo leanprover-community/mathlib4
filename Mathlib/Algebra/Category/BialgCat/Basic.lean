@@ -52,10 +52,12 @@ def of (X : Type v) [Ring X] [Bialgebra R X] :
     BialgCat R where
   carrier := X
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma of_comul {X : Type v} [Ring X] [Bialgebra R X] :
     Coalgebra.comul (A := of R X) = Coalgebra.comul (R := R) (A := X) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma of_counit {X : Type v} [Ring X] [Bialgebra R X] :
     Coalgebra.counit (A := of R X) = Coalgebra.counit (R := R) (A := X) := rfl

@@ -297,6 +297,7 @@ open TopologicalSpace
 variable {E : Type*} [MeasurableSpace E] [NormedAddCommGroup E] [BorelSpace E]
   {μ : Measure α} [IsFiniteMeasure μ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This lemma is superseded by `MemLp.uniformIntegrable_of_identDistrib` which only requires
 `AEStronglyMeasurable`. -/
 theorem MemLp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}

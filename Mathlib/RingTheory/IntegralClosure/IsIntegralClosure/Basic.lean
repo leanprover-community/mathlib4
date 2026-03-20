@@ -270,6 +270,7 @@ theorem Algebra.IsPushout.isIntegral [h : IsPushout R S A SA] : Algebra.IsIntegr
 attribute [local instance] Polynomial.algebra in
 instance : Algebra.IsIntegral R[X] S[X] := Algebra.IsPushout.isIntegral R _ S _
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] MvPolynomial.algebraMvPolynomial in
 instance {σ} : Algebra.IsIntegral (MvPolynomial σ R) (MvPolynomial σ S) :=
   Algebra.IsPushout.isIntegral R _ S _
@@ -311,6 +312,7 @@ theorem isIntegral_leadingCoeff_smul [Algebra R S] (h : aeval x p = 0) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Polynomial.Monic.quotient_isIntegralElem {g : S[X]} (mon : g.Monic) {I : Ideal S[X]}
     (h : g ∈ I) :
     ((Ideal.Quotient.mk I).comp (algebraMap S S[X])).IsIntegralElem (Ideal.Quotient.mk I X) := by
@@ -405,6 +407,14 @@ theorem isField [Algebra R A] [IsScalarTower R A B] [IsDomain A] (hR : IsField R
   have := IsIntegralClosure.isIntegral_algebra R (A := A) B
   isField_of_isIntegral_of_isField' hR
 
+theorem of_algEquiv {S : Type*} [CommRing S] [Algebra A S] [Algebra R S]
+    (f : B ≃ₐ[R] S) (h : ∀ x, algebraMap A S x = f (algebraMap A B x)) :
+    IsIntegralClosure A R S where
+  algebraMap_injective :=
+    funext_iff.2 h ▸ f.injective.comp (IsIntegralClosure.algebraMap_injective A R B)
+  isIntegral_iff {x} := by simp [← isIntegral_algEquiv f.symm,
+    IsIntegralClosure.isIntegral_iff (A := A), h, ← f.symm.injective.eq_iff]
+
 section lift
 
 variable (B) {S : Type*} [CommRing S] [Algebra R S]
@@ -464,6 +474,7 @@ variable [CommRing R] [CommRing A] [Ring B] [CommRing S] [CommRing T]
 variable [Algebra A B] [Algebra R B] (f : R →+* S) (g : S →+* T)
 variable [Algebra R A] [IsScalarTower R A B]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If A is an R-algebra all of whose elements are integral over R,
 and x is an element of an A-algebra that is integral over A, then x is integral over R. -/
 theorem isIntegral_trans [Algebra.IsIntegral R A] (x : B) (hx : IsIntegral A x) :

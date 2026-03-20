@@ -248,6 +248,12 @@ theorem localRingHom_mk' (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.
         (⟨f y, le_comap_primeCompl_iff.mpr (ge_of_eq hIJ) y.2⟩ : J.primeCompl) :=
   map_mk' _ _ _
 
+@[simp]
+theorem localRingHom_mk (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f) (x : R)
+    (y : I.primeCompl) :
+    localRingHom I J f hIJ (mk x y) = mk (f x) ⟨f y, by aesop⟩ := by
+  simp_rw [mk_eq_mk', localRingHom_mk']
+
 @[instance]
 theorem isLocalHom_localRingHom (J : Ideal P) [hJ : J.IsPrime] (f : R →+* P)
     (hIJ : I = J.comap f) : IsLocalHom (localRingHom I J f hIJ) :=
@@ -307,7 +313,7 @@ lemma localRingHom_bijective_of_saturated_inf_eq_top
   · suffices ∀ y, ∀ z ∉ P, ∃ y' ∈ s, ∃ z' ∉ P, z' ∈ s ∧ ∃ t ∉ P, t * (z * y') = t * (z' * y) by
       simpa [(IsLocalization.mk'_surjective p.primeCompl).exists,
         (IsLocalization.mk'_surjective P.primeCompl).forall, P.over_def p,
-        Localization.localRingHom_mk', IsLocalization.mk'_eq_iff_eq, - map_mul,
+        Localization.localRingHom_mk', IsLocalization.mk'_eq_iff_eq, -map_mul,
         IsLocalization.eq_iff_exists P.primeCompl, Function.Surjective] using this
     intro y z hzP
     obtain ⟨a, ⟨haP, has⟩, ha⟩ := H.ge (Set.mem_univ y)
@@ -452,6 +458,7 @@ variable (Rₚ : Type*) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime
 
 open IsLocalRing
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ`, where `Rₚ` satisfies
 `IsLocalization.AtPrime Rₚ p`. In particular, localization preserves the residue field. -/
 noncomputable
@@ -484,6 +491,7 @@ theorem equivQuotMaximalIdeal_apply_mk (x : R) :
     equivQuotMaximalIdeal p Rₚ (Ideal.Quotient.mk _ x) =
       (Ideal.Quotient.mk _ (algebraMap R Rₚ x)) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem equivQuotMaximalIdeal_symm_apply_mk (x : R) (s : p.primeCompl) :
     (equivQuotMaximalIdeal p Rₚ).symm (Ideal.Quotient.mk _ (IsLocalization.mk' Rₚ x s)) =
@@ -507,6 +515,7 @@ variable [IsScalarTower R S Sₚ]
 local notation "pS" => Ideal.map (algebraMap R S) p
 local notation "pSₚ" => Ideal.map (algebraMap Rₚ Sₚ) (maximalIdeal Rₚ)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma comap_map_eq_map :
     (Ideal.map (algebraMap R Sₚ) p).comap (algebraMap S Sₚ) = pS := by
   rw [IsScalarTower.algebraMap_eq R S Sₚ, ← Ideal.map_map, eq_comm]
@@ -538,6 +547,7 @@ lemma comap_map_eq_map :
 
 variable [IsScalarTower R Rₚ Sₚ]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (S Sₚ) in
 /--
 The isomorphism `S ⧸ pS ≃+* Sₚ ⧸ p·Sₚ`, where `Sₚ` is the localization of `S` at the (image) of
@@ -579,5 +589,10 @@ noncomputable def equivQuotientMapMaximalIdeal [p.IsMaximal] :
       hβ, ← map_sub, add_smul, one_smul, add_comm x, add_sub_cancel_right]
 
 end isomorphisms
+
+lemma map_eq_top_of_not_le {I : Ideal R} {p : Ideal R} [p.IsPrime] [IsLocalization.AtPrime S p]
+    (hle : ¬ I ≤ p) : Ideal.map (algebraMap R S) I = ⊤ := by
+  apply IsLocalization.map_eq_top_of_not_subset p.primeCompl
+  simpa [SetLike.le_def, Set.not_subset_iff_exists_mem_notMem] using hle
 
 end IsLocalization.AtPrime

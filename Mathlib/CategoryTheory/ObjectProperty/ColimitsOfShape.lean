@@ -37,12 +37,12 @@ to `limitsOfShape` in the opposite category `Cᵒᵖ` and vice versa.
 ## TODO
 
 * refactor `ObjectProperty.ind` by saying that it is the supremum
-of `P.colimitsOfShape J` for a filtered category `J`
-(generalize also to `κ`-filtered categories?)
+  of `P.colimitsOfShape J` for a filtered category `J`
+  (generalize also to `κ`-filtered categories?)
 * formalize the closure of `P` under finite colimits (which require
-iterating over `ℕ`), and more generally the closure under colimits
-indexed by a category whose type of arrows has a cardinality
-that is bounded by a certain regular cardinal (@joelriou)
+  iterating over `ℕ`), and more generally the closure under colimits
+  indexed by a category whose type of arrows has a cardinality
+  that is bounded by a certain regular cardinal (@joelriou)
 
 -/
 
@@ -111,6 +111,7 @@ noncomputable def reindex {X : C} (h : P.ColimitOfShape J X) (G : J' ⥤ J) [G.F
   toColimitPresentation := h.toColimitPresentation.reindex G
   prop_diag_obj _ := h.prop_diag_obj _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `P : ObjectProperty C`, and a presentation `P.ColimitOfShape J X`
 of an object `X : C`, this is the induced functor `J ⥤ CostructuredArrow P.ι X`. -/
 @[simps]
@@ -370,6 +371,7 @@ instance [Q.IsClosedUnderLimitsOfShape Jᵒᵖ] :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 instance [P.IsClosedUnderColimitsOfShape WalkingParallelPair] :
     P.IsStableUnderRetracts where
   of_retract {X Y} h hY := by

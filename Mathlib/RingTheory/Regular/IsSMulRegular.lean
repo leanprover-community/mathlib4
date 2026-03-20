@@ -80,6 +80,7 @@ lemma isSMulRegular_submodule_iff_right_eq_zero_of_smul :
     Subtype.forall.trans <| by
       simp only [SetLike.mk_smul_mk, Submodule.mk_eq_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSMulRegular_quotient_iff_mem_of_smul_mem :
     IsSMulRegular (M ⧸ N) r ↔ ∀ x : M, r • x ∈ N → x ∈ N :=
   isSMulRegular_iff_right_eq_zero_of_smul.trans <|
