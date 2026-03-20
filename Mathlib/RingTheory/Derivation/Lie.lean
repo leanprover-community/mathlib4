@@ -79,7 +79,7 @@ variable (R A A') in
 /-- Let $\sigma: A \to A'$ be a an homomorphism. A derivation $d:A \to A$ and a derivation
 $d':A\to A'$ are called compatible if $d'\circ \sigma = \sigma \circ d$. Couples of derivations
 with this property form a Lie subalgebra of all couples of derivations. -/
-def CompatibleDerivations : LieSubalgebra R  ((Derivation R A' A') × (Derivation R A A)) where
+def Compatible : LieSubalgebra R  ((Derivation R A' A') × (Derivation R A A)) where
   carrier := { x | (x.fst).compAlgebraMapL R A A' A'
     = (Algebra.ofId A A').toLinearMap.compDer (x.snd) }
   add_mem' {x y} hx hy  := by simp at hx hy; simp [hx,hy]
@@ -91,7 +91,39 @@ def CompatibleDerivations : LieSubalgebra R  ((Derivation R A' A') × (Derivatio
     ext z
     simp at hxx hyy
     simp [Derivation.commutator_apply, hxx, hyy]
+
+namespace Compatible
+lemma mem (x : (Derivation R A' A') × (Derivation R A A)) :
+    x ∈ (Compatible R A A') ↔ x.1 ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ x.2 := by
+  constructor
+  · intro hx; ext a; exact congrArg (· a) hx
+  · intro hx; ext a; exact congrArg (· a) hx
+
+/- Generate an element of `Compatible` from `x y` satisfying the compatibility equation-/
+def mk (x : Derivation R A' A') (y : Derivation R A A)
+  (h : x ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ y) : Compatible R A A' :=
+⟨(x, y), (Compatible.mem _).mpr h⟩
+
+lemma mk_left (x : Derivation R A' A') (y : Derivation R A A)
+    (h : x ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ y) : (mk x y h).1.1 = x := rfl
+
+lemma mk_right (x : Derivation R A' A') (y : Derivation R A A)
+    (h : x ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ y) : (mk x y h).1.2 = y := rfl
+
+lemma apply (x : Compatible R A A') (a : A) :
+    x.1.1 (Algebra.ofId A A' a) = (Algebra.ofId A A')  (x.1.2 a) := by
+  exact congrArg (· a) x.2
+
+end Compatible
+
 end CompatibleDerivations
+
+
+
+
+
+
+
 
 end LieStructures
 
