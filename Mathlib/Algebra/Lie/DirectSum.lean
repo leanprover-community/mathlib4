@@ -99,6 +99,7 @@ section Algebras
 
 /-! The direct sum of Lie algebras carries a natural Lie algebra structure. -/
 
+
 variable (L : ι → Type w)
 variable [∀ i, LieRing (L i)] [∀ i, LieAlgebra R (L i)]
 
