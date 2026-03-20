@@ -170,9 +170,9 @@ lemma quasiIsoAt_π (i : ℤ) (hi : i ≤ n₀ := by lia) :
   obtain (hi | rfl) := hi.lt_or_eq
   · rw [quasiIsoAt_iff' _ (i - 1) i (i + 1) (by simp) (by simp)]
     let φ := (shortComplexFunctor' C _ (i - 1) i (i + 1)).map (π K L n₁)
-    have : IsIso φ.τ₁ := isIso_π_f _ _ _ _ (by lia)
-    have : IsIso φ.τ₂ := isIso_π_f _ _ _ _ (by lia)
-    have : IsIso φ.τ₃ := isIso_π_f _ _ _ _ (by lia)
+    have : IsIso φ.τ₁ := isIso_π_f ..
+    have : IsIso φ.τ₂ := isIso_π_f ..
+    have : IsIso φ.τ₃ := isIso_π_f ..
     exact ShortComplex.quasiIso_of_epi_of_isIso_of_mono φ
   · rw [quasiIsoAt_iff_isIso_homologyMap]
     have : homologyMap (biprod.inl : _ ⟶ mid K L n₁) i = 0 :=
