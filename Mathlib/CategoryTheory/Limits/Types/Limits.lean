@@ -222,7 +222,7 @@ theorem Limit.π_mk (x : ∀ j, F.obj j) (h : ∀ (j j') (f : j ⟶ j'), F.map f
     limit.π F j (Limit.mk F x h) = x j := by
   dsimp [Limit.mk]
   simp
-#lint
+
 -- PROJECT: prove this for concrete categories where the forgetful functor preserves limits
 @[ext]
 theorem limit_ext (x y : (limit F : Type u)) (w : ∀ j, limit.π F j x = limit.π F j y) :
