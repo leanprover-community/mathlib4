@@ -27,7 +27,7 @@ variable {X : TopCat.{u}} {U : Opens X}
 namespace TopCat
 
 set_option backward.isDefEq.respectTransparency false in
-theorem Presheaf.sections_of_exact
+theorem Presheaf.sections_exact_of_exact
     {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)}
     (hS : S.Exact) {s : S.X₂.obj (Opposite.op U)} (h : S.g.app (Opposite.op U) s = 0) :
     ∃ (t : S.X₁.obj (Opposite.op U)), S.f.app (Opposite.op U) t = s := by
@@ -36,11 +36,11 @@ theorem Presheaf.sections_of_exact
   exact (ShortComplex.ab_exact_iff (S.map F)).mp (((Functor.exact_tfae F).out 1 3 rfl rfl).mpr
     ⟨inferInstance, inferInstance⟩ S hS) _ h
 
-lemma Sheaf.sections_of_left_exact {S : ShortComplex (TopCat.Sheaf AddCommGrpCat X)}
+lemma Sheaf.sections_exact_of_left_exact {S : ShortComplex (TopCat.Sheaf AddCommGrpCat X)}
     (hS : S.Exact) (hf : Mono S.f) (s : S.X₂.obj.obj (Opposite.op U))
     (h : S.g.hom.app (Opposite.op U) s = 0) :
     ∃ (t : S.X₁.obj.obj (Opposite.op U)), S.f.hom.app (Opposite.op U) t = s :=
-  Presheaf.sections_of_exact
+  Presheaf.sections_exact_of_exact
     (((Functor.preservesFiniteLimits_tfae (Sheaf.forget ..)).out 1 3 rfl rfl).mpr
     inferInstance S ⟨hS, hf⟩).left h
 
