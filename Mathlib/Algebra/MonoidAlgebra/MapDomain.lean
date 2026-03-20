@@ -56,12 +56,12 @@ theorem mapDomain_one [One M] [One N] {F : Type*} [FunLike F M N] [OneHomClass F
     mapDomain f (1 : R[M]) = (1 : R[N]) := by
   simp [one_def]
 
-/-- Given a map `f : R → S`, return the corresponding map `R[M] → S[M]` obtained by mapping
+/-- Given a map `f : R →+ S`, return the corresponding map `R[M] → S[M]` obtained by mapping
 each coefficient along `f`. -/
 @[to_additive
-/-- Given a map `f : R → S`, return the corresponding map `R[M] → S[M]` obtained by mapping
+/-- Given a map `f : R →+ S`, return the corresponding map `R[M] → S[M]` obtained by mapping
 each coefficient along `f`. -/]
-def mapCoeff (f : R →+ S) (x : R[M]) : S[M] := .ofCoeff <| x.coeff.mapCoeff f f.map_zero
+def mapCoeff (f : R →+ S) (x : R[M]) : S[M] := .ofCoeff <| x.coeff.mapRange f f.map_zero
 
 @[to_additive (attr := simp)]
 lemma coeff_mapCoeff (f : R →+ S) (x : R[M]) :
@@ -73,20 +73,19 @@ lemma ofCoeff_mapRange (f : R →+ S) (x : M →₀ R) :
     ofCoeff (.mapRange f f.map_zero x) = mapCoeff f (ofCoeff x) := rfl
 
 @[to_additive (attr := simp)]
-lemma mapCoeff_zero (f : R →+ S) : mapCoeff f (0 : R[M]) = 0 :=
-  Finsupp.mapCoeff_zero (hf := f.map_zero)
+lemma mapCoeff_zero (f : R →+ S) : mapCoeff f (0 : R[M]) = 0 := mapRange_zero (hf := f.map_zero)
 
 @[to_additive]
 lemma mapCoeff_add (f : R →+ S) (x y : R[M]) : mapCoeff f (x + y) = mapCoeff f x + mapCoeff f y :=
-  Finsupp.mapCoeff_add (hf := f.map_zero) f.map_add ..
+  mapRange_add (hf := f.map_zero) f.map_add ..
 
 @[to_additive]
 lemma mapCoeff_sum (f : R →+ S) (s : Finset ι) (x : ι → R[M]) :
-    mapCoeff f (∑ i ∈ s, x i) = ∑ i ∈ s, mapCoeff f (x i) := mapCoeff_finset_sum ..
+    mapCoeff f (∑ i ∈ s, x i) = ∑ i ∈ s, mapCoeff f (x i) := mapRange_finset_sum ..
 
 @[to_additive (attr := simp)]
 lemma mapCoeff_single (f : R →+ S) (r : R) (m : M) : mapCoeff f (single m r) = single m (f r) :=
-  Finsupp.mapCoeff_single (hf := f.map_zero)
+  mapRange_single (hf := f.map_zero)
 
 @[to_additive (attr := simp)]
 lemma mapCoeff_id (x : R[M]) : mapCoeff (.id R) x = x := by simp [mapCoeff, coeff, ofCoeff]
@@ -253,7 +252,7 @@ lemma mapCoeff_mul (f : R →+* S) (x y : R[M]) :
   classical
   ext
   simp [mul_def]
-  simp [MonoidAlgebra, sum_mapCoeff_index, map_finsuppSum, single_apply, apply_ite, mapCoeff,
+  simp [MonoidAlgebra, sum_mapRange_index, map_finsuppSum, single_apply, apply_ite, mapCoeff,
     coeff, ofCoeff]
 
 variable (M) in
@@ -374,11 +373,11 @@ variable [Ring R] [Ring S]
 
 @[to_additive]
 lemma mapCoeff_neg (f : R →+ S) (x : R[M]) : mapCoeff f (-x) = -mapCoeff f x :=
-  Finsupp.mapCoeff_neg (hf := f.map_zero) f.map_neg ..
+  Finsupp.mapRange_neg (hf := f.map_zero) f.map_neg ..
 
 @[to_additive]
 lemma mapCoeff_sub (f : R →+ S) (x y : R[M]) : mapCoeff f (x - y) = mapCoeff f x - mapCoeff f y :=
-  Finsupp.mapCoeff_sub (hf := f.map_zero) f.map_sub ..
+  Finsupp.mapRange_sub (hf := f.map_zero) f.map_sub ..
 
 end Ring
 end MonoidAlgebra
