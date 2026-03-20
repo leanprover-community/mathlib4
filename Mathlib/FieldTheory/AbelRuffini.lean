@@ -245,12 +245,11 @@ protected theorem solvableByRad.induction (motive : ∀ x, x ∈ solvableByRad F
     (rad : ∀ n x (hn : n ≠ 0) (hx : x ^ n ∈ solvableByRad F E),
       motive (x ^ n) hx → motive x (rad_mem hn hx))
     {x : E} (hx : x ∈ solvableByRad F E) : motive x hx := by
-  let s : Subalgebra F E := {
-    carrier := {x | ∃ hx : x ∈ solvableByRad F E, motive x hx}
+  let s : Subalgebra F E :=
+  { carrier := {x | ∃ hx : x ∈ solvableByRad F E, motive x hx}
     algebraMap_mem' a := ⟨algebraMap_mem _ a, mem a⟩
     add_mem' := fun ⟨ha, ha'⟩ ⟨hb, hb'⟩ ↦ ⟨add_mem ha hb, add _ _ ha hb ha' hb'⟩
-    mul_mem' := fun ⟨ha, ha'⟩ ⟨hb, hb'⟩ ↦ ⟨mul_mem ha hb, mul _ _ ha hb ha' hb'⟩
-  }
+    mul_mem' := fun ⟨ha, ha'⟩ ⟨hb, hb'⟩ ↦ ⟨mul_mem ha hb, mul _ _ ha hb ha' hb'⟩ }
   let t : IntermediateField F E := Subalgebra.IsAlgebraic.toIntermediateField (S := s) <| by
     rintro x ⟨hx, hx'⟩
     apply isAlgebraic_solvableByRad
