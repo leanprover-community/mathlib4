@@ -278,14 +278,8 @@ theorem lie_ι_mul_ι_mem_bivector (a b c d : M) :
   rw [lie_ι_mul_ι a b c d]
   refine (bivector Q).add_mem ((bivector Q).sub_mem
     ((bivector Q).sub_mem ?_ ?_) ?_) ?_
-  · exact Submodule.smul_mem _ _
-        (ι_mul_ι_mem_bivector Q a d)
-  · exact Submodule.smul_mem _ _
-        (ι_mul_ι_mem_bivector Q b d)
-  · exact Submodule.smul_mem _ _
-        (ι_mul_ι_mem_bivector Q c b)
-  · exact Submodule.smul_mem _ _
-        (ι_mul_ι_mem_bivector Q c a)
+  all_goals (rw [Algebra.algebraMap_eq_smul_one, smul_mul_assoc,
+    one_mul]; exact (bivector Q).smul_mem _ (ι_mul_ι_mem_bivector Q _ _))
 
 end Commutator
 
