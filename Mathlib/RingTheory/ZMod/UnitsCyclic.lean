@@ -18,7 +18,7 @@ one of the following mutually exclusive cases happens:
   - `n = 0` (then `ZMod 0 ≃+* ℤ` and the group of units is cyclic of order 2);
   - `n = 1`, `2` or `4`
   - `n` is a power `p ^ e` of an odd prime number, or twice such a power
-  (with `1 ≤ e`).
+    (with `1 ≤ e`).
 
 The individual cases are proved by `inferInstance` and are
 also directly provided by :

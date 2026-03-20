@@ -180,6 +180,7 @@ def prelaxfunctor : PrelaxFunctor Cat Cat where
     ext X
     cases X <;> rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pseudofunctor from `Cat` to `Cat` defined with `WithTerminal`. -/
 @[simps]
 def pseudofunctor : Pseudofunctor Cat Cat where
@@ -251,6 +252,7 @@ def lift {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x
     | of x, star, _ => M x
     | star, star, _ => 𝟙 Z
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between `incl ⋙ lift F _ _` with `F`. -/
 @[simps!]
 def inclLift {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
@@ -264,6 +266,7 @@ def liftStar {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.o
     (hM : ∀ (x y : C) (f : x ⟶ y), F.map f ≫ M y = M x) : (lift F M hM).obj star ≅ Z :=
   eqToIso rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lift_map_liftStar {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
     (hM : ∀ (x y : C) (f : x ⟶ y), F.map f ≫ M y = M x) (x : C) :
     (lift F M hM).map (starTerminal.from (incl.obj x)) ≫ (liftStar F M hM).hom =
@@ -347,6 +350,7 @@ def mkCommaMorphism {F G : WithTerminal C ⥤ D} (η : F ⟶ G) : mkCommaObject 
   right := η.app .star
   left := Functor.whiskerLeft incl η
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An element of the comma category `Comma (𝟭 (C ⥤ D)) (Functor.const C)` can be seen as a
 functor `WithTerminal C ⥤ D`. -/
 @[simps!]
@@ -368,6 +372,7 @@ def ofCommaMorphism {c c' : Comma (𝟭 (C ⥤ D)) (Functor.const C)} (φ : c �
     | of a, star, _ => by simp; simpa [-CommaMorphism.w] using (congrArg (fun f ↦ f.app a) φ.w).symm
     | star, star, _ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The category of functors `WithTerminal C ⥤ D` is equivalent to the category
 `Comma (𝟭 (C ⥤ D)) (const C) `. -/
 @[simps!]
@@ -579,6 +584,7 @@ def prelaxfunctor : PrelaxFunctor Cat Cat where
     ext X
     cases X <;> rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pseudofunctor from `Cat` to `Cat` defined with `WithInitial`. -/
 @[simps]
 def pseudofunctor : Pseudofunctor Cat Cat where
@@ -649,6 +655,7 @@ def lift {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F
     | star, of _, _ => M _
     | star, star, _ => 𝟙 _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between `incl ⋙ lift F _ _` with `F`. -/
 @[simps!]
 def inclLift {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
@@ -668,6 +675,7 @@ theorem liftStar_lift_map {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : �
       M x ≫ (inclLift F M hM).hom.app x := by
   simp [incl]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The uniqueness of `lift`. -/
 @[simp]
 def liftUnique {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
@@ -768,6 +776,7 @@ def ofCommaMorphism {c c' : Comma (Functor.const C) (𝟭 (C ⥤ D))} (φ : c �
     | star, of a, _ => by simpa [-CommaMorphism.w] using (congrArg (fun f ↦ f.app a) φ.w).symm
     | star, star, _ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The category of functors `WithInitial C ⥤ D` is equivalent to the category
 `Comma (const C) (𝟭 (C ⥤ D))`. -/
 @[simps!]

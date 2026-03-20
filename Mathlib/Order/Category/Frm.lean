@@ -93,7 +93,7 @@ lemma coe_comp {X Y Z : Frm} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) =
 
 @[simp]
 lemma forget_map {X Y : Frm} (f : X ⟶ Y) :
-    (forget Frm).map f = f := rfl
+    (forget Frm).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : Frm} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -153,6 +153,7 @@ instance hasForgetToLat : HasForget₂ Frm Lat where
   forget₂.obj X := .of X
   forget₂.map f := Lat.ofHom f.hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an isomorphism of frames from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : Frm.{u}} (e : α ≃o β) : α ≅ β where

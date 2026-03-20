@@ -80,6 +80,7 @@ theorem gal_isSolvable_tower (p q : F[X]) (hpq : (p.map (algebraMap F q.Splittin
 
 section GalXPowSubC
 
+set_option backward.isDefEq.respectTransparency false in
 theorem gal_X_pow_sub_one_isSolvable (n : ℕ) : IsSolvable (X ^ n - 1 : F[X]).Gal := by
   by_cases hn : n = 0
   · rw [hn, pow_zero, sub_self]
@@ -98,6 +99,7 @@ theorem gal_X_pow_sub_one_isSolvable (n : ℕ) : IsSolvable (X ^ n - 1 : F[X]).G
   obtain ⟨d, hd⟩ := key τ
   rw [σ.mul_apply, τ.mul_apply, hc, map_pow, hd, map_pow, hc, ← pow_mul, pow_mul']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
     (h : ((X ^ n - 1 : F[X]).map (RingHom.id F)).Splits) : IsSolvable (X ^ n - C a).Gal := by
   by_cases ha : a = 0
@@ -314,7 +316,7 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
   let f : ↥F⟮α, β⟯ →ₐ[F] (p * q).SplittingField :=
     Classical.choice <| nonempty_algHom_adjoin_of_splits <| by
       intro x hx
-      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hx
+      push _ ∈ _ at hx
       cases hx with rw [hx]
       | inl hx => exact ⟨isIntegral α, hpq.1⟩
       | inr hx => exact ⟨isIntegral β, hpq.2⟩

@@ -254,8 +254,7 @@ noncomputable def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt :=
       rw [colimit_mul_mk_eq F ⟨i, x⟩ ⟨j, y⟩ (max' i j) (IsFiltered.leftToMax i j)
         (IsFiltered.rightToMax i j)]
       dsimp
-      rw [map_mul, t.w_apply, t.w_apply]
-      rfl }
+      rw [map_mul, t.w_apply, t.w_apply] }
 
 /-- The proposed colimit cocone is a colimit in `MonCat`. -/
 @[to_additive /-- The proposed colimit cocone is a colimit in `AddMonCat`. -/]
@@ -295,6 +294,7 @@ In the following, we will show that this has the structure of a _commutative_ mo
 noncomputable abbrev M : MonCat.{max v u} :=
   MonCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ CommMonCat MonCat.{max v u})
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
   { (M.{v, u} F) with

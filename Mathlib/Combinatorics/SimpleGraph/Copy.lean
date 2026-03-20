@@ -162,6 +162,7 @@ def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G := (Embedding.i
 /-- The copy of `⊥` in any simple graph that can embed its vertices. -/
 protected def bot (f : α ↪ β) : Copy (⊥ : SimpleGraph α) B := ⟨⟨f, False.elim⟩, f.injective⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism from a subgraph of `A` to its map under a copy `f : Copy A B`. -/
 noncomputable def isoSubgraphMap (f : Copy A B) (A' : A.Subgraph) :
     A'.coe ≃g (A'.map f.toHom).coe := by
@@ -252,11 +253,13 @@ theorem IsContained.trans : A ⊑ B → B ⊑ C → A ⊑ C := fun ⟨f⟩ ⟨g�
 /-- If `B` contains `C` and `A` contains `B`, then `A` contains `C`. -/
 theorem IsContained.trans' : B ⊑ C → A ⊑ B → A ⊑ C := flip IsContained.trans
 
+@[gcongr]
 lemma IsContained.mono_right {B' : SimpleGraph β} (h_isub : A ⊑ B) (h_sub : B ≤ B') : A ⊑ B' :=
   h_isub.trans <| IsContained.of_le h_sub
 
 alias IsContained.trans_le := IsContained.mono_right
 
+@[gcongr]
 lemma IsContained.mono_left {A' : SimpleGraph α} (h_sub : A ≤ A') (h_isub : A' ⊑ B) : A ⊑ B :=
   (IsContained.of_le h_sub).trans h_isub
 
@@ -274,6 +277,15 @@ alias ⟨_, IsContained.congr_left⟩ := isContained_congr_left
 lemma isContained_congr_right (e₂ : B ≃g C) : A ⊑ B ↔ A ⊑ C := isContained_congr .refl e₂
 
 alias ⟨_, IsContained.congr_right⟩ := isContained_congr_right
+
+instance : IsPreorder (SimpleGraph α) IsContained where
+  refl := .refl
+  trans _ _ _ := .trans
+
+instance :
+    Trans (α := SimpleGraph α) (β := SimpleGraph β) (γ := SimpleGraph γ)
+      IsContained IsContained IsContained where
+  trans := .trans
 
 /-- A simple graph having no vertices is contained in any simple graph. -/
 lemma IsContained.of_isEmpty [IsEmpty α] : A ⊑ B :=
@@ -364,6 +376,15 @@ protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.Is
 @[refl] lemma IsIndContained.refl (G : SimpleGraph V) : G ⊴ G := ⟨Embedding.refl⟩
 lemma IsIndContained.rfl : G ⊴ G := .refl _
 @[trans] lemma IsIndContained.trans : G ⊴ H → H ⊴ I → G ⊴ I := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
+
+instance : IsPreorder (SimpleGraph α) IsIndContained where
+  refl := .refl
+  trans _ _ _ := .trans
+
+instance :
+    Trans (α := SimpleGraph α) (β := SimpleGraph β) (γ := SimpleGraph γ)
+      IsIndContained IsIndContained IsIndContained where
+  trans := .trans
 
 lemma IsIndContained.of_isEmpty [IsEmpty V] : G ⊴ H :=
   ⟨{ toFun := isEmptyElim
@@ -570,7 +591,7 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
     #G.edgeFinset - G.copyCount H ≤ #(G.killCopies H).edgeFinset := by
   classical
   obtain rfl | hH := eq_or_ne H ⊥
-  · simp
+  · simp [← card_edgeSet]
   let f (G' : {G' : G.Subgraph // Nonempty (H ≃g G'.coe)}) := (aux hH G'.2).some
   calc
     _ = #G.edgeFinset - card {G' : G.Subgraph // Nonempty (H ≃g G'.coe)} := ?_
@@ -578,14 +599,12 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
     _ = #G.edgeFinset - #(Set.range f).toFinset := by rw [Set.toFinset_range]
     _ ≤ #(G.edgeFinset \ (Set.range f).toFinset) := le_card_sdiff ..
     _ = #(G.killCopies H).edgeFinset := ?_
-  · simp only [Set.toFinset_card]
+  · simp only [edgeFinset, Set.toFinset_card]
     rw [← Set.toFinset_card, ← edgeFinset, copyCount, ← card_subtype, subtype_univ, card_univ]
-  simp only [killCopies_of_ne_bot, hH, Ne, not_false_iff,
-    Set.toFinset_card, edgeSet_deleteEdges]
-  simp only [Finset.sdiff_eq_inter_compl, Set.diff_eq, ← Set.iUnion_singleton_eq_range,
-    Set.coe_toFinset, coe_filter, Set.iUnion_subtype, ← Fintype.card_coe,
-    ← Finset.coe_sort_coe, coe_inter, coe_compl, Set.coe_toFinset, Set.compl_iUnion,
-    Fintype.card_ofFinset, f]
+  congr 1
+  ext e
+  induction e using Sym2.inductionOn with | hf v w
+  simp [mem_edgeSet, killCopies_of_ne_bot hH, f, eq_comm]
 
 /-- Removing an edge from `H` for each subgraph isomorphic to `G` means that the number of edges
 we've removed is at most the number of copies of `G` in `H`. -/

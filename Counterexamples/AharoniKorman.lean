@@ -235,7 +235,7 @@ lemma to prove that fact later: `no_infinite_antichain`.
 -/
 lemma no_infinite_antichain_level {n : ℕ} {A : Set Hollom} (hA : A ⊆ level n)
     (hA' : IsAntichain (· ≤ ·) A) : A.Finite :=
-  hA'.finite_of_partiallyWellOrderedOn ((level_isPWO).mono hA)
+  hA'.finite_of_partiallyWellOrderedOn (level_isPWO.mono hA)
 
 /--
 Each level is order-connected, i.e. for any `x ∈ level n` and `y ∈ level n` we have
@@ -578,7 +578,6 @@ lemma image_chainBetween_isChain {a b c d n : ℕ} :
     IsChain (· ≤ ·) ((chainBetween a b c d).image (embed n) : Set Hollom) := by
   rw [coe_image]
   apply chainBetween_isChain.image
-  simp
 
 open Finset in
 lemma card_chainBetween {a b c d : ℕ} (hac : a ≤ c) (hbd : b ≤ d) :
@@ -715,7 +714,7 @@ lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
     refine f.injOn_of_isChain ?_
     simp only [B]
     rw [coe_image]
-    refine IsChain.image (· ≤ ·) _ (embed n) (by simp) ?_
+    refine IsChain.image ?_ (embed n)
     rw [coe_union, isChain_union]
     refine ⟨chainBetween_isChain, chainBetween_isChain, ?_⟩
     simp [chainBetween, *]
@@ -893,7 +892,7 @@ lemma x0y0_min (z : ℕ × ℕ) (hC : IsChain (· ≤ ·) C) (h : embed (n + 1) 
   have : (C ∩ level (n + 1)).Nonempty := ⟨_, h, by simp [level_eq_range]⟩
   refine hC.le_of_not_gt h (x0y0_mem this) ?_
   rw [x0y0, dif_pos this, OrderEmbedding.lt_iff_lt]
-  exact wellFounded_lt.not_lt_min {x | embed (n + 1) x ∈ C} ?_ h
+  exact wellFounded_lt.not_lt_min {x | embed (n + 1) x ∈ C} h
 
 /--
 Given a subset `C` of the Hollom partial order, and an index `n`, find the smallest element of

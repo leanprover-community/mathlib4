@@ -202,6 +202,31 @@ theorem cons_dotProduct_cons (x : α) (v : Fin n → α) (y : α) (w : Fin n →
 
 end DotProduct
 
+section Diagonal
+variable [Zero α]
+
+theorem diagonal_fin_one (d : Fin 1 → α) : diagonal d = !![d 0] := by
+  simp [← Matrix.ext_iff]
+
+theorem diagonal_vec1 (a : α) : diagonal ![a] = !![a] :=
+  diagonal_fin_one ![a]
+
+theorem diagonal_fin_two (d : Fin 2 → α) : diagonal d = !![d 0, 0; 0, d 1] := by
+  simp [← Matrix.ext_iff]
+
+theorem diagonal_vec2 (a b : α) : diagonal ![a, b] = !![a, 0; 0, b] :=
+  diagonal_fin_two ![a, b]
+
+theorem diagonal_fin_three (d : Fin 3 → α) :
+    diagonal d = !![d 0, 0, 0; 0, d 1, 0; 0, 0, d 2] := by
+  simp [← Matrix.ext_iff, Fin.forall_fin_succ]
+
+theorem diagonal_vec3 (a b c : α) :
+    diagonal ![a, b, c] = !![a, 0, 0; 0, b, 0; 0, 0, c] :=
+  diagonal_fin_three ![a, b, c]
+
+end Diagonal
+
 section ColRow
 
 variable {ι : Type*}

@@ -221,7 +221,7 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
   obtain ⟨N0, hN0⟩ := (L.elementaryDiagram M).exists_large_model_of_infinite_model κ M
   rw [← lift_le.{max u v}, lift_lift, lift_lift] at h2
   obtain ⟨N, ⟨NN0⟩, hN⟩ :=
-    exists_elementaryEmbedding_card_eq_of_le (L[[M]]) N0 κ
+    exists_elementaryEmbedding_card_eq_of_le L[[M]] N0 κ
       (aleph0_le_lift.1 ((aleph0_le_lift.2 (aleph0_le_mk M)).trans h2))
       (by
         simp only [card_withConstants, lift_add, lift_lift]

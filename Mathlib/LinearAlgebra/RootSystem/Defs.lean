@@ -379,7 +379,7 @@ lemma pairing_reflectionPerm (i j k : ι) :
 lemma toPerfPair_conj_reflection :
     P.toPerfPair.conj (P.reflection i) = (P.coreflection i).toLinearMap.dualMap := by
   ext f n
-  simp [LinearEquiv.conj_apply, reflection_apply, coreflection_apply, mul_comm (f <| P.coroot i)]
+  simp [reflection_apply, coreflection_apply, mul_comm (f <| P.coroot i)]
 
 @[simp]
 lemma toPerfPair_flip_conj_coreflection :
@@ -400,7 +400,7 @@ lemma pairing_reflectionPerm_self_right (i j : ι) :
 
 /-- The indexing set of a root pairing carries an involutive negation, corresponding to the negation
 of a root / coroot. -/
-@[simps] def indexNeg : InvolutiveNeg ι where
+@[simps, implicit_reducible] def indexNeg : InvolutiveNeg ι where
   neg i := P.reflectionPerm i i
   neg_neg i := by
     apply P.root.injective
