@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Decomp
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
 public import Mathlib.Order.Preorder.Finite
@@ -60,7 +60,7 @@ variable (G : SimpleGraph V) (G' : SimpleGraph V')
 
 namespace Walk
 
-variable {G} {u u' v w : V}
+variable {G G'} {u u' v w : V} {p : G.Walk u v} {f : G →g G'}
 
 /-! ### Trails, paths, circuits, cycles -/
 
@@ -459,6 +459,17 @@ theorem IsPath.eq_penultimate_of_mem_edges {p : G.Walk u v} (hp : p.IsPath)
     (hmem : s(v, w) ∈ p.edges) : w = p.penultimate := by
   simpa [hmem] using isPath_reverse_iff p |>.mpr hp |>.eq_snd_of_mem_edges (w := w)
 
+theorem IsPath.injOn_support_of_isPath_map (h : (p.map f).IsPath) :
+    Set.InjOn f {w | w ∈ p.support} := by
+  intro u hu v hv hf
+  obtain ⟨u, rfl⟩ := List.get_of_mem hu
+  obtain ⟨v, rfl⟩ := List.get_of_mem hv
+  congr
+  have := List.nodup_iff_injective_getElem.mp h.support_nodup
+  rw! (castMode := .all) [support_map, List.length_map] at this
+  apply this
+  simpa
+
 /-! ### About cycles -/
 
 -- TODO: These results could possibly be less laborious with a periodic function getCycleVert
@@ -470,7 +481,7 @@ lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
     (p.not_nil_of_tail_not_nil (not_nil_of_isCycle_cons hpc)), Set.mem_setOf] at hn hm
   have := ((Walk.cons_isCycle_iff _ _).mp hpc).1.getVert_injOn
     (by lia : n - 1 ≤ p.tail.length) (by lia : m - 1 ≤ p.tail.length)
-    (by simp_all [SimpleGraph.Walk.getVert_tail, Nat.sub_add_cancel hn.1, Nat.sub_add_cancel hm.1])
+    (by simp_all)
   lia
 
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
@@ -553,12 +564,12 @@ lemma IsTrail.disjoint_edges_takeUntil_dropUntil {x : V} {w : G.Walk u v} (hw : 
   List.disjoint_of_nodup_append <| by simpa [← edges_append] using hw.edges_nodup
 
 protected theorem IsTrail.rotate {u v : V} {c : G.Walk v v} (hc : c.IsTrail) (h : u ∈ c.support) :
-    (c.rotate h).IsTrail := by
-  rw [isTrail_def, (c.rotate_edges h).perm.nodup_iff]
+    (c.rotate u h).IsTrail := by
+  rw [isTrail_def, (c.rotate_edges u h).perm.nodup_iff]
   exact hc.edges_nodup
 
 protected theorem IsCircuit.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCircuit)
-    (h : u ∈ c.support) : (c.rotate h).IsCircuit := by
+    (h : u ∈ c.support) : (c.rotate u h).IsCircuit := by
   refine ⟨hc.isTrail.rotate _, ?_⟩
   cases c
   · exact (hc.ne_nil rfl).elim
@@ -568,9 +579,9 @@ protected theorem IsCircuit.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCircuit)
     simp at hn'
 
 protected theorem IsCycle.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCycle) (h : u ∈ c.support) :
-    (c.rotate h).IsCycle := by
+    (c.rotate u h).IsCycle := by
   refine ⟨hc.isCircuit.rotate _, ?_⟩
-  rw [List.IsRotated.nodup_iff (support_rotate _ _)]
+  rw [(support_rotate ..).nodup_iff]
   exact hc.support_nodup
 
 lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.support) :

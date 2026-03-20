@@ -133,6 +133,7 @@ noncomputable def adj (F : J ⥤ C) :
 
 /-- When `C` is monoidal closed and has suitable limits,
 then for any `F : J ⥤ C`, `tensorLeft F` has a right adjoint. -/
+@[implicit_reducible]
 noncomputable def closed (F : J ⥤ C) : Closed F where
   rightAdj := (eHomFunctor _ _).obj ⟨F⟩
   adj := adj F

@@ -43,11 +43,12 @@ instance [Small.{v} R] [IsNoetherianRing R] (S : Submonoid R) :
       Module.injective_of_isLocalizedModule S (X.localizedModuleMkLinearMap S)
 
 lemma localizedModule_hasInjectiveDimensionLE [Small.{v, u} R] [IsNoetherianRing R] (n : ℕ)
-    (S : Submonoid R) (M : ModuleCat.{v} R) [injle : HasInjectiveDimensionLE M n] :
+    (S : Submonoid R) (M : ModuleCat.{v} R) [HasInjectiveDimensionLE M n] :
     HasInjectiveDimensionLE (M.localizedModule S) n := by
   have : Small.{v} (Localization S) := small_of_surjective Localization.mkHom_surjective
   induction n generalizing M with
   | zero =>
+    have injle : HasInjectiveDimensionLE M 0 := ‹_›
     simp only [HasInjectiveDimensionLE, zero_add, ← injective_iff_hasInjectiveDimensionLT_one]
       at injle ⊢
     rw [← Module.injective_iff_injective_object] at injle ⊢
@@ -56,16 +57,14 @@ lemma localizedModule_hasInjectiveDimensionLE [Small.{v, u} R] [IsNoetherianRing
     have ei : EnoughInjectives (ModuleCat.{v} R) := inferInstance
     rcases ei.1 M with ⟨I, inj, f, monof⟩
     let T := ShortComplex.mk f (cokernel.π f) (cokernel.condition f)
-    have T_exact : T.ShortExact := {
-      exact := ShortComplex.exact_cokernel f
-      epi_g := coequalizer.π_epi }
+    have T_exact : T.ShortExact := { exact := ShortComplex.exact_cokernel f }
     have T_exact' : Function.Exact (ConcreteCategory.hom T.f) (ConcreteCategory.hom T.g) :=
       (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mp T_exact.1
     have TS_exact' := IsLocalizedModule.map_exact S (T.X₁.localizedModuleMkLinearMap S)
       (T.X₂.localizedModuleMkLinearMap S) (T.X₃.localizedModuleMkLinearMap S) _ _ T_exact'
     let TS := T.map (ModuleCat.localizedModuleFunctor S)
     have TS_exact : TS.ShortExact := T_exact.map_of_exact (ModuleCat.localizedModuleFunctor S)
-    let _ := (T_exact.hasInjectiveDimensionLT_X₃_iff n ‹_›).mpr injle
+    let _ := (T_exact.hasInjectiveDimensionLT_X₃_iff n ‹_›).mpr ‹_›
     let _ : Injective TS.X₂ := (ModuleCat.localizedModuleFunctor.{v} S).injective_obj _
     exact (TS_exact.hasInjectiveDimensionLT_X₃_iff n ‹_›).mp (ih T.X₃)
 
@@ -104,11 +103,9 @@ lemma hasInjectiveDimensionLE_iff_forall_maximalSpectrum [Small.{v, u} R] [IsNoe
         (M.localizedModuleMkLinearMap m.1.primeCompl)
     · rw [← Module.injective_iff_injective_object]
       apply Module.injective_of_localization_maximal (fun p hp ↦ ?_)
-      let _ : Small.{v} (Localization.AtPrime p) :=
-        small_of_surjective Localization.mkHom_surjective
+      let : Small.{v} (Localization.AtPrime p) := small_of_surjective Localization.mkHom_surjective
       have : Module.Injective (Localization.AtPrime p) (M.localizedModule p.primeCompl) := by
-        rw [Module.injective_iff_injective_object]
-        exact h ⟨p, hp⟩
+        simpa [Module.injective_iff_injective_object] using h ⟨p, hp⟩
       rw [← Module.Baer.iff_injective] at this ⊢
       exact Module.Baer.of_equiv (LinearEquiv.extendScalarsOfIsLocalization p.primeCompl
         (Localization.AtPrime p) (IsLocalizedModule.linearEquiv p.primeCompl

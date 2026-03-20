@@ -396,6 +396,7 @@ theorem IsRotated.eqv : Equivalence (@IsRotated α) :=
   Equivalence.mk IsRotated.refl IsRotated.symm IsRotated.trans
 
 /-- The relation `List.IsRotated l l'` forms a `Setoid` of cycles. -/
+@[implicit_reducible]
 def IsRotated.setoid (α : Type*) : Setoid (List α) where
   r := IsRotated
   iseqv := IsRotated.eqv
