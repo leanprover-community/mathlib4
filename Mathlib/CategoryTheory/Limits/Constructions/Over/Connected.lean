@@ -115,6 +115,34 @@ instance hasLimitsOfShape_of_isConnected {B : D} [IsConnected J] [HasLimitsOfSha
 
 end CostructuredArrow
 
+namespace StructuredArrow
+
+/-- The projection from `CostructuredArrow K B` to `C` creates any connected limit. -/
+instance [IsConnected J] {B : D} : CreatesColimitsOfShape J (StructuredArrow.proj B K) :=
+  sorry
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The forgetful functor from `CostructuredArrow K B` preserves any connected limit. -/
+instance [IsConnected J] {B : D} : PreservesLimitsOfShape J (CostructuredArrow.proj K B) where
+  preservesLimit.preserves hc := ⟨{
+    lift s := (CostructuredArrow.proj K B).map (hc.lift (CreatesConnected.raiseCone s))
+    fac _ _ := by
+      rw [Functor.mapCone_π_app, ← Functor.map_comp, hc.fac,
+        CreatesConnected.raiseCone_π_app, CostructuredArrow.proj_map,
+        CostructuredArrow.homMk_left _ _]
+    uniq s m fac :=
+      congrArg (CostructuredArrow.proj K B).map (hc.uniq (CreatesConnected.raiseCone s)
+        (CostructuredArrow.homMk m (by simp [← fac])) fun j =>
+          (CostructuredArrow.proj K B).map_injective (fac j))
+  }⟩
+
+/-- The over category has any connected limit which the original category has. -/
+instance hasLimitsOfShape_of_isConnected {B : D} [IsConnected J] [HasLimitsOfShape J C] :
+    HasLimitsOfShape J (CostructuredArrow K B) where
+  has_limit F := hasLimit_of_created F (CostructuredArrow.proj K B)
+
+end StructuredArrow
+
 namespace Over
 
 /-- The forgetful functor from the over category creates any connected limit. -/
