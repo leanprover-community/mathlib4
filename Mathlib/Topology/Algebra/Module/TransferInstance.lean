@@ -68,17 +68,17 @@ variable [Semiring R]
 
 /-- Given a continuous additive equivalence `e : α ≃ₜ+ β`, if `β` is a topological additive group,
 then so is `α`. -/
-@[implicit_reducible]
-def ContinuousAddEquiv.isTopologicalAddGroup
-    [TopologicalSpace β] [AddCommGroup β] [IsTopologicalAddGroup β]
-    [TopologicalSpace α] [AddCommGroup α]
-    (e : α ≃ₜ+ β) : IsTopologicalAddGroup α where
-  continuous_add := by
-    let f := (fun q ↦ q.1 + q.2 : β × β → β)
+@[implicit_reducible, to_additive]
+def ContinuousMulEquiv.isTopologicalGroup
+    [TopologicalSpace β] [CommGroup β] [IsTopologicalGroup β]
+    [TopologicalSpace α] [CommGroup α]
+    (e : α ≃ₜ* β) : IsTopologicalGroup α where
+  continuous_mul := by
+    let f := (fun q ↦ q.1 * q.2 : β × β → β)
     have : Continuous (fun p ↦ e.symm <| f (e p.1, e p.2) : (α × α → α)) := by fun_prop
     exact this.congr <| fun p ↦ by simp [f]
-  continuous_neg := by
-    have : Continuous (e.symm ∘ (fun q ↦ -q) ∘ e) := by fun_prop
+  continuous_inv := by
+    have : Continuous (e.symm ∘ (fun q ↦ q⁻¹) ∘ e) := by fun_prop
     exact this.congr (fun p ↦ by simp)
 
 /-- Given a continuous linear equivalence `e : α ≃L[R] β`, if `β` is a topological additive group,
