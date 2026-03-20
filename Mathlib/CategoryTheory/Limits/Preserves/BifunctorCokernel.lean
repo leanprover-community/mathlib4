@@ -43,12 +43,9 @@ noncomputable abbrev mapBifunctor :
     CokernelCofork (coprod.desc ((F.map f₁).app Y₂) ((F.obj Y₁).map f₂)) :=
   CokernelCofork.ofπ (Z := (F.obj c₁.pt).obj c₂.pt)
     ((F.map c₁.π).app Y₂ ≫ (F.obj c₁.pt).map c₂.π) (by
-      dsimp
       ext
-      · rw [comp_zero, coprod.inl_desc_assoc, ← NatTrans.comp_app_assoc, ← Functor.map_comp]
-        simp
-      · rw [comp_zero, coprod.inr_desc_assoc, NatTrans.naturality_assoc, ← Functor.map_comp]
-        simp)
+      · simp [← NatTrans.comp_app_assoc, ← Functor.map_comp]
+      · simp [← Functor.map_comp])
 
 variable [PreservesColimit (parallelPair f₂ 0) (F.obj c₁.pt)]
   [PreservesColimit (parallelPair f₁ 0) (F.flip.obj Y₂)]
