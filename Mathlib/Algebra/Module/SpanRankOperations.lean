@@ -12,19 +12,17 @@ public import Mathlib.RingTheory.LocalRing.Module
 /-!
 # Span rank under operations
 
-In this file, we mainly proof that base change doesn't increase span rank and
-for finitely generated module over local ring the dimension of base change by
-residue field is exactly its span rank.
+In this file we show how operations on submodules interact with `Submodule.spanRank`.
 
 # Main Results
 
-* `Submodule.spanRank_baseChange_le` : base change doesn't increase span rank.
+* `Submodule.spanRank_baseChange_le`: Base change doesn't increase the span rank.
 
-* `TensorProduct.spanFinrank_top_eq_of_residueField` : for finitely generated module over
-  local ring, dimension of base change by residue field is equal to its span rank.
+* `TensorProduct.spanFinrank_top_eq_of_residueField`: For a finitely generated module over
+  a local ring, the dimension of the base change to the residue field is equal to its span rank.
 
-* `spanFinrank_maximalIdeal_eq_finrank_cotangentSpace` : the minimal number of generators of
-  the unique maximal ideal is equal to the dimension of cotangent space
+* `IsLocalRing.spanFinrank_maximalIdeal_eq_finrank_cotangentSpace`: The minimal number of
+  generators of the unique maximal ideal is equal to the dimension of the cotangent space.
 
 -/
 
@@ -73,6 +71,8 @@ lemma TensorProduct.spanFinrank_top_eq_of_residueField (fg : N.FG) :
     ← hs₁, Set.ncard_image_le hs₃]
   rfl
 
+namespace IsLocalRing
+
 set_option backward.isDefEq.respectTransparency false in
 lemma spanFinrank_eq_finrank_quotient (N : Submodule R M) (fg : N.FG) :
     N.spanFinrank =
@@ -94,3 +94,5 @@ variable (R) in
 lemma spanFinrank_maximalIdeal_eq_finrank_cotangentSpace [IsNoetherianRing R] :
     (maximalIdeal R).spanFinrank = Module.finrank (ResidueField R) (CotangentSpace R) :=
   spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg (maximalIdeal R).fg_of_isNoetherianRing
+
+end IsLocalRing
