@@ -77,9 +77,9 @@ The rules of the original grammar `g` are transformed. Non-terminals `n` become 
 terminals `a` are replaced by the start symbol of the substituting grammar `f a`, which is
 `Sum.inr ⟨a, (f a).initial⟩`.
 -/
-def subst_rules_g {α β : Type} [DecidableEq β]
-    (g : ContextFreeGrammar α) [DecidableEq g.NT]
-    (f : α → ContextFreeGrammar β) [∀ a, DecidableEq (f a).NT] :
+def subst_rules_g {α β : Type}
+    (g : ContextFreeGrammar α)
+    (f : α → ContextFreeGrammar β) :
     Finset (ContextFreeRule β (g.NT ⊕ (Σ a, (f a).NT))) :=
   g.rules.map ⟨fun r => ContextFreeRule.mk (Sum.inl r.input) (r.output.map (fun s =>
     match s with
