@@ -496,9 +496,9 @@ lemma derives_of_subst_derives_f {α β : Type} [DecidableEq α] [DecidableEq β
 /--
 `ProducesG` is the relation of single-step productions using only G-rules.
 -/
-def ProducesG {α β : Type} [DecidableEq β]
-    (g : ContextFreeGrammar α) [DecidableEq g.NT]
-    (f : α → ContextFreeGrammar β) [∀ a, DecidableEq (f a).NT]
+def ProducesG {α β : Type}
+    (g : ContextFreeGrammar α)
+    (f : α → ContextFreeGrammar β)
     (u v : List (Symbol β (g.NT ⊕ (Σ a, (f a).NT)))) : Prop :=
   ∃ r ∈ g.subst_rules_g f, r.Rewrites u v
 
@@ -534,9 +534,9 @@ lemma is_F_rule_output_no_inl {α β : Type} [DecidableEq α] [DecidableEq β]
 /--
 `DerivesG` is the relation of derivations using only G-rules.
 -/
-def DerivesG {α β : Type} [DecidableEq β]
-    (g : ContextFreeGrammar α) [DecidableEq g.NT]
-    (f : α → ContextFreeGrammar β) [∀ a, DecidableEq (f a).NT]
+def DerivesG {α β : Type}
+    (g : ContextFreeGrammar α)
+    (f : α → ContextFreeGrammar β)
     (u v : List (Symbol β (g.NT ⊕ (Σ a, (f a).NT)))) : Prop :=
   Relation.ReflTransGen (g.ProducesG f) u v
 
@@ -621,9 +621,9 @@ lemma derives_split_G_F {α β : Type} [DecidableEq α] [DecidableEq β]
 If `g` derives `v` from `u`, then `g.subst f` derives the lifted `v` from the lifted `u` using
 only G-rules.
 -/
-lemma derivesG_of_derives {α β : Type} [DecidableEq β]
-    (g : ContextFreeGrammar α) [DecidableEq g.NT]
-    (f : α → ContextFreeGrammar β) [∀ a, DecidableEq (f a).NT]
+lemma derivesG_of_derives {α β : Type}
+    (g : ContextFreeGrammar α)
+    (f : α → ContextFreeGrammar β)
     {u v : List (Symbol α g.NT)} (h : g.Derives u v) :
     g.DerivesG f (u.map (g.liftSymbolG f)) (v.map (g.liftSymbolG f)) := by
       induction h with
@@ -673,9 +673,9 @@ lemma derivesF_lift_f {α β : Type} [DecidableEq α] [DecidableEq β]
 If `g.subst f` produces `v'` from a lifted `u` via a G-rule, then `v'` is a lifting of some `v`
 produced by `g` from `u`.
 -/
-lemma producesG_unlift {α β : Type} [DecidableEq β]
-    (g : ContextFreeGrammar α) [DecidableEq g.NT]
-    (f : α → ContextFreeGrammar β) [∀ a, DecidableEq (f a).NT]
+lemma producesG_unlift {α β : Type}
+    (g : ContextFreeGrammar α)
+    (f : α → ContextFreeGrammar β)
     (u : List (Symbol α g.NT)) (v' : List (Symbol β (g.NT ⊕ (Σ a, (f a).NT))))
     (h : g.ProducesG f (u.map (g.liftSymbolG f)) v') :
     ∃ v, v' = v.map (g.liftSymbolG f) ∧ g.Produces u v := by
@@ -694,9 +694,9 @@ lemma producesG_unlift {α β : Type} [DecidableEq β]
 If `g.subst f` derives `v'` from a lifted `u` using only G-rules, then `v'` is a lifting of some
 `v` derived by `g` from `u`.
 -/
-lemma derivesG_unlift {α β : Type} [DecidableEq β]
-    (g : ContextFreeGrammar α) [DecidableEq g.NT]
-    (f : α → ContextFreeGrammar β) [∀ a, DecidableEq (f a).NT]
+lemma derivesG_unlift {α β : Type}
+    (g : ContextFreeGrammar α)
+    (f : α → ContextFreeGrammar β)
     (u : List (Symbol α g.NT)) (v' : List (Symbol β (g.NT ⊕ (Σ a, (f a).NT))))
     (h : g.DerivesG f (u.map (g.liftSymbolG f)) v') :
     ∃ v, v' = v.map (g.liftSymbolG f) ∧ g.Derives u v := by
