@@ -734,7 +734,6 @@ namespace Equivalence
 
 variable (e : C ≌ D)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
 simply use `e.symm.toAdjunction`.) -/
 @[simps]
