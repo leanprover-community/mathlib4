@@ -306,12 +306,9 @@ section CompleteLinearOrder
 
 variable [CompleteLinearOrder α] {s : Set α} {a b : α}
 
+@[to_dual sInf_lt_iff]
 theorem lt_sSup_iff : b < sSup s ↔ ∃ a ∈ s, b < a :=
   lt_isLUB_iff <| isLUB_sSup s
-
-@[to_dual existing lt_sSup_iff]
-theorem sInf_lt_iff : sInf s < b ↔ ∃ a ∈ s, a < b :=
-  isGLB_lt_iff <| isGLB_sInf s
 
 theorem sSup_eq_top : sSup s = ⊤ ↔ ∀ b < ⊤, ∃ a ∈ s, b < a :=
   ⟨fun h _ hb => lt_sSup_iff.1 <| hb.trans_eq h.symm, fun h =>
