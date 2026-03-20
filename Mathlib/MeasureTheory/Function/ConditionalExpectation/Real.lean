@@ -79,6 +79,25 @@ theorem integral_norm_rpow_condExp_le {p : ℝ} (hp : 1 ≤ p) {f : α → E}
     · exact AEStronglyMeasurable.norm_rpow_condExp_le hp hfint.1 hf
   _ = _ := integral_condExp hm
 
+theorem integral_norm_condExp_le (f : α → E) : ∫ x, ‖(μ[f | m]) x‖ ∂μ ≤ ∫ x, ‖f x‖ ∂μ := by
+  by_cases! hfint : ¬ Integrable f μ
+  · simpa [condExp_of_not_integrable hfint] using integral_nonneg (fun x => norm_nonneg (f x))
+  have : Integrable (fun x => ‖f x‖ ^ (1 : ℝ)) μ := by simpa using hfint.norm
+  simpa using integral_norm_rpow_condExp_le (refl 1) this
+
+theorem setIntegral_norm_condExp_le {s : Set α} (hs : MeasurableSet[m] s) (f : α → E) :
+    ∫ x in s, ‖(μ[f | m]) x‖ ∂μ ≤ ∫ x in s, ‖f x‖ ∂μ := by
+  by_cases! hm : ¬ m ≤ m0
+  · simpa [condExp_of_not_le hm] using integral_nonneg (fun x => norm_nonneg (f x))
+  by_cases! hfint : ¬ Integrable f μ
+  · simpa [condExp_of_not_integrable hfint] using integral_nonneg (fun x => norm_nonneg (f x))
+  by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
+  · simpa [condExp_of_not_sigmaFinite hm hsig] using integral_nonneg (fun x => norm_nonneg (f x))
+  calc
+  _ = ∫ x in s, ‖(μ.restrict s)[f | m] x‖ ∂μ :=
+    (integral_congr_ae ((condExp_restrict_ae_eq_restrict hm hs hfint).fun_comp norm)).symm
+  _  ≤ _ := integral_norm_condExp_le f
+
 theorem lpNorm_condExp_le_lpNorm {f : α → E} {p : ℝ≥0∞} (hp : 1 ≤ p) (hpt : p ≠ ⊤)
     (hf : Integrable (fun x => ‖f x‖ ^ p.toReal) μ) :
     lpNorm (μ[f | m]) p μ ≤ lpNorm f p μ := by
@@ -106,39 +125,19 @@ theorem eLpNorm_condExp_le_eLpNorm {f : α → E} {p : ℝ≥0∞} (hp : 1 ≤ p
   · exact ENNReal.ofReal_le_ofReal (lpNorm_condExp_le_lpNorm hp hpt hf)
   · exact (integrable_norm_rpow_iff hfint.1 hp'.ne.symm hpt).1 hf
   · rw [← integrable_norm_rpow_iff integrable_condExp.1 hp'.ne.symm hpt]
-    sorry
+    have hp : 1 ≤ p.toReal := by
+      rwa [← ENNReal.toReal_one, ENNReal.toReal_le_toReal ENNReal.one_ne_top hpt]
+    have := AEStronglyMeasurable.norm_rpow_condExp_le (m := m) hp hf
+    refine Integrable.mono_nonneg integrable_condExp ?_ ?_ this
+    · exact (Real.continuous_rpow_const (zero_le_one.trans hp)).comp_aestronglyMeasurable
+        integrable_condExp.norm.1
+    · filter_upwards with a; positivity
 
 theorem eLpNorm_one_condExp_le_eLpNorm (f : α → E) : eLpNorm (μ[f | m]) 1 μ ≤ eLpNorm f 1 μ := by
   by_cases! hfint : ¬ Integrable f μ
   · simp [condExp_of_not_integrable hfint]
   refine eLpNorm_condExp_le_eLpNorm (refl 1) ENNReal.one_ne_top ?_
   simpa using hfint.norm
-
-theorem integral_norm_condExp_le (f : α → E) : ∫ x, ‖(μ[f | m]) x‖ ∂μ ≤ ∫ x, ‖f x‖ ∂μ := by
-  by_cases! hm : ¬ m ≤ m0
-  · simpa [condExp_of_not_le hm] using integral_nonneg (fun x => norm_nonneg (f x))
-  by_cases! hfint : ¬ Integrable f μ
-  · simpa [condExp_of_not_integrable hfint] using integral_nonneg (fun x => norm_nonneg (f x))
-  by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
-  · simpa [condExp_of_not_sigmaFinite hm hsig] using integral_nonneg (fun x => norm_nonneg (f x))
-  calc
-  _ ≤ ∫ x, μ[(fun x => ‖f x‖) | m] x ∂μ :=
-    integral_mono_ae integrable_condExp.norm integrable_condExp
-      (AEStronglyMeasurable.norm_condExp_le hfint.1)
-  _ = _ := integral_condExp hm
-
-theorem setIntegral_norm_condExp_le {s : Set α} (hs : MeasurableSet[m] s) (f : α → E) :
-    ∫ x in s, ‖(μ[f | m]) x‖ ∂μ ≤ ∫ x in s, ‖f x‖ ∂μ := by
-  by_cases! hm : ¬ m ≤ m0
-  · simpa [condExp_of_not_le hm] using integral_nonneg (fun x => norm_nonneg (f x))
-  by_cases! hfint : ¬ Integrable f μ
-  · simpa [condExp_of_not_integrable hfint] using integral_nonneg (fun x => norm_nonneg (f x))
-  by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
-  · simpa [condExp_of_not_sigmaFinite hm hsig] using integral_nonneg (fun x => norm_nonneg (f x))
-  calc
-  _ = ∫ x in s, ‖(μ.restrict s)[f | m] x‖ ∂μ :=
-    (integral_congr_ae ((condExp_restrict_ae_eq_restrict hm hs hfint).fun_comp norm)).symm
-  _  ≤ _ := integral_norm_condExp_le f
 
 variable [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
 

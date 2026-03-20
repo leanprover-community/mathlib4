@@ -169,7 +169,7 @@ theorem AEStronglyMeasurable.norm_condExp_le (hf : AEStronglyMeasurable f μ) :
     hf_int.norm
 
 theorem AEStronglyMeasurable.norm_rpow_condExp_le {p : ℝ} (hp : 1 ≤ p)
-    (hf : AEStronglyMeasurable f μ) (hfint : Integrable (fun x => ‖f x‖ ^ p) μ) :
+    (hfint : Integrable (fun x => ‖f x‖ ^ p) μ) :
     (‖μ[f | m] ·‖ ^ p) ≤ᵐ[μ] μ[(‖f ·‖ ^ p) | m] := by
   have hp' : 0 < p := by linarith
   by_cases! hm : ¬ m ≤ mα
@@ -177,14 +177,13 @@ theorem AEStronglyMeasurable.norm_rpow_condExp_le {p : ℝ} (hp : 1 ≤ p)
   by_cases! hμm : ¬ SigmaFinite (μ.trim hm)
   · simp [condExp_of_not_sigmaFinite hm hμm, Real.zero_rpow hp'.ne.symm]; aesop
   by_cases! hf_int : ¬ Integrable f μ
-  · have : ¬ Integrable (‖f ·‖) μ := by simpa [integrable_norm_iff hf]
-    simp only [condExp_of_not_integrable hf_int, Pi.zero_apply, norm_zero,
+  · simp only [condExp_of_not_integrable hf_int, Pi.zero_apply, norm_zero,
       Real.zero_rpow hp'.ne.symm]
     apply condExp_nonneg
-    filter_upwards with a using by positivity
+    filter_upwards with a; positivity
   have hl := (Real.continuous_rpow_const hp'.le).lowerSemicontinuous.lowerSemicontinuousOn (Ici 0)
   have := (convexOn_rpow hp).map_condExp_le hm hl ?_ isClosed_Ici hf_int.norm hfint
-  · filter_upwards [AEStronglyMeasurable.norm_condExp_le (m := m) hf, this] with a ha hb
+  · filter_upwards [AEStronglyMeasurable.norm_condExp_le (m := m) hf_int.1, this] with a ha hb
     exact (Real.rpow_le_rpow (norm_nonneg _) ha hp'.le).trans hb
   · filter_upwards with a; simp
 
