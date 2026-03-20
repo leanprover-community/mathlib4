@@ -70,8 +70,7 @@ variable [Semiring R]
 then so is `α`. -/
 @[to_additive]
 lemma ContinuousMulEquiv.isTopologicalGroup
-    [TopologicalSpace β] [CommGroup β] [IsTopologicalGroup β]
-    [TopologicalSpace α] [CommGroup α]
+    [TopologicalSpace β] [Group β] [IsTopologicalGroup β] [TopologicalSpace α] [Group α]
     (e : α ≃ₜ* β) : IsTopologicalGroup α where
   continuous_mul := by
     let f := (fun q ↦ q.1 * q.2 : β × β → β)
@@ -83,17 +82,18 @@ lemma ContinuousMulEquiv.isTopologicalGroup
 
 /-- Given a continuous linear equivalence `e : α ≃L[R] β`, if `β` is a topological additive group,
 then so is `α`. -/
-@[implicit_reducible]
-def ContinuousLinearEquiv.isTopologicalAddGroup
+lemma ContinuousLinearEquiv.isTopologicalAddGroup
     [TopologicalSpace β] [AddCommGroup β] [IsTopologicalAddGroup β] [Module R β]
     [TopologicalSpace α] [AddCommGroup α] [Module R α]
     (e : α ≃L[R] β) : IsTopologicalAddGroup α :=
   (e.toContinuousAddEquiv fun _ ↦ e.toHomeomorph.isOpen_preimage).isTopologicalAddGroup
 
+-- TODO linter bug: making the above an @[implicit_reducible] def does not lint,
+-- making it a plain def does. making a lemma is correct
+
 /-- Given a continuous linear equivalence `e : α ≃L[R] β`, if scalar multiplication on `β` is
 continuous, then so is it for `α`. -/
-@[implicit_reducible]
-def ContinuousLinearEquiv.continuousSMul
+lemma ContinuousLinearEquiv.continuousSMul
     [TopologicalSpace β] [AddCommGroup β] [Module R β] [TopologicalSpace R] [ContinuousSMul R β]
     [TopologicalSpace α] [AddCommGroup α] [Module R α]
     (e : α ≃L[R] β) :
