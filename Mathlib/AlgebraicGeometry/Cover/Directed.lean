@@ -24,6 +24,8 @@ Many natural covers are naturally directed, most importantly the cover of all af
 opens of a scheme.
 -/
 
+set_option backward.inferInstanceAs.normalForm false
+
 @[expose] public section
 
 universe u

@@ -25,6 +25,8 @@ and `V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is étale.
 
 -/
 
+set_option backward.inferInstanceAs.normalForm false
+
 @[expose] public section
 
 universe t u

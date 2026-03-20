@@ -34,8 +34,9 @@ but are independent of that choice.
 number field, ring of integers
 -/
 
-@[expose] public section
+set_option backward.inferInstanceAs.normalForm false
 
+@[expose] public section
 
 /-- A number field is a field which has characteristic zero and is finite
 dimensional over ℚ. -/

@@ -19,6 +19,8 @@ by the property `(opOpEquivalence C).IsTriangulated`.
 
 -/
 
+set_option backward.inferInstanceAs.normalForm false
+
 @[expose] public section
 
 namespace CategoryTheory

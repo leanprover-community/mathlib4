@@ -21,6 +21,8 @@ the underlying types are just the limits in the category of types.
 
 -/
 
+set_option backward.inferInstanceAs.normalForm false
+
 @[expose] public section
 
 open CategoryTheory CategoryTheory.Limits

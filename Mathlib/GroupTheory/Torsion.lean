@@ -40,6 +40,8 @@ periodic group, aperiodic group, torsion subgroup, torsion abelian group
 * groups which are residually finite p-groups with respect to 2 distinct primes are torsion free
 -/
 
+set_option backward.inferInstanceAs.normalForm false
+
 @[expose] public section
 
 

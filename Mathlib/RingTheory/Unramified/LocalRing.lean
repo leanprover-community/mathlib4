@@ -32,6 +32,8 @@ lying over `R`, then
   If `κ(p) = κ(q)` then there exists `r ∉ p` such that `R[1/f] = S[1/f]`.
 -/
 
+set_option backward.inferInstanceAs.normalForm false
+
 @[expose] public section
 
 open IsLocalRing

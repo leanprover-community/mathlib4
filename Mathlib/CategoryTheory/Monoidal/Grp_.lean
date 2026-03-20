@@ -21,6 +21,8 @@ morphisms of group objects commute with taking inverses.
 We show that a finite-product-preserving functor takes group objects to group objects.
 -/
 
+set_option backward.inferInstanceAs.normalForm false
+
 @[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃ u

@@ -68,6 +68,7 @@ theorem isRoot_iterate_derivative_of_lt_rootMultiplicity {p : R[X]} {t : R} {n :
   dvd_iff_isRoot.mp <| (dvd_pow_self _ <| Nat.sub_ne_zero_of_lt hn).trans
     (pow_sub_dvd_iterate_derivative_of_pow_dvd _ <| p.pow_rootMultiplicity_dvd t)
 
+set_option backward.isDefEq.respectTransparency false in
 open Finset in
 theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
     (derivative^[p.rootMultiplicity t] p).eval t =

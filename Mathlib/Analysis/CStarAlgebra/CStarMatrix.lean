@@ -34,6 +34,8 @@ replace the uniformity and bornology by the Pi ones when registering the
 below for more details.
 -/
 
+set_option backward.inferInstanceAs.normalForm false
+
 @[expose] public section
 
 open scoped ComplexOrder Topology Uniformity Bornology Matrix NNReal InnerProductSpace

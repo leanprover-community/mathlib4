@@ -32,6 +32,8 @@ a `TwistShiftData` structure (see the file `Mathlib.CategoryTheory.Shift.Twist`)
 
 -/
 
+set_option backward.inferInstanceAs.normalForm false
+
 @[expose] public section
 
 namespace CategoryTheory

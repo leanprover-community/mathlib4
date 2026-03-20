@@ -20,6 +20,8 @@ We provide instances of `𝒰.Over S` for standard constructions on covers.
 
 -/
 
+set_option backward.inferInstanceAs.normalForm false
+
 @[expose] public section
 
 universe v u

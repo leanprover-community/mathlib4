@@ -30,6 +30,8 @@ disconnected.
 
 -/
 
+set_option backward.inferInstanceAs.normalForm false
+
 @[expose] public section
 
 universe u v

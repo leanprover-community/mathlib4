@@ -27,6 +27,8 @@ The main results are the following:
 
 -/
 
+set_option backward.inferInstanceAs.normalForm false
+
 @[expose] public section
 
 open Set Function Filter

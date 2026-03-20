@@ -45,6 +45,8 @@ Let `R, S` be rings and `f : R →+* S`
   `s ⊗ m : S ⊗[R, f] M`.
 -/
 
+set_option backward.inferInstanceAs.normalForm false
+
 @[expose] public section
 
 suppress_compilation

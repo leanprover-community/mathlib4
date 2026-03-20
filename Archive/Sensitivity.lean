@@ -33,6 +33,8 @@ The project was developed at https://github.com/leanprover-community/lean-sensit
 archived at https://github.com/leanprover-community/mathlib/blob/master/archive/sensitivity.lean
 -/
 
+set_option backward.inferInstanceAs.normalForm false
+
 namespace Sensitivity
 
 /-! The next two lines assert we do not want to give a constructive proof,

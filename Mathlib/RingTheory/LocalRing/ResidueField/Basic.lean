@@ -19,6 +19,8 @@ We prove basic properties of the residue field of a local ring.
 
 -/
 
+set_option backward.inferInstanceAs.normalForm false
+
 @[expose] public section
 
 variable {R S T : Type*}
