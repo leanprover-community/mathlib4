@@ -508,9 +508,13 @@ lemma deriv_differentiableAt_of_2_contDiffOn_open (hI : IsOpen I) (hγ₁ : Cont
           1 (by norm_num)).differentiableAt (hI.mem_nhds ht)).congr_of_eventuallyEq
   exact Filter.eventuallyEq_of_mem (hI.mem_nhds ht) h
 
-lemma eq_zero_of_sum_sq_eq_zero {x y : ℝ} (h : x ^ 2 + y ^ 2 = 0) : x = 0 ∧ y = 0 := by
-  have : x ^ 2 = 0 ∧ y ^ 2 = 0 := by constructor <;> linarith [pow_two_nonneg x, pow_two_nonneg y]
-  simp_all
+lemma left_eq_zero_of_sum_sq_eq_zero {x y : ℝ} (h : x ^ 2 + y ^ 2 = 0) : x = 0 := by
+  have : x ^ 2 = 0 := by linarith [pow_two_nonneg x, pow_two_nonneg y]
+  simpa
+
+lemma right_eq_zero_of_sum_sq_eq_zero {x y : ℝ} (h : x ^ 2 + y ^ 2 = 0) : y = 0 := by
+  have : y ^ 2 = 0 := by linarith [pow_two_nonneg x, pow_two_nonneg y]
+  simpa
 
 set_option backward.isDefEq.respectTransparency false in
 /-- This is the uniqueness part of the fundamental theorem of plane curves: given a curvature
@@ -592,21 +596,17 @@ theorem initialCurve_of_orientedCurvature_is_unique (hI : IsOpen I) (hκ : Conti
     simp only [Fin.isValue, g, f]
     rw [deriv_fun_sub (hDdc₁ hs) (hDdα₁ hs)]
     have hddc₁s : deriv (fun t ↦ (deriv c t) 1) s = κ s * (deriv c s) 0 := by
-      have help₁ : deriv (fun t ↦ (deriv c t) 1) s = (deriv (deriv c) s) 1 := by
+      have help : deriv (fun t ↦ (deriv c t) 1) s = (deriv (deriv c) s) 1 := by
         change deriv (EuclideanSpace.proj 1 ∘ deriv c) s = _
-        have hproj : DifferentiableAt ℝ (EuclideanSpace.proj 1) (deriv c s) := by fun_prop
-        rw [fderiv_comp_deriv s hproj (hDdc hs), ContinuousLinearMap.fderiv]
+        rw [fderiv_comp_deriv s (by fun_prop) (hDdc hs), ContinuousLinearMap.fderiv]
         simp
-      have help₂ := PiLp.ext_iff.mp (hcFre₁ hs) 1
-      simp [help₁, help₂, normal]
+      simp [help, PiLp.ext_iff.mp (hcFre₁ hs) 1, normal]
     have hddα₁s : deriv (fun t ↦ (deriv α t) 1) s = κ s * (deriv α s) 0 := by
-      have help₁ : deriv (fun t ↦ (deriv α t) 1) s = (deriv (deriv α) s) 1 := by
+      have help : deriv (fun t ↦ (deriv α t) 1) s = (deriv (deriv α) s) 1 := by
         change deriv (EuclideanSpace.proj 1 ∘ deriv α) s = _
-        have hproj : DifferentiableAt ℝ (EuclideanSpace.proj 1) (deriv α s) := by fun_prop
-        rw [fderiv_comp_deriv s hproj (hDdα hs), ContinuousLinearMap.fderiv]
+        rw [fderiv_comp_deriv s (by fun_prop) (hDdα hs), ContinuousLinearMap.fderiv]
         simp
-      have help₂ := PiLp.ext_iff.mp (hαFre₁ hs) 1
-      simp [help₁, help₂, normal]
+      simp [help, PiLp.ext_iff.mp (hαFre₁ hs) 1, normal]
     rw [hddc₁s, hddα₁s]
     ring
   have hdh : Set.EqOn (deriv h) 0 I := by
@@ -618,21 +618,19 @@ theorem initialCurve_of_orientedCurvature_is_unique (hI : IsOpen I) (hκ : Conti
          ring
        _ = 2*((f s)*(- κ s * g s)+(g s)*(κ s * f s)) := by rw [hdf s hs, hdg s hs]
        _ = 0 := by ring
-  have hht₀ : h t₀ = 0 := by simp [h, f, g, hc₅, hα₅]
   have hh : ∀s ∈ I, h s = 0 := by
     let ⟨a, ha⟩ := hI.exists_is_const_of_deriv_eq_zero hIoC.isPreconnected hDOnh hdh
     intro s hs
-    rw [ha s hs, ← ha t₀ ht₀, hht₀]
-  have hf : ∀s ∈ I, f s = 0 := fun s hs ↦  (eq_zero_of_sum_sq_eq_zero (hh s hs)).1
-  have hg : ∀s ∈ I, g s = 0 := fun s hs ↦  (eq_zero_of_sum_sq_eq_zero (hh s hs)).2
+    rw [ha s hs, ← ha t₀ ht₀]
+    simp [h, f, g, hc₅, hα₅]
   have heqd₀ : ∀s ∈ I, (deriv c s) 0 = (deriv α s) 0 := by
     intro s hs
-    have help := hf s hs
+    have help := left_eq_zero_of_sum_sq_eq_zero (hh s hs)
     simp [f] at help
     linarith
   have heqd₁ : ∀s ∈ I, (deriv c s) 1 = (deriv α s) 1 := by
     intro s hs
-    have help := hg s hs
+    have help := right_eq_zero_of_sum_sq_eq_zero (hh s hs)
     simp [g] at help
     linarith
   have heqd : ∀s ∈ I, deriv c s = deriv α s := by
@@ -641,9 +639,8 @@ theorem initialCurve_of_orientedCurvature_is_unique (hI : IsOpen I) (hκ : Conti
     fin_cases i
     · simp [heqd₀ s hs]
     · simp [heqd₁ s hs]
-  have hct₀eq : c t₀ = (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀) t₀ := by simp [hc₄, α, hα₄]
   exact hI.eqOn_of_deriv_eq hIoC.isPreconnected (hc₁.differentiableOn (by norm_num))
-    (hα₁.differentiableOn (by norm_num)) heqd ht₀ hct₀eq
+    (hα₁.differentiableOn (by norm_num)) heqd ht₀ (by simp [hc₄, α, hα₄])
 
 end
 
