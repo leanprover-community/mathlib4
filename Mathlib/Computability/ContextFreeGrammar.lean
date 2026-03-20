@@ -334,12 +334,12 @@ alias ⟨_, Generates.reverse⟩ := generates_reverse
 end ContextFreeGrammar
 
 protected theorem Language.IsContextFree.reverse (L : Language T) (h : L.IsContextFree) :
-  L.reverse.IsContextFree := by
+    L.reverse.IsContextFree := by
   rcases h with ⟨g, rfl⟩
   exact ⟨g.reverse, by simp⟩
 
 protected theorem Language.IsContextFree.of_reverse (L : Language T) (h : L.reverse.IsContextFree) :
-  L.IsContextFree := by
+    L.IsContextFree := by
   simpa [reverse_reverse] using IsContextFree.reverse L.reverse h
 
 /-- The class of context-free languages is closed under reversal. -/
