@@ -165,7 +165,7 @@ lemma isIso_π_f (i : ℤ) (hi : i ≠ n₁ := by lia) :
 
 include hn₁ in
 variable (K L) in
-lemma quasiIsoAt_π (i : ℤ) (hi : i ≤ n₀) :
+lemma quasiIsoAt_π (i : ℤ) (hi : i ≤ n₀ := by lia) :
     QuasiIsoAt (π K L n₁) i := by
   obtain (hi | rfl) := hi.lt_or_eq
   · rw [quasiIsoAt_iff' _ (i - 1) i (i + 1) (by simp) (by simp)]
