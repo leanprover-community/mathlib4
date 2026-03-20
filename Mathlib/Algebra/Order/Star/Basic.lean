@@ -272,7 +272,8 @@ lemma star_le_star_iff {x y : R} : star x ≤ star y ↔ x ≤ y := by
   rw [StarOrderedRing.le_iff] at h ⊢
   obtain ⟨d, hd, rfl⟩ := h
   refine ⟨starAddEquiv d, ?_, star_add _ _⟩
-  refine AddMonoidHom.mclosure_preimage_le _ _ <| AddSubmonoid.closure_mono ?_ hd
+  refine AddMonoidHom.mclosure_preimage_le starAddEquiv.toAddMonoidHom _ <|
+    AddSubmonoid.closure_mono ?_ hd
   rintro - ⟨s, rfl⟩
   exact ⟨s, by simp⟩
 
@@ -383,7 +384,8 @@ instance [NonUnitalSemiring R] [StarRing R] [PartialOrder R] [StarOrderedRing R]
     StarOrderedRing Rᵐᵒᵖ where
   le_iff x y := by
     rw [← unop_le_unop, StarOrderedRing.le_iff, op_surjective.exists,
-      ← (AddSubmonoid.closure _).comap_map_eq_of_injective opAddEquiv.injective]
+      ← (AddSubmonoid.closure _).comap_map_eq_of_injective (f := opAddEquiv.toAddMonoidHom)
+      (by simpa using (opAddEquiv (α := R)).injective)]
     congr! with p
     · simp [AddMonoidHom.map_mclosure, ← range_comp', Function.comp_def,
         ← (star_involutive.surjective.comp op_surjective).range_comp]

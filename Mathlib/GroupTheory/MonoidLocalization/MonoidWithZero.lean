@@ -130,7 +130,9 @@ theorem nonZeroDivisors_le_comap (f : LocalizationMap S N) :
     nonZeroDivisors M ≤ (nonZeroDivisors N).comap f := by
   refine fun m hm ↦ nonZeroDivisorsRight_eq_nonZeroDivisors (M₀ := N) ▸ fun n h0 ↦ ?_
   have ⟨ms, eq⟩ := f.surj n
-  rw [← (f.map_units ms.2).mul_left_eq_zero, mul_right_comm, eq, ← map_mul, map_eq_zero_iff] at h0
+  rw [← (f.map_units ms.2).mul_left_eq_zero, mul_right_comm, eq] at h0
+  simp
+  rw [← map_mul, map_eq_zero_iff] at h0
   simp_rw [← mul_assoc, mul_right_mem_nonZeroDivisorsRight_eq_zero_iff hm.2] at h0
   rwa [← (f.map_units ms.2).mul_left_eq_zero, eq, map_eq_zero_iff]
 
