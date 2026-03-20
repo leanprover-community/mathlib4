@@ -192,3 +192,50 @@ theorem equiv_free_prod_prod_multiplicative_zmod (G : Type*) [CommGroup G] [hG :
           (DirectSum.addEquivProd _ )).trans <| (AddEquiv.prodAdditive _ _).symm⟩⟩
 
 end CommGroup
+
+namespace Subgroup
+
+@[to_additive]
+lemma finiteIndex_range_powMonoidHom_of_fg (A : Type*) [CommGroup A] [Group.FG A] {n : ℕ}
+    (hn : n ≠ 0) :
+    (powMonoidHom (α := A) n).range.FiniteIndex :=
+  finiteIndex_iff_finite_quotient.mpr <| CommGroup.finite_of_fg_torsion _ <|
+    CommGroup.isTorsion_quotient_range_powMonoidHom A hn
+
+@[to_additive]
+lemma isFiniteRelIndex_map_powMonoidHom_of_fg {A : Type*} [CommGroup A] {B : Subgroup A}
+    (hB : B.FG) {n : ℕ} (hn : n ≠ 0) :
+    B.map (powMonoidHom (α := A) n) |>.IsFiniteRelIndex B := by
+  rw [isFiniteRelIndex_iff_finiteIndex]
+  have : (map (powMonoidHom (α := A) n) B).subgroupOf B = (powMonoidHom (α := B) n).range := by
+    ext1
+    simp [mem_subgroupOf, Subtype.ext_iff]
+  rw [this]
+  have := (Group.fg_iff_subgroup_fg B).mpr hB
+  exact finiteIndex_range_powMonoidHom_of_fg B hn
+
+end Subgroup
+
+namespace Submodule
+
+variable {R K M : Type*} [CommRing R] [CommRing K] [Algebra R K] [Module.Finite ℤ R]
+  [AddCommGroup M] [Module R M]
+
+lemma fg_toAddSubgroup {A : Submodule R M} (hfg : A.FG) : A.toAddSubgroup.FG := by
+  rw [← AddSubgroup.toIntSubmodule_toAddSubgroup A.toAddSubgroup, ← fg_iff_addSubgroup_fg]
+  exact FG.restrictScalars hfg
+
+open AddSubgroup in
+/-- If `A` and `B` are two `R`-submodules of the `R`-algebra `M`, where `R` is finitely generated
+as a `ℤ`-module, `A` is finitely generated, and `B` contains `n • A`, then `B` has finite
+relative index in `A`. -/
+lemma isFiniteRelIndex_of_map_linearMapMulLeft_le {A B : Submodule R K} {n : ℕ} (hn : n ≠ 0)
+    (hfg : A.FG) (h : A.map (LinearMap.mulLeft R (n : K)) ≤ B) :
+    B.toAddSubgroup.IsFiniteRelIndex A.toAddSubgroup := by
+  have := fg_toAddSubgroup hfg
+  have := isFiniteRelIndex_map_nsmulAddMonoidHom_of_fg this hn
+  refine isFiniteRelIndex_of_le (H₁ := A.toAddSubgroup.map (nsmulAddMonoidHom n)) A.toAddSubgroup ?_
+  rw [SetLike.le_def] at h ⊢
+  simpa using h
+
+end Submodule

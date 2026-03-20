@@ -149,7 +149,6 @@ variable [DivisionRing 𝕜] [DivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜�
 
 variable (f : E →ₛₗ[σ₁₂] F) (g : E →ₗ[𝕜] Eₗ)
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Composition of a semilinear map `f` with the left inverse of a linear map `g` as a continuous
 linear map provided that the norm estimate `‖f x‖ ≤ C * ‖g x‖` holds for all `x : E`. -/

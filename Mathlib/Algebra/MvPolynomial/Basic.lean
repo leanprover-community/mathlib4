@@ -380,7 +380,7 @@ theorem induction_on_monomial {motive : MvPolynomial σ R → Prop}
     simp [add_comm, monomial_add_single, this]
 
 /-- Analog of `Polynomial.induction_on'`.
-To prove something about mv_polynomials,
+To prove something about `MVPolynomials`,
 it suffices to show the condition is closed under taking sums,
 and it holds for monomials. -/
 @[elab_as_elim]
@@ -582,7 +582,7 @@ theorem coeff_add (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p + q
 @[simp]
 theorem coeff_smul {S₁ : Type*} [SMulZeroClass S₁ R] (m : σ →₀ ℕ) (C : S₁) (p : MvPolynomial σ R) :
     coeff m (C • p) = C • coeff m p :=
-  smul_apply C p m
+  AddMonoidAlgebra.smul_apply C p m
 
 @[simp]
 theorem coeff_zero (m : σ →₀ ℕ) : coeff m (0 : MvPolynomial σ R) = 0 :=

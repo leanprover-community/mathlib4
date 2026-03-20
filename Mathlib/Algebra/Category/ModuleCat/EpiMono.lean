@@ -28,7 +28,6 @@ namespace ModuleCat
 variable {R : Type u} [Ring R] {X Y : ModuleCat.{v} R} (f : X ⟶ Y)
 variable {M : Type v} [AddCommGroup M] [Module R M]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ker_eq_bot_of_mono [Mono f] : LinearMap.ker f.hom = ⊥ :=
   LinearMap.ker_eq_bot_of_cancel fun u v h => ModuleCat.hom_ext_iff.mp <|
     (@cancel_mono _ _ _ _ _ f _ (↟u) (↟v)).1 <| ModuleCat.hom_ext_iff.mpr h
@@ -52,10 +51,10 @@ theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
   rw [epi_iff_range_eq_top, LinearMap.range_eq_top]
 
 /-- If the zero morphism is an epi then the codomain is trivial. -/
+@[implicit_reducible]
 def uniqueOfEpiZero (X) [h : Epi (0 : X ⟶ of R M)] : Unique M :=
   uniqueOfSurjectiveZero X ((ModuleCat.epi_iff_surjective _).mp h)
 
-set_option backward.isDefEq.respectTransparency false in
 instance mono_as_hom'_subtype (U : Submodule R X) : Mono (ModuleCat.ofHom U.subtype) :=
   (mono_iff_ker_eq_bot _).mpr (Submodule.ker_subtype U)
 

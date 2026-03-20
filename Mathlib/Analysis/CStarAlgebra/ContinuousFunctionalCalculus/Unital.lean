@@ -730,12 +730,10 @@ lemma cfc_nonneg_of_predicate [LE A]
 variable (R) in
 /-- In an `R`-algebra with a continuous functional calculus, every element satisfying the predicate
 has nonempty `R`-spectrum. -/
+@[deprecated "Use `ContinuousFunctionalCalculus.spectrum_nonempty a ha` instead."
+  (since := "2026-03-08")]
 lemma CFC.spectrum_nonempty [Nontrivial A] (a : A) (ha : p a := by cfc_tac) :
-    (spectrum R a).Nonempty := by
-  by_contra! h
-  apply one_ne_zero (α := A)
-  rw [← cfc_one R a, ← cfc_zero R a]
-  exact cfc_congr fun x hx ↦ by simp_all
+    (spectrum R a).Nonempty := ContinuousFunctionalCalculus.spectrum_nonempty a ha
 
 end CFC
 
@@ -1024,7 +1022,6 @@ variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrdere
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R A p]
 variable [NonnegSpectrumClass R A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfcHom_le_iff {a : A} (ha : p a) {f g : C(spectrum R a, R)} :
     cfcHom ha f ≤ cfcHom ha g ↔ f ≤ g := by
   rw [← sub_nonneg, ← map_sub, cfcHom_nonneg_iff, sub_nonneg]

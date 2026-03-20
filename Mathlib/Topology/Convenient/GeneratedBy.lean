@@ -20,16 +20,16 @@ we say that `Y` is `X`-generated (typeclass `IsGeneratedBy X Y`).
 
 ## TODO (@joelriou)
 * Redefine compactly generated spaces and delta generated spaces using
-these definitions
+  these definitions
 * Define the category of `X`-generated spaces and show that it is coreflective in `TopCat`
 * Show that under suitable assumptions, the category of `X`-generated
-spaces is a closed cartesian monoidal category.
+  spaces is a closed cartesian monoidal category.
 
 ## References
 * [Rainer M. Vogt, *Convenient categories of topological spaces
-for homotopy theory*][vogt-1971]
+  for homotopy theory*][vogt-1971]
 * [Martín Escardó, Jimmie Lawson and Alex Simpson, *Comparing Cartesian closed
-categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
+  categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
 
 -/
 
@@ -47,6 +47,7 @@ namespace TopologicalSpace
 /-- Given a family of topological spaces `X i`, the `X`-generated topology on
 a topological space `Y` is the topology that is coinduced
 by all continuous maps `X i → Y`. -/
+@[implicit_reducible]
 def generatedBy : TopologicalSpace Y :=
   ⨆ (i : ι) (f : C(X i, Y)), coinduced f inferInstance
 
