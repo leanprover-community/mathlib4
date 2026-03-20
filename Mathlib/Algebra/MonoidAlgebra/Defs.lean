@@ -208,7 +208,7 @@ lemma ofCoeff_finsuppSum [AddCommMonoid N] (f : ι →₀ N) (g : ι → N → M
 abbrev single (m : M) (r : R) : R[M] := Finsupp.single m r
 
 /-- Remove a term from an element of the monoid algebra. -/
-@[to_additive /-- Remove a term from an element of the monoid algebra. -/]
+@[to_additive /-- Remove a term from an element of the additive monoid algebra. -/]
 def erase (m : M) (x : R[M]) : R[M] := .ofCoeff <| .erase m x.coeff
 
 @[to_additive (attr := simp)]
