@@ -6,6 +6,7 @@ Authors: Yongle Hu
 module
 
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Kaplansky
 
 /-!
 # UFD criteria via height `1` prime ideals and localization
@@ -28,85 +29,55 @@ variable {R : Type*} [CommRing R] [IsNoetherianRing R] [IsDomain R]
 theorem Ideal.ufd_iff_height_one_primes_principal :
     UniqueFactorizationMonoid R ↔
     ∀ (p : Ideal R) [p.IsPrime], p.primeHeight = 1 → p.IsPrincipal := by
+  apply (UniqueFactorizationMonoid.iff_exists_prime_mem_of_isPrime).trans
   constructor
-  · intro h p hp h1
-    have hpb : p ≠ ⊥ := by
+  · intro hufd p hp h1
+    have hp_ne_bot : p ≠ ⊥ := by
       intro hp
       simp_rw [hp] at h1
-      have h : Order.height (⊥ : PrimeSpectrum R) = 1 := h1
-      simp at h
-    rcases (Submodule.ne_bot_iff p).mp hpb with ⟨x, hxp, hx⟩
-    rcases UniqueFactorizationMonoid.exists_prime_factors x hx with ⟨s, hps, hxs⟩
-    have hsprod_mem : s.prod ∈ p := by
-      rcases Associated.dvd hxs.symm with ⟨b, hb⟩
-      rw [hb]
-      exact mul_mem_right b p hxp
-    obtain ⟨a, ha, hap⟩ : ∃ a ∈ s, a ∈ p :=
-      (IsPrime.multiset_prod_mem_iff_exists_mem hp s).1 hsprod_mem
-    have hsap : (span {a}).IsPrime :=
-      (span_singleton_prime (Prime.ne_zero (hps a ha))).mpr (hps a ha)
-    by_cases hpa : p = span {a}
-    · simpa [hpa] using ⟨a, rfl⟩
-    let l1 : LTSeries (PrimeSpectrum R) := by
-      refine (RelSeries.singleton _ (⊥ : PrimeSpectrum R)).append
-        (RelSeries.singleton _ ⟨span {a}, hsap⟩) ?_
-      simp only [RelSeries.last_singleton, RelSeries.head_singleton, Set.mem_setOf_eq]
-      refine (PrimeSpectrum.asIdeal_lt_asIdeal ⊥ ⟨span {a}, hsap⟩).mp ?_
-      simpa [bot_lt_iff_ne_bot] using Prime.ne_zero (hps a ha)
-    let l : LTSeries (PrimeSpectrum R) := by
-      refine l1.append (RelSeries.singleton _ ⟨p, hp⟩) ?_
-      simpa using (PrimeSpectrum.asIdeal_lt_asIdeal ⟨span {a}, hsap⟩ ⟨p, hp⟩).mp <|
-        lt_of_le_of_ne ((span_singleton_le_iff_mem p).mpr hap) fun eq => hpa eq.symm
-    have h2 : 2 ≤ p.primeHeight := by simpa using by exact le_sSup ⟨l, by simp [l, l1]⟩
-    rw [h1] at h2
-    exfalso
-    have h2' : (2 : WithTop ℕ) ≤ 1 := h2
-    norm_num at h2'
-  · intro hPrincipal
-    refine UniqueFactorizationMonoid.mk ?_
-    intro q
-    constructor
-    · intro hqirr
-      have hq0 : q ≠ 0 := Irreducible.ne_zero hqirr
-      have hspan_ne_top : (span {q}) ≠ ⊤ :=
-        fun htop => hqirr.not_isUnit ((span_singleton_eq_top).1 htop)
-      rcases exists_le_maximal (span {q}) hspan_ne_top with ⟨M, _, hspan_le_M⟩
-      rcases exists_minimalPrimes_le hspan_le_M with ⟨p, hpmin, _⟩
-      have hpp : p.IsPrime := minimalPrimes_isPrime hpmin
-      have hq_mem_p : q ∈ p := hpmin.1.2 (subset_span (by simp))
-      have hp_ne_bot : p ≠ ⊥ := fun hpbot => hq0 (by simpa [hpbot] using hq_mem_p)
-      have hp_not_min : p ∉ minimalPrimes R := by
-        intro hpminR
-        rw [IsDomain.minimalPrimes_eq_singleton_bot R] at hpminR
-        exact hp_ne_bot (by simpa using hpminR)
-      have hp_height_ne_zero : p.primeHeight ≠ 0 :=
-        fun hp0 => hp_not_min (p.primeHeight_eq_zero_iff.1 hp0)
-      have hp_height_le_one : p.primeHeight ≤ 1 := by
-        simpa [p.height_eq_primeHeight] using
-          height_le_one_of_isPrincipal_of_mem_minimalPrimes (span {q}) p hpmin
-      have hp_height_eq_one : p.primeHeight = 1 := by
-        rcases ENat.ne_top_iff_exists.mp (primeHeight_ne_top p) with ⟨n, hn⟩
-        rw [← hn] at hp_height_le_one hp_height_ne_zero ⊢
-        have hn_le : n ≤ 1 := by
-          simpa using (show (n : WithTop ℕ) ≤ 1 from hp_height_le_one)
-        interval_cases n <;> simp at *
-      have : p.IsPrincipal := hPrincipal p hp_height_eq_one
-      let g : R := Submodule.IsPrincipal.generator p
-      have hp_span : span {g} = p := by simp [g]
-      have hq_mem_span_g : q ∈ span {g} := by simpa [g] using hq_mem_p
-      rcases (mem_span_singleton.mp hq_mem_span_g) with ⟨a, hqa⟩
-      have hg_ne_zero : g ≠ 0 := fun hg0 => hp_ne_bot <| by simpa [← hp_span, span_singleton_eq_bot]
-      have hg_irr : Irreducible g := Prime.irreducible <|
-        (span_singleton_prime hg_ne_zero).1 (by simpa [g] using hpp)
-      have hassoc : Associated g q := Irreducible.associated_of_dvd hg_irr hqirr ⟨a, hqa⟩
-      exact (span_singleton_prime hq0).1 <| by
-        simpa [(span_singleton_eq_span_singleton).2 hassoc |>.symm.trans hp_span] using hpp
-    · exact Prime.irreducible
+      exact zero_ne_one ((Order.height_bot (PrimeSpectrum R)).symm.trans h1)
+    rcases hufd p hp_ne_bot hp with ⟨x, hxmem, hxprime⟩
+    have hx0 : x ≠ 0 := hxprime.ne_zero
+    have hspan_prime : (Ideal.span {x}).IsPrime := (Ideal.span_singleton_prime hx0).2 hxprime
+    have hspan_eq : Ideal.span {x} = p := by
+      by_contra hne
+      have hp_height_le : p.height ≤ 1 := by rw [Ideal.height_eq_primeHeight p, h1]
+      have hspan_height_lt : (Ideal.span {x}).height < 1 :=
+        (Ideal.height_le_iff.mp hp_height_le) _ hspan_prime <|
+          lt_of_le_of_ne ((Ideal.span_singleton_le_iff_mem p).2 hxmem) hne
+      have hspan_min : Ideal.span {x} ∈ minimalPrimes R :=
+        Ideal.primeHeight_eq_zero_iff.1 <| by
+          simpa [Ideal.height_eq_primeHeight (Ideal.span {x})] using
+            ENat.lt_one_iff_eq_zero.mp hspan_height_lt
+      rw [IsDomain.minimalPrimes_eq_singleton_bot R] at hspan_min
+      have hspan_bot : Ideal.span {x} = ⊥ := Set.mem_singleton_iff.mp hspan_min
+      exact hx0 ((Ideal.span_singleton_eq_bot).1 hspan_bot)
+    rw [← hspan_eq]
+    infer_instance
+  · intro hprincipal I hI_ne_bot hI_prime
+    rcases (Submodule.ne_bot_iff I).1 hI_ne_bot with ⟨x, hxI, hx0⟩
+    rcases Ideal.exists_minimalPrimes_le ((Ideal.span_singleton_le_iff_mem I).2 hxI) with
+      ⟨p, hpmin, hp_le_I⟩
+    have : p.IsPrime := Ideal.minimalPrimes_isPrime hpmin
+    have hp_ne_bot : p ≠ ⊥ := by
+      intro hp_bot
+      exact hx0 (Ideal.span_singleton_eq_bot.1 (le_antisymm (hp_bot ▸ hpmin.1.2) bot_le))
+    have hp_primeHeight_le : p.primeHeight ≤ 1 := by
+      simpa [Ideal.height_eq_primeHeight p] using
+        Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes (Ideal.span {x}) p hpmin
+    have hp_primeHeight_ne_zero : p.primeHeight ≠ 0 := by
+      intro hp_zero
+      have hp_min : p ∈ minimalPrimes R := Ideal.primeHeight_eq_zero_iff.1 hp_zero
+      rw [IsDomain.minimalPrimes_eq_singleton_bot R] at hp_min
+      exact hp_ne_bot (Set.mem_singleton_iff.mp hp_min)
+    have : p.IsPrincipal := hprincipal p <|
+      le_antisymm hp_primeHeight_le (ENat.one_le_iff_ne_zero.2 hp_primeHeight_ne_zero)
+    exact ⟨Submodule.IsPrincipal.generator p, hp_le_I (Submodule.IsPrincipal.generator_mem p),
+      Submodule.IsPrincipal.prime_generator_of_isPrime p hp_ne_bot⟩
 
 theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
     {x : R} (hx : Prime x) {p : Ideal R} [p.IsPrime] (hpx : x ∉ p)
-    (hprincipal : (map (algebraMap R (Localization.Away x)) p).IsPrincipal) :
-    p.IsPrincipal := by
+    (hprincipal : (map (algebraMap R (Localization.Away x)) p).IsPrincipal) : p.IsPrincipal := by
   let M : Submonoid R := Submonoid.powers x
   have hM : Submonoid.powers x ≤ nonZeroDivisors R :=
     powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero
@@ -229,16 +200,11 @@ theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
 theorem ufd_of_ufd_localization_away_of_prime {x : R} (hx : Prime x)
     [UniqueFactorizationMonoid (Localization.Away x)] : UniqueFactorizationMonoid R := by
   let M : Submonoid R := Submonoid.powers x
-  have hM : M ≤ nonZeroDivisors R := by
-    refine Submonoid.powers_le.2 ?_
-    rw [mem_nonZeroDivisors_iff]
-    constructor <;> intro a ha
-    · exact mul_eq_zero.mp ha |>.resolve_left hx.ne_zero
-    · exact mul_eq_zero.mp ha |>.resolve_right hx.ne_zero
+  have hM : M ≤ nonZeroDivisors R := powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero
   have : IsDomain (Localization.Away x) := by
     simpa [M] using IsLocalization.isDomain_of_le_nonZeroDivisors (Localization.Away x) hM
   rw [Ideal.ufd_iff_height_one_primes_principal]
-  intro p hp hheight
+  intro p hp h1
   by_cases hxp : x ∈ p
   · let q : Ideal R := Ideal.span {x}
     have hqprime : q.IsPrime := (Ideal.span_singleton_prime hx.ne_zero).2 hx
@@ -255,7 +221,7 @@ theorem ufd_of_ufd_localization_away_of_prime {x : R} (hx : Prime x)
           _ ≤ q.primeHeight + 1 := by simpa [add_comm] using add_le_add_right hq_ge_one 1
           _ ≤ p.primeHeight := Ideal.primeHeight_add_one_le_of_lt
             (lt_of_le_of_ne ((Ideal.span_singleton_le_iff_mem p).2 hxp) hqp)
-      have htwo : (2 : WithTop ℕ) ≤ 1 := by rwa [hheight] at htwo
+      have htwo : (2 : WithTop ℕ) ≤ 1 := by rwa [h1] at htwo
       exfalso
       norm_num at htwo
   · have hd : Disjoint (M : Set R) (p : Set R) := by
@@ -269,5 +235,5 @@ theorem ufd_of_ufd_localization_away_of_prime {x : R} (hx : Prime x)
       Ideal.ufd_iff_height_one_primes_principal.1 inferInstance
         (p.map (algebraMap R (Localization.Away x))) <| by
           simpa [IsLocalization.comap_map_of_isPrime_disjoint M (Localization.Away x)
-            inferInstance hd, hheight] using
+            inferInstance hd, h1] using
               (IsLocalization.primeHeight_comap M (p.map (algebraMap R (Localization.Away x)))).symm
