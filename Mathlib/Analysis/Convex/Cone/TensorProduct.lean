@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Convex.Cone.Dual
 public import Mathlib.Geometry.Convex.Cone.Simplicial
 public import Mathlib.Geometry.Convex.Cone.TensorProduct
-public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.TopDualPairing
 
 /-!
 # Tensor Products of Pointed Cones
@@ -18,8 +18,9 @@ finite-dimensional real vector spaces are equal when one cone is simplicial and 
 and the other is proper (pointed and closed).
 
 Finite-dimensionality of the proper cone ambient space is by explicit declaration and is required
-for the `topDualPairing_isContPerfPair` theorem. The simplicial and generating cone ambient space
-is implicitly finite dimensional by the simplicial and generating assumption.
+for the `topDualPairing_isContPerfPair` instance (in `Topology.Algebra.Module.TopDualPairing`).
+The simplicial and generating cone ambient space is implicitly finite dimensional by the
+simplicial and generating assumption.
 
 This file uses `topDualPairing` (the canonical pairing of a vector space and its topological dual)
 to avoid explicit topology assumptions on `Module.Dual`.
@@ -48,32 +49,6 @@ This requires:
 -/
 
 @[expose] public section
-
-/-! ### IsContPerfPair for topDualPairing -/
-
-section TopDualPairingContPerfPair
-
-open Module
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]
-variable [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
-variable [FiniteDimensional 𝕜 E] [T2Space E]
-
-/-- The `topDualPairing` is a continuous perfect pairing for finite-dimensional
-Hausdorff spaces over complete nontrivially normed fields. -/
-theorem topDualPairing_isContPerfPair : (topDualPairing 𝕜 E).IsContPerfPair where
-  continuous_uncurry := by
-    haveI : IsModuleTopology 𝕜 E := isModuleTopologyOfFiniteDimensional
-    haveI : IsModuleTopology 𝕜 (E →L[𝕜] 𝕜) := isModuleTopologyOfFiniteDimensional
-    exact IsModuleTopology.continuous_bilinear_of_finite_left (topDualPairing 𝕜 E)
-  bijective_left := Function.bijective_id
-  bijective_right := by
-    refine LinearMap.toContinuousLinearMap.bijective.comp ?_
-    rw [LinearMap.flip_bijective_iff₁]
-    exact LinearMap.toContinuousLinearMap.symm.bijective
-
-end TopDualPairingContPerfPair
 
 /-! ### Equality of minimal and maximal tensor products -/
 
@@ -112,7 +87,6 @@ theorem minTensorProduct_eq_max_of_simplicial_generating_left (C₁ : PointedCon
     (C₂ : ProperCone ℝ F) (h₁_simp : C₁.IsSimplicial) (h₁_gen : Submodule.span ℝ (C₁ : Set E) = ⊤) :
     minTensorProduct C₁ C₂.toPointedCone = maxTensorProduct C₁ C₂.toPointedCone := by
   classical
-  letI : (topDualPairing ℝ F).IsContPerfPair := topDualPairing_isContPerfPair
   obtain ⟨s, hs_fin, hs_lin, hs_span⟩ := h₁_simp
   haveI : Fintype s := hs_fin.fintype
   -- Extract basis from `C₁.IsSimplicial` + generating
