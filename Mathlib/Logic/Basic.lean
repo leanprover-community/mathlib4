@@ -6,7 +6,8 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.Lemma
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
 
@@ -699,9 +700,11 @@ noncomputable def dec (p : Prop) : Decidable p := by infer_instance
 variable {α : Sort*}
 
 /-- Any predicate `p` is decidable classically. -/
+@[implicit_reducible]
 noncomputable def decPred (p : α → Prop) : DecidablePred p := by infer_instance
 
 /-- Any relation `p` is decidable classically. -/
+@[implicit_reducible]
 noncomputable def decRel (p : α → α → Prop) : DecidableRel p := by infer_instance
 
 /-- Any type `α` has decidable equality classically. -/

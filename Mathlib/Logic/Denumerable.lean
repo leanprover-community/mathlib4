@@ -76,6 +76,7 @@ instance (priority := 100) : Infinite α :=
   Infinite.of_surjective _ (eqv α).surjective
 
 /-- A type equivalent to `ℕ` is denumerable. -/
+@[implicit_reducible]
 def mk' {α} (e : α ≃ ℕ) : Denumerable α where
   encode := e
   decode := some ∘ e.symm
@@ -84,12 +85,12 @@ def mk' {α} (e : α ≃ ℕ) : Denumerable α where
 
 /-- Denumerability is conserved by equivalences. This is transitivity of equivalence the denumerable
 way. -/
+@[implicit_reducible]
 def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
   { Encodable.ofEquiv _ e with
     decode_inv := fun n => by
       simp [decode_ofEquiv, encode_ofEquiv] }
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofEquiv_ofNat (α) {β} [Denumerable α] (e : β ≃ α) (n) :
     @ofNat β (ofEquiv _ e) n = e.symm (ofNat α n) := by
@@ -297,6 +298,7 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Any infinite set of naturals is denumerable. -/
+@[implicit_reducible]
 def denumerable (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : Denumerable s :=
   Denumerable.ofEquiv ℕ
     { toFun := toFunAux
@@ -311,6 +313,7 @@ namespace Denumerable
 open Encodable
 
 /-- An infinite encodable type is denumerable. -/
+@[implicit_reducible]
 def ofEncodableOfInfinite (α : Type*) [Encodable α] [Infinite α] : Denumerable α := by
   letI := @decidableRangeEncode α _
   letI : Infinite (Set.range (@encode α _)) :=

@@ -35,7 +35,6 @@ section
 
 universe u' v'
 
-set_option backward.isDefEq.respectTransparency false in
 open IsLocalizedModule in
 theorem Module.injective_of_isLocalizedModule [Small.{v} R] [IsNoetherianRing R] {Rₛ : Type u'}
     [Small.{v'} Rₛ] [CommRing Rₛ] [Algebra R Rₛ] {Mₛ : Type v'} [AddCommGroup Mₛ] [Module R Mₛ]
@@ -60,7 +59,6 @@ theorem Module.injective_of_isLocalizedModule [Small.{v} R] [IsNoetherianRing R]
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Module.injective_of_localization_maximal [Small.{v} R] [IsNoetherianRing R]
     (H : ∀ (I : Ideal R) (_ : I.IsMaximal),
       Module.Injective (Localization.AtPrime I) (LocalizedModule I.primeCompl M)) :
