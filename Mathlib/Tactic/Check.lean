@@ -72,6 +72,7 @@ where
       match type with
       | `(∀ $binders'*, $type) =>
         let binders' := binders'.filter (·.raw.isOfKind ``Parser.Term.explicitBinder)
+        -- Note: this is a "dangerous" use of `TSyntax.mk`. See also `delabConstWithSignature`.
         return ⟨← `(declSig| $binders* $binders'* : $type)⟩
       -- TODO: handle `_ → {_ : _} → ⋯`
       | _ => return ⟨← `(declSig| $binders* : $type)⟩
