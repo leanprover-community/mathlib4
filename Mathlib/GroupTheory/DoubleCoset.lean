@@ -116,9 +116,12 @@ abbrev mk (H K : Subgroup G) (a : G) : Quotient (H : Set G) K :=
 instance (H K : Subgroup G) : Inhabited (Quotient (H : Set G) K) :=
   ⟨mk H K (1 : G)⟩
 
+lemma eq'' {a b : G} (H K : Subgroup G) : mk H K a = mk H K b ↔ setoid H K a b :=
+  Quotient.eq
+
 lemma eq (H K : Subgroup G) (a b : G) :
     mk H K a = mk H K b ↔ ∃ h ∈ H, ∃ k ∈ K, b = h * a * k := by
-  erw [Quotient.eq'']
+  rw [eq'']
   exact rel_iff
 
 lemma out_eq' (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out = q :=
