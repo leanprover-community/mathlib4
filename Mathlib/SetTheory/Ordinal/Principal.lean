@@ -8,15 +8,15 @@ module
 public import Mathlib.SetTheory.Ordinal.FixedPoint
 
 /-!
-# IsPrincipal ordinals
+# Principal ordinals
 
 We define principal or indecomposable ordinals, and we prove the standard properties about them.
 
 ## Main definitions and results
 
-* `Principal`: A principal or indecomposable ordinal under some binary operation. We include 0 and
+* `IsPrincipal`: A principal or indecomposable ordinal under some binary operation. We include 0 and
   any other typically excluded edge cases for simplicity.
-* `not_bddAbove_isPrincipal`: Principal ordinals (under any operation) are unbounded.
+* `not_bddAbove_setOf_isPrincipal`: Principal ordinals (under any operation) are unbounded.
 * `isPrincipal_add_iff_zero_or_omega0_opow`: The main characterization theorem for additive
   principal ordinals.
 * `isPrincipal_mul_iff_le_two_or_omega0_opow_opow`: The main characterization theorem for
@@ -141,13 +141,13 @@ protected theorem IsPrincipal.sSup {s : Set Ordinal} (H : ∀ x ∈ s, IsPrincip
   · rwa [csSup_of_not_bddAbove hs]
 
 @[deprecated (since := "2026-03-17")]
-alias Principal.sSup := IsPrincipal.sSup
+protected alias Principal.sSup := IsPrincipal.sSup
 
 protected theorem IsPrincipal.iSup {ι} {f : ι → Ordinal} (H : ∀ i, IsPrincipal op (f i)) :
     IsPrincipal op (⨆ i, f i) := IsPrincipal.sSup (by simpa)
 
 @[deprecated (since := "2026-03-17")]
-alias Principal.iSup := IsPrincipal.iSup
+protected alias Principal.iSup := IsPrincipal.iSup
 
 end Arbitrary
 
@@ -281,6 +281,9 @@ theorem isPrincipal_add_omega0_opow (o : Ordinal) : IsPrincipal (· + ·) (ω ^ 
     rw [← mul_add, ← Nat.cast_add]
     exact (omega0_opow_mul_nat_lt hc _).le
 
+@[deprecated (since := "2026-03-17")]
+alias principal_add_omega0_opow := isPrincipal_add_omega0_opow
+
 theorem add_omega0_opow (h : a < ω ^ b) : a + ω ^ b = ω ^ b :=
   (isPrincipal_add_omega0_opow b).add_eq_right h
 
@@ -289,9 +292,6 @@ theorem add_omega0_opow_of_le (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c 
 
 @[deprecated (since := "2026-03-18")]
 alias add_absorp := add_omega0_opow_of_le
-
-@[deprecated (since := "2026-03-17")]
-alias principal_add_omega0_opow := isPrincipal_add_omega0_opow
 
 /-- The main characterization theorem for additive principal ordinals. -/
 theorem isPrincipal_add_iff_zero_or_omega0_opow :
@@ -318,7 +318,7 @@ theorem isPrincipal_add_opow_of_isPrincipal_add {a} (ha : IsPrincipal (· + ·) 
     exact isPrincipal_add_omega0_opow _
 
 @[deprecated (since := "2026-03-17")]
-alias principal_add_opow_of_isPrincipal_add := isPrincipal_add_opow_of_isPrincipal_add
+alias principal_add_opow_of_principal_add := isPrincipal_add_opow_of_isPrincipal_add
 
 theorem isPrincipal_add_mul_of_isPrincipal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (hb₁ : b ≠ 1)
     (hb : IsPrincipal (· + ·) b) : IsPrincipal (· + ·) (a * b) := by
@@ -339,7 +339,7 @@ theorem isPrincipal_add_mul_of_isPrincipal_add (a : Ordinal.{u}) {b : Ordinal.{u
       exact Left.add_lt_add hx' hy'
 
 @[deprecated (since := "2026-03-17")]
-alias principal_add_mul_of_isPrincipal_add := isPrincipal_add_mul_of_isPrincipal_add
+alias principal_add_mul_of_principal_add := isPrincipal_add_mul_of_isPrincipal_add
 
 /-! #### Multiplicative principal ordinals -/
 
@@ -369,7 +369,7 @@ theorem isPrincipal_mul_of_le_two (ho : o ≤ 2) : IsPrincipal (· * ·) o := by
   · exact isPrincipal_mul_two
 
 @[deprecated (since := "2026-03-17")]
-alias principal_mul_of_le_two := isPrincipal_add_of_le_one
+alias principal_mul_of_le_two := isPrincipal_mul_of_le_two
 
 theorem isPrincipal_add_of_isPrincipal_mul (ho : IsPrincipal (· * ·) o) (ho₂ : o ≠ 2) :
     IsPrincipal (· + ·) o := by
@@ -382,7 +382,7 @@ theorem isPrincipal_add_of_isPrincipal_mul (ho : IsPrincipal (· * ·) o) (ho₂
     exact add_le_add (le_max_left a b) (le_max_right a b)
 
 @[deprecated (since := "2026-03-17")]
-alias principal_add_of_isPrincipal_mul := isPrincipal_add_of_isPrincipal_mul
+alias principal_add_of_principal_mul := isPrincipal_add_of_isPrincipal_mul
 
 theorem isSuccLimit_of_isPrincipal_mul (ho₂ : 2 < o) (ho : IsPrincipal (· * ·) o) : IsSuccLimit o :=
   isSuccLimit_of_isPrincipal_add (one_lt_two.trans ho₂)
@@ -465,7 +465,7 @@ theorem isPrincipal_add_of_isPrincipal_mul_opow (hb : 1 < b) (ho : IsPrincipal (
   rwa [← opow_add, opow_lt_opow_iff_right hb] at this
 
 @[deprecated (since := "2026-03-17")]
-alias principal_add_of_isPrincipal_mul_opow := isPrincipal_add_of_isPrincipal_mul_opow
+alias principal_add_of_principal_mul_opow := isPrincipal_add_of_isPrincipal_mul_opow
 
 /-- The main characterization theorem for multiplicative principal ordinals. -/
 theorem isPrincipal_mul_iff_le_two_or_omega0_opow_opow :

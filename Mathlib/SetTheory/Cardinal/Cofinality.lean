@@ -110,7 +110,7 @@ theorem GaloisConnection.cof_le_lift {f : β → α} {g : α → β} (h : Galois
   simp_rw [Order.cof, lift_iInf, le_ciInf_iff']
   rintro ⟨s, hs⟩
   apply (csInf_le' _).trans (mk_image_le_lift (f := g))
-  exact ⟨⟨g '' s, h.map_cofinal hs⟩, rfl⟩
+  exact ⟨⟨g '' s, h.map_isCofinal hs⟩, rfl⟩
 
 theorem GaloisConnection.cof_le {f : γ → α} {g : α → γ} (h : GaloisConnection f g) :
     Order.cof γ ≤ Order.cof α := by
@@ -253,7 +253,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     sInf { a : Cardinal | ∃ (ι : Type u) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = a } := by
   refine le_antisymm (le_csInf (cof_lsub_def_nonempty o) ?_) (csInf_le' ?_)
   · rintro a ⟨ι, f, hf, rfl⟩
-    rw [← type_toType o]
+    rw [← type_toType o, cof_type]
     refine
       (cof_le fun a => ?_).trans
         (@mk_le_of_injective _ _
@@ -635,7 +635,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u + 1, v, u}, Cardinal.lift_lt, cof_type, ← Se]
       refine lt_of_not_ge fun h => ?_
       obtain ⟨a, e⟩ := Cardinal.mem_range_lift_of_le h
-      refine Quotient.inductionOn a (fun α e => ?_) e
+      induction a using Quotient.inductionOn
       obtain ⟨f⟩ := Quotient.exact e
       have f := Equiv.ulift.symm.trans f
       let g a := (f a).1
