@@ -82,9 +82,8 @@ theorem map
     IsNormalClosureFG (K.map f) := by
   obtain ⟨S, hSfinite, hSclosure⟩ := hK
   use f '' S
-  constructor
-  · exact hSfinite.image _
-  · rw [ ← hSclosure, Subgroup.map_normalClosure _ _ hf]
+  refine ⟨hSfinite.image _, ?_⟩
+  rw [ ← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
 /-- Composing with a reindexing `FreeGroup.freeGroupCongr` preserves finite generation in
 normal closure of the kernel. -/
