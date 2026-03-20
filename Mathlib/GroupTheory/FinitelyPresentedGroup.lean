@@ -100,8 +100,8 @@ finitely generated in normal closure, provided this holds for the original kerne
 theorem ker_lift_range (h : FreeGroup α →* G) (hhker : IsNormalClosureFG h.ker) :
     IsNormalClosureFG (FreeGroup.lift
       (fun s : Set.range (fun a : α ↦ h (FreeGroup.of a)) ↦ (s : G))).ker := by
-  set S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
-  set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
+  let S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
+  let f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
   let g := Set.rangeFactorization (fun a : α ↦ h (FreeGroup.of a))
   have hh_fcompg : f.comp (FreeGroup.map g) = h := by ext a; simp [f, g]
   have hg'_surj : Function.Surjective (FreeGroup.map g) :=
@@ -144,12 +144,10 @@ instance isFinitelyPresented_isFG [h : IsFinitelyPresented G] : Group.FG G := by
   rw [Group.fg_iff_exists_freeGroup_hom_surjective_finite]
   obtain ⟨α, hα, rels, hrels, ⟨iso⟩⟩ := h
   unfold PresentedGroup at iso
-  use α, hα
-  let iso' := iso.symm.toMonoidHom.comp (QuotientGroup.mk' (Subgroup.normalClosure rels))
-  use iso'
-  simpa [iso'] using
-    (Function.Surjective.comp
-    iso.symm.surjective (QuotientGroup.mk'_surjective (Subgroup.normalClosure rels)))
+  refine ⟨α, hα,
+    iso.symm.toMonoidHom.comp (QuotientGroup.mk' (Subgroup.normalClosure rels)), ?_⟩
+  exact iso.symm.surjective.comp
+    (QuotientGroup.mk'_surjective (Subgroup.normalClosure rels))
 
 namespace IsFinitelyPresented
 
