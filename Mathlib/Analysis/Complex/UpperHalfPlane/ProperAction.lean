@@ -158,7 +158,7 @@ lemma isProperMap_smul_I : IsProperMap fun g : SL(2, ℝ) ↦ g • I := by
     exact Real.le_sqrt_of_sq_le <| le_trans (by fin_cases j <;> simp [sq_nonneg]) (hA' g hg)
 
 instance instProperSMul : ProperSMul SL(2, ℝ) ℍ := by
-  apply MulAction.properSMul_of_isCompact_setOf_inter_nonempty
+  rw [MulAction.properSMul_iff_isCompact_setOf_inter_nonempty]
   intro U V hU hV
   let U' := {g : SL(2, ℝ) | g • I ∈ U}
   let V' := {g : SL(2, ℝ) | g • I ∈ V}
