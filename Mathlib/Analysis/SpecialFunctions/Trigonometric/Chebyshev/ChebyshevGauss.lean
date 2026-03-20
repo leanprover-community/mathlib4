@@ -110,15 +110,15 @@ theorem sumZeroes_T_of_not_dvd {n : ℕ} {k : ℤ} (hk : ¬ (2 * n : ℤ) ∣ k)
 theorem integral_eq_sumZeroes {n : ℕ} {P : ℝ[X]} (hn : n ≠ 0) (hP : P.degree < 2 * n) :
     ∫ x, P.eval x ∂measureT = sumZeroes n P := by
   have hmem : P ∈ degreeLT ℝ (2 * n) := by rwa [mem_degreeLT]
-  rw [← Sequence.span_degreeLT (m := 2 * n) (chebyshevTsequence ℝ) (by simp),
-    show Set.Iio (2 * n) = Finset.range (2 * n) by simp, ← Finset.coe_image] at hmem
-  obtain ⟨c, rfl⟩ := Submodule.mem_span_finset'.mp hmem
+  rw [← Sequence.span_degreeLT (chebyshevTsequence ℝ) (by simp),
+    show Set.Iio (2 * n) = Finset.range (2 * n) by simp,
+    Submodule.mem_span_image_finset_iff_exists_fun'] at hmem
+  obtain ⟨c, rfl⟩ := hmem
   simp_rw [eval_finset_sum, eval_smul]
   rw [MeasureTheory.integral_finset_sum, sumZeroes_sum]
   · simp_rw [sumZeroes_smul, smul_eq_mul, MeasureTheory.integral_const_mul]
-    congr! with t _
-    obtain ⟨i, hrange, ht⟩ := mem_image.mp t.prop
-    simp_rw [← ht, chebyshevTsequence]
+    congr! with i hrange
+    simp_rw [chebyshevTsequence]
     by_cases i = 0
     case pos hi => rw [hi, Nat.cast_zero, integral_eval_T_real_measureT_zero, sumZeroes_T_zero hn]
     case neg hi =>
