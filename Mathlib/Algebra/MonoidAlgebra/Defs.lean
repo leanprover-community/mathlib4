@@ -44,6 +44,8 @@ The notations are scoped to their respective namespaces, and which one `R[M]` re
 depends on which of the two namespaces is open.
 -/
 
+set_option backward.inferInstanceAs.normalForm false
+
 @[expose] public section
 
 assert_not_exists NonUnitalAlgHom AlgEquiv
