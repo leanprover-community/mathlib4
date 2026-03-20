@@ -4894,6 +4894,8 @@ public import Mathlib.LinearAlgebra.Matrix.IsDiag
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
 public import Mathlib.LinearAlgebra.Matrix.LDL
 public import Mathlib.LinearAlgebra.Matrix.Module
+public import Mathlib.LinearAlgebra.Matrix.MoorePenrose.Basic
+public import Mathlib.LinearAlgebra.Matrix.MoorePenrose.Defs
 public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
