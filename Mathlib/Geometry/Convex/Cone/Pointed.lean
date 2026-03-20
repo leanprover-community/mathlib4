@@ -5,10 +5,10 @@ Authors: Apurva Nakade
 -/
 module
 
+public import Mathlib.Algebra.Group.Submonoid.Support
 public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
-public import Mathlib.Algebra.Group.Submonoid.Support
 
 
 /-!
