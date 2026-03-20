@@ -68,8 +68,8 @@ variable [Semiring R]
 
 /-- Given a continuous additive equivalence `e : α ≃ₜ+ β`, if `β` is a topological additive group,
 then so is `α`. -/
-@[implicit_reducible, to_additive]
-def ContinuousMulEquiv.isTopologicalGroup
+@[to_additive]
+lemma ContinuousMulEquiv.isTopologicalGroup
     [TopologicalSpace β] [CommGroup β] [IsTopologicalGroup β]
     [TopologicalSpace α] [CommGroup α]
     (e : α ≃ₜ* β) : IsTopologicalGroup α where
