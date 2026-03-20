@@ -1020,7 +1020,8 @@ theorem Language.IsContextFree.subst {α β : Type}
       classical
       exact ⟨ g.subst F, by rw [ ← hg, ← funext hF, ContextFreeGrammar.subst_language_eq ] ⟩
 
-/-! ### Singleton language is context-free -/
+/-! ### Main corollaries: Closure under concatenation, union, and Kleene star -/
+/-- Singleton language is context-free -/
 theorem isContextFree_singleton {α : Type} (w : List α) :
     ({w} : Language α).IsContextFree := by
   use ContextFreeGrammar.mk Unit () ({ContextFreeRule.mk () (w.map Symbol.terminal)})
@@ -1049,7 +1050,7 @@ theorem isContextFree_singleton {α : Type} (w : List α) :
       by convert ContextFreeRule.Rewrites.head
            (r := ContextFreeRule.mk () (u.map Symbol.terminal)) [] using 1; simp⟩
 
-/-! ### Finite language {[false], [true]} is context-free -/
+/-- Finite language {[false], [true]} is context-free -/
 theorem isContextFree_pair_bool :
     ({[false], [true]} : Language Bool).IsContextFree := by
   use ContextFreeGrammar.mk Unit () ({ContextFreeRule.mk () [Symbol.terminal false],
@@ -1092,7 +1093,7 @@ theorem isContextFree_pair_bool :
         Finset.mem_insert_of_mem (Finset.mem_singleton_self _),
         ContextFreeRule.Rewrites.head []⟩
 
-/-! ### The universal language over Unit is context-free -/
+/-- The universal language over Unit is context-free -/
 theorem isContextFree_univ_unit : Language.IsContextFree (Set.univ : Language Unit) := by
   use ⟨Unit, (), {⟨(), []⟩, ⟨(), [Symbol.terminal (), Symbol.nonterminal ()]⟩}⟩
   refine Set.eq_univ_of_forall ?_
@@ -1135,7 +1136,7 @@ theorem isContextFree_univ_unit : Language.IsContextFree (Set.univ : Language Un
       exact Relation.ReflTransGen.trans h_step1 (h_prepend _ _ hu)
     convert h_add_terminal _ h using 1
 
-/-! ### Main corollaries: Closure under concatenation, union, and Kleene star -/
+/-- Context free languages are closed under concatenation / multiplication -/
 theorem Language.IsContextFree.mul {α : Type} {L₁ L₂ : Language α}
     (h₁ : L₁.IsContextFree) (h₂ : L₂.IsContextFree) :
     (L₁ * L₂).IsContextFree := by
@@ -1149,6 +1150,7 @@ theorem Language.IsContextFree.mul {α : Type} {L₁ L₂ : Language α}
       exact Eq.symm ( by simpa using
         Language.subst_pair_eq_mul ( fun b => if b = true then L₂ else L₁ ) )
 
+/-- Context free languages are closed under addition / union -/
 theorem Language.IsContextFree.add {α : Type} {L₁ L₂ : Language α}
     (h₁ : L₁.IsContextFree) (h₂ : L₂.IsContextFree) :
     (L₁ + L₂).IsContextFree := by
@@ -1168,6 +1170,7 @@ theorem Language.IsContextFree.add {α : Type} {L₁ L₂ : Language α}
         aesop
       )
 
+/-- Context free languages are closed under the Kleene Star operation -/
 theorem Language.IsContextFree.kstar {α : Type} {L : Language α}
     (h : L.IsContextFree) :
     (KStar.kstar L).IsContextFree := by
