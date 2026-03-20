@@ -86,7 +86,7 @@ lemma isClosedEmbedding_cfcAux : IsClosedEmbedding hA.cfcAux := by
   obtain ⟨x, hx⟩ := x
   obtain ⟨i, rfl⟩ := hA.spectrum_real_eq_range_eigenvalues ▸ hx
   rw [← diagonal_zero] at h2
-  have := (diagonal_eq_diagonal_iff).mp h2
+  have := diagonal_eq_diagonal_iff.mp h2
   exact RCLike.ofReal_eq_zero.mp (this i)
 
 lemma cfcAux_id : hA.cfcAux (.restrict (spectrum ℝ A) (.id ℝ)) = A := by

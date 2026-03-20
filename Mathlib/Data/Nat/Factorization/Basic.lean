@@ -83,14 +83,10 @@ theorem Prime.eq_of_factorization_pos {p q : ℕ} (hp : Prime p) (h : p.factoriz
 /-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 
 
-theorem eq_factorization_iff {n : ℕ} {f : ℕ →₀ ℕ} (hn : n ≠ 0) (hf : ∀ p ∈ f.support, Prime p) :
-    f = n.factorization ↔ f.prod (· ^ ·) = n :=
-  ⟨fun h => by rw [h, factorization_prod_pow_eq_self hn], fun h => by
-    rw [← h, prod_pow_factorization_eq_self hf]⟩
-
+@[deprecated factorizationEquiv_symm_apply_coe (since := "2026-03-18")]
 theorem factorizationEquiv_inv_apply {f : ℕ →₀ ℕ} (hf : ∀ p ∈ f.support, Prime p) :
     (factorizationEquiv.symm ⟨f, hf⟩).1 = f.prod (· ^ ·) :=
-  rfl
+  factorizationEquiv_symm_apply_coe ⟨f, hf⟩
 
 theorem ordProj_of_not_prime (n p : ℕ) (hp : ¬p.Prime) : ordProj[p] n = 1 := by
   simp [hp]
@@ -244,6 +240,24 @@ theorem ordCompl_eq_self_iff_zero_or_not_dvd (n : ℕ) {p : ℕ} (hp : Prime p) 
     · simp [n_eq_zero]
     · simp [Nat.factorization_eq_zero_of_not_dvd not_dvd]
 
+theorem ordCompl_pow_mul_of_not_dvd {m : ℕ} (k : ℕ) {p : ℕ} (hp : p.Prime) (hm : ¬p ∣ m) :
+    ordCompl[p] (p ^ k * m) = m := by
+  rw [ordCompl_self_pow_mul m k hp]
+  exact (ordCompl_eq_self_iff_zero_or_not_dvd m hp).mpr (Or.inr hm)
+
+theorem ordCompl_pow_mul_eq_self_iff (k m : ℕ) {p : ℕ} (hp : p.Prime) :
+    ordCompl[p] (p ^ k * m) = m ↔ m = 0 ∨ ¬p ∣ m := by
+  rw [ordCompl_self_pow_mul m k hp, ordCompl_eq_self_iff_zero_or_not_dvd m hp]
+
+theorem ordCompl_div_pow_of_dvd (k : ℕ) {x p : ℕ} (hp : p.Prime) (hx : p ^ k ∣ x) :
+    ordCompl[p] (x / p ^ k) = ordCompl[p] x := by
+  obtain ⟨m, rfl⟩ := hx
+  rw [Nat.mul_div_cancel_left m (pow_pos hp.pos k), ← ordCompl_self_pow_mul m k hp]
+
+theorem ordCompl_div_of_dvd {x : ℕ} {p : ℕ} (hp : p.Prime) (hx : p ∣ x) :
+    ordCompl[p] (x / p) = ordCompl[p] x := by
+  simpa [pow_one] using ordCompl_div_pow_of_dvd 1 hp (show p ^ 1 ∣ x by simpa)
+
 -- `ordCompl[p] n` is the largest divisor of `n` not divisible by `p`.
 theorem dvd_ordCompl_of_dvd_not_dvd {p d n : ℕ} (hdn : d ∣ n) (hpd : ¬p ∣ d) :
     d ∣ ordCompl[p] n := by
@@ -341,27 +355,18 @@ theorem prod_primeFactors_dvd (n : ℕ) : ∏ p ∈ n.primeFactors, p ∣ n := b
 
 theorem factorization_gcd {a b : ℕ} (ha_pos : a ≠ 0) (hb_pos : b ≠ 0) :
     (gcd a b).factorization = a.factorization ⊓ b.factorization := by
-  let dfac := a.factorization ⊓ b.factorization
-  let d := dfac.prod (· ^ ·)
-  have dfac_prime : ∀ p : ℕ, p ∈ dfac.support → Prime p := by
-    intro p hp
-    have : p ∈ a.primeFactorsList ∧ p ∈ b.primeFactorsList := by simpa [dfac] using hp
-    exact prime_of_mem_primeFactorsList this.1
-  have h1 : d.factorization = dfac := prod_pow_factorization_eq_self dfac_prime
-  have hd_pos : d ≠ 0 := (factorizationEquiv.invFun ⟨dfac, dfac_prime⟩).2.ne'
-  suffices d = gcd a b by rwa [← this]
+  suffices (a.factorization ⊓ b.factorization).prod (· ^ ·) = gcd a b by
+    rw [← this, factorization_prod_pow_eq_self_of_le_factorization inf_le_left]
   apply gcd_greatest
-  · rw [← factorization_le_iff_dvd hd_pos ha_pos, h1]
-    exact inf_le_left
-  · rw [← factorization_le_iff_dvd hd_pos hb_pos, h1]
-    exact inf_le_right
+  · exact prod_pow_dvd_of_le_factorization inf_le_left
+  · exact prod_pow_dvd_of_le_factorization inf_le_right
   · intro e hea heb
-    rcases Decidable.eq_or_ne e 0 with (rfl | he_pos)
-    · simp only [zero_dvd_iff] at hea
-      contradiction
+    rcases eq_or_ne e 0 with (rfl | he_pos)
+    · exact absurd (zero_dvd_iff.mp hea) ha_pos
+    apply dvd_prod_pow_of_factorization_le he_pos
     have hea' := (factorization_le_iff_dvd he_pos ha_pos).mpr hea
     have heb' := (factorization_le_iff_dvd he_pos hb_pos).mpr heb
-    simp [dfac, ← factorization_le_iff_dvd he_pos hd_pos, h1, hea', heb']
+    simp [hea', heb']
 
 theorem factorization_lcm {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
     (a.lcm b).factorization = a.factorization ⊔ b.factorization := by

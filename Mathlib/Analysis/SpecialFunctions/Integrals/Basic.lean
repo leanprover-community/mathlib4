@@ -600,7 +600,6 @@ theorem integral_sin_pow_three :
   have := @integral_sin_pow_odd_mul_cos_pow a b 1 0
   norm_num at this; exact this
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Simplification of the integral of `sin x ^ m * cos x ^ n`, case `m` and `n` are both even. -/
 theorem integral_sin_pow_even_mul_cos_pow_even (m n : ℕ) :
     (∫ x in a..b, sin x ^ (2 * m) * cos x ^ (2 * n)) =

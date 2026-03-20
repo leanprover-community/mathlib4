@@ -55,6 +55,7 @@ instance (F : J ⥤ FGModuleCat k) :
     ((ModuleCat.mono_iff_injective _).1 inferInstance)
 
 /-- The forgetful functor from `FGModuleCat k` to `ModuleCat k` creates all finite limits. -/
+@[implicit_reducible]
 def forget₂CreatesLimit (F : J ⥤ FGModuleCat k) :
     CreatesLimit F (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) :=
   createsLimitOfFullyFaithfulOfIso
