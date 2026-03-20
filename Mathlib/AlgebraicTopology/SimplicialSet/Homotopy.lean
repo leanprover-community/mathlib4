@@ -51,6 +51,8 @@ variable {X Y : SSet.{u}}
 
 namespace RelativeMorphism
 
+/-- Morphisms relatively to the `⊥` subcomplexes of `X` and `Y`
+identify to morphisms `X ⟶ Y`. -/
 @[simps]
 def botEquiv :
     RelativeMorphism (⊥ : X.Subcomplex) (⊥ : Y.Subcomplex)
@@ -73,17 +75,21 @@ section
 
 variable (h : Homotopy f g)
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp high)]
 lemma h₀ : ι₀ ≫ h.h = f :=
   RelativeMorphism.Homotopy.h₀ h
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp high)]
 lemma h₁ : ι₁ ≫ h.h = g :=
   RelativeMorphism.Homotopy.h₁ h
 
 end
 
-noncomputable def toSimplicialHomotopy (H : Homotopy f g) :
+/-- If `H : Homotopy f g` is a homotopy between morphisms of simplicial sets
+`f : X ⟶ Y` and `g : X ⟶ Y` (i.e. `H.h` is a morphism `X ⊗ Δ[1] ⟶ Y` inducing
+`f` and `g`), then this is the corresponding (combinatorial) homotopy of
+morphisms of simplicial objects between `f` and `g`. -/
+noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     SimplicialObject.Homotopy f g where
   h i x := (yonedaEquiv.symm x ▷ Δ[1] ≫ H.h).app _ (prodStdSimplex.nonDegenerateEquiv₁ i).1
   h_zero_comp_δ_zero n := by

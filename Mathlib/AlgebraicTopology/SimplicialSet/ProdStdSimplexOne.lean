@@ -28,6 +28,7 @@ variable {p : ℕ}
 namespace nonDegenerateEquiv₁
 
 open stdSimplex in
+/-- Auxiliary definition for `prodStdSimplex.nonDegenerateEquiv₁` -/
 def toFun (i : Fin (p + 1)) : (Δ[p] ⊗ Δ[1]).nonDegenerate (p + 1) :=
     ⟨⟨stdSimplex.objEquiv.{u}.symm (SimplexCategory.σ i),
       objMk₁ i.succ.castSucc⟩, by
@@ -47,6 +48,10 @@ def toFun (i : Fin (p + 1)) : (Δ[p] ⊗ Δ[1]).nonDegenerate (p + 1) :=
 
 end nonDegenerateEquiv₁
 
+/-- This is an enumeration of the `p + 1` nondegenerate dimension-`(p + 1)`
+simplices of `Δ[p] ⊗ Δ[1]`. It sends `i : Fin (p + 1)` to the nondegenerate
+simplex consisting of the vertices
+`(0, 0) ≤ (1,0) ≤ ... ≤ (i, 0) ≤ (i, 1) ≤ ... ≤ (p, 1)`. -/
 noncomputable def nonDegenerateEquiv₁ :
     Fin (p + 1) ≃ (Δ[p] ⊗ Δ[1] : SSet.{u}).nonDegenerate (p + 1) :=
   Equiv.ofBijective nonDegenerateEquiv₁.toFun (by
