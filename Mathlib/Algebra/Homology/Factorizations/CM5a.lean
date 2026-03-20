@@ -155,7 +155,7 @@ lemma degreewiseEpiWithInjectiveKernel_π :
     ⟨{ r := (biprod.fst : mid K L n₁ ⟶ _).f q, s := (biprod.inr : _ ⟶ mid K L n₁).f q }⟩⟩
 
 variable (K L) in
-lemma isIso_π_f (i : ℤ) (hi : i ≠ n₁) :
+lemma isIso_π_f (i : ℤ) (hi : i ≠ n₁ := by lia) :
     IsIso ((π K L n₁).f i) := by
   refine ⟨(biprod.inr : _ ⟶ mid K L n₁).f i, ?_, by simp⟩
   rw [biprodX_ext_to_iff]
