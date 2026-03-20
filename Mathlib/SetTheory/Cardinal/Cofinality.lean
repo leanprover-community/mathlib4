@@ -635,7 +635,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u + 1, v, u}, Cardinal.lift_lt, cof_type, ← Se]
       refine lt_of_not_ge fun h => ?_
       obtain ⟨a, e⟩ := Cardinal.mem_range_lift_of_le h
-      refine Quotient.inductionOn a (fun α e => ?_) e
+      induction a using Quotient.inductionOn
       obtain ⟨f⟩ := Quotient.exact e
       have f := Equiv.ulift.symm.trans f
       let g a := (f a).1
