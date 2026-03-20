@@ -152,7 +152,7 @@ protected def Etale (X : Scheme.{u}) : Type _ := MorphismProperty.Over @Etale ‚ä
 
 variable (X : Scheme.{u})
 
-set_option backward.inferInstanceAs.normalForm false in
+set_option backward.inferInstanceAs.wrap false in
 instance : Category X.Etale :=
   inferInstanceAs <| Category (MorphismProperty.Over @Etale ‚ä§ X)
 

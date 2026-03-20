@@ -96,7 +96,7 @@ open Function Set NNReal
 
 variable {α : Type*}
 
-set_option backward.deriving.normalForm false in
+set_option backward.deriving.wrap false in
 /-- The extended nonnegative real numbers. This is usually denoted [0, ∞],
   and is relevant as the codomain of a measure. -/
 def ENNReal := WithTop ℝ≥0
@@ -127,7 +127,7 @@ instance : Max ℝ≥0∞ := SemilatticeSup.toMax
 noncomputable instance : CommSemiring ℝ≥0∞ :=
   inferInstanceAs (CommSemiring (WithTop ℝ≥0))
 
-set_option backward.inferInstanceAs.normalForm false in
+set_option backward.inferInstanceAs.wrap false in
 instance : PartialOrder ℝ≥0∞ :=
   inferInstanceAs (PartialOrder (WithTop ℝ≥0))
 

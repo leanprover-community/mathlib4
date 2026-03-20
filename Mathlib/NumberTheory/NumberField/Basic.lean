@@ -111,14 +111,14 @@ namespace RingOfIntegers
 instance : CommRing (𝓞 K) :=
   inferInstanceAs (CommRing (integralClosure _ _))
 
-set_option «instance».normalForm.wrapFields.data false in
+set_option backward.inferInstanceAs.wrap.data false in
 instance : IsDomain (𝓞 K) :=
   inferInstanceAs (IsDomain (integralClosure _ _))
 
 instance [NumberField K] : CharZero (𝓞 K) :=
   inferInstanceAs (CharZero (integralClosure _ _))
 
-set_option backward.inferInstanceAs.normalForm false in
+set_option backward.inferInstanceAs.wrap false in
 instance : Algebra (𝓞 K) K :=
   inferInstanceAs (Algebra (integralClosure _ _) _)
 
@@ -128,7 +128,7 @@ instance : IsTorsionFree (𝓞 K) K :=
 instance : Nontrivial (𝓞 K) :=
   inferInstanceAs (Nontrivial (integralClosure _ _))
 
-set_option backward.inferInstanceAs.normalForm false in
+set_option backward.inferInstanceAs.wrap false in
 instance {L : Type*} [Ring L] [Algebra K L] : Algebra (𝓞 K) L :=
   inferInstanceAs (Algebra (integralClosure _ _) L)
 

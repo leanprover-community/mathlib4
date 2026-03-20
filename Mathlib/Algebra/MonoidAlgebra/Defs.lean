@@ -106,7 +106,7 @@ variable [Semiring R] {x y : R[M]} {r r₁ r₂ : R} {m m' m₁ m₂ : M}
   inferInstanceAs <| Unique <| M →₀ R
 
 -- This is needed or we get errors in UniversalFactorizationRing.lean
-set_option backward.inferInstanceAs.normalForm false in
+set_option backward.inferInstanceAs.wrap false in
 @[to_additive] instance addCommMonoid : AddCommMonoid R[M] :=
   inferInstanceAs <| AddCommMonoid <| M →₀ R
 
@@ -114,7 +114,7 @@ set_option backward.inferInstanceAs.normalForm false in
   inferInstanceAs <| IsCancelAdd <| M →₀ R
 
 -- This is needed or we get errors in UniversalFactorizationRing.lean
-set_option backward.inferInstanceAs.normalForm false in
+set_option backward.inferInstanceAs.wrap false in
 @[to_additive] instance instCoeFun : CoeFun R[M] fun _ ↦ M → R :=
   _root_.inferInstanceAs <| CoeFun (M →₀ R) fun _ ↦ M → R
 

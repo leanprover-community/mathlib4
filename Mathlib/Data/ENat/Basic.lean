@@ -42,7 +42,7 @@ open Function
 
 assert_not_exists Field
 
-set_option backward.deriving.normalForm false in
+set_option backward.deriving.wrap false in
 deriving instance
   LinearOrderedAddCommMonoidWithTop,
   SuccOrder
@@ -84,7 +84,7 @@ theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
 @[simp] theorem succ_coe (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := by
   -- We either need `instSuccOrderENat._aux_1` here,
-  -- or `set_option backward.deriving.normalForm false`, ... somewhere?
+  -- or `set_option backward.deriving.wrap false`, ... somewhere?
   simp [SuccOrder.succ]
   rfl
 

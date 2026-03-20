@@ -42,7 +42,7 @@ variable [Semiring 𝕜]
   [AddCommMonoid G] [Module 𝕜 G] [TopologicalSpace G] [ContinuousAdd G] [ContinuousConstSMul 𝕜 G]
   [AddCommMonoid H] [Module 𝕜 H] [TopologicalSpace H] [ContinuousAdd H] [ContinuousConstSMul 𝕜 H]
 
-set_option backward.deriving.normalForm false in
+set_option backward.deriving.wrap false in
 /-- A formal multilinear series over a field `𝕜`, from `E` to `F`, is given by a family of
 multilinear maps from `E^n` to `F` for all `n`. -/
 @[nolint unusedArguments]

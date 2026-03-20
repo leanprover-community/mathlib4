@@ -59,7 +59,7 @@ def Q (n : ℕ) :=
 
 instance (n) : Inhabited (Q n) := inferInstanceAs (Inhabited (Fin n → Bool))
 
-set_option backward.inferInstanceAs.normalForm false in
+set_option backward.inferInstanceAs.wrap false in
 instance (n) : Fintype (Q n) := inferInstanceAs (Fintype (Fin n → Bool))
 
 /-- The projection from `Q n.succ` to `Q n` forgetting the first value

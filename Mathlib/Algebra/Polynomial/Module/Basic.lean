@@ -20,7 +20,7 @@ module structures on `ℕ →₀ M` of interest. See the docstring of `Polynomia
 universe u v
 open Polynomial
 
-set_option backward.deriving.normalForm false in
+set_option backward.deriving.wrap false in
 /-- The `R[X]`-module `M[X]` for an `R`-module `M`.
 This is isomorphic (as an `R`-module) to `M[X]` when `M` is a ring.
 
