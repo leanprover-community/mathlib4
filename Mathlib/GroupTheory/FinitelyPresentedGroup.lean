@@ -80,7 +80,7 @@ namespace IsNormalClosureFG
 theorem map
     (f : G →* H) (hf : Function.Surjective f) (K : Subgroup G) (hK : IsNormalClosureFG K) :
     IsNormalClosureFG (K.map f) := by
-  obtain ⟨ S, hSfinite, hSclosure ⟩ := hK
+  obtain ⟨S, hSfinite, hSclosure⟩ := hK
   use f '' S
   constructor
   · exact hSfinite.image _
