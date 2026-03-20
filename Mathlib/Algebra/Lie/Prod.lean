@@ -13,15 +13,16 @@ This file defines the Lie algebra structure the Product of two Lie algebras
 ## Main definitions
 
 - products in the domain:
-  - `LieHom.fst`
-  - `LieHom.snd`
-  - `LieHom.prod_ext`
+  - `LieHom.fst` The first projection of a product is a Lie algebra map.
+  - `LieHom.snd` The second projection of a product is a Lie algebra map.
+  - `LieHom.prod_ext` Split equality of Lie algebra homomorphisms from a product into Lie algebra
+  homomorphism over each component,
 - products in the codomain:
-  - `LieHom.inl`
-  - `LieHom.inr`
-  - `LieHom.prod`
+  - `LieHom.inl` The left injection into a product is a Lie algebra map.
+  - `LieHom.inr` The right injection into a product is a Lie algebra map.
+  - `LieHom.prod` The prod of two Lie algebra homomorphisms is a Lie algebra homomorphism.
 - products in both domain and codomain:
-  - `LieHom.prodMap`
+  - `LieHom.prodMap` the `Prod.map` of two Lie algebra homomorphisms is a Lie algebra homomorphism.
 
 ## Todo: Extend to further functionality from LinearMap.prod e.g.
  - Lie Equivalences related to products
@@ -49,7 +50,6 @@ instance instLieRing : LieRing (L₁ × L₂) where
 theorem bracket_apply (x y : L₁ × L₂) : ⁅x, y⁆ = ⟨⁅x.1, y.1⁆, ⁅x.2, y.2⁆⟩ := rfl
 
 instance instLieAlgebra : LieAlgebra R (L₁ × L₂) where
-  __ := inferInstanceAs (Module R (L₁ × L₂))
   lie_smul _ _ _ := by simp
 
 end Prod
