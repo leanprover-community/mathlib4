@@ -9,7 +9,8 @@ public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
-public import Mathlib.Analysis.Normed.Order.Antidiag
+public import Mathlib.Algebra.Order.Antidiag.Prod
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Multivariate restricted power series
@@ -67,6 +68,23 @@ lemma isRestricted.neg (c : σ → ℝ) {f : MvPowerSeries σ R} (hf : IsRestric
   simpa [IsRestricted] using hf
 
 open IsUltrametricDist
+
+lemma tendsto_antidiagonal {M S : Type*} [AddMonoid M] [Finset.HasAntidiagonal M] [NormedRing S]
+    [IsUltrametricDist S] {C : M → ℝ} (hC : ∀ a b, C (a + b) = C a * C b) {f g : M → S}
+    (hf : Tendsto (fun i ↦ ‖f i‖ * C i) cofinite (𝓝 0))
+    (hg : Tendsto (fun i ↦ ‖g i‖ * C i) cofinite (𝓝 0)) :
+    Tendsto (fun a ↦ ‖∑ p ∈ Finset.antidiagonal a, (f p.1 * g p.2)‖ * C a) cofinite (𝓝 0) := by
+  wlog hC' : 0 ≤ C generalizing C
+  · rw [tendsto_zero_iff_norm_tendsto_zero]
+    simpa using this (C := |C|) (by simp [hC]) (by simpa using hf.norm)
+      (by simpa using hg.norm) (fun _ => by simp)
+  refine .squeeze tendsto_const_nhds
+    (tendsto_sup'_antidiagonal_cofinite (tendsto_mul_cofinite_nhds_zero hf hg))
+    (fun x => by simpa using (mul_nonneg (by simp) (hC' x))) fun a ↦ ?_
+  have : 0 ≤ C a := hC' a
+  grw [(Finset.nonempty_antidiagonal _).norm_sum_le_sup'_norm, Finset.sup'_mul₀ this]
+  refine Finset.sup'_mono_fun fun x hx ↦ ?_
+  grw [mul_mul_mul_comm, ← hC, Finset.mem_antidiagonal.mp hx, ← norm_mul_le]
 
 lemma isRestricted.mul [IsUltrametricDist R] (c : σ → ℝ) {f g : MvPowerSeries σ R}
     (hf : IsRestricted c f) (hg : IsRestricted c g) : IsRestricted c (f * g) := by

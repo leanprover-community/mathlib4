@@ -75,6 +75,10 @@ instance [AddMonoid A] : Subsingleton (HasAntidiagonal A) where
     congr with n xy
     rw [ha, hb]
 
+lemma nonempty_antidiagonal {M : Type*} [AddMonoid M] [Finset.HasAntidiagonal M] (a : M) :
+    (Finset.antidiagonal a).Nonempty :=
+  ⟨(0, a), by simp⟩
+
 -- The goal of this lemma is to allow to rewrite antidiagonal
 -- when the decidability instances obsucate Lean
 lemma hasAntidiagonal_congr (A : Type*) [AddMonoid A]

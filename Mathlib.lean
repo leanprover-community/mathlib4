@@ -2117,7 +2117,6 @@ public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Analysis.Normed.Operator.NNNorm
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.Normed.Operator.Prod
-public import Mathlib.Analysis.Normed.Order.Antidiag
 public import Mathlib.Analysis.Normed.Order.Basic
 public import Mathlib.Analysis.Normed.Order.Hom.Basic
 public import Mathlib.Analysis.Normed.Order.Hom.Ultra
