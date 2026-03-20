@@ -39,8 +39,8 @@ instance [∀ X : Sheaf J (Type v), PreservesLimitsOfShape Kᵒᵖ X.obj] :
     PreservesColimitsOfShape K J.yoneda where
   preservesColimit := inferInstance
 
-instance {F : K ⥤ C} [∀ X : Sheaf J (Type (max v v')), PreservesLimit F.op X.obj] :
-    PreservesColimit F (GrothendieckTopology.uliftYoneda.{v', v, u} J) where
+instance {F : K ⥤ C} [∀ X : Sheaf J (Type max v v'), PreservesLimit F.op X.obj] :
+    PreservesColimit F (uliftYoneda.{v'} J) where
   preserves {c} hc := ⟨by
     suffices IsLimit (coyoneda.mapCone (J.uliftYoneda.mapCocone c).op) from
       isColimitOfOp (isLimitOfReflects _ this)
@@ -50,31 +50,23 @@ instance {F : K ⥤ C} [∀ X : Sheaf J (Type (max v v')), PreservesLimit F.op X
       (isoWhiskerRight (J.uliftYonedaOpCompCoyoneda) ((evaluation _ _ ).obj X)).symm this
     exact isLimitOfPreserves _ hc.op⟩
 
-instance [∀ X : Sheaf J (Type (max v v')), PreservesLimitsOfShape Kᵒᵖ X.obj] :
-    PreservesColimitsOfShape K (GrothendieckTopology.uliftYoneda.{v', v, u} J) where
+instance [∀ X : Sheaf J (Type max v v'), PreservesLimitsOfShape Kᵒᵖ X.obj] :
+    PreservesColimitsOfShape K (uliftYoneda.{v'} J) where
 
 instance : PreservesLimitsOfShape K J.yoneda where
   preservesLimit := by
     intro F
-    have :
-        PreservesLimitsOfShape K (J.yoneda ⋙ sheafToPresheaf J (Type v)) :=
-      preservesLimitsOfShape_of_natIso
-        (GrothendieckTopology.yonedaCompSheafToPresheaf J).symm
-    apply preservesLimit_of_reflects_of_preserves
-      (F := J.yoneda)
-      (G := sheafToPresheaf ..)
+    have : PreservesLimitsOfShape K (J.yoneda ⋙ sheafToPresheaf J (Type v)) :=
+      preservesLimitsOfShape_of_natIso (yonedaCompSheafToPresheaf J).symm
+    exact preservesLimit_of_reflects_of_preserves (F := J.yoneda) (G := sheafToPresheaf ..)
 
-instance : PreservesLimitsOfShape K (GrothendieckTopology.uliftYoneda.{v', v, u} J) where
+instance : PreservesLimitsOfShape K (uliftYoneda.{v'} J) where
   preservesLimit := by
     intro F
-    have :
-        PreservesLimitsOfShape K (GrothendieckTopology.uliftYoneda.{v', v, u} J ⋙
-          sheafToPresheaf J (Type (max v v'))) :=
-      preservesLimitsOfShape_of_natIso
-        (GrothendieckTopology.uliftYonedaCompSheafToPresheaf J).symm
-    apply preservesLimit_of_reflects_of_preserves
-      (F := GrothendieckTopology.uliftYoneda.{v', v, u} J)
-      (G := sheafToPresheaf ..)
+    have : PreservesLimitsOfShape K (uliftYoneda J ⋙ sheafToPresheaf J (Type max v v')) :=
+      preservesLimitsOfShape_of_natIso (uliftYonedaCompSheafToPresheaf J).symm
+    exact preservesLimit_of_reflects_of_preserves (uliftYoneda J)
+      (sheafToPresheaf ..)
 
 instance {F : K ⥤ C} [∀ X : Sheaf J (Type v), PreservesLimit F.op X.obj] :
     PreservesColimit F J.yoneda :=
@@ -85,5 +77,5 @@ instance [∀ X : Sheaf J (Type v), PreservesFiniteProducts X.obj] :
   preserves _ := inferInstance
 
 instance [∀ X : Sheaf J (Type max v v'), PreservesFiniteProducts X.obj] :
-    PreservesFiniteCoproducts (GrothendieckTopology.uliftYoneda.{v', v, u} J) where
+    PreservesFiniteCoproducts (uliftYoneda.{v'} J) where
   preserves _ := inferInstance
