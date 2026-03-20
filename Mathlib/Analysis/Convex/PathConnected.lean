@@ -34,9 +34,9 @@ namespace Path
 @[simps]
 protected def segment (a b : E) : Path a b where
   toFun t := lineMap a b (t : ℝ)
+  continuous_toFun := by dsimp [lineMap]; fun_prop
   source' := by simp
   target' := by simp
-  continuous_toFun := by dsimp [lineMap]; fun_prop
 
 @[simp]
 theorem range_segment (a b : E) : Set.range (Path.segment a b) = [a -[ℝ] b] := by
