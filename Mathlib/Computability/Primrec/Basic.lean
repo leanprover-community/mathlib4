@@ -347,12 +347,14 @@ def Primrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f 
 /-- `PrimrecPred p` means `p : α → Prop` is a
   primitive recursive predicate, which is to say that
   `decide ∘ p : α → Bool` is primitive recursive. -/
+@[fun_prop]
 def PrimrecPred {α} [Primcodable α] (p : α → Prop) :=
   ∃ (_ : DecidablePred p), Primrec fun a => decide (p a)
 
 /-- `PrimrecRel p` means `p : α → β → Prop` is a
   primitive recursive relation, which is to say that
   `decide ∘ p : α → β → Bool` is primitive recursive. -/
+--Komyyy0 @[deprecated PrimrecPred "Use `PrimrecPred (uncurry s)` instead." (since := "2026-03-20")]
 def PrimrecRel {α β} [Primcodable α] [Primcodable β] (s : α → β → Prop) :=
   PrimrecPred fun p : α × β => s p.1 p.2
 
@@ -455,6 +457,7 @@ theorem Primrec₂.comp₂ {f : γ → δ → σ} {g : α → β → γ} {h : α
     (hg : Primrec₂ g) (hh : Primrec₂ h) : Primrec₂ fun a b => f (g a b) (h a b) :=
   hf.comp hg hh
 
+@[fun_prop]
 protected lemma PrimrecPred.decide {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) :
     Primrec (fun a => decide (p a)) := by
   convert hp.choose_spec
@@ -468,6 +471,7 @@ lemma primrecPred_iff_primrec_decide {p : α → Prop} [DecidablePred p] :
   mp := PrimrecPred.decide
   mpr := Primrec.primrecPred
 
+@[fun_prop]
 theorem PrimrecPred.comp {p : β → Prop} {f : α → β} :
     (hp : PrimrecPred p) → (hf : Primrec f) → PrimrecPred fun a => p (f a)
   | ⟨_i, hp⟩, hf => hp.comp hf |>.primrecPred
