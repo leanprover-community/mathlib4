@@ -150,7 +150,6 @@ lemma mul_sSup : a * sSup s = ⨆ b ∈ s, a * b := by
 lemma sSup_mul : sSup s * a = ⨆ b ∈ s, b * a := by
   simp_rw [mul_comm, mul_sSup]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mul_iInf [Nonempty ι] : a * ⨅ i, f i = ⨅ i, a * f i := by
   refine (le_iInf fun x ↦ by grw [iInf_le]).antisymm ?_
   obtain ⟨b, hb⟩ := ENat.exists_eq_iInf f
@@ -182,7 +181,6 @@ See also `ENat.iInf_mul` that assumes `[Nonempty ι]` but does not require `a �
 lemma iInf_mul_of_ne (ha₀ : a ≠ 0) : (⨅ i, f i) * a = ⨅ i, f i * a :=
   iInf_mul' <| by simp [ha₀]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma add_iSup [Nonempty ι] (f : ι → ℕ∞) : a + ⨆ i, f i = ⨆ i, a + f i := by
   obtain rfl | ha := eq_or_ne a ⊤
   · simp
@@ -226,7 +224,6 @@ lemma biSup_add_biSup_le {ι κ : Type*} {s : Set ι} {t : Set κ} (hs : s.Nonem
     {f : ι → ℕ∞} {g : κ → ℕ∞} {a : ℕ∞} (h : ∀ i ∈ s, ∀ j ∈ t, f i + g j ≤ a) :
     (⨆ i ∈ s, f i) + ⨆ j ∈ t, g j ≤ a := biSup_add_biSup_le' hs ht h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma iSup_add_iSup (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) : iSup f + iSup g = ⨆ i, f i + g i := by
   cases isEmpty_or_nonempty ι
   · simp only [iSup_of_empty, bot_eq_zero, zero_add]
@@ -235,7 +232,6 @@ lemma iSup_add_iSup (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) : iSup f + iSu
     rcases h i j with ⟨k, hk⟩
     exact le_iSup_of_le k hk
 
-set_option backward.isDefEq.respectTransparency false in
 lemma iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirectedOrder ι] {f g : ι → ℕ∞}
     (hf : Monotone f) (hg : Monotone g) : iSup f + iSup g = ⨆ a, f a + g a :=
   iSup_add_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
@@ -248,7 +244,6 @@ lemma smul_sSup {R} [SMul R ℕ∞] [IsScalarTower R ℕ∞ ℕ∞] (s : Set ℕ
     c • sSup s = ⨆ a ∈ s, c • a := by
   simp_rw [sSup_eq_iSup, smul_iSup]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sub_iSup [Nonempty ι] (ha : a ≠ ⊤) : a - ⨆ i, f i = ⨅ i, a - f i := by
   obtain ⟨i, hi⟩ | h := em (∃ i, a < f i)
   · rw [tsub_eq_zero_iff_le.2 <| le_iSup_of_le _ hi.le, (iInf_eq_bot _).2, bot_eq_zero]
@@ -261,12 +256,10 @@ lemma sub_iSup [Nonempty ι] (ha : a ≠ ⊤) : a - ⨆ i, f i = ⨅ i, a - f i 
   rw [← ENat.sub_sub_cancel ha (h _)]
   exact tsub_le_tsub_left (iInf_le (a - f ·) i) _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma iInf_add : iInf f + a = ⨅ i, f i + a :=
   le_antisymm (le_iInf fun _ ↦ add_le_add (iInf_le _ _) le_rfl) <|
     (tsub_le_iff_right.1 <| le_iInf fun _ ↦ tsub_le_iff_right.2 <| iInf_le _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sub_iInf : (a - ⨅ i, f i) = ⨆ i, a - f i := by
   refine eq_of_forall_ge_iff fun c => ?_
   rw [tsub_le_iff_right, add_comm, iInf_add]
@@ -277,7 +270,6 @@ theorem sInf_add {s : Set ℕ∞} : sInf s + a = ⨅ b ∈ s, b + a := by simp [
 theorem add_iInf {a : ℕ∞} : a + iInf f = ⨅ b, a + f b := by
   rw [add_comm, iInf_add]; simp [add_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) : iInf f + iInf g = ⨅ a, f a + g a :=
   suffices ⨅ a, f a + g a ≤ iInf f + iInf g from
     le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) (iInf_le _ _)) this
@@ -286,7 +278,6 @@ theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) : iInf f + i
       le_iInf₂ fun a a' => let ⟨k, h⟩ := h a a'; iInf_le_of_le k h
     _ = iInf f + iInf g := by simp_rw [iInf_add, add_iInf]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma iInf_add_iInf_of_monotone {ι : Type*} [Preorder ι] [IsCodirectedOrder ι] {f g : ι → ℕ∞}
     (hf : Monotone f) (hg : Monotone g) : iInf f + iInf g = ⨅ a, f a + g a :=
   iInf_add_iInf fun i j ↦ (exists_le_le i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules

@@ -177,7 +177,6 @@ theorem weightedOrder_mul (w : σ → ℕ) (f g : MvPowerSeries σ R) :
   · rw [not_lt_top_iff] at hf
     simp [hf]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem weightedOrder_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontrivial R]
     {ι : Type*} (w : σ → ℕ) (f : ι → MvPowerSeries σ R) (s : Finset ι) :
     (∏ i ∈ s, f i).weightedOrder w = ∑ i ∈ s, (f i).weightedOrder w := by

@@ -106,7 +106,6 @@ noncomputable instance : SMul ℚ≥0 ℝ≥0 where
 noncomputable instance zpow : Pow ℝ≥0 ℤ where
   pow x n := ⟨(x : ℝ) ^ n, zpow_nonneg x.2 _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Redo the `Nonneg.semifield` instance, because this will get unfolded a lot,
 and ends up inserting the non-reducible defeq `ℝ≥0 = { x // x ≥ 0 }` in places where
 it needs to be reducible(-with-instances).
@@ -125,7 +124,6 @@ instance : IsStrictOrderedRing ℝ≥0 :=
 noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
   Nonneg.linearOrderedCommGroupWithZero
 
-set_option backward.isDefEq.respectTransparency false in
 example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
   with_reducible_and_instances exact inv_anti₀ h1p h2p
 
@@ -446,7 +444,6 @@ theorem bddBelow_coe (s : Set ℝ≥0) : BddBelow (((↑) : ℝ≥0 → ℝ) '' 
 noncomputable instance : ConditionallyCompleteLinearOrderBot ℝ≥0 :=
   Nonneg.conditionallyCompleteLinearOrderBot 0
 
-set_option backward.isDefEq.respectTransparency false in
 @[norm_cast]
 theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥0 → ℝ) '' s) := by
   rcases Set.eq_empty_or_nonempty s with rfl | hs
@@ -502,11 +499,9 @@ theorem lt_iff_exists_rat_btwn (a b : ℝ≥0) :
 
 theorem bot_eq_zero : (⊥ : ℝ≥0) = 0 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul_sup (a b c : ℝ≥0) : a * (b ⊔ c) = a * b ⊔ a * c :=
   mul_max_of_nonneg _ _ <| zero_le a
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sup_mul (a b c : ℝ≥0) : (a ⊔ b) * c = a * c ⊔ b * c :=
   max_mul_of_nonneg _ _ <| zero_le c
 
@@ -548,7 +543,6 @@ theorem toNNReal_one : Real.toNNReal 1 = 1 := NNReal.eq <| coe_toNNReal _ zero_l
 theorem toNNReal_pos {r : ℝ} : 0 < Real.toNNReal r ↔ 0 < r := by
   simp [← NNReal.coe_lt_coe]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toNNReal_eq_zero {r : ℝ} : Real.toNNReal r = 0 ↔ r ≤ 0 := by
   simpa [-toNNReal_pos] using not_iff_not.2 (@toNNReal_pos r)
@@ -580,7 +574,6 @@ theorem toNNReal_le_toNNReal_iff {r p : ℝ} (hp : 0 ≤ p) :
 lemma toNNReal_le_one {r : ℝ} : r.toNNReal ≤ 1 ↔ r ≤ 1 := by
   simpa using toNNReal_le_toNNReal_iff zero_le_one
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma one_lt_toNNReal {r : ℝ} : 1 < r.toNNReal ↔ 1 < r := by
   simpa only [not_le] using toNNReal_le_one.not
@@ -589,7 +582,6 @@ lemma one_lt_toNNReal {r : ℝ} : 1 < r.toNNReal ↔ 1 < r := by
 lemma toNNReal_le_natCast {r : ℝ} {n : ℕ} : r.toNNReal ≤ n ↔ r ≤ n := by
   simpa using toNNReal_le_toNNReal_iff n.cast_nonneg
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma natCast_lt_toNNReal {r : ℝ} {n : ℕ} : n < r.toNNReal ↔ n < r := by
   simpa only [not_le] using toNNReal_le_natCast.not
@@ -623,7 +615,6 @@ theorem toNNReal_lt_toNNReal_iff_of_nonneg {r p : ℝ} (hr : 0 ≤ r) :
     Real.toNNReal r < Real.toNNReal p ↔ r < p :=
   toNNReal_lt_toNNReal_iff'.trans ⟨And.left, fun h => ⟨h, lt_of_le_of_lt hr h⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toNNReal_le_toNNReal_iff' {r p : ℝ} : r.toNNReal ≤ p.toNNReal ↔ r ≤ p ∨ r ≤ 0 := by
   simp_rw [← not_lt, toNNReal_lt_toNNReal_iff', not_and_or]
 
@@ -634,7 +625,6 @@ lemma toNNReal_le_toNNReal_iff_of_pos {r p : ℝ} (hr : 0 < r) : r.toNNReal ≤ 
 lemma one_le_toNNReal {r : ℝ} : 1 ≤ r.toNNReal ↔ 1 ≤ r := by
   simpa using toNNReal_le_toNNReal_iff_of_pos one_pos
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toNNReal_lt_one {r : ℝ} : r.toNNReal < 1 ↔ r < 1 := by simp only [← not_le, one_le_toNNReal]
 
@@ -727,12 +717,10 @@ nonrec theorem exists_pow_lt_of_lt_one {a b : ℝ≥0} (ha : 0 < a) (hb : b < 1)
   simpa only [← coe_pow, NNReal.coe_lt_coe] using
     exists_pow_lt_of_lt_one (NNReal.coe_pos.2 ha) (NNReal.coe_lt_coe.2 hb)
 
-set_option backward.isDefEq.respectTransparency false in
 nonrec theorem exists_mem_Ico_zpow {x : ℝ≥0} {y : ℝ≥0} (hx : x ≠ 0) (hy : 1 < y) :
     ∃ n : ℤ, x ∈ Set.Ico (y ^ n) (y ^ (n + 1)) :=
   exists_mem_Ico_zpow hx.bot_lt hy
 
-set_option backward.isDefEq.respectTransparency false in
 nonrec theorem exists_mem_Ioc_zpow {x : ℝ≥0} {y : ℝ≥0} (hx : x ≠ 0) (hy : 1 < y) :
     ∃ n : ℤ, x ∈ Set.Ioc (y ^ n) (y ^ (n + 1)) :=
   exists_mem_Ioc_zpow hx.bot_lt hy
@@ -761,7 +749,6 @@ end Sub
 
 section Inv
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inv_le {r p : ℝ≥0} (h : r ≠ 0) : r⁻¹ ≤ p ↔ 1 ≤ r * p := by
   rw [← mul_le_mul_iff_right₀ (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h]
@@ -769,28 +756,23 @@ theorem inv_le {r p : ℝ≥0} (h : r ≠ 0) : r⁻¹ ≤ p ↔ 1 ≤ r * p := b
 theorem inv_le_of_le_mul {r p : ℝ≥0} (h : 1 ≤ r * p) : r⁻¹ ≤ p := by
   by_cases r = 0 <;> simp [*, inv_le]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem le_inv_iff_mul_le {r p : ℝ≥0} (h : p ≠ 0) : r ≤ p⁻¹ ↔ r * p ≤ 1 := by
   rw [← mul_le_mul_iff_right₀ (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lt_inv_iff_mul_lt {r p : ℝ≥0} (h : p ≠ 0) : r < p⁻¹ ↔ r * p < 1 := by
   rw [← mul_lt_mul_iff_right₀ (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem div_le_of_le_mul {a b c : ℝ≥0} (h : a ≤ b * c) : a / c ≤ b :=
   if h0 : c = 0 then by simp [h0] else (div_le_iff₀ (pos_iff_ne_zero.2 h0)).2 h
 
 theorem div_le_of_le_mul' {a b c : ℝ≥0} (h : a ≤ b * c) : a / b ≤ c :=
   div_le_of_le_mul <| mul_comm b c ▸ h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
   (lt_div_iff₀ <| pos_iff_ne_zero.2 fun hr => False.elim <| by simp [hr] at h).1 h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) : x ≤ y :=
   le_of_forall_lt_imp_le_of_dense fun a ha => by
     have hx : x ≠ 0 := pos_iff_ne_zero.1 (lt_of_le_of_lt (zero_le _) ha)
@@ -799,15 +781,12 @@ theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) 
     have : a * x⁻¹ * x ≤ y := h _ this
     rwa [mul_assoc, inv_mul_cancel₀ hx, mul_one] at this
 
-set_option backward.isDefEq.respectTransparency false in
 nonrec theorem half_le_self (a : ℝ≥0) : a / 2 ≤ a :=
   half_le_self bot_le
 
-set_option backward.isDefEq.respectTransparency false in
 nonrec theorem half_lt_self {a : ℝ≥0} (h : a ≠ 0) : a / 2 < a :=
   half_lt_self h.bot_lt
 
-set_option backward.isDefEq.respectTransparency false in
 theorem div_lt_one_of_lt {a b : ℝ≥0} (h : a < b) : a / b < 1 := by
   rwa [div_lt_iff₀ h.bot_lt, one_mul]
 
@@ -825,11 +804,9 @@ theorem _root_.Real.toNNReal_div' {x y : ℝ} (hy : 0 ≤ y) :
     Real.toNNReal (x / y) = Real.toNNReal x / Real.toNNReal y := by
   rw [div_eq_inv_mul, div_eq_inv_mul, Real.toNNReal_mul (inv_nonneg.2 hy), Real.toNNReal_inv]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inv_lt_one_iff {x : ℝ≥0} (hx : x ≠ 0) : x⁻¹ < 1 ↔ 1 < x := by
   rw [← one_div, div_lt_iff₀ hx.bot_lt, one_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inv_lt_inv {x y : ℝ≥0} (hx : x ≠ 0) (h : x < y) : y⁻¹ < x⁻¹ :=
   inv_strictAnti₀ hx.bot_lt h
 
@@ -852,7 +829,6 @@ variable {ι : Sort*} {f : ι → ℝ≥0}
 theorem le_toNNReal_of_coe_le {x : ℝ≥0} {y : ℝ} (h : ↑x ≤ y) : x ≤ y.toNNReal :=
   (le_toNNReal_iff_coe_le <| x.2.trans h).2 h
 
-set_option backward.isDefEq.respectTransparency false in
 nonrec theorem sSup_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupSet.sSup s = 0 := by
   grind [csSup_of_not_bddAbove, csSup_empty, bot_eq_zero']
 

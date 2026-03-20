@@ -121,7 +121,6 @@ theorem liftAlternating_comp (g : N →ₗ[R] N') (f : ∀ i, M [⋀^Fin i]→�
     rw [liftAlternating_ι_mul, liftAlternating_ι_mul, ← hx]
     simp_rw [AlternatingMap.curryLeft_compAlternatingMap]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem liftAlternating_ιMulti :
     liftAlternating (R := R) (M := M) (N := ExteriorAlgebra R M) (ιMulti R) =

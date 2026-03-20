@@ -250,7 +250,6 @@ theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
   rw [Submodule.Quotient.mk_eq_zero]
   simp +decide [sub_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The core of the proof - scaling `1` by `α * β * γ` gives zero -/
 theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 := by
   suffices α • 1 - β • (y' * x') - γ • (z' * x') = 0 by

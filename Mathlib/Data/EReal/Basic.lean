@@ -748,7 +748,6 @@ lemma coe_toENNReal {x : EReal} (hx : 0 ≤ x) : (x.toENNReal : EReal) = x := by
   simp only [coe_ennreal_ofReal, hx, toReal_nonneg, max_eq_left]
   exact coe_toReal h_top fun _ ↦ by simp_all only [le_bot_iff, zero_ne_bot]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coe_toENNReal_eq_max {x : EReal} : x.toENNReal = max 0 x := by
   rcases le_total 0 x with (hx | hx)
   · rw [coe_toENNReal hx, max_eq_right hx]

@@ -292,15 +292,12 @@ variable (K L)
 variable [Algebra K L]
 variable {K}
 
-set_option backward.isDefEq.respectTransparency false in
 instance (f : K[X]) : FiniteDimensional K f.SplittingField :=
   finiteDimensional f.SplittingField f
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Finite K] (f : K[X]) : Finite f.SplittingField :=
   Module.finite_of_finite K
 
-set_option backward.isDefEq.respectTransparency false in
 instance (f : K[X]) : Module.IsTorsionFree K f.SplittingField :=
   inferInstance
 

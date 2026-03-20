@@ -79,7 +79,6 @@ theorem notMem_val_image {a : α} (t : Set (ofStabilizer G a)) :
 theorem neq_of_mem_ofStabilizer (a : α) {x : ofStabilizer G a} : ↑x ≠ a :=
   x.prop
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma ENat_card_ofStabilizer_add_one_eq (a : α) :
     ENat.card (ofStabilizer G a) + 1 = ENat.card α := by

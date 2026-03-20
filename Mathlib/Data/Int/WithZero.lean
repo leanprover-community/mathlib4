@@ -76,7 +76,6 @@ theorem toNNReal_ne_zero {e : ℝ≥0} {m : ℤᵐ⁰} (he : e ≠ 0) (hm : m �
 theorem toNNReal_pos {e : ℝ≥0} {m : ℤᵐ⁰} (he : e ≠ 0) (hm : m ≠ 0) : 0 < toNNReal he m :=
   lt_of_le_of_ne zero_le' (toNNReal_ne_zero he hm).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `toNNReal` is strictly monotone whenever `1 < e`. -/
 theorem toNNReal_strictMono {e : ℝ≥0} (he : 1 < e) :
     StrictMono (toNNReal (ne_zero_of_lt he)) := by
@@ -90,7 +89,6 @@ theorem toNNReal_strictMono {e : ℝ≥0} (he : 1 < e) :
       WithZero.coe_unzero hy]
     exact hxy
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toNNReal_eq_one_iff {e : ℝ≥0} (m : ℤᵐ⁰) (he0 : e ≠ 0) (he1 : e ≠ 1) :
     toNNReal he0 m = 1 ↔ m = 1 := by
   by_cases hm : m = 0

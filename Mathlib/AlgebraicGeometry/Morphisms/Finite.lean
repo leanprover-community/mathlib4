@@ -186,7 +186,6 @@ lemma isFinite_iff_locallyOfFiniteType_of_jacobsonSpace
   change Module.Finite _ _ ↔ Algebra.FiniteType _ _
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ finite_of_finite_type_of_isJacobsonRing _ _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 01TB "(1) => (3)"]
 lemma Scheme.Hom.closePoints_subset_preimage_closedPoints
     {X Y : Scheme.{u}} (f : X ⟶ Y) [JacobsonSpace Y] [LocallyOfFiniteType f] :
@@ -198,7 +197,6 @@ lemma Scheme.Hom.closePoints_subset_preimage_closedPoints
   simpa [Set.range_comp, Scheme.range_fromSpecResidueField] using
     (X.fromSpecResidueField x ≫ f).isClosedMap.isClosed_range
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 01TB "(1) => (2)"]
 lemma isClosed_singleton_iff_locallyOfFiniteType {X : Scheme.{u}} [JacobsonSpace X] {x : X} :
     IsClosed {x} ↔ LocallyOfFiniteType (X.fromSpecResidueField x) := by

@@ -753,7 +753,6 @@ instance SMulCommClass [CommSemiring R] [Module R V] :
   smul_comm r x y := by
     rw [← single_zero_smul_eq_smul Γ, ← mul_smul', mul_comm, mul_smul', single_zero_smul_eq_smul Γ]
 
-set_option backward.isDefEq.respectTransparency false in
 instance instIsTorsionFree {Γ V : Type*} [Ring R] [IsDomain R] [AddCommGroup V] [AddCommMonoid Γ]
     [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [Module R V] [Module.IsTorsionFree R V] :
     Module.IsTorsionFree R⟦Γ⟧ (HahnModule Γ R V) :=

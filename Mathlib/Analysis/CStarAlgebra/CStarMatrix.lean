@@ -441,7 +441,6 @@ lemma reindexₐ_symm [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mu
     [Star A] {e : m ≃ n} : reindexₐ R A e.symm = (reindexₐ R A e).symm := by
   simp [reindexₐ, reindexₗ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Applying a non-unital ⋆-algebra homomorphism to every entry of a matrix is itself a
 ⋆-algebra homomorphism on matrices. -/
 @[simps]

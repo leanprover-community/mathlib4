@@ -325,7 +325,6 @@ lemma isBasis_preimage_isAffineOpen [IsCofiltered I] [∀ {i j} (f : i ⟶ j), I
     Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map, ← this]
   exact ⟨hxr, hrU⟩
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 @[stacks 01Z4 "(1)"]
 lemma exists_preimage_eq

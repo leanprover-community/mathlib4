@@ -284,7 +284,6 @@ theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = t
   · rw [top_sub_coe, toNat_top, zero_tsub]
   · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
   cases a <;> cases b
   · simp
@@ -312,7 +311,6 @@ theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 :=
 theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
   Order.add_one_le_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
   Order.one_le_iff_pos.trans pos_iff_ne_zero
 
@@ -340,7 +338,6 @@ theorem lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
 
-set_option backward.isDefEq.respectTransparency false in
 @[deprecated not_lt_zero (since := "2025-12-03")]
 protected lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := not_lt_zero
 
@@ -412,11 +409,9 @@ lemma addLECancellable_of_ne_top : a ≠ ⊤ → AddLECancellable a := WithTop.a
 lemma addLECancellable_of_lt_top : a < ⊤ → AddLECancellable a := WithTop.addLECancellable_of_lt_top
 lemma addLECancellable_coe (a : ℕ) : AddLECancellable (a : ℕ∞) := WithTop.addLECancellable_coe _
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma le_sub_of_add_le_left (ha : a ≠ ⊤) : a + b ≤ c → b ≤ c - a :=
   (addLECancellable_of_ne_top ha).le_tsub_of_add_le_left
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma le_sub_of_add_le_right (hb : b ≠ ⊤) : a + b ≤ c → a ≤ c - b :=
   (addLECancellable_of_ne_top hb).le_tsub_of_add_le_right
 
@@ -426,7 +421,6 @@ protected lemma le_sub_one_of_lt (h : a < b) : a ≤ b - 1 := by
   · simp
   · exact ENat.le_sub_of_add_le_right one_ne_top <| lt_coe_add_one_iff.mp <| lt_tsub_iff_right.mp h
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma sub_sub_cancel (h : a ≠ ⊤) (h2 : b ≤ a) : a - (a - b) = b :=
   (addLECancellable_of_ne_top <| ne_top_of_le_ne_top h tsub_le_self).tsub_tsub_cancel_of_le h2
 
@@ -459,7 +453,6 @@ lemma mul_le_mul_of_le_right {x y : ℕ∞} (hxy : x ≤ y) (ha : a ≠ 0) (h_to
     x * a ≤ y * a := by
   simpa [ha, h_top]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma self_le_mul_right (a : ℕ∞) (hc : c ≠ 0) : a ≤ a * c := by
   obtain rfl | hne := eq_or_ne a ⊤
   · simp [top_mul hc]
@@ -472,7 +465,6 @@ lemma self_le_mul_left (a : ℕ∞) (hc : c ≠ 0) : a ≤ c * a := by
   rw [mul_comm]
   exact ENat.self_le_mul_right a hc
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Unique ℕ∞ˣ where
   uniq x := by
     have := x.val_inv
@@ -509,7 +501,6 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
 
 @[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun
 
-set_option backward.isDefEq.respectTransparency false in
 lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} : 1 ≤ n ↔ n ≠ 0 :=
   ⟨fun h ↦ (zero_lt_one.trans_le h).ne',
     fun h ↦ add_one_natCast_le_withTop_of_lt (pos_iff_ne_zero.mpr h)⟩

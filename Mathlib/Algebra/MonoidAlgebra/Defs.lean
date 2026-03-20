@@ -383,7 +383,6 @@ end Mul
 section Semigroup
 variable [Semigroup M]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
 instance nonUnitalSemiring : NonUnitalSemiring R[M] where
   mul_assoc := by simp [mul_def]; simp [MonoidAlgebra, sum_sum_index, mul_add, add_mul, mul_assoc]
@@ -495,7 +494,6 @@ instance isLocalHom_singleOneRingHom : IsLocalHom (singleOneRingHom (R := R) (M 
     · simpa [single_one_mul_apply, one_def] using congr($hax 1)
     · simpa [mul_single_one_apply, one_def] using congr($hxa 1)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- The trivial monoid algebra is the base ring. -/
 @[to_additive (dont_translate := R) (attr := simps! apply symm_apply)

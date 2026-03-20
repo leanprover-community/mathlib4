@@ -137,7 +137,6 @@ lemma coheight_le_iff {a : α} {n : ℕ∞} :
     coheight a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, a ≤ p.head → p.length ≤ n := by
   rw [coheight_eq, iSup₂_le_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma height_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.last = a → p.length ≤ n) :
     height a ≤ n := by
   apply height_le_iff.mpr
@@ -286,7 +285,6 @@ private lemma height_add_const (a : α) (n : ℕ∞) :
   have := length_le_height_last (p := p.snoc y (by simp [*]))
   simpa using this
 
-set_option backward.isDefEq.respectTransparency false in
 lemma height_add_one_le {a b : α} (hab : a < b) : height a + 1 ≤ height b := by
   cases hfin : height a with
   | top =>
@@ -305,7 +303,6 @@ lemma height_add_one_le {a b : α} (hab : a < b) : height a + 1 ≤ height b := 
     coheight x < coheight y :=
   height_strictMono (α := αᵒᵈ) hyx hfin
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coheight_add_one_le {a b : α} (hab : b < a) : coheight a + 1 ≤ coheight b := by
   cases hfin : coheight a with
   | top =>
@@ -385,7 +382,6 @@ lemma exists_series_of_coheight_eq_coe (a : α) {n : ℕ} (h : coheight a = n) :
     ∃ p : LTSeries α, p.head = a ∧ p.length = n :=
   exists_series_of_le_coheight a (le_of_eq h.symm)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Another characterization of height, based on the supremum of the heights of elements below. -/
 lemma height_eq_iSup_lt_height (x : α) : height x = ⨆ y < x, height y + 1 := by
   apply le_antisymm
@@ -447,7 +443,6 @@ lemma coheight_eq_top_iff {x : α} :
   convert height_eq_top_iff (α := αᵒᵈ) (x := x) using 2 with n
   constructor <;> (intro ⟨p, hp, hl⟩; use p.reverse; constructor <;> simpa)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The elements of height zero are the minimal elements. -/
 @[simp] lemma height_eq_zero {x : α} : height x = 0 ↔ IsMin x := by
   simpa [isMin_iff_forall_not_lt] using height_le_coe_iff (x := x) (n := 0)
@@ -462,13 +457,11 @@ protected alias ⟨_, IsMax.coheight_eq_zero⟩ := coheight_eq_zero
 
 lemma height_ne_zero {x : α} : height x ≠ 0 ↔ ¬ IsMin x := height_eq_zero.not
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma height_pos {x : α} : 0 < height x ↔ ¬ IsMin x := by
   simp [pos_iff_ne_zero]
 
 lemma coheight_ne_zero {x : α} : coheight x ≠ 0 ↔ ¬ IsMax x := coheight_eq_zero.not
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coheight_pos {x : α} : 0 < coheight x ↔ ¬ IsMax x := by
   simp [pos_iff_ne_zero]
 
@@ -596,7 +589,6 @@ lemma krullDim_eq_bot_iff : krullDim α = ⊥ ↔ IsEmpty α := by
   simp only [le_bot_iff, WithBot.natCast_ne_bot, isEmpty_iff]
   exact ⟨fun H x ↦ H ⟨0, fun _ ↦ x, by simp⟩, (· <| · 1)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma krullDim_nonneg_iff : 0 ≤ krullDim α ↔ Nonempty α := by
   contrapose!
   rw [← krullDim_eq_bot_iff, ← WithBot.lt_coe_bot, bot_eq_zero, WithBot.coe_zero]
@@ -614,7 +606,6 @@ theorem bot_lt_krullDim_iff : ⊥ < krullDim α ↔ Nonempty α := by
 theorem bot_lt_krullDim [Nonempty α] : ⊥ < krullDim α :=
   bot_lt_krullDim_iff.mpr ‹_›
 
-set_option backward.isDefEq.respectTransparency false in
 lemma krullDim_nonpos_iff_forall_isMax : krullDim α ≤ 0 ↔ ∀ x : α, IsMax x := by
   simp only [krullDim, iSup_le_iff, isMax_iff_forall_not_lt]
   refine ⟨fun H x y h ↦ (H ⟨1, ![x, y],
@@ -642,7 +633,6 @@ lemma krullDim_pos_iff : 0 < krullDim α ↔ ∃ x y : α, x < y := by
   contrapose!
   simp_rw [← isMax_iff_forall_not_lt, ← krullDim_nonpos_iff_forall_isMax]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma one_le_krullDim_iff : 1 ≤ krullDim α ↔ ∃ x y : α, x < y := by
   rw [← krullDim_pos_iff, ← Nat.cast_zero, ← ENat.WithBot.add_one_le_iff, Nat.cast_zero, zero_add]
 
@@ -739,7 +729,6 @@ lemma le_krullDim_iff {n : ℕ} : n ≤ krullDim α ↔ ∃ l : LTSeries α, l.l
     · exact fun ⟨l, hl⟩ ↦ hl ▸ l.longestOf_is_longest
   · simpa [krullDim_eq_top] using SetRel.InfiniteDimensional.exists_relSeries_with_length n
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A definition of krullDim for nonempty `α` that avoids `WithBot` -/
 lemma krullDim_eq_iSup_length [Nonempty α] :
     krullDim α = ⨆ (p : LTSeries α), (p.length : ℕ∞) := by
@@ -778,7 +767,6 @@ lemma height_le_krullDim (a : α) : height a ≤ krullDim α := by
 lemma coheight_le_krullDim (a : α) : coheight a ≤ krullDim α := by
   simpa using height_le_krullDim (α := αᵒᵈ) a
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma _root_.LTSeries.height_last_longestOf [FiniteDimensionalOrder α] :
     height (LTSeries.longestOf α).last = krullDim α := by
@@ -845,7 +833,6 @@ lemma krullDim_eq_iSup_height_add_coheight_of_nonempty [Nonempty α] :
         obtain ⟨p₂, hhead, hlen₂⟩ := exists_series_of_coheight_eq_coe a hch
         apply le_iSup_of_le ((p₁.smash p₂) (by simp [*])) (by simp [*])
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The Krull dimension is the supremum of the elements' heights.
 
@@ -857,7 +844,6 @@ lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), ↑(height a) := by
   | inl h => rw [krullDim_eq_bot, ciSup_of_empty]
   | inr h => rw [krullDim_eq_iSup_height_of_nonempty, WithBot.coe_iSup (OrderTop.bddAbove _)]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The Krull dimension is the supremum of the elements' coheights.
 
@@ -945,7 +931,6 @@ end typeclass
 
 section calculations
 
-set_option backward.isDefEq.respectTransparency false in
 lemma krullDim_eq_one_iff_of_boundedOrder {α : Type*} [PartialOrder α] [BoundedOrder α] :
     krullDim α = 1 ↔ IsSimpleOrder α := by
   rw [le_antisymm_iff, krullDim_le_one_iff_of_boundedOrder, WithBot.one_le_iff_pos,
@@ -1012,7 +997,6 @@ lemma coheight_int (n : ℤ) : coheight n = ⊤ := coheight_of_noMaxOrder ..
 
 lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma height_coe_withBot (x : α) : height (x : WithBot α) = height x + 1 := by
   apply le_antisymm
   · apply height_le
@@ -1085,7 +1069,6 @@ set_option backward.isDefEq.respectTransparency false in
   conv_rhs => rw [← krullDim_orderDual]
   exact krullDim_WithTop (α := αᵒᵈ)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma krullDim_enat : krullDim ℕ∞ = ⊤ := by
   change (krullDim (WithTop ℕ) = ⊤)
@@ -1149,7 +1132,6 @@ lemma coheight_le_of_krullDim_preimage_le (x : α) :
   apply height_le_of_krullDim_preimage_le (f := f.dual)
   exact fun x ↦ le_of_eq_of_le (krullDim_orderDual (α := f ⁻¹' {x})) (h x)
 
-set_option backward.isDefEq.respectTransparency false in
 include f h in
 lemma krullDim_le_of_krullDim_preimage_le :
     Order.krullDim α ≤ (m + 1) * Order.krullDim β + m := by

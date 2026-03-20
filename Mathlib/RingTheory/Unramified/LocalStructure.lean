@@ -307,7 +307,6 @@ instance (priority := low)
     [Algebra.EssFiniteType R S] [Algebra.FormallyUnramified R S] : Algebra.QuasiFinite R S where
   finite_fiber _ _ := Algebra.FormallyUnramified.finite_of_free _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_hasStandardEtaleSurjectionOn
     (Q : Ideal S) [Q.IsPrime] [FiniteType R S] [IsUnramifiedAt R Q] :
     ∃ f ∉ Q, HasStandardEtaleSurjectionOn R f := by

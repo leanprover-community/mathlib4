@@ -188,7 +188,6 @@ section CommRing
 
 variable [CommRing R] (v : Valuation R Γ₀)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : CommRing (WithVal v) := fast_instance% (equiv v).commRing
 
 instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
@@ -318,10 +317,8 @@ section Field
 
 variable [Field R] (v : Valuation R Γ₀)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Field (WithVal v) := fast_instance% (equiv v).field
 
-set_option backward.isDefEq.respectTransparency false in
 instance [NumberField R] : NumberField (WithVal v) where
 
 @[simp] lemma toVal_div (x y : R) : toVal v (x / y) = toVal v x / toVal v y := rfl

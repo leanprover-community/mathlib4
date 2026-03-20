@@ -48,7 +48,6 @@ theorem map_eq_zero : f x = 0 ↔ 2 ≤ x := by
   rcases exists_add_of_le hle with ⟨x, rfl⟩
   rw [add_comm, hf.map_add, hf.map_two, mul_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_ne_zero_iff : f x ≠ 0 ↔ x < 2 := by simp [hf.map_eq_zero]
 
 set_option backward.isDefEq.respectTransparency false in

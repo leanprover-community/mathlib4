@@ -80,7 +80,6 @@ theorem edist_eq_zero_iff :
 theorem edist_self : edist G v v = 0 :=
   edist_eq_zero_iff.mpr rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem edist_pos_of_ne (hne : u ≠ v) :
     0 < G.edist u v :=
   pos_iff_ne_zero.mpr <| edist_eq_zero_iff.ne.mpr hne
@@ -140,7 +139,6 @@ theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
     exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
   · exact le_antisymm (edist_le h.toWalk) (Order.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma edist_le_one_iff_adj_or_eq : G.edist u v ≤ 1 ↔ G.Adj u v ∨ u = v := by
   by_cases huv : u = v
   · simp [huv]
@@ -250,7 +248,6 @@ protected theorem Connected.dist_triangle (hconn : G.Connected) :
   rw [← hp, ← hq, ← Walk.length_append]
   apply dist_le
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Reachable.dist_triangle_left (h : G.Reachable u v) (w) :
     G.dist u w ≤ G.dist u v + G.dist v w := by
   by_cases! h' : ¬G.Reachable u w
@@ -258,7 +255,6 @@ lemma Reachable.dist_triangle_left (h : G.Reachable u v) (w) :
   rw [← ENat.coe_le_coe, ENat.coe_add]
   grind [SimpleGraph.edist_triangle, Reachable.trans, Reachable.symm]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Reachable.dist_triangle_right (h : G.Reachable v w) (u) :
     G.dist u w ≤ G.dist u v + G.dist v w := by
   by_cases! h' : ¬G.Reachable u w

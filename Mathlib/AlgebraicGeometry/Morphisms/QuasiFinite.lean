@@ -202,7 +202,6 @@ nonrec lemma IsFinite.of_locallyQuasiFinite (f : X ⟶ Y) [LocallyQuasiFinite f]
   algebraize [φ.hom]
   exact .of_quasiFinite
 
-set_option backward.isDefEq.respectTransparency false in
 instance (f : X ⟶ Y) [LocallyQuasiFinite f] [QuasiCompact f] (x : Y) :
     IsFinite (f.fiberToSpecResidueField x) :=
   .of_locallyQuasiFinite (pullback.snd _ _)

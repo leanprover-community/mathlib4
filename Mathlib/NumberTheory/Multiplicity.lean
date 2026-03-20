@@ -143,7 +143,6 @@ section IntegralDomain
 
 variable [IsDomain R]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_pow_sub_pow_of_prime {p : R} (hp : Prime p) {x y : R}
     (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ} (hn : ¬p ∣ n) :
     emultiplicity p (x ^ n - y ^ n) = emultiplicity p (x - y) := by
@@ -166,13 +165,10 @@ theorem emultiplicity_geom_sum₂_eq_one :
   rw [pow_two, mul_dvd_mul_iff_left hp.ne_zero]
   exact mt hp.dvd_of_dvd_pow hx
 
-set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_pow_prime_sub_pow_prime :
     emultiplicity (↑p) (x ^ p - y ^ p) = emultiplicity (↑p) (x - y) + 1 := by
   rw [← geom_sum₂_mul, emultiplicity_mul hp, emultiplicity_geom_sum₂_eq_one hp hp1 hxy hx, add_comm]
 
-set_option backward.whnf.reducibleClassField false in
-set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_pow_prime_pow_sub_pow_prime_pow (a : ℕ) :
     emultiplicity (↑p) (x ^ p ^ a - y ^ p ^ a) = emultiplicity (↑p) (x - y) + a := by
   induction a with
@@ -289,7 +285,6 @@ theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hx
   intro x hx
   rw [pow_succ', mul_comm, pow_mul, Int.sq_mod_four_eq_one_of_odd hx.pow]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Int.two_pow_two_pow_sub_pow_two_pow {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2 ∣ x) :
     emultiplicity 2 (x ^ 2 ^ n - y ^ 2 ^ n) = emultiplicity 2 (x - y) + n := by
   simp only [pow_two_pow_sub_pow_two_pow n, emultiplicity_mul Int.prime_two,
@@ -320,7 +315,6 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   conv_rhs => rw [hk]
   exact mul_dvd_mul_left _ hpn
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Lifting the exponent lemma** for `p = 2` -/
 theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) (hn : Even n) :
     emultiplicity 2 (x ^ n - y ^ n) + 1 =

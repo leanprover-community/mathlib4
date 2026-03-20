@@ -161,7 +161,6 @@ def lift : (α → R) ≃ (FreeCommRing α →+* R) :=
 theorem lift_of (x : α) : lift f (of x) = f x :=
   (FreeAbelianGroup.lift_apply_of _ _).trans <| mul_one _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_comp_of (f : FreeCommRing α →+* R) : lift (f ∘ of) = f :=
   RingHom.ext fun x =>

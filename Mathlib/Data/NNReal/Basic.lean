@@ -138,7 +138,6 @@ typeclass. For lemmas about subtraction and addition see lemmas about `OrderedSu
 `Mathlib/Algebra/Order/Sub/Basic.lean`. See also `mul_tsub` and `tsub_mul`.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sub_div (a b c : ℝ≥0) : (a - b) / c = a / c - b / c :=
   tsub_div _ _ _
 

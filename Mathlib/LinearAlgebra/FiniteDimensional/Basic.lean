@@ -525,7 +525,6 @@ theorem finrank_span_singleton {v : V} (hv : v ≠ 0) : finrank K (K ∙ v) = 1 
     apply Subtype.coe_ne_coe.mp
     simp [hv]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A submodule over a division ring is an atom of the submodule lattice iff it has `finrank` 1. -/
 theorem Submodule.isAtom_iff_finrank_eq_one {S : Submodule K V} :
     IsAtom S ↔ finrank K S = 1 := by
@@ -603,7 +602,6 @@ open Module
 
 variable {F E : Type*} [Field F] [Ring E] [Algebra F E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A `Subalgebra` is `FiniteDimensional` iff it is `FiniteDimensional` as a submodule. -/
 theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :
     FiniteDimensional F (Subalgebra.toSubmodule S) ↔ FiniteDimensional F S :=
@@ -612,7 +610,6 @@ theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :
 alias ⟨FiniteDimensional.of_subalgebra_toSubmodule, FiniteDimensional.subalgebra_toSubmodule⟩ :=
   Subalgebra.finiteDimensional_toSubmodule
 
-set_option backward.isDefEq.respectTransparency false in
 instance FiniteDimensional.finiteDimensional_subalgebra [FiniteDimensional F E]
     (S : Subalgebra F E) : FiniteDimensional F S :=
   FiniteDimensional.of_subalgebra_toSubmodule inferInstance

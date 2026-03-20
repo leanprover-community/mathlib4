@@ -288,7 +288,6 @@ lemma expGrowthSup_of_eventually_ge (hb : b ≠ 0) (h : ∀ᶠ n in atTop, b * u
 
 /-! ### Infimum and supremum -/
 
-set_option backward.isDefEq.respectTransparency false in
 lemma expGrowthInf_inf : expGrowthInf (u ⊓ v) = expGrowthInf u ⊓ expGrowthInf v := by
   rw [expGrowthInf, expGrowthInf, expGrowthInf, ← liminf_min]
   refine liminf_congr (Eventually.of_forall fun n ↦ ?_)
@@ -312,7 +311,6 @@ lemma expGrowthInf_iInf {ι : Type*} [Finite ι] (u : ι → ℕ → ℝ≥0∞)
     expGrowthInf (⨅ i, u i) = ⨅ i, expGrowthInf (u i) := by
   rw [← iInf_univ, expGrowthInf_biInf u Set.finite_univ, iInf_univ]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma expGrowthSup_sup : expGrowthSup (u ⊔ v) = expGrowthSup u ⊔ expGrowthSup v := by
   rw [expGrowthSup, expGrowthSup, expGrowthSup, ← limsup_max]
   refine limsup_congr (Eventually.of_forall fun n ↦ ?_)

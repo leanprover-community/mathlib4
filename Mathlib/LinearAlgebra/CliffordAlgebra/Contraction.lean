@@ -67,7 +67,6 @@ def contractLeftAux (d : Module.Dual R M) :
   d.smulRight (LinearMap.fst _ (CliffordAlgebra Q) (CliffordAlgebra Q)) -
     v_mul.compl₂ (LinearMap.snd _ (CliffordAlgebra Q) _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contractLeftAux_contractLeftAux (v : M) (x : CliffordAlgebra Q) (fx : CliffordAlgebra Q) :
     contractLeftAux Q d v (ι Q v * x, contractLeftAux Q d v (x, fx)) = Q v • fx := by
   simp only [contractLeftAux_apply_apply]
@@ -76,7 +75,6 @@ theorem contractLeftAux_contractLeftAux (v : M) (x : CliffordAlgebra Q) (fx : Cl
 
 variable {Q}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Contract an element of the Clifford algebra with an element `d : Module.Dual R M` from the left.
 
 Note that $v ⌋ x$ is spelt `contractLeft (Q.associated v) x`.
@@ -143,7 +141,6 @@ theorem contractLeft_mul_algebraMap (a : CliffordAlgebra Q) (r : R) :
     d⌋(a * algebraMap _ _ r) = d⌋a * algebraMap _ _ r := by
   rw [← Algebra.commutes, contractLeft_algebraMap_mul, Algebra.commutes]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contractRight_algebraMap_mul (r : R) (b : CliffordAlgebra Q) :
     algebraMap _ _ r * b⌊d = algebraMap _ _ r * (b⌊d) := by
   rw [← Algebra.smul_def, LinearMap.map_smul₂, Algebra.smul_def]
@@ -154,7 +151,6 @@ theorem contractRight_mul_algebraMap (a : CliffordAlgebra Q) (r : R) :
 
 variable (Q)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem contractLeft_ι (x : M) : d⌋ι Q x = algebraMap R _ (d x) := by
 -- Porting note: Lean cannot figure out anymore the third argument
@@ -222,14 +218,12 @@ local infixl:70 "⌋" => contractLeft
 
 local infixl:70 "⌊" => contractRight
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `CliffordAlgebra.changeForm` -/
 @[simps!]
 def changeFormAux (B : BilinForm R M) : M →ₗ[R] CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q :=
   haveI v_mul := (Algebra.lmul R (CliffordAlgebra Q)).toLinearMap ∘ₗ ι Q
   v_mul - contractLeft ∘ₗ B
 
-set_option backward.isDefEq.respectTransparency false in
 theorem changeFormAux_changeFormAux (B : BilinForm R M) (v : M) (x : CliffordAlgebra Q) :
     changeFormAux Q B v (changeFormAux Q B v x) = (Q v - B v v) • x := by
   simp only [changeFormAux_apply_apply]
@@ -239,7 +233,6 @@ theorem changeFormAux_changeFormAux (B : BilinForm R M) (v : M) (x : CliffordAlg
 variable {Q}
 variable {Q' Q'' : QuadraticForm R M} {B B' : BilinForm R M}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Convert between two algebras of different quadratic forms, sending vectors to vectors, scalars
 to scalars, and adjusting products by a contraction term.
 
@@ -280,7 +273,6 @@ theorem changeForm_algebraMap (r : R) : changeForm h (algebraMap R _ r) = algebr
 theorem changeForm_one : changeForm h (1 : CliffordAlgebra Q) = 1 := by
   simpa using changeForm_algebraMap h (1 : R)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem changeForm_ι (m : M) : changeForm h (ι (M := M) Q m) = ι (M := M) Q' m :=
   (foldr_ι _ _ _ _ _).trans <|

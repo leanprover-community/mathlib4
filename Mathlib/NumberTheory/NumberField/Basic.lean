@@ -72,7 +72,6 @@ theorem of_module_finite [NumberField K] [Algebra K L] [Module.Finite K L] : Num
     letI := charZero_of_injective_algebraMap (algebraMap K L).injective
     Module.Finite.trans K L
 
-set_option backward.isDefEq.respectTransparency false in
 variable {K} {L} in
 instance of_intermediateField [NumberField K] [NumberField L] [Algebra K L]
     (E : IntermediateField K L) : NumberField E :=
@@ -116,7 +115,6 @@ set_option «instance».normalForm.wrapFields.data false in
 instance : IsDomain (𝓞 K) :=
   inferInstanceAs (IsDomain (integralClosure _ _))
 
-set_option backward.isDefEq.respectTransparency false in
 instance [NumberField K] : CharZero (𝓞 K) :=
   inferInstanceAs (CharZero (integralClosure _ _))
 
@@ -124,7 +122,6 @@ set_option backward.inferInstanceAs.normalForm false in
 instance : Algebra (𝓞 K) K :=
   inferInstanceAs (Algebra (integralClosure _ _) _)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsTorsionFree (𝓞 K) K :=
   inferInstanceAs (IsTorsionFree (integralClosure _ _) _)
 
@@ -372,7 +369,6 @@ protected noncomputable def algEquiv (R : Type*) [CommRing R] [Algebra (𝓞 K) 
 instance extension_algebra_isIntegral : Algebra.IsIntegral (𝓞 K) (𝓞 L) :=
   IsIntegralClosure.isIntegral_algebra (𝓞 K) L
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any extension between ring of integers of number fields is Noetherian. -/
 instance extension_isNoetherian [NumberField K] [NumberField L] : IsNoetherian (𝓞 K) (𝓞 L) :=
   IsIntegralClosure.isNoetherian (𝓞 K) K L (𝓞 L)
@@ -388,7 +384,6 @@ theorem ker_algebraMap_eq_bot : RingHom.ker (algebraMap (𝓞 K) (𝓞 L)) = ⊥
 theorem algebraMap.injective : Function.Injective (algebraMap (𝓞 K) (𝓞 L)) :=
   (RingHom.injective_iff_ker_eq_bot (algebraMap (𝓞 K) (𝓞 L))).mpr (ker_algebraMap_eq_bot K L)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsTorsionFree (𝓞 K) (𝓞 L) :=
   isTorsionFree_iff_algebraMap_injective.mpr <| algebraMap.injective K L
 
