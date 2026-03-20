@@ -393,9 +393,13 @@ noncomputable def mapCoeffAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] whe
   left_inv _ := by aesop
   right_inv _ := by aesop
 
+@[deprecated (since := "2026-03-20")] alias mapRangeAlgEquiv := mapCoeffAlgEquiv
+
 @[to_additive (attr := simp)]
 lemma symm_mapCoeffAlgEquiv (e : A ≃ₐ[R] B) :
     (mapCoeffAlgEquiv R M e).symm = mapCoeffAlgEquiv R M e.symm := rfl
+
+@[deprecated (since := "2026-03-20")] alias symm_mapRangeAlgEquiv := symm_mapCoeffAlgEquiv
 
 @[to_additive (attr := simp)]
 lemma mapRangeAlgEquiv_trans (e₁ : A ≃ₐ[R] B) (e₂ : B ≃ₐ[R] C) :
