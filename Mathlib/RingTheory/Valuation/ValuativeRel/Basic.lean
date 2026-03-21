@@ -1238,8 +1238,8 @@ lemma orderMonoidIso_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
     orderMonoidIso v (.mk x s) = (restrict₀ v x / (restrict₀ v (s : R))) :=
   rfl
 
-/-- This is the same as `ValuativeRel.ValueGroupWithZero.embed_valuation_eq_restrict₀`, where `embed` is
-upgraded to `orderMonoidIso`. -/
+/-- This is the same as `ValuativeRel.ValueGroupWithZero.embed_valuation_eq_restrict₀`,
+where `embed` is upgraded to `orderMonoidIso`. -/
 @[simp]
 lemma orderMonoidIso_valuation_eq_restrict₀ [v.Compatible] (x : R) :
     orderMonoidIso v (valuation R x) = restrict₀ v x :=
