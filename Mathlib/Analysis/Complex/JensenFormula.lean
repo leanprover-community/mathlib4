@@ -229,25 +229,20 @@ theorem AnalyticOnNhd.count_zeros_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
       · exact log_le_log (norm_pos_iff.mpr h) (f_bound z hz)
   calc
   _ ≤ ∑ᶠ u, ((divisor f (closedBall c |R|)) u) * Real.log (R * ‖c - u‖⁻¹) := by
-    apply finsum_le_finsum'
-    · apply (divisor f (closedBall c |r|)).finiteSupport (isCompact_closedBall ..) |>.subset
-      intro z hz
-      simp_all
-    · apply (divisor f (closedBall c |R|)).finiteSupport (isCompact_closedBall ..) |>.subset
-      intro z hz
-      simp_all
-    · intro u
-      by_cases h1 : u ∈ closedBall c |R|
+    refine finsum_le_finsum' ?_ ?_ fun u ↦ ?_
+    · exact (divisor f (closedBall c |r|)).finiteSupport (isCompact_closedBall ..) |>.subset 
+        fun _ _ ↦ (by simp_all)
+    · exact (divisor f (closedBall c |R|)).finiteSupport (isCompact_closedBall ..) |>.subset
+        fun _ _ ↦ (by simp_all)
+    · by_cases h1 : u ∈ closedBall c |R|
       · by_cases h2 : u ∈ closedBall c |r|
-        · simp only [(h₁f.mono (closedBall_subset_closedBall r_lt_R.le)).meromorphicOn, h2,
-            divisor_apply, h₁f.meromorphicOn, h1]
+        · simp only [(h₁f.mono (closedBall_subset_closedBall r_lt_R.le)), h2,
+            AnalyticOnNhd.divisor_apply, h₁f, h1]
           by_cases! h3 : u = c
-          · rw [h3, AnalyticAt.meromorphicOrderAt_eq (h₁f c (by simp)),
-              (h₁f c (by simp)).analyticOrderAt_eq_zero.mpr h₂f]
+          · rw [h3, (h₁f c (by simp)).analyticOrderAt_eq_zero.mpr h₂f]
             simp
           gcongr 1
-          · simp only [Int.cast_nonneg_iff, WithTop.untop₀_nonneg]
-            exact (h₁f u h1).meromorphicOrderAt_nonneg
+          · simp
           · apply log_le_log_of_abs_le_abs
             · rw [abs_div]
               apply div_pos <;>linarith
