@@ -170,7 +170,6 @@ theorem serreDerivative_mdifferentiable {F : ℍ → ℂ} (k : ℂ) (hF : MDiff 
       MDiff (fun z ↦ (k * 12⁻¹) * (EisensteinSeries.E2 z * F z)))
   simp [Pi.mul_apply, mul_assoc, mul_left_comm, mul_comm]
 
-
 open ModularGroup
 
 variable (γ : SL(2, ℤ))
@@ -331,7 +330,6 @@ theorem serreDerivative_slash_invariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff 
     serreDerivative k F ∣[k + 2] γ = serreDerivative k F := by
   rw [serreDerivative_slash_equivariant, h]
   exact hF
-
 
 end
 
