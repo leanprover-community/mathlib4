@@ -66,6 +66,7 @@ theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat
     IsRat (na / nb : ℚ) n d → IsRat (mkRat a b) n d
   | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, ⟨_, h⟩ => by rw [Rat.mkRat_eq_div]; exact ⟨_, h⟩
 
+set_option backward.isDefEq.respectTransparency true in
 theorem isNNRat_natDiv {a na n : ℕ} {b nb d : ℕ} (ha : IsNat a na) (hb : IsNat b nb)
     (hab : IsNNRat ((na : ℤ) / nb : ℚ) n d) : IsNNRat (NNRat.divNat a b) n d := by
   refine ⟨invertibleOfNonzero (by exact_mod_cast hab.den_nz), ?_⟩
@@ -150,12 +151,13 @@ recognizes `q`, returning the cast of `q`. -/
 
 /-- The `norm_num` extension which identifies an expression `RatCast.ratCast q` where `norm_num`
 recognizes `q`, returning the cast of `q`. -/
-@[norm_num NNRat.cast _] def evalNNRatCast : NormNumExt where eval {u α} e := do
+@[norm_num NNRat.cast _, NNRatCast.nnratCast _]
+def evalNNRatCast : NormNumExt where eval {u α} e := do
   let dα ← inferDivisionSemiring α
-  let .app r (a : Q(ℚ≥0)) ← whnfR e | failure
-  guard <|← withNewMCtxDepth <| isDefEq r q(NNRat.cast (K := $α))
+  let ~q(@NNRat.cast _ $dα' $a) := e | failure
+  guard <| ← matchesInstance dα' q(@DivisionSemiring.toNNRatCast _ $dα)
   let r ← derive q($a)
-  haveI' : $e =Q NNRat.cast $a := ⟨⟩
+  have : $e =Q NNRat.cast $a := ⟨⟩
   match r with
   | .isNat _ na pa =>
     assumeInstancesCommute
