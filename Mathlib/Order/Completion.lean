@@ -80,19 +80,21 @@ theorem image_right_subset_upperBounds {f : α → β} (hf : Monotone f)
 
 /-- Convert an element into its Dedekind cut (`Iic a`, `Ici a`). This map is order-preserving,
 though it is injective only on partial orders. -/
-def of (a : α) : DedekindCut α :=
+def principal (a : α) : DedekindCut α :=
   (Concept.ofObject _ a).copy (Iic a) (Ici a)
     (by ext; simpa [mem_lowerPolar_iff] using forall_ge_iff_le.symm)
     (by ext; simp)
 
-@[simp] theorem left_of (a : α) : (of a).left = Iic a := rfl
-@[simp] theorem right_of (a : α) : (of a).right = Ici a := rfl
+@[simp] theorem left_principal (a : α) : (principal a).left = Iic a := rfl
+@[simp] theorem right_principal (a : α) : (principal a).right = Ici a := rfl
 
-@[simp] theorem ofObject_eq_of (a : α) : ofObject (· ≤ ·) a = of a := (copy_eq ..).symm
-@[simp] theorem ofAttribute_eq_of (a : α) : ofAttribute (· ≤ ·) a = of a := by ext; simp
+@[simp] theorem ofObject_eq_principal (a : α) : ofObject (· ≤ ·) a = principal a :=
+  (copy_eq ..).symm
+@[simp] theorem ofAttribute_eq_principal (a : α) : ofAttribute (· ≤ ·) a = principal a := by
+  ext; simp
 
 @[simp]
-theorem of_le_of {a b : α} : of a ≤ of b ↔ a ≤ b := by
+theorem principal_le_principal {a b : α} : principal a ≤ principal b ↔ a ≤ b := by
   simpa using ofObject_le_ofAttribute_iff (r := (· ≤ ·)) (a := a)
 
 /-- We can never have a computable decidable instance, for the same reason we can't on `Set α`. -/
@@ -105,21 +107,21 @@ section PartialOrder
 variable [PartialOrder α]
 
 @[simp]
-theorem of_lt_of {a b : α} : of a < of b ↔ a < b := by
+theorem principal_lt_principal {a b : α} : principal a < principal b ↔ a < b := by
   simp [lt_iff_le_not_ge]
 
 @[simp]
-theorem of_inj {a b : α} : of a = of b ↔ a = b := by
+theorem principal_inj {a b : α} : principal a = principal b ↔ a = b := by
   simp [le_antisymm_iff]
 
-/-- `DedekindCut.of` as an `OrderEmbedding`. -/
+/-- `DedekindCut.principal` as an `OrderEmbedding`. -/
 @[simps! apply]
-def ofEmbedding : α ↪o DedekindCut α where
-  toFun := of
-  inj' _ _ := of_inj.1
-  map_rel_iff' := of_le_of
+def principalEmbedding : α ↪o DedekindCut α where
+  toFun := principal
+  inj' _ _ := principal_inj.1
+  map_rel_iff' := principal_le_principal
 
-@[simp] theorem ofEmbedding_coe : ⇑(@ofEmbedding α _) = of := rfl
+@[simp] theorem principalEmbedding_coe : ⇑(@principalEmbedding α _) = principal := rfl
 
 end PartialOrder
 
@@ -127,15 +129,15 @@ section CompleteLattice
 variable [CompleteLattice α] [PartialOrder β]
 
 @[simp]
-theorem of_sSup (A : DedekindCut α) : of (sSup A.left) = A := by
+theorem of_sSup (A : DedekindCut α) : principal (sSup A.left) = A := by
   apply ext'
   ext
-  rw [right_of, mem_Ici, sSup_le_iff, ← upperBounds_left, mem_upperBounds]
+  rw [right_principal, mem_Ici, sSup_le_iff, ← upperBounds_left, mem_upperBounds]
 
 @[simp]
-theorem of_sInf (A : DedekindCut α) : of (sInf A.right) = A := by
+theorem of_sInf (A : DedekindCut α) : principal (sInf A.right) = A := by
   ext
-  rw [left_of, mem_Iic, le_sInf_iff, ← lowerBounds_right, mem_lowerBounds]
+  rw [left_principal, mem_Iic, le_sInf_iff, ← lowerBounds_right, mem_lowerBounds]
 
 /-- Any order embedding `β ↪o α` into a complete lattice `α` factors through `DedekindCut β`.
 
@@ -156,7 +158,7 @@ theorem factorEmbedding_apply (f : β ↪o α) (A : DedekindCut β) :
   rfl
 
 @[simp]
-theorem factorEmbedding_of (f : β ↪o α) (x : β) : factorEmbedding f (of x) = f x := by
+theorem factorEmbedding_principal (f : β ↪o α) (x : β) : factorEmbedding f (principal x) = f x := by
   rw [factorEmbedding_apply]
   apply le_antisymm (by simp)
   rw [le_sSup_iff]
@@ -166,21 +168,21 @@ theorem factorEmbedding_of (f : β ↪o α) (x : β) : factorEmbedding f (of x) 
 /-- The Dedekind-MacNeille completion of a partial order is the smallest complete lattice containing
 it, in the sense that any embedding into any complete lattice factors through it. -/
 theorem factorEmbedding_factors (f : β ↪o α) :
-    ofEmbedding.trans (factorEmbedding f) = f := by
+    principalEmbedding.trans (factorEmbedding f) = f := by
   ext; simp
 
-/-- `DedekindCut.of` as an `OrderIso`.
+/-- `DedekindCut.principal` as an `OrderIso`.
 
 This provides the second half of the **fundamental theorem of concept lattices**: every complete
 lattice is isomorphic to a concept lattice (its own Dedekind completion). -/
 @[simps! apply]
-def ofIso : α ≃o DedekindCut α where
+def principalIso : α ≃o DedekindCut α where
   invFun := factorEmbedding (OrderIso.refl _).toOrderEmbedding
-  left_inv := factorEmbedding_of _
+  left_inv := factorEmbedding_principal _
   right_inv x := by simp [factorEmbedding]
-  __ := ofEmbedding
+  __ := principalEmbedding
 
-theorem ofIso_symm_apply (A : DedekindCut α) : ofIso.symm A = sSup A.left :=
+theorem principalIso_symm_apply (A : DedekindCut α) : principalIso.symm A = sSup A.left :=
   (factorEmbedding_apply ..).trans <| by simp
 
 end CompleteLattice
