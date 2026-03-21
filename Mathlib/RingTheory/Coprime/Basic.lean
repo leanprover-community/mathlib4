@@ -380,6 +380,48 @@ theorem neg_neg {x y : R} (h : IsCoprime x y) : IsCoprime (-x) (-y) :=
 theorem neg_neg_iff (x y : R) : IsCoprime (-x) (-y) ↔ IsCoprime x y :=
   (neg_left_iff _ _).trans (neg_right_iff _ _)
 
+theorem sub_mul_left_left_iff {x y z : R} : IsCoprime (x - y * z) y ↔ IsCoprime x y := by
+  rw [sub_eq_add_neg, ← mul_neg, add_mul_left_left_iff]
+
+theorem sub_mul_right_left_iff {x y z : R} : IsCoprime (x - z * y) y ↔ IsCoprime x y := by
+  rw [sub_eq_add_neg, ← neg_mul, add_mul_right_left_iff]
+
+theorem sub_mul_left_right_iff {x y z : R} : IsCoprime x (y - x * z) ↔ IsCoprime x y := by
+  rw [sub_eq_add_neg, ← mul_neg, add_mul_left_right_iff]
+
+theorem sub_mul_right_right_iff {x y z : R} : IsCoprime x (y - z * x) ↔ IsCoprime x y := by
+  rw [sub_eq_add_neg, ← neg_mul, add_mul_right_right_iff]
+
+theorem mul_sub_left_left_iff {x y z : R} : IsCoprime (y * z - x) y ↔ IsCoprime x y := by
+  rw [sub_eq_neg_add, add_mul_left_left_iff, neg_left_iff]
+
+theorem mul_sub_right_left_iff {x y z : R} : IsCoprime (z * y - x) y ↔ IsCoprime x y := by
+  rw [sub_eq_neg_add, add_mul_right_left_iff, neg_left_iff]
+
+theorem mul_sub_left_right_iff {x y z : R} : IsCoprime x (x * z - y) ↔ IsCoprime x y := by
+  rw [sub_eq_add_neg, mul_add_left_right_iff, neg_right_iff]
+
+theorem mul_sub_right_right_iff {x y z : R} : IsCoprime x (z * x - y) ↔ IsCoprime x y := by
+  rw [sub_eq_add_neg, mul_add_right_right_iff, neg_right_iff]
+
+lemma add_one_left_of_dvd {x y : R} (h : y ∣ x) : IsCoprime (x + 1) y := by
+  obtain ⟨z, rfl⟩ := h
+  rw [mul_add_left_left_iff]
+  exact isCoprime_one_left
+
+lemma add_one_right_of_dvd {x y : R} (h : x ∣ y) : IsCoprime x (y + 1) :=
+  isCoprime_comm.mp (add_one_left_of_dvd h)
+
+lemma sub_one_left_of_dvd {x y : R} (h : y ∣ x) : IsCoprime (x - 1) y := by
+  rw [← neg_sub, neg_left_iff, sub_eq_neg_add]
+  exact add_one_left_of_dvd h.neg_right
+
+lemma sub_one_right_of_dvd {x y : R} (h : x ∣ y) : IsCoprime x (y - 1) :=
+  isCoprime_comm.mp (sub_one_left_of_dvd h)
+
+lemma add_one_sub_one_of_two_dvd {x : R} (h : 2 ∣ x) : IsCoprime (x + 1) (x - 1) := by
+  simpa [show 2 + (x - 1) = x + 1 by ring] using add_mul_left_left (sub_one_right_of_dvd h) 1
+
 section abs
 
 variable [LinearOrder R] [AddLeftMono R]
@@ -505,5 +547,47 @@ theorem neg_right_iff (x y : R) : IsRelPrime x (-y) ↔ IsRelPrime x y :=
 
 theorem neg_neg_iff (x y : R) : IsRelPrime (-x) (-y) ↔ IsRelPrime x y :=
   (neg_left_iff _ _).trans (neg_right_iff _ _)
+
+theorem sub_mul_left_left_iff : IsRelPrime (x - y * z) y ↔ IsRelPrime x y := by
+  rw [sub_eq_add_neg, ← mul_neg, add_mul_left_left_iff]
+
+theorem sub_mul_right_left_iff : IsRelPrime (x - z * y) y ↔ IsRelPrime x y := by
+  rw [sub_eq_add_neg, ← neg_mul, add_mul_right_left_iff]
+
+theorem sub_mul_left_right_iff : IsRelPrime x (y - x * z) ↔ IsRelPrime x y := by
+  rw [sub_eq_add_neg, ← mul_neg, add_mul_left_right_iff]
+
+theorem sub_mul_right_right_iff : IsRelPrime x (y - z * x) ↔ IsRelPrime x y := by
+  rw [sub_eq_add_neg, ← neg_mul, add_mul_right_right_iff]
+
+theorem mul_sub_left_left_iff : IsRelPrime (y * z - x) y ↔ IsRelPrime x y := by
+  rw [sub_eq_neg_add, add_mul_left_left_iff, neg_left_iff]
+
+theorem mul_sub_right_left_iff : IsRelPrime (z * y - x) y ↔ IsRelPrime x y := by
+  rw [sub_eq_neg_add, add_mul_right_left_iff, neg_left_iff]
+
+theorem mul_sub_left_right_iff : IsRelPrime x (x * z - y) ↔ IsRelPrime x y := by
+  rw [sub_eq_add_neg, mul_add_left_right_iff, neg_right_iff]
+
+theorem mul_sub_right_right_iff : IsRelPrime x (z * x - y) ↔ IsRelPrime x y := by
+  rw [sub_eq_add_neg, mul_add_right_right_iff, neg_right_iff]
+
+lemma add_one_left_of_dvd (h : y ∣ x) : IsRelPrime (x + 1) y := by
+  obtain ⟨z, rfl⟩ := h
+  rw [mul_add_left_left_iff]
+  exact isRelPrime_one_left
+
+lemma add_one_right_of_dvd (h : x ∣ y) : IsRelPrime x (y + 1) :=
+  isRelPrime_comm.mp (add_one_left_of_dvd h)
+
+lemma sub_one_left_of_dvd (h : y ∣ x) : IsRelPrime (x - 1) y := by
+  rw [← neg_sub, neg_left_iff, sub_eq_neg_add]
+  exact add_one_left_of_dvd h.neg_right
+
+lemma sub_one_right_of_dvd (h : x ∣ y) : IsRelPrime x (y - 1) :=
+  isRelPrime_comm.mp (sub_one_left_of_dvd h)
+
+lemma add_one_sub_one_of_two_dvd (h : 2 ∣ x) : IsRelPrime (x + 1) (x - 1) := by
+  simpa [show 2 + (x - 1) = x + 1 by ring] using add_mul_left_left (sub_one_right_of_dvd h) 1
 
 end IsRelPrime
