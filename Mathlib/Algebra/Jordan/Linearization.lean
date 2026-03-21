@@ -3,8 +3,10 @@ Copyright (c) 2026 LIU Yaohua. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: LIU Yaohua
 -/
-import Mathlib.Algebra.Jordan.Basic
-import Mathlib.Algebra.Ring.Associator
+module
+
+public import Mathlib.Algebra.Jordan.Basic
+public import Mathlib.Algebra.Ring.Associator
 
 /-!
 # Linearization of the commutative Jordan identity
@@ -28,6 +30,8 @@ with mixed arguments, and is a standard tool for subsequent multi-variable manip
 
 * [McCrimmon, *A Taste of Jordan Algebras*][mccrimmon2004], Proposition 1.8.5 (JAX2')
 -/
+
+@[expose] public section
 
 namespace IsCommJordan
 
