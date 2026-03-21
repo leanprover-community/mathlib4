@@ -30,23 +30,21 @@ universe u
 such that the topology of A is induced by f. -/
 structure TopPair where
   /-- The first space of the pair -/
-  first : TopCat
-
+  fst : TopCat
   /-- The second space of the pair -/
-  second : TopCat
-
+  snd : TopCat
   /-- The map that induces the topology on A -/
-  map : second ⟶ first
-  map_inducing : Topology.IsInducing map.hom
+  map : snd ⟶ fst
+  isInducing_map : Topology.IsInducing map.hom
 
 namespace TopPair
 
 /-- Constructor for a topological (X, A) pair where A ⊆ X. -/
 def ofSubset {X : TopCat} (A : Set X) : TopPair where
-  first := X
-  second := TopCat.of A
+  fst := X
+  snd := TopCat.of A
   map := ⟨{ toFun := (↑) }⟩
-  map_inducing := ⟨TopologicalSpace.ext rfl⟩
+  isInducing_map := ⟨TopologicalSpace.ext rfl⟩
 
 variable {X Y : TopPair}
 
@@ -55,88 +53,87 @@ second spaces that fit in a commutative square with the maps of the pairs. -/
 @[ext]
 structure Hom (X Y : TopPair) where
   /-- The map between the first spaces -/
-  first : X.first ⟶ Y.first
-
+  fst : X.fst ⟶ Y.fst
   /-- The map between the second spaces -/
-  second : X.second ⟶ Y.second
-
+  snd : X.snd ⟶ Y.snd
   /-- The proof that the two maps fit in the commutative square -/
-  comm : CategoryTheory.CommSq second X.map Y.map first := by cat_disch
+  snd_map : snd ≫ Y.map = X.map ≫ fst := by cat_disch
 
 @[simps]
 instance : Category TopPair where
   Hom := Hom
-  id X := { first := 𝟙 X.first, second := 𝟙 X.second }
-  comp f g := ⟨_, _, CommSq.horiz_comp f.comm g.comm⟩
+  id X := { fst := 𝟙 X.fst, snd := 𝟙 X.snd }
+  comp f g := ⟨f.fst ≫ g.fst, f.snd ≫ g.snd, (CommSq.horiz_comp ⟨f.snd_map⟩ ⟨g.snd_map⟩).w⟩
 
 /-- The functor from topological pairs to topological spaces that forgets the second space, ie. the
 projection to the first space. -/
 @[simps]
 def proj₁ : TopPair ⥤ TopCat where
-  obj X := X.first
-  map f := f.first
+  obj X := X.fst
+  map f := f.fst
 
 /-- The functor from topological pairs to topological spaces that forgets the first space, ie. the
 projection to the second space. -/
 @[simps]
 def proj₂ : TopPair ⥤ TopCat where
-  obj X := X.second
-  map f := f.second
+  obj X := X.snd
+  map f := f.snd
 
 /-- The inclusion functor from topological spaces to topological pairs that sends a space X to
 (X, ∅). -/
 @[simps]
 def incl : TopCat ⥤ TopPair where
   obj X := ⟨_, _, TopCat.isInitialPEmpty.to _, TopCat.IsInducing.empty X⟩
-  map f := ⟨f, 𝟙 (TopCat.of PEmpty), ⟨by ext x; induction x⟩⟩
+  map f := ⟨f, 𝟙 (TopCat.of PEmpty), by ext x; induction x⟩
 
 /-- The functor from topological spaces to topological pairs that sends a space X to (X, X) with the
 identity morphism on X. -/
 @[simps]
 def diag : TopCat ⥤ TopPair where
   obj X := ⟨_, _, 𝟙 X, Topology.IsInducing.id⟩
-  map f := { first := f, second := f }
+  map f := { fst := f, snd := f }
 
 @[simps]
 instance : Inhabited TopPair := ⟨incl.obj TopCat.inhabited.default⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion functor is left adjoint to the projection to the first component. -/
 def inclAdjProj₁ : incl ⊣ proj₁ where
-  unit := { app X := 𝟙 X }
-  counit := {
-    app X := { first := 𝟙 X.first, second := TopCat.isInitialPEmpty.to _ }
-    naturality X Y f := Hom.ext (by simp) (by cat_disch)
+  unit.app X := 𝟙 X
+  counit.app X := {
+    fst := 𝟙 X.fst,
+    snd := TopCat.isInitialPEmpty.to _
+    snd_map := by ext x; induction x
   }
+  counit.naturality X Y f := Hom.ext (by simp) (by ext x; induction x)
   left_triangle_components X := Hom.ext (by simp) (by cat_disch)
 
 /-- The projection functor to the first component is left adjoint to the diagonal functor. -/
 def proj₁AdjDiag : proj₁ ⊣ diag where
-  unit := {
-    app X := { first := 𝟙 X.first, second := X.map },
-    naturality X Y f := Hom.ext (by simp) f.comm.w
-  }
-  counit := { app X := 𝟙 X }
+  unit.app X := { fst := 𝟙 X.fst, snd := X.map }
+  unit.naturality X Y f := Hom.ext (by simp) f.snd_map
+  counit.app X := 𝟙 X
 
 /-- The unique morphism (A, ∅) ⟶ (A, B) that is the identity on A. -/
 @[simps]
-def j (X : TopPair) : TopPair.incl.obj X.first ⟶ X where
-  first := 𝟙 X.first
-  second := TopCat.isInitialPEmpty.to _
-  comm := ⟨by ext x; induction x⟩
+def j (X : TopPair) : TopPair.incl.obj X.fst ⟶ X where
+  fst := 𝟙 X.fst
+  snd := TopCat.isInitialPEmpty.to _
+  snd_map := by ext x; induction x
 
 /-- A homotopy of maps between topological pairs is a homotopy on the first space and a homotopy on
 the second space that fit in a commutative square with the maps of the pairs. -/
 structure Homotopy (f g : X ⟶ Y) where
   /-- The homotopy on the first space. -/
-  first : ContinuousMap.Homotopy f.first.hom g.first.hom
-
+  fst : ContinuousMap.Homotopy f.fst.hom g.fst.hom
   /-- The homotopy on the second space. -/
-  second : ContinuousMap.Homotopy f.second.hom g.second.hom
-
+  snd : ContinuousMap.Homotopy f.snd.hom g.snd.hom
   /-- The proof that the homotopies fit into a commutative square with the maps of the pairs. -/
-  comm : CommSq (W := I × X.second) (X := Y.second) (Y := I × X.first) (Z := Y.first) second
-    (fun (t, x) ↦ (t, X.map x)) Y.map first
+  snd_map : TopCat.ofHom snd.toContinuousMap ≫ Y.map =
+    TopCat.ofHom (ContinuousMap.prodMap (ContinuousMap.id I) X.map.hom) ≫
+      TopCat.ofHom fst.toContinuousMap := by cat_disch
+
+attribute [reassoc] Homotopy.snd_map
+
 
 /-- Two maps between topological pairs are homotopic if there is a homotopy between them. -/
 def Homotopic (f g : X ⟶ Y) := Nonempty (Homotopy f g)
