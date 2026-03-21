@@ -150,17 +150,19 @@ theorem lowerPolar_anti : Antitone (lowerPolar r) :=
   upperPolar_anti _
 
 theorem lowerPolar_upperPolar_monotone : Monotone (lowerPolar r ∘ upperPolar r) :=
-  (lowerPolar_anti r).comp (upperPolar_anti r)
+  (gc_upperPolar_lowerPolar r).monotone_u_comp_l
 
 theorem upperPolar_lowerPolar_monotone : Monotone (upperPolar r ∘ lowerPolar r) :=
-  (upperPolar_anti r).comp (lowerPolar_anti r)
+  (gc_lowerPolar_upperPolar r).monotone_u_comp_l
 
-/-- The `extentClosure` of a set is the smallest extent containing it. -/
+/-- The `extentClosure` of a set is the smallest extent containing it. See
+`IsExtent.lowerPolar_upperPolar_subset` for this proof. -/
 @[simps!]
 def extentClosure (r : α → β → Prop) : ClosureOperator (Set α) :=
   (gc_upperPolar_lowerPolar r).closureOperator
 
-/-- The `intentClosure` of a set is the smallest intent containing it. -/
+/-- The `intentClosure` of a set is the smallest intent containing it. See
+`IsIntent.upperPolar_lowerPolar_subset` for this proof. -/
 @[simps!]
 def intentClosure (r : α → β → Prop) : ClosureOperator (Set β) :=
   (gc_lowerPolar_upperPolar r).closureOperator
@@ -350,11 +352,14 @@ abbrev ofObject (r : α → β → Prop) (a : α) : Concept α β r := ofObjects
 theorem ofObjects_extent : ofObjects r c.extent = c :=
   intent_injective c.upperPolar_extent
 
+theorem extent_ofObjects_of_isExtent (hs : IsExtent r s) : (ofObjects r s).extent = s :=
+  hs.eq
+
 theorem leftInverse_ofObjects_extent : LeftInverse (ofObjects r) extent :=
   fun _ ↦ ofObjects_extent
 
 theorem leftInvOn_extent_ofObjects : Set.LeftInvOn extent (ofObjects r) {s | IsExtent r s} :=
-  fun _ ↦ isExtent_iff.1
+  fun _ ↦ IsExtent.eq
 
 theorem surjective_ofObjects : Surjective (ofObjects r) :=
   leftInverse_ofObjects_extent.surjective
@@ -372,11 +377,14 @@ abbrev ofAttribute (r : α → β → Prop) (b : β) : Concept α β r := ofAttr
 theorem ofAttributes_intent : ofAttributes r c.intent = c :=
   extent_injective c.lowerPolar_intent
 
+theorem intent_ofAttributes_of_isIntent (hs : IsIntent r t) : (ofAttributes r t).intent = t :=
+  hs.eq
+
 theorem leftInverse_ofAttributes_extent : LeftInverse (ofAttributes r) intent :=
   fun c ↦ extent_injective c.lowerPolar_intent
 
 theorem leftInvOn_ofObjects_intent : Set.LeftInvOn intent (ofAttributes r) {s | IsIntent r s} :=
-  fun _ ↦ isIntent_iff.1
+  fun _ ↦ IsIntent.eq
 
 theorem surjective_ofAttributes : Surjective (ofAttributes r) :=
   leftInverse_ofAttributes_extent.surjective
@@ -501,7 +509,7 @@ theorem ofObjects_le_iff : ofObjects r s ≤ c ↔ s ⊆ c.extent := by
   exact ⟨((subset_lowerPolar_upperPolar r s).trans ·),
     (isExtent_extent c).lowerPolar_upperPolar_subset⟩
 
-theorem le_ofObjects_of_subset (h : c.extent ⊆ s) : c ≤ ofObjects r s := by
+theorem le_ofObjects_of_extent_subset (h : c.extent ⊆ s) : c ≤ ofObjects r s := by
   simpa using (lowerPolar_anti r).comp (upperPolar_anti r) h
 
 @[simp]
@@ -510,7 +518,7 @@ theorem le_ofAttributes_iff : c ≤ ofAttributes r t ↔ t ⊆ c.intent := by
   exact ⟨((subset_upperPolar_lowerPolar r t).trans ·),
     (isIntent_intent c).upperPolar_lowerPolar_subset⟩
 
-theorem ofAttributes_le_of_subset (h : c.intent ⊆ t) : ofAttributes r t ≤ c := by
+theorem ofAttributes_le_of_intent_subset (h : c.intent ⊆ t) : ofAttributes r t ≤ c := by
   rw [← intent_subset_intent_iff]
   simpa using (upperPolar_anti r).comp (lowerPolar_anti r) h
 

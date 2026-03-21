@@ -300,7 +300,7 @@ theorem totient_mul_prod_primeFactors (n : ℕ) :
     (φ n * ∏ p ∈ n.primeFactors, p) = n * ∏ p ∈ n.primeFactors, (p - 1) := by
   by_cases hn : n = 0; · simp [hn]
   rw [totient_eq_prod_factorization hn]
-  nth_rw 3 [← factorization_prod_pow_eq_self hn]
+  nth_rw 3 [← prod_factorization_pow_eq_self hn]
   simp only [prod_primeFactors_prod_factorization, ← Finsupp.prod_mul]
   refine Finsupp.prod_congr (M := ℕ) (N := ℕ) fun p hp => ?_
   rw [Finsupp.mem_support_iff, ← zero_lt_iff] at hp

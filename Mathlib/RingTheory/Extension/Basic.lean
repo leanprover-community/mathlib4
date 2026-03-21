@@ -161,6 +161,20 @@ def baseChange {T} [CommRing T] [Algebra R T] (P : Extension R S) : Extension T 
     (IsScalarTower.toAlgHom _ _ _)) (LinearMap.lTensor_surjective T
     (g := (IsScalarTower.toAlgHom R P.Ring S).toLinearMap) P.algebraMap_surjective)
 
+variable (T) in
+/--
+The ring `T ⊗[R] P.Ring` underlying the extension `P.baseChange T` is a `P.Ring`-algebra
+by action on the right. This causes a (mathematical) diamond when `T = P.Ring`, so it is
+not an instance.
+-/
+@[instance_reducible]
+noncomputable def algebraBaseChange : Algebra P.Ring (P.baseChange (T := T)).Ring :=
+  TensorProduct.rightAlgebra
+
+set_option backward.isDefEq.respectTransparency false in
+attribute [local instance] algebraBaseChange in
+instance : IsScalarTower R P.Ring (P.baseChange (T := T)).Ring :=
+  .of_algebraMap_eq fun x ↦ by simp [baseChange, RingHom.algebraMap_toAlgebra]; rfl
 
 end Construction
 
@@ -241,6 +255,16 @@ def Hom.mapKer (f : P.Hom P')
   toFun x := ⟨f.toRingHom x, by simp [show algebraMap P.Ring S x = 0 from x.2]⟩
   map_add' _ _ := Subtype.ext (map_add _ _ _)
   map_smul' := by simp [Algebra.smul_def, ← halg]
+
+set_option backward.isDefEq.respectTransparency false in
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+/-- The canonical hom from `P` to its base change `P.baseChange`. -/
+@[simps]
+noncomputable def toBaseChange (T : Type*) [CommRing T] [Algebra R T] :
+    P.Hom (P.baseChange (T := T)) where
+  toRingHom := TensorProduct.includeRight.toRingHom
+  toRingHom_algebraMap x := by simp [baseChange]
+  algebraMap_toRingHom x := rfl
 
 end
 
