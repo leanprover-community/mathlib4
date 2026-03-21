@@ -139,7 +139,7 @@ variable {I} in
 @[stacks 05GG "(2)"]
 theorem pow_smul_top_eq_eval_ker {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I M n).ker := by
   classical
-  refine le_antisymm (pow_smul_top_le_eval_ker ..) ?_
+  refine le_antisymm (pow_smul_top_le_ker_eval ..) ?_
   replace h := Ideal.FG.pow (n := n) h
   rcases h with ⟨s, hs⟩
   simp only [← hs, span_smul_eq]
