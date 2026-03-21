@@ -236,19 +236,17 @@ lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
     exact IsZariskiLocalAtTarget.of_isPullback
       (P := topologically @SpecializingMap) (.of_hasPullback _ _) H
   obtain ⟨S, rfl⟩ := hY
-  clear * - H
   intro Z hZ
   replace H := hZ.stableUnderSpecialization.image H
-  wlog hX : ∃ R, X = Spec R
-  · obtain ⟨R, g, hg⟩ := compactSpace_iff_exists.mp (QuasiCompact.compactSpace_of_compactSpace f)
-    have inst : QuasiCompact (g ≫ f) := HasAffineProperty.iff_of_isAffine.mpr (by infer_instance)
-    have := this _ (g ≫ f) (g ⁻¹' Z) (hZ.preimage g.continuous)
-    simp_rw [Scheme.Hom.comp_base, TopCat.comp_app, ← Set.image_image,
-      Set.image_preimage_eq _ hg] at this
-    exact this H ⟨_, rfl⟩
-  obtain ⟨R, rfl⟩ := hX
-  obtain ⟨φ, rfl⟩ := Spec.homEquiv.symm.surjective f
-  exact PrimeSpectrum.isClosed_image_of_stableUnderSpecialization φ.hom Z hZ H
+  obtain ⟨R, g, hg⟩ := compactSpace_iff_exists.mp (QuasiCompact.compactSpace_of_compactSpace f)
+  have hfg : f.base '' Z = (g ≫ f).base '' (g ⁻¹' Z) := by
+    simp [← Set.image_image, Set.image_preimage_eq _ hg]
+  suffices IsClosed ((g ≫ f).base '' (g ⁻¹' Z)) by rwa [hfg]
+  obtain ⟨φ, hφ⟩ := Spec.homEquiv.symm.surjective (g ≫ f)
+  have H' := hfg ▸ H
+  rw [← hφ] at H' ⊢
+  exact PrimeSpectrum.isClosed_image_of_stableUnderSpecialization φ.hom _
+    (hZ.preimage g.continuous) H'
 
 @[elab_as_elim]
 theorem compact_open_induction_on {P : X.Opens → Prop} (S : X.Opens)
