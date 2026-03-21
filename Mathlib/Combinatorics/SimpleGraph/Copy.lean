@@ -303,8 +303,8 @@ theorem Copy.degree_le (f : Copy G H) (v : V) [Fintype <| G.neighborSet v]
     [Fintype <| H.neighborSet (f v)] : G.degree v ≤ H.degree (f v) := by
   simpa using Fintype.card_le_of_injective _ (f.mapNeighborSet v).injective
 
-theorem Copy.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj]
-    [DecidableRel H.Adj] (f : Copy G H) : G.maxDegree ≤ H.maxDegree := by
+theorem Copy.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
+    (f : Copy G H) : G.maxDegree ≤ H.maxDegree := by
   cases isEmpty_or_nonempty V
   · simp
   obtain ⟨v, h⟩ := exists_maximal_degree_vertex G
