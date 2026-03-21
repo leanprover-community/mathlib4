@@ -60,7 +60,7 @@ namespace ValuativeRel
 
 /-- The topology induced by a valuative relation. Note that this is not made into a global instance
 to avoid diamonds. If desired, one can equip a ring with a topological space from a valuative
-relation by hand. But as long as they do so, the the fact that the topology is valuative and
+relation by hand. But as long as they do so, the fact that the topology is valuative and
 nonarchemidean can be automatically inferred. -/
 local instance topologicalSpace : TopologicalSpace R := (valuation R).subgroups_basis.topology
 
