@@ -564,36 +564,39 @@ lemma spanFinrank_eq_of_surjective_of_ker_le {R : Type*} [CommRing R] [IsNoether
     (f : R →+* R') (surj : Function.Surjective f) (le : RingHom.ker f ≤ (maximalIdeal R) ^ 2) :
     (maximalIdeal R').spanFinrank = (maximalIdeal R).spanFinrank := by
   classical
-  apply le_antisymm (spanFinrank_le_of_surjective (maximalIdeal R).fg_of_isNoetherianRing f surj)
-  let fin := Submodule.FG.finite_generators (maximalIdeal R').fg_of_isNoetherianRing
-  let _ := fin.fintype
-  rcases surj.list_map (maximalIdeal R').generators.toFinset.toList with ⟨l, hl⟩
-  apply le_of_le_of_eq _ (Submodule.FG.generators_ncard (maximalIdeal R').fg_of_isNoetherianRing)
-  have leneq : l.length = (maximalIdeal R').generators.ncard := by
-    rw [← List.length_map (as := l) f, hl, Set.ncard_eq_toFinset_card', Finset.length_toList]
-  rw [← leneq]
-  have := ((local_hom_TFAE f).out 0 4).mp (surj.isLocalHom f)
-  have mapeq : (maximalIdeal R).map f = maximalIdeal R' := by
-    simpa [this] using Ideal.map_comap_of_surjective f surj (maximalIdeal R')
-  have hspan : Ideal.span (maximalIdeal R').generators = _ := (maximalIdeal R').span_generators
-  have supeq : Ideal.ofList l ⊔ RingHom.ker f = maximalIdeal R := by
-    simp [← Ideal.comap_map_of_surjective' f surj, Ideal.map_ofList, hl, Ideal.ofList, hspan, this]
-  have : Ideal.ofList l = maximalIdeal R :=
-    le_antisymm (by simp [← supeq]) (Submodule.le_of_le_smul_of_le_jacobson_bot
-      (maximalIdeal R).fg_of_isNoetherianRing (maximalIdeal_le_jacobson ⊥)
-      (le_of_eq_of_le supeq.symm (sup_le_sup_left (by simpa [← pow_two]) _)))
-  have spaneq : Submodule.span R (l.toFinset : Set R) = maximalIdeal R := by simp [← this]
-  rw [← spaneq]
-  apply le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (Finset.finite_toSet _))
-  exact le_of_eq_of_le (Set.ncard_coe_finset _) (List.toFinset_card_le l)
+  apply le_antisymm
+  · rw [← map_maximalIdeal_of_surjective _ surj]
+    exact Ideal.spanFinrank_map_le_of_fg _ (maximalIdeal R).fg_of_isNoetherianRing
+  · let fin := Submodule.FG.finite_generators (maximalIdeal R').fg_of_isNoetherianRing
+    let _ := fin.fintype
+    let := surj.isLocalHom f
+    rcases surj.list_map (maximalIdeal R').generators.toFinset.toList with ⟨l, hl⟩
+    apply le_of_le_of_eq _ (Submodule.FG.generators_ncard (maximalIdeal R').fg_of_isNoetherianRing)
+    have leneq : l.length = (maximalIdeal R').generators.ncard := by
+      rw [← List.length_map (as := l) f, hl, Set.ncard_eq_toFinset_card', Finset.length_toList]
+    rw [← leneq]
+    have hspan : Ideal.span (maximalIdeal R').generators = _ := (maximalIdeal R').span_generators
+    have supeq : Ideal.ofList l ⊔ RingHom.ker f = maximalIdeal R := by
+      simp [← Ideal.comap_map_of_surjective' f surj, Ideal.map_ofList, hl, Ideal.ofList, hspan,
+        IsLocalRing.maximalIdeal_comap]
+    have : Ideal.ofList l = maximalIdeal R :=
+      le_antisymm (by simp [← supeq]) (Submodule.le_of_le_smul_of_le_jacobson_bot
+        (maximalIdeal R).fg_of_isNoetherianRing (maximalIdeal_le_jacobson ⊥)
+        (le_of_eq_of_le supeq.symm (sup_le_sup_left (by simpa [← pow_two]) _)))
+    have spaneq : Submodule.span R (l.toFinset : Set R) = maximalIdeal R := by simp [← this]
+    rw [← spaneq]
+    apply (Submodule.spanFinrank_span_le_ncard_of_finite (Finset.finite_toSet _)).trans
+    exact le_of_eq_of_le (Set.ncard_coe_finset _) (List.toFinset_card_le l)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma exist_isRegularLocalRing_surjective_ker_le_of_isAdicComplete
     [IsAdicComplete (maximalIdeal R) R] : ∃ (S : Type u) (_ : CommRing S) (_ : IsRegularLocalRing S)
     (f : S →+* R), Function.Surjective f ∧ RingHom.ker f ≤ (maximalIdeal S) ^ 2 := by
   rcases exist_isRegularLocalRing_surjective_of_isAdicComplete R with ⟨S, _, regS, f, surj⟩
-  obtain ⟨n, hn⟩ : ∃ n, (maximalIdeal R).spanFinrank + n = (maximalIdeal S).spanFinrank :=
-    Nat.le.dest (spanFinrank_le_of_surjective (maximalIdeal S).fg_of_isNoetherianRing f surj)
+  obtain ⟨n, hn⟩ : ∃ n, (maximalIdeal R).spanFinrank + n = (maximalIdeal S).spanFinrank:= by
+    apply Nat.le.dest
+    rw [← map_maximalIdeal_of_surjective _ surj]
+    exact Ideal.spanFinrank_map_le_of_fg _ (maximalIdeal S).fg_of_isNoetherianRing
   induction n generalizing S f with
   | zero =>
     use S, inferInstance, inferInstance, f, surj
@@ -608,7 +611,10 @@ lemma exist_isRegularLocalRing_surjective_ker_le_of_isAdicComplete
     have surj' := Ideal.Quotient.lift_surjective_of_surjective _ this surj
     rw [← (isRegularLocalRing_def _).mp reg, ← (isRegularLocalRing_def _).mp regS,
       ← Nat.cast_one, ← Nat.cast_add, Nat.cast_inj] at dim
-    absurd spanFinrank_le_of_surjective (Ideal.fg_of_isNoetherianRing _) _ surj'
+    have le' : (maximalIdeal R).spanFinrank ≤ (maximalIdeal (S ⧸ Ideal.span {x})).spanFinrank := by
+      rw [← map_maximalIdeal_of_surjective _ surj']
+      exact Ideal.spanFinrank_map_le_of_fg _ (maximalIdeal _).fg_of_isNoetherianRing
+    absurd le'
     omega
   | succ n ih =>
     obtain ⟨x, hx, nmem⟩ : ∃ x ∈ RingHom.ker f, x ∉ (maximalIdeal S) ^ 2 := by
