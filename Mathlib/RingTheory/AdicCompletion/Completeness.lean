@@ -20,8 +20,8 @@ when the ideal `I` is finitely generated.
 * `AdicCompletion.ofPowSMul`: The canonical inclusion between adic completions
   induced by the inclusion from `I ^ n • M` to `M`.
 
-* `AdicCompletion.liftOfValZero`: Given `x` in `AdicCompletion I M` projecting to zero
-  in `M / I ^ n • M`, `liftOfValZero` constructs the corresponding element in
+* `AdicCompletion.OfValEqZero`: Given `x` in `AdicCompletion I M` projecting to zero
+  in `M / I ^ n • M`, `OfValEqZero` constructs the corresponding element in
   the adic completion of `I ^ m • M`.
 
 ## Main results
@@ -74,40 +74,40 @@ theorem ofPowSMul_injective (n : ℕ) : Function.Injective (ofPowSMul I M n) := 
     LinearMap.map_eq_zero_iff _ (powSMulQuotInclusion_injective ..)] at hx
   simp [hx]
 
-private lemma liftOfValZeroAux_exists {x : AdicCompletion I M} (h : c = b + a)
+private lemma OfValEqZeroAux_exists {x : AdicCompletion I M} (h : c = b + a)
     (ha : x.val a = 0) : ∃ t, powSMulQuotInclusion I M h ⊤ t = x.val c := by
   simpa [← LinearMap.mem_range, range_powSMulQuotInclusion] using
     (val_apply_mem_smul_top_iff I (show a ≤ c by lia)).mpr ha
 
-/-- An auxillary lift function used in the definition of `liftOfValZero`.
-Use `liftOfValZero` instead. -/
-def liftOfValZeroAux {x : AdicCompletion I M} (h : c = b + a) (ha : x.val a = 0) :
+/-- An auxillary lift function used in the definition of `OfValEqZero`.
+Use `OfValEqZero` instead. -/
+def OfValEqZeroAux {x : AdicCompletion I M} (h : c = b + a) (ha : x.val a = 0) :
     ↥(I ^ a • ⊤ : Submodule R M) ⧸ I ^ b • (⊤ : Submodule R ↥(I ^ a • ⊤ : Submodule R M)) :=
-  Exists.choose (liftOfValZeroAux_exists I h ha)
+  Exists.choose (OfValEqZeroAux_exists I h ha)
 
-private lemma liftOfValZeroAux_prop {x : AdicCompletion I M} (h : c = b + a)
-    (ha : x.val a = 0) : (powSMulQuotInclusion I M h ⊤) (liftOfValZeroAux I h ha) = x.val c :=
-  Exists.choose_spec (liftOfValZeroAux_exists I h ha)
+private lemma OfValEqZeroAux_prop {x : AdicCompletion I M} (h : c = b + a)
+    (ha : x.val a = 0) : (powSMulQuotInclusion I M h ⊤) (OfValEqZeroAux I h ha) = x.val c :=
+  Exists.choose_spec (OfValEqZeroAux_exists I h ha)
 
 /-- Given an element `x` in the adic completion of `M` whose projection to `M / I ^ n • M` is zero,
-`liftOfValZero` constructs the corresponding element in the adic completion of `I ^ n • M`. -/
+`OfValEqZero` constructs the corresponding element in the adic completion of `I ^ n • M`. -/
 @[no_expose]
-def liftOfValZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
+def OfValEqZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
     AdicCompletion I ↥(I ^ n • (⊤ : Submodule R M)) where
-  val i := liftOfValZeroAux I (Eq.refl (i + n)) hxn
+  val i := OfValEqZeroAux I (Eq.refl (i + n)) hxn
   property {i j} h := by
     obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
-    rw [← (powSMulQuotInclusion_injective I (by rfl) ⊤).eq_iff, liftOfValZeroAux_prop,
+    rw [← (powSMulQuotInclusion_injective I (by rfl) ⊤).eq_iff, OfValEqZeroAux_prop,
       ← LinearMap.comp_apply, ← factorPow_comp_powSMulQuotInclusion I (by rfl)
-      (show i + k + n = k + (i + n) by ring), LinearMap.comp_apply, liftOfValZeroAux_prop]
+      (show i + k + n = k + (i + n) by ring), LinearMap.comp_apply, OfValEqZeroAux_prop]
     exact x.prop (by lia)
 
 @[simp]
-theorem ofPowSMul_liftOfValZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
-    ofPowSMul I M n (liftOfValZero I hxn) = x := by
+theorem ofPowSMul_OfValEqZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
+    ofPowSMul I M n (OfValEqZero I hxn) = x := by
   ext i; by_cases h : n ≤ i
   · obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le' h
-    rw [ofPowSMul_val_apply _ (by rfl), liftOfValZero, liftOfValZeroAux_prop]
+    rw [ofPowSMul_val_apply _ (by rfl), OfValEqZero, OfValEqZeroAux_prop]
   replace h : i ≤ n := by lia
   rw [ofPowSMul_val_apply_eq_zero _ h, ← x.prop h, hxn, _root_.map_zero]
 
@@ -118,7 +118,7 @@ theorem restrictScalars_ofPowSMul_range_eq_eval_ker {n : ℕ} :
   · rcases hx with ⟨y, rfl⟩
     rw [LinearMap.mem_ker, eval_apply, ofPowSMul_val_apply_eq_zero _ (by rfl)]
   simp only [LinearMap.mem_ker, coe_eval] at hx
-  use liftOfValZero I hx; simp
+  use OfValEqZero I hx; simp
 
 set_option backward.isDefEq.respectTransparency false in
 lemma lsum_smul_comp_finsuppLEquivDirectSum_symm {ι : Type*} [DecidableEq ι] (f : ι → R) :
