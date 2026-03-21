@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Algebra.Ring.Action.Pointwise.Set
 
 /-!
 # Pointwise actions on sets in a ring
@@ -22,11 +23,24 @@ pointwise subtraction
 
 public section
 
+open Module
 open scoped Pointwise
 
-variable {R G : Type*}
+variable {R G M : Type*}
 
 namespace Finset
+section Semiring
+variable [Semiring R] [IsDomain R] [AddCommMonoid M] [DecidableEq M] [Module R M]
+  [IsTorsionFree R M] {s : Finset R} {t : Finset M} {r : R} {m : M}
+
+lemma zero_mem_smul_finset_iff (hr : r ≠ 0) : 0 ∈ r • t ↔ 0 ∈ t := by
+  rw [← mem_coe, coe_smul_finset, Set.zero_mem_smul_set_iff hr, mem_coe]
+
+lemma zero_mem_smul_iff : (0 : M) ∈ s • t ↔ 0 ∈ s ∧ t.Nonempty ∨ 0 ∈ t ∧ s.Nonempty := by
+  rw [← mem_coe, coe_smul, Set.zero_mem_smul_iff]; rfl
+
+end Semiring
+
 variable [Ring R] [AddCommGroup G] [Module R G] [DecidableEq G] {s : Finset R} {t : Finset G}
   {a : R}
 

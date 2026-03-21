@@ -176,7 +176,7 @@ theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : Ordinal.{v}) :
   have A : 𝔠 ≤ max #s 2 ^ ℵ₀ := power_le_power_right (le_max_right _ _)
   have B := aleph0_le_continuum.trans A
   have C : #(⋃ j < i, generateMeasurableRec s j) ≤ max #s 2 ^ ℵ₀ := by
-    apply mk_iUnion_Ordinal_lift_le_of_le _ B _
+    apply mk_biUnion_le_of_le_lift _ B _
     · intro j hj
       exact IH j hj (hj.trans_le hi).le
     · rw [lift_power, lift_aleph0]

@@ -573,7 +573,7 @@ lemma withDensity_absolutelyContinuous' {μ : Measure α} {f : α → ℝ≥0∞
   exact measure_mono_null hle <| nonpos_iff_eq_zero.1 <| le_trans (measure_union_le _ _)
     <| hμs.symm ▸ zero_add _ |>.symm ▸ hf_ne_zero.le
 
-theorem withDensity_ae_eq {β : Type} {f g : α → β} {d : α → ℝ≥0∞}
+theorem withDensity_ae_eq {β : Type*} {f g : α → β} {d : α → ℝ≥0∞}
     (hd : AEMeasurable d μ) (h_ae_nonneg : ∀ᵐ x ∂μ, d x ≠ 0) :
     f =ᵐ[μ.withDensity d] g ↔ f =ᵐ[μ] g :=
   Iff.intro

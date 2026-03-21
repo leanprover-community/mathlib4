@@ -54,7 +54,7 @@ theorem IsRegular.pos {c : Cardinal} (H : c.IsRegular) : 0 < c :=
   aleph0_pos.trans_le H.1
 
 theorem IsRegular.nat_lt {c : Cardinal} (H : c.IsRegular) (n : ℕ) : n < c :=
-  lt_of_lt_of_le (nat_lt_aleph0 n) H.aleph0_le
+  lt_of_lt_of_le natCast_lt_aleph0 H.aleph0_le
 
 theorem IsRegular.ord_pos {c : Cardinal} (H : c.IsRegular) : 0 < c.ord := by
   rw [Cardinal.lt_ord, card_zero]
@@ -256,7 +256,7 @@ theorem IsInaccessible.aleph0_lt {c : Cardinal} (h : IsInaccessible c) : ℵ₀ 
   h.1
 
 theorem IsInaccessible.nat_lt {c : Cardinal} (h : IsInaccessible c) (n : ℕ) : n < c :=
-  (nat_lt_aleph0 n).trans h.1
+  natCast_lt_aleph0.trans h.1
 
 theorem IsInaccessible.pos {c : Cardinal} (h : IsInaccessible c) : 0 < c :=
   aleph0_pos.trans h.1

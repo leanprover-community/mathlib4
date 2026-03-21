@@ -158,10 +158,13 @@ theorem iSup_N {ι : Sort*} (f : ι → I.Filtration M) : (iSup f).N = ⨆ i, (f
 theorem iInf_N {ι : Sort*} (f : ι → I.Filtration M) : (iInf f).N = ⨅ i, (f i).N :=
   congr_arg sInf (Set.range_comp _ _).symm
 
+instance : PartialOrder (I.Filtration M) :=
+  PartialOrder.lift _ fun _ _ ↦ Ideal.Filtration.ext
+
 instance : CompleteLattice (I.Filtration M) :=
   Function.Injective.completeLattice Ideal.Filtration.N
-    (fun _ _ => Ideal.Filtration.ext) sup_N inf_N
-    (fun _ => sSup_image) (fun _ => sInf_image) top_N bot_N
+    (fun _ _ ↦ Ideal.Filtration.ext) .rfl .rfl sup_N inf_N
+    (fun _ ↦ sSup_image) (fun _ ↦ sInf_image) top_N bot_N
 
 instance : Inhabited (I.Filtration M) :=
   ⟨⊥⟩
@@ -283,6 +286,7 @@ theorem submodule_span_single :
   rw [← Submodule.span_closure, submodule_closure_single, Submodule.coe_toAddSubmonoid]
   exact Submodule.span_eq (Filtration.submodule F)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     F.submodule = Submodule.span _ (⋃ i ≤ n₀, single R i '' (F.N i : Set M)) ↔
       ∀ n ≥ n₀, I • F.N n = F.N (n + 1) := by
