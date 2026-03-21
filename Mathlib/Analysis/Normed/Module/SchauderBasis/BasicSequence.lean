@@ -215,7 +215,7 @@ theorem basicSequence (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K)
     proj_tendsto := fun x ↦ by
       change Filter.Tendsto (fun n ↦ P n x) Filter.atTop (nhds x)
       simp_rw [show ∀ n, P n x = ∑ i ∈ Finset.range n, b_S.repr x i • b_S i from
-        fun n ↦ by rw [hP]]
+        fun n ↦ hP n x]
       exact tendsto_atTop_of_eventually_const (i₀ := (b_S.repr x).support.sup id + 1)
         fun n hn ↦ h_sum x ((Nat.lt_succ_self _).trans_le hn)
     e_mem_range := fun n ↦ ⟨b_S n, by
@@ -263,9 +263,9 @@ variable (ubs : UnconditionalBasicSequence ℕ 𝕜 X)
 def toBasicSequence : BasicSequence 𝕜 X := {
   e := ubs.e,
   basis := ubs.basis.toSchauderBasis,
-  basis_eq := fun i => ubs.basis_eq i,
+  basis_eq := ubs.basis_eq,
   basisConstant_lt_top :=
-    lt_of_le_of_lt ubs.basis.toSchauderBasis_enormProjBound_le ubs.basisConstant_lt_top
+    ubs.basis.toSchauderBasis_enormProjBound_le.trans_lt ubs.basisConstant_lt_top
 }
 
 /-- The coercion of `toBasicSequence` equals the original coercion. -/
@@ -286,15 +286,13 @@ theorem satisfiesNikolskiiCondition :
     have h := ubs.basis.enorm_proj_le_enormProjBound A
     rwa [enorm_eq_nnnorm, ← ENNReal.toReal_le_toReal ENNReal.coe_ne_top ubs.basisConstant_lt_top.ne,
       ENNReal.coe_toReal, coe_nnnorm] at h
-  have h_eq (S : Finset β) : ‖∑ i ∈ S, a i • ubs.basis i‖ = ‖∑ i ∈ S, a i • ubs i‖ := by
-    simp [ubs.basis_eq]
   calc ‖∑ i ∈ A, a i • ubs i‖
-    _ = ‖∑ i ∈ A, a i • ubs.basis i‖ := (h_eq A).symm
+    _ = ‖∑ i ∈ A, a i • ubs.basis i‖ := by simp [ubs.basis_eq]
     _ = ‖ubs.basis.proj A (∑ i ∈ B, a i • ubs.basis i)‖ := by
       rw [ubs.basis.proj_sum_subset A B a hAB]
     _ ≤ ‖ubs.basis.proj A‖ * ‖∑ i ∈ B, a i • ubs.basis i‖ := ContinuousLinearMap.le_opNorm _ _
     _ ≤ ubs.unconditionalBasicSequenceConstant * ‖∑ i ∈ B, a i • ubs i‖ := by
-      rw [h_eq B]; exact mul_le_mul_of_nonneg_right h_bound (norm_nonneg _)
+      simp [ubs.basis_eq, mul_le_mul_of_nonneg_right h_bound (norm_nonneg _)]
 
 end UnconditionalBasicSequence
 
@@ -334,7 +332,7 @@ theorem unconditionalBasicSequence [Nonempty β] (h : SatisfiesNikolskiiConditio
     SatisfiesGrunblumCondition.sum_repr_eq_of_support_subset b_S x hA
   have norm_sum_eq (y : S) {A : Finset β} (hA : (b_S.repr y).support ⊆ A) :
       ‖∑ i ∈ A, b_S.repr y i • e i‖ = ‖y‖ := by
-    rw [← coe_sum, congrArg Subtype.val (h_sum y hA), norm_coe]
+    rw [← norm_coe, ← coe_sum, congrArg Subtype.val (h_sum y hA)]
   let coord (j : β) : StrongDual 𝕜 S := LinearMap.mkContinuous
     ((Finsupp.lapply j).comp b_S.repr.toLinearMap)
     (K / ‖e j‖)
@@ -361,12 +359,9 @@ theorem unconditionalBasicSequence [Nonempty β] (h : SatisfiesNikolskiiConditio
   have h_bound : ubs_basis.enormProjBound ≤ ENNReal.ofReal K := iSup_le fun A ↦ by
     rw [enorm_eq_nnnorm, ← ENNReal.ofReal_coe_nnreal, ENNReal.ofReal_le_ofReal_iff hK, coe_nnnorm]
     refine ContinuousLinearMap.opNorm_le_bound _ hK fun y ↦ ?_
-    have h_proj : (ubs_basis.proj A y : X) = ∑ i ∈ A, b_S.repr y i • e i := by
-      have : ubs_basis.proj A y = ∑ i ∈ A, b_S.repr y i • b_S i := by
-        simp only [GeneralSchauderBasis.proj_apply]
-        congr 1
-      rw [this, coe_sum]
-    rw [← norm_coe, h_proj]
+    have : ubs_basis.proj A y = ∑ i ∈ A, b_S.repr y i • b_S i := by
+      simp only [GeneralSchauderBasis.proj_apply]; congr 1
+    rw [← norm_coe, this, coe_sum]
     calc ‖∑ i ∈ A, b_S.repr y i • e i‖
         ≤ K * ‖∑ i ∈ A ∪ (b_S.repr y).support, (b_S.repr y) i • e i‖ :=
           h A _ _ Finset.subset_union_left
