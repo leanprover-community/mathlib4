@@ -82,7 +82,7 @@ theorem isRegular_succ {c : Cardinal} (hc : ℵ₀ ≤ c) : IsRegular (succ c) :
     rw [← isSuccPrelimit_type_lt_iff, ← hα]
     exact (isSuccLimit_ord (hd ▸ hc.trans (le_succ c))).isSuccPrelimit
   obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
-  simp_rw [hα, cof_type, le_cof_iff, ← hd, succ_le_iff, ← not_le, isCofinal_iff_iUnion_Iio_eq]
+  simp_rw [hα, cof_type, le_cof_iff, ← hd, succ_le_iff, ← not_le, isCofinal_iff_iUnion_Iio_eq_univ]
   refine fun s hs hsc ↦ (mk_le_mk_of_subset hs.ge).not_gt ?_
   rw [mk_univ, ← hd, lt_succ_iff, ← iUnion_coe_set s fun i ↦ Iio i.1]
   apply (mk_iUnion_le _).trans (mul_le_of_le hc hsc _)
