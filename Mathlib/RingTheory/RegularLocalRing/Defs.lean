@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.KrullDimension.Field
 public import Mathlib.RingTheory.KrullDimension.PID
 
 /-!
-# Define Regular Local Ring
+# Regular local rings
 
 For a Noetherian local ring `R`, we define `IsRegularLocalRing` as
 `(maximalIdeal R).spanFinrank = ringKrullDim R`. This definition is equivalent to
