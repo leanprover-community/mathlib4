@@ -28,48 +28,64 @@ universe u
 
 open CategoryTheory Simplicial MonoidalCategory
 
-lemma Fin.orderHom_ext_of_injective_aux {α : Type*} [PartialOrder α] [DecidableEq α]
-    {n : ℕ} {f g : Fin n →o α}
-    (hg : Function.Injective g)
-    (h : Finset.image f ⊤ = Finset.image g ⊤) (i : Fin n)
-    (h' : ∀ (j : Fin n), j < i → f j = g j) :
-    f i ≤ g i := by
+-- to be moved
+@[elab_as_elim]
+lemma Fin.strong_induction_on {n : ℕ} {motive : Fin n → Prop}
+    (h : ∀ (j : Fin n) (_ : ∀ (k : Fin n), k < j → motive k), motive j) (i : Fin n) :
+    motive i := by
+  obtain ⟨i, hi⟩ := i
+  induction i using Nat.strong_induction_on with
+  | h j hj => exact h _ (fun ⟨k, hk₁⟩ hk₂ ↦ hj _ hk₂ hk₁)
+
+-- to be moved
+lemma Finset.orderEmbedding_eq_of_image_eq
+    {α β : Type*} [LinearOrder α] [PartialOrder β] [Fintype α] [DecidableEq β]
+    {f g : α ↪o β}
+    (h : Finset.image f .univ = Finset.image g .univ) :
+    f = g := by
+  suffices ∀ {n : ℕ} (f g : Fin n ↪o β) (h : Finset.image f ⊤ = Finset.image g ⊤), f = g by
+    let e := Fintype.orderIsoFinOfCardEq α rfl
+    replace h := this (e.toOrderEmbedding.trans f) (e.toOrderEmbedding.trans g) (by
+      ext x
+      suffices Finset.image (f ∘ e) .univ = Finset.image (g ∘ e) .univ by
+        simpa using congrFun (congrArg Membership.mem this) x
+      simpa only [← Finset.image_image, Finset.image_univ_of_surjective e.surjective])
+    ext x
+    obtain ⟨x, rfl⟩ := e.surjective x
+    exact DFunLike.congr_fun (congr_arg OrderEmbedding.toOrderHom h) x
+  suffices ∀ {n : ℕ} {f g : Fin n ↪o β} (h : Finset.image f ⊤ = Finset.image g ⊤) (i : Fin n)
+      (h' : ∀ (j : Fin n), j < i → f j = g j), f i ≤ g i from fun n f g h ↦ by
+    ext i
+    induction i using Fin.strong_induction_on with
+    | h i hi => exact le_antisymm (this h _ hi) (this h.symm _ (fun j hj ↦ (hi j hj).symm))
+  intro n f g h i h'
   have : g i ∈ Finset.image f ⊤ := by rw [h]; simp
   simp only [Finset.top_eq_univ, Finset.mem_image, Finset.mem_univ, true_and] at this
   obtain ⟨j, hj⟩ := this
   rw [← hj]
   apply f.monotone
   by_contra!
-  rw [h' j this] at hj
+  rw [h' j this, EmbeddingLike.apply_eq_iff_eq] at hj
   lia
 
 -- to be moved
-lemma Fin.orderHom_ext_of_injective {α : Type*} [PartialOrder α] [DecidableEq α]
-    {n : ℕ} {f g : Fin n →o α}
+lemma Finset.orderHom_eq_of_image_eq {α β : Type*} [LinearOrder α] [PartialOrder β]
+    [Fintype α] [DecidableEq β] {f g : α →o β}
     (hf : Function.Injective f) (hg : Function.Injective g)
-    (h : Finset.image f ⊤ = Finset.image g ⊤) :
+    (h : Finset.image f .univ = Finset.image g .univ) :
     f = g := by
-  let P (i : ℕ) := ∀ (j : ℕ) (hij : j < i) (hj : j < n), f ⟨j, by lia⟩ = g ⟨j, by lia⟩
-  suffices ∀ i, P i by ext i; exact this (i.1 + 1) i.1 (by lia) (by lia)
-  suffices ∀ i, P i → P (i + 1) from fun i ↦ by
-    induction i with
-    | zero => lia
-    | succ i hi => exact fun j hij hj ↦ this _ hi j hij hj
-  intro i hi j hij hj
-  obtain hij | rfl := (Nat.le_of_lt_succ hij).lt_or_eq
-  · exact hi j hij hj
-  · apply le_antisymm
-    · exact orderHom_ext_of_injective_aux hg h _
-        (fun k hk ↦ hi k hk (by lia))
-    · exact orderHom_ext_of_injective_aux hf h.symm _
-        (fun k hk ↦ (hi k hk (by lia)).symm)
+  ext : 2
+  exact DFunLike.congr_fun (Finset.orderEmbedding_eq_of_image_eq
+    (f := OrderEmbedding.ofStrictMono f (f.monotone.strictMono_of_injective hf))
+    (g := OrderEmbedding.ofStrictMono g (g.monotone.strictMono_of_injective hg))
+    (by simpa)) _
 
 -- to be moved
-lemma Fin.eq_id_of_strictMono {n : ℕ} (f : Fin (n + 1) →o Fin (n + 1)) (hf : StrictMono f) :
-    f = .id := by
-  refine orderHom_ext_of_injective hf.injective (fun _ _ h ↦ h) ?_
-  simp only [Finset.top_eq_univ, OrderHom.id_coe, Finset.image_id]
-  exact Finset.image_univ_of_surjective (Finite.surjective_of_injective hf.injective)
+lemma OrderHom.eq_id {α : Type*} [LinearOrder α] [Finite α] (f : α →o α)
+    (hf : Function.Injective f) :
+    f = .id :=
+  Finset.orderHom_eq_of_image_eq hf Function.injective_id
+   (by simpa using Finset.image_univ_of_surjective (Finite.surjective_of_injective hf))
 
 namespace SSet
 
@@ -198,7 +214,7 @@ lemma nonDegenerate_max_dim_iff {n : ℕ} (z : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋
     z ∈ (Δ[p] ⊗ Δ[q]).nonDegenerate n ↔ orderHomOfSimplex z hn = .id := by
   constructor
   · intro h
-    exact Fin.eq_id_of_strictMono _ (strictMono_orderHomOfSimplex ⟨z, h⟩ hn)
+    exact OrderHom.eq_id _ (strictMono_orderHomOfSimplex ⟨z, h⟩ hn).injective
   · rw [nonDegenerate_iff_injective_objEquiv]
     intro h a b hab
     simp only [DFunLike.ext_iff, orderHomOfSimplex_coe, OrderHom.id_coe, id_eq] at h
