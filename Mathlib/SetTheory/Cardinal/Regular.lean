@@ -73,7 +73,28 @@ theorem isRegular_aleph0 : IsRegular ℵ₀ :=
 lemma fact_isRegular_aleph0 : Fact (IsRegular ℵ₀) where
   out := isRegular_aleph0
 
-theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c) :=
+theorem isRegular_succ {c : Cardinal} (hc : ℵ₀ ≤ c) : IsRegular (succ c) := by
+  refine ⟨hc.trans (le_succ c), ?_⟩
+  generalize hd : succ c = d
+  induction d using Cardinal.inductionOn with | mk α
+  obtain ⟨_, _, hα⟩ := ord_eq_type_lt α
+  have : NoMaxOrder α := by
+    rw [← isSuccPrelimit_type_lt_iff, ← hα]
+    exact (isSuccLimit_ord (hd ▸ hc.trans (le_succ c))).isSuccPrelimit
+  obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
+  simp_rw [hα, cof_type, le_cof_iff, ← hd, succ_le_iff, ← not_le]
+  intro s hs hsc
+  rw [isCofinal_iff_iUnion_Iio_eq] at hs
+  apply (mk_le_mk_of_subset hs.ge).not_gt
+  rw [mk_univ, ← hd, lt_succ_iff, ← iUnion_coe_set s fun i ↦ Iio i.1, ← Cardinal.mul_eq_self hc]
+  apply (mk_iUnion_le _).trans (mul_le_mul' hsc _)
+  simp_rw [ciSup_le_iff' (bddAbove_of_small _), ← lt_succ_iff, hd]
+  intro i
+  have := typein_lt_type LT.lt i.1
+  rwa [← hα, lt_ord] at this
+  #exit
+
+
   ⟨h.trans (le_succ c),
     succ_le_of_lt
       (by
