@@ -25,16 +25,6 @@ For `M` a finitely generated module over Noetherian local ring `R` and an `R`-re
 
 @[expose] public section
 
-section ENat
-
-lemma ENat.WithBot.add_one_le_zero_iff_eq_bot (a : WithBot ℕ∞) :
-    a + 1 ≤ 0 ↔ a = ⊥ := by
-  induction a with
-  | bot => simp
-  | coe a => simp [← WithBot.coe_one, ← WithBot.coe_add]
-
-end ENat
-
 universe v u
 
 variable (R : Type u) [CommRing R]
@@ -104,7 +94,7 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M 
     | 0 =>
       rw [projectiveDimension_le_iff]
       simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one,
-        CharP.cast_eq_zero, ENat.WithBot.add_one_le_zero_iff_eq_bot (projectiveDimension M),
+        CharP.cast_eq_zero, ENat.WithBot.add_one_le_zero_iff (projectiveDimension M),
         projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton, sub,
         ← IsProjective.iff_projective]
       refine ⟨fun h ↦ ?_, fun h ↦ Projective.of_free⟩
