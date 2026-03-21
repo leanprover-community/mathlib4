@@ -240,7 +240,7 @@ lemma deriv_denom_neg_zpow (k : ℤ) (z : ℍ) :
 The derivative anomaly: how D interacts with the slash action.
 This is the key computation for proving Serre derivative equivariance.
 -/
-lemma D_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) (γ : SL(2, ℤ)) :
+lemma normalizedDerivOfComplex_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) (γ : SL(2, ℤ)) :
     D (F ∣[k] γ) = (D F ∣[k + 2] γ) -
       (fun z : ℍ ↦ (k : ℂ) * (2 * π * I)⁻¹ * (γ 1 0 / denom γ z) * (F ∣[k] γ) z) := by
   ext z
@@ -311,7 +311,7 @@ theorem serreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (hF : MDif
     ring_nf
   rw [hLHS]
   -- Substitute D slash and E2 slash action formulas pointwise
-  have hDz := congrFun (D_slash k F hF γ) z
+  have hDz := congrFun (normalizedDerivOfComplex_slash k F hF γ) z
   have hE2z := congrFun (EisensteinSeries.E2_slash_action γ) z
   simp only [Pi.sub_apply] at hDz
   simp only [Pi.sub_apply, Pi.smul_apply, smul_eq_mul] at hE2z
