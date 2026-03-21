@@ -101,7 +101,7 @@ theorem isCofinal_of_iUnion_Iio_eq {s : Set α} (hs : ⋃ i ∈ s, Iio i = univ)
   rw [isCofinal_iff_iUnion_Iic_eq, ← univ_subset_iff, ← hs]
   exact iUnion₂_mono fun _ _ ↦ Iio_subset_Iic_self
 
-theorem isCofinal_iff_iUnion_Iio_eq {s : Set α} [NoMaxOrder α] :
+theorem isCofinal_iff_iUnion_Iio_eq [NoMaxOrder α] {s : Set α} :
     IsCofinal s ↔ ⋃ i ∈ s, Iio i = univ where
   mpr := isCofinal_of_iUnion_Iio_eq
   mp hs := by
