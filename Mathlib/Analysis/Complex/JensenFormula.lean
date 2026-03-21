@@ -186,6 +186,17 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
     filter_upwards [this] with z hz
     simp_all
 
+theorem AnalyticOnNhd.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → ℂ} (hR : R ≠ 0)
+    (h₁f : AnalyticOnNhd ℂ f (closedBall c |R|))
+    (h₂f : f c ≠ 0) :
+    circleAverage (Real.log ‖f ·‖) c R
+      = ∑ᶠ u, divisor f (closedBall c |R|) u * Real.log (R * ‖c - u‖⁻¹)
+        + Real.log ‖f c‖ := by
+  rw [h₁f.meromorphicOn.circleAverage_log_norm hR, h₁f.divisor_apply (by simp),
+    (h₁f c (by simp)).analyticOrderAt_eq_zero.mpr h₂f,
+    (h₁f c (by simp)).meromorphicTrailingCoeffAt_of_ne_zero h₂f]
+  simp
+
 lemma log_le_log_of_abs_le_abs {x y : ℝ} (h0 : 0 < |x|) (h : |x| ≤ |y|) :
     Real.log x ≤ Real.log y := by
   rw [← log_abs, ← log_abs y]
@@ -199,13 +210,7 @@ theorem AnalyticOnNhd.count_zeros_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
   trans ∑ᶠ u, (divisor f (closedBall c |r|) u : ℝ)
   · exact map_finsum (Int.castRingHom ℝ)
       ((divisor _ _).finiteSupport <| isCompact_closedBall ..) |>.le
-  have jensen := h₁f.meromorphicOn.circleAverage_log_norm (abs_ne_zero.mp (by linarith))
-  rw [divisor_apply h₁f.meromorphicOn (by simp),
-    AnalyticAt.meromorphicOrderAt_eq (h₁f c (by simp)),
-    (h₁f c (by simp)).analyticOrderAt_eq_zero.mpr h₂f,
-    (h₁f c (by simp)).meromorphicTrailingCoeffAt_of_ne_zero h₂f] at jensen
-  simp only [ENat.map_zero, CharP.cast_eq_zero, WithTop.coe_zero, WithTop.untop₀_zero,
-    Int.cast_zero, zero_mul, add_zero] at jensen
+  have jensen := h₁f.circleAverage_log_norm (abs_ne_zero.mp (by linarith)) h₂f
   have : circleAverage (fun x ↦ Real.log ‖f x‖) c R ≤ Real.log M := by
     apply circleAverage_mono_on_of_le_circle
     · exact circleIntegrable_log_norm_meromorphicOn 
