@@ -123,12 +123,19 @@ set_option backward.isDefEq.respectTransparency false in
 -- An intermediate helper lemma for the theorem below to avoid introducing
 -- `AdicCompletion.finsuppSum` (the `Finsupp` version of `AdicCompletion.sum`)
 private lemma lsum_smul_comp_finsuppLEquivDirectSum_symm {ι : Type*} [DecidableEq ι] (f : ι → R) :
-    ((lsum (AdicCompletion I R)) fun i ↦
-      ((of I R) (f i) • .id : AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I M)) ∘ₗ
+    ((lsum (AdicCompletion I R)) fun i ↦ ((algebraMap R (AdicCompletion I R)) (f i) • .id :
+      AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I M)) ∘ₗ
         (finsuppLEquivDirectSum (AdicCompletion I R) (AdicCompletion I M) ι).symm.toLinearMap =
     (map I (lsum R fun i ↦ f i • .id) ∘ₗ map I (finsuppLEquivDirectSum R M ι).symm.toLinearMap) ∘ₗ
       (sum I (fun _ : ι ↦ M)) := by
-  ext; simp [-smul_eq_mul, ← Ideal.Quotient.algebraMap_eq]
+  ext
+  -- simp [-algebraMap_smul, algebraMap_apply, -smul_eq_mul]
+  simp only [algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply, LinearMap.coe_comp,
+    coe_lsum, LinearMap.coe_smul, LinearMap.id_coe, LinearEquiv.coe_coe, Function.comp_apply,
+    finsuppLEquivDirectSum_symm_lof, Pi.smul_apply, id_eq, smul_zero, sum_single_index, smul_eval,
+    mapQ_eq_factor, factor_eq_factor, of_apply, mkQ_apply, Ideal.Quotient.mk_eq_mk, mk_apply_coe,
+    sum_lof, map_mk, AdicCauchySequence.map_apply_coe, map_smul]
+  rw [← Ideal.Quotient.algebraMap_eq, algebraMap_smul]
 
 set_option backward.isDefEq.respectTransparency false in
 variable {I} in
@@ -140,8 +147,7 @@ theorem pow_smul_top_eq_ker_eval {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I 
   rcases h with ⟨s, hs⟩
   simp only [← hs, span_smul_eq]
   rw [← restrictScalars_top R (AdicCompletion I R) (AdicCompletion I M),
-    ← restrictScalars_image_smul_eq (R := AdicCompletion I R), show
-    ⇑(algebraMap R (AdicCompletion I R)) = of I R by rfl,
+    ← restrictScalars_image_smul_eq (R := AdicCompletion I R),
     ← restrictScalars_range_ofPowSMul_eq_ker_eval, restrictScalars_le,
     image_smul_top_eq_range_lsum]
   simp only [SetLike.coe_sort_coe]
@@ -160,7 +166,7 @@ theorem pow_smul_top_eq_ker_eval {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I 
       smul_top_eq_range_lsum]
     simp
   rcases map_surjective I this x with ⟨x, rfl⟩
-  exact ⟨x, by rw [ofPowSMul, ← LinearMap.comp_apply, map_comp]; rfl⟩
+  exact ⟨x, by rw [ofPowSMul, ← LinearMap.comp_apply, map_comp]; simp⟩
 
 variable {I} in
 /-- `AdicCompletion I M` is adic complete when `I` is finitely generated. -/
