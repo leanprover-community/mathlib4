@@ -219,7 +219,7 @@ section
 variable (ctx : Simp.Context) (useSimp := true)
 
 /-- A `Methods` implementation which calls `norm_num`. -/
-partial def methods : Simp.Methods :=
+def methods : Simp.Methods :=
   if useSimp then {
     pre := Simp.preDefault #[] >> tryNormNum
     post := Simp.postDefault #[] >> tryNormNum (post := true)
@@ -231,12 +231,11 @@ partial def methods : Simp.Methods :=
   }
 
 /-- Traverses the given expression using simp and normalises any numbers it finds. -/
-partial def deriveSimp (e : Expr) : MetaM Simp.Result :=
+def deriveSimp (e : Expr) : MetaM Simp.Result :=
   (·.1) <$> Simp.main e ctx (methods := methods useSimp)
 
 /-- A discharger which calls `norm_num`, for use in downstream tactics. -/
-partial def discharge (e : Expr) : SimpM (Option Expr) := do
-  withReader (fun _ => (methods useSimp).toMethodsRef) (Simp.dischargeGround e)
+def discharge (e : Expr) : SimpM (Option Expr) := do (← deriveSimp ctx useSimp e).ofTrue
 
 end
 
