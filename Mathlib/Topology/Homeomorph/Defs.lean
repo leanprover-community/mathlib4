@@ -222,7 +222,7 @@ theorem isQuotientMap (h : X ≃ₜ Y) : IsQuotientMap h :=
     simp only [self_comp_symm, IsQuotientMap.id]
 
 theorem coinduced_eq (h : X ≃ₜ Y) : TopologicalSpace.coinduced h ‹_› = ‹_› :=
-  h.isQuotientMap.2.symm
+  h.isQuotientMap.isCoinducing.eq_coinduced.symm
 
 theorem isEmbedding (h : X ≃ₜ Y) : IsEmbedding h := ⟨h.isInducing, h.injective⟩
 
@@ -248,7 +248,7 @@ theorem nontrivialTopology_iff (h : X ≃ₜ Y) : NontrivialTopology X ↔ Nontr
 
 @[simp]
 theorem isOpen_preimage (h : X ≃ₜ Y) {s : Set Y} : IsOpen (h ⁻¹' s) ↔ IsOpen s :=
-  h.isQuotientMap.isOpen_preimage
+  h.isQuotientMap.isCoinducing.isOpen_preimage
 
 @[simp]
 theorem isOpen_image (h : X ≃ₜ Y) {s : Set X} : IsOpen (h '' s) ↔ IsOpen s := by

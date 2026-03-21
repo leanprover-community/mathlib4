@@ -121,7 +121,7 @@ lemma coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
   change IsOpen (p ⁻¹' U) ↔ ∃ V, _
   simp_rw [hf.isOpen_iff,
     (Set.image_surjective.mpr hq.surjective).exists,
-    ← hq.isQuotientMap.isOpen_preimage]
+    ← hq.isQuotientMap.isCoinducing.isOpen_preimage]
   constructor
   · rintro ⟨V, hV, e⟩
     refine ⟨V, hq.continuous.1 _ (hq.isOpenMap _ hV), ?_⟩
@@ -153,7 +153,7 @@ lemma isQuotientMap_of_isOpenQuotientMap_of_isInducing
     (hq : IsOpenQuotientMap q) (hg : IsEmbedding g)
     (H : q ⁻¹' (q '' (Set.range f)) ⊆ Set.range f) :
     IsQuotientMap p :=
-  ⟨hp, hg.eq_induced.trans ((coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
-    f g p q h hf hp hq hg.injective H)).symm⟩
+  ⟨⟨hg.eq_induced.trans ((coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
+    f g p q h hf hp hq hg.injective H)).symm⟩, hp⟩
 
 end Subquotient

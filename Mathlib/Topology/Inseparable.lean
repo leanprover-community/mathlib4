@@ -622,7 +622,7 @@ theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by
   exact ((mk_eq_mk.1 hxy).mem_open_iff hs).1 hys
 
 theorem isOpenMap_mk : IsOpenMap (mk : X → SeparationQuotient X) := fun s hs =>
-  isQuotientMap_mk.isOpen_preimage.1 <| by rwa [preimage_image_mk_open hs]
+  isQuotientMap_mk.isCoinducing.isOpen_preimage.1 <| by rwa [preimage_image_mk_open hs]
 
 theorem isOpenQuotientMap_mk : IsOpenQuotientMap (mk : X → SeparationQuotient X) :=
   ⟨surjective_mk, continuous_mk, isOpenMap_mk⟩

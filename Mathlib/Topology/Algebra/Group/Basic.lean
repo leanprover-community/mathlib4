@@ -887,7 +887,7 @@ lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
     isOpenMap := by
       -- We need to check that if `U ⊆ A` is open then `φ⁻¹ (φ U)` is open.
       intro U hU
-      rw [← hφ.isOpen_preimage]
+      rw [← hφ.isCoinducing.isOpen_preimage]
       -- It suffices to show that `φ⁻¹ (φ U) = ⋃ (U * k⁻¹)` as `k` runs through the kernel of `φ`,
       -- as `U * k⁻¹` is open because `x ↦ x * k` is continuous.
       -- Remark: here is where we use that we have groups not monoids (you cannot avoid

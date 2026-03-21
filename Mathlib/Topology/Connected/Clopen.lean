@@ -453,7 +453,7 @@ theorem preimage_connectedComponent_connected
 theorem Topology.IsQuotientMap.preimage_connectedComponent (hf : IsQuotientMap f)
     (h_fibers : ∀ y : β, IsConnected (f ⁻¹' {y})) (a : α) :
     f ⁻¹' connectedComponent (f a) = connectedComponent a :=
-  ((preimage_connectedComponent_connected h_fibers (fun _ => hf.isClosed_preimage.symm)
+  ((preimage_connectedComponent_connected h_fibers (fun _ => hf.isCoinducing.isClosed_preimage.symm)
       _).subset_connectedComponent mem_connectedComponent).antisymm
     (hf.continuous.mapsTo_connectedComponent a)
 
