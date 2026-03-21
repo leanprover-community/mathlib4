@@ -223,7 +223,7 @@ open Limits
 /-- If `J` is a precoverage on `D`, we obtain a precoverage on `C` by declaring a presieve on `D`
 to be covering if its image under `F` is. -/
 def comap (F : C ⥤ D) (J : Precoverage D) : Precoverage C where
-  coverings Y R := R.map F ∈ J (F.obj Y)
+  coverings Y := {R | R.map F ∈ J (F.obj Y)}
 
 @[simp]
 lemma mem_comap_iff {X : C} {R : Presieve X} :

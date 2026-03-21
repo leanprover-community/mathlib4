@@ -5,7 +5,7 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sieves
+public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 
 /-!
@@ -22,13 +22,15 @@ The analogous statement for a family of morphisms is in the theorem
 
 -/
 
+universe w v u
+
 @[expose] public section
 
 namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category* C]
+variable {C : Type u} [Category.{v} C]
 
 /-- A sieve is effective epimorphic if the associated cocone is a colimit cocone. -/
 def Sieve.EffectiveEpimorphic {X : C} (S : Sieve X) : Prop :=
@@ -45,7 +47,7 @@ This is equal to `Sieve.generate (Presieve.singleton f)`, but has
 more convenient definitional properties.
 -/
 def Sieve.generateSingleton {X Y : C} (f : Y ⟶ X) : Sieve X where
-  arrows Z := { g | ∃ (e : Z ⟶ Y), e ≫ f = g }
+  arrows Z g := ∃ (e : Z ⟶ Y), e ≫ f = g
   downward_closed := by
     rintro W Z g ⟨e, rfl⟩ q
     exact ⟨q ≫ e, by simp⟩
@@ -58,6 +60,25 @@ lemma Sieve.generateSingleton_eq {X Y : C} (f : Y ⟶ X) :
     exact ⟨i, rfl⟩
   · rintro ⟨g, h⟩
     exact ⟨Y, g, f, ⟨⟩, h⟩
+
+lemma Sieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda {X : C} (S : Sieve X) :
+    S.EffectiveEpimorphic ↔ ∀ Y, S.arrows.IsSheafFor (yoneda.obj Y) :=
+  S.forallYonedaIsSheaf_iff_colimit.symm
+
+lemma Presieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda {X : C} (R : Presieve X) :
+    R.EffectiveEpimorphic ↔ ∀ Y, R.IsSheafFor (yoneda.obj Y) := by
+  simp_rw [Presieve.isSheafFor_iff_generate R,
+    Presieve.EffectiveEpimorphic, Sieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda]
+
+lemma Presieve.EffectiveEpimorphic.isSheafFor_of_isRepresentable {X : C} {R : Presieve X}
+    (hR : R.EffectiveEpimorphic) (F : Cᵒᵖ ⥤ Type w) [F.IsRepresentable] :
+    R.IsSheafFor F := by
+  rw [Presieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda] at hR
+  rw [← isSheafFor_comp_uliftFunctor_iff]
+  refine Presieve.isSheafFor_iso (F ⋙ uliftFunctor.{v}).uliftYonedaReprXIso ?_
+  dsimp only [uliftYoneda, Functor.comp_obj, Functor.whiskeringRight_obj_obj]
+  rw [isSheafFor_comp_uliftFunctor_iff]
+  exact hR _
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.proofsInPublic true in
@@ -149,6 +170,12 @@ theorem Sieve.effectiveEpimorphic_singleton {X Y : C} (f : Y ⟶ X) :
     rw [Sieve.generateSingleton_eq]
     apply Nonempty.map (isColimitOfEffectiveEpiStruct _) h
 
+lemma Presieve.IsSheafFor.singleton_of_isRepresentable_of_effectiveEpi {X Y : C} (f : X ⟶ Y)
+    [EffectiveEpi f] (F : Cᵒᵖ ⥤ Type*) [F.IsRepresentable] :
+    (Presieve.singleton f).IsSheafFor F :=
+  Presieve.EffectiveEpimorphic.isSheafFor_of_isRepresentable
+    ((Sieve.effectiveEpimorphic_singleton f).mpr ‹_›) _
+
 /--
 The sieve of morphisms which factor through a morphism in a given family.
 This is equal to `Sieve.generate (Presieve.ofArrows X π)`, but has
@@ -156,7 +183,7 @@ more convenient definitional properties.
 -/
 def Sieve.generateFamily {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) :
     Sieve B where
-  arrows Y := { f | ∃ (a : α) (g : Y ⟶ X a), g ≫ π a = f }
+  arrows Y f := ∃ (a : α) (g : Y ⟶ X a), g ≫ π a = f
   downward_closed := by
     rintro Y₁ Y₂ g₁ ⟨a, q, rfl⟩ e
     exact ⟨a, e ≫ q, by simp⟩

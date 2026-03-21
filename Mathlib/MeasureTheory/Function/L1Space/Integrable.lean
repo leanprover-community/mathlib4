@@ -87,6 +87,12 @@ theorem Integrable.mono {f : α → β} {g : α → γ} (hg : Integrable g μ)
     (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ ‖g a‖) : Integrable f μ :=
   ⟨hf, hg.hasFiniteIntegral.mono h⟩
 
+theorem Integrable.mono_nonneg [Lattice β] [HasSolidNorm β] [AddLeftMono β] {f g : α → β}
+    (hg : Integrable g μ) (hf : AEStronglyMeasurable f μ) (hnonneg : ∀ᵐ a ∂μ, 0 ≤ f a)
+    (h : ∀ᵐ a ∂μ, f a ≤ g a) :
+    Integrable f μ :=
+  ⟨hf, hg.hasFiniteIntegral.mono_nonneg hnonneg h⟩
+
 theorem Integrable.mono'_enorm {f : α → ε} {g : α → ℝ≥0∞} (hg : Integrable g μ)
     (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ g a) : Integrable f μ :=
   ⟨hf, hg.hasFiniteIntegral.mono_enorm h⟩
@@ -220,6 +226,23 @@ lemma integrable_norm_rpow_iff {f : α → β} {p : ℝ≥0∞}
     Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ ↔ MemLp f p μ := by
   rw [← memLp_norm_rpow_iff (q := p) hf p_zero p_top, ← memLp_one_iff_integrable,
     ENNReal.div_self p_zero p_top]
+
+lemma integrable_norm_rpow_of_le [IsFiniteMeasure μ] {f : α → β} (hf : AEStronglyMeasurable f μ)
+    {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) (hpq : p ≤ q) (hint : Integrable (fun x ↦ ‖f x‖ ^ q) μ) :
+    Integrable (fun x ↦ ‖f x‖ ^ p) μ := by
+  rcases hp.eq_or_lt with (rfl | hp)
+  · simp
+  rcases hq.eq_or_lt with (rfl | hq)
+  · grind
+  rw [← ENNReal.toReal_ofReal hp.le, integrable_norm_rpow_iff hf (by simp [hp]) (by simp)]
+  rw [← ENNReal.toReal_ofReal hq.le, integrable_norm_rpow_iff hf  (by simp [hq]) (by simp)] at hint
+  exact MemLp.mono_exponent hint (ENNReal.ofReal_le_ofReal hpq)
+
+lemma integrable_norm_pow_of_le [IsFiniteMeasure μ] {f : α → β} (hf : AEStronglyMeasurable f μ)
+    {p q : ℕ} (hpq : p ≤ q) (hint : Integrable (fun x ↦ ‖f x‖ ^ q) μ) :
+    Integrable (fun x ↦ ‖f x‖ ^ p) μ := by
+  simp_rw [← Real.rpow_natCast] at *
+  exact integrable_norm_rpow_of_le hf p.cast_nonneg q.cast_nonneg (by simpa) hint
 
 theorem Integrable.mono_measure {f : α → ε} (h : Integrable f ν) (hμ : μ ≤ ν) : Integrable f μ :=
   ⟨h.aestronglyMeasurable.mono_measure hμ, h.hasFiniteIntegral.mono_measure hμ⟩
@@ -675,14 +698,14 @@ lemma Integrable.measure_ge_lt_top {f : α → β} [Lattice β] [HasSolidNorm β
     μ {a : α | ε ≤ f a} < ∞ :=
   lt_of_le_of_lt (measure_mono fun x hx => norm_le_norm_of_abs_le_abs <|
     (abs_of_nonneg ε_pos.le).symm ▸ hx.trans (le_abs_self (f x)))
-    (hf.measure_norm_ge_lt_top (by simp; grind))
+    (hf.measure_norm_ge_lt_top (by positivity [ε_pos.ne']))
 
 /-- If `f` is integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite
 measure. -/
 lemma Integrable.measure_le_lt_top {f : α → β} [Lattice β] [HasSolidNorm β] [AddLeftMono β]
     (hf : Integrable f μ) {c : β} (c_neg : c < 0) :
     μ {a : α | f a ≤ c} < ∞ := by
-  have : 0 < ‖c‖ := by simp; grind
+  have : 0 < ‖c‖ := by positivity [c_neg.ne]
   refine lt_of_le_of_lt (measure_mono fun x hx => ?_) (hf.measure_norm_ge_lt_top this)
   have : -c ≤ -f x := by simp; grind
   exact norm_le_norm_of_abs_le_abs <| abs_of_nonpos c_neg.le ▸ this.trans (neg_le_abs _)
@@ -708,7 +731,6 @@ theorem LipschitzWith.integrable_comp_iff_of_antilipschitz {K K'} {f : α → β
     Integrable (g ∘ f) μ ↔ Integrable f μ := by
   simp [← memLp_one_iff_integrable, hg.memLp_comp_iff_of_antilipschitz hg' g0]
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem Integrable.real_toNNReal {f : α → ℝ} (hf : Integrable f μ) :
     Integrable (fun x => ((f x).toNNReal : ℝ)) μ := by

@@ -119,16 +119,14 @@ attribute [local ext] CategoryTheory.Comma
 
 protected theorem ind {X : C} (p : Subobject X → Prop)
     (h : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono f], p (Subobject.mk f)) (P : Subobject X) : p P := by
-  apply Quotient.inductionOn'
-  intro a
+  induction P using Quotient.inductionOn' with | _ a
   exact h a.arrow
 
 protected theorem ind₂ {X : C} (p : Subobject X → Subobject X → Prop)
     (h : ∀ ⦃A B : C⦄ (f : A ⟶ X) (g : B ⟶ X) [Mono f] [Mono g],
       p (Subobject.mk f) (Subobject.mk g))
     (P Q : Subobject X) : p P Q := by
-  apply Quotient.inductionOn₂'
-  intro a b
+  induction P, Q using Quotient.inductionOn₂' with | _ a b
   exact h a.arrow b.arrow
 
 end
@@ -169,6 +167,11 @@ This is isomorphic (in `MonoOver X`) to the original `A`.
 noncomputable def representativeIso {X : C} (A : MonoOver X) :
     representative.obj ((toThinSkeleton _).obj A) ≅ A :=
   (equivMonoOver X).counitIso.app A
+
+@[simp]
+lemma thinSkeleton_mk_representative_eq_self {X : C} (A : Subobject X) :
+    ThinSkeleton.mk (representative.obj A) = A :=
+  Subobject.skeletal _ ⟨((equivMonoOver X).unitIso.app _).symm⟩
 
 /-- Use choice to pick a representative underlying object in `C` for any `Subobject X`.
 

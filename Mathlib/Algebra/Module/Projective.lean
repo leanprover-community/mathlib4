@@ -175,29 +175,32 @@ theorem Projective.of_split [Module.Projective R M]
   rw [LinearMap.comp_apply, ← LinearMap.comp_apply, hg,
     ← LinearMap.comp_apply, H, LinearMap.id_apply]
 
-theorem Projective.of_equiv [Module.Projective R M]
+theorem Projective.of_equiv {R S} [Semiring R] [Semiring S] {M N}
+    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S N]
+    {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    (e₂ : M ≃ₛₗ[σ] N)
+    [Projective R M] : Projective S N := by
+  let e₁ : R ≃+* S := RingHomInvPair.toRingEquiv σ σ'
+  obtain ⟨f, hf⟩ := ‹Projective R M›
+  let g : N →ₗ[S] N →₀ S :=
+  { toFun := fun x ↦ (equivCongrLeft e₂ (f (e₂.symm x))).mapRange e₁ e₁.map_zero
+    map_add' := fun x y ↦ by ext; simp
+    map_smul' := fun r v ↦ by ext i; simp [e₁, e₂.symm.map_smulₛₗ] }
+  refine ⟨⟨g, fun x ↦ ?_⟩⟩
+  replace hf := congr(e₂ $(hf (e₂.symm x)))
+  simpa [linearCombination_apply, sum_mapRange_index, g, map_finsuppSum, e₂.map_smulₛₗ] using hf
+
+theorem Projective.of_equiv' [Module.Projective R M]
     (e : M ≃ₗ[R] P) : Module.Projective R P :=
-  Projective.of_split e.symm e.toLinearMap (by simp)
+  .of_equiv e
+
+@[deprecated (since := "2026-02-14")] alias Projective.of_ringEquiv := Projective.of_equiv
 
 /-- A quotient of a projective module is projective iff it is a direct summand. -/
 theorem Projective.iff_split_of_projective [Module.Projective R M] (s : M →ₗ[R] P)
     (hs : Function.Surjective s) :
     Module.Projective R P ↔ ∃ i, s ∘ₗ i = LinearMap.id :=
   ⟨fun _ ↦ projective_lifting_property _ _ hs, fun ⟨i, H⟩ ↦ Projective.of_split i s H⟩
-
-attribute [local instance] RingHomInvPair.of_ringEquiv in
-theorem Projective.of_ringEquiv {R S} [Semiring R] [Semiring S] {M N}
-    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S N]
-    (e₁ : R ≃+* S) (e₂ : M ≃ₛₗ[RingHomClass.toRingHom e₁] N)
-    [Projective R M] : Projective S N := by
-  obtain ⟨f, hf⟩ := ‹Projective R M›
-  let g : N →ₗ[S] N →₀ S :=
-  { toFun := fun x ↦ (equivCongrLeft e₂ (f (e₂.symm x))).mapRange e₁ e₁.map_zero
-    map_add' := fun x y ↦ by ext; simp
-    map_smul' := fun r v ↦ by ext i; simp [e₂.symm.map_smulₛₗ] }
-  refine ⟨⟨g, fun x ↦ ?_⟩⟩
-  replace hf := congr(e₂ $(hf (e₂.symm x)))
-  simpa [linearCombination_apply, sum_mapRange_index, g, map_finsuppSum, e₂.map_smulₛₗ] using hf
 
 end Semiring
 
