@@ -324,6 +324,11 @@ theorem radical_mul_dvd : radical (a * b) ∣ radical a * radical b := by
   simp [radical_dvd_iff_primeFactors_subset, primeFactors_mul_eq_union,
     primeFactors_mul_eq_union ha hb, primeFactors_radical]
 
+theorem radical_pow_dvd {n : ℕ} : radical (a ^ n) ∣ radical a := by
+  by_cases hn : n = 0
+  · simp [hn]
+  · rw [radical_pow _ hn]
+
 theorem radical_prod_dvd {ι : Type*} {s : Finset ι} {f : ι → M} :
     radical (∏ i ∈ s, f i) ∣ ∏ i ∈ s, radical (f i) := by
   induction s using Finset.cons_induction with

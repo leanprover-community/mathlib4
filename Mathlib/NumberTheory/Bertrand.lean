@@ -239,26 +239,18 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
 alias bertrand := Nat.exists_prime_lt_and_le_two_mul
 
 lemma le_primorial_self {n : ℕ} : n ≤ primorial n := by
-  rcases lt_or_ge n 3 with hn | hn
-  · obtain rfl | rfl | rfl : n = 0 ∨ n = 1 ∨ n = 2 := by lia
-    all_goals decide
+  rcases lt_or_ge n 4 with hn | hn
+  · interval_cases n <;> decide
   · suffices ∃ p ≥ 3, p.Prime ∧ p ≤ n ∧ n ≤ 2 * p by
-      obtain ⟨p, pp, bnd⟩ := this
-      apply bnd.2.2.trans
-      have rearr : 2 * p = ∏ q ∈ {2, p} with q.Prime, q := by
-        rw [Finset.prod_filter, Finset.prod_insert (by grind), Finset.prod_singleton]
-        simp [bnd.1, prime_two]
-      rw [rearr, primorial, Finset.prod_filter, Finset.prod_filter]
-      refine Finset.prod_le_prod_of_subset_of_one_le' (by grind) fun q _ _ ↦ ?_
-      split_ifs with hq
-      · exact hq.one_le
-      · rfl
-    obtain ⟨p, pp, bp₁, bp₂⟩ := bertrand ((n + 1) / 2) (by lia)
-    refine ⟨p, by lia, pp, ?_, by lia⟩
-    suffices p ≠ 2 * ((n + 1) / 2) by lia
-    contrapose pp
-    subst pp
-    exact not_prime_mul (by decide) (by lia)
+      obtain ⟨p, _, pp, _, hp⟩ := this
+      apply hp.trans
+      have rearr : 2 * p = ∏ q ∈ {2, p}, if q.Prime then q else 1 := by
+        simp (disch := grind) [pp, prime_two]
+      rw [rearr, primorial, Finset.prod_filter]
+      refine Finset.prod_le_prod_of_subset_of_one_le' (by grind) fun _ _ _ ↦ ?_
+      exact iteInduction Prime.one_le fun _ ↦ le_rfl
+    obtain ⟨p, pp, _, _⟩ := bertrand (n / 2) (by lia)
+    exact ⟨p, by lia, pp, by lia, by lia⟩
 
 end Nat
 
