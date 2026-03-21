@@ -481,7 +481,7 @@ theorem logCounting_sum_top_eventuallyLE {α : Type*} (s : Finset α) (f : α �
   filter_upwards [eventually_ge_atTop 1] using fun _ hr ↦ logCounting_sum_top_le s f h₁f hr
 
 /--
-For `1 ≤ r`, the logarithmis counting function for the zeros of `f * g` is less than or equal to the
+For `1 ≤ r`, the logarithmic counting function for the zeros of `f * g` is less than or equal to the
 sum of the logarithmic counting functions for the zeros of `f` and `g`, respectively.
 
 Note: The statement proven here is found at the top of page 169 of [Lang: Introduction to Complex

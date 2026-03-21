@@ -90,7 +90,7 @@ namespace LeftPreLieRing
 
 variable {L : Type*} [LeftPreLieRing L]
 
-/-- `LeftPreLieRings` are examples of `LieAdmissibleRings` by the commutatitvity assumption on the
+/-- `LeftPreLieRings` are examples of `LieAdmissibleRings` by the commutativity assumption on the
 associator. -/
 instance instLieAdmissibleRing : LieAdmissibleRing L where
   assoc_def x y z := by
@@ -113,7 +113,7 @@ namespace RightPreLieRing
 
 variable {L : Type*} [RightPreLieRing L]
 
-/-- `RightPreLieRings` are examples of `LieAdmissibleRings` by the commutatitvity assumption on
+/-- `RightPreLieRings` are examples of `LieAdmissibleRings` by the commutativity assumption on
 the associator. -/
 instance instLieAdmissibleRing : LieAdmissibleRing L where
   assoc_def x y z := by

@@ -697,12 +697,12 @@ noncomputable def quotientToQuotientRangePowQuotSucc
     S ⧸ P →ₗ[R ⧸ p]
       (P ^ i).map (Ideal.Quotient.mk (P ^ e)) ⧸ LinearMap.range (powQuotSuccInclusion p P i) where
   toFun := quotientToQuotientRangePowQuotSuccAux p P a_mem
-  map_add' := by
-    intro x y; refine Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => ?_
+  map_add' x y := by
+    induction x, y using Quotient.inductionOn₂' with | _ x y
     simp only [Submodule.Quotient.mk''_eq_mk, ← Submodule.Quotient.mk_add,
       quotientToQuotientRangePowQuotSuccAux_mk, mul_add, map_add, map_mul, AddMemClass.mk_add_mk]
-  map_smul' := by
-    intro x y; refine Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => ?_
+  map_smul' x y := by
+    induction x, y using Quotient.inductionOn₂' with | _ x y
     simp only [Submodule.Quotient.mk''_eq_mk, RingHom.id_apply,
       quotientToQuotientRangePowQuotSuccAux_mk]
     refine congr_arg Submodule.Quotient.mk ?_
@@ -1054,6 +1054,21 @@ theorem ramificationIdx_algebra_tower [IsDedekindDomain S] [IsDedekindDomain T]
     ramificationIdx (algebraMap R S) p P * ramificationIdx (algebraMap S T) P Q := by
   rw [IsScalarTower.algebraMap_eq R S T] at hfg ⊢
   exact ramificationIdx_tower hg0 hfg hg
+
+theorem ramificationIdx_algebra_tower' [IsDedekindDomain S] [IsDedekindDomain T] [IsDomain R]
+    [Module.IsTorsionFree R S] [Module.IsTorsionFree S T] (p : Ideal R) (P : Ideal S) (Q : Ideal T)
+    [Q.IsPrime] [Q.LiesOver P] [P.LiesOver p] :
+    ramificationIdx (algebraMap R T) p Q =
+      ramificationIdx (algebraMap R S) p P * ramificationIdx (algebraMap S T) P Q := by
+  obtain rfl | hp := eq_or_ne p ⊥
+  · simp
+  have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under S Q
+  have : Module.IsTorsionFree R T := by
+    refine Module.IsTorsionFree.of_smul_eq_zero fun r m h ↦ ?_
+    rwa [algebra_compatible_smul S, smul_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff] at h
+  have hP : P ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp _
+  exact ramificationIdx_algebra_tower (map_ne_bot_of_ne_bot hP) (map_ne_bot_of_ne_bot hp)
+    <| map_le_iff_le_comap.mpr <| le_of_eq <| over_def Q P
 
 /-- Let `T / S / R` be a tower of algebras, `p, P, I` be ideals in `R, S, T`, respectively,
   and `p` and `P` are maximal. If `p = P ∩ S` and `P = I ∩ S`,
