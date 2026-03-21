@@ -38,11 +38,11 @@ open _root_.TensorProduct
 variable (R A M N) in
 /-- The (additive) generators of the kernel of the natural map `M ⊗[R] N → M ⊗[A] N`. -/
 def elem_rel : SubMulAction A (M ⊗[R] N) where
-  carrier :=  { (a • m) ⊗ₜ[R] n - m ⊗ₜ[R] (a • n) | (a : A) (m: M) (n : N)}
+  carrier := { (a • m) ⊗ₜ[R] n - m ⊗ₜ[R] (a • n) | (a : A) (m: M) (n : N)}
   smul_mem' := by
     intros a _ hx
     obtain ⟨a', m, n, h⟩ := hx
-    use  a',  a • m, n
+    use a', a • m, n
     simp_rw [←h, smul_sub, ←smul_tmul', sub_left_inj, smul_smul, mul_comm]
 
 omit [IsScalarTower R A N] in
@@ -52,11 +52,11 @@ lemma elem_rel_mem (x : (M ⊗[R] N)) : x ∈ (elem_rel R A M N) ↔
 
 variable (R A M N) in
 /-- The module of relations in `(M ⊗[R] N)` that have to be divided out to obtain `(M ⊗[A] N)` -/
-abbrev rels := (Submodule.span A ((elem_rel R A M N) : Set (M ⊗[R] N) ))
+abbrev rels := (Submodule.span A ((elem_rel R A M N) : Set (M ⊗[R] N)))
 
 variable (R A M N) in
 /-- The tensor product `(M ⊗[A] N)` constructed as a quotient of `(M ⊗[R] N)` -/
-abbrev mk := (M⊗[R] N) ⧸ (rels R A M N)
+abbrev mk := (M ⊗[R] N) ⧸ (rels R A M N)
 
 variable (R A M N) in
 /-- The natural bilinear map into the algebra-based construction of the tensor product -/
@@ -81,7 +81,7 @@ omit [IsScalarTower R A N] in
 @[simp] lemma bil_to_mk_apply (m : M) (n : N) : bil_to_mk R A M N m n = ⟦m⊗ₜn⟧ := by rfl
 
 variable (R A M N) in
-/-- the natural map from the tensor product to the algebra-based construction of the tensor product
+/-- The natural map from the tensor product to the algebra-based construction of the tensor product.
 -/
 abbrev tens_to_mk := TensorProduct.lift (bil_to_mk R A M N)
 
@@ -100,16 +100,16 @@ lemma span_in_ker : (rels R A M N) ≤ (mapOfCompatibleSMul' A R M N).ker := by
 
 
 variable (R A M N) in
-/-- the natural map from the algebra-based construction of the tensor product to
-the tensor product -/
-abbrev mk_to_tens := Submodule.liftQ  (rels R A M N) (mapOfCompatibleSMul' A R M N)
+/-- The natural map from the algebra-based construction of the tensor product to
+the tensor product. -/
+abbrev mk_to_tens := Submodule.liftQ (rels R A M N) (mapOfCompatibleSMul' A R M N)
   (span_in_ker R A M N)
 
 @[simp]
 lemma mk_to_tens_apply (m : M) (n : N) : mk_to_tens R A M N ⟦m⊗ₜn⟧ = m⊗ₜn := by rfl
 
 variable (R A M N) in
-/-- The definition of the equivalence between the algebra-based construction of the tensor product
+/-- The equivalence between the algebra-based construction of the tensor product.
 and the tensor product -/
 def quot_equi_tens :(mk R A M N) ≃ₗ[A] M ⊗[A] N where
   toLinearMap := mk_to_tens R A M N
@@ -129,7 +129,7 @@ def quot_equi_tens :(mk R A M N) ≃ₗ[A] M ⊗[A] N where
     simp [h]
 
 variable (R A M N) in
-lemma compose_eq_mkQ :(tens_to_mk R A M N) ∘ₗ (mapOfCompatibleSMul' A R M N)
+lemma compose_eq_mkQ : (tens_to_mk R A M N) ∘ₗ (mapOfCompatibleSMul' A R M N)
     = (rels R A M N).mkQ := by
   ext _ _
   simp [mapOfCompatibleSMul', Submodule.Quotient.mk''_eq_mk]
