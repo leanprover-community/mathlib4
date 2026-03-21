@@ -93,11 +93,9 @@ instance : Group (QuaternionGroup n) where
   mul := mul
   mul_assoc := by
     rintro (i | i) (j | j) (k | k) <;> simp only [(· * ·), mul] <;> ring_nf
-    congr
-    calc
-      -(n : ZMod (2 * n)) = 0 - n := by rw [zero_sub]
-      _ = 2 * n - n := by norm_cast; simp
-      _ = n := by ring
+    have : (2 * n : ZMod (2 * n)) = 0 := by norm_cast; simp
+    simp only [Mul.mul_eq_hMul]
+    grind
   one := one
   one_mul := by
     rintro (i | i)
