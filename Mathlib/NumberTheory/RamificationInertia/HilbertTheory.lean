@@ -653,4 +653,25 @@ theorem le_isInertiaField_iff [IsFractionRing 𝓞F F] [IsInertiaField K L P E] 
     ramificationIdxIn_eq_ramificationIdx 𝓟F P Gal(L/F), ramificationIdx_algebra_tower' p 𝓟F P,
     mul_eq_right₀ (IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver P hPF)]
 
+theorem isDecompositionField_iff [IsFractionRing 𝓞F F] [p.IsMaximal] [P.IsMaximal] [𝓟F.IsMaximal]
+    (hp : p ≠ ⊥) :
+    IsDecompositionField K L P F ↔ primesOver 𝓟F B = {P} ∧
+      ramificationIdx (algebraMap A 𝓞F) p 𝓟F = 1 ∧ inertiaDeg p 𝓟F = 1 := by
+  let D := (FixedPoints.intermediateField (stabilizer Gal(L/K) P) : IntermediateField K L)
+  convert_to D = F ↔ _
+  · rw [isDecompositionField_iff_fixingSubgroup, ← IsGalois.fixedField_eq_iff_fixingSubgroup_eq,
+      fixedField]
+  rw [le_antisymm_iff, le_isDecompositionField_iff A K L P F D 𝓞F 𝓟F hp,
+    isDecompositionField_le_iff K L P F D 𝓞F 𝓟F]
+
+theorem isInertiaField_iff [IsFractionRing 𝓞F F] [P.IsMaximal] (hp : p ≠ ⊥) :
+    IsInertiaField K L P F ↔ ramificationIdx (algebraMap 𝓞F B) 𝓟F P = Module.finrank F L
+      ∧ ramificationIdx (algebraMap A 𝓞F) p 𝓟F = 1 := by
+  let E := (FixedPoints.intermediateField (inertia Gal(L/K) P) : IntermediateField K L)
+  convert_to E = F ↔ _
+  · rw [isInertiaField_iff_fixingSubgroup, ← IsGalois.fixedField_eq_iff_fixingSubgroup_eq,
+      fixedField]
+  rw [le_antisymm_iff, le_isInertiaField_iff A K L P F E 𝓞F 𝓟F hp,
+    isInertiaField_le_iff A K L P F E 𝓞F 𝓟F hp]
+
 end IntermediateField
