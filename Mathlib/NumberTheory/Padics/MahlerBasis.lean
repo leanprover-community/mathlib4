@@ -86,7 +86,7 @@ noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
 
 @[fun_prop]
 lemma continuous_multichoose (k : ℕ) : Continuous (fun x : ℤ_[p] ↦ Ring.multichoose x k) := by
-  simp only [Ring.multichoose, BinomialRing.multichoose, continuous_induced_rng]
+  simp only [Ring.multichoose, BinomialRing.multichoose]
   fun_prop
 
 @[fun_prop]
