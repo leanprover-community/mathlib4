@@ -163,6 +163,13 @@ theorem proj_apply_basis_mem (A : Finset β) (i : β) :
     b.proj A (b i) = if i ∈ A then b i else 0 := by
   simp [b.ortho, Pi.single_apply]
 
+open scoped Classical in
+/-- The projection of a finite sum of basis vectors onto a subset. -/
+theorem proj_sum_subset (A B : Finset β) (a : β → 𝕜) (hAB : A ⊆ B) :
+    b.proj A (∑ j ∈ B, a j • b j) = ∑ j ∈ A, a j • b j := by
+  simp only [map_sum, map_smul, proj_apply_basis_mem, smul_ite, smul_zero,
+    Finset.sum_ite_mem, Finset.inter_eq_right.mpr hAB]
+
 /-- The projections `b.proj A x` converge to `x` along the summation filter. -/
 theorem tendsto_proj (x : X) : Tendsto (fun A ↦ b.proj A x) L.filter (𝓝 x) := by
   simpa using b.expansion x
@@ -258,7 +265,7 @@ theorem norm_proj_le_nnnormProjBound [CompleteSpace X] (A : Finset β) :
     ‖b.proj A‖ ≤ b.nnnormProjBound :=
   mod_cast b.nnnorm_proj_le_nnnormProjBound A
 
-/-- Convert an ℕ-indexed unconditional Schauder basis to a conditional (classical) Schauder
+/-- Convert an `ℕ`-indexed unconditional Schauder basis to a conditional (classical) Schauder
     basis. Every unconditionally convergent series is also conditionally convergent. -/
 def toSchauderBasis (b : UnconditionalSchauderBasis ℕ 𝕜 X) : SchauderBasis 𝕜 X where
   basis := b.basis

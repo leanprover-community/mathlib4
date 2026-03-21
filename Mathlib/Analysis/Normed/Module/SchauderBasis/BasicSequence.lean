@@ -142,19 +142,17 @@ lemma linearIndependent (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K) (h_nz
       (fun x _ hx ↦ by simp only [c, hx, ite_false, zero_smul])]
     exact (Finset.sum_congr rfl (fun j hj ↦ by simp [c, hj])).trans hg
   have h_part (m : ℕ) (hm : m ≤ N) : ∑ j ∈ Finset.range m, c j • e j = 0 :=
-    norm_le_zero_iff.mp <| by simpa [h_zero] using h_grunblum N m c hm
+    norm_le_zero_iff.mp (by simpa [h_zero] using h_grunblum N m c hm)
   have hc : c i • e i = 0 := by
     rw [← Finset.sum_range_succ_sub_sum (fun j ↦ c j • e j),
         h_part (i + 1) (hltN i hi), h_part i (hltN i hi).le, sub_zero]
   simpa [c, hi, h_nz i] using hc
 
-private lemma sum_repr_eq_of_sup_lt {M : Type*} [AddCommGroup M] [Module 𝕜 M]
-    (b : Module.Basis ℕ 𝕜 M) (x : M) {N : ℕ} (hN : (b.repr x).support.sup id < N) :
-    ∑ i ∈ Finset.range N, b.repr x i • b i = x := by
+private lemma sum_repr_eq_of_support_subset {ι : Type*} {M : Type*} [AddCommGroup M] [Module 𝕜 M]
+    (b : Module.Basis ι 𝕜 M) (x : M) {A : Finset ι} (hA : (b.repr x).support ⊆ A) :
+    ∑ i ∈ A, b.repr x i • b i = x := by
   conv_rhs => rw [← b.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
-  exact (Finset.sum_subset
-    (fun i hi ↦ Finset.mem_range.2 ((Finset.le_sup (f := id) hi).trans_lt hN))
-    (fun i _ hi ↦ by simp [Finsupp.notMem_support_iff.mp hi])).symm
+  exact (Finset.sum_subset hA fun i _ hi ↦ by simp [Finsupp.notMem_support_iff.mp hi]).symm
 
 /-- A nonzero sequence satisfying the Grünblum condition with constant `K` is a basic sequence,
     with basis constant at most `K`. -/
@@ -166,9 +164,10 @@ theorem basicSequence (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K)
   let b_S := Module.Basis.span h_indep
   have hbS (n : ℕ) : (b_S n : X) = e n := congrArg Subtype.val (Module.Basis.span_apply h_indep n)
   have h_sum (x : S) {N : ℕ} (hN : (b_S.repr x).support.sup id < N) :
-      ∑ i ∈ Finset.range N, b_S.repr x i • b_S i = x := sum_repr_eq_of_sup_lt b_S x hN
-  have coe_sum (A : Finset ℕ) (c : ℕ → 𝕜) :
-      (↑(∑ i ∈ A, c i • b_S i) : X) = ∑ i ∈ A, c i • e i := by
+      ∑ i ∈ Finset.range N, b_S.repr x i • b_S i = x :=
+    sum_repr_eq_of_support_subset b_S x
+      fun i hi ↦ Finset.mem_range.2 ((Finset.le_sup (f := id) hi).trans_lt hN)
+  have coe_sum (A : Finset ℕ) (c : ℕ → 𝕜) : (↑(∑ i ∈ A, c i • b_S i) : X) = ∑ i ∈ A, c i • e i := by
     simp [AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, hbS]
   let P_span (k : ℕ) : S →ₗ[𝕜] S :=
     ∑ i ∈ Finset.range k, ((Finsupp.lapply i).comp b_S.repr.toLinearMap).smulRight (b_S i)
@@ -182,9 +181,10 @@ theorem basicSequence (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K)
       _ = K * ‖x‖ := by rw [← norm_coe, ← coe_sum, congrArg Subtype.val (h_sum x hN)]
   let P (k : ℕ) : S →L[𝕜] S := (P_span k).mkContinuous K (h_P_bound k)
   have hP (k : ℕ) (x : S) : P k x = ∑ i ∈ Finset.range k, b_S.repr x i • b_S i := by
-    change P_span k x = _; simp [P_span]
+    change P_span k x = _
+    simp [P_span]
   have h_proj_basis (i n : ℕ) (hi : i < n) : P n (b_S i) = b_S i := by
-    rw [hP]; exact h_sum _ (by simp [b_S.repr_self, Finsupp.support_single_ne_zero, hi])
+    rw [hP, h_sum _ (by simp [b_S.repr_self, Finsupp.support_single_ne_zero, hi])]
   let D : SchauderBasis.RankOneDecomposition 𝕜 S := {
     P, e := b_S,
     proj_zero := by
@@ -291,15 +291,10 @@ theorem satisfiesNikolskiiCondition :
   calc ‖∑ i ∈ A, a i • ubs i‖
     _ = ‖∑ i ∈ A, a i • ubs.basis i‖ := (h_eq A).symm
     _ = ‖ubs.basis.proj A (∑ i ∈ B, a i • ubs.basis i)‖ := by
-      congr 1
-      rw [map_sum]
-      simp only [map_smul, GeneralSchauderBasis.proj_apply_basis_mem, smul_ite, smul_zero]
-      rw [← Finset.sum_subset hAB fun _ _ h ↦ if_neg h,
-          Finset.sum_congr rfl fun _ h ↦ (if_pos h).symm]
+      rw [ubs.basis.proj_sum_subset A B a hAB]
     _ ≤ ‖ubs.basis.proj A‖ * ‖∑ i ∈ B, a i • ubs.basis i‖ := ContinuousLinearMap.le_opNorm _ _
     _ ≤ ubs.unconditionalBasicSequenceConstant * ‖∑ i ∈ B, a i • ubs i‖ := by
-      rw [h_eq B]
-      exact mul_le_mul_of_nonneg_right h_bound (norm_nonneg _)
+      rw [h_eq B]; exact mul_le_mul_of_nonneg_right h_bound (norm_nonneg _)
 
 end UnconditionalBasicSequence
 
@@ -310,9 +305,9 @@ variable {β : Type*} {e : β → X} {K : ℝ}
 /-- The Nikolskii constant must be at least `1` for any nonzero sequence. -/
 theorem one_le [Nonempty β] (h : SatisfiesNikolskiiCondition 𝕜 e K)
     (h_nz : ∀ n, e n ≠ 0) : 1 ≤ K := by
-  have h0 := h {Classical.arbitrary β} {Classical.arbitrary β} (fun _ => 1) Finset.Subset.rfl
-  simp only [sum_singleton, one_smul] at h0
-  exact le_of_mul_le_mul_right ((one_mul _).le.trans h0) (norm_pos_iff.mpr (h_nz _))
+  have := h {Classical.arbitrary β} {Classical.arbitrary β} (fun _ => 1) Finset.Subset.rfl
+  simp only [sum_singleton, one_smul] at this
+  exact le_of_mul_le_mul_right ((one_mul _).le.trans this) (norm_pos_iff.mpr (h_nz _))
 
 /-- A nonzero sequence satisfying the Nikolskii condition is linearly independent. -/
 lemma linearIndependent (hN : SatisfiesNikolskiiCondition 𝕜 e K)
@@ -324,10 +319,9 @@ lemma linearIndependent (hN : SatisfiesNikolskiiCondition 𝕜 e K)
 open scoped Classical in
 /-- A nonzero sequence satisfying the Nikolskii condition is an unconditional basic sequence,
     with basis constant at most `K`. -/
-theorem unconditionalBasicSequence [Nonempty β]
-    (h : SatisfiesNikolskiiCondition 𝕜 e K) (h_nz : ∀ n, e n ≠ 0) :
-    ∃ (b : UnconditionalBasicSequence β 𝕜 X),
-    ⇑b = e ∧ b.unconditionalBasicSequenceConstant ≤ K := by
+theorem unconditionalBasicSequence [Nonempty β] (h : SatisfiesNikolskiiCondition 𝕜 e K)
+    (h_nz : ∀ n, e n ≠ 0) : ∃ (b : UnconditionalBasicSequence β 𝕜 X), ⇑b = e ∧
+    b.unconditionalBasicSequenceConstant ≤ K := by
   have hK : 0 ≤ K := zero_le_one.trans (h.one_le h_nz)
   have h_indep := h.linearIndependent h_nz
   let S := Submodule.span 𝕜 (Set.range e)
@@ -336,9 +330,8 @@ theorem unconditionalBasicSequence [Nonempty β]
   have coe_sum (A : Finset β) (c : β → 𝕜) : (↑(∑ i ∈ A, c i • b_S i) : X) = ∑ i ∈ A, c i • e i := by
     simp [AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, hbS]
   have h_sum (x : S) {A : Finset β} (hA : (b_S.repr x).support ⊆ A) :
-      ∑ i ∈ A, b_S.repr x i • b_S i = x := by
-    conv_rhs => rw [← b_S.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
-    exact (Finset.sum_subset hA fun i _ hi ↦ by simp [Finsupp.notMem_support_iff.mp hi]).symm
+      ∑ i ∈ A, b_S.repr x i • b_S i = x :=
+    SatisfiesGrunblumCondition.sum_repr_eq_of_support_subset b_S x hA
   have norm_sum_eq (y : S) {A : Finset β} (hA : (b_S.repr y).support ⊆ A) :
       ‖∑ i ∈ A, b_S.repr y i • e i‖ = ‖y‖ := by
     rw [← coe_sum, congrArg Subtype.val (h_sum y hA), norm_coe]
@@ -380,10 +373,6 @@ theorem unconditionalBasicSequence [Nonempty β]
         _ = K * ‖y‖ := by congr 1; exact norm_sum_eq y Finset.subset_union_right
   refine ⟨⟨e, ubs_basis, hbS, h_bound.trans_lt ENNReal.ofReal_lt_top⟩, rfl, ?_⟩
   exact (ENNReal.toReal_mono ENNReal.ofReal_ne_top h_bound).trans_eq (ENNReal.toReal_ofReal hK)
-
-theorem toSatisfiesGrunblumCondition {e : ℕ → X}
-    (h : SatisfiesNikolskiiCondition 𝕜 e K) : SatisfiesGrunblumCondition 𝕜 e K :=
-  fun _ _ a hmn => h _ _ a (Finset.range_subset_range.mpr hmn)
 
 end SatisfiesNikolskiiCondition
 
