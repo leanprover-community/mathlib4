@@ -58,6 +58,8 @@ class IsStarNormal [Mul R] [Star R] (x : R) : Prop where
 
 export IsStarNormal (star_comm_self)
 
+attribute [grind →] star_comm_self
+
 theorem star_comm_self' [Mul R] [Star R] (x : R) [IsStarNormal x] : star x * x = x * star x :=
   IsStarNormal.star_comm_self
 
@@ -186,6 +188,12 @@ variable [Monoid R] [StarMul R]
 theorem pow {x : R} (hx : IsSelfAdjoint x) (n : ℕ) : IsSelfAdjoint (x ^ n) := by
   simp only [isSelfAdjoint_iff, star_pow, hx.star_eq]
 
+@[simp]
+theorem invOf_iff (x : R) [Invertible x] : IsSelfAdjoint ⅟x ↔ IsSelfAdjoint x := by
+  rw [isSelfAdjoint_iff, isSelfAdjoint_iff, star_invOf, invOf_inj]
+
+alias ⟨_, invOf⟩ := invOf_iff
+
 @[grind =]
 lemma _root_.IsUnit.isSelfAdjoint_conjugate_iff {a u : R} (hu : IsUnit u) :
     IsSelfAdjoint (u * a * star u) ↔ IsSelfAdjoint a := by
@@ -205,7 +213,7 @@ end Monoid
 
 section Semiring
 
-variable [Semiring R] [StarRing R]
+variable [NonAssocSemiring R] [StarRing R]
 
 @[simp]
 protected theorem natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
@@ -253,6 +261,10 @@ variable [Group R] [StarMul R]
 theorem inv {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint x⁻¹ := by
   simp only [isSelfAdjoint_iff, star_inv, hx.star_eq]
 
+@[simp]
+theorem inv_iff (x : R) : IsSelfAdjoint x⁻¹ ↔ IsSelfAdjoint x := by
+  simp [isSelfAdjoint_iff]
+
 @[aesop safe apply]
 theorem zpow {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) := by
   simp only [isSelfAdjoint_iff, star_zpow, hx.star_eq]
@@ -266,6 +278,10 @@ variable [GroupWithZero R] [StarMul R]
 @[aesop safe apply]
 theorem inv₀ {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint x⁻¹ := by
   simp only [isSelfAdjoint_iff, star_inv₀, hx.star_eq]
+
+@[simp]
+theorem inv₀_iff (x : R) : IsSelfAdjoint x⁻¹ ↔ IsSelfAdjoint x := by
+  simp [isSelfAdjoint_iff]
 
 @[aesop safe apply]
 theorem zpow₀ {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) := by

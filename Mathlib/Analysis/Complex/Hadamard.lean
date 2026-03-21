@@ -526,8 +526,7 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
       · simpa [comp_apply, mem_image, forall_exists_index,
           and_imp, forall_apply_eq_imp_iff₂] using ha
       · use ‖(f 0)‖, 0
-        simp only [mem_preimage, zero_re, mem_singleton_iff, comp_apply,
-          and_self]
+        simp
   · apply Real.rpow_le_rpow (sSupNormIm_nonneg f _) _ hz.1
     · rw [sSupNormIm]
       apply csSup_le _
