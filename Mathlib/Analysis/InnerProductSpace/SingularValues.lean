@@ -192,30 +192,30 @@ theorem support_singularValues : T.singularValues.support = Finset.range (finran
   rw [← Finset.coe_Iio, Finset.coe_inj, Nat.Iio_eq_range] at hn
   simp [← card_support_singularValues, hn]
 
-theorem singularValues_pos_iff_lt_rank {n : ℕ} :
+theorem singularValues_pos_iff_lt_finrank_range_self {n : ℕ} :
     0 < T.singularValues n ↔ n < finrank 𝕜 T.range := by
   rw [singularValues_pos_iff_ne_zero, ← Finsupp.mem_support_iff, support_singularValues,
     Finset.mem_range]
 
-theorem singularValues_rank : T.singularValues (finrank 𝕜 T.range) = 0 := by
+theorem singularValues_finrank_range_self : T.singularValues (finrank 𝕜 T.range) = 0 := by
   rw [← Finsupp.notMem_support_iff, support_singularValues]
   exact Finset.notMem_range_self
 
-theorem singularValues_eq_zero_iff_le_rank {n : ℕ} :
+theorem singularValues_eq_zero_iff_le_finrank_range_self {n : ℕ} :
     T.singularValues n = 0 ↔ finrank 𝕜 T.range ≤ n := by
   rw [← Finsupp.notMem_support_iff, support_singularValues, Finset.mem_range, not_lt]
 
 @[simp]
 theorem singularValues_zero : (0 : E →ₗ[𝕜] F).singularValues = 0 := by
   ext1 i
-  rw [Finsupp.zero_apply, singularValues_eq_zero_iff_le_rank, range_zero]
+  rw [Finsupp.zero_apply, singularValues_eq_zero_iff_le_finrank_range_self, range_zero]
   simp
 
 @[simp]
 theorem singularValues_eq_zero_iff : T.singularValues = 0 ↔ T = 0 := by
   constructor <;> intro h
   · rw [← range_eq_bot, ← Submodule.finrank_eq_zero, ← Nat.le_zero,
-      ← singularValues_eq_zero_iff_le_rank, h, Finsupp.zero_apply]
+      ← singularValues_eq_zero_iff_le_finrank_range_self, h, Finsupp.zero_apply]
   · exact h ▸ singularValues_zero
 
 end LinearMap
