@@ -388,41 +388,38 @@ protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature (hI : IsOp
     (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) :
     ContDiffOn ℝ 2 (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀) I := by
   apply contDiffOn_of_continuousOn_differentiableOn_deriv <;> intro m hm
-  · rw [continuousOn_congr (iteratedDerivWithin_of_isOpen (n:=m)
+  on_goal 1 =>
+    rw [continuousOn_congr (iteratedDerivWithin_of_isOpen (n:=m)
                             (f:=(initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) hI)]
     have hm' : m ≤ 2 := by simp_all
     interval_cases m
-    pick_goal 3
-    · intro t ht
-      rw [continuousWithinAt_congr_of_mem
-          (fun y hy ↦  second_deriv_of_initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ hy) ht]
-      have hcd : ContDiffWithinAt ℝ 0 (fun t ↦ !₂[-κ t * Real.sin (θ₀+∫ξ in t₀..t, κ ξ),
-        κ t * Real.cos (θ₀+∫ξ in t₀..t, κ ξ)]) I t := by
-        apply contDiffWithinAt_piLp'
-        intro i
-        fin_cases i
-        all_goals
-          simp only [neg_mul, Fin.zero_eta, Fin.mk_one, Fin.isValue, Matrix.cons_val_zero,
-                       Matrix.cons_val_one, Matrix.cons_val_fin_one]
-          rw [contDiffWithinAt_zero ht]
-          use I
-          constructor
-          · exact self_mem_nhdsWithin
-          · simp only [Set.inter_self]
-            fun_prop (disch := assumption)
-      exact hcd.continuousWithinAt
-    all_goals
-      simp only [iteratedDeriv_zero, iteratedDeriv_one]
-      fun_prop (disch := assumption)
-  · rw [differentiableOn_congr (iteratedDerivWithin_of_isOpen (n:=m)
+  on_goal 3 =>
+    intro t ht
+    rw [continuousWithinAt_congr_of_mem
+        (fun y hy ↦  second_deriv_of_initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ hy) ht]
+    have hcd : ContDiffWithinAt ℝ 0 (fun t ↦ !₂[-κ t * Real.sin (θ₀+∫ξ in t₀..t, κ ξ),
+      κ t * Real.cos (θ₀+∫ξ in t₀..t, κ ξ)]) I t := by
+      apply contDiffWithinAt_piLp'
+      intro i
+      fin_cases i
+      all_goals
+        simp only [neg_mul, Fin.zero_eta, Fin.mk_one, Fin.isValue, Matrix.cons_val_zero,
+                     Matrix.cons_val_one, Matrix.cons_val_fin_one, contDiffWithinAt_zero ht]
+        use I
+        constructor
+        · exact self_mem_nhdsWithin
+        · simp only [Set.inter_self]
+          fun_prop (disch := assumption)
+    exact hcd.continuousWithinAt
+  on_goal 3 =>
+    rw [differentiableOn_congr (iteratedDerivWithin_of_isOpen (n:=m)
                                 (f:=(initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) hI)]
     have hm' : m < 2 := by simp_all
     interval_cases m
+  all_goals
     all_goals
       simp only [iteratedDeriv_zero, iteratedDeriv_one]
       fun_prop (disch := assumption)
-
-variable {t : ℝ}
 
 /-- The plane curve we construct from the given curvature function `κ` is parametrized by
   arc-length or in other words has unit speed. -/
