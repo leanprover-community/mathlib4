@@ -79,13 +79,12 @@ theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegu
   apply le_antisymm
   · simp only [iSup_le_iff]
     intro M hM
-    by_cases ntr : Nontrivial M
+    rcases subsingleton_or_nontrivial M with sub|ntr
+    · simp [(projectiveDimension_eq_bot_iff M).mpr (ModuleCat.isZero_iff_subsingleton.mpr sub)]
     · have finM := projectiveDimension_ne_top_of_isRegularLocalRing M
       have eq : projectiveDimension M + depth M = ringKrullDim R := by
         rw [← depth_eq, AuslanderBuchsbaum M finM]
       simpa [← eq] using WithBot.le_self_add WithBot.coe_ne_bot _
-    · have : Subsingleton M := not_nontrivial_iff_subsingleton.mp ntr
-      simp [(projectiveDimension_eq_bot_iff M).mpr (ModuleCat.isZero_iff_subsingleton.mpr this)]
   · let _ : Small.{v} (ResidueField R) := small_of_surjective IsLocalRing.residue_surjective
     let k := (ModuleCat.of R (Shrink.{v} (ResidueField R)))
     let _ : Module.Finite R k :=
