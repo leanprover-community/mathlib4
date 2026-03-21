@@ -1053,6 +1053,8 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
   trace[simps.debug] "Type of the Expression before normalizing: {type}"
   withTransparency cfg.typeMd <| forallTelescopeReducing type fun typeArgs tgt ↦ withDefault do
   trace[simps.debug] "Type after removing pi's: {tgt}"
+  -- TODO: consider reducing the type less aggressively.
+  -- See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Simps.20and.20.60def.60/near/560586075
   let tgtWhnf ← whnfD tgt
   trace[simps.debug] "Type after reduction: {tgtWhnf}"
   let newArgs := args ++ typeArgs
