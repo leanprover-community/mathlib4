@@ -90,6 +90,8 @@ Use `#check (t)` to pretty print it as an elaborated expression.
 
 Like the `#check` command, the `#check` tactic allows stuck typeclass instance problems.
 These become metavariables in the output.
+
+To display only explicit arguments in the type signature, see `#check'`.
 -/
 elab tk:"#check " colGt term:term : tactic => do
   withoutModifyingStateWithInfoAndMessages <| withMainContext <|
@@ -98,13 +100,13 @@ elab tk:"#check " colGt term:term : tactic => do
 /--
 The `#check' t` tactic elaborates the term `t` and then pretty prints it with its type as `e : ty`.
 In contrast to `#check t`, we only pretty-print explicit arguments, and omit implicit or type class
-arguments.
+arguments. Currently this only works when `t` is the name of a declaration.
 
 If `t` is an identifier, then it pretty prints a type declaration form
 for the global constant `t` instead.
 Use `#check' (t)` to pretty print it as an elaborated expression.
 
-Like the `#check'` command, the `#check'` tactic allows stuck typeclass instance problems.
+Like other `#check` commands, the `#check'` tactic allows stuck typeclass instance problems.
 These become metavariables in the output.
 -/
 elab tk:"#check' " colGt term:term : tactic => do
