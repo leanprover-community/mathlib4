@@ -48,11 +48,6 @@ open Function Module
 
 open scoped nonZeroDivisors
 
-/-- `ℤ` with its usual ring structure is not a field. -/
-theorem Int.not_isField : ¬IsField ℤ := fun h =>
-  Int.not_even_one <|
-    (h.mul_inv_cancel two_ne_zero).imp fun a => by rw [← two_mul]; exact Eq.symm
-
 namespace NumberField
 
 variable (K L : Type*) [Field K] [Field L]
@@ -81,6 +76,11 @@ instance of_intermediateField [NumberField K] [NumberField L] [Algebra K L]
 variable {K} in
 instance of_subfield [NumberField K] (E : Subfield K) : NumberField E where
   to_finiteDimensional := FiniteDimensional.left ℚ E K
+
+variable {K} {L} in
+instance {M : Type*} [NumberField K] [NumberField L] [Algebra K L] [Field M] [Algebra K M] :
+    NumberField (IntermediateField.normalClosure K L M) where
+  to_finiteDimensional := FiniteDimensional.trans ℚ K _
 
 theorem of_tower [NumberField K] [NumberField L] [Algebra K L] (E : Type*) [Field E]
     [Algebra K E] [Algebra E L] [IsScalarTower K E L] : NumberField E :=
@@ -304,6 +304,9 @@ variable [NumberField K]
 
 instance : IsNoetherian ℤ (𝓞 K) :=
   IsIntegralClosure.isNoetherian _ ℚ K _
+
+instance : AddGroup.FG (𝓞 K) :=
+  Finite.iff_addGroup_fg.mp <| IsNoetherian.finite ℤ (𝓞 K)
 
 /-- The ring of integers of a number field is not a field. -/
 theorem not_isField : ¬IsField (𝓞 K) := by

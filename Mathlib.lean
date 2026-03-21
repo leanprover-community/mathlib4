@@ -1206,6 +1206,7 @@ public import Mathlib.Algebra.Ring.Idempotent
 public import Mathlib.Algebra.Ring.Identities
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Ring.Int.Field
 public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.Algebra.Ring.Invertible

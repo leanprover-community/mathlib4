@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 public import Mathlib.RingTheory.DedekindDomain.LinearDisjoint
 public import Mathlib.RingTheory.Ideal.Norm.RelNorm
+public import Mathlib.NumberTheory.RamificationInertia.HilbertTheory
 
 /-!
 
@@ -127,12 +128,13 @@ theorem discr_dvd_discr [Algebra K L] :
     mul_comm _ (discr K ^ _), mul_assoc]
   exact Int.dvd_mul_right _ _
 
+
 set_option backward.isDefEq.respectTransparency false in
 /--
 Let `K₁` and `K₂` be two number fields and assume that `K₁/ℚ` is Galois. If `discr K₁` and
 `discr K₂` are coprime, then they are linear disjoint over `ℚ`.
 -/
-theorem linearDisjoint_of_isGalois_isCoprime_discr (K₁ K₂ : IntermediateField ℚ L) [IsGalois ℚ K₁]
+theorem linearDisjoint_of_isGalois_isCoprime_discr (K₁ K₂ : IntermediateField ℚ K) [IsGalois ℚ K₁]
     (h : IsCoprime (discr K₁) (discr K₂)) :
     K₁.LinearDisjoint K₂ := by
   apply IntermediateField.LinearDisjoint.of_inf_eq_bot
@@ -168,5 +170,112 @@ theorem natAbs_discr_eq_natAbs_discr_pow_mul_natAbs_discr_pow (K₁ K₂ : Inter
   ext
   exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv (𝓞 K₁) K₁)
     (FractionRing.algEquiv (𝓞 L) L) _
+
+omit [IsFractionRing 𝒪 K] [IsDedekindDomain 𝒪] [CharZero 𝒪] [Module.Finite ℤ 𝒪] in
+lemma not_dvd_discr_iff_forall_liesOver {p : ℤ} (hp : Prime p) :
+    ¬ p ∣ discr K ↔ ∀ (P : Ideal 𝒪) (_ : P.IsMaximal), P.LiesOver (.span {p}) →
+      Algebra.IsUnramifiedAt ℤ P := by
+  have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
+  have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
+  have := IsIntegralClosure.isFractionRing_of_finite_extension ℤ ℚ K 𝒪
+  have := IsIntegralClosure.finite ℤ ℚ K 𝒪
+  have := CharZero.of_module (R := 𝒪) K
+  simp_rw [← not_dvd_differentIdeal_iff]
+  constructor
+  · intro H P hP hP' hP''
+    have := Ideal.absNorm_dvd_absNorm_of_le (Ideal.dvd_iff_le.mp hP'')
+    rw [absNorm_differentIdeal K, Ideal.absNorm_eq_pow_inertiaDeg P hp,
+      ← Int.natAbs_pow, Int.natAbs_dvd_natAbs] at this
+    exact H (.trans (dvd_pow_self _ (Ideal.inertiaDeg_pos' ..).ne') this)
+  · intro H h
+    rw [← Int.dvd_natAbs, ← absNorm_differentIdeal K 𝒪] at h
+    obtain ⟨P, hP, h₁, h₂⟩ := Ideal.exists_isMaximal_dvd_of_dvd_absNorm hp _ h
+    exact H P hP ⟨h₁.symm⟩ h₂
+
+open Ideal
+
+set_option backward.isDefEq.respectTransparency false in
+theorem not_dvd_discr_finsetSup_of_not_dvd_discr (ι : Type*) (F : ι → IntermediateField ℚ K)
+    {p : ℕ} (hp : p.Prime) (s : Finset ι) (hF : ∀ i ∈ s, ¬ (p : ℤ) ∣ discr (F i)) :
+    ¬ (p : ℤ) ∣ discr (s.sup F : IntermediateField ℚ K) := by
+  classical
+  induction s using Finset.induction with
+  | empty =>
+      rw [Finset.sup_empty, discr_eq_discr_of_algEquiv _ (IntermediateField.botEquiv ℚ K),
+        Rat.numberField_discr, Int.natCast_dvd_ofNat]
+      exact hp.not_dvd_one
+  | insert i s hi h =>
+      let F₁ := F i
+      let F₂ : IntermediateField ℚ K := s.sup F
+      let : Algebra F₁ ↥(F₁ ⊔ F₂) := (IntermediateField.inclusion le_sup_left).toAlgebra
+      let : Algebra F₂ ↥(F₁ ⊔ F₂) := (IntermediateField.inclusion le_sup_right).toAlgebra
+      have : IsScalarTower F₁ ↥(F₁ ⊔ F₂) K := IsScalarTower.of_algebraMap_eq' rfl
+      have : IsScalarTower F₂ ↥(F₁ ⊔ F₂) K := IsScalarTower.of_algebraMap_eq' rfl
+      rw [Finset.sup_insert,
+        not_dvd_discr_iff_forall_liesOver _ (𝓞 ↥(F₁ ⊔ F₂)) (Nat.prime_iff_prime_int.mp hp)]
+      intro P hP₁ hP₂
+      have hP : P ≠ ⊥ := Ideal.IsMaximal.ne_bot_of_isIntegral_int P
+      refine (Algebra.isUnramifiedAt_iff_of_isDedekindDomain hP).mpr ?_
+      let p := under ℤ P
+      have hp' : p ≠ ⊥ := under_ne_bot ℤ hP
+      let P₁ := under (𝓞 F₁) P
+      let P₂ := under (𝓞 F₂) P
+      obtain ⟨Q, _, _⟩ := Ideal.exists_maximal_ideal_liesOver_of_isIntegral (S := 𝓞 K) P
+      have : Q.LiesOver p := LiesOver.trans Q P p
+      have : Q.LiesOver P₁ := LiesOver.trans Q P P₁
+      have : Q.LiesOver P₂ := LiesOver.trans Q P P₂
+      refine Ideal.ramificationIdx_sup_eq_one ℤ ℚ K P (𝓞 K) F₁ F₂ (P₁ := P₁) (P₂ := P₂) ?_ ?_ hp'
+      · have hP₁ : P₁ ≠ ⊥ := under_ne_bot (𝓞 F₁) hP
+        rw [← over_def P p, over_def P₁ p, ← Algebra.isUnramifiedAt_iff_of_isDedekindDomain hP₁]
+        exact (not_dvd_discr_iff_forall_liesOver _ (𝓞 F₁) (Nat.prime_iff_prime_int.mp hp)).mp
+          (hF i (Finset.mem_insert_self i s)) _ inferInstance inferInstance
+      · have hP₂ : P₂ ≠ ⊥ := under_ne_bot (𝓞 F₂) hP
+        rw [← over_def P p, over_def P₂ p, ← Algebra.isUnramifiedAt_iff_of_isDedekindDomain hP₂]
+        exact (not_dvd_discr_iff_forall_liesOver _ (𝓞 F₂) (Nat.prime_iff_prime_int.mp hp)).mp
+          (h fun _ h ↦ hF _ (Finset.mem_insert_of_mem h)) _ inferInstance inferInstance
+
+theorem dvd_discr_iff_dvd_discr_normalClosure [Algebra K L] {p : ℕ} (hp : p.Prime) :
+    (p : ℤ) ∣ discr K ↔ (p : ℤ) ∣ discr (normalClosure ℚ K L) := by
+  refine ⟨fun h ↦ Int.dvd_trans h <| discr_dvd_discr K (normalClosure ℚ K L), fun h ↦ ?_⟩
+  contrapose! h
+  have := NumberField.not_dvd_discr_finsetSup_of_not_dvd_discr L (K →ₐ[ℚ] L)
+    (fun f ↦ f.fieldRange) hp (s := Finset.univ) fun f _ ↦ ?_
+  · rwa [Finset.sup_univ_eq_iSup, ← normalClosure_def] at this
+  · let e : K ≃+* f.fieldRange := by
+      refine RingEquiv.ofBijective (f.codRestrict _ <| by simp).toRingHom ⟨RingHom.injective _, ?_⟩
+      exact fun ⟨_, ⟨x, rfl⟩⟩ ↦ ⟨x, rfl⟩
+    rwa [discr_eq_discr_of_ringEquiv _ e.symm]
+
+set_option backward.isDefEq.respectTransparency false in
+set_option synthInstance.maxHeartbeats 200000 in
+-- This result needs some help to compile
+set_option maxHeartbeats 500000 in
+theorem linearDisjoint_of_isCoprime_discr (K₁ K₂ : IntermediateField ℚ K)
+    (h : IsCoprime (discr K₁) (discr K₂)) : K₁.LinearDisjoint K₂ := by
+  let M := IntermediateField.normalClosure ℚ K (AlgebraicClosure K)
+  let F₁ := K₁.extendTop M
+  let F₂ := K₂.extendTop M
+  suffices F₁.LinearDisjoint F₂ by
+    apply this.algEquiv_of_isAlgebraic _ _ (K₁.extendTopEquiv M).symm
+      (K₂.extendTopEquiv M).symm
+    left
+    exact isAlgebraic_tower_bot
+  let N := (IntermediateField.normalClosure ℚ F₁ M).restrictScalars ℚ
+  suffices N.LinearDisjoint F₂ by
+    refine this.of_le_left ?_
+    rintro _ ⟨x, hx, rfl⟩
+    refine F₁.val.fieldRange_le_normalClosure ?_
+    rw [fieldRange_val]
+    exact ⟨x, hx, rfl⟩
+  have : IsGalois ℚ N := IsGalois.normalClosure ℚ F₁ M
+  apply linearDisjoint_of_isGalois_isCoprime_discr
+  rw [discr_eq_discr_of_algEquiv F₂ (K₂.extendTopEquiv M).symm]
+  rw [Int.isCoprime_iff_nat_coprime] at h ⊢
+  refine Nat.coprime_of_dvd' fun p hp hp₁ hp₂ ↦ ?_
+  rw [← Int.natCast_dvd, show N = normalClosure ℚ F₁ M by rfl,
+    ← dvd_discr_iff_dvd_discr_normalClosure _ _ hp,
+    discr_eq_discr_of_algEquiv F₁ (K₁.extendTopEquiv M).symm, Int.natCast_dvd] at hp₁
+  have : p ∣ (discr K₁).natAbs.gcd (discr K₂).natAbs := Nat.dvd_gcd hp₁ hp₂
+  rwa [h] at this
 
 end NumberField
