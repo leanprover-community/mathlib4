@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Finiteness.Basic
 
 This files defines the notion `FGDual` for cones that can be written as the dual of a finite set,
 or equivalently, that are duals of finitely generated cones. In geometric terms, a cone is
-FGDual if it can be written as the intersection of finitely many halfspace. This is the counterpart
+FGDual if it can be written as the intersection of finitely many halfspaces. This is the counterpart
 to FG (finitely generated) which states that the cone is the span of a finite set.
 
 In finite dimensional vector spaces, FG is equivalent to FGDual by the Minkowski-Weyl theorem.
