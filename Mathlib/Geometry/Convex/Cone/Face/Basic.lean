@@ -6,7 +6,7 @@ Authors: Olivia Röhrig
 module
 
 public import Mathlib.Analysis.Convex.Extreme
-public import Mathlib.Geometry.Convex.Cone.Pointed.Basic
+public import Mathlib.Geometry.Convex.Cone.Pointed
 
 /-!
 # Faces of pointed cones

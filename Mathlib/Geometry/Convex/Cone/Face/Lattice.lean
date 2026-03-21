@@ -5,7 +5,7 @@ Authors: Olivia Röhrig
 -/
 module
 
-public import Mathlib.Geometry.Convex.Cone.Pointed.Face.Basic
+public import Mathlib.Geometry.Convex.Cone.Face.Basic
 
 /-!
 ## Face

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Cone.Basic
 public import Mathlib.Analysis.LocallyConvex.Separation
-public import Mathlib.Geometry.Convex.Cone.Pointed.Dual
+public import Mathlib.Geometry.Convex.Cone.Dual
 public import Mathlib.Topology.Algebra.Module.PerfectPairing
 
 /-!
