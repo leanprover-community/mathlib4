@@ -25,37 +25,11 @@ For `M` a finitely generated module over Noetherian local ring `R` and an `R`-re
 
 @[expose] public section
 
-section ENat
-
-lemma ENat.WithBot.add_one_le_zero_iff_eq_bot (a : WithBot ℕ∞) :
-    a + 1 ≤ 0 ↔ a = ⊥ := by
-  induction a with
-  | bot => simp
-  | coe a => simp [← WithBot.coe_one, ← WithBot.coe_add]
-
-end ENat
-
 universe v u
 
 variable (R : Type u) [CommRing R]
 
 open CategoryTheory Abelian IsLocalRing Module RingTheory.Sequence
-
-set_option backward.isDefEq.respectTransparency false in
-variable {R} in
-lemma mem_quotSMulTop_annihilator (x : R) (M : Type*) [AddCommGroup M] [Module R M] :
-    x ∈ Module.annihilator R (QuotSMulTop x M) := by
-  refine mem_annihilator.mpr (fun m ↦ ?_)
-  rcases Submodule.Quotient.mk_surjective _ m with ⟨m', hm'⟩
-  simpa [← hm', ← Submodule.Quotient.mk_smul] using Submodule.smul_mem_pointwise_smul m' x ⊤ trivial
-
-variable {R} in
-lemma quotSMulTop_nontrivial' [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
-    (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L] :
-    Nontrivial (QuotSMulTop x L) := by
-  apply Submodule.Quotient.nontrivial_iff.mpr (Ne.symm _)
-  apply Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator
-  exact IsLocalRing.maximalIdeal_le_jacobson _ mem
 
 section
 
@@ -113,21 +87,21 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M 
   have sub : Subsingleton M ↔ Subsingleton (QuotSMulTop x M) := by
     refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
     by_contra!
-    exact (not_subsingleton_iff_nontrivial.mpr (quotSMulTop_nontrivial' mem M)) h
+    exact (not_subsingleton_iff_nontrivial.mpr (nontrivial_quotSMulTop_of_mem_maximalIdeal M mem)) h
   have aux (n : ℕ) : projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) ≤ n ↔
     projectiveDimension M + 1 ≤ n := by
     match n with
     | 0 =>
       rw [projectiveDimension_le_iff]
       simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one,
-        CharP.cast_eq_zero, ENat.WithBot.add_one_le_zero_iff_eq_bot (projectiveDimension M),
+        CharP.cast_eq_zero, ENat.WithBot.add_one_le_zero_iff (projectiveDimension M),
         projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton, sub,
         ← IsProjective.iff_projective]
       refine ⟨fun h ↦ ?_, fun h ↦ Projective.of_free⟩
       have : Module.Free R (QuotSMulTop x M) := Module.free_of_flat_of_isLocalRing
       by_contra ntr
       let _ := not_subsingleton_iff_nontrivial.mp ntr
-      have := mem_quotSMulTop_annihilator x M
+      have := QuotSMulTop.mem_annihilator M x
       simp only [annihilator_eq_bot.mpr inferInstance, Submodule.mem_bot] at this
       simp only [this, IsSMulRegular.zero_iff_subsingleton] at reg
       absurd ntr
@@ -190,7 +164,7 @@ lemma projectiveDimension_quotient_regular_sequence [Small.{v} R] (M : ModuleCat
     | [] => simp at len
     | x :: rs' =>
       simp only [List.mem_cons, forall_eq_or_imp] at mem
-      let _ : Nontrivial (QuotSMulTop x M) := quotSMulTop_nontrivial' mem.1 M
+      let := nontrivial_quotSMulTop_of_mem_maximalIdeal M mem.1
       simp only [Nat.cast_add, Nat.cast_one]
       simp only [List.length_cons, Nat.add_right_cancel_iff] at len
       have : IsSMulRegular M x := ((isWeaklyRegular_cons_iff M _ _).mp reg).1

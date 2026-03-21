@@ -65,6 +65,18 @@ lemma inl_v_descShortComplex_f (i j : ℤ) (h : i + (-1) = j) :
     (inl S.f).v i j h ≫ (descShortComplex S).f j = 0 := by
   simp [descShortComplex]
 
+section
+
+variable (S₁ S₂ : ShortComplex (CochainComplex C ℤ)) (f : S₁ ⟶ S₂)
+
+lemma map_descShortComplex : map S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm ≫ descShortComplex S₂ =
+    descShortComplex S₁ ≫ f.τ₃ := by
+  ext i
+  simpa [mappingCone.ext_from_iff _ _ _ rfl, map] using
+    congr_fun (congr_arg HomologicalComplex.Hom.f f.comm₂₃) i
+
+end
+
 variable {S}
 
 set_option backward.isDefEq.respectTransparency false in
@@ -163,15 +175,18 @@ lemma descShortComplex_naturality {S₁ S₂ : ShortComplex (CochainComplex C �
 variable {D : Type*} [Category* D] [Abelian D]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma descShortComplex_mapHomologicalComplex (F : C ⥤ D) [F.Additive]
+@[reassoc (attr := simp)]
+lemma mapHomologicalComplexIso_hom_descShortComplex (F : C ⥤ D) [F.Additive]
     (S : ShortComplex (CochainComplex C ℤ)) :
-    (F.mapHomologicalComplex (ComplexShape.up ℤ)).map (descShortComplex S) =
-    (mapHomologicalComplexIso S.f F).hom ≫
-    descShortComplex (S.map (F.mapHomologicalComplex (ComplexShape.up ℤ))) := by
+    (mapHomologicalComplexIso _ _).hom ≫
+      descShortComplex (S.map (F.mapHomologicalComplex (.up ℤ))) =
+    (F.mapHomologicalComplex (.up ℤ)).map (descShortComplex S) := by
+  symm
   ext n
   simp [mapHomologicalComplexIso, descShortComplex, mapHomologicalComplexXIso,
     mapHomologicalComplexXIso'_hom, Functor.mapHomologicalComplex_map_f,
     desc_f _ _ _ _ n (n + 1) rfl]
+
 
 end mappingCone
 

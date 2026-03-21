@@ -65,7 +65,7 @@ instance : CommSemiring ENat := {
 
 namespace ENat
 
-variable {a b c m n : ℕ∞}
+variable {a b c d m n : ℕ∞}
 
 /-- Lemmas about `WithTop` expect (and can output) `WithTop.some` but the normal form for coercion
 `ℕ → ℕ∞` is `Nat.cast`. -/
@@ -73,9 +73,14 @@ variable {a b c m n : ℕ∞}
 
 theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
-set_option backward.isDefEq.respectTransparency false in
+@[simp] theorem succ_coe (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := by
+  simp [SuccOrder.succ]
+  rfl
+
+@[simp] theorem succ_top : SuccOrder.succ (⊤ : ℕ∞) = ⊤ := rfl
+
 instance : SuccAddOrder ℕ∞ where
-  succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ]
+  succ_eq_add_one x := by cases x <;> simp
 
 theorem coe_zero : ((0 : ℕ) : ℕ∞) = 0 :=
   rfl
@@ -292,6 +297,11 @@ theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 :=
 theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
   Order.add_one_le_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
 
+theorem add_one_le_iff' (hn : n ≠ ⊤) : m + 1 ≤ n ↔ m < n := by
+  by_cases hm : m = ⊤
+  · simpa [hm]
+  · exact add_one_le_iff hm
+
 theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
   Order.one_le_iff_pos.trans pos_iff_ne_zero
 
@@ -354,6 +364,15 @@ lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < 
 
 lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m :=
   WithTop.add_lt_add_iff_left h
+
+protected lemma add_lt_add (hac : a < c) (hbd : b < d) : a + b < c + d :=
+  WithTop.add_lt_add hac hbd
+
+protected theorem add_lt_add_of_le_of_lt : a ≠ ⊤ → a ≤ b → c < d → a + c < b + d :=
+  WithTop.add_lt_add_of_le_of_lt
+
+protected theorem add_lt_add_of_lt_of_le : c ≠ ⊤ → a < b → c ≤ d → a + c < b + d :=
+  WithTop.add_lt_add_of_lt_of_le
 
 lemma ne_top_iff_exists : n ≠ ⊤ ↔ ∃ m : ℕ, ↑m = n := WithTop.ne_top_iff_exists
 
@@ -610,6 +629,8 @@ end ENat
 
 namespace ENat.WithBot
 
+lemma coe_eq_natCast (n : ℕ) : (n : ℕ∞) = (n : WithBot ℕ∞) := rfl
+
 lemma lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
   rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
   cases n
@@ -623,6 +644,15 @@ lemma add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n < m := b
   · simp
   · rw [WithBot.coe_le_coe, ENat.coe_add, ENat.coe_one, ENat.add_one_le_iff (ENat.coe_ne_top n),
       ← WithBot.coe_lt_coe, WithBot.coe_natCast]
+
+lemma add_one_le_natCast_iff (n : WithBot ℕ∞) (m : ℕ) : n + 1 ≤ m ↔ n < m := by
+  induction n with
+  | bot => simp
+  | coe n =>
+    simp [← coe_eq_natCast, ← WithBot.coe_one, ← WithBot.coe_add, add_one_le_iff']
+
+lemma add_one_le_zero_iff (n : WithBot ℕ∞) : n + 1 ≤ 0 ↔ n = ⊥ :=
+  (add_one_le_natCast_iff n 0).trans (WithBot.lt_zero_iff_eq_bot n)
 
 @[simp]
 lemma add_natCast_cancel {a b : WithBot ℕ∞} {c : ℕ} : a + c = b + c ↔ a = b :=
