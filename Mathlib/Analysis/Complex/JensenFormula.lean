@@ -245,7 +245,6 @@ circle with radius `‖ρ‖`.
   `Mathlib/Analysis/Meromorphic/FactorizedRational` for a construction that splits factors of the
   form `· - ρ` off arbitrary meromorphic functions.
 -/
-@[simp]
 theorem circleAverage_re_herglotzRieszKernel_mul_log {w ρ c : ℂ} {R : ℝ} (hρ : ρ ∈ sphere c R)
     (hw : w ∈ ball c R) :
     circleAverage ((Complex.re ∘ herglotzRieszKernel c w) * (log ‖· - ρ‖)) c R = log ‖w - ρ‖ := by
