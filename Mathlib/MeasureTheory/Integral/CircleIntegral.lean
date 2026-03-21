@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Analytic.IsolatedZeros
 public import Mathlib.Analysis.SpecialFunctions.Complex.CircleMap
 public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
 /-!
 # Integral over a circle in `ℂ`
@@ -95,7 +96,6 @@ theorem range_circleMap (c : ℂ) (R : ℝ) : range (circleMap c R) = sphere c |
 theorem image_circleMap_Ioc (c : ℂ) (R : ℝ) : circleMap c R '' Ioc 0 (2 * π) = sphere c |R| := by
   rw [← range_circleMap, ← (periodic_circleMap c R).image_Ioc Real.two_pi_pos 0, zero_add]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasDerivAt_circleMap (c : ℂ) (R : ℝ) (θ : ℝ) :
     HasDerivAt (circleMap c R) (circleMap 0 R θ * I) θ := by
   simpa only [mul_assoc, one_mul, ofRealCLM_apply, circleMap, ofReal_one, zero_add]
@@ -142,7 +142,6 @@ theorem lipschitzWith_circleMap (c : ℂ) (R : ℝ) : LipschitzWith (Real.nnabs 
   lipschitzWith_of_nnnorm_deriv_le (differentiable_circleMap _ _) fun θ =>
     NNReal.coe_le_coe.1 <| by simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem continuous_circleMap_inv {R : ℝ} {z w : ℂ} (hw : w ∈ ball z R) :
     Continuous fun θ => (circleMap z R θ - w)⁻¹ := by
   have : ∀ θ, circleMap z R θ - w ≠ 0 := by
@@ -152,7 +151,7 @@ theorem continuous_circleMap_inv {R : ℝ} {z w : ℂ} (hw : w ∈ ball z R) :
   exact Continuous.inv₀ (by fun_prop) this
 
 theorem circleMap_preimage_codiscrete {c : ℂ} {R : ℝ} (hR : R ≠ 0) :
-    map (circleMap c R) (codiscrete ℝ) ≤ codiscreteWithin (Metric.sphere c |R|) := by
+    map (circleMap c R) (codiscrete ℝ) ≤ codiscreteWithin (sphere c |R|) := by
   intro s hs
   apply (analyticOnNhd_circleMap c R).preimage_mem_codiscreteWithin
   · intro x hx
@@ -252,9 +251,28 @@ end CircleIntegrable
 theorem circleIntegrable_zero_radius {f : ℂ → E} {c : ℂ} : CircleIntegrable f c 0 := by
   simp [CircleIntegrable]
 
+/--
+Circle integrability depends only on the restriction of the function to the sphere.
+-/
+theorem crcleIntegrable_congr {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
+    (hf : Set.EqOn f₁ f₂ (sphere c |R|)) :
+    CircleIntegrable f₁ c R ↔ CircleIntegrable f₂ c R :=
+  intervalIntegrable_congr fun x _ ↦ hf (circleMap_mem_sphere' c R x)
+
+/--
+Circle integrability is invariant when taking negative radius.
+-/
+@[simp] theorem circleIntegrable_neg_radius {c : ℂ} {R : ℝ} {f : ℂ → E} :
+    CircleIntegrable f c (-R) ↔ CircleIntegrable f c R := by
+  unfold CircleIntegrable
+  rw [intervalIntegrable_congr (f := fun θ ↦ f (circleMap c (-R) θ))
+    (g := fun θ ↦ (f ∘ (circleMap c R)) (θ + π)) (fun _ _ ↦ by simp [circleMap_neg_radius]),
+    IntervalIntegrable.comp_add_right_iff (c := π), add_comm (2 * π) π]
+  simpa using ((periodic_circleMap c R).comp f).intervalIntegrable_iff (t₂ := 0)
+
 /-- Circle integrability is invariant when functions change along discrete sets. -/
 theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
-    (hf : f₁ =ᶠ[codiscreteWithin (Metric.sphere c |R|)] f₂) (hf₁ : CircleIntegrable f₁ c R) :
+    (hf : f₁ =ᶠ[codiscreteWithin (sphere c |R|)] f₂) (hf₁ : CircleIntegrable f₁ c R) :
     CircleIntegrable f₂ c R := by
   by_cases hR : R = 0
   · simp [hR]
@@ -266,7 +284,7 @@ theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ :
 
 /-- Circle integrability is invariant when functions change along discrete sets. -/
 theorem circleIntegrable_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
-    (hf : f₁ =ᶠ[codiscreteWithin (Metric.sphere c |R|)] f₂) :
+    (hf : f₁ =ᶠ[codiscreteWithin (sphere c |R|)] f₂) :
     CircleIntegrable f₁ c R ↔ CircleIntegrable f₂ c R :=
   ⟨(CircleIntegrable.congr_codiscreteWithin hf ·),
     (CircleIntegrable.congr_codiscreteWithin hf.symm ·)⟩
@@ -293,7 +311,6 @@ theorem ContinuousOn.circleIntegrable {f : ℂ → E} {c : ℂ} {R : ℝ} (hR : 
     (hf : ContinuousOn f (sphere c R)) : CircleIntegrable f c R :=
   ContinuousOn.circleIntegrable' <| (abs_of_nonneg hR).symm ▸ hf
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The function `fun z ↦ (z - w) ^ n`, `n : ℤ`, is circle integrable on the circle with center `c`
 and radius `|R|` if and only if `R = 0` or `0 ≤ n`, or `w` does not belong to this circle. -/
 @[simp]
@@ -344,7 +361,6 @@ def circleIntegral (f : ℂ → E) (c : ℂ) (R : ℝ) : E :=
 /-- `∮ z in C(c, R), f z` is the circle integral $\oint_{|z-c|=R} f(z)\,dz$. -/
 notation3 "∮ "(...)" in ""C("c", "R")"", "r:60:(scoped f => circleIntegral f c R) => r
 
-set_option backward.isDefEq.respectTransparency false in
 theorem circleIntegral_def_Icc (f : ℂ → E) (c : ℂ) (R : ℝ) :
     (∮ z in C(c, R), f z) = ∫ θ in Icc 0 (2 * π),
     deriv (circleMap c R) θ • f (circleMap c R θ) := by
@@ -363,7 +379,7 @@ theorem integral_congr {f g : ℂ → E} {c : ℂ} {R : ℝ} (hR : 0 ≤ R) (h :
 
 /-- Circle integrals are invariant when functions change along discrete sets. -/
 theorem circleIntegral_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℂ}
-    (hf : f₁ =ᶠ[codiscreteWithin (Metric.sphere c |R|)] f₂) (hR : R ≠ 0) :
+    (hf : f₁ =ᶠ[codiscreteWithin (sphere c |R|)] f₂) (hR : R ≠ 0) :
     (∮ z in C(c, R), f₁ z) = (∮ z in C(c, R), f₂ z) := by
   apply intervalIntegral.integral_congr_ae_restrict
   apply ae_restrict_le_codiscreteWithin measurableSet_uIoc
@@ -425,7 +441,6 @@ theorem norm_two_pi_i_inv_smul_integral_le_of_norm_le_const {f : ℂ → E} {c :
   rw [norm_smul, this, ← div_eq_inv_mul, div_le_iff₀ Real.two_pi_pos, mul_comm (R * C), ← mul_assoc]
   exact norm_integral_le_of_norm_le_const hR hf
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is continuous on the circle `|z - c| = R`, `R > 0`, the `‖f z‖` is less than or equal to
 `C : ℝ` on this circle, and this norm is strictly less than `C` at some point `z` of the circle,
 then `‖∮ z in C(c, R), f z‖ < 2 * π * R * C`. -/
@@ -497,7 +512,7 @@ theorem integral_sub_zpow_of_undef {n : ℤ} {c w : ℂ} {R : ℝ} (hn : n < 0)
   rcases eq_or_ne R 0 with (rfl | h0)
   · apply integral_radius_zero
   · apply integral_undef
-    simpa [circleIntegrable_sub_zpow_iff, *, not_or]
+    simpa [circleIntegrable_sub_zpow_iff, *, not_or] using mem_sphere_iff_norm.1 hw
 
 /-- If `n ≠ -1` is an integer number, then the integral of `(z - w) ^ n` over the circle equals
 zero. -/
@@ -538,7 +553,6 @@ theorem cauchyPowerSeries_apply (f : ℂ → E) (c : ℂ) (R : ℝ) (n : ℕ) (w
     div_eq_mul_inv, mul_pow, mul_smul, circleIntegral.integral_smul]
   rw [← smul_comm (w ^ n)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_cauchyPowerSeries_le (f : ℂ → E) (c : ℂ) (R : ℝ) (n : ℕ) :
     ‖cauchyPowerSeries f c R n‖ ≤
       ((2 * π)⁻¹ * ∫ θ : ℝ in 0..2 * π, ‖f (circleMap c R θ)‖) * |R|⁻¹ ^ n :=
@@ -575,7 +589,6 @@ theorem le_radius_cauchyPowerSeries (f : ℂ → E) (c : ℂ) (R : ℝ≥0) :
     have : (R : ℝ) ^ n ≠ 0 := by norm_cast at hR ⊢
     rw [inv_mul_cancel_right₀ this]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any circle integrable function `f`, the power series `cauchyPowerSeries f c R` multiplied
 by `2πI` converges to the integral `∮ z in C(c, R), (z - w)⁻¹ • f z` on the open disc
 `Metric.ball c R`. -/
@@ -644,7 +657,7 @@ theorem integral_sub_inv_of_mem_ball {c w : ℂ} {R : ℝ} (hw : w ∈ ball c R)
     have A : CircleIntegrable (fun _ => (1 : ℂ)) c R := continuousOn_const.circleIntegrable'
     refine (H.unique ?_).symm
     simpa only [smul_eq_mul, mul_one, add_sub_cancel] using
-      hasSum_two_pi_I_cauchyPowerSeries_integral A hw
+      hasSum_two_pi_I_cauchyPowerSeries_integral A (mem_ball_iff_norm.1 hw)
   have H : ∀ n : ℕ, n ≠ 0 → (∮ z in C(c, R), (z - c) ^ (-n - 1 : ℤ)) = 0 := by
     refine fun n hn => integral_sub_zpow_of_ne ?_ _ _ _; simpa
   have : (∮ z in C(c, R), ((w - c) / (z - c)) ^ 0 * (z - c)⁻¹) = 2 * π * I := by simp [hR.ne']

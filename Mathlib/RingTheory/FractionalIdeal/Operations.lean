@@ -513,7 +513,6 @@ theorem eq_zero_or_one (I : FractionalIdeal K⁰ L) : I = 0 ∨ I = 1 := by
     rw [← div_mul_cancel₀ x y_ne, map_mul, ← Algebra.smul_def]
     exact smul_mem (M := L) I (x / y) y_mem
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_zero_or_one_of_isField (hF : IsField R₁) (I : FractionalIdeal R₁⁰ K) : I = 0 ∨ I = 1 :=
   letI : Field R₁ := hF.toField
   eq_zero_or_one I

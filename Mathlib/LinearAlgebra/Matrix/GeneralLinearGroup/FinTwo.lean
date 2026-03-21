@@ -10,7 +10,20 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.Disc
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
-# The group `GL (Fin 2) R`
+# Classification of elements of `GL (Fin 2) R`
+
+Here we classify `2 × 2` matrices over the reals (or more generally over `R` where `R` is a
+suitable ring, but `ℝ` is the motivating case), into the following classes:
+
+* scalars
+* parabolic elements (`Matrix.IsParabolic`) - one eigenvalue with non-semisimple generalized
+  eigenspace
+* hyperbolic elements (`Matrix.IsHyperbolic`) - two distinct real eigenvalues
+* elliptic elements (`Matrix.IsElliptic`) - two distinct non-real complex eigenvalues
+
+This classification is used (among other places) in classifying the fixed points of elements of
+`GL(2, ℝ)⁺` acting on the upper half-plane. See [Wikipedia:SL2(R)#Classification_of_elements]
+(https://en.wikipedia.org/wiki/SL2(R)#Classification_of_elements).
 -/
 
 @[expose] public section
@@ -209,7 +222,6 @@ lemma parabolicEigenvalue_ne_zero {g : GL (Fin 2) K} [NeZero (2 : K)] (hg : IsPa
     sq_eq_zero_iff, not_or]
   exact ⟨NeZero.ne _, g.det_ne_zero⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A non-zero power of a parabolic element is parabolic. -/
 lemma IsParabolic.pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]
     {n : ℕ} (hn : n ≠ 0) : IsParabolic (g ^ n) := by

@@ -117,7 +117,7 @@ noncomputable
 def equivalence (A : Type u₃) [Category.{v₃} A] [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
     haveI := F.reflects_precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
-  Functor.IsDenseSubsite.sheafEquiv F _ _ _
+  Functor.IsDenseSubsite.sheafEquiv _ _ F _
 
 end SheafEquiv
 
@@ -141,7 +141,7 @@ def equivalence' (A : Type u₃) [Category.{v₃} A]
     [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
     haveI := F.reflects_precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
-  Functor.IsDenseSubsite.sheafEquiv F _ _ _
+  Functor.IsDenseSubsite.sheafEquiv _ _ F _
 
 end RegularExtensive
 
@@ -217,7 +217,7 @@ noncomputable
 def equivalence (A : Type u₃) [Category.{v₃} A] [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
     haveI := F.reflects_preregular
     Sheaf (regularTopology C) A ≌ Sheaf (regularTopology D) A :=
-  Functor.IsDenseSubsite.sheafEquiv F _ _ _
+  Functor.IsDenseSubsite.sheafEquiv _ _ F _
 
 end SheafEquiv
 
@@ -243,9 +243,9 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
     (@equalizerCondition_iff_isSheaf _ _ _ _ F _ h).symm
 
 noncomputable instance [Preregular C] [FinitaryExtensive C]
-    (F : Sheaf (coherentTopology C) A) : PreservesFiniteProducts F.val :=
-  (Presheaf.isSheaf_iff_preservesFiniteProducts F.val).1
-    ((Presheaf.isSheaf_coherent_iff_regular_and_extensive F.val).mp F.cond).1
+    (F : Sheaf (coherentTopology C) A) : PreservesFiniteProducts F.obj :=
+  (Presheaf.isSheaf_iff_preservesFiniteProducts F.obj).1
+    ((Presheaf.isSheaf_coherent_iff_regular_and_extensive F.obj).mp F.property).1
 
 theorem isSheaf_iff_preservesFiniteProducts_of_projective [Preregular C] [FinitaryExtensive C]
     [∀ (X : C), Projective X] :
@@ -262,15 +262,15 @@ theorem isSheaf_iff_extensiveSheaf_of_projective [Preregular C] [FinitaryExtensi
 The categories of coherent sheaves and extensive sheaves on `C` are equivalent if `C` is
 preregular, finitary extensive, and every object is projective.
 -/
-@[simps]
+@[simps!]
 def coherentExtensiveEquivalence [Preregular C] [FinitaryExtensive C] [∀ (X : C), Projective X] :
     Sheaf (coherentTopology C) A ≌ Sheaf (extensiveTopology C) A where
-  functor := {
-    obj := fun F ↦ ⟨F.val, (isSheaf_iff_extensiveSheaf_of_projective F.val).mp F.cond⟩
-    map := fun f ↦ ⟨f.val⟩ }
-  inverse := {
-    obj := fun F ↦ ⟨F.val, (isSheaf_iff_extensiveSheaf_of_projective F.val).mpr F.cond⟩
-    map := fun f ↦ ⟨f.val⟩ }
+  functor :=
+    ObjectProperty.lift _ (sheafToPresheaf _ _) (fun F ↦
+      (isSheaf_iff_extensiveSheaf_of_projective F.obj).mp F.property)
+  inverse :=
+    ObjectProperty.lift _ (sheafToPresheaf _ _) (fun F ↦
+      (isSheaf_iff_extensiveSheaf_of_projective F.obj).mpr F.property)
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 

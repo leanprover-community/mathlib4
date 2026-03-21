@@ -194,7 +194,6 @@ end
 section
 open scoped RealInnerProductSpace
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasStrictFDerivAt_norm_sq (x : F) :
     HasStrictFDerivAt (fun x => ‖x‖ ^ 2) (2 • (innerSL ℝ x)) x := by
   simp only [sq, ← @inner_self_eq_norm_mul_norm ℝ]
