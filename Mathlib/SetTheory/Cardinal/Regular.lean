@@ -127,13 +127,16 @@ theorem lsub_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c
     (∀ i, f i < c.ord) → Ordinal.lsub f < c.ord :=
   lsub_lt_ord (by rwa [hc.cof_eq])
 
+-- TODO: generalize the universes of the iSup lemmas
+
 theorem iSup_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
-    (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → iSup f < c.ord :=
-  iSup_lt_ord_lift (by rwa [hc.cof_eq])
+    (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c.ord) : iSup f < c.ord := by
+  apply Ordinal.lift_iSup_lt_of_lt_cof _ hf
+  rwa [lift_umax, Ordinal.lift_id', hc.cof_eq]
 
 theorem iSup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c.ord) → iSup f < c.ord :=
-  iSup_lt_ord (by rwa [hc.cof_eq])
+  Ordinal.iSup_lt_of_lt_cof (by rwa [hc.cof_eq])
 
 theorem blsub_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (ho : Cardinal.lift.{v, u} o.card < c) :
@@ -154,12 +157,13 @@ theorem bsup_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc 
   bsup_lt_ord (by rwa [hc.cof_eq])
 
 theorem iSup_lt_lift_of_isRegular {ι} {f : ι → Cardinal} {c} (hc : IsRegular c)
-    (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c) → iSup.{max u v + 1, u + 1} f < c :=
-  iSup_lt_lift.{u, v} (by rwa [hc.cof_eq])
+    (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c) : iSup f < c := by
+  apply Cardinal.lift_iSup_lt_of_lt_cof _ hf
+  rwa [lift_umax, c.lift_id', hc.cof_eq]
 
 theorem iSup_lt_of_isRegular {ι} {f : ι → Cardinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c) → iSup f < c :=
-  iSup_lt (by rwa [hc.cof_eq])
+  Cardinal.iSup_lt_of_lt_cof (by rwa [hc.cof_eq])
 
 theorem sum_lt_lift_of_isRegular {ι : Type u} {f : ι → Cardinal} {c : Cardinal} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c) : sum f < c :=
@@ -297,8 +301,9 @@ open scoped Ordinal
 lemma iSup_sequence_lt_omega_one {α : Type u} [Countable α]
     (o : α → Ordinal.{max u v}) (ho : ∀ n, o n < (aleph 1).ord) :
     iSup o < (aleph 1).ord := by
-  apply iSup_lt_ord_lift _ ho
-  rw [Cardinal.isRegular_aleph_one.cof_eq]
+  apply lift_iSup_lt_of_lt_cof _ ho
+  rw [← lift_cof, Cardinal.isRegular_aleph_one.cof_eq,
+    Cardinal.lift_umax, Cardinal.lift_id'.{u, v}]
   exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
 
 @[deprecated (since := "2025-12-22")]
