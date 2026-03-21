@@ -31,16 +31,6 @@ variable (R : Type u) [CommRing R]
 
 open IsLocalRing CategoryTheory RingTheory.Sequence
 
-local instance [Small.{v} R] (I : Ideal R) : Small.{v} I :=
-  small_of_injective I.subtype_injective
-
-lemma quotSMulTop_nontrivial' [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
-    (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L] :
-    Nontrivial (QuotSMulTop x L) := by
-  apply Submodule.Quotient.nontrivial_iff.mpr (Ne.symm _)
-  apply Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator
-  exact IsLocalRing.maximalIdeal_le_jacobson _ mem
-
 local instance finite_QuotSMulTop (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M]
     (x : R) : Module.Finite (R ⧸ Ideal.span {x}) (QuotSMulTop x M) := by
   let f : M →ₛₗ[Ideal.Quotient.mk (Ideal.span {x})] (QuotSMulTop x M) := {
@@ -268,9 +258,8 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
     simp only [le_bot_iff, projectiveDimension_eq_bot_iff,
       projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton]
     refine ⟨fun h ↦ (Submodule.Quotient.mk_surjective _).subsingleton, fun h ↦ ?_⟩
-    by_contra ntr
-    have : Nontrivial M := not_subsingleton_iff_nontrivial.mp ntr
-    exact (not_subsingleton_iff_nontrivial.mpr (quotSMulTop_nontrivial' R mem M)) h
+    by_contra! ntr
+    exact (not_subsingleton_iff_nontrivial.mpr (nontrivial_quotSMulTop_of_mem_maximalIdeal M mem)) h
   | coe N =>
     induction N with
     | top => simp
