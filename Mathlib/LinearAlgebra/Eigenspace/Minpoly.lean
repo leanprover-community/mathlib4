@@ -47,19 +47,15 @@ section CommRing
 
 variable {R : Type v} {M : Type w} [CommRing R] [AddCommGroup M] [Module R M] {f : End R M} {μ : R}
 
-theorem aeval_apply_of_mem_eigenspace {f : End R M} {p : R[X]} {μ : R} {x : M}
-    (hx : f x = μ • x) : aeval f p x = p.eval μ • x := by
+theorem aeval_apply_of_hasEigenvector {f : End R M} {p : R[X]} {μ : R} {x : M}
+    (h : f.HasEigenvector μ x) : aeval f p x = p.eval μ • x := by
   refine p.induction_on ?_ ?_ ?_
   · intro a; simp [Module.algebraMap_end_apply]
   · intro p q hp hq; simp [hp, hq, add_smul]
   · intro n a hna
     rw [mul_comm, pow_succ', mul_assoc, map_mul, Module.End.mul_apply, mul_comm, hna]
-    simp only [hx, smul_smul, aeval_X, eval_mul, eval_C, eval_pow, eval_X,
+    simp only [mem_eigenspace_iff.1 h.1, smul_smul, aeval_X, eval_mul, eval_C, eval_pow, eval_X,
       map_smulₛₗ, RingHom.id_apply, mul_comm]
-
-theorem aeval_apply_of_hasEigenvector {f : End R M} {p : R[X]} {μ : R} {x : M}
-    (h : f.HasEigenvector μ x) : aeval f p x = p.eval μ • x :=
-  aeval_apply_of_mem_eigenspace (mem_eigenspace_iff.mp h.1)
 
 theorem isRoot_of_hasEigenvalue [IsDomain R] [IsTorsionFree R M] {f : End R M} {μ : R}
     (h : f.HasEigenvalue μ) : (minpoly R f).IsRoot μ := by
@@ -111,12 +107,6 @@ end CommRing
 section Field
 
 variable {K : Type v} {V : Type w} [Field K] [AddCommGroup V] [Module K V]
-
-theorem eval_zero_of_aeval_apply_eq_zero (f : End K V) (q : K[X]) {v : V}
-    (hv : v ≠ 0) (hf : f v = 0) (hq : (aeval f q) v = 0) : q.eval 0 = 0 := by
-  have h := aeval_apply_of_mem_eigenspace (p := q) (show f v = 0 • v by simp [hf])
-  rw [hq] at h
-  exact smul_eq_zero.mp h.symm |>.resolve_right hv
 
 theorem eigenspace_aeval_polynomial_degree_1 (f : End K V) (q : K[X]) (hq : degree q = 1) :
     eigenspace f (-q.coeff 0 / q.leadingCoeff) = LinearMap.ker (aeval f q) :=

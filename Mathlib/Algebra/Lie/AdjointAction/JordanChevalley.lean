@@ -27,14 +27,29 @@ the Jordan–Chevalley decomposition.
 
 @[expose] public section
 
+open Polynomial
+
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+
+theorem Module.End.aeval_apply_of_mem_eigenspace {R M : Type*} [CommRing R] [AddCommGroup M]
+    [Module R M] {f : Module.End R M} {p : R[X]} {μ : R} {x : M}
+    (hx : f x = μ • x) : aeval f p x = p.eval μ • x := by
+  rcases eq_or_ne x 0 with rfl | hne
+  · simp
+  · exact Module.End.aeval_apply_of_hasEigenvector ⟨mem_eigenspace_iff.mpr hx, hne⟩
+
+theorem Module.End.eval_zero_of_aeval_apply_eq_zero (f : Module.End K V) (q : K[X]) {v : V}
+    (hv : v ≠ 0) (hf : f v = 0) (hq : (aeval f q) v = 0) : q.eval 0 = 0 := by
+  have h := Module.End.aeval_apply_of_mem_eigenspace (p := q) (show f v = 0 • v by simp [hf])
+  rw [hq] at h
+  exact smul_eq_zero.mp h.symm |>.resolve_right hv
 
 namespace LieAlgebra
 
-open scoped Polynomial
+open Module
 
 /-- If `g` commutes with `g' ≠ 0` and `ad(g) = p(ad(g'))`, then `p(0) = 0`. -/
-theorem eval_zero_of_aeval_ad_eq {g g' : Module.End K V}
+theorem eval_zero_of_aeval_ad_eq {g g' : End K V}
     (hx : g' ≠ 0) (hc : Commute g g') {p : K[X]}
     (hp : ad K _ g = p.aeval (ad K _ g')) :
     p.eval 0 = 0 := by
