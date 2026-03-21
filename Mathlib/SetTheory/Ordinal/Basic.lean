@@ -1216,16 +1216,23 @@ theorem lift_ord (c) : Ordinal.lift.{u, v} (ord c) = ord (lift.{u, v} c) := by
 
 theorem mk_ord_toType (c : Cardinal) : #c.ord.ToType = c := by simp
 
-theorem card_typein_lt (r : α → α → Prop) [IsWellOrder α r] (x : α) (h : ord #α = type r) :
+theorem card_typein_lt (r : α → α → Prop) [IsWellOrder α r] (h : ord #α = type r) (x : α) :
     card (typein r x) < #α := by
   rw [← lt_ord, h]
   apply typein_lt_type
 
+theorem mk_Iio_lt [LinearOrder α] [WellFoundedLT α] (hα : ord #α = typeLT α) (i : α) :
+    #(Iio i) < #α :=
+  card_typein_lt LT.lt hα i
+
+@[deprecated card_typein_lt (since := "2026-03-20")]
 theorem card_typein_toType_lt (c : Cardinal) (x : c.ord.ToType) :
     card (typein (α := c.ord.ToType) (· < ·) x) < c := by
   rw [← lt_ord]
   apply typein_lt_self
 
+set_option linter.deprecated false in
+@[deprecated mk_Iio_lt (since := "2026-03-20")]
 theorem mk_Iio_ord_toType {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c :=
   card_typein_toType_lt c i
 
