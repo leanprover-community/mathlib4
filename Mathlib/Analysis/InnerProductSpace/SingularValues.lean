@@ -55,8 +55,6 @@ We take the last approach for the following reasons:
 
 ## TODO
 
-- Implement singular vectors and the singular value decomposition
-- Define singular values and singular value decomposition for matrices
 - Generalize singular values to the approximation numbers for maps between
   possibly-infinite-dimensional normed vector spaces.
   This will likely have a similar type signature to the current singular values definition, except
