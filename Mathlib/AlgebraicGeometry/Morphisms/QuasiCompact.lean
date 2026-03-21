@@ -243,10 +243,10 @@ lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
     simp [← Set.image_image, Set.image_preimage_eq _ hg]
   suffices IsClosed ((g ≫ f).base '' (g ⁻¹' Z)) by rwa [hfg]
   obtain ⟨φ, hφ⟩ := Spec.homEquiv.symm.surjective (g ≫ f)
-  have H' := hfg ▸ H
-  rw [← hφ] at H' ⊢
+  rw [hfg] at H
+  rw [← hφ] at H ⊢
   exact PrimeSpectrum.isClosed_image_of_stableUnderSpecialization φ.hom _
-    (hZ.preimage g.continuous) H'
+    (hZ.preimage g.continuous) H
 
 @[elab_as_elim]
 theorem compact_open_induction_on {P : X.Opens → Prop} (S : X.Opens)
