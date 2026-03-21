@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Algebra.Ring.Subring.Defs
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
-public import Mathlib.RingTheory.NonUnitalSubring.Defs
+public import Mathlib.RingTheory.NonUnitalSubring.Basic
 public import Mathlib.Data.Set.Finite.Basic
 
 /-!
@@ -453,6 +453,10 @@ theorem centralizer_toSubsemiring (s : Set R) :
     (centralizer s).toSubsemiring = Subsemiring.centralizer s :=
   rfl
 
+theorem centralizer_toNonUnitalSubring (s : Set R) :
+    (centralizer s).toNonUnitalSubring = NonUnitalSubring.centralizer s :=
+  rfl
+
 theorem mem_centralizer_iff {s : Set R} {z : R} : z ∈ centralizer s ↔ ∀ g ∈ s, g * z = z * g :=
   Iff.rfl
 
@@ -597,15 +601,13 @@ abbrev closureCommRingOfComm {s : Set R} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * 
       have := closure_le_centralizer_centralizer s
       Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
 
--- TODO: find a good way to fix the non-terminal simp
-set_option linter.flexible false in
 theorem exists_list_of_mem_closure {s : Set R} {x : R} (hx : x ∈ closure s) :
     ∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s ∨ y = (-1 : R)) ∧ (L.map List.prod).sum = x := by
   rw [mem_closure_iff] at hx
   induction hx using AddSubgroup.closure_induction with
   | mem _ hx =>
     obtain ⟨l, hl, h⟩ := Submonoid.exists_list_of_mem_closure hx
-    exact ⟨[l], by simp [h]; clear_aux_decl; tauto⟩
+    exact ⟨[l], by simp_all⟩
   | zero => exact ⟨[], List.forall_mem_nil _, rfl⟩
   | add _ _ _ _ hL hM =>
     obtain ⟨⟨L, HL1, HL2⟩, ⟨M, HM1, HM2⟩⟩ := And.intro hL hM
@@ -878,6 +880,10 @@ def inclusion {S T : Subring R} (h : S ≤ T) : S →+* T :=
 theorem coe_inclusion {S T : Subring R} (h : S ≤ T) (x : S) :
     (Subring.inclusion h x : R) = x := by simp [Subring.inclusion]
 
+theorem inclusion_injective {S T : Subring R} (h : S ≤ T) :
+    Function.Injective (Subring.inclusion h) :=
+  RingHom.injective_codRestrict.mpr S.subtype_injective
+
 @[simp]
 theorem range_subtype (s : Subring R) : s.subtype.range = s :=
   SetLike.coe_injective <| (coe_rangeS _).trans Subtype.range_coe
@@ -1083,6 +1089,16 @@ instance center.smulCommClass_left : SMulCommClass (center R) R R :=
 /-- The center of a semiring acts commutatively on that semiring. -/
 instance center.smulCommClass_right : SMulCommClass R (center R) R :=
   Subsemiring.center.smulCommClass_right
+
+/-- The center of a semiring acts commutatively on any `R`-module -/
+instance {M : Type*} [MulAction R M] :
+    SMulCommClass R (Subring.center R) M :=
+  inferInstanceAs <| SMulCommClass R (Submonoid.center R) M
+
+/-- The center of a semiring acts commutatively on any `R`-module -/
+instance {M : Type*} [MulAction R M] :
+    SMulCommClass (Subring.center R) R M :=
+  inferInstanceAs <| SMulCommClass (Submonoid.center R) R M
 
 end Subring
 

@@ -35,10 +35,10 @@ open FractionalIdeal nonZeroDivisors IntermediateField Algebra Module Submodule
 variable (A B : Type*) {K L : Type*} [CommRing A] [Field K] [Algebra A K] [IsFractionRing A K]
   [CommRing B] [Field L] [Algebra B L] [Algebra A L] [Algebra K L] [FiniteDimensional K L]
   [IsScalarTower A K L]
-variable (R₁ R₂ : Type*) [CommRing R₁] [CommRing R₂] [Algebra A R₁] [Algebra A R₂] [Algebra R₁ B]
-  [Algebra R₂ B] [Algebra R₁ L] [Algebra R₂ L] [IsScalarTower A R₁ L] [IsScalarTower R₁ B L]
-  [IsScalarTower R₂ B L] [Module.Finite A R₂]
-variable {F₁ F₂ : IntermediateField K L} [Algebra R₁ F₁] [Algebra R₂ F₂] [NoZeroSMulDivisors R₁ F₁]
+variable (R₁ R₂ : Type*) [CommRing R₁] [CommRing R₂] [IsDomain R₁] [Algebra A R₁] [Algebra A R₂]
+  [Algebra R₁ B] [Algebra R₂ B] [Algebra R₁ L] [Algebra R₂ L]
+  [IsScalarTower A R₁ L] [IsScalarTower R₁ B L] [IsScalarTower R₂ B L] [Module.Finite A R₂]
+variable {F₁ F₂ : IntermediateField K L} [Algebra R₁ F₁] [Algebra R₂ F₂] [IsTorsionFree R₁ F₁]
   [IsScalarTower A F₂ L] [IsScalarTower A R₂ F₂] [IsScalarTower R₁ F₁ L] [IsScalarTower R₂ F₂ L]
   [Algebra.IsSeparable K F₂] [Algebra.IsSeparable F₁ L]
 
@@ -74,7 +74,7 @@ attribute [local instance] FractionRing.liftAlgebra
 
 variable [IsDomain A] [IsDedekindDomain B] [IsDedekindDomain R₁] [IsDedekindDomain R₂]
     [IsFractionRing B L] [IsFractionRing R₁ F₁] [IsFractionRing R₂ F₂] [IsIntegrallyClosed A]
-    [IsIntegralClosure B R₁ L] [NoZeroSMulDivisors R₁ B] [NoZeroSMulDivisors R₂ B]
+    [IsIntegralClosure B R₁ L] [IsTorsionFree R₁ B] [IsTorsionFree R₂ B]
 
 namespace IsDedekindDomain
 
@@ -96,8 +96,8 @@ theorem differentIdeal_dvd_map_differentIdeal [Algebra.IsIntegral R₂ B]
     rwa [← span_coe_eq_restrictScalars, span_span_of_tower, span_span_of_tower, span_eq] at this
   · exact (_root_.map_ne_zero _).mpr <| coeIdeal_eq_zero.not.mpr differentIdeal_ne_bot
 
-variable [Algebra A B] [Module.Finite A B] [NoZeroSMulDivisors A B] [NoZeroSMulDivisors A R₁]
-  [NoZeroSMulDivisors A R₂] [Module.Finite A R₁] [Module.Finite R₂ B] [IsScalarTower A R₂ B]
+variable [Algebra A B] [Module.Finite A B] [IsTorsionFree A B] [IsTorsionFree A R₁]
+  [IsTorsionFree A R₂] [Module.Finite A R₁] [Module.Finite R₂ B] [IsScalarTower A R₂ B]
   [Module.Finite R₁ B] [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
   [IsScalarTower A R₁ B]
 
@@ -136,8 +136,8 @@ theorem differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime
 
 end IsDedekindDomain
 
-variable [Algebra A B] [Module.Finite A B] [NoZeroSMulDivisors A B] [NoZeroSMulDivisors A R₁]
-  [NoZeroSMulDivisors A R₂] [Module.Finite A R₁] [Module.Finite R₂ B] [IsScalarTower A R₂ B]
+variable [Algebra A B] [Module.Finite A B] [IsTorsionFree A B] [IsTorsionFree A R₁]
+  [IsTorsionFree A R₂] [Module.Finite A R₁] [Module.Finite R₂ B] [IsScalarTower A R₂ B]
   [Module.Finite R₁ B] [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
   [IsScalarTower A R₁ B]
 

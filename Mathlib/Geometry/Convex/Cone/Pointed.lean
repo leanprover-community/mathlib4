@@ -5,9 +5,11 @@ Authors: Apurva Nakade
 -/
 module
 
+public import Mathlib.Algebra.Group.Submonoid.Support
 public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
+
 
 /-!
 # Pointed cones
@@ -36,10 +38,61 @@ namespace PointedCone
 
 open Function Submodule
 
-section Definitions
+section Submodule
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
-  {C C₁ C₂ : PointedCone R E} {x : E} {r : R}
+variable {C : PointedCone R E}
+
+set_option backward.isDefEq.respectTransparency false in
+/-- A submodule is a pointed cone. -/
+@[coe] abbrev ofSubmodule (S : Submodule R E) : PointedCone R E := S.restrictScalars _
+
+instance : Coe (Submodule R E) (PointedCone R E) := ⟨ofSubmodule⟩
+
+@[simp] lemma coe_ofSubmodule (S : Submodule R E) : (ofSubmodule S : Set E) = S := rfl
+
+lemma mem_ofSubmodule_iff {S : Submodule R E} {x : E} : x ∈ (S : PointedCone R E) ↔ x ∈ S := by rfl
+
+set_option backward.isDefEq.respectTransparency false in
+lemma ofSubmodule_inj {S T : Submodule R E} : ofSubmodule S = ofSubmodule T ↔ S = T :=
+  Submodule.restrictScalars_inj ..
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Coercion from submodules to pointed cones as an order embedding. -/
+abbrev ofSubmoduleEmbedding : Submodule R E ↪o PointedCone R E :=
+  Submodule.restrictScalarsEmbedding ..
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Coercion from submodules to pointed cones as a lattice homomorphism. -/
+abbrev ofSubmoduleLatticeHom : CompleteLatticeHom (Submodule R E) (PointedCone R E) :=
+  Submodule.restrictScalarsLatticeHom ..
+
+set_option backward.isDefEq.respectTransparency false in
+lemma ofSubmodule_inf (S T : Submodule R E) : S ⊓ T = (S ⊓ T : PointedCone R E) :=
+  Submodule.restrictScalars_inf _ _ _
+
+set_option backward.isDefEq.respectTransparency false in
+lemma ofSubmodule_sup (S T : Submodule R E) : S ⊔ T = (S ⊔ T : PointedCone R E) :=
+  Submodule.restrictScalars_sup _ _ _
+
+lemma ofSubmodule_sInf (s : Set (Submodule R E)) : sInf s = sInf (ofSubmodule '' s) :=
+  ofSubmoduleLatticeHom.map_sInf' s
+
+lemma ofSubmodule_iInf (s : Set (Submodule R E)) : ⨅ S ∈ s, S = ⨅ S ∈ s, (S : PointedCone R E) := by
+  rw [← sInf_eq_iInf, ofSubmodule_sInf, sInf_eq_iInf, iInf_image]
+
+lemma ofSubmodule_sSup (s : Set (Submodule R E)) : sSup s = sSup (ofSubmodule '' s) :=
+  ofSubmoduleLatticeHom.map_sSup' s
+
+lemma ofSubmodule_iSup (s : Set (Submodule R E)) : ⨆ S ∈ s, S = ⨆ S ∈ s, (S : PointedCone R E) := by
+  rw [← sSup_eq_iSup, ofSubmodule_sSup, sSup_eq_iSup, iSup_image]
+
+end Submodule
+
+section ConvexCone
+
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
+variable {C C₁ C₂ : PointedCone R E} {x : E} {r : R}
 
 /-- Every submodule can be turned into a pointed cone by restricting to nonnegative scalars. -/
 @[coe]
@@ -76,6 +129,7 @@ instance instZero (C : PointedCone R E) : Zero C :=
 nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
   C.smul_mem ⟨r, hr⟩ hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `PointedCone` constructed from a pointed `ConvexCone`. -/
 def _root_.ConvexCone.toPointedCone (C : ConvexCone R E) (hC : C.Pointed) : PointedCone R E where
   carrier := C
@@ -106,6 +160,13 @@ lemma _root_.ConvexCone.toPointedCone_top : (⊤ : ConvexCone R E).toPointedCone
 
 instance canLift : CanLift (ConvexCone R E) (PointedCone R E) (↑) ConvexCone.Pointed where
   prf C hC := ⟨C.toPointedCone hC, rfl⟩
+
+end ConvexCone
+
+section Definitions
+
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
+variable {C : PointedCone R E} {x : E}
 
 /-- Construct a pointed cone from closure under two-element conical combinations.
 I.e., a nonempty set closed under two-element conical combinations is a pointed cone. -/
@@ -154,6 +215,7 @@ between pointed cones induced from linear maps between the ambient modules that 
 
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of a pointed cone under an `R`-linear map is a pointed cone. -/
 def map (f : E →ₗ[R] F) (C : PointedCone R E) : PointedCone R F :=
   Submodule.map (f : E →ₗ[R≥0] F) C
@@ -179,6 +241,7 @@ theorem map_map (g : F →ₗ[R] G) (f : E →ₗ[R] F) (C : PointedCone R E) :
 theorem map_id (C : PointedCone R E) : C.map LinearMap.id = C :=
   SetLike.coe_injective <| Set.image_id _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The preimage of a pointed cone under an `R`-linear map is a pointed cone. -/
 def comap (f : E →ₗ[R] F) (C : PointedCone R F) : PointedCone R E :=
   Submodule.comap (f : E →ₗ[R≥0] F) C
@@ -240,28 +303,35 @@ open Pointwise
 variable [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
 
 /-- The lineality space of a cone `C` is the submodule given by `C ⊓ -C`. -/
+@[simps!]
 def lineal (C : PointedCone R E) : Submodule R E where
-  __ := C ⊓ -C
+  __ := C.support
   smul_mem' r _ hx := by
-    obtain hr | hr := le_total 0 r
+    by_cases hr : 0 ≤ r
     · simpa using And.intro (C.smul_mem hr hx.1) (C.smul_mem hr hx.2)
-    · rw [← neg_nonneg] at hr
+    · have hr := le_of_lt <| neg_pos_of_neg <| lt_of_not_ge hr
       simpa using And.intro (C.smul_mem hr hx.2) (C.smul_mem hr hx.1)
-
 @[simp]
-lemma coe_lineal (C : PointedCone R E) : C.lineal = C ⊓ -C :=
+lemma ofSubmodule_lineal (C : PointedCone R E) : C.lineal = C ⊓ -C :=
   rfl
 
+@[simp]
 lemma mem_lineal {C : PointedCone R E} {x : E} : x ∈ C.lineal ↔ x ∈ C ∧ -x ∈ C := by
   rfl
 
-lemma lineal_le (C : PointedCone R E) : C.lineal ≤ C := by simp
+@[simp]
+theorem support_eq {C : PointedCone R E} : C.support = C.lineal.toAddSubgroup :=
+  rfl
 
 /-- The lineality space of a cone is the largest submodule contained in the cone. -/
+theorem gc_ofSubmodule_lineal :
+    GaloisConnection (α := Submodule R E) ofSubmodule lineal :=
+  fun _ _ ↦ ⟨fun _ _ ↦ by aesop, fun h _ hx ↦ (h hx).1⟩
+
+lemma lineal_le (C : PointedCone R E) : C.lineal ≤ C := gc_ofSubmodule_lineal.l_u_le C
+
 theorem lineal_eq_sSup (C : PointedCone R E) : C.lineal = sSup {S : Submodule R E | S ≤ C} := by
-  refine le_antisymm (le_sSup (lineal_le C)) fun x hx => ?_
-  have hC : sSup {S : Submodule R E | S ≤ C} ≤ C := by simp
-  exact mem_lineal.mpr ⟨hC hx, hC (neg_mem hx : -x ∈ _)⟩
+  simp_rw [gc_ofSubmodule_lineal.le_iff_le, Set.Iic_def, csSup_Iic]
 
 end Lineal
 

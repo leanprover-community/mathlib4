@@ -133,8 +133,6 @@ theorem inverse_zero : inverse (0 : M₀) = 0 := by
   nontriviality
   exact inverse_non_unit _ not_isUnit_zero
 
-variable {M₀}
-
 end Ring
 
 theorem IsUnit.ringInverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
@@ -389,12 +387,6 @@ section CommGroupWithZero
 -- comm
 variable [CommGroupWithZero G₀] {a b c d : G₀}
 
--- see Note [lower instance priority]
-instance (priority := 10) CommGroupWithZero.toCancelCommMonoidWithZero :
-    CancelCommMonoidWithZero G₀ :=
-  { GroupWithZero.toCancelMonoidWithZero,
-    CommGroupWithZero.toCommMonoidWithZero with }
-
 -- See note [lower instance priority]
 instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid :
     DivisionCommMonoid G₀ where
@@ -466,6 +458,7 @@ variable {M : Type*} [Nontrivial M]
 open Classical in
 /-- Constructs a `GroupWithZero` structure on a `MonoidWithZero`
   consisting only of units and 0. -/
+@[implicit_reducible]
 noncomputable def groupWithZeroOfIsUnitOrEqZero [hM : MonoidWithZero M]
     (h : ∀ a : M, IsUnit a ∨ a = 0) : GroupWithZero M :=
   { hM with
@@ -477,6 +470,7 @@ noncomputable def groupWithZeroOfIsUnitOrEqZero [hM : MonoidWithZero M]
 
 /-- Constructs a `CommGroupWithZero` structure on a `CommMonoidWithZero`
   consisting only of units and 0. -/
+@[implicit_reducible]
 noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : CommMonoidWithZero M]
     (h : ∀ a : M, IsUnit a ∨ a = 0) : CommGroupWithZero M :=
   { groupWithZeroOfIsUnitOrEqZero h, hM with }

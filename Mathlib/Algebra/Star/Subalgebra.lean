@@ -43,6 +43,8 @@ instance setLike : SetLike (StarSubalgebra R A) A where
   coe S := S.carrier
   coe_injective' p q h := by obtain ⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
 
+instance : PartialOrder (StarSubalgebra R A) := .ofSetLike (StarSubalgebra R A) A
+
 /-- The actual `StarSubalgebra` obtained from an element of a type satisfying `SubsemiringClass`,
 `SMulMemClass` and `StarMemClass`. -/
 @[simps]
@@ -108,6 +110,20 @@ def toNonUnitalStarSubalgebra (S : StarSubalgebra R A) : NonUnitalStarSubalgebra
 
 lemma one_mem_toNonUnitalStarSubalgebra (S : StarSubalgebra R A) :
     1 ∈ S.toNonUnitalStarSubalgebra := S.one_mem'
+
+@[simp]
+lemma mem_toNonUnitalStarSubalgebra {S : StarSubalgebra R A} {x : A} :
+    x ∈ S.toNonUnitalStarSubalgebra ↔ x ∈ S :=
+  Iff.rfl
+
+lemma toNonUnitalStarSubalgebra_injective : Function.Injective
+    (toNonUnitalStarSubalgebra : StarSubalgebra R A → NonUnitalStarSubalgebra R A) :=
+  fun _ _ ↦ by simp [SetLike.ext_iff]
+
+@[simp]
+lemma toNonUnitalStarSubalgebra_inj {S U : StarSubalgebra R A} :
+    S.toNonUnitalStarSubalgebra = U.toNonUnitalStarSubalgebra ↔ S = U :=
+  toNonUnitalStarSubalgebra_injective.eq_iff
 
 theorem mem_carrier {s : StarSubalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
@@ -505,7 +521,7 @@ theorem adjoin_induction {s : Set A} {p : (x : A) → x ∈ adjoin R s → Prop}
     (star : ∀ x hx, p x hx → p (star x) (star_mem hx))
     {a : A} (ha : a ∈ adjoin R s) : p a ha := by
   refine Algebra.adjoin_induction (fun x hx ↦ ?_) algebraMap add mul ha
-  simp only [Set.mem_union, Set.mem_star] at hx
+  push _ ∈ _ at hx
   obtain (hx | hx) := hx
   · exact mem x hx
   · simpa using star _ (Algebra.subset_adjoin (by simpa using Or.inl hx)) (mem _ hx)

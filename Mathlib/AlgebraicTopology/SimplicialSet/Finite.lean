@@ -122,6 +122,7 @@ instance finite_range {Y : SSet.{u}} (f : Y ⟶ X) [Y.Finite] :
     SSet.Finite (Subcomplex.range f) :=
   finite_of_epi (Subcomplex.toRange f)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma finite_iSup_iff {X : SSet.{u}} {ι : Type*} [Finite ι]
     (A : ι → X.Subcomplex) :
     SSet.Finite (⨆ i, A i :) ↔ ∀ i, SSet.Finite (A i) := by

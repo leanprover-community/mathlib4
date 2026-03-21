@@ -187,8 +187,6 @@ theorem superpolynomialDecay_const_mul_iff [ContinuousMul β] {c : β} (hc0 : c 
   ⟨fun h => (h.const_mul c⁻¹).congr fun x => by simp [← mul_assoc, inv_mul_cancel₀ hc0], fun h =>
     h.const_mul c⟩
 
-variable {l k f}
-
 end Field
 
 section LinearOrderedField
@@ -271,8 +269,6 @@ theorem superpolynomialDecay_param_pow_mul_iff (hk : Tendsto k l atTop) (n : ℕ
 theorem superpolynomialDecay_mul_param_pow_iff (hk : Tendsto k l atTop) (n : ℕ) :
     SuperpolynomialDecay l k (f * k ^ n) ↔ SuperpolynomialDecay l k f := by
   simpa [mul_comm f] using superpolynomialDecay_param_pow_mul_iff f hk n
-
-variable {f}
 
 end LinearOrderedField
 

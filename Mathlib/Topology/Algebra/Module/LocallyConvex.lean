@@ -197,6 +197,16 @@ protected theorem LocallyConvexSpace.induced {t : TopologicalSpace F} [LocallyCo
   rw [nhds_induced]
   exact (LocallyConvexSpace.convex_basis <| f x).comap f
 
+theorem Topology.IsInducing.locallyConvexSpace [TopologicalSpace F] [LocallyConvexSpace 𝕜 F]
+    [TopologicalSpace E] {f : E →ₗ[𝕜] F} (hf : IsInducing f) :
+    LocallyConvexSpace 𝕜 E := by
+  rw [hf.eq_induced]
+  exact .induced f
+
+instance [TopologicalSpace E] [LocallyConvexSpace 𝕜 E] {S : Submodule 𝕜 E} :
+    LocallyConvexSpace 𝕜 S :=
+  IsInducing.locallyConvexSpace (f := S.subtype) .subtypeVal
+
 instance Pi.locallyConvexSpace {ι : Type*} {X : ι → Type*} [∀ i, AddCommMonoid (X i)]
     [∀ i, TopologicalSpace (X i)] [∀ i, Module 𝕜 (X i)] [∀ i, LocallyConvexSpace 𝕜 (X i)] :
     LocallyConvexSpace 𝕜 (∀ i, X i) :=

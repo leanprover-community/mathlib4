@@ -281,7 +281,7 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) (hmeas : Strongly
   obtain ⟨M, hM', hM⟩ := MemLp.integral_indicator_norm_ge_nonneg_le
     (μ := μ) (hf.norm_rpow hp_ne_zero hp_ne_top) (Real.rpow_pos_of_pos hε p.toReal)
   refine ⟨M ^ (1 / p.toReal), ?_⟩
-  rw [eLpNorm_eq_lintegral_rpow_enorm hp_ne_zero hp_ne_top, ← ENNReal.rpow_one (ENNReal.ofReal ε)]
+  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_ne_zero hp_ne_top, ← ENNReal.rpow_one (.ofReal ε)]
   conv_rhs => rw [← mul_one_div_cancel (ENNReal.toReal_pos hp_ne_zero hp_ne_top).ne.symm]
   rw [ENNReal.rpow_mul,
     ENNReal.rpow_le_rpow_iff (one_div_pos.2 <| ENNReal.toReal_pos hp_ne_zero hp_ne_top),
@@ -649,6 +649,7 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
     _ ≤ ENNReal.ofReal ε := by
       rw [← ENNReal.ofReal_add (half_pos hε).le (half_pos hε).le, add_halves]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem unifIntegrable_of (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → β}
     (hf : ∀ i, AEStronglyMeasurable (f i) μ)
     (h : ∀ ε : ℝ, 0 < ε → ∃ C : ℝ≥0,
@@ -822,6 +823,7 @@ theorem uniformIntegrable_of [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
   · rw [Set.indicator_of_notMem hfx, Set.indicator_of_notMem]
     rwa [Set.mem_setOf, hx] at hfx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This lemma is superseded by `UniformIntegrable.spec` which does not require measurability. -/
 theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, StronglyMeasurable (f i))
     (hfu : UniformIntegrable f p μ) {ε : ℝ} (hε : 0 < ε) :
