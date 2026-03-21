@@ -26,7 +26,7 @@ when the ideal `I` is finitely generated.
 
 ## Main results
 
-* `AdicCompletion.pow_smul_top_eq_eval_ker`: `I ^ n • AdicCompletion I M` is exactly the kernel
+* `AdicCompletion.pow_smul_top_eq_ker_eval`: `I ^ n • AdicCompletion I M` is exactly the kernel
   of the evaluation map `eval I M n` when `I` is finitely generated.
 
 * `AdicCompletion.isAdicComplete`: `AdicCompletion I M` is `I`-adically complete if `I` is
@@ -105,11 +105,10 @@ def OfValEqZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
 @[simp]
 theorem ofPowSMul_OfValEqZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
     ofPowSMul I M n (OfValEqZero I hxn) = x := by
-  ext i; by_cases h : n ≤ i
+  ext i; by_cases! h : n ≤ i
   · obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le' h
     rw [ofPowSMul_val_apply _ (by rfl), OfValEqZero, OfValEqZeroAux_prop]
-  replace h : i ≤ n := by lia
-  rw [ofPowSMul_val_apply_eq_zero _ h, ← x.prop h, hxn, _root_.map_zero]
+  rw [ofPowSMul_val_apply_eq_zero _ h.le, ← x.prop h.le, hxn, _root_.map_zero]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem restrictScalars_ofPowSMul_range_eq_eval_ker {n : ℕ} :
@@ -137,7 +136,7 @@ lemma lsum_smul_comp_finsuppLEquivDirectSum_symm {ι : Type*} [DecidableEq ι] (
 set_option backward.isDefEq.respectTransparency false in
 variable {I} in
 @[stacks 05GG "(2)"]
-theorem pow_smul_top_eq_eval_ker {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I M n).ker := by
+theorem pow_smul_top_eq_ker_eval {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I M n).ker := by
   classical
   refine le_antisymm (pow_smul_top_le_ker_eval ..) ?_
   replace h := Ideal.FG.pow (n := n) h
@@ -175,11 +174,11 @@ theorem isAdicComplete (h : I.FG) : IsAdicComplete I (AdicCompletion I M) where
       property {m n} h' := by
         simp only [transitionMap_comp_eval_apply]
         specialize hx h'
-        rwa [SModEq.sub_mem, pow_smul_top_eq_eval_ker h, LinearMap.mem_ker, _root_.map_sub,
+        rwa [SModEq.sub_mem, pow_smul_top_eq_ker_eval h, LinearMap.mem_ker, _root_.map_sub,
           sub_eq_zero, eval_apply, eval_apply, eq_comm] at hx
     }
     use L; intro i
-    rw [SModEq.sub_mem, pow_smul_top_eq_eval_ker h]
+    rw [SModEq.sub_mem, pow_smul_top_eq_ker_eval h]
     simp [L]
 
 end AdicCompletion
