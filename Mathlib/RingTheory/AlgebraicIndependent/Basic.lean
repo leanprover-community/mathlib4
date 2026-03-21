@@ -168,7 +168,6 @@ theorem isTranscendenceBasis_iff_of_subsingleton [Subsingleton R] (x : ι → A)
   (ciSup_le' fun s ↦ by simpa using Set.subsingleton_of_subsingleton).antisymm <| le_ciSup_of_le
     (Cardinal.bddAbove_range _) ⟨{0}, .of_subsingleton⟩ (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem algebraicIndependent_adjoin (hs : AlgebraicIndependent R x) :
     @AlgebraicIndependent ι R (adjoin R (range x))
       (fun i : ι => ⟨x i, subset_adjoin (mem_range_self i)⟩) _ _ _ :=
