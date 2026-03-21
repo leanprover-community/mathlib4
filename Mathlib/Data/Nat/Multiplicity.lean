@@ -215,7 +215,6 @@ theorem emultiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb
   · rw [this]
   exact this.symm ▸ hnb
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A lower bound on the multiplicity of `p` in `choose n k`. -/
 theorem emultiplicity_le_emultiplicity_choose_add {p : ℕ} (hp : p.Prime) :
     ∀ n k : ℕ, emultiplicity p n ≤ emultiplicity p (choose n k) + emultiplicity p k

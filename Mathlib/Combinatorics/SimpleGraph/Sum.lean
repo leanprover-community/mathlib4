@@ -144,7 +144,6 @@ theorem chromaticNumber_le_sum_left : G.chromaticNumber ≤ (G ⊕g H).chromatic
 theorem chromaticNumber_le_sum_right : H.chromaticNumber ≤ (G ⊕g H).chromaticNumber :=
   chromaticNumber_le_of_forall_imp (fun _ h ↦ h.of_sum_right)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem chromaticNumber_sum :
     (G ⊕g H).chromaticNumber = max G.chromaticNumber H.chromaticNumber := by

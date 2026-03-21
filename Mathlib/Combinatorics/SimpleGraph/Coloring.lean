@@ -321,7 +321,6 @@ theorem Colorable.chromaticNumber_le {n : ℕ} (hc : G.Colorable n) : G.chromati
   apply csInf_le chromaticNumber_bddBelow
   exact hc
 
-set_option backward.isDefEq.respectTransparency false in
 theorem chromaticNumber_ne_top_iff_exists : G.chromaticNumber ≠ ⊤ ↔ ∃ n, G.Colorable n := by
   rw [chromaticNumber]
   simp

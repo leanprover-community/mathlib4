@@ -436,7 +436,6 @@ theorem addVal_eq_top_iff {a : R} : addVal R a = ⊤ ↔ a = 0 := by
   · rintro rfl
     exact addVal_zero
 
-set_option backward.isDefEq.respectTransparency false in
 theorem addVal_le_iff_dvd {a b : R} : addVal R a ≤ addVal R b ↔ a ∣ b := by
   classical
   have hp := Classical.choose_spec (exists_prime R)

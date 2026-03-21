@@ -218,7 +218,6 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E1 E2 : IntermediateFi
 theorem le_sup_toSubalgebra : E1.toSubalgebra ⊔ E2.toSubalgebra ≤ (E1 ⊔ E2).toSubalgebra :=
   sup_le (show E1 ≤ E1 ⊔ E2 from le_sup_left) (show E2 ≤ E1 ⊔ E2 from le_sup_right)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sup_toSubalgebra_of_isAlgebraic_right [Algebra.IsAlgebraic K E2] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra := by
   have : (adjoin E1 (E2 : Set L)).toSubalgebra = _ := adjoin_toSubalgebra_of_isAlgebraic fun x h ↦
@@ -259,7 +258,6 @@ section Tower
 variable (E)
 variable {K : Type*} [Field K] [Algebra F K] [Algebra E K] [IsScalarTower F E K]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `K / E / F` is a field extension tower, `L` is an intermediate field of `K / F`, such that
 either `E / F` or `L / F` is algebraic, then `E(L) = E[L]`. -/
 theorem adjoin_intermediateField_toSubalgebra_of_isAlgebraic (L : IntermediateField F K)

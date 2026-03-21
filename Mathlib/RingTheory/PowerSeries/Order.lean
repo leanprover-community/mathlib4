@@ -64,7 +64,6 @@ theorem order_finite_iff_ne_zero : (order φ < ⊤) ↔ φ ≠ 0 := by
   simp only [order]
   split_ifs with h <;> simpa
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `0` power series is the unique power series with infinite order. -/
 @[simp]
 theorem order_eq_top {φ : R⟦X⟧} : φ.order = ⊤ ↔ φ = 0 := by
@@ -415,7 +414,6 @@ section NoZeroDivisors
 
 variable [Semiring R] [NoZeroDivisors R]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The order of the product of two formal power series over an integral domain
 is the sum of their orders. -/
 theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := by

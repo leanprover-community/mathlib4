@@ -84,7 +84,6 @@ lemma spanRank_toENat_eq_iInf_encard (p : Submodule R M) : p.spanRank.toENat =
     rw [Set.encard, ENat.card]
     exact Cardinal.ofENat_toENat_le _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma spanRank_toENat_eq_iInf_finset_card (p : Submodule R M) :
     p.spanRank.toENat = ⨅ (s : {s : Finset M // span R s = p}), (s.1.card : ℕ∞) := by
   rw [spanRank_toENat_eq_iInf_encard]

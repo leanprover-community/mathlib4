@@ -231,7 +231,6 @@ lemma packingNumber_singleton (ε : ℝ≥0) (x : X) : packingNumber ε {x} = 1 
 
 section MinimalCover
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_set_encard_eq_coveringNumber (h : coveringNumber ε A ≠ ⊤) :
     ∃ C, C ⊆ A ∧ C.Finite ∧ IsCover ε A C ∧ C.encard = coveringNumber ε A := by
   simp only [coveringNumber, ne_eq, iInf_eq_top, encard_eq_top_iff, not_forall, not_infinite] at h
@@ -353,7 +352,6 @@ theorem packingNumber_two_mul_le_externalCoveringNumber (ε : ℝ≥0) (A : Set 
       · exact hf' x
       · simpa [edist_comm, hxy] using hf' y
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coveringNumber_le_packingNumber (ε : ℝ≥0) (A : Set X) :
     coveringNumber ε A ≤ packingNumber ε A := by
   by_cases! h_top : packingNumber ε A ≠ ⊤

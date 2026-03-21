@@ -415,7 +415,6 @@ protected lemma le_sub_of_add_le_left (ha : a ≠ ⊤) : a + b ≤ c → b ≤ c
 protected lemma le_sub_of_add_le_right (hb : b ≠ ⊤) : a + b ≤ c → a ≤ c - b :=
   (addLECancellable_of_ne_top hb).le_tsub_of_add_le_right
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma le_sub_one_of_lt (h : a < b) : a ≤ b - 1 := by
   cases b
   · simp

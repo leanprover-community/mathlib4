@@ -181,7 +181,6 @@ theorem natTrailingDegree_monomial_le : natTrailingDegree (monomial n a) ≤ n :
   letI := Classical.decEq R
   if ha : a = 0 then by simp [ha] else (natTrailingDegree_monomial ha).le
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_trailingDegree_monomial : ↑n ≤ trailingDegree (monomial n a) :=
   letI := Classical.decEq R
   if ha : a = 0 then by simp [ha] else (trailingDegree_monomial ha).ge
@@ -430,7 +429,6 @@ theorem coeff_natTrailingDegree_eq_zero_of_trailingDegree_lt
     (h : trailingDegree p < trailingDegree q) : coeff q (natTrailingDegree p) = 0 :=
   coeff_eq_zero_of_lt_trailingDegree <| natTrailingDegree_le_trailingDegree.trans_lt h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ne_zero_of_trailingDegree_lt {n : ℕ∞} (h : trailingDegree p < n) : p ≠ 0 := fun h₀ =>
   h.not_ge (by simp [h₀])
 

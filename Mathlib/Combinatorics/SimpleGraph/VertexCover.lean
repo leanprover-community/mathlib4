@@ -135,7 +135,6 @@ theorem vertexCoverNum_le_card_sub_one : vertexCoverNum G ≤ ENat.card V - 1 :=
   have := hn (Set.univ \ {x}) (by grind [IsVertexCover, Adj.ne'])
   simpa [Set.encard_diff_singleton_of_mem (Set.mem_univ _)] using this
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem vertexCoverNum_ne_top_of_finite [Finite V] : vertexCoverNum G ≠ ⊤ :=
   ne_top_of_le_ne_top (by simpa) (@vertexCoverNum_le_card_sub_one V G)

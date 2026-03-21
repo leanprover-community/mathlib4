@@ -58,7 +58,6 @@ theorem emultiplicity_eq_top :
     emultiplicity a b = ⊤ ↔ ¬FiniteMultiplicity a b := by
   simp [emultiplicity]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_lt_top {a b : α} : emultiplicity a b < ⊤ ↔ FiniteMultiplicity a b := by
   simp [lt_top_iff_ne_top, emultiplicity_eq_top]
 
@@ -108,7 +107,6 @@ theorem multiplicity_eq_one_of_not_finiteMultiplicity (h : ¬FiniteMultiplicity 
     multiplicity a b = 1 := by
   simp [multiplicity, emultiplicity_eq_top.2 h]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem multiplicity_le_emultiplicity :
     multiplicity a b ≤ emultiplicity a b := by
@@ -526,7 +524,6 @@ theorem FiniteMultiplicity.or_of_add {p a b : α} (hf : FiniteMultiplicity p (a 
   obtain ⟨c, hc⟩ := hf
   simp_all [dvd_add]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem min_le_emultiplicity_add {p a b : α} :
     min (emultiplicity p a) (emultiplicity p b) ≤ emultiplicity p (a + b) := by
   cases hm : min (emultiplicity p a) (emultiplicity p b)
@@ -571,7 +568,6 @@ theorem Int.multiplicity_natAbs (a : ℕ) (b : ℤ) :
     multiplicity a b.natAbs = multiplicity (a : ℤ) b :=
   multiplicity_eq_of_emultiplicity_eq (Int.emultiplicity_natAbs a b)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_add_of_gt {p a b : α} (h : emultiplicity p b < emultiplicity p a) :
     emultiplicity p (a + b) = emultiplicity p b := by
   have : FiniteMultiplicity p b := finiteMultiplicity_iff_emultiplicity_ne_top.2 (by simp [·] at h)
@@ -601,7 +597,6 @@ theorem multiplicity_sub_of_gt {p a b : α} (h : multiplicity p b < multiplicity
     (hfin : FiniteMultiplicity p b) : multiplicity p (a - b) = multiplicity p b := by
   rw [sub_eq_add_neg, hfin.neg.multiplicity_add_of_gt] <;> rw [multiplicity_neg]; assumption
 
-set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_add_eq_min {p a b : α}
     (h : emultiplicity p a ≠ emultiplicity p b) :
     emultiplicity p (a + b) = min (emultiplicity p a) (emultiplicity p b) := by

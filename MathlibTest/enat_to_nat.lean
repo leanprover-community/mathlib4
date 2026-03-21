@@ -14,7 +14,6 @@ example (a b : ENat) (h : a ≤ b) : a - 2 * b ≤ b + 1 := by
   enat_to_nat
   lia
 
-set_option backward.isDefEq.respectTransparency false in
 example (a b c : ENat) (hab : a ≥ b) (hbc : b ≥ c) : a ≥ c := by
   enat_to_nat
   lia

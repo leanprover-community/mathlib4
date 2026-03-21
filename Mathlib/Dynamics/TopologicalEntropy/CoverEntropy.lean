@@ -271,7 +271,6 @@ lemma coverMincard_univ (T : X → X) (h : F.Nonempty) (n : ℕ) : coverMincard 
   apply this.coverMincard_le_card.trans_eq
   rw [Finset.card_singleton, Nat.cast_one]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coverMincard_mul_le_pow (F_inv : MapsTo T F F) [U.IsSymm] (m n : ℕ) :
     coverMincard T F (U ○ U) (m * n) ≤ coverMincard T F U m ^ n := by
   rcases F.eq_empty_or_nonempty with rfl | F_nonempty

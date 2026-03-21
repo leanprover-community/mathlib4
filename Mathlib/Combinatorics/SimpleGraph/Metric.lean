@@ -96,7 +96,6 @@ lemma exists_walk_of_edist_ne_top (h : G.edist u v ≠ ⊤) :
     ∃ p : G.Walk u v, p.length = G.edist u v :=
   (reachable_of_edist_ne_top h).exists_walk_length_eq_edist
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem edist_triangle : G.edist u w ≤ G.edist u v + G.edist v w := by
   cases eq_or_ne (G.edist u v) ⊤ with
   | inl huv => simp [huv]
@@ -121,7 +120,6 @@ lemma exists_walk_of_edist_eq_coe {k : ℕ} (h : G.edist u v = k) :
   have ⟨p, hp⟩ := exists_walk_of_edist_ne_top this
   ⟨p, Nat.cast_injective (hp.trans h)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma edist_ne_top_iff_reachable : G.edist u v ≠ ⊤ ↔ G.Reachable u v := by
   refine ⟨reachable_of_edist_ne_top, fun h ↦ ?_⟩
   by_contra hx

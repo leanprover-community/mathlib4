@@ -416,7 +416,6 @@ lemma height_le_coe_iff {x : α} {n : ℕ} : height x ≤ n ↔ ∀ y < x, heigh
 lemma coheight_le_coe_iff {x : α} {n : ℕ} : coheight x ≤ n ↔ ∀ y > x, coheight y < n :=
   height_le_coe_iff (α := αᵒᵈ)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The height of an element is infinite iff there exist series of arbitrary length ending in that
 element.
@@ -497,7 +496,6 @@ lemma coe_lt_coheight_iff {x : α} {n : ℕ} (hfin : coheight x < ⊤) :
     n < coheight x ↔ ∃ y > x, coheight y = n :=
   coe_lt_height_iff (α := αᵒᵈ) hfin
 
-set_option backward.isDefEq.respectTransparency false in
 lemma height_eq_coe_add_one_iff {x : α} {n : ℕ} :
     height x = n + 1 ↔ height x < ⊤ ∧ (∃ y < x, height y = n) ∧ (∀ y < x, height y ≤ n) := by
   wlog hfin : height x < ⊤
@@ -537,7 +535,6 @@ lemma coheight_eq_coe_iff {x : α} {n : ℕ} :
       coheight x < ⊤ ∧ (n = 0 ∨ ∃ y > x, coheight y = n - 1) ∧ (∀ y > x, coheight y < n) :=
   height_eq_coe_iff (α := αᵒᵈ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The elements of finite height `n` are the minimal elements among those of height `≥ n`. -/
 lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
     height a = n ↔ Minimal (fun y => n ≤ height y) a := by
@@ -708,7 +705,6 @@ lemma krullDim_eq_top [InfiniteDimensionalOrder α] :
       WithTop.some_eq_coe, ← WithTop.coe_natCast, WithTop.coe_lt_coe]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma krullDim_eq_top_iff : krullDim α = ⊤ ↔ InfiniteDimensionalOrder α := by
   refine ⟨fun h ↦ ?_, fun _ ↦ krullDim_eq_top⟩
   cases isEmpty_or_nonempty α
@@ -807,7 +803,6 @@ lemma krullDim_eq_iSup_coheight_of_nonempty [Nonempty α] :
     krullDim α = ↑(⨆ (a : α), coheight a) := by
   simpa using krullDim_eq_iSup_height_of_nonempty (α := αᵒᵈ)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The Krull dimension is the supremum of the elements' height plus coheight.
 -/
@@ -1074,7 +1069,6 @@ lemma krullDim_enat : krullDim ℕ∞ = ⊤ := by
   change (krullDim (WithTop ℕ) = ⊤)
   simp [← WithBot.coe_top, ← WithBot.coe_one, ← WithBot.coe_add]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma height_enat (n : ℕ∞) : height n = n := by
   cases n with

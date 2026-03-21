@@ -155,7 +155,6 @@ theorem Finite.exists_encard_eq_coe (h : s.Finite) : ∃ (n : ℕ), s.encard = n
 @[simp] theorem encard_lt_top_iff : s.encard < ⊤ ↔ s.Finite :=
   ⟨fun h ↦ by_contra fun h' ↦ h.ne (Infinite.encard_eq h'), Finite.encard_lt_top⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem encard_eq_top_iff : s.encard = ⊤ ↔ s.Infinite := by
   contrapose!
   rw [← lt_top_iff_ne_top, encard_lt_top_iff]
@@ -451,7 +450,6 @@ theorem exists_subset_encard_eq {k : ℕ∞} (hk : k ≤ s.encard) : ∃ t, t �
     exact ⟨insert x t₀, insert_subset hx.1 ht₀s, by rw [encard_insert_of_notMem hx.2, ht₀]⟩
   | top => rw [top_le_iff] at hk; exact ⟨s, Subset.rfl, hk⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_superset_subset_encard_eq {k : ℕ∞}
     (hst : s ⊆ t) (hsk : s.encard ≤ k) (hkt : k ≤ t.encard) :
     ∃ r, s ⊆ r ∧ r ⊆ t ∧ r.encard = k := by
