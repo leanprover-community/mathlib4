@@ -43,6 +43,17 @@ lemma Measure.integrable_toReal_rnDeriv [IsFiniteMeasure μ] :
   integrable_toReal_of_lintegral_ne_top (Measure.measurable_rnDeriv _ _).aemeasurable
     (Measure.lintegral_rnDeriv_lt_top _ _).ne
 
+lemma _root_.ConvexOn.continuousOn_Ici {y : ℝ} (hf_cvx : ConvexOn ℝ (Ici y) f)
+    (hf_cont : ContinuousWithinAt f (Ici y) y) :
+    ContinuousOn f (Ici y) := by
+  intro x hx
+  rcases eq_or_lt_of_le (α := ℝ) hx with rfl | hx_pos
+  · exact hf_cont
+  · have h := hf_cvx.continuousOn_interior x
+    simp only [nonempty_Iio, interior_Ici', mem_Ioi] at h
+    rw [continuousWithinAt_iff_continuousAt (Ioi_mem_nhds hx_pos)] at h
+    exact (h hx_pos).continuousWithinAt
+
 /-- For a convex continuous function `f` on `[0, ∞)`, if `μ` is absolutely continuous
 with respect to a probability measure `ν`, then
 `f μ.real univ ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`. -/
@@ -50,14 +61,7 @@ lemma le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsProbabilityMeasure ν]
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousWithinAt f (Ici 0) 0)
     (hf_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν) (hμν : μ ≪ ν) :
     f (μ.real univ) ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν := by
-  have hf_cont' : ContinuousOn f (Ici 0) := by
-    intro x hx
-    rcases eq_or_lt_of_le (α := ℝ) (hx : 0 ≤ x) with rfl | hx_pos
-    · exact hf_cont
-    · have h := hf_cvx.continuousOn_interior x
-      simp only [nonempty_Iio, interior_Ici', mem_Ioi] at h
-      rw [continuousWithinAt_iff_continuousAt (Ioi_mem_nhds hx_pos)] at h
-      exact (h hx_pos).continuousWithinAt
+  have hf_cont' : ContinuousOn f (Ici 0) := hf_cvx.continuousOn_Ici hf_cont
   calc f (μ.real univ)
     = f (∫ x, (μ.rnDeriv ν x).toReal ∂ν) := by rw [Measure.integral_toReal_rnDeriv hμν]
   _ ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν := by
@@ -140,14 +144,7 @@ lemma _root_.ConvexOn.apply_rnDeriv_ae_le_integral (hf : StronglyMeasurable f)
     (hκη : μ ⊗ₘ κ ≪ μ ⊗ₘ η) :
     (fun a ↦ f (μ.rnDeriv ν a).toReal)
       ≤ᵐ[ν] fun a ↦ ∫ b, f ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) (a, b)).toReal ∂(η a) := by
-  have hf_cont : ContinuousOn f (Ici 0) := by
-    intro x hx
-    rcases eq_or_lt_of_le (α := ℝ) (hx : 0 ≤ x) with rfl | hx_pos
-    · exact hf_cont_at
-    · have h := hf_cvx.continuousOn_interior x (by simpa)
-      simp only [nonempty_Iio, interior_Ici',
-        continuousWithinAt_iff_continuousAt (Ioi_mem_nhds hx_pos)] at h
-      exact h.continuousWithinAt
+  have hf_cont : ContinuousOn f (Ici 0) := hf_cvx.continuousOn_Ici hf_cont_at
   have h_lt_top : ∀ᵐ a ∂ν, ∀ᵐ b ∂η a, (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) (a, b) < ∞ :=
     Measure.ae_ae_of_ae_compProd <| (μ ⊗ₘ κ).rnDeriv_lt_top (ν ⊗ₘ η)
   have h_integrable : Integrable (fun x ↦ ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) x).toReal) (ν ⊗ₘ η) :=
@@ -193,14 +190,7 @@ lemma _root_.ConvexOn.integrable_apply_rnDeriv_of_integrable_compProd (hf : Stro
     (hf_int : Integrable (fun p ↦ f ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) p).toReal) (ν ⊗ₘ η))
     (hκη : μ ⊗ₘ κ ≪ μ ⊗ₘ η) :
     Integrable (fun a ↦ f (μ.rnDeriv ν a).toReal) ν := by
-  have hf_cont : ContinuousOn f (Ici 0) := by
-    intro x hx
-    rcases eq_or_lt_of_le (α := ℝ) (hx : 0 ≤ x) with rfl | hx_pos
-    · exact hf_cont_at
-    · have h := hf_cvx.continuousOn_interior x (by simpa)
-      simp only [nonempty_Iio, interior_Ici',
-        continuousWithinAt_iff_continuousAt (Ioi_mem_nhds hx_pos)] at h
-      exact h.continuousWithinAt
+  have hf_cont : ContinuousOn f (Ici 0) := hf_cvx.continuousOn_Ici hf_cont_at
   obtain ⟨c, c', h⟩ : ∃ c c', ∀ x, 0 ≤ x → c * x + c' ≤ f x :=
     hf_cvx.exists_affine_le_real isClosed_Ici hf_cont.lowerSemicontinuousOn
   refine integrable_of_le_of_le (f := fun a ↦ f (μ.rnDeriv ν a).toReal)
