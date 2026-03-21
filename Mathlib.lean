@@ -3868,7 +3868,6 @@ public import Mathlib.Data.Int.SuccPred
 public import Mathlib.Data.Int.WithZero
 public import Mathlib.Data.List.AList
 public import Mathlib.Data.List.Basic
-public import Mathlib.Data.List.BirdWadler
 public import Mathlib.Data.List.Chain
 public import Mathlib.Data.List.ChainOfFn
 public import Mathlib.Data.List.Count
@@ -3881,6 +3880,7 @@ public import Mathlib.Data.List.Duplicate
 public import Mathlib.Data.List.Enum
 public import Mathlib.Data.List.FinRange
 public import Mathlib.Data.List.Flatten
+public import Mathlib.Data.List.Fold
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.GetD
 public import Mathlib.Data.List.Indexes

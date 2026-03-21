@@ -90,14 +90,24 @@ theorem foldf_cons_nil : l.foldf cons [] = l.reverse := by simp
 theorem foldf_append {l' : List α} : (l ++ l').foldf f b = l'.foldf f (l.foldf f b) := by
   induction l generalizing b <;> simp [*]
 
-theorem foldl_permute [hv : RightCommutative v] : l.foldl v (v b a) = v (l.foldl v b) a := by
+theorem foldl_cons_eq_apply_foldl [hv : RightCommutative v] :
+    (a :: l).foldl v b = v (l.foldl v b) a := by
+  rw [foldl_cons]
   induction l generalizing a b <;> simp [*, hv.right_comm]
 
-theorem foldf_permute [hf : LeftCommutative f] : l.foldf f (f a b) = f a (l.foldf f b) := by
+theorem foldf_cons_eq_apply_foldf [hf : LeftCommutative f] :
+    (a :: l).foldf f b = f a (l.foldf f b) := by
+  rw [foldf_cons]
   induction l generalizing b <;> simp [*, hf.left_comm]
 
-theorem foldr_permute [hf : LeftCommutative f] : l.foldr f (f a b) = f a (l.foldr f b) := by
-  induction l <;> simp [*, hf.left_comm]
+theorem foldr_cons_eq_foldr_apply [hf : LeftCommutative f] :
+    (a :: l).foldr f b = foldr f (f a b) l := by
+  rw [foldr_cons]
+  induction l generalizing a b <;> simp [*, hf.left_comm]
+
+theorem foldl1_eq_foldr1 {f : α → α → α} [ha : Std.Associative f] {a b : α} :
+    f (l.foldl f a) b = f a (l.foldr f b) := by
+  induction l generalizing a <;> simp [*, ha.assoc]
 
 /-- First Bird–Wadler duality theorem. -/
 theorem foldl_eq_foldr_of_commute {f : α → α → α} [Std.Associative f] (ha : ∀ x, f a x = f x a) :
@@ -111,7 +121,7 @@ theorem foldl_eq_foldr {f : α → α → α} [hf : Std.Commutative f] [Std.Asso
 
 /-- Second Bird–Wadler duality theorem. -/
 theorem foldf_eq_foldr [LeftCommutative f] : l.foldf f b = l.foldr f b := by
-  induction l <;> simp [*, foldf_permute]
+  induction l <;> simp [*, foldf_cons_eq_apply_foldf, -foldf_cons]
 
 theorem foldl_flip_eq_foldr [LeftCommutative f] : l.foldl (flip f) b = l.foldr f b := by
   rw [foldl_flip_eq_foldf, foldf_eq_foldr]
@@ -131,16 +141,11 @@ Corresponds to `foldr_reverse` and `foldl_eq_foldr_reverse` in the standard libr
 theorem foldr_reverse_eq_foldf : l.reverse.foldr f b = l.foldf f b := by
   induction l generalizing b <;> simp [*]
 
-@[deprecated (since := "2026-02-24")] alias foldl_eq_of_comm' := foldl_permute
-@[deprecated (since := "2026-02-24")] alias foldr_eq_of_comm' := foldr_permute
+@[deprecated (since := "2026-02-24")] alias foldl_eq_of_comm' := foldl_cons_eq_apply_foldl
+@[deprecated (since := "2026-02-24")] alias foldr_eq_of_comm' := foldr_cons_eq_foldr_apply
 @[deprecated (since := "2026-02-24")] alias foldl_eq_foldr' := foldr_flip_eq_foldl
-
-theorem foldl1_eq_foldr1 {f : α → α → α} [ha : Std.Associative f] {a b : α} :
-    f (l.foldl f a) b = f a (l.foldr f b) := by
-  induction l generalizing a <;> simp [*, ha.assoc]
-
-@[deprecated (since := "2026-02-24")] alias foldl_eq_of_comm_of_assoc := foldl_permute
+@[deprecated (since := "2026-02-24")] alias foldl_eq_of_comm_of_assoc := foldl_cons_eq_apply_foldl
 @[deprecated (since := "2026-02-24")] alias foldl_op_eq_op_foldr_assoc := foldl1_eq_foldr1
-@[deprecated (since := "2026-02-24")] alias foldl_assoc_comm_cons := foldl_permute
+@[deprecated (since := "2026-02-24")] alias foldl_assoc_comm_cons := foldl_cons_eq_apply_foldl
 
 end List
