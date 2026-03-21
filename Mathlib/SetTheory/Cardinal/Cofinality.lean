@@ -468,16 +468,17 @@ theorem le_cof_iff_lsub {o : Ordinal} {a : Cardinal} :
         rw [← hb]
         exact H _ hf⟩
 
+@[deprecated lift_iSup_add_one_lt_of_lt_cof (since := "2026-03-21")]
 theorem lsub_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal}
     (hι : Cardinal.lift.{v, u} #ι < c.cof)
-    (hf : ∀ i, f i < c) : lsub.{u, v} f < c :=
-  lt_of_le_of_ne (lsub_le hf) fun h => by
-    subst h
-    exact (cof_lsub_le_lift.{u, v} f).not_gt hι
+    (hf : ∀ i, f i < c) : lsub.{u, v} f < c := by
+  apply lift_iSup_add_one_lt_of_lt_cof _ hf
+  rwa [Cardinal.lift_umax, c.lift_id']
 
+@[deprecated iSup_add_one_lt_of_lt_cof (since := "2026-03-21")]
 theorem lsub_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
     (∀ i, f i < c) → lsub.{u, u} f < c :=
-  lsub_lt_ord_lift (by rwa [(#ι).lift_id])
+  iSup_add_one_lt_of_lt_cof hι
 
 theorem cof_iSup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
     cof (iSup f) ≤ Cardinal.lift.{v, u} #ι := by
