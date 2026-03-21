@@ -186,25 +186,31 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
     filter_upwards [this] with z hz
     simp_all
 
+/-- **Jensen's Formula** specialized to the case that `f` is analytic and `f c ≠ 0`. -/
 theorem AnalyticOnNhd.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → ℂ} (hR : R ≠ 0)
     (h₁f : AnalyticOnNhd ℂ f (closedBall c |R|))
     (h₂f : f c ≠ 0) :
     circleAverage (Real.log ‖f ·‖) c R
-      = ∑ᶠ u, divisor f (closedBall c |R|) u * Real.log (R * ‖c - u‖⁻¹)
-        + Real.log ‖f c‖ := by
+      = ∑ᶠ u, divisor f (closedBall c |R|) u * Real.log (R * ‖c - u‖⁻¹) + Real.log ‖f c‖ := by
   rw [h₁f.meromorphicOn.circleAverage_log_norm hR, h₁f.divisor_apply (by simp),
     (h₁f c (by simp)).analyticOrderAt_eq_zero.mpr h₂f,
     (h₁f c (by simp)).meromorphicTrailingCoeffAt_of_ne_zero h₂f]
   simp
 
-theorem AnalyticOnNhd.count_zeros_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (r_pos : 0 < |r|)
+/--
+**Jensen's Inequality**: Estimates the number of zeros of `f` in a ball of radius `r`
+given that `f` is analytic and bounded by `M` on a larger ball of radius `R`.
+-/
+theorem AnalyticOnNhd.sum_divisor_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (r_pos : 0 < |r|)
     (r_lt_R : |r| < |R|) (hM : 1 ≤ M) (h₁f : AnalyticOnNhd ℂ f (closedBall c |R|))
     (h₂f : f c ≠ 0)
     (f_bound : ∀ z ∈ sphere c |R|, ‖f z‖ ≤ M) :
     ∑ᶠ u, divisor f (closedBall c |r|) u ≤ Real.log (M / ‖f c‖) / Real.log (R / r) := by
+  -- Push the coerssion inside the sum
   trans ∑ᶠ u, (divisor f (closedBall c |r|) u : ℝ)
   · exact map_finsum (Int.castRingHom ℝ)
       ((divisor _ _).finiteSupport <| isCompact_closedBall ..) |>.le
+  -- Rearrange: move `log R/r` to the LHS and inside the sum.
   suffices ∑ᶠ u, divisor f (closedBall c |r|) u * Real.log (R / r) ≤ Real.log (M / ‖f c‖) by
     conv at this => lhs; arg 1; ext; rw [← smul_eq_mul]
     rw [← finsum_smul, smul_eq_mul] at this
@@ -214,26 +220,30 @@ theorem AnalyticOnNhd.count_zeros_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
     rw [abs_div]
     exact one_lt_div r_pos|>.mpr r_lt_R
   have jensen := h₁f.circleAverage_log_norm (abs_ne_zero.mp (by linarith)) h₂f
-  have : circleAverage (fun x ↦ Real.log ‖f x‖) c R ≤ Real.log M := by
+  -- Estimate the circleAverage using the bound on f
+  have integral_bound : circleAverage (fun x ↦ Real.log ‖f x‖) c R ≤ Real.log M := by
     apply circleAverage_mono_on_of_le_circle
-    · exact circleIntegrable_log_norm_meromorphicOn 
+    · exact circleIntegrable_log_norm_meromorphicOn
         (h₁f.mono sphere_subset_closedBall).meromorphicOn
     · intro z hz
       by_cases! h : f z = 0
       · simpa [h] using log_nonneg hM
       · exact log_le_log (norm_pos_iff.mpr h) (f_bound z hz)
   calc
+  -- Bound by the sum from Jensen's formula
   _ ≤ ∑ᶠ u, ((divisor f (closedBall c |R|)) u) * Real.log (R * ‖c - u‖⁻¹) := by
     refine finsum_le_finsum' ?_ ?_ fun u ↦ ?_
-    · exact (divisor f (closedBall c |r|)).finiteSupport (isCompact_closedBall ..) |>.subset 
+    · exact (divisor f (closedBall c |r|)).finiteSupport (isCompact_closedBall ..) |>.subset
         fun _ _ ↦ (by simp_all)
     · exact (divisor f (closedBall c |R|)).finiteSupport (isCompact_closedBall ..) |>.subset
         fun _ _ ↦ (by simp_all)
-    · by_cases h1 : u ∈ closedBall c |R|
+    · -- Core bound: estimate the summand by splitting on which ball u is in
+      by_cases h1 : u ∈ closedBall c |R|
       · by_cases h2 : u ∈ closedBall c |r|
-        · simp only [(h₁f.mono (closedBall_subset_closedBall r_lt_R.le)), h2,
+        · --In the smaller ball: the divisors agree and we bound the log factor
+          simp only [(h₁f.mono (closedBall_subset_closedBall r_lt_R.le)), h2,
             AnalyticOnNhd.divisor_apply, h₁f, h1]
-          by_cases! h3 : u = c
+          by_cases! h3 : u = c --Need to use that the divisor is 0 at c rather than comparing the logs
           · rw [h3, (h₁f c (by simp)).analyticOrderAt_eq_zero.mpr h₂f]
             simp
           gcongr 1
@@ -246,9 +256,10 @@ theorem AnalyticOnNhd.count_zeros_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
               · exact norm_pos_iff.mpr (by grind)
               · simp only [mem_closedBall, dist_eq_norm_sub'] at h2
                 exact h2
-        · simp only [h2, not_false_eq_true, Function.locallyFinsuppWithin.apply_eq_zero_of_notMem,
+        · --In the larger ball but not the smaller so LHS is 0 and RHS nonnegative
+          simp only [h2, not_false_eq_true, Function.locallyFinsuppWithin.apply_eq_zero_of_notMem,
           Int.cast_zero, zero_mul]
-          apply mul_nonneg
+          refine mul_nonneg ?_ ?_
           · norm_cast
             apply h₁f.divisor_nonneg
           · rw [← log_one]
@@ -260,10 +271,11 @@ theorem AnalyticOnNhd.count_zeros_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
               exact lt_of_le_of_lt (abs_nonneg r) h2
             · simp only [mem_closedBall, dist_eq_norm_sub'] at h1
               exact h1
-      · have : u ∉ closedBall c |r| := by
+      · --Outside the larger ball so both sides are 0
+        have : u ∉ closedBall c |r| := by
           simp_all
           linarith
         simp [h1, this]
-  _ ≤ Real.log M - Real.log ‖f c‖ := by linarith
+  _ ≤ Real.log M - Real.log ‖f c‖ := by linarith --Uses jensen and integral_bound
   _ = _ := by
     rw [← log_div (by linarith) (norm_ne_zero_iff.mpr h₂f)]
