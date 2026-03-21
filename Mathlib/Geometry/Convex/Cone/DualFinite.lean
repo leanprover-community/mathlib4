@@ -28,8 +28,6 @@ In finite dimensional vector spaces, FG is equivalent to FGDual by the Minkowski
 
 namespace PointedCone
 
-open Module Function
-
 variable {R M N : Type*}
 variable [CommRing R] [PartialOrder R] [IsOrderedRing R]
 variable [AddCommGroup M] [Module R M]
@@ -50,11 +48,11 @@ lemma FGDual.exists_fg_dual {C : PointedCone R N} (hC : C.FGDual p) :
     ∃ D : PointedCone R M, D.FG ∧ dual p D = C := by
   obtain ⟨s, hs⟩ := hC; exact ⟨_, Submodule.fg_span s.finite_toSet, by simp [hs]⟩
 
-/-- An FGDual cone is FGDual w.r.t. the standard pairing. -/
-lemma FGDual.to_id {C : PointedCone R N} (hC : C.FGDual p) : C.FGDual .id := by classical
-  obtain ⟨s, hs⟩ := hC
+/-- An FGDual cone is FGDual w.r.t. the identity pairing. -/
+lemma FGDual.to_fgdual_id {C : PointedCone R N} (hC : C.FGDual p) : C.FGDual .id := by classical
+  obtain ⟨s, rfl⟩ := hC
   use Finset.image p s
-  simp [← dual_id, hs]
+  simp
 
 variable (p) in
 /-- The dual of a finite set is FGDual. -/
