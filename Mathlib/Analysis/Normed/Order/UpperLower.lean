@@ -120,7 +120,6 @@ end Finite
 section Fintype
 variable [Fintype ι] {s : Set (ι → ℝ)} {a₁ a₂ b₁ b₂ x y : ι → ℝ} {δ : ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: Generalise those lemmas so that they also apply to `ℝ` and `EuclideanSpace ι ℝ`
 lemma dist_inf_sup_pi (x y : ι → ℝ) : dist (x ⊓ y) (x ⊔ y) = dist x y := by
   refine congr_arg NNReal.toReal (Finset.sup_congr rfl fun i _ ↦ ?_)

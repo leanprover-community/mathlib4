@@ -256,7 +256,7 @@ instance (priority := 100) {X} [Infinite X] : IrreducibleSpace (CofiniteTopology
 
 theorem irreducibleComponents_eq_singleton [IrreducibleSpace X] :
     irreducibleComponents X = {univ} :=
-  Set.ext fun _ ↦ IsGreatest.maximal_iff (s := IsIrreducible (X := X))
+  Set.ext fun _ ↦ IsGreatest.maximal_iff (s := {s : Set X | IsIrreducible s})
     ⟨IrreducibleSpace.isIrreducible_univ X, fun _ _ ↦ Set.subset_univ _⟩
 
 /-- A set `s` is irreducible if and only if
@@ -290,7 +290,6 @@ theorem isPreirreducible_iff_isClosed_union_isClosed :
   refine forall₂_congr fun _ _ => ?_
   rw [← and_imp, ← not_or, not_imp_not]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A set is irreducible if and only if for every cover by a finite collection of closed sets, it is
 contained in one of the members of the collection. -/
 theorem isIrreducible_iff_sUnion_isClosed :
@@ -413,7 +412,7 @@ lemma IsIrreducible.preimage (ht : IsIrreducible t) {f : Y → X}
 
 lemma preimage_mem_irreducibleComponents_of_isPreirreducible_fiber
     (ht : t ∈ irreducibleComponents X) {f : Y → X} (hf₁ : Continuous f) (hf₂ : IsOpenMap f)
-    (hf₃ : ∀ x, IsPreirreducible (f ⁻¹'{x})) (h : (t ∩ range f).Nonempty) :
+    (hf₃ : ∀ x, IsPreirreducible (f ⁻¹' {x})) (h : (t ∩ range f).Nonempty) :
     f ⁻¹' t ∈ irreducibleComponents Y := by
   refine ⟨ht.1.preimage_of_isPreirreducible_fiber f hf₂ hf₃ h, fun u hu htu ↦ image_subset_iff.mp
     (subset_closure.trans (ht.2 (hu.image f hf₁.continuousOn).closure ?_))⟩

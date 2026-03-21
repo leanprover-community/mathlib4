@@ -17,7 +17,8 @@ and components.
 
 ## Main definitions
 
-- `H ≤ G` (`Graph.IsSubgraph`): the subgraph relation as a partial order on graphs.
+- `H ≤ G`: the subgraph relation as a partial order on graphs. This is the preferred spelling over
+  `H.IsSubgraph G` which it is definitionally equal to.
 - `H ≤s G` (`Graph.IsSpanningSubgraph`): `H` has the same vertex set as `G`.
 - `H ≤i G` (`Graph.IsInducedSubgraph`): `H` contains every ambient link between its vertices.
 - `H ≤c G` (`Graph.IsClosedSubgraph`): `H` is a union of components of `G`.
@@ -28,9 +29,17 @@ Following the overall design of `Graph`, subgraphs are terms of the same type `G
 rather than a separate `Subgraph` structure. This allows us to reuse notation and lemmas
 uniformly and to express the subgraph order directly as a partial order on `Graph α β`.
 
+`G ≤ H` is the canonical spelling for "G is a subgraph of H". This is definitionally equal to
+`G.IsSubgraph H` which exists only for implementation reasons.
+The explicit `IsSubgraph` structure is defined so that stronger subgraph notions
+(such as `IsSpanningSubgraph`, `IsInducedSubgraph`, and `IsClosedSubgraph`) can extend it.
+This allows them to inherit fundamental fields and lemmas like `vertexSet_mono` and `edgeSet_mono`
+without lemma duplication. However, in statements and proofs, users use `G ≤ H` instead.
+The relation `≤` is the `simp` normal form, and the API is developed entirely in terms of it.
+
 ## Tags
 
-graphs, subgraph, induced subgraph, spanning subgraph, closed subgraph, component
+graphs, subgraph, induced subgraph, spanning subgraph, closed subgraph
 -/
 
 @[expose] public section
@@ -44,11 +53,14 @@ open scoped Sym2
 
 namespace Graph
 
-/-- `H ≤ G` (`Graph.IsSubgraph`) means `V(H) ⊆ V(G)` and every link of `H` is a link of `G`. -/
+section Subgraph
+
+/-- `IsSubgraph H G` is NOT the preferred spelling for the subgraph relation. Please use
+`H ≤ G` instead. -/
 @[mk_iff]
 structure IsSubgraph (H G : Graph α β) : Prop where
-  vertexSet_mono : V(H) ⊆ V(G)
-  isLink_mono : ∀ ⦃e x y⦄, H.IsLink e x y → G.IsLink e x y
+  vertexSet_mono : V(H) ⊆ V(G) := by aesop
+  isLink_mono : ∀ ⦃e x y⦄, H.IsLink e x y → G.IsLink e x y := by aesop
 
 attribute [gcongr, grind →] IsSubgraph.vertexSet_mono
 
@@ -58,13 +70,16 @@ lemma IsSubgraph.trans (h₁ : H.IsSubgraph G) (h₂ : G.IsSubgraph G₁) : H.Is
 lemma IsSubgraph.antisymm (h₁ : H.IsSubgraph G) (h₂ : G.IsSubgraph H) : H = G :=
   Graph.ext (h₁.1.antisymm h₂.1) fun _ _ _ ↦ ⟨(h₁.2 ·), (h₂.2 ·)⟩
 
-/-- `H ≤ G` means `V(H) ⊆ V(G)` and every link of `H` is a link of `G`. The subgraph order is a
-partial order on graphs. -/
+/-- `H ≤ G` means `H` is a subgraph of `G`. It is defined as `V(H) ⊆ V(G)` and every link of `H`
+being a link of `G`. -/
 instance : PartialOrder (Graph α β) where
   le := IsSubgraph
   le_refl _ := ⟨le_rfl, fun _ _ _ h ↦ h⟩
   le_trans _ _ _ h₁ h₂ := h₁.trans h₂
   le_antisymm G H h₁ h₂ := h₁.antisymm h₂
+
+@[simp]
+lemma isSubgraph_iff_le : H.IsSubgraph G ↔ H ≤ G := .rfl
 
 @[gcongr]
 lemma IsLink.mono (hHG : H ≤ G) (h : H.IsLink e x y) : G.IsLink e x y := hHG.2 h
@@ -94,9 +109,9 @@ lemma IsSubgraph.isLink_eqOn (hHG : H ≤ G) : EqOn H.IsLink G.IsLink E(H) := by
 lemma Compatible.of_le_le (hH₁G : H₁ ≤ G) (hH₂G : H₂ ≤ G) : H₁.Compatible H₂ :=
   fun _ he₁ he₂ _ _ ↦ hH₁G.isLink_iff he₁ |>.trans <| (hH₂G.isLink_iff he₂).symm
 
-lemma Compatible.of_le (hHG : H ≤ G) : H.Compatible G := Compatible.of_le_le hHG le_rfl
+lemma Compatible.of_le (hHG : H ≤ G) : H.Compatible G := .of_le_le hHG le_rfl
 
-lemma Compatible.of_ge (hHG : G ≤ H) : H.Compatible G := Compatible.of_le_le hHG le_rfl |>.symm
+lemma Compatible.of_ge (hHG : G ≤ H) : H.Compatible G := .of_le_le le_rfl hHG
 
 lemma Compatible.anti_left (hG₁G : G₁ ≤ G) (h : Compatible G H) : Compatible G₁ H :=
   fun _ he₁ he₂ _ _ ↦ hG₁G.isLink_iff he₁ |>.trans <| h (hG₁G.edgeSet_mono he₁) he₂ ..
@@ -165,6 +180,10 @@ lemma vertexSet_ssubset_or_edgeSet_ssubset_of_lt (hGH : G < H) : V(G) ⊂ V(H) �
   by_contra! heq
   exact hGH.2 <| (Compatible.of_le_le hGH.1 le_rfl).ext heq.1 heq.2
 
+end Subgraph
+
+section SpanningSubgraph
+
 /-! ### Spanning Subgraphs -/
 
 /-- `H ≤s G` (`Graph.IsSpanningSubgraph`) is a subgraph of `G` with the same vertex set. -/
@@ -177,7 +196,7 @@ infixl:50 " ≤s " => Graph.IsSpanningSubgraph
 
 namespace IsSpanningSubgraph
 
-alias le := toIsSubgraph
+protected alias le := toIsSubgraph
 
 protected lemma trans (h₁ : G ≤s G₁) (h₂ : G₁ ≤s G₂) : G ≤s G₂ :=
   ⟨h₁.le.trans h₂.le, h₁.vertexSet_eq.trans h₂.vertexSet_eq⟩
@@ -187,9 +206,7 @@ instance : IsPartialOrder (Graph α β) (· ≤s ·) where
   trans _ _ _ h₁ h₂ := h₁.trans h₂
   antisymm _ _ h₁ h₂ := h₁.1.antisymm h₂.1
 
-lemma rfl : G ≤s G where
-  toIsSubgraph := le_refl G
-  vertexSet_eq := _root_.rfl
+@[simp] protected lemma rfl : G ≤s G := refl G
 
 lemma anti_right (hHK : H ≤ K) (hKG : K ≤ G) (h : H ≤s G) : H ≤s K where
   toIsSubgraph := hHK
@@ -203,6 +220,10 @@ lemma ext_of_edgeSet (hE : E(H) = E(G)) (h : H ≤s G) : H = G :=
   (Compatible.of_le h.le).ext h.vertexSet_eq hE
 
 end IsSpanningSubgraph
+
+end SpanningSubgraph
+
+section InducedSubgraph
 
 /-! ### Induced Subgraphs -/
 
@@ -228,9 +249,7 @@ instance : IsPartialOrder (Graph α β) (· ≤i ·) where
   trans _ _ _ h₁ h₂ := h₁.trans h₂
   antisymm _ _ h₁ h₂ := h₁.1.antisymm h₂.1
 
-lemma rfl : G ≤i G where
-  toIsSubgraph := le_refl G
-  isLink_of_mem_mem _ _ _ h _ _ := h
+@[simp] protected lemma rfl : G ≤i G := refl G
 
 lemma isLink_congr (hx : x ∈ V(H)) (hy : y ∈ V(H)) (h : H ≤i G) :
     H.IsLink e x y ↔ G.IsLink e x y :=
@@ -254,6 +273,17 @@ lemma ext_of_vertexSet (hV : V(H) = V(G)) (h : H ≤i G) : H = G :=
     exact h.isLink_of_mem_mem hxy (hV ▸ hxy.left_mem) (hV ▸ hxy.right_mem) |>.edge_mem
 
 end IsInducedSubgraph
+
+lemma IsSubgraph.not_isInducedSubgraph_iff (hHG : H ≤ G) :
+    ¬ H ≤i G ↔ ∃ e x y, G.IsLink e x y ∧ x ∈ V(H) ∧ y ∈ V(H) ∧ e ∉ E(H) := by
+  rw [not_iff_comm]
+  push_neg
+  exact ⟨fun hnind ↦ ⟨hHG, fun e x y hxy hx hy => hxy.anti_of_mem hHG (hnind e x y hxy hx hy)⟩,
+    fun hind _ _ _ hexy hx hy ↦ hind.isLink_of_mem_mem hexy hx hy |>.edge_mem⟩
+
+end InducedSubgraph
+
+section ClosedSubgraph
 
 /-! ### Closed Subgraphs -/
 
@@ -281,8 +311,7 @@ instance : IsPartialOrder (Graph α β) (· ≤c ·) where
   trans _ _ _ h₁ h₂ := h₁.trans h₂
   antisymm _ _ h₁ h₂ := h₁.le.antisymm h₂.le
 
-@[simp]
-protected lemma rfl : G ≤c G := mk' le_rfl fun _ _ h _ ↦ h.edge_mem
+@[simp] protected lemma rfl : G ≤c G := refl G
 
 lemma inc_congr (hx : x ∈ V(H)) (hHG : H ≤c G) : H.Inc e x ↔ G.Inc e x :=
   ⟨(·.mono hHG.le), fun he ↦ he.of_compatible (Compatible.of_ge hHG.le) (hHG.closed he hx)⟩
@@ -313,12 +342,20 @@ lemma anti_right (hHG₁ : H ≤ G₁) (hG₁ : G₁ ≤ G) (hHG : H ≤c G) : H
 
 end IsClosedSubgraph
 
-lemma IsInducedSubgraph.not_isClosedSubgraph_iff (hHG : H ≤i G) :
+lemma IsInducedSubgraph.not_isClosedSubgraph_iff_exists_adj (hHG : H ≤i G) :
     ¬ H ≤c G ↔ ∃ x y, G.Adj x y ∧ x ∈ V(H) ∧ y ∉ V(H) := by
   rw [not_iff_comm]
   push_neg
   exact ⟨fun hncl ↦ ⟨hHG, fun e x ⟨y, hexy⟩ hxH =>
     hHG.isLink_of_mem_mem hexy hxH (hncl x y ⟨e, hexy⟩ hxH) |>.edge_mem⟩,
     fun hcl _ _ hexy ↦ (hcl.mem_iff_of_adj hexy).mp⟩
+
+lemma IsInducedSubgraph.not_isClosedSubgraph_iff_exists_isLink (hHG : H ≤i G) :
+    ¬ H ≤c G ↔ ∃ e x y, G.IsLink e x y ∧ x ∈ V(H) ∧ y ∉ V(H) := by
+  rw [hHG.not_isClosedSubgraph_iff_exists_adj]
+  unfold Adj
+  tauto
+
+end ClosedSubgraph
 
 end Graph

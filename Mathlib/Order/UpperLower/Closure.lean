@@ -241,7 +241,6 @@ protected alias ⟨BddAbove.of_lowerClosure, BddAbove.lowerClosure⟩ := bddAbov
 
 protected alias ⟨BddBelow.of_upperClosure, BddBelow.upperClosure⟩ := bddBelow_upperClosure
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma IsLowerSet.disjoint_upperClosure_left (ht : IsLowerSet t) :
     Disjoint ↑(upperClosure s) t ↔ Disjoint s t := by
   refine ⟨Disjoint.mono_left subset_upperClosure, ?_⟩
@@ -333,7 +332,6 @@ lemma erase_le : s.erase a ≤ s := diff_subset
 @[simp] protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by
   simp [← SetLike.coe_set_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma erase_eq : s.erase a = s ↔ a ∉ s := by rw [← sdiff_singleton]; simp [-sdiff_singleton]
 
 @[simp] lemma sdiff_lt_left : s.sdiff t < s ↔ ¬ Disjoint ↑s t :=
@@ -395,7 +393,6 @@ lemma le_erase : s ≤ s.erase a := diff_subset
 @[simp] protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by
   simp [← SetLike.coe_set_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma erase_eq : s.erase a = s ↔ a ∉ s := by rw [← sdiff_singleton]; simp [-sdiff_singleton]
 
 @[simp] lemma lt_sdiff_left : s < s.sdiff t ↔ ¬ Disjoint ↑s t :=
