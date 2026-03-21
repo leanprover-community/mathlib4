@@ -5,12 +5,15 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 module
 
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.RadonNikodym
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
+import Mathlib.Analysis.Convex.Approximation
 import Mathlib.Analysis.Convex.Deriv
 import Mathlib.InformationTheory.KullbackLeibler.ChainRule
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.RadonNikodym
 
 /-!
 # Data processing inequality for the Kullback-Leibler divergence
@@ -29,23 +32,16 @@ open scoped ENNReal
 
 namespace InformationTheory
 
-section FromCondJensenPR27953
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
-  {α : Type*} {f : α → E} {φ : E → ℝ} {m mα : MeasurableSpace α} {μ : Measure α} {s : Set E}
-
-theorem conditional_jensen (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
-    (hφ_cvx : ConvexOn ℝ s φ) (hφ_cont : LowerSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s)
-    (hs : IsClosed s) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
-    φ ∘ μ[f | m] ≤ᵐ[μ] μ[φ ∘ f | m] := by
-  sorry
-
-end FromCondJensenPR27953
-
 section Aux
 
 variable {α β : Type*} {m mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {μ ν : Measure α} {f : ℝ → ℝ}
+
+-- TODO: use continuity assumptions at 0 only
+
+-- TODO: better lemma names
+
+-- TODO: docstrings
 
 lemma f_condexp_rnDeriv_le [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hm : m ≤ mα)
     (hf : StronglyMeasurable f)
@@ -53,7 +49,7 @@ lemma f_condexp_rnDeriv_le [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hm : m ≤
     (h_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν) :
     (fun x ↦ f ((ν[fun x ↦ (μ.rnDeriv ν x).toReal | m]) x))
       ≤ᵐ[ν.trim hm] ν[fun x ↦ f (μ.rnDeriv ν x).toReal | m] := by
-  have h_ae := conditional_jensen hm hf_cvx hf_cont.lowerSemicontinuousOn
+  have h_ae := hf_cvx.map_condExp_le hm hf_cont.lowerSemicontinuousOn
     (ae_of_all _ fun _ ↦ ENNReal.toReal_nonneg) isClosed_Ici Measure.integrable_toReal_rnDeriv h_int
   rwa [StronglyMeasurable.ae_le_trim_iff]
   · fun_prop
@@ -85,7 +81,7 @@ lemma integrable_f_rnDeriv_map [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (h_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν) :
     Integrable (fun x ↦ f ((μ.map g).rnDeriv (ν.map g) x).toReal) (ν.map g) := by
   obtain ⟨c, c', h⟩ : ∃ c c', ∀ x, 0 ≤ x → c * x + c' ≤ f x :=
-    hf_cvx.exists_affine_le (convex_Ici 0)
+    hf_cvx.exists_affine_le_real isClosed_Ici hf_cont.lowerSemicontinuousOn
   rw [integrable_map_measure _ hg.aemeasurable]
   swap
   · refine (hf.comp_measurable ?_).aestronglyMeasurable
@@ -93,15 +89,13 @@ lemma integrable_f_rnDeriv_map [IsFiniteMeasure μ] [IsFiniteMeasure ν]
   refine integrable_of_le_of_le (f := fun x ↦ f ((∂μ.map g/∂ν.map g) (g x)).toReal)
     (g₁ := fun x ↦ c * ((∂μ.map g/∂ν.map g) (g x)).toReal + c')
     (g₂ := fun x ↦ (ν[fun x ↦ f (μ.rnDeriv ν x).toReal | m𝓨.comap g]) x)
-    ?_ ?_ ?_ ?_ ?_
-  · refine (hf.comp_measurable ?_).aestronglyMeasurable
-    exact ((Measure.measurable_rnDeriv _ _).comp hg).ennreal_toReal
+    ?_ ?_ ?_ ?_ integrable_condExp
+  · exact StronglyMeasurable.aestronglyMeasurable (by fun_prop)
   · exact ae_of_all _ (fun x ↦ h _ ENNReal.toReal_nonneg)
   · exact f_rnDeriv_map_le hμν hg hf hf_cvx hf_cont h_int
   · refine (Integrable.const_mul ?_ _).add (integrable_const _)
     rw [integrable_congr (toReal_rnDeriv_map hμν hg)]
     exact integrable_condExp
-  · exact integrable_condExp
 
 lemma f_rnDeriv_trim_le [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hm : m ≤ m𝓧) (hμν : μ ≪ ν)
     (hf : StronglyMeasurable f)
@@ -121,7 +115,7 @@ lemma integrable_f_rnDeriv_trim [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hm : 
     (h_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν) :
     Integrable (fun x ↦ f ((μ.trim hm).rnDeriv (ν.trim hm) x).toReal) (ν.trim hm) := by
   obtain ⟨c, c', h⟩ : ∃ c c', ∀ x, 0 ≤ x → c * x + c' ≤ f x :=
-    hf_cvx.exists_affine_le (convex_Ici 0)
+    hf_cvx.exists_affine_le_real isClosed_Ici hf_cont.lowerSemicontinuousOn
   refine integrable_of_le_of_le (f := fun x ↦ f ((∂μ.trim hm/∂ν.trim hm) x).toReal)
     (g₁ := fun x ↦ c * ((∂μ.trim hm/∂ν.trim hm) x).toReal + c')
     (g₂ := fun x ↦ (ν[fun x ↦ f (μ.rnDeriv ν x).toReal | m]) x)
