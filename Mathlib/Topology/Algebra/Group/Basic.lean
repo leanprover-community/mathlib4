@@ -146,7 +146,8 @@ theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
 
 @[to_additive]
 theorem smul_connectedComponent (g h : G) : g • connectedComponent h = connectedComponent (g * h) :=
-  (Homeomorph.mulLeft g).isQuotientMap.image_connectedComponent (by simp [isConnected_singleton]) h
+  (Homeomorph.mulLeft g).isQuotientMap.isCoinducing.image_connectedComponent
+    (by simp [isConnected_singleton]) h
 
 @[to_additive]
 theorem totallyDisconnectedSpace_iff_connectedComponent_one :
