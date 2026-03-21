@@ -364,6 +364,7 @@ theorem matches'_map (f : α → β) :
   | 1 => (map_one _).symm
   | char a => by
     rw [eq_comm]
+    ext1
     exact image_singleton
   | R + S => by simp only [matches'_map, map, matches'_add, map_add]
   | R * S => by simp [matches'_map]
