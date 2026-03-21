@@ -66,22 +66,38 @@ instance : Category TopPair where
   id X := { fst := 𝟙 X.fst, snd := 𝟙 X.snd }
   comp f g := ⟨f.fst ≫ g.fst, f.snd ≫ g.snd, (CommSq.horiz_comp ⟨f.snd_map⟩ ⟨g.snd_map⟩).w⟩
 
-/-- `TopPair` is isomorphic to the full subcategory of the comma category with twice the identity
+/-- `TopPair` is equivalent to the full subcategory of the comma category with twice the identity
 functor of TopCat on the morphisms that are inducing. -/
-def isoComma : TopPair ≅ MorphismProperty.Comma (𝟭 TopCat) (𝟭 TopCat)
+def equivComma : TopPair ≌ MorphismProperty.Comma (𝟭 TopCat) (𝟭 TopCat)
     (fun X Y f ↦ Topology.IsInducing (f : TopCat.Hom X Y)) ⊤ ⊤ where
-  hom X := {
-    left := X.snd
-    right := X.fst
-    hom := X.map
-    prop := X.isInducing_map
-  }
-  inv X := {
-    fst := X.right
-    snd := X.left
-    map := X.hom
-    isInducing_map := X.prop
-  }
+      functor := {
+        obj X := {
+          left := X.snd
+          right := X.fst
+          hom := X.map
+          prop := X.isInducing_map
+        }
+        map f := {
+          left := f.snd
+          right := f.fst
+          w := f.snd_map
+          prop_hom_left := by simp
+          prop_hom_right := by simp
+        }
+      }
+      inverse := {
+        obj X := {
+          fst := X.right
+          snd := X.left
+          map := X.hom
+          isInducing_map := X.prop
+        }
+        map f := { fst := f.right, snd := f.left, snd_map := f.w }
+      }
+      unitIso.hom.app := 𝟙
+      unitIso.inv.app := 𝟙
+      counitIso.hom.app := 𝟙
+      counitIso.inv.app := 𝟙
 
 /-- The functor from topological pairs to topological spaces that forgets the second space, ie. the
 projection to the first space. -/
