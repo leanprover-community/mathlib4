@@ -307,7 +307,6 @@ end Adjunction
 namespace Equivalence
 variable (e : C ≌ D) [e.functor.Braided] [e.inverse.Braided]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of categories lifts to an equivalence of their commutative group objects. -/
 @[simps] noncomputable def mapCommGrp : CommGrp C ≌ CommGrp D where
   functor := e.functor.mapCommGrp

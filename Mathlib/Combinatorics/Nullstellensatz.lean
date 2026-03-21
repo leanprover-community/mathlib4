@@ -195,6 +195,7 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
 
 variable [Finite σ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Combinatorial Nullstellensatz**.
 
 If `f` vanishes at every point `x : σ → R` such that `x s ∈ S s` for all `s`,

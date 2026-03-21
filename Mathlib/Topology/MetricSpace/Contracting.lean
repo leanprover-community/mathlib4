@@ -310,7 +310,6 @@ end
 
 variable [Nonempty α] [CompleteSpace α]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a map `f` has a contracting iterate `f^[n]`, then the fixed point of `f^[n]` is also a fixed
 point of `f`. -/
 theorem isFixedPt_fixedPoint_iterate {n : ℕ} (hf : ContractingWith K f^[n]) :

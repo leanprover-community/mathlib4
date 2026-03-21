@@ -128,7 +128,6 @@ theorem isInt_intFloor {R} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [Flo
     (r : R) (m : ℤ) :
     IsInt r m → IsInt ⌊r⌋ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isNat_intFloor_ofIsNNRat (r : α) (n : ℕ) (d : ℕ) :
     IsNNRat r n d → IsNat ⌊r⌋ (n / d) := by
   rintro ⟨inv, rfl⟩
@@ -137,7 +136,6 @@ theorem isNat_intFloor_ofIsNNRat (r : α) (n : ℕ) (d : ℕ) :
   rw [← Int.ofNat_ediv_ofNat, ← floor_natCast_div_natCast n d,
     ← floor_cast (α := α), Rat.cast_div, cast_natCast, cast_natCast]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isInt_intFloor_ofIsRat_neg (r : α) (n : ℕ) (d : ℕ) :
     IsRat r (.negOfNat n) d → IsInt ⌊r⌋ (.negOfNat (-(-n / d) : ℤ).toNat) := by
   rintro ⟨inv, rfl⟩
@@ -190,7 +188,6 @@ theorem isInt_intCeil {R} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [Floo
     (r : R) (m : ℤ) :
     IsInt r m → IsInt ⌈r⌉ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isNat_intCeil_ofIsNNRat (r : α) (n : ℕ) (d : ℕ) :
     IsNNRat r n d → IsNat ⌈r⌉ (-(-n / d) : ℤ).toNat := by
   rintro ⟨inv, rfl⟩
@@ -200,7 +197,6 @@ theorem isNat_intCeil_ofIsNNRat (r : α) (n : ℕ) (d : ℕ) :
     cast_intCast, cast_natCast, Int.cast_natCast,
     Int.natCast_toNat_eq_self.mpr (ceil_nonneg (div_nonneg n.cast_nonneg d.cast_nonneg))]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isInt_intCeil_ofIsRat_neg (r : α) (n : ℕ) (d : ℕ) :
     IsRat r (.negOfNat n) d → IsInt ⌈r⌉ (.negOfNat (n / d)) := by
   rintro ⟨inv, rfl⟩
@@ -249,14 +245,12 @@ theorem isNat_intFract_of_isNat (r : R) (m : ℕ) : IsNat r m → IsNat (Int.fra
 theorem isNat_intFract_of_isInt (r : R) (m : ℤ) : IsInt r m → IsNat (Int.fract r) 0 := by
   rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isNNRat_intFract_of_isNNRat (r : α) (n d : ℕ) :
     IsNNRat r n d → IsNNRat (Int.fract r) (n % d) d := by
   rintro ⟨inv, rfl⟩
   refine ⟨inv, ?_⟩
   simp only [invOf_eq_inv, ← div_eq_mul_inv, fract_div_natCast_eq_div_natCast_mod]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isRat_intFract_of_isRat_negOfNat (r : α) (n d : ℕ) :
     IsRat r (negOfNat n) d → IsRat (Int.fract r) (-n % d) d := by
   rintro ⟨inv, rfl⟩
@@ -311,7 +305,6 @@ theorem isInt_round {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
     (r : R) (m : ℤ) : IsInt r m → IsInt (round r) m := by
   rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsRat.isInt_round {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
     [FloorRing R] (r : R) (n : ℤ) (d : ℕ) (res : ℤ) (hres : round (n / d : ℚ) = res) :
     IsRat r n d → IsInt (round r) res := by
