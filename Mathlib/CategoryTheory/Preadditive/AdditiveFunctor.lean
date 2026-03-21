@@ -226,7 +226,7 @@ section
 
 variable (C D : Type*) [Category* C] [Category* D] [Preadditive C] [Preadditive D]
 
-/-- The additiveness of a functor, as a property of objects in `C ⥤ D`. -/
+/-- The additivity of a functor, as a property of objects in `C ⥤ D`. -/
 def additiveFunctor : ObjectProperty (C ⥤ D) := fun F ↦ F.Additive
 
 variable {C D} in
