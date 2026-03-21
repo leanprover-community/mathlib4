@@ -3,8 +3,10 @@ Copyright (c) 2026 William Weishuhn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: William Weishuhn
 -/
-import Mathlib.Algebra.Star.Basic
-import Mathlib.Algebra.Star.SelfAdjoint
+module
+
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Algebra.Star.SelfAdjoint
 
 /-! # Moore-Penrose pseudo-inverse
 
