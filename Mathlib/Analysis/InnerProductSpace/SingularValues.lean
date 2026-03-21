@@ -139,12 +139,10 @@ theorem hasEigenvalue_adjoint_comp_self_sq_singularValues {n : ℕ} (hn : n < fi
 
 theorem singularValues_antitone : Antitone T.singularValues := by
   intro i j hij
-  by_cases! hi : finrank 𝕜 E ≤ i
-  · rw [T.singularValues_of_finrank_le hi, T.singularValues_of_finrank_le (hi.trans hij)]
   by_cases! hj : finrank 𝕜 E ≤ j
   · simpa [T.singularValues_of_finrank_le hj] using T.singularValues_nonneg i
   have : (T.singularValues j : ℝ) ^ 2 ≤ (T.singularValues i : ℝ) ^ 2 := by
-    rw [T.sq_singularValues_fin rfl ⟨j, hj⟩, T.sq_singularValues_fin rfl ⟨i, hi⟩]
+    rw [T.sq_singularValues_fin rfl ⟨j, hj⟩, T.sq_singularValues_fin rfl ⟨i, hij.trans_lt hj⟩]
     exact T.isSymmetric_adjoint_comp_self.eigenvalues_antitone rfl hij
   exact le_of_sq_le_sq this (T.singularValues_nonneg i)
 
