@@ -762,23 +762,23 @@ alias unbounded_of_unbounded_iUnion := isCofinal_of_isCofinal_iUnion
 
 /-! ### Consequences of König's lemma -/
 
-theorem lt_power_cof {c : Cardinal.{u}} : ℵ₀ ≤ c → c < c ^ c.ord.cof :=
-  Cardinal.inductionOn c fun α h => by
-    rcases ord_eq α with ⟨r, wo, re⟩
-    have := isSuccLimit_ord h
-    rw [re] at this ⊢
-    rcases cof_eq' r this with ⟨S, H, Se⟩
-    have := sum_lt_prod (fun a : S => #{ x // r x a }) (fun _ => #α) fun i => ?_
-    · simp only [Cardinal.prod_const, Cardinal.lift_id, ← Se, ← mk_sigma, power_def] at this ⊢
-      refine lt_of_le_of_lt ?_ this
-      refine ⟨Embedding.ofSurjective ?_ ?_⟩
-      · exact fun x => x.2.1
-      · exact fun a =>
-          let ⟨b, h, ab⟩ := H a
-          ⟨⟨⟨_, h⟩, _, ab⟩, rfl⟩
-    · have := typein_lt_type r i
-      rwa [← re, lt_ord] at this
+open Classical in
+theorem lt_power_cof {c : Cardinal} (hc : ℵ₀ ≤ c) : c < c ^ c.ord.cof := by
+  induction c using Cardinal.inductionOn with | mk α
+  obtain ⟨_, _, hα⟩ := ord_eq_type_lt α
+  have : NoMaxOrder α := by
+    rw [← isSuccPrelimit_type_lt_iff, ← hα]
+    exact (isSuccLimit_ord hc).isSuccPrelimit
+  obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
+  rw [hα, cof_type, ← card_ord (Order.cof _), ← hs', card_type, ← prod_const']
+  have := sum_lt_prod (fun x : s ↦ #(Iio x.1)) (fun _ ↦ #α) fun i ↦ ?_
+  · apply (mk_iUnion_le_sum_mk.trans' _).trans_lt this
+    rw [isCofinal_iff_iUnion_Iio_eq] at hs
+    rw [← mk_univ, ← hs, iUnion_coe_set]
+  · have := typein_lt_type LT.lt i.1
+    rwa [← hα, lt_ord] at this
 
+#exit
 theorem lt_cof_power {a b : Cardinal} (ha : ℵ₀ ≤ a) (b1 : 1 < b) : a < (b ^ a).ord.cof := by
   have b0 : b ≠ 0 := (zero_lt_one.trans b1).ne'
   apply lt_imp_lt_of_le_imp_le (power_le_power_left <| power_ne_zero a b0)

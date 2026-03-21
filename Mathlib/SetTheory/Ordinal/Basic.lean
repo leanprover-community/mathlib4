@@ -1094,10 +1094,18 @@ theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r },
 
 @[deprecated (since := "2026-03-15")] alias ord_eq_Inf := ord_eq_iInf
 
+-- TODO: deprecate in favor of `ord_eq_type_lt`?
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord #α = @type α r wo :=
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
   ⟨r.1, r.2, wo.symm⟩
+
+open Classical in
+/-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
+theorem ord_eq_type_lt (α) : ∃ (_ : LinearOrder α) (_: WellFoundedLT α), ord #α = typeLT α :=
+  let ⟨r, _, hr⟩ := ord_eq α
+  let := linearOrderOfSTO r
+  ⟨this, inferInstance, hr⟩
 
 theorem ord_le_type (r : α → α → Prop) [h : IsWellOrder α r] : ord #α ≤ type r :=
   ciInf_le' _ (Subtype.mk r h)
