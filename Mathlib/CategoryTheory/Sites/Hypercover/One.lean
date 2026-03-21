@@ -755,7 +755,7 @@ def Hom.mapMulticospan {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S
     | .snd _, .id _ => by simp
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Isomorphic pre-`1`-hypercovers have equivalent mutifork index categories. -/
+/-- Isomorphic pre-`1`-hypercovers have equivalent multifork index categories. -/
 @[simps! functor inverse]
 def equivalenceMulticospanOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) :
     WalkingMulticospan E.multicospanShape ≌ WalkingMulticospan F.multicospanShape where
@@ -776,7 +776,7 @@ def equivalenceMulticospanOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `E` and `F` are isomorphic pre-`1`-hypercovers and `G` is a presheaf,
-the multifork for `E` is exact if and only if the multifork for `E` is exact. -/
+the multifork for `E` is exact if and only if the multifork for `F` is exact. -/
 noncomputable
 def isLimitEquivOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) (G : Cᵒᵖ ⥤ A) :
     IsLimit (E.multifork G) ≃ IsLimit (F.multifork G) := by
