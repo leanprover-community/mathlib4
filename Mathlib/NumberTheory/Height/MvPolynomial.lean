@@ -528,6 +528,8 @@ section sym2
 
 namespace Height
 
+variable [AdmissibleAbsValues K]
+
 lemma mulHeight_mul_mulHeight {a b c d : K} (hab : ![a, b] ≠ 0) (hcd : ![c, d] ≠ 0) :
     mulHeight ![a, b]* mulHeight ![c, d] = mulHeight ![a * c, a * d, b * c, b * d] := by
   simp only [← mulHeight_fun_mul_eq hab hcd]
@@ -571,7 +573,7 @@ lemma mulHeight_sym2_ge :
   let q : Fin 4 × Fin 3 → MvPolynomial (Fin 4) K :=
     ![![X 0, 0, 0], ![0, X 1, -X 0], ![0, X 2, -X 0], ![0, 0, X 3]].uncurry
   have hom a : (q a).IsHomogeneous 1 := by
-    fin_cases a <;> simp [q] <;> grind only [!isHomogeneous_X, isHomogeneous_zero, IsHomogeneous.neg]
+    fin_cases a <;> simp [q] <;> grind [!isHomogeneous_X, isHomogeneous_zero, IsHomogeneous.neg]
   obtain ⟨C, hC₀, hC⟩ := mulHeight_eval_ge' (M := 1) (N := 1) hom
   simp only [pow_one] at hC
   refine ⟨C, hC₀, fun hab hcd ↦ ?_⟩
