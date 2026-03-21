@@ -53,6 +53,7 @@ variable [CommSemiring R]
 
 /-- The `degrees` of a polynomial `p` is a special case of the `weightedTotalDegree` of `p` where
   the weights are singletons containing each variable. -/
+@[simp]
 theorem weightedTotalDegree_singleton [DecidableEq σ] (p : MvPolynomial σ R) :
     weightedTotalDegree (fun i => {i}) p = degrees p := by
   rw [degrees_def]; rfl
