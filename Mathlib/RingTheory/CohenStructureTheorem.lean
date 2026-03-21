@@ -267,7 +267,7 @@ lemma exists_section_of_charZero [IsAdicComplete (maximalIdeal R) R]
   let _ : Algebra.FormallySmooth ℚ (ResidueField R) :=
     --should be able to obtain by extension is separable
     sorry
-  let _ : Algebra ℚ R := EqualCharZero.algebraRat (fun I ne ↦
+  obtain ⟨alg⟩ := (EqualCharZero.nonempty_algebraRat_iff R).mpr (fun I ne ↦
     let tores : (R ⧸ I) →+* (ResidueField R) := Ideal.Quotient.factor (le_maximalIdeal ne)
     tores.charZero)
   have exists_lift (n : ℕ) (f : ResidueField R →+* (R ⧸ (maximalIdeal R) ^ (n + 1))) :

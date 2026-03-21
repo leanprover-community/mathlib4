@@ -889,6 +889,8 @@ theorem ncard_range_of_injective (hf : Function.Injective f) :
     (range f).ncard = Nat.card α := by
   rw [← image_univ, ncard_image_of_injective univ hf, ncard_univ]
 
+theorem BijOn.ncard_eq {t : Set β} (h : Set.BijOn f s t) : s.ncard = t.ncard := ncard_congr' h.equiv
+
 /-- A version of the pigeonhole principle for `Set`s rather than `Finset`s.
 
 See also `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` and
@@ -1286,6 +1288,13 @@ theorem ncard_eq_four : s.ncard = 4 ↔
     ∃ x y z w, x ≠ y ∧ x ≠ z ∧ x ≠ w ∧ y ≠ z ∧ y ≠ w ∧ z ≠ w ∧ s = {x, y, z, w} := by
   rw [← encard_eq_four, ncard_def]
   simp
+
+theorem ncard_sumEquiv_symm_apply {α : Type*} (s : Set α) :
+    (Set.sumEquiv.symm (s, s)).ncard = s.ncard + s.ncard := by
+  by_cases hs : s.Finite
+  · simp [(ncard_union_eq_iff (.image _ hs) (.image _ hs)).2 disjoint_image_inl_image_inr,
+      ncard_image_of_injective _ Sum.inl_injective, ncard_image_of_injective _ Sum.inr_injective]
+  · simp [(infinite_union.2 <| .inl <| .image Sum.inl_injective.injOn hs).ncard, Infinite.ncard hs]
 
 end ncard
 end Set
