@@ -16,7 +16,7 @@ public import Mathlib.Order.WithBotTop
 The main definition in this file is `Abelian.SpectralObject.spectralSequence`.
 Assume that `X` is a spectral object indexed by `ι` in an abelian category `C`,
 and that we have `data : SpectralSequenceDataCore ι c r₀` for a family
-of complexes shapes `c : ℤ → ComplexShape κ` for a type `κ` and `r₀ : ℤ`.
+of complex shapes `c : ℤ → ComplexShape κ` for a type `κ` and `r₀ : ℤ`.
 Then, under the assumption `X.HasSpectralSequence data` (see the file
 `Mathlib/Algebra/Homology/SpectralObject/HasSpectralSequence.lean`),
 we obtain `X.spectralSequence data` which is a spectral sequence starting
@@ -29,7 +29,7 @@ The construction of the spectral sequence is as follows. If `r₀ ≤ r`
 and `pq : κ`, we define the object of the spectral sequence in position `pq`
 on the `r`th page as `E^d(i₀ r pq ≤ i₁ pq ≤ i₂ pq ≤ i₃ r pq)`
 where `d := data.deg pq` and the indices `i₀`, `i₁`, `i₂`, `i₃` are given
-by data (they all depend on `pq`, and `i₀` and `i₃` also depend on the page `r`),
+by `data` (they all depend on `pq`, and `i₀` and `i₃` also depend on the page `r`),
 see `spectralSequencePageXIso`.
 
 When `(c r).Rel pq pq'`, the differential from the object in position `pq`
@@ -38,7 +38,7 @@ the differential `X.d` of the spectral object (see the lemma
 `spectralSequence_page_d_eq`). Indeed, the assumptions that
 are part of `data` give equalities of indices `i₂ r pq' = i₀ r pq`
 and `i₃ pq' = i₁ pq`, so that we have a chain of inequalities
-`i₀ r pq' ≤ i₁ pq' ≤ i₂ pq' ≤ i₃ r pq' ≤ i₂ pq ≤ i₄ r pq` for which
+`i₀ r pq' ≤ i₁ pq' ≤ i₂ pq' ≤ i₃ r pq' ≤ i₂ pq ≤ i₃ r pq` for which
 the API of spectral objects provides a differential
 `X.d : E^n(i₀ r pq ≤ i₁ pq ≤ i₂ pq ≤ i₃ r pq) ⟶ E^{n + 1}(i₀ r pq' ≤ i₁ pq' ≤ i₂ pq' ≤ i₃ r pq')`.
 
@@ -50,19 +50,17 @@ complex API, we have `pq = pq'` and the differential is zero. Similarly,
 when there are no nontrivial differentials from the object in position `pq'`,
 we have `pq'' = pq` and the corresponding differential is zero.)
 In the favourable case where both `(c r).Rel pq pq'` and `(c r).Rel pq' pq''`
-hold, the definitions `SpectralObject.SpectralSequence.shortComplexIso` and
-`SpectralObject.spectralSequencePageSc'Iso` in this file can be
-used in combination to `SpectralObject.SpectralSequence.dHomologyIso` in order to compute
-the homology of the differentials.)
+hold, the definition `SpectralObject.SpectralSequence.shortComplexIso`
+in this file can be used in combination to `SpectralObject.SpectralSequence.dHomologyIso`
+in order to compute the homology of the differentials.)
 
 In the general case, using the assumptions in `X.HasSpectralSequence data`,
 we provide a limit kernel fork `kf` and
 a limit cokernel cofork `cc` of the differentials on the `r`th page,
 together with an epi-mono factorization `fac` which allows
-to obtain that the homology of the `r`th page identifies to the homology
-of the next page (see the definitions
-`SpectralObject.SpectralSequence.homologyData` and
-`SpectralObject.spectralSequenceHomologyData`).
+to obtain that the homology of the `r`th page identifies to the next page (see the definitions
+`SpectralObject.SpectralSequence.homologyData` (TODO) and
+`SpectralObject.spectralSequenceHomologyData` (TODO)).
 
 ## Spectral objects indexed by `EInt`.
 
@@ -87,7 +85,7 @@ namespace Abelian
 
 namespace SpectralObject
 
-variable {C ι κ : Type*} [Category C] [Abelian C] [Preorder ι]
+variable {C ι κ : Type*} [Category* C] [Abelian C] [Preorder ι]
   (X : SpectralObject C ι)
   {c : ℤ → ComplexShape κ} {r₀ : ℤ}
 
@@ -207,16 +205,11 @@ noncomputable def shortComplexIso (r : ℤ) (hr : r₀ ≤ r) (pq pq' pq'' : κ)
     (by rw [data.hc₀₂ r pq pq' hpq]) (by rw [data.hc₁₃ r pq pq' hpq]) _ _ _ hn₂')
     (pageXIso _ _ _ hr _ _ _ _ _ rfl rfl rfl rfl _ _ _ (by have := data.hc r pq' pq'' hpq'; lia))
     ?_ ?_
-  · dsimp
-    rw [pageD_eq X data r hr pq pq' hpq _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _,
-      Category.assoc, Category.assoc, Iso.inv_hom_id, Category.comp_id]
-    · exact (data.hc₀₂ r pq' pq'' hpq').symm
-    · exact (data.hc₁₃ r pq' pq'' hpq').symm
-  · dsimp
-    rw [pageD_eq X data r hr pq' pq'' hpq' _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _,
-      Category.assoc, Category.assoc, Iso.inv_hom_id, Category.comp_id]
-    · rfl
-    · rfl
+  · simp only [← Iso.comp_inv_eq, Category.assoc]
+    exact (pageD_eq X data r hr pq pq' hpq _ _ _ _ _ (data.hc₀₂ r pq' pq'' hpq').symm
+      (data.hc₁₃ r pq' pq'' hpq').symm ..).symm
+  · simp only [← Iso.comp_inv_eq, Category.assoc]
+    exact (pageD_eq X data r hr pq' pq'' hpq' _ _ _ _ _ rfl rfl ..).symm
 
 section
 
@@ -278,8 +271,7 @@ lemma isIso_mapFourδ₁Toδ₀' (h : ¬ (c r).Rel pq' pq'')
       i₀' i₀ i₁ i₂ i₃ (data.i₀_le' hrr' hr pq' hi₀' hi₀) (data.le₀₁' r hr pq' hi₀ hi₁)
         (data.le₁₂' pq' hi₁ hi₂) (data.le₂₃' r hr pq' hi₂ hi₃) n₀ n₁ n₂ hn₁ hn₂) := by
   apply X.isIso_map_fourδ₁Toδ₀_of_isZero ..
-  refine X.isZero_H_obj_mk₁_i₀_le' data r r' hrr' hr pq'
-    (fun k hk ↦ ?_) _ (by lia) _ _ hi₀' hi₀
+  refine X.isZero_H_obj_mk₁_i₀_le' data r r' hrr' hr pq' (fun k hk ↦ ?_) _ (by lia) _ _ hi₀' hi₀
   obtain rfl := (c r).next_eq' hk
   subst hpq'
   exact h hk
@@ -302,20 +294,17 @@ lemma kfSc_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ :=
       (pageXIso X data _ hr _ _ _ _ _ rfl (by rw [hi₀', data.i₀_prev r r' _ _ h])
       (by rw [hi₀, data.hc₀₂ r _ _ h]) (by rw [hi₁, data.hc₁₃ r _ _ h]) _ _ _
       (by have := data.hc r _ _ h; lia)) ?_ ?_
-    · dsimp
-      rw [Category.id_comp, Category.assoc, Iso.inv_hom_id, Category.comp_id]
+    · simp
     · dsimp
       rw [pageD_eq X data r hr pq' pq'' h
           (homOfLE (show data.i₀ r pq'' ≤ i₀' by
             simpa only [hi₀', data.i₀_prev r r' _ _ h] using data.le₀₁ r pq''))
-          _ _ _ _ _ _ _ _ _ _ n₀ n₁ n₂ (n₂ + 1),
+          _ _ _ _ rfl _ _ _ _ _ n₀ n₁ n₂ (n₂ + 1),
         Category.assoc, Category.assoc, Iso.inv_hom_id, Category.comp_id]
-      · rfl
-      · rw [hi₀', data.i₀_prev r r' _ _ h]
-  · rw [ShortComplex.exact_iff_epi]; swap
-    · exact (page X data r hr).shape _ _ h
+      rw [hi₀', data.i₀_prev r r' _ _ h]
+  · rw [ShortComplex.exact_iff_epi _ ((page X data r hr).shape _ _ h)]
     have := isIso_mapFourδ₁Toδ₀' X data r r' hrr' hr pq' pq'' hpq'
-      i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃ n₀ n₁ n₂ hn₁' h hn₁ hn₂
+      i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃ n₀ n₁ n₂ hn₁' h
     dsimp
     infer_instance
 
@@ -342,7 +331,7 @@ lemma cc_w (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by li
       (by rw [hi₃, data.hc₁₃ r _ _ h]) (by rw [hi₃', data.i₃_next r r' _ _ h]) rfl
       (n₀ - 1) n₀ n₁ n₂ (by have := data.hc r pq pq' h; lia) (by simp) hn₁ hn₂,
       Category.assoc, Category.assoc, Iso.inv_hom_id_assoc,
-      d_map_fourδ₄Toδ₃ _ _ _ _ _ _ _ _ _ _ _ _, comp_zero]
+      d_map_fourδ₄Toδ₃ .., comp_zero]
   · rw [HomologicalComplex.shape _ _ _ h, zero_comp]
 
 /-- A (limit) cokernel cofork of the differential on the `r`th page whose point
@@ -588,20 +577,20 @@ lemma spectralSequenceHomologyData_left_i
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (X.spectralSequenceHomologyData data r r' hrr' hr pq pq' pq'' hpq hpq'
       i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'  n₀ n₁ n₂ hn₁' hn₁ hn₂).left.i =
-        X.mapFourδ₁Toδ₀' i₀' i₀ i₁ i₂ i₃
-          (data.i₀_le' hrr' hr pq' hi₀' hi₀) _ _ _  n₀ n₁ n₂ hn₁ hn₂ ≫
-          (X.spectralSequencePageXIso data r hr pq'
-              i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃ n₀ n₁ n₂ hn₁' hn₁ hn₂).inv := rfl
+    X.mapFourδ₁Toδ₀' i₀' i₀ i₁ i₂ i₃
+      (data.i₀_le' hrr' hr pq' hi₀' hi₀) _ _ _  n₀ n₁ n₂ hn₁ hn₂ ≫
+        (X.spectralSequencePageXIso data r hr pq'
+          i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃ n₀ n₁ n₂ hn₁' hn₁ hn₂).inv := rfl
 
 @[simp]
 lemma spectralSequenceHomologyData_right_p
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (X.spectralSequenceHomologyData data r r' hrr' hr pq pq' pq'' hpq hpq'
       i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁' hn₁ hn₂).right.p =
-        (X.spectralSequencePageXIso data r hr pq'
-          i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃  n₀ n₁ n₂ hn₁' hn₁ hn₂).hom ≫
-          X.mapFourδ₄Toδ₃' i₀ i₁ i₂ i₃ i₃' _ _ _
-            (data.le₃₃' hrr' hr pq' hi₃ hi₃') n₀ n₁ n₂ hn₁ hn₂ := rfl
+    (X.spectralSequencePageXIso data r hr pq'
+      i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃  n₀ n₁ n₂ hn₁' hn₁ hn₂).hom ≫
+        X.mapFourδ₄Toδ₃' i₀ i₁ i₂ i₃ i₃' _ _ _
+          (data.le₃₃' hrr' hr pq' hi₃ hi₃') n₀ n₁ n₂ hn₁ hn₂ := rfl
 
 lemma spectralSequenceHomologyData_right_homologyIso_eq_left_homologyIso
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
@@ -613,7 +602,7 @@ lemma spectralSequenceHomologyData_right_homologyIso_eq_left_homologyIso
   simp [ShortComplex.HomologyData.right_homologyIso_eq_left_homologyIso_trans_iso]
 
 lemma spectralSequence_iso (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
-  (X.spectralSequence data).iso r r' pq' =
+    (X.spectralSequence data).iso r r' pq' =
     ((X.spectralSequence data).page r).homologyIsoSc' pq pq' pq'' hpq hpq' ≪≫
       (X.spectralSequenceHomologyData data r r' hrr' hr pq pq' pq'' hpq hpq'
       i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁' hn₁ hn₂).left.homologyIso ≪≫

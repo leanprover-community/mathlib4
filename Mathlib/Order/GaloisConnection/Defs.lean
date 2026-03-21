@@ -78,6 +78,9 @@ theorem le_u_l (a) : a ≤ u (l a) :=
 @[to_dual]
 theorem monotone_u : Monotone u := fun a _ H => gc.le_u ((gc.l_u_le a).trans H)
 
+@[to_dual]
+theorem monotone_l_comp_u : Monotone (l ∘ u) := gc.monotone_l.comp gc.monotone_u
+
 /-- If `(l, u)` is a Galois connection, then the relation `x ≤ u (l y)` is a transitive relation.
 If `l` is a closure operator (`Submodule.span`, `Subgroup.closure`, ...) and `u` is the coercion to
 `Set`, this reads as "if `U` is in the closure of `V` and `V` is in the closure of `W` then `U` is

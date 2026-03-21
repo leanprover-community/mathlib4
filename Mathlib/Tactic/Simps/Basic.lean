@@ -8,10 +8,9 @@ module
 public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.App
 public meta import Mathlib.Lean.Expr.Basic
-public meta import Mathlib.Tactic.Basic
 public import Mathlib.Util.AddRelatedDecl
-public import Mathlib.Tactic.Basic
 public import Mathlib.Tactic.Simps.NotationClass
+public import Mathlib.Tactic.Translate.Attributes
 
 /-!
 # Simps attribute
@@ -68,7 +67,6 @@ private structure NameStruct where
   /-- A list of pieces to be joined by `toName`. -/
   components : List String
 
-set_option backward.privateInPublic true in
 /-- Join the components with `_`, or append `_def` if there is only one component. -/
 private def NameStruct.toName (n : NameStruct) : Name :=
   Name.mkStr n.parent <|
@@ -77,9 +75,7 @@ private def NameStruct.toName (n : NameStruct) : Name :=
     | [x] => s!"{x}_def"
     | e => "_".intercalate e
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : Coe NameStruct Name where coe := NameStruct.toName
+private instance : Coe NameStruct Name where coe := NameStruct.toName
 
 /-- `update nm s isPrefix` adds `s` to the last component of `nm`,
 either as prefix or as suffix (specified by `isPrefix`).
@@ -1041,8 +1037,6 @@ partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
   trace[simps.debug] "Structure-eta-reduce:{indentExpr e}\nto{indentExpr reduct}"
   headStructureEtaReduce reduct
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Derive lemmas specifying the projections of the declaration.
 `nm`: name of the lemma
 If `todo` is non-empty, it will generate exactly the names in `todo`.
@@ -1050,7 +1044,7 @@ If `todo` is non-empty, it will generate exactly the names in `todo`.
 was just used. In that case we need to apply these projections before we continue changing `lhs`.
 `simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
 -/
-partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
+private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
     (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
     (todo : List (String × Syntax)) (toApply : List Nat) : MetaM (Array Name) := do
   -- we don't want to unfold non-reducible definitions (like `Set`) to apply more arguments
@@ -1240,3 +1234,7 @@ initialize simpsAttr : ParametricAttribute (Array Name) ←
     applicationTime := .afterCompilation
     descr := "Automatically derive lemmas specifying the projections of this declaration.",
     getParam := simpsTacFromSyntax }
+
+initialize Mathlib.Tactic.registerGeneratingAttr `simps fun decl stx kind => do
+  simpsAttr.attr.add decl stx kind
+  return (simpsAttr.getParam? (← getEnv) decl).get!
