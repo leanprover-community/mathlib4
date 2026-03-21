@@ -467,4 +467,30 @@ def IsTerminal.unop {X : Cᵒᵖ} (hX : IsTerminal X) : IsInitial X.unop :=
   IsInitial.ofUniqueHom (fun _ ↦ (hX.from _).unop)
     (fun _ _ ↦ Quiver.Hom.op_inj (hX.hom_ext _ _))
 
-end CategoryTheory.Limits
+end Limits
+
+namespace Functor
+open Limits
+variable (C : Type*) [Category* C] {D : Type*} [Category* D]
+
+/-- The constant functor returning a specific terminal object is indeed terminal. -/
+def isTerminalConst {X : D} (hX : IsTerminal X) :
+    IsTerminal ((Functor.const C).obj X) :=
+  .ofUniqueHom (fun Y => {app Z := hX.from (Y.obj Z)}) (by intros; ext; apply hX.hom_ext)
+
+@[simp]
+lemma isTerminalConst_from_app {X : D} (hX : IsTerminal X)
+    (F : C ⥤ D) (Y : C) : ((isTerminalConst C hX).from F).app Y = hX.from (F.obj Y) := rfl
+
+/-- The constant functor returning a specific initial object is indeed initial. -/
+def isInitialConst {X : D} (hX : IsInitial X) :
+    IsInitial ((Functor.const C).obj X) :=
+  .ofUniqueHom (fun Y => {app Z := hX.to (Y.obj Z)}) (by intros; ext; apply hX.hom_ext)
+
+@[simp]
+lemma isInitialConst_to_app {X : D} (hX : IsInitial X)
+    (F : C ⥤ D) (Y : C) : ((isInitialConst C hX).to F).app Y = hX.to (F.obj Y) := rfl
+
+end Functor
+
+end CategoryTheory
