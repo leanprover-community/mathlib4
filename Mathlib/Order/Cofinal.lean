@@ -93,17 +93,16 @@ theorem OrderIso.map_isCofinal (e : α ≃o β) {s : Set α} (hs : IsCofinal s) 
 @[deprecated (since := "2026-03-15")]
 alias OrderIso.map_cofinal := OrderIso.map_isCofinal
 
-theorem isCofinal_iff_iUnion_Iic_eq {s : Set α} :
+theorem isCofinal_iff_iUnion_Iic_eq_univ {s : Set α} :
     IsCofinal s ↔ ⋃ i ∈ s, Iic i = univ := by
   simp [IsCofinal, eq_univ_iff_forall]
 
-theorem isCofinal_of_iUnion_Iio_eq {s : Set α} (hs : ⋃ i ∈ s, Iio i = univ) : IsCofinal s := by
-  rw [isCofinal_iff_iUnion_Iic_eq, ← univ_subset_iff, ← hs]
-  exact iUnion₂_mono fun _ _ ↦ Iio_subset_Iic_self
-
-theorem isCofinal_iff_iUnion_Iio_eq [NoMaxOrder α] {s : Set α} :
+theorem isCofinal_iff_iUnion_Iio_eq_univ [NoMaxOrder α] {s : Set α} :
     IsCofinal s ↔ ⋃ i ∈ s, Iio i = univ where
-  mpr := isCofinal_of_iUnion_Iio_eq
+  mpr hs := by
+    rw [isCofinal_iff_iUnion_Iic_eq_univ, ← univ_subset_iff, ← hs]
+    gcongr
+    exact Iio_subset_Iic_self
   mp hs := by
     simp_rw [eq_univ_iff_forall, mem_iUnion, exists_prop]
     intro x
