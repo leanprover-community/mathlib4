@@ -23,6 +23,10 @@ lattice factors through it.
 ## Todo
 
 - Build the order isomorphism `DedekindCut ℚ ≃o EReal`.
+
+## Tags
+
+Dedekind completion, Dedekind cut
 -/
 
 @[expose] public section
