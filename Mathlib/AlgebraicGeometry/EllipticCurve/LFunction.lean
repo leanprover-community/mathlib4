@@ -5,25 +5,13 @@ Authors: Thomas Browning
 -/
 module
 
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Reduction
 public import Mathlib.NumberTheory.ArithmeticFunction.LFunction
-public import Mathlib.Algebra.GroupWithZero.Range
-public import Mathlib.Data.Int.WithZero
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
-public import Mathlib.RingTheory.DedekindDomain.Factorization
-public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-public import Mathlib.RingTheory.Valuation.Archimedean
-public import Mathlib.Topology.Algebra.Valued.NormedValued
-public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
-public import Mathlib.Algebra.Order.Archimedean.Submonoid
-public import Mathlib.RingTheory.Valuation.Discrete.RankOne
-public import Mathlib.Algebra.FiniteSupport.Basic
-public import Mathlib.NumberTheory.LSeries.SumCoeff
-public import Mathlib.RingTheory.PowerSeries.Inverse
-public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
+public import Mathlib.NumberTheory.LSeries.Basic
 public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
+public import Mathlib.RingTheory.PowerSeries.Inverse
 
 /-!
 # The L-function of an elliptic curve
