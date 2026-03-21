@@ -1,0 +1,93 @@
+/-
+Copyright (c) 2026 Rida Hamadani. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Rida Hamadani
+-/
+import Mathlib
+
+/-!
+# Categorical PBW
+
+## References
+
+* This is from the preprint: https://arxiv.org/pdf/1804.06485
+The version presented here would be somewhat more general, I believe, since we don't need to assume
+that all algebras on `C` have reflective coequalizers.
+TODO: I need to figure out later how references work in mathlib and fix tis one
+
+-/
+
+namespace CategoryTheory
+
+namespace Monad
+
+open Limits
+
+universe v u
+
+variable {C : Type u} [Category.{v} C]
+
+instance {T₁ T₂ : Monad C} (h : T₁ ⟶ T₂) [HasReflexiveCoequalizers (Algebra T₂)] :
+    (algebraFunctorOfMonadHom h).IsRightAdjoint :=
+  have : (algebraFunctorOfMonadHom h ⋙ T₁.forget).IsRightAdjoint :=
+    algebra_equiv_of_iso_monads_comp_forget h ▸ instIsRightAdjointAlgebraForget T₂
+  isRightAdjoint_triangle_lift_monadic T₁.forget
+
+noncomputable def directImageFunctor {T₁ T₂ : Monad C} (h : T₁ ⟶ T₂)
+    [HasReflexiveCoequalizers T₂.Algebra] : Algebra T₁ ⥤ Algebra T₂ :=
+  (algebraFunctorOfMonadHom h).leftAdjoint
+
+structure RightModule (T : Monad C) where
+  F : C ⥤ C
+  ρ : F ⋙ T.toFunctor ⟶ F
+  assoc : (ρ ◫ 𝟙 _) ≫ ρ = (Functor.associator _ _ _).hom ≫ (𝟙 _ ◫ T.μ) ≫ ρ := by cat_disch
+  unit : ((𝟙 _) ◫ T.η) ≫ ρ = (Functor.rightUnitor _).hom := by cat_disch
+
+def FreeRightModule (T : Monad C) (X : C ⥤ C) : RightModule T where
+  F := X ⋙ T.toFunctor
+  ρ := (Functor.associator _ _ _).hom ≫ (𝟙 _ ◫ T.μ)
+  assoc := by
+    ext
+    simpa using assoc _ _
+  unit := by
+    ext
+    simpa using left_unit _ _
+
+namespace RightModule
+
+structure Hom {T : Monad C} (M₁ M₂ : RightModule T) where
+  τ : M₁.F ⟶ M₂.F
+  comm : (τ ◫ 𝟙 _) ≫ M₂.ρ = M₁.ρ ≫ τ
+
+structure Iso {T : Monad C} (M₁ M₂ : RightModule T) where
+  hom : Hom M₁ M₂
+  inv : Hom M₂ M₁
+  hom_inv_id : hom.τ ≫ inv.τ = 𝟙 _
+  inv_hom_id : inv.τ ≫ hom.τ = 𝟙 _
+
+def IsFree {T : Monad C} (M : RightModule T) : Prop :=
+  ∃ X : C ⥤ C, Nonempty (Iso M (FreeRightModule T X))
+
+end RightModule
+
+def inducedRightModule {M N : Monad C} (φ : M ⟶ N) : RightModule M where
+  F := N.toFunctor
+  ρ := ((𝟙 _) ◫ φ.toNatTrans) ≫ N.μ
+  assoc := by
+    ext x
+    simpa using φ.app (M.obj (N.obj x)) ≫= N.map (φ.app (N.obj x)) ≫= assoc _ _
+  unit := by
+    ext
+    simpa using left_unit _ _
+
+def HasPBW {M N : Monad C} (φ : M ⟶ N) [HasReflexiveCoequalizers (Algebra N)] :=
+  ∃ X : C ⥤ C, Nonempty (directImageFunctor φ ⋙ N.forget ≅ M.forget ⋙ X)
+
+theorem hasPBW_iff {M N : Monad C} (φ : M ⟶ N) [HasReflexiveCoequalizers (Algebra N)] :
+    HasPBW φ ↔ (inducedRightModule φ).IsFree := by
+  -- got sleepy, will continue another day
+  sorry
+
+end Monad
+
+end CategoryTheory

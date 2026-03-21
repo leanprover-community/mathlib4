@@ -2950,6 +2950,7 @@ public import Mathlib.CategoryTheory.Monad.EquivMon
 public import Mathlib.CategoryTheory.Monad.Kleisli
 public import Mathlib.CategoryTheory.Monad.Limits
 public import Mathlib.CategoryTheory.Monad.Monadicity
+public import Mathlib.CategoryTheory.Monad.PBW
 public import Mathlib.CategoryTheory.Monad.Products
 public import Mathlib.CategoryTheory.Monad.Types
 public import Mathlib.CategoryTheory.Monoidal.Action.Basic
