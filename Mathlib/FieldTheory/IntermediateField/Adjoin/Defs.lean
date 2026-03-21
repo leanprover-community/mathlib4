@@ -150,9 +150,12 @@ theorem sup_toSubfield (S T : IntermediateField F E) :
   exact Set.mem_union_left _ (algebraMap_mem S x)
 
 @[simp, norm_cast]
-theorem coe_sInf (S : Set (IntermediateField F E)) : (↑(sInf S) : Set E) =
-    sInf ((fun (x : IntermediateField F E) => (x : Set E)) '' S) :=
-  rfl
+theorem coe_sInf (S : Set (IntermediateField F E)) : (↑(sInf S) : Set E) = ⋂ s ∈ S, ↑s :=
+  show sInf ((fun (x : IntermediateField F E) => (x : Set E)) '' S) = ⋂ s ∈ S, ↑s by simp
+
+@[simp, grind =]
+theorem mem_sInf {S : Set (IntermediateField F E)} {x : E} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
+  simpa only [Set.mem_iInter] using Set.ext_iff.1 (coe_sInf S) x
 
 @[simp]
 theorem sInf_toSubalgebra (S : Set (IntermediateField F E)) :
