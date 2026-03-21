@@ -728,12 +728,12 @@ noncomputable def quotientToQuotientRangePowQuotSucc
     S ⧸ P →ₗ[R ⧸ p]
       (P ^ i).map (Ideal.Quotient.mk (P ^ e)) ⧸ LinearMap.range (powQuotSuccInclusion p P i) where
   toFun := quotientToQuotientRangePowQuotSuccAux p P a_mem
-  map_add' := by
-    intro x y; refine Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => ?_
+  map_add' x y := by
+    induction x, y using Quotient.inductionOn₂' with | _ x y
     simp only [Submodule.Quotient.mk''_eq_mk, ← Submodule.Quotient.mk_add,
       quotientToQuotientRangePowQuotSuccAux_mk, mul_add, map_add, map_mul, AddMemClass.mk_add_mk]
-  map_smul' := by
-    intro x y; refine Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => ?_
+  map_smul' x y := by
+    induction x, y using Quotient.inductionOn₂' with | _ x y
     simp only [Submodule.Quotient.mk''_eq_mk, RingHom.id_apply,
       quotientToQuotientRangePowQuotSuccAux_mk]
     refine congr_arg Submodule.Quotient.mk ?_
@@ -1091,8 +1091,8 @@ theorem ramificationIdx_algebra_tower' [IsDedekindDomain S] [IsDedekindDomain T]
     [Q.IsPrime] [Q.LiesOver P] [P.LiesOver p] :
     ramificationIdx (algebraMap R T) p Q =
       ramificationIdx (algebraMap R S) p P * ramificationIdx (algebraMap S T) P Q := by
-  by_cases hp : p = ⊥
-  · rw [hp, ramificationIdx_bot, ramificationIdx_bot, zero_mul]
+  obtain rfl | hp := eq_or_ne p ⊥
+  · simp
   have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under S Q
   have : Module.IsTorsionFree R T := by
     refine Module.IsTorsionFree.of_smul_eq_zero fun r m h ↦ ?_

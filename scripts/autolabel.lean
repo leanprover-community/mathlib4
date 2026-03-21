@@ -179,11 +179,13 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Algebra",
       "Mathlib" / "FieldTheory",
       "Mathlib" / "RepresentationTheory",
-      "Mathlib" / "LinearAlgebra"] }
+      "Mathlib" / "LinearAlgebra"],
+    dependencies := #[.«t-data»] }
   | .«t-algebraic-geometry» => {
     dirs := #[
       "Mathlib" / "AlgebraicGeometry",
-      "Mathlib" / "Geometry" / "RingedSpace"] }
+      "Mathlib" / "Geometry" / "RingedSpace"],
+      dependencies := #[.«t-ring-theory»] }
   | .«t-algebraic-topology» => {}
   | .«t-analysis» => {}
   | .«t-category-theory» => {}
@@ -197,13 +199,19 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Control",
       "Mathlib" / "Data"] }
   | .«t-differential-geometry» => {
-    dirs := #["Mathlib" / "Geometry" / "Manifold"] }
+    dirs := #[
+      "Mathlib" / "Geometry" / "Diffeology",
+      "Mathlib" / "Geometry" / "Manifold"],
+    dependencies := #[.«t-analysis», .«t-topology»] }
   | .«t-dynamics» => {}
   | .«t-euclidean-geometry» => {
-    dirs := #["Mathlib" / "Geometry" / "Euclidean"] }
+    dirs := #[
+      "Mathlib" / "Geometry" / "Euclidean",
+      "Mathlib" / "Geometry" / "Polygon"] }
   | .«t-geometric-group-theory» => {
     dirs := #["Mathlib" / "Geometry" / "Group"] }
-  | .«t-group-theory» => {}
+  | .«t-group-theory» => {
+    dependencies := #[.«t-algebra»] }
   | .«t-linter» => {
     dirs := #[
       "Mathlib" / "Tactic" / "Linter",
@@ -228,12 +236,14 @@ def mathlibLabelData : (l : Label) → LabelData l
     exclusions := #["Mathlib" / "Tactic" / "Linter"] }
   | .«t-number-theory» => {}
   | .«t-order» => {}
-  | .«t-ring-theory» => {}
+  | .«t-ring-theory» => {
+    dependencies := #[.«t-algebra», .«t-group-theory»] }
   | .«t-set-theory» => {}
   | .«t-topology» => {}
   | .«CI» => {
     dirs := #[
       ".github",
+      "Cache",
       "scripts",
       "scripts" / "nolints.json",
       "scripts" / "nolints-style.txt",

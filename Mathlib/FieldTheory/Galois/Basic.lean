@@ -95,7 +95,6 @@ instance of_fixed_field (G : Type*) [Group G] [Finite G] [MulSemiringAction G E]
     IsGalois (FixedPoints.subfield G E) E :=
   ⟨⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IntermediateField.AdjoinSimple.card_aut_eq_finrank [FiniteDimensional F E] {α : E}
     (hα : IsIntegral F α) (h_sep : IsSeparable F α)
     (h_splits : ((minpoly F α).map (algebraMap F F⟮α⟯)).Splits) :
@@ -104,7 +103,6 @@ theorem IntermediateField.AdjoinSimple.card_aut_eq_finrank [FiniteDimensional F 
   rw [← IntermediateField.card_algHom_adjoin_integral F hα h_sep h_splits]
   exact Nat.card_congr (algEquivEquivAlgHom F F⟮α⟯)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let $E / F$ be a finite extension of fields. If $E$ is Galois over $F$, then
 $|\text{Aut}(E/F)| = [E : F]$. -/
 @[stacks 09I1 "'only if' part"]
@@ -127,7 +125,6 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   apply Nat.card_congr
   exact Equiv.mk (fun ϕ => iso.trans (ϕ.trans iso.symm)) fun ϕ => iso.symm.trans (ϕ.trans iso)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A galois extension with finite galois group is finite dimensional.
 The dimension is then equal to the order of the galois group via `IsGalois.card_aut_eq_finrank`. -/
 lemma finiteDimensional_of_finite [IsGalois F E] [Finite Gal(E/F)] : FiniteDimensional F E := by
@@ -158,13 +155,11 @@ theorem IsGalois.tower_top_of_isGalois [IsGalois F E] : IsGalois K E :=
 
 variable {F E}
 
-set_option backward.isDefEq.respectTransparency false in
 -- see Note [lower instance priority]
 instance (priority := 100) IsGalois.tower_top_intermediateField (K : IntermediateField F E)
     [IsGalois F E] : IsGalois K E :=
   IsGalois.tower_top_of_isGalois F K E
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isGalois_iff_isGalois_bot : IsGalois (⊥ : IntermediateField F E) E ↔ IsGalois F E := by
   constructor
   · intro h
@@ -269,7 +264,6 @@ theorem fixingSubgroup_sup {K L : IntermediateField F E} :
   exact ⟨fun h ↦ ⟨fixingSubgroup_antitone le_sup_left h, fixingSubgroup_antitone le_sup_right h⟩,
     by simp [← Subgroup.zpowers_le, ← IntermediateField.le_iff_le]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `Gal(E/K)`. -/
 def fixingSubgroupEquiv : fixingSubgroup K ≃* Gal(E/K) where
   toFun ϕ := { AlgEquiv.toRingEquiv (ϕ : Gal(E/F)) with commutes' := ϕ.mem }
@@ -284,7 +278,6 @@ theorem fixingSubgroupEquiv_apply_apply (σ : fixingSubgroup K) (x : E) :
 theorem fixingSubgroupEquiv_symm_apply_apply (σ : Gal(E/K)) (x : E) :
     (fixingSubgroupEquiv K).symm σ • x = σ x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixedField H) = H := by
   have H_le : H ≤ fixingSubgroup (fixedField H) := (le_iff_le _ _).mp le_rfl
   classical
@@ -325,7 +318,6 @@ end IntermediateField
 
 namespace IsGalois
 
-set_option backward.isDefEq.respectTransparency false in
 /-- See `InfiniteGalois.fixedField_fixingSubgroup` for the infinite case,
 i.e. without the `[FiniteDimensional F E]` assumption. -/
 theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
@@ -431,7 +423,6 @@ open IntermediateField
 
 open scoped Pointwise
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IntermediateField.restrictNormalHom_ker (E : IntermediateField K L) [Normal K E] :
     (restrictNormalHom E).ker = E.fixingSubgroup := by
   simp only [Subgroup.ext_iff, MonoidHom.mem_ker, AlgEquiv.ext_iff, one_apply, Subtype.ext_iff,
@@ -441,7 +432,6 @@ namespace IsGalois
 
 variable (E : IntermediateField K L)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `H` is a normal Subgroup of `Gal(L / K)`, then `fixedField H` is Galois over `K`. -/
 instance of_fixedField_normal_subgroup [IsGalois K L]
     (H : Subgroup Gal(L/K)) [hn : Subgroup.Normal H] : IsGalois K (fixedField H) where
@@ -451,7 +441,6 @@ instance of_fixedField_normal_subgroup [IsGalois K L]
     rintro σ x ⟨a, ha, rfl⟩ τ
     exact (symm_apply_eq σ).mp (ha ⟨σ⁻¹ * τ * σ, Subgroup.Normal.conj_mem' hn τ.1 τ.2 σ⟩)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `H` is a normal Subgroup of `Gal(L / K)`, then `Gal(fixedField H / K)` is isomorphic to
 `Gal(L / K) ⧸ H`. -/
 noncomputable def normalAutEquivQuotient [FiniteDimensional K L] [IsGalois K L]
@@ -460,7 +449,6 @@ noncomputable def normalAutEquivQuotient [FiniteDimensional K L] [IsGalois K L]
   QuotientGroup.liftEquiv _ (restrictNormalHom_surjective L) <|
     (fixingSubgroup_fixedField H).symm.trans (fixedField H).restrictNormalHom_ker.symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma normalAutEquivQuotient_apply [FiniteDimensional K L] [IsGalois K L]
     (H : Subgroup Gal(L/K)) [Subgroup.Normal H] (σ : Gal(L/K)) :
     normalAutEquivQuotient H σ = (restrictNormalHom (fixedField H)) σ := rfl
@@ -511,7 +499,6 @@ theorem of_fixedField_eq_bot [FiniteDimensional F E]
   rw [← isGalois_iff_isGalois_bot, ← h]
   classical exact IsGalois.of_fixed_field E (⊤ : Subgroup Gal(E/F))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let $E / F$ be a finite extension of fields. If $|\text{Aut}(E/F)| = [E : F]$, then
 $E$ is Galois over $F$. -/
 @[stacks 09I1 "'if' part"]
@@ -528,7 +515,6 @@ theorem of_card_aut_eq_finrank [FiniteDimensional F E]
 variable {F} {E}
 variable {p : F[X]}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.IsSplittingField F E]
     (hp : p.Separable) (K : Type*) [Field K] [Algebra F K] [Algebra K E] [IsScalarTower F K E]
     {x : E} (hx : x ∈ p.aroots E) :
@@ -559,7 +545,6 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
   · apply sp.splits.of_dvd (Polynomial.map_ne_zero h1)
     rwa [← f.comp_algebraMap, ← p.map_map, RingHom.algebraMap_toAlgebra, Polynomial.map_dvd_map']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separable) :
     IsGalois F E := by
   haveI hFE : FiniteDimensional F E := Polynomial.IsSplittingField.finiteDimensional E p
@@ -606,7 +591,6 @@ theorem tfae [FiniteDimensional F E] : List.TFAE [
   tfae_have 4 → 1 := fun ⟨h, hp1, _⟩ ↦ of_separable_splitting_field hp1
   tfae_finish
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `K/F` is a finite Galois extension, then for any extension `L/F`, the extension `KL/L`
 is also Galois.
@@ -634,7 +618,6 @@ section normalClosure
 variable (k K F : Type*) [Field k] [Field K] [Field F] [Algebra k K] [Algebra k F] [Algebra K F]
   [IsScalarTower k K F] [IsGalois k F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let $F / K / k$ be a tower of field extensions. If $F$ is Galois over $k$,
 then the normal closure of $K$ over $k$ in $F$ is Galois over $k$. -/
 @[stacks 0EXM]
@@ -671,13 +654,11 @@ noncomputable def restrictRestrictAlgEquivMapHom (F K L E : Type*) [Field F] [Fi
 
 variable {F E : Type*} [Field F] [Field E] [Algebra F E] (K L : IntermediateField F E) [Normal F K]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem restrictRestrictAlgEquivMapHom_apply (φ : Gal(E/L)) (x : K) :
     restrictRestrictAlgEquivMapHom F K L E φ x = φ x := by
   simp [restrictRestrictAlgEquivMapHom, AlgEquiv.restrictNormalHom_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem restrictRestrictAlgEquivMapHom_injective (h : K ⊔ L = ⊤) :
     Function.Injective (restrictRestrictAlgEquivMapHom F K L E) := by
   refine (injective_iff_map_eq_one _).mpr fun φ hφ ↦ ?_
@@ -685,7 +666,6 @@ theorem restrictRestrictAlgEquivMapHom_injective (h : K ⊔ L = ⊤) :
   rw [← Subgroup.mem_bot, ← fixingSubgroup_top, ← h, fixingSubgroup_sup]
   exact ⟨fun x ↦ (hφ ▸ restrictRestrictAlgEquivMapHom_apply K L φ x).symm, φ.commutes⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem restrictRestrictAlgEquivMapHom_surjective [FiniteDimensional F K] [FiniteDimensional L E]
     [IsGalois L E] (h : K ⊓ L = ⊥) :
     Function.Surjective (restrictRestrictAlgEquivMapHom F K L E) := by
