@@ -200,7 +200,7 @@ end step₁
 -- This lemma and a few definitions above are made public only in order to please CI.
 -- They will be made private again when the proofs of `cm5a_cof` and `cm5a` are added.
 open step₁ in
-public lemma step₁ [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
+lemma step₁ [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) (hn₁ : n₀ + 1 = n₁ := by lia) :
     ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₀ F ∧ isIsoLE n₀ F ∧
       Mono (homologyMap F.obj.ι n₁) :=
@@ -406,7 +406,7 @@ lemma step₂ [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
     fun i hi ↦ quasiIsoAt_ι f n₁ (fun j hj ↦ hf j (by lia)) _ hi,
     isIso_π_f f n₁⟩
 
-lemma step [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
+public lemma step [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) (hn₁ : n₀ + 1 = n₁ := by lia) :
     ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₁ F ∧ isIsoLE n₀ F := by
   obtain ⟨F₁, h₁, h₂, _⟩ := step₁ f n₀ n₁ hf
