@@ -35,21 +35,21 @@ In preparation to the proof of Jensen's formula, compute several circle averages
 some of the terms that appear in the formula and its proof.
 -/
 
--- Auxiliary definitition for `circleAverage_re_herglotzRieszKernel_mul_log`.
--- Shorthand for the integrand in our computations
+-- Auxiliary definitition for `circleAverage_re_herglotzRieszKernel_mul_log`. Shorthand for the
+-- integrand in our computations
 private noncomputable def herglotzLogIntegrand (w ρ : ℂ) : ℂ → ℝ :=
   (Complex.re ∘ herglotzRieszKernel 0 w) • (log ‖· - ρ‖)
 
--- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`.
--- Continuity of the herglotzLogIntegrand.
+-- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Continuity of the
+-- herglotzLogIntegrand.
 private lemma herglotzLogIntegrand_continuousAt {w ρ z : ℂ} (hz_w : z ≠ w) (hz_ρ : z ≠ ρ) :
     ContinuousAt (herglotzLogIntegrand w ρ) z := by
   have : ‖z - ρ‖ ≠ 0 := by simp_all [sub_eq_zero]
   simp only [herglotzLogIntegrand, herglotzRieszKernel_fun_def, sub_zero, smul_eq_mul]
   fun_prop (disch := grind)
 
--- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`.
--- Continuity of the herglotzLogIntegrand.
+-- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Continuity of the
+-- herglotzLogIntegrand.
 private lemma herglotzLogIntegrand_continuous_on_circle {w ρ : ℂ} {R r : ℝ} (hR : 0 < R)
     (hρ : ‖ρ‖ = R) (hr_pos : 0 < r) (hr_lt : r < R) (hwr : ‖w‖ < r) :
     Continuous (fun θ ↦ herglotzLogIntegrand w ρ (circleMap 0 r θ)) := by
@@ -60,9 +60,8 @@ private lemma herglotzLogIntegrand_continuous_on_circle {w ρ : ℂ} {R r : ℝ}
     by_contra h
     grind [norm_circleMap_zero]
 
--- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`.
--- Computation for the boundedness required by the dominated convergence
--- theorem, Part I.
+-- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Computation for the
+-- boundedness required by the dominated convergence theorem, Part I.
 private lemma dctBoundedness₀ {r₀ r R : ℝ} {ρ : ℂ} (hρ : ‖ρ‖ = R) (hr₀ : 0 < r₀) (hR : 0 < R)
     (hr₀r : r₀ ≤ r) (hrR : r ≤ R) (θ : ℝ) :
     sqrt (r₀ / R) * ‖circleMap 0 R θ - ρ‖ ≤ ‖circleMap 0 r θ - ρ‖ := by
@@ -82,9 +81,8 @@ private lemma dctBoundedness₀ {r₀ r R : ℝ} {ρ : ℂ} (hρ : ‖ρ‖ = R)
   · simp only [hr₀.le, sqrt_div, norm_nonneg, pow_succ_nonneg, sqrt_mul', sqrt_sq]
   · rw [sqrt_sq (norm_nonneg (circleMap 0 r θ - ρ))]
 
--- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`.
--- Computation for the boundedness required by the dominated convergence
--- theorem, Part II.
+-- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Computation for the
+-- boundedness required by the dominated convergence theorem, Part II.
 private lemma dctBoundedness₁ {w ρ : ℂ} {R r₀ r : ℝ} (hR : 0 < R) (hρ : ‖ρ‖ = R) (hr₀ : 0 < r₀)
   (hw : ‖w‖ < r₀) (hr₀r : r₀ ≤ r) (hrR : r ≤ R) (θ : ℝ) (hdR : 0 < ‖circleMap 0 R θ - ρ‖) :
   ‖herglotzLogIntegrand w ρ (circleMap 0 r θ)‖ ≤ ((R + ‖w‖) / (r₀ - ‖w‖))
@@ -124,9 +122,9 @@ private lemma dctBoundedness₁ {w ρ : ℂ} {R r₀ r : ℝ} (hR : 0 < R) (hρ 
           Complex.norm_exp_ofReal_mul_I, mul_one]
         linarith [abs_of_nonneg (by linarith : 0 ≤ r)]
 
--- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Dominated
--- convergence theorem: circle average can be computed by a sequence of circle
--- averages integrating over circles in the interior
+-- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Dominated convergence
+-- theorem: circle average can be computed by a sequence of circle averages integrating over circles
+-- in the interior
 private theorem herglotzLogIntegrand_circleAverage_tendsto {ρ w : ℂ} {R : ℝ} (hR : 0 < R)
     (hρ : ‖ρ‖ = R) (hw : ‖w‖ < R) {r : ℕ → ℝ} (hr_lt : ∀ n, r n < R) (hr_pos : ∀ n, 0 < r n)
     (hr_tendsto : Tendsto r atTop (nhds R)) :
@@ -182,8 +180,8 @@ private theorem herglotzLogIntegrand_circleAverage_tendsto {ρ w : ℂ} {R : ℝ
       (Filter.Tendsto.mul (Complex.continuous_ofReal.continuousAt.tendsto.comp hr_tendsto)
         tendsto_const_nhds)
 
--- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Statement
--- in case where the center equals zero.
+-- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Statement in case where the
+-- center equals zero.
 theorem circleAverage_re_herglotzRieszKernel_mul_log₀ {w ρ : ℂ} {R : ℝ} (hρ : ρ ∈ sphere 0 R)
     (hw : w ∈ ball 0 R) :
     circleAverage ((Complex.re ∘ herglotzRieszKernel 0 w) • (log ‖· - ρ‖)) (0 : ℂ) R
@@ -236,24 +234,22 @@ theorem circleAverage_re_herglotzRieszKernel_mul_log₀ {w ρ : ℂ} {R : ℝ} (
   aesop
 
 /--
-Analogue of the **Poisson Integral Formula** for the circle average function
-`log ‖· - ρ‖` along the circle with radius `‖ρ‖`.
+Analogue of the **Poisson Integral Formula** for the circle average function `log ‖· - ρ‖` along the
+circle with radius `‖ρ‖`.
 
-- See
-  `InnerProductSpace.HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul`
-  in the file `Mathlib/Analysis/Complex/Harmonic/Poisson` for the classic
-  Poisson Integral Formula, for harmonic functions without logarithmic poles.
+- See `InnerProductSpace.HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul` in the file
+  `Mathlib/Analysis/Complex/Harmonic/Poisson` for the classic Poisson Integral Formula, for harmonic
+  functions without logarithmic poles.
 
 - See `MeromorphicOn.extract_zeros_poles` in the file
-  `Mathlib/Analysis/Meromorphic/FactorizedRational` for a construction that
-  splits factors of the form `· - ρ` off arbitrary meromorphic functions.
+  `Mathlib/Analysis/Meromorphic/FactorizedRational` for a construction that splits factors of the
+  form `· - ρ` off arbitrary meromorphic functions.
 -/
 @[simp]
 theorem circleAverage_re_herglotzRieszKernel_mul_log {w ρ c : ℂ} {R : ℝ} (hρ : ρ ∈ sphere c R)
     (hw : w ∈ ball c R) :
-    circleAverage ((Complex.re ∘ herglotzRieszKernel c w) • (log ‖· - ρ‖)) c R = log ‖w - ρ‖ := by
-  simp only [smul_eq_mul, ← circleAverage_map_add_const, Pi.mul_apply, Function.comp_apply,
-    add_zero]
+    circleAverage ((Complex.re ∘ herglotzRieszKernel c w) * (log ‖· - ρ‖)) c R = log ‖w - ρ‖ := by
+  simp only [← circleAverage_map_add_const, Pi.mul_apply, Function.comp_apply, add_zero]
   conv =>
     left; arg 1
     intro z
