@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 module
 
+public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 /-!
 # The Möbius function and Möbius inversion
