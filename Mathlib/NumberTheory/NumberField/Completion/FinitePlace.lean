@@ -277,7 +277,8 @@ open HeightOneSpectrum
 /-- A finite place of a number field `K` is a place associated to an embedding into a completion
 with respect to a maximal ideal. -/
 def FinitePlace (K : Type*) [Field K] [NumberField K] :=
-  {w : AbsoluteValue K ℝ // ∃ v : HeightOneSpectrum (𝓞 K), place (FinitePlace.embedding v) = w}
+  {w : AbsoluteValue K ℝ // ∃ v : HeightOneSpectrum (𝓞 K),
+    place (A := adicCompletion K v) (FinitePlace.embedding v) = w}
 
 /-- Return the finite place defined by a maximal ideal `v`. -/
 noncomputable def FinitePlace.mk [NumberField K] (v : HeightOneSpectrum (𝓞 K)) : FinitePlace K :=
@@ -285,7 +286,8 @@ noncomputable def FinitePlace.mk [NumberField K] (v : HeightOneSpectrum (𝓞 K)
 
 /-- A predicate singling out finite places among the absolute values on a number field `K`. -/
 def IsFinitePlace [NumberField K] (w : AbsoluteValue K ℝ) : Prop :=
-  ∃ v : IsDedekindDomain.HeightOneSpectrum (𝓞 K), place (FinitePlace.embedding v) = w
+  ∃ v : IsDedekindDomain.HeightOneSpectrum (𝓞 K),
+    place (A := adicCompletion K v) (FinitePlace.embedding v) = w
 
 lemma FinitePlace.isFinitePlace [NumberField K] (v : FinitePlace K) : IsFinitePlace v.val := by
   simp [IsFinitePlace, v.prop]
