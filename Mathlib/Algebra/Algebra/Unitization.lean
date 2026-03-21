@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Algebra.NonUnitalHom
 public import Mathlib.Algebra.Star.Module
+public import Mathlib.Algebra.Star.StarProjection
 public import Mathlib.Algebra.Star.NonUnitalSubalgebra
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Tactic.Abel
@@ -127,6 +128,9 @@ theorem inl_injective [Zero A] : Function.Injective (inl : R → Unitization R A
 
 theorem inr_injective [Zero R] : Function.Injective ((↑) : A → Unitization R A) :=
   Function.LeftInverse.injective <| snd_inr _
+
+@[simp, norm_cast] theorem inr_inj (R : Type*) {A : Type*} [Zero R] {x y : A} :
+    (inr x : Unitization R A) = inr y ↔ x = y := inr_injective.eq_iff
 
 instance instNontrivialLeft {𝕜 A} [Nontrivial 𝕜] [Nonempty A] :
     Nontrivial (Unitization 𝕜 A) :=
@@ -393,7 +397,7 @@ section
 
 variable (R)
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_mul [MulZeroClass R] [AddZeroClass A] [Mul A] [SMulWithZero R A] (a₁ a₂ : A) :
     (↑(a₁ * a₂) : Unitization R A) = a₁ * a₂ :=
   ext (mul_zero _).symm <|
@@ -854,5 +858,14 @@ lemma isIdempotentElem_inr_iff (R : Type*) {A : Type*} [MulZeroClass R]
   simp only [IsIdempotentElem, ← inr_mul, inr_injective.eq_iff]
 
 alias ⟨_, IsIdempotentElem.inr⟩ := isIdempotentElem_inr_iff
+
+@[grind =]
+lemma isStarProjection_inr_iff {R A : Type*} [Semiring R] [StarRing R] [NonUnitalSemiring A]
+    [StarRing A] [Module R A] {p : A} :
+    IsStarProjection (p : Unitization R A) ↔ IsStarProjection p := by
+  simp [isStarProjection_iff]
+
+protected alias ⟨_root_.IsStarProjection.of_inr, _root_.IsStarProjection.inr⟩ :=
+  isStarProjection_inr_iff
 
 end Unitization

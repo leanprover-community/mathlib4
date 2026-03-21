@@ -43,7 +43,7 @@ set with a topological group structure.
 @[pp_with_univ]
 structure ProfiniteGrp where
   /-- The underlying profinite topological space. -/
-  toProfinite : Profinite
+  toProfinite : Profinite.{u}
   /-- The group structure. -/
   [group : Group toProfinite]
   /-- The above data together form a topological group. -/
@@ -56,7 +56,7 @@ set with a topological additive group structure.
 @[pp_with_univ]
 structure ProfiniteAddGrp where
   /-- The underlying profinite topological space. -/
-  toProfinite : Profinite
+  toProfinite : Profinite.{u}
   /-- The additive group structure. -/
   [addGroup : AddGroup toProfinite]
   /-- The above data together form a topological additive group. -/
@@ -231,7 +231,7 @@ def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
 @[to_additive /-- A morphism of `FiniteAddGrp` induces a morphism of the associated profinite
 additive groups. -/]
 def ofFiniteGrpHom {G H : FiniteGrp.{u}} (f : G ⟶ H) : ofFiniteGrp G ⟶ ofFiniteGrp H :=
-  ConcreteCategory.ofHom ⟨f.hom.hom, by continuity⟩
+  ConcreteCategory.ofHom ⟨f.hom.hom, by fun_prop⟩
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

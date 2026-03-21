@@ -432,11 +432,14 @@ theorem _root_.LinearMap.exists_ne_zero_of_sSup_eq {N : Submodule R M} {f : N �
     by rw [sSup_eq_iSup] at hs; rw [sSup_image, ← hs, biSup_comap_subtype_eq_top]
   ⟨m, hm, fun eq ↦ ne (LinearMap.ext fun x ↦ congr($eq ⟨x, x.2⟩))⟩
 
+lemma span_val_image_eq_iff (p : Submodule R M) (s : Set p) :
+    span R (Subtype.val '' s) = p ↔ span R s = ⊤ := by
+  simp [← (Submodule.map_injective_of_injective p.injective_subtype).eq_iff, Submodule.map_span]
+
 lemma span_range_subtype_eq_top_iff {ι : Type*} (p : Submodule R M) {s : ι → M}
     (hs : ∀ i, s i ∈ p) :
     span R (Set.range fun i ↦ (⟨s i, hs i⟩ : p)) = ⊤ ↔ span R (Set.range s) = p := by
-  rw [← (map_injective_of_injective p.injective_subtype).eq_iff]
-  simp [map_span, ← Set.range_comp, Function.comp_def]
+  simp [← span_val_image_eq_iff, ← Set.range_comp, Function.comp_def]
 
 lemma comap_le_comap_iff_of_le_range {f : M →ₛₗ[σ₁₂] M₂} [RingHomSurjective σ₁₂]
     {p q : Submodule R₂ M₂} (hp : p ≤ LinearMap.range f) :
@@ -577,7 +580,6 @@ lemma biSup_comap_eq_top_of_surjective {ι : Type*} (s : Set ι) (hs : s.Nonempt
   rw [iSup_subtype'] at hp ⊢
   rw [← comap_map_eq, map_iSup_comap_of_surjective hf, hp, comap_top]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma biSup_comap_eq_top_of_range_eq_biSup
     {R R₂ : Type*} [Semiring R] [Ring R₂] {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
     [Module R M] [Module R₂ M₂] {ι : Type*} (s : Set ι) (hs : s.Nonempty)

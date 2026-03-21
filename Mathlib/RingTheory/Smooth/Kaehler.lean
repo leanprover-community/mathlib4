@@ -99,7 +99,6 @@ lemma isScalarTower_of_section_of_ker_sqZero :
   refine Ideal.mul_mem_mul ?_ m.2
   simpa [RingHom.mem_ker, sub_eq_zero] using AlgHom.congr_fun hg (algebraMap P S p)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a surjective algebra hom `f : P →ₐ[R] S` with square-zero kernel `I`,
 and a section `g : S →ₐ[R] P` (as algebra homs),
@@ -113,7 +112,6 @@ def retractionOfSectionOfKerSqZero : S ⊗[P] Ω[P⁄R] →ₗ[P] RingHom.ker (a
     (IsScalarTower.toAlgHom R P S) hf' g hg).liftKaehlerDifferential
   (f.liftBaseChange S).restrictScalars P
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma retractionOfSectionOfKerSqZero_tmul_D (s : S) (t : P) :
     retractionOfSectionOfKerSqZero g hf' hg (s ⊗ₜ .D _ _ t) =
@@ -142,7 +140,6 @@ include hl
 -- suppose we have a (set-theoretic) section
 variable (σ : S → P) (hσ : ∀ x, algebraMap P S (σ x) = x)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sectionOfRetractionKerToTensorAux_prop (x y) (h : algebraMap P S x = algebraMap P S y) :
     x - l (1 ⊗ₜ .D _ _ x) = y - l (1 ⊗ₜ .D _ _ y) := by
   rw [sub_eq_iff_eq_add, sub_add_comm, ← sub_eq_iff_eq_add, ← Submodule.coe_sub,
@@ -217,7 +214,6 @@ end ofRetraction
 variable [Algebra R S] [IsScalarTower R P S]
 variable (hf' : (RingHom.ker (algebraMap P S)) ^ 2 = ⊥) (hf : Surjective (algebraMap P S))
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a surjective algebra homomorphism `f : P →ₐ[R] S` with square-zero kernel `I`,
 there is a one-to-one correspondence between `P`-linear retractions of `I →ₗ[P] S ⊗[P] Ω[P/R]`
