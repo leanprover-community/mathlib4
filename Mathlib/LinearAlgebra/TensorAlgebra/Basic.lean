@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.FreeAlgebra
 public import Mathlib.Algebra.RingQuot
-public import Mathlib.Algebra.TrivSqZeroExt
+public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.LinearAlgebra.Multilinear.Basic
 
@@ -176,7 +176,6 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : TensorAlgebra R M 
   rw [← lift_symm_apply, ← lift_symm_apply] at w
   exact (lift R).symm.injective w
 
-set_option backward.isDefEq.respectTransparency false in
 -- This proof closely follows `FreeAlgebra.induction`
 /-- If `C` holds for the `algebraMap` of `r : R` into `TensorAlgebra R M`, the `ι` of `x : M`,
 and is preserved under addition and multiplication, then it holds for all of `TensorAlgebra R M`.
@@ -188,7 +187,7 @@ theorem induction {C : TensorAlgebra R M → Prop}
     (a : TensorAlgebra R M) : C a := by
   -- the arguments are enough to construct a subalgebra, and a mapping into it from M
   let s : Subalgebra R (TensorAlgebra R M) :=
-    { carrier := C
+    { carrier := {a | C a}
       mul_mem' := @mul
       add_mem' := @add
       algebraMap_mem' := algebraMap }

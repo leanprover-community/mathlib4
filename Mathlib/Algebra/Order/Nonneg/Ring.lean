@@ -82,7 +82,6 @@ instance [Nontrivial α] [AddGroup α] [LinearOrder α] [AddLeftMono α] :
   · exact ⟨0, ⟨-a, neg_nonneg.mpr lt.le⟩, Subtype.coe_ne_coe.mp (neg_ne_zero.mpr ha).symm⟩
   · exact ⟨0, ⟨a, lt.le⟩, Subtype.coe_ne_coe.mp ha.symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance linearOrderedCommMonoidWithZero [CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     LinearOrderedCommMonoidWithZero { x : α // 0 ≤ x } where
   zero_le a := a.2

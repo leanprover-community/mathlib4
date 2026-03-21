@@ -84,7 +84,7 @@ we have `F : C ⥤ D` `G : D ⥤ C` (with `G` preserving zero morphisms),
 `G` is left exact (that is, preserves finite limits),
 and further we have `adj : G ⊣ F` and `i : F ⋙ G ≅ 𝟭 C`,
 then `C` is also abelian. -/
-@[stacks 03A3]
+@[stacks 03A3, implicit_reducible]
 def abelianOfAdjunction {C : Type u₁} [Category.{v₁} C] [Preadditive C] [HasFiniteProducts C]
     {D : Type u₂} [Category.{v₂} D] [Abelian D] (F : C ⥤ D)
     (G : D ⥤ C) [Functor.PreservesZeroMorphisms G] [PreservesFiniteLimits G] (i : F ⋙ G ≅ 𝟭 C)
@@ -108,6 +108,7 @@ def abelianOfAdjunction {C : Type u₁} [Category.{v₁} C] [Preadditive C] [Has
 via a functor that preserves zero morphisms,
 then `C` is also abelian.
 -/
+@[implicit_reducible]
 def abelianOfEquivalence {C : Type u₁} [Category.{v₁} C] [Preadditive C] [HasFiniteProducts C]
     {D : Type u₂} [Category.{v₂} D] [Abelian D] (F : C ⥤ D)
     [F.IsEquivalence] : Abelian C :=

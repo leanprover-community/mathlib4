@@ -107,19 +107,19 @@ alias ⟨IsClique.subsingleton, _⟩ := isClique_bot_iff
 
 protected theorem IsClique.map (h : G.IsClique s) {f : α ↪ β} : (G.map f).IsClique (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ hab
-  exact ⟨a, b, h ha hb <| ne_of_apply_ne _ hab, rfl, rfl⟩
+  exact ⟨hab, a, b, h ha hb <| ne_of_apply_ne _ hab, rfl, rfl⟩
 
 theorem isClique_map_iff_of_nontrivial {f : α ↪ β} {t : Set β} (ht : t.Nontrivial) :
     (G.map f).IsClique t ↔ ∃ (s : Set α), G.IsClique s ∧ f '' s = t := by
   refine ⟨fun h ↦ ⟨f ⁻¹' t, ?_, ?_⟩, by rintro ⟨x, hs, rfl⟩; exact hs.map⟩
   · rintro x (hx : f x ∈ t) y (hy : f y ∈ t) hne
-    obtain ⟨u, v, huv, hux, hvy⟩ := h hx hy (by simpa)
+    obtain ⟨-, u, v, huv, hux, hvy⟩ := h hx hy (by simpa)
     rw [EmbeddingLike.apply_eq_iff_eq] at hux hvy
     rwa [← hux, ← hvy]
   rw [Set.image_preimage_eq_iff]
   intro x hxt
   obtain ⟨y, hyt, hyne⟩ := ht.exists_ne x
-  obtain ⟨u, v, -, rfl, rfl⟩ := h hyt hxt hyne
+  obtain ⟨-, u, v, -, rfl, rfl⟩ := h hyt hxt hyne
   exact Set.mem_range_self _
 
 theorem isClique_map_iff {f : α ↪ β} {t : Set β} :
@@ -353,7 +353,6 @@ theorem IsContained.not_cliqueFree {n : ℕ} (h : (⊤ : SimpleGraph (Fin n)) �
 @[deprecated (since := "2026-02-21")]
 alias not_cliqueFree_of_top_embedding := IsContained.not_cliqueFree
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An embedding of a complete graph that witnesses the fact that the graph is not clique-free. -/
 noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
     (⊤ : SimpleGraph (Fin n)) ↪g G := by
@@ -456,6 +455,7 @@ theorem not_cliqueFree_of_infinite [Infinite ι] (f : ∀ (i : ι), V i) :
   IsContained.not_cliqueFree ⟨Embedding.toCopy <| topEmbedding V f |>.comp <|
     Embedding.completeGraph <| Fin.valEmbedding.trans <| Infinite.natEmbedding ι⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem not_cliqueFree_of_le_enatCard (f : ∀ (i : ι), V i) (hc : n ≤ ENat.card ι) :
     ¬ (completeMultipartiteGraph V).CliqueFree n := by
   by_cases h : Infinite ι
@@ -556,7 +556,6 @@ theorem CliqueFreeOn.anti (hGH : G ≤ H) (hH : H.CliqueFreeOn s n) : G.CliqueFr
 theorem cliqueFreeOn_empty : G.CliqueFreeOn ∅ n ↔ n ≠ 0 := by
   simp [CliqueFreeOn, Set.subset_empty_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cliqueFreeOn_singleton : G.CliqueFreeOn {a} n ↔ 1 < n := by
   obtain _ | _ | n := n <;>
@@ -645,7 +644,7 @@ theorem cliqueSet_map (hn : n ≠ 1) (G : SimpleGraph α) (f : α ↪ β) :
       rw [map_eq_image, image_preimage, filter_true_of_mem]
       rintro a ha
       obtain ⟨b, hb, hba⟩ := exists_mem_ne (hn.lt_of_le' <| Finset.card_pos.2 ⟨a, ha⟩) a
-      obtain ⟨c, _, _, hc, _⟩ := hs ha hb hba.symm
+      obtain ⟨-, c, _, _, hc, _⟩ := hs ha hb hba.symm
       exact ⟨c, hc⟩
     refine ⟨s.preimage f f.injective.injOn, ⟨?_, by rw [← card_map f, hs']⟩, hs'⟩
     rw [coe_preimage]
@@ -655,11 +654,11 @@ theorem cliqueSet_map (hn : n ≠ 1) (G : SimpleGraph α) (f : α ↪ β) :
 
 @[simp]
 theorem cliqueSet_map_of_equiv (G : SimpleGraph α) (e : α ≃ β) (n : ℕ) :
-    (G.map e.toEmbedding).cliqueSet n = map e.toEmbedding '' G.cliqueSet n := by
+    (G.map e).cliqueSet n = map e.toEmbedding '' G.cliqueSet n := by
   obtain rfl | hn := eq_or_ne n 1
   · ext
     simp [e.exists_congr_left]
-  · exact cliqueSet_map hn _ _
+  · simpa using cliqueSet_map hn G e.toEmbedding
 
 end CliqueSet
 
@@ -756,7 +755,6 @@ theorem cliqueFinset_eq_empty_iff : G.cliqueFinset n = ∅ ↔ G.CliqueFree n :=
 
 protected alias ⟨_, CliqueFree.cliqueFinset⟩ := cliqueFinset_eq_empty_iff
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_cliqueFinset_le : #(G.cliqueFinset n) ≤ (card α).choose n := by
   rw [← card_univ, ← card_powersetCard]
   refine card_mono fun s => ?_
@@ -777,8 +775,7 @@ theorem cliqueFinset_map (f : α ↪ β) (hn : n ≠ 1) :
     simp_rw [coe_cliqueFinset, cliqueSet_map hn, coe_map, coe_cliqueFinset, Embedding.coeFn_mk]
 
 @[simp]
-theorem cliqueFinset_map_of_equiv (e : α ≃ β) (n : ℕ) :
-    (G.map e.toEmbedding).cliqueFinset n =
+theorem cliqueFinset_map_of_equiv (e : α ≃ β) (n : ℕ) : (G.map e).cliqueFinset n =
       (G.cliqueFinset n).map ⟨map e.toEmbedding, Finset.map_injective _⟩ :=
   coe_injective <| by push_cast; exact cliqueSet_map_of_equiv _ _ _
 

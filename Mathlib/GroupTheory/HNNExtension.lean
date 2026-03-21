@@ -418,7 +418,6 @@ theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
   · simp only [unitsSMul, dif_neg h]
     simpa [Cancels] using h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
     unitsSMul φ (-u) (unitsSMul φ u w) = w := by
   rw [unitsSMul]
@@ -567,9 +566,6 @@ theorem prod_smul (g : HNNExtension G A B φ) (w : NormalWord d) :
     rw [← mul_right_inj x, ← ih]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
--- TODO: fix non-terminal simp (acting on two goals, with different simp sets)
-set_option linter.flexible false in
 @[simp]
 theorem prod_smul_empty (w : NormalWord d) :
     (w.prod φ) • empty = w := by
@@ -584,11 +580,8 @@ theorem prod_smul_empty (w : NormalWord d) :
     --   -SetLike.coe_sort_coe]
     -- ext <;> simp [-SetLike.coe_sort_coe]
     simp only [unitsSMulGroup, (d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1,
-      smul_cons]
-    ext <;> simp [-SetLike.coe_sort_coe]
-    rw [(d.compl _).equiv_snd_eq_inv_mul,
-      (d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1]
-    simp
+      (d.compl _).equiv_snd_eq_inv_mul, inv_one, one_mul, mul_inv_cancel, one_smul, smul_cons]
+    ext <;> simp
 
 variable (d)
 /-- The equivalence between elements of the HNN extension and words in normal form. -/

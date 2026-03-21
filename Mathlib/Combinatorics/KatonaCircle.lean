@@ -49,7 +49,6 @@ def prefixed (s : Finset X) : Finset (Numbering X) := {f | IsPrefix f s}
 
 @[simp] lemma mem_prefixed : f ∈ prefixed s ↔ IsPrefix f s := by simp [prefixed]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Decompose a numbering of which `s` is a prefix into a numbering of `s` and a numbering on `sᶜ`.
 -/
 def prefixedEquiv (s : Finset X) : prefixed s ≃ Numbering s × Numbering ↑(sᶜ) where
@@ -105,10 +104,10 @@ def prefixedEquiv (s : Finset X) : prefixed s ≃ Numbering s × Numbering ↑(s
       simp [hx]
   right_inv g := by simp +contextual [Prod.ext_iff, DFunLike.ext_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma card_prefixed (s : Finset X) : #(prefixed s) = (#s)! * (card X - #s)! := by
   simpa [-mem_prefixed] using Fintype.card_congr (prefixedEquiv s)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma dens_prefixed (s : Finset X) : (prefixed s).dens = ((card X).choose #s : ℚ≥0)⁻¹ := by
   simp [dens, card_prefixed, Nat.cast_choose _ s.card_le_univ]
