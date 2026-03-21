@@ -308,28 +308,41 @@ theorem sInf_compl_lt_ord_succ {ι : Type u} (f : ι → Ordinal.{u}) :
     sInf (range f)ᶜ < (succ #ι).ord :=
   lift_id (succ #ι).ord ▸ sInf_compl_lt_lift_ord_succ f
 
-private theorem bddAbove_range_succ_iff {f : β → Ordinal.{u}} :
-    BddAbove (range (fun i ↦ f i + 1)) ↔ BddAbove (range f) := by
+theorem bddAbove_add_one_image_iff {s : Set Ordinal} :
+    BddAbove ((· + 1) '' s) ↔ BddAbove s := by
   constructor <;> rintro ⟨a, ha⟩
-  · use a
-    rintro _ ⟨b, rfl⟩
-    exact (lt_add_one _).le.trans (ha (mem_range_self b))
+  · exact ⟨a, fun b hb ↦ (lt_add_one _).le.trans (ha (mem_image_of_mem _ hb))⟩
   · use a + 1
-    rintro _ ⟨b, rfl⟩
-    simpa using ha (mem_range_self b)
+    simpa [upperBounds]
+
+theorem bddAbove_range_add_one_iff {f : β → Ordinal.{u}} :
+    BddAbove (range fun i ↦ f i + 1) ↔ BddAbove (range f) := by
+  rw [range_comp' (· + 1), bddAbove_add_one_image_iff]
+
+theorem sSup_le_sSup_add_one (s : Set Ordinal) : sSup s ≤ sSup ((· + 1) '' s) := by
+  by_cases hs : BddAbove s
+  · have hs' := bddAbove_add_one_image_iff.2 hs
+    rw [csSup_le_iff' hs]
+    exact fun x hx ↦ (lt_add_one _).le.trans (le_csSup hs' (mem_image_of_mem _ hx))
+  · rw [csSup_of_not_bddAbove hs, csSup_of_not_bddAbove (s := _ '' _)]
+    rwa [bddAbove_add_one_image_iff]
+
+theorem iSup_le_iSup_add_one (f : β → Ordinal) : ⨆ i, f i ≤ ⨆ i, f i + 1 := by
+  rw [iSup, iSup, range_comp' (· + 1)]
+  exact sSup_le_sSup_add_one _
 
 theorem iSup_add_one {β : Type*} [LinearOrder β] [NoMaxOrder β]
     {f : β → Ordinal.{u}} (hf : StrictMono f) : ⨆ i, f i + 1 = ⨆ i, f i := by
+  apply (iSup_le_iSup_add_one f).antisymm'
   by_cases hf' : BddAbove (range f)
-  · have hf'' := bddAbove_range_succ_iff.2 hf'
-    rw [le_antisymm_iff, ciSup_le_iff' hf', ciSup_le_iff' hf'']
-    refine ⟨fun i ↦ ?_, fun i ↦ (lt_add_one _).le.trans (le_ciSup hf'' i)⟩
+  · rw [ciSup_le_iff' (bddAbove_range_add_one_iff.2 hf')]
+    intro i
     obtain ⟨j, hj⟩ := exists_gt i
     apply (le_ciSup hf' j).trans'
     rw [add_one_le_iff]
     exact hf hj
   · rw [ciSup_of_not_bddAbove hf', ciSup_of_not_bddAbove]
-    rwa [← bddAbove_range_succ_iff] at hf'
+    rwa [← bddAbove_range_add_one_iff] at hf'
 
 theorem iSup_Iio_add_one {a : Ordinal.{u}} {f : Iio a → Ordinal.{u}}
     (hf : StrictMono f) (ha : IsSuccPrelimit a) : ⨆ i : Iio a, f i + 1 = ⨆ i : Iio a, f i := by
