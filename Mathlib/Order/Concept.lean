@@ -31,7 +31,7 @@ of `r` determines `α` and `β` already, so we do not define contexts as a separ
 
 ## Tags
 
-concept, formal concept analysis, intent, extend, attribute, Dedekind-MacNeille completion
+concept, formal concept analysis, intent, extent, object, attribute
 -/
 
 @[expose] public section
