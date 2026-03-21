@@ -5,7 +5,7 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Module.SpanRank
+public import Mathlib.Algebra.Module.SpanRankOperations
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.RingTheory.AdicCompletion.Exactness
 public import Mathlib.RingTheory.Ideal.Cotangent
@@ -344,6 +344,6 @@ lemma AdicCompletion.spanFinrank_maximalIdeal_eq [IsNoetherianRing R] [IsLocalRi
   have fg' : (maximalIdeal (AdicCompletion (maximalIdeal R) R)).FG := by
     rw [AdicCompletion.maximalIdeal_eq_map]
     exact fg.map _
-  rw [spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg fg,
-    spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg fg', eq_comm]
+  rw [IsLocalRing.spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg fg,
+    IsLocalRing.spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg fg', eq_comm]
   simp [Module.finrank, CotangentSpace, rkeq]
