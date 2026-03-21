@@ -42,26 +42,26 @@ open Submodule Finsupp
 
 variable {R : Type*} [CommRing R] (I : Ideal R)
 variable {M : Type*} [AddCommGroup M] [Module R M]
+variable {a b c : ℕ}
 
 namespace AdicCompletion
 
 variable (M) in
 /-- The canonical inclusion from the adic completion of `I ^ n • M` to
 the adic completion of `M`. -/
-def ofPowSMul (n : ℕ) : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)
+abbrev ofPowSMul (n : ℕ) : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)
     →ₗ[AdicCompletion I R] AdicCompletion I M := map I (I ^ n • ⊤ : Submodule R M).subtype
 
-theorem ofPowSMul_val_apply {a b c : ℕ} (h : c = b + a)
-    {x : AdicCompletion I ↥(I ^ a • ⊤ : Submodule R M)} : (ofPowSMul I M a x).val c =
-      powSMulQuotInclusion I M h ⊤ (x.val b) := by
-  rw [← x.prop (show b ≤ c by lia), ofPowSMul, map_val_apply]
+theorem ofPowSMul_val_apply (h : c = b + a) {x : AdicCompletion I ↥(I ^ a • ⊤ : Submodule R M)} :
+    (ofPowSMul I M a x).val c = powSMulQuotInclusion I M h ⊤ (x.val b) := by
+  rw [← x.prop (show b ≤ c by lia), map_val_apply]
   refine Quotient.induction_on _ (x.val c) fun z ↦ ?_
   simp [powSMulQuotInclusion]
 
-theorem ofPowSMul_val_apply_eq_zero {n i : ℕ} (h : i ≤ n)
-    {x : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)} : (ofPowSMul I M n x).val i = 0 := by
-  rw [ofPowSMul, map_val_apply]
-  refine Quotient.induction_on _ (x.val i) fun z ↦ ?_
+theorem ofPowSMul_val_apply_eq_zero (h : a ≤ b)
+    {x : AdicCompletion I ↥(I ^ b • ⊤ : Submodule R M)} : (ofPowSMul I M b x).val a = 0 := by
+  rw [map_val_apply]
+  refine Quotient.induction_on _ (x.val a) fun z ↦ ?_
   simpa using pow_smul_top_le _ _ h z.prop
 
 set_option backward.isDefEq.respectTransparency false in
@@ -74,18 +74,18 @@ theorem ofPowSMul_injective (n : ℕ) : Function.Injective (ofPowSMul I M n) := 
     LinearMap.map_eq_zero_iff _ (powSMulQuotInclusion_injective ..)] at hx
   simp [hx]
 
-private lemma liftOfValZeroAux_exists {a b c : ℕ} {x : AdicCompletion I M} (h : c = b + a)
+private lemma liftOfValZeroAux_exists {x : AdicCompletion I M} (h : c = b + a)
     (ha : x.val a = 0) : ∃ t, powSMulQuotInclusion I M h ⊤ t = x.val c := by
   simpa [← LinearMap.mem_range, range_powSMulQuotInclusion] using
     (val_apply_mem_smul_top_iff I (show a ≤ c by lia)).mpr ha
 
 /-- An auxillary lift function used in the definition of `liftOfValZero`.
 Use `liftOfValZero` instead. -/
-def liftOfValZeroAux {a b c : ℕ} {x : AdicCompletion I M} (h : c = b + a) (ha : x.val a = 0) :
+def liftOfValZeroAux {x : AdicCompletion I M} (h : c = b + a) (ha : x.val a = 0) :
     ↥(I ^ a • ⊤ : Submodule R M) ⧸ I ^ b • (⊤ : Submodule R ↥(I ^ a • ⊤ : Submodule R M)) :=
   Exists.choose (liftOfValZeroAux_exists I h ha)
 
-private lemma liftOfValZeroAux_prop {a b c : ℕ} {x : AdicCompletion I M} (h : c = b + a)
+private lemma liftOfValZeroAux_prop {x : AdicCompletion I M} (h : c = b + a)
     (ha : x.val a = 0) : (powSMulQuotInclusion I M h ⊤) (liftOfValZeroAux I h ha) = x.val c :=
   Exists.choose_spec (liftOfValZeroAux_exists I h ha)
 
