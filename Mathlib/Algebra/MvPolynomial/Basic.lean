@@ -582,7 +582,7 @@ theorem coeff_add (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p + q
 @[simp]
 theorem coeff_smul {S₁ : Type*} [SMulZeroClass S₁ R] (m : σ →₀ ℕ) (C : S₁) (p : MvPolynomial σ R) :
     coeff m (C • p) = C • coeff m p :=
-  smul_apply C p m
+  AddMonoidAlgebra.smul_apply C p m
 
 @[simp]
 theorem coeff_zero (m : σ →₀ ℕ) : coeff m (0 : MvPolynomial σ R) = 0 :=
