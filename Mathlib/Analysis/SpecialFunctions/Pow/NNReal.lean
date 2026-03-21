@@ -493,7 +493,7 @@ theorem rpow_eq_pow (x : ℝ≥0∞) (y : ℝ) : rpow x y = x ^ y :=
 theorem rpow_zero {x : ℝ≥0∞} : x ^ (0 : ℝ) = 1 := by
   cases x <;>
     · dsimp only [(· ^ ·), Pow.pow, rpow]
-      simp
+      simp [← none_eq_top]
 
 theorem rpow_zero_pos (x : ℝ≥0∞) : 0 < x ^ (0 : ℝ) := by rw [rpow_zero]; exact one_pos
 
