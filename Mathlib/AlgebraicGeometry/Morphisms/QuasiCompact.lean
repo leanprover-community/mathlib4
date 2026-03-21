@@ -224,7 +224,7 @@ lemma isCompact_iff_exists {U : X.Opens} :
   rwa [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, IsOpenImmersion.lift_fac]
 
 @[stacks 01K9]
-lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
+nonrec lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
     IsClosedMap f ↔ SpecializingMap f := by
   refine ⟨fun h ↦ h.specializingMap, fun H ↦ ?_⟩
   wlog hY : ∃ R, Y = Spec R
@@ -238,15 +238,16 @@ lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
   obtain ⟨S, rfl⟩ := hY
   intro Z hZ
   replace H := hZ.stableUnderSpecialization.image H
-  obtain ⟨R, g, hg⟩ := compactSpace_iff_exists.mp (QuasiCompact.compactSpace_of_compactSpace f)
-  have hfg : f.base '' Z = (g ≫ f).base '' (g ⁻¹' Z) := by
-    simp [← Set.image_image, Set.image_preimage_eq _ hg]
-  suffices IsClosed ((g ≫ f).base '' (g ⁻¹' Z)) by rwa [hfg]
-  obtain ⟨φ, hφ⟩ := Spec.homEquiv.symm.surjective (g ≫ f)
-  rw [hfg] at H
-  rw [← hφ] at H ⊢
-  exact PrimeSpectrum.isClosed_image_of_stableUnderSpecialization φ.hom _
-    (hZ.preimage g.continuous) H
+  wlog hX : ∃ R, X = Spec R
+  · obtain ⟨R, g, hg⟩ := compactSpace_iff_exists.mp (QuasiCompact.compactSpace_of_compactSpace f)
+    have inst : QuasiCompact (g ≫ f) := HasAffineProperty.iff_of_isAffine.mpr (by infer_instance)
+    have := this _ (g ≫ f) (g ⁻¹' Z) (hZ.preimage g.continuous)
+    simp_rw [Scheme.Hom.comp_base, TopCat.comp_app, ← Set.image_image,
+      Set.image_preimage_eq _ hg] at this
+    exact this H ⟨_, rfl⟩
+  obtain ⟨R, rfl⟩ := hX
+  obtain ⟨φ, rfl⟩ := Spec.homEquiv.symm.surjective f
+  exact PrimeSpectrum.isClosed_image_of_stableUnderSpecialization φ.hom Z hZ H
 
 @[elab_as_elim]
 theorem compact_open_induction_on {P : X.Opens → Prop} (S : X.Opens)
