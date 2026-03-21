@@ -33,17 +33,6 @@ public import Mathlib.RingTheory.Regular.RegularSequence
 
 @[expose] public section
 
-
-section ENat
-
-lemma WithBot.add_one_le_zero_iff_eq_bot' (a : WithBot ℕ∞) :
-    a + 1 ≤ 0 ↔ a = ⊥ := by
-  induction a with
-  | bot => simp
-  | coe a => simp [← WithBot.coe_one, ← WithBot.coe_add]
-
-end ENat
-
 universe v u
 
 variable (R : Type u) [CommRing R]
@@ -485,7 +474,7 @@ theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension [Small.{v} R] 
     injectiveDimension M ≤ n := by
     match n with
     | 0 =>
-      simp only [CharP.cast_eq_zero, WithBot.add_one_le_zero_iff_eq_bot',
+      simp only [CharP.cast_eq_zero, ENat.WithBot.add_one_le_zero_iff,
         injectiveDimension_eq_bot_iff, ModuleCat.isZero_of_iff_subsingleton, ← sub]
       rw [← ModuleCat.isZero_of_iff_subsingleton (R := R), ← injectiveDimension_eq_bot_iff]
       refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
