@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.Finiteness.Defs
   finite free `N` over `R` such that `M ⊕ N` is free.
 -/
 
-public section
+@[expose] public section
 
 universe u v
 
