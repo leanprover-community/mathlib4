@@ -295,16 +295,17 @@ theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.1)) 
     simpa [WithAbs.norm_eq_apply_ofAbs] using
       WithAbs.ofAbs_algebraMap v.1 w.1 x ▸ comp_of_comap_eq (comap_eq w v) x.ofAbs
 
-variable {v} in
+variable {v}
+
 theorem embedding_liesOver_of_isReal (h : v.IsReal) :
     ComplexEmbedding.LiesOver w.embedding v.embedding where
   over := (comap_eq w v ▸ comap_embedding_of_isReal _ (comap_eq w v ▸ h)).symm
 
 variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
+  [ContinuousSMul v.Completion w.Completion]
 
-variable {v} in
-theorem extensionEmbedding_liesOver_of_isReal [ContinuousSMul v.Completion w.Completion]
-    (h : v.IsReal) : ComplexEmbedding.LiesOver (extensionEmbedding w) (extensionEmbedding v) :=
+theorem extensionEmbedding_liesOver_of_isReal (h : v.IsReal) :
+    ComplexEmbedding.LiesOver (extensionEmbedding w) (extensionEmbedding v) :=
   letI := embedding_liesOver_of_isReal w h; liesOver_extensionEmbedding w v
 
 end LiesOver
