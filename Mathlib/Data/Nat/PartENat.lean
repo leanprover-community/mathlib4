@@ -720,11 +720,7 @@ theorem find_dom (h : ∃ n, P n) : (find P).Dom :=
 theorem lt_find (n : ℕ) (h : ∀ m ≤ n, ¬P m) : (n : PartENat) < find P := by
   rw [coe_lt_iff]
   intro h₁
-  rw [find_get]
-  have h₂ := @Nat.find_spec P _ h₁
-  revert h₂
-  contrapose!
-  exact h _
+  simpa
 
 theorem lt_find_iff (n : ℕ) : (n : PartENat) < find P ↔ ∀ m ≤ n, ¬P m := by
   refine ⟨?_, lt_find P n⟩
