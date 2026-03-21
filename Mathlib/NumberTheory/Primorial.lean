@@ -86,8 +86,7 @@ lemma Nat.Prime.dvd_primorial {p : ℕ} (hp : Nat.Prime p) : p ∣ p# :=
   hp.dvd_primorial_iff.2 le_rfl
 
 lemma lt_primorial_self {n : ℕ} (hn : 2 < n) : n < n# := by
-  have : 3 ≤ n# :=
-    single_le_prod' (f := id) (by grind [→ Prime.one_le]) (by grind [prime_three])
+  have : 3 ≤ n# := single_le_prod' (f := id) (by grind [→ Prime.pos]) (by grind [prime_three])
   let q := (n# - 1).minFac
   have : n < q := by
     by_contra! h1
