@@ -484,7 +484,7 @@ lemma deriv_differentiableAt_of_2_contDiffOn_open (hI : IsOpen I) (hγ₁ : Cont
   have h : I.EqOn (deriv γ) (iteratedDerivWithin 1 γ I) := by
     intro x hx
     rw [← (derivWithin_of_isOpen hI hx)]; simp
-  exact ((((contDiffOn_nat_iff_continuousOn_differentiableOn_deriv hI.uniqueDiffOn).mp hγ₁).2 1 
+  exact ((((contDiffOn_nat_iff_continuousOn_differentiableOn_deriv hI.uniqueDiffOn).mp hγ₁).2 1
         (by norm_num)).differentiableAt (hI.mem_nhds ht)).congr_of_eventuallyEq
         (Filter.eventuallyEq_of_mem (hI.mem_nhds ht) h)
 
