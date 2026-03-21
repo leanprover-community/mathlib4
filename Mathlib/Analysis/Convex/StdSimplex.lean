@@ -49,10 +49,10 @@ theorem convex_stdSimplex [IsOrderedRing 𝕜] : Convex 𝕜 (stdSimplex 𝕜 ι
 noncomputable
 instance (𝕜 : Type*) [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] :
     ConvexSpace 𝕜 ↑(stdSimplex 𝕜 ι) :=
-  (convex_stdSimplex 𝕜 ι).convexSpace _
+  .ofConvex (convex_stdSimplex 𝕜 ι)
 
 instance : IsConvexMetricSpace ↑(stdSimplex ℝ ι) :=
-  (convex_stdSimplex _ _).isConvexMetricSpace
+  .of_convex (convex_stdSimplex _ _)
 
 @[nontriviality] lemma stdSimplex_of_subsingleton [Subsingleton 𝕜] : stdSimplex 𝕜 ι = univ :=
   eq_univ_of_forall fun _ ↦ ⟨fun _ ↦ (Subsingleton.elim _ _).le, Subsingleton.elim _ _⟩
