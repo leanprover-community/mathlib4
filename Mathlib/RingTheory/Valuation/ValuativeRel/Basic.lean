@@ -1150,7 +1150,7 @@ ValueGroupWithZero R
 where the first row is the map `v` factored through its image group (with zero) in `Γ`.
 -/
 @[simp]
-lemma embed_valuation [v.Compatible] (x : R) :
+lemma embed_valuation_eq_restrict₀ [v.Compatible] (x : R) :
     embed v (valuation R x) = ValueGroup₀.restrict₀ v x := by
   convert embed_mk v x 1
   simp
@@ -1170,7 +1170,7 @@ ValueGroupWithZero R
 the map from `ValueGroupWithZero R` to itself is identity.
 -/
 @[simp]
-lemma embedding_embed_valuation (γ : ValueGroupWithZero R) :
+lemma embedding_embed_valuation_eq (γ : ValueGroupWithZero R) :
     embedding (embed (valuation R) γ) = γ := by
   induction γ using ValueGroupWithZero.ind
   simp [mk_eq_div]
@@ -1238,19 +1238,19 @@ lemma orderMonoidIso_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
     orderMonoidIso v (.mk x s) = (restrict₀ v x / (restrict₀ v (s : R))) :=
   rfl
 
-/-- This is the same as `ValuativeRel.ValueGroupWithZero.embed_valuation`, where `embed` is
+/-- This is the same as `ValuativeRel.ValueGroupWithZero.embed_valuation_eq_restrict₀`, where `embed` is
 upgraded to `orderMonoidIso`. -/
 @[simp]
-lemma orderMonoidIso_valuation [v.Compatible] (x : R) :
+lemma orderMonoidIso_valuation_eq_restrict₀ [v.Compatible] (x : R) :
     orderMonoidIso v (valuation R x) = restrict₀ v x :=
-  embed_valuation v x
+  embed_valuation_eq_restrict₀ v x
 
-/-- This is the same as `ValuativeRel.ValueGroupWithZero.embedding_embed_valuation`, where
+/-- This is the same as `ValuativeRel.ValueGroupWithZero.embedding_embed_valuation_eq`, where
 `embed` is upgraded to `orderMonoidIso`. -/
 @[simp]
-lemma embedding_orderMonoidIso_valuation (γ : ValueGroupWithZero R) :
+lemma embedding_orderMonoidIso_valuation_eq (γ : ValueGroupWithZero R) :
     embedding (orderMonoidIso (valuation R) γ) = γ :=
-  embedding_embed_valuation γ
+  embedding_embed_valuation_eq γ
 
 /-- The map `orderMonoidIso v` is strictly monotone. -/
 lemma orderMonoidIso_strictMono [v.Compatible] : StrictMono (orderMonoidIso v) :=
@@ -1259,7 +1259,7 @@ lemma orderMonoidIso_strictMono [v.Compatible] : StrictMono (orderMonoidIso v) :
 /-- The map `embedding ∘ orderMonoidIso (valuation R))` is identity. -/
 lemma leftInverse_embedding_orderMonoidIso : Function.LeftInverse embedding
     (orderMonoidIso (valuation R)) :=
-  embedding_orderMonoidIso_valuation
+  embedding_orderMonoidIso_valuation_eq
 
 /-- The isomorphism between `ValueGroupWithZero R` and `ValueGroup₀ (valuation R)`. -/
 @[deprecated "use ValueGroupWithZero.embed (valuation R) instead" (since := "2026-03-17")]
