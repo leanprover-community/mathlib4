@@ -611,10 +611,9 @@ lemma exist_isRegularLocalRing_surjective_ker_le_of_isAdicComplete
     have surj' := Ideal.Quotient.lift_surjective_of_surjective _ this surj
     rw [← (isRegularLocalRing_def _).mp reg, ← (isRegularLocalRing_def _).mp regS,
       ← Nat.cast_one, ← Nat.cast_add, Nat.cast_inj] at dim
-    have le' : (maximalIdeal R).spanFinrank ≤ (maximalIdeal (S ⧸ Ideal.span {x})).spanFinrank := by
+    have : (maximalIdeal R).spanFinrank ≤ (maximalIdeal (S ⧸ Ideal.span {x})).spanFinrank := by
       rw [← map_maximalIdeal_of_surjective _ surj']
       exact Ideal.spanFinrank_map_le_of_fg _ (maximalIdeal _).fg_of_isNoetherianRing
-    absurd le'
     omega
   | succ n ih =>
     obtain ⟨x, hx, nmem⟩ : ∃ x ∈ RingHom.ker f, x ∉ (maximalIdeal S) ^ 2 := by
