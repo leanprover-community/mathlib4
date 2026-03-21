@@ -44,7 +44,7 @@ variable (R : Type*) [Ring R] [ValuativeRel R]
 variable {R} in
 lemma Valuation.exists_setOf_restrict_le_iff {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     (v : Valuation R Γ₀) [v.Compatible] (x : R) (s : Set R) :
-    (∃ γ : (ValueGroup₀ v)ˣ, {z | v.restrict (z - x) < γ.val} ⊆ s) ↔
+    (∃ γ : (ValueGroup₀ (v : R →*₀ Γ₀))ˣ, {z | v.restrict (z - x) < γ.val} ⊆ s) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, {a | valuation R (a - x) < γ} ⊆ s := by
   refine ⟨fun ⟨r, hr⟩ ↦ ⟨r.mapEquiv (orderMonoidIso v).symm, ?_⟩,
     fun ⟨r, hr⟩ ↦ ⟨r.mapEquiv (orderMonoidIso v), ?_⟩⟩
@@ -137,24 +137,24 @@ open IsValuativeTopology
 namespace Valuation
 
 lemma mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 x ↔
-    ∃ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ, { z | v.restrict (z - x) < γ.val } ⊆ s := by
+    ∃ γ : (ValueGroup₀ (v : R →*₀ Γ₀))ˣ, { z | v.restrict (z - x) < γ.val } ⊆ s := by
   convert IsValuativeTopology.mem_nhds_iff (s := s) using 4
   simpa [neg_add_eq_sub] using v.exists_setOf_restrict_le_iff _ _
 
 lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 0 ↔
-    ∃ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ, { x | v.restrict x < γ.val } ⊆ s := by
+    ∃ γ : (ValueGroup₀ (v : R →*₀ Γ₀))ˣ, { x | v.restrict x < γ.val } ⊆ s := by
   simp [v.mem_nhds_iff]
 
 alias is_topological_valuation := mem_nhds_zero_iff
 
 theorem hasBasis_nhds (x : R) :
     (𝓝 x).HasBasis (fun _ ↦ True)
-      fun γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ ↦ { z | v.restrict (z - x) < γ.val } := by
+      fun γ : (ValueGroup₀ (v : R →*₀ Γ₀))ˣ ↦ { z | v.restrict (z - x) < γ.val } := by
   simp [Filter.hasBasis_iff, v.mem_nhds_iff]
 
 theorem hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
-      fun γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ ↦ { x | v.restrict x < γ.val } := by
+      fun γ : (ValueGroup₀ (v : R →*₀ Γ₀))ˣ ↦ { x | v.restrict x < γ.val } := by
   simp [Filter.hasBasis_iff, v.is_topological_valuation]
 
 /-- The set `{ y : R | v y = v x }` is a neighbourhood of `x`.
@@ -200,7 +200,7 @@ variable [_u : UniformSpace R] [IsUniformAddGroup R] [IsValuativeTopology R] (v 
   [v.Compatible]
 
 theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ ↦ True)
-    fun γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ ↦
+    fun γ : (MonoidWithZeroHom.ValueGroup₀ (v : R →*₀ Γ₀))ˣ ↦
       { p : R × R | v.restrict (p.2 - p.1) < γ.1 } := by
   rw [uniformity_eq_comap_nhds_zero]
   exact v.hasBasis_nhds_zero.comap _
@@ -211,9 +211,8 @@ theorem toUniformSpace_eq : _u =
   convert v.subgroups_basis.hasBasis_nhds_zero.comap _
   simp [restrict_lt_iff_lt_embedding, sub_eq_add_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔
-    F.NeBot ∧ ∀ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ,
+    F.NeBot ∧ ∀ γ : (MonoidWithZeroHom.ValueGroup₀ (v : R →*₀ Γ₀))ˣ,
       ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), v.restrict (y - x) < γ.1 := by
   rw [v.toUniformSpace_eq, AddGroupFilterBasis.cauchy_iff]
   apply and_congr Iff.rfl
@@ -264,10 +263,9 @@ end Discrete
 
 variable {v}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any valuation `v` compatible with the valuative relation on `R`, the open `r`-ball
 around zero `{x | v.restrict x < r}` is open in the valuative topology. -/
-theorem isOpen_ball (r : ValueGroup₀ v) : IsOpen (X := R) {x | v.restrict x < r} := by
+theorem isOpen_ball (r : ValueGroup₀ (v : R →*₀ Γ₀)) : IsOpen (X := R) {x | v.restrict x < r} := by
   rw [isOpen_iff_mem_nhds]
   rcases eq_or_ne r 0 with rfl | hr
   · simp
@@ -277,10 +275,10 @@ theorem isOpen_ball (r : ValueGroup₀ v) : IsOpen (X := R) {x | v.restrict x < 
   exact ⟨Units.mk0 _ hr,
     fun y hy ↦ (sub_add_cancel y x).symm ▸ (v.restrict.map_add _ x).trans_lt (max_lt hy hx)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any valuation `v` compatible with the valuative relation on `R`, the open `r`-ball
 around zero `{x | v.restrict x < r}` is closed in the valuative topology. -/
-theorem isClosed_ball (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.restrict x < r} := by
+theorem isClosed_ball (r : ValueGroup₀ (v : R →*₀ Γ₀)) :
+    IsClosed (X := R) {x | v.restrict x < r} := by
   rcases eq_or_ne r 0 with rfl | hr
   · simp
   exact AddSubgroup.isClosed_of_isOpen (Valuation.ltAddSubgroup v.restrict (Units.mk0 r hr))
@@ -288,12 +286,13 @@ theorem isClosed_ball (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.restrict 
 
 /-- For any valuation `v` compatible with the valuative relation on `R`, the open `r`-ball
 around zero `{x | v.restrict x < r}` is clopen in the valuative topology. -/
-theorem isClopen_ball (r : ValueGroup₀ v) : IsClopen (X := R) {x | v.restrict x < r} :=
+theorem isClopen_ball (r : ValueGroup₀ (v : R →*₀ Γ₀)) :
+    IsClopen (X := R) {x | v.restrict x < r} :=
   ⟨isClosed_ball _, isOpen_ball _⟩
 
 /-- For any valuation `v` compatible with the valuative relation on `R`, the closed `r`-ball
 around zero `{x | v.restrict x ≤ r}` is open in the valuative topology. -/
-theorem isOpen_closedBall {r : ValueGroup₀ v} (hr : r ≠ 0) :
+theorem isOpen_closedBall {r : ValueGroup₀ (v : R →*₀ Γ₀)} (hr : r ≠ 0) :
   IsOpen (X := R) {x | v.restrict x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
@@ -303,7 +302,8 @@ theorem isOpen_closedBall {r : ValueGroup₀ v} (hr : r ≠ 0) :
 
 /-- For any valuation `v` compatible with the valuative relation on `R`, the closed `r`-ball
 around zero `{x | v.restrict x ≤ r}` is closed in the valuative topology. -/
-theorem isClosed_closedBall (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.restrict x ≤ r} := by
+theorem isClosed_closedBall (r : ValueGroup₀ (v : R →*₀ Γ₀)) :
+    IsClosed (X := R) {x | v.restrict x ≤ r} := by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro x hx
   simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
@@ -314,13 +314,13 @@ theorem isClosed_closedBall (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.res
 
 /-- For any valuation `v` compatible with the valuative relation on `R`, the closed `r`-ball
 around zero `{x | v.restrict x ≤ r}` is clopen in the valuative topology. -/
-theorem isClopen_closedBall {r : ValueGroup₀ v} (hr : r ≠ 0) :
+theorem isClopen_closedBall {r : ValueGroup₀ (v : R →*₀ Γ₀)} (hr : r ≠ 0) :
     IsClopen (X := R) {x | v.restrict x ≤ r} :=
   ⟨isClosed_closedBall _, isOpen_closedBall hr⟩
 
 /-- For any valuation `v` compatible with the valuative relation on `R`, the sphere of radius `r`
 around zero `{x | v.restrict x = r}` is clopen in the valuative topology. -/
-theorem isClopen_sphere {r : ValueGroup₀ v} (hr : r ≠ 0) :
+theorem isClopen_sphere {r : ValueGroup₀ (v : R →*₀ Γ₀)} (hr : r ≠ 0) :
     IsClopen (X := R) {x | v.restrict x = r} := by
   have h : {x : R | v.restrict x = r} = {x | v.restrict x ≤ r} \ {x | v.restrict x < r} := by
     ext x
@@ -330,13 +330,14 @@ theorem isClopen_sphere {r : ValueGroup₀ v} (hr : r ≠ 0) :
 
 /-- For any valuation `v` compatible with the valuative relation on `R`, the sphere of radius `r`
 around zero `{x | v.restrict x = r}` is open in the valuative topology. -/
-theorem isOpen_sphere {r : ValueGroup₀ v} (hr : r ≠ 0) :
+theorem isOpen_sphere {r : ValueGroup₀ (v : R →*₀ Γ₀)} (hr : r ≠ 0) :
     IsOpen (X := R) {x | v.restrict x = r} :=
   isClopen_sphere hr |>.isOpen
 
 /-- For any valuation `v` compatible with the valuative relation on `R`, the sphere of radius `r`
 around zero `{x | v.restrict x = r}` is closed in the valuative topology. -/
-theorem isClosed_sphere (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.restrict x = r} := by
+theorem isClosed_sphere (r : ValueGroup₀ (v : R →*₀ Γ₀)) :
+    IsClosed (X := R) {x | v.restrict x = r} := by
   rcases eq_or_ne r 0 with rfl | hr
   · convert v.isClosed_closedBall 0 using 3
     exact le_zero_iff.symm

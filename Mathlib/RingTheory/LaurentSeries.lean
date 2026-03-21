@@ -667,7 +667,9 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
   · obtain ⟨x, hx⟩ := LaurentSeries.valuation_surjective K γ
     have : Valued.v.restrict x ≠ 0 := fun h ↦ NeZero.ne γ.1 <|
       hx ▸ MonoidWithZeroHom.ValueGroup₀.restrict₀_eq_zero_iff.1 h
-    rw [← hx, ← MonoidWithZeroHom.ValueGroup₀.embedding_restrict₀]
+    rw [← hx]
+    nth_rw 2 [← Valuation.coe_coe]
+    rw [← MonoidWithZeroHom.ValueGroup₀.embedding_restrict₀]
     simp_rw [← Valued.v.restrict_lt_iff_lt_embedding]
     exact (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem
       (i := Units.mk0 (Valued.v.restrict x) this) (by tauto)
@@ -698,7 +700,7 @@ result in full generality and deduce the case `Γ = ℤ` from that one. -/
 lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ᶠ f : K⸨X⸩ in ℱ, ∀ n < N, f.coeff n = (0 : K) := by
   let entourage : Set (K⸨X⸩ × K⸨X⸩) := {P : K⸨X⸩ × K⸨X⸩ | Valued.v.restrict (P.snd - P.fst) < 1}
-  let ζ : (MonoidWithZeroHom.ValueGroup₀ (Valued.v (R := K⸨X⸩)))ˣ :=
+  let ζ : (MonoidWithZeroHom.ValueGroup₀ (Valued.v (R := K⸨X⸩) : K⸨X⸩ →*₀ ℤᵐ⁰))ˣ :=
     Units.mk0 1 (zero_ne_one.symm)
   obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := mem_prod_iff.mp <| Filter.le_def.mp hℱ.2 entourage
     <| (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (i := ζ) (by tauto)
@@ -896,7 +898,7 @@ theorem coe_range_dense : DenseRange ((↑) : K⟮X⟯ → K⸨X⸩) := by
   obtain ⟨γ, hγ⟩ := Valued.mem_nhds_zero.mp hT₀
   have := (embedding γ.1)
   obtain ⟨P, hP⟩ := exists_ratFunc_val_lt f
-    (Units.map (embedding (f := (valued K).v)).toMonoidHom γ)
+    (γ.map (embedding (f := ((valued K).v : K⸨X⸩ →*₀ ℤᵐ⁰))))
   use P
   apply hT₁
   apply hγ
@@ -948,9 +950,10 @@ theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
       · simp only [Valued.mem_nhds, sub_zero, Valuation.restrict_lt_iff_lt_embedding]
         obtain ⟨x, hx⟩ := restrict₀_surjective _ d.1
         use Units.mk0 (Valued.v.restrict (x : K⸨X⸩)) (by
-          rw [Valuation.restrict_def, ne_eq, restrict₀_eq_zero_iff, valuation_def,
-            ← valuation_eq_LaurentSeries_valuation, ← v_def, ← restrict₀_eq_zero_iff]
-          simp [hx])
+          simp only [ne_eq, map_eq_zero]
+          intro h
+          simp only [h, map_zero] at hx
+          exact Units.ne_zero _ hx.symm)
         simp only [Units.val_mk0, ← Valuation.restrict_lt_iff_lt_embedding,
           X_def, Set.setOf_subset_setOf, Valuation.restrict_lt_iff]
         rw [← hx, embedding_restrict₀]
@@ -1089,7 +1092,10 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion K⟮X⟯) :
     · rw [ha, this]
       obtain ⟨x, hx⟩ := valuedAdicCompletion_surjective K⟮X⟯ (idealX K) γ
       use Units.mk0 (Valued.v.restrict x) (by
-        rwa [Valuation.restrict_def, ne_eq, restrict₀_eq_zero_iff, hx])
+        simp only [Valuation.restrict_def, ne_eq, map_eq_zero]
+        intro h
+        simp only [h, map_zero] at hx
+        tauto)
       simp  [Units.val_mk0, Valuation.restrict_lt_iff, hx]
     · refine Set.Subset.trans (fun a _ ↦ ?_) (Set.preimage_mono γ_le)
       rw [Set.mem_preimage, Set.mem_Iio, ← Valued.valuedCompletion_apply a]

@@ -147,6 +147,12 @@ def ValueGroup₀.restrict₀ : A →*₀ ValueGroup₀ f where
 
 namespace ValueGroup₀
 
+lemma embedding_injective : Function.Injective (embedding (f := f)) := by
+  simp [embedding, WithZero.map'_injective_iff]
+
+lemma embedding_inj {a b : ValueGroup₀ f} : embedding a = embedding b ↔ a = b :=
+  ⟨fun h ↦ embedding_injective h, congrArg _⟩
+
 lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
     restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) := by
   simp [h, restrict₀_apply]
