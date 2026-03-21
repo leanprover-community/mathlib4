@@ -178,6 +178,7 @@ theorem isCofinal_of_isCofinal_iUnion {α : Type*} {ι} [LinearOrder α] {s : ι
 
 -- TODO: generalize to `OrderType`
 namespace Ordinal
+variable [LinearOrder β] [LinearOrder γ]
 
 /-- The cofinality on an ordinal is the `Order.cof` of any isomorphic linear order.
 
@@ -251,20 +252,62 @@ theorem cof_one : cof 1 = 1 := by
 theorem cof_succ (o) : cof (succ o) = 1 :=
   cof_add_one o
 
-theorem cof_iSup_Iio {f} (hf : StrictMono f) {a} (ha : IsSuccPrelimit a) :
-    cof (⨆ i : Iio a, f i.1) = cof a := by
-  have : StrictMono (β := Iio (⨆ i : Iio a, f i.1)) (fun i : Iio a ↦ ⟨f i, ?_⟩) := fun x y h ↦ hf h
-  · have := cof_congr_of_strictMono this ?_
-    · simpa [← lift_cof] using this.symm
+theorem ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
+    ∃ s : Set α, IsCofinal s ∧ typeLT s = (Order.cof α).ord := by
+  obtain ⟨s, hs, hs'⟩ := Order.cof_eq α
+  obtain ⟨r, hr, hr'⟩ := ord_eq s
+  have ht := hs.trans (isCofinal_setOf_imp_lt r)
+  refine ⟨_, ht, (ord_le.2 (cof_le ht)).antisymm' ?_⟩
+  rw [← hs', hr', type_le_iff']
+  refine ⟨.ofMonotone (fun x ↦ ⟨x.1, ?_⟩) fun x y hxy ↦ ?_⟩
+  · grind
+  · apply (trichotomous_of r _ _).resolve_right
+    rintro (_ | hxy')
+    · simp_all [Subtype.coe_inj]
+    · obtain ⟨x, z, hz, rfl⟩ := x
+      exact (hz _ hxy').asymm hxy
+
+/-! ### Cofinalities and suprema -/
+
+theorem lift_cof_iSup_add_one [Small.{u} β] {f : β → Ordinal} (hf : StrictMono f) :
+    Cardinal.lift.{v} (cof (⨆ i, f i + 1)) = Cardinal.lift.{u} (Order.cof β) := by
+  have : StrictMono (β := Iio (⨆ i, f i + 1)) (fun i ↦ ⟨f i, ?_⟩) := fun x y h ↦ hf h
+  · have := lift_cof_congr_of_strictMono this ?_
+    · rw [← Cardinal.lift_inj.{_, max (u + 1) v}, Cardinal.lift_lift.{_, _, v},
+        Cardinal.lift_umax.{_, u + 1}, Cardinal.lift_umax.{_, u + 1}, this]
+      simp
     · intro ⟨b, hb⟩
       rw [mem_Iio, lt_ciSup_iff' (bddAbove_of_small _)] at hb
       obtain ⟨i, hi⟩ := hb
-      exact ⟨_, Set.mem_range_self i, hi.le⟩
-  · exact (hf (lt_add_one _)).trans_le <|
-      le_ciSup (ι := Iio a) (bddAbove_of_small _) ⟨_, ha.succ_lt i.2⟩
+      rw [lt_add_one_iff] at hi
+      exact ⟨_, Set.mem_range_self i, hi⟩
+  · rw [mem_Iio]
+    exact (lt_add_one _).trans_le <| le_ciSup  (bddAbove_of_small _) _
+
+theorem cof_iSup_add_one {f : γ → Ordinal} (hf : StrictMono f) :
+    cof (⨆ i, f i + 1) = Order.cof γ := by
+  simpa using lift_cof_iSup_add_one hf
+
+theorem lift_cof_iSup [Small.{u} β] [NoMaxOrder β] {f : β → Ordinal} (hf : StrictMono f) :
+    Cardinal.lift.{v} (cof (⨆ i, f i)) = Cardinal.lift.{u} (Order.cof β) := by
+  sorry
+
+theorem cof_iSup_add_one {f : γ → Ordinal} (hf : StrictMono f) :
+    cof (⨆ i, f i + 1) = Order.cof γ := by
+  simpa using lift_cof_iSup_add_one hf
+
+theorem cof_iSup_Iio_add_one {a} {f : Iio a → Ordinal} (hf : StrictMono f) :
+    cof (⨆ i : Iio a, f i + 1) = cof a := by
+  simpa [← lift_cof] using lift_cof_iSup_add_one hf
+
+theorem cof_iSup_Iio {a} {f : Iio a → Ordinal} (hf : StrictMono f) (ha : IsSuccPrelimit a) :
+    cof (⨆ i : Iio a, f i) = cof a := by
+  rw [← iSup_Iio_add_one hf ha, cof_iSup_Iio_add_one hf]
 
 theorem cof_map_of_isNormal {f} (hf : IsNormal f) {a} (ha : IsSuccLimit a) : cof (f a) = cof a := by
-  rw [hf.apply_of_isSuccLimit ha, cof_iSup_Iio hf.strictMono ha.isSuccPrelimit]
+  rw [hf.apply_of_isSuccLimit ha, cof_iSup_Iio _ ha.isSuccPrelimit]
+  exact hf.strictMono.comp <| Subtype.strictMono_coe _
+  #exit
 
 @[deprecated (since := "2026-03-19")]
 alias cof_eq_of_isNormal := cof_map_of_isNormal
@@ -287,21 +330,6 @@ alias cof_le_of_isNormal := le_cof_map_of_isNormal
 alias IsNormal.cof_le := le_cof_map_of_isNormal
 
 @[deprecated (since := "2026-02-18")] alias cof_eq_one_iff_is_succ := cof_eq_one_iff
-
-theorem ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
-    ∃ s : Set α, IsCofinal s ∧ typeLT s = (Order.cof α).ord := by
-  obtain ⟨s, hs, hs'⟩ := Order.cof_eq α
-  obtain ⟨r, hr, hr'⟩ := ord_eq s
-  have ht := hs.trans (isCofinal_setOf_imp_lt r)
-  refine ⟨_, ht, (ord_le.2 (cof_le ht)).antisymm' ?_⟩
-  rw [← hs', hr', type_le_iff']
-  refine ⟨.ofMonotone (fun x ↦ ⟨x.1, ?_⟩) fun x y hxy ↦ ?_⟩
-  · grind
-  · apply (trichotomous_of r _ _).resolve_right
-    rintro (_ | hxy')
-    · simp_all [Subtype.coe_inj]
-    · obtain ⟨x, z, hz, rfl⟩ := x
-      exact (hz _ hxy').asymm hxy
 
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
