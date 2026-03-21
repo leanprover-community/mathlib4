@@ -36,7 +36,7 @@ theorem preimage_Iio (e : α ≃o β) (b : β) : e ⁻¹' Iio b = Iio (e.symm b)
 theorem preimage_Icc (e : α ≃o β) (a b : β) : e ⁻¹' Icc a b = Icc (e.symm a) (e.symm b) := by
   simp [← Ici_inter_Iic]
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) (reorder := a b)]
 theorem preimage_Ico (e : α ≃o β) (a b : β) : e ⁻¹' Ico a b = Ico (e.symm a) (e.symm b) := by
   simp [← Ici_inter_Iio]
 
@@ -56,7 +56,7 @@ theorem image_Iio (e : α ≃o β) (a : α) : e '' Iio a = Iio (e a) := by
 theorem image_Ioo (e : α ≃o β) (a b : α) : e '' Ioo a b = Ioo (e a) (e b) := by
   rw [e.image_eq_preimage_symm, e.symm.preimage_Ioo, e.symm_symm]
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) (reorder := a b)]
 theorem image_Ioc (e : α ≃o β) (a b : α) : e '' Ioc a b = Ioc (e a) (e b) := by
   rw [e.image_eq_preimage_symm, e.symm.preimage_Ioc, e.symm_symm]
 
