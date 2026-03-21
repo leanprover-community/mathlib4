@@ -61,10 +61,12 @@ theorem ppow_add (k n : ℕ+) (x : M) : x ^ (k + n) = x ^ k * x ^ n :=
 theorem ppow_one (x : M) : x ^ (1 : ℕ+) = x :=
   PNatPowAssoc.ppow_one x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ppow_mul_assoc (k m n : ℕ+) (x : M) :
     (x ^ k * x ^ m) * x ^ n = x ^ k * (x ^ m * x ^ n) := by
   simp only [← ppow_add, add_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ppow_mul_comm (m n : ℕ+) (x : M) :
     x ^ m * x ^ n = x ^ n * x ^ m := by simp only [← ppow_add, add_comm]
 

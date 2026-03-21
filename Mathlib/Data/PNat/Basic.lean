@@ -270,9 +270,11 @@ theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
       rw [add_coe, sub_coe, if_pos h]
       exact add_tsub_cancel_of_le h.le
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sub_add_of_lt {a b : ℕ+} (h : b < a) : a - b + b = a := by
   rw [add_comm, add_sub_of_lt h]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem add_sub {a b : ℕ+} : a + b - b = a :=
   add_right_cancel (sub_add_of_lt (lt_add_left _ _))
