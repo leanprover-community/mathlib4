@@ -138,8 +138,6 @@ lemma absNorm_ne_zero : (absNorm v.asIdeal : ℝ≥0) ≠ 0 :=
 
 variable (K)
 
-variable (K)
-
 /-- The `v`-adic absolute value on `K` defined as the norm of `v` raised to negative `v`-adic
 valuation -/
 noncomputable def adicAbv : AbsoluteValue K ℝ := v.adicAbv <| one_lt_absNorm_nnreal v
@@ -158,10 +156,6 @@ noncomputable instance [Module.Finite ℤ R] [Module.Free ℤ R] : (v.valuation 
 noncomputable instance instRankOneAdicCompletion [Module.Finite ℤ R] [Module.Free ℤ R] :
     (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).RankOne :=
   rankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) (one_lt_absNorm_nnreal v)
-
-/-- The `v`-adic completion of `K` is a normed field. -/
-noncomputable instance instNormedFieldValuedAdicCompletion [Module.Finite ℤ R] [Module.Free ℤ R] :
-    NormedField (adicCompletion K v) := Valued.toNormedField (adicCompletion K v) ℤᵐ⁰
 
 lemma rankOne_hom'_def :
     (instRankOneAdicCompletion K v).hom' = (toNNReal (absNorm_ne_zero v)).comp
@@ -234,7 +228,7 @@ theorem FinitePlace.norm_embedding (x : K) : ‖embedding v x‖ = adicAbv K v x
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/
 theorem FinitePlace.norm_embedding' (x : K) :
-    ‖embedding K v x‖ = toNNReal (absNorm_ne_zero v) (v.valuation K x) := by
+    ‖embedding v x‖ = toNNReal (absNorm_ne_zero v) (v.valuation K x) := by
   rw [norm_embedding, adicAbv_def]
 
 variable (K)
@@ -323,11 +317,10 @@ instance : NonnegHomClass (FinitePlace K) K ℝ where
   apply_nonneg w := w.1.nonneg
 
 @[simp]
-theorem mk_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) : mk v x = ‖embedding K v x‖ := rfl
+theorem mk_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) : mk v x = ‖embedding v x‖ := rfl
 
 lemma coe_apply (v : FinitePlace K) (x : K) : v x = v.val x := rfl
 
-variable {K}
 /-- For a finite place `w`, return a maximal ideal `v` such that `w = finite_place v` . -/
 noncomputable def maximalIdeal (w : FinitePlace K) : HeightOneSpectrum (𝓞 K) := w.2.choose
 
@@ -335,7 +328,7 @@ noncomputable def maximalIdeal (w : FinitePlace K) : HeightOneSpectrum (𝓞 K) 
 theorem mk_maximalIdeal (w : FinitePlace K) : mk (maximalIdeal w) = w := Subtype.ext w.2.choose_spec
 
 theorem norm_embedding_eq (w : FinitePlace K) (x : K) :
-    ‖embedding _ (maximalIdeal w) x‖ = w x := by
+    ‖embedding (maximalIdeal w) x‖ = w x := by
   conv_rhs => rw [← mk_maximalIdeal w, mk_apply]
 
 theorem pos_iff {w : FinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := w.1.pos_iff
@@ -413,7 +406,7 @@ instance : NonarchimedeanHomClass (FinitePlace K) K ℝ where
   map_add_le_max v a b := FinitePlace.add_le v a b
 
 lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) :
-    (equivHeightOneSpectrum.symm v) x = ‖embedding K v x‖ := rfl
+    (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := rfl
 
 @[deprecated (since := "2026-03-11")]
 alias IsDedekindDomain.HeightOneSpectrum.equivHeightOneSpectrum_symm_apply :=
@@ -569,3 +562,5 @@ end HeightOneSpectrum
 end LiesOver
 
 end NumberField
+
+#min_imports
