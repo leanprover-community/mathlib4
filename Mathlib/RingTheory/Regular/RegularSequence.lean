@@ -70,12 +70,6 @@ end Ideal
 
 namespace Submodule
 
-lemma smul_top_le_comap_smul_top [Semiring R] [AddCommMonoid M]
-    [AddCommMonoid M₂] [Module R M] [Module R M₂] (I : Ideal R)
-    (f : M →ₗ[R] M₂) : I • ⊤ ≤ comap f (I • ⊤) :=
-  map_le_iff_le_comap.mp <| le_of_eq_of_le (map_smul'' _ _ _) <|
-    smul_mono_right _ le_top
-
 variable (M) [CommRing R] [AddCommGroup M] [AddCommGroup M₂]
     [Module R M] [Module R M₂] (r : R) (rs : List R)
 
