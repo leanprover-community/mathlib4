@@ -62,7 +62,7 @@ Examples:
 -/
 def foldf (f : α → β → β) (init : β) : List α → β
   | []     => init
-  | a :: l => foldf f (f a init) l
+  | a :: l => l.foldf f (f a init)
 
 @[simp, grind =] theorem foldf_nil : [].foldf f b = b := rfl
 @[simp, grind =] theorem foldf_cons : (a :: l).foldf f b = l.foldf f (f a b) := rfl
@@ -101,7 +101,7 @@ theorem foldf_cons_eq_apply_foldf [hf : LeftCommutative f] :
   induction l generalizing b <;> simp [*, hf.left_comm]
 
 theorem foldr_cons_eq_foldr_apply [hf : LeftCommutative f] :
-    (a :: l).foldr f b = foldr f (f a b) l := by
+    (a :: l).foldr f b = l.foldr f (f a b) := by
   rw [foldr_cons]
   induction l generalizing a b <;> simp [*, hf.left_comm]
 
