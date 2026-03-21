@@ -8,7 +8,6 @@ module
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.RingTheory.Finiteness.Prod
-public import Mathlib.RingTheory.LocalProperties.Exactness
 public import Mathlib.RingTheory.PicardGroup
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
@@ -24,6 +23,11 @@ def IsStablyFree (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M] [Module
 
 variable {R : Type*} [CommRing R] {M N : Type*} [AddCommGroup M] [Module R M]
   [AddCommGroup N] [Module R N] {n : ℕ}
+
+theorem IsStablyFree.projective (h : IsStablyFree R M) : Module.Projective R M := by
+  obtain ⟨N, _, _, _, _, _⟩ := h
+  exact Module.Projective.of_split (LinearMap.inl R M N) (LinearMap.fst R M N)
+    (LinearMap.ext fun _ ↦ rfl)
 
 /-- The multilinear map that takes the left component of the first input and multiplies it
 by the determinant of the right components of the remaining inputs. -/
@@ -76,69 +80,36 @@ private lemma laplaceTerm_eq_zero_of_eq (bN : Module.Basis (Fin n) R N) (v : Fin
 private lemma laplaceTerm_add_eq_zero_of_lt (bN : Module.Basis (Fin n) R N)
     (v : Fin (n + 1) → M × N) {i j : Fin (n + 1)} (h : i < j) (hv : v i = v j) :
       laplaceTerm bN i v + laplaceTerm bN j v = 0 := by
-  have hj0 : j ≠ 0 := ((Fin.zero_le i).trans_lt h).ne'
-  have hiLast : i ≠ Fin.last n := Fin.ne_of_lt (h.trans_le j.le_last)
-  let ai : Fin n := i.castPred hiLast
-  let bi : Fin n := j.pred hj0
-  have h_ai_le_bi : ai ≤ bi := Nat.le_sub_one_of_lt h
-  have : NeZero n := NeZero.of_pos (Fin.pos ai)
-  have htail : (fun k : Fin n => v (i.succAbove k)) =
-      (fun k : Fin n => v (j.succAbove k)) ∘ Fin.cycleIcc ai bi := by
-    funext k
-    have hj : bi.succ = j := by simp [bi]
-    have hi : ai.castSucc = i := by simp [ai]
-    rcases lt_or_ge k ai with hk | hk
-    · rw [Function.comp_apply, Fin.cycleIcc_of_lt hk]
-      have hk_i : k.castSucc < i := by simpa [hi] using hk
-      rw [Fin.succAbove_of_castSucc_lt _ _ hk_i, Fin.succAbove_of_castSucc_lt _ _ (hk_i.trans h)]
-    rcases lt_or_ge bi k with hk' | hk'
-    · rw [Function.comp_apply, Fin.cycleIcc_of_gt hk']
-      have hj_k : j ≤ k.castSucc := by simpa [hj] using show bi.succ ≤ k.castSucc from hk'
-      rw [Fin.succAbove_of_le_castSucc _ _ (h.le.trans hj_k), Fin.succAbove_of_le_castSucc _ _ hj_k]
-    rcases Fin.lt_or_eq_of_le hk' with hk' | rfl
-    · rw [Function.comp_apply, Fin.cycleIcc_of_ge_of_lt hk hk']
-      have hj_k1' : ((k + 1 : Fin n)).castSucc < bi.succ := by
-        apply Fin.lt_def.mpr
-        have hval : (((k + 1 : Fin n) : ℕ)) = (k : ℕ) + 1 := Fin.val_add_one_of_lt' (by omega)
-        simpa [hval] using hk'
-      have hj_k1 : ((k + 1 : Fin n)).castSucc < j := by simpa [hj] using hj_k1'
-      have hi_k : i ≤ k.castSucc := by simpa [hi] using hk
-      rw [Fin.succAbove_of_le_castSucc _ _ hi_k, Fin.succAbove_of_castSucc_lt _ _ hj_k1]
-      have hidx : k.succ = (k + 1 : Fin n).castSucc := by
-        apply Fin.ext
-        have hval : (((k + 1 : Fin n) : ℕ)) = (k : ℕ) + 1 := Fin.val_add_one_of_lt' (by omega)
-        simp [hval]
-      simp [hidx]
-    · rw [Function.comp_apply, Fin.cycleIcc_of_last h_ai_le_bi]
-      have hj : bi.succ = j := by simp [bi]
-      have h' : i < bi.succ := by simpa [hj] using h
-      have hbi : i.succAbove bi = j := by simpa [hj] using (Fin.succAbove_of_lt_succ i bi h')
-      have hai_idx : bi.predAbove i = ai := by simpa [ai] using (Fin.predAbove_of_lt_succ bi i h')
-      have hai : j.succAbove ai = i := by
-        have hne : i ≠ bi.succ := by simpa [hj] using h.ne
-        rw [← hj, ← hai_idx]
-        simpa using Fin.succ_succAbove_predAbove hne
-      rw [hbi, hai, hv]
-  have htail₂ : (fun k : Fin n => (v (i.succAbove k)).2) =
-      (fun k : Fin n => (v (j.succAbove k)).2) ∘ Fin.cycleIcc ai bi := by
-    ext k
-    exact congrArg Prod.snd (congrArg (fun f : Fin n → M × N => f k) htail)
-  have hdet : (bN.det fun k => (v (i.succAbove k)).2) =
-      (Equiv.Perm.sign (Fin.cycleIcc ai bi) : R) * (bN.det fun k => (v (j.succAbove k)).2) := by
-    simpa [Units.smul_def, htail₂] using
-      AlternatingMap.map_perm bN.det (fun k : Fin n => (v (j.succAbove k)).2) (Fin.cycleIcc ai bi)
-  have hsign : (Equiv.Perm.sign i.cycleRange : R) * Equiv.Perm.sign (Fin.cycleIcc ai bi) =
-      - (Equiv.Perm.sign j.cycleRange : R) := by
-    rw [Fin.sign_cycleRange, Fin.sign_cycleIcc_of_le h_ai_le_bi, Fin.sign_cycleRange]
-    norm_num
-    change (-1 : R) ^ (i : ℕ) * (-1 : R) ^ ((j : ℕ) - 1 - i) = -((-1 : R) ^ (j : ℕ))
-    have hexp : (i : ℕ) + ((j : ℕ) - 1 - i) = (j : ℕ) - 1 := Nat.add_sub_of_le h_ai_le_bi
-    rw [← pow_add, hexp]
-    nth_rw 2 [← Nat.sub_add_cancel (Nat.succ_le_of_lt (Nat.zero_lt_of_lt h))]
-    simp [pow_add, pow_one]
-  simp only [laplaceTerm_apply, laplaceTerm_apply, hdet, smul_smul]
-  rw [← mul_assoc, hsign, congrArg Prod.fst hv]
-  simp
+  let A : Matrix (Fin (n + 1)) (Fin (n + 1)) R :=
+    fun p q => Fin.cases (if q = i ∨ q = j then 1 else 0) (fun k => bN.repr ((v q).2) k) p
+  have hcol : ∀ p, A p i = A p j :=
+    Fin.cases (by simp [A, h.ne]) (fun k ↦ by simp [A, hv])
+  have hdet0 : A.det = 0 := Matrix.det_zero_of_column_eq h.ne hcol
+  have hminor (p : Fin (n + 1)) :
+      (A.submatrix Fin.succ p.succAbove).det = bN.det (fun k => (v (p.succAbove k)).2) := by
+    rw [Module.Basis.det_apply]
+    refine congrArg Matrix.det ?_
+    ext a b
+    simp [A, Module.Basis.toMatrix]
+  have hsum : (∑ x, if x = i ∨ x = j then (- 1) ^ (x : ℕ) * (bN.det fun k => (v (x.succAbove k)).2)
+      else 0) = 0 := by
+    rw [Matrix.det_succ_row_zero] at hdet0
+    simpa [A, h.ne, hminor] using hdet0
+  have hcoeff :
+      (Equiv.Perm.sign i.cycleRange : R) * (bN.det fun k => (v (i.succAbove k)).2) +
+        (Equiv.Perm.sign j.cycleRange : R) * (bN.det fun k => (v (j.succAbove k)).2) = 0 := by
+    rw [Finset.sum_ite] at hsum
+    have hsum' : (∑ x with x = i ∨ x = j,
+        (- 1) ^ (x : ℕ) * (bN.det fun k => (v (x.succAbove k)).2)) = 0 := by
+      simpa using hsum
+    have hfilter : Finset.filter (fun x : Fin (n + 1) => x = i ∨ x = j) Finset.univ = {i, j} := by
+      ext x
+      simp [eq_comm]
+    rw [hfilter, Finset.sum_insert, Finset.sum_singleton] at hsum'
+    · simpa [Fin.sign_cycleRange, add_comm] using hsum'
+    · simp [h.ne]
+  simp only [laplaceTerm_apply, laplaceTerm_apply, hv, smul_smul, ← add_smul]
+  simpa using congrArg (fun c : R => c • (v j).1) hcoeff
 
 /-- The alternating map on `M × N` obtained from the Laplace expansion along the `M`-summand. -/
 private noncomputable def laplaceAlternating (bN : Module.Basis (Fin n) R N) :
@@ -154,8 +125,7 @@ private noncomputable def laplaceAlternating (bN : Module.Basis (Fin n) R N) :
         (Finset.mem_erase.mp (Finset.mem_of_mem_erase hp)).1 (Finset.mem_erase.mp hp).1 hv
     by_cases hlt : i < j
     · simpa [hrest, add_assoc] using laplaceTerm_add_eq_zero_of_lt bN v hlt hv
-    · have hgt : j < i := lt_of_le_of_ne (le_of_not_gt hlt) hij.symm
-      simpa [hrest, add_assoc, add_left_comm, add_comm] using
+    · simpa [hrest, add_assoc, add_left_comm, add_comm] using
         laplaceTerm_add_eq_zero_of_lt bN v (lt_of_le_of_ne (le_of_not_gt hlt) hij.symm) hv.symm
 
 /-- The linear map from the top exterior power of `M × N` to `M` induced by the Laplace
@@ -193,47 +163,26 @@ noncomputable def topExteriorLinearEquiv {F : Type*} [AddCommGroup F] [Module R 
     simp [hv_eq]
     simp [hdet, hω]
 
-/-- Let `R` be a commutative ring such that `Spec R` is irreducible, `M` be a finite stably free
-  `R`-module. If `Mₘ ≃ Rₘ` for any maximal ideal `m` of `R`, then `M` is free. -/
-theorem Module.free_of_isStablyFree_of_localized_eq_ring
-    [Nontrivial R] [PreconnectedSpace (PrimeSpectrum R)] [Module.Finite R M]
-    (hstable : IsStablyFree R M) (hloc : ∀ (m : Ideal R) [m.IsMaximal],
+/-- Let `R` be a commutative ring, `M` be a finite stably free `R`-module.
+  If `Mₘ ≃ Rₘ` for any maximal ideal `m` of `R`, then `M` is free. -/
+theorem Module.free_of_isStablyFree_of_localized_eq_ring [Nontrivial R] [Module.Finite R M]
+    (h : IsStablyFree R M) (hloc : ∀ (m : Ideal R) [m.IsMaximal],
       LocalizedModule m.primeCompl M ≃ₗ[Localization.AtPrime m] Localization.AtPrime m) :
     Module.Free R M := by
-  -- Choose a finite free complement `N` such that `M ⊕ N` is free.
-  obtain ⟨N, _, _, _, _, _⟩ := hstable
-  let i : M →ₗ[R] M × N := LinearMap.inl R M N
-  let s : M × N →ₗ[R] M := LinearMap.fst R M N
-  have hs : s ∘ₗ i = LinearMap.id := by
-    ext x
-    rfl
-  -- Since `M` is a direct summand of a free module, it is projective, hence flat and
-  -- finitely presented. Therefore its stalk rank is locally constant on `PrimeSpectrum R`.
-  have : Module.Projective R M := Module.Projective.of_split i s hs
-  have : Module.FinitePresentation R M := Module.finitePresentation_of_projective R M
+  have : Module.Projective R M := h.projective
+  obtain ⟨N, _, _, _, _, _⟩ := h
   obtain ⟨m0, hm0max, _⟩ := Ideal.exists_le_maximal (⊥ : Ideal R) (by simp)
   let p0 : PrimeSpectrum R := PrimeSpectrum.mk m0 hm0max.isPrime
-  have hlocconst : IsLocallyConstant (Module.rankAtStalk (R := R) M) :=
-    Module.isLocallyConstant_rankAtStalk
-  -- At every maximal ideal, the localization of `M` is isomorphic to the localized ring,
-  -- so the stalk rank is `1`; preconnectedness forces this rank to be `1` everywhere.
   have hp0 : Module.rankAtStalk M p0 = 1 :=
     Module.finrank_eq_card_basis ((Module.Basis.singleton (Fin 1) (Localization.AtPrime m0)).map
       (hloc m0).symm) |>.trans (by simp)
-  have hrank1 (p : PrimeSpectrum R) : Module.rankAtStalk M p = 1 :=
-    Eq.trans (by simpa using (hlocconst.apply_eq_of_preconnectedSpace p p0)) hp0
   let n := Module.finrank R N
-  -- Comparing stalk ranks at one maximal point gives `rank (M ⊕ N) = rank N + 1`.
-  have hfinrank_prod : Module.finrank R (M × N) = n + 1 :=
+  have hp : Module.finrank R (M × N) = n + 1 :=
     (congrArg (fun f => f p0) Module.rankAtStalk_eq_finrank_of_free).symm.trans <|
       (congrArg (fun f => f p0) (Module.rankAtStalk_prod M N)).trans <| by
         simp [← hp0, n, Nat.add_comm]
   let bN : Module.Basis (Fin n) R N := Module.finBasisOfFinrankEq R N rfl
-  let bF : Module.Basis (Fin (n + 1)) R (M × N) :=
-    Module.finBasisOfFinrankEq R (M × N) hfinrank_prod
-  -- Laplace expansion along the `M`-summand gives a surjective map
-  -- `Λ^(n + 1) (M ⊕ N) → M`, and after identifying the top exterior power of the free
-  -- module `M ⊕ N` with `R`, this becomes a surjective linear map `f : R → M`.
+  let bF : Module.Basis (Fin (n + 1)) R (M × N) := Module.finBasisOfFinrankEq R (M × N) hp
   let f : R →ₗ[R] M := laplaceToLeft bN ∘ₗ (topExteriorLinearEquiv bF).symm.toLinearMap
   have hf_surj : Function.Surjective f := by
     intro x
@@ -241,14 +190,10 @@ theorem Module.free_of_isStablyFree_of_localized_eq_ring
       (exteriorPower.ιMulti R (n + 1) (Fin.cons (x, 0) fun i => (0, bN i))), ?_⟩
     change laplaceToLeft bN ((topExteriorLinearEquiv bF).symm _) = x
     simpa [LinearEquiv.symm_apply_apply] using laplaceToLeft_ιMulti_cons bN x
-  -- After localizing at a maximal ideal `m`, the map `f_m` is still surjective.
-  -- Since `Mₘ ≃ Rₘ`, it is a surjective endomorphism of a free rank-one module, hence bijective.
-  -- By the local criterion for bijectivity, `f` is bijective over `R`, so `M ≃ R`.
   have hbij : Function.Bijective f := bijective_of_localized_maximal f <| by
     intro m _
     have : Module.Invertible (Localization.AtPrime m) (LocalizedModule m.primeCompl M) :=
       Module.Invertible.congr (hloc m).symm
     exact Module.Invertible.bijective_of_surjective
       (LocalizedModule.map_surjective m.primeCompl f hf_surj)
-  let e : R ≃ₗ[R] M := LinearEquiv.ofBijective f hbij
-  exact Module.Free.of_equiv' inferInstance e
+  exact Module.Free.of_equiv (LinearEquiv.ofBijective f hbij)
