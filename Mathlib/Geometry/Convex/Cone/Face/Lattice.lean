@@ -17,10 +17,10 @@ of a pointed cone `C`.
 ## Main definitions
 
 * `Face C`: the face lattice of `C`.
-* `min`: minimum operation on `Face C`.
-* `CompleteLattice` instance: the face lattice of a pointed cone.
+* `Face.instMin`: minimum operation on `Face C`.
+* `Face.instCompleteLattice`: the face lattice of a pointed cone.
 * `Face.prod`: the product of two faces of pointed cones, together with projections `fst` and `snd`.
-* 'Face.prodOrderIso`: proves that the face lattices of a product cone is the product of the face
+* `Face.prodOrderIso`: proves that the face lattices of a product cone is the product of the face
   lattices of the individual cones.
 
 -/

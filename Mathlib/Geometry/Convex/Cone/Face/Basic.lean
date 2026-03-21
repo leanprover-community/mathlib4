@@ -54,15 +54,12 @@ variable [AddCommGroup M] [Module R M]
 variable {C C₁ C₂ F F₁ F₂ : PointedCone R M}
 
 theorem isFaceOf_iff_mem_of_smul_add_smul_mem : F.IsFaceOf C ↔
-    F ≤ C ∧ ∀ {x y : M} {a b : R}, x ∈ C → y ∈ C → 0 < a → 0 < b → a • x + b • y ∈ F → x ∈ F
-    := by
-  constructor <;> intro h
-  · refine ⟨h.1, fun xC yC a0 b0 hab => ?_⟩
-    exact h.2 xC (Submodule.smul_mem C ⟨_, le_of_lt b0⟩ yC) a0 hab
-  · refine ⟨h.1, ?_⟩
+    F ≤ C ∧ ∀ {x y : M} {a b : R}, x ∈ C → y ∈ C → 0 < a → 0 < b → a • x + b • y ∈ F → x ∈ F where
+  mp h := ⟨h.1, fun xC yC a0 b0 hab => h.2 xC (Submodule.smul_mem C ⟨_, b0.le⟩ yC) a0 hab⟩
+  mpr h := by
+    refine ⟨h.1, ?_⟩
     by_cases hc : 0 < (1 : R)
-    · intros xc yc a0 haxy
-      exact h.2 xc yc a0 hc (by simpa)
+    · exact fun xc yc a0 _ => h.2 xc yc a0 hc (by simpa)
     · simp [(subsingleton_of_zero_eq_one (zero_le_one.eq_or_lt.resolve_right hc)).eq_zero]
 
 namespace IsFaceOf
