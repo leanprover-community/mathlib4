@@ -38,7 +38,7 @@ category theory, preradical, torsion theory
 
 @[expose] public section
 
-universe w v u
+universe w v v' u u'
 
 namespace CategoryTheory.Abelian
 
@@ -126,36 +126,30 @@ instance (P : ObjectProperty C) : (P.leftOrthogonal).IsClosedUnderExtensions whe
       hs.gIsCokernel.fac t Limits.WalkingParallelPair.one
     simp [← hfac, hl]
 
--- TODO: This needs to be cleaned up.
-lemma isClosedUnderCoproducts_of_leftOrthogonal (P : ObjectProperty C) :
-    ∀ {J : Type w}, P.leftOrthogonal.IsClosedUnderColimitsOfShape (Discrete J) := by
-  intro J
-  refine { colimitsOfShape_le := ?_}
-  intro X ⟨hX⟩ Y f hY
-  apply hX.isColimit.hom_ext
-  intro j
-  simpa [comp_zero] using (hX.prop_diag_obj j) (hX.ι.app j ≫ f) hY
-
-/-
-  TODO: Should be able to use these pieces to prove that `P.leftOrthogonal` is closed under
-  colimits, when they exist.
--/
+instance (P : ObjectProperty C) {J : Type u'} [Category.{v'} J] :
+    ObjectProperty.IsClosedUnderColimitsOfShape (P.leftOrthogonal) J where
+  colimitsOfShape_le := by
+    intro X ⟨hX⟩ Y f hY
+    apply hX.isColimit.hom_ext
+    intro j
+    simpa [comp_zero] using (hX.prop_diag_obj j) (hX.ι.app j ≫ f) hY
 
 -- I think these will likely get removed once things are cleand up.
 lemma isClosedUnderQuotients_of_torsionTheory {T F : ObjectProperty C} (hTF : TorsionTheory T F) :
     T.IsClosedUnderQuotients := by
-      rw [hTF.torsion_eq_leftOrthogonal]
-      infer_instance
+  rw [hTF.torsion_eq_leftOrthogonal]
+  infer_instance
 
 lemma isClosedUnderExtensions_of_torsionTheory {T F : ObjectProperty C} (hTF : TorsionTheory T F) :
     T.IsClosedUnderExtensions := by
-      rw [hTF.torsion_eq_leftOrthogonal]
-      infer_instance
+  rw [hTF.torsion_eq_leftOrthogonal]
+  infer_instance
 
 lemma isClosedUnderCoproducts_of_torsionTheory {T F : ObjectProperty C} (hTF : TorsionTheory T F) :
     ∀ {J : Type w}, T.IsClosedUnderColimitsOfShape (Discrete J) := by
   intro J
-  simpa [hTF.torsion_eq_leftOrthogonal] using isClosedUnderCoproducts_of_leftOrthogonal F
+  rw [hTF.torsion_eq_leftOrthogonal]
+  infer_instance
 
 theorem isTorsionClass_iff {P : ObjectProperty C} [LocallySmall.{w} C] [WellPowered.{w} C]
     [HasCoproducts.{w} C] : (∃ F : ObjectProperty C, TorsionTheory P F) ↔
