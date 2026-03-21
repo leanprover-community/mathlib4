@@ -321,7 +321,7 @@ lemma injectiveDimension_ne_top_iff (X : C) :
       exact ⟨d, by simpa only [← injectiveDimension_le_iff] using hd.le⟩
 
 lemma Injective.injectiveDimension_le_zero (X : C) [Injective X] : injectiveDimension X ≤ 0 :=
-  (injectiveDimension_le_iff X 0).mpr ((injective_iff_hasInjectiveDimensionLT_one X).mp ‹_›)
+  (injectiveDimension_le_iff X 0).mpr (injective_iff_hasInjectiveDimensionLT_one.mp ‹_›)
 
 namespace ShortComplex
 

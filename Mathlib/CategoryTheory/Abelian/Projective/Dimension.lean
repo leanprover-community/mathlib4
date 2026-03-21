@@ -323,7 +323,7 @@ lemma projectiveDimension_ne_top_iff (X : C) :
       exact ⟨d, by simpa only [← projectiveDimension_le_iff] using hd.le⟩
 
 lemma Projective.projectiveDimension_le_zero (X : C) [Projective X] : projectiveDimension X ≤ 0 :=
-  (projectiveDimension_le_iff X 0).mpr ((projective_iff_hasProjectiveDimensionLT_one X).mp ‹_›)
+  (projectiveDimension_le_iff X 0).mpr (projective_iff_hasProjectiveDimensionLT_one.mp ‹_›)
 
 namespace ShortComplex
 
