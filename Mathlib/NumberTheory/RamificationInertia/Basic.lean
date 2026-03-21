@@ -697,12 +697,12 @@ noncomputable def quotientToQuotientRangePowQuotSucc
     S ⧸ P →ₗ[R ⧸ p]
       (P ^ i).map (Ideal.Quotient.mk (P ^ e)) ⧸ LinearMap.range (powQuotSuccInclusion p P i) where
   toFun := quotientToQuotientRangePowQuotSuccAux p P a_mem
-  map_add' := by
-    intro x y; refine Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => ?_
+  map_add' x y := by
+    induction x, y using Quotient.inductionOn₂' with | _ x y
     simp only [Submodule.Quotient.mk''_eq_mk, ← Submodule.Quotient.mk_add,
       quotientToQuotientRangePowQuotSuccAux_mk, mul_add, map_add, map_mul, AddMemClass.mk_add_mk]
-  map_smul' := by
-    intro x y; refine Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => ?_
+  map_smul' x y := by
+    induction x, y using Quotient.inductionOn₂' with | _ x y
     simp only [Submodule.Quotient.mk''_eq_mk, RingHom.id_apply,
       quotientToQuotientRangePowQuotSuccAux_mk]
     refine congr_arg Submodule.Quotient.mk ?_

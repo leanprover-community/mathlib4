@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 module
 
 public import Mathlib.Data.ULift
+public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Util.Delaborators
 
 /-!
