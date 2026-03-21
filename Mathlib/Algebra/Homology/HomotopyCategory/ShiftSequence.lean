@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Shift.InducedShiftSequence
 public import Mathlib.CategoryTheory.Shift.Localization
+public import Mathlib.CategoryTheory.Shift.ShiftedHom
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Homology.QuasiIso
@@ -203,7 +204,7 @@ lemma homologyShiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainCom
 lemma homologyFunctor_shiftMap
     {K L : CochainComplex C ℤ} {n : ℤ} (f : K ⟶ L⟦n⟧) (a a' : ℤ) (h : n + a = a') :
     (homologyFunctor C (ComplexShape.up ℤ) 0).shiftMap
-      ((quotient _ _).map f ≫ ((quotient _ _).commShiftIso n).hom.app _) a a' h =
+      (ShiftedHom.map f (quotient _ _)) a a' h =
         (homologyFunctorFactors _ _ a).hom.app K ≫
           (HomologicalComplex.homologyFunctor C (ComplexShape.up ℤ) 0).shiftMap f a a' h ≫
             (homologyFunctorFactors _ _ a').inv.app L := by

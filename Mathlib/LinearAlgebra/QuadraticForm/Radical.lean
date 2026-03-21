@@ -86,6 +86,7 @@ lemma lift_mk {N : Submodule R M} (hN : N ≤ Q.radical) (m : M) :
     Q.lift N hN (Submodule.Quotient.mk m) = Q m :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Universal property of the radical of a quadratic form:
 `Q.radical` is the largest subspace `N` such that

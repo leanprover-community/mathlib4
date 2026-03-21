@@ -14,14 +14,16 @@ public import Mathlib.Data.Nat.Factorial.DoubleFactorial
 /-!
 # Multinomial
 
-This file defines the multinomial coefficient and several small lemma's for manipulating it.
+This file defines the multinomial coefficients and several small lemmas for manipulating them.
 
-- `Nat.multinomial`: the multinomial coefficient.
-  Given a function `f : α → ℕ` and `s : Finset α`,
-  this is the natural number `(∑ a ∈ s, f a) ! / ∏ a ∈ s, (f a) !`.
+- `Nat.multinomial`: the multinomial coefficient,
+  Given a function `f : α → ℕ` and `s : Finset α`, this is the number of strings
+  consisting of symbols from `s`, where `c ∈ s` appears with multiplicity `f c`.
+
+  It is defined as `(∑ i ∈ s, f i)! / ∏ i ∈ s, (f i)!`.
 
 - `Multiset.countPerms`: multinomial coefficient associated with the `Multiset.count` function
-  of a multiset
+  of a multiset. This is the number of lists that induce the given multiset.
 
 - `Finset.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
 
@@ -106,6 +108,32 @@ theorem multinomial_congr {f g : α → ℕ} (h : ∀ a ∈ s, f a = g a) :
   simp only [multinomial]; congr 1
   · rw [Finset.sum_congr rfl h]
   · exact Finset.prod_congr rfl fun a ha => by rw [h a ha]
+
+theorem multinomial_congr_of_eq_on_inter [DecidableEq α] {f g : α → ℕ} {s t : Finset α}
+    (hf : ∀ a ∈ s \ t, f a = 0) (hg : ∀ a ∈ t \ s, g a = 0) (hfg : ∀ a ∈ s ∩ t, f a = g a) :
+    multinomial s f = multinomial t g := by
+  rw [← Nat.mul_right_inj (prod_ne_zero_iff.mpr (fun x _ ↦ factorial_ne_zero (g x))),
+    multinomial_spec, prod_congr_of_eq_on_inter (g := fun a ↦ (f a)!) (s₂ := s) (by aesop)
+    (by aesop) (by aesop), multinomial_spec s f]
+  congr 1
+  exact sum_congr_of_eq_on_inter (by grind) (by grind) (by grind)
+
+theorem multinomial_congr_of_sdiff [DecidableEq α] {f g : α → ℕ} {s t : Finset α}
+    (hst : s ⊆ t) (hg : ∀ a ∈ t \ s, g a = 0) (hfg : ∀ a ∈ s, f a = g a) :
+    multinomial s f = multinomial t g :=
+  multinomial_congr_of_eq_on_inter (by grind) hg (by grind)
+
+variable (s a) in
+theorem multinomial_single [DecidableEq α] :
+    multinomial s (Pi.single a n) = 1 := by
+  rw [← Nat.mul_right_inj (prod_ne_zero_iff.mpr (fun _ _ ↦ factorial_ne_zero _)), mul_one,
+    multinomial_spec, sum_pi_single']
+  split_ifs with ha
+  · rw [Finset.prod_eq_single a (by simp_all) (by simp_all), Pi.single_eq_same]
+  · rw [eq_comm, factorial_zero]
+    apply Finset.prod_eq_one
+    intro _ hb
+    rw [Pi.single_apply, if_neg (ne_of_mem_of_not_mem hb ha), factorial_zero]
 
 /-! ### Connection to binomial coefficients
 
@@ -203,9 +231,7 @@ namespace Multiset
 
 variable {α : Type*}
 
-/-- Alternative definition of multinomial based on `Multiset` delegating to the
-  finsupp definition
--/
+/-- The number of permutations of a given multiset. -/
 noncomputable def countPerms [DecidableEq α] (m : Multiset α) : ℕ :=
   m.toFinsupp.multinomial
 
@@ -219,6 +245,8 @@ theorem countPerms_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
     split_ifs with h
     · rw [Function.update_of_ne h.symm, toFinsupp_apply]
     · rw [not_ne_iff.1 h, Function.update_self]
+
+@[deprecated (since := "2025-03-13")] alias multinomial_filter_ne := countPerms_filter_ne
 
 @[simp]
 theorem countPerms_zero [DecidableEq α] : countPerms (0 : Multiset α) = 1 := by
@@ -238,7 +266,6 @@ variable [Semiring R]
 
 open scoped Function -- required for scoped `on` notation
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: Can we prove one of the following two from the other one?
 /-- The **multinomial theorem**. -/
 lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
@@ -281,7 +308,6 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
   rw [if_neg, add_zero]
   exact ne_of_mem_of_not_mem ht has
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **multinomial theorem**. -/
 theorem sum_pow_of_commute (x : α → R) (s : Finset α)
     (hc : (s : Set α).Pairwise (Commute on x)) :
@@ -363,7 +389,7 @@ namespace Sym
 
 variable {n : ℕ} {α : Type*} [DecidableEq α]
 
-theorem multinomial_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
+theorem countPerms_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
     (fill x m s : Multiset α).countPerms = n.choose m * (s : Multiset α).countPerms := by
   rw [Multiset.countPerms_filter_ne x]
   rw [← mem_coe] at hx
@@ -376,6 +402,9 @@ theorem multinomial_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x
       rw [Multiset.filter_eq_nil]
       exact fun j hj ↦ by simp [Multiset.mem_replicate.mp hj]
     · exact fun j hj h ↦ hx <| by simpa [h] using hj
+
+@[deprecated (since := "2025-03-13")] alias multinomial_coe_fill_of_notMemal_filter_ne :=
+  countPerms_coe_fill_of_notMem
 
 end Sym
 

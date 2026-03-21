@@ -312,7 +312,6 @@ theorem free_of_flat_of_isLocalRing [Module.Finite R P] [Flat R P] : Free R P :=
   .of_basis <| .mk (IsLocalRing.linearIndependent_of_flat _ (eq ▸ w.linearIndependent)) <| by
     exact (span_eq_top_of_tmul_eq_basis _ w <| congr_fun eq).ge
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `M → N → P → 0` is a presentation of `P` over a local ring `(R, 𝔪, k)` with
 `M` finite and `N` finite free, then injectivity of `k ⊗ M → k ⊗ N` implies that `P` is free.
@@ -332,7 +331,6 @@ theorem free_of_lTensor_residueField_injective (hg : Surjective g) (h : Exact f 
 
 end Module
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a linear map `l : M → N` over a local ring `(R, 𝔪, k)`
 with `M` finite and `N` finite free,

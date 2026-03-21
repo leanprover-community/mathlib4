@@ -515,7 +515,7 @@ theorem mk_coe (f : α ≃*o β) (h) : OrderMonoidIso.mk (f : α ≃* β) h = f 
 
 /-- Reinterpret an ordered monoid isomorphism as an order isomorphism. -/
 @[to_additive
-/-- Reinterpret an ordered additive monoid isomomorphism as an order isomomorphism. -/]
+/-- Reinterpret an ordered additive monoid isomorphism as an order isomorphism. -/]
 def toOrderIso (f : α ≃*o β) : α ≃o β :=
   { f with
     map_rel_iff' := map_le_map_iff f }
@@ -699,6 +699,14 @@ theorem eq_symm_comp (e : α ≃*o β) (f : α → α) (g : α → β) :
 theorem symm_comp_eq (e : α ≃*o β) (f : α → α) (g : α → β) :
     e.symm ∘ g = f ↔ g = e ∘ f :=
   e.toEquiv.symm_comp_eq f g
+
+@[to_additive]
+lemma lt_symm_apply (e : α ≃*o β) {x : α} {y : β} : x < e.symm y ↔ e x < y :=
+  e.toOrderIso.lt_symm_apply
+
+@[to_additive]
+lemma symm_apply_lt (e : α ≃*o β) {x : α} {y : β} : e.symm y < x ↔ y < e x :=
+  e.toOrderIso.symm_apply_lt
 
 variable (f)
 

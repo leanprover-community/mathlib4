@@ -523,7 +523,6 @@ when `A` and `B` are merely `CommRing`s, by treating both as `ℤ`-algebras.
 -/
 example [CommRing A] [CommRing B] : CommRing (A ⊗[ℤ] B) := by infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R A B) in
 lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
     [Algebra R A] [Algebra R B] :
@@ -547,7 +546,7 @@ lemma adjoin_one_tmul_image_eq_top [CommSemiring R] [CommSemiring A]
     [Semiring B] [Algebra R A] [Algebra R B]
     (s : Set B) (hs : adjoin R s = ⊤) : adjoin A (((1 : A) ⊗ₜ[R] ·) '' s) = ⊤ := by
   suffices h : adjoin A ((⊤ : Subalgebra R B).map (includeRight (A := A)) : Set (A ⊗[R] B)) = ⊤ by
-    simp [← h, ← hs, AlgHom.map_adjoin, -adjoin_toSubsemiring, adjoin_adjoin_of_tower]
+    simp [← h, ← hs, AlgHom.map_adjoin, adjoin_adjoin_of_tower]
   rw [← Algebra.toSubmodule_eq_top, ← top_le_iff, Algebra.map_top, ← Submodule.baseChange_top,
     Submodule.baseChange_eq_span, Submodule.map_top]
   exact span_le_adjoin _ _
@@ -754,3 +753,44 @@ noncomputable instance : StarRing (A ⊗[R] B) where
   star_add := by simp
 
 end TensorProduct
+
+namespace AlgHom
+
+variable (R S A B : Type*)
+variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
+variable [Algebra R S] [Algebra R B] [IsScalarTower R S B]
+
+/-- Universal property of the base change of algebra.
+
+An algebra map from the base change is equivalent to an algebra map over the base ring.
+
+In categorical terms, this is an adjunction between:
+1. `A ↦ S ⊗[R] A`, a functor `R-Alg ⥤ S-Alg` (the base change).
+2. `B ↦ B`, a functor `S-Alg ⥤ R-Alg` (the restriction).
+-/
+def liftEquiv : (A →ₐ[R] B) ≃ (S ⊗[R] A →ₐ[S] B) where
+  toFun f :=
+    .ofLinearMap (.liftBaseChange S f) (by simp [Algebra.TensorProduct.one_def]) fun x y ↦ by
+      rw [← LinearMap.mul_apply_apply S, ← LinearMap.compr₂_apply,
+        ← LinearMap.mul_apply_apply S, ← LinearMap.compl₁₂_apply]
+      congr; ext; simp
+  invFun f := f.restrictScalars R |>.comp Algebra.TensorProduct.includeRight
+  left_inv f := by ext; simp
+  right_inv f := Algebra.TensorProduct.ext (Subsingleton.elim _ _) <| by ext; simp
+
+variable {R S A B}
+
+@[simp] lemma liftEquiv_tmul (f : A →ₐ[R] B) (s : S) (a : A) :
+    f.liftEquiv R S A B (s ⊗ₜ a) = s • f a := rfl
+
+@[simp] lemma liftEquiv_symm_apply (f : S ⊗[R] A →ₐ[S] B) (a : A) :
+    (liftEquiv ..).symm f a = f (1 ⊗ₜ[R] a) := rfl
+
+@[ext high + 1]
+lemma _root_.Algebra.TensorProduct.ext_ring {f g : S ⊗[R] A →ₐ[S] B}
+    (h : (AlgHom.restrictScalars R f).comp Algebra.TensorProduct.includeRight =
+      (AlgHom.restrictScalars R g).comp Algebra.TensorProduct.includeRight) :
+    f = g :=
+  liftEquiv .. |>.symm.injective h
+
+end AlgHom

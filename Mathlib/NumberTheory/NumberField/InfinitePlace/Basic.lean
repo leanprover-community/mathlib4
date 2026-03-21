@@ -140,6 +140,7 @@ theorem le_iff_le (x : K) (r : ℝ) : (∀ w : InfinitePlace K, w x ≤ r) ↔ �
 
 theorem pos_iff {w : InfinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := AbsoluteValue.pos_iff w.1
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexEmbedding.conjugate φ = ψ := by
   constructor
@@ -543,6 +544,9 @@ lemma infinitePlace_apply (v : InfinitePlace ℚ) (x : ℚ) : v x = |x| := by
 instance : Subsingleton (InfinitePlace ℚ) where
   allEq a b := by ext; simp
 
+noncomputable instance : Unique (InfinitePlace ℚ) :=
+  ⟨⟨infinitePlace⟩, fun _ ↦ Subsingleton.elim _ infinitePlace⟩
+
 lemma isReal_infinitePlace : InfinitePlace.IsReal (infinitePlace) :=
   ⟨Rat.castHom ℂ, by ext; simp, rfl⟩
 
@@ -610,22 +614,25 @@ theorem denseRange_algebraMap_pi [NumberField K] :
   -- Define the sequence `yₙ = ∑ v, 1 / (1 + aᵥ⁻ⁿ) * zᵥ` in `K`
   let y := fun n ↦ ∑ v, (1 / (1 + (a v)⁻¹ ^ n)) * WithAbs.equiv v.1 (z v)
   -- We will show that this sequence converges to `z` in the product topology.
-  have : atTop.Tendsto (fun n v ↦ (WithAbs.equiv v.1).symm (y n)) (𝓝 z) := by
+  have : atTop.Tendsto
+      (fun n (v : InfinitePlace K) ↦ (WithAbs.equiv v.1).symm (y n)) (𝓝 z) := by
     -- At a fixed place `u`, the limit of `y` with respect to `u`'s topology is `zᵤ`.
     refine tendsto_pi_nhds.mpr fun u ↦ ?_
     simp_rw [← Fintype.sum_pi_single u z, y, map_sum, map_mul]
     refine tendsto_finset_sum _ fun w _ ↦ ?_
     by_cases hw : u = w
     · -- Because `1 / (1 + aᵤ⁻ⁿ) → 1` in `WithAbs u.1`.
-      rw [← hw, Pi.single_apply u (z u), if_pos rfl]
+      rw [← hw, Pi.single_eq_same]
       have : u (a u)⁻¹ < 1 := by simpa [← inv_pow, inv_lt_one_iff₀] using .inr (hx u).1
       simpa using (WithAbs.tendsto_one_div_one_add_pow_nhds_one this).mul_const (z u)
     · -- And `1 / (1 + aᵤ⁻ⁿ) → 0` in `WithAbs w.1` when `w ≠ u`.
-      simp only [Pi.single_apply w (z w), hw, if_false]
-      have : 1 < u (a w)⁻¹ := by simpa [one_lt_inv_iff₀] using
+      rw [Pi.single_eq_of_ne (M := fun v ↦ WithAbs v.1) hw (z w)]
+      have hu : 1 < u (a w)⁻¹ := by simpa [one_lt_inv_iff₀] using
         ⟨u.pos_iff.2 fun ha ↦ by linarith [map_zero w ▸ ha ▸ (hx w).1], (hx w).2 u hw⟩
-      simpa using (tendsto_zero_iff_norm_tendsto_zero.2 <|
-        u.1.tendsto_div_one_add_pow_nhds_zero this).mul_const ((WithAbs.equiv u.1).symm _)
+      have := u.1.tendsto_div_one_add_pow_nhds_zero hu
+      simp_rw [← WithAbs.norm_toAbs_eq] at this
+      simpa using (tendsto_zero_iff_norm_tendsto_zero.2 this).mul_const
+        ((WithAbs.equiv u.1).symm (WithAbs.equiv w.1 (z w)))
   -- So taking a sufficiently large index of the sequence `yₙ` gives the desired term.
   let ⟨N, h⟩ := Metric.tendsto_atTop.1 this r hr
   exact ⟨y N, dist_comm z (algebraMap K _ (y N)) ▸ h N le_rfl⟩

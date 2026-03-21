@@ -141,8 +141,6 @@ open Valuation
 noncomputable def withValEquiv (v : HeightOneSpectrum R) :
     WithVal (v.valuation ℚ) ≃ᵤ WithVal (padicValuation (primesEquiv v)) :=
   (valuation_equiv_padicValuation v).uniformEquiv
-    (exists_div_eq_of_surjective (v.valuation_surjective ℚ))
-    (exists_div_eq_of_surjective (surjective_padicValuation (primesEquiv v)))
 
 /-- The continuous `ℚ`-algebra isomorphism between `v.adicCompletion ℚ` and `ℚ_[primesEquiv v]`. -/
 noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum R) :
@@ -159,11 +157,9 @@ noncomputable def adicCompletionIntegers.padicIntEquiv (v : HeightOneSpectrum R)
   __ := let e := (mapRingEquiv _ (withValEquiv v).continuous
           (withValEquiv v).symm.continuous).restrict _ _ fun _ ↦ by
             simpa using (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
-              (v.valuation_surjective ℚ) (surjective_padicValuation _)
         e.trans withValIntegersRingEquiv
   __ := let e := (mapEquiv (withValEquiv v)).subtype fun _ ↦ by
           simpa using (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
-            (v.valuation_surjective ℚ) (surjective_padicValuation _)
         (e.trans withValIntegersUniformEquiv).toHomeomorph
   commutes' := by simp
 
