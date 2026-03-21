@@ -6,8 +6,8 @@ Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Clique
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Operations
 public import Mathlib.Data.Set.Card.Arithmetic

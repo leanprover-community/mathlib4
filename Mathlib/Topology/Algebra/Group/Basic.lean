@@ -257,8 +257,27 @@ instance (priority := 100) continuousInv_of_discreteTopology [TopologicalSpace H
   ⟨continuous_of_discreteTopology⟩
 
 @[to_additive]
+instance (priority := 100) continuousInv_of_indiscreteTopology [TopologicalSpace H] [Inv H]
+    [IndiscreteTopology H] : ContinuousInv H :=
+  ⟨continuous_of_indiscreteTopology⟩
+
+@[to_additive]
+instance (priority := 100) continuousDiv_of_discreteTopology [TopologicalSpace H] [Div H]
+    [DiscreteTopology H] : ContinuousDiv H :=
+  ⟨continuous_of_discreteTopology⟩
+
+@[to_additive]
+instance (priority := 100) continuousDiv_of_indiscreteTopology [TopologicalSpace H] [Div H]
+    [IndiscreteTopology H] : ContinuousDiv H :=
+  ⟨continuous_of_indiscreteTopology⟩
+
+@[to_additive]
 instance (priority := 100) topologicalGroup_of_discreteTopology
     [TopologicalSpace H] [Group H] [DiscreteTopology H] : IsTopologicalGroup H := ⟨⟩
+
+@[to_additive]
+instance (priority := 100) topologicalGroup_of_indiscreteTopology
+    [TopologicalSpace H] [Group H] [IndiscreteTopology H] : IsTopologicalGroup H := ⟨⟩
 
 section PointwiseLimits
 

@@ -613,7 +613,44 @@ attribute [reassoc (attr := simp)] μIso_hom_natural_left
 
 attribute [reassoc] left_unitality right_unitality
 
-variable {F} (h : F.CoreMonoidal)
+variable {F}
+
+/-- Alternative constructor for `CoreMonoidal`, for which the axioms are stated
+in terms on the inverses of `εIso` and `μIso`. -/
+@[simps]
+def mk' (εIso : 𝟙_ D ≅ F.obj (𝟙_ C))
+    (μIso : ∀ X Y : C, F.obj X ⊗ F.obj Y ≅ F.obj (X ⊗ Y))
+    (μIso_inv_natural_left : ∀ {X Y : C} (f : X ⟶ Y) (X' : C),
+      (μIso X X').inv ≫ F.map f ▷ F.obj X' = F.map (f ▷ X') ≫ (μIso Y X').inv := by cat_disch)
+    (μIso_inv_natural_right : ∀ {X Y : C} (X' : C) (f : X ⟶ Y),
+      (μIso X' X).inv ≫ F.obj X' ◁ F.map f = F.map (X' ◁ f) ≫ (μIso X' Y).inv := by cat_disch)
+    (oplax_associativity : ∀ X Y Z : C,
+      (μIso (X ⊗ Y) Z).inv ≫ (μIso X Y).inv ▷ F.obj Z ≫
+        (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom =
+      F.map (α_ X Y Z).hom ≫ (μIso X (Y ⊗ Z)).inv ≫ F.obj X ◁ (μIso Y Z).inv := by cat_disch)
+    (oplax_left_unitality : ∀ X : C, (λ_ (F.obj X)).inv =
+      F.map (λ_ X).inv ≫ (μIso (𝟙_ C) X).inv ≫ εIso.inv ▷ F.obj X := by cat_disch)
+    (oplax_right_unitality : ∀ X : C, (ρ_ (F.obj X)).inv =
+      F.map (ρ_ X).inv ≫ (μIso X (𝟙_ C)).inv ≫ F.obj X ◁ εIso.inv := by cat_disch) :
+    F.CoreMonoidal where
+  εIso := εIso
+  μIso := μIso
+  μIso_hom_natural_left {X Y} f X' := by
+    simp [← cancel_epi (μIso X X').inv, reassoc_of% μIso_inv_natural_left f X']
+  μIso_hom_natural_right {X Y} X' g := by
+    simp [← cancel_mono (μIso X' Y).inv, ← (μIso_inv_natural_right X' g)]
+  associativity X Y Z := by
+    rw [← cancel_epi ((μIso X Y).inv ▷ F.obj Z), ← cancel_epi (μIso (X ⊗ Y) Z).inv,
+      reassoc_of% oplax_associativity]
+    simp
+  left_unitality X := by
+    rw [← cancel_mono (λ_ (F.obj X)).inv, Iso.hom_inv_id, oplax_left_unitality]
+    simp
+  right_unitality X := by
+    rw [← cancel_mono (ρ_ (F.obj X)).inv, Iso.hom_inv_id, oplax_right_unitality]
+    simp
+
+variable (h : F.CoreMonoidal)
 
 /-- The lax monoidal functor structure induced by a `Functor.CoreMonoidal` structure. -/
 @[simps -isSimp, implicit_reducible]
@@ -856,7 +893,7 @@ variable [F.OplaxMonoidal]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The right adjoint of an oplax monoidal functor is lax monoidal. -/
-@[simps, implicit_reducible]
+@[simps -isSimp, implicit_reducible]
 def rightAdjointLaxMonoidal : G.LaxMonoidal where
   ε := adj.homEquiv _ _ (η F)
   μ X Y := adj.homEquiv _ _ (δ F _ _ ≫ (adj.counit.app X ⊗ₘ adj.counit.app Y))
@@ -971,7 +1008,7 @@ variable [G.LaxMonoidal]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The left adjoint of a lax monoidal functor is oplax monoidal. -/
-@[simps, implicit_reducible]
+@[simps -isSimp, implicit_reducible]
 def leftAdjointOplaxMonoidal : F.OplaxMonoidal where
   η := (adj.homEquiv _ _).symm (ε G)
   δ X Y := (adj.homEquiv _ _).symm ((adj.unit.app X ⊗ₘ adj.unit.app Y) ≫ μ G _ _)
@@ -1022,12 +1059,14 @@ instance :
     adj.IsMonoidal := by
   letI := adj.leftAdjointOplaxMonoidal
   refine ⟨?_, fun X Y ↦ ?_⟩
-  · simp [homEquiv_counit]
-  · simp [homEquiv_counit, ← μ_natural]
+  · simp [homEquiv_counit, leftAdjointOplaxMonoidal_η]
+  · simp [homEquiv_counit, ← μ_natural, leftAdjointOplaxMonoidal_δ]
 
 end OplaxMonoidal
 
 set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] leftAdjointOplaxMonoidal_η leftAdjointOplaxMonoidal_δ
+  rightAdjointLaxMonoidal_ε rightAdjointLaxMonoidal_μ in
 /-- If `F ⊣ G` is an adjunction, the `G` is lax monoidal iff `F` is oplax monoidal.
 It is advisable to use `Adjunction.leftAdjointOplaxMonoidal` and
 `Adjunction.rightAdjointLaxMonoidal`, because compatibilities between

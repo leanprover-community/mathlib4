@@ -281,6 +281,16 @@ theorem IndiscreteTopology.isOpen_iff [IndiscreteTopology α] (U : Set α) :
 theorem TopologicalSpace.isOpen_top_iff {α} (U : Set α) : IsOpen[⊤] U ↔ U = ∅ ∨ U = univ :=
   letI : TopologicalSpace α := ⊤; IndiscreteTopology.isOpen_iff _
 
+theorem IndiscreteTopology.isClosed_iff [IndiscreteTopology α] (C : Set α) :
+    IsClosed C ↔ C = ∅ ∨ C = Set.univ := by
+  simp [← isOpen_compl_iff, IndiscreteTopology.isOpen_iff, Or.comm]
+
+theorem dense_indiscrete [IndiscreteTopology α] {s : Set α} (h : s.Nonempty) : Dense s := by
+  simp [dense_iff_inter_open, IndiscreteTopology.isOpen_iff, h]
+
+theorem closure_indiscrete [IndiscreteTopology α] {s : Set α} (h : s.Nonempty) :
+    closure s = Set.univ := Dense.closure_eq (dense_indiscrete h)
+
 /-- Every function to the indiscrete topology is continuous -/
 theorem continuous_of_indiscreteTopology {β} [TopologicalSpace β] [IndiscreteTopology β]
     {f : α → β} : Continuous f where
