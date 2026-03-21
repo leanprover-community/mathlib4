@@ -243,7 +243,7 @@ theorem AnalyticOnNhd.sum_divisor_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
         · --In the smaller ball: the divisors agree and we bound the log factor
           simp only [(h₁f.mono (closedBall_subset_closedBall r_lt_R.le)), h2,
             AnalyticOnNhd.divisor_apply, h₁f, h1]
-          by_cases! h3 : u = c --Need to use that the divisor is 0 at c rather than comparing the logs
+          by_cases! h3 : u = c --Need to use the divisor is 0 at c rather than comparing the logs
           · rw [h3, (h₁f c (by simp)).analyticOrderAt_eq_zero.mpr h₂f]
             simp
           gcongr 1
