@@ -114,8 +114,10 @@ lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : Sim
     (stdSimplex.{u}.obj n).map f x = objEquiv.symm (f.unop ≫ objEquiv x) := by
   rfl
 
+end stdSimplex
+
 /-- The canonical bijection `(stdSimplex.obj n ⟶ X) ≃ X.obj (op n)`. -/
-def _root_.SSet.yonedaEquiv {X : SSet.{u}} {n : SimplexCategory} :
+def yonedaEquiv {X : SSet.{u}} {n : SimplexCategory} :
     (stdSimplex.obj n ⟶ X) ≃ X.obj (op n) :=
   uliftYonedaEquiv
 
@@ -124,8 +126,31 @@ instance (X : SSet.{u}) (n : SimplexCategory) [DecidableEq (X.obj (op n))] :
   fun a b ↦ decidable_of_iff (yonedaEquiv a = yonedaEquiv b) (by simp)
 
 lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
-    yonedaEquiv.{u} (stdSimplex.map f) = objEquiv.symm f :=
+    yonedaEquiv.{u} (stdSimplex.map f) = stdSimplex.objEquiv.symm f :=
   yonedaEquiv.symm.injective rfl
+
+@[deprecated (since := "2026-03-21")] alias stdSimplex.yonedaEquiv_map := yonedaEquiv_map
+
+@[simp]
+lemma yonedaEquiv_symm_app {S : SSet} (n : SimplexCategory) (x : S.obj (op n))
+    (α : (stdSimplex.obj n).obj (op n)) :
+    (yonedaEquiv.symm x).app (op n) α = S.map (SSet.stdSimplex.objEquiv α).op x := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+lemma yonedaEquiv_symm_apply_app {n : SimplexCategory}
+    {S T : SSet} (f : S ⟶ T) (x : S.obj (op n)) :
+    yonedaEquiv.symm (f.app (op n) x) = SSet.yonedaEquiv.symm x ≫ f := by
+  rw [yonedaEquiv.symm_apply_eq]
+  simp [yonedaEquiv, uliftYonedaEquiv]
+
+@[simp]
+lemma yonedaEquiv_symm_stdSimplex_id (n : SimplexCategory) :
+    yonedaEquiv.symm (SSet.stdSimplex.objEquiv.symm (β := n ⟶ _) (𝟙 n)) = 𝟙 (stdSimplex.obj n) :=
+  yonedaEquiv.symm_apply_eq.mpr rfl
+
+namespace stdSimplex
+
+open Finset Opposite SimplexCategory
 
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n + 1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=
