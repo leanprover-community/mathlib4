@@ -510,6 +510,11 @@ lemma _root_.DifferentiableAt.deriv_initialCurve_of_orientedCurvature (hI : IsOp
   have := ContDiffOn.initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀
   fun_prop (disch := assumption)
 
+lemma eq_euclidean_plane_vectors {u v : EuclideanSpace ℝ (Fin 2)}
+    (h₀ : u 0 = v 0) (h₁ : u 1 = v 1) : u = v := by
+    ext i
+    fin_cases i <;> assumption
+
 omit hIoC in
 lemma deriv_fun_proj_deriv_eq_proj_deriv_deriv (i : ι) (hI : IsOpen I) (ht : t ∈ I)
     (hγ : ContDiffOn ℝ 2 γ I) : deriv (fun x ↦ (deriv γ x) i) t = (deriv (deriv γ) t) i := by
@@ -550,11 +555,8 @@ theorem initialCurve_of_orientedCurvature_is_unique (hI : IsOpen I) (hκ : Conti
   let f (s : ℝ) := (deriv c s) 0 - (deriv α s) 0
   let g (s : ℝ) := (deriv c s) 1 - (deriv α s) 1
   let h (s : ℝ) := (f s)^2 + (g s)^2
-  have hDf {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ f s := by fun_prop (disch := assumption)
-  have hDg {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ g s := by fun_prop (disch := assumption)
   have hDh {s : ℝ} (hs : s ∈ I) : DifferentiableAt ℝ h s := by fun_prop (disch := assumption)
-  have hdf : ∀s ∈ I, deriv f s = - κ s * g s := by
-    intro s hs
+  have hdf {s : ℝ} (hs : s ∈ I) : deriv f s = - κ s * g s := by
     simp only [Fin.isValue, neg_mul, f, g]
     rw [deriv_fun_sub (by fun_prop (disch := assumption)) (by fun_prop (disch := assumption))]
     have hddc₀s : deriv (fun t ↦ (deriv c t) 0) s = - κ s * (deriv c s) 1 := by
@@ -564,8 +566,7 @@ theorem initialCurve_of_orientedCurvature_is_unique (hI : IsOpen I) (hκ : Conti
       simp [deriv_fun_proj_deriv_eq_proj_deriv_deriv 0 hI hs hα₁, α, PiLp.ext_iff.mp (hαFre₁ hs) 0,
             normal]
     rw [hddc₀s, hddα₀s]; ring
-  have hdg : ∀s ∈ I, deriv g s = κ s * f s := by
-    intro s hs
+  have hdg {s : ℝ} (hs : s ∈ I) : deriv g s = κ s * f s := by
     simp only [Fin.isValue, g, f]
     rw [deriv_fun_sub (by fun_prop (disch := assumption)) (by fun_prop (disch := assumption))]
     have hddc₁s : deriv (fun t ↦ (deriv c t) 1) s = κ s * (deriv c s) 0 := by
@@ -581,33 +582,26 @@ theorem initialCurve_of_orientedCurvature_is_unique (hI : IsOpen I) (hκ : Conti
     calc
        deriv (fun s ↦ f s ^ 2 + g s ^ 2) s = 2*((f s)*(deriv f s)+(g s)*(deriv g s)) := by
          rw [deriv_fun_add (by fun_prop (disch := assumption)) (by fun_prop (disch := assumption)),
-             deriv_fun_pow (hDf hs) 2, deriv_fun_pow (hDg hs) 2]; ring
-       _ = 2*((f s)*(- κ s * g s)+(g s)*(κ s * f s)) := by rw [hdf s hs, hdg s hs]
+             deriv_fun_pow (by fun_prop (disch := assumption)) 2,
+             deriv_fun_pow (by fun_prop (disch := assumption)) 2]; ring
+       _ = 2*((f s)*(- κ s * g s)+(g s)*(κ s * f s)) := by rw [hdf hs, hdg hs]
        _ = 0 := by ring
-  have hh : ∀s ∈ I, h s = 0 := by
+  have hh {s : ℝ} (hs : s ∈ I) : h s = 0 := by
     let ⟨a, ha⟩ := hI.exists_is_const_of_deriv_eq_zero hIoC.isPreconnected
                    (fun s hs ↦  (hDh hs).differentiableWithinAt) hdh
-    intro s hs
     rw [ha s hs, ← ha t₀ ht₀]
     simp [h, f, g, hc₅, hα₅]
-  have heqd₀ : ∀s ∈ I, (deriv c s) 0 = (deriv α s) 0 := by
-    intro s hs
-    have help := left_eq_zero_of_sum_sq_eq_zero (hh s hs)
+  have heqd₀ {s : ℝ} (hs : s ∈ I) : (deriv c s) 0 = (deriv α s) 0 := by
+    have help := left_eq_zero_of_sum_sq_eq_zero (hh hs)
     simp [f] at help
     linarith
-  have heqd₁ : ∀s ∈ I, (deriv c s) 1 = (deriv α s) 1 := by
-    intro s hs
-    have help := right_eq_zero_of_sum_sq_eq_zero (hh s hs)
+  have heqd₁ {s : ℝ} (hs : s ∈ I) : (deriv c s) 1 = (deriv α s) 1 := by
+    have help := right_eq_zero_of_sum_sq_eq_zero (hh hs)
     simp [g] at help
     linarith
-  have heqd : ∀s ∈ I, deriv c s = deriv α s := by
-    intro s hs
-    ext i
-    fin_cases i
-    · simp [heqd₀ s hs]
-    · simp [heqd₁ s hs]
   exact hI.eqOn_of_deriv_eq hIoC.isPreconnected (hc₁.differentiableOn (by norm_num))
-    (hα₁.differentiableOn (by norm_num)) heqd ht₀ (by simp [hc₄, α, hα₄])
+    (hα₁.differentiableOn (by norm_num))
+    (fun s hs ↦  eq_euclidean_plane_vectors (heqd₀ hs) (heqd₁ hs)) ht₀ (by simp [hc₄, α, hα₄])
 
 end
 
