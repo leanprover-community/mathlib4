@@ -82,39 +82,12 @@ theorem isRegular_succ {c : Cardinal} (hc : ℵ₀ ≤ c) : IsRegular (succ c) :
     rw [← isSuccPrelimit_type_lt_iff, ← hα]
     exact (isSuccLimit_ord (hd ▸ hc.trans (le_succ c))).isSuccPrelimit
   obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
-  simp_rw [hα, cof_type, le_cof_iff, ← hd, succ_le_iff, ← not_le]
-  intro s hs hsc
-  rw [isCofinal_iff_iUnion_Iio_eq] at hs
-  apply (mk_le_mk_of_subset hs.ge).not_gt
-  rw [mk_univ, ← hd, lt_succ_iff, ← iUnion_coe_set s fun i ↦ Iio i.1, ← Cardinal.mul_eq_self hc]
-  apply (mk_iUnion_le _).trans (mul_le_mul' hsc _)
+  simp_rw [hα, cof_type, le_cof_iff, ← hd, succ_le_iff, ← not_le, isCofinal_iff_iUnion_Iio_eq]
+  refine fun s hs hsc ↦ (mk_le_mk_of_subset hs.ge).not_gt ?_
+  rw [mk_univ, ← hd, lt_succ_iff, ← iUnion_coe_set s fun i ↦ Iio i.1]
+  apply (mk_iUnion_le _).trans (mul_le_of_le hc hsc _)
   simp_rw [ciSup_le_iff' (bddAbove_of_small _), ← lt_succ_iff, hd]
-  intro i
-  have := typein_lt_type LT.lt i.1
-  rwa [← hα, lt_ord] at this
-  #exit
-
-
-  ⟨h.trans (le_succ c),
-    succ_le_of_lt
-      (by
-        have αe := Cardinal.mk_out (succ c)
-        set α := (succ c).out
-        rcases ord_eq α with ⟨r, wo, re⟩
-        have := isSuccLimit_ord (h.trans (le_succ _))
-        rw [← αe, re] at this ⊢
-        rcases cof_eq' r this with ⟨S, H, Se⟩
-        rw [← Se]
-        apply lt_imp_lt_of_le_imp_le fun h => mul_le_mul_left h c
-        rw [mul_eq_self h, ← succ_le_iff, ← αe, ← sum_const']
-        refine le_trans ?_ (sum_le_sum (fun (x : S) => card (typein r (x : α))) _ fun i => ?_)
-        · simp only [← card_typein, ← mk_sigma]
-          exact
-            ⟨Embedding.ofSurjective (fun x => x.2.1) fun a =>
-                let ⟨b, h, ab⟩ := H a
-                ⟨⟨⟨_, h⟩, _, ab⟩, rfl⟩⟩
-        · rw [← lt_succ_iff, ← lt_ord, ← αe, re]
-          apply typein_lt_type)⟩
+  exact fun i ↦ mk_Iio_lt i.1 hα
 
 theorem isRegular_aleph_one : IsRegular ℵ₁ := by
   rw [← succ_aleph0]
