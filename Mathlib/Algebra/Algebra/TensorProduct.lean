@@ -109,9 +109,9 @@ abbrev mk_to_tens := Submodule.liftQ (rels R A M N) (mapOfCompatibleSMul' A R M 
 lemma mk_to_tens_apply (m : M) (n : N) : mk_to_tens R A M N ⟦m⊗ₜn⟧ = m⊗ₜn := rfl
 
 variable (R A M N) in
-/-- The equivalence between the algebra-based construction of the tensor product.
-and the tensor product -/
-def mk_eq_tens :(mk R A M N) ≃ₗ[A] M ⊗[A] N where
+/-- The equivalence between the algebra-based construction of the tensor product
+and the tensor product. -/
+def mk_eq_tens : (mk R A M N) ≃ₗ[A] M ⊗[A] N where
   toLinearMap := mk_to_tens R A M N
   invFun := tens_to_mk R A M N
   left_inv := by
