@@ -253,11 +253,13 @@ theorem IsContained.trans : A ⊑ B → B ⊑ C → A ⊑ C := fun ⟨f⟩ ⟨g�
 /-- If `B` contains `C` and `A` contains `B`, then `A` contains `C`. -/
 theorem IsContained.trans' : B ⊑ C → A ⊑ B → A ⊑ C := flip IsContained.trans
 
+@[gcongr]
 lemma IsContained.mono_right {B' : SimpleGraph β} (h_isub : A ⊑ B) (h_sub : B ≤ B') : A ⊑ B' :=
   h_isub.trans <| IsContained.of_le h_sub
 
 alias IsContained.trans_le := IsContained.mono_right
 
+@[gcongr]
 lemma IsContained.mono_left {A' : SimpleGraph α} (h_sub : A ≤ A') (h_isub : A' ⊑ B) : A ⊑ B :=
   (IsContained.of_le h_sub).trans h_isub
 
@@ -275,6 +277,15 @@ alias ⟨_, IsContained.congr_left⟩ := isContained_congr_left
 lemma isContained_congr_right (e₂ : B ≃g C) : A ⊑ B ↔ A ⊑ C := isContained_congr .refl e₂
 
 alias ⟨_, IsContained.congr_right⟩ := isContained_congr_right
+
+instance : IsPreorder (SimpleGraph α) IsContained where
+  refl := .refl
+  trans _ _ _ := .trans
+
+instance :
+    Trans (α := SimpleGraph α) (β := SimpleGraph β) (γ := SimpleGraph γ)
+      IsContained IsContained IsContained where
+  trans := .trans
 
 /-- A simple graph having no vertices is contained in any simple graph. -/
 lemma IsContained.of_isEmpty [IsEmpty α] : A ⊑ B :=
@@ -365,6 +376,15 @@ protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.Is
 @[refl] lemma IsIndContained.refl (G : SimpleGraph V) : G ⊴ G := ⟨Embedding.refl⟩
 lemma IsIndContained.rfl : G ⊴ G := .refl _
 @[trans] lemma IsIndContained.trans : G ⊴ H → H ⊴ I → G ⊴ I := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
+
+instance : IsPreorder (SimpleGraph α) IsIndContained where
+  refl := .refl
+  trans _ _ _ := .trans
+
+instance :
+    Trans (α := SimpleGraph α) (β := SimpleGraph β) (γ := SimpleGraph γ)
+      IsIndContained IsIndContained IsIndContained where
+  trans := .trans
 
 lemma IsIndContained.of_isEmpty [IsEmpty V] : G ⊴ H :=
   ⟨{ toFun := isEmptyElim

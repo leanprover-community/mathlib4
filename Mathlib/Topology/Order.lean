@@ -113,7 +113,7 @@ theorem nhds_mkOfNhds_of_hasBasis {n : α → Filter α} {ι : α → Sort*} {p 
     replace hpure : pure ≤ n := fun x ↦ (hb x).ge_iff.2 (hpure x)
     refine mem_nhds_iff.2 ⟨{x | U ∈ n x}, fun x hx ↦ hpure x hx, fun x hx ↦ ?_, hU⟩
     rcases (hb x).mem_iff.1 hx with ⟨i, hpi, hi⟩
-    exact (hopen x i hpi).mono fun y hy ↦ mem_of_superset hy hi
+    exact (hopen x i hpi).mono fun y ↦ by gcongr
   · exact (nhds_basis_opens a).ge_iff.2 fun U ⟨haU, hUo⟩ ↦ hUo a haU
 
 theorem nhds_mkOfNhds (n : α → Filter α) (a : α) (h₀ : pure ≤ n)
@@ -280,6 +280,16 @@ theorem IndiscreteTopology.isOpen_iff [IndiscreteTopology α] (U : Set α) :
 
 theorem TopologicalSpace.isOpen_top_iff {α} (U : Set α) : IsOpen[⊤] U ↔ U = ∅ ∨ U = univ :=
   letI : TopologicalSpace α := ⊤; IndiscreteTopology.isOpen_iff _
+
+theorem IndiscreteTopology.isClosed_iff [IndiscreteTopology α] (C : Set α) :
+    IsClosed C ↔ C = ∅ ∨ C = Set.univ := by
+  simp [← isOpen_compl_iff, IndiscreteTopology.isOpen_iff, Or.comm]
+
+theorem dense_indiscrete [IndiscreteTopology α] {s : Set α} (h : s.Nonempty) : Dense s := by
+  simp [dense_iff_inter_open, IndiscreteTopology.isOpen_iff, h]
+
+theorem closure_indiscrete [IndiscreteTopology α] {s : Set α} (h : s.Nonempty) :
+    closure s = Set.univ := Dense.closure_eq (dense_indiscrete h)
 
 /-- Every function to the indiscrete topology is continuous -/
 theorem continuous_of_indiscreteTopology {β} [TopologicalSpace β] [IndiscreteTopology β]
