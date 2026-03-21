@@ -5,6 +5,7 @@ Authors: Jakob Scharmberg
 -/
 module
 
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Homotopy.Basic
 
@@ -64,6 +65,23 @@ instance : Category TopPair where
   Hom := Hom
   id X := { fst := 𝟙 X.fst, snd := 𝟙 X.snd }
   comp f g := ⟨f.fst ≫ g.fst, f.snd ≫ g.snd, (CommSq.horiz_comp ⟨f.snd_map⟩ ⟨g.snd_map⟩).w⟩
+
+/-- `TopPair` is isomorphic to the full subcategory of the comma category with twice the identity
+functor of TopCat on the morphisms that are inducing. -/
+def isoComma : TopPair ≅ MorphismProperty.Comma (𝟭 TopCat) (𝟭 TopCat)
+    (fun X Y f ↦ Topology.IsInducing (f : TopCat.Hom X Y)) ⊤ ⊤ where
+  hom X := {
+    left := X.snd
+    right := X.fst
+    hom := X.map
+    prop := X.isInducing_map
+  }
+  inv X := {
+    fst := X.right
+    snd := X.left
+    map := X.hom
+    isInducing_map := X.prop
+  }
 
 /-- The functor from topological pairs to topological spaces that forgets the second space, ie. the
 projection to the first space. -/
