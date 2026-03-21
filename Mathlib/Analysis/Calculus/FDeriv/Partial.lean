@@ -36,8 +36,8 @@ theorem isLittleO_sub_sub_fderiv
   intro ε hε
   replace df' : ∀ᶠ χ in l, ∀ z ∈ [w χ -[ℝ] v χ], HasFDerivWithinAt (f χ) (f' χ z) s z :=
     df'.segment_of_prod_nhdsWithin hw hv seg
-  replace cf' : ∀ᶠ χ in l, ∀ z ∈ [w χ -[ℝ] v χ], dist (f' χ z) φ < ε := by
-    rw [Metric.tendsto_nhds] at cf'
+  replace cf' : ∀ᶠ χ in l, ∀ z ∈ [w χ -[ℝ] v χ], ‖f' χ z - φ‖ < ε := by
+    simp_rw [Metric.tendsto_nhds, dist_eq_norm_sub] at cf'
     exact (cf' ε hε).segment_of_prod_nhdsWithin hw hv seg
   filter_upwards [seg, df', cf'] with χ seg df' cf'
   exact Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le'

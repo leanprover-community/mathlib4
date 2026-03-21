@@ -15,10 +15,10 @@ In this file, we apply the generalised implicit function theorem to the more fam
 that the implicit function preserves the smoothness class of the implicit equation.
 
 Let `E₁`, `E₂`, and `F` be real or complex Banach spaces. Let `f : E₁ × E₂ → F` be a function that
-is $C^n$ at a point `(u₁, u₂) : E₁ × E₂`, where `n ≥ 1`. Let `f'` be the derivative of `f` at
-`(u₁, u₂)`. If the map `y ↦ f' (0, y)` is a Banach space isomorphism, then there exists a function
-`ψ : E₁ → E₂` such that `ψ u₁ = u₂`, and `f (x, ψ x) = f (u₁, u₂)` holds for all `x` in a
-neighbourhood of `u₁`. Furthermore, `ψ` is $C^n$ at `u₁`.
+is $C^n$ at a point `u : E₁ × E₂`, where `n ≥ 1`. Let `f'u` be the derivative of `f` at `u`. If the
+map `y ↦ f'u (0, y)` is a Banach space isomorphism, then there exists a function `ψ : E₁ → E₂` such
+that `ψ u.1 = u.2`, and `f (x, ψ x) = f u` holds for all `x` in a neighbourhood of `u.1`.
+Furthermore, `ψ` is $C^n$ at `u.1`.
 
 ## Tags
 
@@ -53,45 +53,46 @@ variable {u : E₁ × E₂} {f : E₁ × E₂ → F} {n : WithTop ℕ∞}
 
 /-- Implicit function `ψ` defined by `f (x, ψ x) = f u`. -/
 noncomputable def implicitFunction
-    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂u : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     E₁ → E₂ :=
-  (cdf.hasStrictFDerivAt pn).implicitFunctionOfProdDomain if₂
+  (cdf.hasStrictFDerivAt pn).implicitFunctionOfProdDomain if₂u
 
 theorem implicitFunction_def
-    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
-    cdf.implicitFunction pn if₂ = (cdf.hasStrictFDerivAt pn).implicitFunctionOfProdDomain if₂ := by
+    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂u : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    cdf.implicitFunction pn if₂u =
+      (cdf.hasStrictFDerivAt pn).implicitFunctionOfProdDomain if₂u := by
   rfl
 
 /-- At the base point `u.1`, the implicit function evaluates to `u.2`. -/
 theorem implicitFunction_apply_self
-    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
-    cdf.implicitFunction pn if₂ u.1 = u.2 :=
-  eq_of_tendsto_nhds ((cdf.hasStrictFDerivAt pn).tendsto_implicitFunctionOfProdDomain if₂)
+    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂u : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    cdf.implicitFunction pn if₂u u.1 = u.2 :=
+  eq_of_tendsto_nhds ((cdf.hasStrictFDerivAt pn).tendsto_implicitFunctionOfProdDomain if₂u)
 
 /-- `implicitFunction` is indeed the (local) implicit function defined by `f`. -/
 theorem eventually_apply_implicitFunction
-    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
-    ∀ᶠ x in 𝓝 u.1, f (x, cdf.implicitFunction pn if₂ x) = f u :=
-  (cdf.hasStrictFDerivAt pn).eventually_apply_implicitFunctionOfProdDomain if₂
+    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂u : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    ∀ᶠ x in 𝓝 u.1, f (x, cdf.implicitFunction pn if₂u x) = f u :=
+  (cdf.hasStrictFDerivAt pn).eventually_apply_implicitFunctionOfProdDomain if₂u
 
 theorem eventually_apply_eq_iff_implicitFunction
-    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
-    ∀ᶠ v in 𝓝 u, f v = f u ↔ cdf.implicitFunction pn if₂ v.1 = v.2 :=
-  (cdf.hasStrictFDerivAt pn).eventually_apply_eq_iff_implicitFunctionOfProdDomain if₂
+    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂u : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    ∀ᶠ v in 𝓝 u, f v = f u ↔ cdf.implicitFunction pn if₂u v.1 = v.2 :=
+  (cdf.hasStrictFDerivAt pn).eventually_apply_eq_iff_implicitFunctionOfProdDomain if₂u
 
 theorem hasStrictFDerivAt_implicitFunction
-    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
-    HasStrictFDerivAt (cdf.implicitFunction pn if₂)
+    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂u : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    HasStrictFDerivAt (cdf.implicitFunction pn if₂u)
       (-(fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).inverse ∘L (fderiv 𝕜 f u ∘L .inl 𝕜 E₁ E₂)) u.1 :=
-  (cdf.hasStrictFDerivAt pn).hasStrictFDerivAt_implicitFunctionOfProdDomain if₂
+  (cdf.hasStrictFDerivAt pn).hasStrictFDerivAt_implicitFunctionOfProdDomain if₂u
 
-/-- If the implicit equation `f` is $C^n$ at `(u₁, u₂)`, then its implicit function `ψ` around `u₁`
-is also $C^n$ at `u₁`. -/
+/-- If the implicit equation `f` is $C^n$ at `u`, then its implicit function `ψ` around `u.1` is
+also $C^n$ at `u.1`. -/
 theorem contDiffAt_implicitFunction
-    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
-    ContDiffAt 𝕜 n (cdf.implicitFunction pn if₂) u.1 := by
+    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂u : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    ContDiffAt 𝕜 n (cdf.implicitFunction pn if₂u) u.1 := by
   rw [ContDiffAt.implicitFunction_def, HasStrictFDerivAt.implicitFunctionOfProdDomain_def]
-  set φ := (cdf.hasStrictFDerivAt pn).implicitFunctionDataOfProdDomain if₂
+  set φ := (cdf.hasStrictFDerivAt pn).implicitFunctionDataOfProdDomain if₂u
   have : ContDiffAt 𝕜 n φ.implicitFunction.uncurry (f u, u.1) := by
     simpa [φ] using φ.contDiffAt_implicitFunction
       (by simpa [φ] using cdf) (by simpa [φ] using contDiffAt_fst) pn
@@ -102,11 +103,11 @@ end ContDiffAt
 /-- A predicate stating the sufficient conditions on an implicit equation `f : E₁ × E₂ → F` that
 will lead to a $C^n$ implicit function `ψ : E₁ → E₂`. -/
 @[deprecated "ContDiffAt.implicitFunction does not require this" (since := "2026-01-27")]
-structure IsContDiffImplicitAt (n : WithTop ℕ∞) (f : E₁ × E₂ → F) (f' : E₁ × E₂ →L[𝕜] F)
-    (u : E₁ × E₂) : Prop where
-  hasFDerivAt : HasFDerivAt f f' u
+structure IsContDiffImplicitAt
+    (n : WithTop ℕ∞) (f : E₁ × E₂ → F) (f'u : E₁ × E₂ →L[𝕜] F) (u : E₁ × E₂) : Prop where
+  hasFDerivAt : HasFDerivAt f f'u u
   contDiffAt : ContDiffAt 𝕜 n f u
-  bijective : Function.Bijective (f'.comp (ContinuousLinearMap.inr 𝕜 E₁ E₂))
+  bijective : Function.Bijective (f'u.comp (ContinuousLinearMap.inr 𝕜 E₁ E₂))
   ne_zero : n ≠ 0
 
 namespace IsContDiffImplicitAt

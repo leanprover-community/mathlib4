@@ -50,20 +50,26 @@ noncomputable def implicitFunctionOfBivariate : E₁ → E₂ :=
   HasStrictFDerivAt.implicitFunctionOfProdDomain
     (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using if₂u)
 
+theorem implicitFunctionOfBivariate_def :
+    implicitFunctionOfBivariate df₁ df₂ cf₁ cf₂ if₂u =
+      HasStrictFDerivAt.implicitFunctionOfProdDomain
+        (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using if₂u) := by
+  rfl
+
 theorem tendsto_implicitFunctionOfBivariate :
     Tendsto (implicitFunctionOfBivariate df₁ df₂ cf₁ cf₂ if₂u) (𝓝 u.1) (𝓝 u.2) := by
   simpa using HasStrictFDerivAt.tendsto_implicitFunctionOfProdDomain
     (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using if₂u)
 
-theorem image_implicitFunctionOfBivariate :
+theorem eventually_apply_implicitFunctionOfBivariate :
     ∀ᶠ x in 𝓝 u.1, f x (implicitFunctionOfBivariate df₁ df₂ cf₁ cf₂ if₂u x) = f u.1 u.2 := by
-  simpa using HasStrictFDerivAt.image_implicitFunctionOfProdDomain
+  simpa using HasStrictFDerivAt.eventually_apply_implicitFunctionOfProdDomain
     (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using if₂u)
 
-theorem image_eq_iff_implicitFunctionOfBivariate :
+theorem eventually_apply_eq_iff_implicitFunctionOfBivariate :
     ∀ᶠ v in 𝓝 u,
       f v.1 v.2 = f u.1 u.2 ↔ implicitFunctionOfBivariate df₁ df₂ cf₁ cf₂ if₂u v.1 = v.2 := by
-  simpa using HasStrictFDerivAt.image_eq_iff_implicitFunctionOfProdDomain
+  simpa using HasStrictFDerivAt.eventually_apply_eq_iff_implicitFunctionOfProdDomain
     (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using if₂u)
 
 theorem hasStrictFDerivAt_implicitFunctionOfBivariate :
