@@ -276,7 +276,7 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
         rw [← Module.supportDim_quotient_eq_ringKrullDim, ← Module.supportDim_self_eq_ringKrullDim]
         exact Module.supportDim_quotSMulTop_succ_eq_supportDim xreg xmem
       simp only [List.length_cons, Nat.cast_add, Nat.cast_one, ← this] at dim
-      simpa [List.length_map] using WithBot.add_one_cancel.mp dim
+      simpa [List.length_map] using ENat.WithBot.add_one_cancel.mp dim
 
 lemma isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing [IsCohenMacaulayLocalRing R]
     (rs : List R) (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) (ht : (Ideal.ofList rs).height = rs.length) :
