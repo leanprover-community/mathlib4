@@ -232,7 +232,7 @@ structure ConeMorphism (A B : Cone F) where
   /-- A morphism between the two vertex objects of the cones -/
   hom : A.pt ⟶ B.pt
   /-- The triangle consisting of the two natural transformations and `hom` commutes -/
-  w : ∀ j : J, hom ≫ B.π.app j = A.π.app j := by cat_disch
+  w (j : J) : hom ≫ B.π.app j = A.π.app j := by cat_disch
 
 /-- A cocone morphism between two cocones for the same diagram is a morphism of the cocone points
 which commutes with the cocone legs. -/
@@ -241,7 +241,7 @@ structure CoconeMorphism (A B : Cocone F) where
   /-- A morphism between the (co)vertex objects in `C` -/
   hom : A.pt ⟶ B.pt
   /-- The triangle made from the two natural transformations and `hom` commutes -/
-  w : ∀ j : J, A.ι.app j ≫ hom = B.ι.app j := by cat_disch
+  w (j : J) : dsimp% A.ι.app j ≫ hom = B.ι.app j := by cat_disch
 
 attribute [reassoc (attr := simp)] ConeMorphism.w CoconeMorphism.w
 set_option backward.isDefEq.respectTransparency false in
