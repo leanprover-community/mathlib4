@@ -316,7 +316,7 @@ theorem bddAbove_add_one_image_iff {s : Set Ordinal} :
     simpa [upperBounds]
 
 theorem bddAbove_range_add_one_iff {f : β → Ordinal.{u}} :
-    BddAbove (range (fun i ↦ f i + 1)) ↔ BddAbove (range f) := by
+    BddAbove (range fun i ↦ f i + 1) ↔ BddAbove (range f) := by
   rw [range_comp' (· + 1), bddAbove_add_one_image_iff]
 
 theorem sSup_le_sSup_add_one (s : Set Ordinal) : sSup s ≤ sSup ((· + 1) '' s) := by
