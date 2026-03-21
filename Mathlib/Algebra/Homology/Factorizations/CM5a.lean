@@ -437,7 +437,7 @@ abbrev CofFibFactorizationQuasiIsoLE (n : ℤ) := (quasiIsoLE (f := f) n).FullSu
 
 namespace CofFibFactorizationQuasiIsoLE
 
-/-- When `K` and `L` are both strictly `≥ n + 1`, which is the factorization `f ≫ 𝟙 L = f`
+/-- When `K` and `L` are both strictly `≥ n + 1`, this is the factorization `f ≫ 𝟙 L = f`
 of a monomorphism `f : K ⟶ L` as a monomorphism that is a quasi-isomorphism in degrees `≤ n`
 followed by a degreewise epimorphism with an injective kernel. -/
 def zero [Mono f] (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE (n + 1)] :
