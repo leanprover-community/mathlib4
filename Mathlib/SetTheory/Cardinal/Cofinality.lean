@@ -770,8 +770,7 @@ theorem lt_power_cof {c : Cardinal} (hc : ℵ₀ ≤ c) : c < c ^ c.ord.cof := b
     exact (isSuccLimit_ord hc).isSuccPrelimit
   obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
   rw [hα, cof_type, ← card_ord (Order.cof _), ← hs', card_type, ← prod_const']
-  refine (mk_iUnion_le_sum_mk.trans' ?_).trans_lt
-    (sum_lt_prod (fun x : s ↦ #(Iio x.1)) _ fun i ↦ ?_)
+  refine (mk_iUnion_le_sum_mk.trans' ?_).trans_lt (sum_lt_prod (fun x ↦ #(Iio x.1)) _ fun i ↦ ?_)
   · rw [isCofinal_iff_iUnion_Iio_eq] at hs
     rw [← mk_univ, ← hs, iUnion_coe_set]
   · have := typein_lt_type LT.lt i.1
