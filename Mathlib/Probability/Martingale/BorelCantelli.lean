@@ -294,10 +294,11 @@ theorem tendsto_sum_indicator_atTop_iff [IsFiniteMeasure μ]
     (hint : ∀ n, Integrable (f n) μ) (hbdd : ∀ᵐ ω ∂μ, ∀ n, |f (n + 1) ω - f n ω| ≤ R) :
     ∀ᵐ ω ∂μ, Tendsto (fun n => f n ω) atTop atTop ↔
       Tendsto (fun n => predictablePart f ℱ μ n ω) atTop atTop := by
-  have h₁ := (martingale_martingalePart hf hint).ae_not_tendsto_atTop_atTop
-    (martingalePart_bdd_difference ℱ hbdd)
-  have h₂ := (martingale_martingalePart hf hint).ae_not_tendsto_atTop_atBot
-    (martingalePart_bdd_difference ℱ hbdd)
+  simp only [← Real.norm_eq_abs] at hbdd
+  have h₀ := martingalePart_bdd_difference ℱ hbdd
+  simp only [Real.norm_eq_abs, ← NNReal.coe_ofNat, ← NNReal.coe_mul 2 R] at h₀
+  have h₁ := (martingale_martingalePart hf hint).ae_not_tendsto_atTop_atTop h₀
+  have h₂ := (martingale_martingalePart hf hint).ae_not_tendsto_atTop_atBot h₀
   have h₃ : ∀ᵐ ω ∂μ, ∀ n, 0 ≤ (μ[f (n + 1) - f n | ℱ n]) ω := by
     refine ae_all_iff.2 fun n => condExp_nonneg ?_
     filter_upwards [ae_all_iff.1 hfmono n] with ω hω using sub_nonneg.2 hω

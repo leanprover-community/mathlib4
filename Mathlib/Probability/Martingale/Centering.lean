@@ -155,16 +155,16 @@ theorem predictablePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ℕ → 
 
 section Difference
 
-theorem predictablePart_bdd_difference {R : ℝ} {f : ℕ → Ω → E} (ℱ : Filtration ℕ m0)
+theorem predictablePart_bdd_norm_difference {R : ℝ} {f : ℕ → Ω → E} (ℱ : Filtration ℕ m0)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, ‖f (i + 1) ω - f i ω‖ ≤ R) :
     ∀ᵐ ω ∂μ, ∀ i, ‖predictablePart f ℱ μ (i + 1) ω - predictablePart f ℱ μ i ω‖ ≤ R := by
   simp_rw [predictablePart, Finset.sum_apply, Finset.sum_range_succ_sub_sum]
   exact ae_all_iff.2 fun i => ae_bdd_norm_condExp_of_ae_bdd_norm <| ae_all_iff.1 hbdd i
 
-theorem martingalePart_bdd_difference {R : ℝ} {f : ℕ → Ω → E} (ℱ : Filtration ℕ m0)
+theorem martingalePart_bdd_norm_difference {R : ℝ} {f : ℕ → Ω → E} (ℱ : Filtration ℕ m0)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, ‖f (i + 1) ω - f i ω‖ ≤ R) :
-    ∀ᵐ ω ∂μ, ∀ i, ‖martingalePart f ℱ μ (i + 1) ω - martingalePart f ℱ μ i ω‖ ≤ ↑(2 * R) := by
-  filter_upwards [hbdd, predictablePart_bdd_difference ℱ hbdd] with ω hω₁ hω₂ i
+    ∀ᵐ ω ∂μ, ∀ i, ‖martingalePart f ℱ μ (i + 1) ω - martingalePart f ℱ μ i ω‖ ≤ 2 * R := by
+  filter_upwards [hbdd, predictablePart_bdd_norm_difference ℱ hbdd] with ω hω₁ hω₂ i
   simpa [two_mul, martingalePart, sub_sub_sub_comm] using
     (norm_sub_le _ _).trans (add_le_add (hω₁ i) (hω₂ i))
 
