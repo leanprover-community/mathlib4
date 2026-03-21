@@ -771,8 +771,7 @@ theorem lt_power_cof {c : Cardinal} (hc : ℵ₀ ≤ c) : c < c ^ c.ord.cof := b
   obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
   rw [hα, cof_type, ← card_ord (Order.cof _), ← hs', card_type, ← prod_const']
   refine (mk_iUnion_le_sum_mk.trans' ?_).trans_lt (sum_lt_prod (fun x ↦ #(Iio x.1)) _ fun i ↦ ?_)
-  · rw [isCofinal_iff_iUnion_Iio_eq] at hs
-    rw [← mk_univ, ← hs, iUnion_coe_set]
+  · rw [← mk_univ, ← isCofinal_iff_iUnion_Iio_eq.1 hs, iUnion_coe_set]
   · have := typein_lt_type LT.lt i.1
     rwa [← hα, lt_ord] at this
 
