@@ -43,7 +43,7 @@ universe u
 /-- Morphism property selecting Markov kernels in `SFinKer`. -/
 abbrev StochHom : MorphismProperty SFinKer := fun _ _ κ => IsMarkovKernel κ.1
 
-instance : StochHom.IsComonStable where
+instance : StochHom.IsStableUnderComonoid where
   whiskerLeft X Y Z κ hκ := by
     kernel_cat
     infer_instance

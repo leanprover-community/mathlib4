@@ -40,46 +40,49 @@ variable {C : Type*} [Category* C] (P : MorphismProperty C) [MonoidalCategory C]
 macro "widesubcat_ext" : tactic =>
   `(tactic| (rw [Subtype.ext_iff]; try simp only [WideSubcategory.comp_def]))
 
-section IsAssocStable
+section IsStableUnderAssociator
 
 /-- A morphism property stable under associator isomorphisms of a monoidal category. -/
-class IsAssocStable : Prop where
+class IsStableUnderAssociator : Prop where
   associator_hom (c c' c'' : C) : P ((α_ c c' c'').hom)
   associator_inv (c c' c'' : C) : P ((α_ c c' c'').inv)
 
-variable [P.IsAssocStable]
+variable [P.IsStableUnderAssociator]
 
-lemma associator_hom_mem (c c' c'' : C) : P (α_ c c' c'').hom := IsAssocStable.associator_hom _ _ _
+lemma associator_hom_mem (c c' c'' : C) : P (α_ c c' c'').hom :=
+  IsStableUnderAssociator.associator_hom _ _ _
 
-lemma associator_inv_mem (c c' c'' : C) : P (α_ c c' c'').inv := IsAssocStable.associator_inv _ _ _
+lemma associator_inv_mem (c c' c'' : C) : P (α_ c c' c'').inv :=
+  IsStableUnderAssociator.associator_inv _ _ _
 
-end IsAssocStable
+end IsStableUnderAssociator
 
-section IsUnitorStable
+section IsStableUnderUnitor
 
 /-- A morphism property stable under left and right unitor isomorphisms. -/
-class IsUnitorStable : Prop where
+class IsStableUnderUnitor : Prop where
   leftUnitor_hom (c : C) : P ((λ_ c).hom)
   leftUnitor_inv (c : C) : P ((λ_ c).inv)
   rightUnitor_hom (c : C) : P ((ρ_ c).hom)
   rightUnitor_inv (c : C) : P ((ρ_ c).inv)
 
-variable [P.IsUnitorStable]
+variable [P.IsStableUnderUnitor]
 
-lemma leftUnitor_hom_mem (c : C) : P (λ_ c).hom := IsUnitorStable.leftUnitor_hom _
+lemma leftUnitor_hom_mem (c : C) : P (λ_ c).hom := IsStableUnderUnitor.leftUnitor_hom _
 
-lemma leftUnitor_inv_mem (c : C) : P (λ_ c).inv := IsUnitorStable.leftUnitor_inv _
+lemma leftUnitor_inv_mem (c : C) : P (λ_ c).inv := IsStableUnderUnitor.leftUnitor_inv _
 
-lemma rightUnitor_hom_mem (c : C) : P (ρ_ c).hom := IsUnitorStable.rightUnitor_hom _
+lemma rightUnitor_hom_mem (c : C) : P (ρ_ c).hom := IsStableUnderUnitor.rightUnitor_hom _
 
-lemma rightUnitor_inv_mem (c : C) : P (ρ_ c).inv := IsUnitorStable.rightUnitor_inv _
+lemma rightUnitor_inv_mem (c : C) : P (ρ_ c).inv := IsStableUnderUnitor.rightUnitor_inv _
 
-end IsUnitorStable
+end IsStableUnderUnitor
 
 section IsMonoidalStable
 
 /-- A morphism property stable under tensoring, associators, and unitors. -/
-class IsMonoidalStable : Prop extends IsMonoidal P, IsAssocStable P, IsUnitorStable P
+class IsMonoidalStable : Prop extends IsMonoidal P, IsStableUnderAssociator P,
+    IsStableUnderUnitor P
 
 variable [P.IsMonoidalStable]
 
@@ -157,22 +160,22 @@ instance : MonoidalCategory (WideSubcategory P) := by
 
 end IsMonoidalStable
 
-section IsBraidedStable
+section IsStableUnderBraiding
 
 section BraidedCategory
 
 variable [BraidedCategory C]
 
 /-- A monoidal-stable morphism property also stable under braiding isomorphisms. -/
-class IsBraidedStable : Prop extends IsMonoidalStable P where
+class IsStableUnderBraiding : Prop extends IsMonoidalStable P where
   braiding_hom (c c' : C) : P ((β_ c c').hom)
   braiding_inv (c c' : C) : P ((β_ c c').inv)
 
-variable [P.IsBraidedStable]
+variable [P.IsStableUnderBraiding]
 
-lemma braiding_hom_mem (c c' : C) : P (β_ c c').hom := IsBraidedStable.braiding_hom _ _
+lemma braiding_hom_mem (c c' : C) : P (β_ c c').hom := IsStableUnderBraiding.braiding_hom _ _
 
-lemma braiding_inv_mem (c c' : C) : P (β_ c c').inv := IsBraidedStable.braiding_inv _ _
+lemma braiding_inv_mem (c c' : C) : P (β_ c c').inv := IsStableUnderBraiding.braiding_inv _ _
 
 instance : BraidedCategory (WideSubcategory P) where
   braiding c c' := by
@@ -199,7 +202,7 @@ end BraidedCategory
 
 section SymmetricCategory
 
-variable [SymmetricCategory C] [P.IsBraidedStable]
+variable [SymmetricCategory C] [P.IsStableUnderBraiding]
 
 instance : SymmetricCategory (WideSubcategory P) where
   symmetry c c' := by
@@ -208,22 +211,22 @@ instance : SymmetricCategory (WideSubcategory P) where
 
 end SymmetricCategory
 
-end IsBraidedStable
+end IsStableUnderBraiding
 
-section IsComonStable
+section IsStableUnderComonoid
 
 variable [BraidedCategory C] [∀ {c : C}, ComonObj c]
 
 /-- A braided-stable morphism property stable under comonoid counit and comultiplication. -/
-class IsComonStable : Prop extends IsBraidedStable P where
+class IsStableUnderComonoid : Prop extends IsStableUnderBraiding P where
   counit (c : C) : P (ε[c])
   comul (c : C) : P (Δ[c])
 
-variable [P.IsComonStable]
+variable [P.IsStableUnderComonoid]
 
-lemma counit_mem (c : C) : P (ε[c]) := IsComonStable.counit _
+lemma counit_mem (c : C) : P (ε[c]) := IsStableUnderComonoid.counit _
 
-lemma comul_mem (c : C) : P (Δ[c]) := IsComonStable.comul _
+lemma comul_mem (c : C) : P (Δ[c]) := IsStableUnderComonoid.comul _
 
 instance {c : WideSubcategory P} : ComonObj c where
   counit := ⟨ε[c.obj], P.counit_mem _⟩
@@ -245,7 +248,7 @@ instance {c : WideSubcategory P} : IsCommComonObj c where
     widesubcat_ext
     exact IsCommComonObj.comul_comm _
 
-end IsComonStable
+end IsStableUnderComonoid
 
 end MorphismProperty
 
