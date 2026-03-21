@@ -151,7 +151,7 @@ theorem singularValues_antitone : Antitone T.singularValues := by
 are only dim(domain(T)) singular values in [axler2024], so we modify the statement to account for
 this.
 -/
-theorem injective_iff_forall_lt_rank_singularValues_pos :
+theorem injective_iff_forall_lt_finrank_singularValues_pos :
     Function.Injective T ↔ ∀ i < finrank 𝕜 E, 0 < T.singularValues i := by
   have := (adjoint T ∘ₗ T).not_hasEigenvalue_zero_tfae.out 4 0
   rw [← adjoint_comp_self_injective_iff, ← coe_comp, ← ker_eq_bot, ← not_iff_not, this.not_left]
