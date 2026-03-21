@@ -7333,6 +7333,7 @@ public import Mathlib.Topology.Bornology.BoundedOperation
 public import Mathlib.Topology.Bornology.Constructions
 public import Mathlib.Topology.Bornology.Hom
 public import Mathlib.Topology.Bornology.Real
+public import Mathlib.Topology.ClosedBases
 public import Mathlib.Topology.CWComplex.Abstract.Basic
 public import Mathlib.Topology.CWComplex.Classical.Basic
 public import Mathlib.Topology.CWComplex.Classical.Finite
