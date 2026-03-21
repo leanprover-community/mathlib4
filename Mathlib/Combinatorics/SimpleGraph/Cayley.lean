@@ -123,10 +123,6 @@ theorem mulCayley_inv : mulCayley s⁻¹ = mulCayley s := by
   simp [mulCayley_adj, or_comm]
 
 @[to_additive]
-theorem mulCayley_union_inv : mulCayley (s ∪ (s⁻¹)) = mulCayley s := by
-  simpa using mulCayley_mono (Set.Subset.refl s)
-
-@[to_additive]
 instance [DecidableEq M] [DecidablePred (· ∈ s)] : DecidableRel (mulCayley s).Adj :=
   fun u v => decidable_of_iff (u ≠ v ∧ (u⁻¹ * v ∈ s ∨ v⁻¹ * u ∈ s)) (mulCayley_adj s u v).symm
 
