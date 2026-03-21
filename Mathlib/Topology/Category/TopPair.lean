@@ -70,34 +70,28 @@ instance : Category TopPair where
 functor of TopCat on the morphisms that are inducing. -/
 def equivComma : TopPair ≌ MorphismProperty.Comma (𝟭 TopCat) (𝟭 TopCat)
     (fun X Y f ↦ Topology.IsInducing (f : TopCat.Hom X Y)) ⊤ ⊤ where
-      functor := {
-        obj X := {
+      functor.obj X := {
           left := X.snd
           right := X.fst
           hom := X.map
           prop := X.isInducing_map
-        }
-        map f := {
+      }
+      functor.map f := {
           left := f.snd
           right := f.fst
           w := f.snd_map
           prop_hom_left := by simp
           prop_hom_right := by simp
-        }
       }
-      inverse := {
-        obj X := {
+      inverse.obj X := {
           fst := X.right
           snd := X.left
           map := X.hom
           isInducing_map := X.prop
-        }
-        map f := { fst := f.right, snd := f.left, snd_map := f.w }
       }
-      unitIso.hom.app := 𝟙
-      unitIso.inv.app := 𝟙
-      counitIso.hom.app := 𝟙
-      counitIso.inv.app := 𝟙
+      inverse.map f := { fst := f.right, snd := f.left, snd_map := f.w }
+      unitIso := Iso.refl _
+      counitIso := Iso.refl _
 
 /-- The functor from topological pairs to topological spaces that forgets the second space, ie. the
 projection to the first space. -/
