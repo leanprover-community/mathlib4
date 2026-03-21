@@ -57,6 +57,8 @@ for the empty set by convention.
 * `ω` is a notation for the first infinite ordinal in the scope `Ordinal`.
 -/
 
+set_option linter.style.longFile 1700
+
 @[expose] public section
 
 assert_not_exists Module Field
@@ -1094,10 +1096,18 @@ theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r },
 
 @[deprecated (since := "2026-03-15")] alias ord_eq_Inf := ord_eq_iInf
 
+-- TODO: deprecate in favor of `ord_eq_type_lt`?
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord #α = @type α r wo :=
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
   ⟨r.1, r.2, wo.symm⟩
+
+open Classical in
+/-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
+theorem ord_eq_type_lt (α) : ∃ (_ : LinearOrder α) (_: WellFoundedLT α), ord #α = typeLT α :=
+  let ⟨r, _, hr⟩ := ord_eq α
+  let := linearOrderOfSTO r
+  ⟨this, inferInstance, hr⟩
 
 theorem ord_le_type (r : α → α → Prop) [h : IsWellOrder α r] : ord #α ≤ type r :=
   ciInf_le' _ (Subtype.mk r h)
@@ -1208,16 +1218,23 @@ theorem lift_ord (c) : Ordinal.lift.{u, v} (ord c) = ord (lift.{u, v} c) := by
 
 theorem mk_ord_toType (c : Cardinal) : #c.ord.ToType = c := by simp
 
-theorem card_typein_lt (r : α → α → Prop) [IsWellOrder α r] (x : α) (h : ord #α = type r) :
+theorem card_typein_lt {r : α → α → Prop} [IsWellOrder α r] (x : α) (h : ord #α = type r) :
     card (typein r x) < #α := by
   rw [← lt_ord, h]
   apply typein_lt_type
 
+theorem mk_Iio_lt [LinearOrder α] [WellFoundedLT α] (i : α) (h : ord #α = typeLT α) :
+    #(Iio i) < #α :=
+  card_typein_lt (r := LT.lt) i h
+
+@[deprecated card_typein_lt (since := "2026-03-20")]
 theorem card_typein_toType_lt (c : Cardinal) (x : c.ord.ToType) :
     card (typein (α := c.ord.ToType) (· < ·) x) < c := by
   rw [← lt_ord]
   apply typein_lt_self
 
+set_option linter.deprecated false in
+@[deprecated mk_Iio_lt (since := "2026-03-20")]
 theorem mk_Iio_ord_toType {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c :=
   card_typein_toType_lt c i
 
