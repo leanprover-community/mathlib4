@@ -303,7 +303,7 @@ lemma inv_rnDeriv' [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
   filter_upwards [inv_rnDeriv hμν] with x hx; simp only [Pi.inv_apply, ← hx, inv_inv]
 
 variable (ν) in
-lemma ae_rnDeriv_ne_zero_imp_of_ae_aux [SigmaFinite μ] [SigmaFinite ν] {p : α → Prop}
+lemma ae_rnDeriv_ne_zero_imp_of_ae [SigmaFinite μ] [SigmaFinite ν] {p : α → Prop}
     (h : ∀ᵐ a ∂μ, p a) :
     ∀ᵐ a ∂ν, μ.rnDeriv ν a ≠ 0 → p a := by
   rw [ν.haveLebesgueDecomposition_add μ, ae_add_measure_iff]
@@ -315,16 +315,6 @@ lemma ae_rnDeriv_ne_zero_imp_of_ae_aux [SigmaFinite μ] [SigmaFinite ν] {p : α
     rw [← ν.haveLebesgueDecomposition_add μ]
     suffices ∀ᵐx ∂μ, μ.rnDeriv ν x ≠ 0 → p x from h_ac this
     filter_upwards [h] with _ h _ using h
-
-lemma ae_rnDeriv_ne_zero_imp_of_ae [SigmaFinite μ] [SigmaFinite ν] {p : α → Prop}
-    (h : ∀ᵐ a ∂μ, p a) :
-    ∀ᵐ a ∂ν, μ.rnDeriv ν a ≠ 0 → p a := by
-  suffices ∀ᵐ a ∂ν, (ν.withDensity (μ.rnDeriv ν)).rnDeriv ν a ≠ 0 → p a by
-    have h := ν.rnDeriv_withDensity (μ.measurable_rnDeriv ν)
-    filter_upwards [this, h] with x hx1 hx2
-    rwa [hx2] at hx1
-  refine ae_rnDeriv_ne_zero_imp_of_ae_aux ν ?_
-  exact (Measure.absolutelyContinuous_of_le (μ.withDensity_rnDeriv_le ν)) h
 
 section integral
 

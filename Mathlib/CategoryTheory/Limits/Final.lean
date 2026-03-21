@@ -410,6 +410,7 @@ theorem reflectsColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B
     exact IsColimit.ofIsoColimit hc' (Cocone.ext (Iso.refl _) (by simp))
 
 /-- If `F` is final and `F ⋙ G` creates colimits of `H`, then so does `G`. -/
+@[implicit_reducible]
 def createsColimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesColimit (F ⋙ G) H] : CreatesColimit G H where
   reflects := (reflectsColimit_of_comp F).reflects
@@ -436,6 +437,7 @@ theorem reflectsColimitsOfShape_of_final {B : Type u₄} [Category.{v₄} B] (H 
 include F in
 /-- If `H` creates colimits of shape `C` and `F : C ⥤ D` is final, then `H` creates colimits of
 shape `D`. -/
+@[implicit_reducible]
 def createsColimitsOfShapeOfFinal {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
     [CreatesColimitsOfShape C H] : CreatesColimitsOfShape D H where
   CreatesColimit := createsColimitOfComp F
@@ -751,6 +753,7 @@ theorem reflectsLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     exact IsLimit.ofIsoLimit hc' (Cone.ext (Iso.refl _) (by simp))
 
 /-- If `F` is initial and `F ⋙ G` creates limits of `H`, then so does `G`. -/
+@[implicit_reducible]
 def createsLimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesLimit (F ⋙ G) H] : CreatesLimit G H where
   reflects := (reflectsLimit_of_comp F).reflects
@@ -777,6 +780,7 @@ theorem reflectsLimitsOfShape_of_initial {B : Type u₄} [Category.{v₄} B] (H 
 include F in
 /-- If `H` creates limits of shape `C` and `F : C ⥤ D` is initial, then `H` creates limits of shape
 `D`. -/
+@[implicit_reducible]
 def createsLimitsOfShapeOfInitial {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
     [CreatesLimitsOfShape C H] : CreatesLimitsOfShape D H where
   CreatesLimit := createsLimitOfComp F
@@ -1187,7 +1191,6 @@ section Restriction
 
 variable {J C : Type*} [Category* J] [Category* C] {D : J ⥤ C}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `Over j ⥤ J` is initial, restricting a limit cone to the diagram above `j`,
 preserves the limit. -/
 noncomputable def Limits.IsLimit.overPost {c : Cone D} (hc : IsLimit c) (j : J)
@@ -1202,7 +1205,6 @@ noncomputable def Limits.IsLimit.overPost {c : Cone D} (hc : IsLimit c) (j : J)
   · exact NatIso.ofComponents (fun k ↦ CategoryTheory.Over.isoMk (Iso.refl _))
   · exact Cone.ext (Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `Over j ⥤ J` is final, restricting a colimit cocone to the diagram below `j`,
 preserves the limit. -/
 noncomputable def Limits.IsColimit.underPost {c : Cocone D} (hc : IsColimit c) (j : J)
