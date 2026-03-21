@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Int.Init
 public import Mathlib.Data.Nat.Basic
-public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Logic.Function.Basic
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Lift
@@ -27,10 +27,7 @@ open Nat
 namespace Int
 variable {a b c d m n : ℤ}
 
--- TODO: Tag in Lean
-attribute [simp] natAbs_pos
-
-@[gcongr] alias ⟨_, GCongr.ofNat_le_ofNat⟩ := ofNat_le
+attribute [gcongr] ofNat_le
 
 instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 

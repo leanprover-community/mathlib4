@@ -291,9 +291,12 @@ theorem add_singleton_eq (a : A) (r : R) : σ a + {r} = σ (a + ↑ₐ r) :=
 theorem vadd_eq (a : A) (r : R) : r +ᵥ σ a = σ (↑ₐ r + a) :=
   singleton_add.symm.trans <| singleton_add_eq a r
 
-theorem neg_eq (a : A) : -σ a = σ (-a) :=
+theorem _root_.resolventSet_neg (a : A) : resolventSet R (-a) = -resolventSet R a :=
   Set.ext fun x => by
-    simp only [mem_neg, mem_iff, map_neg, ← neg_add', IsUnit.neg_iff, sub_neg_eq_add]
+    simp only [mem_neg, mem_resolventSet_iff, map_neg, ← neg_add', IsUnit.neg_iff, sub_neg_eq_add]
+
+theorem neg_eq (a : A) : -σ a = σ (-a) := by
+  rw [spectrum, Set.compl_neg, spectrum, resolventSet_neg]
 
 theorem singleton_sub_eq (a : A) (r : R) : {r} - σ a = σ (↑ₐ r - a) := by
   rw [sub_eq_add_neg, neg_eq, singleton_add_eq, sub_eq_add_neg]
@@ -311,7 +314,7 @@ variable {R : Type u} {A : Type v} [Semifield R] [Ring A] [Algebra R A]
 lemma inv₀_mem_iff {r : R} {a : Aˣ} :
     r⁻¹ ∈ spectrum R (a : A) ↔ r ∈ spectrum R (↑a⁻¹ : A) := by
   obtain (rfl | hr) := eq_or_ne r 0
-  · simp [zero_mem_iff]
+  · simp
   · lift r to Rˣ using hr.isUnit
     simp [inv_mem_iff]
 
@@ -364,9 +367,9 @@ theorem smul_eq_smul [Nontrivial A] (k : 𝕜) (a : A) (ha : (σ a).Nonempty) :
 theorem nonzero_mul_comm (a b : A) : σ (a * b) \ {0} = σ (b * a) \ {0} := by
   suffices h : ∀ x y : A, σ (x * y) \ {0} ⊆ σ (y * x) \ {0} from
     Set.eq_of_subset_of_subset (h a b) (h b a)
-  rintro _ _ k ⟨k_mem, k_neq⟩
-  change ((Units.mk0 k k_neq) : 𝕜) ∈ _ at k_mem
-  exact ⟨unit_mem_mul_comm.mp k_mem, k_neq⟩
+  rintro _ _ k ⟨k_mem, k_ne⟩
+  change ((Units.mk0 k k_ne) : 𝕜) ∈ _ at k_mem
+  exact ⟨unit_mem_mul_comm.mp k_mem, k_ne⟩
 
 protected theorem map_inv (a : Aˣ) : (σ (a : A))⁻¹ = σ (↑a⁻¹ : A) := by
   ext

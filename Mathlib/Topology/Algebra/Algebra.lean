@@ -47,7 +47,7 @@ variable [TopologicalSpace R] [TopologicalSpace A]
 @[continuity, fun_prop]
 theorem continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A) := by
   rw [algebraMap_eq_smul_one']
-  exact continuous_id.smul continuous_const
+  fun_prop
 
 theorem continuous_algebraMap_iff_smul [ContinuousMul A] :
     Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 := by
@@ -235,7 +235,9 @@ theorem ext_on [T2Space B] {s : Set A} (hs : Dense (Algebra.adjoin R s : Set A))
   ext fun x => eqOn_closure_adjoin h (hs x)
 
 /-- Interpret a `ContinuousAlgHom` as a `ContinuousLinearMap`. -/
-def toContinuousLinearMap (e : A →A[R] B) : A →L[R] B where toLinearMap := e.toAlgHom.toLinearMap
+def toContinuousLinearMap (e : A →A[R] B) : A →L[R] B where
+  toLinearMap := e.toAlgHom.toLinearMap
+  cont := by dsimp; fun_prop
 
 @[simp] theorem coe_toContinuousLinearMap (e : A →A[R] B) : ⇑e.toContinuousLinearMap = e := rfl
 
@@ -590,6 +592,11 @@ theorem Subalgebra.isClosed_topologicalClosure (s : Subalgebra R A) :
 theorem Subalgebra.topologicalClosure_minimal {s t : Subalgebra R A} (h : s ≤ t)
     (ht : IsClosed (t : Set A)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
+
+@[gcongr]
+theorem Subalgebra.topologicalClosure_mono {s t : Subalgebra R A} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  closure_mono h
 
 variable (R) in
 open Algebra in

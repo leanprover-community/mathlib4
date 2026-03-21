@@ -99,7 +99,7 @@ lemma eRank_le_card_width [StrongRankCondition R] (A : Matrix m n R) : A.eRank �
   wlog hfin : Finite n
   · simp [ENat.card_eq_top.2 (by simpa using hfin)]
   have _ := Fintype.ofFinite n
-  rw [ENat.card_eq_coe_fintype_card, eRank, toENat_le_nat]
+  rw [ENat.card_eq_coe_fintype_card, eRank, toENat_le_natCast]
   exact A.cRank_le_card_width
 
 lemma eRank_le_card_height [StrongRankCondition R] (A : Matrix m n R) : A.eRank ≤ ENat.card m := by
@@ -107,7 +107,7 @@ lemma eRank_le_card_height [StrongRankCondition R] (A : Matrix m n R) : A.eRank 
   wlog hfin : Finite m
   · simp [ENat.card_eq_top.2 (by simpa using hfin)]
   have _ := Fintype.ofFinite m
-  rw [ENat.card_eq_coe_fintype_card, eRank, toENat_le_nat]
+  rw [ENat.card_eq_coe_fintype_card, eRank, toENat_le_natCast]
   exact A.cRank_le_card_height
 
 end Infinite
@@ -147,6 +147,7 @@ theorem rank_one [Nontrivial R] [DecidableEq n] :
 theorem rank_zero [Nontrivial R] : rank (0 : Matrix m n R) = 0 := by
   rw [rank, mulVecLin_zero, LinearMap.range_zero, finrank_bot]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cRank_zero {m n : Type*} [Nontrivial R] : cRank (0 : Matrix m n R) = 0 := by
   obtain hn | hn := isEmpty_or_nonempty n
@@ -459,6 +460,7 @@ lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]
 
 end Matrix
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: generalize to `cRank` then deprecate
 theorem Matrix.rank_vecMulVec.{u} {K m n : Type u} [CommRing K] [Fintype n]
     [DecidableEq n] (w : m → K) (v : n → K) : (Matrix.vecMulVec w v).toLin'.rank ≤ 1 := by

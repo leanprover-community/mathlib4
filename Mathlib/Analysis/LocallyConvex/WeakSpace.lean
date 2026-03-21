@@ -56,6 +56,7 @@ theorem Convex.toWeakSpace_closure {s : Set E} (hs : Convex ℝ s) :
     simpa [f'] using (hus y <| subset_closure hy).le
   exact (hux'.not_ge <| hus' ·)
 
+set_option backward.isDefEq.respectTransparency false in
 open ComplexOrder in
 theorem toWeakSpace_closedConvexHull_eq {s : Set E} :
     (toWeakSpace 𝕜 E) '' (closedConvexHull 𝕜 s) = closedConvexHull 𝕜 (toWeakSpace 𝕜 E '' s) := by
@@ -75,8 +76,9 @@ theorem LinearMap.image_closure_of_convex {s : Set E} (hs : Convex ℝ s) (e : E
     rw [← Set.image_subset_image_iff (toWeakSpace 𝕜 F).injective, h_convex.toWeakSpace_closure 𝕜]
     simpa only [Set.image_image, ← hs.toWeakSpace_closure 𝕜, LinearEquiv.symm_apply_apply]
       using he'.continuousOn.image_closure (s := toWeakSpace 𝕜 E '' s)
-  exact WeakBilin.continuous_of_continuous_eval _ fun f ↦
-    WeakBilin.eval_continuous _ { toLinearMap := e.dualMap f : StrongDual 𝕜 E }
+  exact WeakBilin.continuous_of_continuous_eval _ fun f ↦ WeakBilin.eval_continuous _ ({
+      toLinearMap := e.dualMap f
+      cont := by dsimp; fun_prop } : StrongDual 𝕜 E)
 
 /-- If `e` is a linear isomorphism between two locally convex spaces, and `e` induces (via
 precomposition) an isomorphism between their continuous duals, then `e` commutes with the closure

@@ -39,7 +39,7 @@ variable {P Q : MorphismProperty C}
 /-- This is the precoverage on `C` where covering presieves are those where every
 morphism satisfies `P`. -/
 def precoverage (P : MorphismProperty C) : Precoverage C where
-  coverings X S := ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → P f
+  coverings X := {S | ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → P f}
 
 @[simp]
 lemma ofArrows_mem_precoverage {X : C} {ι : Type*} {Y : ι → C} {f : ∀ i, Y i ⟶ X} :
@@ -73,6 +73,15 @@ lemma precoverage_inf : precoverage (P ⊓ Q) = precoverage P ⊓ precoverage Q 
   ext X R
   exact ⟨fun hS ↦ ⟨fun _ _ hf ↦ (hS hf).left, fun _ _ hf ↦ (hS hf).right⟩,
     fun h ↦ fun _ _ hf ↦ ⟨h.left hf, h.right hf⟩⟩
+
+@[simp, grind .]
+lemma bot_mem_precoverage (X : C) : ⊥ ∈ precoverage P X := fun _ _ h ↦ h.elim
+
+lemma comap_precoverage {D : Type*} [Category* D] (P : MorphismProperty D) (F : C ⥤ D) :
+    P.precoverage.comap F = (P.inverseImage F).precoverage := by
+  ext X R
+  obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
+  simp
 
 /-- If `P` is stable under base change, this is the coverage on `C` where covering presieves
 are those where every morphism satisfies `P`. -/
