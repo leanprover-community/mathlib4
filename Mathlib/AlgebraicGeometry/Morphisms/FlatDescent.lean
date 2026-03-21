@@ -56,7 +56,7 @@ instance descendsAlong_universallyClosed_surjective_inf_flat_inf_quasicompact :
   have : IsClosed ((pullback.snd (Spec.map φ) f).base ⁻¹' ((pullback.fst f g).base '' s)) := by
     rw [← Scheme.image_preimage_eq_of_isPullback (isPullback_map_snd_snd ..)]
     exact p.isClosedMap _ (hs.preimage r.continuous)
-  rwa [(Flat.isQuotientMap_of_surjective _).isClosed_preimage] at this
+  rwa [(Flat.isQuotientMap_of_surjective _).isCoinducing.isClosed_preimage] at this
 
 /-- Universally open satisfies fpqc descent. -/
 @[stacks 02KT]
@@ -74,7 +74,7 @@ instance descendsAlong_universallyOpen_surjective_inf_flat_inf_quasicompact :
   have : IsOpen ((pullback.snd (Spec.map φ) f).base ⁻¹' ((pullback.fst f g).base '' s)) := by
     rw [← Scheme.image_preimage_eq_of_isPullback (isPullback_map_snd_snd ..)]
     exact p.isOpenMap _ (hs.preimage r.continuous)
-  rwa [(Flat.isQuotientMap_of_surjective _).isOpen_preimage] at this
+  rwa [(Flat.isQuotientMap_of_surjective _).isCoinducing.isOpen_preimage] at this
 
 /-- Universally injective satisfies fpqc descent. -/
 @[stacks 02KW]
