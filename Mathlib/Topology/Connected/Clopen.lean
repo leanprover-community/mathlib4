@@ -461,10 +461,15 @@ theorem Topology.IsCoinducing.preimage_connectedComponent (hf : IsCoinducing f)
 alias Topology.IsQuotientMap.preimage_connectedComponent :=
   Topology.IsCoinducing.preimage_connectedComponent
 
-lemma Topology.IsQuotientMap.image_connectedComponent {f : α → β} (hf : IsQuotientMap f)
+lemma Topology.IsCoinducing.image_connectedComponent {f : α → β} (hf : IsCoinducing f)
     (h_fibers : ∀ y : β, IsConnected (f ⁻¹' {y})) (a : α) :
     f '' connectedComponent a = connectedComponent (f a) := by
-  rw [← hf.isCoinducing.preimage_connectedComponent h_fibers, image_preimage_eq _ hf.surjective]
+  rw [← hf.preimage_connectedComponent h_fibers,
+    image_preimage_eq _ fun y ↦ (h_fibers y).nonempty]
+
+@[deprecated (since := "2026-03-21")]
+alias Topology.IsQuotientMap.image_connectedComponent :=
+  Topology.IsCoinducing.image_connectedComponent
 
 end Preconnected
 
