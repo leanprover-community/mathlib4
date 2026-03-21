@@ -123,3 +123,5 @@ theorem primorial_le_four_pow (n : ℕ) : n# ≤ 4 ^ n := by
   obtain rfl | hn := eq_or_ne n 0
   · decide
   · exact (primorial_lt_four_pow n hn).le
+
+@[deprecated (since := "2026-03-21")] alias primorial_le_4_pow := primorial_le_four_pow
