@@ -104,7 +104,7 @@ theorem isNat_ratCast {R : Type*} [DivisionRing R] : {q : ℚ} → {n : ℕ} →
     IsNat q n → IsNat (q : R) n
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem isNat_NNRatCast {R : Type*} [DivisionSemiring R] : {q : ℚ≥0} → {n : ℕ} →
+theorem isNat_nnratCast {R : Type*} [DivisionSemiring R] : {q : ℚ≥0} → {n : ℕ} →
     IsNat q n → IsNat (q : R) n
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
@@ -116,7 +116,7 @@ theorem isNNRat_ratCast {R : Type*} [DivisionRing R] [CharZero R] : {q : ℚ} �
     IsNNRat q n d → IsNNRat (q : R) n d
   | _, _, _, ⟨⟨qi,_,_⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only; norm_cast⟩
 
-theorem isNNRat_NNRatCast {R : Type*} [DivisionSemiring R] [CharZero R] : {q : ℚ≥0} → {n : ℕ} →
+theorem isNNRat_nnratCast {R : Type*} [DivisionSemiring R] [CharZero R] : {q : ℚ≥0} → {n : ℕ} →
     {d : ℕ} → IsNNRat q n d → IsNNRat (q : R) n d
   | _, _, _, ⟨⟨qi,_,_⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only; norm_cast⟩
 
@@ -149,7 +149,6 @@ recognizes `q`, returning the cast of `q`. -/
     return .isNegNNRat dα qa na da q(isRat_ratCast $pa)
   | _ => failure
 
-<<<<<<< HEAD
 /-- The `norm_num` extension which identifies an expression `RatCast.ratCast q` where `norm_num`
 recognizes `q`, returning the cast of `q`. -/
 @[norm_num NNRat.cast _] def evalNNRatCast : NormNumExt where eval {u α} e := do
@@ -161,16 +160,14 @@ recognizes `q`, returning the cast of `q`. -/
   match r with
   | .isNat _ na pa =>
     assumeInstancesCommute
-    return .isNat _ na q(isNat_NNRatCast $pa)
+    return .isNat _ na q(isNat_nnratCast $pa)
   | .isNNRat _ qa na da pa =>
     assumeInstancesCommute
     let some _ ← inferCharZeroOfDivisionSemiring? dα | failure
-    return .isNNRat q(inferInstance) qa na da q(isNNRat_NNRatCast $pa)
+    return .isNNRat q(inferInstance) qa na da q(isNNRat_nnratCast $pa)
   | _ => failure
 
 set_option backward.isDefEq.respectTransparency false in
-=======
->>>>>>> master
 theorem isNNRat_inv_pos {α} [DivisionSemiring α] [CharZero α] {a : α} {n d : ℕ} :
     IsNNRat a (Nat.succ n) d → IsNNRat a⁻¹ d (Nat.succ n) := by
   rintro ⟨_, rfl⟩
