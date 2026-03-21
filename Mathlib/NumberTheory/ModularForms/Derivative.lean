@@ -222,7 +222,7 @@ lemma deriv_moebius (z : ℍ) : deriv (fun w ↦ num γ w / denom γ w) z = 1 / 
       ((γ 0 0 : ℤ) * z + (γ 0 1 : ℤ)) * (γ 1 0 : ℤ) = 1 := by linear_combination hdet
   simp only [hnum_eq, one_div]
 
-/-- Derivative of denom^(-k): d/dz[(cz+d)^(-k)] = -k * c * (cz+d)^(-k-1). -/
+/-- Derivative of denom^(-k): $\frac{d}{dz}[(cz+d)^(-k)] = -k * c * (cz+d)^(-k-1)$. -/
 lemma deriv_denom_neg_zpow (k : ℤ) (z : ℍ) :
     deriv (fun w ↦ (denom γ w) ^ (-k)) z =
       (-k) * ((γ : Matrix (Fin 2) (Fin 2) ℤ) 1 0 : ℂ) * (denom γ z) ^ (-k - 1) := by
@@ -236,10 +236,7 @@ lemma deriv_denom_neg_zpow (k : ℤ) (z : ℍ) :
   simp only [Int.cast_neg]
   ring
 
-/--
-The derivative anomaly: how D interacts with the slash action.
-This is the key computation for proving Serre derivative equivariance.
--/
+/-- How `D` interacts with the slash action. -/
 lemma normalizedDerivOfComplex_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) (γ : SL(2, ℤ)) :
     D (F ∣[k] γ) = (D F ∣[k + 2] γ) -
       (fun z : ℍ ↦ (k : ℂ) * (2 * π * I)⁻¹ * (γ 1 0 / denom γ z) * (F ∣[k] γ) z) := by
@@ -255,16 +252,16 @@ lemma normalizedDerivOfComplex_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) 
     simp only [Function.comp_apply, ofComplex_apply_of_im_pos hw]
     rw [ModularForm.SL_slash_apply (f := F) (k := k) γ ⟨w, hw⟩]
     congr 1
-    · let gz : ℍ := γ • ⟨w, hw⟩
-      have hsmul : (gz : ℂ) = num γ w / denom γ w := by
-        have h := coe_smul_of_det_pos hdet_pos ⟨w, hw⟩
-        simp only [gz] at h ⊢; exact h
-      have hmob_im : (num γ w / denom γ w).im > 0 := hsmul ▸ gz.im_pos
-      congr 1; exact UpperHalfPlane.ext (by rw [ofComplex_apply_of_im_pos hmob_im]; exact hsmul)
+    · let τ : ℍ := ⟨w, hw⟩
+      have hsmul : ((γ • τ : ℍ) : ℂ) = num γ w / denom γ w := by
+        simpa [τ] using (coe_smul_of_det_pos hdet_pos τ)
+      have hmoebius_im : 0 < (num γ w / denom γ w).im := hsmul ▸ (γ • τ).im_pos
+      change F (γ • τ) = F (ofComplex (num γ w / denom γ w))
+      refine congrArg F ?_
+      exact UpperHalfPlane.ext (by simpa [τ, ofComplex_apply_of_im_pos hmoebius_im] using hsmul)
   rw [hcomp]
   have hdiff_moebius := differentiableAt_moebius γ z
-  have hmob_eq : ↑(γ • z) = num γ z / denom γ z :=
-    coe_smul_of_det_pos hdet_pos z
+  have hmob_eq : ↑(γ • z) = num γ z / denom γ z := coe_smul_of_det_pos hdet_pos z
   have hdiff_F_comp : DifferentiableAt ℂ (F ∘ ofComplex) (num γ z / denom γ z) :=
     mdifferentiableAt_iff.mp (hF ⟨_, hmob_eq ▸ (γ • z).im_pos⟩)
   have hcomp_eq : (fun w ↦ (F ∘ ofComplex) (num γ w / denom γ w)) =
@@ -293,9 +290,8 @@ lemma normalizedDerivOfComplex_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) 
   ring
 
 /--
-Serre derivative is equivariant under the slash action. More precisely, if `F` is invariant
-under the slash action of weight `k`, then `serreDerivative k F` is invariant under the slash action
-of weight `k + 2`.
+Serre derivative is equivariant under the slash action. More precisely,
+$\partial_k (F ∣[k] γ) = (\partial_k F) ∣[k + 2] \gamma$ for all $\gamma \in SL(2, \mathbb{Z})$.
 -/
 theorem serreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) :
     ∀ γ : SL(2, ℤ), serreDerivative k F ∣[k + 2] γ = serreDerivative k (F ∣[k] γ) := by
@@ -311,10 +307,13 @@ theorem serreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (hF : MDif
     ring_nf
   rw [hLHS]
   -- Substitute D slash and E2 slash action formulas pointwise
-  have hDz := congrFun (normalizedDerivOfComplex_slash k F hF γ) z
-  have hE2z := congrFun (EisensteinSeries.E2_slash_action γ) z
-  simp only [Pi.sub_apply] at hDz
-  simp only [Pi.sub_apply, Pi.smul_apply, smul_eq_mul] at hE2z
+  have hDz : (D (F ∣[k] γ)) z = (D F ∣[k + 2] γ) z -
+      ((k : ℂ) * (2 * π * I)⁻¹ * (γ 1 0 / denom γ z) * (F ∣[k] γ) z) := by
+    simpa [Pi.sub_apply] using congrFun (normalizedDerivOfComplex_slash k F hF γ) z
+  have hE2z : (EisensteinSeries.E2 ∣[(2 : ℤ)] γ) z =
+      EisensteinSeries.E2 z - 1 / (2 * riemannZeta 2) * EisensteinSeries.D2 γ z := by
+    simpa [Pi.sub_apply, Pi.smul_apply, smul_eq_mul] using
+      congrFun (EisensteinSeries.E2_slash_action γ) z
   rw [hDz, hE2z]
   simp only [show EisensteinSeries.D2 γ z = (2 * ↑π * I * ↑↑(γ 1 0)) / denom γ ↑z from rfl,
     riemannZeta_two]
@@ -323,6 +322,10 @@ theorem serreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (hF : MDif
   simp only [I_sq]
   ring
 
+/--
+As a corollary, if `F` is invariant under the slash action of weight `k`, then `serreDerivative k F`
+is invariant under the slash action of weight `k + 2`.
+-/
 theorem serreDerivative_slash_invariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F)
     (γ : SL(2, ℤ)) (h : F ∣[k] γ = F) :
     serreDerivative k F ∣[k + 2] γ = serreDerivative k F := by
