@@ -362,10 +362,10 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
   rw [G.isClique_iff_induce_eq.mp h.choose_spec.isClique]
   exact Embedding.completeGraph <| Finset.equivFinOfCardEq h.choose_spec.card_eq |>.symm.toEmbedding
 
-theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ (⊤ : SimpleGraph (Fin n)) ⊑ G :=
+theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ completeGraph (Fin n) ⊑ G :=
   ⟨(⟨topEmbeddingOfNotCliqueFree · |>.toCopy⟩), IsContained.not_cliqueFree⟩
 
-theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty ((⊤ : SimpleGraph (Fin n)) ↪g G) := by
+theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty (completeGraph (Fin n) ↪g G) := by
   contrapose!
   exact ⟨(⟨topEmbeddingOfNotCliqueFree ·⟩), (IsContained.not_cliqueFree ⟨·.some.toCopy⟩)⟩
 
