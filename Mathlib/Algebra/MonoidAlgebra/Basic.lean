@@ -253,16 +253,16 @@ theorem lift_unique (F : R[M] →ₐ[R] A) (f : R[M]) :
     simp [lift_apply]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem lift_mapCoeffRingHom_algebraMap [CommSemiring S] [Algebra S A]
+theorem lift_mapRingHom_algebraMap [CommSemiring S] [Algebra S A]
     [Algebra R S] [IsScalarTower R S A]
     (f : M →* A) (x : R[M]) :
-    lift _ _ _ f (mapCoeffRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
+    lift _ _ _ f (mapRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
   induction x using Finsupp.induction with
   | zero => simp
   | single_add a b f _ _ ih => simp [ih]
 
 @[deprecated (since := "2026-03-20")]
-alias lift_mapRangeRingHom_algebraMap := lift_mapCoeffRingHom_algebraMap
+alias lift_mapRangeRingHom_algebraMap := lift_mapRingHom_algebraMap
 
 variable (R A) in
 /-- If `f : M → N` is a monoid homomorphism, then `MonoidAlgebra.mapDomain f` is an algebra
@@ -345,66 +345,66 @@ lemma mapDomainRingHom_comp_algebraMap (f : M →* N) :
     (mapDomainRingHom A f).comp (algebraMap R A[M]) = algebraMap R A[N] := by ext; simp
 
 @[to_additive (attr := simp)]
-lemma mapCoeffRingHom_comp_algebraMap (f : R →+* S) :
-    (mapCoeffRingHom (M := M) f).comp (algebraMap _ _) = (algebraMap _ _).comp f := by ext; simp
+lemma mapRingHom_comp_algebraMap (f : R →+* S) :
+    (mapRingHom (M := M) f).comp (algebraMap _ _) = (algebraMap _ _).comp f := by ext; simp
 
 @[deprecated (since := "2026-03-20")]
-alias mapRangeRingHom_comp_algebraMap := mapCoeffRingHom_comp_algebraMap
+alias mapRangeRingHom_comp_algebraMap := mapRingHom_comp_algebraMap
 
 variable (M) in
 /-- The algebra homomorphism of monoid algebras induced by a homomorphism of the base algebras. -/
 @[to_additive
 /-- The algebra homomorphism of additive monoid algebras induced by a homomorphism of the base
 algebras. -/]
-noncomputable def mapCoeffAlgHom (f : A →ₐ[R] B) : A[M] →ₐ[R] B[M] where
-  __ := mapCoeffRingHom M f
+noncomputable def mapAlgHom (f : A →ₐ[R] B) : A[M] →ₐ[R] B[M] where
+  __ := mapRingHom M f
   commutes' := by simp
 
-@[deprecated (since := "2026-03-20")] alias mapRangeAlgHom := mapCoeffAlgHom
+@[deprecated (since := "2026-03-20")] alias mapRangeAlgHom := mapAlgHom
 
 variable (M) in
 @[to_additive (attr := simp)]
-lemma toRingHom_mapCoeffAlgHom (f : A →ₐ[R] B) :
-    mapCoeffAlgHom M f = mapCoeffRingHom M f.toRingHom := rfl
+lemma toRingHom_mapAlgHom (f : A →ₐ[R] B) :
+    mapAlgHom M f = mapRingHom M f.toRingHom := rfl
 
-@[deprecated (since := "2026-03-20")] alias toRingHom_mapRangeAlgHom := toRingHom_mapCoeffAlgHom
-
-@[to_additive (attr := simp)]
-lemma mapCoeffAlgHom_apply (f : A →ₐ[R] B) (x : A[M]) (m : M) :
-    mapCoeffAlgHom M f x m = f (x m) := mapCoeffRingHom_apply f.toRingHom x m
-
-@[deprecated (since := "2026-03-20")] alias mapRangeAlgHom_apply := mapCoeffAlgHom_apply
+@[deprecated (since := "2026-03-20")] alias toRingHom_mapRangeAlgHom := toRingHom_mapAlgHom
 
 @[to_additive (attr := simp)]
-lemma mapCoeffAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
-    mapCoeffAlgHom M f (single m a) = single m (f a) := by
+lemma mapAlgHom_apply (f : A →ₐ[R] B) (x : A[M]) (m : M) :
+    mapAlgHom M f x m = f (x m) := mapRingHom_apply f.toRingHom x m
+
+@[deprecated (since := "2026-03-20")] alias mapRangeAlgHom_apply := mapAlgHom_apply
+
+@[to_additive (attr := simp)]
+lemma mapAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
+    mapAlgHom M f (single m a) = single m (f a) := by
   classical ext; simp [single_apply, apply_ite f]
 
-@[deprecated (since := "2026-03-20")] alias mapRangeAlgHom_single := mapCoeffAlgHom_single
+@[deprecated (since := "2026-03-20")] alias mapRangeAlgHom_single := mapAlgHom_single
 
 variable (R M) in
 /-- The algebra isomorphism of monoid algebras induced by an isomorphism of the base algebras. -/
 @[to_additive (attr := simps apply)
 /-- The algebra isomorphism of additive monoid algebras induced by an isomorphism of the base
 algebras. -/]
-noncomputable def mapCoeffAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
-  __ := mapCoeffAlgHom M e
-  invFun := mapCoeffAlgHom M (e.symm : B →ₐ[R] A)
+noncomputable def mapAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
+  __ := mapAlgHom M e
+  invFun := mapAlgHom M (e.symm : B →ₐ[R] A)
   left_inv _ := by aesop
   right_inv _ := by aesop
 
-@[deprecated (since := "2026-03-20")] alias mapRangeAlgEquiv := mapCoeffAlgEquiv
+@[deprecated (since := "2026-03-20")] alias mapRangeAlgEquiv := mapAlgEquiv
 
 @[to_additive (attr := simp)]
-lemma symm_mapCoeffAlgEquiv (e : A ≃ₐ[R] B) :
-    (mapCoeffAlgEquiv R M e).symm = mapCoeffAlgEquiv R M e.symm := rfl
+lemma symm_mapAlgEquiv (e : A ≃ₐ[R] B) :
+    (mapAlgEquiv R M e).symm = mapAlgEquiv R M e.symm := rfl
 
-@[deprecated (since := "2026-03-20")] alias symm_mapRangeAlgEquiv := symm_mapCoeffAlgEquiv
+@[deprecated (since := "2026-03-20")] alias symm_mapRangeAlgEquiv := symm_mapAlgEquiv
 
 @[to_additive (attr := simp)]
 lemma mapRangeAlgEquiv_trans (e₁ : A ≃ₐ[R] B) (e₂ : B ≃ₐ[R] C) :
-    mapCoeffAlgEquiv R M (e₁.trans e₂) =
-      (mapCoeffAlgEquiv R M e₁).trans (mapCoeffAlgEquiv R M e₂) := by ext; simp
+    mapAlgEquiv R M (e₁.trans e₂) =
+      (mapAlgEquiv R M e₁).trans (mapAlgEquiv R M e₂) := by ext; simp
 
 end mapRange
 
@@ -465,7 +465,7 @@ That's why it is not a global instance. -/
 Warning: This produces a diamond for `Algebra R[M] S[M][M]` and another one for `Algebra R[M] R[M]`.
 That's why it is not a global instance. -/]
 noncomputable abbrev algebraMonoidAlgebra : Algebra R[M] S[M] :=
-  (mapCoeffRingHom M (algebraMap R S)).toAlgebra
+  (mapRingHom M (algebraMap R S)).toAlgebra
 
 scoped[AlgebraMonoidAlgebra] attribute [instance] MonoidAlgebra.algebraMonoidAlgebra
   AddMonoidAlgebra.algebraAddMonoidAlgebra
@@ -473,12 +473,12 @@ scoped[AlgebraMonoidAlgebra] attribute [instance] MonoidAlgebra.algebraMonoidAlg
 open scoped AlgebraMonoidAlgebra
 
 @[to_additive (attr := simp)]
-lemma algebraMap_def : algebraMap R[M] S[M] = mapCoeffRingHom M (algebraMap R S) := rfl
+lemma algebraMap_def : algebraMap R[M] S[M] = mapRingHom M (algebraMap R S) := rfl
 
 @[to_additive (dont_translate := R)]
 lemma isScalarTower_monoidAlgebra [CommSemiring T] [Algebra R T] [Algebra S T]
     [IsScalarTower R S T] : IsScalarTower R S[M] T[M] :=
-  .of_algebraMap_eq' (mapCoeffAlgHom _ (IsScalarTower.toAlgHom R S T)).comp_algebraMap.symm
+  .of_algebraMap_eq' (mapAlgHom _ (IsScalarTower.toAlgHom R S T)).comp_algebraMap.symm
 
 scoped[AlgebraMonoidAlgebra] attribute [instance] MonoidAlgebra.isScalarTower_monoidAlgebra
   AddMonoidAlgebra.vaddAssocClass_addMonoidAlgebra
@@ -586,16 +586,16 @@ theorem lift_unique (F : R[M] →ₐ[R] A) (f : R[M]) :
     simp [lift_apply]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem lift_mapCoeffRingHom_algebraMap [CommSemiring S] [Algebra S A]
+theorem lift_mapRingHom_algebraMap [CommSemiring S] [Algebra S A]
     [Algebra R S] [IsScalarTower R S A]
     (f : Multiplicative M →* A) (x : R[M]) :
-    lift _ _ _ f (mapCoeffRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
+    lift _ _ _ f (mapRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
   induction x using Finsupp.induction with
   | zero => simp
   | single_add a b f _ _ ih => simp [ih]
 
 @[deprecated (since := "2026-03-20")]
-alias lift_mapRangeRingHom_algebraMap := lift_mapCoeffRingHom_algebraMap
+alias lift_mapRangeRingHom_algebraMap := lift_mapRingHom_algebraMap
 
 lemma algHom_ext_iff {φ₁ φ₂ : R[M] →ₐ[R] A} : (∀ x, φ₁ (single x 1) = φ₂ (single x 1)) ↔ φ₁ = φ₂ :=
   ⟨fun h => algHom_ext h, by rintro rfl _; rfl⟩
