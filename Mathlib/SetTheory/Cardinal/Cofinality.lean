@@ -297,11 +297,11 @@ theorem cof_iSup [NoMaxOrder γ] {f : γ → Ordinal} (hf : StrictMono f) :
   simpa using lift_cof_iSup hf
 
 theorem cof_iSup_Iio_add_one {a} {f : Iio a → Ordinal} (hf : StrictMono f) :
-    cof (⨆ i : Iio a, f i + 1) = cof a := by
+    cof (⨆ i, f i + 1) = cof a := by
   simpa [← lift_cof] using lift_cof_iSup_add_one hf
 
 theorem cof_iSup_Iio {a} {f : Iio a → Ordinal} (hf : StrictMono f) (ha : IsSuccPrelimit a) :
-    cof (⨆ i : Iio a, f i) = cof a := by
+    cof (⨆ i, f i) = cof a := by
   rw [← iSup_Iio_add_one hf ha, cof_iSup_Iio_add_one hf]
 
 theorem cof_map_of_isNormal {f} (hf : IsNormal f) {a} (ha : IsSuccLimit a) : cof (f a) = cof a := by
