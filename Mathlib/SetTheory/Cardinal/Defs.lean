@@ -106,9 +106,9 @@ theorem inductionOn₃ {motive : Cardinal → Cardinal → Cardinal → Prop} (c
     (mk : ∀ α β γ, motive #α #β #γ) : motive c₁ c₂ c₃ :=
   Quotient.inductionOn₃ c₁ c₂ c₃ mk
 
-theorem induction_on_pi {ι : Type u} {p : (ι → Cardinal.{v}) → Prop}
-    (f : ι → Cardinal.{v}) (h : ∀ f : ι → Type v, p fun i ↦ #(f i)) : p f :=
-  Quotient.induction_on_pi f h
+theorem induction_on_pi {ι : Type*} {motive : (ι → Cardinal) → Prop}
+    (f : ι → Cardinal) (mk : ∀ f : ι → Type v, motive fun i ↦ #(f i)) : motive f :=
+  Quotient.induction_on_pi f mk
 
 protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
