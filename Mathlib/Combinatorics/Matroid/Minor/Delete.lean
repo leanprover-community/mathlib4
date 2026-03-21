@@ -91,7 +91,7 @@ lemma deleteElem_eq_self (he : e ∉ M.E) : M ＼ {e} = M := by
 lemma delete_delete (M : Matroid α) (D₁ D₂ : Set α) : M ＼ D₁ ＼ D₂ = M ＼ (D₁ ∪ D₂) := by
   rw [← restrict_compl, ← restrict_compl, ← restrict_compl, restrict_restrict_eq,
     restrict_ground_eq, diff_diff]
-  simp [diff_subset]
+  simp
 
 lemma delete_comm (M : Matroid α) (D₁ D₂ : Set α) : M ＼ D₁ ＼ D₂ = M ＼ D₂ ＼ D₁ := by
   rw [delete_delete, union_comm, delete_delete]
