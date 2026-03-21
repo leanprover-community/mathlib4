@@ -20,8 +20,29 @@ This file constructs L-functions as formal Dirichlet series.
 * `ArithmeticFunction.ofPowerSeries q f`: L-function `f(q⁻ˢ)` obtained from a power series `f(T)`.
 * `ArithmeticFunction.eulerProduct f`: the Euler product of a family `f i` of Dirichlet series.
 
-## TODO
-* If each `f i` is multiplicative, then `ArithmeticFunction.eulerProduct f` is multiplicative.
+## Implementation notes
+
+We take the following route from polynomials to L-functions:
+* Starting from a polynomial in `T`, `PowerSeries.invOfUnit` gives the reciporical power series.
+* `ofPowerSeries` gives the local Euler factor as a formal Dirichlet series on powers of `q`.
+* `eulerProduct` gives the L-function as the formal product of these local Euler factors.
+* `LSeries` gives the L-function as an analytic function on the right half-plane of convergence.
+
+For example, the Riemann zeta function `ζ(s)` corresponds to taking `1 - T` at each prime `p`.
+
+For context, here is a diagram of the possible routes from polynomials to L-functions:
+
+                   T=q⁻ˢ                     s ∈ ℂ
+[polynomials in T] ----> [polynomials in q⁻ˢ] ----> [analytic function in s]
+          |                           |                           |
+          | (reciprocal)              | (reciprocal)              | (reciprocal)
+          v         T=q⁻ˢ             V          s ∈ ℂ            V
+[power series in T] ----> [power series in q⁻ˢ] ----> [analytic function in s] (the Euler factor)
+          |                           |                           |
+          | (product)                 | (product)                 | (product)
+          v                 T=q⁻ˢ     V               s ∈ ℂ       V
+[multivariate power series] ----> [Dirichlet series] ----> [L-function in s] (the Euler product)
+
 -/
 
 @[expose] public section
@@ -128,6 +149,7 @@ theorem ofPowerSeries_apply_one (q : ℕ) (f : PowerSeries R) :
   · simp [ofPowerSeries, dif_neg hq]
 
 end PowerSeries
+
 section EulerProduct
 
 open Filter
