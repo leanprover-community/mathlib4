@@ -24,13 +24,10 @@ open IsLocalRing
 variable (R : Type*) [CommRing R]
 
 /-- A ring is regular if its localization at any prime `IsRegularLocalRing`. -/
+@[mk_iff]
 class IsRegularRing : Prop where
   localization_isRegular : ∀ p : Ideal R, ∀ (_ : p.IsPrime),
     IsRegularLocalRing (Localization.AtPrime p)
-
-lemma isRegularRing_iff : IsRegularRing R ↔ ∀ p : Ideal R, ∀ (_ : p.IsPrime),
-    IsRegularLocalRing (Localization.AtPrime p) :=
-  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 lemma isRegularRing_of_ringEquiv {R R' : Type*} [CommRing R] [CommRing R']
     (e : R ≃+* R') [reg : IsRegularRing R] : IsRegularRing R' := by
