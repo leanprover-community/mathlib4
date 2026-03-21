@@ -399,8 +399,8 @@ theorem succ_ne_zero (c : Cardinal) : succ c ≠ 0 :=
 
 theorem add_one_le_of_lt {a b : Cardinal} (h : a < b) : a + 1 ≤ b := by
   induction a, b using Cardinal.inductionOn₂ with | mk α β
-  obtain ⟨f⟩ := le_of_lt h
-  have hf : ¬Surjective f := fun hn => h.not_ge (mk_le_of_surjective hn)
+  obtain ⟨f⟩ := h.le
+  have hf : ¬Surjective f := fun hn ↦ h.not_ge (mk_le_of_surjective hn)
   rw [Surjective, not_forall] at hf
   obtain ⟨b, hb⟩ := hf
   rw [← mk_option]
