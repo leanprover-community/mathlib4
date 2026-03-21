@@ -42,7 +42,6 @@ variable [Semiring 𝕜]
   [AddCommMonoid G] [Module 𝕜 G] [TopologicalSpace G] [ContinuousAdd G] [ContinuousConstSMul 𝕜 G]
   [AddCommMonoid H] [Module 𝕜 H] [TopologicalSpace H] [ContinuousAdd H] [ContinuousConstSMul 𝕜 H]
 
-set_option backward.deriving.wrap false in
 /-- A formal multilinear series over a field `𝕜`, from `E` to `F`, is given by a family of
 multilinear maps from `E^n` to `F` for all `n`. -/
 @[nolint unusedArguments]
@@ -51,7 +50,10 @@ def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring �
     [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F]
     [ContinuousConstSMul 𝕜 F] :=
   ∀ n : ℕ, E [×n]→L[𝕜] F
-deriving AddCommMonoid, Inhabited
+deriving Inhabited
+
+set_option backward.inferInstanceAs.wrap.data false in
+deriving instance AddCommMonoid for FormalMultilinearSeries
 
 section Module
 

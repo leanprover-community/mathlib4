@@ -42,12 +42,6 @@ open Function
 
 assert_not_exists Field
 
-set_option backward.deriving.wrap false in
-deriving instance
-  LinearOrderedAddCommMonoidWithTop,
-  SuccOrder
-  for ENat
-
 deriving instance Nontrivial,
   LinearOrder, Bot, Sub,
   IsOrderedRing, CanonicallyOrderedAdd,
@@ -57,6 +51,12 @@ deriving instance Nontrivial,
   NoZeroDivisors,
   ZeroLEOneClass
   for ENat
+
+set_option backward.deriving.wrap false in
+deriving instance LinearOrderedAddCommMonoidWithTop for ENat
+
+set_option backward.inferInstanceAs.wrap.data false in
+deriving instance SuccOrder for ENat
 
 #adaptation_note /-- Upon bumping to v4.29.0-rc3, we write out the `CommSemiring` instance rather
 than using `deriving`, to ensure that the `NatCast` instance is definitionally equal to the one
@@ -69,7 +69,7 @@ instance : CommSemiring ENat := {
   toNatCast := inferInstance
 }
 
--- Moving this before `CommSemiring ENat` causes a failure later.
+-- Moving this before `CommSemiring ENat` causes a failure later (where?).
 deriving instance CanonicallyOrderedAdd for ENat
 
 namespace ENat
@@ -83,8 +83,6 @@ variable {a b c d m n : ℕ∞}
 theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
 @[simp] theorem succ_coe (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := by
-  -- We either need `instSuccOrderENat._aux_1` here,
-  -- or `set_option backward.deriving.wrap false`, ... somewhere?
   simp [SuccOrder.succ]
   rfl
 

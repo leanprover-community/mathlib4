@@ -100,7 +100,7 @@ set_option backward.deriving.wrap false in
 /-- The extended nonnegative real numbers. This is usually denoted [0, ∞],
   and is relevant as the codomain of a measure. -/
 def ENNReal := WithTop ℝ≥0
-  deriving Zero, Top, AddCommMonoidWithOne, SemilatticeSup, DistribLattice, Nontrivial
+  deriving Zero, Top, AddCommMonoidWithOne, SemilatticeSup, Nontrivial, DistribLattice
 
 @[inherit_doc]
 scoped[ENNReal] notation "ℝ≥0∞" => ENNReal

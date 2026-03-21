@@ -33,7 +33,7 @@ noncomputable section
 set_option backward.deriving.wrap false in
 /-- The type of extended real numbers `[-∞, ∞]`, constructed as `WithBot (WithTop ℝ)`. -/
 def EReal := WithBot (WithTop ℝ)
-  deriving Bot, Zero, One, Nontrivial, AddMonoid, PartialOrder, AddCommMonoid
+  deriving Bot, Zero, One, Nontrivial, AddMonoid, AddCommMonoid, PartialOrder
 
 instance : ZeroLEOneClass EReal := inferInstanceAs (ZeroLEOneClass (WithBot (WithTop ℝ)))
 instance : SupSet EReal := inferInstanceAs (SupSet (WithBot (WithTop ℝ)))

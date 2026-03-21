@@ -20,7 +20,6 @@ module structures on `ℕ →₀ M` of interest. See the docstring of `Polynomia
 universe u v
 open Polynomial
 
-set_option backward.deriving.wrap false in
 /-- The `R[X]`-module `M[X]` for an `R`-module `M`.
 This is isomorphic (as an `R`-module) to `M[X]` when `M` is a ring.
 
@@ -41,7 +40,10 @@ for the full discussion.
 -/
 @[nolint unusedArguments]
 def PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] := ℕ →₀ M
-deriving Inhabited, FunLike, CoeFun
+deriving Inhabited, FunLike
+
+set_option backward.inferInstanceAs.wrap.data false in
+deriving instance CoeFun for PolynomialModule
 
 noncomputable section
 deriving instance AddCommGroup for PolynomialModule

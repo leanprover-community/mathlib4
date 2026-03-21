@@ -58,14 +58,15 @@ inductive Rel : FreeAlgebra R M → FreeAlgebra R M → Prop
 
 end TensorAlgebra
 
--- This is needed or we get errors in `Mathlib/Algebra/Lie/UniversalEnveloping.lean`.
--- We should localize this and diagnose!
-set_option backward.deriving.wrap false in
 /-- The tensor algebra of the module `M` over the commutative semiring `R`.
 -/
 def TensorAlgebra :=
   RingQuot (TensorAlgebra.Rel R M)
-deriving Inhabited, Semiring
+deriving Inhabited
+
+-- This is needed or we get errors in `Mathlib/Algebra/Lie/UniversalEnveloping.lean`.
+set_option backward.deriving.wrap false in
+deriving instance Semiring for TensorAlgebra
 
 -- `IsScalarTower` is not needed, but the instance isn't really canonical without it.
 @[nolint unusedArguments]
