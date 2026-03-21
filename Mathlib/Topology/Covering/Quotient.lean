@@ -100,10 +100,11 @@ noncomputable def trivializationOfSMulDisjoint [TopologicalSpace G] [DiscreteTop
   have : Nonempty (X → E) := ⟨Function.surjInv hf.surjective⟩
   refine IsOpen.trivializationDiscrete (fun g ↦ (g • ·) ⁻¹' U) (f '' U)
     ?_ (fun g W hWU ↦ ⟨fun hoW ↦ (hoW.preimage hf.continuous).inter (open_U.preimage <|
-      continuous_const_smul g), fun isOpen ↦ hf.isOpen_preimage.mp ?_⟩) (fun g e₁ h₁ e₂ h₂ he ↦ ?_)
-    ?_ (fun {g₁ g₂} hne ↦ disjoint_iff_inf_le.mpr fun e ⟨h₁, h₂⟩ ↦ hne <|
+      continuous_const_smul g), fun isOpen ↦ hf.isCoinducing.isOpen_preimage.mp ?_⟩)
+      (fun g e₁ h₁ e₂ h₂ he ↦ ?_) ?_
+    (fun {g₁ g₂} hne ↦ disjoint_iff_inf_le.mpr fun e ⟨h₁, h₂⟩ ↦ hne <|
       mul_inv_eq_one.mp (disjoint _ ⟨_, ⟨_, h₂, ?_⟩, h₁⟩)) preim_im.subset
-  · rw [← hf.isOpen_preimage, preim_im]
+  · rw [← hf.isCoinducing.isOpen_preimage, preim_im]
     exact isOpen_iUnion fun g ↦ open_U.preimage (continuous_const_smul g)
   · convert isOpen_iUnion fun g : G ↦ isOpen.preimage (continuous_const_smul g)
     ext e; refine ⟨fun hW ↦ ?_, ?_⟩
