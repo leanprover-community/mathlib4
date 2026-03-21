@@ -9,27 +9,28 @@ public import Mathlib.Analysis.Convex.Quasiconvex
 public import Mathlib.Order.SaddlePoint
 public import Mathlib.Topology.Instances.EReal.Lemmas
 
-/-! # Formalization of the von Neumann Sion theorem
+/-! # Formalization of Sion's version of the von Neumann minimax theorem
 
 ## Statements
 
 `Sion.exists_isSaddlePointOn` :
-Let X and Y be convex subsets of topological vector spaces E and F,
-X being moreover compact,
-and let f : X × Y → ℝ be a function such that
-- for all x, f(x, ⬝) is upper semicontinuous and quasiconcave
-- for all y, f(⬝, y) is lower semicontinuous and quasiconvex
-Then inf_x sup_y f(x,y) = sup_y inf_x f(x,y).
+Let `X` and `Y` be convex subsets of topological vector spaces `E` and `F`,
+`X` being moreover compact,
+and let `f : X × Y → ℝ` be a function such that
+- for all `x ∈ X`, `f(x, ⬝)` is upper semicontinuous and quasiconcave
+- for all `y ∈ Y`, `f(⬝, y)` is lower semicontinuous and quasiconvex
+Then `⊓ x, ⊔ y, f (x, y) = ⊔ y, ⊓ x f (x, y)`.
 
-The classical case of the theorem assumes that f is continuous,
-f(x, ⬝) is concave, f(⬝, y) is convex.
+The classical case of the theorem assumes that `f` is continuous,
+`f(x, ⬝)` is concave, `f(⬝, y)` is convex.
 
 As a particular case, one get the von Neumann theorem where
-f is bilinear and E, F are finite dimensional.
+`f` is bilinear and `E`, `F` are finite dimensional.
 
 We follow the proof of [Komiya-1988][Komiya (1988)].
 
 ## Remark on implementation
+
   * The essential part of the proof holds for a function
   `f : X → Y → β`, where `β` is a complete dense linear order.
   * We have written part of it for just a dense linear order,
@@ -43,9 +44,9 @@ We follow the proof of [Komiya-1988][Komiya (1988)].
 
 ## TODO
 
-- Explicit the classical particular cases (in particular, von Neumann)
+- Spell out the particular case of von Neumann theorem.
 
-- Once the Dedekind MacNeille completion of a linear order enters mathlib,
+- Once the Dedekind MacNeille completion of a linear order enters Mathlib,
   the statement of `DMCompletion.exists_isSaddlePointOn` can be simplified,
   by assigning the variables `γ` and `ι : β ↪o γ` to the Dedekind MacNeille completion of `β`.
 
@@ -63,20 +64,6 @@ We follow the proof of [Komiya-1988][Komiya (1988)].
 -/
 
 open Set Filter
-
-public theorem clusterPt_principal_subtype_iff_frequently
-    {α : Type*} [TopologicalSpace α] {s t : Set α}
-    (hst : s ⊆ t) {J : Set s} {a : s} :
-    ClusterPt a (Filter.principal J) ↔ ∃ᶠ x in nhdsWithin a t, ∃ h : x ∈ s, (⟨x, h⟩ : s) ∈ J := by
-  rw [nhdsWithin_eq_map_subtype_coe (hst a.prop), Filter.frequently_map,
-    clusterPt_principal_iff_frequently,
-    Topology.IsInducing.subtypeVal.nhds_eq_comap, Filter.frequently_comap,
-    Topology.IsInducing.subtypeVal.nhds_eq_comap, Filter.frequently_comap, Subtype.coe_mk]
-  apply frequently_congr
-  apply Eventually.of_forall
-  intro x
-  simp only [SetCoe.exists, exists_and_left, exists_eq_left]
-  exact ⟨fun ⟨h, hx⟩ => ⟨hst h, h, hx⟩, fun ⟨_, hx⟩ => hx⟩
 
 namespace Sion
 

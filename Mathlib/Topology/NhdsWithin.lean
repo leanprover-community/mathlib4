@@ -513,6 +513,18 @@ theorem tendsto_nhdsWithin_iff_subtype {s : Set α} {a : α} (h : a ∈ s) (f : 
     Tendsto f (𝓝[s] a) l ↔ Tendsto (s.restrict f) (𝓝 ⟨a, h⟩) l := by
   rw [nhdsWithin_eq_map_subtype_coe h, tendsto_map'_iff]; rfl
 
+theorem clusterPt_principal_subtype_iff_frequently {s t : Set α} (hst : s ⊆ t) {J : Set s} {a : s} :
+    ClusterPt a (Filter.principal J) ↔ ∃ᶠ x in nhdsWithin a t, ∃ h : x ∈ s, (⟨x, h⟩ : s) ∈ J := by
+  rw [nhdsWithin_eq_map_subtype_coe (hst a.prop), Filter.frequently_map,
+    clusterPt_principal_iff_frequently,
+    Topology.IsInducing.subtypeVal.nhds_eq_comap, Filter.frequently_comap,
+    Topology.IsInducing.subtypeVal.nhds_eq_comap, Filter.frequently_comap, Subtype.coe_mk]
+  apply frequently_congr
+  apply Eventually.of_forall
+  intro x
+  simp only [SetCoe.exists, exists_and_left, exists_eq_left]
+  exact ⟨fun ⟨h, hx⟩ => ⟨hst h, h, hx⟩, fun ⟨_, hx⟩ => hx⟩
+
 /-!
 ## The `nhdsSetWithin`-filter
 -/
