@@ -100,8 +100,7 @@ but we define it with `copy` so that the edge set is definitionally equal to `E(
 @[simps! (attr := grind =)]
 def edgeDelete (G : Graph α β) (F : Set β) : Graph α β :=
   (G.edgeRestrict (E(G) \ F)).copy (edgeSet := E(G) \ F)
-  (IsLink := fun e x y ↦ G.IsLink e x y ∧ e ∉ F) rfl
-  (by simp [diff_subset])
+  (IsLink := fun e x y ↦ G.IsLink e x y ∧ e ∉ F) rfl (by simp)
   (fun e x y ↦ by
     simp only [edgeRestrict_isLink, mem_diff, and_comm, and_congr_left_iff, and_iff_left_iff_imp]
     exact fun h _ ↦ h.edge_mem)
