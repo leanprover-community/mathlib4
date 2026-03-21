@@ -45,14 +45,12 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 
 namespace AdicCompletion
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- The canonical inclusion from the adic completion of `I ^ n • M` to
 the adic completion of `M`. -/
 def ofPowSMul (n : ℕ) : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)
     →ₗ[AdicCompletion I R] AdicCompletion I M := map I (I ^ n • ⊤ : Submodule R M).subtype
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ofPowSMul_val_apply {a b c : ℕ} (h : c = b + a)
     {x : AdicCompletion I ↥(I ^ a • ⊤ : Submodule R M)} : (ofPowSMul I M a x).val c =
       powSMulQuotInclusion I M h ⊤ (x.val b) := by
@@ -60,7 +58,6 @@ theorem ofPowSMul_val_apply {a b c : ℕ} (h : c = b + a)
   refine Quotient.induction_on _ (x.val c) fun z ↦ ?_
   simp [powSMulQuotInclusion]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ofPowSMul_val_apply_eq_zero {n i : ℕ} (h : i ≤ n)
     {x : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)} : (ofPowSMul I M n x).val i = 0 := by
   rw [ofPowSMul, map_val_apply]
@@ -77,25 +74,21 @@ theorem ofPowSMul_injective (n : ℕ) : Function.Injective (ofPowSMul I M n) := 
     LinearMap.map_eq_zero_iff _ (powSMulQuotInclusion_injective ..)] at hx
   simp [hx]
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma liftOfValZeroAux_exists {a b c : ℕ} {x : AdicCompletion I M} (h : c = b + a)
     (ha : x.val a = 0) : ∃ t, powSMulQuotInclusion I M h ⊤ t = x.val c := by
   simpa [← LinearMap.mem_range, range_powSMulQuotInclusion] using
     (val_apply_mem_smul_top_iff I (show a ≤ c by lia)).mpr ha
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxillary lift function used in the definition of `liftOfValZero`.
 Use `liftOfValZero` instead. -/
 def liftOfValZeroAux {a b c : ℕ} {x : AdicCompletion I M} (h : c = b + a) (ha : x.val a = 0) :
     ↥(I ^ a • ⊤ : Submodule R M) ⧸ I ^ b • (⊤ : Submodule R ↥(I ^ a • ⊤ : Submodule R M)) :=
   Exists.choose (liftOfValZeroAux_exists I h ha)
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma liftOfValZeroAux_prop {a b c : ℕ} {x : AdicCompletion I M} (h : c = b + a)
     (ha : x.val a = 0) : (powSMulQuotInclusion I M h ⊤) (liftOfValZeroAux I h ha) = x.val c :=
   Exists.choose_spec (liftOfValZeroAux_exists I h ha)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an element `x` in the adic completion of `M` whose projection to `M / I ^ n • M` is zero,
 `liftOfValZero` constructs the corresponding element in the adic completion of `I ^ n • M`. -/
 @[no_expose]
@@ -109,7 +102,6 @@ def liftOfValZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
       (show i + k + n = k + (i + n) by ring), LinearMap.comp_apply, liftOfValZeroAux_prop]
     exact x.prop (by lia)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofPowSMul_liftOfValZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
     ofPowSMul I M n (liftOfValZero I hxn) = x := by
