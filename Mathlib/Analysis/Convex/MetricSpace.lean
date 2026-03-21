@@ -31,11 +31,6 @@ which is what one would expect from the triangle inequality.
 
 @[expose] public section
 
-lemma Topology.IsOpenEmbedding.continuousAt_iff' {X Y Z : Type*} {f : X → Y}
-    {g : Y → Z} [TopologicalSpace Y] [TopologicalSpace X] [TopologicalSpace Z]
-    (hf : Topology.IsOpenEmbedding f) {x : X} : ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) :=
-  hf.isInducing.continuousAt_iff' (hf.isOpen_range.mem_nhds (by simp))
-
 open ConvexSpace
 
 variable {X : Type*} [ConvexSpace ℝ X] [MetricSpace X]
@@ -194,7 +189,7 @@ lemma continuous_convexComboPair' [BoundedSpace X]
   rw [continuous_iff_continuousAt]
   intro i
   by_cases hi : f i ∈ Set.Ioo 0 1
-  · exact ((isOpen_Ioo.preimage hf).isOpenEmbedding_subtypeVal.continuousAt_iff'
+  · exact ((isOpen_Ioo.preimage hf).isOpenEmbedding_subtypeVal.continuousAt_iff
       (x := ⟨i, hi⟩)).mp ((continuous_convexComboPair (X := X)).comp₃ (W := f ⁻¹' Set.Ioo 0 1)
       (e := fun i ↦ ⟨f i, Set.Ioo_subset_Icc_self i.prop⟩) (f := x ∘ (↑)) (k := y ∘ (↑))
       (by fun_prop) (hx.comp_continuous continuous_subtype_val (by simp_all; grind))
