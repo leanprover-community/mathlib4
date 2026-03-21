@@ -30,23 +30,20 @@ lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R
   induction i generalizing M
   · simp only [CharP.cast_eq_zero, add_zero, ge_iff_le]
     intro le
-    by_cases ntr : Nontrivial M
+    rcases subsingleton_or_nontrivial M with sub|ntr
+    · have := (ModuleCat.isZero_iff_subsingleton.mpr sub).hasProjectiveDimensionLT_zero
+      exact ⟨0, inferInstance⟩
     · let _ := (isMaximalCohenMacaulay_def M).mpr (le_antisymm (depth_le_ringKrullDim M) le)
       let _ := free_of_isMaximalCohenMacaulay_of_isRegularLocalRing M
       use 0
       infer_instance
-    · have := ModuleCat.isZero_iff_subsingleton.mpr (not_nontrivial_iff_subsingleton.mp ntr)
-      have := this.hasProjectiveDimensionLT_zero
-      use 0
-      exact CategoryTheory.instHasProjectiveDimensionLTSucc M 0
   · rename_i i ih _
     rw [Nat.cast_add, Nat.cast_one, ge_iff_le, add_comm _ 1, ← add_assoc]
     intro le
-    by_cases ntr : Nontrivial M
-    · rcases Module.Finite.exists_fin' R M with ⟨n, f', hf'⟩
-      let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv R R)).trans
-        (Finsupp.linearEquivFunOnFinite R R (Fin n))).1
-      have surjf : Function.Surjective f := by simpa [f] using hf'
+    rcases subsingleton_or_nontrivial M with sub|ntr
+    · have := (ModuleCat.isZero_iff_subsingleton.mpr sub).hasProjectiveDimensionLT_zero
+      exact ⟨0, inferInstance⟩
+    · rcases Module.exists_finite_presentation R  M with ⟨P, _, _, _, _, f, surjf⟩
       let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
       have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
       have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
@@ -63,10 +60,6 @@ lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R
       rcases ih S.X₁ ge' with ⟨m, hm⟩
       use m + 1
       exact (S_exact.hasProjectiveDimensionLT_X₃_iff m proj).mpr hm
-    · have := ModuleCat.isZero_iff_subsingleton.mpr (not_nontrivial_iff_subsingleton.mp ntr)
-      have := this.hasProjectiveDimensionLT_zero
-      use 0
-      exact CategoryTheory.instHasProjectiveDimensionLTSucc M 0
 
 lemma projectiveDimension_ne_top_of_isRegularLocalRing [IsRegularLocalRing R] [Small.{v, u} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] : projectiveDimension M ≠ ⊤ := by
