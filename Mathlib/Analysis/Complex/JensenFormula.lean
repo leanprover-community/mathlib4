@@ -210,6 +210,14 @@ theorem AnalyticOnNhd.count_zeros_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
   trans ∑ᶠ u, (divisor f (closedBall c |r|) u : ℝ)
   · exact map_finsum (Int.castRingHom ℝ)
       ((divisor _ _).finiteSupport <| isCompact_closedBall ..) |>.le
+  suffices ∑ᶠ u, divisor f (closedBall c |r|) u * Real.log (R / r) ≤ Real.log (M / ‖f c‖) by
+    conv at this => lhs; arg 1; ext; rw [← smul_eq_mul]
+    rw [← finsum_smul, smul_eq_mul] at this
+    apply le_div_iff₀ _|>.mpr this
+    rw [← log_abs]
+    apply log_pos
+    rw [abs_div]
+    exact one_lt_div r_pos|>.mpr r_lt_R
   have jensen := h₁f.circleAverage_log_norm (abs_ne_zero.mp (by linarith)) h₂f
   have : circleAverage (fun x ↦ Real.log ‖f x‖) c R ≤ Real.log M := by
     apply circleAverage_mono_on_of_le_circle
@@ -219,11 +227,8 @@ theorem AnalyticOnNhd.count_zeros_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
       by_cases! h : f z = 0
       · simpa [h] using log_nonneg hM
       · exact log_le_log (norm_pos_iff.mpr h) (f_bound z hz)
-  have : ∑ᶠ u, ((divisor f (closedBall c |R|)) u) * Real.log (R * ‖c - u‖⁻¹)
-    ≤ Real.log M - Real.log ‖f c‖ := by linarith
-  rw [← log_div (by linarith) (norm_ne_zero_iff.mpr h₂f)] at this
-  have next : ∑ᶠ u, divisor f (closedBall c |r|) u * Real.log (R / r)
-      ≤ ∑ᶠ u, ((divisor f (closedBall c |R|)) u) * Real.log (R * ‖c - u‖⁻¹) := by
+  calc
+  _ ≤ ∑ᶠ u, ((divisor f (closedBall c |R|)) u) * Real.log (R * ‖c - u‖⁻¹) := by
     apply finsum_le_finsum'
     · apply (divisor f (closedBall c |r|)).finiteSupport (isCompact_closedBall ..) |>.subset
       intro z hz
@@ -269,13 +274,6 @@ theorem AnalyticOnNhd.count_zeros_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
           simp_all
           linarith
         simp [h1, this]
-  have := next.trans this
-  conv at this => lhs; arg 1; ext; rw [← smul_eq_mul]
-  rw [← finsum_smul, smul_eq_mul] at this
-  apply le_div_iff₀ _|>.mpr this
-  rw [← log_abs]
-  apply log_pos
-  rw [abs_div]
-  exact one_lt_div r_pos|>.mpr r_lt_R
-
-
+  _ ≤ Real.log M - Real.log ‖f c‖ := by linarith
+  _ = _ := by
+    rw [← log_div (by linarith) (norm_ne_zero_iff.mpr h₂f)]
