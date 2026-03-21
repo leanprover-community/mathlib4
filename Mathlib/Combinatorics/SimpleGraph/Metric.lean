@@ -143,7 +143,7 @@ lemma edist_le_one_iff_adj_or_eq : G.edist u v ≤ 1 ↔ G.Adj u v ∨ u = v := 
     exact edist_eq_one_iff_adj
 
 lemma edist_eq_two_iff {u v : V} :
-    G.edist u v = 2 ↔ u ≠ v ∧ ¬ G.Adj u v ∧ Nonempty (G.commonNeighbors u v) := by
+    G.edist u v = 2 ↔ u ≠ v ∧ ¬ G.Adj u v ∧ (G.commonNeighbors u v).Nonempty := by
   refine ⟨fun h ↦ ⟨?_, ?_, ?_⟩, fun h ↦ le_antisymm ?_ ?_⟩
   · simp [← G.edist_eq_zero_iff.not (b := u = v), h]
   · simp [← edist_eq_one_iff_adj, h]
@@ -152,7 +152,7 @@ lemma edist_eq_two_iff {u v : V} :
     suffices w.getVert 1 ∈ G.commonNeighbors (w.getVert 0) (w.getVert w.length) by simpa
     refine hw ▸ G.mem_commonNeighbors.mp ?_
     exact ⟨w.adj_getVert_succ (by simp [hw]), (w.adj_getVert_succ (by simp [hw])).symm⟩
-  · obtain ⟨w, hw⟩ := nonempty_subtype.mp h.2.2
+  · obtain ⟨w, hw⟩ := h.2.2
     rw [mem_commonNeighbors] at hw
     have := (Walk.cons hw.1 <| .cons hw.2.symm .nil).edist_le
     simp_all
@@ -160,7 +160,7 @@ lemma edist_eq_two_iff {u v : V} :
     cases ENat.le_one_iff_eq_zero_or_eq_one.mp (Order.le_of_lt_succ hc) <;> simp_all
 
 lemma two_lt_edist_iff {u v : V} :
-    2 < G.edist u v ↔ u ≠ v ∧ ¬ G.Adj u v ∧ IsEmpty (G.commonNeighbors u v) := by
+    2 < G.edist u v ↔ u ≠ v ∧ ¬ G.Adj u v ∧ (G.commonNeighbors u v) = ∅ := by
   refine ⟨fun h ↦ ?_, fun h ↦ lt_of_le_of_ne ?_ (Ne.symm ?_)⟩
   · have hn : u ≠ v := fun hc ↦ by simp [hc] at h
     have : ¬ G.Adj u v := fun hc ↦ by simp [edist_eq_one_iff_adj.mpr hc] at h
