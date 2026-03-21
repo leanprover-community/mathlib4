@@ -1195,7 +1195,7 @@ lemma embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   · simp [restrict₀_apply, embed]
 
 /--
-When we have `h : w.IsEquiv v`, the image group (with zero) of `v` is canonically
+When we have `h : w.IsEquiv v`, the image group (with zero) of `v` is
 isomorphic to that of `w` via `h.orderMonoidIso`. Then the following diagram is commutative:
 ```
               ValueGroup₀ w
