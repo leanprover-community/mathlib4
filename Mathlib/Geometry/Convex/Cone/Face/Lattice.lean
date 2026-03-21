@@ -53,6 +53,8 @@ instance : SetLike (Face C) M where
   coe C := C.toPointedCone
   coe_injective' := SetLike.coe_injective.comp <| by rintro ⟨_, _⟩ ⟨_, _⟩ _; congr
 
+instance : PartialOrder (Face C) := .ofSetLike (Face C) M
+
 @[ext]
 theorem ext (h : ∀ x, x ∈ F₁ ↔ x ∈ F₂) : F₁ = F₂ := SetLike.ext h
 
