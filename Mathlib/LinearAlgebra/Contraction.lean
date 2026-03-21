@@ -111,18 +111,16 @@ theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (
   simp only [coe_comp, Function.comp_apply, dualTensorHom_apply, map_smul, LinearMap.smul_apply]
   rw [smul_comm]
 
--- TODO: fix non-terminal simp (acting on two goals, with different simp sets)
-set_option linter.flexible false in
 /-- As a matrix, `dualTensorHom` evaluated on a basis element of `M* ⊗ N` is a matrix with a
 single one and zeros elsewhere -/
 theorem toMatrix_dualTensorHom {m : Type*} {n : Type*} [Fintype m] [Finite n] [DecidableEq m]
     [DecidableEq n] (bM : Basis m R M) (bN : Basis n R N) (j : m) (i : n) :
     toMatrix bM bN (dualTensorHom R M N (bM.coord j ⊗ₜ bN i)) = single i j 1 := by
   ext i' j'
-  by_cases hij : i = i' ∧ j = j' <;>
-    simp [LinearMap.toMatrix_apply, Finsupp.single_eq_pi_single, hij]
-  rw [and_iff_not_or_not, Classical.not_not] at hij
-  rcases hij with hij | hij <;> simp [hij]
+  by_cases hij : i = i' ∧ j = j'
+  · simp [LinearMap.toMatrix_apply, hij]
+  · rw [and_iff_not_or_not, Classical.not_not] at hij
+    rcases hij with hij | hij <;> simp [LinearMap.toMatrix_apply, Finsupp.single_eq_pi_single, hij]
 
 attribute [-ext] AlgebraTensorModule.curry_injective in
 /-- If `M` is free, the natural linear map $M^* ⊗ N → Hom(M, N)$ is an equivalence. This function

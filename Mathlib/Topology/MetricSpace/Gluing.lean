@@ -183,6 +183,7 @@ set_option backward.privateInPublic.warn false in
 `Φ p` and `Φ q`, and between `Ψ p` and `Ψ q`, coincide up to `2 ε` where `ε > 0`, one can almost
 glue the two spaces `X` and `Y` along the images of `Φ` and `Ψ`, so that `Φ p` and `Ψ p` are
 at distance `ε`. -/
+@[implicit_reducible]
 def glueMetricApprox [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε)
     (H : ∀ p q, |dist (Φ p) (Φ q) - dist (Ψ p) (Ψ q)| ≤ 2 * ε) : MetricSpace (X ⊕ Y) where
   dist := glueDist Φ Ψ ε
@@ -437,7 +438,6 @@ open Topology
 
 open Filter
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The injection of a space in a disjoint union is an isometry -/
 theorem isometry_mk (i : ι) : Isometry (Sigma.mk i : E i → Σ k, E k) :=
   Isometry.of_dist_eq fun x y => by simp
@@ -468,6 +468,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Given two isometric embeddings `Φ : Z → X` and `Ψ : Z → Y`, we define a pseudometric space
 structure on `X ⊕ Y` by declaring that `Φ x` and `Ψ x` are at distance `0`. -/
+@[implicit_reducible]
 def gluePremetric (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : PseudoMetricSpace (X ⊕ Y) where
   dist := glueDist Φ Ψ 0
   dist_self := glueDist_self Φ Ψ 0
