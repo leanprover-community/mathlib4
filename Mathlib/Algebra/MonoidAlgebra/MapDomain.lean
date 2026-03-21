@@ -240,6 +240,15 @@ lemma mapCoeffAddEquiv_trans (e₁ : R ≃+ S) (e₂ : S ≃+ T) :
 
 @[deprecated (since := "2026-03-20")] alias mapRangeAddEquiv_trans := mapCoeffAddEquiv_trans
 
+@[to_additive (attr := simp) (dont_translate := R S) mapCoeff_mul]
+lemma mapCoeff_mul (f : R →+* S) (x y : R[M]) :
+    mapCoeff (f : R →+ S) (x * y) = mapCoeff f x * mapCoeff f y := by
+  classical
+  ext
+  simp [mul_def]
+  simp [MonoidAlgebra, sum_mapRange_index, map_finsuppSum, single_apply, apply_ite, mapCoeff,
+    coeff, ofCoeff]
+
 end Mul
 
 variable [Monoid M] [Monoid N] [Monoid O]
@@ -269,15 +278,6 @@ lemma mapDomainRingHom_comp (f : N →* O) (g : M →* N) :
 
 @[to_additive (attr := simp) (dont_translate := R S) mapCoeff_one]
 lemma mapCoeff_one (f : R →+* S) : mapCoeff f (1 : R[M]) = (1 : S[M]) := by ext; simp [one_def]
-
-@[to_additive (attr := simp) (dont_translate := R S) mapCoeff_mul]
-lemma mapCoeff_mul (f : R →+* S) (x y : R[M]) :
-    mapCoeff (f : R →+ S) (x * y) = mapCoeff f x * mapCoeff f y := by
-  classical
-  ext
-  simp [mul_def]
-  simp [MonoidAlgebra, sum_mapRange_index, map_finsuppSum, single_apply, apply_ite, mapCoeff,
-    coeff, ofCoeff]
 
 variable (M) in
 /-- The ring homomorphism of monoid algebras induced by a homomorphism of the base rings. -/
