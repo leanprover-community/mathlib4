@@ -178,7 +178,6 @@ theorem isCofinal_of_isCofinal_iUnion {α : Type*} {ι} [LinearOrder α] {s : ι
 
 -- TODO: generalize to `OrderType`
 namespace Ordinal
-variable [LinearOrder β] [LinearOrder γ]
 
 /-- The cofinality on an ordinal is the `Order.cof` of any isomorphic linear order.
 
@@ -269,6 +268,9 @@ theorem ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
 
 /-! ### Cofinalities and suprema -/
 
+section LinearOrder
+variable [LinearOrder β] [LinearOrder γ]
+
 theorem lift_cof_iSup_add_one [Small.{u} β] {f : β → Ordinal} (hf : StrictMono f) :
     Cardinal.lift.{v} (cof (⨆ i, f i + 1)) = Cardinal.lift.{u} (Order.cof β) := by
   have : StrictMono (β := Iio (⨆ i, f i + 1)) (fun i ↦ ⟨f i, ?_⟩) := fun x y h ↦ hf h
@@ -295,6 +297,8 @@ theorem lift_cof_iSup [Small.{u} β] [NoMaxOrder β] {f : β → Ordinal} (hf : 
 theorem cof_iSup [NoMaxOrder γ] {f : γ → Ordinal} (hf : StrictMono f) :
     cof (⨆ i, f i) = Order.cof γ := by
   simpa using lift_cof_iSup hf
+
+end LinearOrder
 
 theorem cof_iSup_Iio_add_one {a} {f : Iio a → Ordinal} (hf : StrictMono f) :
     cof (⨆ i, f i + 1) = cof a := by
@@ -354,7 +358,7 @@ theorem sSup_lt_of_lt_cof {s : Set Ordinal.{u}} {a : Ordinal.{u}}
     (ha : #s < (lift.{u + 1} a).cof) (hs : ∀ i ∈ s, i < a) : sSup s < a :=
   (sSup_le_sSup_add_one s).trans_lt (sSup_add_one_lt_of_lt_cof ha hs)
 
-theorem lift_iSup_add_one_lt_of_lt_cof {β} {f : β → Ordinal.{u}} {a : Ordinal.{u}}
+theorem lift_iSup_add_one_lt_of_lt_cof {f : β → Ordinal.{u}} {a : Ordinal.{u}}
     (ha : Cardinal.lift.{u} #β < (lift.{v} a).cof) (hf : ∀ i, f i < a) : ⨆ i, f i + 1 < a := by
   rw [iSup, range_comp' (· + 1)]
   apply sSup_add_one_lt_of_lt_cof _ (by simpa)
@@ -363,16 +367,16 @@ theorem lift_iSup_add_one_lt_of_lt_cof {β} {f : β → Ordinal.{u}} {a : Ordina
   rw [← Cardinal.lift_lt.{_, u + 1}] at ha
   simpa [← lift_cof] using ha
 
-theorem iSup_add_one_lt_of_lt_cof {α} {f : α → Ordinal.{u}} {a : Ordinal.{u}}
+theorem iSup_add_one_lt_of_lt_cof {f : α → Ordinal.{u}} {a : Ordinal.{u}}
     (ha : #α < a.cof) (hf : ∀ i, f i < a) : ⨆ i, f i + 1 < a := by
   rw [← Cardinal.lift_lt.{_, u}, lift_cof] at ha
   simpa using lift_iSup_add_one_lt_of_lt_cof ha hf
 
-theorem lift_iSup_lt_of_lt_cof {β} {f : β → Ordinal.{u}} {a : Ordinal.{u}}
+theorem lift_iSup_lt_of_lt_cof {f : β → Ordinal.{u}} {a : Ordinal.{u}}
     (ha : Cardinal.lift.{u} #β < (lift.{v} a).cof) (hf : ∀ i, f i < a) : ⨆ i, f i < a :=
   (iSup_le_iSup_add_one f).trans_lt (lift_iSup_add_one_lt_of_lt_cof ha hf)
 
-theorem iSup_lt_of_lt_cof {α} {f : α → Ordinal.{u}} {a : Ordinal.{u}}
+theorem iSup_lt_of_lt_cof {f : α → Ordinal.{u}} {a : Ordinal.{u}}
     (ha : #α < a.cof) (hf : ∀ i, f i < a) : ⨆ i, f i < a := by
   rw [← Cardinal.lift_lt.{_, u}, lift_cof] at ha
   simpa using lift_iSup_lt_of_lt_cof ha hf
@@ -384,12 +388,12 @@ theorem _root_.Cardinal.sSup_lt_of_lt_cof {s : Set Cardinal.{u}} {a : Cardinal.{
   · simpa [mk_image_eq ord_injective]
   · simpa
 
-theorem _root_.Cardinal.lift_iSup_lt_of_lt_cof {β} {f : β → Cardinal.{u}} {a : Cardinal.{u}}
+theorem _root_.Cardinal.lift_iSup_lt_of_lt_cof {f : β → Cardinal.{u}} {a : Cardinal.{u}}
     (ha : Cardinal.lift.{u} #β < a.lift.ord.cof) (hf : ∀ i, f i < a) : ⨆ i, f i < a := by
   rw [← ord_lt_ord, iSup_ord]
   apply Ordinal.lift_iSup_lt_of_lt_cof <;> simpa
 
-theorem _root_.Cardinal.iSup_lt_of_lt_cof {α} {f : α → Cardinal.{u}} {a : Cardinal.{u}}
+theorem _root_.Cardinal.iSup_lt_of_lt_cof {f : α → Cardinal.{u}} {a : Cardinal.{u}}
     (ha : #α < a.ord.cof) (hf : ∀ i, f i < a) : ⨆ i, f i < a := by
   rw [← ord_lt_ord, iSup_ord]
   apply Ordinal.iSup_lt_of_lt_cof <;> simpa
