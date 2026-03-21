@@ -290,11 +290,11 @@ theorem cof_iSup_add_one {f : γ → Ordinal} (hf : StrictMono f) :
 
 theorem lift_cof_iSup [Small.{u} β] [NoMaxOrder β] {f : β → Ordinal} (hf : StrictMono f) :
     Cardinal.lift.{v} (cof (⨆ i, f i)) = Cardinal.lift.{u} (Order.cof β) := by
-  sorry
+  rw [← iSup_add_one hf, lift_cof_iSup_add_one hf]
 
-theorem cof_iSup_add_one {f : γ → Ordinal} (hf : StrictMono f) :
-    cof (⨆ i, f i + 1) = Order.cof γ := by
-  simpa using lift_cof_iSup_add_one hf
+theorem cof_iSup [NoMaxOrder γ] {f : γ → Ordinal} (hf : StrictMono f) :
+    cof (⨆ i, f i) = Order.cof γ := by
+  simpa using lift_cof_iSup hf
 
 theorem cof_iSup_Iio_add_one {a} {f : Iio a → Ordinal} (hf : StrictMono f) :
     cof (⨆ i : Iio a, f i + 1) = cof a := by
@@ -307,7 +307,6 @@ theorem cof_iSup_Iio {a} {f : Iio a → Ordinal} (hf : StrictMono f) (ha : IsSuc
 theorem cof_map_of_isNormal {f} (hf : IsNormal f) {a} (ha : IsSuccLimit a) : cof (f a) = cof a := by
   rw [hf.apply_of_isSuccLimit ha, cof_iSup_Iio _ ha.isSuccPrelimit]
   exact hf.strictMono.comp <| Subtype.strictMono_coe _
-  #exit
 
 @[deprecated (since := "2026-03-19")]
 alias cof_eq_of_isNormal := cof_map_of_isNormal
@@ -333,7 +332,7 @@ alias IsNormal.cof_le := le_cof_map_of_isNormal
 
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
--- TODO: use `⨆ i, succ (f i)` instead of `lsub`
+-- TODO: use `⨆ i, f i + 1` instead of `lsub`
 
 private theorem card_mem_cof {o} : ∃ (ι : _) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = o.card :=
   ⟨_, _, lsub_typein o, mk_toType o⟩
