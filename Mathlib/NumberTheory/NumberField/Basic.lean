@@ -305,6 +305,9 @@ variable [NumberField K]
 instance : IsNoetherian ℤ (𝓞 K) :=
   IsIntegralClosure.isNoetherian _ ℚ K _
 
+instance : AddGroup.FG (𝓞 K) :=
+  Finite.iff_addGroup_fg.mp <| IsNoetherian.finite ℤ (𝓞 K)
+
 /-- The ring of integers of a number field is not a field. -/
 theorem not_isField : ¬IsField (𝓞 K) := by
   have h_inj : Function.Injective (algebraMap ℤ (𝓞 K)) := RingHom.injective_int (algebraMap ℤ (𝓞 K))
