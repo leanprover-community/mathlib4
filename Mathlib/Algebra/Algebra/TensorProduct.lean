@@ -78,7 +78,7 @@ def bil_to_mk : M →ₗ[A] N →ₗ[A] (mk R A M N) where
       LinearMap.smul_apply, ←LinearMap.map_smul, smul_tmul']
 
 omit [IsScalarTower R A N] in
-@[simp] lemma bil_to_mk_apply (m : M) (n : N) : bil_to_mk R A M N m n = ⟦m⊗ₜn⟧ := by rfl
+@[simp] lemma bil_to_mk_apply (m : M) (n : N) : bil_to_mk R A M N m n = ⟦m⊗ₜn⟧ := rfl
 
 variable (R A M N) in
 /-- The natural map from the tensor product to the algebra-based construction of the tensor product.
@@ -86,7 +86,7 @@ variable (R A M N) in
 abbrev tens_to_mk := TensorProduct.lift (bil_to_mk R A M N)
 
 omit [IsScalarTower R A N] in
-lemma tens_to_mk_apply (m : M) (n : N) : tens_to_mk R A M N (m⊗ₜn) = ⟦m⊗ₜn⟧ := by rfl
+lemma tens_to_mk_apply (m : M) (n : N) : tens_to_mk R A M N (m⊗ₜn) = ⟦m⊗ₜn⟧ := rfl
 
 variable (R A M N) in
 lemma span_in_ker : (rels R A M N) ≤ (mapOfCompatibleSMul' A R M N).ker := by
@@ -106,7 +106,7 @@ abbrev mk_to_tens := Submodule.liftQ (rels R A M N) (mapOfCompatibleSMul' A R M 
   (span_in_ker R A M N)
 
 @[simp]
-lemma mk_to_tens_apply (m : M) (n : N) : mk_to_tens R A M N ⟦m⊗ₜn⟧ = m⊗ₜn := by rfl
+lemma mk_to_tens_apply (m : M) (n : N) : mk_to_tens R A M N ⟦m⊗ₜn⟧ = m⊗ₜn := rfl
 
 variable (R A M N) in
 /-- The equivalence between the algebra-based construction of the tensor product.
