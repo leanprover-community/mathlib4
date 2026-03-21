@@ -111,7 +111,7 @@ theorem ofPowSMul_OfValEqZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n 
   rw [ofPowSMul_val_apply_eq_zero _ h.le, ← x.prop h.le, hxn, _root_.map_zero]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem restrictScalars_ofPowSMul_range_eq_eval_ker {n : ℕ} :
+theorem restrictScalars_range_ofPowSMul_eq_ker_eval {n : ℕ} :
     (ofPowSMul I M n).range.restrictScalars R = (eval I M n).ker := by
   refine le_antisymm (fun x hx ↦ ?_) (fun x hx ↦ ?_)
   · rcases hx with ⟨y, rfl⟩
