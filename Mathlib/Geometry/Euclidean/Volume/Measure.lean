@@ -80,6 +80,50 @@ theorem MeasureTheory.Measure.euclideanHausdorffMeasure_def (d : ℕ) :
     addHaarScalarFactor (volume : Measure (EuclideanSpace ℝ (Fin d))) μH[d] • μH[d] := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in -- needed by simplifying `1 • _`
+/-- `μHE[0]` and `μH[0]` are equal. -/
+@[simp]
+theorem MeasureTheory.Measure.euclideanHausdorffMeasure_zero :
+    (μHE[0] : Measure X) = (μH[0] : Measure X) := by
+  let basis : OrthonormalBasis (Fin 0) ℝ (EuclideanSpace ℝ (Fin 0)) :=
+    EuclideanSpace.basisFun (Fin 0) ℝ
+  have heq : ({0} : Set (EuclideanSpace ℝ (Fin 0))) = parallelepiped basis := by
+    simp [parallelepiped]
+  obtain h := isAddLeftInvariant_eq_smul (volume : Measure (EuclideanSpace ℝ (Fin 0))) μH[(0 : ℕ)]
+  obtain h := congr($h.symm {0})
+  conv_rhs at h => rw [heq, OrthonormalBasis.volume_parallelepiped]
+  simp_rw [CharP.cast_eq_zero, smul_apply, hausdorffMeasure_zero_singleton, ENNReal.smul_def,
+    smul_eq_mul, mul_one, ENNReal.coe_eq_one] at h
+  simp [euclideanHausdorffMeasure_def, h]
+
+/-- The scalar that defines `μHE[d]` is non-zero. -/
+theorem MeasureTheory.Measure.addHaarScalarFactor_volume_hausdorffMeasure_ne_zero (d : ℕ) :
+    addHaarScalarFactor (volume : Measure (EuclideanSpace ℝ (Fin d))) μH[d] ≠ 0 := by
+  intro h0
+  obtain h := isAddLeftInvariant_eq_smul (volume : Measure (EuclideanSpace ℝ (Fin d))) μH[d]
+  obtain h := congr($h (parallelepiped (stdOrthonormalBasis ℝ (EuclideanSpace ℝ (Fin d)))))
+  simp [OrthonormalBasis.volume_parallelepiped, h0] at h
+
+set_option backward.isDefEq.respectTransparency false in -- needed by `ENNReal.smul_def`
+instance MeasureTheory.isAddHaarMeasure_euclideanHausdorffMeasure {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
+    [BorelSpace E] : (μHE[Module.finrank ℝ E] : Measure E).IsAddHaarMeasure := by
+  rw [euclideanHausdorffMeasure_def, ENNReal.smul_def]
+  exact IsAddHaarMeasure.smul _
+    (by simpa using addHaarScalarFactor_volume_hausdorffMeasure_ne_zero (Module.finrank ℝ E))
+    (by simp)
+
+set_option backward.isDefEq.respectTransparency false in -- needed by `ENNReal.smul_top`
+/-- If `d₁ < d₂`, then for any set s we have either `μHE[d₂] s = 0`, or `μHE[d₁] s = ∞`. -/
+theorem MeasureTheory.Measure.euclideanHausdorffMeasure_zero_or_top {d₁ d₂ : ℕ} (h : d₁ < d₂)
+    (s : Set X) : μHE[d₂] s = 0 ∨ μHE[d₁] s = ⊤ := by
+  simp_rw [euclideanHausdorffMeasure_def]
+  obtain h | h := hausdorffMeasure_zero_or_top (show (d₁ : ℝ) < d₂ by simpa using h) s
+  · simp [h]
+  · right
+    rw [smul_apply, h, ENNReal.smul_top]
+    simp [addHaarScalarFactor_volume_hausdorffMeasure_ne_zero]
+
 /-!
 ### `μHE[d]` is preserved through isometry
 -/
@@ -116,6 +160,23 @@ theorem MeasureTheory.Measure.euclideanHausdorffMeasure_smul₀ {𝕜 : Type*} {
     Measure.smul_apply, smul_comm]
   simp
 
+section Homothety
+variable {𝕜 V P : Type*} [NormedField 𝕜] [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+  [MeasurableSpace P] [MetricSpace P] [NormedAddTorsor V P] [BorelSpace P]
+
+theorem MeasureTheory.euclideanHausdorffMeasure_homothety_image (d : ℕ) (x : P) {c : 𝕜}
+    (hc : c ≠ 0) (s : Set P) :
+    μHE[d] (AffineMap.homothety x c '' s) = ‖c‖₊ ^ d • μHE[d] s := by
+  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
+  rw [hausdorffMeasure_homothety_image (by simp) x hc, smul_comm, NNReal.rpow_natCast]
+
+theorem MeasureTheory.euclideanHausdorffMeasure_homothety_preimage (d : ℕ) (x : P) {c : 𝕜}
+    (hc : c ≠ 0) (s : Set P) :
+    μHE[d] (AffineMap.homothety x c ⁻¹' s) = ‖c‖₊⁻¹ ^ d • μHE[d] s := by
+  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
+  rw [hausdorffMeasure_homothety_preimage (by simp) x hc, smul_comm, NNReal.rpow_natCast]
+
+end Homothety
 
 variable {V P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V]
