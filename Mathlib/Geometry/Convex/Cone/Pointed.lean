@@ -172,8 +172,8 @@ def ofConeComb (C : Set E) (nonempty : C.Nonempty)
 variable (R) in
 /-- The cone hull of a set `s` is the smallest pointed cone that contains `s`.
 
-Pointed cones being defined as submodules over nonnegative scalars, this is exactly the
-submodule span of `s` w.r.t. nonnegative scalars. -/
+Pointed cones being defined as submodules over nonnegative scalars, this is implemented as
+the submodule span of `s` w.r.t. nonnegative scalars. -/
 abbrev hull (s : Set E) : PointedCone R E := span R≥0 s
 
 lemma subset_hull {s : Set E} : s ⊆ PointedCone.hull R s := subset_span
