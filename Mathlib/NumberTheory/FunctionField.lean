@@ -107,7 +107,6 @@ instance : IsIntegralClosure (ringOfIntegers Fq F) Fq[X] F :=
 
 variable [Algebra (RatFunc Fq) F] [IsScalarTower Fq[X] (RatFunc Fq) F]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem algebraMap_injective : Function.Injective (⇑(algebraMap Fq[X] (ringOfIntegers Fq F))) := by
   have hinj : Function.Injective (⇑(algebraMap Fq[X] F)) := by
     rw [IsScalarTower.algebraMap_eq Fq[X] (RatFunc Fq) F]
@@ -118,7 +117,6 @@ theorem algebraMap_injective : Function.Injective (⇑(algebraMap Fq[X] (ringOfI
   rw [injective_iff_map_eq_zero (algebraMap Fq[X] F)] at hinj
   exact hinj p hp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem not_isField : ¬IsField (ringOfIntegers Fq F) := by
   simpa [← (IsIntegralClosure.isIntegral_algebra Fq[X] F).isField_iff_isField
       (algebraMap_injective Fq F)] using
@@ -132,11 +130,9 @@ instance : IsFractionRing (ringOfIntegers Fq F) F :=
 instance : IsIntegrallyClosed (ringOfIntegers Fq F) :=
   integralClosure.isIntegrallyClosedOfFiniteExtension (RatFunc Fq)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.IsSeparable (RatFunc Fq) F] : IsNoetherian Fq[X] (ringOfIntegers Fq F) :=
   IsIntegralClosure.isNoetherian _ (RatFunc Fq) F _
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.IsSeparable (RatFunc Fq) F] : IsDedekindDomain (ringOfIntegers Fq F) :=
   IsIntegralClosure.isDedekindDomain Fq[X] (RatFunc Fq) F _
 
@@ -225,6 +221,9 @@ theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
   rw [inftyValuationDef, if_neg (by simpa), RatFunc.intDegree_polynomial]
 
 instance : Valuation.IsNontrivial (inftyValuation Fq) := ⟨RatFunc.X, by simp⟩
+
+instance : Valuation.IsTrivialOn Fq (inftyValuation Fq) :=
+  ⟨fun _ hx ↦ by simp [inftyValuation.C _ hx]⟩
 
 /-- The valued field `Fq(t)` with the valuation at infinity. -/
 @[implicit_reducible]

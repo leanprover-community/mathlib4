@@ -602,7 +602,6 @@ open Module
 
 variable {F E : Type*} [Field F] [Ring E] [Algebra F E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A `Subalgebra` is `FiniteDimensional` iff it is `FiniteDimensional` as a submodule. -/
 theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :
     FiniteDimensional F (Subalgebra.toSubmodule S) ↔ FiniteDimensional F S :=
@@ -611,7 +610,6 @@ theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :
 alias ⟨FiniteDimensional.of_subalgebra_toSubmodule, FiniteDimensional.subalgebra_toSubmodule⟩ :=
   Subalgebra.finiteDimensional_toSubmodule
 
-set_option backward.isDefEq.respectTransparency false in
 instance FiniteDimensional.finiteDimensional_subalgebra [FiniteDimensional F E]
     (S : Subalgebra F E) : FiniteDimensional F S :=
   FiniteDimensional.of_subalgebra_toSubmodule inferInstance
