@@ -231,7 +231,7 @@ def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
 @[to_additive /-- A morphism of `FiniteAddGrp` induces a morphism of the associated profinite
 additive groups. -/]
 def ofFiniteGrpHom {G H : FiniteGrp.{u}} (f : G ⟶ H) : ofFiniteGrp G ⟶ ofFiniteGrp H :=
-  ConcreteCategory.ofHom ⟨f.hom.hom, by continuity⟩
+  ConcreteCategory.ofHom ⟨f.hom.hom, by fun_prop⟩
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
