@@ -55,7 +55,7 @@ variable (C) in
 map returning `⊤ : Sieve X`. -/
 @[simps]
 def Presheaf.truth : (Functor.const _).obj PUnit ⟶ Functor.sieves C where
-  app X _ := (⊤ : Sieve X.unop)
+  app X := TypeCat.ofHom fun _ ↦ (⊤ : Sieve X.unop)
 
 variable {F G : Cᵒᵖ ⥤ Type (max u v)}
 
@@ -67,11 +67,12 @@ to the (closed) sieve on X where `f : Y → X` is in the sieve iff
 -/
 @[simps app]
 def Presheaf.χ (m : F ⟶ G) : G ⟶ Functor.sieves C where
-  app X x := ⟨fun Y f => ∃ a, G.map f.op x = m.app (.op Y) a, by
+  app X := TypeCat.ofHom fun x ↦ ⟨fun Y f => ∃ a, G.map f.op x = m.app (.op Y) a, by
     intro Y Z f ⟨a, ha⟩ g
     use F.map g.op a
-    simp [ha, FunctorToTypes.naturality]⟩
+    simp [ha, NatTrans.naturality_apply]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Presheaf.comp_χ_eq (m : F ⟶ G) : m ≫ Presheaf.χ m =
     (Functor.isTerminalConst _ Types.isTerminalPUnit).from F ≫ Presheaf.truth C := by
   ext
