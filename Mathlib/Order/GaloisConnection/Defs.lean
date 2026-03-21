@@ -49,10 +49,10 @@ section
 
 variable [Preorder α] [Preorder β] {l : α → β} {u : β → α}
 
-@[to_dual self (reorder := α β, 3 4, l u, hu hl, hul hlu)]
-theorem monotone_intro (hu : Monotone u) (hl : Monotone l) (hul : ∀ a, a ≤ u (l a))
-    (hlu : ∀ a, l (u a) ≤ a) : GaloisConnection l u := fun _ _ =>
-  ⟨fun h => (hul _).trans (hu h), fun h => (hl h).trans (hlu _)⟩
+@[to_dual self (reorder := α β, 3 4, l u, hu hl, hu_l hl_u)]
+theorem monotone_intro (hu : Monotone u) (hl : Monotone l) (hu_l : ∀ a, a ≤ u (l a))
+    (hl_u : ∀ a, l (u a) ≤ a) : GaloisConnection l u := fun _ _ =>
+  ⟨fun h => (hu_l _).trans (hu h), fun h => (hl h).trans (hl_u _)⟩
 
 @[to_dual self]
 protected theorem dual {l : α → β} {u : β → α} (gc : GaloisConnection l u) :
@@ -224,11 +224,11 @@ structure GaloisCoinsertion [Preorder α] [Preorder β] (l : α → β) (u : β 
 @[to_dual (reorder := hu hl)
 /-- A constructor for a Galois coinsertion with the trivial `choice` function. -/]
 def GaloisInsertion.monotoneIntro {α β : Type*} [Preorder α] [Preorder β] {l : α → β} {u : β → α}
-    (hu : Monotone u) (hl : Monotone l) (hul : ∀ a, a ≤ u (l a)) (hlu : ∀ b, l (u b) = b) :
+    (hu : Monotone u) (hl : Monotone l) (hu_l : ∀ a, a ≤ u (l a)) (hl_u : ∀ b, l (u b) = b) :
     GaloisInsertion l u where
   choice x _ := l x
-  gc := GaloisConnection.monotone_intro hu hl hul fun b => le_of_eq (hlu b)
-  le_l_u b := le_of_eq <| (hlu b).symm
+  gc := GaloisConnection.monotone_intro hu hl hu_l fun b => le_of_eq (hl_u b)
+  le_l_u b := le_of_eq <| (hl_u b).symm
   choice_eq _ _ := rfl
 
 /-- Make a `GaloisInsertion l u` from a `GaloisConnection l u` such that `∀ b, b ≤ l (u b)` -/
