@@ -314,7 +314,6 @@ lemma restrict_union {μ : FiniteMeasure Ω} {s t : Set Ω} (h : Disjoint s t) (
   ext u hu
   simp [Measure.restrict_union h ht]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma restrict_biUnion_finset {ι : Type*} {μ : FiniteMeasure Ω} {T : Finset ι}
     {s : ι → Set Ω} (hd : (T : Set ι).Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
     μ.restrict (⋃ i ∈ T, s i) = ∑ i ∈ T, μ.restrict (s i) := by
@@ -709,7 +708,7 @@ theorem tendsto_of_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : �
   intro f
   apply (ENNReal.tendsto_toReal_iff (fi := F)
       (fun i ↦ (f.lintegral_lt_top_of_nnreal (μs i)).ne) (f.lintegral_lt_top_of_nnreal μ).ne).mp
-  have lip : LipschitzWith 1 ((↑) : ℝ≥0 → ℝ) := isometry_subtype_coe.lipschitz
+  have lip : LipschitzWith 1 ((↑) : ℝ≥0 → ℝ) := NNReal.isometry_coe.lipschitz
   set f₀ := BoundedContinuousFunction.comp _ lip f with _def_f₀
   have f₀_eq : ⇑f₀ = ((↑) : ℝ≥0 → ℝ) ∘ ⇑f := rfl
   have f₀_nn : 0 ≤ ⇑f₀ := fun _ ↦ by

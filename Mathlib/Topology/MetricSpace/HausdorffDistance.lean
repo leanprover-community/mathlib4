@@ -184,7 +184,6 @@ theorem exists_real_pos_lt_infEDist_of_notMem_closure {x : α} {E : Set α} (h :
   rcases h with ⟨ε, ⟨_, ⟨ε_pos, ε_lt⟩⟩⟩
   exact ⟨ε, ⟨ENNReal.ofReal_pos.mp ε_pos, ε_lt⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_closedEBall_of_lt_infEDist {r : ℝ≥0∞} (h : r < infEDist x s) :
     Disjoint (Metric.closedEBall x r) s := by
   rw [disjoint_left]

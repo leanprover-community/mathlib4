@@ -110,7 +110,7 @@ See also [MM92] Chapter III, Section 2, Equation (2).
 -/
 @[stacks 00ZC]
 def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
-  sieves X S := ∃ R ∈ K X, R ≤ (S : Presieve _)
+  sieves X := {S | ∃ R ∈ K X, R ≤ (S : Presieve _)}
   top_mem' _ := ⟨Presieve.singleton (𝟙 _), K.has_isos _, fun _ _ _ => ⟨⟩⟩
   pullback_stable' X Y S g := by
     rintro ⟨R, hR, RS⟩
@@ -182,7 +182,7 @@ The trivial pretopology, in which the coverings are exactly singleton isomorphis
 also known as the indiscrete, coarse, or chaotic topology. -/
 @[stacks 07GE]
 def trivial : Pretopology C where
-  coverings X S := ∃ (Y : _) (f : Y ⟶ X) (_ : IsIso f), S = Presieve.singleton f
+  coverings X := {S | ∃ (Y : _) (f : Y ⟶ X) (_ : IsIso f), S = Presieve.singleton f}
   has_isos _ _ _ i := ⟨_, _, i, rfl⟩
   pullbacks X Y f S := by
     rintro ⟨Z, g, i, rfl⟩
@@ -200,9 +200,8 @@ def trivial : Pretopology C where
     · infer_instance
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): the next four lines were just "ext (W k)"
     apply funext
-    rintro W
-    apply Set.ext
-    rintro k
+    intro W
+    ext K
     constructor
     · rintro ⟨V, h, k, ⟨_⟩, hh, rfl⟩
       rw [hTi] at hh

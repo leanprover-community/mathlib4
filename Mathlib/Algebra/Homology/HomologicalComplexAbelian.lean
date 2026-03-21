@@ -25,7 +25,11 @@ open CategoryTheory Category Limits
 
 namespace HomologicalComplex
 
-variable {C ι : Type*} {c : ComplexShape ι} [Category* C] [Abelian C]
+variable {C ι : Type*} {c : ComplexShape ι} [Category* C]
+
+section
+
+variable [Abelian C]
 
 noncomputable instance : IsNormalEpiCategory (HomologicalComplex C c) := ⟨fun p _ =>
   ⟨NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
@@ -41,7 +45,6 @@ noncomputable instance : Abelian (HomologicalComplex C c) where
 
 variable (S : ShortComplex (HomologicalComplex C c))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exact_of_degreewise_exact (hS : ∀ (i : ι), (S.map (eval C c i)).Exact) :
     S.Exact := by
   simp only [ShortComplex.exact_iff_isZero_homology] at hS ⊢
@@ -71,5 +74,29 @@ lemma shortExact_iff_degreewise_shortExact :
     have := hS.epi_g
     exact hS.map (eval C c i)
   · exact shortExact_of_degreewise_shortExact S
+
+end
+
+section
+
+variable [HasZeroMorphisms C] [HasZeroObject C] [DecidableEq ι]
+
+instance (i j : ι) (I : C) [Injective I] :
+    Injective (((single C c i).obj I).X j) := by
+  by_cases hij : j = i
+  · subst hij
+    simp only [single_obj_X_self]
+    infer_instance
+  · exact (isZero_single_obj_X _ _ _ _ hij).injective
+
+instance (i j : ι) (P : C) [Projective P] :
+    Projective (((single C c i).obj P).X j) := by
+  by_cases hij : j = i
+  · subst hij
+    simp only [single_obj_X_self]
+    infer_instance
+  · exact (isZero_single_obj_X _ _ _ _ hij).projective
+
+end
 
 end HomologicalComplex

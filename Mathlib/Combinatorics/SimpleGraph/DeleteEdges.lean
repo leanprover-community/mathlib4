@@ -92,7 +92,6 @@ theorem deleteEdges_sdiff_eq_of_le {H : SimpleGraph V} (h : H ≤ G) :
 theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = G.edgeSet \ s := by
   simp [deleteEdges]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (Sym2 V))
     [Fintype (G.deleteEdges s).edgeSet] :
     (G.deleteEdges s).edgeFinset = G.edgeFinset \ s := by
