@@ -51,7 +51,7 @@ def isLimitKernelFork (f : M ⟶ N) (g : N ⟶ P) (H : Function.Exact f.hom g.ho
     (H₂ : Function.Injective f.hom) :
     IsLimit (KernelFork.ofι (f := g) f (by ext; exact H.apply_apply_eq_zero _)) := by
   refine IsLimit.ofIsoLimit (kernelIsLimit g) <|
-    Cones.ext ((LinearEquiv.ofInjective _ H₂).trans
+    Cone.ext ((LinearEquiv.ofInjective _ H₂).trans
         (LinearEquiv.ofEq _ _ (LinearMap.exact_iff.mp H).symm)).toModuleIso.symm ?_
   · rintro ⟨⟩ <;> ext x <;> simp [kernelCone]
 
@@ -79,7 +79,7 @@ def isColimitCokernelCofork (f : M ⟶ N) (g : N ⟶ P) (H : Function.Exact f.ho
     (H₂ : Function.Surjective g.hom) :
     IsColimit (CokernelCofork.ofπ (f := f) g (by ext; exact H.apply_apply_eq_zero _)) := by
   refine IsColimit.ofIsoColimit (ModuleCat.cokernelIsColimit f) <|
-    Cocones.ext (((Submodule.quotEquivOfEq _ _ (LinearMap.exact_iff.mp H)).toModuleIso).symm
+    Cocone.ext (((Submodule.quotEquivOfEq _ _ (LinearMap.exact_iff.mp H)).toModuleIso).symm
     ≪≫ ((LinearMap.quotKerEquivOfSurjective _ H₂).toModuleIso)) ?_
   · rintro ⟨⟩ <;> ext x
     · simpa using (Function.Exact.apply_apply_eq_zero H x).symm
