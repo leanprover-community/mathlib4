@@ -7333,7 +7333,6 @@ public import Mathlib.Topology.Bornology.BoundedOperation
 public import Mathlib.Topology.Bornology.Constructions
 public import Mathlib.Topology.Bornology.Hom
 public import Mathlib.Topology.Bornology.Real
-public import Mathlib.Topology.ClosedBases
 public import Mathlib.Topology.CWComplex.Abstract.Basic
 public import Mathlib.Topology.CWComplex.Classical.Basic
 public import Mathlib.Topology.CWComplex.Classical.Finite
@@ -7399,6 +7398,7 @@ public import Mathlib.Topology.Category.TopCommRingCat
 public import Mathlib.Topology.Category.UniformSpace
 public import Mathlib.Topology.Clopen
 public import Mathlib.Topology.ClopenBox
+public import Mathlib.Topology.ClosedBases
 public import Mathlib.Topology.Closure
 public import Mathlib.Topology.ClusterPt
 public import Mathlib.Topology.Coherent
