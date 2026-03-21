@@ -477,8 +477,7 @@ lemma epsilon1_add_ringKrullDim_eq_spanFinrank_add_spanFinrank_of_surjective (S 
       have surj' := Ideal.Quotient.lift_surjective_of_surjective _ this surj
       rw [← (isRegularLocalRing_def _).mp reg, ← (isRegularLocalRing_def _).mp ‹_›,
         ← Nat.cast_one, ← Nat.cast_add, Nat.cast_inj] at dim
-      have le' : (maximalIdeal R).spanFinrank ≤
-        (maximalIdeal (S ⧸ Ideal.span {x})).spanFinrank := by
+      have : (maximalIdeal R).spanFinrank ≤ (maximalIdeal (S ⧸ Ideal.span {x})).spanFinrank := by
         rw [← map_maximalIdeal_of_surjective _ surj']
         exact Ideal.spanFinrank_map_le_of_fg _ (maximalIdeal _).fg_of_isNoetherianRing
       omega
