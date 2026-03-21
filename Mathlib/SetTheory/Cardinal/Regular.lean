@@ -99,6 +99,10 @@ theorem isRegular_aleph_one : IsRegular ℵ₁ := by
   rw [← succ_aleph0]
   exact isRegular_succ le_rfl
 
+@[simp]
+theorem cof_omega_one : (ω_ 1).cof = ℵ_ 1 :=
+  isRegular_aleph_one.cof_omega_eq
+
 theorem isRegular_preAleph_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (succ o)) := by
   rw [preAleph_succ]
   exact isRegular_succ (aleph0_le_preAleph.2 h)
@@ -120,12 +124,13 @@ lemma isRegular_lift_iff {κ : Cardinal.{v}} :
   ⟨fun ⟨h₁, h₂⟩ ↦ ⟨by simpa using h₁, by simpa [← lift_le.{u, v}]⟩, fun h ↦ h.lift⟩
 
 theorem lsub_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
-    (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → Ordinal.lsub.{u, v} f < c.ord :=
-  lsub_lt_ord_lift (by rwa [hc.cof_eq])
+    (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c.ord) : Ordinal.lsub.{u, v} f < c.ord := by
+  apply lift_iSup_add_one_lt_of_lt_cof _ hf
+  rwa [lift_umax, c.ord.lift_id', hc.cof_eq]
 
 theorem lsub_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c.ord) → Ordinal.lsub f < c.ord :=
-  lsub_lt_ord (by rwa [hc.cof_eq])
+  iSup_add_one_lt_of_lt_cof (by rwa [hc.cof_eq])
 
 -- TODO: generalize the universes of the iSup lemmas
 
