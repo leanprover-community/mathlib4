@@ -498,6 +498,7 @@ theorem IsBipartite.four_mul_encard_edgeSet_le (h : G.IsBipartite) :
   have := Set.encard_union_eq h.disjoint ▸ Set.encard_le_card
   rw [ENat.card_eq_coe_natCard, ← s.toFinite.cast_ncard_eq, ← t.toFinite.cast_ncard_eq] at this ⊢
   norm_cast at this ⊢
+  rw [ENat.coe_le_coe] at this ⊢
   grind [Nat.pow_le_pow_left this 2, four_mul_le_sq_add s.ncard t.ncard]
 
 end
