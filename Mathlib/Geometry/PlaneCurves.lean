@@ -77,7 +77,7 @@ def normal : EuclideanSpace ℝ (Fin 2) :=
   let c' := deriv c t
   !₂[-(c' 1), c' 0]
 
-/-- The normal vector at point of a plane curve is orthogonal to the velocity vector at the point.
+/-- The `normal` vector at point of a plane curve is orthogonal to the velocity vector at the point.
 -/
 theorem inner_of_velocity_normal_eq_zero : inner ℝ (deriv c t) (normal c t) = 0 := by
   simp [normal, inner]; ring
@@ -86,7 +86,7 @@ end
 
 variable {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} {t : ℝ}
 
-/-- The normal vector at point of a plane curve parametrized by arc-length (i.e., with unit-speed)
+/-- The `normal` vector at point of a plane curve parametrized by arc-length (i.e., with unit-speed)
 has length 1 (is a unit vector). -/
 theorem norm_normal_eq_one_of_unit_speed (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
     ‖normal c t‖ = 1 := by
@@ -96,9 +96,9 @@ theorem norm_normal_eq_one_of_unit_speed (hc : ∀ t ∈ I, ‖deriv c t‖ = 1)
   rw [add_comm, ← hc t ht]
   simp [norm]
 
-/-- For every plane curve parametrized by arc-length, the velocity vector and the normal vector at
-each point form an orthonormal basis of the plane, which is sometimes called the moving frame of the
-curve or the Frenet frame, which we call `frameAt`. -/
+/-- For every plane curve `c` parametrized by arc-length, the velocity vector `deriv c` and the
+`normal` vector at each point form an orthonormal basis of the plane, which is sometimes called the
+moving frame of the curve or the Frenet frame, which we call `frameAt`. -/
 def frameAt (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
     OrthonormalBasis (Fin 2) ℝ (EuclideanSpace ℝ (Fin 2)) :=
   let B := ![deriv c t, normal c t]
@@ -125,8 +125,8 @@ def frameAt (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
   OrthonormalBasis.mk (v := B) (hon := hBon) (hsp := hBsp)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- A simpler formula for the curvature of a plane curve parametrized by arc-length, or in other
-words with unit speed. -/
+/-- A simpler formula for the curvature (`orientedCurvature`) of a plane curve parametrized by
+arc-length, or in other words with unit speed. -/
 theorem orientedCurvature_of_unit_speed_curve (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
     orientedCurvature c t = inner ℝ (iteratedDeriv 2 c t) (normal c t) := by
   unfold orientedCurvature normal
@@ -152,22 +152,18 @@ lemma inners_sum_eq_zero_of_const_inner_on_open {α β : ℝ → EuclideanSpace 
     {s : ℝ} (ht : t ∈ I) {α' β' : EuclideanSpace ℝ ι} (hdα : HasDerivAt α α' t)
     (hdβ : HasDerivAt β β' t) (hci : Set.EqOn (fun t ↦ inner ℝ (α t) (β t)) (fun _ ↦ s) I) :
     inner ℝ (α t) β' + inner ℝ α' (β t) = 0 := by
-  symm
-  calc
-    (0 : ℝ) = deriv (fun t ↦  inner ℝ (α t) (β t)) t := by simp [← derivWithin_of_isOpen hI ht,
-                                                                 derivWithin_congr hci (hci ht)]
-    _ = inner ℝ (α t) β' + inner ℝ α' (β t) := (HasDerivAt.inner ℝ hdα hdβ).deriv
+  simp [← (HasDerivAt.inner ℝ hdα hdβ).deriv, ← derivWithin_of_isOpen hI ht,
+        derivWithin_congr hci (hci ht)]
 
-/-- Given a continuously differentiable parametrized curve whose position has the same magnitude at
-all time, i.e, at constant radius distance from the origin (the curve `γ` is contained in a sphere
-of radius `r` from the origin), then the velocity vector is always perpendicular to the position
-vector of the curve at every point (in other words their dot product is zero). -/
+/-- Given a continuously differentiable parametrized curve `c` whose position has the same magnitude
+at all time, i.e, at constant radius distance from the origin (the curve `γ` is contained in a
+sphere of radius `r` from the origin), then the velocity vector `deriv γ` is always perpendicular to
+the position vector of the curve at every point (in other words their dot product is zero). -/
 theorem inner_of_deriv_curve_eq_zero_of_const_magnitude_curve (hI : IsOpen I)
     (hγ₁ : ContDiffOn ℝ 1 γ I) {r : ℝ} (hγ₂ : ∀ t ∈ I, ‖γ t‖ = r) (ht : t ∈ I) :
     inner ℝ (deriv γ t) (γ t) = 0 := by
-  have h : Set.EqOn (fun x ↦  inner ℝ (γ x) (γ x)) (fun x ↦  r^2) I := by
-    intro x hx
-    simp [hγ₂ x hx]
+  have h : Set.EqOn (fun x ↦  inner ℝ (γ x) (γ x)) (fun x ↦  r^2) I := 
+    fun x hx ↦  by simp [hγ₂ x hx]
   have hd : HasDerivAt γ (deriv γ t) t :=
     (hγ₁.contDiffAt (hI.mem_nhds ht)).differentiableAt_one.hasDerivAt
   symm
@@ -385,8 +381,8 @@ lemma _root_.DifferentiableOn.deriv_initialCurve_of_orientedCurvature (hI : IsOp
               θ₀ p₀ hI hκ ht₀ h).differentiableAt.differentiableWithinAt
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The plane curve we construct from the given orientedCurvature function κ is twice continuously
-differentiable on the given interval I. -/
+/-- The plane curve we construct from the given orientedCurvature function `κ` is twice continuously
+differentiable on the given interval `I`. -/
 @[fun_prop]
 protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature (hI : IsOpen I)
     (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) :
@@ -428,14 +424,14 @@ protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature (hI : IsOp
 
 variable {t : ℝ}
 
-/-- The plane curve we construct from the given curvature function κ is parametrized by
+/-- The plane curve we construct from the given curvature function `κ` is parametrized by
   arc-length or in other words has unit speed. -/
 theorem initialCurve_of_orientedCurvature_has_unit_speed (hI : IsOpen I) (hκ : ContinuousOn κ I)
     (ht₀ : t₀ ∈ I) (ht : t ∈ I) : ‖deriv (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀) t‖ = 1 := by
   simp [(HasDerivAt.initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ ht).deriv,
       EuclideanSpace.norm_eq]
 
-/-- The plane curve we construct from a given function κ has orientedCurvature function κ. -/
+/-- The plane curve we construct from a given function `κ` has orientedCurvature function `κ`. -/
 theorem orientedCurvature_initialCurve_of_orientedCurvature (hI : IsOpen I) (hκ : ContinuousOn κ I)
     (ht₀ : t₀ ∈ I) (ht : t ∈ I) :
     orientedCurvature (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀) t = κ t := by
@@ -450,7 +446,7 @@ theorem orientedCurvature_initialCurve_of_orientedCurvature (hI : IsOpen I) (hκ
     + (Real.sin (θ₀ + ∫ (ξ : ℝ) in t₀..t, κ ξ))^2) := by ring
     _ = κ t := by simp
 
-/-- The plane curve we construct is at the point p₀ at time t₀ (position initial condition). -/
+/-- The plane curve we construct is at the point `p₀` at time `t₀` (position initial condition). -/
 theorem position_initial_condition_initialCurve_of_orientedCurvature (κ : ℝ → ℝ) (t₀ : ℝ) :
     (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀) t₀ = p₀ := by
   unfold initialCurve_of_orientedCurvature
@@ -458,8 +454,8 @@ theorem position_initial_condition_initialCurve_of_orientedCurvature (κ : ℝ �
   simp only [Fin.isValue, intervalIntegral.integral_same, add_zero]
   fin_cases i <;> simp
 
-/-- The plane curve we construct has unit velocity vector at the direction of the angle θ₀ at time
-t₀ (velocity initial condition). -/
+/-- The plane curve we construct has unit velocity vector at the direction of the angle `θ₀` at time
+`t₀` (velocity initial condition). -/
 theorem velocity_initial_condition_initialCurve_of_orientedCurvature (hI : IsOpen I)
     (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) :
     deriv (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀) t₀ = !₂[Real.cos θ₀, Real.sin θ₀] := by
