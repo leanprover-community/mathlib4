@@ -79,7 +79,7 @@ theorem Ioi_disjoint_Iio_of_le (h : a ≤ b) : Disjoint (Ioi b) (Iio a) :=
 theorem Ioi_disjoint_Iio_same : Disjoint (Ioi a) (Iio a) :=
   Ioi_disjoint_Iio_of_le le_rfl
 
-@[to_dual Iio_disjoint_Ioi_iff]
+@[to_dual (attr := simp) Iio_disjoint_Ioi_iff]
 theorem Ioi_disjoint_Iio_iff [DenselyOrdered α] : Disjoint (Ioi a) (Iio b) ↔ ¬a < b :=
   ⟨fun h hab ↦ (exists_between hab).elim
     fun _ hc ↦ h.notMem_of_mem_left hc.left hc.right,

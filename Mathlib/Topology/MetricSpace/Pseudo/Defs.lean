@@ -1141,6 +1141,9 @@ theorem Real.Icc_eq_closedBall (x y : ℝ) : Icc x y = closedBall ((x + y) / 2) 
   rw [Real.closedBall_eq_Icc, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two,
     ← add_div, add_assoc, add_sub_cancel, add_self_div_two]
 
+lemma Real.sphere_eq_pair (x : ℝ) {r : ℝ} (hr : 0 ≤ r) : sphere x r = {x - r, x + r} := by
+  ext; simp [dist_eq]; grind
+
 theorem Metric.uniformity_eq_comap_nhds_zero :
     𝓤 α = comap (fun p : α × α => dist p.1 p.2) (𝓝 (0 : ℝ)) := by
   ext s

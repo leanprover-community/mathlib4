@@ -6,8 +6,8 @@ Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Clique
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Operations
 public import Mathlib.Data.Set.Card.Arithmetic
@@ -528,7 +528,7 @@ lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp [Finite V
       rw [← hc', Walk.mem_verts_toSubgraph]
       exact hvp
     simp_all
-  use p.rotate hvp
+  use p.rotate v hvp
   rw [← this]
   exact ⟨hp.1.rotate _, by simp⟩
 
