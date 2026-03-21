@@ -252,7 +252,7 @@ theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' :
 structure IsInaccessible (c : Cardinal) : Prop where
   /-- An inaccessible cardinal is uncountable. -/
   aleph0_lt : ℵ₀ < c
-  /-- This condition is enough to prove `c.ord.cof = c`, see `IsRegular.cof_eq`. -/
+  /-- This condition is enough to prove `c.ord.cof = c`, see `IsInaccessible.isRegular`. -/
   le_cof : c ≤ c.ord.cof
   /-- An inaccessible cardinal is a strong limit, see `IsInaccessible.isStrongLimit`. -/
   two_power_lt ⦃x⦄ : x < c → 2 ^ x < c
