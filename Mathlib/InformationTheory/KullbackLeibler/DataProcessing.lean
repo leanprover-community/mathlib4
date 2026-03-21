@@ -42,7 +42,7 @@ open scoped ENNReal
 namespace ConvexOn
 
 variable {𝓧 𝓨 : Type*} {m m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace 𝓨}
-  {μ ν : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν] {f : ℝ → ℝ}
+  {μ ν : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν] {f : ℝ → ℝ} {g : 𝓧 → 𝓨}
 
 lemma map_condExp_rnDeriv_le (hm : m ≤ m𝓧) (hf : StronglyMeasurable f)
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont_at : ContinuousWithinAt f (Ici 0) 0)
@@ -52,7 +52,7 @@ lemma map_condExp_rnDeriv_le (hm : m ≤ m𝓧) (hf : StronglyMeasurable f)
   hf_cvx.map_condExp_le_trim hm (hf_cvx.continuousOn_Ici hf_cont_at).lowerSemicontinuousOn hf
     (ae_of_all _ fun _ ↦ ENNReal.toReal_nonneg) isClosed_Ici Measure.integrable_toReal_rnDeriv h_int
 
-lemma comp_rnDeriv_map_le (hμν : μ ≪ ν) {g : 𝓧 → 𝓨} (hg : Measurable g) (hf : StronglyMeasurable f)
+lemma comp_rnDeriv_map_le (hμν : μ ≪ ν) (hg : Measurable g) (hf : StronglyMeasurable f)
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont_at : ContinuousWithinAt f (Ici 0) 0)
     (h_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν) :
     (fun x ↦ f ((μ.map g).rnDeriv (ν.map g) (g x)).toReal)
@@ -63,8 +63,7 @@ lemma comp_rnDeriv_map_le (hμν : μ ≪ ν) {g : 𝓧 → 𝓨} (hg : Measurab
       = f ((ν[fun x ↦ (μ.rnDeriv ν x).toReal | m𝓨.comap g]) a) := by rw [ha1]
     _ ≤ (ν[fun x ↦ f (μ.rnDeriv ν x).toReal | m𝓨.comap g]) a := ha2
 
-lemma integrable_comp_rnDeriv_map (hμν : μ ≪ ν) {g : 𝓧 → 𝓨} (hg : Measurable g)
-    (hf : StronglyMeasurable f)
+lemma integrable_comp_rnDeriv_map (hμν : μ ≪ ν) (hg : Measurable g) (hf : StronglyMeasurable f)
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont_at : ContinuousWithinAt f (Ici 0) 0)
     (h_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν) :
     Integrable (fun x ↦ f ((μ.map g).rnDeriv (ν.map g) x).toReal) (ν.map g) := by
