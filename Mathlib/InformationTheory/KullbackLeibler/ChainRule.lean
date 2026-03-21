@@ -34,12 +34,18 @@ always guaranteed, and thus holds for all measurable spaces `𝓧` and `𝓨`, w
 
 ## Proof
 
+The main ingredient is the chain rule for Radon-Nikodym derivatives:
+`∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η) = ∂μ/∂ν * ∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`.
+Then, omitting edge cases, the Kullback-Leibler divergence is an integral of a logarithm of the
+derivative on the left, which decomposes into a sum of two integrals of logarithms.
+We know give a more detailed outline of the proof.
+
 The Kullback-Leibler divergence `klDiv μ ν` is defined with an if-then-else statement:
 if the measures are absolutely continuous (`μ ≪ ν`) and the log-likelihood ratio `llr μ ν` is
 integrable, then it is defined as `∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ`, otherwise
 it is defined to be `∞`.
 
-We first deal with the case in which absolute continuity does not hold. The crucial observation is
+We first deal with the case in which absolute continuity does not hold. The main observation is
 that `μ ⊗ₘ κ ≪ ν ⊗ₘ η ↔ μ ≪ ν ∧ μ ⊗ₘ κ ≪ μ ⊗ₘ η`, which means that if one of the two sides of the
 KL equality is infinite because of lack of absolute continuity, then the other side is also infinite
 for the same reason.
@@ -49,14 +55,11 @@ we can show a similar equivalence for integrability, which allows us to conclude
 are infinite.
 `Integrable (llr (μ ⊗ₘ κ) (ν ⊗ₘ η)) (μ ⊗ₘ κ)` is equivalent to
 `Integrable (llr μ ν) μ ∧ Integrable (llr (μ ⊗ₘ κ) (μ ⊗ₘ η)) (μ ⊗ₘ κ)`.
-This is harder to prove than the absolute continuity and relies on the convexity of
-the function `x ↦ x * log x`.
+The proof of this equivalence relies on the convexity of the function `x ↦ x * log x`.
 
 Finally, we prove the equality in the case in which both absolute continuity and integrability hold.
 In that case, `klDiv μ ν = ∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ` and similarly for
 the other terms. It is easy to see that it suffices to prove the equality of the integrals parts.
-The main ingredient is the chain rule for Radon-Nikodym derivatives:
-`∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η) = ∂μ/∂ν * ∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`.
 Finally, the computation for the integral of the log-likelihood ratio is as follows:
 ```
 ∫ p, llr (μ ⊗ₘ κ) (ν ⊗ₘ η) p ∂(μ ⊗ₘ κ)
@@ -75,22 +78,20 @@ Add a version of the chain rule for the integral form of the contional KL diverg
 
 -/
 
-@[expose] public section
+public section
 
 open Real MeasureTheory Set ProbabilityTheory
-
 open scoped ENNReal
 
 namespace InformationTheory
 
-variable {𝓧 𝓨 γ : Type*} {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace 𝓨} {mγ : MeasurableSpace γ}
+variable {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace 𝓨}
   {μ ν : Measure 𝓧} {κ η : Kernel 𝓧 𝓨}
+  [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsMarkovKernel κ] [IsMarkovKernel η]
 
 /-- If the log-likelihood ration between two composition-products is integrable, then so is the
-log-likelihood ratio between the two measures on the first space.
-See `integrable_llr_compProd_iff` for a stronger result. -/
+log-likelihood ratio between the two measures on the first space. -/
 lemma integrable_llr_of_integrable_llr_compProd
-    [IsMarkovKernel κ] [IsMarkovKernel η] [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η) (h_int : Integrable (llr (μ ⊗ₘ κ) (ν ⊗ₘ η)) (μ ⊗ₘ κ)) :
     Integrable (llr μ ν) μ := by
   have ⟨hμν_ac, hκη_ac⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
@@ -99,8 +100,7 @@ lemma integrable_llr_of_integrable_llr_compProd
     continuous_mul_log.stronglyMeasurable continuous_mul_log.continuousWithinAt h_int hκη_ac
   exact (integrable_rnDeriv_mul_log_iff hμν_ac).mp h_int
 
-lemma rnDeriv_compProd_mul_log_eq_mul_add [IsMarkovKernel κ]
-    [IsMarkovKernel η] [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h_ac : μ ⊗ₘ κ ≪ μ ⊗ₘ η) :
+lemma rnDeriv_compProd_mul_log_eq_mul_add (h_ac : μ ⊗ₘ κ ≪ μ ⊗ₘ η) :
     ∀ᵐ p ∂(ν ⊗ₘ η), ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal * log ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal =
       (((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal * (log ((∂μ/∂ν) p.1).toReal +
         log ((∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)) p).toReal)) := by
@@ -113,8 +113,7 @@ lemma rnDeriv_compProd_mul_log_eq_mul_add [IsMarkovKernel κ]
   · simp [h_zero2]
   simp [log_mul h_zero1 h_zero2]
 
-lemma integrable_llr_compProd_iff [IsMarkovKernel κ]
-    [IsMarkovKernel η] [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
+lemma integrable_llr_compProd_iff (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
     Integrable (llr (μ ⊗ₘ κ) (ν ⊗ₘ η)) (μ ⊗ₘ κ) ↔
       Integrable (llr μ ν) μ ∧ Integrable (llr (μ ⊗ₘ κ) (μ ⊗ₘ η)) (μ ⊗ₘ κ) := by
   have ⟨h_ac_μν, h_ac_κη⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
@@ -157,8 +156,7 @@ lemma integrable_llr_compProd_iff [IsMarkovKernel κ]
 
 /-- Chain rule for the integral of the log-likelihood ratio, under absolute continuity and
 integrability assumptions. -/
-lemma integral_llr_compProd_eq_add [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsMarkovKernel κ]
-    [IsMarkovKernel η] (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η)
+lemma integral_llr_compProd_eq_add (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η)
     (h_int : Integrable (llr (μ ⊗ₘ κ) (ν ⊗ₘ η)) (μ ⊗ₘ κ)) :
     ∫ p, llr (μ ⊗ₘ κ) (ν ⊗ₘ η) p ∂μ ⊗ₘ κ =
       ∫ a, llr μ ν a ∂μ + ∫ p, llr (μ ⊗ₘ κ) (μ ⊗ₘ η) p ∂(μ ⊗ₘ κ) := by
@@ -192,8 +190,7 @@ lemma integral_llr_compProd_eq_add [IsFiniteMeasure μ] [IsFiniteMeasure ν] [Is
 
 variable (μ ν κ) in
 @[simp]
-lemma klDiv_compProd_left [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsMarkovKernel κ] :
-    klDiv (μ ⊗ₘ κ) (ν ⊗ₘ κ) = klDiv μ ν := by
+lemma klDiv_compProd_left : klDiv (μ ⊗ₘ κ) (ν ⊗ₘ κ) = klDiv μ ν := by
   -- first, if we don't have absolute continuity, both sides are `∞`
   by_cases h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ κ
   swap
@@ -216,9 +213,7 @@ variable (μ ν κ η) in
 /-- **Chain rule** for the Kullback-Leibler divergence, with conditional KL expressed using
 composition-products.
 This version holds without any assumption on the measurable spaces. -/
-theorem klDiv_compProd_eq_add [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsMarkovKernel κ]
-    [IsMarkovKernel η] :
-    klDiv (μ ⊗ₘ κ) (ν ⊗ₘ η) = klDiv μ ν + klDiv (μ ⊗ₘ κ) (μ ⊗ₘ η) := by
+theorem klDiv_compProd_eq_add : klDiv (μ ⊗ₘ κ) (ν ⊗ₘ η) = klDiv μ ν + klDiv (μ ⊗ₘ κ) (μ ⊗ₘ η) := by
   -- first, if we don't have absolute continuity, both sides are `∞`
   by_cases h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η
   swap
