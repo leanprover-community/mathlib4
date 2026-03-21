@@ -68,6 +68,7 @@ theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
 
 /-- The `degreeOf` a variable `i` for a polynomial `p` is a special case of the
   `weightedTotalDegree` of `p` where `i` has the only nonzero weight and that weight is `1`. -/
+@[simp]
 theorem weightedTotalDegree_piSingle [DecidableEq σ] (i : σ) (p : MvPolynomial σ R) :
     weightedTotalDegree (Pi.single i 1) p = degreeOf i p := by
   simp only [weightedTotalDegree, weight, linearCombination, Pi.single_apply, degreeOf, degrees,
