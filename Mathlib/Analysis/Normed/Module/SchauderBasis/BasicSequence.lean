@@ -164,8 +164,7 @@ theorem basicSequence (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K)
   let b_S := Module.Basis.span h_indep
   have hbS (n : ℕ) : (b_S n : X) = e n := congrArg Subtype.val (Module.Basis.span_apply h_indep n)
   have h_sum (x : S) {N : ℕ} (hN : (b_S.repr x).support.sup id < N) :
-      ∑ i ∈ Finset.range N, b_S.repr x i • b_S i = x :=
-    sum_repr_eq_of_support_subset b_S x
+      ∑ i ∈ Finset.range N, b_S.repr x i • b_S i = x := sum_repr_eq_of_support_subset b_S x
       fun i hi ↦ Finset.mem_range.2 ((Finset.le_sup (f := id) hi).trans_lt hN)
   have coe_sum (A : Finset ℕ) (c : ℕ → 𝕜) : (↑(∑ i ∈ A, c i • b_S i) : X) = ∑ i ∈ A, c i • e i := by
     simp [AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, hbS]
@@ -195,7 +194,7 @@ theorem basicSequence (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K)
       have h_range : (P n).toLinearMap.range =
           Submodule.span 𝕜 (Set.range (fun i : Fin n ↦ b_S i)) := by
         apply le_antisymm
-        · rintro _ ⟨x, rfl⟩
+        · rintro _ ⟨_, rfl⟩
           rw [ContinuousLinearMap.coe_coe, hP]
           exact Submodule.sum_mem _ fun i hi ↦
             Submodule.smul_mem _ _ (Submodule.subset_span ⟨⟨i, Finset.mem_range.mp hi⟩, rfl⟩)
@@ -212,12 +211,9 @@ theorem basicSequence (h_grunblum : SatisfiesGrunblumCondition 𝕜 e K)
         smul_eq_mul, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq', Finset.mem_range,
         ite_smul, zero_smul, ← Finset.sum_filter]
       congr 1; ext _; simp
-    proj_tendsto := fun x ↦ by
-      change Filter.Tendsto (fun n ↦ P n x) Filter.atTop (nhds x)
-      simp_rw [show ∀ n, P n x = ∑ i ∈ Finset.range n, b_S.repr x i • b_S i from
-        fun n ↦ hP n x]
-      exact tendsto_atTop_of_eventually_const (i₀ := (b_S.repr x).support.sup id + 1)
-        fun n hn ↦ h_sum x ((Nat.lt_succ_self _).trans_le hn)
+    proj_tendsto := fun x ↦ (Filter.tendsto_congr fun n ↦ hP n x).mpr
+      (tendsto_atTop_of_eventually_const (i₀ := (b_S.repr x).support.sup id + 1)
+        fun n hn ↦ h_sum x ((Nat.lt_succ_self _).trans_le hn))
     e_mem_range := fun n ↦ ⟨b_S n, by
       change P (n + 1) (b_S n) - P n (b_S n) = b_S n
       simp [hP, Finset.sum_range_succ]⟩
