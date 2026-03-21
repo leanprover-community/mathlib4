@@ -53,8 +53,6 @@ For context, here is a diagram of the possible routes from polynomials to L-func
 
 namespace ArithmeticFunction
 
-open Filter
-
 section PowerSeries
 
 variable {R : Type*} [CommSemiring R]
