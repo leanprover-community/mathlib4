@@ -31,7 +31,7 @@ with mixed arguments, and is a standard tool for subsequent multi-variable manip
 * [McCrimmon, *A Taste of Jordan Algebras*][mccrimmon2004], Proposition 1.8.5 (JAX2')
 -/
 
-@[expose] public section
+public section
 
 namespace IsCommJordan
 
