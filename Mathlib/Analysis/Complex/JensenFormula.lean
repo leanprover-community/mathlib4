@@ -197,11 +197,6 @@ theorem AnalyticOnNhd.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
     (h₁f c (by simp)).meromorphicTrailingCoeffAt_of_ne_zero h₂f]
   simp
 
-lemma log_le_log_of_abs_le_abs {x y : ℝ} (h0 : 0 < |x|) (h : |x| ≤ |y|) :
-    Real.log x ≤ Real.log y := by
-  rw [← log_abs, ← log_abs y]
-  exact log_le_log h0 h
-
 theorem AnalyticOnNhd.count_zeros_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (r_pos : 0 < |r|)
     (r_lt_R : |r| < |R|) (hM : 1 ≤ M) (h₁f : AnalyticOnNhd ℂ f (closedBall c |R|))
     (h₂f : f c ≠ 0)
