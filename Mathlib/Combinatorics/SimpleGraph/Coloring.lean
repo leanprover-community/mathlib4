@@ -120,8 +120,12 @@ theorem Coloring.card_colorClasses_le [Fintype α] [Fintype C.colorClasses] :
 theorem Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colorClass c)
     (hw : w ∈ C.colorClass c) : ¬G.Adj v w := fun h => C.valid h (Eq.trans hv (Eq.symm hw))
 
+theorem Coloring.isIndepSet_colorClass (c : α) : G.IsIndepSet <| C.colorClass c :=
+  fun _ hv _ hw _ ↦ C.not_adj_of_mem_colorClass hv hw
+
+@[deprecated isIndepSet_colorClass (since := "2026-02-07")]
 theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.colorClass c) :=
-  fun _ hv _ hw _ => C.not_adj_of_mem_colorClass hv hw
+  C.isIndepSet_colorClass c
 
 -- TODO make this computable
 noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
@@ -180,7 +184,7 @@ graph. -/
 theorem Colorable.map (f : V ↪ β) [NeZero n] (hc : G.Colorable n) : (G.map f).Colorable n := by
   obtain ⟨C⟩ := hc
   use extend f C (const β default)
-  intro a b ⟨_, _, hadj, ha, hb⟩
+  intro a b ⟨_, _, _, hadj, ha, hb⟩
   rw [← ha, f.injective.extend_apply, ← hb, f.injective.extend_apply]
   exact C.valid hadj
 

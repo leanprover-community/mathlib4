@@ -531,13 +531,12 @@ theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Fin
               (mul_mem_cancel_left (inv_mem hb₁)).1 <| by
                 rw [hx] at hb₂; simpa [mul_inv_rev, mul_assoc] using hb₂)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The fixed points of the action of `H` on its cosets correspond to `normalizer H / H`. -/
 def fixedPointsMulLeftCosetsEquivQuotient (H : Subgroup G) [Finite (H : Set G)] :
     MulAction.fixedPoints H (G ⧸ H) ≃
       normalizer H ⧸ Subgroup.comap ((normalizer H).subtype : normalizer H →* G) H :=
-  @subtypeQuotientEquivQuotientSubtype G (normalizer H : Set G) (_) (_)
-    (MulAction.fixedPoints H (G ⧸ H))
+  @subtypeQuotientEquivQuotientSubtype G (· ∈ normalizer H) (_) (_)
+    (· ∈ MulAction.fixedPoints H (G ⧸ H))
     (fun _ => (@mem_fixedPoints_mul_left_cosets_iff_mem_normalizer _ _ _ ‹_› _).symm)
     (by
       intros
@@ -717,6 +716,7 @@ theorem card_eq_multiplicity [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow
   exact P.1.card_subgroup_dvd_card
 
 /-- If `G` has a normal Sylow `p`-subgroup, then it is the only Sylow `p`-subgroup. -/
+@[implicit_reducible]
 noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (h : P.Normal) : Unique (Sylow p G) := by
   refine { uniq := fun Q ↦ ?_ }
@@ -815,6 +815,6 @@ noncomputable def directProductOfNormal [Finite G]
       _ = ∏ p ∈ ps, p ^ (Nat.card G).factorization p :=
         (Finset.prod_finset_coe (fun p => p ^ (Nat.card G).factorization p) _)
       _ = (Nat.card G).factorization.prod (· ^ ·) := rfl
-      _ = Nat.card G := Nat.factorization_prod_pow_eq_self Nat.card_pos.ne'
+      _ = Nat.card G := Nat.prod_factorization_pow_eq_self Nat.card_pos.ne'
 
 end Sylow

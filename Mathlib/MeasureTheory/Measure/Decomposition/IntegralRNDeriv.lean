@@ -22,6 +22,8 @@ import Mathlib.Probability.Kernel.Composition.RadonNikodym
 * `mul_le_integral_rnDeriv_of_ac`: for a convex continuous function `f` on `[0, ∞)`, if `μ`
   is absolutely continuous with respect to `ν`, then
   `ν.real univ * f (μ.real univ / ν.real univ) ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`.
+* `ConvexOn.integrable_apply_rnDeriv_of_integrable_compProd`: for `f` a convex function on `[0, ∞)`,
+  if `f ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) (a, b))` is integrable, then `f (μ.rnDeriv ν a)` is integrable.
 
 -/
 
@@ -33,7 +35,7 @@ open scoped ENNReal
 
 namespace MeasureTheory
 
-variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α} {f : ℝ → ℝ}
+variable {𝓧 : Type*} {m𝓧 : MeasurableSpace 𝓧} {μ ν : Measure 𝓧} {f : ℝ → ℝ}
 
 @[fun_prop]
 lemma Measure.integrable_toReal_rnDeriv [IsFiniteMeasure μ] :
@@ -114,7 +116,7 @@ lemma mul_le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
 section Integrable
 
-variable {β : Type*} {mβ : MeasurableSpace β} {κ η : Kernel α β} {f : ℝ → ℝ}
+variable {𝓨 : Type*} {m𝓨 : MeasurableSpace 𝓨} {κ η : Kernel 𝓧 𝓨} {f : ℝ → ℝ}
   [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
 lemma lintegral_rnDeriv_compProd [IsSFiniteKernel κ] [IsFiniteKernel η]
@@ -124,7 +126,7 @@ lemma lintegral_rnDeriv_compProd [IsSFiniteKernel κ] [IsFiniteKernel η]
   intro s hs hsμ
   calc ∫⁻ a in s, ∫⁻ b, (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂(η a) ∂μ
   _ = ∫⁻ a in s, ∫⁻ b in univ, (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂(η a) ∂μ := by simp
-  _ = ∫⁻ (a : α) in s, (κ a) univ ∂μ := by
+  _ = ∫⁻ a in s, (κ a) univ ∂μ := by
     rw [← Measure.setLIntegral_compProd (by fun_prop) hs .univ, Measure.setLIntegral_rnDeriv hκη,
       Measure.compProd_apply_prod hs .univ]
 
@@ -149,14 +151,15 @@ lemma _root_.ConvexOn.apply_rnDeriv_ae_le_integral (hf : StronglyMeasurable f)
   have h_lt_top : ∀ᵐ a ∂ν, ∀ᵐ b ∂η a, (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) (a, b) < ∞ :=
     Measure.ae_ae_of_ae_compProd <| (μ ⊗ₘ κ).rnDeriv_lt_top (ν ⊗ₘ η)
   have h_integrable : Integrable (fun x ↦ ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) x).toReal) (ν ⊗ₘ η) :=
-    Measure.integrable_toReal_rnDeriv (μ := μ ⊗ₘ κ) (ν := ν ⊗ₘ η)
+    Measure.integrable_toReal_rnDeriv
   rw [Measure.integrable_compProd_iff] at h_integrable h_int
   rotate_left
   · exact StronglyMeasurable.aestronglyMeasurable (by fun_prop)
   · exact StronglyMeasurable.aestronglyMeasurable (by fun_prop)
   have h_ae1 : ∀ᵐ a ∂ν,
       μ.rnDeriv ν a * ∫⁻ b, (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂(η a) = μ.rnDeriv ν a := by
-    filter_upwards [Measure.ae_rnDeriv_ne_zero_imp_of_ae (lintegral_rnDeriv_compProd hκη)] with a ha
+    filter_upwards [Measure.ae_rnDeriv_ne_zero_imp_of_ae _ (lintegral_rnDeriv_compProd hκη)]
+      with a ha
     by_cases h0 : μ.rnDeriv ν a = 0
     · simp [h0]
     · simp [ha h0]

@@ -60,7 +60,7 @@ lemma of_toAddSubgroup_le {U : Submodule R M} {V : Submodule S M}
   simp only [SModEq, Submodule.Quotient.eq] at hxy ⊢
   exact h hxy
 
-@[refl]
+@[refl, simp]
 protected theorem refl (x : M) : x ≡ x [SMOD U] :=
   @rfl _ _
 
