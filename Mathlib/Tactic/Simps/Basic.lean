@@ -1054,7 +1054,7 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
   withTransparency cfg.typeMd <| forallTelescopeReducing type fun typeArgs tgt ↦ withDefault do
   trace[simps.debug] "Type after removing pi's: {tgt}"
   let tgtWhnf ← whnfD tgt
-  trace[simps.debug] "Type after reduction: {tgt}"
+  trace[simps.debug] "Type after reduction: {tgtWhnf}"
   let newArgs := args ++ typeArgs
   let lhsAp := lhs.instantiateLambdasOrApps typeArgs
   let rhsAp := rhs.instantiateLambdasOrApps typeArgs
