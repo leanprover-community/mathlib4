@@ -20,7 +20,7 @@ with the construction of the tensor product directly over the ring $A$.
 # Main constructions
 
  - `mk` : The construction of the tensor product using the algebra structure
- - `quot_equi_tens` The isomorphism between this construction of the tensor product and the generic
+ - `mk_eq_tens` The isomorphism between this construction of the tensor product and the generic
   one
 -/
 
@@ -111,7 +111,7 @@ lemma mk_to_tens_apply (m : M) (n : N) : mk_to_tens R A M N ⟦m⊗ₜn⟧ = m�
 variable (R A M N) in
 /-- The equivalence between the algebra-based construction of the tensor product.
 and the tensor product -/
-def quot_equi_tens :(mk R A M N) ≃ₗ[A] M ⊗[A] N where
+def mk_eq_tens :(mk R A M N) ≃ₗ[A] M ⊗[A] N where
   toLinearMap := mk_to_tens R A M N
   invFun := tens_to_mk R A M N
   left_inv := by
@@ -137,8 +137,8 @@ lemma compose_eq_mkQ : (tens_to_mk R A M N) ∘ₗ (mapOfCompatibleSMul' A R M N
 variable (R A M N) in
 lemma CompatibleSMul_ker_eq_span : (mapOfCompatibleSMul' A R M N).ker = (rels R A M N)
     := by
-  have h : (quot_equi_tens R A M N).symm.toLinearMap = tens_to_mk R A M N := rfl
-  simp_rw [←LinearEquiv.ker_comp (quot_equi_tens R A M N).symm (mapOfCompatibleSMul' A R M N),
+  have h : (mk_eq_tens R A M N).symm.toLinearMap = tens_to_mk R A M N := rfl
+  simp_rw [←LinearEquiv.ker_comp (mk_eq_tens R A M N).symm (mapOfCompatibleSMul' A R M N),
   h, compose_eq_mkQ, Submodule.ker_mkQ]
 
 end Algebra.TensorProduct.FromRing
