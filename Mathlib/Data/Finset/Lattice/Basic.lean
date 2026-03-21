@@ -22,11 +22,6 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 `Mathlib/Order/Lattice.lean`. For the lattice structure on finsets, `⊥` is called `bot` with
 `⊥ = ∅` and `⊤` is called `top` with `⊤ = univ`.
 
-* `Finset.instHasSubset`: Lots of API about lattices, otherwise behaves as one would expect.
-* `Finset.instUnion`: Defines `s ∪ t` (or `s ⊔ t`) as the union of `s` and `t`.
-  See `Finset.sup`/`Finset.biUnion` for finite unions.
-* `Finset.instInter`: Defines `s ∩ t` (or `s ⊓ t`) as the intersection of `s` and `t`.
-  See `Finset.inf` for finite intersections.
 
 ## Implementation Notes
 
