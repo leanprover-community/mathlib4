@@ -131,6 +131,7 @@ def diag : TopCat ⥤ TopPair where
 instance : Inhabited TopPair := ⟨incl.obj TopCat.inhabited.default⟩
 
 /-- The inclusion functor is left adjoint to the projection to the first component. -/
+@[simps]
 def inclAdjProj₁ : incl ⊣ proj₁ where
   unit.app X := 𝟙 X
   counit.app X := {
@@ -142,6 +143,7 @@ def inclAdjProj₁ : incl ⊣ proj₁ where
   left_triangle_components X := Hom.ext (by simp) (by cat_disch)
 
 /-- The projection functor to the first component is left adjoint to the diagonal functor. -/
+@[simps]
 def proj₁AdjDiag : proj₁ ⊣ diag where
   unit.app X := { fst := 𝟙 X.fst, snd := X.map }
   unit.naturality X Y f := Hom.ext (by simp) f.snd_map
@@ -156,6 +158,7 @@ def j (X : TopPair) : TopPair.incl.obj X.fst ⟶ X where
 
 /-- A homotopy of maps between topological pairs is a homotopy on the first space and a homotopy on
 the second space that fit in a commutative square with the maps of the pairs. -/
+@[ext]
 structure Homotopy (f g : X ⟶ Y) where
   /-- The homotopy on the first space. -/
   fst : ContinuousMap.Homotopy f.fst.hom g.fst.hom
