@@ -55,25 +55,25 @@ lemma mem_ofSubmodule_iff {S : Submodule R E} {x : E} : x ∈ (S : PointedCone R
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ofSubmodule_inj {S T : Submodule R E} : ofSubmodule S = ofSubmodule T ↔ S = T :=
-  Submodule.restrictScalars_inj ..
+  restrictScalars_inj ..
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Coercion from submodules to pointed cones as an order embedding. -/
 abbrev ofSubmoduleEmbedding : Submodule R E ↪o PointedCone R E :=
-  Submodule.restrictScalarsEmbedding ..
+  restrictScalarsEmbedding ..
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Coercion from submodules to pointed cones as a lattice homomorphism. -/
 abbrev ofSubmoduleLatticeHom : CompleteLatticeHom (Submodule R E) (PointedCone R E) :=
-  Submodule.restrictScalarsLatticeHom ..
+  restrictScalarsLatticeHom ..
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ofSubmodule_inf (S T : Submodule R E) : S ⊓ T = (S ⊓ T : PointedCone R E) :=
-  Submodule.restrictScalars_inf _ _ _
+  restrictScalars_inf _ _ _
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ofSubmodule_sup (S T : Submodule R E) : S ⊔ T = (S ⊔ T : PointedCone R E) :=
-  Submodule.restrictScalars_sup _ _ _
+  restrictScalars_sup _ _ _
 
 lemma ofSubmodule_sInf (s : Set (Submodule R E)) : sInf s = sInf (ofSubmodule '' s) :=
   ofSubmoduleLatticeHom.map_sInf' s
@@ -174,14 +174,14 @@ variable (R) in
 
 Pointed cones being defined as submodules over nonnegative scalars, this is exactly the
 submodule span of `s` w.r.t. nonnegative scalars. -/
-abbrev hull (s : Set E) : PointedCone R E := Submodule.span R≥0 s
+abbrev hull (s : Set E) : PointedCone R E := span R≥0 s
 
-lemma subset_hull {s : Set E} : s ⊆ PointedCone.hull R s := Submodule.subset_span
+lemma subset_hull {s : Set E} : s ⊆ PointedCone.hull R s := subset_span
 
 /-- Elements of the cone hull are expressible as conical combination of elements from s. -/
 lemma mem_hull_set {s : Set E} : x ∈ hull R s ↔
       ∃ c : E →₀ R, ↑c.support ⊆ s ∧ (∀ y, 0 ≤ c y) ∧ c.sum (fun m r => r • m) = x := by
-  rw [Submodule.mem_span_set]
+  rw [mem_span_set]
   constructor
   · rintro ⟨c, hc, rfl⟩
     exact ⟨⟨c.support, Subtype.val ∘ c, by simp [← Subtype.val_inj]⟩, hc, fun y ↦ (c y).2, rfl⟩
