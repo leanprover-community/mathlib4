@@ -7288,6 +7288,7 @@ public import Mathlib.Topology.Algebra.PontryaginDual
 public import Mathlib.Topology.Algebra.ProperAction.AddTorsor
 public import Mathlib.Topology.Algebra.ProperAction.Basic
 public import Mathlib.Topology.Algebra.ProperAction.CompactlyGenerated
+public import Mathlib.Topology.Algebra.ProperAction.ProperlyDiscontinuous
 public import Mathlib.Topology.Algebra.ProperConstSMul
 public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
 public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
