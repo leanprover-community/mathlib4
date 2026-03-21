@@ -21,20 +21,53 @@ public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 Valued Field should be in another file. Completabletopfield,
 -/
 
-open Valuation ValuativeRel IsValuativeTopology UniformSpace
+open Valuation ValuativeRel IsValuativeTopology UniformSpace MonoidWithZeroHom ValueGroup₀
 
 variable {R K Γ₀ : Type*}
 
 section Valuation
 
-variable [Ring R] [UniformSpace R] [IsTopologicalRing R] [IsUniformAddGroup R] [ValuativeRel R]
-  [IsValuativeTopology R] [LinearOrderedCommGroupWithZero Γ₀]
+variable [Ring R] [ValuativeRel R] [LinearOrderedCommGroupWithZero Γ₀]
 
--- restrict surjective, continuous
--- extends restrict
--- back to Gamma 0
+local instance (v : Valuation R Γ₀) : TopologicalSpace (ValueGroup₀ v) :=
+  WithZeroTopology.topologicalSpace
+
+section TopologicalSpace
+
+variable [TopologicalSpace R] [IsValuativeTopology R] (v : Valuation R Γ₀) [v.Compatible]
+
+theorem Valuation.continuous_restrict :
+    Continuous v.restrict := by
+  rw [continuous_iff_continuousAt]
+  intro x
+  rcases eq_or_ne (v.restrict x) 0 with (h | h)
+  · rw [ContinuousAt, h, WithZeroTopology.tendsto_zero]
+    intro γ hγ
+    rw [Filter.Eventually, v.mem_nhds_iff]
+    use Units.mk0 γ hγ
+    simp only [Units.val_mk0, Set.setOf_subset_setOf]
+    intro a ha
+    calc
+    _ ≤ max (v.restrict (a - x)) (v.restrict x) := by simpa using v.restrict.map_add (a - x) x
+    _ < γ := by simp [h, ha]
+  · rw [ContinuousAt, WithZeroTopology.tendsto_of_ne_zero h]
+    simp_rw [v.restrict_inj]
+    apply Valuation.loc_const
+    simpa [restrict₀_apply] using h
+
+end TopologicalSpace
+
+section UniformSpace
+
+variable [UniformSpace R] [IsValuativeTopology R] [IsUniformAddGroup R] (v : Valuation R Γ₀) [v.Compatible]
+
+def Valuation.restrtictCompletion : Valuation (Completion R) (ValueGroup₀ v) := sorry
+
+noncomputable
 def Valuation.completion (v : Valuation R Γ₀) [v.Compatible] :
-    Valuation (Completion R) Γ₀ := by sorry
+    Valuation (Completion R) Γ₀ := v.restrtictCompletion.map (embedding (f := v)) (by sorry)
+
+end UniformSpace
 
 end Valuation
 
@@ -54,7 +87,7 @@ section Compatible
 variable [Ring R] [UniformSpace R] [IsTopologicalRing R] [IsUniformAddGroup R] [ValuativeRel R]
   [IsValuativeTopology R] [LinearOrderedCommGroupWithZero Γ₀]
 
-instance Valuation.compatible_completion (v : Valuation R Γ₀) [v.Compatible] :
-    v.completion.Compatible := sorry
+-- instance Valuation.compatible_completion (v : Valuation R Γ₀) [v.Compatible] :
+--     v.completion.Compatible := sorry
 
 end Compatible
