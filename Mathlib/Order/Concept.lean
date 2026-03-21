@@ -459,14 +459,17 @@ theorem strictMono_extent : StrictMono (@extent α β r) := fun _ _ =>
 theorem strictAnti_intent : StrictAnti (@intent α β r) := fun _ _ =>
   intent_ssubset_intent_iff.2
 
+@[simp]
 theorem isLowerSet_extent_le {α : Type*} [Preorder α] (c : Concept α α (· ≤ ·)) :
     IsLowerSet c.extent :=
   @mem_extent_of_rel_extent _ _ _ _
 
+@[simp]
 theorem isUpperSet_intent_le {α : Type*} [Preorder α] (c : Concept α α (· ≤ ·)) :
     IsUpperSet c.intent :=
   @mem_intent_of_intent_rel _ _ _ _
 
+@[simp]
 theorem isLowerSet_extent_lt {α : Type*} [PartialOrder α] (c : Concept α α (· < ·)) :
     IsLowerSet c.extent := by
   intro a b hb ha
@@ -474,6 +477,7 @@ theorem isLowerSet_extent_lt {α : Type*} [PartialOrder α] (c : Concept α α (
   · assumption
   · exact mem_extent_of_rel_extent hb ha
 
+@[simp]
 theorem isUpperSet_intent_lt {α : Type*} [PartialOrder α] (c : Concept α α (· < ·)) :
     IsUpperSet c.intent := by
   intro a b hb ha
@@ -541,7 +545,9 @@ instance : SupSet (Concept α β r) where
   sSup S := ofIsIntent _ _ (.iInter₂ _ fun c (_ : c ∈ S) ↦ c.isIntent_intent)
 
 /-- One half of the **fundamental theorem of concept lattices**: every concept lattice is a complete
-lattice. -/
+lattice.
+
+See `DedekindCut.principalIso` for the second half. -/
 instance : CompleteLattice (Concept α β r) where
   isLUB_sSup s := by
     refine ⟨fun _ hc ↦ ?_, fun _ hc ↦ ?_⟩

@@ -43,8 +43,8 @@ relation of `α`.
 For `A : DedekindCut α`, the sets `A.left` and `A.right` are related by
 `upperBounds A.left = A.right` and `lowerBounds A.right = A.left`.
 
-The theorem `DedekindCut.factorEmbedding_factors` proves that if `α` is a partial order and `β` is a
-complete lattice, any embedding `α ↪o β` factors through `DedekindCut α`. -/
+The theorem `DedekindCut.principalEmbedding_trans_factorEmbedding` proves that if `α` is a partial
+order and `β` is a complete lattice, any embedding `α ↪o β` factors through `DedekindCut α`. -/
 abbrev DedekindCut [Preorder α] := Concept α α (· ≤ ·)
 
 namespace DedekindCut
@@ -133,13 +133,13 @@ section CompleteLattice
 variable [CompleteLattice α] [PartialOrder β]
 
 @[simp]
-theorem of_sSup (A : DedekindCut α) : principal (sSup A.left) = A := by
+theorem principal_sSup (A : DedekindCut α) : principal (sSup A.left) = A := by
   apply ext'
   ext
   rw [right_principal, mem_Ici, sSup_le_iff, ← upperBounds_left, mem_upperBounds]
 
 @[simp]
-theorem of_sInf (A : DedekindCut α) : principal (sInf A.right) = A := by
+theorem principal_sInf (A : DedekindCut α) : principal (sInf A.right) = A := by
   ext
   rw [left_principal, mem_Iic, le_sInf_iff, ← lowerBounds_right, mem_lowerBounds]
 
@@ -171,14 +171,16 @@ theorem factorEmbedding_principal (f : β ↪o α) (x : β) : factorEmbedding f 
 
 /-- The Dedekind-MacNeille completion of a partial order is the smallest complete lattice containing
 it, in the sense that any embedding into any complete lattice factors through it. -/
-theorem factorEmbedding_factors (f : β ↪o α) :
+theorem principalEmbedding_trans_factorEmbedding (f : β ↪o α) :
     principalEmbedding.trans (factorEmbedding f) = f := by
   ext; simp
 
 /-- `DedekindCut.principal` as an `OrderIso`.
 
 This provides the second half of the **fundamental theorem of concept lattices**: every complete
-lattice is isomorphic to a concept lattice (its own Dedekind completion). -/
+lattice is isomorphic to a concept lattice (its own Dedekind completion).
+
+See `Concept.instCompleteLattice` for the first half. -/
 @[simps! apply]
 def principalIso : α ≃o DedekindCut α where
   invFun := factorEmbedding (OrderIso.refl _).toOrderEmbedding
