@@ -21,6 +21,8 @@ public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 Valued Field should be in another file. Completabletopfield,
 -/
 
+@[expose] public section
+
 open Valuation ValuativeRel IsValuativeTopology UniformSpace MonoidWithZeroHom ValueGroup₀
 
 variable {R K Γ₀ : Type*}
