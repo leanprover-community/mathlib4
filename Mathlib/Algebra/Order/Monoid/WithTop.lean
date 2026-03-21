@@ -66,8 +66,6 @@ protected theorem le_add_self [AddCommMagma α] [LE α] [CanonicallyOrderedAdd �
 
 lemma lt_zero_iff_eq_bot {α : Type*} [AddMonoid α] [Preorder α] [CanonicallyOrderedAdd α]
     (a : WithBot α) : a < 0 ↔ a = ⊥ := by
-  induction a with
-  | bot => simp
-  | coe => simp
+  induction a <;> simp
 
 end WithBot

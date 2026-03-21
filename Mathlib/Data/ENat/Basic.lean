@@ -73,9 +73,14 @@ variable {a b c d m n : ℕ∞}
 
 theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
-set_option backward.isDefEq.respectTransparency false in
+@[simp] theorem succ_coe (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := by
+  simp [SuccOrder.succ]
+  rfl
+
+@[simp] theorem succ_top : SuccOrder.succ (⊤ : ℕ∞) = ⊤ := rfl
+
 instance : SuccAddOrder ℕ∞ where
-  succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ]
+  succ_eq_add_one x := by cases x <;> simp
 
 theorem coe_zero : ((0 : ℕ) : ℕ∞) = 0 :=
   rfl
@@ -291,6 +296,11 @@ theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 :=
 
 theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
   Order.add_one_le_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
+
+theorem add_one_le_iff' (hn : n ≠ ⊤) : m + 1 ≤ n ↔ m < n := by
+  by_cases hm : m = ⊤
+  · simpa [hm]
+  · exact add_one_le_iff hm
 
 theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
   Order.one_le_iff_pos.trans pos_iff_ne_zero
@@ -639,10 +649,7 @@ lemma add_one_le_natCast_iff (n : WithBot ℕ∞) (m : ℕ) : n + 1 ≤ m ↔ n 
   induction n with
   | bot => simp
   | coe n =>
-    by_cases eq : n = ⊤
-    · simpa [eq] using WithBot.coe_lt_coe.mpr (ENat.coe_lt_top m)
-    · rw [← ENat.WithBot.coe_eq_natCast, ← WithBot.coe_one, ← WithBot.coe_add, WithBot.coe_le_coe,
-        WithBot.coe_lt_coe, ENat.add_one_le_iff eq]
+    simp [← coe_eq_natCast, ← WithBot.coe_one, ← WithBot.coe_add, add_one_le_iff']
 
 lemma add_one_le_zero_iff (n : WithBot ℕ∞) : n + 1 ≤ 0 ↔ n = ⊥ :=
   (add_one_le_natCast_iff n 0).trans (WithBot.lt_zero_iff_eq_bot n)
