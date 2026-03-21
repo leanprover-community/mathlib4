@@ -428,13 +428,37 @@ lemma fTowerSubmodule_lie_mem
   · apply Submodule.smul_mem
     exact fTowerSubmodule_lie_h_mem M t P hv
 
+def fTowerLieSubmodule (hL : t.toLieSubalgebra ℂ = ⊤)
+    {μ : ℂ} {m : M} (P : t.HasPrimitiveVectorWith m μ) :
+    LieSubmodule ℂ L M :=
+  {
+    fTowerSubmodule M t P with
+    lie_mem := fun {x v} hv => fTowerSubmodule_lie_mem M t hL P x hv
+  }
+
 -- the f-tower spans M, using the irreducibility of representation
-lemma fTowerSubmodule_eq_top
+lemma fTowerLieSubmodule_eq_top
     [LieModule.IsIrreducible ℂ L M]
     (hL : t.toLieSubalgebra ℂ = ⊤)
     {μ : ℂ} {m : M} (P : t.HasPrimitiveVectorWith m μ) :
-    fTowerSubmodule M t P = ⊤ := by
-  sorry
+    fTowerLieSubmodule M t hL P = ⊤ := by
+    -- prove that the primitive vector 0 ≠ m ∈ M so M ≠ ⊥
+  have hm_mem : m ∈ fTowerSubmodule M t P := by
+    rw [fTowerSubmodule]
+    apply Submodule.mem_span_of_mem
+    simp_all only [mem_range]
+    use 0
+    simp_all only [pow_zero, End.one_apply]
+  have hfTower_ne : fTowerSubmodule M t P ≠ ⊥ := by
+    rw [Submodule.ne_bot_iff]
+    use m
+    exact ⟨hm_mem, P.ne_zero⟩
+  rcases eq_bot_or_eq_top (fTowerLieSubmodule M t hL P) with h_bot | h_top
+  · by_contra!
+    have h_bot_sub : fTowerSubmodule M t P = ⊥ := congr_arg LieSubmodule.toSubmodule h_bot
+    exact hfTower_ne h_bot_sub
+  · exact h_top
+
 
 -- {f^k(m)} is linearly independent
 lemma fTower_linearIndependent
@@ -450,7 +474,7 @@ abbrev weightSpace (t : IsSl2Triple h e f) (μ : ℂ) := End.eigenspace (toEnd �
 -- each weight space has dimension ≤ 1.
 lemma finrank_weightSpace_le_one_of_fTower
     {μ : ℂ} {m : M} (P : t.HasPrimitiveVectorWith m μ)
-    (h_spans : fTowerSubmodule M t P = ⊤)
+    (h_spans : fTowerLieSubmodule M t P = ⊤)
     {weight : ℂ} :
     finrank ℂ (t.weightSpace M weight) ≤ 1 := by
   sorry
