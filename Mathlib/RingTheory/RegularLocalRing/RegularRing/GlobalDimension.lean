@@ -25,7 +25,8 @@ open IsLocalRing CategoryTheory
 variable (R) in
 theorem IsRegularRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularRing R]
     [IsNoetherianRing R] : globalDimension.{v} R = ringKrullDim R := by
-  by_cases ntr : Nontrivial R
+  rcases subsingleton_or_nontrivial R with sub|ntr
+  · rw [(globalDimension_eq_bot_iff R).mpr sub, ringKrullDim_eq_bot_of_subsingleton]
   · rw [globalDimension_eq_iSup_loclization_maximal]
     let _ : Nonempty (Subtype (Ideal.IsMaximal (α := R))) :=
       nonempty_subtype.mpr (Ideal.exists_maximal R)
@@ -60,5 +61,3 @@ theorem IsRegularRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularRi
         ← IsRegularLocalRing.globalDimension_eq_ringKrullDim.{u, v} (Localization.AtPrime p)]
       exact le_iSup (fun (p : MaximalSpectrum R) ↦ globalDimension (Localization.AtPrime p.1))
         ⟨p, hp⟩
-  · have : Subsingleton R := not_nontrivial_iff_subsingleton.mp ntr
-    rw [(globalDimension_eq_bot_iff R).mpr this, ringKrullDim_eq_bot_of_subsingleton]

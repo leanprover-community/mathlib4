@@ -63,7 +63,7 @@ lemma isCohenMacaulayLocalRing_of_isRegularLocalRing [IsRegularLocalRing R] :
   let fg' : (maximalIdeal R).FG := (maximalIdeal R).fg_of_isNoetherianRing
   let _ : Fintype (maximalIdeal R).generators := (Submodule.FG.finite_generators fg').fintype
   have : ringKrullDim R = ((maximalIdeal R).generators.toFinset.card : ℕ∞) := by
-    rw [← (isRegularLocalRing_def R).mp ‹_›, ← Set.ncard_eq_toFinset_card',
+    rw [← (isRegularLocalRing_iff R).mp ‹_›, ← Set.ncard_eq_toFinset_card',
       Submodule.FG.generators_ncard fg']
     rfl
   simp only [this, WithBot.coe_le_coe]
@@ -81,7 +81,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma isField_of_isRegularLocalRing_of_dimension_zero [IsRegularLocalRing R]
     (h : ringKrullDim R = 0) : IsField R := by
   rw [IsLocalRing.isField_iff_maximalIdeal_eq, ← Submodule.spanRank_eq_zero_iff_eq_bot]
-  have := (isRegularLocalRing_def R).mp ‹_›
+  have := (isRegularLocalRing_iff R).mp ‹_›
   simp only [h, Nat.cast_eq_zero] at this
   have fg : (maximalIdeal R).FG := (maximalIdeal R).fg_of_isNoetherianRing
   simpa [Submodule.fg_iff_spanRank_eq_spanFinrank.mpr fg] using this
@@ -102,9 +102,7 @@ lemma free_of_quotSMulTop_free [IsLocalRing R] [IsNoetherianRing R] (M : Type*) 
   let fin : Fintype I := Module.Free.ChooseBasisIndex.fintype _ _
   have : Module.Finite R (I →₀ R) := by simp [Fintype.finite fin]
   let b := Module.Free.chooseBasis (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
-  let b' : QuotSMulTop x M ≃ₗ[R] I →₀ R ⧸ Ideal.span {x} := {
-    __ := b.1
-    map_smul' r m := by simp}
+  let b' : QuotSMulTop x M ≃ₗ[R] I →₀ R ⧸ Ideal.span {x} := b.1.restrictScalars R
   let f := b'.symm.toLinearMap.comp (Finsupp.mapRange.linearMap (Submodule.mkQ (Ideal.span {x})))
   rcases Module.projective_lifting_property (Submodule.mkQ (x • (⊤ : Submodule R M))) f
     (Submodule.mkQ_surjective _) with ⟨g, hg⟩
@@ -153,7 +151,8 @@ theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing
   · let _ : Field R := (isField_of_isRegularLocalRing_of_dimension_zero hn).toField
     exact Module.Free.of_divisionRing R M
   · rename_i n ih _ _ _ _ _
-    by_cases ntr : Nontrivial M
+    rcases subsingleton_or_nontrivial M with sub|ntr
+    · exact Module.Free.of_subsingleton R M
     · obtain ⟨x, xmem, xnmem⟩ : ∃ x ∈ maximalIdeal R, x ∉ (maximalIdeal R) ^ 2 := by
         by_contra! ge
         have : IsField R := by
@@ -169,12 +168,11 @@ theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing
         have := (Set.ext_iff.mp (biUnion_associatedPrimes_eq_compl_regular R M) x).mpr h
         simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop] at this
         rcases this with ⟨p, pass, mem⟩
-        have le1 := depth_le_ringKrullDim_associatedPrime M p pass
-        rw [← WithBot.coe_le_coe, WithBot.coe_unbot, (isMaximalCohenMacaulay_def M).mp ‹_›] at le1
-        have le2 : ringKrullDim (R ⧸ p) ≤ ringKrullDim (R ⧸ Ideal.span {x}) :=
-          ringKrullDim_le_of_surjective (Ideal.Quotient.factor
-            ((Ideal.span_singleton_le_iff_mem p).mpr mem)) (Ideal.Quotient.factor_surjective _)
-        have := le1.trans le2
+        have le := depth_le_ringKrullDim_associatedPrime M p pass
+        rw [← WithBot.coe_le_coe, WithBot.coe_unbot, (isMaximalCohenMacaulay_def M).mp ‹_›] at le
+        have : ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span {x}) :=
+          le.trans (ringKrullDim_le_of_surjective (Ideal.Quotient.factor
+            ((Ideal.span_singleton_le_iff_mem p).mpr mem)) (Ideal.Quotient.factor_surjective _))
         rw [hn, dim, Nat.cast_le] at this
         exact (Nat.not_succ_le_self n) this
       have max : (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x ↑M)).IsMaximalCohenMacaulay := by
@@ -188,5 +186,3 @@ theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing
         simpa only [Ideal.Quotient.algebraMap_eq] using Ideal.Quotient.mk_surjective
       have free := ih (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) dim
       exact free_of_quotSMulTop_free M xmem reg free
-    · have : Subsingleton M := not_nontrivial_iff_subsingleton.mp ntr
-      exact Module.Free.of_subsingleton R M
