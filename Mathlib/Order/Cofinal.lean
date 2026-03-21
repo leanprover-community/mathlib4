@@ -9,6 +9,8 @@ public import Mathlib.Order.GaloisConnection.Basic
 public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Order.WellFounded
 
+import Mathlib.Data.Set.Lattice
+
 /-!
 # Cofinal sets
 
@@ -24,6 +26,8 @@ For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofin
 -/
 
 @[expose] public section
+
+open Set
 
 variable {α β : Type*}
 
@@ -54,7 +58,7 @@ end LE
 section Preorder
 variable [Preorder α] [Preorder β]
 
-theorem IsCofinal.univ : IsCofinal (@Set.univ α) :=
+theorem IsCofinal.univ : IsCofinal (@univ α) :=
   fun a ↦ ⟨a, ⟨⟩, le_rfl⟩
 
 instance : Inhabited {s : Set α // IsCofinal s} :=
@@ -65,7 +69,7 @@ theorem IsCofinal.image {f : α → β} {s : Set α} (hs : IsCofinal s)
   intro a
   obtain ⟨_, ⟨b, rfl⟩, hb⟩ := hf' a
   obtain ⟨c, hc, hc'⟩ := hs b
-  exact ⟨_, Set.mem_image_of_mem f hc, hb.trans (hf hc')⟩
+  exact ⟨_, mem_image_of_mem f hc, hb.trans (hf hc')⟩
 
 /-- A cofinal subset of a cofinal subset is cofinal. -/
 theorem IsCofinal.trans {s : Set α} {t : Set s} (hs : IsCofinal s) (ht : IsCofinal t) :
@@ -73,8 +77,8 @@ theorem IsCofinal.trans {s : Set α} {t : Set s} (hs : IsCofinal s) (ht : IsCofi
   ht.image (Subtype.mono_coe _) (by simpa)
 
 theorem GaloisConnection.isCofinal_range {f : β → α} {g : α → β} (h : GaloisConnection f g) :
-    IsCofinal (.range g) :=
-  fun a ↦ ⟨_, Set.mem_range_self _, le_u_l h a⟩
+    IsCofinal (range g) :=
+  fun a ↦ ⟨_, mem_range_self _, le_u_l h a⟩
 
 theorem GaloisConnection.map_isCofinal {f : β → α} {g : α → β}
     (h : GaloisConnection f g) {s : Set α} (hs : IsCofinal s) : IsCofinal (g '' s) :=
@@ -88,6 +92,24 @@ theorem OrderIso.map_isCofinal (e : α ≃o β) {s : Set α} (hs : IsCofinal s) 
 
 @[deprecated (since := "2026-03-15")]
 alias OrderIso.map_cofinal := OrderIso.map_isCofinal
+
+theorem isCofinal_iff_iUnion_Iic_eq {s : Set α} :
+    IsCofinal s ↔ ⋃ i ∈ s, Iic i = univ := by
+  simp [IsCofinal, eq_univ_iff_forall]
+
+theorem isCofinal_of_iUnion_Iio_eq {s : Set α} (hs : ⋃ i ∈ s, Iio i = univ) : IsCofinal s := by
+  rw [isCofinal_iff_iUnion_Iic_eq, ← univ_subset_iff, ← hs]
+  exact iUnion₂_mono fun _ _ ↦ Iio_subset_Iic_self
+
+theorem isCofinal_iff_iUnion_Iio_eq {s : Set α} [NoMaxOrder α] :
+    IsCofinal s ↔ ⋃ i ∈ s, Iio i = univ where
+  mpr := isCofinal_of_iUnion_Iio_eq
+  mp hs := by
+    simp_rw [eq_univ_iff_forall, mem_iUnion, exists_prop]
+    intro x
+    obtain ⟨y, hy⟩ := exists_gt x
+    obtain ⟨z, hz, hz'⟩ := hs y
+    exact ⟨z, hz, hy.trans_le hz'⟩
 
 end Preorder
 
