@@ -568,11 +568,9 @@ lemma Connected.exists_preconnected_induce_compl_singleton_of_finite [Finite V]
   exact ⟨v, hv.preconnected⟩
 
 /-- Removing a leaf from a tree gives another tree. -/
-lemma IsTree.tree_if_removed_leaf (v : V) [Fintype ↑(G.neighborSet v)]
-(h1 : G.IsTree) (h2 : G.degree v = 1) : (G.induce {v}ᶜ).IsTree := by
-  constructor
-  · exact (Connected.induce_compl_singleton_of_degree_eq_one h1.isConnected) h2
-  · exact IsAcyclic.induce h1.IsAcyclic {v}ᶜ
+lemma IsTree.induce_compl_singleton_of_degree_eq_one (v : V) [Fintype ↑(G.neighborSet v)]
+(h₁ : G.IsTree) (h₂ : G.degree v = 1) : (G.induce {v}ᶜ).IsTree :=
+  ⟨h₁.connected.induce_compl_singleton_of_degree_eq_one h₂, h₁.isAcyclic.induce {v}ᶜ⟩
 
 lemma IsAcyclic.dist_ne_of_adj (hG : G.IsAcyclic) {u v w : V} (hadj : G.Adj v w)
     (hreach : G.Reachable u v) : G.dist u v ≠ G.dist u w := by
