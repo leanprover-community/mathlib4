@@ -78,7 +78,6 @@ abbrev Completion := v.1.Completion
 
 namespace Completion
 
-set_option backward.isDefEq.respectTransparency false in
 instance : NormedField v.Completion :=
   letI := v.isometry_embedding.isUniformInducing.completableTopField
   UniformSpace.Completion.instNormedFieldOfCompletableTopField (WithAbs v.1)
@@ -233,7 +232,7 @@ def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completi
 
 attribute [local instance] WithAbs.algebraLeft
 
-variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) {v : InfinitePlace K}
+variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) {v}
   [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -244,8 +243,15 @@ theorem algebraMap_coe (x : WithAbs v.1) :
   rw [algebraMap_def] at this
   simp [this, algebraMap_def, Algebra.algebraMap_self]
 
-variable (v)
+end Completion
 
+section LiesOver
+
+variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) (v : InfinitePlace K)
+
+namespace Completion
+
+variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
 /-- Assume that `w.Completion` forms an algebra over `v.Completion` with continuous scalar action,
 such that `IsScalarTower K v.Completion w.Completion`.
 If `w.embedding : L →+* ℂ` extends `v.embedding : K →+* ℂ`, then the corresponding embeddings
@@ -280,12 +286,10 @@ namespace LiesOver
 
 open Completion
 
-variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) (v : InfinitePlace K)
-  [w.1.LiesOver v.1]
+variable [w.1.LiesOver v.1]
 
 attribute [local instance] WithAbs.algebraLeft
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.1)) :=
   AddMonoidHomClass.isometry_of_norm _ fun x ↦ by
     simpa [WithAbs.norm_eq_apply_ofAbs] using
@@ -302,5 +306,7 @@ variable {v} in
 theorem extensionEmbedding_liesOver_of_isReal [ContinuousSMul v.Completion w.Completion]
     (h : v.IsReal) : ComplexEmbedding.LiesOver (extensionEmbedding w) (extensionEmbedding v) :=
   letI := embedding_liesOver_of_isReal w h; liesOver_extensionEmbedding w v
+
+end LiesOver
 
 end NumberField.InfinitePlace.LiesOver
