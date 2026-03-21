@@ -29,6 +29,8 @@ so it applies to non-square matrices and linear maps between different spaces.
   (Dec 1992, Linear Algebra and its Applications)
 -/
 
+@[expose] public section
+
 /-- `As` is a Moore-Penrose pseudo-inverse of `A` if the four Penrose conditions hold:
 1. `A * As * A = A`
 2. `As * A * As = As`

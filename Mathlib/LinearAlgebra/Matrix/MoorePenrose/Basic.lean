@@ -30,6 +30,8 @@ is the unique matrix satisfying the four Penrose conditions
   `A⁺ = A⁻¹`.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 namespace Matrix
