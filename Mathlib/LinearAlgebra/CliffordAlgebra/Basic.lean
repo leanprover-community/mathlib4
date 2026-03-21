@@ -64,6 +64,7 @@ inductive Rel : TensorAlgebra R M → TensorAlgebra R M → Prop
 
 end CliffordAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Clifford algebra of an `R`-module `M` equipped with a `QuadraticForm` `Q`.
 -/
 def CliffordAlgebra :=

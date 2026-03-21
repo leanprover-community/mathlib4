@@ -62,11 +62,7 @@ end TensorAlgebra
 -/
 def TensorAlgebra :=
   RingQuot (TensorAlgebra.Rel R M)
-deriving Inhabited
-
--- This is needed or we get errors in `Mathlib/Algebra/Lie/UniversalEnveloping.lean`.
-set_option backward.deriving.wrap false in
-deriving instance Semiring for TensorAlgebra
+deriving Inhabited, Semiring
 
 -- `IsScalarTower` is not needed, but the instance isn't really canonical without it.
 @[nolint unusedArguments]
