@@ -762,7 +762,6 @@ alias unbounded_of_unbounded_iUnion := isCofinal_of_isCofinal_iUnion
 
 /-! ### Consequences of König's lemma -/
 
-open Classical in
 theorem lt_power_cof {c : Cardinal} (hc : ℵ₀ ≤ c) : c < c ^ c.ord.cof := by
   induction c using Cardinal.inductionOn with | mk α
   obtain ⟨_, _, hα⟩ := ord_eq_type_lt α
@@ -771,18 +770,16 @@ theorem lt_power_cof {c : Cardinal} (hc : ℵ₀ ≤ c) : c < c ^ c.ord.cof := b
     exact (isSuccLimit_ord hc).isSuccPrelimit
   obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
   rw [hα, cof_type, ← card_ord (Order.cof _), ← hs', card_type, ← prod_const']
-  have := sum_lt_prod (fun x : s ↦ #(Iio x.1)) (fun _ ↦ #α) fun i ↦ ?_
-  · apply (mk_iUnion_le_sum_mk.trans' _).trans_lt this
-    rw [isCofinal_iff_iUnion_Iio_eq] at hs
+  refine (mk_iUnion_le_sum_mk.trans' ?_).trans_lt
+    (sum_lt_prod (fun x : s ↦ #(Iio x.1)) _ fun i ↦ ?_)
+  · rw [isCofinal_iff_iUnion_Iio_eq] at hs
     rw [← mk_univ, ← hs, iUnion_coe_set]
   · have := typein_lt_type LT.lt i.1
     rwa [← hα, lt_ord] at this
 
-#exit
-theorem lt_cof_power {a b : Cardinal} (ha : ℵ₀ ≤ a) (b1 : 1 < b) : a < (b ^ a).ord.cof := by
-  have b0 : b ≠ 0 := (zero_lt_one.trans b1).ne'
-  apply lt_imp_lt_of_le_imp_le (power_le_power_left <| power_ne_zero a b0)
+theorem lt_cof_power {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : 1 < b) : a < (b ^ a).ord.cof := by
+  apply lt_imp_lt_of_le_imp_le (power_le_power_left <| power_ne_zero a hb.ne_bot)
   rw [← power_mul, mul_eq_self ha]
-  exact lt_power_cof (ha.trans <| (cantor' _ b1).le)
+  exact lt_power_cof (ha.trans <| (cantor' _ hb).le)
 
 end Cardinal
