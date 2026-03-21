@@ -90,7 +90,7 @@ theorem subtypeOrderIso_apply_coe [PartialOrder α] [OrderTop α] [DecidablePred
 
 theorem subtypeOrderIso_symm_apply [PartialOrder α] [OrderTop α] [DecidablePred (· = (⊤ : α))]
     {a : α} (h : a ≠ ⊤) :
-    (subtypeOrderIso).symm a = (⟨a, h⟩ : {a : α // a ≠ ⊤}) := by
+    subtypeOrderIso.symm a = (⟨a, h⟩ : {a : α // a ≠ ⊤}) := by
   rw [OrderIso.symm_apply_eq]
   rfl
 
@@ -154,7 +154,7 @@ theorem subtypeOrderIso_apply_coe [PartialOrder α] [OrderBot α] [DecidablePred
 
 theorem subtypeOrderIso_symm_apply [PartialOrder α] [OrderBot α] [DecidablePred (· = (⊥ : α))]
     {a : α} (h : a ≠ ⊥) :
-    (subtypeOrderIso).symm a = (⟨a, h⟩ : {a : α // a ≠ ⊥}) := by
+    subtypeOrderIso.symm a = (⟨a, h⟩ : {a : α // a ≠ ⊥}) := by
   rw [OrderIso.symm_apply_eq]
   rfl
 

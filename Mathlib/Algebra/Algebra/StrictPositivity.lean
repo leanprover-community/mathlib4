@@ -67,6 +67,15 @@ lemma isSelfAdjoint [Semiring A] [PartialOrder A] [StarRing A] [StarOrderedRing 
 lemma _root_.isStrictlyPositive_one [LE A] [Monoid A] [Zero A] [ZeroLEOneClass A] :
     IsStrictlyPositive (1 : A) := iff_of_unital.mpr ⟨zero_le_one, isUnit_one⟩
 
+@[grind =]
+lemma _root_.Units.isStrictlyPositive_iff [LE A] [Monoid A] [Zero A] {a : Aˣ} :
+    IsStrictlyPositive (a : A) ↔ (0 : A) ≤ a :=
+  ⟨fun h => h.nonneg, fun h => iff_of_unital.mp ⟨h, a.isUnit⟩⟩
+
+@[aesop safe apply]
+lemma _root_.Units.isStrictlyPositive_of_le [LE A] [Monoid A] [Zero A] {a : Aˣ}
+    (h : (0 : A) ≤ a) : IsStrictlyPositive (a : A) := a.isStrictlyPositive_iff.mpr h
+
 end basic
 
 section StarOrderedRing
