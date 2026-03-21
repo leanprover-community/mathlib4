@@ -3,7 +3,9 @@ Copyright (c) 2026 Fangming Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li
 -/
-import Mathlib.Topology.Bases
+module
+
+public import Mathlib.Topology.Bases
 
 /-!
 # Closed bases and closed subbases of topologies.
@@ -20,9 +22,11 @@ of them.
   closed subbasis if the topology on `α` equals `generateFrom { uᶜ | u ∈ s }`.
 -/
 
-namespace TopologicalSpace
+@[expose] public section
 
 variable {α : Type*} [t : TopologicalSpace α]
+
+namespace TopologicalSpace
 
 /-- A closed basis is a collection of closed sets `s : Set (Set α)` such that every closed subset
   of `α` can be written as an intersection of elements of `s`. -/
