@@ -475,9 +475,9 @@ theorem sierpinski_pathological_family (Hcont : #ℝ = ℵ₁) :
     rw [this]
     apply Countable.union _ (countable_singleton _)
     rw [Cardinal.countable_iff_lt_aleph_one, ← Hcont]
-    exact Cardinal.card_typein_lt r H x
+    exact Cardinal.card_typein_lt x H
   · rw [Cardinal.countable_iff_lt_aleph_one, ← Hcont]
-    exact Cardinal.card_typein_lt r H x
+    exact Cardinal.card_typein_lt x H
 
 /-- A family of sets in `ℝ` which only miss countably many points, but such that any point is
 contained in only countably many of them. -/
