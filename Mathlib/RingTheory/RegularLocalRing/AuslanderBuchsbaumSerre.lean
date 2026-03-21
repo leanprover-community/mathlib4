@@ -31,16 +31,6 @@ variable (R : Type u) [CommRing R]
 
 open IsLocalRing CategoryTheory RingTheory.Sequence
 
-local instance [Small.{v} R] (I : Ideal R) : Small.{v} I :=
-  small_of_injective I.subtype_injective
-
-lemma quotSMulTop_nontrivial' [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
-    (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L] :
-    Nontrivial (QuotSMulTop x L) := by
-  apply Submodule.Quotient.nontrivial_iff.mpr (Ne.symm _)
-  apply Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator
-  exact IsLocalRing.maximalIdeal_le_jacobson _ mem
-
 local instance finite_QuotSMulTop (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M]
     (x : R) : Module.Finite (R ⧸ Ideal.span {x}) (QuotSMulTop x M) := by
   let f : M →ₛₗ[Ideal.Quotient.mk (Ideal.span {x})] (QuotSMulTop x M) := {
@@ -234,12 +224,8 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
       have reg2'' : IsSMulRegular S.X₂ x := reg1.of_free S.X₂
       have reg2' : IsSMulRegular S.X₁ x := reg2''.submodule _ _
       have Sx_exact' := QuotSMulTop_map_exact x S_exact' surjf
-      let Sx : ShortComplex (ModuleCat.{v} (R ⧸ Ideal.span {x})) := {
-        f := ModuleCat.ofHom (QuotSMulTop_map x (LinearMap.ker f).subtype)
-        g := ModuleCat.ofHom (QuotSMulTop_map x f)
-        zero := by
-          rw [← ModuleCat.ofHom_comp, Sx_exact'.linearMap_comp_eq_zero]
-          rfl }
+      let Sx := ModuleCat.shortComplexOfCompEqZero (QuotSMulTop_map x (LinearMap.ker f).subtype)
+        (QuotSMulTop_map x f) Sx_exact'.linearMap_comp_eq_zero
       have inj : Function.Injective (QuotSMulTop_map x (LinearMap.ker f).subtype) := by
         rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff]
         intro y hy
@@ -254,23 +240,19 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
           Submodule.mem_top, true_and, Subtype.exists, SetLike.mk_smul_mk, LinearMap.mem_ker]
         use z, reg2.right_eq_zero_of_smul this
         exact Subtype.val_inj.mp hz
-      have Sx_exact : Sx.ShortExact := {
-        exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact Sx).mpr Sx_exact'
-        mono_f := (ModuleCat.mono_iff_injective Sx.f).mpr inj
-        epi_g := (ModuleCat.epi_iff_surjective Sx.g).mpr (QuotSMulTop_map_surjective x surjf)}
+      have Sx_exact := ModuleCat.shortComplex_shortExact Sx Sx_exact' inj
+        (QuotSMulTop_map_surjective x surjf)
       let _ := (free_iff_quotSMulTop_free R N mem reg2'').mpr inferInstance
-      have proj' := ModuleCat.projective_of_categoryTheory_projective Sx.X₂
       exact ((S_exact.hasProjectiveDimensionLT_X₃_iff n proj).trans (ih S.X₁ reg2')).trans
-        (Sx_exact.hasProjectiveDimensionLT_X₃_iff n proj').symm
+        (Sx_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).symm
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
   | bot =>
     simp only [le_bot_iff, projectiveDimension_eq_bot_iff,
       projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton]
     refine ⟨fun h ↦ (Submodule.Quotient.mk_surjective _).subsingleton, fun h ↦ ?_⟩
-    by_contra ntr
-    have : Nontrivial M := not_subsingleton_iff_nontrivial.mp ntr
-    exact (not_subsingleton_iff_nontrivial.mpr (quotSMulTop_nontrivial' R mem M)) h
+    by_contra! ntr
+    exact (not_subsingleton_iff_nontrivial.mpr (nontrivial_quotSMulTop_of_mem_maximalIdeal M mem)) h
   | coe N =>
     induction N with
     | top => simp
@@ -298,16 +280,8 @@ lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE_aux [IsLocalRing R] 
     simpa [Sf] using LinearEquiv.injective (Shrink.linearEquiv R (maximalIdeal R))
   have surj : Function.Surjective Sg := by
     simpa [Sg] using Ideal.Quotient.mk_surjective
-  let S : ShortComplex (ModuleCat.{v} R) := {
-    f := ModuleCat.ofHom Sf
-    g := ModuleCat.ofHom Sg
-    zero := by
-      ext x
-      simp [Function.Exact.apply_apply_eq_zero exac] }
-  have S_exact : S.ShortExact := {
-    exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr exac
-    mono_f := (ModuleCat.mono_iff_injective _).mpr inj
-    epi_g := (ModuleCat.epi_iff_surjective _).mpr surj }
+  let S := ModuleCat.shortComplexOfCompEqZero Sf Sg exac.linearMap_comp_eq_zero
+  have S_exact := ModuleCat.shortComplex_shortExact S exac inj surj
   rcases h with ⟨n, hn⟩
   have projdim := (S_exact.hasProjectiveDimensionLT_X₃_iff n
     (ModuleCat.projective_of_categoryTheory_projective S.X₂)).mpr hn
