@@ -434,40 +434,31 @@ open LieSubmodule in
 
 /-! ### Ideal-Cartan intersection
 
-We prove that the intersection `I ⊓ H` of a Lie ideal with a Cartan subalgebra
-equals the span of the coroots for roots in `I.rootSet`. -/
+We prove that the Cartan part `I.restr H ⊓ H.toLieSubmodule` of a Lie ideal equals the
+span of the coroots for roots in `I.rootSet`. -/
 
-omit [CharZero K] [IsKilling K L] [IsTriangularizable K H L] in
-/-- The coroot span of a Lie ideal is contained in the Cartan part of the ideal. -/
-lemma coroot_span_le_inf_cartan (I : LieIdeal K L) :
-    ⨆ α ∈ I.rootSet (H := H), (corootSubmodule α.1).toSubmodule ≤
-      I.toSubmodule ⊓ H.toSubmodule :=
-  iSup₂_le fun _ hα ↦ le_inf (I.corootSubmodule_le hα) LieSubmodule.map_incl_le
-
-/-- A root outside `I.rootSet` vanishes on the Cartan part `I ⊓ H` of the ideal. -/
+/-- A root outside `I.rootSet` vanishes on the Cartan part of the ideal. -/
 lemma weight_apply_eq_zero_of_not_mem_rootSet (I : LieIdeal K L)
-    {x : L} (hxI : x ∈ I.toSubmodule) (hxH : x ∈ H.toSubmodule)
-    {β : H.root} (hβ : β ∉ I.rootSet (H := H)) :
-    (β : Weight K H L) ⟨x, hxH⟩ = 0 := by
+    {h : H} (hI : (h : L) ∈ I) {β : H.root} (hβ : β ∉ I.rootSet) :
+    (β : Weight K H L) h = 0 := by
   simp only [LieIdeal.mem_rootSet] at hβ
-  by_contra h; apply hβ; intro y hy
-  have hsmul : (β : Weight K H L) ⟨x, hxH⟩ • y ∈ I.toSubmodule := by
-    rw [← lie_eq_smul_of_mem_rootSpace hy ⟨x, hxH⟩]
-    exact lie_mem_left K L I x y hxI
-  rwa [I.toSubmodule.smul_mem_iff (by exact_mod_cast h)] at hsmul
+  by_contra hne; apply hβ; intro y hy
+  have hsmul : (β : Weight K H L) h • y ∈ I.toSubmodule := by
+    rw [← lie_eq_smul_of_mem_rootSpace hy h]
+    exact lie_mem_left K L I h y hI
+  rwa [I.toSubmodule.smul_mem_iff (by exact_mod_cast hne)] at hsmul
 
 /-- For `α ∈ I.rootSet` and `β ∉ I.rootSet`, the weight `α` vanishes on `coroot β`.
 
-Together with `weight_apply_eq_zero_of_not_mem_rootSet` (which gives the other direction
-`β(coroot α) = 0`), this yields a full orthogonality between roots inside and outside a
-Lie ideal. -/
+Together with `weight_apply_eq_zero_of_not_mem_rootSet` (which gives `β(coroot α) = 0`),
+this yields a symmetric orthogonality between roots inside and outside a Lie ideal. -/
 lemma rootSet_apply_coroot_eq_zero (I : LieIdeal K L)
-    {α : H.root} (hα : α ∈ I.rootSet (H := H))
-    {β : H.root} (hβ : β ∉ I.rootSet (H := H)) :
+    {α : H.root} (hα : α ∈ I.rootSet)
+    {β : H.root} (hβ : β ∉ I.rootSet) :
     (α : Weight K H L) (coroot (β : Weight K H L)) = 0 := by
   have h_ker : coroot (α : Weight K H L) ∈ (β : Weight K H L).ker :=
     weight_apply_eq_zero_of_not_mem_rootSet I
-      (I.corootSubmodule_le hα (coe_coroot_mem_corootSubmodule _)) (coroot _).property hβ
+      (I.corootSubmodule_le hα (coe_coroot_mem_corootSubmodule _)) hβ
   have h_trace := traceForm_eq_zero_of_mem_ker_of_mem_span_coroot h_ker
     (Submodule.mem_span_singleton_self (coroot (β : Weight K H L)))
   have : coroot (β : Weight K H L) ∈
@@ -478,20 +469,27 @@ lemma rootSet_apply_coroot_eq_zero (I : LieIdeal K L)
     right; exact traceForm_comm K H L _ _ ▸ h_trace
   rwa [orthogonal_span_coroot_eq_ker] at this
 
-/-- The Cartan part `I ⊓ H` of a Lie ideal equals the span of the coroots for roots in `I`.
+omit [CharZero K] [IsKilling K L] [IsTriangularizable K H L] in
+/-- The coroot span of a Lie ideal is contained in the Cartan part of the ideal. -/
+lemma iSup_corootSubmodule_le_restr_inf (I : LieIdeal K L) :
+    ⨆ α ∈ I.rootSet, corootSubmodule α.1 ≤ I.restr H ⊓ H.toLieSubmodule :=
+  iSup₂_le fun _ hα ↦ le_inf (I.corootSubmodule_le hα) LieSubmodule.map_incl_le
 
-This characterizes which elements of the Cartan subalgebra lie in a given ideal: precisely
-the linear combinations of coroots whose root spaces are contained in the ideal. -/
-lemma lieIdeal_inf_cartan_eq_coroot_span (I : LieIdeal K L) :
-    I.toSubmodule ⊓ H.toSubmodule =
-      ⨆ α ∈ I.rootSet (H := H), (corootSubmodule α.1).toSubmodule := by
-  refine le_antisymm ?_ (coroot_span_le_inf_cartan I)
-  intro x hx
-  obtain ⟨hxI, hxH⟩ := Submodule.mem_inf.mp hx
+private lemma span_coroot_le_corootSubmodule (α : Weight K H L) :
+    Submodule.map H.toSubmodule.subtype (K ∙ coroot α) ≤ (corootSubmodule α).toSubmodule := by
+  rw [← coe_corootSpace_eq_span_singleton]
+  rfl
+
+/-- The Cartan part `I.restr H ⊓ H.toLieSubmodule` of a Lie ideal equals the span of the
+coroots for roots in `I.rootSet`. -/
+lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
+    I.restr H ⊓ H.toLieSubmodule = ⨆ α ∈ I.rootSet, corootSubmodule α.1 := by
+  refine le_antisymm ?_ (iSup_corootSubmodule_le_restr_inf I)
+  intro x ⟨hxI, hxH⟩
   set h : H := ⟨x, hxH⟩
-  set S_I : Submodule K H := ⨆ α ∈ I.rootSet (H := H), (K ∙ coroot (α.1 : Weight K H L))
+  set S_I : Submodule K H := ⨆ α ∈ I.rootSet, (K ∙ coroot (α.1 : Weight K H L))
   set S_c : Submodule K H :=
-    ⨆ (β : H.root) (_ : β ∉ I.rootSet (H := H)), (K ∙ coroot (β : Weight K H L))
+    ⨆ (β : H.root) (_ : β ∉ I.rootSet), (K ∙ coroot (β : Weight K H L))
   have h_top : S_I ⊔ S_c = ⊤ := by
     rw [eq_top_iff, ← show ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero),
         (K ∙ coroot α : Submodule K H) = ⊤ by
@@ -499,22 +497,23 @@ lemma lieIdeal_inf_cartan_eq_coroot_span (I : LieIdeal K L) :
         biSup_corootSpace_eq_top, LieSubmodule.top_toSubmodule]]
     exact iSup₂_le fun α hα ↦ by
       have hα_root : α ∈ H.root := by simpa [LieSubalgebra.root] using hα
-      by_cases hαI : (⟨α, hα_root⟩ : H.root) ∈ I.rootSet (H := H)
+      by_cases hαI : (⟨α, hα_root⟩ : H.root) ∈ I.rootSet
       · exact le_sup_of_le_left (le_iSup₂_of_le ⟨α, hα_root⟩ hαI le_rfl)
       · exact le_sup_of_le_right (le_iSup₂_of_le ⟨α, hα_root⟩ hαI le_rfl)
-  have hS_I_le : S_I ≤ Submodule.comap H.toSubmodule.subtype
-      (⨆ α ∈ I.rootSet (H := H), (corootSubmodule α.1).toSubmodule) :=
-    iSup₂_le fun α hα z hz ↦ by
-      rw [Submodule.mem_comap]
-      obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.mp hz
-      simp only [map_smul]
-      exact Submodule.smul_mem _ _
-        ((le_iSup₂_of_le α hα le_rfl : (corootSubmodule α.1).toSubmodule ≤ _)
-          (coe_coroot_mem_corootSubmodule α.1))
+  have hS_I_sub : ∀ z ∈ S_I,
+      (z : L) ∈ (⨆ α ∈ I.rootSet, corootSubmodule α.1 : LieSubmodule K H L) := by
+    intro z hz
+    refine (iSup₂_le (fun α hα z hz ↦ ?_) : S_I ≤
+        Submodule.comap H.toSubmodule.subtype
+          (⨆ α ∈ I.rootSet, corootSubmodule α.1 : LieSubmodule K H L)) hz
+    obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.mp hz
+    exact (le_iSup₂_of_le α hα le_rfl : corootSubmodule α.1 ≤ _)
+      ((corootSubmodule α.1).toSubmodule.smul_mem _
+        (coe_coroot_mem_corootSubmodule α.1))
   obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp (h_top ▸ Submodule.mem_top (x := h))
-  have haI : (a : L) ∈ I.toSubmodule :=
-    (Submodule.mem_inf.mp (coroot_span_le_inf_cartan I (hS_I_le ha))).1
-  have hbI : (b : L) ∈ I.toSubmodule := by
+  have haI : (a : L) ∈ I :=
+    ((iSup_corootSubmodule_le_restr_inf I) (hS_I_sub a ha)).1
+  have hbI : (b : L) ∈ I := by
     have : (b : L) = x - (a : L) := by
       have h1 : (a : L) + (b : L) = x := congr_arg Subtype.val hab
       rw [← h1, add_sub_cancel_left]
@@ -524,15 +523,15 @@ lemma lieIdeal_inf_cartan_eq_coroot_span (I : LieIdeal K L) :
     refine (Submodule.mem_iInf _).mpr fun μ ↦ ?_
     by_cases hμ : μ.IsNonZero
     · have hμ_root : μ ∈ H.root := by simpa [LieSubalgebra.root] using hμ
-      by_cases hμI : (⟨μ, hμ_root⟩ : H.root) ∈ I.rootSet (H := H)
+      by_cases hμI : (⟨μ, hμ_root⟩ : H.root) ∈ I.rootSet
       · exact (iSup₂_le fun γ hγ ↦ Submodule.span_le.mpr <| by
           simp [Set.singleton_subset_iff, rootSet_apply_coroot_eq_zero I hμI hγ]) hb
-      · exact weight_apply_eq_zero_of_not_mem_rootSet I hbI b.property hμI
+      · exact weight_apply_eq_zero_of_not_mem_rootSet I hbI hμI
     · simp only [Weight.IsNonZero, not_not] at hμ
       exact LinearMap.mem_ker.mpr (congr_fun hμ b)
   have hha : h = a := by rw [← hab, hb_zero, add_zero]
-  rw [show x = (a : L) from congr_arg Subtype.val hha]
-  exact hS_I_le ha
+  subst hha
+  exact hS_I_sub h ha
 
 instance [IsSimple K L] : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L
