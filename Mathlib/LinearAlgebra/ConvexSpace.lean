@@ -107,7 +107,7 @@ def map {M : Type v} {N : Type w} (g : M → N) (f : StdSimplex R M) : StdSimple
 lemma map_const (f : StdSimplex R M) (x : N) : f.map (fun _ ↦ x) = .single x := by
   classical
   ext a
-  suffices (f.sum fun a₁ b ↦ if x = a then b else 0) = if x = a then 1 else 0 by
+  suffices f.sum (fun a₁ b ↦ if x = a then b else 0) = if x = a then 1 else 0 by
     simpa [map, Finsupp.mapDomain, ← mk_single, Finsupp.single_apply]
   split_ifs <;> simp
 
