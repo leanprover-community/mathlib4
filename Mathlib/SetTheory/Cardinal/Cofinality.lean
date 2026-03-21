@@ -662,7 +662,7 @@ theorem cof_omega0 : cof ω = ℵ₀ :=
     rw [← card_omega0]
     apply cof_le_card
 
--- TODO: deprecate in favor of `Order.cof_eq`
+@[deprecated Order.cof_eq (since := "2026-03-20")]
 theorem cof_eq' (r : α → α → Prop) [H : IsWellOrder α r] (h : IsSuccLimit (type r)) :
     ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = cof (type r) := by
   classical
