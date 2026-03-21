@@ -9,7 +9,6 @@ public meta import Lean.Meta.Tactic.TryThis
 public meta import Mathlib.Lean.Expr.Basic
 public meta import Std.Time.Format
 public import Batteries.Tactic.Alias
-public import Mathlib.Tactic.Lemma
 
 /-!
 # `deprecate to` -- a deprecation tool

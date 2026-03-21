@@ -6,8 +6,6 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Tactic.TypeStar
-public import Mathlib.Tactic.Lemma
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
 
