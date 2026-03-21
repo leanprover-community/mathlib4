@@ -120,18 +120,15 @@ theorem restrictScalars_range_ofPowSMul_eq_ker_eval {n : ℕ} :
   use OfValEqZero I hx; simp
 
 set_option backward.isDefEq.respectTransparency false in
-lemma lsum_smul_comp_finsuppLEquivDirectSum_symm {ι : Type*} [DecidableEq ι] (f : ι → R) :
+-- An intermediate helper lemma for the theorem below to avoid introducing
+-- `AdicCompletion.finsuppSum` (the `Finsupp` version of `AdicCompletion.sum`)
+private lemma lsum_smul_comp_finsuppLEquivDirectSum_symm {ι : Type*} [DecidableEq ι] (f : ι → R) :
     ((lsum (AdicCompletion I R)) fun i ↦
       ((of I R) (f i) • .id : AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I M)) ∘ₗ
         (finsuppLEquivDirectSum (AdicCompletion I R) (AdicCompletion I M) ι).symm.toLinearMap =
     (map I (lsum R fun i ↦ f i • .id) ∘ₗ map I (finsuppLEquivDirectSum R M ι).symm.toLinearMap) ∘ₗ
       (sum I (fun _ : ι ↦ M)) := by
-  ext
-  simp only [LinearMap.coe_comp, coe_lsum, LinearEquiv.coe_coe, Function.comp_apply,
-    finsuppLEquivDirectSum_symm_lof, LinearMap.smul_apply, LinearMap.id_coe, id_eq, smul_zero,
-    sum_single_index, smul_eval, smul_eq_mul, of_apply, mkQ_apply, Ideal.Quotient.mk_eq_mk,
-    mk_apply_coe, sum_lof, map_mk, AdicCauchySequence.map_apply_coe, map_smul]
-  rfl
+  ext; simp [-smul_eq_mul, ← Ideal.Quotient.algebraMap_eq]
 
 set_option backward.isDefEq.respectTransparency false in
 variable {I} in
