@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Tactic.TypeStar
 public import Mathlib.Tactic.Lemma
 
 /-!
