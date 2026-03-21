@@ -19,8 +19,8 @@ of a pointed cone `C`.
 * `Face C`: the face lattice of `C`.
 * `min`: minimum operation on `Face C`.
 * `CompleteLattice` instance: the face lattice of a pointed cone.
-* `prod`: the product of two faces of pointed cones, together with projections `fst` and `snd`.
-* `prodOrderIso`: proves that the face lattices of a product cone is the product of the face
+* `Face.prod`: the product of two faces of pointed cones, together with projections `fst` and `snd`.
+* 'Face.prodOrderIso`: proves that the face lattices of a product cone is the product of the face
   lattices of the individual cones.
 
 -/
@@ -192,6 +192,4 @@ end Prod
 
 end Field
 
-end Face
-
-end PointedCone
+end PointedCone.Face

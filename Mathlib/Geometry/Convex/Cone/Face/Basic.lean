@@ -42,7 +42,7 @@ variable {R M N : Type*}
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M] in
 /-- A sub-cone `F` of a pointed cone `C` is a face of `C` if any two points of `C` with a strictly
 positive combination in `F` are also in `F`. -/
-structure IsFaceOf (F C : PointedCone R M) where
+structure IsFaceOf (F C : PointedCone R M) : Prop where
   le : F ≤ C
   mem_of_smul_add_mem :
     ∀ {x y : M} {a : R}, x ∈ C → y ∈ C → 0 < a → a • x + y ∈ F → x ∈ F
@@ -54,7 +54,7 @@ variable [AddCommGroup M] [Module R M]
 variable {C C₁ C₂ F F₁ F₂ : PointedCone R M}
 
 theorem isFaceOf_iff_mem_of_smul_add_smul_mem : F.IsFaceOf C ↔
-    (F ≤ C ∧ ∀ {x y : M} {a b : R}, x ∈ C → y ∈ C → 0 < a → 0 < b → a • x + b • y ∈ F → x ∈ F)
+    F ≤ C ∧ ∀ {x y : M} {a b : R}, x ∈ C → y ∈ C → 0 < a → 0 < b → a • x + b • y ∈ F → x ∈ F
     := by
   constructor <;> intro h
   · refine ⟨h.1, fun xC yC a0 b0 hab => ?_⟩
@@ -69,7 +69,7 @@ namespace IsFaceOf
 
 /-- A pointed cone `C` as a face of itself. -/
 @[refl, simp]
-theorem refl (C : PointedCone R M) : C.IsFaceOf C := ⟨fun _ a => a, fun hx _ _ _ => hx⟩
+protected theorem refl (C : PointedCone R M) : C.IsFaceOf C := ⟨fun _ a => a, fun hx _ _ _ => hx⟩
 
 protected theorem rfl {C : PointedCone R M} : C.IsFaceOf C := ⟨fun _ a => a, fun hx _ _ _ => hx⟩
 
