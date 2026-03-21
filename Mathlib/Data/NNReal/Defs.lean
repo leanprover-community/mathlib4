@@ -99,7 +99,6 @@ noncomputable instance : SMul ℚ≥0 ℝ≥0 where
 noncomputable instance zpow : Pow ℝ≥0 ℤ where
   pow x n := ⟨(x : ℝ) ^ n, zpow_nonneg x.2 _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Redo the `Nonneg.semifield` instance, because this will get unfolded a lot,
 and ends up inserting the non-reducible defeq `ℝ≥0 = { x // x ≥ 0 }` in places where
 it needs to be reducible(-with-instances).
@@ -115,8 +114,8 @@ instance : IsOrderedRing ℝ≥0 :=
 instance : IsStrictOrderedRing ℝ≥0 :=
   Nonneg.isStrictOrderedRing
 
-noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
-  Nonneg.linearOrderedCommGroupWithZero
+noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 where
+  zero_le h := h.2
 
 example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
   with_reducible_and_instances exact inv_anti₀ h1p h2p
