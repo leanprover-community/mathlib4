@@ -610,8 +610,8 @@ lemma abs_logHeight_sym2_sub_le :
   -- `grind` does it without the `specialize`, but is slow
   exact ⟨max C₁ (-C₂), fun hab hcd ↦ by specialize hC₂ hab hcd; grind⟩
 
-end sym2
-
 end Height
+
+end sym2
 
 end
