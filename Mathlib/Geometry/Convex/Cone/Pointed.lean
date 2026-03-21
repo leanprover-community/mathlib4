@@ -170,16 +170,16 @@ def ofConeComb (C : Set E) (nonempty : C.Nonempty)
   .ofLinearComb C nonempty fun x hx y hy ⟨a, ha⟩ ⟨b, hb⟩ => coneComb x hx y hy a ha b hb
 
 variable (R) in
-/-- The span of a set `s` is the smallest pointed cone that contains `s`.
+/-- The cone hull of a set `s` is the smallest pointed cone that contains `s`.
 
 Pointed cones being defined as submodules over nonnegative scalars, this is exactly the
 submodule span of `s` w.r.t. nonnegative scalars. -/
-abbrev span (s : Set E) : PointedCone R E := Submodule.span R≥0 s
+abbrev hull (s : Set E) : PointedCone R E := Submodule.span R≥0 s
 
-lemma subset_span {s : Set E} : s ⊆ PointedCone.span R s := Submodule.subset_span
+lemma subset_hull {s : Set E} : s ⊆ PointedCone.hull R s := Submodule.subset_span
 
 /-- Elements of the cone hull are expressible as conical combination of elements from s. -/
-lemma mem_span_set {s : Set E} : x ∈ span R s ↔
+lemma mem_hull_set {s : Set E} : x ∈ hull R s ↔
       ∃ c : E →₀ R, ↑c.support ⊆ s ∧ (∀ y, 0 ≤ c y) ∧ c.sum (fun m r => r • m) = x := by
   rw [Submodule.mem_span_set]
   constructor
