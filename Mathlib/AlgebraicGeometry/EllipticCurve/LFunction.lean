@@ -7,12 +7,23 @@ module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Reduction
 public import Mathlib.NumberTheory.ArithmeticFunction.LFunction
-public import Mathlib.NumberTheory.NumberField.FinitePlaces
-public import Mathlib.NumberTheory.LSeries.SumCoeff
-public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.Algebra.GroupWithZero.Range
+public import Mathlib.Data.Int.WithZero
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.Factorization
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+public import Mathlib.RingTheory.Valuation.Archimedean
+public import Mathlib.Topology.Algebra.Valued.NormedValued
+public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
+public import Mathlib.Algebra.Order.Archimedean.Submonoid
+public import Mathlib.RingTheory.Valuation.Discrete.RankOne
+public import Mathlib.Algebra.FiniteSupport.Basic
+public import Mathlib.NumberTheory.LSeries.SumCoeff
+public import Mathlib.RingTheory.PowerSeries.Inverse
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
+public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
 
 /-!
 # The L-function of an elliptic curve
@@ -43,8 +54,8 @@ noncomputable def localPolynomial : ℤ[X] :=
   letI W' := W.minimal R
   letI q : ℤ := Nat.card (IsLocalRing.ResidueField R)
   letI a : ℤ := q + 1 - (Nat.card (W'.reduction R).toAffine.Point)
-  if W'.IsGoodReduction R then 1 - C a * X + C q * X ^ 2
-  else if W'.IsAdditiveReduction R then 1
+  if W'.HasGoodReduction R then 1 - C a * X + C q * X ^ 2
+  else if W'.HasAdditiveReduction R then 1
   else if W'.IsSplitMultiplicativeReduction R then 1 - X
   else 1 + X
 
@@ -78,13 +89,13 @@ protected noncomputable def LSeries (W : WeierstrassCurve K) (s : ℂ) :=
 
 end WeierstrassCurve
 
--- todo: generalize to `HasFiniteQuotients`
-instance {S : Type*} [CommRing S] [Nontrivial S] [IsDedekindDomain S] [Module.Free ℤ S]
-  [Module.Finite ℤ S] [CharZero S] :
+variable {S : Type*} [CommRing S] [Ring.HasFiniteQuotients S]
+
+instance [IsDedekindDomain S] [Module.Free ℤ S] :
     Northcott (fun p : IsDedekindDomain.HeightOneSpectrum S ↦ p.asIdeal.absNorm) := by
-  constructor
-  intro B
-  refine ((Ideal.finite_setOf_absNorm_le B).preimage
-    (f := IsDedekindDomain.HeightOneSpectrum.asIdeal) (Function.Injective.injOn ?_)).subset ?_
-  · exact fun _ _ ↦ IsDedekindDomain.HeightOneSpectrum.ext
-  · grind
+  rw [northcott_iff]
+  exact Ring.HasFiniteQuotients.finite_absNorm_heightOneSpectrum_le
+
+instance : Northcott (fun p : Ideal S ↦ p.cardQuot) := by
+  rw [northcott_iff]
+  exact Ring.HasFiniteQuotients.finite_cardQuot_le
