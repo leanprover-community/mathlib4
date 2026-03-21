@@ -228,6 +228,10 @@ theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable
   hs.2 ▸ by simp only [← preimage_comp, Function.comp_def, hf hs.1]
 
 @[fun_prop]
+theorem Measurable.codRestrict {s : Set β} {f : α → β} (hf : Measurable f)
+    (h : ∀ y, f y ∈ s) : Measurable (codRestrict f s h) := hf.subtype_mk
+
+@[fun_prop]
 protected theorem Measurable.rangeFactorization {f : α → β} (hf : Measurable f) :
     Measurable (rangeFactorization f) :=
   hf.subtype_mk
