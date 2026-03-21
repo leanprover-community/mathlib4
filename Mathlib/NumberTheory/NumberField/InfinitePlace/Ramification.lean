@@ -588,8 +588,11 @@ namespace NumberField.InfinitePlace
 
 open ComplexEmbedding AbsoluteValue
 
-variable {K L : Type*} [Field K] [Field L] [Algebra K L] (w : InfinitePlace L) (v : InfinitePlace K)
-  [w.1.LiesOver v.1]
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
+
+section LiesOver
+
+variable (w : InfinitePlace L) (v : InfinitePlace K) [w.1.LiesOver v.1]
 
 namespace LiesOver
 
@@ -637,7 +640,11 @@ theorem IsUnramified.liesOver_isReal_over (hw : w.IsUnramified K) (hv : v.IsReal
   (InfinitePlace.isUnramified_iff.1 hw).resolve_right
     (by simpa [LiesOver.comap_eq w v] using not_isComplex_iff_isReal.2 hv)
 
-variable (L)
+end LiesOver
+
+section placesOver
+
+variable (v : InfinitePlace K) (L)
 
 /-- The set of infinite places of `L` that lie above a given infinite place of `K`. -/
 def placesOver : Set (InfinitePlace L) := { w | w.1.LiesOver v.1 }
@@ -648,36 +655,37 @@ def unramifiedPlacesOver : Set (InfinitePlace L) := { w | w.1.LiesOver v.1 ∧ w
 /-- The set of infinite places of `L` that are ramified over a given infinite place of `K`. -/
 def ramifiedPlacesOver : Set (InfinitePlace L) := { w | w.1.LiesOver v.1 ∧ w.IsRamified K }
 
-variable {L}
+variable {L} {v} {w : InfinitePlace L}
 
-theorem mk_mem_unramifiedPlacesOver {φ : L →+* ℂ} {v : InfinitePlace K}
-    (h : φ ∈ unmixedEmbeddingsOver L (v.embedding)) : mk φ ∈ unramifiedPlacesOver L v :=
+theorem mk_mem_unramifiedPlacesOver {φ : L →+* ℂ} (h : φ ∈ unmixedEmbeddingsOver L (v.embedding)) :
+    mk φ ∈ unramifiedPlacesOver L v :=
   ⟨⟨have := h.1; mk_embedding v ▸ LiesOver.comp_eq (mk φ).1 (mk v.embedding).1⟩,
     h.2.mk_isUnramified⟩
 
-theorem liesOver_embedding_of_mem_ramifiedPlacesOver {w : InfinitePlace L} {v : InfinitePlace K}
-    (hw : w ∈ ramifiedPlacesOver L v) : ComplexEmbedding.LiesOver w.embedding v.embedding where
+theorem liesOver_embedding_of_mem_ramifiedPlacesOver (hw : w ∈ ramifiedPlacesOver L v) :
+    ComplexEmbedding.LiesOver w.embedding v.embedding where
   over := have := hw.1; hw.2.comap_embedding ▸ congrArg embedding (LiesOver.comap_eq w v)
 
-theorem liesOver_conjugate_embedding_of_mem_ramifiedPlacesOver {w : InfinitePlace L}
-    {v : InfinitePlace K} (hw : w ∈ ramifiedPlacesOver L v) :
+theorem liesOver_conjugate_embedding_of_mem_ramifiedPlacesOver
+    (hw : w ∈ ramifiedPlacesOver L v) :
     ComplexEmbedding.LiesOver (conjugate w.embedding) v.embedding where
   over := have := hw.1; hw.2.comap_embedding_conjugate ▸ congrArg embedding (LiesOver.comap_eq w v)
 
-theorem mk_mem_ramifiedPlacesOver {φ : L →+* ℂ} {v : InfinitePlace K}
-    (h : φ ∈ mixedEmbeddingsOver L (v.embedding)) : mk φ ∈ ramifiedPlacesOver L v :=
+theorem mk_mem_ramifiedPlacesOver {φ : L →+* ℂ} (h : φ ∈ mixedEmbeddingsOver L (v.embedding)) :
+    mk φ ∈ ramifiedPlacesOver L v :=
   ⟨⟨have := h.1; mk_embedding v ▸ LiesOver.comp_eq (mk φ).1 (mk v.embedding).1⟩, h.2.mk_isRamified⟩
 
-theorem embedding_mem_mixedEmbeddingsOver {v : InfinitePlace K} (w : InfinitePlace L)
-    (hw : w ∈ ramifiedPlacesOver L v) : w.embedding ∈ mixedEmbeddingsOver L (v.embedding) :=
+variable (w)
+
+theorem embedding_mem_mixedEmbeddingsOver (hw : w ∈ ramifiedPlacesOver L v) :
+    w.embedding ∈ mixedEmbeddingsOver L (v.embedding) :=
   ⟨liesOver_embedding_of_mem_ramifiedPlacesOver hw, hw.2.isMixed_embedding⟩
 
-theorem conjugate_embedding_mem_mixedEmbeddingsOver {v : InfinitePlace K} (w : InfinitePlace L)
-    (hw : w ∈ ramifiedPlacesOver L v) :
+theorem conjugate_embedding_mem_mixedEmbeddingsOver (hw : w ∈ ramifiedPlacesOver L v) :
     conjugate w.embedding ∈ mixedEmbeddingsOver L (v.embedding) :=
   ⟨liesOver_conjugate_embedding_of_mem_ramifiedPlacesOver hw, hw.2.isMixed_conjugate_embedding⟩
 
-variable (L)
+variable (L) (v)
 
 theorem disjoint_ramifiedPlacesOver_unramifiedPlacesOver :
     Disjoint (ramifiedPlacesOver L v) (unramifiedPlacesOver L v) := by
@@ -687,8 +695,6 @@ theorem union_ramifiedPlacesOver_unramifiedPlacesOver :
     (ramifiedPlacesOver L v) ∪ (unramifiedPlacesOver L v) = placesOver L v := by
   rw [placesOver, ramifiedPlacesOver, unramifiedPlacesOver, ← Set.setOf_or]
   grind
-
-variable (v : InfinitePlace K) (w : InfinitePlace L)
 
 theorem bijOn_sumElim_conjugate :
     (Set.sumEquiv.symm (ramifiedPlacesOver L v, ramifiedPlacesOver L v)).BijOn
@@ -723,8 +729,8 @@ private theorem embeddingConjugateIte_neg (h : ¬ComplexEmbedding.LiesOver w.emb
 
 variable (L v)
 
-private theorem mapsTo_embeddingConjugateIte : Set.MapsTo (embeddingConjugateIte v)
-    (unramifiedPlacesOver L v) (unmixedEmbeddingsOver L v.embedding) := by
+private theorem mapsTo_embeddingConjugateIte : (unramifiedPlacesOver L v).MapsTo
+    (embeddingConjugateIte v) (unmixedEmbeddingsOver L v.embedding) := by
   rintro w ⟨_, hw⟩
   by_cases h : ComplexEmbedding.LiesOver w.embedding v.embedding
   · simpa [embeddingConjugateIte_pos h] using ⟨h, hw.isUnmixed⟩
@@ -744,8 +750,9 @@ private theorem surjOn_embeddingConjugateIte : (unramifiedPlacesOver L v).SurjOn
 open scoped Classical in
 private theorem bijOn_extensionIte : (unramifiedPlacesOver L v).BijOn (embeddingConjugateIte v)
     (unmixedEmbeddingsOver L v.embedding) :=
-  ⟨mapsTo_embeddingConjugateIte L v, star_involutive.injective_ite (embedding_injective _)
-    (fun _ _ ↦ eq_of_embedding_eq_conjugate L) |>.injOn, surjOn_embeddingConjugateIte L v⟩
+  ⟨mapsTo_embeddingConjugateIte L v, ((embedding_injective _).ite (star_injective.comp
+    (embedding_injective _)) (fun _ _ ↦ eq_of_embedding_eq_conjugate L)).injOn,
+      surjOn_embeddingConjugateIte L v⟩
 
 /-- The number of unramified places over an infinite place is equal to the number of unmixed
 embeddings over the place. -/
@@ -759,7 +766,7 @@ number of ramified places over `v`. -/
 theorem unramifedPlacesOver_ncard_add_eq_finrank [NumberField K] [NumberField L] :
     (unramifiedPlacesOver L v).ncard + 2 * (ramifiedPlacesOver L v).ncard = Module.finrank K L := by
   classical
-  letI : Algebra K ℂ := v.embedding.toAlgebra
+  let : Algebra K ℂ := v.embedding.toAlgebra
   rw [← AlgHom.card K L ℂ, ramifiedPlacesOver_ncard, unramifiedPlacesOver_ncard,
     ← Set.ncard_union_eq (disjoint_unmixedEmbeddingsOver_mixedEmbeddingsOver L v.embedding),
     union_unmixedEmbeddingsOver_mixedEmbeddingsOver, Set.ncard_eq_toFinset_card]
@@ -767,5 +774,7 @@ theorem unramifedPlacesOver_ncard_add_eq_finrank [NumberField K] [NumberField L]
     AlgHom.coe_ringHom_injective.injOn (fun ψ hψ ↦ ?_)).symm
   simp only [Set.Finite.toFinset_setOf, coe_filter, mem_univ, true_and, Set.mem_setOf_eq] at hψ
   exact ⟨⟨ψ, fun _ ↦ by simp [RingHom.algebraMap_toAlgebra, ← hψ.over]⟩, by simp⟩
+
+end placesOver
 
 end NumberField.InfinitePlace
