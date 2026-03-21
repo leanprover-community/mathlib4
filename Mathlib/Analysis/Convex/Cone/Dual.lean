@@ -18,7 +18,7 @@ we define `ProperCone.dual p C` to be the proper cone in `N` consisting of all p
 `0 ≤ p x y` for all `x ∈ s`.
 
 When the pairing is perfect, this gives us the algebraic dual of a cone.
-See `Mathlib/Geometry/Convex/Cone/Pointed/Dual.lean` for that case.
+See `Mathlib/Geometry/Convex/Cone/Dual.lean` for that case.
 When the pairing is continuous and perfect (as a continuous pairing), this gives us the topological
 dual instead. This is developed here.
 
