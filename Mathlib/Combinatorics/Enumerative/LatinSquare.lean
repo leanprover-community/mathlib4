@@ -106,6 +106,8 @@ class LatinRectangle (m : Type*) (n : Type*) (α : Type*)
   /-- The number of rows is less than or equal to the number of columns. -/
   m_le_n : Fintype.card m ≤ Fintype.card n := by simp
 
+attribute [coe] LatinRectangle.M
+
 /-- Pretty printing of Latin rectangles. -/
 instance {m n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [ToString α] :
   Repr (LatinRectangle (Fin m) (Fin n) α) where
@@ -147,14 +149,10 @@ example : LatinRectangle (Fin 5) (Fin 5) (Fin 5) := LatinRectangle.mk (fun x y �
   (by decide) (by decide) (by decide)
 
 /-- Get the underlying `Matrix` of the LatinRectangle. -/
-@[coe]
-abbrev toMatrix : (LatinRectangle m n α) → (Matrix m n α)
- | A => A.M
-
 instance {m : Type*} {n : Type*} {α : Type*} [Fintype m]
   [Fintype n] [Fintype α] [DecidableEq α] :
   Coe (LatinRectangle m n α) (Matrix m n α) where
-  coe := toMatrix
+  coe A := A.M
 
 instance {n : Type*} {α : Type*}
   [Fintype n] [Fintype α] [DecidableEq α] :
