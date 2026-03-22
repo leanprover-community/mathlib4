@@ -536,9 +536,7 @@ lemma natCast_log (m n : ℕ) : ↑(Nat.log m n) = Ordinal.log ↑m ↑n := by
   case inl => rw_mod_cast [Nat.log_of_left_le_one hm, log_of_left_le_one (mod_cast hm)]
   obtain (rfl | hn) := eq_or_ne n 0
   case inl => simp
-  rw_mod_cast [eq_comm, log_eq_iff (mod_cast hm) (mod_cast hn),
-    and_iff_right (mod_cast m.pow_log_le_self hn), succ_eq_add_one, ← Nat.log_lt_iff_lt_pow hm hn]
-  apply lt_add_one
+  rw_mod_cast [eq_comm, log_eq_iff (mod_cast hm) (mod_cast hn), ← Nat.log_eq_iff (.inr ⟨hm, hn⟩)]
 
 end Ordinal
 
