@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 module
 
 public import Mathlib.SetTheory.Ordinal.Family
+public import Mathlib.Data.Nat.Log
 
 /-!
 # Ordinal exponential
@@ -528,6 +529,16 @@ theorem iSup_pow_natCast {o : Ordinal} (ho : 0 < o) : ⨆ n : ℕ, o ^ n = o ^ �
 
 @[deprecated (since := "2025-12-25")]
 alias iSup_pow := iSup_pow_natCast
+
+@[simp, norm_cast]
+lemma natCast_log (m n : ℕ) : (↑(Nat.log m n) : Ordinal.{u}) = log ↑m ↑n := by
+  obtain (hm | hm) := le_or_gt m 1
+  case inl => rw_mod_cast [Nat.log_of_left_le_one hm, log_of_left_le_one (mod_cast hm)]
+  obtain (rfl | hn) := eq_or_ne n 0
+  case inl => simp
+  rw_mod_cast [eq_comm, log_eq_iff (mod_cast hm) (mod_cast hn),
+    and_iff_right (mod_cast m.pow_log_le_self hn), succ_eq_add_one, ← Nat.log_lt_iff_lt_pow hm hn]
+  apply lt_add_one
 
 end Ordinal
 
