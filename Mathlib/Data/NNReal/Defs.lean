@@ -54,12 +54,17 @@ assert_not_exists TrivialStar
 
 open Function
 
--- This is needed here or we get errors in `Mathlib/Data/ENNReal/Basic.lean`.
-set_option backward.deriving.wrap false in
 /-- Nonnegative real numbers, denoted as `ℝ≥0` within the NNReal namespace -/
-def NNReal := { r : ℝ // 0 ≤ r } deriving
+def NNReal := { r : ℝ // 0 ≤ r }
+
+deriving instance
+  Inhabited, SemilatticeInf, DistribLattice for NNReal
+
+-- This is needed here or we get errors in `Mathlib/Data/ENNReal/Basic.lean` or downstream.
+set_option backward.deriving.wrap false in
+deriving instance
   Zero, One, Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
-  Inhabited, PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice
+  PartialOrder, SemilatticeSup for NNReal
 
 #adaptation_note /-- nightly-2026-03-04: strange we need `noncomputable` for a Prop?
 Will be fixed by https://github.com/leanprover/lean4/pull/12789 -/
