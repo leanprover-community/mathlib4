@@ -641,7 +641,7 @@ example (r : ℤ) (hr : 2 ≤ r) (p q : ℤ) (hp : p < 0) :
   isZero_spectralSequence_page_X_of_isZero_H' _ _ _ hr _
     (Y.isZero₂_of_isFirstQuadrant _ _ _ _ (by simp; lia))
 
-/-- The `E₂` cohomologial spectral sequence indexed by `ℕ × ℕ` attached to
+/-- The `E₂` cohomological spectral sequence indexed by `ℕ × ℕ` attached to
 a first quadrant spectral object indexed by `EInt`. -/
 noncomputable abbrev E₂SpectralSequenceNat := Y.spectralSequence coreE₂CohomologicalNat
 
