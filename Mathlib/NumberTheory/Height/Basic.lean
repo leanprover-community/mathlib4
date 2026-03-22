@@ -479,7 +479,7 @@ lemma logHeight_vecCons_zero {n : ℕ} (x : Fin n → K) :
 @[simp]
 lemma mulHeight_vecCons_vecCons_zero {n : ℕ} (a : K) (x : Fin n → K) :
     mulHeight (vecCons a (vecCons 0 x)) = mulHeight (vecCons a x) := by
-  rw [← mulHeight_comp_equiv (Equiv.swap 0 1), cons_cons_comp_swap_zero_one]
+  rw [← mulHeight_comp_equiv (Equiv.swap 0 1)]
   simp
 
 @[simp]
