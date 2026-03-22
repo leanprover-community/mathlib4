@@ -599,21 +599,14 @@ theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
 
 variable {s t}
 
--- TODO: find a good way to fix the linter; simp is called on four goals, with only two remaining
-set_option linter.flexible false in
 theorem offDiag_union (h : Disjoint s t) :
     (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ˢ t ∪ t ×ˢ s := by
   ext x
   simp only [mem_offDiag, mem_union, ne_eq, mem_prod]
   constructor
   · rintro ⟨h0 | h0, h1 | h1, h2⟩ <;> simp [h0, h1, h2]
-  · rintro (((⟨h0, h1, h2⟩ | ⟨h0, h1, h2⟩) | ⟨h0, h1⟩) | ⟨h0, h1⟩) <;> simp [*]
-    · rintro h3
-      rw [h3] at h0
-      exact Set.disjoint_left.mp h h0 h1
-    · rintro h3
-      rw [h3] at h0
-      exact (Set.disjoint_right.mp h h0 h1).elim
+  · rintro (((⟨h0, h1, h2⟩ | ⟨h0, h1, h2⟩) | ⟨h0, h1⟩) | ⟨h0, h1⟩) <;>
+      simp [*, h.ne_of_mem, Ne.symm]
 
 theorem offDiag_insert (ha : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
   grind

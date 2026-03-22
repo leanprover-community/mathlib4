@@ -169,7 +169,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
   -- Neither matching contains the edge that would make the other matching of G perfect
   have hM1nac : ¬M1.Adj a c := fun h ↦ by simpa [hnGac, edge_adj, hnac, hxa.ne, hnbc.symm, hab.ne]
     using h.adj_sub
-  have hsupG : G ⊔ edge x b ⊔ (G ⊔ edge a c) = (G ⊔ edge a c) ⊔ edge x b := by aesop
+  have hsupG : G ⊔ edge x b ⊔ (G ⊔ edge a c) = (G ⊔ edge a c) ⊔ edge x b := by grind
   -- We state conditions for our cycle that hold in all cases and show that this suffices
   suffices ∃ (G' : SimpleGraph V), G'.IsAlternating M2.spanningCoe ∧ G'.IsCycles ∧ ¬G'.Adj x b ∧
       G'.Adj a c ∧ G' ≤ G ⊔ edge a c by
@@ -228,7 +228,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     have : (p'.takeUntil x' hx'p).toSubgraph.Adj a (p'.takeUntil x' hx'p).snd := by
       apply Walk.toSubgraph_adj_snd
       rw [Walk.nil_takeUntil]
-      aesop
+      grind
     rwa [Walk.snd_takeUntil, hp'.2.1] at this
     simp only [Finset.mem_insert, Finset.mem_singleton] at hx'
     obtain rfl | rfl := hx'

@@ -89,9 +89,8 @@ theorem IsUniformInducing.uniformContinuous_iff {f : α → β} {g : β → γ} 
   dsimp only [UniformContinuous, Tendsto]
   simp only [← hg.comap_uniformity, ← map_le_iff_le_comap, Filter.map_map, Function.comp_def]
 
-protected theorem IsUniformInducing.isUniformInducing_comp_iff {f : α → β} {g : β → γ}
-    (hg : IsUniformInducing g) : IsUniformInducing (g ∘ f) ↔ IsUniformInducing f := by
-  simp only [isUniformInducing_iff, ← hg.comap_uniformity, comap_comap, Function.comp_def]
+@[deprecated (since := "2026-03-17")]
+alias IsUniformInducing.isUniformInducing_comp_iff := IsUniformInducing.of_comp_iff
 
 theorem IsUniformInducing.uniformContinuousOn_iff {f : α → β} {g : β → γ} {S : Set α}
     (hg : IsUniformInducing g) :
@@ -161,6 +160,10 @@ theorem IsUniformEmbedding.comp {g : β → γ} (hg : IsUniformEmbedding g) {f :
 theorem IsUniformEmbedding.of_comp_iff {g : β → γ} (hg : IsUniformEmbedding g) {f : α → β} :
     IsUniformEmbedding (g ∘ f) ↔ IsUniformEmbedding f := by
   simp_rw [isUniformEmbedding_iff, hg.isUniformInducing.of_comp_iff, hg.injective.of_comp_iff f]
+
+theorem IsUniformEmbedding.of_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f)
+    (hg : UniformContinuous g) (hgf : IsUniformEmbedding (g ∘ f)) : IsUniformEmbedding f :=
+  ⟨.of_comp hf hg hgf.isUniformInducing, .of_comp hgf.injective⟩
 
 theorem Equiv.isUniformEmbedding {α β : Type*} [UniformSpace α] [UniformSpace β] (f : α ≃ β)
     (h₁ : UniformContinuous f) (h₂ : UniformContinuous f.symm) : IsUniformEmbedding f :=
@@ -521,7 +524,7 @@ theorem UniformContinuous.rangeFactorization {f : α → β} (hf : UniformContin
 @[simp]
 theorem isUniformInducing_rangeFactorization_iff {f : α → β} :
     IsUniformInducing (rangeFactorization f) ↔ IsUniformInducing f :=
-  (isUniformInducing_val (range f)).isUniformInducing_comp_iff.symm
+  (isUniformInducing_val (range f)).of_comp_iff.symm
 
 theorem IsUniformInducing.rangeFactorization {f : α → β} (hf : IsUniformInducing f) :
     IsUniformInducing (rangeFactorization f) :=
@@ -592,7 +595,7 @@ lemma IsDenseInducing.isUniformInducing_extend {γ : Type*} [UniformSpace γ]
     funext x
     simpa using (hid.inseparable_extend h.uniformContinuous.continuous.continuousAt)
   suffices Subtype.val ∘ fwd = SeparationQuotient.mk ∘ hid.extend f by
-    rw [← SeparationQuotient.isUniformInducing_mk.isUniformInducing_comp_iff, ← this]
+    rw [← SeparationQuotient.isUniformInducing_mk.of_comp_iff, ← this]
     exact (isUniformInducing_val _).comp hfu
   rw [← coe_comp_rangeFactorization (SeparationQuotient.mk ∘ hid.extend f),
     ← val_comp_inclusion hrr, Function.comp_assoc, Subtype.val_injective.comp_left.eq_iff]

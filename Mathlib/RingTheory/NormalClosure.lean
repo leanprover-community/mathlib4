@@ -72,7 +72,6 @@ instance : Nontrivial T := inferInstanceAs (Nontrivial (integralClosure S E))
 
 instance : Algebra S T := inferInstanceAs (Algebra S (integralClosure S E))
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 This is a local instance since it is only used in this file to construct `Ring.NormalClosure`.
 -/
@@ -80,7 +79,6 @@ local instance : Algebra T E := inferInstanceAs (Algebra (integralClosure S E) E
 
 instance : Algebra R T := ((algebraMap S T).comp (algebraMap R S)).toAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 local instance : IsScalarTower S T E :=
   inferInstanceAs (IsScalarTower S (integralClosure S E) E)
 
@@ -106,10 +104,8 @@ instance : FaithfulSMul R T :=
 
 variable [Module.Finite R S]
 
-set_option backward.isDefEq.respectTransparency false in
 local instance : FiniteDimensional L E := Module.Finite.right K L E
 
-set_option backward.isDefEq.respectTransparency false in
 local instance : IsFractionRing T E :=
   integralClosure.isFractionRing_of_finite_extension L E
 

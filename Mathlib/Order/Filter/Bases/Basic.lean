@@ -430,12 +430,7 @@ theorem hasBasis_biInf_of_directed' {ι : Type*} {ι' : ι → Sort _} {dom : Se
       s ii'.1 ii'.2 := by
   refine ⟨fun t => ?_⟩
   rw [mem_biInf_of_directed h hdom, Sigma.exists]
-  refine exists_congr fun i => ⟨?_, ?_⟩
-  · rintro ⟨hi, hti⟩
-    rcases (hl i hi).mem_iff.mp hti with ⟨b, hb, hbt⟩
-    exact ⟨b, ⟨hi, hb⟩, hbt⟩
-  · rintro ⟨b, ⟨hi, hb⟩, hibt⟩
-    exact ⟨hi, (hl i hi).mem_iff.mpr ⟨b, hb, hibt⟩⟩
+  grind +splitIndPred
 
 theorem hasBasis_biInf_of_directed {ι : Type*} {ι' : Sort _} {dom : Set ι} (hdom : dom.Nonempty)
     {l : ι → Filter α} (s : ι → ι' → Set α) (p : ι → ι' → Prop)
@@ -444,12 +439,7 @@ theorem hasBasis_biInf_of_directed {ι : Type*} {ι' : Sort _} {dom : Set ι} (h
       s ii'.1 ii'.2 := by
   refine ⟨fun t => ?_⟩
   rw [mem_biInf_of_directed h hdom, Prod.exists]
-  refine exists_congr fun i => ⟨?_, ?_⟩
-  · rintro ⟨hi, hti⟩
-    rcases (hl i hi).mem_iff.mp hti with ⟨b, hb, hbt⟩
-    exact ⟨b, ⟨hi, hb⟩, hbt⟩
-  · rintro ⟨b, ⟨hi, hb⟩, hibt⟩
-    exact ⟨hi, (hl i hi).mem_iff.mpr ⟨b, hb, hibt⟩⟩
+  grind +splitIndPred
 
 lemma hasBasis_top :
     (⊤ : Filter α).HasBasis (fun _ : Unit ↦ True) (fun _ ↦ Set.univ) :=

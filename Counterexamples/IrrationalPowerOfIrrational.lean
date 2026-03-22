@@ -6,10 +6,10 @@ Authors: Seewoo Lee
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.NumberTheory.Real.Irrational
 
-/-
-# Irrational power of irrational numbers are not necessarily irrational.
+/-!
+# An irrational power of an irrational number need not be irrational
 
-Prove that there exist irrational numbers `a`, `b` such that `a^b` is rational.
+This file proves that there exist irrational numbers `a`, `b` such that `a^b` is rational.
 
 We use the following famous argument (based on the law of excluded middle and irrationality of √2).
 Consider `c = √2^√2`. If `c` is rational, we are done.
