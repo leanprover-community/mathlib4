@@ -577,20 +577,30 @@ variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 open Nat.Primrec
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.flip (since := "2026-03-22")]
 protected theorem flip {f : α → β → σ} (h : Primrec₂ f) : Primrec₂ (flip f) :=
   h.comp₂ Primrec₂.right Primrec₂.left
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.swap (since := "2026-03-22")]
 protected theorem swap {f : α → β → σ} (h : Primrec₂ f) : Primrec₂ (swap f) :=
   h.flip
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated PrimrecPred.flip (since := "2026-03-22")]
 protected theorem _root_.PrimrecRel.flip {r : α → β → Prop} (h : PrimrecRel r) :
     PrimrecRel (flip r) :=
   h.comp₂ Primrec₂.right Primrec₂.left
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated PrimrecPred.swap (since := "2026-03-22")]
 protected theorem _root_.PrimrecRel.swap {r : α → β → Prop} (h : PrimrecRel r) :
     PrimrecRel (swap r) :=
   h.flip
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.nat_iff₂ (since := "2026-03-22")]
 theorem nat_iff {f : α → β → σ} : Primrec₂ f ↔ Nat.Primrec
     (.unpaired fun m n => encode <| (@decode α _ m).bind fun a => (@decode β _ n).map (f a)) := by
   have :
@@ -601,6 +611,8 @@ theorem nat_iff {f : α → β → σ} : Primrec₂ f ↔ Nat.Primrec
           cases a <;> cases b <;> rfl
   simp [Primrec₂, Primrec, this]
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated Primrec.nat_iff₂' (since := "2026-03-22")]
 theorem nat_iff' {f : α → β → σ} :
     Primrec₂ f ↔
       Primrec₂ fun m n : ℕ => (@decode α _ m).bind fun a => Option.map (f a) (@decode β _ n) :=
@@ -613,9 +625,13 @@ namespace Primrec
 variable {α : Type*} {β : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated id (since := "2026-03-22")]
 theorem to₂ {f : α × β → σ} (hf : Primrec f) : Primrec₂ fun a b => f (a, b) :=
   hf
 
+--Komyyy0 set_option linter.deprecated false in
+--Komyyy0 @[deprecated id (since := "2026-03-22")]
 lemma _root_.PrimrecPred.primrecRel {p : α × β → Prop} (hp : PrimrecPred p) :
     PrimrecRel fun a b => p (a, b) :=
   hp
