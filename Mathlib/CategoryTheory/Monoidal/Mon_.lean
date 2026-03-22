@@ -92,8 +92,8 @@ variable {M : C} [MonObj M]
 
 @[inherit_doc] scoped notation "σ" => AddMonObj.add
 @[inherit_doc] scoped notation "σ[" M "]" => AddMonObj.add (X := M)
-@[inherit_doc] scoped notation "ε" => AddMonObj.zero
-@[inherit_doc] scoped notation "ε[" M "]" => AddMonObj.zero (X := M)
+@[inherit_doc] scoped notation "ζ" => AddMonObj.zero
+@[inherit_doc] scoped notation "ζ[" M "]" => AddMonObj.zero (X := M)
 
 end AddMonObj
 
@@ -210,7 +210,7 @@ open AddMonObj in
 /-- The property that a morphism between additive monoid objects is an additive monoid morphism. -/
 class _root_.CategoryTheory.IsAddMonHom
     {M' N' : C} [AddMonObj M'] [AddMonObj N'] (f : M' ⟶ N') : Prop where
-  zero_hom (f) : ε ≫ f = ε := by cat_disch
+  zero_hom (f) : ζ ≫ f = ζ := by cat_disch
   add_hom (f) : σ ≫ f = (f ⊗ₘ f) ≫ σ := by cat_disch
 
 /-- The property that a morphism between monoid objects is a monoid morphism. -/
@@ -839,7 +839,7 @@ scoped[CategoryTheory.Obj] attribute [instance] CategoryTheory.Functor.monObjObj
 
 open scoped Obj
 
-@[to_additive (attr := reassoc, simp) ε_def]
+@[to_additive (attr := reassoc, simp) ζ_def]
 lemma obj.η_def : (η : 𝟙_ D ⟶ F.obj X) = ε F ≫ F.map η := rfl
 
 @[to_additive (attr := reassoc, simp) σ_def]
@@ -957,7 +957,7 @@ protected instance Full.mapMon [F.Full] [F.Faithful] : F.mapMon.Full where
 instance FullyFaithful.isAddMonHom_preimage (hF : F.FullyFaithful) {X Y : C}
     [AddMonObj X] [AddMonObj Y] (f : F.obj X ⟶ F.obj Y) [IsAddMonHom f] :
     IsAddMonHom (hF.preimage f) where
-  zero_hom := hF.map_injective (by simp [← cancel_epi (ε F), ← obj.ε_def_assoc, ← obj.ε_def])
+  zero_hom := hF.map_injective (by simp [← cancel_epi (ε F), ← obj.ζ_def_assoc, ← obj.ζ_def])
   add_hom := hF.map_injective (by
     simp [← obj.σ_def_assoc, ← obj.σ_def, ← μ_natural_assoc, ← cancel_epi (LaxMonoidal.μ F ..)])
 
