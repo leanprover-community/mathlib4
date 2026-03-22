@@ -5,10 +5,10 @@ Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies, Joël Riou
 -/
 module
 
+public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Topology.Algebra.Monoid.FunOnFinite
 public import Mathlib.Topology.UnitInterval
-public import Mathlib.LinearAlgebra.ConvexSpace
 
 /-!
 # The standard simplex
@@ -45,11 +45,6 @@ theorem convex_stdSimplex [IsOrderedRing 𝕜] : Convex 𝕜 (stdSimplex 𝕜 ι
   · simp_rw [Pi.add_apply, Pi.smul_apply]
     rwa [Finset.sum_add_distrib, ← Finset.smul_sum, ← Finset.smul_sum, hf.2, hg.2, smul_eq_mul,
       smul_eq_mul, mul_one, mul_one]
-
-noncomputable
-instance (𝕜 : Type*) [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] :
-    ConvexSpace 𝕜 ↑(stdSimplex 𝕜 ι) :=
-  .ofConvex (convex_stdSimplex 𝕜 ι)
 
 @[nontriviality] lemma stdSimplex_of_subsingleton [Subsingleton 𝕜] : stdSimplex 𝕜 ι = univ :=
   eq_univ_of_forall fun _ ↦ ⟨fun _ ↦ (Subsingleton.elim _ _).le, Subsingleton.elim _ _⟩
@@ -271,7 +266,7 @@ theorem diam_stdSimplex [Nontrivial ι] : Metric.diam (stdSimplex ℝ ι) = 1 :=
   obtain ⟨i, j, hij⟩ := exists_pair_ne ι
   classical
   rw [show (1 : ℝ) = dist (Pi.single i 1 : ι → ℝ) (Pi.single j 1) by
-    simp [dist_single_single i j (1 : ℝ) 1 hij]]
+    simp [dist_single_single i j (1 : ℝ) 1 hij, Real.dist_eq]]
   exact Metric.dist_le_diam_of_mem (bounded_stdSimplex _)
     (single_mem_stdSimplex _ _) (single_mem_stdSimplex _ _)
 
