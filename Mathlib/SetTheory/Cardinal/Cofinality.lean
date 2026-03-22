@@ -271,6 +271,21 @@ theorem ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
     · obtain ⟨x, z, hz, rfl⟩ := x
       exact (hz _ hxy').asymm hxy
 
+@[simp]
+theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α] :
+    (Order.cof α).ord.cof = Order.cof α := by
+  obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
+  rw [← hs', cof_type]
+  apply le_antisymm
+  · rw [← card_ord (Order.cof α), ← hs', card_type]
+    exact cof_le_cardinalMk s
+  · rw [le_cof_iff]
+    exact fun t ht ↦ (cof_le (hs.trans ht)).trans_eq (mk_image_eq Subtype.val_injective)
+
+@[simp]
+theorem cof_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
+  simpa using Order.cof_ord_cof o.ToType
+
 /-! ### Cofinalities and suprema -/
 
 theorem lift_cof_iSup_add_one [Small.{u} β] {f : β → Ordinal} (hf : StrictMono f) :
@@ -333,36 +348,6 @@ alias cof_le_of_isNormal := le_cof_map_of_isNormal
 alias IsNormal.cof_le := le_cof_map_of_isNormal
 
 @[deprecated (since := "2026-02-18")] alias cof_eq_one_iff_is_succ := cof_eq_one_iff
-
-theorem ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
-    ∃ s : Set α, IsCofinal s ∧ typeLT s = (Order.cof α).ord := by
-  obtain ⟨s, hs, hs'⟩ := Order.cof_eq α
-  obtain ⟨r, hr, hr'⟩ := ord_eq s
-  have ht := hs.trans (isCofinal_setOf_imp_lt r)
-  refine ⟨_, ht, (ord_le.2 (cof_le ht)).antisymm' ?_⟩
-  rw [← hs', hr', type_le_iff']
-  refine ⟨.ofMonotone (fun x ↦ ⟨x.1, ?_⟩) fun x y hxy ↦ ?_⟩
-  · grind
-  · apply (trichotomous_of r _ _).resolve_right
-    rintro (_ | hxy')
-    · simp_all [Subtype.coe_inj]
-    · obtain ⟨x, z, hz, rfl⟩ := x
-      exact (hz _ hxy').asymm hxy
-
-@[simp]
-theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α] :
-    (Order.cof α).ord.cof = Order.cof α := by
-  obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
-  rw [← hs', cof_type]
-  apply le_antisymm
-  · rw [← card_ord (Order.cof α), ← hs', card_type]
-    exact cof_le_cardinalMk s
-  · rw [le_cof_iff]
-    exact fun t ht ↦ (cof_le (hs.trans ht)).trans_eq (mk_image_eq Subtype.val_injective)
-
-@[simp]
-theorem cof_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
-  simpa using Order.cof_ord_cof o.ToType
 
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
