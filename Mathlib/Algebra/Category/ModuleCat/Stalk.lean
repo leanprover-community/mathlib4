@@ -36,6 +36,7 @@ variable {C : Type*} [SmallCategory C] [IsFiltered C] (R : C ⥤ RingCat) (M : C
     [∀ i, Module (R.obj i) (M.obj i)]
     (H : ∀ {i j} (f : i ⟶ j) r m, M.map f (r • m) = R.map f r • M.map f m)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). The scalar multiplication function on `ColimitType`. -/
 protected noncomputable
 def colimit.smul (r : (R ⋙ forget _).ColimitType) (m : (M ⋙ forget _).ColimitType) :
@@ -55,7 +56,7 @@ def colimit.smul (r : (R ⋙ forget _).ColimitType) (m : (M ⋙ forget _).Colimi
       bowtie (leftToMax U₁ V) (f ≫ leftToMax U₂ V)
         (rightToMax U₁ V) (rightToMax U₂ V)
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ α β ?_
-    simp [*, ← elementwise_of% R.map_comp, ← elementwise_of% M.map_comp, -Functor.map_comp]
+    simp [*, ← R.map_comp_apply, ← M.map_comp_apply, -Functor.map_comp]
 
 #adaptation_note /-- As of nightly-2026-02-10, we need to increase the maxHeartbeats limits here,
 and as of nightly-2026-02-23, we also need `backward.whnf.reducibleClassField`
