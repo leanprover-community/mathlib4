@@ -531,12 +531,19 @@ variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 open Nat.Primrec
 
+protected theorem flip {f : α → β → σ} (h : Primrec₂ f) : Primrec₂ (flip f) :=
+  h.comp₂ Primrec₂.right Primrec₂.left
+
 protected theorem swap {f : α → β → σ} (h : Primrec₂ f) : Primrec₂ (swap f) :=
+  h.flip
+
+protected theorem _root_.PrimrecRel.flip {r : α → β → Prop} (h : PrimrecRel r) :
+    PrimrecRel (flip r) :=
   h.comp₂ Primrec₂.right Primrec₂.left
 
 protected theorem _root_.PrimrecRel.swap {r : α → β → Prop} (h : PrimrecRel r) :
     PrimrecRel (swap r) :=
-  h.comp₂ Primrec₂.right Primrec₂.left
+  h.flip
 
 theorem nat_iff {f : α → β → σ} : Primrec₂ f ↔ Nat.Primrec
     (.unpaired fun m n => encode <| (@decode α _ m).bind fun a => (@decode β _ n).map (f a)) := by
