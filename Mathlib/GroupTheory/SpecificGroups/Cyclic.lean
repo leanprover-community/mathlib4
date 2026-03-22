@@ -48,6 +48,16 @@ assert_not_exists Ideal TwoSidedIdeal
 
 variable {α G G' : Type*} {a : α}
 
+/- TODO: Generalise to `Submonoid.powers`. -/
+@[to_additive]
+theorem image_range_orderOf [Group G] [Fintype G] [DecidableEq G] {x : G} :
+    letI : Fintype (Subgroup.zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
+    Finset.image (fun i => x ^ i) (Finset.range (orderOf x)) =
+      (Subgroup.zpowers x : Set G).toFinset := by
+  letI : Fintype (Subgroup.zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
+  ext x
+  rw [Set.mem_toFinset, SetLike.mem_coe, mem_zpowers_iff_mem_range_orderOf]
+
 section Cyclic
 
 open Subgroup
