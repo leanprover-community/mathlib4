@@ -184,9 +184,9 @@ def renameLatinRectangle
       ext
       simp
     rw [h_comp]
-    exact Function.Injective.comp 
-      (Equiv.bijective h).1 
-      (Function.Injective.comp h' 
+    exact Function.Injective.comp
+      (Equiv.bijective h).1
+      (Function.Injective.comp h'
       (Equiv.bijective f.symm).1)
   m_le_n := by
     have ineq := A.m_le_n
