@@ -407,3 +407,9 @@ info: universeTest3'.{v, v', u, u'} (u₂ : PUnit ×' PUnit) (u₁ : PUnit ×' P
 -/
 #guard_msgs in
 #check universeTest3'
+
+class Category.{v,u} (c : Type u) where
+  bla : Type v
+
+@[to_dual self (reorder := A B, 2 4)]
+structure Comma {A : Type u} [Category.{v} A] {B : Type u'} [Category.{v'} B] where
