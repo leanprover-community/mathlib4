@@ -299,7 +299,8 @@ lemma sum_card_eq_sum_card_fiber_biUnion
     ∑ j ∈ s, (Finset.card (B j)) =
     ∑ x ∈ (s.biUnion B), Finset.card {j | j ∈ s ∧ x ∈ B j} := by
       let r : ι → α → Prop := fun j x => x ∈ B j
-      have g := Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow r (s := s) (t := s.biUnion B)
+      have g := Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow r (s := s) 
+        (t := s.biUnion B)
       unfold Finset.bipartiteAbove Finset.bipartiteBelow r at g
       have hB : ∀ j ∈ s, {b ∈ s.biUnion B | b ∈ B j} = B j := by
         intro j hj
