@@ -32,6 +32,8 @@ theorem Equiv.Perm.isCyclic_of_card_le_two (hα : Nat.card α ≤ 2) :
     IsCyclic (Perm α) := by
   apply isCyclic_of_card_dvd_prime (p := 2)
   rw [Nat.card_perm]
+  -- The `interval_cases` tactic is incompatible with `assert_not_exists Field`
+  -- interval_cases (Nat.card α) <;> simp
   by_cases h0 : Nat.card α = 0
   · simp [h0]
   rw [← ne_eq, ← Nat.one_le_iff_ne_zero] at h0
