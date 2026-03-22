@@ -112,7 +112,8 @@ variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A
 open scoped TensorProduct Kronecker
 
 theorem _root_.Unitary.tmul_mem {U : A} {V : B} (hU : U ∈ unitary A) (hV : V ∈ unitary B) :
-    U ⊗ₜ[R] V ∈ unitary (A ⊗[R] B) := by simp [mem_iff, hU, hV, Algebra.TensorProduct.one_def]
+    U ⊗ₜ[R] V ∈ unitary (A ⊗[R] B) := by
+  simp [Unitary.mem_iff, hU, hV, Algebra.TensorProduct.one_def]
 
 theorem kroneckerTMul_mem_unitary {m : Type*} [Fintype m] [DecidableEq m] {U : Matrix m m A}
     {V : Matrix n n B} (hU : U ∈ unitary (Matrix m m A)) (hV : V ∈ unitary (Matrix n n B)) :
