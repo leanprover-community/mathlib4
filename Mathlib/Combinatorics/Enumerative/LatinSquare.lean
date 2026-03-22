@@ -60,8 +60,6 @@ square; this theorem is formalized as
 * [DONE] Add theorem that a k-1 × n Latin rectangle can be extended to a k × n Latin rectangle.
 * [DONE] Corollary, any k x n Latin rectangle can be extneded to a Latin square.
 * [DONE] Add that a n x n Latin rectangle is a Latin square.
-* TODO Add docstrings as required by mathlib
-* TODO Prove latin_rectangle_equiv_relation is equivalence relation
 * Add Ryser's theorem using partial Latin squares.
 * Add Evan's Conjeture.
 * Add isomorphism to quasigroups.
