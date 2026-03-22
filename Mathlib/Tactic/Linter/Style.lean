@@ -419,6 +419,11 @@ public register_option linter.style.longLine : Bool := {
 
 namespace Style.longLine
 
+def isImport (s : String) : Bool :=
+  s.startsWith "import " || s.startsWith "public import " ||
+  s.startsWith "meta import " || s.startsWith "public meta import " ||
+  s.startsWith "import all " || s.startsWith "meta import all "
+
 @[inherit_doc Mathlib.Linter.linter.style.longLine]
 def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless getLinterValue linter.style.longLine (← getLinterOptions) do
@@ -429,6 +434,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- The linter still lints the message guarded by `#guard_msgs`.
     if stx.isOfKind ``Lean.guardMsgsCmd then
       return
+    if stx.isOfKind ``Lean.Parser.Module.header then return
     -- if the linter reached the end of the file, then we scan the `import` syntax instead
     let stx := ← do
       if stx.isOfKind ``Lean.Parser.Command.eoi then
@@ -443,7 +449,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let longLines := ((sstr.getD default).splitOn "\n").filter fun line ↦
       (100 < (fm.toPosition line.stopPos).column)
     for line in longLines do
-      if (line.splitOn "http").length ≤ 1 then
+      if (line.splitOn "http").length ≤ 1 && !(isImport line.toString) then
         let stringMsg := if line.contains '"' then
           "\nYou can use \"string gaps\" to format long strings: within a string quotation, \
           using a '\\' at the end of a line allows you to continue the string on the following \
