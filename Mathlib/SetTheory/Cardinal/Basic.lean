@@ -326,7 +326,7 @@ theorem lt_one_iff_zero {c : Cardinal} : c < 1 ↔ c = 0 := by
   simpa using lt_succ_bot_iff (a := c)
 
 theorem le_one_iff {c : Cardinal} : c ≤ 1 ↔ c = 0 ∨ c = 1 := by
-  simpa using @le_succ_bot_iff _ _ _ c _
+  simpa using le_succ_bot_iff (a := c)
 
 /-! ### Properties about `aleph0` -/
 
