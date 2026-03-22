@@ -87,14 +87,6 @@ lemma ofSubmodule_sSup (s : Set (Submodule R E)) : sSup s = sSup (ofSubmodule ''
 lemma ofSubmodule_iSup (s : Set (Submodule R E)) : ⨆ S ∈ s, S = ⨆ S ∈ s, (S : PointedCone R E) := by
   rw [← sSup_eq_iSup, ofSubmodule_sSup, sSup_eq_iSup, iSup_image]
 
-/-- The linear span of the cone. -/
-abbrev linSpan (C : PointedCone R E) : Submodule R E := Submodule.span R C
-
-@[simp] lemma coe_linSpan (S : Submodule R E) : (S : PointedCone R E).linSpan = S :=
-    by simp [linSpan]
-
-lemma le_linSpan (C : PointedCone R E) : C ≤ C.linSpan := Submodule.subset_span
-
 end Submodule
 
 section ConvexCone
@@ -359,11 +351,10 @@ section DirectedOrderRing
 variable {R : Type*} [Ring R] [PartialOrder R] [IsDirectedOrder R] [IsOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 
-variable (R) in
-@[simp] lemma span_neg_pair_eq_submodule_span_singleton (x : M) : span R {-x, x} = R ∙ x := by
+@[simp] lemma hull_neg_pair_eq_span_singleton (x : M) : hull R {-x, x} = R ∙ x := by
   ext y
-  rw [← Submodule.span_insert_eq_span <| neg_mem <| Submodule.mem_span_singleton_self x]
-  simp only [Submodule.restrictScalars_mem, Submodule.mem_span_pair, smul_neg, Subtype.exists]
+  rw [← span_insert_eq_span <| neg_mem <| mem_span_singleton_self x]
+  simp only [restrictScalars_mem, mem_span_pair, smul_neg, Subtype.exists]
   constructor
   · rintro ⟨a, _, b, _, rfl⟩
     exact ⟨a, b, rfl⟩
@@ -375,33 +366,33 @@ variable (R) in
         _ = (b - a) • x               := by rw [neg_sub, sub_add_sub_cancel]
         _ = -(a • x) + b • x          := by rw [sub_smul]; abel
 
-@[simp] lemma span_neg_sup_span_eq_submodule_span (s : Set M) :
-    span R (-s) ⊔ span R s = Submodule.span R s := by
+@[simp] lemma hull_neg_sup_hull_eq_span (s : Set M) :
+    hull R (-s) ⊔ hull R s = span R s := by
   ext x
   constructor <;> intro h
-  · obtain ⟨_, hn, _, hp, rfl⟩ := Submodule.mem_sup.mp h
+  · obtain ⟨_, hn, _, hp, rfl⟩ := mem_sup.mp h
     exact add_mem
-      (Submodule.mem_span.mpr fun p hsp => Submodule.mem_span.mp hn p <|
-        fun y hy => by simpa using p.neg_mem (hsp (Set.mem_neg.mp hy)))
-      (Submodule.mem_span.mpr fun p hsp => Submodule.mem_span.mp hp p hsp)
-  · rw [Submodule.restrictScalars_mem, Submodule.mem_span_set'] at h
+      (mem_span.mpr fun p hsp => mem_span.mp hn p <|
+        fun y hy => by simpa using p.neg_mem (hsp <| Set.mem_neg.mp hy))
+      (mem_span.mpr fun p hsp => mem_span.mp hp p hsp)
+  · rw [restrictScalars_mem, mem_span_set'] at h
     obtain ⟨n, f, g, rfl⟩ := h
-    have hx : ∑ i, f i • (g i : M) ∈ span R (-s ∪ s) := by
-      refine sum_mem ?_
+    have hx : ∑ i, f i • (g i : M) ∈ hull R (-s ∪ s) := by
+      apply sum_mem
       intro i _
-      have hpair : f i • (g i : M) ∈ span R ({-(g i : M), (g i : M)} : Set M) := by
-        rw [span_neg_pair_eq_submodule_span_singleton (R := R) (x := (g i : M))]
-        exact Submodule.mem_span_singleton.mpr ⟨f i, by simp⟩
-      exact Set.mem_of_subset_of_mem (Submodule.span_mono <| by
+      have hpair : f i • (g i : M) ∈ hull R {-(g i : M), (g i : M)} := by
+        rw [hull_neg_pair_eq_span_singleton]
+        exact mem_span_singleton.mpr ⟨f i, by simp⟩
+      exact Set.mem_of_subset_of_mem (span_mono <| by
         intro z hz
         rcases Set.mem_insert_iff.mp hz with rfl | hz
         · exact Set.mem_union_left _ (by simp [(g i).property])
         · rcases Set.mem_singleton_iff.mp hz with rfl
           exact Set.mem_union_right _ (g i).property) hpair
-    simpa [Submodule.span_union, sup_comm, Set.union_comm] using hx
+    simpa [span_union, sup_comm, Set.union_comm] using hx
 
 lemma span_eq_submodule_span_of_neg_eq {s : Set M} (hs : -s = s) :
-    span R s = Submodule.span R s := by
+    hull R s = span R s := by
   nth_rw 1 [← Set.union_self s, hs.symm]
   simp
 
@@ -409,19 +400,19 @@ section Pointwise
 
 open Pointwise
 
-lemma neg_sup_eq_linSpan (C : PointedCone R M) : -C ⊔ C = C.linSpan := by
-  nth_rw 1 2 [← Submodule.span_eq C, ← Submodule.span_neg_eq_neg]
-  exact span_neg_sup_span_eq_submodule_span _
+lemma neg_sup_eq_span {C : PointedCone R M} : -C ⊔ C = span R (C : Set M) := by
+  nth_rw 1 2 [← span_eq C, ← span_neg_eq_neg]
+  exact hull_neg_sup_hull_eq_span _
 
-lemma neg_le_iff_eq_linSpan {C : PointedCone R M} : -C ≤ C ↔ C.linSpan = C := by
-  rw [← neg_sup_eq_linSpan, sup_eq_right]
+lemma neg_le_iff_span_eq {C : PointedCone R M} : -C ≤ C ↔ span R (C : Set M) = C := by
+  rw [← neg_sup_eq_span, sup_eq_right]
 
 end Pointwise
 
-lemma mem_linSpan {C : PointedCone R M} {x : M} :
-    x ∈ C.linSpan ↔ ∃ p ∈ C, ∃ n ∈ C, p = x + n := by
-  rw [← mem_ofSubmodule_iff, ← neg_sup_eq_linSpan, Submodule.mem_sup]
-  simp only [Submodule.mem_neg]
+lemma mem_span {C : PointedCone R M} {x : M} :
+    x ∈ span R C ↔ ∃ p ∈ C, ∃ n ∈ C, p = x + n := by
+  rw [← mem_ofSubmodule_iff, ← neg_sup_eq_span, mem_sup]
+  simp only [mem_neg]
   constructor <;> intro h
   · obtain ⟨y, hy', z, hz, rfl⟩ := h
     exact ⟨z, hz, -y, hy', by simp⟩
