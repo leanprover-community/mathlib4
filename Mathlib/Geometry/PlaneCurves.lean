@@ -295,7 +295,7 @@ lemma _root_.HasDerivAt.initialCurve_of_orientedCurvature (hI : IsOpen I)
     (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) (ht : t ∈ I) :
     HasDerivAt (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)
     !₂[Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ), Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ)] t :=
-  (HasDerivWithinAt.initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ ht).hasDerivAt 
+  (HasDerivWithinAt.initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ ht).hasDerivAt
     (hI.mem_nhds ht)
 
 /-- Auxiliary lemma giving us the `derivWithin` the interval `I` of a certain function. -/
@@ -326,7 +326,7 @@ lemma hasDerivWithinAt_some_function₂_aux (hκ : ContinuousOn κ I) (ht₀ : t
   have h : HasDerivAt Real.sin (Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ))
                ((fun τ ↦  θ₀ + ∫ξ in t₀..τ, κ ξ) t) := by simp [Real.hasDerivAt_sin]
   exact h.comp_hasDerivWithinAt t (hasDerivWithinAt_some_function₀_aux θ₀ hκ ht₀ ht)
-  
+
 lemma _root_.HasDerivAt.deriv_initialCurve_of_orientedCurvature (hI : IsOpen I)
     (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) (ht : t ∈ I) :
     HasDerivAt (deriv (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀))
