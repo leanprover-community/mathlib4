@@ -339,8 +339,7 @@ identifies to an object `X.E` -/
 noncomputable abbrev cc (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     CokernelCofork ((page X data r hr).d pq pq') :=
   CokernelCofork.ofπ _
-    (cc_w X data r r' hrr' hr pq pq' i₀ i₁ i₂ i₃ i₃' hi₀ hi₁ hi₂ hi₃ hi₃'
-      n₀ n₁ n₂ hn₁' hn₁ hn₂)
+    (cc_w X data r r' hrr' hr pq pq' i₀ i₁ i₂ i₃ i₃' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁' hn₁ hn₂)
 
 /-- The (exact) short complex attached to the cokernel cofork `cc`. -/
 @[simps!]
