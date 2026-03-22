@@ -524,6 +524,52 @@ theorem PrimrecRel.of_eq {α β} [Primcodable α] [Primcodable β] {r s : α →
     (hr : PrimrecRel r) (H : ∀ a b, r a b ↔ s a b) : PrimrecRel s :=
   funext₂ (fun a b => propext (H a b)) ▸ hr
 
+namespace Primrec
+
+variable {α : Type*} {β : Type*} {σ : Type*}
+variable [Primcodable α] [Primcodable β] [Primcodable σ]
+
+open Nat.Primrec
+
+@[fun_prop]
+lemma prodSwap : Primrec (Prod.swap : α × β → β × α) := by
+  unfold Prod.swap; fun_prop
+
+@[fun_prop]
+protected theorem flip {f : α → β → σ} (h : Primrec (uncurry f)) : Primrec (uncurry (flip f)) := by
+  rw [uncurry_flip]; fun_prop
+
+-- This can't be `fun_prop` because `Function.swap` is reducible.
+protected theorem swap {f : α → β → σ} (h : Primrec (uncurry f)) : Primrec (uncurry (swap f)) :=
+  h.flip
+
+@[fun_prop]
+protected theorem _root_.PrimrecPred.flip {r : α → β → Prop} (h : PrimrecPred (uncurry r)) :
+    PrimrecPred (uncurry (flip r)) := by
+  rw [uncurry_flip]; fun_prop
+
+-- This can't be `fun_prop` because `Function.swap` is reducible.
+protected theorem _root_.PrimrecPred.swap {r : α → β → Prop} (h : PrimrecPred (uncurry r)) :
+    PrimrecPred (uncurry (swap r)) :=
+  h.flip
+
+theorem nat_iff₂ {f : α → β → σ} : Primrec (uncurry f) ↔ Nat.Primrec
+    (.unpaired fun m n => encode <| (@decode α _ m).bind fun a => (@decode β _ n).map (f a)) := by
+  have :
+    ∀ (a : Option α) (b : Option β),
+      Option.map (fun p : α × β => f p.1 p.2)
+          (Option.bind a fun a : α => Option.map (Prod.mk a) b) =
+        Option.bind a fun a => Option.map (f a) b := fun a b => by
+          cases a <;> cases b <;> rfl
+  simp +unfoldPartialApp [uncurry, Primrec, this]
+
+theorem nat_iff₂' {f : α → β → σ} :
+    Primrec (uncurry f) ↔
+      Primrec fun p : ℕ × ℕ => (@decode α _ p.1).bind fun a => Option.map (f a) (@decode β _ p.2) :=
+  nat_iff₂.trans <| unpaired'.trans encode_iff
+
+end Primrec
+
 namespace Primrec₂
 
 variable {α : Type*} {β : Type*} {σ : Type*}
