@@ -887,19 +887,19 @@ abbrev pullbackSnd (f : R →+* T) (g : S →+* T) : (f.Pullback g) →+* S :=
 
 theorem isUnit_pullback_mk_iff (f : R →+* T) (g : S →+* T) (a : R × S) (a_in : a ∈ f.Pullback g) :
     IsUnit (⟨a, a_in⟩ : f.Pullback g) ↔ IsUnit a.1 ∧ IsUnit a.2 := by
-  rw [← Prod.isUnit_iff]; refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simp [isUnit_iff_exists, ← Subtype.val_inj] at h ⊢
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← Prod.isUnit_iff]
+    simp [isUnit_iff_exists, ← Subtype.val_inj] at h ⊢
     grind
-  rcases a with ⟨u, v⟩
   simp only [mem_eqLocus, coe_comp, coe_fst, Function.comp_apply, coe_snd] at a_in
-  obtain ⟨⟨s, t⟩, h⟩ := isUnit_iff_exists.mp h
-  simp only [Prod.mk_mul_mk, Prod.mk_eq_one] at h
-  simp only [isUnit_iff_exists, ← Subtype.val_inj, Subring.coe_mul, OneMemClass.coe_one,
-    Subtype.exists, mem_eqLocus, coe_comp, coe_fst, Function.comp_apply, coe_snd, exists_and_left,
-    exists_prop, Prod.exists, Prod.mk_mul_mk, Prod.mk_eq_one]
-  refine ⟨s, t, ⟨h.left, ?_, h.right⟩⟩
-  rw [← mul_one (f s), ← map_one g, ← h.left.right, map_mul, ← mul_assoc, ← a_in, ← map_mul,
-    h.right.left, map_one, one_mul]
+  obtain ⟨s, hs⟩ := isUnit_iff_exists.mp h.left
+  obtain ⟨t, ht⟩ := isUnit_iff_exists.mp h.right
+  simp only [isUnit_iff_exists, ← Subtype.val_inj, Subring.coe_mul, Prod.mul_def,
+    OneMemClass.coe_one, Prod.mk_eq_one, Subtype.exists, mem_eqLocus, coe_comp, coe_fst,
+    Function.comp_apply, coe_snd, exists_and_left, exists_prop, Prod.exists]
+  refine ⟨s, t, ⟨⟨hs.left, ht.left⟩, hs.right, ?_, ht.right⟩⟩
+  rw [← mul_one (f s), ← map_one g, ← ht.left, map_mul, ← mul_assoc, ← a_in, ← map_mul,
+    hs.right, map_one, one_mul]
 
 open Function in
 theorem surjective_pullbackFst_of_surjective (f : R →+* T) (g : S →+* T) (h : Surjective g) :
