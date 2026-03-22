@@ -330,7 +330,7 @@ def coinvariantsShortComplex : ShortComplex (Rep.{w} k G) where
   X₃ := toCoinvariants A S
   f := ofHom ⟨Submodule.subtype _, fun g ↦ by ext; simp⟩
   g := toCoinvariantsMkQ A S
-  zero :=  by ext x; exact (Submodule.Quotient.mk_eq_zero _).2 x.2
+  zero := by ext x; exact (Submodule.Quotient.mk_eq_zero _).2 x.2
 
 lemma coinvariantsShortComplex_shortExact : (coinvariantsShortComplex.{w} A S).ShortExact where
   exact := (forget₂ (Rep.{w} k G) (ModuleCat k)).reflects_exact_of_faithful _ <|
