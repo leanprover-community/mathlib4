@@ -444,7 +444,7 @@ lemma weight_apply_eq_zero_of_not_mem_rootSet (I : LieIdeal K L)
     exact lie_mem_left K L I h y hI
   rwa [I.toSubmodule.smul_mem_iff h_ne] at h_smul
 
-lemma rootSet_apply_coroot_eq_zero (I : LieIdeal K L)
+lemma rootSet_apply_coroot_eq_zero_of_not_mem_rootSet (I : LieIdeal K L)
     {α : H.root} (hα : α ∈ I.rootSet)
     {β : H.root} (hβ : β ∉ I.rootSet) :
     (α : Weight K H L) (coroot β) = 0 := by
@@ -482,7 +482,7 @@ lemma restr_inf_cartan_eq_iSup_corootSubmodule (I : LieIdeal K L) :
     rw [this]
     exact iSup₂_le fun γ hγ ↦ by
       rw [coe_corootSpace_eq_span_singleton, Submodule.span_singleton_le_iff_mem, LinearMap.mem_ker]
-      exact rootSet_apply_coroot_eq_zero I hμ hγ
+      exact rootSet_apply_coroot_eq_zero_of_not_mem_rootSet I hμ hγ
   have hx_top : (⟨x, hxH⟩ : H) ∈ span_I_roots ⊔ span_compl_roots := h_top ▸ trivial
   obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp hx_top
   have haI : (a : L) ∈ I :=
