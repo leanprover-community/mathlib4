@@ -304,7 +304,7 @@ theorem ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
       exact (hz _ hxy').asymm hxy
 
 @[simp]
-theorem _root_.Order.cof_cof (α : Type*) [LinearOrder α] [WellFoundedLT α] :
+theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α] :
     (Order.cof α).ord.cof = Order.cof α := by
   obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
   rw [← hs', cof_type]
@@ -316,7 +316,7 @@ theorem _root_.Order.cof_cof (α : Type*) [LinearOrder α] [WellFoundedLT α] :
 
 @[simp]
 theorem cof_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
-  simpa using Order.cof_cof o.ToType
+  simpa using Order.cof_ord_cof o.ToType
 
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
