@@ -271,7 +271,7 @@ theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α :
 @[norm_cast]
 theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
   rw [Nat.cast_succ]
-  refine (add_one_le_succ _).antisymm (succ_le_of_lt ?_)
+  refine (add_one_le_of_lt <| lt_succ _).antisymm (succ_le_of_lt ?_)
   rw [← Nat.cast_succ]
   exact Nat.cast_lt.2 (Nat.lt_succ_self _)
 
