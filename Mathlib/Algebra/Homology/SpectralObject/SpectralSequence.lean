@@ -390,10 +390,9 @@ lemma ccSc_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ :=
     dsimp
     rw [pageD_eq X data r hr pq pq' h _ _ _ _ _ hi₀ hi₁ _ _ _ _ (n₀ - 1) n₀ n₁ n₂,
         Category.assoc, Category.assoc, Iso.inv_hom_id, Category.comp_id]
-  · rw [ShortComplex.exact_iff_mono]; swap
-    · exact (page X data r hr).shape _ _ h
+  · refine (ShortComplex.exact_iff_mono _ ((page X data r hr).shape _ _ h)).mpr ?_
     have := isIso_mapFourδ₄Toδ₃' X data r r' hrr' hr pq pq' hpq
-      i₀ i₁ i₂ i₃ i₃' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁' h hn₁ hn₂
+      i₀ i₁ i₂ i₃ i₃' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁' h
     dsimp
     infer_instance
 
