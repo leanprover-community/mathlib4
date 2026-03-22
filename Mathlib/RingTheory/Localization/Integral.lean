@@ -85,6 +85,18 @@ theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
     (integerNormalization M p).coeff i = coeffIntegerNormalization M p i :=
   rfl
 
+variable {M} in
+theorem integerNormalization_eq_zero_iff [IsDomain R] (hM : M ≤ nonZeroDivisors R) (p : S[X]) :
+    integerNormalization M p = 0 ↔ p = 0 := by
+  obtain ⟨_, hb₁, hb₂⟩ := integerNormalization_spec M p
+  have := isDomain_of_le_nonZeroDivisors S hM
+  have := (faithfulSMul_iff_algebraMap_injective R S).mpr <| IsLocalization.injective S hM
+  have : Function.Injective ⇑(mapRingHom (algebraMap R S)) := by
+    rw [coe_mapRingHom, map_injective_iff]
+    exact (faithfulSMul_iff_algebraMap_injective R S).mp this
+  rw [← _root_.map_eq_zero_iff (mapRingHom (algebraMap R S)) this, coe_mapRingHom, hb₂]
+  exact smul_eq_zero_iff_right <| nonZeroDivisors.ne_zero (hM hb₁)
+
 @[deprecated integerNormalization_spec (since := "2026-02-05")]
 theorem integerNormalization_map_to_map (p : S[X]) :
     ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p := by
@@ -115,11 +127,8 @@ variable {A K C : Type*} [CommRing A] [IsDomain A] [Field K] [Algebra A K] [IsFr
 variable [CommRing C]
 
 theorem integerNormalization_eq_zero_iff {p : K[X]} :
-    integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 := by
-  obtain ⟨b, hb₁, hb₂⟩ := integerNormalization_spec (nonZeroDivisors A) p
-  rw [← _root_.map_eq_zero_iff (mapRingHom _)
-    (map_injective _ (FaithfulSMul.algebraMap_injective A K)), coe_mapRingHom, hb₂]
-  exact smul_eq_zero_iff_right (nonZeroDivisors.ne_zero hb₁)
+    integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 :=
+  IsLocalization.integerNormalization_eq_zero_iff (fun _ a ↦ a) p
 
 variable (A K C)
 
@@ -562,3 +571,53 @@ lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field
     apply IsIntegral.tower_top (R := R)
     apply IsIntegral.map (IsScalarTower.toAlgHom R S L)
     exact Algebra.IsIntegral.isIntegral (s : S)
+
+section NormalizedGCDMonoid
+
+open IsLocalization
+
+variable {R S : Type*} [Nontrivial R] [CommRing R] [NormalizedGCDMonoid R]
+(M : Submonoid R) [CommRing S] [Algebra R S] [IsLocalization M S]
+(p : Polynomial S)
+
+private lemma aux_ne_zero :
+    normalize (integerNormalization M p).primPart ≠ 0 := by
+  rw [ne_eq, normalize_eq_zero]
+  exact primPart_ne_zero (integerNormalization M p)
+
+noncomputable def IsLocalization.normalizedCoprimeIntegerNormalization :=
+  letI := Classical.decEq S
+  if p = 0 then 0 else
+  normalize (integerNormalization M p).primPart
+
+lemma IsLocalization.normalizedCoprimeIntegerNormalization_eq_zero_iff :
+    normalizedCoprimeIntegerNormalization M p = 0 ↔ p = 0 := by
+  simp [normalizedCoprimeIntegerNormalization, aux_ne_zero M p]
+
+lemma IsLocalization.normalizedCoprimeIntegerNormalization_degree_eq [IsDomain R]
+    (hM : M ≤ nonZeroDivisors R) :
+    (normalizedCoprimeIntegerNormalization M p).degree = p.degree := by
+  have := isDomain_of_le_nonZeroDivisors S hM
+  rcases eq_or_ne p 0 with (rfl | hp)
+  · simp [normalizedCoprimeIntegerNormalization]
+  convert_to (normalizedCoprimeIntegerNormalization M p).natDegree = p.natDegree
+  · simp [degree_eq_natDegree, degree_eq_natDegree,
+      normalizedCoprimeIntegerNormalization_eq_zero_iff, hp]
+  simp only [normalizedCoprimeIntegerNormalization, hp, ↓reduceIte]
+  rw [normalize_apply, natDegree_mul (primPart_ne_zero _) (by simp), coe_normUnit, natDegree_C,
+    add_zero, natDegree_primPart]
+  obtain ⟨b, hb1, hb2⟩ := integerNormalization_spec M p
+  have : ((integerNormalization M p).map (algebraMap R S)).natDegree =
+    (integerNormalization M p).natDegree := by
+    apply natDegree_map_of_leadingCoeff_ne_zero (algebraMap R S)
+      <| (map_ne_zero_iff (algebraMap R S) (IsLocalization.injective S hM)).mpr _
+    rwa [leadingCoeff_ne_zero, ne_eq, integerNormalization_eq_zero_iff hM]
+  rw [← this, hb2]
+  have : Function.Injective (algebraMap R S) := by
+    exact IsLocalization.injective S hM
+  rw [← IsScalarTower.algebraMap_smul (A := S)]
+  rw [natDegree_smul]
+  rw [propext (map_ne_zero_iff (algebraMap R S) this)]
+  exact nonZeroDivisors.ne_zero (hM hb1)
+
+end NormalizedGCDMonoid
