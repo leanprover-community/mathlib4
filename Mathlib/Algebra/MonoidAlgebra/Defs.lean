@@ -207,6 +207,39 @@ lemma ofCoeff_finsuppSum [AddCommMonoid N] (f : ι →₀ N) (g : ι → N → M
 /-- `AddMonoidAlgebra.single m r` for `m : M`, `r : R` is the element `rm : R[M]`. -/]
 abbrev single (m : M) (r : R) : R[M] := Finsupp.single m r
 
+/-- Remove a term from an element of the monoid algebra. -/
+@[to_additive /-- Remove a term from an element of the additive monoid algebra. -/]
+def erase (m : M) (x : R[M]) : R[M] := .ofCoeff <| .erase m x.coeff
+
+@[to_additive (attr := simp)]
+lemma coeff_erase (m : M) (x : R[M]) : (x.erase m).coeff = x.coeff.erase m := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_erase (m : M) (x : M →₀ R) : ofCoeff (x.erase m) = (ofCoeff x).erase m := rfl
+
+@[to_additive (attr := simp)]
+lemma erase_zero (m : M) : erase m (0 : R[M]) = 0 := by simp [erase]
+
+@[to_additive (attr := simp)]
+lemma erase_single (m : M) (r : R) : erase m (single m r) = 0 := by
+  simp [erase, ofCoeff, coeff]; rfl
+
+/-- Replace the `m`-th coefficient of an element `x` of the monoid algebra by a given value `r : R`.
+If `r = 0`, this is equal to `x.erase m`. -/
+@[to_additive
+/-- Replace the `m`-th coefficient of an element `x` of the monoid algebra by a given value `r : R`.
+If `r = 0`, this is equal to `x.erase m`. -/]
+def update (m : M) (r : R) (x : R[M]) : R[M] :=
+  ofCoeff (x.coeff.update m r)
+
+@[to_additive (attr := simp)]
+lemma coeff_update (m : M) (r : R) (x : R[M]) :
+    (x.update m r).coeff = x.coeff.update m r := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_update (m : M) (r : R) (x : M →₀ R) :
+    ofCoeff (x.update m r) = (ofCoeff x).update m r := rfl
+
 section SMul
 
 /-! ### Basic scalar multiplication instances

@@ -718,6 +718,7 @@ public import Mathlib.Algebra.Lie.Nilpotent
 public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 public import Mathlib.Algebra.Lie.Normalizer
 public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.Lie.Prod
 public import Mathlib.Algebra.Lie.Quotient
 public import Mathlib.Algebra.Lie.Rank
 public import Mathlib.Algebra.Lie.SemiDirect
@@ -2202,6 +2203,7 @@ public import Mathlib.Analysis.Polynomial.Factorization
 public import Mathlib.Analysis.Polynomial.Fourier
 public import Mathlib.Analysis.Polynomial.MahlerMeasure
 public import Mathlib.Analysis.Polynomial.Norm
+public import Mathlib.Analysis.Polynomial.Order
 public import Mathlib.Analysis.Quaternion
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.RCLike.BoundedContinuous
@@ -5462,6 +5464,7 @@ public import Mathlib.NumberTheory.AbelSummation
 public import Mathlib.NumberTheory.ArithmeticFunction
 public import Mathlib.NumberTheory.ArithmeticFunction.Carmichael
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.NumberTheory.ArithmeticFunction.LFunction
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
@@ -5745,6 +5748,7 @@ public import Mathlib.Order.CompleteLattice.SetLike
 public import Mathlib.Order.CompleteLatticeIntervals
 public import Mathlib.Order.CompletePartialOrder
 public import Mathlib.Order.CompleteSublattice
+public import Mathlib.Order.Completion
 public import Mathlib.Order.Concept
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.ConditionallyCompleteLattice.Defs
@@ -7332,6 +7336,7 @@ public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Topology.Algebra.UniformFilterBasis
 public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.Algebra.UniformRing
+public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.Valued.LocallyCompact
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology
