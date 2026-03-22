@@ -40,11 +40,8 @@ public section
 variable {α β : Type*} [CommSemiring α] [PartialOrder α] [Semiring β] [PartialOrder β] [Algebra α β]
 
 theorem IsOrderedModule.of_algebraMap_mono [PosMulMono β] [MulPosMono β]
-    (h : Monotone (algebraMap α β)) : IsOrderedModule α β where
-  smul_le_smul_of_nonneg_left _ ha _ _ hb := by
-    simpa [Algebra.smul_def] using mul_le_mul_of_nonneg_left hb (by simpa using h ha)
-  smul_le_smul_of_nonneg_right _ ha _ _ hb := by
-    simpa [Algebra.smul_def] using mul_le_mul_of_nonneg_right (h hb) ha
+    (h : Monotone (algebraMap α β)) : IsOrderedModule α β := .of_smul_one_mono <| by
+  simpa [Algebra.smul_def] using h
 
 section OrderedSemiring
 variable (β) [IsOrderedRing β] [SMulPosMono α β] {a : α}
