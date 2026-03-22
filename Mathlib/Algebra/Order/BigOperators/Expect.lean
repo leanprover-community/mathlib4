@@ -109,20 +109,20 @@ variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] [Mod
 section PosSMulStrictMono
 variable [PosSMulStrictMono ℚ≥0 α]
 
-lemma expect_lt_expect (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i)
-    : 𝔼 i ∈ s, f i < 𝔼 i ∈ s, g i := by
+lemma expect_lt_expect (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
+    𝔼 i ∈ s, f i < 𝔼 i ∈ s, g i := by
   apply smul_lt_smul_of_pos_left (sum_lt_sum hle hlt)
   rw [inv_pos, Nat.cast_pos, card_pos]
   exact hlt.imp (fun _ => And.left)
 
-lemma expect_lt (hle : ∀ x ∈ s, f x ≤ a) (hlt : ∃ x ∈ s, f x < a)
-    : 𝔼 i ∈ s, f i < a := by
-  rw [←expect_const (hlt.imp (fun _ => And.left)) a]
+lemma expect_lt (hle : ∀ x ∈ s, f x ≤ a) (hlt : ∃ x ∈ s, f x < a) :
+    𝔼 i ∈ s, f i < a := by
+  rw [← expect_const (hlt.imp (fun _ => And.left)) a]
   exact expect_lt_expect hle hlt
 
-lemma lt_expect (hle : ∀ x ∈ s, a ≤ f x) (hlt : ∃ x ∈ s, a < f x)
-    : a < 𝔼 i ∈ s, f i := by
-  rw [←expect_const (hlt.imp (fun _ => And.left)) a]
+lemma lt_expect (hle : ∀ x ∈ s, a ≤ f x) (hlt : ∃ x ∈ s, a < f x) :
+    a < 𝔼 i ∈ s, f i := by
+  rw [← expect_const (hlt.imp (fun _ => And.left)) a]
   exact expect_lt_expect hle hlt
 
 lemma expect_pos (hf : ∀ i ∈ s, 0 < f i) (hs : s.Nonempty) : 0 < 𝔼 i ∈ s, f i :=
@@ -136,8 +136,8 @@ variable [AddCommMonoid α] [LinearOrder α] [IsOrderedAddMonoid α] [Module ℚ
   [PosSMulMono ℚ≥0 α] {s : Finset ι}
   {f g : ι → α} {a : α}
 
-lemma exists_lt_of_expect_lt_expect (h : 𝔼 i ∈ s, g i < 𝔼 i ∈ s, f i)
-    : ∃ x ∈ s, g x < f x := by
+lemma exists_lt_of_expect_lt_expect (h : 𝔼 i ∈ s, g i < 𝔼 i ∈ s, f i) :
+    ∃ x ∈ s, g x < f x := by
   contrapose! h; exact expect_le_expect h
 
 lemma exists_lt_of_lt_expect (hs : s.Nonempty) (h : a < 𝔼 i ∈ s, f i) : ∃ x ∈ s, a < f x := by
@@ -152,8 +152,8 @@ section LinearOrderedCancelAddMonoid
 variable [AddCommMonoid α] [LinearOrder α] [IsOrderedCancelAddMonoid α] [Module ℚ≥0 α]
   [PosSMulStrictMono ℚ≥0 α] {a : α} {s : Finset ι} {f g : ι → α}
 
-lemma exists_le_of_expect_le_expect (hs : s.Nonempty) (h : 𝔼 i ∈ s, g i ≤ 𝔼 i ∈ s, f i)
-    : ∃ x ∈ s, g x ≤ f x := by
+lemma exists_le_of_expect_le_expect (hs : s.Nonempty) (h : 𝔼 i ∈ s, g i ≤ 𝔼 i ∈ s, f i) :
+    ∃ x ∈ s, g x ≤ f x := by
   obtain ⟨_, hx⟩ := hs
   contrapose! h
   exact expect_lt_expect (fun _ hx ↦ le_of_lt (h _ hx)) ⟨_, ⟨hx, h _ hx⟩⟩
