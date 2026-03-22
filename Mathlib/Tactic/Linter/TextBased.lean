@@ -90,8 +90,8 @@ Note: changes to the texts here must be accounted for in `parse?_errorContext`!
 def StyleError.errorMessage (err : StyleError) : String := match err with
   | StyleError.adaptationNote =>
     "Found the string \"Adaptation note:\", please use the #adaptation_note command instead"
-  | windowsLineEnding => "This line ends with a windows line ending (\r\n): please use Unix line\
-    endings (\n) instead"
+  | windowsLineEnding => "This file contains windows line endings (\\r\\n): please use Unix line\
+    endings (\\n) instead"
   | trailingWhitespace => "This line ends with some whitespace: please remove this"
   | semicolon => "This line contains a space before a semicolon"
   | StyleError.unwantedUnicode c => s!"This line contains a bad unicode character \
