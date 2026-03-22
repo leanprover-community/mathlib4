@@ -53,8 +53,7 @@ theorem finiteType_isStableUnderBaseChange : IsStableUnderBaseChange @FiniteType
   · exact finiteType_respectsIso
   · introv h
     rw [finiteType_algebraMap] at h
-    suffices Algebra.FiniteType S (S ⊗[R] T) by
-      rw [RingHom.FiniteType]; convert this; ext; simp_rw [Algebra.smul_def]; rfl
+    apply finiteType_algebraMap.mpr
     infer_instance
 
 /-- If `S` is a finite type `R`-algebra, then `S' = M⁻¹S` is a finite type `R' = M⁻¹R`-algebra. -/
