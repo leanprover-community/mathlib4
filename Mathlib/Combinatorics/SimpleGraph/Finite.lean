@@ -359,6 +359,7 @@ theorem IsRegularOfDegree.top [DecidableEq V] :
   intro v
   simp
 
+@[simp]
 theorem IsRegularOfDegree.bot : (⊥ : SimpleGraph V).IsRegularOfDegree 0 :=
   bot_degree
 
