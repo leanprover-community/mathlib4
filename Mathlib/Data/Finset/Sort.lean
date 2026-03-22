@@ -356,3 +356,51 @@ lemma nonempty_orderEmbedding_of_finite_infinite
   haveI := Fintype.ofFinite α
   obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq β (Fintype.card α)
   exact ⟨((Fintype.orderIsoFinOfCardEq α rfl).symm.toOrderEmbedding).trans (s.orderEmbOfFin hs)⟩
+
+lemma Finset.orderEmbedding_eq_of_image_eq
+    {α β : Type*} [LinearOrder α] [PartialOrder β] [Fintype α] [DecidableEq β]
+    {f g : α ↪o β}
+    (h : Finset.image f .univ = Finset.image g .univ) :
+    f = g := by
+  suffices ∀ {n : ℕ} (f g : Fin n ↪o β) (h : Finset.image f ⊤ = Finset.image g ⊤), f = g by
+    let e := Fintype.orderIsoFinOfCardEq α rfl
+    replace h := this (e.toOrderEmbedding.trans f) (e.toOrderEmbedding.trans g) (by
+      ext x
+      suffices Finset.image (f ∘ e) .univ = Finset.image (g ∘ e) .univ by
+        simpa using congrFun (congrArg Membership.mem this) x
+      simpa only [← Finset.image_image, Finset.image_univ_of_surjective e.surjective])
+    ext x
+    obtain ⟨x, rfl⟩ := e.surjective x
+    exact DFunLike.congr_fun (congr_arg OrderEmbedding.toOrderHom h) x
+  suffices ∀ {n : ℕ} {f g : Fin n ↪o β} (h : Finset.image f ⊤ = Finset.image g ⊤) (i : Fin n)
+      (h' : ∀ (j : Fin n), j < i → f j = g j), f i ≤ g i from fun n f g h ↦ by
+    ext i
+    induction i using Fin.strong_induction_on with
+    | h i hi => exact le_antisymm (this h _ hi) (this h.symm _ (fun j hj ↦ (hi j hj).symm))
+  intro n f g h i h'
+  have : g i ∈ Finset.image f ⊤ := by rw [h]; simp
+  simp only [Finset.top_eq_univ, Finset.mem_image, Finset.mem_univ, true_and] at this
+  obtain ⟨j, hj⟩ := this
+  rw [← hj]
+  apply f.monotone
+  by_contra!
+  rw [h' j this, EmbeddingLike.apply_eq_iff_eq] at hj
+  lia
+
+lemma Finset.orderHom_eq_of_image_eq {α β : Type*} [LinearOrder α] [PartialOrder β]
+    [Fintype α] [DecidableEq β] {f g : α →o β}
+    (hf : Function.Injective f) (hg : Function.Injective g)
+    (h : Finset.image f .univ = Finset.image g .univ) :
+    f = g := by
+  ext : 2
+  exact DFunLike.congr_fun (Finset.orderEmbedding_eq_of_image_eq
+    (f := OrderEmbedding.ofStrictMono f (f.monotone.strictMono_of_injective hf))
+    (g := OrderEmbedding.ofStrictMono g (g.monotone.strictMono_of_injective hg))
+    (by simpa)) _
+
+lemma OrderHom.eq_id_of_injective {α : Type*} [LinearOrder α] [Finite α] (f : α →o α)
+    (hf : Function.Injective f) :
+    f = .id :=
+  let := Fintype.ofFinite α
+  Finset.orderHom_eq_of_image_eq hf Function.injective_id
+    (by simpa using Finset.image_univ_of_surjective (Finite.surjective_of_injective hf))
