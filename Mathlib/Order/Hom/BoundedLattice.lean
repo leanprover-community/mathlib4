@@ -42,34 +42,20 @@ open Function
 variable {F α β γ δ : Type*}
 
 /-- The type of finitary supremum-preserving homomorphisms from `α` to `β`. -/
-structure SupBotHom (α β : Type*) [Max α] [Max β] [Bot α] [Bot β] extends SupHom α β where
-  /-- A `SupBotHom` preserves the bottom element.
-
-  Do not use this directly. Use `map_bot` instead. -/
-  map_bot' : toFun ⊥ = ⊥
+structure SupBotHom (α β : Type*) [Max α] [Max β] [Bot α] [Bot β]
+  extends SupHom α β, BotHom α β where
 
 /-- The type of finitary infimum-preserving homomorphisms from `α` to `β`. -/
 @[to_dual]
-structure InfTopHom (α β : Type*) [Min α] [Min β] [Top α] [Top β] extends InfHom α β where
-  /-- An `InfTopHom` preserves the top element.
-
-  Do not use this directly. Use `map_top` instead. -/
-  map_top' : toFun ⊤ = ⊤
+structure InfTopHom (α β : Type*) [Min α] [Min β] [Top α] [Top β]
+  extends InfHom α β, TopHom α β where
 
 /-- The type of bounded lattice homomorphisms from `α` to `β`. -/
 structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOrder α]
-  [BoundedOrder β] extends LatticeHom α β where
-  /-- A `BoundedLatticeHom` preserves the top element.
-
-  Do not use this directly. Use `map_top` instead. -/
-  map_top' : toFun ⊤ = ⊤
-  /-- A `BoundedLatticeHom` preserves the bottom element.
-
-  Do not use this directly. Use `map_bot` instead. -/
-  map_bot' : toFun ⊥ = ⊥
+  [BoundedOrder β] extends LatticeHom α β, InfTopHom α β, SupBotHom α β where
 
 attribute [to_dual self (reorder := map_top' map_bot')] BoundedLatticeHom.mk
-attribute [to_dual existing] BoundedLatticeHom.map_top'
+attribute [to_dual existing] BoundedLatticeHom.toInfTopHom BoundedLatticeHom.map_top'
 
 section
 
@@ -207,11 +193,6 @@ variable [Max α] [Bot α]
 section Sup
 
 variable [Max β] [Bot β] [Max γ] [Bot γ] [Max δ] [Bot δ]
-
-/-- Reinterpret a `SupBotHom` as a `BotHom`. -/
-@[to_dual /-- Reinterpret an `InfTopHom` as a `TopHom`. -/]
-def toBotHom (f : SupBotHom α β) : BotHom α β :=
-  { f with }
 
 @[to_dual]
 instance : FunLike (SupBotHom α β) α β where
@@ -372,11 +353,6 @@ namespace BoundedLatticeHom
 
 variable [Lattice α] [Lattice β] [Lattice γ] [Lattice δ] [BoundedOrder α] [BoundedOrder β]
   [BoundedOrder γ] [BoundedOrder δ]
-
-/-- Reinterpret a `BoundedLatticeHom` as a `SupBotHom`. -/
-@[to_dual /-- Reinterpret a `BoundedLatticeHom` as an `InfTopHom`. -/]
-def toSupBotHom (f : BoundedLatticeHom α β) : SupBotHom α β :=
-  { f with }
 
 /-- Reinterpret a `BoundedLatticeHom` as a `BoundedOrderHom`. -/
 def toBoundedOrderHom (f : BoundedLatticeHom α β) : BoundedOrderHom α β :=
