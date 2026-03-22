@@ -203,7 +203,7 @@ lemma continuous_convexComboPair' [BoundedSpace X]
       (by fun_prop) (hx.comp_continuous continuous_subtype_val (by simp_all; grind))
       (hy.comp_continuous continuous_subtype_val (by simp_all; grind))).continuousAt
   obtain ht | ht : f t = 0 ∨ f t = 1 := by
-    simpa [le_antisymm_iff, hf0 _, hf1 _, -not_and, not_and_or] using ht
+    simpa [le_antisymm_iff, hf0, hf1, -not_and, not_and_or] using ht
   · simp only [ContinuousAt, ht, sub_zero, convexComboPair_zero]
     rw [Metric.nhds_basis_ball.tendsto_right_iff]
     intro r hr
