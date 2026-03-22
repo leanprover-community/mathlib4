@@ -1002,13 +1002,12 @@ See note [reducible non-instances]. -/
 protected abbrev distribLattice [DistribLattice α] {P : α → Prop}
   (Psup : ∀ ⦃s t : α⦄, P s → P t → P (s ⊔ t))
   (Pinf : ∀ ⦃s t : α⦄, P s → P t → P (s ⊓ t)) :
-    DistribLattice (Subtype P) :=
-  { toLattice := Subtype.lattice Psup Pinf
-    le_sup_inf := by
-      intro a b c
-      rw [← Subtype.coe_le_coe, Subtype.coe_sup Psup, Subtype.coe_inf Pinf,
-        Subtype.coe_sup Psup, Subtype.coe_sup Psup, Subtype.coe_inf Pinf]
-      exact @DistribLattice.le_sup_inf α _ a b c }
+    DistribLattice (Subtype P) where
+  toLattice := Subtype.lattice Psup Pinf
+  le_sup_inf a b c := by
+    rw [← Subtype.coe_le_coe, Subtype.coe_sup Psup, Subtype.coe_inf Pinf,
+      Subtype.coe_sup Psup, Subtype.coe_sup Psup, Subtype.coe_inf Pinf]
+    exact @DistribLattice.le_sup_inf α _ a b c
 
 end Subtype
 

@@ -104,8 +104,8 @@ theorem image_preimage [DecidableEq β] (f : α → β) (s : Finset β) [∀ x, 
       ← Set.sep_mem_eq]; rfl
 
 theorem preimage_eq_image_invFunOn_of_bij {α β : Type*} [Nonempty α] [DecidableEq α] (f : α → β)
-  (s : Finset β) (hf : Set.BijOn f (f ⁻¹' s) s) :
-    (s.preimage f hf.2.1) = s.image (Function.invFunOn f (f ⁻¹' ↑s)) := by
+    (s : Finset β) (hf : Set.BijOn f (f ⁻¹' s) s) :
+    s.preimage f hf.2.1 = s.image (Function.invFunOn f (f ⁻¹' ↑s)) := by
   ext x
   simp only [mem_preimage, mem_image]
   constructor
