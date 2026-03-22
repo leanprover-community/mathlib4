@@ -319,8 +319,9 @@ def yonedaMonObjIsoOfRepresentableBy
         simp only [← Functor.comp_map, ← ConcreteCategory.forget_map_eq_coe, ← α.homEquiv_comp]
         simp }) (fun φ ↦ MonCat.hom_ext (MonoidHom.ext (α.homEquiv_comp φ.unop)))
 
-/-- The yoneda embedding of `Mon_C` into presheaves of monoids. -/
-@[to_additive (attr := simps)]
+/-- The yoneda embedding of `Mon C` into presheaves of monoids. -/
+@[to_additive (attr := simps)
+/-- The yoneda embedding of `AddMon C` into presheaves of additive monoids. -/]
 def yonedaMon : Mon C ⥤ Cᵒᵖ ⥤ MonCat.{v} where
   obj M := yonedaMonObj M.X
   map {M N} ψ :=
@@ -456,7 +457,9 @@ namespace Hom
 
 /-- If `M` and `N` are isomorphic as monoid objects, then `X ⟶ M` and `X ⟶ N` are isomorphic
 monoids. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+/-- If `M` and `N` are isomorphic as additive monoid objects, then `X ⟶ M` and `X ⟶ N`
+are isomorphic additive monoids. -/]
 def mulEquivCongrRight (e : M ≅ N) [IsMonHom e.hom] (X : C) : (X ⟶ M) ≃* (X ⟶ N) :=
   ((yonedaMon.mapIso <| Mon.mkIso' e).app <| .op X).monCatIsoToMulEquiv
 

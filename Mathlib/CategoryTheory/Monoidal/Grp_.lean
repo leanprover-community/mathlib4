@@ -101,7 +101,7 @@ abbrev toMon (A : Grp C) : Mon C := ⟨A.X⟩
 
 variable (C) in
 /-- The trivial group object. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!) /-- The trivial additive group object. -/]
 def trivial : Grp C :=
   { Mon.trivial C with grp := inferInstanceAs (GrpObj (𝟙_ C)) }
 
@@ -384,14 +384,17 @@ section
 variable (C)
 
 /-- The forgetful functor from group objects to monoid objects. -/
-@[to_additive (attr := simps! obj_X)]
+@[to_additive (attr := simps! obj_X)
+/-- The forgetful functor from additive group objects to additive monoid objects. -/]
 def forget₂Mon : Grp C ⥤ Mon C :=
   inducedFunctor Grp.toMon
 
 @[deprecated (since := "2025-09-15")] alias forget₂Mon_ := forget₂Mon
 
 /-- The forgetful functor from group objects to monoid objects is fully faithful. -/
-@[to_additive]
+@[to_additive
+/-- The forgetful functor from additive group objects to additive monoid objects
+is fully faithful. -/]
 def fullyFaithfulForget₂Mon : (forget₂Mon C).FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
@@ -420,7 +423,8 @@ theorem forget₂Mon_map_hom {A B : Grp C} (f : A ⟶ B) :
 variable (C)
 
 /-- The forgetful functor from group objects to the ambient category. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+/-- The forgetful functor from additive group objects to the ambient category. -/]
 def forget : Grp C ⥤ C :=
   forget₂Mon C ⋙ Mon.forget C
 
@@ -621,7 +625,8 @@ open Monoidal
 
 variable (F) in
 /-- A finite-product-preserving functor takes group objects to group objects. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+/-- A finite-product-preserving functor takes additive group objects to additive group objects. -/]
 def mapGrp : Grp C ⥤ Grp D where
   obj A := .mk (F.obj A.X)
   map f := Grp.homMk' (F.mapMon.map f.hom)
@@ -665,35 +670,41 @@ theorem comp_mapGrp_mul (A : Grp C) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The identity functor is also the identity on group objects. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+/-- The identity functor is also the identity on additive group objects. -/]
 def mapGrpIdIso : mapGrp (𝟭 C) ≅ 𝟭 (Grp C) :=
   NatIso.ofComponents fun X ↦ Grp.mkIso (.refl _)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The composition functor is also the composition on group objects. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+/-- The composition functor is also the composition on additive group objects. -/]
 def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
   NatIso.ofComponents fun X ↦ Grp.mkIso (.refl _)
 
 /-- Natural transformations between functors lift to group objects. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+/-- Natural transformations between functors lift to additive group objects. -/]
 def mapGrpNatTrans (f : F ⟶ F') : F.mapGrp ⟶ F'.mapGrp where
   app X := Grp.homMk' ((mapMonNatTrans f).app X.toMon)
 
 /-- Natural isomorphisms between functors lift to group objects. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+/-- Natural isomorphisms between functors lift to additive group objects. -/]
 def mapGrpNatIso (e : F ≅ F') : F.mapGrp ≅ F'.mapGrp :=
   NatIso.ofComponents fun X ↦ Grp.mkIso (e.app _)
 
 attribute [local instance] Monoidal.ofChosenFiniteProducts in
 /-- `mapGrp` is functorial in the left-exact functor. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+/-- `mapAddGrp` is functorial in the left-exact functor. -/]
 noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp C ⥤ Grp D where
   obj F := F.1.mapGrp
   map {F G} α := { app A := Grp.homMk'' (α.hom.app A.X) }
 
 /-- Pullback a group object along a fully faithful monoidal functor. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+/-- Pullback an additive group object along a fully faithful monoidal functor. -/]
 abbrev FullyFaithful.grpObj (hF : F.FullyFaithful) (X : C) [GrpObj (F.obj X)] :
     GrpObj X where
   __ := hF.monObj X
@@ -709,7 +720,10 @@ set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.ofIso_one MonObj.ofIso_mul in
 /-- The essential image of a full and faithful functor between cartesian-monoidal categories is the
 same on group objects as on objects. -/
-@[to_additive (attr := simp)] lemma essImage_mapGrp [F.Full] [F.Faithful] {G : Grp D} :
+@[to_additive (attr := simp)
+/-- The essential image of a full and faithful functor between cartesian-monoidal categories is the
+same on additive group objects as on objects. -/]
+lemma essImage_mapGrp [F.Full] [F.Faithful] {G : Grp D} :
     F.mapGrp.essImage G ↔ F.essImage G.X where
   mp := by rintro ⟨H, ⟨e⟩⟩; exact ⟨H.X, ⟨(Grp.forget _).mapIso e⟩⟩
   mpr := by
@@ -756,7 +770,9 @@ variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.Monoidal]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to group objects. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+/-- An adjunction of monoidal functors lifts to an adjunction of their lifts
+to additive group objects. -/]
 def mapGrp : F.mapGrp ⊣ G.mapGrp where
   unit := mapGrpIdIso.inv ≫ mapGrpNatTrans a.unit ≫ mapGrpCompIso.hom
   counit := mapGrpCompIso.inv ≫ mapGrpNatTrans a.counit ≫ mapGrpIdIso.hom
@@ -767,7 +783,8 @@ namespace Equivalence
 variable (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal]
 
 /-- An equivalence of categories lifts to an equivalence of their group objects. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+/-- An equivalence of categories lifts to an equivalence of their additive group objects. -/]
 def mapGrp : Grp C ≌ Grp D where
   functor := e.functor.mapGrp
   inverse := e.inverse.mapGrp

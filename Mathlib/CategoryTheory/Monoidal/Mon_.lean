@@ -885,13 +885,15 @@ theorem comp_mapMon_mul (X : Mon C) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The identity functor is also the identity on monoid objects. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+/-- The identity functor is also the identity on additive monoid objects. -/]
 def mapMonIdIso : mapMon (𝟭 C) ≅ 𝟭 (Mon C) :=
   NatIso.ofComponents fun X ↦ Mon.mkIso (.refl _)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The composition functor is also the composition on monoid objects. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+/-- The composition functor is also the composition on additive monoid objects. -/]
 def mapMonCompIso : (F ⋙ G).mapMon ≅ F.mapMon ⋙ G.mapMon :=
   NatIso.ofComponents fun X ↦ Mon.mkIso (.refl _)
 
@@ -900,12 +902,14 @@ protected instance Faithful.mapMon [F.Faithful] : F.mapMon.Faithful where
   map_injective {_X _Y} _f _g hfg := Mon.Hom.ext <| map_injective congr(($hfg).hom)
 
 /-- Natural transformations between functors lift to monoid objects. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+/-- Natural transformations between functors lift to additive monoid objects. -/]
 def mapMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] : F.mapMon ⟶ F'.mapMon where
   app X := .mk' (f.app _)
 
 /-- Natural isomorphisms between functors lift to monoid objects. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+/-- Natural isomorphisms between functors lift to additive monoid objects. -/]
 def mapMonNatIso (e : F ≅ F') [NatTrans.IsMonoidal e.hom] : F.mapMon ≅ F'.mapMon :=
   NatIso.ofComponents fun X ↦ Mon.mkIso (e.app _)
 
@@ -920,7 +924,8 @@ variable [F.OplaxMonoidal]
 
 open scoped MonObj in
 /-- Pullback a monoid object along a fully faithful oplax monoidal functor. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+/-- Pullback an additive monoid object along a fully faithful oplax monoidal functor. -/]
 abbrev FullyFaithful.monObj (hF : F.FullyFaithful) (X : C) [MonObj (F.obj X)] : MonObj X where
   one := hF.preimage <| OplaxMonoidal.η F ≫ η[F.obj X]
   mul := hF.preimage <| OplaxMonoidal.δ F X X ≫ μ[F.obj X]
@@ -956,6 +961,7 @@ instance FullyFaithful.isAddMonHom_preimage (hF : F.FullyFaithful) {X Y : C}
   add_hom := hF.map_injective (by
     simp [← obj.σ_def_assoc, ← obj.σ_def, ← μ_natural_assoc, ← cancel_epi (LaxMonoidal.μ F ..)])
 
+@[to_additive existing]
 instance FullyFaithful.isMonHom_preimage (hF : F.FullyFaithful) {X Y : C}
     [MonObj X] [MonObj Y] (f : F.obj X ⟶ F.obj Y) [IsMonHom f] :
     IsMonHom (hF.preimage f) where
@@ -964,13 +970,11 @@ instance FullyFaithful.isMonHom_preimage (hF : F.FullyFaithful) {X Y : C}
     simp [← obj.μ_def_assoc, ← obj.μ_def, ← μ_natural_assoc, ← cancel_epi (LaxMonoidal.μ F ..)]
 
 set_option backward.isDefEq.respectTransparency false in
-protected def FullyFaithful.mapAddMon (hF : F.FullyFaithful) : F.mapAddMon.FullyFaithful where
-  preimage {X Y} f := .mk' <| hF.preimage f.hom
-
-set_option backward.isDefEq.respectTransparency false in
-/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `Mon(F) : Mon C ⥤ Mon D` is fully
+/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `F.mapMon : Mon C ⥤ Mon D` is fully
 faithful too. -/
-@[to_additive existing (attr := simps)]
+@[to_additive (attr := simps)
+/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `F.mapAddMon : AddMon C ⥤ AddMon D`
+is fully faithful too. -/]
 protected def FullyFaithful.mapMon (hF : F.FullyFaithful) : F.mapMon.FullyFaithful where
   preimage {X Y} f := .mk' <| hF.preimage f.hom
 
@@ -979,7 +983,9 @@ attribute [local simp] MonObj.ofIso_one MonObj.ofIso_mul in
 open Monoidal in
 /-- The essential image of a fully faithful functor between cartesian-monoidal categories is the
 same on monoid objects as on objects. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp)
+/-- The essential image of a fully faithful functor between cartesian-monoidal categories is the
+same on additive monoid objects as on objects. -/]
 lemma essImage_mapMon [F.Full] [F.Faithful] {M : Mon D} :
     F.mapMon.essImage M ↔ F.essImage M.X where
   mp := by rintro ⟨N, ⟨e⟩⟩; exact ⟨N.X, ⟨(Mon.forget _).mapIso e⟩⟩
@@ -1038,7 +1044,8 @@ instance [F.Braided] : F.mapMon.Braided where
 
 variable (C D) in
 /-- `mapMon` is functorial in the lax monoidal functor. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+/-- `mapAddMon` is functorial in the lax monoidal functor. -/]
 def mapMonFunctor : LaxMonoidalFunctor C D ⥤ Mon C ⥤ Mon D where
   obj F := F.mapMon
   map α := { app A := .mk' (α.hom.app A.X) }
@@ -1053,7 +1060,10 @@ variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.LaxMonoidal] 
 
 set_option backward.isDefEq.respectTransparency false in
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to monoid objects. -/
-@[to_additive (attr := simps)] def mapMon : F.mapMon ⊣ G.mapMon where
+@[to_additive (attr := simps)
+/-- An adjunction of monoidal functors lifts to an adjunction of their lifts to additive
+monoid objects. -/]
+def mapMon : F.mapMon ⊣ G.mapMon where
   unit := mapMonIdIso.inv ≫ mapMonNatTrans a.unit ≫ mapMonCompIso.hom
   counit := mapMonCompIso.inv ≫ mapMonNatTrans a.counit ≫ mapMonIdIso.hom
 
@@ -1062,7 +1072,8 @@ end Adjunction
 namespace Equivalence
 
 /-- An equivalence of categories lifts to an equivalence of their monoid objects. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+/-- An equivalence of categories lifts to an equivalence of their additive monoid objects. -/]
 def mapMon (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal] [e.IsMonoidal] :
     Mon C ≌ Mon D where
   functor := e.functor.mapMon
@@ -1078,13 +1089,15 @@ namespace EquivLaxMonoidalFunctorPUnit
 
 variable (C) in
 /-- Implementation of `Mon.equivLaxMonoidalFunctorPUnit`. -/
-@[to_additive (attr := simps) laxMonoidalToAddMon]
+@[to_additive (attr := simps) laxMonoidalToAddMon
+/-- Implementation of `AddMon.equivLaxMonoidalFunctorPUnit`. -/]
 def laxMonoidalToMon : LaxMonoidalFunctor (Discrete PUnit.{w + 1}) C ⥤ Mon C where
   obj F := (F.mapMon : Mon _ ⥤ Mon C).obj (trivial (Discrete PUnit))
   map α := ((Functor.mapMonFunctor (Discrete PUnit) C).map α).app _
 
 /-- Implementation of `Mon.equivLaxMonoidalFunctorPUnit`. -/
-@[to_additive (attr := simps!) addMonToLaxMonoidalObj]
+@[to_additive (attr := simps!) addMonToLaxMonoidalObj
+/-- Implementation of `AddMon.equivLaxMonoidalFunctorPUnit`. -/]
 def monToLaxMonoidalObj (A : Mon C) :
     Discrete PUnit.{w + 1} ⥤ C := (Functor.const _).obj A.X
 
@@ -1105,7 +1118,8 @@ variable (C)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `Mon.equivLaxMonoidalFunctorPUnit`. -/
-@[to_additive (attr := simps) addMonToLaxMonoidal]
+@[to_additive (attr := simps) addMonToLaxMonoidal
+/-- Implementation of `AddMon.equivLaxMonoidalFunctorPUnit`. -/]
 def monToLaxMonoidal : Mon C ⥤ LaxMonoidalFunctor (Discrete PUnit.{w + 1}) C where
   obj A := LaxMonoidalFunctor.of (monToLaxMonoidalObj A)
   map f :=
@@ -1117,14 +1131,15 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `Mon.equivLaxMonoidalFunctorPUnit`. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+/-- Implementation of `AddMon.equivLaxMonoidalFunctorPUnit`. -/]
 def unitIso :
     𝟭 (LaxMonoidalFunctor (Discrete PUnit.{w + 1}) C) ≅ laxMonoidalToMon C ⋙ monToLaxMonoidal C :=
   NatIso.ofComponents
     (fun F ↦ LaxMonoidalFunctor.isoOfComponents (fun _ ↦ F.mapIso (eqToIso (by ext))))
 
 /-- Auxiliary definition for `counitIso`. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!) /-- Auxiliary definition for `counitIso`. -/]
 def counitIsoAux (F : Mon C) :
     ((monToLaxMonoidal.{w} C ⋙ laxMonoidalToMon C).obj F).X ≅ ((𝟭 (Mon C)).obj F).X :=
   Iso.refl _
@@ -1148,7 +1163,8 @@ theorem isMonHom_counitIsoAux (F : Mon C) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `Mon.equivLaxMonoidalFunctorPUnit`. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+/-- Implementation of `AddMon.equivLaxMonoidalFunctorPUnit`. -/]
 def counitIso : monToLaxMonoidal.{w} C ⋙ laxMonoidalToMon C ≅ 𝟭 (Mon C) :=
   NatIso.ofComponents fun F ↦
     letI : IsMonHom (counitIsoAux.{w} C F).hom := isMonHom_counitIsoAux C F
