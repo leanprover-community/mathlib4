@@ -252,6 +252,13 @@ lemma abs_intCast (n : ℤ) : abs (n : A) = |n| := by
     rw [Int.cast_negSucc, abs_neg, abs_natCast, ← Int.cast_natCast]
     congr
 
+omit [StarModule ℝ A] in
+@[simp] theorem abs_coe_unitary (U : unitary A) : abs (U : A) = 1 := by simp [abs]
+
+omit [StarModule ℝ A] in
+@[simp] theorem abs_of_mem_unitary {U : A} (hU : U ∈ unitary A) : abs U = 1 :=
+  abs_coe_unitary ⟨U, hU⟩
+
 end Real
 
 section RCLike
