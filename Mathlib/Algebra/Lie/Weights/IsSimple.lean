@@ -455,15 +455,14 @@ this yields a symmetric orthogonality between roots inside and outside a Lie ide
 lemma rootSet_apply_coroot_eq_zero (I : LieIdeal K L)
     {α : H.root} (hα : α ∈ I.rootSet)
     {β : H.root} (hβ : β ∉ I.rootSet) :
-    (↑α : Weight K H L) (coroot β) = 0 := by
-  have h_ker : coroot (↑α : Weight K H L) ∈ (↑β : Weight K H L).ker :=
+    (α : Weight K H L) (coroot β) = 0 := by
+  have h_ker : coroot (α : Weight K H L) ∈ (β : Weight K H L).ker :=
     weight_apply_eq_zero_of_not_mem_rootSet I
       (I.corootSubmodule_le hα (coe_coroot_mem_corootSubmodule _)) hβ
-  change coroot (↑β : Weight K H L) ∈ (↑α : Weight K H L).ker
+  change coroot (β : Weight K H L) ∈ (α : Weight K H L).ker
   rw [← orthogonal_span_coroot_eq_ker,
     LinearMap.BilinForm.orthogonal_span_singleton_eq_toLin_ker, LinearMap.mem_ker]
-  exact traceForm_eq_zero_of_mem_ker_of_mem_span_coroot h_ker
-    (Submodule.mem_span_singleton_self _)
+  exact traceForm_eq_zero_of_mem_ker_of_mem_span_coroot h_ker (Submodule.mem_span_singleton_self _)
 
 /-- The Cartan part `I.restr H ⊓ H.toLieSubmodule` of a Lie ideal equals the span of the
 coroots for roots in `I.rootSet`. -/
