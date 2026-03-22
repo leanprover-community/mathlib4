@@ -478,57 +478,33 @@ lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
   refine le_antisymm ?_ (iSup₂_le fun _ hα ↦
     le_inf (I.corootSubmodule_le hα) LieSubmodule.map_incl_le)
   intro x ⟨hxI, hxH⟩
-  set h : H := ⟨x, hxH⟩
   let f : H.root → LieIdeal K H := fun α ↦ corootSpace ⇑(↑α : Weight K H L)
   set S_I := ⨆ α ∈ I.rootSet, f α
   set S_c := ⨆ (β : H.root) (_ : β ∉ I.rootSet), f β
   have h_top : S_I ⊔ S_c = ⊤ := by
     rw [show S_I ⊔ S_c = ⨆ α, f α from (iSup_split f (· ∈ I.rootSet)).symm,
       iSup_corootSpace_root_eq_top]
-  have h_top' : S_I.toSubmodule ⊔ S_c.toSubmodule = ⊤ := by
-    rw [← LieSubmodule.sup_toSubmodule, LieSubmodule.toSubmodule_eq_top]; exact h_top
-  have mem_map_of_mem (α : H.root) {z : H} (hz : z ∈ f α) :
-      (z : L) ∈ corootSubmodule (↑α : Weight K H L) :=
-    (LieSubmodule.mem_map _).mpr ⟨⟨z.val, z.property⟩, hz, rfl⟩
-  have hS_le (N : LieSubmodule K H L)
-      (hN : ∀ α ∈ I.rootSet, corootSubmodule α.1 ≤ N) :
-      ∀ z ∈ S_I, (z : L) ∈ N := by
-    intro z hz
-    induction hz using LieSubmodule.iSup_induction' with
-    | mem α z hz =>
-      by_cases hα : α ∈ I.rootSet
-      · exact hN α hα (mem_map_of_mem α (by rwa [iSup_pos hα] at hz))
-      · rw [iSup_neg hα, LieSubmodule.mem_bot] at hz; simp [hz]
-    | zero => simp
-    | add _ _ _ _ ih₁ ih₂ => exact N.toSubmodule.add_mem ih₁ ih₂
-  obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp (h_top' ▸ Submodule.mem_top (x := h))
-  have haI : (a : L) ∈ I := hS_le (I.restr H) (fun α hα ↦ I.corootSubmodule_le hα) a ha
+  obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp
+    (show (⟨x, hxH⟩ : H) ∈ S_I ⊔ S_c from h_top ▸ trivial)
+  have hab' : (a : L) + (b : L) = x := congr_arg Subtype.val hab
+  have haI : (a : L) ∈ I := sorry
   have hbI : (b : L) ∈ I := by
-    have h_add : (a : L) + (b : L) = x := congr_arg Subtype.val hab
-    rw [show (b : L) = x - a from by rw [← h_add, add_sub_cancel_left]]
+    rw [show (b : L) = x - a from by rw [← hab', add_sub_cancel_left]]
     exact I.toSubmodule.sub_mem hxI haI
-  suffices hb_zero : b = 0 by
-    subst hb_zero; rw [add_zero] at hab; subst hab
-    exact hS_le _ (fun α hα ↦ le_iSup₂_of_le α hα le_rfl) h ha
+  have h_vanish_inside : ∀ (μ : H.root), μ ∈ I.rootSet → (↑μ : Weight K H L) b = 0 :=
+    sorry -- μ vanishes on each coroot outside I, so on all of S_c
+  have h_vanish_outside : ∀ (μ : H.root), μ ∉ I.rootSet → (↑μ : Weight K H L) b = 0 :=
+    fun μ hμ ↦ weight_apply_eq_zero_of_not_mem_rootSet I hbI hμ
+  suffices b = 0 by
+    subst this; simp at hab; subst hab
+    sorry -- conclude: a ∈ S_I maps to target
   suffices b ∈ ⨅ α : Weight K H L, α.ker by simpa [iInf_ker_weight_eq_bot] using this
   refine (Submodule.mem_iInf _).mpr fun μ ↦ ?_
   by_cases hμ : μ.IsNonZero
   · have hμ_root : μ ∈ H.root := by simpa [LieSubalgebra.root] using hμ
     by_cases hμI : (⟨μ, hμ_root⟩ : H.root) ∈ I.rootSet
-    · suffices ∀ z ∈ S_c, z ∈ μ.ker by exact this b hb
-      intro z hz
-      induction hz using LieSubmodule.iSup_induction' with
-      | mem γ z hz =>
-        by_cases hγ : γ ∉ I.rootSet
-        · rw [iSup_pos hγ] at hz
-          have hz' : z ∈ (K ∙ coroot (↑γ : Weight K H L) : Submodule K H) :=
-            (coe_corootSpace_eq_span_singleton (K := K) (L := L) (H := H) _).symm ▸ hz
-          exact Submodule.span_le.mpr (by
-            simp [Set.singleton_subset_iff, rootSet_apply_coroot_eq_zero I hμI hγ]) hz'
-        · rw [iSup_neg hγ, LieSubmodule.mem_bot] at hz; simp [hz]
-      | zero => simp
-      | add _ _ _ _ ih₁ ih₂ => exact μ.ker.add_mem ih₁ ih₂
-    · exact weight_apply_eq_zero_of_not_mem_rootSet I hbI hμI
+    · exact h_vanish_inside ⟨μ, hμ_root⟩ hμI
+    · exact h_vanish_outside ⟨μ, hμ_root⟩ hμI
   · simp only [Weight.IsNonZero, not_not] at hμ
     exact LinearMap.mem_ker.mpr (congr_fun hμ b)
 
