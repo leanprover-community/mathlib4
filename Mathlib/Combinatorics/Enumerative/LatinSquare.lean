@@ -687,10 +687,7 @@ lemma subrect_refl
     IsSubrect A A' := by
   obtain ⟨f,g,h,hrfl⟩ := h
   simp only [IsSubrect]
-  use f
-  use g
-  use h
-  exact hrfl
+  exact ⟨f, g, h, hrfl⟩
 
 /-- A Latin rectangle `LatinRectangle m n α` extends to a Latin square `LatinSquare n α`.
     In other words, there always exists a Latin square that contains a given Latin rectangle
