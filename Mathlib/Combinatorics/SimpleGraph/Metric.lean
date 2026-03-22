@@ -70,6 +70,7 @@ theorem edist_le (p : G.Walk u v) :
   sInf_le ⟨p, rfl⟩
 protected alias Walk.edist_le := edist_le
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem edist_eq_zero_iff :
     G.edist u v = 0 ↔ u = v := by
@@ -112,6 +113,7 @@ theorem edist_comm : G.edist u v = G.edist v u := by
     ← Set.image_comp, Set.image_univ, Function.comp_def]
   simp_rw [Walk.length_reverse, ← edist_eq_sInf]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_walk_of_edist_eq_coe {k : ℕ} (h : G.edist u v = k) :
     ∃ p : G.Walk u v, p.length = k :=
   have : G.edist u v ≠ ⊤ := by rw [h]; exact ENat.coe_ne_top _
@@ -124,6 +126,7 @@ lemma edist_ne_top_iff_reachable : G.edist u v ≠ ⊤ ↔ G.Reachable u v := by
   simp only [edist, iInf_eq_top, ENat.coe_ne_top] at hx
   exact h.elim hx
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The extended distance between vertices is equal to `1` if and only if these vertices are adjacent.
 -/
@@ -143,33 +146,30 @@ lemma edist_le_one_iff_adj_or_eq : G.edist u v ≤ 1 ↔ G.Adj u v ∨ u = v := 
     exact edist_eq_one_iff_adj
 
 lemma edist_eq_two_iff {u v : V} :
-    G.edist u v = 2 ↔ u ≠ v ∧ ¬ G.Adj u v ∧ Nonempty (G.commonNeighbors u v) := by
+    G.edist u v = 2 ↔ u ≠ v ∧ ¬ G.Adj u v ∧ (G.commonNeighbors u v).Nonempty := by
   refine ⟨fun h ↦ ⟨?_, ?_, ?_⟩, fun h ↦ le_antisymm ?_ ?_⟩
-  · simp [← G.edist_eq_zero_iff.not (b := u = v), h]
-  · simp [← edist_eq_one_iff_adj, h]
+  · simp +decide [← G.edist_eq_zero_iff.not (b := u = v), h]
+  · simp +decide [← edist_eq_one_iff_adj, h]
   · obtain ⟨w, hw⟩ := exists_walk_of_edist_eq_coe h
     use w.getVert 1
-    have h : w.getVert 1 ∈ G.commonNeighbors (w.getVert 0) (w.getVert w.length) := by
-      rw [mem_commonNeighbors]
-      apply And.intro <| w.adj_getVert_succ (Nat.lt_of_sub_eq_succ hw)
-      rw [hw]
-      exact (w.adj_getVert_succ (hw ▸ Nat.one_lt_two)).symm
-    rwa [Walk.getVert_zero, Walk.getVert_length] at h
-  · obtain ⟨w, hw⟩ := nonempty_subtype.mp h.2.2
+    suffices w.getVert 1 ∈ G.commonNeighbors (w.getVert 0) (w.getVert w.length) by simpa
+    refine hw ▸ G.mem_commonNeighbors.mp ?_
+    exact ⟨w.adj_getVert_succ (by simp [hw]), (w.adj_getVert_succ (by simp [hw])).symm⟩
+  · obtain ⟨w, hw⟩ := h.2.2
     rw [mem_commonNeighbors] at hw
     have := (Walk.cons hw.1 <| .cons hw.2.symm .nil).edist_le
     simp_all
   · by_contra! hc
-    cases ENat.lt_two_iff.mp hc <;> simp_all
+    cases ENat.le_one_iff_eq_zero_or_eq_one.mp (Order.le_of_lt_succ hc) <;> simp_all
 
 lemma two_lt_edist_iff {u v : V} :
-    2 < G.edist u v ↔ u ≠ v ∧ ¬ G.Adj u v ∧ IsEmpty (G.commonNeighbors u v) := by
+    2 < G.edist u v ↔ u ≠ v ∧ ¬ G.Adj u v ∧ (G.commonNeighbors u v) = ∅ := by
   refine ⟨fun h ↦ ?_, fun h ↦ lt_of_le_of_ne ?_ (Ne.symm ?_)⟩
-  · have hn : u ≠ v := by simp [← G.edist_eq_zero_iff.not (b := u = v), ne_of_gt (pos_of_gt h)]
-    have : ¬ G.Adj u v := by simpa [← edist_eq_one_iff_adj] using ne_of_gt (lt_trans (by decide) h)
+  · have hn : u ≠ v := fun hc ↦ by simp [hc] at h
+    have : ¬ G.Adj u v := fun hc ↦ by simp +decide [edist_eq_one_iff_adj.mpr hc] at h
     use hn, this
     by_contra! hc
-    rwa [edist_eq_two_iff.mpr ⟨hn, this, hc⟩, lt_self_iff_false 2] at h
+    simp [edist_eq_two_iff.mpr ⟨hn, this, hc⟩] at h
   · rw [← one_add_one_eq_two]
     refine Order.add_one_le_of_lt <| lt_of_le_of_ne ?_ ?_
     <;> grind [Order.one_le_iff_pos, pos_iff_ne_zero, edist_eq_zero_iff, edist_eq_one_iff_adj]

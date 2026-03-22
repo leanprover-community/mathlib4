@@ -249,7 +249,6 @@ theorem opNNNorm_mul : ‖mul 𝕜 R‖₊ = 1 :=
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The norm of `lsmul` equals 1 in any nontrivial normed group.
 
 This is `ContinuousLinearMap.opNorm_lsmul_le` as an equality. -/

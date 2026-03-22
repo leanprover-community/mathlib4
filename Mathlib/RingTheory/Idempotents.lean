@@ -330,7 +330,6 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker
   refine ⟨_, ((equiv (Fintype.equivFin I)).mpr h₁),
     by ext x; simpa using congr_fun h₂ (Fintype.equivFin I x)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_isNilpotent_sub_of_isIdempotentElem_of_commute {e₁ e₂ : R}
     (he₁ : IsIdempotentElem e₁) (he₂ : IsIdempotentElem e₂) (H : IsNilpotent (e₁ - e₂))
     (H' : Commute e₁ e₂) :
