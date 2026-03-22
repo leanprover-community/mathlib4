@@ -221,8 +221,7 @@ theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom.toLinearMap =
 
 lemma d_apply {n : ℕ} (f : (Fin (n + 1 + 1) → G) →₀ k) :
     ((standardComplex k G).d (n + 1) n).hom f = d k G (n + 1) f := by
-  rw [← Representation.IntertwiningMap.toLinearMap_apply, d_eq]
-  with_reducible_and_instances congr -- what's wrong here?
+  rw [← Representation.IntertwiningMap.toLinearMap_apply, d_eq]; rfl
 
 section Exactness
 
@@ -375,10 +374,8 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
 
 end barComplex
 
--- #exit
 open barComplex
 
-unif_hint (H : Type*) [MulAction G H] where ⊢ Action.V (Action.ofMulAction G H) ≟ H
 set_option backward.isDefEq.respectTransparency false in
 /-- The projective resolution of `k` as a trivial `k`-linear `G`-representation with `n`th
 differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ)` to

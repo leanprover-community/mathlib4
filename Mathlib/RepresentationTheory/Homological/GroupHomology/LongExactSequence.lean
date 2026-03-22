@@ -49,7 +49,7 @@ lemma map_chainsFunctor_shortExact :
         (hX.exact.map (forget₂ (Rep k G) (ModuleCat k))).moduleCat_range_eq_ker
       simp [moduleCat_exact_iff_range_eq_ker, ker_mapRange,
         range_mapRange_linearMap X.f.hom.toLinearMap (LinearMap.ker_eq_bot.2 <|
-        (Rep.mono_iff_injective k G X.f).1 hX.mono_f), this]
+        (Rep.mono_iff_injective X.f).1 hX.mono_f), this]
     mono_f := chainsMap_id_f_map_mono X.f i
     epi_g := letI := hX.epi_g; chainsMap_id_f_map_epi X.g i }
 
@@ -150,7 +150,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem mem_cycles₁_of_comp_eq_d₂₁
     {y : G × G →₀ X.X₂} {x : G →₀ X.X₁} (hx : mapRange.linearMap X.f.hom.toLinearMap x =
     d₂₁ X.X₂ y) :
-    x ∈ cycles₁ X.X₁ := LinearMap.mem_ker.2 <| (Rep.mono_iff_injective k G X.f).1 hX.2 <| by
+    x ∈ cycles₁ X.X₁ := LinearMap.mem_ker.2 <| (Rep.mono_iff_injective X.f).1 hX.2 <| by
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH1]
 

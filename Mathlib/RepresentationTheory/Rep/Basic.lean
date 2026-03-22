@@ -544,11 +544,13 @@ instance preservesColimits_forget :
     Limits.PreservesColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
   Limits.preservesColimits_of_natIso (forgetNatIsoActionForget k G).symm
 
+variable {k G} in
 theorem epi_iff_surjective (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=
   ⟨fun _ => (ModuleCat.epi_iff_surjective ((forget₂ _ _).map f)).1 inferInstance,
   fun h => (forget₂ _ _).epi_of_epi_map ((ModuleCat.epi_iff_surjective <|
     (forget₂ _ _).map f).2 h)⟩
 
+variable {k G} in
 theorem mono_iff_injective (f : A ⟶ B) : Mono f ↔ Function.Injective f.hom :=
   ⟨fun _ => (ModuleCat.mono_iff_injective ((forget₂ _ _).map f)).1 inferInstance,
   fun h => (forget₂ _ _).mono_of_mono_map ((ModuleCat.mono_iff_injective <|

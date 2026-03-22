@@ -123,17 +123,8 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given a monoid morphism `φ : G →* H` and a morphism of `G`-representations `f : A ⟶ B`, there
 is a natural `H`-representation morphism `coind φ A ⟶ coind φ B`, given by postcomposition by
 `f`. -/
--- @[simps!]
 noncomputable abbrev coindMap {A B : Rep k G} (f : A ⟶ B) : coind φ A ⟶ coind φ B :=
   ofHom <| Representation.coindMap φ f.hom
-
--- lemma coindMap_coe_apply {A B : Rep k G} (f : A ⟶ B) (x : Representation.coindV φ A.ρ) :
---     ((coindMap φ f).hom x).1 = (f.hom.toLinearMap.compLeft H) x.1 := rfl
-
--- @[simp]
--- lemma coindMap_coe_apply_apply {A B : Rep k G} (f : A ⟶ B)
---     (x : Representation.coindV φ A.ρ) (h : H) :
---     ((coindMap φ f).hom x).1 h = f.hom (x.1 h) := rfl
 
 variable (k) in
 /-- Given a monoid homomorphism `φ : G →* H`, this is the functor sending a `G`-representation `A`
@@ -146,9 +137,9 @@ noncomputable def coindFunctor : Rep.{t} k G ⥤ Rep k H where
 set_option backward.isDefEq.respectTransparency false in
 instance {G : Type v'} [Group G] (S : Subgroup G) :
     (coindFunctor k S.subtype).PreservesEpimorphisms where
-  preserves {X Y} f := (epi_iff_surjective k G _).2 fun y => by
+  preserves {X Y} f := (epi_iff_surjective _).2 fun y => by
     letI := QuotientGroup.rightRel S
-    choose! s hs using (Rep.epi_iff_surjective _ _ f).1 ‹_›
+    choose! s hs using (Rep.epi_iff_surjective f).1 ‹_›
     choose! i hi using Quotient.mk'_surjective (α := G)
     let γ (g : G) : S := ⟨g * (i (Quotient.mk' g))⁻¹,
       (QuotientGroup.rightRel_apply.1 (Quotient.eq'.1 (hi (Quotient.mk' g))))⟩
@@ -210,7 +201,6 @@ lemma coind'_ext {f g : coind' φ A} (hfg : ∀ h, f.hom.toLinearMap (.single h 
 /-- Given a monoid morphism `φ : G →* H` and a morphism of `G`-representations `f : A ⟶ B`, there
 is a natural `H`-representation morphism `coind' φ A ⟶ coind' φ B`, given by postcomposition
 by `f`. -/
--- @[simps! hom]
 noncomputable def coindMap' {A B : Rep k G} (f : A ⟶ B) : coind' φ A ⟶ coind' φ B := Rep.ofHom
   { __ := Linear.rightComp k _ f
     isIntertwining' h := by ext; simp }
@@ -280,9 +270,6 @@ def resCoindToHom (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) : B ⟶ (coin
 @[simp]
 lemma resCoindToHom_hom_hom_apply_coe (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) (c : ↑B.V)
     (i : H) : ((resCoindToHom φ B A f).hom c).1 i = (Hom.hom f) ((B.ρ i) c) := rfl
-
--- unif_hint (G H : Type*) [Monoid G] [Monoid H] (φ : G →* H) (A : Rep k G) where ⊢
---   A.ρ.coind φ ≟ (coind φ A).ρ
 
 attribute [pp_with_univ] Rep coind
 

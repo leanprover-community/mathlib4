@@ -113,7 +113,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma chainsMap_f_map_mono (hf : Function.Injective f) [Mono φ] (i : ℕ) :
     Mono ((chainsMap f φ).f i) := by
   simpa [ModuleCat.mono_iff_injective] using
-    (mapRange_injective φ.hom (map_zero _) <| (Rep.mono_iff_injective k G φ).1
+    (mapRange_injective φ.hom (map_zero _) <| (Rep.mono_iff_injective φ).1
     inferInstance).comp (mapDomain_injective hf.comp_left)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -125,7 +125,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma chainsMap_f_map_epi (hf : Function.Surjective f) [Epi φ] (i : ℕ) :
     Epi ((chainsMap f φ).f i) := by
   simpa [ModuleCat.epi_iff_surjective] using
-    (mapRange_surjective φ.hom (map_zero _) ((Rep.epi_iff_surjective k G φ).1 inferInstance)).comp
+    (mapRange_surjective φ.hom (map_zero _) ((Rep.epi_iff_surjective φ).1 inferInstance)).comp
     (mapDomain_surjective hf.comp_left)
 
 set_option backward.isDefEq.respectTransparency false in

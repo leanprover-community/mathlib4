@@ -89,7 +89,7 @@ lemma cochainsMap_zero : cochainsMap (A := A) (B := B) f 0 = 0 := by rfl
 lemma cochainsMap_f_map_mono (hf : Function.Surjective f) [Mono φ] (i : ℕ) :
     Mono ((cochainsMap f φ).f i) := by
   simpa [ModuleCat.mono_iff_injective] using
-    ((Rep.mono_iff_injective k G φ).1 inferInstance).comp_left.comp <|
+    ((Rep.mono_iff_injective φ).1 inferInstance).comp_left.comp <|
     LinearMap.funLeft_injective_of_surjective k A _ hf.comp_left
 
 set_option backward.isDefEq.respectTransparency false in
@@ -100,7 +100,7 @@ instance cochainsMap_id_f_map_mono {A B : Rep k G} (φ : A ⟶ B) [Mono φ] (i :
 lemma cochainsMap_f_map_epi (hf : Function.Injective f) [Epi φ] (i : ℕ) :
     Epi ((cochainsMap f φ).f i) := by
   simpa [ModuleCat.epi_iff_surjective] using
-    ((Rep.epi_iff_surjective k G φ).1 inferInstance).comp_left.comp <|
+    ((Rep.epi_iff_surjective φ).1 inferInstance).comp_left.comp <|
     LinearMap.funLeft_surjective_of_injective k A _ hf.comp_left
 
 set_option backward.isDefEq.respectTransparency false in

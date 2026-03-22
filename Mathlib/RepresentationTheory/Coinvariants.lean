@@ -337,8 +337,8 @@ lemma coinvariantsShortComplex_shortExact : (coinvariantsShortComplex.{w} A S).S
     (ShortComplex.moduleCat_exact_iff _).2
     fun x hx => ⟨(⟨x, (Submodule.Quotient.mk_eq_zero _).1 hx⟩ : Representation.Coinvariants.ker <|
       A.ρ.comp S.subtype), rfl⟩
-  mono_f := (Rep.mono_iff_injective k G _).2 fun _ _ h => Subtype.ext h
-  epi_g := (Rep.epi_iff_surjective k G _).2 <| Submodule.mkQ_surjective _
+  mono_f := (Rep.mono_iff_injective _).2 fun _ _ h => Subtype.ext h
+  epi_g := (Rep.epi_iff_surjective _).2 <| Submodule.mkQ_surjective _
 
 end
 
