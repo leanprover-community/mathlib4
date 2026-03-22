@@ -240,12 +240,11 @@ theorem pos_iff_ne_zero {o : OrderType} : 0 < o ↔ o ≠ 0 where
   `lift.{u v} : OrderType.{v} → OrderType.{max v u}` -/
 @[pp_with_univ]
 def lift (o : OrderType.{v}) : OrderType.{max v u} :=
-  o.liftOn (δ := OrderType.{max v u}) (fun w _ ↦ type (ULift.{u,v} w)) (fun α _ β _ e ↦
-    type_congr <| ((ULift.orderIso.{u, v} (α := α)).trans (type_eq_type.mp e).some).trans
-    (ULift.orderIso.{u, v} (α := β)).symm)
+  o.liftOn (fun α _ ↦ type (ULift α)) fun _α _ _β _ e ↦
+    ((ULift.orderIso.trans (type_eq_type.mp e).some).trans ULift.orderIso.symm).type_congr
 
 @[simp]
-theorem type_uLift : type (ULift.{v, u} α) = lift.{v} (type α) := Eq.refl (type (ULift.{v, u} α))
+theorem type_uLift : type (ULift.{v, u} α) = lift.{v} (type α) := (rfl)
 
 /-- An order type lifted to a lower or equal universe equals itself. -/
 theorem lift_id' (o : OrderType.{max u v}) : lift.{u} o = o :=
