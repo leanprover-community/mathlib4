@@ -278,8 +278,13 @@ lemma succ_natCast (n : ℕ) : Order.succ (n : Cardinal) = n + 1 := by
 theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
   simp
 
+@[simp]
 lemma natCast_add_one_le_iff {n : ℕ} {c : Cardinal} : n + 1 ≤ c ↔ n < c := by
-  rw [← Order.succ_le_iff, Cardinal.succ_natCast]
+  rw [← Order.succ_le_iff, succ_natCast]
+
+@[simp]
+lemma lt_natCast_add_one_iff {n : ℕ} {c : Cardinal} : c < n + 1 ↔ c ≤ n := by
+  rw [← Order.lt_succ_iff, succ_natCast]
 
 lemma two_le_iff_one_lt {c : Cardinal} : 2 ≤ c ↔ 1 < c := by
   convert natCast_add_one_le_iff
@@ -308,7 +313,7 @@ theorem exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
 theorem card_le_of {α : Type u} {n : ℕ} (H : ∀ s : Finset α, s.card ≤ n) : #α ≤ n := by
   contrapose! H
   apply exists_finset_le_card α (n + 1)
-  simpa [← succ_natCast] using H
+  simpa using H
 
 theorem cantor' (a) {b : Cardinal} (hb : 1 < b) : a < b ^ a := by
   rw [← succ_le_iff, (by norm_cast : succ (1 : Cardinal) = 2)] at hb
@@ -327,7 +332,7 @@ theorem lt_one_iff_zero {c : Cardinal} : c < 1 ↔ c = 0 := by
 /-! ### Properties about `aleph0` -/
 
 @[simp] lemma natCast_lt_aleph0 {n : ℕ} : (n : Cardinal.{u}) < ℵ₀ := by
-  rw [← succ_le_iff, succ_natCast, ← Nat.cast_add_one, ← lift_mk_fin, aleph0, lift_mk_le.{u}]
+  rw [← natCast_add_one_le_iff, ← Nat.cast_add_one, ← lift_mk_fin, aleph0, lift_mk_le.{u}]
   exact ⟨⟨(↑), fun a b => Fin.ext⟩⟩
 
 @[deprecated natCast_lt_aleph0 (since := "2026-01-21")]
@@ -995,7 +1000,7 @@ theorem exists_notMem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length <
 
 theorem exists_ne_ne_of_three_le {α : Type*} (h : 3 ≤ #α) (x y : α) : ∃ z : α, z ≠ x ∧ z ≠ y := by
   have : ↑(3 : ℕ) ≤ #α := by simpa using h
-  have : ↑(2 : ℕ) < #α := by rwa [← succ_le_iff, succ_natCast, ← Nat.cast_add_one]
+  have : ↑(2 : ℕ) < #α := by rwa [← natCast_add_one_le_iff, ← Nat.cast_add_one]
   have := exists_notMem_of_length_lt [x, y] this
   simpa [not_or] using this
 
