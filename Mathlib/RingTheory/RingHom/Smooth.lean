@@ -87,6 +87,14 @@ namespace Smooth
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 
+lemma formallySmooth {f : R →+* S} (hf : f.Smooth) : f.FormallySmooth := by
+  rw [smooth_def] at hf
+  exact hf.1
+
+lemma finitePresentation {f : R →+* S} (hf : f.Smooth) : f.FinitePresentation := by
+  rw [smooth_def] at hf
+  exact hf.2
+
 /-- Composition of smooth ring homomorphisms is smooth. -/
 lemma comp {f : R →+* S} {g : S →+* T} (hf : f.Smooth) (hg : g.Smooth) : (g.comp f).Smooth := by
   algebraize [f, g, g.comp f]
@@ -137,5 +145,8 @@ lemma propertyIsLocal : PropertyIsLocal Smooth where
   StableUnderCompositionWithLocalizationAwayTarget :=
     (stableUnderComposition.stableUnderCompositionWithLocalizationAway
       holdsForLocalizationAway).right
+
+lemma respectsIso : RespectsIso Smooth :=
+  propertyIsLocal.respectsIso
 
 end RingHom.Smooth
