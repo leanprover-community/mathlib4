@@ -79,16 +79,6 @@ variable {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β] [DecidableEq
 
 @[expose] public section LatinSquare
 
-/-- This condition is that an entry appears exactly once in a given row.
-    Equivalently, ∀ i : m, ∀ y : α, ∃! j: n, M i j = y. -/
-abbrev OncePerRow (M : Matrix m n α) : Prop :=
-  ∀ i, Function.Bijective (M.row i)
-
-/-- This condition states that entries are not repeated in a given column.
-    Equivalently, ∀ y : n, ∀ x₁ x₂ : m, x₁ ≠ x₂ → M x₁ y ≠ M x₂ y. -/
-abbrev DistinctColEntries (M : Matrix m n α) : Prop :=
-  ∀ y, Function.Injective (M.col y)
-
 /-- For m ≤ n, an m × n Latin rectangle is a partial n × n Latin Square where
     the first m entries are filled. -/
 class LatinRectangle (m : Type*) (n : Type*) (α : Type*)
@@ -98,9 +88,9 @@ class LatinRectangle (m : Type*) (n : Type*) (α : Type*)
   /-- An $m × n$ Latin rectangle contains $n$ distinct entries. -/
   exactly_n_symbols : Fintype.card α = Fintype.card n
   /-- Each row contains each symbol exactly once. -/
-  once_per_row : OncePerRow M
+  once_per_row : ∀ i, Function.Bijective (M.row i)
   /-- Entries cannot repeat in a given column. -/
-  distinct_col_entries : DistinctColEntries M
+  distinct_col_entries : ∀ y, Function.Injective (M.col y)
   /-- The number of rows is less than or equal to the number of columns. -/
   m_le_n : Fintype.card m ≤ Fintype.card n := by simp
 
@@ -114,20 +104,13 @@ instance {m n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [ToString α] :
       String.intercalate " " (List.ofFn (fun j => (toString (L.M i j))));
       String.intercalate "\n" (List.ofFn row)
 
-/-- This condition is that an entry appears exactly once in a given column.
-    Equivalently, ∀ j : n, ∀ x : α, ∃! i : m, M i j = x. -/
-abbrev OncePerColumn (M : Matrix m n α) : Prop :=
-  ∀ j, Function.Bijective (M.col j)
-
 /-- If a matrix has each symbol appearing exactly once in every column,
     then the entries in each column are distinct. -/
 lemma latin_square_col_implies_latin_rectangle_col
     {n : Type*} {α : Type*}
     (M : Matrix n n α)
-    (h₂ : OncePerColumn M) :
-    DistinctColEntries M := by
-  rw [OncePerColumn] at h₂
-  rw [DistinctColEntries]
+    (h₂ : ∀ j, Function.Bijective (M.col j)) :
+    ∀ y, Function.Injective (M.col y) := by
   exact (h₂ · |>.injective)
 
 /-- A LatinSquare is a Square LatinRectangle -/
@@ -156,8 +139,8 @@ def LatinSquareFromOncePerColumn
   [Fintype n] [Fintype α] [DecidableEq α]
     (M : Matrix n n α)
     (exactly_n_symbols : Fintype.card α = Fintype.card n)
-    (once_per_row : OncePerRow M)
-    (once_per_column : OncePerColumn M) : LatinSquare n α := {
+    (once_per_row : ∀ i, Function.Bijective (M.row i))
+    (once_per_column : ∀ j, Function.Bijective (M.col j)) : LatinSquare n α := {
     M := M,
     exactly_n_symbols := exactly_n_symbols,
     once_per_row := once_per_row,
@@ -172,10 +155,10 @@ def groupToCayleyTable (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
     (M := fun i j ↦ i * j)
     (exactly_n_symbols := by rfl)
     (once_per_row := by
-      simp only [OncePerRow, Matrix.row]
+      simp only [Matrix.row]
       exact Group.mulLeft_bijective (G := G))
     (once_per_column := by
-      simp only [OncePerColumn, Matrix.col]
+      simp only [Matrix.col]
       exact Group.mulRight_bijective (G := G))
 
 
@@ -199,9 +182,9 @@ def renameLatinRectangle
   once_per_row i' :=
     h.bijective.comp (A.once_per_row (f.symm i') |>.comp g.symm.bijective)
   distinct_col_entries := by
-    simp only [DistinctColEntries, Matrix.col]
+    simp only [Matrix.col]
     have h' := A.distinct_col_entries
-    simp only [DistinctColEntries, Matrix.col] at h'
+    simp only [Matrix.col] at h'
     intro j'
     specialize h' (g.symm j')
     have h_comp :
@@ -369,7 +352,6 @@ lemma col_card
     ∀ j, (Finset.image (col A j) Finset.univ).card = Fintype.card k := by
   intro j
   have h_inj := A.distinct_col_entries
-  unfold DistinctColEntries at h_inj
   exact Finset.card_image_of_injective Finset.univ (h_inj j)
 
 lemma card_symbols_not_in
@@ -390,7 +372,6 @@ lemma row_entry_to_column_entry
     ∃ f : k → n,
     ∀ {a : k} {b : n}, LatinRectangle.M a b = x ↔ f a = b := by
   have hrow := A.once_per_row
-  unfold OncePerRow at hrow
   conv at hrow =>
     ext
     rw [Function.bijective_iff_existsUnique]
@@ -462,7 +443,6 @@ theorem latin_rectangle_extends_one_row
       rw [h₁''] at h₁'
       rw [<-h₁'] at h₁
       have hinj := A.distinct_col_entries
-      unfold DistinctColEntries at hinj
       specialize hinj (f a2)
       simp only [Function.Injective, Matrix.col] at hinj
       exact hinj h₁
@@ -511,7 +491,6 @@ theorem latin_rectangle_extends_one_row
       rw [Finset.mem_image]
       intro ha
       have h := A.once_per_row
-      unfold OncePerRow at h
       obtain ⟨a, ha⟩ := ha
       use a
       refine ⟨ ?_, ha.2 ⟩
@@ -559,7 +538,6 @@ theorem latin_rectangle_extends_one_row
     M := M'
     exactly_n_symbols := A.exactly_n_symbols
     once_per_row := by
-      unfold OncePerRow
       simp only [Matrix.row, M']
       intro y
       split_ifs
@@ -572,7 +550,7 @@ theorem latin_rectangle_extends_one_row
         simp only [Function.Embedding.toFun_eq_coe] at h₁'
         rw [h₁']
         have h := A.once_per_row
-        simp only [OncePerRow,Matrix.row] at h
+        simp only [Matrix.row] at h
         apply h
       · simp only [Subtype.forall, Finset.mem_univ, forall_true_left, Set.mem_setOf_eq] at hf
         have h₂ := A.exactly_n_symbols.symm
@@ -596,7 +574,6 @@ theorem latin_rectangle_extends_one_row
           simp only [Subtype.exists, Finset.mem_univ, exists_true_left] at h₃
           exact h₃
     distinct_col_entries := by
-      unfold DistinctColEntries
       intro y
       simp only [Function.Injective, Matrix.col, Matrix.transpose,
                  Finset.mem_image, Finset.mem_univ, true_and,
@@ -613,7 +590,6 @@ theorem latin_rectangle_extends_one_row
         simp only [Function.Embedding.toFun_eq_coe] at h₂'
         rw [<- ha2',h₂']
         have h := A.distinct_col_entries
-        unfold DistinctColEntries at h
         unfold Function.Injective at h
         intro hM
         apply h at hM
