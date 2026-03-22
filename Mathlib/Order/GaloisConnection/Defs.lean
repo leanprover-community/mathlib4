@@ -49,10 +49,10 @@ section
 
 variable [Preorder α] [Preorder β] {l : α → β} {u : β → α}
 
-@[to_dual self (reorder := α β, 3 4, l u, hu hl, hu_l hl_u)]
-theorem monotone_intro (hu : Monotone u) (hl : Monotone l) (hu_l : ∀ a, a ≤ u (l a))
-    (hl_u : ∀ a, l (u a) ≤ a) : GaloisConnection l u := fun _ _ =>
-  ⟨fun h => (hu_l _).trans (hu h), fun h => (hl h).trans (hl_u _)⟩
+@[to_dual self (reorder := α β, 3 4, l u, hu hl, h_u_l h_l_u)]
+theorem monotone_intro (hu : Monotone u) (hl : Monotone l) (h_u_l : ∀ a, a ≤ u (l a))
+    (h_l_u : ∀ a, l (u a) ≤ a) : GaloisConnection l u := fun _ _ =>
+  ⟨fun h => (h_u_l _).trans (hu h), fun h => (hl h).trans (h_l_u _)⟩
 
 @[to_dual self]
 protected theorem dual {l : α → β} {u : β → α} (gc : GaloisConnection l u) :
@@ -212,7 +212,7 @@ structure GaloisInsertion {α β : Type*} [Preorder α] [Preorder β] (l : α �
 /-- A Galois coinsertion is a Galois connection where `u ∘ l = id`. It also contains a constructive
 choice function, to give better definitional equalities when lifting order structures. Dual to
 `GaloisInsertion` -/
-@[to_dual existing (reorder := α β, 3 4, l u)]
+@[to_dual (reorder := α β, 3 4, l u)]
 structure GaloisCoinsertion [Preorder α] [Preorder β] (l : α → β) (u : β → α) where
   /-- A constructive choice function for images of `u`. -/
   choice : ∀ x : β, x ≤ l (u x) → α
@@ -227,11 +227,11 @@ structure GaloisCoinsertion [Preorder α] [Preorder β] (l : α → β) (u : β 
 @[to_dual (reorder := hu hl)
 /-- A constructor for a Galois coinsertion with the trivial `choice` function. -/]
 def GaloisInsertion.monotoneIntro {α β : Type*} [Preorder α] [Preorder β] {l : α → β} {u : β → α}
-    (hu : Monotone u) (hl : Monotone l) (hu_l : ∀ a, a ≤ u (l a)) (hl_u : ∀ b, l (u b) = b) :
+    (hu : Monotone u) (hl : Monotone l) (h_u_l : ∀ a, a ≤ u (l a)) (h_l_u : ∀ b, l (u b) = b) :
     GaloisInsertion l u where
   choice x _ := l x
-  gc := GaloisConnection.monotone_intro hu hl hu_l fun b => le_of_eq (hl_u b)
-  le_l_u b := le_of_eq <| (hl_u b).symm
+  gc := GaloisConnection.monotone_intro hu hl h_u_l fun b => le_of_eq (h_l_u b)
+  le_l_u b := le_of_eq <| (h_l_u b).symm
   choice_eq _ _ := rfl
 
 /-- Make a `GaloisInsertion l u` from a `GaloisConnection l u` such that `∀ b, b ≤ l (u b)` -/
