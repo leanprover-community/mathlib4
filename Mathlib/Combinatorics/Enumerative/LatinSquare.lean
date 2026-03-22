@@ -759,7 +759,7 @@ theorem latin_rectangle_extends_to_latin_square
       have ih := ih m hm_lt (k := k') (A := A') h_k'_le_n hm
       obtain ⟨ A'', hA'' ⟩ := ih
       use A''
-      exact subrect_transitive hA hA''
+      exact hA.trans hA''
 
 end Completion
 
