@@ -134,7 +134,7 @@ lemma Finite.exists_lt_map_eq_of_forall_mem [Infinite α] (hf : ∀ a, f a ∈ t
   obtain ⟨a, -, b, -, h⟩ := infinite_univ.exists_lt_map_eq_of_mapsTo hf ht
   exact ⟨a, b, h⟩
 
-/-- If the cofinality of an order is finite, it's at most one. -/
+/-- If the cofinality of a linear order is finite, it's at most one. -/
 theorem Finite.exists_subsingleton_isCofinal {s : Set α} (hs : s.Finite) (hs' : IsCofinal s) :
     ∃ t : Set α, t.Subsingleton ∧ IsCofinal t := by
   obtain rfl | hn := s.eq_empty_or_nonempty
