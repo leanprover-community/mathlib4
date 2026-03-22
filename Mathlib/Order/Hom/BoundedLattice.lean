@@ -50,9 +50,13 @@ structure SupBotHom (α β : Type*) [Max α] [Max β] [Bot α] [Bot β]
 structure InfTopHom (α β : Type*) [Min α] [Min β] [Top α] [Top β]
   extends InfHom α β, TopHom α β where
 
+attribute [nolint docBlame] SupBotHom.toBotHom InfTopHom.toTopHom
+
 /-- The type of bounded lattice homomorphisms from `α` to `β`. -/
 structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOrder α]
   [BoundedOrder β] extends LatticeHom α β, InfTopHom α β, SupBotHom α β where
+
+attribute [nolint docBlame] BoundedLatticeHom.toInfTopHom BoundedLatticeHom.toSupBotHom
 
 attribute [to_dual self (reorder := map_top' map_bot')] BoundedLatticeHom.mk
 attribute [to_dual existing] BoundedLatticeHom.toInfTopHom BoundedLatticeHom.map_top'
