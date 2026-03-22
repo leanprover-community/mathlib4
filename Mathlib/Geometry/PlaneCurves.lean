@@ -277,21 +277,26 @@ lemma continuousOn_angle_fun_aux (hI : IsOpen I) (hκ : ContinuousOn κ I) (ht�
            hI hκ ht₀ hx).continuousAt.continuousWithinAt
   fun_prop
 
-protected lemma _root_.HasDerivAt.initialCurve_of_orientedCurvature (hI : IsOpen I)
+protected lemma _root_.HasDerivWithinAt.initialCurve_of_orientedCurvature (hI : IsOpen I)
+    (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) (ht : t ∈ I) :
+    HasDerivWithinAt (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)
+    !₂[Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ), Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ)] I t := by
+  rw [hasDerivWithinAt_pi_euclidean]
+  unfold initialCurve_of_orientedCurvature
+  have h := continuousOn_angle_fun_aux θ₀ hI hκ ht₀
+  intro i
+  fin_cases i
+  all_goals
+    simp only [Fin.zero_eta,Fin.mk_one, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
+               hasDerivWithinAt_const_add_iff]
+    exact intervalIntegral.hasDerivWithinAt_of_continuousOn_interval (by fun_prop) ht₀ ht
+
+lemma _root_.HasDerivAt.initialCurve_of_orientedCurvature (hI : IsOpen I)
     (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) (ht : t ∈ I) :
     HasDerivAt (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)
-    !₂[Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ), Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ)] t := by
-  apply HasDerivWithinAt.hasDerivAt (s := I)
-  · rw [hasDerivWithinAt_pi_euclidean]
-    unfold initialCurve_of_orientedCurvature
-    have h := continuousOn_angle_fun_aux θ₀ hI hκ ht₀
-    intro i
-    fin_cases i
-    all_goals
-      simp only [Fin.zero_eta,Fin.mk_one, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
-                 hasDerivWithinAt_const_add_iff]
-      exact intervalIntegral.hasDerivWithinAt_of_continuousOn_interval (by fun_prop) ht₀ ht
-  · exact hI.mem_nhds ht
+    !₂[Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ), Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ)] t :=
+  (HasDerivWithinAt.initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ ht).hasDerivAt
+                                                                                    (hI.mem_nhds ht)
 
 lemma _root_.HasDerivAt.deriv_initialCurve_of_orientedCurvature (hI : IsOpen I)
     (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) (ht : t ∈ I) :
@@ -330,9 +335,7 @@ lemma _root_.HasDerivAt.deriv_initialCurve_of_orientedCurvature (hI : IsOpen I)
       rw [show Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ) * κ t
                 = κ t * Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ) by ring] at hint
       exact hint
-  apply HasDerivWithinAt.hasDerivAt
-  · exact h'.congr h (h ht)
-  · exact hI.mem_nhds ht
+  exact (h'.congr h (h ht)).hasDerivAt (hI.mem_nhds ht)
 
 lemma second_deriv_of_initialCurve_of_orientedCurvature (hI : IsOpen I) (hκ : ContinuousOn κ I)
     (ht₀ : t₀ ∈ I) (ht : t ∈ I) : iteratedDeriv 2 (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀) t
