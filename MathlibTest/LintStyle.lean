@@ -767,10 +767,11 @@ set_option linter.flexible false in
 which is not disallowed by `isAllowedCharacter`. -/
 private theorem disallowed_of_replaceable (c : Char) (creplaced : replaceDisallowed c ≠ none) :
     !isAllowedCharacter c := by
-  contrapose creplaced
-  simp [isAllowedCharacter, Array.contains] at creplaced
-  repeat obtain ⟨_, creplaced⟩ := creplaced
-  simp [replaceDisallowed]
+  unfold replaceDisallowed at creplaced
+  split at creplaced <;>
+  first
+  | native_decide
+  | exact absurd rfl creplaced
 
 end unicodeLinter
 
