@@ -35,55 +35,33 @@ attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma hasProjectiveDimensionLE_of_semiLinearEquiv [Small.{v} R] [Small.{v'} R']
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'} (e' : M ≃ₛₗ[RingHomClass.toRingHom e] N)
     (n : ℕ) [h : HasProjectiveDimensionLE M n] : HasProjectiveDimensionLE N n := by
-  induction n generalizing M N e'
-  · simp only [HasProjectiveDimensionLE, zero_add,
+  induction n generalizing M N e' with
+  | zero =>
+    simp only [HasProjectiveDimensionLE, zero_add,
       ← projective_iff_hasProjectiveDimensionLT_one] at h ⊢
     rw [← IsProjective.iff_projective] at h ⊢
     exact Projective.of_equiv e'
-  · rename_i n ih
-    let b : Basis M R (M →₀ Shrink.{v} R) :=
-      ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)⟩
-    let f := (b.constr ℕ _root_.id)
-    have surjf : Function.Surjective f :=
-      fun m ↦ ⟨Finsupp.single m 1, by simp [f, b, Module.Basis.constr_apply]⟩
-    let b' : Basis N R' (N →₀ Shrink.{v'} R') :=
-      ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v'} R' R')⟩
+  | succ n ih =>
+    let S := M.projectiveShortComplex
+    let S' := N.projectiveShortComplex
+    have S_exact := M.shortExact_projectiveShortComplex
+    have S'_exact := N.shortExact_projectiveShortComplex
     let eR : Shrink.{v} R ≃ₛₗ[RingHomClass.toRingHom e] Shrink.{v'} R' :=
       ((Shrink.linearEquiv R R).trans e.toSemilinearEquiv).trans (Shrink.linearEquiv R' R').symm
-    let eP : (M →₀ Shrink.{v} R) ≃ₛₗ[RingHomClass.toRingHom e] (N →₀ Shrink.{v'} R') :=
+    let e2 : S.X₂ ≃ₛₗ[RingHomClass.toRingHom e] S'.X₂ :=
       (Finsupp.mapDomain.linearEquiv (Shrink R) R e').trans (Finsupp.mapRange.linearEquiv eR)
-    let g := ((e'.toLinearMap.comp f).comp eP.symm.toLinearMap)
-    have surjg : Function.Surjective g := by simpa [g] using surjf
-    let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
-    have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
-    let S' : ShortComplex (ModuleCat.{v'} R') := g.shortComplexKer
-    have S'_exact : S'.ShortExact := LinearMap.shortExact_shortComplexKer surjg
+    have comm : S'.g.hom.comp e2.toLinearMap = e'.toLinearMap.comp S.g.hom := by
+      ext m r
+      simp [S, S', e2, eR, Basis.constr_apply, map_smulₛₗ]
+    have : S.g.hom.ker = Submodule.comap e2.toLinearMap S'.g.hom.ker := by
+      rw [← LinearMap.ker_comp, comm, LinearEquiv.ker_comp]
+    rw [Submodule.comap_equiv_eq_map_symm] at this
+    let eker' : S.g.hom.ker ≃ₛₗ[RingHomClass.toRingHom e] S'.g.hom.ker :=
+      (LinearEquiv.ofEq _ _ this).trans (e2.symm.submoduleMap S'.g.hom.ker).symm
     have : HasProjectiveDimensionLT S.X₁ (n + 1) :=
-      (S_exact.hasProjectiveDimensionLT_X₃_iff n (ModuleCat.projective_of_free b)).mp h
-    have ker1 (x : LinearMap.ker f) : eP x.1 ∈ LinearMap.ker g := by
-      simp only [LinearMap.mem_ker, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-        EmbeddingLike.map_eq_zero_iff, g]
-      rw [← LinearMap.mem_ker.mp x.2]
-      congr
-      exact eP.symm_apply_apply x.1
-    have ker2 (x : LinearMap.ker g) : eP.symm x.1 ∈ LinearMap.ker f := by
-      have := LinearMap.mem_ker.mp x.2
-      simp only [g, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-        EmbeddingLike.map_eq_zero_iff] at this
-      exact this
-    let eker' : LinearMap.ker f ≃ₛₗ[RingHomClass.toRingHom e] LinearMap.ker g := {
-      toFun x := ⟨eP x.1, ker1 x⟩
-      map_add' x y := by simp
-      map_smul' r x := SetCoe.ext (eP.map_smulₛₗ _ _)
-      invFun x := ⟨eP.symm x.1, ker2 x⟩
-      left_inv := by
-        rw [Function.leftInverse_iff_comp]
-        exact funext (fun x ↦ SetCoe.ext (eP.symm_apply_apply x.1))
-      right_inv := by
-        rw [Function.rightInverse_iff_comp]
-        exact funext (fun x ↦ SetCoe.ext (eP.apply_symm_apply x.1)) }
+      (S_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).mp h
     let eker : S.X₁ ≃ₛₗ[RingHomClass.toRingHom e] S'.X₁ := eker'
-    apply (S'_exact.hasProjectiveDimensionLT_X₃_iff n (ModuleCat.projective_of_free b')).mpr
+    apply (S'_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).mpr
     exact ih eker
 
 attribute [local instance] RingHomInvPair.of_ringEquiv in
