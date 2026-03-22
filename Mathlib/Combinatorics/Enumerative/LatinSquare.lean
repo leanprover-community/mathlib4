@@ -135,7 +135,7 @@ lemma latin_square_col_implies_latin_rectangle_col
   exact h₂.1
 
 /-- A LatinSquare is a Square LatinRectangle -/
-abbrev LatinSquare (n : Type*) [Fintype n] (α : Type*) [Fintype α] [DecidableEq α] := 
+abbrev LatinSquare (n : Type*) [Fintype n] (α : Type*) [Fintype α] [DecidableEq α] :=
   LatinRectangle n n α
 
 /-- An example of a 5 × 5 Latin rectangle with entries in Fin 5. -/
@@ -166,13 +166,13 @@ def LatinSquareFromOncePerColumn
     exactly_n_symbols := exactly_n_symbols,
     once_per_row := once_per_row,
     distinct_col_entries := latin_square_col_implies_latin_rectangle_col M once_per_column
-  } 
-  
+  }
+
 /-- Every Finite Group's Cayley table is an example of a Latin Square. -/
 @[to_additive /-- Every Additive Finite Group's Cayley table is an example of a Latin Square -/,
   reducible]
 def groupToCayleyTable (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
-  LatinSquare G G := LatinSquareFromOncePerColumn 
+  LatinSquare G G := LatinSquareFromOncePerColumn
     (M := fun i j ↦ i * j)
     (exactly_n_symbols := by rfl)
     (once_per_row := by
