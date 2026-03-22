@@ -66,11 +66,11 @@ lemma bitwise_zero : bitwise f 0 0 = 0 := by
   simp only [bitwise_zero_right, ite_self]
 
 lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
-    bitwise f n m = bit (f (bodd n) (bodd m)) (bitwise f n.div2 m.div2) := by
+    bitwise f n m = bit (f (bodd n) (bodd m)) (bitwise f (n / 2) (m / 2)) := by
   conv_lhs => unfold bitwise
   have mod_two_iff_bod x : (x % 2 = 1 : Bool) = bodd x := by
-    simp only [mod_two_of_bodd, cond]; cases bodd x <;> rfl
-  simp [hn, hm, mod_two_iff_bod, bit, div2_val, two_mul]
+    simp only [mod_two_of_bodd]; cases bodd x <;> rfl
+  simp [hn, hm, mod_two_iff_bod, bit, two_mul]
 
 theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
     (h : n ≠ 0) :
@@ -151,7 +151,7 @@ lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
     | bit yb y hyb =>
       rw [← bit_ne_zero_iff] at hyb
       simp_rw [binaryRec_of_ne_zero _ _ hyb, bitwise_of_ne_zero hxb hyb, bodd_bit, div2_bit,
-        eq_rec_constant, ih]
+        bit_div_two, eq_rec_constant, ih]
 
 theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n = 0 := by
   induction n using Nat.binaryRec with | zero => rfl | bit b n hn => ?_
