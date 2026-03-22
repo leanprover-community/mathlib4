@@ -190,7 +190,6 @@ omit [Finite ι] [IsDomain R] [CharZero R] in
     h i ∈ cartanSubalgebra b :=
   Submodule.subset_span <| mem_range_self i
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma h_mem_cartanSubalgebra' [Fintype ι] [DecidableEq ι] (i : b.support) (hi) :
     ⟨h i, hi⟩ ∈ cartanSubalgebra' b := by
   simp [cartanSubalgebra']
@@ -224,7 +223,6 @@ lemma span_range_h'_eq_top [Fintype ι] [DecidableEq ι] :
         ← (injective_subtype _).mem_set_image, ← image_comp]
   rwa [map_span, ← range_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 omit [Finite ι] [IsDomain R] [CharZero R] [P.IsCrystallographic] in
 @[simp] lemma ω_mul_ω [DecidableEq ι] [Fintype ι] :
     ω b * ω b = 1 := by
@@ -242,7 +240,6 @@ lemma ω_mul_h [Fintype ι] (i : b.support) :
   · simp only [ω, h, Matrix.mul_apply, Fintype.sum_sum_type, Matrix.fromBlocks_apply₂₂]
     aesop
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ω_mul_e [Fintype ι] (i : b.support) :
     ω b * e i = f i * ω b := by
   letI := P.indexNeg
@@ -259,7 +256,6 @@ lemma ω_mul_e [Fintype ι] (i : b.support) :
     rw [Finset.sum_eq_single_of_mem (-k) (Finset.mem_univ _) (by aesop)]
     simp [neg_eq_iff_eq_neg, sub_eq_add_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ω_mul_f [Fintype ι] (i : b.support) :
     ω b * f i = e i * ω b := by
   classical
@@ -267,7 +263,6 @@ lemma ω_mul_f [Fintype ι] (i : b.support) :
   simp only [← mul_assoc, ω_mul_ω] at this
   simpa [mul_assoc, ω_mul_ω] using this.symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lie_e_f_mul_ω [Fintype ι] (i j : b.support) :
     ⁅e i, f j⁆ * ω b = -ω b * ⁅e j, f i⁆ := by
   classical
@@ -360,7 +355,6 @@ lemma f_lie_v_ne {i j : ι} {k : b.support} (h : P.root i = P.root j + P.root k)
 
 section ωConj
 
-set_option backward.isDefEq.respectTransparency false in
 variable (b) in
 /-- The conjugation `x ↦ ωxω` as an equivalence of Lie algebras. -/
 @[simps] def ωConj :
@@ -382,7 +376,6 @@ variable (b) in
     simp only [← mul_assoc, ω_mul_ω, one_mul]
     simp [mul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ωConj_mem_of_mem
     {x : Matrix (b.support ⊕ ι) (b.support ⊕ ι) R} (hx : x ∈ lieAlgebra b) :
     ωConj b x ∈ lieAlgebra b := by
@@ -403,7 +396,6 @@ lemma ωConj_mem_of_mem
 
 variable (N : LieSubmodule R (lieAlgebra b) (b.support ⊕ ι → R))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence `x ↦ ωxω` as an operation on Lie submodules of the Geck construction. -/
 def ωConjLieSubmodule :
     LieSubmodule R (lieAlgebra b) (b.support ⊕ ι → R) where
