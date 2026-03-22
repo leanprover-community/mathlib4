@@ -575,6 +575,12 @@ theorem map_closure (f : G →* N) (s : Set G) : (closure s).map f = closure (f 
   Set.image_preimage.l_comm_of_u_comm (gc_map_comap f) (Subgroup.gi N).gc (Subgroup.gi G).gc
     fun _ ↦ rfl
 
+/-- A surjective homomorphism sends a generating set to a generating set. -/
+@[to_additive /-- A surjective additive homomorphism sends a generating set to a generating set. -/]
+theorem closure_image_eq_top (f : G →* N) (hf : Function.Surjective f)
+    {s : Set G} (hs : Subgroup.closure s = ⊤) : Subgroup.closure (f '' s) = ⊤ := by
+  rw [← map_closure, hs, Subgroup.map_top_of_surjective _ hf]
+
 end MonoidHom
 
 namespace Subgroup

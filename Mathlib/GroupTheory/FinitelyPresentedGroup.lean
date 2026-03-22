@@ -6,23 +6,22 @@ Authors: Riccardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
 -/
 module
 
-public import Mathlib.Algebra.Group.PUnit
-public import Mathlib.Data.Finite.Card
-public import Mathlib.GroupTheory.Finiteness
-public import Mathlib.GroupTheory.PresentedGroup
-public import Mathlib.GroupTheory.QuotientGroup.Basic
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.GroupTheory.FreeGroup.Basic
 
 /-!
 # Finitely Presented Groups
 
-This file defines finitely-presented groups.
+This file defines finitely presented groups.
 
 ## Main definitions
 * `IsNormalClosureFG`: defines when a subgroup is the normal closure of a finite set.
-* `IsFinitelyPresented`: defines when a group admits a finite generating set whose
-  relation subgroup is the normal closure of a finite set.
+* `IsFinitelyPresented`: defines when a group is finitely presented.
 
 ## Main results
+* `IsNormalClosureFG.map`: `IsNormalClosureFG` is invariant under surjective homomorphism.
+* `IsFinitelyPresented.of_mulEquiv`: finitely presented groups are closed under isomorphism.
 
 ## Tags
 finitely presented group, finitely generated normal closure
@@ -32,41 +31,13 @@ finitely presented group, finitely generated normal closure
 
 variable {G H α β : Type*} [Group G] [Group H]
 
--- TODO: move to Logic/Equiv/Set.lean
-/-- The subtype coercion from `e '' S` factors as `e ∘ val ∘ (e.image S)⁻¹`. -/
-theorem Equiv.val_image_symm_comp {α β : Type*} (e : α ≃ β) (S : Set α) :
-    (Subtype.val : ↥(e '' S) → β) = e ∘ Subtype.val ∘ (e.image S).symm :=
-  funext fun x => by simp [Equiv.image]
-
--- TODO: move to FreeGroup/Basic.lean
-/-- Post-composing with a group homomorphism commutes with `FreeGroup.lift`. -/
-theorem FreeGroup.lift_comp_monoidHom (f : α → G) (g : G →* H) :
-    FreeGroup.lift (g ∘ f) = g.comp (FreeGroup.lift f) := by
-  ext x; simp
-
--- TODO: move to FreeGroup/Basic.lean
-/-- Pre-composing with an equivalence corresponds to
-post-composing `FreeGroup.lift` with `FreeGroup.freeGroupCongr`. -/
-theorem FreeGroup.lift_comp_equiv (f : α → G) (e : β ≃ α) :
-    FreeGroup.lift (f ∘ e) =
-      (FreeGroup.lift f).comp
-        (FreeGroup.freeGroupCongr e : FreeGroup β →* FreeGroup α) := by
-  ext x; simp [FreeGroup.freeGroupCongr, FreeGroup.map_eq_lift]
-
--- TODO: move to FreeGroup/Basic.lean
 /-- Lifting the subtype coercion from a `MulEquiv`-image set factors as
 `iso ∘ (lift val) ∘ freeGroupCongr`. -/
-theorem FreeGroup.lift_subtype_val_mulEquiv_image (iso : G ≃* H) (S : Set G) :
+lemma FreeGroup.lift_subtype_val_mulEquiv_image (iso : G ≃* H) (S : Set G) :
     FreeGroup.lift (Subtype.val : ↥(↑iso '' S) → H) =
       iso.toMonoidHom.comp ((FreeGroup.lift (Subtype.val : ↥S → G)).comp
         (FreeGroup.freeGroupCongr (iso.toEquiv.image S).symm)) := by
   ext ⟨_, s, hs, rfl⟩; simp [Equiv.image]
-
--- TODO move this to Subgroup/Map.lean
-/-- A surjective homomorphism sends a generating set to a generating set. -/
-lemma closure_image_eq_top (f : G →* H) (hf : Function.Surjective f) {S : Set G}
-    (hS : Subgroup.closure S = ⊤) : Subgroup.closure (f '' S) = ⊤ := by
-  rw [← MonoidHom.map_closure, hS, Subgroup.map_top_of_surjective _ hf]
 
 /-- Definition of subgroup that is given by the normal closure of finitely many elements. -/
 def IsNormalClosureFG (N : Subgroup G) : Prop :=
@@ -107,7 +78,8 @@ namespace IsFinitelyPresented
 /-- Finitely presented groups are closed under isomorphism. -/
 theorem of_mulEquiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented H := by
   obtain ⟨S, hSfinite, hSclosure, hker⟩ := h
-  use iso '' S, hSfinite.image iso, closure_image_eq_top (iso : G →* H) iso.surjective hSclosure
+  use iso '' S, hSfinite.image iso,
+    MonoidHom.closure_image_eq_top (iso : G →* H) iso.surjective hSclosure
   rw [FreeGroup.lift_subtype_val_mulEquiv_image, MonoidHom.ker_eq_of_comp_mulEquiv]
   exact IsNormalClosureFG.ker_comp_freeGroupCongr (iso.toEquiv.image S) _ hker
 
