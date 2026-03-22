@@ -662,8 +662,7 @@ example (r : ℤ) (hr : 2 ≤ r) (p q : ℤ) (hp : 0 < p) :
     IsZero ((Y.E₂SpectralSequence.page r).X ⟨p, q⟩) := by
   apply isZero_spectralSequence_page_X_of_isZero_H' _ _ _ hr
   apply Y.isZero₂_of_isThirdQuadrant
-  simp
-  lia
+  cat_disch
 
 /-- The `E₂` homologial spectral sequence indexed by `ℕ × ℕ` attached to
 a third quadrant spectral object indexed by `EInt`. -/
