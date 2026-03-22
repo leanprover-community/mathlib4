@@ -21,7 +21,6 @@ For this measure, every set is measurable.
 * `MassFunction`: A mass function (giving rise to a discrete measure) is a function `α → ℝ≥0∞`.
 
 ## Tags
-
 mass function, weight function, discrete measure
 
 -/
