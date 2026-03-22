@@ -491,8 +491,8 @@ lemma restr_inf_cartan_eq_iSup_corootSubmodule (I : LieIdeal K L) :
       (hspan_I_roots_incl ▸ LieSubmodule.mem_map_of_mem ha)
   have hbI : (b : L) ∈ I := by
     have h_sum : (a : L) + b = x := congr_arg Subtype.val hab
-    rw [show (b : L) = x - a from by rw [← h_sum, add_sub_cancel_left]]
-    exact I.toSubmodule.sub_mem hxI haI
+    have h_b_eq : (b : L) = x - a := by rw [← h_sum, add_sub_cancel_left]
+    rw [h_b_eq]; exact I.toSubmodule.sub_mem hxI haI
   suffices b = 0 by
     subst this; simp only [add_zero] at hab; subst hab
     exact hspan_I_roots_incl ▸ LieSubmodule.mem_map_of_mem ha
