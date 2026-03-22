@@ -664,7 +664,7 @@ example (r : ℤ) (hr : 2 ≤ r) (p q : ℤ) (hp : 0 < p) :
   apply Y.isZero₂_of_isThirdQuadrant
   cat_disch
 
-/-- The `E₂` homologial spectral sequence indexed by `ℕ × ℕ` attached to
+/-- The `E₂` homological spectral sequence indexed by `ℕ × ℕ` attached to
 a third quadrant spectral object indexed by `EInt`. -/
 noncomputable abbrev E₂HomologicalSpectralSequenceNat := Y.spectralSequence coreE₂HomologicalNat
 
