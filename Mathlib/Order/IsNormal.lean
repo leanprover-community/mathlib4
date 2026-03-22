@@ -107,7 +107,6 @@ theorem comp (hg : IsNormal g) (hf : IsNormal f) : IsNormal (g ∘ f) := by
   simpa [hg.le_iff_forall_le (hf.map_isSuccLimit ha), hf.lt_iff_exists_lt ha] using
     fun c d hd hc ↦ (hg.strictMono hc).le.trans (hb hd)
 
-/-- Restrict a normal function `α → β` to a normal function `Iio a → Iio (f a)`. -/
 theorem to_Iio (hf : IsNormal f) (a : α) :
     IsNormal (β := Iio (f a)) fun x : Iio a ↦ ⟨f x.1, hf.strictMono x.2⟩ := by
   rw [isNormal_iff]
@@ -204,11 +203,11 @@ protected theorem ext_iff [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : 
     convert hg.isLUB_image_Iio_of_isSuccLimit ha using 1
     aesop
 
-@[deprecated (since := "2026-03-22")] alias Order.IsNormal.ext := Order.IsNormal.ext_iff
+@[deprecated (since := "2026-03-22")] protected alias Order.IsNormal.ext := Order.IsNormal.ext_iff
 
-theorem exists_btwn_of_exists_ge [NoMaxOrder α] [OrderBot α] [WellFoundedLT β]
+theorem exists_map_le_lt_map_succ_of_exists_ge [NoMaxOrder α] [OrderBot α] [WellFoundedLT β]
     {f : α → β} {x : β} (hf : Order.IsNormal f) (hf' : ∃ y, x ≤ f y) (hx : f ⊥ ≤ x) :
-    ∃ a, f a ≤ x ∧ x < f (Order.succ a) := by
+    ∃ a, f a ≤ x ∧ x < f (succ a) := by
   have : Nonempty β := ⟨x⟩
   let := WellFoundedLT.toOrderBot β
   let := WellFoundedLT.conditionallyCompleteLinearOrderBot α
@@ -220,10 +219,11 @@ theorem exists_btwn_of_exists_ge [NoMaxOrder α] [OrderBot α] [WellFoundedLT β
   · rw [hf.le_iff_le_sSup ⟨⊥, hx⟩ H]
   · rw [← not_le, hf.le_iff_le_sSup ⟨⊥, hx⟩ H, not_le, Order.lt_succ_iff]
 
-/-- If `f : α → α`, we can infer one of the hypotheses in `exists_btwn_of_exists_ge`. -/
-theorem exists_btwn [NoMaxOrder α] [OrderBot α] {f : α → α} {x : α}
+/-- If `f : α → α`, we can infer one of the hypotheses in
+`exists_map_le_lt_map_succ_of_exists_ge`. -/
+theorem exists_map_le_lt_map_succ [NoMaxOrder α] [OrderBot α] {f : α → α} {x : α}
     (hf : Order.IsNormal f) (hx : f ⊥ ≤ x) : ∃ a, f a ≤ x ∧ x < f (Order.succ a) :=
-  exists_btwn_of_exists_ge hf ⟨x, hf.strictMono.le_apply⟩ hx
+  exists_map_le_lt_map_succ_of_exists_ge hf ⟨x, hf.strictMono.le_apply⟩ hx
 
 end WellFoundedLT
 end IsNormal
