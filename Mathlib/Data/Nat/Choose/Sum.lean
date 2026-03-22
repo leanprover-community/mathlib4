@@ -36,7 +36,7 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
   let t : ℕ → ℕ → R := fun n m ↦ x ^ m * y ^ (n - m) * n.choose m
   change (x + y) ^ n = ∑ m ∈ range (n + 1), t n m
   have h_first : ∀ n, t n 0 = y ^ n := fun n ↦ by
-    simp only [t, choose_zero_right, pow_zero, cast_one, mul_one, one_mul]
+    simp only [t, choose_zero_right, pow_zero, cast_one, mul_one, one_mul, Nat.sub_zero]
   have h_last : ∀ n, t n n.succ = 0 := fun n ↦ by
     simp only [t, choose_succ_self, cast_zero, mul_zero]
   have h_middle :
@@ -95,7 +95,6 @@ theorem sum_range_choose (n : ℕ) : (∑ m ∈ range (n + 1), n.choose m) = 2 ^
   have := (add_pow 1 1 n).symm
   simpa [one_add_one_eq_two] using this
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sum_range_choose_halfway (m : ℕ) : (∑ i ∈ range (m + 1), (2 * m + 1).choose i) = 4 ^ m :=
   have : (∑ i ∈ range (m + 1), (2 * m + 1).choose (2 * m + 1 - i)) =
       ∑ i ∈ range (m + 1), (2 * m + 1).choose i :=
@@ -151,7 +150,6 @@ lemma sum_range_add_choose (n k : ℕ) :
   convert (sum_map _ (addRightEmbedding k) (·.choose k)).symm using 2
   rw [map_add_right_Ico, zero_add, add_right_comm, Ico_add_one_right_eq_Icc]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Summing `i * (n.choose i)` for `i ∈ [0, n]` gives `n * 2 ^ (n - 1)`. -/
 theorem sum_range_mul_choose (n : ℕ) :
     ∑ i ∈ Finset.range (n + 1), i * (n.choose i) = n * 2 ^ (n - 1) := by

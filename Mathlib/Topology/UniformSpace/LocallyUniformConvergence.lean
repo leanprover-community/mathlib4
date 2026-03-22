@@ -282,7 +282,7 @@ theorem tendstoLocallyUniformlyOn_iff_filter :
     exact ⟨_, hs2, _, eventually_of_mem hs1 fun x => id, fun hi y hy => hi y hy⟩
   · rintro h u hu x hx
     obtain ⟨pa, hpa, pb, hpb, h⟩ := h x hx u hu
-    exact ⟨pb, hpb, eventually_of_mem hpa fun i hi y hy => h hi hy⟩
+    exact ⟨{a | pb a}, hpb, eventually_of_mem hpa fun i hi y hy => h hi hy⟩
 
 theorem tendstoLocallyUniformly_iff_filter :
     TendstoLocallyUniformly F f p ↔ ∀ x, TendstoUniformlyOnFilter F f p (𝓝 x) := by
