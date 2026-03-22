@@ -308,7 +308,6 @@ lemma map_le_iff_le_comap {f : BoundedLatticeHom α β} {M : BooleanSubalgebra �
 lemma gc_map_comap (f : BoundedLatticeHom α β) : GaloisConnection (map f) (comap f) :=
   fun _ _ ↦ map_le_iff_le_comap
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma map_bot (f : BoundedLatticeHom α β) : (⊥ : BooleanSubalgebra α).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
@@ -318,7 +317,6 @@ lemma map_sup (f : BoundedLatticeHom α β) (L M : BooleanSubalgebra α) :
 lemma map_iSup (f : BoundedLatticeHom α β) (L : ι → BooleanSubalgebra α) :
     (⨆ i, L i).map f = ⨆ i, (L i).map f := (gc_map_comap f).l_iSup
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma comap_top (f : BoundedLatticeHom α β) : (⊤ : BooleanSubalgebra β).comap f = ⊤ :=
   (gc_map_comap f).u_top
 

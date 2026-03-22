@@ -152,6 +152,26 @@ instance (F : C ⥤ D) [PreservesFiniteEffectiveEpiFamilies F] : PreservesEffect
 instance (F : C ⥤ D) [IsEquivalence F] : F.PreservesEffectiveEpiFamilies where
   preserves _ _ := inferInstance
 
+section Composition
+
+variable {E : Type*} [Category* E]
+
+instance (F : C ⥤ D) (G : D ⥤ E) [PreservesEffectiveEpis F] [PreservesEffectiveEpis G] :
+    PreservesEffectiveEpis (F ⋙ G) where
+  preserves _ _ := by dsimp; infer_instance
+
+instance (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteEffectiveEpiFamilies F]
+    [PreservesFiniteEffectiveEpiFamilies G] :
+    PreservesFiniteEffectiveEpiFamilies (F ⋙ G) where
+  preserves _ _ _ := by dsimp; infer_instance
+
+instance (F : C ⥤ D) (G : D ⥤ E) [PreservesEffectiveEpiFamilies.{u} F]
+    [PreservesEffectiveEpiFamilies.{u} G] :
+    PreservesEffectiveEpiFamilies.{u} (F ⋙ G) where
+  preserves _ _ _ := by dsimp; infer_instance
+
+end Composition
+
 end Preserves
 
 section Reflects
@@ -227,6 +247,27 @@ instance (F : C ⥤ D) [IsEquivalence F] : F.ReflectsEffectiveEpiFamilies where
     have : EffectiveEpiFamily X (fun a ↦ (π a ≫ (asEquivalence F).unit.app B) ≫
         (asEquivalence F).unitInv.app _) := inferInstance
     simpa
+
+section Composition
+
+variable {E : Type*} [Category* E]
+
+instance (F : C ⥤ D) (G : D ⥤ E) [ReflectsEffectiveEpis F] [ReflectsEffectiveEpis G] :
+    ReflectsEffectiveEpis (F ⋙ G) where
+  reflects _ h := F.effectiveEpi_of_map _ (G.effectiveEpi_of_map _ h)
+
+instance (F : C ⥤ D) (G : D ⥤ E) [ReflectsFiniteEffectiveEpiFamilies F]
+    [ReflectsFiniteEffectiveEpiFamilies G] :
+    ReflectsFiniteEffectiveEpiFamilies (F ⋙ G) where
+  reflects _ _ h :=
+    F.finite_effectiveEpiFamily_of_map _ _ (G.finite_effectiveEpiFamily_of_map _ _ h)
+
+instance (F : C ⥤ D) (G : D ⥤ E) [ReflectsEffectiveEpiFamilies.{u} F]
+    [ReflectsEffectiveEpiFamilies.{u} G] :
+    ReflectsEffectiveEpiFamilies.{u} (F ⋙ G) where
+  reflects _ _ h := F.effectiveEpiFamily_of_map _ _ (G.effectiveEpiFamily_of_map _ _ h)
+
+end Composition
 
 end Reflects
 

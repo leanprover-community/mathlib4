@@ -32,7 +32,6 @@ attribute [local instance] nontrivial_of_invariantBasisNumber
 
 open Basis Cardinal Function Module Set Submodule
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If every finite set of linearly independent vectors has cardinality at most `n`,
 then the same is true for arbitrary sets of linearly independent vectors.
 -/
@@ -42,7 +41,7 @@ theorem linearIndependent_bounded_of_finset_linearIndependent_bounded {n : ℕ}
   intro s li
   apply Cardinal.card_le_of
   intro t
-  rw [← Finset.card_map (Embedding.subtype s)]
+  rw [← Finset.card_map (Embedding.subtype (· ∈ s))]
   apply H
   apply linearIndependent_finset_map_embedding_subtype _ li
 
@@ -139,6 +138,7 @@ theorem Module.Basis.nonempty_fintype_index_of_rank_lt_aleph0 {ι : Type*} (b : 
     Cardinal.lt_aleph0_iff_fintype] at h
 
 /-- If a module has a finite dimension, all bases are indexed by a finite type. -/
+@[implicit_reducible]
 noncomputable def Module.Basis.fintypeIndexOfRankLtAleph0 {ι : Type*} (b : Basis ι R M)
     (h : Module.rank R M < ℵ₀) : Fintype ι :=
   Classical.choice (b.nonempty_fintype_index_of_rank_lt_aleph0 h)
@@ -221,7 +221,6 @@ lemma natCast_le_rank_iff_finset [Nontrivial R] {n : ℕ} :
   ⟨exists_finset_linearIndependent_of_le_rank,
     fun ⟨s, h₁, h₂⟩ ↦ by simpa [h₁] using h₂.cardinal_le_rank⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_finset_linearIndependent_of_le_finrank {n : ℕ} (hn : n ≤ finrank R M) :
     ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) := by
   by_cases h : finrank R M = 0
@@ -269,6 +268,7 @@ theorem iSupIndep.subtype_ne_bot_le_finrank_aux
 
 /-- If `p` is an independent family of submodules of an `R`-finite module `M`, then the
 number of nontrivial subspaces in the family `p` is finite. -/
+@[implicit_reducible]
 noncomputable def iSupIndep.fintypeNeBotOfFiniteDimensional
     {p : ι → Submodule R M} (hp : iSupIndep p) :
     Fintype { i : ι // p i ≠ ⊥ } := by
@@ -296,7 +296,6 @@ section
 
 open Finset
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a finset has cardinality larger than the rank of a module,
 then there is a nontrivial linear relation amongst its elements. -/
 theorem Module.exists_nontrivial_relation_of_finrank_lt_card {t : Finset M}
@@ -436,7 +435,6 @@ lemma Submodule.bot_eq_top_of_rank_eq_zero (h : Module.rank R M = 0) : (⊥ : Su
   rw [rank_zero_iff] at h
   subsingleton
 
-set_option backward.isDefEq.respectTransparency false in
 /-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed. -/
 @[simp]
 theorem Submodule.rank_eq_zero {S : Submodule R M} : Module.rank R S = 0 ↔ S = ⊥ :=

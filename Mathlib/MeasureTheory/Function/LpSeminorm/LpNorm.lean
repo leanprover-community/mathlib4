@@ -217,7 +217,7 @@ lemma lpNorm_sum_le {ι : Type*} {s : Finset ι} {f : ι → α → E} (hf : ∀
 -- TODO: Golf using `eLpNorm_expect_le` once it exists
 lemma lpNorm_expect_le [Module ℚ≥0 E] [NormedSpace ℝ E] {ι : Type*} {s : Finset ι}
     {f : ι → α → E} (hf : ∀ i ∈ s, MemLp (f i) p μ) (hp : 1 ≤ p) :
-    lpNorm (𝔼 i ∈ s, f i) p μ ≤ 𝔼 i ∈ s, lpNorm (f i) p μ  :=  by
+    lpNorm (𝔼 i ∈ s, f i) p μ ≤ 𝔼 i ∈ s, lpNorm (f i) p μ := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
   refine (le_inv_smul_iff_of_pos <| by positivity).2 ?_
