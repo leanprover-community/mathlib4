@@ -8,12 +8,7 @@ module
 
 public import Mathlib.CategoryTheory.MarkovCategory.Basic
 public import Mathlib.CategoryTheory.Monoidal.Widesubcategory
-public import Mathlib.MeasureTheory.Measure.WithDensity
 public import Mathlib.Probability.Kernel.Category.SFinKer
-public import Mathlib.Topology.Connected.Separation
-public import Mathlib.Topology.EMetricSpace.Paracompact
-public import Mathlib.Topology.MetricSpace.Polish
-public import Mathlib.Topology.Separation.Lemmas
 
 /-!
 # Stoch
@@ -82,34 +77,24 @@ instance : StochHom.IsStableUnderComonoid where
 /-- `Stoch` is the wide subcategory of `SFinKer` with Markov-kernel morphisms. -/
 abbrev Stoch := WideSubcategory StochHom
 
-noncomputable
+noncomputable section
+
+instance : CopyDiscardCategory Stoch.{u} where
+  copy_tensor X Y := by
+    widesubcat_ext
+    exact CopyDiscardCategory.copy_tensor X.obj Y.obj
+  discard_tensor X Y := by
+    widesubcat_ext
+    exact CopyDiscardCategory.discard_tensor X.obj Y.obj
+  copy_unit := by
+    widesubcat_ext
+    exact CopyDiscardCategory.copy_unit (C := SFinKer.{u})
+
 instance : MarkovCategory Stoch.{u} where
   discard_natural κ := by
     widesubcat_ext
     kernel_cat
     have : IsMarkovKernel κ.1.1 := κ.2
     exact κ.1.1.comp_discard
-  copy_tensor X Y := by
-    widesubcat_ext
-    dsimp [MonoidalCategory.tensorμ, ComonObj.comul, BraidedCategory.braiding]
-    kernel_cat
-    repeat rw [Kernel.id_map (by fun_prop)]
-    simp only [Kernel.copy, Kernel.id, Kernel.swap]
-    repeat rw [Kernel.deterministic_parallelComp_deterministic]
-    repeat rw [Kernel.deterministic_comp_deterministic]
-    congr 1
-  discard_tensor X Y := by
-    widesubcat_ext
-    kernel_cat
-    simp only [ComonObj.counit, Kernel.comp_id_parallelComp]
-    rw [Kernel.id_map (by fun_prop), Kernel.deterministic_comp_eq_map]
-    ext x s hs
-    rw [Kernel.map_apply _ (by fun_prop), Kernel.parallelComp_apply]
-    simp [Kernel.discard_apply]
-  copy_unit := by
-    widesubcat_ext
-    dsimp [ComonObj.comul]
-    kernel_cat
-    ext x s hs
-    rw [Kernel.id_map (by fun_prop)]
-    simp [Kernel.copy_apply, Kernel.deterministic_apply]
+
+end
