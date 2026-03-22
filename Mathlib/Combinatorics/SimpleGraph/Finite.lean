@@ -313,6 +313,7 @@ theorem IsRegularOfDegree.degree_eq {d : ℕ} (h : G.IsRegularOfDegree d) (v : V
   h v
 
 /-- The empty graph is regular of any degree `d` -/
+@[simp]
 theorem IsRegularOfDegree.of_isEmpty [IsEmpty V] {d : ℕ} : G.IsRegularOfDegree d :=
   IsEmpty.elim ‹_›
 
