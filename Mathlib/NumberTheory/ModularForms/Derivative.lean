@@ -207,21 +207,18 @@ $\frac{d}{dz}\left(\frac{az+b}{cz+d}\right) = \frac{1}{(cz+d)^2}$.
 -/
 lemma deriv_moebius (z : ℍ) : deriv (fun w ↦ num γ w / denom γ w) z = 1 / (denom γ z) ^ 2 := by
   have hz : denom γ z ≠ 0 := denom_ne_zero γ z
-  have hdet : ((γ : Matrix (Fin 2) (Fin 2) ℤ) 0 0 : ℂ) * (γ 1 1) -
-      ((γ : Matrix (Fin 2) (Fin 2) ℤ) 0 1 : ℂ) * (γ 1 0) = 1 := by
-    have := Matrix.SpecialLinearGroup.det_coe γ
-    simp only [Matrix.det_fin_two, ← Int.cast_mul, ← Int.cast_sub] at this ⊢
-    exact_mod_cast this
+  have hnum_eq : ((γ 0 0 : ℤ) : ℂ) * ((γ 1 0 : ℤ) * z + (γ 1 1 : ℤ)) -
+      ((γ 0 0 : ℤ) * z + (γ 0 1 : ℤ)) * (γ 1 0 : ℤ) = 1 := by
+    have := γ.det_coe
+    rw [Matrix.det_fin_two] at this
+    apply_fun ((↑) : ℤ → ℂ) at this
+    push_cast at this
+    linear_combination this
   rw [deriv_fun_div (differentiableAt_num γ z) (differentiableAt_denom γ z) hz,
       deriv_num, deriv_denom]
-  simp only [denom_apply, num, Matrix.SpecialLinearGroup.coe_GL_coe_matrix,
-    Matrix.SpecialLinearGroup.map_apply_coe, RingHom.mapMatrix_apply, Int.coe_castRingHom,
-    Matrix.map_apply, ofReal_intCast] at *
-  have hnum_eq : ((γ 0 0 : ℤ) : ℂ) * ((γ 1 0 : ℤ) * z + (γ 1 1 : ℤ)) -
-      ((γ 0 0 : ℤ) * z + (γ 0 1 : ℤ)) * (γ 1 0 : ℤ) = 1 := by linear_combination hdet
-  simp only [hnum_eq, one_div]
+  simp [denom_apply, num, hnum_eq]
 
-/-- Derivative of denom^(-k): $\frac{d}{dz}[(cz+d)^(-k)] = -k * c * (cz+d)^(-k-1)$. -/
+/-- Derivative of `denom^(-k)`: $\frac{d}{dz}[(cz+d)^{-k}] = -k * c * (cz+d)^{-k-1}$. -/
 lemma deriv_denom_neg_zpow (k : ℤ) (z : ℍ) :
     deriv (fun w ↦ (denom γ w) ^ (-k)) z =
       (-k) * ((γ : Matrix (Fin 2) (Fin 2) ℤ) 1 0 : ℂ) * (denom γ z) ^ (-k - 1) := by
@@ -314,8 +311,7 @@ theorem serreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (hF : MDif
     simpa [Pi.sub_apply, Pi.smul_apply, smul_eq_mul] using
       congrFun (EisensteinSeries.E2_slash_action γ) z
   rw [hDz, hE2z]
-  simp only [show EisensteinSeries.D2 γ z = (2 * ↑π * I * ↑↑(γ 1 0)) / denom γ ↑z from rfl,
-    riemannZeta_two]
+  simp only [EisensteinSeries.D2, riemannZeta_two]
   field_simp [denom_ne_zero γ z, Complex.ofReal_ne_zero.mpr Real.pi_ne_zero]
   ring_nf
   simp only [I_sq]
