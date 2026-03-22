@@ -967,7 +967,8 @@ namespace Subtype
 
 /-- A subtype forms a `⊔`-semilattice if `⊔` preserves the property.
 See note [reducible non-instances]. -/
-@[to_dual /-- A subtype forms a `⊓`-semilattice if `⊓` preserves the property.
+@[to_dual (rename := Psup → Pinf)
+/-- A subtype forms a `⊓`-semilattice if `⊓` preserves the property.
 See note [reducible non-instances]. -/]
 protected abbrev semilatticeSup [SemilatticeSup α] {P : α → Prop}
     (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) :
@@ -984,13 +985,13 @@ protected abbrev lattice [Lattice α] {P : α → Prop} (Psup : ∀ ⦃x y⦄, P
   __ := Subtype.semilatticeInf Pinf
   __ := Subtype.semilatticeSup Psup
 
-@[to_dual (attr := simp, norm_cast)]
+@[to_dual (attr := simp, norm_cast) (rename := Psup → Pinf)]
 theorem coe_sup [SemilatticeSup α] {P : α → Prop}
     (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) (x y : Subtype P) :
     (haveI := Subtype.semilatticeSup Psup; (x ⊔ y : Subtype P) : α) = (x ⊔ y : α) :=
   rfl
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) (rename := Psup → Pinf)]
 theorem mk_sup_mk [SemilatticeSup α] {P : α → Prop}
     (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) {x y : α} (hx : P x) (hy : P y) :
     (haveI := Subtype.semilatticeSup Psup; (⟨x, hx⟩ ⊔ ⟨y, hy⟩ : Subtype P)) =

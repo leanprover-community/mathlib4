@@ -2266,8 +2266,10 @@ Q2916568:
 
 Q2919401:
   title: Ostrowski's theorem
-  decl: Rat.AbsoluteValue.equiv_real_or_padic
-  authors: David Kurniadi Angdinata, Fabrizio Barroero, Laura Capuano, Nirvana Coppola, María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Turchet, Francesco Veneziano
+  decls:
+    - Rat.AbsoluteValue.equiv_real_or_padic
+    - RatFunc.valuation_isEquiv_infty_or_adic
+  authors: David Kurniadi Angdinata, Fabrizio Barroero, Laura Capuano, Nirvana Coppola, María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Turchet, Francesco Veneziano, Xavier Généreux
   date: 2024
 
 Q2981012:
