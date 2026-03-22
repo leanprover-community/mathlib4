@@ -184,13 +184,16 @@ variable {m n : SimplexCategoryᵒᵖ} (f : m ⟶ n) (z : (X ⊗ Y).obj m)
 
 end
 
-@[simp] lemma prod_δ_fst {n : ℕ} (i : Fin (n + 2)) (z : (X ⊗ Y : SSet.{u}) _⦋n + 1⦌) :
+@[simp, grind =] lemma prod_δ_fst {n : ℕ} (i : Fin (n + 2)) (z : (X ⊗ Y : SSet.{u}) _⦋n + 1⦌) :
     ((X ⊗ Y).δ i z).1 = X.δ i z.1 := rfl
-@[simp] lemma prod_δ_snd {n : ℕ} (i : Fin (n + 2)) (z : (X ⊗ Y : SSet.{u}) _⦋n + 1⦌) :
+
+@[simp, grind =] lemma prod_δ_snd {n : ℕ} (i : Fin (n + 2)) (z : (X ⊗ Y : SSet.{u}) _⦋n + 1⦌) :
     ((X ⊗ Y).δ i z).2 = Y.δ i z.2 := rfl
-@[simp] lemma prod_σ_fst {n : ℕ} (i : Fin (n + 1)) (z : (X ⊗ Y : SSet.{u}) _⦋n⦌) :
+
+@[simp, grind =] lemma prod_σ_fst {n : ℕ} (i : Fin (n + 1)) (z : (X ⊗ Y : SSet.{u}) _⦋n⦌) :
     ((X ⊗ Y).σ i z).1 = X.σ i z.1 := rfl
-@[simp] lemma prod_σ_snd {n : ℕ} (i : Fin (n + 1)) (z : (X ⊗ Y : SSet.{u}) _⦋n⦌) :
+
+@[simp, grind =] lemma prod_σ_snd {n : ℕ} (i : Fin (n + 1)) (z : (X ⊗ Y : SSet.{u}) _⦋n⦌) :
     ((X ⊗ Y).σ i z).2 = Y.σ i z.2 := rfl
 
 end
