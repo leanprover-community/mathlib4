@@ -98,9 +98,9 @@ lemma mem (x : (Derivation R A' A') × (Derivation R A A)) :
   · intro hx; ext a; exact congrArg (· a) hx
   · intro hx; ext a; exact congrArg (· a) hx
 
-/-- Generate an element of `Compatible` from `x y` satisfying the compatibility equation. -/
+/-- Generate an element of `couple` from `x y` satisfying the compatibility equation. -/
 def mk (x : Derivation R A' A') (y : Derivation R A A)
-  (h : x ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ y) : Compatible R A A' :=
+  (h : x ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ y) : couple R A A' :=
 ⟨(x, y), (Compatible.mem _).mpr h⟩
 
 lemma mk_left (x : Derivation R A' A') (y : Derivation R A A)
@@ -109,7 +109,7 @@ lemma mk_left (x : Derivation R A' A') (y : Derivation R A A)
 lemma mk_right (x : Derivation R A' A') (y : Derivation R A A)
     (h : x ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ y) : (mk x y h).1.2 = y := rfl
 
-lemma apply (x : Compatible R A A') (a : A) :
+lemma apply (x : couple R A A') (a : A) :
     x.1.1 (Algebra.ofId A A' a) = (Algebra.ofId A A')  (x.1.2 a) := by
   exact congrArg (· a) x.2
 
