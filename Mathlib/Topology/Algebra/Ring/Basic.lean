@@ -300,7 +300,7 @@ induced by left multiplication by a unit. -/
 def mulLeft (r : Rˣ) : R ≃ₜ+ R where
   __ := r.mulLeft
   map_add' x₁ x₂ := left_distrib ↑r x₁ x₂
-  continuous_toFun := continuous_mul_left _
+  continuous_toFun := continuous_const_mul _
   continuous_invFun := continuous_const_mul _
 
 /-- The additive homeomorphism from a topological ring to itself,
