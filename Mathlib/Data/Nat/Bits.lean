@@ -6,7 +6,6 @@ Authors: Praneeth Kolichala
 module
 
 public import Mathlib.Data.Nat.BinaryRec
-public import Mathlib.Data.Nat.Init
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Lemma
 
@@ -45,17 +44,16 @@ def boddDiv2 : ℕ → Bool × ℕ
     | (true, m) => (false, succ m)
 
 /-- `div2 n = ⌊n/2⌋` the greatest integer smaller than `n/2` -/
-@[grind =]
-def div2 (n : ℕ) : ℕ := n / 2
+@[grind =] def div2 (n : ℕ) : ℕ := n / 2
 
-def div2Impl (n : ℕ) : ℕ := n >>> 1
+@[inline] def div2Impl (n : ℕ) : ℕ := n >>> 1
 
 @[csimp] lemma div2_eq_div2Impl : @div2 = @div2Impl := rfl
 
 theorem div2_val (n) : div2 n = n / 2 := rfl
 
 /-- `bodd n` returns `true` if `n` is odd -/
-def bodd (n : ℕ) : Bool := n.testBit 0
+@[inline] def bodd (n : ℕ) : Bool := n.testBit 0
 
 @[simp] lemma bodd_zero : bodd 0 = false := rfl
 
@@ -99,7 +97,8 @@ lemma div2_two : div2 2 = 1 := rfl
 @[simp]
 lemma div2_succ (n : ℕ) : div2 (n + 1) = cond (bodd n) (succ (div2 n)) (div2 n) := by
   cases n using bitCasesOn with
-  | bit b n => cases b <;> simp [bit_val, div2_val, Nat.succ_div, Nat.dvd_mul_right]
+  | bit b n => cases b <;>
+    simp [bit_val, div2_val, Nat.succ_div, Nat.add_assoc, Nat.dvd_add_right (Nat.dvd_mul_right _ _)]
 
 @[simp, grind =]
 lemma div2_bit (b n) : div2 (bit b n) = n := by
