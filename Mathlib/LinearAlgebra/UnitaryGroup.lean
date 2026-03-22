@@ -106,7 +106,7 @@ theorem kronecker_mem_unitary {R m : Type*} [Semiring R] [StarRing R] [Fintype m
       Finset.sum_const_zero, ← ite_and, and_comm, Prod.eq_iff_fst_eq_snd_eq]
 
 open scoped Kronecker TensorProduct in
-theorem Matrix.kroneckerTMul_mem_unitary {R A B m : Type*} [Fintype m] [DecidableEq m]
+theorem kroneckerTMul_mem_unitary {R A B m : Type*} [Fintype m] [DecidableEq m]
     [CommSemiring R] [StarRing R] [Semiring A] [Semiring B] [StarRing A] [StarRing B] [Algebra R A]
     [Algebra R B] [StarModule R A] [StarModule R B] {U : Matrix m m A} {V : Matrix n n B}
     (hU : U ∈ unitary (Matrix m m A)) (hV : V ∈ unitary (Matrix n n B)) :
