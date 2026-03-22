@@ -6,7 +6,6 @@ Authors: Anne Baanen, Eric Wieser
 module
 
 public import Mathlib.Data.Fin.Tuple.Basic
-public import Aesop
 
 /-!
 # Matrix and vector notation
@@ -139,6 +138,34 @@ theorem cons_val_succ' {i : ℕ} (h : i.succ < m.succ) (x : α) (u : Fin m → �
     vecCons x u ⟨i.succ, h⟩ = u ⟨i, Nat.lt_of_succ_lt_succ h⟩ := by
   simp only [vecCons, Fin.cons, Fin.cases_succ']
 
+/-- We don't want to always simplify `Fin.cons` to `vecCons`.
+But in cases that we are already mixing the declarations for dependent tuples and non-dependent
+tuples, we can simplify to the non-dependent tuples. -/
+@[simp]
+lemma Fin.cons_vecEmpty {α : Type*} (x : α) : Fin.cons x ![] = ![x] := by rfl
+
+/-- Simplify `Fin.snoc` to `vecCons` in this case. -/
+@[simp]
+lemma Fin.snoc_vecEmpty {α : Type*} (x : α) : Fin.snoc ![] x = ![x] := by
+  ext i
+  cases Fin.fin_one_eq_zero i
+  rfl
+
+/-- We don't want to always simplify `Fin.cons` to `vecCons`.
+But in cases that we are already mixing the declarations for dependent tuples and non-dependent
+tuples, we can simplify to the non-dependent tuples.
+This allows us to simplify `Fin.cons 5 ![1, 3, 7]` to `![5, 1, 3, 7]`. -/
+@[simp]
+lemma Fin.cons_vecCons {α : Type*} (x y : α) (p : Fin n → α) :
+  Fin.cons x (vecCons y p) = vecCons x (vecCons y p) := by rfl
+
+/-- We push `Fin.snoc` inside `vecCons`. This allows us to simplify e.g.
+`Fin.snoc ![1, 3, 7] 5` to `![1, 3, 7, 5]`. -/
+@[simp]
+lemma Fin.snoc_vecCons {α : Type*} (x y : α) (p : Fin n → α) :
+    Fin.snoc (vecCons y p) x = vecCons y (Fin.snoc p x) :=
+  Fin.cons_snoc_eq_snoc_cons .. |>.symm
+
 section simprocs
 open Lean Qq
 
@@ -200,6 +227,10 @@ theorem head_cons (x : α) (u : Fin m → α) : vecHead (vecCons x u) = x :=
 theorem tail_cons (x : α) (u : Fin m → α) : vecTail (vecCons x u) = u := by
   ext
   simp [vecTail]
+
+@[simp]
+theorem _root_.Fin.tail_vecCons (x : α) (t : Fin n → α) : Fin.tail (Matrix.vecCons x t) = t :=
+  rfl
 
 theorem empty_val' {n' : Type*} (j : n') : (fun i => (![] : Fin 0 → n' → α) i j) = ![] :=
   empty_eq _

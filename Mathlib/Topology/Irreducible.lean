@@ -256,7 +256,7 @@ instance (priority := 100) {X} [Infinite X] : IrreducibleSpace (CofiniteTopology
 
 theorem irreducibleComponents_eq_singleton [IrreducibleSpace X] :
     irreducibleComponents X = {univ} :=
-  Set.ext fun _ ↦ IsGreatest.maximal_iff (s := IsIrreducible (X := X))
+  Set.ext fun _ ↦ IsGreatest.maximal_iff (s := {s : Set X | IsIrreducible s})
     ⟨IrreducibleSpace.isIrreducible_univ X, fun _ _ ↦ Set.subset_univ _⟩
 
 /-- A set `s` is irreducible if and only if
@@ -412,7 +412,7 @@ lemma IsIrreducible.preimage (ht : IsIrreducible t) {f : Y → X}
 
 lemma preimage_mem_irreducibleComponents_of_isPreirreducible_fiber
     (ht : t ∈ irreducibleComponents X) {f : Y → X} (hf₁ : Continuous f) (hf₂ : IsOpenMap f)
-    (hf₃ : ∀ x, IsPreirreducible (f ⁻¹'{x})) (h : (t ∩ range f).Nonempty) :
+    (hf₃ : ∀ x, IsPreirreducible (f ⁻¹' {x})) (h : (t ∩ range f).Nonempty) :
     f ⁻¹' t ∈ irreducibleComponents Y := by
   refine ⟨ht.1.preimage_of_isPreirreducible_fiber f hf₂ hf₃ h, fun u hu htu ↦ image_subset_iff.mp
     (subset_closure.trans (ht.2 (hu.image f hf₁.continuousOn).closure ?_))⟩
@@ -471,3 +471,21 @@ lemma IsDiscrete.subsingleton_of_isPreirreducible (hs : IsDiscrete s) (hs' : IsP
   exact (hUx.le (by grind)).symm.trans (b := z) (hVy.le (by grind))
 
 end Preirreducible
+
+lemma Function.Surjective.preirreducibleSpace {f : X → Y} (hfc : Continuous f)
+    (hf : Function.Surjective f) [PreirreducibleSpace X] : PreirreducibleSpace Y where
+  isPreirreducible_univ := by
+    rw [← hf.range_eq, ← Set.image_univ]
+    exact (PreirreducibleSpace.isPreirreducible_univ).image _ hfc.continuousOn
+
+lemma Function.Surjective.irreducibleSpace {f : X → Y} (hfc : Continuous f)
+    (hf : Function.Surjective f) [IrreducibleSpace X] : IrreducibleSpace Y where
+  isPreirreducible_univ := by
+    rw [← hf.range_eq, ← Set.image_univ]
+    exact (PreirreducibleSpace.isPreirreducible_univ).image _ hfc.continuousOn
+  toNonempty := Nonempty.map f inferInstance
+
+lemma Homeomorph.irreducibleSpace_iff
+    (e : X ≃ₜ Y) : IrreducibleSpace X ↔ IrreducibleSpace Y :=
+  ⟨fun _ ↦ e.surjective.irreducibleSpace e.continuous,
+    fun _ ↦ e.symm.surjective.irreducibleSpace e.symm.continuous⟩

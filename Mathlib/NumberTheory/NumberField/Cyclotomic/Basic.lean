@@ -109,7 +109,9 @@ theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExt
       have h₁ := minpoly.isIntegrallyClosed_eq_field_fractions' ℚ hint
       have h₂ := hζ.minpoly_sub_one_eq_cyclotomic_comp (cyclotomic.irreducible_rat (NeZero.pos _))
       rw [IsPrimitiveRoot.subOnePowerBasis_gen] at h₁
-      rw [h₁, ← map_cyclotomic_int, show Int.castRingHom ℚ = algebraMap ℤ ℚ by rfl,
+      #adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
+      we needed to change the next line from `rw` to `erw`. -/
+      erw [h₁, ← map_cyclotomic_int, show Int.castRingHom ℚ = algebraMap ℤ ℚ by rfl,
         show X + 1 = map (algebraMap ℤ ℚ) (X + 1) by simp, ← map_comp] at h₂
       rw [IsPrimitiveRoot.subOnePowerBasis_gen,
         map_injective (algebraMap ℤ ℚ) (algebraMap ℤ ℚ).injective_int h₂]
@@ -126,6 +128,7 @@ theorem isIntegralClosure_adjoin_singleton_of_prime [hcycl : IsCyclotomicExtensi
   rw [← pow_one p] at hζ hcycl
   exact isIntegralClosure_adjoin_singleton_of_prime_pow hζ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The integral closure of `ℤ` inside `CyclotomicField (p ^ k) ℚ` is
 `CyclotomicRing (p ^ k) ℤ ℚ`. -/
 theorem cyclotomicRing_isIntegralClosure_of_prime_pow :
@@ -195,6 +198,7 @@ lemma finite_quotient_toInteger_sub_one [NumberField K] {k : ℕ} (hk : 1 < k)
   simp only [Ideal.span_singleton_eq_bot, sub_eq_zero] at h
   exact hζ.ne_one hk (RingOfIntegers.ext_iff.1 h)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We have that `𝓞 K ⧸ Ideal.span {ζ - 1}` has cardinality equal to the norm of `ζ - 1`.
 
 See the results below to compute this norm in various cases. -/
@@ -228,6 +232,7 @@ theorem integralPowerBasisOfPrimePow_dim [hcycl : IsCyclotomicExtension {p ^ k} 
   simp [integralPowerBasisOfPrimePow, ← cyclotomic_eq_minpoly hζ (NeZero.pos _),
     natDegree_cyclotomic]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a `p ^ k` cyclotomic
 extension of `ℚ`. -/
 noncomputable def subOneIntegralPowerBasisOfPrimePow [IsCyclotomicExtension {p ^ k} ℚ K]
@@ -245,6 +250,7 @@ theorem subOneIntegralPowerBasisOfPrimePow_gen [IsCyclotomicExtension {p ^ k} �
       ⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral (NeZero.pos _)) (Subalgebra.one_mem _)⟩ := by
   simp [subOneIntegralPowerBasisOfPrimePow]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `ζ - 1` is prime if `p ≠ 2` and `ζ` is a primitive `p ^ (k + 1)`-th root of unity.
   See `zeta_sub_one_prime` for a general statement. -/
 theorem zeta_sub_one_prime_of_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
@@ -263,6 +269,7 @@ theorem zeta_sub_one_prime_of_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
   simp only [algebraMap_int_eq, map_natCast]
   exact hζ.norm_sub_one_of_prime_ne_two (Polynomial.cyclotomic.irreducible_rat (NeZero.pos _)) hodd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `ζ - 1` is prime if `ζ` is a primitive `2 ^ (k + 1)`-th root of unity.
   See `zeta_sub_one_prime` for a general statement. -/
 theorem zeta_sub_one_prime_of_two_pow [IsCyclotomicExtension {2 ^ (k + 1)} ℚ K]
@@ -308,6 +315,7 @@ theorem subOneIntegralPowerBasisOfPrimePow_gen_prime [IsCyclotomicExtension {p ^
     Prime hζ.subOneIntegralPowerBasisOfPrimePow.gen := by
   simpa only [subOneIntegralPowerBasisOfPrimePow_gen] using hζ.zeta_sub_one_prime
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The norm, relative to `ℤ`, of `ζ - 1` in an `n`-th cyclotomic extension of `ℚ` where `n` is not a
 power of a prime number is `1`.
@@ -323,6 +331,7 @@ theorem norm_toInteger_sub_one_eq_one {n : ℕ} [IsCyclotomicExtension {n} ℚ K
     sub_one_norm_eq_eval_cyclotomic hζ h₁ (cyclotomic.irreducible_rat (NeZero.pos _)),
     eval_one_cyclotomic_not_prime_pow h₂, Int.cast_one]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The norm, relative to `ℤ`, of `ζ ^ p ^ s - 1` in a `p ^ (k + 1)`-th cyclotomic extension of `ℚ`
 is `p ^ p ^ s` if `s ≤ k` and `p ^ (k - s + 1) ≠ 2`. -/
 lemma norm_toInteger_pow_sub_one_of_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
@@ -332,6 +341,7 @@ lemma norm_toInteger_pow_sub_one_of_prime_pow_ne_two [IsCyclotomicExtension {p ^
   rw [Algebra.norm_eq_iff ℤ (Sₘ := K) (Rₘ := ℚ) le_rfl]
   simp [hζ.norm_pow_sub_one_of_prime_pow_ne_two (cyclotomic.irreducible_rat (NeZero.pos _)) hs htwo]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The norm, relative to `ℤ`, of `ζ ^ 2 ^ k - 1` in a `2 ^ (k + 1)`-th cyclotomic extension of `ℚ`
 is `(-2) ^ 2 ^ k`. -/
 lemma norm_toInteger_pow_sub_one_of_two [IsCyclotomicExtension {2 ^ (k + 1)} ℚ K]
@@ -350,6 +360,7 @@ lemma norm_toInteger_pow_sub_one_of_prime_ne_two [IsCyclotomicExtension {p ^ (k 
   apply eq_of_prime_pow_eq hp.out.prime Nat.prime_two.prime (k - s).succ_pos
   rwa [pow_one]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The norm, relative to `ℤ`, of `ζ - 1` in a `2 ^ (k + 2)`-th cyclotomic extension of `ℚ` is `2`.
 -/
@@ -533,6 +544,7 @@ lemma toInteger_sub_one_not_dvd_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
   · rw [hζ.norm_toInteger_sub_one_of_prime_ne_two hodd]
     exact Nat.prime_iff_prime_int.1 hp.1
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 /--
 Let `ζ` be a primitive root of unity of order `n` with `2 ≤ n`. Any prime number that divides the
@@ -599,6 +611,7 @@ open nonZeroDivisors IsPrimitiveRoot
 variable (K p k)
 variable [CharZero K]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We compute the absolute discriminant of a `p ^ k`-th cyclotomic field.
   Beware that in the cases `p ^ k = 1` and `p ^ k = 2` the formula uses `1 / 2 = 0` and `0 - 1 = 0`.
   See also the results below. -/
@@ -651,6 +664,7 @@ theorem discr_prime [IsCyclotomicExtension {p} ℚ K] :
 
 variable (n) [hn : NeZero n]
 
+set_option backward.isDefEq.respectTransparency false in
 open Algebra IntermediateField Nat in
 /--
 Computes the absolute discriminant of the `n`-th cyclotomic field.
@@ -725,6 +739,7 @@ theorem natAbs_discr [hK : IsCyclotomicExtension {n} ℚ K] :
   rw [← Nat.cast_pow, Int.natCast_dvd_natCast]
   exact Nat.prod_primeFactors_pow_totient_ediv_dvd (NeZero.pos _)
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField Nat in
 private theorem adjoin_singleton_eq_top_aux [NumberField K] (F₁ F₂ : IntermediateField ℚ K)
     {n₁ n₂ : ℕ} [NeZero n₁] [NeZero n₂] [IsCyclotomicExtension {n₁} ℚ F₁]
@@ -756,6 +771,7 @@ private theorem adjoin_singleton_eq_top_aux [NumberField K] (F₁ F₂ : Interme
 
 variable {n K}
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 theorem adjoin_singleton_eq_top [hK : IsCyclotomicExtension {n} ℚ K]
     {ζ : K} (hζ : IsPrimitiveRoot ζ n) :
@@ -802,6 +818,7 @@ theorem isIntegralClosure_adjoin_singleton {ζ : K} [hcycl : IsCyclotomicExtensi
 
 variable (n)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The integral closure of `ℤ` inside `CyclotomicField n ℚ` is `CyclotomicRing n ℤ ℚ`. -/
 theorem cyclotomicRing_isIntegralClosure :
     IsIntegralClosure (CyclotomicRing n ℤ ℚ) ℤ (CyclotomicField n ℚ) := by
@@ -856,6 +873,7 @@ theorem integralPowerBasis_dim [IsCyclotomicExtension {n} ℚ K] (hζ : IsPrimit
     hζ.integralPowerBasis.dim = φ n := by
   simp [integralPowerBasis, ← cyclotomic_eq_minpoly hζ (NeZero.pos _), natDegree_cyclotomic]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a cyclotomic
 extension of `ℚ`. -/
 noncomputable def subOneIntegralPowerBasis [IsCyclotomicExtension {n} ℚ K]

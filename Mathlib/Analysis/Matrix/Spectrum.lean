@@ -46,9 +46,6 @@ theorem spectrum_toLpLin [DecidableEq n] (p : ENNReal) :
 theorem spectrum_toEuclideanLin [DecidableEq n] : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
   spectrum_toLpLin 2
 
-@[deprecated (since := "2025-08-13")] alias IsHermitian.spectrum_toEuclideanLin :=
-  spectrum_toEuclideanLin
-
 namespace IsHermitian
 
 section DecidableEq
@@ -130,13 +127,13 @@ theorem conjStarAlgAut_star_eigenvectorUnitary :
       diagonal (RCLike.ofReal ∘ hA.eigenvalues) := by
   apply Matrix.toEuclideanLin.injective <| (EuclideanSpace.basisFun n 𝕜).toBasis.ext fun i ↦ ?_
   simp only [conjStarAlgAut_star_apply, toLpLin_apply, OrthonormalBasis.coe_toBasis,
-    EuclideanSpace.basisFun_apply, EuclideanSpace.ofLp_single, ← mulVec_mulVec,
+    EuclideanSpace.basisFun_apply, PiLp.ofLp_single, ← mulVec_mulVec,
     eigenvectorUnitary_mulVec, ← mulVec_mulVec, mulVec_eigenvectorBasis,
     Matrix.diagonal_mulVec_single, mulVec_smul, star_eigenvectorUnitary_mulVec,
-    RCLike.real_smul_eq_coe_smul (K := 𝕜), WithLp.toLp_smul, EuclideanSpace.toLp_single,
+    RCLike.real_smul_eq_coe_smul (K := 𝕜), WithLp.toLp_smul, PiLp.toLp_single,
     Function.comp_apply, mul_one]
   apply PiLp.ext fun j ↦ ?_
-  simp only [PiLp.smul_apply, EuclideanSpace.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
+  simp only [PiLp.smul_apply, PiLp.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
 
 @[deprecated (since := "2025-11-06")] alias star_mul_self_mul_eq_diagonal :=
   conjStarAlgAut_star_eigenvectorUnitary
@@ -217,9 +214,6 @@ theorem spectrum_real_eq_range_eigenvalues :
     spectrum ℝ A = Set.range hA.eigenvalues := Set.ext fun x => by
   conv_lhs => rw [hA.spectral_theorem, ← spectrum.algebraMap_mem_iff 𝕜]
   simp
-
-@[deprecated (since := "2025-08-14")]
-alias eigenvalues_eq_spectrum_real := spectrum_real_eq_range_eigenvalues
 
 /-- The eigenvalues of a Hermitian matrix `A` are all zero iff `A = 0`. -/
 theorem eigenvalues_eq_zero_iff :

@@ -224,7 +224,7 @@ theorem up_iInf [InfSet α] (f : ι → α) : up (⨅ i, f i) = ⨅ i, up (f i) 
   congr_arg ULift.up <| (down_iInf _).symm
 
 instance instCompleteLattice [CompleteLattice α] : CompleteLattice (ULift.{v} α) :=
-  ULift.down_injective.completeLattice _ down_sup down_inf
+  ULift.down_injective.completeLattice _ .rfl .rfl down_sup down_inf
     (fun s => by rw [sSup_eq_iSup', down_iSup, iSup_subtype''])
     (fun s => by rw [sInf_eq_iInf', down_iInf, iInf_subtype'']) down_top down_bot
 
@@ -237,10 +237,8 @@ instance instCompleteLinearOrder : CompleteLinearOrder PUnit where
   __ := instLinearOrder
   sSup := fun _ => unit
   sInf := fun _ => unit
-  le_sSup := by intros; trivial
-  sSup_le := by intros; trivial
-  sInf_le := by intros; trivial
-  le_sInf := by intros; trivial
+  isLUB_sSup _ := ⟨top_mem_upperBounds _, bot_mem_lowerBounds _⟩
+  isGLB_sInf _ := ⟨bot_mem_lowerBounds _, top_mem_upperBounds _⟩
   le_himp_iff := by intros; trivial
   himp_bot := by intros; trivial
   sdiff_le_iff := by intros; trivial

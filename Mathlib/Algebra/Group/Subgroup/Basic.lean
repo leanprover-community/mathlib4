@@ -270,8 +270,8 @@ namespace Subgroup
 instance normal_top : (⊤ : Subgroup G).Normal where
   conj_mem _ a _ := a
 
-/-- The trivial subgroup `{1}`is normal. -/
-@[to_additive (attr := simp) /-- The trivial subgroup `{0}`is normal. -/]
+/-- The trivial subgroup `{1}` is normal. -/
+@[to_additive (attr := simp) /-- The trivial subgroup `{0}` is normal. -/]
 instance normal_bot : (⊥ : Subgroup G).Normal where
   conj_mem := by simp
 
@@ -411,7 +411,7 @@ This may be easier to work with, as it avoids inequalities and negations. -/
 theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
     NormalizerCondition G ↔ ∀ H : Subgroup G, H.normalizer = H → H = ⊤ := by
   apply forall_congr'; intro H
-  simp only [lt_iff_le_and_ne, le_normalizer, le_top, Ne]
+  simp only [lt_iff_le_and_ne, le_normalizer, Ne]
   tauto
 
 end Normalizer
@@ -523,6 +523,11 @@ theorem closure_le_normalClosure {s : Set G} : closure s ≤ normalClosure s := 
 theorem normalClosure_closure_eq_normalClosure {s : Set G} :
     normalClosure ↑(closure s) = normalClosure s :=
   le_antisymm (normalClosure_le_normal closure_le_normalClosure) (normalClosure_mono subset_closure)
+
+/-- The normal closure of an empty set is the trivial subgroup. -/
+@[simp]
+lemma normalClosure_empty : normalClosure (∅ : Set G) = (⊥ : Subgroup G) := by
+  rw [← normalClosure_closure_eq_normalClosure, closure_empty, normalClosure_eq_self]
 
 /-- The normal core of a subgroup `H` is the largest normal subgroup of `G` contained in `H`,
 as shown by `Subgroup.normalCore_eq_iSup`. -/
@@ -825,14 +830,14 @@ theorem inf_subgroupOf_inf_normal_of_right (A B' B : Subgroup G)
     [hN : (B'.subgroupOf B).Normal] : ((A ⊓ B').subgroupOf (A ⊓ B)).Normal := by
   rw [normal_subgroupOf_iff_le_normalizer_inf] at hN ⊢
   rw [inf_inf_inf_comm, inf_idem]
-  exact le_trans (inf_le_inf A.le_normalizer hN) (inf_normalizer_le_normalizer_inf)
+  exact le_trans (inf_le_inf A.le_normalizer hN) inf_normalizer_le_normalizer_inf
 
 @[to_additive]
 theorem inf_subgroupOf_inf_normal_of_left {A' A : Subgroup G} (B : Subgroup G)
     [hN : (A'.subgroupOf A).Normal] : ((A' ⊓ B).subgroupOf (A ⊓ B)).Normal := by
   rw [normal_subgroupOf_iff_le_normalizer_inf] at hN ⊢
   rw [inf_inf_inf_comm, inf_idem]
-  exact le_trans (inf_le_inf hN B.le_normalizer) (inf_normalizer_le_normalizer_inf)
+  exact le_trans (inf_le_inf hN B.le_normalizer) inf_normalizer_le_normalizer_inf
 
 @[to_additive]
 instance normal_inf_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊓ K).Normal :=

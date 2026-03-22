@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Bryan Gin-ge Chen
 -/
 module
 
+public import Aesop
 public import Mathlib.Order.Heyting.Basic
 
 /-!
@@ -160,6 +161,7 @@ a distributive lattice that is complemented is a Boolean algebra.
 
 This is not an instance, because it creates data using choice.
 -/
+@[implicit_reducible]
 noncomputable
 def booleanAlgebraOfComplemented [BoundedOrder α] [ComplementedLattice α] : BooleanAlgebra α where
   __ := (inferInstanceAs (BoundedOrder α))

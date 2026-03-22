@@ -171,8 +171,8 @@ open BoundedContinuousFunction
 instance : SeminormedAddCommGroup C(α, E) where
   __ := ContinuousMap.instPseudoMetricSpace _ _
   __ := ContinuousMap.instAddCommGroupContinuousMap
-  dist_eq x y := by
-    rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm, mkOfCompact_sub]
+  dist_eq x y := by rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm_neg_add,
+    mkOfCompact_add, mkOfCompact_neg]
   dist := dist
   norm := norm
 
