@@ -187,7 +187,6 @@ instance IsStableUnderBaseChange.isomorphisms :
     (isomorphisms C).IsStableUnderBaseChange where
   of_isPullback h _ := h.isIso_snd_of_isIso
 
-set_option backward.isDefEq.respectTransparency false in
 instance IsStableUnderBaseChange.monomorphisms :
     (monomorphisms C).IsStableUnderBaseChange where
   of_isPullback h _ := h.mono_snd_of_mono
@@ -310,7 +309,6 @@ instance IsStableUnderCobaseChange.isomorphisms :
     (isomorphisms C).IsStableUnderCobaseChange where
   of_isPushout h _ := h.isIso_inl_of_isIso
 
-set_option backward.isDefEq.respectTransparency false in
 variable (C) in
 instance IsStableUnderCobaseChange.epimorphisms :
     (epimorphisms C).IsStableUnderCobaseChange where
@@ -524,7 +522,6 @@ lemma colimitsOfShape_colimMap {X Y : J ⥤ C}
     W.colimitsOfShape J (colimMap f) :=
   ⟨_, _, _, _, _, colimit.isColimit Y, _, hf⟩
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] IsCofiltered.isConnected in
 variable {W} in
 lemma colimitsOfShape.of_isColimit
