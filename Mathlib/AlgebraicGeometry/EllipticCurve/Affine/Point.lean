@@ -836,6 +836,61 @@ lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalar
 
 end Point
 
+/-!
+### The x-coordinate map to ℙ¹
+
+We define the map from affine points of `W` to the projective line by producing a coordinate
+vector in `Fin 2 → F` that represents the projective point.
+-/
+
+namespace Point
+
+lemma x_eq_iff {P Q : W.Point} {xP yP xQ yQ : F} {hP' : W.Nonsingular xP yP}
+    {hQ' : W.Nonsingular xQ yQ} (hP : P = some xP yP hP') (hQ : Q = some xQ yQ hQ') :
+    xP = xQ ↔ P = Q ∨ P = -Q := by
+  refine ⟨fun H ↦ ?_, fun H ↦ by grind [neg_some]⟩
+  simp_rw [hP, hQ, neg_some, some.injEq, ← and_or_left]
+  exact ⟨H, Y_eq_of_X_eq hP'.1 hQ'.1 H⟩
+
+/-- This map sends an affine point `P` on `W` to a representative of its image on ℙ¹
+under the x-coordinate map. We take `![1, 0]` for the point at infinity and `![x, 1]`,
+where `x` is the x-coordinate of `P` for a finite point. -/
+noncomputable def xRep : W.Point → Fin 2 → F
+  | 0 => ![1, 0]
+  | some x _ _ => ![x, 1]
+
+@[simp]
+lemma xRep_zero : (0 : W.Point).xRep = ![1, 0] :=
+  rfl
+
+@[simp]
+lemma xRep_some {x y : F} (h : W.Nonsingular x y) : (some x y h).xRep = ![x, 1] :=
+  rfl
+
+lemma xRep_ne_zero (P : W.Point) : P.xRep ≠ 0 := by
+  cases P <;> simp [← zero_def]
+
+@[simp]
+lemma xRep_neg (P : W.Point) : (-P).xRep = P.xRep := by
+  cases P <;> simp [← zero_def]
+
+lemma eq_or_eq_neg_of_xRep_eq_xRep {P Q : W.Point} (h : P.xRep = Q.xRep) :
+    P = Q ∨ P = -Q := by
+  match P, Q with
+  | 0, 0 => exact .inl rfl
+  | 0, some .. => simp [xRep] at h
+  | some .., 0 => simp [xRep] at h
+  | some x₁ _ _, some x₂ _ _ =>
+    simp only [xRep, Matrix.vecCons_inj, and_true] at h
+    exact (x_eq_iff rfl rfl).mp h
+
+lemma xRep_eq_xRep_iff {P Q : W.Point} :
+    P.xRep = Q.xRep ↔ P = Q ∨ P = -Q := by
+  refine ⟨eq_or_eq_neg_of_xRep_eq_xRep, fun H ↦ ?_⟩
+  rcases H with rfl | rfl <;> simp
+
+end Point
+
 end Affine
 
 end WeierstrassCurve
