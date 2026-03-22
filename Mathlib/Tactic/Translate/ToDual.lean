@@ -241,6 +241,8 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("nhdsGE", "NhdsLE"),
   ("neTop", "NeBot"),
   ("decidableSucc", "DecidablePred"),
+  ("galoisInsertion", "GaloisCoinsertion"),
+  ("galoisCoinsertion", "GaloisInsertion"),
 ]
 
 /-- The bundle of environment extensions for `to_dual` -/
