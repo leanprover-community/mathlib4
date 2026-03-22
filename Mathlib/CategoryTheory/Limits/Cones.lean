@@ -236,7 +236,7 @@ structure ConeMorphism (A B : Cone F) where
 
 /-- A cocone morphism between two cocones for the same diagram is a morphism of the cocone points
 which commutes with the cocone legs. -/
-@[to_dual existing (reorder := A B)]
+@[to_dual (reorder := A B)]
 structure CoconeMorphism (A B : Cocone F) where
   /-- A morphism between the (co)vertex objects in `C` -/
   hom : A.pt ⟶ B.pt
