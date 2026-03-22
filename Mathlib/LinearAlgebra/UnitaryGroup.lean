@@ -121,6 +121,8 @@ theorem kroneckerTMul_mem_unitary {m : Type*} [Fintype m] [DecidableEq m] {U : M
   simp_rw [Unitary.mem_iff, star_eq_conjTranspose] at hU hV ⊢
   simp [conjTranspose_kroneckerTMul, ← mul_kroneckerTMul_mul, hU, hV]
 
+end TensorProduct
+
 namespace UnitaryGroup
 
 instance coeMatrix : Coe (unitaryGroup n α) (Matrix n n α) :=
