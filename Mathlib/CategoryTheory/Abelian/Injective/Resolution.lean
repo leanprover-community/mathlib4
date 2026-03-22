@@ -348,7 +348,7 @@ end InjectiveResolution
 
 variable [Abelian C]
 
-/-- Given an injective presentaion `M → I`, the short complex `0 → M → I → N → 0`. -/
+/-- Given an injective presentation `M → I`, the short complex `0 → M → I → N → 0`. -/
 noncomputable abbrev InjectivePresentation.shortComplex
     {X : C} (ip : InjectivePresentation X) : ShortComplex C :=
   ShortComplex.mk ip.f (Limits.cokernel.π ip.f) (Limits.cokernel.condition ip.f)

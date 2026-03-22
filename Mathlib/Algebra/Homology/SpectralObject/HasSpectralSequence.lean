@@ -21,9 +21,9 @@ For example, from a spectral object `X` indexed by `EInt` the definition
 `coreE₂Cohomological` will allow to construct an `E₂` cohomological
 spectral sequence such that the object on position `(p, q)` on the `r`th
 page is `E^{p + q}(q - r + 2 ≤ q ≤ q + 1 ≤ q + r - 1)`.
-The data (and properties) in the structure `SpectralSequenceDataCore` shall allow
-to define the pages and the differentials directly from the `SpectralObject` API
-from the files
+The data (and properties) in the structure `SpectralSequenceDataCore` allow
+to define the pages and the differentials directly from the `SpectralObject`
+API from the files
 `Mathlib/Algebra/Homology/SpectralObject/Page.lean` and
 `Mathlib/Algebra/Homology/SpectralObject/Differentials.lean`.
 However, the computation of the homology of the differentials in
@@ -158,7 +158,8 @@ def coreE₂Cohomological :
 
 /-- The data which allows to construct an `E₂`-cohomological spectral sequence
 indexed by `ℕ × ℕ` from a spectral object indexed by `EInt`. (Note: additional
-assumptions on the spectral object are required.) -/
+assumptions on the spectral object are required for the construction of
+the spectral sequence from this.) -/
 @[simps!]
 def coreE₂CohomologicalNat :
     SpectralSequenceDataCore EInt
@@ -211,32 +212,31 @@ def coreE₂CohomologicalFin (l : ℕ) :
   hc₁₃ r := by
     rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩ hr
     rw [Fin.ext_iff]
-    dsimp at h₁ h₂ ⊢
+    dsimp
     grind
   antitone_i₀ := by
     rintro r r' ⟨a, ⟨a', _⟩⟩ hr hrr'
-    dsimp
     rw [Fin.mk_le_mk]
     lia
   monotone_i₃ := by
     rintro r r' ⟨a, ⟨a', _⟩⟩ hr hrr'
-    dsimp
     rw [Fin.mk_le_mk]
     exact Fin.clamp_monotone (by lia)
   i₀_prev := by
     rintro r r' ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩ hrr' hr
     ext
-    dsimp at h₁ h₂ ⊢
+    dsimp
     lia
   i₃_next := by
     rintro r r' ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩ hrr' hr
     ext
-    dsimp at h₁ h₂ ⊢
+    dsimp
     grind
 
 /-- The data which allows to construct an `E₂`-homological spectral sequence
 indexed by `ℕ × ℕ` from a spectral object indexed by `EInt`. (Note: additional
-assumptions on the spectral object are required.) -/
+assumptions on the spectral object are required for the construction of
+the spectral sequence from this.) -/
 @[simps!]
 def coreE₂HomologicalNat :
     SpectralSequenceDataCore EInt
@@ -274,8 +274,7 @@ the property which allows to construct a spectral sequence by using the recipe g
 by `data`. The conditions given allow to show that the homology of a page identifies
 to the next page. -/
 class HasSpectralSequence : Prop where
-  isZero_H_obj_mk₁_i₀_le (r r' : ℤ) (pq : κ)
-    (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq pq'))
+  isZero_H_obj_mk₁_i₀_le (r r' : ℤ) (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq pq'))
     (n : ℤ) (hn : n = data.deg pq + 1 )
     (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
       IsZero ((X.H n).obj (mk₁ (homOfLE (data.i₀_le r r' pq))))
@@ -345,8 +344,7 @@ instance {l : ℕ} (E : SpectralObject C (Fin (l + 1))) :
     have := isIso_homOfLE this
     apply E.isZero_H_map_mk₁_of_isIso
   isZero_H_obj_mk₁_i₃_le r r' pq hpq n hn hrr' hr := by
-    have : (coreE₂CohomologicalFin l).i₃ r pq =
-        (coreE₂CohomologicalFin l).i₃ r' pq := by
+    have : (coreE₂CohomologicalFin l).i₃ r pq = (coreE₂CohomologicalFin l).i₃ r' pq := by
       subst hrr'
       obtain ⟨p, q, hq⟩ := pq
       have h : l < q + r := by
@@ -355,8 +353,7 @@ instance {l : ℕ} (E : SpectralObject C (Fin (l + 1))) :
         simp only [ComplexShape.spectralSequenceFin_rel_iff, not_and, Prod.forall] at hpq
         exact hpq (p - r) ⟨l - 1 - t, by lia⟩ (by lia) (by lia)
       dsimp
-      rw [add_sub_cancel_right, Fin.clamp_eq_last _ _ (by lia),
-        Fin.clamp_eq_last _ _ (by lia)]
+      rw [add_sub_cancel_right, Fin.clamp_eq_last _ _ (by lia), Fin.clamp_eq_last _ _ (by lia)]
     have := isIso_homOfLE this
     apply E.isZero_H_map_mk₁_of_isIso
 
@@ -386,22 +383,18 @@ instance : Y.HasSpectralSequence coreE₂CohomologicalNat where
   isZero_H_obj_mk₁_i₀_le := by
     rintro r _ ⟨p, q⟩ hpq n rfl rfl hr
     apply isZero₁_of_isFirstQuadrant
-    dsimp
-    simp only [WithBotTop.coe_le_coe]
+    simp only [coreE₂CohomologicalNat_i₀, WithBotTop.coe_le_coe]
     by_contra!
     obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p + r by lia)
     obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + 1 - r by lia)
-    simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
     exact hpq ⟨p', q'⟩ (by constructor <;> lia)
   isZero_H_obj_mk₁_i₃_le := by
     rintro r _ ⟨p, q⟩ hpq n rfl rfl hr
     apply isZero₂_of_isFirstQuadrant
-    dsimp
-    simp only [WithBotTop.coe_lt_coe]
+    simp only [coreE₂CohomologicalNat_deg, coreE₂CohomologicalNat_i₃, WithBotTop.coe_lt_coe]
     by_contra!
     obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p - r by lia)
     obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q - 1 + r by lia)
-    simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
     exact hpq ⟨p', q'⟩ (by constructor <;> lia)
 
 end
@@ -433,22 +426,18 @@ instance : Y.HasSpectralSequence coreE₂HomologicalNat where
   isZero_H_obj_mk₁_i₀_le := by
     rintro r _ ⟨p, q⟩ hpq n rfl rfl hr
     apply isZero₂_of_isThirdQuadrant
-    dsimp
-    simp only [WithBotTop.coe_le_coe]
+    simp only [coreE₂HomologicalNat_i₀, coreE₂HomologicalNat_deg, WithBotTop.coe_le_coe]
     by_contra!
     obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p - r by lia)
     obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + r - 1 by lia)
-    simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
     exact hpq ⟨p', q'⟩ (by constructor <;> lia)
   isZero_H_obj_mk₁_i₃_le := by
     rintro r _ ⟨p, q⟩ hpq n rfl rfl hr
     apply isZero₁_of_isThirdQuadrant
-    dsimp
-    simp only [WithBotTop.coe_lt_coe]
+    simp only [coreE₂HomologicalNat_i₃, WithBotTop.coe_lt_coe]
     by_contra!
     obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p + r by lia)
     obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + 1 - r by lia)
-    simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
     exact hpq ⟨p', q'⟩ (by constructor <;> lia)
 
 end

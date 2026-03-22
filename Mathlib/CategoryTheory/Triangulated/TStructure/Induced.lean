@@ -19,7 +19,7 @@ If `P` is a triangulated subcategory of `C`, we introduce a typeclass
 
 In particular, we show that the triangulated subcategory `t.plus`
 of `t`-bounded above objects can be endowed with a t-structure `t.onPlus`,
-and the same applis to `t.minus` and `t.bounded`.
+and the same applies to `t.minus` and `t.bounded`.
 
 -/
 
@@ -37,6 +37,7 @@ namespace ObjectProperty
 
 /-- The property that a full subcategory of a pretriangulated category
 equipped with a t-structure can be endowed with an induced t-structure. -/
+@[mk_iff]
 class HasInducedTStructure [P.IsTriangulated] : Prop where
   exists_triangle_zero_one (A : C) (hA : P A) :
     ∃ (X Y : C) (_ : t.IsLE X 0) (_ : t.IsGE Y 1)
@@ -85,9 +86,9 @@ lemma HasInducedTStructure.mk' {P : ObjectProperty C} [P.IsTriangulated] {t : TS
     (h : ∀ (X : C) (_ : P X) (n : ℤ), P ((t.truncLE n).obj X) ∧ P ((t.truncGE n).obj X)) :
     P.HasInducedTStructure t where
   exists_triangle_zero_one X hX :=
-      ⟨_, _, inferInstance, inferInstance, _, _, _,
-        t.triangleLEGE_distinguished 0 1 (by lia) X,
-          P.le_isoClosure _ ((h X hX _).1), P.le_isoClosure _ ((h X hX _).2)⟩
+    ⟨_, _, inferInstance, inferInstance, _, _, _,
+      t.triangleLEGE_distinguished 0 1 (by lia) X,
+        P.le_isoClosure _ ((h X hX _).1), P.le_isoClosure _ ((h X hX _).2)⟩
 
 lemma mem_of_hasInductedTStructure (P : ObjectProperty C) [P.IsTriangulated] (t : TStructure C)
     [P.IsClosedUnderIsomorphisms] [P.HasInducedTStructure t]
@@ -111,13 +112,13 @@ instance (P P' : ObjectProperty C) [P.IsTriangulated] [P'.IsTriangulated] (t : T
     rintro X ⟨hX, hX'⟩ n
     exact
       ⟨⟨(P.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
-        (by dsimp; infer_instance) hX (by dsimp; infer_instance)).1,
-      (P'.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
-        (by dsimp; infer_instance) hX' (by dsimp; infer_instance)).1⟩,
-        ⟨(P.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by lia) X)
-        (n - 1) n (by lia) (by dsimp; infer_instance) hX (by dsimp; infer_instance)).2,
-      (P'.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by lia) X)
-        (n - 1) n (by lia) (by dsimp; infer_instance) hX' (by dsimp; infer_instance)).2⟩⟩)
+          (by dsimp; infer_instance) hX (by dsimp; infer_instance)).1,
+        (P'.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
+          (by dsimp; infer_instance) hX' (by dsimp; infer_instance)).1⟩,
+          ⟨(P.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by lia) X)
+          (n - 1) n (by lia) (by dsimp; infer_instance) hX (by dsimp; infer_instance)).2,
+        (P'.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by lia) X)
+          (n - 1) n (by lia) (by dsimp; infer_instance) hX' (by dsimp; infer_instance)).2⟩⟩)
 
 end ObjectProperty
 
