@@ -149,16 +149,14 @@ lemma globalDimension_eq_iSup_loclization_maximal [Small.{v} R] [IsNoetherianRin
   · simp only [globalDimension_eq_sup_projectiveDimension_finite, iSup_le_iff]
     intro M fin
     simp only [M.projectiveDimension_eq_iSup_localizedModule_maximal, iSup_le_iff]
-    intro p
-    exact le_trans (le_iSup _ (M.localizedModule p.asIdeal.primeCompl))
-      (le_iSup (fun (p : MaximalSpectrum R) ↦ globalDimension (Localization.AtPrime p.asIdeal)) p)
+    exact fun m ↦ (le_iSup _ (M.localizedModule m.asIdeal.primeCompl)).trans
+      (le_iSup (fun (p : MaximalSpectrum R) ↦ globalDimension (Localization.AtPrime p.asIdeal)) m)
   · simp only [iSup_le_iff, globalDimension]
     intro p Mp
     let _ : Module R Mp := Module.compHom Mp (algebraMap R (Localization.AtPrime p.1))
     have : IsScalarTower R (Localization.AtPrime p.1) Mp := IsScalarTower.of_compHom _ _ _
     apply (le_trans _ (ModuleCat.projectiveDimension_le_projectiveDimension_of_isLocalizedModule
-      p.1.primeCompl (ModuleCat.of R Mp))).trans
-      (le_iSup (fun (M : ModuleCat.{v} R) ↦ projectiveDimension M) (ModuleCat.of R Mp))
+      p.1.primeCompl (ModuleCat.of R Mp))).trans (le_iSup _ (ModuleCat.of R Mp))
     let _ := isLocalizedModule_id p.1.primeCompl Mp (Localization.AtPrime p.1)
     exact le_of_eq (projectiveDimension_eq_of_iso (LinearEquiv.extendScalarsOfIsLocalization
       p.1.primeCompl (Localization.AtPrime p.1) (IsLocalizedModule.linearEquiv p.1.primeCompl
