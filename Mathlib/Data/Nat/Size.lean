@@ -17,18 +17,22 @@ namespace Nat
 
 theorem shiftLeft_eq_mul_pow (m) : ∀ n, m <<< n = m * 2 ^ n := shiftLeft_eq _
 
-theorem shiftLeft'_tt_eq_mul_pow (m) : ∀ n, shiftLeft' true m n + 1 = (m + 1) * 2 ^ n
+theorem shiftLeft'_true_eq_mul_pow (m) : ∀ n, shiftLeft' true m n + 1 = (m + 1) * 2 ^ n
   | 0 => by simp [shiftLeft', Nat.pow_zero]
   | k + 1 => by
     rw [shiftLeft', bit_val, Bool.toNat_true, Nat.add_assoc, ← Nat.mul_add_one,
-      shiftLeft'_tt_eq_mul_pow m k, Nat.mul_left_comm, Nat.mul_comm 2, Nat.pow_succ]
+      shiftLeft'_true_eq_mul_pow m k, Nat.mul_left_comm, Nat.mul_comm 2, Nat.pow_succ]
+
+@[deprecated (since := "2026-03-22")] alias shiftLeft'_tt_eq_mul_pow := shiftLeft'_true_eq_mul_pow
 
 theorem shiftLeft'_ne_zero_left (b) {m} (h : m ≠ 0) (n) : shiftLeft' b m n ≠ 0 := by
   induction n <;> simp [shiftLeft', *]
 
-theorem shiftLeft'_tt_ne_zero (m) : ∀ {n}, (n ≠ 0) → shiftLeft' true m n ≠ 0
+theorem shiftLeft'_true_ne_zero (m) : ∀ {n}, (n ≠ 0) → shiftLeft' true m n ≠ 0
   | 0, h => absurd rfl h
-  | succ _, _ => by dsimp [shiftLeft', bit]; lia
+  | succ _, _ => by simp [shiftLeft', bit]
+
+@[deprecated (since := "2026-03-22")] alias shiftLeft'_tt_ne_zero := shiftLeft'_true_ne_zero
 
 /-! ### `size` -/
 
@@ -56,7 +60,7 @@ theorem size_shiftLeft' {b m n} (h : shiftLeft' b m n ≠ 0) :
     rw [s0] at h ⊢
     cases b; · exact absurd rfl h
     have : shiftLeft' true m n + 1 = 1 := congr_arg (· + 1) s0
-    rw [shiftLeft'_tt_eq_mul_pow] at this
+    rw [shiftLeft'_true_eq_mul_pow] at this
     obtain rfl := succ.inj (eq_one_of_dvd_one ⟨_, this.symm⟩)
     simp only [Nat.zero_add, Nat.one_mul, Nat.pow_eq_one, succ_ne_self, false_or] at this
     rw [this, Nat.add_zero]
