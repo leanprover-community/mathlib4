@@ -26,6 +26,3 @@ instance : SymmGraphLike α (α × α) (SimpleGraph α) where
   snd_mem_of_darts _ := Set.mem_univ _
 
 lemma SimpleGraph.darts_def (G : SimpleGraph α) : GraphLike.darts G = { (u, v) | G.Adj u v } := rfl
-
-@[grind =]
-lemma SimpleGraph.adj_def (G : SimpleGraph α) (u v : α) : Adj G u v ↔ G.Adj u v := Iff.rfl

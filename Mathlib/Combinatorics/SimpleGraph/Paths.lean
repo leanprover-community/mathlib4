@@ -924,7 +924,7 @@ variable {p : Walk G u v}
 protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
     (p.transfer H hp).IsPath := by
   induction p with
-  | nil => simp
+  | nil => simp [Walk.transfer]
   | cons _ _ ih =>
     simp only [Walk.transfer, cons_isPath_iff, support_transfer _] at pp ⊢
     exact ⟨ih _ pp.1, pp.2⟩

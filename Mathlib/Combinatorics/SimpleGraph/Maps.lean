@@ -215,6 +215,7 @@ abbrev induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
 variable {G} in
 lemma induce_adj {s : Set V} {u v : s} : (G.induce s).Adj u v ↔ G.Adj u v := .rfl
 
+/-- Convert a step in a graph to a step in the induced subgraph. -/
 def stepInduce {s : Set V} {u v : s} (h : step G u.val v) : step (G.induce s) u v :=
   ⟨(u, v), induce_adj.mpr h.adj, rfl, rfl⟩
 

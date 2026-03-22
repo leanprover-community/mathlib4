@@ -189,7 +189,7 @@ instance : Subsingleton (step G u v) where
     obtain rfl := Prod.ext h1 h2
     exact Subtype.ext rfl
 
-@[simp] lemma Adj.toStep_adj (h : Adj G u v) : (h.toStep).adj = h := rfl
+lemma Adj.toStep_adj (h : Adj G u v) : (h.toStep).adj = h := rfl
 
 @[simp]
 lemma exists_step_iff_adj {P : (step G u v) → Prop} :

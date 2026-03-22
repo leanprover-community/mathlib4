@@ -138,6 +138,7 @@ end mapLe
 
 /-! ### Transferring between graphs -/
 
+/-- Convert a step in a graph to a step in a subgraph. -/
 protected def _root_.GraphLike.step.transfer (s : step G u v) (H : SimpleGraph V)
     (h : s(u, v) ∈ H.edgeSet) : step H u v :=
   ⟨s.val, by simpa using h, s.prop.2.1, s.prop.2.2⟩
@@ -147,7 +148,7 @@ lemma step.transfer_inv (s : step G u v) (H : SimpleGraph V) (h : s(u, v) ∈ H.
     (s.transfer H h).inv = s.inv.transfer H (Sym2.eq_swap ▸ h) := by simp
 
 /-- The walk `p` transferred to lie in `H`, given that `H` contains its edges. -/
-@[simp]
+-- @[simp]
 protected def transfer {u v : V} (p : Walk G u v)
     (H : SimpleGraph V) (h : ∀ e, e ∈ p.edges → e ∈ H.edgeSet) : Walk H u v :=
   match p with
@@ -156,45 +157,45 @@ protected def transfer {u v : V} (p : Walk G u v)
     cons (s.transfer H (h _ (by simp))) (p.transfer H fun e he => h e (by simp [he]))
 
 theorem transfer_self : p.transfer G p.edges_subset_edgeSet = p := by
-  induction p <;> simp [*]
+  induction p <;> simp [*, Walk.transfer]
 
 variable {H : SimpleGraph V}
 
 theorem transfer_eq_map_ofLE (hp) (GH : G ≤ H) : p.transfer H hp = p.map (.ofLE GH) := by
-  induction p <;> simp [*]
+  induction p <;> simp [*, Walk.transfer]
 
 @[simp]
 theorem edges_transfer (hp) : (p.transfer H hp).edges = p.edges := by
-  induction p <;> simp [*]
+  induction p <;> simp [*, Walk.transfer]
 
 @[simp]
 theorem edgeSet_transfer (hp) : (p.transfer H hp).edgeSet = p.edgeSet := by ext; simp
 
 @[simp]
 theorem support_transfer (hp) : (p.transfer H hp).support = p.support := by
-  induction p <;> simp [*]
+  induction p <;> simp [*, Walk.transfer]
 
 @[simp]
 theorem length_transfer (hp) : (p.transfer H hp).length = p.length := by
-  induction p <;> simp [*]
+  induction p <;> simp [*, Walk.transfer]
 
 @[simp]
 theorem transfer_transfer (hp) {K : SimpleGraph V} (hp') :
     (p.transfer H hp).transfer K hp' = p.transfer K (p.edges_transfer hp ▸ hp') := by
-  induction p <;> simp [*]
+  induction p <;> simp [*, Walk.transfer]
 
 @[simp]
 theorem transfer_append {w : V} (q : Walk G v w) (hpq) :
     (p.append q).transfer H hpq =
       (p.transfer H fun e he => hpq _ (by simp [he])).append
         (q.transfer H fun e he => hpq _ (by simp [he])) := by
-  induction p <;> simp [*]
+  induction p <;> simp [*, Walk.transfer]
 
 @[simp]
 theorem reverse_transfer (hp) :
     (p.transfer H hp).reverse =
       p.reverse.transfer H (by simp only [edges_reverse, List.mem_reverse]; exact hp) := by
-  induction p <;> simp [*]
+  induction p <;> simp [*, Walk.transfer]
 
 /-! ### Inducing a walk -/
 
@@ -240,6 +241,7 @@ lemma map_induce_induceHomOfLE (hs : s ⊆ s') {u v : V} : ∀ (w : Walk G u v) 
 
 /-! ## Deleting edges -/
 
+/-- Convert a step in a graph to a step in a graph with edges deleted. -/
 abbrev _root_.GraphLike.step.toDeleteEdges (s : Set (Sym2 V)) (h : step G u v) (hp : s(u, v) ∉ s) :
     step (G.deleteEdges s) u v :=
   ⟨h.val, deleteEdges_adj.mpr ⟨h.prop.1, by simpa⟩, h.prop.2.1, h.prop.2.2⟩

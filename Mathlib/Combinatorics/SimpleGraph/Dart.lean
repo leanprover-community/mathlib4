@@ -23,15 +23,12 @@ variable {V : Type*} {G : SimpleGraph V} {d : V × V}
 
 namespace GraphLike
 
-@[simp]
 theorem fst_ne_snd_of_mem_darts (hd : d ∈ darts G) : d.fst ≠ d.snd :=
   fun h ↦ G.irrefl <| h ▸ (show G.Adj d.1 d.2 from adj_of_mem_darts hd)
 
-@[simp]
 theorem snd_ne_fst_of_mem_darts (hd : d ∈ darts G) : d.snd ≠ d.fst :=
   fun h ↦ G.irrefl <| h ▸ (show G.Adj d.1 d.2 from adj_of_mem_darts hd)
 
-@[simp]
 theorem step.ne {u v} (s : step G u v) : u ≠ v := by
   obtain ⟨d, hd, rfl, rfl⟩ := s
   exact fst_ne_snd_of_mem_darts hd
@@ -63,7 +60,7 @@ theorem dartOfNeighborSet_injective (v : V) : Function.Injective (G.dartOfNeighb
     injection h with h'
     convert congr_arg Prod.snd h'
 
-instance nonempty_darts_top [Nontrivial V] : (darts (⊤ : SimpleGraph V)).Nonempty := by
+lemma nonempty_darts_top [Nontrivial V] : (darts (⊤ : SimpleGraph V)).Nonempty := by
   obtain ⟨v, w, h⟩ := exists_pair_ne V
   exact ⟨(v, w), h⟩
 
