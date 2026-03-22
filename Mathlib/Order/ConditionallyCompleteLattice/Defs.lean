@@ -190,8 +190,7 @@ def conditionallyCompleteLatticeOfsInf (α : Type*) [H1 : PartialOrder α] [H2 :
 
 /-- A version of `conditionallyCompleteLatticeOfsSup` when we already know that `α` is a lattice.
 
-This should only be used when it is both hard and unnecessary to provide `sup` & `inf`
-explicitly. -/
+This should only be used when it is both hard and unnecessary to provide `sInf` explicitly. -/
 @[implicit_reducible]
 def conditionallyCompleteLatticeOfLatticeOfsSup (α : Type*) [H1 : Lattice α] [SupSet α]
     (isLUB_sSup : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (sSup s)) :
@@ -204,8 +203,7 @@ def conditionallyCompleteLatticeOfLatticeOfsSup (α : Type*) [H1 : Lattice α] [
 
 /-- A version of `conditionallyCompleteLatticeOfsInf` when we already know that `α` is a lattice.
 
-This should only be used when it is both hard and unnecessary to provide `sup` & `inf`
-explicitly. -/
+This should only be used when it is both hard and unnecessary to provide `sSup` explicitly. -/
 @[implicit_reducible]
 def conditionallyCompleteLatticeOfLatticeOfsInf (α : Type*) [H1 : Lattice α] [InfSet α]
     (isGLB_sInf : ∀ s : Set α, BddBelow s → s.Nonempty → IsGLB s (sInf s)) :
