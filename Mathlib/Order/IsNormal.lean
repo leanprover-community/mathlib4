@@ -203,10 +203,10 @@ protected theorem ext_iff [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : 
     convert hg.isLUB_image_Iio_of_isSuccLimit ha using 1
     aesop
 
-@[deprecated (since := "2026-03-22")] protected alias Order.IsNormal.ext := Order.IsNormal.ext_iff
+@[deprecated (since := "2026-03-22")] protected alias ext := IsNormal.ext_iff
 
 theorem exists_map_le_lt_map_succ_of_exists_ge [NoMaxOrder α] [OrderBot α] [WellFoundedLT β]
-    {f : α → β} {x : β} (hf : Order.IsNormal f) (hf' : ∃ y, x ≤ f y) (hx : f ⊥ ≤ x) :
+    {f : α → β} {x : β} (hf : IsNormal f) (hf' : ∃ y, x ≤ f y) (hx : f ⊥ ≤ x) :
     ∃ a, f a ≤ x ∧ x < f (succ a) := by
   have : Nonempty β := ⟨x⟩
   let := WellFoundedLT.toOrderBot β
@@ -217,12 +217,12 @@ theorem exists_map_le_lt_map_succ_of_exists_ge [NoMaxOrder α] [OrderBot α] [We
     ⟨y, fun z hz ↦ hf.strictMono.le_iff_le.1 <| hz.trans hy⟩
   refine ⟨sSup (f ⁻¹' Set.Iic x), ?_, ?_⟩
   · rw [hf.le_iff_le_sSup ⟨⊥, hx⟩ H]
-  · rw [← not_le, hf.le_iff_le_sSup ⟨⊥, hx⟩ H, not_le, Order.lt_succ_iff]
+  · rw [← not_le, hf.le_iff_le_sSup ⟨⊥, hx⟩ H, not_le, lt_succ_iff]
 
 /-- If `f : α → α`, we can infer one of the hypotheses in
 `exists_map_le_lt_map_succ_of_exists_ge`. -/
 theorem exists_map_le_lt_map_succ [NoMaxOrder α] [OrderBot α] {f : α → α} {x : α}
-    (hf : Order.IsNormal f) (hx : f ⊥ ≤ x) : ∃ a, f a ≤ x ∧ x < f (Order.succ a) :=
+    (hf : IsNormal f) (hx : f ⊥ ≤ x) : ∃ a, f a ≤ x ∧ x < f (succ a) :=
   exists_map_le_lt_map_succ_of_exists_ge hf ⟨x, hf.strictMono.le_apply⟩ hx
 
 end WellFoundedLT
