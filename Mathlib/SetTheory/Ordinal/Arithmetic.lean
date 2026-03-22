@@ -886,9 +886,9 @@ theorem div_eq_iff {a b c : Ordinal} (hb : b ≠ 0) : a / b = c ↔ b * c ≤ a 
   ⟨fun h ↦ h ▸ ⟨mul_div_le a b, lt_mul_succ_div a hb⟩, fun ⟨hle, hlt⟩ ↦ div_eq hle hlt⟩
 
 /-- Assumes `c ≠ 0` instead of `b ≠ 0` -/
-theorem div_eq_iff' {a b c : Ordinal} (hb : c ≠ 0) : a / b = c ↔ b * c ≤ a ∧ a < b * (c + 1) := by
+theorem div_eq_iff' {a b c : Ordinal} (hc : c ≠ 0) : a / b = c ↔ b * c ≤ a ∧ a < b * (c + 1) := by
   rcases eq_or_ne b 0 with (rfl | hb)
-  · simp [hb.symm]
+  · simp [hc.symm]
   exact div_eq_iff hb
 
 theorem div_eq_one_iff {a b : Ordinal} : a / b = 1 ↔ b ≤ a ∧ a < b * 2 := by
