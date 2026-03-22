@@ -33,18 +33,15 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I : Ideal R) :
     Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
     ∀ g : I →ₗ[R] M, ∃ g' : R →ₗ[R] M, ∀ (x : R) (mem : x ∈ I), g' x = g ⟨x, mem⟩ := by
-  let Sf := (Shrink.linearEquiv.{v} R R).symm.toLinearMap.comp
-    (I.subtype.comp (Shrink.linearEquiv.{v} R I).toLinearMap)
-  let Sg := (Shrink.linearEquiv.{v} R (R ⧸ I)).symm.toLinearMap.comp
-    ((Ideal.Quotient.mkₐ R I).toLinearMap.comp (Shrink.linearEquiv.{v} R R).toLinearMap)
+  let Sf := ((Shrink.linearEquiv.{v} R R).symm.toLinearMap.comp I.subtype).comp
+    (Shrink.linearEquiv.{v} R I).toLinearMap
+  let Sg := (Shrink.linearEquiv.{v} R (R ⧸ I)).symm.comp
+    (I.mkQ.comp (Shrink.linearEquiv.{v} R R).toLinearMap)
   have exac : Function.Exact Sf Sg := by
-    intro x
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, AlgHom.coe_toLinearMap,
-      Ideal.Quotient.mkₐ_eq_mk, Function.comp_apply, EmbeddingLike.map_eq_zero_iff,
-      Submodule.coe_subtype, Set.mem_range, Ideal.Quotient.eq_zero_iff_mem, Sg, Sf]
-    exact ⟨fun h ↦ ⟨(equivShrink I) ⟨_, h⟩, by simp⟩, fun ⟨y, hy⟩ ↦ by simp [← hy]⟩
+    rw [LinearEquiv.fst_comp_exact_iff_exact, LinearEquiv.comp_snd_exact_iff_exact,
+      LinearEquiv.conj_symm_exact_iff_exact, LinearMap.exact_iff, I.ker_mkQ, I.range_subtype]
   have inj : Function.Injective Sf := by simpa [Sf] using (Shrink.linearEquiv R I).injective
-  have surj : Function.Surjective Sg := by simpa [Sg] using Ideal.Quotient.mk_surjective
+  have surj : Function.Surjective Sg := by simpa [Sg] using I.mkQ_surjective
   let S := ModuleCat.shortComplexOfCompEqZero Sf Sg exac.linearMap_comp_eq_zero
   have S_exact := ModuleCat.shortComplex_shortExact S exac inj surj
   have : Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
@@ -108,15 +105,13 @@ lemma ext_subsingleton_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ
     ∀ N : ModuleCat.{v} R, Subsingleton (Ext N M n) := by
   match n with
   | 0 =>
-    let e₀ := (Shrink.linearEquiv R (R ⧸ (⊥ : Ideal R))).trans
-      (AlgEquiv.quotientBot R R).toLinearEquiv
+    let e₀ := (Shrink.linearEquiv R (R ⧸ (⊥ : Ideal R))).trans (Submodule.quotEquivOfEqBot _ rfl)
     have := (Ext.homEquiv₀.subsingleton_congr.mp (h ⊥))
     rw [ModuleCat.homAddEquiv.subsingleton_congr,
       ((e₀.congrLeft M R).trans (LinearMap.ringLmapEquivSelf R R M)).subsingleton_congr,
       ← ModuleCat.isZero_iff_subsingleton] at this
     intro N
-    rw [Ext.homEquiv₀.subsingleton_congr]
-    exact subsingleton_of_forall_eq 0 (fun y ↦ Limits.IsZero.eq_zero_of_tgt this y)
+    exact Ext.homEquiv₀.subsingleton_congr.mpr (subsingleton_of_forall_eq 0 this.eq_zero_of_tgt)
   | n + 1 => exact ext_subsingleton_of_quotients' M n  h
 
 end ModuleCat
