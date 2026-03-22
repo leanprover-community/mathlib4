@@ -58,3 +58,50 @@ theorem prod_inf_prod {S T : Subalgebra R A} {S₁ T₁ : Subalgebra R B} :
   SetLike.coe_injective Set.prod_inter_prod
 
 end Subalgebra
+
+namespace AlgHom
+
+variable {R A B C F G : Type*} [CommSemiring R]
+
+section Semiring
+
+variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
+  [FunLike F A C] [AlgHomClass F R A C] [FunLike G B C] [AlgHomClass G R B C]
+
+/-- The subalgebra of pairs `(a, b) : A × B` such that `f a = g b`, i.e.,
+  the pullback of f and g as a subalgebra of A × B. -/
+abbrev Pullback (f : F) (g : G) : Subalgebra R (A × B) := AlgHom.equalizer
+  ((f : A →ₐ[R] C).comp (AlgHom.fst R A B)) ((g : B →ₐ[R] C).comp (AlgHom.snd R A B))
+
+/-- The first projection from the pullback of `f` and `g` to `A`. -/
+abbrev pullbackFst (f : F) (g : G) : Pullback f g →ₐ[R] A :=
+  (AlgHom.fst R A B).comp (Pullback f g).val
+
+/-- The second projection from the pullback of `f` and `g` to `B`. -/
+abbrev pullbackSnd (f : F) (g : G) : Pullback f g →ₐ[R] B :=
+  (AlgHom.snd R A B).comp (Pullback f g).val
+
+end Semiring
+
+section Ring
+
+variable [Ring A] [Algebra R A] [Ring B] [Algebra R B] [Semiring C] [Algebra R C]
+  [FunLike F A C] [AlgHomClass F R A C] [FunLike G B C] [AlgHomClass G R B C]
+
+instance isLocalHom_pullbackFst (f : F) (g : G) [IsLocalHom g] : IsLocalHom (pullbackFst f g) :=
+  ⟨(RingHom.isLocalHom_pullbackFst f g).map_nonunit⟩
+
+instance isLocalHom_pullbackSnd (f : F) (g : G) [IsLocalHom f] : IsLocalHom (pullbackSnd f g) :=
+  ⟨(RingHom.isLocalHom_pullbackSnd f g).map_nonunit⟩
+
+theorem surjective_pullbackFst_of_surjective (f : F) (g : G) (h : Function.Surjective g) :
+    Function.Surjective (pullbackFst f g) :=
+  RingHom.surjective_pullbackFst_of_surjective (f : A →+* C) (g : B →+* C) h
+
+theorem surjective_pullbackSnd_of_surjective (f : F) (g : G) (h : Function.Surjective f) :
+    Function.Surjective (pullbackSnd f g) :=
+  RingHom.surjective_pullbackSnd_of_surjective (f : A →+* C) (g : B →+* C) h
+
+end Ring
+
+end AlgHom
