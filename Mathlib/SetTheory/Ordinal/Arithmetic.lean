@@ -892,7 +892,7 @@ theorem div_eq_iff' {a b c : Ordinal} (hb : c ≠ 0) : a / b = c ↔ b * c ≤ a
   exact div_eq_iff hb
 
 theorem div_eq_one_iff {a b : Ordinal} : a / b = 1 ↔ b ≤ a ∧ a < b * 2 := by
-  simp [div_eq_iff' one_ne_zero, mul_add, Ordinal.mul_two]
+  rw [div_eq_iff' one_ne_zero, mul_one, one_add_one_eq_two]
 
 @[simp]
 theorem div_one (a : Ordinal) : a / 1 = a := by
