@@ -184,11 +184,10 @@ def renameLatinRectangle
       ext
       simp
     rw [h_comp]
-    apply Function.Injective.comp
-    · exact (Equiv.bijective h).1
-    · apply Function.Injective.comp
-      · exact h'
-      · exact (Equiv.bijective f.symm).1,
+    exact Function.Injective.comp 
+      (Equiv.bijective h).1 
+      (Function.Injective.comp h' 
+      (Equiv.bijective f.symm).1)
   m_le_n := by
     have ineq := A.m_le_n
     have f' : Fintype.card m = Fintype.card m' := Fintype.card_congr f
@@ -275,7 +274,7 @@ lemma sum_card_eq_sum_card_fiber_biUnion
         (t := s.biUnion B)
       unfold Finset.bipartiteAbove Finset.bipartiteBelow r at g
       have hB : ∀ j ∈ s, {b ∈ s.biUnion B | b ∈ B j} = B j := by grind
-      have hB' : ∀ b, ({a ∈ s | b ∈ B a} : Finset ι) = ({j | j ∈ s ∧ b ∈ B j} : Finset ι) := by 
+      have hB' : ∀ b, ({a ∈ s | b ∈ B a} : Finset ι) = ({j | j ∈ s ∧ b ∈ B j} : Finset ι) := by
         grind
       rw [Finset.sum_congr rfl (fun j hj => by rw [hB j hj])] at g
       simp [hB', g]
