@@ -816,8 +816,6 @@ lemma Hom.iUnion_support_ker_openCover_map_comp
 lemma ker_morphismRestrict_ideal (f : X.Hom Y) [QuasiCompact f]
     (U : Y.Opens) (V : U.toScheme.affineOpens) :
     (f ∣_ U).ker.ideal V = f.ker.ideal ⟨U.ι ''ᵁ V, V.2.image_of_isOpenImmersion _⟩ := by
-  have inst : QuasiCompact (f ∣_ U) := MorphismProperty.of_isPullback
-      (isPullback_morphismRestrict _ _).flip inferInstance
   ext x
   simpa [Scheme.Hom.appLE] using map_eq_zero_iff _
     (ConcreteCategory.bijective_of_isIso

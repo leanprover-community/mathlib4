@@ -459,7 +459,6 @@ theorem arg_cos_add_sin_mul_I_eq_toIocMod (θ : ℝ) :
     arg (cos θ + sin θ * I) = toIocMod Real.two_pi_pos (-π) θ := by
   rw [← one_mul (_ + _), ← ofReal_one, arg_mul_cos_add_sin_mul_I_eq_toIocMod zero_lt_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem arg_mul_cos_add_sin_mul_I_sub {r : ℝ} (hr : 0 < r) (θ : ℝ) :
     arg (r * (cos θ + sin θ * I)) - θ = 2 * π * ⌊(π - θ) / (2 * π)⌋ := by
   rw [arg_mul_cos_add_sin_mul_I_eq_toIocMod hr, toIocMod_sub_self, toIocDiv_eq_neg_floor,
