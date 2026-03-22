@@ -473,42 +473,45 @@ lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
     le_inf (I.corootSubmodule_le hα) LieSubmodule.map_incl_le)
   intro x ⟨hxI, hxH⟩
   let f : H.root → LieIdeal K H := fun α ↦ corootSpace α.1
-  set S_I := ⨆ α ∈ I.rootSet, f α
-  set S_c := ⨆ (β : H.root) (_ : β ∉ I.rootSet), f β
-  have h_top : S_I ⊔ S_c = ⊤ := by
-    rw [show S_I ⊔ S_c = ⨆ α, f α from (iSup_split f (· ∈ I.rootSet)).symm, eq_top_iff,
+  set span_I_roots := ⨆ α ∈ I.rootSet, f α
+  set span_compl_roots := ⨆ (β : H.root) (_ : β ∉ I.rootSet), f β
+  have h_top : span_I_roots ⊔ span_compl_roots = ⊤ := by
+    rw [show span_I_roots ⊔ span_compl_roots = ⨆ α, f α from
+      (iSup_split f (· ∈ I.rootSet)).symm, eq_top_iff,
       ← biSup_corootSpace_eq_top (K := K) (L := L)]
     exact iSup₂_le fun α hα ↦
       le_iSup_of_le ⟨α, by simpa [LieSubalgebra.root] using hα⟩ le_rfl
-  have hS_I_incl : LieSubmodule.map H.toLieSubmodule.incl S_I =
+  have hspan_I_roots_incl : LieSubmodule.map H.toLieSubmodule.incl span_I_roots =
       ⨆ α ∈ I.rootSet, corootSubmodule α.1 := by
     change LieSubmodule.map _ (⨆ α ∈ I.rootSet, f α) = ⨆ α ∈ I.rootSet, _
     simp_rw [LieSubmodule.map_iSup]; rfl
-  have hS_c_ker (μ : H.root) (hμ : μ ∈ I.rootSet) : S_c.toSubmodule ≤ μ.1.ker := by
-    rw [show S_c.toSubmodule = ⨆ β ∉ I.rootSet, (f β).toSubmodule from by
-      simp_rw [S_c, LieSubmodule.iSup_toSubmodule]]
+  have hspan_compl_roots_ker (μ : H.root) (hμ : μ ∈ I.rootSet) :
+      span_compl_roots.toSubmodule ≤ μ.1.ker := by
+    rw [show span_compl_roots.toSubmodule = ⨆ β ∉ I.rootSet, (f β).toSubmodule from by
+      simp_rw [span_compl_roots, LieSubmodule.iSup_toSubmodule]]
     exact iSup₂_le fun γ hγ ↦
       (coe_corootSpace_eq_span_singleton (K := K) (L := L) (H := H) _).symm ▸
         Submodule.span_le.mpr (by simp [Set.singleton_subset_iff,
           rootSet_apply_coroot_eq_zero I hμ hγ])
   obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp
-    (show (⟨x, hxH⟩ : H) ∈ S_I ⊔ S_c from h_top ▸ trivial)
+    (show (⟨x, hxH⟩ : H) ∈ span_I_roots ⊔ span_compl_roots from h_top ▸ trivial)
   have hab_val : a + b = x := congr_arg Subtype.val hab
   have haI : (a : L) ∈ I :=
     (iSup₂_le (fun _ hα ↦ I.corootSubmodule_le hα) :
-      ⨆ α ∈ I.rootSet, corootSubmodule α.1 ≤ _) (hS_I_incl ▸ LieSubmodule.mem_map_of_mem ha)
+      ⨆ α ∈ I.rootSet, corootSubmodule α.1 ≤ _)
+      (hspan_I_roots_incl ▸ LieSubmodule.mem_map_of_mem ha)
   have hbI : (b : L) ∈ I := by
     rw [show (b : L) = x - a from by rw [← hab_val, add_sub_cancel_left]]
     exact I.toSubmodule.sub_mem hxI haI
   suffices b = 0 by
     subst this; simp only [add_zero] at hab; subst hab
-    exact hS_I_incl ▸ LieSubmodule.mem_map_of_mem ha
+    exact hspan_I_roots_incl ▸ LieSubmodule.mem_map_of_mem ha
   suffices b ∈ ⨅ α : Weight K H L, α.ker by simpa [iInf_ker_weight_eq_bot] using this
   refine (Submodule.mem_iInf _).mpr fun μ ↦ ?_
   by_cases hμ : μ.IsNonZero
   · have hμ_root : μ ∈ H.root := by simpa [LieSubalgebra.root] using hμ
     by_cases hμI : (⟨μ, hμ_root⟩ : H.root) ∈ I.rootSet
-    · exact hS_c_ker ⟨μ, hμ_root⟩ hμI hb
+    · exact hspan_compl_roots_ker ⟨μ, hμ_root⟩ hμI hb
     · exact weight_apply_eq_zero_of_not_mem_rootSet I hbI hμI
   · simp only [Weight.IsNonZero, not_not] at hμ
     exact LinearMap.mem_ker.mpr (congr_fun hμ b)
