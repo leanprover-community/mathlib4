@@ -970,6 +970,11 @@ theorem hasDerivWithinAt_of_continuousOn_interval {I : Set ℝ} [I.OrdConnected]
     (h.stronglyMeasurableAtFilter_nhdsWithin (Set.OrdConnected.measurableSet ‹_›) x)
     (h.continuousWithinAt hx)
 
+theorem hasDerivAt_integral_of_continuousOn_open_interval {I : Set ℝ} [I.OrdConnected] {t₀ t : ℝ}
+    (hI : IsOpen I) {f : ℝ → ℝ} (hf : ContinuousOn f I) (ht₀ : t₀ ∈ I) (ht : t ∈ I) :
+    HasDerivAt (fun x ↦  ∫ u in t₀..x, f u) (f t) t :=
+  (hasDerivWithinAt_of_continuousOn_interval hf ht₀ ht).hasDerivAt (hI.mem_nhds ht)
+
 end FTC1
 
 /-!

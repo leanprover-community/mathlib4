@@ -195,7 +195,7 @@ theorem second_deriv_eq_orientedCurvature_times_normal (hI : IsOpen I) (hc₁ : 
 
 /-- Auxiliary lemma: If `c` is a twice continuously differentiable plane curve on an interval `I`,
 then the normal has a derivative at every point of `I`. -/
-lemma normal_hasDerivAt_aux (hI : IsOpen I) (hc : ContDiffOn ℝ 2 c I) (ht : t ∈ I) :
+lemma _root_.HasDerivAt.normal (hI : IsOpen I) (hc : ContDiffOn ℝ 2 c I) (ht : t ∈ I) :
     HasDerivAt (normal c) (deriv (normal c) t) t := by
   have hd : ContDiffOn ℝ 1 (deriv c) I := hc.deriv_of_isOpen hI (by norm_num)
   have hD : DifferentiableOn ℝ (deriv c) I := hd.differentiableOn (by norm_num)
@@ -225,6 +225,21 @@ theorem inner_of_deriv_normal_normal_of_unit_speed_eq_zero (hI : IsOpen I)
   inner_of_deriv_curve_eq_zero_of_const_magnitude_curve hI (by fun_prop (disch := assumption))
     (fun _ ht ↦  norm_normal_eq_one_of_unit_speed hc₂ ht) ht
 
+theorem inner_deriv_deriv_normal_eq_minus_orientedCurvature (hI : IsOpen I)
+    (hc₁ : ContDiffOn ℝ 2 c I) (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
+    inner ℝ (deriv c t) (deriv (normal c) t) = - orientedCurvature c t := by
+  rw [← add_eq_zero_iff_eq_neg', add_comm]
+  symm
+  have hci : Set.EqOn (fun x ↦ inner ℝ (normal c x) (deriv c x)) (fun x ↦ 0) I := by
+    intro x hx
+    simp only
+    rw [real_inner_comm, inner_of_velocity_normal_eq_zero c x]
+  rw [← inners_sum_eq_zero_of_const_inner_on_open hI ht (HasDerivAt.normal hI hc₁ ht)
+      (velocity_hasDerivAt_aux hI hc₁ ht) hci, second_deriv_eq_orientedCurvature_times_normal hI hc₁
+      hc₂ ht, real_inner_comm, inner_smul_left_eq_smul]
+  simp only [inner_self_eq_norm_sq_to_K, norm_normal_eq_one_of_unit_speed hc₂ ht,
+    RCLike.ofReal_real_eq_id, id_eq, one_pow, smul_eq_mul, mul_one, add_comm, real_inner_comm]
+
 /-- The second Frenet equation for plane curves: For any twice continously differentiable plane
 curve parametrized by arc-length (i.e., with unit speed), the derivative of the normal vector is
 equal to minus the curvature times the velocity vector (first derivative). -/
@@ -236,26 +251,7 @@ theorem deriv_normal_eq_minus_orientedCurvature_times_deriv (hI : IsOpen I)
             Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one,
             neg_smul, real_inner_comm (deriv (normal c) t) (normal c t),
             inner_of_deriv_normal_normal_of_unit_speed_eq_zero hI hc₁ hc₂ ht]
-  have h : inner ℝ (deriv c t) (deriv (normal c) t) = - orientedCurvature c t := by
-    have h' : inner ℝ (deriv c t) (deriv (normal c) t) + orientedCurvature c t = 0 := by
-      symm
-      have hci : Set.EqOn (fun x ↦ inner ℝ (normal c x) (deriv c x)) (fun x ↦ 0) I := by
-        intro x hx
-        simp only
-        rw [real_inner_comm, inner_of_velocity_normal_eq_zero c x]
-      calc
-        (0 : ℝ) = (orientedCurvature c t)•(inner ℝ (normal c t) (normal c t))
-                  + inner ℝ (deriv (normal c) t) (deriv c t) := by
-          rw [← inners_sum_eq_zero_of_const_inner_on_open hI ht (normal_hasDerivAt_aux hI hc₁ ht)
-                (velocity_hasDerivAt_aux hI hc₁ ht) hci,
-              second_deriv_eq_orientedCurvature_times_normal hI hc₁ hc₂ ht,
-              real_inner_comm, inner_smul_left_eq_smul]
-        _ = inner ℝ (deriv c t) (deriv (normal c) t) + (orientedCurvature c t) := by
-          simp only [inner_self_eq_norm_sq_to_K, norm_normal_eq_one_of_unit_speed hc₂ ht,
-                     RCLike.ofReal_real_eq_id, id_eq, one_pow, smul_eq_mul,
-                     mul_one, add_comm, real_inner_comm]
-    linarith [h']
-  simp [h]
+  simp [inner_deriv_deriv_normal_eq_minus_orientedCurvature hI hc₁ hc₂ ht]
 
 /-- This is the plane curve we construct in the fundamental theorem of plane curves, given curvature
 function κ, initial position p₀ at time t₀ and initial velocity vector condition given by an angle
@@ -267,28 +263,19 @@ def initialCurve_of_orientedCurvature (κ : ℝ → ℝ) (t₀ : ℝ) (p₀ : Eu
               p₀ 1 + ∫τ in t₀..t, Real.sin (θ₀ + ∫ξ in t₀..τ, κ ξ)]
 
 variable {κ : ℝ → ℝ} {t₀ : ℝ} (θ₀ : ℝ) (p₀ : EuclideanSpace ℝ (Fin 2)) {t : ℝ}
-
-section
-
-variable [hIoC : I.OrdConnected]
+  [hIoC : I.OrdConnected]
 
 /-- Auxiliary lemma which says that the angle function (fun x ↦ θ₀ + ∫ξ in t₀..x, κ ξ) is continuous
 on the interval I. -/
 @[fun_prop]
 lemma continuousOn_angle_fun_aux (hI : IsOpen I) (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) :
     ContinuousOn (fun x ↦ θ₀ + ∫ (ξ : ℝ) in t₀..x, κ ξ) I := by
-  have h₁ : ContinuousOn (fun x ↦ θ₀) I := continuousOn_const
-  have h₂ : ContinuousOn (fun x ↦ ∫ (ξ : ℝ) in t₀..x, κ ξ) I := by
+  have h : ContinuousOn (fun x ↦ ∫ (ξ : ℝ) in t₀..x, κ ξ) I := by
     obtain ⟨ε, hε_pos, hε⟩ : ∃ ε > 0, Metric.ball t₀ ε ⊆ I := Metric.isOpen_iff.mp hI t₀ ht₀
     intro x hx
-    have hd : HasDerivAt (fun x ↦  ∫ ξ in t₀..x, κ ξ) (κ x) x := by
-      apply_rules [intervalIntegral.integral_hasDerivAt_right]
-      · apply_rules [ContinuousOn.intervalIntegrable, hκ]
-        exact hκ.mono (hIoC.uIcc_subset ht₀ hx)
-      · exact ContinuousOn.stronglyMeasurableAtFilter hI hκ x hx
-      · exact hκ.continuousAt (hI.mem_nhds hx)
-    exact hd.continuousAt.continuousWithinAt
-  exact h₁.add h₂
+    exact (intervalIntegral.hasDerivAt_integral_of_continuousOn_open_interval
+           hI hκ ht₀ hx).continuousAt.continuousWithinAt
+  fun_prop
 
 protected lemma _root_.HasDerivAt.initialCurve_of_orientedCurvature (hI : IsOpen I)
     (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) (ht : t ∈ I) :
@@ -575,7 +562,5 @@ theorem initialCurve_of_orientedCurvature_is_unique (hI : IsOpen I) (hκ : Conti
     (hα₁.differentiableOn (by norm_num)) (fun s hs ↦  eq_euclidean_plane_vectors
     (by linarith [left_eq_zero_of_sum_sq_eq_zero (hh hs), f])
     (by linarith [right_eq_zero_of_sum_sq_eq_zero (hh hs), g])) ht₀ (by simp [hc₄, α, hα₄])
-
-end
 
 end PlaneCurve
