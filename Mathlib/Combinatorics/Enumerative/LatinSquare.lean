@@ -134,15 +134,9 @@ lemma latin_square_col_implies_latin_rectangle_col
   specialize h₂ j
   exact h₂.1
 
-/-- A LatinSquare is an n × n array containing exactly n symbols,
-    each occurring exactly once in each row and exactly once in each column. -/
-class LatinSquare (n : Type*) (α : Type*) [Fintype n] [Fintype α] [DecidableEq α]
-  extends LatinRectangle n n α where
-  /-- Each column contains each symbol exactly once. -/
-  once_per_column : OncePerColumn M
-  /-- If each column contains each symbol exactly once, then there are no repeats across columns. -/
-  distinct_col_entries := latin_square_col_implies_latin_rectangle_col M once_per_column
-  m_le_n := by rfl
+/-- A LatinSquare is a Square LatinRectangle -/
+abbrev LatinSquare (n : Type*) [Fintype n] (α : Type*) [Fintype α] [DecidableEq α] := 
+  LatinRectangle n n α
 
 /-- An example of a 5 × 5 Latin rectangle with entries in Fin 5. -/
 example : LatinRectangle (Fin 5) (Fin 5) (Fin 5) := LatinRectangle.mk (fun x y ↦ ((x + y) : Fin 5))
@@ -154,59 +148,39 @@ instance {m : Type*} {n : Type*} {α : Type*} [Fintype m]
   Coe (LatinRectangle m n α) (Matrix m n α) where
   coe A := A.M
 
-instance {n : Type*} {α : Type*}
-  [Fintype n] [Fintype α] [DecidableEq α] :
-  Coe (LatinSquare n α) (LatinRectangle n n α) where
-  coe := fun A => A.toLatinRectangle
-
 /-- Get a specific column of the LatinRectangle. -/
 abbrev col (A : LatinRectangle m n α) : n → m → α := Matrix.col A
 
 /-- Get a specific row of the LatinRectangle. -/
 abbrev row (A : LatinRectangle m n α) : m → n → α := Matrix.row A
 
-/-- An n × n Latin rectangle is a Latin square. -/
+/-- Alernative constructor for LatinSquares using the OncePerColumn property -/
 @[reducible]
-def toLatinSquare : (LatinRectangle n n α) → (LatinSquare n α)
-  | A => {
-      M := A.M,
-      exactly_n_symbols := A.exactly_n_symbols,
-      once_per_row := A.once_per_row,
-      m_le_n := A.m_le_n,
-      once_per_column j :=
-        Fintype.bijective_iff_injective_and_card _ |>.mpr
-          ⟨A.distinct_col_entries j, A.exactly_n_symbols.symm⟩
-      }
-
-instance : Coe (LatinRectangle n n α) (LatinSquare n α) where
-  coe := toLatinSquare
-
-theorem lr_as_ls_as_lr_is_eq (A : LatinRectangle n n α) :
-    ((A : LatinSquare n α) : LatinRectangle n n α) = A := by
-  simp[LatinSquare.toLatinRectangle]
-
-theorem ls_as_lr_as_ls_is_eq (A : LatinSquare n α) :
-    ((A : LatinRectangle n n α) : LatinSquare n α) = A := by
-  simp[toLatinSquare]
-
-instance {n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [ToString α] :
-    Repr (LatinSquare (Fin n) α) where
-    reprPrec L prec := Repr.reprPrec L.toLatinRectangle prec
-
+def LatinSquareFromOncePerColumn
+  [Fintype n] [Fintype α] [DecidableEq α]
+    (M : Matrix n n α)
+    (exactly_n_symbols : Fintype.card α = Fintype.card n)
+    (once_per_row : OncePerRow M)
+    (once_per_column : OncePerColumn M) : LatinSquare n α := {
+    M := M,
+    exactly_n_symbols := exactly_n_symbols,
+    once_per_row := once_per_row,
+    distinct_col_entries := latin_square_col_implies_latin_rectangle_col M once_per_column
+  } 
+  
 /-- Every Finite Group's Cayley table is an example of a Latin Square. -/
 @[to_additive /-- Every Additive Finite Group's Cayley table is an example of a Latin Square -/,
   reducible]
 def groupToCayleyTable (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
-  LatinSquare G G := {
-    M := fun i j ↦ i * j,
-    exactly_n_symbols := by rfl,
-    once_per_row := by
+  LatinSquare G G := LatinSquareFromOncePerColumn 
+    (M := fun i j ↦ i * j)
+    (exactly_n_symbols := by rfl)
+    (once_per_row := by
       simp only [OncePerRow, Matrix.row]
-      exact Group.mulLeft_bijective (G := G),
-    once_per_column := by
+      exact Group.mulLeft_bijective (G := G))
+    (once_per_column := by
       simp only [OncePerColumn, Matrix.col]
-      exact Group.mulRight_bijective (G := G)
-   }
+      exact Group.mulRight_bijective (G := G))
 
 
 @[expose] public section Equivalence
