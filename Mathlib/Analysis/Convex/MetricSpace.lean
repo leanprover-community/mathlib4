@@ -40,7 +40,7 @@ variable (X) in
 Concretely, we ask for `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)`,
 which is what one would expect from the triangle inequality.
 
-In particular, convex subsets of affine spaces are convex metric spaces. -/
+In particular, convex subsets of normed affine spaces are convex metric spaces. -/
 class IsConvexMetricSpace : Prop where
   /-- Use `dist_convexCombination_map_le` instead. -/
   dist_convexCombination_map_le' (f : StdSimplex ℝ ℕ) (x y : ℕ → X) :
