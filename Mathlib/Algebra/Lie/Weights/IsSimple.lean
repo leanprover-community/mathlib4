@@ -484,27 +484,35 @@ lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
   have h_top : S_I ⊔ S_c = ⊤ := by
     rw [show S_I ⊔ S_c = ⨆ α, f α from (iSup_split f (· ∈ I.rootSet)).symm,
       iSup_corootSpace_root_eq_top]
-  obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp
-    (show (⟨x, hxH⟩ : H) ∈ S_I ⊔ S_c from h_top ▸ trivial)
-  have hab' : (a : L) + (b : L) = x := congr_arg Subtype.val hab
-  have h_map : LieSubmodule.map H.toLieSubmodule.incl S_I =
+  have hS_I_map : LieSubmodule.map H.toLieSubmodule.incl S_I =
       ⨆ α ∈ I.rootSet, corootSubmodule α.1 := by
     change LieSubmodule.map H.toLieSubmodule.incl (⨆ α ∈ I.rootSet, f α) =
       ⨆ α ∈ I.rootSet, LieSubmodule.map H.toLieSubmodule.incl (f α)
     simp_rw [LieSubmodule.map_iSup]
+  have hS_c_le_ker (μ : H.root) (hμI : μ ∈ I.rootSet) :
+      S_c.toSubmodule ≤ (↑μ : Weight K H L).ker := by
+    rw [show S_c.toSubmodule = ⨆ β ∉ I.rootSet, (f β).toSubmodule from by
+      simp_rw [S_c, LieSubmodule.iSup_toSubmodule]]
+    exact iSup₂_le fun γ hγ ↦
+      (coe_corootSpace_eq_span_singleton (K := K) (L := L) (H := H) _).symm ▸
+        Submodule.span_le.mpr (by
+          simp [Set.singleton_subset_iff, rootSet_apply_coroot_eq_zero I hμI hγ])
+  obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp
+    (show (⟨x, hxH⟩ : H) ∈ S_I ⊔ S_c from h_top ▸ trivial)
+  have hab' : (a : L) + (b : L) = x := congr_arg Subtype.val hab
   have haI : (a : L) ∈ I :=
     (iSup₂_le (fun _ hα ↦ I.corootSubmodule_le hα) : ⨆ α ∈ I.rootSet, corootSubmodule α.1 ≤ _)
-      (h_map ▸ LieSubmodule.mem_map_of_mem ha)
+      (hS_I_map ▸ LieSubmodule.mem_map_of_mem ha)
   have hbI : (b : L) ∈ I := by
     rw [show (b : L) = x - a from by rw [← hab', add_sub_cancel_left]]
     exact I.toSubmodule.sub_mem hxI haI
   have h_vanish_inside : ∀ (μ : H.root), μ ∈ I.rootSet → (↑μ : Weight K H L) b = 0 :=
-    sorry -- μ vanishes on each coroot outside I, so on all of S_c
+    fun μ hμI ↦ hS_c_le_ker μ hμI hb
   have h_vanish_outside : ∀ (μ : H.root), μ ∉ I.rootSet → (↑μ : Weight K H L) b = 0 :=
     fun μ hμ ↦ weight_apply_eq_zero_of_not_mem_rootSet I hbI hμ
   suffices b = 0 by
     subst this; simp only [add_zero] at hab; subst hab
-    sorry -- conclude: a ∈ S_I maps to target
+    exact hS_I_map ▸ LieSubmodule.mem_map_of_mem ha
   suffices b ∈ ⨅ α : Weight K H L, α.ker by simpa [iInf_ker_weight_eq_bot] using this
   refine (Submodule.mem_iInf _).mpr fun μ ↦ ?_
   by_cases hμ : μ.IsNonZero
