@@ -76,15 +76,14 @@ section CompatibleDerivations
 variable {A' : Type*} [CommRing A'] [Algebra R A'] [Algebra A A'] [IsScalarTower R A A']
 
 variable (R A A') in
-/-- Let $\sigma: A \to A'$ be a an homomorphism. A derivation $d:A \to A$ and a derivation
-$d':A\to A'$ are called compatible if $d'\circ \sigma = \sigma \circ d$. Couples of derivations
+/-- Let `σ : A → A'` be a an homomorphism. A derivation `d : A → A` and a derivation
+`d' : A' → A'` are called compatible if `d' ∘ σ = σ ∘ d`. Couples of derivations
 with this property form a Lie subalgebra of all couples of derivations. -/
-def Compatible : LieSubalgebra R  ((Derivation R A' A') × (Derivation R A A)) where
-  carrier := { x | (x.fst).compAlgebraMapL R A A' A'
-    = (Algebra.ofId A A').toLinearMap.compDer (x.snd) }
-  add_mem' {x y} hx hy  := by simp at hx hy; simp [hx,hy]
+def couple : LieSubalgebra R  (Derivation R A' A' × Derivation R A A) where
+  carrier := { x | x.fst.compAlgebraMapL R A A' A' = (Algebra.ofId A A').toLinearMap.compDer x.snd }
+  add_mem' := by simp_all
   zero_mem' := by simp
-  smul_mem'  c x h := by simp at h; simp [h]
+  smul_mem' := by simp_all
   lie_mem' {x y} hx hy := by
     have hxx (a : A) := congrArg (fun f => f a) hx
     have hyy (a : A) := congrArg (fun f => f a) hy
@@ -94,7 +93,7 @@ def Compatible : LieSubalgebra R  ((Derivation R A' A') × (Derivation R A A)) w
 
 namespace Compatible
 lemma mem (x : (Derivation R A' A') × (Derivation R A A)) :
-    x ∈ (Compatible R A A') ↔ x.1 ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ x.2 := by
+    x ∈ couple R A A' ↔ x.1 ∘ Algebra.ofId A A' = Algebra.ofId A A' ∘ x.2 := by
   constructor
   · intro hx; ext a; exact congrArg (· a) hx
   · intro hx; ext a; exact congrArg (· a) hx
@@ -117,13 +116,6 @@ lemma apply (x : Compatible R A A') (a : A) :
 end Compatible
 
 end CompatibleDerivations
-
-
-
-
-
-
-
 
 end LieStructures
 
