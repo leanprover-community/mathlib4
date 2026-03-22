@@ -22,7 +22,7 @@ when the ideal `I` is finitely generated.
 
 * `AdicCompletion.OfValEqZero`: Given `x` in `AdicCompletion I M` projecting to zero
   in `M / I ^ n • M`, `OfValEqZero` constructs the corresponding element in
-  the adic completion of `I ^ m • M`.
+  the adic completion of `I ^ n • M`.
 
 ## Main results
 
