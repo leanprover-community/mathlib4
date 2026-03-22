@@ -542,7 +542,7 @@ noncomputable def spectralSequencePageSc'Iso (r : ℤ) (hr : r₀ ≤ r) (pq pq'
         (homOfLE (by simpa only [← data.hc₁₃ r pq' pq'' hpq', data.hc₀₂ r pq pq' hpq]
           using data.le₁₂ pq')) (homOfLE (data.le₀₁ r pq))
         (homOfLE (data.le₁₂ pq)) (homOfLE (data.le₂₃ r pq))
-        n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄  :=
+        n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄ :=
   SpectralSequence.shortComplexIso _ _ _ hr _ _ _ hpq hpq' _ _ _ _ _ _ _ _ _ hn₂'
 
 section
