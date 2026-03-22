@@ -7,12 +7,16 @@ module
 
 public import Mathlib.Probability.BrownianMotion.GaussianProjectiveFamily
 public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Def
+public import Mathlib.Probability.Process.Filtration
 
 import Mathlib.Probability.Distributions.Gaussian.CharFun
 import Mathlib.Probability.Distributions.Gaussian.Fernique
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
 import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Basic
 import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Independence
+import Mathlib.Probability.Independence.BoundedContinuousFunction
+import Mathlib.Probability.Independence.Integration
+import Mathlib.Probability.Independence.ZeroOne
 
 /-!
 # Brownian motion
@@ -52,10 +56,103 @@ pre-Brownian motion, Brownian motion, Markov property
 
 @[expose] public section
 
-open MeasureTheory
+open MeasureTheory Filtration MeasurableSpace Filter
 open scoped ENNReal NNReal Topology
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {B X : ℝ≥0 → Ω → ℝ} {P : Measure Ω}
+
+section Aux
+
+open ProbabilityTheory
+
+lemma MeasurableSpace.comap_process {Ω T : Type*} {𝓧 : T → Type*} [∀ t, MeasurableSpace (𝓧 t)]
+    (X : (t : T) → Ω → 𝓧 t) :
+    MeasurableSpace.comap (fun ω t ↦ X t ω) MeasurableSpace.pi =
+      ⨆ t, MeasurableSpace.comap (X t) inferInstance := by
+  simp_rw [MeasurableSpace.pi, MeasurableSpace.comap_iSup, MeasurableSpace.comap_comp]
+  rfl
+
+lemma MeasurableSpace.comap_le_comap
+    {Ω 𝓧 𝓨 : Type*} [m𝓧 : MeasurableSpace 𝓧] [m𝓨 : MeasurableSpace 𝓨]
+    {X : Ω → 𝓧} {Y : Ω → 𝓨} (f : 𝓧 → 𝓨) (hf : Measurable f) (h : Y = f ∘ X) :
+    m𝓨.comap Y ≤ m𝓧.comap X := by
+  rw [h, ← MeasurableSpace.comap_comp]
+  exact MeasurableSpace.comap_mono hf.comap_le
+
+lemma MeasureTheory.Filtration.natural_eq_comap {Ω ι : Type*} {m : MeasurableSpace Ω}
+    {β : ι → Type*} [(i : ι) → TopologicalSpace (β i)]
+    [∀ (i : ι), TopologicalSpace.MetrizableSpace (β i)]
+    [mβ : (i : ι) → MeasurableSpace (β i)] [∀ (i : ι), BorelSpace (β i)] [Preorder ι]
+    (u : (i : ι) → Ω → β i)
+    (hum : ∀ (i : ι), StronglyMeasurable (u i)) (i : ι) :
+    Filtration.natural u hum i = .comap (fun ω (j : Set.Iic i) ↦ u j ω) inferInstance := by
+  simp_rw [Filtration.natural, comap_process, iSup_subtype']
+  rfl
+
+lemma ProbabilityTheory.measure_eq_zero_or_one_of_indep_self {Ω : Type*} {m mΩ : MeasurableSpace Ω}
+    {P : Measure Ω} [IsZeroOrProbabilityMeasure P]
+    (hm1 : m ≤ mΩ) (hm2 : Indep m m P) {A : Set Ω} (hA : MeasurableSet[m] A) :
+    P A = 0 ∨ P A = 1 := by
+  rw [Indep_iff_IndepSets, indepSets_iff_singleton_indepSets] at hm2
+  replace hm2 := indepSets_iff_singleton_indepSets.1 (hm2 A hA).symm A hA
+  exact measure_eq_zero_or_one_of_indepSet_self <|
+    (indepSet_iff_indepSets_singleton (hm1 A hA) (hm1 A hA) P).2 hm2
+
+lemma MeasurableSpace.generateFrom_singleton_eq_comap_indicator_one {Ω : Type*} {A : Set Ω} :
+    MeasurableSpace.generateFrom {A} =
+      MeasurableSpace.comap (A.indicator (1 : Ω → ℝ)) inferInstance := by
+  refine le_antisymm (MeasurableSpace.generateFrom_le fun s hs ↦ ?_)
+    (Measurable.comap_le ?_)
+  · simp only [Set.mem_singleton_iff] at hs
+    rw [hs, ← measurable_indicator_const_iff (1 : ℝ)]
+    exact comap_measurable _
+  · apply (measurable_indicator_const_iff 1).2 ?_
+    exact MeasurableSpace.measurableSet_generateFrom (by simp)
+
+lemma ProbabilityTheory.singleton_indepSets_comap_iff {Ω : Type*} {mΩ : MeasurableSpace Ω}
+    {P : Measure Ω} [IsZeroOrProbabilityMeasure P] {𝓧 : Type*}
+    {m𝓧 : MeasurableSpace 𝓧} {A : Set Ω} {X : Ω → 𝓧} (hX : Measurable X) (hA : MeasurableSet A) :
+    IndepSets {A} {s | MeasurableSet[m𝓧.comap X] s} P ↔
+      (A.indicator (1 : Ω → ℝ)) ⟂ᵢ[P] X := by
+  rw [IndepFun_iff_Indep, ← generateFrom_singleton_eq_comap_indicator_one]
+  constructor
+  · exact IndepSets.indep (generateFrom_le (by simpa)) hX.comap_le (by simp [IsPiSystem])
+      (@MeasurableSpace.isPiSystem_measurableSet _ (m𝓧.comap X)) rfl (by simp)
+  · refine fun h ↦ Indep.indepSets ?_
+    convert h
+    simp
+
+lemma IndepSets.setIntegral_eq_mul {Ω 𝓧 : Type*} {mΩ : MeasurableSpace Ω}
+    {μ : Measure Ω} [m𝓧 : MeasurableSpace 𝓧] {X : Ω → 𝓧} [IsZeroOrProbabilityMeasure μ]
+    {f : 𝓧 → ℝ} {A : Set Ω} (hA1 : IndepSets {A} {s | MeasurableSet[m𝓧.comap X] s} μ)
+    (hX : Measurable X) (hA2 : MeasurableSet A)
+    (hf : AEStronglyMeasurable f (μ.map X)) :
+    ∫ ω in A, f (X ω) ∂μ = μ.real A * ∫ ω, f (X ω) ∂μ :=
+  calc ∫ ω in A, f (X ω) ∂μ
+    = ∫ ω, id (A.indicator 1 ω) * f (X ω) ∂μ := by
+        rw [← integral_indicator hA2]
+        congr with ω
+        by_cases hω : ω ∈ A <;> simp [hω]
+  _ = μ.real A * ∫ ω, f (X ω) ∂μ := by
+    rw [IndepFun.integral_fun_comp_mul_comp]
+    · simp [integral_indicator_one hA2]
+    · exact (singleton_indepSets_comap_iff hX hA2).1 hA1
+    · exact (aemeasurable_indicator_const_iff 1).2 hA2.nullMeasurableSet
+    · exact hX.aemeasurable
+    · fun_prop
+    · exact hf
+
+lemma Indep.singleton_indepSets {Ω : Type*} {m1 m2 mΩ : MeasurableSpace Ω}
+    {P : Measure Ω} (h : Indep m1 m2 P) {A : Set Ω}
+    (hA : MeasurableSet[m1] A) : IndepSets {A} {s | MeasurableSet[m2] s} P := by
+  have := (Indep_iff_IndepSets m1 m2 P).1 h
+  apply indepSets_of_indepSets_of_le_left this
+  simpa
+
+lemma measurableSpace_le_iff {Ω : Type*} {m1 m2 : MeasurableSpace Ω} :
+    m1 ≤ m2 ↔ ∀ s, MeasurableSet[m1] s → MeasurableSet[m2] s := by aesop
+
+end Aux
 
 namespace ProbabilityTheory
 
@@ -257,5 +354,111 @@ lemma IsBrownian.tendsto_nhds_zero (hB : IsBrownian B P) :
   exact h2.symm
 
 end IsBrownian
+
+variable (mB : ∀ t, Measurable (B t))
+
+local notation "𝓕" => natural B (fun t ↦ Measurable.stronglyMeasurable (mB t))
+
+/-- **Blumenthal's zero-one law**: Let `𝓕` be the canonical filtration associated to a Brownian
+motion. Then the `σ`-algebra `⨅ s > 0, 𝓕 s` is trivial. -/
+lemma IsBrownian.indep_zero (hB : IsBrownian B P) (mB : ∀ t, Measurable (B t))
+    (cB : ∀ ω, Continuous (B · ω)) {A : Set Ω}
+    (hA : MeasurableSet[⨅ s > 0, 𝓕 s] A) :
+    P A = 0 ∨ P A = 1 := by
+  have := hB.isGaussianProcess.isProbabilityMeasure
+  -- We consider three different `σ`-algebras. `m1` is the one generated by the process `B`.
+  let m1 : MeasurableSpace Ω := .comap (fun ω t ↦ B t ω) inferInstance
+  -- `m2` is the one generated by the restriction of `B` to positive real numbers.
+  let m2 : MeasurableSpace Ω := .comap (fun ω (t : Set.Ioi (0 : ℝ≥0)) ↦ B t ω) inferInstance
+  -- `m3` is `⨅ s > 0, 𝓕 s`, which we want to show to be trivial.
+  set m3 : MeasurableSpace Ω := ⨅ s > 0, 𝓕 s
+-- We easily have that `m3 ≤ m1 ≤ mΩ`.
+  have hm1 : m1 ≤ mΩ := by
+    apply Measurable.comap_le
+    apply @measurable_pi_lambda _ _ _ mΩ
+    exact mB
+  have hm3 : m3 ≤ m1 := by
+    apply iInf₂_le_of_le 1 (by simp)
+    rw [natural_eq_comap]
+    exact comap_le_comap (fun x t ↦ x t.1) (by fun_prop) (by grind)
+  have hm3' := hm3.trans hm1
+  -- Because `B` is continuous, `B t ⟶ B 0` as `t → 0⁺`, thus
+  -- the random variable `B 0` is actually measurable with respect to `m2`, so `m1 ≤ m2`.
+  have : m1 ≤ m2 := by
+    simp_rw [m1, m2, comap_process]
+    rw [iSup_split_single _ 0, sup_le_iff]
+    constructor; swap
+    · simp_rw [← pos_iff_ne_zero, iSup_subtype, Set.mem_Ioi]
+      rfl
+    rw [← measurable_iff_comap_le]
+    have : NeBot ((𝓝[≠] (0 : ℝ≥0)).comap ((↑) : Set.Ioi (0 : ℝ≥0) → ℝ≥0)) := by
+      refine comap_coe_neBot_of_le_principal <| le_principal_iff.2 ?_
+      convert self_mem_nhdsWithin
+      ext; simp [pos_iff_ne_zero]
+    refine @measurable_of_tendsto_metrizable' _ _ (iSup _) _ _ _ _ _ _ _ _ this _
+      (fun t ↦ (comap_measurable _).iSup' t) ?_
+    refine Filter.tendsto_comap'_iff ?_ |>.2
+      (tendsto_pi_nhds.2 fun ω ↦ continuousAt_iff_punctured_nhds.1 (cB ω).continuousAt)
+    convert self_mem_nhdsWithin
+    ext; simp [pos_iff_ne_zero]
+  -- We prove the result by showing that `m3` is independent of itself.
+  refine measure_eq_zero_or_one_of_indep_self hm3' ?_ hA
+  -- To do so, we show that for all `A ∈ m3`, all finite sets `I ⊆ (0, +∞)` and all
+  -- bounded continuous functions `f : (I → ℝ) → ℝ`,
+  -- `∫ ω in A, f (fun t ↦ B t) ∂P = P.real A * ∫ ω, f (fun t ↦ B t) ∂P`.
+  refine indep_of_indep_of_le_right ?_ (hm3.trans this)
+  refine indep_comap_process_of_bcf hm3' (fun _ ↦ (mB _).aemeasurable) fun A hA I f ↦ ?_
+  -- If `I` is empty, there is nothing to do.
+  obtain rfl | hI := I.eq_empty_or_nonempty
+  · have : Subsingleton ((∅ : Finset (Set.Ioi (0 : ℝ≥0))) → ℝ) := inferInstance
+    simp [this.eq_zero]
+  -- We now assume `I` is not empty. We then prove that for all `ε > 0` such that `ε ≤ min I`,
+  -- `∫ ω in A, f (fun t ↦ B t ω - B ε ω) ∂P = P.real A * ∫ ω, f (fun t ↦ B t ω - B ε ω) ∂P`.
+  -- This follows from the fact that, because `A ∈ m3` in particular `A` is measurable
+  -- with respect to `σ(B t | t ≤ ε)`. This `σ`-algebra is independent from
+  -- `σ(B (ε + t) - B ε | t ≥ 0)` by the weak Markov property.
+  have key1 (ε : ℝ≥0) (hε1 : 0 < ε) (hε2 : ε ≤ I.min' hI) :
+      ∫ ω in A, f (fun t ↦ B t ω - B ε ω) ∂P = P.real A * ∫ ω, f (fun t ↦ B t ω - B ε ω) ∂P := by
+    rw [IndepSets.setIntegral_eq_mul _ (by fun_prop) (hm3' A hA) (by fun_prop)]
+    refine indepSets_of_indepSets_of_le_right
+      (Indep.singleton_indepSets ((IndepFun_iff_Indep _ _ _).1 (hB.indepFun_shift ε)).symm ?_) ?_
+    · suffices m3 ≤ .comap (fun ω (t : Set.Iic ε) ↦ B t ω) MeasurableSpace.pi from this A hA
+      apply iInf₂_le_of_le ε hε1
+      rw [natural_eq_comap]
+    simp only [Set.setOf_subset_setOf, ← measurableSpace_le_iff]
+    apply comap_le_comap (fun x t ↦ x (t.1 - ε)) (by fun_prop)
+    ext ω t
+    simp only [Function.comp_apply, sub_left_inj]
+    rw [add_tsub_cancel_of_le (hε2.trans (I.min'_le t.1 t.2))]
+  -- Because `f` is continuous and `B t ⟶ 0` almost surely as `t → 0`,
+  -- we deduce that almost surely `f (fun t ↦ B t - B ε) ⟶ f (fun t ↦ B t)` as `t → 0`.
+  have key2 : ∀ᵐ ω ∂P, Tendsto (fun ε ↦ f (fun t ↦ B t ω - B ε ω)) (𝓝[>] 0)
+      (𝓝 (f (fun t ↦ B t ω))) := by
+    filter_upwards [hB.tendsto_nhds_zero] with ω hω
+    refine f.continuous.tendsto _ |>.comp (tendsto_pi_nhds.2 fun t ↦ ?_)
+    convert (tendsto_nhdsWithin_of_tendsto_nhds hω).const_sub (B t ω)
+    simp
+  -- Because `f` is also bounded, we can apply the dominated convergence theorem to show that
+  -- `∫ ω in A, f (fun t ↦ B t ω - B ε ω) ∂P ⟶ ∫ ω in A, f (fun t ↦ B t ω) ∂P`
+  -- as `ε → 0⁺`.
+  have h1 : Tendsto (fun ε ↦ ∫ ω in A, f (fun t ↦ B t ω - B ε ω) ∂P) (𝓝[>] 0)
+      (𝓝 (∫ ω in A, f (fun t ↦ B t ω) ∂P)) := by
+    refine tendsto_integral_filter_of_dominated_convergence (fun _ ↦ ‖f‖) ?_ ?_
+      (integrable_const _) (ae_restrict_of_ae key2)
+    · exact .of_forall fun _ ↦ Measurable.aestronglyMeasurable (by fun_prop)
+    · exact .of_forall fun _ ↦ ae_of_all _ fun _ ↦ f.norm_coe_le_norm _
+  -- But similarly we have that
+  -- `P.real A * ∫ ω, f (fun t ↦ B t ω - B ε ω) ∂P ⟶ P.real A * ∫ ω in A, f (fun t ↦ B t ω) ∂P`
+  -- as `ε → 0⁺`, and we can conclude by uniqueness of the limit.
+  refine tendsto_nhds_unique h1 ?_
+  refine Tendsto.congr' (f₁ := fun ε ↦ P.real A * ∫ ω, f (fun t ↦ B t ω - B ε ω) ∂P) ?_ ?_
+  · apply sets_of_superset _ (Ioc_mem_nhdsGT (I.min' hI).2)
+    rintro ε ⟨h1, h2⟩
+    exact (key1 ε h1 h2).symm
+  refine Filter.Tendsto.const_mul (b := P.real A) ?_
+  refine tendsto_integral_filter_of_dominated_convergence (fun _ ↦ ‖f‖) ?_ ?_
+    (integrable_const _) key2
+  · exact .of_forall fun _ ↦ Measurable.aestronglyMeasurable (by fun_prop)
+  · exact .of_forall fun _ ↦ ae_of_all _ fun _ ↦ f.norm_coe_le_norm _
 
 end ProbabilityTheory
