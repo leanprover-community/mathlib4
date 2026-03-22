@@ -487,7 +487,14 @@ lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
   obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp
     (show (⟨x, hxH⟩ : H) ∈ S_I ⊔ S_c from h_top ▸ trivial)
   have hab' : (a : L) + (b : L) = x := congr_arg Subtype.val hab
-  have haI : (a : L) ∈ I := sorry
+  have h_map : LieSubmodule.map H.toLieSubmodule.incl S_I =
+      ⨆ α ∈ I.rootSet, corootSubmodule α.1 := by
+    change LieSubmodule.map H.toLieSubmodule.incl (⨆ α ∈ I.rootSet, f α) =
+      ⨆ α ∈ I.rootSet, LieSubmodule.map H.toLieSubmodule.incl (f α)
+    simp_rw [LieSubmodule.map_iSup]
+  have haI : (a : L) ∈ I :=
+    (iSup₂_le (fun _ hα ↦ I.corootSubmodule_le hα) : ⨆ α ∈ I.rootSet, corootSubmodule α.1 ≤ _)
+      (h_map ▸ LieSubmodule.mem_map_of_mem ha)
   have hbI : (b : L) ∈ I := by
     rw [show (b : L) = x - a from by rw [← hab', add_sub_cancel_left]]
     exact I.toSubmodule.sub_mem hxI haI
@@ -496,7 +503,7 @@ lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
   have h_vanish_outside : ∀ (μ : H.root), μ ∉ I.rootSet → (↑μ : Weight K H L) b = 0 :=
     fun μ hμ ↦ weight_apply_eq_zero_of_not_mem_rootSet I hbI hμ
   suffices b = 0 by
-    subst this; simp at hab; subst hab
+    subst this; simp only [add_zero] at hab; subst hab
     sorry -- conclude: a ∈ S_I maps to target
   suffices b ∈ ⨅ α : Weight K H L, α.ker by simpa [iInf_ker_weight_eq_bot] using this
   refine (Submodule.mem_iInf _).mpr fun μ ↦ ?_
