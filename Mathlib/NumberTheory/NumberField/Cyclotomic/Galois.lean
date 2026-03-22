@@ -90,8 +90,8 @@ section stabilizer
 
 open Pointwise MulAction Ideal
 
-variable (p : ℕ) [hp : Fact (Nat.Prime p)] (P : Ideal (𝓞 K)) [hP₁ : P.IsMaximal]
-    [hP₂ : P.LiesOver (Ideal.span {(p : ℤ)})] (hn : p.Coprime n)
+variable (p : ℕ) [hp : Fact (Nat.Prime p)] (P : Ideal (𝓞 K)) [P.IsMaximal]
+  [P.LiesOver (Ideal.span {(p : ℤ)})] (hn : p.Coprime n)
 
 attribute [local instance] Ideal.Quotient.field
 
@@ -105,7 +105,8 @@ theorem mem_zpowers_galEquivZMod_of_mem_stabilizer {σ : Gal(K/ℚ)} (hσ : σ �
   obtain ⟨i, hi⟩ := FiniteField.exists_forall_apply_eq_pow (ℤ ⧸ span {(p : ℤ)}) p (𝓞 K⧸ P) τ
   refine ⟨i, ?_⟩
   have h₀ : IsPrimitiveRoot (Ideal.Quotient.mk P hζ.toInteger) n := by
-    refine hζ.toInteger_isPrimitiveRoot.idealQuotient_mk (by simpa using IsMaximal.ne_top hP₁) ?_
+    refine hζ.toInteger_isPrimitiveRoot.idealQuotient_mk
+      (by simpa using IsMaximal.ne_top inferInstance) ?_
     rw [Ideal.absNorm_eq_pow_inertiaDeg' _ hp.out]
     exact Nat.Coprime.pow_left _ hn
   have h₁ := IsFractionRing.stabilizerHom_apply_apply_mk Gal(K/ℚ) (Ideal.span {(p : ℤ)}) P
@@ -123,7 +124,7 @@ theorem galEquivZMod_stabilizer :
       Subgroup.zpowers (ZMod.unitOfCoprime p hn) := by
   classical
   have : IsGalois ℚ K := IsCyclotomicExtension.isGalois {n} ℚ K
-  rw [SetLike.ext'_iff]
+  apply SetLike.ext'
   refine Set.eq_of_subset_of_card_le ?_ ?_
   · rintro _ ⟨σ, hσ, rfl⟩
     exact mem_zpowers_galEquivZMod_of_mem_stabilizer n K p P hn hσ

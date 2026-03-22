@@ -145,14 +145,12 @@ noncomputable def algEquivExtension (l : Type*) [Field l] [Algebra k l]
 include p in
 theorem exists_forall_apply_eq_pow (l : Type*) [Field l] [Algebra k l] [Finite l] (g : Gal(l/k)) :
     ∃ i, ∀ x, g x = x ^ (Nat.card k ^ i) := by
-  obtain ⟨n, hn⟩ : ∃ n, Module.finrank k l = n := exists_eq'
-  have : NeZero n := hn ▸ NeZero.of_pos Module.finrank_pos
-  let τ := (algEquivExtension k p n l hn).symm.trans (g.trans (algEquivExtension k p n l hn))
-  obtain ⟨i, _, hi⟩ := Extension.exists_frob_pow_eq k p n τ
+  let n := Module.finrank k l
+  have : NeZero n := NeZero.of_pos Module.finrank_pos
+  obtain ⟨i, _, hi⟩ := Extension.exists_frob_pow_eq k p n <|
+    (algEquivExtension k p n l rfl).symm.trans (g.trans (algEquivExtension k p n l rfl))
   refine ⟨i, fun x ↦ ?_⟩
-  convert (AlgEquiv.congr_arg (f := (algEquivExtension k p n l hn).symm) <|
-    AlgEquiv.congr_fun hi (algEquivExtension k p n l hn x)).symm
-  · simp [τ]
-  · simp
+  simpa using (AlgEquiv.congr_arg (f := (algEquivExtension k p n l rfl).symm) <|
+    AlgEquiv.congr_fun hi (algEquivExtension k p n l rfl x)).symm
 
 end FiniteField
