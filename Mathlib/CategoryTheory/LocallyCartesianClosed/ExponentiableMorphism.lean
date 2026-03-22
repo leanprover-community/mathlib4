@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 
 We define an exponentiable morphism `f : I ⟶ J` to be a morphism with a functorial choice of
 pullbacks, given by `ChosenPullbacksAlong f`, together with a right adjoint to
-the pullback functor `ChosenPullbacksAlong.pulback f : Over J ⥤ Over I`. We call this right adjoint
+the pullback functor `ChosenPullbacksAlong.pullback f : Over J ⥤ Over I`. We call this right adjoint
 the pushforward functor along `f`.
 
 ## Main results
@@ -134,10 +134,12 @@ theorem pushforward_curry_uncurry {X : Over I} {A : Over J} (v : A ⟶ (pushforw
     pushforwardCurry (pushforwardUncurry v) = v :=
   pullbackPushforwardAdj f |>.homEquiv A X |>.right_inv v
 
+set_option backward.isDefEq.respectTransparency false in
 instance : ChosenPullbacksAlong (Over.mk f).hom := by
   dsimp only [Over.mk_hom]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance OverMkHom : ExponentiableMorphism (Over.mk f).hom := by
   dsimp only [Over.mk_hom]
   infer_instance
@@ -147,12 +149,13 @@ end
 section
 
 /-- The identity morphisms `𝟙 _` are exponentiable. -/
+@[implicit_reducible]
 def id (I : C) [ChosenPullbacksAlong (𝟙 I)] : ExponentiableMorphism (𝟙 I) :=
   ⟨𝟭 _, ofNatIsoLeft (F := 𝟭 _) Adjunction.id (pullbackId I).symm⟩
 
 theorem id_pushforward (I : C) [ChosenPullbacksAlong (𝟙 I)] :
     (id I).pushforward = 𝟭 (Over I) := by
-  dsimp only [id]
+  dsimp +instances only [id]
 
 /-- Any pushforward of the identity morphism is naturally isomorphic to the identity functor. -/
 def pushforwardId (I : C) [ChosenPullbacksAlong (𝟙 I)] [ExponentiableMorphism (𝟙 I)] :
@@ -175,6 +178,7 @@ theorem pushforwardId_hom_counit (I : C) [ChosenPullbacksAlong (𝟙 I)]
   rw [pushforwardId, Adjunction.rightAdjointUniq_hom_counit]
 
 /-- The composition of exponentiable morphisms is exponentiable. -/
+@[implicit_reducible]
 def comp {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
     [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
     [ExponentiableMorphism f] [ExponentiableMorphism g] :
@@ -187,7 +191,7 @@ theorem comp_pushforward {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
     [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
     [ExponentiableMorphism f] [ExponentiableMorphism g] :
     (comp f g).pushforward = pushforward f ⋙ pushforward g := by
-  dsimp only [comp]
+  dsimp +instances only [comp]
 
 /-- The natural isomorphism between pushforward of the composition and the composition of
 pushforward functors. -/

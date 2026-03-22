@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Aesop
 public import Mathlib.Order.BoundedOrder.Lattice
 
 /-!

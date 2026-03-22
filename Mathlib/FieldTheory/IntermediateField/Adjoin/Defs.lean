@@ -150,9 +150,12 @@ theorem sup_toSubfield (S T : IntermediateField F E) :
   exact Set.mem_union_left _ (algebraMap_mem S x)
 
 @[simp, norm_cast]
-theorem coe_sInf (S : Set (IntermediateField F E)) : (↑(sInf S) : Set E) =
-    sInf ((fun (x : IntermediateField F E) => (x : Set E)) '' S) :=
-  rfl
+theorem coe_sInf (S : Set (IntermediateField F E)) : (↑(sInf S) : Set E) = ⋂ s ∈ S, ↑s :=
+  show sInf ((fun (x : IntermediateField F E) => (x : Set E)) '' S) = ⋂ s ∈ S, ↑s by simp
+
+@[simp, grind =]
+theorem mem_sInf {S : Set (IntermediateField F E)} {x : E} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
+  simpa only [Set.mem_iInter] using Set.ext_iff.1 (coe_sInf S) x
 
 @[simp]
 theorem sInf_toSubalgebra (S : Set (IntermediateField F E)) :
@@ -200,7 +203,7 @@ theorem iSup_toSubfield {ι : Sort*} [Nonempty ι] (S : ι → IntermediateField
 
 variable (F E)
 
-/-- The bottom intermediate_field is isomorphic to the field. -/
+/-- The bottom `IntermediateField` is isomorphic to the field. -/
 noncomputable def botEquiv : (⊥ : IntermediateField F E) ≃ₐ[F] F :=
   (Subalgebra.equivOfEq _ _ bot_toSubalgebra).trans (Algebra.botEquiv F E)
 
@@ -469,11 +472,7 @@ theorem restrictScalars_adjoin_of_algEquiv
     (adjoin L S).restrictScalars F = (adjoin L' S).restrictScalars F := by
   apply_fun toSubfield using (fun K K' h ↦ by
     ext x; change x ∈ K.toSubfield ↔ x ∈ K'.toSubfield; rw [h])
-  change Subfield.closure _ = Subfield.closure _
-  congr
-  ext x
-  exact ⟨fun ⟨y, h⟩ ↦ ⟨i y, by rw [← h, hi]; rfl⟩,
-    fun ⟨y, h⟩ ↦ ⟨i.symm y, by rw [← h, hi, Function.comp_apply, AlgEquiv.apply_symm_apply]⟩⟩
+  simp [hi]
 
 @[elab_as_elim]
 theorem adjoin_induction {s : Set E} {p : ∀ x ∈ adjoin F s, Prop}
@@ -565,6 +564,13 @@ theorem AdjoinSimple.coe_gen : (AdjoinSimple.gen F α : E) = α :=
 
 theorem AdjoinSimple.algebraMap_gen : algebraMap F⟮α⟯ E (AdjoinSimple.gen F α) = α :=
   rfl
+
+-- Note: After unfolding `AdjoinSimple.gen`, the simp lemma `coe_aeval_mk_apply`
+-- does not fire, so we have to add this.
+@[simp]
+theorem AdjoinSimple.coe_aeval_gen_apply (f : F[X]) :
+    aeval (AdjoinSimple.gen F α) f = aeval α f :=
+  Polynomial.coe_aeval_mk_apply ..
 
 theorem adjoin_simple_adjoin_simple (β : E) : F⟮α⟯⟮β⟯.restrictScalars F = F⟮α, β⟯ :=
   adjoin_adjoin_left _ _ _

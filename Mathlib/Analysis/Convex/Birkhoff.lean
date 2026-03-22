@@ -142,6 +142,7 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
   intro σ'
   split <;> simp [add_nonneg, hw, hM.1]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If M is a doubly stochastic matrix, then it is a convex combination of permutation matrices. Note
 `doublyStochastic_eq_convexHull_permMatrix` shows `doublyStochastic n` is exactly the convex hull of
@@ -160,6 +161,7 @@ lemma exists_eq_sum_perm_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R 
     rw [sum_row_of_mem_doublyStochastic hM]
   simpa [sum_comm (γ := n), Equiv.toPEquiv_apply] using this
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 **Birkhoff's theorem**
 The set of doubly stochastic matrices is the convex hull of the permutation matrices.  Note
@@ -176,6 +178,7 @@ theorem doublyStochastic_eq_convexHull_permMatrix :
     obtain ⟨w, hw1, hw2, hw3⟩ := exists_eq_sum_perm_of_mem_doublyStochastic hM
     exact mem_convexHull_of_exists_fintype w (·.permMatrix R) hw1 hw2 (by simp) hw3
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The set of extreme points of the doubly stochastic matrices is the set of permutation matrices.
 -/

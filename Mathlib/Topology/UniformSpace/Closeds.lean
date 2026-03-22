@@ -425,7 +425,7 @@ instance : T0Space (Closeds α) := by
   exact ⟨(x, y), hxy, y, rfl, hy⟩
 
 theorem isUniformInducing_closure : IsUniformInducing (Closeds.closure (α := α)) :=
-  isUniformEmbedding_coe.isUniformInducing_comp_iff.mp
+  isUniformEmbedding_coe.isUniformInducing.of_comp_iff.mp
     UniformSpace.hausdorff.isUniformInducing_closure
 
 theorem uniformContinuous_closure : UniformContinuous (Closeds.closure (α := α)) :=

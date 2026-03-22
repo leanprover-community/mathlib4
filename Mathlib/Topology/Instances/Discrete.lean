@@ -41,6 +41,7 @@ instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable
   secondCountableTopology_of_countable_cover (fun _ ↦ isOpen_discrete _)
     (iUnion_of_singleton α)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LinearOrder.bot_topologicalSpace_eq_generateFrom {α} [LinearOrder α] [PredOrder α]
     [SuccOrder α] : (⊥ : TopologicalSpace α) = generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a } := by
   let _ := Preorder.topology α
