@@ -42,7 +42,7 @@ variable (X) in
 Concretely, we ask for `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)`,
 which is what one would expect from the triangle inequality.
 
-In particular, convex subsets of affine spaces are convex metric spaces. -/
+In particular, convex subsets of normed affine spaces are convex metric spaces. -/
 class IsConvexMetricSpace : Prop where
   /-- Use `dist_convexCombination_map_le` instead. -/
   dist_convexCombination_map_le' (f : StdSimplex ℝ ℕ) (x y : ℕ → X) :
@@ -206,7 +206,7 @@ lemma continuous_convexComboPair' [BoundedSpace X]
       (by fun_prop) (hx.comp_continuous continuous_subtype_val (by simp_all; grind))
       (hy.comp_continuous continuous_subtype_val (by simp_all; grind))).continuousAt
   obtain ht | ht : f t = 0 ∨ f t = 1 := by
-    simpa [le_antisymm_iff, hf0 _, hf1 _, -not_and, not_and_or] using ht
+    simpa [le_antisymm_iff, hf0, hf1, -not_and, not_and_or] using ht
   · simp only [ContinuousAt, ht, sub_zero, convexComboPair_zero]
     rw [Metric.nhds_basis_ball.tendsto_right_iff]
     intro r hr
