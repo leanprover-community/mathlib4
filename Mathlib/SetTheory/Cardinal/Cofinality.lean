@@ -210,7 +210,7 @@ theorem cof_toType (o : Ordinal) : Order.cof o.ToType = o.cof := by
 
 @[simp]
 theorem lift_cof (o : Ordinal.{u}) : Cardinal.lift.{v} (cof o) = cof (Ordinal.lift.{v} o) := by
-  induction o using inductionOnWellOrder with | H α
+  cases o using inductionOnWellOrder with | type α
   rw [cof_type, ← type_lt_ulift, cof_type, ← Cardinal.lift_id'.{u, v} (Order.cof (ULift _)),
     ← Cardinal.lift_umax, ← ULift.orderIso.lift_cof_congr]
 
@@ -240,7 +240,7 @@ theorem cof_zero : cof 0 = 0 :=
   cof_eq_zero.2 rfl
 
 theorem cof_eq_one_iff {o} : cof o = 1 ↔ o ∈ range succ := by
-  induction o using inductionOnWellOrder with | H α
+  cases o using inductionOnWellOrder with | type α
   rw [cof_type, Order.cof_eq_one_iff, type_lt_mem_range_succ_iff]
   simp_rw [isTop_iff_isMax]
 
