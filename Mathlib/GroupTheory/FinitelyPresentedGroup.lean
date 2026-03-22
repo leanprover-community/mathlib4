@@ -31,7 +31,7 @@ finitely presented group, finitely generated normal closure
 
 variable {G H α β : Type*} [Group G] [Group H]
 
-/-- This is a lemma about the following commuting diagram:
+/-- This is a statement about the following commutative diagram:
 suppose that `G` and `H` are isomorphic via `iso`, and `S` is a set in `G`,
 then the canonical inclusion map from `FreeGroup(iso '' S)` to `H` is given by
 first taking the inverse isomorphism between the `FreeGroup (S)` and `FreeGroup (iso '' S)`, then
@@ -42,7 +42,7 @@ lemma FreeGroup.lift_subtype_val_mulEquiv_image (iso : G ≃* H) (S : Set G) :
         (FreeGroup.freeGroupCongr (iso.toEquiv.image S).symm)) := by
   ext ⟨_, s, hs, rfl⟩; simp [Equiv.image]
 
-/-- Definition of subgroup that is given by the normal closure of finitely many elements. -/
+/-- Defining when a subgroup is given by the normal closure of finitely many elements. -/
 def IsNormalClosureFG (N : Subgroup G) : Prop :=
   ∃ S : Set G, S.Finite ∧ Subgroup.normalClosure S = N
 
