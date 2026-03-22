@@ -553,19 +553,21 @@ protected theorem _root_.PrimrecPred.swap {r : α → β → Prop} (h : PrimrecP
     PrimrecPred (uncurry (swap r)) :=
   h.flip
 
-theorem nat_iff₂ {f : α → β → σ} : Primrec (uncurry f) ↔ Nat.Primrec
-    (.unpaired fun m n => encode <| (@decode α _ m).bind fun a => (@decode β _ n).map (f a)) := by
+theorem nat_iff₂ {f : α × β → σ} : Primrec f ↔ Nat.Primrec
+    (.unpaired fun m n => encode <|
+      (@decode α _ m).bind fun a => (@decode β _ n).map (curry f a)) := by
   have :
     ∀ (a : Option α) (b : Option β),
-      Option.map (fun p : α × β => f p.1 p.2)
+      Option.map f
           (Option.bind a fun a : α => Option.map (Prod.mk a) b) =
-        Option.bind a fun a => Option.map (f a) b := fun a b => by
+        Option.bind a fun a => Option.map (curry f a) b := fun a b => by
           cases a <;> cases b <;> rfl
-  simp +unfoldPartialApp [uncurry, Primrec, this]
+  simp [Primrec, this]
 
-theorem nat_iff₂' {f : α → β → σ} :
-    Primrec (uncurry f) ↔
-      Primrec fun p : ℕ × ℕ => (@decode α _ p.1).bind fun a => Option.map (f a) (@decode β _ p.2) :=
+theorem nat_iff₂' {f : α × β → σ} :
+    Primrec f ↔
+      Primrec fun p : ℕ × ℕ =>
+        (@decode α _ p.1).bind fun a => Option.map (curry f a) (@decode β _ p.2) :=
   nat_iff₂.trans <| unpaired'.trans encode_iff
 
 end Primrec
