@@ -139,8 +139,8 @@ def removeBot (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) :
   sSup_eq' := by simp [← sSup_eq]
 
 @[simp]
-lemma mem_removeBot_iff (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) :
-  x ∈ removeBot P indep sSup_eq ↔ x ∈ P ∧ x ≠ ⊥ := Iff.rfl
+lemma mem_removeBot (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) :
+    x ∈ removeBot P indep sSup_eq ↔ x ∈ P ∧ x ≠ ⊥ := Iff.rfl
 
 @[simp]
 lemma notMem_of_bot (P : Partition (⊥ : α)) (x : α) : x ∉ P := by
@@ -150,10 +150,8 @@ lemma notMem_of_bot (P : Partition (⊥ : α)) (x : α) : x ∉ P := by
 
 /-- There is a unique partition of `⊥`. -/
 instance : Unique (Partition (⊥ : α)) where
-  default := removeBot {⊥} (sSupIndep_singleton ⊥) sSup_singleton
-  uniq P := by
-    ext x
-    simp
+  default := removeBot (∅ : Set α) sSupIndep_empty sSup_empty
+  uniq P := by ext; simp
 
 lemma ne_bot_of_mem' (hxP : x ∈ P) : s ≠ ⊥ := by
   rintro rfl
@@ -168,33 +166,33 @@ variable [CompleteLattice α] {P Q : Partition s}
 /-- Partitions on `s` are ordered by refinement: `P ≤ Q` if every part of `P` is contained in a part
 of `Q`. -/
 instance : PartialOrder (Partition s) where
-  le P Q := ∀ x ∈ P, ∃ y ∈ Q, x ≤ y
+  le P Q := ∀ ⦃x⦄, x ∈ P → ∃ y ∈ Q, x ≤ y
   lt := _
-  le_refl P x hx := ⟨x,hx,rfl.le⟩
+  le_refl P x hx := ⟨x, hx, le_rfl⟩
   le_trans P Q R hPQ hQR x hxP := by
-    obtain ⟨y, hy, hxy⟩ := hPQ x hxP
-    obtain ⟨z, hz, hyz⟩ := hQR y hy
+    obtain ⟨y, hy, hxy⟩ := hPQ hxP
+    obtain ⟨z, hz, hyz⟩ := hQR hy
     exact ⟨z, hz, hxy.trans hyz⟩
   le_antisymm P Q hp hq := by
     refine Partition.ext fun x ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · obtain ⟨y, hy, hxy⟩ := hp x h
-      obtain ⟨x', hx', hyx'⟩ := hq y hy
+    · obtain ⟨y, hy, hxy⟩ := hp h
+      obtain ⟨x', hx', hyx'⟩ := hq hy
       obtain rfl := P.pairwiseDisjoint.eq_of_le h hx' (P.ne_bot_of_mem h)
         (hxy.trans hyx')
       rwa [hxy.antisymm hyx']
-    obtain ⟨y, hy, hxy⟩ := hq x h
-    obtain ⟨x', hx', hyx'⟩ := hp y hy
+    obtain ⟨y, hy, hxy⟩ := hq h
+    obtain ⟨x', hx', hyx'⟩ := hp hy
     obtain rfl := Q.pairwiseDisjoint.eq_of_le h hx' (Q.ne_bot_of_mem h)
       (hxy.trans hyx')
     rwa [hxy.antisymm hyx']
 
-lemma le_def : P ≤ Q ↔ ∀ x ∈ P, ∃ y ∈ Q, x ≤ y := Iff.rfl
+lemma le_def : P ≤ Q ↔ ∀ x ∈ P, ∃ y ∈ Q, x ≤ y := .rfl
 
-lemma exists_le_of_mem_le (h : P ≤ Q) (hx : x ∈ P) : ∃ y ∈ Q, x ≤ y := h x hx
+lemma exists_le_of_mem_le (h : P ≤ Q) (hx : x ∈ P) : ∃ y ∈ Q, x ≤ y := h hx
 
-lemma exists_unique_of_mem_le (h : P ≤ Q) (hx : x ∈ P) :
+lemma existsUnique_of_mem_le (h : P ≤ Q) (hx : x ∈ P) :
     ∃! y ∈ Q, x ≤ y := by
-  obtain ⟨y, hy, hxy⟩ := h x hx
+  obtain ⟨y, hy, hxy⟩ := h hx
   refine ⟨y, ⟨hy, hxy⟩, fun z ⟨hz, hxz⟩ => Q.eq_of_not_disjoint hz hy ?_⟩
   have := P.ne_bot_of_mem hx
   contrapose! this
@@ -212,7 +210,7 @@ instance : OrderTop (Partition s) where
 
 @[simp] lemma mem_top_iff {a : α} : a ∈ (⊤ : Partition s) ↔ a = s ∧ a ≠ ⊥ := by
   change a ∈ removeBot {s} (sSupIndep_singleton s) sSup_singleton ↔ _
-  rw [mem_removeBot_iff, mem_singleton_iff]
+  rw [mem_removeBot, mem_singleton_iff]
 
 lemma parts_top_subset : ((⊤ : Partition s) : Set α) ⊆ {s} := by
   simp
@@ -271,14 +269,16 @@ section Rel
 def Rel (P : Partition u) (a b : α) : Prop :=
   ∃ t ∈ P, a ∈ t ∧ b ∈ t
 
-lemma le_of_rel_le (h : P.Rel ≤ Q.Rel) : P ≤ Q := by
-  intro S hS
-  obtain ⟨x, hxS⟩ := nonempty_of_mem hS
-  obtain ⟨T, hT, hxT, -⟩ := h x x ⟨S, hS, hxS, hxS⟩
-  refine ⟨T, hT, fun a haS ↦ ?_⟩
-  obtain ⟨T', hT', haT', hxT'⟩ := h a x ⟨S, hS, haS, hxS⟩
-  obtain rfl := eq_of_mem_of_mem hT hT' hxT hxT'
-  exact haT'
+lemma rel_le_iff_le : P.Rel ≤ Q.Rel ↔ P ≤ Q := by
+  refine ⟨fun h S hS ↦ ?_, fun h a b ⟨t, ht, ha, hb⟩ ↦ ?_⟩
+  · obtain ⟨x, hxS⟩ := nonempty_of_mem hS
+    obtain ⟨T, hT, hxT, -⟩ := h x x ⟨S, hS, hxS, hxS⟩
+    refine ⟨T, hT, fun a haS ↦ ?_⟩
+    obtain ⟨T', hT', haT', hxT'⟩ := h a x ⟨S, hS, haS, hxS⟩
+    obtain rfl := eq_of_mem_of_mem hT hT' hxT hxT'
+    exact haT'
+  obtain ⟨t', ht', htt'⟩ := h ht
+  use t', ht', htt' ha, htt' hb
 
 lemma Rel.exists (h : P.Rel x y) : ∃ t ∈ P, x ∈ t ∧ y ∈ t := h
 
