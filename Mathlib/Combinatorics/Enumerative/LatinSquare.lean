@@ -693,7 +693,7 @@ theorem latin_rectangle_extends_one_row
   rfl
 
 /-- Being a subrectangle of a `LatinRectangle` is a transitive property. -/
-lemma subrect_transitive {m'' : Type*} [Fintype m'']
+lemma IsSubrect.trans {m'' : Type*} [Fintype m'']
     {n : Type*} [Fintype n]
     {A : LatinRectangle m n α}
     {A' : LatinRectangle m' n α}
