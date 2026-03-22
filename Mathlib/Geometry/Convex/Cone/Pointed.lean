@@ -178,6 +178,9 @@ abbrev hull (s : Set E) : PointedCone R E := span R≥0 s
 
 lemma subset_hull {s : Set E} : s ⊆ PointedCone.hull R s := subset_span
 
+@[deprecated "`PointedCone.span` was renamed to `PointedCone.hull`" (since := "2026-03-22")]
+alias subset_span := subset_hull
+
 /-- Elements of the cone hull are expressible as conical combination of elements from s. -/
 lemma mem_hull_set {s : Set E} : x ∈ hull R s ↔
       ∃ c : E →₀ R, ↑c.support ⊆ s ∧ (∀ y, 0 ≤ c y) ∧ c.sum (fun m r => r • m) = x := by
@@ -187,6 +190,9 @@ lemma mem_hull_set {s : Set E} : x ∈ hull R s ↔
     exact ⟨⟨c.support, Subtype.val ∘ c, by simp [← Subtype.val_inj]⟩, hc, fun y ↦ (c y).2, rfl⟩
   · rintro ⟨c, hc, hc₀, rfl⟩
     exact ⟨⟨c.support, fun y ↦ ⟨c y, hc₀ _⟩, by simp⟩, hc, rfl⟩
+
+@[deprecated "`PointedCone.span` was renamed to `PointedCone.hull`" (since := "2026-03-22")]
+alias mem_span_set := mem_hull_set
 
 end Definitions
 
