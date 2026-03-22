@@ -36,7 +36,7 @@ suppose that `G` and `H` are isomorphic via `iso`, and `S` is a set in `G`,
 then the canonical inclusion map from `FreeGroup(iso '' S)` to `H` is given by
 first taking the inverse isomorphism between the `FreeGroup (S)` and `FreeGroup (iso '' S)`, then
 composing with the canonical inclusion map from `FreeGroup(S)` to `G` and then taking `iso`. -/
-lemma FreeGroup.lift_subtype_val_mulEquiv_image (iso : G ≃* H) (S : Set G) :
+lemma FreeGroup.lift_mulEquiv_image (iso : G ≃* H) (S : Set G) :
     FreeGroup.lift ((↑) : ↥(↑iso '' S) → H) =
       iso.toMonoidHom.comp ((FreeGroup.lift ((↑) : S → G)).comp
         (FreeGroup.freeGroupCongr (iso.toEquiv.image S).symm)) := by
@@ -83,7 +83,7 @@ theorem of_mulEquiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPre
   obtain ⟨S, hSfinite, hSclosure, hker⟩ := h
   use iso '' S, hSfinite.image iso,
     MonoidHom.closure_image_eq_top (iso : G →* H) iso.surjective hSclosure
-  rw [FreeGroup.lift_subtype_val_mulEquiv_image, MonoidHom.ker_eq_of_comp_mulEquiv]
+  rw [FreeGroup.lift_mulEquiv_image, MonoidHom.ker_eq_of_comp_mulEquiv]
   exact IsNormalClosureFG.ker_comp_freeGroupCongr (iso.toEquiv.image S) _ hker
 
 end IsFinitelyPresented
