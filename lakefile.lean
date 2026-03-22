@@ -124,8 +124,24 @@ Currently, these checks are quite lenient, but could be made stricter in the fut
 lean_exe «check_title_labels» where
   srcDir := "scripts"
 
-lean_exe «check_modulized_tests» where
-  srcDir := "scripts"
+open Lean System Parser.Module in
+script «check_modulized_tests» (args) := do
+  let pathStrs :=
+    (← FilePath.walkDir "MathlibTest").qsort (lt := fun p₁ p₂ ↦ p₁.toString < p₂.toString)
+  for pathStr in pathStrs do
+    unless !(← pathStr.isDir) do continue
+    let mut text ← IO.FS.readFile pathStr
+    let inputCtx := Parser.mkInputContext text pathStr.toString
+    let (header, parserState, msgs) ← Parser.parseHeader inputCtx
+    if !msgs.toList.isEmpty then -- skip this file if there are parse errors
+      msgs.forM fun msg => msg.toString >>= liftM ∘ IO.println
+      throw <| .userError "parse errors in file"
+    let `(header| $[module%$moduleTk?]? $[prelude%$preludeTk?]? $imps:import*) := header
+      | throw <| .userError s!"unexpected header syntax of {pathStr}"
+    if moduleTk?.isSome then
+      continue
+    IO.println s!"not modulized: {pathStr}"
+  return 0
 
 lean_exe mathlib_test_executable where
   root := `MathlibTest.MathlibTestExecutable
