@@ -315,29 +315,17 @@ theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : #Q.parts ≤ #
 
 end Order
 
-@[simp]
-theorem _root_.Finset.sup_preimage {α β : Type*} [hnea : Nonempty α] [SemilatticeSup β] [OrderBot β]
-  (s : Finset β) (f : α → β) (hf : Set.BijOn f (f ⁻¹' ↑s) s) :
-    (preimage s f hf.2.1).sup f = s.sup id := by
-  classical
-  let finvs := invFunOn f (f ⁻¹' ↑s)
-  have hfinvs : ∀ x ∈ s, f (finvs x) = x := (Set.BijOn.invOn_invFunOn hf).2
-  have hfinvs' : ∀ x ∈ s, (f ∘ finvs) x = id x := (Set.BijOn.invOn_invFunOn hf).2
-  rw [← sup_congr (Eq.refl s) hfinvs', ← sup_image]
-  congr
-  exact preimage_eq_image_invFunOn_of_bij f s hf
-
 lemma _root_.Finset.sup_preimage_val_id_eq_sup_toSubtype_id {pr : α → Prop}
-  (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t)) (hbot : pr (⊥ : α)) {t : Finset α}
-  (ht : ∀ x ∈ t, pr x) :
+    (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t)) (hbot : pr (⊥ : α)) {t : Finset α}
+    (ht : ∀ x ∈ t, pr x) :
     @sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot)
-      (@preimage _ _ t (fun (x :Subtype pr) => x.val)
+      (@preimage _ _ t (fun (x : Subtype pr) => x.val)
       (Set.injOn_of_injective Subtype.val_injective)) id
     = (⟨t.sup id, sup_induction hbot (fun _ h _ => Psup h) ht⟩ : Subtype pr) := by
   letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
   ext
   simp only [sup_coe, id_eq]
-  apply Finset.sup_preimage t (fun (x : Subtype pr) => x.val)
+  apply Finset.sup_preimage
   refine ⟨Set.mapsTo_preimage _ _, Set.injOn_of_injective Subtype.val_injective, ?_⟩
   intro x hx; simpa using ⟨hx, ht x hx⟩
 

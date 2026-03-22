@@ -103,21 +103,18 @@ theorem image_preimage [DecidableEq β] (f : α → β) (s : Finset β) [∀ x, 
     simp only [coe_image, coe_preimage, coe_filter, Set.image_preimage_eq_inter_range,
       ← Set.sep_mem_eq]; rfl
 
-theorem preimage_eq_image_invFunOn_of_bij {α β : Type*} [Nonempty α] [DecidableEq α] (f : α → β)
-    (s : Finset β) (hf : Set.BijOn f (f ⁻¹' s) s) :
-    s.preimage f hf.2.1 = s.image (Function.invFunOn f (f ⁻¹' ↑s)) := by
+theorem preimage_eq_image_invFunOn_of_bij {α β : Type*} [Nonempty α] [DecidableEq α] {f : α → β}
+    {g : β → α} {s : Finset β} (hf : Set.BijOn f (f ⁻¹' s) s) (hg : Set.RightInvOn g f s) :
+    s.preimage f hf.2.1 = s.image g := by
   ext x
   simp only [mem_preimage, mem_image]
   constructor
   · intro hx
-    exact ⟨f x, ⟨hx, (Set.BijOn.invOn_invFunOn hf).1 (Set.mem_preimage.mpr hx)⟩⟩
+    have : ∀ y ∈ s, g y ∈ (f ⁻¹' s) := by intro y hy; simpa [hg hy] using hy
+    exact ⟨f x, ⟨hx, (Set.InjOn.rightInvOn_of_leftInvOn hf.2.1 hg hf.1 this hx)⟩⟩
   · intro hx
     obtain ⟨y, hy, hyx⟩ := hx
-    have : y = f x := by
-      have : f ((Function.invFunOn f (f ⁻¹' ↑s)) y) = f x := by congr
-      rw [(Set.BijOn.invOn_invFunOn hf).2 hy] at this
-      exact this
-    rw [← this]; exact hy
+    rw [← hyx, hg hy]; exact hy
 
 theorem image_preimage_of_bij [DecidableEq β] (f : α → β) (s : Finset β)
     (hf : Set.BijOn f (f ⁻¹' ↑s) ↑s) : image f (preimage s f hf.injOn) = s :=
@@ -134,6 +131,18 @@ theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
     s ⊆ t.map f ↔ ∃ u ⊆ t, s = u.map f := by
   classical
   simp_rw [map_eq_image, subset_image_iff, eq_comm]
+
+@[simp]
+theorem sup_preimage {α β : Type*} [hnea : Nonempty α] [SemilatticeSup β] [OrderBot β]
+    {s : Finset β} {f : α → β} (hf : Set.BijOn f (f ⁻¹' ↑s) s) :
+    (preimage s f hf.2.1).sup f = s.sup id := by
+  classical
+  let finvs := invFunOn f (f ⁻¹' ↑s)
+  have hfinvs : ∀ x ∈ s, f (finvs x) = x := (Set.BijOn.invOn_invFunOn hf).2
+  have hfinvs' : ∀ x ∈ s, (f ∘ finvs) x = id x := (Set.BijOn.invOn_invFunOn hf).2
+  rw [← sup_congr (Eq.refl s) hfinvs', ← sup_image]
+  congr
+  exact preimage_eq_image_invFunOn_of_bij hf (Set.BijOn.invOn_invFunOn hf).2
 
 theorem sigma_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σ a, β a)) (t : Finset α) :
     t.sigma (fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) = {a ∈ s | a.1 ∈ t} := by
