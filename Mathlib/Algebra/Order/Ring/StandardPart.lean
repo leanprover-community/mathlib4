@@ -145,7 +145,7 @@ def FiniteResidueField : Type _ :=
 namespace FiniteResidueField
 
 noncomputable instance : Field (FiniteResidueField K) :=
-  inferInstanceAs% Field (IsLocalRing.ResidueField _)
+  inferInstanceAs (Field (IsLocalRing.ResidueField _))
 
 private theorem ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.mk
     (Submodule.quotientRel (IsLocalRing.maximalIdeal (FiniteElement K))) ⁻¹' {x} := by
