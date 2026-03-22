@@ -295,19 +295,42 @@ lemma _root_.HasDerivAt.initialCurve_of_orientedCurvature (hI : IsOpen I)
     (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) (ht : t ∈ I) :
     HasDerivAt (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)
     !₂[Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ), Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ)] t :=
-  (HasDerivWithinAt.initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ ht).hasDerivAt
-                                                                                    (hI.mem_nhds ht)
+  (HasDerivWithinAt.initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ ht).hasDerivAt 
+    (hI.mem_nhds ht)
 
+/-- Auxiliary lemma giving us the `derivWithin` the interval `I` of a certain function. -/
+lemma hasDerivWithinAt_some_function₀_aux (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) (ht : t ∈ I) :
+    HasDerivWithinAt (fun x ↦  θ₀ + ∫ξ in t₀..x, κ ξ) (κ t) I t := by
+  rw [← zero_add (κ t)]
+  exact (hasDerivWithinAt_const t I θ₀).add
+    (intervalIntegral.hasDerivWithinAt_of_continuousOn_interval hκ ht₀ ht)
+
+/-- Auxiliary lemma giving us the `derivWithin` the interval `I` of a certain function. -/
+lemma hasDerivWithinAt_some_function₁_aux (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) (ht : t ∈ I) :
+    HasDerivWithinAt (fun x ↦ Real.cos (θ₀ + ∫ (ξ : ℝ) in t₀..x, κ ξ))
+                     (-(κ t * Real.sin (θ₀ + ∫ (ξ : ℝ) in t₀..t, κ ξ))) I t := by
+  rw [show -(κ t * Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ)) = -Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ) * κ t
+      by ring, show (fun t ↦  Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ))
+      = Real.cos ∘ (fun x ↦  θ₀ + ∫ξ in t₀..x, κ ξ) from rfl]
+  have h : HasDerivAt Real.cos (-Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ))
+        ((fun τ ↦  θ₀ + ∫ξ in t₀..τ, κ ξ) t) := by simp [Real.hasDerivAt_cos]
+  exact h.comp_hasDerivWithinAt t (hasDerivWithinAt_some_function₀_aux θ₀ hκ ht₀ ht)
+
+/-- Auxiliary lemma giving us the `derivWithin` the interval `I` of a certain function. -/
+lemma hasDerivWithinAt_some_function₂_aux (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) (ht : t ∈ I) :
+    HasDerivWithinAt (fun x ↦ Real.sin (θ₀ + ∫ (ξ : ℝ) in t₀..x, κ ξ))
+                     (κ t * Real.cos (θ₀ + ∫ (ξ : ℝ) in t₀..t, κ ξ)) I t:= by
+  rw [show κ t * Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ) = Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ) * κ t
+      by ring, show (fun t ↦  Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ))
+            = Real.sin ∘ (fun x ↦  θ₀ + ∫ξ in t₀..x, κ ξ) from rfl]
+  have h : HasDerivAt Real.sin (Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ))
+               ((fun τ ↦  θ₀ + ∫ξ in t₀..τ, κ ξ) t) := by simp [Real.hasDerivAt_sin]
+  exact h.comp_hasDerivWithinAt t (hasDerivWithinAt_some_function₀_aux θ₀ hκ ht₀ ht)
+  
 lemma _root_.HasDerivAt.deriv_initialCurve_of_orientedCurvature (hI : IsOpen I)
     (hκ : ContinuousOn κ I) (ht₀ : t₀ ∈ I) (ht : t ∈ I) :
     HasDerivAt (deriv (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀))
     !₂[-(κ t)*Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ), (κ t)*Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ)] t := by
-  have h₀ : HasDerivWithinAt (fun x ↦  θ₀ + ∫ξ in t₀..x, κ ξ) (κ t) I t := by
-    have hyp₁ : HasDerivWithinAt (fun x ↦ θ₀) 0 I t := by apply hasDerivWithinAt_const
-    have hyp₂ := hyp₁.add (intervalIntegral.hasDerivWithinAt_of_continuousOn_interval hκ ht₀ ht)
-    rw [show (fun x ↦  θ₀) + (fun t ↦ ∫τ in t₀..t, κ τ) = fun x ↦  θ₀ + ∫ξ in t₀..x, κ ξ from rfl,
-        zero_add] at hyp₂
-    exact hyp₂
   have h : I.EqOn (deriv (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀))
            (fun x ↦  !₂[Real.cos (θ₀+∫ξ in t₀..x, κ ξ), Real.sin (θ₀+∫ξ in t₀..x, κ ξ)]) :=
     fun x hx ↦  (HasDerivAt.initialCurve_of_orientedCurvature θ₀ p₀ hI hκ ht₀ hx).deriv
@@ -316,25 +339,10 @@ lemma _root_.HasDerivAt.deriv_initialCurve_of_orientedCurvature (hI : IsOpen I)
             !₂[-κ t *Real.sin (θ₀+∫ξ in t₀..t, κ ξ),κ t *Real.cos (θ₀+∫ξ in t₀..t, κ ξ)] I t := by
     rw [hasDerivWithinAt_pi_euclidean]
     intro i
-    fin_cases i
-    · simp only [Fin.zero_eta, Fin.isValue, Matrix.cons_val_zero, neg_mul]
-      have h₁ : HasDerivAt Real.cos (-Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ))
-        ((fun τ ↦  θ₀ + ∫ξ in t₀..τ, κ ξ) t) := by simp [Real.hasDerivAt_cos]
-      have hint := h₁.comp_hasDerivWithinAt t h₀
-      rw [show (fun t ↦  Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ))
-                = Real.cos ∘ (fun x ↦  θ₀ + ∫ξ in t₀..x, κ ξ) from rfl]
-      rw [show -Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ) * κ t
-                = -(κ t * Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ)) by ring] at hint
-      exact hint
-    · simp only [Fin.mk_one, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one, neg_mul]
-      have h₁ : HasDerivAt Real.sin (Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ))
-        ((fun τ ↦  θ₀ + ∫ξ in t₀..τ, κ ξ) t) := by simp [Real.hasDerivAt_sin]
-      have hint := h₁.comp_hasDerivWithinAt t h₀
-      rw [show (fun t ↦  Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ))
-                = Real.sin ∘ (fun x ↦  θ₀ + ∫ξ in t₀..x, κ ξ) from rfl]
-      rw [show Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ) * κ t
-                = κ t * Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ) by ring] at hint
-      exact hint
+    fin_cases i <;> simp only [Fin.mk_one, Fin.zero_eta, Fin.isValue, Matrix.cons_val_zero,
+                               Matrix.cons_val_one, Matrix.cons_val_fin_one, neg_mul]
+    · exact hasDerivWithinAt_some_function₁_aux θ₀ hκ ht₀ ht
+    · exact hasDerivWithinAt_some_function₂_aux θ₀ hκ ht₀ ht
   exact (h'.congr h (h ht)).hasDerivAt (hI.mem_nhds ht)
 
 lemma second_deriv_of_initialCurve_of_orientedCurvature (hI : IsOpen I) (hκ : ContinuousOn κ I)
@@ -550,13 +558,10 @@ theorem initialCurve_of_orientedCurvature_is_unique (hI : IsOpen I) (hκ : Conti
   have hdh : Set.EqOn (deriv h) 0 I := by
     intro s hs
     unfold h
-    calc
-       deriv (fun s ↦ f s ^ 2 + g s ^ 2) s = 2*((f s)*(deriv f s)+(g s)*(deriv g s)) := by
-         rw [deriv_fun_add (by fun_prop (disch := assumption)) (by fun_prop (disch := assumption)),
-             deriv_fun_pow (by fun_prop (disch := assumption)) 2,
-             deriv_fun_pow (by fun_prop (disch := assumption)) 2]; ring
-       _ = 2*((f s)*(- κ s * g s)+(g s)*(κ s * f s)) := by rw [hdf hs, hdg hs]
-       _ = 0 := by ring
+    rw [deriv_fun_add (by fun_prop (disch := assumption)) (by fun_prop (disch := assumption)),
+        deriv_fun_pow (by fun_prop (disch := assumption)) 2,
+        deriv_fun_pow (by fun_prop (disch := assumption)) 2, hdf hs, hdg hs]
+    ring_nf; simp
   have hh {s : ℝ} (hs : s ∈ I) : h s = 0 := by
     let ⟨a, ha⟩ := hI.exists_is_const_of_deriv_eq_zero hIoC.isPreconnected
                    (fun s hs ↦  (hDh hs).differentiableWithinAt) hdh
