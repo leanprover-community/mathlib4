@@ -189,7 +189,7 @@ theorem of_succ_lt
     exact (IH _ hab' (lt_succ_of_not_isMax hab.not_isMax)).trans_le
       ((hl hb).1 (mem_image_of_mem _ hab'))
 
-protected theorem ext [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : IsNormal g) :
+protected theorem ext_iff [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : IsNormal g) :
     f = g ↔ f ⊥ = g ⊥ ∧ ∀ a, f a = g a → f (succ a) = g (succ a) := by
   constructor
   · simp_all
@@ -202,6 +202,8 @@ protected theorem ext [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : IsNo
     apply (hf.isLUB_image_Iio_of_isSuccLimit ha).unique
     convert hg.isLUB_image_Iio_of_isSuccLimit ha using 1
     aesop
+
+@[deprecated (since := "2026-03-22")] alias Order.IsNormal.ext := Order.IsNormal.ext_iff
 
 theorem exists_btwn_of_exists_ge [NoMaxOrder α] [OrderBot α] [WellFoundedLT β]
     {f : α → β} {x : β} (hf : Order.IsNormal f) (hf' : ∃ y, x ≤ f y) (hx : f ⊥ ≤ x) :
