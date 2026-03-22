@@ -471,11 +471,6 @@ lemma iSup_corootSubmodule_le_restr_inf (I : LieIdeal K L) :
     ⨆ α ∈ I.rootSet, corootSubmodule α.1 ≤ I.restr H ⊓ H.toLieSubmodule :=
   iSup₂_le fun _ hα ↦ le_inf (I.corootSubmodule_le hα) LieSubmodule.map_incl_le
 
-private lemma span_coroot_le_corootSubmodule (α : Weight K H L) :
-    Submodule.map H.toSubmodule.subtype (K ∙ coroot α) ≤ (corootSubmodule α).toSubmodule := by
-  rw [← coe_corootSpace_eq_span_singleton]
-  rfl
-
 /-- The Cartan part `I.restr H ⊓ H.toLieSubmodule` of a Lie ideal equals the span of the
 coroots for roots in `I.rootSet`. -/
 lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
