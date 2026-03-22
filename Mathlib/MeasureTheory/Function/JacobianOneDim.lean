@@ -319,20 +319,15 @@ theorem integral_Icc_deriv_smul_of_deriv_nonneg {a b : ℝ} {g : ℝ → F}
     · rw [interior_Icc]
       intro z hz
       simpa [(hff' z hz).deriv] using hf' z hz
-  have A : ∫ x in Icc a b, f' x • g (f x) = ∫ x in Ioo a b, f' x • g (f x) :=
-    setIntegral_congr_set Ioo_ae_eq_Icc.symm
-  have B : ∫ u in Icc (f a) (f b), g u = ∫ u in f '' (Ioo a b), g u := by
+  have A : ∫ u in Icc (f a) (f b), g u = ∫ u in f '' (Ioo a b), g u := by
     apply setIntegral_congr_set
-    have : Icc (f a) (f b) = f '' (Icc a b) := (ContinuousOn.image_Icc_of_monotoneOn hab hf M).symm
-    rw [this]
+    rw [← hf.image_Icc_of_monotoneOn hab M]
     refine ae_eq_set.2 ⟨?_, by simp [show f '' Ioo a b \ f '' Icc a b = ∅ by grind]⟩
-    have : f '' (Icc a b) \ f '' Ioo a b ⊆ {f a, f b} := by
-      rw [← image_pair f a b]
-      exact (subset_image_diff _ _ _).trans (image_mono (by grind))
+    have : f '' (Icc a b) \ f '' Ioo a b ⊆ {f a, f b} := by grind
     apply measure_mono_null this
     apply Finite.measure_zero (by simp)
-  symm
-  rw [A, B, integral_image_eq_integral_deriv_smul_of_monotoneOn measurableSet_Ioo]
+  rw [A, integral_Icc_eq_integral_Ioo,
+    integral_image_eq_integral_deriv_smul_of_monotoneOn measurableSet_Ioo]
   · exact fun z hz ↦ (hff' z hz).hasDerivWithinAt
   · exact M.mono Ioo_subset_Icc_self
 
@@ -348,21 +343,15 @@ theorem integrableOn_Icc_deriv_smul_iff_of_deriv_nonneg {a b : ℝ} {g : ℝ →
     · rw [interior_Icc]
       intro z hz
       simpa [(hff' z hz).deriv] using hf' z hz
-  have A : IntegrableOn (fun x ↦ f' x • g (f x)) (Icc a b) ↔
-      IntegrableOn (fun x ↦ f' x • g (f x)) (Ioo a b) :=
-    integrableOn_congr_set_ae Ioo_ae_eq_Icc.symm
-  have B : IntegrableOn g (Icc (f a) (f b)) ↔ IntegrableOn g (f '' (Ioo a b)) := by
+  have A : IntegrableOn g (Icc (f a) (f b)) ↔ IntegrableOn g (f '' (Ioo a b)) := by
     apply integrableOn_congr_set_ae
-    have : Icc (f a) (f b) = f '' (Icc a b) := (ContinuousOn.image_Icc_of_monotoneOn hab hf M).symm
-    rw [this]
+    rw [← hf.image_Icc_of_monotoneOn hab M]
     refine ae_eq_set.2 ⟨?_, by simp [show f '' Ioo a b \ f '' Icc a b = ∅ by grind]⟩
-    have : f '' (Icc a b) \ f '' Ioo a b ⊆ {f a, f b} := by
-      rw [← image_pair f a b]
-      exact (subset_image_diff _ _ _).trans (image_mono (by grind))
+    have : f '' (Icc a b) \ f '' Ioo a b ⊆ {f a, f b} := by grind
     apply measure_mono_null this
     apply Finite.measure_zero (by simp)
-  symm
-  rw [A, B, integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn measurableSet_Ioo]
+  rw [A, integrableOn_Icc_iff_integrableOn_Ioo,
+    integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn measurableSet_Ioo]
   · exact fun z hz ↦ (hff' z hz).hasDerivWithinAt
   · exact M.mono Ioo_subset_Icc_self
 
@@ -446,20 +435,15 @@ theorem integral_Icc_deriv_smul_of_deriv_nonpos {a b : ℝ} {g : ℝ → F}
     · rw [interior_Icc]
       intro z hz
       simpa [(hff' z hz).deriv] using hf' z hz
-  have A : ∫ x in Icc a b, f' x • g (f x) = ∫ x in Ioo a b, f' x • g (f x) :=
-    setIntegral_congr_set Ioo_ae_eq_Icc.symm
-  have B : ∫ u in Icc (f b) (f a), g u = ∫ u in f '' (Ioo a b), g u := by
+  have A : ∫ u in Icc (f b) (f a), g u = ∫ u in f '' (Ioo a b), g u := by
     apply setIntegral_congr_set
-    have : Icc (f b) (f a) = f '' (Icc a b) := (ContinuousOn.image_Icc_of_antitoneOn hab hf M).symm
-    rw [this]
+    rw [← hf.image_Icc_of_antitoneOn hab M]
     refine ae_eq_set.2 ⟨?_, by simp [show f '' Ioo a b \ f '' Icc a b = ∅ by grind]⟩
-    have : f '' (Icc a b) \ f '' Ioo a b ⊆ {f a, f b} := by
-      rw [← image_pair f a b]
-      exact (subset_image_diff _ _ _).trans (image_mono (by grind))
+    have : f '' (Icc a b) \ f '' Ioo a b ⊆ {f a, f b} := by grind
     apply measure_mono_null this
     apply Finite.measure_zero (by simp)
-  symm
-  rw [A, B, integral_image_eq_integral_deriv_smul_of_antitoneOn measurableSet_Ioo (f' := f')]
+  rw [A, integral_Icc_eq_integral_Ioo,
+    integral_image_eq_integral_deriv_smul_of_antitoneOn measurableSet_Ioo (f' := f')]
   · simp [integral_neg]
   · exact fun z hz ↦ (hff' z hz).hasDerivWithinAt
   · exact M.mono Ioo_subset_Icc_self
@@ -476,22 +460,15 @@ theorem integrableOn_Icc_deriv_smul_iff_of_deriv_nonpos {a b : ℝ} {g : ℝ →
     · rw [interior_Icc]
       intro z hz
       simpa [(hff' z hz).deriv] using hf' z hz
-  have A : IntegrableOn (fun x ↦ f' x • g (f x)) (Icc a b) ↔
-      IntegrableOn (fun x ↦ f' x • g (f x)) (Ioo a b) :=
-    integrableOn_congr_set_ae Ioo_ae_eq_Icc.symm
-  have B : IntegrableOn g (Icc (f b) (f a)) ↔ IntegrableOn g (f '' (Ioo a b)) := by
+  have A : IntegrableOn g (Icc (f b) (f a)) ↔ IntegrableOn g (f '' (Ioo a b)) := by
     apply integrableOn_congr_set_ae
-    have : Icc (f b) (f a) = f '' (Icc a b) := (ContinuousOn.image_Icc_of_antitoneOn hab hf M).symm
-    rw [this]
+    rw [← hf.image_Icc_of_antitoneOn hab M]
     refine ae_eq_set.2 ⟨?_, by simp [show f '' Ioo a b \ f '' Icc a b = ∅ by grind]⟩
-    have : f '' (Icc a b) \ f '' Ioo a b ⊆ {f a, f b} := by
-      rw [← image_pair f a b]
-      exact (subset_image_diff _ _ _).trans (image_mono (by grind))
+    have : f '' (Icc a b) \ f '' Ioo a b ⊆ {f a, f b} := by grind
     apply measure_mono_null this
     apply Finite.measure_zero (by simp)
-  symm
-  rw [A, B,
-      integrableOn_image_iff_integrableOn_deriv_smul_of_antitoneOn measurableSet_Ioo (f' := f')]
+  rw [A, integrableOn_Icc_iff_integrableOn_Ioo,
+    integrableOn_image_iff_integrableOn_deriv_smul_of_antitoneOn measurableSet_Ioo (f' := f')]
   · simp
   · exact fun z hz ↦ (hff' z hz).hasDerivWithinAt
   · exact M.mono Ioo_subset_Icc_self
