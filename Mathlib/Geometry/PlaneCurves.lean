@@ -378,7 +378,6 @@ lemma _root_.DifferentiableOn.deriv_initialCurve_of_orientedCurvature (hI : IsOp
   fun _ h ↦  (HasDerivAt.deriv_initialCurve_of_orientedCurvature
               θ₀ p₀ hI hκ ht₀ h).differentiableAt.differentiableWithinAt
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The plane curve we construct from the given orientedCurvature function `κ` is twice continuously
 differentiable on the given interval `I`. -/
 @[fun_prop]
@@ -389,7 +388,7 @@ protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature (hI : IsOp
   on_goal 1 =>
     rw [continuousOn_congr (iteratedDerivWithin_of_isOpen (n:=m)
                             (f:=(initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) hI)]
-    have hm' : m ≤ 2 := by simp_all
+    have hm' : m ≤ 2 := ENat.coe_le_coe.mp hm
     interval_cases m
   on_goal 3 =>
     intro t ht
@@ -412,7 +411,7 @@ protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature (hI : IsOp
   on_goal 3 =>
     rw [differentiableOn_congr (iteratedDerivWithin_of_isOpen (n:=m)
                                 (f:=(initialCurve_of_orientedCurvature κ t₀ p₀ θ₀)) hI)]
-    have hm' : m < 2 := by simp_all
+    have hm' : m < 2 := ENat.coe_lt_coe.mp hm
     interval_cases m
   all_goals
     all_goals
@@ -501,7 +500,6 @@ lemma deriv_fun_proj_deriv_eq_proj_deriv_deriv (i : ι) (hI : IsOpen I) (ht : t 
   rw [fderiv_comp_deriv t (by fun_prop) (by fun_prop (disch := assumption)),
       ContinuousLinearMap.fderiv]; simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is the uniqueness part of the fundamental theorem of plane curves: given a curvature
 function κ and initial conditions (position p₀ at some time t₀ and unit velocity vector at time t₀
 at direction given by angle θ₀) the plane curve we construct is the only such twice continuously
@@ -566,8 +564,8 @@ theorem initialCurve_of_orientedCurvature_is_unique (hI : IsOpen I) (hκ : Conti
     let ⟨a, ha⟩ := hI.exists_is_const_of_deriv_eq_zero hIoC.isPreconnected
                    (fun s hs ↦  (hDh hs).differentiableWithinAt) hdh
     simp [ha s hs, ← ha t₀ ht₀, h, f, g, hc₅, hα₅]
-  exact hI.eqOn_of_deriv_eq hIoC.isPreconnected (hc₁.differentiableOn (by norm_num))
-    (hα₁.differentiableOn (by norm_num)) (fun s hs ↦  eq_euclidean_plane_vectors
+  exact hI.eqOn_of_deriv_eq hIoC.isPreconnected (hc₁.differentiableOn (by decide))
+    (hα₁.differentiableOn (by decide)) (fun s hs ↦  eq_euclidean_plane_vectors
     (by linarith [left_eq_zero_of_sum_sq_eq_zero (hh hs), f])
     (by linarith [right_eq_zero_of_sum_sq_eq_zero (hh hs), g])) ht₀ (by simp [hc₄, α, hα₄])
 
