@@ -459,15 +459,11 @@ lemma rootSet_apply_coroot_eq_zero (I : LieIdeal K L)
   have h_ker : coroot (↑α : Weight K H L) ∈ (↑β : Weight K H L).ker :=
     weight_apply_eq_zero_of_not_mem_rootSet I
       (I.corootSubmodule_le hα (coe_coroot_mem_corootSubmodule _)) hβ
-  have h_trace := traceForm_eq_zero_of_mem_ker_of_mem_span_coroot h_ker
-    (Submodule.mem_span_singleton_self (coroot (↑β : Weight K H L)))
-  have : coroot (↑β : Weight K H L) ∈
-      (traceForm K H L).orthogonal (K ∙ coroot (↑α : Weight K H L)) := by
-    intro y hy
-    obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.mp hy
-    simp only [LinearMap.BilinForm.isOrtho_def, map_smul, LinearMap.smul_apply, smul_eq_zero]
-    right; exact traceForm_comm K H L _ _ ▸ h_trace
-  rwa [orthogonal_span_coroot_eq_ker] at this
+  change coroot (↑β : Weight K H L) ∈ (↑α : Weight K H L).ker
+  rw [← orthogonal_span_coroot_eq_ker,
+    LinearMap.BilinForm.orthogonal_span_singleton_eq_toLin_ker, LinearMap.mem_ker]
+  exact traceForm_eq_zero_of_mem_ker_of_mem_span_coroot h_ker
+    (Submodule.mem_span_singleton_self _)
 
 omit [CharZero K] [IsKilling K L] [IsTriangularizable K H L] in
 /-- The coroot span of a Lie ideal is contained in the Cartan part of the ideal. -/
