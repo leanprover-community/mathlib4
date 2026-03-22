@@ -138,10 +138,7 @@ lemma shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
 @[simp] lemma shiftLeft_eq' (m n : Nat) : shiftLeft m n = m <<< n := rfl
 @[simp] lemma shiftRight_eq (m n : Nat) : shiftRight m n = m >>> n := rfl
 
-lemma div2_lt_self (h : n ≠ 0) : div2 n < n :=
-  div_lt_self (Nat.pos_iff_ne_zero.mpr h) Nat.one_lt_two
-
-@[deprecated (since := "2026-03-22")] alias binaryRec_decreasing := div2_lt_self
+lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by grind
 
 /-- `size n` : Returns the size of a natural number in
 bits i.e. the length of its binary representation -/
