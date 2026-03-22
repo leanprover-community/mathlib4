@@ -772,8 +772,6 @@ def unop (e : Cᵒᵖ ≌ Dᵒᵖ) : C ≌ D where
 
 end Equivalence
 
-set_option linter.translateReorder false in
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between arrows of the form `A ⟶ B` and `B.unop ⟶ A.unop`. Useful for building
 adjunctions.
 Note that this (definitionally) gives variants
@@ -788,7 +786,7 @@ def opEquiv''' (A B : C) : (Opposite.op A ⟶ Opposite.op B) ≃ (B ⟶ A) :=
   opEquiv _ _
 ```
 -/
-@[to_dual self, simps (attr := to_dual self (reorder := A B))]
+@[to_dual self, simps (attr := to_dual self)]
 def opEquiv (A B : Cᵒᵖ) : (A ⟶ B) ≃ (B.unop ⟶ A.unop) where
   toFun f := f.unop
   invFun g := g.op
