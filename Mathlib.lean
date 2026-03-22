@@ -2189,8 +2189,10 @@ public import Mathlib.Analysis.NormedSpace.RCLike
 public import Mathlib.Analysis.NormedSpace.Real
 public import Mathlib.Analysis.NormedSpace.RieszLemma
 public import Mathlib.Analysis.NormedSpace.SphereNormEquiv
+public import Mathlib.Analysis.ODE.Basic
 public import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Analysis.ODE.PicardLindelof
+public import Mathlib.Analysis.ODE.Transform
 public import Mathlib.Analysis.Oscillation
 public import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.PSeriesComplex
@@ -2434,6 +2436,7 @@ public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 public import Mathlib.CategoryTheory.Bicategory.Functor.Strict
 public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
 public import Mathlib.CategoryTheory.Bicategory.Functor.StrictlyUnitary
+public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Lax
 public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
 public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Pseudo
 public import Mathlib.CategoryTheory.Bicategory.Grothendieck
@@ -2443,6 +2446,7 @@ public import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 public import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
 public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 public import Mathlib.CategoryTheory.Bicategory.LocallyGroupoid
+public import Mathlib.CategoryTheory.Bicategory.Modification.Lax
 public import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 public import Mathlib.CategoryTheory.Bicategory.Modification.Pseudo
 public import Mathlib.CategoryTheory.Bicategory.Monad.Basic
@@ -3253,7 +3257,9 @@ public import Mathlib.CategoryTheory.Sites.Point.Category
 public import Mathlib.CategoryTheory.Sites.Point.Comap
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
 public import Mathlib.CategoryTheory.Sites.Point.IsMonoidalW
+public import Mathlib.CategoryTheory.Sites.Point.Map
 public import Mathlib.CategoryTheory.Sites.Point.Monoidal
+public import Mathlib.CategoryTheory.Sites.Point.OfIsCofiltered
 public import Mathlib.CategoryTheory.Sites.Point.Over
 public import Mathlib.CategoryTheory.Sites.Point.Presheaf
 public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
@@ -3407,6 +3413,7 @@ public import Mathlib.Combinatorics.Enumerative.Schroder
 public import Mathlib.Combinatorics.Enumerative.Stirling
 public import Mathlib.Combinatorics.Extremal.RuzsaSzemeredi
 public import Mathlib.Combinatorics.Graph.Basic
+public import Mathlib.Combinatorics.Graph.Subgraph
 public import Mathlib.Combinatorics.HalesJewett
 public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Combinatorics.Hall.Finite
@@ -4137,6 +4144,7 @@ public import Mathlib.Data.Real.CompleteField
 public import Mathlib.Data.Real.ConjExponents
 public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Data.Real.Embedding
+public import Mathlib.Data.Real.Hom
 public import Mathlib.Data.Real.Irrational
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.Real.Sign
@@ -4691,6 +4699,7 @@ public import Mathlib.Lean.GoalsLocation
 public import Mathlib.Lean.Json
 public import Mathlib.Lean.Linter
 public import Mathlib.Lean.LocalContext
+public import Mathlib.Lean.MessageData.ForExprs
 public import Mathlib.Lean.MessageData.Trace
 public import Mathlib.Lean.Meta
 public import Mathlib.Lean.Meta.Basic
@@ -5455,6 +5464,7 @@ public import Mathlib.NumberTheory.AbelSummation
 public import Mathlib.NumberTheory.ArithmeticFunction
 public import Mathlib.NumberTheory.ArithmeticFunction.Carmichael
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.NumberTheory.ArithmeticFunction.LFunction
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
@@ -7325,6 +7335,7 @@ public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Topology.Algebra.UniformFilterBasis
 public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.Algebra.UniformRing
+public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.Valued.LocallyCompact
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology
