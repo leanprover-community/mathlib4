@@ -10,12 +10,17 @@ public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.ContinuousMap.Ordered
 import Mathlib.Topology.ContinuousMap.Units
 
+/-! # Mapping `C(X, ℝ)` to `C(X, 𝕜)` and back
+
+This file contains the definitions for `ContinuousMap.realToRCLike` and
+`ContinuousMap.rclikeToReal`, which map `C(X, ℝ)` to `C(X, 𝕜)` and back for any `RCLike 𝕜`. -/
+
 @[expose] public section
 
 namespace ContinuousMap
 variable {X : Type*} (𝕜 : Type*) [TopologicalSpace X] [RCLike 𝕜]
 
-/-- Lifting `C(A, ℝ)` to `C(A, 𝕜)` using `RCLike.ofReal`. -/
+/-- Lifting `C(X, ℝ)` to `C(X, 𝕜)` using `RCLike.ofReal`. -/
 @[simps] def realToRCLike (f : C(X, ℝ)) : C(X, 𝕜) where toFun x := RCLike.ofReal (f x)
 
 @[simp] lemma isSelfAdjoint_realToRCLike {f : C(X, ℝ)} : IsSelfAdjoint (f.realToRCLike 𝕜) := by
@@ -31,7 +36,7 @@ lemma monotone_realToRCLike : Monotone (realToRCLike (X := X) 𝕜) :=
   fun f g hfg x ↦ by simpa using hfg x
 
 variable {𝕜} in
-/-- Mapping `C(A, 𝕜)` to `C(A, ℝ)` using `RCLike.re`. -/
+/-- Mapping `C(X, 𝕜)` to `C(X, ℝ)` using `RCLike.re`. -/
 @[simps] def rclikeToReal (f : C(X, 𝕜)) : C(X, ℝ) where toFun x := RCLike.re (f x)
 
 @[simp] theorem rclikeToReal_realToRCLike (f : C(X, ℝ)) :
