@@ -59,10 +59,6 @@ lemma objMk₁_of_le_castSucc {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h :
     dsimp% objMk₁.{u} i j = 1 := by
   simpa [objMk₁_apply_eq_one_iff]
 
--- to be moved
-lemma _root_.Fin.eq_iff_eq_zero_iff (a b : Fin 2) : a = b ↔ (a = 0 ↔ b = 0) := by
-  fin_cases a <;> fin_cases b <;> tauto
-
 lemma δ_objMk₁_of_le {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : i ≤ j.castSucc) :
     Δ[1].δ j (objMk₁.{u} i) =
       objMk₁.{u} (i.castPred (Fin.ne_last_of_lt (lt_of_le_of_lt h j.castSucc_lt_succ))) := by
