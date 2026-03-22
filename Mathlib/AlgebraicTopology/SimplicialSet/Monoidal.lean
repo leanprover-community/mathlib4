@@ -179,8 +179,8 @@ variable (X Y : SSet.{u})
 section
 
 variable {m n : SimplexCategoryᵒᵖ} (f : m ⟶ n) (z : (X ⊗ Y).obj m)
-@[simp] lemma prod_map_fst : ((X ⊗ Y).map f z).1 = X.map f z.1 := rfl
-@[simp] lemma prod_map_snd : ((X ⊗ Y).map f z).2 = Y.map f z.2 := rfl
+@[simp high, grind =] lemma prod_map_fst : ((X ⊗ Y).map f z).1 = X.map f z.1 := rfl
+@[simp high, grind =] lemma prod_map_snd : ((X ⊗ Y).map f z).2 = Y.map f z.2 := rfl
 
 end
 
