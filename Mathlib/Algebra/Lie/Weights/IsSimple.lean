@@ -486,39 +486,34 @@ lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
       by_cases hαI : (⟨α, hα_root⟩ : H.root) ∈ I.rootSet
       · exact le_sup_of_le_left (le_iSup₂_of_le ⟨α, hα_root⟩ hαI le_rfl)
       · exact le_sup_of_le_right (le_iSup₂_of_le ⟨α, hα_root⟩ hαI le_rfl)
-  have hS_I_sub : ∀ z ∈ S_I,
-      (z : L) ∈ (⨆ α ∈ I.rootSet, corootSubmodule α.1 : LieSubmodule K H L) := by
-    intro z hz
+  obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp (h_top ▸ Submodule.mem_top (x := h))
+  have haI : (a : L) ∈ I := (iSup₂_le (fun α hα z hz ↦
+    (I.corootSubmodule_le hα) (Submodule.mem_span_singleton.mp hz |>.choose_spec ▸
+      (corootSubmodule α.1).toSubmodule.smul_mem _
+        (coe_coroot_mem_corootSubmodule α.1))) : S_I ≤
+    Submodule.comap H.toSubmodule.subtype I.toSubmodule) ha
+  have hbI : (b : L) ∈ I := by
+    have h_add : (a : L) + (b : L) = x := congr_arg Subtype.val hab
+    rw [show (b : L) = x - a from by rw [← h_add, add_sub_cancel_left]]
+    exact I.toSubmodule.sub_mem hxI haI
+  suffices hb_zero : b = 0 by
+    subst hb_zero; rw [add_zero] at hab; subst hab
     refine (iSup₂_le (fun α hα z hz ↦ ?_) : S_I ≤
         Submodule.comap H.toSubmodule.subtype
-          (⨆ α ∈ I.rootSet, corootSubmodule α.1 : LieSubmodule K H L)) hz
+          (⨆ α ∈ I.rootSet, corootSubmodule α.1 : LieSubmodule K H L)) ha
     obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.mp hz
     exact (le_iSup₂_of_le α hα le_rfl : corootSubmodule α.1 ≤ _)
-      ((corootSubmodule α.1).toSubmodule.smul_mem _
-        (coe_coroot_mem_corootSubmodule α.1))
-  obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp (h_top ▸ Submodule.mem_top (x := h))
-  have haI : (a : L) ∈ I :=
-    ((iSup₂_le (fun _ hα ↦ le_inf (I.corootSubmodule_le hα) LieSubmodule.map_incl_le))
-      (hS_I_sub a ha)).1
-  have hbI : (b : L) ∈ I := by
-    have h_eq_sub : (b : L) = x - (a : L) := by
-      have h_add : (a : L) + (b : L) = x := congr_arg Subtype.val hab
-      rw [← h_add, add_sub_cancel_left]
-    rw [h_eq_sub]; exact I.toSubmodule.sub_mem hxI haI
-  have hb_zero : b = 0 := by
-    suffices b ∈ ⨅ α : Weight K H L, α.ker by simpa [iInf_ker_weight_eq_bot] using this
-    refine (Submodule.mem_iInf _).mpr fun μ ↦ ?_
-    by_cases hμ : μ.IsNonZero
-    · have hμ_root : μ ∈ H.root := by simpa [LieSubalgebra.root] using hμ
-      by_cases hμI : (⟨μ, hμ_root⟩ : H.root) ∈ I.rootSet
-      · exact (iSup₂_le fun γ hγ ↦ Submodule.span_le.mpr <| by
-          simp [Set.singleton_subset_iff, rootSet_apply_coroot_eq_zero I hμI hγ]) hb
-      · exact weight_apply_eq_zero_of_not_mem_rootSet I hbI hμI
-    · simp only [Weight.IsNonZero, not_not] at hμ
-      exact LinearMap.mem_ker.mpr (congr_fun hμ b)
-  have h_eq : h = a := by rw [← hab, hb_zero, add_zero]
-  subst h_eq
-  exact hS_I_sub h ha
+      ((corootSubmodule α.1).toSubmodule.smul_mem _ (coe_coroot_mem_corootSubmodule α.1))
+  suffices b ∈ ⨅ α : Weight K H L, α.ker by simpa [iInf_ker_weight_eq_bot] using this
+  refine (Submodule.mem_iInf _).mpr fun μ ↦ ?_
+  by_cases hμ : μ.IsNonZero
+  · have hμ_root : μ ∈ H.root := by simpa [LieSubalgebra.root] using hμ
+    by_cases hμI : (⟨μ, hμ_root⟩ : H.root) ∈ I.rootSet
+    · exact (iSup₂_le fun γ hγ ↦ Submodule.span_le.mpr <| by
+        simp [Set.singleton_subset_iff, rootSet_apply_coroot_eq_zero I hμI hγ]) hb
+    · exact weight_apply_eq_zero_of_not_mem_rootSet I hbI hμI
+  · simp only [Weight.IsNonZero, not_not] at hμ
+    exact LinearMap.mem_ker.mpr (congr_fun hμ b)
 
 instance [IsSimple K L] : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L
