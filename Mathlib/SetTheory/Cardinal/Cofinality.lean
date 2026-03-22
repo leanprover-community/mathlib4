@@ -210,7 +210,7 @@ theorem cof_toType (o : Ordinal) : Order.cof o.ToType = o.cof := by
 
 @[simp]
 theorem lift_cof (o : Ordinal.{u}) : Cardinal.lift.{v} (cof o) = cof (Ordinal.lift.{v} o) := by
-  induction o using inductionOnWellOrder with | H α
+  cases o using inductionOnWellOrder with | type α
   rw [cof_type, ← type_lt_ulift, cof_type, ← Cardinal.lift_id'.{u, v} (Order.cof (ULift _)),
     ← Cardinal.lift_umax, ← ULift.orderIso.lift_cof_congr]
 
@@ -240,7 +240,7 @@ theorem cof_zero : cof 0 = 0 :=
   cof_eq_zero.2 rfl
 
 theorem cof_eq_one_iff {o} : cof o = 1 ↔ o ∈ range succ := by
-  induction o using inductionOnWellOrder with | H α
+  cases o using inductionOnWellOrder with | type α
   rw [cof_type, Order.cof_eq_one_iff, type_lt_mem_range_succ_iff]
   simp_rw [isTop_iff_isMax]
 
@@ -306,6 +306,21 @@ theorem ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
     · simp_all [Subtype.coe_inj]
     · obtain ⟨x, z, hz, rfl⟩ := x
       exact (hz _ hxy').asymm hxy
+
+@[simp]
+theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α] :
+    (Order.cof α).ord.cof = Order.cof α := by
+  obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
+  rw [← hs', cof_type]
+  apply le_antisymm
+  · rw [← card_ord (Order.cof α), ← hs', card_type]
+    exact cof_le_cardinalMk s
+  · rw [le_cof_iff]
+    exact fun t ht ↦ (cof_le (hs.trans ht)).trans_eq (mk_image_eq Subtype.val_injective)
+
+@[simp]
+theorem cof_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
+  simpa using Order.cof_ord_cof o.ToType
 
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
@@ -589,12 +604,6 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
       · by_contra! H
         exact (wo.wf.not_lt_min {j | r j i ∧ f i ≤ f j} ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
       · rwa [bfamilyOfFamily'_typein]
-
-@[simp]
-theorem cof_cof (a : Ordinal.{u}) : cof (cof a).ord = cof a := by
-  obtain ⟨f, hf⟩ := exists_fundamental_sequence a
-  obtain ⟨g, hg⟩ := exists_fundamental_sequence a.cof.ord
-  exact ord_injective (hf.trans hg).cof_eq.symm
 
 theorem IsFundamentalSequence.of_isNormal {f : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
     {a o} (ha : IsSuccLimit a) {g} (hg : IsFundamentalSequence a o g) :
