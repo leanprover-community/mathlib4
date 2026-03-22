@@ -518,8 +518,7 @@ lemma isZero_spectralSequence_page_X_of_isZero_H (r : ℤ) (hr : r₀ ≤ r)
   exact isZero_E_of_isZero_H _ _ _ _ _ _ _ h
 
 /-- isZero_spectralSequence_page_X_of_isZero_H' -/
-lemma isZero_spectralSequence_page_X_of_isZero_H' (r : ℤ) (hr : r₀ ≤ r)
-    (pq : κ)
+lemma isZero_spectralSequence_page_X_of_isZero_H' (r : ℤ) (hr : r₀ ≤ r) (pq : κ)
     (h : IsZero ((X.H (data.deg pq)).obj (mk₁ (homOfLE (data.le₁₂ pq))))) :
     IsZero (((X.spectralSequence data).page r).X pq) :=
   X.isZero_spectralSequence_page_X_of_isZero_H data r hr pq _ rfl _ _ rfl rfl h
