@@ -325,6 +325,9 @@ theorem one_le_iff_ne_zero {c : Cardinal} : 1 ≤ c ↔ c ≠ 0 := by
 theorem lt_one_iff_zero {c : Cardinal} : c < 1 ↔ c = 0 := by
   simpa using lt_succ_bot_iff (a := c)
 
+theorem le_one_iff {c : Cardinal} : c ≤ 1 ↔ c = 0 ∨ c = 1 := by
+  simpa using @le_succ_bot_iff _ _ _ c _
+
 /-! ### Properties about `aleph0` -/
 
 @[simp] lemma natCast_lt_aleph0 {n : ℕ} : (n : Cardinal.{u}) < ℵ₀ := by
