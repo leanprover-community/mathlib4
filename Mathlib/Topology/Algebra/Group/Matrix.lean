@@ -13,6 +13,8 @@ public import Mathlib.Topology.Instances.Matrix
 /-!
 # Topology on matrix groups
 
+Lemmas about the topology of matrix groups, such as `GL(n, R)` and `SL(n, R)` for a
+topological ring `R`.
 -/
 
 @[expose] public section

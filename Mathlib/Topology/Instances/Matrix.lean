@@ -38,6 +38,7 @@ This file is a place to collect topological results about matrices.
 
 @[expose] public section
 
+assert_not_exists Matrix.GeneralLinearGroup Matrix.SpecialLinearGroup -- guard against import creep
 
 open Matrix
 
