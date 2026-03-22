@@ -22,7 +22,7 @@ if all `Ext X Y i` vanish when `n ≤ i`. This defines a type class
 `HasProjectiveDimensionLE`.)
 
 We also define the projective dimension in `WithBot ℕ∞` as `projectiveDimension`,
-`projectiveDimension X = ⊥` iff `X` is zero and acts in common sense in the non-negative values.
+`projectiveDimension X = ⊥` iff `X` is zero and behaves as expected on non-negative values.
 
 -/
 
@@ -254,6 +254,7 @@ lemma Retract.projectiveDimension_le {X Y : C} (h : Retract X Y) :
     have := hn i hi
     exact h.hasProjectiveDimensionLT i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma projectiveDimension_lt_iff {X : C} {n : ℕ} :
     projectiveDimension X < n ↔ HasProjectiveDimensionLT X n := by
   refine ⟨fun h ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩

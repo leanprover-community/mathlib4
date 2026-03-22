@@ -106,6 +106,26 @@ theorem angle_eq_pi_div_two_iff_mem_sphere_ofDiameter {p₁ p₂ p₃ : P} :
 
 alias thales_theorem := angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter
 
+/-- Converse of Thales' theorem in 2D: if three distinct points on a circle
+    form a right angle, then the chord is a diameter. -/
+theorem isDiameter_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} {s : Sphere P}
+    [Fact (finrank ℝ V = 2)]
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s)
+    (hne₁₂ : p₁ ≠ p₂) (hne₂₃ : p₂ ≠ p₃)
+    (hangle : ∠ p₁ p₂ p₃ = π / 2) :
+    s.IsDiameter p₁ p₃ := by
+  haveI : FiniteDimensional ℝ V := .of_finrank_eq_succ (Fact.out : finrank ℝ V = 2)
+  have hne₁₃ : p₁ ≠ p₃ := fun h ↦ by
+    rw [h, angle_self_of_ne hne₂₃.symm] at hangle; linarith [Real.pi_pos]
+  have hd := Sphere.isDiameter_ofDiameter p₁ p₃
+  have h_eq : s = Sphere.ofDiameter p₁ p₃ := by
+    by_contra hne
+    have := eq_of_mem_sphere_of_mem_sphere_of_finrank_eq_two
+      (Fact.out : finrank ℝ V = 2) hne hne₁₃ hp₁ hp₃ hp₂
+      hd.left_mem hd.right_mem (angle_eq_pi_div_two_iff_mem_sphere_ofDiameter.mp hangle)
+    exact this.elim hne₁₂.symm hne₂₃
+  exact h_eq ▸ hd
+
 /-- For a tangent line to a sphere, the angle between the line and the radius at the tangent point
 equals `π / 2`. -/
 theorem IsTangentAt.angle_eq_pi_div_two {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P}
@@ -405,6 +425,7 @@ theorem mem_circumsphere_of_two_zsmul_oangle_eq {t : Triangle ℝ P} {p : P} {i�
 
 end Oriented
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The circumradius of a triangle may be expressed explicitly as half the length of a side
 divided by the sine of the angle at the third point (a version of the law of sines or sine rule). -/
 theorem dist_div_sin_angle_div_two_eq_circumradius (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3}

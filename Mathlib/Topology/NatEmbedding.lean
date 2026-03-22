@@ -24,6 +24,7 @@ open Function Filter Set Topology
 
 variable (X : Type*) [TopologicalSpace X] [T2Space X] [Infinite X]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In an infinite Hausdorff topological space, there exists a sequence of pairwise disjoint
 infinite open sets. -/
 theorem exists_seq_infinite_isOpen_pairwise_disjoint :

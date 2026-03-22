@@ -110,12 +110,12 @@ theorem mem_sieves_iff_coe : S ∈ J.sieves X ↔ S ∈ J X :=
   Iff.rfl
 
 /-- Also known as the maximality axiom. -/
-@[simp]
+@[simp, grind .]
 theorem top_mem (X : C) : ⊤ ∈ J X :=
   J.top_mem' X
 
 /-- Also known as the stability axiom. -/
-@[simp]
+@[simp, grind .]
 theorem pullback_stable (f : Y ⟶ X) (hS : S ∈ J X) : S.pullback f ∈ J Y :=
   J.pullback_stable' f hS
 
@@ -127,6 +127,7 @@ lemma pullback_mem_iff_of_isIso {i : X ⟶ Y} [IsIso i] {S : Sieve Y} :
   convert J.pullback_stable (inv i) H
   rw [← Sieve.pullback_comp, IsIso.inv_hom_id, Sieve.pullback_id]
 
+@[grind .]
 theorem transitive (hS : S ∈ J X) (R : Sieve X) (h : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → R.pullback f ∈ J Y) :
     R ∈ J X :=
   J.transitive' hS R h

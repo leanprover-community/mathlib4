@@ -5,7 +5,6 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Algebra.Order.ToIntervalMod
 public import Mathlib.Analysis.SpecialFunctions.Log.Base
@@ -86,6 +85,7 @@ lemma eventually_atTop_ge_nat {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPoly
   obtain ⟨c, hc_mem, hc⟩ := hf.eventually_atTop_ge hb
   exact ⟨c, hc_mem, hc.natCast_atTop⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃ᶠ x in atTop, f x = 0) :
     ∀ᶠ x in atTop, f x = 0 := by
   obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf (1 / 2) (by norm_num)
@@ -109,11 +109,11 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
     | succ k ih =>
       intro z hxz hz
       simp only [Nat.cast_add, Nat.cast_one] at *
-      have hx' : x ≤ (2 : ℝ)^(-(k : ℤ) - 1) * x₀ := by
+      have hx' : x ≤ (2 : ℝ) ^ (-(k : ℤ) - 1) * x₀ := by
         calc x ≤ z := hxz
           _ ≤ _ := by simp only [neg_add, ← sub_eq_add_neg] at hz; exact hz.2
-      specialize hx ((2 : ℝ)^(-(k : ℤ) - 1) * x₀) hx' z
-      specialize ih ((2 : ℝ)^(-(k : ℤ) - 1) * x₀) hx' ?ineq
+      specialize hx ((2 : ℝ) ^ (-(k : ℤ) - 1) * x₀) hx' z
+      specialize ih ((2 : ℝ) ^ (-(k : ℤ) - 1) * x₀) hx' ?ineq
       case ineq =>
         rw [Set.left_mem_Icc]
         gcongr
@@ -189,45 +189,14 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
       rw [eventually_atTop]
       refine ⟨max n₀ 2, ?_⟩
       refine Real.induction_Ico_mul _ 2 (by norm_num) (by positivity) ?base ?step
-      case base =>
-        intro x ⟨hxlb, hxub⟩
-        have h₁ := calc n₀ ≤ 1 * max n₀ 2 := by simp
-                        _ ≤ 2 * max n₀ 2 := by gcongr; norm_num
-        have h₂ := hn₀ (2 * max n₀ 2) h₁ (max n₀ 2) ⟨by simp, by linarith⟩
-        rw [h₂]
-        exact hn₀ (2 * max n₀ 2) h₁ x ⟨by simp [hxlb], le_of_lt hxub⟩
+      case base => grind
       case step =>
-        intro n hn hyp_ind z hz
-        have z_nonneg : 0 ≤ z := by
-          calc (0 : ℝ) ≤ (2 : ℝ) ^ n * max n₀ 2 := by
-                        exact mul_nonneg (pow_nonneg (by norm_num) _) (by norm_num)
-                  _ ≤ z := by exact_mod_cast hz.1
+        intro n _ _ z _
         have le_2n : max n₀ 2 ≤ (2 : ℝ) ^ n * max n₀ 2 := by
-          nth_rewrite 1 [← one_mul (max n₀ 2)]
-          gcongr
-          exact one_le_pow₀ (by norm_num : (1 : ℝ) ≤ 2)
-        have n₀_le_z : n₀ ≤ z := by
-          calc n₀ ≤ max n₀ 2 := by simp
-                _ ≤ (2 : ℝ) ^ n * max n₀ 2 := le_2n
-                _ ≤ _ := by exact_mod_cast hz.1
-        have fz_eq_c₂fz : f z = c₂ * f z := hn₀ z n₀_le_z z ⟨by linarith, le_rfl⟩
-        have z_to_half_z' : f (1 / 2 * z) = c₂ * f z :=
-          hn₀ z n₀_le_z (1 / 2 * z) ⟨le_rfl, by linarith⟩
-        have z_to_half_z : f (1 / 2 * z) = f z := by rwa [← fz_eq_c₂fz] at z_to_half_z'
+          simp [one_le_pow₀ (show (1 : ℝ) ≤ 2 by norm_num1)]
         have half_z_to_base : f (1 / 2 * z) = f (max n₀ 2) := by
-          refine hyp_ind (1 / 2 * z) ⟨?lb, ?ub⟩
-          case lb =>
-            calc max n₀ 2 ≤ (1 / 2 : ℝ) * (2 : ℝ) ^ 1 * max n₀ 2 := by simp
-                        _ ≤ (1 / 2 : ℝ) * (2 : ℝ) ^ n * max n₀ 2 := by gcongr; norm_num
-                        _ ≤ _ := by rw [mul_assoc]; gcongr; exact_mod_cast hz.1
-          case ub =>
-            have h₁ : (2 : ℝ) ^ n = (1 / 2 : ℝ) * (2 : ℝ) ^ (n + 1) := by
-              rw [one_div, pow_add, pow_one]
-              ring
-            rw [h₁, mul_assoc]
-            gcongr
-            exact_mod_cast hz.2
-        rw [← z_to_half_z, half_z_to_base]
+          grind [mul_assoc]
+        grind
     obtain ⟨c, hc⟩ := hmain
     cases le_or_gt 0 c with
     | inl hpos =>
@@ -505,6 +474,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
            _ = c₂ / 3 * (3 / 2 * f x) := by ring
            _ ≤ c₂ / 3 * (f x + g x) := by gcongr
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma GrowsPolynomially.inv {f : ℝ → ℝ} (hf : GrowsPolynomially f) :
     GrowsPolynomially fun x => (f x)⁻¹ := by
   cases hf.eventually_atTop_zero_or_pos_or_neg with

@@ -302,6 +302,7 @@ theorem add_eq_iff {x y z : Tropical R} : x + y = z ↔ x = z ∧ x ≤ y ∨ y 
   rw [trop_add_def, trop_eq_iff_eq_untrop]
   simp [min_eq_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem add_eq_zero_iff {a b : Tropical (WithTop R)} : a + b = 0 ↔ a = 0 ∧ b = 0 := by
   rw [add_eq_iff]
@@ -485,7 +486,7 @@ instance : CommSemiring (Tropical R) :=
 @[simp]
 theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : Tropical R) (n : ℕ) : (n + 1) • x = x := by
   induction n with
-  | zero => simp
+  | zero => simp [one_nsmul]
   | succ n IH => rw [add_nsmul, IH, one_nsmul, add_self]
 
 -- TODO: find/create the right classes to make this hold (for enat, ennreal, etc)

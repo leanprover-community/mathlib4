@@ -113,10 +113,8 @@ theorem antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
   simp [Nat.cast_add_one_ne_zero k]
 
 theorem integral_bernoulliFun : ∫ x : ℝ in 0..1, bernoulliFun k x = if k = 0 then 1 else 0 := by
-  simp +contextual [
-    integral_eq_sub_of_hasDerivAt (fun x _ => antideriv_bernoulliFun k x)
-      (intervalIntegrable_bernoulliFun k _ _),
-    bernoulliFun_eval_one, ← sub_div, ite_div]
+  simp +contextual [integral_eq_sub_of_hasDerivAt (fun x _ => antideriv_bernoulliFun k x)
+      (intervalIntegrable_bernoulliFun k _ _), bernoulliFun_eval_one, ← sub_div, ite_div]
 
 variable {k} in
 theorem integral_bernoulliFun_eq_zero (hk : k ≠ 0) :
@@ -139,6 +137,7 @@ theorem bernoulliFun_eval_one_sub {k : ℕ} {x : ℝ} :
   simpa [bernoulliFun, Polynomial.aeval_comp]
     using congr_arg (·.aeval x) (Polynomial.bernoulli_comp_one_sub_X k)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The multiplication theorem. Proof follows https://math.stackexchange.com/a/1721099/38218. -/
 theorem bernoulliFun_mul (k : ℕ) {m : ℕ} (m0 : m ≠ 0) (x : ℝ) :
     bernoulliFun k (m * x) =
@@ -242,6 +241,7 @@ theorem bernoulliFourierCoeff_recurrence (k : ℕ) {n : ℤ} (hn : n ≠ 0) :
 theorem bernoulli_zero_fourier_coeff {n : ℤ} (hn : n ≠ 0) : bernoulliFourierCoeff 0 n = 0 := by
   simpa using bernoulliFourierCoeff_recurrence 0 hn
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `0`-th Fourier coefficient of `Bₖ(x)`. -/
 theorem bernoulliFourierCoeff_zero {k : ℕ} (hk : k ≠ 0) : bernoulliFourierCoeff k 0 = 0 := by
   simp_rw [bernoulliFourierCoeff, fourierCoeffOn_eq_integral, neg_zero, fourier_zero, sub_zero,

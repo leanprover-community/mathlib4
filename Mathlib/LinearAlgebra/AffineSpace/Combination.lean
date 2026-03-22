@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.Tactic.FinCases
 
 /-!
 # Affine combinations of points
@@ -403,11 +402,13 @@ theorem affineCombination_vsub (w₁ w₂ : ι → k) (p : ι → P) :
     s.affineCombination k p w₁ -ᵥ s.affineCombination k p w₂ = s.weightedVSub p (w₁ - w₂) := by
   rw [← AffineMap.linearMap_vsub, affineCombination_linear, vsub_eq_sub]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w : P → k) (f : s → P)
     (hf : Function.Injective f) :
     s.attach.affineCombination k f (w ∘ f) = (image f univ).affineCombination k id w := by
   simp [affineCombination, hf]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem attach_affineCombination_coe (s : Finset P) (w : P → k) :
     s.attach.affineCombination k ((↑) : s → P) (w ∘ (↑)) = s.affineCombination k id w := by
   classical rw [attach_affineCombination_of_injective s w ((↑) : s → P) Subtype.coe_injective,
@@ -713,6 +714,7 @@ section AffineSpace'
 
 variable {ι k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A `weightedVSub` with sum of weights 0 is in the `vectorSpan` of
 an indexed family. -/
 theorem weightedVSub_mem_vectorSpan {s : Finset ι} {w : ι → k} (h : ∑ i ∈ s, w i = 0)

@@ -96,6 +96,7 @@ theorem cpow_sub {x : ℂ} (y z : ℂ) (hx : x ≠ 0) : x ^ (y - z) = x ^ y / x 
 
 theorem cpow_neg_one (x : ℂ) : x ^ (-1 : ℂ) = x⁻¹ := by simpa using cpow_neg x 1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- See also `Complex.cpow_int_mul'`. -/
 lemma cpow_int_mul (x : ℂ) (n : ℤ) (y : ℂ) : x ^ (n * y) = (x ^ y) ^ n := by
   rcases eq_or_ne x 0 with rfl | hx

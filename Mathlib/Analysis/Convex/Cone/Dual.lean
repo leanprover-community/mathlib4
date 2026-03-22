@@ -128,6 +128,7 @@ theorem hyperplane_separation (C : ProperCone ℝ E) (hKconv : Convex ℝ K) (hK
   simpa [hx₀.ne] using hv ((v * (f x)⁻¹) • x)
     (C.smul_mem hx <| le_of_lt <| mul_pos_of_neg_of_neg hv₀ <| inv_neg''.2 hx₀)
 
+set_option backward.isDefEq.respectTransparency false in
 open ConvexCone in
 /-- Geometric interpretation of **Farkas' lemma**. Also stronger version of the
 **Hahn-Banach separation theorem** for proper cones. -/
@@ -139,7 +140,7 @@ theorem hyperplane_separation_point (C : ProperCone ℝ E) (hx₀ : x₀ ∉ C) 
 @[simp] theorem dual_flip_dual (p : E →ₗ[ℝ] F →ₗ[ℝ] ℝ) [p.IsContPerfPair] (C : ProperCone ℝ E) :
     dual p.flip (dual p (C : Set E)) = C := by
   refine le_antisymm (fun x ↦ ?_) subset_dual_dual
-  simp only [mem_toPointedCone, mem_dual, SetLike.mem_coe]
+  simp only [mem_dual, SetLike.mem_coe]
   contrapose!
   simpa [p.flip.toContPerfPair.surjective.exists] using C.hyperplane_separation_point
 

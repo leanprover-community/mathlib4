@@ -106,6 +106,7 @@ lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
   rw [term_of_ne_zero hp₁, term_of_ne_zero hp₂, mul_comm_div, div_div, ← mul_div_assoc,
     ← natCast_mul_natCast_cpow, ← cast_mul, mul_comm p.2, (mem_divisorsAntidiagonal.mp hp).1]
 
+set_option backward.isDefEq.respectTransparency false in
 open Set in
 /-- We give an expression of the `LSeries.term` of the convolution of two functions
 in terms of an a priori infinite sum over all pairs `(k, m)` with `k * m = n`

@@ -21,7 +21,7 @@ and corresponding API.
 The Bochner integral is defined through the extension process described in the file
 `Mathlib/MeasureTheory/Integral/SetToL1.lean`, which follows these steps:
 
-1. Define the integral of the indicator of a set. This is `weightedSMul μ s x = μ.real s * x`.
+1. Define the integral of the indicator of a set. This is `weightedSMul μ s x = μ.real s • x`.
   `weightedSMul μ` is shown to be linear in the value `x` and `DominatedFinMeasAdditive`
   (defined in the file `Mathlib/MeasureTheory/Integral/SetToL1.lean`) with respect to the set `s`.
 
@@ -43,9 +43,6 @@ The Bochner integral is defined through the extension process described in the f
                 `Mathlib/MeasureTheory/Function/LpSpace/Basic.lean`)
 * `α →₁ₛ[μ] E` : simple functions in L1 space, i.e., equivalence classes of integrable simple
                  functions (defined in `Mathlib/MeasureTheory/Function/SimpleFuncDenseLp.lean`)
-
-We also define notations for integral on a set, which are described in the file
-`Mathlib/MeasureTheory/Integral/SetIntegral.lean`.
 
 Note: `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is missing.
 
@@ -209,6 +206,7 @@ theorem integral_eq_sum_filter [DecidablePred fun x : F => x ≠ 0] {m : Measura
     f.integral μ = ∑ x ∈ {x ∈ f.range | x ≠ 0}, μ.real (f ⁻¹' {x}) • x := by
   simp_rw [integral_def, setToSimpleFunc_eq_sum_filter, weightedSMul_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Bochner integral is equal to a sum over any set that includes `f.range` (except `0`). -/
 theorem integral_eq_sum_of_subset [DecidablePred fun x : F => x ≠ 0] {f : α →ₛ F} {s : Finset F}
     (hs : {x ∈ f.range | x ≠ 0} ⊆ s) :
@@ -356,8 +354,7 @@ lemma integral_mono_measure {ν} {f : α →ₛ F} (hf : 0 ≤ᵐ[ν] f) (hμν 
     · simp [← hx]
     simp only [measureReal_def]
     gcongr
-    · exact integrable_iff.mp hfν (f x) hx.ne' |>.ne
-    · exact hμν _
+    exact integrable_iff.mp hfν (f x) hx.ne' |>.ne
   · suffices ν (f ⁻¹' {f x}) = 0 by
       have A : μ (f ⁻¹' {f x}) = 0 := by simpa using (hμν _ |>.trans_eq this)
       simp [measureReal_def, A, this]
@@ -460,6 +457,7 @@ local notation "Integral" => integralCLM α E μ
 
 open ContinuousLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_Integral_le_one : ‖Integral‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ zero_le_one fun f ↦ by
     simpa [one_mul] using norm_integral_le_norm f

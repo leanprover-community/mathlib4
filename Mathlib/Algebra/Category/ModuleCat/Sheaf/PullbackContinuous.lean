@@ -72,6 +72,7 @@ variable [(PresheafOfModules.pushforward.{v} φ.val).IsRightAdjoint]
 
 namespace PullbackConstruction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construction of a left adjoint to the functor `pushforward.{v} φ` by using the
 pullback of presheaves of modules and the sheafification. -/
 noncomputable def adjunction :
@@ -88,7 +89,7 @@ noncomputable def adjunction :
         -- these erw seem difficult to remove
         erw [Adjunction.homEquiv_naturality_left_symm,
           Adjunction.homEquiv_naturality_left_symm]
-        dsimp
+        dsimp [pushforward_obj_val]
         simp only [Functor.map_comp, Category.assoc]
       homEquiv_naturality_right := by
         tauto }

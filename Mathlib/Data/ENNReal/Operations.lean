@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Data.ENNReal.Real
+public import Mathlib.Tactic.Finiteness
 
 /-!
 # Properties of addition, multiplication and subtraction on extended non-negative real numbers
@@ -47,9 +48,11 @@ protected lemma pow_lt_pow_left_iff {n : ℕ} (hn : n ≠ 0) : a ^ n < b ^ n ↔
   pow_le_pow_left' h n
 @[mono, gcongr] protected alias ⟨_, pow_lt_pow_left⟩ := ENNReal.pow_lt_pow_left_iff
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mul_left_strictMono (h₀ : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (· * a) :=
   WithTop.mul_left_strictMono (pos_iff_ne_zero.2 h₀) hinf
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mul_right_strictMono (h₀ : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * ·) :=
   WithTop.mul_right_strictMono (pos_iff_ne_zero.2 h₀) hinf
 
@@ -250,28 +253,16 @@ lemma pow_lt_top (ha : a < ∞) : a ^ n < ∞ := WithTop.pow_lt_top ha
 
 end OperationsAndInfty
 
--- TODO: generalize to `WithTop`
-@[gcongr] protected theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d := by
-  lift a to ℝ≥0 using ac.ne_top
-  lift b to ℝ≥0 using bd.ne_top
-  cases c; · simp
-  cases d; · simp
-  simp only [← coe_add, coe_lt_coe] at *
-  exact add_lt_add ac bd
+protected theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d :=
+  WithTop.add_lt_add ac bd
 
 section Cancel
 
--- TODO: generalize to `WithTop`
 /-- An element `a` is `AddLECancellable` if `a + b ≤ a + c` implies `b ≤ c` for all `b` and `c`.
   This is true in `ℝ≥0∞` for all elements except `∞`. -/
 @[simp]
-theorem addLECancellable_iff_ne {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ := by
-  constructor
-  · rintro h rfl
-    refine zero_lt_one.not_ge (h ?_)
-    simp
-  · rintro h b c hbc
-    apply ENNReal.le_of_add_le_add_left h hbc
+theorem addLECancellable_iff_ne {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ :=
+  WithTop.addLECancellable_iff_ne_top
 
 /-- This lemma has an abbreviated name because it is used frequently. -/
 theorem cancel_of_ne {a : ℝ≥0∞} (h : a ≠ ∞) : AddLECancellable a :=
@@ -511,12 +502,15 @@ theorem image_coe_Ioc (x y : ℝ≥0) : (↑) '' Ioc x y = Ioc (x : ℝ≥0∞) 
 @[simp]
 theorem image_coe_Ioo (x y : ℝ≥0) : (↑) '' Ioo x y = Ioo (x : ℝ≥0∞) y := WithTop.image_coe_Ioo
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem image_coe_uIcc (x y : ℝ≥0) : (↑) '' uIcc x y = uIcc (x : ℝ≥0∞) y := by simp [uIcc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem image_coe_uIoc (x y : ℝ≥0) : (↑) '' uIoc x y = uIoc (x : ℝ≥0∞) y := by simp [uIoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem image_coe_uIoo (x y : ℝ≥0) : (↑) '' uIoo x y = uIoo (x : ℝ≥0∞) y := by simp [uIoo]
 

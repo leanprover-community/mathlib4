@@ -293,6 +293,7 @@ instance {c d : Cone F} (f : c ≅ d) : IsIso f.hom.hom := ⟨f.inv.hom, by simp
 
 instance {c d : Cone F} (f : c ≅ d) : IsIso f.inv.hom := ⟨f.hom.hom, by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ConeMorphism.map_w {c c' : Cone F} (f : c ⟶ c') (G : C ⥤ D) (j : J) :
     G.map f.hom ≫ G.map (c'.π.app j) = G.map (c.π.app j) := by
@@ -387,6 +388,7 @@ def whiskering (E : K ⥤ J) : Cone F ⥤ Cone (E ⋙ F) where
   obj c := c.whisker E
   map f := { hom := f.hom }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Whiskering by an equivalence gives an equivalence between categories of cones.
 -/
 @[simps]
@@ -421,6 +423,7 @@ def forget : Cone F ⥤ C where
 
 variable (G : C ⥤ D)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A functor `G : C ⥤ D` sends cones over `F` to cones over `F ⋙ G` functorially. -/
 @[simps]
 def functoriality : Cone F ⥤ Cone (F ⋙ G) where
@@ -433,6 +436,7 @@ def functoriality : Cone F ⥤ Cone (F ⋙ G) where
     { hom := G.map f.hom
       w := ConeMorphism.map_w f G }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Functoriality is functorial. -/
 def functorialityCompFunctoriality (H : D ⥤ E) :
     functoriality F G ⋙ functoriality (F ⋙ G) H ≅ functoriality F (G ⋙ H) :=
@@ -447,6 +451,7 @@ instance functoriality_faithful [G.Faithful] : (Cones.functoriality F G).Faithfu
   map_injective {_X} {_Y} f g h :=
     ConeMorphism.ext f g <| G.map_injective <| congr_arg ConeMorphism.hom h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
 equivalence between cones over `F` and cones over `F ⋙ e.functor`.
 -/
@@ -488,6 +493,7 @@ instance inhabitedCoconeMorphism (A : Cocone F) : Inhabited (CoconeMorphism A A)
 
 attribute [reassoc (attr := simp)] CoconeMorphism.w
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance Cocone.category : Category (Cocone F) where
   Hom A B := CoconeMorphism A B
@@ -515,6 +521,7 @@ instance {c d : Cocone F} (f : c ≅ d) : IsIso f.hom.hom := ⟨f.inv.hom, by si
 
 instance {c d : Cocone F} (f : c ≅ d) : IsIso f.inv.hom := ⟨f.hom.hom, by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma CoconeMorphism.map_w {c c' : Cocone F} (f : c ⟶ c') (G : C ⥤ D) (j : J) :
     G.map (c.ι.app j) ≫ G.map f.hom = G.map (c'.ι.app j) := by
@@ -571,6 +578,7 @@ def extendIso (s : Cocone F) {X : C} (f : s.pt ≅ X) : s ≅ s.extend f.hom whe
 instance {s : Cocone F} {X : C} (f : s.pt ⟶ X) [IsIso f] : IsIso (Cocones.extend s f) :=
   ⟨(extendIso s (asIso f)).inv, by cat_disch⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Functorially precompose a cocone for `F` by a natural transformation `G ⟶ F` to give a cocone
 for `G`. -/
 @[simps]
@@ -600,6 +608,7 @@ def precomposeEquivalence {G : J ⥤ C} (α : G ≅ F) : Cocone F ≌ Cocone G w
   unitIso := NatIso.ofComponents fun s => Cocones.ext (Iso.refl _)
   counitIso := NatIso.ofComponents fun s => Cocones.ext (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Whiskering on the left by `E : K ⥤ J` gives a functor from `Cocone F` to `Cocone (E ⋙ F)`.
 -/
 @[simps]
@@ -607,6 +616,7 @@ def whiskering (E : K ⥤ J) : Cocone F ⥤ Cocone (E ⋙ F) where
   obj c := c.whisker E
   map f := { hom := f.hom }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Whiskering by an equivalence gives an equivalence between categories of cones.
 -/
 @[simps]
@@ -641,6 +651,7 @@ def forget : Cocone F ⥤ C where
 
 variable (G : C ⥤ D)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A functor `G : C ⥤ D` sends cocones over `F` to cocones over `F ⋙ G` functorially. -/
 @[simps]
 def functoriality : Cocone F ⥤ Cocone (F ⋙ G) where
@@ -653,6 +664,7 @@ def functoriality : Cocone F ⥤ Cocone (F ⋙ G) where
     { hom := G.map f.hom
       w := CoconeMorphism.map_w f G }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Functoriality is functorial. -/
 def functorialityCompFunctoriality (H : D ⥤ E) :
     functoriality F G ⋙ functoriality (F ⋙ G) H ≅ functoriality F (G ⋙ H) :=
@@ -667,6 +679,7 @@ instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful wher
   map_injective {_X} {_Y} f g h :=
     CoconeMorphism.ext f g <| G.map_injective <| congr_arg CoconeMorphism.hom h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
 equivalence between cocones over `F` and cocones over `F ⋙ e.functor`.
 -/
@@ -882,6 +895,7 @@ def Cone.unop (c : Cone F.op) : Cocone F where
 
 variable (F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The category of cocones on `F`
 is equivalent to the opposite category of
 the category of cones on the opposite of `F`.

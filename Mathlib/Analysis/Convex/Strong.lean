@@ -150,6 +150,7 @@ end NormedSpace
 section InnerProductSpace
 variable [InnerProductSpace ℝ E] {s : Set E} {a b m : ℝ} {x y : E} {f : E → ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma aux_sub (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) :
     a * (f x - m / (2 : ℝ) * ‖x‖ ^ 2) + b * (f y - m / (2 : ℝ) * ‖y‖ ^ 2) +
       m / (2 : ℝ) * ‖a • x + b • y‖ ^ 2

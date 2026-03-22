@@ -233,6 +233,7 @@ def AdjoinRootXPowSubCEquivToRootsOfUnity [NeZero n] (σ : K[n√a] ≃ₐ[K] K[
     rw [div_self]
     rwa [Ne, map_eq_zero_iff _ (algebraMap K _).injective]))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between the roots of unity of `K` and `Gal(K[ⁿ√a]/K)`. -/
 noncomputable
 def autAdjoinRootXPowSubCEquiv [NeZero n] :
@@ -458,6 +459,7 @@ variable (hK : (primitiveRoots (Module.finrank K L) K).Nonempty)
 open Module
 variable (K L)
 
+set_option backward.isDefEq.respectTransparency false in
 include hK in
 /-- If `L/K` is a cyclic extension of degree `n`, and `K` contains all `n`-th roots of unity,
 then `L = K[α]` for some `α ^ n ∈ K`. -/

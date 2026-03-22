@@ -158,6 +158,7 @@ section
 
 variable [∀ (F : C₁ ⥤ D), L.HasLeftKanExtension F] [∀ (F : C₂ ⥤ D), R.HasLeftKanExtension F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The base change natural transformation for left Kan extensions associated to
 a 2-square. -/
 @[simps -isSimp]
@@ -175,12 +176,14 @@ noncomputable def lanBaseChange :
     have := R.lanUnit.naturality_app (T.obj X) τ
     simp [reassoc_of% this]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_lanBaseChange_app_iff (F : C₂ ⥤ D) :
     IsIso (w.lanBaseChange.app F) ↔
       IsLeftKanExtension _ ((LeftExtension.mk _ (R.lanUnit.app F)).compTwoSquare w).hom := by
   rw [lanBaseChange_app, isIso_lanAdjunction_homEquiv_symm_iff]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 instance isIso_lanBaseChange_app (F : C₂ ⥤ D)
     [R.HasPointwiseLeftKanExtension F] [w.GuitartExact] :
     IsIso (w.lanBaseChange.app F) := by

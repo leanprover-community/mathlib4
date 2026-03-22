@@ -63,6 +63,7 @@ def iteratedDerivWithin (n : ℕ) (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) : F
 
 variable {n : ℕ} {f : 𝕜 → F} {s : Set 𝕜} {x : 𝕜}
 
+@[simp]
 theorem iteratedDerivWithin_univ : iteratedDerivWithin n f univ = iteratedDeriv n f := by
   ext x
   rw [iteratedDerivWithin, iteratedDeriv, iteratedFDerivWithin_univ]
@@ -287,6 +288,7 @@ theorem ContDiff.differentiable_iteratedDeriv {n : WithTop ℕ∞} (m : ℕ) (h 
   (contDiff_iff_iteratedDeriv.1 (h.of_le (ENat.add_one_natCast_le_withTop_of_lt hmn))).2 m
     (mod_cast (lt_add_one m))
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem ContDiff.differentiable_iteratedDeriv' (m : ℕ) (h : ContDiff 𝕜 (m + 1) f) :
     Differentiable 𝕜 (iteratedDeriv m f) :=
@@ -357,3 +359,21 @@ theorem iteratedDerivWithin_const {n : ℕ} {c : F} {s : Set 𝕜} {x : 𝕜} :
   induction n generalizing c with
   | zero => simp
   | succ n h => simp [iteratedDerivWithin_succ', Pi.zero_def, h]
+
+@[simp]
+lemma iteratedDeriv_fun_const_zero : iteratedDeriv n (fun _ ↦ 0) x = (0 : F) := by
+  simpa using @iteratedDeriv_const 𝕜 _ F _ _ n 0
+
+@[simp]
+lemma iteratedDeriv_const_zero : iteratedDeriv n (0 : 𝕜 → F) x = (0 : F) := by
+  simp [Pi.zero_def]
+
+@[simp]
+lemma iteratedDerivWithin_fun_const_zero {s : Set 𝕜} :
+    iteratedDerivWithin n (fun _ ↦ 0) s x = (0 : F) := by
+  simpa using @iteratedDerivWithin_const 𝕜 _ F _ _ n 0
+
+@[simp]
+lemma iteratedDerivWithin_const_zero {s : Set 𝕜} :
+    iteratedDerivWithin n (0 : 𝕜 → F) s x = (0 : F) := by
+  simp [Pi.zero_def]

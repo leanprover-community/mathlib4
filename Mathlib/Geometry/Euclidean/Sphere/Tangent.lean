@@ -86,6 +86,7 @@ lemma IsTangentAt.eq_of_isTangentAt {s : Sphere P} {p q : P} {as : AffineSubspac
     ← inner_sub_right, vsub_sub_vsub_cancel_right] at hqp
   simpa using hqp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isTangentAt_center_iff {s : Sphere P} {as : AffineSubspace ℝ P} :
     s.IsTangentAt s.center as ↔ s.radius = 0 ∧ s.center ∈ as := by
   refine ⟨?_, ?_⟩
@@ -197,7 +198,7 @@ lemma dist_orthogonalProjection_eq_radius_iff_isTangentAt {s : Sphere P} {as : A
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · refine ⟨?_, orthogonalProjection_mem _, fun p hp ↦ ?_⟩
     · rwa [mem_sphere']
-    · rw [SetLike.mem_coe, mem_orthRadius_iff_inner_left]
+    · rw [mem_orthRadius_iff_inner_left]
       exact orthogonalProjection_vsub_mem_direction_orthogonal as s.center _
         (vsub_orthogonalProjection_mem_direction s.center hp)
   · rw [dist_orthogonalProjection_eq_infDist, h.isTangent.infDist_eq_radius]

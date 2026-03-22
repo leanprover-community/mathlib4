@@ -59,7 +59,7 @@ instance (x : X) : Lattice (OpenNhds x) :=
 
 instance (x : X) : OrderTop (OpenNhds x) where
   top := ⟨⊤, trivial⟩
-  le_top _ := by dsimp [LE.le]; exact le_top
+  le_top _ := by simp [LE.le]
 
 instance (x : X) : Inhabited (OpenNhds x) :=
   ⟨⊤⟩

@@ -45,6 +45,7 @@ theorem posLog_def : log⁺ x = max 0 (log x) := rfl
 ## Elementary Properties
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Presentation of `log` in terms of its positive part. -/
 theorem posLog_sub_posLog_inv : log⁺ x - log⁺ x⁻¹ = log x := by
   rw [posLog_def, posLog_def, log_inv]
@@ -157,6 +158,7 @@ theorem posLog_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
 ## Estimates for Sums
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: non-terminal simp followed by positivity
 set_option linter.flexible false in
 /-- Estimate for `log⁺` of a sum. See `Real.posLog_add` for a variant involving

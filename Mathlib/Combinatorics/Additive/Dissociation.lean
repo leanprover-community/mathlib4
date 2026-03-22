@@ -64,7 +64,7 @@ lemma mulDissociated_singleton : MulDissociated ({a} : Set α) ↔ a ≠ 1 := by
 lemma not_mulDissociated :
     ¬ MulDissociated s ↔
       ∃ t : Finset α, ↑t ⊆ s ∧ ∃ u : Finset α, ↑u ⊆ s ∧ t ≠ u ∧ ∏ x ∈ t, x = ∏ x ∈ u, x := by
-  simp [MulDissociated, InjOn]; aesop
+  grind [MulDissociated, InjOn]
 
 @[to_additive]
 lemma not_mulDissociated_iff_exists_disjoint :
@@ -115,6 +115,7 @@ lemma subset_mulSpan : s ⊆ mulSpan s := fun a ha ↦
   mem_mulSpan.2 ⟨Pi.single a 1, fun b ↦ by obtain rfl | hab := eq_or_ne a b <;> simp [*], by
     simp [Pi.single, Function.update, pow_ite, ha]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma prod_div_prod_mem_mulSpan (ht : t ⊆ s) (hu : u ⊆ s) :
     (∏ a ∈ t, a) / ∏ a ∈ u, a ∈ mulSpan s :=

@@ -82,7 +82,9 @@ theorem uniformContinuous_add : UniformContinuous fun p : ℚ × ℚ => p.1 + p.
 
 theorem uniformContinuous_neg : UniformContinuous (@Neg.neg ℚ _) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
-    ⟨_, ε0, fun _ _ h => by simpa only [abs_sub_comm, dist_eq, cast_neg, neg_sub_neg] using h⟩
+    ⟨_, ε0, fun _ _ h => by
+      #adaptation_note /-- We can remove `_root_.` after https://github.com/leanprover/lean4/pull/12504 -/
+      simpa only [_root_.abs_sub_comm, dist_eq, cast_neg, neg_sub_neg] using h⟩
 
 instance : IsUniformAddGroup ℚ :=
   IsUniformAddGroup.mk' Rat.uniformContinuous_add Rat.uniformContinuous_neg
@@ -110,11 +112,11 @@ namespace NNRat
 instance : MetricSpace ℚ≥0 :=
   Subtype.metricSpace
 
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 @[simp ←, push_cast]
 lemma dist_eq (p q : ℚ≥0) : dist p q = dist (p : ℚ) (q : ℚ) := rfl
 
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 @[simp ←, push_cast]
 lemma nndist_eq (p q : ℚ≥0) : nndist p q = nndist (p : ℚ) (q : ℚ) := rfl
 
@@ -122,9 +124,7 @@ instance : IsTopologicalSemiring ℚ≥0 where
   toContinuousAdd := continuousAdd_induced Nonneg.coeRingHom
   toContinuousMul := continuousMul_induced Nonneg.coeRingHom
 
-instance : ContinuousSub ℚ≥0 :=
-  ⟨((continuous_subtype_val.fst'.sub continuous_subtype_val.snd').max
-      continuous_const).subtype_mk _⟩
+instance : ContinuousSub ℚ≥0 := ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
 instance : OrderTopology ℚ≥0 := orderTopology_of_ordConnected (t := Set.Ici 0)
 instance : ContinuousInv₀ ℚ≥0 := inferInstance

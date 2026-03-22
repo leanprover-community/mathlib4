@@ -37,6 +37,7 @@ section IsPrincipal
 
 variable {R : Type*} [CommRing R] [IsDomain R] {I : Ideal R}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a principal ideal `I`, `R ⧸ I ≃ₗ[R] I ^ n ⧸ I ^ (n + 1)`. To convert into a form
 that uses the ideal of `R ⧸ I ^ (n + 1)`, compose with
 `Ideal.powQuotPowSuccLinearEquivMapMkPowSuccPow`. -/
@@ -76,6 +77,7 @@ def quotEquivPowQuotPowSucc (h : I.IsPrincipal) (h' : I ≠ ⊥) (n : ℕ) :
   refine hx.imp ?_
   simp [g, LinearMap.codRestrict, eq_comm, mul_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a principal ideal `I`, `R ⧸ I ≃ I ^ n ⧸ I ^ (n + 1)`. Supplied as a plain equiv to bypass
 typeclass synthesis issues on complex `Module` goals.  To convert into a form
 that uses the ideal of `R ⧸ I ^ (n + 1)`, compose with

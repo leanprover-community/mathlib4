@@ -196,6 +196,7 @@ lemma meromorphicTrailingCoeffAt_congr_nhdsNE {f₁ f₂ : 𝕜 → E} (h : f₁
 ## Behavior under Arithmetic Operations
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `f₁` and `f₂` have unequal order at `x`, then the trailing coefficient of `f₁ + f₂` at `x` is the
 trailing coefficient of the function with the lowest order.

@@ -217,6 +217,7 @@ lemma lieBracket_add_right (hW : DifferentiableAt 𝕜 W x) (hW₁ : Differentia
   rw [fderiv_add hW hW₁, ContinuousLinearMap.add_apply]
   abel
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The differentiation operator along `[W, V]`
 is the commutator of the differentiation operators along `W` and `V`. -/
 lemma fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt {f : E → F}

@@ -210,6 +210,7 @@ lemma ExtremallyDisconnected.disjoint_closure_of_disjoint_isOpen [ExtremallyDisc
     Disjoint (closure U₁) (closure U₂) :=
   (h.closure_right hU₁).closure_left <| open_closure U₂ hU₂
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private lemma ExtremallyDisconnected.homeoCompactToT2_injective [ExtremallyDisconnected A]
     [T2Space A] [T2Space E] [CompactSpace E] {ρ : E → A} (ρ_cont : Continuous ρ)

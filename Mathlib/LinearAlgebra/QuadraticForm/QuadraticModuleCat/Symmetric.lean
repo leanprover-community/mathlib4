@@ -39,6 +39,7 @@ instance : BraidedCategory (QuadraticModuleCat.{u} R) :=
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` is a braided functor. -/
 instance : (forget₂ (QuadraticModuleCat R) (ModuleCat R)).Braided where
 
+set_option backward.isDefEq.respectTransparency false in
 instance instSymmetricCategory : SymmetricCategory (QuadraticModuleCat.{u} R) :=
   .ofFaithful (forget₂ (QuadraticModuleCat R) (ModuleCat R))
 

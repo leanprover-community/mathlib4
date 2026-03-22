@@ -42,6 +42,7 @@ theorem pi_tensorProductMk_quotient_surjective :
   classical rw [pi_mkQ_rTensor] at this
   simpa using this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A form of Chinese remainder theorem for modules, part II: if ideals `Iᵢ` of `R` are pairwise
 coprime, then for any `R`-module `M`, the kernel of `M → Πᵢ (R ⧸ Iᵢ) ⊗[R] M` equals `(⋂ᵢ Iᵢ) • M`.
 -/

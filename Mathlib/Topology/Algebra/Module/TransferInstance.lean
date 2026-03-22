@@ -6,9 +6,11 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Algebra.Module.Shrink
-public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Instances.Shrink
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Data.EReal.Operations
+public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Transfer topological algebraic structures across `Equiv`s
@@ -48,7 +50,7 @@ def continuousLinearEquiv (e : α ≃ β) :
   { toLinearEquiv := e.linearEquiv _
     continuous_toFun := continuous_induced_dom
     continuous_invFun := by
-      simp only [Equiv.topologicalSpace, ← @coinduced_symm]
+      simp +instances only [Equiv.topologicalSpace, ← @coinduced_symm]
       exact continuous_coinduced_rng }
 
 @[simp]

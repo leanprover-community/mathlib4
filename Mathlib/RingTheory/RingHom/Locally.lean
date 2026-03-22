@@ -34,8 +34,8 @@ composition, base change, etc., so is `Locally P`.
 - `RingHom.locally_isStableUnderBaseChange`: `Locally P` is stable under base change if `P` is.
 - `RingHom.locally_stableUnderComposition`: `Locally P` is stable under composition
   if `P` is and `P` is preserved under localizations.
-- `RingHom.locally_StableUnderCompositionWithLocalizationAwayTarget` and
-  `RingHom.locally_StableUnderCompositionWithLocalizationAwaySource`: `Locally P` is stable under
+- `RingHom.locally_stableUnderCompositionWithLocalizationAwayTarget` and
+  `RingHom.locally_stableUnderCompositionWithLocalizationAwaySource`: `Locally P` is stable under
   composition with localization away maps if `P` is.
 - `RingHom.locally_localizationPreserves`: If `P` is preserved by localizations, then so is
   `Locally P`.
@@ -198,6 +198,7 @@ lemma locally_holdsForLocalizationAway (hPa : HoldsForLocalizationAway P) :
   rw [← IsScalarTower.algebraMap_eq]
   apply hPa _ r
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `P` preserves localizations, then `Locally P` is stable under composition if `P` is. -/
 lemma locally_stableUnderComposition (hPi : RespectsIso P) (hPl : LocalizationPreserves P)
     (hPc : StableUnderComposition P) :
@@ -237,12 +238,10 @@ lemma locally_stableUnderComposition (hPi : RespectsIso P) (hPl : LocalizationPr
 
 /-- If `P` is stable under composition with localization away maps on the right,
 then so is `Locally P`. -/
-lemma locally_StableUnderCompositionWithLocalizationAwayTarget
-    (hP0 : RespectsIso P)
+lemma locally_stableUnderCompositionWithLocalizationAwayTarget
     (hPa : StableUnderCompositionWithLocalizationAwayTarget P) :
     StableUnderCompositionWithLocalizationAwayTarget (Locally P) := by
   intro R S T _ _ _ _ t _ f hf
-  simp only [locally_iff_isLocalization hP0 f] at hf
   obtain ⟨s, hsone, hs⟩ := hf
   refine ⟨algebraMap S T '' s, ?_, ?_⟩
   · rw [← Ideal.map_span, hsone, Ideal.map_top]
@@ -264,15 +263,24 @@ lemma locally_StableUnderCompositionWithLocalizationAwayTarget
     apply hPa _ (algebraMap S (Localization.Away a) t)
     apply hs a ha
 
+@[deprecated (since := "2026-02-11")]
+alias locally_StableUnderCompositionWithLocalizationAwayTarget :=
+  locally_stableUnderCompositionWithLocalizationAwayTarget
+
 /-- If `P` is stable under composition with localization away maps on the left,
 then so is `Locally P`. -/
-lemma locally_StableUnderCompositionWithLocalizationAwaySource
+lemma locally_stableUnderCompositionWithLocalizationAwaySource
     (hPa : StableUnderCompositionWithLocalizationAwaySource P) :
     StableUnderCompositionWithLocalizationAwaySource (Locally P) := by
   intro R S T _ _ _ _ r _ f ⟨s, hsone, hs⟩
   refine ⟨s, hsone, fun t ht ↦ ?_⟩
   rw [← comp_assoc]
   exact hPa _ r _ (hs t ht)
+
+@[deprecated (since := "2026-02-11")]
+alias locally_StableUnderCompositionWithLocalizationAwaySource :=
+  locally_stableUnderCompositionWithLocalizationAwaySource
+
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- If `P` is stable under base change, then so is `Locally P`. -/
@@ -386,9 +394,9 @@ lemma locally_propertyIsLocal (hPl : LocalizationAwayPreserves P)
     (hPa : StableUnderCompositionWithLocalizationAway P) : PropertyIsLocal (Locally P) where
   localizationAwayPreserves := locally_localizationAwayPreserves hPl
   StableUnderCompositionWithLocalizationAwayTarget :=
-    locally_StableUnderCompositionWithLocalizationAwayTarget hPl.respectsIso hPa.right
+    locally_stableUnderCompositionWithLocalizationAwayTarget hPa.right
   ofLocalizationSpan := (locally_ofLocalizationSpanTarget hPl.respectsIso).ofLocalizationSpan
-    (locally_StableUnderCompositionWithLocalizationAwaySource hPa.left)
+    (locally_stableUnderCompositionWithLocalizationAwaySource hPa.left)
   ofLocalizationSpanTarget := locally_ofLocalizationSpanTarget hPl.respectsIso
 
 end Stability

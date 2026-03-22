@@ -49,17 +49,18 @@ variable {F F' F'' : C ⥤ Type w} (G G' : Subfunctor F)
 instance : PartialOrder (Subfunctor F) :=
   PartialOrder.lift Subfunctor.obj (fun _ _ => Subfunctor.ext)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : CompleteLattice (Subfunctor F) where
   sup F G :=
     { obj U := F.obj U ⊔ G.obj U
       map _ _ := by
-        rintro (h|h)
+        rintro (h | h)
         · exact Or.inl (F.map _ h)
         · exact Or.inr (G.map _ h) }
   le_sup_left _ _ _ := by simp
   le_sup_right _ _ _ := by simp
   sup_le F G H h₁ h₂ U := by
-    rintro x (h|h)
+    rintro x (h | h)
     · exact h₁ _ h
     · exact h₂ _ h
   inf S T :=
@@ -189,7 +190,6 @@ instance : IsIso (Subfunctor.ι (⊤ : Subfunctor F)) := by
   rw [isIso_iff_bijective]
   exact ⟨Subtype.coe_injective, fun x => ⟨⟨x, _root_.trivial⟩, rfl⟩⟩
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 theorem eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
   constructor
   · rintro rfl

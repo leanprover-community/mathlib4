@@ -110,6 +110,7 @@ noncomputable instance : Algebra R[X] W'.CoordinateRing :=
 instance : IsScalarTower R R[X] W'.CoordinateRing :=
   Quotient.isScalarTower R R[X] _
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Subsingleton R] : Subsingleton W'.CoordinateRing :=
   Module.subsingleton R[X] _
 
@@ -118,6 +119,7 @@ variable (W') in
 noncomputable abbrev mk : R[X][Y] →+* W'.CoordinateRing :=
   AdjoinRoot.mk W'.polynomial
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 variable (W') in
 /-- The power basis `{1, Y}` for `R[W]` over `R[X]`. -/
@@ -125,6 +127,7 @@ protected noncomputable def basis : Basis (Fin 2) R[X] W'.CoordinateRing :=
   (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
     (AdjoinRoot.powerBasis' monic_polynomial).basis.reindex <| finCongr natDegree_polynomial
 
+set_option backward.isDefEq.respectTransparency false in
 lemma basis_apply (n : Fin 2) :
     CoordinateRing.basis W' n = (AdjoinRoot.powerBasis' monic_polynomial).gen ^ (n : ℕ) := by
   classical
@@ -145,15 +148,18 @@ lemma coe_basis : (CoordinateRing.basis W' : Fin 2 → W'.CoordinateRing) = ![1,
   fin_cases n
   exacts [basis_zero, basis_one]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma smul (x : R[X]) (y : W'.CoordinateRing) : x • y = mk W' (C x) * y :=
   (algebraMap_smul W'.CoordinateRing x y).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma smul_basis_eq_zero {p q : R[X]} (hpq : p • (1 : W'.CoordinateRing) + q • mk W' Y = 0) :
     p = 0 ∧ q = 0 := by
   have h := Fintype.linearIndependent_iff.mp (CoordinateRing.basis W').linearIndependent ![p, q]
   rw [Fin.sum_univ_succ, basis_zero, Fin.sum_univ_one, Fin.succ_zero_eq_one, basis_one] at h
   exact ⟨h hpq 0, h hpq 1⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_smul_basis_eq (x : W'.CoordinateRing) :
     ∃ p q : R[X], p • (1 : W'.CoordinateRing) + q • mk W' Y = x := by
   have h := (CoordinateRing.basis W').sum_equivFun x
@@ -191,6 +197,7 @@ protected lemma map_smul (f : R →+* S) (x : R[X]) (y : W'.CoordinateRing) :
   rw [smul, map_mul, map_mk, map_C, smul]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_injective {f : R →+* S} (hf : Function.Injective f) : Function.Injective <| map W' f :=
   (injective_iff_map_eq_zero _).mpr fun y hy => by
     obtain ⟨p, q, rfl⟩ := exists_smul_basis_eq y
@@ -372,11 +379,11 @@ lemma XYIdeal_mul_XYIdeal [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     C_simp
     ring1
 
-set_option backward.proofsInPublic true in
 /-- The non-zero fractional ideal `⟨X - x, Y - y⟩` of `F(W)` for some `x` and `y` in `F`. -/
 noncomputable def XYIdeal' {x y : F} (h : W.Nonsingular x y) :
     (FractionalIdeal W.CoordinateRing⁰ W.FunctionField)ˣ :=
-  Units.mkOfMulEqOne _ _ <| by
+  Units.mkOfMulEqOne (XYIdeal W x (C y)) (XYIdeal W x (C <| W.negY x y) *
+      (XIdeal W x : FractionalIdeal W.CoordinateRing⁰ W.FunctionField)⁻¹) <| by
     rw [← mul_assoc, ← coeIdeal_mul, mul_comm <| XYIdeal W .., XYIdeal_neg_mul h, XIdeal,
       FractionalIdeal.coe_ideal_span_singleton_mul_inv W.FunctionField <| XClass_ne_zero x]
 
@@ -400,6 +407,7 @@ lemma mk_XYIdeal'_mul_mk_XYIdeal' [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h�
 
 /-! ## Norms on the affine coordinate ring -/
 
+set_option backward.isDefEq.respectTransparency false in
 lemma norm_smul_basis (p q : R[X]) : Algebra.norm R[X] (p • (1 : W'.CoordinateRing) + q • mk W' Y) =
     p ^ 2 - p * q * (C W'.a₁ * X + C W'.a₃) -
       q ^ 2 * (X ^ 3 + C W'.a₂ * X ^ 2 + C W'.a₄ * X + C W'.a₆) := by
@@ -638,14 +646,18 @@ lemma toClass_injective : Function.Injective <| toClass (W := W) := by
   · exact zero_add 0
   · exact CoordinateRing.mk_XYIdeal'_neg_mul h
 
+instance : AddCommSemigroup W.Point where
+  add_comm _ _ := toClass_injective <| by simp only [map_add, add_comm]
+  add_assoc _ _ _ := toClass_injective <| by simp only [map_add, add_assoc]
+
 instance : AddCommGroup W.Point where
-  nsmul := nsmulRec
-  zsmul := zsmulRec
+  nsmul := nsmulBinRec
+  nsmul_succ := nsmulBinRec_succ
+  zsmul := zsmulRec nsmulBinRec
+  zsmul_succ' := nsmulBinRec_succ
   zero_add := zero_add
   add_zero := add_zero
   neg_add_cancel _ := by rw [add_eq_zero]
-  add_comm _ _ := toClass_injective <| by simp only [map_add, add_comm]
-  add_assoc _ _ _ := toClass_injective <| by simp only [map_add, add_assoc]
 
 /-! ## Maps and base changes -/
 

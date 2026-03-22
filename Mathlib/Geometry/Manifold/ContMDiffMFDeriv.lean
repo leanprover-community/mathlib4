@@ -342,6 +342,7 @@ namespace TangentBundle
 
 open Bundle
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The derivative of the zero section of the tangent bundle maps `⟨x, v⟩` to `⟨⟨x, 0⟩, ⟨v, 0⟩⟩`.
 
 Note that, as currently framed, this is a statement in coordinates, thus reliant on the choice
@@ -434,6 +435,7 @@ lemma contMDiff_equivTangentBundleProd :
   exact (contMDiff_fst.contMDiff_tangentMap le_rfl).prodMk
     (contMDiff_snd.contMDiff_tangentMap le_rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical equivalence between the product of tangent bundles and the tangent bundle of a
 product is smooth. -/
 lemma contMDiff_equivTangentBundleProd_symm :

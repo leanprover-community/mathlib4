@@ -12,7 +12,8 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 /-!
 # The transfinite iteration of a successor structure
 
-Given a successor structure `Φ : SuccStruct C` (see the file `SmallObject.Iteration.Basic`)
+Given a successor structure `Φ : SuccStruct C`
+(see the file `Mathlib/CategoryTheory/SmallObject/Iteration/Basic.lean`)
 and a well-ordered type `J`, we define the iteration `Φ.iteration J : C`. It is
 defined as the colimit of a functor `Φ.iterationFunctor J : J ⥤ C`.
 

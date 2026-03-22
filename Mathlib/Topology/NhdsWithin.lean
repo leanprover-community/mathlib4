@@ -211,6 +211,10 @@ theorem nhds_eq_nhdsWithin_sup_nhdsWithin (b : α) {I₁ I₂ : Set α} (hI : Se
     nhds b = nhdsWithin b I₁ ⊔ nhdsWithin b I₂ := by
   rw [← nhdsWithin_univ b, hI, nhdsWithin_union]
 
+lemma inter_mem_nhdsWithin_inter {a b c d : Set α} {x : α} (h : a ∈ 𝓝[b] x) (h' : c ∈ 𝓝[d] x) :
+    a ∩ c ∈ 𝓝[b ∩ d] x :=
+  inter_mem (nhdsWithin_mono _ inter_subset_left h) (nhdsWithin_mono _ inter_subset_right h')
+
 /-- If `L` and `R` are neighborhoods of `b` within sets whose union is `Set.univ`, then
 `L ∪ R` is a neighborhood of `b`. -/
 theorem union_mem_nhds_of_mem_nhdsWithin {b : α}
@@ -541,6 +545,9 @@ lemma nhdsSetWithin_singleton {x : α} {s : Set α} : 𝓝ˢ[s] {x} = 𝓝[s] x 
 @[simp]
 lemma nhdsSetWithin_univ {s : Set α} : 𝓝ˢ[univ] s = 𝓝ˢ s := by
   simp [nhdsSetWithin]
+
+theorem mem_nhdsSet {s t : Set α} : s ∈ 𝓝ˢ t ↔ ∃ u ⊆ s, IsOpen u ∧ t ⊆ u := by
+  simp [← nhdsSetWithin_univ, mem_nhdsSetWithin, and_comm, and_assoc]
 
 @[simp]
 lemma nhdsSetWithin_univ' {s : Set α} : 𝓝ˢ[s] univ = 𝓟 s := by

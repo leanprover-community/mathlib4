@@ -5,7 +5,6 @@ Authors: Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
@@ -29,6 +28,7 @@ universe v u
 
 variable {C : Type u} [Category.{v} C]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Factorisations of a morphism `f` as a structure, containing, one object, two morphisms,
 and the condition that their composition equals `f`. -/
 structure Factorisation {X Y : C} (f : X ⟶ Y) where

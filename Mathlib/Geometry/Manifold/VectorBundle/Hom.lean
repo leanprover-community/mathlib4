@@ -62,6 +62,7 @@ theorem contMDiffOn_continuousLinearMapCoordChange
 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hom_chart (y₀ y : LE₁E₂) :
     chartAt (ModelProd HB (F₁ →L[𝕜] F₂)) y₀ y =
       (chartAt HB y₀.1 y.1, inCoordinates F₁ E₁ F₂ E₂ y₀.1 y.1 y₀.1 y.1 y.2) := by
@@ -162,7 +163,7 @@ variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B�
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b₁ : M → B₁`, and
 another base map `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending smoothly
-on `m`, one can apply `ϕ m` to `g m`, and the resulting map is `C^n`.
+on `m`, one can apply `ϕ m` to `v m`, and the resulting map is `C^n`.
 
 Note that the smoothness of `ϕ` cannot always be stated as smoothness of a map into a manifold,
 as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` are smooth manifolds only when `b₁` and `b₂` are
@@ -203,7 +204,7 @@ lemma ContMDiffWithinAt.clm_apply_of_inCoordinates
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b₁ : M → B₁`, and
 another base map `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending smoothly
-on `m`, one can apply `ϕ m` to `g m`, and the resulting map is `C^n`.
+on `m`, one can apply `ϕ m` to `v m`, and the resulting map is `C^n`.
 
 Note that the smoothness of `ϕ` cannot always be stated as smoothness of a map into a manifold,
 as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` are smooth manifolds only when `b₁` and `b₂` are

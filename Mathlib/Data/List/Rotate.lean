@@ -90,10 +90,9 @@ theorem rotate'_length_mul (l : List α) : ∀ n : ℕ, l.rotate' (l.length * n)
       _ = l := by rw [rotate'_length, rotate'_length_mul l n]
 
 theorem rotate'_mod (l : List α) (n : ℕ) : l.rotate' (n % l.length) = l.rotate' n :=
-  calc
-    l.rotate' (n % l.length) =
-        (l.rotate' (n % l.length)).rotate' ((l.rotate' (n % l.length)).length * (n / l.length)) :=
-      by rw [rotate'_length_mul]
+  calc l.rotate' (n % l.length)
+    _ = (l.rotate' (n % l.length)).rotate'
+        ((l.rotate' (n % l.length)).length * (n / l.length)) := by rw [rotate'_length_mul]
     _ = l.rotate' n := by rw [rotate'_rotate', length_rotate', Nat.mod_add_div]
 
 theorem rotate_eq_rotate' (l : List α) (n : ℕ) : l.rotate n = l.rotate' n :=
@@ -229,7 +228,7 @@ theorem get_rotate_one (l : List α) (k : Fin (l.rotate 1).length) :
   get_rotate l 1 k
 
 -- Allow `l[a]'b` to have a line break between `[a]'` and `b`.
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 /-- A version of `List.getElem_rotate` that represents `l[k]` in terms of
 `(List.rotate l n)[⋯]`, not vice versa. Can be used instead of rewriting `List.getElem_rotate`
 from right to left. -/
@@ -360,7 +359,7 @@ def IsRotated : Prop :=
 -- This matches the precedence of the infix `~` for `List.Perm`, and of other relation infixes
 infixr:50 " ~r " => IsRotated
 
-variable {l l'}
+variable {l l'} {a : α}
 
 @[refl]
 theorem IsRotated.refl (l : List α) : l ~r l :=
@@ -458,6 +457,9 @@ theorem IsRotated.map {β : Type*} {l₁ l₂ : List α} (h : l₁ ~r l₂) (f :
   obtain ⟨n, rfl⟩ := h
   rw [map_rotate]
   use n
+
+lemma IsRotated.cons_append_singleton : a :: l ~r l ++ [a] := by
+  simpa using isRotated_append (l := [a])
 
 theorem IsRotated.cons_getLast_dropLast
     (L : List α) (hL : L ≠ []) : L.getLast hL :: L.dropLast ~r L := by

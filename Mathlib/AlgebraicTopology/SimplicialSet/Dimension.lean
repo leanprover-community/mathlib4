@@ -43,6 +43,7 @@ lemma degenerate_eq_top_of_hasDimensionLT (hn : d ≤ n) : X.degenerate n = ⊤ 
 lemma nonDegenerate_eq_bot_of_hasDimensionLT (hn : d ≤ n) : X.nonDegenerate n = ⊥ := by
   simp [nonDegenerate, X.degenerate_eq_top_of_hasDimensionLT d n hn]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma dim_lt_of_nonDegenerate {n : ℕ} (x : X.nonDegenerate n) (d : ℕ)
     [X.HasDimensionLT d] : n < d := by
   by_contra!
@@ -66,6 +67,7 @@ namespace Subcomplex
 
 variable {X : SSet.{u}}
 
+set_option backward.isDefEq.respectTransparency false in
 instance (d : ℕ) [X.HasDimensionLT d] (A : X.Subcomplex) : HasDimensionLT A d where
   degenerate_eq_top (n : ℕ) (hd : d ≤ n) := by
     ext x
@@ -78,12 +80,14 @@ lemma le_iff_of_hasDimensionLT (A B : X.Subcomplex) (d : ℕ) [X.HasDimensionLT 
   rintro n x hx
   exact h _ (X.dim_lt_of_nonDegenerate x d) ⟨hx, x.prop⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_top_iff_of_hasDimensionLT (A : X.Subcomplex) (d : ℕ) [X.HasDimensionLT d] :
     A = ⊤ ↔ ∀ i < d, X.nonDegenerate i ⊆ A.obj _ := by
   simp [← top_le_iff, le_iff_of_hasDimensionLT ⊤ A d]
 
 end Subcomplex
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasDimensionLT_of_mono {X Y : SSet.{u}} (f : X ⟶ Y) [Mono f] (d : ℕ)
     [Y.HasDimensionLT d] : X.HasDimensionLT d where
   degenerate_eq_top n hn := by
@@ -97,6 +101,7 @@ lemma Subcomplex.hasDimensionLT_of_le
     HasDimensionLT A d :=
   hasDimensionLT_of_mono (Subcomplex.homOfLE h) d
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasDimensionLT_of_epi {X Y : SSet.{u}} (f : X ⟶ Y) [Epi f] (d : ℕ)
     [X.HasDimensionLT d] : Y.HasDimensionLT d where
   degenerate_eq_top n hn := by
@@ -123,6 +128,7 @@ lemma hasDimensionLT_subcomplex_top_iff (X : SSet.{u}) (d : ℕ) :
     HasDimensionLT (⊤ : X.Subcomplex) d ↔ X.HasDimensionLT d :=
   hasDimensionLT_iff_of_iso (Subcomplex.topIso X) _
 
+set_option backward.isDefEq.respectTransparency false in
 instance {X : SSet.{u}} (n : ℕ) : HasDimensionLT (⊥ : X.Subcomplex) n where
   degenerate_eq_top k hk := by
     ext ⟨x, hx⟩

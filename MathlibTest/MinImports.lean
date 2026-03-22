@@ -123,9 +123,9 @@ set_option linter.minImports false
 
 /--
 warning: Imports increased to
-[Init.Guard, Mathlib.Data.Int.Notation]
+[Mathlib.Data.Int.Notation]
 
-New imports: [Init.Guard, Mathlib.Data.Int.Notation]
+New imports: [Mathlib.Data.Int.Notation]
 
 
 Note: This linter can be disabled with `set_option linter.minImports false`
@@ -142,9 +142,9 @@ set_option linter.minImports false in
 
 /--
 warning: Imports increased to
-[Init.Guard, Mathlib.Data.Int.Notation]
+[Mathlib.Data.Int.Notation]
 
-New imports: [Init.Guard, Mathlib.Data.Int.Notation]
+New imports: [Mathlib.Data.Int.Notation]
 
 
 Note: This linter can be disabled with `set_option linter.minImports false`
@@ -210,18 +210,6 @@ def propose_to_move_this_def : ℕ := 0
 -- This theorem depends on a local definition, so should not be moved.
 #guard_msgs in
 theorem theorem_with_local_def : propose_to_move_this_def = 0 := rfl
-
--- This definition depends on definitions in two different files, so should not be moved.
-/--
-warning: Consider moving this declaration to the module Mathlib.Tactic.NormNum.Basic.
-
-Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
--/
-#guard_msgs in
-theorem theorem_with_multiple_dependencies : True :=
-  let _ := Mathlib.Meta.FunProp.funPropAttr
-  let _ := Mathlib.Meta.NormNum.evalNatDvd
-  trivial
 
 -- Private declarations shouldn't get a warning by default.
 private theorem private_theorem : (0 : ℕ) = 0 := rfl

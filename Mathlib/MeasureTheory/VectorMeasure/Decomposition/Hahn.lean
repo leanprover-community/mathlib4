@@ -217,6 +217,7 @@ private theorem restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
       (someExistsOneDivLT_subset hx₂).2
         (Set.mem_iUnion.2 ⟨n, Set.mem_iUnion.2 ⟨Nat.lt_succ_iff.mp h, hx₁⟩⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Function in -- required for scoped `on` notation
 private theorem restrictNonposSeq_disjoint : Pairwise (Disjoint on restrictNonposSeq s i) := by
   intro n m h
@@ -322,11 +323,8 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
       rw [one_div] at this ⊢
       exact inv_lt_of_inv_lt₀ hE₃ this
   obtain ⟨k, hk₁, hk₂⟩ := this
-  have hA' : A ⊆ i \ ⋃ l ≤ k, restrictNonposSeq s i l := by
-    apply Set.diff_subset_diff_right
-    intro x; simp only [Set.mem_iUnion]
-    rintro ⟨n, _, hn₂⟩
-    exact ⟨n, hn₂⟩
+  have hA' : A ⊆ i \ ⋃ l ≤ k, restrictNonposSeq s i l :=
+    Set.diff_subset_diff_right (Set.iUnion₂_subset_iUnion _ _)
   refine
     findExistsOneDivLT_min (hn' k) (Nat.sub_lt hk₁ Nat.zero_lt_one)
       ⟨E, Set.Subset.trans hE₂ hA', hE₁, ?_⟩

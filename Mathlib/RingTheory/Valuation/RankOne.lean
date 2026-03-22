@@ -10,6 +10,10 @@ public import Mathlib.Algebra.Order.GroupWithZero.WithZero
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Data.Real.Embedding
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+public import Mathlib.Combinatorics.Matroid.Init
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Rank one valuations
@@ -46,6 +50,7 @@ class RankOne (v : Valuation R Γ₀) extends Valuation.IsNontrivial v where
 
 open WithZero
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivial] :
     Nonempty v.RankOne ↔ MulArchimedean Γ₀ := by
   constructor
@@ -108,7 +113,7 @@ theorem unit_ne_one : unit v ≠ 1 := by
   rw [Ne, ← Units.val_inj, Units.val_one]
   exact ((nontrivial v).choose_spec).2
 
-instance [RankOne v] : IsNontrivial v where
+instance : IsNontrivial v where
   exists_val_nontrivial := RankOne.nontrivial v
 
 end RankOne

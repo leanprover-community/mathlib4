@@ -159,6 +159,7 @@ theorem liftQSpanSingleton_apply (x : M) (f : M →ₛₗ[τ₁₂] M₂) (h : f
 theorem range_mkQ : range p.mkQ = ⊤ :=
   eq_top_iff'.2 <| by rintro ⟨x⟩; exact ⟨x, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ker_mkQ : ker p.mkQ = p := by ext; simp
 
@@ -191,6 +192,7 @@ theorem mapQ_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) :
 theorem mapQ_mkQ (f : M →ₛₗ[τ₁₂] M₂) {h} : (mapQ p q f h).comp p.mkQ = q.mkQ.comp f := by
   ext x; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapQ_zero (h : p ≤ q.comap (0 : M →ₛₗ[τ₁₂] M₂) := (by simp)) :
     p.mapQ q (0 : M →ₛₗ[τ₁₂] M₂) h = 0 := by
@@ -372,6 +374,7 @@ variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃] [RingHomSurjective τ₁₂]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_mkQ_comp (f : M →ₛₗ[τ₁₂] M₂) : (range f).mkQ.comp f = 0 :=
   LinearMap.ext fun x => by simp
 

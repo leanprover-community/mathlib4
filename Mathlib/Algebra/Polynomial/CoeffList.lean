@@ -5,7 +5,7 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Definitions
+public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Algebra.Polynomial.EraseLead
 public import Mathlib.Data.List.Range
 

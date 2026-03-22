@@ -56,13 +56,13 @@ lemma LocalSubring.map_maximalIdeal_eq_top_of_isMax {R : LocalSubring K}
     rw [Ideal.map_map]; rfl
   exact (hR.eq_of_le h_RleSₘ ▸ hS).not_ge (LocalSubring.le_ofPrime ..)
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 00IC]
 -- the conclusion could be `IsIntegrallyClosedIn R.toSubring K`, which has slightly worse defeq.
 lemma LocalSubring.mem_of_isMax_of_isIntegral {R : LocalSubring K}
     (hR : IsMax R) {x : K} (hx : IsIntegral R.toSubring x) : x ∈ R.toSubring := by
   let S := Algebra.adjoin R.toSubring {x}
   have : Algebra.IsIntegral R.toSubring S := Algebra.IsIntegral.adjoin (by simpa)
-  have : FaithfulSMul R.toSubring S := NoZeroSMulDivisors.instFaithfulSMulOfNontrivial
   obtain ⟨Q : Ideal S.toSubring, hQ, e⟩ := Ideal.exists_ideal_over_maximal_of_isIntegral
     (S := S) (maximalIdeal R.toSubring) (le_maximalIdeal (by simp))
   have : R = .ofPrime S.toSubring Q := by
@@ -207,6 +207,7 @@ lemma LocalSubring.eq_iInf_of_isIntegrallyClosedIn {R : LocalSubring K}
     have ⟨V, hV⟩ := R.exists_le_valuationSubring_of_isIntegrallyClosedIn hxR
     hV.2 (iInf_le_of_le (α := Subring K) ⟨V, hV.1⟩ le_rfl h)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The integral closure of a subset in a field is the intersection of all valuation subrings
 containing it. -/
 lemma iInf_valuationSubring_superset {s : Set K} :

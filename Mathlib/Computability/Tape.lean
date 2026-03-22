@@ -5,10 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Vector.Basic
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Data.List.GetD
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.List.Basic
 
 /-!
 # Turing machine tapes
@@ -89,15 +91,7 @@ theorem BlankRel.symm {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} : BlankRel l₁ 
 @[trans]
 theorem BlankRel.trans {Γ} [Inhabited Γ] {l₁ l₂ l₃ : List Γ} :
     BlankRel l₁ l₂ → BlankRel l₂ l₃ → BlankRel l₁ l₃ := by
-  rintro (h₁ | h₁) (h₂ | h₂)
-  · exact Or.inl (h₁.trans h₂)
-  · rcases le_total l₁.length l₃.length with h | h
-    · exact Or.inl (h₁.above_of_le h₂ h)
-    · exact Or.inr (h₂.above_of_le h₁ h)
-  · rcases le_total l₁.length l₃.length with h | h
-    · exact Or.inl (h₁.below_of_le h₂ h)
-    · exact Or.inr (h₂.below_of_le h₁ h)
-  · exact Or.inr (h₂.trans h₁)
+  grind [eq_def, BlankExtends.below_of_le, BlankExtends.above_of_le, BlankExtends.trans]
 
 /-- Given two `BlankRel` lists, there exists (constructively) a common join. -/
 def BlankRel.above {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ l₂) :

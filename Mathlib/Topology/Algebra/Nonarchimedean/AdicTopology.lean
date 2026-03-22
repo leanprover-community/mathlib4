@@ -7,7 +7,9 @@ module
 
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
-public import Mathlib.Topology.Algebra.UniformRing
+import Mathlib.Topology.Algebra.UniformRing  -- shake: keep (used in `example` only)
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+
 
 /-!
 # Adic topology
@@ -86,6 +88,7 @@ def adicTopology (I : Ideal R) : TopologicalSpace R :=
 theorem nonarchimedean (I : Ideal R) : @NonarchimedeanRing R _ I.adicTopology :=
   I.adic_basis.toRing_subgroups_basis.nonarchimedean
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For the `I`-adic topology, the neighborhoods of zero has basis given by the powers of `I`. -/
 theorem hasBasis_nhds_zero_adic (I : Ideal R) :
     HasBasis (@nhds R I.adicTopology (0 : R)) (fun _n : ℕ => True) fun n =>
@@ -100,6 +103,7 @@ theorem hasBasis_nhds_zero_adic (I : Ideal R) :
     · rintro ⟨i, -, h⟩
       exact ⟨(I ^ i : Ideal R), ⟨i, by simp⟩, h⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasBasis_nhds_adic (I : Ideal R) (x : R) :
     HasBasis (@nhds R I.adicTopology x) (fun _n : ℕ => True) fun n =>
       (fun y => x + y) '' (I ^ n : Ideal R) := by
@@ -254,9 +258,11 @@ example : NonarchimedeanRing R := by infer_instance
 
 example : IsTopologicalRing (UniformSpace.Completion R) := by infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 example (M : Type*) [AddCommGroup M] [Module R M] :
     @IsTopologicalAddGroup M (WithIdeal.topologicalSpaceModule R M) _ := by infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 example (M : Type*) [AddCommGroup M] [Module R M] :
     @ContinuousSMul R M _ _ (WithIdeal.topologicalSpaceModule R M) := by infer_instance
 

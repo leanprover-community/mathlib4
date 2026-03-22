@@ -5,9 +5,9 @@ Authors: Arthur Paulino, Gabriel Ebner, Kyle Miller
 -/
 module
 
-public meta import Mathlib.Tactic.WithoutCDot
 public meta import Lean.Meta.Tactic.Util
 public meta import Lean.Elab.Tactic.Basic
+public import Mathlib.Init
 
 /-!
 # The `use` tactic
@@ -208,7 +208,7 @@ elab (name := useSyntax)
     "use" discharger?:(Parser.Tactic.discharger)? ppSpace args:term,+ : tactic => do
   runUse false (← mkUseDischarger discharger?) args.getElems.toList
 
-@[inherit_doc useSyntax]
+@[tactic_alt useSyntax]
 elab "use!" discharger?:(Parser.Tactic.discharger)? ppSpace args:term,+ : tactic => do
   runUse true (← mkUseDischarger discharger?) args.getElems.toList
 

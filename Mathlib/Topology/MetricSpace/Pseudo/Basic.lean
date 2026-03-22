@@ -9,8 +9,7 @@ public import Mathlib.Data.ENNReal.Real
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
-
-import Mathlib.Topology.Metrizable.Basic
+public import Mathlib.Topology.Metrizable.Basic
 
 /-!
 ## Pseudo-metric spaces
@@ -205,8 +204,11 @@ end Real
 namespace Topology
 
 /-- The preimage of a separable set by an inducing map is separable. -/
-protected lemma IsInducing.isSeparable_preimage {f : β → α} [TopologicalSpace β]
+protected lemma IsInducing.isSeparable_preimage {α : Type*} [TopologicalSpace α]
+    [PseudoMetrizableSpace α] {f : β → α} [TopologicalSpace β]
     (hf : IsInducing f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) := by
+  letI : UniformSpace α := TopologicalSpace.pseudoMetrizableSpaceUniformity α
+  have := pseudoMetrizableSpaceUniformity_countably_generated
   have : SeparableSpace s := hs.separableSpace
   have : SecondCountableTopology s := UniformSpace.secondCountable_of_separable _
   have : IsInducing ((mapsTo_preimage f s).restrict _ _ _) :=
@@ -214,14 +216,16 @@ protected lemma IsInducing.isSeparable_preimage {f : β → α} [TopologicalSpac
   have := this.secondCountableTopology
   exact .of_subtype _
 
-protected theorem IsEmbedding.isSeparable_preimage {f : β → α} [TopologicalSpace β]
+protected theorem IsEmbedding.isSeparable_preimage {α : Type*} [TopologicalSpace α]
+    [PseudoMetrizableSpace α] {f : β → α} [TopologicalSpace β]
     (hf : IsEmbedding f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) :=
   hf.isInducing.isSeparable_preimage hs
 
 end Topology
 
 /-- A compact set is separable. -/
-theorem IsCompact.isSeparable {s : Set α} (hs : IsCompact s) : IsSeparable s :=
+theorem IsCompact.isSeparable {α : Type*} [TopologicalSpace α] [PseudoMetrizableSpace α]
+    {s : Set α} (hs : IsCompact s) : IsSeparable s :=
   haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
   .of_subtype s
 
@@ -270,7 +274,8 @@ lemma exists_finite_cover_balls_of_isCompact_closure (hs : IsCompact (closure s)
 end Compact
 
 /-- If a map is continuous on a separable set `s`, then the image of `s` is also separable. -/
-theorem ContinuousOn.isSeparable_image [TopologicalSpace β] {f : α → β} {s : Set α}
+theorem ContinuousOn.isSeparable_image {α : Type*} [TopologicalSpace α] [PseudoMetrizableSpace α]
+    [TopologicalSpace β] {f : α → β} {s : Set α}
     (hf : ContinuousOn f s) (hs : IsSeparable s) : IsSeparable (f '' s) := by
   rw [image_eq_range, ← image_univ]
   exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.restrict

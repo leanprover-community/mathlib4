@@ -22,7 +22,7 @@ open Fintype MulAction
 
 variable (p : ℕ) (G : Type*) [Group G]
 
-/-- A p-group is a group in which every element has prime power order -/
+/-- A p-group is a group in which the order of every element is a power of `p`. -/
 def IsPGroup : Prop :=
   ∀ g : G, ∃ k : ℕ, g ^ p ^ k = 1
 
@@ -223,6 +223,7 @@ theorem center_nontrivial [Nontrivial G] [Finite G] : Nontrivial (Subgroup.cente
     obtain ⟨g, hg⟩ := this dvd (Subgroup.center G).one_mem
     exact ⟨⟨1, ⟨g, hg.1⟩, mt Subtype.ext_iff.mp hg.2⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bot_lt_center [Nontrivial G] [Finite G] : ⊥ < Subgroup.center G := by
   haveI := center_nontrivial hG
   classical exact
@@ -300,6 +301,7 @@ theorem coprime_card_of_ne {G₂ : Type*} [Group G₂] (p₁ p₂ : ℕ) [hp₁ 
   obtain ⟨n₂, heq₂⟩ := iff_card.mp hH₂; rw [heq₂]; clear heq₂
   exact Nat.coprime_pow_primes _ _ hp₁.elim hp₂.elim hne
 
+set_option backward.isDefEq.respectTransparency false in
 /-- p-groups with different p are disjoint -/
 theorem disjoint_of_ne (p₁ p₂ : ℕ) [hp₁ : Fact p₁.Prime] [hp₂ : Fact p₂.Prime] (hne : p₁ ≠ p₂)
     (H₁ H₂ : Subgroup G) (hH₁ : IsPGroup p₁ H₁) (hH₂ : IsPGroup p₂ H₂) : Disjoint H₁ H₂ := by
@@ -313,6 +315,7 @@ theorem disjoint_of_ne (p₁ p₂ : ℕ) [hp₁ : Fact p₁.Prime] [hp₂ : Fact
   · simpa using hn₁
   · exact absurd (eq_of_prime_pow_eq hp₁.out.prime hp₂.out.prime hn₁ this) hne
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_or_disjoint_of_coprime [hp : Fact p.Prime] {P : Subgroup G} (hP : IsPGroup p P)
     {H : Subgroup G} [H.Normal] (h_cop : (Nat.card H).Coprime H.index) :
     P ≤ H ∨ Disjoint H P := by

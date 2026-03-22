@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.CharP.LocalRing
 public import Mathlib.RingTheory.Ideal.Quotient.Basic
-public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Equal and mixed characteristic
@@ -153,6 +152,7 @@ Note: Property `(2)` is denoted as `EqualCharZero` in the statement names below.
 
 namespace EqualCharZero
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `ℚ`-algebra implies equal characteristic. -/
 theorem of_algebraRat [Algebra ℚ R] : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   intro I hI
@@ -168,6 +168,7 @@ section ConstructionAlgebraRat
 
 variable {R}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Internal: Not intended to be used outside this local construction. -/
 theorem PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))]
     (n : ℕ+) : IsUnit (n : R) := by

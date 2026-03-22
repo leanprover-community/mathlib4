@@ -410,6 +410,7 @@ theorem aestronglyMeasurable_condExpL1CLM (f : α →₁[μ] F') :
     refine IsClosed.preimage (condExpL1CLM F' hm μ).continuous ?_
     exact isClosed_aestronglyMeasurable hm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem condExpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
     condExpL1CLM F' hm μ (f : α →₁[μ] F') = ↑f := by
   let g := lpMeasToLpTrimLie F' ℝ 1 μ hm f
@@ -503,7 +504,7 @@ theorem condExpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable[m] f μ)
   exact hfm.congr hfi.coeFn_toL1.symm
 
 theorem condExpL1_mono {E}
-    [NormedAddCommGroup E] [PartialOrder E] [OrderClosedTopology E] [IsOrderedAddMonoid E]
+    [NormedAddCommGroup E] [PartialOrder E] [ClosedIciTopology E] [IsOrderedAddMonoid E]
     [CompleteSpace E] [NormedSpace ℝ E] [IsOrderedModule ℝ E] {f g : α → E} (hf : Integrable f μ)
     (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     condExpL1 hm μ f ≤ᵐ[μ] condExpL1 hm μ g := by

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.Immersion
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
-public import Mathlib.Geometry.Manifold.Diffeomorph
+public import Mathlib.Geometry.Manifold.Diffeomorph  -- shake: keep (used in `proof_wanted` only)
 
 /-! # Smooth embeddings
 

@@ -179,7 +179,7 @@ h : R (2 • myId x) (2 • myId x)
 ⊢ True
 -/
 #guard_msgs (trace) in
-set_option pp.mvars false in
+set_option pp.mvars.anonymous false in
 example (x : ℤ) (R : ℤ → ℤ → Prop) (hR : Reflexive R) : True := by
   have h : R (myId x + x) (x + myId x) := hR ..
   abel_nf at h

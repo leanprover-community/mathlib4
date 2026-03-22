@@ -66,7 +66,7 @@ structure Hom (X Y : InducedCategory D F) where
 @[simps id_hom comp_hom]
 instance : Category.{v} (InducedCategory D F) where
   Hom X Y := Hom X Y
-  id X := { hom := 𝟙 _}
+  id X := { hom := 𝟙 _ }
   comp f g := { hom := f.hom ≫ g.hom }
 
 attribute [reassoc] comp_hom

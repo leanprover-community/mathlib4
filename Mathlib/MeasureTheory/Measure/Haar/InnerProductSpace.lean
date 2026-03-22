@@ -34,10 +34,7 @@ namespace LinearIsometryEquiv
 variable (f : E ≃ₗᵢ[ℝ] F)
 
 /-- Every linear isometry equivalence is a measurable equivalence. -/
-def toMeasurableEquiv : E ≃ᵐ F where
-  toEquiv := f
-  measurable_toFun := f.continuous.measurable
-  measurable_invFun := f.symm.continuous.measurable
+def toMeasurableEquiv : E ≃ᵐ F := f.toHomeomorph.toMeasurableEquiv
 
 @[simp] theorem coe_toMeasurableEquiv : (f.toMeasurableEquiv : E → F) = f := rfl
 
@@ -102,6 +99,7 @@ equivalence between the space and the Euclidean space of the same dimension. -/
 noncomputable def OrthonormalBasis.measurableEquiv (b : OrthonormalBasis ι ℝ F) :
     F ≃ᵐ EuclideanSpace ℝ ι := b.repr.toHomeomorph.toMeasurableEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The measurable equivalence defined by an orthonormal basis is volume preserving. -/
 theorem OrthonormalBasis.measurePreserving_measurableEquiv (b : OrthonormalBasis ι ℝ F) :
     MeasurePreserving b.measurableEquiv volume volume := by
@@ -151,9 +149,6 @@ theorem EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp :
     MeasurableEquiv.coe_toLp, ← PiLp.coe_symm_continuousLinearEquiv 2 ℝ, Basis.map_addHaar]
   exact (EuclideanSpace.basisFun _ _).addHaar_eq_volume.symm
 
-@[deprecated (since := "2025-07-26")] alias EuclideanSpace.volume_preserving_measurableEquiv :=
-  EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp
-
 /-- A copy of `EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp`
 for the canonical spelling of the equivalence. -/
 theorem PiLp.volume_preserving_ofLp : MeasurePreserving (@ofLp 2 (ι → ℝ)) :=
@@ -164,6 +159,7 @@ theorem PiLp.volume_preserving_ofLp : MeasurePreserving (@ofLp 2 (ι → ℝ)) :
 theorem PiLp.volume_preserving_toLp : MeasurePreserving (@toLp 2 (ι → ℝ)) :=
   (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp ι).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma volume_euclideanSpace_eq_dirac [IsEmpty ι] :
     (volume : Measure (EuclideanSpace ℝ ι)) = Measure.dirac 0 := by
   rw [← (PiLp.volume_preserving_toLp ι).map_eq, volume_pi_eq_dirac 0,

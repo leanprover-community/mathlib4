@@ -53,6 +53,7 @@ namespace ColimitPresentation
 
 initialize_simps_projections ColimitPresentation (-isColimit)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma w (pres : ColimitPresentation J X) {i j : J} (f : i ⟶ j) :
     pres.diag.map f ≫ pres.ι.app j = pres.ι.app i := by

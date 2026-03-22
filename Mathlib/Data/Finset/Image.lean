@@ -133,12 +133,10 @@ theorem _root_.Function.Commute.finset_map {f g : α ↪ α} (h : Function.Commu
     Function.Commute (map f) (map g) :=
   Function.Semiconj.finset_map h
 
-@[simp]
+@[simp, gcongr]
 theorem map_subset_map {s₁ s₂ : Finset α} : s₁.map f ⊆ s₂.map f ↔ s₁ ⊆ s₂ :=
   ⟨fun h _ xs => (mem_map' _).1 <| h <| (mem_map' f).2 xs,
    fun h => by simp [subset_def, Multiset.map_subset_map h]⟩
-
-@[gcongr] alias ⟨_, _root_.GCongr.finsetMap_subset⟩ := map_subset_map
 
 /-- The `Finset` version of `Equiv.subset_symm_image`. -/
 theorem subset_map_symm {t : Finset β} {f : α ≃ β} : s ⊆ t.map f.symm ↔ s.map f ⊆ t := by
@@ -164,10 +162,8 @@ theorem map_inj {s₁ s₂ : Finset α} : s₁.map f = s₂.map f ↔ s₁ = s�
 theorem map_injective (f : α ↪ β) : Injective (map f) :=
   (mapEmbedding f).injective
 
-@[simp]
+@[simp, gcongr]
 theorem map_ssubset_map {s t : Finset α} : s.map f ⊂ t.map f ↔ s ⊂ t := (mapEmbedding f).lt_iff_lt
-
-@[gcongr] alias ⟨_, _root_.GCongr.finsetMap_ssubset⟩ := map_ssubset_map
 
 @[simp]
 theorem mapEmbedding_apply : mapEmbedding f s = map f s :=
@@ -182,6 +178,7 @@ lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finse
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
   simp [Function.comp_def, filter_map, f.injective.eq_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [DecidablePred p] :
     s.attach.filter p =
       (s.filter fun x => ∃ h, p ⟨x, h⟩).attach.map
@@ -474,6 +471,7 @@ theorem mem_range_iff_mem_finset_range_of_mod_eq [DecidableEq α] {f : ℤ → �
 theorem attach_image_val [DecidableEq α] {s : Finset α} : s.attach.image Subtype.val = s :=
   eq_of_veq <| by rw [image_val, attach_val, Multiset.attach_map_val, dedup_eq_self]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma attach_cons (a : α) (s : Finset α) (ha) :
     attach (cons a s ha) =

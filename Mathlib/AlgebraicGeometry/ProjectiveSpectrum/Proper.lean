@@ -33,6 +33,7 @@ open Scheme CategoryTheory Limits pullback HomogeneousLocalization
 
 section IsSeparated
 
+set_option backward.isDefEq.respectTransparency false in
 lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜 d)
     {g : A} (hg : g ∈ 𝒜 e) {x : A} (hx : x = f * g) (hd : 0 < d) :
     Function.Surjective
@@ -77,6 +78,7 @@ lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜
   · simp only [hx, add_tsub_cancel_right]
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
   refine ⟨IsZariskiLocalAtTarget.of_openCover (Pullback.openCoverOfLeftRight

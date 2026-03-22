@@ -83,7 +83,7 @@ instance : MonoidalCategoryStruct P.FullSubcategory where
   tensorHom f g := ObjectProperty.homMk (f.hom ⊗ₘ g.hom)
   tensorUnit := ⟨𝟙_ C, P.prop_unit⟩
   associator X Y Z := P.isoMk (α_ X.1 Y.1 Z.1)
-  leftUnitor X :=  P.isoMk (λ_ X.1)
+  leftUnitor X := P.isoMk (λ_ X.1)
   rightUnitor X := P.isoMk (ρ_ X.1)
 
 /--
@@ -95,6 +95,7 @@ instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
     { μIso _ _ := Iso.refl _
       εIso := Iso.refl _ }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful monoidal functor from a full monoidal subcategory into the original category
 ("forgetting" the condition).
 -/
@@ -128,6 +129,7 @@ section
 
 variable {P} {P' : ObjectProperty C} [P'.IsMonoidal] (h : P ≤ P')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An inequality `P ≤ P'` between monoidal properties of objects induces
 a monoidal functor between full monoidal subcategories. -/
 instance : (ιOfLE h).Monoidal :=
@@ -146,11 +148,13 @@ section Braided
 
 variable [BraidedCategory C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The braided structure on a full subcategory inherited by the braided structure on `C`.
 -/
 instance fullBraidedSubcategory : BraidedCategory (FullSubcategory P) :=
   .ofFaithful P.ι fun X Y ↦ P.isoMk (β_ X.1 Y.1)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful braided functor from a full braided subcategory into the original category
 ("forgetting" the condition).
 -/
@@ -158,6 +162,7 @@ instance : P.ι.Braided where
 
 variable {P}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An inequality `P ≤ P'` between monoidal properties of objects induces
 a braided functor between full braided subcategories. -/
 instance {P' : ObjectProperty C} [P'.IsMonoidal] (h : P ≤ P') :
@@ -178,6 +183,7 @@ section Closed
 
 variable [MonoidalClosed C] [P.IsMonoidalClosed]
 
+set_option backward.isDefEq.respectTransparency false in
 instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) where
   closed X :=
     { rightAdj := P.lift (P.ι ⋙ ihom X.1) (fun Y => P.prop_ihom X.2 Y.2)

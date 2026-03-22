@@ -31,15 +31,6 @@ variable {α : Type u} {β : Type v} {γ : Type w} [UniformSpace α] [UniformSpa
 ### Uniform inducing maps
 -/
 
-/-- A map `f : α → β` between uniform spaces is called *uniform inducing* if the uniformity filter
-on `α` is the pullback of the uniformity filter on `β` under `Prod.map f f`. If `α` is a separated
-space, then this implies that `f` is injective, hence it is a `IsUniformEmbedding`. -/
-@[mk_iff]
-structure IsUniformInducing (f : α → β) : Prop where
-  /-- The uniformity filter on the domain is the pullback of the uniformity filter on the codomain
-  under `Prod.map f f`. -/
-  comap_uniformity : comap (fun x : α × α => (f x.1, f x.2)) (𝓤 β) = 𝓤 α
-
 lemma isUniformInducing_iff_uniformSpace {f : α → β} :
     IsUniformInducing f ↔ ‹UniformSpace β›.comap f = ‹UniformSpace α› := by
   rw [isUniformInducing_iff, UniformSpace.ext_iff, Filter.ext_iff]
@@ -133,16 +124,6 @@ protected theorem IsUniformInducing.injective [T0Space α] {f : α → β} (h : 
 /-!
 ### Uniform embeddings
 -/
-
-/-- A map `f : α → β` between uniform spaces is a *uniform embedding* if it is uniform inducing and
-injective. If `α` is a separated space, then the latter assumption follows from the former. -/
-@[mk_iff]
-structure IsUniformEmbedding (f : α → β) : Prop extends IsUniformInducing f where
-  /-- A uniform embedding is injective. -/
-  injective : Function.Injective f
-
-lemma IsUniformEmbedding.isUniformInducing (hf : IsUniformEmbedding f) : IsUniformInducing f :=
-  hf.toIsUniformInducing
 
 theorem isUniformEmbedding_iff' {f : α → β} :
     IsUniformEmbedding f ↔
@@ -390,23 +371,39 @@ theorem completeSpace_extension {m : β → α} (hm : IsUniformInducing m) (dens
         _ ≤ 𝓝 x := le_nhds_of_cauchy_adhp ‹Cauchy g› this
         ⟩⟩
 
+lemma Filter.totallyBounded_map_iff {f : α → β} {F : Filter α} (hf : IsUniformInducing f) :
+    (F.map f).TotallyBounded ↔ F.TotallyBounded := by
+  refine ⟨fun hs ↦ ?_, fun h ↦ h.map hf.uniformContinuous⟩
+  simp_rw [(hf.basis_uniformity (basis_sets _)).filter_totallyBounded_iff]
+  intro t ht
+  rcases exists_subset_image_finite_and.1 (hs.exists_subset_of_mem (F.image_mem_map F.univ_mem) ht)
+    with ⟨u, -, hfin, h⟩
+  use u, hfin
+  simp_rw [SetRel.preimage, exists_mem_image] at h
+  exact h
+
 lemma totallyBounded_image_iff {f : α → β} {s : Set α} (hf : IsUniformInducing f) :
     TotallyBounded (f '' s) ↔ TotallyBounded s := by
-  refine ⟨fun hs ↦ ?_, fun h ↦ h.image hf.uniformContinuous⟩
-  simp_rw [(hf.basis_uniformity (basis_sets _)).totallyBounded_iff]
-  intro t ht
-  rcases exists_subset_image_finite_and.1 (hs.exists_subset ht) with ⟨u, -, hfin, h⟩
-  use u, hfin
-  rwa [biUnion_image, image_subset_iff, preimage_iUnion₂] at h
+  simp_rw [← totallyBounded_principal_iff, ← map_principal, totallyBounded_map_iff hf]
 
 theorem totallyBounded_preimage {f : α → β} {s : Set β} (hf : IsUniformInducing f)
     (hs : TotallyBounded s) : TotallyBounded (f ⁻¹' s) :=
   (totallyBounded_image_iff hf).1 <| hs.subset <| image_preimage_subset ..
 
+theorem Filter.totallyBounded_comap {f : α → β} {F : Filter β} (hf : IsUniformInducing f)
+    (hF : F.TotallyBounded) : (F.comap f).TotallyBounded :=
+  (totallyBounded_map_iff hf).1 <| hF.mono map_comap_le
+
 instance CompleteSpace.sum [CompleteSpace α] [CompleteSpace β] : CompleteSpace (α ⊕ β) := by
   rw [completeSpace_iff_isComplete_univ, ← range_inl_union_range_inr]
   exact isUniformEmbedding_inl.isUniformInducing.isComplete_range.union
     isUniformEmbedding_inr.isUniformInducing.isComplete_range
+
+theorem IsUniformEmbedding.discreteUniformity [DiscreteUniformity β] {f : α → β}
+    (hf : IsUniformEmbedding f) : DiscreteUniformity α := by
+  simp_rw [discreteUniformity_iff_eq_principal_setRelId, ← hf.comap_uniformity,
+    DiscreteUniformity.eq_principal_setRelId, comap_principal, SetRel.id, preimage_setOf_eq,
+    hf.injective.eq_iff]
 
 end
 

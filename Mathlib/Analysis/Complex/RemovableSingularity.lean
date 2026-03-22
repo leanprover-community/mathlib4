@@ -126,6 +126,7 @@ theorem tendsto_limUnder_of_differentiable_on_punctured_nhds_of_bounded_under {f
     Tendsto f (𝓝[≠] c) (𝓝 <| limUnder (𝓝[≠] c) f) :=
   tendsto_limUnder_of_differentiable_on_punctured_nhds_of_isLittleO hd hb.isLittleO_sub_self_inv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Cauchy formula for the derivative of a holomorphic function. -/
 theorem two_pi_I_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable {U : Set ℂ}
     (hU : IsOpen U) {c w₀ : ℂ} {R : ℝ} {f : ℂ → E} (hc : closedBall c R ⊆ U)

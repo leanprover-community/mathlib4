@@ -92,6 +92,7 @@ theorem not_isChain_of_chainHeight_lt_encard (s t : Set α) (ht : t ⊆ s)
   grw [encard_le_chainHeight_of_isChain _ _ ht hh] at he
   exact (lt_self_iff_false _).mp he
 
+set_option backward.isDefEq.respectTransparency false in
 theorem chainHeight_eq_top_iff :
     s.chainHeight r = ⊤ ↔ ∀ n : ℕ, ∃ t ⊆ s, t.encard = n ∧ IsChain r t := by
   refine ⟨fun h _ ↦ exists_isChain_of_le_chainHeight _ (le_top.trans_eq h.symm), fun h ↦ ?_⟩

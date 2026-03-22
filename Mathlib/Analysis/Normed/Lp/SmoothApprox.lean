@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Manifold.SmoothApprox
 public import Mathlib.MeasureTheory.Function.ContinuousMapDense
-public import Mathlib.Tactic.MoveAdd
 
 /-!
 

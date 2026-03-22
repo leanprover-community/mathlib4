@@ -19,7 +19,7 @@ In this file we define a predicate `Irrational` on `ℝ`, prove that the `n`-th 
 number is irrational if it is not integer, and that `√(q : ℚ)` is irrational if and only if
 `¬IsSquare q ∧ 0 ≤ q`.
 
-We also provide dot-style constructors like `Irrational.add_rat`, `Irrational.rat_sub` etc.
+We also provide dot-style constructors like `Irrational.add_ratCast`, `Irrational.ratCast_sub` etc.
 
 With the `Decidable` instances in this file, is possible to prove `Irrational √n` using `decide`,
 when `n` is a numeric literal or cast;
@@ -40,6 +40,9 @@ theorem irrational_iff_ne_rational (x : ℝ) : Irrational x ↔ ∀ a b : ℤ, b
 
 theorem Irrational.ne_rational {x : ℝ} (hx : Irrational x) (a b : ℤ) : x ≠ a / b := by
   rintro rfl; exact hx ⟨a / b, by simp⟩
+
+theorem exists_rat_of_not_irrational {x : ℝ} (hx : ¬ Irrational x) : ∃ (q : ℚ), x = q := by
+  grind [Irrational]
 
 /-- A transcendental real number is irrational. -/
 theorem Transcendental.irrational {r : ℝ} (tr : Transcendental ℚ r) : Irrational r := by
@@ -120,6 +123,7 @@ theorem irrational_sqrt_intCast_iff_of_nonneg {z : ℤ} (hz : 0 ≤ z) :
   rw [← Rat.isSquare_intCast_iff, ← irrational_sqrt_ratCast_iff_of_nonneg (mod_cast hz),
     Rat.cast_intCast]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem irrational_sqrt_intCast_iff {z : ℤ} :
     Irrational (√z) ↔ ¬IsSquare z ∧ 0 ≤ z := by
   rw [← Rat.cast_intCast, irrational_sqrt_ratCast_iff, Rat.isSquare_intCast_iff,

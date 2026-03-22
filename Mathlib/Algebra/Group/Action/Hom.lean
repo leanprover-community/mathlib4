@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Action.Pretransitive
 public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Tactic.ToDual
 
 /-!
 # Homomorphisms and group actions
@@ -39,6 +40,7 @@ namespace MulAction
 
 variable (α)
 
+set_option backward.whnf.reducibleClassField false in
 /-- A multiplicative action of `M` on `α` and a monoid homomorphism `N → M` induce
 a multiplicative action of `N` on `α`.
 

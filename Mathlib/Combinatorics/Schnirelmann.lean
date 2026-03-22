@@ -10,6 +10,7 @@ public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Schnirelmann density
@@ -188,6 +189,7 @@ end
 @[simp] lemma schnirelmannDensity_empty : schnirelmannDensity ∅ = 0 :=
   schnirelmannDensity_eq_zero_of_one_notMem (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Schnirelmann density of any finset is `0`. -/
 lemma schnirelmannDensity_finset (A : Finset ℕ) : schnirelmannDensity A = 0 := by
   refine le_antisymm ?_ schnirelmannDensity_nonneg
@@ -260,9 +262,7 @@ lemma schnirelmannDensity_setOf_modeq_one {m : ℕ} :
   rcases eq_or_ne m 1 with rfl | hm
   · simp [Nat.modEq_one]
   rw [← schnirelmannDensity_setOf_mod_eq_one hm]
-  apply schnirelmannDensity_congr
-  ext n
-  simp only [Set.mem_setOf_eq, Nat.ModEq, Nat.one_mod_eq_one.mpr hm]
+  simp [Nat.ModEq, Nat.one_mod_eq_one.mpr hm]
 
 lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ := by
   have h : setOf Odd = {n | n % 2 = 1} := Set.ext fun _ => Nat.odd_iff

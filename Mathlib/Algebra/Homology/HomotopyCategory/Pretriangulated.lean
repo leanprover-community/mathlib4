@@ -54,6 +54,7 @@ the morphism induced by the `1`-cocycle `-mappingCone.fst φ`. -/
 noncomputable def triangle : Triangle (CochainComplex C ℤ) :=
   Triangle.mk φ (inr φ) (Cocycle.homOf ((-fst φ).rightShift 1 0 (zero_add 1)))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_v_triangle_mor₃_f (p q : ℤ) (hpq : p + (-1) = q) :
     (inl φ).v p q hpq ≫ (triangle φ).mor₃.f q =
@@ -65,6 +66,7 @@ lemma inl_v_triangle_mor₃_f (p q : ℤ) (hpq : p + (-1) = q) :
     Cochain.rightShift_v _ 1 0 (zero_add 1) q q (add_zero q) p (by lia), shiftFunctor_obj_X,
     shiftFunctorObjXIso, Preadditive.comp_neg, inl_v_fst_v_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_f_triangle_mor₃_f (p : ℤ) : (inr φ).f p ≫ (triangle φ).mor₃.f p = 0 := by
   dsimp [triangle]
@@ -75,6 +77,7 @@ lemma inr_f_triangle_mor₃_f (p : ℤ) : (inr φ).f p ≫ (triangle φ).mor₃.
     shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, comp_id,
     Preadditive.comp_neg, inr_f_fst_v, neg_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_triangleδ : inr φ ≫ (triangle φ).mor₃ = 0 := by ext; simp
 
@@ -106,6 +109,7 @@ lemma triangleMapOfHomotopy_comm₂ :
     inr φ₁ ≫ mapOfHomotopy H = b ≫ inr φ₂ := by
   simp [mapOfHomotopy]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma triangleMapOfHomotopy_comm₃ :
     mapOfHomotopy H ≫ (triangle φ₂).mor₃ = (triangle φ₁).mor₃ ≫ a⟦1⟧' := by
@@ -121,6 +125,7 @@ lemma triangleMapOfHomotopy_comm₃ :
     assoc, inl_v_fst_v, inr_f_fst_v, comp_zero, add_zero, inl_v_fst_v_assoc, inr_f_desc_f_assoc,
     HomologicalComplex.comp_f, neg_zero, inr_f_fst_v_assoc, zero_comp, and_self]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `triangleh φ₁ ⟶ triangleh φ₂` that is induced by a square that
 is commutative up to homotopy. -/
 @[simps]
@@ -171,6 +176,7 @@ lemma map_comp (comm' : φ₂ ≫ b' = a' ≫ φ₃) :
   ext n
   simp [ext_from_iff _ (n + 1) n rfl, map]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `triangle φ₁ ⟶ triangle φ₂` that is induced by a commutative square. -/
 @[simps]
 noncomputable def triangleMap :
@@ -190,6 +196,7 @@ end map
 
 section Rotate
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `φ : K ⟶ L`, `K⟦(1 : ℤ)⟧` is homotopy equivalent to
 the mapping cone of `inr φ : L ⟶ mappingCone φ`. -/
 noncomputable def rotateHomotopyEquiv :
@@ -249,6 +256,7 @@ noncomputable def rotateHomotopyEquiv :
         Int.negOnePow_zero, inl_v_snd_v, inr_f_snd_v, zero_add, inl_v_descCochain_v,
         inr_f_descCochain_v, inl_v_triangle_mor₃_f, inr_f_triangle_mor₃_f, neg_add_cancel]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `rotateTrianglehIso`. -/
 noncomputable def rotateHomotopyEquivComm₂Homotopy :
     Homotopy ((triangle φ).mor₃ ≫ (rotateHomotopyEquiv φ).hom)
@@ -289,6 +297,7 @@ lemma rotateHomotopyEquiv_comm₂ :
   simpa only [Functor.map_comp]
     using HomotopyCategory.eq_of_homotopy _ _ (rotateHomotopyEquivComm₂Homotopy φ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma rotateHomotopyEquiv_comm₃ :
     (rotateHomotopyEquiv φ).hom ≫ (triangle (inr φ)).mor₃ = -φ⟦1⟧' := by
@@ -306,6 +315,7 @@ lemma rotateHomotopyEquiv_comm₃ :
     inl_v_triangle_mor₃_f, Iso.refl_inv, Preadditive.comp_neg, comp_id, inr_f_triangle_mor₃_f,
     comp_zero, neg_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism of triangles `(triangleh φ).rotate ≅ (triangleh (inr φ))`. -/
 noncomputable def rotateTrianglehIso :
     (triangleh φ).rotate ≅ (triangleh (inr φ)) :=
@@ -323,6 +333,7 @@ end Rotate
 
 section Shift
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism `(mappingCone φ)⟦n⟧ ≅ mappingCone (φ⟦n⟧')`. -/
 noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (φ⟦n⟧') where
   hom := lift _ (n.negOnePow • (fst φ).shift n) ((snd φ).shift n) (by
@@ -354,6 +365,7 @@ noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (
       Int.units_mul_self, one_smul, lift_f_snd_v, inl_v_snd_v, smul_zero, and_self,
       inr_f_desc_f_assoc, shiftFunctor_map_f', inr_f_fst_v, inr_f_snd_v]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism `(triangle φ)⟦n⟧ ≅ triangle (φ⟦n⟧')`. -/
 noncomputable def shiftTriangleIso (n : ℤ) :
     (Triangle.shiftFunctor _ n).obj (triangle φ) ≅ triangle (φ⟦n⟧') := by
@@ -393,6 +405,7 @@ open Preadditive
 
 variable (G : C ⥤ D) [G.Additive]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_δ :
     (G.mapHomologicalComplex (ComplexShape.up ℤ)).map (triangle φ).mor₃ ≫
       NatTrans.app ((Functor.mapHomologicalComplex G (ComplexShape.up ℤ)).commShiftIso 1).hom K =
@@ -409,6 +422,7 @@ lemma map_δ :
   simp only [shiftFunctor_obj_X, Cochain.neg_v, shiftFunctorObjXIso,
     HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, comp_id, Functor.map_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `φ : K ⟶ L` is a morphism of cochain complexes in `C` and `G : C ⥤ D` is an
 additive functor, then the image by `G` of the triangle `triangle φ` identifies to
 the triangle associated to the image of `φ` by `G`. -/
@@ -503,6 +517,7 @@ lemma rotate_distinguished_triangle (T : Triangle (HomotopyCategory C (ComplexSh
     exact isomorphic_distinguished _ (invRotate_distinguished_triangle' T.rotate hT) _
       ((triangleRotation _).unitIso.app T)
 
+set_option backward.isDefEq.respectTransparency false in
 open CochainComplex.mappingCone in
 lemma complete_distinguished_triangle_morphism
     (T₁ T₂ : Triangle (HomotopyCategory C (ComplexShape.up ℤ)))

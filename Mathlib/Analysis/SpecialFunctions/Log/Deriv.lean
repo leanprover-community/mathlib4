@@ -91,7 +91,7 @@ theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x �
 @[fun_prop]
 theorem contDiffOn_log {n : WithTop ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
   intro x hx
-  simp only [mem_compl_iff, mem_singleton_iff] at hx
+  push _ ∈ _ at hx
   exact (contDiffAt_log.2 hx).contDiffWithinAt
 
 end Real
@@ -206,6 +206,7 @@ end LogDifferentiable
 
 namespace Real
 
+set_option backward.isDefEq.respectTransparency false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- A crude lemma estimating the difference between `log (1-x)` and its Taylor series at `0`,
@@ -281,6 +282,7 @@ lemma hasDerivAt_half_log_one_add_div_one_sub_sub_sum_range
   simp [this, field, geom_sum_eq hy₃, hy₄, sub_ne_zero_of_ne, hy₃.symm]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A lemma estimating the difference between $\frac{1}{2} * \log(\frac{1+x}{1-x})$ and its
 Taylor series at `0`, where the bound tends to `0`. This bound is particularly useful for explicit
 estimates of logarithms.
@@ -315,6 +317,7 @@ lemma sum_range_sub_log_div_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
   -- fourth step: conclude by massaging the inequality of the third step
   simpa [F, pow_succ, div_mul_eq_mul_div] using C
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 For `0 ≤ x < 1`, the partial sums of the series expansion of $\frac{1}{2} * \log(\frac{1+x}{1-x})$
 at `0` form a lower bound for it. This shows that the absolute value in `sum_range_sub_log_div_le`
@@ -374,6 +377,7 @@ theorem hasSum_pow_div_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     _ ≤ |x| ^ i := by
       simpa [pow_succ] using mul_le_of_le_one_right (pow_nonneg (abs_nonneg x) i) (le_of_lt h)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Power series expansion of `log(1 + x) - log(1 - x)` for `|x| < 1`. -/
 theorem hasSum_log_sub_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     HasSum (fun k : ℕ => (2 : ℝ) * (1 / (2 * k + 1)) * x ^ (2 * k + 1))

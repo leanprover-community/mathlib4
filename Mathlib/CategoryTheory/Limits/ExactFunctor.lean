@@ -78,7 +78,7 @@ abbrev RightExactFunctor.forget : (C ⥤ᵣ D) ⥤ C ⥤ D :=
 abbrev RightExactFunctor.fullyFaithful : (RightExactFunctor.forget C D).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
 
-/-- Rxactness, as a property of objects in `C ⥤ D`. -/
+/-- Exactness, as a property of objects in `C ⥤ D`. -/
 def exactFunctor : ObjectProperty (C ⥤ D) :=
   leftExactFunctor C D ⊓ rightExactFunctor C D
 

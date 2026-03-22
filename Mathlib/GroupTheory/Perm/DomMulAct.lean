@@ -117,6 +117,7 @@ theorem stabilizer_ncard [Finite α] [Fintype ι] :
 
 variable [DecidableEq α] [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cardinality of the type of permutations preserving a function
   (without the finiteness assumption on target) -/
 theorem stabilizer_card' :

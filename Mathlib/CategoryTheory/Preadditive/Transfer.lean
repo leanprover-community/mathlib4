@@ -41,6 +41,7 @@ end Preadditive
 open Preadditive
 namespace Functor.FullyFaithful
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The preadditive structure on `C` induced by a fully faithful functor `F : C ⥤ D` makes `F` an
 additive functor. -/
 lemma additive_ofFullyFaithful :

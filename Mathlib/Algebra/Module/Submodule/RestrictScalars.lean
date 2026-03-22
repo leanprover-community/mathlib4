@@ -74,13 +74,31 @@ instance restrictScalars.isScalarTower (p : Submodule R M) :
     IsScalarTower S R (p.restrictScalars S) where
   smul_assoc r s x := Subtype.ext <| smul_assoc r s (x : M)
 
+variable {R M} in
+lemma restrictScalars_le {s t : Submodule R M} :
+    s.restrictScalars S ≤ t.restrictScalars S ↔ s ≤ t :=
+  Iff.rfl
+
+variable {R M} in
+lemma restrictScalars_lt {s t : Submodule R M} :
+    s.restrictScalars S < t.restrictScalars S ↔ s < t :=
+  Iff.rfl
+
 /-- `restrictScalars S` is an embedding of the lattice of `R`-submodules into
 the lattice of `S`-submodules. -/
 @[simps]
 def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M where
   toFun := restrictScalars S
   inj' := restrictScalars_injective S R M
-  map_rel_iff' := by simp [SetLike.le_def]
+  map_rel_iff' := restrictScalars_le S
+
+@[mono]
+lemma restrictScalars_monotone : Monotone (restrictScalars S : Submodule R M → Submodule S M) :=
+  (restrictScalarsEmbedding S R M).monotone
+
+variable {R M} in
+lemma restrictScalars_mono {s t : Submodule R M} (hst : s ≤ t) :
+    s.restrictScalars S ≤ t.restrictScalars S := restrictScalars_monotone S R M hst
 
 /-- Turning `p : Submodule R M` into an `S`-submodule gives the same module structure
 as turning it into a type and adding a module structure. -/
@@ -105,12 +123,45 @@ theorem restrictScalars_top : restrictScalars S (⊤ : Submodule R M) = ⊤ :=
 theorem restrictScalars_eq_top_iff {p : Submodule R M} : restrictScalars S p = ⊤ ↔ p = ⊤ := by
   simp [SetLike.ext_iff]
 
+variable {R M}
+
+@[simp]
+lemma restrictScalars_sInf (s : Set (Submodule R M)) :
+    (sInf s).restrictScalars S = sInf (restrictScalars S '' s) := by
+  ext; simp
+
+@[simp]
+lemma restrictScalars_sSup (s : Set (Submodule R M)) :
+    (sSup s).restrictScalars S = sSup (restrictScalars S '' s) := by
+  simp [← toAddSubmonoid_inj, toAddSubmonoid_sSup, ← Set.image_comp]
+
+variable (R M) in
 /-- If ring `S` acts on a ring `R` and `M` is a module over both (compatibly with this action) then
 we can turn an `R`-submodule into an `S`-submodule by forgetting the action of `R`. -/
 def restrictScalarsLatticeHom : CompleteLatticeHom (Submodule R M) (Submodule S M) where
   toFun := restrictScalars S
-  map_sInf' s := by ext; simp
-  map_sSup' s := by rw [← toAddSubmonoid_inj, toAddSubmonoid_sSup, ← Set.image_comp]; simp
+  map_sInf' := restrictScalars_sInf S
+  map_sSup' := restrictScalars_sSup S
+
+@[simp]
+lemma restrictScalars_iInf {ι : Sort*} (s : ι → Submodule R M) :
+    (iInf s).restrictScalars S = ⨅ i, restrictScalars S (s i) := by
+  ext; simp
+
+@[simp]
+lemma restrictScalars_iSup {ι : Sort*} (s : ι → Submodule R M) :
+    (iSup s).restrictScalars S = ⨆ i, restrictScalars S (s i) :=
+  map_iSup (restrictScalarsLatticeHom S R M) s
+
+@[simp]
+lemma restrictScalars_inf (s t : Submodule R M) :
+    (s ⊓ t).restrictScalars S = s.restrictScalars S ⊓ t.restrictScalars S := by
+  ext x; simp
+
+@[simp]
+lemma restrictScalars_sup (s t : Submodule R M) :
+    (s ⊔ t).restrictScalars S = s.restrictScalars S ⊔ t.restrictScalars S := by
+  simpa [Set.image_insert_eq] using restrictScalars_sSup S (s := {s, t})
 
 @[simp]
 lemma toIntSubmodule_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]

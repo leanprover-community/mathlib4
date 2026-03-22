@@ -55,6 +55,7 @@ theorem tendsto_finset_preimage_atTop_atTop {f : α → β} (hf : Function.Injec
   (Finset.monotone_preimage hf).tendsto_atTop_finset fun x =>
     ⟨{f x}, Finset.mem_preimage.2 <| Finset.mem_singleton_self _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_toLeft_atTop :
     Tendsto (Finset.toLeft (α := α) (β := β)) atTop atTop := by
   intro s hs
@@ -62,6 +63,7 @@ lemma tendsto_toLeft_atTop :
   obtain ⟨t, H⟩ := hs
   exact ⟨t.disjSum ∅, fun b hb ↦ H _ (by simpa [← Finset.coe_subset, Set.subset_def] using hb)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_toRight_atTop :
     Tendsto (Finset.toRight (α := α) (β := β)) atTop atTop := by
   intro s hs
@@ -74,6 +76,7 @@ theorem tendsto_finset_powerset_atTop_atTop : Tendsto (Finset.powerset (α := α
   refine tendsto_atTop_atTop.mpr fun t ↦ ⟨t.sup id, fun _ hu _ hv ↦ ?_⟩
   exact Finset.mem_powerset.mpr <| (Finset.le_sup_of_le hv fun _ h ↦ h).trans hu
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_finset_Iic_atTop_atTop [Preorder α] [LocallyFiniteOrderBot α] :
     Tendsto (Finset.Iic (α := α)) atTop atTop := by
   rcases isEmpty_or_nonempty α with _ | _
