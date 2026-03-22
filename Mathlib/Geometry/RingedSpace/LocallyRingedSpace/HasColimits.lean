@@ -116,7 +116,7 @@ noncomputable instance : PreservesColimitsOfShape (Discrete.{v} ι) forgetToShea
   ⟨fun {G} =>
     preservesColimit_of_preserves_colimit_cocone (coproductCofanIsColimit G)
       ((colimit.isColimit (C := SheafedSpace.{u+1, u, u} CommRingCat.{u}) _).ofIsoColimit
-        (Cocones.ext (Iso.refl _) fun _ => Category.comp_id _))⟩
+        (Cocone.ext (Iso.refl _) fun _ => Category.comp_id _))⟩
 
 end HasCoproducts
 

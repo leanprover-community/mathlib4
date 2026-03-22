@@ -11,7 +11,7 @@ public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Order.Quotient
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
-import Mathlib.Data.Real.CompleteField
+import Mathlib.Data.Real.Hom
 
 /-!
 # Standard part function
@@ -28,10 +28,6 @@ field, meaning we can uniquely embed it in the reals.
 Given a finite element of the field, the `ArchimedeanClass.stdPart` function returns the real number
 corresponding to this unique embedding. This function generalizes, among other things, the standard
 part function on `Hyperreal`.
-
-## TODO
-
-Redefine `Hyperreal.st` in terms of `ArchimedeanClass.stdPart`.
 
 ## References
 
@@ -149,7 +145,7 @@ def FiniteResidueField : Type _ :=
 namespace FiniteResidueField
 
 noncomputable instance : Field (FiniteResidueField K) :=
-  inferInstanceAs (Field (IsLocalRing.ResidueField _))
+  inferInstanceAs% Field (IsLocalRing.ResidueField _)
 
 private theorem ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.mk
     (Submodule.quotientRel (IsLocalRing.maximalIdeal (FiniteElement K))) ⁻¹' {x} := by
@@ -202,12 +198,6 @@ theorem mk_lt_mk {x y : FiniteElement K} : mk x < mk y ↔ x < y ∧ mk x ≠ mk
 theorem lt_of_mk_lt_mk {x y : FiniteElement K} (h : mk x < mk y) : x < y :=
   (mk_lt_mk.1 h).1
 
-#adaptation_note /-- Upon bumping to v4.29.0-rc3, this was previously proved by
-`grind [mul_le_mul_of_nonneg_left]`, but `grind` fails due to `inferInstanceAs` leakage in the
-`Field (FiniteResidueField K)` instance causing a defeq mismatch between
-`DivisionMonoid.toDivInvOneMonoid.toInvOneClass.toInv` and `Field.toGrindField.toInv`.
-See https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/576520256
--/
 private theorem mul_le_mul_of_nonneg_left' {x y z : FiniteResidueField K} (h : x ≤ y) (hz : 0 ≤ z) :
     z * x ≤ z * y := by
   induction x with | mk x
@@ -216,11 +206,7 @@ private theorem mul_le_mul_of_nonneg_left' {x y z : FiniteResidueField K} (h : x
   rw [← map_mul, ← map_mul]
   rw [← map_zero mk] at hz
   rw [mk_le_mk] at h hz ⊢
-  rcases h with h | h
-  · rcases hz with hz | hz
-    · simp [mul_le_mul_of_nonneg_left h hz]
-    · simp [← hz]
-  · simp [h]
+  grind [mul_le_mul_of_nonneg_left]
 
 instance : IsOrderedRing (FiniteResidueField K) where
   zero_le_one := mk.monotone' zero_le_one
@@ -301,7 +287,7 @@ For any infinite inputs, this function outputs a junk value of 0. -/
 @[no_expose]
 noncomputable def stdPart (x : K) : ℝ :=
   if h : 0 ≤ mk x then
-    OrderRingHom.comp default FiniteResidueField.mk (.mk x h) else 0
+    OrderRingHom.comp Classical.ofNonempty FiniteResidueField.mk (.mk x h) else 0
 
 theorem stdPart_of_mk_nonneg (f : FiniteResidueField K →+*o ℝ) (h : 0 ≤ mk x) :
     stdPart x = f (.mk <| .mk x h) := by
@@ -319,7 +305,7 @@ theorem stdPart_eq_zero {x : K} : stdPart x = 0 ↔ mk x ≠ 0 where
   mp := by
     contrapose!
     intro h
-    rwa [stdPart_of_mk_nonneg default h.ge, map_ne_zero, FiniteResidueField.mk_ne_zero]
+    rwa [stdPart_of_mk_nonneg Classical.ofNonempty h.ge, map_ne_zero, FiniteResidueField.mk_ne_zero]
 
 alias ⟨_, stdPart_of_mk_ne_zero⟩ := stdPart_eq_zero
 
@@ -397,7 +383,7 @@ theorem stdPart_div (hx : 0 ≤ mk x) (hy : 0 ≤ -mk y) :
 
 @[simp]
 theorem stdPart_ratCast (q : ℚ) : stdPart (q : K) = q := by
-  rw [stdPart_of_mk_nonneg default (mk_ratCast_nonneg q), FiniteElement.mk_ratCast,
+  rw [stdPart_of_mk_nonneg Classical.ofNonempty (mk_ratCast_nonneg q), FiniteElement.mk_ratCast,
     FiniteResidueField.mk_ratCast, map_ratCast]
 
 @[simp]
