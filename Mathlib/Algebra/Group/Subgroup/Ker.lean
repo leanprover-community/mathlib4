@@ -266,6 +266,12 @@ lemma ker_comp_mulEquiv {P : Type*} [MulOneClass P] (g : N →* P) (iso : G ≃*
     (g.comp iso).ker = map (iso.symm : N →* G) g.ker := by
   rw [← comap_ker, comap_equiv_eq_map_symm]
 
+/-- Composing with an isomorphism on the codomain does not change the kernel. -/
+@[to_additive (attr := simp)]
+lemma ker_eq_of_comp_mulEquiv {P : Type*} [MulOneClass P] (f : G →* N) (iso : N ≃* P) :
+    (iso.toMonoidHom.comp f).ker = f.ker := by
+  ext x; simp
+
 @[to_additive (attr := simp)]
 theorem comap_bot (f : G →* N) : (⊥ : Subgroup N).comap f = f.ker :=
   rfl
