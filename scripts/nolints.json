@@ -22,7 +22,6 @@
  ["docBlame", "Ctop.inter"],
  ["docBlame", "Ctop.top"],
  ["docBlame", "DilationEquiv.toDilation"],
- ["docBlame", "EqualCharZero.pnatCast"],
  ["docBlame", "EsakiaHom.toPseudoEpimorphism"],
  ["docBlame", "EuclideanDomain.wellFoundedRelation"],
  ["docBlame", "ExceptT.callCC"],
