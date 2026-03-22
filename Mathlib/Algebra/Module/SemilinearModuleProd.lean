@@ -412,6 +412,12 @@ def coprodₛₗ (f : E →ₛₗ[σ] M) (g : F →ₗ[S] M) : E ×[σ] F →ₛ
 theorem coprodₛₗ_apply (f : E →ₛₗ[σ] M) (g : F →ₗ[S] M) (x : E ×[σ] F) :
     coprodₛₗ f g x = f x.1 + g x.2 := rfl
 
+theorem coprodₛₗ_zero_left (g : F →ₗ[S] M) : (0 : E →ₛₗ[σ] M).coprodₛₗ g = g.comp (sndₛₗ σ E F) :=
+  zero_add _
+
+theorem coprodₛₗ_zero_right (f : E →ₛₗ[σ] M) : f.coprodₛₗ (0 : F →ₗ[S] M) = f.comp (fstₛₗ σ E F) :=
+  add_zero _
+
 variable {R S : Type*} [Semiring R] [Semiring S] (σ : R ≃+* S)
   (E : Type*) [AddCommGroup E] [Module R E]
   (F : Type*) [AddCommGroup F] [Module S F]
@@ -433,12 +439,6 @@ theorem coprodₛₗ_inrₛₗ (f : E →ₛₗ[(σ : R →+* S)] M) (g : F →�
     @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (id_comp_eq σ) (coprodₛₗ f g) (inrₛₗ σ E F)
       = g := by
   ext; simp
-
--- theorem coprod_zero_left (g : M₂ →ₗ[R] M₃) : (0 : M →ₗ[R] M₃).coprod g = g.comp (snd R M M₂) :=
---   zero_add _
-
--- theorem coprod_zero_right (f : M →ₗ[R] M₃) : f.coprod (0 : M₂ →ₗ[R] M₃) = f.comp (fst R M M₂) :=
---   add_zero _
 
 -- theorem comp_coprod (f : M₃ →ₗ[R] M₄) (g₁ : M →ₗ[R] M₃) (g₂ : M₂ →ₗ[R] M₃) :
 --     f.comp (g₁.coprod g₂) = (f.comp g₁).coprod (f.comp g₂) :=
