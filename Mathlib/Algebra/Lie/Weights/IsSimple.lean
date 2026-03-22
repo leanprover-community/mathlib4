@@ -27,6 +27,8 @@ As of Mar 2026, the proofs that these maps are part of an order isomorphism is s
   submodule of the dual space
 
 ## Main results
+* `LieAlgebra.IsKilling.restr_inf_cartan_eq_iSup_corootSubmodule`: the Cartan part of a Lie ideal I
+  equals the span of the coroots for roots in `I.rootSet`.
 * `LieAlgebra.IsKilling.instIsIrreducible`: the root system of a simple Lie algebra is irreducible
 -/
 
@@ -432,12 +434,6 @@ open LieSubmodule in
     exact sl2SubmoduleOfRoot_ne_bot i.1 hα₀ h_sl2_le
   · simp [h, invtSubmoduleToLieIdeal]
 
-/-! ### Ideal-Cartan intersection
-
-We prove that the Cartan part `I.restr H ⊓ H.toLieSubmodule` of a Lie ideal equals the
-span of the coroots for roots in `I.rootSet`. -/
-
-/-- A root outside `I.rootSet` vanishes on the Cartan part of the ideal. -/
 lemma weight_apply_eq_zero_of_not_mem_rootSet (I : LieIdeal K L)
     {h : H} (hI : (h : L) ∈ I) {β : H.root} (hβ : β ∉ I.rootSet) :
     (β : Weight K H L) h = 0 := by
@@ -448,10 +444,6 @@ lemma weight_apply_eq_zero_of_not_mem_rootSet (I : LieIdeal K L)
     exact lie_mem_left K L I h y hI
   rwa [I.toSubmodule.smul_mem_iff h_ne] at h_smul
 
-/-- For `α ∈ I.rootSet` and `β ∉ I.rootSet`, the weight `α` vanishes on `coroot β`.
-
-Together with `weight_apply_eq_zero_of_not_mem_rootSet` (which gives `β(coroot α) = 0`),
-this yields a symmetric orthogonality between roots inside and outside a Lie ideal. -/
 lemma rootSet_apply_coroot_eq_zero (I : LieIdeal K L)
     {α : H.root} (hα : α ∈ I.rootSet)
     {β : H.root} (hβ : β ∉ I.rootSet) :
@@ -464,9 +456,9 @@ lemma rootSet_apply_coroot_eq_zero (I : LieIdeal K L)
     LinearMap.BilinForm.orthogonal_span_singleton_eq_toLin_ker, LinearMap.mem_ker]
   exact traceForm_eq_zero_of_mem_ker_of_mem_span_coroot h_ker (Submodule.mem_span_singleton_self _)
 
-/-- The Cartan part `I.restr H ⊓ H.toLieSubmodule` of a Lie ideal equals the span of the
-coroots for roots in `I.rootSet`. -/
-lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
+/-- The intersection of a Lie ideal `I` with the Cartan subalgebra `H` equals the span of
+the coroots for roots whose root spaces lie in `I`. -/
+lemma restr_inf_cartan_eq_iSup_corootSubmodule (I : LieIdeal K L) :
     I.restr H ⊓ H.toLieSubmodule = ⨆ α ∈ I.rootSet, corootSubmodule α.1 := by
   refine le_antisymm ?_ (iSup₂_le fun _ hα ↦
     le_inf (I.corootSubmodule_le hα) LieSubmodule.map_incl_le)
@@ -478,8 +470,7 @@ lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
     (iSup_split f (· ∈ I.rootSet)).symm
   have h_top : span_I_roots ⊔ span_compl_roots = ⊤ := by
     rw [h_split, eq_top_iff, ← biSup_corootSpace_eq_top]
-    exact iSup₂_le fun α hα ↦
-      le_iSup_of_le ⟨α, by simpa [LieSubalgebra.root] using hα⟩ le_rfl
+    exact iSup₂_le fun α hα ↦ le_iSup_of_le ⟨α, by simpa [LieSubalgebra.root] using hα⟩ le_rfl
   have hspan_I_roots_incl : LieSubmodule.map H.toLieSubmodule.incl span_I_roots =
       ⨆ α ∈ I.rootSet, corootSubmodule α.1 := by
     change LieSubmodule.map _ (⨆ α ∈ I.rootSet, f α) = ⨆ α ∈ I.rootSet, _
