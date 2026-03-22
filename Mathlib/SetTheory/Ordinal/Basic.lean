@@ -928,10 +928,10 @@ theorem succ_ne_zero (o : Ordinal) : succ o ≠ 0 :=
 
 @[simp]
 theorem lt_one_iff_zero {a : Ordinal} : a < 1 ↔ a = 0 := by
-  simpa using @lt_succ_bot_iff _ _ _ a _ _
+  simpa using lt_succ_bot_iff (a := a)
 
 theorem le_one_iff {a : Ordinal} : a ≤ 1 ↔ a = 0 ∨ a = 1 := by
-  simpa using @le_succ_bot_iff _ _ _ a _
+  simpa using le_succ_bot_iff (a := a)
 
 @[deprecated card_add_one (since := "2026-02-27")]
 theorem card_succ (o : Ordinal) : card (succ o) = card o + 1 := by
