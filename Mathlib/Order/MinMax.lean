@@ -130,10 +130,6 @@ theorem max_lt_max (h₁ : a < c) (h₂ : b < d) : max a b < max c d :=
   max_lt (lt_max_of_lt_left h₁) (lt_max_of_lt_right h₂)
 
 @[to_dual]
-lemma min_left_comm (a b c : α) : min a (min b c) = min b (min a c) := by
-  rw [← min_assoc, min_comm a, min_assoc]
-
-@[to_dual]
 lemma min_right_comm (a b c : α) : min (min a b) c = min (min a c) b := by
   rw [min_assoc, min_comm b, ← min_assoc]
 
