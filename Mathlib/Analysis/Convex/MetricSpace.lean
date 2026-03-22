@@ -26,6 +26,8 @@ which is what one would expect from the triangle inequality.
 ## TODO
 - Equip `StdSimplex` with a topology and show the analogous continuity result for n-ary
   convex combinations.
+- Reverse the import direction with `Mathlib.LinearAlgebra.ConvexSpace.AffineSpace`
+  once that file is moved to the proper location.
 
 -/
 
@@ -49,6 +51,7 @@ class IsConvexMetricSpace : Prop where
 
 variable [IsConvexMetricSpace X]
 
+/-- `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)` -/
 lemma dist_convexCombination_map_le {ι : Type*} (f : StdSimplex ℝ ι) (x y : ι → X) :
     dist (convexCombination (f.map x)) (convexCombination (f.map y)) ≤
       f.weights.sum fun i r ↦ r * dist (x i) (y i) := by
