@@ -274,16 +274,9 @@ lemma sum_card_eq_sum_card_fiber_biUnion
       have g := Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow r (s := s)
         (t := s.biUnion B)
       unfold Finset.bipartiteAbove Finset.bipartiteBelow r at g
-      have hB : ∀ j ∈ s, {b ∈ s.biUnion B | b ∈ B j} = B j := by
-        intro j hj
-        ext a1
-        simp only [Finset.mem_filter, Finset.mem_biUnion]
-        constructor
-        · rintro ⟨_, ha1⟩
-          exact ha1
-        · intro h1; exact ⟨⟨j, hj, h1⟩, h1⟩
-      have hB' : ∀ b, ({a ∈ s | b ∈ B a} : Finset ι) = ({j | j ∈ s ∧ b ∈ B j} : Finset ι) := by
-        intro b; ext j; simp [and_comm]
+      have hB : ∀ j ∈ s, {b ∈ s.biUnion B | b ∈ B j} = B j := by grind
+      have hB' : ∀ b, ({a ∈ s | b ∈ B a} : Finset ι) = ({j | j ∈ s ∧ b ∈ B j} : Finset ι) := by 
+        grind
       rw [Finset.sum_congr rfl (fun j hj => by rw [hB j hj])] at g
       simp [hB', g]
 
