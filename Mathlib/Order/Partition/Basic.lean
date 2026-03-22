@@ -27,8 +27,6 @@ of `Q`.
 * `Partition s`: For `[CompleteLattice α]` and `s : α`, a `Partition s` is an independent
   collection of nontrivial elements whose supremum is `s`.
 * `Partition.removeBot`: A constructor for `Partition s` that removes `⊥` from a set of parts.
-* `Partition.Rel`: The partial equivalence relation induced by a partition of a set.
-* `Partition.IsRepFun`: A predicate characterizing a representative function for a partition.
 
 ## TODO
 
