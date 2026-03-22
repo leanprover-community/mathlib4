@@ -439,4 +439,3 @@ theorem Summable.matrix_blockDiag' {f : X → Matrix (Σ i, m' i) (Σ i, n' i) R
 end BlockMatrices
 
 end tsum
-#min_imports
