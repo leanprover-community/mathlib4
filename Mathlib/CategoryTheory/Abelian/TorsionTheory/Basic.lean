@@ -151,7 +151,166 @@ lemma isClosedUnderCoproducts_of_torsionTheory {T F : ObjectProperty C} (hTF : T
   rw [hTF.torsion_eq_leftOrthogonal]
   infer_instance
 
-theorem isTorsionClass_iff {P : ObjectProperty C} [LocallySmall.{w} C] [WellPowered.{w} C]
+example (P : ObjectProperty C) [P.IsClosedUnderQuotients] {X Y : C} (hX : P X) (f : X ⟶ Y) :
+    P (image f) :=
+  ObjectProperty.IsClosedUnderQuotients.prop_of_epi (factorThruImage f) hX
+
+lemma prop_sSup_subobjectOf (P : ObjectProperty C)
+    [P.IsClosedUnderQuotients] [∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J)]
+    [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C]
+    (X : C) :
+    P (Subobject.sSup {A : Subobject X | P (A : C)}) := by
+  let subobjs := {A : Subobject X | P (A : C)}
+  let I := equivShrink (Subobject X) '' subobjs
+  let D : Discrete I ⥤ C := Discrete.functor fun j => ((equivShrink (Subobject X)).symm j : C)
+  have hPDi (i : Discrete I) : P (D.obj i) := by
+    rcases i with ⟨i⟩
+    change P (((equivShrink (Subobject X)).symm i : Subobject X) : C)
+    rcases i.2 with ⟨A, hA, hi⟩
+    have : ((equivShrink (Subobject X)).symm i : Subobject X) = A := by
+      simpa using (congrArg (Equiv.symm (equivShrink (Subobject X))) hi).symm
+    rw [this]
+    exact hA
+  have hPcolimD : P (colimit D) := by
+    simpa using P.prop_colimit D hPDi
+  let f := Subobject.smallCoproductDesc subobjs
+  have hPimage : P (image f) :=
+    P.prop_of_epi (factorThruImage f) hPcolimD
+  rw [Subobject.sSup]
+  let e : Subobject.underlying.obj
+      (Subobject.mk (Limits.image.ι (Subobject.smallCoproductDesc subobjs))) ≅
+      Limits.image (Subobject.smallCoproductDesc subobjs) :=
+    Subobject.underlyingIso (Limits.image.ι (Subobject.smallCoproductDesc subobjs))
+  exact P.prop_of_iso e.symm hPimage
+
+/-
+These should be all the ingredients for the converse of `isTorsion_iff`, but currently in an
+awful state. Some notes on the badness:
+
+Attack is basically the same as Stenström's, just adapted to the available tools in mathlib.
+Form the maximal `P`-subobject, `Y`, of `X` via `Subobject.sSup` and show `P Y` (above).
+Show `P.rightOrothogonal (cokernel Y.arrow)` and conclude that `Y.arrow` is `Epi`, hence `P X`.
+The bulk of the ugliness lies in showing `P.rightOrthogonal (cokernel Y.arrow)`.
+(Part of the problem might be in misunderstanding/misuing the API for `Subobject`?)
+
+Most of the work is in showing for `P Z` and `f : Z ⟶ cokernel Y.arrow`, `B := image f` is 0.
+The necessary component is lifting `B` to a subobject of `X` that contains `Y` and has property `P`.
+Initially attempted to use `Subobject.pullback`, but couldn't seem to find a way to prove that
+`Subobject.pullbackπ` (i.e. the morphism from the subobject of `X` to `B`) is `Epi`. This is mostly
+why I'm concerned about my usage of the `Subobject` API; `Subobject.pullbackπ` is supposed to be the
+projection corresponding to `cokernel.π Y.arrow`, so I would expect to be able to prove
+`Subobject.pullbackπ` easily when `Epi` is stable under pullback in `C`. I assume I've missed
+something.
+
+Decided instead to use `A := pullback (cokernel.π Y.arrow) (image.ι f)` directly, with `i := fst`
+and `p := snd`. From there,
+  * Use `pullback.lift Y.arrow 0` to construct `g : Y ⟶ A`,
+  * Show the `ShortComplex` with left leg `g` and right leg `p` is `ShortExact`,
+  * Prove that the subobject of `X` corresponding to `image.ι i` is contained in `Y`, which factors
+    `image.ι i` through `Y.arrow`,
+  * Use `p = 0` and `Epi p` to force `B = 0`.
+
+TODO: Need to sort out the correct level of generality to state, prove, and home the above.
+ -/
+example (P : ObjectProperty C)
+    [P.IsClosedUnderQuotients] [P.IsClosedUnderExtensions]
+    [∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J)]
+    [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C] :
+    P = P.rightOrthogonal.leftOrthogonal := by
+  refine le_antisymm (le_rightOrthogonal_leftOrthogonal P) ?_
+  intro X hX
+  let Y := CategoryTheory.Subobject.sSup {A : Subobject X | P (A : C)}
+  have hPY : P (Y : C) := prop_sSup_subobjectOf P X
+  let ses := ShortComplex.mk Y.arrow (cokernel.π Y.arrow) (cokernel.condition Y.arrow)
+  have hses : ses.ShortExact := {
+    exact := by
+      exact ShortComplex.exact_of_g_is_cokernel ses
+        (cokernelIsCokernel ses.f)
+    mono_f := by infer_instance
+    epi_g := by infer_instance
+  }
+  have hcok : P.rightOrthogonal (cokernel Y.arrow) := by
+    rw [ObjectProperty.rightOrthogonal_iff]
+    intro Z f hPZ
+    let A := pullback (cokernel.π Y.arrow) (Abelian.image.ι f)
+    let B := Abelian.image f
+    let p : A ⟶ B := pullback.snd (cokernel.π Y.arrow) (Abelian.image.ι f)
+    let i : A ⟶ X := pullback.fst (cokernel.π Y.arrow) (Abelian.image.ι f)
+    have hPimf : P (Abelian.image f) :=
+      ObjectProperty.IsClosedUnderQuotients.prop_of_epi (Abelian.factorThruImage f) hPZ
+    have w₁ : Y.arrow ≫ cokernel.π Y.arrow = 0 ≫ Abelian.image.ι f := by
+      simp
+    let g := pullback.lift Y.arrow 0 w₁
+    haveI : Mono g := by
+      apply (mono_comp_iff_of_mono g i).mp
+      rw [pullback.lift_fst Y.arrow 0 w₁]
+      infer_instance
+    let shortComplex : ShortComplex C :=
+      ShortComplex.mk g p (pullback.lift_snd Y.arrow 0 w₁)
+    have hshortComplex : shortComplex.ShortExact := {
+      exact := by
+        refine ShortComplex.exact_of_f_is_kernel shortComplex ?_
+        refine KernelFork.IsLimit.ofι' g (pullback.lift_snd Y.arrow 0 w₁) ?_
+        intro A k hk
+        have : i ≫ cokernel.π Y.arrow = p ≫ Abelian.image.ι f := by
+          simpa [i, p] using pullback.condition
+        have : (k ≫ i) ≫ cokernel.π Y.arrow = 0 := calc
+          _ = k ≫ i ≫ cokernel.π Y.arrow := by rw [← Category.assoc]
+          _ = k ≫ p ≫ Abelian.image.ι f := by
+            rw [this]
+          _ = (k ≫ p) ≫ Abelian.image.ι f := by
+            rw [Category.assoc]
+          _ = 0 := by simp [p, hk]
+        let kernelFork : KernelFork (cokernel.π Y.arrow) := (KernelFork.ofι (k ≫ i) this)
+        let l : A ⟶ Y := hses.fIsKernel.lift kernelFork
+        have hfac : l ≫ Y.arrow = k ≫ i :=
+          hses.fIsKernel.fac kernelFork WalkingParallelPair.zero
+        refine ⟨l ,?_⟩
+        apply (cancel_mono i).mp
+        calc
+          _ = l ≫ g ≫ i := by rw [Category.assoc]
+          _ = l ≫ Y.arrow := by rw [pullback.lift_fst Y.arrow 0 w₁]
+          _ =  k ≫ i := hfac
+      mono_f := by infer_instance
+      epi_g := by infer_instance
+    }
+    have hPA: P A :=
+      ObjectProperty.prop_X₂_of_shortExact P hshortComplex hPY hPimf
+    have hPimagefst : P (Abelian.image i) :=
+      P.prop_of_epi (Abelian.factorThruImage i) hPA
+    have himg_mem : Subobject.mk (Abelian.image.ι i) ∈ {A : Subobject X | P (A : C)} := by
+      change P (((Subobject.mk (Abelian.image.ι i) : Subobject X) : C))
+      exact P.prop_of_iso (Subobject.underlyingIso (Abelian.image.ι i)).symm hPimagefst
+    have himg_le_Y : Subobject.mk (Abelian.image.ι i) ≤ Y := by
+      simpa [Y] using (le_sSup himg_mem)
+    have : (Subobject.mk (Abelian.image.ι i) : C) ⟶ (Y : C) :=
+      (Subobject.mk (Abelian.image.ι i)).ofLE Y himg_le_Y
+    let g' : Abelian.image i ⟶ (Y : C) := Subobject.ofMkLE (Abelian.image.ι i) Y himg_le_Y
+    have : g' ≫ Y.arrow = image.ι i := by exact Subobject.ofMkLE_arrow himg_le_Y
+    have : p = 0 := by
+      rw [← cancel_mono (Abelian.image.ι f), zero_comp]
+      calc
+        _ = i ≫ cokernel.π Y.arrow := pullback.condition.symm
+        _ = Abelian.factorThruImage i ≫ image.ι i ≫ cokernel.π Y.arrow :=
+          Eq.symm (kernel.lift_ι_assoc (cokernel.π i) i (cokernel.condition i) (cokernel.π Y.arrow))
+        _ = Abelian.factorThruImage i ≫ (g' ≫ Y.arrow) ≫ cokernel.π Y.arrow := by
+          exact
+            Eq.symm
+              (Abelian.factorThruImage i ≫=
+                congrFun (congrArg CategoryStruct.comp this) (cokernel.π Y.arrow))
+        _ = 0 := by simp
+    have : IsZero (Abelian.image f) :=
+      IsZero.of_epi_eq_zero p this
+    have : Abelian.image.ι f = 0 := IsZero.eq_zero_of_src this (Abelian.image.ι f)
+    rw [← image.fac f, this, comp_zero]
+  have : cokernel.π Y.arrow = 0 := by
+    exact
+      eq_of_comp_right_eq fun {Z} h ↦
+        congrArg (CategoryStruct.comp h) (hX (cokernel.π Y.arrow) hcok)
+  haveI : Epi Y.arrow := by exact Preadditive.epi_of_cokernel_zero (hX (cokernel.π Y.arrow) hcok)
+  exact ObjectProperty.prop_of_epi P Y.arrow hPY
+
+/- theorem isTorsionClass_iff {P : ObjectProperty C} [LocallySmall.{w} C] [WellPowered.{w} C]
     [HasCoproducts.{w} C] : (∃ F : ObjectProperty C, TorsionTheory P F) ↔
     (P.IsClosedUnderQuotients ∧ P.IsClosedUnderExtensions ∧
     ∀ {J : Type w}, P.IsClosedUnderColimitsOfShape (Discrete J)) := by
@@ -176,33 +335,9 @@ theorem isTorsionClass_iff {P : ObjectProperty C} [LocallySmall.{w} C] [WellPowe
         Somewhere along the way, things went off the rails. Starting to think I'm using the wrong
         components. Will revisit.
       -/
-      let subobjs : Set (Subobject X) := {A : Subobject X | P (Subobject.underlying.obj A)}
+      let subobjs : Set (Subobject X) := {A : Subobject X | P (A : C)}
       let Y := CategoryTheory.Subobject.sSup subobjs
-      let I := equivShrink (Subobject X) '' subobjs
-      let f := Subobject.smallCoproductDesc subobjs -- Morphism coproduct over `subobjs` to `X`
-      let D : Discrete I ⥤ C := Discrete.functor fun j => ((equivShrink (Subobject X)).symm j : C)
-      have hPcoprod : P (colimit D) := by
-        haveI := hcoprod (J := I)
-        have hD : ∀ j, P (D.obj j) := by
-          intro j
-          rcases j with ⟨j⟩
-          change P (((equivShrink (Subobject X)).symm j : Subobject X) : C)
-          rcases j.2 with ⟨A, hA, hj⟩
-          have : ((equivShrink (Subobject X)).symm j : Subobject X) = A := by
-            simpa using (congrArg (Equiv.symm (equivShrink (Subobject X))) hj).symm
-          rw [this]
-          exact hA
-        simpa [D] using P.prop_colimit D hD
-      have hPimage : P (image f) := by
-        exact hquot.prop_of_epi (factorThruImage f) hPcoprod
-      have hPY : P (Subobject.underlying.obj Y) := by
-        dsimp [Y,f]
-        rw [Subobject.sSup]
-        let e : Subobject.underlying.obj
-            (Subobject.mk (Limits.image.ι (Subobject.smallCoproductDesc subobjs))) ≅
-            Limits.image (Subobject.smallCoproductDesc subobjs) :=
-        Subobject.underlyingIso (Limits.image.ι (Subobject.smallCoproductDesc subobjs))
-        exact P.prop_of_iso e.symm hPimage
+      have hPY : P Y := prop_sSup_subobjectOf P X
       let ses := ShortComplex.mk Y.arrow (cokernel.π Y.arrow) (cokernel.condition Y.arrow)
       have hs : ses.ShortExact := {
         exact := by
@@ -213,7 +348,7 @@ theorem isTorsionClass_iff {P : ObjectProperty C} [LocallySmall.{w} C] [WellPowe
       }
       have hcok : P.rightOrthogonal (cokernel Y.arrow) := by
         sorry
-      sorry
+      sorry -/
 
 end TorsionTheory
 
