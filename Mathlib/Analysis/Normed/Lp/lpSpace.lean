@@ -3,12 +3,14 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.MeanInequalities
-import Mathlib.Analysis.MeanInequalitiesPow
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Data.Set.Image
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
+module
+
+public import Mathlib.Analysis.MeanInequalities
+public import Mathlib.Analysis.MeanInequalitiesPow
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Data.Set.Image
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 
 /-!
 # ℓp space
@@ -55,6 +57,8 @@ say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open scoped NNReal ENNReal Function
@@ -99,10 +103,10 @@ theorem memℓp_gen {f : ∀ i, E i} (hf : Summable fun i => ‖f i‖ ^ p.toRea
   rcases p.trichotomy with (rfl | rfl | hp)
   · apply memℓp_zero
     have H : Summable fun _ : α => (1 : ℝ) := by simpa using hf
-    exact (Set.Finite.of_summable_const (by norm_num) H).subset (Set.subset_univ _)
+    exact (Set.Finite.of_summable_const (by simp) H).subset (Set.subset_univ _)
   · apply memℓp_infty
     have H : Summable fun _ : α => (1 : ℝ) := by simpa using hf
-    simpa using ((Set.Finite.of_summable_const (by norm_num) H).image fun i => ‖f i‖).bddAbove
+    simpa using ((Set.Finite.of_summable_const (by simp) H).image fun i => ‖f i‖).bddAbove
   exact (memℓp_gen_iff hp).2 hf
 
 theorem memℓp_gen' {C : ℝ} {f : ∀ i, E i} (hf : ∀ s : Finset α, ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ C) :
@@ -182,11 +186,11 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
       Real.rpow_le_rpow this (hA ⟨i, rfl⟩) (inv_nonneg.mpr hq.le)
   · apply memℓp_gen
     have hf' := hfq.summable hq
-    refine .of_norm_bounded_eventually _ hf' (@Set.Finite.subset _ { i | 1 ≤ ‖f i‖ } ?_ _ ?_)
+    refine .of_norm_bounded_eventually hf' (@Set.Finite.subset _ { i | 1 ≤ ‖f i‖ } ?_ _ ?_)
     · have H : { x : α | 1 ≤ ‖f x‖ ^ q.toReal }.Finite := by
-        simpa using hf'.tendsto_cofinite_zero.eventually_lt_const (by norm_num)
+        simpa using hf'.tendsto_cofinite_zero.eventually_lt_const (by simp)
       exact H.subset fun i hi => Real.one_le_rpow hi hq.le
-    · show ∀ i, ¬|‖f i‖ ^ p.toReal| ≤ ‖f i‖ ^ q.toReal → 1 ≤ ‖f i‖
+    · change ∀ i, ¬|‖f i‖ ^ p.toReal| ≤ ‖f i‖ ^ q.toReal → 1 ≤ ‖f i‖
       intro i hi
       have : 0 ≤ ‖f i‖ ^ p.toReal := Real.rpow_nonneg (norm_nonneg _) p.toReal
       simp only [abs_of_nonneg, this] at hi
@@ -346,6 +350,7 @@ def coeFnAddMonoidHom : lp E p →+ (∀ i, E i) where
 @[simp]
 theorem coeFnAddMonoidHom_apply (x : lp E p) : coeFnAddMonoidHom E p x = ⇑x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
     ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, ⇑(f i) := by
   simp
@@ -380,6 +385,7 @@ theorem norm_rpow_eq_tsum (hp : 0 < p.toReal) (f : lp E p) :
     ‖f‖ ^ p.toReal = ∑' i, ‖f i‖ ^ p.toReal := by
   rw [norm_eq_tsum_rpow hp, ← Real.rpow_mul]
   · field_simp
+    simp
   apply tsum_nonneg
   intro i
   calc
@@ -403,6 +409,7 @@ theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
     refine Real.rpow_nonneg (tsum_nonneg ?_) _
     exact fun i => Real.rpow_nonneg (norm_nonneg _) _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem norm_zero : ‖(0 : lp E p)‖ = 0 := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -519,7 +526,7 @@ theorem sum_rpow_le_norm_rpow (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
     ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ ‖f‖ ^ p.toReal := by
   rw [lp.norm_rpow_eq_tsum hp f]
   have : ∀ i, 0 ≤ ‖f i‖ ^ p.toReal := fun i => Real.rpow_nonneg (norm_nonneg _) _
-  refine sum_le_tsum _ (fun i _ => this i) ?_
+  refine Summable.sum_le_tsum _ (fun i _ => this i) ?_
   exact (lp.memℓp f).summable hp
 
 theorem norm_le_of_forall_le' [Nonempty α] {f : lp E ∞} (C : ℝ) (hCf : ∀ i, ‖f i‖ ≤ C) :
@@ -541,7 +548,7 @@ theorem norm_le_of_tsum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp 
 
 theorem norm_le_of_forall_sum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp E p}
     (hf : ∀ s : Finset α, ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal) : ‖f‖ ≤ C :=
-  norm_le_of_tsum_le hp hC (tsum_le_of_sum_le ((lp.memℓp f).summable hp) hf)
+  norm_le_of_tsum_le hp hC (((lp.memℓp f).summable hp).tsum_le_of_sum_le hf)
 
 end ComparePointwise
 
@@ -622,9 +629,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
       NNReal.hasSum_coe] at hRHS hLHS
     refine hasSum_mono hLHS hRHS fun i => ?_
     dsimp only
-    rw [← NNReal.mul_rpow]
-    -- Porting note: added
-    rw [lp.coeFn_smul, Pi.smul_apply]
+    rw [← NNReal.mul_rpow, lp.coeFn_smul, Pi.smul_apply]
     gcongr
     apply nnnorm_smul_le
 
@@ -723,7 +728,7 @@ theorem _root_.Memℓp.infty_mul {f g : ∀ i, B i} (hf : Memℓp f ∞) (hg : M
         ((norm_nonneg _).trans (hCf ⟨i, rfl⟩))
 
 instance : Mul (lp B ∞) where
-  mul f g := ⟨HMul.hMul (α := ∀ i, B i) _ _ , f.property.infty_mul g.property⟩
+  mul f g := ⟨HMul.hMul (α := ∀ i, B i) _ _, f.property.infty_mul g.property⟩
 
 @[simp]
 theorem infty_coeFn_mul (f g : lp B ∞) : ⇑(f * g) = ⇑f * ⇑g :=
@@ -883,8 +888,8 @@ protected def single (p) (i : α) (a : E i) : lp E p :=
     refine (memℓp_zero ?_).of_exponent_ge (zero_le p)
     refine (Set.finite_singleton i).subset ?_
     intro j
-    simp only [forall_exists_index, Set.mem_singleton_iff, Ne, dite_eq_right_iff,
-      Set.mem_setOf_eq, not_forall]
+    simp only [Set.mem_singleton_iff, Ne,
+      Set.mem_setOf_eq]
     rw [not_imp_comm]
     intro h
     exact Pi.single_eq_of_ne h _⟩
@@ -1015,7 +1020,7 @@ protected theorem norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p
     simp only [if_neg hi, sub_zero, sub_self]
   have hF' : ∀ i ∈ s, F i = ‖f i‖ ^ p.toReal := by
     intro i hi
-    simp only [F, coeFn_sum, lp.single_apply, if_pos hi, sub_self, eq_self_iff_true, coeFn_sub,
+    simp only [F, coeFn_sum, lp.single_apply, if_pos hi, sub_self, coeFn_sub,
       Pi.sub_apply, Finset.sum_apply, Finset.sum_pi_single, sub_eq_self]
     simp [Real.zero_rpow hp.ne']
   have : HasSum F (∑ i ∈ s, F i) := hasSum_sum_of_ne_finset_zero hF
@@ -1131,7 +1136,7 @@ theorem sum_rpow_le_of_tendsto (hp : p ≠ ∞) {C : ℝ} {F : ι → lp E p} (h
   gcongr
 
 /-- "Semicontinuity of the `lp` norm": If all sufficiently large elements of a sequence in `lp E p`
- have `lp` norm `≤ C`, then the pointwise limit, if it exists, also has `lp` norm `≤ C`. -/
+have `lp` norm `≤ C`, then the pointwise limit, if it exists, also has `lp` norm `≤ C`. -/
 theorem norm_le_of_tendsto {C : ℝ} {F : ι → lp E p} (hCF : ∀ᶠ k in l, ‖F k‖ ≤ C) {f : lp E p}
     (hf : Tendsto (id fun i => F i : ι → ∀ a, E a) l (𝓝 f)) : ‖f‖ ≤ C := by
   obtain ⟨i, hi⟩ := hCF.exists
@@ -1166,6 +1171,7 @@ theorem tendsto_lp_of_tendsto_pi {F : ℕ → lp E p} (hF : CauchySeq F) {f : lp
     NormedAddCommGroup.uniformity_basis_dist.mem_of_mem hε
   refine (hF.eventually_eventually hε').mono ?_
   rintro n (hn : ∀ᶠ l in atTop, ‖(fun f => F n - f) (F l)‖ < ε)
+  rw [mem_closedBall_iff_norm]
   refine norm_le_of_tendsto (hn.mono fun k hk => hk.le) ?_
   rw [tendsto_pi_nhds]
   intro a
@@ -1201,7 +1207,7 @@ lemma LipschitzWith.uniformly_bounded [PseudoMetricSpace α] (g : α → ι → 
   rintro - ⟨i, rfl⟩
   calc
     |g a i| = |g a i - g a₀ i + g a₀ i| := by simp
-    _ ≤ |g a i - g a₀ i| + |g a₀ i| := abs_add _ _
+    _ ≤ |g a i - g a₀ i| + |g a₀ i| := abs_add_le _ _
     _ ≤ ↑K * dist a a₀ + M := by
         gcongr
         · exact lipschitzWith_iff_dist_le_mul.1 (hg i) a a₀
@@ -1213,9 +1219,12 @@ theorem LipschitzOnWith.coordinate [PseudoMetricSpace α] (f : α → ℓ^∞(ι
   constructor
   · intro hfl i x hx y hy
     calc
-      dist (f x i) (f y i) ≤ dist (f x) (f y) := lp.norm_apply_le_norm top_ne_zero (f x - f y) i
+      dist (f x i) (f y i) ≤ dist (f x) (f y) := by
+        simp only [dist_eq_norm]
+        exact lp.norm_apply_le_norm top_ne_zero (f x - f y) i
       _ ≤ K * dist x y := hfl x hx y hy
   · intro hgl x hx y hy
+    rw [dist_eq_norm]
     apply lp.norm_le_of_forall_le
     · positivity
     intro i

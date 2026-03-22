@@ -3,13 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Nat.Log
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.Nat.Digits
-import Mathlib.RingTheory.Multiplicity
+module
+
+public import Mathlib.Data.Nat.Choose.Factorization
 
 /-!
 # Natural number multiplicity
@@ -27,9 +23,9 @@ coefficients.
 * `Nat.Prime.multiplicity_factorial_mul`: The multiplicity of `p` in `(p * n)!` is `n` more than
   that of `n!`.
 * `Nat.Prime.multiplicity_choose`: Kummer's Theorem. The multiplicity of `p` in `n.choose k` is the
-   number of carries when `k` and `n - k` are added in base `p`. See `padicValNat_choose` for the
-   same result but stated in the language of `p`-adic valuations and
-   `sub_one_mul_padicValNat_choose_eq_sub_sum_digits` for a related result.
+  number of carries when `k` and `n - k` are added in base `p`. See `padicValNat_choose` for the
+  same result but stated in the language of `p`-adic valuations and
+  `sub_one_mul_padicValNat_choose_eq_sub_sum_digits` for a related result.
 
 ## Other declarations
 
@@ -40,15 +36,18 @@ coefficients.
   naturals. Avoids having to provide `p ≠ 1` and other trivialities, along with translating between
   `Prime` and `Nat.Prime`.
 
+## TODO
+
+Derive results from the corresponding ones `Mathlib.Data.Nat.Factorization.Multiplicity`
+
 ## Tags
 
 Legendre, p-adic
 -/
 
+public section
 
-open Finset Nat
-
-open Nat
+open Finset
 
 namespace Nat
 
@@ -118,14 +117,15 @@ theorem emultiplicity_factorial {p : ℕ} (hp : p.Prime) :
 
 /-- For a prime number `p`, taking `(p - 1)` times the multiplicity of `p` in `n!` equals `n` minus
 the sum of base `p` digits of `n`. -/
- theorem sub_one_mul_multiplicity_factorial {n p : ℕ} (hp : p.Prime) :
-     (p - 1) * multiplicity p n ! =
-     n - (p.digits n).sum := by
+theorem sub_one_mul_multiplicity_factorial {n p : ℕ} (hp : p.Prime) :
+    (p - 1) * multiplicity p n ! =
+    n - (p.digits n).sum := by
   simp only [multiplicity_eq_of_emultiplicity_eq_some <|
-      emultiplicity_factorial hp <| lt_succ_of_lt <| lt.base (log p n),
+      emultiplicity_factorial hp <| lt_succ_of_lt <| Nat.lt_add_one (log p n),
     ← Finset.sum_Ico_add' _ 0 _ 1, Ico_zero_eq_range, ←
     sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The multiplicity of `p` in `(p * (n + 1))!` is one more than the sum
   of the multiplicities of `p` in `(p * n)!` and `n + 1`. -/
 theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
@@ -134,14 +134,14 @@ theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   have h0 : 2 ≤ p := hp.two_le
   have h1 : 1 ≤ p * n + 1 := Nat.le_add_left _ _
   have h2 : p * n + 1 ≤ p * (n + 1) := by linarith
-  have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by omega
+  have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by lia
   have hm : emultiplicity p (p * n)! ≠ ⊤ := by
     rw [Ne, emultiplicity_eq_top, Classical.not_not, Nat.finiteMultiplicity_iff]
     exact ⟨hp.ne_one, factorial_pos _⟩
   revert hm
   have h4 : ∀ m ∈ Ico (p * n + 1) (p * (n + 1)), emultiplicity p m = 0 := by
     intro m hm
-    rw [emultiplicity_eq_zero, ← not_dvd_iff_between_consec_multiples _ hp.pos]
+    rw [emultiplicity_eq_zero, not_dvd_iff_lt_mul_succ _ hp.pos]
     rw [mem_Ico] at hm
     exact ⟨n, lt_of_succ_le hm.1, hm.2⟩
   simp_rw [← prod_Ico_id_eq_factorial, Finset.emultiplicity_prod hp', ← sum_Ico_consecutive _ h1 h3,
@@ -153,13 +153,26 @@ theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
 /-- The multiplicity of `p` in `(p * n)!` is `n` more than that of `n!`. -/
 theorem emultiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
     emultiplicity p (p * n)! = emultiplicity p n ! + n := by
-  induction' n with n ih
-  · simp
-  · simp only [hp, emultiplicity_factorial_mul_succ, ih, factorial_succ, emultiplicity_mul,
-    cast_add, cast_one, ← add_assoc]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    simp only [hp, emultiplicity_factorial_mul_succ, ih, factorial_succ, emultiplicity_mul,
+      cast_add, cast_one, ← add_assoc]
     congr 1
     rw [add_comm, add_assoc]
 
+/- The multiplicity of a prime `p` in `p ^ n` is the sum of `p ^ i`, where `i` ranges between `0`
+  and `n - 1`. -/
+theorem multiplicity_factorial_pow {n p : ℕ} (hp : p.Prime) :
+    multiplicity p (p ^ n).factorial = ∑ i ∈ Finset.range n, p ^ i := by
+  rw [← ENat.coe_inj, ← (Nat.finiteMultiplicity_iff.2
+      ⟨hp.ne_one, (p ^ n).factorial_pos⟩).emultiplicity_eq_multiplicity]
+  induction n with
+  | zero => simp [hp.emultiplicity_one]
+  | succ n h =>
+    rw [pow_succ', hp.emultiplicity_factorial_mul, h, Finset.sum_range_succ, ENat.coe_add]
+
+set_option backward.isDefEq.respectTransparency false in
 /-- A prime power divides `n!` iff it is at most the sum of the quotients `n / p ^ i`.
   This sum is expressed over the set `Ico 1 b` where `b` is any bound greater than `log p n` -/
 theorem pow_dvd_factorial_iff {p : ℕ} {n r b : ℕ} (hp : p.Prime) (hbn : log p n < b) :
@@ -172,18 +185,6 @@ theorem emultiplicity_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
   rw [hp.emultiplicity_factorial (lt_succ_self _)]
   apply WithTop.coe_mono
   exact Nat.geom_sum_Ico_le hp.two_le _ _
-
-theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
-    ∑ i ∈ Finset.Ico 1 b, n / p ^ i =
-      ((∑ i ∈ Finset.Ico 1 b, k / p ^ i) + ∑ i ∈ Finset.Ico 1 b, (n - k) / p ^ i) +
-        #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} :=
-  calc
-    ∑ i ∈ Finset.Ico 1 b, n / p ^ i = ∑ i ∈ Finset.Ico 1 b, (k + (n - k)) / p ^ i := by
-      simp only [add_tsub_cancel_of_le hkn]
-    _ = ∑ i ∈ Finset.Ico 1 b,
-          (k / p ^ i + (n - k) / p ^ i + if p ^ i ≤ k % p ^ i + (n - k) % p ^ i then 1 else 0) := by
-      simp only [Nat.add_div (pow_pos hp.pos _)]
-    _ = _ := by simp [sum_add_distrib, sum_boole]
 
 /-- The multiplicity of `p` in `choose (n + k) k` is the number of carries when `k` and `n`
   are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
@@ -222,7 +223,7 @@ theorem emultiplicity_le_emultiplicity_choose_add {p : ℕ} (hp : p.Prime) :
   | n + 1, k + 1 => by
     rw [← hp.emultiplicity_mul]
     refine emultiplicity_le_emultiplicity_of_dvd_right ?_
-    rw [← succ_mul_choose_eq]
+    rw [← add_one_mul_choose_eq]
     exact dvd_mul_right _ _
 
 variable {p n k : ℕ}
@@ -257,9 +258,9 @@ theorem emultiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤
   rw [Nat.add_sub_cancel_right]
 
 theorem dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣ (p ^ n).choose k := by
-  obtain hkp | hkp := hkp.symm.lt_or_lt
+  obtain hkp | hkp := hkp.symm.lt_or_gt
   · simp [choose_eq_zero_of_lt hkp]
-  refine emultiplicity_ne_zero.1 fun h => hkp.not_le <| Nat.le_of_dvd hk.bot_lt ?_
+  refine emultiplicity_ne_zero.1 fun h => hkp.not_ge <| Nat.le_of_dvd hk.bot_lt ?_
   have H := hp.emultiplicity_choose_prime_pow_add_emultiplicity hkp.le hk
   rw [h, zero_add, emultiplicity_eq_coe] at H
   exact H.1
@@ -270,6 +271,7 @@ theorem dvd_choose_pow_iff (hp : Prime p) : p ∣ (p ^ n).choose k ↔ k ≠ 0 �
 
 end Prime
 
+set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), emultiplicity 2 n ! < n := by
   have h2 := prime_two.prime
   refine binaryRec ?_ ?_

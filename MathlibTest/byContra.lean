@@ -6,8 +6,7 @@ import Mathlib.Algebra.Notation.Defs
 import Mathlib.Data.Nat.Basic
 import Mathlib.Order.Basic
 
-set_option autoImplicit true
-example (a b : ℕ) (foo : False)  : a < b := by
+example (a b : ℕ) (foo : False) : a < b := by
   by_contra!
   guard_hyp this : b ≤ a
   exact foo
@@ -27,17 +26,42 @@ example : 1 < 2 := by
   guard_hyp this : 2 ≤ 1
   contradiction
 
-example (_p : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ P := by
-  by_contra! foo : ¬ ¬ ¬ P -- normalises to ¬ P, as does ¬ (goal).
-  guard_hyp foo : ¬ ¬ ¬ P
+example (p : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ p := by
+  by_contra! foo : ¬ ¬ ¬ p -- normalises to ¬ p, as does ¬ (goal).
+  guard_hyp foo : ¬ ¬ ¬ p
   exact bar
 
-example (_p : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ P := by
-  by_contra! : ¬ ¬ ¬ P
-  guard_hyp this : ¬ ¬ ¬ P
+example (p : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ p := by
+  by_contra! : ¬ ¬ ¬ p
+  guard_hyp this : ¬ ¬ ¬ p
   exact bar
 
-variable [LinearOrder α] [One α] [Mul α]
+/--
+error: Type mismatch
+  h✝
+has type
+  b ≤ a
+but is expected to have type
+  a ≤ b
+---
+error: unsolved goals
+a b : ℕ
+this : a ≤ b
+⊢ False
+-/
+#guard_msgs in
+example (a b : ℕ) : a < b := by
+  by_contra! : a ≤ b
+
+example (P Q : Prop) (h' : False) : P ∧ Q := by
+  fail_if_success by_contra! +fdsewfjdsk h
+  by_contra! +distrib h
+  guard_hyp h : ¬P ∨ ¬Q
+  exact h'
+
+section order
+
+variable {α} [LinearOrder α] [One α] [Mul α]
 
 example (x : α) (f : False) : x ≤ 1 := by
   set a := x * x
@@ -57,3 +81,18 @@ example (x : α) (f : False) : x ≤ 1 := by
   by_contra! h
   guard_hyp h : 1 < x
   assumption
+
+end order
+
+example (n : ℕ) (h : n ≠ 0) : n ≠ 0 := by
+  by_contra! rfl
+  simp only [Ne, not_true_eq_false] at h
+
+example (p q : Prop) (hnp : ¬ p) : ¬ p ∨ ¬ q := by
+  by_contra! ⟨hp, _⟩
+  exact hnp hp
+
+example (p q : Prop) (hnp : ¬ p) (hnq : ¬ q) : ¬ (p ∨ q) := by
+  by_contra! hp | hq
+  · exact hnp hp
+  · exact hnq hq

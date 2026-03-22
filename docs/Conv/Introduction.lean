@@ -19,7 +19,7 @@ other theorem provers like HOL4, HOL Light or Isabelle.
 As a first example, let us prove
 `example (a b c : ℕ) : a * (b * c) = a * (c * b)` (examples in this file
 are somewhat artificial since the `ring` tactic from
-`Mathlib.Tactic.Ring` could finish them immediately). The naive first attempt is
+`Mathlib/Tactic/Ring.lean` could finish them immediately). The naive first attempt is
 to enter tactic mode and try `rw [mul_comm]`. But this transforms the goal
 into `b * c * a = a * (c * b)`, after commuting the very first
 multiplication appearing in the term. There are several ways to fix this

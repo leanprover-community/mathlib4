@@ -3,9 +3,10 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.Convex.Uniform
-import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.Convex.Uniform
+public import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Convexity properties of inner product spaces
@@ -19,6 +20,8 @@ import Mathlib.Analysis.InnerProductSpace.Basic
 inner product space, Hilbert space, norm
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -38,7 +41,6 @@ instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConve
       exact pow_pos hε _
     rw [sub_sub_cancel]
     refine le_sqrt_of_sq_le ?_
-    rw [sq, eq_sub_iff_add_eq.2 (parallelogram_law_with_norm ℝ x y), ← sq ‖x - y‖, hx, hy]
+    rw [sq, eq_sub_iff_add_eq.2 (parallelogram_law_with_norm_mul ℝ x y), ← sq ‖x - y‖, hx, hy]
     ring_nf
     gcongr⟩
-

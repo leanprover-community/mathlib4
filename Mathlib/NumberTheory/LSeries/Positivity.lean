@@ -3,10 +3,12 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler, Michael Stoll
 -/
-import Mathlib.Analysis.Complex.TaylorSeries
-import Mathlib.Analysis.Complex.Positivity
-import Mathlib.NumberTheory.ArithmeticFunction
-import Mathlib.NumberTheory.LSeries.Deriv
+module
+
+public import Mathlib.Analysis.Complex.TaylorSeries
+public import Mathlib.Analysis.Complex.Positivity
+public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.NumberTheory.LSeries.Deriv
 
 /-!
 # Positivity of values of L-series
@@ -22,6 +24,8 @@ The main results of this file are as follows.
   see `LSeries.positive_of_eq_differentiable` and
   `ArithmeticFunction.LSeries_positive_of_eq_differentiable`.
 -/
+
+public section
 
 open scoped ComplexOrder
 
@@ -55,7 +59,7 @@ then `L a x` is positive real for all real `x` larger than `abscissaOfAbsConv a`
 lemma positive {a : ℕ → ℂ} (ha₀ : 0 ≤ a) (ha₁ : 0 < a 1) {x : ℝ} (hx : abscissaOfAbsConv a < x) :
     0 < LSeries a x := by
   rw [LSeries]
-  refine tsum_pos ?_ (fun n ↦ term_nonneg (ha₀ n) x) 1 <| term_pos one_ne_zero ha₁ x
+  refine Summable.tsum_pos ?_ (fun n ↦ term_nonneg (ha₀ n) x) 1 <| term_pos one_ne_zero ha₁ x
   exact LSeriesSummable_of_abscissaOfAbsConv_lt_re <| by simpa only [ofReal_re] using hx
 
 /-- If all values of `a : ℕ → ℂ` are nonnegative reals and `a 1`

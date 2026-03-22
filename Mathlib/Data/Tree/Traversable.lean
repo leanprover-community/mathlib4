@@ -3,16 +3,19 @@ Copyright (c) 2025 Edward van de Meent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward van de Meent
 -/
+module
 
-import Mathlib.Data.Tree.Basic
-import Mathlib.Control.Applicative
-import Mathlib.Control.Traversable.Basic
+public import Mathlib.Data.Tree.Basic
+public import Mathlib.Control.Applicative
+public import Mathlib.Control.Traversable.Basic
 
 /-!
 # Traversable Binary Tree
 
 Provides a `Traversable` instance for the `Tree` type.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -38,8 +41,7 @@ lemma comp_traverse
     rfl
 
 lemma traverse_eq_map_id (f : α → β) (t : Tree α) :
-    t.traverse ((pure : β → Id β) ∘ f) = t.map f := by
-  rw [← Id.pure_eq (t.map f)]
+    t.traverse ((pure : β → Id β) ∘ f) = pure (t.map f) := by
   induction t with
   | nil => rw [traverse, map]
   | node v l r hl hr =>

@@ -3,11 +3,13 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.GroupTheory.Nilpotent
-import Mathlib.GroupTheory.SchurZassenhaus
-import Mathlib.GroupTheory.SemidirectProduct
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.GroupTheory.Abelianization.Finite
+public import Mathlib.GroupTheory.Nilpotent
+public import Mathlib.GroupTheory.SchurZassenhaus
+public import Mathlib.GroupTheory.SemidirectProduct
 
 /-!
 # Z-Groups
@@ -28,6 +30,8 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
   to a semidirect product of two cyclic subgroups of coprime order.
 
 -/
+
+@[expose] public section
 
 variable (G G' G'' : Type*) [Group G] [Group G'] [Group G''] (f : G →* G') (f' : G' →* G'')
 
@@ -138,8 +142,8 @@ section Commutator
 variable (G) in
 /-- A finite Z-group has cyclic commutator subgroup. -/
 theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) := by
-  refine WellFoundedLT.induction (C := fun H ↦ IsCyclic (⁅H, H⁆ : Subgroup G)) (⊤ : Subgroup G) ?_
-  intro H hH
+  rw [commutator_def]
+  induction (⊤ : Subgroup G) using WellFoundedLT.induction with | ind H hH
   rcases eq_or_ne H ⊥ with rfl | h
   · rw [Subgroup.commutator_bot_left]
     infer_instance
@@ -176,7 +180,7 @@ variable {p : ℕ} [Fact p.Prime]
 
 namespace IsPGroup
 
-/-- If a cyclic `p`-group `G` acts on a group `K` of coprime order, then the map `K × G → G`
+/-- If a group `K` acts on a cyclic `p`-group `G` of coprime order, then the map `K × G → G`
   defined by `(k, g) ↦ k • g * g⁻¹` is either trivial or surjective. -/
 theorem smul_mul_inv_trivial_or_surjective [IsCyclic G] (hG : IsPGroup p G)
     {K : Type*} [Group K] [MulDistribMulAction K G] (hGK : (Nat.card G).Coprime (Nat.card K)) :

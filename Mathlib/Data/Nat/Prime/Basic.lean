@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Associated
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Data.Nat.Prime.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Data.Nat.Prime.Defs
 
 /-!
 # Prime numbers
@@ -15,9 +17,7 @@ This file develops the theory of prime numbers: natural numbers `p ≥ 2` whose 
 
 -/
 
-open Bool Subtype
-
-open Nat
+public section
 
 namespace Nat
 variable {n : ℕ}
@@ -26,9 +26,9 @@ theorem prime_mul_iff {a b : ℕ} : Nat.Prime (a * b) ↔ a.Prime ∧ b = 1 ∨ 
   simp only [irreducible_mul_iff, ← irreducible_iff_nat_prime, Nat.isUnit_iff]
 
 theorem not_prime_mul {a b : ℕ} (a1 : a ≠ 1) (b1 : b ≠ 1) : ¬Prime (a * b) := by
-  simp [prime_mul_iff, _root_.not_or, *]
+  simp [prime_mul_iff, *]
 
-theorem not_prime_mul' {a b n : ℕ} (h : a * b = n) (h₁ : a ≠ 1) (h₂ : b ≠ 1) : ¬Prime n :=
+theorem not_prime_of_mul_eq {a b n : ℕ} (h : a * b = n) (h₁ : a ≠ 1) (h₂ : b ≠ 1) : ¬Prime n :=
   h ▸ not_prime_mul h₁ h₂
 
 theorem Prime.dvd_iff_eq {p a : ℕ} (hp : p.Prime) (a1 : a ≠ 1) : a ∣ p ↔ p = a := by
@@ -82,6 +82,10 @@ theorem not_prime_iff_exists_dvd_ne {n : ℕ} (h : 2 ≤ n) : (¬Prime n) ↔ �
 theorem not_prime_iff_exists_dvd_lt {n : ℕ} (h : 2 ≤ n) : (¬Prime n) ↔ ∃ m, m ∣ n ∧ 2 ≤ m ∧ m < n :=
   ⟨exists_dvd_of_not_prime2 h, fun ⟨_, h1, h2, h3⟩ => not_prime_of_dvd_of_lt h1 h2 h3⟩
 
+theorem not_prime_iff_exists_mul_eq {n : ℕ} (h : 2 ≤ n) :
+    (¬Prime n) ↔ ∃ a b, a < n ∧ b < n ∧ a * b = n := by
+  rw [prime_iff_not_exists_mul_eq, and_iff_right h, Classical.not_not]
+
 theorem dvd_of_forall_prime_mul_dvd {a b : ℕ}
     (hdvd : ∀ p : ℕ, p.Prime → p ∣ a → p * a ∣ b) : a ∣ b := by
   obtain rfl | ha := eq_or_ne a 1
@@ -92,6 +96,10 @@ theorem dvd_of_forall_prime_mul_dvd {a b : ℕ}
 theorem Prime.even_iff {p : ℕ} (hp : Prime p) : Even p ↔ p = 2 := by
   rw [even_iff_two_dvd, prime_dvd_prime_iff_eq prime_two hp, eq_comm]
 
+theorem Prime.odd_iff {p : ℕ} (hp : Prime p) : Odd p ↔ 3 ≤ p := by
+  rw [← not_iff_not, not_odd_iff_even, hp.even_iff, not_le]
+  grind [hp.two_le]
+
 theorem Prime.odd_of_ne_two {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2) : Odd p :=
   hp.eq_two_or_odd'.resolve_left h_two
 
@@ -99,8 +107,8 @@ theorem Prime.even_sub_one {p : ℕ} (hp : p.Prime) (h2 : p ≠ 2) : Even (p - 1
   let ⟨n, hn⟩ := hp.odd_of_ne_two h2; ⟨n, by rw [hn, Nat.add_sub_cancel, two_mul]⟩
 
 /-- A prime `p` satisfies `p % 2 = 1` if and only if `p ≠ 2`. -/
-theorem Prime.mod_two_eq_one_iff_ne_two {p : ℕ} [Fact p.Prime] : p % 2 = 1 ↔ p ≠ 2 := by
-  refine ⟨fun h hf => ?_, (Nat.Prime.eq_two_or_odd <| @Fact.out p.Prime _).resolve_left⟩
+theorem Prime.mod_two_eq_one_iff_ne_two {p : ℕ} (hp : p.Prime) : p % 2 = 1 ↔ p ≠ 2 := by
+  refine ⟨fun h hf => ?_, hp.eq_two_or_odd.resolve_left⟩
   rw [hf] at h
   simp at h
 
@@ -121,11 +129,11 @@ theorem Prime.not_coprime_iff_dvd {m n : ℕ} : ¬Coprime m n ↔ ∃ p, Prime p
     apply Nat.not_coprime_of_dvd_of_dvd (Prime.one_lt hp.1) hp.2.1 hp.2.2
 
 /-- If `0 < m < minFac n`, then `n` and `m` are coprime. -/
-lemma coprime_of_lt_minFac {n m : ℕ} (h₀ : m ≠ 0) (h : m < minFac n) : Coprime n m  := by
+lemma coprime_of_lt_minFac {n m : ℕ} (h₀ : m ≠ 0) (h : m < minFac n) : Coprime n m := by
   rw [← not_not (a := n.Coprime m), Prime.not_coprime_iff_dvd]
   push_neg
   exact fun p hp hn hm ↦
-    ((le_of_dvd (by omega) hm).trans_lt <| h.trans_le <| minFac_le_of_dvd hp.two_le hn).false
+    ((le_of_dvd (by lia) hm).trans_lt <| h.trans_le <| minFac_le_of_dvd hp.two_le hn).false
 
 /-- If `0 < m < minFac n`, then `n` and `m` have gcd equal to `1`. -/
 lemma gcd_eq_one_of_lt_minFac {n m : ℕ} (h₀ : m ≠ 0) (h : m < minFac n) : n.gcd m = 1 :=
@@ -182,7 +190,7 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
   · refine (hy ?_).elim
     subst hap
     subst ha
-    rw [sq, Nat.mul_right_eq_self_iff (Nat.mul_pos hp.pos hp.pos : 0 < a * a)] at h
+    rw [sq, Nat.mul_eq_left (Nat.mul_ne_zero hp.ne_zero hp.ne_zero)] at h
     exact h
 
 theorem Prime.coprime_pow_of_not_dvd {p m a : ℕ} (pp : Prime p) (h : ¬p ∣ a) : Coprime a (p ^ m) :=
@@ -198,12 +206,13 @@ theorem coprime_pow_primes {p q : ℕ} (n m : ℕ) (pp : Prime p) (pq : Prime q)
 theorem coprime_or_dvd_of_prime {p} (pp : Prime p) (i : ℕ) : Coprime p i ∨ p ∣ i := by
   rw [pp.dvd_iff_not_coprime]; apply em
 
-theorem coprime_of_lt_prime {n p} (n_pos : 0 < n) (hlt : n < p) (pp : Prime p) : Coprime p n :=
-  (coprime_or_dvd_of_prime pp n).resolve_right fun h => Nat.lt_le_asymm hlt (le_of_dvd n_pos h)
+theorem coprime_of_lt_prime {n p} (ne_zero : n ≠ 0) (hlt : n < p) (pp : Prime p) : Coprime p n :=
+  (coprime_or_dvd_of_prime pp n).resolve_right fun h => Nat.lt_le_asymm hlt
+    (le_of_dvd (Nat.pos_of_ne_zero ne_zero) h)
 
-theorem eq_or_coprime_of_le_prime {n p} (n_pos : 0 < n) (hle : n ≤ p) (pp : Prime p) :
+theorem eq_or_coprime_of_le_prime {n p} (ne_zero : n ≠ 0) (hle : n ≤ p) (pp : Prime p) :
     p = n ∨ Coprime p n :=
-  hle.eq_or_lt.imp Eq.symm fun h => coprime_of_lt_prime n_pos h pp
+  hle.eq_or_lt.imp Eq.symm fun h => coprime_of_lt_prime ne_zero h pp
 
 theorem prime_eq_prime_of_dvd_pow {m p q} (pp : Prime p) (pq : Prime q) (h : p ∣ q ^ m) : p = q :=
   (prime_dvd_prime_iff_eq pp pq).mp (pp.dvd_of_dvd_pow h)
@@ -211,9 +220,9 @@ theorem prime_eq_prime_of_dvd_pow {m p q} (pp : Prime p) (pq : Prime q) (h : p �
 theorem dvd_prime_pow {p : ℕ} (pp : Prime p) {m i : ℕ} : i ∣ p ^ m ↔ ∃ k ≤ m, i = p ^ k := by
   simp_rw [_root_.dvd_prime_pow (prime_iff.mp pp) m, associated_eq_eq]
 
-theorem Prime.dvd_mul_of_dvd_ne {p1 p2 n : ℕ} (h_neq : p1 ≠ p2) (pp1 : Prime p1) (pp2 : Prime p2)
+theorem Prime.dvd_mul_of_dvd_ne {p1 p2 n : ℕ} (h_ne : p1 ≠ p2) (pp1 : Prime p1) (pp2 : Prime p2)
     (h1 : p1 ∣ n) (h2 : p2 ∣ n) : p1 * p2 ∣ n :=
-  Coprime.mul_dvd_of_dvd_of_dvd ((coprime_primes pp1 pp2).mpr h_neq) h1 h2
+  Coprime.mul_dvd_of_dvd_of_dvd ((coprime_primes pp1 pp2).mpr h_ne) h1 h2
 
 /-- If `p` is prime,
 and `a` doesn't divide `p^k`, but `a` does divide `p^(k+1)`

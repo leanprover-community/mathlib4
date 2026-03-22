@@ -3,9 +3,11 @@ Copyright (c) 2022 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.CategoryTheory.Preadditive.Basic
-import Mathlib.CategoryTheory.Endofunctor.Algebra
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.CategoryTheory.Endofunctor.Algebra
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Preadditive structure on algebras over a monad
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 If `C` is a preadditive category and `F` is an additive endofunctor on `C` then `Algebra F` is
 also preadditive. Dually, the category `Coalgebra F` is also preadditive.
 -/
+
+@[expose] public section
 
 
 universe v₁ u₁
@@ -83,7 +87,7 @@ instance Endofunctor.algebraPreadditive : Preadditive (Endofunctor.Algebra F) wh
       zsmul_neg' := by
         intros
         apply Algebra.Hom.ext
-        simp only [negSucc_zsmul, neg_inj, ← Nat.cast_smul_eq_nsmul ℤ]
+        simp only [negSucc_zsmul, ← Nat.cast_smul_eq_nsmul ℤ]
       neg_add_cancel := by
         intros
         apply Algebra.Hom.ext
@@ -160,7 +164,7 @@ instance Endofunctor.coalgebraPreadditive : Preadditive (Endofunctor.Coalgebra F
       zsmul_neg' := by
         intros
         apply Coalgebra.Hom.ext
-        simp only [negSucc_zsmul, neg_inj, ← Nat.cast_smul_eq_nsmul ℤ]
+        simp only [negSucc_zsmul, ← Nat.cast_smul_eq_nsmul ℤ]
       neg_add_cancel := by
         intros
         apply Coalgebra.Hom.ext

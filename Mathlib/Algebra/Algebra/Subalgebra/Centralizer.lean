@@ -3,8 +3,10 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Basis
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Properties of centers and centralizers
@@ -21,6 +23,8 @@ Let `R` be a commutative ring and `A` and `B` two `R`-algebras.
 - `Subalgebra.centralizer_range_includeRight_eq_center_tensorProduct`: if `A` is free as a module,
   then the centralizer of `1 ⊗ B` in `A ⊗ B` is `A ⊗ C(B)` where `C(B)` is the center of `B`.
 -/
+
+public section
 
 namespace Subalgebra
 
@@ -81,11 +85,10 @@ lemma centralizer_coe_image_includeLeft_eq_center_tensorProduct
       Finset.sum_mul, mul_one] at hw
     refine TensorProduct.sum_tmul_basis_right_injective ℬ ?_
     simp only [Finsupp.coe_lsum]
-    rw [sum_of_support_subset (s := b.support) (hs := Finsupp.support_smul) (h := by aesop),
-      sum_of_support_subset (s := b.support) (hs := support_mapRange) (h := by aesop)]
+    rw [sum_of_support_subset (s := b.support) (hs := Finsupp.support_smul) (h := by simp),
+      sum_of_support_subset (s := b.support) (hs := support_mapRange) (h := by simp)]
     simpa only [Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul, LinearMap.flip_apply,
       TensorProduct.mk_apply, Finsupp.mapRange_apply] using hw
-
   · rintro ⟨w, rfl⟩
     rw [Subalgebra.mem_centralizer_iff]
     rintro _ ⟨x, hx, rfl⟩
@@ -121,7 +124,7 @@ lemma centralizer_coe_image_includeRight_eq_center_tensorProduct
         by rw [Algebra.TensorProduct.comm_comp_map_apply]⟩
     · rintro ⟨y, hy⟩
       refine ⟨(Algebra.TensorProduct.comm R _ _) y, (Algebra.TensorProduct.comm R A B).injective ?_⟩
-      rw [← hy, comm_comp_map_apply, ← comm_symm, AlgEquiv.symm_apply_apply]
+      rw [← hy, comm_comp_map_apply, ← Algebra.TensorProduct.comm_symm, AlgEquiv.symm_apply_apply]
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.
@@ -160,7 +163,7 @@ lemma centralizer_coe_range_includeLeft_eq_center_tensorProduct [Module.Free R B
   rw [← centralizer_univ, ← Algebra.coe_top (R := R) (A := A),
     ← centralizer_coe_map_includeLeft_eq_center_tensorProduct R A B ⊤]
   ext
-  simp [includeLeft, includeLeftRingHom, Set.range_comp]
+  simp [includeLeft, includeLeftRingHom]
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `A` is free as `R`-module.
@@ -173,7 +176,7 @@ lemma centralizer_range_includeRight_eq_center_tensorProduct [Module.Free R A] :
   rw [← centralizer_univ, ← Algebra.coe_top (R := R) (A := B),
     ← centralizer_coe_map_includeRight_eq_center_tensorProduct R A B ⊤]
   ext
-  simp [includeRight, includeLeftRingHom, Set.range_comp]
+  simp [includeRight]
 
 lemma centralizer_tensorProduct_eq_center_tensorProduct_left [Module.Free R B] :
     Subalgebra.centralizer R

@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.RelIso.Basic
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.RelIso.Basic
 
 /-!
 # Order continuity
@@ -17,6 +19,8 @@ For monotone functions `ℝ → ℝ` these notions correspond to the usual left 
 We prove some basic lemmas (`map_sup`, `map_sSup` etc) and prove that a `RelIso` is both left
 and right order continuous.
 -/
+
+@[expose] public section
 
 
 universe u v w x
@@ -53,8 +57,8 @@ protected theorem id : LeftOrdContinuous (id : α → α) := fun s x h => by
 
 variable {α}
 
--- Porting note: not sure what is the correct name for this
-protected theorem order_dual : LeftOrdContinuous f → RightOrdContinuous (toDual ∘ f ∘ ofDual) :=
+protected theorem rightOrdContinuous_dual :
+    LeftOrdContinuous f → RightOrdContinuous (toDual ∘ f ∘ ofDual) :=
   id
 
 theorem map_isGreatest (hf : LeftOrdContinuous f) {s : Set α} {x : α} (h : IsGreatest s x) :
@@ -87,7 +91,7 @@ theorem le_iff (hf : LeftOrdContinuous f) (h : Injective f) {x y} : f x ≤ f y 
   simp only [← sup_eq_right, ← hf.map_sup, h.eq_iff]
 
 theorem lt_iff (hf : LeftOrdContinuous f) (h : Injective f) {x y} : f x < f y ↔ x < y := by
-  simp only [lt_iff_le_not_le, hf.le_iff h]
+  simp only [lt_iff_le_not_ge, hf.le_iff h]
 
 variable (f)
 

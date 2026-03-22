@@ -3,16 +3,21 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Simon Hudon
 -/
-import Batteries.Data.List.Lemmas
-import Mathlib.Tactic.TypeStar
+module
+
+public import Batteries.Tactic.Alias
+public import Batteries.Data.List.Basic
+public import Mathlib.Init
 
 /-!
 # The Following Are Equivalent
 
 This file allows to state that all propositions in a list are equivalent. It is used by
-`Mathlib.Tactic.Tfae`.
+`Mathlib/Tactic/Tfae.lean`.
 `TFAE l` means `∀ x ∈ l, ∀ y ∈ l, x ↔ y`. This is equivalent to `Pairwise (↔) l`.
 -/
+
+@[expose] public section
 
 
 namespace List
@@ -50,12 +55,12 @@ theorem tfae_cons_self {a} {l : List Prop} : TFAE (a :: a :: l) ↔ TFAE (a :: l
 theorem tfae_of_forall (b : Prop) (l : List Prop) (h : ∀ a ∈ l, a ↔ b) : TFAE l :=
   fun _a₁ h₁ _a₂ h₂ => (h _ h₁).trans (h _ h₂).symm
 
-theorem tfae_of_cycle {a b} {l : List Prop} (h_chain : List.Chain (· → ·) a (b :: l))
+theorem tfae_of_cycle {a b} {l : List Prop} (h_chain : List.IsChain (· → ·) (a :: b :: l))
     (h_last : getLastD l b → a) : TFAE (a :: b :: l) := by
   induction l generalizing a b with
   | nil => simp_all [tfae_cons_cons, iff_def]
   | cons c l IH =>
-    simp only [tfae_cons_cons, getLastD_cons, tfae_singleton, and_true, chain_cons, Chain.nil] at *
+    simp only [tfae_cons_cons, getLastD_cons, isChain_cons_cons] at *
     rcases h_chain with ⟨ab, ⟨bc, ch⟩⟩
     have := IH ⟨bc, ch⟩ (ab ∘ h_last)
     exact ⟨⟨ab, h_last ∘ (this.2 c (.head _) _ getLastD_mem_cons).1 ∘ bc⟩, this⟩
@@ -81,7 +86,7 @@ example (P₁ P₂ P₃ : ℕ → Prop) (H : ∀ n, [P₁ n, P₂ n, P₃ n].TFA
 theorem forall_tfae {α : Type*} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
     (l.map (fun p ↦ ∀ a, p a)).TFAE := by
   simp only [TFAE, List.forall_mem_map]
-  intros p₁ hp₁ p₂ hp₂
+  intro p₁ hp₁ p₂ hp₂
   exact forall_congr' fun a ↦ H a (p₁ a) (mem_map_of_mem hp₁)
     (p₂ a) (mem_map_of_mem hp₂)
 
@@ -100,7 +105,7 @@ example (P₁ P₂ P₃ : ℕ → Prop) (H : ∀ n, [P₁ n, P₂ n, P₃ n].TFA
 theorem exists_tfae {α : Type*} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
     (l.map (fun p ↦ ∃ a, p a)).TFAE := by
   simp only [TFAE, List.forall_mem_map]
-  intros p₁ hp₁ p₂ hp₂
+  intro p₁ hp₁ p₂ hp₂
   exact exists_congr fun a ↦ H a (p₁ a) (mem_map_of_mem hp₁)
     (p₂ a) (mem_map_of_mem hp₂)
 

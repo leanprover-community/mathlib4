@@ -3,10 +3,11 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.RingTheory.SimpleRing.Defs
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.RingTheory.TwoSidedIdeal.Kernel
+public import Mathlib.RingTheory.SimpleRing.Defs
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.RingTheory.TwoSidedIdeal.Kernel
 
 /-! # Basic Properties of Simple rings
 
@@ -15,12 +16,14 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
 ## Main results
 
 - `IsSimpleRing.nontrivial`: simple rings are non-trivial.
-- `DivisionRing.IsSimpleRing`: division rings are simple.
+- `DivisionRing.isSimpleRing`: division rings are simple.
 - `RingHom.injective`: every ring homomorphism from a simple ring to a nontrivial ring is injective.
 - `IsSimpleRing.iff_injective_ringHom`: a ring is simple iff every ring homomorphism to a nontrivial
   ring is injective.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -30,12 +33,9 @@ namespace IsSimpleRing
 
 variable {R}
 
-instance [IsSimpleRing R] : IsSimpleOrder (TwoSidedIdeal R) := IsSimpleRing.simple
-
-instance [simple : IsSimpleRing R] : Nontrivial R := by
-  obtain ⟨x, hx⟩ := SetLike.exists_of_lt (bot_lt_top : (⊥ : TwoSidedIdeal R) < ⊤)
-  have h (hx : x = 0) : False := by simp_all [TwoSidedIdeal.zero_mem]
-  use x, 0, h
+instance [IsSimpleRing R] : Nontrivial R := by
+  obtain ⟨x, _, hx⟩ := SetLike.exists_of_lt (bot_lt_top : (⊥ : TwoSidedIdeal R) < ⊤)
+  use x, 0, hx
 
 lemma one_mem_of_ne_bot {A : Type*} [NonAssocRing A] [IsSimpleRing A] (I : TwoSidedIdeal A)
     (hI : I ≠ ⊥) : (1 : A) ∈ I :=
@@ -47,7 +47,7 @@ lemma one_mem_of_ne_zero_mem {A : Type*} [NonAssocRing A] [IsSimpleRing A] (I : 
 
 lemma of_eq_bot_or_eq_top [Nontrivial R] (h : ∀ I : TwoSidedIdeal R, I = ⊥ ∨ I = ⊤) :
     IsSimpleRing R where
-  simple := { eq_bot_or_eq_top := h }
+  simple.eq_bot_or_eq_top := h
 
 instance _root_.DivisionRing.isSimpleRing (A : Type*) [DivisionRing A] : IsSimpleRing A :=
   .of_eq_bot_or_eq_top <| fun I ↦ by

@@ -23,7 +23,7 @@ This is a test of the state of the library suggested by Martin Hairer.
 
 noncomputable section
 
-open Metric Set MeasureTheory
+open Metric Set MeasureTheory PiLp
 open MvPolynomial hiding support
 open Function hiding eval
 open scoped ContDiff
@@ -38,7 +38,7 @@ variable (𝕜 E F) in
 /-- The set of `C^n` functions supported in a set `s`, as a submodule of the space of functions. -/
 def ContDiffSupportedOn (n : ℕ∞) (s : Set E) : Submodule 𝕜 (E → F) where
   carrier := { f : E → F | tsupport f ⊆ s ∧ ContDiff 𝕜 n f }
-  add_mem' hf hg := ⟨tsupport_add.trans <| union_subset hf.1 hg.1, hf.2.add hg.2⟩
+  add_mem' hf hg := ⟨(tsupport_add _ _).trans <| union_subset hf.1 hg.1, hf.2.add hg.2⟩
   zero_mem' :=
     ⟨(tsupport_eq_empty_iff.mpr rfl).subset.trans (empty_subset _), contDiff_const (c := 0)⟩
   smul_mem' r f hf :=
@@ -73,7 +73,8 @@ lemma hasCompactSupport [ProperSpace E] (f : ContDiffSupportedOn 𝕜 E F n (clo
 theorem integrable_eval_mul (p : MvPolynomial ι ℝ)
     (f : ContDiffSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
     Integrable fun (x : EuclideanSpace ℝ ι) ↦ eval x p * f x :=
-  p.continuous_eval.mul (ContDiffSupportedOn.contDiff f).continuous
+  (p.continuous_eval.comp (continuous_ofLp 2 _)).mul
+    (ContDiffSupportedOn.contDiff f).continuous
     |>.integrable_of_hasCompactSupport (hasCompactSupport f).mul_left
 
 end ContDiffSupportedOn
@@ -89,7 +90,7 @@ def L : MvPolynomial ι ℝ →ₗ[ℝ]
   have int := ContDiffSupportedOn.integrable_eval_mul (ι := ι)
   .mk₂ ℝ (fun p f ↦ ∫ x : EuclideanSpace ℝ ι, eval x p • f x)
     (fun p₁ p₂ f ↦ by simp [add_mul, integral_add (int p₁ f) (int p₂ f)])
-    (fun r p f ↦ by simp [mul_assoc, integral_mul_left])
+    (fun r p f ↦ by simp [mul_assoc, integral_const_mul])
     (fun p f₁ f₂ ↦ by simp_rw [smul_eq_mul, ← integral_add (int p _) (int p _), ← mul_add]; rfl)
     fun r p f ↦ by simp_rw [← integral_smul, smul_comm r]; rfl
 
@@ -97,7 +98,8 @@ lemma inj_L : Injective (L ι) :=
   (injective_iff_map_eq_zero _).mpr fun p hp ↦ by
     have H : ∀ᵐ x : EuclideanSpace ℝ ι, x ∈ ball 0 1 → eval x p = 0 :=
       isOpen_ball.ae_eq_zero_of_integral_contDiff_smul_eq_zero
-        (continuous_eval p |>.locallyIntegrable.locallyIntegrableOn _)
+        (p.continuous_eval.comp (continuous_ofLp 2 _)
+          |>.locallyIntegrable.locallyIntegrableOn _)
         fun g hg _h2g g_supp ↦ by
           simpa [mul_comm (g _), L] using congr($hp ⟨g, g_supp.trans ball_subset_closedBall, hg⟩)
     simp_rw [MvPolynomial.funext_iff, map_zero]
@@ -106,10 +108,12 @@ lemma inj_L : Injective (L ι) :=
       (preconnectedSpace_iff_univ.mp inferInstance) (z₀ := 0) trivial
       (Filter.mem_of_superset (Metric.ball_mem_nhds 0 zero_lt_one) ?_) trivial
     rw [← ae_restrict_iff'₀ measurableSet_ball.nullMeasurableSet] at H
-    apply Measure.eqOn_of_ae_eq H p.continuous_eval.continuousOn continuousOn_const
+    apply Measure.eqOn_of_ae_eq H
+      (p.continuous_eval.comp (continuous_ofLp 2 _)).continuousOn continuousOn_const
     rw [isOpen_ball.interior_eq]
     apply subset_closure
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
     ∃ (ρ : EuclideanSpace ℝ ι → ℝ), tsupport ρ ⊆ closedBall 0 1 ∧ ContDiff ℝ ∞ ρ ∧
     ∀ (p : MvPolynomial ι ℝ), p.totalDegree ≤ N →

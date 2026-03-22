@@ -3,8 +3,11 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
-import Mathlib.Tactic.CategoryTheory.MonoidalComp
+module
+
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+public import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
 /-!
 # Expressions for monoidal categories
@@ -14,6 +17,8 @@ or `Mor` terms. The converted expressions are used in the coherence tactics and 
 widgets.
 
 -/
+
+public meta section
 
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike MonoidalCategory
@@ -68,7 +73,7 @@ def mkContext? (e : Expr) : MetaM (Option Context) := do
     let C ← instantiateMVars <| ← inferType f
     let .succ level₁ ← getLevel C | return none
     let .succ level₂ ← getLevel type | return none
-    let .some instCat ← synthInstance?
+    let some instCat ← synthInstance?
       (mkAppN (.const ``Category [level₂, level₁]) #[C]) | return none
     let instMonoidal? ← synthInstance?
       (mkAppN (.const ``MonoidalCategory [level₂, level₁]) #[C, instCat])
@@ -88,11 +93,11 @@ def synthMonoidalError {α : Type} : MetaM α := do
 instance : MonadMor₁ MonoidalM where
   id₁M a := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
-    return .id (q(MonoidalCategory.tensorUnit) : Q($ctx.C)) a
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    return .id (q(𝟙_ _) : Q($ctx.C)) a
   comp₁M f g := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f_e : Q($ctx.C) := f.e
     let g_e : Q($ctx.C) := g.e
     return .comp (q($f_e ⊗ $g_e)) f g
@@ -111,7 +116,7 @@ theorem structuralIsoOfExpr_comp {f g h : C}
 theorem StructuralOfExpr_monoidalComp {f g h i : C} [MonoidalCoherence g h]
     (η : f ⟶ g) (η' : f ≅ g) (ih_η : η'.hom = η) (θ : h ⟶ i) (θ' : h ≅ i) (ih_θ : θ'.hom = θ) :
     (η' ≪⊗≫ θ').hom = η ⊗≫ θ := by
-  simp [ih_η, ih_θ, monoidalIsoComp, monoidalComp, MonoidalCoherence.iso]
+  simp [ih_η, ih_θ, monoidalIsoComp, monoidalComp]
 
 variable [MonoidalCategory C]
 
@@ -128,7 +133,7 @@ theorem structuralIsoOfExpr_whiskerRight {f g : C} (h : C)
 theorem structuralIsoOfExpr_horizontalComp {f₁ g₁ f₂ g₂ : C}
     (η : f₁ ⟶ g₁) (η' : f₁ ≅ g₁) (ih_η : η'.hom = η)
     (θ : f₂ ⟶ g₂) (θ' : f₂ ≅ g₂) (ih_θ : θ'.hom = θ) :
-    (η' ⊗ θ').hom = η ⊗ θ := by
+    (η' ⊗ᵢ θ').hom = η ⊗ₘ θ := by
   simp [ih_η, ih_θ]
 
 end
@@ -138,19 +143,19 @@ open MonadMor₁
 instance : MonadMor₂Iso MonoidalM where
   associatorM f g h := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f_e : Q($ctx.C) := f.e
     let g_e : Q($ctx.C) := g.e
     let h_e : Q($ctx.C) := h.e
     return .associator q(α_ $f_e $g_e $h_e) f g h
   leftUnitorM f := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f_e : Q($ctx.C) := f.e
     return .leftUnitor q(λ_ $f_e) f
   rightUnitorM f := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f_e : Q($ctx.C) := f.e
     return .rightUnitor q(ρ_ $f_e) f
   id₂M f := do
@@ -160,7 +165,7 @@ instance : MonadMor₂Iso MonoidalM where
     return .id q(Iso.refl $f_e) f
   coherenceHomM f g inst := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     have f_e : Q($ctx.C) := f.e
     have g_e : Q($ctx.C) := g.e
     have inst : Q(MonoidalCoherence $f_e $g_e) := inst
@@ -183,7 +188,7 @@ instance : MonadMor₂Iso MonoidalM where
     return .comp q($η_e ≪≫ $θ_e) f g h η θ
   whiskerLeftM f η := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let g ← η.srcM
     let h ← η.tgtM
     have f_e : Q($ctx.C) := f.e
@@ -193,7 +198,7 @@ instance : MonadMor₂Iso MonoidalM where
     return .whiskerLeft q(whiskerLeftIso $f_e $η_e) f g h η
   whiskerRightM η h := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← η.srcM
     let g ← η.tgtM
     have f_e : Q($ctx.C) := f.e
@@ -203,7 +208,7 @@ instance : MonadMor₂Iso MonoidalM where
     return .whiskerRight q(whiskerRightIso $η_e $h_e) f g η h
   horizontalCompM η θ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f₁ ← η.srcM
     let g₁ ← η.tgtM
     let f₂ ← θ.srcM
@@ -309,13 +314,13 @@ instance : MonadMor₂ MonoidalM where
         have η_iso_eq : Q(Iso.hom $η_iso_e = $η_e) := η_iso.eq
         have θ_iso_eq : Q(Iso.hom $θ_iso_e = $θ_e) := θ_iso.eq
         let eq := q(structuralIsoOfExpr_comp _ _ $η_iso_eq _ _ $θ_iso_eq)
-        return .some ⟨← comp₂M η_iso.e θ_iso.e, eq⟩
+        return some ⟨← comp₂M η_iso.e θ_iso.e, eq⟩
       | _ => return none)
     let e : Q($f_e ⟶ $h_e) := q($η_e ≫ $θ_e)
     return .comp e iso_lift? f g h η θ
   whiskerLeftM f η := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let g ← η.srcM
     let h ← η.tgtM
     have f_e : Q($ctx.C) := f.e
@@ -327,13 +332,13 @@ instance : MonadMor₂ MonoidalM where
         have η_iso_e : Q($g_e ≅ $h_e) := η_iso.e.e
         have η_iso_eq : Q(Iso.hom $η_iso_e = $η_e) := η_iso.eq
         let eq := q(structuralIsoOfExpr_whiskerLeft $f_e _ _ $η_iso_eq)
-        return .some ⟨← whiskerLeftM f η_iso.e, eq⟩
+        return some ⟨← whiskerLeftM f η_iso.e, eq⟩
       | _ => return none)
     let e : Q($f_e ⊗ $g_e ⟶ $f_e ⊗ $h_e) := q($f_e ◁ $η_e)
     return .whiskerLeft e iso_lift? f g h η
   whiskerRightM η h := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← η.srcM
     let g ← η.tgtM
     have f_e : Q($ctx.C) := f.e
@@ -345,13 +350,13 @@ instance : MonadMor₂ MonoidalM where
         have η_iso_e : Q($f_e ≅ $g_e) := η_iso.e.e
         have η_iso_eq : Q(Iso.hom $η_iso_e = $η_e) := η_iso.eq
         let eq := q(structuralIsoOfExpr_whiskerRight $h_e _ _ $η_iso_eq)
-        return .some ⟨← whiskerRightM η_iso.e h, eq⟩
+        return some ⟨← whiskerRightM η_iso.e h, eq⟩
       | _ => return none)
     let e : Q($f_e ⊗ $h_e ⟶ $g_e ⊗ $h_e) := q($η_e ▷ $h_e)
     return .whiskerRight e iso_lift? f g η h
   horizontalCompM η θ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f₁ ← η.srcM
     let g₁ ← η.tgtM
     let f₂ ← θ.srcM
@@ -369,9 +374,9 @@ instance : MonadMor₂ MonoidalM where
         have η_iso_eq : Q(Iso.hom $η_iso_e = $η_e) := η_iso.eq
         have θ_iso_eq : Q(Iso.hom $θ_iso_e = $θ_e) := θ_iso.eq
         let eq := q(structuralIsoOfExpr_horizontalComp _ _ $η_iso_eq _ _ $θ_iso_eq)
-        return .some ⟨← horizontalCompM η_iso.e θ_iso.e, eq⟩
+        return some ⟨← horizontalCompM η_iso.e θ_iso.e, eq⟩
       | _ => return none)
-    let e : Q($f₁_e ⊗ $f₂_e ⟶ $g₁_e ⊗ $g₂_e) := q($η_e ⊗ $θ_e)
+    let e : Q($f₁_e ⊗ $f₂_e ⟶ $g₁_e ⊗ $g₂_e) := q($η_e ⊗ₘ $θ_e)
     return .horizontalComp e iso_lift? f₁ g₁ f₂ g₂ η θ
   coherenceCompM α η θ := do
     let ctx ← read
@@ -394,7 +399,7 @@ instance : MonadMor₂ MonoidalM where
         have η_iso_eq : Q(Iso.hom $η_iso_e = $η_e) := η_iso.eq
         have θ_iso_eq : Q(Iso.hom $θ_iso_e = $θ_e) := θ_iso.eq
         let eq := q(StructuralOfExpr_monoidalComp _ _ $η_iso_eq _ _ $θ_iso_eq)
-        return .some ⟨← coherenceCompM α η_iso.e θ_iso.e, eq⟩
+        return some ⟨← coherenceCompM α η_iso.e θ_iso.e, eq⟩
       | _ => return none)
     let e : Q($f_e ⟶ $i_e) := q($η_e ⊗≫ $θ_e)
     return .coherenceComp e iso_lift? f g h i α η θ
@@ -403,8 +408,8 @@ instance : MonadMor₂ MonoidalM where
 def id₁? (e : Expr) : MonoidalM (Option Obj) := do
   let ctx ← read
   match ctx.instMonoidal? with
-  | .some _monoidal => do
-    if ← withDefault <| isDefEq e (q(MonoidalCategory.tensorUnit) : Q($ctx.C)) then
+  | some _monoidal => do
+    if ← withDefault <| isDefEq e (q(𝟙_ _) : Q($ctx.C)) then
       return some ⟨none⟩
     else
       return none
@@ -416,7 +421,7 @@ def comp? (e : Expr) : MonoidalM (Option (Mor₁ × Mor₁)) := do
   let f ← mkFreshExprMVarQ ctx.C
   let g ← mkFreshExprMVarQ ctx.C
   match ctx.instMonoidal? with
-    | .some _monoidal => do
+    | some _monoidal => do
       if ← withDefault <| isDefEq e q($f ⊗ $g) then
         let f ← instantiateMVars f
         let g ← instantiateMVars g
@@ -427,6 +432,9 @@ def comp? (e : Expr) : MonoidalM (Option (Mor₁ × Mor₁)) := do
 
 /-- Construct a `Mor₁` expression from a Lean expression. -/
 partial def mor₁OfExpr (e : Expr) : MonoidalM Mor₁ := do
+  let e ← instantiateMVars e
+  if e.hasExprMVar then
+    throwError m!"expression contains metavariables:\n{e}"
   if let some f := (← get).cache.find? e then
     return f
   let f ←

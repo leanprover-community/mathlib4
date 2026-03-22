@@ -3,7 +3,9 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.PFunctor.Univariate.M
+module
+
+public import Mathlib.Data.PFunctor.Univariate.M
 
 /-!
 
@@ -37,8 +39,10 @@ The present theory focuses on the univariate case for qpfs
 
 -/
 
+@[expose] public section
 
-universe u
+
+universe u u' v
 
 /-- Quotients of polynomial functors.
 
@@ -46,8 +50,8 @@ Roughly speaking, saying that `F` is a quotient of a polynomial functor means th
 elements of `F α` are represented by pairs `⟨a, f⟩`, where `a` is the shape of the object and
 `f` indexes the relevant elements of `α`, in a suitably natural manner.
 -/
-class QPF (F : Type u → Type u) extends Functor F where
-  P : PFunctor.{u}
+class QPF (F : Type u → Type v) extends Functor F where
+  P : PFunctor.{u, u'}
   abs : ∀ {α}, P α → F α
   repr : ∀ {α}, F α → P α
   abs_repr : ∀ {α} (x : F α), abs (repr x) = x
@@ -55,7 +59,7 @@ class QPF (F : Type u → Type u) extends Functor F where
 
 namespace QPF
 
-variable {F : Type u → Type u} [q : QPF F]
+variable {F : Type u → Type v} [q : QPF F]
 
 open Functor (Liftp Liftr)
 
@@ -74,7 +78,6 @@ theorem id_map {α : Type _} (x : F α) : id <$> x = x := by
 theorem comp_map {α β γ : Type _} (f : α → β) (g : β → γ) (x : F α) :
     (g ∘ f) <$> x = g <$> f <$> x := by
   rw [← abs_repr x]
-  obtain ⟨a, f⟩ := repr x
   rw [← abs_map, ← abs_map, ← abs_map]
   rfl
 
@@ -202,7 +205,7 @@ def Wrepr : q.P.W → q.P.W :=
   recF (PFunctor.W.mk ∘ repr)
 
 theorem Wrepr_equiv (x : q.P.W) : Wequiv (Wrepr x) x := by
-  induction' x with a f ih
+  induction x with | _ a f ih
   apply Wequiv.trans
   · change Wequiv (Wrepr ⟨a, f⟩) (PFunctor.W.mk (q.P.map Wrepr ⟨a, f⟩))
     apply Wequiv.abs'
@@ -212,6 +215,7 @@ theorem Wrepr_equiv (x : q.P.W) : Wequiv (Wrepr x) x := by
   apply Wequiv.ind; exact ih
 
 /-- Define the fixed point as the quotient of trees under the equivalence relation `Wequiv`. -/
+@[instance_reducible]
 def Wsetoid : Setoid q.P.W :=
   ⟨Wequiv, @Wequiv.refl _ _, @Wequiv.symm _ _, @Wequiv.trans _ _⟩
 
@@ -220,6 +224,8 @@ attribute [local instance] Wsetoid
 /-- inductive type defined as initial algebra of a Quotient of Polynomial Functor -/
 def Fix (F : Type u → Type u) [q : QPF F] :=
   Quotient (Wsetoid : Setoid q.P.W)
+
+variable {F : Type u → Type u} [q : QPF F]
 
 /-- recursor of a type defined by a qpf -/
 def Fix.rec {α : Type _} (g : F α → α) : Fix F → α :=
@@ -267,11 +273,11 @@ theorem Fix.ind_rec {α : Type u} (g₁ g₂ : Fix F → α)
     (h : ∀ x : F (Fix F), g₁ <$> x = g₂ <$> x → g₁ (Fix.mk x) = g₂ (Fix.mk x)) :
     ∀ x, g₁ x = g₂ x := by
   rintro ⟨x⟩
-  induction' x with a f ih
+  induction x with | _ a f ih
   change g₁ ⟦⟨a, f⟩⟧ = g₂ ⟦⟨a, f⟩⟧
   rw [← Fix.ind_aux a f]; apply h
   rw [← abs_map, ← abs_map, PFunctor.map_eq, PFunctor.map_eq]
-  congr with x
+  congr 2 with x
   apply ih
 
 theorem Fix.rec_unique {α : Type u} (g : F α → α) (h : Fix F → α)
@@ -299,7 +305,7 @@ theorem Fix.dest_mk (x : F (Fix F)) : Fix.dest (Fix.mk x) = x := by
 
 theorem Fix.ind (p : Fix F → Prop) (h : ∀ x : F (Fix F), Liftp p x → p (Fix.mk x)) : ∀ x, p x := by
   rintro ⟨x⟩
-  induction' x with a f ih
+  induction x with | _ a f ih
   change p ⟦⟨a, f⟩⟧
   rw [← Fix.ind_aux a f]
   apply h
@@ -346,6 +352,7 @@ instance [Inhabited q.P.A] : Inhabited (Cofix F) :=
 def Cofix.corec {α : Type _} (g : α → F α) (x : α) : Cofix F :=
   Quot.mk _ (corecF g x)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- destructor for type defined by `Cofix` -/
 def Cofix.dest : Cofix F → F (Cofix F) :=
   Quot.lift (fun x => Quot.mk Mcongr <$> abs (PFunctor.M.dest x))
@@ -448,6 +455,7 @@ variable {F₂ : Type u → Type u} [q₂ : QPF F₂]
 variable {F₁ : Type u → Type u} [q₁ : QPF F₁]
 
 /-- composition of qpfs gives another qpf -/
+@[implicit_reducible]
 def comp : QPF (Functor.Comp F₂ F₁) where
   P := PFunctor.comp q₂.P q₁.P
   abs {α} := by
@@ -473,7 +481,7 @@ def comp : QPF (Functor.Comp F₂ F₁) where
     rcases h' : repr (f x) with ⟨b, g⟩
     dsimp; rw [← h', abs_repr]
   abs_map {α β} f := by
-    dsimp (config := { unfoldPartialApp := true }) [Functor.Comp, PFunctor.comp]
+    dsimp +unfoldPartialApp [Functor.Comp, PFunctor.comp]
     intro p
     obtain ⟨a, g⟩ := p; dsimp
     obtain ⟨b, h⟩ := a; dsimp
@@ -507,6 +515,7 @@ variable {FG_repr : ∀ {α}, G α → F α}
 functor `G α`, `G` is a qpf. We can consider `G` a quotient on `F` where
 elements `x y : F α` are in the same equivalence class if
 `FG_abs x = FG_abs y`. -/
+@[implicit_reducible]
 def quotientQPF (FG_abs_repr : ∀ {α} (x : G α), FG_abs (FG_repr x) = x)
     (FG_abs_map : ∀ {α β} (f : α → β) (x : F α), FG_abs (f <$> x) = f <$> FG_abs x) : QPF G where
   P := q.P
@@ -551,7 +560,7 @@ theorem has_good_supp_iff {α : Type u} (x : F α) :
       ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ a' f', abs ⟨a', f'⟩ = x → f '' univ ⊆ f' '' univ := by
   constructor
   · intro h
-    have : Liftp (supp x) x := by rw [h]; intro u; exact id
+    have : Liftp (· ∈ supp x) x := by rw [h]; intro u; exact id
     rw [liftp_iff] at this
     rcases this with ⟨a, f, xeq, h'⟩
     refine ⟨a, f, xeq.symm, ?_⟩
@@ -626,8 +635,7 @@ theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftpP
     rw [suppPreservation_iff_uniform] at h'
     dsimp only [SuppPreservation, supp] at h
     rw [liftp_iff_of_isUniform h', supp_eq_of_isUniform h', PFunctor.liftp_iff']
-    simp only [image_univ, mem_range, exists_imp]
-    constructor <;> intros <;> subst_vars <;> solve_by_elim
+    simp
   · rintro α ⟨a, f⟩
     simp only [LiftpPreservation] at h
     simp only [supp, h]

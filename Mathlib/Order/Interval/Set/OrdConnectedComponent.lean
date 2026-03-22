@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Data.Set.Lattice.Image
+module
+
+public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Order connected components of a set
@@ -14,6 +16,8 @@ In this file we define `Set.ordConnectedComponent s x` to be the set of `y` such
 this construction is used only to prove that any linear order with order topology is a T₅ space,
 so we only add API needed for this lemma.
 -/
+
+@[expose] public section
 
 
 open Interval Function OrderDual
@@ -30,6 +34,7 @@ def ordConnectedComponent (s : Set α) (x : α) : Set α :=
 theorem mem_ordConnectedComponent : y ∈ ordConnectedComponent s x ↔ [[x, y]] ⊆ s :=
   Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dual_ordConnectedComponent :
     ordConnectedComponent (ofDual ⁻¹' s) (toDual x) = ofDual ⁻¹' ordConnectedComponent s x :=
   ext <| (Surjective.forall toDual.surjective).2 fun x => by simp [mem_ordConnectedComponent]
@@ -54,7 +59,7 @@ theorem ordConnectedComponent_eq_empty : ordConnectedComponent s x = ∅ ↔ x �
 
 @[simp]
 theorem ordConnectedComponent_empty : ordConnectedComponent ∅ x = ∅ :=
-  ordConnectedComponent_eq_empty.2 (not_mem_empty x)
+  ordConnectedComponent_eq_empty.2 (notMem_empty x)
 
 @[simp]
 theorem ordConnectedComponent_univ : ordConnectedComponent univ x = univ := by
@@ -118,7 +123,7 @@ def ordConnectedSection (s : Set α) : Set α :=
 theorem dual_ordConnectedSection (s : Set α) :
     ordConnectedSection (ofDual ⁻¹' s) = ofDual ⁻¹' ordConnectedSection s := by
   simp only [ordConnectedSection]
-  simp (config := { unfoldPartialApp := true }) only [ordConnectedProj]
+  simp +unfoldPartialApp only [ordConnectedProj]
   ext x
   simp only [mem_range, Subtype.exists, mem_preimage, OrderDual.exists, dual_ordConnectedComponent,
     ofDual_toDual]
@@ -160,7 +165,7 @@ theorem dual_ordSeparatingSet :
     dual_ordConnectedComponent, ← preimage_compl, preimage_inter, preimage_iUnion]
 
 /-- An auxiliary neighborhood that will be used in the proof of
-    `OrderTopology.CompletelyNormalSpace`. -/
+`OrderTopology.CompletelyNormalSpace`. -/
 def ordT5Nhd (s t : Set α) : Set α :=
   ⋃ x ∈ s, ordConnectedComponent (tᶜ ∩ (ordConnectedSection <| ordSeparatingSet s t)ᶜ) x
 
@@ -173,7 +178,7 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
   clear hx₂
   rw [mem_ordConnectedComponent, subset_inter_iff] at ha hb
   wlog hab : a ≤ b with H
-  · exact H b hbt hb a has ha (le_of_not_le hab)
+  · exact H b hbt hb a has ha (le_of_not_ge hab)
   obtain ⟨ha, ha'⟩ := ha
   obtain ⟨hb, hb'⟩ := hb
   have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := by

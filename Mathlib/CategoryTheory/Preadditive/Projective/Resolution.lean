@@ -3,8 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Homology.QuasiIso
-import Mathlib.Algebra.Homology.SingleHomology
+module
+
+public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.Algebra.Homology.SingleHomology
+public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 
 /-!
 # Projective resolutions
@@ -16,8 +19,10 @@ of `Z` in degree zero.
 
 -/
 
+@[expose] public section
 
-universe v u
+
+universe v u v' u'
 
 namespace CategoryTheory
 
@@ -110,6 +115,7 @@ noncomputable def isColimitCokernelCofork : IsColimit (P.cokernelCofork) := by
     Iso.hom_inv_id, comp_id, isoHomologyι_inv_hom_id, singleObjHomologySelfIso_inv_homologyι,
     singleObjOpcyclesSelfIso_hom, single₀ObjXSelf, Iso.refl_inv, id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : Epi (P.π.f n) := by
   cases n
   · exact epi_of_isColimit_cofork P.isColimitCokernelCofork
@@ -129,6 +135,48 @@ noncomputable def self [Projective Z] : ProjectiveResolution Z where
       apply HomologicalComplex.isZero_single_obj_X
       simp
 
+variable {Z} {Z' : C} (P' : ProjectiveResolution Z')
+
+/-- Given injective resolutions `P` and `P'` of two objects `Z` and `Z'`,
+and a morphism `f : Z ⟶ Z'`, this structure contains the data of a morphism
+`P.complex ⟶ P'.complex` which is compatible with `f` -/
+structure Hom (f : Z ⟶ Z') where
+  /-- A morphism between the cocomplexes -/
+  hom : P.complex ⟶ P'.complex
+  hom_f_zero_comp_π_f_zero : hom.f 0 ≫ P'.π.f 0 = P.π.f 0 ≫ ((single₀ C).map f).f 0
+
+namespace Hom
+
+attribute [reassoc (attr := simp)] hom_f_zero_comp_π_f_zero
+
+set_option backward.isDefEq.respectTransparency false in
+variable {I I'} in
+@[reassoc (attr := simp)]
+lemma hom_comp_π {f : Z ⟶ Z'} (φ : Hom P P' f) :
+    φ.hom ≫ P'.π = P.π ≫ (single₀ C).map f := by cat_disch
+
+end Hom
+
 end ProjectiveResolution
 
-end CategoryTheory
+namespace Functor
+
+open Limits
+
+variable {C : Type u} [Category* C] [HasZeroObject C] [Preadditive C]
+  {D : Type u'} [Category.{v'} D] [HasZeroObject D] [Preadditive D] [CategoryWithHomology D]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- An additive functor `F` which preserves homology and sends projective objects to projective
+objects sends a projective resolution of `Z` to a projective resolution of `F.obj Z`. -/
+@[simps complex π]
+noncomputable def mapProjectiveResolution (F : C ⥤ D) [F.Additive]
+    [F.PreservesProjectiveObjects] [F.PreservesHomology] {Z : C} (P : ProjectiveResolution Z) :
+    ProjectiveResolution (F.obj Z) where
+  complex := (F.mapHomologicalComplex _).obj P.complex
+  projective n := PreservesProjectiveObjects.projective_obj (P.projective n)
+  π := (F.mapHomologicalComplex _).map P.π ≫
+    (HomologicalComplex.singleMapHomologicalComplex _ _ _).hom.app _
+  quasiIso := inferInstance
+
+end CategoryTheory.Functor

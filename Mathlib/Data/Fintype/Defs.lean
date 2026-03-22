@@ -3,8 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Filter
-import Mathlib.Data.Finite.Defs
+module
+
+public import Mathlib.Data.Finset.Filter
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Order.Lex
 
 /-!
 # Finite types
@@ -34,6 +37,8 @@ These files also contain appropriate `Infinite` instances for these types.
 
 `Infinite` instances for `ℕ`, `ℤ`, `Multiset α`, and `List α` are in `Data.Fintype.Lattice`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -87,7 +92,7 @@ variable [Fintype α] {s t : Finset α}
 def univ : Finset α :=
   @Fintype.elems α _
 
-@[simp]
+@[simp, grind ←]
 theorem mem_univ (x : α) : x ∈ (univ : Finset α) :=
   Fintype.complete x
 
@@ -106,6 +111,8 @@ theorem coe_eq_univ : (s : Set α) = Set.univ ↔ s = univ := by rw [← coe_uni
 
 @[simp]
 theorem subset_univ (s : Finset α) : s ⊆ univ := fun a _ => mem_univ a
+
+theorem mem_filter_univ {p : α → Prop} [DecidablePred p] : ∀ x, x ∈ univ.filter p ↔ p x := by simp
 
 end Finset
 
@@ -133,7 +140,7 @@ See also
   form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
 -/
 @[term_elab setBuilder]
-def elabFinsetBuilderSetOf : TermElab
+meta def elabFinsetBuilderSetOf : TermElab
   | `({ $x:ident | $p }), expectedType? => do
     -- If the expected type is not known to be `Finset ?α`, give up.
     unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
@@ -162,7 +169,7 @@ def elabFinsetBuilderSetOf : TermElab
 
 /-- Delaborator for `Finset.filter`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the filter is over `Finset.univ`. -/
-@[app_delab Finset.filter] def delabFinsetFilter : Delab :=
+@[app_delab Finset.filter] meta def delabFinsetFilter : Delab :=
   whenPPOption getPPNotation do
   let #[_, p, _, t] := (← getExpr).getAppArgs | failure
   guard p.isLambda
@@ -175,7 +182,7 @@ to show the domain type when the filter is over `Finset.univ`. -/
     else
       `({$i:ident | $p})
   -- check if `t` is of the form `s₀ᶜ`, in which case we display `x ∉ s₀` instead
-  else if t.isAppOfArity ``HasCompl.compl 3 then
+  else if t.isAppOfArity ``Compl.compl 3 then
     let #[_, _, s₀] := t.getAppArgs | failure
     -- if `s₀` is a singleton, we can even use the notation `x ≠ a`
     if s₀.isAppOfArity ``Singleton.singleton 4 then
@@ -190,14 +197,14 @@ to show the domain type when the filter is over `Finset.univ`. -/
 
 end Mathlib.Meta
 
-open Finset Function
+open Finset
 
 namespace Fintype
 
 instance decidablePiFintype {α} {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
     DecidableEq (∀ a, β a) := fun f g =>
-  decidable_of_iff (∀ a ∈ @Fintype.elems α _, f a = g a)
-    (by simp [funext_iff, Fintype.complete])
+  decidable_of_iff (∀ a ∈ @univ α _, f a = g a)
+    (by simp [funext_iff])
 
 instance decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∀ a, p a) :=
@@ -225,7 +232,7 @@ end BundledHoms
 
 theorem nodup_map_univ_iff_injective [Fintype α] {f : α → β} :
     (Multiset.map f univ.val).Nodup ↔ Function.Injective f := by
-  rw [nodup_map_iff_injOn, coe_univ, Set.injective_iff_injOn_univ]
+  rw [nodup_map_iff_injOn, coe_univ, Set.injOn_univ]
 
 instance decidableInjectiveFintype [DecidableEq β] [Fintype α] :
     DecidablePred (Injective : (α → β) → Prop) :=
@@ -251,6 +258,8 @@ instance subsingleton (α : Type*) : Subsingleton (Fintype α) :=
 
 instance (α : Type*) : Lean.Meta.FastSubsingleton (Fintype α) := {}
 
+-- adding `@[implicit_reducible]` causes downstream breakage
+set_option warn.classDefReducibility false in
 /-- Given a predicate that can be represented by a finset, the subtype
 associated to the predicate is a fintype. -/
 protected def subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
@@ -258,6 +267,8 @@ protected def subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s
   ⟨⟨s.1.pmap Subtype.mk fun x => (H x).1, s.nodup.pmap fun _ _ _ _ => congr_arg Subtype.val⟩,
     fun ⟨x, px⟩ => Multiset.mem_pmap.2 ⟨x, (H x).2 px, rfl⟩⟩
 
+-- adding `@[implicit_reducible]` causes downstream breakage
+set_option warn.classDefReducibility false in
 /-- Construct a fintype from a finset with the same elements. -/
 def ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) : Fintype p :=
   Fintype.subtype s H

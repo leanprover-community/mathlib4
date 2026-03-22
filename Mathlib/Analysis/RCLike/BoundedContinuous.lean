@@ -3,12 +3,16 @@ Copyright (c) 2025 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Star
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Analysis.Normed.Operator.NNNorm
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Star
 
 /-! # Results on bounded continuous functions with `RCLike` values -/
+
+public section
 
 open Filter Real RCLike BoundedContinuousFunction
 
@@ -19,7 +23,7 @@ variable (𝕜 E : Type*) [RCLike 𝕜] [PseudoEMetricSpace E]
 namespace RCLike
 
 /-- On a star subalgebra of bounded continuous functions, the operations "restrict scalars to ℝ"
- and "forget that a bounded continuous function is a bounded" commute. -/
+and "forget that a bounded continuous function is a bounded" commute. -/
 theorem restrict_toContinuousMap_eq_toContinuousMapStar_restrict
     {A : StarSubalgebra 𝕜 (E →ᵇ 𝕜)} :
     ((A.restrictScalars ℝ).comap

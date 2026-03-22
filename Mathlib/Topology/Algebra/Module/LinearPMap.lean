@@ -3,8 +3,11 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.Topology.Algebra.Module.Basic
+module
+
+public import Mathlib.LinearAlgebra.LinearPMap
+public import Mathlib.Topology.Algebra.Module.Basic
+public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Partially defined linear operators over topological vector spaces
@@ -26,9 +29,9 @@ underlying spaces are normed.
 
 ## Main statements
 
-* `LinearPMap.closable_iff_exists_closed_extension`: an unbounded operator is closable iff it has a
-  closed extension.
-* `LinearPMap.closable.existsUnique`: there exists a unique closure
+* `LinearPMap.isClosable_iff_exists_closed_extension`: an unbounded operator is closable iff it has
+  a closed extension.
+* `LinearPMap.IsClosable.existsUnique`: there exists a unique closure
 * `LinearPMap.closureHasCore`: the domain of `f` is a core of its closure
 
 ## References
@@ -39,6 +42,8 @@ underlying spaces are normed.
 
 Unbounded operators, closed operators
 -/
+
+@[expose] public section
 
 
 open Topology
@@ -52,6 +57,7 @@ namespace LinearPMap
 
 /-! ### Closed and closable operators -/
 
+section Basic
 
 /-- An unbounded operator is closed iff its graph is closed. -/
 def IsClosed (f : E →ₗ.[R] F) : Prop :=
@@ -159,11 +165,21 @@ theorem closureHasCore (f : E →ₗ.[R] F) : f.closure.HasCore f.domain := by
   rw [f.le_closure.2 hyz]
   exact domRestrict_apply hyz
 
+end Basic
+
 /-! ### Topological properties of the inverse -/
 
 section Inverse
 
 variable {f : E →ₗ.[R] F}
+
+/-- The inverse of `f : LinearPMap` is closed if and only if `f` is closed. -/
+theorem inverse_closed_iff (hf : LinearMap.ker f.toFun = ⊥) : f.inverse.IsClosed ↔ f.IsClosed := by
+  rw [IsClosed, inverse_graph hf]
+  exact (ContinuousLinearEquiv.prodComm R E F).isClosed_image
+
+variable [ContinuousAdd E] [ContinuousAdd F]
+variable [TopologicalSpace R] [ContinuousSMul R E] [ContinuousSMul R F]
 
 /-- If `f` is invertible and closable as well as its closure being invertible, then
 the graph of the inverse of the closure is given by the closure of the graph of the inverse. -/
@@ -172,13 +188,12 @@ theorem closure_inverse_graph (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClos
     f.closure.inverse.graph = f.inverse.graph.topologicalClosure := by
   rw [inverse_graph hf, inverse_graph hcf, ← hf'.graph_closure_eq_closure_graph]
   apply SetLike.ext'
-  simp only [Submodule.topologicalClosure_coe, Submodule.map_coe, LinearEquiv.prodComm_apply]
+  simp only [Submodule.topologicalClosure_coe, Submodule.map_coe, LinearEquiv.coe_coe,
+    LinearEquiv.prodComm_apply]
   apply (image_closure_subset_closure_image continuous_swap).antisymm
-  have h1 := Set.image_equiv_eq_preimage_symm f.graph (LinearEquiv.prodComm R E F).toEquiv
-  have h2 := Set.image_equiv_eq_preimage_symm (_root_.closure f.graph)
-    (LinearEquiv.prodComm R E F).toEquiv
-  simp only [LinearEquiv.coe_toEquiv, LinearEquiv.prodComm_apply,
-    LinearEquiv.coe_toEquiv_symm] at h1 h2
+  have h1 := (LinearEquiv.prodComm R E F).toEquiv.image_eq_preimage_symm f.graph
+  have h2 := (LinearEquiv.prodComm R E F).toEquiv.image_eq_preimage_symm (_root_.closure f.graph)
+  simp only [LinearEquiv.coe_toEquiv, LinearEquiv.prodComm_apply] at h1 h2
   rw [h1, h2]
   apply continuous_swap.closure_preimage_subset
 

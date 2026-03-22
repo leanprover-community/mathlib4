@@ -3,7 +3,9 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Probability.Kernel.Basic
+module
+
+public import Mathlib.Probability.Kernel.Basic
 
 /-!
 # Map of a kernel by a measurable function
@@ -25,6 +27,8 @@ Kernels built from other kernels:
   a kernel.
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory
@@ -83,7 +87,7 @@ lemma map_zero : Kernel.map (0 : Kernel α β) f = 0 := by
   ext
   by_cases hf : Measurable f
   · simp [map_apply, hf]
-  · simp [map_of_not_measurable _ hf, map_apply]
+  · simp [map_of_not_measurable _ hf]
 
 @[simp]
 lemma map_id (κ : Kernel α β) : map κ id = κ := by
@@ -125,7 +129,7 @@ instance IsZeroOrMarkovKernel.map (κ : Kernel α β) [IsZeroOrMarkovKernel κ] 
 
 instance IsFiniteKernel.map (κ : Kernel α β) [IsFiniteKernel κ] (f : β → γ) :
     IsFiniteKernel (map κ f) := by
-  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
+  refine ⟨⟨κ.bound, κ.bound_lt_top, fun a => ?_⟩⟩
   by_cases hf : Measurable f
   · rw [map_apply' κ hf a MeasurableSet.univ]
     exact measure_le_bound κ a _
@@ -161,10 +165,10 @@ theorem comap_apply' (κ : Kernel α β) (hg : Measurable g) (c : γ) (s : Set �
 
 @[simp]
 lemma comap_zero (hg : Measurable g) : Kernel.comap (0 : Kernel α β) g hg = 0 := by
-  ext; rw [Kernel.comap_apply]; simp
+  ext; simp
 
 @[simp]
-lemma comap_id (κ : Kernel α β) : comap κ id measurable_id = κ := by ext a; rw [comap_apply]; simp
+lemma comap_id (κ : Kernel α β) : comap κ id measurable_id = κ := by ext; simp
 
 @[simp]
 lemma comap_id' (κ : Kernel α β) : comap κ (fun a ↦ a) measurable_id = κ := comap_id κ
@@ -192,13 +196,16 @@ instance IsZeroOrMarkovKernel.comap (κ : Kernel α β) [IsZeroOrMarkovKernel κ
 
 instance IsFiniteKernel.comap (κ : Kernel α β) [IsFiniteKernel κ] (hg : Measurable g) :
     IsFiniteKernel (comap κ g hg) := by
-  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
+  refine ⟨⟨κ.bound, κ.bound_lt_top, fun a => ?_⟩⟩
   rw [comap_apply' κ hg a Set.univ]
   exact measure_le_bound κ _ _
 
 instance IsSFiniteKernel.comap (κ : Kernel α β) [IsSFiniteKernel κ] (hg : Measurable g) :
     IsSFiniteKernel (comap κ g hg) :=
   ⟨⟨fun n => Kernel.comap (seq κ n) g hg, inferInstance, (sum_comap_seq κ hg).symm⟩⟩
+
+lemma comap_comp_right (κ : Kernel α β) {f : δ → γ} (hf : Measurable f) (hg : Measurable g) :
+    comap κ (g ∘ f) (hg.comp hf) = (comap κ g hg).comap f hf := by ext; simp
 
 lemma comap_map_comm (κ : Kernel β γ) {f : α → β} {g : γ → δ}
     (hf : Measurable f) (hg : Measurable g) :
@@ -211,7 +218,7 @@ end MapComap
 @[simp]
 lemma id_map {f : α → β} (hf : Measurable f) : Kernel.id.map f = deterministic f hf := by
   ext
-  rw [Kernel.map_apply _ hf, Kernel.deterministic_apply, Kernel.id_apply, Measure.map_dirac hf]
+  rw [Kernel.map_apply _ hf, Kernel.deterministic_apply, Kernel.id_apply, Measure.map_dirac' hf]
 
 @[simp]
 lemma id_comap {f : α → β} (hf : Measurable f) : Kernel.id.comap f hf = deterministic f hf := by
@@ -410,6 +417,10 @@ theorem fst_apply (κ : Kernel α (β × γ)) (a : α) : fst κ a = (κ a).map P
 theorem fst_apply' (κ : Kernel α (β × γ)) (a : α) {s : Set β} (hs : MeasurableSet s) :
     fst κ a s = κ a {p | p.1 ∈ s} := by rw [fst_apply, Measure.map_apply measurable_fst hs]; rfl
 
+theorem fst_real_apply (κ : Kernel α (β × γ)) (a : α) {s : Set β} (hs : MeasurableSet s) :
+    (fst κ a).real s = (κ a).real {p | p.1 ∈ s} := by
+  simp [fst_apply', hs, measureReal_def]
+
 @[simp]
 lemma fst_zero : fst (0 : Kernel α (β × γ)) = 0 := by simp [fst]
 
@@ -433,7 +444,8 @@ instance IsSFiniteKernel.fst (κ : Kernel α (β × γ)) [IsSFiniteKernel κ] :
 instance (priority := 100) isFiniteKernel_of_isFiniteKernel_fst {κ : Kernel α (β × γ)}
     [h : IsFiniteKernel (fst κ)] :
     IsFiniteKernel κ := by
-  refine ⟨h.bound, h.bound_lt_top, fun a ↦ le_trans ?_ (measure_le_bound (fst κ) a Set.univ)⟩
+  refine ⟨(fst κ).bound, (fst κ).bound_lt_top,
+    fun a ↦ le_trans ?_ (measure_le_bound (fst κ) a Set.univ)⟩
   rw [fst_apply' _ _ MeasurableSet.univ]
   simp
 
@@ -494,7 +506,8 @@ instance IsSFiniteKernel.snd (κ : Kernel α (β × γ)) [IsSFiniteKernel κ] :
 instance (priority := 100) isFiniteKernel_of_isFiniteKernel_snd {κ : Kernel α (β × γ)}
     [h : IsFiniteKernel (snd κ)] :
     IsFiniteKernel κ := by
-  refine ⟨h.bound, h.bound_lt_top, fun a ↦ le_trans ?_ (measure_le_bound (snd κ) a Set.univ)⟩
+  refine ⟨(snd κ).bound, (snd κ).bound_lt_top,
+    fun a ↦ le_trans ?_ (measure_le_bound (snd κ) a Set.univ)⟩
   rw [snd_apply' _ _ MeasurableSet.univ]
   simp
 

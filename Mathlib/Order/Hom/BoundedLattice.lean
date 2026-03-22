@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Hom.Bounded
-import Mathlib.Order.Hom.Lattice
-import Mathlib.Order.SymmDiff
+module
+
+public import Mathlib.Order.Hom.Bounded
+public import Mathlib.Order.Hom.Lattice
+public import Mathlib.Order.SymmDiff
 
 /-!
 # Bounded lattice homomorphisms
@@ -31,6 +33,8 @@ be satisfied by itself and all stricter types.
 
 Do we need more intersections between `BotHom`, `TopHom` and lattice homomorphisms?
 -/
+
+@[expose] public section
 
 
 open Function
@@ -62,11 +66,6 @@ structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOr
 
   Do not use this directly. Use `map_bot` instead. -/
   map_bot' : toFun ⊥ = ⊥
-
--- TODO: remove this configuration and use the default configuration.
-initialize_simps_projections SupBotHom (+toSupHom, -toFun)
-initialize_simps_projections InfTopHom (+toInfHom, -toFun)
-initialize_simps_projections BoundedLatticeHom (+toLatticeHom, -toFun)
 
 section
 
@@ -178,16 +177,16 @@ section BooleanAlgebra
 variable [BooleanAlgebra α] [BooleanAlgebra β] [FunLike F α β] [BoundedLatticeHomClass F α β]
 variable (f : F)
 
-/-- Special case of `map_compl` for boolean algebras. -/
+/-- Special case of `map_compl` for Boolean algebras. -/
 theorem map_compl' (a : α) : f aᶜ = (f a)ᶜ :=
   (isCompl_compl.map _).compl_eq.symm
 
-/-- Special case of `map_sdiff` for boolean algebras. -/
+/-- Special case of `map_sdiff` for Boolean algebras. -/
 theorem map_sdiff' (a b : α) : f (a \ b) = f a \ f b := by
   rw [sdiff_eq, sdiff_eq, map_inf, map_compl']
 
 open scoped symmDiff in
-/-- Special case of `map_symmDiff` for boolean algebras. -/
+/-- Special case of `map_symmDiff` for Boolean algebras. -/
 theorem map_symmDiff' (a b : α) : f (a ∆ b) = f a ∆ f b := by
   rw [symmDiff, symmDiff, map_sup, map_sdiff', map_sdiff']
 
@@ -259,7 +258,7 @@ theorem copy_eq (f : SupBotHom α β) (f' : α → β) (h : f' = f) : f.copy f' 
 variable (α)
 
 /-- `id` as a `SupBotHom`. -/
-@[simps]
+@[simps!]
 protected def id : SupBotHom α α :=
   ⟨SupHom.id α, rfl⟩
 
@@ -314,15 +313,18 @@ variable [SemilatticeSup β] [OrderBot β]
 instance : Max (SupBotHom α β) :=
   ⟨fun f g => { f.toBotHom ⊔ g.toBotHom with toSupHom := f.toSupHom ⊔ g.toSupHom }⟩
 
+instance : PartialOrder (SupBotHom α β) :=
+  PartialOrder.lift _ DFunLike.coe_injective
+
 instance : SemilatticeSup (SupBotHom α β) :=
-  (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 instance : OrderBot (SupBotHom α β) where
   bot := ⟨⊥, rfl⟩
   bot_le _ _ := bot_le
 
 @[simp]
-theorem coe_sup (f g : SupBotHom α β) : DFunLike.coe (f ⊔ g) = f ⊔ g :=
+theorem coe_sup (f g : SupBotHom α β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
   rfl
 
 @[simp]
@@ -409,7 +411,7 @@ theorem copy_eq (f : InfTopHom α β) (f' : α → β) (h : f' = f) : f.copy f' 
 variable (α)
 
 /-- `id` as an `InfTopHom`. -/
-@[simps]
+@[simps!]
 protected def id : InfTopHom α α :=
   ⟨InfHom.id α, rfl⟩
 
@@ -464,15 +466,18 @@ variable [SemilatticeInf β] [OrderTop β]
 instance : Min (InfTopHom α β) :=
   ⟨fun f g => { f.toTopHom ⊓ g.toTopHom with toInfHom := f.toInfHom ⊓ g.toInfHom }⟩
 
+instance : PartialOrder (InfTopHom α β) :=
+  PartialOrder.lift _ DFunLike.coe_injective
+
 instance : SemilatticeInf (InfTopHom α β) :=
-  (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 instance : OrderTop (InfTopHom α β) where
   top := ⟨⊤, rfl⟩
   le_top _ _ := le_top
 
 @[simp]
-theorem coe_inf (f g : InfTopHom α β) : DFunLike.coe (f ⊓ g) = f ⊓ g :=
+theorem coe_inf (f g : InfTopHom α β) : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
   rfl
 
 @[simp]
@@ -596,7 +601,7 @@ theorem comp_apply (f : BoundedLatticeHom β γ) (g : BoundedLatticeHom α β) (
   rfl
 
 @[simp]
--- Porting note: `simp`-normal form of `coe_comp_lattice_hom`
+-- `simp`-normal form of `coe_comp_lattice_hom`
 theorem coe_comp_lattice_hom' (f : BoundedLatticeHom β γ) (g : BoundedLatticeHom α β) :
     (⟨(f : SupHom β γ).comp g, map_inf (f.comp g)⟩ : LatticeHom α γ) =
       (f : LatticeHom β γ).comp g :=
@@ -607,7 +612,7 @@ theorem coe_comp_lattice_hom (f : BoundedLatticeHom β γ) (g : BoundedLatticeHo
   rfl
 
 @[simp]
--- Porting note: `simp`-normal form of `coe_comp_sup_hom`
+-- `simp`-normal form of `coe_comp_sup_hom`
 theorem coe_comp_sup_hom' (f : BoundedLatticeHom β γ) (g : BoundedLatticeHom α β) :
     ⟨f ∘ g, map_sup (f.comp g)⟩ = (f : SupHom β γ).comp g :=
   rfl
@@ -617,7 +622,7 @@ theorem coe_comp_sup_hom (f : BoundedLatticeHom β γ) (g : BoundedLatticeHom α
   rfl
 
 @[simp]
--- Porting note: `simp`-normal form of `coe_comp_inf_hom`
+-- `simp`-normal form of `coe_comp_inf_hom`
 theorem coe_comp_inf_hom' (f : BoundedLatticeHom β γ) (g : BoundedLatticeHom α β) :
     ⟨f ∘ g, map_inf (f.comp g)⟩ = (f : InfHom β γ).comp g :=
   rfl
@@ -680,8 +685,6 @@ lattices. -/
 def dual : SupBotHom α β ≃ InfTopHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨SupHom.dual f.toSupHom, f.map_bot'⟩
   invFun f := ⟨SupHom.dual.symm f.toInfHom, f.map_top'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp] theorem dual_id : SupBotHom.dual (SupBotHom.id α) = InfTopHom.id _ := rfl
 
@@ -708,12 +711,10 @@ variable [Min α] [Top α] [Min β] [Top β] [Min γ] [Top γ]
 
 /-- Reinterpret a finitary infimum homomorphism as a finitary supremum homomorphism between the dual
 lattices. -/
-@[simps]
+@[simps!]
 protected def dual : InfTopHom α β ≃ SupBotHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨InfHom.dual f.toInfHom, f.map_top'⟩
   invFun f := ⟨InfHom.dual.symm f.toSupHom, f.map_bot'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem dual_id : InfTopHom.dual (InfTopHom.id α) = SupBotHom.id _ :=
@@ -742,12 +743,10 @@ variable [Lattice α] [BoundedOrder α] [Lattice β] [BoundedOrder β] [Lattice 
 
 /-- Reinterpret a bounded lattice homomorphism as a bounded lattice homomorphism between the dual
 bounded lattices. -/
-@[simps]
+@[simps!]
 protected def dual : BoundedLatticeHom α β ≃ BoundedLatticeHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨LatticeHom.dual f.toLatticeHom, f.map_bot', f.map_top'⟩
   invFun f := ⟨LatticeHom.dual.symm f.toLatticeHom, f.map_bot', f.map_top'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem dual_id : BoundedLatticeHom.dual (BoundedLatticeHom.id α) = BoundedLatticeHom.id _ :=

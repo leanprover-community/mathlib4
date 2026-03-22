@@ -3,9 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Group.Finset
-import Mathlib.Data.Finsupp.Order
-import Mathlib.Data.Sym.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Finset
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Data.Sym.Basic
+public import Mathlib.Order.Preorder.Finsupp
 
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions
@@ -15,6 +18,8 @@ with `Multiset.toFinsupp` the reverse equivalence and `Finsupp.orderIsoMultiset`
 promoted to an order isomorphism).
 
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -59,7 +64,7 @@ theorem toMultiset_sum_single (s : Finset ι) (n : ℕ) :
 
 @[simp]
 theorem card_toMultiset (f : α →₀ ℕ) : Multiset.card (toMultiset f) = f.sum fun _ => id := by
-  simp [toMultiset_apply, map_finsupp_sum, Function.id_def]
+  simp [toMultiset_apply, Function.id_def]
 
 theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
     f.toMultiset.map g = toMultiset (f.mapDomain g) := by
@@ -127,7 +132,7 @@ variable [DecidableEq α]
 /-- Given a multiset `s`, `s.toFinsupp` returns the finitely supported function on `ℕ` given by
 the multiplicities of the elements of `s`. -/
 @[simps symm_apply]
-def toFinsupp : Multiset α ≃+ (α →₀ ℕ) where
+noncomputable def toFinsupp : Multiset α ≃+ (α →₀ ℕ) where
   toFun s := ⟨s.toFinset, fun a => s.count a, fun a => by simp⟩
   invFun f := Finsupp.toMultiset f
   map_add' _ _ := Finsupp.ext fun _ => count_add _ _ _
@@ -190,7 +195,7 @@ theorem Finsupp.toMultiset_eq_iff [DecidableEq α] {f : α →₀ ℕ} {s : Mult
 
 namespace Finsupp
 /-- `Finsupp.toMultiset` as an order isomorphism. -/
-def orderIsoMultiset [DecidableEq ι] : (ι →₀ ℕ) ≃o Multiset ι where
+noncomputable def orderIsoMultiset [DecidableEq ι] : (ι →₀ ℕ) ≃o Multiset ι where
   toEquiv := Multiset.toFinsupp.symm.toEquiv
   map_rel_iff' {f g} := by simp [le_def, Multiset.le_iff_count]
 
@@ -236,7 +241,7 @@ variable [DecidableEq α] (n : ℕ)
 finitely-supported maps `α →₀ ℕ` with total mass `n`.
 
 See also `Sym.equivNatSumOfFintype` when `α` is finite. -/
-def equivNatSum :
+noncomputable def equivNatSum :
     Sym α n ≃ {P : α →₀ ℕ // P.sum (fun _ ↦ id) = n} :=
   Multiset.toFinsupp.toEquiv.subtypeEquiv <| by simp
 

@@ -3,10 +3,12 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
-import Mathlib.Data.Complex.FiniteDimensional
-import Mathlib.NumberTheory.EulerProduct.Basic
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.NumberTheory.EulerProduct.Basic
 
 /-!
 # Logarithms of Euler Products
@@ -16,11 +18,13 @@ under suitable conditions on `f`. This can be seen as a logarithmic version of t
 Euler product for `f`.
 -/
 
+public section
+
 open Complex
 
 open Topology in
 /-- If `f : α → ℂ` is summable, then so is `n ↦ log (1 - f n)`. -/
-lemma Summable.clog_one_sub {α  : Type*} {f : α → ℂ} (hsum : Summable f) :
+lemma Summable.clog_one_sub {α : Type*} {f : α → ℂ} (hsum : Summable f) :
     Summable fun n ↦ log (1 - f n) := by
   have hg : DifferentiableAt ℂ (fun z ↦ log (1 - z)) 0 := by
     have : 1 - 0 ∈ slitPlane := (sub_zero (1 : ℂ)).symm ▸ one_mem_slitPlane

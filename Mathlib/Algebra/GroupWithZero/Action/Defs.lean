@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.GroupWithZero.Opposite
+module
+
+public import Mathlib.Algebra.Group.Action.Opposite
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.GroupWithZero.Opposite
+public import Mathlib.Algebra.Notation.Pi.Basic
 
 /-!
 # Definitions of group actions
@@ -35,6 +37,8 @@ More sophisticated lemmas belong in `GroupTheory.GroupAction`.
 
 group action
 -/
+
+@[expose] public section
 
 assert_not_exists Equiv.Perm.equivUnitsEnd Prod.fst_mul Ring
 
@@ -66,7 +70,6 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Injective.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom B A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     SMulZeroClass M B where
-  smul := (· • ·)
   smul_zero c := hf <| by simp only [smul, map_zero, smul_zero]
 
 /-- Pushforward a zero-preserving scalar multiplication along a zero-preserving map.
@@ -74,7 +77,6 @@ See note [reducible non-instances]. -/
 protected abbrev ZeroHom.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom A B)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     SMulZeroClass M B where
-  -- Porting note: `simp` no longer works here.
   smul_zero c := by rw [← map_zero f, ← smul, smul_zero]
 
 /-- Push forward the multiplication of `R` on `M` along a compatible surjective map `f : R → S`.
@@ -85,7 +87,6 @@ abbrev Function.Surjective.smulZeroClassLeft {R S M : Type*} [Zero M] [SMulZeroC
     [SMul S M] (f : R → S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) :
     SMulZeroClass S M where
-  smul := (· • ·)
   smul_zero := hf.forall.mpr fun c => by rw [hsmul, smul_zero]
 
 variable (A)
@@ -123,7 +124,6 @@ instance MulZeroClass.toSMulWithZero [MulZeroClass M₀] : SMulWithZero M₀ M�
 
 /-- Like `MulZeroClass.toSMulWithZero`, but multiplies on the right. -/
 instance MulZeroClass.toOppositeSMulWithZero [MulZeroClass M₀] : SMulWithZero M₀ᵐᵒᵖ M₀ where
-  smul := (· • ·)
   smul_zero _ := zero_mul _
   zero_smul := mul_zero
 
@@ -144,7 +144,6 @@ variable [Zero M₀'] [Zero A'] [SMul M₀ A']
 -- See note [reducible non-instances]
 protected abbrev Function.Injective.smulWithZero (f : ZeroHom A' A) (hf : Injective f)
     (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : SMulWithZero M₀ A' where
-  smul := (· • ·)
   zero_smul a := hf <| by simp [smul]
   smul_zero a := hf <| by simp [smul]
 
@@ -152,7 +151,6 @@ protected abbrev Function.Injective.smulWithZero (f : ZeroHom A' A) (hf : Inject
 -- See note [reducible non-instances]
 protected abbrev Function.Surjective.smulWithZero (f : ZeroHom A A') (hf : Surjective f)
     (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : SMulWithZero M₀ A' where
-  smul := (· • ·)
   zero_smul m := by
     rcases hf m with ⟨x, rfl⟩
     simp [← smul]
@@ -161,10 +159,11 @@ protected abbrev Function.Surjective.smulWithZero (f : ZeroHom A A') (hf : Surje
 variable (A)
 
 /-- Compose a `SMulWithZero` with a `ZeroHom`, with action `f r' • m` -/
+@[implicit_reducible]
 def SMulWithZero.compHom (f : ZeroHom M₀' M₀) : SMulWithZero M₀' A where
   smul := (f · • ·)
   smul_zero m := smul_zero (f m)
-  zero_smul m := by show (f 0) • m = 0; rw [map_zero, zero_smul]
+  zero_smul m := by change (f 0) • m = 0; rw [map_zero, zero_smul]
 
 end Zero
 
@@ -233,16 +232,17 @@ protected abbrev Function.Injective.mulActionWithZero (f : ZeroHom A' A) (hf : I
 /-- Pushforward a `MulActionWithZero` structure along a surjective zero-preserving homomorphism. -/
 -- See note [reducible non-instances]
 protected abbrev Function.Surjective.mulActionWithZero (f : ZeroHom A A') (hf : Surjective f)
-   (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : MulActionWithZero M₀ A' :=
+    (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : MulActionWithZero M₀ A' :=
   { hf.mulAction f smul, hf.smulWithZero f smul with }
 
 variable (A)
 
 /-- Compose a `MulActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
+@[implicit_reducible]
 def MulActionWithZero.compHom (f : M₀' →*₀ M₀) : MulActionWithZero M₀' A where
   __ := SMulWithZero.compHom A f.toZeroHom
-  mul_smul r s m := by show f (r * s) • m = f r • f s • m; simp [mul_smul]
-  one_smul m := by show f 1 • m = m; simp
+  mul_smul r s m := by change f (r * s) • m = f r • f s • m; simp [mul_smul]
+  one_smul m := by change f 1 • m = m; simp
 
 end MonoidWithZero
 
@@ -275,13 +275,6 @@ variable [AddZeroClass A] [DistribSMul M A]
 
 theorem smul_add (a : M) (b₁ b₂ : A) : a • (b₁ + b₂) = a • b₁ + a • b₂ :=
   DistribSMul.smul_add _ _ _
-
-instance AddMonoidHom.smulZeroClass [AddZeroClass B] : SMulZeroClass M (B →+ A) where
-  smul r f :=
-    { toFun := fun a => r • (f a)
-      map_zero' := by simp only [map_zero, smul_zero]
-      map_add' := fun x y => by simp only [map_add, smul_add] }
-  smul_zero _ := ext fun _ => smul_zero _
 
 /-- Pullback a distributive scalar multiplication along an injective additive monoid
 homomorphism.
@@ -325,9 +318,28 @@ abbrev DistribSMul.compFun (f : N → M) : DistribSMul N A :=
 def DistribSMul.toAddMonoidHom (x : M) : A →+ A :=
   { SMulZeroClass.toZeroHom A x with toFun := (x • ·), map_add' := smul_add x }
 
+instance AddMonoid.nat_smulCommClass {M A : Type*} [AddMonoid A] [DistribSMul M A] :
+    SMulCommClass ℕ M A where
+  smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_nsmul y n).symm
+
+-- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
+instance AddMonoid.nat_smulCommClass' {M A : Type*} [AddMonoid A] [DistribSMul M A] :
+    SMulCommClass M ℕ A :=
+  .symm _ _ _
+
 end DistribSMul
 
-/-- Typeclass for multiplicative actions on additive structures. This generalizes group modules. -/
+/-- Typeclass for multiplicative actions on additive structures.
+
+For example, if `G` is a group (with group law written as multiplication) and `A` is an
+abelian group (with group law written as addition), then to give `A` a `G`-module
+structure (for example, to use the theory of group cohomology) is to say `[DistribMulAction G A]`.
+Note in that we do not use the `Module` typeclass for `G`-modules, as the `Module` typeclass
+is for modules over a ring rather than a group.
+
+Mathematically, `DistribMulAction G A` is equivalent to giving `A` the structure of
+a `ℤ[G]`-module.
+-/
 @[ext]
 class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction M A where
   /-- Multiplying `0` by a scalar gives `0` -/
@@ -343,9 +355,7 @@ variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
 instance (priority := 100) DistribMulAction.toDistribSMul : DistribSMul M A :=
   { ‹DistribMulAction M A› with }
 
--- Porting note: this probably is no longer relevant.
-/-! Since Lean 3 does not have definitional eta for structures, we have to make sure
-that the definition of `DistribMulAction.toDistribSMul` was done correctly,
+/-! We make sure that the definition of `DistribMulAction.toDistribSMul` was done correctly,
 and the two paths from `DistribMulAction` to `SMul` are indeed definitionally equal. -/
 example :
     (DistribMulAction.toMulAction.toSMul : SMul M A) =
@@ -369,7 +379,7 @@ protected abbrev Function.Surjective.distribMulAction [AddMonoid B] [SMul M B] (
 variable (A)
 
 /-- Each element of the monoid defines an additive monoid homomorphism. -/
-@[simps!]
+@[simps!, deprecated DistribSMul.toAddMonoidHom (since := "2026-01-07")]
 def DistribMulAction.toAddMonoidHom (x : M) : A →+ A :=
   DistribSMul.toAddMonoidHom A x
 
@@ -379,26 +389,18 @@ variable (M)
 @[simps]
 def DistribMulAction.toAddMonoidEnd :
     M →* AddMonoid.End A where
-  toFun := DistribMulAction.toAddMonoidHom A
+  toFun := DistribSMul.toAddMonoidHom A
   map_one' := AddMonoidHom.ext <| one_smul M
   map_mul' x y := AddMonoidHom.ext <| mul_smul x y
-
-instance AddMonoid.nat_smulCommClass :
-    SMulCommClass ℕ M
-      A where smul_comm n x y := ((DistribMulAction.toAddMonoidHom A x).map_nsmul y n).symm
-
--- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
-instance AddMonoid.nat_smulCommClass' : SMulCommClass M ℕ A :=
-  SMulCommClass.symm _ _ _
 
 end
 
 section
 
-variable [Monoid M] [AddGroup A] [DistribMulAction M A]
+variable [AddGroup A] [DistribSMul M A]
 
 instance AddGroup.int_smulCommClass : SMulCommClass ℤ M A where
-  smul_comm n x y := ((DistribMulAction.toAddMonoidHom A x).map_zsmul y n).symm
+  smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_zsmul y n).symm
 
 -- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
 instance AddGroup.int_smulCommClass' : SMulCommClass M ℤ A :=
@@ -413,7 +415,7 @@ theorem smul_sub (r : M) (x y : A) : r • (x - y) = r • x - r • y := by
 
 end
 
-section Group
+section DistribMulAction
 variable [Group α] [AddMonoid β] [DistribMulAction α β]
 
 lemma smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
@@ -422,4 +424,24 @@ lemma smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
 lemma smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
   not_congr <| smul_eq_zero_iff_eq a
 
-end Group
+end DistribMulAction
+
+section MulDistribMulAction
+variable [Group α] [GroupWithZero β] [MulDistribMulAction α β]
+
+instance : SMulZeroClass α β where
+  smul_zero g := not_imp_comm.mp mul_inv_cancel₀ <| by
+    rw [← smul_one g, ← inv_smul_eq_iff, smul_mul', inv_smul_smul, zero_mul]
+    exact zero_ne_one
+
+/-- A version of `smul_inv'` for groups with zero. -/
+@[simp] theorem smul_inv₀' (g : α) (x : β) : g • x⁻¹ = (g • x)⁻¹ := by
+  by_cases hx : x = 0
+  · rw [hx, inv_zero, smul_zero, inv_zero]
+  · apply eq_inv_of_mul_eq_one_right
+    rw [← smul_mul', mul_inv_cancel₀ hx, smul_one]
+
+theorem smul_div₀' (g : α) (x y : β) : g • (x / y) = (g • x) / (g • y) := by
+  rw [div_eq_mul_inv, div_eq_mul_inv, smul_mul', smul_inv₀']
+
+end MulDistribMulAction

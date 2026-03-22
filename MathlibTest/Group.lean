@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Group
 
 variable {G : Type} [Group G]
@@ -29,11 +30,11 @@ example (n : ℕ) (a : G) : a^(n-n) = 1 := by group
 
 example (n : ℤ) (a : G) : a^(n-n) = 1 := by group
 
-example (n : ℤ) (a : G) (h : a^(n*(n+1)-n-n^2) = a) : a = 1 := by
+example (n : ℤ) (a : G) (h : a ^ (n * (n + 1) - n - n ^ 2) = a) : a = 1 := by
   group at h
   exact h.symm
 
-example (a b c d : G) (h : c = (a*b^2)*((b*b)⁻¹*a⁻¹)*d) : a*c*d⁻¹ = a := by
+example (a b c d : G) (h : c = (a * b ^ 2) * ((b * b)⁻¹ * a⁻¹) * d) : a*c*d⁻¹ = a := by
   group at h
   rw [h]
   group

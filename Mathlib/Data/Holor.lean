@@ -3,9 +3,11 @@ Copyright (c) 2018 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.Data.Nat.Find
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Basic properties of holors
@@ -30,6 +32,8 @@ Based on the tensor library found in <https://www.isa-afp.org/entries/Deep_Learn
 
 * <https://en.wikipedia.org/wiki/Tensor_rank_decomposition>
 -/
+
+@[expose] public section
 
 
 universe u
@@ -66,14 +70,14 @@ def assocLeft : HolorIndex (ds₁ ++ (ds₂ ++ ds₃)) → HolorIndex (ds₁ ++ 
 
 theorem take_take : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.take = t.take.take
   | ⟨is, h⟩ =>
-    Subtype.eq <| by
-      simp [assocRight, take, cast_type, List.take_take, Nat.le_add_right, min_eq_left]
+    Subtype.ext <| by
+      simp [assocRight, take, cast_type, List.take_take, Nat.le_add_right]
 
 theorem drop_take : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.drop.take = t.take.drop
-  | ⟨is, h⟩ => Subtype.eq (by simp [assocRight, take, drop, cast_type, List.drop_take])
+  | ⟨is, h⟩ => Subtype.ext (by simp [assocRight, take, drop, cast_type, List.drop_take])
 
 theorem drop_drop : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.drop.drop = t.drop
-  | ⟨is, h⟩ => Subtype.eq (by simp [add_comm, assocRight, drop, cast_type, List.drop_drop])
+  | ⟨is, h⟩ => Subtype.ext (by simp [assocRight, drop, cast_type, List.drop_drop])
 
 end HolorIndex
 
@@ -144,7 +148,7 @@ theorem mul_assoc0 [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z :
     rw [append_assoc]
 
 theorem mul_assoc [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z : Holor α ds₃) :
-    HEq (mul (mul x y) z) (mul x (mul y z)) := by simp [cast_heq, mul_assoc0, assocLeft]
+    mul (mul x y) z ≍ mul x (mul y z) := by simp [cast_heq, mul_assoc0, assocLeft]
 
 theorem mul_left_distrib [Distrib α] (x : Holor α ds₁) (y : Holor α ds₂) (z : Holor α ds₂) :
     x ⊗ (y + z) = x ⊗ y + x ⊗ z := funext fun t => left_distrib (x t.take) (y t.drop) (z t.drop)
@@ -162,7 +166,7 @@ nonrec theorem mul_zero {α : Type} [MulZeroClass α] (x : Holor α ds₁) : x �
 
 theorem mul_scalar_mul [Mul α] (x : Holor α []) (y : Holor α ds) :
     x ⊗ y = x ⟨[], Forall₂.nil⟩ • y := by
-  simp (config := { unfoldPartialApp := true }) [mul, SMul.smul, HolorIndex.take, HolorIndex.drop,
+  simp +unfoldPartialApp [mul, SMul.smul, HolorIndex.take, HolorIndex.drop,
     HSMul.hSMul]
 
 -- holor slices
@@ -188,9 +192,9 @@ theorem slice_eq (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) (h : slice x 
       have hid : i < d := (forall₂_cons.1 hiisdds).1
       have hisds : Forall₂ (· < ·) is ds := (forall₂_cons.1 hiisdds).2
       calc
-        x ⟨i :: is, _⟩ = slice x i hid ⟨is, hisds⟩ := congr_arg x (Subtype.eq rfl)
+        x ⟨i :: is, _⟩ = slice x i hid ⟨is, hisds⟩ := congr_arg x (Subtype.ext rfl)
         _ = slice y i hid ⟨is, hisds⟩ := by rw [h]
-        _ = y ⟨i :: is, _⟩ := congr_arg y (Subtype.eq rfl)
+        _ = y ⟨i :: is, _⟩ := congr_arg y (Subtype.ext rfl)
 
 theorem slice_unitVec_mul [Semiring α] {i : ℕ} {j : ℕ} (hid : i < d) (x : Holor α ds) :
     slice (unitVec d j ⊗ x) i hid = if i = j then x else 0 :=
@@ -213,6 +217,7 @@ theorem slice_sum [AddCommMonoid α] {β : Type} (i : ℕ) (hid : i < d) (s : Fi
   · intro _ _ h_not_in ih
     rw [Finset.sum_insert h_not_in, ih, slice_add, Finset.sum_insert h_not_in]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The original holor can be recovered from its slices by multiplying with unit vectors and
 summing up. -/
 @[simp]
@@ -238,13 +243,14 @@ theorem sum_unitVec_mul_slice [Semiring α] (x : Holor α (d :: ds)) :
   it is the tensor product of 1-dimensional holors. -/
 inductive CPRankMax1 [Mul α] : ∀ {ds}, Holor α ds → Prop
   | nil (x : Holor α []) : CPRankMax1 x
-  | cons {d} {ds} (x : Holor α [d]) (y : Holor α ds) : CPRankMax1 y → CPRankMax1 (x ⊗ y)
+  | cons {d : ℕ} {ds : List ℕ} (x : Holor α [d]) (y : Holor α ds) :
+    CPRankMax1 y → CPRankMax1 (x ⊗ y)
 
 /-- `CPRankMax N x` means `x` has CP rank at most `N`, that is,
   it can be written as the sum of N holors of rank at most 1. -/
 inductive CPRankMax [Mul α] [AddMonoid α] : ℕ → ∀ {ds}, Holor α ds → Prop
-  | zero {ds} : CPRankMax 0 (0 : Holor α ds)
-  | succ (n) {ds} (x : Holor α ds) (y : Holor α ds) :
+  | zero {ds : List ℕ} : CPRankMax 0 (0 : Holor α ds)
+  | succ (n : ℕ) {ds : List ℕ} (x : Holor α ds) (y : Holor α ds) :
     CPRankMax1 x → CPRankMax n y → CPRankMax (n + 1) (x + y)
 
 theorem cprankMax_nil [Mul α] [AddMonoid α] (x : Holor α nil) : CPRankMax 1 x := by
@@ -269,6 +275,7 @@ theorem cprankMax_add [Mul α] [AddMonoid α] :
     · assumption
     · exact cprankMax_add hx₂ hy
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cprankMax_mul [NonUnitalNonAssocSemiring α] :
     ∀ (n : ℕ) (x : Holor α [d]) (y : Holor α ds), CPRankMax n y → CPRankMax n (x ⊗ y)
   | 0, x, _, CPRankMax.zero => by simp [mul_zero x, CPRankMax.zero]
@@ -285,13 +292,10 @@ theorem cprankMax_sum [NonUnitalNonAssocSemiring α] {β} {n : ℕ} (s : Finset 
   Finset.induction_on s (by simp [CPRankMax.zero])
     (by
       intro x s (h_x_notin_s : x ∉ s) ih h_cprank
-      simp only [Finset.sum_insert h_x_notin_s, Finset.card_insert_of_not_mem h_x_notin_s]
+      simp only [Finset.sum_insert h_x_notin_s, Finset.card_insert_of_notMem h_x_notin_s]
       rw [Nat.right_distrib]
       simp only [Nat.one_mul, Nat.add_comm]
-      have ih' : CPRankMax (Finset.card s * n) (∑ x ∈ s, f x) := by
-        apply ih
-        intro (x : β) (h_x_in_s : x ∈ s)
-        simp only [h_cprank, Finset.mem_insert_of_mem, h_x_in_s]
+      have ih' : CPRankMax (Finset.card s * n) (∑ x ∈ s, f x) := by grind
       exact cprankMax_add (h_cprank x (Finset.mem_insert_self x s)) ih')
 
 theorem cprankMax_upper_bound [Semiring α] : ∀ {ds}, ∀ x : Holor α ds, CPRankMax ds.prod x

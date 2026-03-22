@@ -3,10 +3,12 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.RingTheory.Localization.Finiteness
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+module
+
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.RingTheory.Localization.Finiteness
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 /-!
 # Free modules and localization
@@ -22,6 +24,8 @@ import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 - Show that the flat locus of a finitely presented module is open.
 
 -/
+
+public section
 
 variable {R M N N'} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable (S : Submonoid R) [AddCommGroup N'] [Module R N']
@@ -58,7 +62,7 @@ lemma Module.FinitePresentation.exists_basis_localizedModule_powers
       (Finsupp.single i 1)
     simp only [Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply,
       map_one, LocalizedModule.mkLinearMap_apply] at this
-    show LocalizedModule.lift _ _ _ (e.symm (e'.symm _)) = _
+    change LocalizedModule.lift _ _ _ (e.symm (e'.symm _)) = _
     replace he := LinearMap.congr_fun he (e.symm (e'.symm (Finsupp.single i 1)))
     simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
       Function.comp_apply, LinearEquiv.apply_symm_apply, LinearEquiv.restrictScalars_apply] at he

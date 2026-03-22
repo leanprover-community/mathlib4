@@ -3,12 +3,14 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Category.Ring.Under.Basic
-import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-import Mathlib.CategoryTheory.Limits.Over
-import Mathlib.RingTheory.TensorProduct.Pi
-import Mathlib.RingTheory.RingHom.Flat
-import Mathlib.RingTheory.Flat.Equalizer
+module
+
+public import Mathlib.Algebra.Category.Ring.Under.Basic
+public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+public import Mathlib.CategoryTheory.Limits.Over
+public import Mathlib.RingTheory.TensorProduct.Pi
+public import Mathlib.RingTheory.RingHom.Flat
+public import Mathlib.RingTheory.Flat.Equalizer
 
 /-!
 # Limits in `Under R` for a commutative ring `R`
@@ -17,6 +19,8 @@ We show that `Under.pushout f` is left-exact, i.e. preserves finite limits, if `
 flat.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -60,6 +64,7 @@ def tensorProductFan' : Fan (fun i ↦ mkUnder S (S ⊗[R] (P i).right)) :=
   Fan.mk (mkUnder S <| ∀ i, S ⊗[R] (P i).right)
     (fun i ↦ AlgHom.toUnder <| Pi.evalAlgHom S _ i)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The two fans on `i ↦ S ⊗[R] P i` agree if `ι` is finite. -/
 def tensorProductFanIso [Fintype ι] [DecidableEq ι] :
     tensorProductFan S P ≅ tensorProductFan' S P :=
@@ -68,8 +73,7 @@ def tensorProductFanIso [Fintype ι] [DecidableEq ι] :
     apply CommRingCat.mkUnder_ext
     intro c
     induction c
-    · simp only [AlgHom.toUnder_right, map_zero, Under.comp_right, comp_apply,
-        AlgEquiv.toUnder_hom_right_apply, Pi.evalAlgHom_apply, Pi.zero_apply]
+    · simp only [map_zero, Under.comp_right]
     · simp only [AlgHom.toUnder_right, Algebra.TensorProduct.map_tmul, AlgHom.coe_id, id_eq,
         Pi.evalAlgHom_apply, Under.comp_right, comp_apply, AlgEquiv.toUnder_hom_right_apply,
         Algebra.TensorProduct.piRight_tmul]
@@ -92,16 +96,12 @@ instance (J : Type u) [Finite J] (f : J → Under R) :
   have hc : IsLimit c := Under.piFanIsLimit f
   preservesLimit_of_preserves_limit_cone hc (piFanTensorProductIsLimit f)
 
-instance (J : Type) [Finite J] :
-    PreservesLimitsOfShape (Discrete J) (tensorProd R S) :=
-  let J' : Type u := ULift.{u} J
-  have : PreservesLimitsOfShape (Discrete J') (tensorProd R S) :=
-    preservesLimitsOfShape_of_discrete (tensorProd R S)
-  let e : Discrete J' ≌ Discrete J := Discrete.equivalence Equiv.ulift
-  preservesLimitsOfShape_of_equiv e (R.tensorProd S)
-
 instance : PreservesFiniteProducts (tensorProd R S) where
-  preserves J := { }
+  preserves n :=
+    let J : Type u := ULift.{u} (Fin n)
+    have : PreservesLimitsOfShape (Discrete J) (tensorProd R S) :=
+      preservesLimitsOfShape_of_discrete (tensorProd R S)
+    preservesLimitsOfShape_of_equiv (Discrete.equivalence Equiv.ulift) (R.tensorProd S)
 
 end Pi
 
@@ -113,6 +113,7 @@ lemma equalizer_comp {A B : Under R} (f g : A ⟶ B) :
   ext (a : AlgHom.equalizer (toAlgHom f) (toAlgHom g))
   exact a.property
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical fork on `f g : A ⟶ B` given by the equalizer. -/
 def equalizerFork {A B : Under R} (f g : A ⟶ B) :
     Fork f g :=
@@ -149,6 +150,7 @@ def equalizerFork'IsLimit {A B : Type u} [CommRing A] [CommRing B] [Algebra R A]
     IsLimit (Under.equalizerFork' f g) :=
   Under.equalizerForkIsLimit f.toUnder g.toUnder
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The fork on `𝟙 ⊗[R] f` and `𝟙 ⊗[R] g` given by `S ⊗[R] eq(f, g)`. -/
 def tensorProdEqualizer {A B : Under R} (f g : A ⟶ B) :
     Fork ((tensorProd R S).map f) ((tensorProd R S).map g) :=
