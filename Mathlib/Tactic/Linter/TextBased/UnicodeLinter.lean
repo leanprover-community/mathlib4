@@ -26,6 +26,20 @@ public def UnicodeVariant.emoji := '\uFE0F'
 /-- Following any unicode character, this indicates that the text variant should be displayed -/
 public def UnicodeVariant.text := '\uFE0E'
 
+/-- Prints a unicode character's codepoint in hexadecimal with prefix 'U+'.
+E.g., 'a' is "U+0061". -/
+public def Char.printCodepointHex (c : Char) : String :=
+  let digits := Nat.toDigits 16 c.val.toNat
+  -- print at least 4 (could be more) hex characters using leading zeros
+  ("U+".append <| "0000".drop digits.length |>.toString).append <| String.ofList digits
+
+/-- Prints all characters in a string in hexadecimal with prefix 'U+'.
+E.g., "ab" is "U+0061;U+0062". -/
+public def String.printCodepointHex (s : String) : String :=
+  -- note: must not contain spaces because of the error message parsing below!
+  ";".intercalate <| s.toList.map Char.printCodepointHex
+
+
 /-- Allowed (by the linter) whitespace characters -/
 def ASCII.allowedWhitespace (c : Char) : Bool := #[' ', '\n'].contains c
 
@@ -121,6 +135,25 @@ def withVSCodeAbbrev : Array Char := #[
 '𝕝', '𝕞', '𝕟', '𝕠', '𝕡', '𝕢', '𝕣', '𝕤', '𝕥', '𝕦', '𝕧', '𝕨', '𝕩', '𝕪', '𝕫', '⨯',
 '⨿', 'Ϳ', '⧾', '⧿', '¡']
 
+/--
+Other unicode characters present in Mathlib but not present in any of the above lists.
+(as of March 17, 2026)
+Empty lines make sure the characters don't overlap as displayed.
+-/
+def othersInMathlib : Array Char := #[
+'✔', '«', '»', '⟍', 'ł', 'ń', '⎯', '⏐', 'ć', 'š', '̂', 'ᘁ', '𝖣', 'ß', 'ỳ', '⤏',
+
+'┌', '┐', '│', '├', '└', '┬', '┘', '▼', '◄', '⋅', 'ś', '－', '＼', '◥', '／', '◢',
+
+'◿', '◹', 'ő', '⥥', '⤞', '⥢', '╱', '⟋', 'Ž', 'ą', 'Š', 'ầ', '：', '꙳', '⎛',
+
+'⎞', '⎜', '⎟', '⎝', '⎠', 'ă', 'ĝ', 'ᵧ', '▶', '‑', '‾', 'ř', '⏎', '‐', '̀', '𐞥',
+
+'ꟴ', 'ᵟ', 'ᴀ', 'ʙ', 'ᴄ', 'ᴅ', 'ᴇ', 'ꜰ', 'ɢ', 'ʜ', 'ɪ', 'ᴊ', 'ᴋ', 'ʟ', 'ᴍ', 'ɴ',
+
+'ᴏ', 'ᴘ', 'ꞯ', 'ʀ', 'ꜱ', 'ᴛ', 'ᴜ', 'ᴠ', 'ᴡ', 'ʏ', 'ᴢ', 'ᵦ', 'ᵨ', 'ᵩ', 'ᵪ', 'Ś', 'ę'
+]
+
 /-- Unicode symbols in mathlib that should always be followed by the emoji variant selector. -/
 public def emojis : Array Char := #[
 '\u2705',        -- ✅️
@@ -138,31 +171,10 @@ public def emojis : Array Char := #[
 
 /-- Unicode symbols in mathlib that should always be followed by the text variant selector. -/
 public def nonEmojis : Array Char := #[]
--- TODO: should there be any? maybe #['↗', '↘', '✝', '▼', '▶']?
 
-/--
-Other unicode characters present in Mathlib but not present in any of the above lists.
-(as of March 17, 2026)
-Empty lines make sure the characters don't overlap as displayed.
--/
-def othersInMathlib : Array Char := #[
-'✔', '«', '»', '⟍', 'ł', 'ń', '⎯', '⏐', 'ć', 'š', '̂', 'ᘁ', '𝖣', 'ß', 'ỳ', '⤏',
-
-'┌', '┐', '│', '├', '└', '┬', '┘', '▼', '◄', '⋅', 'ś', '－', '＼', '◥', '／', '◢',
-
-'◿', '◹', 'ő', '⥥', '⤞', '⥢', '╱', '⟋', 'Ž', 'ą', 'Š', 'ầ', '：', '꙳', '⎛',
-
-'⎞', '⎜', '⎟', '⎝', '⎠', 'ă', 'ĝ', 'ᵧ', '▶', '‑', '‾', 'ř', '⏎', '‐', '̀', '𐞥',
-
-'ꟴ', 'ᵟ', 'ᴀ', 'ʙ', 'ᴄ', 'ᴅ', 'ᴇ', 'ꜰ', 'ɢ', 'ʜ', 'ɪ', 'ᴊ', 'ᴋ', 'ʟ', 'ᴍ', 'ɴ',
-
-'ᴏ', 'ᴘ', 'ꞯ', 'ʀ', 'ꜱ', 'ᴛ', 'ᴜ', 'ᴠ', 'ᴡ', 'ʏ', 'ᴢ', 'ᵦ', 'ᵨ', 'ᵩ', 'ᵪ'
-]
-
-/-- If `false`, the character is not allowed in Mathlib.
-Consider adding it to one of the whitelists.
+/-- Blocklist: If `false`, the character is not allowed in Mathlib.
 Note: if `true`, a character might still not be allowed depending on context
-(e.g. misplaced variant selectors)
+(e.g. misplaced variant selectors).
 -/
 public def isAllowedCharacter (c : Char) : Bool :=
   ASCII.allowed c
@@ -175,33 +187,53 @@ public def isAllowedCharacter (c : Char) : Bool :=
 
 /-- Provide default replacement (`String`) for a blocklisted character, or `none` if none defined -/
 public def replaceDisallowed : Char → Option String
-| '\u00a0' => " " -- replace "NO-BREAK SPACE" by normal space
-| '\u202f' => " " -- replace "NARROW NO-BREAK SPACE" by normal space
-| '\u2000' => " " -- replace "EN QUAD" by normal space
-| '\u2001' => " " -- replace "EM QUAD" by normal space
-| '\u2002' => " " -- replace "EN SPACE" by normal space
-| '\u2003' => " " -- replace "EM SPACE" by normal space
-| '\u2004' => " " -- replace "THREE-PER-EM SPACE" by normal space
-| '\u2005' => " " -- replace "FOUR-PER-EM SPACE" by normal space
-| '\u2006' => " " -- replace "SIX-PER-EM SPACE" by normal space
-| '\u2007' => " " -- replace "FIGURE SPACE" by normal space
-| '\u2008' => " " -- replace "PUNCTUATION SPACE" by normal space
-| '\u2009' => " " -- replace "THIN SPACE" by normal space
-| '\u200A' => " " -- replace "HAIR SPACE" by normal space
-| '\u200b' => "" -- replace "ZERO WIDTH SPACE" by nothing.
+| '\u0009' => "  "    -- "TAB" => "2 spaces"
+| '\u000B' => "\n"    -- "LINE TABULATION" => "Line Feed"
+| '\u000C' => "\n"    -- "FORM FEED" => "Line Feed"
+| '\u000D' => "\n"    -- "CARRIAGE RETURN" => "Line Feed"
+| '\u001F' => ""      -- "INFORMATION SEPARATOR ONE" => "nothing"
+| '\u00A0' => " "     -- "NO-BREAK SPACE" => "1 space"
+| '\u1680' => " "     -- "OGHAM SPACE MARK" => "1 space"
+| '\u2000' => "  "    -- "EN QUAD" => "2 spaces"
+| '\u2001' => "    "  -- "EM QUAD" => "4 spaces"
+| '\u2002' => " "     -- "EN SPACE" => "1 space"
+| '\u2003' => " "     -- "EM SPACE" => "1 space"
+| '\u2004' => " "     -- "THREE-PER-EM SPACE" => "1 space"
+| '\u2005' => " "     -- "FOUR-PER-EM SPACE" => "1 space"
+| '\u2006' => " "     -- "SIX-PER-EM SPACE" => "1 space"
+| '\u2007' => " "     -- "FIGURE SPACE" => "1 space"
+| '\u2008' => " "     -- "PUNCTUATION SPACE" => "1 space"
+| '\u2009' => " "     -- "THIN SPACE" => "1 space"
+| '\u200A' => " "     -- "HAIR SPACE" => "1 space"
+| '\u200B' => ""      -- "ZERO WIDTH SPACE" => "nothing"
+| '\u200C' => ""      -- "ZERO WIDTH NON-JOINER" => "nothing"
+| '\u200D' => ""      -- "ZERO WIDTH JOINER" => "nothing"
+| '\u200E' => ""      -- "LEFT-TO-RIGHT MARK" => "nothing"
+| '\u200F' => ""      -- "RIGHT-TO-LEFT MARK" => "nothing"
+| '\u2028' => " "     -- "LINE SEPARATOR" => "1 space"
+| '\u2029' => " "     -- "PARAGRAPH SEPARATOR" => "1 space"
+| '\u202A' => ""      -- "LEFT-TO-RIGHT EMBEDDING" => "nothing"
+| '\u202B' => ""      -- "RIGHT-TO-LEFT EMBEDDING" => "nothing"
+| '\u202C' => ""      -- "POP DIRECTIONAL FORMATTING" => "nothing"
+| '\u202D' => ""      -- "LEFT-TO-RIGHT OVERRIDE" => "nothing"
+| '\u202E' => ""      -- "RIGHT-TO-LEFT OVERRIDE" => "nothing"
+| '\u202F' => " "     -- "NARROW NO-BREAK SPACE" => "1 space"
+| '\u205F' => " "     -- "MEDIUM MATHEMATICAL SPACE" => "1 space"
+| '\u2060' => ""      -- "WORD JOINER" => "nothing"
+| '\u2062' => ""      -- "INVISIBLE TIMES" => "nothing"
+| '\u2063' => ""      -- "INVISIBLE SEPARATOR" => "nothing"
+| '\u2064' => ""      -- "INVISIBLE PLUS" => "nothing"
+| '\u2066' => ""      -- "LEFT-TO-RIGHT ISOLATE" => "nothing"
+| '\u2067' => ""      -- "RIGHT-TO-LEFT ISOLATE" => "nothing"
+| '\u2068' => ""      -- "FIRST STRONG ISOLATE" => "nothing"
+| '\u2069' => ""      -- "POP DIRECTIONAL ISOLATE" => "nothing"
+| '\u206A' => ""      -- "INHIBIT SYMMETRIC SWAPPING" => "nothing"
+| '\u206B' => ""      -- "ACTIVATE SYMMETRIC SWAPPING" => "nothing"
+| '\u206C' => ""      -- "INHIBIT ARABIC FORM SHAPING" => "nothing"
+| '\u206D' => ""      -- "ACTIVATE ARABIC FORM SHAPING" => "nothing"
+| '\u206E' => ""      -- "NATIONAL DIGIT SHAPES" => "nothing"
+| '\u206F' => ""      -- "NOMINAL DIGIT SHAPES" => "nothing"
+| '\u3000' => "  "    -- "IDEOGRAPHIC SPACE" =>  "2 spaces"
 | _ => none
-
-/-- Prints a unicode character's codepoint in hexadecimal with prefix 'U+'.
-E.g., 'a' is "U+0061". -/
-public def Char.printCodepointHex (c : Char) : String :=
-  let digits := Nat.toDigits 16 c.val.toNat
-  -- print at least 4 (could be more) hex characters using leading zeros
-  ("U+".append <| "0000".drop digits.length |>.toString).append <| String.ofList digits
-
-/-- Prints all characters in a string in hexadecimal with prefix 'U+'.
-E.g., "ab" is "U+0061;U+0062". -/
-public def String.printCodepointHex (s : String) : String :=
-  -- note: must not contain spaces because of the error message parsing below!
-  ";".intercalate <| s.toList.map Char.printCodepointHex
 
 end Mathlib.Linter.TextBased.UnicodeLinter
