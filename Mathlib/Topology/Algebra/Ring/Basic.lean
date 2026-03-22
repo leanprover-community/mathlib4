@@ -310,7 +310,7 @@ def mulRight (r : Rˣ) : R ≃ₜ+ R where
   __ := r.mulRight
   map_add' x₁ x₂ := right_distrib x₁ x₂ r
   continuous_toFun := continuous_mul_const _
-  continuous_invFun := continuous_mul_right _
+  continuous_invFun := continuous_mul_const _
 
 end ContinuousAddEquiv
 
