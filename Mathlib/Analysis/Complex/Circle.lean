@@ -99,7 +99,6 @@ def toUnits : Circle →* Units ℂ := unitSphereToUnits ℂ
 instance : CompactSpace Circle := Metric.sphere.compactSpace _ _
 instance : IsTopologicalGroup Circle := Metric.sphere.instIsTopologicalGroup
 instance instUniformSpace : UniformSpace Circle := instUniformSpaceSubtype
-instance : IsUniformGroup Circle := inferInstance
 
 /-- If `z` is a nonzero complex number, then `conj z / z` belongs to the unit circle. -/
 @[simps]

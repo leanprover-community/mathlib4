@@ -874,7 +874,6 @@ lemma nilpotencyClass_le_one_of_isSimple_of_isNilpotent [IsSimpleGroup G] [IsNil
     nilpotencyClass G ≤ 1 :=
   CommGroup.nilpotencyClass_le_one
 
-set_option backward.isDefEq.respectTransparency false in
 theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondition G := by
   -- roughly based on https://groupprops.subwiki.org/wiki/Nilpotent_implies_normalizer_condition
   rw [normalizerCondition_iff_only_full_group_self_normalizing]

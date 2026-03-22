@@ -29,6 +29,7 @@ open Finset
 open scoped ArithmeticFunction
 namespace PNat
 
+set_option backward.isDefEq.respectTransparency false in
 instance instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) :=
   /- The set of divisors of a positive natural number.
 This is `Nat.divisorsAntidiagonal` without a special case for `n = 0`. -/
