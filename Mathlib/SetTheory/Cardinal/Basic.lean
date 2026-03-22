@@ -325,6 +325,17 @@ theorem one_le_iff_ne_zero {c : Cardinal} : 1 ≤ c ↔ c ≠ 0 := by
 theorem lt_one_iff_zero {c : Cardinal} : c < 1 ↔ c = 0 := by
   simpa using lt_succ_bot_iff (a := c)
 
+theorem le_mul_of_pos_left {a b : Cardinal} (h : 0 < b) : a ≤ b * a := by
+  simpa using mul_le_mul_left (one_le_iff_pos.mpr h) a
+
+@[deprecated (since := "2026-03-20")] alias le_mul_left := le_mul_of_pos_left
+
+theorem le_mul_of_pos_right {a b : Cardinal} (h : 0 < b) : a ≤ a * b := by
+  rw [mul_comm]
+  exact le_mul_of_pos_left h
+
+@[deprecated (since := "2026-03-20")] alias le_mul_right := le_mul_of_pos_right
+
 /-! ### Properties about `aleph0` -/
 
 @[simp] lemma natCast_lt_aleph0 {n : ℕ} : (n : Cardinal.{u}) < ℵ₀ := by

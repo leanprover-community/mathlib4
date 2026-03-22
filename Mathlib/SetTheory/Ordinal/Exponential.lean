@@ -247,7 +247,7 @@ theorem opow_mul (a b c : Ordinal) : a ^ (b * c) = (a ^ b) ^ c := by
 theorem opow_mul_add_pos {b v : Ordinal} (hb : b ≠ 0) (u : Ordinal) (hv : v ≠ 0) (w : Ordinal) :
     0 < b ^ u * v + w :=
   (opow_pos u <| pos_iff_ne_zero.2 hb).trans_le <|
-    (le_mul_left _ <| pos_iff_ne_zero.2 hv).trans le_self_add
+    (le_mul_of_pos_right _ <| pos_iff_ne_zero.2 hv).trans le_self_add
 
 theorem opow_mul_add_lt_opow_mul {b u w x : Ordinal} {v : Ordinal} (hw : w < b ^ u) (hv : v < x) :
     b ^ u * v + w < b ^ u * x := by
