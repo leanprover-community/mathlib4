@@ -313,8 +313,7 @@ lemma sum_card_eq_sum_card_fiber_biUnion
       have hB' : ∀ b, ({a ∈ s | b ∈ B a} : Finset ι) = ({j | j ∈ s ∧ b ∈ B j} : Finset ι) := by
         intro b; ext j; simp [and_comm]
       rw [Finset.sum_congr rfl (fun j hj => by rw [hB j hj])] at g
-      simp_rw [hB'] at g
-      convert g
+      simp [hB', g]
 
 /-- Given a finite collection of finite subsets $B_1, \ldots, B_r$,
     each with cardinality k, if the cardinality of their union is less than r,
