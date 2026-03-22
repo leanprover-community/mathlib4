@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Star.TensorProduct
-public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Adjoin.Basic
 
@@ -752,9 +751,6 @@ noncomputable instance : StarMul (A ⊗[R] B) where
 
 noncomputable instance : StarRing (A ⊗[R] B) where
   star_add := by simp
-
-theorem _root_.Unitary.tmul_mem {U : A} {V : B} (hU : U ∈ unitary A) (hV : V ∈ unitary B) :
-    U ⊗ₜ[R] V ∈ unitary (A ⊗[R] B) := by simp [mem_iff, hU, hV, Algebra.TensorProduct.one_def]
 
 end TensorProduct
 
