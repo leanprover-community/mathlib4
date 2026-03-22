@@ -68,14 +68,31 @@ def logVariation {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions 
   -- convert `[min, max, stddev]` to user-facing heartbeats
   logInfo s!"Min: {min / 1000} Max: {max / 1000} StdDev: {stddev / 10}%"
 
-/-- Count the heartbeats used by a tactic, e.g.: `#count_heartbeats simp`. -/
+/-- `#count_heartbeats tac` counts the heartbeats used by the tactic sequence `tac`
+and prints an info line with the number of heartbeats.
+
+* `#count_heartbeats! n in tac`, where `n` is an optional natural number literal, runs `tac`
+  `n` times on the same goal while counting the heartbeats, and prints an info line with range and
+  standard deviation. `n` can be left out, and defaults to 10.
+
+Example:
+
+```
+example : 1 + 1 = 2 := by
+  -- The next line will print an info message of this format; the exact number may vary.
+  -- info: 4646
+  #count_heartbeats simp
+
+example : 1 + 1 = 2 := by
+  -- The next line will print an info message of this format; the exact numbers may vary.
+  -- info: Min: 4 Max: 4 StdDev: 2%
+  #count_heartbeats! 37 in simp
+```
+-/
 elab "#count_heartbeats " tac:tacticSeq : tactic => do
   logInfo s!"{← runTacForHeartbeats tac (revert := false)}"
 
-/--
-`#count_heartbeats! in tac` runs a tactic 10 times, counting the heartbeats used, and logs the range
-and standard deviation. The tactic `#count_heartbeats! n in tac` runs it `n` times instead.
--/
+@[tactic_alt «tactic#count_heartbeats_»]
 elab "#count_heartbeats! " n:(num)? "in" ppLine tac:tacticSeq : tactic => do
   let n := match n with
            | some j => j.getNat

@@ -122,6 +122,11 @@ theorem ae_eq_symm {f g : α → β} (h : f =ᵐ[μ] g) : g =ᵐ[μ] f :=
 theorem ae_eq_trans {f g h : α → β} (h₁ : f =ᵐ[μ] g) (h₂ : g =ᵐ[μ] h) : f =ᵐ[μ] h :=
   h₁.trans h₂
 
+lemma aeEq_iff {f g : α → β} : f =ᵐ[μ] g ↔ μ {x | f x ≠ g x} = 0 := by rfl
+
+lemma _root_.Set.EqOn.aeEq {f g : α → β} (h : s.EqOn f g) (h2 : μ sᶜ = 0) : f =ᵐ[μ] g :=
+  eventuallyEq_of_mem h2 h
+
 @[simp] lemma ae_eq_top : ae μ = ⊤ ↔ ∀ a, μ {a} ≠ 0 := by
   simp only [Filter.ext_iff, mem_ae_iff, mem_top, ne_eq]
   refine ⟨fun h a ha ↦ by simpa [ha] using (h {a}ᶜ).1, fun h s ↦ ⟨fun hs ↦ ?_, ?_⟩⟩
@@ -175,6 +180,7 @@ open scoped symmDiff in
 theorem measure_symmDiff_eq_zero_iff {s t : Set α} : μ (s ∆ t) = 0 ↔ s =ᵐ[μ] t := by
   simp [ae_eq_set, symmDiff_def]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ae_eq_set_compl_compl {s t : Set α} : sᶜ =ᵐ[μ] tᶜ ↔ s =ᵐ[μ] t := by
   simp only [← measure_symmDiff_eq_zero_iff, compl_symmDiff_compl]
@@ -231,6 +237,16 @@ theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
     (s ∩ t : Set α) =ᵐ[μ] (∅ : Set α) := by
   convert ae_eq_set_inter (ae_eq_refl s) h
   rw [inter_empty]
+
+theorem ae_eq_set_biInter {s : Set β} (hs : s.Countable) {t t' : β → Set α}
+    (h : ∀ b ∈ s, t b =ᵐ[μ] t' b) :
+    (⋂ b ∈ s, t b : Set α) =ᵐ[μ] (⋂ b ∈ s, t' b : Set α) :=
+  .countable_bInter hs h
+
+theorem ae_eq_set_biUnion {s : Set β} (hs : s.Countable) {t t' : β → Set α}
+    (h : ∀ b ∈ s, t b =ᵐ[μ] t' b) :
+    (⋃ b ∈ s, t b : Set α) =ᵐ[μ] (⋃ b ∈ s, t' b : Set α) :=
+  .countable_bUnion hs h
 
 @[to_additive]
 theorem _root_.Set.mulIndicator_ae_eq_one {M : Type*} [One M] {f : α → M} {s : Set α} :

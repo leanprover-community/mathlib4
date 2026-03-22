@@ -63,7 +63,9 @@ is the Shannon entropy of a Bernoulli random variable with success probability `
 @[pp_nodot] noncomputable def binEntropy (p : ℝ) : ℝ := p * log p⁻¹ + (1 - p) * log (1 - p)⁻¹
 
 @[simp] lemma binEntropy_zero : binEntropy 0 = 0 := by simp [binEntropy]
+
 @[simp] lemma binEntropy_one : binEntropy 1 = 0 := by simp [binEntropy]
+
 @[simp] lemma binEntropy_two_inv : binEntropy 2⁻¹ = log 2 := by norm_num [binEntropy]; simp; ring
 
 lemma binEntropy_eq_negMulLog_add_negMulLog_one_sub (p : ℝ) :

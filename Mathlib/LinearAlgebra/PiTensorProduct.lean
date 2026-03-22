@@ -311,6 +311,7 @@ lemma _root_.FreeAddMonoid.toPiTensorProduct (p : FreeAddMonoid (R × Π i, s i)
 def lifts (x : ⨂[R] i, s i) : Set (FreeAddMonoid (R × Π i, s i)) :=
   {p | AddCon.toQuotient (c := addConGen (PiTensorProduct.Eqv R s)) p = x}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An element `p` of `FreeAddMonoid (R × Π i, s i)` lifts an element `x` of `⨂[R] i, s i`
 if and only if `x` is equal to the sum of `a • ⨂ₜ[R] i, m i` over all the entries
 `(a, m)` of `p`.
@@ -325,11 +326,14 @@ lemma nonempty_lifts (x : ⨂[R] i, s i) : Set.Nonempty (lifts x) := by
   existsi Quot.out x
   simp [lifts, ← AddCon.quot_mk_eq_coe]
 
+instance (x : ⨂[R] i, s i) : Nonempty ↑x.lifts := nonempty_subtype.mpr (nonempty_lifts x)
+
 /-- The empty list lifts the element `0` of `⨂[R] i, s i`.
 -/
 lemma lifts_zero : 0 ∈ lifts (0 : ⨂[R] i, s i) := by
   rw [mem_lifts_iff, FreeAddMonoid.toList_zero, List.map_nil, List.sum_nil]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If elements `p,q` of `FreeAddMonoid (R × Π i, s i)` lift elements `x,y` of `⨂[R] i, s i`
 respectively, then `p + q` lifts `x + y`.
 -/
@@ -711,6 +715,7 @@ theorem lift_reindex_symm
     lift φ (reindex R s e |>.symm x) = lift (domDomCongrLinearEquiv' R R s _ e φ) x :=
   LinearMap.congr_fun (lift_comp_reindex_symm e φ) x
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem reindex_trans (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) :
     (reindex R s e).trans (reindex R _ e') = reindex R s (e.trans e') := by
@@ -732,6 +737,7 @@ theorem reindex_symm (e : ι ≃ ι₂) :
   ext x
   simp [reindex]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem reindex_refl : reindex R s (Equiv.refl ι) = LinearEquiv.refl R _ := by
   ext

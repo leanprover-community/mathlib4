@@ -482,6 +482,7 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
     erw [MonoidalCategory.whiskerRight_apply]
     simp [TensorProduct.add_tmul]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : MonoidalLinear R (ModuleCat.{u} R) := by
   refine ⟨?_, ?_⟩
   · intros

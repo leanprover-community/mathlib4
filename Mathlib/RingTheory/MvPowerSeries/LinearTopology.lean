@@ -50,7 +50,7 @@ open scoped Topology
 open Set SetLike Filter
 
 /-- The underlying family for the basis of ideals in a multivariate power series ring. -/
-def basis (σ : Type*) (R : Type*) [Ring R] (Jd : TwoSidedIdeal R × (σ →₀ ℕ)) :
+noncomputable def basis (σ : Type*) (R : Type*) [Ring R] (Jd : TwoSidedIdeal R × (σ →₀ ℕ)) :
     TwoSidedIdeal (MvPowerSeries σ R) :=
   TwoSidedIdeal.mk' {f | ∀ e ≤ Jd.2, coeff e f ∈ Jd.1}
     (by simp [coeff_zero])
@@ -111,6 +111,7 @@ variable [TopologicalSpace R]
 -- We endow MvPowerSeries σ R with the product topology.
 open WithPiTopology
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the ring `R` is endowed with a linear topology, then the sets `↑basis σ R (J, d)`,
 for `J : TwoSidedIdeal R` which are neighborhoods of `0 : R` and `d : σ →₀ ℕ`,
 constitute a basis of neighborhoods of `0 : MvPowerSeries σ R` for the product topology. -/
