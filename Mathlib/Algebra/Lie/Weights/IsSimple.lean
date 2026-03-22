@@ -465,12 +465,6 @@ lemma rootSet_apply_coroot_eq_zero (I : LieIdeal K L)
   exact traceForm_eq_zero_of_mem_ker_of_mem_span_coroot h_ker
     (Submodule.mem_span_singleton_self _)
 
-private lemma iSup_corootSpace_root_eq_top :
-    ⨆ (α : H.root), corootSpace ⇑(↑α : Weight K H L) = ⊤ := by
-  rw [eq_top_iff, ← biSup_corootSpace_eq_top (K := K) (L := L)]
-  exact iSup₂_le fun α hα ↦
-    le_iSup_of_le ⟨α, by simpa [LieSubalgebra.root] using hα⟩ le_rfl
-
 /-- The Cartan part `I.restr H ⊓ H.toLieSubmodule` of a Lie ideal equals the span of the
 coroots for roots in `I.rootSet`. -/
 lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
@@ -478,48 +472,44 @@ lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
   refine le_antisymm ?_ (iSup₂_le fun _ hα ↦
     le_inf (I.corootSubmodule_le hα) LieSubmodule.map_incl_le)
   intro x ⟨hxI, hxH⟩
-  let f : H.root → LieIdeal K H := fun α ↦ corootSpace ⇑(↑α : Weight K H L)
+  let f : H.root → LieIdeal K H := fun α ↦ corootSpace α.1
   set S_I := ⨆ α ∈ I.rootSet, f α
   set S_c := ⨆ (β : H.root) (_ : β ∉ I.rootSet), f β
   have h_top : S_I ⊔ S_c = ⊤ := by
-    rw [show S_I ⊔ S_c = ⨆ α, f α from (iSup_split f (· ∈ I.rootSet)).symm,
-      iSup_corootSpace_root_eq_top]
-  have hS_I_map : LieSubmodule.map H.toLieSubmodule.incl S_I =
+    rw [show S_I ⊔ S_c = ⨆ α, f α from (iSup_split f (· ∈ I.rootSet)).symm, eq_top_iff,
+      ← biSup_corootSpace_eq_top (K := K) (L := L)]
+    exact iSup₂_le fun α hα ↦
+      le_iSup_of_le ⟨α, by simpa [LieSubalgebra.root] using hα⟩ le_rfl
+  have hS_I_incl : LieSubmodule.map H.toLieSubmodule.incl S_I =
       ⨆ α ∈ I.rootSet, corootSubmodule α.1 := by
-    change LieSubmodule.map H.toLieSubmodule.incl (⨆ α ∈ I.rootSet, f α) =
-      ⨆ α ∈ I.rootSet, LieSubmodule.map H.toLieSubmodule.incl (f α)
-    simp_rw [LieSubmodule.map_iSup]
-  have hS_c_le_ker (μ : H.root) (hμI : μ ∈ I.rootSet) :
-      S_c.toSubmodule ≤ (↑μ : Weight K H L).ker := by
+    change LieSubmodule.map _ (⨆ α ∈ I.rootSet, f α) = ⨆ α ∈ I.rootSet, _
+    simp_rw [LieSubmodule.map_iSup]; rfl
+  have hS_c_ker (μ : H.root) (hμ : μ ∈ I.rootSet) : S_c.toSubmodule ≤ μ.1.ker := by
     rw [show S_c.toSubmodule = ⨆ β ∉ I.rootSet, (f β).toSubmodule from by
       simp_rw [S_c, LieSubmodule.iSup_toSubmodule]]
     exact iSup₂_le fun γ hγ ↦
       (coe_corootSpace_eq_span_singleton (K := K) (L := L) (H := H) _).symm ▸
-        Submodule.span_le.mpr (by
-          simp [Set.singleton_subset_iff, rootSet_apply_coroot_eq_zero I hμI hγ])
+        Submodule.span_le.mpr (by simp [Set.singleton_subset_iff,
+          rootSet_apply_coroot_eq_zero I hμ hγ])
   obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp
     (show (⟨x, hxH⟩ : H) ∈ S_I ⊔ S_c from h_top ▸ trivial)
-  have hab' : (a : L) + (b : L) = x := congr_arg Subtype.val hab
+  have hab_val : a + b = x := congr_arg Subtype.val hab
   have haI : (a : L) ∈ I :=
-    (iSup₂_le (fun _ hα ↦ I.corootSubmodule_le hα) : ⨆ α ∈ I.rootSet, corootSubmodule α.1 ≤ _)
-      (hS_I_map ▸ LieSubmodule.mem_map_of_mem ha)
+    (iSup₂_le (fun _ hα ↦ I.corootSubmodule_le hα) :
+      ⨆ α ∈ I.rootSet, corootSubmodule α.1 ≤ _) (hS_I_incl ▸ LieSubmodule.mem_map_of_mem ha)
   have hbI : (b : L) ∈ I := by
-    rw [show (b : L) = x - a from by rw [← hab', add_sub_cancel_left]]
+    rw [show (b : L) = x - a from by rw [← hab_val, add_sub_cancel_left]]
     exact I.toSubmodule.sub_mem hxI haI
-  have h_vanish_inside : ∀ (μ : H.root), μ ∈ I.rootSet → (↑μ : Weight K H L) b = 0 :=
-    fun μ hμI ↦ hS_c_le_ker μ hμI hb
-  have h_vanish_outside : ∀ (μ : H.root), μ ∉ I.rootSet → (↑μ : Weight K H L) b = 0 :=
-    fun μ hμ ↦ weight_apply_eq_zero_of_not_mem_rootSet I hbI hμ
   suffices b = 0 by
     subst this; simp only [add_zero] at hab; subst hab
-    exact hS_I_map ▸ LieSubmodule.mem_map_of_mem ha
+    exact hS_I_incl ▸ LieSubmodule.mem_map_of_mem ha
   suffices b ∈ ⨅ α : Weight K H L, α.ker by simpa [iInf_ker_weight_eq_bot] using this
   refine (Submodule.mem_iInf _).mpr fun μ ↦ ?_
   by_cases hμ : μ.IsNonZero
   · have hμ_root : μ ∈ H.root := by simpa [LieSubalgebra.root] using hμ
     by_cases hμI : (⟨μ, hμ_root⟩ : H.root) ∈ I.rootSet
-    · exact h_vanish_inside ⟨μ, hμ_root⟩ hμI
-    · exact h_vanish_outside ⟨μ, hμ_root⟩ hμI
+    · exact hS_c_ker ⟨μ, hμ_root⟩ hμI hb
+    · exact weight_apply_eq_zero_of_not_mem_rootSet I hbI hμI
   · simp only [Weight.IsNonZero, not_not] at hμ
     exact LinearMap.mem_ker.mpr (congr_fun hμ b)
 
