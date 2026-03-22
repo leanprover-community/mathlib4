@@ -301,6 +301,12 @@ lemma LinearEquiv.conj_exact_iff_exact (e : N ≃ₗ[R] N') :
     LinearMap.range_comp]
   exact (Submodule.map_injective_of_injective e.injective).eq_iff
 
+variable (f g) in
+lemma LinearEquiv.conj_symm_exact_iff_exact (e : N' ≃ₗ[R] N) :
+    Function.Exact (e.symm ∘ₗ f) (g ∘ₗ (e : N' →ₗ[R] N)) ↔ Exact f g := by
+  nth_rw 2 [← e.symm_symm]
+  rw [LinearEquiv.conj_exact_iff_exact]
+
 namespace Function
 
 open LinearMap
@@ -316,9 +322,17 @@ lemma Surjective.comp_exact_iff_exact {p : M' →ₗ[R] M} (h : Surjective p) :
   iff_of_eq <| forall_congr fun x =>
     congrArg (g x = 0 ↔ x ∈ ·) (h.range_comp f)
 
+lemma LinearEquiv.fst_comp_exact_iff_exact {e : M' ≃ₗ[R] M} :
+    Exact (f ∘ₗ (e : M' →ₗ[R] M)) g ↔ Exact f g :=
+  e.surjective.comp_exact_iff_exact
+
 lemma Injective.comp_exact_iff_exact {i : P →ₗ[R] P'} (h : Injective i) :
     Exact f (i ∘ₗ g) ↔ Exact f g :=
   forall_congr' fun _ => iff_congr (map_eq_zero_iff _ h) Iff.rfl
+
+lemma LinearEquiv.comp_snd_exact_iff_exact {e : P ≃ₗ[R] P'} :
+    Exact f ((e : P →ₗ[R] P') ∘ₗ g) ↔ Exact f g :=
+  e.injective.comp_exact_iff_exact
 
 namespace Exact
 
