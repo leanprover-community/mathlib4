@@ -720,11 +720,10 @@ theorem latin_rectangle_extends_to_latin_square
       have ι_h := Function.Embedding.nonempty_of_card_le hk'_le
       let ι' : k ↪ k' := Classical.choice ι_h
       have H := latin_rectangle_extends_one_row A h_k_lt_n ι' hk'_card
-      obtain ⟨ A', hA ⟩ := H
+      have ⟨A', hA⟩ := H
       have ih := ih m hm_lt (k := k') (A := A') h_k'_le_n hm
-      obtain ⟨ A'', hA'' ⟩ := ih
-      use A''
-      exact hA.trans hA''
+      have ⟨A'', hA''⟩ := ih
+      exact ⟨A'', hA.trans hA''⟩
 
 end Completion
 
