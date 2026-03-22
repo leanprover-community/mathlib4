@@ -25,36 +25,29 @@ namespace prodStdSimplex
 
 variable {p : ℕ}
 
-namespace nonDegenerateEquiv₁
-
 open stdSimplex in
-/-- Auxiliary definition for `prodStdSimplex.nonDegenerateEquiv₁` -/
-def toFun (i : Fin (p + 1)) : (Δ[p] ⊗ Δ[1]).nonDegenerate (p + 1) :=
-    ⟨⟨stdSimplex.objEquiv.{u}.symm (SimplexCategory.σ i),
-      objMk₁ i.succ.castSucc⟩, by
-  rw [nonDegenerate_max_dim_iff _ rfl]
-  ext j
-  dsimp
-  by_cases hj : j ≤ i.castSucc
-  · rw [objMk₁_of_castSucc_lt _ _ (by simpa),
-      Fin.coe_ofNat_eq_mod, Nat.zero_mod, add_zero]
-    change (i.predAbove j : ℕ) = _
-    simp [Fin.predAbove_of_le_castSucc _ _ hj]
-  · simp only [not_le] at hj
-    rw [objMk₁_of_le_castSucc _ _ (by simpa), objEquiv_symm_apply]
-    change (i.predAbove j : ℕ) + 1 = _
-    rw [Fin.predAbove_of_castSucc_lt _ _ hj, Fin.val_pred]
-    lia⟩
-
-end nonDegenerateEquiv₁
-
 /-- This is an enumeration of the `p + 1` nondegenerate dimension-`(p + 1)`
 simplices of `Δ[p] ⊗ Δ[1]`. It sends `i : Fin (p + 1)` to the nondegenerate
 simplex consisting of the vertices
 `(0, 0) ≤ (1,0) ≤ ... ≤ (i, 0) ≤ (i, 1) ≤ ... ≤ (p, 1)`. -/
 noncomputable def nonDegenerateEquiv₁ :
     Fin (p + 1) ≃ (Δ[p] ⊗ Δ[1] : SSet.{u}).nonDegenerate (p + 1) :=
-  Equiv.ofBijective nonDegenerateEquiv₁.toFun (by
+  Equiv.ofBijective
+    (fun i ↦ ⟨⟨stdSimplex.objEquiv.{u}.symm (SimplexCategory.σ i),
+      objMk₁ i.succ.castSucc⟩, by
+      rw [nonDegenerate_max_dim_iff _ rfl]
+      ext j
+      dsimp
+      by_cases hj : j ≤ i.castSucc
+      · rw [objMk₁_of_castSucc_lt _ _ (by simpa),
+          Fin.coe_ofNat_eq_mod, Nat.zero_mod, add_zero]
+        change (i.predAbove j : ℕ) = _
+        simp [Fin.predAbove_of_le_castSucc _ _ hj]
+      · simp only [not_le] at hj
+        rw [objMk₁_of_le_castSucc _ _ (by simpa), objEquiv_symm_apply]
+        change (i.predAbove j : ℕ) + 1 = _
+        rw [Fin.predAbove_of_castSucc_lt _ _ hj, Fin.val_pred]
+        lia⟩) (by
     refine ⟨fun _ _ h ↦ ?_, fun ⟨⟨s₁, s₂⟩, hs⟩ ↦ ?_⟩
     · simpa using stdSimplex.objMk₁_injective (congr_arg (Prod.snd ∘ Subtype.val) h)
     · rw [nonDegenerate_max_dim_iff _ rfl] at hs
