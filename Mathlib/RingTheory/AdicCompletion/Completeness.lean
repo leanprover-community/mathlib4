@@ -130,6 +130,7 @@ private lemma lsum_smul_comp_finsuppLEquivDirectSum_symm {ι : Type*} [Decidable
     (map I (lsum R fun i ↦ f i • .id) ∘ₗ map I (finsuppLEquivDirectSum R M ι).symm.toLinearMap) ∘ₗ
       (sumEquivOfFintype I (fun _ : ι ↦ M)) := by
   ext
+  -- simp [-algebraMap_smul, algebraMap_apply, -smul_eq_mul]
   simp only [algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply, LinearMap.coe_comp,
     coe_lsum, LinearMap.coe_smul, LinearMap.id_coe, LinearEquiv.coe_coe, Function.comp_apply,
     finsuppLEquivDirectSum_symm_lof, Pi.smul_apply, id_eq, smul_zero, sum_single_index, smul_eval,
