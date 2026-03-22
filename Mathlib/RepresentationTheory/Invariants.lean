@@ -5,7 +5,7 @@ Authors: Antoine Labelle
 -/
 module
 
-public import Mathlib.RepresentationTheory.Basic
+public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.FDRep
 
 /-!
@@ -64,8 +64,9 @@ section Invariants
 
 open GroupAlgebra
 
-variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
-variable (ρ : Representation k G V)
+variable {k G V W : Type*} [CommRing k] [Group G] [AddCommGroup V] [Module k V] [AddCommGroup W]
+  [Module k W]
+variable (ρ : Representation k G V) (σ : Representation k G W)
 
 /-- The subspace of invariants, consisting of the vectors fixed by all elements of `G`.
 -/
@@ -92,6 +93,28 @@ lemma mem_invariants_iff_of_forall_mem_zpowers
     rcases hg γ with ⟨i, rfl⟩
     induction i with | zero => simp | succ i _ => simp_all [zpow_add_one] | pred i h => _
     simpa [neg_sub_comm _ (1 : ℤ), zpow_sub] using congr(ρ g⁻¹ $(h.trans hx.symm))⟩
+
+variable {ρ σ} in
+@[simp] lemma mem_linHom_invariants_iff_isIntertwining (f : V →ₗ[k] W) :
+    (∀ (g : G), σ g ∘ₗ f ∘ₗ ρ g⁻¹ = f) ↔ ρ.IsIntertwiningMap σ f := by
+  refine ⟨fun hf ↦ ⟨fun γ v ↦ ?_⟩, fun hf γ ↦ ?_⟩
+  · specialize hf γ
+    nth_rewrite 1 [← hf]
+    simp
+  · ext v
+    simp [hf.isIntertwining]
+
+/-- The invariants of the representation `linHom ρ σ` correspond to intertwining maps
+ from `ρ` to `σ`. -/
+def invariantsEquivIntertwiningMap : (linHom ρ σ).invariants ≃ₗ[k] IntertwiningMap ρ σ where
+  toFun f := f.val.intertwiningMap_of_isIntertwiningMap ρ σ
+    ((mem_linHom_invariants_iff_isIntertwining f.val).mp f.property).isIntertwining
+  map_add' _ _ := IntertwiningMap.ext_iff.mpr rfl
+  map_smul' _ _ := IntertwiningMap.ext_iff.mpr rfl
+  invFun g :=
+    { val := g.toLinearMap
+      property := (mem_linHom_invariants_iff_isIntertwining g.toLinearMap).mpr
+        {isIntertwining := g.isIntertwining} }
 
 section
 
@@ -121,7 +144,7 @@ theorem isProj_averageMap : LinearMap.IsProj ρ.invariants ρ.averageMap :=
 end
 section Subgroup
 
-variable {V : Type*} [AddCommMonoid V] [Module k V]
+variable {V : Type*} [AddCommGroup V] [Module k V]
 variable (ρ : Representation k G V) (S : Subgroup G) [S.Normal]
 
 lemma le_comap_invariants (g : G) :
@@ -214,6 +237,7 @@ abbrev quotientToInvariants : Rep k (G ⧸ S) := Rep.of (A.ρ.quotientToInvarian
 
 variable (k G)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor sending a representation to its submodule of invariants. -/
 @[simps! obj_carrier map_hom]
 noncomputable def invariantsFunctor : Rep k G ⥤ ModuleCat k where
@@ -227,6 +251,7 @@ instance : (invariantsFunctor k G).PreservesZeroMorphisms where
 instance : (invariantsFunctor k G).Additive where
 instance : (invariantsFunctor k G).Linear k where
 
+set_option backward.isDefEq.respectTransparency false in
 variable {G} in
 /-- Given a normal subgroup S ≤ G, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A^S`. -/
@@ -241,6 +266,7 @@ noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
       simp [ModuleCat.endRingEquiv, Representation.quotientToInvariants,
         Representation.toInvariants, invariants, hom_comm_apply] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the functor equipping a module with the trivial representation, and
 the functor sending a representation to its submodule of invariants. -/
 @[simps]

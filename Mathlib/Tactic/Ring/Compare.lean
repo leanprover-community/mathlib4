@@ -5,7 +5,6 @@ Authors: Heather Macbeth
 -/
 module
 
-public meta import Mathlib.Tactic.Ring.Basic
 import all Mathlib.Tactic.NormNum.Ineq
 public import Mathlib.Tactic.NormNum.Ineq
 public import Mathlib.Tactic.Ring.Basic

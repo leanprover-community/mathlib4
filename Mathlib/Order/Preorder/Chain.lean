@@ -34,7 +34,7 @@ assert_not_exists CompleteLattice
 
 open Set Set.Notation
 
-variable {α β : Type*}
+variable {α β F : Type*}
 
 /-! ### Chains -/
 
@@ -77,7 +77,7 @@ theorem IsChain.mono_rel {r' : α → α → Prop} (h : IsChain r s) (h_imp : �
 theorem IsChain.symm (h : IsChain r s) : IsChain (flip r) s :=
   h.mono' fun _ _ => Or.symm
 
-theorem isChain_of_trichotomous [IsTrichotomous α r] (s : Set α) : IsChain r s :=
+theorem isChain_of_trichotomous [Std.Trichotomous r] (s : Set α) : IsChain r s :=
   fun a _ b _ hab => (trichotomous_of r a b).imp_right fun h => h.resolve_left hab
 
 protected theorem IsChain.insert (hs : IsChain r s) (ha : ∀ b ∈ s, a ≠ b → a ≺ b ∨ b ≺ a) :
@@ -87,12 +87,12 @@ protected theorem IsChain.insert (hs : IsChain r s) (ha : ∀ b ∈ s, a ≠ b �
 lemma IsChain.pair (h : r a b) : IsChain r {a, b} :=
   IsChain.singleton.insert fun _ hb _ ↦ .inl <| (eq_of_mem_singleton hb).symm.recOn ‹_›
 
-theorem isChain_univ_iff : IsChain r (univ : Set α) ↔ IsTrichotomous α r := by
+theorem isChain_univ_iff : IsChain r (univ : Set α) ↔ Std.Trichotomous r := by
   refine ⟨fun h => ⟨fun a b => ?_⟩, fun h => @isChain_of_trichotomous _ _ h univ⟩
-  rw [or_left_comm, or_iff_not_imp_left]
-  exact h trivial trivial
+  have : a ≠ b → (r a b ∨ r b a) := h trivial trivial
+  grind
 
-theorem IsChain.image (r : α → α → Prop) (s : β → β → Prop) (f : α → β)
+theorem IsChain.image_of_map_rel (r : α → α → Prop) (s : β → β → Prop) (f : α → β)
     (h : ∀ x y, r x y → s (f x) (f y)) {c : Set α} (hrc : IsChain r c) : IsChain s (f '' c) :=
   fun _ ⟨_, ha₁, ha₂⟩ _ ⟨_, hb₁, hb₂⟩ =>
   ha₂ ▸ hb₂ ▸ fun hxy => (hrc ha₁ hb₁ <| ne_of_apply_ne f hxy).imp (h _ _) (h _ _)
@@ -110,7 +110,7 @@ lemma isChain_union {s t : Set α} :
 
 lemma Monotone.isChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
     (hf : Monotone f) (hs : IsChain (· ≤ ·) s) : IsChain (· ≤ ·) (f '' s) :=
-  hs.image _ _ _ (fun _ _ a ↦ hf a)
+  hs.image_of_map_rel _ _ _ (fun _ _ a ↦ hf a)
 
 theorem Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     IsChain (· ≤ ·) (range f) := by
@@ -135,35 +135,36 @@ section Rel
 
 variable {r : α → α → Prop} {r' : β → β → Prop} {s : Set α}
 
-theorem IsChain.image_relEmbedding (hs : IsChain r s) (φ : r ↪r r') : IsChain r' (φ '' s) := by
-  intro b hb b' hb' h
-  rw [Set.mem_image] at hb hb'
-  obtain ⟨⟨a, has, rfl⟩, ⟨a', has', rfl⟩⟩ := hb, hb'
-  have := hs has has' (fun haa' => h (by rw [haa']))
-  grind [RelEmbedding.map_rel_iff]
+theorem IsChain.image [FunLike F α β] [RelHomClass F r r'] (hs : IsChain r s) (φ : F) :
+    IsChain r' (φ '' s) :=
+  hs.image_of_map_rel _ _ _ (fun _ _ h ↦ map_rel φ h)
+
+@[deprecated IsChain.image (since := "2026-02-26")]
+theorem IsChain.image_relEmbedding (hs : IsChain r s) (φ : r ↪r r') : IsChain r' (φ '' s) :=
+  hs.image _
 
 theorem IsChain.preimage_relEmbedding {t : Set β} (ht : IsChain r' t) (φ : r ↪r r') :
-    IsChain r (φ ⁻¹' t) := fun _ ha _s ha' hne => by
-  have := ht ha ha' (fun h => hne (φ.injective h))
-  grind [RelEmbedding.map_rel_iff]
+    IsChain r (φ ⁻¹' t) :=
+  ht.preimage _ _ _ φ.injective (fun _ _ h ↦ φ.map_rel_iff.mp h)
 
+@[deprecated IsChain.image (since := "2026-02-26")]
 theorem IsChain.image_relIso (hs : IsChain r s) (φ : r ≃r r') : IsChain r' (φ '' s) :=
-  hs.image_relEmbedding φ.toRelEmbedding
+  hs.image φ.toRelEmbedding
 
 theorem IsChain.preimage_relIso {t : Set β} (hs : IsChain r' t) (φ : r ≃r r') :
     IsChain r (φ ⁻¹' t) :=
   hs.preimage_relEmbedding φ.toRelEmbedding
 
 theorem IsChain.image_relEmbedding_iff {φ : r ↪r r'} : IsChain r' (φ '' s) ↔ IsChain r s :=
-  ⟨fun h => (φ.injective.preimage_image s).subst (h.preimage_relEmbedding φ), fun h =>
-    h.image_relEmbedding φ⟩
+  ⟨fun h => (φ.injective.preimage_image s).subst (h.preimage_relEmbedding φ), fun h => h.image φ⟩
 
 theorem IsChain.image_relIso_iff {φ : r ≃r r'} : IsChain r' (φ '' s) ↔ IsChain r s :=
   @image_relEmbedding_iff _ _ _ _ _ (φ : r ↪r r')
 
+@[deprecated IsChain.image (since := "2026-02-26")]
 theorem IsChain.image_embedding [LE α] [LE β] (hs : IsChain (· ≤ ·) s) (φ : α ↪o β) :
     IsChain (· ≤ ·) (φ '' s) :=
-  image_relEmbedding hs _
+  image hs _
 
 theorem IsChain.preimage_embedding [LE α] [LE β] {t : Set β} (ht : IsChain (· ≤ ·) t) (φ : α ↪o β) :
     IsChain (· ≤ ·) (φ ⁻¹' t) :=
@@ -173,9 +174,10 @@ theorem IsChain.image_embedding_iff [LE α] [LE β] {φ : α ↪o β} :
     IsChain (· ≤ ·) (φ '' s) ↔ IsChain (· ≤ ·) s :=
   image_relEmbedding_iff
 
+@[deprecated IsChain.image (since := "2026-02-26")]
 theorem IsChain.image_iso [LE α] [LE β] (hs : IsChain (· ≤ ·) s) (φ : α ≃o β) :
     IsChain (· ≤ ·) (φ '' s) :=
-  image_relEmbedding hs _
+  image hs _
 
 theorem IsChain.image_iso_iff [LE α] [LE β] {φ : α ≃o β} :
     IsChain (· ≤ ·) (φ '' s) ↔ IsChain (· ≤ ·) s :=
@@ -187,7 +189,7 @@ theorem IsChain.preimage_iso [LE α] [LE β] {t : Set β} (ht : IsChain (· ≤ 
 
 theorem IsChain.preimage_iso_iff [LE α] [LE β] {t : Set β} {φ : α ≃o β} :
     IsChain (· ≤ ·) (φ ⁻¹' t) ↔ IsChain (· ≤ ·) t :=
-  ⟨fun h => (φ.image_preimage t).subst (h.image_iso φ), fun h => h.preimage_iso _⟩
+  ⟨fun h => (φ.image_preimage t).subst (h.image φ), fun h => h.preimage_iso _⟩
 
 end Rel
 
@@ -250,11 +252,10 @@ theorem IsMaxChain.top_mem [LE α] [OrderTop α] (h : IsMaxChain (· ≤ ·) s) 
 
 lemma IsMaxChain.image {s : β → β → Prop} (e : r ≃r s) {c : Set α} (hc : IsMaxChain r c) :
     IsMaxChain s (e '' c) where
-  left := hc.isChain.image _ _ _ fun _ _ ↦ by exact e.map_rel_iff.2
+  left := hc.isChain.image e
   right t ht hf := by
     rw [← e.coe_fn_toEquiv, ← e.toEquiv.eq_preimage_iff_image_eq, ← Equiv.image_symm_eq_preimage]
-    exact hc.2 (ht.image _ _ _ fun _ _ ↦ by exact e.symm.map_rel_iff.2)
-      ((e.toEquiv.subset_symm_image _ _).2 hf)
+    exact hc.2 (ht.image e.symm) ((e.toEquiv.subset_symm_image _ _).2 hf)
 
 protected theorem IsMaxChain.isEmpty_iff (h : IsMaxChain r s) : IsEmpty α ↔ s = ∅ := by
   refine ⟨fun _ ↦ s.eq_empty_of_isEmpty, fun h' ↦ ?_⟩

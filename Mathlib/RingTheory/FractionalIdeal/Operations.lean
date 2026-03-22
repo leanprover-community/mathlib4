@@ -587,6 +587,7 @@ theorem mem_spanSingleton {x y : P} : x ∈ spanSingleton S y ↔ ∃ z : R, z �
 theorem mem_spanSingleton_self (x : P) : x ∈ spanSingleton S x :=
   (mem_spanSingleton S).mpr ⟨1, one_smul _ _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable (P) in
 /-- A version of `FractionalIdeal.den_mul_self_eq_num` in terms of fractional ideals. -/
 theorem den_mul_self_eq_num' (I : FractionalIdeal S P) :
@@ -743,11 +744,11 @@ theorem div_spanSingleton (J : FractionalIdeal R₁⁰ K) (d : K) :
   have h_spand : spanSingleton R₁⁰ d ≠ 0 := mt spanSingleton_eq_zero_iff.mp hd
   apply le_antisymm
   · intro x hx
-    rw [mem_div_iff_of_ne_zero (spanSingleton_ne_zero_iff.mpr hd)] at hx
+    rw [← mem_coe, coe_div h_spand, Submodule.mem_div_iff_forall_mul_mem] at hx
     specialize hx d (mem_spanSingleton_self R₁⁰ d)
     have h_xd : x = d⁻¹ * (x * d) := by field
-    rw [one_div_spanSingleton, h_xd]
-    exact mul_mem_mul (mem_spanSingleton_self R₁⁰ _) hx
+    rw [← mem_coe, coe_mul, one_div_spanSingleton, h_xd]
+    exact Submodule.mul_mem_mul (mem_spanSingleton_self R₁⁰ _) hx
   · rw [le_div_iff_mul_le h_spand, mul_assoc, mul_left_comm, one_div_spanSingleton,
       spanSingleton_mul_spanSingleton, inv_mul_cancel₀ hd, spanSingleton_one, mul_one]
 
@@ -828,6 +829,14 @@ theorem num_le (I : FractionalIdeal S P) :
   intro _ h
   rw [← Algebra.smul_def]
   exact Submodule.smul_mem _ _ h
+
+/-- If the numerator ideal of a fractional ideal is principal, then so is the fractional ideal. -/
+theorem isPrincipal_of_isPrincipal_num [IsDomain R]
+    (I : FractionalIdeal R⁰ (FractionRing R)) (hI : I.num.IsPrincipal) :
+    (I : Submodule R (FractionRing R)).IsPrincipal :=
+  Module.isPrincipal_submodule_iff.mp
+    <| (FractionalIdeal.equivNumOfIsLocalization I).isPrincipal_iff.mpr
+    <| Module.isPrincipal_submodule_iff.mpr hI
 
 end PrincipalIdeal
 

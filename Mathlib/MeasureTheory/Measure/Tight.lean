@@ -120,6 +120,7 @@ protected lemma subset (hT : IsTightMeasureSet T) (hST : S ⊆ T) :
   tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hT (fun _ ↦ by simp)
     (iSup_le_iSup_of_subset hST)
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma union (hS : IsTightMeasureSet S) (hT : IsTightMeasureSet T) :
     IsTightMeasureSet (S ∪ T) := by
   rw [IsTightMeasureSet, iSup_union]
