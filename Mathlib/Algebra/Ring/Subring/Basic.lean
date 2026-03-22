@@ -865,6 +865,75 @@ instance isLocalHom_eqLocus_subtype (f g : R →+* S) : IsLocalHom (f.eqLocus g)
 
 end eqLocus
 
+section Pullback
+
+variable {T : Type w} [Semiring T]
+
+/-- The subring of pairs `(r, s) : R × S` such that `f r = g s`, i.e.,
+  the pullback of f and g as a subring of R × S. -/
+abbrev Pullback (f : R →+* T) (g : S →+* T) : Subring (R × S) :=
+  (f.comp (RingHom.fst R S)).eqLocus <| g.comp (RingHom.snd R S)
+
+/-- The first projection from the pullback of `f` and `g` to `A`. -/
+abbrev pullbackFst (f : R →+* T) (g : S →+* T) : (f.Pullback g) →+* R :=
+  (RingHom.fst R S).comp (RingHom.Pullback f g).subtype
+
+/-- The second projection from the pullback of `f` and `g` to `B`. -/
+abbrev pullbackSnd (f : R →+* T) (g : S →+* T) : (f.Pullback g) →+* S :=
+  (RingHom.snd R S).comp (f.Pullback g).subtype
+
+theorem isUnit_pullback_mk_of_isUnit (f : R →+* T) (g : S →+* T) (a : R × S)
+    (a_in : a ∈ f.Pullback g) (h : IsUnit a) : IsUnit (⟨a, a_in⟩ : f.Pullback g) := by
+  rcases a with ⟨u, v⟩
+  simp only [mem_eqLocus, coe_comp, coe_fst, Function.comp_apply, coe_snd] at a_in
+  obtain ⟨⟨s, t⟩, h⟩ := isUnit_iff_exists.mp h
+  simp only [Prod.mk_mul_mk, Prod.mk_eq_one] at h
+  simp only [isUnit_iff_exists, ← Subtype.val_inj, Subring.coe_mul, OneMemClass.coe_one,
+    Subtype.exists, mem_eqLocus, coe_comp, coe_fst, Function.comp_apply, coe_snd, exists_and_left,
+    exists_prop, Prod.exists, Prod.mk_mul_mk, Prod.mk_eq_one]
+  refine ⟨s, t, ⟨h.left, ?_, h.right⟩⟩
+  rw [← mul_one (f s), ← map_one g, ← h.left.right, map_mul, ← mul_assoc, ← a_in, ← map_mul,
+    h.right.left, map_one, one_mul]
+
+open Function in
+theorem surjective_pullbackFst_of_surjective (f : R →+* T) (g : S →+* T) (h : Surjective g) :
+    Surjective (f.pullbackFst g) := by
+  simp only [Surjective, coe_comp, coe_fst, Subring.coe_subtype, Function.comp_apply,
+    Subtype.exists, mem_eqLocus, coe_snd, exists_prop, Prod.exists, exists_and_right,
+    exists_eq_right]
+  intro r; simpa [eq_comm] using h (f r)
+
+open Function in
+theorem surjective_pullbackSnd_of_surjective (f : R →+* T) (g : S →+* T) (h : Surjective f) :
+    Surjective (f.pullbackSnd g) := by
+  simp only [Surjective, coe_comp, coe_snd, Subring.coe_subtype, Function.comp_apply,
+    Subtype.exists, mem_eqLocus, coe_fst, exists_prop, Prod.exists, exists_eq_right]
+  intro s; simpa [eq_comm] using h (g s)
+
+instance isLocalHom_pullbackFst {F G : Type*} [FunLike F R T] [RingHomClass F R T] [FunLike G S T]
+    [RingHomClass G S T] (f : F) (g : G) [IsLocalHom g] :
+      IsLocalHom ((f : R →+* T).pullbackFst (g : S →+* T)) where
+  map_nonunit := by
+    simp only [coe_comp, coe_fst, Subring.coe_subtype, Function.comp_apply, Subtype.forall,
+      mem_eqLocus, coe_coe, coe_snd, Prod.forall]
+    intro a b h ha; apply isUnit_pullback_mk_of_isUnit
+    refine Prod.isUnit_iff.mpr ⟨ha, ?_⟩
+    suffices IsUnit (g b) from IsLocalHom.map_nonunit b this
+    rw [← h]; exact IsUnit.map f ha
+
+instance isLocalHom_pullbackSnd {F G : Type*} [FunLike F R T] [RingHomClass F R T] [FunLike G S T]
+    [RingHomClass G S T] (f : F) (g : G) [IsLocalHom f] :
+      IsLocalHom ((f : R →+* T).pullbackSnd (g : S →+* T)) where
+  map_nonunit := by
+    simp only [coe_comp, coe_fst, Subring.coe_subtype, Function.comp_apply, Subtype.forall,
+      mem_eqLocus, coe_coe, coe_snd, Prod.forall]
+    intro a b h hb; apply isUnit_pullback_mk_of_isUnit
+    refine Prod.isUnit_iff.mpr ⟨?_, hb⟩
+    suffices IsUnit (f a) from IsLocalHom.map_nonunit a this
+    rw [h]; exact IsUnit.map g hb
+
+end Pullback
+
 theorem closure_preimage_le (f : R →+* S) (s : Set S) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
   closure_le.2 fun _ hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
 
