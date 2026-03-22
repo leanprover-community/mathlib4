@@ -5,20 +5,21 @@ Authors: Gaëtan Serré
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Comon_
+public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
 public import Mathlib.Probability.Kernel.Composition.KernelLemmas
 public import Mathlib.Probability.Kernel.Category.Tactics
 
 /-!
 # SFinKer
 
-The category of measurable spaces with s-finite kernels is a symmetric monoidal category.
+The category of measurable spaces with s-finite kernels is a copy-discard category.
 
 ## Main declarations
 
 * `LargeCategory SFinKer`: the categorical structure on `SFinKer`.
 * `MonoidalCategory SFinKer`: `SFinKer` is a monoidal category using the Cartesian product.
 * `SymmetricCategory SFinKer`: `SFinKer` is a symmetric monoidal category.
+* `CopyDiscardCategory SFinKer`: `SFinKer` is a copy-discard category.
 
 ## References
 * [A synthetic approach to
@@ -175,29 +176,7 @@ instance : MonoidalCategory SFinKer.{u} where
       Kernel.deterministic_comp_deterministic]
     congr
 
-instance {X : SFinKer} : ComonObj X where
-  counit := ⟨Kernel.discard X, by kernel_instance⟩
-  comul := ⟨Kernel.copy X, by kernel_instance⟩
-  counit_comul := by
-    kernel_cat
-    simp only [Kernel.discard, Kernel.copy, Kernel.id]
-    rw [Kernel.deterministic_parallelComp_deterministic,
-      Kernel.deterministic_comp_deterministic, Kernel.deterministic_map measurable_id (by fun_prop)]
-    congr 1
-  comul_counit := by
-    kernel_cat
-    simp only [Kernel.discard, Kernel.copy, Kernel.id]
-    rw [Kernel.deterministic_parallelComp_deterministic,
-      Kernel.deterministic_comp_deterministic, Kernel.deterministic_map measurable_id (by fun_prop)]
-    congr 1
-  comul_assoc := by
-    kernel_cat
-    rw [Kernel.id_map (by fun_prop)]
-    simp [Kernel.copy, Kernel.id, Kernel.deterministic_comp_deterministic,
-      Kernel.deterministic_parallelComp_deterministic]
-    congr 1
-
-instance : BraidedCategory SFinKer.{u} where
+instance : SymmetricCategory SFinKer.{u} where
   braiding X Y := by
     refine ⟨⟨Kernel.swap _ _, by kernel_instance⟩, ⟨Kernel.swap _ _, by kernel_instance⟩,
       ?_, ?_⟩
@@ -227,15 +206,54 @@ instance : BraidedCategory SFinKer.{u} where
       repeat rw [Kernel.deterministic_comp_deterministic]
       congr 1
     all_goals fun_prop
-
-instance : SymmetricCategory SFinKer.{u} where
   symmetry X Y := by
     kernel_cat
     exact Kernel.swap_swap
 
-instance (X : SFinKer) : IsCommComonObj X where
-  comul_comm := by
+instance {X : SFinKer} : ComonObj X where
+  counit := ⟨Kernel.discard X, by kernel_instance⟩
+  comul := ⟨Kernel.copy X, by kernel_instance⟩
+  counit_comul := by
     kernel_cat
-    exact Kernel.swap_copy
+    simp only [Kernel.discard, Kernel.copy, Kernel.id]
+    rw [Kernel.deterministic_parallelComp_deterministic,
+      Kernel.deterministic_comp_deterministic, Kernel.deterministic_map measurable_id (by fun_prop)]
+    congr 1
+  comul_counit := by
+    kernel_cat
+    simp only [Kernel.discard, Kernel.copy, Kernel.id]
+    rw [Kernel.deterministic_parallelComp_deterministic,
+      Kernel.deterministic_comp_deterministic, Kernel.deterministic_map measurable_id (by fun_prop)]
+    congr 1
+  comul_assoc := by
+    kernel_cat
+    rw [Kernel.id_map (by fun_prop)]
+    simp [Kernel.copy, Kernel.id, Kernel.deterministic_comp_deterministic,
+      Kernel.deterministic_parallelComp_deterministic]
+    congr 1
+
+instance : CopyDiscardCategory SFinKer.{u} where
+  isCommComonObj X := ⟨by kernel_cat; exact Kernel.swap_copy⟩
+  copy_tensor X Y := by
+    dsimp only [MonoidalCategory.tensorμ, ComonObj.comul, BraidedCategory.braiding]
+    kernel_cat
+    repeat rw [Kernel.id_map (by fun_prop)]
+    simp only [Kernel.copy, Kernel.id, Kernel.swap]
+    repeat rw [Kernel.deterministic_parallelComp_deterministic]
+    repeat rw [Kernel.deterministic_comp_deterministic]
+    congr 1
+  discard_tensor X Y := by
+    kernel_cat
+    simp only [ComonObj.counit, Kernel.comp_id_parallelComp]
+    rw [Kernel.id_map (by fun_prop), Kernel.deterministic_comp_eq_map]
+    ext x s hs
+    rw [Kernel.map_apply _ (by fun_prop), Kernel.parallelComp_apply]
+    simp [Kernel.discard_apply]
+  copy_unit := by
+    dsimp only [ComonObj.comul]
+    kernel_cat
+    ext x s hs
+    rw [Kernel.id_map (by fun_prop)]
+    simp [Kernel.copy_apply, Kernel.deterministic_apply]
 
 end
