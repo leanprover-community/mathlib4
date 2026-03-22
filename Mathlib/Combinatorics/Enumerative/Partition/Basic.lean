@@ -157,7 +157,8 @@ theorem toFinsuppAntidiag_mem_finsuppAntidiag {n : ℕ} (p : Partition n) :
   convert ← p.parts_sum
   rw [Finset.sum_multiset_count]
   apply Finset.sum_subset hp
-  suffices ∀ (x : ℕ), 1 ≤ x → x ≤ n → x ∉ p.parts → x ∉ p.parts ∨ x = 0 by simp
+  suffices ∀ (x : ℕ), 1 ≤ x → x ≤ n → x ∉ p.parts → x ∉ p.parts ∨ x = 0 by
+    simp [imp_or_left_iff_true]
   grind
 
 /-- The partition of exactly one part. -/
