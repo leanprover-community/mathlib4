@@ -493,7 +493,7 @@ lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
       rw [coe_corootSpace_eq_span_singleton, Submodule.span_singleton_le_iff_mem, LinearMap.mem_ker]
       exact rootSet_apply_coroot_eq_zero I hμ hγ
   obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp
-    (show (⟨x, hxH⟩ : H) ∈ span_I_roots ⊔ span_compl_roots from h_top ▸ trivial)
+    (h_top ▸ trivial : (⟨x, hxH⟩ : H) ∈ span_I_roots ⊔ span_compl_roots)
   have haI : (a : L) ∈ I :=
     (iSup₂_le (fun _ hα ↦ I.corootSubmodule_le hα) :
       ⨆ α ∈ I.rootSet, corootSubmodule α.1 ≤ _)
