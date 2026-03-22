@@ -139,7 +139,6 @@ lemma Module.exists_surjective_quotient_of_finite :
 
 open TensorProduct
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Nontrivial (M ⊗[R] M) := by
   obtain ⟨I, ϕ, hI, hϕ⟩ := Module.exists_surjective_quotient_of_finite R M
   let ψ : M ⊗[R] M →ₗ[R] R ⧸ I :=
@@ -151,7 +150,6 @@ instance : Nontrivial (M ⊗[R] M) := by
 
 end NontrivialTensorProduct
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Subalgebra.finite_sup {K L : Type*} [CommSemiring K] [CommSemiring L] [Algebra K L]
     (E1 E2 : Subalgebra K L) [Module.Finite K E1] [Module.Finite K E2] :
     Module.Finite K ↥(E1 ⊔ E2) := by
