@@ -442,11 +442,11 @@ lemma weight_apply_eq_zero_of_not_mem_rootSet (I : LieIdeal K L)
     {h : H} (hI : (h : L) ∈ I) {β : H.root} (hβ : β ∉ I.rootSet) :
     (β : Weight K H L) h = 0 := by
   simp only [LieIdeal.mem_rootSet] at hβ
-  by_contra hne; apply hβ; intro y hy
-  have hsmul : (β : Weight K H L) h • y ∈ I.toSubmodule := by
+  by_contra h_ne; apply hβ; intro y hy
+  have h_smul : (β : Weight K H L) h • y ∈ I.toSubmodule := by
     rw [← lie_eq_smul_of_mem_rootSpace hy h]
     exact lie_mem_left K L I h y hI
-  rwa [I.toSubmodule.smul_mem_iff (by exact_mod_cast hne)] at hsmul
+  rwa [I.toSubmodule.smul_mem_iff (by exact_mod_cast h_ne)] at h_smul
 
 /-- For `α ∈ I.rootSet` and `β ∉ I.rootSet`, the weight `α` vanishes on `coroot β`.
 
@@ -501,10 +501,10 @@ lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
     ((iSup₂_le (fun _ hα ↦ le_inf (I.corootSubmodule_le hα) LieSubmodule.map_incl_le))
       (hS_I_sub a ha)).1
   have hbI : (b : L) ∈ I := by
-    have : (b : L) = x - (a : L) := by
-      have h1 : (a : L) + (b : L) = x := congr_arg Subtype.val hab
-      rw [← h1, add_sub_cancel_left]
-    rw [this]; exact I.toSubmodule.sub_mem hxI haI
+    have h_eq_sub : (b : L) = x - (a : L) := by
+      have h_add : (a : L) + (b : L) = x := congr_arg Subtype.val hab
+      rw [← h_add, add_sub_cancel_left]
+    rw [h_eq_sub]; exact I.toSubmodule.sub_mem hxI haI
   have hb_zero : b = 0 := by
     suffices b ∈ ⨅ α : Weight K H L, α.ker by simpa [iInf_ker_weight_eq_bot] using this
     refine (Submodule.mem_iInf _).mpr fun μ ↦ ?_
@@ -516,8 +516,8 @@ lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
       · exact weight_apply_eq_zero_of_not_mem_rootSet I hbI hμI
     · simp only [Weight.IsNonZero, not_not] at hμ
       exact LinearMap.mem_ker.mpr (congr_fun hμ b)
-  have hha : h = a := by rw [← hab, hb_zero, add_zero]
-  subst hha
+  have h_eq : h = a := by rw [← hab, hb_zero, add_zero]
+  subst h_eq
   exact hS_I_sub h ha
 
 instance [IsSimple K L] : (rootSystem H).IsIrreducible := by
