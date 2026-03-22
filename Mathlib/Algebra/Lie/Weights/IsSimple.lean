@@ -465,17 +465,12 @@ lemma rootSet_apply_coroot_eq_zero (I : LieIdeal K L)
   exact traceForm_eq_zero_of_mem_ker_of_mem_span_coroot h_ker
     (Submodule.mem_span_singleton_self _)
 
-omit [CharZero K] [IsKilling K L] [IsTriangularizable K H L] in
-/-- The coroot span of a Lie ideal is contained in the Cartan part of the ideal. -/
-lemma iSup_corootSubmodule_le_restr_inf (I : LieIdeal K L) :
-    ⨆ α ∈ I.rootSet, corootSubmodule α.1 ≤ I.restr H ⊓ H.toLieSubmodule :=
-  iSup₂_le fun _ hα ↦ le_inf (I.corootSubmodule_le hα) LieSubmodule.map_incl_le
-
 /-- The Cartan part `I.restr H ⊓ H.toLieSubmodule` of a Lie ideal equals the span of the
 coroots for roots in `I.rootSet`. -/
 lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
     I.restr H ⊓ H.toLieSubmodule = ⨆ α ∈ I.rootSet, corootSubmodule α.1 := by
-  refine le_antisymm ?_ (iSup_corootSubmodule_le_restr_inf I)
+  refine le_antisymm ?_ (iSup₂_le fun _ hα ↦
+    le_inf (I.corootSubmodule_le hα) LieSubmodule.map_incl_le)
   intro x ⟨hxI, hxH⟩
   set h : H := ⟨x, hxH⟩
   set S_I : Submodule K H := ⨆ α ∈ I.rootSet, (K ∙ coroot (α.1 : Weight K H L))
@@ -503,7 +498,8 @@ lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
         (coe_coroot_mem_corootSubmodule α.1))
   obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp (h_top ▸ Submodule.mem_top (x := h))
   have haI : (a : L) ∈ I :=
-    ((iSup_corootSubmodule_le_restr_inf I) (hS_I_sub a ha)).1
+    ((iSup₂_le (fun _ hα ↦ le_inf (I.corootSubmodule_le hα) LieSubmodule.map_incl_le))
+      (hS_I_sub a ha)).1
   have hbI : (b : L) ∈ I := by
     have : (b : L) = x - (a : L) := by
       have h1 : (a : L) + (b : L) = x := congr_arg Subtype.val hab
