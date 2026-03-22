@@ -850,6 +850,19 @@ theorem eq_of_eqOn_set_dense {s : Set R} (hs : closure s = ⊤) {f g : R →+* S
     f = g :=
   eq_of_eqOn_set_top <| hs ▸ eqOn_set_closure h
 
+theorem isUnit_eqLocus_mk_of_isUnit (f g : R →+* S) (r : R) (r_in : r ∈ f.eqLocus g)
+    (h : IsUnit r) : IsUnit (⟨r, r_in⟩ : f.eqLocus g) := by
+  rw [mem_eqLocus] at r_in
+  obtain ⟨s, hs⟩ := isUnit_iff_exists.mp h
+  simp only [isUnit_iff_exists, ← Subtype.val_inj, Subring.coe_mul, OneMemClass.coe_one,
+    Subtype.exists, mem_eqLocus, exists_and_left, exists_prop]
+  refine ⟨s, hs.left, ?_, hs.right⟩
+  rw [← mul_one (f s), ← map_one g, ← hs.left, map_mul, ← mul_assoc, ← r_in, ← map_mul, hs.right,
+    map_one, one_mul]
+
+instance isLocalHom_eqLocus_subtype (f g : R →+* S) : IsLocalHom (f.eqLocus g).subtype where
+  map_nonunit := by simpa using RingHom.isUnit_eqLocus_mk_of_isUnit f g
+
 end eqLocus
 
 theorem closure_preimage_le (f : R →+* S) (s : Set S) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
