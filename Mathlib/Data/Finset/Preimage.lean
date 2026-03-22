@@ -103,8 +103,8 @@ theorem image_preimage [DecidableEq β] (f : α → β) (s : Finset β) [∀ x, 
     simp only [coe_image, coe_preimage, coe_filter, Set.image_preimage_eq_inter_range,
       ← Set.sep_mem_eq]; rfl
 
-theorem preimage_eq_image_invFunOn_of_bij {α β : Type*} [Nonempty α] [DecidableEq α] {f : α → β}
-    {g : β → α} {s : Finset β} (hf : Set.BijOn f (f ⁻¹' s) s) (hg : Set.RightInvOn g f s) :
+theorem preimage_eq_image_invFunOn_of_bij {α β : Type*} [DecidableEq α] {f : α → β} {g : β → α}
+    {s : Finset β} (hf : Set.BijOn f (f ⁻¹' s) s) (hg : Set.RightInvOn g f s) :
     s.preimage f hf.2.1 = s.image g := by
   ext x
   simp only [mem_preimage, mem_image]
