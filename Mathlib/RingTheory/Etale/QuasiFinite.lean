@@ -373,6 +373,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
   simp only [← IsScalarTower.algebraMap_eq, RingHom.comp_assoc, AlgHom.comp_algebraMap_of_tower,
     Algebra.ofId_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `S` be a finite type `R`-algebra, and `q` a prime lying over `p` such that `S` is quasi-finite
 at `q`.
