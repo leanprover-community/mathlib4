@@ -275,7 +275,7 @@ lemma sum_card_eq_sum_card_fiber_biUnion
         (t := s.biUnion B)
       unfold Finset.bipartiteAbove Finset.bipartiteBelow r at g
       have hB : ∀ j ∈ s, {b ∈ s.biUnion B | b ∈ B j} = B j := by grind
-      have hB' : ∀ b, ({a ∈ s | b ∈ B a} : Finset ι) = ({j | j ∈ s ∧ b ∈ B j} : Finset ι) := by 
+      have hB' : ∀ b, ({a ∈ s | b ∈ B a} : Finset ι) = ({j | j ∈ s ∧ b ∈ B j} : Finset ι) := by
         grind
       rw [Finset.sum_congr rfl (fun j hj => by rw [hB j hj])] at g
       simp [hB', g]
