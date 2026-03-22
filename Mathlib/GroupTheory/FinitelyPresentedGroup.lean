@@ -39,7 +39,7 @@ first taking the inverse isomorphism between the `FreeGroup (S)` and `FreeGroup 
 composing with the canonical inclusion map from `FreeGroup(S)` to `G` and then taking `iso`. -/
 lemma FreeGroup.lift_mulEquiv_image (iso : G ≃* H) (S : Set G) :
     FreeGroup.lift ((↑) : ↥(↑iso '' S) → H) =
-      iso.toMonoidHom.comp ((FreeGroup.lift ((↑) : S → G)).comp
+      (↑iso : G →* H).comp ((FreeGroup.lift ((↑) : S → G)).comp
         (FreeGroup.freeGroupCongr (iso.toEquiv.image S).symm)) := by
   ext ⟨_, s, hs, rfl⟩; simp [Equiv.image]
 
