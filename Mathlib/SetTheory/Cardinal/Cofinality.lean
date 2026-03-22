@@ -315,8 +315,10 @@ theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α
     exact fun t ht ↦ (cof_le (hs.trans ht)).trans_eq (mk_image_eq Subtype.val_injective)
 
 @[simp]
-theorem cof_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
+theorem cof_ord_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
   simpa using Order.cof_ord_cof o.ToType
+
+@[deprecated (since := "2026-03-21")] alias cof_cof := cof_ord_cof
 
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
@@ -645,7 +647,7 @@ theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsSuccLimit o := by
   · simp only [l, iff_true]
     refine le_of_not_gt fun h => ?_
     obtain ⟨n, e⟩ := Cardinal.lt_aleph0.1 h
-    have := cof_cof o
+    have := cof_ord_cof o
     rw [e, ord_nat] at this
     cases n
     · apply l.ne_bot
