@@ -31,11 +31,14 @@ finitely presented group, finitely generated normal closure
 
 variable {G H α β : Type*} [Group G] [Group H]
 
-/-- Lifting the subtype coercion from a `MulEquiv`-image set factors as
-`iso ∘ (lift val) ∘ freeGroupCongr`. -/
+/-- This is a lemma about the following commuting diagram:
+suppose that `G` and `H` are isomorphic via `iso`, and `S` is a set in `G`,
+then the canonical inclusion map from `FreeGroup(iso '' S)` to `H` is given by
+first taking the inverse isomorphism between the `FreeGroup (S)` and `FreeGroup (iso '' S)`, then
+composing with the canonical inclusion map from `FreeGroup(S)` to `G` and then taking `iso`. -/
 lemma FreeGroup.lift_subtype_val_mulEquiv_image (iso : G ≃* H) (S : Set G) :
-    FreeGroup.lift (Subtype.val : ↥(↑iso '' S) → H) =
-      iso.toMonoidHom.comp ((FreeGroup.lift (Subtype.val : ↥S → G)).comp
+    FreeGroup.lift ((↑) : ↥(↑iso '' S) → H) =
+      iso.toMonoidHom.comp ((FreeGroup.lift ((↑) : S → G)).comp
         (FreeGroup.freeGroupCongr (iso.toEquiv.image S).symm)) := by
   ext ⟨_, s, hs, rfl⟩; simp [Equiv.image]
 
