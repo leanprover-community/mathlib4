@@ -148,8 +148,8 @@ lemma edist_le_one_iff_adj_or_eq : G.edist u v ≤ 1 ↔ G.Adj u v ∨ u = v := 
 lemma edist_eq_two_iff {u v : V} :
     G.edist u v = 2 ↔ u ≠ v ∧ ¬ G.Adj u v ∧ (G.commonNeighbors u v).Nonempty := by
   refine ⟨fun h ↦ ⟨?_, ?_, ?_⟩, fun h ↦ le_antisymm ?_ ?_⟩
-  · simp [← G.edist_eq_zero_iff.not (b := u = v), h]
-  · simp [← edist_eq_one_iff_adj, h]
+  · simp +decide [← G.edist_eq_zero_iff.not (b := u = v), h]
+  · simp +decide [← edist_eq_one_iff_adj, h]
   · obtain ⟨w, hw⟩ := exists_walk_of_edist_eq_coe h
     use w.getVert 1
     suffices w.getVert 1 ∈ G.commonNeighbors (w.getVert 0) (w.getVert w.length) by simpa
@@ -166,7 +166,7 @@ lemma two_lt_edist_iff {u v : V} :
     2 < G.edist u v ↔ u ≠ v ∧ ¬ G.Adj u v ∧ (G.commonNeighbors u v) = ∅ := by
   refine ⟨fun h ↦ ?_, fun h ↦ lt_of_le_of_ne ?_ (Ne.symm ?_)⟩
   · have hn : u ≠ v := fun hc ↦ by simp [hc] at h
-    have : ¬ G.Adj u v := fun hc ↦ by simp [edist_eq_one_iff_adj.mpr hc] at h
+    have : ¬ G.Adj u v := fun hc ↦ by simp +decide [edist_eq_one_iff_adj.mpr hc] at h
     use hn, this
     by_contra! hc
     simp [edist_eq_two_iff.mpr ⟨hn, this, hc⟩] at h
