@@ -491,8 +491,8 @@ lemma restr_inf_toLieSubmodule_eq_iSup_corootSubmodule (I : LieIdeal K L) :
       simp_rw [span_compl_roots, LieSubmodule.iSup_toSubmodule]]
     exact iSup₂_le fun γ hγ ↦
       (coe_corootSpace_eq_span_singleton (K := K) (L := L) (H := H) _).symm ▸
-        Submodule.span_le.mpr (by simp [Set.singleton_subset_iff,
-          rootSet_apply_coroot_eq_zero I hμ hγ])
+        (Submodule.span_singleton_le_iff_mem (coroot (↑γ : Weight K H L)) _).mpr
+          (LinearMap.mem_ker.mpr (rootSet_apply_coroot_eq_zero I hμ hγ))
   obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp
     (show (⟨x, hxH⟩ : H) ∈ span_I_roots ⊔ span_compl_roots from h_top ▸ trivial)
   have hab_val : a + b = x := congr_arg Subtype.val hab
