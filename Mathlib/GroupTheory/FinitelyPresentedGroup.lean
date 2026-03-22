@@ -20,7 +20,8 @@ This file defines finitely presented groups.
 * `IsFinitelyPresented`: defines when a group is finitely presented.
 
 ## Main results
-* `IsNormalClosureFG.map`: `IsNormalClosureFG` is invariant under surjective homomorphism.
+* `IsNormalClosureFG.map`: being the normal closure of a finite set is invariant
+  under surjective homomorphism.
 * `IsFinitelyPresented.of_mulEquiv`: finitely presented groups are closed under isomorphism.
 
 ## Tags
@@ -42,13 +43,13 @@ lemma FreeGroup.lift_mulEquiv_image (iso : G ≃* H) (S : Set G) :
         (FreeGroup.freeGroupCongr (iso.toEquiv.image S).symm)) := by
   ext ⟨_, s, hs, rfl⟩; simp [Equiv.image]
 
-/-- Defining when a subgroup is given by the normal closure of finitely many elements. -/
+/-- Defines when a subgroup is the normal closure of a finite set. -/
 def IsNormalClosureFG (N : Subgroup G) : Prop :=
   ∃ S : Set G, S.Finite ∧ Subgroup.normalClosure S = N
 
 namespace IsNormalClosureFG
 
-/-- `IsNormalClosureFG` is invariant under surjective homomorphism. -/
+/-- Being the normal closure of a finite set is invariant under surjective homomorphism. -/
 theorem map (f : G →* H) (hf : Function.Surjective f) (N : Subgroup G) (hN : IsNormalClosureFG N) :
     IsNormalClosureFG (N.map f) := by
   obtain ⟨S, hSfinite, hSclosure⟩ := hN
