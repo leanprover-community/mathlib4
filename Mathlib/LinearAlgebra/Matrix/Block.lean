@@ -186,6 +186,18 @@ theorem BlockTriangular.mul [Fintype m] [NonUnitalNonAssocSemiring R]
   · simp_rw [hM hki, zero_mul]
   · simp_rw [hN (lt_of_lt_of_le hij hki), mul_zero]
 
+
+theorem BlockTriangular.pow [DecidableEq m] [Fintype m] [Semiring R]
+  (hM : BlockTriangular M b) (n : ℕ) :
+    BlockTriangular (M ^ n) b := by
+  induction n with
+  | zero => simp [blockTriangular_one]
+  | succ n ih =>
+    rw [pow_succ]
+    exact ih.mul hM
+
+
+
 end LinearOrder
 
 theorem upper_two_blockTriangular [Zero R] [Preorder α] (A : Matrix m m R) (B : Matrix m n R)
