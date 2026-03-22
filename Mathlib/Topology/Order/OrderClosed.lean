@@ -78,7 +78,7 @@ class ClosedIciTopology (α : Type*) [TopologicalSpace α] [Preorder α] : Prop 
   /-- For any `a`, the set `[a, +∞)` is closed. -/
   isClosed_Ici (a : α) : IsClosed (Ici a)
 
-attribute [to_dual existing] ClosedIicTopology ClosedIicTopology.isClosed_Iic
+attribute [to_dual existing] ClosedIicTopology
 
 /-- A topology on a set which is both a topological space and a preorder is _order-closed_ if the
 set of points `(x, y)` with `x ≤ y` is closed in the product space. We introduce this as a mixin.
