@@ -101,6 +101,10 @@ def principal (a : α) : DedekindCut α :=
 theorem principal_le_principal {a b : α} : principal a ≤ principal b ↔ a ≤ b := by
   simpa using ofObject_le_ofAttribute_iff (r := (· ≤ ·)) (a := a)
 
+@[simp]
+theorem principal_lt_principal {a b : α} : principal a < principal b ↔ a < b := by
+  simp [lt_iff_le_not_ge]
+
 /-- We can never have a computable decidable instance, for the same reason we can't on `Set α`. -/
 noncomputable instance : DecidableLE (DedekindCut α) :=
   Classical.decRel _
@@ -109,10 +113,6 @@ end Preorder
 
 section PartialOrder
 variable [PartialOrder α]
-
-@[simp]
-theorem principal_lt_principal {a b : α} : principal a < principal b ↔ a < b := by
-  simp [lt_iff_le_not_ge]
 
 @[simp]
 theorem principal_inj {a b : α} : principal a = principal b ↔ a = b := by
@@ -125,7 +125,7 @@ def principalEmbedding : α ↪o DedekindCut α where
   inj' _ _ := principal_inj.1
   map_rel_iff' := principal_le_principal
 
-@[simp] theorem principalEmbedding_coe : ⇑(@principalEmbedding α _) = principal := rfl
+@[simp] theorem coe_principalEmbedding : ⇑(@principalEmbedding α _) = principal := rfl
 
 end PartialOrder
 
@@ -133,13 +133,13 @@ section CompleteLattice
 variable [CompleteLattice α] [PartialOrder β]
 
 @[simp]
-theorem principal_sSup (A : DedekindCut α) : principal (sSup A.left) = A := by
+theorem principal_sSup_left (A : DedekindCut α) : principal (sSup A.left) = A := by
   apply ext'
   ext
   rw [right_principal, mem_Ici, sSup_le_iff, ← upperBounds_left, mem_upperBounds]
 
 @[simp]
-theorem principal_sInf (A : DedekindCut α) : principal (sInf A.right) = A := by
+theorem principal_sInf_right (A : DedekindCut α) : principal (sInf A.right) = A := by
   ext
   rw [left_principal, mem_Iic, le_sInf_iff, ← lowerBounds_right, mem_lowerBounds]
 
@@ -183,8 +183,8 @@ lattice is isomorphic to a concept lattice (its own Dedekind completion).
 See `Concept.instCompleteLattice` for the first half. -/
 @[simps! apply]
 def principalIso : α ≃o DedekindCut α where
-  invFun := factorEmbedding (OrderIso.refl _).toOrderEmbedding
-  left_inv := factorEmbedding_principal _
+  invFun := factorEmbedding (OrderIso.refl α)
+  left_inv x := factorEmbedding_principal _ x
   right_inv x := by simp [factorEmbedding]
   __ := principalEmbedding
 
