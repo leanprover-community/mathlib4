@@ -206,13 +206,11 @@ theorem BlockTriangular.exp {α : Type*} {M : Matrix m m 𝔸} {b : m → α} [L
     Matrix.linftyOpNormedRing
   letI : @NormedAlgebra ℚ (Matrix m m 𝔸) Rat.instNormedField Matrix.linftyOpSemiNormedRing :=
     Matrix.linftyOpNormedAlgebra
-
   obtain ⟨a, ha⟩ := NormedSpace.expSeries_summable' (𝕂 := ℚ) M
   have hzero : ∀ n : ℕ, (M ^ n) i j = 0 := fun n => (BlockTriangular.pow hM n) hji
   have h1 := (continuous_apply i).continuousAt.tendsto.comp ha
   have h2 := (continuous_apply j).continuousAt.tendsto.comp h1
   simp at h2
-
   rw [← ((congr_fun NormedSpace.exp_eq_tsum_rat M).trans ha.tsum_eq).symm]
   exact tendsto_nhds_unique  (h2.congr (fun s => by
     simp [Function.comp, Matrix.sum_apply, smul_apply, hzero]
