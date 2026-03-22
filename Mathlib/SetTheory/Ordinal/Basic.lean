@@ -174,10 +174,9 @@ theorem type_eq_zero_of_empty (r) [IsWellOrder α r] [IsEmpty α] : type r = 0 :
 
 @[simp]
 theorem type_eq_zero_iff_isEmpty [IsWellOrder α r] : type r = 0 ↔ IsEmpty α := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · let ⟨s⟩ := type_eq.1 h
-    exact s.toEquiv.isEmpty
-  · exact type_eq_zero_of_empty r
+  refine ⟨fun h ↦ ?_, fun _ ↦ type_eq_zero_of_empty r⟩
+  let ⟨s⟩ := type_eq.1 h
+  exact s.toEquiv.isEmpty
 
 theorem type_ne_zero_iff_nonempty [IsWellOrder α r] : type r ≠ 0 ↔ Nonempty α := by simp
 
