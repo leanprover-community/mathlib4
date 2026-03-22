@@ -112,7 +112,8 @@ attribute [to_additive existing] one_mul_assoc mul_one_assoc mul_assoc_assoc
 
 /-- Transfer `MonObj` along an isomorphism. -/
 -- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
-@[to_additive (attr := simps! -isSimp, implicit_reducible)]
+@[to_additive (attr := simps! -isSimp, implicit_reducible)
+/-- Transfer `AddMonObj` along an isomorphism. -/]
 def ofIso (e : M ≅ X) : MonObj X where
   one := η[M] ≫ e.hom
   mul := (e.inv ⊗ₘ e.inv) ≫ μ[M] ≫ e.hom
@@ -532,8 +533,11 @@ structure Hom (M N : Mon C) where
 
 attribute [to_additive existing (attr := instance)] Hom.isMonHom_hom
 
-/-- Construct a morphism `M ⟶ N` of `Mon C` from a map `f : M ⟶ N` and a `IsMonHom f` instance. -/
-@[to_additive]
+/-- Construct a morphism `M ⟶ N` of `Mon C` from a map `f : M ⟶ N` and
+compatibilities with the unit and the multiplication. -/
+@[to_additive
+/-- Construct a morphism `M ⟶ N` of `AddMon C` from a map `f : M ⟶ N` and
+compatibilities with the zero and the addition. -/]
 abbrev Hom.mk' {M N : Mon C} (f : M.X ⟶ N.X)
     (one_f : η ≫ f = η := by cat_disch)
     (mul_f : μ ≫ f = (f ⊗ₘ f) ≫ μ := by cat_disch) : Hom M N :=
@@ -541,7 +545,8 @@ abbrev Hom.mk' {M N : Mon C} (f : M.X ⟶ N.X)
   .mk f
 
 /-- The identity morphism on a monoid object. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+/-- The identity morphism on an additive monoid object. -/]
 def id (M : Mon C) : Hom M M := ⟨𝟙 M.X⟩
 
 @[to_additive]
@@ -549,7 +554,8 @@ instance homInhabited (M : Mon C) : Inhabited (Hom M M) :=
   ⟨id M⟩
 
 /-- Composition of morphisms of monoid objects. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+/-- Composition of morphisms of additive monoid objects. -/]
 def comp {M N O : Mon C} (f : Hom M N) (g : Hom N O) : Hom M O where
   hom := f.hom ≫ g.hom
 
@@ -584,7 +590,8 @@ section
 variable (C)
 
 /-- The forgetful functor from monoid objects to the ambient category. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+/-- The forgetful functor from additive monoid objects to the ambient category. -/]
 def forget : Mon C ⥤ C where
   obj A := A.X
   map f := f.hom
@@ -609,14 +616,19 @@ instance {M N : Mon C} {f : M ⟶ N} [IsIso f] : IsIso f.hom :=
 
 /-- Construct an isomorphism of monoid objects by giving a monoid isomorphism between the underlying
 objects. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+/-- Construct an isomorphism of additive monoid objects by giving a additive monoid
+isomorphism between the underlying objects. -/]
 def mkIso' {M N : C} [MonObj M] [MonObj N] (e : M ≅ N) [IsMonHom e.hom] : mk M ≅ mk N where
   hom := Hom.mk e.hom
   inv := Hom.mk e.inv
 
 /-- Construct an isomorphism of monoid objects by giving an isomorphism between the underlying
 objects and checking compatibility with unit and multiplication only in the forward direction. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+/-- Construct an isomorphism of additive monoid objects by giving an isomorphism between
+the underlying objects and checking compatibility with zero and addition only in
+the forward direction. -/]
 abbrev mkIso {M N : Mon C} (e : M.X ≅ N.X) (one_f : η[M.X] ≫ e.hom = η[N.X] := by cat_disch)
     (mul_f : μ[M.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[N.X] := by cat_disch) : M ≅ N :=
   have : IsMonHom e.hom := ⟨one_f, mul_f⟩
