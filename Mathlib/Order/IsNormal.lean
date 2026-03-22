@@ -189,7 +189,7 @@ theorem of_succ_lt
     exact (IH _ hab' (lt_succ_of_not_isMax hab.not_isMax)).trans_le
       ((hl hb).1 (mem_image_of_mem _ hab'))
 
-protected theorem ext_iff [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : IsNormal g) :
+theorem ext_iff [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : IsNormal g) :
     f = g ↔ f ⊥ = g ⊥ ∧ ∀ a, f a = g a → f (succ a) = g (succ a) := by
   constructor
   · simp_all
