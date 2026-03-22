@@ -73,12 +73,13 @@ theorem IsSRGWith.ediam_eq_two [Nontrivial V] (h : G.IsSRGWith n k ℓ μ) (ht :
   · rw [ediam_le_iff]
     intro u v
     by_contra! hc
-    obtain ⟨hn, ha, _⟩ := two_lt_edist_iff.mp hc
+    obtain ⟨hn, ha, he⟩ := two_lt_edist_iff.mp hc
     have h := h.of_not_adj hn ha
-    rw [Fintype.card_eq_zero] at h
+    simp only at h
+    simp_rw [he, Fintype.card_eq_zero] at h
     exact false_of_ne (h ▸ hm)
   · by_contra! hc
-    cases ENat.le_one_iff_eq_zero_or_eq_one.mp hc with
+    cases ENat.le_one_iff_eq_zero_or_eq_one.mp (Order.le_of_lt_succ hc) with
     | inl hc =>
       rw [ediam_eq_zero_iff_subsingleton] at hc
       exact false_of_nontrivial_of_subsingleton V
