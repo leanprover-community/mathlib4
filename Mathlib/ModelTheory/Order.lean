@@ -205,6 +205,7 @@ variable (L M)
 
 /-- Any linearly-ordered type is naturally a structure in the language `Language.order`.
 This is not an instance, because sometimes the `Language.order.Structure` is defined first. -/
+@[implicit_reducible]
 def orderStructure [LE M] : Language.order.Structure M where
   RelMap | .le => (fun x => x 0 ≤ x 1)
 
@@ -352,6 +353,7 @@ section structure_to_order
 variable (L) [IsOrdered L] (M) [L.Structure M]
 
 /-- Any structure in an ordered language can be ordered correspondingly. -/
+@[implicit_reducible]
 def leOfStructure : LE M where
   le a b := Structure.RelMap (leSymb : L.Relations 2) ![a, b]
 
@@ -365,13 +367,14 @@ instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
 /-- The order structure on an ordered language is decidable. -/
 -- This should not be a global instance,
 -- because it will match with any `LE` typeclass search
-@[local instance]
+@[instance_reducible, local instance]
 def decidableLEOfStructure
     [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     letI := L.leOfStructure M
     DecidableLE M := h
 
 /-- Any model of a theory of preorders is a preorder. -/
+@[implicit_reducible]
 def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
   __ := L.leOfStructure M
   le_refl := Relations.realize_reflexive.1 ((Theory.model_iff _).1 h _
@@ -380,12 +383,14 @@ def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
     (by simp only [preorderTheory, Set.mem_insert_iff, Set.mem_singleton_iff, or_true]))
 
 /-- Any model of a theory of partial orders is a partial order. -/
+@[implicit_reducible]
 def partialOrderOfModels [h : M ⊨ L.partialOrderTheory] : PartialOrder M where
   __ := L.preorderOfModels M
   le_antisymm := (Relations.realize_antisymmetric.mp <|
     Theory.model_iff _ |>.mp h _ <| by simp [partialOrderTheory]).antisymm
 
 /-- Any model of a theory of linear orders is a linear order. -/
+@[implicit_reducible]
 def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
     [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     LinearOrder M where
@@ -489,6 +494,7 @@ lemma dlo_isExtensionPair
   refine congr_fun hg.symm ⟨x, (?_ : x ∈ hS.toFinset)⟩
   simp only [Set.Finite.mem_toFinset, SetLike.mem_coe, xS]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.dlo] [Nonempty M] :
     Infinite M := by
   letI := orderStructure ℚ
@@ -515,6 +521,7 @@ theorem isFraisseLimit_of_countable_nonempty_dlo (M : Type w)
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} M :=
   ⟨(isUltrahomogeneous_iff_IsExtensionPair cg_of_countable).2 (dlo_isExtensionPair M M), dlo_age M⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The class of finite models of the theory of linear orders is Fraïssé. -/
 theorem isFraisse_finite_linear_order :
     IsFraisse {M : CategoryTheory.Bundled.{0} Language.order.Structure |
@@ -531,6 +538,7 @@ theorem aleph0_categorical_dlo : (ℵ₀).Categorical Language.order.dlo := fun 
   exact (isFraisseLimit_of_countable_nonempty_dlo M₁).nonempty_equiv
     (isFraisseLimit_of_countable_nonempty_dlo M₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The theory of dense linear orders is `ℵ₀`-complete. -/
 theorem dlo_isComplete : Language.order.dlo.IsComplete :=
   aleph0_categorical_dlo.{0}.isComplete ℵ₀ _ le_rfl (by simp [one_le_aleph0])
@@ -549,6 +557,7 @@ namespace Order
 
 open FirstOrder FirstOrder.Language
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A model-theoretic adaptation of the proof of `Order.iso_of_countable_dense`: two countable,
   dense, nonempty linear orders without endpoints are order isomorphic. -/
 example (α β : Type w') [LinearOrder α] [LinearOrder β]

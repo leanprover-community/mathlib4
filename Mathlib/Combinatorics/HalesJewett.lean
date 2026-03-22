@@ -51,10 +51,10 @@ allows us to work directly with `α`, `Option α`, `(ι → α) → κ`, and `ι
 ## TODO
 
 - Prove a finitary version of Van der Waerden's theorem (either by compactness or by modifying the
-current proof).
+  current proof).
 
 - One could reformulate the proof of Hales-Jewett to give explicit upper bounds on the number of
-coordinates needed.
+  coordinates needed.
 
 ## Tags
 

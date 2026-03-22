@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Monotone.Basic
-public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Galois connections, insertions and coinsertions
@@ -78,6 +77,9 @@ theorem le_u_l (a) : a ≤ u (l a) :=
 
 @[to_dual]
 theorem monotone_u : Monotone u := fun a _ H => gc.le_u ((gc.l_u_le a).trans H)
+
+@[to_dual]
+theorem monotone_l_comp_u : Monotone (l ∘ u) := gc.monotone_l.comp gc.monotone_u
 
 /-- If `(l, u)` is a Galois connection, then the relation `x ≤ u (l y)` is a transitive relation.
 If `l` is a closure operator (`Submodule.span`, `Subgroup.closure`, ...) and `u` is the coercion to
@@ -225,6 +227,7 @@ def GaloisConnection.toGaloisInsertion {α β : Type*} [Preorder α] [Preorder �
     choice_eq := fun _ _ => rfl }
 
 /-- Lift the bottom along a Galois connection -/
+@[implicit_reducible]
 def GaloisConnection.liftOrderBot {α β : Type*} [Preorder α] [OrderBot α] [PartialOrder β]
     {l : α → β} {u : β → α} (gc : GaloisConnection l u) :
     OrderBot β where
@@ -312,6 +315,7 @@ def GaloisConnection.toGaloisCoinsertion {α β : Type*} [Preorder α] [Preorder
     choice_eq := fun _ _ => rfl }
 
 /-- Lift the top along a Galois connection -/
+@[implicit_reducible]
 def GaloisConnection.liftOrderTop {α β : Type*} [PartialOrder α] [Preorder β] [OrderTop β]
     {l : α → β} {u : β → α} (gc : GaloisConnection l u) :
     OrderTop α where

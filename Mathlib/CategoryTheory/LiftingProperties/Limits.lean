@@ -60,6 +60,7 @@ instance [HasPullback g t] {T₁ T₂ : C} (p : T₁ ⟶ T₂) [HasLiftingProper
     HasLiftingProperty p (pullback.fst g t) :=
   (IsPullback.of_hasPullback g t).flip.hasLiftingProperty p
 
+set_option backward.isDefEq.respectTransparency false in
 instance {J : Type*} {A B : J → C} [HasProduct A] [HasProduct B]
     (f : (j : J) → A j ⟶ B j) {X Y : C} (p : X ⟶ Y)
     [∀ j, HasLiftingProperty p (f j)] :
@@ -70,6 +71,7 @@ instance {J : Type*} {A B : J → C} [HasProduct A] [HasProduct B]
       ⟨by rw [← Category.assoc, ← sq.w]; simp⟩
     exact ⟨⟨{ l := Pi.lift (fun j ↦ (sq' j).lift) }⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance {J : Type*} {A B : J → C} [HasCoproduct A] [HasCoproduct B]
     (f : (j : J) → A j ⟶ B j) {X Y : C} (p : X ⟶ Y)
     [∀ j, HasLiftingProperty (f j) p] :

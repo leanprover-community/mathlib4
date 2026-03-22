@@ -118,12 +118,14 @@ def flip : F.flip.PushoutObjObj f₂ f₁ where
   inr := sq.inl
   isPushout := sq.isPushout.flip
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ι_flip : sq.flip.ι = sq.ι := by
   apply sq.flip.isPushout.hom_ext
   · rw [inl_ι, flip_inl, inr_ι, flip_obj_map]
   · rw [inr_ι, flip_inr, inl_ι, flip_map_app]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ofHasPushout_ι [HasPushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂)] :
     (ofHasPushout F f₁ f₂).ι =
       pushout.desc ((F.obj Y₁).map f₂) ((F.map f₁).app Y₂) (by simp) := by
@@ -135,6 +137,7 @@ variable {f₁ f₁' : Arrow C₁} {f₂ : Arrow C₂}
   (sq₁₂ : F.PushoutObjObj f₁.hom f₂.hom)
   (sq₁₂' : F.PushoutObjObj f₁'.hom f₂.hom)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁'` and
   `f₂ : Arrow C₂`, and a morphism `f₁ ⟶ f₁'`, this defines a morphism between the induced
   pushout maps. -/
@@ -160,6 +163,7 @@ lemma mapArrowLeft_comp {f₁'' : Arrow C₁} (sq₁₂'' : F.PushoutObjObj f₁
     mapArrowLeft sq₁₂ sq₁₂' sq ≫ mapArrowLeft sq₁₂' sq₁₂'' sq' =
       mapArrowLeft sq₁₂ sq₁₂'' (sq ≫ sq') := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁'` and
   `f₂ : Arrow C₂`, and an isomorphism `f₁ ≅ f₁'`, this defines an isomorphism of the induced
   pushout maps. -/
@@ -173,6 +177,7 @@ variable {f₁ : Arrow C₁} {f₂ f₂' : Arrow C₂}
     (sq₁₂ : F.PushoutObjObj f₁.hom f₂.hom)
     (sq₁₂' : F.PushoutObjObj f₁.hom f₂'.hom)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁` and
   `f₂' : Arrow C₂`, and a morphism `f₂ ⟶ f₂'`, this defines a morphism between the induced
   pushout maps. -/
@@ -199,6 +204,7 @@ lemma mapArrowRight_comp {f₂'' : Arrow C₂} (sq₁₂'' : F.PushoutObjObj f�
     mapArrowRight sq₁₂ sq₁₂' sq ≫ mapArrowRight sq₁₂' sq₁₂'' sq' =
       mapArrowRight sq₁₂ sq₁₂'' (sq ≫ sq') := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁` and
   `f₂' : Arrow C₂`, and an isomorphism `f₂ ≅ f₂'`, this defines an isomorphism of the induced
   pushout maps. -/
@@ -288,6 +294,7 @@ lemma hom_ext {X₂ : C₂} {f g : X₂ ⟶ sq.pt} (h₁ : f ≫ sq.fst = g ≫ 
     (h₂ : f ≫ sq.snd = g ≫ sq.snd) : f = g :=
   sq.isPullback.hom_ext h₁ h₂
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ofHasPullback_π
     [HasPullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)] :
     (ofHasPullback G f₁ f₃).π =
@@ -300,6 +307,7 @@ variable {f₁ f₁' : Arrow C₁} {f₃ : Arrow C₃}
   (sq₁₃ : G.PullbackObjObj f₁.hom f₃.hom)
   (sq₁₃' : G.PullbackObjObj f₁'.hom f₃.hom)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁'` and
   `f₃ : Arrow C₃`, and a morphism `f₁' ⟶ f₁`, this defines a morphism between the induced
   pullback maps. -/
@@ -326,6 +334,7 @@ lemma mapArrowLeft_comp {f₁'' : Arrow C₁} (sq₁₃'' : G.PullbackObjObj f�
     mapArrowLeft sq₁₃ sq₁₃' sq ≫ mapArrowLeft sq₁₃' sq₁₃'' sq' =
       mapArrowLeft sq₁₃ sq₁₃'' (sq' ≫ sq) := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁'` and
   `f₃ : Arrow C₃`, and an isomorphism `f₁ ≅ f₁'`, this defines an isomorphism of the induced
   pullback maps. -/
@@ -339,6 +348,7 @@ variable {f₁ : Arrow C₁} {f₃ f₃' : Arrow C₃}
   (sq₁₃ : G.PullbackObjObj f₁.hom f₃.hom)
   (sq₁₃' : G.PullbackObjObj f₁.hom f₃'.hom)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁` and
   `f₃' : Arrow C₃`, and a morphism `f₃ ⟶ f₃'`, this defines a morphism between the induced
   pullback maps. -/
@@ -364,6 +374,7 @@ lemma mapArrowRight_comp {f₃'' : Arrow C₃} (sq₁₃'' : G.PullbackObjObj f�
     mapArrowRight sq₁₃ sq₁₃' sq ≫ mapArrowRight sq₁₃' sq₁₃'' sq' =
       mapArrowRight sq₁₃ sq₁₃'' (sq ≫ sq') := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁` and
   `f₃' : Arrow C₃`, and an isomorphism `f₃ ≅ f₃'`, this defines an isomorphism of the induced
   pullback maps. -/
@@ -415,6 +426,7 @@ attribute [local simp] ofHasPushout_inl ofHasPushout_inr ι
 
 namespace LeibnizAdjunction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a parametrized adjunction `F ⊣₂ G` and an arrow `X₁ : Arrow C₁`, this is the induced
   adjunction `F.leibnizPushout.obj X₁ ⊣ G.leibnizPullback.obj (op X₁)`. -/
 @[simps]
@@ -428,11 +440,11 @@ def adj (adj₂ : F ⊣₂ G) (X₁ : Arrow C₁) [HasPullbacks C₂] [HasPushou
       w := by
         apply pullback.hom_ext
         · simp [← homEquiv_naturality_one, ← homEquiv_naturality_two, pushout.condition]
-        · simp [← homEquiv_naturality_two, ← homEquiv_naturality_three]}
+        · simp [← homEquiv_naturality_two, ← homEquiv_naturality_three] }
     naturality _ _ _ := by
       ext
       · simp [← homEquiv_naturality_two, ← homEquiv_naturality_three]
-      · apply pullback.hom_ext <;> simp [← homEquiv_naturality_two, ← homEquiv_naturality_three]}
+      · apply pullback.hom_ext <;> simp [← homEquiv_naturality_two, ← homEquiv_naturality_three] }
   counit := {
     app X₃ := {
       left := pushout.desc (adj₂.homEquiv.symm (𝟙 _)) (adj₂.homEquiv.symm (pullback.fst ..))
@@ -442,12 +454,12 @@ def adj (adj₂ : F ⊣₂ G) (X₁ : Arrow C₁) [HasPullbacks C₂] [HasPushou
         apply pushout.hom_ext
         · simp [← homEquiv_symm_naturality_two, ← homEquiv_symm_naturality_three]
         · simp [← homEquiv_symm_naturality_one, ← homEquiv_symm_naturality_three,
-            pullback.condition]}
+            pullback.condition] }
     naturality _ _ _ := by
       ext
       · apply pushout.hom_ext <;> simp [← homEquiv_symm_naturality_two,
           ← homEquiv_symm_naturality_three]
-      · simp [← homEquiv_symm_naturality_two, ← homEquiv_symm_naturality_three]}
+      · simp [← homEquiv_symm_naturality_two, ← homEquiv_symm_naturality_three] }
   left_triangle_components _ := by
     ext
     · apply pushout.hom_ext <;> simp [← homEquiv_symm_naturality_two, ofHasPushout_pt]
@@ -459,6 +471,7 @@ def adj (adj₂ : F ⊣₂ G) (X₁ : Arrow C₁) [HasPullbacks C₂] [HasPushou
 
 end LeibnizAdjunction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Leibniz (parametrized) adjunction `F.leibnizPushout ⊣₂ G.leibnizPullback` induced by a
   parameterized adjunction `F ⊣₂ G`. -/
 @[simps]

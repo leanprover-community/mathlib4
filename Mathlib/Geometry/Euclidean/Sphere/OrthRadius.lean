@@ -37,7 +37,8 @@ variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [Norme
 /-- The affine subspace orthogonal to the radius vector of the sphere `s` at the point `p` (if
 `p` lies in `s`, this is the tangent space; generally, this is the polar of the inversion of `p`
 in `s`). -/
-def orthRadius (s : Sphere P) (p : P) : AffineSubspace ℝ P := .mk' p (ℝ ∙ (p -ᵥ s.center))ᗮ
+noncomputable def orthRadius (s : Sphere P) (p : P) : AffineSubspace ℝ P :=
+  .mk' p (ℝ ∙ (p -ᵥ s.center))ᗮ
 
 lemma self_mem_orthRadius (s : Sphere P) (p : P) : p ∈ s.orthRadius p :=
   self_mem_mk' _ _

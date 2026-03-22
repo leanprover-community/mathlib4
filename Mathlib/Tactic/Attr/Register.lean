@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Init
 public meta import Lean.LabelAttribute -- TODO: `registerLabelAttr` should be marked `meta`
+public import Lean.LabelAttribute
+public import Lean.Meta.Tactic.Simp
 
 /-!
 # Attributes used in `Mathlib`
@@ -114,7 +116,7 @@ objects "remembers" how it was proved: Every use of a (commutative) monoid objec
 unitor, associator or commutator, and proving a tautology simply amounts to undoing those moves as
 prescribed by the presence of unitors, associators and commutators in its expression.
 
-This simp set is opiniated about its normal form, which is why it cannot be used concurrently with
+This simp set is opinionated about its normal form, which is why it cannot be used concurrently with
 some of the simp lemmas in the standard simp set:
 * It eliminates all mentions of whiskers by rewriting them to tensored homs,
   which goes against `whiskerLeft_id` and `id_whiskerRight`:

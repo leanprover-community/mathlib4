@@ -74,6 +74,7 @@ lemma card_pos : 0 < Nat.card (R ⧸ Q.under R) :=
   have := H.finite_quotient
   Nat.card_pos
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_comap : Q ≤ Q.comap φ := by
   intro x hx
   simp_all only [Ideal.mem_comap, ← Ideal.Quotient.eq_zero_iff_mem (I := Q), H.mk_apply,
@@ -143,6 +144,7 @@ lemma localize_algebraMap [Q.IsPrime] (x : S) :
 
 open IsLocalRing nonZeroDivisors
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isArithFrobAt_localize [Q.IsPrime] : H.localize.IsArithFrobAt (maximalIdeal _) := by
   have h : Nat.card (R ⧸ (maximalIdeal _).comap (algebraMap R (Localization.AtPrime Q))) =
       Nat.card (R ⧸ Q.under R) := by
@@ -191,7 +193,7 @@ variable {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
 variable {Q : Ideal S} {σ σ' : G}
 
 lemma mul_inv_mem_inertia (H : IsArithFrobAt R σ Q) (H' : IsArithFrobAt R σ' Q) :
-    σ * σ'⁻¹ ∈ Q.toAddSubgroup.inertia G := by
+    σ * σ'⁻¹ ∈ Q.inertia G := by
   intro x
   simpa [mul_smul] using sub_mem (H (σ'⁻¹ • x)) (H' (σ'⁻¹ • x))
 
