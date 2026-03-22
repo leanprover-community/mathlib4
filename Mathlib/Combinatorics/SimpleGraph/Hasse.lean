@@ -141,7 +141,7 @@ def IsPath.pathGraphIsoToSubgraph (hw : w.IsPath) :
       pathGraphHomToSubgraph, RelHom.coeFn_mk, hw.support_nodup.getElem_inj_iff]
 
 variable {w} in
-/-- A path induces a homomorphism from a path graph to the graph -/
+/-- A path induces an injective homomorphism from a path graph to the graph -/
 def IsPath.pathGraphCopy (hw : w.IsPath) : Copy (pathGraph <| w.length + 1) G :=
   w.toSubgraph.coeCopy.comp hw.pathGraphIsoToSubgraph.toCopy
 
