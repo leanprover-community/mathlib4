@@ -144,10 +144,10 @@ instance {m : Type*} {n : Type*} {α : Type*} [Fintype m]
   Coe (LatinRectangle m n α) (Matrix m n α) where
   coe A := A.M
 
-/-- Get a specific column of the LatinRectangle. -/
+/-- Get a specific column of the `LatinRectangle`. -/
 abbrev col (A : LatinRectangle m n α) : n → m → α := Matrix.col A
 
-/-- Get a specific row of the LatinRectangle. -/
+/-- Get a specific row of the `LatinRectangle`. -/
 abbrev row (A : LatinRectangle m n α) : m → n → α := Matrix.row A
 
 /-- Alernative constructor for LatinSquares using the OncePerColumn property -/
