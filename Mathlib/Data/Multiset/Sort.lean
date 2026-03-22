@@ -28,7 +28,7 @@ section sort
 /-- `sort s` constructs a sorted list from the multiset `s`.
   (Uses merge sort algorithm.) -/
 def sort (s : Multiset α) (r : α → α → Prop := by exact fun a b => a ≤ b)
-    [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [IsTotal α r] : List α :=
+    [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [Std.Total r] : List α :=
   Quot.liftOn s (mergeSort · (r · ·)) fun _ _ h =>
     ((mergeSort_perm _ _).trans <| h.trans (mergeSort_perm _ _).symm).eq_of_pairwise' (r := r)
       (pairwise_mergeSort' _ _) (pairwise_mergeSort' _ _)
@@ -36,8 +36,8 @@ def sort (s : Multiset α) (r : α → α → Prop := by exact fun a b => a ≤ 
 section
 
 variable (a : α) (f : α → β) (l : List α) (s : Multiset α)
-variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [IsTotal α r]
-variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [Std.Antisymm r'] [IsTotal β r']
+variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [Std.Total r]
+variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [Std.Antisymm r'] [Std.Total r']
 
 @[simp]
 theorem coe_sort : sort l r = mergeSort l (r · ·) :=
@@ -79,7 +79,7 @@ end
 section
 
 variable {a : α} {s : Multiset α}
-variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [IsTotal α r]
+variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [Std.Total r]
 
 @[simp]
 theorem mem_sort : a ∈ sort s r ↔ a ∈ s := by rw [← mem_coe, sort_eq]

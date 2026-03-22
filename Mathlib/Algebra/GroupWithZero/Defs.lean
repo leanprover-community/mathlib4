@@ -139,25 +139,44 @@ end MonoidWithZero
 
 /-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left
 and right absorbing, and left/right multiplication by a non-zero element is injective. -/
-class CancelMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, IsCancelMulZero M₀
+@[deprecated "Use `[MonoidWithZero M₀] [IsCancelMulZero M₀].`" (since := "2026-01-11")]
+structure CancelMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, IsCancelMulZero M₀
 
 /-- A type `M` is a commutative “monoid with zero” if it is a commutative monoid with zero
 element, and `0` is left and right absorbing. -/
 class CommMonoidWithZero (M₀ : Type*) extends CommMonoid M₀, MonoidWithZero M₀
 
-section CommSemigroup
+section MulZeroClass
 
-variable [CommSemigroup M₀] [Zero M₀]
+variable (M₀) [MulZeroClass M₀]
+
+-- see Note [lower instance priority]
+instance (priority := 10) IsLeftCancelMulZero.to_noZeroDivisors [IsLeftCancelMulZero M₀] :
+    NoZeroDivisors M₀ where
+  eq_zero_or_eq_zero_of_mul_eq_zero {x _} h :=
+    or_iff_not_imp_left.mpr fun ne ↦ mul_left_cancel₀ ne ((mul_zero x).symm ▸ h)
+
+-- see Note [lower instance priority]
+instance (priority := 10) IsRightCancelMulZero.to_noZeroDivisors [IsRightCancelMulZero M₀] :
+    NoZeroDivisors M₀ where
+  eq_zero_or_eq_zero_of_mul_eq_zero {_ y} h :=
+    or_iff_not_imp_right.mpr fun ne ↦ mul_right_cancel₀ ne ((zero_mul y).symm ▸ h)
+
+end MulZeroClass
+
+section CommMagma
+
+variable [CommMagma M₀] [Zero M₀]
 
 lemma IsLeftCancelMulZero.to_isRightCancelMulZero [IsLeftCancelMulZero M₀] :
-    IsRightCancelMulZero M₀ :=
-{ mul_right_cancel_of_ne_zero :=
-    fun hb _ _ h => mul_left_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
+    IsRightCancelMulZero M₀ where
+  mul_right_cancel_of_ne_zero :=
+    fun hb _ _ h => mul_left_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _))
 
 lemma IsRightCancelMulZero.to_isLeftCancelMulZero [IsRightCancelMulZero M₀] :
-    IsLeftCancelMulZero M₀ :=
-{ mul_left_cancel_of_ne_zero :=
-    fun hb _ _ h => mul_right_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
+    IsLeftCancelMulZero M₀ where
+  mul_left_cancel_of_ne_zero :=
+    fun hb _ _ h => mul_right_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _))
 
 lemma IsLeftCancelMulZero.to_isCancelMulZero [IsLeftCancelMulZero M₀] :
     IsCancelMulZero M₀ :=
@@ -167,19 +186,14 @@ lemma IsRightCancelMulZero.to_isCancelMulZero [IsRightCancelMulZero M₀] :
     IsCancelMulZero M₀ :=
 { IsRightCancelMulZero.to_isLeftCancelMulZero with }
 
-end CommSemigroup
+end CommMagma
 
 /-- A type `M` is a `CancelCommMonoidWithZero` if it is a commutative monoid with zero element,
 `0` is left and right absorbing,
 and left/right multiplication by a non-zero element is injective. -/
-class CancelCommMonoidWithZero (M₀ : Type*) extends CommMonoidWithZero M₀, IsLeftCancelMulZero M₀
-
--- See note [lower cancel priority]
-attribute [instance 75] CancelCommMonoidWithZero.toCommMonoidWithZero
-
-instance (priority := 100) CancelCommMonoidWithZero.toCancelMonoidWithZero
-    [CancelCommMonoidWithZero M₀] : CancelMonoidWithZero M₀ :=
-{ IsLeftCancelMulZero.to_isCancelMulZero (M₀ := M₀) with }
+@[deprecated "Use `[CommMonoidWithZero M₀] [IsCancelMulZero M₀].`" (since := "2026-01-11")]
+structure CancelCommMonoidWithZero (M₀ : Type*)
+    extends CommMonoidWithZero M₀, IsLeftCancelMulZero M₀
 
 /-- Prop-valued mixin for a monoid with zero to be equipped with a cancelling division.
 
@@ -236,13 +250,10 @@ such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`. -/
 class CommGroupWithZero (G₀ : Type*) extends CommMonoidWithZero G₀, GroupWithZero G₀
 
-section
-variable [CancelMonoidWithZero M₀] {x : M₀}
-
-lemma eq_zero_or_one_of_sq_eq_self (hx : x ^ 2 = x) : x = 0 ∨ x = 1 :=
+lemma eq_zero_or_one_of_sq_eq_self [MonoidWithZero M₀] [IsRightCancelMulZero M₀]
+    {x : M₀} (hx : x ^ 2 = x) :
+    x = 0 ∨ x = 1 :=
   or_iff_not_imp_left.mpr (mul_left_injective₀ · <| by simpa [sq] using hx)
-
-end
 
 section GroupWithZero
 

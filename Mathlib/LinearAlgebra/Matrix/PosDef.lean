@@ -189,7 +189,7 @@ protected theorem diagonal [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R
     obtain ⟨i, hxi⟩ := by simpa [Finsupp.ext_iff] using hx
     refine ⟨i, ?_, Finsupp.sum_pos' ?_ ⟨i, ?_, ?_⟩⟩ <;> simp +contextual [diagonal,
       apply_ite, star_left_conjugate_nonneg (h _).le,
-      star_left_conjugate_pos (h i), isRegular_of_ne_zero hxi, Finsupp.mem_support_iff.mpr hxi]
+      star_left_conjugate_pos (h i), IsRegular.of_ne_zero hxi, Finsupp.mem_support_iff.mpr hxi]
 
 @[simp]
 theorem _root_.Matrix.posDef_diagonal_iff

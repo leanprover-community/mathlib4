@@ -58,6 +58,8 @@ instance {s : α} : SetLike (Partition s) α where
   coe := Partition.parts
   coe_injective' p p' h := by cases p; cases p'; simpa using h
 
+instance : PartialOrder (Partition s) := .ofSetLike (Partition s) α
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe {s : α} (P : Partition s) : Set α := P
 

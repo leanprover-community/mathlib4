@@ -91,7 +91,7 @@ theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x �
 @[fun_prop]
 theorem contDiffOn_log {n : WithTop ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
   intro x hx
-  simp only [mem_compl_iff, mem_singleton_iff] at hx
+  push _ ∈ _ at hx
   exact (contDiffAt_log.2 hx).contDiffWithinAt
 
 end Real

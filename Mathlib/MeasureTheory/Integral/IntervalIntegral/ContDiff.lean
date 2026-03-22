@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Deriv
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-! # Fundamental theorem of calculus for `C^1` functions
