@@ -622,7 +622,7 @@ section
 
 variable (Y : SpectralObject C EInt)
 
-/-- The `E₂` cohomologial spectral sequence indexed by `ℤ × ℤ` attached to
+/-- The `E₂` cohomological spectral sequence indexed by `ℤ × ℤ` attached to
 a first quadrant spectral object indexed by `EInt`. -/
 noncomputable abbrev E₂SpectralSequence : E₂CohomologicalSpectralSequence C :=
   Y.spectralSequence coreE₂Cohomological
