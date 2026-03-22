@@ -845,17 +845,10 @@ vector in `Fin 2 → F` that represents the projective point.
 
 namespace Point
 
-lemma x_eq_iff {P Q : W.Point} {xP yP xQ yQ : F} {hP' : W.Nonsingular xP yP}
-    {hQ' : W.Nonsingular xQ yQ} (hP : P = some xP yP hP') (hQ : Q = some xQ yQ hQ') :
-    xP = xQ ↔ P = Q ∨ P = -Q := by
-  refine ⟨fun H ↦ ?_, fun H ↦ by grind [neg_some]⟩
-  simp_rw [hP, hQ, neg_some, some.injEq, ← and_or_left]
-  exact ⟨H, Y_eq_of_X_eq hP'.1 hQ'.1 H⟩
-
 /-- This map sends an affine point `P` on `W` to a representative of its image on ℙ¹
 under the x-coordinate map. We take `![1, 0]` for the point at infinity and `![x, 1]`,
 where `x` is the x-coordinate of `P` for a finite point. -/
-noncomputable def xRep : W.Point → Fin 2 → F
+noncomputable def xRep : W'.Point → Fin 2 → R
   | 0 => ![1, 0]
   | some x _ _ => ![x, 1]
 
@@ -864,15 +857,24 @@ lemma xRep_zero : (0 : W.Point).xRep = ![1, 0] :=
   rfl
 
 @[simp]
-lemma xRep_some {x y : F} (h : W.Nonsingular x y) : (some x y h).xRep = ![x, 1] :=
+lemma xRep_some {x y : R} (h : W'.Nonsingular x y) : (some x y h).xRep = ![x, 1] :=
   rfl
 
-lemma xRep_ne_zero (P : W.Point) : P.xRep ≠ 0 := by
-  cases P <;> simp [← zero_def]
+lemma xRep_ne_zero [Nontrivial R] (P : W'.Point) : P.xRep ≠ 0 := by
+  cases P <;> simp [xRep]
 
 @[simp]
-lemma xRep_neg (P : W.Point) : (-P).xRep = P.xRep := by
+lemma xRep_neg (P : W'.Point) : (-P).xRep = P.xRep := by
   cases P <;> simp [← zero_def]
+
+-- The following lemmas need a field as base ring.
+
+lemma x_eq_iff {P Q : W.Point} {xP yP xQ yQ : F} {hP' : W.Nonsingular xP yP}
+    {hQ' : W.Nonsingular xQ yQ} (hP : P = some xP yP hP') (hQ : Q = some xQ yQ hQ') :
+    xP = xQ ↔ P = Q ∨ P = -Q := by
+  refine ⟨fun H ↦ ?_, fun H ↦ by grind [neg_some]⟩
+  simp_rw [hP, hQ, neg_some, some.injEq, ← and_or_left]
+  exact ⟨H, Y_eq_of_X_eq hP'.1 hQ'.1 H⟩
 
 lemma eq_or_eq_neg_of_xRep_eq_xRep {P Q : W.Point} (h : P.xRep = Q.xRep) :
     P = Q ∨ P = -Q := by
