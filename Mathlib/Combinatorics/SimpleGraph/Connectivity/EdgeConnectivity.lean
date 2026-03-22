@@ -23,6 +23,8 @@ This file defines k-edge-connectivity for simple graphs.
 
 @[expose] public section
 
+open GraphLike
+
 namespace SimpleGraph
 
 variable {V : Type*} {G H : SimpleGraph V} {k l : ℕ} {u v w x : V}
@@ -66,14 +68,14 @@ protected lemma IsEdgeReachable.zero : G.IsEdgeReachable 0 u v := by simp [IsEdg
 @[simp] protected lemma IsEdgeConnected.zero : G.IsEdgeConnected 0 := fun _ _ ↦ .zero
 
 @[simp]
-lemma isEdgeReachable_one : G.IsEdgeReachable 1 u v ↔ G.Reachable u v := by
+lemma isEdgeReachable_one : G.IsEdgeReachable 1 u v ↔ Reachable G u v := by
   simp [IsEdgeReachable, ENat.lt_one_iff_eq_zero]
 
 @[simp]
 lemma isEdgeConnected_one : G.IsEdgeConnected 1 ↔ G.Preconnected := by
   simp [IsEdgeConnected, Preconnected]
 
-lemma IsEdgeReachable.reachable (hk : k ≠ 0) (huv : G.IsEdgeReachable k u v) : G.Reachable u v :=
+lemma IsEdgeReachable.reachable (hk : k ≠ 0) (huv : G.IsEdgeReachable k u v) : Reachable G u v :=
   isEdgeReachable_one.mp (huv.anti (Nat.one_le_iff_ne_zero.mpr hk))
 
 @[nontriviality]
@@ -152,7 +154,7 @@ In this section, we prove results about 2-connected components of a graph, but w
 -/
 
 namespace Walk
-variable {w : G.Walk u v}
+variable {w : Walk G u v}
 
 /-- A trail doesn't go through a vertex that is not 2-edge-reachable from its 2-edge-reachable
 endpoints. -/

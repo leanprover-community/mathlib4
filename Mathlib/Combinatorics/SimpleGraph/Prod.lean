@@ -32,11 +32,9 @@ Define all other graph products!
 
 @[expose] public section
 
-variable {α β γ V V₁ V₂ W W₁ W₂ : Type*}
+variable {α β γ V V₁ V₂ W W₁ W₂ : Type*} {G : SimpleGraph α} {H : SimpleGraph β}
 
 namespace SimpleGraph
-
-variable {G : SimpleGraph α} {H : SimpleGraph β}
 
 /-- Box product of simple graphs. It relates `(a₁, b)` and `(a₂, b)` if `G` relates `a₁` and `a₂`,
 and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
@@ -110,72 +108,66 @@ def sumBoxProdDistrib (G₁ : SimpleGraph V₁) (G₂ : SimpleGraph V₂) (H : S
   toEquiv := .sumProdDistrib ..
   map_rel_iff' := by simp
 
-end Iso
+end SimpleGraph.Iso
 
-namespace Walk
-
-variable {G}
+namespace GraphLike.Walk
 
 /-- Turn a walk on `G` into a walk on `G □ H`. -/
-protected def boxProdLeft {a₁ a₂ : α} (b : β) : G.Walk a₁ a₂ → (G □ H).Walk (a₁, b) (a₂, b) :=
+protected def boxProdLeft (H) {a₁ a₂ : α} (b : β) : Walk G a₁ a₂ → Walk (G □ H) (a₁, b) (a₂, b) :=
   Walk.map (G.boxProdLeft H b).toHom
 
-variable (G) {H}
-
 /-- Turn a walk on `H` into a walk on `G □ H`. -/
-protected def boxProdRight {b₁ b₂ : β} (a : α) : H.Walk b₁ b₂ → (G □ H).Walk (a, b₁) (a, b₂) :=
+protected def boxProdRight (G) {b₁ b₂ : β} (a : α) : Walk H b₁ b₂ → Walk (G □ H) (a, b₁) (a, b₂) :=
   Walk.map (G.boxProdRight H a).toHom
-
-variable {G}
 
 /-- Project a walk on `G □ H` to a walk on `G` by discarding the moves in the direction of `H`. -/
 def ofBoxProdLeft [DecidableEq β] [DecidableRel G.Adj] {x y : α × β} :
-    (G □ H).Walk x y → G.Walk x.1 y.1
+    Walk (G □ H) x y → Walk G x.1 y.1
   | nil => nil
   | cons h w =>
-    Or.by_cases h
-      (fun hG => w.ofBoxProdLeft.cons hG.1)
+    Or.by_cases h.adj
+      (fun hG => w.ofBoxProdLeft.cons (Adj.toStep hG.1))
       (fun hH => hH.2 ▸ w.ofBoxProdLeft)
 
 /-- Project a walk on `G □ H` to a walk on `H` by discarding the moves in the direction of `G`. -/
 def ofBoxProdRight [DecidableEq α] [DecidableRel H.Adj] {x y : α × β} :
-    (G □ H).Walk x y → H.Walk x.2 y.2
+    Walk (G □ H) x y → Walk H x.2 y.2
   | nil => nil
   | cons h w =>
-    (Or.symm h).by_cases
-      (fun hH => w.ofBoxProdRight.cons hH.1)
+    (Or.symm h.adj).by_cases
+      (fun hH => w.ofBoxProdRight.cons (Adj.toStep hH.1))
       (fun hG => hG.2 ▸ w.ofBoxProdRight)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a₂ : α} {b : β} :
-    ∀ (w : G.Walk a₁ a₂), (w.boxProdLeft H b).ofBoxProdLeft = w
+    ∀ (w : Walk G a₁ a₂), (w.boxProdLeft H b).ofBoxProdLeft = w
   | nil => rfl
   | cons' x y z h w => by
     rw [Walk.boxProdLeft, map_cons, ofBoxProdLeft, Or.by_cases, dif_pos, ← Walk.boxProdLeft]
     · simp [ofBoxProdLeft_boxProdLeft]
-    · exact ⟨h, rfl⟩
+    · exact ⟨h.adj, rfl⟩
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofBoxProdRight_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b₁ b₂ : α} :
-    ∀ (w : G.Walk b₁ b₂), (w.boxProdRight G a).ofBoxProdRight = w
+    ∀ (w : Walk G b₁ b₂), (w.boxProdRight G a).ofBoxProdRight = w
   | nil => rfl
   | cons' x y z h w => by
     rw [Walk.boxProdRight, map_cons, ofBoxProdRight, Or.by_cases, dif_pos, ←
       Walk.boxProdRight]
     · simp [ofBoxProdRight_boxProdRight]
-    · exact ⟨h, rfl⟩
+    · exact ⟨h.adj, rfl⟩
 
 lemma length_boxProd {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [DecidableEq β]
-    [DecidableRel G.Adj] [DecidableRel H.Adj] (w : (G □ H).Walk (a₁, b₁) (a₂, b₂)) :
+    [DecidableRel G.Adj] [DecidableRel H.Adj] (w : Walk (G □ H) (a₁, b₁) (a₂, b₂)) :
     w.length = w.ofBoxProdLeft.length + w.ofBoxProdRight.length := by
   match w with
   | .nil => simp [ofBoxProdLeft, ofBoxProdRight]
   | .cons x w' => next c =>
     unfold ofBoxProdLeft ofBoxProdRight
     rw [length_cons, length_boxProd w']
-    have disj : (G.Adj a₁ c.1 ∧ b₁ = c.2) ∨ (H.Adj b₁ c.2 ∧ a₁ = c.1) := by simp_all
+    have disj : (G.Adj a₁ c.1 ∧ b₁ = c.2) ∨ (H.Adj b₁ c.2 ∧ a₁ = c.1) := x.adj
     rcases disj with h₁ | h₂
     · simp only [h₁, and_self, ↓reduceDIte, length_cons, Or.by_cases]
       rw [add_comm, add_comm w'.ofBoxProdLeft.length 1, add_assoc]
@@ -183,9 +175,9 @@ lemma length_boxProd {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [Decidab
     · simp only [h₂, add_assoc, Or.by_cases]
       congr <;> simp [h₂.2.symm]
 
-end Walk
+end GraphLike.Walk
 
-variable {G H}
+namespace SimpleGraph
 
 protected theorem Preconnected.boxProd (hG : G.Preconnected) (hH : H.Preconnected) :
     (G □ H).Preconnected := by
@@ -255,7 +247,7 @@ theorem degree_boxProd (x : α × β)
   simp_rw [Finset.card_product, Finset.card_singleton, mul_one, one_mul]
 
 lemma reachable_boxProd {x y : α × β} :
-    (G □ H).Reachable x y ↔ G.Reachable x.1 y.1 ∧ H.Reachable x.2 y.2 := by
+    (G □ H).Reachable x y ↔ Reachable G x.1 y.1 ∧ H.Reachable x.2 y.2 := by
   classical
   constructor
   · intro ⟨w⟩
@@ -279,13 +271,13 @@ lemma edist_boxProd (x y : α × β) :
     have ⟨wH, hwH⟩ := exists_walk_of_edist_ne_top rGH.2
     let w_app := (wG.boxProdLeft _ _).append (wH.boxProdRight _ _)
     have w_len : w_app.length = wG.length + wH.length := by
-      unfold w_app Walk.boxProdLeft Walk.boxProdRight; simp
+      unfold w_app GraphLike.Walk.boxProdLeft GraphLike.Walk.boxProdRight; simp
     refine le_antisymm ?_ ?_
     · calc (G □ H).edist x y ≤ w_app.length := by exact edist_le _
           _ = wG.length + wH.length := by exact_mod_cast w_len
           _ = G.edist x.1 y.1 + H.edist x.2 y.2 := by simp only [hwG, hwH]
     · have ⟨w, hw⟩ := exists_walk_of_edist_ne_top h
-      rw [← hw, Walk.length_boxProd]
+      rw [← hw, GraphLike.Walk.length_boxProd]
       exact add_le_add (edist_le w.ofBoxProdLeft) (edist_le w.ofBoxProdRight)
 
 end SimpleGraph

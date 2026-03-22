@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Combinatorics.SimpleGraph.Finite
 public import Mathlib.Combinatorics.SimpleGraph.Maps
+public import Mathlib.Combinatorics.GraphLike.Basic
 public import Mathlib.Data.Int.Cast.Basic
 
 /-!
@@ -31,7 +32,7 @@ case.
 @[expose] public section
 
 
-open Finset Fintype
+open Finset Fintype GraphLike
 
 namespace SimpleGraph
 

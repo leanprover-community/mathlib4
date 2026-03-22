@@ -27,6 +27,8 @@ This file defines colorings for some common graphs.
 
 assert_not_exists Field
 
+open GraphLike
+
 namespace SimpleGraph
 
 theorem chromaticNumber_le_two_iff_isBipartite {V : Type*} {G : SimpleGraph V} :
@@ -67,7 +69,7 @@ theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
     exact two_le_chromaticNumber_of_adj hadj
 
 theorem Coloring.even_length_iff_congr {α} {G : SimpleGraph α}
-    (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
+    (c : G.Coloring Bool) {u v : α} (p : Walk G u v) :
     Even p.length ↔ (c u ↔ c v) := by
   induction p with
   | nil => simp
@@ -75,16 +77,16 @@ theorem Coloring.even_length_iff_congr {α} {G : SimpleGraph α}
     simp only [Walk.length_cons, Nat.even_add_one]
     have : ¬ c u = true ↔ c v = true := by
       rw [← not_iff, ← Bool.eq_iff_iff]
-      exact c.valid h
+      exact c.valid h.adj
     tauto
 
 theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
-    (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
+    (c : G.Coloring Bool) {u v : α} (p : Walk G u v) :
     Odd p.length ↔ (¬c u ↔ c v) := by
   rw [← Nat.not_even_iff_odd, c.even_length_iff_congr p]
   tauto
 
-theorem Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u : α} (p : G.Walk u u)
+theorem Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u : α} (p : Walk G u u)
     (hOdd : Odd p.length) : 3 ≤ G.chromaticNumber := Classical.by_contradiction <| by
   intro h
   have h' : G.chromaticNumber ≤ 2 := Order.le_of_lt_add_one <| not_le.mp h
@@ -157,7 +159,7 @@ theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n)
       intro h2
       rw [← h2] at hOdd
       exact (Nat.not_odd_iff.mpr rfl) hOdd
-    let w : (cycleGraph (n - 3 + 3)).Walk 0 0 := cycleGraph.cycle (n - 3)
+    let w : Walk (cycleGraph (n - 3 + 3)) 0 0 := cycleGraph.cycle (n - 3)
     have hOdd' : Odd w.length := by
       rw [cycleGraph.length_cycle, hn3]
       exact hOdd
@@ -180,18 +182,18 @@ end CompleteEquipartiteGraph
 
 open Walk
 lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
-    G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), Even w.length := by
+    G.Colorable 2 ↔ ∀ u, ∀ (w : Walk G u u), Even w.length := by
   simp_rw [← Nat.not_odd_iff_even]
   constructor <;> intro h
   · intro _ w ho
-    have := (w.three_le_chromaticNumber_of_odd_loop ho).trans h.chromaticNumber_le
+    have := (three_le_chromaticNumber_of_odd_loop w ho).trans h.chromaticNumber_le
     norm_cast
   · apply colorable_iff_forall_connectedComponents.2
     intro c
     obtain ⟨_, hv⟩ := c.nonempty_supp
     use fun a ↦ Fin.ofNat 2 (c.connected_toSimpleGraph ⟨_, hv⟩ a).some.length
     intro a b hab he
-    apply h _ <| (((c.connected_toSimpleGraph ⟨_, hv⟩ a).some.concat hab).append
+    apply h _ <| (((c.connected_toSimpleGraph ⟨_, hv⟩ a).some.concat (Adj.toStep hab)).append
                  (c.connected_toSimpleGraph ⟨_, hv⟩ b).some.reverse).map c.toSimpleGraph_hom
     rw [length_map, length_append, length_concat, length_reverse, add_right_comm]
     have : ((Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ a)).length) % 2 =

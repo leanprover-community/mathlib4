@@ -71,15 +71,15 @@ lemma inv_mem_darts (hd : d ∈ darts G) : inv α d ∈ darts G :=
   inv_mem_darts_iff.mpr hd
 
 /-- The inverse of a step. -/
-def step.inv (h : step G u v) : step G v u := by
-  obtain ⟨d, hd, hu, hv⟩ := h
-  use SymmDartLike.inv α d, inv_mem_darts hd, hv ▸ inv_fst, hu ▸ inv_snd
+def step.inv (h : step G u v) : step G v u := ⟨SymmDartLike.inv α h.val, inv_mem_darts h.prop.1,
+    (inv_fst.trans h.prop.2.2), inv_snd.trans h.prop.2.1⟩
+
+@[simp]
+lemma step.inv_val (h : step G u v) : h.inv.val = SymmDartLike.inv α h.val := by rfl
 
 @[simp]
 lemma step.inv_inv (h : step G u v) : h.inv.inv = h := by
   obtain ⟨d, hd, hu, hv⟩ := h
-  change step.inv (⟨SymmDartLike.inv α d, inv_mem_darts hd, hv ▸ inv_fst, hu ▸ inv_snd⟩ :
-    step G v u) = _
   simp [inv]
 
 instance : Std.Symm (Adj G) where
@@ -99,6 +99,10 @@ def dartSym2 (d : darts G) : Sym2 α := s(fst d.val, snd d.val)
 theorem dartSym2_mk {p : β} (h : p ∈ darts G) : dartSym2 (⟨p, h⟩ : darts G) = s(fst p, snd p) :=
   rfl
 
+@[simp]
+lemma step.todart_dartSym2 (h : step G u v) : dartSym2 h.todart = s(u, v) := by
+  simp [dartSym2]
+
 /-- The dart with reversed orientation from a given dart. -/
 def dartSymm (d : darts G) : darts G := ⟨inv α d.val, inv_mem_darts_iff.mpr d.prop⟩
 
@@ -106,6 +110,10 @@ def dartSymm (d : darts G) : darts G := ⟨inv α d.val, inv_mem_darts_iff.mpr d
 theorem dartSymm_mk {p : β} (h : p ∈ darts G) :
     dartSymm (⟨p, h⟩) = ⟨inv α p, inv_mem_darts_iff.mpr h⟩ :=
   rfl
+
+@[simp]
+lemma step.inv_todart (h : step G u v) : h.inv.todart = dartSymm h.todart := by
+  simp [todart]
 
 @[simp]
 theorem dartSym2_symm (d : darts G) : dartSym2 (dartSymm d) = dartSym2 d := by
@@ -155,9 +163,9 @@ instance : SymmDartLike α (α × α) where
   inv_fst := Prod.fst_swap
   inv_snd := Prod.snd_swap
 
-@[simp] lemma fst_eq : fst d = d.fst := rfl
+@[simp, grind =] lemma fst_eq : fst d = d.fst := rfl
 
-@[simp] lemma snd_eq : snd d = d.snd := rfl
+@[simp, grind =] lemma snd_eq : snd d = d.snd := rfl
 
 @[simp] lemma toProd_eq : toProd d = d := rfl
 
@@ -180,6 +188,14 @@ instance : Subsingleton (step G u v) where
     rintro ⟨p₁, h₁, rfl, rfl⟩ ⟨p₂, h₂, h1, h2⟩
     obtain rfl := Prod.ext h1 h2
     exact Subtype.ext rfl
+
+@[simp] lemma Adj.toStep_adj (h : Adj G u v) : (h.toStep).adj = h := rfl
+
+@[simp]
+lemma exists_step_iff_adj {P : (step G u v) → Prop} :
+    (∃ s : step G u v, P s) ↔ (∃ h : Adj G u v, P (h.toStep)) := by
+  refine ⟨fun ⟨s, hp⟩ ↦ ⟨s.adj, ?_⟩, fun ⟨h, hp⟩ ↦ ⟨h.toStep, hp⟩⟩
+  rwa [Subsingleton.elim s.adj.toStep s]
 
 @[simp]
 lemma step_val_eq {s : step G u v} : s.val = (u, v) := by

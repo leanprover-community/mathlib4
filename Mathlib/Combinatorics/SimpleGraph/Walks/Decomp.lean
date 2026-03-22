@@ -18,7 +18,9 @@ public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
 
 @[expose] public section
 
-namespace SimpleGraph.Walk
+open SimpleGraph DartLike SymmDartLike GraphLike SymmGraphLike
+
+namespace GraphLike.Walk
 
 universe u
 
@@ -31,7 +33,7 @@ section WalkDecomp
 variable [DecidableEq V]
 
 /-- Given a vertex in the support of a path, give the path up until (and including) that vertex. -/
-def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Walk v u
+def takeUntil {v w : V} : ∀ (p : Walk G v w) (u : V), u ∈ p.support → Walk G v u
   | nil, u, h => by rw [mem_support_nil_iff.mp h]
   | cons r p, u, h =>
     if hx : v = u then
@@ -42,22 +44,22 @@ def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
         · exact (hx rfl).elim
         · assumption)
 
-@[simp] theorem takeUntil_nil {u : V} {h} : takeUntil (nil : G.Walk u u) u h = nil := rfl
+@[simp] theorem takeUntil_nil {u : V} {h} : takeUntil (nil : Walk G u u) u h = nil := rfl
 
-lemma takeUntil_cons {v' : V} {p : G.Walk v' v} (hwp : w ∈ p.support) (h : u ≠ w)
-    (hadj : G.Adj u v') :
+lemma takeUntil_cons {v' : V} {p : Walk G v' v} (hwp : w ∈ p.support) (h : u ≠ w)
+    (hadj : step G u v') :
     (p.cons hadj).takeUntil w (List.mem_of_mem_tail hwp) = (p.takeUntil w hwp).cons hadj := by
   simp [Walk.takeUntil, h]
 
 @[simp]
-lemma takeUntil_first (p : G.Walk u v) :
+lemma takeUntil_first (p : Walk G u v) :
     p.takeUntil u p.start_mem_support = .nil := by cases p <;> simp [Walk.takeUntil]
 
 @[simp]
-lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
+lemma nil_takeUntil (p : Walk G u v) (hwp : w ∈ p.support) :
     (p.takeUntil w hwp).Nil ↔ u = w := ⟨Nil.eq, (by cases ·; simp)⟩
 
-lemma takeUntil_eq_take (p : G.Walk u v) (h : w ∈ p.support) :
+lemma takeUntil_eq_take (p : Walk G u v) (h : w ∈ p.support) :
     p.takeUntil w h = (p.take <| p.support.idxOf w).copy rfl (p.getVert_support_idxOf h) := by
   apply ext_support
   induction p with
@@ -71,14 +73,14 @@ lemma takeUntil_eq_take (p : G.Walk u v) (h : w ∈ p.support) :
         support_cons, support_copy, ih (by grind)]
       grind
 
-lemma length_takeUntil (p : G.Walk u v) (h : w ∈ p.support) :
+lemma length_takeUntil (p : Walk G u v) (h : w ∈ p.support) :
     (p.takeUntil w h).length = p.support.idxOf w := by
   simp [takeUntil_eq_take, Nat.le_iff_lt_add_one, ← length_support, List.idxOf_lt_length_of_mem h]
 
 /-- Given a vertex in the support of a path, give the path from (and including) that vertex to
 the end. In other words, drop vertices from the front of a path until (and not including)
 that vertex. -/
-def dropUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Walk u w
+def dropUntil {v w : V} : ∀ (p : Walk G v w) (u : V), u ∈ p.support → Walk G u w
   | nil, u, h => by rw [mem_support_nil_iff.mp h]
   | cons r p, u, h =>
     if hx : v = u then by
@@ -92,7 +94,7 @@ def dropUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
 /-- The `takeUntil` and `dropUntil` functions split a walk into two pieces.
 The lemma `SimpleGraph.Walk.count_support_takeUntil_eq_one` specifies where this split occurs. -/
 @[simp]
-theorem take_spec {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+theorem take_spec {u v w : V} (p : Walk G v w) (h : u ∈ p.support) :
     (p.takeUntil u h).append (p.dropUntil u h) = p := by
   induction p
   · rw [mem_support_nil_iff] at h
@@ -104,11 +106,11 @@ theorem take_spec {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
       split_ifs with h' <;> subst_vars <;> simp [*]
 
 @[simp]
-lemma dropUntil_first (p : G.Walk u v) (h : u ∈ p.support) : p.dropUntil u h = p := by
+lemma dropUntil_first (p : Walk G u v) (h : u ∈ p.support) : p.dropUntil u h = p := by
   unfold dropUntil
   split <;> simp
 
-lemma dropUntil_eq_drop (p : G.Walk u v) (h : w ∈ p.support) :
+lemma dropUntil_eq_drop (p : Walk G u v) (h : w ∈ p.support) :
     p.dropUntil w h = (p.drop <| p.support.idxOf w).copy (p.getVert_support_idxOf h) rfl := by
   apply ext_support
   induction p with
@@ -122,18 +124,18 @@ lemma dropUntil_eq_drop (p : G.Walk u v) (h : w ∈ p.support) :
     · rw [drop_cons_eq _ _ _ (by grind), support_copy, dropUntil]
       grind
 
-lemma length_dropUntil (p : G.Walk u v) (h : w ∈ p.support) :
+lemma length_dropUntil (p : Walk G u v) (h : w ∈ p.support) :
     (p.dropUntil w h).length = p.length - p.support.idxOf w := by
   simp [dropUntil_eq_drop]
 
-theorem isSubwalk_takeUntil (p : G.Walk u v) (h : w ∈ p.support) : (p.takeUntil w h).IsSubwalk p :=
+theorem isSubwalk_takeUntil (p : Walk G u v) (h : w ∈ p.support) : (p.takeUntil w h).IsSubwalk p :=
   ⟨nil, p.dropUntil w h, by simp⟩
 
-theorem isSubwalk_dropUntil (p : G.Walk u v) (h : w ∈ p.support) : (p.dropUntil w h).IsSubwalk p :=
+theorem isSubwalk_dropUntil (p : Walk G u v) (h : w ∈ p.support) : (p.dropUntil w h).IsSubwalk p :=
   ⟨p.takeUntil w h, nil, by simp⟩
 
 theorem mem_support_iff_exists_append {V : Type u} {G : SimpleGraph V} {u v w : V}
-    {p : G.Walk u v} : w ∈ p.support ↔ ∃ (q : G.Walk u w) (r : G.Walk w v), p = q.append r := by
+    {p : Walk G u v} : w ∈ p.support ↔ ∃ (q : Walk G u w) (r : Walk G w v), p = q.append r := by
   classical
   constructor
   · exact fun h => ⟨_, _, (p.take_spec h).symm⟩
@@ -141,7 +143,7 @@ theorem mem_support_iff_exists_append {V : Type u} {G : SimpleGraph V} {u v w : 
     simp only [mem_support_append_iff, end_mem_support, start_mem_support, or_self_iff]
 
 @[simp]
-theorem count_support_takeUntil_eq_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+theorem count_support_takeUntil_eq_one {u v w : V} (p : Walk G v w) (h : u ∈ p.support) :
     (p.takeUntil u h).support.count u = 1 := by
   induction p
   · rw [mem_support_nil_iff] at h
@@ -152,7 +154,7 @@ theorem count_support_takeUntil_eq_one {u v w : V} (p : G.Walk v w) (h : u ∈ p
     · simp! only
       split_ifs with h' <;> rw [eq_comm] at h' <;> subst_vars <;> simp! [*, List.count_cons]
 
-theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) (x : V) :
+theorem count_edges_takeUntil_le_one {u v w : V} (p : Walk G v w) (h : u ∈ p.support) (x : V) :
     (p.takeUntil u h).edges.count s(u, x) ≤ 1 := by
   induction p with
   | nil =>
@@ -175,60 +177,60 @@ theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.s
         · apply ih
 
 @[simp]
-theorem takeUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w')
+theorem takeUntil_copy {u v w v' w'} (p : Walk G v w) (hv : v = v') (hw : w = w')
     (h : u ∈ (p.copy hv hw).support) :
     (p.copy hv hw).takeUntil u h = (p.takeUntil u (by subst_vars; exact h)).copy hv rfl := by
   subst_vars
   rfl
 
 @[simp]
-theorem dropUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w')
+theorem dropUntil_copy {u v w v' w'} (p : Walk G v w) (hv : v = v') (hw : w = w')
     (h : u ∈ (p.copy hv hw).support) :
     (p.copy hv hw).dropUntil u h = (p.dropUntil u (by subst_vars; exact h)).copy rfl hw := by
   subst_vars
   rfl
 
-theorem support_takeUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+theorem support_takeUntil_subset {u v w : V} (p : Walk G v w) (h : u ∈ p.support) :
     (p.takeUntil u h).support ⊆ p.support := fun x hx => by
   rw [← take_spec p h, mem_support_append_iff]
   exact Or.inl hx
 
-theorem support_dropUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+theorem support_dropUntil_subset {u v w : V} (p : Walk G v w) (h : u ∈ p.support) :
     (p.dropUntil u h).support ⊆ p.support := fun x hx => by
   rw [← take_spec p h, mem_support_append_iff]
   exact Or.inr hx
 
-theorem darts_takeUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+theorem darts_takeUntil_subset {u v w : V} (p : Walk G v w) (h : u ∈ p.support) :
     (p.takeUntil u h).darts ⊆ p.darts := fun x hx => by
   rw [← take_spec p h, darts_append, List.mem_append]
   exact Or.inl hx
 
-theorem darts_dropUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+theorem darts_dropUntil_subset {u v w : V} (p : Walk G v w) (h : u ∈ p.support) :
     (p.dropUntil u h).darts ⊆ p.darts := fun x hx => by
   rw [← take_spec p h, darts_append, List.mem_append]
   exact Or.inr hx
 
-theorem edges_takeUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+theorem edges_takeUntil_subset {u v w : V} (p : Walk G v w) (h : u ∈ p.support) :
     (p.takeUntil u h).edges ⊆ p.edges :=
   List.map_subset _ (p.darts_takeUntil_subset h)
 
-theorem edges_dropUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+theorem edges_dropUntil_subset {u v w : V} (p : Walk G v w) (h : u ∈ p.support) :
     (p.dropUntil u h).edges ⊆ p.edges :=
   List.map_subset _ (p.darts_dropUntil_subset h)
 
-theorem length_takeUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+theorem length_takeUntil_le {u v w : V} (p : Walk G v w) (h : u ∈ p.support) :
     (p.takeUntil u h).length ≤ p.length := by
   have := congr_arg Walk.length (p.take_spec h)
   rw [length_append] at this
   exact Nat.le.intro this
 
-theorem length_dropUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+theorem length_dropUntil_le {u v w : V} (p : Walk G v w) (h : u ∈ p.support) :
     (p.dropUntil u h).length ≤ p.length := by
   have := congr_arg Walk.length (p.take_spec h)
   rw [length_append, add_comm] at this
   exact Nat.le.intro this
 
-lemma takeUntil_append_of_mem_left {x : V} (p : G.Walk u v) (q : G.Walk v w) (hx : x ∈ p.support) :
+lemma takeUntil_append_of_mem_left {x : V} (p : Walk G u v) (q : Walk G v w) (hx : x ∈ p.support) :
     (p.append q).takeUntil x (subset_support_append_left _ _ hx) = p.takeUntil _ hx := by
   induction p with
   | nil => rw [mem_support_nil_iff] at hx; subst_vars; simp
@@ -241,24 +243,24 @@ lemma takeUntil_append_of_mem_left {x : V} (p : G.Walk u v) (q : G.Walk v w) (hx
         takeUntil_cons (subset_support_append_left _ _ this) hxu]
       simpa using ih _ this
 
-lemma getVert_takeUntil {u v : V} {n : ℕ} {p : G.Walk u v} (hw : w ∈ p.support)
+lemma getVert_takeUntil {u v : V} {n : ℕ} {p : Walk G u v} (hw : w ∈ p.support)
     (hn : n ≤ (p.takeUntil w hw).length) : (p.takeUntil w hw).getVert n = p.getVert n := by
   conv_rhs => rw [← take_spec p hw, getVert_append]
   cases hn.lt_or_eq <;> simp_all
 
-lemma snd_takeUntil (hsu : w ≠ u) (p : G.Walk u v) (h : w ∈ p.support) :
+lemma snd_takeUntil (hsu : w ≠ u) (p : Walk G u v) (h : w ∈ p.support) :
     (p.takeUntil w h).snd = p.snd := by
   apply p.getVert_takeUntil h
   by_contra! hc
   simp only [Nat.lt_one_iff, ← nil_iff_length_eq, nil_takeUntil] at hc
   exact hsu hc.symm
 
-lemma getVert_length_takeUntil {p : G.Walk v w} (h : u ∈ p.support) :
+lemma getVert_length_takeUntil {p : Walk G v w} (h : u ∈ p.support) :
     p.getVert (p.takeUntil _ h).length = u := by
   have := congr_arg₂ (y := (p.takeUntil _ h).length) getVert (p.take_spec h) rfl
   grind [getVert_append, getVert_zero]
 
-lemma getVert_lt_length_takeUntil_ne {n : ℕ} {p : G.Walk v w} (h : u ∈ p.support)
+lemma getVert_lt_length_takeUntil_ne {n : ℕ} {p : Walk G v w} (h : u ∈ p.support)
     (hn : n < (p.takeUntil _ h).length) : p.getVert n ≠ u := by
   rintro rfl
   have h₁ : n < (p.takeUntil _ h).support.dropLast.length := by simpa
@@ -268,22 +270,22 @@ lemma getVert_lt_length_takeUntil_ne {n : ℕ} {p : G.Walk v w} (h : u ∈ p.sup
   have := support_eq_concat _ ▸ p.count_support_takeUntil_eq_one h
   grind [List.not_mem_of_count_eq_zero]
 
-theorem getVert_le_length_takeUntil_eq_iff {n : ℕ} {p : G.Walk v w} (h : u ∈ p.support)
+theorem getVert_le_length_takeUntil_eq_iff {n : ℕ} {p : Walk G v w} (h : u ∈ p.support)
     (hn : n ≤ (p.takeUntil _ h).length) : p.getVert n = u ↔ n = (p.takeUntil _ h).length := by
   grind [getVert_length_takeUntil, getVert_lt_length_takeUntil_ne]
 
-lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (huw : u ≠ w) :
+lemma length_takeUntil_lt {u v w : V} {p : Walk G v w} (h : u ∈ p.support) (huw : u ≠ w) :
     (p.takeUntil u h).length < p.length := by
   rw [(p.length_takeUntil_le h).lt_iff_ne]
   exact fun hl ↦ huw (by simpa using (hl ▸ getVert_takeUntil h (by rfl) :
     (p.takeUntil u h).getVert (p.takeUntil u h).length = p.getVert p.length))
 
-lemma takeUntil_takeUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support)
+lemma takeUntil_takeUntil {w x : V} (p : Walk G u v) (hw : w ∈ p.support)
     (hx : x ∈ (p.takeUntil w hw).support) :
     (p.takeUntil w hw).takeUntil x hx = p.takeUntil x (p.support_takeUntil_subset hw hx) := by
   simp_rw [← takeUntil_append_of_mem_left _ (p.dropUntil w hw) hx, take_spec]
 
-lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {w x : V} (h : x ≠ w)
+lemma notMem_support_takeUntil_support_takeUntil_subset {p : Walk G u v} {w x : V} (h : x ≠ w)
     (hw : w ∈ p.support) (hx : x ∈ (p.takeUntil w hw).support) :
     w ∉ (p.takeUntil x (p.support_takeUntil_subset hw hx)).support := by
   rw [← takeUntil_takeUntil p hw hx]
@@ -297,27 +299,27 @@ lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {w x : 
   lia
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
-def rotate (c : G.Walk v v) (u : V) (h : u ∈ c.support) : G.Walk u u :=
+def rotate (c : Walk G v v) (u : V) (h : u ∈ c.support) : Walk G u u :=
   (c.dropUntil u h).append (c.takeUntil u h)
 
 @[simp]
-theorem support_rotate (c : G.Walk v v) (u : V) (h) :
+theorem support_rotate (c : Walk G v v) (u : V) (h) :
     (c.rotate u h).support.tail ~r c.support.tail := by
   simp only [rotate, tail_support_append]
   apply List.IsRotated.trans List.isRotated_append
   rw [← tail_support_append, take_spec]
 
 @[simp]
-theorem mem_support_rotate_iff (c : G.Walk v v) (u : V) (h) :
+theorem mem_support_rotate_iff (c : Walk G v v) (u : V) (h) :
     w ∈ (c.rotate u h).support ↔ w ∈ c.support := by
   grind [rotate, take_spec, mem_support_append_iff]
 
-theorem rotate_darts (c : G.Walk v v) (u : V) (h) : (c.rotate u h).darts ~r c.darts := by
+theorem rotate_darts (c : Walk G v v) (u : V) (h) : (c.rotate u h).darts ~r c.darts := by
   simp only [rotate, darts_append]
   apply List.IsRotated.trans List.isRotated_append
   rw [← darts_append, take_spec]
 
-theorem rotate_edges (c : G.Walk v v) (u : V) (h) : (c.rotate u h).edges ~r c.edges :=
+theorem rotate_edges (c : Walk G v v) (u : V) (h) : (c.rotate u h).edges ~r c.edges :=
   (rotate_darts c u h).map _
 
 end WalkDecomp
@@ -326,11 +328,11 @@ end WalkDecomp
 is the `n`-th node (zero-indexed) in the walk. In addition, `n` is at most the length of the walk.
 Due to the definition of `getVert` it would otherwise be legal to return a larger `n` for the last
 node. -/
-theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
+theorem mem_support_iff_exists_getVert {u v w : V} {p : Walk G v w} :
     u ∈ p.support ↔ ∃ n, p.getVert n = u ∧ n ≤ p.length := by
   classical
   exact Iff.intro
     (fun h ↦ ⟨_, p.getVert_length_takeUntil h, p.length_takeUntil_le h⟩)
     (fun ⟨_, h, _⟩ ↦ h ▸ getVert_mem_support _ _)
 
-end SimpleGraph.Walk
+end GraphLike.Walk

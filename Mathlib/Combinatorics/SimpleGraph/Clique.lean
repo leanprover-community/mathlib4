@@ -30,7 +30,7 @@ A clique is a set of vertices that are pairwise adjacent.
 
 @[expose] public section
 
-open Finset Fintype Function SimpleGraph.Walk
+open Finset Fintype Function GraphLike.Walk GraphLike
 
 namespace SimpleGraph
 
@@ -298,12 +298,13 @@ theorem is3Clique_iff :
 end DecidableEq
 
 theorem is3Clique_iff_exists_cycle_length_three :
-    (∃ s : Finset α, G.IsNClique 3 s) ↔ ∃ (u : α) (w : G.Walk u u), w.IsCycle ∧ w.length = 3 := by
+    (∃ s : Finset α, G.IsNClique 3 s) ↔ ∃ (u : α) (w : Walk G u u), w.IsCycle ∧ w.length = 3 := by
   classical
   simp_rw [is3Clique_iff, isCycle_def]
-  exact
-    ⟨(fun ⟨_, a, _, _, hab, hac, hbc, _⟩ => ⟨a, cons hab (cons hbc (cons hac.symm nil)), by aesop⟩),
-    (fun ⟨_, .cons hab (.cons hbc (.cons hca nil)), _, _⟩ => ⟨_, _, _, _, hab, hca.symm, hbc, rfl⟩)⟩
+  exact ⟨(fun ⟨_, a, _, _, hab, hac, hbc, _⟩ => ⟨a, Walk.cons (Adj.toStep hab)
+    (Walk.cons (Adj.toStep hbc) (Walk.cons (Adj.toStep hac.symm) nil)), by aesop⟩),
+    (fun ⟨_, .cons hab (.cons hbc (.cons hca nil)), _, _⟩ =>
+    ⟨_, _, _, _, hab.adj, hca.adj.symm, hbc.adj, rfl⟩)⟩
 
 /-- If a set of vertices `A` is an `n`-clique in subgraph of `G` induced by a superset of `A`,
 its embedding is an `n`-clique in `G`. -/

@@ -71,7 +71,7 @@ def Embedding.sumInr : H ↪g G ⊕g H where
   inj' u v := by simp
   map_rel_iff' := by simp
 
-lemma Reachable.sum_sup_edge (hv : G.Reachable v v') (hw : H.Reachable w w') :
+lemma Reachable.sum_sup_edge (hv : Reachable G v v') (hw : H.Reachable w w') :
     (G.sum H ⊔ edge (.inl v) (.inr w)).Reachable (.inl v') (.inr w') :=
   ((hv.symm.map Embedding.sumInl.toHom).mono le_sup_left).trans <| .trans
     (Adj.reachable <| by simp [edge]) <| (hw.map Embedding.sumInr.toHom).mono le_sup_left

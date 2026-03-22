@@ -27,8 +27,6 @@ of graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
 
 * `GraphLike α β` generalizes `SimpleGraph`, `Digraph`, and `Graph`. When multi-digraph and
   hypergraphs are formalized, they can also use this typeclass.
-* `SymmGraphLike α β`, (defined in `Symm.lean`) generalizes `SimpleGraph` and `Graph` but not
-  `Digraph`.
 * `GraphLike α (α × α)` generalizes `SimpleGraph` and `Digraph` but not `Graph`.
 
 ## TODO
@@ -138,12 +136,33 @@ lemma step.ext_HEq {u' v'} {s₁ : step G u v} {s₂ : step G u' v'} (h : s₁.v
   obtain rfl : d₁ = d₂ := h
   rfl
 
+def step.todart (h : step G u v) : darts G := ⟨h.val, h.prop.1⟩
+
+@[simp]
+lemma step.todart_val (h : step G u v) : h.todart.val = h.val := rfl
+
+@[simp]
+lemma step.todart_fst (s : step G u v) : DartLike.fst s.todart.val = u := by
+  obtain ⟨d, hd, rfl, rfl⟩ := s
+  rfl
+
+@[simp]
+lemma step.todart_snd (s : step G u v) : DartLike.snd s.todart.val = v := by
+  obtain ⟨d, hd, rfl, rfl⟩ := s
+  rfl
+
 lemma step.adj (h : step G u v) : Adj G u v := by
   rw [← exists_darts_iff_adj]
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact ⟨d, hd, rfl, rfl⟩
 
 @[ext] theorem darts_ext (d₁ d₂ : darts G) (h : d₁.val = d₂.val) : d₁ = d₂ := Subtype.ext h
+
+def dartStep (d : darts G) : step G (fst d.val) (snd d.val) :=
+  ⟨d.val, d.prop, rfl, rfl⟩
+
+@[simp]
+lemma dartStep_val (d : darts G) : (dartStep d).val = d.val := rfl
 
 /-- Two darts are said to be adjacent if they could be consecutive
 darts in a walk -- that is, the first dart's second vertex is equal to

@@ -5,7 +5,7 @@ Authors: Hunter Monroe, Kyle Miller
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Dart
+public import Mathlib.Combinatorics.SimpleGraph.GraphLike
 public import Mathlib.Data.FunLike.Fintype
 public import Mathlib.Logic.Embedding.Set
 
@@ -41,7 +41,7 @@ abbreviations as well.
 @[expose] public section
 
 
-open Function
+open Function GraphLike
 
 namespace SimpleGraph
 
@@ -215,6 +215,9 @@ abbrev induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
 variable {G} in
 lemma induce_adj {s : Set V} {u v : s} : (G.induce s).Adj u v ↔ G.Adj u v := .rfl
 
+def stepInduce {s : Set V} {u v : s} (h : step G u.val v) : step (G.induce s) u v :=
+  ⟨(u, v), induce_adj.mpr h.adj, rfl, rfl⟩
+
 @[simp] lemma induce_top (s : Set V) : (completeGraph V).induce s = completeGraph s :=
   comap_top Subtype.val_injective
 
@@ -313,12 +316,27 @@ def mapNeighborSet (v : V) (w : G.neighborSet v) : G'.neighborSet (f v) :=
   ⟨f w, f.apply_mem_neighborSet w.property⟩
 
 /-- The map between darts induced by a homomorphism. -/
-def mapDart (d : G.Dart) : G'.Dart :=
-  ⟨d.1.map f f, f.map_adj d.2⟩
+def mapDart (d : darts G) : darts G' :=
+  ⟨Prod.map f f d, f.map_adj (mem_darts_iff_adj.mp d.prop)⟩
 
 @[simp]
-theorem mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2⟩ :=
+theorem mapDart_apply (d : darts G) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2⟩ :=
   rfl
+
+/-- The map between steps induced by a homomorphism. -/
+@[simps]
+def mapStep {u v : V} (s : step G u v) : step G' (f u) (f v) :=
+  ⟨Prod.map f f s.val, f.map_rel' s.prop.1, by simp, by simp⟩
+
+theorem mapStep_injective {f : G →g G'} (u v : V) :
+    Function.Injective (f.mapStep : step G u v → step G' (f u) (f v)) :=
+  fun _ _ _ => by simp
+
+@[simp]
+theorem mapStep_id (s : step G u v) : Hom.id.mapStep s = s := step.ext rfl
+
+@[simp]
+theorem mapStep_inv (s : step G u v) : f.mapStep s.inv = (f.mapStep s).inv := by simp
 
 /-- The graph homomorphism from a smaller graph to a bigger one. -/
 def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩

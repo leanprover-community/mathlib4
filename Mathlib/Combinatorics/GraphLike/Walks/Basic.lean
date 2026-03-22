@@ -117,7 +117,7 @@ theorem eq_of_length_eq_zero : ∀ {p : Walk G u v}, p.length = 0 → u = v
   | nil, _ => rfl
 
 /-- If `u` and `v` connected by one-edge walk, then there exists a step between them. -/
-def step_of_length_eq_one : ∀ {p : Walk G u v}, p.length = 1 → step G u v
+def adj_of_length_eq_one : ∀ {p : Walk G u v}, p.length = 1 → step G u v
   | cons s nil, _ => s
 
 @[simp]
@@ -306,6 +306,9 @@ protected lemma Nil.eq : p.Nil → u = v | .nil => rfl
 lemma not_nil_of_ne : u ≠ v → ¬ p.Nil := mt Nil.eq
 
 lemma nil_iff_support_eq : p.Nil ↔ p.support = [v] := by
+  cases p <;> simp
+
+lemma nil_iff_support_eq' : p.Nil ↔ p.support = [u] := by
   cases p <;> simp
 
 @[simp, grind =]

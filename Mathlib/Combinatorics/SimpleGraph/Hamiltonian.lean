@@ -23,19 +23,17 @@ In this file we introduce Hamiltonian paths, cycles and graphs.
 
 @[expose] public section
 
-open Finset Function
-
-namespace SimpleGraph
+open Finset Function GraphLike SimpleGraph
 
 variable {α : Type*} [DecidableEq α] {G : SimpleGraph α}
 variable {β : Type*} [DecidableEq β] {H : SimpleGraph β}
-variable {a b : α} {p : G.Walk a b} {f : G →g H}
+variable {a b : α} {p : Walk G a b} {f : G →g H}
 
-namespace Walk
+namespace GraphLike.Walk
 
 /-- A Hamiltonian path is a walk `p` that visits every vertex exactly once. Note that while
 this definition doesn't contain that `p` is a path, `p.isPath` gives that. -/
-def IsHamiltonian (p : G.Walk a b) : Prop := ∀ a, p.support.count a = 1
+def IsHamiltonian (p : Walk G a b) : Prop := ∀ a, p.support.count a = 1
 
 variable (f) in
 lemma IsHamiltonian.map (hf : Bijective f) (hp : p.IsHamiltonian) :
@@ -60,7 +58,7 @@ lemma IsPath.isHamiltonian_iff (hp : p.IsPath) : p.IsHamiltonian ↔ ∀ w, w �
 
 theorem IsHamiltonian.of_subsingleton [Subsingleton α] : p.IsHamiltonian := by
   intro v
-  rw [nil_iff_support_eq.mp p.nil_of_subsingleton, Subsingleton.elim v a, List.count_singleton_self]
+  rw [nil_iff_support_eq.mp p.nil_of_subsingleton, Subsingleton.elim v b, List.count_singleton_self]
 
 /-- If a path `p` is Hamiltonian then its vertex set must be finite. -/
 @[implicit_reducible]
@@ -134,10 +132,10 @@ lemma isHamiltonian_iff_isPath_and_length_eq [Fintype α] :
   simp_rw [length_support, h, Nat.sub_one_add_one Fintype.card_ne_zero]
 
 /-- A Hamiltonian cycle is a cycle that visits every vertex once. -/
-structure IsHamiltonianCycle (p : G.Walk a a) : Prop extends p.IsCycle where
+structure IsHamiltonianCycle (p : Walk G a a) : Prop extends p.IsCycle where
   isHamiltonian_tail : p.tail.IsHamiltonian
 
-variable {p : G.Walk a a}
+variable {p : Walk G a a}
 
 lemma IsHamiltonianCycle.isCycle (hp : p.IsHamiltonianCycle) : p.IsCycle :=
   hp.toIsCycle
@@ -191,7 +189,9 @@ lemma isHamiltonianCycle_iff_isCycle_and_length_eq [Fintype α] :
   refine isHamiltonian_iff_isPath_and_length_eq.mpr ⟨h₁.isPath_tail, ?_⟩
   grind [length_tail_add_one, IsCycle.not_nil]
 
-end Walk
+end GraphLike.Walk
+
+namespace SimpleGraph
 
 variable [Fintype α]
 
@@ -199,7 +199,7 @@ variable [Fintype α]
 
 By convention, the singleton graph is considered to be Hamiltonian. -/
 def IsHamiltonian (G : SimpleGraph α) : Prop :=
-  Fintype.card α ≠ 1 → ∃ a, ∃ p : G.Walk a a, p.IsHamiltonianCycle
+  Fintype.card α ≠ 1 → ∃ a, ∃ p : Walk G a a, p.IsHamiltonianCycle
 
 lemma IsHamiltonian.mono {H : SimpleGraph α} (hGH : G ≤ H) (hG : G.IsHamiltonian) :
     H.IsHamiltonian :=
@@ -262,7 +262,7 @@ theorem not_isHamiltonian_of_isBridge (G : SimpleGraph V)
   have he_not_in_cycle : s(x, y) ∉ c.edges :=
     (SimpleGraph.isBridge_iff_adj_and_forall_cycle_notMem.mp hbr).2 c hcHam.isCycle
   have hWalkAllMem :
-      ∀ p : G.Walk x y, s(x, y) ∈ p.edges :=
+      ∀ p : Walk G x y, s(x, y) ∈ p.edges :=
     (SimpleGraph.isBridge_iff_adj_and_forall_walk_mem_edges.mp hbr).2
   let cX := c.rotate x (hcHam.mem_support x)
   have hcycleX : cX.IsCycle := hcHam.isCycle.rotate (hcHam.mem_support x)
