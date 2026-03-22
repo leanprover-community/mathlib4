@@ -903,18 +903,11 @@ theorem isUnit_pullback_mk_iff (f : R →+* T) (g : S →+* T) (a : R × S) (a_i
 
 open Function in
 theorem surjective_pullbackFst_of_surjective (f : R →+* T) (g : S →+* T) (h : Surjective g) :
-    Surjective (f.pullbackFst g) := by
-  simp only [Surjective, coe_comp, coe_fst, Subring.coe_subtype, Function.comp_apply,
-    Subtype.exists, mem_eqLocus, coe_snd, exists_prop, Prod.exists, exists_and_right,
-    exists_eq_right]
-  intro r; simpa [eq_comm] using h (f r)
+    Surjective (f.pullbackFst g) := fun r ↦ by simpa [eq_comm] using h (f r)
 
 open Function in
 theorem surjective_pullbackSnd_of_surjective (f : R →+* T) (g : S →+* T) (h : Surjective f) :
-    Surjective (f.pullbackSnd g) := by
-  simp only [Surjective, coe_comp, coe_snd, Subring.coe_subtype, Function.comp_apply,
-    Subtype.exists, mem_eqLocus, coe_fst, exists_prop, Prod.exists, exists_eq_right]
-  intro s; simpa [eq_comm] using h (g s)
+    Surjective (f.pullbackSnd g) := fun s ↦ by simpa [eq_comm] using h (g s)
 
 instance isLocalHom_pullbackFst {F G : Type*} [FunLike F R T] [RingHomClass F R T] [FunLike G S T]
     [RingHomClass G S T] (f : F) (g : G) [IsLocalHom g] :
