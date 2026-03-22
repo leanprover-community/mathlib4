@@ -122,19 +122,19 @@ theorem restrictScalars_range_ofPowSMul_eq_ker_eval {n : ℕ} :
 set_option backward.isDefEq.respectTransparency false in
 -- An intermediate helper lemma for the theorem below to avoid introducing
 -- `AdicCompletion.finsuppSum` (the `Finsupp` version of `AdicCompletion.sum`)
-private lemma lsum_smul_comp_finsuppLEquivDirectSum_symm {ι : Type*} [DecidableEq ι] (f : ι → R) :
-    ((lsum (AdicCompletion I R)) fun i ↦ ((algebraMap R (AdicCompletion I R)) (f i) • .id :
-      AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I M)) ∘ₗ
-        (finsuppLEquivDirectSum (AdicCompletion I R) (AdicCompletion I M) ι).symm.toLinearMap =
+private lemma lsum_smul_comp_finsuppLEquivDirectSum_symm {ι : Type*} [DecidableEq ι] [Fintype ι]
+    (f : ι → R) : ((lsum (AdicCompletion I R))
+      fun i ↦ ((algebraMap R (AdicCompletion I R)) (f i) • .id :
+        AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I M)) ∘ₗ
+      (finsuppLEquivDirectSum (AdicCompletion I R) (AdicCompletion I M) ι).symm.toLinearMap =
     (map I (lsum R fun i ↦ f i • .id) ∘ₗ map I (finsuppLEquivDirectSum R M ι).symm.toLinearMap) ∘ₗ
-      (sum I (fun _ : ι ↦ M)) := by
+      (sumEquivOfFintype I (fun _ : ι ↦ M)) := by
   ext
-  -- simp [-algebraMap_smul, algebraMap_apply, -smul_eq_mul]
   simp only [algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply, LinearMap.coe_comp,
     coe_lsum, LinearMap.coe_smul, LinearMap.id_coe, LinearEquiv.coe_coe, Function.comp_apply,
     finsuppLEquivDirectSum_symm_lof, Pi.smul_apply, id_eq, smul_zero, sum_single_index, smul_eval,
     mapQ_eq_factor, factor_eq_factor, of_apply, mkQ_apply, Ideal.Quotient.mk_eq_mk, mk_apply_coe,
-    sum_lof, map_mk, AdicCauchySequence.map_apply_coe, map_smul]
+    sumEquivOfFintype_apply, sum_lof, map_mk, AdicCauchySequence.map_apply_coe, map_smul]
   rw [← Ideal.Quotient.algebraMap_eq, algebraMap_smul]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -153,9 +153,7 @@ theorem pow_smul_top_eq_ker_eval {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I 
   simp only [SetLike.coe_sort_coe]
   rw [← LinearMap.range_comp_of_range_eq_top (f := (finsuppLEquivDirectSum ..).symm.toLinearMap)
     _ (by simp), lsum_smul_comp_finsuppLEquivDirectSum_symm,
-    LinearMap.range_comp_of_range_eq_top _ (LinearMap.range_eq_top_of_surjective _ <|
-      Function.RightInverse.surjective (g := sumInv ..) (fun _ ↦ by
-      rw [← LinearMap.comp_apply, sum_comp_sumInv, LinearMap.id_apply])),
+    LinearMap.range_comp_of_range_eq_top _ (LinearEquiv.range _),
     LinearMap.range_comp_of_range_eq_top _ (LinearMap.range_eq_top_of_surjective _ <|
       Function.RightInverse.surjective (g := map I (finsuppLEquivDirectSum R M s)) (fun _ ↦ by
       simp [← LinearMap.comp_apply, map_comp]))]
@@ -166,7 +164,8 @@ theorem pow_smul_top_eq_ker_eval {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I 
       smul_top_eq_range_lsum]
     simp
   rcases map_surjective I this x with ⟨x, rfl⟩
-  exact ⟨x, by rw [ofPowSMul, ← LinearMap.comp_apply, map_comp]; simp⟩
+  use x
+  rw [ofPowSMul, ← LinearMap.comp_apply, map_comp, LinearMap.subtype_comp_codRestrict]
 
 variable {I} in
 /-- `AdicCompletion I M` is adic complete when `I` is finitely generated. -/
