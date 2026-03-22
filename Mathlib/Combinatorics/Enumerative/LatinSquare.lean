@@ -128,9 +128,7 @@ lemma latin_square_col_implies_latin_rectangle_col
     DistinctColEntries M := by
   rw [OncePerColumn] at h₂
   rw [DistinctColEntries]
-  intro j
-  specialize h₂ j
-  exact h₂.1
+  exact (h₂ · |>.injective)
 
 /-- A LatinSquare is a Square LatinRectangle -/
 abbrev LatinSquare (n : Type*) [Fintype n] (α : Type*) [Fintype α] [DecidableEq α] :=
