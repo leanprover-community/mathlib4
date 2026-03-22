@@ -255,6 +255,59 @@ theorem cof_one : cof 1 = 1 := by
 theorem cof_succ (o) : cof (succ o) = 1 :=
   cof_add_one o
 
+theorem _root_.Order.cof_le_one_of_cof_lt_aleph0 [LinearOrder α] (h : Order.cof α < ℵ₀) :
+    Order.cof α ≤ 1 := by
+  obtain ⟨s, hs, hs'⟩ := Order.cof_eq α
+  have hf : s.Finite := by
+    rw [Set.Finite, ← mk_lt_aleph0_iff]
+    exact hs'.trans_lt h
+  obtain ⟨t, ht, ht'⟩ := hf.exists_subsingleton_isCofinal hs
+  apply (cof_le ht').trans
+  simpa
+
+theorem cof_le_one_of_cof_lt_aleph0 {o : Ordinal} : cof o < ℵ₀ → cof o ≤ 1 := by
+  simpa using Order.cof_le_one_of_cof_lt_aleph0 (α := o.ToType)
+
+theorem _root_.Order.aleph0_le_cof_of_one_lt_cof [LinearOrder α] [WellFoundedLT α] :
+    1 < Order.cof α → ℵ₀ ≤ Order.cof α := by
+  contrapose!
+  exact Order.cof_le_one_of_cof_lt_aleph0
+
+theorem aleph0_le_cof_of_one_lt_cof {o : Ordinal} : 1 < cof o → ℵ₀ ≤ cof o := by
+  simpa using Order.aleph0_le_cof_of_one_lt_cof (α := o.ToType)
+
+theorem _root_.Order.aleph0_le_cof_iff [LinearOrder α] [WellFoundedLT α] [Nonempty α] :
+    ℵ₀ ≤ Order.cof α ↔ NoMaxOrder α := by
+  rw [← not_iff_not, not_le]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨(_ | n), hn⟩ := Cardinal.lt_aleph0.1 h
+    · simp_all
+    · have hn' := hn
+      rw [← Order.cof_ord_cof, hn, ord_nat, eq_comm] at hn'
+      aesop (add simp [cof_add_one, Order.cof_eq_one_iff])
+  · rw [← noTopOrder_iff_noMaxOrder, noTopOrder_iff] at h
+    rw [Order.cof_eq_one_iff.2]
+    · exact one_lt_aleph0
+    · simpa using h
+#exit
+
+variable (α) in
+theorem _root_.Order.aleph0_le_cof [LinearOrder α] [WellFoundedLT α] [Nonempty α] [NoMaxOrder α] :
+    ℵ₀ ≤ Order.cof α :=
+  Order.aleph0_le_cof_iff.2 ‹_›
+
+theorem aleph0_le_cof_iff {o} : ℵ₀ ≤ cof o ↔ IsSuccLimit o := by
+  induction o using Ordinal.inductionOnWellOrder with | _ α
+  cases isEmpty_or_nonempty α with
+  | inl => simp [type_eq_zero_of_empty]
+  | inr h => simp [isSuccLimit_iff, Order.aleph0_le_cof_iff, isSuccPrelimit_type_lt_iff]
+
+@[deprecated (since := "2026-03-21")] alias aleph0_le_cof := aleph0_le_cof_iff
+
+@[simp]
+theorem cof_omega0 : cof ω = ℵ₀ :=
+  (card_omega0 ▸ cof_le_card _).antisymm (aleph0_le_cof_iff.2 isSuccLimit_omega0)
+
 theorem cof_iSup_Iio {f} (hf : StrictMono f) {a} (ha : IsSuccPrelimit a) :
     cof (⨆ i : Iio a, f i.1) = cof a := by
   have : StrictMono (β := Iio (⨆ i : Iio a, f i.1)) (fun i : Iio a ↦ ⟨f i, ?_⟩) := fun x y h ↦ hf h
