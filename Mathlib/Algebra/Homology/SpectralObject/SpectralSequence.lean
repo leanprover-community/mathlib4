@@ -517,7 +517,6 @@ lemma isZero_spectralSequence_page_X_of_isZero_H (r : ℤ) (hr : r₀ ≤ r)
     _ i₁ i₂ _ rfl h₁ h₂ rfl (n - 1) n (n + 1) hn]
   exact isZero_E_of_isZero_H _ _ _ _ _ _ _ h
 
-/-- isZero_spectralSequence_page_X_of_isZero_H' -/
 lemma isZero_spectralSequence_page_X_of_isZero_H' (r : ℤ) (hr : r₀ ≤ r) (pq : κ)
     (h : IsZero ((X.H (data.deg pq)).obj (mk₁ (homOfLE (data.le₁₂ pq))))) :
     IsZero (((X.spectralSequence data).page r).X pq) :=
@@ -623,7 +622,7 @@ section
 variable (Y : SpectralObject C EInt)
 
 /-- The `E₂` cohomological spectral sequence indexed by `ℤ × ℤ` attached to
-a first quadrant spectral object indexed by `EInt`. -/
+a spectral object indexed by `EInt`. -/
 noncomputable abbrev E₂SpectralSequence : E₂CohomologicalSpectralSequence C :=
   Y.spectralSequence coreE₂Cohomological
 
