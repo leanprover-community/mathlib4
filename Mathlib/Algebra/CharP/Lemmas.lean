@@ -124,7 +124,6 @@ lemma add_pow_expChar_of_commute (h : Commute x y) : (x + y) ^ p = x ^ p + y ^ p
   · let ⟨r, hr⟩ := h.exists_add_pow_prime_eq hprime
     simp [hr]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma add_pow_expChar_pow_of_commute (h : Commute x y) :
     (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n := by
   obtain _ | hprime := hR

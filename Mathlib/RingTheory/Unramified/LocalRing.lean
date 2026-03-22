@@ -93,6 +93,7 @@ lemma FormallyUnramified.map_maximalIdeal [FormallyUnramified R S] :
   rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient]
   exact isField_quotient_map_maximalIdeal
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 02FM]
 lemma FormallyUnramified.of_map_maximalIdeal
     [Algebra.IsSeparable (ResidueField R) (ResidueField S)]
@@ -193,7 +194,6 @@ lemma finite_of_primesOver_eq_singleton [Module.Finite R S] [q.LiesOver p] :
       map_mul, mul_assoc, mul_left_comm, IsLocalization.mk'_spec'_mk, ← map_mul]
   exact Submodule.subset_span ⟨_, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma localRingHom_surjective_of_primesOver_eq_singleton
     [Module.Finite R S] [q.LiesOver p] [Algebra.IsUnramifiedAt R q]
     (H : Function.Surjective (algebraMap p.ResidueField q.ResidueField)) :

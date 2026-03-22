@@ -218,7 +218,7 @@ end MapComap
 @[simp]
 lemma id_map {f : α → β} (hf : Measurable f) : Kernel.id.map f = deterministic f hf := by
   ext
-  rw [Kernel.map_apply _ hf, Kernel.deterministic_apply, Kernel.id_apply, Measure.map_dirac hf]
+  rw [Kernel.map_apply _ hf, Kernel.deterministic_apply, Kernel.id_apply, Measure.map_dirac' hf]
 
 @[simp]
 lemma id_comap {f : α → β} (hf : Measurable f) : Kernel.id.comap f hf = deterministic f hf := by

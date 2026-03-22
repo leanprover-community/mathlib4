@@ -167,7 +167,6 @@ theorem discr_powerBasis_eq_prod' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃ 
 
 local notation "n" => finrank K L
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A variation of `Algebra.discr_powerBasis_eq_prod`. -/
 theorem discr_powerBasis_eq_prod'' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃ (L →ₐ[K] E)) :
     algebraMap K E (discr K pb.basis) =
@@ -297,7 +296,6 @@ end Field
 
 section Int
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Two (finite) ℤ-bases have the same discriminant. -/
 theorem discr_eq_discr (b : Basis ι ℤ A) (b' : Basis ι ℤ A) :
     Algebra.discr ℤ b = Algebra.discr ℤ b' := by

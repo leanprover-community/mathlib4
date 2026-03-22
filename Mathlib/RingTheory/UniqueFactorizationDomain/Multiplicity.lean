@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
@@ -57,8 +58,6 @@ variable [NormalizationMonoid R]
 
 open Multiset
 
-section
-
 theorem le_emultiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} (ha : Irreducible a)
     (hb : b ≠ 0) :
     ↑n ≤ emultiplicity a b ↔ replicate n (normalize a) ≤ normalizedFactors b := by
@@ -79,14 +78,18 @@ theorem le_emultiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} 
     rw [← (prod_normalizedFactors hb).dvd_iff_dvd_right, hu, prod_add, prod_replicate]
     exact (Associated.pow_pow <| associated_normalize a).dvd.trans (Dvd.intro u.prod rfl)
 
+variable [DecidableEq R]
+
 /-- The multiplicity of an irreducible factor of a nonzero element is exactly the number of times
 the normalized factor occurs in the `normalizedFactors`.
+
+For a version using `multiplicity`, see `multiplicity_eq_count_normalizedFactors`.
 
 See also `count_normalizedFactors_eq` which expands the definition of `multiplicity`
 to produce a specification for `count (normalizedFactors _) _`..
 -/
-theorem emultiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha : Irreducible a)
-    (hb : b ≠ 0) : emultiplicity a b = (normalizedFactors b).count (normalize a) := by
+theorem emultiplicity_eq_count_normalizedFactors {a b : R} (ha : Irreducible a) (hb : b ≠ 0) :
+    emultiplicity a b = (normalizedFactors b).count (normalize a) := by
   apply le_antisymm
   · apply Order.le_of_lt_add_one
     rw [← Nat.cast_one, ← Nat.cast_add, lt_iff_not_ge,
@@ -94,16 +97,25 @@ theorem emultiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha :
     simp
   rw [le_emultiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
 
-end
+/-- The multiplicity of an irreducible factor of a nonzero element is exactly the number of times
+the normalized factor occurs in the `normalizedFactors`.
 
+For a version using `emultiplicity`, see `emultiplicity_eq_count_normalizedFactors`. -/
+theorem multiplicity_eq_count_normalizedFactors {a b : R} (ha : Irreducible a) (hb : b ≠ 0) :
+    multiplicity a b = (normalizedFactors b).count (normalize a) := by
+  have := emultiplicity_eq_count_normalizedFactors ha hb
+  rwa [(finiteMultiplicity_of_emultiplicity_eq_natCast this).emultiplicity_eq_multiplicity,
+    ENat.coe_inj] at this
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The number of times an irreducible factor `p` appears in `normalizedFactors x` is defined by
 the number of times it divides `x`.
 
 See also `multiplicity_eq_count_normalizedFactors` if `n` is given by `multiplicity p x`.
 -/
-theorem count_normalizedFactors_eq [DecidableEq R] {p x : R} (hp : Irreducible p)
-    (hnorm : normalize p = p) {n : ℕ} (hle : p ^ n ∣ x) (hlt : ¬p ^ (n + 1) ∣ x) :
-    (normalizedFactors x).count p = n := by classical
+theorem count_normalizedFactors_eq {p x : R} (hp : Irreducible p) (hnorm : normalize p = p) {n : ℕ}
+    (hle : p ^ n ∣ x) (hlt : ¬p ^ (n + 1) ∣ x) :
+    (normalizedFactors x).count p = n := by
   by_cases hx0 : x = 0
   · simp [hx0] at hlt
   apply Nat.cast_injective (R := ℕ∞)
@@ -117,8 +129,8 @@ the number of times it divides `x`. This is a slightly more general version of
 
 See also `multiplicity_eq_count_normalizedFactors` if `n` is given by `multiplicity p x`.
 -/
-theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Irreducible p)
-    (hnorm : normalize p = p) {n : ℕ} (hle : p ^ n ∣ x) (hlt : ¬p ^ (n + 1) ∣ x) :
+theorem count_normalizedFactors_eq' {p x : R} (hp : p = 0 ∨ Irreducible p) (hnorm : normalize p = p)
+    {n : ℕ} (hle : p ^ n ∣ x) (hlt : ¬p ^ (n + 1) ∣ x) :
     (normalizedFactors x).count p = n := by
   rcases hp with (rfl | hp)
   · cases n
@@ -126,6 +138,15 @@ theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Ir
     · rw [zero_pow (Nat.succ_ne_zero _)] at hle hlt
       exact absurd hle hlt
   · exact count_normalizedFactors_eq hp hnorm hle hlt
+
+lemma associated_finprod_pow_count {x : R} (hx : x ≠ 0) :
+    Associated (∏ᶠ p : R, p ^ (normalizedFactors x).count p) x := by
+  rw [← Multiset.prod_map_eq_finprod, Multiset.map_id']
+  exact prod_normalizedFactors hx
+
+lemma finprod_pow_count_eq_of_subsingleton_units [Subsingleton Rˣ] {x : R} (hx : x ≠ 0) :
+    ∏ᶠ p : R, p ^ (normalizedFactors x).count p = x :=
+  associated_iff_eq.mp <| associated_finprod_pow_count hx
 
 end multiplicity
 

@@ -58,7 +58,6 @@ theorem FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup :
   ext
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Finsupp.toFreeAbelianGroup_comp_toFinsupp :
     toFreeAbelianGroup.comp toFinsupp = AddMonoidHom.id (FreeAbelianGroup X) := by
