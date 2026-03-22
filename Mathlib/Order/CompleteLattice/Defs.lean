@@ -293,12 +293,11 @@ section CompleteLinearOrder
 
 variable [CompleteLinearOrder α] {s : Set α} {a b : α}
 
+@[to_dual sInf_lt_iff]
 theorem lt_sSup_iff : b < sSup s ↔ ∃ a ∈ s, b < a :=
   lt_isLUB_iff <| isLUB_sSup s
 
-theorem sInf_lt_iff : sInf s < b ↔ ∃ a ∈ s, a < b :=
-  isGLB_lt_iff <| isGLB_sInf s
-
+@[to_dual]
 theorem sSup_eq_top : sSup s = ⊤ ↔ ∀ b < ⊤, ∃ a ∈ s, b < a :=
   ⟨fun h _ hb => lt_sSup_iff.1 <| hb.trans_eq h.symm, fun h =>
     top_unique <|
@@ -306,20 +305,13 @@ theorem sSup_eq_top : sSup s = ⊤ ↔ ∀ b < ⊤, ∃ a ∈ s, b < a :=
         let ⟨_, ha, h⟩ := h _ h'
         (h.trans_le <| le_sSup ha).false⟩
 
-theorem sInf_eq_bot : sInf s = ⊥ ↔ ∀ b > ⊥, ∃ a ∈ s, a < b :=
-  @sSup_eq_top αᵒᵈ _ _
-
+@[to_dual iInf_lt_iff]
 theorem lt_iSup_iff {f : ι → α} : a < iSup f ↔ ∃ i, a < f i :=
   lt_sSup_iff.trans exists_range_iff
 
-theorem iInf_lt_iff {f : ι → α} : iInf f < a ↔ ∃ i, f i < a :=
-  sInf_lt_iff.trans exists_range_iff
-
+@[to_dual]
 theorem lt_biSup_iff {s : Set β} {f : β → α} : a < ⨆ i ∈ s, f i ↔ ∃ i ∈ s, a < f i := by
   simp [lt_iSup_iff]
-
-theorem biInf_lt_iff {s : Set β} {f : β → α} : ⨅ i ∈ s, f i < a ↔ ∃ i ∈ s, f i < a := by
-  simp [iInf_lt_iff]
 
 end CompleteLinearOrder
 

@@ -106,7 +106,7 @@ def Ordinal : Type (u + 1) :=
   Quotient Ordinal.isEquivalent
 
 /-- A "canonical" type order-isomorphic to the ordinal `o`, living in the same universe. This is
-defined through the axiom of choice.
+defined through the axiom of choice; in particular, it has no useful def-eqs, and it is not exposed.
 
 Use this over `Iio o` only when it is paramount to have a `Type u` rather than a `Type (u + 1)`,
 and convert using
@@ -116,23 +116,26 @@ Ordinal.ToType.mk : Iio o → o.ToType
 Ordinal.ToType.toOrd : o.ToType → Iio o
 ```
 -/
+@[no_expose]
 def Ordinal.ToType (o : Ordinal.{u}) : Type u :=
   o.out.α
 
 @[deprecated (since := "2025-12-04")]
 alias Ordinal.toType := Ordinal.ToType
 
-instance hasWellFounded_toType (o : Ordinal) : WellFoundedRelation o.ToType :=
-  ⟨o.out.r, o.out.wo.wf⟩
-
+@[no_expose]
 instance linearOrder_toType (o : Ordinal) : LinearOrder o.ToType :=
   @IsWellOrder.linearOrder _ o.out.r o.out.wo
 
 instance wellFoundedLT_toType (o : Ordinal) : WellFoundedLT o.ToType :=
   o.out.wo.toIsWellFounded
 
+instance hasWellFounded_toType (o : Ordinal) : WellFoundedRelation o.ToType :=
+  WellFoundedLT.toWellFoundedRelation
+
 namespace Ordinal
 
+@[no_expose]
 noncomputable instance (o : Ordinal) : SuccOrder o.ToType :=
   .ofLinearWellFoundedLT _
 
@@ -227,34 +230,34 @@ instance nontrivial : Nontrivial Ordinal.{u} :=
 
 Not to be confused with well-founded induction `WellFoundedLT.induction`. -/
 @[elab_as_elim]
-theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
-    (H : ∀ (α r) [IsWellOrder α r], C (type r)) : C o :=
-  Quot.inductionOn o fun ⟨α, r, wo⟩ => @H α r wo
+theorem inductionOn {motive : Ordinal → Prop} (o : Ordinal)
+    (type : ∀ (α r) [IsWellOrder α r], motive (type r)) : motive o :=
+  Quot.inductionOn o fun ⟨α, r, _⟩ ↦ type α r
 
 /-- `Quotient.inductionOn₂` specialized to ordinals.
 
 Not to be confused with well-founded induction `WellFoundedLT.induction`. -/
 @[elab_as_elim]
-theorem inductionOn₂ {C : Ordinal → Ordinal → Prop} (o₁ o₂ : Ordinal)
-    (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s], C (type r) (type s)) : C o₁ o₂ :=
-  Quotient.inductionOn₂ o₁ o₂ fun ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ => @H α r wo₁ β s wo₂
+theorem inductionOn₂ {motive : Ordinal → Ordinal → Prop} (o₁ o₂ : Ordinal)
+    (type : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s], motive (type r) (type s)) :
+    motive o₁ o₂ :=
+  Quotient.inductionOn₂ o₁ o₂ fun ⟨α, r, _⟩ ⟨β, s, _⟩ ↦ type α r β s
 
 /-- `Quotient.inductionOn₃` specialized to ordinals.
 
 Not to be confused with well-founded induction `WellFoundedLT.induction`. -/
 @[elab_as_elim]
-theorem inductionOn₃ {C : Ordinal → Ordinal → Ordinal → Prop} (o₁ o₂ o₃ : Ordinal)
-    (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s] (γ t) [IsWellOrder γ t],
-      C (type r) (type s) (type t)) : C o₁ o₂ o₃ :=
-  Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ ⟨γ, t, wo₃⟩ =>
-    @H α r wo₁ β s wo₂ γ t wo₃
+theorem inductionOn₃ {motive : Ordinal → Ordinal → Ordinal → Prop} (o₁ o₂ o₃ : Ordinal)
+    (type : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s] (γ t) [IsWellOrder γ t],
+      motive (type r) (type s) (type t)) : motive o₁ o₂ o₃ :=
+  Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ ↦ type α r β s γ t
 
 open Classical in
 /-- To prove a result on ordinals, it suffices to prove it for order types of well-orders. -/
 @[elab_as_elim]
-theorem inductionOnWellOrder {C : Ordinal → Prop} (o : Ordinal)
-    (H : ∀ (α) [LinearOrder α] [WellFoundedLT α], C (typeLT α)) : C o :=
-  inductionOn o fun α r wo ↦ @H α (linearOrderOfSTO r) wo.toIsWellFounded
+theorem inductionOnWellOrder {motive : Ordinal → Prop} (o : Ordinal)
+    (type : ∀ (α) [LinearOrder α] [WellFoundedLT α], motive (typeLT α)) : motive o :=
+  inductionOn o fun α r wo ↦ @type α (linearOrderOfSTO r) wo.toIsWellFounded
 
 open Classical in
 /-- To define a function on ordinals, it suffices to define them on order types of well-orders.
@@ -1036,8 +1039,7 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
       obtain ⟨f⟩ := lift_type_lt.{_,_,v}.1 h
       obtain ⟨f, a, hf⟩ := f
       exists a
-      induction a using inductionOn with
-      | H a r =>
+      induction a using inductionOn with | type α r
       refine lift_type_eq.{u, max (u + 1) v, max (u + 1) v}.2
         ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ ?_) ?_).symm⟩
       · exact fun b => enum r ⟨f b, (hf _).1 ⟨_, rfl⟩⟩
@@ -1077,6 +1079,7 @@ theorem mk_toType (o : Ordinal) : #o.ToType = o.card :=
 
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal
   whose cardinal is `c`. For the order-embedding version, see `ord.order_embedding`. -/
+@[no_expose]
 def ord (c : Cardinal) : Ordinal :=
   Quot.liftOn c (fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2) <| by
   rintro α β ⟨f⟩
@@ -1085,8 +1088,10 @@ def ord (c : Cardinal) : Ordinal :=
     refine ⟨⟨_, RelIso.IsWellOrder.preimage r ?_⟩, type_preimage _ _⟩
   exacts [f.symm, f]
 
-theorem ord_eq_Inf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
-  rfl
+theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
+  (rfl)
+
+@[deprecated (since := "2026-03-15")] alias ord_eq_Inf := ord_eq_iInf
 
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord #α = @type α r wo :=
