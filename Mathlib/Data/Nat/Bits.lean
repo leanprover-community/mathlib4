@@ -44,11 +44,7 @@ def boddDiv2 : ℕ → Bool × ℕ
     | (true, m) => (false, succ m)
 
 /-- `div2 n = ⌊n/2⌋` the greatest integer smaller than `n/2` -/
-@[grind =] def div2 (n : ℕ) : ℕ := n / 2
-
-@[inline] def div2Impl (n : ℕ) : ℕ := n >>> 1
-
-@[csimp] lemma div2_eq_div2Impl : @div2 = @div2Impl := rfl
+@[inline, grind =] def div2 (n : ℕ) : ℕ := n / 2
 
 theorem div2_val (n) : div2 n = n / 2 := rfl
 
