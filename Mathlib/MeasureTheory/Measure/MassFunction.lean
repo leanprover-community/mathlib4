@@ -36,32 +36,24 @@ universe u
 variable {α β γ δ : Type*}
 
 lemma Function.support_subsingleton_of_disjoint [Zero β] {s : δ → Set α} (f : α → β)
-    (hs : Pairwise (Disjoint on s)) (i : α) [DecidablePred (fun d => i ∈ s d)] (j : δ)
-    (hj : i ∈ s j) : Function.support (fun d ↦ if i ∈ s d then f i else 0) ⊆ {j} := by
+    (hs : Pairwise (Disjoint on s)) (i : α) (j : δ)
+    (hj : i ∈ s j) : Function.support (fun d ↦ (s d).indicator f i) ⊆ {j} := by
   intro d
-  simp_rw [Set.mem_singleton_iff, Function.mem_support, ne_eq, ite_eq_right_iff, Classical.not_imp]
-  rw [← not_imp_not]
-  intro hd e
-  obtain r := Set.disjoint_iff_inter_eq_empty.mp (hs hd)
-  revert r
-  change s d ∩ s j ≠ ∅
-  rw [← Set.nonempty_iff_ne_empty, Set.nonempty_def]
-  exact ⟨i, ⟨e.1, hj⟩⟩
+  by_cases h : d = j
+  · aesop
+  · simp only [Pairwise, ne_eq] at hs
+    simp [h, Disjoint.notMem_of_mem_left (hs fun a ↦ h ((Eq.symm a))) hj]
 
-lemma Set.indicator_iUnion_of_disjoint [AddCommMonoid β] [TopologicalSpace β]
+lemma Set.indicator_iUnion_of_disjoint' [AddCommMonoid β] [TopologicalSpace β]
     (s : δ → Set α) (hs : Pairwise (Disjoint on s)) (f : α → β) (i : α) :
     (⋃ d, s d).indicator f i = ∑' d, (s d).indicator f i := by
   classical
-  simp only [Set.indicator, Set.mem_iUnion]
-  by_cases h₀ : ∃ d, i ∈ s d <;> simp only [h₀, ↓reduceIte]
+  by_cases h₀ : ∃ d, i ∈ s d
   · obtain ⟨j, hj⟩ := h₀
-    rw [← tsum_subtype_eq_of_support_subset (s := {j})]
-    · simp only [tsum_fintype, Finset.univ_unique, Set.default_coe_singleton, Finset.sum_singleton,
-      left_eq_ite_iff]
-      exact fun h ↦ False.elim (h hj)
-    · apply (support_subsingleton_of_disjoint f hs i j hj)
-  · push_neg at h₀
-    simp_rw [if_neg (h₀ _), tsum_zero]
+    rw [← tsum_subtype_eq_of_support_subset (s := {j})
+      ((support_subsingleton_of_disjoint f hs i j hj))]
+    aesop
+  · aesop
 
 open ENNReal MeasureTheory
 
@@ -151,7 +143,7 @@ lemma toMeasure_additive (μ : MassFunction α) (s : δ → Set α) (hs : Pairwi
     μ.toMeasure (⋃ d, s d) = ∑' (d : δ), μ.toMeasure (s d) := by
   simp only [toMeasure_apply, Set.indicator.mul_indicator_eq]
   rw [ENNReal.tsum_comm]
-  exact tsum_congr (fun b ↦ Set.indicator_iUnion_of_disjoint s hs μ b)
+  exact tsum_congr (indicator_iUnion_of_disjoint s hs μ)
 
 theorem toMeasure_apply_finset {μ : MassFunction α} (s : Finset α) : μ.toMeasure s = ∑ x ∈ s, μ x
     := by
