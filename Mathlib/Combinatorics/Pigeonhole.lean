@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Order.Preorder.Finite
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 
 /-!
 # Pigeonhole principles
@@ -287,6 +288,39 @@ elements. See also `Finset.exists_card_fiber_lt_of_card_lt_mul` for a stronger s
 theorem exists_card_fiber_le_of_card_le_mul (ht : t.Nonempty) (hn : #s ≤ #t * n) :
     ∃ y ∈ t, #{x ∈ s | f x = y} ≤ n :=
   exists_card_fiber_le_of_card_le_nsmul ht hn
+
+/-- A version of the pigeonhole principle for set-valued functions.
+
+Given a family of sets `B : n → Finset α`, each of cardinality `k`, indexed by a finite set
+`s : Finset n`, if the cardinality of the union `s.biUnion B` is less than `s.card`, then
+there exists an element `x ∈ s.biUnion B` which is covered by more than `k` of the sets
+`B j` (i.e., `k < #{j ∈ s | x ∈ B j}`).
+
+This is a double-counting variant of the pigeonhole principle. The key identity is
+`∑ x ∈ s.biUnion B, #{j ∈ s | x ∈ B j} = ∑ j ∈ s, (B j).card = s.card * k`.
+If every element were covered by at most `k` sets, the left-hand side would be bounded by
+`(s.biUnion B).card * k < s.card * k`, a contradiction.
+
+Unlike the classical pigeonhole principle (see `Finset.exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to`),
+this formulation handles a *set-valued* assignment where elements may belong to
+multiple sets simultaneously. -/
+lemma exists_lt_card_fiber_of_card_biUnion_lt_card
+    {n : Type*} [DecidableEq n] [Fintype n]
+    {α : Type*} [DecidableEq α]
+    {B : n → Finset α}
+    {s : Finset n}
+    {k : Nat} [nek : NeZero k]
+    (h₁ : ∀ j, Finset.card (B j) = k)
+    (h₂ : (s.biUnion B).card < (s.card)) :
+    ∃ x ∈ s.biUnion B, k < (Finset.card {j | j ∈ s ∧ x ∈ B j}) := by
+  by_contra! hc
+  have hc' := Finset.sum_le_sum  (s := s.biUnion B) (ι := α)
+    (f := fun x => Finset.card {j | j ∈ s ∧ x ∈ B j})
+    (g := fun _ => k) (by grind)
+  have : (Finset.card (s.biUnion B))*k < s.card*k :=
+    Nat.mul_lt_mul_right (Nat.ne_zero_iff_zero_lt.mp nek.out) |>.mpr (by lia)
+  simp at hc'
+  simpa [← Finset.sum_card_eq_sum_card_fiber_biUnion B s, h₁] using Nat.lt_of_le_of_lt hc' this
 
 end Finset
 
