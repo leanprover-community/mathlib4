@@ -52,14 +52,12 @@ namespace IsNormalClosureFG
 theorem map (f : G →* H) (hf : Function.Surjective f) (N : Subgroup G) (hN : IsNormalClosureFG N) :
     IsNormalClosureFG (N.map f) := by
   obtain ⟨S, hSfinite, hSclosure⟩ := hN
-  use f '' S
-  refine ⟨hSfinite.image _, ?_⟩
+  refine ⟨f '' S, hSfinite.image _, ?_⟩
   rw [ ← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
 /-- Composing with a reindexing free group isomorphism preserves finite generation in
 normal closure of the kernel. -/
-lemma ker_comp_freeGroupCongr
-    (e : α ≃ β) (f : FreeGroup α →* G) (hfker : IsNormalClosureFG f.ker) :
+lemma ker_comp_freeGroupCongr (e : α ≃ β) (f : FreeGroup α →* G) (hfker : IsNormalClosureFG f.ker) :
     IsNormalClosureFG
       (f.comp (FreeGroup.freeGroupCongr e.symm : FreeGroup β →* FreeGroup α)).ker := by
   simp only [MonoidHom.ker_comp_mulEquiv]
