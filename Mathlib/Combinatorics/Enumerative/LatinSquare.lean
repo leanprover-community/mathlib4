@@ -104,15 +104,6 @@ instance {m n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [ToString α] :
       String.intercalate " " (List.ofFn (fun j => (toString (L.M i j))));
       String.intercalate "\n" (List.ofFn row)
 
-/-- If a matrix has each symbol appearing exactly once in every column,
-    then the entries in each column are distinct. -/
-lemma latin_square_col_implies_latin_rectangle_col
-    {n : Type*} {α : Type*}
-    (M : Matrix n n α)
-    (h₂ : ∀ j, Function.Bijective (M.col j)) :
-    ∀ y, Function.Injective (M.col y) := by
-  exact (h₂ · |>.injective)
-
 /-- A LatinSquare is a Square LatinRectangle -/
 abbrev LatinSquare (n : Type*) [Fintype n] (α : Type*) [Fintype α] [DecidableEq α] :=
   LatinRectangle n n α
@@ -144,7 +135,7 @@ def LatinSquareFromOncePerColumn
     M := M,
     exactly_n_symbols := exactly_n_symbols,
     once_per_row := once_per_row,
-    distinct_col_entries := latin_square_col_implies_latin_rectangle_col M once_per_column
+    distinct_col_entries := (once_per_column · |>.injective)
   }
 
 /-- Every Finite Group's Cayley table is an example of a Latin Square. -/
