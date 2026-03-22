@@ -75,7 +75,6 @@ theorem IsSRGWith.ediam_eq_two [Nontrivial V] (h : G.IsSRGWith n k ℓ μ) (ht :
     by_contra! hc
     obtain ⟨hn, ha, he⟩ := two_lt_edist_iff.mp hc
     have h := h.of_not_adj hn ha
-    simp only at h
     simp_rw [he, Fintype.card_eq_zero] at h
     exact false_of_ne (h ▸ hm)
   · by_contra! hc
