@@ -839,13 +839,13 @@ end Point
 /-!
 ### The x-coordinate map to ℙ¹
 
-We define the map from affine points of `W` to the projective line by producing a coordinate
-vector in `Fin 2 → F` that represents the projective point.
+We define the map from affine points of an affine Weierstrass curve over `R` to the projective line
+by producing a coordinate vector in `Fin 2 → R` that represents the projective point.
 -/
 
 namespace Point
 
-/-- This map sends an affine point `P` on `W` to a representative of its image on ℙ¹
+/-- This map sends an affine point `P` on `W'` to a representative of its image on ℙ¹
 under the x-coordinate map. We take `![1, 0]` for the point at infinity and `![x, 1]`,
 where `x` is the x-coordinate of `P` for a finite point. -/
 noncomputable def xRep : W'.Point → Fin 2 → R
@@ -853,7 +853,7 @@ noncomputable def xRep : W'.Point → Fin 2 → R
   | some x _ _ => ![x, 1]
 
 @[simp]
-lemma xRep_zero : (0 : W.Point).xRep = ![1, 0] :=
+lemma xRep_zero : (0 : W'.Point).xRep = ![1, 0] :=
   rfl
 
 @[simp]
