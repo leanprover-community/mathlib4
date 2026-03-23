@@ -117,8 +117,8 @@ lemma integrable_llr_compProd_iff (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
       Integrable (llr μ ν) μ ∧ Integrable (llr (μ ⊗ₘ κ) (μ ⊗ₘ η)) (μ ⊗ₘ κ) := by
   have ⟨h_ac_μν, h_ac_κη⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
   rw [← integrable_rnDeriv_mul_log_iff h_ac,
-    integrable_congr (rnDeriv_compProd_mul_log_eq_mul_add h_ac_κη)]
-  rw [integrable_toReal_rnDeriv_mul_iff h_ac]
+    integrable_congr (rnDeriv_compProd_mul_log_eq_mul_add h_ac_κη),
+    integrable_toReal_rnDeriv_mul_iff h_ac]
   have h_iff_κ : Integrable (llr μ ν) μ ↔ Integrable (fun x ↦ llr μ ν x.1) (μ ⊗ₘ κ) := by
     rw [Measure.integrable_compProd_iff]
     swap; · exact StronglyMeasurable.aestronglyMeasurable (by fun_prop)
@@ -138,13 +138,12 @@ lemma integrable_llr_compProd_iff (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
         log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) x).toReal) (μ ⊗ₘ κ) := by
     have ⟨h_ac_μν, h_ac_κη⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
     rw [← integrable_rnDeriv_mul_log_iff h_ac,
-     integrable_congr (rnDeriv_compProd_mul_log_eq_mul_add h_ac_κη)]
+      integrable_congr (rnDeriv_compProd_mul_log_eq_mul_add h_ac_κη)]
     exact integrable_toReal_rnDeriv_mul_iff h_ac
-  rw [← h_int_iff] at h_int
-  have h_int1 := integrable_llr_of_integrable_llr_compProd h_ac h_int
+  have h_int1 := integrable_llr_of_integrable_llr_compProd h_ac (h_int_iff.2 h_int)
   rw [h_iff_κ] at h_int1
-  rw [h_int_iff, integrable_add_iff_integrable_right'] at h_int
-  · refine ⟨h_int1, h_int⟩
+  rw [integrable_add_iff_integrable_right'] at h_int
+  · exact ⟨h_int1, h_int⟩
   · exact h_int1
 
 /-- Chain rule for the integral of the log-likelihood ratio, under absolute continuity and
