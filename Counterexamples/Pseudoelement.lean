@@ -45,6 +45,7 @@ def x : Over (of ℤ ℚ ⊞ of ℤ ℚ) :=
 def y : Over (of ℤ ℚ ⊞ of ℤ ℚ) :=
   Over.mk (biprod.lift (𝟙 _) (𝟙 _))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `biprod.fst ≫ x` is pseudoequal to `biprod.fst y`. -/
 theorem fst_x_pseudo_eq_fst_y : PseudoEqual _ (app biprod.fst x) (app biprod.fst y) := by
   refine ⟨of ℤ ℚ, 𝟙 _, 𝟙 _, inferInstance, ?_, ?_⟩
@@ -52,6 +53,7 @@ theorem fst_x_pseudo_eq_fst_y : PseudoEqual _ (app biprod.fst x) (app biprod.fst
   · dsimp [x, y]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `biprod.snd ≫ x` is pseudoequal to `biprod.snd y`. -/
 theorem snd_x_pseudo_eq_snd_y : PseudoEqual _ (app biprod.snd x) (app biprod.snd y) := by
   refine ⟨of ℤ ℚ, 𝟙 _, 2 • 𝟙 _, inferInstance, ?_, ?_⟩
@@ -61,6 +63,7 @@ theorem snd_x_pseudo_eq_snd_y : PseudoEqual _ (app biprod.snd x) (app biprod.snd
     refine ConcreteCategory.hom_ext _ _ fun a => ?_
     simp_rw [biprod.lift_snd]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 -- Porting note: locally disable instance to avoid inferred/synthesized clash
 attribute [-instance] AddCommGroup.toIntModule in
 /-- `x` is not pseudoequal to `y`. -/
@@ -77,13 +80,13 @@ theorem x_not_pseudo_eq : ¬PseudoEqual _ x y := by
   let π₁ := (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _)
   have ha₁ := congr_arg π₁ ha
   rw [← ModuleCat.comp_apply, ← ModuleCat.comp_apply] at ha₁
-  simp only [π₁, φ, BinaryBiproduct.bicone_fst, biprod.lift_fst, CategoryTheory.id_apply,
-    biprod.lift_fst_assoc, Category.id_comp, biprod.lift_snd_assoc, Linear.smul_comp,
-    Preadditive.add_comp, BinaryBicone.inl_fst, BinaryBicone.inr_fst, smul_zero, add_zero] at ha₁
+  simp only [π₁, φ, biprod.lift_fst, biprod.lift_fst_assoc, Category.id_comp,
+    biprod.lift_snd_assoc, Linear.smul_comp, Preadditive.add_comp, BinaryBicone.inl_fst,
+    BinaryBicone.inr_fst, smul_zero, add_zero] at ha₁
   let π₂ := (biprod.snd : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _)
   have ha₂ := congr_arg π₂ ha
   rw [← ModuleCat.comp_apply, ← ModuleCat.comp_apply] at ha₂
-  simp_all [π₁, π₂, φ]
+  simp_all [π₂, φ]
 
 attribute [local instance] Pseudoelement.setoid
 

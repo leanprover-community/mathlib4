@@ -3,8 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.Positivity.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.Order.Group.Abs
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Algebraic order homomorphism classes
@@ -44,8 +47,11 @@ multiplicative ring norms but outside of this use we only consider real-valued s
 Finitary versions of the current lemmas.
 -/
 
+@[expose] public section
 
-library_note "out-param inheritance"/--
+assert_not_exists Field
+
+library_note «out-param inheritance» /--
 Diamond inheritance cannot depend on `outParam`s in the following circumstances:
 * there are three classes `Top`, `Middle`, `Bottom`
 * all of these classes have a parameter `(α : outParam _)`
@@ -74,7 +80,7 @@ variable {ι F α β γ δ : Type*}
 
 /-- `NonnegHomClass F α β` states that `F` is a type of nonnegative morphisms. -/
 class NonnegHomClass (F : Type*) (α β : outParam Type*) [Zero β] [LE β] [FunLike F α β] : Prop where
-  /-- the image of any element is non negative. -/
+  /-- the image of any element is nonnegative. -/
   apply_nonneg (f : F) : ∀ a, 0 ≤ f a
 
 /-- `SubadditiveHomClass F α β` states that `F` is a type of subadditive morphisms. -/
@@ -137,20 +143,6 @@ theorem le_map_div_add_map_div [Group α] [Add β] [LE β] [MulLEAddHomClass F �
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) + f (b / c) := by
     simpa only [div_mul_div_cancel] using map_mul_le_add f (a / b) (b / c)
 
-namespace Mathlib.Meta.Positivity
-
-open Lean Meta Qq
-
-/-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
-@[positivity DFunLike.coe _ _]
-def evalMap : PositivityExt where eval {_ β} _ _ e := do
-  let .app (.app _ f) a ← whnfR e
-    | throwError "not ↑f · where f is of NonnegHomClass"
-  let pa ← mkAppOptM ``apply_nonneg #[none, none, β, none, none, none, none, f, a]
-  pure (.nonnegative pa)
-
-end Mathlib.Meta.Positivity
-
 /-! ### Group (semi)norms -/
 
 
@@ -206,13 +198,7 @@ export AddGroupNormClass (eq_zero_of_map_eq_zero)
 
 export GroupNormClass (eq_one_of_map_eq_zero)
 
-attribute [simp] map_one_eq_zero
-
-attribute [simp] map_neg_eq_map
-
-attribute [simp] map_inv_eq_map
-
-attribute [to_additive] GroupSeminormClass.toMulLEAddHomClass
+attribute [simp] map_one_eq_zero map_neg_eq_map map_inv_eq_map
 
 -- See note [lower instance priority]
 instance (priority := 100) AddGroupSeminormClass.toZeroHomClass [AddGroup α]
@@ -230,6 +216,11 @@ theorem map_div_le_add : f (x / y) ≤ f x + f y := by
 
 @[to_additive]
 theorem map_div_rev : f (x / y) = f (y / x) := by rw [← inv_div, map_inv_eq_map]
+
+@[to_additive]
+theorem map_inv_mul {α : Type*} [FunLike F α β] [CommGroup α] [GroupSeminormClass F α β] (x y : α) :
+    f (x⁻¹ * y) = f (x * y⁻¹) := by
+  rw [← map_inv_eq_map, inv_mul', inv_inv, div_eq_mul_inv]
 
 @[to_additive]
 theorem le_map_add_map_div' : f x ≤ f y + f (y / x) := by

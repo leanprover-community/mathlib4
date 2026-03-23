@@ -3,11 +3,14 @@ Copyright (c) 2024 Jineon Baek and Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
-import Mathlib.Algebra.Polynomial.Expand
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.NumberTheory.FLT.Basic
-import Mathlib.NumberTheory.FLT.MasonStothers
-import Mathlib.RingTheory.Polynomial.Content
+module
+
+public import Mathlib.Algebra.Polynomial.Expand
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.NumberTheory.FLT.Basic
+public import Mathlib.NumberTheory.FLT.MasonStothers
+public import Mathlib.RingTheory.Polynomial.Content
+public import Mathlib.Tactic.GCongr
 
 /-!
 # Fermat's Last Theorem for polynomials over a field
@@ -19,13 +22,15 @@ all polynomials must be constants.
 
 More generally, we can prove non-solvability of the Fermat-Catalan equation: there are no
 non-constant polynomial solutions to the equation `u * a ^ p + v * b ^ q + w * c ^ r = 0`, where
-`p, q, r ≥ 3` with `p * q + q * r + r * p ≤ p * q * r` , `p, q, r` not divisible by `char k`,
+`p, q, r ≥ 3` with `p * q + q * r + r * p ≤ p * q * r`, `p, q, r` not divisible by `char k`,
 and `u, v, w` are nonzero elements in `k`.
 FLT is the special case where `p = q = r = n`, `u = v = 1`, and `w = -1`.
 
 The proof uses the Mason-Stothers theorem (Polynomial ABC theorem) and infinite descent
 (in the characteristic p case).
 -/
+
+public section
 
 open Polynomial UniqueFactorizationMonoid
 
@@ -61,7 +66,7 @@ private lemma ineq_pqr_contradiction {p q r a b c : ℕ}
   calc
     _ = (p * a) * (q * r) + (q * b) * (r * p) + (r * c) * (p * q) + 1 := by ring
     _ ≤ (a + b + c) * (q * r) + (a + b + c) * (r * p) + (a + b + c) * (p * q) := by
-      rw [Nat.succ_le]
+      rw [Nat.succ_le_iff]
       gcongr
     _ = (q * r + r * p + p * q) * (a + b + c) := by ring
     _ ≤ _ := by gcongr
@@ -180,10 +185,10 @@ private theorem Polynomial.flt_catalan_aux
       · apply (isCoprime_expand chn0).mp
         rwa [← eq_a, ← eq_b]
       · have _ : ch ≠ 1 := CharP.ringChar_ne_one
-        have hch2 : 2 ≤ ch := by omega
+        have hch2 : 2 ≤ ch := by lia
         rw [← add_le_add_iff_right 1, ← eq_d, eq_deg_a]
-        refine le_trans ?_ (Nat.mul_le_mul_left _ hch2)
-        omega
+        grw [← hch2]
+        lia
       · rw [eq_a, eq_b, eq_c, ← expand_C ch u, ← expand_C ch v, ← expand_C ch w] at heq
         simp_rw [← map_pow, ← map_mul, ← map_add] at heq
         rwa [Polynomial.expand_eq_zero (zero_lt_iff.mpr chn0)] at heq
@@ -234,22 +239,17 @@ theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k
     FermatLastTheoremWith' k[X] n := by
   classical
   rw [FermatLastTheoremWith']
-  intros a b c ha hb hc heq
+  intro a b c ha hb hc heq
   obtain ⟨a', eq_a⟩ := gcd_dvd_left a b
   obtain ⟨b', eq_b⟩ := gcd_dvd_right a b
   set d := gcd a b
   have hd : d ≠ 0 := gcd_ne_zero_of_left ha
   rw [eq_a, eq_b, mul_pow, mul_pow, ← mul_add] at heq
   have hdc : d ∣ c := by
-    have hn : 0 < n := by omega
+    -- TODO: This is basically reproving `IsIntegrallyClosed.pow_dvd_pow_iff`
+    have hn : 0 < n := by lia
     have hdncn : d ^ n ∣ c ^ n := ⟨_, heq.symm⟩
-    rw [dvd_iff_normalizedFactors_le_normalizedFactors hd hc]
-    rw [dvd_iff_normalizedFactors_le_normalizedFactors
-          (pow_ne_zero n hd) (pow_ne_zero n hc),
-        normalizedFactors_pow, normalizedFactors_pow] at hdncn
-    simp_rw [Multiset.le_iff_count, Multiset.count_nsmul,
-      mul_le_mul_left hn] at hdncn ⊢
-    exact hdncn
+    simpa [dvd_iff_normalizedFactors_le_normalizedFactors, Multiset.le_iff_count, *] using hdncn
   obtain ⟨c', eq_c⟩ := hdc
   rw [eq_a, mul_ne_zero_iff] at ha
   rw [eq_b, mul_ne_zero_iff] at hb

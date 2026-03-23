@@ -3,7 +3,9 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.Orthonormal
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Orthonormal
 
 /-!
 # Subspaces of inner product spaces
@@ -12,9 +14,11 @@ This file defines the inner-product structure on a subspace of an inner-product 
 some theorems about orthogonal families of subspaces.
 -/
 
+@[expose] public section
+
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp
+open RCLike Real Filter Topology ComplexConjugate Finsupp Module
 
 open LinearMap (BilinForm)
 
@@ -109,7 +113,7 @@ theorem OrthogonalFamily.inner_right_dfinsupp
     _ = l.sum fun j => fun w => ite (i = j) ⟪V i v, V j w⟫ 0 :=
       (congr_arg l.sum <| funext fun _ => funext <| hV.eq_ite v)
     _ = ⟪v, l i⟫ := by
-      simp only [DFinsupp.sum, Submodule.coe_inner, Finset.sum_ite_eq, ite_eq_left_iff,
+      simp only [DFinsupp.sum, Finset.sum_ite_eq,
         DFinsupp.mem_support_toFun]
       split_ifs with h
       · simp only [LinearIsometry.inner_map_map]
@@ -153,7 +157,7 @@ theorem OrthogonalFamily.comp {γ : Type*} {f : γ → ι} (hf : Function.Inject
 
 theorem OrthogonalFamily.orthonormal_sigma_orthonormal {α : ι → Type*} {v_family : ∀ i, α i → G i}
     (hv_family : ∀ i, Orthonormal 𝕜 (v_family i)) :
-    Orthonormal 𝕜 fun a : Σi, α i => V a.1 (v_family a.1 a.2) := by
+    Orthonormal 𝕜 fun a : Σ i, α i => V a.1 (v_family a.1 a.2) := by
   constructor
   · rintro ⟨i, v⟩
     simpa only [LinearIsometry.norm_map] using (hv_family i).left v
@@ -176,7 +180,7 @@ theorem OrthogonalFamily.norm_sq_diff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
   have hF : ∀ i, ‖F i‖ = ‖f i‖ := by
     intro i
     dsimp only [F]
-    split_ifs <;> simp only [eq_self_iff_true, norm_neg]
+    split_ifs <;> simp only [norm_neg]
   have :
     ‖(∑ i ∈ s₁ \ s₂, V i (F i)) + ∑ i ∈ s₂ \ s₁, V i (F i)‖ ^ 2 =
       (∑ i ∈ s₁ \ s₂, ‖F i‖ ^ 2) + ∑ i ∈ s₂ \ s₁, ‖F i‖ ^ 2 := by
@@ -195,7 +199,8 @@ theorem OrthogonalFamily.norm_sq_diff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
 theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : ∀ i, G i) :
     (Summable fun i => V i (f i)) ↔ Summable fun i => ‖f i‖ ^ 2 := by
   classical
-    simp only [summable_iff_cauchySeq_finset, NormedAddCommGroup.cauchySeq_iff, Real.norm_eq_abs]
+    simp only [summable_iff_cauchySeq_finset, NormedAddCommGroup.cauchySeq_iff, norm_neg_add,
+      Real.norm_eq_abs]
     constructor
     · intro hf ε hε
       obtain ⟨a, H⟩ := hf _ (sqrt_pos.mpr hε)

@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.Restrict
+module
+
+public import Mathlib.MeasureTheory.Measure.Restrict
 
 /-!
 # Classes for finite measures
@@ -13,6 +15,8 @@ We introduce the following typeclasses for measures:
 * `IsFiniteMeasure μ`: `μ univ < ∞`;
 * `IsLocallyFiniteMeasure μ` : `∀ x, ∃ s ∈ 𝓝 x, μ s < ∞`.
 -/
+
+@[expose] public section
 
 open scoped NNReal Topology
 open Set MeasureTheory Measure Filter Function MeasurableSpace ENNReal
@@ -53,17 +57,22 @@ theorem measure_ne_top (μ : Measure α) [IsFiniteMeasure μ] (s : Set α) : μ 
 
 theorem measure_compl_le_add_of_le_add [IsFiniteMeasure μ] (hs : MeasurableSet s)
     (ht : MeasurableSet t) {ε : ℝ≥0∞} (h : μ s ≤ μ t + ε) : μ tᶜ ≤ μ sᶜ + ε := by
-  rw [measure_compl ht (measure_ne_top μ _), measure_compl hs (measure_ne_top μ _),
-    tsub_le_iff_right]
+  rw [measure_compl ht (by finiteness), measure_compl hs (by finiteness), tsub_le_iff_right]
   calc
     μ univ = μ univ - μ s + μ s := (tsub_add_cancel_of_le <| measure_mono s.subset_univ).symm
-    _ ≤ μ univ - μ s + (μ t + ε) := add_le_add_left h _
+    _ ≤ μ univ - μ s + (μ t + ε) := by gcongr
     _ = _ := by rw [add_right_comm, add_assoc]
 
 theorem measure_compl_le_add_iff [IsFiniteMeasure μ] (hs : MeasurableSet s) (ht : MeasurableSet t)
     {ε : ℝ≥0∞} : μ sᶜ ≤ μ tᶜ + ε ↔ μ t ≤ μ s + ε :=
   ⟨fun h => compl_compl s ▸ compl_compl t ▸ measure_compl_le_add_of_le_add hs.compl ht.compl h,
     measure_compl_le_add_of_le_add ht hs⟩
+
+theorem cofinite_eq_bot_iff : μ.cofinite = ⊥ ↔ IsFiniteMeasure μ := by
+  simp [← empty_mem_iff_bot, μ.mem_cofinite, isFiniteMeasure_iff]
+
+@[nontriviality, simp]
+theorem cofinite_eq_bot [IsFiniteMeasure μ] : μ.cofinite = ⊥ := cofinite_eq_bot_iff.2 ‹_›
 
 /-- The measure of the whole space with respect to a finite measure, considered as `ℝ≥0`. -/
 def measureUnivNNReal (μ : Measure α) : ℝ≥0 :=
@@ -72,7 +81,7 @@ def measureUnivNNReal (μ : Measure α) : ℝ≥0 :=
 @[simp]
 theorem coe_measureUnivNNReal (μ : Measure α) [IsFiniteMeasure μ] :
     ↑(measureUnivNNReal μ) = μ univ :=
-  ENNReal.coe_toNNReal (measure_ne_top μ univ)
+  ENNReal.coe_toNNReal (by finiteness)
 
 instance isFiniteMeasureZero : IsFiniteMeasure (0 : Measure α) :=
   ⟨by simp⟩
@@ -98,6 +107,7 @@ instance IsFiniteMeasure.average : IsFiniteMeasure ((μ univ)⁻¹ • μ) where
     rw [smul_apply, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
     exact ENNReal.div_self_le_one.trans_lt ENNReal.one_lt_top
 
+set_option backward.isDefEq.respectTransparency false in
 instance isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0 ℝ≥0∞]
     [IsScalarTower R ℝ≥0∞ ℝ≥0∞] [IsFiniteMeasure μ] {r : R} : IsFiniteMeasure (r • μ) := by
   rw [← smul_one_smul ℝ≥0 r μ]
@@ -116,13 +126,19 @@ theorem Measure.isFiniteMeasure_map {m : MeasurableSpace α} (μ : Measure α) [
   · rw [map_of_not_aemeasurable hf]
     exact MeasureTheory.isFiniteMeasureZero
 
-instance IsFiniteMeasure_comap (f : β → α) [IsFiniteMeasure μ] : IsFiniteMeasure (μ.comap f) where
+theorem Measure.isFiniteMeasure_of_map {μ : Measure α} {f : α → β}
+    (hf : AEMeasurable f μ) [IsFiniteMeasure (μ.map f)] : IsFiniteMeasure μ where
   measure_univ_lt_top := by
-    by_cases hf : Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ
-    · rw [Measure.comap_apply₀ _ _ hf.1 hf.2 MeasurableSet.univ.nullMeasurableSet]
-      exact measure_lt_top μ _
-    · rw [Measure.comap, dif_neg hf]
-      exact zero_lt_top
+    rw [← Set.preimage_univ (f := f), ← map_apply_of_aemeasurable hf .univ]
+    exact IsFiniteMeasure.measure_univ_lt_top
+
+theorem Measure.isFiniteMeasure_map_iff {μ : Measure α} {f : α → β}
+    (hf : AEMeasurable f μ) : IsFiniteMeasure (μ.map f) ↔ IsFiniteMeasure μ :=
+  ⟨fun _ ↦ isFiniteMeasure_of_map hf, fun _ ↦ isFiniteMeasure_map μ f⟩
+
+instance IsFiniteMeasure_comap (f : β → α) [IsFiniteMeasure μ] : IsFiniteMeasure (μ.comap f) where
+  measure_univ_lt_top :=
+    (Measure.comap_apply_le _ _ nullMeasurableSet_univ).trans_lt (measure_lt_top _ _)
 
 @[simp]
 theorem measureUnivNNReal_eq_zero [IsFiniteMeasure μ] : measureUnivNNReal μ = 0 ↔ μ = 0 := by
@@ -138,6 +154,14 @@ but it holds for measures with the additional assumption that μ is finite. -/
 theorem Measure.le_of_add_le_add_left [IsFiniteMeasure μ] (A2 : μ + ν₁ ≤ μ + ν₂) : ν₁ ≤ ν₂ :=
   fun S => ENNReal.le_of_add_le_add_left (MeasureTheory.measure_ne_top μ S) (A2 S)
 
+lemma Measure.eq_of_le_of_measure_univ_eq [IsFiniteMeasure μ]
+    (hμν : μ ≤ ν) (h_univ : μ univ = ν univ) : μ = ν := by
+  refine le_antisymm hμν (le_intro fun s hs _ ↦ ?_)
+  by_contra! h_lt
+  have h_disj : Disjoint s sᶜ := disjoint_compl_right_iff_subset.mpr subset_rfl
+  rw [← union_compl_self s, measure_union h_disj hs.compl, measure_union h_disj hs.compl] at h_univ
+  exact ENNReal.add_lt_add_of_lt_of_le (by finiteness) h_lt (hμν sᶜ) |>.not_ge h_univ.symm.le
+
 theorem summable_measure_toReal [hμ : IsFiniteMeasure μ] {f : ℕ → Set α}
     (hf₁ : ∀ i : ℕ, MeasurableSet (f i)) (hf₂ : Pairwise (Disjoint on f)) :
     Summable fun x => μ.real (f x) := by
@@ -147,8 +171,7 @@ theorem summable_measure_toReal [hμ : IsFiniteMeasure μ] {f : ℕ → Set α}
 
 theorem ae_eq_univ_iff_measure_eq [IsFiniteMeasure μ] (hs : NullMeasurableSet s μ) :
     s =ᵐ[μ] univ ↔ μ s = μ univ :=
-  ⟨measure_congr, fun h ↦
-    ae_eq_of_subset_of_measure_ge (subset_univ _) h.ge hs (measure_ne_top _ _)⟩
+  ⟨measure_congr, fun h ↦ ae_eq_of_subset_of_measure_ge (subset_univ _) h.ge hs (by finiteness)⟩
 
 theorem ae_iff_measure_eq [IsFiniteMeasure μ] {p : α → Prop}
     (hp : NullMeasurableSet { a | p a } μ) : (∀ᵐ a ∂μ, p a) ↔ μ { a | p a } = μ univ := by
@@ -170,7 +193,7 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
     intro x hx
     simp only [mem_iInter, mem_iUnion, exists_prop] at hx
     obtain ⟨j, _, x_in_Es_j⟩ := hx 0
-    obtain ⟨k, k_gt_j, x_in_Es_k⟩ := hx (j+1)
+    obtain ⟨k, k_gt_j, x_in_Es_k⟩ := hx (j + 1)
     have oops := (Es_disj (Nat.ne_of_lt k_gt_j)).ne_of_mem x_in_Es_j x_in_Es_k
     contradiction
   have key := tendsto_measure_iInter_atTop (μ := μ) (fun n ↦ by measurability)
@@ -190,21 +213,15 @@ theorem abs_measureReal_sub_le_measureReal_symmDiff'
     rw [this, measure_symmDiff_eq hs ht, ENNReal.toReal_add hst hts]
     convert abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
   rw [measure_diff' s ht ht', measure_diff' t hs hs',
-    ENNReal.toReal_sub_of_le measure_le_measure_union_right (measure_union_ne_top hs' ht'),
-    ENNReal.toReal_sub_of_le measure_le_measure_union_right (measure_union_ne_top ht' hs'),
+    ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),
+    ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),
     union_comm t s]
   abel
-
-@[deprecated (since := "2025-04-18")] alias
-  abs_toReal_measure_sub_le_measure_symmDiff' := abs_measureReal_sub_le_measureReal_symmDiff'
 
 theorem abs_measureReal_sub_le_measureReal_symmDiff [IsFiniteMeasure μ]
     (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ) :
     |μ.real s - μ.real t| ≤ μ.real (s ∆ t) :=
-  abs_measureReal_sub_le_measureReal_symmDiff' hs ht (measure_ne_top μ s) (measure_ne_top μ t)
-
-@[deprecated (since := "2025-04-18")] alias
-  abs_toReal_measure_sub_le_measure_symmDiff := abs_measureReal_sub_le_measureReal_symmDiff
+  abs_measureReal_sub_le_measureReal_symmDiff' hs ht (by finiteness) (by finiteness)
 
 instance {s : Finset ι} {μ : ι → Measure α} [∀ i, IsFiniteMeasure (μ i)] :
     IsFiniteMeasure (∑ i ∈ s, μ i) where measure_univ_lt_top := by simp [measure_lt_top]
@@ -306,6 +323,12 @@ protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
   refine ⟨v ∩ s, ⟨hv.inter hs, lt_of_le_of_lt ?_ μv⟩, ⟨xv, xs⟩, inter_subset_right⟩
   exact measure_mono inter_subset_left
 
+instance [TopologicalSpace α] (μ : Measure α) [hμ : IsLocallyFiniteMeasure μ] :
+    IsLocallyFiniteMeasure (μ.restrict s) where
+  finiteAtNhds x := by
+    obtain ⟨t, ht, hmus⟩ := hμ.finiteAtNhds x
+    exact ⟨t, ht, lt_of_le_of_lt (restrict_apply_le s t) hmus⟩
+
 /-- A measure `μ` is finite on compacts if any compact set `K` satisfies `μ K < ∞`. -/
 class IsFiniteMeasureOnCompacts [TopologicalSpace α] (μ : Measure α) : Prop where
   protected lt_top_of_isCompact : ∀ ⦃K : Set α⦄, IsCompact K → μ K < ∞
@@ -333,14 +356,13 @@ theorem measure_closedBall_lt_top [PseudoMetricSpace α] [ProperSpace α] {μ : 
     [IsFiniteMeasureOnCompacts μ] {x : α} {r : ℝ} : μ (Metric.closedBall x r) < ∞ :=
   Metric.isBounded_closedBall.measure_lt_top
 
-theorem measure_ball_lt_top [PseudoMetricSpace α] [ProperSpace α] {μ : Measure α}
-    [IsFiniteMeasureOnCompacts μ] {x : α} {r : ℝ} : μ (Metric.ball x r) < ∞ :=
-  Metric.isBounded_ball.measure_lt_top
-
 @[aesop (rule_sets := [finiteness]) safe apply]
 theorem measure_ball_ne_top [PseudoMetricSpace α] [ProperSpace α] {μ : Measure α}
     [IsFiniteMeasureOnCompacts μ] {x : α} {r : ℝ} : μ (Metric.ball x r) ≠ ∞ :=
-  measure_ball_lt_top.ne
+  Metric.isBounded_ball.measure_lt_top.ne
+
+theorem measure_ball_lt_top [PseudoMetricSpace α] [ProperSpace α] {μ : Measure α}
+    [IsFiniteMeasureOnCompacts μ] {x : α} {r : ℝ} : μ (Metric.ball x r) < ∞ := by finiteness
 
 protected theorem IsFiniteMeasureOnCompacts.smul [TopologicalSpace α] (μ : Measure α)
     [IsFiniteMeasureOnCompacts μ] {c : ℝ≥0∞} (hc : c ≠ ∞) : IsFiniteMeasureOnCompacts (c • μ) :=
@@ -417,8 +439,8 @@ theorem ext_on_measurableSpace_of_generate_finite {α} (m₀ : MeasurableSpace �
   | empty => simp
   | basic t ht => exact hμν t ht
   | compl t htm iht =>
-    rw [measure_compl (h t htm) (measure_ne_top _ _), measure_compl (h t htm) (measure_ne_top _ _),
-      iht, h_univ]
+    rw [measure_compl (h t htm) (by finiteness), measure_compl (h t htm) (by finiteness), iht,
+      h_univ]
   | iUnion f hfd hfm ihf =>
     simp [measure_iUnion, hfd, h _ (hfm _), ihf]
 

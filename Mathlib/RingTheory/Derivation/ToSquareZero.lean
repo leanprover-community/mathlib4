@@ -3,16 +3,22 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
-import Mathlib.RingTheory.Derivation.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Operations
+module
+
+public import Mathlib.RingTheory.Derivation.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-!
-# Results
+# Derivations into Square-Zero Ideals
+
+## Main statements
 
 - `derivationToSquareZeroOfLift`: The `R`-derivations from `A` into a square-zero ideal `I`
   of `B` corresponds to the lifts `A →ₐ[R] B` of the map `A →ₐ[R] B ⧸ I`.
 
 -/
+
+@[expose] public section
 
 
 section ToSquareZero
@@ -26,11 +32,8 @@ variable [Algebra R A] [Algebra R B] (I : Ideal B)
   we may define a map `f₁ - f₂ : A →ₗ[R] I`. -/
 def diffToIdealOfQuotientCompEq (f₁ f₂ : A →ₐ[R] B)
     (e : (Ideal.Quotient.mkₐ R I).comp f₁ = (Ideal.Quotient.mkₐ R I).comp f₂) : A →ₗ[R] I :=
-  LinearMap.codRestrict (I.restrictScalars _) (f₁.toLinearMap - f₂.toLinearMap) (by
-    intro x
-    change f₁ x - f₂ x ∈ I
-    rw [← Ideal.Quotient.eq, ← Ideal.Quotient.mkₐ_eq_mk R, ← AlgHom.comp_apply, e]
-    rfl)
+  LinearMap.codRestrict (I.restrictScalars _) (f₁.toLinearMap - f₂.toLinearMap)
+    (fun x => by simpa [Ideal.Quotient.eq] using congr($e x))
 
 @[simp]
 theorem diffToIdealOfQuotientCompEq_apply (f₁ f₂ : A →ₐ[R] B)
@@ -49,7 +52,7 @@ def derivationToSquareZeroOfLift [IsScalarTower R A B] (hI : I ^ 2 = ⊥) (f : A
     { diffToIdealOfQuotientCompEq I f (IsScalarTower.toAlgHom R A B) ?_ with
       map_one_eq_zero' := ?_
       leibniz' := ?_ }
-  · rw [e]; ext; rfl
+  · ext; simp [e]
   · ext; simp
   · intro x y
     let F := diffToIdealOfQuotientCompEq I f (IsScalarTower.toAlgHom R A B) (by rw [e]; ext; rfl)
@@ -62,8 +65,7 @@ def derivationToSquareZeroOfLift [IsScalarTower R A B] (hI : I ^ 2 = ⊥) (f : A
       LinearMap.toFun_eq_coe]
     simp only [map_mul, sub_mul, mul_sub, Algebra.smul_def] at this ⊢
     rw [sub_eq_iff_eq_add, sub_eq_iff_eq_add] at this
-    simp only [LinearMap.coe_toAddHom, diffToIdealOfQuotientCompEq_apply, map_mul, this,
-      IsScalarTower.coe_toAlgHom']
+    simp only [this]
     ring
 
 variable (hI : I ^ 2 = ⊥)
@@ -82,7 +84,6 @@ def liftOfDerivationToSquareZero [IsScalarTower R A B] (hI : I ^ 2 = ⊥) (f : D
       A →ₗ[R] B) with
     toFun := fun x => f x + algebraMap A B x
     map_one' := by
-      -- Note: added the `(algebraMap _ _)` hint because otherwise it would match `f 1`
       rw [map_one (algebraMap _ _), f.map_one_eq_zero, Submodule.coe_zero, zero_add]
     map_mul' := fun x y => by
       have : (f x : B) * f y = 0 := by
@@ -92,18 +93,19 @@ def liftOfDerivationToSquareZero [IsScalarTower R A B] (hI : I ^ 2 = ⊥) (f : D
         Submodule.coe_smul_of_tower, Algebra.smul_def, this]
       ring
     commutes' := fun r => by
-      simp only [Derivation.map_algebraMap, eq_self_iff_true, zero_add, Submodule.coe_zero, ←
+      simp only [Derivation.map_algebraMap, zero_add, Submodule.coe_zero, ←
         IsScalarTower.algebraMap_apply R A B r]
     map_zero' := ((I.restrictScalars R).subtype.comp f.toLinearMap +
       (IsScalarTower.toAlgHom R A B).toLinearMap).map_zero }
 
--- @[simp] -- Porting note: simp normal form is `liftOfDerivationToSquareZero_mk_apply'`
+set_option backward.isDefEq.respectTransparency false in
+-- simp normal form is `liftOfDerivationToSquareZero_mk_apply'`
 theorem liftOfDerivationToSquareZero_mk_apply [IsScalarTower R A B] (d : Derivation R A I) (x : A) :
     Ideal.Quotient.mk I (liftOfDerivationToSquareZero I hI d x) = algebraMap A (B ⧸ I) x := by
   rw [liftOfDerivationToSquareZero_apply, map_add, Ideal.Quotient.eq_zero_iff_mem.mpr (d x).prop,
-    zero_add]
-  rfl
+    zero_add, Ideal.Quotient.mk_algebraMap]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem liftOfDerivationToSquareZero_mk_apply' (d : Derivation R A I) (x : A) :
     (Ideal.Quotient.mk I) (d x) + (algebraMap A (B ⧸ I)) x = algebraMap A (B ⧸ I) x := by

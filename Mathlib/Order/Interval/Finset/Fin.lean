@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
-import Mathlib.Data.Finset.Fin
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Order.Interval.Set.Fin
+module
+
+public import Mathlib.Data.Finset.Fin
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Order.Interval.Set.Fin
 
 /-!
 # Finite intervals in `Fin n`
@@ -13,6 +15,8 @@ import Mathlib.Order.Interval.Set.Fin
 This file proves that `Fin n` is a `LocallyFiniteOrder` and calculates the cardinality of its
 intervals as Finsets and Fintypes.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -23,7 +27,7 @@ namespace Fin
 variable (n : ℕ)
 
 /-!
-### Locally finite order etc instances
+### Locally finite order etc. instances
 -/
 
 instance instLocallyFiniteOrder (n : ℕ) : LocallyFiniteOrder (Fin n) where
@@ -88,46 +92,6 @@ theorem attachFin_Iic : attachFin (Iic a) (fun _x hx ↦ (mem_Iic.mp hx).trans_l
 theorem attachFin_Iio : attachFin (Iio a) (fun _x hx ↦ (mem_Iio.mp hx).trans a.2) = Iio a := by
   ext; simp
 
-section deprecated
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Icc (since := "2025-04-06")]
-theorem Icc_eq_finset_subtype : Icc a b = (Icc (a : ℕ) b).fin n := attachFin_eq_fin _
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Ico (since := "2025-04-06")]
-theorem Ico_eq_finset_subtype : Ico a b = (Ico (a : ℕ) b).fin n := attachFin_eq_fin _
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Ioc (since := "2025-04-06")]
-theorem Ioc_eq_finset_subtype : Ioc a b = (Ioc (a : ℕ) b).fin n := attachFin_eq_fin _
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Ioo (since := "2025-04-06")]
-theorem Ioo_eq_finset_subtype : Ioo a b = (Ioo (a : ℕ) b).fin n := attachFin_eq_fin _
-
-set_option linter.deprecated false in
-@[deprecated attachFin_uIcc (since := "2025-04-06")]
-theorem uIcc_eq_finset_subtype : uIcc a b = (uIcc (a : ℕ) b).fin n := Icc_eq_finset_subtype _ _
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Ico_eq_Ici (since := "2025-04-06")]
-theorem Ici_eq_finset_subtype : Ici a = (Ico (a : ℕ) n).fin n := by ext; simp
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Ioo_eq_Ioi (since := "2025-04-06")]
-theorem Ioi_eq_finset_subtype : Ioi a = (Ioo (a : ℕ) n).fin n := by ext; simp
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Iic (since := "2025-04-06")]
-theorem Iic_eq_finset_subtype : Iic b = (Iic (b : ℕ)).fin n := by ext; simp
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Iio (since := "2025-04-06")]
-theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n := by ext; simp
-
-end deprecated
-
 section val
 
 /-!
@@ -189,9 +153,6 @@ theorem map_valEmbedding_Ioo : (Ioo a b).map Fin.valEmbedding = Ioo (a : ℕ) b 
 @[simp]
 theorem map_valEmbedding_uIcc : (uIcc a b).map valEmbedding = uIcc (a : ℕ) b :=
   map_valEmbedding_Icc _ _
-
-@[deprecated (since := "2025-04-08")]
-alias map_subtype_embedding_uIcc := map_valEmbedding_uIcc
 
 @[simp]
 theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Ico (a : ℕ) n := by
@@ -929,33 +890,79 @@ theorem card_Iic : #(Iic b) = b + 1 := by rw [← Nat.card_Iic b, ← map_valEmb
 @[simp]
 theorem card_Iio : #(Iio b) = b := by rw [← Nat.card_Iio b, ← map_valEmbedding_Iio, card_map]
 
-@[deprecated Fintype.card_Icc (since := "2025-03-28")]
-theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by simp
-
-@[deprecated Fintype.card_Ico (since := "2025-03-28")]
-theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by simp
-
-@[deprecated Fintype.card_Ioc (since := "2025-03-28")]
-theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by simp
-
-@[deprecated Fintype.card_Ioo (since := "2025-03-28")]
-theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by simp
-
-@[deprecated Fintype.card_uIcc (since := "2025-03-28")]
-theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a : ℤ).natAbs + 1 := by simp
-
-@[deprecated Fintype.card_Ici (since := "2025-03-28")]
-theorem card_fintypeIci : Fintype.card (Set.Ici a) = n - a := by simp
-
-@[deprecated Fintype.card_Ioi (since := "2025-03-28")]
-theorem card_fintypeIoi : Fintype.card (Set.Ioi a) = n - 1 - a := by simp
-
-@[deprecated Fintype.card_Iic (since := "2025-03-28")]
-theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by simp
-
-@[deprecated Fintype.card_Iio (since := "2025-03-28")]
-theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by simp
-
 end card
+
+/-! ### Perturbations of endpoints by one -/
+
+/-
+Note: the `haveI`s in the statements below are needed for `0` and `1`
+to be defined in `Fin n`. One could instead add `[NeZero n]` at the
+top of this section, but then this instance would be required to
+rewrite using the lemmas.
+-/
+
+section pm_one
+
+lemma Iio_add_one_eq_Iic {n : ℕ} {b : Fin n} (hb : b + 1 < n) :
+    haveI := b.neZero
+    Iio (b + 1) = Iic b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_add_one_of_lt']
+
+lemma Iic_sub_one_eq_Iio {n : ℕ} {b : Fin n} :
+    haveI := b.neZero
+    (hb : 0 < b) → Iic (b - 1) = Iio b := by
+  grind [= Fin.val_sub_one_of_ne_zero]
+
+lemma Ici_add_one_eq_Ioi {n : ℕ} {a : Fin n} (ha : a + 1 < n) :
+    haveI := a.neZero
+    Ici (a + 1) = Ioi a := by
+  grind [= Fin.le_def, = Fin.val_add_one_of_lt']
+
+lemma Ioi_sub_one_eq_Ici {n : ℕ} {a : Fin n} :
+    haveI := a.neZero
+    (ha : 0 < a) → Ioi (a - 1) = Ici a := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_sub_one_of_ne_zero]
+
+lemma Ioc_sub_one_eq_Icc {n : ℕ} {a b : Fin n} :
+    haveI := a.neZero
+    (ha : 0 < a) → Ioc (a - 1) b = Icc a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_sub_one_of_ne_zero]
+
+lemma Icc_add_one_eq_Ioc {n : ℕ} {a b : Fin n} (ha : a + 1 < n) :
+    haveI := a.neZero
+    Icc (a + 1) b = Ioc a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_add_one_of_lt']
+
+lemma Ioo_sub_one_eq_Ico {n : ℕ} {a b : Fin n} :
+    haveI := a.neZero
+    (ha : 0 < a) → Ioo (a - 1) b = Ico a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_sub_one_of_ne_zero]
+
+lemma Ico_add_one_eq_Ioo {n : ℕ} {a b : Fin n} (ha : a + 1 < n) :
+    haveI := a.neZero
+    Ico (a + 1) b = Ioo a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_add_one_of_lt']
+
+lemma Icc_sub_one_eq_Ico {n : ℕ} {a b : Fin n} :
+    haveI := a.neZero
+    (hb : 0 < b) → Icc a (b - 1) = Ico a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_sub_one_of_ne_zero]
+
+lemma Ico_add_one_eq_Icc {n : ℕ} {a b : Fin n} (hb : b + 1 < n) :
+    haveI := a.neZero
+    Ico a (b + 1) = Icc a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_add_one_of_lt']
+
+lemma Ioc_sub_one_eq_Ioo {n : ℕ} {a b : Fin n} :
+    haveI := a.neZero
+    (hb : 0 < b) → Ioc a (b - 1) = Ioo a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_sub_one_of_ne_zero]
+
+lemma Ioo_add_one_eq_Ioc {n : ℕ} {a b : Fin n} (hb : b + 1 < n) :
+    haveI := a.neZero
+    Ioo a (b + 1) = Ioc a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_add_one_of_lt']
+
+end pm_one
 
 end Fin

@@ -3,7 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Peter Nelson
 -/
-import Mathlib.Order.Antichain
+module
+
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.WellFounded
 
 /-!
 # Minimality and Maximality
@@ -37,17 +41,27 @@ but it may be worth re-examining this to make it easier in the future; see the T
 * API for `MinimalFor`/`MaximalFor`
 -/
 
+@[expose] public section
+
 assert_not_exists CompleteLattice
 
 open Set OrderDual
 
-variable {ι α : Type*}
+variable {ι α β : Type*}
 
 section LE
-variable [LE α] {f : ι → α} {i j : ι}
+variable [LE α] {P Q : ι → Prop} {f : ι → α} {i j : ι}
 
 @[simp] lemma minimalFor_eq_iff : MinimalFor (· = j) f i ↔ i = j := by simp +contextual [MinimalFor]
 @[simp] lemma maximalFor_eq_iff : MaximalFor (· = j) f i ↔ i = j := by simp +contextual [MaximalFor]
+
+@[gcongr]
+theorem MinimalFor.anti (h : MinimalFor P f i) (hle : Q ≤ P) (hQ : Q i) : MinimalFor Q f i :=
+  ⟨hQ, (h.le_of_le <| hle · ·)⟩
+
+@[gcongr]
+theorem MaximalFor.anti (h : MaximalFor P f i) (hle : Q ≤ P) (hQ : Q i) : MaximalFor Q f i :=
+  ⟨hQ, (h.le_of_le <| hle · ·)⟩
 
 end LE
 
@@ -174,13 +188,19 @@ end LE
 
 section Preorder
 
-variable [Preorder α]
+variable [Preorder α] [Preorder β] {Q : ι → Prop} {f : ι → α} {g : α → β} {i j : ι}
 
 theorem minimal_iff_forall_lt : Minimal P x ↔ P x ∧ ∀ ⦃y⦄, y < x → ¬ P y := by
-  simp [Minimal, lt_iff_le_not_ge, not_imp_not, imp.swap]
+  simp [Minimal, lt_iff_le_not_ge, imp.swap]
 
 theorem maximal_iff_forall_gt : Maximal P x ↔ P x ∧ ∀ ⦃y⦄, x < y → ¬ P y :=
   minimal_iff_forall_lt (α := αᵒᵈ)
+
+theorem minimalFor_iff_forall_lt : MinimalFor Q f i ↔ Q i ∧ ∀ ⦃j⦄, f j < f i → ¬ Q j := by
+  simp [MinimalFor, lt_iff_le_not_ge, imp.swap]
+
+theorem maximalFor_iff_forall_gt : MaximalFor Q f i ↔ Q i ∧ ∀ ⦃j⦄, f i < f j → ¬ Q j :=
+  minimalFor_iff_forall_lt (α := αᵒᵈ)
 
 theorem Minimal.not_prop_of_lt (h : Minimal P x) (hlt : y < x) : ¬ P y :=
   (minimal_iff_forall_lt.1 h).2 hlt
@@ -188,11 +208,23 @@ theorem Minimal.not_prop_of_lt (h : Minimal P x) (hlt : y < x) : ¬ P y :=
 theorem Maximal.not_prop_of_gt (h : Maximal P x) (hlt : x < y) : ¬ P y :=
   (maximal_iff_forall_gt.1 h).2 hlt
 
-theorem Minimal.not_lt (h : Minimal P x) (hy : P y) : ¬ (y < x) :=
+theorem MinimalFor.not_prop_of_lt (h : MinimalFor Q f i) (hlt : f j < f i) : ¬ Q j :=
+  (minimalFor_iff_forall_lt.1 h).2 hlt
+
+theorem MaximalFor.not_prop_of_gt (h : MaximalFor Q f i) (hgt : f i < f j) : ¬ Q j :=
+  (maximalFor_iff_forall_gt.1 h).2 hgt
+
+theorem Minimal.not_lt (h : Minimal P x) (hy : P y) : ¬(y < x) :=
   fun hlt ↦ h.not_prop_of_lt hlt hy
 
-theorem Maximal.not_gt (h : Maximal P x) (hy : P y) : ¬ (x < y) :=
+theorem Maximal.not_gt (h : Maximal P x) (hy : P y) : ¬(x < y) :=
   fun hlt ↦ h.not_prop_of_gt hlt hy
+
+theorem MinimalFor.not_lt (h : MinimalFor Q f i) (hj : Q j) : ¬(f j < f i) :=
+  fun hlt ↦ h.not_prop_of_lt hlt hj
+
+theorem MaximalFor.not_gt (h : MaximalFor Q f i) (hj : Q j) : ¬(f i < f j) :=
+  fun hgt ↦ h.not_prop_of_gt hgt hj
 
 @[simp] theorem minimal_le_iff : Minimal (· ≤ y) x ↔ x ≤ y ∧ IsMin x :=
   minimal_iff_isMin (fun _ _ h h' ↦ h'.trans h)
@@ -215,6 +247,46 @@ theorem not_maximal_iff_exists_gt (hx : P x) : ¬ Maximal P x ↔ ∃ y, x < y �
   not_minimal_iff_exists_lt (α := αᵒᵈ) hx
 
 alias ⟨exists_gt_of_not_maximal, _⟩ := not_maximal_iff_exists_gt
+
+theorem MinimalFor.of_strictMonoOn_comp (hg : StrictMonoOn g (f '' setOf Q))
+    (h : MinimalFor Q (g ∘ f) i) : MinimalFor Q f i := by
+  refine ⟨h.prop, fun j hj hle ↦ ?_⟩
+  by_contra
+  exact h.not_lt hj <| hg ⟨j, hj, rfl⟩ ⟨i, h.prop, rfl⟩ <| lt_of_le_not_ge hle this
+
+theorem MaximalFor.of_strictMonoOn_comp (hg : StrictMonoOn g (f '' setOf Q))
+    (h : MaximalFor Q (g ∘ f) i) : MaximalFor Q f i := by
+  refine ⟨h.prop, fun j hj hle ↦ ?_⟩
+  by_contra
+  exact h.not_gt hj <| hg ⟨i, h.prop, rfl⟩ ⟨j, hj, rfl⟩ <| lt_of_le_not_ge hle this
+
+theorem MinimalFor.minimal_of_strictMonoOn (hg : StrictMonoOn g (setOf P)) (h : MinimalFor P g x) :
+    Minimal P x :=
+  minimalFor_id.mp <| .of_strictMonoOn_comp (Set.image_id _ ▸ hg) h
+
+theorem MaximalFor.maximal_of_strictMonoOn (hg : StrictMonoOn g (setOf P)) (h : MaximalFor P g x) :
+    Maximal P x :=
+  maximalFor_id.mp <| .of_strictMonoOn_comp (Set.image_id _ ▸ hg) h
+
+theorem MinimalFor.maximalFor_of_strictAntiOn_comp (hg : StrictAntiOn g (f '' setOf Q))
+    (h : MinimalFor Q (g ∘ f) i) : MaximalFor Q f i := by
+  refine ⟨h.prop, fun j hj hle ↦ ?_⟩
+  by_contra
+  exact h.not_lt hj <| hg ⟨i, h.prop, rfl⟩ ⟨j, hj, rfl⟩ <| lt_of_le_not_ge hle this
+
+theorem MaximalFor.minimalFor_of_strictAntiOn_comp (hg : StrictAntiOn g (f '' setOf Q))
+    (h : MaximalFor Q (g ∘ f) i) : MinimalFor Q f i := by
+  refine ⟨h.prop, fun j hj hle ↦ ?_⟩
+  by_contra
+  exact h.not_gt hj <| hg ⟨j, hj, rfl⟩ ⟨i, h.prop, rfl⟩ <| lt_of_le_not_ge hle this
+
+theorem MinimalFor.maximal_of_strictAntiOn (hg : StrictAntiOn g (setOf P)) (h : MinimalFor P g x) :
+    Maximal P x :=
+  maximalFor_id.mp <| MinimalFor.maximalFor_of_strictAntiOn_comp (Set.image_id _ ▸ hg) h
+
+theorem MaximalFor.minimal_of_strictAntiOn (hg : StrictAntiOn g (setOf P)) (h : MaximalFor P g x) :
+    Minimal P x :=
+  minimalFor_id.mp <| MaximalFor.minimalFor_of_strictAntiOn_comp (Set.image_id _ ▸ hg) h
 
 section WellFoundedLT
 variable [WellFoundedLT α]
@@ -308,6 +380,24 @@ theorem maximal_iff_maximal_of_imp_of_forall (hPQ : ∀ ⦃x⦄, Q x → P x)
 
 end PartialOrder
 
+section LinearOrder
+
+variable [LinearOrder α] {i j : ι} {Q : ι → Prop} {f : ι → α}
+
+theorem Minimal.le (h : Minimal P x) (hy : P y) : x ≤ y :=
+  le_of_not_gt (h.not_lt hy)
+
+theorem Maximal.le (h : Maximal P x) (hy : P y) : y ≤ x :=
+  le_of_not_gt (h.not_gt hy)
+
+theorem MinimalFor.le (h : MinimalFor Q f i) (hj : Q j) : f i ≤ f j :=
+  le_of_not_gt (h.not_lt hj)
+
+theorem MaximalFor.le (h : MaximalFor Q f i) (hj : Q j) : f j ≤ f i :=
+  le_of_not_gt (h.not_gt hj)
+
+end LinearOrder
+
 section Subset
 
 variable {P : Set α → Prop} {s t : Set α}
@@ -356,9 +446,6 @@ theorem Maximal.mem_of_prop_insert (h : Maximal P s) (hx : P (insert x s)) : x �
 
 theorem Minimal.notMem_of_prop_diff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
   fun hxs ↦ ((h.eq_of_superset hx diff_subset).subset hxs).2 rfl
-
-@[deprecated (since := "2025-05-23")]
-alias Minimal.not_mem_of_prop_diff_singleton := Minimal.notMem_of_prop_diff_singleton
 
 theorem Set.minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
     Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s \ {x}) :=
@@ -419,39 +506,11 @@ theorem IsLeast.minimal (h : IsLeast s x) : Minimal (· ∈ s) x :=
 theorem IsGreatest.maximal (h : IsGreatest s x) : Maximal (· ∈ s) x :=
   ⟨h.1, fun _b hb _ ↦ h.2 hb⟩
 
-theorem IsAntichain.minimal_mem_iff (hs : IsAntichain (· ≤ ·) s) : Minimal (· ∈ s) x ↔ x ∈ s :=
-  ⟨fun h ↦ h.prop, fun h ↦ ⟨h, fun _ hys hyx ↦ (hs.eq hys h hyx).symm.le⟩⟩
-
-theorem IsAntichain.maximal_mem_iff (hs : IsAntichain (· ≤ ·) s) : Maximal (· ∈ s) x ↔ x ∈ s :=
-  hs.to_dual.minimal_mem_iff
-
-/-- If `t` is an antichain shadowing and including the set of maximal elements of `s`,
-then `t` *is* the set of maximal elements of `s`. -/
-theorem IsAntichain.eq_setOf_maximal (ht : IsAntichain (· ≤ ·) t)
-    (h : ∀ x, Maximal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, b ≤ a ∧ Maximal (· ∈ s) b) :
-    {x | Maximal (· ∈ s) x} = t := by
-  refine Set.ext fun x ↦ ⟨h _, fun hx ↦ ?_⟩
-  obtain ⟨y, hyx, hy⟩ := hs x hx
-  rwa [← ht.eq (h y hy) hx hyx]
-
-/-- If `t` is an antichain shadowed by and including the set of minimal elements of `s`,
-then `t` *is* the set of minimal elements of `s`. -/
-theorem IsAntichain.eq_setOf_minimal (ht : IsAntichain (· ≤ ·) t)
-    (h : ∀ x, Minimal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, a ≤ b ∧ Minimal (· ∈ s) b) :
-    {x | Minimal (· ∈ s) x} = t :=
-  ht.to_dual.eq_setOf_maximal h hs
-
 end Preorder
 
 section PartialOrder
 
 variable [PartialOrder α]
-
-theorem setOf_maximal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Maximal P x} :=
-  fun _ hx _ ⟨hy, _⟩ hne hle ↦ hne (hle.antisymm <| hx.2 hy hle)
-
-theorem setOf_minimal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Minimal P x} :=
-  (setOf_maximal_antichain (α := αᵒᵈ) P).swap
 
 theorem IsLeast.minimal_iff (h : IsLeast s a) : Minimal (· ∈ s) x ↔ x = a :=
   ⟨fun h' ↦ h'.eq_of_ge h.1 (h.2 h'.prop), fun h' ↦ h' ▸ h.minimal⟩
@@ -465,7 +524,7 @@ end Set
 
 section Image
 
-variable [Preorder α] {β : Type*} [Preorder β] {s : Set α} {t : Set β}
+variable [Preorder α] [Preorder β] {s : Set α} {t : Set β}
 section Function
 
 variable {f : α → β}
@@ -616,17 +675,19 @@ theorem image_setOf_maximal (f : α ≃o β) (P : α → Prop) :
   convert _root_.image_monotone_setOf_maximal (f := f) (by simp [f.le_iff_le])
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_minimal_mem (f : s ≃o t) (hx : Minimal (· ∈ s) x) :
     Minimal (· ∈ t) (f ⟨x, hx.prop⟩) := by
   simpa only [show t = range (Subtype.val ∘ f) by simp, mem_univ, minimal_true_subtype, hx,
     true_imp_iff, image_univ] using OrderEmbedding.minimal_mem_image
-    (f.toOrderEmbedding.trans (OrderEmbedding.subtype t)) (s := univ) (x := ⟨x, hx.prop⟩)
+    (f.toOrderEmbedding.trans (OrderEmbedding.subtype (· ∈ t))) (s := univ) (x := ⟨x, hx.prop⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_maximal_mem (f : s ≃o t) (hx : Maximal (· ∈ s) x) :
     Maximal (· ∈ t) (f ⟨x, hx.prop⟩) := by
   simpa only [show t = range (Subtype.val ∘ f) by simp, mem_univ, maximal_true_subtype, hx,
     true_imp_iff, image_univ] using OrderEmbedding.maximal_mem_image
-    (f.toOrderEmbedding.trans (OrderEmbedding.subtype t)) (s := univ) (x := ⟨x, hx.prop⟩)
+    (f.toOrderEmbedding.trans (OrderEmbedding.subtype (· ∈ t))) (s := univ) (x := ⟨x, hx.prop⟩)
 
 /-- If two sets are order isomorphic, their minimals are also order isomorphic. -/
 def mapSetOfMinimal (f : s ≃o t) : {x | Minimal (· ∈ s) x} ≃o {x | Minimal (· ∈ t) x} where
@@ -650,7 +711,7 @@ def setOfMinimalIsoSetOfMaximal (f : s ≃o tᵒᵈ) :
       toFun x := ⟨(f ⟨x.1, x.2.1⟩).1, ((show s ≃o ofDual ⁻¹' t from f).mapSetOfMinimal x).2⟩
       invFun x := ⟨(f.symm ⟨x.1, x.2.1⟩).1,
         ((show ofDual ⁻¹' t ≃o s from f.symm).mapSetOfMinimal x).2⟩
-      __ := (show s ≃o ofDual⁻¹' t from f).mapSetOfMinimal
+      __ := (show s ≃o ofDual ⁻¹' t from f).mapSetOfMinimal
 
 /-- If two sets are antitonically order isomorphic, their maximals/minimals are too. -/
 def setOfMaximalIsoSetOfMinimal (f : s ≃o tᵒᵈ) :
@@ -658,7 +719,7 @@ def setOfMaximalIsoSetOfMinimal (f : s ≃o tᵒᵈ) :
   toFun x := ⟨(f ⟨x.1, x.2.1⟩).1, ((show s ≃o ofDual ⁻¹' t from f).mapSetOfMaximal x).2⟩
   invFun x := ⟨(f.symm ⟨x.1, x.2.1⟩).1,
         ((show ofDual ⁻¹' t ≃o s from f.symm).mapSetOfMaximal x).2⟩
-  __ := (show s ≃o ofDual⁻¹' t from f).mapSetOfMaximal
+  __ := (show s ≃o ofDual ⁻¹' t from f).mapSetOfMaximal
 
 end OrderIso
 

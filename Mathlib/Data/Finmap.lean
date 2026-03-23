@@ -3,13 +3,17 @@ Copyright (c) 2018 Sean Leather. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
 -/
-import Mathlib.Data.List.AList
-import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Part
+module
+
+public import Mathlib.Data.List.AList
+public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.Part
 
 /-!
 # Finite maps over `Multiset`
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -72,6 +76,8 @@ structure Finmap (β : α → Type v) : Type max u v where
 def AList.toFinmap (s : AList β) : Finmap β :=
   ⟨s.entries, s.nodupKeys⟩
 
+-- Setting `priority := high` means that Lean will prefer this notation to the identical one
+-- for `Quotient.mk`
 local notation:arg "⟦" a "⟧" => AList.toFinmap a
 
 theorem AList.toFinmap_eq {s₁ s₂ : AList β} :
@@ -125,8 +131,7 @@ def liftOn₂ {γ} (s₁ s₂ : Finmap β) (f : AList β → AList β → γ)
 
 @[simp]
 theorem liftOn₂_toFinmap {γ} (s₁ s₂ : AList β) (f : AList β → AList β → γ) (H) :
-    liftOn₂ ⟦s₁⟧ ⟦s₂⟧ f H = f s₁ s₂ := by
-      cases s₁; cases s₂; rfl
+    liftOn₂ ⟦s₁⟧ ⟦s₂⟧ f H = f s₁ s₂ := rfl
 
 /-! ### Induction -/
 
@@ -203,8 +208,6 @@ theorem toFinmap_nil [DecidableEq α] : ([].toFinmap : Finmap β) = ∅ :=
 
 theorem notMem_empty {a : α} : a ∉ (∅ : Finmap β) :=
   Multiset.notMem_zero a
-
-@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp]
 theorem keys_empty : (∅ : Finmap β).keys = ∅ :=
@@ -392,8 +395,6 @@ theorem notMem_erase_self {a : α} {s : Finmap β} : a ∉ erase a s := by
   left
   rfl
 
-@[deprecated (since := "2025-05-23")] alias not_mem_erase_self := notMem_erase_self
-
 @[simp]
 theorem lookup_erase (a) (s : Finmap β) : lookup a (erase a s) = none :=
   induction_on s <| AList.lookup_erase a
@@ -433,10 +434,6 @@ theorem entries_insert_of_notMem {a : α} {b : β a} {s : Finmap β} :
   induction_on s fun s h => by
     simp [AList.entries_insert_of_notMem (mt mem_toFinmap.1 h), -entries_insert]
 
-@[deprecated (since := "2025-05-23")] alias entries_insert_of_not_mem := entries_insert_of_notMem
-
-@[deprecated (since := "2024-12-14")] alias insert_entries_of_neg := entries_insert_of_not_mem
-
 @[simp]
 theorem mem_insert {a a' : α} {b' : β a'} {s : Finmap β} : a ∈ insert a' b' s ↔ a = a' ∨ a ∈ s :=
   induction_on s AList.mem_insert
@@ -466,13 +463,14 @@ theorem toFinmap_cons (a : α) (b : β a) (xs : List (Sigma β)) :
 
 theorem mem_list_toFinmap (a : α) (xs : List (Sigma β)) :
     a ∈ xs.toFinmap ↔ ∃ b : β a, Sigma.mk a b ∈ xs := by
-  induction' xs with x xs
-  · simp only [toFinmap_nil, notMem_empty, find?, not_mem_nil, exists_false]
-  obtain ⟨fst_i, snd_i⟩ := x
-  simp only [toFinmap_cons, *, exists_or, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff]
-  refine (or_congr_left <| and_iff_left_of_imp ?_).symm
-  rintro rfl
-  simp only [exists_eq, heq_iff_eq]
+  induction xs with
+  | nil => simp only [toFinmap_nil, notMem_empty, not_mem_nil, exists_false]
+  | cons x xs =>
+    obtain ⟨fst_i, snd_i⟩ := x
+    simp only [toFinmap_cons, *, exists_or, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff]
+    refine (or_congr_left <| and_iff_left_of_imp ?_).symm
+    rintro rfl
+    simp only [exists_eq, heq_iff_eq]
 
 @[simp]
 theorem insert_singleton_eq {a : α} {b b' : β a} : insert a b (singleton a b') = singleton a b := by
@@ -550,13 +548,13 @@ theorem union_assoc {s₁ s₂ s₃ : Finmap β} : s₁ ∪ s₂ ∪ s₃ = s₁
 theorem empty_union {s₁ : Finmap β} : ∅ ∪ s₁ = s₁ :=
   induction_on s₁ fun s₁ => by
     rw [← empty_toFinmap]
-    simp [-empty_toFinmap, AList.toFinmap_eq, union_toFinmap, AList.union_assoc]
+    simp [-empty_toFinmap, union_toFinmap]
 
 @[simp]
 theorem union_empty {s₁ : Finmap β} : s₁ ∪ ∅ = s₁ :=
   induction_on s₁ fun s₁ => by
     rw [← empty_toFinmap]
-    simp [-empty_toFinmap, AList.toFinmap_eq, union_toFinmap, AList.union_assoc]
+    simp [-empty_toFinmap, union_toFinmap]
 
 theorem erase_union_singleton (a : α) (b : β a) (s : Finmap β) (h : s.lookup a = some b) :
     s.erase a ∪ singleton a b = s :=

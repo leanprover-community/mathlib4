@@ -3,14 +3,16 @@ Copyright (c) 2024 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Data.Finset.Density
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Data.Finset.Density
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Average over a finset
@@ -29,10 +31,10 @@ This file defines `Finset.expect`, the average (aka expectation) of a function o
 
 ## Implementation notes
 
-This definition is a special case of the general convex comnination operator in a convex space.
+This definition is a special case of the general convex combination operator in a convex space.
 However:
 1. We don't yet have general convex spaces.
-2. The uniform weights case is a overwhelmingly useful special case which should have its own API.
+2. The uniform weights case is an overwhelmingly useful special case which should have its own API.
 
 When convex spaces are finally defined, we should redefine `Finset.expect` in terms of that convex
 combination operator.
@@ -42,6 +44,8 @@ combination operator.
 * Connect `Finset.expect` with the expectation over `s` in the probability theory sense.
 * Give a formulation of Jensen's inequality in this language.
 -/
+
+@[expose] public section
 
 open Finset Function
 open Fintype (card)
@@ -85,7 +89,7 @@ open Batteries.ExtendedBinder
 
 /-- Delaborator for `Finset.expect`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the expect is over `Finset.univ`. -/
-@[scoped app_delab Finset.expect] def delabFinsetExpect : Delab :=
+@[scoped app_delab Finset.expect] meta def delabFinsetExpect : Delab :=
   whenPPOption getPPNotation <| withOverApp 6 <| do
   let #[_, _, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
@@ -117,7 +121,10 @@ lemma expect_univ [Fintype ι] : 𝔼 i, f i = (∑ i, f i) /ℚ Fintype.card ι
   rw [expect, card_univ]
 
 @[simp] lemma expect_empty (f : ι → M) : 𝔼 i ∈ ∅, f i = 0 := by simp [expect]
+
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma expect_singleton (f : ι → M) (i : ι) : 𝔼 j ∈ {i}, f j = f i := by simp [expect]
+
 @[simp] lemma expect_const_zero (s : Finset ι) : 𝔼 _i ∈ s, (0 : M) = 0 := by simp [expect]
 
 @[congr]
@@ -162,6 +169,7 @@ lemma expect_ite_zero (s : Finset ι) (p : ι → Prop) [DecidablePred p]
 section DecidableEq
 variable [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma expect_ite_mem (s t : Finset ι) (f : ι → M) :
     𝔼 i ∈ s, (if i ∈ t then f i else 0) = (#(s ∩ t) / #s : ℚ≥0) • 𝔼 i ∈ s ∩ t, f i := by
   obtain hst | hst := (s ∩ t).eq_empty_or_nonempty
@@ -247,6 +255,7 @@ most arguments. -/
 lemma expect_equiv (e : ι ≃ κ) (hst : ∀ i, i ∈ s ↔ e i ∈ t) (hfg : ∀ i ∈ s, f i = g (e i)) :
     𝔼 i ∈ s, f i = 𝔼 i ∈ t, g i := by simp_rw [expect, card_equiv e hst, sum_equiv e hst hfg]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Expectation over a product set equals the expectation of the fiberwise expectations.
 
 For rewriting in the reverse direction, use `Finset.expect_product'`. -/
@@ -254,6 +263,7 @@ lemma expect_product (s : Finset ι) (t : Finset κ) (f : ι × κ → M) :
     𝔼 x ∈ s ×ˢ t, f x = 𝔼 i ∈ s, 𝔼 j ∈ t, f (i, j) := by
   simp only [expect, card_product, sum_product, smul_sum, mul_inv, mul_smul, Nat.cast_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Expectation over a product set equals the expectation of the fiberwise expectations.
 
 For rewriting in the reverse direction, use `Finset.expect_product`. -/
@@ -276,7 +286,7 @@ end bij
 
 lemma _root_.map_expect {F : Type*} [FunLike F M N] [LinearMapClass F ℚ≥0 M N]
     (g : F) (f : ι → M) (s : Finset ι) :
-    g (𝔼 i ∈ s, f i) = 𝔼 i ∈ s, g (f i) := by simp only [expect, map_smul, map_natCast, map_sum]
+    g (𝔼 i ∈ s, f i) = 𝔼 i ∈ s, g (f i) := by simp only [expect, map_smul, map_sum]
 
 @[simp]
 lemma card_smul_expect (s : Finset ι) (f : ι → M) : #s • 𝔼 i ∈ s, f i = ∑ i ∈ s, f i := by
@@ -336,6 +346,7 @@ end Semiring
 section CommSemiring
 variable [CommSemiring M] [Module ℚ≥0 M] [IsScalarTower ℚ≥0 M M] [SMulCommClass ℚ≥0 M M]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma expect_pow (s : Finset ι) (f : ι → M) (n : ℕ) :
     (𝔼 i ∈ s, f i) ^ n = 𝔼 p ∈ Fintype.piFinset fun _ : Fin n ↦ s, ∏ i, f (p i) := by
   classical
@@ -396,7 +407,7 @@ See `Function.Bijective.expect_comp` for a version without `h`. -/
 lemma expect_bijective (e : ι → κ) (he : Bijective e) (f : ι → M) (g : κ → M)
     (h : ∀ i, f i = g (e i)) : 𝔼 i, f i = 𝔼 i, g i :=
   expect_nbij e (fun _ _ ↦ mem_univ _) (fun i _ ↦ h i) he.injective.injOn <| by
-    simpa using he.surjective.surjOn _
+    simpa using he.surjective
 
 /-- `Fintype.expect_equiv` is a specialization of `Finset.expect_bij` that automatically fills in
 most arguments.

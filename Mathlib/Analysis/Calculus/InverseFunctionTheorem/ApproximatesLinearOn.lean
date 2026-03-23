@@ -3,9 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Operator.Banach
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
-import Mathlib.Topology.PartialHomeomorph
+module
+
+public import Mathlib.Analysis.Normed.Operator.Banach
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Topology.OpenPartialHomeomorph.Basic
+
 /-!
 # Non-linear maps close to affine maps
 
@@ -16,14 +19,14 @@ behave like `f a + f' (x - a)` near each `a ∈ s`.
 When `f'` is onto, we show that `f` is locally onto.
 
 When `f'` is a continuous linear equiv, we show that `f` is a homeomorphism
-between `s` and `f '' s`. More precisely, we define `ApproximatesLinearOn.toPartialHomeomorph` to
-be a `PartialHomeomorph` with `toFun = f`, `source = s`, and `target = f '' s`.
-between `s` and `f '' s`. More precisely, we define `ApproximatesLinearOn.toPartialHomeomorph` to
-be a `PartialHomeomorph` with `toFun = f`, `source = s`, and `target = f '' s`.
+between `s` and `f '' s`. More precisely, we define `ApproximatesLinearOn.toOpenPartialHomeomorph`
+to be an `OpenPartialHomeomorph` with `toFun = f`, `source = s`, and `target = f '' s`.
+between `s` and `f '' s`. More precisely, we define `ApproximatesLinearOn.toOpenPartialHomeomorph`
+to be an `OpenPartialHomeomorph` with `toFun = f`, `source = s`, and `target = f '' s`.
 
 Maps of this type naturally appear in the proof of the inverse function theorem (see next section),
-and `ApproximatesLinearOn.toPartialHomeomorph` will imply that the locally inverse function
-and `ApproximatesLinearOn.toPartialHomeomorph` will imply that the locally inverse function
+and `ApproximatesLinearOn.toOpenPartialHomeomorph` will imply that the locally inverse function
+and `ApproximatesLinearOn.toOpenPartialHomeomorph` will imply that the locally inverse function
 exists.
 
 We define this auxiliary notion to split the proof of the inverse function theorem into small
@@ -34,7 +37,7 @@ lemmas. This approach makes it possible
 - to reuse parts of the proofs in the case if a function is not strictly differentiable. E.g., for a
   function `f : E × F → G` with estimates on `f x y₁ - f x y₂` but not on `f x₁ y - f x₂ y`.
 
-## Notations
+## Notation
 
 We introduce some `local notation` to make formulas shorter:
 
@@ -42,6 +45,8 @@ We introduce some `local notation` to make formulas shorter:
 * by `g` we denote the auxiliary contracting map `x ↦ x + f'.symm (y - f x)` used to prove that
   `{x | f x = y}` is nonempty.
 -/
+
+@[expose] public section
 
 open Function Set Filter Metric
 
@@ -143,7 +148,6 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
     rw [this]
   have If' : (0 : ℝ) < f'symm.nnnorm := by rw [← inv_pos]; exact (NNReal.coe_nonneg _).trans_lt hc
   have Icf' : (c : ℝ) * f'symm.nnnorm < 1 := by rwa [inv_eq_one_div, lt_div_iff₀ If'] at hc
-  have Jf' : (f'symm.nnnorm : ℝ) ≠ 0 := ne_of_gt If'
   have Jcf' : (1 : ℝ) - c * f'symm.nnnorm ≠ 0 := by apply ne_of_gt; linarith
   /- We have to show that `y` can be written as `f x` for some `x ∈ closedBall b ε`.
     The idea of the proof is to apply the Banach contraction principle to the map
@@ -204,7 +208,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
         rw [mul_one]
         gcongr
         exact mem_closedBall'.1 hy
-      _ = ε * (1 - c * f'symm.nnnorm) := by field_simp; ring
+      _ = ε * (1 - c * f'symm.nnnorm) := by field
   /- Main inductive control: `f (u n)` becomes exponentially close to `y`, and therefore
     `dist (u (n+1)) (u n)` becomes exponentally small, making it possible to get an inductive
     bound on `dist (u n) b`, from which one checks that `u n` remains in the ball on which we
@@ -212,7 +216,9 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
   have D : ∀ n : ℕ, dist (f (u n)) y ≤ ((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y ∧
       dist (u n) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) /
         (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := fun n ↦ by
-    induction' n with n IH; · simp [hu, le_refl]
+    induction n with
+    | zero => simp [hu]
+    | succ n IH => ?_
     rw [usucc]
     have Ign : dist (g (u n)) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
         (1 - c * f'symm.nnnorm) * dist (f b) y :=
@@ -227,7 +233,9 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
                   · exact IH.2
         _ = f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
               (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := by
-          field_simp [Jcf', pow_succ]; ring
+          replace Jcf' : (1 : ℝ) - f'symm.nnnorm * c ≠ 0 := by convert Jcf' using 1; ring
+          simp [field, pow_succ, -mul_eq_mul_left_iff]
+          ring
     refine ⟨?_, Ign⟩
     calc
       dist (f (g (u n))) y ≤ c * f'symm.nnnorm * dist (f (u n)) y :=
@@ -277,8 +285,8 @@ theorem open_image (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRi
 theorem image_mem_nhds (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse)
     {x : E} (hs : s ∈ 𝓝 x) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : f '' s ∈ 𝓝 (f x) := by
   obtain ⟨t, hts, ht, xt⟩ : ∃ t, t ⊆ s ∧ IsOpen t ∧ x ∈ t := _root_.mem_nhds_iff.1 hs
-  have := IsOpen.mem_nhds ((hf.mono_set hts).open_image f'symm ht hc) (mem_image_of_mem _ xt)
-  exact mem_of_superset this (image_subset _ hts)
+  grw [← hts]
+  exact IsOpen.mem_nhds ((hf.mono_set hts).open_image f'symm ht hc) (mem_image_of_mem _ xt)
 
 theorem map_nhds_eq (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse) {x : E}
     (hs : s ∈ 𝓝 x) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : map f (𝓝 x) = 𝓝 (f x) := by
@@ -286,7 +294,7 @@ theorem map_nhds_eq (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearR
     le_antisymm ((hf.continuousOn x (mem_of_mem_nhds hs)).continuousAt hs) (le_map fun t ht => ?_)
   have : f '' (s ∩ t) ∈ 𝓝 (f x) :=
     (hf.mono_set inter_subset_left).image_mem_nhds f'symm (inter_mem hs ht) hc
-  exact mem_of_superset this (image_subset _ inter_subset_right)
+  exact mem_of_superset this (image_mono inter_subset_right)
 
 end LocallyOnto
 
@@ -333,7 +341,8 @@ protected theorem surjective [CompleteSpace E] (hf : ApproximatesLinearOn f (f' 
     exact fun R h y hy => h hy
 
 /-- A map approximating a linear equivalence on a set defines a partial equivalence on this set.
-Should not be used outside of this file, because it is superseded by `toPartialHomeomorph` below.
+Should not be used outside of this file, because it is superseded by `toOpenPartialHomeomorph`
+below.
 
 This is a first step towards the inverse function. -/
 def toPartialEquiv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
@@ -341,7 +350,7 @@ def toPartialEquiv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
   (hf.injOn hc).toPartialEquiv _ _
 
 /-- The inverse function is continuous on `f '' s`.
-Use properties of `PartialHomeomorph` instead. -/
+Use properties of `OpenPartialHomeomorph` instead. -/
 theorem inverse_continuousOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : ContinuousOn (hf.toPartialEquiv hc).symm (f '' s) := by
   apply continuousOn_iff_continuous_restrict.2
@@ -362,7 +371,7 @@ theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Sub
       (f' : E →L[𝕜] F).bound_of_antilipschitz f'.antilipschitz _
     _ = N * ‖A y' - A x' - f' (y' - x')‖ := by
       congr 2
-      simp only [ContinuousLinearEquiv.apply_symm_apply, ContinuousLinearEquiv.map_sub]
+      simp only [ContinuousLinearEquiv.apply_symm_apply, map_sub]
       abel
     _ ≤ N * (c * ‖y' - x'‖) := mul_le_mul_of_nonneg_left (hf _ y's _ x's) (NNReal.coe_nonneg _)
     _ ≤ N * (c * (((N⁻¹ - c)⁻¹ : ℝ≥0) * ‖A y' - A x'‖)) := by
@@ -379,9 +388,9 @@ section
 variable (f s)
 
 /-- Given a function `f` that approximates a linear equivalence on an open set `s`,
-returns a partial homeomorphism with `toFun = f` and `source = s`. -/
-def toPartialHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
-    (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) : PartialHomeomorph E F where
+returns an open partial homeomorphism with `toFun = f` and `source = s`. -/
+def toOpenPartialHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
+    (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) : OpenPartialHomeomorph E F where
   toPartialEquiv := hf.toPartialEquiv hc
   open_source := hs
   open_target := hf.open_image f'.toNonlinearRightInverse hs <| by
@@ -389,36 +398,49 @@ def toPartialHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
   continuousOn_toFun := hf.continuousOn
   continuousOn_invFun := hf.inverse_continuousOn hc
 
-@[simp]
-theorem toPartialHomeomorph_coe (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
-    (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) :
-    (hf.toPartialHomeomorph f s hc hs : E → F) = f :=
-  rfl
+@[deprecated (since := "2025-08-29")] noncomputable alias
+  toPartialHomeomorph := toOpenPartialHomeomorph
 
 @[simp]
-theorem toPartialHomeomorph_source (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
+theorem toOpenPartialHomeomorph_coe (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) :
-    (hf.toPartialHomeomorph f s hc hs).source = s :=
+    (hf.toOpenPartialHomeomorph f s hc hs : E → F) = f :=
   rfl
 
+@[deprecated (since := "2025-08-29")] alias
+  toPartialHomeomorph_coe := toOpenPartialHomeomorph_coe
+
 @[simp]
-theorem toPartialHomeomorph_target (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
+theorem toOpenPartialHomeomorph_source (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) :
-    (hf.toPartialHomeomorph f s hc hs).target = f '' s :=
+    (hf.toOpenPartialHomeomorph f s hc hs).source = s :=
   rfl
+
+@[deprecated (since := "2025-08-29")] alias
+  toPartialHomeomorph_source := toOpenPartialHomeomorph_source
+
+@[simp]
+theorem toOpenPartialHomeomorph_target (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
+    (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) :
+    (hf.toOpenPartialHomeomorph f s hc hs).target = f '' s :=
+  rfl
+
+@[deprecated (since := "2025-08-29")] alias
+  toPartialHomeomorph_target := toOpenPartialHomeomorph_target
 
 /-- A function `f` that approximates a linear equivalence on the whole space is a homeomorphism. -/
 def toHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
     (hc : Subsingleton E ∨ c < N⁻¹) : E ≃ₜ F := by
-  refine (hf.toPartialHomeomorph _ _ hc isOpen_univ).toHomeomorphOfSourceEqUnivTargetEqUniv rfl ?_
-  rw [toPartialHomeomorph_target, image_univ, range_eq_univ]
+  refine
+    (hf.toOpenPartialHomeomorph _ _ hc isOpen_univ).toHomeomorphOfSourceEqUnivTargetEqUniv rfl ?_
+  rw [toOpenPartialHomeomorph_target, image_univ, range_eq_univ]
   exact hf.surjective hc
 
 end
 
 theorem closedBall_subset_target (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) {b : E} (ε0 : 0 ≤ ε) (hε : closedBall b ε ⊆ s) :
-    closedBall (f b) ((N⁻¹ - c) * ε) ⊆ (hf.toPartialHomeomorph f s hc hs).target :=
+    closedBall (f b) ((N⁻¹ - c) * ε) ⊆ (hf.toOpenPartialHomeomorph f s hc hs).target :=
   (hf.surjOn_closedBall_of_nonlinearRightInverse f'.toNonlinearRightInverse ε0 hε).mono hε
     Subset.rfl
 

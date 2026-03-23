@@ -3,13 +3,17 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.Algebra.Structures
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.Structures
 
 /-!
 # Algebraic structures over `C^n` functions
 
 In this file, we define instances of algebraic structures over `C^n` functions.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -53,11 +57,7 @@ theorem coe_one {G : Type*} [One G] [TopologicalSpace G] [ChartedSpace H' G] :
     ⇑(1 : C^n⟮I, N; I', G⟯) = 1 :=
   rfl
 
-instance instNSMul {G : Type*} [AddMonoid G] [TopologicalSpace G] [ChartedSpace H' G]
-    [ContMDiffAdd I' n G] : SMul ℕ C^n⟮I, N; I', G⟯ where
-  smul n f := ⟨n • (f : N → G), (contMDiff_nsmul n).comp f.contMDiff⟩
-
-@[to_additive existing]
+@[to_additive]
 instance instPow {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] :
     Pow C^n⟮I, N; I', G⟯ ℕ where
@@ -89,8 +89,8 @@ instance monoid {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
   DFunLike.coe_injective.monoid _ coe_one coe_mul coe_pow
 
 /-- Coercion to a function as a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
-@[to_additive (attr := simps) "Coercion to a function as an `AddMonoidHom`.
-  Similar to `AddMonoidHom.coeFn`."]
+@[to_additive (attr := simps) /-- Coercion to a function as an `AddMonoidHom`.
+  Similar to `AddMonoidHom.coeFn`. -/]
 def coeFnMonoidHom {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] : C^n⟮I, N; I', G⟯ →* N → G where
   toFun := DFunLike.coe
@@ -101,25 +101,24 @@ variable (I N)
 
 /-- For a manifold `N` and a `C^n` homomorphism `φ` between Lie groups `G'`, `G''`, the
 'left-composition-by-`φ`' group homomorphism from `C^n⟮I, N; I', G'⟯` to `C^n⟮I, N; I'', G''⟯`. -/
-@[to_additive "For a manifold `N` and a `C^n` homomorphism `φ` between additive Lie groups `G'`,
+@[to_additive /-- For a manifold `N` and a `C^n` homomorphism `φ` between additive Lie groups `G'`,
 `G''`, the 'left-composition-by-`φ`' group homomorphism from `C^n⟮I, N; I', G'⟯` to
-`C^n⟮I, N; I'', G''⟯`."]
+`C^n⟮I, N; I'', G''⟯`. -/]
 def compLeftMonoidHom {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpace H' G']
     [ContMDiffMul I' n G'] {G'' : Type*} [Monoid G''] [TopologicalSpace G''] [ChartedSpace H'' G'']
-    [ContMDiffMul I'' n G''] (φ : G' →* G'') (hφ : ContMDiff I' I'' n φ) :
+    [ContMDiffMul I'' n G''] (φ : G' →* G'') (hφ : CMDiff n φ) :
     C^n⟮I, N; I', G'⟯ →* C^n⟮I, N; I'', G''⟯ where
   toFun f := ⟨φ ∘ f, hφ.comp f.contMDiff⟩
-  map_one' := by ext; show φ 1 = 1; simp
-  map_mul' f g := by ext x; show φ (f x * g x) = φ (f x) * φ (g x); simp
+  map_one' := by ext; change φ 1 = 1; simp
+  map_mul' f g := by ext x; change φ (f x * g x) = φ (f x) * φ (g x); simp
 
 variable (I') {N}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215):
 -- TODO: generalize to any `C^n` map instead of `Set.inclusion`
 /-- For a Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction' group homomorphism from
 `C^n⟮I, V; I', G⟯` to `C^n⟮I, U; I', G⟯`. -/
-@[to_additive "For an additive Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction' group
-homomorphism from `C^n⟮I, V; I', G⟯` to `C^n⟮I, U; I', G⟯`."]
+@[to_additive /-- For an additive Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction'
+group homomorphism from `C^n⟮I, V; I', G⟯` to `C^n⟮I, U; I', G⟯`. -/]
 def restrictMonoidHom (G : Type*) [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] {U V : Opens N} (h : U ≤ V) : C^n⟮I, V; I', G⟯ →* C^n⟮I, U; I', G⟯ where
   toFun f := ⟨f ∘ Set.inclusion h, f.contMDiff.comp (contMDiff_inclusion h)⟩
@@ -192,7 +191,7 @@ variable (I N)
 'left-composition-by-`φ`' ring homomorphism from `C^n⟮I, N; I', R'⟯` to `C^n⟮I, N; I'', R''⟯`. -/
 def compLeftRingHom {R' : Type*} [Ring R'] [TopologicalSpace R'] [ChartedSpace H' R']
     [ContMDiffRing I' n R'] {R'' : Type*} [Ring R''] [TopologicalSpace R''] [ChartedSpace H'' R'']
-    [ContMDiffRing I'' n R''] (φ : R' →+* R'') (hφ : ContMDiff I' I'' n φ) :
+    [ContMDiffRing I'' n R''] (φ : R' →+* R'') (hφ : CMDiff n φ) :
     C^n⟮I, N; I', R'⟯ →+* C^n⟮I, N; I'', R''⟯ :=
   { ContMDiffMap.compLeftMonoidHom I N φ.toMonoidHom hφ,
     ContMDiffMap.compLeftAddMonoidHom I N φ.toAddMonoidHom hφ with
@@ -325,7 +324,6 @@ theorem smul_comp' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (f : 
 functions with values in `𝕜`. -/
 instance module' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     Module C^n⟮I, N; 𝓘(𝕜), 𝕜⟯ C^n⟮I, N; 𝓘(𝕜, V), V⟯ where
-  smul := (· • ·)
   smul_add c f g := by ext x; exact smul_add (c x) (f x) (g x)
   add_smul c₁ c₂ f := by ext x; exact add_smul (c₁ x) (c₂ x) (f x)
   mul_smul c₁ c₂ f := by ext x; exact mul_smul (c₁ x) (c₂ x) (f x)

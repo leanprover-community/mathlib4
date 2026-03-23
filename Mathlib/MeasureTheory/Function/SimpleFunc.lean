@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Pi
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 /-!
 # Simple functions
@@ -19,6 +21,8 @@ measurable function into `ℝ≥0∞`, it is sufficient to show that the propert
 characteristic functions and is closed under addition and supremum of increasing sequences of
 functions.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -111,7 +115,7 @@ theorem exists_range_iff {f : α →ₛ β} {p : β → Prop} : (∃ y ∈ f.ran
 theorem preimage_eq_empty_iff (f : α →ₛ β) (b : β) : f ⁻¹' {b} = ∅ ↔ b ∉ f.range :=
   preimage_singleton_eq_empty.trans <| not_congr mem_range.symm
 
-theorem exists_forall_le [Nonempty β] [Preorder β] [IsDirected β (· ≤ ·)] (f : α →ₛ β) :
+theorem exists_forall_le [Nonempty β] [Preorder β] [IsDirectedOrder β] (f : α →ₛ β) :
     ∃ C, ∀ x, f x ≤ C :=
   f.range.exists_le.imp fun _ => forall_mem_range.1
 
@@ -161,11 +165,11 @@ theorem measurableSet_preimage (f : α →ₛ β) (s) : MeasurableSet (f ⁻¹' 
   measurableSet_cut (fun _ b => b ∈ s) f fun b => MeasurableSet.const (b ∈ s)
 
 /-- A simple function is measurable -/
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem measurable [MeasurableSpace β] (f : α →ₛ β) : Measurable f := fun s _ =>
   measurableSet_preimage f s
 
-@[measurability]
+@[fun_prop]
 protected theorem aemeasurable [MeasurableSpace β] {μ : Measure α} (f : α →ₛ β) :
     AEMeasurable f μ :=
   f.measurable.aemeasurable
@@ -201,7 +205,7 @@ open scoped Classical in
 @[simp]
 theorem piecewise_compl {s : Set α} (hs : MeasurableSet sᶜ) (f g : α →ₛ β) :
     piecewise sᶜ hs f g = piecewise s hs.of_compl g f :=
-  coe_injective <| by simp [hs]
+  coe_injective <| by simp
 
 @[simp]
 theorem piecewise_univ (f g : α →ₛ β) : piecewise univ MeasurableSet.univ f g = f :=
@@ -246,7 +250,7 @@ theorem bind_apply (f : α →ₛ β) (g : β → α →ₛ γ) (a) : f.bind g a
   rfl
 
 /-- Given a function `g : β → γ` and a simple function `f : α →ₛ β`, `f.map g` return the simple
-    function `g ∘ f : α →ₛ γ` -/
+function `g ∘ f : α →ₛ γ` -/
 def map (g : β → γ) (f : α →ₛ β) : α →ₛ γ :=
   bind f (const α ∘ g)
 
@@ -407,10 +411,6 @@ theorem coe_div [Div β] (f g : α →ₛ β) : ⇑(f / g) = ⇑f / ⇑g :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_le [LE β] {f g : α →ₛ β} : (f : α → β) ≤ g ↔ f ≤ g :=
-  Iff.rfl
-
-@[simp, norm_cast]
 theorem coe_sup [Max β] (f g : α →ₛ β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
   rfl
 
@@ -438,17 +438,12 @@ theorem inf_apply [Min β] (f g : α →ₛ β) (a : α) : (f ⊓ g) a = f a ⊓
 
 @[to_additive (attr := simp)]
 theorem range_one [Nonempty α] [One β] : (1 : α →ₛ β).range = {1} :=
-  Finset.ext fun x => by simp [eq_comm]
+  Finset.ext fun x => by simp
 
 @[simp]
 theorem range_eq_empty_of_isEmpty {β} [hα : IsEmpty α] (f : α →ₛ β) : f.range = ∅ := by
-  rw [← Finset.not_nonempty_iff_eq_empty]
-  by_contra h
-  obtain ⟨y, hy_mem⟩ := h
-  rw [SimpleFunc.mem_range, Set.mem_range] at hy_mem
-  obtain ⟨x, hxy⟩ := hy_mem
-  rw [isEmpty_iff] at hα
-  exact hα x
+  ext
+  simp
 
 theorem eq_zero_of_mem_range_zero [Zero β] : ∀ {y : β}, y ∈ (0 : α →ₛ β).range → y = 0 :=
   @(forall_mem_range.2 fun _ => rfl)
@@ -511,63 +506,175 @@ theorem zpow_apply [DivInvMonoid β] (z : ℤ) (f : α →ₛ β) (a : α) : (f 
 section Additive
 
 instance instAddMonoid [AddMonoid β] : AddMonoid (α →ₛ β) :=
-  Function.Injective.addMonoid (fun f => show α → β from f) coe_injective coe_zero coe_add
-    fun _ _ => coe_smul _ _
+  fast_instance% Function.Injective.addMonoid (fun f => show α → β from f) coe_injective coe_zero
+    coe_add fun _ _ => coe_smul _ _
 
 instance instAddCommMonoid [AddCommMonoid β] : AddCommMonoid (α →ₛ β) :=
-  Function.Injective.addCommMonoid (fun f => show α → β from f) coe_injective coe_zero coe_add
-    fun _ _ => coe_smul _ _
+  fast_instance% Function.Injective.addCommMonoid (fun f => show α → β from f)
+    coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
 
 instance instAddGroup [AddGroup β] : AddGroup (α →ₛ β) :=
   Function.Injective.addGroup (fun f => show α → β from f) coe_injective coe_zero coe_add coe_neg
     coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 instance instAddCommGroup [AddCommGroup β] : AddCommGroup (α →ₛ β) :=
-  Function.Injective.addCommGroup (fun f => show α → β from f) coe_injective coe_zero coe_add
-    coe_neg coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
+  fast_instance% Function.Injective.addCommGroup (fun f => show α → β from f) coe_injective
+    coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 end Additive
 
 @[to_additive existing]
 instance instMonoid [Monoid β] : Monoid (α →ₛ β) :=
-  Function.Injective.monoid (fun f => show α → β from f) coe_injective coe_one coe_mul coe_pow
+  fast_instance% Function.Injective.monoid (fun f => show α → β from f) coe_injective coe_one
+    coe_mul coe_pow
 
 @[to_additive existing]
 instance instCommMonoid [CommMonoid β] : CommMonoid (α →ₛ β) :=
-  Function.Injective.commMonoid (fun f => show α → β from f) coe_injective coe_one coe_mul coe_pow
+  fast_instance% Function.Injective.commMonoid (fun f => show α → β from f) coe_injective coe_one
+    coe_mul coe_pow
 
 @[to_additive existing]
 instance instGroup [Group β] : Group (α →ₛ β) :=
-  Function.Injective.group (fun f => show α → β from f) coe_injective coe_one coe_mul coe_inv
-    coe_div coe_pow coe_zpow
+  fast_instance% Function.Injective.group (fun f => show α → β from f) coe_injective coe_one
+    coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive existing]
 instance instCommGroup [CommGroup β] : CommGroup (α →ₛ β) :=
-  Function.Injective.commGroup (fun f => show α → β from f) coe_injective coe_one coe_mul coe_inv
-    coe_div coe_pow coe_zpow
+  fast_instance% Function.Injective.commGroup (fun f => show α → β from f) coe_injective coe_one
+    coe_mul coe_inv coe_div coe_pow coe_zpow
+
+instance [Monoid K] [MulAction K β] : MulAction K (α →ₛ β) :=
+  fast_instance% Function.Injective.mulAction (fun f => show α → β from f) coe_injective coe_smul
 
 instance instModule [Semiring K] [AddCommMonoid β] [Module K β] : Module K (α →ₛ β) :=
-  Function.Injective.module K ⟨⟨fun f => show α → β from f, coe_zero⟩, coe_add⟩
+  fast_instance% Function.Injective.module K ⟨⟨fun f => show α → β from f, coe_zero⟩, coe_add⟩
     coe_injective coe_smul
 
 theorem smul_eq_map [SMul K β] (k : K) (f : α →ₛ β) : k • f = f.map (k • ·) :=
   rfl
+
+lemma smul_const [SMul K β] (k : K) (b : β) :
+    (k • const α b : α →ₛ β) = const α (k • b) := ext fun _ ↦ rfl
+
+instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →ₛ β) :=
+  fast_instance% Function.Injective.nonUnitalNonAssocSemiring (fun f => show α → β from f)
+    coe_injective coe_zero coe_add coe_mul coe_smul
+
+instance [NonUnitalSemiring β] : NonUnitalSemiring (α →ₛ β) :=
+  fast_instance% Function.Injective.nonUnitalSemiring (fun f => show α → β from f)
+    SimpleFunc.coe_injective coe_zero coe_add coe_mul coe_smul
+
+instance [NatCast β] : NatCast (α →ₛ β) where
+  natCast n := const _ (NatCast.natCast n)
+
+@[simp, norm_cast]
+lemma coe_natCast [NatCast β] (n : ℕ) :
+    ⇑(↑n : α →ₛ β) = fun _ ↦ ↑n := rfl
+
+instance [NonAssocSemiring β] : NonAssocSemiring (α →ₛ β) :=
+  fast_instance% Function.Injective.nonAssocSemiring (fun f => show α → β from f)
+    coe_injective coe_zero coe_one coe_add coe_mul coe_smul coe_natCast
+
+instance [IntCast β] : IntCast (α →ₛ β) where
+  intCast n := const _ (IntCast.intCast n)
+
+@[simp, norm_cast]
+lemma coe_intCast [IntCast β] (n : ℤ) :
+    ⇑(↑n : α →ₛ β) = fun _ ↦ ↑n := rfl
+
+instance [NonAssocRing β] : NonAssocRing (α →ₛ β) :=
+  fast_instance% Function.Injective.nonAssocRing (fun f => show α → β from f) coe_injective
+    coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_natCast coe_intCast
+
+instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →ₛ β) :=
+  fast_instance% Function.Injective.nonUnitalCommSemiring (fun f => show α → β from f)
+    coe_injective coe_zero coe_add coe_mul coe_smul
+
+instance [CommSemiring β] : CommSemiring (α →ₛ β) :=
+  fast_instance% Function.Injective.commSemiring (fun f => show α → β from f)
+    coe_injective coe_zero coe_one coe_add coe_mul coe_smul coe_pow coe_natCast
+
+instance [NonUnitalCommRing β] : NonUnitalCommRing (α →ₛ β) :=
+  fast_instance% Function.Injective.nonUnitalCommRing (fun f => show α → β from f)
+    coe_injective coe_zero coe_add coe_mul coe_neg coe_sub coe_smul coe_smul
+
+instance [CommRing β] : CommRing (α →ₛ β) :=
+  fast_instance% Function.Injective.commRing (fun f => show α → β from f) coe_injective coe_zero
+    coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
+
+instance [Semiring β] : Semiring (α →ₛ β) :=
+  fast_instance% Function.Injective.semiring (fun f => show α → β from f) coe_injective coe_zero
+    coe_one coe_add coe_mul coe_smul coe_pow coe_natCast
+
+instance [NonUnitalRing β] : NonUnitalRing (α →ₛ β) :=
+  fast_instance% Function.Injective.nonUnitalRing (fun f => show α → β from f) coe_injective
+    coe_zero coe_add coe_mul coe_neg coe_sub coe_smul coe_smul
+
+instance [Ring β] : Ring (α →ₛ β) :=
+  fast_instance% Function.Injective.ring (fun f => show α → β from f) coe_injective coe_zero
+    coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
+
+instance [SMul K γ] [SMul γ β] [SMul K β] [IsScalarTower K γ β] : IsScalarTower K γ (α →ₛ β) where
+  smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
+
+instance [SMul γ β] [SMul K β] [SMulCommClass K γ β] : SMulCommClass K γ (α →ₛ β) where
+  smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
+
+instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) where
+  algebraMap := {
+    toFun r := const α <| algebraMap K β r
+    map_one' := ext fun _ ↦ algebraMap K β |>.map_one ▸ rfl
+    map_mul' _ _ := ext fun _ ↦ algebraMap K β |>.map_mul ..
+    map_zero' := ext fun _ ↦ algebraMap K β |>.map_zero ▸ rfl
+    map_add' _ _ := ext fun _ ↦ algebraMap K β |>.map_add .. }
+  commutes' _ _ := ext fun _ ↦ Algebra.commutes ..
+  smul_def' _ _ := ext fun _ ↦ Algebra.smul_def ..
+
+@[simp]
+lemma const_algebraMap [CommSemiring K] [Semiring β] [Algebra K β] (k : K) :
+    const α (algebraMap K β k) = algebraMap K (α →ₛ β) k := rfl
+
+@[simp]
+lemma coe_algebraMap [CommSemiring K] [Semiring β] [Algebra K β] (k : K) (x : α) :
+    ⇑(algebraMap K (α →ₛ β)) k x = algebraMap K (α → β) k x := rfl
+
+section Star
+
+instance [Star β] : Star (α →ₛ β) where
+  star f := f.map Star.star
+
+@[simp]
+lemma coe_star [Star β] {f : α →ₛ β} : ⇑(star f) = star ⇑f := rfl
+
+instance [InvolutiveStar β] : InvolutiveStar (α →ₛ β) where
+  star_involutive _ := ext fun _ ↦ star_star _
+
+instance [AddMonoid β] [StarAddMonoid β] : StarAddMonoid (α →ₛ β) where
+  star_add _ _ := ext fun _ ↦ star_add ..
+
+instance [Mul β] [StarMul β] : StarMul (α →ₛ β) where
+  star_mul _ _ := ext fun _ ↦ star_mul ..
+
+instance [NonUnitalNonAssocSemiring β] [StarRing β] : StarRing (α →ₛ β) where
+  star_add _ _ := ext fun _ ↦ star_add ..
+
+end Star
 
 section Preorder
 variable [Preorder β] {s : Set α} {f f₁ f₂ g g₁ g₂ : α →ₛ β} {hs : MeasurableSet s}
 
 instance instPreorder : Preorder (α →ₛ β) := Preorder.lift (⇑)
 
-@[norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
-@[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := .rfl
+@[simp, norm_cast, gcongr] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
+@[simp, norm_cast, gcongr] lemma coe_lt_coe : ⇑f < g ↔ f < g := .rfl
 
-@[simp] lemma mk_le_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' ≤ mk g hg hg' ↔ f ≤ g := Iff.rfl
-@[simp] lemma mk_lt_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' < mk g hg hg' ↔ f < g := Iff.rfl
+@[deprecated (since := "2025-10-21")] alias coe_le := coe_le_coe
 
-@[gcongr] protected alias ⟨_, GCongr.mk_le_mk⟩ := mk_le_mk
-@[gcongr] protected alias ⟨_, GCongr.mk_lt_mk⟩ := mk_lt_mk
-@[gcongr] protected alias ⟨_, GCongr.coe_le_coe⟩ := coe_le_coe
-@[gcongr] protected alias ⟨_, GCongr.coe_lt_coe⟩ := coe_lt_coe
+@[simp, gcongr]
+lemma mk_le_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' ≤ mk g hg hg' ↔ f ≤ g := Iff.rfl
+
+@[simp, gcongr]
+lemma mk_lt_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' < mk g hg hg' ↔ f < g := Iff.rfl
 
 open scoped Classical in
 @[gcongr]
@@ -589,9 +696,9 @@ instance instOrderTop [LE β] [OrderTop β] : OrderTop (α →ₛ β) where
   le_top _ _ := le_top
 
 @[to_additive]
-instance [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] :
+instance [CommMonoid β] [Preorder β] [IsOrderedMonoid β] :
     IsOrderedMonoid (α →ₛ β) where
-  mul_le_mul_left _ _ h _ _ := mul_le_mul_left' (h _) _
+  mul_le_mul_left _ _ h _ _ := mul_le_mul_left (h _) _
 
 instance instSemilatticeInf [SemilatticeInf β] : SemilatticeInf (α →ₛ β) :=
   { SimpleFunc.instPartialOrder with
@@ -719,7 +826,7 @@ theorem approx_apply [TopologicalSpace β] [OrderClosedTopology β] [MeasurableS
   · exact hf measurableSet_Ici
 
 theorem monotone_approx (i : ℕ → β) (f : α → β) : Monotone (approx i f) := fun _ _ h =>
-  Finset.sup_mono <| Finset.range_subset.2 h
+  Finset.sup_mono <| Finset.range_subset_range.2 h
 
 theorem approx_comp [TopologicalSpace β] [OrderClosedTopology β] [MeasurableSpace β]
     [OpensMeasurableSpace β] [MeasurableSpace γ] {i : ℕ → β} {f : γ → β} {g : α → γ} {n : ℕ} (a : α)
@@ -761,8 +868,9 @@ theorem ennrealRatEmbed_encode (q : ℚ) :
 def eapprox : (α → ℝ≥0∞) → ℕ → α →ₛ ℝ≥0∞ :=
   approx ennrealRatEmbed
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eapprox_lt_top (f : α → ℝ≥0∞) (n : ℕ) (a : α) : eapprox f n a < ∞ := by
-  simp only [eapprox, approx, finset_sup_apply, Finset.mem_range, ENNReal.bot_eq_zero, restrict]
+  simp only [eapprox, approx, finset_sup_apply, restrict]
   rw [Finset.sup_lt_iff (α := ℝ≥0∞) WithTop.top_pos]
   intro b _
   split_ifs
@@ -774,12 +882,9 @@ theorem eapprox_lt_top (f : α → ℝ≥0∞) (n : ℕ) (a : α) : eapprox f n 
       _ < ⊤ := ENNReal.coe_lt_top
   · exact WithTop.top_pos
 
-@[mono]
+@[gcongr, mono]
 theorem monotone_eapprox (f : α → ℝ≥0∞) : Monotone (eapprox f) :=
   monotone_approx _ f
-
-@[gcongr]
-lemma eapprox_mono {m n : ℕ} (hmn : m ≤ n) : eapprox f m ≤ eapprox f n := monotone_eapprox _ hmn
 
 lemma iSup_eapprox_apply (hf : Measurable f) (a : α) : ⨆ n, (eapprox f n : α →ₛ ℝ≥0∞) a = f a := by
   rw [eapprox, iSup_approx_apply ennrealRatEmbed f a hf rfl]
@@ -870,10 +975,7 @@ theorem map_lintegral (g : β → ℝ≥0∞) (f : α →ₛ β) :
   rw [map_preimage_singleton, ← f.sum_measure_preimage_singleton, Finset.mul_sum]
   refine Finset.sum_congr ?_ ?_
   · congr
-  · intro x
-    simp only [Finset.mem_filter]
-    rintro ⟨_, h⟩
-    rw [h]
+  · grind
 
 theorem add_lintegral (f g : α →ₛ ℝ≥0∞) : (f + g).lintegral μ = f.lintegral μ + g.lintegral μ :=
   calc
@@ -957,8 +1059,7 @@ theorem lintegral_restrict_iUnion_of_directed {ι : Type*} [Countable ι]
   simp only [lintegral, Measure.restrict_iUnion_apply_eq_iSup hd (measurableSet_preimage ..),
     ENNReal.mul_iSup]
   refine finsetSum_iSup fun i j ↦ (hd i j).imp fun k ⟨hik, hjk⟩ ↦ fun a ↦ ?_
-  -- TODO https://github.com/leanprover-community/mathlib4/pull/14739 make `gcongr` close this goal
-  constructor <;> · gcongr; refine Measure.restrict_mono ?_ le_rfl _; assumption
+  constructor <;> gcongr
 
 theorem const_lintegral (c : ℝ≥0∞) : (const α c).lintegral μ = c * μ univ := by
   rw [lintegral]
@@ -975,7 +1076,6 @@ theorem restrict_const_lintegral (c : ℝ≥0∞) {s : Set α} (hs : MeasurableS
     ((const α c).restrict s).lintegral μ = c * μ s := by
   rw [restrict_lintegral_eq_lintegral_restrict _ hs, const_lintegral_restrict]
 
-@[gcongr]
 theorem lintegral_mono_fun {f g : α →ₛ ℝ≥0∞} (h : f ≤ g) : f.lintegral μ ≤ g.lintegral μ := by
   refine Monotone.of_left_le_map_sup (f := (lintegral · μ)) (fun f g ↦ ?_) h
   calc
@@ -988,11 +1088,9 @@ theorem lintegral_mono_fun {f g : α →ₛ ℝ≥0∞} (h : f ≤ g) : f.linteg
 theorem le_sup_lintegral (f g : α →ₛ ℝ≥0∞) : f.lintegral μ ⊔ g.lintegral μ ≤ (f ⊔ g).lintegral μ :=
   Monotone.le_map_sup (fun _ _ ↦ lintegral_mono_fun) f g
 
-@[gcongr]
 theorem lintegral_mono_measure {f : α →ₛ ℝ≥0∞} (h : μ ≤ ν) : f.lintegral μ ≤ f.lintegral ν := by
   simp only [lintegral]
   gcongr
-  apply h
 
 /-- `SimpleFunc.lintegral` is monotone both in function and in measure. -/
 @[mono, gcongr]
@@ -1036,7 +1134,7 @@ theorem support_eq [MeasurableSpace α] [Zero β] (f : α →ₛ β) :
     support f = ⋃ y ∈ {y ∈ f.range | y ≠ 0}, f ⁻¹' {y} :=
   Set.ext fun x => by
     simp only [mem_support, Set.mem_preimage, mem_filter, mem_range_self, true_and, exists_prop,
-      mem_iUnion, Set.mem_range, mem_singleton_iff, exists_eq_right']
+      mem_iUnion, mem_singleton_iff, exists_eq_right']
 
 variable {m : MeasurableSpace α} [Zero β] [Zero γ] {μ : Measure α} {f : α →ₛ β}
 
@@ -1080,7 +1178,7 @@ protected theorem map {g : β → γ} (hf : f.FinMeasSupp μ) (hg : g 0 = 0) : (
 
 theorem of_map {g : β → γ} (h : (f.map g).FinMeasSupp μ) (hg : ∀ b, g b = 0 → b = 0) :
     f.FinMeasSupp μ :=
-  flip lt_of_le_of_lt h <| measure_mono <| support_subset_comp @(hg) _
+  flip lt_of_le_of_lt h <| measure_mono <| support_subset_comp @hg _
 
 theorem map_iff {g : β → γ} (hg : ∀ {b}, g b = 0 ↔ b = 0) :
     (f.map g).FinMeasSupp μ ↔ f.FinMeasSupp μ :=
@@ -1089,7 +1187,7 @@ theorem map_iff {g : β → γ} (hg : ∀ {b}, g b = 0 ↔ b = 0) :
 protected theorem pair {g : α →ₛ γ} (hf : f.FinMeasSupp μ) (hg : g.FinMeasSupp μ) :
     (pair f g).FinMeasSupp μ :=
   calc
-    μ (support <| pair f g) = μ (support f ∪ support g) := congr_arg μ <| support_prod_mk f g
+    μ (support <| pair f g) = μ (support f ∪ support g) := congr_arg μ <| support_prodMk f g
     _ ≤ μ (support f) + μ (support g) := measure_union_le _ _
     _ < _ := add_lt_top.2 ⟨hf, hg⟩
 
@@ -1289,7 +1387,7 @@ and supremum of increasing sequences of functions.
 It is possible to make the hypotheses in the induction steps a bit stronger, and such conditions
 can be added once we need them (for example in `h_add` it is only necessary to consider the sum of
 a simple function with a multiple of a characteristic function and that the intersection
-of their images is a subset of `{0}`. -/
+of their images is a subset of `{0}`). -/
 @[elab_as_elim]
 theorem Measurable.ennreal_induction {motive : (α → ℝ≥0∞) → Prop}
     (indicator : ∀ (c : ℝ≥0∞) ⦃s⦄, MeasurableSet s → motive (Set.indicator s fun _ => c))
@@ -1312,7 +1410,7 @@ functions.
 It is possible to make the hypotheses in the induction steps a bit stronger, and such conditions
 can be added once we need them (for example in `h_add` it is only necessary to consider the sum of
 a simple function with a multiple of a characteristic function and that the intersection
-of their images is a subset of `{0}`. -/
+of their images is a subset of `{0}`). -/
 @[elab_as_elim]
 lemma Measurable.ennreal_sigmaFinite_induction [SigmaFinite μ] {motive : (α → ℝ≥0∞) → Prop}
     (indicator : ∀ (c : ℝ≥0∞) ⦃s⦄, MeasurableSet s → μ s < ∞ → motive (Set.indicator s fun _ ↦ c))
@@ -1324,7 +1422,7 @@ lemma Measurable.ennreal_sigmaFinite_induction [SigmaFinite μ] {motive : (α �
   refine Measurable.ennreal_induction (fun c s hs ↦ ?_) add iSup hf
   convert iSup (f := fun n ↦ (s ∩ spanningSets μ n).indicator fun _ ↦ c)
     (fun n ↦ measurable_const.indicator (hs.inter (measurableSet_spanningSets ..)))
-    (fun m n hmn a ↦ Set.indicator_le_indicator_of_subset (by gcongr) (by simp) _)
+    (fun m n hmn a ↦ by dsimp; grw [hmn])
     (fun n ↦ indicator _ (hs.inter (measurableSet_spanningSets ..))
       (measure_inter_lt_top_of_right_ne_top (measure_spanningSets_lt_top ..).ne)) with a
   simp [← Set.indicator_iUnion_apply (M := ℝ≥0∞) rfl, ← Set.inter_iUnion]

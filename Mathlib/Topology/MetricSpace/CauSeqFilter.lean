@@ -3,8 +3,10 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Topology.MetricSpace.Cauchy
+module
+
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Topology.MetricSpace.Cauchy
 
 /-!
 # Completeness in terms of `Cauchy` filters vs `isCauSeq` sequences
@@ -13,6 +15,8 @@ In this file we apply `Metric.complete_of_cauchySeq_tendsto` to prove that a `No
 is complete in terms of `Cauchy` filter if and only if it is complete in terms
 of `CauSeq` Cauchy sequences.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -62,7 +66,7 @@ theorem CauSeq.cauchySeq (f : CauSeq β norm) : CauchySeq f := by
   rcases mem_uniformity_dist.1 hs with ⟨ε, ⟨hε, hεs⟩⟩
   obtain ⟨N, hN⟩ := CauSeq.cauchy₂ f hε
   exists { n | n ≥ N }.image f
-  simp only [exists_prop, mem_atTop_sets, mem_map, mem_image, mem_setOf_eq]
+  simp only [mem_atTop_sets, mem_map]
   constructor
   · exists N
     intro b hb

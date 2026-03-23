@@ -3,11 +3,14 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Rayleigh
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-import Mathlib.Data.Fin.Tuple.Sort
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Rayleigh
+public import Mathlib.Analysis.Normed.Group.Submodule
+public import Mathlib.Analysis.Normed.Operator.FredholmAlternative
+public import Mathlib.LinearAlgebra.Eigenspace.ContinuousLinearMap
+public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+public import Mathlib.Data.Fin.Tuple.Sort
 
 /-! # Spectral theory of self-adjoint operators
 
@@ -36,7 +39,7 @@ Letting `T` be a self-adjoint operator on a finite-dimensional inner product spa
 * `LinearMap.IsSymmetric.eigenvalues` gives the eigenvalues in decreasing order.  This is
   done for several reasons: (i) This agrees with the standard convention of listing singular
   values in decreasing order, with the operator norm as the first singular value
-  (ii) For positive compact operators on an infinite dimensional space, one can list the nonzero
+  (ii) For positive compact operators on an infinite-dimensional space, one can list the nonzero
   eigenvalues in decreasing (but not increasing) order since they converge to zero. (iii) This
   simplifies several theorem statements. For example the Schur-Horn theorem states that the diagonal
   of the matrix representation of a selfadjoint linear map is majorized by the eigenvalue sequence
@@ -45,15 +48,23 @@ Letting `T` be a self-adjoint operator on a finite-dimensional inner product spa
 These are forms of the *diagonalization theorem* for self-adjoint operators on finite-dimensional
 inner product spaces.
 
+The third part of the file covers properties of compact self-adjoint operators:
+* `orthogonalComplement_iSup_eigenspaces_eq_bot`: the eigenspaces of a compact self-adjoint operator
+  have trivial orthogonal complement.
+* `finite_dimensional_eigenspace`: the eigenspaces of a compact self-adjoint operator are
+  finite-dimensional.
+
 ## TODO
 
-Spectral theory for compact self-adjoint operators, bounded self-adjoint operators.
+Spectral theory for bounded self-adjoint operators.
 
 ## Tags
 
 self-adjoint operator, spectral theorem, diagonalization theorem
 
 -/
+
+@[expose] public section
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
@@ -62,7 +73,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 open scoped ComplexConjugate
 
-open Module.End
+open Module End WithLp
 
 namespace LinearMap
 
@@ -180,12 +191,12 @@ theorem diagonalization_apply_self_apply (hT : T.IsSymmetric) (v : E) (μ : Eige
     hT.diagonalization (T v) μ = (μ : 𝕜) • hT.diagonalization v μ := by
   suffices
     ∀ w : PiLp 2 fun μ : Eigenvalues T => eigenspace T μ,
-      T (hT.diagonalization.symm w) = hT.diagonalization.symm fun μ => (μ : 𝕜) • w μ by
+      T (hT.diagonalization.symm w) = hT.diagonalization.symm (toLp 2 fun μ => (μ : 𝕜) • w μ) by
     simpa only [LinearIsometryEquiv.symm_apply_apply, LinearIsometryEquiv.apply_symm_apply] using
       congr_arg (fun w => hT.diagonalization w μ) (this (hT.diagonalization v))
   intro w
   have hwT : ∀ μ, T (w μ) = (μ : 𝕜) • w μ := fun μ => mem_eigenspace_iff.1 (w μ).2
-  simp only [hwT, diagonalization_symm_apply, map_sum, Submodule.coe_smul_of_tower]
+  simp only [diagonalization_symm_apply, map_sum, hwT, SetLike.val_smul]
 
 end Version1
 
@@ -193,12 +204,44 @@ section Version2
 
 variable {n : ℕ}
 
+set_option backward.privateInPublic true in
 /-- Unsorted eigenvalues and eigenvectors.  These private definitions should not be used directly.
 Instead use the functions eigenvalues and eigenvectorBasis defined below. -/
 private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
     (i : Fin n) : ℝ :=
   @RCLike.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces').val
+
+private theorem hasEigenvalue_unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
+    (i : Fin n) : HasEigenvalue T (hT.unsortedEigenvalues hn i) := by
+  unfold unsortedEigenvalues
+  let ⟨x, hx⟩ := hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
+    hT.orthogonalFamily_eigenspaces'
+  rwa [Eigenvalues.val_mk, RCLike.conj_eq_iff_re.mp (hT.conj_eigenvalue_eq_self hx)]
+
+private theorem exists_unsortedEigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
+    {μ : 𝕜} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, hT.unsortedEigenvalues hn i = μ := by
+  let (eq := hx) x : Eigenvalues T := ⟨μ, hμ⟩
+  obtain ⟨i, hi⟩ := hT.direct_sum_isInternal.exists_subordinateOrthonormalBasisIndex_eq hn
+    hT.orthogonalFamily_eigenspaces' (hasEigenvalue_iff.mp x.prop)
+  use i
+  rw [unsortedEigenvalues, hi, hx, Eigenvalues.val_mk, ← RCLike.conj_eq_iff_re,
+    hT.conj_eigenvalue_eq_self hμ]
+
+private theorem card_filter_unsortedEigenvalues_eq (hT : T.IsSymmetric)
+    (hn : Module.finrank 𝕜 E = n) (μ : 𝕜) :
+    Finset.card {i | hT.unsortedEigenvalues hn i = μ} = Module.finrank 𝕜 (eigenspace T μ) := by
+  by_cases hμ : HasEigenvalue T μ
+  · convert hT.direct_sum_isInternal.card_filter_subordinateOrthonormalBasisIndex_eq hn
+      hT.orthogonalFamily_eigenspaces' ⟨μ, hμ⟩ with i
+    unfold unsortedEigenvalues
+    let ⟨x, hx⟩ := hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
+      hT.orthogonalFamily_eigenspaces'
+    rw [Eigenvalues.val_mk, RCLike.conj_eq_iff_re.mp (hT.conj_eigenvalue_eq_self hx)]
+    exact Subtype.mk_eq_mk.symm
+  · rw [Module.End.hasEigenvalue_iff.not_left.mp hμ, finrank_bot, Finset.card_filter_eq_zero_iff]
+    intro i _ rfl
+    exact hμ (hT.hasEigenvalue_unsortedEigenvalues hn i)
 
 private noncomputable def unsortedEigenvectorBasis (hT : T.IsSymmetric)
     (hn : Module.finrank 𝕜 E = n) : OrthonormalBasis (Fin n) 𝕜 E :=
@@ -226,12 +269,28 @@ private theorem hasEigenvector_eigenvectorBasis_helper (hT : T.IsSymmetric)
     exact hT.conj_eigenvalue_eq_self (hasEigenvalue_of_hasEigenvector key)
   simpa [re_μ] using key
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The eigenvalues for a self-adjoint operator `T` on a
 finite-dimensional inner product space `E`, sorted in decreasing order -/
 noncomputable irreducible_def eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
     Fin n → ℝ :=
   (hT.unsortedEigenvalues hn) ∘ Tuple.sort (hT.unsortedEigenvalues hn) ∘ @Fin.revPerm n
 
+theorem exists_eigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) {μ : 𝕜}
+    (hμ : HasEigenvalue T μ) : ∃ i : Fin n, hT.eigenvalues hn i = μ := by
+  obtain ⟨i, hi⟩ := hT.exists_unsortedEigenvalues_eq hn hμ
+  use ((Tuple.sort (hT.unsortedEigenvalues hn)).symm i).revPerm
+  simp [eigenvalues_def, hi]
+
+theorem card_filter_eigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) (μ : 𝕜) :
+    Finset.card {i | hT.eigenvalues hn i = μ} = Module.finrank 𝕜 (eigenspace T μ) := by
+  rw [← hT.card_filter_unsortedEigenvalues_eq hn, eigenvalues_def]
+  apply Finset.card_equiv (Fin.revPerm.trans (Tuple.sort (hT.unsortedEigenvalues hn)))
+  simp
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A choice of orthonormal basis of eigenvectors for self-adjoint operator `T` on a
 finite-dimensional inner product space `E`.  Eigenvectors are sorted in decreasing
 order of their eigenvalues. -/
@@ -274,7 +333,7 @@ theorem eigenvectorBasis_apply_self_apply (hT : T.IsSymmetric) (hn : Module.finr
   suffices
     ∀ w : EuclideanSpace 𝕜 (Fin n),
       T ((hT.eigenvectorBasis hn).repr.symm w) =
-        (hT.eigenvectorBasis hn).repr.symm fun i => hT.eigenvalues hn i * w i by
+        (hT.eigenvectorBasis hn).repr.symm (toLp 2 fun i ↦ hT.eigenvalues hn i * w i) by
     simpa [OrthonormalBasis.sum_repr_symm] using
       congr_arg (fun v => (hT.eigenvectorBasis hn).repr v i)
         (this ((hT.eigenvectorBasis hn).repr v))
@@ -282,7 +341,7 @@ theorem eigenvectorBasis_apply_self_apply (hT : T.IsSymmetric) (hn : Module.finr
   simp_rw [← OrthonormalBasis.sum_repr_symm, map_sum, map_smul, apply_eigenvectorBasis]
   apply Fintype.sum_congr
   intro a
-  rw [smul_smul, mul_comm]
+  rw [smul_smul, mul_comm, ofLp_toLp]
 
 end Version2
 
@@ -316,3 +375,54 @@ theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenv
   exact (mul_pos_iff_of_pos_right hpos).mp (this ▸ hnn v)
 
 end Nonneg
+
+namespace ContinuousLinearMap
+
+variable [CompleteSpace E] {T : E →L[𝕜] E}
+
+theorem eq_zero_of_forall_hasEigenvalue_eq_zero (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
+    (∀ μ, HasEigenvalue (T : End 𝕜 E) μ → μ = 0) ↔ T = 0 := by
+  rw [← nnnorm_eq_zero, ← ENNReal.coe_eq_zero, ← T.spectralRadius_eq_nnnorm hT'.isSelfAdjoint,
+    spectralRadius, ← not_iff_not, ENNReal.iSup_eq_zero]
+  push Not
+  apply exists_congr
+  simp +contextual [hT.hasEigenvalue_iff_mem_spectrum]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The **Spectral Theorem** for compact self-adjoint operators: the eigenspaces of a compact
+self-adjoint operator have trivial orthogonal complement. -/
+theorem orthogonalComplement_iSup_eigenspaces_eq_bot
+    (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
+    (⨆ μ, eigenspace (T : Module.End 𝕜 E) μ)ᗮ = ⊥ := by
+  let S : (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ →L[𝕜] (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ :=
+    { __ := T.restrict hT'.orthogonalComplement_iSup_eigenspaces_invariant
+      cont := by fun_prop }
+  have hS_compact : IsCompactOperator S :=
+    hT.restrict' hT'.orthogonalComplement_iSup_eigenspaces_invariant
+  have hS_symm : S.IsSymmetric :=
+    hT'.restrict_invariant (hT'.orthogonalComplement_iSup_eigenspaces_invariant)
+  have hS μ : eigenspace (S : Module.End 𝕜 (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ) μ = ⊥ := by
+    rw [Submodule.eq_bot_iff]
+    intro v hv
+    rw [Subtype.ext_iff, Submodule.coe_zero, ← Submodule.mem_bot 𝕜,
+      ← Submodule.inf_orthogonal_eq_bot (⨆ μ, eigenspace T μ : Submodule 𝕜 E)]
+    refine ⟨Submodule.mem_iSup_of_mem μ ?_, v.2⟩
+    rw [mem_eigenspace_iff] at hv ⊢
+    exact Subtype.ext_iff.mp hv
+  have h μ : HasEigenvalue (S : End 𝕜 (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ) μ → μ = 0 := by
+    simp_all [hasEigenvalue_iff]
+  rw [eq_zero_of_forall_hasEigenvalue_eq_zero hS_compact hS_symm] at h
+  rw [← Submodule.subsingleton_iff_eq_bot]
+  by_contra! hV
+  simpa [h] using hS 0
+
+/-- The **Spectral Theorem** for compact self-adjoint operators: the eigenspaces of a compact
+self-adjoint operator are finite-dimensional. -/
+theorem finite_dimensional_eigenspace (hT : IsCompactOperator T) (μ : 𝕜) (hμ : μ ≠ 0) :
+    FiniteDimensional 𝕜 (eigenspace T.toLinearMap μ) := by
+  replace hT := hT.restrict'
+    ((mem_invtSubmodule_iff_forall_mem_of_mem _).mp (eigenspace_mem_invtSubmodule T.toLinearMap μ))
+  rw [restrict_eigenspace, LinearMap.coe_smul, IsCompactOperator.smul_iff₀ hμ] at hT
+  rwa [← isCompactOperator_id_iff_finiteDimensional]
+
+end ContinuousLinearMap

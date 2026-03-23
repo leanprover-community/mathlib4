@@ -3,8 +3,10 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Artie Khovanov
 -/
-import Mathlib.Algebra.Order.Group.Cone
-import Mathlib.Algebra.Ring.Subsemiring.Order
+module
+
+public import Mathlib.Algebra.Order.Group.Cone
+public import Mathlib.Algebra.Ring.Subsemiring.Order
 
 /-!
 # Construct ordered rings from rings with a specified positive cone.
@@ -16,6 +18,8 @@ in terms of the subset of non-negative elements.
 We also provide constructors that convert between
 cones in rings and the corresponding ordered rings.
 -/
+
+@[expose] public section
 
 /-- `RingConeClass S R` says that `S` is a type of cones in `R`. -/
 class RingConeClass (S : Type*) (R : outParam Type*) [Ring R] [SetLike S R] : Prop
@@ -34,6 +38,8 @@ instance RingCone.instSetLike (R : Type*) [Ring R] : SetLike (RingCone R) R wher
   coe C := C.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
+instance (R : Type*) [Ring R] : PartialOrder (RingCone R) := .ofSetLike (RingCone R) R
+
 instance RingCone.instRingConeClass (R : Type*) [Ring R] :
     RingConeClass (RingCone R) R where
   add_mem {C} := C.add_mem'
@@ -41,6 +47,16 @@ instance RingCone.instRingConeClass (R : Type*) [Ring R] :
   mul_mem {C} := C.mul_mem'
   one_mem {C} := C.one_mem'
   eq_zero_of_mem_of_neg_mem {C} := C.eq_zero_of_mem_of_neg_mem'
+
+@[simp]
+theorem RingCone.mem_mk {R : Type*} [Ring R] {toSubsemiring : Subsemiring R}
+    (eq_zero_of_mem_of_neg_mem) {x : R} :
+    x ∈ mk toSubsemiring eq_zero_of_mem_of_neg_mem ↔ x ∈ toSubsemiring := .rfl
+
+@[simp]
+theorem RingCone.coe_set_mk {R : Type*} [Ring R] {toSubsemiring : Subsemiring R}
+    (eq_zero_of_mem_of_neg_mem) :
+    (mk toSubsemiring eq_zero_of_mem_of_neg_mem : Set R) = toSubsemiring := rfl
 
 namespace RingCone
 
@@ -57,9 +73,11 @@ def nonneg : RingCone T where
 @[simp] lemma mem_nonneg : a ∈ nonneg T ↔ 0 ≤ a := Iff.rfl
 @[simp, norm_cast] lemma coe_nonneg : nonneg T = {x : T | 0 ≤ x} := rfl
 
-instance nonneg.isMaxCone {T : Type*} [Ring T] [LinearOrder T] [IsStrictOrderedRing T] :
-    IsMaxCone (nonneg T) where
-  mem_or_neg_mem := mem_or_neg_mem (C := AddGroupCone.nonneg T)
+instance nonneg.hasMemOrNegMem {T : Type*} [Ring T] [LinearOrder T] [IsOrderedRing T] :
+    HasMemOrNegMem (nonneg T) where
+  mem_or_neg_mem := mem_or_neg_mem (AddGroupCone.nonneg T)
+
+@[deprecated (since := "2025-08-21")] alias nonneg.isMaxCone := nonneg.hasMemOrNegMem
 
 end RingCone
 
@@ -71,5 +89,5 @@ lemma IsOrderedRing.mkOfCone [RingConeClass S R] :
     IsOrderedRing R :=
   letI _ : PartialOrder R := .mkOfAddGroupCone C
   haveI : IsOrderedAddMonoid R := .mkOfCone C
-  haveI : ZeroLEOneClass R := ⟨show _ ∈ C by simpa using one_mem C⟩
+  haveI : ZeroLEOneClass R := ⟨show _ ∈ C by simp⟩
   .of_mul_nonneg fun x y xnn ynn ↦ show _ ∈ C by simpa using mul_mem xnn ynn

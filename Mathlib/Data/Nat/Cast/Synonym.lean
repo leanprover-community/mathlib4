@@ -3,8 +3,11 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Cast.Defs
-import Mathlib.Order.Synonym
+module
+
+public import Mathlib.Data.Nat.Cast.Defs
+public import Mathlib.Order.OrderDual
+public import Mathlib.Order.Lex
 
 /-!
 # Cast of natural numbers (additional theorems)
@@ -12,6 +15,8 @@ import Mathlib.Order.Synonym
 This file proves additional properties about the *canonical* homomorphism from
 the natural numbers into an additive monoid with a one (`Nat.cast`).
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 

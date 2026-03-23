@@ -3,15 +3,17 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.Torsion
-import Mathlib.Algebra.Ring.Idempotent
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.RingTheory.Filtration
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.RingTheory.Nakayama
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.Algebra.Ring.Idempotent
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.RingTheory.Filtration
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.Nakayama
 
 /-!
 # The module `I ⧸ I ^ 2`
@@ -24,10 +26,12 @@ Additional support is also given to the cotangent space `m ⧸ m ^ 2` of a local
 
 -/
 
+@[expose] public section
+
 
 namespace Ideal
 
--- Porting note: universes need to be explicit to avoid bad universe levels in `quotCotangent`
+-- Universes need to be explicit to avoid bad universe levels in `quotCotangent`
 universe u v w
 
 variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [Algebra S R]
@@ -35,32 +39,21 @@ variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] 
 
 /-- `I ⧸ I ^ 2` as a quotient of `I`. -/
 def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
--- The `AddCommGroup, Module (R ⧸ I), Inhabited, Module S, IsScalarTower, IsNoetherian` instances
--- should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
+deriving Inhabited, AddCommGroup, Module (R ⧸ I)
 
-instance : AddCommGroup I.Cotangent := by delta Cotangent; infer_instance
+deriving instance Module S, IsScalarTower S S' for Cotangent I
 
-instance cotangentModule : Module (R ⧸ I) I.Cotangent := by delta Cotangent; infer_instance
-
-instance : Inhabited I.Cotangent := ⟨0⟩
-
-instance Cotangent.moduleOfTower : Module S I.Cotangent :=
-  Submodule.Quotient.module' _
-
-instance Cotangent.isScalarTower : IsScalarTower S S' I.Cotangent :=
-  Submodule.Quotient.isScalarTower _ _
-
-instance [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
-  inferInstanceAs (IsNoetherian R (I ⧸ (I • ⊤ : Submodule R I)))
+variable [IsNoetherian R I] in
+deriving instance IsNoetherian R for Cotangent I
 
 /-- The quotient map from `I` to `I ⧸ I ^ 2`. -/
 @[simps! -isSimp apply]
 def toCotangent : I →ₗ[R] I.Cotangent := Submodule.mkQ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_toCotangent_ker : (LinearMap.ker I.toCotangent).map I.subtype = I ^ 2 := by
   rw [Ideal.toCotangent, Submodule.ker_mkQ, pow_two, Submodule.map_smul'' I ⊤ (Submodule.subtype I),
-    Algebra.id.smul_eq_mul, Submodule.map_subtype_top]
+    smul_eq_mul, Submodule.map_subtype_top]
 
 theorem mem_toCotangent_ker {x : I} : x ∈ LinearMap.ker I.toCotangent ↔ (x : R) ∈ I ^ 2 := by
   rw [← I.map_toCotangent_ker]
@@ -91,7 +84,7 @@ def cotangentToQuotientSquare : I.Cotangent →ₗ[R] R ⧸ I ^ 2 :=
   Submodule.mapQ (I • ⊤) (I ^ 2) I.subtype
     (by
       rw [← Submodule.map_le_iff_le_comap, Submodule.map_smul'', Submodule.map_top,
-        Submodule.range_subtype, smul_eq_mul, pow_two] )
+        Submodule.range_subtype, smul_eq_mul, pow_two])
 
 theorem to_quotient_square_comp_toCotangent :
     I.cotangentToQuotientSquare.comp I.toCotangent = (I ^ 2).mkQ.comp (Submodule.subtype I) :=
@@ -100,6 +93,13 @@ theorem to_quotient_square_comp_toCotangent :
 @[simp]
 theorem toCotangent_to_quotient_square (x : I) :
     I.cotangentToQuotientSquare (I.toCotangent x) = (I ^ 2).mkQ x := rfl
+
+lemma cotangentToQuotientSquare_injective : Function.Injective I.cotangentToQuotientSquare := by
+  rw [injective_iff_map_eq_zero]
+  intro x hx
+  obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
+  rw [toCotangent_to_quotient_square] at hx
+  rwa [Ideal.toCotangent_eq_zero, ← Submodule.Quotient.mk_eq_zero (I ^ 2)]
 
 lemma Cotangent.smul_eq_zero_of_mem {I : Ideal R}
     {x} (hx : x ∈ I) (m : I.Cotangent) : x • m = 0 := by
@@ -113,7 +113,7 @@ lemma isTorsionBySet_cotangent :
 
 /-- `I ⧸ I ^ 2` as an ideal of `R ⧸ I ^ 2`. -/
 def cotangentIdeal (I : Ideal R) : Ideal (R ⧸ I ^ 2) :=
-  Submodule.map (Quotient.mk (I ^ 2)|>.toSemilinearMap) I
+  Submodule.map (Quotient.mk (I ^ 2) |>.toSemilinearMap) I
 
 theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by
   rw [eq_bot_iff, pow_two I.cotangentIdeal, ← smul_eq_mul]
@@ -139,9 +139,6 @@ theorem range_cotangentToQuotientSquare :
   · rw [LinearMap.range_comp, I.toCotangent_range, Submodule.map_top]
   · rw [to_quotient_square_comp_toCotangent, LinearMap.range_comp, I.range_subtype]; ext; rfl
 
-@[deprecated (since := "2025-01-04")]
-alias to_quotient_square_range := range_cotangentToQuotientSquare
-
 /-- The equivalence of the two definitions of `I / I ^ 2`, either as the quotient of `I` or the
 ideal of `R / I ^ 2`. -/
 noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal := by
@@ -164,15 +161,9 @@ theorem cotangentEquivIdeal_apply (x : I.Cotangent) :
     ↑(I.cotangentEquivIdeal x) = I.cotangentToQuotientSquare x := rfl
 
 theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
-    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify `(R₂ := R)` because `I.toCotangent` suggested `R ⧸ I^2` instead
-    I.cotangentEquivIdeal.symm ⟨(I ^ 2).mkQ x,
-      -- timeout (200000 heartbeats) without `by exact`
-      by exact Submodule.mem_map_of_mem (F := R →ₗ[R] R ⧸ I ^ 2) (f := (I ^ 2).mkQ) hx⟩ =
-      I.toCotangent (R := R) ⟨x, hx⟩ := by
-  apply I.cotangentEquivIdeal.injective
-  rw [I.cotangentEquivIdeal.apply_symm_apply]
-  ext
-  rfl
+    I.cotangentEquivIdeal.symm ⟨(I ^ 2).mkQ x, Submodule.mem_map_of_mem hx⟩ =
+      I.toCotangent ⟨x, hx⟩ := by
+  simp [I.cotangentEquivIdeal.symm_apply_eq, Subtype.ext_iff]
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
@@ -184,6 +175,12 @@ def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRing
     rw [IsScalarTower.algebraMap_apply R A, RingHom.toFun_eq_coe, Ideal.Quotient.algebraMap_eq,
       Ideal.Quotient.lift_mk]
     exact f.map_algebraMap r
+
+-- Can't be `simp`, because `RingHom.ker f.toRingHom` in the definition of `AlgHom.kerSquareLift`
+-- is not simp NF. Will be fixed by removing `RingHomClass` in the definition of `RingHom.ker`.
+-- (#25138)
+lemma _root_.AlgHom.kerSquareLift_mk (f : A →ₐ[R] B) (x : A) : f.kerSquareLift x = f x :=
+  rfl
 
 theorem _root_.AlgHom.ker_kerSquareLift (f : A →ₐ[R] B) :
     RingHom.ker f.kerSquareLift.toRingHom = (RingHom.ker f.toRingHom).cotangentIdeal := by
@@ -226,6 +223,43 @@ lemma mapCotangent_toCotangent
     (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁ ≤ I₂.comap f) (x : I₁) :
     Ideal.mapCotangent I₁ I₂ f h (Ideal.toCotangent I₁ x) = Ideal.toCotangent I₂ ⟨f x, h x.2⟩ := rfl
 
+section Lift
+
+variable {S : Type*} [CommRing S] [Algebra R S] {I : Ideal S}
+variable {M : Type*} [AddCommGroup M] [Module R M]
+
+/-- Lift a linear map `f : I →ₗ[R] M` that vanishes on products to a linear map on the
+cotangent space `I ⧸ I ^ 2`. -/
+def Cotangent.lift (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0) :
+    I.Cotangent →ₗ[R] M where
+  __ := QuotientAddGroup.lift _ f.toAddMonoidHom <| fun x hx ↦ by
+    simp only [Submodule.mem_toAddSubgroup, AddMonoidHom.mem_ker] at hx ⊢
+    refine Submodule.smul_induction_on hx (fun r hr y _ ↦ hf ⟨r, hr⟩ y) fun x y hx hy ↦ ?_
+    simp only [map_add, hx, hy, add_zero]
+  map_smul' r x := by
+    obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
+    exact map_smul f _ _
+
+@[simp]
+lemma Cotangent.lift_toCotangent (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0) (x : I) :
+    Cotangent.lift f hf (I.toCotangent x) = f x :=
+  rfl
+
+@[simp]
+lemma Cotangent.lift_comp_toCotangent (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0) :
+    Cotangent.lift f hf ∘ₗ I.toCotangent = f :=
+  rfl
+
+lemma Cotangent.lift_surjective_iff (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0) :
+    Function.Surjective (Cotangent.lift f hf) ↔ Function.Surjective f := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← Cotangent.lift_comp_toCotangent f hf, LinearMap.coe_comp]
+    exact Function.Surjective.comp h (toCotangent_surjective I)
+  · dsimp [Cotangent.lift]
+    exact QuotientAddGroup.lift_surjective_of_surjective _ _ h _
+
+end Lift
+
 end Ideal
 
 namespace IsLocalRing
@@ -235,10 +269,12 @@ variable (R : Type*) [CommRing R] [IsLocalRing R]
 /-- The `A ⧸ I`-vector space `I ⧸ I ^ 2`. -/
 abbrev CotangentSpace : Type _ := (maximalIdeal R).Cotangent
 
-instance : Module (ResidueField R) (CotangentSpace R) := Ideal.cotangentModule _
+instance : Module (ResidueField R) (CotangentSpace R) :=
+  inferInstanceAs <| Module (R ⧸ maximalIdeal R) _
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
-  Module.IsTorsionBySet.isScalarTower _
+  inferInstanceAs <| IsScalarTower R (R ⧸ maximalIdeal R) _
 
 instance [IsNoetherianRing R] : FiniteDimensional (ResidueField R) (CotangentSpace R) :=
   Module.Finite.of_restrictScalars_finite R _ _
@@ -291,24 +327,3 @@ theorem finrank_cotangentSpace_le_one_iff [IsNoetherianRing R] :
   exact ⟨fun ⟨x, h⟩ ↦ ⟨_, h⟩, fun ⟨x, h⟩ ↦ ⟨⟨x, h ▸ subset_span (Set.mem_singleton x)⟩, h⟩⟩
 
 end IsLocalRing
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.CotangentSpace := IsLocalRing.CotangentSpace
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.subsingleton_cotangentSpace_iff := IsLocalRing.subsingleton_cotangentSpace_iff
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.map_eq_top_iff := IsLocalRing.CotangentSpace.map_eq_top_iff
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.span_image_eq_top_iff := IsLocalRing.CotangentSpace.span_image_eq_top_iff
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.finrank_cotangentSpace_eq_zero_iff := IsLocalRing.finrank_cotangentSpace_eq_zero_iff
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.finrank_cotangentSpace_eq_zero := IsLocalRing.finrank_cotangentSpace_eq_zero
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.finrank_cotangentSpace_le_one_iff := IsLocalRing.finrank_cotangentSpace_le_one_iff

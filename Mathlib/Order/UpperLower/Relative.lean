@@ -3,10 +3,12 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Data.Set.Image
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.Interval.Set.Defs
-import Mathlib.Order.SetNotation
+module
+
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.SetNotation
 
 /-!
 # Properties of relative upper/lower sets
@@ -14,16 +16,48 @@ import Mathlib.Order.SetNotation
 This file proves results on `IsRelUpperSet` and `IsRelLowerSet`.
 -/
 
+@[expose] public section
+
 open Set
 
-variable {α : Type*} {ι : Sort*} {κ : ι → Sort*} {s t : Set α} {a : α} {P : α → Prop}
+variable {α : Type*} {ι : Sort*} {κ : ι → Sort*} {s t : Set α} {a b : α} {P : α → Prop}
 
 section LE
 
 variable [LE α]
 
+@[simp] lemma isRelUpperSet_true_iff_isUpperSet :
+    IsRelUpperSet s (fun _ ↦ True) ↔ IsUpperSet s := by
+  grind [IsUpperSet, IsRelUpperSet]
+
+@[simp] lemma isRelLowerSet_true_iff_isLowerSet :
+    IsRelLowerSet s (fun _ ↦ True) ↔ IsLowerSet s := by
+  grind [IsLowerSet, IsRelLowerSet]
+
+variable (P) in
+lemma IsUpperSet.isRelUpperSet_sep (hs : IsUpperSet s) : IsRelUpperSet {x ∈ s | P x} P :=
+  fun _ h => ⟨h.2, fun _ ht hp => ⟨hs ht h.1, hp⟩⟩
+variable (P) in
+lemma IsLowerSet.isRelLowerSet_sep (hs : IsLowerSet s) : IsRelLowerSet {x ∈ s | P x} P :=
+  fun _ h => ⟨h.2, fun _ ht hp => ⟨hs ht h.1, hp⟩⟩
+
+/-- A subset that is a lower set is additionally a _relative_ lower set. -/
+lemma IsRelLowerSet.mono_isLowerSet (ht : IsRelLowerSet t P) (hs : IsLowerSet s) (hst : s ⊆ t) :
+    IsRelLowerSet s P :=
+  fun _ h => ⟨(ht (hst h)).1, fun _ ht _ => hs ht h⟩
+
+/-- A subset that is an upper set is additionally a _relative_ upper set. -/
+lemma IsRelUpperSet.mono_isUpperSet (ht : IsRelUpperSet t P) (hs : IsUpperSet s) (hst : s ⊆ t) :
+    IsRelUpperSet s P :=
+  fun _ h => ⟨(ht (hst h)).1, fun _ ht _ => hs ht h⟩
+
 lemma IsRelUpperSet.prop_of_mem (hs : IsRelUpperSet s P) (h : a ∈ s) : P a := (hs h).1
 lemma IsRelLowerSet.prop_of_mem (hs : IsRelLowerSet s P) (h : a ∈ s) : P a := (hs h).1
+
+lemma IsRelUpperSet.mem_of_le (hs : IsRelUpperSet s P) (h : a ∈ s) (h₁ : a ≤ b) (h₂ : P b) :
+    b ∈ s := (hs h).2 h₁ h₂
+lemma IsRelLowerSet.mem_of_le (hs : IsRelLowerSet s P) (h : a ∈ s) (h₁ : b ≤ a) (h₂ : P b) :
+    b ∈ s := (hs h).2 h₁ h₂
 
 @[simp] lemma isRelUpperSet_empty : IsRelUpperSet (∅ : Set α) P := fun _ ↦ False.elim
 @[simp] lemma isRelLowerSet_empty : IsRelLowerSet (∅ : Set α) P := fun _ ↦ False.elim
@@ -107,6 +141,7 @@ protected lemma IsRelLowerSet.iInter₂ [Nonempty ι] [∀ i, Nonempty (κ i)]
     IsRelLowerSet (⋂ (i) (j), f i j) P :=
   .iInter fun i ↦ .iInter (hf i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isUpperSet_subtype_iff_isRelUpperSet {s : Set { x // P x }} :
     IsUpperSet s ↔ IsRelUpperSet (Subtype.val '' s) P := by
   refine ⟨fun h a x ↦ ?_, fun h a b x y ↦ ?_⟩
@@ -115,6 +150,7 @@ lemma isUpperSet_subtype_iff_isRelUpperSet {s : Set { x // P x }} :
   · have ma : a.1 ∈ Subtype.val '' s := by simp [a.2, y]
     simpa only [mem_image, SetCoe.ext_iff, exists_eq_right] using (h ma).2 x b.2
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isLowerSet_subtype_iff_isRelLowerSet {s : Set { x // P x }} :
     IsLowerSet s ↔ IsRelLowerSet (Subtype.val '' s) P := by
   refine ⟨fun h a x ↦ ?_, fun h a b x y ↦ ?_⟩
@@ -126,6 +162,8 @@ lemma isLowerSet_subtype_iff_isRelLowerSet {s : Set { x // P x }} :
 instance : SetLike (RelUpperSet P) α where
   coe := RelUpperSet.carrier
   coe_injective' s t h := by cases s; cases t; congr
+
+instance : PartialOrder (RelUpperSet P) := .ofSetLike (RelUpperSet P) α
 
 instance : SetLike (RelLowerSet P) α where
   coe := RelLowerSet.carrier
@@ -145,7 +183,7 @@ lemma isRelUpperSet_Icc_le : IsRelUpperSet (Icc a c) (· ≤ c) := fun _ b ↦ b
   exact fun _ x _ ↦ b.1.trans x
 
 lemma isRelLowerSet_Icc_ge : IsRelLowerSet (Icc c a) (c ≤ ·) := fun _ b ↦ by
-  simp_all only [mem_Icc, and_true, true_and]
+  simp_all only [mem_Icc, true_and]
   exact fun _ x _ ↦ x.trans b.2
 
 end Preorder

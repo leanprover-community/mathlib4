@@ -3,32 +3,36 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.FinCategory.Basic
-import Mathlib.CategoryTheory.EssentiallySmall
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.SetTheory.Cardinal.HasCardinalLT
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.CategoryTheory.FinCategory.Basic
+public import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-!
 # Cardinal of Arrow
 
 We obtain various results about the cardinality of `Arrow C`. For example,
-If `A` is a (small) category, `Arrow C` is finite iff `FinCategory C` holds.
+if `C` is a (small) category, `Arrow C` is finite iff `FinCategory C` holds.
 
 -/
+
+@[expose] public section
 
 universe w w' v u
 
 namespace CategoryTheory
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Arrow.finite_iff (C : Type u) [SmallCategory C] :
     Finite (Arrow C) ↔ Nonempty (FinCategory C) := by
   constructor
   · intro
     refine ⟨?_, fun a b ↦ ?_⟩
     · have := Finite.of_injective (fun (a : C) ↦ Arrow.mk (𝟙 a))
-        (fun _ _  ↦ congr_arg Comma.left)
+        (fun _ _ ↦ congr_arg Comma.left)
       apply Fintype.ofFinite
     · have := Finite.of_injective (fun (f : a ⟶ b) ↦ Arrow.mk f)
         (fun f g h ↦ by
@@ -36,7 +40,7 @@ lemma Arrow.finite_iff (C : Type u) [SmallCategory C] :
           congr)
       apply Fintype.ofFinite
   · rintro ⟨_⟩
-    have := Fintype.ofEquiv  _ (Arrow.equivSigma C).symm
+    have := Fintype.ofEquiv _ (Arrow.equivSigma C).symm
     infer_instance
 
 instance Arrow.finite {C : Type u} [SmallCategory C] [FinCategory C] :
@@ -48,8 +52,6 @@ instance Arrow.finite {C : Type u} [SmallCategory C] [FinCategory C] :
 def Arrow.opEquiv (C : Type u) [Category.{v} C] : Arrow Cᵒᵖ ≃ Arrow C where
   toFun f := Arrow.mk f.hom.unop
   invFun g := Arrow.mk g.hom.op
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 lemma hasCardinalLT_arrow_op_iff (C : Type u) [Category.{v} C] (κ : Cardinal.{w}) :
@@ -61,10 +63,14 @@ lemma hasCardinalLT_arrow_discrete_iff {X : Type u} (κ : Cardinal.{w}) :
     HasCardinalLT (Arrow (Discrete X)) κ ↔ HasCardinalLT X κ :=
   hasCardinalLT_iff_of_equiv (Arrow.discreteEquiv X) κ
 
+instance (X : Type u) [Finite X] : Finite (Arrow (Discrete X)) :=
+  Finite.of_equiv _ (Arrow.discreteEquiv X).symm
+
 lemma small_of_small_arrow (C : Type u) [Category.{v} C] [Small.{w} (Arrow C)] :
     Small.{w} C :=
   small_of_injective (f := fun X ↦ Arrow.mk (𝟙 X)) (fun _ _ h ↦ congr_arg Comma.left h)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma locallySmall_of_small_arrow (C : Type u) [Category.{v} C] [Small.{w} (Arrow C)] :
     LocallySmall.{w} C where
   hom_small X Y :=
@@ -72,6 +78,7 @@ lemma locallySmall_of_small_arrow (C : Type u) [Category.{v} C] [Small.{w} (Arro
       change (Arrow.mk f).hom = (Arrow.mk g).hom
       congr)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `Arrow.{w} (ShrinkHoms C) ≃ Arrow C`. -/
 noncomputable def Arrow.shrinkHomsEquiv (C : Type u) [Category.{v} C] [LocallySmall.{w} C] :
     Arrow.{w} (ShrinkHoms C) ≃ Arrow C where

@@ -3,10 +3,11 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
+module
+
+public import Mathlib.Data.Set.Defs
+
 import Mathlib.Tactic.Attr.Register
-import Mathlib.Data.Set.Defs
-import Mathlib.Tactic.TypeStar
-import Batteries.Tactic.Lint
 
 /-!
 # Functors
@@ -26,6 +27,8 @@ This module provides additional lemmas, definitions, and instances for `Functor`
 functor, applicative
 -/
 
+@[expose] public section
+
 universe u v w
 
 section Functor
@@ -39,7 +42,6 @@ theorem Functor.map_id : (id <$> ·) = (id : F α → F α) := funext id_map
 theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
     ((g <$> ·) ∘ (f <$> ·) : F α → F γ) = ((g ∘ f) <$> ·) :=
   funext fun _ => (comp_map _ _ _).symm
-  -- Porting note: was `apply funext <;> intro <;> rw [comp_map]` but `rw` failed?
 
 theorem Functor.ext {F} :
     ∀ {F1 : Functor F} {F2 : Functor F} [@LawfulFunctor F F1] [@LawfulFunctor F F2],
@@ -54,12 +56,6 @@ theorem Functor.ext {F} :
     exact E1.trans E2.symm
 
 end Functor
-
-/-- Introduce `id` as a quasi-functor. (Note that where a lawful `Monad` or
-`Applicative` or `Functor` is needed, `Id` is the correct definition). -/
-@[deprecated "Use `pure : α → Id α` instead." (since := "2025-05-21")]
-def id.mk {α : Sort u} : α → id α :=
-  id
 
 namespace Functor
 
@@ -131,8 +127,8 @@ instance {α β} [Inhabited α] : Inhabited (AddConst α β) :=
   ⟨(default : α)⟩
 
 /-- `Functor.Comp` is a wrapper around `Function.Comp` for types.
-    It prevents Lean's type class resolution mechanism from trying
-    a `Functor (Comp F id)` when `Functor F` would do. -/
+It prevents Lean's type class resolution mechanism from trying
+a `Functor (Comp F id)` when `Functor F` would do. -/
 def Comp (F : Type u → Type w) (G : Type v → Type u) (α : Type v) : Type w :=
   F <| G α
 
@@ -181,20 +177,18 @@ protected theorem id_map : ∀ x : Comp F G α, Comp.map id x = x
 
 protected theorem comp_map (g' : α → β) (h : β → γ) :
     ∀ x : Comp F G α, Comp.map (h ∘ g') x = Comp.map h (Comp.map g' x)
-  | Comp.mk x => by simp [Comp.map, Comp.mk, Functor.map_comp_map, functor_norm, Function.comp_def]
+  | Comp.mk x => by simp [Comp.map, Comp.mk, functor_norm, Function.comp_def]
 
 instance lawfulFunctor : LawfulFunctor (Comp F G) where
   map_const := rfl
   id_map := Comp.id_map
   comp_map := Comp.comp_map
 
--- Porting note: had to use switch to `Id` from `id` because this has the `Functor` instance.
 theorem functor_comp_id {F} [AF : Functor F] [LawfulFunctor F] :
-    @Comp.functor F Id _ _ = AF :=
+    Comp.functor (G := Id) = AF :=
   @Functor.ext F _ AF (Comp.lawfulFunctor (G := Id)) _ fun _ _ _ _ => rfl
 
--- Porting note: had to use switch to `Id` from `id` because this has the `Functor` instance.
-theorem functor_id_comp {F} [AF : Functor F] [LawfulFunctor F] : @Comp.functor Id F _ _ = AF :=
+theorem functor_id_comp {F} [AF : Functor F] [LawfulFunctor F] : Comp.functor (F := Id) = AF :=
   @Functor.ext F _ AF (Comp.lawfulFunctor (F := Id)) _ fun _ _ _ _ => rfl
 
 end Comp
@@ -234,7 +228,7 @@ instance instApplicativeComp : Applicative (Comp F G) :=
 
 end Comp
 
-variable {F : Type u → Type u} [Functor F]
+variable {F : Type u → Type v} [Functor F]
 
 /-- If we consider `x : F α` to, in some sense, contain values of type `α`,
 predicate `Liftp p x` holds iff every value contained by `x` satisfies `p`. -/

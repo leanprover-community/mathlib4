@@ -3,11 +3,12 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.Tactic.Abel
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.RingTheory.Congruence.Opposite
+public import Mathlib.Tactic.Abel
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.RingTheory.Congruence.Opposite
 
 /-!
 # Two Sided Ideals
@@ -23,6 +24,8 @@ In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two-sided-id
 * `TwoSidedIdeal.addCommGroup`: Every `I : TwoSidedIdeal R` is an abelian group.
 
 -/
+
+@[expose] public section
 
 assert_not_exists LinearMap
 
@@ -52,7 +55,7 @@ instance [Nontrivial R] : Nontrivial (TwoSidedIdeal R) := by
 
 instance setLike : SetLike (TwoSidedIdeal R) R where
   coe t := {r | t.ringCon r 0}
-  coe_injective'  := by
+  coe_injective' := by
     rintro ⟨t₁⟩ ⟨t₂⟩ (h : {x | _} = {x | _})
     congr 1
     refine RingCon.ext fun a b ↦ ⟨fun H ↦ ?_, fun H ↦ ?_⟩
@@ -62,6 +65,8 @@ instance setLike : SetLike (TwoSidedIdeal R) R where
     · have H' : a - b ∈ {x | t₂ x 0} := sub_self b ▸ t₂.sub H (t₂.refl b)
       rw [← h] at H'
       convert t₁.add H' (t₁.refl b) using 1 <;> abel
+
+instance : PartialOrder (TwoSidedIdeal R) := .ofSetLike (TwoSidedIdeal R) R
 
 lemma mem_iff (x : R) : x ∈ I ↔ I.ringCon x 0 := Iff.rfl
 
@@ -93,8 +98,6 @@ lemma le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) :
 def orderIsoRingCon : TwoSidedIdeal R ≃o RingCon R where
   toFun := TwoSidedIdeal.ringCon
   invFun := .mk
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' {I J} := Iff.symm <| le_iff.trans ⟨fun h x y r => by rw [rel_iff] at r ⊢; exact h r,
     fun h x hx => by rw [SetLike.mem_coe, mem_iff] at hx ⊢; exact h hx⟩
 
@@ -112,7 +115,6 @@ lemma lt_iff (I J : TwoSidedIdeal R) : I < J ↔ (I : Set R) ⊂ (J : Set R) := 
   rw [lt_iff_le_and_ne, Set.ssubset_iff_subset_ne, le_iff]
   simp
 
-@[simp]
 lemma zero_mem : 0 ∈ I := I.ringCon.refl 0
 
 lemma add_mem {x y} (hx : x ∈ I) (hy : y ∈ I) : x + y ∈ I := by simpa using I.ringCon.add hx hy
@@ -240,8 +242,6 @@ Two-sided-ideals of `A` and that of `Aᵒᵖ` corresponds bijectively to each ot
 def opOrderIso : TwoSidedIdeal R ≃o TwoSidedIdeal Rᵐᵒᵖ where
   toFun := op
   invFun := unop
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' {I' J'} := by simpa [ringCon_le_iff] using RingCon.opOrderIso.map_rel_iff
 
 end NonUnitalNonAssocRing

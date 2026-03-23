@@ -3,7 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton
 -/
-import Mathlib.CategoryTheory.Limits.Types.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # Cones and limits
@@ -14,6 +16,8 @@ and the type `lim Hom(F·, X)`.
 
 -/
 
+@[expose] public section
+
 universe v u
 
 namespace CategoryTheory.Limits
@@ -22,7 +26,7 @@ open Functor Opposite
 
 section
 
-variable {J C : Type*} [Category J] [Category C]
+variable {J C : Type*} [Category* J] [Category* C]
 
 /-- Sections of `F ⋙ coyoneda.obj (op X)` identify to natural
 transformations `(const J).obj X ⟶ F`. -/
@@ -36,9 +40,8 @@ def compCoyonedaSectionsEquiv (F : J ⥤ C) (X : C) :
         rw [Category.id_comp]
         exact (s.property f).symm }
   invFun τ := ⟨τ.app, fun {j j'} f => by simpa using (τ.naturality f).symm⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Sections of `F.op ⋙ yoneda.obj X` identify to natural
 transformations `F ⟶ (const J).obj X`. -/
 @[simps]
@@ -51,8 +54,6 @@ def opCompYonedaSectionsEquiv (F : J ⥤ C) (X : C) :
         rw [Category.comp_id]
         exact (s.property f.op) }
   invFun τ := ⟨fun j => τ.app j.unop, fun {j j'} f => by simp [τ.naturality f.unop]⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- Sections of `F ⋙ yoneda.obj X` identify to natural
 transformations `(const J).obj X ⟶ F`. -/
@@ -67,8 +68,6 @@ def compYonedaSectionsEquiv (F : J ⥤ Cᵒᵖ) (X : C) :
         exact Quiver.Hom.unop_inj (s.property f).symm }
   invFun τ := ⟨fun j => (τ.app j).unop,
     fun {j j'} f => Quiver.Hom.op_inj (by simpa using (τ.naturality f).symm)⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 end
 
@@ -80,6 +79,7 @@ noncomputable def limitCompCoyonedaIsoCone (F : J ⥤ C) (X : C) :
     limit (F ⋙ coyoneda.obj (op X)) ≅ ((const J).obj X ⟶ F) :=
   ((Types.limitEquivSections _).trans (compCoyonedaSectionsEquiv F X)).toIso
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`,
     naturally in `X`. -/
 @[simps!]
@@ -101,6 +101,7 @@ noncomputable def limitCompYonedaIsoCocone (F : J ⥤ C) (X : C) :
     limit (F.op ⋙ yoneda.obj X) ≅ (F ⟶ (const J).obj X) :=
   ((Types.limitEquivSections _).trans (opCompYonedaSectionsEquiv F X)).toIso
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`,
     naturally in `X`. -/
 @[simps!]
