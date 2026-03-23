@@ -21,7 +21,7 @@ We define and prove basic properties about flasque sheaves on topological spaces
 
 ## Main results
 
-* `TopCat.Sheaf.IsFlasque.epi_of_shortExact_Γ_map`: Given a short exact sequence of sheaves,
+* `TopCat.Sheaf.IsFlasque.epi_of_shortExact`: Given a short exact sequence of sheaves,
   `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` is flasque then `𝓖(U) ⟶ 𝓗(U)` is surjective, for any open `U`.
 
 * `TopCat.Sheaf.IsFlasque.of_shortExact_of_isFlasque₁₂ `: Given a short exact sequence of
