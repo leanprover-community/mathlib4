@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
 module
 
+public import Mathlib.Algebra.MvPolynomial.Coeff
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
 public import Mathlib.RingTheory.PowerSeries.Evaluation
 public import Mathlib.Data.Finsupp.Weight
@@ -279,6 +280,18 @@ theorem map_algebraMap_eq_subst_X (f : R⟦X⟧) :
     map (algebraMap R S) f = subst X f :=
   MvPowerSeries.map_algebraMap_eq_subst_X f
 
+lemma coeff_subst_single {σ : Type*} [DecidableEq σ] (s : σ) (f : R⟦X⟧) (e : σ →₀ ℕ) :
+    MvPowerSeries.coeff e (subst (MvPowerSeries.X s) f) =
+      if e = Finsupp.single s (e s) then coeff (e s) f else 0 := by
+  rw [coeff_subst (HasSubst.X s), finsum_eq_single _ (e s)]
+  · rw [MvPowerSeries.coeff_X_pow, smul_eq_mul]
+    split_ifs with he
+    · rw [mul_one]
+    · rw [mul_zero]
+  · intro d hd
+    simp only [MvPowerSeries.coeff_X_pow, smul_eq_mul, mul_ite]
+    grind
+
 set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Polynomial.toPowerSeries_toMvPowerSeries (p : Polynomial R) :
     (p : PowerSeries R) =
@@ -434,5 +447,59 @@ lemma subst_rescale_of_degree_eq_one (a : R) {σ : Type*} (p : MvPowerSeries σ 
   rw [subst_smul hp, ← Polynomial.coe_X, subst_coe hp, Polynomial.aeval_X,
     ← MvPowerSeries.rescale_eq_subst, MvPowerSeries.rescale_homogeneous_eq_smul hp_lin,
     subst, pow_one]
+
+section Bivariate
+
+open Finset Finsupp Nat
+
+/-- Notation for the first variable of the bivariate power series ring `R⟦X₀, X₁⟧. -/
+noncomputable abbrev X₀ {R : Type*} [Semiring R] := MvPowerSeries.X (σ := Fin 2) (R := R) 0
+
+/-- Notation for the second variable of the bivariate power series ring `R⟦X₀, X₁⟧. -/
+noncomputable abbrev X₁ {R : Type*} [Semiring R] := MvPowerSeries.X (σ := Fin 2) (R := R) 1
+
+set_option backward.isDefEq.respectTransparency false in
+lemma coeff_subst_X₀_add_X₁ (f : R⟦X⟧) (e : Fin 2 →₀ ℕ) :
+    (MvPowerSeries.coeff e) (subst (X₀ + X₁) f) =
+      (e 0 + e 1).choose (e 0) * coeff (e 0 + e 1) f := by
+  rw [PowerSeries.subst, MvPowerSeries.coeff_subst
+    (MvPowerSeries.hasSubst_of_constantCoeff_zero (fun _ ↦ by simp))]
+  simp only [Fin.isValue, Finsupp.prod_pow, univ_unique, PUnit.default_eq_unit, prod_singleton,
+    smul_eq_mul]
+  simp only [← MvPolynomial.coe_X, ← MvPolynomial.coe_add, ← MvPolynomial.coe_pow,
+    MvPolynomial.coeff_coe]
+  rw [finsum_eq_single _ (single () (e 0 + e 1)), mul_comm]
+  · apply congr_arg₂
+    · simp only [Fin.isValue, single_add, Finsupp.coe_add, Pi.add_apply, single_eq_same,
+      MvPolynomial.coeff_add_pow, mem_antidiagonal, reduceIte]
+    · simp [coeff]
+  · intro d hd'
+    simp only [Fin.isValue, MvPolynomial.coeff_add_pow, mem_antidiagonal, cast_ite, cast_zero,
+      mul_ite, mul_zero, ite_eq_right_iff]
+    intro hd
+    have hd_eq : d = single () (e 0 + e 1) := by ext; simp [hd]
+    exact absurd hd_eq hd'
+
+lemma coeff_subst_X₀_mul_X₁ (f : R⟦X⟧) (e : Fin 2 →₀ ℕ) :
+    MvPowerSeries.coeff e (subst X₀ f * subst X₁ f) = coeff (e 0) f * coeff (e 1) f := by
+  rw [MvPowerSeries.coeff_mul, Finset.sum_eq_single (single 0 (e 0), single 1 (e 1)) ?_ ?_]
+  · grind [coeff_subst_single]
+  · intro b hb hb'
+    by_contra hmul_ne_zero
+    rcases ne_zero_and_ne_zero_of_mul hmul_ne_zero with ⟨h0, h1⟩
+    simp only [Fin.isValue, coeff_subst_single, ne_eq, ite_eq_right_iff,
+      not_forall, exists_prop] at h0 h1
+    apply hb'
+    rw [Prod.ext_iff, ← mem_antidiagonal.mp hb, h0.1, h1.1]
+    simp
+  · intro he
+    have he' : single 0 (e 0) + single 1 (e 1) = e := by
+      ext i
+      match i with
+      | 0 => simp
+      | 1 => simp
+    exact absurd (mem_antidiagonal.mpr he') he
+
+end Bivariate
 
 end PowerSeries
