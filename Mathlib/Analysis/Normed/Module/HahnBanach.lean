@@ -45,7 +45,8 @@ that works both for `ℝ` and `ℂ`. -/
 theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : StrongDual ℝ p) :
     ∃ g : StrongDual ℝ E, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   rcases exists_extension_of_le_sublinear ⟨p, f⟩ (fun x => ‖f‖ * ‖x‖)
-      (fun c hc x => by simp only [norm_smul c x, Real.norm_eq_abs, abs_of_pos hc, mul_left_comm])
+      (fun c hc x => by
+        simp only [norm_smul c x, Real.norm_eq_abs, abs_of_nonneg hc, mul_left_comm])
       (fun x y => by
         rw [← left_distrib]
         exact mul_le_mul_of_nonneg_left (norm_add_le x y) (@norm_nonneg _ _ f))
