@@ -852,7 +852,7 @@ lemma matchingNumber.eq_of_iso {H : SimpleGraph W} (f : H ≃g G) :
   le_antisymm f.isContained.matchingNumber_le f.symm.isContained.matchingNumber_le
 
 lemma matchingNumber.of_subgraph {G : SimpleGraph V} (H : Subgraph G) :
-    matchingNumber H.coe = ⨆ (M ≤ H) (_ : M.IsMatching), M.edgeSet.encard := by
+    H.coe.matchingNumber = ⨆ (M ≤ H) (_ : M.IsMatching), M.edgeSet.encard := by
   classical
   apply le_antisymm
   · apply matchingNumber.le_iff.2
