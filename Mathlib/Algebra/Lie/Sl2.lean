@@ -230,15 +230,13 @@ lemma pow_toEnd_f_eq_zero_of_eq_nat [IsDomain R] [CharZero R] [IsNoetherian R M]
 
 end HasPrimitiveVectorWith
 
--- define endomorphism for e
 variable {m : M} {μ : R}
 local notation "φ " n => ((toEnd R L M e) ^ n) m
 
-lemma lie_e_pow_toEnd_e (hm : ⁅h, m⁆ = μ • m) (n : ℕ) :
+lemma lie_e_pow_toEnd_e (n : ℕ) :
     ⁅e, φ n⁆ = φ (n + 1) := by
   simp [pow_succ']
 
--- symmetric to the proof of lie_h_pow_toEnd_f
 lemma lie_h_pow_toEnd_e (t : IsSl2Triple h e f)
     (hm : ⁅h, m⁆ = μ • m) (n : ℕ) :
     ⁅h, φ n⁆ = (μ + 2 * n) • φ n := by
@@ -250,10 +248,8 @@ lemma lie_h_pow_toEnd_e (t : IsSl2Triple h e f)
     congr 1
     ring
 
--- new section to isolate the use of ℂ
 section ComplexIrreducible
 
--- type of M may be set to be inferred ?
 variable {L : Type*} (M : Type*) [LieRing L] [LieAlgebra ℂ L]
   [AddCommGroup M] [Module ℂ M] [LieRingModule L M] [LieModule ℂ L M]
 variable {h e f : L} (t : IsSl2Triple h e f)
@@ -338,11 +334,11 @@ lemma exists_primitiveVector (t : IsSl2Triple h e f)
       exact t.lie_h_pow_toEnd_e hm₀.apply_eq_smul n_prim
     · simp only [m_prim, e_vecs]
       have h_eq : n_prim + 1 = N := by omega
-      rw [lie_e_pow_toEnd_e hm₀.apply_eq_smul n_prim, h_eq]
+      rw [lie_e_pow_toEnd_e n_prim, h_eq]
       exact hN_zero
   exact ⟨μ_prim, m_prim, m_prim_ne, m_prim_eq⟩
 
---The ℂ span of the f-tower {f^k(m) | k ∈ ℕ} for a primitive vector m.
+/-- The `ℂ`-span of the f-tower `{f^k(m) | k ∈ ℕ}` for a primitive vector `m`. -/
 def fTowerSubmodule (t : IsSl2Triple h e f)
     {μ : ℂ} {m : M} (P : t.HasPrimitiveVectorWith m μ) :
     Submodule ℂ M :=
@@ -429,6 +425,7 @@ lemma fTowerSubmodule_lie_mem
   · apply Submodule.smul_mem
     exact fTowerSubmodule_lie_h_mem M t P hv
 
+/-- The `fTowerSubmodule` equipped with the structure of a Lie submodule. -/
 def fTowerLieSubmodule (hL : t.toLieSubalgebra ℂ = ⊤)
     {μ : ℂ} {m : M} (P : t.HasPrimitiveVectorWith m μ) :
     LieSubmodule ℂ L M :=
@@ -520,9 +517,10 @@ lemma fTower_linearIndependent
   apply h_evals_inj
   exact (Classical.choose_spec (Set.mem_range_self n)).symm
 
--- ℂ may be later generalized to any algebraically closed field of chr 0.
-abbrev weightSpace (t : IsSl2Triple h e f) (μ : ℂ) := End.eigenspace (toEnd ℂ L M h) μ
+/-- The weight space of a given weight `μ` with respect to the Cartan element `h` of the `sl₂` triple.
+`ℂ` may be later generalized to any algebraically closed field of characteristic 0. -/
 
+abbrev weightSpace (t : IsSl2Triple h e f) (μ : ℂ) := End.eigenspace (toEnd ℂ L M h) μ
 -- {f^k(m)} form a basis of M
 -- each weight space corresponds to at most a single base vector hence has dimension ≤ 1.
 lemma finrank_weightSpace_le_one_of_fTower
