@@ -55,11 +55,13 @@ def IsAcyclic : Prop := ∀ ⦃v : V⦄ (c : G.Walk v v), ¬c.IsCycle
 
 /-- A *tree* is a connected acyclic graph. -/
 @[mk_iff]
-structure IsTree : Prop where
-  /-- Graph is connected. -/
-  protected isConnected : G.Connected
-  /-- Graph is acyclic. -/
-  protected IsAcyclic : G.IsAcyclic
+structure IsTree : Prop extends
+  connected : G.Connected where
+  /-- A tree is acyclic. -/
+  isAcyclic : G.IsAcyclic
+
+@[deprecated (since := "2026-03-18")] alias IsTree.isConnected := IsTree.connected
+@[deprecated (since := "2026-03-18")] alias IsTree.IsAcyclic := IsTree.isAcyclic
 
 variable {G G'}
 
@@ -132,13 +134,19 @@ theorem exists_maximal_isAcyclic_of_le_isAcyclic
 /-- A connected component of an acyclic graph is a tree. -/
 lemma IsAcyclic.isTree_connectedComponent (h : G.IsAcyclic) (c : G.ConnectedComponent) :
     c.toSimpleGraph.IsTree where
-  isConnected := c.connected_toSimpleGraph
-  IsAcyclic := h.comap c.toSimpleGraph_hom <| by simp [ConnectedComponent.toSimpleGraph_hom]
+  connected := c.connected_toSimpleGraph
+  isAcyclic := h.comap c.toSimpleGraph_hom <| by simp [ConnectedComponent.toSimpleGraph_hom]
+
+set_option backward.isDefEq.respectTransparency false in
+theorem IsAcyclic.of_card_le_two (h : ENat.card V ≤ 2) : G.IsAcyclic := by
+  intro v p hp
+  have := hp.three_le_length
+  have := Nat.cast_le.mp <| hp.support_nodup.length_le_enatCard.trans h
+  rw [List.length_tail, p.length_support] at this
+  lia
 
 lemma IsAcyclic.of_subsingleton [Subsingleton V] {G : SimpleGraph V} : G.IsAcyclic :=
-  fun v p hp ↦ hp.ne_nil <| match p with
-    | nil => rfl
-    | cons hadj _ => (G.irrefl <| Subsingleton.elim v _ ▸ hadj).elim
+  .of_card_le_two <| ENat.card_le_one.trans one_le_two
 
 lemma Subgraph.isAcyclic_coe_bot (G : SimpleGraph V) : (⊥ : G.Subgraph).coe.IsAcyclic :=
   @IsAcyclic.of_subsingleton _ (Set.isEmpty_coe_sort.mpr rfl).instSubsingleton _
@@ -293,7 +301,7 @@ theorem IsAcyclic.isPath_iff_isTrail (hG : G.IsAcyclic) {v w : V} (p : G.Walk v 
 
 lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     Finset.card G.edgeFinset + 1 = Fintype.card V := by
-  have := hG.isConnected.nonempty
+  have := hG.connected.nonempty
   inhabit V
   classical
   have : Finset.card ({default} : Finset V)ᶜ + 1 = Fintype.card V := by
@@ -350,10 +358,10 @@ lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isTree_iff_minimal_connected : IsTree G ↔ Minimal Connected G := by
-  refine ⟨fun htree ↦ ⟨htree.isConnected, fun G' h' hle u v hadj ↦ ?_⟩, isTree_of_minimal_connected⟩
+  refine ⟨fun htree ↦ ⟨htree.connected, fun G' h' hle u v hadj ↦ ?_⟩, isTree_of_minimal_connected⟩
   have ⟨p, hp⟩ := h'.exists_isPath u v
   have := congrArg Walk.edges <| congrArg Subtype.val <|
-    htree.IsAcyclic.path_unique ⟨p.mapLe hle, hp.mapLe hle⟩ <| Path.singleton hadj
+    htree.isAcyclic.path_unique ⟨p.mapLe hle, hp.mapLe hle⟩ <| Path.singleton hadj
   simp only [edges_map, Hom.coe_ofLE, Sym2.map_id, List.map_id_fun, id_eq] at this
   simp [this, p.adj_of_mem_edges]
 
@@ -423,8 +431,8 @@ theorem Connected.maximal_le_isAcyclic_iff_isTree {T : SimpleGraph V} (hG : G.Co
   have := hG.nonempty
   refine ⟨fun h ↦ ⟨⟨fun u v ↦ ?_⟩, h.1.2⟩, fun hT' ↦ ?_⟩
   · exact G.reachable_eq_of_maximal_isAcyclic T h ▸ hG.preconnected u v
-  · rw [maximal_isAcyclic_iff_reachable_eq hT hT'.IsAcyclic,
-      T.preconnected_iff_reachable_eq_top.mp hT'.isConnected.preconnected,
+  · rw [maximal_isAcyclic_iff_reachable_eq hT hT'.isAcyclic,
+      T.preconnected_iff_reachable_eq_top.mp hT'.preconnected,
       G.preconnected_iff_reachable_eq_top.mp hG.preconnected]
 
 @[simp]
@@ -436,7 +444,7 @@ theorem maximal_isAcyclic_iff_isTree [Nonempty V] {T : SimpleGraph V} :
 with `Nonempty V` as part of the iff rather than an assumption. -/
 theorem isTree_iff_maximal_isAcyclic : G.IsTree ↔ Nonempty V ∧ Maximal IsAcyclic G := by
   refine ⟨fun h ↦ ?_, fun ⟨_, h⟩ ↦ G.maximal_isAcyclic_iff_isTree.mp h⟩
-  have := h.isConnected.nonempty
+  have := h.nonempty
   exact ⟨this, G.maximal_isAcyclic_iff_isTree.mpr h⟩
 
 /-- Every acyclic subgraph can be extended to a spanning forest. -/
@@ -480,7 +488,7 @@ lemma isTree_iff_connected_and_card [Finite V] :
     G.IsTree ↔ G.Connected ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
   have := Fintype.ofFinite V
   classical
-  refine ⟨fun h ↦ ⟨h.isConnected, by simpa [edgeFinset] using h.card_edgeFinset⟩,
+  refine ⟨fun h ↦ ⟨h.connected, by simpa [edgeFinset] using h.card_edgeFinset⟩,
     fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
   simp_rw [isAcyclic_iff_forall_adj_isBridge]
   refine fun x y h ↦ by_contra fun hbr ↦
@@ -500,7 +508,7 @@ lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivi
       exact le_trans q (G.minDegree_le_degree _)
     rw [Finset.sum_const, Finset.card_univ, smul_eq_mul] at hle
     lia
-  · have := h.isConnected.preconnected.minDegree_pos_of_nontrivial
+  · have := h.preconnected.minDegree_pos_of_nontrivial
     lia
 
 /-- A nontrivial tree has a vertex of degree one. -/
@@ -574,7 +582,7 @@ lemma IsAcyclic.dist_ne_of_adj (hG : G.IsAcyclic) {u v w : V} (hadj : G.Adj v w)
 
 lemma IsTree.dist_ne_of_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : G.Adj v w) :
     G.dist u v ≠ G.dist u w :=
-  hG.IsAcyclic.dist_ne_of_adj hadj <| hG.isConnected u v
+  hG.isAcyclic.dist_ne_of_adj hadj <| hG.connected u v
 
 lemma IsAcyclic.dist_eq_dist_add_one_of_adj_of_reachable
     (hG : G.IsAcyclic) (u : V) {v w : V} (hadj : G.Adj v w) (hreach : G.Reachable u v) :
@@ -592,7 +600,7 @@ noncomputable def IsTree.coloringTwoOfVert (hG : G.IsTree) (u : V) : G.Coloring 
 
 /-- Arbitrary coloring with two colors for a tree -/
 noncomputable def IsTree.coloringTwo (hG : G.IsTree) : G.Coloring (Fin 2) :=
-  hG.coloringTwoOfVert hG.isConnected.nonempty.some
+  hG.coloringTwoOfVert hG.connected.nonempty.some
 
 lemma IsTree.isBipartite (hG : G.IsTree) : G.IsBipartite :=
   ⟨hG.coloringTwo⟩
@@ -622,7 +630,7 @@ lemma IsAcyclic.colorable_two (hG : G.IsAcyclic) : G.Colorable 2 :=
 
 /-- A tree is 2-colorable. -/
 lemma IsTree.colorable_two (hG : G.IsTree) : G.Colorable 2 :=
-  hG.IsAcyclic.colorable_two
+  hG.isAcyclic.colorable_two
 
 /-- The chromatic number of an acyclic graph (forest) is at most 2. -/
 lemma IsAcyclic.chromaticNumber_le_two (hG : G.IsAcyclic) : G.chromaticNumber ≤ 2 :=

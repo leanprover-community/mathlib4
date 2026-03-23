@@ -202,7 +202,7 @@ section DegreeOf
 /-! ### `degreeOf` -/
 
 
-/-- `degreeOf n p` gives the highest power of X_n that appears in `p` -/
+/-- `degreeOf n p` gives the highest power of $X_n$ that appears in `p` -/
 def degreeOf (n : σ) (p : MvPolynomial σ R) : ℕ :=
   letI := Classical.decEq σ
   p.degrees.count n
