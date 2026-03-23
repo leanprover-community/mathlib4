@@ -30,9 +30,8 @@ depends continuously on the base point, we register automatically an instance of
 `[IsContinuousRiemannianBundle F E]` (and similarly if the data is smooth).
 
 The general theory should be built assuming `[IsContinuousRiemannianBundle F E]`, while the
-`[RiemannianBundle E]` mechanism is only to build data in specific situations.
-As instances related to Riemannian bundles are both costly and quite specific, they are scoped
-to the `Bundle` namespace.
+`[RiemannianBundle E]` mechanism is only to build data in specific situations, for instance for
+the tangent bundle.
 
 ## Keywords
 Vector bundle, Riemannian metric
@@ -411,6 +410,15 @@ creating diamonds. Use as follows:
   `g : ContMDiffRiemannianMetric IB n F E` registers the inner product space on the fibers, and the
   fact that it varies smoothly (and continuously), i.e., `[IsContMDiffRiemannianBundle]` and
   `[IsContinuousRiemannianBundle]` instances.
+
+Note that this is only useful when there is a preexisting topology in the fibers of a vector
+bundle, like for the tangent bundle. This should *not* be used to express theorems for general
+bundles with a metric. Instead, use
+```
+variable {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
+  [∀ x, NormedAddCommGroup (E x)] [∀ x, InnerProductSpace ℝ (E x)]
+  [FiberBundle F E] [VectorBundle ℝ F E] [IsContinuousRiemannianBundle F E]
+```
 -/
 class RiemannianBundle where
   /-- The family of inner products on the fibers -/
@@ -421,21 +429,38 @@ a `NormedAddCommGroup` structure.
 
 The normal priority for an instance which always applies like this one should be 100.
 We use 80 as this is rather specialized, so we want other paths to be tried first typically.
-As this instance is quite specific and very costly because of higher-order unification, we
-also scope it to the `Bundle` namespace. -/
-noncomputable scoped instance (priority := 80) [h : RiemannianBundle E] (b : B) :
-    NormedAddCommGroup (E b) :=
+-/
+noncomputable instance (priority := 80)
+    {B : Type*} {E : B → Type*} [(b : B) → TopologicalSpace (E b)]
+    [(b : B) → AddCommGroup (E b)] [(b : B) → Module ℝ (E b)]
+    /- We are careful about the parameter order, putting `RiemannianBundle E`
+    before `IsTopologicalAddGroup` to avoid the following loop: to put a `IsTopologicalAddGroup`
+    structure on `E b`, one tries to find a `NormedAddCommGroup`, then one tries to apply the
+    current instance. If `IsTopologicalAddGroup (E b)` were before `RiemannianBundle`, then one
+    would try to find a `IsTopologicalAddGroup`, and loop. Normally, loops are detected by typeclass
+    inference but currently it is not in this specific complicated situation. -/
+    [h : RiemannianBundle E] [∀ (b : B), IsTopologicalAddGroup (E b)]
+    [∀ (b : B), ContinuousConstSMul ℝ (E b)] (b : B) :
+    NormedAddCommGroup (E b) := fast_instance%
   (h.g.toCore b).toNormedAddCommGroupOfTopology (h.g.continuousAt b) (h.g.isVonNBounded b)
 
 /-- A fiber in a bundle satisfying the `[RiemannianBundle E]` typeclass inherits
 an `InnerProductSpace ℝ` structure.
 
 The normal priority for an instance which always applies like this one should be 100.
-We use 80 as this is rather specialized, so we want other paths to be tried first typically.
-As this instance is quite specific and very costly because of higher-order unification, we
-also scope it to the `Bundle` namespace. -/
-noncomputable scoped instance (priority := 80) [h : RiemannianBundle E] (b : B) :
-    InnerProductSpace ℝ (E b) :=
+We use 80 as this is rather specialized, so we want other paths to be tried first typically. -/
+noncomputable instance (priority := 80)
+    {B : Type*} {E : B → Type*} [(b : B) → TopologicalSpace (E b)]
+    [(b : B) → AddCommGroup (E b)] [(b : B) → Module ℝ (E b)]
+    /- We are careful about the parameter order, putting `RiemannianBundle E`
+    before `IsTopologicalAddGroup` to avoid the following loop: to put a `IsTopologicalAddGroup`
+    structure on `E b`, one tries to find a `NormedAddCommGroup`, then one tries to apply the
+    current instance. If `IsTopologicalAddGroup (E b)` were before `RiemannianBundle`, then one
+    would try to find a `IsTopologicalAddGroup`, and loop. Normally, loops are detected by typeclass
+    inference but currently it is not in this specific complicated situation. -/
+    [h : RiemannianBundle E] [∀ (b : B), IsTopologicalAddGroup (E b)]
+    [∀ (b : B), ContinuousConstSMul ℝ (E b)] (b : B) :
+    InnerProductSpace ℝ (E b) := fast_instance%
   .ofCoreOfTopology (h.g.toCore b) (h.g.continuousAt b) (h.g.isVonNBounded b)
 
 variable (F E) in
