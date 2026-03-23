@@ -191,8 +191,8 @@ lemma klDiv_compProd_left : klDiv (μ ⊗ₘ κ) (ν ⊗ₘ κ) = klDiv μ ν :=
   · rw [klDiv_of_not_ac h_ac, klDiv_of_not_ac]
     rwa [Measure.absolutelyContinuous_compProd_left_iff] at h_ac
   -- we can now express the KL divergences with an integral of a log-likelihood ratio
-  rw [klDiv_eq_lintegral_klFun, if_pos h_ac, klDiv_eq_lintegral_klFun,
-    if_pos (Measure.absolutelyContinuous_compProd_left_iff.mp h_ac)]
+  rw [klDiv_eq_lintegral_klFun_of_ac h_ac,
+    klDiv_eq_lintegral_klFun_of_ac (Measure.absolutelyContinuous_compProd_left_iff.mp h_ac)]
   rw [Measure.absolutelyContinuous_compProd_left_iff] at h_ac
   calc ∫⁻ p, ENNReal.ofReal (klFun ((∂μ ⊗ₘ κ/∂ν ⊗ₘ κ) p).toReal) ∂(ν ⊗ₘ κ)
   _ = ∫⁻ p, ENNReal.ofReal (klFun ((∂μ/∂ν) p.1).toReal) ∂(ν ⊗ₘ κ) := by
