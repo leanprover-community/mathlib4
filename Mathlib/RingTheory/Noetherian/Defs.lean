@@ -117,6 +117,8 @@ theorem isNoetherian_iff : IsNoetherian R M ↔ WellFoundedGT (Submodule R M) :=
     ⟨fun ⟨h⟩ => fun k => (fg_iff_compact k).mp (h k), fun h =>
       ⟨fun k => (fg_iff_compact k).mpr (h k)⟩⟩
 
+@[deprecated (since := "2026-03-23")] alias isNoetherian_iff' := isNoetherian_iff
+
 alias ⟨IsNoetherian.wf, isNoetherian_mk⟩ := isNoetherian_iff
 
 instance IsNoetherian.wellFoundedGT [h : IsNoetherian R M] : WellFoundedGT (Submodule R M) :=
