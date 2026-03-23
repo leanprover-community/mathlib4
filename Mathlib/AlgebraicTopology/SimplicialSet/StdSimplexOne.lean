@@ -37,27 +37,25 @@ def objMk₁ {n : ℕ} (i : Fin (n + 2)) : (Δ[1] _⦋n⦌ : Type u) :=
         · dsimp
           rw [if_neg hi, if_neg (fun hj' ↦ hi (lt_of_le_of_lt (by simpa using h) hj'))] }
 
-set_option backward.isDefEq.respectTransparency false in
+@[local grind =]
+private lemma objMk₁_apply {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) : 
+    dsimp% objMk₁ i j = if j.castSucc < i then 0 else 1 := rfl
+
 lemma objMk₁_apply_eq_zero_iff {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) :
     dsimp% objMk₁.{u} i j = 0 ↔ j.castSucc < i := by
-  by_cases hj : j.castSucc < i
-  · simpa [objMk₁, if_pos hj]
-  · simpa [objMk₁, if_neg hj] using hj
+  grind
 
 lemma objMk₁_of_castSucc_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : j.castSucc < i) :
     dsimp% objMk₁.{u} i j = 0 := by
-  simpa [objMk₁_apply_eq_zero_iff]
+  grind
 
-set_option backward.isDefEq.respectTransparency false in
 lemma objMk₁_apply_eq_one_iff {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) :
     dsimp% objMk₁.{u} i j = 1 ↔ i ≤ j.castSucc := by
-  by_cases hj : j.castSucc < i
-  · simpa [objMk₁, if_pos hj]
-  · simpa [objMk₁, if_neg hj] using hj
+  grind
 
 lemma objMk₁_of_le_castSucc {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : i ≤ j.castSucc) :
     dsimp% objMk₁.{u} i j = 1 := by
-  simpa [objMk₁_apply_eq_one_iff]
+  grind
 
 lemma δ_objMk₁_of_le {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : i ≤ j.castSucc) :
     Δ[1].δ j (objMk₁.{u} i) =
