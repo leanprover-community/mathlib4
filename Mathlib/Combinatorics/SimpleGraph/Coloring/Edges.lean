@@ -48,18 +48,22 @@ variable {V V' α β : Type*} {G H : SimpleGraph V} {G' : SimpleGraph V'} {n m :
 
 variable (G) in
 /-- An `α`-edge-coloring of a simple graph `G` is a coloring of `G.lineGraph` -/
-abbrev EdgeColoring (α : Type*) := G.lineGraph.Coloring α
+abbrev EdgeColoring (α : Type*) :=
+  G.lineGraph.Coloring α
 
 /-- `α`-edge-coloring is a special case of `α`-edge-labeling -/
-instance : Coe (G.EdgeColoring α) (G.EdgeLabeling α) := ⟨RelHom.toFun⟩
+instance : Coe (G.EdgeColoring α) (G.EdgeLabeling α) :=
+  ⟨RelHom.toFun⟩
 
 variable (G) in
 /-- Whether a graph can be edge-colored using colors from `α` -/
-def EdgeColorableWith (α : Type*) : Prop := Nonempty <| G.EdgeColoring α
+def EdgeColorableWith (α : Type*) : Prop :=
+  Nonempty <| G.EdgeColoring α
 
 variable (G n) in
 /-- Whether a graph can be edge-colored by at most `n` colors -/
-def EdgeColorable : Prop := G.EdgeColorableWith <| Fin n
+def EdgeColorable : Prop :=
+  G.EdgeColorableWith <| Fin n
 
 variable (G) in
 /-- The chromatic index of a graph is the minimal number of colors needed to color its edges.
@@ -86,6 +90,7 @@ variable (n) in
 theorem EdgeColorable.of_bot : (⊥ : SimpleGraph V).EdgeColorable n :=
   EdgeColorableWith.of_bot _
 
+variable (G) in
 @[simp]
 lemma edgeColorable_zero_iff : G.EdgeColorable 0 ↔ G = ⊥ :=
   edgeColorableWith_iff_of_isEmpty _
@@ -153,9 +158,9 @@ theorem EdgeColorableWith.of_lineGraph_hom (f : G.lineGraph →g G'.lineGraph)
     (h : G'.EdgeColorableWith α) : G.EdgeColorableWith α :=
   ⟨h.some.ofLineGraphHom f⟩
 
-theorem EdgeColorableWith.of_isContained (f : G ⊑ G') (h : G'.EdgeColorableWith α) :
+theorem EdgeColorableWith.of_isContained (hle : G ⊑ G') (h : G'.EdgeColorableWith α) :
     G.EdgeColorableWith α :=
-  ⟨h.some.ofCopy f.some⟩
+  ⟨h.some.ofCopy hle.some⟩
 
 variable (α) in
 theorem EdgeColorableWith.of_lineGraph_iso (f : G.lineGraph ≃g G'.lineGraph) :
@@ -170,8 +175,8 @@ theorem EdgeColorable.of_lineGraph_hom (f : G.lineGraph →g G'.lineGraph) (h : 
     G.EdgeColorable n :=
   Colorable.of_hom f h
 
-theorem EdgeColorable.of_isContained (f : G ⊑ G') (h : G'.EdgeColorable n) : G.EdgeColorable n :=
-  EdgeColorableWith.of_isContained f h
+theorem EdgeColorable.of_isContained (hle : G ⊑ G') (h : G'.EdgeColorable n) : G.EdgeColorable n :=
+  EdgeColorableWith.of_isContained hle h
 
 variable (n) in
 theorem EdgeColorable.of_lineGraph_iso (f : G.lineGraph ≃g G'.lineGraph) :
@@ -186,8 +191,8 @@ theorem chromaticIndex_le_of_lineGraph_hom (f : G.lineGraph →g G'.lineGraph) :
     G.chromaticIndex ≤ G'.chromaticIndex :=
   chromaticNumber_mono_of_hom f
 
-theorem IsContained.chromaticIndex_le (f : G ⊑ G') : G.chromaticIndex ≤ G'.chromaticIndex :=
-  chromaticIndex_le_of_lineGraph_hom f.some.lineGraph.toHom
+theorem IsContained.chromaticIndex_le (hle : G ⊑ G') : G.chromaticIndex ≤ G'.chromaticIndex :=
+  chromaticIndex_le_of_lineGraph_hom hle.some.lineGraph.toHom
 
 theorem chromaticIndex_eq_of_lineGraph_iso (f : G.lineGraph ≃g G'.lineGraph) :
     G.chromaticIndex = G'.chromaticIndex :=
@@ -200,12 +205,15 @@ theorem Iso.chromaticIndex_eq (f : G ≃g G') : G.chromaticIndex = G'.chromaticI
 def EdgeColoring.ofIsSubgraph (hle : G ≤ H) (C : H.EdgeColoring α) : G.EdgeColoring α :=
   C.ofCopy <| .ofLE _ _ hle
 
+@[gcongr]
 theorem EdgeColorableWith.anti (hle : G ≤ H) (h : H.EdgeColorableWith α) : G.EdgeColorableWith α :=
   h.of_isContained <| .of_le hle
 
+@[gcongr]
 theorem EdgeColorable.anti (hle : G ≤ H) (h : H.EdgeColorable n) : G.EdgeColorable n :=
   h.of_isContained <| .of_le hle
 
+@[gcongr]
 theorem chromaticIndex_mono (hle : G ≤ H) : G.chromaticIndex ≤ H.chromaticIndex :=
   IsContained.chromaticIndex_le <| .of_le hle
 
