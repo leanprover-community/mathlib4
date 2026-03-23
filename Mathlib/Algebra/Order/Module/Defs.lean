@@ -362,7 +362,7 @@ lemma strictMono_smul_right_of_pos [SMulPosStrictMono α β] (hb : 0 < b) :
 
 variable (β) in
 @[gcongr, mono]
-lemma smul_one_mono [Mul β] [One β] [ZeroLEOneClass β] [SMulPosMono α β] :
+lemma smul_one_mono [One β] [ZeroLEOneClass β] [SMulPosMono α β] :
     Monotone (fun x : α ↦ x • (1 : β)) :=
   fun _ _ ha ↦ smul_le_smul_of_nonneg_right ha zero_le_one
 
@@ -430,7 +430,7 @@ end Preorder
 
 variable (β) in
 @[gcongr, mono]
-lemma smul_one_strictMono [Preorder α] [PartialOrder β] [Zero β] [Mul β] [One β] [ZeroLEOneClass β]
+lemma smul_one_strictMono [Preorder α] [PartialOrder β] [Zero β] [One β] [ZeroLEOneClass β]
     [NeZero (1 : β)] [SMulPosStrictMono α β] :
     StrictMono (fun x : α ↦ x • (1 : β)) :=
   fun _ _ ha ↦ smul_lt_smul_of_pos_right ha (zero_lt_one (α := β))
