@@ -95,9 +95,7 @@ protected theorem comp (hf : IsFundamentalSeq f) (hg : IsFundamentalSeq g) :
 theorem comp_isNormal {g : Ordinal → Ordinal} (hg : IsNormal g) (hf : IsFundamentalSeq f)
     (ho : IsSuccLimit o) : IsFundamentalSeq fun i ↦ ⟨g (f i), hg.strictMono (f i).2⟩ where
   strictMono := hg.strictMono.comp hf.strictMono
-  le_ord_cof := by
-    rw [cof_map_of_isNormal hg ho]
-    exact hf.le_ord_cof
+  le_ord_cof := by rw [cof_map_of_isNormal hg ho, hf.ord_cof]
   isCofinal_range := by
     rintro ⟨b, hb⟩
     rw [mem_Iio, hg.lt_iff_exists_lt ho] at hb
