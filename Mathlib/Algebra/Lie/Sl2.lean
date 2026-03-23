@@ -250,15 +250,17 @@ lemma lie_h_pow_toEnd_e (t : IsSl2Triple h e f)
     congr 1
     ring
 
+-- new section to isolate the use of ℂ
 section ComplexIrreducible
 
+-- type of M may be set to be inferred ?
 variable {L : Type*} (M : Type*) [LieRing L] [LieAlgebra ℂ L]
   [AddCommGroup M] [Module ℂ M] [LieRingModule L M] [LieModule ℂ L M]
 variable {h e f : L} (t : IsSl2Triple h e f)
 
--- ℂ is algebraically closed and M fin-dim so h has egval μ and egvec m in M.
+-- ℂ is algebraically closed and M fin-dim so h has eigenvalue μ and eigen-vector m in M.
 -- e acting on m raises the eigenvalue of m
--- this must stop at some n otherwise the span goes to infinite dim
+-- this must stop at some n otherwise the span would be of infinite dimension
 lemma exists_primitiveVector (t : IsSl2Triple h e f)
     [FiniteDimensional ℂ M] [Nontrivial M] :
     ∃ (μ : ℂ) (m : M), m ≠ 0 ∧ t.HasPrimitiveVectorWith m μ := by
@@ -272,7 +274,6 @@ lemma exists_primitiveVector (t : IsSl2Triple h e f)
   -- prove that e_vecs vanishes at some k
   have e_exists_k_zero : ∃ (k : Nat), k ≠ 0 ∧ ((toEnd ℂ L M e)^k) m₀ = 0  := by
     by_contra! contra
-    -- contradiction :
     have h_indep :=
       Module.End.eigenvectors_linearIndependent
       (toEnd ℂ L M h)
@@ -448,7 +449,7 @@ lemma fTowerLieSubmodule_eq_top
     apply Submodule.mem_span_of_mem
     simp_all only [mem_range]
     use 0
-    simp_all only [pow_zero, End.one_apply]
+    rfl
   have hfTower_ne : fTowerSubmodule M t P ≠ ⊥ := by
     rw [Submodule.ne_bot_iff]
     use m
@@ -465,28 +466,365 @@ lemma fTower_linearIndependent
     {μ : ℂ} {m : M} (P : t.HasPrimitiveVectorWith m μ) :
     LinearIndependent ℂ (fun i : {n : ℕ | ((toEnd ℂ L M f) ^ n) m ≠ 0} =>
       ((toEnd ℂ L M f) ^ (i : ℕ)) m) := by
-  sorry
+  -- similar to the approche used in exists_primitiveVector, but this time
+  -- we consider the action of f instead of e
+  let domain : Type := {n : ℕ // ((toEnd ℂ L M f) ^ n) m ≠ 0}
+  -- In contrast to e, f lowers the weight (eigenvalue) of the primitive vector.
+  let evals : domain → ℂ := fun n ↦ μ - 2 * (n.1 : ℂ)
+  let e_vecs : domain → M := fun n ↦ ((toEnd ℂ L M f) ^ n.1) m
+  have h_indep :=
+    Module.End.eigenvectors_linearIndependent
+    (toEnd ℂ L M h)
+    (Set.range evals)
+    (fun ⟨γ, hγ⟩ ↦ e_vecs (Classical.choose hγ))
+    (by
+      rintro ⟨γ, hγ⟩
+      dsimp only
+      rw [Module.End.hasEigenvector_iff, Module.End.mem_eigenspace_iff]
+      let n : domain := Classical.choose hγ
+      have h_γ_eq : evals n = γ := Classical.choose_spec hγ
+      let v := e_vecs n
+      have h_v_ne : v ≠ 0 := n.property
+      have h_v_eq : (toEnd ℂ L M h) v = γ • v := by
+        rw [← h_γ_eq]
+        unfold evals
+        simp only [toEnd_apply_apply, ne_eq]
+        rw [P.lie_h_pow_toEnd_f]
+      exact ⟨h_v_eq, h_v_ne⟩
+    )
+  -- we still need to pull back the index from the set of eigenvalues to domain
+  -- this part is proposed by Gemini3.1 pro
+  have h_evals_inj : Function.Injective evals := by
+    intro a b hab
+    dsimp [evals] at hab
+    simp_all only [ne_eq, sub_right_inj, mul_eq_mul_left_iff, Nat.cast_inj,
+    OfNat.ofNat_ne_zero, or_false, domain, evals, e_vecs]
+    obtain ⟨val, property⟩ := a
+    obtain ⟨val_1, property_1⟩ := b
+    subst hab
+    simp_all only [ne_eq]
+  let g : domain → Set.range evals := fun n ↦ ⟨evals n, Set.mem_range_self n⟩
+  have hg_inj : Function.Injective g := by
+    intro a b hab
+    dsimp [g] at hab
+    have h_eq : evals a = evals b := by
+      apply_fun Subtype.val at hab
+      exact hab
+    exact h_evals_inj h_eq
+  -- pull back the index family
+  have h_indep_domain := h_indep.comp g hg_inj
+  convert h_indep_domain using 1
+  ext n
+  dsimp
+  congr
+  apply h_evals_inj
+  exact (Classical.choose_spec (Set.mem_range_self n)).symm
 
 -- ℂ may be later generalized to any algebraically closed field of chr 0.
 abbrev weightSpace (t : IsSl2Triple h e f) (μ : ℂ) := End.eigenspace (toEnd ℂ L M h) μ
 
---  {f^k(m)} form a basis of M
--- each weight space has dimension ≤ 1.
+-- {f^k(m)} form a basis of M
+-- each weight space corresponds to at most a single base vector hence has dimension ≤ 1.
 lemma finrank_weightSpace_le_one_of_fTower
     {μ : ℂ} {m : M} (P : t.HasPrimitiveVectorWith m μ)
-    (h_spans : fTowerLieSubmodule M t P = ⊤)
+    (h_spans : fTowerSubmodule M t P = ⊤)
     {weight : ℂ} :
-    finrank ℂ (t.weightSpace M weight) ≤ 1 := by
-  sorry
+    finrank ℂ (weightSpace M t weight) ≤ 1 := by
+  by_cases h_fin : Module.Finite ℂ (weightSpace M t weight)
+  · haveI : Module.Finite ℂ (weightSpace M t weight) := h_fin
+    rw [finrank_le_one_iff]
+    by_cases h_bot : weightSpace M t weight = ⊥
+    · simp [h_bot]
+    -- separate the case to obtain a non zero vector u
+    · obtain ⟨u, hu_mem, hu_ne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot h_bot
+      use ⟨u, hu_mem⟩
+      rintro ⟨w, hw_mem⟩
+      simp [Subtype.ext_iff, Submodule.coe_smul]
+      have hu_mem_fTower : u ∈ fTowerSubmodule M t P := by
+        rw [h_spans]
+        simp only [Submodule.mem_top]
+      have hw_mem_fTower : w ∈ fTowerSubmodule M t P := by
+        rw [h_spans]
+        simp only [Submodule.mem_top]
+      rw [fTowerSubmodule] at hu_mem_fTower hw_mem_fTower
+
+      -- represent u and w in the form of linear composition of f^i(m)
+      obtain ⟨cu, hu_sum⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp hu_mem_fTower
+      obtain ⟨cw, hw_sum⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp hw_mem_fTower
+      rw [Module.End.mem_eigenspace_iff] at hu_mem hw_mem
+      -- substitute u and w in the hu_mem and hw_mem with their sum form
+      rw [← hu_sum] at hu_mem
+      rw [← hw_sum] at hw_mem
+      -- put h inside the sum so that it acts on (((toEnd ℂ L M) f ^ x) m)
+      simp [Finsupp.sum, map_sum, map_smul, Finset.smul_sum] at hu_mem hw_mem
+      simp_rw [P.lie_h_pow_toEnd_f] at hu_mem hw_mem
+      simp_rw [smul_smul] at hu_mem hw_mem
+      rw [← sub_eq_zero, ← Finset.sum_sub_distrib] at hu_mem hw_mem
+      simp_rw [← sub_smul] at hu_mem hw_mem
+
+      -- Note: The code below largely relies on the help of Gemini 3.1 Pro.
+      -- Define a predicate `p` for non-zero vectors.
+      let p : ℕ → Prop := fun n ↦ ((toEnd ℂ L M) f ^ n) m ≠ 0
+      -- Provide a decidability instance for filtering.
+      haveI : DecidablePred p := Classical.decPred p
+
+      -- Show the sum remains zero after filtering out zero vectors.
+      have hu_filter : ∑ x ∈ cu.support.filter p, (cu x * (μ - 2 * ↑x) - weight * cu x) • ((toEnd ℂ L M) f ^ x) m = 0 := by
+        rw [← hu_mem]
+        apply Finset.sum_subset (Finset.filter_subset p cu.support)
+        intro x hx hx_not_mem
+        have hpx : ¬ p x := fun h ↦ hx_not_mem (Finset.mem_filter.mpr ⟨hx, h⟩)
+        have hpx_eq : ((toEnd ℂ L M) f ^ x) m = 0 := by
+          by_contra h_contra
+          exact hpx h_contra
+        rw [hpx_eq, smul_zero]
+
+      -- Obtain the `linearIndependent_iff` formulation.
+      have h_indep := fTower_linearIndependent M t P
+      have h_lin_iff := linearIndependent_iff'.mp h_indep
+
+      -- Bridge the type gap between `Finset ℕ` and `Finset {n // p n}`.
+      have H_map : Finset.map (Function.Embedding.subtype p) (cu.support.subtype p) = cu.support.filter p := by
+        ext x
+        rw [Finset.mem_map, Finset.mem_filter]
+        constructor
+        · rintro ⟨a, ha, ha_eq⟩
+          rw [Finset.mem_subtype] at ha
+          rw [← ha_eq]
+          exact ⟨ha, a.prop⟩
+        · rintro ⟨hx, hpx⟩
+          refine ⟨⟨x, hpx⟩, ?_, rfl⟩
+          rw [Finset.mem_subtype]
+          exact hx
+
+      -- Rewrite the sum over the subtype.
+      -- Use explicit coercions to prevent typeclass inference timeouts.
+      have hu_subtype : ∑ n ∈ cu.support.subtype p, (cu (n : ℕ) * (μ - 2 * ((n : ℕ) : ℂ)) - weight * cu (n : ℕ)) • ((toEnd ℂ L M) f ^ (n : ℕ)) m = 0 := by
+        have h_sum_map := Finset.sum_map (cu.support.subtype p) (Function.Embedding.subtype p) (fun x ↦ (cu x * (μ - 2 * (x : ℂ)) - weight * cu x) • ((toEnd ℂ L M) f ^ x) m)
+        rw [H_map] at h_sum_map
+        exact Eq.trans h_sum_map.symm hu_filter
+
+      -- Separate instantiation and application to avoid timeouts.
+      have hu_coeff_subtype : ∀ i ∈ cu.support.subtype p, cu (i : ℕ) * (μ - 2 * ((i : ℕ) : ℂ)) - weight * cu (i : ℕ) = 0 := by
+        intro i hi
+        -- Explicitly provide the coefficient function to ensure syntactic equality.
+        have H := h_lin_iff (cu.support.subtype p) (fun n ↦ cu (n : ℕ) * (μ - 2 * ((n : ℕ) : ℂ)) - weight * cu (n : ℕ)) hu_subtype
+        exact H i hi
+
+      -- Pull the coefficient condition back to `ℕ`.
+      have hu_coeff : ∀ x ∈ cu.support, ((toEnd ℂ L M) f ^ x) m ≠ 0 → cu x * (μ - 2 * (x : ℂ)) - weight * cu x = 0 := by
+        intro x hx h_nonzero
+        -- Resolve the subset membership condition.
+        exact hu_coeff_subtype ⟨x, h_nonzero⟩ (Finset.mem_subtype.mpr hx)
+
+      -- ==========================================================
+      -- === 2. Repeat the same filtering and extraction for `w` ===
+      -- ==========================================================
+      have hw_filter : ∑ x ∈ cw.support.filter p, (cw x * (μ - 2 * ↑x) - weight * cw x) • ((toEnd ℂ L M) f ^ x) m = 0 := by
+        rw [← hw_mem]
+        apply Finset.sum_subset (Finset.filter_subset p cw.support)
+        intro x hx hx_not_mem
+        have hpx : ¬ p x := fun h ↦ hx_not_mem (Finset.mem_filter.mpr ⟨hx, h⟩)
+        have hpx_eq : ((toEnd ℂ L M) f ^ x) m = 0 := by
+          by_contra h_contra
+          exact hpx h_contra
+        rw [hpx_eq, smul_zero]
+
+      have H_map_w : Finset.map (Function.Embedding.subtype p) (cw.support.subtype p) = cw.support.filter p := by
+        ext x
+        rw [Finset.mem_map, Finset.mem_filter]
+        constructor
+        · rintro ⟨a, ha, ha_eq⟩
+          rw [Finset.mem_subtype] at ha
+          rw [← ha_eq]
+          exact ⟨ha, a.prop⟩
+        · rintro ⟨hx, hpx⟩
+          refine ⟨⟨x, hpx⟩, ?_, rfl⟩
+          rw [Finset.mem_subtype]
+          exact hx
+
+      have hw_subtype : ∑ n ∈ cw.support.subtype p, (cw (n : ℕ) * (μ - 2 * ((n : ℕ) : ℂ)) - weight * cw (n : ℕ)) • ((toEnd ℂ L M) f ^ (n : ℕ)) m = 0 := by
+        have h_sum_map := Finset.sum_map (cw.support.subtype p) (Function.Embedding.subtype p) (fun x ↦ (cw x * (μ - 2 * (x : ℂ)) - weight * cw x) • ((toEnd ℂ L M) f ^ x) m)
+        rw [H_map_w] at h_sum_map
+        exact Eq.trans h_sum_map.symm hw_filter
+
+      have hw_coeff_subtype : ∀ i ∈ cw.support.subtype p, cw (i : ℕ) * (μ - 2 * ((i : ℕ) : ℂ)) - weight * cw (i : ℕ) = 0 := by
+        intro i hi
+        have H := h_lin_iff (cw.support.subtype p) (fun n ↦ cw (n : ℕ) * (μ - 2 * ((n : ℕ) : ℂ)) - weight * cw (n : ℕ)) hw_subtype
+        exact H i hi
+
+      have hw_coeff : ∀ x ∈ cw.support, ((toEnd ℂ L M) f ^ x) m ≠ 0 → cw x * (μ - 2 * (x : ℂ)) - weight * cw x = 0 := by
+        intro x hx h_nonzero
+        exact hw_coeff_subtype ⟨x, h_nonzero⟩ (Finset.mem_subtype.mpr hx)
+
+      -- ==========================================================
+      -- === 3. Isolate the unique index `K` and show `u` and `w` are collinear ===
+      -- ==========================================================
+      have h_exists_K : ∃ K, cu K ≠ 0 ∧ ((toEnd ℂ L M) f ^ K) m ≠ 0 := by
+        by_contra! h_contra
+        have hu_zero : u = 0 := by
+          rw [← hu_sum]
+          change ∑ x ∈ cu.support, cu x • ((toEnd ℂ L M) f ^ x) m = 0
+          apply Finset.sum_eq_zero
+          intro x _
+          by_cases h_f : ((toEnd ℂ L M) f ^ x) m = 0
+          · rw [h_f, smul_zero]
+          · -- Deduce `cu x = 0` by contradiction.
+            have h_cu_zero : cu x = 0 := by
+              by_contra hc
+              -- `cu x ≠ 0` implies `f^x m = 0`, contradicting `h_f`.
+              exact h_f (h_contra x hc)
+            rw [h_cu_zero, zero_smul]
+        exact hu_ne hu_zero
+
+      obtain ⟨K, hK_cu, hK_f_ne_zero⟩ := h_exists_K
+
+      have h_weight_eq : μ - 2 * (K : ℂ) = weight := by
+        have h_eq := hu_coeff K (Finsupp.mem_support_iff.mpr hK_cu) hK_f_ne_zero
+        rw [sub_eq_zero, mul_comm weight, mul_right_inj' hK_cu] at h_eq
+        exact h_eq
+
+      -- Simplify `u`: all terms except the `K`-th term vanish.
+      have hu_simp : u = cu K • ((toEnd ℂ L M) f ^ K) m := by
+        rw [← hu_sum]
+        change ∑ x ∈ cu.support, cu x • ((toEnd ℂ L M) f ^ x) m = _
+        have hK_mem : K ∈ cu.support := Finsupp.mem_support_iff.mpr hK_cu
+        -- Show that `K` is not in the erased support.
+        have h_not_mem : K ∉ cu.support.erase K := fun h ↦ (Finset.mem_erase.mp h).1 rfl
+        rw [← Finset.insert_erase hK_mem, Finset.sum_insert h_not_mem]
+        have h_erase_zero : ∑ x ∈ cu.support.erase K, cu x • ((toEnd ℂ L M) f ^ x) m = 0 := by
+          apply Finset.sum_eq_zero
+          intro x hx
+          have hx_ne : x ≠ K := (Finset.mem_erase.mp hx).1
+          have hx_mem : x ∈ cu.support := (Finset.mem_erase.mp hx).2
+          by_cases h_f : ((toEnd ℂ L M) f ^ x) m = 0
+          · rw [h_f, smul_zero]
+          · have h_eq := hu_coeff x hx_mem h_f
+            rw [← h_weight_eq] at h_eq
+            have h_cu_zero : cu x = 0 := by
+              have h1 : cu x * (μ - 2 * ↑x) - (μ - 2 * ↑K) * cu x = 0 := h_eq
+              have h2 : cu x * (2 * (↑K - ↑x)) = 0 := by
+                calc
+                  cu x * (2 * (↑K - ↑x)) = cu x * (μ - 2 * ↑x) - (μ - 2 * ↑K) * cu x := by ring
+                  _ = 0 := h1
+              cases mul_eq_zero.mp h2 with
+              | inl h => exact h
+              | inr h =>
+                have h_diff : (K : ℂ) - (x : ℂ) = 0 := by
+                  cases mul_eq_zero.mp h with
+                  | inl h2 => norm_num at h2
+                  | inr h_diff => exact h_diff
+                have h_eq_nat : K = x := by exact_mod_cast sub_eq_zero.mp h_diff
+                exact (hx_ne h_eq_nat.symm).elim
+            rw [h_cu_zero, zero_smul]
+        rw [h_erase_zero, add_zero]
+
+      -- Simplify `w`: similarly, all non-`K` terms vanish.
+      have hw_simp : w = cw K • ((toEnd ℂ L M) f ^ K) m := by
+        rw [← hw_sum]
+        change ∑ x ∈ cw.support, cw x • ((toEnd ℂ L M) f ^ x) m = _
+        by_cases hK_mem_w : K ∈ cw.support
+        · have h_not_mem_w : K ∉ cw.support.erase K := fun h ↦ (Finset.mem_erase.mp h).1 rfl
+          rw [← Finset.insert_erase hK_mem_w, Finset.sum_insert h_not_mem_w]
+          have h_erase_zero : ∑ x ∈ cw.support.erase K, cw x • ((toEnd ℂ L M) f ^ x) m = 0 := by
+            apply Finset.sum_eq_zero
+            intro x hx
+            have hx_ne : x ≠ K := (Finset.mem_erase.mp hx).1
+            have hx_mem : x ∈ cw.support := (Finset.mem_erase.mp hx).2
+            by_cases h_f : ((toEnd ℂ L M) f ^ x) m = 0
+            · rw [h_f, smul_zero]
+            · have h_eq := hw_coeff x hx_mem h_f
+              rw [← h_weight_eq] at h_eq
+              have h_cw_zero : cw x = 0 := by
+                have h1 : cw x * (μ - 2 * ↑x) - (μ - 2 * ↑K) * cw x = 0 := h_eq
+                have h2 : cw x * (2 * (↑K - ↑x)) = 0 := by
+                  calc
+                    cw x * (2 * (↑K - ↑x)) = cw x * (μ - 2 * ↑x) - (μ - 2 * ↑K) * cw x := by ring
+                    _ = 0 := h1
+                cases mul_eq_zero.mp h2 with
+                | inl h => exact h
+                | inr h =>
+                  have h_diff : (K : ℂ) - (x : ℂ) = 0 := by
+                    cases mul_eq_zero.mp h with
+                    | inl h2 => norm_num at h2
+                    | inr h_diff => exact h_diff
+                  have h_eq_nat : K = x := by exact_mod_cast sub_eq_zero.mp h_diff
+                  exact (hx_ne h_eq_nat.symm).elim
+              rw [h_cw_zero, zero_smul]
+          rw [h_erase_zero, add_zero]
+        · have h_w_zero : ∑ x ∈ cw.support, cw x • ((toEnd ℂ L M) f ^ x) m = 0 := by
+            apply Finset.sum_eq_zero
+            intro x hx
+            have hx_ne : x ≠ K := by
+              rintro rfl
+              exact hK_mem_w hx
+            by_cases h_f : ((toEnd ℂ L M) f ^ x) m = 0
+            · rw [h_f, smul_zero]
+            · have h_eq := hw_coeff x hx h_f
+              rw [← h_weight_eq] at h_eq
+              have h_cw_zero : cw x = 0 := by
+                have h1 : cw x * (μ - 2 * ↑x) - (μ - 2 * ↑K) * cw x = 0 := h_eq
+                have h2 : cw x * (2 * (↑K - ↑x)) = 0 := by
+                  calc
+                    cw x * (2 * (↑K - ↑x)) = cw x * (μ - 2 * ↑x) - (μ - 2 * ↑K) * cw x := by ring
+                    _ = 0 := h1
+                cases mul_eq_zero.mp h2 with
+                | inl h => exact h
+                | inr h =>
+                  have h_diff : (K : ℂ) - (x : ℂ) = 0 := by
+                    cases mul_eq_zero.mp h with
+                    | inl h2 => norm_num at h2
+                    | inr h_diff => exact h_diff
+                  have h_eq_nat : K = x := by exact_mod_cast sub_eq_zero.mp h_diff
+                  exact (hx_ne h_eq_nat.symm).elim
+              rw [h_cw_zero, zero_smul]
+          have hcwK_zero : cw K = 0 := by
+            by_contra hc
+            exact hK_mem_w (Finsupp.mem_support_iff.mpr hc)
+          rw [h_w_zero, hcwK_zero, zero_smul]
+
+      -- Conclude by providing the scalar ratio.
+      use (cw K) / (cu K)
+      rw [hu_simp, hw_simp]
+      simp only [smul_smul]
+      congr 1
+      exact div_mul_cancel₀ (cw K) hK_cu
+    -- finrank = 0 by definition if weightspace has infinite dimension
+  · rw [finrank_of_infinite_dimensional h_fin]
+    exact zero_le_one
 
 --The non-trivial weight space of a fin-dim irreducible representation of sl(2,ℂ) has dimension 1.
 theorem finrank_weightSpace_eq_one_of_isIrreducible
     (t : IsSl2Triple h e f)
-    (hL : t.toLieSubalgebra ℂ = ⊤) --lie algebra of sl(2,ℂ)
+    (hL : t.toLieSubalgebra ℂ = ⊤) --lie algebra sl(2,ℂ)
     [FiniteDimensional ℂ M] [LieModule.IsIrreducible ℂ L M] --fin-dim irrep
     {μ : ℂ} (h_nontrivial : t.weightSpace M μ ≠ ⊥) : --non trivial weight space
     finrank ℂ ( t.weightSpace M μ) = 1 := by
-  sorry
+  haveI : Nontrivial M := by
+    rw [nontrivial_iff]
+    by_contra h_triv
+    push_neg at h_triv
+    apply h_nontrivial
+    ext x
+    simp only [Submodule.mem_bot]
+    constructor
+    · intro _; exact h_triv x 0
+    · intro h; rw [h]; exact Submodule.zero_mem _
+  -- Get a primitive vector
+  obtain ⟨μ₀, m₀, hm₀_ne, P⟩ := exists_primitiveVector M t
+  -- The f-tower spans M
+  have h_top_lie := fTowerLieSubmodule_eq_top M t hL P
+  -- Each weight space has dimension ≤ 1
+  have h_le : finrank ℂ (t.weightSpace M μ) ≤ 1 := by
+    have h_top : fTowerSubmodule M t P = ⊤ := congr_arg LieSubmodule.toSubmodule h_top_lie
+    exact finrank_weightSpace_le_one_of_fTower M t P h_top
+  -- The given weight space has dimension ≥ 1 (since it's non-trivial)
+  have h_ge : 1 ≤ finrank ℂ (t.weightSpace M μ) := by
+    rw [Nat.one_le_iff_ne_zero]
+    intro h_eq
+    apply h_nontrivial
+    rwa [Submodule.finrank_eq_zero] at h_eq
+  exact le_antisymm h_le h_ge
 
 end ComplexIrreducible
 
