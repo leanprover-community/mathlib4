@@ -703,7 +703,7 @@ lemma exists_maximal_isMatching (G : SimpleGraph V) :
   rcases huv with ⟨N', ⟨hN'c, huv⟩⟩
   by_cases hN'N : N' ≤ N
   · exact hw.2 u (hN'N.2 huv)
-  specialize hchain h_matching hN'c (Ne.symm (ne_of_not_le hN'N))
+  specialize hchain h_matching hN'c (ne_of_not_le hN'N).symm
   simp only [hN'N, or_false] at hchain
   obtain ⟨z, hz⟩ := hc hN'c (hchain.1 hv)
   exact (hz.2 u huv).trans (hz.2 w (hchain.2 hw.1)).symm
