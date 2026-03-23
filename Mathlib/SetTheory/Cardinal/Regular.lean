@@ -100,6 +100,10 @@ theorem isRegular_aleph_one : IsRegular ℵ₁ := by
   rw [← succ_aleph0]
   exact isRegular_succ le_rfl
 
+@[simp]
+theorem cof_omega_one : (ω_ 1).cof = ℵ_ 1 := by
+  simpa using isRegular_aleph_one.cof_omega_eq
+
 theorem isRegular_preAleph_add_one {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (o + 1)) := by
   rw [preAleph_add_one]
   exact isRegular_succ (aleph0_le_preAleph.2 h)
@@ -123,10 +127,6 @@ theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (ℵ_ (succ o)) :=
 @[simp]
 theorem cof_omega_add_one (o : Ordinal) : (ω_ (o + 1)).cof = ℵ_ (o + 1) :=
   (isRegular_aleph_add_one o).cof_omega_eq
-
-@[simp]
-theorem cof_omega_one : (ω_ 1).cof = ℵ_ 1 := by
-  simpa using cof_omega_add_one 0
 
 lemma IsRegular.lift {κ : Cardinal.{v}} (h : κ.IsRegular) :
     (Cardinal.lift.{u} κ).IsRegular := by
