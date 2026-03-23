@@ -67,6 +67,7 @@ noncomputable def ofPowerSeries (q : ℕ) : PowerSeries R →ₐ[R] ArithmeticFu
     ⟨Function.extend (q ^ ·) (f.coeff ·) 0, by simp [Nat.ne_zero_of_lt hq]⟩ else
       algebraMap R (ArithmeticFunction R) f.constantCoeff
   map_zero' := by ext; split_ifs <;> simp [Function.extend]
+  -- note that `ofPowerSeries.map_one'` relies on the junk value `f.constantCoeff`.
   map_one' := by
     ext n
     split_ifs with hq
@@ -132,22 +133,23 @@ noncomputable def ofPowerSeries (q : ℕ) : PowerSeries R →ₐ[R] ArithmeticFu
         exact ⟨0, by simp [hn]⟩
     · simp
 
-theorem ofPowerSeries_apply (q : ℕ) (hq : 1 < q) (f : PowerSeries R) (n : ℕ) :
+theorem ofPowerSeries_apply {q : ℕ} (hq : 1 < q) (f : PowerSeries R) (n : ℕ) :
     ofPowerSeries q f n = Function.extend (q ^ ·) (f.coeff ·) 0 n := by
   simp [ofPowerSeries, dif_pos hq]
 
-theorem ofPowerSeries_apply_pow (q : ℕ) (hq : 1 < q) (f : PowerSeries R) (k : ℕ) :
+theorem ofPowerSeries_apply_pow {q : ℕ} (hq : 1 < q) (f : PowerSeries R) (k : ℕ) :
     ofPowerSeries q f (q ^ k) = f.coeff k := by
-  rw [ofPowerSeries_apply q hq, (Nat.pow_right_injective hq).extend_apply]
+  rw [ofPowerSeries_apply hq, (Nat.pow_right_injective hq).extend_apply]
 
 theorem ofPowerSeries_apply_zero (q : ℕ) (f : PowerSeries R) : ofPowerSeries q f 0 = 0 := by
   simp
 
 @[simp]
+-- note that `ofPowerSeries_apply_one` relies on the junk value `f.constantCoeff`.
 theorem ofPowerSeries_apply_one (q : ℕ) (f : PowerSeries R) :
     ofPowerSeries q f 1 = f.constantCoeff := by
   by_cases hq : 1 < q
-  · rw [← pow_zero q, ofPowerSeries_apply_pow q hq, PowerSeries.coeff_zero_eq_constantCoeff]
+  · rw [← pow_zero q, ofPowerSeries_apply_pow hq, PowerSeries.coeff_zero_eq_constantCoeff]
   · simp [ofPowerSeries, dif_neg hq]
 
 end PowerSeries
