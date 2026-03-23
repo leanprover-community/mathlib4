@@ -42,7 +42,8 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] (F : IntermediateField 
 The image of the intermediate field `F` of `L/K` under the inclusion `L ⊆ M`, viewed as an
 intermediate field of `M/K`.
 -/
-abbrev extendTop : IntermediateField K M := F.map (Algebra.algHom K L M)
+@[reducible]
+def extendTop : IntermediateField K M := F.map (Algebra.algHom K L M)
 
 /-- The isomorphism between `F` and its image `F.extendTop M` in `M`. -/
 @[simps! apply_coe]

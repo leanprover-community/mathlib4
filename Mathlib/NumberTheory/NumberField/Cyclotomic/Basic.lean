@@ -701,7 +701,6 @@ theorem discr [hK : IsCyclotomicExtension {n} ℚ K] :
     have hζ₂' : IsPrimitiveRoot (AdjoinSimple.gen ℚ (ζ ^ n₁)) n₂ :=
       IsPrimitiveRoot.coe_submonoidClass_iff.mp hζ₂
     replace hK₂ := @hK₂ ℚ⟮ζ ^ n₁⟯ _ _ _ _ (of_intermediateField _)
-    have : IsGalois ℚ ℚ⟮ζ ^ n₂⟯ := isGalois {n₁} ℚ _
     have h_top : ℚ⟮ζ ^ n₂⟯ ⊔ ℚ⟮ζ ^ n₁⟯ = ⊤ := by
       have : IsCyclotomicExtension {n₁ * n₂} ℚ (⊤ : IntermediateField ℚ K) :=
           hK.equiv _ _ _ topEquiv.symm
@@ -715,7 +714,7 @@ theorem discr [hK : IsCyclotomicExtension {n} ℚ K] :
       refine Coprime.coprime_div_right ?_ (prod_primeFactors_pow_totient_ediv_dvd (NeZero.pos _))
       exact Coprime.pow_left _ (Coprime.pow_right _ h)
     have h_dsj : ℚ⟮ζ ^ n₂⟯.LinearDisjoint ℚ⟮ζ ^ n₁⟯ :=
-      linearDisjoint_of_isGalois_isCoprime_discr _ _ _ h_cpr
+      linearDisjoint_of_isCoprime_discr _ _ _ h_cpr
     have h_div₁ := prod_primeFactors_pow_totient_ediv_dvd n₁.pos_of_neZero
     have h_div₂ := prod_primeFactors_pow_totient_ediv_dvd n₂.pos_of_neZero
     rw [natAbs_discr_eq_natAbs_discr_pow_mul_natAbs_discr_pow K ℚ⟮ζ ^ n₂⟯ ℚ⟮ζ ^ n₁⟯ h_dsj h_top
@@ -754,8 +753,7 @@ private theorem adjoin_singleton_eq_top_aux [NumberField K] (F₁ F₂ : Interme
     refine Coprime.coprime_div_right ?_ (prod_primeFactors_pow_totient_ediv_dvd (NeZero.pos _))
     exact Coprime.pow_left _ (Coprime.pow_right _ h)
   have h_disj : F₁.LinearDisjoint F₂ := by
-    have : IsGalois ℚ F₁ := IsCyclotomicExtension.isGalois {n₁} ℚ F₁
-    apply linearDisjoint_of_isGalois_isCoprime_discr
+    apply linearDisjoint_of_isCoprime_discr
     exact h_cpr
   replace hζ₁ : IsPrimitiveRoot hζ₁.toInteger n₁ := hζ₁.toInteger_isPrimitiveRoot
   replace hζ₁ := hζ₁.map_of_injective (FaithfulSMul.algebraMap_injective (𝓞 F₁) (𝓞 K))

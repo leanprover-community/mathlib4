@@ -131,8 +131,11 @@ theorem discr_dvd_discr [Algebra K L] :
 
 set_option backward.isDefEq.respectTransparency false in
 /--
-Let `K₁` and `K₂` be two number fields and assume that `K₁/ℚ` is Galois. If `discr K₁` and
-`discr K₂` are coprime, then they are linear disjoint over `ℚ`.
+Let `K₁` and `K₂` be two number fields of `K/ℚ`, and assume that `K₁/ℚ` is Galois.
+If `discr K₁` and `discr K₂` are coprime, then `K₁` and `K₂` are linearly disjoint over `ℚ`.
+
+Note: the Galois hypothesis on `K₁` is not necessary; see `linearDisjoint_of_isCoprime_discr`
+for the general result.
 -/
 theorem linearDisjoint_of_isGalois_isCoprime_discr (K₁ K₂ : IntermediateField ℚ K) [IsGalois ℚ K₁]
     (h : IsCoprime (discr K₁) (discr K₂)) :
@@ -195,6 +198,10 @@ lemma not_dvd_discr_iff_forall_liesOver {p : ℤ} (hp : Prime p) :
 open Ideal
 
 set_option backward.isDefEq.respectTransparency false in
+/--
+If a prime `p` does not divide `discr (F i)` for any `i ∈ s`, then `p` does not divide the
+discriminant of the compositum `⨆ i ∈ s, F i`.
+-/
 theorem not_dvd_discr_finsetSup_of_not_dvd_discr (ι : Type*) (F : ι → IntermediateField ℚ K)
     {p : ℕ} (hp : p.Prime) (s : Finset ι) (hF : ∀ i ∈ s, ¬ (p : ℤ) ∣ discr (F i)) :
     ¬ (p : ℤ) ∣ discr (s.sup F : IntermediateField ℚ K) := by
@@ -234,6 +241,10 @@ theorem not_dvd_discr_finsetSup_of_not_dvd_discr (ι : Type*) (F : ι → Interm
         exact (not_dvd_discr_iff_forall_liesOver _ (𝓞 F₂) (Nat.prime_iff_prime_int.mp hp)).mp
           (h fun _ h ↦ hF _ (Finset.mem_insert_of_mem h)) _ inferInstance inferInstance
 
+/--
+A prime `p` divides `discr K` if and only if `p` divides the discriminant of the normal closure
+of `K` over `ℚ`.
+-/
 theorem dvd_discr_iff_dvd_discr_normalClosure [Algebra K L] {p : ℕ} (hp : p.Prime) :
     (p : ℤ) ∣ discr K ↔ (p : ℤ) ∣ discr (normalClosure ℚ K L) := by
   refine ⟨fun h ↦ Int.dvd_trans h <| discr_dvd_discr K (normalClosure ℚ K L), fun h ↦ ?_⟩
@@ -249,7 +260,10 @@ theorem dvd_discr_iff_dvd_discr_normalClosure [Algebra K L] {p : ℕ} (hp : p.Pr
 set_option backward.isDefEq.respectTransparency false in
 set_option synthInstance.maxHeartbeats 200000 in
 -- This result needs some help to compile
-set_option maxHeartbeats 500000 in
+/--
+Let `K₁` and `K₂` be two number fields of `K/ℚ`. If `discr K₁` and `discr K₂` are coprime,
+then `K₁` and `K₂` are linearly disjoint over `ℚ`.
+-/
 theorem linearDisjoint_of_isCoprime_discr (K₁ K₂ : IntermediateField ℚ K)
     (h : IsCoprime (discr K₁) (discr K₂)) : K₁.LinearDisjoint K₂ := by
   let M := IntermediateField.normalClosure ℚ K (AlgebraicClosure K)
