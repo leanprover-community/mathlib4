@@ -70,9 +70,9 @@ lemma op_σ (X : SSet.{u}) {n : ℕ} (i : Fin (n + 1)) (x : X _⦋n⦌) :
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] op_map in
 /-- The functor `opFunctor : SSet ⥤ SSet` is an involution. -/
-@[simps! +dsimpLhs]
+@[simps!]
 def opFunctorCompOpFunctorIso : opFunctor.{u} ⋙ opFunctor ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun X ↦ NatIso.ofComponents
+  dsimp% NatIso.ofComponents (fun X ↦ NatIso.ofComponents
     (fun n ↦ Equiv.toIso (opObjEquiv.trans opObjEquiv)))
 
 /-- The covariant involution `opFunctor : SSet ⥤ SSet`,

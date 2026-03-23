@@ -29,12 +29,12 @@ def CommGrpCat.coyoneda : CommGrpCatᵒᵖ ⥤ CommGrpCat ⥤ CommGrpCat where
 
 /-- The `CommGrpCat`-valued coyoneda embedding composed with the forgetful functor is the usual
 coyoneda embedding. -/
-@[to_additive (attr := simps! +dsimpLhs)
+@[to_additive (attr := simps!)
 /-- The `AddCommGrpCat`-valued coyoneda embedding composed with the forgetful functor is the usual
 coyoneda embedding. -/]
 def CommGrpCat.coyonedaForget :
     coyoneda ⋙ (Functor.whiskeringRight _ _ _).obj (forget _) ≅ CategoryTheory.coyoneda :=
-  NatIso.ofComponents fun X ↦ NatIso.ofComponents fun Y ↦ {
+  dsimp% NatIso.ofComponents fun X ↦ NatIso.ofComponents fun Y ↦ {
     hom := TypeCat.ofHom (fun f ↦ ofHom f),
     inv := TypeCat.ofHom (fun f ↦ f.hom) }
 
