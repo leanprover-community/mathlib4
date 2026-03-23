@@ -97,13 +97,9 @@ instance instNormalCenter : (center G).Normal :=
   ⟨fun a ha b ↦ by simpa [mem_center_iff.mp ha b]⟩
 
 @[to_additive]
-theorem center_le_setNormalizer (s : Set G) : center G ≤ setNormalizer s := by
+theorem center_le_normalizer (s : Set G) : center G ≤ normalizer s := by
   intro x hx y
   simp [← mem_center_iff.mp hx y]
-
-@[to_additive]
-theorem center_le_normalizer : center G ≤ H.normalizer :=
-  center_le_setNormalizer _
 
 end Normalizer
 
