@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.Finsupp.Span
 public import Mathlib.Topology.Algebra.Module.WeakBilin
 
 /-!
-# Weak Dual in Topological Vector Spaces
+# Weak Bilinear Topologies in Topological Vector Spaces
 
 We prove that the weak topology induced by a bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜` is locally
 convex and we explicitly give a neighborhood basis in terms of the family of seminorms

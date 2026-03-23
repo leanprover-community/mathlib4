@@ -1963,7 +1963,7 @@ public import Mathlib.Analysis.LocallyConvex.Polar
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Analysis.LocallyConvex.StrongTopology
-public import Mathlib.Analysis.LocallyConvex.WeakDual
+public import Mathlib.Analysis.LocallyConvex.WeakBilin
 public import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
 public import Mathlib.Analysis.LocallyConvex.WeakSpace
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
@@ -7240,6 +7240,7 @@ public import Mathlib.Topology.Algebra.Module.TransferInstance
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
 public import Mathlib.Topology.Algebra.Module.WeakBilin
 public import Mathlib.Topology.Algebra.Module.WeakDual
+public import Mathlib.Topology.Algebra.Module.WeakSpace
 public import Mathlib.Topology.Algebra.Monoid
 public import Mathlib.Topology.Algebra.Monoid.AddChar
 public import Mathlib.Topology.Algebra.Monoid.Defs
