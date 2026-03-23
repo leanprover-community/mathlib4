@@ -235,7 +235,8 @@ def deriveSimp (e : Expr) : MetaM Simp.Result :=
   (·.1) <$> Simp.main e ctx (methods := methods useSimp)
 
 /-- A discharger which calls `norm_num`, for use in downstream tactics. -/
-def discharge (e : Expr) : SimpM (Option Expr) := do (← deriveSimp ctx useSimp e).ofTrue
+def discharge (e : Expr) : SimpM (Option Expr) := do
+  (← deriveSimp (← readThe Simp.Context) useSimp e).ofTrue
 
 end
 
