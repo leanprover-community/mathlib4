@@ -81,7 +81,7 @@ namespace IsFinitelyPresented
 theorem of_mulEquiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented H := by
   obtain ⟨S, hSfinite, hSclosure, hker⟩ := h
   use iso '' S, hSfinite.image iso,
-    MonoidHom.closure_image_eq_top (iso : G →* H) iso.surjective hSclosure
+    MonoidHom.closure_eq_top_image_of_surjective (iso : G →* H) iso.surjective hSclosure
   rw [FreeGroup.lift_mulEquiv_image, MonoidHom.ker_eq_of_comp_mulEquiv]
   exact IsNormalClosureFG.ker_comp_freeGroupCongr (iso.toEquiv.image S) _ hker
 
