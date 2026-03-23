@@ -51,7 +51,6 @@ namespace TypeCat
 /-- A one-field structure wrapping a function between types. -/
 @[ext]
 structure Fun (X Y : Type*) where
-  mk' ::
   /-- The underlying function. -/
   toFun : X → Y
 
@@ -61,9 +60,9 @@ instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
 
 initialize_simps_projections Fun (toFun → apply)
 
-/-- Construct a `Fun` from a function between types. -/
-def Fun.mk {X Y : Type*} (f : X → Y) : Fun X Y where
-  toFun := f
+-- /-- Construct a `Fun` from a function between types. -/
+-- def Fun.mk {X Y : Type*} (f : X → Y) : Fun X Y where
+--   toFun := f
 
 lemma Fun.mk_as {X Y : Type*} (f : X → Y) : (Fun.mk f).toFun = f :=
   rfl
