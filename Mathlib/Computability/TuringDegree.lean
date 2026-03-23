@@ -47,7 +47,7 @@ variable {f g h : ℕ →. ℕ}
 `f` is Turing reducible to `g` if `f` is partial recursive given access to the oracle `g`
 -/
 abbrev TuringReducible (f g : ℕ →. ℕ) : Prop :=
-  RecursiveIn {g} f
+  Nat.RecursiveIn {g} f
 
 /--
 `f` is Turing equivalent to `g` if `f` is reducible to `g` and `g` is reducible to `f`.
@@ -65,10 +65,10 @@ If a function is partial recursive, then it is recursive in every partial functi
 -/
 lemma Nat.Partrec.turingReducible (pF : Nat.Partrec f) : f ≤ᵀ g := by
   induction pF with repeat {constructor}
-  | pair _ _ ih₁ ih₂ => exact RecursiveIn.pair ih₁ ih₂
-  | comp _ _ ih₁ ih₂ => exact RecursiveIn.comp ih₁ ih₂
-  | prec _ _ ih₁ ih₂ => exact RecursiveIn.prec ih₁ ih₂
-  | rfind _ ih => exact RecursiveIn.rfind ih
+  | pair _ _ ih₁ ih₂ => exact Nat.RecursiveIn.pair ih₁ ih₂
+  | comp _ _ ih₁ ih₂ => exact Nat.RecursiveIn.comp ih₁ ih₂
+  | prec _ _ ih₁ ih₂ => exact Nat.RecursiveIn.prec ih₁ ih₂
+  | rfind _ ih => exact Nat.RecursiveIn.rfind ih
 
 /--
 If a function is recursive in the constant zero function,
@@ -92,10 +92,10 @@ protected theorem TuringReducible.rfl : f ≤ᵀ f := .refl _
 theorem TuringReducible.trans (hg : f ≤ᵀ g) (hh : g ≤ᵀ h) : f ≤ᵀ h := by
   induction hg with repeat {constructor}
   | oracle _ hg => rw [Set.mem_singleton_iff] at hg; rw [hg]; exact hh
-  | pair _ _ ih₁ ih₂ => exact RecursiveIn.pair ih₁ ih₂
-  | comp _ _ ih₁ ih₂ => exact RecursiveIn.comp ih₁ ih₂
-  | prec _ _ ih₁ ih₂ => exact RecursiveIn.prec ih₁ ih₂
-  | rfind _ ih => exact RecursiveIn.rfind ih
+  | pair _ _ ih₁ ih₂ => exact Nat.RecursiveIn.pair ih₁ ih₂
+  | comp _ _ ih₁ ih₂ => exact Nat.RecursiveIn.comp ih₁ ih₂
+  | prec _ _ ih₁ ih₂ => exact Nat.RecursiveIn.prec ih₁ ih₂
+  | rfind _ ih => exact Nat.RecursiveIn.rfind ih
 
 instance : IsPreorder (ℕ →. ℕ) TuringReducible where
   refl _ := .rfl
