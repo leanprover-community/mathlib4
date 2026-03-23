@@ -89,6 +89,10 @@ ofUnits_units_gci.gc
 lemma ofUnits_le_iff_le_units (S : Submonoid M) (H : Subgroup Mˣ) :
     H.ofUnits ≤ S ↔ H ≤ S.units := ofUnits_units_gc _ _
 
+@[to_additive]
+theorem IsUnit.coe {S : Type*} [SetLike S M] [SubmonoidClass S M] {N : S} {a : N}
+    (ha : IsUnit a) : IsUnit (a : M) := ha.map (SubmonoidClass.subtype N)
+
 namespace Submonoid
 
 section Units
@@ -143,7 +147,6 @@ def unitsEquivUnitsType (S : Submonoid M) : S.units ≃* Sˣ where
   invFun := fun x => ⟨⟨_, _, S.coe_val_mul_coe_inv_val, S.coe_inv_val_mul_coe_val⟩, ⟨x.1.2, x.2.2⟩⟩
   map_mul' := fun _ _ => rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma units_top : (⊤ : Submonoid M).units = ⊤ := ofUnits_units_gc.u_top
 
@@ -164,7 +167,6 @@ lemma units_iInf₂ {ι : Sort*} {κ : ι → Sort*} (f : (i : ι) → κ i → 
     (⨅ (i : ι), ⨅ (j : κ i), f i j).units = ⨅ (i : ι), ⨅ (j : κ i), (f i j).units :=
   ofUnits_units_gc.u_iInf₂
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma units_bot : (⊥ : Submonoid M).units = ⊥ := ofUnits_units_gci.u_bot
 
@@ -175,7 +177,7 @@ lemma units_surjective : Function.Surjective (units (M := M)) :=
 @[to_additive]
 lemma units_left_inverse :
     Function.LeftInverse (units (M := M)) (Subgroup.ofUnits (M := M)) :=
-  ofUnits_units_gci.u_l_leftInverse
+  ofUnits_units_gci.leftInverse_u_l
 
 /-- The equivalence between the subgroup of units of `S` and the submonoid of unit
 elements of `S`. -/
@@ -262,7 +264,6 @@ noncomputable def ofUnitsEquivType (S : Subgroup Mˣ) : S.ofUnits ≃* S where
   invFun := fun x => ⟨x.1, ⟨x.1, x.2, rfl⟩⟩
   map_mul' := fun _ _ => Subtype.ext (Units.ext rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma ofUnits_bot : (⊥ : Subgroup Mˣ).ofUnits = ⊥ := ofUnits_units_gc.l_bot
 
@@ -298,7 +299,7 @@ lemma ofUnits_inf_units (S T : Subgroup Mˣ) : (S.ofUnits ⊓ T.ofUnits).units =
 @[to_additive]
 lemma ofUnits_right_inverse :
     Function.RightInverse (ofUnits (M := M)) (Submonoid.units (M := M)) :=
-  ofUnits_units_gci.u_l_leftInverse
+  ofUnits_units_gci.leftInverse_u_l
 
 @[to_additive]
 lemma ofUnits_strictMono : StrictMono (ofUnits (M := M)) := ofUnits_units_gci.strictMono_l

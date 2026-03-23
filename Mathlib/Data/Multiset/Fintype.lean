@@ -153,7 +153,6 @@ def coeEmbedding (m : Multiset α) : m ↪ α × ℕ where
     rintro ⟨⟩
     rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Another way to coerce a `Multiset` to a type is to go through `m.toEnumFinset` and coerce
 that `Finset` to a type. -/
 @[simps]

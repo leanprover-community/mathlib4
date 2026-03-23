@@ -39,7 +39,7 @@ As in other polynomial files, we typically use the notation:
 + `R : Type*` `[CommSemiring R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
+  This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
 
 + `r : R`
 
@@ -202,7 +202,7 @@ section DegreeOf
 /-! ### `degreeOf` -/
 
 
-/-- `degreeOf n p` gives the highest power of X_n that appears in `p` -/
+/-- `degreeOf n p` gives the highest power of $X_n$ that appears in `p` -/
 def degreeOf (n : σ) (p : MvPolynomial σ R) : ℕ :=
   letI := Classical.decEq σ
   p.degrees.count n

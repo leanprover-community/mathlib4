@@ -165,6 +165,7 @@ theorem equivalence_not_adj : Equivalence (¬G.Adj · ·) where
 
 /-- The non-adjacency setoid over the vertices of a Turán-maximal graph
 induced by `equivalence_not_adj`. -/
+@[implicit_reducible]
 def setoid : Setoid V := ⟨_, h.equivalence_not_adj⟩
 
 instance : DecidableRel h.setoid.r :=
@@ -181,7 +182,6 @@ lemma not_adj_iff_part_eq [DecidableEq V] :
   change t ∈ fp.part s ↔ fp.part s = fp.part t
   rw [fp.mem_part_iff_part_eq_part (mem_univ t) (mem_univ s), eq_comm]
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 lemma degree_eq_card_sub_part_card [DecidableEq V] :
     G.degree s = card V - #(h.finpartition.part s) :=

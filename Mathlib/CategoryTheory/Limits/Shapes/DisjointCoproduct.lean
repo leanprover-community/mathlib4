@@ -6,7 +6,7 @@ Authors: Bhavik Mehta, Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 
@@ -132,6 +132,15 @@ noncomputable def ofCoproductDisjointOfCommSq [HasStrictInitialObjects C]
     .ofCoproductDisjointOfIsColimitOfIsLimit hij hc (limit.isLimit _)
 
 end IsInitial
+
+lemma CoproductDisjoint.isPullback_of_isInitial {c : Cofan X} (hc : IsColimit c)
+    {Y : C} (hY : IsInitial Y) {i j : ι} [HasPullback (c.inj i) (c.inj j)] (hij : i ≠ j) :
+    IsPullback (hY.to _) (hY.to _) (c.inj i) (c.inj j) := by
+  refine .of_iso_pullback (by simp) ?_ ?_ ?_
+  · refine hY.uniqueUpToIso ?_
+    exact IsInitial.ofCoproductDisjointOfIsColimit hij hc
+  · simp
+  · simp
 
 end
 

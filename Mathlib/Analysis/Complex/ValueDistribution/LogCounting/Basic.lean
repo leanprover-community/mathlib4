@@ -125,6 +125,30 @@ Evaluation of the logarithmic counting function at zero yields zero.
   simp [logCounting]
 
 /--
+The logarithmic counting function of a singleton indicator is asymptotically equal to
+`log · - log ‖e‖`.
+-/
+@[simp] lemma logCounting_single_eq_log_sub_const [DecidableEq E] [ProperSpace E] {e : E} {r : ℝ}
+    {n : ℤ} (hr : ‖e‖ ≤ r) :
+    logCounting (single e n) r = n * (log r - log ‖e‖) := by
+  classical
+  simp only [logCounting, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
+  rw [finsum_eq_sum_of_support_subset _ (s := (finite_singleton e).toFinset)
+    (by simp_all [toClosedBall, restrict_apply, single_apply])]
+  simp only [toFinite_toFinset, toFinset_singleton, Finset.sum_singleton]
+  rw [toClosedBall_eval_within _ (by simpa [abs_of_nonneg ((norm_nonneg e).trans hr)])]
+  by_cases he : 0 = e
+  · simp [← he, single_apply]
+  · simp only [single_apply, he, reduceIte, Int.cast_zero, zero_mul, add_zero,
+      log_mul (ne_of_lt (lt_of_lt_of_le (norm_pos_iff.mpr (he ·.symm)) hr)).symm
+      (inv_ne_zero (norm_ne_zero_iff.mpr (he ·.symm))), log_inv]
+    grind
+
+/-!
+### Elementary Properties of Logarithmic Counting Functions
+-/
+
+/--
 The logarithmic counting function is even.
 -/
 lemma logCounting_even [ProperSpace E] (D : locallyFinsupp E ℤ) :
@@ -169,6 +193,25 @@ lemma logCounting_mono [ProperSpace E] {D : locallyFinsupp E ℤ} (hD : 0 ≤ D)
   · exact Int.cast_nonneg (hD 0)
 
 /--
+The logarithmic counting function of a positive function with locally finite support is
+asymptotically strictly monotone.
+-/
+lemma logCounting_strictMono [DecidableEq E] [ProperSpace E] {D : locallyFinsupp E ℤ} {e : E}
+    (hD : single e 1 ≤ D) :
+    StrictMonoOn (logCounting D) (Ioi ‖e‖) := by
+  rw [(by aesop : logCounting D = logCounting (single e 1) + logCounting (D - single e 1))]
+  apply StrictMonoOn.add_monotone
+  · intro a ha b hb hab
+    rw [mem_Ioi] at ha hb
+    rw [logCounting_single_eq_log_sub_const ha.le, logCounting_single_eq_log_sub_const hb.le]
+    gcongr
+    exact (norm_nonneg e).trans_lt ha
+  · intro a ha b hb hab
+    apply logCounting_mono _ _ ((norm_nonneg e).trans_lt hb) hab
+    · simp [hD]
+    · simpa [mem_Ioi] using (norm_nonneg e).trans_lt ha
+
+/--
 For `1 ≤ r`, the logarithmic counting function is non-negative.
 -/
 theorem logCounting_nonneg {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
@@ -186,7 +229,6 @@ theorem logCounting_nonneg {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
     · simpa [mul_comm r, one_le_inv_mul₀ (norm_pos_iff.mpr h₁a), abs_of_pos h₃r] using h₂a
   · simp [apply_eq_zero_of_notMem ((toClosedBall r) _) h₂a]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 For `1 ≤ r`, the logarithmic counting function respects the `≤` relation.
 -/
@@ -232,7 +274,6 @@ noncomputable def logCounting : ℝ → ℝ := by
   · exact (divisor f univ)⁻.logCounting
   · exact (divisor (f · - a.untop₀) univ)⁺.logCounting
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Relation between `ValueDistribution.logCounting` and `locallyFinsuppWithin.logCounting`.
 -/
@@ -440,7 +481,7 @@ theorem logCounting_sum_top_eventuallyLE {α : Type*} (s : Finset α) (f : α �
   filter_upwards [eventually_ge_atTop 1] using fun _ hr ↦ logCounting_sum_top_le s f h₁f hr
 
 /--
-For `1 ≤ r`, the logarithmis counting function for the zeros of `f * g` is less than or equal to the
+For `1 ≤ r`, the logarithmic counting function for the zeros of `f * g` is less than or equal to the
 sum of the logarithmic counting functions for the zeros of `f` and `g`, respectively.
 
 Note: The statement proven here is found at the top of page 169 of [Lang: Introduction to Complex
@@ -536,7 +577,6 @@ For `𝕜 = ℂ`, the theorems below describe the logarithmic counting function 
 averages.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Over the complex numbers, present the logarithmic counting function attached to the divisor of a
 meromorphic function `f` as a circle average over `log ‖f ·‖`.
