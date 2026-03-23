@@ -115,10 +115,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma objMk₁_injective {n : ℕ} : Function.Injective (objMk₁.{u} (n := n)) := by
   intro i j h
   wlog hij : i < j generalizing i j
-  · simp only [not_lt] at hij
-    obtain hij | rfl := hij.lt_or_eq
-    · exact (this h.symm hij).symm
-    · rfl
+  · grind
   have := DFunLike.congr_fun (objMk_bijective.1 h)
     ⟨i.1, lt_of_lt_of_le hij (by dsimp; lia)⟩
   simp [if_pos hij] at this
