@@ -22,7 +22,7 @@ equals `log ‖meromorphicTrailingCoeffAt g c‖` plus a correction term that ac
 poles of `g` within the ball.
 -/
 
-@[expose] public section
+public section
 
 open Filter MeromorphicAt MeromorphicOn Metric Real
 
@@ -85,7 +85,7 @@ function of Value Distribution Theory, as discussed in
 `Mathlib/Analysis/Complex/ValueDistribution/CountingFunction.lean`.
 -/
 lemma countingFunction_finsum_eq_finsum_add {c : ℂ} {R : ℝ} {D : ℂ → ℤ} (hR : R ≠ 0)
-    (hD : D.support.Finite) :
+    (hD : D.HasFiniteSupport) :
     ∑ᶠ u, D u * (log R - log ‖c - u‖) = ∑ᶠ u, D u * log (R * ‖c - u‖⁻¹) + D c * log R := by
   by_cases h : c ∈ D.support
   · have {g : ℂ → ℝ} : (fun u ↦ D u * g u).support ⊆ hD.toFinset :=
@@ -108,7 +108,7 @@ lemma countingFunction_finsum_eq_finsum_add {c : ℂ} {R : ℝ} {D : ℂ → ℤ
 ## Jensen's Formula
 -/
 
-/-!
+/--
 **Jensen's Formula**: If `f : ℂ → ℂ` is meromorphic on the closed ball with center `c` and radius
 `R`, then the `circleAverage (log ‖f ·‖) c R` equals `log ‖meromorphicTrailingCoeffAt f c‖` plus a
 correction term that accounts for the zeros and poles of `f` within the ball.

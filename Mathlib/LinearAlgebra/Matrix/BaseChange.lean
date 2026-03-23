@@ -21,7 +21,7 @@ This file is a home for results about base change for matrices.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Matrix
 

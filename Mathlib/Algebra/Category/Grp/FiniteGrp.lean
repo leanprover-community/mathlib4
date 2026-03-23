@@ -26,14 +26,14 @@ open CategoryTheory
 @[pp_with_univ]
 structure FiniteGrp where
   /-- A group that is finite -/
-  toGrp : GrpCat
+  toGrp : GrpCat.{u}
   [isFinite : Finite toGrp]
 
 /-- The category of finite additive groups. -/
 @[pp_with_univ]
 structure FiniteAddGrp where
   /-- An additive group that is finite -/
-  toAddGrp : AddGrpCat
+  toAddGrp : AddGrpCat.{u}
   [isFinite : Finite toAddGrp]
 
 attribute [to_additive] FiniteGrp

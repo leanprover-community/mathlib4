@@ -5,9 +5,8 @@ Authors: Gabriel Ebner
 -/
 module
 
-public meta import Mathlib.Data.Subtype
-public meta import Mathlib.Tactic.Eqns
-public meta import Mathlib.Util.TermReduce
+public import Mathlib.Tactic.Eqns
+public import Mathlib.Util.TermReduce
 
 /-!
 # Irreducible definitions

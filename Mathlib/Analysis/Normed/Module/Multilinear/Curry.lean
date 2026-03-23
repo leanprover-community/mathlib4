@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
 public import Mathlib.LinearAlgebra.Multilinear.Curry
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!
 # Currying and uncurrying continuous multilinear maps
@@ -454,6 +455,11 @@ theorem ContinuousMultilinearMap.fin0_apply_norm (f : G [×0]→L[𝕜] G') {x :
       simp [-ContinuousMultilinearMap.apply_zero_uncurry0]
   simpa [-Matrix.zero_empty] using this
 
+@[simp]
+theorem ContinuousMultilinearMap.fin0_apply_enorm (f : G [×0]→L[𝕜] G') {x : Fin 0 → G} :
+    ‖f x‖ₑ = ‖f‖ₑ := by
+  simp_rw [← ofReal_norm, fin0_apply_norm]
+
 theorem ContinuousMultilinearMap.curry0_norm (f : G [×0]→L[𝕜] G') : ‖f.curry0‖ = ‖f‖ := by simp
 
 variable (𝕜 G G')
@@ -480,7 +486,11 @@ theorem continuousMultilinearCurryFin0_apply (f : G [×0]→L[𝕜] G') :
   rfl
 
 @[simp]
-theorem continuousMultilinearCurryFin0_symm_apply (x : G') (v : Fin 0 → G) :
+theorem continuousMultilinearCurryFin0_symm_apply (x : G') :
+    (continuousMultilinearCurryFin0 𝕜 G G').symm x = ContinuousMultilinearMap.uncurry0 𝕜 G x :=
+  rfl
+
+theorem continuousMultilinearCurryFin0_symm_apply_apply (x : G') (v : Fin 0 → G) :
     (continuousMultilinearCurryFin0 𝕜 G G').symm x v = x :=
   rfl
 

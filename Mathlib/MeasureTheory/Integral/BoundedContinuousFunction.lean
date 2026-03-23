@@ -18,7 +18,7 @@ specialized form in some other files, in particular in those related to the topo
 convergence of probability measures and finite measures.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Filter
 open scoped ENNReal NNReal BoundedContinuousFunction Topology
@@ -80,6 +80,7 @@ variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X]
 variable (μ : Measure X)
 variable {E : Type*} [NormedAddCommGroup E]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma lintegral_nnnorm_le (f : X →ᵇ E) :
     ∫⁻ x, ‖f x‖₊ ∂μ ≤ ‖f‖₊ * (μ Set.univ) := by
   calc  ∫⁻ x, ‖f x‖₊ ∂μ
@@ -88,6 +89,7 @@ lemma lintegral_nnnorm_le (f : X →ᵇ E) :
 
 variable [OpensMeasurableSpace X] [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma integrable [IsFiniteMeasure μ] (f : X →ᵇ E) :
     Integrable f μ := by
   refine ⟨f.continuous.measurable.aestronglyMeasurable, (hasFiniteIntegral_def _ _).mp ?_⟩
@@ -97,6 +99,7 @@ lemma integrable [IsFiniteMeasure μ] (f : X →ᵇ E) :
 
 variable [NormedSpace ℝ E]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma norm_integral_le_mul_norm [IsFiniteMeasure μ] (f : X →ᵇ E) :
     ‖∫ x, f x ∂μ‖ ≤ μ.real Set.univ * ‖f‖ := by
   calc  ‖∫ x, f x ∂μ‖

@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.Dimension.Finite
 
 -/
 
-@[expose] public section
+public section
 
 variable {R M : Type*} [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
 

@@ -11,17 +11,18 @@ public import Mathlib.Data.Matrix.Basis
 /-!
 # Composition of matrices
 
-This file shows that Mₙ(Mₘ(R)) ≃ Mₙₘ(R), Mₙ(Rᵒᵖ) ≃ₐ[K] Mₙ(R)ᵒᵖ
-and also different levels of equivalence when R is an AddCommMonoid,
-Semiring, and Algebra over a CommSemiring K.
+This file shows that `Mₙ(Mₘ(R)) ≃ Mₙₘ(R)`, `Mₙ(Rᵒᵖ) ≃ₐ[K] Mₙ(R)ᵒᵖ`
+and also different levels of equivalence when `R` is an `AddCommMonoid`,
+`Semiring`, and `Algebra` over a `CommSemiring K`.
 
-## Main results
+## Main definitions
 
 * `Matrix.comp` is an equivalence between `Matrix I J (Matrix K L R)` and
   `I × K` by `J × L` matrices.
-* `Matrix.swap` is an equivalence between `(I × J)` by `(K × L)` matrices and
-  `J × I` by `L × K` matrices.
-
+* `Matrix.compAddEquiv`: `Matrix.comp` as an `AddEquiv`
+* `Matrix.compRingEquiv`: `Matrix.comp` as a `RingEquiv`
+* `Matrix.compLinearEquiv`: `Matrix.comp` as a `LinearEquiv`
+* `Matrix.compAlgEquiv`: `Matrix.comp` as an `AlgEquiv`
 -/
 
 @[expose] public section
@@ -30,8 +31,8 @@ namespace Matrix
 
 variable (I J K L R R' : Type*)
 
-/-- I by J matrix where each entry is a K by L matrix is equivalent to
-    I × K by J × L matrix -/
+/-- An `I` by `J` matrix where each entry is a `K` by `L` matrix is equivalent to
+    an `I × K` by `J × L` matrix -/
 @[simps]
 def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
   toFun m ik jl := m ik.1 jl.1 ik.2 jl.2
@@ -137,10 +138,10 @@ theorem compRingEquiv_apply (M : Matrix I I (Matrix J J R)) :
 theorem compRingEquiv_symm_apply (M : Matrix (I × J) (I × J) R) :
     (compRingEquiv I J R).symm M = (comp I I J J R).symm M := rfl
 
-instance (R) [MulOne R] [AddCommMonoid R] [Fintype I] [DecidableEq I] [IsStablyFiniteRing R] :
+instance (R) [MulOne R] [AddCommMonoid R] [DecidableEq I] [IsStablyFiniteRing R] :
     IsStablyFiniteRing (Matrix I I R) :=
-  ⟨fun n ↦ let f := MonoidHom.mk ⟨compRingEquiv (Fin n) I R, comp_one⟩ (map_mul _)
-    .of_injective f (compRingEquiv ..).injective⟩
+  ⟨fun n ↦ .of_injective (MonoidHom.mk ⟨_, comp_one⟩ (compRingEquiv (Fin n) I R).map_mul)
+    (RingEquiv.injective _)⟩
 
 end AddCommMonoid
 

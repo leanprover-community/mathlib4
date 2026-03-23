@@ -35,7 +35,7 @@ and `q` is notation for the cardinality of `K`.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u v
@@ -100,6 +100,7 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
 
 variable [DecidableEq K] (p : ℕ) [CharP K p]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Chevalley–Warning theorem**, finitary version.
 Let `(f i)` be a finite family of multivariate polynomials
 in finitely many variables (`X s`, `s : σ`) over a finite field of characteristic `p`.

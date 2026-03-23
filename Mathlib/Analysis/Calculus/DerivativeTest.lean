@@ -46,7 +46,7 @@ Source: [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_s
 derivative test, first-derivative test, second-derivative test, calculus
 -/
 
-@[expose] public section
+public section
 
 
 open Set Topology

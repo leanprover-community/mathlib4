@@ -90,7 +90,7 @@ lemma coe_comp {X Y Z : HeytAlg} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → 
 
 @[simp]
 lemma forget_map {X Y : HeytAlg} (f : X ⟶ Y) :
-    (forget HeytAlg).map f = f := rfl
+    (forget HeytAlg).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : HeytAlg} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -154,6 +154,7 @@ instance hasForgetToLat : HasForget₂ HeytAlg BddDistLat where
   forget₂.obj X := .of X
   forget₂.map f := BddDistLat.ofHom f.hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an isomorphism of Heyting algebras from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : HeytAlg.{u}} (e : α ≃o β) : α ≅ β where

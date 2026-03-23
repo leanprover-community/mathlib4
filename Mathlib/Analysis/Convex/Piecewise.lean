@@ -28,7 +28,7 @@ This file proves convex and concave theorems for piecewise functions.
   and `concaveOn_univ_piecewise_Ici_of_antitoneOn_Ici_monotoneOn_Iic`.
 -/
 
-@[expose] public section
+public section
 
 
 variable {𝕜 E β : Type*} [Semiring 𝕜] [PartialOrder 𝕜]

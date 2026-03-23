@@ -5,10 +5,11 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public meta import Mathlib.Order.BoundedOrder.Basic
-public meta import Mathlib.Order.Lattice
-public meta import Mathlib.Util.AtomM
 public meta import Qq
+public import Mathlib.Order.BoundedOrder.Basic  -- shake: keep (Qq dependency)
+public import Mathlib.Order.Lattice  -- shake: keep (Qq dependency)
+public meta import Mathlib.Tactic.ToDual
+public import Mathlib.Util.AtomM
 
 /-!
 # Facts collection for the `order` Tactic
@@ -59,7 +60,7 @@ abbrev CollectFactsM := StateT CollectFactsState AtomM
 
 /-- Adds `type` to the state. It checks if the type has already been added up to
 `reducible_and_instances` transparency. Returns the type that is added to the state and
-defenitionally equal (but may be not syntactically equal) to `type`. -/
+definitionally equal (but may be not syntactically equal) to `type`. -/
 def addType {u : Level} (type : Q(Type u)) : CollectFactsM Q(Type u) := do
   match ← (← get).keys.findM? (withReducibleAndInstances <| isDefEq type ·) with
   | none =>

@@ -23,7 +23,7 @@ public import Mathlib.Topology.UniformSpace.Equicontinuity
 uniform space, uniform continuity, compact space
 -/
 
-@[expose] public section
+public section
 
 open Uniformity Topology Filter UniformSpace Set
 

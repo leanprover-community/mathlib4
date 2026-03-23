@@ -5,8 +5,10 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum.Basic
-public meta import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.Nat.Prime.Basic
+public meta import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Tactic.NormNum.Result
 
 /-!
 # `norm_num` extensions on natural numbers
@@ -123,7 +125,7 @@ theorem isNat_minFac_4 : {n n' k : ℕ} →
 /-- The `norm_num` extension which identifies expressions of the form `minFac n`. -/
 @[norm_num Nat.minFac _] partial def evalMinFac : NormNumExt where eval {_ _} e := do
   let .app (.const ``Nat.minFac _) (n : Q(ℕ)) ← whnfR e | failure
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨nn, pn⟩ ← deriveNat n sℕ
   let n' := nn.natLit!
   let rec aux (ek : Q(ℕ)) (prf : Q(MinFacHelper $nn $ek)) :

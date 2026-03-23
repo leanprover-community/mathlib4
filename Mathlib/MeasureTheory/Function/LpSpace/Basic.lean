@@ -208,9 +208,9 @@ instance instNorm : Norm (Lp E p μ) where norm f := ENNReal.toReal (eLpNorm f p
 -- can't use `ENNReal.toNNReal (eLpNorm f p μ)`
 instance instNNNorm : NNNorm (Lp E p μ) where nnnorm f := ⟨‖f‖, ENNReal.toReal_nonneg⟩
 
-instance instDist : Dist (Lp E p μ) where dist f g := ‖f - g‖
+instance instDist : Dist (Lp E p μ) where dist f g := ‖-f + g‖
 
-instance instEDist : EDist (Lp E p μ) where edist f g := eLpNorm (⇑f - ⇑g) p μ
+instance instEDist : EDist (Lp E p μ) where edist f g := eLpNorm (-⇑f + ⇑g) p μ
 
 theorem norm_def (f : Lp E p μ) : ‖f‖ = ENNReal.toReal (eLpNorm f p μ) :=
   rfl
@@ -236,24 +236,30 @@ theorem nnnorm_toLp (f : α → E) (hf : MemLp f p μ) :
   NNReal.eq <| norm_toLp f hf
 
 lemma enorm_toLp {f : α → E} (hf : MemLp f p μ) : ‖hf.toLp f‖ₑ = eLpNorm f p μ := by
-  simp [enorm, nnnorm_toLp f hf, ENNReal.coe_toNNReal hf.2.ne]
+  simp_rw [enorm, nnnorm_toLp f hf, ENNReal.coe_toNNReal hf.2.ne]
+
+theorem dist_eq_eLpNorm_neg_add (f g : Lp E p μ) : dist f g = (eLpNorm (-⇑f + ⇑g) p μ).toReal := by
+  simp_rw [dist, norm_def]
+  congr 1
+  apply eLpNorm_congr_ae
+  exact (coeFn_add _ _).trans ((coeFn_neg f).add ae_eq_rfl)
 
 theorem dist_def (f g : Lp E p μ) : dist f g = (eLpNorm (⇑f - ⇑g) p μ).toReal := by
-  simp_rw [dist, norm_def]
-  refine congr_arg _ ?_
-  apply eLpNorm_congr_ae (coeFn_sub _ _)
+  rw [dist_eq_eLpNorm_neg_add, ← eLpNorm_neg, neg_add, neg_neg, sub_eq_add_neg]
 
-theorem edist_def (f g : Lp E p μ) : edist f g = eLpNorm (⇑f - ⇑g) p μ :=
-  rfl
+theorem edist_eq_eLpNorm_neg_add (f g : Lp E p μ) : edist f g = eLpNorm (-⇑f + ⇑g) p μ := rfl
+
+theorem edist_def (f g : Lp E p μ) : edist f g = eLpNorm (⇑f - ⇑g) p μ := by
+  rw [edist_eq_eLpNorm_neg_add, ← eLpNorm_neg, neg_add, neg_neg, sub_eq_add_neg]
 
 protected theorem edist_dist (f g : Lp E p μ) : edist f g = .ofReal (dist f g) := by
   rw [edist_def, dist_def, ← eLpNorm_congr_ae (coeFn_sub _ _),
     ENNReal.ofReal_toReal (eLpNorm_ne_top (f - g))]
 
 protected theorem dist_edist (f g : Lp E p μ) : dist f g = (edist f g).toReal :=
-  MeasureTheory.Lp.dist_def ..
+  MeasureTheory.Lp.dist_eq_eLpNorm_neg_add ..
 
-theorem dist_eq_norm (f g : Lp E p μ) : dist f g = ‖f - g‖ := rfl
+theorem dist_eq_norm (f g : Lp E p μ) : dist f g = ‖-f + g‖ := rfl
 
 @[simp]
 theorem edist_toLp_toLp (f g : α → E) (hf : MemLp f p μ) (hg : MemLp g p μ) :
@@ -263,12 +269,11 @@ theorem edist_toLp_toLp (f g : α → E) (hf : MemLp f p μ) (hg : MemLp g p μ)
 
 @[simp]
 theorem edist_toLp_zero (f : α → E) (hf : MemLp f p μ) : edist (hf.toLp f) 0 = eLpNorm f p μ := by
-  simpa using edist_toLp_toLp f 0 hf MemLp.zero
+  simpa using edist_toLp_toLp f 0 hf .zero
 
 @[simp]
 theorem nnnorm_zero : ‖(0 : Lp E p μ)‖₊ = 0 := by
-  rw [nnnorm_def]
-  change (eLpNorm (⇑(0 : α →ₘ[μ] E)) p μ).toNNReal = 0
+  rw [nnnorm_def, ZeroMemClass.coe_zero]
   simp [eLpNorm_congr_ae AEEqFun.coeFn_zero, eLpNorm_zero]
 
 @[simp]
@@ -278,27 +283,23 @@ theorem norm_zero : ‖(0 : Lp E p μ)‖ = 0 :=
 @[simp]
 theorem norm_measure_zero (f : Lp E p (0 : MeasureTheory.Measure α)) : ‖f‖ = 0 := by
   -- Squeezed for performance reasons
-  simp only [norm_def, eLpNorm_measure_zero, ENNReal.toReal_zero]
+  simp_rw [norm_def, eLpNorm_measure_zero, ENNReal.toReal_zero]
 
 @[simp] theorem norm_exponent_zero (f : Lp E 0 μ) : ‖f‖ = 0 := by
   -- Squeezed for performance reasons
-  simp only [norm_def, eLpNorm_exponent_zero, ENNReal.toReal_zero]
+  simp_rw [norm_def, eLpNorm_exponent_zero, ENNReal.toReal_zero]
+
+theorem eq_zero_iff_ae_eq_zero {f : Lp E p μ} : f = 0 ↔ f =ᵐ[μ] 0 := by
+  rw [Lp.ext_iff]
+  exact EventuallyEq.congr_right AEEqFun.coeFn_zero
 
 theorem nnnorm_eq_zero_iff {f : Lp E p μ} (hp : 0 < p) : ‖f‖₊ = 0 ↔ f = 0 := by
   refine ⟨fun hf => ?_, fun hf => by simp [hf]⟩
-  rw [nnnorm_def, ENNReal.toNNReal_eq_zero_iff] at hf
-  cases hf with
-  | inl hf =>
-    rw [eLpNorm_eq_zero_iff (Lp.aestronglyMeasurable f) hp.ne.symm] at hf
-    exact Subtype.ext (AEEqFun.ext (hf.trans AEEqFun.coeFn_zero.symm))
-  | inr hf =>
-    exact absurd hf (eLpNorm_ne_top f)
+  simp_rw [nnnorm_def, ENNReal.toNNReal_eq_zero_iff, eLpNorm_ne_top, or_false] at hf
+  simp_rw [eq_zero_iff_ae_eq_zero, ← eLpNorm_eq_zero_iff (Lp.aestronglyMeasurable f) hp.ne.symm, hf]
 
 theorem norm_eq_zero_iff {f : Lp E p μ} (hp : 0 < p) : ‖f‖ = 0 ↔ f = 0 :=
   NNReal.coe_eq_zero.trans (nnnorm_eq_zero_iff hp)
-
-theorem eq_zero_iff_ae_eq_zero {f : Lp E p μ} : f = 0 ↔ f =ᵐ[μ] 0 := by
-  rw [← (Lp.memLp f).toLp_eq_toLp_iff MemLp.zero, MemLp.toLp_zero, toLp_coeFn]
 
 @[simp]
 theorem nnnorm_neg (f : Lp E p μ) : ‖-f‖₊ = ‖f‖₊ := by
@@ -358,9 +359,7 @@ theorem mem_Lp_of_ae_bound [IsFiniteMeasure μ] {f : α →ₘ[μ] E} (C : ℝ) 
 theorem nnnorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
     (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) : ‖f‖₊ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
   by_cases hμ : μ = 0
-  · by_cases hp : p.toReal⁻¹ = 0
-    · simp [hp, hμ, nnnorm_def]
-    · simp [hμ, nnnorm_def]
+  · simp [hμ, nnnorm_def]
   rw [← ENNReal.coe_le_coe, nnnorm_def, ENNReal.coe_toNNReal (eLpNorm_ne_top _)]
   refine (eLpNorm_le_of_ae_nnnorm_bound hfC).trans_eq ?_
   rw [← coe_measureUnivNNReal μ, ← ENNReal.coe_rpow_of_ne_zero (measureUnivNNReal_pos hμ).ne',
@@ -380,12 +379,11 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
         add_le' := fun f g => by
           suffices ‖f + g‖ₑ ≤ ‖f‖ₑ + ‖g‖ₑ by
             -- Squeezed for performance reasons
-            simpa only [ge_iff_le, enorm, ←ENNReal.coe_add, ENNReal.coe_le_coe] using this
+            simpa only [ge_iff_le, enorm, ← ENNReal.coe_add, ENNReal.coe_le_coe] using this
           simp only [Lp.enorm_def]
           exact (eLpNorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le
             (eLpNorm_add_le (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _) hp.out)
-        eq_zero_of_map_eq_zero' := fun _ =>
-          (norm_eq_zero_iff <| zero_lt_one.trans_le hp.1).1 } with
+        eq_zero_of_map_eq_zero' _ := (norm_eq_zero_iff <| zero_lt_one.trans_le hp.1).1 } with
     edist := edist
     edist_dist := Lp.edist_dist }
 
@@ -571,6 +569,39 @@ theorem isometry_compMeasurePreserving [Fact (1 ≤ p)] (hf : MeasurePreserving 
 
 theorem toLp_compMeasurePreserving {g : β → E} (hg : MemLp g p μb) (hf : MeasurePreserving f μ μb) :
     compMeasurePreserving f hf (hg.toLp g) = (hg.comp_measurePreserving hf).toLp _ := rfl
+
+@[simp]
+theorem compMeasurePreserving_id :
+    compMeasurePreserving (E := E) (p := p) id (.id μb) = AddMonoidHom.id _ := by
+  ext
+  simp
+
+theorem compMeasurePreserving_id_apply (g : Lp E p μb) :
+    compMeasurePreserving id (MeasurePreserving.id μb) g = g := by simp
+
+theorem compMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ} {μc : Measure γ}
+    {f : β → γ} (hf : MeasurePreserving f μb μc) {f' : α → β} (hf' : MeasurePreserving f' μ μb) :
+    compMeasurePreserving (E := E) (p := p) (f ∘ f') (hf.comp hf') =
+    (compMeasurePreserving f' hf').comp (compMeasurePreserving f hf) := by
+  ext g
+  simp [AEEqFun.compMeasurePreserving_comp _ hf hf']
+
+theorem compMeasurePreserving_comp_apply {γ : Type*} {mγ : MeasurableSpace γ} {μc : Measure γ}
+    (g : Lp E p μc) {f : β → γ} (hf : MeasurePreserving f μb μc) {f' : α → β}
+    (hf' : MeasurePreserving f' μ μb) :
+    (compMeasurePreserving (f ∘ f') (hf.comp hf')) g =
+    (compMeasurePreserving f' hf') ((compMeasurePreserving f hf) g) := by
+  simp [compMeasurePreserving_comp hf hf']
+
+theorem compMeasurePreserving_iterate {f : α → α} (hf : MeasurePreserving f μ μ) (n : ℕ) :
+    (compMeasurePreserving (E := E) (p := p) f hf)^[n] =
+    compMeasurePreserving f^[n] (MeasurePreserving.iterate hf n) := by
+  funext
+  induction n with
+  | zero => simp
+  | succ n h =>
+    nth_rewrite 1 [add_comm n 1]
+    simp [Function.iterate_add, h, compMeasurePreserving_comp (hf.iterate n) hf]
 
 variable (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 

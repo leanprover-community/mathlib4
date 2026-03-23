@@ -20,16 +20,16 @@ every element `x` of the Witt vectors `𝕎 R` can be written as the
 ## Main theorems
 
 * `WittVector.dvd_sub_sum_teichmuller_iterateFrobeniusEquiv_coeff` : `p ^ (n + 1)` divides
-`x` minus the summation of the first `n + 1` terms of the Teichmuller series.
+  `x` minus the summation of the first `n + 1` terms of the Teichmuller series.
 * `WittVector.eq_of_apply_teichmuller_eq` : Given a ring `S` such that `p` is nilpotent in `S`
-and two ring maps `f g : 𝕎 R →+* S`, if they coincide on the teichmuller representatives,
-then they are equal.
+  and two ring maps `f g : 𝕎 R →+* S`, if they coincide on the teichmuller representatives,
+  then they are equal.
 
 ## TODO
 Show that the Teichmuller series is unique.
 -/
 
-@[expose] public section
+public section
 
 open Ideal Quotient
 namespace WittVector
@@ -97,7 +97,7 @@ theorem dvd_sub_sum_teichmuller_iterateFrobeniusEquiv_coeff (x : 𝕎 R) (n : �
       ← le_coeff_eq_iff_le_sub_coeff_eq_zero]
   intro i hi
   rw [WittVector.sum_coeff_eq_coeff_sum]
-  · rw [Finset.sum_eq_add_sum_diff_singleton (Finset.mem_Iic.mpr (Nat.lt_succ_iff.mp hi))]
+  · rw [Finset.sum_eq_add_sum_diff_singleton_of_mem (Finset.mem_Iic.mpr (Nat.lt_succ_iff.mp hi))]
     let g := fun x : ℕ ↦ (0 : R)
     rw [Finset.sum_congr rfl (g := g)]
     · simp [g]

@@ -17,7 +17,7 @@ Let `R` have field of fractions `ℚ`. If `v : HeightOneSpectrum R`, then `v.adi
 the uniform space completion of `ℚ` with respect to the `v`-adic valuation.
 On the other hand, `ℚ_[p]` is the `p`-adic numbers, defined as the completion of `ℚ` with respect
 to the `p`-adic norm using the completion of Cauchy sequences. This file constructs continuous
-`ℚ`-algebra` isomorphisms between the two, as well as continuous `ℤ`-algebra isomorphisms for their
+`ℚ`-algebra isomorphisms between the two, as well as continuous `ℤ`-algebra isomorphisms for their
 respective rings of integers.
 
 Isomorphisms are provided in both directions, allowing traversal of the following diagram:
@@ -141,8 +141,6 @@ open Valuation
 noncomputable def withValEquiv (v : HeightOneSpectrum R) :
     WithVal (v.valuation ℚ) ≃ᵤ WithVal (padicValuation (primesEquiv v)) :=
   (valuation_equiv_padicValuation v).uniformEquiv
-    (exists_div_eq_of_surjective (v.valuation_surjective ℚ))
-    (exists_div_eq_of_surjective (surjective_padicValuation (primesEquiv v)))
 
 /-- The continuous `ℚ`-algebra isomorphism between `v.adicCompletion ℚ` and `ℚ_[primesEquiv v]`. -/
 noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum R) :
@@ -159,11 +157,9 @@ noncomputable def adicCompletionIntegers.padicIntEquiv (v : HeightOneSpectrum R)
   __ := let e := (mapRingEquiv _ (withValEquiv v).continuous
           (withValEquiv v).symm.continuous).restrict _ _ fun _ ↦ by
             simpa using (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
-              (v.valuation_surjective ℚ) (surjective_padicValuation _)
         e.trans withValIntegersRingEquiv
   __ := let e := (mapEquiv (withValEquiv v)).subtype fun _ ↦ by
           simpa using (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
-            (v.valuation_surjective ℚ) (surjective_padicValuation _)
         (e.trans withValIntegersUniformEquiv).toHomeomorph
   commutes' := by simp
 

@@ -50,7 +50,7 @@ to approach integration valued in a functional space `ℱ`. More precisely:
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 
