@@ -44,11 +44,13 @@ def IsRegular (c : Cardinal) : Prop :=
 theorem IsRegular.aleph0_le {c : Cardinal} (H : c.IsRegular) : ℵ₀ ≤ c :=
   H.1
 
-theorem IsRegular.cof_eq {c : Cardinal} (H : c.IsRegular) : c.ord.cof = c :=
+theorem IsRegular.cof_ord {c : Cardinal} (H : c.IsRegular) : c.ord.cof = c :=
   (cof_ord_le c).antisymm H.2
 
+@[deprecated (since := "2026-03-22")] alias IsRegular.cof_eq := IsRegular.cof_ord
+
 theorem IsRegular.cof_omega_eq {o : Ordinal} (H : (ℵ_ o).IsRegular) : (ω_ o).cof = ℵ_ o := by
-  rw [← ord_aleph, H.cof_eq]
+  rw [← ord_aleph, H.cof_ord]
 
 theorem IsRegular.pos {c : Cardinal} (H : c.IsRegular) : 0 < c :=
   aleph0_pos.trans_le H.1
@@ -152,45 +154,45 @@ lemma isRegular_lift_iff {κ : Cardinal.{v}} :
 
 theorem lsub_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → Ordinal.lsub.{u, v} f < c.ord :=
-  lsub_lt_ord_lift (by rwa [hc.cof_eq])
+  lsub_lt_ord_lift (by rwa [hc.cof_ord])
 
 theorem lsub_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c.ord) → Ordinal.lsub f < c.ord :=
-  lsub_lt_ord (by rwa [hc.cof_eq])
+  lsub_lt_ord (by rwa [hc.cof_ord])
 
 theorem iSup_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → iSup f < c.ord :=
-  iSup_lt_ord_lift (by rwa [hc.cof_eq])
+  iSup_lt_ord_lift (by rwa [hc.cof_ord])
 
 theorem iSup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c.ord) → iSup f < c.ord :=
-  iSup_lt_ord (by rwa [hc.cof_eq])
+  iSup_lt_ord (by rwa [hc.cof_ord])
 
 theorem blsub_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (ho : Cardinal.lift.{v, u} o.card < c) :
     (∀ i hi, f i hi < c.ord) → Ordinal.blsub.{u, v} o f < c.ord :=
-  blsub_lt_ord_lift (by rwa [hc.cof_eq])
+  blsub_lt_ord_lift (by rwa [hc.cof_ord])
 
 theorem blsub_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (ho : o.card < c) : (∀ i hi, f i hi < c.ord) → Ordinal.blsub o f < c.ord :=
-  blsub_lt_ord (by rwa [hc.cof_eq])
+  blsub_lt_ord (by rwa [hc.cof_ord])
 
 theorem bsup_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} o.card < c) :
     (∀ i hi, f i hi < c.ord) → Ordinal.bsup.{u, v} o f < c.ord :=
-  bsup_lt_ord_lift (by rwa [hc.cof_eq])
+  bsup_lt_ord_lift (by rwa [hc.cof_ord])
 
 theorem bsup_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (hι : o.card < c) : (∀ i hi, f i hi < c.ord) → Ordinal.bsup o f < c.ord :=
-  bsup_lt_ord (by rwa [hc.cof_eq])
+  bsup_lt_ord (by rwa [hc.cof_ord])
 
 theorem iSup_lt_lift_of_isRegular {ι} {f : ι → Cardinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c) → iSup.{max u v + 1, u + 1} f < c :=
-  iSup_lt_lift.{u, v} (by rwa [hc.cof_eq])
+  iSup_lt_lift.{u, v} (by rwa [hc.cof_ord])
 
 theorem iSup_lt_of_isRegular {ι} {f : ι → Cardinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c) → iSup f < c :=
-  iSup_lt (by rwa [hc.cof_eq])
+  iSup_lt (by rwa [hc.cof_ord])
 
 theorem sum_lt_lift_of_isRegular {ι : Type u} {f : ι → Cardinal} {c : Cardinal} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c) : sum f < c :=
@@ -229,7 +231,7 @@ theorem card_biUnion_lt_iff_forall_of_isRegular {α β : Type u} {s : Set α} {t
 theorem nfpFamily_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal → Ordinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) (hc' : c ≠ ℵ₀) (hf : ∀ (i), ∀ b < c.ord, f i b < c.ord) {a}
     (ha : a < c.ord) : nfpFamily f a < c.ord := by
-  apply nfpFamily_lt_ord_lift _ _ hf ha <;> rw [hc.cof_eq]
+  apply nfpFamily_lt_ord_lift _ _ hf ha <;> rw [hc.cof_ord]
   · exact lt_of_le_of_ne hc.1 hc'.symm
   · exact hι
 
@@ -240,23 +242,23 @@ theorem nfpFamily_lt_ord_of_isRegular {ι} {f : ι → Ordinal → Ordinal} {c} 
 
 theorem nfp_lt_ord_of_isRegular {f : Ordinal → Ordinal} {c} (hc : IsRegular c) (hc' : c ≠ ℵ₀)
     (hf : ∀ i < c.ord, f i < c.ord) {a} : a < c.ord → nfp f a < c.ord :=
-  nfp_lt_ord (by rw [hc.cof_eq]; exact lt_of_le_of_ne hc.1 hc'.symm) hf
+  nfp_lt_ord (by rw [hc.cof_ord]; exact lt_of_le_of_ne hc.1 hc'.symm) hf
 
 theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {c} (hc : IsRegular c)
     (hι : lift.{v} #ι < c) (hc' : c ≠ ℵ₀) (hf : ∀ i, ∀ b < c.ord, f i b < c.ord) {a} :
     a < c.ord → derivFamily f a < c.ord := by
   have hω : ℵ₀ < c.ord.cof := by
-    rw [hc.cof_eq]
+    rw [hc.cof_ord]
     exact lt_of_le_of_ne hc.1 hc'.symm
   induction a using limitRecOn with
   | zero =>
     rw [derivFamily_zero]
-    exact nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
+    exact nfpFamily_lt_ord_lift hω (by rwa [hc.cof_ord]) hf
   | succ b hb =>
     intro hb'
     rw [derivFamily_succ]
     exact
-      nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
+      nfpFamily_lt_ord_lift hω (by rwa [hc.cof_ord]) hf
         ((isSuccLimit_ord hc.1).succ_lt (hb ((lt_succ b).trans hb')))
   | limit b hb H =>
     intro hb'
