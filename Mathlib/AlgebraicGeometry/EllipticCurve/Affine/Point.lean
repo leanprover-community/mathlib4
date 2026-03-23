@@ -850,7 +850,8 @@ under the x-coordinate map. We take `![1, 0]` for the point at infinity and `![x
 where `x` is the x-coordinate of `P` for a finite point.
 
 We define it in the general setting of a commutative base ring, even though the definition
-of points in this setting is not really correct. -/
+of points in this setting is not really correct. For Weierstrass curves over fields, this
+gives the correct notion. -/
 noncomputable def xRep : W'.Point → Fin 2 → R
   | 0 => ![1, 0]
   | some x _ _ => ![x, 1]
