@@ -210,7 +210,7 @@ variable (R : Type*) [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFracti
 noncomputable def adicCompletionEquiv (p : Nat.Primes) :
     ℚ_[p] ≃A[ℚ] ((primesEquiv (R := R)).symm p).adicCompletion ℚ := by
   apply (ContinuousAlgEquiv.cast (primesEquiv.apply_symm_apply p).symm).trans
-    (adicCompletion.padicEquiv ((primesEquiv (R := R)).symm p)).symm
+    (adicCompletion.padicEquiv (primesEquiv.symm p)).symm
 
 end Padic
 
