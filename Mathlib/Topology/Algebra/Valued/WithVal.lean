@@ -192,8 +192,7 @@ section CommRing
 
 variable [CommRing R] (v : Valuation R Γ₀)
 
-instance : CommRing (WithVal v) := fast_instance%
-  Equiv.commRing { toFun := ofVal, invFun := toVal v }
+instance : CommRing (WithVal v) := fast_instance% (equiv v).commRing
 
 end CommRing
 
@@ -209,7 +208,7 @@ theorem smul_left_def [SMul R S] (x : WithVal v) (s : S) : x • s = ofVal x •
 instance [SMul R S] [FaithfulSMul R S] : FaithfulSMul (WithVal v) S where
   eq_of_smul_eq_smul h := ofVal_injective v <| FaithfulSMul.eq_of_smul_eq_smul h
 
-instance [SMul S R] : SMul S (WithVal v) := Equiv.smul S { toFun := ofVal, invFun := toVal v }
+instance [SMul S R] : SMul S (WithVal v) := (equiv v).smul S
 
 theorem smul_right_def [SMul S R] (s : S) (x : WithVal v) : s • x = toVal v (s • ofVal x) := rfl
 
@@ -224,7 +223,7 @@ instance {P : Type*} [Ring R] [SMul S P] [SMul R S] [SMul R P]
 
 instance {P : Type*} [Ring S] [SMul P S] [SMul R S] [SMul P R]
     [IsScalarTower P R S] (v : Valuation S Γ₀) : IsScalarTower P R (WithVal v) :=
-  Equiv.isScalarTower P R { toFun := ofVal, invFun := toVal v }
+  (equiv v).isScalarTower P R
 
 instance {P : Type*} [Ring S] [SMul P R] [SMul S R] [SMul P S]
     [IsScalarTower P S R] (v : Valuation S Γ₀) : IsScalarTower P (WithVal v) R where
@@ -237,8 +236,8 @@ set_option backward.isDefEq.respectTransparency false in
 instance [AddCommMonoid S] [Module R S] [Module.Finite R S] :
     Module.Finite (WithVal v) S := .of_restrictScalars_finite R (WithVal v) S
 
-instance [Semiring S] [Module S R] : Module S (WithVal v) := fast_instance%
-  Equiv.module S { toFun := ofVal, invFun := toVal v }
+instance [Semiring S] [Module S R] : Module S (WithVal v) :=
+  fast_instance% (equiv v).module S
 
 @[simp] theorem toVal_smul [SMul S R] (s : S) (r : R) : toVal v (s • r) = s • toVal v r := rfl
 
@@ -286,7 +285,7 @@ section right
 
 variable [CommSemiring R] [Ring S] [Algebra R S] (v : Valuation S Γ₀)
 
-instance : Algebra R (WithVal v) := Equiv.algebra R { toFun := ofVal, invFun := toVal v }
+instance : Algebra R (WithVal v) := (equiv v).algebra R
 
 theorem algebraMap_right_apply (r : R) :
     algebraMap R (WithVal v) r = toVal v (algebraMap R S r) := rfl
@@ -315,12 +314,11 @@ end Algebra
 section Field
 
 instance [DivisionRing R] (v : Valuation R Γ₀) : DivisionRing (WithVal v) := fast_instance%
-  Equiv.divisionRing { toFun := ofVal, invFun := toVal v }
+  (equiv v).divisionRing
 
 variable [Field R] (v : Valuation R Γ₀)
 
-instance : Field (WithVal v) := fast_instance%
-  Equiv.field { toFun := ofVal, invFun := toVal v }
+instance : Field (WithVal v) := fast_instance% (equiv v).field
 
 instance [NumberField R] : NumberField (WithVal v) where
 
