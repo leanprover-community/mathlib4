@@ -990,7 +990,7 @@ instance {α : Type*} {p : α → Prop} [TopologicalSpace α] [WeakEMetricSpace 
     WeakEMetricSpace (Subtype p) :=
   WeakEMetricSpace.induced Subtype.coe_injective ‹_›
 
-@[simp] theorem WeakEDist.self
+theorem WeakEDist.self
     {α : Type*} [TopologicalSpace α] [m : WeakPseudoEMetricSpace α] (a : α) :
     edist a a = 0 := by rw [m.edist_self]
 
