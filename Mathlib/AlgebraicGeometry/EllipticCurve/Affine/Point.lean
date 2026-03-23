@@ -876,8 +876,7 @@ lemma x_eq_iff {P Q : W.Point} {xP yP xQ yQ : F} {hP' : W.Nonsingular xP yP}
   simp_rw [hP, hQ, neg_some, some.injEq, ← and_or_left]
   exact ⟨H, Y_eq_of_X_eq hP'.1 hQ'.1 H⟩
 
-lemma eq_or_eq_neg_of_xRep_eq_xRep {P Q : W.Point} (h : P.xRep = Q.xRep) :
-    P = Q ∨ P = -Q := by
+lemma eq_or_eq_neg_of_xRep_eq_xRep {P Q : W.Point} (h : P.xRep = Q.xRep) : P = Q ∨ P = -Q := by
   match P, Q with
   | 0, 0 => exact .inl rfl
   | 0, some .. => simp [xRep] at h
@@ -886,8 +885,7 @@ lemma eq_or_eq_neg_of_xRep_eq_xRep {P Q : W.Point} (h : P.xRep = Q.xRep) :
     simp only [xRep, Matrix.vecCons_inj, and_true] at h
     exact (x_eq_iff rfl rfl).mp h
 
-lemma xRep_eq_xRep_iff {P Q : W.Point} :
-    P.xRep = Q.xRep ↔ P = Q ∨ P = -Q := by
+lemma xRep_eq_xRep_iff {P Q : W.Point} : P.xRep = Q.xRep ↔ P = Q ∨ P = -Q := by
   refine ⟨eq_or_eq_neg_of_xRep_eq_xRep, fun H ↦ ?_⟩
   rcases H with rfl | rfl <;> simp
 
