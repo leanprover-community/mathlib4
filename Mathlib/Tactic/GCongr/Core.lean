@@ -13,7 +13,6 @@ public import Mathlib.Order.Defs.Unbundled
 public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.GCongr.ForwardAttr
 public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.TypeStar
 
 import all Lean.Meta.Tactic.Apply
 
