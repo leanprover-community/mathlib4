@@ -124,6 +124,10 @@ theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (ℵ_ (succ o)) :=
 theorem cof_omega_add_one (o : Ordinal) : (ω_ (o + 1)).cof = ℵ_ (o + 1) :=
   (isRegular_aleph_add_one o).cof_omega_eq
 
+@[simp]
+theorem cof_omega_one : (ω_ 1).cof = ℵ_ 1 := by
+  simpa using cof_omega_add_one 0
+
 lemma IsRegular.lift {κ : Cardinal.{v}} (h : κ.IsRegular) :
     (Cardinal.lift.{u} κ).IsRegular := by
   obtain ⟨h₁, h₂⟩ := h
