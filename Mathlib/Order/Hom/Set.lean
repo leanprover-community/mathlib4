@@ -229,9 +229,8 @@ end OrderIso
 
 section BooleanAlgebra
 
-variable [BooleanAlgebra α]
+variable (α) [BooleanAlgebra α]
 
-variable (α) in
 /-- Taking complements as an order isomorphism to the order dual. -/
 @[simps!]
 def OrderIso.compl : α ≃o αᵒᵈ where
@@ -243,5 +242,8 @@ def OrderIso.compl : α ≃o αᵒᵈ where
 
 theorem compl_strictAnti : StrictAnti (compl : α → α) :=
   (OrderIso.compl α).strictMono
+
+theorem compl_antitone : Antitone (compl : α → α) :=
+  (OrderIso.compl α).monotone
 
 end BooleanAlgebra
