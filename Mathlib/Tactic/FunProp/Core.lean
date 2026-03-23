@@ -26,6 +26,8 @@ namespace Meta.FunProp
 
 def funProp' (e : Expr) : FunPropM (Option Result) := do
   let some prf ← funProp e | return none
+  if ¬(← isDefEq e (← inferType prf)) then
+    throwError "failed to assign metavariables in the goal"
   return some {
     proof := prf
     outputs := #[] -- todo: correctly set this!
@@ -266,8 +268,7 @@ def applyPiRule (goal : Goal) : FunPropM (Option Result) := do
     return none
 
   for thm in thms do
-    let .pi id_f := thm.thmArgs | return none
-    if let some r ← tryTheoremWithHint? goal (.decl thm.thmName) #[(id_f, goal.mainFun)] then
+    if let some r ← tryTheoremWithHint? goal (.decl thm.thmName) #[] then
       return r
 
   return none
@@ -548,8 +549,9 @@ def fvarAppCase (goal : Goal) (fData : FunctionData) :
       return r
 
     if let some f ← fData.unfoldHeadFVar? then
-      let e' := goal.expr.setArg goal.decl.funArgId f
-      if let some r ← funProp' e' then
+      trace[Meta.Tactic.fun_prop] m!"unfolded local function {fData.fn}, {goal.mainFun} ==> {f}"
+      let goal' ← goal.updateMainFun f
+      if let some r ← funProp' (← goal'.mkFreshExpr).2 then
         return r
 
     if (← fData.isMorApplication) != .none then
@@ -641,14 +643,14 @@ partial def main (goal : Goal) : FunPropM (Option Result) := do
   match ← getFunctionData? goal.mainFun (← unfoldNamePred) with
   | .letE f =>
     trace[Debug.Meta.Tactic.fun_prop] "let case on {← ppExpr f}"
-    let goal := goal.updateMainFun f -- update goal with reduced f
+    let goal ← goal.updateMainFun f -- update goal with reduced f
     letCase goal goal.mainFun
   | .lam f =>
     trace[Debug.Meta.Tactic.fun_prop] "pi case on {← ppExpr f}"
-    let goal := goal.updateMainFun f -- update goal with reduced f
+    let goal ← goal.updateMainFun f -- update goal with reduced f
     applyPiRule goal
   | .data fData =>
-    let goal := goal.updateMainFun (← fData.toExpr) -- update goal with reduced f
+    let goal ← goal.updateMainFun (← fData.toExpr) -- update goal with reduced f
 
     if fData.isIdentityFun then
       applyIdRule goal
@@ -703,6 +705,8 @@ partial def funPropImpl (e : Expr) : FunPropM (Option Expr) := do
       let some goal ← getFunPropGoal? e | return none
 
       if let some r ← main goal then
+        if ¬(← isDefEq e (← inferType r.proof)) then
+          throwError m!"Failed to fill in metavariables in {e} with\n{← inferType r.proof}"
         return some r.proof
         -- cacheResult e r
       else

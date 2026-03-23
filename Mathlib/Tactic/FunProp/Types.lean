@@ -8,6 +8,7 @@ module
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 public import Mathlib.Tactic.FunProp.FunctionData
 public import Mathlib.Tactic.FunProp.Decl
+public import Qq
 
 /-!
 ## `funProp`
@@ -147,26 +148,69 @@ def Goal.mkFreshExpr (goal : Goal) : MetaM (Array Expr × Expr) := do
   return (xs, b)
 
 -- e.setArg funPropDecl.funArgId b
-def Goal.updateMainFun (goal : Goal) (f : Expr) : Goal :=
-  { goal with
-    expr := goal.expr.setArg goal.decl.funArgId f
+def Goal.updateMainFun (goal : Goal) (f : Expr) : MetaM Goal := do
+  let expr ← lambdaTelescope goal.expr fun xs e =>
+    mkLambdaFVars xs (e.setArg goal.decl.funArgId f)
+  return { goal with
+    expr
     mainFun := f }
+
+/-- result of abstractAppArgsWithMVars -/
+structure AbstractArgsMVarsResult where
+  args : Array Expr
+  expr : Expr
+  deriving Inhabited, BEq
+
+
+/-- Abstracts arguments containing metavariables in an application expression into lambda-bound
+variables.
+
+Given an expression `f a₁ a₂ ... aₙ` where some arguments contain metavariables, this function
+will return:
+  - `args`: subset of of `aᵢ` that contain metavariables
+  - `expr`: `f` abstracted over all the arguments containing metavariables
+
+**Example:**
+```lean
+Input:  (1 : Nat) + (2 + ?n)
+Output: expr := fun a => 1 + a
+        args := #[2 + ?n] -/
+def abstractAppArgsWithMVars (e : Expr) : MetaM AbstractArgsMVarsResult := do
+  if ¬e.hasExprMVar then
+    return { args := #[], expr := e }
+
+  let (fn, args) := e.withApp fun fn args => (fn, args)
+  let some i := args.findIdx? fun arg => arg.hasExprMVar
+    | throwError m!"unexpected metavariable in {e}"
+  let fn := fn.beta args[0:i]
+  let args := args[i:].toList
+  go (← inferType fn) fn args #[] #[]
+where
+  go (type : Expr) (fn : Expr) (args : List Expr) (margs : Array Expr) (vars : Array Expr) :
+    MetaM AbstractArgsMVarsResult :=
+  match type, args with
+  | .forallE n t b _, arg :: args => do
+    if ¬arg.hasExprMVar ∧ (← isDefEq t (← inferType arg)) then
+      go (b.instantiate1 arg) (fn.app arg) args margs vars
+    else
+      withLocalDeclD n t fun var =>
+        go (b.instantiate1 var) (fn.app var) args (margs.push arg) (vars.push var)
+  | _, _ => do
+    return {
+      args := vars
+      expr := ← mkLambdaFVars vars fn
+    }
 
 def getFunPropGoal? (e : Expr) : MetaM (Option Goal) := do
   let e ← instantiateMVars e
   -- todo: correct implementation
   let some (decl, f) ← getFunProp? e | return none
 
-  let mut expr := e
-  let mut numOutParams := 0
-  if e.hasExprMVar then
-    let r ← abstractMVars e (levels := false)
-    expr := r.expr
-    numOutParams := r.numMVars
+  let r ← abstractAppArgsWithMVars e
 
   return some {
-    numOutParams
-    expr
+    numOutParams := r.args.size
+    expr := r.expr
     decl
     mainFun := f
   }
