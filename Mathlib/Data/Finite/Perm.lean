@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Data.Fintype.Perm
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 public import Mathlib.SetTheory.Cardinal.Finite
 
 /-! # Properties of `Equiv.Perm` on `Finite` types
@@ -25,4 +24,3 @@ theorem card_perm {α : Type*} [Finite α] : Nat.card (Equiv.Perm α) = (Nat.car
   rw [card_eq_fintype_card, card_eq_fintype_card, Fintype.card_perm]
 
 end Nat
-
