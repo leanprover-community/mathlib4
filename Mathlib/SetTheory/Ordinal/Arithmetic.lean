@@ -1139,7 +1139,7 @@ theorem isSuccLimit_omega0 : IsSuccLimit ω := by
   exact natCast_lt_omega0 (n + 1)
 
 @[simp]
-theorem isSuccPrelimit_omega0 : IsSuccLimit ω :=
+theorem isSuccPrelimit_omega0 : IsSuccPrelimit ω :=
   isSuccLimit_omega0.isSuccPrelimit
 
 theorem omega0_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
