@@ -199,8 +199,7 @@ lemma existsUnique_of_mem_le (h : P ≤ Q) (hx : x ∈ P) :
 /-- The top partition of `s` is the partition with the single part `s`. -/
 instance : OrderTop (Partition s) where
   top := removeBot {s} (sSupIndep_singleton s) sSup_singleton
-  le_top P x hxP := by
-    simp [P.ne_bot_of_mem' hxP, P.le_of_mem hxP]
+  le_top P x hxP := by simp [P.ne_bot_of_mem' hxP, P.le_of_mem hxP]
 
 lemma top_def : (⊤ : Partition s) = removeBot {s} (sSupIndep_singleton s) sSup_singleton := rfl
 
