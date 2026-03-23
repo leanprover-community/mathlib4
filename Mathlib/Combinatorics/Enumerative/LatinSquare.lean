@@ -5,20 +5,10 @@ Authors: Christopher J. R. Lloyd, George H. Seelinger
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Data.Finset.Image
-public import Mathlib.Data.Finset.Card
-public import Mathlib.Data.Finset.Defs
-public import Mathlib.Data.Fintype.Basic
-public import Mathlib.Tactic.Group
-public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Data.ZMod.Basic
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic
-public import Mathlib.Algebra.Group.Fin.Basic
-public import Mathlib.Combinatorics.Hall.Basic
-public import Mathlib.LinearAlgebra.Matrix.Defs
-public import Mathlib.Logic.Equiv.Embedding
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Combinatorics.Hall.Basic
+public import Mathlib.Data.ZMod.Defs
+public import Mathlib.LinearAlgebra.Matrix.Defs
 
 /-!
 # LatinSquare
@@ -363,7 +353,7 @@ lemma row_entry_to_column_entry
   rw [forall_existsUnique_iff] at hrow
   exact hrow
 
-/-- Given an injective map f : k → k' such that k' has cardinality one mroe than k,
+/-- Given an injective map f : k → k' such that k' has cardinality one more than k,
     there is a unique element of k' not in the image of f. -/
 lemma unique_missed_element
     {k : Type*} [Fintype k]
@@ -685,3 +675,4 @@ theorem latin_rectangle_extends_to_latin_square
 end Completion
 
 end LatinSquare
+#min_imports
