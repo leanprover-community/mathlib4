@@ -227,7 +227,6 @@ lemma cyclesIso_hom_i (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n�
       (X.shortComplex f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂).iCycles :=
   ShortComplex.LeftHomologyData.cyclesIso_hom_comp_i _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The epimorphism `Z^{n₁}(f₁, f₂) ⟶ E^{n₁}(f₁, f₂, f₃)`. -/
 noncomputable def πE (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     X.cycles f₁ f₂ n₁ ⟶ X.E f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂ :=

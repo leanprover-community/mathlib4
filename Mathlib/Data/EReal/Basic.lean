@@ -32,7 +32,7 @@ noncomputable section
 
 /-- The type of extended real numbers `[-∞, ∞]`, constructed as `WithBot (WithTop ℝ)`. -/
 def EReal := WithBot (WithTop ℝ)
-  deriving Bot, Zero, One, Nontrivial, AddMonoid, PartialOrder, AddCommMonoid
+  deriving Bot, Zero, One, Nontrivial, AddMonoid, AddCommMonoid, PartialOrder
 
 instance : ZeroLEOneClass EReal := inferInstanceAs (ZeroLEOneClass (WithBot (WithTop ℝ)))
 instance : SupSet EReal := inferInstanceAs (SupSet (WithBot (WithTop ℝ)))
@@ -115,13 +115,26 @@ theorem coe_one : ((1 : ℝ) : EReal) = 1 := rfl
 
 /-- A recursor for `EReal` in terms of the coercion.
 
-When working in term mode, note that pattern matching can be used directly. -/
+When working in term mode, note that pattern matching can be used directly,
+although this is prone to leaking the implementation details in terms of `Option`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 protected def rec {motive : EReal → Sort*}
     (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) : ∀ a : EReal, motive a
   | ⊥ => bot
   | (a : ℝ) => coe a
   | ⊤ => top
+
+@[simp] theorem rec_bot {motive : EReal → Sort*}
+    (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) : EReal.rec bot coe top ⊥ = bot :=
+  rfl
+
+@[simp] theorem rec_top {motive : EReal → Sort*}
+    (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) : EReal.rec bot coe top ⊤ = top :=
+  rfl
+
+@[simp] theorem rec_coe {motive : EReal → Sort*}
+    (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) (a : ℝ) :
+    EReal.rec bot coe top a = coe a := rfl
 
 protected lemma «forall» {p : EReal → Prop} : (∀ r, p r) ↔ p ⊥ ∧ p ⊤ ∧ ∀ r : ℝ, p r where
   mp h := ⟨h _, h _, fun _ ↦ h _⟩
@@ -502,6 +515,7 @@ lemma preimage_coe_Ioi (x : ℝ) : Real.toEReal ⁻¹' Ioi x = Ioi x := by
   refine preimage_comp.trans ?_
   simp only [WithBot.preimage_coe_Ioi, WithTop.preimage_coe_Ioi]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma preimage_coe_Ioi_bot : Real.toEReal ⁻¹' Ioi ⊥ = univ := by
   change (WithBot.some ∘ WithTop.some) ⁻¹' (Ioi ⊥) = _
@@ -520,6 +534,7 @@ lemma preimage_coe_Iio (y : ℝ) : Real.toEReal ⁻¹' Iio y = Iio y := by
   refine preimage_comp.trans ?_
   simp only [WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma preimage_coe_Iio_top : Real.toEReal ⁻¹' Iio ⊤ = univ := by
   change (WithBot.some ∘ WithTop.some) ⁻¹' (Iio (WithBot.some ⊤)) = _
@@ -747,7 +762,6 @@ lemma coe_toENNReal {x : EReal} (hx : 0 ≤ x) : (x.toENNReal : EReal) = x := by
   simp only [coe_ennreal_ofReal, hx, toReal_nonneg, max_eq_left]
   exact coe_toReal h_top fun _ ↦ by simp_all only [le_bot_iff, zero_ne_bot]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coe_toENNReal_eq_max {x : EReal} : x.toENNReal = max 0 x := by
   rcases le_total 0 x with (hx | hx)
   · rw [coe_toENNReal hx, max_eq_right hx]

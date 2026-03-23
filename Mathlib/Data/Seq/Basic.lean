@@ -906,6 +906,7 @@ theorem Pairwise_drop {R : α → α → Prop} {s : Seq α} (h : s.Pairwise R) {
 
 end Pairwise
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Coinductive principle for proving `b.length' ≤ a.length'` for two sequences `a` and `b`. -/
 theorem at_least_as_long_as_coind {a : Seq α} {b : Seq β}
     (motive : Seq α → Seq β → Prop) (base : motive a b)

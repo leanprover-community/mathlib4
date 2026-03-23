@@ -642,6 +642,7 @@ instance : TopologicalSpace RealCopy' := inferInstanceAs (TopologicalSpace ℝ)
 variable {x y : RealCopy'} {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}
   [Fact (x < y)]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc x y) :=
   instIccChartedSpace x y
 
