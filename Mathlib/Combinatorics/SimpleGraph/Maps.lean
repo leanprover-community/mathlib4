@@ -362,6 +362,9 @@ abbrev comp (f' : G' →g G'') (f : G →g G') : G →g G'' :=
 theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
 
+theorem comp_comap_ofLE (f : H →g G) : f = .comp (.comap f G) (.ofLE f.le_comap) :=
+  rfl
+
 end Hom
 
 namespace Embedding
