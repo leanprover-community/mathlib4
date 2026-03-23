@@ -17,30 +17,27 @@ public import Mathlib.Tactic.Group
 public import Mathlib.Tactic.IntervalCases
 
 /-!
-# Cyclic groups
-
-A group `G` is called cyclic if there exists an element `g : G` such that every element of `G` is of
-the form `g ^ n` for some `n : ℕ`. This file only deals with the predicate on a group to be cyclic.
-For the concrete cyclic group of order `n`, see `Data.ZMod.Basic`.
-
-## Main definitions
-
-* `IsCyclic` is a predicate on a group stating that the group is cyclic.
+# Further properties of cyclic groups
 
 ## Main statements
 
-* `isCyclic_of_prime_card` proves that a finite group of prime order is cyclic.
 * `isSimpleGroup_of_prime_card`, `IsSimpleGroup.isCyclic`,
   and `IsSimpleGroup.prime_card` classify finite simple abelian groups.
+* `IsCyclic.card_orderOf_eq_totient` computes the number of elements of given order
+  in a cyclic group.
 * `IsCyclic.exponent_eq_card`: For a finite cyclic group `G`, the exponent is equal to
   the group's cardinality.
 * `IsCyclic.exponent_eq_zero_of_infinite`: Infinite cyclic groups have exponent zero.
 * `IsCyclic.iff_exponent_eq_card`: A finite commutative group is cyclic iff its exponent
   is equal to its cardinality.
+* `commGroupOfCyclicCenterQuotient`: if the quotient of a group by
+  its center is cyclic, then the group is commutative.
+* `Group.isCyclic_prod_iff`: the product of two finite cyclic groups is cyclic
+  if and only if their orders are relatively prime.
 
 ## Tags
 
-cyclic group
+cyclic group, exponent, totient
 -/
 
 @[expose] public section

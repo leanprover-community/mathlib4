@@ -5,39 +5,15 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Group.TypeTags.Finite
-public import Mathlib.Algebra.Order.Hom.TypeTags
--- public import Mathlib.Data.Nat.Totient
-public import Mathlib.Data.ZMod.Aut
 public import Mathlib.Data.ZMod.QuotientGroup
--- public import Mathlib.GroupTheory.Exponent
-public import Mathlib.GroupTheory.Subgroup.Simple
--- public import Mathlib.Tactic.Group
--- public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Cyclic groups
 
-A group `G` is called cyclic if there exists an element `g : G` such that every element of `G` is of
-the form `g ^ n` for some `n : ℕ`. This file only deals with the predicate on a group to be cyclic.
+`IsCyclic` is a predicate on a group stating that the group is cyclic.
 For the concrete cyclic group of order `n`, see `Data.ZMod.Basic`.
 
-## Main definitions
-
-* `IsCyclic` is a predicate on a group stating that the group is cyclic.
-
-## Main statements
-
 * `isCyclic_of_prime_card` proves that a finite group of prime order is cyclic.
-* `isSimpleGroup_of_prime_card`, `IsSimpleGroup.isCyclic`,
-  and `IsSimpleGroup.prime_card` classify finite simple abelian groups.
-* `IsCyclic.exponent_eq_card`: For a finite cyclic group `G`, the exponent is equal to
-  the group's cardinality.
-* `IsCyclic.exponent_eq_zero_of_infinite`: Infinite cyclic groups have exponent zero.
-* `IsCyclic.iff_exponent_eq_card`: A finite commutative group is cyclic iff its exponent
-  is equal to its cardinality.
-
-## Tags
 
 cyclic group
 -/
