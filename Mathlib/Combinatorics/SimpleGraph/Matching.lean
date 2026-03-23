@@ -903,7 +903,7 @@ lemma matchingNumber.of_subgraph {G : SimpleGraph V} (H : Subgraph G) :
   simp only [this, Set.encard_empty, zero_le]
 
 lemma matchingNumber.of_matching (G : SimpleGraph V) (M : Subgraph G) (hM : M.IsMatching) :
-    matchingNumber M.coe = M.edgeSet.encard := by
+    M.coe.matchingNumber = M.edgeSet.encard := by
   rw [matchingNumber.of_subgraph]
   refine le_antisymm (iSup₂_le ?_) <| le_iSup₂_of_le M (le_refl M) <| le_iSup_iff.mpr fun _ a ↦ a hM
   simp only [iSup_le_iff]
