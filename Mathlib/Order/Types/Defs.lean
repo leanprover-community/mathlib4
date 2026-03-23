@@ -265,10 +265,16 @@ theorem lift_lift.{u_1} (o : OrderType.{u_1}) : lift.{u} (lift.{v} o) = lift.{ma
   inductionOn o fun _ ↦
     (ULift.orderIso.trans <| ULift.orderIso.trans ULift.orderIso.symm).type_congr
 
-theorem nonempty_toType_lift_orderIso (o : OrderType.{u}) :
-    Nonempty ((lift.{v} o).ToType ≃o o.ToType) := by
-  rw [← type_toType o, ← type_uLift, type_toType]
-  exact ⟨(Nonempty.some <| type_eq_type.mp <| type_toType (type _)).trans ULift.orderIso⟩
+theorem lift_type_eq_iff : lift (type α) = lift (type β) ↔ Nonempty (α ≃o β) := by
+  refine ⟨fun h ↦ ?_, fun ⟨h⟩ ↦ congrArg lift <| type_congr h⟩
+  rw [← type_uLift, ← type_uLift, type_eq_type] at h
+  exact ⟨(ULift.orderIso.symm.trans h.some).trans ULift.orderIso⟩
+
+theorem lift_type_lt_iff : lift (type α) ≤ lift (type β) ↔ Nonempty (α ↪o β) := by
+ refine ⟨fun h ↦ ?_, fun ⟨h⟩ ↦ type_le_type <| (ULift.orderIso.toOrderEmbedding.trans h).trans
+   ULift.orderIso.symm.toOrderEmbedding⟩
+ rw [← type_uLift, ← type_uLift, type_le_type_iff] at h
+ exact ⟨(ULift.orderIso.symm.toOrderEmbedding.trans h.some).trans ULift.orderIso.toOrderEmbedding⟩
 
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
 @[expose]
