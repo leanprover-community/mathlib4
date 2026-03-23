@@ -833,6 +833,38 @@ example {α β γ δ : Type _} (x : α) (e₁ : α ≃ β) (e₂ : γ ≃ δ) (z
 
 end PrefixProjectionNames
 
+namespace DsimpLhs
+
+structure Fun (α : Sort _) (β : Sort _) where
+  toFun : α → β
+
+instance {α β} : CoeFun (Fun α β) (fun _ ↦ α → β) := ⟨Fun.toFun⟩
+
+def wrap {α β : Sort _} (f : α → β) : α → β := f
+
+@[simp]
+lemma wrap_eq {α β : Sort _} (f : α → β) : wrap f = f := rfl
+
+/-- Intentionally wrapped custom projection. -/
+def Fun.Simps.toFun' {α β : Sort _} (f : Fun α β) : α → β := wrap f.toFun
+
+initialize_simps_projections Fun (toFun → toFun')
+
+@[simps]
+def succFun : Fun Nat Nat := ⟨fun x ↦ x + 1⟩
+
+example (x : Nat) : succFun x = x + 1 := by
+  fail_if_success simp
+  rfl
+
+@[simps +dsimpLhs]
+def succFun' : Fun Nat Nat := ⟨Nat.succ⟩
+
+example (x : Nat) : succFun' x = x + 1 := by
+  simp
+
+end DsimpLhs
+
 
 -- test transparency setting
 structure SetPlus (α : Type) where
