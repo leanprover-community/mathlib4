@@ -279,6 +279,13 @@ def addEquiv [Add R] [Add A] : Unitization R A ≃+ R × A where
   toEquiv := equiv
   map_add' _ _ := rfl
 
+/-- The identity map between `Unitization R A` and `R × A` as a `LinearEquiv`. -/
+def linearEquiv [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R] [Module S A] :
+    Unitization R A ≃ₗ[S] R × A where
+  toEquiv := equiv
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
 @[simp]
 theorem fst_zero [Zero R] [Zero A] : (0 : Unitization R A).fst = 0 :=
   rfl
@@ -381,12 +388,11 @@ theorem ind {R A} [AddZeroClass R] [AddZeroClass A] {P : Unitization R A → Pro
   inl_fst_add_inr_snd_eq x ▸ inl_add_inr x.fst x.snd
 
 @[ext]
-theorem linearMap_ext {N} [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [AddCommMonoid N]
+theorem linearMap_ext {N} [CommSemiring S] [AddCommMonoid R] [AddCommMonoid A] [AddCommMonoid N]
     [Module S R] [Module S A] [Module S N] ⦃f g : Unitization R A →ₗ[S] N⦄
-    (hl : ∀ r, f (inl r) = g (inl r)) (hr : ∀ a : A, f a = g a) : f = g := by
-  ext x
-  induction x using ind with
-  | inl_add_inr r a => simp [map_add, hl, hr]
+    (hl : ∀ r, f (inl r) = g (inl r)) (hr : ∀ a : A, f a = g a) : f = g :=
+  linearEquiv.arrowCongr (.refl ..) |>.injective <|
+    LinearMap.prod_ext (LinearMap.ext hl) (LinearMap.ext hr)
 
 variable (R A)
 
@@ -500,9 +506,7 @@ instance instMonoid [CommMonoid R] [NonUnitalSemiring A] [DistribMulAction R A]
   { Unitization.instMulOneClass with
     mul_assoc x y z := Unitization.ext (mul_assoc ..) <| by
       simp only [snd_mul, fst_mul, smul_add, smul_smul, add_mul, smul_mul_assoc, mul_assoc, mul_add,
-        mul_smul_comm]
-      rw [mul_comm z.fst x.fst]
-      rw [mul_comm z.fst y.fst]
+        mul_smul_comm, mul_comm z.fst x.fst, mul_comm z.fst y.fst]
       abel }
 
 instance instCommMonoid [CommMonoid R] [NonUnitalCommSemiring A] [DistribMulAction R A]
