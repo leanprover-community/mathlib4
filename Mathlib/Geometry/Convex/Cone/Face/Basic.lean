@@ -22,10 +22,9 @@ in `F` are also in `F`.
 
 ## Implementation notes
 
-* We prove that every face is an extreme set of its cone. We do not use `IsExtreme` as a
-  definition because this is an affine notion and does not allow the flexibility necessary to
-  deal wth cones over general rings. E.g. the cone of positive integers has no proper subset that
-  are extreme.
+* We do not use `IsExtreme` as a definition because this is an affine notion and does not allow the
+  flexibility necessary to deal wth cones over general rings. E.g. the cone of positive integers has
+  no proper subset that are extreme. We prove that every face is an extreme set of its cone.
 * Most results proven over a field hold more generally over an Archimedean ring. In particular,
   `iff_mem_of_add_mem` holds whenever for every `x ∈ R` there is a `y ∈ R` with `1 ≤ x * y`.
 
@@ -78,7 +77,7 @@ protected theorem trans (h₁ : F₂.IsFaceOf F₁) (h₂ : F₁.IsFaceOf C) : F
   exact h₁.2 (h₂.2 hx hy a0 b0 (h₁.1 h)) (h₂.2 hy hx b0 a0 (by rw [add_comm]; exact h₁.1 h)) a0 b0 h
 
 /-- A face of a cone is a face of another if and only if they are contained in each other. -/
-theorem iff_le_of_isFaceOf (h₁ : F₁.IsFaceOf C) (h₂ : F₂.IsFaceOf C) :
+theorem isFaceOf_iff_le (h₁ : F₁.IsFaceOf C) (h₂ : F₂.IsFaceOf C) :
     F₁.IsFaceOf F₂ ↔ F₁ ≤ F₂ := by
   refine ⟨IsFaceOf.le, fun h => ?_⟩
   rw [isFaceOf_iff_mem_of_smul_add_smul_mem] at ⊢ h₁

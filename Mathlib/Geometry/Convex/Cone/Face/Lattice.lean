@@ -17,8 +17,6 @@ of a pointed cone `C`.
 ## Main definitions
 
 * `Face C`: the face lattice of `C`.
-* `Face.instMin`: minimum operation on `Face C`.
-* `Face.instCompleteLattice`: the face lattice of a pointed cone.
 * `Face.prod`: the product of two faces of pointed cones, together with projections `fst` and `snd`.
 * `Face.prodOrderIso`: proves that the face lattices of a product cone is the product of the face
   lattices of the individual cones.
@@ -59,7 +57,8 @@ instance : PartialOrder (Face C) := .ofSetLike (Face C) M
 theorem ext (h : ∀ x, x ∈ F₁ ↔ x ∈ F₂) : F₁ = F₂ := SetLike.ext h
 
 @[simp]
-theorem coe_le_iff {F₁ F₂ : Face C} : F₁.toPointedCone ≤ F₂.toPointedCone ↔ F₁ ≤ F₂ := by
+theorem toPointedCone_le_toPointedCone {F₁ F₂ : Face C} :
+    F₁.toPointedCone ≤ F₂.toPointedCone ↔ F₁ ≤ F₂ := by
   constructor <;> intro h x xF₁ <;> exact h xF₁
 
 @[simp]
@@ -76,8 +75,8 @@ instance : Min (Face C) where
 instance : InfSet (Face C) where
   sInf S :=
     { toSubmodule := C ⊓ sInf {s.1 | s ∈ S}
-      isFaceOf := by
-        refine ⟨fun _ sm => sm.1, ?_⟩
+      isFaceOf.le _ sm := sm.1,
+      isFaceOf.mem_of_smul_add_mem := by
         simp only [Submodule.mem_inf, Submodule.mem_sInf, Set.mem_setOf_eq, forall_exists_index,
           and_imp, forall_apply_eq_imp_iff₂]
         intros _ _ a xc yc a0 _ h
@@ -94,11 +93,11 @@ instance : CompleteSemilatticeInf (Face C) where
   __ := instSemilatticeInf
   isGLB_sInf S := by
     constructor <;> intro f fS
-    · rw [← coe_le_iff]
+    · rw [← toPointedCone_le_toPointedCone]
       refine inf_le_of_right_le ?_
       simpa [LE.le] using fun _ xs => xs f fS
     · simp only [sInf, Set.mem_setOf_eq, Set.iInter_exists, Set.biInter_and',
-      Set.iInter_iInter_eq_right, ← coe_le_iff, toPointedCone, le_inf_iff]
+      Set.iInter_iInter_eq_right, ← toPointedCone_le_toPointedCone, toPointedCone, le_inf_iff]
       refine ⟨f.isFaceOf.le, ?_⟩
       simpa [LE.le] using fun ⦃x⦄ a _ i ↦ (mem_coe x).mp (fS i a)
 
@@ -118,8 +117,7 @@ section Field
 variable [Field R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M]
   [AddCommGroup N] [Module R N] {C C₁ : PointedCone R M} {C₂ : PointedCone R N}
 
-/-- The lineality space of a cone `C` as a face of `C`. It is contained in all faces of `C`. This is
-an abbrev for `⊥`. -/
+/-- The lineality space of a cone `C` as a face of `C`. It is contained in all faces of `C`. -/
 def lineal : Face C := ⟨_, .lineal C⟩
 
 /-- The lineality space of `C` is its bottom face. -/
@@ -183,7 +181,7 @@ def prodOrderIso (C : PointedCone R M) (D : PointedCone R N) :
   map_rel_iff' := by
     simp only [Equiv.coe_fn_mk, ge_iff_le, Prod.mk_le_mk]
     intro F₁ F₂; constructor <;> intro a
-    · simpa [fst_prod_snd, coe_le_iff] using Face.prod_mono a.1 a.2
+    · simpa [fst_prod_snd, toPointedCone_le_toPointedCone] using Face.prod_mono a.1 a.2
     · constructor; all_goals
       try simpa only [prod_left, prod_right]
       exact fun _ d => Submodule.map_mono a d
