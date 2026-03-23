@@ -555,7 +555,7 @@ theorem _root_.Polynomial.Irreducible.natDegree_dvd_finrank {f : K[X]} (hi : Irr
   rw [← f.degree_map (algebraMap K L)] at this
   obtain ⟨x, hx⟩ := hs.exists_eval_eq_zero this
   rw [eval_map_algebraMap] at hx
-  have key := minpoly.eq_minpoly_of_irreducible hi hx
+  have key := minpoly.Irreducible.eq_minpoly hi hx
   replace hi := hi.ne_zero
   rw [key, natDegree_C_mul (leadingCoeff_ne_zero.mpr hi)]
   apply minpoly.degree_dvd

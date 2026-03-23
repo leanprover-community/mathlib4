@@ -154,7 +154,7 @@ theorem Irreducible.natDegree_dvd_of_dvd_X_pow_card_pow_sub_X {n : ℕ} {f : K[X
   have : Fact (Nat.Prime p) := ⟨CharP.char_is_prime K p⟩
   have : NeZero n := ⟨hn⟩
   rw [← finrank_extension K p n]
-  apply natDegree_dvd_finrank_of_irreducible hi
+  apply Irreducible.natDegree_dvd_finrank hi
   refine Splits.of_dvd ?_ ?_ (map_dvd (algebraMap K (Extension K p n)) h)
   · apply IsSplittingField.splits
   · exact map_ne_zero (X_pow_card_pow_sub_X_ne_zero K hn Finite.one_lt_card)
