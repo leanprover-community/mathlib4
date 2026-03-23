@@ -174,10 +174,7 @@ def renameLatinRectangle
       ext
       simp
     rw [h_comp]
-    exact Function.Injective.comp
-      (Equiv.bijective h).1
-      (Function.Injective.comp h'
-      (Equiv.bijective f.symm).1)
+    exact h.injective.comp (h'.comp f.symm.injective)
   m_le_n := by
     have ineq := A.m_le_n
     have f' : Fintype.card m = Fintype.card m' := Fintype.card_congr f
