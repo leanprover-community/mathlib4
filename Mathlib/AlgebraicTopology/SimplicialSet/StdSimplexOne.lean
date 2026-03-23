@@ -36,7 +36,7 @@ def objMk₁ {n : ℕ} (i : Fin (n + 2)) : (Δ[1] _⦋n⦌ : Type u) :=
         split_ifs <;> grind }
 
 @[local grind =]
-private lemma objMk₁_apply {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) : 
+private lemma objMk₁_apply {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) :
     dsimp% objMk₁ i j = if j.castSucc < i then 0 else 1 := rfl
 
 lemma objMk₁_apply_eq_zero_iff {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) :
@@ -85,8 +85,7 @@ lemma σ_objMk₁_of_le {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : i ≤
   change objMk₁.{u} i (j.predAbove k) = _
   by_cases! hk : k < i
   · grind [Fin.castPred, Fin.predAbove_of_le_castSucc, objMk₁_of_castSucc_lt]
-  · simp at hk
-    rw [objMk₁_of_le_castSucc, objMk₁_of_le_castSucc _ _ (by simpa)]
+  · rw [objMk₁_of_le_castSucc, objMk₁_of_le_castSucc _ _ (by simpa)]
     by_cases hk' : k ≤ j.castSucc
     · rwa [Fin.predAbove_of_le_castSucc _ _ hk', Fin.castSucc_castPred]
     · grind [Fin.predAbove]
@@ -125,14 +124,12 @@ lemma objMk₁_surjective {n : ℕ} : Function.Surjective (objMk₁.{u} (n := n)
     ext i : 1
     dsimp [objMk₁]
     split_ifs with h
-    · have hi : i ∉ S := fun hi ↦ by
-        have := S.min'_le _ hi
-        grind
+    · have hi : i ∉ S := fun hi ↦ by have := S.min'_le _ hi; grind
       grind
     · simp only [Fin.castSucc_lt_castSucc_iff, Finset.lt_min'_iff, not_forall,
         not_lt] at h
       obtain ⟨j, hj, hij⟩ := h
-      grind [ show f j ≤ f i from (objEquiv f).toOrderHom.monotone hij]
+      grind [show f j ≤ f i from (objEquiv f).toOrderHom.monotone hij]
   · refine ⟨Fin.last _, ?_⟩
     ext i : 1
     dsimp [objMk₁]
