@@ -94,8 +94,8 @@ theorem cfc_mem_elemental (f : 𝕜 → 𝕜) (a : A) :
 @[deprecated (since := "2026-03-20")] alias cfc_apply_mem_elemental := cfc_mem_elemental
 
 lemma cfc_mem {𝕜' S : Type*} [Monoid 𝕜'] [MulAction 𝕜' A] [SetLike S A] [SubringClass S A]
-    [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' A] [SMulMemClass S 𝕜' A] [StarMemClass S A] (s : S)
-    [IsClosed (s : Set A)] (f : 𝕜 → 𝕜) (a : A) (has : a ∈ s) :
+    [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' A] [SMulMemClass S 𝕜' A] [StarMemClass S A] {s : S}
+    [hs : IsClosed (s : Set A)] (f : 𝕜 → 𝕜) {a : A} (has : a ∈ s) :
     cfc f a ∈ s :=
   have := SMulMemClass.ofIsScalarTower S 𝕜 𝕜' A
   StarSubalgebra.topologicalClosure_minimal (t := .ofClass s) (by simpa) (by simpa)
@@ -210,9 +210,9 @@ theorem cfcₙ_mem_elemental (f : 𝕜 → 𝕜) (a : A) :
 @[deprecated (since := "2026-03-20")] alias cfcₙ_apply_mem_elemental := cfcₙ_mem_elemental
 
 lemma cfcₙ_mem {𝕜' S : Type*} [Monoid 𝕜'] [MulAction 𝕜' A] [SetLike S A] [NonUnitalSubringClass S A]
-    [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' A] [SMulMemClass S 𝕜' A] [StarMemClass S A] (s : S)
-    [IsClosed (s : Set A)] (f : 𝕜 → 𝕜) (a : A)
-    (has : a ∈ s) : cfcₙ f a ∈ s :=
+    [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' A] [SMulMemClass S 𝕜' A] [StarMemClass S A] {s : S}
+    [hs : IsClosed (s : Set A)] (f : 𝕜 → 𝕜) {a : A} (has : a ∈ s) :
+    cfcₙ f a ∈ s :=
   have := SMulMemClass.ofIsScalarTower S 𝕜 𝕜' A
   NonUnitalStarSubalgebra.topologicalClosure_minimal (t := .ofClass s) _ (by simpa) (by simpa)
     (cfcₙ_mem_elemental f a)
@@ -249,8 +249,8 @@ lemma range_cfcₙ_nnreal_subset
   exact Set.image_mono fun _ ↦ cfcₙ_nonneg
 
 set_option backward.isDefEq.respectTransparency false in
-lemma range_cfcₙ_nnreal
-    [NonUnitalClosedEmbeddingContinuousFunctionalCalculus ℝ A IsSelfAdjoint] (a : A) (ha : 0 ≤ a := by cfc_tac) :
+lemma range_cfcₙ_nnreal [NonUnitalClosedEmbeddingContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+    (a : A) (ha : 0 ≤ a := by cfc_tac) :
     Set.range (cfcₙ (R := ℝ≥0) · a) = {x | x ∈ NonUnitalStarAlgebra.elemental ℝ a ∧ 0 ≤ x} := by
   rw [range_cfcₙ_nnreal_eq_image_cfcₙ_real a ha, Set.setOf_and, SetLike.setOf_mem_eq,
     ← range_cfcₙ _ ha.isSelfAdjoint, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
