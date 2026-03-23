@@ -31,7 +31,8 @@ depends continuously on the base point, we register automatically an instance of
 
 The general theory should be built assuming `[IsContinuousRiemannianBundle F E]`, while the
 `[RiemannianBundle E]` mechanism is only to build data in specific situations, for instance for
-the tangent bundle.
+the tangent bundle. As instances related to Riemannian bundles are both costly and quite specific,
+they are scoped to the `Bundle` namespace.
 
 ## Keywords
 Vector bundle, Riemannian metric
@@ -430,7 +431,7 @@ a `NormedAddCommGroup` structure.
 The normal priority for an instance which always applies like this one should be 100.
 We use 80 as this is rather specialized, so we want other paths to be tried first typically.
 -/
-noncomputable instance (priority := 80)
+noncomputable scoped instance (priority := 80)
     {B : Type*} {E : B → Type*} [(b : B) → TopologicalSpace (E b)]
     [(b : B) → AddCommGroup (E b)] [(b : B) → Module ℝ (E b)]
     /- We are careful about the parameter order, putting `RiemannianBundle E`
@@ -449,7 +450,7 @@ an `InnerProductSpace ℝ` structure.
 
 The normal priority for an instance which always applies like this one should be 100.
 We use 80 as this is rather specialized, so we want other paths to be tried first typically. -/
-noncomputable instance (priority := 80)
+noncomputable scoped instance (priority := 80)
     {B : Type*} {E : B → Type*} [(b : B) → TopologicalSpace (E b)]
     [(b : B) → AddCommGroup (E b)] [(b : B) → Module ℝ (E b)]
     [h : RiemannianBundle E] [∀ (b : B), IsTopologicalAddGroup (E b)]
