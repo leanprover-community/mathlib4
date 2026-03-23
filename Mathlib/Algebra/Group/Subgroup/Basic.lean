@@ -308,12 +308,10 @@ theorem characteristic_iff_le_map : H.Characteristic ↔ ∀ ϕ : G ≃* G, H �
   simp_rw [map_equiv_eq_comap_symm']
   exact characteristic_iff_le_comap.trans ⟨fun h ϕ => h ϕ.symm, fun h ϕ => h ϕ.symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance botCharacteristic : Characteristic (⊥ : Subgroup G) :=
   characteristic_iff_le_map.mpr fun _ϕ => bot_le
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance topCharacteristic : Characteristic (⊤ : Subgroup G) :=
   characteristic_iff_map_le.mpr fun _ϕ => le_top
@@ -325,16 +323,15 @@ section Normalizer
 
 variable {H}
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
-theorem normalizer_eq_top_iff : H.normalizer = ⊤ ↔ H.Normal :=
+theorem normalizer_eq_top_iff : normalizer (H : Set G) = ⊤ ↔ H.Normal :=
   eq_top_iff.trans
     ⟨fun h => ⟨fun a ha b => (h (mem_top b) a).mp ha⟩, fun h a _ha b =>
-      ⟨fun hb => h.conj_mem b hb a, fun hb => by rwa [h.mem_comm_iff, inv_mul_cancel_left] at hb⟩⟩
+      ⟨fun hb => h.conj_mem b hb a, fun hb => inv_mul_cancel_left a b ▸ h.mem_comm_iff.mp hb⟩⟩
 
 variable (H) in
 @[to_additive]
-theorem normalizer_eq_top [h : H.Normal] : H.normalizer = ⊤ :=
+theorem normalizer_eq_top [h : H.Normal] : normalizer (H : Set G) = ⊤ :=
   normalizer_eq_top_iff.mpr h
 
 variable {N : Type*} [Group N]
@@ -342,14 +339,14 @@ variable {N : Type*} [Group N]
 /-- The preimage of the normalizer is contained in the normalizer of the preimage. -/
 @[to_additive /-- The preimage of the normalizer is contained in the normalizer of the preimage. -/]
 theorem le_normalizer_comap (f : N →* G) :
-    H.normalizer.comap f ≤ (H.comap f).normalizer := fun x => by
+    (normalizer H).comap f ≤ normalizer (H.comap f) := fun x => by
   simp only [mem_normalizer_iff, mem_comap]
   intro h n
   simp [h (f n)]
 
 /-- The image of the normalizer is contained in the normalizer of the image. -/
 @[to_additive /-- The image of the normalizer is contained in the normalizer of the image. -/]
-theorem le_normalizer_map (f : G →* N) : H.normalizer.map f ≤ (H.map f).normalizer := fun _ => by
+theorem le_normalizer_map (f : G →* N) : (normalizer H).map f ≤ normalizer (H.map f) := fun _ => by
   simp only [and_imp, mem_map, exists_imp, mem_normalizer_iff]
   rintro x hx rfl n
   constructor
@@ -363,7 +360,7 @@ theorem le_normalizer_map (f : G →* N) : H.normalizer.map f ≤ (H.map f).norm
 
 @[to_additive]
 theorem comap_normalizer_eq_of_le_range {f : N →* G} (h : H ≤ f.range) :
-    comap f H.normalizer = (comap f H).normalizer := by
+    (normalizer H).comap f = normalizer (H.comap f) := by
   apply le_antisymm (le_normalizer_comap f)
   rw [← map_le_iff_le_comap]
   apply (le_normalizer_map f).trans
@@ -371,37 +368,38 @@ theorem comap_normalizer_eq_of_le_range {f : N →* G} (h : H ≤ f.range) :
 
 @[to_additive]
 theorem subgroupOf_normalizer_eq {H N : Subgroup G} (h : H ≤ N) :
-    H.normalizer.subgroupOf N = (H.subgroupOf N).normalizer :=
+    (normalizer H).subgroupOf N = normalizer (H.subgroupOf N) :=
   comap_normalizer_eq_of_le_range (h.trans_eq N.range_subtype.symm)
 
 @[to_additive]
 theorem normal_subgroupOf_iff_le_normalizer (h : H ≤ K) :
-    (H.subgroupOf K).Normal ↔ K ≤ H.normalizer := by
+    (H.subgroupOf K).Normal ↔ K ≤ normalizer H := by
   rw [← subgroupOf_eq_top, subgroupOf_normalizer_eq h, normalizer_eq_top_iff]
 
 @[to_additive]
 theorem normal_subgroupOf_iff_le_normalizer_inf :
-    (H.subgroupOf K).Normal ↔ K ≤ (H ⊓ K).normalizer :=
+    (H.subgroupOf K).Normal ↔ K ≤ normalizer (H ⊓ K : Subgroup G) :=
   inf_subgroupOf_right H K ▸ normal_subgroupOf_iff_le_normalizer inf_le_right
 
 @[to_additive]
-instance (priority := 100) normal_in_normalizer : (H.subgroupOf H.normalizer).Normal :=
+instance (priority := 100) normal_in_normalizer : (H.subgroupOf <| normalizer H).Normal :=
   (normal_subgroupOf_iff_le_normalizer H.le_normalizer).mpr le_rfl
 
 @[to_additive]
 theorem le_normalizer_of_normal_subgroupOf [hK : (H.subgroupOf K).Normal] (HK : H ≤ K) :
-    K ≤ H.normalizer :=
+    K ≤ normalizer H :=
   (normal_subgroupOf_iff_le_normalizer HK).mp hK
 
 @[to_additive]
-theorem subset_normalizer_of_normal {S : Set G} [hH : H.Normal] : S ⊆ H.normalizer :=
+theorem subset_normalizer_of_normal {S : Set G} [hH : H.Normal] : S ⊆ normalizer (H : Set G) :=
   (@normalizer_eq_top _ _ H hH) ▸ le_top
 
 @[to_additive]
-theorem le_normalizer_of_normal [H.Normal] : K ≤ H.normalizer := subset_normalizer_of_normal
+theorem le_normalizer_of_normal [H.Normal] : K ≤ normalizer H := subset_normalizer_of_normal
 
 @[to_additive]
-theorem inf_normalizer_le_normalizer_inf : H.normalizer ⊓ K.normalizer ≤ (H ⊓ K).normalizer :=
+theorem inf_normalizer_le_normalizer_inf :
+    normalizer H ⊓ normalizer K ≤ normalizer ((H ⊓ K :) : Set G) :=
   fun _ h g ↦ and_congr (h.1 g) (h.2 g)
 
 variable (G) in
@@ -412,7 +410,7 @@ def _root_.NormalizerCondition :=
 /-- Alternative phrasing of the normalizer condition: Only the full group is self-normalizing.
 This may be easier to work with, as it avoids inequalities and negations. -/
 theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
-    NormalizerCondition G ↔ ∀ H : Subgroup G, H.normalizer = H → H = ⊤ := by
+    NormalizerCondition G ↔ ∀ H : Subgroup G, normalizer H = H → H = ⊤ := by
   apply forall_congr'; intro H
   simp only [lt_iff_le_and_ne, le_normalizer, Ne]
   tauto
@@ -606,7 +604,6 @@ namespace Subgroup
 
 variable {N : Type*} [Group N] (H : Subgroup G)
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem Normal.map {H : Subgroup G} (h : H.Normal) (f : G →* N) (hf : Function.Surjective f) :
     (H.map f).Normal := by
@@ -628,7 +625,7 @@ variable {N : Type*} [Group N] (f : G →* N)
       /-- The preimage of the normalizer is equal to the normalizer of the preimage of
       a surjective function. -/]
 theorem comap_normalizer_eq_of_surjective (H : Subgroup G) {f : N →* G}
-    (hf : Function.Surjective f) : H.normalizer.comap f = (H.comap f).normalizer :=
+    (hf : Function.Surjective f) : (normalizer H).comap f = normalizer (H.comap f) :=
   comap_normalizer_eq_of_le_range fun x _ ↦ hf x
 
 /-- The image of the normalizer is equal to the normalizer of the image of an isomorphism. -/
@@ -636,7 +633,7 @@ theorem comap_normalizer_eq_of_surjective (H : Subgroup G) {f : N →* G}
       /-- The image of the normalizer is equal to the normalizer of the image of an
       isomorphism. -/]
 theorem map_equiv_normalizer_eq (H : Subgroup G) (f : G ≃* N) :
-    H.normalizer.map f.toMonoidHom = (H.map f.toMonoidHom).normalizer := by
+    (normalizer H).map f.toMonoidHom = normalizer (H.map f.toMonoidHom) := by
   ext x
   simp only [mem_normalizer_iff, mem_map_equiv]
   rw [f.toEquiv.forall_congr]
@@ -649,7 +646,7 @@ theorem map_equiv_normalizer_eq (H : Subgroup G) (f : G ≃* N) :
       /-- The image of the normalizer is equal to the normalizer of the image of a bijective
         function. -/]
 theorem map_normalizer_eq_of_bijective (H : Subgroup G) {f : G →* N} (hf : Function.Bijective f) :
-    H.normalizer.map f = (H.map f).normalizer :=
+    (normalizer H).map f = normalizer (H.map f) :=
   map_equiv_normalizer_eq H (MulEquiv.ofBijective f hf)
 
 end Subgroup
@@ -834,14 +831,14 @@ theorem inf_subgroupOf_inf_normal_of_right (A B' B : Subgroup G)
     [hN : (B'.subgroupOf B).Normal] : ((A ⊓ B').subgroupOf (A ⊓ B)).Normal := by
   rw [normal_subgroupOf_iff_le_normalizer_inf] at hN ⊢
   rw [inf_inf_inf_comm, inf_idem]
-  exact le_trans (inf_le_inf A.le_normalizer hN) (inf_normalizer_le_normalizer_inf)
+  exact le_trans (inf_le_inf A.le_normalizer hN) inf_normalizer_le_normalizer_inf
 
 @[to_additive]
 theorem inf_subgroupOf_inf_normal_of_left {A' A : Subgroup G} (B : Subgroup G)
     [hN : (A'.subgroupOf A).Normal] : ((A' ⊓ B).subgroupOf (A ⊓ B)).Normal := by
   rw [normal_subgroupOf_iff_le_normalizer_inf] at hN ⊢
   rw [inf_inf_inf_comm, inf_idem]
-  exact le_trans (inf_le_inf hN B.le_normalizer) (inf_normalizer_le_normalizer_inf)
+  exact le_trans (inf_le_inf hN B.le_normalizer) inf_normalizer_le_normalizer_inf
 
 @[to_additive]
 instance normal_inf_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊓ K).Normal :=
@@ -862,7 +859,6 @@ theorem SubgroupNormal.mem_comm {H K : Subgroup G} (hK : H ≤ K) [hN : (H.subgr
   have := (normal_subgroupOf_iff hK).mp hN (a * b) b h hb
   rwa [mul_assoc, mul_assoc, mul_inv_cancel, mul_one] at this
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Elements of disjoint, normal subgroups commute. -/
 @[to_additive /-- Elements of disjoint, normal subgroups commute. -/]
 theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Normal) (hH₂ : H₂.Normal)
@@ -881,13 +877,13 @@ theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Nor
 
 @[to_additive]
 theorem normal_subgroupOf_of_le_normalizer {H N : Subgroup G}
-    (hLE : H ≤ N.normalizer) : (N.subgroupOf H).Normal := by
+    (hLE : H ≤ normalizer N) : (N.subgroupOf H).Normal := by
   rw [normal_subgroupOf_iff_le_normalizer_inf]
   exact (le_inf hLE H.le_normalizer).trans inf_normalizer_le_normalizer_inf
 
 @[to_additive]
 theorem normal_subgroupOf_sup_of_le_normalizer {H N : Subgroup G}
-    (hLE : H ≤ N.normalizer) : (N.subgroupOf (H ⊔ N)).Normal := by
+    (hLE : H ≤ normalizer N) : (N.subgroupOf (H ⊔ N)).Normal := by
   rw [normal_subgroupOf_iff_le_normalizer le_sup_right]
   exact sup_le hLE le_normalizer
 
@@ -899,7 +895,6 @@ namespace IsConj
 
 open Subgroup
 
-set_option backward.isDefEq.respectTransparency false in
 theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg : g ∈ N}
     {hg' : g' ∈ N} (hc : IsConj g g') (ht : normalClosure ({⟨g, hg⟩} : Set N) = ⊤) :
     normalClosure ({⟨g', hg'⟩} : Set N) = ⊤ := by

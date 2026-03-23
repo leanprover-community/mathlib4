@@ -55,7 +55,7 @@ variable {s : SignedMeasure α} {i j : Set α}
 
 section ExistsSubsetRestrictNonpos
 
-/-! ### exists_subset_restrict_nonpos
+/-! ### `exists_subset_restrict_nonpos`
 
 In this section we will prove that a set `i` whose measure is negative contains a negative subset
 `j` with respect to the signed measure `s` (i.e. `s ≤[j] 0`), whose measure is negative. This lemma
@@ -217,7 +217,6 @@ private theorem restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
       (someExistsOneDivLT_subset hx₂).2
         (Set.mem_iUnion.2 ⟨n, Set.mem_iUnion.2 ⟨Nat.lt_succ_iff.mp h, hx₁⟩⟩)
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Function in -- required for scoped `on` notation
 private theorem restrictNonposSeq_disjoint : Pairwise (Disjoint on restrictNonposSeq s i) := by
   intro n m h
