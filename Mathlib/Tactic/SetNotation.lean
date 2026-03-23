@@ -108,20 +108,18 @@ def elabSubsetLike (x y : Term) (le leCls sub subCls : Name) (expectedType? : Op
     TermElabM Expr := do
   let rel ← `(SubsetElabAux $x $y)
   let e ← elabApp rel expectedType?
-  -- `e` may have `_patWithRef` mdata annotations, so we use `whnfCore`.
-  let mkApp3 (.const ``SubsetElabAux [u]) α x y ← whnfCore e
-    | throwError "unexpected result {e} when elaborating {rel}"
+  let_expr f@SubsetElabAux α x y := e | throwError "unexpected result {e} when elaborating {rel}"
   -- If the type cannot be determined yet, we postpone elaboration until it is known.
   -- This behaviour is inspired by `resolveLValLoop`.
   tryPostponeIfMVar α
   if ← isMVarApp α then
     synthesizeSyntheticMVarsUsingDefault
   if ← useSetNotationFor α then
-    let inst ← mkInstMVar <| .app (.const leCls [u]) α
-    return mkApp4 (.const le [u]) α inst x y
+    let inst ← mkInstMVar <| .app (.const leCls f.constLevels!) α
+    return mkApp4 (.const le f.constLevels!) α inst x y
   else
-    let inst ← mkInstMVar <| .app (.const subCls [u]) α
-    return mkApp4 (.const sub [u]) α inst x y
+    let inst ← mkInstMVar <| .app (.const subCls f.constLevels!) α
+    return mkApp4 (.const sub f.constLevels!) α inst x y
 
 /-- Subset relation: `a ⊆ b`.
 
