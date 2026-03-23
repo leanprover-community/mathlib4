@@ -34,7 +34,7 @@ example (_delete_this : Nat) (dont_delete_this : Int) (dont_delete_this2 : Int) 
   fail_if_success assumption
   exact dont_delete_this.toNat + dont_delete_this2.toNat
 
--- Confirms that clearExcept does not clear auxiliary declarations (e.g. recursive hypotheses).
+-- Confirms that `clearExcept` does not clear the `auxDecl` introduced in recursive  functions.
 def myLen : List α → Nat
   | [] => 0
   | _ :: xs => myLen xs + 1
