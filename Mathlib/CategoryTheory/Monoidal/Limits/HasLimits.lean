@@ -50,12 +50,6 @@ lemma HasColimit.isoOfNatIso_ι_hom_whiskerRight (w : F ≅ G) (j : J) {Q : C} :
   simp [← MonoidalCategory.comp_whiskerRight]
 
 @[reassoc (attr := simp)]
-theorem HasColimit.isoOfNatIso_hom_desc_whiskerRight (t : Cocone G) (w : F ≅ G) {Q : C} :
-    (HasColimit.isoOfNatIso w).hom ▷ Q ≫ colimit.desc G t ▷ Q =
-      colimit.desc F ((Cocone.precompose w.hom).obj _) ▷ Q := by
-  simp [← MonoidalCategory.comp_whiskerRight]
-
-@[reassoc (attr := simp)]
 lemma colimit.whiskerLeft_ι_desc (c : Cocone F) (j : J) {Q : C} :
     Q ◁ colimit.ι F j ≫ Q ◁ colimit.desc F c = Q ◁ c.ι.app j := by
   simp [← MonoidalCategory.whiskerLeft_comp]
