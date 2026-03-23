@@ -3,7 +3,7 @@ Copyright (c) 2025 Lenny Taelman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lenny Taelman
 -/
-
+module
 import Mathlib.Tactic.TautoSet
 
 variable {α : Type} {A B C D E : Set α}
