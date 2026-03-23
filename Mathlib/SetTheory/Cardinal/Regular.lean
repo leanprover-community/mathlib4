@@ -102,10 +102,6 @@ theorem isRegular_aleph_one : IsRegular ℵ₁ := by
   rw [← succ_aleph0]
   exact isRegular_succ le_rfl
 
-@[simp]
-theorem cof_omega_one : (ω_ 1).cof = ℵ_ 1 :=
-  isRegular_aleph_one.cof_omega_eq
-
 theorem isRegular_preAleph_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (succ o)) := by
   rw [preAleph_succ]
   exact isRegular_succ (aleph0_le_preAleph.2 h)
@@ -177,17 +173,18 @@ theorem bsup_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc 
 @[deprecated lift_iSup_lt_of_lt_cof (since := "2026-03-22")]
 theorem iSup_lt_lift_of_isRegular {ι} {f : ι → Cardinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c) : iSup f < c := by
-  apply Cardinal.lift_iSup_lt_of_lt_cof _ hf
+  apply lift_iSup_lt_of_lt_cof_ord _ hf
   rwa [lift_umax, c.lift_id', hc.cof_ord]
 
 @[deprecated iSup_lt_of_lt_cof (since := "2026-03-22")]
 theorem iSup_lt_of_isRegular {ι} {f : ι → Cardinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c) → iSup f < c :=
-  Cardinal.iSup_lt_of_lt_cof (by rwa [hc.cof_ord])
+  iSup_lt_of_lt_cof_ord (by rwa [hc.cof_ord])
 
 theorem sum_lt_lift_of_isRegular {ι : Type u} {f : ι → Cardinal} {c : Cardinal} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c) : sum f < c := by
-  apply (sum_le_lift_mk_mul_iSup _).trans_lt <| mul_lt_of_lt hc.1 hι (lift_iSup_lt_of_lt_cof _ hf)
+  apply (sum_le_lift_mk_mul_iSup _).trans_lt <|
+    mul_lt_of_lt hc.1 hι (lift_iSup_lt_of_lt_cof_ord _ hf)
   rwa [lift_umax, c.lift_id', hc.cof_ord]
 
 theorem sum_lt_of_isRegular {ι : Type u} {f : ι → Cardinal} {c : Cardinal} (hc : IsRegular c)
@@ -205,7 +202,7 @@ theorem card_iUnion_lt_iff_forall_of_isRegular {ι : Type u} {α : Type u} {t : 
   refine ⟨card_lt_of_card_iUnion_lt, fun h ↦ ?_⟩
   apply lt_of_le_of_lt (Cardinal.mk_sUnion_le _)
   apply Cardinal.mul_lt_of_lt hc.aleph0_le (mk_range_le.trans_lt hι)
-  apply Cardinal.iSup_lt_of_lt_cof (mk_range_le.trans_lt _)
+  apply Cardinal.iSup_lt_of_lt_cof_ord (mk_range_le.trans_lt _)
   · simpa
   · rwa [hc.cof_ord]
 

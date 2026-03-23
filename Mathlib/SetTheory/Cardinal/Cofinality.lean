@@ -577,11 +577,11 @@ alias iSup_lt_ord := iSup_lt_of_lt_cof
 theorem iSup_lt_lift {ι} {f : ι → Cardinal} {c : Cardinal}
     (hι : Cardinal.lift.{v, u} #ι < c.ord.cof)
     (hf : ∀ i, f i < c) : iSup f < c := by
-  apply Cardinal.lift_iSup_lt_of_lt_cof _ hf
+  apply lift_iSup_lt_of_lt_cof_ord _ hf
   rwa [Cardinal.lift_umax, c.lift_id']
 
 @[deprecated (since := "2026-03-22")]
-alias iSup_lt := Cardinal.iSup_lt_of_lt_cof
+alias iSup_lt := Cardinal.iSup_lt_of_lt_cof_ord
 
 theorem nfpFamily_lt_ord_lift {ι} {f : ι → Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
     (hc' : Cardinal.lift.{v, u} #ι < cof c) (hf : ∀ (i), ∀ b < c, f i b < c) {a} (ha : a < c) :
