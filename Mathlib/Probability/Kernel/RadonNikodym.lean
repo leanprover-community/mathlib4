@@ -3,13 +3,15 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Disintegration.Density
-import Mathlib.Probability.Kernel.WithDensity
+module
+
+public import Mathlib.Probability.Kernel.Disintegration.Density
+public import Mathlib.Probability.Kernel.WithDensity
 
 /-!
 # Radon-Nikodym derivative and Lebesgue decomposition for kernels
 
-Let `α` and `γ` be two measurable space, where either `α` is countable or `γ` is
+Let `α` and `γ` be two measurable spaces, where either `α` is countable or `γ` is
 countably generated. Let `κ, η : Kernel α γ` be finite kernels.
 Then there exists a function `Kernel.rnDeriv κ η : α → γ → ℝ≥0∞` jointly measurable on `α × γ`
 and a kernel `Kernel.singularPart κ η : Kernel α γ` such that
@@ -67,6 +69,8 @@ Uniqueness results: if `κ = η.withDensity f + ξ` for measurable `f` and `ξ` 
 Theorem 1.28 in [O. Kallenberg, Random Measures, Theory and Applications][kallenberg2017].
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter ENNReal
 
@@ -194,9 +198,6 @@ lemma mem_mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) (x : γ) :
 lemma notMem_mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) (x : γ) :
     x ∉ mutuallySingularSetSlice κ η a ↔ rnDerivAux κ (κ + η) a x < 1 := by
   simp [mutuallySingularSetSlice]
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_mutuallySingularSetSlice := notMem_mutuallySingularSetSlice
 
 lemma measurableSet_mutuallySingularSet (κ η : Kernel α γ) :
     MeasurableSet (mutuallySingularSet κ η) :=

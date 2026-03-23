@@ -3,9 +3,10 @@ Copyright (c) 2024 Alvan Caleb Arulandu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alvan Caleb Arulandu
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.CDF
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+module
+
+public import Mathlib.Probability.CDF
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
 /-! # Pareto distributions over ℝ
 
@@ -20,6 +21,8 @@ Define the Pareto measure over the reals.
 * `paretoMeasure`: a Pareto measure on `ℝ`, parametrized by its scale `t` and shape `r`.
 
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal
 
@@ -58,12 +61,12 @@ lemma lintegral_paretoPDF_of_le (hx : x ≤ t) :
     rw [if_neg (by linarith)]
 
 /-- The Pareto pdf is measurable. -/
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_paretoPDFReal (t r : ℝ) : Measurable (paretoPDFReal t r) :=
   Measurable.ite measurableSet_Ici ((measurable_id.pow_const _).const_mul _) measurable_const
 
 /-- The Pareto pdf is strongly measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_paretoPDFReal (t r : ℝ) :
     StronglyMeasurable (paretoPDFReal t r) :=
   (measurable_paretoPDFReal t r).stronglyMeasurable

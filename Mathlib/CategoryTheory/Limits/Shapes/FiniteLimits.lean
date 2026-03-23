@@ -3,18 +3,22 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.FinCategory.AsType
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.Data.Fintype.Option
+module
+
+public import Mathlib.CategoryTheory.FinCategory.AsType
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback  -- shake: keep (`example`)
+public import Mathlib.Data.Fintype.Option
 
 /-!
 # Categories with finite limits.
 
 A typeclass for categories with all finite (co)limits.
 -/
+
+@[expose] public section
 
 
 universe w' w v' u' v u
@@ -27,7 +31,7 @@ namespace CategoryTheory.Limits
 
 variable (C : Type u) [Category.{v} C]
 
--- We can't just made this an `abbreviation`
+-- We can't just made this an `abbrev`
 -- because of https://github.com/leanprover-community/lean/issues/429
 /-- A category has all finite limits if every functor `J ⥤ C` with a `FinCategory J`
 instance and `J : Type` has a limit.
@@ -209,7 +213,7 @@ instance finCategoryWidePullback [Fintype J] : FinCategory (WidePullbackShape J)
 instance finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J) where
   fintypeHom := WidePushoutShape.fintypeHom
 
--- We can't just made this an `abbreviation`
+-- We can't just made this an `abbrev`
 -- because of https://github.com/leanprover-community/lean/issues/429
 /-- A category `HasFiniteWidePullbacks` if it has all limits of shape `WidePullbackShape J` for
 finite `J`, i.e. if it has a wide pullback for every finite collection of morphisms with the same

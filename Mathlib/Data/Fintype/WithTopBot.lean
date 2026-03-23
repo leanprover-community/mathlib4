@@ -3,12 +3,16 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Fintype.Option
-import Mathlib.Order.TypeTags
+module
+
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Order.TypeTags
 
 /-!
 # Fintype instances for `WithTop α` and `WithBot α`
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 

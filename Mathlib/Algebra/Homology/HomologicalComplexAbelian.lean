@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-! # THe category of homological complexes is abelian
 
@@ -17,11 +19,17 @@ is exact (resp. short exact) iff degreewise it is so.
 
 -/
 
+public section
+
 open CategoryTheory Category Limits
 
 namespace HomologicalComplex
 
-variable {C ι : Type*} {c : ComplexShape ι} [Category C] [Abelian C]
+variable {C ι : Type*} {c : ComplexShape ι} [Category* C]
+
+section
+
+variable [Abelian C]
 
 noncomputable instance : IsNormalEpiCategory (HomologicalComplex C c) := ⟨fun p _ =>
   ⟨NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
@@ -66,5 +74,29 @@ lemma shortExact_iff_degreewise_shortExact :
     have := hS.epi_g
     exact hS.map (eval C c i)
   · exact shortExact_of_degreewise_shortExact S
+
+end
+
+section
+
+variable [HasZeroMorphisms C] [HasZeroObject C] [DecidableEq ι]
+
+instance (i j : ι) (I : C) [Injective I] :
+    Injective (((single C c i).obj I).X j) := by
+  by_cases hij : j = i
+  · subst hij
+    simp only [single_obj_X_self]
+    infer_instance
+  · exact (isZero_single_obj_X _ _ _ _ hij).injective
+
+instance (i j : ι) (P : C) [Projective P] :
+    Projective (((single C c i).obj P).X j) := by
+  by_cases hij : j = i
+  · subst hij
+    simp only [single_obj_X_self]
+    infer_instance
+  · exact (isZero_single_obj_X _ _ _ _ hij).projective
+
+end
 
 end HomologicalComplex

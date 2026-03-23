@@ -3,43 +3,45 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Archimedean.Hom
-import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Hom
+public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 
 /-!
 # Conditionally complete linear ordered fields
 
 This file shows that the reals are unique, or, more formally, given a type satisfying the common
 axioms of the reals (field, conditionally complete, linearly ordered) that there is an isomorphism
-preserving these properties to the reals. This is `LinearOrderedField.inducedOrderRingIso` for `ℚ`.
+preserving these properties to the reals.
+This is `ConditionallyCompleteLinearOrderedField.inducedOrderRingIso`.
 Moreover this isomorphism is unique.
 
-We introduce definitions of conditionally complete linear ordered fields, and show all such are
+We show all conditionally complete linear ordered fields are
 archimedean. We also construct the natural map from a `LinearOrderedField` to such a field.
 
 ## Main definitions
 
-* `ConditionallyCompleteLinearOrderedField`: A field satisfying the standard axiomatization of
-  the real numbers, being a Dedekind complete and linear ordered field.
-* `LinearOrderedField.inducedMap`: A (unique) map from any archimedean linear ordered field to a
-  conditionally complete linear ordered field. Various bundlings are available.
+* `ConditionallyCompleteLinearOrderedField.inducedMap`: A (unique) map from any archimedean linear
+  ordered field to a conditionally complete linear ordered field. Various bundlings are available.
 
 ## Main results
 
-* `LinearOrderedField.uniqueOrderRingHom` : Uniqueness of `OrderRingHom`s from an archimedean
-  linear ordered field to a conditionally complete linear ordered field.
-* `LinearOrderedField.uniqueOrderRingIso` : Uniqueness of `OrderRingIso`s between two
-  conditionally complete linearly ordered fields.
+* `ConditionallyCompleteLinearOrderedField.uniqueOrderRingHom` : Uniqueness of `OrderRingHom`s
+  from an archimedean linear ordered field to a conditionally complete linear ordered field.
+* `ConditionallyCompleteLinearOrderedField.uniqueOrderRingIso` : Uniqueness of `OrderRingIso`s
+  between two conditionally complete linearly ordered fields.
 
 ## References
 
-* https://mathoverflow.net/questions/362991/
-  who-first-characterized-the-real-numbers-as-the-unique-complete-ordered-field
+* https://mathoverflow.net/questions/362991/who-first-characterized-the-real-numbers-as-the-unique-complete-ordered-field
 
 ## Tags
 
 reals, conditionally complete, ordered field, uniqueness
 -/
+
+@[expose] public section
 
 variable {F α β γ : Type*}
 
@@ -51,21 +53,21 @@ open scoped Pointwise
 
 /-- A field which is both linearly ordered and conditionally complete with respect to the order.
 This axiomatizes the reals. -/
-class ConditionallyCompleteLinearOrderedField (α : Type*) extends
+@[deprecated "Use `[Field α] [ConditionallyCompleteLinearOrder α] [IsStrictOrderedRing α]` instead."
+  (since := "2026-02-23")]
+structure ConditionallyCompleteLinearOrderedField (α : Type*) extends
     Field α, ConditionallyCompleteLinearOrder α, IsStrictOrderedRing α where
 
 -- see Note [lower instance priority]
 /-- Any conditionally complete linearly ordered field is archimedean. -/
-instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedean
-    [ConditionallyCompleteLinearOrderedField α] : Archimedean α :=
-  archimedean_iff_nat_lt.2
-    (by
-      by_contra! h
-      obtain ⟨x, h⟩ := h
-      have := csSup_le (range_nonempty Nat.cast)
-        (forall_mem_range.2 fun m =>
-          le_sub_iff_add_le.2 <| le_csSup ⟨x, forall_mem_range.2 h⟩ ⟨m+1, Nat.cast_succ m⟩)
-      linarith)
+scoped instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedean
+    [Field α] [ConditionallyCompleteLinearOrder α] [IsStrictOrderedRing α] : Archimedean α :=
+  archimedean_iff_nat_lt.2 <| by
+    by_contra! ⟨x, h⟩
+    have := csSup_le (range_nonempty Nat.cast)
+      (forall_mem_range.2 fun m =>
+        le_sub_iff_add_le.2 <| le_csSup ⟨x, forall_mem_range.2 h⟩ ⟨m+1, Nat.cast_succ m⟩)
+    linarith
 
 namespace LinearOrderedField
 
@@ -138,6 +140,12 @@ theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b :=
 
 end CutMap
 
+end LinearOrderedField
+
+namespace ConditionallyCompleteLinearOrderedField
+
+open LinearOrderedField
+
 /-!
 ### Induced map
 
@@ -148,7 +156,8 @@ end CutMap
 section InducedMap
 
 variable (α β γ) [Field α] [LinearOrder α] [IsStrictOrderedRing α]
-  [ConditionallyCompleteLinearOrderedField β] [ConditionallyCompleteLinearOrderedField γ]
+  [Field β] [ConditionallyCompleteLinearOrder β] [IsStrictOrderedRing β]
+  [Field γ] [ConditionallyCompleteLinearOrder γ] [IsStrictOrderedRing γ]
 
 /-- The induced order-preserving function from a linear ordered field to a conditionally complete
 linear ordered field, defined by taking the Sup in the codomain of all the rationals less than the
@@ -259,15 +268,15 @@ def inducedOrderRingHom : α →+*o β :=
         obtain h | rfl | h := lt_trichotomy x 0
         · convert this (-x) (neg_pos.2 h) using 1
           · rw [neg_mul, mul_neg, neg_neg]
-          · simp_rw [AddMonoidHom.map_neg, neg_mul, mul_neg, neg_neg]
-        · simp only [mul_zero, AddMonoidHom.map_zero]
+          · simp_rw [map_neg, neg_mul, mul_neg, neg_neg]
+        · simp only [mul_zero, map_zero]
         · exact this x h
         -- prove that the (Sup of rationals less than x) ^ 2 is the Sup of the set of rationals less
         -- than (x ^ 2) by showing it is an upper bound and any smaller number is not an upper bound
       refine fun x hx => csSup_eq_of_forall_le_of_forall_lt_exists_gt (cutMap_nonempty β _) ?_ ?_
       · exact le_inducedMap_mul_self_of_mem_cutMap hx
       · exact exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self hx)
-      (two_ne_zero) (inducedMap_one _ _) with
+          two_ne_zero (inducedMap_one _ _) with
     monotone' := inducedMap_mono _ _ }
 
 /-- The isomorphism of ordered rings between two conditionally complete linearly ordered fields. -/
@@ -298,25 +307,61 @@ open OrderRingIso
 
 /-- There is a unique ordered ring homomorphism from an archimedean linear ordered field to a
 conditionally complete linear ordered field. -/
-instance uniqueOrderRingHom : Unique (α →+*o β) :=
+scoped instance uniqueOrderRingHom : Unique (α →+*o β) :=
   uniqueOfSubsingleton <| inducedOrderRingHom α β
 
 /-- There is a unique ordered ring isomorphism between two conditionally complete linear ordered
 fields. -/
-instance uniqueOrderRingIso : Unique (β ≃+*o γ) :=
+scoped instance uniqueOrderRingIso : Unique (β ≃+*o γ) :=
   uniqueOfSubsingleton <| inducedOrderRingIso β γ
 
 end InducedMap
 
+end ConditionallyCompleteLinearOrderedField
+
+namespace LinearOrderedField
+
+@[deprecated (since := "2026-02-24")]
+alias inducedMap := ConditionallyCompleteLinearOrderedField.inducedMap
+@[deprecated (since := "2026-02-24")]
+alias inducedMap_mono := ConditionallyCompleteLinearOrderedField.inducedMap_mono
+@[deprecated (since := "2026-02-24")]
+alias inducedMap_rat := ConditionallyCompleteLinearOrderedField.inducedMap_rat
+@[deprecated (since := "2026-02-24")]
+alias inducedMap_zero := ConditionallyCompleteLinearOrderedField.inducedMap_zero
+@[deprecated (since := "2026-02-24")]
+alias inducedMap_one := ConditionallyCompleteLinearOrderedField.inducedMap_one
+@[deprecated (since := "2026-02-24")]
+alias inducedMap_nonneg := ConditionallyCompleteLinearOrderedField.inducedMap_nonneg
+@[deprecated (since := "2026-02-24")]
+alias coe_lt_inducedMap_iff := ConditionallyCompleteLinearOrderedField.coe_lt_inducedMap_iff
+@[deprecated (since := "2026-02-24")]
+alias lt_inducedMap_iff := ConditionallyCompleteLinearOrderedField.lt_inducedMap_iff
+@[deprecated (since := "2026-02-24")]
+alias inducedMap_self := ConditionallyCompleteLinearOrderedField.inducedMap_self
+@[deprecated (since := "2026-02-24")]
+alias inducedMap_inducedMap := ConditionallyCompleteLinearOrderedField.inducedMap_inducedMap
+@[deprecated (since := "2026-02-24")]
+alias inducedMap_inv_self := ConditionallyCompleteLinearOrderedField.inducedMap_inv_self
+@[deprecated (since := "2026-02-24")]
+alias inducedMap_add := ConditionallyCompleteLinearOrderedField.inducedMap_add
+@[deprecated (since := "2026-02-24")]
+alias le_inducedMap_mul_self_of_mem_cutMap :=
+  ConditionallyCompleteLinearOrderedField.le_inducedMap_mul_self_of_mem_cutMap
+@[deprecated (since := "2026-02-24")]
+alias exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self :=
+  ConditionallyCompleteLinearOrderedField.exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self
+@[deprecated (since := "2026-02-24")]
+alias inducedAddHom := ConditionallyCompleteLinearOrderedField.inducedAddHom
+@[deprecated (since := "2026-02-24")]
+alias inducedOrderRingHom := ConditionallyCompleteLinearOrderedField.inducedOrderRingHom
+@[deprecated (since := "2026-02-24")]
+alias inducedOrderRingIso := ConditionallyCompleteLinearOrderedField.inducedOrderRingIso
+@[deprecated (since := "2026-02-24")]
+alias coe_inducedOrderRingIso := ConditionallyCompleteLinearOrderedField.coe_inducedOrderRingIso
+@[deprecated (since := "2026-02-24")]
+alias inducedOrderRingIso_symm := ConditionallyCompleteLinearOrderedField.inducedOrderRingIso_symm
+@[deprecated (since := "2026-02-24")]
+alias inducedOrderRingIso_self := ConditionallyCompleteLinearOrderedField.inducedOrderRingIso_self
+
 end LinearOrderedField
-
-section Real
-
-variable {R S : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R]
-  [Ring S] [LinearOrder S] [IsStrictOrderedRing S]
-
-theorem ringHom_monotone (hR : ∀ r : R, 0 ≤ r → ∃ s : R, s ^ 2 = r) (f : R →+* S) : Monotone f :=
-  (monotone_iff_map_nonneg f).2 fun r h => by
-    obtain ⟨s, rfl⟩ := hR r h; rw [map_pow]; apply sq_nonneg
-
-end Real

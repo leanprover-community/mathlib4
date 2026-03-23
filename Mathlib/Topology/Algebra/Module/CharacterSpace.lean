@@ -3,10 +3,12 @@ Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Topology.Algebra.Module.WeakDual
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Topology.Algebra.Module.WeakDual
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Character space of a topological algebra
@@ -31,6 +33,8 @@ which provides the element as a continuous linear map. (Even though `WeakDual �
 character space, Gelfand transform, functional calculus
 
 -/
+
+@[expose] public section
 
 
 namespace WeakDual
@@ -142,7 +146,7 @@ instance instAlgHomClass : AlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
     map_one := map_one'
     commutes := fun φ r => by
       rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_self, RingHom.id_apply]
-      rw [map_smul, Algebra.id.smul_eq_mul, map_one' φ, mul_one] }
+      rw [map_smul, smul_eq_mul, map_one' φ, mul_one] }
 
 /-- An element of the character space of a unital algebra, as an algebra homomorphism. -/
 @[simps]

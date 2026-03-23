@@ -3,12 +3,14 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Ring.List
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.List.Prime
-import Mathlib.Data.List.Sort
-import Mathlib.Data.List.Perm.Subperm
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.List
+public import Mathlib.Data.Nat.GCD.Basic
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.List.Prime
+public import Mathlib.Data.List.Sort
+public import Mathlib.Data.List.Perm.Subperm
 
 /-!
 # Prime numbers
@@ -21,6 +23,8 @@ This file deals with the factors of natural numbers.
 - `Nat.primeFactorsList_unique`: uniqueness of the prime factorisation
 
 -/
+
+@[expose] public section
 
 assert_not_exists Multiset
 
@@ -112,8 +116,8 @@ alias primeFactorsList_chain_2 := isChain_two_cons_primeFactorsList
 @[deprecated (since := "2025-09-24")]
 alias primeFactorsList_chain' := isChain_primeFactorsList
 
-theorem primeFactorsList_sorted (n : ℕ) : List.Sorted (· ≤ ·) (primeFactorsList n) :=
-  (isChain_primeFactorsList _).pairwise
+theorem primeFactorsList_sorted (n : ℕ) : List.SortedLE (primeFactorsList n) :=
+  (isChain_primeFactorsList _).sortedLE
 
 /-- `primeFactorsList` can be constructed inductively by extracting `minFac`, for sufficiently
 large `n`. -/
@@ -219,7 +223,8 @@ theorem primeFactorsList_sublist_right {n k : ℕ} (h : k ≠ 0) :
     n.primeFactorsList <+ (n * k).primeFactorsList := by
   rcases n with - | hn
   · simp [zero_mul]
-  apply sublist_of_subperm_of_sorted _ (primeFactorsList_sorted _) (primeFactorsList_sorted _)
+  apply sublist_of_subperm_of_pairwise _
+    (primeFactorsList_sorted _).pairwise (primeFactorsList_sorted _).pairwise
   simp only [(perm_primeFactorsList_mul (Nat.succ_ne_zero _) h).subperm_left]
   exact (sublist_append_left _ _).subperm
 

@@ -3,8 +3,10 @@ Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
-import Mathlib.Analysis.Normed.Operator.Bilinear
-import Mathlib.Analysis.Normed.Operator.NNNorm
+module
+
+public import Mathlib.Analysis.Normed.Operator.Bilinear
+public import Mathlib.Analysis.Normed.Operator.NNNorm
 
 /-!
 # Operators on complete normed spaces
@@ -12,6 +14,8 @@ import Mathlib.Analysis.Normed.Operator.NNNorm
 This file contains statements about norms of operators on complete normed spaces, such as a
 version of the Banach-Alaoglu theorem (`ContinuousLinearMap.isCompact_image_coe_closedBall`).
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -69,6 +73,7 @@ theorem tendsto_of_tendsto_pointwise_of_cauchySeq {f : ℕ → E' →SL[σ₁₂
   /- Since `f` is a Cauchy sequence, there exists `b → 0` such that `‖f n - f m‖ ≤ b N` for any
     `m, n ≥ N`. -/
   rcases cauchySeq_iff_le_tendsto_0.1 hf with ⟨b, hb₀, hfb, hb_lim⟩
+  simp_rw [dist_eq_norm] at hfb
   -- Since `b → 0`, it suffices to show that `‖f n x - g x‖ ≤ b n * ‖x‖` for all `n` and `x`.
   suffices ∀ n x, ‖f n x - g x‖ ≤ b n * ‖x‖ from
     tendsto_iff_norm_sub_tendsto_zero.2

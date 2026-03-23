@@ -33,12 +33,12 @@ while true; do
   LEAN_ABORT_ON_PANIC=1 "${SCRIPTS_DIR}/lake-build-wrapper.py" ".lake/build_summary_${TARGET_NAME}.json" lake build --wfail -KCI "$TARGET_NAME"
   echo "**** end of lake build: attempt $counter"
 
-  echo "**** start of lake build --no-build: attempt $counter}"
+  echo "::group::lake build --no-build: attempt $counter"
   set +e
-  "${SCRIPTS_DIR}/lake-build-wrapper.py" ".lake/build_summary_${TARGET_NAME}_no_build.json" lake build --no-build -v "$TARGET_NAME"
+  lake build --no-build -v "$TARGET_NAME"
   result=$?
   set -e
-  echo "**** end of lake build --no-build: attempt $counter}"
+  echo "::endgroup::"
 
   if [ "$result" -eq 0 ]; then
     echo "lake build --no-build succeeded!"

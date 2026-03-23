@@ -3,14 +3,19 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Order.Ring.InjSurj
-import Mathlib.Algebra.Ring.Subsemiring.Defs
-import Mathlib.Order.Interval.Set.Defs
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Order.Monoid.Submonoid
+public import Mathlib.Algebra.Order.Ring.InjSurj
+public import Mathlib.Algebra.Ring.Subsemiring.Defs
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # `Order`ed instances for `SubsemiringClass` and `Subsemiring`.
 -/
+
+@[expose] public section
 
 namespace SubsemiringClass
 variable {R S : Type*} [SetLike S R] (s : S)
@@ -50,13 +55,15 @@ variable (R) in
 /-- The set of nonnegative elements in an ordered semiring, as a subsemiring. -/
 @[simps]
 def nonneg : Subsemiring R where
-  carrier := Set.Ici 0
+  __ := AddSubmonoid.nonneg R
   mul_mem' := mul_nonneg
   one_mem' := zero_le_one
-  add_mem' := add_nonneg
-  zero_mem' := le_rfl
 
 @[simp] lemma mem_nonneg {x : R} : x ∈ nonneg R ↔ 0 ≤ x := .rfl
+
+variable (R) in
+@[simp]
+theorem nonneg_toAddSubmonoid : (nonneg R).toAddSubmonoid = AddSubmonoid.nonneg R := rfl
 
 end nonneg
 

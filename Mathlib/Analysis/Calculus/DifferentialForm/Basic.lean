@@ -3,9 +3,12 @@ Copyright (c) 2025 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Sam Lindauer
 -/
-import Mathlib.Analysis.NormedSpace.Alternating.Uncurry.Fin
-import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-import Mathlib.Analysis.Calculus.FDeriv.CompCLM
+module
+
+public import Mathlib.Analysis.Normed.Module.Alternating.Uncurry.Fin
+public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
+public import Mathlib.Analysis.Calculus.FDeriv.ContinuousAlternatingMap
 
 /-!
 # Exterior derivative of a differential form on a normed space
@@ -26,7 +29,7 @@ $$
 dω(x; v_0, \dots, v_n) = \sum_{i=0}^n (-1)^i D_x ω(x; v_0, \dots, \widehat{v_i}, \dots, v_n) · v_i
 $$
 
-where $$\widehat{v_i}$$ means that we omit this element of the tuple, see `extDeriv_apply`.
+where $\widehat{v_i}$ means that we omit this element of the tuple, see `extDeriv_apply`.
 
 ## TODO
 
@@ -42,13 +45,16 @@ where $$\widehat{v_i}$$ means that we omit this element of the tuple, see `extDe
   sync with the API for `ContinuousMultilinearMap`.
 -/
 
+@[expose] public section
+
 open Filter ContinuousAlternatingMap Set
 open scoped Topology
 
-variable {𝕜 E F : Type*}
+variable {𝕜 E F G : Type*}
   [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {n m k : ℕ} {r : WithTop ℕ∞}
   {ω ω₁ ω₂ : E → E [⋀^Fin n]→L[𝕜] F} {s t : Set E} {x : E}
 
@@ -62,7 +68,7 @@ $$
 dω(x; v_0, \dots, v_n) = \sum_{i=0}^n (-1)^i D_x ω(x; v_0, \dots, \widehat{v_i}, \dots, v_n) · v_i
 $$
 
-where $$\widehat{v_i}$$ means that we omit this element of the tuple, see `extDeriv_apply`.
+where $\widehat{v_i}$ means that we omit this element of the tuple, see `extDeriv_apply`.
 -/
 noncomputable def extDeriv (ω : E → E [⋀^Fin n]→L[𝕜] F) (x : E) : E [⋀^Fin (n + 1)]→L[𝕜] F :=
   .alternatizeUncurryFin (fderiv 𝕜 ω x)
@@ -77,7 +83,7 @@ $$
 dω(x; v_0, \dots, v_n) = \sum_{i=0}^n (-1)^i D_x ω(x; v_0, \dots, \widehat{v_i}, \dots, v_n) · v_i
 $$
 
-where $$\widehat{v_i}$$ means that we omit this element of the tuple, see `extDerivWithin_apply`.
+where $\widehat{v_i}$ means that we omit this element of the tuple, see `extDerivWithin_apply`.
 -/
 noncomputable def extDerivWithin (ω : E → E [⋀^Fin n]→L[𝕜] F) (s : Set E) (x : E) :
     E [⋀^Fin (n + 1)]→L[𝕜] F :=
@@ -109,7 +115,7 @@ theorem extDeriv_fun_add (hω₁ : DifferentiableAt 𝕜 ω₁ x) (hω₂ : Diff
 
 theorem extDerivWithin_smul (c : 𝕜) (ω : E → E [⋀^Fin n]→L[𝕜] F) (hsx : UniqueDiffWithinAt 𝕜 s x) :
     extDerivWithin (c • ω) s x = c • extDerivWithin ω s x := by
-  simp [extDerivWithin, fderivWithin_const_smul_of_field, hsx, alternatizeUncurryFin_smul]
+  simp [extDerivWithin, fderivWithin_const_smul_field, hsx, alternatizeUncurryFin_smul]
 
 theorem extDerivWithin_fun_smul (c : 𝕜) (ω : E → E [⋀^Fin n]→L[𝕜] F)
     (hsx : UniqueDiffWithinAt 𝕜 s x) :
@@ -205,7 +211,7 @@ theorem extDerivWithin_extDerivWithin_apply (hω : ContDiffWithinAt 𝕜 r ω s 
         fderivWithin 𝕜 (fderivWithin 𝕜 ω s) s x) := by
     congr 1
     have : DifferentiableWithinAt 𝕜 (fderivWithin 𝕜 ω s) s x := by
-      refine (hω.fderivWithin_right hs ?_ h'x).differentiableWithinAt le_rfl
+      refine (hω.fderivWithin_right hs ?_ h'x).differentiableWithinAt one_ne_zero
       exact le_minSmoothness.trans hr
     exact alternatizeUncurryFinCLM _ _ _ |>.hasFDerivAt.comp_hasFDerivWithinAt x
       this.hasFDerivWithinAt |>.fderivWithin (hs.uniqueDiffWithinAt h'x)
@@ -229,3 +235,32 @@ theorem extDeriv_extDeriv_apply (hω : ContDiffAt 𝕜 r ω x) (hr : minSmoothne
 theorem extDeriv_extDeriv (h : ContDiff 𝕜 r ω) (hr : minSmoothness 𝕜 2 ≤ r) :
     extDeriv (extDeriv ω) = 0 :=
   funext fun _ ↦ extDeriv_extDeriv_apply h.contDiffAt hr
+
+/-- Exterior derivative within a set commutes with pullback. -/
+theorem extDerivWithin_pullback {ω : F → F [⋀^Fin n]→L[𝕜] G} {f : E → F} {t : Set F}
+    (hω : DifferentiableWithinAt 𝕜 ω t (f x)) (hf : ContDiffWithinAt 𝕜 r f s x)
+    (hr : minSmoothness 𝕜 2 ≤ r) (hs : UniqueDiffOn 𝕜 s)
+    (hxc : x ∈ closure (interior s)) (hxs : x ∈ s) (hst : MapsTo f s t) :
+    extDerivWithin (fun x ↦ (ω (f x)).compContinuousLinearMap (fderivWithin 𝕜 f s x)) s x =
+      (extDerivWithin ω t (f x)).compContinuousLinearMap (fderivWithin 𝕜 f s x) := by
+  have hdf : DifferentiableWithinAt 𝕜 f s x :=
+    hf.differentiableWithinAt <| (two_pos.trans_le <| le_minSmoothness.trans hr).ne'
+  have hd2f : DifferentiableWithinAt 𝕜 (fderivWithin 𝕜 f s) s x :=
+    (hf.fderivWithin_right hs (le_minSmoothness.trans hr) hxs).differentiableWithinAt one_ne_zero
+  rw [extDerivWithin,
+    fderivWithin_continuousAlternatingMapCompContinuousLinearMap (by exact hω.comp x hdf hst) hd2f
+      (hs x hxs),
+    alternatizeUncurryFin_add, fderivWithin_comp' _ hω hdf hst (hs x hxs), extDerivWithin,
+    alternatizeUncurryFin_fderivCompContinuousLinearMap_eq_zero, add_zero]
+  · ext v
+    simp +unfoldPartialApp [alternatizeUncurryFin_apply, Fin.removeNth, Function.comp_def]
+  · apply hf.isSymmSndFDerivWithinAt <;> assumption
+
+/-- Exterior derivative commutes with pullback. -/
+theorem extDeriv_pullback {ω : F → F [⋀^Fin n]→L[𝕜] G} {f : E → F}
+    (hω : DifferentiableAt 𝕜 ω (f x)) (hf : ContDiffAt 𝕜 r f x) (hr : minSmoothness 𝕜 2 ≤ r) :
+    extDeriv (fun x ↦ (ω (f x)).compContinuousLinearMap (fderiv 𝕜 f x)) x =
+      (extDeriv ω (f x)).compContinuousLinearMap (fderiv 𝕜 f x) := by
+  simp only [← differentiableWithinAt_univ, ← extDerivWithin_univ, ← contDiffWithinAt_univ,
+    ← fderivWithin_univ] at *
+  apply extDerivWithin_pullback (r := r) <;> simp [*]

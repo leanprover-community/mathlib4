@@ -3,8 +3,10 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Fabrizio Barroero, Christopher Hoskin
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
-import Mathlib.Order.Interval.Set.Defs
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # circleMap
@@ -18,6 +20,8 @@ This file defines the circle map $θ ↦ c + R e^{θi}$, a parametrization of a 
 ## Tags
 
 -/
+
+@[expose] public section
 noncomputable section circleMap
 
 open Complex Function Metric Real
@@ -37,8 +41,6 @@ theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖ = |R| 
 
 theorem circleMap_notMem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
   simp [Complex.dist_eq, le_abs_self]
-
-@[deprecated (since := "2025-05-23")] alias circleMap_not_mem_ball := circleMap_notMem_ball
 
 theorem circleMap_ne_mem_ball {c : ℂ} {R : ℝ} {w : ℂ} (hw : w ∈ ball c R) (θ : ℝ) :
     circleMap c R θ ≠ w :=

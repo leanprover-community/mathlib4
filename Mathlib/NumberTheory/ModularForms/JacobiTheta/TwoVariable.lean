@@ -3,10 +3,12 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Calculus.SmoothSeries
-import Mathlib.Analysis.Normed.Operator.Prod
-import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+module
+
+public import Mathlib.Analysis.Calculus.SmoothSeries
+public import Mathlib.Analysis.Normed.Operator.Prod
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
 # The two-variable Jacobi theta function
@@ -25,6 +27,8 @@ $$\theta'(z, τ) = \sum_{n \in \mathbb{Z}} 2 \pi i n \exp (2 i \pi n z + i \pi n
 (Note that the Mellin transform of `θ` will give us functional equations for `L`-functions
 of even Dirichlet characters, and that of `θ'` will do the same for odd Dirichlet characters.)
 -/
+
+@[expose] public section
 
 open Complex Real Asymptotics Filter Topology
 
@@ -209,7 +213,7 @@ lemma summable_jacobiTheta₂_term_fderiv_iff (z τ : ℂ) :
       (?_ : 3 * π * |n| ^ 2 * ‖jacobiTheta₂_term n z τ‖ ≤ _)
     simp_rw [mul_assoc (3 * π)]
     refine mul_le_mul_of_nonneg_left ?_ (mul_pos (by simp : 0 < (3 : ℝ)) pi_pos).le
-    refine mul_le_mul_of_nonneg_left ?_ (pow_nonneg (Int.cast_nonneg.mpr (abs_nonneg _)) _)
+    refine mul_le_mul_of_nonneg_left ?_ (pow_nonneg (Int.cast_nonneg (abs_nonneg _)) _)
     exact norm_jacobiTheta₂_term_le hτ le_rfl le_rfl n
 
 lemma summable_jacobiTheta₂'_term_iff (z τ : ℂ) :
@@ -338,8 +342,7 @@ lemma hasDerivAt_jacobiTheta₂_fst (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
   { toFun := fun f ↦ f (1, 0)
     cont := continuous_id'.clm_apply continuous_const
     map_add' := by simp only [ContinuousLinearMap.add_apply, forall_const]
-    map_smul' := by simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul,
-      RingHom.id_apply, forall_const] }
+    map_smul' := by simp }
   have step1 : HasSum (fun n ↦ (jacobiTheta₂_term_fderiv n z τ) (1, 0))
       ((jacobiTheta₂_fderiv z τ) (1, 0)) := by
     apply eval_fst_CLM.hasSum (hasSum_jacobiTheta₂_term_fderiv z hτ)

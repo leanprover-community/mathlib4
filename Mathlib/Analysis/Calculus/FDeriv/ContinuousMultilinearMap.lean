@@ -3,8 +3,10 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Calculus.FDeriv.CompCLM
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 
 /-!
 # Derivatives of operations on continuous multilinear maps
@@ -35,6 +37,8 @@ is given by `ContinuousMultilinearMap.fderivCompContinuousLinearMap`.
 All statements in the first section are claiming this, for various notions of differentiation.
 The second section deduces the corresponding differentiability results when `ι` is finite.
 -/
+
+public section
 
 variable {𝕜 ι E : Type*} {F G : ι → Type*} {H : Type*}
   [NontriviallyNormedField 𝕜]

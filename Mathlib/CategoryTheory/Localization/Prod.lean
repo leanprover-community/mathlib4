@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+module
+
+public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Localization of product categories
@@ -24,6 +26,8 @@ the strict universal property of the localization for `W₁.prod W₂`. The gene
 case follows by transporting this result through equivalences of categories.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 

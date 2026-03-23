@@ -3,8 +3,10 @@ Copyright (c) 2025 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine
 -/
-import Mathlib.Analysis.Asymptotics.LinearGrowth
-import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
+module
+
+public import Mathlib.Analysis.Asymptotics.LinearGrowth
+public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 
 /-!
 # Exponential growth
@@ -16,12 +18,14 @@ versions, using a `liminf` and a `limsup` respectively.
 
 - `expGrowthInf`, `expGrowthSup`: respectively, `liminf` and `limsup` of `log (u n) / n`.
 - `expGrowthInfTopHom`, `expGrowthSupBotHom`: the functions `expGrowthInf`, `expGrowthSup`
-as homomorphisms preserving finitary `Inf`/`Sup` respectively.
+  as homomorphisms preserving finitary `Inf`/`Sup` respectively.
 
 ## Tags
 
 asymptotics, exponential
 -/
+
+@[expose] public section
 
 namespace ExpGrowth
 
@@ -160,6 +164,7 @@ lemma expGrowthInf_top : expGrowthInf ⊤ = ⊤ := by
   rw [← linearGrowthInf_top, expGrowthInf_def]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma expGrowthSup_top : expGrowthSup ⊤ = ⊤ := by
   apply top_le_iff.1
   rw [← expGrowthInf_top]
@@ -283,6 +288,7 @@ lemma expGrowthSup_of_eventually_ge (hb : b ≠ 0) (h : ∀ᶠ n in atTop, b * u
 
 /-! ### Infimum and supremum -/
 
+set_option backward.isDefEq.respectTransparency false in
 lemma expGrowthInf_inf : expGrowthInf (u ⊓ v) = expGrowthInf u ⊓ expGrowthInf v := by
   rw [expGrowthInf, expGrowthInf, expGrowthInf, ← liminf_min]
   refine liminf_congr (Eventually.of_forall fun n ↦ ?_)
@@ -295,6 +301,7 @@ noncomputable def expGrowthInfTopHom : InfTopHom (ℕ → ℝ≥0∞) EReal wher
   map_inf' _ _ := expGrowthInf_inf
   map_top' := expGrowthInf_top
 
+set_option backward.isDefEq.respectTransparency false in
 lemma expGrowthInf_biInf {α : Type*} (u : α → ℕ → ℝ≥0∞) {s : Set α} (hs : s.Finite) :
     expGrowthInf (⨅ x ∈ s, u x) = ⨅ x ∈ s, expGrowthInf (u x) := by
   have := map_finset_inf expGrowthInfTopHom hs.toFinset u
@@ -305,6 +312,7 @@ lemma expGrowthInf_iInf {ι : Type*} [Finite ι] (u : ι → ℕ → ℝ≥0∞)
     expGrowthInf (⨅ i, u i) = ⨅ i, expGrowthInf (u i) := by
   rw [← iInf_univ, expGrowthInf_biInf u Set.finite_univ, iInf_univ]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma expGrowthSup_sup : expGrowthSup (u ⊔ v) = expGrowthSup u ⊔ expGrowthSup v := by
   rw [expGrowthSup, expGrowthSup, expGrowthSup, ← limsup_max]
   refine limsup_congr (Eventually.of_forall fun n ↦ ?_)

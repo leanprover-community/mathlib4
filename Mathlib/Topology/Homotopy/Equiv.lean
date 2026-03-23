@@ -3,7 +3,9 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Topology.Homotopy.Basic
+module
+
+public import Mathlib.Topology.Homotopy.Basic
 
 /-!
 
@@ -24,6 +26,8 @@ locale.
 
 -/
 
+@[expose] public section
+
 universe u v w x
 
 variable {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x}
@@ -37,11 +41,11 @@ are both homotopic to corresponding identity maps.
 -/
 @[ext]
 structure HomotopyEquiv (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] where
-  /-- The forward map of an homotopy.
+  /-- The forward map of a homotopy.
 
   Do NOT use directly. Use the coercion instead. -/
   toFun : C(X, Y)
-  /-- The backward map of an homotopy.
+  /-- The backward map of a homotopy.
 
   Do NOT use `e.invFun` directly. Use the coercion of `e.symm` instead. -/
   invFun : C(Y, X)

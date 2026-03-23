@@ -3,14 +3,18 @@ Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang
 -/
-import Mathlib.Analysis.Normed.Operator.Conformal
-import Mathlib.Analysis.InnerProductSpace.LinearMap
+module
+
+public import Mathlib.Analysis.Normed.Operator.Conformal
+public import Mathlib.Analysis.InnerProductSpace.LinearMap
 
 /-!
 # Conformal maps between inner product spaces
 
 In an inner product space, a map is conformal iff it preserves inner products up to a scalar factor.
 -/
+
+public section
 
 
 variable {E F : Type*}

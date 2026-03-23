@@ -3,9 +3,11 @@ Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.LocalExtr.Rolle
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Topology.Algebra.Polynomial
+module
+
+public import Mathlib.Analysis.Calculus.LocalExtr.Rolle
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # Rolle's Theorem for polynomials
@@ -26,6 +28,8 @@ Namely, we prove the following facts.
 
 polynomial, Rolle's Theorem, root
 -/
+
+public section
 
 namespace Polynomial
 

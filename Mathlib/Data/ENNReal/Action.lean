@@ -3,7 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.ENNReal.Operations
+module
+
+public import Mathlib.Algebra.Module.Torsion.Field
+public import Mathlib.Data.ENNReal.Operations
 
 /-!
 # Scalar multiplication on `ℝ≥0∞`.
@@ -11,6 +14,8 @@ import Mathlib.Data.ENNReal.Operations
 This file defines basic scalar actions on extended nonnegative reals, showing that
 `MulAction`s, `DistribMulAction`s, `Module`s and `Algebra`s restrict from `ℝ≥0∞` to `ℝ≥0`.
 -/
+
+@[expose] public section
 
 open Set NNReal ENNReal
 
@@ -62,8 +67,8 @@ theorem coe_smul {R} (r : R) (s : ℝ≥0) [SMul R ℝ≥0] [SMul R ℝ≥0∞] 
   rw [← smul_one_smul ℝ≥0 r (s : ℝ≥0∞), smul_def, smul_eq_mul, ← ENNReal.coe_mul, smul_mul_assoc,
     one_mul]
 
-theorem smul_top {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-    [NoZeroSMulDivisors R ℝ≥0∞] [DecidableEq R] (c : R) :
+theorem smul_top {R : Type*} [Semiring R] [IsDomain R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    [Module.IsTorsionFree R ℝ≥0∞] [DecidableEq R] (c : R) :
     c • ∞ = if c = 0 then 0 else ∞ := by
   rw [← smul_one_mul, mul_top']
   simp_rw [smul_eq_zero, or_iff_left one_ne_zero]
@@ -71,8 +76,9 @@ theorem smul_top {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ�
 lemma nnreal_smul_lt_top {x : ℝ≥0} {y : ℝ≥0∞} (hy : y < ⊤) : x • y < ⊤ := mul_lt_top (by simp) hy
 lemma nnreal_smul_ne_top {x : ℝ≥0} {y : ℝ≥0∞} (hy : y ≠ ⊤) : x • y ≠ ⊤ := mul_ne_top (by simp) hy
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nnreal_smul_ne_top_iff {x : ℝ≥0} {y : ℝ≥0∞} (hx : x ≠ 0) : x • y ≠ ⊤ ↔ y ≠ ⊤ :=
-  ⟨by rintro h rfl; simp [smul_top, hx] at h, nnreal_smul_ne_top⟩
+  ⟨by rintro h rfl; simp [smul_top (R := ℝ≥0), hx] at h, nnreal_smul_ne_top⟩
 
 lemma nnreal_smul_lt_top_iff {x : ℝ≥0} {y : ℝ≥0∞} (hx : x ≠ 0) : x • y < ⊤ ↔ y < ⊤ := by
   rw [lt_top_iff_ne_top, lt_top_iff_ne_top, nnreal_smul_ne_top_iff hx]
@@ -88,10 +94,10 @@ theorem toReal_smul (r : ℝ≥0) (s : ℝ≥0∞) : (r • s).toReal = r • s.
 
 instance : PosSMulStrictMono ℝ≥0 ℝ≥0∞ where
   smul_lt_smul_of_pos_left _r hr _a _b hab :=
-    ENNReal.mul_lt_mul_left' (coe_pos.2 hr).ne' coe_ne_top hab
+    ENNReal.mul_lt_mul_right (coe_pos.2 hr).ne' coe_ne_top hab
 
 instance : SMulPosMono ℝ≥0 ℝ≥0∞ where
-  smul_le_smul_of_nonneg_right _r _ _a _b hab := mul_le_mul_right' (coe_le_coe.2 hab) _
+  smul_le_smul_of_nonneg_right _r _ _a _b hab := _root_.mul_le_mul_left (coe_le_coe.2 hab) _
 
 end Actions
 

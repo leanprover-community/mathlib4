@@ -3,13 +3,16 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.FunLike.Equiv
-import Mathlib.Data.Quot
-import Mathlib.Data.Subtype
-import Mathlib.Logic.Unique
-import Mathlib.Tactic.Conv
-import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.Substs
+module
+
+public import Mathlib.Data.FunLike.Equiv
+public import Mathlib.Data.Quot
+public import Mathlib.Data.Subtype
+public import Mathlib.Logic.Unique
+public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Substs
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Equivalence between types
@@ -20,7 +23,7 @@ In this file we define two types:
   not equality!) to express that various `Type`s or `Sort`s are equivalent.
 
 * `Equiv.Perm α`: the group of permutations `α ≃ α`. More lemmas about `Equiv.Perm` can be found in
-  `Mathlib/GroupTheory/Perm.lean`.
+  `Mathlib/GroupTheory/Perm/`.
 
 Then we define
 
@@ -43,8 +46,9 @@ Then we define
   - `Equiv.decidableEq` takes `e : α ≃ β` and `[DecidableEq β]` and returns `DecidableEq α`.
 
   More definitions of this kind can be found in other files.
-  E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic type classes like
-  `Group`, `Module`, etc.
+  E.g., `Mathlib/Algebra/Group/TransferInstance.lean` does it for `Group`,
+  `Mathlib/Algebra/Module/TransferInstance.lean` does it for `Module`, and similar files exist for
+  other algebraic type classes.
 
 Many more such isomorphisms and operations are defined in `Mathlib/Logic/Equiv/Basic.lean`.
 
@@ -52,6 +56,8 @@ Many more such isomorphisms and operations are defined in `Mathlib/Logic/Equiv/B
 
 equivalence, congruence, bijective map
 -/
+
+@[expose] public section
 
 open Function
 
@@ -100,13 +106,6 @@ instance : EquivLike (α ≃ β) α β where
   left_inv := Equiv.left_inv
   right_inv := Equiv.right_inv
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
-
-/-- Deprecated helper instance for when inference gets stuck on following the normal chain
-`EquivLike → FunLike`. -/
-@[deprecated EquivLike.toFunLike (since := "2025-06-20")]
-def instFunLike : FunLike (α ≃ β) α β where
-  coe := Equiv.toFun
-  coe_injective' := DFunLike.coe_injective
 
 @[simp, norm_cast]
 lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
@@ -210,7 +209,7 @@ theorem nontrivial_congr {α β} (e : α ≃ β) : Nontrivial α ↔ Nontrivial 
   ⟨fun _ ↦ e.symm.nontrivial, fun _ ↦ e.nontrivial⟩
 
 /-- Transfer `DecidableEq` across an equivalence. -/
-protected def decidableEq (e : α ≃ β) [DecidableEq β] : DecidableEq α :=
+protected abbrev decidableEq (e : α ≃ β) [DecidableEq β] : DecidableEq α :=
   e.injective.decidableEq
 
 theorem nonempty_congr (e : α ≃ β) : Nonempty α ↔ Nonempty β := Nonempty.congr e e.symm
@@ -218,10 +217,10 @@ theorem nonempty_congr (e : α ≃ β) : Nonempty α ↔ Nonempty β := Nonempty
 protected theorem nonempty (e : α ≃ β) [Nonempty β] : Nonempty α := e.nonempty_congr.mpr ‹_›
 
 /-- If `α ≃ β` and `β` is inhabited, then so is `α`. -/
-protected def inhabited [Inhabited β] (e : α ≃ β) : Inhabited α := ⟨e.symm default⟩
+protected abbrev inhabited [Inhabited β] (e : α ≃ β) : Inhabited α := ⟨e.symm default⟩
 
 /-- If `α ≃ β` and `β` is a singleton type, then so is `α`. -/
-protected def unique [Unique β] (e : α ≃ β) : Unique α := e.symm.surjective.unique
+protected abbrev unique [Unique β] (e : α ≃ β) : Unique α := e.symm.surjective.unique
 
 /-- Equivalence between equal types. -/
 protected def cast {α β : Sort _} (h : α = β) : α ≃ β where
@@ -281,12 +280,12 @@ theorem apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : α ≃ β) : f x = y �
 
 @[simp] theorem cast_apply {α β} (h : α = β) (x : α) : Equiv.cast h x = cast h x := rfl
 
-@[simp] theorem cast_symm {α β} (h : α = β) : (Equiv.cast h).symm = Equiv.cast h.symm := rfl
+theorem cast_symm {α β} (h : α = β) : Equiv.cast h.symm = (Equiv.cast h).symm := rfl
 
 @[simp] theorem cast_refl {α} (h : α = α := rfl) : Equiv.cast h = Equiv.refl α := rfl
 
-@[simp] theorem cast_trans {α β γ} (h : α = β) (h2 : β = γ) :
-    (Equiv.cast h).trans (Equiv.cast h2) = Equiv.cast (h.trans h2) :=
+theorem cast_trans {α β γ} (h : α = β) (h2 : β = γ) :
+    Equiv.cast (h.trans h2) = (Equiv.cast h).trans (Equiv.cast h2) :=
   ext fun x => by substs h h2; rfl
 
 theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ a ≍ b := by

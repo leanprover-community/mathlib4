@@ -3,8 +3,9 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.GroupTheory.Perm.Cycle.Concrete
+public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 
 /-! # Possible cycle types of permutations
 
@@ -13,6 +14,8 @@ import Mathlib.GroupTheory.Perm.Cycle.Concrete
   its sum is at most `Fintype.card α` and its members are at least 2.
 
 -/
+
+public section
 
 variable (α : Type*) [DecidableEq α] [Fintype α]
 
@@ -103,19 +106,12 @@ theorem Equiv.Perm.exists_with_cycleType_iff {m : Multiset ℕ} :
       apply List.map_congr_left
       intro x hx; simp only [Function.comp_apply]
       rw [List.support_formPerm_of_nodup x (hp_nodup x hx)]
-      ·-- length
+      · -- length
         rw [List.toFinset_card_of_nodup (hp_nodup x hx)]
       · -- length >= 1
         grind
     · -- cycles
-      intro g
-      rw [List.mem_map]
-      rintro ⟨x, hx, rfl⟩
-      have hx_nodup : x.Nodup := hp_nodup x hx
-      rw [← Cycle.formPerm_coe x hx_nodup]
-      apply Cycle.isCycle_formPerm
-      rw [Cycle.nontrivial_coe_nodup_iff hx_nodup]
-      exact hp2 x hx
+      simpa using fun a b ↦ List.isCycle_formPerm (hp_nodup a b) (hp2 a b)
     · -- disjoint
       rw [List.pairwise_map]
       apply List.Pairwise.imp_of_mem _ hp_disj

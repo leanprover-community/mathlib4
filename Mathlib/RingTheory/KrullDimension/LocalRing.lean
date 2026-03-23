@@ -3,15 +3,19 @@ Copyright (c) 2025 Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang
 -/
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.KrullDimension.Field
-import Mathlib.RingTheory.KrullDimension.Zero
+module
+
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.KrullDimension.Field
+public import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 # The Krull dimension of a local ring
 
 In this file, we proved some results about the Krull dimension of a local ring.
 -/
+
+public section
 
 lemma ringKrullDim_eq_one_iff_of_isLocalRing_isDomain {R : Type*}
     [CommRing R] [IsLocalRing R] [IsDomain R] : ringKrullDim R = 1 ↔ ¬ IsField R ∧

@@ -3,16 +3,18 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.IsManifold.Basic
-import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
-import Mathlib.Analysis.InnerProductSpace.PiL2
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.WithLp
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 /-!
 # Constructing examples of manifolds over ℝ
 
 We introduce the necessary bits to be able to define manifolds modelled over `ℝ^n`, boundaryless
 or with boundary or with corners. As a concrete example, we construct explicitly the manifold with
-boundary structure on the real interval `[x, y]`, and prove that its boundary is indeed `{x,y}`
+boundary structure on the real interval `[x, y]`, and prove that its boundary is indeed `{x, y}`
 whenever `x < y`. As a corollary, a product `M × [x, y]` with a manifold `M` without boundary
 has boundary `M × {x, y}`.
 
@@ -42,9 +44,11 @@ The manifold structure on the interval `[x, y] = Icc x y` requires the assumptio
 typeclass. We provide it as `[Fact (x < y)]`.
 -/
 
+@[expose] public section
+
 noncomputable section
 
-open Set Function
+open Set Function WithLp
 
 open scoped Manifold ContDiff ENNReal
 
@@ -74,9 +78,9 @@ instance [NeZero n] : TopologicalSpace (EuclideanHalfSpace n) :=
 instance : TopologicalSpace (EuclideanQuadrant n) :=
   instTopologicalSpaceSubtype
 
-instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) := ⟨⟨fun _ ↦ 0, by simp⟩⟩
+instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) := ⟨⟨0, by simp⟩⟩
 
-instance {n : ℕ} : Zero (EuclideanQuadrant n) := ⟨⟨fun _ ↦ 0, by simp⟩⟩
+instance {n : ℕ} : Zero (EuclideanQuadrant n) := ⟨⟨0, by simp⟩⟩
 
 instance [NeZero n] : Inhabited (EuclideanHalfSpace n) :=
   ⟨0⟩
@@ -86,12 +90,12 @@ instance : Inhabited (EuclideanQuadrant n) :=
 
 @[ext]
 theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=
-  Subtype.eq h
+  Subtype.ext h
 
 @[ext]
 theorem EuclideanHalfSpace.ext [NeZero n] (x y : EuclideanHalfSpace n)
     (h : x.1 = y.1) : x = y :=
-  Subtype.eq h
+  Subtype.ext h
 
 theorem EuclideanHalfSpace.convex [NeZero n] :
     Convex ℝ { x : EuclideanSpace ℝ (Fin n) | 0 ≤ x 0 } :=
@@ -121,26 +125,26 @@ theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
 @[simp]
 theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a < y i } := by
-  let f : StrongDual ℝ (Π _ : Fin n, ℝ) := ContinuousLinearMap.proj i
+  let f : PiLp p (fun _ : Fin n ↦ ℝ) → ℝ := fun x ↦ x i
   change interior (f ⁻¹' Ici a) = f ⁻¹' Ioi a
-  rw [f.interior_preimage, interior_Ici]
-  apply Function.surjective_eval
+  rw [← (PiLp.isOpenMap_apply p _ i).preimage_interior_eq_interior_preimage, interior_Ici]
+  fun_prop
 
 @[simp]
 theorem closure_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a ≤ y i } := by
-  let f : StrongDual ℝ (Π _ : Fin n, ℝ) := ContinuousLinearMap.proj i
+  let f : PiLp p (fun _ : Fin n ↦ ℝ) → ℝ := fun x ↦ x i
   change closure (f ⁻¹' Ici a) = f ⁻¹' Ici a
-  rw [f.closure_preimage, closure_Ici]
-  apply Function.surjective_eval
+  rw [← (PiLp.isOpenMap_apply p _ i).preimage_closure_eq_closure_preimage, closure_Ici]
+  fun_prop
 
 @[simp]
 theorem closure_open_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a < y i } = { y | a ≤ y i } := by
-  let f : StrongDual ℝ (Π _ : Fin n, ℝ) := ContinuousLinearMap.proj i
+  let f : PiLp p (fun _ : Fin n ↦ ℝ) → ℝ := fun x ↦ x i
   change closure (f ⁻¹' Ioi a) = f ⁻¹' Ici a
-  rw [f.closure_preimage, closure_Ioi]
-  apply Function.surjective_eval
+  rw [← (PiLp.isOpenMap_apply p _ i).preimage_closure_eq_closure_preimage, closure_Ioi]
+  fun_prop
 
 @[simp]
 theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
@@ -155,18 +159,19 @@ theorem range_euclideanQuadrant (n : ℕ) :
 theorem interior_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
       { y | ∀ i : Fin n, a < y i } := by
-  let f : Fin n → StrongDual ℝ (Π _ : Fin n, ℝ) := fun i ↦ ContinuousLinearMap.proj i
-  have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i )⁻¹' Ici a := by
+  let f i : PiLp p (fun _ : Fin n ↦ ℝ) → ℝ := fun x ↦ x i
+  have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i) ⁻¹' Ici a := by
     ext; simp; rfl
-  have h' : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a < y i } = ⋂ i, (f i )⁻¹' Ioi a := by
+  have h' : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a < y i } = ⋂ i, (f i) ⁻¹' Ioi a := by
     ext; simp; rfl
   rw [h, h', interior_iInter_of_finite]
   apply iInter_congr fun i ↦ ?_
-  rw [(f i).interior_preimage, interior_Ici]
-  apply Function.surjective_eval
+  rw [← (PiLp.isOpenMap_apply p _ i).preimage_interior_eq_interior_preimage, interior_Ici]
+  fun_prop
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanHalfSpace n)`, used as
 a model for manifolds with boundary. In the scope `Manifold`, use the shortcut `𝓡∂ n`.
@@ -174,15 +179,17 @@ a model for manifolds with boundary. In the scope `Manifold`, use the shortcut `
 def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n) where
   toFun := Subtype.val
-  invFun x := ⟨update x 0 (max (x 0) 0), by simp⟩
+  invFun x := ⟨toLp 2 (update x 0 (max (x 0) 0)), by simp⟩
   source := univ
   target := { x | 0 ≤ x 0 }
   map_source' x _ := x.property
   map_target' _ _ := mem_univ _
   left_inv' := fun ⟨xval, xprop⟩ _ => by
-    rw [Subtype.mk_eq_mk, update_eq_iff]
+    rw [Subtype.mk_eq_mk, ← WithLp.equiv_symm_apply, Equiv.symm_apply_eq, update_eq_iff]
     exact ⟨max_eq_left xprop, fun i _ => rfl⟩
-  right_inv' _ hx := update_eq_iff.2 ⟨max_eq_left hx, fun _ _ => rfl⟩
+  right_inv' _ hx := by
+    rw [Subtype.coe_mk, ← WithLp.equiv_symm_apply, Equiv.symm_apply_eq, update_eq_iff]
+    exact ⟨max_eq_left hx, fun _ _ => rfl⟩
   source_eq := rfl
   convex_range' := by
     simp only [instIsRCLikeNormedField, ↓reduceDIte]
@@ -191,24 +198,27 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     exact EuclideanHalfSpace.convex (n := n)
   nonempty_interior' := by
     rw [range_euclideanHalfSpace, interior_halfSpace]
-    refine ⟨fun i ↦ 1, by simp⟩
+    exact ⟨toLp 2 fun i ↦ 1, by simp⟩
   continuous_toFun := continuous_subtype_val
   continuous_invFun := by
-    exact (continuous_id.update 0 <| (continuous_apply 0).max continuous_const).subtype_mk _
+    exact ((PiLp.continuous_toLp 2 _).comp <| (PiLp.continuous_ofLp 2 _).update 0 <|
+      (PiLp.continuous_apply 2 _ 0).max continuous_const).subtype_mk _
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanQuadrant n)`, used as a
 model for manifolds with corners -/
 def modelWithCornersEuclideanQuadrant (n : ℕ) :
     ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n) where
   toFun := Subtype.val
-  invFun x := ⟨fun i => max (x i) 0, fun i => by simp only [le_refl, or_true, le_max_iff]⟩
+  invFun x := ⟨toLp 2 fun i ↦ max (x i) 0,
+    fun i ↦ by simp only [le_sup_right]⟩
   source := univ
   target := { x | ∀ i, 0 ≤ x i }
   map_source' x _ := x.property
   map_target' _ _ := mem_univ _
-  left_inv' x _ := by ext i; simp only [x.2 i, max_eq_left]
-  right_inv' x hx := by ext1 i; simp only [hx i, max_eq_left]
+  left_inv' x _ := by ext i; simp only [x.2 i, sup_of_le_left]
+  right_inv' x hx := by ext1 i; simp only [hx i, sup_of_le_left]
   source_eq := rfl
   convex_range' := by
     simp only [instIsRCLikeNormedField, ↓reduceDIte]
@@ -217,10 +227,10 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
     exact EuclideanQuadrant.convex
   nonempty_interior' := by
     rw [range_euclideanQuadrant, interior_euclideanQuadrant]
-    exact ⟨fun i ↦ 1, by simp⟩
+    exact ⟨toLp 2 fun i ↦ 1, by simp⟩
   continuous_toFun := continuous_subtype_val
-  continuous_invFun := Continuous.subtype_mk
-    (continuous_pi fun i => (continuous_id.max continuous_const).comp (continuous_apply i)) _
+  continuous_invFun := Continuous.subtype_mk ((PiLp.continuous_toLp 2 _).comp <|
+    (continuous_pi fun i ↦ ((PiLp.continuous_apply 2 _ i).max continuous_const))) _
 
 /-- The model space used to define `n`-dimensional real manifolds without boundary. -/
 scoped[Manifold]
@@ -255,6 +265,7 @@ lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
       apply range_euclideanHalfSpace
     _ = { y | 0 = y 0 } := frontier_halfSpace 2 _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
 -/
@@ -262,45 +273,35 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     OpenPartialHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
   source := { z : Icc x y | z.val < y }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
-  toFun := fun z : Icc x y => ⟨fun _ => z.val - x, sub_nonneg.mpr z.property.1⟩
+  toFun := fun z : Icc x y => ⟨toLp 2 fun _ ↦ z.val - x, sub_nonneg.mpr z.property.1⟩
   invFun z := ⟨min (z.val 0 + x) y, by simp [z.prop, h.out.le]⟩
-  map_source' := by simp only [imp_self, sub_lt_sub_iff_right, mem_setOf_eq, forall_true_iff]
+  map_source' := by simp only [mem_setOf_eq, Fin.isValue, sub_lt_sub_iff_right,
+    imp_self, implies_true]
   map_target' := by
     simp only [min_lt_iff, mem_setOf_eq]; intro z hz; left
     linarith
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
     simp only [mem_setOf_eq, mem_Icc] at hz h'z
-    simp only [hz, min_eq_left, sub_add_cancel]
+    simp only [Fin.isValue, sub_add_cancel, hz, inf_of_le_left]
   right_inv' := by
     rintro ⟨z, hz⟩ h'z
     rw [Subtype.mk_eq_mk]
-    funext i
+    ext i
     dsimp at hz h'z
     have A : x + z 0 ≤ y := by linarith
     rw [Subsingleton.elim i 0]
-    simp only [A, add_comm, add_sub_cancel_left, min_eq_left]
+    simp only [Fin.isValue, add_comm, A, inf_of_le_left, add_sub_cancel_left]
   open_source :=
     haveI : IsOpen { z : ℝ | z < y } := isOpen_Iio
     this.preimage continuous_subtype_val
   open_target := by
     have : IsOpen { z : ℝ | z < y - x } := isOpen_Iio
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
-      this.preimage (@continuous_apply (Fin 1) (fun _ => ℝ) _ 0)
+      this.preimage (@PiLp.continuous_apply 2 (Fin 1) (fun _ => ℝ) _ 0)
     exact this.preimage continuous_subtype_val
-  continuousOn_toFun := by
-    apply Continuous.continuousOn
-    apply Continuous.subtype_mk
-    have : Continuous fun (z : ℝ) (_ : Fin 1) => z - x :=
-      Continuous.sub (continuous_pi fun _ => continuous_id) continuous_const
-    exact this.comp continuous_subtype_val
-  continuousOn_invFun := by
-    apply Continuous.continuousOn
-    apply Continuous.subtype_mk
-    have A : Continuous fun z : ℝ => min (z + x) y :=
-      (continuous_id.add continuous_const).min continuous_const
-    have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) => z 0 := continuous_apply 0
-    exact (A.comp B).comp continuous_subtype_val
+  continuousOn_toFun := by fun_prop
+  continuousOn_invFun := by fun_prop
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
 
@@ -329,6 +330,7 @@ lemma IccLeftChart_extend_bot_mem_frontier :
   rw [IccLeftChart_extend_bot, frontier_range_modelWithCornersEuclideanHalfSpace,
     mem_setOf, PiLp.zero_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The right chart for the topological space `[x, y]`, defined on `(x,y]` and sending `y` to `0` in
 `EuclideanHalfSpace 1`.
 -/
@@ -336,46 +338,37 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     OpenPartialHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
   source := { z : Icc x y | x < z.val }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
-  toFun z := ⟨fun _ => y - z.val, sub_nonneg.mpr z.property.2⟩
+  toFun z := ⟨toLp 2 fun _ ↦ y - z.val, sub_nonneg.mpr z.property.2⟩
   invFun z :=
     ⟨max (y - z.val 0) x, by simp [z.prop, h.out.le, sub_eq_add_neg]⟩
-  map_source' := by simp only [imp_self, mem_setOf_eq, sub_lt_sub_iff_left, forall_true_iff]
+  map_source' := by simp only [mem_setOf_eq, Fin.isValue, sub_lt_sub_iff_left,
+    imp_self, implies_true]
   map_target' := by
     simp only [lt_max_iff, mem_setOf_eq]; intro z hz; left
     linarith
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
     simp only [mem_setOf_eq, mem_Icc] at hz h'z
-    simp only [hz, sub_eq_add_neg, max_eq_left, add_add_neg_cancel'_right, neg_add_rev, neg_neg]
+    simp only [Fin.isValue, sub_eq_add_neg, neg_add_rev, neg_neg,
+      add_neg_cancel_comm_assoc, hz, sup_of_le_left]
   right_inv' := by
     rintro ⟨z, hz⟩ h'z
     rw [Subtype.mk_eq_mk]
-    funext i
+    ext i
     dsimp at hz h'z
     have A : x ≤ y - z 0 := by linarith
     rw [Subsingleton.elim i 0]
-    simp only [A, sub_sub_cancel, max_eq_left]
+    simp only [Fin.isValue, A, sup_of_le_left, sub_sub_cancel]
   open_source :=
     haveI : IsOpen { z : ℝ | x < z } := isOpen_Ioi
     this.preimage continuous_subtype_val
   open_target := by
     have : IsOpen { z : ℝ | z < y - x } := isOpen_Iio
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
-      this.preimage (@continuous_apply (Fin 1) (fun _ => ℝ) _ 0)
+      this.preimage (@PiLp.continuous_apply 2 (Fin 1) (fun _ ↦ ℝ) _ 0)
     exact this.preimage continuous_subtype_val
-  continuousOn_toFun := by
-    apply Continuous.continuousOn
-    apply Continuous.subtype_mk
-    have : Continuous fun (z : ℝ) (_ : Fin 1) => y - z :=
-      continuous_const.sub (continuous_pi fun _ => continuous_id)
-    exact this.comp continuous_subtype_val
-  continuousOn_invFun := by
-    apply Continuous.continuousOn
-    apply Continuous.subtype_mk
-    have A : Continuous fun z : ℝ => max (y - z) x :=
-      (continuous_const.sub continuous_id).max continuous_const
-    have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) => z 0 := continuous_apply 0
-    exact (A.comp B).comp continuous_subtype_val
+  continuousOn_toFun := by fun_prop
+  continuousOn_invFun := by fun_prop
 
 lemma IccRightChart_extend_top :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ = 0 := by
@@ -443,10 +436,7 @@ lemma boundary_Icc : (𝓡∂ 1).boundary (Icc x y) = {⊥, ⊤} := by
   · apply iff_of_false
     · simpa [← mem_compl_iff, ModelWithCorners.compl_boundary] using
         Icc_isInteriorPoint_interior hp
-    · rw [mem_insert_iff, mem_singleton_iff]
-      push_neg
-      constructor <;> by_contra h <;> rw [congrArg Subtype.val h] at hp
-      exacts [left_mem_Ioo.mp hp, right_mem_Ioo.mp hp]
+    · rintro (rfl | rfl) <;> simp at hp
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
@@ -461,8 +451,8 @@ lemma boundary_product [I.Boundaryless] :
 instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     IsManifold (𝓡∂ 1) n (Icc x y) := by
   have M : ContDiff ℝ n (show EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
-      from fun z i => -z i + (y - x)) :=
-    contDiff_id.neg.add contDiff_const
+      from fun z ↦ toLp 2 fun i ↦ -z i + (y - x)) :=
+    PiLp.contDiff_toLp.comp <| PiLp.contDiff_ofLp.neg.add contDiff_const
   apply isManifold_of_contDiffOn
   intro e e' he he'
   simp only [atlas] at he he'
@@ -493,7 +483,7 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart,
       update_self, max_eq_left, hz₀, hz₁.le, mfld_simps]
     abel
-  ·-- `e = right chart`, `e' = right chart`
+  · -- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
 /-! Register the manifold structure on `Icc 0 1`. These are merely special cases of

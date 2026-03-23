@@ -3,8 +3,10 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.GroupTheory.SpecificGroups.Dihedral
+module
+
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.GroupTheory.SpecificGroups.Dihedral
 
 /-!
 # Quaternion Groups
@@ -40,6 +42,8 @@ Show that `QuaternionGroup 2 ≃* (Quaternion ℤ)ˣ`.
 
 -/
 
+@[expose] public section
+
 
 /-- The (generalised) quaternion group `QuaternionGroup n` of order `4n`. It can be defined by the
 presentation $\langle a, x | a^{2n} = 1, x^2 = a^n, x^{-1}ax=a^{-1}\rangle$. We write `a i` for
@@ -54,7 +58,8 @@ namespace QuaternionGroup
 
 variable {n : ℕ}
 
-/-- Multiplication of the dihedral group.
+set_option backward.privateInPublic true in
+/-- Multiplication of the quaternion group.
 -/
 private def mul : QuaternionGroup n → QuaternionGroup n → QuaternionGroup n
   | a i, a j => a (i + j)
@@ -62,20 +67,26 @@ private def mul : QuaternionGroup n → QuaternionGroup n → QuaternionGroup n
   | xa i, a j => xa (i + j)
   | xa i, xa j => a (n + j - i)
 
+set_option backward.privateInPublic true in
 /-- The identity `1` is given by `aⁱ`.
 -/
 private def one : QuaternionGroup n :=
   a 0
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Inhabited (QuaternionGroup n) :=
   ⟨one⟩
 
+set_option backward.privateInPublic true in
 /-- The inverse of an element of the quaternion group.
 -/
 private def inv : QuaternionGroup n → QuaternionGroup n
   | a i => a (-i)
   | xa i => xa (n + i)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The group structure on `QuaternionGroup n`.
 -/
 instance : Group (QuaternionGroup n) where
@@ -125,6 +136,7 @@ theorem a_zero : a 0 = (1 : QuaternionGroup n) := by
 theorem one_def : (1 : QuaternionGroup n) = a 0 :=
   rfl
 
+set_option backward.privateInPublic true in
 private def fintypeHelper : ZMod (2 * n) ⊕ ZMod (2 * n) ≃ QuaternionGroup n where
   invFun i :=
     match i with
@@ -150,6 +162,8 @@ def quaternionGroupZeroEquivDihedralGroupZero : QuaternionGroup 0 ≃* DihedralG
   right_inv := by rintro (k | k) <;> rfl
   map_mul' := by rintro (k | k) (l | l) <;> simp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `0 < n`, then `QuaternionGroup n` is a finite group.
 -/
 instance [NeZero n] : Fintype (QuaternionGroup n) :=

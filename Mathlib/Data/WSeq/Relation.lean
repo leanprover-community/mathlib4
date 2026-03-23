@@ -3,8 +3,10 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.WSeq.Basic
-import Mathlib.Logic.Relation
+module
+
+public import Mathlib.Data.WSeq.Basic
+public import Mathlib.Logic.Relation
 
 /-!
 # Relations between and equivalence of weak sequences
@@ -19,6 +21,8 @@ ignoring computation time (`none` elements). Equivalence is then defined in the 
   elements are `R`-related.
 * `Stream'.WSeq.Equiv`: Two sequences are equivalent if they are `LiftRel (· = ·)`-related.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -87,7 +91,6 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β
         · exact liftRel_destruct h
         · assumption
       apply Computation.LiftRel.imp _ _ _ h
-      intro a b
       apply LiftRelO.imp_right
       intro s t
       apply Or.inl⟩⟩
@@ -387,7 +390,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
       simp only [destruct_join]
       exact ⟨none, mem_bind mT (ret_mem _), by rw [eq_of_pure_mem rs2.mem]; trivial⟩
     | some (s, S'), some (t, T'), ⟨st, ST'⟩, _, rs2, mT => by
-      simp? [destruct_append]  at rs2  says simp only [destruct_join.aux, destruct_append] at rs2
+      simp? [destruct_append] at rs2 says simp only [destruct_join.aux, destruct_append] at rs2
       exact
         let ⟨k1, rs3, ek⟩ := of_results_think rs2
         let ⟨o', m1, n1, rs4, rs5, ek1⟩ := of_results_bind rs3

@@ -3,11 +3,13 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Group.Constructions
-import Mathlib.Analysis.Normed.Group.Submodule
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
-import Mathlib.Topology.Algebra.Group.AddTorsor
-import Mathlib.Topology.MetricSpace.IsometricSMul
+module
+
+public import Mathlib.Analysis.Normed.Group.Constructions
+public import Mathlib.Analysis.Normed.Group.Submodule
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+public import Mathlib.Topology.Algebra.Group.AddTorsor
+public import Mathlib.Topology.MetricSpace.IsometricSMul
 
 /-!
 # Torsors of additive normed group actions.
@@ -16,6 +18,8 @@ This file defines torsors of additive normed group actions, with a
 metric space structure.  The motivating case is Euclidean affine
 spaces.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -177,6 +181,7 @@ theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 
 /-- The pseudodistance defines a pseudometric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/
+@[implicit_reducible]
 def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAddCommGroup V]
     [AddTorsor V P] : PseudoMetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
@@ -188,6 +193,7 @@ def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAd
 
 /-- The distance defines a metric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/
+@[implicit_reducible]
 def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormedAddCommGroup V]
     [AddTorsor V P] : MetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
@@ -225,3 +231,22 @@ theorem uniformContinuous_vsub : UniformContinuous fun x : P × P => x.1 -ᵥ x.
 instance : IsTopologicalAddTorsor P where
   continuous_vadd := uniformContinuous_vadd.continuous
   continuous_vsub := uniformContinuous_vsub.continuous
+
+/-- Pullback of a normed add torsor along an injective map. -/
+abbrev Function.Injective.normedAddTorsor {Q : Type*} [VAdd V Q] [VSub V Q]
+    [Nonempty Q] [PseudoMetricSpace Q] (f : Q → P) (hf : Function.Injective f)
+    (vadd : ∀ (c : V) (x : Q), f (c +ᵥ x) = c +ᵥ f x)
+    (vsub : ∀ (x y : Q), x -ᵥ y = f x -ᵥ f y)
+    (norm : ∀ (x y : Q), dist x y = dist (f x) (f y)) : NormedAddTorsor V Q where
+  __ := hf.addTorsor f vadd vsub
+  dist_eq_norm' x y := by simp [norm, NormedAddTorsor.dist_eq_norm', vsub]
+
+/-- Pushforward of a normed add torsor along a surjective map. -/
+abbrev Function.Surjective.normedAddTorsor
+    {Q : Type*} [VAdd V Q] [VSub V Q] [PseudoMetricSpace Q]
+    (f : P → Q) (hf : Surjective f)
+    (vadd : ∀ (c : V) (x : P), f (c +ᵥ x) = c +ᵥ f x)
+    (vsub : ∀ (x y : P), x -ᵥ y = f x -ᵥ f y)
+    (norm : ∀ (x y : P), dist x y = dist (f x) (f y)) : NormedAddTorsor V Q where
+  __ := hf.addTorsor f vadd vsub
+  dist_eq_norm' := by simp [hf.forall, ← norm, NormedAddTorsor.dist_eq_norm', ← vsub]

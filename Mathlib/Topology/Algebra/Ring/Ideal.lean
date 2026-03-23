@@ -3,9 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.Group.Quotient
-import Mathlib.RingTheory.Ideal.Quotient.Defs
+module
+
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Ideals and quotients of topological rings
@@ -14,6 +16,8 @@ In this file we define `Ideal.closure` to be the topological closure of an ideal
 ring. We also define a `TopologicalSpace` structure on the quotient of a topological ring by an
 ideal and prove that the quotient is a topological ring.
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -40,6 +44,20 @@ https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234852.
 -/
 theorem Ideal.closure_eq_of_isClosed (I : Ideal R) (hI : IsClosed (I : Set R)) : I.closure = I :=
   SetLike.ext' hI.closure_eq
+
+variable (R)
+
+/-- The connected component of zero in a topological ring as an ideal. -/
+def Ideal.connectedComponentOfZero : Ideal R where
+  __ := AddSubgroup.connectedComponentOfZero R
+  smul_mem' c x h := IsConnected.subset_connectedComponent
+    (isConnected_connectedComponent.image _ (continuous_const_mul c).continuousOn)
+    ⟨0, mem_connectedComponent, mul_zero c⟩ ⟨x, h, rfl⟩
+
+@[simp]
+theorem Ideal.coe_connectedComponentOfZero :
+    (Ideal.connectedComponentOfZero R : Set R) = connectedComponent 0 :=
+  rfl
 
 end Ring
 

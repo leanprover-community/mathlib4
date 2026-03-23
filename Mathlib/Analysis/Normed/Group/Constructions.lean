@@ -3,9 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.PUnit
-import Mathlib.Algebra.Group.ULift
-import Mathlib.Analysis.Normed.Group.Basic
+module
+
+public import Mathlib.Algebra.Group.PUnit
+public import Mathlib.Algebra.Group.ULift
+public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Product of normed groups and other constructions
@@ -13,6 +15,8 @@ import Mathlib.Analysis.Normed.Group.Basic
 This file constructs the infinity norm on finite products of normed groups and provides instances
 for type synonyms.
 -/
+
+@[expose] public section
 
 open NNReal
 
@@ -131,12 +135,12 @@ instance Multiplicative.toNNNorm : NNNorm (Multiplicative E) := ‹NNNorm E›
 end NNNorm
 
 instance Additive.seminormedAddGroup [SeminormedGroup E] : SeminormedAddGroup (Additive E) where
-  dist_eq x y := dist_eq_norm_div x.toMul y.toMul
+  dist_eq x y := dist_eq_norm_inv_mul x.toMul y.toMul
 
 
 instance Multiplicative.seminormedGroup [SeminormedAddGroup E] :
     SeminormedGroup (Multiplicative E) where
-  dist_eq x y := dist_eq_norm_sub x.toAdd y.toAdd
+  dist_eq x y := dist_eq_norm_neg_add x.toAdd y.toAdd
 
 instance Additive.seminormedCommGroup [SeminormedCommGroup E] :
     SeminormedAddCommGroup (Additive E) :=
@@ -245,11 +249,10 @@ variable [SeminormedGroup E] [SeminormedGroup F]
 /-- Product of seminormed groups, using the sup norm. -/
 @[to_additive /-- Product of seminormed groups, using the sup norm. -/]
 instance Prod.seminormedGroup : SeminormedGroup (E × F) where
-  dist_eq x y := by
-    simp only [Prod.norm_def, Prod.dist_eq, dist_eq_norm_div, Prod.fst_div, Prod.snd_div]
+  dist_eq x y := by simp [Prod.norm_def, Prod.dist_eq, dist_eq_norm_inv_mul]
 
 /-- Multiplicative version of `Prod.nnnorm_def`.
-Earlier, this names was used for the additive version. -/
+Earlier, this name was used for the additive version. -/
 @[to_additive Prod.nnnorm_def]
 lemma Prod.nnnorm_def' (x : E × F) : ‖x‖₊ = max ‖x.1‖₊ ‖x.2‖₊ := rfl
 
@@ -291,14 +294,15 @@ variable [Fintype ι]
 section SeminormedGroup
 variable [∀ i, SeminormedGroup (G i)] [SeminormedGroup E] (f : ∀ i, G i) {x : ∀ i, G i} {r : ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Finite product of seminormed groups, using the sup norm. -/
 @[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
 instance Pi.seminormedGroup : SeminormedGroup (∀ i, G i) where
   norm f := ↑(Finset.univ.sup fun b => ‖f b‖₊)
   dist_eq x y :=
     congr_arg (toReal : ℝ≥0 → ℝ) <|
-      congr_arg (Finset.sup Finset.univ) <|
-        funext fun a => show nndist (x a) (y a) = ‖x a / y a‖₊ from nndist_eq_nnnorm_div (x a) (y a)
+      congr_arg (Finset.sup Finset.univ) <| funext fun a =>
+        show nndist (x a) (y a) = ‖(x a)⁻¹ * y a‖₊ from nndist_eq_nnnorm_inv_mul (x a) (y a)
 
 @[to_additive Pi.norm_def]
 lemma Pi.norm_def' : ‖f‖ = ↑(Finset.univ.sup fun b => ‖f b‖₊) := rfl
@@ -393,6 +397,7 @@ instance Pi.normedCommGroup [∀ i, NormedCommGroup (G i)] : NormedCommGroup (�
     mul_comm := mul_comm
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Pi.nnnorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
     ‖Pi.single i y‖₊ = ‖y‖₊ := by
   have H : ∀ b, ‖single i y b‖₊ = single (M := fun _ ↦ ℝ≥0) i ‖y‖₊ b := by
@@ -425,7 +430,7 @@ but that case would likely never be used.
 instance instSeminormedAddGroup [SeminormedAddGroup E] : SeminormedAddGroup Eᵐᵒᵖ where
   __ := instPseudoMetricSpace
   norm x := ‖x.unop‖
-  dist_eq _ _ := dist_eq_norm _ _
+  dist_eq _ _ := dist_eq_norm_neg_add _ _
 
 lemma norm_op [SeminormedAddGroup E] (a : E) : ‖MulOpposite.op a‖ = ‖a‖ := rfl
 
@@ -440,7 +445,7 @@ instance instNormedAddGroup [NormedAddGroup E] : NormedAddGroup Eᵐᵒᵖ where
   __ := instSeminormedAddGroup
 
 instance instSeminormedAddCommGroup [SeminormedAddCommGroup E] : SeminormedAddCommGroup Eᵐᵒᵖ where
-  dist_eq _ _ := dist_eq_norm _ _
+  dist_eq _ _ := dist_eq_norm_neg_add _ _
 
 instance instNormedAddCommGroup [NormedAddCommGroup E] : NormedAddCommGroup Eᵐᵒᵖ where
   __ := instSeminormedAddCommGroup

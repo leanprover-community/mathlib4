@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Data.SetLike.Fintype
-import Mathlib.GroupTheory.PGroup
-import Mathlib.GroupTheory.NoncommPiCoprod
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Data.SetLike.Fintype
+public import Mathlib.GroupTheory.PGroup
+public import Mathlib.GroupTheory.NoncommPiCoprod
 
 /-!
 # Sylow theorems
@@ -38,6 +40,8 @@ The Sylow theorems are the following results for every finite group `G` and ever
   If the number of Sylow `p`-subgroups is finite, then it is congruent to `1` modulo `p`.
 -/
 
+@[expose] public section
+
 
 open MulAction Subgroup
 
@@ -65,6 +69,8 @@ theorem ext {P Q : Sylow p G} (h : (P : Subgroup G) = Q) : P = Q := by cases P; 
 instance : SetLike (Sylow p G) G where
   coe := (↑)
   coe_injective' _ _ h := ext (SetLike.coe_injective h)
+
+instance : PartialOrder (Sylow p G) := .ofSetLike (Sylow p G) G
 
 instance : SubgroupClass (Sylow p G) G where
   mul_mem := Subgroup.mul_mem _
@@ -204,6 +210,12 @@ theorem finite_of_injective {H : Type*} [Group H] {f : H →* G}
 /-- If `H` is a subgroup of `G`, then `Finite (Sylow p G)` implies `Finite (Sylow p H)`. -/
 instance (H : Subgroup G) [Finite (Sylow p G)] : Finite (Sylow p H) :=
   finite_of_injective H.subtype_injective
+
+/-- If a Sylow `p`-subgroup has finite index, then the number of Sylow `p`-subgroups is finite. -/
+theorem finite_of_finiteIndex (P : Sylow p G) [P.FiniteIndex] : Finite (Sylow p G) := by
+  apply finite_of_ker_is_pGroup (f := QuotientGroup.mk' P.normalCore)
+  rw [QuotientGroup.ker_mk']
+  exact P.isPGroup'.to_le P.normalCore_le
 
 open Pointwise
 
@@ -423,9 +435,10 @@ theorem not_dvd_index' [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
   exact hp.1.not_dvd_mul hP (not_dvd_card_sylow p G)
 
 /-- A Sylow p-subgroup has index indivisible by `p`. -/
-theorem not_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) [P.FiniteIndex] :
-    ¬ p ∣ P.index :=
-  P.not_dvd_index' Nat.card_pos.ne'
+theorem not_dvd_index [Fact p.Prime] (P : Sylow p G) [P.FiniteIndex] :
+    ¬ p ∣ P.index := by
+  have := P.finite_of_finiteIndex
+  exact P.not_dvd_index' Nat.card_pos.ne'
 
 section mapSurjective
 
@@ -522,8 +535,8 @@ theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Fin
 def fixedPointsMulLeftCosetsEquivQuotient (H : Subgroup G) [Finite (H : Set G)] :
     MulAction.fixedPoints H (G ⧸ H) ≃
       normalizer H ⧸ Subgroup.comap ((normalizer H).subtype : normalizer H →* G) H :=
-  @subtypeQuotientEquivQuotientSubtype G (normalizer H : Set G) (_) (_)
-    (MulAction.fixedPoints H (G ⧸ H))
+  @subtypeQuotientEquivQuotientSubtype G (· ∈ normalizer H) (_) (_)
+    (· ∈ MulAction.fixedPoints H (G ⧸ H))
     (fun _ => (@mem_fixedPoints_mul_left_cosets_iff_mem_normalizer _ _ _ ‹_› _).symm)
     (by
       intros
@@ -703,6 +716,7 @@ theorem card_eq_multiplicity [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow
   exact P.1.card_subgroup_dvd_card
 
 /-- If `G` has a normal Sylow `p`-subgroup, then it is the only Sylow `p`-subgroup. -/
+@[implicit_reducible]
 noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (h : P.Normal) : Unique (Sylow p G) := by
   refine { uniq := fun Q ↦ ?_ }
@@ -801,6 +815,6 @@ noncomputable def directProductOfNormal [Finite G]
       _ = ∏ p ∈ ps, p ^ (Nat.card G).factorization p :=
         (Finset.prod_finset_coe (fun p => p ^ (Nat.card G).factorization p) _)
       _ = (Nat.card G).factorization.prod (· ^ ·) := rfl
-      _ = Nat.card G := Nat.factorization_prod_pow_eq_self Nat.card_pos.ne'
+      _ = Nat.card G := Nat.prod_factorization_pow_eq_self Nat.card_pos.ne'
 
 end Sylow

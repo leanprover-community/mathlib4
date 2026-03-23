@@ -3,10 +3,12 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Harun Khan, Alex Keizer
 -/
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Data.ZMod.Defs
-import Mathlib.Data.Int.Cast.Lemmas
+module
+
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Data.ZMod.Defs
+public import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Basic Theorems About Bitvectors
@@ -17,6 +19,8 @@ because they refer to other notions defined in Mathlib.
 Please do not extend this file further: material about BitVec needed in downstream projects
 can either be PR'd to Lean, or kept downstream if it also relies on Mathlib.
 -/
+
+@[expose] public section
 
 namespace BitVec
 
@@ -70,14 +74,14 @@ lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin :=
 lemma toFin_pow (x : BitVec w) (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := by
   induction n with
   | zero => simp
-  | succ n ih => simp [ih, BitVec.pow_succ, pow_succ]
+  | succ n ih => simp [ih, BitVec.pow_succ]
 
 /-!
 ## Ring
 -/
 
 -- Verify that the `HPow` instance from Lean agrees definitionally with the instance via `Monoid`.
-example : @instHPow (Fin (2 ^ w)) ℕ Monoid.toNatPow = Lean.Grind.Fin.instHPowFinNatOfNeZero := rfl
+example : @instHPow (Fin (2 ^ w)) ℕ Monoid.toPow = Lean.Grind.Fin.instHPowFinNatOfNeZero := rfl
 
 instance : CommSemiring (BitVec w) :=
   open Fin.CommRing in

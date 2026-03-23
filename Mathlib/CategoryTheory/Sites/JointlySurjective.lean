@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Sites.Precoverage
-import Mathlib.CategoryTheory.Limits.Types.Pullbacks
+module
+
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
 # The jointly surjective precoverage
@@ -18,6 +20,8 @@ See `Mathlib/CategoryTheory/Sites/Types.lean` for the Grothendieck topology of j
 covers.
 -/
 
+@[expose] public section
+
 universe u
 
 namespace CategoryTheory
@@ -29,7 +33,7 @@ namespace Types
 /-- The jointly surjective precoverage in the category of types has the jointly surjective
 families as coverings. -/
 def jointlySurjectivePrecoverage : Precoverage (Type u) where
-  coverings X R := ∀ x : X, ∃ (Y : Type u) (g : Y ⟶ X), R g ∧ x ∈ Set.range g
+  coverings X := {R | ∀ x : X, ∃ (Y : Type u) (g : Y ⟶ X), R g ∧ x ∈ Set.range g}
 
 lemma mem_jointlySurjectivePrecoverage_iff {X : Type u} {R : Presieve X} :
     R ∈ jointlySurjectivePrecoverage X ↔
@@ -73,9 +77,17 @@ instance : jointlySurjectivePrecoverage.IsStableUnderSup where
     obtain ⟨Y, f, hf, hx⟩ := hR x
     use Y, f, .inl hf
 
+instance : Precoverage.Small.{u} jointlySurjectivePrecoverage.{u} where
+  zeroHypercoverSmall {X} E := by
+    choose i y hy using ofArrows_mem_jointlySurjectivePrecoverage_iff.mp E.mem₀
+    refine ⟨X, i, ?_⟩
+    rw [ofArrows_mem_jointlySurjectivePrecoverage_iff]
+    intro x
+    use x, y x, hy x
+
 end Types
 
-variable {C : Type*} [Category C] (F : C ⥤ Type u)
+variable {C : Type*} [Category* C] (F : C ⥤ Type u)
 
 lemma Presieve.mem_comap_jointlySurjectivePrecoverage_iff {X : C} {R : Presieve X} :
     R ∈ Types.jointlySurjectivePrecoverage.comap F X ↔

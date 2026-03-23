@@ -3,9 +3,11 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.PiNat
-import Mathlib.Topology.Metrizable.CompletelyMetrizable
-import Mathlib.Topology.Sets.Opens
+module
+
+public import Mathlib.Topology.MetricSpace.PiNat
+public import Mathlib.Topology.Metrizable.CompletelyMetrizable
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # Polish spaces
@@ -38,6 +40,8 @@ with additional properties:
   show that a set is clopenable if and only if it is Borel-measurable, see
   `isClopenable_iff_measurableSet`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -258,6 +262,7 @@ but this is nontrivial (see `isClopenable_iff_measurableSet`). -/
 def IsClopenable [t : TopologicalSpace α] (s : Set α) : Prop :=
   ∃ t' : TopologicalSpace α, t' ≤ t ∧ @PolishSpace α t' ∧ IsClosed[t'] s ∧ IsOpen[t'] s
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a closed set `s` in a Polish space, one can construct a finer Polish topology for
 which `s` is both open and closed. -/
 theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s : Set α}
@@ -278,13 +283,7 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
   · rw [← f.induced_symm]
     exact f.symm.polishSpace_induced
   · rw [isOpen_coinduced, isOpen_sum_iff]
-    simp only [preimage_preimage, f]
-    have inl (x : s) : (Equiv.Set.sumCompl s) (Sum.inl x) = x := Equiv.Set.sumCompl_apply_inl ..
-    have inr (x : ↑sᶜ) : (Equiv.Set.sumCompl s) (Sum.inr x) = x := Equiv.Set.sumCompl_apply_inr ..
-    simp_rw [t, inl, inr, Subtype.coe_preimage_self]
-    simp only [isOpen_univ, true_and]
-    rw [Subtype.preimage_coe_compl']
-    simp
+    simp [preimage_preimage, f, t]
 
 theorem IsClopenable.compl [TopologicalSpace α] {s : Set α} (hs : IsClopenable s) :
     IsClopenable sᶜ := by

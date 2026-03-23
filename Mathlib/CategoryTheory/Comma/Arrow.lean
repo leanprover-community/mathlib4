@@ -3,7 +3,9 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Comma.Basic
+module
+
+public import Mathlib.CategoryTheory.Comma.Basic
 
 /-!
 # The category of arrows
@@ -16,6 +18,8 @@ where `L` and `R` are both the identity functor.
 
 comma, arrow
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -72,6 +76,10 @@ theorem mk_eq (f : Arrow T) : Arrow.mk f.hom = f := by
   cases f
   rfl
 
+lemma mk_surjective (f : Arrow T) :
+    ∃ (X Y : T) (g : X ⟶ Y), f = Arrow.mk g :=
+  ⟨_, _, f.hom, rfl⟩
+
 theorem mk_injective (A B : T) :
     Function.Injective (Arrow.mk : (A ⟶ B) → Arrow T) := fun f g h => by
   cases h
@@ -83,6 +91,7 @@ theorem mk_inj (A B : T) {f g : A ⟶ B} : Arrow.mk f = Arrow.mk g ↔ f = g :=
 instance {X Y : T} : CoeOut (X ⟶ Y) (Arrow T) where
   coe := mk
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mk_eq_mk_iff {X Y X' Y' : T} (f : X ⟶ Y) (f' : X' ⟶ Y') :
     Arrow.mk f = Arrow.mk f' ↔
       ∃ (hX : X = X') (hY : Y = Y'), f = eqToHom hX ≫ f' ≫ eqToHom hY.symm := by
@@ -131,15 +140,18 @@ def homMk' {X Y : T} {f : X ⟶ Y} {P Q : T} {g : P ⟶ Q} (u : X ⟶ P) (v : Y 
   w := w
 
 -- `w_mk_left` is not needed, as it is a consequence of `w` and `mk_hom`.
+set_option backward.isDefEq.respectTransparency false in -- This is needed in Algebra/Homology/ShortComplex/QuasiIso.lean
 @[reassoc (attr := simp)]
 theorem w_mk_right {f : Arrow T} {X Y : T} {g : X ⟶ Y} (sq : f ⟶ mk g) :
     sq.left ≫ g = f.hom ≫ sq.right :=
   sq.w
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem w {f g : Arrow T} (sq : f ⟶ g) : sq.left ≫ g.hom = f.hom ≫ sq.right := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isIso_of_isIso_left_of_isIso_right {f g : Arrow T} (ff : f ⟶ g) [IsIso ff.left]
     [IsIso ff.right] : IsIso ff where
   out := by
@@ -167,6 +179,7 @@ theorem hom.congr_left {f g : Arrow T} {φ₁ φ₂ : f ⟶ g} (h : φ₁ = φ�
 theorem hom.congr_right {f g : Arrow T} {φ₁ φ₂ : f ⟶ g} (h : φ₁ = φ₂) : φ₁.right = φ₂.right := by
   simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iso_w {f g : Arrow T} (e : f ≅ g) : g.hom = e.inv.left ≫ f.hom ≫ e.hom.right := by
   have eq := Arrow.hom.congr_right e.inv_hom_id
   rw [Arrow.comp_right, Arrow.id_right] at eq
@@ -180,23 +193,27 @@ section
 
 variable {f g : Arrow T} (sq : f ⟶ g)
 
+set_option backward.isDefEq.respectTransparency false in
 instance isIso_left [IsIso sq] : IsIso sq.left where
   out := by
     apply Exists.intro (inv sq).left
     simp only [← Comma.comp_left, IsIso.hom_inv_id, IsIso.inv_hom_id]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 instance isIso_right [IsIso sq] : IsIso sq.right where
   out := by
     apply Exists.intro (inv sq).right
     simp only [← Comma.comp_right, IsIso.hom_inv_id, IsIso.inv_hom_id]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_of_isIso {X Y : T} {f : X ⟶ Y} {g : Arrow T} (sq : mk f ⟶ g) [IsIso sq] [IsIso f] :
     IsIso g.hom := by
   rw [iso_w' (asIso sq)]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_hom_iff_isIso_hom_of_isIso {f g : Arrow T} (sq : f ⟶ g) [IsIso sq] :
     IsIso f.hom ↔ IsIso g.hom :=
   ⟨fun _ => isIso_of_isIso sq, fun _ => isIso_of_isIso (inv sq)⟩
@@ -209,20 +226,25 @@ lemma isIso_hom_iff_isIso_of_isIso {Y Z : T} {f : Arrow T} {g : Y ⟶ Z} (sq : f
     IsIso f.hom ↔ IsIso g :=
   isIso_hom_iff_isIso_hom_of_isIso sq
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inv_left [IsIso sq] : (inv sq).left = inv sq.left :=
   IsIso.eq_inv_of_hom_inv_id <| by rw [← Comma.comp_left, IsIso.hom_inv_id, id_left]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inv_right [IsIso sq] : (inv sq).right = inv sq.right :=
   IsIso.eq_inv_of_hom_inv_id <| by rw [← Comma.comp_right, IsIso.hom_inv_id, id_right]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem left_hom_inv_right [IsIso sq] : sq.left ≫ g.hom ≫ inv sq.right = f.hom := by
   simp only [← Category.assoc, IsIso.comp_inv_eq, w]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inv_left_hom_right [IsIso sq] : inv sq.left ≫ f.hom ≫ sq.right = g.hom := by
   simp only [w, IsIso.inv_comp_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 instance mono_left [Mono sq] : Mono sq.left where
   right_cancellation {Z} φ ψ h := by
     let aux : (Z ⟶ f.left) → (Arrow.mk (𝟙 Z) ⟶ f) := fun φ =>
@@ -238,6 +260,7 @@ instance mono_left [Mono sq] : Mono sq.left where
       rw [← Arrow.w]
       simp only [← Category.assoc, h]
 
+set_option backward.isDefEq.respectTransparency false in
 instance epi_right [Epi sq] : Epi sq.right where
   left_cancellation {Z} φ ψ h := by
     let aux : (g.right ⟶ Z) → (g ⟶ Arrow.mk (𝟙 Z)) := fun φ =>
@@ -268,6 +291,7 @@ lemma inv_hom_id_right (e : f ≅ g) : e.inv.right ≫ e.hom.right = 𝟙 _ := b
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a square from an arrow `i` to an isomorphism `p`, express the source part of `sq`
 in terms of the inverse of `p`. -/
 @[simp]
@@ -275,6 +299,7 @@ theorem square_to_iso_invert (i : Arrow T) {X Y : T} (p : X ≅ Y) (sq : i ⟶ A
     i.hom ≫ sq.right ≫ p.inv = sq.left := by
   simpa only [Category.assoc] using (Iso.comp_inv_eq p).mpr (Arrow.w_mk_right sq).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a square from an isomorphism `i` to an arrow `p`, express the target part of `sq`
 in terms of the inverse of `i`. -/
 theorem square_from_iso_invert {X Y : T} (i : X ≅ Y) (p : Arrow T) (sq : Arrow.mk i.hom ⟶ p) :
@@ -282,6 +307,7 @@ theorem square_from_iso_invert {X Y : T} (i : X ≅ Y) (p : Arrow T) (sq : Arrow
 
 variable {C : Type u} [Category.{v} C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A helper construction: given a square between `i` and `f ≫ g`, produce a square between
 `i` and `g`, whose top leg uses `f`:
 ```
@@ -308,6 +334,7 @@ def leftFunc : Arrow C ⥤ C :=
 def rightFunc : Arrow C ⥤ C :=
   Comma.snd _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation from `leftFunc` to `rightFunc`, given by the arrow itself. -/
 @[simps]
 def leftToRight : (leftFunc : Arrow C ⥤ C) ⟶ rightFunc where app f := f.hom
@@ -320,6 +347,7 @@ universe v₁ v₂ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A functor `C ⥤ D` induces a functor between the corresponding arrow categories. -/
 @[simps]
 def mapArrow (F : C ⥤ D) : Arrow C ⥤ Arrow D where
@@ -360,7 +388,7 @@ instance isEquivalence_mapArrow (F : C ⥤ D) [IsEquivalence F] :
 
 end Functor
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 /-- The images of `f : Arrow C` by two isomorphic functors `F : C ⥤ D` are
 isomorphic arrows in `D`. -/

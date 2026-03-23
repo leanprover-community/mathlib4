@@ -3,7 +3,9 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Insert
+module
+
+public import Mathlib.Data.Finset.Insert
 
 /-!
 # Disjoint finite sets
@@ -20,15 +22,15 @@ finite sets, finset
 
 -/
 
+@[expose] public section
+
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice Monoid
 
 open Multiset Subtype Function
 
-universe u
-
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {ι α β γ : Type*}
 
 namespace Finset
 
@@ -49,16 +51,10 @@ theorem disjoint_left : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → a ∉ t :=
 
 alias ⟨_root_.Disjoint.notMem_of_mem_left_finset, _⟩ := disjoint_left
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.not_mem_of_mem_left_finset := Disjoint.notMem_of_mem_left_finset
-
 theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by
   rw [_root_.disjoint_comm, disjoint_left]
 
 alias ⟨_root_.Disjoint.notMem_of_mem_right_finset, _⟩ := disjoint_right
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.not_mem_of_mem_right_finset := Disjoint.notMem_of_mem_right_finset
 
 theorem disjoint_iff_ne : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := by
   simp only [disjoint_left, imp_not_comm, forall_eq']
@@ -88,7 +84,9 @@ theorem disjoint_empty_left (s : Finset α) : Disjoint ∅ s :=
 theorem disjoint_empty_right (s : Finset α) : Disjoint s ∅ :=
   disjoint_bot_right
 
-@[simp]
+-- Higher priority than `disjoint_singleton_right` to make sure `Disjoint {a} {b}`
+-- simplifies to `a ≠ b`.
+@[simp default + 1]
 theorem disjoint_singleton_left : Disjoint (singleton a) s ↔ a ∉ s := by
   simp only [disjoint_left, mem_singleton, forall_eq]
 
@@ -111,6 +109,10 @@ theorem disjoint_coe : Disjoint (s : Set α) t ↔ Disjoint s t := by
 theorem pairwiseDisjoint_coe {ι : Type*} {s : Set ι} {f : ι → Finset α} :
     s.PairwiseDisjoint (fun i => f i : ι → Set α) ↔ s.PairwiseDisjoint f :=
   forall₅_congr fun _ _ _ _ _ => disjoint_coe
+
+@[simp] lemma pairwiseDisjoint_singleton_iff_injOn {s : Set ι} {f : ι → α} :
+    s.PairwiseDisjoint (fun i ↦ ({f i} : Finset α)) ↔ s.InjOn f := by
+  simp [Set.PairwiseDisjoint, Set.Pairwise, not_imp_not, Set.InjOn]
 
 variable [DecidableEq α]
 
@@ -176,7 +178,7 @@ section Insert
 
 variable [DecidableEq α] {s t u v : Finset α} {a b : α} {f : α → β}
 
-@[simp]
+@[simp, grind =]
 theorem disjoint_insert_left : Disjoint (insert a s) t ↔ a ∉ t ∧ Disjoint s t := by
   simp only [disjoint_left, mem_insert, or_imp, forall_and, forall_eq]
 

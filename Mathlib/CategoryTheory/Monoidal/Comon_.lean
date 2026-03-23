@@ -3,11 +3,13 @@ Copyright (c) 2024 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Mon_
-import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
-import Mathlib.CategoryTheory.Monoidal.Transport
-import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
+public import Mathlib.CategoryTheory.Monoidal.Transport
+public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # The category of comonoids in a monoidal category.
@@ -18,12 +20,14 @@ and show that they are equivalently monoid objects in the opposite category.
 We construct the monoidal structure on `Comon C`, when `C` is braided.
 
 An oplax monoidal functor takes comonoid objects to comonoid objects.
-That is, a oplax monoidal functor `F : C ⥤ D` induces a functor `Comon C ⥤ Comon D`.
+That is, an oplax monoidal functor `F : C ⥤ D` induces a functor `Comon C ⥤ Comon D`.
 
 ## TODO
 * Comonoid objects in `C` are "just"
   oplax monoidal functors from the trivial monoidal category to `C`.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂ u
 
@@ -48,15 +52,15 @@ class ComonObj (X : C) where
 namespace ComonObj
 
 @[inherit_doc] scoped notation "Δ" => ComonObj.comul
-@[inherit_doc] scoped notation "Δ["M"]" => ComonObj.comul (X := M)
+@[inherit_doc] scoped notation "Δ[" M "]" => ComonObj.comul (X := M)
 @[inherit_doc] scoped notation "ε" => ComonObj.counit
-@[inherit_doc] scoped notation "ε["M"]" => ComonObj.counit (X := M)
+@[inherit_doc] scoped notation "ε[" M "]" => ComonObj.counit (X := M)
 
 attribute [reassoc (attr := simp)] counit_comul comul_counit comul_assoc
 
 /-- The canonical comonoid structure on the monoidal unit.
 This is not a global instance to avoid conflicts with other comonoid structures. -/
-@[simps]
+@[instance_reducible, simps]
 def instTensorUnit (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] : ComonObj (𝟙_ C) where
   counit := 𝟙 _
   comul := (λ_ _).inv
@@ -224,6 +228,7 @@ def mkIso {M N : Comon C} (f : M.X ≅ N.X) (f_counit : f.hom ≫ ε[N.X] = ε[M
   have : IsComonHom f.hom := ⟨f_counit, f_comul⟩
   ⟨⟨f.hom⟩, ⟨f.inv⟩, by cat_disch, by cat_disch⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance uniqueHomToTrivial (A : Comon C) : Unique (A ⟶ trivial C) where
   default.hom := ε[A.X]
@@ -317,6 +322,7 @@ def MonOpOpToComon : (Mon Cᵒᵖ)ᵒᵖ ⥤ Comon C where
 
 @[deprecated (since := "2025-09-15")] alias Mon_OpOpToComon_ := MonOpOpToComon
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Comonoid objects are contravariantly equivalent to monoid objects in the opposite category.
 -/
@@ -327,12 +333,23 @@ def Comon_EquivMon_OpOp : Comon C ≌ (Mon Cᵒᵖ)ᵒᵖ where
   unitIso := NatIso.ofComponents fun _ => .refl _
   counitIso := NatIso.ofComponents fun _ => .refl _
 
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
+the simpNF linter complains about `monoidal_tensorObj_comon_counit` being `@[simp]`.
+So we spell out all the other ones.
+-/
 /--
 Comonoid objects in a braided category form a monoidal category.
 
 This definition is via transporting back and forth to monoids in the opposite category.
 -/
-@[simps!]
+@[simps!
+  tensorObj_X tensorObj_comon_comul
+  whiskerLeft_hom whiskerRight_hom
+  tensorHom_hom
+  tensorUnit_X tensorUnit_comon_counit tensorUnit_comon_comul
+  associator_hom_hom associator_inv_hom
+  leftUnitor_hom_hom leftUnitor_inv_hom
+  rightUnitor_hom_hom rightUnitor_inv_hom]
 instance monoidal [BraidedCategory C] : MonoidalCategory (Comon C) :=
   Monoidal.transport (Comon_EquivMon_OpOp C).symm
 
@@ -366,13 +383,9 @@ the tensor product of the comultiplications followed by the tensor strength
 @[simp]
 theorem tensorObj_comul (A B : C) [ComonObj A] [ComonObj B] :
     Δ[A ⊗ B] = (Δ[A] ⊗ₘ Δ[B]) ≫ tensorμ A A B B := by
-  rw [tensorObj_comul']
-  congr
-  simp only [tensorμ, unop_tensorObj, unop_op]
-  apply Quiver.Hom.unop_inj
-  dsimp [op_tensorObj, op_associator]
-  rw [Category.assoc, Category.assoc, Category.assoc]
+  simp [tensorObj_comul']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful functor from `Comon C` to `C` is monoidal when `C` is monoidal. -/
 instance : (forget C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
@@ -394,7 +407,7 @@ variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 open OplaxMonoidal ComonObj IsComonHom
 
-/-- The image of a comonoid object under a oplax monoidal functor is a comonoid object. -/
+/-- The image of a comonoid object under an oplax monoidal functor is a comonoid object. -/
 abbrev obj.instComonObj (A : C) [ComonObj A] (F : C ⥤ D) [F.OplaxMonoidal] :
     ComonObj (F.obj A) where
   counit := F.map ε[A] ≫ η F
@@ -429,9 +442,9 @@ instance map.instIsComon_Hom
     dsimp
     rw [Category.assoc, δ_natural, ← F.map_comp_assoc, ← F.map_comp_assoc, hom_comul]
 
-/-- A oplax monoidal functor takes comonoid objects to comonoid objects.
+/-- An oplax monoidal functor takes comonoid objects to comonoid objects.
 
-That is, a oplax monoidal functor `F : C ⥤ D` induces a functor `Comon C ⥤ Comon D`.
+That is, an oplax monoidal functor `F : C ⥤ D` induces a functor `Comon C ⥤ Comon D`.
 -/
 @[simps]
 def mapComon (F : C ⥤ D) [F.OplaxMonoidal] : Comon C ⥤ Comon D where

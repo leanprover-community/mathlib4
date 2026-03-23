@@ -3,8 +3,11 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
-import Mathlib.Tactic.CategoryTheory.BicategoricalComp
+module
+
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
+public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 
 /-!
 # Expressions for bicategories
@@ -14,6 +17,8 @@ or `Mor` terms. The converted expressions are used in the coherence tactics and 
 widgets.
 
 -/
+
+public meta section
 
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike Bicategory
@@ -437,6 +442,9 @@ def comp? (e : Expr) : BicategoryM (Option (Mor₁ × Mor₁)) := do
 
 /-- Construct a `Mor₁` expression from a Lean expression. -/
 partial def mor₁OfExpr (e : Expr) : BicategoryM Mor₁ := do
+  let e ← instantiateMVars e
+  if e.hasExprMVar then
+    throwError m!"expression contains metavariables:\n{e}"
   if let some f := (← get).cache.find? e then
     return f
   let f ←

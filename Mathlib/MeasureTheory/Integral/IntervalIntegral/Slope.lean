@@ -3,24 +3,28 @@ Copyright (c) 2025 Yizheng Zhu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yizheng Zhu
 -/
-import Mathlib.LinearAlgebra.AffineSpace.Slope
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.Slope
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Some properties of the interval integral of `fun x ↦ slope f x (x + c)`, given a constant `c : ℝ`
 
 This file proves that:
 * `IntervalIntegrable.intervalIntegrable_slope`: If `f` is interval integrable on `a..(b + c)`
-where `a ≤ b` and `0 ≤ c`, then `fun x ↦ slope f x (x + c)` is interval integrable on `a..b`.
+  where `a ≤ b` and `0 ≤ c`, then `fun x ↦ slope f x (x + c)` is interval integrable on `a..b`.
 * `MonotoneOn.intervalIntegrable_slope`: If `f` is monotone on `a..(b + c)`
-where `a ≤ b` and `0 ≤ c`, then `fun x ↦ slope f x (x + c)` is interval integrable on `a..b`.
+  where `a ≤ b` and `0 ≤ c`, then `fun x ↦ slope f x (x + c)` is interval integrable on `a..b`.
 * `MonotoneOn.intervalIntegral_slope_le`:  If `f` is monotone on `a..(b + c)`
-where `a ≤ b` and `0 ≤ c`, then the interval integral of `fun x ↦ slope f x (x + c)` on `a..b` is
-at most `f (b + c) - f a`.
+  where `a ≤ b` and `0 ≤ c`, then the interval integral of `fun x ↦ slope f x (x + c)` on `a..b` is
+  at most `f (b + c) - f a`.
 
 ## Tags
 interval integrable, interval integral, monotone, slope
 -/
+
+public section
 
 open MeasureTheory Set
 

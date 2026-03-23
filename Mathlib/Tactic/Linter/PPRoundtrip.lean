@@ -3,9 +3,10 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Lean.Elab.Command
-import Mathlib.Init
+public meta import Lean.Elab.Command
+public import Mathlib.Init
 
 /-!
 # The "ppRoundtrip" linter
@@ -13,6 +14,8 @@ import Mathlib.Init
 The "ppRoundtrip" linter emits a warning when the syntax of a command differs substantially
 from the pretty-printed version of itself.
 -/
+
+meta section
 open Lean Elab Command Linter
 
 namespace Mathlib.Linter
@@ -26,7 +29,7 @@ However, it may not always be successful.
 It also prints both the source code and the "expected code" in a 5-character radius from
 the first difference.
 -/
-register_option linter.ppRoundtrip : Bool := {
+public register_option linter.ppRoundtrip : Bool := {
   defValue := false
   descr := "enable the ppRoundtrip linter"
 }
@@ -58,11 +61,11 @@ it only replace all whitespace starting from a linebreak (`\n`) with a single wh
 def polishSource (s : String) : String × Array Nat :=
   let split := s.splitToList (· == '\n')
   let preWS := split.foldl (init := #[]) fun p q =>
-    let txt := q.trimLeft.length
+    let txt := q.trimAsciiStart.copy.length
     (p.push (q.length - txt)).push txt
   let preWS := preWS.eraseIdxIfInBounds 0
-  let s := (split.map .trimLeft).filter (· != "")
-  (" ".intercalate (s.filter (!·.isEmpty)), preWS)
+  let s := (split.map String.trimAsciiStart).filter (· != "".toSlice)
+  (" ".toSlice.intercalate (s.filter (!·.isEmpty)), preWS)
 
 /-- `posToShiftedPos lths diff` takes as input an array `lths` of natural numbers,
 and one further natural number `diff`.
@@ -84,7 +87,7 @@ def posToShiftedPos (lths : Array Nat) (diff : Nat) : Nat := Id.run do
 
 /-- `zoomString str centre offset` returns the substring of `str` consisting of the `offset`
 characters around the `centre`th character. -/
-def zoomString (str : String) (centre offset : Nat) : Substring :=
+def zoomString (str : String) (centre offset : Nat) : Substring.Raw :=
   { str := str, startPos := ⟨centre - offset⟩, stopPos := ⟨centre + offset⟩ }
 
 /-- `capSourceInfo s p` "shortens" all end-position information in the `SourceInfo` `s` to be
@@ -107,7 +110,7 @@ partial
 def capSyntax (stx : Syntax) (p : Nat) : Syntax :=
   match stx with
     | .node si k args => .node (capSourceInfo si p) k (args.map (capSyntax · p))
-    | .atom si val => .atom (capSourceInfo si p) (val.take p)
+    | .atom si val => .atom (capSourceInfo si p) (val.take p).copy
     | .ident si r v pr => .ident (capSourceInfo si p) { r with stopPos := ⟨min r.stopPos.1 p⟩ } v pr
     | s => s
 
@@ -133,7 +136,7 @@ def ppRoundtrip : Linter where run := withSetOptionIn fun stx ↦ do
       let diff := real.firstDiffPos st
       let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
       let f := origSubstring.str.drop (pos)
-      let extraLth := (f.takeWhile (· != diff.get st)).length
+      let extraLth := (f.takeWhile (· != diff.get st)).copy.length
       let srcCtxt := zoomString real diff.1 5
       let ppCtxt  := zoomString st diff.1 5
       Linter.logLint linter.ppRoundtrip (.ofRange ⟨⟨pos⟩, ⟨pos + extraLth + 1⟩⟩)

@@ -3,13 +3,15 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Algebra.MvPolynomial.Monad
-import Mathlib.Algebra.MvPolynomial.Supported
-import Mathlib.RingTheory.AlgebraicIndependent.Defs
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.MvPolynomial.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Algebra.MvPolynomial.Monad
+public import Mathlib.Algebra.MvPolynomial.Supported
+public import Mathlib.RingTheory.AlgebraicIndependent.Defs
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 # Algebraic Independence
@@ -24,6 +26,8 @@ This file contains basic results on algebraic independence of a family of elemen
 transcendence basis, transcendence degree, transcendence
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -107,6 +111,7 @@ theorem aeval_of_algebraicIndependent
   intro p hp
   exact hf _ (hx _ (by rwa [← aeval_comp_bind₁, AlgHom.comp_apply] at hp))
 
+set_option backward.isDefEq.respectTransparency false in
 omit hx in
 /-- If `{f_i(x) | i : ι}` is algebraically independent over `R`, then
 `{f_i : MvPolynomial ι R | i : ι}` is also algebraically independent over `R`.
@@ -129,6 +134,7 @@ theorem trdeg_eq_zero_of_not_injective (h : ¬ Injective (algebraMap R A)) : trd
   have := isEmpty_algebraicIndependent h
   rw [trdeg, ciSup_of_empty, bot_eq_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem MvPolynomial.algebraicIndependent_X (σ R : Type*) [CommRing R] :
     AlgebraicIndependent R (X (R := R) (σ := σ)) := by
   rw [AlgebraicIndependent, aeval_X_left]
@@ -230,8 +236,8 @@ end RingHom
 /-- Every finite subset of an algebraically independent set is algebraically independent. -/
 theorem algebraicIndependent_finset_map_embedding_subtype (s : Set A)
     (li : AlgebraicIndependent R ((↑) : s → A)) (t : Finset s) :
-    AlgebraicIndependent R ((↑) : Finset.map (Embedding.subtype s) t → A) := by
-  let f : t.map (Embedding.subtype s) → s := fun x =>
+    AlgebraicIndependent R ((↑) : Finset.map (Embedding.subtype (· ∈ s)) t → A) := by
+  let f : t.map (Embedding.subtype (· ∈ s)) → s := fun x =>
     ⟨x.1, by
       obtain ⟨x, h⟩ := x
       rw [Finset.mem_map] at h
@@ -252,7 +258,7 @@ theorem algebraicIndependent_bounded_of_finset_algebraicIndependent_bounded {n :
   intro s li
   apply Cardinal.card_le_of
   intro t
-  rw [← Finset.card_map (Embedding.subtype s)]
+  rw [← Finset.card_map (Embedding.subtype (· ∈ s))]
   apply H
   apply algebraicIndependent_finset_map_embedding_subtype _ li
 
@@ -304,7 +310,7 @@ lemma IsTranscendenceBasis.of_comp_algebraMap [Algebra A A'] [IsScalarTower R A 
   .of_comp (IsScalarTower.toAlgHom R A A') (FaithfulSMul.algebraMap_injective A A') H
 
 /-- Also see `IsTranscendenceBasis.algebraMap_comp`
-for the composition with a algebraic extension. -/
+for the composition with an algebraic extension. -/
 theorem AlgEquiv.isTranscendenceBasis (e : A ≃ₐ[R] A') (hx : IsTranscendenceBasis R x) :
     IsTranscendenceBasis R (e ∘ x) :=
   .of_comp e.symm.toAlgHom e.symm.injective (by convert hx; ext; simp)

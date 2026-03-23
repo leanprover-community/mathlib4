@@ -3,16 +3,19 @@ Copyright (c) 2024 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Analysis.SumIntegralComparisons
-import Mathlib.NumberTheory.Harmonic.Defs
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Analysis.SumIntegralComparisons
+public import Mathlib.NumberTheory.Harmonic.Defs
 
 /-!
 
 This file proves $\log(n + 1) \le H_n \le 1 + \log(n)$ for all natural numbers $n$.
 
 -/
+
+public section
 
 lemma harmonic_eq_sum_Icc {n : ℕ} : harmonic n = ∑ i ∈ Finset.Icc 1 n, (↑i)⁻¹ := by
   rw [harmonic, Finset.range_eq_Ico, Finset.sum_Ico_add' (fun (i : ℕ) ↦ (i : ℚ)⁻¹) 0 n (c := 1)]

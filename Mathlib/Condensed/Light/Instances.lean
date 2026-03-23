@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
-import Mathlib.CategoryTheory.Sites.Equivalence
+module
+
+public import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
+public import Mathlib.CategoryTheory.Sites.Equivalence
 
 /-!
 # `HasSheafify` instances
@@ -13,9 +15,11 @@ In this file, we obtain a `HasSheafify (coherentTopology LightProfinite.{u}) (Ty
 instance (and similarly for other concrete categories). These instances
 are not obtained automatically because `LightProfinite.{u}` is a large category,
 but as it is essentially small, the instances can be obtained using the results
-in the file `CategoryTheory.Sites.Equivalence`.
+in the file `Mathlib/CategoryTheory/Sites/Equivalence.lean`.
 
 -/
+
+@[expose] public section
 
 universe u u' v
 

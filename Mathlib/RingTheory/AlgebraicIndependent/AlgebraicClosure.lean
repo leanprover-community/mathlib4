@@ -3,9 +3,11 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.FieldTheory.AlgebraicClosure
-import Mathlib.RingTheory.Algebraic.Integral
-import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
+module
+
+public import Mathlib.FieldTheory.AlgebraicClosure
+public import Mathlib.RingTheory.Algebraic.Integral
+public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
 /-!
 # Algebraic independence persists to the algebraic closure
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 * `AlgebraicIndependent.algebraicClosure`: an algebraically independent family remains
   algebraically independent over the algebraic closure.
 -/
+
+public section
 
 open Function Algebra
 

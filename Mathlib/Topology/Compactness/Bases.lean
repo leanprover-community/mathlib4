@@ -3,12 +3,16 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Dagur Asgeirsson
 -/
-import Mathlib.Topology.Bases
-import Mathlib.Topology.Compactness.Compact
+module
+
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Topological bases in compact sets and compact spaces
 -/
+
+public section
 
 open Set TopologicalSpace
 

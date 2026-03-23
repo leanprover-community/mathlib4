@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.Normed.Group.BallSphere
+module
+
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.Group.BallSphere
 
 /-!
 # Algebraic structures on unit balls and spheres
@@ -14,6 +16,8 @@ In this file we define algebraic structures (`Semigroup`, `CommSemigroup`, `Mono
 `Metric.sphere (0 : 𝕜) 1`. In each case we use the weakest possible typeclass assumption on `𝕜`,
 from `NonUnitalSeminormedRing` to `NormedField`.
 -/
+
+@[expose] public section
 
 
 open Set Metric
@@ -66,8 +70,8 @@ protected theorem Metric.unitBall.coe_eq_zero [Zero 𝕜] [PseudoMetricSpace �
 
 instance Metric.unitBall.instSemigroupWithZero [NonUnitalSeminormedRing 𝕜] :
     SemigroupWithZero (ball (0 : 𝕜) 1) where
-  zero_mul _ := Subtype.eq <| zero_mul _
-  mul_zero _ := Subtype.eq <| mul_zero _
+  zero_mul _ := Subtype.ext <| zero_mul _
+  mul_zero _ := Subtype.ext <| mul_zero _
 
 instance Metric.unitBall.instIsLeftCancelMulZero [NonUnitalSeminormedRing 𝕜]
     [IsLeftCancelMulZero 𝕜] : IsLeftCancelMulZero (ball (0 : 𝕜) 1) :=
@@ -124,8 +128,8 @@ protected lemma Metric.unitClosedBall.coe_eq_zero [Zero 𝕜] [PseudoMetricSpace
 
 instance Metric.unitClosedBall.instSemigroupWithZero [NonUnitalSeminormedRing 𝕜] :
     SemigroupWithZero (closedBall (0 : 𝕜) 1) where
-  zero_mul _ := Subtype.eq <| zero_mul _
-  mul_zero _ := Subtype.eq <| mul_zero _
+  zero_mul _ := Subtype.ext <| zero_mul _
+  mul_zero _ := Subtype.ext <| mul_zero _
 
 /-- Closed unit ball in a seminormed ring as a bundled `Submonoid`. -/
 def Submonoid.unitClosedBall (𝕜 : Type*) [SeminormedRing 𝕜] [NormOneClass 𝕜] : Submonoid 𝕜 :=
@@ -159,9 +163,9 @@ protected theorem Metric.unitClosedBall.coe_pow [SeminormedRing 𝕜] [NormOneCl
 instance Metric.unitClosedBall.instMonoidWithZero [SeminormedRing 𝕜] [NormOneClass 𝕜] :
     MonoidWithZero (closedBall (0 : 𝕜) 1) where
 
-instance Metric.unitClosedBall.instCancelMonoidWithZero [SeminormedRing 𝕜] [IsCancelMulZero 𝕜]
-    [NormOneClass 𝕜] : CancelMonoidWithZero (closedBall (0 : 𝕜) 1) where
-  toIsCancelMulZero := Subtype.val_injective.isCancelMulZero _ rfl fun _ _ ↦ rfl
+instance Metric.unitClosedBall.instIsCancelMulZero [SeminormedRing 𝕜] [IsCancelMulZero 𝕜]
+    [NormOneClass 𝕜] : IsCancelMulZero (closedBall (0 : 𝕜) 1) :=
+  Subtype.val_injective.isCancelMulZero _ rfl fun _ _ ↦ rfl
 
 /-!
 ### Algebraic instances on the unit sphere
@@ -240,7 +244,7 @@ theorem unitSphereToUnits_apply_coe [NormedDivisionRing 𝕜] (x : sphere (0 : �
 
 theorem unitSphereToUnits_injective [NormedDivisionRing 𝕜] :
     Function.Injective (unitSphereToUnits 𝕜) := fun x y h =>
-  Subtype.eq <| by convert congr_arg Units.val h
+  Subtype.ext <| by convert congr_arg Units.val h
 
 instance Metric.unitSphere.instGroup [NormedDivisionRing 𝕜] : Group (sphere (0 : 𝕜) 1) :=
   unitSphereToUnits_injective.group (unitSphereToUnits 𝕜) (Units.ext rfl)

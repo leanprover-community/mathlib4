@@ -3,9 +3,11 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Analysis.LocallyConvex.Barrelled
-import Mathlib.Topology.Baire.CompleteMetrizable
+module
+
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.LocallyConvex.Barrelled
+public import Mathlib.Topology.Baire.CompleteMetrizable
 
 /-!
 # The Banach-Steinhaus theorem: Uniform Boundedness Principle
@@ -17,6 +19,8 @@ Note that we prove the more general version about barrelled spaces in
 `Analysis.LocallyConvex.Barrelled`, and the usual version below is indeed deduced from the
 more general setup.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -48,12 +52,3 @@ theorem banach_steinhaus_iSup_nnnorm {ι : Type*} [CompleteSpace E] {g : ι → 
 open Topology
 
 open Filter
-
-/-- Given a *sequence* of continuous linear maps which converges pointwise and for which the
-domain is complete, the Banach-Steinhaus theorem is used to guarantee that the limit map
-is a *continuous* linear map as well. -/
-abbrev continuousLinearMapOfTendsto {α : Type*} [CompleteSpace E] [T2Space F] {l : Filter α}
-    [l.IsCountablyGenerated] [l.NeBot] (g : α → E →SL[σ₁₂] F) {f : E → F}
-    (h : Tendsto (fun n x ↦ g n x) l (𝓝 f)) :
-    E →SL[σ₁₂] F :=
-  (norm_withSeminorms 𝕜₂ F).continuousLinearMapOfTendsto g h

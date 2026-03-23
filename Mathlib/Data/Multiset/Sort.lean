@@ -3,13 +3,18 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Sort
-import Mathlib.Data.Multiset.Range
-import Mathlib.Util.Qq
+module
+
+public import Mathlib.Data.List.Sort
+public import Mathlib.Data.Multiset.Range
+public import Mathlib.Util.Qq
+public meta import Mathlib.Data.Multiset.Defs
 
 /-!
 # Construct a sorted list from a multiset.
 -/
+
+@[expose] public section
 
 variable {α β : Type*}
 
@@ -23,27 +28,26 @@ section sort
 /-- `sort s` constructs a sorted list from the multiset `s`.
   (Uses merge sort algorithm.) -/
 def sort (s : Multiset α) (r : α → α → Prop := by exact fun a b => a ≤ b)
-    [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r] : List α :=
+    [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [Std.Total r] : List α :=
   Quot.liftOn s (mergeSort · (r · ·)) fun _ _ h =>
-    eq_of_perm_of_sorted ((mergeSort_perm _ _).trans <| h.trans (mergeSort_perm _ _).symm)
-      (sorted_mergeSort IsTrans.trans
-        (fun a b => by simpa using IsTotal.total a b) _)
-      (sorted_mergeSort IsTrans.trans
-        (fun a b => by simpa using IsTotal.total a b) _)
+    ((mergeSort_perm _ _).trans <| h.trans (mergeSort_perm _ _).symm).eq_of_pairwise' (r := r)
+      (pairwise_mergeSort' _ _) (pairwise_mergeSort' _ _)
 
 section
 
 variable (a : α) (f : α → β) (l : List α) (s : Multiset α)
-variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
-variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm β r'] [IsTotal β r']
+variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [Std.Total r]
+variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [Std.Antisymm r'] [Std.Total r']
 
 @[simp]
 theorem coe_sort : sort l r = mergeSort l (r · ·) :=
   rfl
 
 @[simp]
-theorem sort_sorted : Sorted r (sort s r) :=
-  Quot.inductionOn s (sorted_mergeSort' _)
+theorem pairwise_sort : (sort s r).Pairwise r :=
+  Quot.inductionOn s (pairwise_mergeSort' _)
+
+@[deprecated (since := "2025-10-11")] alias sort_sorted := pairwise_sort
 
 @[simp]
 theorem sort_eq : ↑(sort s r) = s :=
@@ -64,18 +68,18 @@ theorem map_sort (hs : ∀ a ∈ s, ∀ b ∈ s, r a b ↔ r' (f a) (f b)) :
 
 theorem sort_cons : (∀ b ∈ s, r a b) → sort (a ::ₘ s) r = a :: sort s r := by
   refine Quot.inductionOn s fun l => ?_
-  simpa [mergeSort_eq_insertionSort] using insertionSort_cons r (a := a) (l := l)
+  simpa [mergeSort_eq_insertionSort] using insertionSort_cons_of_forall_rel r (a := a) (l := l)
 
 @[simp]
 theorem sort_range (n : ℕ) : sort (range n) = List.range n :=
-  List.mergeSort_eq_self _ (sorted_le_range n)
+  List.mergeSort_eq_self _ (sortedLT_range n).sortedLE.pairwise
 
 end
 
 section
 
 variable {a : α} {s : Multiset α}
-variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
+variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [Std.Total r]
 
 @[simp]
 theorem mem_sort : a ∈ sort s r ↔ a ∈ s := by rw [← mem_coe, sort_eq]
@@ -89,7 +93,7 @@ end sort
 
 open Qq in
 universe u in
-unsafe instance {α : Type u} [Lean.ToLevel.{u}] [Lean.ToExpr α] :
+meta unsafe instance {α : Type u} [Lean.ToLevel.{u}] [Lean.ToExpr α] :
     Lean.ToExpr (Multiset α) :=
   haveI u' := Lean.toLevel.{u}
   haveI α' : Q(Type u') := Lean.toTypeExpr α

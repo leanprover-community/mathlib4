@@ -3,8 +3,10 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.ScottContinuity
-import Mathlib.Topology.Order.UpperLowerSetTopology
+module
+
+public import Mathlib.Order.ScottContinuity
+public import Mathlib.Topology.Order.UpperLowerSetTopology
 
 /-!
 # Scott topology
@@ -58,6 +60,8 @@ The converse is true in some special cases, but not in general
 
 Scott topology, preorder
 -/
+
+@[expose] public section
 
 open Set
 
@@ -143,6 +147,7 @@ section ScottHausdorff
 
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
 `d` lies in `u` then there is a tail of `d` which is a subset of `u`. -/
+@[implicit_reducible]
 def scottHausdorff (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α where
   IsOpen u := ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u
@@ -178,7 +183,7 @@ variable {α D}
 lemma isOpen_iff [IsScottHausdorff α D] :
     IsOpen s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
       a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
-  simp [topology_eq_scottHausdorff (α := α) (D := D), IsOpen, scottHausdorff]
+  simp +instances [topology_eq_scottHausdorff (α := α) (D := D), IsOpen, scottHausdorff]
 
 lemma dirSupInaccOn_of_isOpen [IsScottHausdorff α D] (h : IsOpen s) : DirSupInaccOn D s :=
   fun d hd₀ hd₁ hd₂ a hda hd₃ ↦ by
@@ -215,6 +220,7 @@ section Preorder
 /-- The Scott topology.
 
 It is defined as the join of the topology of upper sets and the Scott-Hausdorff topology. -/
+@[implicit_reducible]
 def scott (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α :=
   upperSet α ⊔ scottHausdorff α D
 
@@ -277,8 +283,6 @@ instance [IsScott α univ] : ClosedIicTopology α where
   isClosed_Iic _ :=
     isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨isLowerSet_Iic _, dirSupClosed_Iic _⟩
 
-@[deprecated (since := "2025-07-02")] protected alias isClosed_Iic := isClosed_Iic
-
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
 `(-∞,a]`.
@@ -314,9 +318,6 @@ lemma monotone_of_continuous [IsScott α D] (hf : Continuous f) : Monotone f := 
     simp only [upperBounds, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
       mem_setOf] at hb
     exact hfcb <| hb _ hcd
-
-@[deprecated (since := "2025-07-02")]
-alias scottContinuous_iff_continuous := scottContinuousOn_iff_continuous
 
 end Preorder
 

@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Basic
-import Mathlib.RingTheory.Artinian.Module
+module
+
+public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Lie subalgebras
@@ -26,6 +28,8 @@ results.
 
 lie algebra, lie subalgebra
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -61,6 +65,8 @@ instance : SetLike (LieSubalgebra R L) L where
     rcases L'' with ⟨⟨⟩⟩
     congr
     exact SetLike.coe_injective' h
+
+instance : PartialOrder (LieSubalgebra R L) := .ofSetLike (LieSubalgebra R L) L
 
 instance : AddSubgroupClass (LieSubalgebra R L) L where
   add_mem := Submodule.add_mem _
@@ -396,6 +402,9 @@ theorem bot_coe : ((⊥ : LieSubalgebra R L) : Set L) = {0} :=
 theorem bot_toSubmodule : ((⊥ : LieSubalgebra R L) : Submodule R L) = ⊥ :=
   rfl
 
+@[simp] lemma toSubmodule_eq_bot (K : LieSubalgebra R L) : K.toSubmodule = ⊥ ↔ K = ⊥ := by
+  simp [← toSubmodule_inj]
+
 @[simp]
 theorem mem_bot (x : L) : x ∈ (⊥ : LieSubalgebra R L) ↔ x = 0 :=
   mem_singleton_iff
@@ -410,6 +419,9 @@ theorem top_coe : ((⊤ : LieSubalgebra R L) : Set L) = univ :=
 @[simp]
 theorem top_toSubmodule : ((⊤ : LieSubalgebra R L) : Submodule R L) = ⊤ :=
   rfl
+
+@[simp] lemma toSubmodule_eq_top (K : LieSubalgebra R L) : K.toSubmodule = ⊤ ↔ K = ⊤ := by
+  simp [← toSubmodule_inj]
 
 @[simp]
 theorem mem_top (x : L) : x ∈ (⊤ : LieSubalgebra R L) :=
@@ -490,7 +502,7 @@ instance addCommMonoid : AddCommMonoid (LieSubalgebra R L) where
   nsmul := nsmulRec
 
 instance : IsOrderedAddMonoid (LieSubalgebra R L) where
-  add_le_add_left _ _ := sup_le_sup_left
+  add_le_add_left _ _ := sup_le_sup_right
 
 instance : CanonicallyOrderedAdd (LieSubalgebra R L) where
   exists_add_of_le {_a b} h := ⟨b, (sup_eq_right.2 h).symm⟩
@@ -523,6 +535,11 @@ instance subsingleton_of_bot : Subsingleton (LieSubalgebra R (⊥ : LieSubalgebr
 
 theorem subsingleton_bot : Subsingleton (⊥ : LieSubalgebra R L) :=
   show Subsingleton ((⊥ : LieSubalgebra R L) : Set L) by simp
+
+variable {K K'} in
+@[simp] lemma disjoint_toSubmodule :
+    Disjoint (K : Submodule R L) (K' : Submodule R L) ↔ Disjoint K K' := by
+  simp [disjoint_iff, ← toSubmodule_inj]
 
 variable (R L)
 
@@ -700,6 +717,17 @@ theorem lieSpan_induction {p : (x : L) → x ∈ lieSpan R L s → Prop}
       smul_mem' := fun r ↦ fun ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩
       lie_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, lie _ _ _ _ hpx hpy⟩ }
   exact lieSpan_le (K := p) |>.mpr (fun y hy ↦ ⟨subset_lieSpan hy, mem y hy⟩) hx |>.elim fun _ ↦ id
+
+@[simp] lemma lieSpan_neg : lieSpan R L (-s) = lieSpan R L s := by
+  suffices ∀ s : Set L, lieSpan R L (-s) ≤ lieSpan R L s from
+    le_antisymm (this s) <| by simpa using (this (-s))
+  intro s x hx
+  induction hx using lieSpan_induction with
+  | mem y h => exact neg_mem_iff.mp <| subset_lieSpan <| Set.mem_neg.mp h
+  | zero => exact zero_mem _
+  | add _ _ _ _ hu hv => exact add_mem hu hv
+  | smul t _ _ hu => exact SMulMemClass.smul_mem t hu
+  | lie _ _ _ _ hu hv => exact lie_mem _ hu hv
 
 end LieSpan
 

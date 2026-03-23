@@ -3,11 +3,13 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Algebra.Star.Unitary
-import Mathlib.Data.Matrix.Reflection
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+module
+
+public import Mathlib.Algebra.Star.Unitary
+public import Mathlib.Data.Matrix.Reflection
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
 # The Unitary Group
@@ -37,6 +39,8 @@ We also define the orthogonal group `Matrix.orthogonalGroup n R`, where `R` is a
 matrix group, group, unitary group, orthogonal group
 
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -195,6 +199,32 @@ theorem toGL_mul (A B : unitaryGroup n α) : toGL (A * B) = toGL A * toGL B := U
 `LinearMap.GeneralLinearGroup n α`. -/
 def embeddingGL : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
   ⟨⟨fun A => toGL A, toGL_one⟩, toGL_mul⟩
+
+theorem _root_.Matrix.transpose_mem_unitaryGroup_iff {U : Matrix n n α} :
+    Uᵀ ∈ unitaryGroup n α ↔ U ∈ unitaryGroup n α := by
+  conv_rhs => rw [mem_unitaryGroup_iff']
+  rw [mem_unitaryGroup_iff, show star Uᵀ = (star U)ᵀ by rfl, ← transpose_mul, ← transpose_inj]
+  simp
+
+theorem _root_.Matrix.map_star_mem_unitaryGroup_iff {U : Matrix n n α} :
+    U.map star ∈ unitaryGroup n α ↔ U ∈ unitaryGroup n α := by
+  simp [← conjTranspose_transpose, transpose_mem_unitaryGroup_iff, ← star_eq_conjTranspose]
+
+/-- The transpose of a unitary matrix as a unitary matrix. -/
+@[simps] def transpose (U : unitaryGroup n α) : unitaryGroup n α :=
+  ⟨Uᵀ, transpose_mem_unitaryGroup_iff.mpr (SetLike.coe_mem _)⟩
+
+/-- The `Matrix.map star` of a unitary matrix (i.e., taking the `star` of
+each element in the matrix) as a unitary matrix. -/
+@[simps] def map_star (U : unitaryGroup n α) : unitaryGroup n α :=
+  ⟨(U : Matrix n n α).map star, map_star_mem_unitaryGroup_iff.mpr (SetLike.coe_mem _)⟩
+
+theorem map_star_inv_eq_transpose (U : unitaryGroup n α) :
+    (map_star U)⁻¹ = UnitaryGroup.transpose U := by ext; simp
+
+theorem transpose_inv_eq_map_star (U : unitaryGroup n α) :
+    (UnitaryGroup.transpose U)⁻¹ = map_star U := by
+  simp [← map_star_inv_eq_transpose]
 
 end UnitaryGroup
 

@@ -3,12 +3,14 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.MvPolynomial.Monad
-import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
-import Mathlib.RingTheory.TensorProduct.Finite
-import Mathlib.RingTheory.TensorProduct.Free
+module
+
+public import Mathlib.Algebra.MvPolynomial.Monad
+public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
+public import Mathlib.RingTheory.TensorProduct.Finite
+public import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
 # Characteristic polynomials of linear families of endomorphisms
@@ -61,6 +63,8 @@ The proof concludes because characteristic polynomials are independent of the ch
 * [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
 
 -/
+
+@[expose] public section
 
 open Module MvPolynomial
 open scoped Matrix
@@ -236,6 +240,7 @@ noncomputable
 def polyCharpolyAux : Polynomial (MvPolynomial ι R) :=
   (charpoly.univ R ιM).map <| MvPolynomial.bind₁ (φ.toMvPolynomial b bₘ.end)
 
+set_option backward.isDefEq.respectTransparency false in
 open Algebra.TensorProduct MvPolynomial in
 lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
     polyCharpolyAux (tensorProduct _ _ _ _ ∘ₗ φ.baseChange A) (basis A b) (basis A bₘ) =
@@ -244,7 +249,7 @@ lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
   rw [← charpoly.univ_map_map _ (algebraMap R A)]
   simp only [Polynomial.map_map]
   congr 1
-  apply ringHom_ext
+  apply MvPolynomial.ringHom_ext
   · intro r
     simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_C, bind₁_C_right]
   · rintro ij
@@ -318,6 +323,7 @@ lemma polyCharpolyAux_map_aeval
   congr
   exact DFunLike.ext _ _ fun f ↦ (MvPolynomial.eval_map (algebraMap R A) x f).symm
 
+set_option backward.isDefEq.respectTransparency false in
 open Algebra.TensorProduct MvPolynomial in
 /-- `LinearMap.polyCharpolyAux` is independent of the choice of basis of the target module.
 
@@ -552,7 +558,7 @@ lemma exists_isNilRegular_of_finrank_le_card (h : finrank R M ≤ #R) :
 
 lemma exists_isNilRegular [Infinite R] : ∃ x : L, IsNilRegular φ x := by
   apply exists_isNilRegular_of_finrank_le_card
-  exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
+  exact Cardinal.natCast_le_aleph0.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
 
 end IsDomain
 

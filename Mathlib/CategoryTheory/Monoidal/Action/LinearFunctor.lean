@@ -3,7 +3,9 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.Action.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Action.Basic
 
 /-! # Functors that are linear with respect to an action
 
@@ -15,21 +17,23 @@ express compatibility of `F` with the action of `C`:
 * `F.LaxRightLinear C` bundles the "lineator" as a morphism
   `μᵣ : F.obj d ⊙ᵣ c ⟶ F.obj (d ⊙ᵣ c)`.
 * `F.OplaxLeftLinear C` bundles the "lineator" as a morphism
-  `δₗ : F.obj (c ⊙ₗ d) ⟶ c ⊙ₗ F.obj d `.
+  `δₗ : F.obj (c ⊙ₗ d) ⟶ c ⊙ₗ F.obj d`.
 * `F.OplaxRightLinear C` bundles the "lineator" as a morphism
-  `δᵣ : F.obj (d ⊙ᵣ d) ⟶ F.obj d ⊙ᵣ c`.
+  `δᵣ : F.obj (d ⊙ᵣ c) ⟶ F.obj d ⊙ᵣ c`.
 * `F.LeftLinear C` expresses that `F` has both a `LaxLeftLinear C` and
-  an `F.OplaxLeftLinear C` structure, and that they are compatible, i.e
+  an `F.OplaxLeftLinear C` structure, and that they are compatible, i.e.
   `δₗ F` is a left and right inverse to `μₗ`.
 * `F.RightLinear C` expresses that `F` has both a `LaxRightLinear C` and
-  an `F.OplaxRightLinear C` structure, and that they are compatible, i.e
+  an `F.OplaxRightLinear C` structure, and that they are compatible, i.e.
   `δᵣ F` is a left and right inverse to `μᵣ`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Functor
 
-variable {D D' : Type*} [Category D] [Category D']
+variable {D D' : Type*} [Category* D] [Category* D']
 
 open MonoidalCategory
 
@@ -42,7 +46,7 @@ open MonoidalLeftAction
 that is natural in each variable and coherent with respect to left actions
 of `C` on `D` and `D'`. -/
 class LaxLeftLinear
-    (F : D ⥤ D') (C : Type*) [Category C] [MonoidalCategory C]
+    (F : D ⥤ D') (C : Type*) [Category* C] [MonoidalCategory C]
     [MonoidalLeftAction C D] [MonoidalLeftAction C D'] where
   /-- The "μₗ" morphism. -/
   μₗ (F) (c : C) (d : D) : c ⊙ₗ F.obj d ⟶ F.obj (c ⊙ₗ d)
@@ -67,7 +71,7 @@ attribute [reassoc (attr := simp)] μₗ_associativity
 attribute [simp, reassoc] μₗ_unitality
 
 variable
-  (F : D ⥤ D') {C : Type*} [Category C] [MonoidalCategory C]
+  (F : D ⥤ D') {C : Type*} [Category* C] [MonoidalCategory C]
   [MonoidalLeftAction C D] [MonoidalLeftAction C D']
   [F.LaxLeftLinear C]
 
@@ -95,7 +99,7 @@ end LaxLeftLinear
 that is natural in each variable and coherent with respect to left actions
 of `C` on `D` and `D'`. -/
 class OplaxLeftLinear
-    (F : D ⥤ D') (C : Type*) [Category C] [MonoidalCategory C]
+    (F : D ⥤ D') (C : Type*) [Category* C] [MonoidalCategory C]
     [MonoidalLeftAction C D] [MonoidalLeftAction C D'] where
   /-- The oplax lineator morphism. -/
   δₗ (F) (c : C) (d : D) : F.obj (c ⊙ₗ d) ⟶ c ⊙ₗ F.obj d
@@ -123,7 +127,7 @@ attribute [reassoc (attr := simp)] δₗ_associativity
 attribute [simp, reassoc] δₗ_unitality_inv
 
 variable
-  (F : D ⥤ D') {C : Type*} [Category C] [MonoidalCategory C]
+  (F : D ⥤ D') {C : Type*} [Category* C] [MonoidalCategory C]
   [MonoidalLeftAction C D] [MonoidalLeftAction C D']
   [F.OplaxLeftLinear C]
 
@@ -150,7 +154,7 @@ end OplaxLeftLinear
 /-- `F.LeftLinear C` asserts that `F` is both lax and oplax left-linear,
 in a compatible way, i.e that `μₗ` is inverse to `δₗ`. -/
 class LeftLinear
-    (F : D ⥤ D') (C : Type*) [Category C] [MonoidalCategory C]
+    (F : D ⥤ D') (C : Type*) [Category* C] [MonoidalCategory C]
     [MonoidalLeftAction C D] [MonoidalLeftAction C D'] extends
     F.LaxLeftLinear C, F.OplaxLeftLinear C where
   μₗ_comp_δₗ (F) (c : C) (d : D) :
@@ -163,7 +167,7 @@ namespace LeftLinear
 open LaxLeftLinear OplaxLeftLinear
 
 variable
-  (F : D ⥤ D') {C : Type*} [Category C] [MonoidalCategory C]
+  (F : D ⥤ D') {C : Type*} [Category* C] [MonoidalCategory C]
   [MonoidalLeftAction C D] [MonoidalLeftAction C D']
   [F.LeftLinear C]
 
@@ -204,7 +208,7 @@ open MonoidalRightAction
 that is natural in each variable and coherent with respect to left actions
 of `C` on `D` and `D'`. -/
 class LaxRightLinear
-    (F : D ⥤ D') (C : Type*) [Category C] [MonoidalCategory C]
+    (F : D ⥤ D') (C : Type*) [Category* C] [MonoidalCategory C]
     [MonoidalRightAction C D] [MonoidalRightAction C D'] where
   /-- The "μᵣ" morphism. -/
   μᵣ (F) (d : D) (c : C) : F.obj d ⊙ᵣ c ⟶ F.obj (d ⊙ᵣ c)
@@ -229,7 +233,7 @@ attribute [reassoc (attr := simp)] μᵣ_associativity
 attribute [simp, reassoc] μᵣ_unitality
 
 variable
-  (F : D ⥤ D') {C : Type*} [Category C] [MonoidalCategory C]
+  (F : D ⥤ D') {C : Type*} [Category* C] [MonoidalCategory C]
   [MonoidalRightAction C D] [MonoidalRightAction C D']
   [F.LaxRightLinear C]
 
@@ -257,7 +261,7 @@ end LaxRightLinear
 that is natural in each variable and coherent with respect to left actions
 of `C` on `D` and `D'`. -/
 class OplaxRightLinear
-    (F : D ⥤ D') (C : Type*) [Category C] [MonoidalCategory C]
+    (F : D ⥤ D') (C : Type*) [Category* C] [MonoidalCategory C]
     [MonoidalRightAction C D] [MonoidalRightAction C D'] where
   /-- The oplax lineator morphism. -/
   δᵣ (F) (d : D) (c : C) : F.obj (d ⊙ᵣ c) ⟶ (F.obj d) ⊙ᵣ c
@@ -285,7 +289,7 @@ attribute [reassoc (attr := simp)] δᵣ_associativity
 attribute [simp, reassoc] δᵣ_unitality_inv
 
 variable
-  (F : D ⥤ D') {C : Type*} [Category C] [MonoidalCategory C]
+  (F : D ⥤ D') {C : Type*} [Category* C] [MonoidalCategory C]
   [MonoidalRightAction C D] [MonoidalRightAction C D']
   [F.OplaxRightLinear C]
 
@@ -312,7 +316,7 @@ end OplaxRightLinear
 /-- `F.RightLinear C` asserts that `F` is both lax and oplax left-linear,
 in a compatible way, i.e that `μᵣ` is inverse to `δᵣ`. -/
 class RightLinear
-    (F : D ⥤ D') (C : Type*) [Category C] [MonoidalCategory C]
+    (F : D ⥤ D') (C : Type*) [Category* C] [MonoidalCategory C]
     [MonoidalRightAction C D] [MonoidalRightAction C D'] extends
     F.LaxRightLinear C, F.OplaxRightLinear C where
   μᵣ_comp_δᵣ (F) (d : D) (c : C) :
@@ -325,7 +329,7 @@ namespace RightLinear
 open LaxRightLinear OplaxRightLinear
 
 variable
-  (F : D ⥤ D') {C : Type*} [Category C] [MonoidalCategory C]
+  (F : D ⥤ D') {C : Type*} [Category* C] [MonoidalCategory C]
   [MonoidalRightAction C D] [MonoidalRightAction C D']
   [F.RightLinear C]
 

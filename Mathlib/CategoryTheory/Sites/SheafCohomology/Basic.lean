@@ -3,11 +3,15 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.Grp.Abelian
-import Mathlib.Algebra.Category.Grp.Adjunctions
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
-import Mathlib.CategoryTheory.Sites.Abelian
-import Mathlib.CategoryTheory.Sites.ConstantSheaf
+module
+
+public import Mathlib.Algebra.Category.Grp.Abelian
+public import Mathlib.Algebra.Category.Grp.Adjunctions
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
+public import Mathlib.CategoryTheory.Sites.Abelian
+public import Mathlib.CategoryTheory.Sites.ConstantSheaf
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
+public import Mathlib.Algebra.Category.Grp.Zero
 
 /-!
 # Sheaf cohomology
@@ -30,6 +34,8 @@ of sets `yoneda.obj U` to `F`.
   `(F.cohomologyPresheaf n).obj (Opposite.op U) ≃+ Sheaf.H (F.over U) n`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -56,6 +62,27 @@ noncomputable instance (n : ℕ) : AddCommGroup (F.H n) := by
   dsimp only [H]
   infer_instance
 
+variable (J) in
+/-- Cohomology of an abelian sheaf in degree `n` as a functor. -/
+noncomputable def cohomologyFunctor (n : ℕ) :
+    Sheaf J AddCommGrpCat.{w} ⥤ AddCommGrpCat.{w'} :=
+  (extFunctor.{w'} n).obj <|
+    .op <| ((constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of (ULift ℤ)))
+
+lemma cohomologyFunctor_obj (n : ℕ) (F : Sheaf J AddCommGrpCat.{w}) :
+    (cohomologyFunctor J n).obj F = F.H n :=
+  rfl
+
+instance (n : ℕ) : (cohomologyFunctor J n).Additive := by
+  dsimp [cohomologyFunctor]
+  infer_instance
+
+lemma subsingleton_H_of_isZero {F : Sheaf J AddCommGrpCat.{w}} (h : Limits.IsZero F) (n : ℕ) :
+    Subsingleton (F.H n) := by
+  rw [← cohomologyFunctor_obj]
+  apply AddCommGrpCat.subsingleton_of_isZero
+  exact Functor.map_isZero (cohomologyFunctor J n) h
+
 end
 
 section
@@ -78,6 +105,12 @@ presheaf of sets `yoneda.obj U` to `F`. -/
 noncomputable abbrev cohomologyPresheaf (F : Sheaf J AddCommGrpCat.{v}) (n : ℕ) :
     Cᵒᵖ ⥤ AddCommGrpCat.{w'} :=
   (cohomologyPresheafFunctor J n).obj F
+
+/-- Given an abelian sheaf `F` on `(C, J)`, `n : ℕ` and `X : C`, this is
+the degree-`n` sheaf cohomology of `X` with values in `F`. -/
+noncomputable abbrev H' (F : Sheaf J AddCommGrpCat.{v}) (n : ℕ) (X : C) :
+    AddCommGrpCat.{w'} :=
+  (F.cohomologyPresheaf n).obj (Opposite.op X)
 
 end
 

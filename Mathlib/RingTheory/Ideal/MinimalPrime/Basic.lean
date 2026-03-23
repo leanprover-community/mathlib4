@@ -3,8 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.IsPrimary
-import Mathlib.Order.Minimal
+module
+
+public import Mathlib.RingTheory.Ideal.IsPrimary
+public import Mathlib.RingTheory.Ideal.Over
+public import Mathlib.Order.Minimal
 
 /-!
 
@@ -21,11 +24,13 @@ We provide various results concerning the minimal primes above an ideal.
 - `Ideal.sInf_minimalPrimes`: The intersection of minimal primes over `I` is `I.radical`.
 
 Further results that need the theory of localizations can be found in
-`RingTheory/Ideal/Minimal/Localization.lean`.
+`Mathlib/RingTheory/Ideal/MinimalPrime/Localization.lean`.
 
 -/
 
-assert_not_exists Localization -- See `RingTheory/Ideal/Minimal/Localization.lean`
+@[expose] public section
+
+assert_not_exists Localization -- See `Mathlib/RingTheory/Ideal/MinimalPrime/Localization.lean`
 
 section
 
@@ -106,7 +111,7 @@ end
 
 section
 
-variable {R S : Type*} [CommRing R] [CommRing S] {I J : Ideal R}
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] {I J : Ideal R}
 
 theorem Ideal.minimalPrimes_eq_subsingleton (hI : I.IsPrimary) : I.minimalPrimes = {I.radical} := by
   ext J
@@ -127,7 +132,6 @@ theorem Ideal.minimalPrimes_eq_subsingleton_self [I.IsPrime] : I.minimalPrimes =
 variable (R) in
 theorem IsDomain.minimalPrimes_eq_singleton_bot [IsDomain R] :
     minimalPrimes R = {⊥} :=
-  have := Ideal.bot_prime (α := R)
   Ideal.minimalPrimes_eq_subsingleton_self
 
 end
@@ -153,5 +157,43 @@ theorem Ideal.minimalPrimes_eq_empty_iff (I : Ideal R) :
     apply Set.notMem_empty _ hp.1
   · rintro rfl
     exact Ideal.minimalPrimes_top
+
+lemma Ideal.mem_minimalPrimes_sup {R : Type*} [CommRing R] {p I J : Ideal R} [p.IsPrime]
+    (hle : I ≤ p) (h : p.map (Ideal.Quotient.mk I) ∈ (J.map (Ideal.Quotient.mk I)).minimalPrimes) :
+    p ∈ (I ⊔ J).minimalPrimes := by
+  refine ⟨⟨‹_›, ?_⟩, fun q ⟨_, hq⟩ hqp ↦ ?_⟩
+  · rw [sup_le_iff]
+    exact ⟨hle, by simpa [hle] using Ideal.comap_mono (f := Ideal.Quotient.mk I) h.1.2⟩
+  · rw [sup_le_iff] at hq
+    have h2 : p.map (Quotient.mk I) ≤ q.map (Quotient.mk I) :=
+      h.2 ⟨isPrime_map_quotientMk_of_isPrime hq.1, map_mono hq.2⟩ (map_mono hqp)
+    simpa [comap_map_quotientMk, hq.1, sup_le_iff] using comap_mono (f := Ideal.Quotient.mk I) h2
+
+variable {S : Type*} [CommRing S] [Algebra R S]
+
+/-- If `P` lies over `p`, `p` is a minimal prime over `I` and the image of `P` is
+a minimal prime over the image of `J` in `S ⧸ p S`, then `P` is a minimal prime
+over `I S ⊔ J`. -/
+lemma Ideal.map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes
+    {I p : Ideal R} {P : Ideal S} [P.IsPrime] [P.LiesOver p]
+    (hI : p ∈ I.minimalPrimes) {J : Ideal S} (hJP : J ≤ P)
+    (hJ : P.map (Ideal.Quotient.mk _) ∈
+      (J.map (Ideal.Quotient.mk (p.map (algebraMap R S)))).minimalPrimes) :
+    P ∈ (I.map (algebraMap R S) ⊔ J).minimalPrimes := by
+  refine ⟨⟨inferInstance, sup_le_iff.mpr ?_⟩, fun q ⟨_, hleq⟩ hqle ↦ ?_⟩
+  · refine ⟨?_, hJP⟩
+    rw [Ideal.map_le_iff_le_comap, ← Ideal.under_def, ← Ideal.over_def P p]
+    exact hI.1.2
+  · simp only [sup_le_iff] at hleq
+    have h1 : p.map (algebraMap R S) ≤ q := by
+      rw [Ideal.map_le_iff_le_comap]
+      refine hI.2 ⟨inferInstance, le_trans Ideal.le_comap_map (Ideal.comap_mono hleq.1)⟩ ?_
+      convert Ideal.comap_mono hqle
+      exact Ideal.LiesOver.over
+    have h2 : P.map (Ideal.Quotient.mk (p.map (algebraMap R S))) ≤
+        q.map (Ideal.Quotient.mk (p.map (algebraMap R S))) :=
+      hJ.2 ⟨Ideal.isPrime_map_quotientMk_of_isPrime h1, Ideal.map_mono hleq.2⟩
+        (Ideal.map_mono hqle)
+    simpa [h1] using Ideal.comap_mono (f := Ideal.Quotient.mk (p.map (algebraMap R S))) h2
 
 end

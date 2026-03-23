@@ -3,17 +3,21 @@ Copyright (c) 2016 Leonardo de Moura. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Batteries.Control.AlternativeMonad
-import Mathlib.Control.Basic
-import Mathlib.Data.Set.Defs
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Data.Set.Notation
+module
+
+public import Batteries.Control.AlternativeMonad
+public import Mathlib.Control.Basic
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.Set.Notation
 
 /-!
 # Functoriality of `Set`
 
 This file defines the functor structure of `Set`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -92,6 +96,7 @@ so it does not make much sense using `do` notation in general.
 Moreover, this would cause monad-related coercions and monad lifting logic to become activated.
 Either use `attribute [local instance] Set.monad` to make it be a local instance
 or use `SetM.run do ...` when `do` notation is wanted. -/
+@[instance_reducible]
 protected def monad : AlternativeMonad.{u} Set where
   __ : Alternative Set := inferInstance
   bind s f := ⋃ i ∈ s, f i

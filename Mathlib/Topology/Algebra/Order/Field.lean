@@ -3,10 +3,12 @@ Copyright (c) 2022 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 -/
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Order.Filter.AtTopBot.Field
-import Mathlib.Topology.Algebra.Field
-import Mathlib.Topology.Algebra.Order.Group
+module
+
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Order.Filter.AtTopBot.Field
+public import Mathlib.Topology.Algebra.Field
+public import Mathlib.Topology.Algebra.Order.Group
 
 /-!
 # Topologies on linear ordered fields
@@ -16,6 +18,8 @@ and division (apart from zero in the denominator). We also prove theorems like
 `Filter.Tendsto.mul_atTop`: if `f` tends to a positive number and `g` tends to positive infinity,
 then `f * g` tends to positive infinity.
 -/
+
+@[expose] public section
 
 
 open Set Filter TopologicalSpace Function
@@ -60,6 +64,12 @@ theorem tendsto_inv_nhdsGT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 :
 /-- The function `r ↦ r⁻¹` tends to `0` on the right as `r → +∞`. -/
 theorem tendsto_inv_atTop_nhdsGT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝[>] (0 : 𝕜)) :=
   inv_atTop₀.le
+
+theorem tendsto_nhdsGT_zero_of_comp_inv_tendsto_atTop {f : 𝕜 → α}
+    (h : Tendsto (fun x ↦ f x⁻¹) atTop l) :
+    Tendsto f (𝓝[>] 0) l := by
+  convert h.comp tendsto_inv_nhdsGT_zero
+  grind [inv_inv]
 
 theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0) :=
   tendsto_inv_atTop_nhdsGT_zero.mono_right inf_le_left
@@ -189,15 +199,15 @@ lemma inv_nhdsLT_zero : (𝓝[<] (0 : 𝕜))⁻¹ = atBot := by
 theorem tendsto_inv_nhdsLT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[<] (0 : 𝕜)) atBot :=
   inv_nhdsLT_zero.le
 
-@[deprecated (since := "2025-04-23")]
-alias tendsto_inv_zero_atBot := tendsto_inv_nhdsLT_zero
+theorem tendsto_nhdsLT_zero_of_comp_inv_tendsto_atBot {f : 𝕜 → α}
+    (h : Tendsto (fun x ↦ f x⁻¹) atBot l) :
+    Tendsto f (𝓝[<] 0) l := by
+  convert h.comp tendsto_inv_nhdsLT_zero
+  grind
 
 /-- The function `r ↦ r⁻¹` tends to `0` on the left as `r → -∞`. -/
 theorem tendsto_inv_atBot_nhdsLT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝[<] (0 : 𝕜)) :=
   inv_atBot₀.le
-
-@[deprecated (since := "2025-04-23")]
-alias tendsto_inv_atBot_zero' := tendsto_inv_atBot_nhdsLT_zero
 
 theorem tendsto_inv_atBot_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝 0) :=
   tendsto_inv_atBot_nhdsLT_zero.mono_right inf_le_left
@@ -299,7 +309,7 @@ instance (priority := 100) IsStrictOrderedRing.toIsTopologicalDivisionRing :
 
 -- TODO: generalize to a `GroupWithZero`
 theorem comap_mulLeft_nhdsGT_zero {x : 𝕜} (hx : 0 < x) : comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
-  rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]
+  rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi₀ _ hx, zero_div]
   congr 1
   refine ((Homeomorph.mulLeft₀ x hx.ne').comap_nhds_eq _).trans ?_
   simp

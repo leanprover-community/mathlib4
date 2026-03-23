@@ -3,11 +3,15 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 
 /-!
 # Yoneda embedding of `CommMon C`
 -/
+
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -17,6 +21,7 @@ namespace CategoryTheory
 universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] [BraidedCategory C] {X : C}
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of commutative monoids, then `X` is a commutative monoid object. -/
 lemma IsCommMonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommMonCat) (α : (F ⋙ forget _).RepresentableBy X) :

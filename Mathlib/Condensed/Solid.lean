@@ -3,9 +3,11 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
-import Mathlib.Condensed.Functors
-import Mathlib.Condensed.Limits
+module
+
+public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+public import Mathlib.Condensed.Functors
+public import Mathlib.Condensed.Limits
 
 /-!
 
@@ -22,6 +24,8 @@ groups were introduced in [scholze2019condensed], Definition 5.1.
 TODO (hard): prove that `((profiniteSolid ℤ).obj S).IsSolid` for `S : Profinite`.
 TODO (slightly easier): prove that `((profiniteSolid 𝔽ₚ).obj S).IsSolid` for `S : Profinite`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -72,7 +76,7 @@ end Condensed
 The predicate on condensed `R`-modules describing the property of being solid.
 
 TODO: This is not the correct definition of solid `R`-modules for a general `R`. The correct one is
-as follows: Use this to define solid modules over a finite type `ℤ`-algebra `R`. In particular this
+as follows: Use this to define solid modules over a finite type `ℤ`-algebra `R`. In particular this
 gives a definition of solid modules over `ℤ[X]` (polynomials in one variable). Then a solid
 `R`-module over a general ring `R` is the condition that for every `r ∈ R` and every ring
 homomorphism `ℤ[X] → R` such that `X` maps to `r`, the underlying `ℤ[X]`-module is solid.

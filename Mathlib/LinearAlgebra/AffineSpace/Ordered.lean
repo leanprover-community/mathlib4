@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.LinearAlgebra.AffineSpace.Midpoint
-import Mathlib.LinearAlgebra.AffineSpace.Slope
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.Order.Module.Synonym
+public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+public import Mathlib.LinearAlgebra.AffineSpace.Slope
 
 /-!
 # Ordered modules as affine spaces
@@ -25,6 +27,8 @@ for an ordered module interpreted as an affine space.
 
 affine space, ordered module, slope
 -/
+
+public section
 
 
 open AffineMap
@@ -83,12 +87,14 @@ theorem lineMap_lt_lineMap_iff_of_lt (h : r < r') : lineMap a b r < lineMap a b 
 theorem left_lt_lineMap_iff_lt (h : 0 < r) : a < lineMap a b r ↔ a < b :=
   Iff.trans (by rw [lineMap_apply_zero]) (lineMap_lt_lineMap_iff_of_lt h)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_lt_left_iff_lt (h : 0 < r) : lineMap a b r < a ↔ b < a :=
   left_lt_lineMap_iff_lt (E := Eᵒᵈ) h
 
 theorem lineMap_lt_right_iff_lt (h : r < 1) : lineMap a b r < b ↔ a < b :=
   Iff.trans (by rw [lineMap_apply_one]) (lineMap_lt_lineMap_iff_of_lt h)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem right_lt_lineMap_iff_lt (h : r < 1) : b < lineMap a b r ↔ b < a :=
   lineMap_lt_right_iff_lt (E := Eᵒᵈ) h
 
@@ -105,7 +111,7 @@ theorem lineMap_le_lineMap_iff_of_lt' (h : a < b) : lineMap a b r ≤ lineMap a 
   rw [add_le_add_iff_right, smul_le_smul_iff_of_pos_right (sub_pos.mpr h)]
 
 theorem left_le_lineMap_iff_nonneg (h : a < b) : a ≤ lineMap a b r ↔ 0 ≤ r := by
-  rw [← lineMap_le_lineMap_iff_of_lt' h, lineMap_apply_zero,]
+  rw [← lineMap_le_lineMap_iff_of_lt' h, lineMap_apply_zero]
 
 theorem lineMap_le_left_iff_nonpos (h : a < b) : lineMap a b r ≤ a ↔ r ≤ 0 := by
   rw [← lineMap_le_lineMap_iff_of_lt' h, lineMap_apply_zero]
@@ -126,7 +132,7 @@ theorem left_lt_lineMap_iff_pos (h : a < b) : a < lineMap a b r ↔ 0 < r := by
 theorem lineMap_lt_left_iff_neg (h : a < b) : lineMap a b r < a ↔ r < 0 := by
   rw [← lineMap_lt_lineMap_iff_of_lt' h, lineMap_apply_zero]
 
-theorem right_lt_lineMap_iff_one_lt (h : a < b) : b < lineMap a b r ↔ 1 < r  := by
+theorem right_lt_lineMap_iff_one_lt (h : a < b) : b < lineMap a b r ↔ 1 < r := by
   rw [← lineMap_lt_lineMap_iff_of_lt' h, lineMap_apply_one]
 
 theorem lineMap_lt_right_iff_lt_one (h : a < b) : lineMap a b r < b ↔ r < 1 := by
@@ -160,6 +166,7 @@ theorem left_le_lineMap_iff_le (h : 0 < r) : a ≤ lineMap a b r ↔ a ≤ b :=
 theorem left_le_midpoint : a ≤ midpoint k a b ↔ a ≤ b :=
   left_le_lineMap_iff_le <| inv_pos.2 zero_lt_two
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_le_left_iff_le (h : 0 < r) : lineMap a b r ≤ a ↔ b ≤ a :=
   left_le_lineMap_iff_le (E := Eᵒᵈ) h
 
@@ -173,6 +180,7 @@ theorem lineMap_le_right_iff_le (h : r < 1) : lineMap a b r ≤ b ↔ a ≤ b :=
 @[simp]
 theorem midpoint_le_right : midpoint k a b ≤ b ↔ a ≤ b := lineMap_le_right_iff_le two_inv_lt_one
 
+set_option backward.isDefEq.respectTransparency false in
 theorem right_le_lineMap_iff_le (h : r < 1) : b ≤ lineMap a b r ↔ b ≤ a :=
   lineMap_le_right_iff_le (E := Eᵒᵈ) h
 
@@ -228,6 +236,7 @@ theorem map_le_lineMap_iff_slope_le_slope_left (h : 0 < r * (b - a)) :
     mul_inv_cancel_right₀ (right_ne_zero_of_mul h.ne'), smul_add,
     smul_inv_smul₀ (left_ne_zero_of_mul h.ne')]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `c = lineMap a b r`, `a < c`, the point `(c, f c)` is non-strictly above the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a b ≤ slope f a c`. -/
 theorem lineMap_le_map_iff_slope_le_slope_left (h : 0 < r * (b - a)) :
@@ -241,6 +250,7 @@ theorem map_lt_lineMap_iff_slope_lt_slope_left (h : 0 < r * (b - a)) :
   lt_iff_lt_of_le_iff_le' (lineMap_le_map_iff_slope_le_slope_left h)
     (map_le_lineMap_iff_slope_le_slope_left h)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `c = lineMap a b r`, `a < c`, the point `(c, f c)` is strictly above the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a b < slope f a c`. -/
 theorem lineMap_lt_map_iff_slope_lt_slope_left (h : 0 < r * (b - a)) :
@@ -259,6 +269,7 @@ theorem map_le_lineMap_iff_slope_le_slope_right (h : 0 < (1 - r) * (b - a)) :
     smul_neg, neg_add_eq_sub]
   · exact right_ne_zero_of_mul h.ne'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `c = lineMap a b r`, `c < b`, the point `(c, f c)` is non-strictly above the
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b ≤ slope f a b`. -/
 theorem lineMap_le_map_iff_slope_le_slope_right (h : 0 < (1 - r) * (b - a)) :
@@ -272,6 +283,7 @@ theorem map_lt_lineMap_iff_slope_lt_slope_right (h : 0 < (1 - r) * (b - a)) :
   lt_iff_lt_of_le_iff_le' (lineMap_le_map_iff_slope_le_slope_right h)
     (map_le_lineMap_iff_slope_le_slope_right h)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `c = lineMap a b r`, `c < b`, the point `(c, f c)` is strictly above the
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b < slope f a b`. -/
 theorem lineMap_lt_map_iff_slope_lt_slope_right (h : 0 < (1 - r) * (b - a)) :
@@ -287,6 +299,7 @@ theorem map_le_lineMap_iff_slope_le_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r
   rw [map_le_lineMap_iff_slope_le_slope_left (mul_pos h₀ (sub_pos.2 hab)), ←
     lineMap_slope_lineMap_slope_lineMap f a b r, right_le_lineMap_iff_le h₁]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `c = lineMap a b r`, `a < c < b`, the point `(c, f c)` is non-strictly above the
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b ≤ slope f a c`. -/
 theorem lineMap_le_map_iff_slope_le_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r < 1) :
@@ -300,6 +313,7 @@ theorem map_lt_lineMap_iff_slope_lt_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r
   lt_iff_lt_of_le_iff_le' (lineMap_le_map_iff_slope_le_slope hab h₀ h₁)
     (map_le_lineMap_iff_slope_le_slope hab h₀ h₁)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `c = lineMap a b r`, `a < c < b`, the point `(c, f c)` is strictly above the
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b < slope f a c`. -/
 theorem lineMap_lt_map_iff_slope_lt_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r < 1) :

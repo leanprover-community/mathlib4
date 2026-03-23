@@ -3,9 +3,11 @@ Copyright (c) 2022 Sebastian Monnet. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Monnet
 -/
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Topology.Algebra.OpenSubgroup
+module
+
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
 # Krull topology
@@ -36,8 +38,11 @@ all intermediate fields `E` with `E/K` finite dimensional.
 - `krullTopology_t2 K L`. For an integral field extension `L/K`, the topology `krullTopology K L`
   is Hausdorff.
 
-- `krullTopology_totallyDisconnected K L`. For an integral field extension `L/K`, the topology
-  `krullTopology K L` is totally disconnected.
+- `krullTopology_isTotallySeparated K L`. For an integral field extension `L/K`, the topology
+  `krullTopology K L` is totally separated.
+
+- `stabilizer_isOpen_of_isIntegral`: For an integral field extension `L/K`, the stabilizer
+  in `Gal(L/K)` of any element in `L` is open for the Krull topology.
 
 - `IntermediateField.finrank_eq_fixingSubgroup_index`: given a Galois extension `K/k` and an
   intermediate field `L`, the `[L : k]` as a natural number is equal to the index of the
@@ -54,6 +59,8 @@ all intermediate fields `E` with `E/K` finite dimensional.
 
 - `krullTopology K L` is defined as an instance for type class inference.
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
@@ -93,6 +100,7 @@ theorem mem_galBasis_iff (K L : Type*) [Field K] [Field L] [Algebra K L] (U : Se
 
 /-- For a field extension `L/K`, `galGroupBasis K L` is the group filter basis on `Gal(L/K)`
 whose sets are `Gal(L/E)` for finite subextensions `E/K`. -/
+@[implicit_reducible]
 def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
     GroupFilterBasis Gal(L/K) where
   toFilterBasis := galBasis K L
@@ -116,7 +124,7 @@ def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
     rw [IntermediateField.mem_fixingSubgroup_iff]
     intro x hx
     change σ (g (σ⁻¹ x)) = x
-    have h_in_F : σ⁻¹ x ∈ F := ⟨x, hx, by dsimp; rw [← AlgEquiv.invFun_eq_symm]; rfl⟩
+    have h_in_F : σ⁻¹ x ∈ F := ⟨x, hx, by dsimp⟩
     have h_g_fix : g (σ⁻¹ x) = σ⁻¹ x := by
       rw [Subgroup.mem_carrier, IntermediateField.mem_fixingSubgroup_iff F g] at hg
       exact hg (σ⁻¹ x) h_in_F
@@ -233,7 +241,7 @@ instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L
   exact ⟨x, IntermediateField.mem_adjoin_simple_self K x, hx⟩
 
 /-- If `L/K` is an algebraic field extension, then the Krull topology on `Gal(L/K)` is
-  totally disconnected. -/
+  totally separated. -/
 theorem krullTopology_isTotallySeparated {K L : Type*} [Field K] [Field L] [Algebra K L]
     [Algebra.IsIntegral K L] : IsTotallySeparated (Set.univ : Set Gal(L/K)) :=
   (totallySeparatedSpace_iff _).mp inferInstance
@@ -246,6 +254,23 @@ instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type*) [Fiel
   change IsOpen ((⊥ : Subgroup Gal(L/K)) : Set Gal(L/K))
   rw [← IntermediateField.fixingSubgroup_top]
   exact IntermediateField.fixingSubgroup_isOpen ⊤
+
+section MulAction
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
+
+/-- If `L/K` is an algebraic field extension, then the stabilizer
+in `Gal(L/K)` of any element in `L` is open for the Krull topology. -/
+theorem stabilizer_isOpen_of_isIntegral [Algebra.IsIntegral K L] (x : L) :
+    IsOpen (MulAction.stabilizer Gal(L/K) x : Set Gal(L/K)) := by
+  open IntermediateField in
+  let E := adjoin K {x}
+  have hL : FiniteDimensional K E := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral x)
+  convert fixingSubgroup_isOpen E
+  ext g
+  simpa using (forall_mem_adjoin_smul_eq_self_iff K (S := {x}) g).symm
+
+end MulAction
 
 namespace IntermediateField
 
@@ -303,7 +328,7 @@ theorem finrank_eq_fixingSubgroup_index (L : IntermediateField k K) [IsGalois k 
   have h := Module.finrank_mul_finrank k ↥L' ↥E
   classical
   rw [← IsGalois.card_fixingSubgroup_eq_finrank L', ← IsGalois.card_aut_eq_finrank k E] at h
-  rw [← L'.fixingSubgroup.index_mul_card,  Nat.mul_left_inj Finite.card_pos.ne'] at h
+  rw [← L'.fixingSubgroup.index_mul_card, Nat.mul_left_inj Finite.card_pos.ne'] at h
   rw [(restrict_algEquiv hle).toLinearEquiv.finrank_eq, h, ← L'.map_fixingSubgroup_index K]
   congr 2
   exact lift_restrict hle

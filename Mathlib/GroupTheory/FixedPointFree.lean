@@ -3,7 +3,9 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Perm.Cycle.Type
+module
+
+public import Mathlib.GroupTheory.Perm.Cycle.Type
 
 /-!
 # Fixed-point-free automorphisms
@@ -12,6 +14,8 @@ This file defines fixed-point-free automorphisms and proves some basic propertie
 
 An automorphism `φ` of a group `G` is fixed-point-free if `1 : G` is the only fixed point of `φ`.
 -/
+
+@[expose] public section
 
 namespace MonoidHom
 
@@ -67,6 +71,7 @@ theorem commute_all_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Invol
   rwa [hφ.coe_eq_inv_of_involutive h2, inv_eq_iff_eq_inv, mul_inv_rev, inv_inv, inv_inv] at key
 
 /-- If a finite group admits a fixed-point-free involution, then it is commutative. -/
+@[implicit_reducible]
 def commGroupOfInvolutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ) :
     CommGroup G := .mk (hφ.commute_all_of_involutive h2)
 

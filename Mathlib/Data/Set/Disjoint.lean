@@ -3,11 +3,15 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Basic
+module
+
+public import Mathlib.Data.Set.Basic
 
 /-!
 # Theorems about the `Disjoint` relation on `Set`.
 -/
+
+public section
 
 assert_not_exists HeytingAlgebra RelIso
 
@@ -33,23 +37,17 @@ theorem disjoint_iff_inter_eq_empty : Disjoint s t ↔ s ∩ t = ∅ :=
 theorem _root_.Disjoint.inter_eq : Disjoint s t → s ∩ t = ∅ :=
   Disjoint.eq_bot
 
+@[grind =]
 theorem disjoint_left : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → a ∉ t :=
   disjoint_iff_inf_le.trans <| forall_congr' fun _ => not_and
 
 alias ⟨_root_.Disjoint.notMem_of_mem_left, _⟩ := disjoint_left
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.not_mem_of_mem_left := Disjoint.notMem_of_mem_left
-
 theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by rw [disjoint_comm, disjoint_left]
 
 alias ⟨_root_.Disjoint.notMem_of_mem_right, _⟩ := disjoint_right
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.not_mem_of_mem_right := Disjoint.notMem_of_mem_right
-
-lemma not_disjoint_iff : ¬Disjoint s t ↔ ∃ x, x ∈ s ∧ x ∈ t :=
-  Set.disjoint_iff.not.trans <| not_forall.trans <| exists_congr fun _ ↦ not_not
+lemma not_disjoint_iff : ¬Disjoint s t ↔ ∃ x, x ∈ s ∧ x ∈ t := by grind
 
 lemma not_disjoint_iff_nonempty_inter : ¬ Disjoint s t ↔ (s ∩ t).Nonempty := not_disjoint_iff
 
@@ -58,8 +56,7 @@ alias ⟨_, Nonempty.not_disjoint⟩ := not_disjoint_iff_nonempty_inter
 lemma disjoint_or_nonempty_inter (s t : Set α) : Disjoint s t ∨ (s ∩ t).Nonempty :=
   (em _).imp_right not_disjoint_iff_nonempty_inter.1
 
-lemma disjoint_iff_forall_ne : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ t → a ≠ b := by
-  simp only [Ne, disjoint_left, @imp_not_comm _ (_ = _), forall_eq']
+lemma disjoint_iff_forall_ne : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ t → a ≠ b := by grind
 
 alias ⟨_root_.Disjoint.ne_of_mem, _⟩ := disjoint_iff_forall_ne
 
@@ -123,6 +120,6 @@ end Disjoint
 namespace Set
 
 theorem mem_union_of_disjoint (h : Disjoint s t) {x : α} : x ∈ s ∪ t ↔ Xor' (x ∈ s) (x ∈ t) := by
-  grind [Xor', Set.disjoint_left]
+  grind [Xor']
 
 end Set

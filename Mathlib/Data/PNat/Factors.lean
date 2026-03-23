@@ -3,11 +3,13 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
-import Mathlib.Data.PNat.Prime
-import Mathlib.Data.Nat.Factors
-import Mathlib.Data.Multiset.OrderedMonoid
-import Mathlib.Data.Multiset.Sort
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+public import Mathlib.Data.PNat.Prime
+public import Mathlib.Data.Nat.Factors
+public import Mathlib.Data.Multiset.OrderedMonoid
+public import Mathlib.Data.Multiset.Sort
 
 /-!
 # Prime factors of nonzero naturals
@@ -20,6 +22,8 @@ the multiplicity of `p` in this factors multiset being the p-adic valuation of `
 * `PrimeMultiset`: Type of multisets of prime numbers.
 * `FactorMultiset n`: Multiset of prime factors of `n`.
 -/
+
+@[expose] public section
 
 /-- The type of multisets of prime numbers.  Unique factorization
 gives an equivalence between this set and ℕ+, as we will formalize
@@ -103,6 +107,7 @@ theorem coePNat_prime (v : PrimeMultiset) (p : ℕ+) (h : p ∈ (v : Multiset �
 instance coeMultisetPNatNat : Coe (Multiset ℕ+) (Multiset ℕ) :=
   ⟨fun v => v.map (↑)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coePNat_nat (v : PrimeMultiset) : ((v : Multiset ℕ+) : Multiset ℕ) = (v : Multiset ℕ) := by
   change (v.map ((↑) : Nat.Primes → ℕ+)).map Subtype.val = v.map Subtype.val
   rw [Multiset.map_map]
@@ -149,7 +154,7 @@ theorem to_ofPNatMultiset (v : Multiset ℕ+) (h) : (ofPNatMultiset v h : Multis
   dsimp [ofPNatMultiset, toPNatMultiset]
   have : (fun (p : ℕ+) (h : p.Prime) => ((↑) : Nat.Primes → ℕ+) ⟨p, h⟩) = fun p _ => id p := by
     funext p h
-    apply Subtype.eq
+    apply Subtype.ext
     rfl
   rw [Multiset.map_pmap, this, Multiset.pmap_eq_map, Multiset.map_id]
 
@@ -261,6 +266,7 @@ def factorMultisetEquiv : ℕ+ ≃ PrimeMultiset where
   left_inv := prod_factorMultiset
   right_inv := PrimeMultiset.factorMultiset_prod
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Factoring gives a homomorphism from the multiplicative
 monoid ℕ+ to the additive monoid of multisets. -/
 @[simp]
@@ -361,6 +367,7 @@ theorem factorMultiset_lcm (m n : ℕ+) :
     · exact dvd_lcm_left m n
     · exact dvd_lcm_right m n
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The number of occurrences of p in the factor multiset of m
 is the same as the p-adic valuation of m. -/
 theorem count_factorMultiset (m : ℕ+) (p : Nat.Primes) (k : ℕ) :

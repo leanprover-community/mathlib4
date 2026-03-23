@@ -3,9 +3,11 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Ideal.Quotient.Defs
+module
+
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Quotients of powers of principal ideals
@@ -26,6 +28,8 @@ formed as ring equivs.
 
 -/
 
+@[expose] public section
+
 
 namespace Ideal
 
@@ -33,6 +37,7 @@ section IsPrincipal
 
 variable {R : Type*} [CommRing R] [IsDomain R] {I : Ideal R}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a principal ideal `I`, `R ⧸ I ≃ₗ[R] I ^ n ⧸ I ^ (n + 1)`. To convert into a form
 that uses the ideal of `R ⧸ I ^ (n + 1)`, compose with
 `Ideal.powQuotPowSuccLinearEquivMapMkPowSuccPow`. -/

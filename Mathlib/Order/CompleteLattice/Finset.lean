@@ -3,17 +3,21 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Option
-import Mathlib.Data.Set.Lattice.Image
+module
+
+public import Mathlib.Data.Finset.Option
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Lattice operations on finsets
 
 This file is concerned with how big lattice or set operations behave when indexed by a finset.
 
-See also `Mathlib/Data/Finset/Lattice.lean`, which is concerned with folding binary lattice
+See also `Mathlib/Data/Finset/Lattice/Fold.lean`, which is concerned with folding binary lattice
 operations over a finset.
 -/
+
+public section
 
 assert_not_exists IsOrderedMonoid MonoidWithZero
 
@@ -86,6 +90,13 @@ right-hand side. -/
 theorem iInter_eq_iInter_finset' (s : ι' → Set α) :
     ⋂ i, s i = ⋂ t : Finset (PLift ι'), ⋂ i ∈ t, s (PLift.down i) :=
   iInf_eq_iInf_finset' s
+
+theorem iUnion_finset_eq_set (s : Set ι) :
+    ⋃ s' : Finset s, Subtype.val '' (s' : Set s) = s := by
+  ext x
+  simp only [Set.mem_iUnion, Set.mem_image, SetLike.mem_coe, Subtype.exists,
+    exists_and_right, exists_eq_right]
+  exact ⟨fun ⟨_, hx, _⟩ ↦ hx, fun hx ↦ ⟨{⟨x, hx⟩}, hx, by simp⟩⟩
 
 end Set
 

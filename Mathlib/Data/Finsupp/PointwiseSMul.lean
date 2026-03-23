@@ -3,10 +3,12 @@ Copyright (c) 2025 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Data.Finsupp.Defs
-import Mathlib.Data.Set.SMulAntidiagonal
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Data.Finsupp.Defs
+public import Mathlib.Data.Set.SMulAntidiagonal
 
 /-!
 # Scalar multiplication by finitely supported functions.
@@ -20,6 +22,8 @@ finitely supported `R`-valued functions on `G` on the space of `V`-valued functi
 * Finsupp.vaddAntidiagonal : The finset of pairs that vector-add to a given element.
 
 -/
+
+@[expose] public section
 
 open Finset Function
 

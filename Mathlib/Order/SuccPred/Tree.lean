@@ -3,11 +3,12 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
+module
 
-import Mathlib.Order.SuccPred.Archimedean
-import Mathlib.Data.Nat.Find
-import Mathlib.Order.Atoms
-import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.SuccPred.Archimedean
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Order.Atoms
+public import Mathlib.Data.SetLike.Basic
 
 /-!
 # Rooted trees
@@ -17,6 +18,8 @@ This is a `PartialOrder`, with `PredOrder` with the immediate parent as a predec
 `OrderBot` which is the root. We also have an `IsPredArchimedean` assumption to prevent infinite
 dangling chains.
 -/
+
+@[expose] public section
 
 variable {α : Type*} [PartialOrder α] [PredOrder α] [IsPredArchimedean α]
 
@@ -63,7 +66,7 @@ lemma findAtom_eq_bot {r : α} :
   mp h := by
     unfold findAtom at h
     have := Nat.find_min' (bot_le (a := r)).exists_pred_iterate h
-    replace : Nat.find (bot_le (a := r)).exists_pred_iterate = 0 := by omega
+    replace : Nat.find (bot_le (a := r)).exists_pred_iterate = 0 := by lia
     simpa [this] using h
   mpr h := by simp [h]
 

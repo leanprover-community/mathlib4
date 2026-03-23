@@ -3,8 +3,10 @@ Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
-import Mathlib.RingTheory.Valuation.ValuationSubring
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!
 # Algebra instances
@@ -12,15 +14,17 @@ import Mathlib.RingTheory.Valuation.ValuationSubring
 This file contains several `Algebra` and `IsScalarTower` instances related to extensions
 of a field with a valuation, as well as their unit balls.
 
-# Main Definitions
+## Main definitions
 * `ValuationSubring.algebra` : Given an algebra between two field extensions `L` and `E` of a
   field `K` with a valuation, create an algebra between their two rings of integers.
 
-# Main Results
+## Main statements
 
 * `integralClosure_algebraMap_injective` : the unit ball of a field `K` with respect to a
   valuation injects into its integral closure in a field extension `L` of `K`.
 -/
+
+@[expose] public section
 
 open Function Valuation
 open scoped WithZero
@@ -29,8 +33,8 @@ variable {K : Type*} [Field K] (v : Valuation K ℤᵐ⁰) (L : Type*) [Field L]
 
 namespace ValuationSubring
 
--- Implementation note : this instance was automatic in Lean3
-instance : Algebra v.valuationSubring L := Algebra.ofSubring v.valuationSubring.toSubring
+-- Shortcut instance with potential performance benefit
+instance : Algebra v.valuationSubring L := inferInstance
 
 theorem algebraMap_injective : Injective (algebraMap v.valuationSubring L) :=
   (FaithfulSMul.algebraMap_injective K L).comp (IsFractionRing.injective _ _)
@@ -39,16 +43,18 @@ theorem isIntegral_of_mem_ringOfIntegers {x : L} (hx : x ∈ integralClosure v.v
     IsIntegral v.valuationSubring (⟨x, hx⟩ : integralClosure v.valuationSubring L) :=
   integralClosure.isIntegral ⟨x, hx⟩
 
-theorem isIntegral_of_mem_ringOfIntegers' {x : (integralClosure v.valuationSubring L)} :
+theorem isIntegral_of_mem_ringOfIntegers' {x : integralClosure v.valuationSubring L} :
     IsIntegral v.valuationSubring (x : integralClosure v.valuationSubring L) := by
   apply isIntegral_of_mem_ringOfIntegers
 
 variable (E : Type _) [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
 
-instance : IsScalarTower v.valuationSubring L E := Subring.instIsScalarTowerSubtypeMem _
+-- Shortcut instance with potential performance benefit
+instance : IsScalarTower v.valuationSubring L E := inferInstance
 
 /-- Given an algebra between two field extensions `L` and `E` of a field `K` with a valuation `v`,
   create an algebra between their two rings of integers. -/
+-- TODO: fix the smul field
 instance algebra :
     Algebra (integralClosure v.valuationSubring L) (integralClosure v.valuationSubring E) :=
   RingHom.toAlgebra
@@ -65,14 +71,12 @@ instance algebra :
   and a ring `R` satisfying `isIntegralClosure R v.valuationSubring L`. -/
 protected noncomputable def equiv (R : Type*) [CommRing R] [Algebra v.valuationSubring R]
     [Algebra R L] [IsScalarTower v.valuationSubring R L]
-    [IsIntegralClosure R v.valuationSubring L] : integralClosure v.valuationSubring L ≃+* R := by
-  have := IsScalarTower.subalgebra' (valuationSubring v) L L
-    (integralClosure (valuationSubring v) L)
-  exact (IsIntegralClosure.equiv v.valuationSubring R L
+    [IsIntegralClosure R v.valuationSubring L] : integralClosure v.valuationSubring L ≃+* R :=
+  (IsIntegralClosure.equiv v.valuationSubring R L
     (integralClosure v.valuationSubring L)).symm.toRingEquiv
 
 theorem integralClosure_algebraMap_injective :
     Injective (algebraMap v.valuationSubring (integralClosure v.valuationSubring L)) :=
-  FaithfulSMul.algebraMap_injective ↥v.valuationSubring ↥(integralClosure (↥v.valuationSubring) L)
+  FaithfulSMul.algebraMap_injective ..
 
 end ValuationSubring

@@ -3,13 +3,17 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.PUnit
-import Mathlib.Algebra.Order.AddGroupWithTop
+module
+
+public import Mathlib.Algebra.Group.PUnit
+public import Mathlib.Algebra.Order.AddGroupWithTop
 /-!
 # Instances on PUnit
 
 This file collects facts about ordered algebraic structures on the one-element type.
 -/
+
+@[expose] public section
 
 namespace PUnit
 
@@ -26,5 +30,6 @@ instance : LinearOrderedAddCommMonoidWithTop PUnit where
   top := ()
   le_top _ := le_rfl
   top_add' _ := rfl
+  isAddLeftRegular_of_ne_top := by simp
 
 end PUnit

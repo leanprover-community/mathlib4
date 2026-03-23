@@ -3,19 +3,23 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.RingTheory.Polynomial.Resultant.Basic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.RingTheory.Polynomial.Resultant.Basic
 
 
 /-!
 # The discriminant of a matrix
 -/
 
+@[expose] public section
+
 open Polynomial
 
 namespace Matrix
 
-variable {R n : Type*} [CommRing R] [Nontrivial R] [Fintype n] [DecidableEq n]
+variable {R n : Type*} [CommRing R] [Fintype n] [DecidableEq n]
 
 /-- The discriminant of a matrix is defined to be the discriminant of its characteristic
 polynomial. -/
@@ -23,6 +27,7 @@ noncomputable def discr (A : Matrix n n R) : R := A.charpoly.discr
 
 lemma discr_of_card_eq_two (A : Matrix n n R) (hn : Fintype.card n = 2) :
     A.discr = A.trace ^ 2 - 4 * A.det := by
+  nontriviality R
   rw [discr, Polynomial.discr_of_degree_eq_two (by simp; norm_cast)]
   simp [A.charpoly_of_card_eq_two hn]
 

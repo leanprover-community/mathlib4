@@ -3,15 +3,19 @@ Copyright (c) 2025 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Limits.Filtered
+module
+
+public import Mathlib.CategoryTheory.Limits.Opposites
+public import Mathlib.CategoryTheory.Limits.Filtered
 
 /-!
-# Filered colimits and cofilered limits in `C` and `Cᵒᵖ`
+# Filtered colimits and cofiltered limits in `C` and `Cᵒᵖ`
 
-We construct filered colimits and cofilered limits in the opposite categories.
+We construct filtered colimits and cofiltered limits in the opposite categories.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 

@@ -3,13 +3,15 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Notation
-import Mathlib.Control.Functor
-import Mathlib.Data.SProd
-import Mathlib.Util.CompileInductive
-import Batteries.Tactic.Lint.Basic
-import Batteries.Data.List.Basic
-import Batteries.Logic
+module
+
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Control.Functor
+public import Mathlib.Data.SProd
+public import Mathlib.Util.CompileInductive
+public import Batteries.Tactic.Lint.Basic
+public import Batteries.Data.List.Basic
+public import Batteries.Logic
 
 /-!
 ## Definitions on lists
@@ -17,6 +19,8 @@ import Batteries.Logic
 This file contains various definitions on lists. It does not contain
 proofs about these definitions, those are contained in other files in `Data.List`
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -463,5 +467,12 @@ theorem length_mapAccumr₂ :
   | _, [], [], _ => rfl
 
 end MapAccumr
+
+section consecutivePairs
+
+/-- `consecutivePairs [a, b, c, d]` is `[(a, b), (b, c), (c, d)]`. -/
+abbrev consecutivePairs (l : List α) : List (α × α) := l.zip l.tail
+
+end consecutivePairs
 
 end List

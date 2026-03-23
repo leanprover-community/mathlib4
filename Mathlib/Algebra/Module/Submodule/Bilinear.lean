@@ -3,8 +3,10 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Span.Basic
-import Mathlib.LinearAlgebra.BilinearMap
+module
+
+public import Mathlib.LinearAlgebra.Span.Basic
+public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Images of pairs of submodules under bilinear maps
@@ -18,13 +20,15 @@ This file provides `Submodule.map₂`, which is later used to implement `Submodu
 
 ## Notes
 
-This file is quite similar to the n-ary section of `Data.Set.Basic` and to `Order.Filter.NAry`.
-Please keep them in sync.
+This file is quite similar to the n-ary section of `Mathlib/Data/Set/Basic.lean` and to
+`Mathlib/Order/Filter/NAry.lean`. Please keep them in sync.
 
 ## TODO
 
 Generalize this file to semilinear maps.
 -/
+
+@[expose] public section
 
 
 universe uι u v
@@ -77,7 +81,7 @@ theorem map₂_bot_right (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) : m
   eq_bot_iff.2 <|
     map₂_le.2 fun m _hm n hn => by
       rw [Submodule.mem_bot] at hn
-      rw [hn, LinearMap.map_zero]; simp only [mem_bot]
+      rw [hn, map_zero]; simp only [mem_bot]
 
 @[simp]
 theorem map₂_bot_left (f : M →ₗ[R] N →ₗ[R] P) (q : Submodule R N) : map₂ f ⊥ q = ⊥ :=

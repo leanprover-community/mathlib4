@@ -3,10 +3,12 @@ Copyright (c) 2021 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Ralf Stephan
 -/
-import Mathlib.Data.Nat.Prime.Nth
-import Mathlib.Data.Nat.Totient
-import Mathlib.NumberTheory.SmoothNumbers
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.Data.Nat.Prime.Nth
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.NumberTheory.SmoothNumbers
+public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # The Prime Counting Function
@@ -32,6 +34,8 @@ With `open scoped Nat.Prime`, we use the standard notation `π` to represent the
 function (and `π'` to represent the reindexed version).
 
 -/
+
+@[expose] public section
 
 
 namespace Nat
@@ -93,8 +97,6 @@ theorem tendsto_primeCounting' : Tendsto π' atTop atTop := by
 theorem tendsto_primeCounting : Tendsto π atTop atTop :=
   (tendsto_add_atTop_iff_nat 1).mpr tendsto_primeCounting'
 
-@[deprecated (since := "2025-07-08")] alias tensto_primeCounting := tendsto_primeCounting
-
 @[simp]
 theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
   nth_mem_of_infinite infinite_setOf_prime _
@@ -105,7 +107,7 @@ lemma primeCounting'_eq_zero_iff {n : ℕ} : n.primeCounting' = 0 ↔ n ≤ 2 :=
 
 @[simp]
 lemma primeCounting_eq_zero_iff {n : ℕ} : n.primeCounting = 0 ↔ n ≤ 1 := by
-  simp [primeCounting]
+  simp [primeCounting, -Order.add_one_le_iff]
 
 @[simp]
 lemma primeCounting_zero : primeCounting 0 = 0 :=

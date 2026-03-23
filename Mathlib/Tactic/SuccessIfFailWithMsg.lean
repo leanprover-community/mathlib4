@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Sébastien Gouëzel, Kim Morrison, Thomas Murrills
 -/
-import Lean.Elab.Eval
-import Lean.Elab.Tactic.BuiltinTactic
-import Mathlib.Init
-import Lean.Meta.Tactic.TryThis
+module
+
+public meta import Lean.Elab.Eval
+public meta import Lean.Elab.Tactic.BuiltinTactic
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.TryThis
 
 /-!
 # Success If Fail With Message
@@ -16,6 +18,8 @@ This file implements a tactic that succeeds only if its argument fails with a sp
 It's mostly useful in tests, where we want to make sure that tactics fail in certain ways under
 circumstances.
 -/
+
+public meta section
 
 open Lean Meta Elab Tactic
 
@@ -38,10 +42,10 @@ def successIfFailWithMessage {s α : Type} {m : Type → Type} [Monad m] [MonadL
     catch err => pure (some (← err.toMessageData.toString))
   restoreState s
   if let some err := err then
-    unless msg.trim == err.trim do
+    unless msg.trimAscii == err.trimAscii do
       if let some msgref := msgref then
         let suggestion : TryThis.Suggestion :=
-          { suggestion := s!"\"{err.trim}\""
+          { suggestion := s!"\"{err.trimAscii}\""
             toCodeActionTitle? := some (fun _ => "Update with tactic error message")}
         TryThis.addSuggestion msgref suggestion (header := "Update with tactic error message: ")
 

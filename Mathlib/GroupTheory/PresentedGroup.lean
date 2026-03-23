@@ -3,9 +3,11 @@ Copyright (c) 2019 Michael Howes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Howes, Newell Jensen
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.GroupTheory.FreeGroup.Basic
-import Mathlib.GroupTheory.QuotientGroup.Defs
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Defining a group given by generators and relations
@@ -25,6 +27,8 @@ given by generators `x : α` and relations `r ∈ rels`.
 
 generators, relations, group presentations
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -68,6 +72,7 @@ lemma mk_eq_mk_of_inv_mul_mem {rels : Set (FreeGroup α)} {x y : FreeGroup α}
     (hx : x⁻¹ * y ∈ rels) : mk rels x = mk rels y :=
   eq_of_inv_mul_eq_one <| one_of_mem hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The generators of a presented group generate the presented group. That is, the subgroup closure
 of the set of generators equals `⊤`. -/
 @[simp]

@@ -3,12 +3,15 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.CoalgCat.Basic
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
-import Mathlib.CategoryTheory.Monoidal.Comon_
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Coalgebra.TensorProduct
+module
+
+public import Mathlib.Algebra.Category.CoalgCat.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+public import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
+public import Mathlib.CategoryTheory.Monoidal.Comon_
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Coalgebra.TensorProduct
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # The category equivalence between `R`-coalgebras and comonoid objects in `R-Mod`
@@ -29,6 +32,8 @@ constructed in `Mathlib/Algebra/Category/CoalgCat/Monoidal.lean` to have better
 definitional equalities.
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -107,6 +112,7 @@ variable {R}
 equivalence with `Comon(R-Mod)`. This is just an auxiliary definition; the `MonoidalCategory`
 instance we make in `Mathlib/Algebra/Category/CoalgCat/Monoidal.lean` has better
 definitional equalities. -/
+@[instance_reducible]
 noncomputable def instMonoidalCategoryAux : MonoidalCategory (CoalgCat R) :=
   Monoidal.transport (comonEquivalence R).symm
 
@@ -120,6 +126,7 @@ attribute [local instance] instMonoidalCategoryAux
 
 open MonoidalCategory ModuleCat.MonoidalCategory
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tensorObj_comul (K L : CoalgCat R) :
     Coalgebra.comul (R := R) (A := (K ⊗ L : CoalgCat R))
       = (TensorProduct.tensorTensorTensorComm R K K L L).toLinearMap
@@ -151,6 +158,7 @@ theorem rightUnitor_hom_toLinearMap :
 
 open TensorProduct
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 theorem comul_tensorObj :
     Coalgebra.comul (R := R) (A := (CoalgCat.of R M ⊗ CoalgCat.of R N : CoalgCat R))
@@ -160,6 +168,7 @@ theorem comul_tensorObj :
     AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 theorem comul_tensorObj_tensorObj_right :
     Coalgebra.comul (R := R) (A := (CoalgCat.of R M ⊗
@@ -171,18 +180,20 @@ theorem comul_tensorObj_tensorObj_right :
     AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 theorem comul_tensorObj_tensorObj_left :
     Coalgebra.comul (R := R)
       (A := ((CoalgCat.of R M ⊗ CoalgCat.of R N) ⊗ CoalgCat.of R P : CoalgCat R))
       = Coalgebra.comul (A := M ⊗[R] N ⊗[R] P) := by
   rw [ofComonObjCoalgebraStruct_comul]
-  dsimp
-  simp only [toComonObj]
+  dsimp +instances
+  simp +instances only [toComonObj]
   simp [tensorμ_eq_tensorTensorTensorComm, TensorProduct.comul_def,
     AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem counit_tensorObj :
     Coalgebra.counit (R := R) (A := (CoalgCat.of R M ⊗ CoalgCat.of R N : CoalgCat R))
       = Coalgebra.counit (A := M ⊗[R] N) := by
@@ -190,6 +201,7 @@ theorem counit_tensorObj :
   simp [TensorProduct.counit_def, TensorProduct.AlgebraTensorModule.rid_eq_rid, ← lid_eq_rid]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem counit_tensorObj_tensorObj_right :
     Coalgebra.counit (R := R)
       (A := (CoalgCat.of R M ⊗ (CoalgCat.of R N ⊗ CoalgCat.of R P) : CoalgCat R))
@@ -198,6 +210,7 @@ theorem counit_tensorObj_tensorObj_right :
   simp [TensorProduct.counit_def, TensorProduct.AlgebraTensorModule.rid_eq_rid, ← lid_eq_rid]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem counit_tensorObj_tensorObj_left :
     Coalgebra.counit (R := R)
       (A := ((CoalgCat.of R M ⊗ CoalgCat.of R N) ⊗ CoalgCat.of R P : CoalgCat R))

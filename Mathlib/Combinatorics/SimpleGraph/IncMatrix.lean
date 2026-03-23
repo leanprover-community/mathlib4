@@ -3,9 +3,11 @@ Copyright (c) 2021 Gabriel Moise. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Moise, Yaël Dillies, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Matrix.Mul
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Data.Finset.Sym
+public import Mathlib.Data.Matrix.Mul
 
 /-!
 # Incidence matrix of a simple graph
@@ -40,6 +42,8 @@ incidence matrix for each `SimpleGraph α` has the same type.
 * Define the graph Laplacian of a simple graph using the oriented incidence matrix from an
   arbitrary orientation of a simple graph.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -81,9 +85,6 @@ theorem incMatrix_apply_mul_incMatrix_apply_of_not_adj (hab : a ≠ b) (h : ¬G.
 
 theorem incMatrix_of_notMem_incidenceSet (h : e ∉ G.incidenceSet a) : G.incMatrix R a e = 0 := by
   rw [incMatrix_apply, Set.indicator_of_notMem h]
-
-@[deprecated (since := "2025-05-23")]
-alias incMatrix_of_not_mem_incidenceSet := incMatrix_of_notMem_incidenceSet
 
 theorem incMatrix_of_mem_incidenceSet (h : e ∈ G.incidenceSet a) : G.incMatrix R a e = 1 := by
   rw [incMatrix_apply, Set.indicator_of_mem h, Pi.one_apply]
@@ -127,9 +128,6 @@ theorem sum_incMatrix_apply_of_mem_edgeSet [Fintype α] :
 theorem sum_incMatrix_apply_of_notMem_edgeSet [Fintype α] (h : e ∉ G.edgeSet) :
     ∑ a, G.incMatrix R a e = 0 :=
   sum_eq_zero fun _ _ => G.incMatrix_of_notMem_incidenceSet fun he => h he.1
-
-@[deprecated (since := "2025-05-23")]
-alias sum_incMatrix_apply_of_not_mem_edgeSet := sum_incMatrix_apply_of_notMem_edgeSet
 
 theorem incMatrix_transpose_mul_diag [Fintype α] [Decidable (e ∈ G.edgeSet)] :
     ((G.incMatrix R)ᵀ * G.incMatrix R) e e = if e ∈ G.edgeSet then 2 else 0 := by

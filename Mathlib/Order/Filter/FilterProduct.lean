@@ -3,10 +3,12 @@ Copyright (c) 2019 Abhimanyu Pallavi Sudhir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abhimanyu Pallavi Sudhir, Yury Kudryashov
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Order.Filter.Ring
-import Mathlib.Order.Filter.Ultrafilter.Defs
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Order.Filter.Ring
+public import Mathlib.Order.Filter.Ultrafilter.Defs
 
 /-!
 # Ultraproducts
@@ -19,6 +21,8 @@ ultrafilter. Definitions and properties that work for any filter should go to `O
 
 ultrafilter, ultraproduct
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -79,7 +83,7 @@ theorem lt_def [Preorder β] : ((· < ·) : β* → β* → Prop) = LiftRel (· 
   ext ⟨f⟩ ⟨g⟩
   exact coe_lt
 
-instance isTotal [LE β] [IsTotal β (· ≤ ·)] : IsTotal β* (· ≤ ·) :=
+instance total [LE β] [@Std.Total β (· ≤ ·)] : @Std.Total β* (· ≤ ·) :=
   ⟨fun f g =>
     inductionOn₂ f g fun _f _g => eventually_or.1 <| Eventually.of_forall fun _x => total_of _ _ _⟩
 

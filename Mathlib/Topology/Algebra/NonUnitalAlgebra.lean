@@ -3,8 +3,10 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
-import Mathlib.Topology.Algebra.Module.Basic
+module
+
+public import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
+public import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Non-unital topological (sub)algebras
@@ -19,6 +21,8 @@ Any non-unital subalgebra of a non-unital topological algebra is itself a non-un
 topological algebra, and its closure is again a non-unital subalgebra.
 
 -/
+
+@[expose] public section
 
 namespace NonUnitalSubalgebra
 
@@ -46,6 +50,11 @@ theorem isClosed_topologicalClosure (s : NonUnitalSubalgebra R A) :
 theorem topologicalClosure_minimal {s t : NonUnitalSubalgebra R A}
     (h : s ≤ t) (ht : IsClosed (t : Set A)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
+
+@[gcongr]
+theorem topologicalClosure_mono {s t : NonUnitalSubalgebra R A} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  closure_mono h
 
 /-- If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
 topological closure.

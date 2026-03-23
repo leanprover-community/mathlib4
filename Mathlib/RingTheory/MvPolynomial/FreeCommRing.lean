@@ -3,8 +3,9 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.RingTheory.FreeCommRing
+public import Mathlib.RingTheory.FreeCommRing
 
 /-!
 
@@ -22,6 +23,8 @@ formulas whose realization is a property of an `MvPolynomial`
   `p : MvPolynomial κ R` such that `p.support ⊆ monoms i`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -41,7 +44,7 @@ def genericPolyMap (monoms : ι → Finset (κ →₀ ℕ)) :
     ι → FreeCommRing ((Σ i : ι, monoms i) ⊕ κ) :=
   fun i => (monoms i).attach.sum
     (fun m => FreeCommRing.of (Sum.inl ⟨i, m⟩) *
-      Finsupp.prod m.1 (fun j n => FreeCommRing.of (Sum.inr j)^ n))
+      Finsupp.prod m.1 (fun j n => FreeCommRing.of (Sum.inr j) ^ n))
 
 /-- Collections of `MvPolynomial`s, `p : ι → MvPolynomial κ R` such
 that `∀ i, (p i).support ⊆ monoms i` can be identified with functions
@@ -72,6 +75,7 @@ theorem MvPolynomialSupportLEEquiv_symm_apply_coeff [DecidableEq κ] [CommRing R
   (mvPolynomialSupportLEEquiv (R := R) (fun i : ι => (p i).support)).symm_apply_apply
     ⟨p, fun _ => Finset.Subset.refl _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_genericPolyMap [DecidableEq κ] [CommRing R]
     [DecidableEq R] (monoms : ι → Finset (κ →₀ ℕ))

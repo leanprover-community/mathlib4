@@ -3,12 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Finset.Preimage
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Preimage
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Sums and products over preimages of finite sets.
 -/
+
+public section
 
 assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 

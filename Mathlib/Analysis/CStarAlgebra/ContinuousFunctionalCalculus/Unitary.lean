@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Tactic.Peel
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
-import Mathlib.Analysis.Complex.Basic
+module
+
+public import Mathlib.Tactic.Peel
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
+public import Mathlib.Analysis.Complex.Basic
 
 /-! # Conditions on unitary elements imposed by the continuous functional calculus
 
@@ -15,6 +17,8 @@ import Mathlib.Analysis.Complex.Basic
   star-normal and its spectrum lies on the unit circle.
 
 -/
+
+public section
 
 section Generic
 

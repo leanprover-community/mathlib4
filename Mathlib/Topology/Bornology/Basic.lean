@@ -3,7 +3,9 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Order.Filter.Cofinite
+module
+
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Basic theory of bornology
@@ -36,6 +38,8 @@ Although use of `cobounded α` is discouraged for indicating the (co)boundedness
 it is intended for regular use as a filter on `α`.
 -/
 
+@[expose] public section
+
 
 open Set Filter
 
@@ -63,7 +67,7 @@ lemma Bornology.ext (t t' : Bornology α)
 
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
-@[simps]
+@[simps, implicit_reducible]
 def Bornology.ofBounded {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
     (subset_mem : ∀ s₁ ∈ B, ∀ s₂ ⊆ s₁, s₂ ∈ B)
@@ -74,7 +78,7 @@ def Bornology.ofBounded {α : Type*} (B : Set (Set α))
 
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
-@[simps! cobounded]
+@[simps! cobounded, implicit_reducible]
 def Bornology.ofBounded' {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
     (subset_mem : ∀ s₁ ∈ B, ∀ s₂ ⊆ s₁, s₂ ∈ B)

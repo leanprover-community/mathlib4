@@ -3,10 +3,12 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Data.Finset.Lattice.Fold
+module
+
+public import Mathlib.Order.Filter.Tendsto
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Minimum and maximum w.r.t. a filter and on a set
@@ -73,6 +75,8 @@ Similar predicates with `on` suffix are particular cases for `l = 𝓟 s`.
   list of known (anti)monotone (binary) functions with their names, as well as a list of special
   types of filters, and define the missing lemmas once one of these two lists grows.
 -/
+
+@[expose] public section
 
 
 universe u v w x
@@ -190,6 +194,12 @@ theorem isMaxOn_const {b : β} : IsMaxOn (fun _ => b) s a :=
 
 theorem isExtrOn_const {b : β} : IsExtrOn (fun _ => b) s a :=
   isExtrFilter_const
+
+/-- If `f` has a minimum and a maximum both given by `f a` along the filter `l`, then it is
+eventually equal to `f a` along the filter. -/
+lemma eventuallyEq_of_isMinFilter_of_isMaxFilter {β : Type*} [PartialOrder β] {f : α → β}
+    (h₁ : IsMinFilter f l a) (h₂ : IsMaxFilter f l a) : f =ᶠ[l] (fun _ ↦ f a) := by
+  filter_upwards [h₁, h₂] using by grind
 
 /-! ### Order dual -/
 

@@ -3,10 +3,13 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Geometry.Manifold.ContMDiff.Basic
-import Mathlib.Geometry.Manifold.Instances.Real
-import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Geometry.Manifold.ContMDiff.Basic
+public import Mathlib.Geometry.Manifold.Instances.Real
+import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 /-! # Manifold structure on real intervals
 
@@ -30,7 +33,9 @@ embeddings. Once this is done,
   with the projection `ℝ → Icc x y` is
 -/
 
-open Set
+@[expose] public section
+
+open Set WithLp
 open scoped Manifold Topology
 
 noncomputable section
@@ -52,16 +57,16 @@ Note that one cannot abuse defeqs for this definition: this is *not* the same as
 orientation-reversing. -/
 irreducible_def oneTangentSpaceIcc {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :
     TangentSpace (𝓡∂ 1) z :=
-  mfderivWithin 𝓘(ℝ) (𝓡∂ 1) (Set.projIcc x y h.out.le) (Icc x y) z 1
+  mfderiv[Icc x y] (Set.projIcc x y h.out.le) z 1
 
 instance {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) : One (TangentSpace (𝓡∂ 1) z) where
   one := oneTangentSpaceIcc z
 
 variable {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion map from of a closed segment to `ℝ` is smooth in the manifold sense. -/
-lemma contMDiff_subtype_coe_Icc :
-    ContMDiff (𝓡∂ 1) 𝓘(ℝ) n (fun (z : Icc x y) ↦ (z : ℝ)) := by
+lemma contMDiff_subtype_coe_Icc : CMDiff n (fun (z : Icc x y) ↦ (z : ℝ)) := by
   intro z
   rw [contMDiffAt_iff]
   refine ⟨by fun_prop, ?_⟩
@@ -79,8 +84,8 @@ lemma contMDiff_subtype_coe_Icc :
     have : ContDiff ℝ n (fun (z : EuclideanSpace ℝ (Fin 1)) ↦ z 0 + x) := by fun_prop
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem; swap
     · simpa using z.2.1
-    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (fun i ↦ z - x) := by
-      apply (isOpen_lt (continuous_apply 0) continuous_const).mem_nhds
+    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (toLp 2 fun i ↦ z - x) := by
+      apply (isOpen_lt (PiLp.continuous_apply 2 _ 0) continuous_const).mem_nhds
       simpa using hz
     filter_upwards [self_mem_nhdsWithin, nhdsWithin_le_nhds this] with w hw h'w
     rw [max_eq_left hw, min_eq_left]
@@ -95,16 +100,15 @@ lemma contMDiff_subtype_coe_Icc :
     have : ContDiff ℝ n (fun (z : EuclideanSpace ℝ (Fin 1)) ↦ y - z 0) := by fun_prop
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem; swap
     · simpa using z.2.2
-    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (fun i ↦ y - z) := by
-      apply (isOpen_lt (continuous_apply 0) continuous_const).mem_nhds
+    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (toLp 2 fun i ↦ y - z) := by
+      apply (isOpen_lt (PiLp.continuous_apply 2 _ 0) continuous_const).mem_nhds
       simpa using h.out.trans_le hz
     filter_upwards [self_mem_nhdsWithin, nhdsWithin_le_nhds this] with w hw h'w
     rw [max_eq_left hw, max_eq_left]
     linarith
 
 /-- The projection from `ℝ` to a closed segment is smooth on the segment, in the manifold sense. -/
-lemma contMDiffOn_projIcc :
-    ContMDiffOn 𝓘(ℝ) (𝓡∂ 1) n (Set.projIcc x y h.out.le) (Icc x y) := by
+lemma contMDiffOn_projIcc : CMDiff[Icc x y] n (Set.projIcc x y h.out.le) := by
   intro z hz
   rw [contMDiffWithinAt_iff]
   refine ⟨by apply ContinuousAt.continuousWithinAt; fun_prop, ?_⟩
@@ -114,7 +118,7 @@ lemma contMDiffOn_projIcc :
   suffices ContDiffWithinAt ℝ n _ (Icc x y) z by simpa
   split_ifs with h'z
   · have : ContDiff ℝ n (fun (w : ℝ) ↦
-        (show EuclideanSpace ℝ (Fin 1) from fun (_ : Fin 1) ↦ w - x)) := by
+        (show EuclideanSpace ℝ (Fin 1) from toLp 2 fun (_ : Fin 1) ↦ w - x)) := by
       dsimp
       apply contDiff_euclidean.2 (fun i ↦ by fun_prop)
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem _ hz
@@ -125,7 +129,7 @@ lemma contMDiffOn_projIcc :
     rw [max_eq_right, min_eq_right hw.2]
     simp [hw.1, h.out.le]
   · have : ContDiff ℝ n (fun (w : ℝ) ↦
-        (show EuclideanSpace ℝ (Fin 1) from fun (_ : Fin 1) ↦ y - w)) := by
+        (show EuclideanSpace ℝ (Fin 1) from toLp 2 fun (_ : Fin 1) ↦ y - w)) := by
       dsimp
       apply contDiff_euclidean.2 (fun i ↦ by fun_prop)
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem _ hz
@@ -137,15 +141,14 @@ lemma contMDiffOn_projIcc :
     simp [hw.1, h.out.le]
 
 lemma contMDiffOn_comp_projIcc_iff {f : Icc x y → M} :
-    ContMDiffOn 𝓘(ℝ) I n (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) ↔ ContMDiff (𝓡∂ 1) I n f := by
+    CMDiff[Icc x y] n (f ∘ (Set.projIcc x y h.out.le)) ↔ CMDiff n f := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ hf.comp_contMDiffOn contMDiffOn_projIcc⟩
   convert hf.comp_contMDiff (contMDiff_subtype_coe_Icc (x := x) (y := y)) (fun z ↦ z.2)
   ext z
   simp
 
 lemma contMDiffWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y} :
-    ContMDiffWithinAt 𝓘(ℝ) I n (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) w ↔
-      ContMDiffAt (𝓡∂ 1) I n f w := by
+    CMDiffAt[Icc x y] n (f ∘ (Set.projIcc x y h.out.le)) w ↔ CMDiffAt n f w := by
   refine ⟨fun hf ↦ ?_,
     fun hf ↦ hf.comp_contMDiffWithinAt_of_eq (contMDiffOn_projIcc w w.2) (by simp)⟩
   have A := contMDiff_subtype_coe_Icc (x := x) (y := y) (n := n) w
@@ -155,33 +158,33 @@ lemma contMDiffWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y} :
   simp
 
 lemma mdifferentiableWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y} :
-    MDifferentiableWithinAt 𝓘(ℝ) I (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) w ↔
-      MDifferentiableAt (𝓡∂ 1) I f w := by
+    MDiffAt[Icc x y] (f ∘ (Set.projIcc x y h.out.le)) w ↔ MDiffAt f w := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
-  · have A := (contMDiff_subtype_coe_Icc (x := x) (y := y) (n := 1) w).mdifferentiableAt le_rfl
+  · have A := (contMDiff_subtype_coe_Icc (x := x) (y := y) w).mdifferentiableAt one_ne_zero
     rw [← mdifferentiableWithinAt_univ] at A ⊢
     convert hf.comp _ A (fun z hz ↦ z.2)
     ext z
     simp
-  · have := (contMDiffOn_projIcc (x := x) (y := y) (n := 1) w w.2).mdifferentiableWithinAt le_rfl
+  · have := (contMDiffOn_projIcc (x := x) (y := y) w w.2).mdifferentiableWithinAt one_ne_zero
     exact MDifferentiableAt.comp_mdifferentiableWithinAt_of_eq (w : ℝ) hf this (by simp)
 
 lemma mfderivWithin_projIcc_one {z : ℝ} (hz : z ∈ Icc x y) :
-    mfderivWithin 𝓘(ℝ) (𝓡∂ 1) (Set.projIcc x y h.out.le) (Icc x y) z 1 = 1 := by
+    mfderiv[Icc x y] (Set.projIcc x y h.out.le) z 1 = 1 := by
   change _ = oneTangentSpaceIcc (Set.projIcc x y h.out.le z)
   simp only [oneTangentSpaceIcc]
   congr
   simp [projIcc_of_mem h.out.le hz]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mfderivWithin_comp_projIcc_one {f : Icc x y → M} {w : Icc x y} :
-    mfderivWithin 𝓘(ℝ) I (f ∘ (projIcc x y h.out.le)) (Icc x y) w 1 = mfderiv (𝓡∂ 1) I f w 1 := by
-  by_cases hw : MDifferentiableAt (𝓡∂ 1) I f w; swap
+    mfderiv[Icc x y] (f ∘ (projIcc x y h.out.le)) w 1 = mfderiv% f w 1 := by
+  by_cases hw : MDiffAt f w; swap
   · rw [mfderiv_zero_of_not_mdifferentiableAt hw, mfderivWithin_zero_of_not_mdifferentiableWithinAt]
     · rfl
     · rwa [mdifferentiableWithinAt_comp_projIcc_iff]
   rw [mfderiv_comp_mfderivWithin (I' := 𝓡∂ 1)]; rotate_left
   · simp [hw]
-  · exact (contMDiffOn_projIcc _ w.2).mdifferentiableWithinAt le_rfl
+  · exact (contMDiffOn_projIcc _ w.2).mdifferentiableWithinAt one_ne_zero
   · exact (uniqueDiffOn_Icc h.out _ w.2).uniqueMDiffWithinAt
   simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
   have : w = projIcc x y h.out.le (w : ℝ) := by rw [projIcc_of_mem]
@@ -191,8 +194,8 @@ lemma mfderivWithin_comp_projIcc_one {f : Icc x y → M} {w : Icc x y} :
 
 lemma mfderiv_subtype_coe_Icc_one (z : Icc x y) :
     mfderiv (𝓡∂ 1) 𝓘(ℝ) (Subtype.val : Icc x y → ℝ) z 1 = 1 := by
-  have A : mfderivWithin 𝓘(ℝ) 𝓘(ℝ) (Subtype.val ∘ (projIcc x y h.out.le)) (Icc x y) z 1
-      = mfderivWithin 𝓘(ℝ) 𝓘(ℝ) id (Icc x y) z 1 := by
+  have A : mfderiv[Icc x y] (Subtype.val ∘ (projIcc x y h.out.le)) z 1
+      = mfderiv[Icc x y] (@id ℝ) z 1 := by
     congr 1
     apply mfderivWithin_congr_of_mem _ z.2
     intro z hz

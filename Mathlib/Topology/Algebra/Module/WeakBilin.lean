@@ -3,8 +3,10 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Moritz Doll
 -/
-import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.LinearAlgebra.BilinearMap
+module
+
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Weak dual topology
@@ -43,6 +45,8 @@ We prove the following results characterizing the weak topology:
 weak-star, weak dual, duality
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -107,6 +111,7 @@ theorem tendsto_iff_forall_eval_tendsto {l : Filter α} {f : α → WeakBilin B}
   rw [← tendsto_pi_nhds, (isEmbedding hB).tendsto_nhds_iff]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Addition in `WeakBilin B` is continuous. -/
 instance instContinuousAdd [ContinuousAdd 𝕜] : ContinuousAdd (WeakBilin B) := by
   refine ⟨continuous_induced_rng.2 ?_⟩
@@ -116,14 +121,15 @@ instance instContinuousAdd [ContinuousAdd 𝕜] : ContinuousAdd (WeakBilin B) :=
   ext
   simp only [Function.comp_apply, Pi.add_apply, map_add, LinearMap.add_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Scalar multiplication by `𝕜` on `WeakBilin B` is continuous. -/
 instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (WeakBilin B) := by
   refine ⟨continuous_induced_rng.2 ?_⟩
   refine cast (congr_arg _ ?_) (continuous_fst.smul ((coeFn_continuous B).comp continuous_snd))
   ext
-  simp only [Function.comp_apply, Pi.smul_apply, LinearMap.map_smulₛₗ, RingHom.id_apply,
-    LinearMap.smul_apply]
+  simp only [Function.comp_apply, Pi.smul_apply, map_smulₛₗ, RingHom.id_apply, LinearMap.smul_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Map `F` into the topological dual of `E` with the weak topology induced by `F`
 -/
@@ -144,6 +150,7 @@ variable [AddCommGroup F] [Module 𝕜 F]
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `WeakBilin B` is a `IsTopologicalAddGroup`, meaning that addition and negation are
 continuous. -/
 instance instIsTopologicalAddGroup [ContinuousAdd 𝕜] : IsTopologicalAddGroup (WeakBilin B) where

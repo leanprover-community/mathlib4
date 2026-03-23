@@ -3,13 +3,17 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Invertible
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Theorems about additively and multiplicatively invertible elements in rings
 
 -/
+
+@[expose] public section
 
 variable {R : Type*}
 
@@ -58,6 +62,7 @@ theorem IsAddUnit.mul_right {x : R} (h : IsAddUnit x) (y : R) : IsAddUnit (x * y
 end NonUnitalNonAssocSemiring
 
 /-- `-⅟a` is the inverse of `-a` -/
+@[implicit_reducible]
 def invertibleNeg [Mul R] [One R] [HasDistribNeg R] (a : R) [Invertible a] : Invertible (-a) :=
   ⟨-⅟a, by simp, by simp⟩
 

@@ -3,8 +3,10 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Order.Monoid.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Order.Monoid.Defs
 
 /-!
 # Ordered scalar multiplication and vector addition
@@ -47,6 +49,8 @@ an ordered field.
 * WithTop (in a different file?)
 -/
 
+@[expose] public section
+
 open Function
 
 variable {G P : Type*}
@@ -69,9 +73,9 @@ instance [LE G] [LE P] [SMul G P] [IsOrderedSMul G P] : CovariantClass G P (· �
   elim := fun a _ _ bc ↦ IsOrderedSMul.smul_le_smul_left _ _ bc a
 
 @[to_additive]
-instance [CommMonoid G] [PartialOrder G] [IsOrderedMonoid G] : IsOrderedSMul G G where
-  smul_le_smul_left _ _ := mul_le_mul_left'
-  smul_le_smul_right _ _ := mul_le_mul_right'
+instance [CommMonoid G] [Preorder G] [IsOrderedMonoid G] : IsOrderedSMul G G where
+  smul_le_smul_left _ _ := mul_le_mul_right
+  smul_le_smul_right _ _ := mul_le_mul_left
 
 @[to_additive]
 theorem IsOrderedSMul.smul_le_smul [LE G] [Preorder P] [SMul G P] [IsOrderedSMul G P]
@@ -108,7 +112,7 @@ instance [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P] 
     (IsOrderedCancelSMul.le_of_smul_le_smul_right b a c h.ge)
 
 @[to_additive]
-instance [CommMonoid G] [PartialOrder G] [IsOrderedCancelMonoid G] : IsOrderedCancelSMul G G where
+instance [CommMonoid G] [Preorder G] [IsOrderedCancelMonoid G] : IsOrderedCancelSMul G G where
   le_of_smul_le_smul_left _ _ _ := le_of_mul_le_mul_left'
   le_of_smul_le_smul_right _ _ _ := le_of_mul_le_mul_right'
 

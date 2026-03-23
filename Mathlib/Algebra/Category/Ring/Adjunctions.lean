@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+module
+
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Adjunctions in `CommRingCat`
@@ -18,6 +20,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 - `CommRingCat.unitsAdj`: `G ↦ ℤ[G]` is left adjoint to `S ↦ Sˣ`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -75,6 +79,7 @@ def coyonedaAdj (R : CommRingCat.{u}) :
 
 instance (R : CommRingCat.{u}) : (yoneda.obj R).IsRightAdjoint := ⟨_, ⟨coyonedaAdj R⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `n` is a singleton, `Hom(n, -)` is the identity in `CommRingCat`. -/
 @[simps!]
 def coyonedaUnique {n : Type v} [Unique n] : coyoneda.obj (op n) ≅ 𝟭 CommRingCat.{max u v} :=
@@ -87,11 +92,7 @@ def monoidAlgebra (R : CommRingCat.{max u v}) : CommMonCat.{v} ⥤ Under R where
   map f := Under.homMk (CommRingCat.ofHom <| MonoidAlgebra.mapDomainRingHom R f.hom)
   map_comp f g := by ext : 2; apply MonoidAlgebra.ringHom_ext <;> intro <;> simp
 
-@[simps (nameStem := "commMon")]
-instance : HasForget₂ CommRingCat CommMonCat where
-  forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
-  forget_comp := rfl
-
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction `G ↦ R[G]` and `S ↦ Sˣ` between `CommGrpCat` and `R-Alg`. -/
 def monoidAlgebraAdj (R : CommRingCat.{u}) :
     monoidAlgebra R ⊣ Under.forget R ⋙ forget₂ _ _ where
@@ -102,7 +103,7 @@ def monoidAlgebraAdj (R : CommRingCat.{u}) :
     naturality S T f := by
       ext : 2
       apply MonoidAlgebra.ringHom_ext <;>
-        intro <;> simp [MonoidAlgebra.liftNCRingHom, ← Under.w f, - Under.w] }
+        intro <;> simp [MonoidAlgebra.liftNCRingHom, ← Under.w f, -Under.w] }
   left_triangle_components G := by
     ext : 2
     apply MonoidAlgebra.ringHom_ext <;> intro <;> simp [MonoidAlgebra.liftNCRingHom]

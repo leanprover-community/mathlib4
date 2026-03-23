@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Topology.ClusterPt
+module
+
+public import Mathlib.Topology.ClusterPt
 
 /-!
 # Continuity in topological spaces
@@ -17,6 +19,8 @@ partially defined functions.
 
 continuity, continuous function
 -/
+
+@[expose] public section
 
 open Set Filter Topology
 
@@ -38,7 +42,7 @@ theorem IsOpen.preimage (hf : Continuous f) {t : Set Y} (h : IsOpen t) :
   hf.isOpen_preimage t h
 
 lemma Equiv.continuous_symm_iff (e : X ≃ Y) : Continuous e.symm ↔ IsOpenMap e := by
-  simp_rw [continuous_def, ← Set.image_equiv_eq_preimage_symm, IsOpenMap]
+  simp_rw [continuous_def, ← Equiv.image_eq_preimage_symm, IsOpenMap]
 
 lemma Equiv.isOpenMap_symm_iff (e : X ≃ Y) : IsOpenMap e.symm ↔ Continuous e := by
   simp_rw [← Equiv.continuous_symm_iff, Equiv.symm_symm]
@@ -92,6 +96,11 @@ theorem ClusterPt.map {lx : Filter X} {ly : Filter Y} (H : ClusterPt x lx)
 theorem preimage_interior_subset_interior_preimage {t : Set Y} (hf : Continuous f) :
     f ⁻¹' interior t ⊆ interior (f ⁻¹' t) :=
   interior_maximal (preimage_mono interior_subset) (isOpen_interior.preimage hf)
+
+theorem continuous_iff_preimage_interior_subset_interior_preimage :
+    Continuous f ↔ ∀ s, f ⁻¹' (interior s) ⊆ interior (f ⁻¹' s) where
+  mp h s := preimage_interior_subset_interior_preimage h
+  mpr h := ⟨fun s hs ↦ subset_interior_iff_isOpen.mp <| by grw [← h, hs.interior_eq]⟩
 
 @[continuity]
 theorem continuous_id : Continuous (id : X → X) :=
@@ -213,6 +222,12 @@ theorem closure_subset_preimage_closure_image (h : Continuous f) :
     closure s ⊆ f ⁻¹' closure (f '' s) :=
   (mapsTo_image _ _).closure h
 
+theorem continuous_iff_image_closure_subset_closure_image :
+    Continuous f ↔ ∀ s, f '' closure s ⊆ closure (f '' s) where
+  mp h s := image_closure_subset_closure_image h
+  mpr h := continuous_iff_isClosed.mpr fun s hs ↦ isClosed_of_closure_subset <| by
+    grw [image_subset_iff.mp <| h <| f ⁻¹' s, image_preimage_subset, hs.closure_subset]
+
 theorem map_mem_closure {t : Set Y} (hf : Continuous f)
     (hx : x ∈ closure s) (ht : MapsTo f s t) : f x ∈ closure t :=
   ht.closure hf hx
@@ -311,7 +326,7 @@ theorem DenseRange.mem_nhds (h : DenseRange f) (hs : s ∈ 𝓝 x) :
 
 end DenseRange
 
-library_note2 «continuity lemma statement» /--
+library_note «continuity lemma statement» /--
 The library contains many lemmas stating that functions/operations are continuous. There are many
 ways to formulate the continuity of operations. Some are more convenient than others.
 Note: for the most part this note also applies to other properties
@@ -409,7 +424,7 @@ With `ContinuousAt` you can be even more precise about what to prove in case of 
 see e.g. `ContinuousAt.comp_div_cases`.
 -/
 
-library_note2 «comp_of_eq lemmas» /--
+library_note «comp_of_eq lemmas» /--
 Lean's elaborator has trouble elaborating applications of lemmas that state that the composition of
 two functions satisfy some property at a point, like `ContinuousAt.comp` / `ContDiffAt.comp` and
 `ContMDiffWithinAt.comp`. The reason is that a lemma like this looks like

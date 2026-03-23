@@ -3,9 +3,11 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Rodriguez
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Center
-import Mathlib.GroupTheory.ClassEquation
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Center
+public import Mathlib.GroupTheory.ClassEquation
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 
 /-!
 # Wedderburn's Little Theorem
@@ -34,6 +36,8 @@ below proof is free, then the proof works nearly verbatim.
 
 -/
 
+@[expose] public section
+
 open scoped Polynomial
 open Fintype
 
@@ -51,12 +55,14 @@ open Module Polynomial
 
 variable {D}
 
+@[implicit_reducible]
 private def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
     [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
     Field R :=
   { show DivisionRing R from Fintype.divisionRingOfIsDomain R with
     mul_comm := fun x y ↦ Subtype.ext <| hD hR x.2 y.2 }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We prove that if every subring of `D` is central, then so is `D`. -/
 private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ := by
   classical

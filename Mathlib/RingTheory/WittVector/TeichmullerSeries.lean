@@ -3,9 +3,10 @@ Copyright (c) 2025 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang
 -/
+module
 
-import Mathlib.RingTheory.WittVector.Complete
-import Mathlib.RingTheory.WittVector.Teichmuller
+public import Mathlib.RingTheory.WittVector.Complete
+public import Mathlib.RingTheory.WittVector.Teichmuller
 
 /-!
 # Teichmuller Series
@@ -19,14 +20,16 @@ every element `x` of the Witt vectors `𝕎 R` can be written as the
 ## Main theorems
 
 * `WittVector.dvd_sub_sum_teichmuller_iterateFrobeniusEquiv_coeff` : `p ^ (n + 1)` divides
-`x` minus the summation of the first `n + 1` terms of the Teichmuller series.
+  `x` minus the summation of the first `n + 1` terms of the Teichmuller series.
 * `WittVector.eq_of_apply_teichmuller_eq` : Given a ring `S` such that `p` is nilpotent in `S`
-and two ring maps `f g : 𝕎 R →+* S`, if they coincide on the teichmuller representatives,
-then they are equal.
+  and two ring maps `f g : 𝕎 R →+* S`, if they coincide on the teichmuller representatives,
+  then they are equal.
 
 ## TODO
 Show that the Teichmuller series is unique.
 -/
+
+public section
 
 open Ideal Quotient
 namespace WittVector
@@ -54,8 +57,7 @@ theorem sum_coeff_eq_coeff_sum {α : Type*} {S : Finset α} (x : α → 𝕎 R)
     simp only [ha, not_false_eq_true, Finset.sum_insert]
     have : ∀ (n : ℕ), (x a).coeff n = 0 ∨ (∑ s ∈ S', x s).coeff n = 0 := by
       simp only [hind]
-      by_contra! h
-      obtain ⟨m, hma, hmS'⟩ := h
+      by_contra! ⟨m, hma, hmS'⟩
       have := Finset.sum_eq_zero.mt hmS'
       push_neg at this
       choose b hb hb' using this
@@ -76,11 +78,11 @@ theorem teichmuller_mul_pow_coeff_of_ne (x : R)
     {m n : ℕ} (h : m ≠ n) : (teichmuller p x * p ^ n).coeff m = 0 := by
   cases Nat.lt_or_lt_of_ne h with
   | inl h =>
-     exact WittVector.mul_pow_charP_coeff_zero (teichmuller p x) h
+    exact WittVector.mul_pow_charP_coeff_zero (teichmuller p x) h
   | inr h =>
     rw [← Nat.sub_add_cancel h.le, WittVector.mul_pow_charP_coeff_succ (teichmuller p x),
-        WittVector.teichmuller_coeff_pos p x (m - n) (Nat.zero_lt_sub_of_lt h), zero_pow]
-    simp [Prime.ne_zero <| Nat.Prime.prime Fact.out]
+      WittVector.teichmuller_coeff_pos p x (m - n) (Nat.zero_lt_sub_of_lt h), zero_pow]
+    simp [Nat.Prime.ne_zero Fact.out]
 
 variable [PerfectRing R p]
 
@@ -95,7 +97,7 @@ theorem dvd_sub_sum_teichmuller_iterateFrobeniusEquiv_coeff (x : 𝕎 R) (n : �
       ← le_coeff_eq_iff_le_sub_coeff_eq_zero]
   intro i hi
   rw [WittVector.sum_coeff_eq_coeff_sum]
-  · rw [Finset.sum_eq_add_sum_diff_singleton (Finset.mem_Iic.mpr (Nat.lt_succ_iff.mp hi))]
+  · rw [Finset.sum_eq_add_sum_diff_singleton_of_mem (Finset.mem_Iic.mpr (Nat.lt_succ_iff.mp hi))]
     let g := fun x : ℕ ↦ (0 : R)
     rw [Finset.sum_congr rfl (g := g)]
     · simp [g]
@@ -105,8 +107,8 @@ theorem dvd_sub_sum_teichmuller_iterateFrobeniusEquiv_coeff (x : 𝕎 R) (n : �
   · refine fun n ↦ ⟨fun ⟨a, _, ha⟩ ⟨b, _, hb⟩ ↦ ?_⟩
     ext
     dsimp only [ne_eq, Set.mem_setOf_eq]
-    rw [← of_not_not ((teichmuller_mul_pow_coeff_of_ne _).mt ha)]
-    exact of_not_not ((teichmuller_mul_pow_coeff_of_ne _).mt hb)
+    rw [← Not.imp_symm (teichmuller_mul_pow_coeff_of_ne _) ha]
+    exact Not.imp_symm (teichmuller_mul_pow_coeff_of_ne _) hb
 
 /--
 Given a ring `S` such that `p` is nilpotent in `S`

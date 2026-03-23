@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Topology.Basic
+module
+
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Topology.Basic
 /-!
 # Induced and coinduced topologies
 
@@ -42,6 +44,8 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
   and the topology on the codomain is equal to the coinduced topology.
 -/
 
+@[expose] public section
+
 open Set
 open scoped Topology
 
@@ -53,6 +57,7 @@ variable {X Y : Type*}
   the induced topology on `X` is the collection of sets
   that are preimages of some open set in `Y`.
   This is the coarsest topology that makes `f` continuous. -/
+@[implicit_reducible]
 def induced (f : X → Y) (t : TopologicalSpace Y) : TopologicalSpace X where
   IsOpen s := ∃ t, IsOpen t ∧ f ⁻¹' t = s
   isOpen_univ := ⟨univ, isOpen_univ, preimage_univ⟩
@@ -73,6 +78,7 @@ instance _root_.instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpa
   the coinduced topology on `Y` is defined such that
   `s : Set Y` is open if the preimage of `s` is open.
   This is the finest topology that makes `f` continuous. -/
+@[implicit_reducible]
 def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
   IsOpen s := IsOpen (f ⁻¹' s)
   isOpen_univ := t.isOpen_univ

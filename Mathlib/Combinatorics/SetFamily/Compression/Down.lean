@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Lattice.Fold
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Down-compressions
@@ -34,6 +36,8 @@ when the resulting set is not already in `𝒜`.
 
 compression, down-compression
 -/
+
+@[expose] public section
 
 
 variable {α : Type*} [DecidableEq α] {𝒜 : Finset (Finset α)} {s : Finset α} {a : α}
@@ -81,7 +85,7 @@ theorem memberSubfamily_union (a : α) (𝒜 ℬ : Finset (Finset α)) :
 theorem card_memberSubfamily_add_card_nonMemberSubfamily (a : α) (𝒜 : Finset (Finset α)) :
     #(𝒜.memberSubfamily a) + #(𝒜.nonMemberSubfamily a) = #𝒜 := by
   rw [memberSubfamily, nonMemberSubfamily, card_image_of_injOn]
-  · conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun s => (a ∈ s))]
+  · conv_rhs => rw [← card_filter_add_card_filter_not (fun s => (a ∈ s))]
   · apply (erase_injOn' _).mono
     simp
 
@@ -182,7 +186,7 @@ it suffices to prove it for
 * the finset family which only contains the empty finset.
 * `{s ∪ {a} | s ∈ 𝒜}` assuming the property for `𝒜` a family of finsets not containing `a`.
 * `ℬ ∪ 𝒞` assuming the property for `ℬ` and `𝒞`, where `a` is an element of the ground type and
-  `ℬ`is a family of finsets not containing `a` and `𝒞` a family of finsets containing `a`.
+  `ℬ` is a family of finsets not containing `a` and `𝒞` a family of finsets containing `a`.
   Note that instead of giving `ℬ` and `𝒞`, the `subfamily` case gives you `𝒜 = ℬ ∪ 𝒞`, so that
   `ℬ = {s ∈ 𝒜 | a ∉ s}` and `𝒞 = {s ∈ 𝒜 | a ∈ s}`.
 
@@ -221,7 +225,7 @@ open FinsetFamily
 /-- `a` is in the down-compressed family iff it's in the original and its compression is in the
 original, or it's not in the original but it's the compression of something in the original. -/
 theorem mem_compression : s ∈ 𝓓 a 𝒜 ↔ s ∈ 𝒜 ∧ s.erase a ∈ 𝒜 ∨ s ∉ 𝒜 ∧ insert a s ∈ 𝒜 := by
-  simp_rw [compression, mem_disjUnion, mem_filter, mem_image, and_comm (a := ( s ∉ 𝒜))]
+  simp_rw [compression, mem_disjUnion, mem_filter, mem_image, and_comm (a := s ∉ 𝒜)]
   refine
     or_congr_right
       (and_congr_left fun hs =>
@@ -260,8 +264,8 @@ theorem compression_idem (a : α) (𝒜 : Finset (Finset α)) : 𝓓 a (𝓓 a �
 theorem card_compression (a : α) (𝒜 : Finset (Finset α)) : #(𝓓 a 𝒜) = #𝒜 := by
   rw [compression, card_disjUnion, filter_image,
     card_image_of_injOn ((erase_injOn' _).mono fun s hs => _), ← card_union_of_disjoint]
-  · conv_rhs => rw [← filter_union_filter_neg_eq (fun s => (erase s a ∈ 𝒜)) 𝒜]
-  · exact disjoint_filter_filter_neg 𝒜 𝒜 (fun s => (erase s a ∈ 𝒜))
+  · conv_rhs => rw [← filter_union_filter_not_eq (fun s => (erase s a ∈ 𝒜)) 𝒜]
+  · exact disjoint_filter_filter_not 𝒜 𝒜 (fun s => (erase s a ∈ 𝒜))
   intro s hs
   rw [mem_coe, mem_filter] at hs
   exact not_imp_comm.1 erase_eq_of_notMem (ne_of_mem_of_not_mem hs.1 hs.2).symm

@@ -3,12 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Free
-import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.CategoryTheory.Elements
-import Mathlib.CategoryTheory.Generator.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Free
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+public import Mathlib.CategoryTheory.Elements
+public import Mathlib.CategoryTheory.Generator.Basic
 
 /-!
 # Generators for the category of presheaves of modules
@@ -41,6 +43,8 @@ of a morphism between coproducts of objects in `freeYoneda R`.
 
 -/
 
+@[expose] public section
+
 universe v v₁ u u₁
 
 open CategoryTheory Limits
@@ -55,6 +59,7 @@ noncomputable def freeYonedaEquiv {M : PresheafOfModules.{v} R} {X : C} :
     ((free R).obj (yoneda.obj X) ⟶ M) ≃ M.obj (Opposite.op X) :=
   freeHomEquiv.trans yonedaEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 lemma freeYonedaEquiv_symm_app (M : PresheafOfModules.{v} R) (X : C)
     (x : M.obj (Opposite.op X)) :
     (freeYonedaEquiv.symm x).app (Opposite.op X) (ModuleCat.freeMk (𝟙 _)) = x := by
@@ -163,6 +168,7 @@ lemma ι_fromFreeYonedaCoproduct_apply (m : M.Elements) (X : Cᵒᵖ) (x : m.fre
       m.fromFreeYoneda.app X x :=
   congr_fun ((evaluation R X ⋙ forget _).congr_map (M.ι_fromFreeYonedaCoproduct m)) x
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma fromFreeYonedaCoproduct_app_mk (m : M.Elements) :
     M.fromFreeYonedaCoproduct.app _ (M.freeYonedaCoproductMk m) = m.2 := by

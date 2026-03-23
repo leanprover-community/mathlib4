@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Associated
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Data.Nat.Prime.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Data.Nat.Prime.Defs
 
 /-!
 # Prime numbers
@@ -14,6 +16,8 @@ This file develops the theory of prime numbers: natural numbers `p ≥ 2` whose 
 `p` and `1`.
 
 -/
+
+public section
 
 namespace Nat
 variable {n : ℕ}
@@ -26,9 +30,6 @@ theorem not_prime_mul {a b : ℕ} (a1 : a ≠ 1) (b1 : b ≠ 1) : ¬Prime (a * b
 
 theorem not_prime_of_mul_eq {a b n : ℕ} (h : a * b = n) (h₁ : a ≠ 1) (h₂ : b ≠ 1) : ¬Prime n :=
   h ▸ not_prime_mul h₁ h₂
-
-@[deprecated (since := "2025-05-24")]
-alias not_prime_mul' := not_prime_of_mul_eq
 
 theorem Prime.dvd_iff_eq {p a : ℕ} (hp : p.Prime) (a1 : a ≠ 1) : a ∣ p ↔ p = a := by
   refine ⟨?_, by rintro rfl; rfl⟩
@@ -95,6 +96,10 @@ theorem dvd_of_forall_prime_mul_dvd {a b : ℕ}
 theorem Prime.even_iff {p : ℕ} (hp : Prime p) : Even p ↔ p = 2 := by
   rw [even_iff_two_dvd, prime_dvd_prime_iff_eq prime_two hp, eq_comm]
 
+theorem Prime.odd_iff {p : ℕ} (hp : Prime p) : Odd p ↔ 3 ≤ p := by
+  rw [← not_iff_not, not_odd_iff_even, hp.even_iff, not_le]
+  grind [hp.two_le]
+
 theorem Prime.odd_of_ne_two {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2) : Odd p :=
   hp.eq_two_or_odd'.resolve_left h_two
 
@@ -128,7 +133,7 @@ lemma coprime_of_lt_minFac {n m : ℕ} (h₀ : m ≠ 0) (h : m < minFac n) : Cop
   rw [← not_not (a := n.Coprime m), Prime.not_coprime_iff_dvd]
   push_neg
   exact fun p hp hn hm ↦
-    ((le_of_dvd (by cutsat) hm).trans_lt <| h.trans_le <| minFac_le_of_dvd hp.two_le hn).false
+    ((le_of_dvd (by lia) hm).trans_lt <| h.trans_le <| minFac_le_of_dvd hp.two_le hn).false
 
 /-- If `0 < m < minFac n`, then `n` and `m` have gcd equal to `1`. -/
 lemma gcd_eq_one_of_lt_minFac {n m : ℕ} (h₀ : m ≠ 0) (h : m < minFac n) : n.gcd m = 1 :=
@@ -215,9 +220,9 @@ theorem prime_eq_prime_of_dvd_pow {m p q} (pp : Prime p) (pq : Prime q) (h : p �
 theorem dvd_prime_pow {p : ℕ} (pp : Prime p) {m i : ℕ} : i ∣ p ^ m ↔ ∃ k ≤ m, i = p ^ k := by
   simp_rw [_root_.dvd_prime_pow (prime_iff.mp pp) m, associated_eq_eq]
 
-theorem Prime.dvd_mul_of_dvd_ne {p1 p2 n : ℕ} (h_neq : p1 ≠ p2) (pp1 : Prime p1) (pp2 : Prime p2)
+theorem Prime.dvd_mul_of_dvd_ne {p1 p2 n : ℕ} (h_ne : p1 ≠ p2) (pp1 : Prime p1) (pp2 : Prime p2)
     (h1 : p1 ∣ n) (h2 : p2 ∣ n) : p1 * p2 ∣ n :=
-  Coprime.mul_dvd_of_dvd_of_dvd ((coprime_primes pp1 pp2).mpr h_neq) h1 h2
+  Coprime.mul_dvd_of_dvd_of_dvd ((coprime_primes pp1 pp2).mpr h_ne) h1 h2
 
 /-- If `p` is prime,
 and `a` doesn't divide `p^k`, but `a` does divide `p^(k+1)`

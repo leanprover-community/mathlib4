@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.Algebra.Colimit.Module
-import Mathlib.Algebra.Module.Shrink
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.Algebra.Colimit.Module
+public import Mathlib.Algebra.Module.Shrink
 
 /-!
 # The category of R-modules has all limits
@@ -14,6 +16,8 @@ import Mathlib.Algebra.Module.Shrink
 Further, these limits are preserved by the forgetful functor --- that is,
 the underlying types are just the limits in the category of types.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -75,6 +79,7 @@ instance limitModule :
     Module R (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
   inferInstanceAs <| Module R (Shrink (sectionsSubmodule F))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `limit.π (F ⋙ forget (ModuleCat.{w} R)) j` as an `R`-linear map. -/
 def limitπLinearMap (j) :
     (Types.Small.limitCone (F ⋙ forget (ModuleCat.{w} R))).pt →ₗ[R]
@@ -91,6 +96,7 @@ def limitπLinearMap (j) :
 
 namespace HasLimits
 
+set_option backward.isDefEq.respectTransparency false in
 -- The next two definitions are used in the construction of `HasLimits (ModuleCat R)`.
 -- After that, the limits should be constructed using the generic limits API,
 -- e.g. `limit F`, `limit.cone F`, and `limit.isLimit F`.
@@ -104,6 +110,7 @@ def limitCone : Cone F where
       naturality := fun _ _ f => hom_ext <| LinearMap.coe_injective <|
         ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `ModuleCat R` is a limit cone.
 (Internal use only; use the limits API.)
 -/
@@ -221,8 +228,7 @@ def directLimitDiagram : ι ⥤ ModuleCat R where
     symm
     apply Module.DirectedSystem.map_map f
 
-variable [DecidableEq ι]
-
+set_option backward.isDefEq.respectTransparency false in
 /-- The `Cocone` on `directLimitDiagram` corresponding to
 the unbundled `directLimit` of modules.
 
@@ -236,6 +242,7 @@ def directLimitCocone : Cocone (directLimitDiagram G f) where
         ext
         exact DirectLimit.of_f }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The unbundled `directLimit` of modules is a colimit
 in the sense of `CategoryTheory`. -/
 @[simps]

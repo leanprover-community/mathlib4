@@ -3,10 +3,12 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Atlas
-import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-import Mathlib.Geometry.Manifold.Diffeomorph
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
+public import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
+public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+public import Mathlib.Geometry.Manifold.Diffeomorph
 
 /-!
 # Derivatives of maps in the tangent bundle
@@ -15,6 +17,8 @@ This file contains properties of derivatives which need the manifold structure o
 bundle. Notably, it includes formulas for the tangent maps to charts, and unique differentiability
 statements for subsets of the tangent bundle.
 -/
+
+@[expose] public section
 
 open Bundle Set
 open scoped Manifold
@@ -55,7 +59,7 @@ theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
   exact ((chartAt H (TotalSpace.proj p)).right_inv h).symm
 
 lemma mfderiv_chartAt_eq_tangentCoordChange {x y : M} (hsrc : x ∈ (chartAt H y).source) :
-    mfderiv I I (chartAt H y) x = tangentCoordChange I x y x := by
+    mfderiv% (chartAt H y) x = tangentCoordChange I x y x := by
   have := mdifferentiableAt_atlas (I := I) (ChartedSpace.chart_mem_atlas _) hsrc
   simp [mfderiv, if_pos this, Function.comp_assoc]
 
@@ -73,13 +77,11 @@ lemma inTangentCoordinates_eq_mfderiv_comp
     {ϕ : Π x : N, TangentSpace I (f x) →L[𝕜] TangentSpace I' (g x)} {x₀ : N} {x : N}
     (hx : f x ∈ (chartAt H (f x₀)).source) (hy : g x ∈ (chartAt H' (g x₀)).source) :
     inTangentCoordinates I I' f g ϕ x₀ x =
-    (mfderiv I' 𝓘(𝕜, E') (extChartAt I' (g x₀)) (g x)) ∘L (ϕ x) ∘L
-      (mfderivWithin 𝓘(𝕜, E) I (extChartAt I (f x₀)).symm (range I)
-        (extChartAt I (f x₀) (f x))) := by
+    (mfderiv% (extChartAt I' (g x₀)) (g x)) ∘L (ϕ x) ∘L
+      (mfderiv[range I] (extChartAt I (f x₀)).symm (extChartAt I (f x₀) (f x))) := by
   rw [inTangentCoordinates_eq _ _ _ hx hy, tangentBundleCore_coordChange]
   congr
-  · have : MDifferentiableAt I' 𝓘(𝕜, E') (extChartAt I' (g x₀)) (g x) :=
-      mdifferentiableAt_extChartAt hy
+  · have : MDiffAt (extChartAt I' (g x₀)) (g x) := mdifferentiableAt_extChartAt hy
     simp_all [mfderiv]
   · simp only [mfderivWithin, writtenInExtChartAt, modelWithCornersSelf_coe, range_id, inter_univ]
     rw [if_pos]
@@ -91,7 +93,7 @@ lemma inTangentCoordinates_eq_mfderiv_comp
 open Bundle
 variable (I) in
 /-- The canonical identification between the tangent bundle to the model space and the product,
-as a diffeomorphism -/
+as a diffeomorphism. -/
 def tangentBundleModelSpaceDiffeomorph (n : ℕ∞) :
     TangentBundle I H ≃ₘ^n⟮I.tangent, I.prod 𝓘(𝕜, E)⟯ ModelProd H E where
   __ := TotalSpace.toProd H E

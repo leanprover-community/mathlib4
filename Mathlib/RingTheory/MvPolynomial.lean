@@ -3,11 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.MvPolynomial.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 # Multivariate polynomials over fields
@@ -16,6 +18,8 @@ This file contains basic facts about multivariate polynomials over fields, for e
 dimension of the space of multivariate polynomials over a field is equal to the cardinality of
 finitely supported functions from the indexing set to `ℕ`.
 -/
+
+public section
 
 
 noncomputable section
@@ -28,6 +32,7 @@ namespace MvPolynomial
 
 variable (σ : Type u) (K : Type v)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotient_mk_comp_C_injective [Field K] (I : Ideal (MvPolynomial σ K)) (hI : I ≠ ⊤) :
     Function.Injective ((Ideal.Quotient.mk I).comp MvPolynomial.C) := by
   refine (injective_iff_map_eq_zero _).2 fun x hx => ?_
@@ -39,11 +44,17 @@ theorem quotient_mk_comp_C_injective [Field K] (I : Ideal (MvPolynomial σ K)) (
 variable {σ K} [CommRing K] [Nontrivial K]
 open Cardinal
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rank_eq_lift : Module.rank K (MvPolynomial σ K) = lift.{v} #(σ →₀ ℕ) := by
-  rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank, lift_lift, lift_umax.{u,v}]
+  rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank, lift_lift, lift_umax.{u, v}]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rank_eq {σ : Type v} : Module.rank K (MvPolynomial σ K) = #(σ →₀ ℕ) := by
   rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank]
+
+#adaptation_note /-- Needed after leanprover/lean4#12564 -/
+instance : Module K (MvPolynomial σ K) :=
+  inferInstanceAs <| Module K (AddMonoidAlgebra K (σ →₀ ℕ))
 
 theorem finrank_eq_zero [Nonempty σ] : Module.finrank K (MvPolynomial σ K) = 0 :=
   (basisMonomials σ K).linearIndependent.finrank_eq_zero_of_infinite

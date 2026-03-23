@@ -3,11 +3,13 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.RingTheory.Finiteness.Defs
-import Mathlib.Topology.Bornology.Constructions
-import Mathlib.Topology.UniformSpace.Equiv
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
+module
+
+public import Mathlib.RingTheory.Finiteness.Defs
+public import Mathlib.Topology.Bornology.Constructions
+public import Mathlib.Topology.UniformSpace.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 
 /-! # Type synonym for types with a `CStarModule` structure
 
@@ -47,6 +49,8 @@ However, by utilizing the type synonym, these actually correspond to *different 
 The pattern here is the same one as is used by `Lex` for order structures; it avoids having a
 separate synonym for each type, and allows all the structure-copying code to be shared.
 -/
+
+@[expose] public section
 
 set_option linter.unusedVariables false in
 /-- A type synonym for endowing a given type with a `CStarModule` structure. This has the scoped
@@ -170,7 +174,8 @@ def linearEquiv [Semiring R] [AddCommGroup E] [Module R E] : C⋆ᵐᵒᵈ(A, E)
     invFun := (equiv _ _).symm }
 
 lemma map_top_submodule {R : Type*} [Semiring R] [AddCommGroup E] [Module R E] :
-    (⊤ : Submodule R E).map (linearEquiv R A E).symm = ⊤ := Submodule.map_eq_top_iff.mpr rfl
+    (⊤ : Submodule R E).map (linearEquiv R A E).symm.toLinearMap = ⊤ :=
+  Submodule.map_eq_top_iff.mpr rfl
 
 instance instModuleFinite [Semiring R] [AddCommGroup E] [Module R E] [Module.Finite R E] :
     Module.Finite R C⋆ᵐᵒᵈ(A, E) := ‹Module.Finite R E›

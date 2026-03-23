@@ -3,16 +3,18 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies, Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.Ring.Unbundled.Basic
-import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Ring.GrindInstances
-import Mathlib.Tactic.Tauto
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+module
+
+public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+public import Mathlib.Algebra.CharZero.Defs
+public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Ring.GrindInstances
+public import Mathlib.Tactic.Tauto
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 
 /-!
 # Ordered rings and semirings
@@ -101,6 +103,8 @@ immediate predecessors and what conditions are added to each of them.
   - `LinearOrderedCommSemiring` & additive inverses
   - `CommRing` & `IsDomain` & linear order structure
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidHom
 
@@ -232,5 +236,9 @@ lemma one_sub_le_one_sub_mul_one_add (h : b + b * c ≤ a + c) : 1 - a ≤ (1 - 
 lemma one_sub_le_one_add_mul_one_sub (h : c + b * c ≤ a + b) : 1 - a ≤ (1 + b) * (1 - c) := by
   rw [mul_one_sub, one_add_mul, sub_le_sub_iff, add_assoc, add_comm b]
   gcongr
+
+instance [Nontrivial R] : NoMaxOrder R := ⟨fun a ↦ ⟨a + 1, by simp⟩⟩
+
+instance [Nontrivial R] : NoMinOrder R := ⟨fun a ↦ ⟨a - 1, by simp⟩⟩
 
 end OrderedRing

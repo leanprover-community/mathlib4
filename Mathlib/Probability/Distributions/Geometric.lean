@@ -3,9 +3,10 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
+module
 
-import Mathlib.Probability.ProbabilityMassFunction.Basic
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+public import Mathlib.Probability.ProbabilityMassFunction.Basic
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-! # Geometric distributions over ℕ
 
@@ -19,6 +20,8 @@ Define the geometric measure over the natural numbers
   `geometricPMF p = ENNReal.ofReal (geometricPMFReal p)`.
 * `geometricMeasure`: a geometric measure on `ℕ`, parametrized by its success probability `p`.
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal
 
@@ -64,11 +67,11 @@ def geometricPMF (hp_pos : 0 < p) (hp_le_one : p ≤ 1) : PMF ℕ :=
       (fun n ↦ geometricPMFReal_nonneg hp_pos hp_le_one)⟩
 
 /-- The geometric pmf is measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_geometricPMFReal : Measurable (geometricPMFReal p) := by
   fun_prop
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_geometricPMFReal : StronglyMeasurable (geometricPMFReal p) :=
   stronglyMeasurable_iff_measurable.mpr measurable_geometricPMFReal
 

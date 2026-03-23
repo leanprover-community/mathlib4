@@ -3,10 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Topology.ContinuousMap.ContinuousSqrt
-import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
+public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-! # The positive (and negative) parts of a selfadjoint element in a C⋆-algebra
 
@@ -14,6 +15,8 @@ This file defines the positive and negative parts of a selfadjoint element in a 
 the continuous functional calculus and develops the basic API, including the uniqueness of the
 positive and negative parts.
 -/
+
+public section
 
 open scoped NNReal
 
@@ -99,6 +102,7 @@ section SMul
 
 variable [StarModule ℝ A]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma posPart_smul {r : ℝ≥0} {a : A} : (r • a)⁺ = r • a⁺ := by
   by_cases ha : IsSelfAdjoint a
@@ -179,6 +183,7 @@ lemma negPart_eq_zero_iff (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
   nth_rw 2 [← posPart_sub_negPart a]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma negPart_eq_neg (a : A) : a⁻ = -a ↔ a ≤ 0 := by
   rw [← neg_inj, neg_neg, eq_comm]
   refine ⟨fun ha ↦ by rw [ha, neg_nonpos]; exact negPart_nonneg a, fun ha ↦ ?_⟩
@@ -204,6 +209,8 @@ open ContinuousMapZero
 
 variable [IsTopologicalRing A] [T2Space A]
 
+set_option backward.isDefEq.respectTransparency false in
+set_option linter.flexible false in -- simp followed by `exact le_rfl`
 open NonUnitalContinuousFunctionalCalculus in
 /-- The positive and negative parts of a selfadjoint element `a` are unique. That is, if
 `a = b - c` is the difference of nonnegative elements whose product is zero, then these are

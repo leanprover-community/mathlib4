@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Data.ULift
-import Mathlib.Util.Delaborators
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Data.ULift
+public import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Util.Delaborators
 
 /-!
 # Cardinal Numbers
@@ -46,6 +48,8 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
 Cantor's theorem, König's theorem, Konig's theorem
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -89,22 +93,22 @@ instance canLiftCardinalType : CanLift Cardinal.{u} (Type u) mk fun _ => True :=
   ⟨fun c _ => Quot.inductionOn c fun α => ⟨α, rfl⟩⟩
 
 @[elab_as_elim]
-theorem inductionOn {p : Cardinal → Prop} (c : Cardinal) (h : ∀ α, p #α) : p c :=
-  Quotient.inductionOn c h
+theorem inductionOn {motive : Cardinal → Prop} (c : Cardinal) (mk : ∀ α, motive #α) : motive c :=
+  Quotient.inductionOn c mk
 
 @[elab_as_elim]
-theorem inductionOn₂ {p : Cardinal → Cardinal → Prop} (c₁ : Cardinal) (c₂ : Cardinal)
-    (h : ∀ α β, p #α #β) : p c₁ c₂ :=
-  Quotient.inductionOn₂ c₁ c₂ h
+theorem inductionOn₂ {motive : Cardinal → Cardinal → Prop} (c₁ c₂ : Cardinal)
+    (mk : ∀ α β, motive #α #β) : motive c₁ c₂ :=
+  Quotient.inductionOn₂ c₁ c₂ mk
 
 @[elab_as_elim]
-theorem inductionOn₃ {p : Cardinal → Cardinal → Cardinal → Prop} (c₁ : Cardinal) (c₂ : Cardinal)
-    (c₃ : Cardinal) (h : ∀ α β γ, p #α #β #γ) : p c₁ c₂ c₃ :=
-  Quotient.inductionOn₃ c₁ c₂ c₃ h
+theorem inductionOn₃ {motive : Cardinal → Cardinal → Cardinal → Prop} (c₁ c₂ c₃ : Cardinal)
+    (mk : ∀ α β γ, motive #α #β #γ) : motive c₁ c₂ c₃ :=
+  Quotient.inductionOn₃ c₁ c₂ c₃ mk
 
-theorem induction_on_pi {ι : Type u} {p : (ι → Cardinal.{v}) → Prop}
-    (f : ι → Cardinal.{v}) (h : ∀ f : ι → Type v, p fun i ↦ #(f i)) : p f :=
-  Quotient.induction_on_pi f h
+theorem induction_on_pi {ι : Type*} {motive : (ι → Cardinal) → Prop}
+    (f : ι → Cardinal) (mk : ∀ f : ι → Type v, motive fun i ↦ #(f i)) : motive f :=
+  Quotient.induction_on_pi f mk
 
 protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
@@ -224,6 +228,9 @@ theorem mk_ne_zero_iff {α : Type u} : #α ≠ 0 ↔ Nonempty α :=
 @[simp]
 theorem mk_ne_zero (α : Type u) [Nonempty α] : #α ≠ 0 :=
   mk_ne_zero_iff.2 ‹_›
+
+theorem nonempty_out {x : Cardinal} (h : x ≠ 0) : Nonempty x.out := by
+  rwa [← mk_ne_zero_iff, mk_out]
 
 instance : One Cardinal.{u} :=
   -- `PUnit` might be more canonical, but this is convenient for defeq with natCast
@@ -470,8 +477,8 @@ theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
 def aleph0 : Cardinal.{u} :=
   lift #ℕ
 
-@[inherit_doc]
-scoped notation "ℵ₀" => Cardinal.aleph0
+@[inherit_doc] scoped notation "ℵ₀" => Cardinal.aleph0
+recommended_spelling "aleph0" for "ℵ₀" in [aleph0, «termℵ₀»]
 
 theorem mk_nat : #ℕ = ℵ₀ :=
   (lift_id _).symm

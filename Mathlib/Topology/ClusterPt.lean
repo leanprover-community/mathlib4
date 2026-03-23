@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Topology.Neighborhoods
+module
+
+public import Mathlib.Topology.Neighborhoods
 
 /-!
 # Lemmas on cluster and accumulation points
@@ -16,12 +18,17 @@ clusters at `x` along `F : Filter α` if `MapClusterPt x F f : ClusterPt x (map 
 In particular the notion of cluster point of a sequence `u` is `MapClusterPt x atTop u`.
 -/
 
+public section
+
 open Set Filter Topology
 
 universe u v w
 
 variable {X : Type u} [TopologicalSpace X] {Y : Type v} {ι : Sort w} {α β : Type*}
   {x : X} {s s₁ s₂ t : Set X}
+
+@[simp]
+protected lemma ClusterPt.top : ClusterPt x ⊤ := by simp [ClusterPt]
 
 theorem clusterPt_sup {F G : Filter X} : ClusterPt x (F ⊔ G) ↔ ClusterPt x F ∨ ClusterPt x G := by
   simp only [ClusterPt, inf_sup_left, sup_neBot]
@@ -133,9 +140,18 @@ theorem MapClusterPt.tendsto_comp [TopologicalSpace Y] {f : X → Y} {y : Y}
     (hf : Tendsto f (𝓝 x) (𝓝 y)) (hu : MapClusterPt x F u) : MapClusterPt y F (f ∘ u) :=
   hu.tendsto_comp' (hf.mono_left inf_le_left)
 
+theorem mapClusterPt_id_iff [TopologicalSpace α] {a : α} : MapClusterPt a F id ↔ ClusterPt a F := by
+  rw [MapClusterPt, map_id]
+
+alias ⟨_, ClusterPt.mapClusterPt_id⟩ := mapClusterPt_id_iff
+
 theorem MapClusterPt.continuousAt_comp [TopologicalSpace Y] {f : X → Y} (hf : ContinuousAt f x)
     (hu : MapClusterPt x F u) : MapClusterPt (f x) F (f ∘ u) :=
   hu.tendsto_comp hf
+
+theorem ContinuousAt.mapClusterPt [TopologicalSpace α] {a : α} (hf : ContinuousAt u a)
+    (hu : ClusterPt a F) : MapClusterPt (u a) F u :=
+  hu.mapClusterPt_id.continuousAt_comp hf
 
 theorem Filter.HasBasis.mapClusterPt_iff_frequently {ι : Sort*} {p : ι → Prop} {s : ι → Set X}
     (hx : (𝓝 x).HasBasis p s) : MapClusterPt x F u ↔ ∀ i, p i → ∃ᶠ a in F, u a ∈ s i := by
@@ -157,6 +173,10 @@ theorem Filter.Tendsto.mapClusterPt [NeBot F] (h : Tendsto u F (𝓝 x)) : MapCl
 theorem MapClusterPt.of_comp {φ : β → α} {p : Filter β} (h : Tendsto φ p F)
     (H : MapClusterPt x p (u ∘ φ)) : MapClusterPt x F u :=
   H.clusterPt.mono <| map_mono h
+
+theorem IsClosed.mem_of_mapClusterPt {l : X} {s : Set X} {f : α → X} {b : Filter α}
+    (hs : IsClosed s) (hf : MapClusterPt l b f) (h : ∀ᶠ (x : α) in b, f x ∈ s) : l ∈ s :=
+  (hf.frequently' h).mem_of_closed hs
 
 end MapClusterPt
 
@@ -236,9 +256,6 @@ theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x)
 
 lemma notMem_closure_iff_nhdsWithin_eq_bot : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot]
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_closure_iff_nhdsWithin_eq_bot := notMem_closure_iff_nhdsWithin_eq_bot
 
 theorem mem_interior_iff_not_clusterPt_compl : x ∈ interior s ↔ ¬ClusterPt x (𝓟 sᶜ) := by
   rw [← mem_closure_iff_clusterPt, closure_compl, mem_compl_iff, not_not]

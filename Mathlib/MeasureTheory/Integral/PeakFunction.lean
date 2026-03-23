@@ -3,7 +3,9 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+module
+
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Integrals against peak functions
@@ -32,6 +34,8 @@ functions are also called approximations of unity, or approximations of identity
 Note that there are related results about convolution with respect to peak functions in the file
 `Mathlib/Analysis/Convolution.lean`, such as `MeasureTheory.convolution_tendsto_right` there.
 -/
+
+public section
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 

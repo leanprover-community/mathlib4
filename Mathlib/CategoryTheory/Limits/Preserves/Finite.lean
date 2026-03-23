@@ -3,8 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Preservation of finite (co)limits.
@@ -14,12 +16,14 @@ involved are abelian, or more generally, finitely (co)complete.
 
 ## Related results
 * `CategoryTheory.Limits.preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts` :
-  see `CategoryTheory/Limits/Constructions/LimitsOfProductsAndEqualizers.lean`. Also provides
-  the dual version.
+  see `Mathlib/CategoryTheory/Limits/Constructions/LimitsOfProductsAndEqualizers.lean`.
+  Also provides the dual version.
 * `CategoryTheory.Limits.preservesFiniteLimitsIffFlat` :
-  see `CategoryTheory/Functor/Flat.lean`.
+  see `Mathlib/CategoryTheory/Functor/Flat.lean`.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory

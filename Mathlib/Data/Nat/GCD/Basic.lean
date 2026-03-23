@@ -3,9 +3,11 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Algebra.Group.Nat.Units
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.GroupWithZero.Nat
+module
+
+public import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.GroupWithZero.Nat
 
 /-!
 # Properties of `Nat.gcd`, `Nat.lcm`, and `Nat.Coprime`
@@ -20,6 +22,8 @@ Note that the global `IsCoprime` is not a straightforward generalization of `Nat
 
 Most of this file could be moved to batteries as well.
 -/
+
+public section
 
 assert_not_exists IsOrderedMonoid
 

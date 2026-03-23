@@ -3,15 +3,17 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.Algebra.Category.ModuleCat.Adjunctions
-import Mathlib.Algebra.Category.ModuleCat.Colimits
-import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
-import Mathlib.CategoryTheory.Sites.Abelian
-import Mathlib.CategoryTheory.Sites.Adjunction
-import Mathlib.CategoryTheory.Sites.Equivalence
-import Mathlib.Condensed.Light.Basic
-import Mathlib.Condensed.Light.Instances
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
+public import Mathlib.CategoryTheory.Sites.Abelian
+public import Mathlib.CategoryTheory.Sites.Adjunction
+public import Mathlib.CategoryTheory.Sites.Equivalence
+public import Mathlib.Condensed.Light.Basic
+public import Mathlib.Condensed.Light.Instances
 /-!
 
 # Light condensed `R`-modules
@@ -25,6 +27,8 @@ This file defines light condensed modules over a ring `R`.
 * The forgetful functor from light condensed `R`-modules to light condensed sets has a left
   adjoint, sending a light condensed set to the corresponding *free* light condensed `R`-module.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -42,6 +46,7 @@ abbrev LightCondMod := LightCondensed.{u} (ModuleCat.{u} R)
 noncomputable instance : Abelian (LightCondMod.{u} R) := sheafIsAbelian
 
 /-- The forgetful functor from light condensed `R`-modules to light condensed sets. -/
+@[simps! obj_obj_map map_hom_app]
 def LightCondensed.forget : LightCondMod R ⥤ LightCondSet :=
   sheafCompose _ (CategoryTheory.forget _)
 
@@ -68,7 +73,7 @@ noncomputable example : Abelian LightCondAb := inferInstance
 namespace LightCondMod
 
 lemma hom_naturality_apply {X Y : LightCondMod.{u} R} (f : X ⟶ Y) {S T : LightProfiniteᵒᵖ}
-    (g : S ⟶ T) (x : X.val.obj S) : f.val.app T (X.val.map g x) = Y.val.map g (f.val.app S x) :=
-  NatTrans.naturality_apply f.val g x
+    (g : S ⟶ T) (x : X.obj.obj S) : f.hom.app T (X.obj.map g x) = Y.obj.map g (f.hom.app S x) :=
+  NatTrans.naturality_apply f.hom g x
 
 end LightCondMod

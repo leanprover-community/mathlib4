@@ -3,12 +3,14 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Joachim Breitner
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.GroupTheory.Congruence.Basic
-import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
-import Mathlib.SetTheory.Cardinal.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.GroupTheory.Congruence.Basic
+public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # The coproduct (a.k.a. the free product) of groups or monoids
@@ -78,6 +80,8 @@ could be obtained by showing that `Monoid.CoprodI.Rel` is confluent.
 
 -/
 
+@[expose] public section
+
 
 open Set
 
@@ -121,6 +125,7 @@ theorem of_apply {i} (m : M i) : of m = Con.mk' _ (FreeMonoid.of <| Sigma.mk i m
 
 variable {N : Type*} [Monoid N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- See note [partially-applied ext lemmas]. -/
 @[ext 1100] -- This needs a higher `ext` priority
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
@@ -173,11 +178,12 @@ theorem of_leftInverse [DecidableEq ι] (i : ι) :
 theorem of_injective (i : ι) : Function.Injective (of : M i →* _) := by
   classical exact (of_leftInverse i).injective
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mrange_eq_iSup {N} [Monoid N] (f : ∀ i, M i →* N) :
     MonoidHom.mrange (lift f) = ⨆ i, MonoidHom.mrange (f i) := by
   rw [lift, Equiv.coe_fn_mk, Con.lift_range, FreeMonoid.mrange_lift,
     range_sigma_eq_iUnion_range, Submonoid.closure_iUnion]
-  simp only [MonoidHom.mclosure_range]
+  simp +instances only [MonoidHom.mclosure_range]
 
 theorem lift_mrange_le {N} [Monoid N] (f : ∀ i, M i →* N) {s : Submonoid N} :
     MonoidHom.mrange (lift f) ≤ s ↔ ∀ i, MonoidHom.mrange (f i) ≤ s := by
@@ -204,10 +210,8 @@ theorem induction_left {motive : CoprodI M → Prop} (m : CoprodI M) (one : moti
 @[elab_as_elim]
 theorem induction_on {motive : CoprodI M → Prop} (m : CoprodI M) (one : motive 1)
     (of : ∀ (i) (m : M i), motive (of m))
-    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive m := by
-  induction m using CoprodI.induction_left with
-  | one => exact one
-  | mul m x hx => exact mul _ _ (of _ _) hx
+    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive m :=
+  induction_left m one fun {_} _ _ ↦ mul _ _ (of _ _)
 
 section Group
 
@@ -228,12 +232,12 @@ instance : Group (CoprodI G) :=
       intro m
       rw [inv_def]
       induction m using CoprodI.induction_on with
-      | one => rw [MonoidHom.map_one, MulOpposite.unop_one, one_mul]
+      | one => rw [map_one, MulOpposite.unop_one, one_mul]
       | of m ih =>
         change of _⁻¹ * of _ = 1
         rw [← of.map_mul, inv_mul_cancel, of.map_one]
       | mul x y ihx ihy =>
-        rw [MonoidHom.map_mul, MulOpposite.unop_mul, mul_assoc, ← mul_assoc _ x y, ihx, one_mul,
+        rw [map_mul, MulOpposite.unop_mul, mul_assoc, ← mul_assoc _ x y, ihx, one_mul,
           ihy] }
 
 theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
@@ -337,7 +341,7 @@ def rcons {i} (p : Pair M i) : Word M :=
 
 @[simp]
 theorem prod_rcons {i} (p : Pair M i) : prod (rcons p) = of p.head * prod p.tail :=
-  if hm : p.head = 1 then by rw [rcons, dif_pos hm, hm, MonoidHom.map_one, one_mul]
+  if hm : p.head = 1 then by rw [rcons, dif_pos hm, hm, map_one, one_mul]
   else by rw [rcons, dif_neg hm, cons, prod, List.map_cons, List.prod_cons, prod]
 
 theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
@@ -400,6 +404,7 @@ theorem consRecOn_cons {motive : Word M → Sort*} (i) (m : M i) (w : Word M) h1
 
 variable [DecidableEq ι] [∀ i, DecidableEq (M i)]
 
+set_option backward.privateInPublic true in
 -- This definition is computable but not very nice to look at. Thankfully we don't have to inspect
 -- it, since `rcons` is known to be injective.
 /-- Given `i : ι`, any reduced word can be decomposed into a pair `p` such that `w = rcons p`. -/
@@ -414,6 +419,8 @@ private def equivPairAux (i) (w : Word M) : { p : Pair M i // rcons p = w } :=
           property := by subst ij; simp [rcons, h2] }
       else ⟨⟨1, cons m w h1 h2, by simp [cons, fstIdx, Ne.symm ij]⟩, by simp [rcons]⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The equivalence between words and pairs. Given a word, it decomposes it as a pair by removing
 the first letter if it comes from `M i`. Given a pair, it prepends the head to the tail. -/
 def equivPair (i) : Word M ≃ Pair M i where
@@ -470,7 +477,7 @@ instance summandAction (i) : MulAction (M i) (Word M) where
     apply (equivPair i).symm_apply_eq.mpr
     simp [equivPair]
   mul_smul m m' w := by
-    dsimp [instHSMul]
+    dsimp +instances [instHSMul]
     simp [mul_assoc, ← equivPair_symm, Equiv.apply_symm_apply]
 
 instance : MulAction (CoprodI M) (Word M) :=
@@ -514,7 +521,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
       intro hm1
       split_ifs with h
       · rcases h with ⟨hnil, rfl⟩
-        simp only [List.head?_eq_head hnil, Option.some.injEq]
+        simp only [List.head?_eq_some_head hnil, Option.some.injEq]
         constructor
         · rintro rfl
           exact Or.inl ⟨_, rfl, rfl⟩
@@ -523,8 +530,8 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
             subst h
             rfl
           · simp only [fstIdx, Option.map_eq_some_iff, Sigma.exists,
-              exists_and_right, exists_eq_right, not_exists, ne_eq] at hm'
-            exact (hm'.1 (w.toList.head hnil).2 (by rw [List.head?_eq_head])).elim
+              exists_and_right, exists_eq_right, not_exists] at hm'
+            exact (hm'.1 (w.toList.head hnil).2 (by rw [List.head?_eq_some_head])).elim
       · revert h
         rw [fstIdx]
         cases w.toList
@@ -639,11 +646,7 @@ def last : ∀ {i j} (_w : NeWord M i j), M j
 
 @[simp]
 theorem toList_head? {i j} (w : NeWord M i j) : w.toList.head? = Option.some ⟨i, w.head⟩ := by
-  rw [← Option.mem_def]
-  induction w
-  · rw [Option.mem_def]
-    rfl
-  · exact List.mem_head?_append_of_mem_head? (by assumption)
+  fun_induction toList with grind [head]
 
 @[simp]
 theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.some ⟨j, w.last⟩ := by
@@ -816,7 +819,7 @@ theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
   | @append i j k l w₁ hne w₂ hIw₁ hIw₂ =>
     calc
       lift f (NeWord.append w₁ hne w₂).prod • X k = lift f w₁.prod • lift f w₂.prod • X k := by
-        simp [MulAction.mul_smul]
+        simp [mul_smul]
       _ ⊆ lift f w₁.prod • X _ := smul_set_subset_smul_set_iff.mpr (hIw₂ hk)
       _ ⊆ X i := hIw₁ hne
 
@@ -838,7 +841,7 @@ theorem lift_word_prod_nontrivial_of_head_eq_last {i} (w : NeWord H i i) :
 
 theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j)
     (hcard : 3 ≤ #(H i)) (hheadtail : i ≠ j) : lift f w.prod ≠ 1 := by
-  obtain ⟨h, hn1, hnh⟩ := Cardinal.three_le hcard 1 w.head⁻¹
+  obtain ⟨h, hn1, hnh⟩ := Cardinal.exists_ne_ne_of_three_le hcard 1 w.head⁻¹
   have hnot1 : h * w.head ≠ 1 := by
     rw [← div_inv_eq_mul]
     exact div_ne_one_of_ne hnh
@@ -856,7 +859,7 @@ theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) :
     lift f w.prod ≠ 1 := by
   classical
     rcases hcard with hcard | hcard
-    · obtain ⟨i, h1, h2⟩ := Cardinal.three_le hcard i j
+    · obtain ⟨i, h1, h2⟩ := Cardinal.exists_ne_ne_of_three_le hcard i j
       exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w h1 h2
     · obtain ⟨k, hcard⟩ := hcard
       by_cases hh : i = k <;> by_cases hl : j = k
@@ -927,7 +930,7 @@ instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [∀ i, IsFreeGrou
 
 -- NB: One might expect this theorem to be phrased with ℤ, but ℤ is an additive group,
 -- and using `Multiplicative ℤ` runs into diamond issues.
-/-- A free group is a free product of copies of the free_group over one generator. -/
+/-- A free group is a free product of copies of the `FreeGroup` over one generator. -/
 @[simps!]
 def _root_.freeGroupEquivCoprodI {ι : Type u_1} :
     FreeGroup ι ≃* CoprodI fun _ : ι => FreeGroup Unit := by
@@ -1021,7 +1024,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
           | succ n _hle hi =>
             calc
               a i ^ (n + 1) • (Y i)ᶜ = (a i ^ n * a i) • (Y i)ᶜ := by rw [zpow_add, zpow_one]
-              _ = a i ^ n • a i • (Y i)ᶜ := MulAction.mul_smul _ _ _
+              _ = a i ^ n • a i • (Y i)ᶜ := mul_smul _ _ _
               _ ⊆ a i ^ n • X i := smul_set_mono <| hX i
               _ ⊆ a i ^ n • (Y i)ᶜ := smul_set_mono (hXYdisj i i).subset_compl_right
               _ ⊆ X i := hi
@@ -1039,7 +1042,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
           | pred n hle hi =>
             calc
               a i ^ (n - 1) • (X i)ᶜ = (a i ^ n * (a i)⁻¹) • (X i)ᶜ := by rw [zpow_sub, zpow_one]
-              _ = a i ^ n • (a i)⁻¹ • (X i)ᶜ := MulAction.mul_smul _ _ _
+              _ = a i ^ n • (a i)⁻¹ • (X i)ᶜ := mul_smul _ _ _
               _ ⊆ a i ^ n • Y i := smul_set_mono <| hY i
               _ ⊆ a i ^ n • (X i)ᶜ := smul_set_mono (hXYdisj i i).symm.subset_compl_right
               _ ⊆ Y i := hi
@@ -1050,8 +1053,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   use Inhabited.default
   simp only [H]
   rw [FreeGroup.freeGroupUnitEquivInt.cardinal_eq, Cardinal.mk_denumerable]
-  apply le_of_lt
-  exact nat_lt_aleph0 3
+  exact natCast_le_aleph0
 
 end PingPongLemma
 

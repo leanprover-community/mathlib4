@@ -3,8 +3,10 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.NumberTheory.Zsqrtd.GaussianInt
-import Mathlib.NumberTheory.LegendreSymbol.Basic
+module
+
+public import Mathlib.NumberTheory.Zsqrtd.GaussianInt
+public import Mathlib.NumberTheory.LegendreSymbol.Basic
 
 /-!
 # Facts about the Gaussian integers relying on quadratic reciprocity.
@@ -15,6 +17,8 @@ import Mathlib.NumberTheory.LegendreSymbol.Basic
 A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4`
 
 -/
+
+public section
 
 
 open Zsqrtd Complex
@@ -44,7 +48,7 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
       have hkmul : (k ^ 2 + 1 : ℤ[i]) = ⟨k, 1⟩ * ⟨k, -1⟩ := by ext <;> simp [sq]
       have hk₀ : k ≠ 0 := by rintro rfl; simp at hk
       have hkltp := calc
-          1 + k * k ≤ k * (k + 1) := by cutsat
+          1 + k * k ≤ k * (k + 1) := by lia
           _ < p * p := mul_lt_mul k_lt_p k_lt_p (Nat.succ_pos _) (Nat.zero_le _)
       have hpk₁ : ¬(p : ℤ[i]) ∣ ⟨k, -1⟩ := fun ⟨x, hx⟩ =>
         lt_irrefl (p * x : ℤ[i]).norm.natAbs <|

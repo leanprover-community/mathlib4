@@ -3,11 +3,13 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Divisibility.Hom
-import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Nat.Hom
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Algebra.Ring.Nat
+module
+
+public import Mathlib.Algebra.Divisibility.Hom
+public import Mathlib.Algebra.Group.Even
+public import Mathlib.Algebra.Group.Nat.Hom
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Algebra.Ring.Nat
 
 /-!
 # Cast of natural numbers (additional theorems)
@@ -20,6 +22,8 @@ the natural numbers into an additive monoid with a one (`Nat.cast`).
 * `castAddMonoidHom`: `cast` bundled as an `AddMonoidHom`.
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid Commute.zero_right Commute.add_right abs_eq_max_neg
   NeZero.natCast_ne
@@ -206,7 +210,7 @@ instance (priority := low) instOfNat (n : ℕ) [∀ i, OfNat (π i) n] : OfNat (
 theorem ofNat_apply (n : ℕ) [∀ i, OfNat (π i) n] (a : α) : (ofNat(n) : ∀ a, π a) a = ofNat(n) := rfl
 
 @[push ←]
-lemma ofNat_def (n : ℕ) [∀ i, OfNat (π i) n] : (ofNat(n) : ∀ a, π a) = fun _ ↦ ofNat(n) := rfl
+lemma ofNat_def (n : ℕ) [∀ i, OfNat (π i) n] : (OfNat.ofNat n : ∀ a, π a) = fun _ ↦ ofNat(n) := rfl
 
 end OfNat
 
