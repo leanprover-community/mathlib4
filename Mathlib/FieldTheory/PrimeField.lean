@@ -63,7 +63,6 @@ theorem Subfield.bot_eq_of_zMod_algebra {K : Type*} (p : ℕ) [hp : Fact (Nat.Pr
 The order-preserving bijection between the intermediate fields of `K/ℚ`,
 with `K` a field of characteristic `0`, and the subfields of `K`.
 -/
-@[simps]
 def IntermediateFieldEquivSubfield_of_charZero (K : Type*) [Field K] [CharZero K] :
     IntermediateField ℚ K ≃o Subfield K where
   toFun := IntermediateField.toSubfield
