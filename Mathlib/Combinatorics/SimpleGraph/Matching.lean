@@ -844,7 +844,7 @@ lemma IsContained.matchingNumber_le {H : SimpleGraph W} (h : H ⊑ G) :
   · simpa only [Subgraph.edgeSet_map] using M.edgeSet.mapsTo_image _
   exact fun _ _ _ _ h ↦ Sym2.map.injective hf h
 
-lemma Subgraph.matchingNumber_le (G : SimpleGraph V) (H : Subgraph G) :
+lemma Subgraph.matchingNumber_coe_le (G : SimpleGraph V) (H : Subgraph G) :
     matchingNumber H.coe ≤ matchingNumber G := H.coe_isContained.matchingNumber_le
 
 lemma matchingNumber.eq_of_iso {H : SimpleGraph W} (f : H ≃g G) :
