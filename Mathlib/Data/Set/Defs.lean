@@ -10,8 +10,6 @@ public import Mathlib.Tactic.SetNotation
 
 import Mathlib.Tactic.ToDual
 
-import Mathlib.Tactic.ToDual
-
 /-!
 # Sets
 
