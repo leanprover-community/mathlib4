@@ -992,8 +992,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   let mut lhs := lhs
   if cfg.dsimpLhs then
     let ctx ← mkSimpContext
-    let (result, _) ← dsimp lhs ctx
-    lhs := result
+    (lhs, _) ← dsimp lhs ctx
   let eqAp := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
   let declType ← mkForallFVars args eqAp
   let declValue ← mkLambdaFVars args prf
