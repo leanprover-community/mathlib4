@@ -53,6 +53,9 @@ instance [P.IsClosedUnderIsomorphisms] [Q.IsClosedUnderIsomorphisms] :
     IsClosedUnderIsomorphisms (P ⊓ Q) where
   of_iso e h := ⟨IsClosedUnderIsomorphisms.of_iso e h.1, IsClosedUnderIsomorphisms.of_iso e h.2⟩
 
+instance : IsClosedUnderIsomorphisms (⊥ : ObjectProperty C) where
+  of_iso _ h := h
+
 instance : IsClosedUnderIsomorphisms (⊤ : ObjectProperty C) where
   of_iso := by simp
 
@@ -83,6 +86,10 @@ instance [∀ a, (P a).IsClosedUnderIsomorphisms] :
     isoClosure_iSup, isoClosure_eq_self]
 
 end
+
+lemma neq_bot_iff_exists (P : ObjectProperty C) :
+    ¬ P = ⊥ ↔ ∃ X, P X := by
+  simp [← le_bot_iff, not_le_iff_exists]
 
 @[simp]
 lemma ι_map_top (P : ObjectProperty C) :
