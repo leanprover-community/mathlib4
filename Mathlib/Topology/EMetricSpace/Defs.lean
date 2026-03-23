@@ -60,10 +60,10 @@ section
 variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α} [EDist α]
 
 /-- `EMetric.ball x ε` is the set of all points `y` with `edist y x < ε` -/
-def EMetric.eball (x : α) (ε : ℝ≥0∞) : Set α :=
+def Metric.eball (x : α) (ε : ℝ≥0∞) : Set α :=
   { y | edist y x < ε }
 
-@[simp] theorem EMetric.mem_ball : y ∈ eball x ε ↔ edist y x < ε := Iff.rfl
+@[simp] theorem Metric.mem_eball : y ∈ eball x ε ↔ edist y x < ε := Iff.rfl
 
 end
 
@@ -402,12 +402,6 @@ theorem Prod.edist_eq [PseudoEMetricSpace β] (x y : α × β) :
 namespace Metric
 
 variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α}
-
-/-- `Metric.eball x ε` is the set of all points `y` with `edist y x < ε` -/
-def eball (x : α) (ε : ℝ≥0∞) : Set α :=
-  {y | edist y x < ε}
-
-@[simp] theorem mem_eball : y ∈ eball x ε ↔ edist y x < ε := Iff.rfl
 
 theorem mem_eball' : y ∈ eball x ε ↔ edist x y < ε := by rw [edist_comm, mem_eball]
 
@@ -878,7 +872,7 @@ class WeakPseudoEMetricSpace
   /-- The ambient topology on `α` matches the `edist` topology on eballs of finite radius`. -/
   topology_eq_on_restrict :
     ∀ (x : α) (r : ℝ≥0∞),
-    IsOpen ((EMetric.eball x ⊤) ↓∩ (eball x r))
+    IsOpen ((Metric.eball x ⊤) ↓∩ (Metric.eball x r))
 
 @[ext]
 protected theorem WeakPseudoEMetricSpace.ext
@@ -899,7 +893,7 @@ instance PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [inst : Pseud
   topology_eq_on_restrict := by
     intro x r
     refine IsOpen.preimage_val ?_
-    exact isOpen_ball
+    exact Metric.isOpen_eball
 
 /-- WeakPseudoEMetricSpace can be induced backwards. -/
 abbrev WeakPseudoEMetricSpace.induced
@@ -930,9 +924,9 @@ abbrev WeakPseudoEMetricSpace.induced
       obtain ⟨ε, εp, εh⟩ := th (f x) xh
       use ε
       refine ⟨εp, ?_⟩
-      have ss : eball x ε ⊆ f ⁻¹' (eball (f x) ε) := by
+      have ss : Metric.eball x ε ⊆ f ⁻¹' (Metric.eball (f x) ε) := by
         intro
-        simp only [mem_ball, mem_preimage]
+        simp only [Metric.mem_eball, mem_preimage]
         exact id
       exact subset_trans ss (preimage_mono εh)
     topology_eq_on_restrict := by
@@ -941,11 +935,11 @@ abbrev WeakPseudoEMetricSpace.induced
       use (f ⁻¹' u)
       refine ⟨isOpen_induced hu, ?_⟩
       ext ⟨z, zh⟩
-      simp only [mem_preimage, mem_ball]
-      have (i : { x_1 // x_1 ∈ eball (f x) ⊤ }) :
-          i ∈ Subtype.val ⁻¹' u ↔ i ∈ eball (f x) ⊤ ↓∩ eball (f x) r :=
+      simp only [mem_preimage, Metric.mem_eball]
+      have (i : { x_1 // x_1 ∈ Metric.eball (f x) ⊤ }) :
+          i ∈ Subtype.val ⁻¹' u ↔ i ∈ Metric.eball (f x) ⊤ ↓∩ Metric.eball (f x) r :=
         Iff.of_eq (congrFun uy i)
-      simp only [mem_preimage, mem_ball, Subtype.forall] at this
+      simp only [mem_preimage, Metric.mem_eball, Subtype.forall] at this
       exact this (f z) zh
   }
 
