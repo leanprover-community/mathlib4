@@ -84,8 +84,8 @@ section Basic
 
 variable {R A : Type*}
 
-@[simp] lemma mk_toProd (x : Unitization R A) : mk x.toProd = x := rfl
-@[simp] lemma toProd_mk (x : R × A) : toProd (mk x) = x := rfl
+lemma mk_toProd (x : Unitization R A) : mk x.toProd = x := rfl
+lemma toProd_mk (x : R × A) : toProd (mk x) = x := rfl
 
 /-- The canonical equivalence between `Unitization R A` and `R × A`. -/
 @[simps apply symm_apply]
@@ -116,18 +116,6 @@ lemma mk_bijective : (mk : R × A → Unitization R A).Bijective :=
 @[simp]
 lemma toProd_inj_iff {x y : Unitization R A} : toProd x = toProd y ↔ x = y :=
   toProd_injective.eq_iff
-
-@[simp]
-lemma toProd_ne_iff {x y : Unitization R A} : toProd x ≠ toProd y ↔ x ≠ y :=
-  toProd_injective.ne_iff
-
-@[simp]
-lemma mk_inj_iff {x y : R × A} : mk x = mk y ↔ x = y :=
-  mk_injective.eq_iff
-
-@[simp]
-lemma mk_ne_iff {x y : R × A} : mk x ≠ mk y ↔ x ≠ y :=
-  mk_injective.ne_iff
 
 /-- The canonical inclusion `R → Unitization R A`. -/
 def inl [Zero A] (r : R) : Unitization R A :=
@@ -213,8 +201,14 @@ instance instZero [Zero R] [Zero A] : Zero (Unitization R A) :=
 instance instAdd [Add R] [Add A] : Add (Unitization R A) :=
   equiv.add
 
+instance instSub [Sub R] [Sub A] : Sub (Unitization R A) :=
+  equiv.sub
+
 instance instNeg [Neg R] [Neg A] : Neg (Unitization R A) :=
   equiv.Neg
+
+instance instSMul [SMul S R] [SMul S A] : SMul S (Unitization R A) :=
+  equiv.smul S
 
 instance instAddSemigroup [AddSemigroup R] [AddSemigroup A] : AddSemigroup (Unitization R A) :=
   equiv.addSemigroup
@@ -237,9 +231,6 @@ instance instAddCommMonoid [AddCommMonoid R] [AddCommMonoid A] : AddCommMonoid (
 
 instance instAddCommGroup [AddCommGroup R] [AddCommGroup A] : AddCommGroup (Unitization R A) :=
   equiv.addCommGroup
-
-instance instSMul [SMul S R] [SMul S A] : SMul S (Unitization R A) :=
-  equiv.smul S
 
 @[simp]
 theorem toProd_zero [Zero R] [Zero A] : (0 : Unitization R A).toProd = 0 :=
