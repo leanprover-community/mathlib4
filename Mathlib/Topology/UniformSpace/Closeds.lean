@@ -521,11 +521,10 @@ instance [CompleteSpace α] : CompleteSpace (Compacts α) := by
   simp_rw [Set.mem_preimage, Prod.map, id, mem_hausdorffEntourage]
   constructor
   · intro x hx
-    let lx := l ⊓ 𝓟 (UniformSpace.ball x U)
+    set lx := l ⊓ 𝓟 (UniformSpace.ball x U) with le_def
     have hlx : lx.TotallyBounded := hl.mono inf_le_left
     have : lx.NeBot := by
-      unfold lx l
-      rw [Filter.lift'_inf_principal_eq, Filter.lift'_neBot_iff fun _ _ h =>
+      rw [le_def, Filter.lift'_inf_principal_eq, Filter.lift'_neBot_iff fun _ _ h =>
         Set.inter_subset_inter_left _ <| Set.biUnion_subset_biUnion_left h]
       intro s hs
       obtain ⟨K', ⟨h₁, -⟩, h₂⟩ := Filter.nonempty_of_mem <| Filter.inter_mem hK hs
