@@ -101,7 +101,7 @@ theorem isRegular_aleph_one : IsRegular ℵ₁ := by
   exact isRegular_succ le_rfl
 
 @[simp]
-theorem cof_omega_one : (ω_ 1).cof = ℵ_ 1 := by
+theorem cof_omega_one : cof ω₁ = ℵ₁ := by
   simpa using isRegular_aleph_one.cof_omega_eq
 
 theorem isRegular_preAleph_add_one {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (o + 1)) := by
