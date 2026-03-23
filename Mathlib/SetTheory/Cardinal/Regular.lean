@@ -128,6 +128,35 @@ theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (ℵ_ (succ o)) :=
 theorem cof_omega_add_one (o : Ordinal) : (ω_ (o + 1)).cof = ℵ_ (o + 1) :=
   (isRegular_aleph_add_one o).cof_omega_eq
 
+theorem _root_.Ordinal.iSup_lt_omega_one {α : Type*} [Countable α] {f : α → Ordinal}
+    (hf : ∀ i, f i < ω₁) : ⨆ i, f i < ω₁ := by
+  apply iSup_lt_o
+
+section Omega1
+
+namespace Ordinal
+
+open Cardinal
+open scoped Ordinal
+
+-- TODO: generalize universes, and use ω₁.
+lemma iSup_sequence_lt_omega_one {α : Type u} [Countable α]
+    (o : α → Ordinal.{max u v}) (ho : ∀ n, o n < (aleph 1).ord) :
+    iSup o < (aleph 1).ord := by
+  apply iSup_lt_ord_lift _ ho
+  rw [Cardinal.isRegular_aleph_one.cof_eq]
+  exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
+
+@[deprecated (since := "2025-12-22")]
+alias iSup_sequence_lt_omega1 := iSup_sequence_lt_omega_one
+
+end Ordinal
+
+end Omega1
+
+
+#exit
+
 lemma IsRegular.lift {κ : Cardinal.{v}} (h : κ.IsRegular) :
     (Cardinal.lift.{u} κ).IsRegular := by
   obtain ⟨h₁, h₂⟩ := h
@@ -306,25 +335,3 @@ theorem IsInaccessible.univ : IsInaccessible univ.{u, v} :=
 -- `IsInaccessible (ℶ_ o)`
 
 end Cardinal
-
-section Omega1
-
-namespace Ordinal
-
-open Cardinal
-open scoped Ordinal
-
--- TODO: generalize universes, and use ω₁.
-lemma iSup_sequence_lt_omega_one {α : Type u} [Countable α]
-    (o : α → Ordinal.{max u v}) (ho : ∀ n, o n < (aleph 1).ord) :
-    iSup o < (aleph 1).ord := by
-  apply iSup_lt_ord_lift _ ho
-  rw [Cardinal.isRegular_aleph_one.cof_eq]
-  exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
-
-@[deprecated (since := "2025-12-22")]
-alias iSup_sequence_lt_omega1 := iSup_sequence_lt_omega_one
-
-end Ordinal
-
-end Omega1
