@@ -929,14 +929,10 @@ theorem normal_subgroupOf_sup_of_le_normalizer {H N : Subgroup G}
 
 end SubgroupNormal
 
+@[to_additive]
 instance normal_subgroupOf_closure_normalizer (s : Set G) :
     (closure s |>.subgroupOf <| normalizer s).Normal :=
   normal_subgroupOf_of_le_normalizer <| normalizer_le_normalizer_closure s
-
-instance _root_.AddSubgroup.normal_addSubgroupOf_closure_normalizer {G : Type*} [AddGroup G]
-    (s : Set G) : (AddSubgroup.closure s |>.addSubgroupOf <| AddSubgroup.normalizer s).Normal :=
-  AddSubgroup.normal_addSubgroupOf_of_le_normalizer <|
-    AddSubgroup.normalizer_le_normalizer_closure s
 
 end Subgroup
 
