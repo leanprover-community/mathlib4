@@ -109,8 +109,7 @@ theorem comp_isNormal {g : Ordinal → Ordinal} (hg : IsNormal g) (hf : IsFundam
 end IsFundamentalSeq
 
 /-- Every ordinal has a fundamental sequence. -/
-theorem exists_isFundamentalSeq (o : Ordinal) (ha : o.cof.ord = a) :
-    ∃ f : Iio a → Iio o, IsFundamentalSeq f := by
+theorem exists_isFundamentalSeq (ha : o.cof.ord = a) : ∃ f : Iio a → Iio o, IsFundamentalSeq f := by
   subst ha
   obtain ⟨s, hs, hs'⟩ := ord_cof_eq o.ToType
   rw [cof_toType] at hs'
