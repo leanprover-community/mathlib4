@@ -61,11 +61,10 @@ deriving instance
   Inhabited, SemilatticeInf, DistribLattice for NNReal
 
 -- This is needed here or we get errors in `Mathlib/Data/ENNReal/Basic.lean` or downstream.
-set_option backward.deriving.wrap false in
+set_option backward.inferInstanceAs.wrap false in
 deriving instance
   Zero, One, Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
-  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice,
-  Nontrivial, Inhabited
+  PartialOrder, SemilatticeSup, Nontrivial for NNReal
 
 namespace NNReal
 

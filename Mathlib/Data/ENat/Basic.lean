@@ -52,7 +52,7 @@ deriving instance Nontrivial,
   ZeroLEOneClass
   for ENat
 
-set_option backward.deriving.wrap false in
+set_option backward.inferInstanceAs.wrap false in
 deriving instance LinearOrderedAddCommMonoidWithTop for ENat
 
 set_option backward.inferInstanceAs.wrap.data false in

@@ -528,6 +528,7 @@ theorem drop_nil {n : ℕ} : (@nil α).drop n = nil := by
   | zero => simp [drop]
   | succ m ih => simp [← dropn_tail, ih]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem drop_length' {n : ℕ} {s : Seq α} :
     (s.drop n).length' = s.length' - n := by
