@@ -71,7 +71,7 @@ theorem infinite_pigeonhole_card_lt {β α : Type u} (f : β → α) (h : #α < 
   simp_rw [← succ_le_iff]
   rcases lt_or_ge #α ℵ₀ with hα | hα
   · obtain ⟨a, ha⟩ := infinite_pigeonhole_card f ℵ₀ hβ le_rfl
-      (by rwa [isRegular_aleph0.cof_ord_eq])
+      (by rwa [isRegular_aleph0.cof_ord])
     exact ⟨a, ha.trans' (succ_le_of_lt hα)⟩
   · exact infinite_pigeonhole_card f (succ #α) (succ_le_of_lt h) (hα.trans (le_succ _))
       ((lt_succ _).trans_le (isRegular_succ hα).2.ge)
@@ -83,7 +83,7 @@ theorem exists_infinite_fiber {β α : Type u} (f : β → α) (h : #α < #β) [
   simp_rw [Cardinal.infinite_iff]
   rcases lt_or_ge #α ℵ₀ with hα | hα
   · exact infinite_pigeonhole_card f ℵ₀ (aleph0_le_mk β) le_rfl
-      (by rwa [isRegular_aleph0.cof_ord_eq])
+      (by rwa [isRegular_aleph0.cof_ord])
   · obtain ⟨a, ha⟩ := infinite_pigeonhole_card_lt f h (aleph0_le_mk β)
     exact ⟨a, hα.trans ha.le⟩
 
@@ -100,7 +100,7 @@ theorem exists_uncountable_fiber {β α : Type u} (f : β → α) (h : #α < #β
   simp_rw [← Cardinal.aleph1_le_mk_iff]
   rcases lt_or_ge #α ℵ₀ with hα | hα
   · exact infinite_pigeonhole_card f ℵ₁ (aleph1_le_mk β) aleph0_lt_aleph_one.le
-      (by rw [isRegular_aleph_one.cof_ord_eq]; exact hα.trans aleph0_lt_aleph_one)
+      (by rw [isRegular_aleph_one.cof_ord]; exact hα.trans aleph0_lt_aleph_one)
   · obtain ⟨a, ha⟩ := infinite_pigeonhole_card_lt f h (aleph0_le_mk β)
     rw [← Order.succ_le_succ_iff, succ_aleph0] at hα
     exact ⟨a, hα.trans (succ_le_of_lt ha)⟩
