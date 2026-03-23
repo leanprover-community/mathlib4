@@ -50,21 +50,18 @@ def Subgroup.IsNormalClosureFG (N : Subgroup G) : Prop :=
 namespace Subgroup.IsNormalClosureFG
 
 /-- Being the normal closure of a finite set is invariant under surjective homomorphism. -/
-protected theorem map (f : G →* H) (hf : Function.Surjective f) (N : Subgroup G)
-    (hN : N.IsNormalClosureFG) : (N.map f).IsNormalClosureFG := by
+protected theorem map {N : Subgroup G} (hN : IsNormalClosureFG N)
+    {f : G →* H} (hf : Function.Surjective f) : (N.map f).IsNormalClosureFG := by
   obtain ⟨S, hSfinite, hSclosure⟩ := hN
   refine ⟨f '' S, hSfinite.image _, ?_⟩
   rw [ ← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
 /-- Composing with a reindexing free group isomorphism preserves finite generation in
 normal closure of the kernel. -/
-lemma ker_comp_freeGroupCongr (e : α ≃ β) (f : FreeGroup α →* G)
-    (hfker : f.ker.IsNormalClosureFG) :
-    (f.comp (FreeGroup.freeGroupCongr e.symm : FreeGroup β →* FreeGroup α)).ker.IsNormalClosureFG
-    := by
-  simp only [MonoidHom.ker_comp_mulEquiv]
-  exact hfker.map ((FreeGroup.freeGroupCongr e.symm).symm : FreeGroup α →* FreeGroup β)
-    (FreeGroup.freeGroupCongr e.symm).symm.surjective f.ker
+lemma ker_comp_freeGroupCongr (e : β ≃ α) (f : FreeGroup α →* G) (hfker : IsNormalClosureFG f.ker) :
+    (f.comp (FreeGroup.freeGroupCongr e : FreeGroup β →* FreeGroup α)).ker.IsNormalClosureFG := by
+  rw [MonoidHom.ker_comp_mulEquiv]
+  exact hfker.map (FreeGroup.freeGroupCongr e).symm.surjective
 
 end Subgroup.IsNormalClosureFG
 
@@ -84,6 +81,6 @@ theorem of_mulEquiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPre
   use iso '' S, hSfinite.image iso,
     MonoidHom.closure_eq_top_image_of_surjective (iso : G →* H) iso.surjective hSclosure
   rw [FreeGroup.lift_mulEquiv_image, MonoidHom.ker_eq_of_comp_mulEquiv]
-  exact hker.ker_comp_freeGroupCongr (iso.toEquiv.image S) _
+  exact hker.ker_comp_freeGroupCongr (iso.toEquiv.image S).symm _
 
 end IsFinitelyPresented
