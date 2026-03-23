@@ -104,6 +104,17 @@ lemma jointlyFaithful [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
       (fun (Φ : P.FullSubcategory) ↦ Φ.obj.sheafFiber (A := A)) :=
   (hP.jointlyReflectIsomorphisms A).jointlyFaithful
 
+variable {A} in
+include hP hJ in
+lemma W_iff {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [HasWeakSheafify J A]
+    [HasProducts.{w} A] :
+    J.W f ↔ ∀ (Φ : P.FullSubcategory), IsIso (Φ.obj.presheafFiber.map f) := by
+  rw [GrothendieckTopology.W_iff, (hP.jointlyReflectIsomorphisms A).isIso_iff]
+  exact forall_congr'
+    (fun Φ ↦ (MorphismProperty.isomorphisms A).arrow_mk_iso_iff
+      (((Functor.mapArrowFunctor _ _).mapIso
+        (Φ.obj.presheafToSheafCompSheafFiberIso A)).app (Arrow.mk f)))
+
 omit [(forget A).ReflectsIsomorphisms] hJ in
 include hP in
 variable {A} in
@@ -121,7 +132,7 @@ lemma jointly_reflect_isLocallySurjective
   exact fun Φ ↦ ((MorphismProperty.epimorphisms (Type w)).arrow_mk_iso_iff
     (((Functor.mapArrowFunctor _ _).mapIso
       ((Φ.obj.presheafFiberCompIso (forget A)).symm ≪≫
-        Functor.isoWhiskerLeft _ (Φ.obj.presheafToSheafCompSheafFiber (Type w)).symm)).app
+        Functor.isoWhiskerLeft _ (Φ.obj.presheafToSheafCompSheafFiberIso (Type w)).symm)).app
           (Arrow.mk f))).1 (hf Φ)
 
 end

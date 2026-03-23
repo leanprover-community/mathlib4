@@ -239,15 +239,15 @@ theorem floor_sub_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] :
     ⌊a - ofNat(n)⌋ = ⌊a⌋ - ofNat(n) :=
   floor_sub_natCast a n
 
-theorem abs_sub_lt_one_of_floor_eq_floor {R : Type*}
-    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
-    {a b : R} (h : ⌊a⌋ = ⌊b⌋) : |a - b| < 1 := by
-  have : a < ⌊a⌋ + 1 := lt_floor_add_one a
-  have : b < ⌊b⌋ + 1 := lt_floor_add_one b
-  have : (⌊a⌋ : R) = ⌊b⌋ := Int.cast_inj.2 h
-  have : (⌊a⌋ : R) ≤ a := floor_le a
-  have : (⌊b⌋ : R) ≤ b := floor_le b
-  exact abs_sub_lt_iff.2 ⟨by linarith, by linarith⟩
+theorem abs_sub_lt_one_of_floor_eq_floor {a b : R} (h : ⌊a⌋ = ⌊b⌋) : |a - b| < 1 := by
+  wlog h0 : b ≤ a generalizing a b
+  · rw [abs_sub_comm]
+    exact this h.symm (le_of_not_ge h0)
+  calc |a - b|
+    _ = a - b := abs_of_nonneg (sub_nonneg_of_le h0)
+    _ < ⌊a⌋ + 1 - b := sub_lt_sub_right (lt_floor_add_one a) _
+    _ ≤ ⌊a⌋ + 1 - ⌊b⌋ := sub_le_sub_left (floor_le b) _
+    _ = 1 := by rw [h, add_sub_cancel_left]
 
 lemma floor_eq_self_iff_mem (a : R) : ⌊a⌋ = a ↔ a ∈ Set.range Int.cast := by
   aesop
@@ -796,15 +796,12 @@ lemma ceil_le_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉ / b ≤ a) : ⌈a⌉ �
     positivity
   · exact (ceil_lt_mul hb hba).le
 
-set_option backward.isDefEq.respectTransparency false in
 lemma div_two_lt_floor (ha : 1 ≤ a) : a / 2 < ⌊a⌋ := by
   rw [div_eq_inv_mul]; refine mul_lt_floor ?_ ?_ ?_ <;> norm_num; assumption
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ceil_lt_two_mul (ha : 2⁻¹ < a) : ⌈a⌉ < 2 * a :=
   ceil_lt_mul one_lt_two (by norm_num at ha ⊢; exact ha)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ceil_le_two_mul (ha : 2⁻¹ ≤ a) : ⌈a⌉ ≤ 2 * a :=
   ceil_le_mul one_lt_two (by norm_num at ha ⊢; exact ha)
 
