@@ -257,7 +257,7 @@ open Classical in
 @[elab_as_elim]
 theorem inductionOnWellOrder {motive : Ordinal → Prop} (o : Ordinal)
     (type : ∀ (α) [LinearOrder α] [WellFoundedLT α], motive (typeLT α)) : motive o :=
-  inductionOn o fun α r wo ↦ @type α (linearOrderOfSTO r) wo.toIsWellFounded
+  inductionOn o fun α r wo ↦ @type α (linearOrderOfSTO r) wo.wf
 
 open Classical in
 /-- To define a function on ordinals, it suffices to define them on order types of well-orders.
@@ -1463,7 +1463,7 @@ variable (r) in
 ordered by `r`, when `s` is finite. See `card_typein_min_le_mk` for the `Ordinal` version. -/
 theorem not_lt_enum_ord_mk_min_compl [IsWellOrder α r] {s : Set α} (hfin : s.Finite)
     (h : sᶜ.Nonempty) :
-    ¬r (enum r ⟨#s |>.ord, ord_mk_lt_type r hfin h⟩) (IsWellFounded.wf.min (r := r) sᶜ h) := by
+    ¬r (enum r ⟨#s |>.ord, ord_mk_lt_type r hfin h⟩) (IsWellOrder.wf.min (r := r) sᶜ h) := by
   grw [← typein_le_typein, typein_enum, Cardinal.le_ord_iff_card_le_of_lt_aleph0 _ hfin.lt_aleph0,
     card_typein_min_le_mk]
 
