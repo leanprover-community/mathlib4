@@ -868,25 +868,25 @@ instance isLocalHom_eqLocus_subtype (f g : R →+* S) : IsLocalHom (f.eqLocus g)
 
 end eqLocus
 
-section Pullback
+section pullback
 
 variable {T : Type w} [Semiring T]
 
 /-- The subring of pairs `(r, s) : R × S` such that `f r = g s`, i.e.,
   the pullback of f and g as a subring of R × S. -/
-abbrev Pullback (f : R →+* T) (g : S →+* T) : Subring (R × S) :=
+abbrev pullback (f : R →+* T) (g : S →+* T) : Subring (R × S) :=
   (f.comp (RingHom.fst R S)).eqLocus <| g.comp (RingHom.snd R S)
 
 /-- The first projection from the pullback of `f` and `g` to `A`. -/
-abbrev pullbackFst (f : R →+* T) (g : S →+* T) : (f.Pullback g) →+* R :=
-  (RingHom.fst R S).comp (RingHom.Pullback f g).subtype
+abbrev pullbackFst (f : R →+* T) (g : S →+* T) : (f.pullback g) →+* R :=
+  (RingHom.fst R S).comp (RingHom.pullback f g).subtype
 
 /-- The second projection from the pullback of `f` and `g` to `B`. -/
-abbrev pullbackSnd (f : R →+* T) (g : S →+* T) : (f.Pullback g) →+* S :=
-  (RingHom.snd R S).comp (f.Pullback g).subtype
+abbrev pullbackSnd (f : R →+* T) (g : S →+* T) : (f.pullback g) →+* S :=
+  (RingHom.snd R S).comp (f.pullback g).subtype
 
-theorem isUnit_pullback_mk_iff (f : R →+* T) (g : S →+* T) (a : R × S) (a_in : a ∈ f.Pullback g) :
-    IsUnit (⟨a, a_in⟩ : f.Pullback g) ↔ IsUnit a.1 ∧ IsUnit a.2 := by
+theorem isUnit_pullback_mk_iff (f : R →+* T) (g : S →+* T) (a : R × S) (a_in : a ∈ f.pullback g) :
+    IsUnit (⟨a, a_in⟩ : f.pullback g) ↔ IsUnit a.1 ∧ IsUnit a.2 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [← Prod.isUnit_iff]
     simp [isUnit_iff_exists, ← Subtype.val_inj] at h ⊢
@@ -933,7 +933,7 @@ instance isLocalHom_pullbackSnd {F G : Type*} [FunLike F R T] [RingHomClass F R 
     suffices IsUnit (f x.1) from IsLocalHom.map_nonunit x.1 this
     rw [x_in]; exact IsUnit.map g ha
 
-end Pullback
+end pullback
 
 theorem closure_preimage_le (f : R →+* S) (s : Set S) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
   closure_le.2 fun _ hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
