@@ -156,19 +156,24 @@ defined on a subspace of `E`, and `f x ≤ N x` for all `x` in the domain of `f`
 then `f` can be extended to the whole space to a linear map `g` such that `g x ≤ N x`
 for all `x`. -/
 theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ)
-    (N_hom : ∀ c : ℝ, 0 ≤ c → ∀ x, N (c • x) = c * N x) (N_add : ∀ x y, N (x + y) ≤ N x + N y)
+    (N_hom : ∀ c : ℝ, 0 < c → ∀ x, N (c • x) = c * N x) (N_add : ∀ x y, N (x + y) ≤ N x + N y)
     (hf : ∀ x : f.domain, f x ≤ N x) :
     ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x, g x ≤ N x := by
+  have N_hom' : ∀ c : ℝ, 0 ≤ c → ∀ x, N (c • x) = c * N x := fun c hc ↦ by
+    rcases eq_or_ne c 0 with _ | hc'
+    · suffices N 0 = 0 by simp [*]
+      grind [N_hom 2 (by norm_num) 0, smul_zero]
+    · exact N_hom c (lt_of_le_of_ne hc hc'.symm)
   let s : PointedCone ℝ (E × ℝ) :=
     { carrier := { p : E × ℝ | N p.1 ≤ p.2 }
       zero_mem' :=
         calc
           N 0 = N (0 • 0) := by rw [smul_zero]
-          _ = 0 * N 0 := N_hom 0 (le_refl 0) 0
+          _ = 0 * N 0 := N_hom' 0 (le_refl 0) 0
           _ ≤ 0 := by simp
       smul_mem' := fun ⟨c, hc⟩ {p} hp =>
         calc
-          N (c • p.1) = c * N p.1 := N_hom c hc p.1
+          N (c • p.1) = c * N p.1 := N_hom' c hc p.1
           _ ≤ c * p.2 := mul_le_mul_of_nonneg_left hp hc
       add_mem' := fun {x y} hx hy => by exact (N_add _ _).trans (add_le_add hx hy) }
   set f' := (-f).coprod (LinearMap.id.toPMap ⊤)
