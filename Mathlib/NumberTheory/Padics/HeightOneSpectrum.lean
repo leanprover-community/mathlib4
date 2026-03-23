@@ -226,7 +226,7 @@ variable (R : Type*) [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFracti
 noncomputable def adicCompletionIntegersEquiv (p : Nat.Primes) :
     ℤ_[p] ≃A[ℤ] ((primesEquiv (R := R)).symm p).adicCompletionIntegers ℚ := by
   apply (ContinuousAlgEquiv.cast (primesEquiv.apply_symm_apply p).symm).trans
-    (adicCompletionIntegers.padicIntEquiv ((primesEquiv (R := R)).symm p)).symm
+    (adicCompletionIntegers.padicIntEquiv (primesEquiv.symm p)).symm
 
 /-- The diagram
 ```
