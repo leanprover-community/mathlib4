@@ -104,7 +104,7 @@ noncomputable def TopCat.toSSetIsoConst (X : TopCat.{u}) [TotallyDisconnectedSpa
       (X.toSSetObjEquiv n).symm))).symm
 
 /-- The canonical map `Δ[n] ⟶ Simp(Δₜ[n])` (where `Δₜ[n]` is the topological `n`-simplex`. -/
-@[simps!] noncomputable def SSet.stdSimplexToTop :
+@[simps! -isSimp] noncomputable def SSet.stdSimplexToTop :
     SSet.stdSimplex.{u} ⟶ SimplexCategory.toTop ⋙ TopCat.toSSet :=
   SSet.stdSimplex.whiskerLeft sSetTopAdj.unit ≫
     Functor.whiskerRight SSet.toTopSimplex.hom TopCat.toSSet
