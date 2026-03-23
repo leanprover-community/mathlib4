@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.Algebra.Order.Hom.TypeTags
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.Data.ZMod.Aut
-public import Mathlib.Data.ZMod.QuotientGroup
 public import Mathlib.GroupTheory.Exponent
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 public import Mathlib.GroupTheory.Subgroup.Simple
@@ -30,6 +29,7 @@ public import Mathlib.Tactic.IntervalCases
 * `IsCyclic.exponent_eq_zero_of_infinite`: Infinite cyclic groups have exponent zero.
 * `IsCyclic.iff_exponent_eq_card`: A finite commutative group is cyclic iff its exponent
   is equal to its cardinality.
+* `IsCyclic.card_mulAut`, cardinality of automorphisms of a finite group.
 * `commGroupOfCyclicCenterQuotient`: if the quotient of a group by
   its center is cyclic, then the group is commutative.
 * `Group.isCyclic_prod_iff`: the product of two finite cyclic groups is cyclic
