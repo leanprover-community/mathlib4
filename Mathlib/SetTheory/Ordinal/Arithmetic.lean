@@ -1215,7 +1215,7 @@ theorem isSuccLimit_ord {c} (hc : ℵ₀ ≤ c) : IsSuccLimit (ord c) := by
     rwa [add_one_of_aleph0_le] at ha
     rw [← ord_le, ← IsSuccLimit.le_succ_iff, succ_eq_add_one, ord_le, card_add_one]
     · exact hc.trans ha
-    · simpa using isSuccLimit_omega0
+    · simp
 
 theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.ToType :=
   toType_noMax_of_succ_lt fun _ ↦ (isSuccLimit_ord h).succ_lt
