@@ -31,7 +31,8 @@ def getVarsToClear (preserve : Array FVarId) : MetaM (Array FVarId) := do
         toClear := toClear.push decl.fvarId
   return toClear
 
-/-- Clears all hypotheses from a goal except those in the preserve list. -/
+/-- Clears all hypotheses from a goal except those in the preserve list, class instances, and
+auxiliary declarations (e.g. recursive hypotheses). -/
 def clearExcept (preserve : Array FVarId) (goal : MVarId) : MetaM MVarId := do
   let toClear ← getVarsToClear preserve
   goal.tryClearMany toClear
