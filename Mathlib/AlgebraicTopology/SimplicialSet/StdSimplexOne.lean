@@ -70,12 +70,7 @@ lemma δ_objMk₁_of_le {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : i ≤
   change objMk₁.{u} i.castSucc (j.succAbove k) = _
   rw [Fin.eq_iff_eq_zero_iff]
   simp only [objMk₁_apply_eq_zero_iff, Fin.castSucc_lt_castSucc_iff]
-  by_cases hk : k.castSucc < j
-  · rw [Fin.succAbove_of_castSucc_lt _ _ hk]
-  · simp only [not_lt] at hk
-    rw [Fin.succAbove_of_le_castSucc _ _ hk]
-    exact ⟨fun h' ↦ (Fin.lt_irrefl _
-      (lt_of_le_of_lt ((h.trans hk).trans k.castSucc_le_succ) h')).elim, by lia⟩
+  grind [Fin.succAbove]
 
 lemma δ_objMk₁_of_lt {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : j.castSucc < i) :
     Δ[1].δ j (objMk₁.{u} i) = objMk₁.{u} (i.pred (Fin.ne_zero_of_lt h)) := by
