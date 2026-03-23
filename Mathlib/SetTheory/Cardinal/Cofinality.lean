@@ -217,6 +217,7 @@ theorem isCofinal_of_isCofinal_iUnion {α : Type*} {ι} [LinearOrder α] {s : ι
 
 -- TODO: generalize to `OrderType`
 namespace Ordinal
+variable [LinearOrder β] [LinearOrder γ]
 
 /-- The cofinality on an ordinal is the `Order.cof` of any isomorphic linear order.
 
@@ -314,41 +315,6 @@ theorem cof_omega0 : cof ω = ℵ₀ := by
   · rw [aleph0_le_cof_iff, one_lt_cof_iff]
     exact isSuccLimit_omega0
 
-theorem cof_iSup_Iio {f} (hf : StrictMono f) {a} (ha : IsSuccPrelimit a) :
-    cof (⨆ i : Iio a, f i.1) = cof a := by
-  have : StrictMono (β := Iio (⨆ i : Iio a, f i.1)) (fun i : Iio a ↦ ⟨f i, ?_⟩) := fun x y h ↦ hf h
-  · have := cof_congr_of_strictMono this ?_
-    · simpa [← lift_cof] using this.symm
-    · intro ⟨b, hb⟩
-      rw [mem_Iio, lt_ciSup_iff' (bddAbove_of_small _)] at hb
-      obtain ⟨i, hi⟩ := hb
-      exact ⟨_, Set.mem_range_self i, hi.le⟩
-  · exact (hf (lt_add_one _)).trans_le <|
-      le_ciSup (ι := Iio a) (bddAbove_of_small _) ⟨_, ha.succ_lt i.2⟩
-
-theorem cof_map_of_isNormal {f} (hf : IsNormal f) {a} (ha : IsSuccLimit a) : cof (f a) = cof a := by
-  rw [hf.apply_of_isSuccLimit ha, cof_iSup_Iio hf.strictMono ha.isSuccPrelimit]
-
-@[deprecated (since := "2026-03-19")]
-alias cof_eq_of_isNormal := cof_map_of_isNormal
-
-@[deprecated (since := "2025-12-25")]
-alias IsNormal.cof_eq := cof_eq_of_isNormal
-
-theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) := by
-  rcases zero_or_succ_or_isSuccLimit a with (rfl | ⟨b, rfl⟩ | ha)
-  · rw [cof_zero]
-    exact zero_le _
-  · rw [cof_succ, Cardinal.one_le_iff_ne_zero, cof_eq_zero.ne, ← pos_iff_ne_zero]
-    exact (zero_le (f b)).trans_lt (hf.strictMono (lt_succ b))
-  · rw [cof_map_of_isNormal hf ha]
-
-@[deprecated (since := "2026-03-19")]
-alias cof_le_of_isNormal := le_cof_map_of_isNormal
-
-@[deprecated (since := "2025-12-25")]
-alias IsNormal.cof_le := le_cof_map_of_isNormal
-
 @[deprecated (since := "2026-02-18")] alias cof_eq_one_iff_is_succ := cof_eq_one_iff
 
 theorem ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
@@ -383,9 +349,70 @@ theorem cof_ord_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
 
 @[deprecated (since := "2026-03-21")] alias cof_cof := cof_ord_cof
 
+/-! ### Cofinalities and suprema -/
+
+theorem lift_cof_iSup_add_one [Small.{u} β] {f : β → Ordinal} (hf : StrictMono f) :
+    Cardinal.lift.{v} (cof (⨆ i, f i + 1)) = Cardinal.lift.{u} (Order.cof β) := by
+  have : StrictMono (β := Iio (⨆ i, f i + 1)) (fun i ↦ ⟨f i, ?_⟩) := fun x y h ↦ hf h
+  · have := lift_cof_congr_of_strictMono this ?_
+    · rw [← Cardinal.lift_inj.{_, max (u + 1) v}, Cardinal.lift_lift.{_, _, v},
+        Cardinal.lift_umax.{_, u + 1}, Cardinal.lift_umax.{_, u + 1}, this]
+      simp
+    · intro ⟨b, hb⟩
+      rw [mem_Iio, lt_ciSup_iff' (bddAbove_of_small _)] at hb
+      obtain ⟨i, hi⟩ := hb
+      rw [lt_add_one_iff] at hi
+      exact ⟨_, Set.mem_range_self i, hi⟩
+  · rw [mem_Iio]
+    exact (lt_add_one _).trans_le <| le_ciSup  (bddAbove_of_small _) _
+
+theorem cof_iSup_add_one {f : γ → Ordinal} (hf : StrictMono f) :
+    cof (⨆ i, f i + 1) = Order.cof γ := by
+  simpa using lift_cof_iSup_add_one hf
+
+theorem lift_cof_iSup [Small.{u} β] [NoMaxOrder β] {f : β → Ordinal} (hf : StrictMono f) :
+    Cardinal.lift.{v} (cof (⨆ i, f i)) = Cardinal.lift.{u} (Order.cof β) := by
+  rw [← iSup_add_one hf, lift_cof_iSup_add_one hf]
+
+theorem cof_iSup [NoMaxOrder γ] {f : γ → Ordinal} (hf : StrictMono f) :
+    cof (⨆ i, f i) = Order.cof γ := by
+  simpa using lift_cof_iSup hf
+
+theorem cof_iSup_Iio_add_one {a} {f : Iio a → Ordinal} (hf : StrictMono f) :
+    cof (⨆ i, f i + 1) = cof a := by
+  simpa [← lift_cof] using lift_cof_iSup_add_one hf
+
+theorem cof_iSup_Iio {a} {f : Iio a → Ordinal} (hf : StrictMono f) (ha : IsSuccPrelimit a) :
+    cof (⨆ i, f i) = cof a := by
+  rw [← iSup_Iio_add_one hf ha, cof_iSup_Iio_add_one hf]
+
+theorem cof_map_of_isNormal {f} (hf : IsNormal f) {a} (ha : IsSuccLimit a) : cof (f a) = cof a := by
+  rw [hf.apply_of_isSuccLimit ha, cof_iSup_Iio _ ha.isSuccPrelimit]
+  exact hf.strictMono.comp <| Subtype.strictMono_coe _
+
+@[deprecated (since := "2026-03-19")]
+alias cof_eq_of_isNormal := cof_map_of_isNormal
+
+@[deprecated (since := "2025-12-25")]
+alias IsNormal.cof_eq := cof_eq_of_isNormal
+
+theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) := by
+  rcases zero_or_succ_or_isSuccLimit a with (rfl | ⟨b, rfl⟩ | ha)
+  · rw [cof_zero]
+    exact zero_le _
+  · rw [cof_succ, Cardinal.one_le_iff_ne_zero, cof_eq_zero.ne, ← pos_iff_ne_zero]
+    exact (zero_le (f b)).trans_lt (hf.strictMono (lt_succ b))
+  · rw [cof_map_of_isNormal hf ha]
+
+@[deprecated (since := "2026-03-19")]
+alias cof_le_of_isNormal := le_cof_map_of_isNormal
+
+@[deprecated (since := "2025-12-25")]
+alias IsNormal.cof_le := le_cof_map_of_isNormal
+
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
--- TODO: use `⨆ i, succ (f i)` instead of `lsub`
+-- TODO: use `⨆ i, f i + 1` instead of `lsub`
 
 private theorem card_mem_cof {o} : ∃ (ι : _) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = o.card :=
   ⟨_, _, lsub_typein o, mk_toType o⟩
@@ -725,24 +752,11 @@ theorem cof_eq' (r : α → α → Prop) [H : IsWellOrder α r] (h : IsSuccLimit
   rwa [← not_bddAbove_iff_isCofinal, not_bddAbove_iff] at hs
 
 @[simp]
-theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
-  le_antisymm (cof_le_card _)
-    (by
-      refine le_of_forall_lt fun c h => ?_
-      rcases lt_univ'.1 h with ⟨c, rfl⟩
-      rcases Order.cof_eq Ordinal.{u} with ⟨S, H, Se⟩
-      rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u + 1, v, u}, Cardinal.lift_lt, cof_type, ← Se]
-      refine lt_of_not_ge fun h => ?_
-      obtain ⟨a, e⟩ := Cardinal.mem_range_lift_of_le h
-      induction a using Quotient.inductionOn
-      obtain ⟨f⟩ := Quotient.exact e
-      have f := Equiv.ulift.symm.trans f
-      let g a := (f a).1
-      let o := succ (iSup g)
-      rcases H o with ⟨b, h, l⟩
-      refine l.not_gt (lt_succ_iff.2 ?_)
-      rw [← show g (f.symm ⟨b, h⟩) = b by simp [g]]
-      apply Ordinal.le_iSup)
+theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} := by
+  apply (cof_le_card _).antisymm
+  simp_rw [univ, ← lift_cof, ← lift_card, Cardinal.lift_le, cof_type, card_type, le_cof_iff,
+    ← not_bddAbove_iff_isCofinal]
+  exact fun s hs ↦ mk_le_of_injective (enumOrdOrderIso s hs).injective
 
 end Ordinal
 
