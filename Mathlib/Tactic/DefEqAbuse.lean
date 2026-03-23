@@ -439,7 +439,10 @@ def suggestAnnotationsTac (tac : Syntax) : TacticM (Option (Array Name)) := do
   let succeedsWith (names : Array Name) : TacticM Bool :=
     withTempImplicitReducible names do withCurrHeartbeats do
       withOptions (·.setBool `backward.isDefEq.respectTransparency true) do
-        try Term.withoutErrToSorry <| evalTactic tac; notM MonadLog.hasErrors
+        try
+          Core.resetMessageLog
+          Term.withoutErrToSorry <| evalTactic tac
+          notM MonadLog.hasErrors
         catch _ => pure false
   minimizeCandidates succeedsWith candidates
 
