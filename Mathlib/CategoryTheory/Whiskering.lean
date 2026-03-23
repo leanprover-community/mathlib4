@@ -43,27 +43,27 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `α : G ⟶ H` then `whiskerLeft F α : F ⋙ G ⟶ F ⋙ H` has components `α.app (F.obj X)`. -/
-@[simps]
+@[to_dual self, simps (attr := to_dual self)]
 def whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) :
     F ⋙ G ⟶ F ⋙ H where
   app X := α.app (F.obj X)
   naturality X Y f := by rw [Functor.comp_map, Functor.comp_map, α.naturality]
 
-@[simp]
+@[simp, to_dual self]
 lemma id_hcomp (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) : 𝟙 F ◫ α = whiskerLeft F α := by
   ext
   simp
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `α : G ⟶ H` then `whiskerRight α F : G ⋙ F ⟶ H ⋙ F` has components `F.map (α.app X)`. -/
-@[simps]
+@[to_dual self, simps (attr := to_dual self)]
 def whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) :
     G ⋙ F ⟶ H ⋙ F where
   app X := F.map (α.app X)
   naturality X Y f := by
     rw [Functor.comp_map, Functor.comp_map, ← F.map_comp, ← F.map_comp, α.naturality]
 
-@[simp]
+@[simp, to_dual self]
 lemma hcomp_id {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) : α ◫ 𝟙 F = whiskerRight α F := by
   ext
   simp
@@ -190,22 +190,23 @@ theorem whiskerRight_id {G : C ⥤ D} (F : D ⥤ E) :
 theorem whiskerRight_id' {G : C ⥤ D} (F : D ⥤ E) : whiskerRight (𝟙 G) F = 𝟙 (G.comp F) :=
   ((whiskeringRight C D E).obj F).map_id _
 
-@[simp, reassoc]
+@[simp, to_dual self, reassoc]
 theorem whiskerLeft_comp (F : C ⥤ D) {G H K : D ⥤ E} (α : G ⟶ H) (β : H ⟶ K) :
     whiskerLeft F (α ≫ β) = whiskerLeft F α ≫ whiskerLeft F β :=
   rfl
 
-@[simp, reassoc]
+@[simp, to_dual self, reassoc]
 theorem whiskerRight_comp {G H K : C ⥤ D} (α : G ⟶ H) (β : H ⟶ K) (F : D ⥤ E) :
     whiskerRight (α ≫ β) F = whiskerRight α F ≫ whiskerRight β F :=
   ((whiskeringRight C D E).obj F).map_comp α β
 
-@[reassoc]
+@[to_dual none, reassoc]
 theorem whiskerLeft_comp_whiskerRight {F G : C ⥤ D} {H K : D ⥤ E} (α : F ⟶ G) (β : H ⟶ K) :
     whiskerLeft F β ≫ whiskerRight α K = whiskerRight α H ≫ whiskerLeft G β := by
   ext
   simp
 
+@[to_dual hcomp_eq_whiskerRight_comp_whiskerLeft]
 lemma NatTrans.hcomp_eq_whiskerLeft_comp_whiskerRight {F G : C ⥤ D} {H K : D ⥤ E}
     (α : F ⟶ G) (β : H ⟶ K) : α ◫ β = whiskerLeft F β ≫ whiskerRight α K := by
   ext
@@ -261,22 +262,24 @@ lemma isoWhiskerRight_refl (F : C ⥤ D) (G : D ⥤ E) :
     isoWhiskerRight (Iso.refl F) G = Iso.refl _ := by
   cat_disch
 
+@[to_dual self]
 instance isIso_whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) [IsIso α] :
     IsIso (whiskerLeft F α) :=
   (isoWhiskerLeft F (asIso α)).isIso_hom
 
+@[to_dual self]
 instance isIso_whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) [IsIso α] :
     IsIso (whiskerRight α F) :=
   (isoWhiskerRight (asIso α) F).isIso_hom
 
-@[simp]
+@[simp, to_dual self]
 theorem inv_whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) [IsIso α] :
     inv (whiskerRight α F) = whiskerRight (inv α) F := by
   symm
   apply IsIso.eq_inv_of_inv_hom_id
   simp [← whiskerRight_comp]
 
-@[simp]
+@[simp, to_dual self]
 theorem inv_whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) [IsIso α] :
     inv (whiskerLeft F α) = whiskerLeft F (inv α) := by
   symm
@@ -301,18 +304,19 @@ theorem isoWhiskerLeft_trans_isoWhiskerRight {F G : C ⥤ D} {H K : D ⥤ E} (α
 
 variable {B : Type u₄} [Category.{v₄} B]
 
-@[simp]
+@[simp, to_dual none]
 theorem whiskerLeft_twice (F : B ⥤ C) (G : C ⥤ D) {H K : D ⥤ E} (α : H ⟶ K) :
     whiskerLeft F (whiskerLeft G α) =
     (Functor.associator _ _ _).inv ≫ whiskerLeft (F ⋙ G) α ≫ (Functor.associator _ _ _).hom := by
   cat_disch
 
-@[simp]
+@[simp, to_dual none]
 theorem whiskerRight_twice {H K : B ⥤ C} (F : C ⥤ D) (G : D ⥤ E) (α : H ⟶ K) :
     whiskerRight (whiskerRight α F) G =
     (Functor.associator _ _ _).hom ≫ whiskerRight α (F ⋙ G) ≫ (Functor.associator _ _ _).inv := by
   cat_disch
 
+@[to_dual none]
 theorem whiskerRight_left (F : B ⥤ C) {G H : C ⥤ D} (α : G ⟶ H) (K : D ⥤ E) :
     whiskerRight (whiskerLeft F α) K =
     (Functor.associator _ _ _).hom ≫ whiskerLeft F (whiskerRight α K) ≫
