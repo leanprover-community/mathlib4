@@ -306,13 +306,16 @@ theorem aleph0_le_cof_iff {o : Ordinal} : ℵ₀ ≤ cof o ↔ 1 < cof o := by
 theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsSuccLimit o := by
   rw [aleph0_le_cof_iff, one_lt_cof_iff]
 
+/-- A countable limit ordinal has cofinality `ℵ₀`. -/
+theorem cof_eq_aleph0_of_isSuccLimit {o : Ordinal} (ho : IsSuccLimit o) (ho' : o < ω₁) :
+    cof o = ℵ₀ := by
+  apply ((cof_le_card _).trans _).antisymm
+  · rwa [aleph0_le_cof_iff, one_lt_cof_iff]
+  · rwa [card_le_iff, succ_aleph0, ord_aleph]
+
 @[simp]
-theorem cof_omega0 : cof ω = ℵ₀ := by
-  apply le_antisymm
-  · rw [← card_omega0]
-    exact cof_le_card ω
-  · rw [aleph0_le_cof_iff, one_lt_cof_iff]
-    exact isSuccLimit_omega0
+theorem cof_omega0 : cof ω = ℵ₀ :=
+  cof_eq_aleph0_of_isSuccLimit isSuccLimit_omega0 omega0_lt_omega_one
 
 theorem cof_iSup_Iio {f} (hf : StrictMono f) {a} (ha : IsSuccPrelimit a) :
     cof (⨆ i : Iio a, f i.1) = cof a := by
