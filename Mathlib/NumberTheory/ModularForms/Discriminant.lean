@@ -35,7 +35,7 @@ be expressed as `q * ∏' (1 - q ^ (n + 1)) ^ 24` where `q = e ^ (2πiz)`.
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
 
-open Function Complex Topology Filter SlashInvariantForm CongruenceSubgroup
+open Function Complex Topology Filter SlashInvariantForm CongruenceSubgroup MatrixGroups
 
 open UpperHalfPlane hiding I
 
@@ -149,32 +149,24 @@ lemma discriminant_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
   simp only [he, mul_pow, mul_pow, inv_pow, csqrt_I_pow_24, csqrt_pow_24_eq (ne_zero z)]
   field_simp [z.ne_zero]
 
-/-- The modular discriminant `Δ` as a slash-invariant form of weight 12 and level 1. -/
-def discriminantSIF : SlashInvariantForm Γ(1) 12 where
-  toFun := Δ
-  slash_action_eq' A hA := by
-    obtain ⟨A, _, rfl⟩ := hA
-    exact slash_action_generators_SL2Z discriminant_S_invariant discriminant_T_invariant A
-
 lemma discriminant_bounded_factor :
     Tendsto (fun x : ℍ ↦ ∏' (n : ℕ), (1 - eta_q n x) ^ 24) atImInfty (𝓝 1) := by
   have htprod : Tendsto (fun q : ℂ ↦ ∏' (n : ℕ), (1 - q ^ (n + 1))) (𝓝 0) (𝓝 1) := by
     have := tendsto_tprod_one_add_of_dominated_convergence (𝓕 := 𝓝 0) (g := 0)
-      (f := fun q : ℂ ↦ fun n : ℕ ↦ -q ^ (n + 1)) (bound := fun n : ℕ ↦ (1 / 2 : ℝ) ^ (n + 1))
+      (f := fun (q : ℂ) (n : ℕ) ↦ -q ^ (n + 1)) (bound := fun n ↦ (1 / 2 : ℝ) ^ (n + 1))
     simp only [Pi.zero_apply, norm_neg, norm_pow, add_zero, tprod_one] at this
     simp_rw [sub_eq_add_neg]
     apply this
     · simpa only [pow_succ'] using (summable_geometric_of_abs_lt_one (by norm_num)).mul_left _
     · exact fun k ↦ by simpa using ((continuous_pow (M := ℂ) (k + 1)).tendsto 0).neg
     · filter_upwards [Metric.ball_mem_nhds (0 : ℂ) (by norm_num : (0 : ℝ) < 1 / 2)] with q hq k
-      exact pow_le_pow_left₀ (norm_nonneg _)
-        (by rw [Metric.mem_ball, dist_zero_right] at hq; exact hq.le) _
+      exact pow_le_pow_left₀ (norm_nonneg _) (mem_ball_zero_iff.mp hq).le _
   have := (htprod.comp (UpperHalfPlane.qParam_tendsto_atImInfty zero_lt_one)).pow 24
-  simp only [one_pow, comp_def, Periodic.qParam, ofReal_one, div_one, eta_q] at *
+  simp only [Periodic.qParam, ofReal_one, div_one, comp_apply, one_pow, eta_q] at *
   convert this using 2 with τ
   rw [Multipliable.tprod_pow]
-  exact (ModularForm.multipliableLocallyUniformlyOn_eta.multipliable τ.2).congr fun x ↦ by
-    simp [eta_q, Periodic.qParam, ofReal_one, div_one, ← exp_nat_mul]
+  apply (multipliableLocallyUniformlyOn_eta.multipliable τ.2).congr
+  simp [eta_q, Periodic.qParam, ← exp_nat_mul]
 
 lemma discriminant_isZeroAtImInfty : IsZeroAtImInfty Δ := by
   apply Tendsto.congr (fun z ↦ (discriminant_eq_q_prod z).symm)
@@ -183,20 +175,21 @@ lemma discriminant_isZeroAtImInfty : IsZeroAtImInfty Δ := by
     (discriminant_bounded_factor.congr fun z ↦ by congr 1)
 
 /-- The modular discriminant `Δ` as a cusp form of weight 12 and level 1. -/
-def discriminantCuspForm : CuspForm Γ(1) 12 where
-  toSlashInvariantForm := discriminantSIF
+def discriminantCuspForm : CuspForm 𝒮ℒ 12 where
+  toFun := Δ
+  slash_action_eq' A hA := by
+    obtain ⟨A, rfl⟩ := hA
+    exact slash_action_generators_SL2Z discriminant_S_invariant discriminant_T_invariant A
   holo' := by
     rw [UpperHalfPlane.mdifferentiable_iff]
-    refine DifferentiableOn.congr (fun z hz ↦
-      (differentiableAt_eta_of_mem_upperHalfPlaneSet hz).pow 24
-        |>.differentiableWithinAt) fun z hz ↦ ?_
-    simp [discriminantSIF, discriminant, ofComplex_apply_of_im_pos hz]
+    refine .congr (fun z hz ↦ (differentiableAt_eta_of_mem_upperHalfPlaneSet hz).pow
+      24 |>.differentiableWithinAt) fun z hz ↦ ?_
+    simp [discriminant, ofComplex_apply_of_im_pos hz]
   zero_at_cusps' hc := by
     rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z] at hc
     rw [OnePoint.isZeroAt_iff_forall_SL2Z hc]
     intro γ _
-    rw [discriminantSIF, slash_action_generators_SL2Z discriminant_S_invariant
-      discriminant_T_invariant]
+    rw [slash_action_generators_SL2Z discriminant_S_invariant discriminant_T_invariant]
     exact discriminant_isZeroAtImInfty
 
 end

@@ -51,15 +51,15 @@ lemma wt_eq_zero_of_eq_const {f : F} {c : ℂ} (hf : ⇑f = Function.const _ c) 
   simpa using ofReal_inj.trans <| zpow_eq_one_iff_right₀ (two_pos.le : (0 : ℝ) ≤ 2) (by norm_num1)
 
 theorem slash_action_generators_SL2Z {f : ℍ → ℂ} {k : ℤ}
-    (hS : f ∣[k] S = f) (hT : f ∣[k] T = f) :
-    ∀ γ : SL(2, ℤ), f ∣[k] γ = f := by
+    (hS : f ∣[k] S = f) (hT : f ∣[k] T = f) : ∀ γ : SL(2, ℤ), f ∣[k] γ = f := by
   intro γ
-  have hγ : γ ∈ Subgroup.closure {S, T} := by simp [SpecialLinearGroup.SL2Z_generators]
-  refine Subgroup.closure_induction (p := fun γ _ ↦ f ∣[k] γ = f) ?_ ?_ ?_ ?_ hγ
-  · intro x hx; rcases hx with rfl | rfl <;> assumption
-  · exact SlashAction.slash_one k f
-  · intro _ _ _ _ hf₁ hf₂; rw [SlashAction.slash_mul, hf₁, hf₂]
-  · intro x _ hx; rw [← hx, ← SlashAction.slash_mul]; simp [hx]
+  have h𝒮ℒ : 𝒮ℒ = Subgroup.closure ({↑S, ↑T} : Set (GL (Fin 2) ℝ)) := by
+    change (Matrix.SpecialLinearGroup.mapGL ℝ).range = _
+    rw [MonoidHom.range_eq_map, ← SpecialLinearGroup.SL2Z_generators, MonoidHom.map_closure,
+      Set.image_pair]
+    rfl
+  exact (slash_action_generators h𝒮ℒ).mpr (fun g hg ↦ by rcases hg with rfl | rfl <;> assumption)
+    _ (MonoidHom.mem_range.mpr ⟨γ, rfl⟩)
 
 end SlashInvariantForm
 

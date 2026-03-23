@@ -191,7 +191,7 @@ lemma multipliable_one_add_of_summable [CompleteSpace R]
     exact (dist_triangle_right _ _ (∏ i ∈ s, (1 + f i))).trans_lt (add_halves ε ▸ add_lt_add hx hy)
 
 lemma summable_finset_prod_of_summable_norm [CompleteSpace R] (hf : Summable (fun i ↦ ‖f i‖)) :
-    Summable (fun s : Finset ι ↦ ∏ i ∈ s, f i) :=
+    Summable (fun s ↦ ∏ i ∈ s, f i) :=
   (summable_finset_prod_of_summable_nonneg (fun _ ↦ norm_nonneg _) hf).of_norm_bounded
     fun _ ↦ Finset.norm_prod_le _ _
 

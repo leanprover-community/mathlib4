@@ -51,20 +51,17 @@ lemma slash_S_apply (f : ℍ → ℂ) (k : ℤ) (z : ℍ) :
 
 section Generators
 
-theorem slash_action_generators
-    (f : ℍ → ℂ) {Γ : Subgroup (GL (Fin 2) ℝ)} (s : Set Γ) (hΓ : ⊤ = Subgroup.closure s)
-    (k : ℤ) : (∀ γ : Γ, f ∣[k] γ.1 = f) ↔ (∀ γ ∈ s, f ∣[k] γ.1 = f) := by
-  constructor <;> intro h
-  · exact fun γ _ ↦ h _
-  · intro ⟨γ, hγ⟩
-    apply Subgroup.closure_induction (G := Γ) (p := fun γ _ ↦ f ∣[k] γ.1 = f) (k := s) ?_ ?_
-    · intro _ _ _ _ hf₁ hf₂
-      rw [Subgroup.coe_mul, SlashAction.slash_mul, hf₁, hf₂]
-    · intro x _ hf
-      rw [← hf, ← SlashAction.slash_mul]; simp [hf]
-    · simp [← hΓ]
-    · exact fun γ hγ ↦ h γ hγ
-    · exact SlashAction.slash_one k f
+theorem slash_action_generators {f : ℍ → ℂ} {Γ : Subgroup (GL (Fin 2) ℝ)}
+    {s : Set (GL (Fin 2) ℝ)} (hΓ : Γ = Subgroup.closure s) {k : ℤ} :
+    (∀ γ ∈ Γ, f ∣[k] γ = f) ↔ (∀ γ ∈ s, f ∣[k] γ = f) := by
+  constructor <;> intro h γ hγ
+  · exact h γ (hΓ ▸ Subgroup.mem_closure_of_mem hγ)
+  · apply Subgroup.closure_induction (p := fun γ _ ↦ f ∣[k] γ = f) h (by simp)
+    · simp +contextual [SlashAction.slash_mul]
+    · intro x hx hf
+      rw [← hf, ← SlashAction.slash_mul]
+      simp [hf]
+    · simpa [← hΓ]
 
 end Generators
 
