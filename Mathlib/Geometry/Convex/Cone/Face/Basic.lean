@@ -44,8 +44,8 @@ variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Modul
 positive combination in `F` are also in `F`. -/
 structure IsFaceOf (F C : PointedCone R M) : Prop where
   le : F ≤ C
-  mem_of_smul_add_mem :
-    ∀ {x y : M} {a : R}, x ∈ C → y ∈ C → 0 < a → a • x + y ∈ F → x ∈ F
+  mem_of_smul_add_mem {x y : M} {a : R} :
+    x ∈ C → y ∈ C → 0 < a → a • x + y ∈ F → x ∈ F
 
 section Semiring
 
@@ -64,7 +64,7 @@ theorem isFaceOf_iff_mem_of_smul_add_smul_mem : F.IsFaceOf C ↔
 
 namespace IsFaceOf
 
-/-- A pointed cone `C` as a face of itself. -/
+/-- A pointed cone `C` is a face of itself. -/
 @[refl, simp]
 protected theorem refl (C : PointedCone R M) : C.IsFaceOf C := ⟨fun _ a => a, fun hx _ _ _ => hx⟩
 
@@ -72,7 +72,7 @@ protected theorem rfl {C : PointedCone R M} : C.IsFaceOf C := ⟨fun _ a => a, f
 
 /-- The face of a face of a cone is also a face of the cone. -/
 @[trans]
-theorem trans (h₁ : F₂.IsFaceOf F₁) (h₂ : F₁.IsFaceOf C) : F₂.IsFaceOf C := by
+protected theorem trans (h₁ : F₂.IsFaceOf F₁) (h₂ : F₁.IsFaceOf C) : F₂.IsFaceOf C := by
   rw [isFaceOf_iff_mem_of_smul_add_smul_mem] at h₁ h₂ ⊢
   refine ⟨h₁.1.trans h₂.1, fun hx hy a0 b0 h ↦ ?_⟩
   exact h₁.2 (h₂.2 hx hy a0 b0 (h₁.1 h)) (h₂.2 hy hx b0 a0 (by rw [add_comm]; exact h₁.1 h)) a0 b0 h
@@ -131,7 +131,7 @@ section Map
 variable [AddCommGroup N] [Module R N]
 
 /-- The image of a face of a cone under an injective linear map is a face of the
-  image of the cone. -/
+image of the cone. -/
 theorem map (f : M →ₗ[R] N) (hf : Function.Injective f) (hF : F.IsFaceOf C) :
     (F.map f).IsFaceOf (C.map f) := by
   refine ⟨map_mono hF.le, ?_⟩

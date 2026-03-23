@@ -32,7 +32,7 @@ namespace PointedCone
 variable {R M N : Type*}
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M] in
-/-- A face of a pointed cone `C`. Represents the face lattice of `C`. -/
+/-- The face lattice of a pointed cone `C`. -/
 structure Face (C : PointedCone R M) extends PointedCone R M where
   isFaceOf : IsFaceOf toSubmodule C
 
@@ -103,7 +103,7 @@ instance : CompleteSemilatticeInf (Face C) where
       simpa [LE.le] using fun ⦃x⦄ a _ i ↦ (mem_coe x).mp (fS i a)
 
 instance : CompleteLattice (Face C) where
-  top := ⟨C, IsFaceOf.refl _⟩
+  top := ⟨C, .refl _⟩
   le_top F := F.isFaceOf.le
   __ := completeLatticeOfCompleteSemilatticeInf _
 
@@ -120,7 +120,7 @@ variable [Field R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R 
 
 /-- The lineality space of a cone `C` as a face of `C`. It is contained in all faces of `C`. This is
 an abbrev for `⊥`. -/
-def lineal : Face C := ⟨_, IsFaceOf.lineal C⟩
+def lineal : Face C := ⟨_, .lineal C⟩
 
 /-- The lineality space of `C` is its bottom face. -/
 theorem lineal_eq_bot : lineal = (⊥ : Face C) :=
