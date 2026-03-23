@@ -71,7 +71,7 @@ relations. -/
 @[mk_iff]
 class IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out : ∃ S : Set G, S.Finite ∧ Subgroup.closure S = ⊤ ∧
-  (FreeGroup.lift ((↑) : S → G)).ker.IsNormalClosureFG
+    (FreeGroup.lift ((↑) : S → G)).ker.IsNormalClosureFG
 
 namespace IsFinitelyPresented
 
