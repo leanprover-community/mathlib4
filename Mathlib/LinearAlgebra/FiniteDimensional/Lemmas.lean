@@ -111,6 +111,19 @@ theorem sup_span_singleton_eq_top_iff [Module.Finite K V] {W : Submodule K V} {v
       aesop
     · exact Submodule.disjoint_span_singleton_of_notMem hv
 
+theorem finrank_sup_span_singleton [Module.Finite K V] {p : Submodule K V} {v : V} (hv : v ∉ p) :
+    finrank K (p ⊔ Submodule.span K {v} : Submodule K V) = finrank K p + 1 := by
+  rw [← Nat.add_left_inj, finrank_sup_add_finrank_inf_eq, add_assoc,
+    Nat.add_left_cancel_iff, finrank_span_singleton (by aesop),
+    Nat.left_eq_add, Submodule.finrank_eq_zero, eq_bot_iff]
+  intro x
+  simp only [mem_inf, mem_span_singleton]
+  rintro ⟨hx, ⟨a, hx'⟩⟩
+  rw [← hx'] at hx
+  suffices a = 0 by simp [← hx', this]
+  contrapose hv
+  simpa [smul_mem_iff p hv] using hx
+
 end DivisionRing
 
 end Submodule
