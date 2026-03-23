@@ -148,7 +148,7 @@ private def findDiamondFailures (instExpr : Expr) (structName : Name) :
           let eq ← withNewMCtxDepth <| withReducibleAndInstances <| isDefEq lhsField rhsField
           unless eq do
             -- Find where the unreduced field expressions structurally diverge,
-            -- then whnf the divergence point to show the actual differing values.
+            -- then whnf the divergence point to show the differing structure.
             let (divLhs, divRhs) ← findDivergence lhsField rhsField
             let divLhs ← withReducibleAndInstances <| whnf divLhs
             let divRhs ← withReducibleAndInstances <| whnf divRhs
