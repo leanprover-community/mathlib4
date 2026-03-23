@@ -92,6 +92,8 @@ protected theorem comp (hf : IsFundamentalSeq f) (hg : IsFundamentalSeq g) :
     rw [range_comp]
     exact hg.isCofinal_range.image hf.strictMono.monotone hf.isCofinal_range
 
+/-- If `f` is a fundamental sequence for a limit ordinal `o` and `g` is normal, then `g ∘ f` is a
+fundamental sequence for `g o`. -/
 theorem comp_isNormal {g : Ordinal → Ordinal} (hg : IsNormal g) (hf : IsFundamentalSeq f)
     (ho : IsSuccLimit o) : IsFundamentalSeq fun i ↦ ⟨g (f i), hg.strictMono (f i).2⟩ where
   strictMono := hg.strictMono.comp hf.strictMono
