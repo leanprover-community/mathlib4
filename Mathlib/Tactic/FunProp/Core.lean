@@ -266,7 +266,8 @@ def applyPiRule (goal : Goal) : FunPropM (Option Result) := do
     return none
 
   for thm in thms do
-    if let some r ← tryTheoremWithHint? goal (.decl thm.thmName) #[] then
+    let .pi id_f := thm.thmArgs | return none
+    if let some r ← tryTheoremWithHint? goal (.decl thm.thmName) #[(id_f, goal.mainFun)] then
       return r
 
   return none

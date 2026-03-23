@@ -153,12 +153,21 @@ def Goal.updateMainFun (goal : Goal) (f : Expr) : Goal :=
     mainFun := f }
 
 def getFunPropGoal? (e : Expr) : MetaM (Option Goal) := do
+  let e ← instantiateMVars e
   -- todo: correct implementation
   let some (decl, f) ← getFunProp? e | return none
+
+  let mut expr := e
+  let mut numOutParams := 0
+  if e.hasExprMVar then
+    let r ← abstractMVars e (levels := false)
+    expr := r.expr
+    numOutParams := r.numMVars
+
   return some {
-    numOutParams := 0
-    expr := e
-    decl := decl
+    numOutParams
+    expr
+    decl
     mainFun := f
   }
 
