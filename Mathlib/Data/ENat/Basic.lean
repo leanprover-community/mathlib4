@@ -73,9 +73,14 @@ variable {a b c d m n : ℕ∞}
 
 theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
-set_option backward.isDefEq.respectTransparency false in
+@[simp] theorem succ_coe (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := by
+  simp [SuccOrder.succ]
+  rfl
+
+@[simp] theorem succ_top : SuccOrder.succ (⊤ : ℕ∞) = ⊤ := rfl
+
 instance : SuccAddOrder ℕ∞ where
-  succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ]
+  succ_eq_add_one x := by cases x <;> simp
 
 theorem coe_zero : ((0 : ℕ) : ℕ∞) = 0 :=
   rfl
@@ -297,6 +302,12 @@ theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
 
 lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
   not_le.symm.trans one_le_iff_ne_zero.not_left
+
+lemma le_one_iff_eq_zero_or_eq_one : n ≤ 1 ↔ n = 0 ∨ n = 1 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by cases h <;> simp_all⟩
+  cases n
+  · simp at h
+  · rwa [← lt_one_iff_eq_zero, ← le_iff_lt_or_eq]
 
 theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
   Order.lt_add_one_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)

@@ -699,6 +699,24 @@ noncomputable def toEquivalence (adj : F ⊣ G) [∀ X, IsIso (adj.unit.app X)]
   unitIso := NatIso.ofComponents fun X => asIso (adj.unit.app X)
   counitIso := NatIso.ofComponents fun Y => asIso (adj.counit.app Y)
 
+set_option backward.isDefEq.respectTransparency false in
+lemma map_comp_bijective_iff (adj : F ⊣ G) {X Y : C} (f : X ⟶ Y) (Z : D) :
+    Function.Bijective (fun (g : F.obj Y ⟶ Z) ↦ F.map f ≫ g) ↔
+      Function.Bijective (fun (g : Y ⟶ G.obj Z) ↦ f ≫ g) := by
+  rw [← Function.Bijective.of_comp_iff' (adj.homEquiv _ _).bijective,
+    ← Function.Bijective.of_comp_iff _ (adj.homEquiv _ _).symm.bijective]
+  congr!
+  ext g
+  simp
+
+lemma comp_map_bijective_iff (adj : F ⊣ G) {X Y : D} (g : X ⟶ Y) (Z : C) :
+    Function.Bijective (fun (f : Z ⟶ G.obj X) ↦ f ≫ G.map g) ↔
+      Function.Bijective (fun (f : F.obj Z ⟶ X) ↦ f ≫ g) := by
+  rw [← Function.Bijective.of_comp_iff' (adj.homEquiv _ _).bijective,
+    ← Function.Bijective.of_comp_iff _ (adj.homEquiv _ _).symm.bijective]
+  congr!
+  simp
+
 end Adjunction
 
 open Adjunction
@@ -716,7 +734,6 @@ namespace Equivalence
 
 variable (e : C ≌ D)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
 simply use `e.symm.toAdjunction`.) -/
 @[simps]

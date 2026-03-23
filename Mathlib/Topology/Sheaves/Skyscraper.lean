@@ -298,7 +298,6 @@ lemma germ_fromStalk {𝓕 : Presheaf C X} {c : C} (f : 𝓕 ⟶ skyscraperPresh
     𝓕.germ U p₀ hU ≫ fromStalk p₀ f = f.app (op U) ≫ eqToHom (if_pos hU) :=
   colimit.ι_desc _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem to_skyscraper_fromStalk {𝓕 : Presheaf C X} {c : C} (f : 𝓕 ⟶ skyscraperPresheaf p₀ c) :
     toSkyscraperPresheaf p₀ (fromStalk _ f) = f := by
   apply NatTrans.ext
