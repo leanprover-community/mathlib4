@@ -150,6 +150,6 @@ class Pointed (α : Type) where
 
 abbrev myPointed : Pointed Nat := ⟨0, trivial⟩
 
-/-- info: { val := 0, h := trivial } : Pointed Nat -/
+/-- info: { val := 0, h := _check._proof_1 } : Pointed Nat -/
 #guard_msgs in
 #check fast_instance% (myPointed : Pointed Nat)
