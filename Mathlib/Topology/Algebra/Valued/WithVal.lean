@@ -182,8 +182,6 @@ theorem val_apply_equiv (r : WithVal v) : v (equiv v r) = Valued.v r := rfl
 instance [CharZero R] : CharZero (WithVal v) :=
   .of_addMonoidHom (equiv v).symm.toAddMonoidHom (by simp) (equiv v).symm.injective
 
-instance : Ring (WithVal v) := fast_instance% (equiv v).ring
-
 instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
 
 instance : (valuation v).Compatible := .ofValuation (valuation v)
