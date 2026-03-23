@@ -3,9 +3,9 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Ring.Equiv
+module
 
-#align_import algebra.ring.comp_typeclasses from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
+public import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # Propositional typeclasses on several ring homs
@@ -15,6 +15,7 @@ This file contains three typeclasses used in the definition of (semi)linear maps
 * `RingHomCompTriple σ₁₂ σ₂₃ σ₁₃`, which expresses the fact that `σ₂₃.comp σ₁₂ = σ₁₃`
 * `RingHomInvPair σ₁₂ σ₂₁`, which states that `σ₁₂` and `σ₂₁` are inverses of each other
 * `RingHomSurjective σ`, which states that `σ` is surjective
+
 These typeclasses ensure that objects such as `σ₂₃.comp σ₁₂` never end up in the type of a
 semilinear map; instead, the typeclass system directly finds the appropriate `RingHom` to use.
 A typical use-case is conjugate-linear maps, i.e. when `σ = Complex.conj`; this system ensures that
@@ -41,16 +42,17 @@ Instances of these typeclasses mostly involving `RingHom.id` are also provided:
 `RingHomCompTriple`, `RingHomInvPair`, `RingHomSurjective`
 -/
 
+@[expose] public section
+
 
 variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 
 /-- Class that expresses that a ring homomorphism is in fact the identity. -/
 -- This at first seems not very useful. However we need this when considering
 -- modules over some diagram in the category of rings,
 -- e.g. when defining presheaves over a presheaf of rings.
--- See `Mathlib.Algebra.Category.ModuleCat.Presheaf`.
+-- See `Mathlib/Algebra/Category/ModuleCat/Presheaf.lean`.
 class RingHomId {R : Type*} [Semiring R] (σ : R →+* R) : Prop where
   eq_id : σ = RingHom.id R
 
@@ -63,7 +65,6 @@ class RingHomCompTriple (σ₁₂ : R₁ →+* R₂) (σ₂₃ : R₂ →+* R₃
   Prop where
   /-- The morphisms form a commutative triangle -/
   comp_eq : σ₂₃.comp σ₁₂ = σ₁₃
-#align ring_hom_comp_triple RingHomCompTriple
 
 attribute [simp] RingHomCompTriple.comp_eq
 
@@ -74,7 +75,6 @@ namespace RingHomCompTriple
 @[simp]
 theorem comp_apply [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] {x : R₁} : σ₂₃ (σ₁₂ x) = σ₁₃ x :=
   RingHom.congr_fun comp_eq x
-#align ring_hom_comp_triple.comp_apply RingHomCompTriple.comp_apply
 
 end RingHomCompTriple
 
@@ -85,11 +85,6 @@ class RingHomInvPair (σ : R₁ →+* R₂) (σ' : outParam (R₂ →+* R₁)) :
   comp_eq : σ'.comp σ = RingHom.id R₁
   /-- `σ'` is a left inverse of `σ'` -/
   comp_eq₂ : σ.comp σ' = RingHom.id R₂
-#align ring_hom_inv_pair RingHomInvPair
-
--- attribute [simp] RingHomInvPair.comp_eq Porting note: `simp` can prove it
-
--- attribute [simp] RingHomInvPair.comp_eq₂ Porting note: `simp` can prove it
 
 variable {σ : R₁ →+* R₂} {σ' : R₂ →+* R₁}
 
@@ -97,56 +92,57 @@ namespace RingHomInvPair
 
 variable [RingHomInvPair σ σ']
 
--- @[simp] Porting note: `simp` can prove it
 theorem comp_apply_eq {x : R₁} : σ' (σ x) = x := by
   rw [← RingHom.comp_apply, comp_eq]
   simp
-#align ring_hom_inv_pair.comp_apply_eq RingHomInvPair.comp_apply_eq
 
--- @[simp] Porting note: `simp` can prove it
 theorem comp_apply_eq₂ {x : R₂} : σ (σ' x) = x := by
   rw [← RingHom.comp_apply, comp_eq₂]
   simp
-#align ring_hom_inv_pair.comp_apply_eq₂ RingHomInvPair.comp_apply_eq₂
 
 instance ids : RingHomInvPair (RingHom.id R₁) (RingHom.id R₁) :=
   ⟨rfl, rfl⟩
-#align ring_hom_inv_pair.ids RingHomInvPair.ids
 
 instance triples {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁] :
     RingHomCompTriple σ₁₂ σ₂₁ (RingHom.id R₁) :=
   ⟨by simp only [comp_eq]⟩
-#align ring_hom_inv_pair.triples RingHomInvPair.triples
 
 instance triples₂ {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁] :
     RingHomCompTriple σ₂₁ σ₁₂ (RingHom.id R₂) :=
   ⟨by simp only [comp_eq₂]⟩
-#align ring_hom_inv_pair.triples₂ RingHomInvPair.triples₂
+
+variable (σ σ') in
+/-- The ring equivalence defined by a pair of ring homomorphisms satisfying `RingHomInvPair`. -/
+@[simps!]
+def toRingEquiv : R₁ ≃+* R₂ := .ofRingHom σ σ' comp_eq₂ comp_eq
 
 /-- Construct a `RingHomInvPair` from both directions of a ring equiv.
 
 This is not an instance, as for equivalences that are involutions, a better instance
-would be `RingHomInvPair e e`. Indeed, this declaration is not currently used in mathlib.
+would be `RingHomInvPair e e`.
 
-See note [reducible non-instances].
+This declaration should not be used as an instance to state a theorem,
+but it may be useful sometimes in the middle of a proof.
 -/
-@[reducible]
 theorem of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R₂) ↑e.symm :=
   ⟨e.symm_toRingHom_comp_toRingHom, e.symm.symm_toRingHom_comp_toRingHom⟩
-#align ring_hom_inv_pair.of_ring_equiv RingHomInvPair.of_ringEquiv
+
+/-- Construct a `RingHomInvPair` from both directions of a ring equiv.
+
+This is not an instance, as for equivalences that are involutions, a better instance
+would be `RingHomInvPair e e`.
+-/
+theorem of_ringEquiv_symm (e : R₁ ≃+* R₂) : RingHomInvPair (↑e.symm : R₂ →+* R₁) ↑e :=
+  of_ringEquiv e.symm
 
 /--
 Swap the direction of a `RingHomInvPair`. This is not an instance as it would loop, and better
-instances are often available and may often be preferrable to using this one. Indeed, this
+instances are often available and may often be preferable to using this one. Indeed, this
 declaration is not currently used in mathlib.
-
-See note [reducible non-instances].
 -/
-@[reducible]
 theorem symm (σ₁₂ : R₁ →+* R₂) (σ₂₁ : R₂ →+* R₁) [RingHomInvPair σ₁₂ σ₂₁] :
     RingHomInvPair σ₂₁ σ₁₂ :=
   ⟨RingHomInvPair.comp_eq₂, RingHomInvPair.comp_eq⟩
-#align ring_hom_inv_pair.symm RingHomInvPair.symm
 
 end RingHomInvPair
 
@@ -154,15 +150,11 @@ namespace RingHomCompTriple
 
 instance ids : RingHomCompTriple (RingHom.id R₁) σ₁₂ σ₁₂ :=
   ⟨by
-    ext
     simp⟩
-#align ring_hom_comp_triple.ids RingHomCompTriple.ids
 
 instance right_ids : RingHomCompTriple σ₁₂ (RingHom.id R₂) σ₁₂ :=
   ⟨by
-    ext
     simp⟩
-#align ring_hom_comp_triple.right_ids RingHomCompTriple.right_ids
 
 end RingHomCompTriple
 
@@ -171,24 +163,18 @@ of semilinear maps, where some lemmas require this. -/
 class RingHomSurjective (σ : R₁ →+* R₂) : Prop where
   /-- The ring homomorphism is surjective -/
   is_surjective : Function.Surjective σ
-#align ring_hom_surjective RingHomSurjective
 
 theorem RingHom.surjective (σ : R₁ →+* R₂) [t : RingHomSurjective σ] : Function.Surjective σ :=
   t.is_surjective
-#align ring_hom.is_surjective RingHom.surjective
 
 namespace RingHomSurjective
 
--- The linter gives a false positive, since `σ₂` is an out_param
--- @[nolint dangerous_instance] Porting note: this linter is not implemented yet
 instance (priority := 100) invPair {σ₁ : R₁ →+* R₂} {σ₂ : R₂ →+* R₁} [RingHomInvPair σ₁ σ₂] :
     RingHomSurjective σ₁ :=
   ⟨fun x => ⟨σ₂ x, RingHomInvPair.comp_apply_eq₂⟩⟩
-#align ring_hom_surjective.inv_pair RingHomSurjective.invPair
 
 instance ids : RingHomSurjective (RingHom.id R₁) :=
   ⟨is_surjective⟩
-#align ring_hom_surjective.ids RingHomSurjective.ids
 
 /-- This cannot be an instance as there is no way to infer `σ₁₂` and `σ₂₃`. -/
 theorem comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomSurjective σ₁₂] [RingHomSurjective σ₂₃] :
@@ -196,6 +182,7 @@ theorem comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomSurjective �
   { is_surjective := by
       have := σ₂₃.surjective.comp σ₁₂.surjective
       rwa [← RingHom.coe_comp, RingHomCompTriple.comp_eq] at this }
-#align ring_hom_surjective.comp RingHomSurjective.comp
+
+instance (σ : R₁ ≃+* R₂) : RingHomSurjective (σ : R₁ →+* R₂) := ⟨σ.surjective⟩
 
 end RingHomSurjective

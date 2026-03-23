@@ -3,7 +3,10 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Baire
+module
+
+public import Mathlib.Topology.Baire.Lemmas
+public import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-! # Open mapping theorem for morphisms of topological groups
 
@@ -18,21 +21,23 @@ the discrete topology, and `H` the real line with the usual topology. Both are l
 groups, and the identity from `G` to `H` is continuous but not open.
 -/
 
+public section
+
 open scoped Topology Pointwise
 
 open MulAction Set Function
 
 variable {G X : Type*} [TopologicalSpace G] [TopologicalSpace X]
-  [Group G] [TopologicalGroup G] [MulAction G X]
+  [Group G] [IsTopologicalGroup G] [MulAction G X]
   [SigmaCompactSpace G] [BaireSpace X] [T2Space X]
   [ContinuousSMul G X] [IsPretransitive G X]
 
 /-- Consider a sigma-compact group acting continuously and transitively on a Baire space. Then
 the orbit map is open around the identity. It follows in `isOpenMap_smul_of_sigmaCompact` that it
 is open around any point. -/
-@[to_additive "Consider a sigma-compact additive group acting continuously and transitively on a
+@[to_additive /-- Consider a sigma-compact additive group acting continuously and transitively on a
 Baire space. Then the orbit map is open around zero. It follows in
-`isOpenMap_vadd_of_sigmaCompact` that it is open around any point."]
+`isOpenMap_vadd_of_sigmaCompact` that it is open around any point. -/]
 theorem smul_singleton_mem_nhds_of_sigmaCompact
     {U : Set G} (hU : U ∈ 𝓝 1) (x : X) : U • {x} ∈ 𝓝 x := by
   /- Consider a small closed neighborhood `V` of the identity. Then the group is covered by
@@ -44,10 +49,8 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
   if `V` is small enough. -/
   obtain ⟨V, V_mem, V_closed, V_symm, VU⟩ : ∃ V ∈ 𝓝 (1 : G), IsClosed V ∧ V⁻¹ = V ∧ V * V ⊆ U :=
     exists_closed_nhds_one_inv_eq_mul_subset hU
-  obtain ⟨s, s_count, hs⟩ : ∃ (s : Set G), s.Countable ∧ ⋃ g ∈ s, g • V = univ := by
-    apply countable_cover_nhds_of_sigma_compact (fun g ↦ ?_)
-    convert smul_mem_nhds g V_mem
-    simp only [smul_eq_mul, mul_one]
+  obtain ⟨s, s_count, hs⟩ : ∃ (s : Set G), s.Countable ∧ ⋃ g ∈ s, g • V = univ :=
+    countable_cover_nhds_of_sigmaCompact fun _ ↦ by simpa
   let K : ℕ → Set G := compactCovering G
   let F : ℕ × s → Set X := fun p ↦ (K p.1 ∩ (p.2 : G) • V) • ({x} : Set X)
   obtain ⟨⟨n, ⟨g, hg⟩⟩, hi⟩ : ∃ i, (interior (F i)).Nonempty := by
@@ -57,26 +60,25 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
     · rintro ⟨n, ⟨g, hg⟩⟩
       apply IsCompact.isClosed
       suffices H : IsCompact ((fun (g : G) ↦ g • x) '' (K n ∩ g • V)) by
-        simpa only [smul_singleton] using H
-      apply IsCompact.image
-      · exact (isCompact_compactCovering G n).inter_right (V_closed.smul g)
-      · exact continuous_id.smul continuous_const
+        simpa only [F, smul_singleton] using H
+      apply IsCompact.image ?_ (by fun_prop)
+      exact (isCompact_compactCovering G n).inter_right (V_closed.smul g)
     · apply eq_univ_iff_forall.2 (fun y ↦ ?_)
       obtain ⟨h, rfl⟩ : ∃ h, h • x = y := exists_smul_eq G x y
       obtain ⟨n, hn⟩ : ∃ n, h ∈ K n := exists_mem_compactCovering h
       obtain ⟨g, gs, hg⟩ : ∃ g ∈ s, h ∈ g • V := exists_set_mem_of_union_eq_top s _ hs _
-      simp only [smul_singleton, mem_iUnion, mem_image, mem_inter_iff, Prod.exists, Subtype.exists,
-        exists_prop]
+      simp only [F, smul_singleton, mem_iUnion, mem_image, mem_inter_iff, Prod.exists,
+        Subtype.exists, exists_prop]
       exact ⟨n, g, gs, h, ⟨hn, hg⟩, rfl⟩
   have I : (interior ((g • V) • {x})).Nonempty := by
     apply hi.mono
     apply interior_mono
-    exact smul_subset_smul_right (inter_subset_right _ _)
+    exact smul_subset_smul_right inter_subset_right
   obtain ⟨y, hy⟩ : (interior (V • ({x} : Set X))).Nonempty := by
     rw [smul_assoc, interior_smul] at I
     exact smul_set_nonempty.1 I
   obtain ⟨g', hg', rfl⟩ : ∃ g' ∈ V, g' • x = y := by simpa using interior_subset hy
-  have J : (g' ⁻¹ • V) • {x} ∈ 𝓝 x := by
+  have J : (g'⁻¹ • V) • {x} ∈ 𝓝 x := by
     apply mem_interior_iff_mem_nhds.1
     rwa [smul_assoc, interior_smul, mem_inv_smul_set_iff]
   have : (g'⁻¹ • V) • {x} ⊆ U • ({x} : Set X) := by
@@ -89,9 +91,9 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
 /-- Consider a sigma-compact group acting continuously and transitively on a Baire space. Then
 the orbit map is open. This is a version of the open mapping theorem, valid notably for the
 action of a sigma-compact locally compact group on a locally compact space. -/
-@[to_additive "Consider a sigma-compact additive group acting continuously and transitively on a
+@[to_additive /-- Consider a sigma-compact additive group acting continuously and transitively on a
 Baire space. Then the orbit map is open. This is a version of the open mapping theorem, valid
-notably for the action of a sigma-compact locally compact group on a locally compact space."]
+notably for the action of a sigma-compact locally compact group on a locally compact space. -/]
 theorem isOpenMap_smul_of_sigmaCompact (x : X) : IsOpenMap (fun (g : G) ↦ g • x) := by
   /- We have already proved the theorem around the basepoint of the orbit, in
   `smul_singleton_mem_nhds_of_sigmaCompact`. The general statement follows around an arbitrary
@@ -115,6 +117,6 @@ theorem MonoidHom.isOpenMap_of_sigmaCompact
   let A : MulAction G H := MulAction.compHom _ f
   have : ContinuousSMul G H := continuousSMul_compHom h'f
   have : IsPretransitive G H := isPretransitive_compHom hf
-  have : f = (fun (g : G) ↦ g • (1 : H)) := by simp [MulAction.compHom_smul_def]
+  have : f = (fun (g : G) ↦ g • (1 : H)) := by simp [A, MulAction.compHom_smul_def]
   rw [this]
   exact isOpenMap_smul_of_sigmaCompact _

@@ -6,8 +6,6 @@ Authors: Jeremy Avigad
 import Mathlib.Data.W.Basic
 import Mathlib.Data.Fin.VecNotation
 
-#align_import examples.prop_encodable from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
-
 /-!
 # W types
 
@@ -35,17 +33,6 @@ inductive PropForm (α : Type*)
   | not : PropForm α → PropForm α
   | and : PropForm α → PropForm α → PropForm α
   | or : PropForm α → PropForm α → PropForm α
-#align prop_encodable.prop_form PropEncodable.PropForm
-
-/-!
-The next three functions make it easier to construct functions from a small
-`Fin`.
--/
-
--- porting note: using `![_, _]` notation instead
-#noalign prop_encodable.mk_fn0
-#noalign prop_encodable.mk_fn1
-#noalign prop_encodable.mk_fn2
 
 namespace PropForm
 

@@ -1,81 +1,116 @@
 /-
-Copyright (c) 2022 Jujian Zhang. All rights reserved.
+Copyright (c) 2026 Brian Nugent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz, Jujian Zhang
+Authors: Brian Nugent
 -/
-import Mathlib.CategoryTheory.Abelian.FunctorCategory
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Preadditive.FunctorCategory
-import Mathlib.CategoryTheory.Abelian.Transfer
-import Mathlib.CategoryTheory.Sites.LeftExact
+module
 
-#align_import topology.sheaves.abelian from "leanprover-community/mathlib"@"ac3ae212f394f508df43e37aa093722fa9b65d31"
+public import Mathlib.Algebra.Category.Grp.AB
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+public import Mathlib.Topology.Sheaves.Limits
+public import Mathlib.Topology.Sheaves.Skyscraper
 
 /-!
-# Category of sheaves is abelian
-Let `C, D` be categories and `J` be a grothendieck topology on `C`, when `D` is abelian and
-sheafification is possible in `C`, `Sheaf J D` is abelian as well (`sheafIsAbelian`).
+# Sheaves over Abelian categories
+We provide instances for categories of sheaves over Abelian categories.
 
-Hence, `presheafToSheaf` is an additive functor (`presheafToSheaf_additive`).
+## Main Results
 
-TODO: This file should be moved to `CategoryTheory/Sites`.
+* `TopCat.Sheaf.exact_iff_stalkFunctor_map_exact`: A complex of sheaves over a concrete abelian
+category is exact if and only if it is exact on stalks.
 
 -/
 
+@[expose] public section
 
-noncomputable section
+universe u v v₁ v₂
 
-namespace CategoryTheory
+open TopologicalSpace CategoryTheory Limits
 
-open CategoryTheory.Limits
+namespace TopCat
 
-section Abelian
+variable {X : TopCat.{u}}
 
-universe w v u
+section
 
--- porting note: `C` was `Type (max v u)`, but making it more universe polymorphic
---   solves some problems
-variable {C : Type u} [Category.{v} C]
+variable {C : Type v₁} [Category.{v₂} C] [HasSheafify (Opens.grothendieckTopology X) C] [Abelian C]
 
-variable {D : Type w} [Category.{max v u} D] [Abelian D]
+noncomputable instance : Abelian (Presheaf C X) := inferInstanceAs (Abelian (_ ⥤ _))
 
-variable {J : GrothendieckTopology C}
+namespace Sheaf
 
--- porting note: this `Abelian` instance is no longer necessary,
--- maybe because I have made `C` more universe polymorphic
---
--- This needs to be specified manually because of universe level.
---instance : Abelian (Cᵒᵖ ⥤ D) :=
---  @Abelian.functorCategoryAbelian Cᵒᵖ _ D _ _
+noncomputable instance : Abelian (Sheaf C X) :=
+  inferInstanceAs (Abelian (CategoryTheory.Sheaf _ _))
 
--- This also needs to be specified manually, but I don't know why.
-instance hasFiniteProductsSheaf : HasFiniteProducts (Sheaf J D) where
-  out j := { has_limit := fun F => by infer_instance }
+instance : (Sheaf.forget C X).Additive where
 
--- sheafification assumptions
-variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
+instance {D : Type*} [Category.{u} D] [Abelian D] [IsGrothendieckAbelian.{u} D]
+    [HasSheafify (Opens.grothendieckTopology X) D] : IsGrothendieckAbelian.{u} (Sheaf D X) :=
+  inferInstanceAs (IsGrothendieckAbelian (CategoryTheory.Sheaf _ _))
 
-variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
+end Sheaf
 
-variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
+end
 
-variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
+set_option backward.isDefEq.respectTransparency false in
+/-- The stalk functor is additive -/
+instance (p₀ : X) {C : Type v} [Category.{u} C] [Abelian C] [HasColimits C] :
+    (Presheaf.stalkFunctor C p₀).Additive := by
+  dsimp [Presheaf.stalkFunctor]
+  have : ((Functor.whiskeringLeft _ _ C).obj (OpenNhds.inclusion p₀).op).Additive := ⟨by cat_disch⟩
+  infer_instance
 
-variable [ReflectsIsomorphisms (forget D)]
+namespace Sheaf
 
-instance sheafIsAbelian [HasFiniteLimits D] : Abelian (Sheaf J D) :=
-  let adj := sheafificationAdjunction J D
-  abelianOfAdjunction _ _ (asIso adj.counit) adj
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf_is_abelian CategoryTheory.sheafIsAbelian
+open Presheaf
 
-attribute [local instance] preservesBinaryBiproductsOfPreservesBinaryProducts
+variable {C : Type v} [Category.{u} C] [HasColimits C] [HasLimits C]
+  {FC : C → C → Type*} {CC : C → Type u} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+  [instCC : ConcreteCategory C FC] [PreservesFilteredColimits (CategoryTheory.forget C)]
+  [PreservesLimits (CategoryTheory.forget C)] [Abelian C]
+  {X : TopCat.{u}} (p₀ : X)
 
-instance presheafToSheaf_additive : (presheafToSheaf J D).Additive :=
-  (presheafToSheaf J D).additive_of_preservesBinaryBiproducts
-set_option linter.uppercaseLean3 false in
-#align category_theory.presheaf_to_Sheaf_additive CategoryTheory.presheafToSheaf_additive
+instance : Limits.PreservesFiniteLimits (forget C X ⋙ stalkFunctor C p₀) :=
+  have : (forget C X ⋙ stalkFunctor C p₀).PreservesHomology := by
+    simp only [(forget C X ⋙ stalkFunctor C p₀).exact_tfae.out 2 0]
+    intro S h
+    have := ((forget C X ⋙ stalkFunctor C p₀).preservesFiniteColimits_tfae.out 3 0).mp
+      (inferInstanceAs (PreservesFiniteColimits _))
+    refine ShortComplex.ShortExact.mk' (this S h).left ?_ (this S h).right
+    have := h.2
+    exact Functor.map_mono (forget C X ⋙ stalkFunctor C p₀) _
+  (forget C X ⋙ stalkFunctor C p₀).preservesFiniteLimits_of_preservesHomology
 
-end Abelian
+open ZeroObject
 
-end CategoryTheory
+include instCC in
+/-- A sheaf is zero if and only if its stalks are all zero. -/
+lemma isZero_iff_stalkFunctor_obj_isZero (F : Sheaf C X) :
+    IsZero F ↔ ∀ x : X, IsZero ((forget C X ⋙ stalkFunctor C x).obj F) := by
+  refine ⟨fun h _ => Functor.map_isZero _ h, ?_⟩
+  intro h
+  let f : F ⟶ 0 := (isZero_zero (Sheaf C X)).from_ F
+  have : IsIso f := by
+    rw[Presheaf.isIso_iff_stalkFunctor_map_iso]
+    exact fun x => isIso_of_source_target_iso_zero _ (h x).isoZero
+      ((forget C X ⋙ stalkFunctor C x).map_isZero (isZero_zero _)).isoZero
+  exact (isZero_zero _).of_iso (asIso f)
+
+include instCC in
+/-- Exactness can be checked on stalks for complexes of sheaves. -/
+theorem exact_iff_stalkFunctor_map_exact (S : ShortComplex (Sheaf C X)) :
+    S.Exact ↔ ∀ x : X, (S.map (forget C X ⋙ stalkFunctor C x)).Exact := by
+  constructor
+  · intro h x
+    have := (forget C X ⋙ stalkFunctor C x).exact_tfae.out 2 1
+    exact this.mp inferInstance S h
+  intro h
+  simp_rw [ShortComplex.exact_iff_isZero_homology] at h
+  rw [ShortComplex.exact_iff_isZero_homology, isZero_iff_stalkFunctor_obj_isZero S.homology]
+  exact fun x => (h x).of_iso
+    (ShortComplex.mapHomologyIso S (forget C X ⋙ stalkFunctor C x)).symm
+
+end Sheaf
+
+end TopCat

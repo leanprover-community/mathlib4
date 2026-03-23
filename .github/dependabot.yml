@@ -1,0 +1,20 @@
+version: 2  # Specifies the version of the Dependabot configuration file format
+
+updates:
+  # Configuration for dependency updates
+  - package-ecosystem: "github-actions"  # Specifies the ecosystem to check for updates
+    directories:
+      - "/.github/workflows"
+    schedule:
+      # Check for updates to GitHub Actions every month
+      interval: "monthly"
+    groups:
+      # group updates into single PRs
+      actions-version-updates:
+        applies-to: version-updates
+        patterns:
+          - "*"
+      actions-security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"

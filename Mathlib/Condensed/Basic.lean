@@ -3,9 +3,10 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
+module
 
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.Topology.Category.CompHaus.EffectiveEpi
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 
 /-!
 
@@ -19,10 +20,6 @@ of Clausen-Scholze and Barwick-Haine.
 We use the coherent Grothendieck topology on `CompHaus`, and define condensed objects in `C` to
 be `C`-valued sheaves, with respect to this Grothendieck topology.
 
-In future work, we will define similar Grothendieck topologies on the category of profinite sets
-and extremally disconnected sets, and show that the three categories are equivalent (under
-suitable assumptions on `C`).
-
 Note: Our definition more closely resembles "Pyknotic objects" in the sense of Barwick-Haine,
 as we do not impose cardinality bounds, and manage universes carefully instead.
 
@@ -32,6 +29,8 @@ as we do not impose cardinality bounds, and manage universes carefully instead.
 - [scholze2019condensed]: *Lectures on Condensed Mathematics*, 2019.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 
@@ -50,7 +49,41 @@ instance {C : Type w} [Category.{v} C] : Category (Condensed.{u} C) :=
   show Category (Sheaf _ _) from inferInstance
 
 /--
-Condensed sets (types) with the appropriate universe levels, i.e. `Type (u+1)`-valued
+Condensed sets (types) with the appropriate universe levels, i.e. `Type (u + 1)`-valued
 sheaves on `CompHaus.{u}`.
 -/
-abbrev CondensedSet := Condensed.{u} (Type (u+1))
+abbrev CondensedSet := Condensed.{u} (Type (u + 1))
+
+namespace Condensed
+
+variable {C : Type w} [Category.{v} C]
+
+@[simp]
+lemma id_hom (X : Condensed.{u} C) : (𝟙 X : X ⟶ X).hom = 𝟙 _ := rfl
+
+@[simp]
+lemma comp_hom {X Y Z : Condensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).hom = f.hom ≫ g.hom :=
+  rfl
+
+@[deprecated (since := "2026-03-05")] alias id_val := id_hom
+@[deprecated (since := "2026-03-05")] alias comp_val := comp_hom
+
+@[ext]
+lemma hom_ext {X Y : Condensed.{u} C} (f g : X ⟶ Y) (h : ∀ S, f.hom.app S = g.hom.app S) :
+    f = g := by
+  apply Sheaf.hom_ext
+  ext
+  exact h _
+
+end Condensed
+
+namespace CondensedSet
+
+-- Note: `simp` can prove this when stated for `Condensed C` for a concrete category `C`.
+-- However, it doesn't seem to see through the abbreviation `CondensedSet`
+@[simp]
+lemma hom_naturality_apply {X Y : CondensedSet.{u}} (f : X ⟶ Y) {S T : CompHausᵒᵖ} (g : S ⟶ T)
+    (x : X.obj.obj S) : f.hom.app T (X.obj.map g x) = Y.obj.map g (f.hom.app S x) :=
+  NatTrans.naturality_apply f.hom g x
+
+end CondensedSet

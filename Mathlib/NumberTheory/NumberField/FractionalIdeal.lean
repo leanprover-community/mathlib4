@@ -3,9 +3,11 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.RingTheory.FractionalIdeal.Norm
-import Mathlib.RingTheory.FractionalIdeal.Operations
+module
+
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.FractionalIdeal.Norm
+public import Mathlib.RingTheory.FractionalIdeal.Operations
 
 /-!
 
@@ -16,11 +18,13 @@ Prove some results on the fractional ideals of number fields.
 ## Main definitions and results
 
   * `NumberField.basisOfFractionalIdeal`: A `ℚ`-basis of `K` that spans `I` over `ℤ` where `I` is
-  a fractional ideal of a number field `K`.
+    a fractional ideal of a number field `K`.
   * `NumberField.det_basisOfFractionalIdeal_eq_absNorm`: for `I` a fractional ideal of a number
-  field `K`, the absolute value of the determinant of the base change from `integralBasis` to
-  `basisOfFractionalIdeal I` is equal to the norm of `I`.
+    field `K`, the absolute value of the determinant of the base change from `integralBasis` to
+    `basisOfFractionalIdeal I` is equal to the norm of `I`.
 -/
+
+@[expose] public section
 
 variable (K : Type*) [Field K] [NumberField K]
 
@@ -35,10 +39,12 @@ open Module
 -- This is necessary to avoid several timeouts
 attribute [local instance 2000] Submodule.module
 
+set_option backward.isDefEq.respectTransparency false in
 instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Free ℤ I := by
   refine Free.of_equiv (LinearEquiv.restrictScalars ℤ (I.equivNum ?_)).symm
   exact nonZeroDivisors.coe_ne_zero I.den
 
+set_option backward.isDefEq.respectTransparency false in
 instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Finite ℤ I := by
   refine Module.Finite.of_surjective
     (LinearEquiv.restrictScalars ℤ (I.equivNum ?_)).symm.toLinearMap (LinearEquiv.surjective _)
@@ -50,19 +56,19 @@ instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     rw [← (Algebra.lmul _ _).commutes, Algebra.lmul_isUnit_iff, isUnit_iff_ne_zero, eq_intCast,
       Int.cast_ne_zero]
     exact nonZeroDivisors.coe_ne_zero x
-  surj' x := by
+  surj x := by
     obtain ⟨⟨a, _, d, hd, rfl⟩, h⟩ := IsLocalization.surj (Algebra.algebraMapSubmonoid (𝓞 K) ℤ⁰) x
-    refine ⟨⟨⟨Ideal.absNorm I.1.num * a, I.1.num_le ?_⟩, d * Ideal.absNorm I.1.num, ?_⟩ , ?_⟩
-    · simp_rw [FractionalIdeal.val_eq_coe, FractionalIdeal.coe_coeIdeal]
-      refine (IsLocalization.mem_coeSubmodule _ _).mpr ⟨Ideal.absNorm I.1.num * a, ?_, ?_⟩
+    refine ⟨⟨⟨Ideal.absNorm I.1.num * (algebraMap _ K a), I.1.num_le ?_⟩, d * Ideal.absNorm I.1.num,
+      ?_⟩, ?_⟩
+    · refine (IsLocalization.mem_coeSubmodule _ _).mpr ⟨Ideal.absNorm I.1.num * a, ?_, ?_⟩
       · exact Ideal.mul_mem_right _ _ I.1.num.absNorm_mem
-      · rw [map_mul, map_natCast]; rfl
+      · rw [map_mul, map_natCast]
     · refine Submonoid.mul_mem _ hd (mem_nonZeroDivisors_of_ne_zero ?_)
       rw [Nat.cast_ne_zero, ne_eq, Ideal.absNorm_eq_zero_iff]
       exact FractionalIdeal.num_eq_zero_iff.not.mpr <| Units.ne_zero I
-    · simp_rw [LinearMap.coe_restrictScalars, Submodule.coeSubtype] at h ⊢
-      rw [show (a : K) = algebraMap (𝓞 K) K a by rfl, ← h]
-      simp only [Submonoid.mk_smul, zsmul_eq_mul, Int.cast_mul, Int.cast_ofNat, algebraMap_int_eq,
+    · simp_rw [LinearMap.coe_restrictScalars, Submodule.coe_subtype] at h ⊢
+      rw [← h]
+      simp only [Submonoid.mk_smul, zsmul_eq_mul, Int.cast_mul, Int.cast_natCast, algebraMap_int_eq,
         eq_intCast, map_intCast]
       ring
   exists_of_eq h :=
@@ -88,7 +94,7 @@ theorem mem_span_basisOfFractionalIdeal {I : (FractionalIdeal (𝓞 K)⁰ K)ˣ} 
   rw [basisOfFractionalIdeal, (fractionalIdealBasis K I.1).ofIsLocalizedModule_span ℚ ℤ⁰ _]
   simp
 
-open FiniteDimensional in
+open Module in
 theorem fractionalIdeal_rank (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     finrank ℤ I = finrank ℤ (𝓞 K) := by
   rw [finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank,
@@ -102,7 +108,7 @@ open Module
 
 /-- The absolute value of the determinant of the base change from `integralBasis` to
 `basisOfFractionalIdeal I` is equal to the norm of `I`. -/
-theorem det_basisOfFractionalIdeal_eq_absNorm  (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
+theorem det_basisOfFractionalIdeal_eq_absNorm (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
     (e : (Free.ChooseBasisIndex ℤ (𝓞 K)) ≃ (Free.ChooseBasisIndex ℤ I)) :
     |(integralBasis K).det ((basisOfFractionalIdeal K I).reindex e.symm)| =
       FractionalIdeal.absNorm I.1 := by
@@ -113,3 +119,5 @@ theorem det_basisOfFractionalIdeal_eq_absNorm  (I : (FractionalIdeal (𝓞 K)⁰
   simpa using basisOfFractionalIdeal_apply K I _
 
 end Norm
+
+end NumberField

@@ -3,21 +3,25 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+module
 
-import Mathlib.Order.CompleteLatticeIntervals
-import Mathlib.Order.CompactlyGenerated.Basic
+public import Mathlib.Order.CompleteLatticeIntervals
+public import Mathlib.Order.CompactlyGenerated.Basic
 
 /-!
 # Results about compactness properties for intervals in complete lattices
 -/
 
+@[expose] public section
+
 variable {ι α : Type*} [CompleteLattice α]
 
 namespace Set.Iic
 
-theorem isCompactElement {a : α} {b : Iic a} (h : CompleteLattice.IsCompactElement (b : α)) :
-    CompleteLattice.IsCompactElement b := by
-  simp only [CompleteLattice.isCompactElement_iff, Finset.sup_eq_iSup] at h ⊢
+theorem isCompactElement {a : α} {b : Iic a} (h : IsCompactElement (b : α)) :
+    IsCompactElement b := by
+  simp only [CompleteLattice.isCompactElement_iff_exists_le_iSup_of_le_iSup,
+    Finset.sup_eq_iSup] at h ⊢
   intro ι s hb
   replace hb : (b : α) ≤ iSup ((↑) ∘ s) := le_trans hb <| (coe_iSup s) ▸ le_refl _
   obtain ⟨t, ht⟩ := h ι ((↑) ∘ s) hb
@@ -36,7 +40,7 @@ instance instIsCompactlyGenerated [IsCompactlyGenerated α] {a : α} :
     change sSup (((↑) : Iic a → α) '' (range f)) = sSup s
     congr
     ext b
-    simpa using hx b
+    simpa [f] using hx b
 
 end Set.Iic
 
@@ -62,6 +66,6 @@ theorem complementedLattice_of_complementedLattice_Iic
   have hu₁ : u ⊆ {a | IsAtom a} := by
     rintro a ⟨-, ⟨i, rfl⟩, ⟨-, ⟨hi, rfl⟩, ha : a ∈ t i hi⟩⟩
     exact ht' i hi a ha
-  have hu₂ : sSup u = ⨆ i ∈ s, f i := by simp_rw [sSup_iUnion, biSup_congr' ht]
+  have hu₂ : sSup u = ⨆ i ∈ s, f i := by simp_rw [u, sSup_iUnion, biSup_congr' ht]
   rw [eq_top_iff, ← h', ← hu₂]
   exact sSup_le_sSup hu₁

@@ -1,11 +1,11 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
+module
 
-#align_import algebra.homology.single from "leanprover-community/mathlib"@"324a7502510e835cdbd3de1519b6c66b51fb2467"
+public import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!
 # Homological complexes supported in a single degree
@@ -20,6 +20,8 @@ In `ChainComplex.toSingle₀Equiv` we characterize chain maps to an
 an augmented exact complex of projectives.)
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits ZeroObject
 
@@ -36,7 +38,7 @@ variable {ι : Type*} [DecidableEq ι] (c : ComplexShape ι)
 noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
   obj A :=
     { X := fun i => if i = j then A else 0
-      d := fun i j => 0 }
+      d := fun _ _ => 0 }
   map f :=
     { f := fun i => if h : i = j then eqToHom (by dsimp; rw [if_pos h]) ≫ f ≫
               eqToHom (by dsimp; rw [if_pos h]) else 0 }
@@ -46,8 +48,12 @@ noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
     split_ifs with h
     · subst h
       simp
-    · rw [if_neg h]
-      simp
+    · #adaptation_note /-- nightly-2024-03-07
+      previously was `rw [if_neg h]; simp`, but that fails with "motive not type correct"
+      This is because dsimp does not simplify numerals;
+      this note should be removable once https://github.com/leanprover/lean4/pull/8433 lands. -/
+      convert (id_zero (C := V)).symm
+      all_goals simp [if_neg h]
   map_comp f g := by
     ext
     dsimp
@@ -55,7 +61,6 @@ noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
     · subst h
       simp
     · simp
-#align homological_complex.single HomologicalComplex.single
 
 variable {V}
 
@@ -77,8 +82,6 @@ noncomputable def singleObjXIsoOfEq (j : ι) (A : V) (i : ι) (hi : i = j) :
 /-- The object in degree `j` of `(single V c h).obj A` is just `A`. -/
 noncomputable def singleObjXSelf (j : ι) (A : V) : ((single V c j).obj A).X j ≅ A :=
   singleObjXIsoOfEq c j A j rfl
-set_option linter.uppercaseLean3 false in
-#align homological_complex.single_obj_X_self HomologicalComplex.singleObjXSelf
 
 @[simp]
 lemma single_obj_d (j : ι) (A : V) (k l : ι) :
@@ -91,7 +94,18 @@ theorem single_map_f_self (j : ι) {A B : V} (f : A ⟶ B) :
   dsimp [single]
   rw [dif_pos rfl]
   rfl
-#align homological_complex.single_map_f_self HomologicalComplex.single_map_f_self
+
+variable (V)
+
+/-- The natural isomorphism `single V c j ⋙ eval V c j ≅ 𝟭 V`. -/
+@[simps!]
+noncomputable def singleCompEvalIsoSelf (j : ι) : single V c j ⋙ eval V c j ≅ 𝟭 V :=
+  NatIso.ofComponents (singleObjXSelf c j) (fun {A B} f => by simp [single_map_f_self])
+
+lemma isZero_single_comp_eval (j i : ι) (hi : i ≠ j) : IsZero (single V c j ⋙ eval V c i) :=
+  Functor.isZero _ (fun _ ↦ isZero_single_obj_X c _ _ _ hi)
+
+variable {V c}
 
 @[ext]
 lemma from_single_hom_ext {K : HomologicalComplex V c} {j : ι} {A : V}
@@ -111,19 +125,17 @@ lemma to_single_hom_ext {K : HomologicalComplex V c} {j : ι} {A : V}
     exact hfg
   · apply (isZero_single_obj_X c j A i h).eq_of_tgt
 
-instance (j : ι) : Faithful (single V c j) where
+instance (j : ι) : (single V c j).Faithful where
   map_injective {A B f g} w := by
     rw [← cancel_mono (singleObjXSelf c j B).inv,
       ← cancel_epi (singleObjXSelf c j A).hom, ← single_map_f_self,
       ← single_map_f_self, w]
 
-noncomputable instance (j : ι) : Full (single V c j) where
-  preimage {A B} f := (singleObjXSelf c j A).inv ≫ f.f j ≫ (singleObjXSelf c j B).hom
-  witness f := by
-    ext
-    simp [single_map_f_self]
-
-variable {c}
+instance (j : ι) : (single V c j).Full where
+  map_surjective {A B} f :=
+    ⟨(singleObjXSelf c j A).inv ≫ f.f j ≫ (singleObjXSelf c j B).hom, by
+      ext
+      simp [single_map_f_self]⟩
 
 /-- Constructor for morphisms to a single homological complex. -/
 noncomputable def mkHomToSingle {K : HomologicalComplex V c} {j : ι} {A : V} (φ : K.X j ⟶ A)
@@ -173,6 +185,8 @@ lemma mkHomFromSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : A �
   rw [dif_pos rfl, comp_id]
   rfl
 
+instance (j : ι) : (single V c j).PreservesZeroMorphisms where
+
 end HomologicalComplex
 
 namespace ChainComplex
@@ -183,7 +197,7 @@ noncomputable abbrev single₀ : V ⥤ ChainComplex V ℕ :=
 
 variable {V}
 
-@[simp, nolint simpNF]
+@[simp]
 lemma single₀_obj_zero (A : V) :
     ((single₀ V).obj A).X 0 = A := rfl
 
@@ -192,13 +206,14 @@ lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
     ((single₀ V).map f).f 0 = f := by
   rw [HomologicalComplex.single_map_f_self]
   dsimp [HomologicalComplex.singleObjXSelf, HomologicalComplex.singleObjXIsoOfEq]
-  erw [comp_id, id_comp]
+  rw [comp_id, id_comp]
 
 
 @[simp]
 lemma single₀ObjXSelf (X : V) :
     HomologicalComplex.singleObjXSelf (ComplexShape.down ℕ) 0 X = Iso.refl _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Morphisms from an `ℕ`-indexed chain complex `C`
 to a single object chain complex with `X` concentrated in degree 0
 are the same as morphisms `f : C.X 0 ⟶ X` such that `C.d 1 0 ≫ f = 0`.
@@ -210,8 +225,8 @@ noncomputable def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
   invFun f := HomologicalComplex.mkHomToSingle f.1 (fun i hi => by
     obtain rfl : i = 1 := by simpa using hi.symm
     exact f.2)
-  left_inv φ := by aesop_cat
-  right_inv f := by aesop_cat
+  left_inv φ := by cat_disch
+  right_inv f := by simp
 
 @[simp]
 lemma toSingle₀Equiv_symm_apply_f_zero {C : ChainComplex V ℕ} {X : V}
@@ -227,9 +242,8 @@ noncomputable def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
     ((single₀ V).obj X ⟶ C) ≃ (X ⟶ C.X 0) where
   toFun f := f.f 0
   invFun f := HomologicalComplex.mkHomFromSingle f (fun i hi => by simp at hi)
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
-#align chain_complex.from_single₀_equiv ChainComplex.fromSingle₀Equiv
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 @[simp]
 lemma fromSingle₀Equiv_symm_apply_f_zero
@@ -252,7 +266,7 @@ noncomputable abbrev single₀ : V ⥤ CochainComplex V ℕ :=
 
 variable {V}
 
-@[simp, nolint simpNF]
+@[simp]
 lemma single₀_obj_zero (A : V) :
     ((single₀ V).obj A).X 0 = A := rfl
 
@@ -261,12 +275,13 @@ lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
     ((single₀ V).map f).f 0 = f := by
   rw [HomologicalComplex.single_map_f_self]
   dsimp [HomologicalComplex.singleObjXSelf, HomologicalComplex.singleObjXIsoOfEq]
-  erw [comp_id, id_comp]
+  rw [comp_id, id_comp]
 
 @[simp]
 lemma single₀ObjXSelf (X : V) :
     HomologicalComplex.singleObjXSelf (ComplexShape.up ℕ) 0 X = Iso.refl _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Morphisms from a single object cochain complex with `X` concentrated in degree 0
 to an `ℕ`-indexed cochain complex `C`
 are the same as morphisms `f : X ⟶ C.X 0` such that `f ≫ C.d 0 1 = 0`. -/
@@ -277,8 +292,8 @@ noncomputable def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
   invFun f := HomologicalComplex.mkHomFromSingle f.1 (fun i hi => by
     obtain rfl : i = 1 := by simpa using hi.symm
     exact f.2)
-  left_inv φ := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv φ := by cat_disch
+  right_inv := by cat_disch
 
 @[simp]
 lemma fromSingle₀Equiv_symm_apply_f_zero {C : CochainComplex V ℕ} {X : V}
@@ -294,8 +309,8 @@ noncomputable def toSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
     (C ⟶ (single₀ V).obj X) ≃ (C.X 0 ⟶ X) where
   toFun f := f.f 0
   invFun f := HomologicalComplex.mkHomToSingle f (fun i hi => by simp at hi)
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 @[simp]
 lemma toSingle₀Equiv_symm_apply_f_zero

@@ -18,7 +18,7 @@ const {
 layout = [Grid, Arrows, EnsureOnCanvas]
 
 forall Targettable x {
-    -- The `center` is the "root" position of a targettable. Cells targetting
+    -- The `center` is the "root" position of a targettable. Cells targeting
     -- this targettable start/end at positions relative to the center.
     -- HACK: The optimization variable has to be defined in terms of two separate
     -- floats to force Penrose to track dependencies at this granularity rather
@@ -46,7 +46,7 @@ forall Targettable x {
     }
 
     -- NOTE: Not used anymore, we use the optimization engine instead.
-    -- Sides of a Targettable where the ends of cells targetting it are attached.
+    -- Sides of a Targettable where the ends of cells targeting it are attached.
     -- +-T-+
     -- L C R
     -- +-B-+
@@ -136,7 +136,7 @@ where f := MakeCell(A, B) {
     -- in order to make convergence possible.
     override f.textBox.ensureOnCanvas = false
 
-    -- NOTE: This is only necessary for the playground. The Lean widget programatically positions
+    -- NOTE: This is only necessary for the playground. The Lean widget programmatically positions
     -- the diagram after optimization.
     -- ensure onCanvas(f.textBox, canvas.width, canvas.height) in EnsureOnCanvas
     -- ensure onCanvas(f.shape, canvas.width, canvas.height) in EnsureOnCanvas
