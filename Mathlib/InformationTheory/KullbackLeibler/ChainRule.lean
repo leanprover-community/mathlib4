@@ -118,11 +118,7 @@ lemma integrable_llr_compProd_iff (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
   have ⟨h_ac_μν, h_ac_κη⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
   rw [← integrable_rnDeriv_mul_log_iff h_ac,
     integrable_congr (rnDeriv_compProd_mul_log_eq_mul_add h_ac_κη)]
-  have : Integrable (fun x ↦ ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) x).toReal *
-        (log ((∂μ/∂ν) x.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) x).toReal)) (ν ⊗ₘ η) ↔
-      Integrable (fun x ↦ (log ((∂μ/∂ν) x.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) x).toReal))
-        (μ ⊗ₘ κ) := integrable_rnDeriv_smul_iff h_ac
-  rw [this]
+  rw [integrable_toReal_rnDeriv_mul_iff h_ac]
   have h_iff_κ : Integrable (llr μ ν) μ ↔ Integrable (fun x ↦ llr μ ν x.1) (μ ⊗ₘ κ) := by
     rw [Measure.integrable_compProd_iff]
     swap; · exact StronglyMeasurable.aestronglyMeasurable (by fun_prop)
@@ -143,7 +139,7 @@ lemma integrable_llr_compProd_iff (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
     have ⟨h_ac_μν, h_ac_κη⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
     rw [← integrable_rnDeriv_mul_log_iff h_ac,
      integrable_congr (rnDeriv_compProd_mul_log_eq_mul_add h_ac_κη)]
-    exact integrable_rnDeriv_smul_iff h_ac
+    exact integrable_toReal_rnDeriv_mul_iff h_ac
   rw [← h_int_iff] at h_int
   have h_int1 := integrable_llr_of_integrable_llr_compProd h_ac h_int
   rw [h_iff_κ] at h_int1
