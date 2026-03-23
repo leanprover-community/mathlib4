@@ -365,11 +365,12 @@ noncomputable def completeGraphEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.Cliqu
 alias topEmbeddingOfNotCliqueFree := completeGraphEmbeddingOfNotCliqueFree
 
 theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ completeGraph (Fin n) ⊑ G :=
-  ⟨(⟨completeGraphEmbeddingOfNotCliqueFree · |>.toCopy⟩), IsContained.not_cliqueFree⟩
+  ⟨(completeGraphEmbeddingOfNotCliqueFree · |>.isContained), IsContained.not_cliqueFree⟩
 
 theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty (completeGraph (Fin n) ↪g G) := by
   contrapose!
-  exact ⟨(⟨completeGraphEmbeddingOfNotCliqueFree ·⟩), (IsContained.not_cliqueFree ⟨·.some.toCopy⟩)⟩
+  exact ⟨(completeGraphEmbeddingOfNotCliqueFree · |>.isIndContained),
+    (·.some.isContained.not_cliqueFree)⟩
 
 /-- A simple graph has no `card β`-cliques iff it does not contain `⊤ : SimpleGraph β`. -/
 theorem cliqueFree_iff_top_free {β : Type*} [Fintype β] :
@@ -454,8 +455,8 @@ theorem not_cliqueFree_of_le_card [Fintype ι] (f : ∀ (i : ι), V i) (hc : n �
 
 theorem not_cliqueFree_of_infinite [Infinite ι] (f : ∀ (i : ι), V i) :
     ¬ (completeMultipartiteGraph V).CliqueFree n :=
-  IsContained.not_cliqueFree ⟨Embedding.toCopy <| topEmbedding V f |>.comp <|
-    Embedding.completeGraph <| Fin.valEmbedding.trans <| Infinite.natEmbedding ι⟩
+  (topEmbedding V f |>.comp <| .completeGraph <| Fin.valEmbedding.trans <| Infinite.natEmbedding ι)
+    |>.isContained.not_cliqueFree
 
 set_option backward.isDefEq.respectTransparency false in
 theorem not_cliqueFree_of_le_enatCard (f : ∀ (i : ι), V i) (hc : n ≤ ENat.card ι) :
@@ -482,7 +483,7 @@ protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n)
       simp_rw [hx, hy, adj_comm, not_adj_replaceVertex_same, top_adj, false_iff, not_ne_iff] at e
       rwa [← hx, e, hy, replaceVertex_self, not_cliqueFree_iff] at h
     · unfold replaceVertex at hφ
-      refine ⟨Embedding.toCopy ⟨φ.setValue x s, fun {a b} ↦ ?_⟩⟩
+      refine Embedding.isContained ⟨φ.setValue x s, fun {a b} ↦ ?_⟩
       simp only [Embedding.coeFn_mk, Embedding.setValue, not_exists.mp ms, ite_false]
       rw [apply_ite (G.Adj · _), apply_ite (G.Adj _ ·), apply_ite (G.Adj _ ·)]
       convert @hφ a b <;> simp only [← φ.apply_eq_iff_eq, SimpleGraph.irrefl, hx]
