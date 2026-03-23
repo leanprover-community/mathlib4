@@ -99,7 +99,7 @@ variable {α : Type*}
 /-- The extended nonnegative real numbers. This is usually denoted [0, ∞],
   and is relevant as the codomain of a measure. -/
 def ENNReal := WithTop ℝ≥0
-  deriving Zero, Top, AddCommMonoidWithOne, SemilatticeSup, Nontrivial, DistribLattice
+  deriving Zero, Top, AddCommMonoidWithOne, SemilatticeSup, DistribLattice, Nontrivial
 
 @[inherit_doc]
 scoped[ENNReal] notation "ℝ≥0∞" => ENNReal
