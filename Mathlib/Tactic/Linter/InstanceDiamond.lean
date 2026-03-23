@@ -192,35 +192,22 @@ private def checkInstanceDiamond (declName : Name) :
     let instExpr := mkAppN (← mkConstWithLevelParams declName) args
     let failures ← findDiamondFailures instExpr structName
     if failures.isEmpty then return none
-    -- Build example statements for each failure
-    -- Annotate the instance with its return type so implicit arguments can be inferred
-    let instStr := toString (← ppExpr instExpr)
-    let retTyStr := toString (← ppExpr retTy)
-    let annotatedInst := s!"({instStr} : {retTyStr})"
-    -- Format binders (shared across all failures)
-    let mut binderStrs : Array String := #[]
-    for arg in args do
-      let decl ← arg.fvarId!.getDecl
-      let name := decl.userName.eraseMacroScopes
-      let ty := toString (← ppExpr decl.type)
-      let binderStr := match decl.binderInfo with
-        | .default => s!"({name} : {ty})"
-        | .implicit => s!"\{{name} : {ty}}"
-        | .strictImplicit => s!"⦃{name} : {ty}⦄"
-        | .instImplicit => s!"[{name} : {ty}]"
-      binderStrs := binderStrs.push binderStr
-    let bindersStr := " ".intercalate binderStrs.toList
+    -- Build example statements for each failure.
+    -- Wrap instExpr in mdata with `pp.explicit` so the pretty-printer shows all
+    -- implicit arguments for just the instance application (e.g. `@inst n α ...`),
+    -- making the example reparsable without needing string assembly.
+    let explicitInst := Expr.mdata (KVMap.empty.setBool `pp.explicit true) instExpr
     let mut messages : Array MessageData := #[]
     let mut examples : Array String := #[]
     for f in failures do
-      -- Build equation using explicit projection paths with type-annotated instance
-      let formatPath (path : List Name) : String :=
-        path.map (fun n => s!".{n.getString!}") |> String.join
-      let eqStr := s!"{annotatedInst}{formatPath f.pathI} =\n    {annotatedInst}{formatPath f.pathJ}"
-      let ex := if binderStrs.isEmpty then
-        s!"example : {eqStr} := by with_reducible_and_instances rfl"
-      else
-        s!"example {bindersStr} :\n    {eqStr} := by\n  with_reducible_and_instances rfl"
+      let displayLhs ← applyProjectionPath explicitInst f.pathI
+      let displayRhs ← applyProjectionPath explicitInst f.pathJ
+      let eq ← mkEq displayLhs displayRhs
+      let prop ← mkForallFVars args eq
+      let propStr := toString (← ppExpr prop)
+      let tactic := if args.isEmpty then "with_reducible_and_instances rfl"
+        else "intros; with_reducible_and_instances rfl"
+      let ex := s!"example : {propStr} := by {tactic}"
       messages := messages.push (f.message ++ m!"\n{ex}")
       examples := examples.push ex
     return some (.joinSep messages.toList "\n", examples)
