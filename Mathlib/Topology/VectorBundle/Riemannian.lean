@@ -430,7 +430,8 @@ a `NormedAddCommGroup` structure.
 
 The normal priority for an instance which always applies like this one should be 100.
 We use 80 as this is rather specialized, so we want other paths to be tried first typically.
--/
+As this instance is quite specific and very costly because of higher-order unification, we
+also scope it to the `Bundle` namespace. -/
 noncomputable scoped instance (priority := 80)
     {B : Type*} {E : B → Type*} [(b : B) → TopologicalSpace (E b)]
     [(b : B) → AddCommGroup (E b)] [(b : B) → Module ℝ (E b)]
@@ -449,7 +450,9 @@ noncomputable scoped instance (priority := 80)
 an `InnerProductSpace ℝ` structure.
 
 The normal priority for an instance which always applies like this one should be 100.
-We use 80 as this is rather specialized, so we want other paths to be tried first typically. -/
+We use 80 as this is rather specialized, so we want other paths to be tried first typically.
+As this instance is quite specific and very costly because of higher-order unification, we
+also scope it to the `Bundle` namespace. -/
 noncomputable scoped instance (priority := 80)
     {B : Type*} {E : B → Type*} [(b : B) → TopologicalSpace (E b)]
     [(b : B) → AddCommGroup (E b)] [(b : B) → Module ℝ (E b)]
