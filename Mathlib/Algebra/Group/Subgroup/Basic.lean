@@ -322,42 +322,42 @@ variable (H)
 section Normalizer
 
 @[to_additive]
-theorem setNormalizer_empty : normalizer (∅ : Set G) = ⊤ :=
+theorem normalizer_empty : normalizer (∅ : Set G) = ⊤ :=
   ext fun _ ↦ ⟨fun _ ↦ trivial, fun _ _ ↦ .rfl⟩
 
 @[to_additive]
-theorem setNormalizer_eq_top {G : Type*} [CommGroup G] (s : Set G) : normalizer s = ⊤ := by
+theorem _root_.CommGroup.normalizer_eq_top {G : Type*} [CommGroup G] (s : Set G) :
+    normalizer s = ⊤ := by
   ext
   simp [mem_normalizer_iff]
 
-theorem mem_setNormalizer_iff_conj_image_eq {s : Set G} {g : G} :
+theorem mem_normalizer_iff_conj_image_eq {s : Set G} {g : G} :
     g ∈ normalizer s ↔ MulAut.conj g '' s = s := by
   simp_rw [mem_normalizer_iff'', Set.ext_iff, Set.mem_image, MulAut.conj_apply]
   refine forall_congr' fun h ↦ ?_
   simp_rw [mul_inv_eq_iff_eq_mul, ← eq_inv_mul_iff_mul_eq, ← mul_assoc, exists_eq_right, iff_comm]
 
-theorem _root_.AddSubgroup.mem_setNormalizer_iff_conj_image_eq {G : Type*} [AddGroup G] {s : Set G}
+theorem _root_.AddSubgroup.mem_normalizer_iff_conj_image_eq {G : Type*} [AddGroup G] {s : Set G}
     {g : G} : g ∈ AddSubgroup.normalizer s ↔ AddAut.conj g '' s = s := by
   simp_rw [AddSubgroup.mem_normalizer_iff'', Set.ext_iff, Set.mem_image,
     AddAut.conj_apply]
   refine forall_congr' fun h ↦ ?_
   simp_rw [add_neg_eq_iff_eq_add, ← eq_neg_add_iff_add_eq, ← add_assoc, exists_eq_right, iff_comm]
 
-theorem setNormalizer_le_normalizer_closure (s : Set G) :
-    normalizer s ≤ normalizer (closure s) := by
+theorem normalizer_le_normalizer_closure (s : Set G) : normalizer s ≤ normalizer (closure s) := by
   intro g hg
   have : MulAut.conj g '' (closure s) = closure (MulAut.conj g '' s) :=
     congr(SetLike.coe $(MulAut.conj g |>.toMonoidHom.map_closure s))
-  rw [mem_setNormalizer_iff_conj_image_eq.mp hg] at this
-  rwa [mem_setNormalizer_iff_conj_image_eq]
+  rw [mem_normalizer_iff_conj_image_eq.mp hg] at this
+  rwa [mem_normalizer_iff_conj_image_eq]
 
-theorem _root_.AddSubgroup.setNormalizer_le_normalizer_closure {G : Type*} [AddGroup G]
-    (s : Set G) : AddSubgroup.normalizer s ≤ AddSubgroup.normalizer (AddSubgroup.closure s) := by
+theorem _root_.AddSubgroup.normalizer_le_normalizer_closure {G : Type*} [AddGroup G] (s : Set G) :
+    AddSubgroup.normalizer s ≤ AddSubgroup.normalizer (AddSubgroup.closure s) := by
   intro g hg
   have : AddAut.conj g '' (AddSubgroup.closure s) = AddSubgroup.closure (AddAut.conj g '' s) :=
     congr(SetLike.coe $(AddAut.conj g |>.toAddMonoidHom.map_closure s))
-  rw [AddSubgroup.mem_setNormalizer_iff_conj_image_eq.mp hg] at this
-  rwa [AddSubgroup.mem_setNormalizer_iff_conj_image_eq]
+  rw [AddSubgroup.mem_normalizer_iff_conj_image_eq.mp hg] at this
+  rwa [AddSubgroup.mem_normalizer_iff_conj_image_eq]
 
 variable {H}
 
@@ -929,14 +929,14 @@ theorem normal_subgroupOf_sup_of_le_normalizer {H N : Subgroup G}
 
 end SubgroupNormal
 
-instance normal_subgroupOf_closure_setNormalizer (s : Set G) :
+instance normal_subgroupOf_closure_normalizer (s : Set G) :
     (closure s |>.subgroupOf <| normalizer s).Normal :=
-  normal_subgroupOf_of_le_normalizer <| setNormalizer_le_normalizer_closure s
+  normal_subgroupOf_of_le_normalizer <| normalizer_le_normalizer_closure s
 
-instance _root_.AddSubgroup.normal_addSubgroupOf_closure_setNormalizer {G : Type*} [AddGroup G]
+instance _root_.AddSubgroup.normal_addSubgroupOf_closure_normalizer {G : Type*} [AddGroup G]
     (s : Set G) : (AddSubgroup.closure s |>.addSubgroupOf <| AddSubgroup.normalizer s).Normal :=
   AddSubgroup.normal_addSubgroupOf_of_le_normalizer <|
-    AddSubgroup.setNormalizer_le_normalizer_closure s
+    AddSubgroup.normalizer_le_normalizer_closure s
 
 end Subgroup
 

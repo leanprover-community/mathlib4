@@ -146,30 +146,30 @@ abbrev closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x *
       Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
 
 @[to_additive]
-theorem centralizer_le_setNormalizer (s : Set G) : centralizer s ≤ normalizer s := by
+theorem centralizer_le_normalizer (s : Set G) : centralizer s ≤ normalizer s := by
   refine fun g hg h ↦ ⟨fun hh ↦ ?_, fun hh ↦ ?_⟩
   · simpa [← hg h hh]
   · convert hh
     simpa using hg _ hh
 
-instance normal_subgroupOf_centralizer_setNormalizer (s : Set G) :
+instance normal_subgroupOf_centralizer_normalizer (s : Set G) :
     (centralizer s |>.subgroupOf <| normalizer s).Normal := by
-  refine (Subgroup.normal_subgroupOf_iff <| centralizer_le_setNormalizer s).mpr fun c n hc hn ↦ ?_
+  refine (Subgroup.normal_subgroupOf_iff <| centralizer_le_normalizer s).mpr fun c n hc hn ↦ ?_
   refine mem_centralizer_iff_commutator_eq_one'.mpr fun g hg ↦ ?_
   suffices n * (c * (n⁻¹ * g * n) * c⁻¹ * n⁻¹ * g⁻¹) = 1 by simpa [commutatorElement_def, mul_assoc]
   simp [← hc _ <| mem_normalizer_iff''.mp hn g |>.mp hg]
 
-instance _root_.AddSubgroup.normal_addSubgroupOf_centralizer_setNormalizer {G : Type*} [AddGroup G]
+instance _root_.AddSubgroup.normal_addSubgroupOf_centralizer_normalizer {G : Type*} [AddGroup G]
     (s : Set G) :
     (AddSubgroup.centralizer s |>.addSubgroupOf <| AddSubgroup.normalizer s).Normal := by
-  refine (AddSubgroup.normal_addSubgroupOf_iff <| AddSubgroup.centralizer_le_setNormalizer s).mpr ?_
+  refine (AddSubgroup.normal_addSubgroupOf_iff <| AddSubgroup.centralizer_le_normalizer s).mpr ?_
   intro c n hc hn
   refine AddSubgroup.mem_centralizer_iff_commutator_eq_zero'.mpr fun g hg ↦ ?_
   suffices n + (c + (-n + g + n) + -c + -n + -g) = 0 by simpa [add_assoc]
   simp [← hc _ <| AddSubgroup.mem_normalizer_iff''.mp hn g |>.mp hg]
 
 @[to_additive]
-theorem setNormalizer_singleton (g : G) : normalizer {g} = centralizer {g} := by
+theorem normalizer_singleton (g : G) : normalizer {g} = centralizer {g} := by
   refine ext fun h ↦ ⟨?_, ?_⟩
   · rintro hh g rfl
     exact mul_eq_of_eq_mul_inv (hh g |>.mp rfl).symm
