@@ -75,40 +75,10 @@ namespace padicValNat
 variable {p : ℕ}
 
 /-- If `p ≠ 0` and `p ≠ 1`, then `padicValNat p p` is `1`. -/
-@[simp]
-theorem self (hp : 1 < p) : padicValNat p p = 1 := by
-  simp [padicValNat_def', ne_zero_of_lt hp, hp.ne']
+alias self := padicValNat_base
 
 theorem eq_zero_of_not_dvd {n : ℕ} (h : ¬p ∣ n) : padicValNat p n = 0 :=
   eq_zero_iff.2 <| Or.inr <| Or.inr h
-
-open Nat.maxPowDiv
-
-theorem maxPowDiv_eq_emultiplicity {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) :
-    p.maxPowDiv n = emultiplicity p n := by
-  apply (emultiplicity_eq_of_dvd_of_not_dvd (pow_dvd p n) _).symm
-  intro h
-  apply Nat.not_lt.mpr <| le_of_dvd hp hn h
-  simp
-
-set_option backward.isDefEq.respectTransparency false in
-theorem maxPowDiv_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) (h : FiniteMultiplicity p n) :
-    p.maxPowDiv n = multiplicity p n := by
-  exact_mod_cast h.emultiplicity_eq_multiplicity ▸ maxPowDiv_eq_emultiplicity hp hn
-
-/-- Allows for more efficient code for `padicValNat` -/
-@[csimp]
-theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
-  ext p n
-  by_cases! +distrib h : 1 < p ∧ 0 < n
-  · rw [padicValNat_def' h.1.ne' h.2.ne', maxPowDiv_eq_multiplicity h.1 h.2.ne']
-    exact Nat.finiteMultiplicity_iff.2 ⟨h.1.ne', h.2⟩
-  · rcases h with (h | h)
-    · interval_cases p
-      · simp [Classical.em]
-      · dsimp [padicValNat, maxPowDiv]
-        rw [go, if_neg]; simp
-    · simp [Nat.le_zero.mp h]
 
 end padicValNat
 
@@ -443,12 +413,6 @@ theorem dvd_of_one_le_padicValNat {n : ℕ} (hp : 1 ≤ padicValNat p n) : p ∣
   by_contra h
   rw [padicValNat.eq_zero_of_not_dvd h] at hp
   exact lt_irrefl 0 (lt_of_lt_of_le zero_lt_one hp)
-
-theorem pow_padicValNat_dvd {n : ℕ} : p ^ padicValNat p n ∣ n := by
-  rcases eq_or_ne n 0 with (rfl | hn); · simp
-  rcases eq_or_ne p 1 with (rfl | hp); · simp
-  apply pow_dvd_of_le_multiplicity
-  rw [padicValNat_def'] <;> assumption
 
 set_option backward.isDefEq.respectTransparency false in
 theorem padicValNat_dvd_iff_le_of_ne_one {p : ℕ} (hp : p ≠ 1) {a n : ℕ} (ha : a ≠ 0) :

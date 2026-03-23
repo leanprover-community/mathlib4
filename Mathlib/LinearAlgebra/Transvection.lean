@@ -6,10 +6,11 @@ Authors: Antoine Chambert-Loir
 
 module
 
+public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
-public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Dual.BaseChange
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.FixedSubmodule
 
 /-!
 # Transvections in a module
@@ -59,6 +60,8 @@ def transvection (f : Dual R V) (v : V) : V →ₗ[R] V where
   map_smul' r x := by simp [smul_eq_mul, smul_add, mul_smul]
 
 namespace transvection
+
+open Submodule LinearMap
 
 theorem apply (f : Dual R V) (v x : V) :
     transvection f v x = x + f x • v :=
@@ -197,6 +200,18 @@ theorem inv_eq' {f : Dual R V} {v : V}
 
 end transvection
 
+theorem mem_fixedSubmodule_transvection_iff {f : Dual R V} {v : V} {hfv : f v = 0} {x : V} :
+    x ∈ (LinearEquiv.transvection hfv).fixedSubmodule ↔ f x • v = 0 := by
+  simp [LinearMap.transvection.apply, add_eq_left]
+
+theorem ker_le_fixedSubmodule_transvection {f : Dual R V} {v : V} (hfv : f v = 0) :
+    LinearMap.ker f ≤ (transvection hfv).fixedSubmodule := by
+  intro x hx
+  rw [mem_ker] at hx
+  simp [LinearMap.transvection.apply, hx]
+
+section dilatransvections
+
 variable (R V) in
 /-- The set of transvections in the group of linear equivalences -/
 def transvections : Set (V ≃ₗ[R] V) :=
@@ -258,6 +273,14 @@ theorem transvections_subset_dilatransvections :
 theorem refl_mem_dilatransvections : refl R V ∈ dilatransvections R V :=
   transvections_subset_dilatransvections one_mem_transvections
 
+theorem transvection_mem_transvections {f : Dual R V} {v : V} {hfv : f v = 0} :
+    transvection hfv ∈ transvections R V :=
+  ⟨f, v, hfv, rfl⟩
+
+theorem transvection_mem_dilatransvections {f : Dual R V} {v : V} (hfv : f v = 0) :
+    transvection hfv ∈ dilatransvections R V :=
+  transvections_subset_dilatransvections transvection_mem_transvections
+
 @[simp]
 theorem one_mem_dilatransvections : 1 ∈ dilatransvections R V :=
   refl_mem_dilatransvections
@@ -284,11 +307,15 @@ theorem dilatransvections_pow_mono :
     Monotone (fun n : ℕ ↦ (dilatransvections R V) ^ n) :=
   Set.pow_right_monotone one_mem_dilatransvections
 
+section divisionRing
+
+variable {K : Type*} [DivisionRing K] [Module K V]
+
 /-- Over a division ring, `dilatransvections` correspond to linear
 equivalences `e` such that the linear map `e - id` has rank at most 1.
 
 See also `LinearEquiv.mem_dilatransvections_iff_finrank`. -/
-theorem mem_dilatransvections_iff_rank {K : Type*} [DivisionRing K] [Module K V] {e : V ≃ₗ[K] V} :
+theorem mem_dilatransvections_iff_rank {e : V ≃ₗ[K] V} :
     e ∈ dilatransvections K V ↔
       Module.rank K (range ((e : V →ₗ[K] V) - LinearMap.id (R := K))) ≤ 1 := by
   simp only [dilatransvections]
@@ -330,15 +357,88 @@ open Cardinal in
 equivalences `e` such that the linear map `e - id` has rank at most 1.
 
 See also `LinearEquiv.mem_dilatransvections_iff_rank`. -/
-theorem mem_dilatransvections_iff_finrank
-    {K : Type*} [DivisionRing K] [Module K V] [Module.Finite K V]
-    {e : V ≃ₗ[K] V} :
+theorem mem_dilatransvections_iff_finrank [Module.Finite K V] {e : V ≃ₗ[K] V} :
     e ∈ dilatransvections K V ↔
       finrank K (range ((e : V →ₗ[K] V) - LinearMap.id (R := K))) ≤ 1 := by
   rw [mem_dilatransvections_iff_rank, finrank, ← one_toNat,
     toNat_le_iff_le_of_lt_aleph0 (rank_lt_aleph0 K _) one_lt_aleph0]
 
-end LinearEquiv
+theorem mem_dilatransvections_iff_finrank_quotient [Module.Finite K V] {e : V ≃ₗ[K] V} :
+    e ∈ dilatransvections K V ↔ finrank K (V ⧸ e.fixedSubmodule) ≤ 1 := by
+  rw [mem_dilatransvections_iff_finrank, ← (quotKerEquivRange _).finrank_eq,
+    ← fixedSubmodule_eq_ker]
+
+theorem mem_dilatransvections_iff_rank_quotient {e : V ≃ₗ[K] V} :
+    e ∈ dilatransvections K V ↔ Module.rank K (V ⧸ e.fixedSubmodule) ≤ 1 := by
+  rw [mem_dilatransvections_iff_rank, ← (quotKerEquivRange _).rank_eq, ← fixedSubmodule_eq_ker]
+
+variable (e f : V ≃ₗ[K] V)
+open Pointwise MulAction
+
+/-- Characterization of transvections within dilatransvections. -/
+theorem mem_transvections_iff_mem_dilatransvections_and_fixedReduce_eq_one
+    [Module.Finite K V] (e : V ≃ₗ[K] V) :
+    e ∈ transvections K V ↔ e ∈ dilatransvections K V ∧ e.fixedReduce = 1 := by
+  refine ⟨fun ⟨f, v, hfv, he⟩ ↦ ?_, fun ⟨he, he'⟩ ↦ ?_⟩
+  · constructor
+    · rw [he]
+      exact transvection_mem_dilatransvections hfv
+    · rw [one_eq_refl, fixedReduce_eq_one, he]
+      intro x
+      apply ker_le_fixedSubmodule_transvection hfv
+      rw [transvection.apply]
+      simp [hfv]
+  · by_cases he_one : e = 1
+    · use 0, 0, by simp, by aesop
+    have hefixed_ne_top : e.fixedSubmodule ≠ ⊤ := by
+      rwa [ne_eq, LinearEquiv.fixedSubmodule_eq_top_iff]
+    obtain ⟨w : V, hw : w ∉ e.fixedSubmodule⟩ :=
+      SetLike.exists_not_mem_of_ne_top e.fixedSubmodule hefixed_ne_top rfl
+    obtain ⟨f, hfw, hf⟩ := Submodule.exists_dual_map_eq_bot_of_notMem hw inferInstance
+    rw [mem_dilatransvections_iff_finrank_quotient] at he
+    have hf' : e.fixedSubmodule = LinearMap.ker f := by
+      suffices finrank K (V ⧸ LinearMap.ker f) = 1 by
+        apply Submodule.eq_of_le_of_finrank_le
+        · intro x
+          rw [mem_ker, ← Submodule.mem_bot K, ← hf]
+          exact mem_map_of_mem
+        rw [← Nat.add_le_add_iff_right, finrank_quotient_add_finrank] at he
+        have := (LinearMap.ker f).finrank_quotient_add_finrank
+        linarith
+      rw [← Nat.add_left_inj, Submodule.finrank_quotient_add_finrank]
+      rw [← f.finrank_ker_add_one_of_ne_zero, add_comm]
+      aesop
+    have eq_top : e.fixedSubmodule ⊔ Submodule.span K {w} = ⊤ := by
+      rw [Submodule.sup_span_singleton_eq_top_iff hw]
+      apply le_antisymm he
+      apply Nat.one_le_of_lt
+      rw [← Nat.ne_zero_iff_zero_lt]
+      contrapose hefixed_ne_top
+      apply eq_top_of_finrank_eq
+      rw [← Nat.add_left_cancel_iff, finrank_quotient_add_finrank, hefixed_ne_top, zero_add]
+    set v := (f w)⁻¹ • (e w - w)
+    suffices hfv : f v = 0 by
+      use f, v, hfv
+      rw [← LinearEquiv.toLinearMap_inj,
+        ← sub_eq_zero, ← LinearMap.ker_eq_top, eq_top_iff, ← eq_top]
+      simp only [LinearEquiv.transvection.coe_toLinearMap,
+        sup_le_iff, Submodule.span_singleton_le_iff_mem, LinearMap.mem_ker, LinearMap.sub_apply,
+        LinearEquiv.coe_coe]
+      constructor
+      · intro x hx
+        suffices f x = 0 by
+          simpa [this, LinearMap.transvection.apply, sub_eq_zero] using hx
+        rwa [hf', LinearMap.mem_ker] at hx
+      · simp_all [v, LinearMap.transvection.apply]
+    suffices e w - w ∈ LinearMap.ker f by
+      simp only [LinearMap.mem_ker, map_sub] at this
+      simp only [v, LinearMap.map_smul, map_sub, this, smul_zero]
+    rw [← hf', ← Submodule.ker_mkQ e.fixedSubmodule, LinearMap.mem_ker]
+    simp [Submodule.mkQ_apply, Submodule.Quotient.mk_sub, ← fixedReduce_mk, he']
+
+end divisionRing
+
+end LinearEquiv.dilatransvections
 
 section baseChange
 
@@ -377,7 +477,6 @@ variable {R V A : Type*} [CommRing R] [AddCommGroup V]
     {f : Module.Dual R V} {v : V} (h : f v = 0)
     {W : Type*} [AddCommMonoid W] [Module R W] [Module A W]
   [IsScalarTower R A W] {ε : V →ₗ[R] W} (ibc : IsBaseChange A ε)
-
 
 theorem LinearEquiv.transvection.baseChange
     (hA : f.baseChange A (1 ⊗ₜ[R] v) = 0 := by simp [Algebra.algebraMap_eq_smul_one]) :
@@ -543,3 +642,5 @@ end transvection
 end LinearMap
 
 end determinant
+
+end
