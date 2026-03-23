@@ -73,6 +73,9 @@ theorem ext (a b : SimplexCategory) : a.len = b.len → a = b :=
 
 attribute [irreducible] SimplexCategory
 
+-- TODO: Consider turning `SimplexCategory` a one field structure to make this reducibly equal.
+unif_hint len_mk_eq_n (n : ℕ) where ⊢ len (.mk n) ≟ n
+
 open Simplicial
 
 @[simp]

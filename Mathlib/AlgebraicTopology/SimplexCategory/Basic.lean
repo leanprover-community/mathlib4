@@ -613,6 +613,9 @@ lemma toType_apply (x : SimplexCategory) : ToType x = Fin (x.len + 1) := rfl
 @[simp]
 lemma concreteCategoryHom_id (n : SimplexCategory) : ConcreteCategory.hom (𝟙 n) = .id := rfl
 
+@[simp]
+lemma δ_apply {n : ℕ} (i : Fin (n + 2)) (j : Fin (⦋n⦌.len + 1)) : δ i j = i.succAbove j := rfl
+
 end Concrete
 
 section EpiMono
