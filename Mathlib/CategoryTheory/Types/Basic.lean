@@ -60,9 +60,6 @@ instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
 
 initialize_simps_projections Fun (toFun → apply)
 
-lemma Fun.mk_as {X Y : Type*} (f : X → Y) : (Fun.mk f).toFun = f :=
-  rfl
-
 @[simp]
 lemma Fun.mk_apply {X Y : Type*} (f : X → Y) (x : X) : (Fun.mk f) x = f x :=
   rfl

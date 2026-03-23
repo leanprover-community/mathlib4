@@ -287,7 +287,7 @@ lemma image_ofSimplex {n : ℕ} (x : X _⦋n⦌) (f : X ⟶ Y) :
 
 /-- Given a morphism of simplicial sets `f : X ⟶ Y` and a subcomplex `A` of `X`,
 this is the induced morphism from `A` to `A.image f`. -/
-@[simps! (config := { dsimpLhs := true })]
+@[simps! +dsimpLhs]
 def toImage : (A : SSet) ⟶ (A.image f : SSet) :=
   (A.image f).lift (A.ι ≫ f) (by rw [image_eq_range])
 

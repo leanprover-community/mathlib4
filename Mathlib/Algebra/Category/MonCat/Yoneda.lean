@@ -30,7 +30,7 @@ def CommMonCat.coyoneda : CommMonCatᵒᵖ ⥤ CommMonCat ⥤ CommMonCat where
 
 /-- The `CommMonCat`-valued coyoneda embedding composed with the forgetful functor is the usual
 coyoneda embedding. -/
-@[to_additive (attr := simps! (config := { dsimpLhs := true }))
+@[to_additive (attr := simps! +dsimpLhs)
 /-- The `AddCommMonCat`-valued coyoneda embedding composed with the forgetful functor is the usual
 coyoneda embedding. -/]
 def CommMonCat.coyonedaForget :
