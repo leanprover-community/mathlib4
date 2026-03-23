@@ -89,9 +89,9 @@ variable {M} in
 theorem integerNormalization_eq_zero_iff [IsDomain R] (hM : M ≤ nonZeroDivisors R) (p : S[X]) :
     integerNormalization M p = 0 ↔ p = 0 := by
   obtain ⟨_, hb₁, hb₂⟩ := integerNormalization_spec M p
-  haveI := isDomain_of_le_nonZeroDivisors S hM
-  have := (faithfulSMul_iff_algebraMap_injective R S).mpr <| IsLocalization.injective S hM
-  have : Function.Injective ⇑(mapRingHom (algebraMap R S)) := by
+  letI := isDomain_of_le_nonZeroDivisors S hM
+  letI := (faithfulSMul_iff_algebraMap_injective R S).mpr <| IsLocalization.injective S hM
+  letI : Function.Injective <| mapRingHom (algebraMap R S) := by
     rw [coe_mapRingHom, map_injective_iff]
     exact IsLocalization.injective S hM
   rw [← _root_.map_eq_zero_iff (mapRingHom (algebraMap R S)) this, coe_mapRingHom, hb₂]
