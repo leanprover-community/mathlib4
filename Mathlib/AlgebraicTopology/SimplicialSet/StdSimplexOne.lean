@@ -87,7 +87,7 @@ lemma σ_objMk₁_of_le {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : i ≤
   ext k : 1
   dsimp [SimplicialObject.σ, SimplexCategory.σ]
   change objMk₁.{u} i (j.predAbove k) = _
-  by_cases hk : k < i
+  by_cases! hk : k < i
   · grind [Fin.castPred, Fin.predAbove_of_le_castSucc, objMk₁_of_castSucc_lt]
   · simp at hk
     rw [objMk₁_of_le_castSucc, objMk₁_of_le_castSucc _ _ (by simpa)]
