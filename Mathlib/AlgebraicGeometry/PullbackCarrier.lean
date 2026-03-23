@@ -312,7 +312,6 @@ lemma exists_preimage_pullback (x : X) (y : Y) (h : f x = g y) :
     ∃ z : ↑(pullback f g), pullback.fst f g z = x ∧ pullback.snd f g z = y :=
   (Pullback.Triplet.mk' x y h).exists_preimage
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.AlgebraicGeometry.Scheme.isEmpty_pullback_iff {f : X ⟶ S} {g : Y ⟶ S} :
     IsEmpty ↑(Limits.pullback f g) ↔ Disjoint (Set.range f) (Set.range g) := by
   refine ⟨?_, Scheme.isEmpty_pullback f g⟩
@@ -321,6 +320,13 @@ lemma _root_.AlgebraicGeometry.Scheme.isEmpty_pullback_iff {f : X ⟶ S} {g : Y 
   rintro ⟨_, ⟨x, rfl⟩, _, ⟨y, rfl⟩, e⟩
   obtain ⟨z, -⟩ := exists_preimage_pullback x y e
   exact ⟨z⟩
+
+instance (priority := low) [Nonempty X] [Nonempty Y] [Subsingleton S] :
+    Nonempty ↑(pullback f g) := by
+  have : Nonempty S := .map f ‹_›
+  rw [← not_isEmpty_iff, AlgebraicGeometry.Scheme.isEmpty_pullback_iff, Set.not_disjoint_iff]
+  exact ⟨Nonempty.some ‹_›, Function.surjective_to_subsingleton _ _,
+    Function.surjective_to_subsingleton _ _⟩
 
 variable (f g)
 

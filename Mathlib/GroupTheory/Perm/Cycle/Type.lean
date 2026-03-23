@@ -548,7 +548,6 @@ theorem _root_.exists_prime_orderOf_dvd_card' {G : Type*} [Group G] [Finite G] (
 
 end Cauchy
 
-set_option backward.isDefEq.respectTransparency false in
 theorem subgroup_eq_top_of_swap_mem [DecidableEq α] {H : Subgroup (Perm α)}
     [d : DecidablePred (· ∈ H)] {τ : Perm α} (h0 : (Fintype.card α).Prime)
     (h1 : Fintype.card α ∣ Fintype.card H) (h2 : τ ∈ H) (h3 : IsSwap τ) : H = ⊤ := by

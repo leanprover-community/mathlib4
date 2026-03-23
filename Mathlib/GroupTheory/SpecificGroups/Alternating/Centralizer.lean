@@ -210,7 +210,7 @@ theorem OnCycleFactors.kerParam_range_eq_centralizer_of_count_le_one
   ext c : 2
   rw [← Multiset.nodup_iff_count_le_one, cycleType_def,
     Multiset.nodup_map_iff_inj_on (cycleFactorsFinset g).nodup] at h_count
-  exact h_count _ (by simp) _ c.prop ((mem_range_toPermHom_iff).mp (by simp) c)
+  exact h_count _ (by simp) _ c.prop (mem_range_toPermHom_iff.mp (by simp) c)
 
 /-- The centralizer of a permutation is contained in the alternating group if and only if
 its cycles have odd length, with at most one of each, and there is at most one fixed point. -/
@@ -275,7 +275,6 @@ theorem alternatingGroup.commutator_perm_le :
   rintro _ p q rfl
   simp [map_commutatorElement, commutatorElement_eq_one_iff_commute, Commute.all]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `n ≥ 5`, then the alternating group on `n` letters is perfect -/
 theorem commutator_alternatingGroup_eq_top (h5 : 5 ≤ Fintype.card α) :
     commutator (alternatingGroup α) = ⊤ := by
@@ -292,7 +291,6 @@ theorem commutator_alternatingGroup_eq_self (h5 : 5 ≤ Fintype.card α) :
   rw [← Subgroup.map_subtype_commutator, commutator_alternatingGroup_eq_top h5,
     ← MonoidHom.range_eq_map, Subgroup.range_subtype]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The commutator subgroup of the permutation group is the alternating group -/
 theorem alternatingGroup.commutator_perm_eq (h5 : 5 ≤ Fintype.card α) :
     commutator (Perm α) = alternatingGroup α := by

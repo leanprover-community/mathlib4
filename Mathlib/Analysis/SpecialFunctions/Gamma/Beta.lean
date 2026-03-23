@@ -273,7 +273,6 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
       mul_cpow_ofReal_nonneg hx.1.le (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hn)).le]
   rw [A, B, cpow_natCast]; ring
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The main technical lemma for `GammaSeq_tendsto_Gamma`, expressing the integral defining the
 Gamma function for `0 < re s` as the limit of a sequence of integrals over finite intervals. -/
 theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
@@ -399,7 +398,6 @@ theorem GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
     mul_div_cancel_right₀, ← div_div, mul_comm z _, mul_one_div]
   exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr <| by positivity)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Euler's reflection formula for the complex Gamma function. -/
 theorem Gamma_mul_Gamma_one_sub (z : ℂ) : Gamma z * Gamma (1 - z) = π / sin (π * z) := by
   have pi_ne : (π : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr pi_ne_zero
