@@ -28,7 +28,7 @@ convex and we explicitly give a neighborhood basis in terms of the family of sem
 
 * `LinearMap.hasBasis_weakBilin`: the seminorm balls of `B.toSeminormFamily` form a
   neighborhood basis of `0` in the weak topology.
-* `LinearMap.toSeminormFamily.withSeminorms`: the topology of a weak space is induced by the
+* `LinearMap.weakBilin_withSeminorms`: the topology of a weak space is induced by the
   family of seminorms `B.toSeminormFamily`.
 * `WeakBilin.locallyConvexSpace`: a space endowed with a weak topology is locally convex.
 * `LinearMap.rightDualEquiv`: When `B` is right-separating, `F` is linearly equivalent to the
@@ -43,7 +43,7 @@ convex and we explicitly give a neighborhood basis in terms of the family of sem
 
 ## Tags
 
-weak dual, seminorm
+weak bilinear, seminorm
 -/
 
 @[expose] public section
