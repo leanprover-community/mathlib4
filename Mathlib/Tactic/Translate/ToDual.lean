@@ -231,15 +231,19 @@ def nameDict : Std.HashMap String (List String) := .ofList [
 def abbreviationDict : Std.HashMap String String := .ofList [
   ("wellFoundedLT", "WellFoundedGT"),
   ("wellFoundedGT", "WellFoundedLT"),
-  ("succColimit", "SuccLimit"),
-  ("predColimit", "PredLimit"),
-  ("codirectedOrder", "DirectedOrder"),
-  ("directedOrder", "CodirectedOrder"),
   ("nhdsLT", "NhdsGT"),
   ("nhdsGT", "NhdsLT"),
   ("nhdsLE", "NhdsGE"),
   ("nhdsGE", "NhdsLE"),
-  ("neTop", "NeBot")
+  ("succColimit", "SuccLimit"),
+  ("predColimit", "PredLimit"),
+  ("codirectedOrder", "DirectedOrder"),
+  ("directedOrder", "CodirectedOrder"),
+  ("galoisInsertion", "GaloisCoinsertion"),
+  ("galoisCoinsertion", "GaloisInsertion"),
+
+  ("neTop", "NeBot"),
+  ("decidableSucc", "DecidablePred"),
 ]
 
 /-- The bundle of environment extensions for `to_dual` -/
