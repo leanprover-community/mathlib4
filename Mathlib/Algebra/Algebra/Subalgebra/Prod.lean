@@ -61,7 +61,7 @@ end Subalgebra
 
 namespace AlgHom
 
-variable {R A B C F G : Type*} [CommSemiring R]
+variable {R A B C : Type*} [CommSemiring R]
 
 section Semiring
 
