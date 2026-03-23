@@ -148,8 +148,7 @@ instance isLocalRing_ringHomPullback {R S T F G : Type*} [Ring R] [Ring S] [Semi
     apply IsLocalHom.map_nonunit at this; right
     simpa [RingHom.isUnit_pullback_mk_iff] using ⟨hs, this⟩
 
-instance isLocalRing_algHomPullback {R S T A F G : Type*} [CommSemiring R] [Ring S] [Algebra R S]
-    [IsLocalRing S] [Ring T] [Algebra R T] [Semiring A] [Algebra R A] [FunLike F S A]
-    [AlgHomClass F R S A] [FunLike G T A] [AlgHomClass G R T A] (f : F) (g : G) [IsLocalHom g] :
-      IsLocalRing (AlgHom.Pullback f g) :=
-  inferInstanceAs <| IsLocalRing (RingHom.Pullback (f : S →+* A) (g : T →+* A))
+instance isLocalRing_algHompullback {R S T A : Type*} [CommSemiring R] [Ring S] [Algebra R S]
+    [IsLocalRing S] [Ring T] [Algebra R T] [Semiring A] [Algebra R A] (f : S →ₐ[R] A)
+    (g : T →ₐ[R] A) [IsLocalHom g] : IsLocalRing (AlgHom.pullback f g) :=
+  inferInstanceAs <| IsLocalRing (RingHom.pullback (f : S →+* A) (g : T →+* A))
