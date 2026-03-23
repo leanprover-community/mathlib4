@@ -21,20 +21,15 @@ open TopCat AlgebraicGeometry TopologicalSpace CategoryTheory Opposite
 
 namespace AlgebraicGeometry.Scheme.Modules
 
-variable {X : Scheme.{u}} (U : X.Opens) (M : X.Modules)
-
-instance test : Algebra Γ(X, ⊤) Γ(X, U) := (X.presheaf.map U.leTop.op).hom.toAlgebra
-
-example : Module Γ(X, U) Γ(M, U) := inferInstance
+variable {X : Scheme.{u}} (U : X.Opens) (M : X.Modules) (f : Γ(X, ⊤))
 
 set_option backward.isDefEq.respectTransparency false in
-abbrev modulePresheaf := (PresheafOfModules.forgetToPresheafModuleCat (op ⊤)
+abbrev modulePresheaf : X.Opensᵒᵖ ⥤ ModuleCat Γ(X, ⊤) := (PresheafOfModules.forgetToPresheafModuleCat (op ⊤)
   (Limits.initialOpOfTerminal Limits.isTerminalTop)).obj M.val
 
-variable (f : Γ(X, ⊤))
+def IsLocalizing : Prop :=
+  IsLocalizedModule.Away f (M.modulePresheaf.map (X.basicOpen f).leTop.op).hom
 
-#check (M.modulePresheaf.map U.leTop.op).hom
-#check (M.modulePresheaf.obj (op ⊤)).isModule
-#check @IsLocalizedModule.Away Γ(X, ⊤) _ _ _ f _ (M.modulePresheaf.obj (op ⊤)).isModule _ (M.modulePresheaf.obj (op U)).isModule (M.modulePresheaf.map U.leTop.op).hom
+
 
 end AlgebraicGeometry.Scheme.Modules
