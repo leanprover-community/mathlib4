@@ -102,6 +102,10 @@ theorem isRegular_aleph_one : IsRegular ℵ₁ := by
   rw [← succ_aleph0]
   exact isRegular_succ le_rfl
 
+@[simp]
+theorem cof_omega_one : cof ω₁ = ℵ₁ :=
+  isRegular_aleph_one.cof_omega_eq
+
 theorem isRegular_preAleph_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (succ o)) := by
   rw [preAleph_succ]
   exact isRegular_succ (aleph0_le_preAleph.2 h)
