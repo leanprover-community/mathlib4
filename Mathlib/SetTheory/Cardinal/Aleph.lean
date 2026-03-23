@@ -262,6 +262,7 @@ theorem range_omega : range omega = {x | ω ≤ x ∧ IsInitial x} := by
 theorem mem_range_omega_iff {x : Ordinal} : x ∈ range omega ↔ ω ≤ x ∧ IsInitial x := by
   rw [range_omega, mem_setOf]
 
+@[simp]
 theorem omega0_lt_omega_one : ω < ω₁ := by
   rw [← omega_zero, omega_lt_omega]
   exact zero_lt_one
