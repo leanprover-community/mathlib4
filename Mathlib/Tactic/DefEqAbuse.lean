@@ -378,8 +378,9 @@ def collectCandidates (env : Environment) (roots : Array Name) : Array Name := I
       if let some info := env.find? name then
         if wasOriginallyDefn env name && getReducibilityStatusCore env name == .semireducible then
           candidates := candidates.push name
-        if let some val := info.value? then
-          for c in val.getUsedConstants do
+        -- Only `defs`, `theorem`s and `opaque`s can have values, and we only care about the first.
+        if let .defnInfo { value ..} := info then
+          for c in value.getUsedConstants do
             if !visited.contains c then
               queue := queue.push c
   return candidates
