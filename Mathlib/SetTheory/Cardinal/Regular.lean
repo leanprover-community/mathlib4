@@ -146,23 +146,27 @@ theorem iSup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c
     (∀ i, f i < c.ord) → iSup f < c.ord :=
   Ordinal.iSup_lt_of_lt_cof (by rwa [hc.cof_eq])
 
+set_option linter.deprecated false in
 @[deprecated lift_iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem blsub_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (ho : Cardinal.lift.{v, u} o.card < c) :
     (∀ i hi, f i hi < c.ord) → Ordinal.blsub.{u, v} o f < c.ord :=
   blsub_lt_ord_lift (by rwa [hc.cof_eq])
 
+set_option linter.deprecated false in
 @[deprecated lift_iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem blsub_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (ho : o.card < c) : (∀ i hi, f i hi < c.ord) → Ordinal.blsub o f < c.ord :=
   blsub_lt_ord (by rwa [hc.cof_eq])
 
+set_option linter.deprecated false in
 @[deprecated iSup_lt_ord_lift_of_isRegular (since := "2026-03-22")]
 theorem bsup_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} o.card < c) :
     (∀ i hi, f i hi < c.ord) → Ordinal.bsup.{u, v} o f < c.ord :=
   bsup_lt_ord_lift (by rwa [hc.cof_eq])
 
+set_option linter.deprecated false in
 @[deprecated lift_iSup_lt_of_lt_cof (since := "2026-03-22")]
 theorem bsup_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (hι : o.card < c) : (∀ i hi, f i hi < c.ord) → Ordinal.bsup o f < c.ord :=
@@ -248,12 +252,10 @@ theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {
         ((isSuccLimit_ord hc.1).succ_lt (hb ((lt_succ b).trans hb')))
   | limit b hb H =>
     intro hb'
-    -- TODO: generalize the universes of the lemmas in this file so we don't have to rely on bsup
-    have : ⨆ a : Iio b, _ = _ := iSup_Iio_eq_bsup (f := fun x (_ : x < b) ↦ derivFamily f x)
-    rw [derivFamily_limit f hb, this]
-    apply bsup_lt_ord
-    · rwa [hc.cof_eq, ← lt_ord]
-    · exact fun i hi ↦ H i hi (hi.trans hb')
+    rw [derivFamily_limit f hb]
+    apply Ordinal.lift_iSup_lt_of_lt_cof
+    · rwa [← lift_cof, hc.cof_eq, mk_Iio_ordinal, lift_lift, lift_lt, ← lt_ord]
+    · exact fun i ↦ H i.1 i.2 <| i.2.trans hb'
 
 theorem derivFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c)
     (hc' : c ≠ ℵ₀) (hf : ∀ (i), ∀ b < c.ord, f i b < c.ord) {a} :
