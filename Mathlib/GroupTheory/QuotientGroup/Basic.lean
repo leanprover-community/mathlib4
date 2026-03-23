@@ -473,11 +473,6 @@ lemma mulEquivPiModRangePowMonoidHom_apply (x : (i : ι) → A i) :
     mulEquivPiModRangePowMonoidHom A n ↑x = fun i ↦ ↑(x i) :=
   rfl
 
-@[to_additive (attr := simp)]
-lemma mulEquivPiModRangePowMonoidHom_apply_apply (x : (i : ι) → A i) (i : ι) :
-    mulEquivPiModRangePowMonoidHom A n ↑x i = ↑(x i) :=
-  rfl
-
 end powMonoidHom
 
 end QuotientGroup
