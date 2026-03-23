@@ -239,7 +239,7 @@ theorem eVariationOn_top' {f : α → E} {s : Set α}
     ∃ p : ℕ × { u : ℕ → α // Monotone u ∧ ∀ i, u i ∈ s },
     L < (∑ i ∈ Finset.range p.1,
     edist (f (p.2.1 (i + 1))) (f (p.2.1 i)) ^ r.toReal) := by
-  obtain ⟨p, hp⟩ := eVariationOn_top h h' hv (L^ (r.toReal)⁻¹)
+  obtain ⟨p, hp⟩ := eVariationOn_top h h' hv (L^ (r.toReal) ⁻¹)
   use p
   apply (ENNReal.rpow_lt_rpow_iff (z := r.toReal ⁻¹) ?_).mp
   · have : (↑L : ℝ≥0∞) ^ r.toReal ⁻¹ = (↑(L ^ r.toReal ⁻¹) : ℝ≥0∞) := by
@@ -269,11 +269,11 @@ lemma ennreal_sum_rpow_le_rpow_sum (m : ℕ) (u : ℕ → ℝ≥0∞) {p : ℝ} 
         ENNReal.add_rpow_le_rpow_add (∑ x ∈ Finset.range m, u x) (u m) hp
 
 lemma sum_lp_mono_p (m : ℕ) (u : ℕ → ℝ≥0∞) {p q : ℝ} (hp : 0 < p) (pq : p ≤ q) :
-    (∑ n ∈ Finset.range m, (u n) ^ q) ^ q⁻¹ ≤ (∑ n ∈ Finset.range m, (u n) ^ p) ^ p⁻¹ := by
+    (∑ n ∈ Finset.range m, (u n) ^ q) ^ q ⁻¹ ≤ (∑ n ∈ Finset.range m, (u n) ^ p) ^ p⁻¹ := by
   have hq := hp.trans_le pq
   have hrw : ∀ n, (u n) ^ q = ((u n) ^ p) ^ (q / p) := fun n ↦ by
     rw [← ENNReal.rpow_mul]; congr 1; field_simp
-  have hinv : (p : ℝ)⁻¹ = q / p * q⁻¹ := by field_simp
+  have hinv : (p : ℝ) ⁻¹ = q / p * q ⁻¹ := by field_simp
   simp_rw [hrw]
   rw [hinv, ENNReal.rpow_mul]
   exact ENNReal.rpow_le_rpow
