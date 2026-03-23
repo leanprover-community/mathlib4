@@ -192,7 +192,7 @@ instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
   isCardinalFiltered_preorder _ _ (fun ι f hs ↦ by
     have h : Function.Surjective (fun i ↦ (⟨f i, i, rfl⟩ : Set.range f)) := fun _ ↦ by aesop
     contrapose! hs
-    rw [← hκ.out.cof_eq, ← Ordinal.cof_toType]
+    rw [← hκ.out.cof_ord, ← Ordinal.cof_toType]
     refine (Order.cof_le fun j ↦ ?_).trans (Cardinal.mk_le_of_surjective h)
     obtain ⟨k, hk⟩ := hs j
     exact ⟨_, Set.mem_range_self k, hk.le⟩)
