@@ -474,7 +474,7 @@ section swap
 
 @[simp]
 lemma cons_cons_comp_swap_zero_one (a b : α) (x : Fin n → α) :
-    vecCons a (vecCons b x) ∘ ⇑(Equiv.swap 0 1) = vecCons b (vecCons a x) := by
+    vecCons a (vecCons b x) ∘ (Equiv.swap 0 1) = vecCons b (vecCons a x) := by
   ext j : 1
   match j with
   | 0 => simp
@@ -485,7 +485,7 @@ lemma cons_cons_comp_swap_zero_one (a b : α) (x : Fin n → α) :
       Equiv.swap_apply_of_ne_of_ne (Fin.succ_ne_zero _) (Fin.succ_succ_ne_one _), cons_val_succ]
 
 lemma cons_swap (a : α) (x : Fin n → α) (i j : Fin n) :
-    vecCons a (x ∘ ⇑(Equiv.swap i j)) = vecCons a x ∘ ⇑(Equiv.swap i.succ j.succ) := by
+    vecCons a (x ∘ (Equiv.swap i j)) = vecCons a x ∘ (Equiv.swap i.succ j.succ) := by
   ext k : 1
   rcases eq_or_ne k 0 with rfl | hk₀
   · simp [Equiv.swap_apply_of_ne_of_ne (Fin.succ_ne_zero i).symm (Fin.succ_ne_zero j).symm]

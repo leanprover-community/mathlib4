@@ -460,15 +460,13 @@ open Matrix
 @[simp]
 lemma mulHeight_vecCons_zero {n : ℕ} (x : Fin n → K) :
     mulHeight (vecCons 0 x) = mulHeight x := by
-  let e := (Equiv.sumComm ..).trans <| (finSumFinEquiv (m := 1) (n := n)).trans <|
-    finCongr (show 1 + n = n.succ from n.one_add)
+  let e := (Equiv.sumComm ..).trans <| finSumFinEquiv.trans <| finCongr n.one_add
   have he : Matrix.vecCons 0 x ∘ ⇑e = Sum.elim x 0 := by
     ext j : 1
     match j with
     | .inl _ => simp [e]
     | .inr ⟨i, h⟩ =>
-      simp only [show i = 0 by lia]
-      simp [e, show Fin.castAdd n 0 = 0 from Fin.castAdd_mk _ _ zero_lt_one]
+      simp [show i = 0 by lia, e, show Fin.castAdd n 0 = 0 from Fin.castAdd_mk _ _ zero_lt_one]
   rw [← mulHeight_comp_equiv e, he, mulHeight_sumElim_zero_eq]
 
 @[simp]
