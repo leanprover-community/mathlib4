@@ -26,8 +26,8 @@ which is what one would expect from the triangle inequality.
 ## TODO
 - Equip `StdSimplex` with a topology and show the analogous continuity result for n-ary
   convex combinations.
-- Reverse the import direction with `Mathlib.LinearAlgebra.ConvexSpace.AffineSpace`
-  once that file is moved to the proper location.
+- Tidy up the imports with `Mathlib.LinearAlgebra.ConvexSpace.AffineSpace` etc once those files
+  are moved to proper places.
 
 -/
 
@@ -185,18 +185,16 @@ lemma continuous_convexComboPair :
     simp [← coe_nnreal_ennreal_nndist, ← ENNReal.coe_mul, NNReal.toReal_le,
       dist_convexComboPair_convexComboPair, Subtype.dist_eq, dist_eq_norm]
 
-/-- When `X` is a bounded convex metric space, to check continuity of
-`t ↦ f(t) • x(t) + (1 - f(t)) • y(t)` it suffices to show that `f` is continuous,
-`x` is continuous away from `f(t) = 0`, and `y` is continuous away from `f(t) = 1`. -/
-lemma continuous_convexComboPair' [BoundedSpace X]
+lemma continuous_convexComboPair_of_isBounded
     {T : Type*} [TopologicalSpace T] (f : T → ℝ) (hf : Continuous f)
     (hf0 : ∀ t, 0 ≤ f t) (hf1 : ∀ t, f t ≤ 1) (x y : T → X)
-    (hx : ContinuousOn x (f ⁻¹' {0}ᶜ)) (hy : ContinuousOn y (f ⁻¹' {1}ᶜ)) :
+    (hx : ContinuousOn x (f ⁻¹' {0}ᶜ)) (hy : ContinuousOn y (f ⁻¹' {1}ᶜ))
+    (hx' : Bornology.IsBounded (Set.range x)) (hy' : Bornology.IsBounded (Set.range y)) :
     Continuous fun i ↦ convexComboPair (f i) (1 - f i) (hf0 _) (by simpa using hf1 _)
       (add_sub_cancel ..) (x i) (y i) := by
-  obtain ⟨D, hD, hD'⟩ := ((Metric.isBounded_iff_eventually.mp (Bornology.isBounded_univ.mpr
-    ‹_›)).and (Filter.eventually_gt_atTop 0)).exists
-  simp only [Set.mem_univ, forall_const] at hD
+  obtain ⟨D, hD, hD'⟩ := ((Metric.isBounded_iff_eventually.mp (hx'.union hy')).and
+    (Filter.eventually_gt_atTop 0)).exists
+  replace hD := fun t₁ t₂ ↦ hD (.inl (Set.mem_range_self t₁)) (.inr (Set.mem_range_self t₂))
   rw [continuous_iff_continuousAt]
   intro t
   by_cases ht : f t ∈ Set.Ioo 0 1
@@ -234,6 +232,17 @@ lemma continuous_convexComboPair' [BoundedSpace X]
     grw [hj, hj', hf1, hD]
     · field_simp; norm_num
     · exact hf0 _
+
+/-- When `X` is a bounded convex metric space, to check continuity of
+`t ↦ f(t) • x(t) + (1 - f(t)) • y(t)` it suffices to show that `f` is continuous,
+`x` is continuous away from `f(t) = 0`, and `y` is continuous away from `f(t) = 1`. -/
+lemma continuous_convexComboPair' [BoundedSpace X]
+    {T : Type*} [TopologicalSpace T] (f : T → ℝ) (hf : Continuous f)
+    (hf0 : ∀ t, 0 ≤ f t) (hf1 : ∀ t, f t ≤ 1) (x y : T → X)
+    (hx : ContinuousOn x (f ⁻¹' {0}ᶜ)) (hy : ContinuousOn y (f ⁻¹' {1}ᶜ)) :
+    Continuous fun i ↦ convexComboPair (f i) (1 - f i) (hf0 _) (by simpa using hf1 _)
+      (add_sub_cancel ..) (x i) (y i) :=
+  continuous_convexComboPair_of_isBounded f hf hf0 hf1 x y hx hy (.all _) (.all _)
 
 section Convex
 
