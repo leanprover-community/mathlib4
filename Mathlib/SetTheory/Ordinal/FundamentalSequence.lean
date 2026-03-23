@@ -54,16 +54,16 @@ theorem iSup_add_one_eq (hf : IsFundamentalSeq f) : ⨆ i, (f i).1 + 1 = o := by
     rw [← add_one_le_iff]
     apply Ordinal.le_iSup
 
-theorem ord_cof_eq (hf : IsFundamentalSeq f) : o.cof.ord = a := by
+theorem ord_cof (hf : IsFundamentalSeq f) : o.cof.ord = a := by
   apply hf.le_ord_cof.antisymm'
   rw [← hf.iSup_add_one_eq, cof_iSup_Iio_add_one hf.strictMono]
   exact ord_cof_le a
 
 theorem iSup_eq (hf : IsFundamentalSeq f) (ha : 1 < a) : ⨆ i, (f i).1 = o := by
   rw [← iSup_Iio_add_one hf.strictMono, hf.iSup_add_one_eq]
-  rw [← hf.ord_cof_eq]
+  rw [← hf.ord_cof]
   apply (isSuccLimit_ord _).isSuccPrelimit
-  rwa [aleph0_le_cof_iff, ← ord_lt_ord, hf.ord_cof_eq, ord_one]
+  rwa [aleph0_le_cof_iff, ← ord_lt_ord, hf.ord_cof, ord_one]
 
 /-- A regular ordinal `o` has a fundamental sequence given by all smaller ordinals. -/
 protected theorem id (ho : o ≤ o.cof.ord) : IsFundamentalSeq (o := o) id where
@@ -87,7 +87,7 @@ protected theorem add_one (o : Ordinal) :
 protected theorem comp (hf : IsFundamentalSeq f) (hg : IsFundamentalSeq g) :
     IsFundamentalSeq (f ∘ g) where
   strictMono := hf.strictMono.comp hg.strictMono
-  le_ord_cof := by rw [hf.ord_cof_eq, ← hg.ord_cof_eq]; exact a.ord_cof_le
+  le_ord_cof := by rw [hf.ord_cof, ← hg.ord_cof]; exact a.ord_cof_le
   isCofinal_range := by
     rw [range_comp]
     exact hg.isCofinal_range.image hf.strictMono.monotone hf.isCofinal_range
@@ -133,7 +133,7 @@ namespace IsFundamentalSequence
 variable {a o : Ordinal.{u}} {f : ∀ b < o, Ordinal.{u}}
 
 set_option linter.deprecated false in
-@[deprecated IsFundamentalSeq.ord_cof_eq (since := "2026-03-23")]
+@[deprecated IsFundamentalSeq.ord_cof (since := "2026-03-23")]
 protected theorem cof_eq (hf : IsFundamentalSequence a o f) : a.cof.ord = o :=
   hf.1.antisymm' <| by
     rw [← hf.2.2]
