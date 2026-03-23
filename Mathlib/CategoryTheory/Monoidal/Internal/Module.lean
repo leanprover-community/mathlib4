@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # `Mon (ModuleCat R) ≌ AlgCat R`
@@ -100,7 +101,7 @@ def functor : Mon (ModuleCat.{u} R) ⥤ AlgCat R where
 
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
-@[simps]
+@[instance_reducible, simps]
 def inverseObj (A : AlgCat.{u} R) : MonObj (ModuleCat.of R A) where
   one := ofHom <| Algebra.linearMap R A
   mul := ofHom <| LinearMap.mul' R A

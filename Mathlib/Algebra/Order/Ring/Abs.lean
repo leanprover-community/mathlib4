@@ -45,7 +45,7 @@ variable [Ring α] [LinearOrder α] [IsOrderedRing α] {n : ℕ} {a b : α}
 
 lemma abs_two : |(2 : α)| = 2 := abs_of_nonneg zero_le_two
 
-@[simp]
+@[simp, grind =]
 lemma abs_mul (a b : α) : |a * b| = |a| * |b| := by
   rw [abs_eq (mul_nonneg (abs_nonneg a) (abs_nonneg b))]
   rcases le_total a 0 with ha | ha <;> rcases le_total b 0 with hb | hb <;>
@@ -58,7 +58,7 @@ def absHom : α →*₀ α where
   map_one' := abs_one
   map_mul' := abs_mul
 
-@[simp]
+@[simp, grind =]
 lemma abs_pow (a : α) (n : ℕ) : |a ^ n| = |a| ^ n := (absHom.toMonoidHom : α →* α).map_pow _ _
 
 lemma pow_abs (a : α) (n : ℕ) : |a| ^ n = |a ^ n| := (abs_pow a n).symm
@@ -275,3 +275,6 @@ lemma Odd.of_dvd_nat (hn : Odd n) (hm : m ∣ n) : Odd m :=
 lemma Odd.ne_two_of_dvd_nat {m n : ℕ} (hn : Odd n) (hm : m ∣ n) : m ≠ 2 := by
   rintro rfl
   exact absurd (hn.of_dvd_nat hm) (by decide)
+
+lemma Int.le_abs_of_dvd {a b : ℤ} (h₁ : b ≠ 0) (h₂ : a ∣ b) : a ≤ |b| :=
+  le_of_dvd (by simpa) (by simpa)

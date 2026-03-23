@@ -28,7 +28,7 @@ variable (R : Type u) {A : Type v} {B : Type w}
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- The minimal subalgebra that includes `s`. -/
-@[simps toSubsemiring]
+@[simps -isSimp toSubsemiring]
 def adjoin (s : Set A) : Subalgebra R A :=
   { Subsemiring.closure (Set.range (algebraMap R A) ∪ s) with
     algebraMap_mem' := fun r => Subsemiring.subset_closure <| Or.inl ⟨r, rfl⟩ }
@@ -414,6 +414,50 @@ end Subalgebra
 
 end MapComap
 
+section saturation
+
+namespace Subalgebra
+
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+  {s : Subalgebra R S} {M : Submonoid S} {H : M ≤ s.toSubmonoid}
+
+/-- The saturation of a subalgebra `s` with respect to a submonoid `M` is the smallest
+subalgebra closed under division by `s`. -/
+def saturation (s : Subalgebra R S) (M : Submonoid S) (H : M ≤ s.toSubmonoid) :
+    Subalgebra R S where
+  carrier := { x | ∃ m ∈ M, m * x ∈ s }
+  mul_mem' := by
+    intro a b ⟨m, hm, ha⟩ ⟨n, hn, hb⟩
+    refine ⟨_, mul_mem hm hn, mul_mul_mul_comm m n a b ▸ mul_mem ha hb⟩
+  add_mem' := by
+    intro a b ⟨m, hm, ha⟩ ⟨n, hn, hb⟩
+    refine ⟨_, mul_mem hn hm, ?_⟩
+    rw [mul_add, mul_assoc, mul_comm n m, mul_assoc]
+    exact add_mem (mul_mem (H hn) ha) (mul_mem (H hm) hb)
+  algebraMap_mem' r := ⟨1, one_mem _, by simp⟩
+
+@[simp] lemma mem_saturation_iff {x : S} :
+    x ∈ s.saturation M H ↔ ∃ m ∈ M, m • x ∈ s := .rfl
+
+lemma le_saturation : s ≤ s.saturation M H :=
+  fun x hx ↦ ⟨1, one_mem M, by simpa⟩
+
+@[simp] lemma saturation_saturation :
+    (s.saturation M H).saturation M (H.trans s.le_saturation) = s.saturation M H :=
+  le_saturation.antisymm' fun x ⟨m, hm, n, hn, h⟩ ↦ ⟨_, M.mul_mem hn hm, mul_assoc n m x ▸ h⟩
+
+lemma mem_saturation_of_mul_mem_left {x y} (hxy : x * y ∈ s.saturation M H)
+    (hx : x ∈ M) : y ∈ s.saturation M H :=
+  saturation_saturation.le ⟨_, hx, hxy⟩
+
+lemma mem_saturation_of_mul_mem_right {x y} (hxy : x * y ∈ s.saturation M H)
+    (hy : y ∈ M) : x ∈ s.saturation M H :=
+  mem_saturation_of_mul_mem_left (mul_comm x y ▸ hxy) hy
+
+end Subalgebra
+
+end saturation
+
 section Adjoin
 
 universe uR uS uA uB
@@ -775,6 +819,11 @@ theorem ext_of_eq_adjoin {S : Subalgebra R A} {s : Set A} (hS : S = adjoin R s) 
     φ₁ = φ₂ := by
   subst hS; exact adjoin_ext h
 
+theorem _root_.Algebra.forall_mem_adjoin_smul_eq_self_iff (S : Set A) {M : Type*} [Monoid M]
+    [MulSemiringAction M A] [SMulCommClass M R A] (m : M) :
+    (∀ x ∈ adjoin R S, m • x = x) ↔ (∀ x ∈ S, m • x = x) :=
+  AlgHom.eqOn_adjoin_iff (φ := MulSemiringAction.toAlgHom R A m) (ψ := .id R A)
+
 end AlgHom
 
 section NatInt
@@ -840,6 +889,25 @@ lemma Algebra.adjoin_nonUnitalSubalgebra (s : Set A) :
 end CommSemiring
 
 namespace Subalgebra
+
+section toNonUnitalSubalgebra
+
+variable [CommSemiring R] [Semiring A] [Algebra R A]
+
+/-- The forgetful map from subalgebras to non-unital subalgebras, as an order embedding. -/
+def toNonUnitalSubalgebraOrderEmbedding : Subalgebra R A ↪o NonUnitalSubalgebra R A where
+  toFun := toNonUnitalSubalgebra
+  inj' := toNonUnitalSubalgebra_injective
+  map_rel_iff' := by simp [SetLike.le_def]
+
+@[simp]
+lemma toNonUnitalSubalgebra_le_toNonUnitalSubalgebra {S T : Subalgebra R A} :
+    S.toNonUnitalSubalgebra ≤ T.toNonUnitalSubalgebra ↔ S ≤ T :=
+  toNonUnitalSubalgebraOrderEmbedding.le_iff_le
+
+alias ⟨_, toNonUnitalSubalgebra_mono⟩ := toNonUnitalSubalgebra_le_toNonUnitalSubalgebra
+
+end toNonUnitalSubalgebra
 
 variable [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 

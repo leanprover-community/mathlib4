@@ -45,6 +45,7 @@ namespace CliffordAlgebra
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction: note this is really just a heterobasic `CliffordAlgebra.map`. -/
 def ofBaseChangeAux (Q : QuadraticForm R V) :
     CliffordAlgebra Q →ₐ[R] CliffordAlgebra (Q.baseChange A) :=
@@ -58,6 +59,7 @@ def ofBaseChangeAux (Q : QuadraticForm R V) :
     ofBaseChangeAux A Q (ι Q v) = ι (Q.baseChange A) (1 ⊗ₜ v) :=
   CliffordAlgebra.lift_ι_apply _ _ v
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Convert from the base-changed clifford algebra to the clifford algebra over a base-changed
 module. -/
 def ofBaseChange (Q : QuadraticForm R V) :
@@ -76,6 +78,7 @@ def ofBaseChange (Q : QuadraticForm R V) :
   change algebraMap _ _ z * ofBaseChangeAux A Q 1 = _
   rw [map_one, mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Convert from the clifford algebra over a base-changed module to the base-changed clifford
 algebra. -/
 def toBaseChange (Q : QuadraticForm R V) :
@@ -99,10 +102,12 @@ def toBaseChange (Q : QuadraticForm R V) :
       QuadraticForm.polarBilin_baseChange, LinearMap.BilinForm.baseChange_tmul, one_mul,
       TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one, QuadraticMap.polarBilin_apply_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem toBaseChange_ι (Q : QuadraticForm R V) (z : A) (v : V) :
     toBaseChange A Q (ι (Q.baseChange A) (z ⊗ₜ v)) = z ⊗ₜ ι Q v :=
   CliffordAlgebra.lift_ι_apply _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toBaseChange_comp_involute (Q : QuadraticForm R V) :
     (toBaseChange A Q).comp (involute : CliffordAlgebra (Q.baseChange A) →ₐ[A] _) =
       (Algebra.TensorProduct.map (AlgHom.id _ _) involute).comp (toBaseChange A Q) := by
@@ -122,6 +127,7 @@ theorem toBaseChange_involute (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.ba
 
 open MulOpposite
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary theorem used to prove `toBaseChange_reverse` without needing induction. -/
 theorem toBaseChange_comp_reverseOp (Q : QuadraticForm R V) :
     (toBaseChange A Q).op.comp reverseOp =
@@ -154,15 +160,18 @@ theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.bas
 
 attribute [ext] TensorProduct.ext
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toBaseChange_comp_ofBaseChange (Q : QuadraticForm R V) :
     (toBaseChange A Q).comp (ofBaseChange A Q) = AlgHom.id _ _ := by
   ext v
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem toBaseChange_ofBaseChange (Q : QuadraticForm R V) (x : A ⊗[R] CliffordAlgebra Q) :
     toBaseChange A Q (ofBaseChange A Q x) = x :=
   AlgHom.congr_fun (toBaseChange_comp_ofBaseChange A Q :) x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofBaseChange_comp_toBaseChange (Q : QuadraticForm R V) :
     (ofBaseChange A Q).comp (toBaseChange A Q) = AlgHom.id _ _ := by
   ext x
@@ -175,6 +184,7 @@ theorem ofBaseChange_comp_toBaseChange (Q : QuadraticForm R V) :
     ofBaseChange A Q (toBaseChange A Q x) = x :=
   AlgHom.congr_fun (ofBaseChange_comp_toBaseChange A Q :) x
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Base-changing the vector space of a clifford algebra is isomorphic as an A-algebra to
 base-changing the clifford algebra itself; <|Cℓ(A ⊗_R V, Q_A) ≅ A ⊗_R Cℓ(V, Q)<|.
 

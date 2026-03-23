@@ -33,14 +33,13 @@ variable {R : Type*} [CommRing R] {P : RingPreordering R}
 
 namespace RingPreordering
 
+@[gcongr]
 theorem toSubsemiring_le_toSubsemiring {P₁ P₂ : RingPreordering R} :
     P₁.toSubsemiring ≤ P₂.toSubsemiring ↔ P₁ ≤ P₂ := .rfl
 
+@[gcongr]
 theorem toSubsemiring_lt_toSubsemiring {P₁ P₂ : RingPreordering R} :
     P₁.toSubsemiring < P₂.toSubsemiring ↔ P₁ < P₂ := .rfl
-
-@[gcongr] alias ⟨_, GCongr.toSubsemiring_le_toSubsemiring⟩ := toSubsemiring_le_toSubsemiring
-@[gcongr] alias ⟨_, GCongr.toSubsemiring_lt_toSubsemiring⟩ := toSubsemiring_lt_toSubsemiring
 
 @[mono]
 theorem toSubsemiring_mono : Monotone (toSubsemiring : RingPreordering R → _) :=
@@ -165,7 +164,7 @@ instance : P.HasIdealSupport where
 @[simp] theorem support_eq_bot : P.support = ⊥ := by
   simpa [← Submodule.toAddSubgroup_inj] using supportAddSubgroup_eq_bot P
 
-instance : P.support.IsPrime := by simpa using Ideal.bot_prime
+instance : P.support.IsPrime := by simpa using Ideal.isPrime_bot
 
 end Field
 

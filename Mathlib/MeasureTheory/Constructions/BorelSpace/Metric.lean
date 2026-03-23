@@ -14,8 +14,8 @@ public import Mathlib.Topology.MetricSpace.Thickening
 
 ## Main statements
 
-* `measurable_dist`, `measurable_infEdist`, `measurable_norm`, `measurable_enorm`,
-  `Measurable.dist`, `Measurable.infEdist`, `Measurable.norm`, `Measurable.enorm`:
+* `measurable_dist`, `measurable_infEDist`, `measurable_norm`, `measurable_enorm`,
+  `Measurable.dist`, `Measurable.infEDist`, `Measurable.norm`, `Measurable.enorm`:
   measurability of various metric-related notions;
 * `tendsto_measure_thickening_of_isClosed`:
   the measure of a closed set is the limit of the measure of its ε-thickenings as ε → 0.
@@ -101,29 +101,31 @@ section PseudoEMetricSpace
 variable [PseudoEMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
 variable [MeasurableSpace β] {x : α} {ε : ℝ≥0∞}
 
-open EMetric
+open Metric
 
 @[measurability]
-theorem measurableSet_eball : MeasurableSet (EMetric.ball x ε) :=
-  EMetric.isOpen_ball.measurableSet
+theorem measurableSet_eball : MeasurableSet (Metric.eball x ε) :=
+  Metric.isOpen_eball.measurableSet
 
 @[fun_prop]
-theorem measurable_edist_right : Measurable (edist x) :=
-  (continuous_const.edist continuous_id).measurable
+theorem measurable_edist_right : Measurable (edist x) := by fun_prop
 
 @[fun_prop]
-theorem measurable_edist_left : Measurable fun y => edist y x :=
-  (continuous_id.edist continuous_const).measurable
+theorem measurable_edist_left : Measurable fun y ↦ edist y x := by fun_prop
 
-theorem measurable_infEdist {s : Set α} : Measurable fun x => infEdist x s :=
-  continuous_infEdist.measurable
+theorem measurable_infEDist {s : Set α} : Measurable fun x => infEDist x s :=
+  continuous_infEDist.measurable
+
+@[deprecated (since := "2026-01-08")]
+alias measurable_infEdist := measurable_infEDist
 
 @[fun_prop]
-theorem Measurable.infEdist {f : β → α} (hf : Measurable f) {s : Set α} :
-    Measurable fun x => infEdist (f x) s :=
-  measurable_infEdist.comp hf
+protected theorem Measurable.infEDist {f : β → α} (hf : Measurable f) {s : Set α} :
+    Measurable fun x => infEDist (f x) s :=
+  measurable_infEDist.comp hf
 
-open Metric EMetric
+@[deprecated (since := "2026-01-08")]
+alias Measurable.infEdist := Measurable.infEDist
 
 /-- If a set has a closed thickening with finite measure, then the measure of its `r`-closed
 thickenings converges to the measure of its closure as `r` tends to `0`. -/

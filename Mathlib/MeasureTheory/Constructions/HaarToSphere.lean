@@ -184,7 +184,7 @@ private lemma ball_subset_sector_of_small_epsilon
   -- Let $u = y / \|y\|$. We show $\|u - x\| < \epsilon$.
   set u : E := ‖y‖⁻¹ • y
   have hu₁ : ‖u‖ = 1 := by simp [u, hy₀, norm_smul]
-  refine  ⟨‖y‖, ⟨by simpa, hy₁⟩, u, ⟨?_, by simpa⟩, by simp [u, hy₀]⟩
+  refine ⟨‖y‖, ⟨by simpa, hy₁⟩, u, ⟨?_, by simpa⟩, by simp [u, hy₀]⟩
   rw [mem_ball]
   have hyx := calc
     dist y x ≤ dist y ((1 - ε / 4) • x) + dist ((1 - ε / 4) • x) x := dist_triangle ..
@@ -210,6 +210,7 @@ theorem toSphereBallBound_pos (n : ℕ) (ε : ℝ) : 0 < toSphereBallBound n ε 
     positivity
   · positivity
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A ball of radius `ε` on the unit sphere in a real normed space
 has measure at least `toSphereBallBound n ε * μ (ball 0 1)`,
 where `n` is the dimension of the space,

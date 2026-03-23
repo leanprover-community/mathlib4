@@ -44,8 +44,9 @@ instance instCommRing : CommRing ℤ where
   intCast_ofNat _ := rfl
   intCast_negSucc _ := rfl
 
-instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero ℤ where
+instance : IsCancelMulZero ℤ where
   mul_left_cancel_of_ne_zero ha _ _ := (mul_eq_mul_left_iff ha).1
+  mul_right_cancel_of_ne_zero ha _ _ := (mul_eq_mul_right_iff ha).1
 
 instance instIsDomain : IsDomain ℤ where
 

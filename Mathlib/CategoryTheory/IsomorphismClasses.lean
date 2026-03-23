@@ -27,12 +27,13 @@ section Category
 
 variable {C : Type u} [Category.{v} C]
 
-/-- An object `X` is isomorphic to an object `Y`, if `X ≅ Y` is not empty. -/
+/-- An object `X` is isomorphic to an object `Y` if `X ≅ Y` is nonempty. -/
 def IsIsomorphic : C → C → Prop := fun X Y => Nonempty (X ≅ Y)
 
 variable (C)
 
 /-- `IsIsomorphic` defines a setoid. -/
+@[instance_reducible]
 def isIsomorphicSetoid : Setoid C where
   r := IsIsomorphic
   iseqv := ⟨fun X => ⟨Iso.refl X⟩, fun ⟨α⟩ => ⟨α.symm⟩, fun ⟨α⟩ ⟨β⟩ => ⟨α.trans β⟩⟩

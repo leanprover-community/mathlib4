@@ -59,6 +59,7 @@ lemma curriedActionMop_map_unmop_app {c c' : C} (f : c ⟶ c') (d : D) :
     ((curriedActionMop C D).map f).unmop.app d = f ⊵ₗ d :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open MonoidalOpposite in
 /-- When `C` acts on the left on `D`, the functor
 `curriedActionMop : C ⥤ (D ⥤ D)ᴹᵒᵖ` is monoidal, where `D ⥤ D` has the
@@ -66,8 +67,8 @@ composition monoidal structure. -/
 @[simps!]
 instance curriedActionMopMonoidal : (curriedActionMop C D).Monoidal where
   ε := .mop <| (actionUnitNatIso C D).inv
-  μ _ _ := .mop <| {app _ := αₗ _ _ _ |>.inv}
-  δ _ _ := .mop <| {app _ := αₗ _ _ _ |>.hom}
+  μ _ _ := .mop <| { app _ := αₗ _ _ _ |>.inv }
+  δ _ _ := .mop <| { app _ := αₗ _ _ _ |>.hom }
   η := .mop <| (actionUnitNatIso C D).hom
   associativity c₁ c₂ c₃ := by
     apply (mopEquiv (D ⥤ D)).fullyFaithfulInverse.map_injective
@@ -90,9 +91,10 @@ end
 
 variable {C D}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A monoidal functor `F : C ⥤ (D ⥤ D)ᴹᵒᵖ` can be thought of as a left action
 of `C` on `D`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def actionOfMonoidalFunctorToEndofunctorMop (F : C ⥤ (D ⥤ D)ᴹᵒᵖ) [F.Monoidal] :
     MonoidalLeftAction C D where
   actionObj c d := (F.obj c).unmop.obj d
@@ -161,8 +163,8 @@ is monoidal, where `D ⥤ D` has the composition monoidal structure. -/
 instance curriedActionMonoidal [MonoidalRightAction C D] :
     (curriedAction C D).Monoidal where
   ε := (actionUnitNatIso C D).inv
-  μ _ _ := {app _ := αᵣ _ _ _ |>.inv}
-  δ _ _ := {app _ := αᵣ _ _ _ |>.hom}
+  μ _ _ := { app _ := αᵣ _ _ _ |>.inv }
+  δ _ _ := { app _ := αᵣ _ _ _ |>.hom }
   η := (actionUnitNatIso C D).hom
   associativity c₁ c₂ c₃ := by
     ext d
@@ -178,9 +180,10 @@ instance curriedActionMonoidal [MonoidalRightAction C D] :
     simpa [-actionHom_leftUnitor] using
       t ⊴ᵣ (λ_ x).inv ≫= actionHom_leftUnitor x t
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A monoidal functor `F : C ⥤ D ⥤ D` can be thought of as a right action
 of `C` on `D`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def actionOfMonoidalFunctorToEndofunctor (F : C ⥤ D ⥤ D) [F.Monoidal] :
     MonoidalRightAction C D where
   actionObj d c := (F.obj c).obj d
