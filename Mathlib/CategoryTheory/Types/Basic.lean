@@ -60,10 +60,6 @@ instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
 
 initialize_simps_projections Fun (toFun → apply)
 
--- /-- Construct a `Fun` from a function between types. -/
--- def Fun.mk {X Y : Type*} (f : X → Y) : Fun X Y where
---   toFun := f
-
 lemma Fun.mk_as {X Y : Type*} (f : X → Y) : (Fun.mk f).toFun = f :=
   rfl
 
@@ -115,7 +111,7 @@ The concrete category instance on `Type u`.
 
 Note: sometimes one needs to specify explicitly `(CC := fun X ↦ X)` to help typeclass inference.
 -/
-instance : ConcreteCategory.{u} (Type u) (fun X Y ↦ Fun X Y) where
+instance : ConcreteCategory.{u} (Type u) Fun where
   hom := Hom.hom'
   ofHom := Hom.mk
 
