@@ -92,11 +92,8 @@ noncomputable def ofPowerSeries (q : ℕ) : PowerSeries R →ₐ[R] ArithmeticFu
       · obtain ⟨k, rfl⟩ := hn
         rw [(Nat.pow_right_injective hq).extend_apply]
         have hs : (Finset.antidiagonal k).map (.prodMap ⟨fun k ↦ q ^ k, Nat.pow_right_injective hq⟩
-            ⟨fun k ↦ q ^ k, Nat.pow_right_injective hq⟩) ⊆ (q ^ k).divisorsAntidiagonal := by
-          intro k hk
-          obtain ⟨i, hi, rfl⟩ := Finset.mem_map.mp hk
-          rw [Finset.mem_antidiagonal] at hi
-          simp [Nat.mem_divisorsAntidiagonal, ← hi, pow_add, ne_zero_of_lt hq]
+            ⟨fun k ↦ q ^ k, Nat.pow_right_injective hq⟩) ⊆ (q ^ k).divisorsAntidiagonal :=
+          Nat.antidiagonal_map_subset_divisorsAntidiagonal_pow hq k
         rw [PowerSeries.coeff_mul k f g, ← Finset.sum_subset hs]
         · simp [(Nat.pow_right_injective hq).extend_apply]
         · intro (a, b) hab h
