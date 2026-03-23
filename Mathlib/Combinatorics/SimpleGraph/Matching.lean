@@ -698,11 +698,7 @@ lemma exists_maximal_isMatching (G : SimpleGraph V) :
     simp only [Subgraph.verts_sSup, Set.mem_iUnion, exists_prop, M] at hv
     rcases hv with ⟨N, h_matching, hv⟩
     rcases hc h_matching hv with ⟨w, hw⟩
-    use w
-    constructor
-    · simp only [Subgraph.sSup_adj, M]
-      exact ⟨N, h_matching, hw.1⟩
-    intro u huv
+    refine ⟨w, ⟨N, h_matching, hw.1⟩, fun u huv ↦ ?_⟩
     simp only [Subgraph.sSup_adj, M] at huv
     rcases huv with ⟨N', ⟨hN'c, huv⟩⟩
     by_cases hN'N : N' ≤ N
