@@ -223,9 +223,9 @@ lemma rank_mul_eq_right_of_isUnit_det [Fintype m] [DecidableEq m]
   rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
 
 /-- Taking a subset of the rows and columns reduces the rank. -/
-theorem rank_submatrix_le [Nontrivial R] [Fintype n₀] (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
+theorem rank_submatrix_le [Nontrivial R] [Fintype n₀] (r : m₀ → m) (c : n₀ → n) (A : Matrix m n R) :
     (A.submatrix r c).rank ≤ A.rank := by
-  have h : (A.submatrix r c).rank ≤ (A.submatrix r ⇑(Equiv.refl n)).rank := by
+  have h : (A.submatrix r c).rank ≤ (A.submatrix r (Equiv.refl n)).rank := by
     rw [show (A.submatrix r c).rank = ((A.submatrix r (Equiv.refl n)).submatrix id c).rank by rfl]
     set B := A.submatrix r (Equiv.refl n)
     rw [show (B.submatrix id c) = (B.submatrix id c)ᵀᵀ by rw[transpose_transpose],
@@ -235,7 +235,7 @@ theorem rank_submatrix_le [Nontrivial R] [Fintype n₀] (A : Matrix m n R) (r : 
       row_transpose]
     haveI := Module.Finite.span_of_finite R (Set.finite_range B.col)
     exact Submodule.finrank_mono (Submodule.span_mono (fun v ⟨j, hj⟩ => ⟨c j, hj⟩))
-  apply le_trans h ?_
+  apply le_trans h
   rw [rank, rank, mulVecLin_submatrix, LinearMap.range_comp, LinearMap.range_comp,
     show LinearMap.funLeft R R (Equiv.refl n).symm =
     LinearEquiv.funCongrLeft R R (Equiv.refl n).symm by rfl, LinearEquiv.range, Submodule.map_top]
