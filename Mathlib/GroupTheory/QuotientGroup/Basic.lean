@@ -446,6 +446,8 @@ namespace QuotientGroup
 
 section powMonoidHom
 
+-- TODO: Generalize to arbitrary products of homomorphisms
+
 variable {ι : Type*} (A : ι → Type*) [∀ i, CommGroup (A i)] (n : ℕ)
 
 /-- The isomorphism between the quotient of a product by the image of the `n`th power map
