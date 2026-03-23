@@ -164,6 +164,15 @@ namespace Mathlib.Tactic.DefEqAbuse
     unless (`Meta.isDefEq).isPrefixOf td.cls do return .descend
     f td header children
 
+/-- Strip the leading status emoji and space that `withTraceNodeBefore` prepends to trace headers.
+Headers have the form `"{emoji} {content}"`; this returns just `{content}`.
+Used to compare header strings across trace runs where the same check may have different results
+(and thus different emoji prefixes). -/
+private def stripHeaderEmoji (s : String) : String :=
+  match s.splitOn " " with
+  | _ :: rest => " ".intercalate rest
+  | _ => s
+
 /-- Find the deepest failing `Meta.isDefEq` trace nodes (leaf failures).
 Skips `onFailure` retry nodes and ignores ✅️ branches (recovered failures aren't root causes). -/
 partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
@@ -179,9 +188,9 @@ Returns a `HashSet` of emoji-stripped header strings. -/
 partial def collectIsDefEqChecks (pred : Lean.TraceResult → Bool)
     (msg : MessageData) : BaseIO (Std.HashSet String) :=
   msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
-    let headerStr ← header.toString
     if let some status := td.result? then
       if pred status then
+        let headerStr := stripHeaderEmoji (← header.toString)
         return .descend (butFirst := some {headerStr})
     return .descend
 
@@ -196,8 +205,8 @@ partial def findTransitionFailures (permSuccesses : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array MessageData) :=
   if permSuccesses.isEmpty then findLeafFailures msg
   else msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
-    let headerStr ← header.toString
     unless td.result? matches some .failure do return .descend
+    let headerStr := stripHeaderEmoji (← header.toString)
     if permSuccesses.contains headerStr && !permFailures.contains headerStr then
       -- Transition point: fails strict, succeeds permissive, doesn't also fail permissive.
       -- Look for deeper transition points among children.
