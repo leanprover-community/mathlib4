@@ -1011,6 +1011,11 @@ theorem le_enum_succ {o : Ordinal} (a : (succ o).ToType) :
 def univ : Ordinal.{max (u + 1) v} :=
   lift.{v, u + 1} (typeLT Ordinal)
 
+@[simp]
+theorem type_lt_ordinal : typeLT Ordinal = univ.{u, u + 1} :=
+  (lift_id _).symm
+
+@[deprecated type_lt_ordinal (since := "2026-03-20")]
 theorem univ_id : univ.{u, u + 1} = typeLT Ordinal :=
   lift_id _
 
@@ -1058,8 +1063,9 @@ theorem liftPrincipalSeg_coe :
 theorem liftPrincipalSeg_top : (liftPrincipalSeg.{u, v}).top = univ.{u, v} :=
   rfl
 
+@[deprecated liftPrincipalSeg_top (since := "2026-03-20")]
 theorem liftPrincipalSeg_top' : liftPrincipalSeg.{u, u + 1}.top = typeLT Ordinal := by
-  simp only [liftPrincipalSeg_top, univ_id]
+  simp
 
 end Ordinal
 
@@ -1490,3 +1496,5 @@ theorem List.SortedGT.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : Li
           (List.head_le_of_lt hmltl))
 
 @[deprecated (since := "2025-11-27")] alias List.Sorted.lt_ord_of_lt := List.SortedGT.lt_ord_of_lt
+
+set_option linter.style.longFile 1700
