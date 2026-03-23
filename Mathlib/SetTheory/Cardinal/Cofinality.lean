@@ -378,8 +378,10 @@ theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α
     exact fun t ht ↦ (cof_le (hs.trans ht)).trans_eq (mk_image_eq Subtype.val_injective)
 
 @[simp]
-theorem cof_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
+theorem cof_ord_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
   simpa using Order.cof_ord_cof o.ToType
+
+@[deprecated (since := "2026-03-21")] alias cof_cof := cof_ord_cof
 
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
