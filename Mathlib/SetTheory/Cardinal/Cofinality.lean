@@ -529,6 +529,7 @@ theorem cof_lsub_le_lift {ι} (f : ι → Ordinal) :
   rw [← lift_id'.{u} (lsub f), ← Cardinal.lift_umax.{u, v}]
   exact cof_lift_iSup_add_one_le _
 
+@[deprecated le_cof_iff (since := "2026-03-21")]
 theorem le_cof_iff_lsub {o : Ordinal} {a : Cardinal} :
     a ≤ cof o ↔ ∀ {ι} (f : ι → Ordinal), lsub.{u, u} f = o → a ≤ #ι := by
   rw [cof_eq_sInf_lsub]
@@ -610,6 +611,8 @@ theorem exists_blsub_cof (o : Ordinal) :
   rw [← hι, hι']
   exact ⟨_, hf⟩
 
+set_option linter.deprecated false in
+@[deprecated le_cof_iff (since := "2026-03-21")]
 theorem le_cof_iff_blsub {b : Ordinal} {a : Cardinal} :
     a ≤ cof b ↔ ∀ {o} (f : ∀ a < o, Ordinal), blsub.{u, u} o f = b → a ≤ o.card :=
   le_cof_iff_lsub.trans
