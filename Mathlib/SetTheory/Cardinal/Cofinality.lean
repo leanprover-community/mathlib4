@@ -315,41 +315,6 @@ theorem cof_omega0 : cof ω = ℵ₀ := by
   · rw [aleph0_le_cof_iff, one_lt_cof_iff]
     exact isSuccLimit_omega0
 
-theorem cof_iSup_Iio {f} (hf : StrictMono f) {a} (ha : IsSuccPrelimit a) :
-    cof (⨆ i : Iio a, f i.1) = cof a := by
-  have : StrictMono (β := Iio (⨆ i : Iio a, f i.1)) (fun i : Iio a ↦ ⟨f i, ?_⟩) := fun x y h ↦ hf h
-  · have := cof_congr_of_strictMono this ?_
-    · simpa [← lift_cof] using this.symm
-    · intro ⟨b, hb⟩
-      rw [mem_Iio, lt_ciSup_iff' (bddAbove_of_small _)] at hb
-      obtain ⟨i, hi⟩ := hb
-      exact ⟨_, Set.mem_range_self i, hi.le⟩
-  · exact (hf (lt_add_one _)).trans_le <|
-      le_ciSup (ι := Iio a) (bddAbove_of_small _) ⟨_, ha.succ_lt i.2⟩
-
-theorem cof_map_of_isNormal {f} (hf : IsNormal f) {a} (ha : IsSuccLimit a) : cof (f a) = cof a := by
-  rw [hf.apply_of_isSuccLimit ha, cof_iSup_Iio hf.strictMono ha.isSuccPrelimit]
-
-@[deprecated (since := "2026-03-19")]
-alias cof_eq_of_isNormal := cof_map_of_isNormal
-
-@[deprecated (since := "2025-12-25")]
-alias IsNormal.cof_eq := cof_eq_of_isNormal
-
-theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) := by
-  rcases zero_or_succ_or_isSuccLimit a with (rfl | ⟨b, rfl⟩ | ha)
-  · rw [cof_zero]
-    exact zero_le _
-  · rw [cof_succ, Cardinal.one_le_iff_ne_zero, cof_eq_zero.ne, ← pos_iff_ne_zero]
-    exact (zero_le (f b)).trans_lt (hf.strictMono (lt_succ b))
-  · rw [cof_map_of_isNormal hf ha]
-
-@[deprecated (since := "2026-03-19")]
-alias cof_le_of_isNormal := le_cof_map_of_isNormal
-
-@[deprecated (since := "2025-12-25")]
-alias IsNormal.cof_le := le_cof_map_of_isNormal
-
 @[deprecated (since := "2026-02-18")] alias cof_eq_one_iff_is_succ := cof_eq_one_iff
 
 theorem ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
@@ -444,8 +409,6 @@ alias cof_le_of_isNormal := le_cof_map_of_isNormal
 
 @[deprecated (since := "2025-12-25")]
 alias IsNormal.cof_le := le_cof_map_of_isNormal
-
-@[deprecated (since := "2026-02-18")] alias cof_eq_one_iff_is_succ := cof_eq_one_iff
 
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
