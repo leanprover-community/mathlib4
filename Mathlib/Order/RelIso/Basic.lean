@@ -228,7 +228,6 @@ instance : EmbeddingLike (r ↪r s) α β where
 theorem coe_toEmbedding {f : r ↪r s} : ((f : r ↪r s).toEmbedding : α → β) = f :=
   rfl
 
-@[simp]
 theorem coe_toRelHom {f : r ↪r s} : ((f : r ↪r s).toRelHom : α → β) = f :=
   rfl
 
@@ -574,11 +573,9 @@ instance : EquivLike (r ≃r s) α β where
   right_inv f := f.right_inv
   coe_injective' _ _ hf _ := DFunLike.ext' hf
 
-@[simp]
 theorem coe_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f :=
   rfl
 
-@[simp]
 theorem coe_toEmbedding (f : r ≃r s) : (f.toEmbedding : α → β) = f :=
   rfl
 
