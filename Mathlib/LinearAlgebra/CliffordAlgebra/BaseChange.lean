@@ -186,7 +186,7 @@ theorem ofBaseChange_comp_toBaseChange (Q : QuadraticForm R V) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Base-changing the vector space of a clifford algebra is isomorphic as an A-algebra to
-base-changing the clifford algebra itself; <|Cℓ(A ⊗_R V, Q_A) ≅ A ⊗_R Cℓ(V, Q)<|.
+base-changing the clifford algebra itself; $<|Cℓ(A ⊗_R V, Q_A) ≅ A ⊗_R Cℓ(V, Q)<|$.
 
 This is `CliffordAlgebra.toBaseChange` and `CliffordAlgebra.ofBaseChange` as an equivalence. -/
 @[simps!]

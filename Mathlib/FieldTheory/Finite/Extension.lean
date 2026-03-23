@@ -135,3 +135,28 @@ noncomputable def algEquivExtension (l : Type*) [Field l] [Algebra k l]
   exact (IsSplittingField.algEquiv _ (X ^ (Nat.card k ^ n) - X)).symm
 
 end FiniteField
+
+section Polynomial
+
+open FiniteField Polynomial
+
+variable {K : Type*} [Field K]
+
+theorem Irreducible.natDegree_dvd_of_dvd_X_pow_card_pow_sub_X {n : ℕ} {f : K[X]}
+    (hi : Irreducible f) (h : f ∣ X ^ (Nat.card K) ^ n - X) : f.natDegree ∣ n := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
+  cases finite_or_infinite K; swap
+  · rw [Nat.card_eq_zero_of_infinite, zero_pow hn, pow_zero, ← dvd_neg, neg_sub] at h
+    rw [((Splits.X_sub_C 1).of_dvd (X_sub_C_ne_zero 1) h).natDegree_eq_one_of_irreducible hi]
+    exact one_dvd n
+  let ⟨p, hp⟩ := CharP.exists K
+  have : Fact (Nat.Prime p) := ⟨CharP.char_is_prime K p⟩
+  have : NeZero n := ⟨hn⟩
+  rw [← finrank_extension K p n]
+  apply Irreducible.natDegree_dvd_finrank hi
+  refine Splits.of_dvd ?_ ?_ (map_dvd (algebraMap K (Extension K p n)) h)
+  · apply IsSplittingField.splits
+  · exact map_ne_zero (X_pow_card_pow_sub_X_ne_zero K hn Finite.one_lt_card)
+
+end Polynomial
