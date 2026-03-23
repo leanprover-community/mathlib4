@@ -244,6 +244,14 @@ theorem omega0_le_omega (o : Ordinal) : ω ≤ ω_ o := by
 theorem omega_pos (o : Ordinal) : 0 < ω_ o :=
   omega0_pos.trans_le (omega0_le_omega o)
 
+@[simp]
+theorem omega0_lt_omega_one : ω < ω₁ := by
+  rw [← omega_zero, omega_lt_omega]
+  exact zero_lt_one
+
+@[deprecated (since := "2025-12-22")]
+alias omega0_lt_omega1 := omega0_lt_omega_one
+
 theorem isNormal_omega : IsNormal omega :=
   isNormal_preOmega.comp (isNormal_add_right _)
 
@@ -261,14 +269,6 @@ theorem range_omega : range omega = {x | ω ≤ x ∧ IsInitial x} := by
 
 theorem mem_range_omega_iff {x : Ordinal} : x ∈ range omega ↔ ω ≤ x ∧ IsInitial x := by
   rw [range_omega, mem_setOf]
-
-@[simp]
-theorem omega0_lt_omega_one : ω < ω₁ := by
-  rw [← omega_zero, omega_lt_omega]
-  exact zero_lt_one
-
-@[deprecated (since := "2025-12-22")]
-alias omega0_lt_omega1 := omega0_lt_omega_one
 
 end Ordinal
 
