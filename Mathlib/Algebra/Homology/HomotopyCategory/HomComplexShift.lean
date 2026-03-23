@@ -53,6 +53,7 @@ def rightShift (a n' : ℤ) (hn' : n' + a = n) : Cochain K (L⟦a⟧) n' :=
   Cochain.mk (fun p q hpq => γ.v p (p + n) rfl ≫
     (L.shiftFunctorObjXIso a q (p + n) (by lia)).inv)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma rightShift_v (a n' : ℤ) (hn' : n' + a = n) (p q : ℤ) (hpq : p + n' = q)
     (p' : ℤ) (hp' : p + n = p') :
     (γ.rightShift a n' hn').v p q hpq = γ.v p p' hp' ≫
@@ -120,6 +121,7 @@ lemma shift_v' (a : ℤ) (p q : ℤ) (hpq : p + n = q) :
   simp only [shift_v γ a p q hpq _ _ rfl rfl, shiftFunctor_obj_X, shiftFunctorObjXIso,
     HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rightUnshift_rightShift (a n' : ℤ) (hn' : n' + a = n) :
     (γ.rightShift a n' hn').rightUnshift n hn' = γ := by
@@ -128,6 +130,7 @@ lemma rightUnshift_rightShift (a n' : ℤ) (hn' : n' + a = n) :
     γ.rightShift_v _ _ hn' p (p + n') rfl q hpq,
     shiftFunctorObjXIso, assoc, Iso.inv_hom_id, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rightShift_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn' : n' + a = n) :
     (γ.rightUnshift n hn').rightShift a n' hn' = γ := by
@@ -152,6 +155,7 @@ lemma leftShift_leftUnshift {a n' : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ
     γ.leftUnshift_v n hn' (q - n) q (by lia) p hpq, Linear.comp_units_smul, smul_smul,
     Iso.hom_inv_id_assoc, Int.units_mul_self, one_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rightShift_add (a n' : ℤ) (hn' : n' + a = n) :
     (γ₁ + γ₂).rightShift a n' hn' = γ₁.rightShift a n' hn' + γ₂.rightShift a n' hn' := by
@@ -159,6 +163,7 @@ lemma rightShift_add (a n' : ℤ) (hn' : n' + a = n) :
   dsimp
   simp only [rightShift_v _ a n' hn' p q hpq _ rfl, add_v, add_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma leftShift_add (a n' : ℤ) (hn' : n + a = n') :
     (γ₁ + γ₂).leftShift a n' hn' = γ₁.leftShift a n' hn' + γ₂.leftShift a n' hn' := by
@@ -166,6 +171,7 @@ lemma leftShift_add (a n' : ℤ) (hn' : n + a = n') :
   dsimp
   simp only [leftShift_v _ a n' hn' p q hpq (p + a) (by lia), add_v, comp_add, smul_add]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma shift_add (a : ℤ) :
     (γ₁ + γ₂).shift a = γ₁.shift a + γ₂.shift a := by
@@ -276,6 +282,7 @@ lemma leftUnshift_add {n' a : ℤ} (γ₁ γ₂ : Cochain (K⟦a⟧) L n') (n : 
   change (leftShiftAddEquiv K L n a n' hn).symm (γ₁ + γ₂) = _
   apply map_add
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rightShift_smul (a n' : ℤ) (hn' : n' + a = n) (x : R) :
     (x • γ).rightShift a n' hn' = x • γ.rightShift a n' hn' := by
@@ -283,6 +290,7 @@ lemma rightShift_smul (a n' : ℤ) (hn' : n' + a = n) (x : R) :
   dsimp
   simp only [rightShift_v _ a n' hn' p q hpq _ rfl, smul_v, Linear.smul_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma leftShift_smul (a n' : ℤ) (hn' : n + a = n') (x : R) :
     (x • γ).leftShift a n' hn' = x • γ.leftShift a n' hn' := by
@@ -291,6 +299,7 @@ lemma leftShift_smul (a n' : ℤ) (hn' : n + a = n') (x : R) :
   simp only [leftShift_v _ a n' hn' p q hpq (p + a) (by lia), smul_v, Linear.comp_smul,
     smul_comm x]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma shift_smul (a : ℤ) (x : R) :
     (x • γ).shift a = x • (γ.shift a) := by
@@ -335,6 +344,7 @@ lemma leftShift_units_smul (a n' : ℤ) (hn' : n + a = n') (x : Rˣ) :
     (x • γ).leftShift a n' hn' = x • γ.leftShift a n' hn' := by
   apply leftShift_smul
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma shift_units_smul (a : ℤ) (x : Rˣ) :
     (x • γ).shift a = x • (γ.shift a) := by
@@ -376,6 +386,7 @@ lemma rightUnshift_comp {m : ℤ} {a : ℤ} (γ' : Cochain L (M⟦a⟧) m) {nm :
     comp_v _ _ (show n + m' = nm' by lia) p (p + n) q (by lia) (by lia),
     γ'.rightUnshift_v m' hm' (p + n) q (by lia) (p + n + m) rfl, assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma leftShift_comp (a n' : ℤ) (hn' : n + a = n') {m t t' : ℤ} (γ' : Cochain L M m)
     (h : n + m = t) (ht' : t + a = t') :
     (γ.comp γ' h).leftShift a t' ht' = (a * m).negOnePow • (γ.leftShift a n' hn').comp γ'
@@ -397,6 +408,7 @@ lemma leftShift_comp_zero_cochain (a n' : ℤ) (hn' : n + a = n') (γ' : Cochain
       (γ.leftShift a n' hn').comp γ' (add_zero n') := by
   rw [leftShift_comp γ a n' hn' γ' (add_zero _) hn', mul_zero, Int.negOnePow_zero, one_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a = m) :
     δ n' m' (γ.rightShift a n' hn') = a.negOnePow • (δ n m γ).rightShift a m' hm' := by
   by_cases hnm : n + 1 = m
@@ -417,6 +429,7 @@ lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a =
   · have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by lia)
     rw [δ_shape _ _ hnm', δ_shape _ _ hnm, rightShift_zero, smul_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n)
     (m m' : ℤ) (hm' : m' + a = m) :
     δ n m (γ.rightUnshift n hn) = a.negOnePow • (δ n' m' γ).rightUnshift m hm' := by
@@ -425,6 +438,7 @@ lemma δ_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn 
   simp only [rightUnshift_rightShift, γ'.δ_rightShift a n' m' hn m hm', rightUnshift_units_smul,
     smul_smul, Int.units_mul_self, one_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ_leftShift (a n' m' : ℤ) (hn' : n + a = n') (m : ℤ) (hm' : m + a = m') :
     δ n' m' (γ.leftShift a n' hn') = a.negOnePow • (δ n m γ).leftShift a m' hm' := by
   by_cases hnm : n + 1 = m
@@ -448,6 +462,7 @@ lemma δ_leftShift (a n' m' : ℤ) (hn' : n + a = n') (m : ℤ) (hm' : m + a = m
   · have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by lia)
     rw [δ_shape _ _ hnm', δ_shape _ _ hnm, leftShift_zero, smul_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ_leftUnshift {a n' : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n')
     (m m' : ℤ) (hm' : m + a = m') :
     δ n m (γ.leftUnshift n hn) = a.negOnePow • (δ n' m' γ).leftUnshift m hm' := by
@@ -456,6 +471,7 @@ lemma δ_leftUnshift {a n' : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn :
   simp only [leftUnshift_leftShift, γ'.δ_leftShift a n' m' hn m hm', leftUnshift_units_smul,
     smul_smul, Int.units_mul_self, one_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma δ_shift (a m : ℤ) :
     δ n m (γ.shift a) = a.negOnePow • (δ n m γ).shift a := by
@@ -470,6 +486,7 @@ lemma δ_shift (a m : ℤ) :
     rw [smul_comm]
   · rw [δ_shape _ _ hnm, δ_shape _ _ hnm, shift_zero, smul_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma leftShift_rightShift (a n' : ℤ) (hn' : n' + a = n) :
     (γ.rightShift a n' hn').leftShift a n hn' =
       (a * n + (a * (a - 1)) / 2).negOnePow • γ.shift a := by
@@ -479,6 +496,7 @@ lemma leftShift_rightShift (a n' : ℤ) (hn' : n' + a = n) :
   dsimp
   rw [id_comp, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma rightShift_leftShift (a n' : ℤ) (hn' : n + a = n') :
     (γ.leftShift a n' hn').rightShift a n hn' =
       (a * n' + (a * (a - 1)) / 2).negOnePow • γ.shift a := by

@@ -45,6 +45,7 @@ theorem FormallySmooth.iff_injective_lTensor_residueField.{u}
   rw [← IsLocalRing.split_injective_iff_lTensor_residueField_injective,
     P.formallySmooth_iff_split_injection]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem FormallySmooth.iff_injective_cotangentComplexBaseChange_residueField
     (P : Type*) [CommRing P] [Algebra R P] [Algebra P S]
     [IsScalarTower R P S] [FormallySmooth R P] [Module.Free P Ω[P⁄R]] [Module.Finite P Ω[P⁄R]]
@@ -59,6 +60,7 @@ theorem FormallySmooth.iff_injective_cotangentComplexBaseChange_residueField
   exact (((AlgebraTensorModule.cancelBaseChange P'.Ring S _ _ P'.ker).symm ≪≫ₗ
     P'.cotangentEquiv.baseChange (A := _)).injective_comp _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The **Jacobian criterion** for smoothness of local algebras.
 Suppose `S` is a local `R`-algebra, and `0 → I → P → S → 0` is a presentation such that

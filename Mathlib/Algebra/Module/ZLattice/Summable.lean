@@ -35,6 +35,7 @@ variable {ι : Type*} (b : Basis ι ℤ L)
 
 namespace ZLattice
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_forall_abs_repr_le_norm :
     ∃ (ε : ℝ), 0 < ε ∧ ∀ (x : L), ∀ i, ε * |b.repr x i| ≤ ‖x‖ := by
   wlog H : IsZLattice ℝ L
@@ -157,7 +158,6 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
 
 variable (L)
 
-set_option linter.flexible false in -- simp followed by positivity
 lemma exists_finsetSum_norm_rpow_le_tsum :
     ∃ A > (0 : ℝ), ∀ r < (-Module.finrank ℤ L : ℝ), ∀ s : Finset L,
       ∑ z ∈ s, ‖z‖ ^ r ≤ A ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) := by
@@ -187,7 +187,7 @@ lemma exists_finsetSum_norm_rpow_le_tsum :
     obtain ⟨n, hn⟩ : ∃ n : ℕ, u ⊆ Fintype.piFinset fun _ : I ↦ Finset.Icc (-n : ℤ) n := by
       obtain ⟨r, hr, hr'⟩ := u.finite_toSet.isCompact.isBounded.subset_closedBall_lt 0 0
       refine ⟨⌊r⌋.toNat, fun x hx ↦ ?_⟩
-      have hr'' : ⌊r⌋ ⊔ 0 = ⌊r⌋ := by simp; positivity
+      have hr'' : ⌊r⌋ ⊔ 0 = ⌊r⌋ := by rw [sup_eq_left]; positivity
       have := hr' hx
       simp only [Metric.mem_closedBall, dist_zero_right, pi_norm_le_iff_of_nonneg hr.le,
         Int.norm_eq_abs, ← Int.cast_abs, ← Int.le_floor] at this
@@ -237,6 +237,7 @@ lemma tsum_norm_rpow_le (r : ℝ) (hr : r < -Module.finrank ℤ L) :
       tsumNormRPowBound L ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) :=
   Summable.tsum_le_of_sum_le (summable_norm_rpow L r hr) (tsumNormRPowBound_spec L r hr)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) (x : E) :
     Summable fun z : L ↦ ‖z - x‖ ^ r := by
   cases subsingleton_or_nontrivial L

@@ -1,4 +1,6 @@
 import Mathlib.Tactic.TermCongr
+import Mathlib.Tactic.Basic
+import Batteries.Logic
 
 /-!
 `congr(...)` tests needing no additional imports
