@@ -97,10 +97,7 @@ lemma σ_objMk₁_of_le {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : i ≤
     rw [objMk₁_of_le_castSucc, objMk₁_of_le_castSucc _ _ (by simpa)]
     by_cases hk' : k ≤ j.castSucc
     · rwa [Fin.predAbove_of_le_castSucc _ _ hk', Fin.castSucc_castPred]
-    · simp only [not_le] at hk'
-      rw [Fin.predAbove_of_castSucc_lt _ _ hk']
-      refine h.trans ?_
-      rwa [Fin.castSucc_le_castSucc_iff, Fin.le_pred_iff, ← Fin.castSucc_lt_iff_succ_le]
+    · grind [Fin.predAbove]
 
 lemma σ_objMk₁_of_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : j.castSucc < i) :
     Δ[1].σ j (objMk₁.{u} i) = objMk₁ i.succ := by
