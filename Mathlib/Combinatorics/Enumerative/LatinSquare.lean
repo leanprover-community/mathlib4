@@ -672,4 +672,3 @@ theorem latin_rectangle_extends_to_latin_square
 end Completion
 
 end LatinSquare
-#min_imports
