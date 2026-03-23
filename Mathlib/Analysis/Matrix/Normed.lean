@@ -77,7 +77,7 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 @[instance_reducible]
 protected def seminormedAddCommGroup : SeminormedAddCommGroup (Matrix m n α) :=
-  Pi.seminormedAddCommGroup
+  fast_instance% Pi.seminormedAddCommGroup
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
@@ -502,6 +502,7 @@ matrix. -/
 @[instance_reducible, local instance]
 def frobeniusSeminormedAddCommGroup [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
+  fast_instance%
   @PiLp.seminormedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 2 _)
 
 /-- Normed group instance (using the Frobenius norm) for matrices over a normed group.  Not
@@ -509,7 +510,7 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 @[instance_reducible, local instance]
 def frobeniusNormedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) :=
-  @PiLp.normedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 2 _)
+  fast_instance% @PiLp.normedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 2 _)
 
 /-- This applies to the Frobenius norm. -/
 @[local instance]
@@ -535,6 +536,7 @@ matrix. -/
 @[instance_reducible, local instance]
 def frobeniusNormedSpace [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
+  fast_instance%
   letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
   letI := PiLp.normedSpaceSeminormedAddCommGroupToPi (R := R) 2 (fun _ : n ↦ α)
   PiLp.normedSpaceSeminormedAddCommGroupToPi 2 _
