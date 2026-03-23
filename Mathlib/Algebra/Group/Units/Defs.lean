@@ -538,6 +538,28 @@ theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
 instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
   h
 
+@[grind =]
+theorem mul_iff₃ {a b c : M} (ha : IsUnit a) (hc : IsUnit c) :
+    IsUnit (a * b * c) ↔ IsUnit b := by
+  refine ⟨fun habc => ?_, fun hb => ?_⟩
+  · let bx : Mˣ :=
+      { val := ha.unit⁻¹ * habc.unit * hc.unit⁻¹
+        inv := hc.unit * habc.unit⁻¹ * ha.unit
+        val_inv := by norm_cast; simp [← mul_assoc]
+        inv_val := by norm_cast; simp [← mul_assoc] }
+    have : bx = b := by
+      calc ha.unit⁻¹ * habc.unit * hc.unit⁻¹ = ha.unit⁻¹ * (ha.unit * b * hc.unit) * hc.unit⁻¹ :=
+          rfl
+        _ = (ha.unit⁻¹ * ha.unit) * b * (hc.unit * hc.unit⁻¹) := by simp only [← mul_assoc]
+        _ = b := by simp
+    exact ⟨bx, this⟩
+  · let abcx : Mˣ :=
+      { val := ha.unit * hb.unit * hc.unit
+        inv := hc.unit⁻¹ * hb.unit⁻¹ * ha.unit⁻¹
+        val_inv := by norm_cast; simp [← mul_assoc]
+        inv_val := by norm_cast; simp [← mul_assoc] }
+    exact ⟨abcx, rfl⟩
+
 end Monoid
 
 section DivisionMonoid
