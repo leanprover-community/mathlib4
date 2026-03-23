@@ -437,11 +437,10 @@ def suggestAnnotationsTac (tac : Syntax) : TacticM (Option (Array Name)) := do
   let candidates := collectCandidates (← getEnv) goalType.getUsedConstants
   if candidates.isEmpty then return none
   let succeedsWith (names : Array Name) : TacticM Bool :=
-    withTempImplicitReducible names do
-      withTheReader Core.Context ({ · with maxHeartbeats := 0 }) do
-        withOptions (·.setBool `backward.isDefEq.respectTransparency true) do
-          try Term.withoutErrToSorry <| evalTactic tac; pure true
-          catch _ => pure false
+    withTempImplicitReducible names do withCurrHeartbeats do
+      withOptions (·.setBool `backward.isDefEq.respectTransparency true) do
+        try Term.withoutErrToSorry <| evalTactic tac; notM MonadLog.hasErrors
+        catch _ => pure false
   minimizeCandidates succeedsWith candidates
 
 /-- Try to find a (possibly non-unique) minimal set of semireducible constants that, when marked
@@ -474,12 +473,10 @@ def suggestAnnotationsCmd (cmd : Syntax) : CommandElabM (Option (Array Name)) :=
     withTempImplicitReducibleCmd names do
       withScope (fun scope =>
         { scope with opts := scope.opts.setBool `Elab.async false
-            |>.setBool `backward.isDefEq.respectTransparency true
-            |>.insert `maxHeartbeats (.ofNat 0) }) do
+            |>.setBool `backward.isDefEq.respectTransparency true }) do
         try
           elabCommand cmd
-          let hasErrors := (← get).messages.hasErrors
-          return !hasErrors
+          notM MonadLog.hasErrors
         catch _ => return false
   minimizeCandidates succeedsWith candidates
 
