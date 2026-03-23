@@ -89,11 +89,11 @@ variable {M} in
 theorem integerNormalization_eq_zero_iff [IsDomain R] (hM : M ≤ nonZeroDivisors R) (p : S[X]) :
     integerNormalization M p = 0 ↔ p = 0 := by
   obtain ⟨_, hb₁, hb₂⟩ := integerNormalization_spec M p
-  have := isDomain_of_le_nonZeroDivisors S hM
+  haveI := isDomain_of_le_nonZeroDivisors S hM
   have := (faithfulSMul_iff_algebraMap_injective R S).mpr <| IsLocalization.injective S hM
   have : Function.Injective ⇑(mapRingHom (algebraMap R S)) := by
     rw [coe_mapRingHom, map_injective_iff]
-    exact (faithfulSMul_iff_algebraMap_injective R S).mp this
+    exact IsLocalization.injective S hM
   rw [← _root_.map_eq_zero_iff (mapRingHom (algebraMap R S)) this, coe_mapRingHom, hb₂]
   exact smul_eq_zero_iff_right <| nonZeroDivisors.ne_zero (hM hb₁)
 
@@ -128,7 +128,7 @@ variable [CommRing C]
 
 theorem integerNormalization_eq_zero_iff {p : K[X]} :
     integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 :=
-  IsLocalization.integerNormalization_eq_zero_iff (fun _ a ↦ a) p
+  IsLocalization.integerNormalization_eq_zero_iff le_rfl p
 
 variable (A K C)
 
