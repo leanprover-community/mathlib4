@@ -47,21 +47,15 @@ open scoped Manifold ContDiff
 
 @[expose] public section
 
--- TODO: revisit and fix this once the dust has settled
-set_option backward.isDefEq.respectTransparency false
-
 variable
   -- Let `M` be a `C^k` real manifold modeled on `(E, H)`
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {M : Type*}
   -- Let `V` be a bundle over `M`, endowed with a Riemannian metric.
   (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
   {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
-  [∀ x, AddCommGroup (V x)] [∀ x, Module ℝ (V x)]
-  [∀ x : M, TopologicalSpace (V x)]
-  [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
-  [FiberBundle F V] [RiemannianBundle V]
+  [∀ x, NormedAddCommGroup (V x)] [∀ x, InnerProductSpace ℝ (V x)]
 
 /-! # Compatible connections
 
@@ -85,17 +79,10 @@ noncomputable abbrev product (σ τ : Π x : M, V x) : M → ℝ :=
 
 -- `product` is C^k if σ and τ are: this is shown in `Riemannian.lean`
 
--- Performance hack: TODO find a better fix, see
--- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Slow.20Riemannian.20geometry/with/580396376
-attribute [instance 900] NormedAddGroup.toAddGroup SeminormedAddGroup.toAddGroup
-  NormedAlgebra.toAlgebra
-
 local notation "⟪" σ ", " τ "⟫" => product σ τ
 
 -- Basic API for the product of two sections.
 section product
-
-omit [TopologicalSpace M]
 
 lemma product_apply (x) : ⟪σ, τ⟫ x = inner ℝ (σ x) (τ x) := rfl
 
@@ -162,19 +149,16 @@ end product
 
 -- These lemmas are necessary as my Lie bracket identities (assuming minimal differentiability)
 -- only hold point-wise. They abstract the expanding and unexpanding of `product`.
-omit [TopologicalSpace M] in
 lemma product_congr_left {x} (h : σ x = σ' x) : product σ τ x = product σ' τ x := by
   rw [product_apply, h, ← product_apply]
 
-omit [TopologicalSpace M] in
 lemma product_congr_left₂ {x} (h : σ x = σ' x + σ'' x) :
     product σ τ x = product σ' τ x + product σ'' τ x := by
   rw [product_apply, h, inner_add_left, ← product_apply]
-omit [TopologicalSpace M] in
+
 lemma product_congr_right {x} (h : τ x = τ' x) : product σ τ x = product σ τ' x := by
   rw [product_apply, h, ← product_apply]
 
-omit [TopologicalSpace M] in
 lemma product_congr_right₂ {x} (h : τ x = τ' x + τ'' x) :
     product σ τ x = product σ τ' x + product σ τ'' x := by
   rw [product_apply, h, inner_add_right, ← product_apply]
@@ -183,8 +167,8 @@ namespace CovariantDerivative
 
 -- Let `cov` be a covariant derivative on `V`.
 -- TODO: include in cheat sheet!
-variable (cov : CovariantDerivative I F V)
-
+variable [TopologicalSpace M] [ChartedSpace H M] [FiberBundle F V]
+  (cov : CovariantDerivative I F V)
 
 /-- Local notation for a covariant derivative on a vector bundle acting on a vector field and a
 section. -/
