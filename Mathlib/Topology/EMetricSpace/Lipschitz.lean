@@ -319,8 +319,10 @@ protected theorem continuousOn (hf : LipschitzOnWith K f s) : ContinuousOn f s :
   hf.uniformContinuousOn.continuousOn
 
 protected theorem weaken (hf : LipschitzOnWith K f s) {K' : ℝ≥0} (h : K ≤ K') :
-    LipschitzOnWith K' f s :=
-  fun _ hx _ hy => (hf hx hy).trans <| mul_left_mono (ENNReal.coe_le_coe.2 h)
+    LipschitzOnWith K' f s := by
+  unfold LipschitzOnWith at hf ⊢
+  grw [← h]
+  exact hf
 
 theorem edist_le_mul_of_le (h : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
     {r : ℝ≥0∞} (hr : edist x y ≤ r) :

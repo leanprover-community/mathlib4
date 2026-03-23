@@ -517,7 +517,7 @@ theorem ofObjects_le_iff : ofObjects r s ≤ c ↔ s ⊆ c.extent := by
     (isExtent_extent c).lowerPolar_upperPolar_subset⟩
 
 theorem le_ofObjects_of_extent_subset (h : c.extent ⊆ s) : c ≤ ofObjects r s := by
-  simpa using (lowerPolar_anti r).comp (upperPolar_anti r) h
+  simpa using (lowerPolar_antitone r).comp (upperPolar_antitone r) h
 
 @[simp]
 theorem le_ofAttributes_iff : c ≤ ofAttributes r t ↔ t ⊆ c.intent := by
@@ -527,7 +527,7 @@ theorem le_ofAttributes_iff : c ≤ ofAttributes r t ↔ t ⊆ c.intent := by
 
 theorem ofAttributes_le_of_intent_subset (h : c.intent ⊆ t) : ofAttributes r t ≤ c := by
   rw [← intent_subset_intent_iff]
-  simpa using (upperPolar_anti r).comp (lowerPolar_anti r) h
+  simpa using (upperPolar_antitone r).comp (lowerPolar_antitone r) h
 
 theorem ofObject_le_ofAttribute_iff {a b} : ofObject r a ≤ ofAttribute r b ↔ r a b := by
   simp

@@ -80,10 +80,10 @@ lemma add_right_inj_of_ne_top (h : a ≠ ⊤) : a + b = a + c ↔ b = c :=
   (add_right_injective_of_ne_top _ h).eq_iff
 
 lemma add_left_strictMono_of_ne_top (h : b ≠ ⊤) : StrictMono (fun x ↦ x + b) :=
-  add_left_mono.strictMono_of_injective <| add_left_injective_of_ne_top _ h
+  add_left_monotone.strictMono_of_injective <| add_left_injective_of_ne_top _ h
 
 lemma add_right_strictMono_of_ne_top (h : b ≠ ⊤) : StrictMono (fun x ↦ b + x) :=
-  add_right_mono.strictMono_of_injective <| add_right_injective_of_ne_top _ h
+  add_right_monotone.strictMono_of_injective <| add_right_injective_of_ne_top _ h
 
 @[simp]
 lemma add_le_add_iff_left_of_ne_top (h : a ≠ ⊤) : b + a ≤ c + a ↔ b ≤ c :=

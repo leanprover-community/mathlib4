@@ -90,7 +90,7 @@ lemma epow_right_mono (h : x ≠ 0) : Monotone (fun y : ℕ∞ ↦ x ^ y) := by
     · exact (h (lt_one_iff_eq_zero.1 x_0)).rec
     · simp only [one_epow, le_refl]
     · simp only [epow_top x_2, le_top]
-  · exact pow_right_mono₀ (one_le_iff_ne_zero.2 h) (Nat.cast_le.1 y_z)
+  · exact pow_right_monotone₀ (one_le_iff_ne_zero.2 h) (Nat.cast_le.1 y_z)
 
 lemma one_le_epow (h : x ≠ 0) : 1 ≤ x ^ y :=
   le_of_eq_of_le (by simp) (epow_right_mono h (zero_le y))
@@ -103,7 +103,7 @@ lemma epow_left_mono : Monotone (fun x : ℕ∞ ↦ x ^ y) := by
     · rw [lt_one_iff_eq_zero.1 x_0, zero_epow_top]; exact bot_le
     · rw [one_epow]; exact one_le_epow (one_le_iff_ne_zero.1 x_z)
     · rw [epow_top (x_2.trans_le x_z)]; exact le_top
-  · simp only [epow_natCast, (pow_left_mono _) x_z]
+  · simp only [epow_natCast, (pow_left_monotone _) x_z]
 
 lemma epow_eq_zero_iff : x ^ y = 0 ↔ x = 0 ∧ y ≠ 0 := by
   refine ⟨fun h ↦ ⟨?_, fun y_0 ↦ ?_⟩, fun h ↦ h.1.symm ▸ zero_epow h.2⟩

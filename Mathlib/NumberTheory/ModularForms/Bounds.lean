@@ -241,7 +241,8 @@ lemma ModularFormClass.exists_bound {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup (GL 
   lift t to NNReal using ht.le
   rw [← coe_nnnorm]
   norm_cast at ⊢ ht
-  rw [(pow_left_mono k).map_max, (pow_left_mono 2).map_max, ← max_div_div_right (by positivity)]
+  rw [(pow_left_monotone k).map_max, (pow_left_monotone 2).map_max,
+    ← max_div_div_right (by positivity)]
   congr <;> simp [field, ht.ne']
 
 local notation "𝕢" => Function.Periodic.qParam
