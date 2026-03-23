@@ -153,7 +153,8 @@ theorem isNoetherian_of_finite_isArtinian {R} [CommRing R] [Module R M]
     let e (I : Ideal R) : R ⧸ I →ₛₗ[Ideal.Quotient.mk I] R ⧸ I := ⟨.id _, fun _ _ ↦ rfl⟩
     rw [(e _).isNoetherian_iff_of_bijective Function.bijective_id]
     refine @instIsNoetherianRingOfIsArtinianRing _ _ ?_
-    rw [IsArtinianRing, ← (e _).isArtinian_iff_of_bijective Function.bijective_id]
+    rw [IsArtinianRing, ← (e _).isArtinian_iff_of_bijective Function.bijective_id,
+      (LinearMap.quotKerEquivRange _).isArtinian_iff]
     infer_instance
   infer_instance
 
