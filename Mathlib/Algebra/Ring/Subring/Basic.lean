@@ -385,7 +385,7 @@ theorem center_toSubsemiring : (center R).toSubsemiring = Subsemiring.center R :
 
 variable {R}
 
-theorem mem_center_iff {R} [Ring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
+theorem mem_center_iff {R : Type*} [Ring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
   Subsemigroup.mem_center_iff
 
 instance decidableMemCenter {R} [Ring R] [DecidableEq R] [Fintype R] :
