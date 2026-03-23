@@ -73,7 +73,7 @@ theorem finrank_fixedSubmodule_add_le :
     finrank K e.fixedSubmodule + finrank K f.fixedSubmodule ≤
       finrank K ↥(e.fixedSubmodule ⊔ f.fixedSubmodule) +
         finrank K (e * f).fixedSubmodule := by
-  have := finrank_mono (inf_fixedSubmodule_le_fixedSubmodule_mul e f)
+  have := finrank_mono (fixedSubmodule_inf_fixedSubmodule_le_comp e.toLinearMap f.toLinearMap)
   rwa [← Nat.add_le_add_iff_left, finrank_sup_add_finrank_inf_eq] at this
 
 theorem finrank_le_one_add_finrank_fixedSubmodule_dilatransvection
@@ -110,8 +110,6 @@ theorem finrank_fixedSubmodule_mul_dilatransvection_le (hf : f ∈ dilatransvect
   conv_rhs => rw [show e = (e * f) * f⁻¹ from by aesop]
   rw [← inv_mem_dilatransvections_iff] at hf
   exact le_one_add_finrank_fixedSubmodule_mul_dilatransvection (e * f) f⁻¹ hf
-
-
 
 theorem fixedSubmodule_transvection_mul
     {f : Dual K V} {v : V} {e : V ≃ₗ[K] V}
@@ -241,7 +239,7 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_ne_smul_id
   | zero =>
     -- this part is identical, makes a lemma ?
     simp only [zero_tsub, pow_zero, one_mul]
-    suffices e = 1 by
+    suffices e = refl K V by
       rw [this]; exact one_mem_dilatransvections
     rw [← fixedSubmodule_eq_top_iff]
     apply Submodule.eq_top_of_finrank_eq
@@ -273,7 +271,9 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_ne_smul_id
       have ht_fixed {f : Dual K V} {u : V}
           (hf : e.fixedSubmodule ⊔ K ∙ (e u - u) ≤ LinearMap.ker f) :
           e.fixedSubmodule ≤ (t hf).fixedSubmodule := fun x hx ↦ by
-        simp only [mem_fixedSubmodule_iff, t, transvection.apply, add_eq_left, smul_eq_zero]
+        simp only [mem_fixedSubmodule_iff, t]
+        simp only [transvection.coe_toLinearMap]
+        simp only [LinearMap.transvection.apply, add_eq_left, smul_eq_zero]
         left
         rw [← LinearMap.mem_ker]
         apply hf
