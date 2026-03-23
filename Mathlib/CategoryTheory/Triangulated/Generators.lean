@@ -128,7 +128,7 @@ instance : P.triangEnvelope.IsStableUnderRetracts where
     obtain ⟨n, hn⟩ := hY
     exact ⟨n, IsStableUnderRetracts.of_retract r hn⟩
 
-lemma triangEnvelope.containsZero {X : C} (h : P X) : P.triangEnvelope.ContainsZero := 
+lemma triangEnvelope.containsZero {X : C} (h : P X) : P.triangEnvelope.ContainsZero :=
   IsStableUnderRetracts.containsZero _ (P.le_triangEnvelope X h)
 
 instance [P.ContainsZero] : P.triangEnvelope.ContainsZero := by
@@ -152,7 +152,7 @@ instance [IsTriangulated C] : P.triangEnvelope.IsTriangulatedClosed₂ := by
   use n + (m + 1)
   rw [triangEnvelopeIter_add' P rfl]
   exact le_retractClosure _ _ ⟨_, _, _, _, _, hT, hn, hm⟩
-  
+
 lemma triangEnvelope.isTriangulated [IsTriangulated C] {X : C} (h : P X) :
     P.triangEnvelope.IsTriangulated where
   exists_zero := by
@@ -180,5 +180,5 @@ lemma IsStrongTriangulatedGenerator.isClassicalTriangulatedGenerator
   obtain ⟨n, hn⟩ := h
   intro X
   exact (P.triangEnvelopeIter_le_triangEnvelope n) _ (hn X)
-  
+
 end CategoryTheory.ObjectProperty
