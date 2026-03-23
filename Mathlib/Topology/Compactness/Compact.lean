@@ -539,7 +539,7 @@ theorem isCompact_generateFrom [T : TopologicalSpace X]
   have hSF : ∀ x ∈ s, ∃ t, x ∈ t ∧ t ∈ S ∧ t ∉ F := by simpa [nhds_generateFrom] using hF
   choose! U hxU hSU hUF using hSF
   obtain ⟨Q, hQU, hQ, hsQ⟩ := h (U '' s) (by simpa [Set.subset_def])
-    (fun x hx ↦ Set.mem_sUnion_of_mem (hxU _ hx) (by aesop))
+    (fun x hx ↦ Set.mem_sUnion_of_mem (hxU _ hx) (by grind))
   have : ∀ s ∈ Q, s ∉ F := fun s hsQ ↦ (hQU hsQ).choose_spec.2 ▸ hUF _ (hQU hsQ).choose_spec.1
   have hQF : ⋂₀ (compl '' Q) ∈ F.sets := by simpa [Filter.biInter_mem hQ, F.compl_mem_iff_notMem]
   have : ⋃₀ Q ∉ F := by
@@ -1051,6 +1051,11 @@ theorem IsCompact.prod {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
 /-- Finite topological spaces are compact. -/
 instance (priority := 100) Finite.compactSpace [Finite X] : CompactSpace X where
   isCompact_univ := finite_univ.isCompact
+
+/-- The indiscrete topology is compact -/
+-- see note [lower instance priority]
+instance (priority := 100) instCompactSpace [IndiscreteTopology X] : CompactSpace X where
+  isCompact_univ f hf := by simp [clusterPt_of_indiscreteTopology, nonempty_of_neBot f]
 
 instance ULift.compactSpace [CompactSpace X] : CompactSpace (ULift.{v} X) :=
   IsClosedEmbedding.uliftDown.compactSpace
