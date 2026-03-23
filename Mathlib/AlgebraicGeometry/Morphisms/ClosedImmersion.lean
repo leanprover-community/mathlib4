@@ -336,7 +336,7 @@ lemma Spec_iff {R : CommRingCat} {f : X ⟶ Spec R} :
       change f = X.isoSpec.hom ≫ Spec.map φ
       simp only [Scheme.isoSpec, asIso_hom, Spec.map_comp, ← Scheme.toSpecΓ_naturality_assoc,
         ← SpecMap_ΓSpecIso_hom, φ]
-      simp only [← Spec.map_comp, Iso.inv_hom_id, Spec.map_id, Category.comp_id]
+      simp
   · rintro ⟨I, e, rfl⟩
     infer_instance
 
