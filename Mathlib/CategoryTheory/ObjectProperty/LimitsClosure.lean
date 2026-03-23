@@ -170,13 +170,8 @@ lemma strictLimitsClosureStep_strictLimitsClosureIter_eq_self :
     choose o ho ho' using hF
     obtain ⟨m, hm, hm'⟩ : ∃ (m : Ordinal.{w}) (hm : m < κ.ord), ∀ (j : J a), o j ≤ m := by
       refine ⟨⨆ j, o ((equivShrink.{w} (J a)).symm j),
-<<<<<<< HEAD
-          Ordinal.iSup_lt_of_lt_cof ?_ (fun _ ↦ ho _), fun j ↦ ?_⟩
-      · rw [hκ.cof_eq, ← hasCardinalLT_iff_cardinal_mk_lt _ κ,
-=======
           Ordinal.iSup_lt_ord ?_ (fun _ ↦ ho _), fun j ↦ ?_⟩
       · rw [hκ.cof_ord, ← hasCardinalLT_iff_cardinal_mk_lt _ κ,
->>>>>>> cof_eq
           ← hasCardinalLT_iff_of_equiv (equivShrink.{w} (J a))]
         exact h a
       · obtain ⟨j, rfl⟩ := (equivShrink.{w} (J a)).symm.surjective j
