@@ -709,7 +709,6 @@ theorem coe_inclusion (s : S) : (inclusion h s : A) = s :=
 
 namespace inclusion
 
-set_option backward.isDefEq.respectTransparency false in
 scoped instance isScalarTower_left (X) [SMul X R] [SMul X A] [IsScalarTower X R A] :
     letI := (inclusion h).toModule; IsScalarTower X S T :=
   letI := (inclusion h).toModule
@@ -877,7 +876,6 @@ theorem rangeS_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algeb
   rw [algebraMap_eq, Algebra.algebraMap_self, RingHom.id_comp, ← toSubsemiring_subtype,
     Subsemiring.rangeS_subtype]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem range_algebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
     (S : Subalgebra R A) : (algebraMap S A).range = S.toSubring := by

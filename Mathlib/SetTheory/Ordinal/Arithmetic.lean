@@ -247,8 +247,9 @@ theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSu
 @[simp]
 theorem typein_ordinal (o : Ordinal.{u}) :
     @typein Ordinal (· < ·) _ o = Ordinal.lift.{u + 1} o := by
-  refine Quotient.inductionOn o ?_
-  rintro ⟨α, r, wo⟩; apply Quotient.sound
+  induction o using Quotient.inductionOn with | _ w
+  obtain ⟨α, r, wo⟩ := w
+  apply Quotient.sound
   constructor; refine ((RelIso.preimage Equiv.ulift r).trans (enum r).symm).symm
 
 theorem mk_Iio_ordinal (o : Ordinal.{u}) :
@@ -663,15 +664,10 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
         Sum.lex_inl_inl] using h
 
 theorem mul_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
-    a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c :=
-  ⟨fun h _ l => (mul_le_mul_right l.le _).trans h, fun H =>
-    -- We use the `induction` tactic in order to change `h`/`H` too.
-    le_of_not_gt <| by
-      induction a using inductionOn with
-      | H α r =>
-        induction b using inductionOn with
-        | H β s =>
-          exact mul_le_of_limit_aux h H⟩
+    a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c := by
+  refine ⟨fun h _ l ↦ (mul_le_mul_right l.le _).trans h, fun H ↦ le_of_not_gt ?_⟩
+  induction a, b using inductionOn₂ with | type α r β s
+  exact mul_le_of_limit_aux h H
 
 theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) := by
   refine .of_succ_lt (fun b ↦ ?_) fun hb ↦ ?_
