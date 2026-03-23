@@ -107,12 +107,12 @@ lemma le_card_filter [Nonempty W] [Nonempty α]
       true_and, eq_comm, ← Sum.isRight_iff] at hx
     simpa [hx, Sum.not_isLeft.mpr hx] using h_le hadj
   have h_card_filter_subset_eq (x) (hx : x ∈ univ.map .inr) :
-      #{x ∈ (univ.map .inl).powerset ∩ (G.neighborFinset x).powerset | #x = card α}
+      #{x ∈ {y ∈ (univ.map .inl).powerset | y ∈ (G.neighborFinset x).powerset} | #x = card α}
         = #{x ∈ (G.neighborFinset x).powerset | #x = card α} := by
-    simp_rw [inter_eq_right.mpr <| h_subset x hx]
+    simp_rw [filter_mem_eq_inter, inter_eq_right.mpr <| h_subset x hx]
   simp_rw [card_filter, sum_product_right, ← card_filter, powersetCard_eq_filter,
-    filter_comm, ← mem_powerset, filter_mem_eq_inter, sum_congr rfl h_card_filter_subset_eq,
-    ← powersetCard_eq_filter, card_powersetCard, card_neighborFinset_eq_degree, Nat.cast_sum,
+    filter_comm, ← mem_powerset, sum_congr rfl h_card_filter_subset_eq, ← powersetCard_eq_filter,
+    card_powersetCard, card_neighborFinset_eq_degree, Nat.cast_sum,
     ← le_inv_mul_iff₀ (mod_cast card_pos : 0 < (card W : ℝ)), mul_sum,
     div_eq_mul_inv _ (card W : ℝ), mul_comm _ (card W : ℝ)⁻¹, mul_sum, sum_map,
     Function.Embedding.inr_apply]
@@ -133,8 +133,8 @@ lemma card_edgeFinset_le_bound_of_completeBipartiteGraph_free [Nonempty α] [Non
       ← Sum.isRight_eq_false, bot_adj, iff_false, not_or, not_and_or, Bool.not_eq_false,
       Sum.isRight_iff, IsEmpty.exists_iff, not_false_eq_true, true_or, and_true, or_true,
       implies_true]
-    rw [h_bot, le_bot_iff] at h_le
-    simp_rw [Set.toFinset_card, h_le, edgeSet_bot, ← Set.toFinset_card,
+    simp_rw [h_bot, le_iff_adj, bot_adj, imp_false, ← eq_bot_iff_forall_not_adj] at h_le
+    simp_rw [edgeFinset_card, h_le, edgeSet_bot, ← Set.toFinset_card,
       Set.toFinset_empty, Finset.card_empty, Nat.cast_zero]
     exact bound_nonneg (card V) (card W)
       (Nat.one_le_cast.mpr card_pos) (Nat.one_le_cast.mpr card_pos)
@@ -146,8 +146,10 @@ lemma card_edgeFinset_le_bound_of_completeBipartiteGraph_free [Nonempty α] [Non
           coe_univ, Set.image_univ, Set.mem_range, eq_comm, ← Sum.isLeft_iff, ← Sum.isRight_iff]
         exact h_le hadj
     have h_sum_degrees_eq_card_edges : ∑ w : W, ↑(G.degree (Sum.inr w)) = #G.edgeFinset := by
-      simp_rw [← isBipartiteWith_sum_degrees_eq_card_edges' h_isBipartiteWith,
-        Finset.sum_map, Function.Embedding.inr_apply]
+      rw [← isBipartiteWith_sum_degrees_eq_card_edges' h_isBipartiteWith, Finset.sum_map]
+      conv =>
+        enter [2, 2, x]
+        rw [Function.Embedding.inr_apply]
     rcases lt_or_ge (∑ w : W, G.degree (.inr w) : ℝ) ((card α - 1) * (card W) : ℝ)
         with h_sum_lt | h_avg
     -- if avg degree less than `card a - 1`
