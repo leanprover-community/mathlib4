@@ -638,6 +638,10 @@ lemma sqrt_eq_cfc {a : A} : sqrt a = cfc NNReal.sqrt a := by
   unfold sqrt
   rw [cfcₙ_eq_cfc]
 
+lemma sqrt_of_not_nonneg {a : A} (ha : ¬0 ≤ a) : sqrt a = 0 := by
+  rw [sqrt_eq_cfc]
+  exact cfc_apply_of_not_predicate _ ha
+
 lemma sqrt_sq (a : A) (ha : 0 ≤ a := by cfc_tac) : sqrt (a ^ 2) = a := by
   rw [pow_two, sqrt_mul_self (A := A) a]
 
@@ -716,15 +720,25 @@ lemma _root_.IsUnit.cfcNNRpow (a : A) (y : ℝ≥0) (ha_unit : IsUnit a) (hy : y
     (ha : 0 ≤ a := by cfc_tac) : IsUnit (a ^ y) :=
   (isUnit_nnrpow_iff a y hy ha).mpr ha_unit
 
-@[grind =]
 lemma isUnit_sqrt_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : IsUnit (sqrt a) ↔ IsUnit a := by
   rw [sqrt_eq_rpow]
   exact isUnit_rpow_iff a _ (by simp) ha
 
+@[grind =]
+lemma isUnit_sqrt_iff_isStrictlyPositive {a : A} : IsUnit (sqrt a) ↔ IsStrictlyPositive a := by
+  refine ⟨fun h => ?_, by grind [isUnit_sqrt_iff]⟩
+  rw [IsStrictlyPositive.iff_of_unital]
+  have ha : 0 ≤ a := by
+    nontriviality
+    by_contra H
+    rw [CFC.sqrt_of_not_nonneg H] at h
+    exact not_isUnit_zero h
+  refine ⟨ha, ?_⟩
+  rwa [isUnit_sqrt_iff _ ha] at h
+
 @[aesop safe apply]
-lemma _root_.IsUnit.cfcSqrt (a : A) (ha_unit : IsUnit a) (ha : 0 ≤ a := by cfc_tac) :
-    IsUnit (sqrt a) :=
-  (isUnit_sqrt_iff a ha).mpr ha_unit
+lemma _root_.IsUnit.cfcSqrt (a : A) (ha : IsStrictlyPositive a := by cfc_tac) :
+    IsUnit (sqrt a) := by grind
 
 @[aesop safe apply]
 lemma _root_.IsStrictlyPositive.nnrpow (a : A) (y : ℝ≥0) (hy : y ≠ 0)
@@ -746,6 +760,58 @@ lemma inverse_rpow (a : A) (x : ℝ) (hx : x ≠ 0) (ha : IsStrictlyPositive a :
     simp
   rw [← inverse_eq_rpow_neg_one (by grind)] at this
   rw [this]
+
+omit [IsTopologicalRing A] [T2Space A] in
+@[aesop safe apply]
+lemma _root_.IsStrictlyPositive.ringInverse {a : A} (ha : IsStrictlyPositive a) :
+    IsStrictlyPositive (Ring.inverse a) := by
+  rw [CFC.inverse_eq_rpow_neg_one]
+  cfc_tac
+
+omit [IsTopologicalRing A] [T2Space A] in
+@[grind =]
+lemma _root_.isStrictlyPositive_ringInverse_iff {a : A} :
+    IsStrictlyPositive (Ring.inverse a) ↔ IsStrictlyPositive a := by
+  nontriviality A
+  refine ⟨fun h => ?_, IsStrictlyPositive.ringInverse⟩
+  have ha : IsUnit a := by
+    by_contra H
+    rw [Ring.inverse_non_unit _ H, IsStrictlyPositive.iff_of_unital] at h
+    exact not_isUnit_zero h.2
+  have : a = Ring.inverse (Ring.inverse a) := by rw [Ring.inverse_inverse ha]
+  rw [this]
+  exact h.ringInverse
+
+omit [IsTopologicalRing A] [T2Space A] in
+open Ring in
+lemma ringInverse_nonneg_iff_nonneg_of_isUnit {a : A} (ha : IsUnit a) :
+    0 ≤ inverse a ↔ 0 ≤ a := by
+  refine ⟨?_, ?_⟩
+  · grind =>
+      have : IsStrictlyPositive (inverse a)
+      finish
+  · grind =>
+      have : IsStrictlyPositive (inverse a)
+      finish
+
+open Ring in
+lemma sqrt_ringInverse {a : A} : sqrt (inverse a) = inverse (sqrt a) := by
+  by_cases ha : IsStrictlyPositive a
+  · rw [sqrt_eq_rpow, sqrt_eq_rpow, inverse_rpow _ _ (by grind),
+        inverse_eq_rpow_neg_one, rpow_rpow _ _ _ (by grind)]
+    grind only
+  · have ha' : ¬IsUnit (sqrt a) := by rwa [CFC.isUnit_sqrt_iff_isStrictlyPositive]
+    have hcases : ¬0 ≤ a ∨ ¬IsUnit a := by grind
+    obtain H|H := hcases
+    · have h₁ : sqrt a = 0 := by rw [sqrt_of_not_nonneg H]
+      rw [h₁, inverse_zero]
+      by_cases hunit : IsUnit a
+      · have h₂ : ¬0 ≤ inverse a := by grind [CFC.ringInverse_nonneg_iff_nonneg_of_isUnit]
+        rw [sqrt_of_not_nonneg h₂]
+      · rw [inverse_non_unit _ hunit]
+        simp
+    · rw [inverse_non_unit _ ha', inverse_non_unit _ H]
+      simp
 
 /-- For an element `a` in a C⋆-algebra, TFAE:
 1. `a` is strictly positive,

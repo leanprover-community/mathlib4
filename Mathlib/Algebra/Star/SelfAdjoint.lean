@@ -73,6 +73,8 @@ theorem all [Star R] [TrivialStar R] (r : R) : IsSelfAdjoint r :=
 theorem star_eq [Star R] {x : R} (hx : IsSelfAdjoint x) : star x = x :=
   hx
 
+grind_pattern star_eq => IsSelfAdjoint x, star x
+
 theorem _root_.isSelfAdjoint_iff [Star R] {x : R} : IsSelfAdjoint x ↔ star x = x :=
   Iff.rfl
 
@@ -222,6 +224,19 @@ protected theorem natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
 @[simp]
 protected theorem ofNat (n : ℕ) [n.AtLeastTwo] : IsSelfAdjoint (ofNat(n) : R) :=
   .natCast n
+
+@[aesop safe apply, grind ←]
+protected theorem ringInverse {a : A} [Semiring A] [StarRing A]
+    (ha : IsSelfAdjoint a) : IsSelfAdjoint (Ring.inverse a) := by
+  rw [isSelfAdjoint_iff] at ha ⊢
+  rw [← Ring.inverse_star, ha]
+
+theorem _root_.isSelfAdjoint_ringInverse_iff {a : A} [Semiring A] [StarRing A] (ha : IsUnit a) :
+    IsSelfAdjoint (Ring.inverse a) ↔ IsSelfAdjoint a := by
+  refine ⟨fun h => ?_, fun h => h.ringInverse⟩
+  grind =>
+    have : a = Ring.inverse (Ring.inverse a)
+    instantiate only [IsSelfAdjoint.ringInverse]
 
 end Semiring
 

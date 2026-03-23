@@ -122,23 +122,29 @@ theorem eq_mul_inverse_iff_mul_eq (x y z : M₀) (h : IsUnit z) : x = y * invers
   ⟨fun h1 => by rw [h1, inverse_mul_cancel_right _ _ h],
   fun h1 => by rw [← h1, mul_inverse_cancel_right _ _ h]⟩
 
-variable (M₀)
-
+variable (M₀) in
 @[simp]
 theorem inverse_one : inverse (1 : M₀) = 1 :=
   inverse_unit 1
 
+variable (M₀) in
 @[simp]
 theorem inverse_zero : inverse (0 : M₀) = 0 := by
   nontriviality
   exact inverse_non_unit _ not_isUnit_zero
 
+@[grind =]
+theorem inverse_inverse {a : M₀} (h : IsUnit a) : inverse (inverse a) = a := by
+  obtain ⟨u, rfl⟩ := h
+  rw [inverse_unit, inverse_unit, inv_inv]
+
 end Ring
 
+@[aesop safe apply]
 theorem IsUnit.ringInverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
   | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (Ring.inverse_unit u).symm⟩
 
-@[simp]
+@[simp, grind =]
 theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
   ⟨fun h => by
     cases subsingleton_or_nontrivial M₀
@@ -147,6 +153,37 @@ theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
       rw [Ring.inverse_non_unit _ h]
       exact not_isUnit_zero,
     IsUnit.ringInverse⟩
+
+@[grind =]
+theorem Ring.inverse_mul {a b : M₀} (h : IsUnit a ∨ IsUnit b) :
+    inverse (a * b) = inverse b * inverse a := by
+  cases h
+  case inl ha =>
+    by_cases hb : IsUnit b
+    · have h₁ : a * b = ha.unit * hb.unit := rfl
+      rw [← Units.val_mul] at h₁
+      rw [h₁, Ring.inverse_unit, Ring.inverse_of_isUnit ha, Ring.inverse_of_isUnit hb]
+      simp
+    · have h₁ : ¬IsUnit (a * b) := by
+        intro H
+        grind =>
+          have : IsUnit (inverse a * (a * b)) := ha.ringInverse.mul H
+          have : inverse a * a = 1 := Ring.inverse_mul_cancel _ ha
+          finish
+      simp [inverse_non_unit _ h₁, inverse_non_unit _ hb]
+  case inr hb =>
+    by_cases ha : IsUnit a
+    · have h₁ : a * b = ha.unit * hb.unit := rfl
+      rw [← Units.val_mul] at h₁
+      rw [h₁, Ring.inverse_unit, Ring.inverse_of_isUnit ha, Ring.inverse_of_isUnit hb]
+      simp
+    · have h₁ : ¬IsUnit (a * b) := by
+        intro H
+        grind =>
+          have : IsUnit ((a * b) * inverse b) := H.mul hb.ringInverse
+          have : b * inverse b = 1 := Ring.mul_inverse_cancel _ hb
+          finish
+      simp [inverse_non_unit _ h₁, inverse_non_unit _ ha]
 
 namespace Units
 
