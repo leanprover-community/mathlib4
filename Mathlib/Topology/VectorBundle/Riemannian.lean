@@ -439,8 +439,9 @@ noncomputable scoped instance (priority := 80)
     before `IsTopologicalAddGroup` to avoid the following loop: to put a `IsTopologicalAddGroup`
     structure on `E b`, one tries to find a `NormedAddCommGroup`, then one tries to apply the
     current instance. If `IsTopologicalAddGroup (E b)` were before `RiemannianBundle`, then one
-    would try to find a `IsTopologicalAddGroup`, and loop. Normally, loops are detected by typeclass
-    inference but currently it is not in this specific complicated situation. -/
+    would try to find a `IsTopologicalAddGroup` to apply the instance, and loop.
+    Normally, loops are detected by typeclass inference but here it is not the case as the loop is
+    at different depth levels. See lean4#13063. -/
     [h : RiemannianBundle E] [∀ (b : B), IsTopologicalAddGroup (E b)]
     [∀ (b : B), ContinuousConstSMul ℝ (E b)] (b : B) :
     NormedAddCommGroup (E b) := fast_instance%
