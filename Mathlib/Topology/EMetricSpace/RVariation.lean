@@ -209,7 +209,6 @@ theorem mono (f : α → E) {s t : Set α} (hst : t ⊆ s) :
   intro n u hu ut
   exact sum_le hr hr' hu fun i => hst (ut i)
 
-@[simp]
 theorem rEVariationOn_of_empty (r : ℝ≥0∞) (f : α → E) : rEVariationOn r f ∅ = 0 := by
   unfold rEVariationOn; split_ifs <;> simp
 
