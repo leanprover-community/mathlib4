@@ -3,11 +3,12 @@ Copyright (c) 2025 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+module
 
-import Mathlib.Analysis.LocallyConvex.Polar
-import Mathlib.Analysis.LocallyConvex.WeakDual
-import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+public import Mathlib.Analysis.LocallyConvex.Polar
+public import Mathlib.Analysis.LocallyConvex.WeakDual
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Analysis.LocallyConvex.Separation
 
 /-!
 
@@ -26,6 +27,10 @@ import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 
 bipolar, locally convex space
 -/
+
+public section
+
+open scoped ComplexOrder
 
 variable {𝕜 E F : Type*}
 
@@ -67,7 +72,7 @@ open scoped ComplexConjugate
 theorem flip_polar_polar_eq {s : Set E} [Nonempty s] :
     B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
   refine subset_antisymm ?_ <| closedAbsConvexHull_min (E := WeakBilin B)
-    (subset_bipolar B s) (polar_absConvex _) (polar_isClosed B.flip _)
+    (subset_bipolar B s) (absConvex_polar _) (polar_isClosed B.flip _)
   rw [← Set.compl_subset_compl]
   -- Let `x` be an element not in `(closedAbsConvexHull 𝕜) s`
   intro x hx
@@ -75,7 +80,8 @@ theorem flip_polar_polar_eq {s : Set E} [Nonempty s] :
   -- `(closedAbsConvexHull 𝕜) s` and `x`
   obtain ⟨f, ⟨u, ⟨hf₁, hf₂⟩⟩⟩ :=
     RCLike.geometric_hahn_banach_closed_point (𝕜 := 𝕜) (E := WeakBilin B)
-      absConvex_convexClosedHull.2 isClosed_closedAbsConvexHull hx
+      (by rw [← convex_RCLike_iff_convex_real (K := 𝕜)]; exact absConvex_convexClosedHull.2)
+      isClosed_closedAbsConvexHull hx
   -- `0` is in `(closedAbsConvexHull 𝕜) s` so `u` must be strictly positive
   have f_zero_lt_u : RCLike.re (f 0) < u :=
     (hf₁ 0) (absConvexHull_subset_closedAbsConvexHull zero_mem_absConvexHull)

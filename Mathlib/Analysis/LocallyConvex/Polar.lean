@@ -6,6 +6,7 @@ Authors: Moritz Doll, Kalle Kytölä
 module
 
 public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.Topology.Algebra.Module.WeakBilin
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
@@ -301,17 +302,17 @@ namespace LinearMap
 
 section NormedField
 
-variable [NormedField 𝕜] [NormedSpace ℝ 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [RCLike 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
 
-variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F] [IsScalarTower ℝ 𝕜 𝕜]
-
-theorem polar_absConvex : AbsConvex 𝕜 (B.polar s) :=
-  polar_eq_biInter_preimage B s ▸ AbsConvex.iInter₂ fun i _ =>
+open ComplexOrder in
+theorem absConvex_polar : AbsConvex 𝕜 (B.polar s) := by
+  rw [polar_eq_biInter_preimage]
+  exact AbsConvex.iInter₂ fun i hi =>
     ⟨balanced_closedBall_zero.mulActionHom_preimage (f := (B i : (F →ₑ[(RingHom.id 𝕜)] 𝕜))),
-      (convex_closedBall _ _).linear_preimage (B i)⟩
+      (convex_RCLike_iff_convex_real.mpr (convex_closedBall 0 1)).linear_preimage _⟩
 
 end NormedField
 

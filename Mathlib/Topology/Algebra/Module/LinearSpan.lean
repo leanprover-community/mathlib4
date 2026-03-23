@@ -3,15 +3,17 @@ Copyright (c) 2025 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.LinearAlgebra.Finsupp.Span
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
+module
+
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.LinearAlgebra.Finsupp.Span
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 
 /-!
 # Linear Span
@@ -34,6 +36,8 @@ import Mathlib.Analysis.LocallyConvex.WithSeminorms
 span, continuous
 
 -/
+
+public section
 
 open Topology TopologicalSpace
 

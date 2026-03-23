@@ -187,10 +187,11 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 namespace LinearMap
 
+open ContinuousLinearMap in
 lemma dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := by
   rintro ⟨f₁, hf₁⟩
   have mem_span :
-    f₁ ∈ Submodule.span 𝕜 (⇑(WeakBilin.eval B).CLMtoLinearMap₂ '' Set.univ) := by
+    f₁ ∈ Submodule.span 𝕜 (⇑((coeLMₛₗ _).comp (WeakBilin.eval B)) '' Set.univ) := by
       rw [Set.image_univ, mem_span_iff_continuous _]
       convert hf₁
       simpa [WeakBilin.instTopologicalSpace] using Eq.symm (induced_to_pi ..)
