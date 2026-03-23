@@ -6,18 +6,15 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.IntegralRepresentation
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog.Basic
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
-import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
-import Mathlib.Analysis.Calculus.LHopital
 
 /-!
-# FIXME
+# Conjugating by the square root of a positive operator
+
+This file defines `conjSqrt c a` as `sqrt c * a * sqrt c`, and develops API for this operation.
 
 ## Main declarations
+
+* `conjSqrt c`: the map `fun a => sqrt c * a * sqrt c`, bundled as a continuous linear map,
 -/
 
 namespace CFC
@@ -29,22 +26,25 @@ variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
   [NonnegSpectrumClass ℝ A] [SeparatelyContinuousMul A]
   [IsTopologicalRing A] [T2Space A]
 
-noncomputable def conjSqrt (c : A) : A →L[ℝ] A where
+/-- Conjugation by the square root of an operator, i.e. `sqrt c * a * sqrt c`. -/
+@[expose]
+public noncomputable def conjSqrt (c : A) : A →L[ℝ] A where
   toFun a := sqrt c * a * sqrt c
   map_add' a b := by grind
   map_smul' r a := by simp
 
 omit [IsTopologicalRing A] [T2Space A] in
-lemma conjSqrt_apply {c a : A} : conjSqrt c a = sqrt c * a * sqrt c := rfl
+public lemma conjSqrt_apply {c a : A} : conjSqrt c a = sqrt c * a * sqrt c := rfl
 
 @[grind =]
-lemma isStrictlyPositive_conjSqrt_iff {c a : A} (hc : IsStrictlyPositive c) :
+public lemma isStrictlyPositive_conjSqrt_iff (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
     IsStrictlyPositive (conjSqrt c a) ↔ IsStrictlyPositive a := by
   have hc' : IsSelfAdjoint (sqrt c) := by cfc_tac
   rw [conjSqrt_apply]
   by_cases ha : IsSelfAdjoint a <;> grind
 
-lemma inverse_conjSqrt {c a : A} (hc : IsStrictlyPositive c) :
+@[grind _=_]
+public lemma inverse_conjSqrt (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
     inverse (conjSqrt c a) = conjSqrt (inverse c) (inverse a) := by
   by_cases ha : IsUnit a
   · grind [conjSqrt_apply, sqrt_ringInverse]
@@ -53,7 +53,7 @@ lemma inverse_conjSqrt {c a : A} (hc : IsStrictlyPositive c) :
     simp
 
 @[grind =]
-lemma conjSqrt_ringInverse_conjSqrt {c a : A} (hc : IsStrictlyPositive c) :
+public lemma conjSqrt_ringInverse_conjSqrt (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
     conjSqrt (inverse c) (conjSqrt c a) = a := by
   rw [conjSqrt_apply, conjSqrt_apply]
   have : sqrt (inverse c) * sqrt c = 1 := by
@@ -67,7 +67,7 @@ lemma conjSqrt_ringInverse_conjSqrt {c a : A} (hc : IsStrictlyPositive c) :
   grind only
 
 @[grind =]
-lemma conjSqrt_conjSqrt_ringInverse {c a : A} (hc : IsStrictlyPositive c) :
+public lemma conjSqrt_conjSqrt_ringInverse (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
     conjSqrt c (conjSqrt (inverse c) a) = a := by
   rw [conjSqrt_apply, conjSqrt_apply]
   have : sqrt (inverse c) * sqrt c = 1 := by
@@ -81,25 +81,28 @@ lemma conjSqrt_conjSqrt_ringInverse {c a : A} (hc : IsStrictlyPositive c) :
   grind only
 
 @[grind =]
-lemma conjSqrt_one {c : A} (hc : IsStrictlyPositive c) : conjSqrt c 1 = c := by
+public lemma conjSqrt_one (c : A) (hc : IsStrictlyPositive c := by cfc_tac) : conjSqrt c 1 = c := by
   rw [conjSqrt_apply, mul_one, sqrt_mul_sqrt_self _]
 
-lemma conjSqrt_ringInverse_self {c : A} (hc : IsStrictlyPositive c) : conjSqrt (inverse c) c = 1 := by
-  rw [← conjSqrt_one hc]
-  grind
+@[grind =]
+public lemma conjSqrt_ringInverse_self (c : A) (hc : IsStrictlyPositive c := by cfc_tac) :
+    conjSqrt (inverse c) c = 1 := by
+  grind =>
+    have : conjSqrt c 1 = c
+    finish
 
-lemma conjSqrt_of_not_nonneg {c a : A} (hc : ¬0 ≤ c) : conjSqrt c a = 0 := by
+public lemma conjSqrt_of_not_nonneg {c a : A} (hc : ¬0 ≤ c) : conjSqrt c a = 0 := by
   have : sqrt c = 0 := by rw [sqrt_of_not_nonneg hc]
   simp [conjSqrt_apply, this]
 
-lemma conjSqrt_monotone {c : A} : Monotone (conjSqrt c) := by
+public lemma conjSqrt_monotone {c : A} : Monotone (conjSqrt c) := by
   intro a b hab
   by_cases hc : 0 ≤ c
   · exact IsSelfAdjoint.conjugate_le_conjugate hab (by cfc_tac)
   · simp [conjSqrt_of_not_nonneg hc]
 
 @[gcongr]
-lemma conjSqrt_le_conjSqrt {c a b : A} (h : a ≤ b) : conjSqrt c a ≤ conjSqrt c b :=
+public lemma conjSqrt_le_conjSqrt {c a b : A} (h : a ≤ b) : conjSqrt c a ≤ conjSqrt c b :=
   conjSqrt_monotone h
 
 end CFC
