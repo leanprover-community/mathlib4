@@ -208,14 +208,14 @@ theorem singularValues_eq_zero_iff_le_finrank_range {n : ℕ} :
 @[simp]
 theorem singularValues_zero : (0 : E →ₗ[𝕜] F).singularValues = 0 := by
   ext1 i
-  rw [Finsupp.zero_apply, singularValues_eq_zero_iff_le_finrank_range_self, range_zero]
+  rw [Finsupp.zero_apply, singularValues_eq_zero_iff_le_finrank_range, range_zero]
   simp
 
 @[simp]
 theorem singularValues_eq_zero_iff : T.singularValues = 0 ↔ T = 0 := by
   constructor <;> intro h
   · rw [← range_eq_bot, ← Submodule.finrank_eq_zero, ← Nat.le_zero,
-      ← singularValues_eq_zero_iff_le_finrank_range_self, h, Finsupp.zero_apply]
+      ← singularValues_eq_zero_iff_le_finrank_range, h, Finsupp.zero_apply]
   · exact h ▸ singularValues_zero
 
 end LinearMap
