@@ -331,6 +331,9 @@ def mapOfCompatibleSMul' : M ⊗[A] N →ₗ[R] M ⊗[R] N where
   map_smul' _ x := x.induction_on (map_zero _) (fun _ _ ↦ by simp [smul_tmul'])
     fun _ _ h h' ↦ by simpa using congr($h + $h')
 
+@[simp] lemma mapOfCompatibleSMul'_apply (x : M ⊗[A] N) :
+    mapOfCompatibleSMul' R A M N x = mapOfCompatibleSMul R A M N x := rfl
+
 /-- If the R- and A-actions on M and N satisfy `CompatibleSMul` both ways,
 then `M ⊗[A] N` is canonically isomorphic to `M ⊗[R] N`. -/
 def equivOfCompatibleSMul [CompatibleSMul A R M N] : M ⊗[A] N ≃ₗ[A] M ⊗[R] N where

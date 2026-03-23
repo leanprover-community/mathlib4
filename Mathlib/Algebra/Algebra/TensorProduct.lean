@@ -8,6 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.Algebra.Exact
 
 /-!
 # Construction of the tensor product over an algebra from the tensor product over its ring
@@ -36,110 +37,78 @@ variable {N : Type*} [AddCommMonoid N] [Module R N] [Module A N] [IsScalarTower 
 open _root_.TensorProduct
 
 variable (R A M N) in
-/-- The (additive) generators of the kernel of the natural map `M ⊗[R] N → M ⊗[A] N`. -/
-def elem_rel : SubMulAction A (M ⊗[R] N) where
-  carrier := { (a • m) ⊗ₜ[R] n - m ⊗ₜ[R] (a • n) | (a : A) (m: M) (n : N)}
-  smul_mem' := by
-    intros a _ hx
-    obtain ⟨a', m, n, h⟩ := hx
-    use a', a • m, n
-    simp_rw [←h, smul_sub, ←smul_tmul', sub_left_inj, smul_smul, mul_comm]
-
-omit [IsScalarTower R A N] in
-lemma elem_rel_mem (x : (M ⊗[R] N)) : x ∈ (elem_rel R A M N) ↔
-    (∃ (a : A) (m : M) (n : N), x = (a • m) ⊗ₜ[R] n - m ⊗ₜ[R] (a • n)) := by
-  simp_rw [←SetLike.mem_coe, ←SubMulAction.mem_carrier, elem_rel, Set.mem_setOf, eq_comm]
-
-variable (R A M N) in
-/-- The module of relations in `(M ⊗[R] N)` that have to be divided out to obtain `(M ⊗[A] N)` -/
-abbrev rels := (Submodule.span A ((elem_rel R A M N) : Set (M ⊗[R] N)))
+abbrev rels := (Submodule.span A ({(a • m) ⊗ₜ[R] n - m ⊗ₜ[R] (a • n) | (a : A) (m: M) (n : N)}))
 
 variable (R A M N) in
 /-- The tensor product `(M ⊗[A] N)` constructed as a quotient of `(M ⊗[R] N)` -/
 abbrev mk := (M ⊗[R] N) ⧸ (rels R A M N)
 
 variable (R A M N) in
-/-- The natural bilinear map into the algebra-based construction of the tensor product -/
-def bil_to_mk : M →ₗ[A] N →ₗ[A] (mk R A M N) where
-  toFun m := {
-    toFun n := (rels R A M N).mkQ (m⊗ₜn)
-    map_add' _ _ := by simp [tmul_add]
-    map_smul' a n := by
-      rw [RingHom.id_apply, ←LinearMap.map_smul, ←sub_eq_zero, ←LinearMap.map_sub,smul_tmul',
-        ←LinearMap.mem_ker, Submodule.ker_mkQ, ←neg_mem_iff]
-      refine Submodule.mem_span_of_mem ?_
-      rw [SetLike.mem_coe, elem_rel_mem]
-      use a, m, n
-      simp}
-  map_add' _ _ := by ext _; simp [add_tmul]
-  map_smul' _ _ := by
-    ext _
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, RingHom.id_apply,
-      LinearMap.smul_apply, ←LinearMap.map_smul, smul_tmul']
-
-omit [IsScalarTower R A N] in
-@[simp] lemma bil_to_mk_apply (m : M) (n : N) : bil_to_mk R A M N m n = ⟦m⊗ₜn⟧ := rfl
+lemma rels_in_ker : (rels R A M N) ≤ (mapOfCompatibleSMul' A R M N).ker := by
+  rw [Submodule.span_le]
+  rintro x ⟨a, m, n, h⟩
+  simp [← h, smul_tmul]
 
 variable (R A M N) in
-/-- The natural map from the tensor product to the algebra-based construction of the tensor product.
--/
-abbrev tens_to_mk := TensorProduct.lift (bil_to_mk R A M N)
-
-omit [IsScalarTower R A N] in
-lemma tens_to_mk_apply (m : M) (n : N) : tens_to_mk R A M N (m⊗ₜn) = ⟦m⊗ₜn⟧ := rfl
-
-variable (R A M N) in
-lemma span_in_ker : (rels R A M N) ≤ (mapOfCompatibleSMul' A R M N).ker := by
-  simp_rw [LinearMap.le_ker_iff_comp_subtype_eq_zero, Submodule.linearMap_eq_zero_iff_of_eq_span
-   (S:=((elem_rel R A M N) : Set (M ⊗[R] N) )) , LinearMap.coe_comp, Submodule.coe_subtype,
-   Function.comp_apply, Subtype.forall]
-  intro _ hx
-  rw [SetLike.mem_coe, elem_rel_mem] at hx
-  obtain ⟨_, _, _, heq⟩ := hx
-  simp [heq, mapOfCompatibleSMul', smul_tmul]
-
-
-variable (R A M N) in
-/-- The natural map from the algebra-based construction of the tensor product to
-the tensor product. -/
-abbrev mk_to_tens := Submodule.liftQ (rels R A M N) (mapOfCompatibleSMul' A R M N)
-  (span_in_ker R A M N)
-
-@[simp]
-lemma mk_to_tens_apply (m : M) (n : N) : mk_to_tens R A M N ⟦m⊗ₜn⟧ = m⊗ₜn := rfl
-
-variable (R A M N) in
-/-- The equivalence between the algebra-based construction of the tensor product
-and the tensor product. -/
+/-- The equivalence between the algebra-based construction of the tensor product `mk`
+and the general construction of the tensor product. -/
 def mk_eq_tens : (mk R A M N) ≃ₗ[A] M ⊗[A] N where
-  toLinearMap := mk_to_tens R A M N
-  invFun := tens_to_mk R A M N
+  toLinearMap := Submodule.liftQ (rels R A M N) (mapOfCompatibleSMul' A R M N) (rels_in_ker R A M N)
+  invFun : M ⊗[A] N →ₗ[A] mk R A M N := TensorProduct.lift ({
+    toFun m := {
+      toFun n := (rels R A M N).mkQ (m⊗ₜn)
+      map_add' _ _ := by simp [tmul_add]
+      map_smul' a n := by
+        symm
+        simp_rw [Submodule.mkQ_apply, ←Submodule.Quotient.mk_smul, Submodule.Quotient.eq]
+        exact Submodule.subset_span ⟨a, m, n, rfl⟩ }
+    map_add' _ _ := by ext _; simp [add_tmul]
+    map_smul' _ _ := by simp; rfl })
   left_inv := by
-    rw [Function.leftInverse_iff_comp]
-    ext z
-    obtain ⟨y, hy⟩ := Quotient.exists_rep z
-    obtain ⟨_, h⟩ := exists_finset (y)
-    simp_rw [←hy, h, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Function.comp_apply, id_eq,
-      Submodule.Quotient.mk''_eq_mk, ←Submodule.mkQ_apply, map_sum, Submodule.mkQ_apply,
-      ←Submodule.Quotient.mk''_eq_mk, mk_to_tens_apply, tens_to_mk_apply]
+    intro x
+    obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
+    induction x using TensorProduct.induction_on <;> simp_all
   right_inv := by
-    rw [Function.rightInverse_iff_comp]
-    ext z
-    obtain ⟨_, h⟩ := exists_finset (z)
-    simp [h]
+    intro x
+    induction x using TensorProduct.induction_on <;> simp_all
 
 variable (R A M N) in
-lemma compose_eq_mkQ : (tens_to_mk R A M N) ∘ₗ (mapOfCompatibleSMul' A R M N)
-    = (rels R A M N).mkQ := by
-  ext _ _
-  simp [mapOfCompatibleSMul', Submodule.Quotient.mk''_eq_mk]
+@[simp]
+lemma mk_eq_tens_mapOfCompatibleSMul' : mk_eq_tens R A M N ∘ₗ (rels R A M N).mkQ
+    = (mapOfCompatibleSMul' A R M N) := rfl
 
-variable (R A M N) in
-lemma CompatibleSMul_ker_eq_span : (mapOfCompatibleSMul' A R M N).ker = (rels R A M N)
+variable (R A) in
+@[simp]
+lemma mk_eq_tens_tmul_apply (m : M) (n : N) : mk_eq_tens R A M N  ((rels R A M N).mkQ  (m⊗ₜ[R] n))
+    = m⊗ₜ[A] n := by
+  unfold mk_eq_tens
+  simp [Submodule.liftQ_apply]
+
+variable (R A) in
+@[simp]
+lemma mk_eq_tens_inv_tmul_apply (m : M) (n : N) :
+    (mk_eq_tens R A M N).symm (m⊗ₜ[A] n) =  (rels R A M N).mkQ  (m⊗ₜ[R] n) := by
+  unfold mk_eq_tens
+  simp
+
+lemma rels_tens_mk_exact : Function.Exact ((rels R A M N).subtype) (mapOfCompatibleSMul' A R M N)
     := by
-  have h : (mk_eq_tens R A M N).symm.toLinearMap = tens_to_mk R A M N := rfl
-  simp_rw [←LinearEquiv.ker_comp (mk_eq_tens R A M N).symm (mapOfCompatibleSMul' A R M N),
-  h, compose_eq_mkQ, Submodule.ker_mkQ]
+  rw [LinearMap.exact_iff]
+  ext x
+  constructor
+  · intro h
+    rw [← mk_eq_tens_mapOfCompatibleSMul', LinearEquiv.ker_comp] at h
+    simp_all
+  · intro h
+    apply (rels_in_ker R A M N)
+    simp_all
+
+
+
+
+
+
+
 
 end Algebra.TensorProduct.FromRing
 
