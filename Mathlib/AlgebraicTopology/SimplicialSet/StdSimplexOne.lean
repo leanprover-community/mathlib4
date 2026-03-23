@@ -101,10 +101,7 @@ lemma σ_objMk₁_of_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : j.cas
   dsimp [SimplicialObject.σ, SimplexCategory.σ]
   change objMk₁.{u} i (j.predAbove k) = _
   by_cases hk : i < k
-  · obtain ⟨k, rfl⟩ := Fin.eq_succ_of_ne_zero (Fin.ne_zero_of_lt hk)
-    rw [Fin.predAbove_of_castSucc_lt _ _ (h.trans hk),
-      objMk₁_of_le_castSucc _ _ (by simpa [Fin.le_castSucc_iff]),
-      objMk₁_of_le_castSucc _ _ (by simpa [Fin.le_castSucc_iff])]
+  · grind [Fin.predAbove_of_castSucc_lt, objMk₁_of_le_castSucc]
   · simp only [not_lt] at hk
     rw [objMk₁_of_castSucc_lt i.succ k (by simpa),
       objMk₁_of_castSucc_lt]
