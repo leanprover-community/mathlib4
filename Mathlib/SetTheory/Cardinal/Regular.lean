@@ -104,6 +104,16 @@ theorem isRegular_aleph_one : IsRegular ℵ₁ := by
 theorem cof_omega_one : cof ω₁ = ℵ₁ := by
   simpa using isRegular_aleph_one.cof_omega_eq
 
+theorem _root_.Ordinal.iSup_lt_omega_one {α : Type*} [Countable α] {f : α → Ordinal}
+    (hf : ∀ i, f i < ω₁) : ⨆ i, f i < ω₁ :=
+  Ordinal.lift_iSup_lt_of_lt_cof (by simp) hf
+
+@[deprecated (since := "2026-03-23")]
+alias iSup_sequence_lt_omega_one := Ordinal.iSup_lt_omega_one
+
+@[deprecated (since := "2025-12-22")]
+alias iSup_sequence_lt_omega1 := Ordinal.iSup_lt_omega_one
+
 theorem isRegular_preAleph_add_one {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (o + 1)) := by
   rw [preAleph_add_one]
   exact isRegular_succ (aleph0_le_preAleph.2 h)
@@ -127,36 +137,6 @@ theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (ℵ_ (succ o)) :=
 @[simp]
 theorem cof_omega_add_one (o : Ordinal) : (ω_ (o + 1)).cof = ℵ_ (o + 1) :=
   (isRegular_aleph_add_one o).cof_omega_eq
-
-theorem _root_.Ordinal.iSup_lt_omega_one {α : Type*} [Countable α] {f : α → Ordinal}
-    (hf : ∀ i, f i < ω₁) : ⨆ i, f i < ω₁ := by
-  apply Ordinal.lift_iSup_lt_of_lt_cof _ hf
-  simpa
-
-section Omega1
-
-namespace Ordinal
-
-open Cardinal
-open scoped Ordinal
-
--- TODO: generalize universes, and use ω₁.
-lemma iSup_sequence_lt_omega_one {α : Type u} [Countable α]
-    (o : α → Ordinal.{max u v}) (ho : ∀ n, o n < (aleph 1).ord) :
-    iSup o < (aleph 1).ord := by
-  apply iSup_lt_ord_lift _ ho
-  rw [Cardinal.isRegular_aleph_one.cof_eq]
-  exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
-
-@[deprecated (since := "2025-12-22")]
-alias iSup_sequence_lt_omega1 := iSup_sequence_lt_omega_one
-
-end Ordinal
-
-end Omega1
-
-
-#exit
 
 lemma IsRegular.lift {κ : Cardinal.{v}} (h : κ.IsRegular) :
     (Cardinal.lift.{u} κ).IsRegular := by
