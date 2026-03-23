@@ -246,19 +246,19 @@ theorem Subset.antisymm_iff {s₁ s₂ : Finset α} : s₁ = s₂ ↔ s₁ ⊆ s
 
 theorem not_subset : ¬s ⊆ t ↔ ∃ x ∈ s, x ∉ t := by simp only [← coe_subset, Set.not_subset, mem_coe]
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-16")]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-16"), nolint synTaut]
 theorem le_eq_subset : ((· ≤ ·) : Finset α → Finset α → Prop) = (· ⊆ ·) :=
   rfl
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-16")]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-16"), nolint synTaut]
 theorem lt_eq_subset : ((· < ·) : Finset α → Finset α → Prop) = (· ⊂ ·) :=
   rfl
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-16")]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-16"), nolint synTaut]
 theorem le_iff_subset {s₁ s₂ : Finset α} : s₁ ≤ s₂ ↔ s₁ ⊆ s₂ :=
   Iff.rfl
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-16")]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-16"), nolint synTaut]
 theorem lt_iff_ssubset {s₁ s₂ : Finset α} : s₁ < s₂ ↔ s₁ ⊂ s₂ :=
   Iff.rfl
 

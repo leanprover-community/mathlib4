@@ -101,19 +101,19 @@ theorem sup_eq_union : ((· ⊔ ·) : Set α → Set α → Set α) = (· ∪ ·
 theorem inf_eq_inter : ((· ⊓ ·) : Set α → Set α → Set α) = (· ∩ ·) :=
   rfl
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-16")]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-16"), nolint synTaut]
 theorem le_eq_subset : (· ≤ ·) = ((· ⊆ ·) : Set α → Set α → Prop) :=
   rfl
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-16")]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-16"), nolint synTaut]
 theorem lt_eq_ssubset : ((· < ·) : Set α → Set α → Prop) = (· ⊂ ·) :=
   rfl
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-16")]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-16"), nolint synTaut]
 theorem le_iff_subset : s ≤ t ↔ s ⊆ t :=
   Iff.rfl
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-16")]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-16"), nolint synTaut]
 theorem lt_iff_ssubset : s < t ↔ s ⊂ t :=
   Iff.rfl
 

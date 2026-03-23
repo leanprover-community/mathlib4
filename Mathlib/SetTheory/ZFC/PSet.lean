@@ -160,11 +160,11 @@ theorem Subset.congr_right : ∀ {x y z : PSet}, Equiv x y → (z ⊆ x ↔ z �
       let ⟨a, ab⟩ := βα b
       ⟨a, cb.trans (Equiv.symm ab)⟩⟩
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-18")]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-18"), nolint synTaut]
 theorem le_def (x y : PSet) : x ≤ y ↔ x ⊆ y :=
   Iff.rfl
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-18")]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-18"), nolint synTaut]
 theorem lt_def (x y : PSet) : x < y ↔ x ⊂ y :=
   Iff.rfl
 
