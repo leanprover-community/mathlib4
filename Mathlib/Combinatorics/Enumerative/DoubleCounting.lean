@@ -214,16 +214,15 @@ lemma sum_card_eq_sum_card_fiber_biUnion
     (s : Finset ι) :
     ∑ j ∈ s, (Finset.card (B j)) =
     ∑ x ∈ (s.biUnion B), Finset.card {j | j ∈ s ∧ x ∈ B j} := by
-      let r : ι → α → Prop := fun j x => x ∈ B j
-      have g := Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow r (s := s)
-        (t := s.biUnion B)
-      unfold Finset.bipartiteAbove Finset.bipartiteBelow r at g
-      have hB : ∀ j ∈ s, {b ∈ s.biUnion B | b ∈ B j} = B j := by grind
-      have hB' : ∀ b, ({a ∈ s | b ∈ B a} : Finset ι) = ({j | j ∈ s ∧ b ∈ B j} : Finset ι) := by
-        grind
-      rw [Finset.sum_congr rfl (fun j hj => by rw [hB j hj])] at g
-      simp [hB', g]
-
+  let r : ι → α → Prop := fun j x => x ∈ B j
+  have g := Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow r (s := s)
+    (t := s.biUnion B)
+  unfold Finset.bipartiteAbove Finset.bipartiteBelow r at g
+  have hB : ∀ j ∈ s, {b ∈ s.biUnion B | b ∈ B j} = B j := by grind
+  have hB' : ∀ b, ({a ∈ s | b ∈ B a} : Finset ι) = ({j | j ∈ s ∧ b ∈ B j} : Finset ι) := by
+    grind
+  rw [Finset.sum_congr rfl (fun j hj => by rw [hB j hj])] at g
+  simp [hB', g]
 
 end Bipartite
 
