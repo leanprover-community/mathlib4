@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Finiteness.Defs
 
 ## Main definitions
 * `IsStablyFree`: A module `M` over a commutative ring `R` is called stably free if there exists a
-  finite free `N` over `R` such that `M ⊕ N` is free.
+  finite free module `N` over `R` such that `M ⊕ N` is free.
 -/
 
 @[expose] public section
@@ -21,7 +21,8 @@ public import Mathlib.RingTheory.Finiteness.Defs
 universe u v
 
 /-- A module `M` over a commutative ring `R` is called stably free if there exists a
-  finite free `N` over `R` such that `M ⊕ N` is free. -/
+  finite free module `N` over `R` such that `M ⊕ N` is free. -/
+@[stacks 0BC3 "(2)"]
 def IsStablyFree (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M] [Module R M] : Prop :=
   ∃ (N : Type u) (_ : AddCommGroup N) (_ : Module R N)
     (_ : Module.Finite R N) (_ : Module.Free R N), Module.Free R (M × N)
