@@ -87,7 +87,7 @@ private def findDiamondFailures (instExpr : Expr) (structName : Name) :
         if !pjAncestors.contains ancestor then continue
         diamondPairs := diamondPairs.push (ancestor, pi, pj)
   -- Check each diamond pair
-  let mut failures : Array DiamondFailure := #[]
+  let mut rawFailures : Array (Name × List Name × List Name × Expr × Expr) := #[]
   for (ancestor, pi, pj) in diamondPairs do
     -- Get canonical paths from each parent to the ancestor
     let some pathI := if ancestor == pi.structName then some []
@@ -104,9 +104,34 @@ private def findDiamondFailures (instExpr : Expr) (structName : Name) :
     let rhs ← applyProjectionPath instExpr fullPathJ
     let ok ← withNewMCtxDepth <| withReducibleAndInstances <| isDefEq lhs rhs
     unless ok do
+      rawFailures := rawFailures.push (ancestor, fullPathI, fullPathJ, lhs, rhs)
+  -- Root-cause filter: keep only the most primitive failing ancestors.
+  -- If B fails and one of B's ancestors A also fails, then B's failure is
+  -- a consequence of A's — suppress B.
+  let failedNames := rawFailures.map (·.1)
+  let mut failures : Array DiamondFailure := #[]
+  for (ancestor, fullPathI, fullPathJ, lhs, rhs) in rawFailures do
+    let ancestorsOfThis ← getAllParentStructures ancestor
+    let dominated := failedNames.any fun other =>
+      other != ancestor && ancestorsOfThis.any (· == other)
+    unless dominated do
+      -- Find which fields of the ancestor differ between the two paths
+      let fields := getStructureFields env ancestor
+      let mut differingFields : Array Name := #[]
+      for field in fields do
+        try
+          let projName := ancestor ++ field
+          let lhsField ← applyProjectionPath lhs [projName]
+          let rhsField ← applyProjectionPath rhs [projName]
+          let eq ← withNewMCtxDepth <| withReducibleAndInstances <| isDefEq lhsField rhsField
+          unless eq do
+            differingFields := differingFields.push field
+        catch _ => pure ()
+      let fieldMsg := if differingFields.isEmpty then m!""
+        else m!"\n  differing fields: {differingFields.toList}"
       failures := failures.push {
-        message := m!"instance diamond: {fullPathI} and {fullPathJ} \
-           give different results for ancestor class {ancestor}"
+        message := m!"instance diamond at {ancestor}:\
+           \n  {fullPathI} and {fullPathJ}{fieldMsg}"
         lhs, rhs }
   return failures
 
@@ -170,7 +195,8 @@ def instanceDiamondLinter : Linter where run := withSetOptionIn fun stx ↦ do
         let endPos := stx.getTailPos?.getD default
         let insertSpan := Syntax.atom (SourceInfo.synthetic endPos endPos) ""
         liftCoreM <| Lean.Meta.Tactic.TryThis.addSuggestion stx
-          { suggestion := .string exampleStr }
+          { suggestion := .string exampleStr
+            toCodeActionTitle? := some fun _ => "Insert instance diamond examples" }
           (origSpan? := insertSpan)
 
 initialize addLinter instanceDiamondLinter
