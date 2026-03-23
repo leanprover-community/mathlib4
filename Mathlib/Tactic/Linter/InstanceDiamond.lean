@@ -8,6 +8,7 @@ module
 public import Lean.Elab.Command
 public import Lean.Linter.Basic
 public import Lean.Meta.Instances
+public meta import Lean.Meta.Tactic.TryThis
 public import Mathlib.Tactic.DeclarationNames
 
 /-!
@@ -53,12 +54,18 @@ private def applyProjectionPath (e : Expr) (path : List Name) : MetaM Expr := do
     e := mkAppN (.const projName us) (type.getAppArgs.push e)
   return e
 
+/-- A single diamond failure: the warning message and the lhs/rhs expressions that failed defeq. -/
+private structure DiamondFailure where
+  message : MessageData
+  lhs : Expr
+  rhs : Expr
+
 /-- Find all diamond failures for an instance expression of the given class.
 
 For each pair of direct parents that share a common ancestor,
 checks that the two projection paths yield definitionally equal results. -/
 private def findDiamondFailures (instExpr : Expr) (structName : Name) :
-    MetaM (Array MessageData) := do
+    MetaM (Array DiamondFailure) := do
   let env ← getEnv
   let parents := (getStructureInfo env structName).parentInfo
   if parents.size < 2 then return #[]
@@ -71,7 +78,6 @@ private def findDiamondFailures (instExpr : Expr) (structName : Name) :
     parentAncestors := parentAncestors.push (p, ancestorSet)
   -- Collect all common ancestors with the pair of parents that witness them
   let mut diamondPairs : Array (Name × StructureParentInfo × StructureParentInfo) := #[]
-  let mut checked : NameSet := {}
   for i in [:parentAncestors.size] do
     for j in [i + 1 : parentAncestors.size] do
       let (pi, piAncestors) := parentAncestors[i]!
@@ -79,11 +85,9 @@ private def findDiamondFailures (instExpr : Expr) (structName : Name) :
       -- Find common ancestors
       for ancestor in piAncestors.toList do
         if !pjAncestors.contains ancestor then continue
-        if checked.contains ancestor then continue
-        checked := checked.insert ancestor
         diamondPairs := diamondPairs.push (ancestor, pi, pj)
   -- Check each diamond pair
-  let mut failures : Array MessageData := #[]
+  let mut failures : Array DiamondFailure := #[]
   for (ancestor, pi, pj) in diamondPairs do
     -- Get canonical paths from each parent to the ancestor
     let some pathI := if ancestor == pi.structName then some []
@@ -100,13 +104,16 @@ private def findDiamondFailures (instExpr : Expr) (structName : Name) :
     let rhs ← applyProjectionPath instExpr fullPathJ
     let ok ← withNewMCtxDepth <| withReducibleAndInstances <| isDefEq lhs rhs
     unless ok do
-      failures := failures.push
-        m!"instance diamond: {fullPathI} and {fullPathJ} \
+      failures := failures.push {
+        message := m!"instance diamond: {fullPathI} and {fullPathJ} \
            give different results for ancestor class {ancestor}"
+        lhs, rhs }
   return failures
 
-/-- Check a single declaration for instance diamonds. -/
-private def checkInstanceDiamond (declName : Name) : MetaM (Option MessageData) := do
+/-- Check a single declaration for instance diamonds.
+Returns the warning message and example statements demonstrating each failure. -/
+private def checkInstanceDiamond (declName : Name) :
+    MetaM (Option (MessageData × Array String)) := do
   unless ← isInstance declName do return none
   let info ← getConstInfo declName
   -- Skip instances with sorry in their body
@@ -125,7 +132,21 @@ private def checkInstanceDiamond (declName : Name) : MetaM (Option MessageData) 
     let instExpr := mkAppN (← mkConstWithLevelParams declName) args
     let failures ← findDiamondFailures instExpr structName
     if failures.isEmpty then return none
-    return some (.joinSep failures.toList "\n")
+    -- Build example statements for each failure
+    let mut messages : Array MessageData := #[]
+    let mut examples : Array String := #[]
+    for f in failures do
+      let eq ← mkEq f.lhs f.rhs
+      let prop ← mkForallFVars args eq
+      let propStr := toString (← ppExpr prop)
+      let tactic := if args.isEmpty then
+        "with_reducible_and_instances rfl"
+      else
+        "intros; with_reducible_and_instances rfl"
+      let ex := s!"example : {propStr} := by {tactic}"
+      messages := messages.push (f.message ++ m!"\n{ex}")
+      examples := examples.push ex
+    return some (.joinSep messages.toList "\n", examples)
 
 @[inherit_doc linter.instanceDiamond]
 def instanceDiamondLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -133,17 +154,24 @@ def instanceDiamondLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  -- Only look at instance declarations
+  -- Only look at declaration commands
   unless stx.isOfKind ``Lean.Parser.Command.declaration do return
-  unless stx[1].isOfKind ``Lean.Parser.Command.instance do return
   -- Get the declaration names added by this command
   let declNames ← getNamesFrom (stx.getPos?.getD default)
   for id in declNames do
     let declName := id.getId
     if declName.hasMacroScopes then continue
     let result ← liftTermElabM <| Meta.MetaM.run' <| checkInstanceDiamond declName
-    if let some msg := result then
+    if let some (msg, examples) := result then
       logLint linter.instanceDiamond stx msg
+      -- Emit "Try this:" suggestions to insert example statements after the declaration
+      if !examples.isEmpty then
+        let exampleStr := "\n\n" ++ "\n\n".intercalate examples.toList
+        let endPos := stx.getTailPos?.getD default
+        let insertSpan := Syntax.atom (SourceInfo.synthetic endPos endPos) ""
+        liftCoreM <| Lean.Meta.Tactic.TryThis.addSuggestion stx
+          { suggestion := .string exampleStr }
+          (origSpan? := insertSpan)
 
 initialize addLinter instanceDiamondLinter
 
