@@ -344,8 +344,7 @@ variable {G H} {s : Finset α}
 theorem IsNClique.not_cliqueFree (hG : G.IsNClique n s) : ¬G.CliqueFree n :=
   fun h ↦ h _ hG
 
-theorem IsContained.not_cliqueFree {n : ℕ} (h : (⊤ : SimpleGraph (Fin n)) ⊑ G) :
-    ¬G.CliqueFree n := by
+theorem IsContained.not_cliqueFree {n : ℕ} (h : completeGraph (Fin n) ⊑ G) : ¬G.CliqueFree n := by
   have := isNClique_map_copy_top h.some
   rw [Fintype.card_fin] at this
   exact (· _ this)
@@ -354,20 +353,23 @@ theorem IsContained.not_cliqueFree {n : ℕ} (h : (⊤ : SimpleGraph (Fin n)) �
 alias not_cliqueFree_of_top_embedding := IsContained.not_cliqueFree
 
 /-- An embedding of a complete graph that witnesses the fact that the graph is not clique-free. -/
-noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
-    (⊤ : SimpleGraph (Fin n)) ↪g G := by
+noncomputable def completeGraphEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
+    completeGraph (Fin n) ↪g G := by
   unfold CliqueFree at h
-  push_neg at h
+  push Not at h
   apply Embedding.induce (h.choose : Set α) |>.comp
   rw [G.isClique_iff_induce_eq.mp h.choose_spec.isClique]
   exact Embedding.completeGraph <| Finset.equivFinOfCardEq h.choose_spec.card_eq |>.symm.toEmbedding
 
+@[deprecated (since := "2026-03-23")]
+alias topEmbeddingOfNotCliqueFree := completeGraphEmbeddingOfNotCliqueFree
+
 theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ completeGraph (Fin n) ⊑ G :=
-  ⟨(⟨topEmbeddingOfNotCliqueFree · |>.toCopy⟩), IsContained.not_cliqueFree⟩
+  ⟨(⟨completeGraphEmbeddingOfNotCliqueFree · |>.toCopy⟩), IsContained.not_cliqueFree⟩
 
 theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty (completeGraph (Fin n) ↪g G) := by
   contrapose!
-  exact ⟨(⟨topEmbeddingOfNotCliqueFree ·⟩), (IsContained.not_cliqueFree ⟨·.some.toCopy⟩)⟩
+  exact ⟨(⟨completeGraphEmbeddingOfNotCliqueFree ·⟩), (IsContained.not_cliqueFree ⟨·.some.toCopy⟩)⟩
 
 /-- A simple graph has no `card β`-cliques iff it does not contain `⊤ : SimpleGraph β`. -/
 theorem cliqueFree_iff_top_free {β : Type*} [Fintype β] :
@@ -375,7 +377,7 @@ theorem cliqueFree_iff_top_free {β : Type*} [Fintype β] :
   rw [← not_iff_not, not_free, not_cliqueFree_iff,
     isContained_congr (Iso.completeGraph (equivFin β)) Iso.refl]
 
-theorem IsContained.not_cliqueFree_card [Fintype α] (f : (⊤ : SimpleGraph α) ⊑ G) :
+theorem IsContained.not_cliqueFree_card [Fintype α] (f : completeGraph α ⊑ G) :
     ¬G.CliqueFree (card α) := by
   rw [not_cliqueFree_iff]
   exact ⟨f.some.comp <| (Iso.completeGraph <| equivFin α).symm.toCopy⟩
@@ -470,7 +472,7 @@ end completeMultipartiteGraph
 protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n) (s t : α) :
     (G.replaceVertex s t).CliqueFree n := by
   contrapose h
-  obtain ⟨φ, hφ⟩ := topEmbeddingOfNotCliqueFree h
+  have ⟨φ, hφ⟩ := completeGraphEmbeddingOfNotCliqueFree h
   rw [not_cliqueFree_iff]
   by_cases mt : t ∈ Set.range φ
   · obtain ⟨x, hx⟩ := mt
