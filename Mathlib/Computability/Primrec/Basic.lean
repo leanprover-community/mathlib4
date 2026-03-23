@@ -638,9 +638,14 @@ lemma _root_.PrimrecPred.primrecRel {p : α × β → Prop} (hp : PrimrecPred p)
     PrimrecRel fun a b => p (a, b) :=
   hp
 
-theorem nat_rec {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (hg : Primrec₂ g) :
-    Primrec₂ fun a (n : ℕ) => n.rec (motive := fun _ => β) (f a) fun n IH => g a (n, IH) :=
-  Primrec₂.nat_iff.2 <|
+--Komyyy0 theorem nat_rec {f : α → β} {g : α → ℕ → β → β}
+--Komyyy0     (hf : Primrec f) (hg : Primrec (fun p : α × ℕ × β ↦ g p.1 p.2.1 p.2.2)) :
+--Komyyy0     Primrec fun p : α × ℕ => p.2.rec (motive := fun _ => β) (f p.1) (g p.1) :=
+theorem nat_rec {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (hg : Primrec₂ g) : --Komyyy1
+    Primrec₂ fun a (n : ℕ) => --Komyyy1
+      n.rec (motive := fun _ => β) (f a) fun n IH => g a (n, IH) := --Komyyy1
+--Komyyy0   Primrec.nat_iff₂.2 <|
+ Primrec₂.nat_iff.2 <| --Komyyy1
     ((Nat.Primrec.casesOn' .zero <|
               (Nat.Primrec.prec hf <|
                     .comp hg <|
@@ -657,10 +662,17 @@ theorem nat_rec {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (
         Option.bind_some, Option.map_map]
       induction n.unpair.2 <;> simp [*, encodek]
 
-theorem nat_rec' {f : α → ℕ} {g : α → β} {h : α → ℕ × β → β}
-    (hf : Primrec f) (hg : Primrec g) (hh : Primrec₂ h) :
-    Primrec fun a => (f a).rec (motive := fun _ => β) (g a) fun n IH => h a (n, IH) :=
-  (nat_rec hg hh).comp .id hf
+--Komyyy0 @[fun_prop]
+--Komyyy0 theorem nat_rec' {f : α → ℕ} {g : α → β} {h : α → ℕ → β → β}
+--Komyyy0     (hf : Primrec f) (hg : Primrec g)
+--Komyyy0     (hh : Primrec (fun p : α × ℕ × β ↦ h p.1 p.2.1 p.2.2)) :
+--Komyyy0     Primrec fun a => (f a).rec (motive := fun _ => β) (g a) (h a) :=
+--Komyyy0   (nat_rec hg hh).comp (.pair .id hf)
+
+theorem nat_rec' {f : α → ℕ} {g : α → β} {h : α → ℕ × β → β} --Komyyy1
+    (hf : Primrec f) (hg : Primrec g) (hh : Primrec₂ h) : --Komyyy1
+    Primrec fun a => (f a).rec (motive := fun _ => β) (g a) fun n IH => h a (n, IH) := --Komyyy1
+  (nat_rec hg hh).comp .id hf --Komyyy1
 
 theorem nat_rec₁ {f : ℕ → α → α} (a : α) (hf : Primrec₂ f) : Primrec (Nat.rec a f) :=
   nat_rec' .id (.const a) <| comp₂ hf Primrec₂.right
