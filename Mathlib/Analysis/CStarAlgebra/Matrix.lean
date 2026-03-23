@@ -129,7 +129,7 @@ lemma inner_toEuclideanCLM (A : Matrix n n ℝ) (x y : EuclideanSpace ℝ n) :
     toLin_apply, mulVec_eq_sum, OrthonormalBasis.coe_toBasis_repr_apply,
     EuclideanSpace.basisFun_repr, op_smul_eq_smul, Finset.sum_apply, Pi.smul_apply, transpose_apply,
     smul_eq_mul, OrthonormalBasis.coe_toBasis, EuclideanSpace.basisFun_apply, PiLp.inner_apply,
-    ofLp_sum, ofLp_smul, EuclideanSpace.ofLp_single, RCLike.inner_apply, conj_trivial, dotProduct]
+    ofLp_sum, ofLp_smul, PiLp.ofLp_single, RCLike.inner_apply, conj_trivial, dotProduct]
   congr with i
   rw [mul_comm (x.ofLp i)]
   simp [Pi.single_apply]
