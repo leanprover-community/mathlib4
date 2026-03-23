@@ -98,6 +98,26 @@ lemma ofSubmodule_iSup (s : Set (Submodule R E)) : ⨆ S ∈ s, S = ⨆ S ∈ s,
 
 end Submodule
 
+section PointedCone
+
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
+variable {C C₁ C₂ : PointedCone R E} {x : E} {r : R}
+
+@[ext] lemma ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
+
+nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
+  C.smul_mem ⟨r, hr⟩ hx
+
+lemma smul_mem_iff {𝕜 M : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    [AddCommMonoid M] [Module 𝕜 M] (C : PointedCone 𝕜 M)
+    {c : 𝕜} (hc : 0 < c) {x : M} : c • x ∈ C ↔ x ∈ C :=
+  ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ C.smul_mem (inv_pos.2 hc).le h, C.smul_mem hc.le⟩
+
+lemma convex (C : PointedCone R E) : Convex R (C : Set E) :=
+  convex_iff_add_mem.2 fun _ hx _ hy _ _ ha hb _ ↦ add_mem (C.smul_mem ha hx) (C.smul_mem hb hy)
+
+end PointedCone
+
 section Definitions
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
@@ -199,26 +219,6 @@ theorem mem_comap {f : E →ₗ[R] F} {C : PointedCone R F} {x : E} : x ∈ C.co
   Iff.rfl
 
 end Maps
-
-section PointedCone
-
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
-variable {C C₁ C₂ : PointedCone R E} {x : E} {r : R}
-
-@[ext] lemma ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
-
-nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
-  C.smul_mem ⟨r, hr⟩ hx
-
-lemma smul_mem_iff {𝕜 M : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-    [AddCommMonoid M] [Module 𝕜 M] (C : PointedCone 𝕜 M)
-    {c : 𝕜} (hc : 0 < c) {x : M} : c • x ∈ C ↔ x ∈ C :=
-  ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ C.smul_mem (inv_pos.2 hc).le h, C.smul_mem hc.le⟩
-
-lemma convex (C : PointedCone R E) : Convex R (C : Set E) :=
-  convex_iff_add_mem.2 fun _ hx _ hy _ _ ha hb _ ↦ add_mem (C.smul_mem ha hx) (C.smul_mem hb hy)
-
-end PointedCone
 
 section PositiveCone
 
