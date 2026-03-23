@@ -141,9 +141,8 @@ theorem hyperplane_separation_of_notMem (K : ProperCone ℝ E) {f : E →L[ℝ] 
 
 /-- Geometric interpretation of **Farkas' lemma**. Also stronger version of the
 **Hahn-Banach separation theorem** for proper cones. -/
-theorem hyperplane_separation_of_notMem_absolute
-    (K : ProperCone ℝ E) {b : E} (disj : b ∉ K) :
-    ∃ y : E, (∀ x ∈ K, 0 ≤ ⟪x, y⟫_ℝ) ∧ ⟪b, y⟫_ℝ < 0 := by
+theorem hyperplane_separation_of_notMem_absolute (K : ProperCone ℝ E) {b : E} (disj : b ∉ K) :
+    ∃ y : E, y ∈ innerDual K ∧ ⟪b, y⟫_ℝ < 0 := by
   simpa using K.hyperplane_separation_of_notMem
     (f := ContinuousLinearMap.id ℝ E) (by simpa using disj)
 
