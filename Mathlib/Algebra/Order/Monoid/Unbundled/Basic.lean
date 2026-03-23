@@ -157,15 +157,14 @@ variable [Preorder α]
 lemma mul_right_monotone [MulLeftMono α] {a : α} : Monotone (a * ·) :=
   fun _ _ h ↦ mul_le_mul_right h _
 
-@[deprecated (since :="2026-03-18")] alias add_left_mono := add_left_monotone
-@[deprecated (since :="2026-03-18")] alias mul_left_mono := mul_left_monotone
-
 @[to_additive]
 lemma mul_left_monotone [MulRightMono α] {a : α} : Monotone (· * a) :=
   fun _ _ h ↦ mul_le_mul_left h _
 
 @[deprecated (since :="2026-03-18")] alias add_right_mono := add_right_monotone
 @[deprecated (since :="2026-03-18")] alias mul_right_mono := mul_right_monotone
+@[deprecated (since :="2026-03-18")] alias add_left_mono := add_left_monotone
+@[deprecated (since :="2026-03-18")] alias mul_left_mono := mul_left_monotone
 
 @[to_additive]
 lemma mul_right_strictMono [MulLeftStrictMono α] {a : α} : StrictMono (a * ·) :=
