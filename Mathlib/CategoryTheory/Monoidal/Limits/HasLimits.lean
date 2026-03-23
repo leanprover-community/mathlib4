@@ -34,29 +34,34 @@ namespace Limits
 
 section HasColimit
 
+variable {J : Type u₁} [Category.{v₁} J]
+    {F G : J ⥤ C} [HasColimit F] [HasColimit G]
+
 @[reassoc (attr := simp)]
-lemma HasColimit.whiskerLeft_isoOfNatIso_ι_hom {J : Type u₁} [Category.{v₁} J]
-    {F G : J ⥤ C} [HasColimit F] [HasColimit G] (w : F ≅ G) (j : J) {Q : C} :
+lemma HasColimit.whiskerLeft_isoOfNatIso_ι_hom (w : F ≅ G) (j : J) {Q : C} :
     Q ◁ colimit.ι F j ≫ Q ◁ (HasColimit.isoOfNatIso w).hom =
       Q ◁ w.hom.app j ≫ Q ◁ colimit.ι G j := by
   simp [← MonoidalCategory.whiskerLeft_comp]
 
 @[reassoc (attr := simp)]
-lemma HasColimit.isoOfNatIso_ι_hom_whiskerRight {J : Type u₁} [Category.{v₁} J]
-    {F G : J ⥤ C} [HasColimit F] [HasColimit G] (w : F ≅ G) (j : J) {Q : C} :
+lemma HasColimit.isoOfNatIso_ι_hom_whiskerRight (w : F ≅ G) (j : J) {Q : C} :
     colimit.ι F j ▷ Q ≫ (HasColimit.isoOfNatIso w).hom ▷ Q =
       w.hom.app j ▷ Q ≫ colimit.ι G j ▷ Q := by
   simp [← MonoidalCategory.comp_whiskerRight]
 
 @[reassoc (attr := simp)]
-lemma colimit.whiskerLeft_ι_desc {J : Type u₁} [Category.{v₁} J]
-    {F : J ⥤ C} [HasColimit F] (c : Cocone F) (j : J) {Q : C} :
+theorem HasColimit.isoOfNatIso_hom_desc_whiskerRight (t : Cocone G) (w : F ≅ G) {Q : C} :
+    (HasColimit.isoOfNatIso w).hom ▷ Q ≫ colimit.desc G t ▷ Q =
+      colimit.desc F ((Cocone.precompose w.hom).obj _) ▷ Q := by
+  simp [← MonoidalCategory.comp_whiskerRight]
+
+@[reassoc (attr := simp)]
+lemma colimit.whiskerLeft_ι_desc (c : Cocone F) (j : J) {Q : C} :
     Q ◁ colimit.ι F j ≫ Q ◁ colimit.desc F c = Q ◁ c.ι.app j := by
   simp [← MonoidalCategory.whiskerLeft_comp]
 
 @[reassoc (attr := simp)]
-lemma colimit.ι_desc_whiskerRight {J : Type u₁} [Category.{v₁} J]
-    {F : J ⥤ C} [HasColimit F] (c : Cocone F) (j : J) {Q : C} :
+lemma colimit.ι_desc_whiskerRight (c : Cocone F) (j : J) {Q : C} :
     colimit.ι F j ▷ Q ≫ colimit.desc F c ▷ Q = c.ι.app j ▷ Q := by
   simp [← comp_whiskerRight]
 
