@@ -336,6 +336,7 @@ lemma LSeriesSummable.isBigO_rpow {f : ℕ → ℂ} {s : ℂ} (h : LSeriesSummab
   convert hC n (Nat.pos_iff_ne_zero.mp hn) using 2
   rw [Real.norm_eq_abs, Real.abs_rpow_of_nonneg n.cast_nonneg, abs_of_nonneg n.cast_nonneg]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f n` is bounded in absolute value by a constant times `n^(x-1)` and `re s > x`,
 then the `LSeries` of `f` is summable at `s`. -/
 lemma LSeriesSummable_of_le_const_mul_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ} (hs : x < s.re)

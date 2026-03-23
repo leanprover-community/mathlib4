@@ -187,6 +187,7 @@ theorem circleAverage_zero_one_congr_inv {f : ℂ → E} :
 ## Constant Functions
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The circle average of a constant function equals the constant.
 -/

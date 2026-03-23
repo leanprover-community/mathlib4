@@ -60,7 +60,8 @@ variable [Group α] (s : Subgroup α)
 
 /-- The equivalence relation corresponding to the partition of a group by left cosets
 of a subgroup. -/
-@[to_additive /-- The equivalence relation corresponding to the partition of a group by left cosets
+@[to_additive (attr := instance_reducible)
+  /-- The equivalence relation corresponding to the partition of a group by left cosets
 of a subgroup. -/]
 def leftRel : Setoid α :=
   MulAction.orbitRel s.op α

@@ -64,6 +64,8 @@ instance : SetLike (ClosedSubgroup G) G where
   coe U := U.1
   coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
 
+@[to_additive] instance : PartialOrder (ClosedSubgroup G) := .ofSetLike (ClosedSubgroup G) G
+
 @[to_additive]
 instance : SubgroupClass (ClosedSubgroup G) G where
   mul_mem := Subsemigroup.mul_mem' _
@@ -80,7 +82,7 @@ instance instInfClosedSubgroup : Min (ClosedSubgroup G) :=
 
 @[to_additive]
 instance instSemilatticeInfClosedSubgroup : SemilatticeInf (ClosedSubgroup G) :=
-  SetLike.coe_injective.semilatticeInf ((↑) : ClosedSubgroup G → Set G) fun _ _ ↦ rfl
+  SetLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_additive]
 instance [CompactSpace G] (H : ClosedSubgroup G) : CompactSpace H :=

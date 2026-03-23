@@ -395,6 +395,7 @@ protected theorem comap_eq {f : γ → β} :
   letI : UniformSpace γ := .comap f ‹_›
   exact (UniformFun.postcomp_isUniformInducing (f := f) ⟨rfl⟩).comap_uniformSpace.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Post-composition by a uniformly continuous function is uniformly continuous on `α →ᵤ β`.
 
 More precisely, if `f : γ → β` is uniformly continuous, then `(fun g ↦ f ∘ g) : (α →ᵤ γ) → (α →ᵤ β)`
@@ -456,6 +457,7 @@ protected theorem tendsto_iff_tendstoUniformly {F : ι → α →ᵤ β} {f : α
   rw [(UniformFun.hasBasis_nhds α β f).tendsto_right_iff, TendstoUniformly]
   simp only [mem_setOf, UniformFun.gen, Function.comp_def]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural bijection between `α → β × γ` and `(α → β) × (α → γ)`, upgraded to a uniform
 isomorphism between `α →ᵤ β × γ` and `(α →ᵤ β) × (α →ᵤ γ)`. -/
 protected def uniformEquivProdArrow [UniformSpace γ] : (α →ᵤ β × γ) ≃ᵤ (α →ᵤ β) × (α →ᵤ γ) :=
@@ -728,7 +730,7 @@ protected theorem hasBasis_nhds (f : α →ᵤ[𝔖] β) (h : 𝔖.Nonempty) (h'
 protected theorem uniformContinuous_restrict (h : s ∈ 𝔖) :
     UniformContinuous (UniformFun.ofFun ∘ (s.restrict : (α → β) → s → β) ∘ toFun 𝔖) := by
   change _ ≤ _
-  simp only [UniformOnFun.uniformSpace, map_le_iff_le_comap, iInf_uniformity]
+  simp only [map_le_iff_le_comap, iInf_uniformity]
   exact iInf₂_le s h
 
 theorem isUniformEmbedding_toFun_finite :
@@ -827,6 +829,7 @@ lemma uniformContinuous_ofFun_toFun (𝔗 : Set (Set α)) (h : ∀ s ∈ 𝔖, �
   obtain ⟨t, ht, hxt⟩ := Set.mem_sUnion.mp <| hsT hx
   exact hf t ht x hxt
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `u₁`, `u₂` be two uniform structures on `γ` and `𝔖₁ 𝔖₂ : Set (Set α)`. If `u₁ ≤ u₂` and
 `𝔖₂ ⊆ 𝔖₁` then `𝒱(α, γ, 𝔖₁, u₁) ≤ 𝒱(α, γ, 𝔖₂, u₂)`. -/
 protected theorem mono ⦃u₁ u₂ : UniformSpace γ⦄ (hu : u₁ ≤ u₂) ⦃𝔖₁ 𝔖₂ : Set (Set α)⦄
@@ -869,6 +872,7 @@ protected theorem inf_eq {u₁ u₂ : UniformSpace γ} :
   refine iInf_congr fun i => ?_
   cases i <;> rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `u` is a uniform structure on `β` and `f : γ → β`, then
 `𝒱(α, γ, 𝔖, comap f u) = comap (fun g ↦ f ∘ g) 𝒱(α, γ, 𝔖, u₁)`. -/
 protected theorem comap_eq {f : γ → β} :
@@ -1039,6 +1043,7 @@ instance [CompleteSpace β] : CompleteSpace (α →ᵤ[𝔖] β) := by
     refine hUc.mem_of_tendsto ((hg x ⟨s, hs, hx⟩).prodMk_nhds tendsto_const_nhds) ?_
     filter_upwards [hV] with g' hg' using hVU (mk_mem_prod hg' hf) _ hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural bijection between `α → β × γ` and `(α → β) × (α → γ)`, upgraded to a uniform
 isomorphism between `α →ᵤ[𝔖] β × γ` and `(α →ᵤ[𝔖] β) × (α →ᵤ[𝔖] γ)`. -/
 protected def uniformEquivProdArrow [UniformSpace γ] :
@@ -1064,6 +1069,7 @@ protected def uniformEquivProdArrow [UniformSpace γ] :
       rfl
 -- the relevant diagram commutes by definition
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝔖) (δ : ι → Type*) [∀ i, UniformSpace (δ i)] in
 /-- The natural bijection between `α → Π i, δ i` and `Π i, α → δ i`, upgraded to a uniform
 isomorphism between `α →ᵤ[𝔖] (Π i, δ i)` and `Π i, α →ᵤ[𝔖] δ i`. -/

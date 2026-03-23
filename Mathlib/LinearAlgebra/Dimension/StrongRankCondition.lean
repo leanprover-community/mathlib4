@@ -247,7 +247,7 @@ theorem linearIndependent_le_infinite_basis {ι : Type w} (b : Basis ι R M) [In
   by_contra h
   rw [not_le, ← Cardinal.mk_finset_of_infinite ι] at h
   let Φ := fun k : κ => (b.repr (v k)).support
-  obtain ⟨s, w : Infinite ↑(Φ ⁻¹' {s})⟩ := Cardinal.exists_infinite_fiber Φ h (by infer_instance)
+  obtain ⟨s, w : Infinite ↑(Φ ⁻¹' {s})⟩ := Cardinal.exists_infinite_fiber' Φ h
   let v' := fun k : Φ ⁻¹' {s} => v k
   have i' : LinearIndependent R v' := i.comp _ Subtype.val_injective
   have w' : Finite (Φ ⁻¹' {s}) := by
@@ -404,6 +404,7 @@ def Submodule.inductionOnRank {R M} [Ring R] [StrongRankCondition R] [AddCommGro
   Submodule.inductionOnRankAux b P ih (Fintype.card ι) N fun hs hli => by
     simpa using b.card_le_card_of_linearIndependent hli
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `S` a module-finite free `R`-algebra, then the `R`-rank of a nonzero `R`-free
 ideal `I` of `S` is the same as the rank of `S`. -/
 theorem Ideal.rank_eq {R S : Type*} [CommRing R] [StrongRankCondition R] [Ring S] [IsDomain S]

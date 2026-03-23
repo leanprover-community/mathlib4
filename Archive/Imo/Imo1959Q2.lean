@@ -88,6 +88,7 @@ theorem IsGood.sqrt_two_le (h : IsGood x A) : sqrt 2 ≤ A :=
   (le_or_gt x 1).elim (fun hx ↦ (h.eq_sqrt_two_iff_le_one.2 hx).ge) fun hx ↦
     (h.sqrt_two_lt_of_one_lt hx).le
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isGood_iff_of_sqrt_two_lt (hA : sqrt 2 < A) : IsGood x A ↔ x = (A / 2) ^ 2 + 1 / 2 := by
   have : 0 < A := lt_trans (by simp) hA
   constructor

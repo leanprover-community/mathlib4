@@ -82,6 +82,7 @@ theorem volume_Ico {a b : ℝ} : volume (Ico a b) = ofReal (b - a) := by simp [v
 theorem volume_real_Ico {a b : ℝ} : volume.real (Ico a b) = max (b - a) 0 := by
   simp [measureReal_def, ENNReal.toReal_ofReal']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem volume_real_Ico_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ico a b) = b - a := by
   simp [hab]
 
@@ -92,6 +93,7 @@ theorem volume_Icc {a b : ℝ} : volume (Icc a b) = ofReal (b - a) := by simp [v
 theorem volume_real_Icc {a b : ℝ} : volume.real (Icc a b) = max (b - a) 0 := by
   simp [measureReal_def, ENNReal.toReal_ofReal']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem volume_real_Icc_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Icc a b) = b - a := by
   simp [hab]
 
@@ -106,6 +108,7 @@ theorem volume_uIoo {a b : ℝ} : volume (uIoo a b) = ofReal |b - a| := by
 theorem volume_real_Ioo {a b : ℝ} : volume.real (Ioo a b) = max (b - a) 0 := by
   simp [measureReal_def, ENNReal.toReal_ofReal']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem volume_real_Ioo_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ioo a b) = b - a := by
   simp [hab]
 
@@ -120,6 +123,7 @@ theorem volume_uIoc {a b : ℝ} : volume (uIoc a b) = ofReal |b - a| := by
 theorem volume_real_Ioc {a b : ℝ} : volume.real (Ioc a b) = max (b - a) 0 := by
   simp [measureReal_def, ENNReal.toReal_ofReal']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem volume_real_Ioc_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ioc a b) = b - a := by
   simp [hab]
 
@@ -149,20 +153,26 @@ theorem volume_real_closedBall {a r : ℝ} (hr : 0 ≤ r) :
   simp [measureReal_def, hr]
 
 @[simp]
-theorem volume_emetric_ball (a : ℝ) (r : ℝ≥0∞) : volume (EMetric.ball a r) = 2 * r := by
+theorem volume_eball (a : ℝ) (r : ℝ≥0∞) : volume (Metric.eball a r) = 2 * r := by
   rcases eq_or_ne r ∞ with (rfl | hr)
-  · rw [Metric.emetric_ball_top, volume_univ, two_mul, _root_.top_add]
+  · rw [Metric.eball_top, volume_univ, two_mul, _root_.top_add]
   · lift r to ℝ≥0 using hr
-    rw [Metric.emetric_ball_nnreal, volume_ball, two_mul, ← NNReal.coe_add,
+    rw [Metric.eball_coe, volume_ball, two_mul, ← NNReal.coe_add,
       ENNReal.ofReal_coe_nnreal, ENNReal.coe_add, two_mul]
 
+@[deprecated (since := "2026-01-24")]
+alias volume_emetric_ball := volume_eball
+
 @[simp]
-theorem volume_emetric_closedBall (a : ℝ) (r : ℝ≥0∞) : volume (EMetric.closedBall a r) = 2 * r := by
+theorem volume_closedEBall (a : ℝ) (r : ℝ≥0∞) : volume (Metric.closedEBall a r) = 2 * r := by
   rcases eq_or_ne r ∞ with (rfl | hr)
-  · rw [EMetric.closedBall_top, volume_univ, two_mul, _root_.top_add]
+  · rw [Metric.closedEBall_top, volume_univ, two_mul, _root_.top_add]
   · lift r to ℝ≥0 using hr
-    rw [Metric.emetric_closedBall_nnreal, volume_closedBall, two_mul, ← NNReal.coe_add,
+    rw [Metric.closedEBall_coe, volume_closedBall, two_mul, ← NNReal.coe_add,
       ENNReal.ofReal_coe_nnreal, ENNReal.coe_add, two_mul]
+
+@[deprecated (since := "2026-01-24")]
+alias volume_emetric_closedBall := volume_closedEBall
 
 instance noAtoms_volume : NoAtoms (volume : Measure ℝ) :=
   ⟨fun _ => volume_singleton⟩
@@ -171,6 +181,7 @@ instance noAtoms_volume : NoAtoms (volume : Measure ℝ) :=
 theorem volume_interval {a b : ℝ} : volume (uIcc a b) = ofReal |b - a| := by
   rw [← Icc_min_max, volume_Icc, max_sub_min_eq_abs]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem volume_real_interval {a b : ℝ} : volume.real (uIcc a b) = |b - a| := by
   simp [measureReal_def]
@@ -221,6 +232,7 @@ theorem volume_le_diam (s : Set ℝ) : volume s ≤ ediam s := by
     exact volume.mono hs.subset_Icc_sInf_sSup
   · rw [Metric.ediam_of_unbounded hs]; exact le_top
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Filter.Eventually.volume_pos_of_nhds_real {p : ℝ → Prop} {a : ℝ}
     (h : ∀ᶠ x in 𝓝 a, p x) : (0 : ℝ≥0∞) < volume { x | p x } := by
   rcases h.exists_Ioo_subset with ⟨l, u, hx, hs⟩
@@ -312,7 +324,7 @@ theorem smul_map_volume_mul_left {a : ℝ} (h : a ≠ 0) :
       preimage_const_mul_Ioo_of_neg _ _ h, abs_of_neg h, mul_sub, smul_eq_mul,
       mul_div_cancel₀ _ (ne_of_lt h)]
   · simp only [Real.volume_Ioo, Measure.smul_apply, ← ENNReal.ofReal_mul (le_of_lt h),
-      Measure.map_apply (measurable_const_mul a) measurableSet_Ioo, preimage_const_mul_Ioo _ _ h,
+      Measure.map_apply (measurable_const_mul a) measurableSet_Ioo, preimage_const_mul_Ioo₀ _ _ h,
       abs_of_pos h, mul_sub, mul_div_cancel₀ _ (ne_of_gt h), smul_eq_mul]
 
 theorem map_volume_mul_left {a : ℝ} (h : a ≠ 0) :

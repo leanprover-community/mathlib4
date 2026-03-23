@@ -274,6 +274,7 @@ instance instAddCommMonoid : AddCommMonoid (AddChar A M) := Additive.addCommMono
 lemma coe_prod (s : Finset ι) (ψ : ι → AddChar A M) : ∏ i ∈ s, ψ i = ∏ i ∈ s, ⇑(ψ i) := by
   induction s using Finset.cons_induction <;> simp [*]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_sum (s : Finset ι) (ψ : ι → AddChar A M) : ∑ i ∈ s, ψ i = ∏ i ∈ s, ⇑(ψ i) := by
   induction s using Finset.cons_induction <;> simp [*]
@@ -307,6 +308,7 @@ def toMonoidHomMulEquiv : AddChar A M ≃* (Multiplicative A →* M) :=
 def toAddMonoidAddEquiv : Additive (AddChar A M) ≃+ (A →+ Additive M) :=
   { toAddMonoidHomEquiv with map_add' := fun φ ψ ↦ by rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The double dual embedding. -/
 def doubleDualEmb : A →+ AddChar (AddChar A M) M where
   toFun a := { toFun := fun ψ ↦ ψ a
@@ -411,6 +413,7 @@ lemma sub_apply' (ψ χ : AddChar A M) (a : A) : (ψ - χ) a = ψ a / χ a := by
 lemma map_sub_eq_div (ψ : AddChar A M) (a b : A) : ψ (a - b) = ψ a / ψ b :=
   ψ.toMonoidHom.map_div _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma injective_iff {ψ : AddChar A M} : Injective ψ ↔ ∀ ⦃x⦄, ψ x = 1 → x = 0 :=
   ψ.toMonoidHom.ker_eq_bot_iff.symm.trans eq_bot_iff
 

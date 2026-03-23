@@ -101,6 +101,7 @@ attribute [to_additive existing isAddFoelner_iff] isFoelner_iff
 
 namespace IsFoelner
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The constant sequence `X` is Følner if `X` has finite measure. -/
 @[to_additive /--The constant sequence `X` is Følner if `X` has finite measure. -/]
 theorem univ_of_isFiniteMeasure [NeZero μ] [IsFiniteMeasure μ] :
@@ -215,7 +216,7 @@ variable (G μ) in
 /-- The maximal Følner filter with respect to some additive group `G` acting
     on a measure space `X` is the pullback of `𝓝 0` along the map `s ↦ μ (g +ᵥ s) / μ s`
     on measurable sets of finite non-zero measure. -/]
-def maxFoelner : Filter (Set X) :=
+noncomputable def maxFoelner : Filter (Set X) :=
   𝓟 {s : Set X | MeasurableSet s ∧ μ s ≠ 0 ∧ μ s ≠ ∞} ⊓
   ⨅ (g : G), comap (fun s ↦ μ ((g • s) ∆ s) / μ s) (𝓝 0)
 

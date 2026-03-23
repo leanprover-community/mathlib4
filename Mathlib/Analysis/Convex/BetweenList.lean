@@ -204,6 +204,7 @@ lemma SortedLT.sbtw {l : List R} (h : l.SortedLT) : l.Sbtw R :=
 @[deprecated (since := "2025-10-13")]
 alias Sorted.sbtw := SortedLT.sbtw
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_map_eq_of_sorted_nonempty_iff_wbtw {l : List P} (hl : l ≠ []) :
     (∃ l' : List R, l'.SortedLE ∧ l'.map (lineMap (l.head hl) (l.getLast hl)) = l) ↔
       l.Wbtw R := by

@@ -74,6 +74,9 @@ lemma precoverage_inf : precoverage (P ⊓ Q) = precoverage P ⊓ precoverage Q 
   exact ⟨fun hS ↦ ⟨fun _ _ hf ↦ (hS hf).left, fun _ _ hf ↦ (hS hf).right⟩,
     fun h ↦ fun _ _ hf ↦ ⟨h.left hf, h.right hf⟩⟩
 
+@[simp, grind .]
+lemma bot_mem_precoverage (X : C) : ⊥ ∈ precoverage P X := fun _ _ h ↦ h.elim
+
 lemma comap_precoverage {D : Type*} [Category* D] (P : MorphismProperty D) (F : C ⥤ D) :
     P.precoverage.comap F = (P.inverseImage F).precoverage := by
   ext X R

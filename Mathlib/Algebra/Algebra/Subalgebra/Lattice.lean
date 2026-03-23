@@ -507,6 +507,7 @@ theorem adjoin_iUnion {α : Type*} (s : α → Set A) :
     adjoin R (Set.iUnion s) = ⨆ i : α, adjoin R (s i) :=
   (@Algebra.gc R A _ _ _).l_iSup
 
+set_option backward.isDefEq.respectTransparency false in
 theorem adjoin_attach_biUnion [DecidableEq A] {α : Type*} {s : Finset α} (f : s → Finset A) :
     adjoin R (s.attach.biUnion f : Set A) = ⨆ x, adjoin R (f x) := by simp [adjoin_iUnion]
 
@@ -818,6 +819,11 @@ theorem ext_of_eq_adjoin {S : Subalgebra R A} {s : Set A} (hS : S = adjoin R s) 
     (h : ∀ x hx, φ₁ ⟨x, hS.ge (subset_adjoin hx)⟩ = φ₂ ⟨x, hS.ge (subset_adjoin hx)⟩) :
     φ₁ = φ₂ := by
   subst hS; exact adjoin_ext h
+
+theorem _root_.Algebra.forall_mem_adjoin_smul_eq_self_iff (S : Set A) {M : Type*} [Monoid M]
+    [MulSemiringAction M A] [SMulCommClass M R A] (m : M) :
+    (∀ x ∈ adjoin R S, m • x = x) ↔ (∀ x ∈ S, m • x = x) :=
+  AlgHom.eqOn_adjoin_iff (φ := MulSemiringAction.toAlgHom R A m) (ψ := .id R A)
 
 end AlgHom
 

@@ -593,6 +593,7 @@ eventually. Nor is it clear whether, if so, there are any bounds on how many ite
 -- modified from 2021 American Mathematics Competition 12B, problem 9
 section
 
+set_option backward.isDefEq.respectTransparency false in
 example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
     P ((4 * x + y) / x / (x / (3 * x + y)) - (5 * x + y) / x / (x / (2 * x + y))) := by
   ring_nf
@@ -605,6 +606,7 @@ example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
   guard_target = P 2
   exact test_sorry
 
+set_option backward.isDefEq.respectTransparency false in
 example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
     P ((4 * x + y) / x / (x / (3 * x + y)) - (5 * x + y) / x / (x / (2 * x + y))) := by
   field_simp
@@ -969,3 +971,29 @@ example {K : Type*} [DivisionRing K] {n' x : K} (h : n' ≠ 0) (h' : n' + x ≠ 
 example {K : Type*} [Field K] {n' x : K} (hn : n' ≠ 0) :
     1 / (1 + x / n') = n' / (n' + x) := by
   field_simp
+
+/-! ## Contextual rewrites in subexpressions -/
+
+-- Ensure that the discharger has access to changes in the local context, and that the simp cache
+-- does not attempt to reuse the proof in an invalid context.
+example (x : ℚ) : (if x ≠ 0 then x / x else x / x) = 1 := by
+  field_simp
+  guard_target = (if x ≠ 0 then 1 else x / x) = 1
+  exact test_sorry
+
+example (x : ℚ) : (if x = 0 then x / x else x / x) = 1 := by
+  field_simp
+  guard_target = (if x = 0 then x / x else 1) = 1
+  exact test_sorry
+
+/- Test whether the discharger has access to implication hypotheses. -/
+example (x : ℚ) : (x ≠ 0 → x / x = 1) := by
+  field_simp
+  guard_target = (x ≠ 0 → True)
+  exact test_sorry
+
+/- Ensure that the `x = 0` hypothesis isn't used by `simp` to substitute. -/
+example (x : ℚ) : (x = 0 → x / x = 1) := by
+  field_simp
+  guard_target = (x = 0 → x / x = 1)
+  exact test_sorry

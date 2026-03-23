@@ -41,6 +41,7 @@ def count (n : ℕ) : ℕ :=
 theorem count_zero : count p 0 = 0 := by simp [count]
 
 /-- A fintype instance for the set relevant to `Nat.count`. Locally an instance in scope `count` -/
+@[instance_reducible]
 def CountSet.fintype (n : ℕ) : Fintype { i // i < n ∧ p i } :=
   Fintype.ofFinset {x ∈ range n | p x} <| by
     intro x
@@ -72,6 +73,7 @@ theorem count_succ (n : ℕ) : count p (n + 1) = count p n + if p n then 1 else 
 theorem count_monotone : Monotone (count p) :=
   monotone_nat_of_le_succ (by grind)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p (a + k)) b := by
   have : Disjoint {x ∈ range a | p x} {x ∈ (range b).map <| addLeftEmbedding a | p x} := by
     grind [Finset.disjoint_left]

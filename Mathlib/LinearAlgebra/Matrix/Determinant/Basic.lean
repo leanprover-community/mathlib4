@@ -280,9 +280,11 @@ theorem det_smul_of_tower {α} [Monoid α] [MulAction α R] [IsScalarTower α R 
     det (c • A) = c ^ Fintype.card n • det A := by
   rw [← smul_one_smul R c A, det_smul, smul_pow, one_pow, smul_mul_assoc, one_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem det_neg (A : Matrix n n R) : det (-A) = (-1) ^ Fintype.card n * det A := by
   rw [← det_smul, neg_one_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `Matrix.det_neg` with scalar multiplication by `Units ℤ` instead of multiplication
 by `R`. -/
 theorem det_neg_eq_smul (A : Matrix n n R) :

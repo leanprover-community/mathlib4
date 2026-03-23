@@ -53,6 +53,7 @@ def valuation : Valuation K ℝ≥0 where
 theorem valuation_apply (x : K) : valuation x = ‖x‖₊ := rfl
 
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
+@[instance_reducible]
 def toValued : Valued K ℝ≥0 :=
   { hK.toUniformSpace,
     inferInstanceAs (IsUniformAddGroup K) with
@@ -103,6 +104,7 @@ theorem norm_pos_iff_valuation_pos {x : L} : 0 < Valued.norm x ↔ (0 : Γ₀) <
 variable (L) (Γ₀)
 
 /-- The normed field structure determined by a rank one valuation. -/
+@[instance_reducible]
 def toNormedField : NormedField L :=
   { (inferInstance : Field L) with
     norm := norm
@@ -115,7 +117,9 @@ def toNormedField : NormedField L :=
       exact le_trans (norm_add_le _ _)
         (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _))
     eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (norm_eq_zero hxy)
-    dist_eq := fun x y => rfl
+    dist_eq := fun x y => by
+      simp only [norm]
+      rw [← v.map_neg, neg_sub, sub_eq_add_neg, add_comm]
     norm_mul := fun x y => by simp only [norm, ← NNReal.coe_mul, map_mul]
     toUniformSpace := Valued.toUniformSpace
     uniformity_dist := by
@@ -212,6 +216,7 @@ end toNormedField
 /--
 The nontrivially normed field structure determined by a rank one valuation.
 -/
+@[instance_reducible]
 def toNontriviallyNormedField : NontriviallyNormedField L := {
   val.toNormedField with
   non_trivial := by

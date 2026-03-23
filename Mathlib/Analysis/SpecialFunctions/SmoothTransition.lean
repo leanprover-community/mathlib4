@@ -67,6 +67,7 @@ protected theorem monotone : Monotone expNegInvGlue := by
   simp [expNegInvGlue, not_le.2 hx, not_le.2 (hx.trans_le hxy),
     inv_le_inv₀ (hx.trans_le hxy) hx, hxy]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The function `expNegInvGlue` is not analytic at `0`. -/
 theorem not_analyticAt_zero : ¬ AnalyticAt ℝ expNegInvGlue 0 := by
   intro h

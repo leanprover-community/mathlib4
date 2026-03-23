@@ -152,11 +152,12 @@ theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexE
       change LipschitzWith 1 (ψ ∘ ι.symm)
       apply LipschitzWith.of_dist_le_mul
       intro x y
-      rw [NNReal.coe_one, one_mul, NormedField.dist_eq, Function.comp_apply, Function.comp_apply,
+      rw [NNReal.coe_one, one_mul, dist_eq_norm, Function.comp_apply, Function.comp_apply,
         ← map_sub, ← map_sub]
       apply le_of_eq
       suffices ‖φ (ι.symm (x - y))‖ = ‖ψ (ι.symm (x - y))‖ by
-        rw [← this, ← RingEquiv.ofLeftInverse_apply hiφ _, RingEquiv.apply_symm_apply ι _]
+        rw [← this, ← RingEquiv.ofLeftInverse_apply hiφ _, RingEquiv.apply_symm_apply ι _,
+          dist_eq_norm]
         rfl
       exact congrFun (congrArg (↑) h₀) _
     cases
@@ -361,6 +362,7 @@ theorem prod_eq_abs_norm (x : K) :
     simp_rw [Finset.prod_congr rfl (this _), Finset.prod_const, card_filter_mk_eq]
   · rw [eq_ratCast, Rat.cast_abs, ← Real.norm_eq_abs, ← Complex.norm_real, Complex.ofReal_ratCast]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
     (h : ∀ ⦃z⦄, z ≠ w → z a < 1) : 1 ≤ w a := by
   suffices (1 : ℝ) ≤ |Algebra.norm ℚ (a : K)| by
@@ -458,6 +460,7 @@ theorem card_add_two_mul_card_eq_rank :
     ← Embeddings.card K ℂ, Nat.add_sub_of_le]
   exact Fintype.card_subtype_le _
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 The signature of the permutation on the complex embeddings of `K` defined by sending an embedding
@@ -511,7 +514,7 @@ theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k)
   | inr hnegone =>
     replace hζ' := hζ'.eq_orderOf
     simp only [show f ζ = -1 from Complex.ext (by simp [hnegone]) (by simp [him]),
-      orderOf_neg_one, ringChar.eq_zero, OfNat.zero_ne_ofNat, ↓reduceIte] at hζ'
+      orderOf_neg_one, ringChar.eq_zero] at hζ'
     lia
 
 end IsPrimitiveRoot
@@ -586,6 +589,7 @@ theorem isNontrivial : v.1.IsNontrivial := by
 
 variable {v} (K)
 
+set_option backward.isDefEq.respectTransparency false in
 open Filter in
 /--
 *Weak approximation for infinite places*

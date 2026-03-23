@@ -471,6 +471,7 @@ lemma addVal_eq_zero_iff {x : R} :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 instance (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
     IsHausdorff (maximalIdeal R) R where
   haus' x hx := by

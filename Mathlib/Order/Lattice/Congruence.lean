@@ -82,7 +82,7 @@ private lemma transitive {r : α → α → Prop}
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Alternative conditions for a lattice congruence. -/
-def mk' [Lattice α] (r : α → α → Prop) [h₁ : Std.Refl r]
+def mk' (r : α → α → Prop) [h₁ : Std.Refl r]
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
     (h₃ : ∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z)
     (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) : LatticeCon α where
@@ -114,11 +114,12 @@ variable [FunLike F α β]
 
 open Function
 
+set_option backward.whnf.reducibleClassField false in
 /-- The kernel of a lattice homomorphism as a lattice congruence. -/
 @[simps!]
-def ker [Lattice α] [Lattice β] [LatticeHomClass F α β] (f : F) : LatticeCon α where
+def ker [LatticeHomClass F α β] (f : F) : LatticeCon α where
   toSetoid := Setoid.ker f
-  inf _ _ := by simp_all only [Setoid.ker, onFun, map_inf]
-  sup _ _ := by simp_all only [Setoid.ker, onFun, map_sup]
+  inf _ _ := by simp_all +instances only [Setoid.ker, onFun, map_inf]
+  sup _ _ := by simp_all +instances only [Setoid.ker, onFun, map_sup]
 
 end LatticeCon

@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
 module
 
-public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
@@ -234,13 +233,6 @@ def fintypeOfFintype [Fintype ι] (b : Basis ι R M) [Fintype R] : Fintype M :=
   haveI := Classical.decEq ι
   Fintype.ofEquiv _ b.equivFun.toEquiv.symm
 
-theorem card_fintype [Fintype ι] (b : Basis ι R M) [Fintype R] [Fintype M] :
-    card M = card R ^ card ι := by
-  classical
-    calc
-      card M = card (ι → R) := card_congr b.equivFun.toEquiv
-      _ = card R ^ card ι := card_fun
-
 /-- Given a basis `v` indexed by `ι`, the canonical linear equivalence between `ι → R` and `M` maps
 a function `x : ι → R` to the linear combination `∑_i x i • v i`. -/
 @[simp]
@@ -382,6 +374,7 @@ variable {R' : Type*} [Semiring R'] [Module R' M] (f : R ≃+* R')
 
 attribute [local instance] SMul.comp.isScalarTower
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `R` and `R'` are isomorphic rings that act identically on a module `M`,
 then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module.
 
@@ -463,6 +456,7 @@ section Fintype
 
 variable [Fintype ι] [DecidableEq M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `b.reindexFinsetRange` is a basis indexed by `Finset.univ.image b`,
 the finite set of basis vectors themselves. -/
 def reindexFinsetRange : Basis (Finset.univ.image b) R M :=

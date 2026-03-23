@@ -137,6 +137,7 @@ lemma not_hasEigenvalue_zero_tfae (φ : Module.End K M) :
   have aux₂ : ker φ = ⊥ ↔ ¬ ⊥ < ker φ := by rw [bot_lt_iff_ne_bot, not_not]
   simpa only [aux₁, aux₂] using this
 
+set_option backward.isDefEq.respectTransparency false in
 open Module.Free in
 lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
     finrank K (φ.maxGenEigenspace 0) = natTrailingDegree (φ.charpoly) := by

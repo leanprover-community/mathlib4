@@ -261,10 +261,6 @@ theorem reverse_concat' (l : List α) (a : α) : (l ++ [a]).reverse = a :: l.rev
   rw [reverse_append]; rfl
 
 @[simp]
-theorem reverse_singleton (a : α) : reverse [a] = [a] :=
-  rfl
-
-@[simp]
 theorem reverse_involutive : Involutive (@reverse α) :=
   reverse_reverse
 
@@ -393,9 +389,6 @@ theorem mem_dropLast_of_mem_of_ne_getLast? {a : α} (ha : a ∈ l) (ha' : a ≠ 
 
 @[simp]
 theorem head!_nil [Inhabited α] : ([] : List α).head! = default := rfl
-
-@[deprecated cons_head_tail (since := "2025-08-15")]
-theorem head_cons_tail (x : List α) (h : x ≠ []) : x.head h :: x.tail = x := by simp
 
 theorem head_eq_getElem_zero {l : List α} (hl : l ≠ []) :
     l.head hl = l[0]'(length_pos_iff.2 hl) :=
@@ -985,6 +978,7 @@ theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :
   induction l with | nil => ?_ | cons a l ih => ?_ <;> simp [filterMap_cons]
   rcases f a <;> simp [ih]
 
+@[congr]
 theorem filterMap_congr {f g : α → Option β} {l : List α}
     (h : ∀ x ∈ l, f x = g x) : l.filterMap f = l.filterMap g := by
   induction l <;> simp_all [filterMap_cons]
@@ -999,6 +993,11 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
       grind
     · simp +contextual [ha, ih]
   mpr h := Eq.trans (filterMap_congr <| by simpa) (congr_fun filterMap_eq_map _)
+
+@[simp]
+lemma filterMap_none (l : List α) :
+    l.filterMap (fun _ ↦ @Option.none β) = [] := by
+  induction l <;> simp [*]
 
 /-! ### filter -/
 

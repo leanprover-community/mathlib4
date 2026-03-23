@@ -385,6 +385,7 @@ lemma completedSinZeta_one_sub (a : UnitAddCircle) (s : ℂ) :
 ## Relation to the Dirichlet series for `1 < re s`
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Formula for `completedSinZeta` as a Dirichlet series in the convergence range
 (first version, with sum over `ℤ`). -/
 lemma hasSum_int_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
@@ -486,6 +487,7 @@ theorem hasSum_int_hurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   have : 0 < re (s + 1) := by rw [add_re, one_re]; positivity
   simp [div_right_comm _ _ (Gammaℝ _), mul_div_cancel_left₀ _ (Gammaℝ_ne_zero_of_re_pos this)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Formula for `hurwitzZetaOdd` as a Dirichlet series in the convergence range, with sum over `ℕ`
 (version with absolute values) -/
 lemma hasSum_nat_hurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :

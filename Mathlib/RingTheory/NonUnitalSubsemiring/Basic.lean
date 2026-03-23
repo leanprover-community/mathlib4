@@ -214,6 +214,7 @@ instance : CompleteLattice (NonUnitalSubsemiring R) :=
     inf_le_right := fun _ _ _ => And.right
     le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_top_iff' (A : NonUnitalSubsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 
@@ -269,6 +270,7 @@ end NonUnitalNonAssocSemiring
 
 section NonUnitalSemiring
 
+set_option backward.isDefEq.respectTransparency false in
 -- no instance diamond, unlike the unital version
 example {R} [NonUnitalSemiring R] :
     (center.instNonUnitalCommSemiring _).toNonUnitalSemiring =
@@ -502,6 +504,7 @@ variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 theorem closure_eq (s : NonUnitalSubsemiring R) : closure (s : Set R) = s :=
   (NonUnitalSubsemiring.gi R).l_u_eq s
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem closure_empty : closure (∅ : Set R) = ⊥ :=
   (NonUnitalSubsemiring.gi R).gc.l_bot
@@ -545,10 +548,12 @@ theorem comap_iInf {ι : Sort*} (f : F) (s : ι → NonUnitalSubsemiring S) :
     (comap f (iInf s) : NonUnitalSubsemiring R) = ⨅ i, comap f (s i) :=
   @GaloisConnection.u_iInf _ _ _ _ _ _ _ (gc_map_comap f) s
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_bot (f : F) : map f (⊥ : NonUnitalSubsemiring R) = (⊥ : NonUnitalSubsemiring S) :=
   (gc_map_comap f).l_bot
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comap_top (f : F) : comap f (⊤ : NonUnitalSubsemiring S) = (⊤ : NonUnitalSubsemiring R) :=
   (gc_map_comap f).u_top

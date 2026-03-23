@@ -33,6 +33,7 @@ public section
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 variable (I : Ideal R) {N : Submodule R M}
 
+set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 /-- Let `N` be a finite index f.g. `R`-submodule, and `I` be a finite index ideal.
 Then `I • N` also has finite index. -/
@@ -55,6 +56,7 @@ lemma Submodule.finite_quotient_smul [Finite (R ⧸ I)] [Finite (M ⧸ N)] (hN :
   have : Finite ((R ⧸ I) ⊗[R] N) := Module.finite_of_finite (R ⧸ I)
   exact Nat.card_pos.ne'
 
+set_option backward.isDefEq.respectTransparency false in
 -- We have `hs` and `N` instead of using `span R s` in the goal to make it easier to use.
 -- Usually we would like to bound the index of some abstract `I • N`, and we may construct `s` while
 -- applying this lemma instead of having to provide it beforehand.

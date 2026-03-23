@@ -132,7 +132,7 @@ def domLCongr (e : ι ≃ ι') : (Π₀ i, M i) ≃ₗ[R] (Π₀ i, M (e.symm i)
 This is the `DFinsupp` version of `Finsupp.curryLinearEquiv`. -/
 @[simps! apply symm_apply]
 def sigmaCurryLEquiv {α : ι → Type*} {M : (i : ι) → α i → Type*}
-    [Π i j, AddCommMonoid (M i j)] [Π i j, Module R (M i j)] [DecidableEq ι] :
+    [Π i j, AddCommMonoid (M i j)] [Π i j, Module R (M i j)] :
     (Π₀ (i : (x : ι) × α x), M i.fst i.snd) ≃ₗ[R] Π₀ (i : ι) (j : α i), M i j where
   __ := DFinsupp.sigmaCurryEquiv
   map_add' _ _ := by ext; rfl
@@ -533,6 +533,7 @@ theorem iSupIndep_of_dfinsuppSumAddHom_injective' (p : ι → AddSubgroup N)
   rw [← iSupIndep_map_orderIso_iff (AddSubgroup.toIntSubmodule : AddSubgroup N ≃o _)]
   exact iSupIndep_of_dfinsupp_lsum_injective _ h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map out of a direct sum of a family of submodules is injective when the submodules
 are `iSupIndep`.
 

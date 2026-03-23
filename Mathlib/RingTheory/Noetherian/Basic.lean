@@ -156,6 +156,7 @@ instance isNoetherian_prod [IsNoetherian R M] [IsNoetherian R P] : IsNoetherian 
         fun x ⟨_, hx2⟩ => ⟨x.1, Prod.ext rfl <| Eq.symm <| LinearMap.mem_ker.1 hx2⟩
       Submodule.map_comap_eq_self this ▸ (noetherian _).map _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance isNoetherian_sup (M₁ M₂ : Submodule R P) [IsNoetherian R M₁] [IsNoetherian R M₂] :
     IsNoetherian R ↥(M₁ ⊔ M₂) := by
   have := isNoetherian_range (M₁.subtype.coprod M₂.subtype)
@@ -184,6 +185,7 @@ instance isNoetherian_iSup :
   · intros; rw [iSup_of_empty]; infer_instance
   · intro _ _ ih _ _; rw [iSup_option]; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the first and final modules in an exact sequence are Noetherian,
   then the middle module is also Noetherian. -/
 theorem isNoetherian_of_range_eq_ker [IsNoetherian R M] [IsNoetherian R P]
@@ -200,6 +202,7 @@ theorem isNoetherian_of_range_eq_ker [IsNoetherian R M] [IsNoetherian R P]
       (by simp [Submodule.map_comap_eq, inf_comm, Submodule.range_liftQ])
       (by simp [Submodule.comap_map_eq, h])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isNoetherian_iff_submodule_quotient (S : Submodule R P) :
     IsNoetherian R P ↔ IsNoetherian R S ∧ IsNoetherian R (P ⧸ S) := by
   refine ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ ?_⟩
@@ -316,6 +319,7 @@ instance isNoetherian_of_isNoetherianRing_of_finite (R M : Type*)
   have ⟨_, _, h⟩ := Module.Finite.exists_fin' R M
   isNoetherian_of_surjective _ _ (LinearMap.range_eq_top.mpr h)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module R M]
     (N : Submodule R M) [I : IsNoetherianRing R] (hN : N.FG) : IsNoetherian R N :=
   haveI : Module.Finite R N := .of_fg hN; inferInstance
@@ -366,6 +370,7 @@ variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 theorem FG.of_le_of_isNoetherian {S T : Submodule R M} [IsNoetherian R T] (hST : S ≤ T) : S.FG :=
   isNoetherian_submodule.mp inferInstance _ hST
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A submodule contained in an FG submodule is FG over noetherian rings. -/
 lemma FG.of_le [IsNoetherianRing R] {S T : Submodule R M} (hT : T.FG) (hST : S ≤ T) : S.FG := by
   rw [← Module.Finite.iff_fg] at hT
@@ -377,6 +382,7 @@ universe w v u
 
 variable (R : Type u) [CommRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Module.exists_finite_presentation [Small.{v} R] (M : Type v) [AddCommGroup M] [Module R M]
     [Module.Finite R M] : ∃ (P : Type v) (_ : AddCommGroup P) (_ : Module R P) (_ : Module.Free R P)
       (_ : Module.Finite R P) (f : P →ₗ[R] M), Function.Surjective f := by

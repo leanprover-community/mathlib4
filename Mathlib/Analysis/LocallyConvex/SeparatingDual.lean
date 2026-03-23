@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Central.Basic
 public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.Topology.Algebra.Module.StrongTopology
 
 /-!
 # Spaces with separating dual
@@ -162,6 +163,24 @@ instance _root_.Algebra.IsCentral.instContinuousLinearMap [Algebra.IsCentral S R
     have (y : V) := by simpa [hg] using congr($(Subalgebra.mem_center_iff.mp hf (g.smulRight y)) x)
     exact ⟨g (f x), by simp [this, ContinuousLinearMap.ext_iff]⟩
 
+open ContinuousLinearMap ContinuousLinearEquiv in
+theorem _root_.ContinuousLinearEquiv.conjContinuousAlgEquiv_ext_iff
+    {R V W : Type*} [NormedField R] [AddCommGroup V] [AddCommGroup W] [TopologicalSpace R]
+    [TopologicalSpace V] [TopologicalSpace W] [IsTopologicalRing R] [Module R V] [Module R W]
+    [SeparatingDual R V] [IsTopologicalAddGroup V] [IsTopologicalAddGroup W]
+    [ContinuousSMul R V] [ContinuousSMul R W] (f g : V ≃L[R] W) :
+    f.conjContinuousAlgEquiv = g.conjContinuousAlgEquiv ↔ ∃ α : Rˣ, f = α • g := by
+  conv_lhs => rw [eq_comm]
+  simp_rw [ContinuousAlgEquiv.ext_iff, funext_iff, conjContinuousAlgEquiv_apply,
+    ← eq_toContinuousLinearMap_symm_comp, ← ContinuousLinearMap.comp_assoc,
+    eq_comp_toContinuousLinearMap_symm, ContinuousLinearMap.comp_assoc,
+    ← ContinuousLinearMap.comp_assoc _ f.toContinuousLinearMap, comp_coe, ← mul_def,
+    ← Subalgebra.mem_center_iff (R := R), Algebra.IsCentral.center_eq_bot, ← comp_coe,
+    Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one, ContinuousLinearEquiv.ext_iff]
+  refine ⟨fun ⟨y, h⟩ ↦ ?_, fun ⟨y, h⟩ ↦ ⟨(y : R), by ext; simp [h]⟩⟩
+  if hy : y = 0 then exact ⟨1, funext fun x ↦ by simp [by simpa [hy] using congr($h x).symm]⟩
+  else exact ⟨.mk0 y hy, funext fun x ↦ by simp [by simpa [eq_symm_apply] using congr($h x)]⟩
+
 end algebra
 
 /-- In a topological vector space with separating dual, the group of continuous linear equivalences
@@ -191,9 +210,8 @@ theorem exists_continuousLinearEquiv_apply_eq
       rw [mul_comm _ (G y), ← mul_assoc, mul_inv_cancel₀ Gy]
       simp only [smul_sub, one_mul, add_sub_cancel]
       abel
-    continuous_toFun := continuous_id.add (G.continuous.smul continuous_const)
-    continuous_invFun :=
-      continuous_id.add ((continuous_const.mul G.continuous).smul continuous_const) }
+    continuous_toFun := by fun_prop
+    continuous_invFun := by fun_prop }
   exact ⟨A, show x + G x • (y - x) = y by simp [Gx]⟩
 
 end Field

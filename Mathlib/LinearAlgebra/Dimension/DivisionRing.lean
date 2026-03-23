@@ -53,6 +53,7 @@ theorem Module.Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0 (h : Module.ran
     (Basis.ofVectorSpaceIndex K V).Finite :=
   Set.finite_def.2 <| (Basis.ofVectorSpace K V).nonempty_fintype_index_of_rank_lt_aleph0 h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Also see `rank_quotient_add_rank`. -/
 theorem rank_quotient_add_rank_of_divisionRing (p : Submodule K V) :
     Module.rank K (V ⧸ p) + Module.rank K p = Module.rank K V := by
@@ -75,6 +76,7 @@ variable [AddCommGroup V₃] [Module K V₃]
 
 open LinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is mostly an auxiliary lemma for `Submodule.rank_sup_add_rank_inf_eq`. -/
 theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd : V₁ →ₗ[K] V₂)
     (ce : V₁ →ₗ[K] V₃) (hde : ⊤ ≤ LinearMap.range db ⊔ LinearMap.range eb) (hgd : ker cd = ⊥)

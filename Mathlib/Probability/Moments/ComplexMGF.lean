@@ -106,6 +106,7 @@ lemma re_complexMGF_ofReal' : (fun x : ℝ ↦ (complexMGF X μ x).re) = mgf X �
   ext x
   exact re_complexMGF_ofReal x
 
+set_option backward.isDefEq.respectTransparency false in
 lemma complexMGF_id_mul_I {μ : Measure ℝ} (t : ℝ) :
     complexMGF id μ (t * I) = charFun μ t := by
   simp only [complexMGF, id_eq, charFun, RCLike.inner_apply, conj_trivial, ofReal_mul]
@@ -118,6 +119,7 @@ lemma complexMGF_mul_I (hX : AEMeasurable X μ) (t : ℝ) :
 
 section Analytic
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For `z : ℂ` with `z.re ∈ interior (integrableExpSet X μ)`, the derivative of the function
 `z' ↦ μ[X ^ n * cexp (z' * X)]` at `z` is `μ[X ^ (n + 1) * cexp (z * X)]`. -/
 lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
@@ -314,6 +316,7 @@ section ext
 
 variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the complex moment-generating functions of two random variables `X` and `Y` with respect to
 the finite measures `μ`, `μ'`, respectively, coincide, then `μ.map X = μ'.map Y`. In other words,
 complex moment-generating functions separate the distributions of random variables. -/

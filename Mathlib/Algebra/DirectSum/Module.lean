@@ -369,6 +369,7 @@ indexed by `ι`. This is `DirectSum.coeAddMonoidHom` as a `LinearMap`. -/
 def coeLinearMap : (⨁ i, A i) →ₗ[R] M :=
   toModule R ι M fun i ↦ (A i).subtype
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeLinearMap_eq_dfinsuppSum [DecidableEq M] (x : DirectSum ι fun i => A i) :
     coeLinearMap A x = DFinsupp.sum x fun i => (fun x : A i => ↑x) := by
   simp only [coeLinearMap, toModule, DFinsupp.lsum, LinearEquiv.coe_mk, LinearMap.coe_mk,
@@ -426,6 +427,7 @@ noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type
         DFinsupp.mapRange.linearEquiv fun i ↦ (v i).repr) ≪≫ₗ
       (sigmaFinsuppLequivDFinsupp R).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) : ⇑(h.collectedBasis v) = fun a : Σ i, α i ↦ ↑(v a.1 a.2) := by
@@ -494,6 +496,7 @@ theorem isInternal_ne_bot_iff {A : ι → Submodule R M} :
     IsInternal (fun i : {i // A i ≠ ⊥} ↦ A i) ↔ IsInternal A := by
   simp [isInternal_submodule_iff_iSupIndep_and_iSup_eq_top]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isInternal_biSup_submodule_of_iSupIndep {A : ι → Submodule R M} (s : Set ι)
     (h : iSupIndep <| fun i : s ↦ A i) :
     IsInternal <| fun (i : s) ↦ (A i).comap (⨆ i ∈ s, A i).subtype := by

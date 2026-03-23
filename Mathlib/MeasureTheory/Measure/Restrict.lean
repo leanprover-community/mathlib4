@@ -646,9 +646,14 @@ theorem mem_map_restrict_ae_iff {β} {s : Set α} {t : Set β} {f : α → β} (
     t ∈ Filter.map f (ae (μ.restrict s)) ↔ μ ((f ⁻¹' t)ᶜ ∩ s) = 0 := by
   rw [mem_map, mem_ae_iff, Measure.restrict_apply' hs]
 
-theorem ae_add_measure_iff {p : α → Prop} {ν} :
+@[simp] theorem ae_add_measure_iff {p : α → Prop} {ν} :
     (∀ᵐ x ∂μ + ν, p x) ↔ (∀ᵐ x ∂μ, p x) ∧ ∀ᵐ x ∂ν, p x :=
   add_eq_zero
+
+/-- See also `Measure.ae_sum_iff`. -/
+@[simp] lemma ae_finsetSum_measure_iff {p : α → Prop} {s : Finset ι} {μ : ι → Measure α} :
+    (∀ᵐ x ∂∑ i ∈ s, μ i, p x) ↔ ∀ i ∈ s, ∀ᵐ x ∂μ i, p x := by
+  induction s using Finset.cons_induction <;> simp [*]
 
 theorem ae_eq_comp' {ν : Measure β} {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ)
     (h : g =ᵐ[ν] g') (h2 : μ.map f ≪ ν) : g ∘ f =ᵐ[μ] g' ∘ f :=
@@ -817,6 +822,7 @@ variable {u : Set δ} [MeasureSpace δ] {p : δ → Prop}
 Not registered as an instance, as there are other natural choices such as the normalized restriction
 for a probability measure, or the subspace measure when restricting to a vector subspace. Enable
 locally if needed with `attribute [local instance] Measure.Subtype.measureSpace`. -/
+@[instance_reducible]
 noncomputable def Subtype.measureSpace : MeasureSpace (Subtype p) where
   volume := Measure.comap Subtype.val volume
 
@@ -1059,6 +1065,7 @@ end IndicatorFunction
 
 section Sum
 
+set_option backward.isDefEq.respectTransparency false in
 open Finset in
 /-- An upper bound on a sum of restrictions of a measure `μ`. This can be used to compare
 `∫ x ∈ X, f x ∂μ` with `∑ i, ∫ x ∈ (s i), f x ∂μ`, where `s` is a cover of `X`. -/

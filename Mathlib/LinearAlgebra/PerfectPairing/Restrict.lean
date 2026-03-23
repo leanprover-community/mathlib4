@@ -150,6 +150,7 @@ variable {K L M N : Type*} [Field K] [Field L] [Algebra K L]
   [Module K M] [Module K N] [IsScalarTower K L M]
   (p : M →ₗ[L] N →ₗ[L] L) [p.IsPerfPair]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a perfect pairing over a field `L` takes values in a subfield `K` along two `K`-subspaces
 whose `L` span is full, then these subspaces induce a `K`-structure in the sense of
 [*Algebra I*, Bourbaki : Chapter II, §8.1 Definition 1][bourbaki1989]. -/
@@ -215,6 +216,7 @@ variable {M' N' : Type*}
   [AddCommGroup M'] [AddCommGroup N'] [Module K M'] [Module K N'] [IsScalarTower K L N]
   (i : M' →ₗ[K] M) (j : N' →ₗ[K] N) (hi : Injective i) (hj : Injective j)
 
+set_option backward.isDefEq.respectTransparency false in
 include hi hj in
 /-- An auxiliary definition used only to simplify the construction of the more general definition
 `PerfectPairing.restrictScalarsField`. -/
@@ -232,6 +234,7 @@ private lemma restrictScalars_field_aux
   have : FiniteDimensional K (LinearMap.range i) := b'.finiteDimensional_of_finite
   exact Finite.equiv (LinearEquiv.ofInjective i hi).symm
 
+set_option backward.isDefEq.respectTransparency false in
 include hi hj in
 /-- Simultaneously restrict both the domains and scalars of a perfect pairing with coefficients in a
 field. -/

@@ -451,6 +451,7 @@ lemma hom_ext {F G : LaxBraidedFunctor C D} {α β : F ⟶ G} (h : α.hom.hom = 
     α = β :=
   InducedCategory.hom_ext (LaxMonoidalFunctor.hom_ext h)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for morphisms in the category `LaxBraidedFunctor C D`. -/
 @[simps]
 def homMk {F G : LaxBraidedFunctor C D} (f : F.toFunctor ⟶ G.toFunctor) [NatTrans.IsMonoidal f] :
@@ -532,13 +533,15 @@ def SymmetricCategory.ofFaithful {C D : Type*} [Category* C] [Category* D] [Mono
     [F.Faithful] : SymmetricCategory C where
   symmetry X Y := F.map_injective (by simp)
 
+set_option backward.whnf.reducibleClassField false in
 /-- Pull back a symmetric braiding along a fully faithful monoidal functor. -/
 noncomputable def SymmetricCategory.ofFullyFaithful {C D : Type*} [Category* C] [Category* D]
     [MonoidalCategory C] [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Full]
     [F.Faithful] [SymmetricCategory D] : SymmetricCategory C :=
   let h : BraidedCategory C := BraidedCategory.ofFullyFaithful F
   let _ : F.Braided := {
-    braided X Y := by simp [h, BraidedCategory.ofFullyFaithful, BraidedCategory.ofFaithful] }
+    braided X Y := by
+      simp +instances [h, BraidedCategory.ofFullyFaithful, BraidedCategory.ofFaithful] }
   .ofFaithful F
 
 @[deprecated (since := "2025-10-17")]
@@ -869,11 +872,12 @@ lemma SymmetricCategory.reverseBraiding_eq (C : Type u₁) [Category.{v₁} C]
   funext X Y
   exact Iso.ext (braiding_swap_eq_inv_braiding Y X).symm
 
+set_option backward.whnf.reducibleClassField false in
 /-- The identity functor from `C` to `C`, where the codomain is given the
 reversed braiding, upgraded to a braided functor. -/
 def SymmetricCategory.equivReverseBraiding (C : Type u₁) [Category.{v₁} C]
     [MonoidalCategory C] [SymmetricCategory C] :=
   @Functor.Braided.mk C _ _ _ C _ _ (reverseBraiding C) (𝟭 C) _ <| by
-    simp [reverseBraiding, braiding_swap_eq_inv_braiding]
+    simp +instances [reverseBraiding, braiding_swap_eq_inv_braiding]
 
 end CategoryTheory

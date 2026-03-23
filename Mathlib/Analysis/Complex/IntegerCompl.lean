@@ -28,21 +28,29 @@ local notation "ℂ_ℤ" => integerComplement
 
 lemma integerComplement_eq : ℂ_ℤ = {z : ℂ | ¬ ∃ (n : ℤ), n = z} := rfl
 
-lemma integerComplement.mem_iff {x : ℂ} : x ∈ ℂ_ℤ ↔ ¬ ∃ (n : ℤ), n = x := Iff.rfl
+lemma mem_integerComplement_iff {x : ℂ} : x ∈ ℂ_ℤ ↔ ¬ ∃ (n : ℤ), n = x := Iff.rfl
 
+@[deprecated (since := "2026-01-29")]
+alias integerComplement.mem_iff := mem_integerComplement_iff
+
+@[simp]
 lemma _root_.UpperHalfPlane.coe_mem_integerComplement (z : ℍ) : ↑z ∈ ℂ_ℤ :=
-  not_exists.mpr fun x hx ↦ ne_int z x hx.symm
+  not_exists.mpr fun x hx ↦ ne_intCast z x hx.symm
 
-lemma integerComplement.add_coe_int_mem {x : ℂ} (a : ℤ) : x + (a : ℂ) ∈ ℂ_ℤ ↔ x ∈ ℂ_ℤ := by
-  simp only [mem_iff, not_iff_not]
+@[simp]
+lemma add_intCast_mem_integerComplement {x : ℂ} (a : ℤ) : x + (a : ℂ) ∈ ℂ_ℤ ↔ x ∈ ℂ_ℤ := by
+  simp only [mem_integerComplement_iff, not_iff_not]
   exact ⟨(Exists.elim · fun n hn ↦ ⟨n - a, by simp [hn]⟩),
     (Exists.elim · fun n hn ↦ ⟨n + a, by simp [hn]⟩)⟩
+
+@[deprecated (since := "2026-01-29")]
+alias integerComplement.add_coe_int_mem := add_intCast_mem_integerComplement
 
 lemma integerComplement.ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) : x ≠ 0 :=
   fun hx' ↦ hx ⟨0, by exact_mod_cast hx'.symm⟩
 
 lemma integerComplement_add_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) (a : ℤ) : x + (a : ℂ) ≠ 0 :=
-  integerComplement.ne_zero ((integerComplement.add_coe_int_mem a).mpr hx)
+  integerComplement.ne_zero ((add_intCast_mem_integerComplement a).mpr hx)
 
 lemma integerComplement.ne_one {x : ℂ} (hx : x ∈ ℂ_ℤ) : x ≠ 1 :=
   fun hx' ↦ hx ⟨1, by exact_mod_cast hx'.symm⟩
@@ -54,14 +62,13 @@ lemma integerComplement_pow_two_ne_pow_two {x : ℂ} (hx : x ∈ ℂ_ℤ) (n : �
 
 lemma upperHalfPlane_inter_integerComplement :
     {z : ℂ | 0 < z.im} ∩ ℂ_ℤ = {z : ℂ | 0 < z.im} := by
-  ext z
-  simp only [Set.mem_inter_iff, Set.mem_setOf_eq, and_iff_left_iff_imp]
-  exact fun hz ↦ UpperHalfPlane.coe_mem_integerComplement ⟨z, hz⟩
+  apply Set.inter_eq_self_of_subset_left
+  exact fun z hz ↦ UpperHalfPlane.coe_mem_integerComplement ⟨z, hz⟩
 
 lemma _root_.UpperHalfPlane.int_div_mem_integerComplement (z : ℍ) {n : ℤ} (hn : n ≠ 0) :
     n / (z : ℂ) ∈ ℂ_ℤ := by
   rintro ⟨_, hm⟩
-  have : (n / (z : ℂ)).im ≠ 0 := by simp [div_im, hn, z.im_pos.ne', ne_zero z]
+  have : (n / (z : ℂ)).im ≠ 0 := by simp [div_im, z.ne_zero, hn, z.im_ne_zero]
   simpa [← hm]
 
 end Complex

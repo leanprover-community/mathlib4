@@ -390,13 +390,78 @@ def getLocalCacheSet : IO <| Std.TreeSet String compare := do
 def isFromMathlib (mod : Name) : Bool :=
   mod.getRoot == `Mathlib
 
+/-- Get the trace file path for a module. -/
+def getTracePath (mod : Name) : CacheM FilePath := do
+  let sp := (← read).srcSearchPath
+  let packageDir ← getSrcDir sp mod
+  let path := (System.mkFilePath <| mod.components.map toString)
+  return packageDir / LIBDIR / path.withExtension "trace"
+
+/-- Read the `depHash` from a trace file, if it exists and is valid.
+    Returns the hash as a UInt64. -/
+def readTraceHash (tracePath : FilePath) : IO (Option UInt64) := do
+  let contents ← try IO.FS.readFile tracePath
+                  catch _ => return none
+  -- Try to parse as JSON and extract depHash
+  let some json := Lean.Json.parse contents |>.toOption | return none
+  let some depHashStr := json.getObjValAs? String "depHash" |>.toOption | return none
+  -- Parse hex string to UInt64
+  return depHashStr.parseHexToUInt64?
+
+/-- Read the Lake depHash from an ltar file header.
+    The ltar format is: 4-byte magic (LTAR/LTR2/LTR3) + 8-byte little-endian u64 hash. -/
+def readLtarHash (ltarPath : FilePath) : IO (Option UInt64) := do
+  let some handle ← try
+      some <$> IO.FS.Handle.mk ltarPath .read
+    catch _ => pure none | return none
+  -- Read 12 bytes: 4 magic + 8 hash
+  let bytes ← handle.read 12
+  if bytes.size < 12 then return none
+  -- Verify magic (LTAR, LTR2, or LTR3)
+  let magic := String.fromUTF8! (bytes.extract 0 4)
+  if magic != "LTAR" && magic != "LTR2" && magic != "LTR3" then return none
+  -- Read little-endian u64 hash
+  let mut hash : UInt64 := 0
+  for i in [0:8] do
+    hash := hash ||| ((bytes.get! (4 + i)).toUInt64 <<< (i * 8).toUInt64)
+  return some hash
+
+/-- Check if a module's trace file indicates it is already decompressed with the correct hash.
+    The hash to compare comes from the ltar file header, not the mathlib cache hash.
+    Returns `true` if the module needs decompression, `false` if it can be skipped. -/
+def needsDecompression (mod : Name) (mathlibHash : UInt64) : CacheM Bool := do
+  -- Read the Lake depHash from the ltar file header
+  let ltarPath := CACHEDIR / mathlibHash.asLTar
+  let some ltarHash ← readLtarHash ltarPath | return true
+  -- Read the trace file hash
+  let tracePath ← getTracePath mod
+  let some traceHash ← readTraceHash tracePath | return true
+  -- They should match if the file is already decompressed
+  return ltarHash != traceHash
+
+/-- Filter the hashmap to only include modules that need decompression.
+    A module needs decompression if its trace file doesn't exist or has a different hash. -/
+def ModuleHashMap.filterNeedsDecompression (hashMap : ModuleHashMap) : CacheM ModuleHashMap :=
+  hashMap.foldM (init := ∅) fun acc mod hash => do
+    if ← needsDecompression mod hash then
+      return acc.insert mod hash
+    else
+      return acc
+
 /-- Decompresses build files into their respective folders -/
 def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
   let hashMap ← hashMap.filterExists true
+  let totalCached := hashMap.size
+  -- Unless force is set, filter to only modules that actually need decompression
+  let hashMap ← if force then pure hashMap else hashMap.filterNeedsDecompression
   let size := hashMap.size
+  let skipped := totalCached - size
   if size > 0 then
     let now ← IO.monoMsNow
-    IO.println s!"Decompressing {size} file(s)"
+    if skipped > 0 then
+      IO.println s!"Decompressing {size} file(s) ({skipped} already decompressed)"
+    else
+      IO.println s!"Decompressing {size} file(s)"
     let args := (if force then #["-f"] else #[]) ++ #["-x", "--delete-corrupted", "-j", "-"]
     let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
@@ -427,9 +492,12 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
-    IO.println s!"Unpacked in {(← IO.monoMsNow) - now} ms"
+    IO.println s!"Decompressed in {(← IO.monoMsNow) - now} ms"
     IO.println "Completed successfully!"
-  else IO.println "No cache files to decompress"
+  else if totalCached > 0 then
+    IO.println s!"Already decompressed {totalCached} file(s)"
+  else
+    IO.println "No cache files to decompress"
 
 instance : Ord FilePath where
   compare x y := compare x.toString y.toString

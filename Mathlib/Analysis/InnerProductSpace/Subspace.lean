@@ -199,7 +199,8 @@ theorem OrthogonalFamily.norm_sq_diff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
 theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : ∀ i, G i) :
     (Summable fun i => V i (f i)) ↔ Summable fun i => ‖f i‖ ^ 2 := by
   classical
-    simp only [summable_iff_cauchySeq_finset, NormedAddCommGroup.cauchySeq_iff, Real.norm_eq_abs]
+    simp only [summable_iff_cauchySeq_finset, NormedAddCommGroup.cauchySeq_iff, norm_neg_add,
+      Real.norm_eq_abs]
     constructor
     · intro hf ε hε
       obtain ⟨a, H⟩ := hf _ (sqrt_pos.mpr hε)
@@ -249,6 +250,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 variable {ι : Type*} {G : ι → Type*}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An orthogonal family forms an independent family of subspaces; that is, any collection of
 elements each from a different subspace in the family is linearly independent. In particular, the
 pairwise intersections of elements of the family are 0. -/

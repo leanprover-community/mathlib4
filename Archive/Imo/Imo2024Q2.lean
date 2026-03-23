@@ -27,6 +27,7 @@ open scoped Nat
 def Condition (a b : ℕ) : Prop :=
   0 < a ∧ 0 < b ∧ ∃ g N : ℕ, 0 < g ∧ 0 < N ∧ ∀ n : ℕ, N ≤ n → Nat.gcd (a ^ n + b) (b ^ n + a) = g
 
+set_option backward.isDefEq.respectTransparency false in
 lemma dvd_pow_iff_of_dvd_sub {a b d n : ℕ} {z : ℤ} (ha : a.Coprime d)
     (hd : (φ d : ℤ) ∣ (n : ℤ) - z) :
     d ∣ a ^ n + b ↔ (((ZMod.unitOfCoprime _ ha) ^ z : (ZMod d)ˣ) : ZMod d) + b = 0 := by

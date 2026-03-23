@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 public import Mathlib.Tactic.Bound.Init
 public import Mathlib.Tactic.Common

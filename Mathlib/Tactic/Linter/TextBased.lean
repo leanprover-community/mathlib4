@@ -10,6 +10,7 @@ public meta import Lake.Util.Casing
 public import Batteries.Data.String.Basic
 public import Mathlib.Data.Nat.Notation
 public meta import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
+public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 
 -- Don't warn about the lake import: the above file has almost no imports, and this PR has been
 -- benchmarked.
@@ -230,8 +231,14 @@ def adaptationNoteLinter : TextbasedLinter := fun opts lines ↦ Id.run do
 
   let mut errors := Array.mkEmpty 0
   for h : idx in [:lines.size] do
-    -- We make this shorter to catch "Adaptation note", "adaptation note" and a missing colon.
-    if lines[idx].containsSubstr "daptation note" then
+    let line := lines[idx]
+    -- Flag lines that look like a hand-written adaptation note comment
+    -- (e.g. "-- Adaptation note:" or "-- adaptation note:"), but not lines that
+    -- merely reference the concept (e.g. "-- see adaptation note") or that
+    -- use the correct #adaptation_note command.
+    if line.containsSubstr "daptation note" &&
+        !line.containsSubstr "#adaptation_note" &&
+        !line.containsSubstr "see adaptation note" then
       errors := errors.push (StyleError.adaptationNote, idx + 1)
   return (errors, none)
 

@@ -204,6 +204,7 @@ theorem natDegree_multiset_prod_of_monic (h : ∀ f ∈ t, Monic f) :
   apply natDegree_multiset_prod'
   simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 theorem degree_multiset_prod_of_monic [Nontrivial R] (h : ∀ f ∈ t, Monic f) :
     t.prod.degree = (t.map degree).sum := by
   have : t.prod ≠ 0 := Monic.ne_zero <| by simpa using monic_multiset_prod_of_monic _ _ h

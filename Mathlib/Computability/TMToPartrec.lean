@@ -31,7 +31,7 @@ open List (Vector)
 
 open Function (update)
 
-open Relation
+open Relation StateTransition
 
 namespace Turing
 
@@ -571,15 +571,8 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
     swap
     · rw [Function.update_of_ne h₁.symm, List.reverseAux_nil]
     refine TransGen.head' rfl ?_
-    rw [tr]; simp only [pop', TM2.stepAux]
-    revert e; rcases S k₁ with - | ⟨a, Sk⟩ <;> intro e
-    · cases e
-      rfl
-    simp only [splitAtPred, Option.elim, List.head?, List.tail_cons] at e ⊢
-    revert e; cases p a <;> intro e <;>
-      simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and, reduceCtorEq] at e ⊢
-    simp only [e]
-    rfl
+    simp only [tr_move, pop', TM2.stepAux]
+    grind [splitAtPred.eq_def]
   | cons a L₁ IH =>
     refine TransGen.head rfl ?_
     rw [tr]; simp only [pop', Option.elim, TM2.stepAux, push']
@@ -924,6 +917,7 @@ theorem tr_init (c v) :
     ∃ b, TrCfg (stepNormal c Cont.halt v) b ∧ Reaches₁ (TM2.step tr) (init c v) b :=
   trNormal_respects _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v := by
   obtain ⟨i, h₁, h₂⟩ := tr_init c v
   refine Part.ext fun x => ?_
@@ -934,7 +928,7 @@ theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v :
     obtain ⟨v', hv, rfl⟩ := hc₂
     exact ⟨_, hv, hc₁.symm⟩
   · rintro ⟨v', hv, rfl⟩
-    have := Turing.tr_eval (b₁ := Cfg.halt v') tr_respects h₁
+    have := StateTransition.tr_eval (b₁ := Cfg.halt v') tr_respects h₁
     simp only [stepNormal_eval, Part.map_eq_map, Part.mem_map_iff, Cfg.halt.injEq,
       exists_eq_right] at this
     obtain ⟨_, ⟨⟩, h⟩ := this hv

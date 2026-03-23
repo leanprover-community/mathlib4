@@ -179,7 +179,7 @@ theorem resultant_zero_right : resultant f 0 m n = 0 ^ m * f.coeff 0 ^ n := by
   obtain _ | m := m; · simp
   have (i : Fin (m + 1 + n)) : sylvester f 0 (m + 1) n i ⟨0, by lia⟩ = 0 := by
     simp [sylvester, show (0 : Fin (m + 1 + n)) = Fin.castAdd _ 0 from rfl, Fin.addCases_left]
-  simpa [resultant] using Matrix.det_eq_zero_of_column_eq_zero ⟨0, by simp⟩ this
+  simpa [resultant] using Matrix.det_eq_zero_of_column_eq_zero ⟨0, by lia⟩ this
 
 @[simp]
 theorem resultant_zero_left : resultant 0 g m n = 0 ^ n * g.coeff 0 ^ m := by
@@ -476,6 +476,7 @@ lemma resultant_eq_prod_roots_sub
   · rw [f.modByMonic_add_div hg, natDegree_divByMonic _ hg, Nat.sub_add_cancel hfg]
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` splits with leading coeff `a` and degree `n`,
 then `Res(f, g) = aⁿ * ∏ g(α)` where `α` runs through the roots of `f`. -/
 nonrec lemma resultant_eq_prod_eval [IsDomain R]
@@ -525,6 +526,7 @@ nonrec lemma resultant_eq_prod_eval [IsDomain R]
   simp only [eval_map_algebraMap, Function.comp_apply, Multiset.map_map, L]
   congr; ext; simp [aeval_algebraMap_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.unusedVariables false in
 -- the variable names are used in the code action of `induction`.
 /-- An induction principle useful to prove statements about resultants.
@@ -573,9 +575,9 @@ nonrec lemma resultant_mul_right (f g₁ g₂ : R[X]) (m : ℕ) (hm : f.natDegre
     rw [← Polynomial.map_mul] at this
     simpa only [resultant_map_map, ← map_mul, natDegree_map_eq_of_injective hφ] using this
   | surjective R S φ hφ f IH =>
-    obtain ⟨f', hf', e⟩ := Polynomial.mem_lifts_and_degree_eq (Polynomial.map_surjective φ hφ f)
-    obtain ⟨g₁', hg₁, e₁⟩ := Polynomial.mem_lifts_and_degree_eq (Polynomial.map_surjective φ hφ g₁)
-    obtain ⟨g₂', hg₂, e₂⟩ := Polynomial.mem_lifts_and_degree_eq (Polynomial.map_surjective φ hφ g₂)
+    obtain ⟨f', hf', e⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ f)
+    obtain ⟨g₁', hg₁, e₁⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ g₁)
+    obtain ⟨g₂', hg₂, e₂⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ g₂)
     rw [← hg₁, ← hg₂, ← hf', ← Polynomial.map_mul]
     simp_rw [resultant_map_map, hg₁, hg₂, hf', ← natDegree_eq_natDegree e₁,
       ← natDegree_eq_natDegree e₂, ← natDegree_eq_natDegree e, IH, map_mul]
@@ -600,7 +602,7 @@ lemma resultant_mul_left (f₁ f₂ g : R[X]) (n : ℕ) (hn : g.natDegree ≤ n)
     apply hφ
     simpa only [resultant_map_map, natDegree_map_eq_of_injective hφ, map_zero, map_pow] using IH
   | surjective R S φ hφ f IH =>
-    obtain ⟨f', hf', e⟩ := Polynomial.mem_lifts_and_degree_eq (Polynomial.map_surjective φ hφ f)
+    obtain ⟨f', hf', e⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ f)
     rw [← hf', resultant_map_map, hf', ← natDegree_eq_natDegree e, IH f', map_pow, map_zero]
 
 lemma resultant_self_eq_zero (f : R[X]) (h : f.natDegree ≠ 0) :
@@ -719,8 +721,8 @@ nonrec lemma resultant_scaleRoots (f g : R[X]) (r : R) :
     · simpa [natDegree_map_eq_of_injective hφ] using this
     all_goals simpa [map_eq_zero_iff _ hφ]
   | surjective R S φ hφ f IH =>
-    obtain ⟨f', hf', ef⟩ := Polynomial.mem_lifts_and_degree_eq (Polynomial.map_surjective φ hφ f)
-    obtain ⟨g', hg', eg⟩ := Polynomial.mem_lifts_and_degree_eq (Polynomial.map_surjective φ hφ g)
+    obtain ⟨f', hf', ef⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ f)
+    obtain ⟨g', hg', eg⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ g)
     obtain ⟨r, rfl⟩ := hφ r
     have hfl : f.leadingCoeff = φ f'.leadingCoeff := by
       simp_rw [← coeff_natDegree, ← natDegree_eq_natDegree ef, ← hf', coeff_map]
@@ -743,8 +745,8 @@ lemma resultant_integralNormalization (f g : R[X]) (hg : g.natDegree ≠ 0) :
     let S := MvPolynomial R ℤ
     let φ : S →+* R := MvPolynomial.eval₂Hom (algebraMap _ _) id
     have hφ : Function.Surjective φ := fun x ↦ ⟨.X x, by simp [φ, MvPolynomial.eval₂Hom]⟩
-    obtain ⟨f', hf', ef⟩ := Polynomial.mem_lifts_and_degree_eq (Polynomial.map_surjective φ hφ f)
-    obtain ⟨g', hg', eg⟩ := Polynomial.mem_lifts_and_degree_eq (Polynomial.map_surjective φ hφ g)
+    obtain ⟨f', hf', ef⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ f)
+    obtain ⟨g', hg', eg⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ g)
     have hfl : f.leadingCoeff = φ f'.leadingCoeff := by
       simp_rw [← coeff_natDegree, ← natDegree_eq_natDegree ef, ← hf', coeff_map]
     have hgl : g.leadingCoeff = φ g'.leadingCoeff := by
@@ -786,8 +788,8 @@ nonrec lemma resultant_taylor (f g : R[X]) (r : R) :
     rw [← map_taylor, ← map_taylor] at this
     simpa [natDegree_map_eq_of_injective hφ] using this
   | surjective R S φ hφ f IH =>
-    obtain ⟨f', hf', ef⟩ := Polynomial.mem_lifts_and_degree_eq (Polynomial.map_surjective φ hφ f)
-    obtain ⟨g', hg', eg⟩ := Polynomial.mem_lifts_and_degree_eq (Polynomial.map_surjective φ hφ g)
+    obtain ⟨f', hf', ef⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ f)
+    obtain ⟨g', hg', eg⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ g)
     obtain ⟨r, rfl⟩ := hφ r
     have hfl : f.leadingCoeff = φ f'.leadingCoeff := by
       simp_rw [← coeff_natDegree, ← natDegree_eq_natDegree ef, ← hf', coeff_map]
@@ -952,6 +954,7 @@ lemma discr_of_degree_eq_one {f : R[X]} (hf : f.degree = 1) : discr f = 1 := by
     simp [e, sylvesterDeriv, mul_comm, hf]
   simp [discr, ← Matrix.det_reindex_self e, this, hf]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Standard formula for the discriminant of a quadratic polynomial. -/
 lemma discr_of_degree_eq_two {f : R[X]} (hf : f.degree = 2) :
@@ -1011,10 +1014,11 @@ private lemma sylvesterDeriv_of_natDegree_eq_three {f : R[X]} (hf : f.natDegree 
   fin_cases hi' <;>
   · simp only [and_true, Fin.isValue, Fin.mk_one, Fin.reduceFinMk, Fin.zero_eta,
       le_add_iff_nonneg_left, Matrix.cons_val_one, Matrix.cons_val_zero, Matrix.cons_val,
-      mul_one, Nat.cast_zero, Nat.reduceAdd, Nat.reduceEqDiff, Nat.reduceLeDiff, nonpos_iff_eq_zero,
-      OfNat.one_ne_ofNat, OfNat.zero_ne_ofNat, ↓reduceIte, zero_add, zero_le, zero_tsub]
+      Nat.reduceAdd, Nat.reduceEqDiff, Nat.reduceLeDiff, nonpos_iff_eq_zero,
+      OfNat.one_ne_ofNat, ↓reduceIte, zero_add, zero_le]
     fin_cases hj' <;> simp [mul_comm, one_add_one_eq_two, (by norm_num : (2 : R) + 1 = 3)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Standard formula for the discriminant of a cubic polynomial. -/
 lemma discr_of_degree_eq_three {f : R[X]} (hf : f.degree = 3) :
     discr f = f.coeff 2 ^ 2 * f.coeff 1 ^ 2

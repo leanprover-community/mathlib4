@@ -42,9 +42,8 @@ def isLimitMapConeFanMkEquiv {P : C} (g : ∀ j, P ⟶ f j) :
     IsLimit (Functor.mapCone G (Fan.mk P g)) ≃
       IsLimit (Fan.mk _ fun j => G.map (g j) : Fan fun j => G.obj (f j)) := by
   refine (IsLimit.postcomposeHomEquiv ?_ _).symm.trans (IsLimit.equivIsoLimit ?_)
-  · refine Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
-  refine Cones.ext (Iso.refl _) fun j =>
-      by dsimp; cases j; simp
+  · exact Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
+  exact Cones.ext (Iso.refl _) fun j ↦ by dsimp; cases j; simp
 
 /-- The property of preserving products expressed in terms of fans. -/
 def isLimitFanMkObjOfIsLimit [PreservesLimit (Discrete.functor f) G] {P : C} (g : ∀ j, P ⟶ f j)

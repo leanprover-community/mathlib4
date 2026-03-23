@@ -111,6 +111,7 @@ theorem sum_tmul_eq_zero_of_vanishesTrivially (hmn : VanishesTrivially R m n) :
   rw [Finset.sum_comm]
   simp_rw [← tmul_smul, ← smul_tmul, ← sum_tmul, h₂, zero_tmul, Finset.sum_const_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Equational criterion for vanishing**
 [A. Altman and S. Kleiman, *A term of commutative algebra* (Lemma 8.16)][altman2021term],
 forward direction.
@@ -181,6 +182,7 @@ theorem vanishesTrivially_iff_sum_tmul_eq_zero (hm : Submodule.span R (Set.range
     VanishesTrivially R m n ↔ ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N) :=
   ⟨sum_tmul_eq_zero_of_vanishesTrivially R, vanishesTrivially_of_sum_tmul_eq_zero R hm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Equational criterion for vanishing**
 [A. Altman and S. Kleiman, *A term of commutative algebra* (Lemma 8.16)][altman2021term],
 forward direction, generalization.
@@ -220,6 +222,7 @@ theorem vanishesTrivially_iff_sum_tmul_eq_zero_of_rTensor_injective
   ⟨sum_tmul_eq_zero_of_vanishesTrivially R,
     vanishesTrivially_of_sum_tmul_eq_zero_of_rTensor_injective R hm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Converse of `TensorProduct.vanishesTrivially_of_sum_tmul_eq_zero_of_rTensor_injective`.
 
 Assume that every expression $\sum_i m_i \otimes n_i$ which vanishes also vanishes trivially.

@@ -49,6 +49,7 @@ theorem tendsto_rpow_neg_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => 
   Tendsto.congr' (eventuallyEq_of_mem (Ioi_mem_atTop 0) fun _ hx => (rpow_neg (le_of_lt hx) y).symm)
     (tendsto_rpow_atTop hy).inv_tendsto_atTop
 
+set_option backward.isDefEq.respectTransparency false in
 open Asymptotics in
 lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 1) :
     Tendsto (b ^ · : ℝ → ℝ) atTop (𝓝 (0 : ℝ)) := by

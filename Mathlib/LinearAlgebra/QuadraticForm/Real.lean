@@ -29,6 +29,7 @@ open Finset Module QuadraticMap SignType
 namespace QuadraticForm
 variable {ι : Type*} [Fintype ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isometry between a weighted sum of squares with weights `u` on the
 (non-zero) real numbers and the weighted sum of squares with weights `sign ∘ u`. -/
 noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :

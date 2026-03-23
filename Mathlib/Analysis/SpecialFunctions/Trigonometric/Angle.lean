@@ -95,6 +95,7 @@ theorem natCast_mul_eq_nsmul (x : ℝ) (n : ℕ) : ↑((n : ℝ) * x) = n • (�
 theorem intCast_mul_eq_zsmul (x : ℝ) (n : ℤ) : ↑((n : ℝ) * x : ℝ) = n • (↑x : Angle) := by
   simpa only [zsmul_eq_mul] using coeHom.map_zsmul x n
 
+set_option backward.isDefEq.respectTransparency false in
 theorem angle_eq_iff_two_pi_dvd_sub {ψ θ : ℝ} : (θ : Angle) = ψ ↔ ∃ k : ℤ, θ - ψ = 2 * π * k := by
   simp only [eq_comm]
   rw [Angle.coe, Angle.coe, QuotientAddGroup.eq]
@@ -432,6 +433,7 @@ def toReal (θ : Angle) : ℝ :=
 theorem toReal_coe (θ : ℝ) : (θ : Angle).toReal = toIocMod two_pi_pos (-π) θ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toReal_coe_eq_self_iff {θ : ℝ} : (θ : Angle).toReal = θ ↔ -π < θ ∧ θ ≤ π := by
   rw [toReal_coe, toIocMod_eq_self two_pi_pos]
   ring_nf
@@ -578,6 +580,7 @@ theorem toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff {θ : ℝ} {k : ℤ} :
     mul_assoc, mul_comm (k : ℝ), toReal_coe_eq_self_iff, Set.mem_Ioc]
   exact ⟨fun h => ⟨by linarith, by linarith⟩, fun h => ⟨by linarith, by linarith⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toReal_coe_eq_self_sub_two_pi_iff {θ : ℝ} :
     (θ : Angle).toReal = θ - 2 * π ↔ θ ∈ Set.Ioc π (3 * π) := by
   convert @toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff θ 1 <;> norm_num
@@ -636,7 +639,7 @@ lemma two_nsmul_eq_iff_eq_of_abs_toReal_lt_pi_div_two {θ ψ : Angle} (hθ : |θ
   suffices θ ≠ ψ + π by simp [this, two_nsmul_eq_iff]
   rintro rfl
   simp only [← cos_pos_iff_abs_toReal_lt_pi_div_two, cos_add_pi] at hθ hψ
-  lia
+  grind
 
 lemma two_zsmul_eq_iff_eq_of_abs_toReal_lt_pi_div_two {θ ψ : Angle} (hθ : |θ.toReal| < π / 2)
     (hψ : |ψ.toReal| < π / 2) : (2 : ℤ) • θ = (2 : ℤ) • ψ ↔ θ = ψ := by
@@ -729,10 +732,12 @@ theorem sign_zero : (0 : Angle).sign = 0 := by
 @[simp, grind =]
 theorem sign_coe_pi : (π : Angle).sign = 0 := by rw [sign, sin_coe_pi, _root_.sign_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 theorem sign_neg (θ : Angle) : (-θ).sign = -θ.sign := by
   simp_rw [sign, sin_neg, Left.sign_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sign_antiperiodic : Function.Antiperiodic sign (π : Angle) := fun θ => by
   rw [sign, sign, sin_add_pi, Left.sign_neg]
 
@@ -804,6 +809,7 @@ theorem eq_iff_abs_toReal_eq_of_sign_eq {θ ψ : Angle} (h : θ.sign = ψ.sign) 
 theorem sign_coe_pi_div_two : (↑(π / 2) : Angle).sign = 1 := by
   rw [sign, sin_coe, sin_pi_div_two, sign_one]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sign_coe_neg_pi_div_two : (↑(-π / 2) : Angle).sign = -1 := by
   rw [sign, sin_coe, neg_div, Real.sin_neg, sin_pi_div_two, Left.sign_neg, sign_one]
@@ -818,6 +824,7 @@ theorem sign_neg_coe_nonpos_of_nonneg_of_le_pi {θ : ℝ} (h0 : 0 ≤ θ) (hpi :
   rw [sign, sign_nonpos_iff, sin_neg, Left.neg_nonpos_iff]
   exact sin_nonneg_of_nonneg_of_le_pi h0 hpi
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sign_two_nsmul_eq_sign_iff {θ : Angle} :
     ((2 : ℕ) • θ).sign = θ.sign ↔ θ = π ∨ |θ.toReal| < π / 2 := by
   simp only [sign, sin_two_nsmul, nsmul_eq_mul, Nat.cast_ofNat, sign_mul, Nat.ofNat_pos, sign_pos,
@@ -830,6 +837,7 @@ theorem sign_two_zsmul_eq_sign_iff {θ : Angle} :
     ((2 : ℤ) • θ).sign = θ.sign ↔ θ = π ∨ |θ.toReal| < π / 2 := by
   rw [two_zsmul, ← two_nsmul, sign_two_nsmul_eq_sign_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sign_two_nsmul_eq_neg_sign_iff {θ : Angle} :
     ((2 : ℕ) • θ).sign = -θ.sign ↔ θ = 0 ∨ π / 2 < |θ.toReal| := by
   simpa [← cos_pos_iff_abs_toReal_lt_pi_div_two, ← cos_neg_iff_pi_div_two_lt_abs_toReal]

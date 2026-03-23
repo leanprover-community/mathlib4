@@ -140,6 +140,7 @@ lemma isGaussian_map_equiv_iff {μ : Measure E} (L : E ≃L[ℝ] F) :
 
 section charFunDual
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The characteristic function of a Gaussian measure `μ` has value
 `exp (μ[L] * I - Var[L; μ] / 2)` at `L : Dual ℝ E`. -/
 lemma IsGaussian.charFunDual_eq (L : StrongDual ℝ E) :
@@ -156,6 +157,7 @@ lemma IsGaussian.charFunDual_eq (L : StrongDual ℝ E) :
     · simp only [sup_eq_left]
       exact variance_nonneg _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A finite measure is Gaussian iff its characteristic function has value
 `exp (μ[L] * I - Var[L; μ] / 2)` for every `L : Dual ℝ E`. -/
 theorem isGaussian_iff_charFunDual_eq {μ : Measure E} [IsFiniteMeasure μ] :
@@ -211,6 +213,7 @@ instance isGaussian_conv [SecondCountableTopology E]
       IsGaussian.map_eq_gaussianReal L, gaussianReal_conv_gaussianReal]
     congr <;> simp [variance_nonneg]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (c : E) : IsGaussian (μ.map (fun x ↦ x + c)) := by
   refine isGaussian_of_charFunDual_eq fun L ↦ ?_
   rw [charFunDual_map_add_const, IsGaussian.charFunDual_eq, ← exp_add]
@@ -237,6 +240,7 @@ instance (c : E) : IsGaussian (μ.map (fun x ↦ c - x)) := by
     rwa [Measure.map_map (by fun_prop) (by fun_prop), Function.comp_def] at this
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A product of Gaussian distributions is Gaussian. -/
 instance [SecondCountableTopologyEither E F] {ν : Measure F} [IsGaussian ν] :
     IsGaussian (μ.prod ν) := by

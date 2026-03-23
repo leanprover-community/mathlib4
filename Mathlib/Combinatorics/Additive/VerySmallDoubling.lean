@@ -149,6 +149,7 @@ private lemma nonempty_of_doubling (h : #(A * A) < (3 / 2 : ℚ) * #A) : A.Nonem
   by_contra! rfl
   simp at h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `A` has doubling strictly less than `3 / 2`, then `A⁻¹ * A` is a subgroup.
 
 Note that this is sharp: `A = {0, 1}` in `ℤ` has doubling `3 / 2` and `A⁻¹ * A` isn't a subgroup. -/
@@ -312,6 +313,7 @@ lemma smul_inv_mul_eq_inv_mul_opSMul (h : #(A * A) < (3 / 2 : ℚ) * #A) (ha : a
         rw [mul_assoc, ← invMulSubgroup_eq_inv_mul _ h, ← mul_assoc,
           ← invMulSubgroup_eq_inv_mul _ h, ← invMulSubgroup_eq_mul_inv _ h, coe_mul_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped RightActions in
 /-- If `A` has doubling strictly less than `3 / 2`, then there exists a subgroup `H` of the
 normaliser of `A` of size strictly less than `3 / 2 * #A` such that `A` is a subset of a coset of

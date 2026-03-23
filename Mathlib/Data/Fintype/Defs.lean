@@ -63,6 +63,7 @@ class Fintype (α : Type*) where
 
 namespace Finset
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nodup_map_iff_injOn {f : α → β} {s : Finset α} :
     (Multiset.map f s.val).Nodup ↔ Set.InjOn f s := by
   simp [Multiset.nodup_map_iff_inj_on s.nodup, Set.InjOn]
@@ -102,6 +103,7 @@ theorem eq_univ_iff_forall : s = univ ↔ ∀ x, x ∈ s := by simp [Finset.ext_
 theorem eq_univ_of_forall : (∀ x, x ∈ s) → s = univ :=
   eq_univ_iff_forall.2
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_univ : ↑(univ : Finset α) = (Set.univ : Set α) := by ext; simp
 

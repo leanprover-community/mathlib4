@@ -311,6 +311,7 @@ private theorem aux {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] 
 
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] {s : Set V}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The intrinsic interior of a nonempty convex set is nonempty. -/
 protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s.Nonempty) :
     (intrinsicInterior ℝ s).Nonempty := by

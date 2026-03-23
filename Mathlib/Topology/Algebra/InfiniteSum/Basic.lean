@@ -35,10 +35,10 @@ variable [CommMonoid α] [TopologicalSpace α]
 variable {f g : β → α} {a b : α} {L : SummationFilter β}
 
 /-- Constant one function has product `1` -/
-@[to_additive /-- Constant zero function has sum `0` -/]
+@[to_additive (attr := simp) /-- Constant zero function has sum `0` -/]
 theorem hasProd_one : HasProd (fun _ ↦ 1 : β → α) 1 L := by simp [HasProd, tendsto_const_nhds]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem hasProd_empty [IsEmpty β] : HasProd f 1 L := by
   convert hasProd_one
 
@@ -46,11 +46,11 @@ theorem hasProd_empty [IsEmpty β] : HasProd f 1 L := by
 theorem HasProd.of_subsingleton_cod [Subsingleton α] : HasProd f 1 L := by
   convert hasProd_one
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) L :=
   hasProd_one.multipliable
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem multipliable_empty [IsEmpty β] : Multipliable f L :=
   hasProd_empty.multipliable
 
@@ -491,6 +491,7 @@ theorem Finset.tprod_subtype (s : Finset β) (f : β → α) :
     ∏' x : { x // x ∈ s }, f x = ∏ x ∈ s, f x := by
   rw [← prod_attach]; exact tprod_fintype _
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem Finset.tprod_subtype' (s : Finset β) (f : β → α) :
     ∏' x : (s : Set β), f x = ∏ x ∈ s, f x := by
@@ -499,6 +500,7 @@ theorem Finset.tprod_subtype' (s : Finset β) (f : β → α) :
 @[to_additive]
 theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β → α}
     (hf : mulSupport f ⊆ Set.range g) : ∏' c, f (g c) = ∏' b, f b := by

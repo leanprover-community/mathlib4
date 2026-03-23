@@ -22,7 +22,7 @@ Further results on the structure of ideals in a Dedekind domain are found in
 
 - `IsDedekindDomainInv` alternatively defines a Dedekind domain as an integral domain where
   every nonzero fractional ideal is invertible.
-- `isDedekindDomainInv_iff` shows that this does note depend on the choice of field of
+- `isDedekindDomainInv_iff` shows that this does not depend on the choice of field of
   fractions.
 
 ## Main results:
@@ -233,6 +233,7 @@ variable [IsDedekindDomain A] {I : Ideal A}
 
 open Ideal
 
+set_option backward.isDefEq.respectTransparency false in
 lemma not_inv_le_one_of_ne_bot (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
     ¬(I⁻¹ : FractionalIdeal A⁰ K) ≤ 1 := by
   have hNF : ¬IsField A := fun h ↦ letI := h.toField; (eq_bot_or_eq_top I).elim hI0 hI1
@@ -310,11 +311,9 @@ theorem coe_ideal_mul_inv (I : Ideal A) (hI0 : I ≠ ⊥) : I * (I : FractionalI
   have x_mul_mem : ∀ b ∈ (I⁻¹ : FractionalIdeal A⁰ K), x * b ∈ (I⁻¹ : FractionalIdeal A⁰ K) := by
     intro b hb
     rw [mem_inv_iff (coeIdeal_ne_zero.mpr hI0)]
-    dsimp only at hx
-    rw [val_eq_coe, mem_coe, mem_inv_iff hJ0] at hx
-    simp only [mul_assoc, mul_comm b] at hx ⊢
-    intro y hy
-    exact hx _ (mul_mem_mul hy hb)
+    rw [mem_inv_iff hJ0] at hx
+    simp_rw [mul_assoc, mul_comm b]
+    exact fun y hy ↦ hx _ (mul_mem_mul hy hb)
   -- It turns out the subalgebra consisting of all `p(x)` for `p : A[X]` works.
   refine ⟨AlgHom.range (Polynomial.aeval x : A[X] →ₐ[A] K),
     isNoetherian_submodule.mp (isNoetherian (I : FractionalIdeal A⁰ K)⁻¹) _ fun y hy => ?_,

@@ -360,7 +360,8 @@ instance Pi.opensMeasurableSpace {ι : Type*} {X : ι → Type*} [Countable ι]
   constructor
   have : Pi.topologicalSpace = .generateFrom { t | ∃ (s : ∀ a, Set (X a)) (i : Finset ι),
       (∀ a ∈ i, s a ∈ countableBasis (X a)) ∧ t = pi (↑i) s } := by
-    simp only [funext fun a => @eq_generateFrom_countableBasis (X a) _ _, pi_generateFrom_eq]
+    simp +instances only [funext fun a => @eq_generateFrom_countableBasis (X a) _ _,
+      pi_generateFrom_eq]
   rw [borel_eq_generateFrom_of_subbasis this]
   apply generateFrom_le
   rintro _ ⟨s, i, hi, rfl⟩
@@ -378,7 +379,7 @@ instance Pi.opensMeasurableSpace_of_subsingleton {ι : Type*} {X : ι → Type*}
     have := Classical.choice (nonempty_unique ι)
     rw [borel, MeasurableSpace.pi, ciSup_unique]
     refine MeasurableSpace.generateFrom_le fun s hs ↦ MeasurableSpace.measurableSet_comap.2 ?_
-    simp only [Pi.topologicalSpace, ciInf_unique, isOpen_induced_eq, Set.mem_image,
+    simp +instances only [Pi.topologicalSpace, ciInf_unique, isOpen_induced_eq, Set.mem_image,
       Set.mem_setOf_eq] at hs
     obtain ⟨t, ht, rfl⟩ := hs
     exact ⟨t, ht.measurableSet, rfl⟩
@@ -519,13 +520,9 @@ theorem ContinuousOn.measurable_piecewise {f g : α → γ} {s : Set α} [∀ j 
 @[to_additive]
 instance (priority := 100) ContinuousMul.measurableMul [Mul γ] [ContinuousMul γ] :
     MeasurableMul γ where
-  measurable_const_mul _ := (continuous_const.mul continuous_id).measurable
-  measurable_mul_const _ := (continuous_id.mul continuous_const).measurable
 
 instance (priority := 100) ContinuousSub.measurableSub [Sub γ] [ContinuousSub γ] :
     MeasurableSub γ where
-  measurable_const_sub _ := (continuous_const.sub continuous_id).measurable
-  measurable_sub_const _ := (continuous_id.sub continuous_const).measurable
 
 @[to_additive]
 instance (priority := 100) ContinuousInv.measurableInv [Inv γ] [ContinuousInv γ] :
@@ -535,13 +532,11 @@ instance (priority := 100) ContinuousInv.measurableInv [Inv γ] [ContinuousInv �
 instance (priority := 100) ContinuousConstSMul.toMeasurableConstSMul {M α} [TopologicalSpace α]
     [MeasurableSpace α] [BorelSpace α] [SMul M α] [ContinuousConstSMul M α] :
     MeasurableConstSMul M α where
-  measurable_const_smul _ := (continuous_const_smul _).measurable
 
 @[to_additive]
 instance (priority := 100) ContinuousSMul.toMeasurableSMul {M α} [TopologicalSpace M]
     [TopologicalSpace α] [MeasurableSpace M] [MeasurableSpace α] [OpensMeasurableSpace M]
     [BorelSpace α] [SMul M α] [ContinuousSMul M α] : MeasurableSMul M α where
-  measurable_smul_const _ := (continuous_id.smul continuous_const).measurable
 
 section Homeomorph
 
@@ -663,6 +658,7 @@ lemma MeasurableEmbedding.borelSpace {α β : Type*} [MeasurableSpace α] [Topol
 instance _root_.ULift.instBorelSpace : BorelSpace (ULift α) :=
   MeasurableEquiv.ulift.measurableEmbedding.borelSpace Homeomorph.ulift.isInducing
 
+set_option backward.isDefEq.respectTransparency false in
 instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
   constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, MeasurableSet.of_discrete]

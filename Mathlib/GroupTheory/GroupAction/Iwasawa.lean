@@ -11,9 +11,9 @@ public import Mathlib.GroupTheory.Subgroup.Simple
 
 /-! # Iwasawa criterion for simplicity
 
-- `IwasawaStructure` : the structure underlying the Iwasawa criterion
-For a group `G`, this consists of an action of `G` on a type `α` and,
-for every `a : α`, of a subgroup `T a`, such that the following properties hold:
+- `IwasawaStructure` : the structure underlying the Iwasawa criterion.
+  For a group `G`, this consists of an action of `G` on a type `α` and,
+  for every `a : α`, of a subgroup `T a`, such that the following properties hold:
   - for all `a`, `T a` is commutative
   - for all `g : G` and `a : α`, `T (g • a) = MulAut.conj g • T a`
   - the subgroups `T a` generate `G`
@@ -22,12 +22,12 @@ We then prove two versions of the Iwasawa criterion when
 there is an Iwasawa structure.
 
 - `IwasawaStructure.commutator_le` asserts that if the action of `G` on `α`
-is quasiprimitive, then every normal subgroup that acts nontrivially
-contains `commutator G`
+  is quasiprimitive, then every normal subgroup that acts nontrivially
+  contains `commutator G`.
 
-- `IwasawaStructure.isSimpleGroup` : the Iwasawa criterion for simplicity
-If the action of `G` on `α` is quasiprimitive and faithful,
-and `G` is nontrivial and perfect, then `G` is simple.
+- `IwasawaStructure.isSimpleGroup` : the Iwasawa criterion for simplicity.
+  If the action of `G` on `α` is quasiprimitive and faithful,
+  and `G` is nontrivial and perfect, then `G` is simple.
 
 ## TODO
 
@@ -39,7 +39,7 @@ Additivize. The issue is that it requires to additivize `commutator`
 
 namespace MulAction
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 variable (M : Type*) [Group M] (α : Type*) [MulAction M α]
 
@@ -58,6 +58,7 @@ variable {M α}
 
 namespace IwasawaStructure
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Iwasawa criterion : If a quasiprimitive action of a group G on X
   has an Iwasawa structure, then any normal subgroup that acts nontrivially
   contains the group of commutators. -/
@@ -78,6 +79,7 @@ theorem commutator_le (IwaS : IwasawaStructure M α) [IsQuasiPreprimitive M α]
   have hk' : k ∈ N ⊔ IwaS.T a := Subgroup.mem_sup_right hk
   exact (N ⊔ IwaS.T a).mul_mem ((N ⊔ IwaS.T a).mul_mem hg' hk') ((N ⊔ IwaS.T a).inv_mem hg')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Iwasawa criterion for simplicity -/
 theorem isSimpleGroup [Nontrivial M] (is_perfect : commutator M = ⊤)
     [IsQuasiPreprimitive M α] (IwaS : IwasawaStructure M α) (is_faithful : FaithfulSMul M α) :

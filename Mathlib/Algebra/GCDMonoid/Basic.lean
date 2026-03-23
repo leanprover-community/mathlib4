@@ -884,6 +884,7 @@ instance uniqueNormalizationMonoidOfUniqueUnits : Unique (NormalizationMonoid α
   default := .ofUniqueUnits
   uniq := fun ⟨u, _, _, _⟩ => by congr; simp [eq_iff_true_of_subsingleton]
 
+set_option backward.whnf.reducibleClassField false in
 instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
   ⟨fun g₁ g₂ => by
     have hgcd : g₁.gcd = g₂.gcd := by
@@ -1017,6 +1018,7 @@ noncomputable def gcdMonoidOfGCD [DecidableEq α] (gcd : α → α → α)
       apply Or.resolve_left (mul_eq_zero.1 _) a0'
       rw [h, mul_zero] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Define `NormalizedGCDMonoid` on a structure just from the `gcd` and its properties. -/
 noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq α] (gcd : α → α → α)
     (gcd_dvd_left : ∀ a b, gcd a b ∣ a) (gcd_dvd_right : ∀ a b, gcd a b ∣ b)
@@ -1135,6 +1137,7 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
       rw [mul_comm, mul_dvd_mul_iff_right h_1.2]
       apply ac }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Define `NormalizedGCDMonoid` on a structure just from the `lcm` and its properties. -/
 noncomputable def normalizedGCDMonoidOfLCM [NormalizationMonoid α] [DecidableEq α] (lcm : α → α → α)
     (dvd_lcm_left : ∀ a b, a ∣ lcm a b) (dvd_lcm_right : ∀ a b, b ∣ lcm a b)

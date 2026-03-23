@@ -139,6 +139,38 @@ lemma IsCompact.inter_of_isOpen (hUcomp : IsCompact U) (hVcomp : IsCompact V) (h
     (hVopen : IsOpen V) : IsCompact (U ∩ V) :=
   QuasiSeparatedSpace.inter_isCompact _ _ hUopen hUcomp hVopen hVcomp
 
+lemma QuasiSeparatedSpace.isCompact_sInter_of_nonempty {s : Set (Set α)} (hf : s.Finite)
+    (hne : s.Nonempty) (ho : ∀ t ∈ s, IsOpen t ∨ IsClosed t) (hc : ∀ t ∈ s, IsCompact t) :
+    IsCompact (⋂₀ s) := by
+  wlog h : ∀ t ∈ s, IsOpen t
+  · let a := { t ∈ s | IsOpen t }
+    let b := { t ∈ s | IsClosed t }
+    have heq : s = a ∪ b := subset_antisymm (by grind) (by grind)
+    rw [heq, Set.sInter_union]
+    simp only [not_forall] at h
+    obtain ⟨t, ht, hno⟩ := h
+    obtain (ha | ha) := a.eq_empty_or_nonempty
+    · simp only [ha, Set.sInter_empty, Set.univ_inter]
+      exact IsCompact.of_isClosed_subset (hc _ ht) (isClosed_sInter (by grind)) (by grind)
+    · apply IsCompact.inter_right
+      · apply this (hf.subset (by grind)) ha <;> grind
+      · exact isClosed_sInter (by grind)
+  revert hne
+  induction s, hf using Set.Finite.induction_on with
+  | empty => simp
+  | insert ha hs ih =>
+    rename_i s
+    obtain (rfl | hne) := s.eq_empty_or_nonempty
+    · grind
+    · grind [IsCompact.inter_of_isOpen, hs.isOpen_sInter, Set.sInter_insert]
+
+lemma QuasiSeparatedSpace.isCompact_sInter [CompactSpace α] {s : Set (Set α)} (hf : s.Finite)
+    (ho : ∀ t ∈ s, IsOpen t ∨ IsClosed t) (hc : ∀ t ∈ s, IsCompact t) :
+    IsCompact (⋂₀ s) := by
+  obtain (rfl | hne) := s.eq_empty_or_nonempty
+  · simp [CompactSpace.isCompact_univ]
+  · exact QuasiSeparatedSpace.isCompact_sInter_of_nonempty hf hne ho hc
+
 end QuasiSeparatedSpace
 
 lemma quasiSeparatedSpace_congr (e : α ≃ₜ β) : QuasiSeparatedSpace α ↔ QuasiSeparatedSpace β where

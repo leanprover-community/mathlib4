@@ -112,6 +112,7 @@ theorem isPrimePow_pow_iff {n k : ℕ} (hk : k ≠ 0) : IsPrimePow (n ^ k) ↔ I
   apply existsUnique_congr
   simp +contextual [Nat.prime_iff, Prime.dvd_pow_iff_dvd, hk]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn : IsPrimePow n) :
     n ∣ a * b ↔ n ∣ a ∨ n ∣ b := by
   rcases eq_or_ne a 0 with (rfl | ha)
@@ -145,10 +146,6 @@ theorem Nat.mul_divisors_filter_prime_pow {a b : ℕ} (hab : a.Coprime b) :
   simp only [ha, hb, Finset.mem_union, Finset.mem_filter, Nat.mul_eq_zero, and_true, Ne,
     and_congr_left_iff, not_false_iff, Nat.mem_divisors, or_self_iff]
   apply hab.isPrimePow_dvd_mul
-
-@[deprecated Nat.factorization_minFac_ne_zero (since := "2025-07-21")]
-lemma IsPrimePow.factorization_minFac_ne_zero {n : ℕ} (hn : IsPrimePow n) :
-    n.factorization n.minFac ≠ 0 := Nat.factorization_minFac_ne_zero (one_lt hn)
 
 /-- The canonical equivalence between pairs `(p, k)` with `p` a prime and `k : ℕ`
 and the set of prime powers given by `(p, k) ↦ p^(k+1)`. -/

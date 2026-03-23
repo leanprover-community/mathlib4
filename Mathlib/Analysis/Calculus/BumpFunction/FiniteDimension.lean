@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.SmoothSeries
 public import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
-public import Mathlib.Analysis.Convolution
+public import Mathlib.Analysis.Calculus.ContDiff.Convolution
 public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 public import Mathlib.Data.Set.Pointwise.Support
 public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
@@ -77,6 +77,7 @@ theorem exists_contDiff_tsupport_subset {s : Set E} {x : E} {n : ℕ∞} (hs : s
 @[deprecated (since := "2025-12-17")]
 alias exists_smooth_tsupport_subset := exists_contDiff_tsupport_subset
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an open set `s` in a finite-dimensional real normed vector space, there exists a smooth
 function with values in `[0, 1]` whose support is exactly `s`. -/
 theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen s) :
@@ -337,6 +338,7 @@ theorem y_neg (D : ℝ) (x : E) : y D (-x) = y D x := by
   · filter_upwards with x
     simp only [φ, indicator, mem_closedBall, dist_zero_right, norm_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem y_eq_one_of_mem_closedBall {D : ℝ} {x : E} (Dpos : 0 < D)
     (hx : x ∈ closedBall (0 : E) (1 - D)) : y D x = 1 := by
   change (w D ⋆[lsmul ℝ ℝ, μ] φ) x = 1
@@ -382,7 +384,7 @@ theorem y_le_one {D : ℝ} (x : E) (Dpos : 0 < D) : y D x ≤ 1 := by
         fun _ => zero_le_one
     refine ((w_compact_support E Dpos).convolutionExists_left _ ?_
       (locallyIntegrable_const (1 : ℝ)) x).integrable
-    exact continuous_const.mul ((u_continuous E).comp (continuous_id.const_smul _))
+    exact continuous_const.mul ((u_continuous E).comp (by fun_prop))
   have B : (w D ⋆[lsmul ℝ ℝ, μ] fun _ => (1 : ℝ)) x = 1 := by
     simp only [convolution, mul_one, lsmul_apply, smul_eq_mul, w_integral E Dpos]
   exact A.trans (le_of_eq B)
@@ -395,7 +397,7 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
     have B : LocallyIntegrable (φ : E → ℝ) μ :=
       (locallyIntegrable_const _).indicator measurableSet_closedBall
     have C : Continuous (w D : E → ℝ) :=
-      continuous_const.mul ((u_continuous E).comp (continuous_id.const_smul _))
+      continuous_const.mul ((u_continuous E).comp (by fun_prop))
     exact (F_comp.convolutionExists_left (lsmul ℝ ℝ : ℝ →L[ℝ] ℝ →L[ℝ] ℝ) C B x).integrable
   · set z := (D / (1 + D)) • x with hz
     have B : 0 < 1 + D := by linarith

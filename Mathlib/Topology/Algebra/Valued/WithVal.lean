@@ -45,7 +45,7 @@ namespace WithVal
 
 section Instances
 
-variable {P S : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+variable {P S : Type*}
 
 instance [Ring R] (v : Valuation R Γ₀) : Ring (WithVal v) := inferInstanceAs (Ring R)
 
@@ -54,6 +54,8 @@ instance [CommRing R] (v : Valuation R Γ₀) : CommRing (WithVal v) := inferIns
 instance [Field R] (v : Valuation R Γ₀) : Field (WithVal v) := inferInstanceAs (Field R)
 
 instance [Ring R] (v : Valuation R Γ₀) : Inhabited (WithVal v) := ⟨0⟩
+
+instance [Ring R] (v : Valuation R Γ₀) : Preorder (WithVal v) := v.toPreorder
 
 instance [CommSemiring S] [CommRing R] [Algebra S R] (v : Valuation R Γ₀) :
     Algebra S (WithVal v) := inferInstanceAs (Algebra S R)
@@ -79,9 +81,6 @@ instance {S : Type*} [Ring S] [Algebra R S] (w : Valuation S Γ₀) :
 instance {P S : Type*} [Ring S] [Semiring P] [Module P R] [Module P S]
     [Algebra R S] [IsScalarTower P R S] :
     IsScalarTower P (WithVal v) S := inferInstanceAs (IsScalarTower P R S)
-
-instance [Ring R] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-    {v : Valuation R Γ₀} : Preorder (WithVal v) := v.toPreorder
 
 end Instances
 
@@ -237,6 +236,7 @@ instance : IsDedekindDomain (𝓞 (WithVal v)) := inferInstanceAs (IsDedekindDom
 instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
     IsIntegralClosure R ℤ (WithVal v) := ‹IsIntegralClosure R ℤ K›
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The ring equivalence between `𝓞 (WithVal v)` and an integral closure of
 `ℤ` in `K`. -/
 @[simps!]

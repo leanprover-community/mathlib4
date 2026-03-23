@@ -206,12 +206,12 @@ theorem trace_prodMap :
   refine (cancel_right h).1 ?_
   ext
   · simp only [dualTensorHomEquiv, LinearEquiv.coe_prodCongr,
-      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply, restrictScalars_comp,
+      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply,
       curry_apply, coe_comp, coe_restrictScalars, coe_inl, Function.comp_apply, prodMap_apply,
       map_zero, prodMapLinear_apply, dualTensorHom_prodMap_zero, trace_eq_contract_apply,
       contractLeft_apply, coe_fst, coprod_apply, id_coe, id_eq, add_zero, e]
   · simp only [dualTensorHomEquiv, LinearEquiv.coe_prodCongr,
-      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply, restrictScalars_comp,
+      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply,
       curry_apply, coe_comp, coe_restrictScalars, coe_inr, Function.comp_apply, prodMap_apply,
       map_zero, prodMapLinear_apply, zero_prodMap_dualTensorHom, trace_eq_contract_apply,
       contractLeft_apply, coe_snd, coprod_apply, id_coe, id_eq, zero_add, e]
@@ -313,6 +313,7 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
   have ⟨_, h⟩ := AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K W)
   (by simpa using congr($h x)) ▸ trace_conj' _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem _root_.Matrix.trace_map {K m n : Type*} [Field K] [Fintype m] [Fintype n]
     [DecidableEq m] [DecidableEq n] {F : Type*} [EquivLike F (Matrix m m K) (Matrix n n K)]
     [AlgEquivClass F K _ _] (f : F) (x : Matrix m m K) : (f x).trace = x.trace := by
@@ -326,6 +327,7 @@ proof_wanted _root_.Matrix.trace_map' {K m F : Type*} [Field K] [Fintype m] [Dec
     [FunLike F (Matrix m m K) (Matrix m m K)] [AlgHomClass F K _ _] (f : F) (x : Matrix m m K) :
     (f x).trace = x.trace
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [Module.Free R p]
     [Module.Finite R p] [Module.Free R (ker f)] [Module.Finite R (ker f)] :
     trace R M f = (finrank R p : R) := by

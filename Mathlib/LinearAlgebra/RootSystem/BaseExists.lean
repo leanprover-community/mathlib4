@@ -59,6 +59,7 @@ lemma baseOf_pairwise_pairing_le_zero [CharZero R] [IsDomain R] [P.IsCrystallogr
   contrapose! this
   exact P.root_sub_root_mem_of_pairingIn_pos this hne
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This lemma is usually established for root systems with coefficients `R` equal to `ℚ` or `ℝ`, in
 which case one may take `S = R`. However our statement allows for more general coefficients such as
 `R = ℂ` and `S = ℚ`.
@@ -113,6 +114,7 @@ section Field
 variable [Field R] [CharZero R] [Module R M] [Module R N] (P : RootPairing ι R M N)
   [P.IsRootSystem] [P.IsCrystallographic]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma linearIndepOn_root_baseOf (f : M →+ ℚ) (hf : ∀ i, f (P.root i) ≠ 0) :
     LinearIndepOn R P.root (baseOf P.root f) := by
   let _i : Module ℚ M := Module.compHom M (algebraMap ℚ R)
@@ -191,10 +193,11 @@ lemma eq_baseOf_iff (s : Set ι) (f : M →+ ℚ)
   refine ⟨?_, fun ⟨hli, sp⟩ ↦ P.eq_baseOf_of_linearIndepOn_of_mem_or_neg_mem_closure s hli sp f hf⟩
   rintro rfl
   exact ⟨P.linearIndepOn_root_baseOf f hf', fun i ↦
-    mem_or_neg_mem_closure_baseOf P.root f i (by aesop) (by simp)⟩
+    mem_or_neg_mem_closure_baseOf P.root f i (by simp_all) (by simp)⟩
 
 variable [P.IsReduced]
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma baseOf_root_eq_baseOf_coroot_aux
     (f : M →+ ℚ) (g : N →+ ℚ) (hf : ∀ i, f (P.root i) ≠ 0)
     (hfg : ∀ i, 0 < f (P.root i) ↔ 0 < g (P.coroot i)) :
@@ -263,9 +266,7 @@ private lemma baseOf_root_eq_baseOf_coroot_aux
     exact ⟨q, -1, by simp [Rat.cast_smul_eq_qsmul, hq'], by simp⟩
   rcases IsReduced.eq_or_eq_neg i j hij with hij | hij
   · simpa using hij
-  · obtain ⟨rfl⟩ : q = -1 := smul_left_injective ℚ (P.ne_zero j) <| by
-      simp_rw [neg_smul, ← neg_eq_iff_eq_neg, ← smul_neg, ← hij, one_smul, hq']
-    lia
+  · grind
 
 lemma baseOf_root_eq_baseOf_coroot
     (f : M →+ ℚ) (hf : ∀ i, f (P.root i) ≠ 0)
@@ -290,7 +291,7 @@ lemma coroot_mem_or_neg_mem_closure_of_root (s : Set ι)
   obtain ⟨f, hf'⟩ := exists_dual_forall_apply_eq_one (hli.restrict_scalars' ℚ)
   have hf := P.eq_baseOf_of_linearIndepOn_of_mem_or_neg_mem_closure s hli hsp f hf'
   have hf₀ (i : ι) : f (P.root i) ≠ 0 :=
-    AddSubmonoid.apply_ne_zero_of_mem_or_neg_mem_closure P.root (f : M →+ ℚ) s (by aesop) i
+    AddSubmonoid.apply_ne_zero_of_mem_or_neg_mem_closure P.root (f : M →+ ℚ) s (by simp_all) i
       (P.ne_zero i) (by simp) (hsp i)
   have aux (i : ι) : ∃ q : ℚ, 0 < q ∧ q = 2 / P.RootForm (P.root i) (P.root i) := by
     refine ⟨2 / P.RootFormIn ℚ (P.rootSpanMem ℚ i) (P.rootSpanMem ℚ i), ?_, ?_⟩

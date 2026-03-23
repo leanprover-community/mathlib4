@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+public import Mathlib.Algebra.Exact
+public import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
 # The concrete (co)kernels in the category of modules are (co)kernels in the categorical sense.
@@ -25,12 +27,14 @@ variable {R : Type u} [Ring R]
 
 section
 
-variable {M N : ModuleCat.{v} R} (f : M ⟶ N)
+variable {M N P : ModuleCat.{v} R} (f : M ⟶ N)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The kernel cone induced by the concrete kernel. -/
 def kernelCone : KernelFork f :=
   KernelFork.ofι (ofHom (LinearMap.ker f.hom).subtype) <| by aesop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The kernel of a linear map is a kernel in the categorical sense. -/
 def kernelIsLimit : IsLimit (kernelCone f) :=
   Fork.IsLimit.mk _
@@ -40,6 +44,17 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
         LinearMap.mem_ker.2 <| by simp [← ConcreteCategory.comp_apply])
     (fun _ => hom_ext <| LinearMap.subtype_comp_codRestrict _ _ _) fun s m h =>
       hom_ext <| LinearMap.ext fun x => Subtype.ext_iff.2 (by simp [← h]; rfl)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Construct an `IsLimit` structure of kernels given `Function.Exact`. -/
+noncomputable
+def isLimitKernelFork (f : M ⟶ N) (g : N ⟶ P) (H : Function.Exact f.hom g.hom)
+    (H₂ : Function.Injective f.hom) :
+    IsLimit (KernelFork.ofι (f := g) f (by ext; exact H.apply_apply_eq_zero _)) := by
+  refine IsLimit.ofIsoLimit (kernelIsLimit g) <|
+    Cones.ext ((LinearEquiv.ofInjective _ H₂).trans
+        (LinearEquiv.ofEq _ _ (LinearMap.exact_iff.mp H).symm)).toModuleIso.symm ?_
+  · rintro ⟨⟩ <;> ext x <;> simp [kernelCone]
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
 def cokernelCocone : CokernelCofork f :=
@@ -57,6 +72,19 @@ def cokernelIsColimit : IsColimit (cokernelCocone f) :=
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation
     apply (cancel_epi (ofHom (LinearMap.range f.hom).mkQ)).1
     exact h
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Construct an `IsColimit` structure of cokernels given `Function.Exact`. -/
+noncomputable
+def isColimitCokernelCofork (f : M ⟶ N) (g : N ⟶ P) (H : Function.Exact f.hom g.hom)
+    (H₂ : Function.Surjective g.hom) :
+    IsColimit (CokernelCofork.ofπ (f := f) g (by ext; exact H.apply_apply_eq_zero _)) := by
+  refine IsColimit.ofIsoColimit (ModuleCat.cokernelIsColimit f) <|
+    Cocones.ext (((Submodule.quotEquivOfEq _ _ (LinearMap.exact_iff.mp H)).toModuleIso).symm
+    ≪≫ ((LinearMap.quotKerEquivOfSurjective _ H₂).toModuleIso)) ?_
+  · rintro ⟨⟩ <;> ext x
+    · simpa using (Function.Exact.apply_apply_eq_zero H x).symm
+    · rfl
 
 end
 
@@ -76,6 +104,7 @@ attribute [local instance] hasCokernels_moduleCat
 
 variable {G H : ModuleCat.{v} R} (f : G ⟶ H)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The categorical kernel of a morphism in `ModuleCat`
 agrees with the usual module-theoretical kernel.
 -/
@@ -84,6 +113,7 @@ noncomputable def kernelIsoKer {G H : ModuleCat.{v} R} (f : G ⟶ H) :
     kernel f ≅ ModuleCat.of R (LinearMap.ker f.hom) :=
   limit.isoLimitCone ⟨_, kernelIsLimit f⟩
 
+set_option backward.isDefEq.respectTransparency false in
 -- We now show this isomorphism commutes with the inclusion of the kernel into the source.
 @[simp, elementwise]
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation
@@ -91,6 +121,7 @@ theorem kernelIsoKer_inv_kernel_ι : (kernelIsoKer f).inv ≫ kernel.ι f =
     ofHom (LinearMap.ker f.hom).subtype :=
   limit.isoLimitCone_inv_π _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, elementwise]
 theorem kernelIsoKer_hom_ker_subtype :
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation

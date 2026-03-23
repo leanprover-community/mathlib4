@@ -131,8 +131,6 @@ theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) �
 
 section Embedding
 
-@[deprecated (since := "2025-08-14")] alias ultrafilter_pure_injective := Ultrafilter.pure_injective
-
 open TopologicalSpace
 
 /-- The range of `pure : α → Ultrafilter α` is dense in `Ultrafilter α`. -/
@@ -295,6 +293,7 @@ lemma preStoneCechExtend_preStoneCechUnit (a : α) :
     preStoneCechExtend hg (preStoneCechUnit a) = g a :=
   congr_fun (preStoneCechExtend_extends hg) a
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_if_preStoneCechUnit_eq {a b : α} (h : preStoneCechUnit a = preStoneCechUnit b) :
     g a = g b := by
   have e := ultrafilter_extend_extends g

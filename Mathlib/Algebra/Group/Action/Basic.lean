@@ -95,7 +95,7 @@ section Arrow
 variable {G A B : Type*} [DivisionMonoid G] [MulAction G A]
 
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g • F) a = F (g⁻¹ • a)`. -/
-@[to_additive (attr := simps) arrowAddAction
+@[to_additive (attr := instance_reducible) (attr := simps) arrowAddAction
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)` -/]
 def arrowAction : MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
@@ -111,6 +111,7 @@ attribute [local instance] arrowAction
 variable [Monoid M]
 
 /-- When `M` is a monoid, `ArrowAction` is additionally a `MulDistribMulAction`. -/
+@[instance_reducible]
 def arrowMulDistribMulAction : MulDistribMulAction G (A → M) where
   smul_one _ := rfl
   smul_mul _ _ _ := rfl

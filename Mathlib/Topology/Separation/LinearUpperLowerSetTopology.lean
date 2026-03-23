@@ -16,6 +16,7 @@ public import Mathlib.Topology.Separation.Regular
 
 open Set Topology.IsUpperSet
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := low) {α : Type*}
     [TopologicalSpace α] [LinearOrder α] [Topology.IsUpperSet α] : CompletelyNormalSpace α where
   completely_normal s t hcst hsct := by

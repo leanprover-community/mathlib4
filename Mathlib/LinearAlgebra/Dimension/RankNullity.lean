@@ -95,6 +95,7 @@ theorem LinearMap.rank_eq_of_surjective {f : M →ₗ[R] M₁} (h : Surjective f
     Module.rank R M = Module.rank R M₁ + Module.rank R (LinearMap.ker f) := by
   rw [← rank_range_add_rank_ker f, ← rank_range_of_surjective f h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_linearIndepOn_of_lt_rank [StrongRankCondition R]
     {s : Set M} (hs : LinearIndepOn R id s) :
     ∃ t, s ⊆ t ∧ #t = Module.rank R M ∧ LinearIndepOn R id t := by
@@ -148,6 +149,7 @@ theorem exists_linearIndependent_pair_of_one_lt_rank [IsDomain R] [StrongRankCon
   rw [this] at hy
   exact ⟨y, hy⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Submodule.exists_smul_notMem_of_rank_lt {N : Submodule R M}
     (h : Module.rank R N < Module.rank R M) : ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
   have : Module.rank R (M ⧸ N) ≠ 0 := by
@@ -161,6 +163,7 @@ theorem Submodule.exists_smul_notMem_of_rank_lt {N : Submodule R M}
 
 open Cardinal Basis Submodule Function Set LinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Submodule.rank_sup_add_rank_inf_eq (s t : Submodule R M) :
     Module.rank R (s ⊔ t : Submodule R M) + Module.rank R (s ⊓ t : Submodule R M) =
     Module.rank R s + Module.rank R t := by
@@ -217,6 +220,7 @@ lemma Submodule.finrank_quotient [Module.Finite R M] {S : Type*} [Ring S] [SMul 
   rw [← (N.restrictScalars R).finrank_quotient_add_finrank]
   exact Nat.eq_sub_of_add_eq rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Submodule.disjoint_ker_of_finrank_le [IsDomain R] [IsTorsionFree R M] {N : Type*}
     [AddCommGroup N] [Module R N] {L : Submodule R M} [Module.Finite R L] (f : M →ₗ[R] N)
     (h : finrank R L ≤ finrank R (L.map f)) :
@@ -237,6 +241,7 @@ open Submodule Module
 
 variable [StrongRankCondition R] [Module.Finite R M]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Submodule.exists_of_finrank_lt (N : Submodule R M) (h : finrank R N < finrank R M) :
     ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
   obtain ⟨s, hs, hs'⟩ :=

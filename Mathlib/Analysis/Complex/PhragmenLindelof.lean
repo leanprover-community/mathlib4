@@ -561,6 +561,7 @@ theorem eqOn_quadrant_III (hdf : DiffContOnCl ℂ f (Iio 0 ×ℂ Iio 0))
   sub_eq_zero.1 <| eq_zero_on_quadrant_III (hdf.sub hdg) (isBigO_sub_exp_rpow hBf hBg)
     (fun x hx => sub_eq_zero.2 <| hre x hx) (fun x hx => sub_eq_zero.2 <| him x hx) hz
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Phragmen-Lindelöf principle** in the fourth quadrant. Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable in the open fourth quadrant and is continuous on its closure;
@@ -631,6 +632,7 @@ theorem eqOn_quadrant_IV (hdf : DiffContOnCl ℂ f (Ioi 0 ×ℂ Iio 0))
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Phragmen-Lindelöf principle** in the right half-plane. Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable in the open right half-plane and is continuous on its closure;
@@ -722,8 +724,7 @@ theorem right_half_plane_of_bounded_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.
   -- Taking the limit as `ε → 0`, we obtain the required inequality.
   suffices ∀ᶠ ε : ℝ in 𝓝[<] 0, ‖exp (ε * z) • f z‖ ≤ C by
     refine le_of_tendsto (Tendsto.mono_left ?_ nhdsWithin_le_nhds) this
-    apply ((continuous_ofReal.mul continuous_const).cexp.smul continuous_const).norm.tendsto'
-    simp
+    exact Continuous.tendsto' (by fun_prop) _ _ (by simp)
   filter_upwards [self_mem_nhdsWithin] with ε ε₀; change ε < 0 at ε₀
   set g : ℂ → E := fun z => exp (ε * z) • f z; change ‖g z‖ ≤ C
   replace hd : DiffContOnCl ℂ g {z : ℂ | 0 < z.re} :=

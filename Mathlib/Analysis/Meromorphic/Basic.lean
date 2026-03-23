@@ -245,7 +245,7 @@ lemma inv {f : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x
     filter_upwards [hg_eq, hg_an.continuousAt.eventually_ne hg_ne] with z hfg hg_ne'
     rcases eq_or_ne z x with rfl | hz_ne
     · simp only [sub_self, pow_succ, mul_zero, zero_smul]
-    · replace hfg := congr_arg (· ⁻¹) hfg
+    · replace hfg := congr_arg (·⁻¹) hfg
       simp only [smul_inv₀] at hfg
       rw [inv_smul_eq_iff₀ (pow_ne_zero m (sub_ne_zero.mpr hz_ne)), smul_comm,
         eq_inv_smul_iff₀ (pow_ne_zero n (sub_ne_zero.mpr hz_ne))] at hfg
@@ -654,7 +654,7 @@ lemma zpow {f : 𝕜 → 𝕜'} {n : ℤ} (hf : Meromorphic f) : Meromorphic (f 
 
 @[fun_prop]
 protected lemma deriv [CompleteSpace E] (hf : Meromorphic f) : Meromorphic (deriv f) :=
-    fun x ↦ (hf x).deriv
+  fun x ↦ (hf x).deriv
 
 @[fun_prop]
 lemma iterated_deriv [CompleteSpace E] {n : ℕ} (hf : Meromorphic f) :

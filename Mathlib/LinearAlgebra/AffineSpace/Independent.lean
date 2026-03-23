@@ -62,6 +62,7 @@ theorem affineIndependent_def (p : ι → P) :
 theorem affineIndependent_of_subsingleton [Subsingleton ι] (p : ι → P) : AffineIndependent k p :=
   fun _ _ h _ i hi => Fintype.eq_of_subsingleton_of_sum_eq h i hi
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A family indexed by a `Fintype` is affinely independent if and
 only if no nontrivial weighted subtractions over `Finset.univ` (where
 the sum of the weights is 0) are 0. -/
@@ -175,6 +176,7 @@ theorem linearIndependent_set_iff_affineIndependent_vadd_union_singleton {s : Se
     exact Set.diff_singleton_eq_self fun h => hs 0 h rfl
   rw [h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A family is affinely independent if and only if any affine
 combinations (with sum of weights 1) that evaluate to the same point
 have equal `Set.indicator`. -/
@@ -255,6 +257,18 @@ theorem AffineIndependent.indicator_eq_of_affineCombination_eq {p : ι → P}
     (hw₂ : ∑ i ∈ s₂, w₂ i = 1) (h : s₁.affineCombination k p w₁ = s₂.affineCombination k p w₂) :
     Set.indicator (↑s₁) w₁ = Set.indicator (↑s₂) w₂ :=
   (affineIndependent_iff_indicator_eq_of_affineCombination_eq k p).1 ha s₁ s₂ w₁ w₂ hw₁ hw₂ h
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Given an affinely independent family of points, two affine combinations (with sum of weights 1)
+are equal if and only if their weights are pointwise equal. -/
+lemma AffineIndependent.affineCombination_eq_iff_eq {p : ι → P} (ha : AffineIndependent k p)
+    {w₁ w₂ : ι → k} {s : Finset ι} (hw₁ : ∑ i ∈ s, w₁ i = 1) (hw₂ : ∑ i ∈ s, w₂ i = 1) :
+    s.affineCombination k p w₁ = s.affineCombination k p w₂ ↔ ∀ i ∈ s, w₁ i = w₂ i := by
+  refine ⟨fun h ↦ ?_, fun h ↦ s.affineCombination_congr h fun _ _ ↦ rfl⟩
+  have hi := ha.indicator_eq_of_affineCombination_eq _ _ _ _ hw₁ hw₂ h
+  intro i hs
+  suffices Set.indicator s w₁ i = Set.indicator s w₂ i by simpa [hs] using this
+  simp [hi]
 
 /-- An affinely independent family is injective, if the underlying
 ring is nontrivial. -/
@@ -426,6 +440,7 @@ theorem AffineEquiv.affineIndependent_iff {p : ι → P} (e : P ≃ᵃ[k] P₂) 
     AffineIndependent k (e ∘ p) ↔ AffineIndependent k p :=
   e.toAffineMap.affineIndependent_iff e.toEquiv.injective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Affine equivalences preserve affine independence of subsets. -/
 theorem AffineEquiv.affineIndependent_set_of_eq_iff {s : Set P} (e : P ≃ᵃ[k] P₂) :
     AffineIndependent k ((↑) : e '' s → P₂) ↔ AffineIndependent k ((↑) : s → P) := by
@@ -434,6 +449,7 @@ theorem AffineEquiv.affineIndependent_set_of_eq_iff {s : Set P} (e : P ≃ᵃ[k]
 
 end Composition
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a family is affinely independent, the infimum of the affine spans of points indexed by two
 subsets equals the affine span of points indexed by the intersection of those subsets, if the
 underlying ring is nontrivial. -/
@@ -586,6 +602,7 @@ lemma AffineIndependent.vectorSpan_image_eq_iff [Nontrivial k] {p : ι → P}
     · rfl
     · simp [h₁.image p, h₂.image p, vectorSpan_of_subsingleton]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_nontrivial_relation_sum_zero_of_not_affine_ind {t : Finset V}
     (h : ¬AffineIndependent k ((↑) : t → V)) :
     ∃ f : V → k, ∑ e ∈ t, f e • e = 0 ∧ ∑ e ∈ t, f e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
@@ -679,6 +696,19 @@ theorem affineCombination_mem_affineSpan_pair {p : ι → P} (h : AffineIndepend
     weightedVSub_mem_vectorSpan_pair h _ hw₂ hw₁]
   · simp only [Pi.sub_apply, sub_eq_iff_eq_add]
   · simp_all only [Pi.sub_apply, Finset.sum_sub_distrib, sub_self]
+
+/-- Given an affinely independent family of points, an affine combination (with sum of weights 1)
+equals the line map of two affine combination points if and only if its weights are given pointwise
+by the line map of the corresponding weights. -/
+theorem AffineIndependent.affineCombination_eq_lineMap_iff_weight_lineMap {p : ι → P}
+    (ha : AffineIndependent k p) {w w₁ w₂ : ι → k} {s : Finset ι} (hw : ∑ i ∈ s, w i = 1)
+    (hw₁ : ∑ i ∈ s, w₁ i = 1) (hw₂ : ∑ i ∈ s, w₂ i = 1) (c : k) :
+    s.affineCombination k p w =
+      AffineMap.lineMap (s.affineCombination k p w₁) (s.affineCombination k p w₂) c ↔
+        ∀ i ∈ s, w i = AffineMap.lineMap (w₁ i) (w₂ i) c := by
+  rw [← AffineMap.apply_lineMap, ha.affineCombination_eq_iff_eq hw]
+  · simp [AffineMap.lineMap_apply]
+  · simp [AffineMap.lineMap_apply, sum_add_distrib, ← mul_sum, hw₁, hw₂]
 
 end AffineIndependent
 

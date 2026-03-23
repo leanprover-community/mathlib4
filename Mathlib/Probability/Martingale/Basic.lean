@@ -253,6 +253,7 @@ end Submartingale
 
 section Submartingale
 
+set_option backward.isDefEq.respectTransparency false in
 theorem submartingale_of_setIntegral_le [SigmaFiniteFiltration μ ℱ]
     {f : ι → Ω → ℝ} (hadp : StronglyAdapted ℱ f)
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i j : ι,

@@ -50,6 +50,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
   · apply h₁
     rw [← Ideal.map_pow, Ideal.map_quotient_self]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type*} [CommRing R] {I : Ideal R}
     (hI : IsNilpotent I) {x : R} : IsUnit (Ideal.Quotient.mk I x) ↔ IsUnit x := by
   refine ⟨?_, fun h => h.map <| Ideal.Quotient.mk I⟩

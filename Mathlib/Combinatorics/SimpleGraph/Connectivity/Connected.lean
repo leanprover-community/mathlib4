@@ -663,6 +663,22 @@ lemma connected_toSimpleGraph (C : ConnectedComponent G) : (C.toSimpleGraph).Con
     exact C.reachable_toSimpleGraph hu hv
   nonempty := ⟨C.out, C.out_eq⟩
 
+theorem maximal_connected_induce_supp (C : G.ConnectedComponent) :
+    Maximal (G.induce · |>.Connected) C.supp := by
+  refine C.ind fun v ↦ ?_
+  refine ⟨connected_toSimpleGraph _, fun s hconn hle u hu ↦ ConnectedComponent.sound ?_⟩
+  exact hconn.preconnected ⟨u, hu⟩ ⟨v, hle rfl⟩ |>.map <| Embedding.induce s |>.toHom
+
+theorem maximal_connected_induce_iff (s : Set V) :
+    Maximal (G.induce · |>.Connected) s ↔ ∃ C : G.ConnectedComponent, C.supp = s := by
+  refine ⟨fun ⟨hconn, h⟩ ↦ ?_, fun ⟨C, h⟩ ↦ ?_⟩
+  · have ⟨v, hv⟩ := hconn.nonempty
+    suffices s ≤ (G.connectedComponentMk v).supp from
+      ⟨G.connectedComponentMk v, le_antisymm (h (connected_toSimpleGraph _) this) this⟩
+    exact fun u hu ↦ ConnectedComponent.sound <|
+      hconn.preconnected ⟨u, hu⟩ ⟨v, hv⟩ |>.map <| Embedding.induce s |>.toHom
+  · exact h ▸ maximal_connected_induce_supp _
+
 end ConnectedComponent
 
 /-- Given graph homomorphisms from each connected component of `G` to `H`, this is the graph
@@ -677,6 +693,7 @@ def homOfConnectedComponents (G : SimpleGraph V) {H : SimpleGraph V'}
     convert (C (G.connectedComponentMk _)).map_rel h using 3 <;>
       rw [ConnectedComponent.connectedComponentMk_eq_of_adj hab]
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Extract as lemma about general equivalence relation
 lemma pairwise_disjoint_supp_connectedComponent (G : SimpleGraph V) :
     Pairwise fun c c' : ConnectedComponent G ↦ Disjoint c.supp c'.supp := by
@@ -721,6 +738,7 @@ def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
 theorem isBridge_iff {u v : V} :
     G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {s(u, v)}).Reachable u v := Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
     (G \ fromEdgeSet {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', s(v, w) ∉ p.edges := by
   constructor
@@ -801,6 +819,7 @@ theorem isBridge_iff_mem_and_forall_cycle_notMem {e : Sym2 V} :
     G.IsBridge e ↔ e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
   Sym2.ind (fun _ _ => isBridge_iff_adj_and_forall_cycle_notMem) e
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
 lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}
     (h : ¬ G.IsBridge s(x, y)) : (G.deleteEdges {s(x, y)}).Connected := by

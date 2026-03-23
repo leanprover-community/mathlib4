@@ -76,6 +76,7 @@ theorem pderiv_monomial {i : σ} :
   · rw [Finsupp.notMem_support_iff] at hi; simp [hi]
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma X_mul_pderiv_monomial {i : σ} {m : σ →₀ ℕ} {r : R} :
     X i * pderiv i (monomial m r) = m i • monomial m r := by
   rw [pderiv_monomial, X, monomial_mul, smul_monomial]

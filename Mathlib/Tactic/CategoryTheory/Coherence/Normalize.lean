@@ -370,7 +370,7 @@ def evalComp : NormalExpr → NormalExpr → CoherenceM ρ Eval.Result
 
 open MkEvalWhiskerLeft
 
-variable [MonadMor₁ (CoherenceM ρ)] [MonadMor₂Iso (CoherenceM ρ)]
+variable [MonadMor₁ (CoherenceM ρ)]
 
 /-- Evaluate the expression `f ◁ η` into a normalized form. -/
 def evalWhiskerLeft : Mor₁ → NormalExpr → CoherenceM ρ Eval.Result

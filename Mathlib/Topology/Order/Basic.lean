@@ -91,6 +91,7 @@ instance (priority := 100) [OrderTopology α] [Countable α] :
     exact Countable.mono (fun s hs => by grind) ((countable_range f1).union (countable_range f2))
   · simp [OrderTopology.topology_eq_generate_intervals]
 
+set_option backward.isDefEq.respectTransparency false in
 instance [t : OrderTopology α] : OrderTopology αᵒᵈ :=
   ⟨by
     convert OrderTopology.topology_eq_generate_intervals (α := α) using 6
@@ -98,7 +99,7 @@ instance [t : OrderTopology α] : OrderTopology αᵒᵈ :=
 
 protected theorem OrderTopology.continuous_iff [OrderTopology α] [TopologicalSpace β] {f : β → α} :
     Continuous f ↔ ∀ a, IsOpen (f ⁻¹' Ioi a) ∧ IsOpen (f ⁻¹' Iio a) := by
-  simp_rw [OrderTopology.topology_eq_generate_intervals, continuous_generateFrom_iff]
+  simp_rw +instances [OrderTopology.topology_eq_generate_intervals, continuous_generateFrom_iff]
   aesop
 
 theorem isOpen_iff_generate_intervals [t : OrderTopology α] {s : Set α} :
@@ -361,6 +362,7 @@ theorem nhdsGE_basis_of_exists_gt [TopologicalSpace α] [LinearOrder α] [OrderT
         Ico_subset_Ico_right (min_le_right _ _)⟩)
       ha
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nhdsLE_basis_of_exists_lt [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ l, l < a) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a := by
   convert nhdsGE_basis_of_exists_gt (α := αᵒᵈ) ha using 2
@@ -636,6 +638,7 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
     exact isOpen_Ioo
   exact Subset.antisymm (Ioc_subset_Ioo_right (hy x hx.1).lt) fun u hu => ⟨hu.1, Hy _ _ hx.1 hu.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/
 theorem countable_setOf_covBy_left [SecondCountableTopology α] :

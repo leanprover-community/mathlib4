@@ -39,15 +39,18 @@ open Module
 -- This is necessary to avoid several timeouts
 attribute [local instance 2000] Submodule.module
 
+set_option backward.isDefEq.respectTransparency false in
 instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Free ℤ I := by
   refine Free.of_equiv (LinearEquiv.restrictScalars ℤ (I.equivNum ?_)).symm
   exact nonZeroDivisors.coe_ne_zero I.den
 
+set_option backward.isDefEq.respectTransparency false in
 instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Finite ℤ I := by
   refine Module.Finite.of_surjective
     (LinearEquiv.restrictScalars ℤ (I.equivNum ?_)).symm.toLinearMap (LinearEquiv.surjective _)
   exact nonZeroDivisors.coe_ne_zero I.den
 
+set_option backward.isDefEq.respectTransparency false in
 instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     IsLocalizedModule ℤ⁰ ((Submodule.subtype (I : Submodule (𝓞 K) K)).restrictScalars ℤ) where
   map_units x := by
@@ -58,8 +61,7 @@ instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     obtain ⟨⟨a, _, d, hd, rfl⟩, h⟩ := IsLocalization.surj (Algebra.algebraMapSubmonoid (𝓞 K) ℤ⁰) x
     refine ⟨⟨⟨Ideal.absNorm I.1.num * (algebraMap _ K a), I.1.num_le ?_⟩, d * Ideal.absNorm I.1.num,
       ?_⟩, ?_⟩
-    · simp_rw [FractionalIdeal.val_eq_coe, FractionalIdeal.coe_coeIdeal]
-      refine (IsLocalization.mem_coeSubmodule _ _).mpr ⟨Ideal.absNorm I.1.num * a, ?_, ?_⟩
+    · refine (IsLocalization.mem_coeSubmodule _ _).mpr ⟨Ideal.absNorm I.1.num * a, ?_, ?_⟩
       · exact Ideal.mul_mem_right _ _ I.1.num.absNorm_mem
       · rw [map_mul, map_natCast]
     · refine Submonoid.mul_mem _ hd (mem_nonZeroDivisors_of_ne_zero ?_)
@@ -73,16 +75,19 @@ instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
   exists_of_eq h :=
     ⟨1, by rwa [one_smul, one_smul, ← (Submodule.injective_subtype I.1.coeToSubmodule).eq_iff]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A `ℤ`-basis of a fractional ideal. -/
 noncomputable def fractionalIdealBasis (I : FractionalIdeal (𝓞 K)⁰ K) :
     Basis (Free.ChooseBasisIndex ℤ I) ℤ I := Free.chooseBasis ℤ I
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A `ℚ`-basis of `K` that spans `I` over `ℤ`, see `mem_span_basisOfFractionalIdeal` below. -/
 noncomputable def basisOfFractionalIdeal (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     Basis (Free.ChooseBasisIndex ℤ I) ℚ K :=
   (fractionalIdealBasis K I.1).ofIsLocalizedModule ℚ ℤ⁰
     ((Submodule.subtype (I : Submodule (𝓞 K) K)).restrictScalars ℤ)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem basisOfFractionalIdeal_apply (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
     (i : Free.ChooseBasisIndex ℤ I) :
     basisOfFractionalIdeal K I i = fractionalIdealBasis K I.1 i :=
@@ -93,6 +98,7 @@ theorem mem_span_basisOfFractionalIdeal {I : (FractionalIdeal (𝓞 K)⁰ K)ˣ} 
   rw [basisOfFractionalIdeal, (fractionalIdealBasis K I.1).ofIsLocalizedModule_span ℚ ℤ⁰ _]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 open Module in
 theorem fractionalIdeal_rank (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     finrank ℤ I = finrank ℤ (𝓞 K) := by
@@ -105,6 +111,7 @@ section Norm
 
 open Module
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The absolute value of the determinant of the base change from `integralBasis` to
 `basisOfFractionalIdeal I` is equal to the norm of `I`. -/
 theorem det_basisOfFractionalIdeal_eq_absNorm (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)

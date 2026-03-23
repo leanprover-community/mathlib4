@@ -47,6 +47,7 @@ variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 attribute [local ext high] ext LinearMap.prod_ext
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `M, N` be `R`-modules, `m ≤ M` and `n ≤ N` be an `R`-submodules. Then we have a linear
 isomorphism between tensor products of the quotients and the quotient of the tensor product:

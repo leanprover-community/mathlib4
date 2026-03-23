@@ -124,6 +124,7 @@ lemma bot_ringCon : (⊥ : TwoSidedIdeal R).ringCon = ⊥ := rfl
 lemma mem_bot {x : R} : x ∈ (⊥ : TwoSidedIdeal R) ↔ x = 0 :=
   Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : CompleteLattice (TwoSidedIdeal R) where
   __ := (inferInstance : SemilatticeSup (TwoSidedIdeal R))
   __ := (inferInstance : SemilatticeInf (TwoSidedIdeal R))

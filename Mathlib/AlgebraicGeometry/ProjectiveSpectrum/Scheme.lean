@@ -215,6 +215,7 @@ end ToSpec
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The continuous function from the basic open set `D(f)` in `Proj`
 to the corresponding basic open set in `Spec A⁰_f`. -/
 @[simps! -isSimp hom_apply_asIdeal]
@@ -527,6 +528,7 @@ namespace toSpec
 variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m)
 include hm f_deg
 
+set_option backward.isDefEq.respectTransparency false in
 variable {𝒜} in
 lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :
     toSpec 𝒜 f '' (Subtype.val ⁻¹' (pbo (decompose 𝒜 a i) : Set (ProjectiveSpectrum 𝒜))) =
@@ -541,6 +543,7 @@ lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :
 
 end toSpec
 
+set_option backward.isDefEq.respectTransparency false in
 variable {𝒜} in
 /-- The continuous function `Spec A⁰_f → Proj|D(f)` sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}` where
 `m` is the degree of `f` -/
@@ -581,6 +584,7 @@ def projIsoSpecTopComponent {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m
 
 namespace ProjectiveSpectrum.Proj
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The ring map from `A⁰_ f` to the local sections of the structure sheaf of the projective spectrum of
 `A` on the basic open set `D(f)` defined by sending `s ∈ A⁰_f` to the section `x ↦ s` on `D(f)`.
@@ -629,6 +633,7 @@ def awayToΓ (f) : CommRingCat.of (A⁰_ f) ⟶ LocallyRingedSpace.Γ.obj (op <|
   awayToSection 𝒜 f ≫ (ProjectiveSpectrum.Proj.structureSheaf 𝒜).1.map
     (homOfLE (Opens.isOpenEmbedding_obj_top _).le).op
 
+set_option backward.isDefEq.respectTransparency false in
 lemma awayToΓ_ΓToStalk (f) (x) :
     awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x =
       CommRingCat.ofHom (HomogeneousLocalization.mapId 𝒜 (Submonoid.powers_le.mpr x.2)) ≫
@@ -651,6 +656,7 @@ def toSpec (f) : (Proj| pbo f) ⟶ Spec (A⁰_ f) :=
 
 open HomogeneousLocalization IsLocalRing
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toSpec_base_apply_eq_comap {f} (x : Proj| pbo f) :
     (toSpec 𝒜 f).base x = PrimeSpectrum.comap (mapId 𝒜 (Submonoid.powers_le.mpr x.2))
       (closedPoint (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)) := by
@@ -691,22 +697,25 @@ lemma toSpec_preimage_basicOpen {f}
   convert (ProjIsoSpecTopComponent.ToSpec.preimage_basicOpen f t)
   exact funext fun _ => toSpec_base_apply_eq _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma toOpen_toSpec_val_c_app (f) (U) :
-    StructureSheaf.toOpen (A⁰_ f) U.unop ≫ (toSpec 𝒜 f).c.app U =
+    (Scheme.ΓSpecIso _).inv ≫ (Spec A⁰_ f).presheaf.map (homOfLE le_top).op ≫
+      (toSpec 𝒜 f).c.app U =
       awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.map (homOfLE le_top).op :=
-  Eq.trans (by congr) <| ΓSpec.toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app _ U
+  Eq.trans (by rfl) <| ΓSpec.toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app _ U
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma toStalk_stalkMap_toSpec (f) (x) :
-    StructureSheaf.toStalk _ _ ≫ (toSpec 𝒜 f).stalkMap x =
-      awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x := by
-  rw [StructureSheaf.toStalk, Category.assoc]
-  simp_rw [← Spec.locallyRingedSpaceObj_presheaf']
-  rw [LocallyRingedSpace.stalkMap_germ (toSpec 𝒜 f),
-    toOpen_toSpec_val_c_app_assoc, Presheaf.germ_res]
+    (Scheme.ΓSpecIso _).inv ≫ (Spec A⁰_ f).presheaf.germ _ _ (by simp) ≫
+      (toSpec 𝒜 f).stalkMap x = awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x := by
+  dsimp
+  erw [LocallyRingedSpace.stalkMap_germ (toSpec 𝒜 f) ⊤ x (by simp)]
+  erw [toOpen_toSpec_val_c_app_assoc]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `x` is a point in the basic open set `D(f)` where `f` is a homogeneous element of positive
 degree, then the homogeneously localized ring `A⁰ₓ` has the universal property of the localization
@@ -798,14 +807,15 @@ lemma toStalk_specStalkEquiv (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
 lemma stalkMap_toSpec (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     (toSpec 𝒜 f).stalkMap x =
       (specStalkEquiv 𝒜 f x f_deg hm).hom ≫ (Proj.stalkIso' 𝒜 x.1).toCommRingCatIso.inv ≫
-      ((Proj.toLocallyRingedSpace 𝒜).restrictStalkIso (Opens.isOpenEmbedding _) x).inv :=
-  CommRingCat.hom_ext <|
+      ((Proj.toLocallyRingedSpace 𝒜).restrictStalkIso (Opens.isOpenEmbedding _) x).inv := by
+  refine CommRingCat.hom_ext <|
     IsLocalization.ringHom_ext (R := A⁰_ f) ((toSpec 𝒜 f).base x).asIdeal.primeCompl
-      (S := (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).base x)) <|
-      CommRingCat.hom_ext_iff.mp <|
-        (toStalk_stalkMap_toSpec _ _ _).trans <| by
-        rw [awayToΓ_ΓToStalk, ← toStalk_specStalkEquiv, Category.assoc]; rfl
+      (S := (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).base x)) <| ?_
+  ext a
+  refine congr($(toStalk_stalkMap_toSpec 𝒜 f x) _).trans ?_
+  rw [awayToΓ_ΓToStalk, ← toStalk_specStalkEquiv, Category.assoc]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_toSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     IsIso (toSpec 𝒜 f) := by
   haveI : IsIso (toSpec 𝒜 f).base := toSpec_base_isIso 𝒜 f_deg hm

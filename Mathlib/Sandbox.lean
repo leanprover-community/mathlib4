@@ -1,23 +1,11 @@
 module
 
-public import Mathlib.Misc
+-- public import Mathlib.Misc
 public import Mathlib.GalCyclotomic
 public import Mathlib.FieldTheory.Finite.Extension
 public import Mathlib.NumberTheory.NumberField.Ideal.Basic
 
-section IsPrimitiveRoot
 
-open NumberField Ideal
-
-theorem IsPrimitiveRoot.idealQuotient_mk {K : Type*} [Field K] {I : Ideal (𝓞 K)} [NumberField K]
-    {n : ℕ} [NeZero n] {ζ : (𝓞 K)} (hζ : IsPrimitiveRoot ζ n) (hI₁ : absNorm I ≠ 1)
-    (hI₂ : (absNorm I).Coprime n) : IsPrimitiveRoot (Ideal.Quotient.mk I ζ) n := by
-  have h : IsPrimitiveRoot hζ.toRootsOfUnity n :=
-    IsPrimitiveRoot.coe_submonoidClass_iff.mp <| IsPrimitiveRoot.coe_units_iff.mp hζ
-  exact IsPrimitiveRoot.coe_units_iff.mpr <|
-    h.map_of_injective <| Ideal.rootsOfUnityMapQuot_injective n hI₁ hI₂
-
-end IsPrimitiveRoot
 section FiniteField
 
 open FiniteField
@@ -62,8 +50,10 @@ theorem step1 (σ : Gal(K/ℚ)) (hσ : σ • P = P) :
     galEquiv m K σ ∈ Subgroup.zpowers (ZMod.unitOfCoprime p hm) := by
   have hζ := IsCyclotomicExtension.zeta_spec m ℚ K
   let 𝕜 := (𝓞 K) ⧸ P
+  have : Finite 𝕜 := by exact instFiniteQuotientRingOfIntegersIdealOfNumberFieldOfIsMaximal
   let τ := IsFractionRing.stabilizerHom Gal(K/ℚ) (Ideal.span {(p : ℤ)}) P
      (ℤ ⧸ span {(p : ℤ)}) 𝕜 ⟨σ, hσ⟩
+  have : CharP (ℤ ⧸ span {(p : ℤ)}) p := sorry
   obtain ⟨i, hi⟩ := toto (ℤ ⧸ span {(p : ℤ)}) p 𝕜 τ
   refine ⟨i, ?_⟩
   dsimp only
@@ -72,7 +62,7 @@ theorem step1 (σ : Gal(K/ℚ)) (hσ : σ • P = P) :
   have t₂ := IsFractionRing.stabilizerHom_apply_apply_mk Gal(K/ℚ) (Ideal.span {(p : ℤ)}) P
     (ℤ ⧸ span {(p : ℤ)}) 𝕜 ⟨σ, hσ⟩ hζ.toInteger
   simp only [Algebra.algebraMap_self, RingHomCompTriple.comp_apply, 𝕜] at t₂
-  have t₃ := hζ.toInteger_isPrimitiveRoot.idealQuotient_mk (I := P) ?_ ?_
+  -- have t₃ := hζ.toInteger_isPrimitiveRoot.idealQuotient_mk (I := P) ?_ ?_
   · rw [t₂] at t₁
     rw [galEquiv_smul_of_pow_eq m, map_pow, IsOfFinOrder.pow_inj_mod] at t₁
     · rw [zpow_natCast]

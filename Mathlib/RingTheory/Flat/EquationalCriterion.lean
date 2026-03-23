@@ -266,6 +266,7 @@ theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type*} [A
   ⟨k, a ∘ₗ e.symm, y, by rwa [← comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm], by
     rwa [comp_assoc]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every homomorphism from a finitely presented module to a flat module factors through a finite
 free module. -/
 @[stacks 058E "only if"]

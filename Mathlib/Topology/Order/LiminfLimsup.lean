@@ -179,6 +179,7 @@ theorem limsInf_eq_of_le_nhds {f : Filter α} {a : α} [NeBot f] (h : f ≤ 𝓝
       a = (𝓝 a).limsInf := (limsInf_nhds a).symm
       _ ≤ f.limsInf := limsInf_le_limsInf_of_le h (isBounded_ge_nhds a) hb_le.isCobounded_flip)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a filter is converging, its liminf coincides with its limit. -/
 theorem limsSup_eq_of_le_nhds {f : Filter α} {a : α} [NeBot f] (h : f ≤ 𝓝 a) : f.limsSup = a :=
   limsInf_eq_of_le_nhds (α := αᵒᵈ) h
@@ -347,6 +348,7 @@ theorem Antitone.map_limsup_of_continuousAt {f : R → S} (f_decr : Antitone f) 
     f (F.limsup a) = F.liminf (f ∘ a) :=
   f_decr.map_limsSup_of_continuousAt f_cont bdd_above cobdd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An antitone function between (conditionally) complete linear ordered spaces sends a
 `Filter.limsInf` to the `Filter.limsup` of the image if the function is continuous at the `limsInf`
 (and the filter is bounded from below and frequently bounded from above). -/
@@ -385,6 +387,7 @@ theorem Monotone.map_limsup_of_continuousAt {f : R → S} (f_incr : Monotone f) 
     f (F.limsup a) = F.limsup (f ∘ a) :=
   f_incr.map_limsSup_of_continuousAt f_cont bdd_above cobdd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A monotone function between (conditionally) complete linear ordered spaces sends a
 `Filter.limsInf` to the `Filter.liminf` of the image if the function is continuous at the `limsInf`
 (and the filter is bounded from below and frequently bounded from above). -/

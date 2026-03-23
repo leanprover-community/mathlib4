@@ -119,8 +119,8 @@ lemma addLinearEquiv_symm_apply (PQ) :
     ((addLinearEquiv R m n).symm PQ : R[X]) = (PQ.1 : R[X]) + (PQ.2 : R[X]) * X ^ (m : ℕ) := calc
   _ = ((addLinearEquiv R m n).symm (LinearMap.inl R _ _ PQ.1 + LinearMap.inr R _ _ PQ.2) : R[X]) :=
       by rw [LinearMap.inl_apply, LinearMap.inr_apply, Prod.add_def, add_zero, zero_add]
-  _ = _ := by rw [map_add, Submodule.coe_add,
-        addLinearEquiv_symm_apply_inl, addLinearEquiv_symm_apply_inr]
+  _ = _ := by
+    rw [map_add, Submodule.coe_add, addLinearEquiv_symm_apply_inl, addLinearEquiv_symm_apply_inr]
 
 lemma addLinearEquiv_symm_apply' (PQ) :
     ((addLinearEquiv R m n).symm PQ : R[X]) = (PQ.1 : R[X]) + X ^ (m : ℕ) * (PQ.2 : R[X]) := by
@@ -174,6 +174,7 @@ noncomputable def taylorLinearEquiv (r : R) (n : ℕ) : R[X]_n ≃ₗ[R] R[X]_n 
     (taylorLinearEquiv r n).symm = taylorLinearEquiv (-r) n :=
   LinearEquiv.ext <| fun _ ↦ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem det_taylorLinearEquiv_toLinearMap :
     (taylorLinearEquiv r n).toLinearMap.det = 1 := by
   nontriviality R
@@ -188,6 +189,7 @@ noncomputable def taylorLinearEquiv (r : R) (n : ℕ) : R[X]_n ≃ₗ[R] R[X]_n 
     change (taylor r (degreeLT.basis R n j)).coeff i = 0
     rw [degreeLT.basis_val, coeff_eq_zero_of_degree_lt (by simpa [-taylor_X_pow, -taylor_pow])]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem det_taylorLinearEquiv :
     (taylorLinearEquiv r n).det = 1 :=
   Units.ext <| by rw [LinearEquiv.coe_det, det_taylorLinearEquiv_toLinearMap, Units.val_one]

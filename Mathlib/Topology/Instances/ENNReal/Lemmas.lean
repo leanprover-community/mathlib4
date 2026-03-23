@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Data.ENNReal.BigOperators
-public import Mathlib.Tactic.Bound
 public import Mathlib.Topology.Order.LiminfLimsup
 public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.Instances.NNReal.Lemmas
@@ -190,6 +189,7 @@ theorem nhdsGT_ofNat_neBot (n : ℕ) [n.AtLeastTwo] : (𝓝[>] (OfNat.ofNat n : 
 theorem nhdsLT_neBot [NeZero x] : (𝓝[<] x).NeBot :=
   nhdsLT_neBot_of_exists_lt ⟨0, NeZero.pos x⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Closed intervals `Set.Icc (x - ε) (x + ε)`, `ε ≠ 0`, form a basis of neighborhoods of an
 extended nonnegative real number `x ≠ ∞`. We use `Set.Icc` instead of `Set.Ioo` because this way the
 statement works for `x = 0`.
@@ -556,10 +556,10 @@ section
 
 variable [EMetricSpace β]
 
-open ENNReal Filter EMetric
+open ENNReal Filter
 
 /-- In an emetric ball, the distance between points is everywhere finite -/
-theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : ball a r) : edist x.1 y.1 ≠ ∞ :=
+theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : eball a r) : edist x.1 y.1 ≠ ∞ :=
   ne_of_lt <|
     calc
       edist x y ≤ edist a x + edist a y := edist_triangle_left x.1 y.1 a
@@ -568,12 +568,12 @@ theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : ball a r) : ed
 
 /-- Each ball in an extended metric space gives us a metric space, as the edist
 is everywhere finite. -/
-def metricSpaceEMetricBall (a : β) (r : ℝ≥0∞) : MetricSpace (ball a r) :=
+def metricSpaceEMetricBall (a : β) (r : ℝ≥0∞) : MetricSpace (eball a r) :=
   EMetricSpace.toMetricSpace edist_ne_top_of_mem_ball
 
-theorem nhds_eq_nhds_emetric_ball (a x : β) (r : ℝ≥0∞) (h : x ∈ ball a r) :
-    𝓝 x = map ((↑) : ball a r → β) (𝓝 ⟨x, h⟩) :=
-  (map_nhds_subtype_coe_eq_nhds _ <| IsOpen.mem_nhds EMetric.isOpen_ball h).symm
+theorem nhds_eq_nhds_emetric_ball (a x : β) (r : ℝ≥0∞) (h : x ∈ eball a r) :
+    𝓝 x = map ((↑) : eball a r → β) (𝓝 ⟨x, h⟩) :=
+  (map_nhds_subtype_coe_eq_nhds _ <| isOpen_eball.mem_nhds h).symm
 
 end
 
@@ -585,7 +585,7 @@ open EMetric
 
 theorem tendsto_iff_edist_tendsto_0 {l : Filter β} {f : β → α} {y : α} :
     Tendsto f l (𝓝 y) ↔ Tendsto (fun x => edist (f x) y) l (𝓝 0) := by
-  simp only [EMetric.nhds_basis_eball.tendsto_right_iff, EMetric.mem_ball,
+  simp only [Metric.nhds_basis_eball.tendsto_right_iff, Metric.mem_eball,
     @tendsto_order ℝ≥0∞ β _ _, forall_prop_of_false ENNReal.not_lt_zero, forall_const, true_and]
 
 /-- Yet another metric characterization of Cauchy sequences on integers. This one is often the
@@ -617,9 +617,9 @@ theorem continuous_of_le_add_edist {f : α → ℝ≥0∞} (C : ℝ≥0∞) (hC 
   refine continuous_iff_continuousAt.2 fun x => ENNReal.tendsto_nhds_of_Icc fun ε ε0 => ?_
   rcases ENNReal.exists_nnreal_pos_mul_lt hC ε0.ne' with ⟨δ, δ0, hδ⟩
   rw [mul_comm] at hδ
-  filter_upwards [EMetric.closedBall_mem_nhds x (ENNReal.coe_pos.2 δ0)] with y hy
+  filter_upwards [Metric.closedEBall_mem_nhds x (ENNReal.coe_pos.2 δ0)] with y hy
   refine ⟨tsub_le_iff_right.2 <| (h x y).trans ?_, (h y x).trans ?_⟩ <;> grw [← hδ.le] <;> gcongr
-  exacts [EMetric.mem_closedBall'.1 hy, EMetric.mem_closedBall.1 hy]
+  exacts [Metric.mem_closedEBall'.1 hy, Metric.mem_closedEBall.1 hy]
 
 theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
   apply continuous_of_le_add_edist 2 (by decide)
@@ -640,8 +640,11 @@ theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : 
     (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x => edist (f x) (g x)) x (𝓝 (edist a b)) :=
   (continuous_edist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
 
-theorem EMetric.isClosed_closedBall {a : α} {r : ℝ≥0∞} : IsClosed (closedBall a r) :=
-  isClosed_le (continuous_id.edist continuous_const) continuous_const
+theorem Metric.isClosed_closedEBall {a : α} {r : ℝ≥0∞} : IsClosed (closedEBall a r) :=
+  isClosed_le (by fun_prop) continuous_const
+
+@[deprecated (since := "2026-01-24")]
+alias EMetric.isClosed_closedBall := Metric.isClosed_closedEBall
 
 @[simp]
 theorem Metric.ediam_closure (s : Set α) : ediam (closure s) = ediam s := by
@@ -745,6 +748,7 @@ section truncateToReal
 Unlike `ENNReal.toReal`, this cast is continuous and monotone when `t ≠ ∞`. -/
 noncomputable def truncateToReal (t x : ℝ≥0∞) : ℝ := (min t x).toReal
 
+set_option backward.isDefEq.respectTransparency false in
 lemma truncateToReal_eq_toReal {t x : ℝ≥0∞} (t_ne_top : t ≠ ∞) (x_le : x ≤ t) :
     truncateToReal t x = x.toReal := by
   have x_lt_top : x < ∞ := lt_of_le_of_lt x_le t_ne_top.lt_top
@@ -863,6 +867,7 @@ lemma limsup_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b :
   rw [key]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma ofNNReal_limsup {u : ι → ℝ≥0} (hf : f.IsBoundedUnder (· ≤ ·) u) :
     limsup u f = limsup (fun i ↦ (u i : ℝ≥0∞)) f := by
@@ -870,6 +875,7 @@ lemma ofNNReal_limsup {u : ι → ℝ≥0} (hf : f.IsBoundedUnder (· ≤ ·) u)
   rw [coe_le_coe, le_limsup_iff, le_limsup_iff]
   simp [forall_ennreal]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma ofNNReal_liminf {u : ι → ℝ≥0} (hf : f.IsCoboundedUnder (· ≥ ·) u) :
     liminf u f = liminf (fun i ↦ (u i : ℝ≥0∞)) f := by
@@ -877,6 +883,7 @@ lemma ofNNReal_liminf {u : ι → ℝ≥0} (hf : f.IsCoboundedUnder (· ≥ ·) 
   rw [coe_le_coe, le_liminf_iff, le_liminf_iff]
   simp [forall_ennreal]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem liminf_add_of_right_tendsto_zero {u : Filter ι} {g : ι → ℝ≥0∞} (hg : u.Tendsto g (𝓝 0))
     (f : ι → ℝ≥0∞) : u.liminf (f + g) = u.liminf f := by
   refine le_antisymm ?_ <| liminf_le_liminf <| .of_forall <| by simp

@@ -59,17 +59,23 @@ theorem head_flatten_eq_head_head {l : List (List α)} (hl : l.flatten ≠ [])
     (hl' : l.head (by grind) ≠ []) : l.flatten.head hl = (l.head (by grind)).head hl' :=
   (head_head_eq_head_flatten ..).symm
 
-/-- See also `getLast_flatten_of_flatten_ne_nil`, which switches around the proof obligations. -/
-theorem getLast_flatten_of_getLast_ne_nil {l : List (List α)}
+/-- See also `getLast_flatten_eq_getLast_getLast`, which switches around the proof obligations. -/
+theorem getLast_getLast_eq_getLast_flatten {l : List (List α)}
     (hl : l ≠ []) (hl' : l.getLast hl ≠ []) :
-    l.flatten.getLast (flatten_ne_nil_iff.2 ⟨_, getLast_mem hl, hl'⟩) =
-      (l.getLast hl).getLast hl' := by
+    (l.getLast hl).getLast hl' =
+      l.flatten.getLast (flatten_ne_nil_iff.2 ⟨_, getLast_mem hl, hl'⟩) := by
   cases eq_nil_or_concat l with grind
 
-/-- See also `getLast_flatten_of_getLast_ne_nil`, which switches around the proof obligations. -/
-theorem getLast_flatten_of_flatten_ne_nil {l : List (List α)}
+@[deprecated (since := "2026-01-31")]
+alias getLast_flatten_of_getLast_ne_nil := getLast_getLast_eq_getLast_flatten
+
+/-- See also `getLast_getLast_eq_getLast_flatten`, which switches around the proof obligations. -/
+theorem getLast_flatten_eq_getLast_getLast {l : List (List α)}
     (hl : l.flatten ≠ []) (hl' : l.getLast (by grind) ≠ []) :
-    (l.getLast (by grind)).getLast hl' = l.flatten.getLast hl :=
-  (getLast_flatten_of_getLast_ne_nil ..).symm
+    l.flatten.getLast hl = (l.getLast (by grind)).getLast hl' :=
+  (getLast_getLast_eq_getLast_flatten ..).symm
+
+@[deprecated (since := "2026-01-31")]
+alias getLast_flatten_of_flatten_ne_nil := getLast_flatten_eq_getLast_getLast
 
 end List

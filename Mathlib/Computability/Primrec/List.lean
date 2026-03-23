@@ -585,6 +585,7 @@ theorem const {n} : ∀ m, @Primrec' n fun _ => m
 theorem head {n : ℕ} : @Primrec' n.succ head :=
   (get 0).of_eq fun v => by simp [get_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tail {n f} (hf : @Primrec' n f) : @Primrec' n.succ fun v => f v.tail :=
   (hf.comp _ fun i => @get _ i.succ).of_eq fun v => by
     rw [← ofFn_get v.tail]; congr; funext i; simp

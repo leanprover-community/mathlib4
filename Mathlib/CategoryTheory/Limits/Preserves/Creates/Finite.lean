@@ -35,7 +35,7 @@ class CreatesFiniteLimits (F : C ⥤ D) where
   createsFiniteLimits :
     ∀ (J : Type) [SmallCategory J] [FinCategory J], CreatesLimitsOfShape J F := by infer_instance
 
-attribute [instance] CreatesFiniteLimits.createsFiniteLimits
+attribute [instance_reducible, instance] CreatesFiniteLimits.createsFiniteLimits
 
 noncomputable section
 
@@ -94,7 +94,7 @@ class CreatesFiniteProducts (F : C ⥤ D) where
   creates :
     ∀ (J : Type) [Fintype J], CreatesLimitsOfShape (Discrete J) F := by infer_instance
 
-attribute [instance] CreatesFiniteProducts.creates
+attribute [instance_reducible, instance] CreatesFiniteProducts.creates
 
 noncomputable section
 
@@ -124,7 +124,7 @@ class CreatesFiniteColimits (F : C ⥤ D) where
   createsFiniteColimits :
     ∀ (J : Type) [SmallCategory J] [FinCategory J], CreatesColimitsOfShape J F := by infer_instance
 
-attribute [instance] CreatesFiniteColimits.createsFiniteColimits
+attribute [instance_reducible, instance] CreatesFiniteColimits.createsFiniteColimits
 
 noncomputable section
 
@@ -183,7 +183,7 @@ class CreatesFiniteCoproducts (F : C ⥤ D) where
   creates :
     ∀ (J : Type) [Fintype J], CreatesColimitsOfShape (Discrete J) F := by infer_instance
 
-attribute [instance] CreatesFiniteCoproducts.creates
+attribute [instance_reducible, instance] CreatesFiniteCoproducts.creates
 
 noncomputable section
 

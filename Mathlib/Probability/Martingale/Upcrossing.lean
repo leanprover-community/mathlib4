@@ -312,6 +312,7 @@ theorem upperCrossingTime_eq_of_bound_le (hab : a < b) (hn : N ≤ n) :
 
 variable {ℱ : Filtration ℕ m0}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem StronglyAdapted.isStoppingTime_crossing (hf : StronglyAdapted ℱ f) :
     IsStoppingTime ℱ (fun ω ↦ (upperCrossingTime a b f N n ω : ℕ)) ∧
       IsStoppingTime ℱ (fun ω ↦ (lowerCrossingTime a b f N n ω : ℕ)) := by
@@ -367,6 +368,7 @@ theorem upcrossingStrat_le_one : upcrossingStrat a b f N n ω ≤ 1 := by
     refine le_trans upperCrossingTime_le_lowerCrossingTime
       (lowerCrossingTime_mono (Nat.succ_le_of_lt hij'))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem StronglyAdapted.upcrossingStrat (hf : StronglyAdapted ℱ f) :
     StronglyAdapted ℱ (upcrossingStrat a b f N) := by
   intro n
@@ -387,6 +389,7 @@ theorem Submartingale.sum_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Submart
   hf.sum_mul_sub hf.stronglyAdapted.upcrossingStrat (fun _ _ => upcrossingStrat_le_one) fun _ _ =>
     upcrossingStrat_nonneg
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Submartingale.sum_sub_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (a b : ℝ) (N : ℕ) : Submartingale (fun n : ℕ =>
       ∑ k ∈ Finset.range n, (1 - upcrossingStrat a b f N k) * (f (k + 1) - f k)) ℱ μ := by
@@ -397,6 +400,7 @@ theorem Submartingale.sum_sub_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Sub
   · intro n ω
     simp [upcrossingStrat_le_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Submartingale.sum_mul_upcrossingStrat_le [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ) :
     μ[∑ k ∈ Finset.range n, upcrossingStrat a b f N k * (f (k + 1) - f k)] ≤ μ[f n] - μ[f 0] := by
   have h₁ : (0 : ℝ) ≤
@@ -745,6 +749,7 @@ theorem upcrossingsBefore_eq_sum (hab : a < b) : upcrossingsBefore a b f N ω =
     smul_eq_mul, mul_one, smul_eq_mul, mul_zero, Nat.card_Ico, Nat.add_succ_sub_one,
     add_zero, add_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem StronglyAdapted.measurable_upcrossingsBefore (hf : StronglyAdapted ℱ f) (hab : a < b) :
     Measurable (upcrossingsBefore a b f N) := by
   have : upcrossingsBefore a b f N = fun ω =>

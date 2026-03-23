@@ -37,7 +37,7 @@ lemma isSheaf_pointwiseColimit [PreservesFiniteProducts (colim (J := J) (C := A)
     Presheaf.IsSheaf (extensiveTopology C) (pointwiseCocone (G ⋙ sheafToPresheaf _ A)).pt := by
   rw [Presheaf.isSheaf_iff_preservesFiniteProducts]
   dsimp only [pointwiseCocone_pt]
-  apply (config := { allowSynthFailures := true }) comp_preservesFiniteProducts
+  apply +allowSynthFailures comp_preservesFiniteProducts
   have : ∀ (i : J), PreservesFiniteProducts ((G ⋙ sheafToPresheaf _ A).obj i) := fun i ↦ by
     rw [← Presheaf.isSheaf_iff_preservesFiniteProducts]
     exact Sheaf.cond _
@@ -46,8 +46,7 @@ lemma isSheaf_pointwiseColimit [PreservesFiniteProducts (colim (J := J) (C := A)
 
 instance [Preadditive A] : PreservesFiniteProducts (colim (J := J) (C := A)) where
   preserves _ := by
-    apply (config := { allowSynthFailures := true })
-      preservesProductsOfShape_of_preservesBiproductsOfShape
+    apply +allowSynthFailures preservesProductsOfShape_of_preservesBiproductsOfShape
     apply preservesBiproductsOfShape_of_preservesCoproductsOfShape
 
 instance [PreservesFiniteProducts (colim (J := J) (C := A))] :

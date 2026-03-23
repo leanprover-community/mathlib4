@@ -614,6 +614,7 @@ end MulDistribMulAction
 section IsCancelSMul
 
 variable (G P : Type*)
+-- TODO: IsRightCancelSmul
 
 /-- A vector addition is left-cancellative if it is pointwise injective on the left. -/
 class IsLeftCancelVAdd [VAdd G P] : Prop where

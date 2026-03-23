@@ -140,7 +140,7 @@ instance (L : SummationFilter β) [HasSupport L] (f : β ↪ γ) : HasSupport (L
     simp [this]
 
 /-- Pullback of a summation filter along an embedding. -/
-@[simps] def comap (L : SummationFilter β) (f : γ ↪ β) : SummationFilter γ where
+@[simps] noncomputable def comap (L : SummationFilter β) (f : γ ↪ β) : SummationFilter γ where
   filter := L.filter.map (fun s ↦ s.preimage f f.injective.injOn)
 
 @[simp] lemma support_comap (L : SummationFilter β) (f : γ ↪ β) :

@@ -100,6 +100,7 @@ def indexCone (hC : IsCompact C) : Cone (indexFunctor hC) where
 
 variable (hC : IsCompact C)
 
+set_option backward.isDefEq.respectTransparency false in
 instance isIso_indexCone_lift :
     IsIso ((limitConeIsLimit.{u, u} (indexFunctor hC)).lift (indexCone hC)) :=
   haveI : CompactSpace C := by rwa [← isCompact_iff_compactSpace]
@@ -135,6 +136,7 @@ instance isIso_indexCone_lift :
             (fun J => (hc J (a.val (op J))).isCompact) fun J => hc J (a.val (op J))
         exact ⟨x, Set.mem_iInter.1 hx⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map from `C` to the explicit limit as an isomorphism. -/
 noncomputable
 def isoindexConeLift :

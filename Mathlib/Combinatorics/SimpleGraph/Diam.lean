@@ -103,7 +103,7 @@ lemma eccent_le_iff (u : α) (k : ℕ∞) : G.eccent u ≤ k ↔ ∀ v, G.edist 
 lemma eccent_le_one_iff (u : α) : G.eccent u ≤ 1 ↔ ∀ v, u ≠ v → G.Adj u v := by
   constructor
   · intro h v huv
-    have hd : G.edist u v ≤ 1 := LE.le.trans edist_le_eccent h
+    have hd : G.edist u v ≤ 1 := edist_le_eccent.trans h
     have hd' : 1 ≤ G.edist u v := Order.one_le_iff_pos.mpr (G.edist_pos_of_ne huv)
     exact edist_eq_one_iff_adj.mp (le_antisymm (hd') hd).symm
   · intro hall
@@ -115,7 +115,7 @@ lemma eccent_le_one_iff (u : α) : G.eccent u ≤ 1 ↔ ∀ v, u ≠ v → G.Adj
 lemma eccent_eq_one_iff [Nontrivial α] (u : α) :
     G.eccent u = 1 ↔ ∀ v, u ≠ v → G.Adj u v := by
   have h : 1 ≤ G.eccent u := ENat.one_le_iff_ne_zero.mpr (eccent_ne_zero u)
-  rw [← LE.le.ge_iff_eq' h]
+  rw [← h.ge_iff_eq']
   exact eccent_le_one_iff u
 
 end eccent

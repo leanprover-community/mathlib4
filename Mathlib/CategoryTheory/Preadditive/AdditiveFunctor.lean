@@ -119,6 +119,7 @@ lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
     dsimp
     rw [F.map_add]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma additive_of_comp_faithful
     (F : C ⥤ D) (G : D ⥤ E) [G.Additive] [(F ⋙ G).Additive] [Faithful G] :
     F.Additive where
@@ -144,6 +145,11 @@ end InducedCategory
 instance fullSubcategoryInclusion_additive {C : Type*} [Category* C] [Preadditive C]
     (Z : ObjectProperty C) : Z.ι.Additive where
 
+instance {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive D]
+    (F : D ⥤ C) [F.Additive] (P : ObjectProperty C)
+    (hF : ∀ (X : D), P (F.obj X)) :
+    (P.lift F hF).Additive where
+
 section
 
 -- To talk about preservation of biproducts we need to specify universes explicitly.
@@ -156,6 +162,7 @@ open CategoryTheory.Limits
 
 open CategoryTheory.Preadditive
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) preservesFiniteBiproductsOfAdditive [Additive F] :
     PreservesFiniteBiproducts F where
   preserves := fun {J} _ =>

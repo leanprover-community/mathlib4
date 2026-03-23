@@ -96,9 +96,7 @@ theorem directSum_symm_lof_tmul (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂)
 theorem directSumLeft_tmul_lof (i : ι₁) (x : M₁ i) (y : M₂') :
     directSumLeft R S M₁ M₂' (DirectSum.lof S _ _ i x ⊗ₜ[R] y) =
     DirectSum.lof S _ _ i (x ⊗ₜ[R] y) := by
-  dsimp [directSumLeft, LinearEquiv.ofLinear_apply, lift.tmul]
-  rw [DirectSum.toModule_lof S]
-  rfl
+  simp [directSumLeft]
 
 @[simp]
 theorem directSumLeft_symm_lof_tmul (i : ι₁) (x : M₁ i) (y : M₂') :

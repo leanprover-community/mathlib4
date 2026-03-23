@@ -71,6 +71,7 @@ lemma self_mem_engel (x : L) : x ∈ engel R x := by
   simp only [mem_engel_iff]
   exact ⟨1, by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma engel_zero : engel R (0 : L) = ⊤ := by
   rw [eq_top_iff]

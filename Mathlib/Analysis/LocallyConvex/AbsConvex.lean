@@ -263,6 +263,7 @@ section
 
 variable [AddCommGroup E] [Module ℝ E]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma balancedHull_subset_convexHull_union_neg {s : Set E} :
     balancedHull ℝ s ⊆ convexHull ℝ (s ∪ -s) := by
   intro a ha

@@ -106,6 +106,8 @@ end AlgEquiv
 
 -- end DirichletCharacter
 
+#exit
+
 section IsPrimitiveRoot
 
 theorem IsPrimitiveRoot.isOfFinOrder {M : Type*} [CommMonoid M] {ζ : M} {k : ℕ} [NeZero k]

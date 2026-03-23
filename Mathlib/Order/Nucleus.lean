@@ -93,13 +93,10 @@ instance : PartialOrder (Nucleus X) := .lift (⇑) DFunLike.coe_injective
 @[simp, norm_cast] lemma coe_le_coe : ⇑m ≤ n ↔ m ≤ n := .rfl
 @[simp, norm_cast] lemma coe_lt_coe : ⇑m < n ↔ m < n := .rfl
 
-@[simp] lemma mk_le_mk (toInfHom₁ toInfHom₂ : InfHom X X)
+@[simp, gcongr] lemma mk_le_mk (toInfHom₁ toInfHom₂ : InfHom X X)
     (le_apply₁ le_apply₂ idempotent₁ idempotent₂) :
     mk toInfHom₁ le_apply₁ idempotent₁ ≤ mk toInfHom₂ le_apply₂ idempotent₂ ↔
       toInfHom₁ ≤ toInfHom₂ := .rfl
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.Nucleus.mk_le_mk⟩ := mk_le_mk
 
 instance : Min (Nucleus X) where
   min m n := {
@@ -114,7 +111,8 @@ instance : Min (Nucleus X) where
 @[simp, norm_cast] lemma coe_inf (m n : Nucleus X) : ⇑(m ⊓ n) = ⇑m ⊓ ⇑n := rfl
 @[simp] lemma inf_apply (m n : Nucleus X) (x : X) : (m ⊓ n) x = m x ⊓ n x := rfl
 
-instance : SemilatticeInf (Nucleus X) := DFunLike.coe_injective.semilatticeInf _ coe_inf
+instance : SemilatticeInf (Nucleus X) :=
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl coe_inf
 
 /-- The smallest nucleus is the identity. -/
 instance instBot : OrderBot (Nucleus X) where

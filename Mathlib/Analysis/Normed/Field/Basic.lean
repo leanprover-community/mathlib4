@@ -39,7 +39,7 @@ open scoped Topology NNReal ENNReal
 `‖x y‖ = ‖x‖ ‖y‖`. -/
 class NormedDivisionRing (α : Type*) extends Norm α, DivisionRing α, MetricSpace α where
   /-- The distance is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = norm (x - y)
+  dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is multiplicative. -/
   protected norm_mul : ∀ a b, norm (a * b) = norm a * norm b
 
@@ -150,7 +150,7 @@ end NormedDivisionRing
 /-- A normed field is a field with a norm satisfying ‖x y‖ = ‖x‖ ‖y‖. -/
 class NormedField (α : Type*) extends Norm α, Field α, MetricSpace α where
   /-- The distance is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = norm (x - y)
+  dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is multiplicative. -/
   protected norm_mul : ∀ a b, norm (a * b) = norm a * norm b
 

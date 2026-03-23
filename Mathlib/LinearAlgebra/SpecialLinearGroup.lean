@@ -108,6 +108,7 @@ instance : One (SpecialLinearGroup R V) :=
 instance : Pow (SpecialLinearGroup R V) ℕ where
   pow x n := ⟨x ^ n, by simp [x.prop]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Pow (SpecialLinearGroup R V) ℤ where
   pow x n := ⟨x ^ n, by simp [x.prop]⟩
 
@@ -404,6 +405,7 @@ noncomputable def centerEquivRootsOfUnity_invFun
       rw [mem_rootsOfUnity', max_eq_left hV] at hr
       simpa [← Subtype.val_inj, ← Units.val_inj]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- The isomorphism between the roots of unity and the center of the special linear group. -/
 noncomputable def centerEquivRootsOfUnity :

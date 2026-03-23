@@ -20,6 +20,7 @@ universe v u
 
 namespace CategoryTheory.Limits
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `F` and `G` be two diagrams indexed by a connected `I`, and `X` and `Y` be two cones over
 `F` and `G` respectively, with maps `α : F ⟶ G` and `f : X ⟶ Y` that commutes with the cone maps.
@@ -47,6 +48,7 @@ def isLimitOfIsPullbackOfIsConnected
   uniq s g hg := (hf (Classical.arbitrary _)).hom_ext (by simp [hg])
     (hcG.hom_ext <| by simp [reassoc_of% hg])
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `F` and `G` be two diagrams indexed by a connected `I`, and `X` and `Y` be two cocones over
 `F` and `G` respectively, with maps `α : F ⟶ G` and `f : X ⟶ Y` that commutes with the cocone maps.

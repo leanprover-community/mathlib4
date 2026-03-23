@@ -161,6 +161,7 @@ section
 
 variable {f : ι → Set α} {s t : Set ι}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Set.pairwiseDisjoint_iff :
     s.PairwiseDisjoint f ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → (f i ∩ f j).Nonempty → i = j := by
   simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, not_imp_comm (a := _ = _),

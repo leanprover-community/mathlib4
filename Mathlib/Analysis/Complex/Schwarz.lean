@@ -118,7 +118,8 @@ theorem schwarz_aux {f : ℂ → ℂ} {c z : ℂ} {R₁ R₂ : ℝ} {n : ℕ}
   · grw [frontier_ball_subset_sphere]
     intro w hw
     have hwc := ne_of_mem_sphere hw hR₁.ne'
-    have hfw : ‖f w - f c‖ ≤ R₂ := by simpa using h_maps (sphere_subset_closedBall hw)
+    have hfw : ‖f w - f c‖ ≤ R₂ := by
+      simpa [dist_eq_norm] using h_maps (sphere_subset_closedBall hw)
     rw [mem_sphere_iff_norm] at hw
     simpa [g', hwc, g, hw, field]
   · exact subset_closure hz
@@ -131,6 +132,7 @@ variable {E F : Type*}
   [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedAddCommGroup F] [NormedSpace ℂ F]
   {R R₁ R₂ : ℝ} {f : E → F} {c z : E}
 
+set_option backward.isDefEq.respectTransparency false in
 open AffineMap in
 /-- Let `f : E → F` be a complex analytic map
 sending an open ball of radius `R₁` to a closed ball of radius `R₂`.
@@ -152,7 +154,7 @@ theorem dist_le_mul_div_pow_of_mapsTo_ball_of_isLittleO {f : E → F} {c z : E} 
   have hne : z ≠ c := ne_of_apply_ne _ hfne
   -- Let `g : F → ℂ` be a continuous linear function such that `‖g‖ = 1`
   -- and `‖g (f z - f c)‖ = ‖f z - f c‖`.
-  rcases exists_dual_vector ℂ _ (sub_ne_zero.mpr hfne) with ⟨g, hg, hgf⟩
+  rcases exists_dual_vector ℂ _ (norm_sub_eq_zero_iff.not.mpr hfne) with ⟨g, hg, hgf⟩
   -- Consider `h : ℂ → ℂ` given by `h w = g (f (c + w * (z - c)))`.
   set h : ℂ → ℂ := g ∘ f ∘ lineMap c z
   -- This map is differentiable on the ball with center at the origin and radius `R₁ / dist z c`
@@ -283,6 +285,7 @@ theorem norm_dslope_le_div_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R
     · exact dist_le_div_mul_dist_of_mapsTo_ball hd h_maps hz
     · simpa
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equality case in the **Schwarz Lemma**: in the setup of `norm_dslope_le_div_of_mapsTo_ball`,
 if `‖dslope f c z₀‖ = R₂ / R₁` holds at a point in the ball
 then the map `f` is affine with slope `dslope f c z₀`.

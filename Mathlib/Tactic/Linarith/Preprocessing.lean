@@ -389,12 +389,23 @@ def removeNe : GlobalBranchingPreprocessor where
   transform := removeNe_aux
 end removeNe
 
+/-- Definition overidden in `Mathlib.Tactic.Linarith.NNRealPreprocessor`. -/
+initialize nnrealToRealTransform : IO.Ref (List Expr → MetaM (List Expr)) ← IO.mkRef pure
+
+/--
+If `h` is an equality or inequality between NNReals, `nnrealToReal` lifts this inequality to the
+Reals. It also adds the facts that the reals involved are nonnegative. To avoid adding the same
+nonnegativity facts many times, it is a global preprocessor. This preprocessor does nothing unless
+`Mathlib.Tactic.Linarith.NNRealPreprocessor` is imported -/
+def nnrealToReal : GlobalPreprocessor where
+  description := "move nnreals to reals"
+  transform l := do (← nnrealToRealTransform.get) l
 
 /--
 The default list of preprocessors, in the order they should typically run.
 -/
 def defaultPreprocessors : List GlobalBranchingPreprocessor :=
-  [filterComparisons, removeNegations, natToInt, strengthenStrictInt,
+  [filterComparisons, removeNegations, nnrealToReal, natToInt, strengthenStrictInt,
     compWithZero, cancelDenoms]
 
 /--

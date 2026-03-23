@@ -61,6 +61,7 @@ section Four
 
 variable {R₁ R₂ : ComposableArrows C 3} (φ : R₁ ⟶ R₂)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mono_of_epi_of_mono_of_mono' (hR₁ : R₁.map' 0 2 = 0)
     (hR₁' : (mk₂ (R₁.map' 1 2) (R₁.map' 2 3)).Exact)
     (hR₂ : (mk₂ (R₂.map' 0 1) (R₂.map' 1 2)).Exact)
@@ -91,6 +92,7 @@ theorem mono_of_epi_of_mono_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
     (by simpa only [R₁.map'_comp 0 1 2] using hR₁.toIsComplex.zero 0)
     (hR₁.exact 1).exact_toComposableArrows (hR₂.exact 0).exact_toComposableArrows h₀ h₁ h₃
 
+set_option backward.isDefEq.respectTransparency false in
 theorem epi_of_epi_of_epi_of_mono'
     (hR₁ : (mk₂ (R₁.map' 1 2) (R₁.map' 2 3)).Exact)
     (hR₂ : (mk₂ (R₂.map' 0 1) (R₂.map' 1 2)).Exact) (hR₂' : R₂.map' 1 3 = 0)
@@ -156,6 +158,7 @@ variable {R₁ R₂ : ComposableArrows C 2} (φ : R₁ ⟶ R₂)
 
 attribute [local simp] Precomp.map
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mono_of_epi_of_epi_mono' (hR₁ : R₁.map' 0 2 = 0) (hR₁' : Epi (R₁.map' 1 2))
     (hR₂ : R₂.Exact) (h₀ : Epi (app' φ 0)) (h₁ : Mono (app' φ 1)) :
     Mono (app' φ 2) := by
@@ -176,6 +179,7 @@ theorem mono_of_epi_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
   mono_of_epi_of_epi_mono' φ (by simpa only [map'_comp R₁ 0 1 2] using hR₁.toIsComplex.zero 0)
     hR₁' hR₂ h₀ h₁
 
+set_option backward.isDefEq.respectTransparency false in
 theorem epi_of_mono_of_epi_of_mono' (hR₁ : R₁.Exact) (hR₂ : R₂.map' 0 2 = 0)
     (hR₂' : Mono (R₂.map' 0 1)) (h₀ : Epi (app' φ 1)) (h₁ : Mono (app' φ 2)) :
     Epi (app' φ 0) := by
@@ -196,6 +200,7 @@ theorem epi_of_mono_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
   epi_of_mono_of_epi_of_mono' φ hR₁
     (by simpa only [map'_comp R₂ 0 1 2] using hR₂.toIsComplex.zero 0) hR₂' h₀ h₁
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mono_of_mono_of_mono_of_mono (hR₁ : R₁.Exact)
     (hR₂' : Mono (R₂.map' 0 1))
     (h₀ : Mono (app' φ 0))
@@ -210,6 +215,7 @@ theorem mono_of_mono_of_mono_of_mono (hR₁ : R₁.Exact)
   rw [ShortComplex.exact_iff_mono _ (by simp)]
   exact hR₂'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact) (hR₁' : Epi (R₁.map' 1 2))
     (h₀ : Epi (app' φ 0)) (h₁ : Epi (app' φ 2)) :
     Epi (app' φ 1) := by
@@ -233,11 +239,13 @@ variable {R₁ R₂ : ShortComplex C} (φ : R₁ ⟶ R₂)
 
 attribute [local simp] ComposableArrows.Precomp.map
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mono_of_epi_of_epi_of_mono (hR₂ : R₂.Exact) (hR₁' : Epi R₁.g)
     (h₀ : Epi φ.τ₁) (h₁ : Mono φ.τ₂) : Mono (φ.τ₃) :=
   Abelian.mono_of_epi_of_epi_mono' (ShortComplex.mapToComposableArrows φ)
     (by simp) hR₁' hR₂.exact_toComposableArrows h₀ h₁
 
+set_option backward.isDefEq.respectTransparency false in
 theorem epi_of_mono_of_epi_of_mono (hR₁ : R₁.Exact)
     (hR₂' : Mono R₂.f) (h₀ : Epi φ.τ₂) (h₁ : Mono φ.τ₃) : Epi φ.τ₁ :=
   Abelian.epi_of_mono_of_epi_of_mono' (ShortComplex.mapToComposableArrows φ)

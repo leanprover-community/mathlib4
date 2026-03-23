@@ -246,46 +246,69 @@ lemma ofENat_toENat_eq_self {a : Cardinal} : toENat a = a ↔ a ≤ ℵ₀ := by
 
 lemma toENat_nat (n : ℕ) : toENat n = n := map_natCast _ n
 
-@[simp] lemma toENat_le_nat {a : Cardinal} {n : ℕ} : toENat a ≤ n ↔ a ≤ n := toENatAux_le_nat
-@[simp] lemma toENat_eq_nat {a : Cardinal} {n : ℕ} : toENat a = n ↔ a = n := toENatAux_eq_nat
-@[simp] lemma toENat_eq_zero {a : Cardinal} : toENat a = 0 ↔ a = 0 := toENatAux_eq_zero
-@[simp] lemma toENat_le_one {a : Cardinal} : toENat a ≤ 1 ↔ a ≤ 1 := toENat_le_nat
-@[simp] lemma toENat_eq_one {a : Cardinal} : toENat a = 1 ↔ a = 1 := toENat_eq_nat
+@[simp] lemma toENat_ofNat (n : ℕ) [n.AtLeastTwo] : toENat ofNat(n) = ofNat(n) := toENat_nat _
 
-@[simp] lemma toENat_le_ofNat {a : Cardinal} {n : ℕ} [n.AtLeastTwo] :
-    toENat a ≤ ofNat(n) ↔ a ≤ OfNat.ofNat n := toENat_le_nat
+variable {c c' : Cardinal.{u}} {n : ℕ}
 
-@[simp] lemma toENat_eq_ofNat {a : Cardinal} {n : ℕ} [n.AtLeastTwo] :
-    toENat a = ofNat(n) ↔ a = OfNat.ofNat n := toENat_eq_nat
+@[simp] lemma toENat_le_natCast : toENat c ≤ n ↔ c ≤ n := toENatAux_le_nat
+@[simp] lemma toENat_le_one : toENat c ≤ 1 ↔ c ≤ 1 := toENat_le_natCast
+@[simp] lemma toENat_le_ofNat [n.AtLeastTwo] : toENat c ≤ ofNat(n) ↔ c ≤ ofNat(n) :=
+  toENat_le_natCast
 
-@[simp] lemma toENat_eq_top {a : Cardinal} : toENat a = ⊤ ↔ ℵ₀ ≤ a := enat_gc.u_eq_top
+@[deprecated (since := "2026-01-13")] alias toENat_le_nat := toENat_le_natCast
 
-lemma toENat_ne_top {a : Cardinal} : toENat a ≠ ⊤ ↔ a < ℵ₀ := by simp
+lemma toENat_le_iff_of_le_aleph0 (hc : c ≤ ℵ₀) : toENat c ≤ toENat c' ↔ c ≤ c' := by
+  lift c to ℕ∞ using hc; simp_rw [toENat_ofENat, enat_gc _]
 
-@[simp] lemma toENat_lt_top {a : Cardinal} : toENat a < ⊤ ↔ a < ℵ₀ := by simp [lt_top_iff_ne_top]
+lemma toENat_le_iff_of_lt_aleph0 (hc' : c' < ℵ₀) : toENat c ≤ toENat c' ↔ c ≤ c' := by
+  lift c' to ℕ using hc'; simp_rw [toENat_nat, ← toENat_le_natCast]
+
+lemma toENat_eq_iff_of_le_aleph0 (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) : toENat c = toENat c' ↔ c = c' :=
+  toENat_strictMonoOn.injOn.eq_iff hc hc'
+
+@[simp] lemma natCast_le_toENat : n ≤ toENat c ↔ n ≤ c := by
+  rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 natCast_le_aleph0]
+
+@[simp] lemma one_le_toENat : 1 ≤ toENat c ↔ 1 ≤ c := natCast_le_toENat
+@[simp] lemma ofNat_le_toENat [n.AtLeastTwo] : ofNat(n) ≤ toENat c ↔ ofNat(n) ≤ c :=
+  natCast_le_toENat
+
+@[simp] lemma toENat_lt_natCast : toENat c < n ↔ c < n := by simp [← not_le]
+@[simp] lemma toENat_lt_one : toENat c < 1 ↔ c < 1 := toENat_lt_natCast
+@[simp] lemma toENat_lt_ofNat [n.AtLeastTwo] : toENat c < ofNat(n) ↔ c < ofNat(n) :=
+  toENat_lt_natCast
+
+@[simp] lemma natCast_lt_toENat : n < toENat c ↔ n < c := by simp [← not_le]
+@[simp] lemma one_lt_toENat : 1 < toENat c ↔ 1 < c := natCast_lt_toENat
+@[simp] lemma ofNat_lt_toENat [n.AtLeastTwo] : ofNat(n) < toENat c ↔ ofNat(n) < c :=
+  natCast_lt_toENat
+
+@[simp] lemma toENat_eq_natCast : toENat c = n ↔ c = n := toENatAux_eq_nat
+@[simp] lemma toENat_eq_zero : toENat c = 0 ↔ c = 0 := toENat_eq_natCast
+@[simp] lemma toENat_eq_one : toENat c = 1 ↔ c = 1 := toENat_eq_natCast
+@[simp] lemma toENat_eq_ofNat [n.AtLeastTwo] : toENat c = ofNat(n) ↔ c = ofNat(n) :=
+  toENat_eq_natCast
+
+@[deprecated (since := "2026-01-13")] alias toENat_eq_nat := toENat_eq_natCast
+
+@[simp] lemma natCast_eq_toENat : n = toENat c ↔ n = c := by simp [eq_comm (a := Nat.cast _)]
+@[simp] lemma ofNat_eq_toENat [n.AtLeastTwo] : ofNat(n) = toENat c ↔ ofNat(n) = c :=
+  natCast_eq_toENat
+
+@[simp] lemma toENat_eq_top : toENat c = ⊤ ↔ ℵ₀ ≤ c := enat_gc.u_eq_top
+
+lemma toENat_ne_top : toENat c ≠ ⊤ ↔ c < ℵ₀ := by simp
+
+@[simp] lemma toENat_lt_top : toENat c < ⊤ ↔ c < ℵ₀ := by simp [lt_top_iff_ne_top]
 
 @[simp]
-theorem toENat_lift {a : Cardinal.{v}} : toENat (lift.{u} a) = toENat a := by
-  cases le_total a ℵ₀ with
-  | inl ha => lift a to ℕ∞ using ha; simp
+theorem toENat_lift : toENat (lift.{v} c) = toENat c := by
+  cases le_total c ℵ₀ with
+  | inl ha => lift c to ℕ∞ using ha; simp
   | inr ha => simp [toENat_eq_top.2, ha]
 
 theorem toENat_congr {α : Type u} {β : Type v} (e : α ≃ β) : toENat #α = toENat #β := by
   rw [← toENat_lift, lift_mk_eq.{_, _, v}.mpr ⟨e⟩, toENat_lift]
-
-lemma toENat_le_iff_of_le_aleph0 {c c' : Cardinal} (h : c ≤ ℵ₀) :
-    toENat c ≤ toENat c' ↔ c ≤ c' := by
-  lift c to ℕ∞ using h
-  simp_rw [toENat_ofENat, enat_gc _]
-
-lemma toENat_le_iff_of_lt_aleph0 {c c' : Cardinal} (hc' : c' < ℵ₀) :
-    toENat c ≤ toENat c' ↔ c ≤ c' := by
-  lift c' to ℕ using hc'
-  simp_rw [toENat_nat, ← toENat_le_nat]
-
-lemma toENat_eq_iff_of_le_aleph0 {c c' : Cardinal} (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) :
-    toENat c = toENat c' ↔ c = c' :=
-  toENat_strictMonoOn.injOn.eq_iff hc hc'
 
 @[simp, norm_cast]
 lemma ofENat_add (m n : ℕ∞) : ofENat (m + n) = m + n := by apply toENat_injOn <;> simp
@@ -314,7 +337,5 @@ def ofENatHom : ℕ∞ →+*o Cardinal where
   map_zero' := ofENat_zero
   map_add' := ofENat_add
   monotone' := ofENat_mono
-
-
 
 end Cardinal
