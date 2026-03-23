@@ -848,7 +848,7 @@ lemma Subgraph.matchingNumber_le (G : SimpleGraph V) (H : Subgraph G) :
     matchingNumber H.coe ≤ matchingNumber G := H.coe_isContained.matchingNumber_le
 
 lemma matchingNumber.eq_of_iso {H : SimpleGraph W} (f : H ≃g G) :
-    matchingNumber H = matchingNumber G :=
+    H.matchingNumber = G.matchingNumber :=
   le_antisymm f.isContained.matchingNumber_le f.symm.isContained.matchingNumber_le
 
 lemma Subgraph.matchingNumber_coe_eq_iSup {G : SimpleGraph V} (H : Subgraph G) :
