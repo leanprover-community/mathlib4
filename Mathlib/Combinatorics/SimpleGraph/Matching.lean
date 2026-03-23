@@ -176,11 +176,9 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
 lemma IsMatching.restrict {G' M : Subgraph G} (hM : M.IsMatching) (hMG' : M ≤ G') :
     (G'.restrict M).IsMatching := by
   intro _ hv
-  obtain ⟨w, hw⟩ := hM hv
-  use ⟨w, hMG'.1 <| M.edge_vert hw.1.symm⟩
-  refine ⟨?_, fun y hy ↦ SetCoe.ext <| hw.2 y hy.2⟩
-  simp only [comap_adj, coe_adj, hom_apply]
-  exact ⟨hMG'.2 hw.1, hw.1⟩
+  obtain ⟨w, hw₁, hw₂⟩ := hM hv
+  use ⟨w, hMG'.1 <| M.edge_vert hw₁.symm⟩
+  exact ⟨⟨hMG'.2 hw₁, hw₁⟩, fun y hy ↦ SetCoe.ext <| hw₂ y hy.2⟩
 
 lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s t)
     (f : s ≃ t) (hadj : ∀ v : s, G.Adj v (f v)) :
