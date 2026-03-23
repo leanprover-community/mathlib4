@@ -32,10 +32,8 @@ def objMk₁ {n : ℕ} (i : Fin (n + 2)) : (Δ[1] _⦋n⦌ : Type u) :=
   objMk
     { toFun j := if j.castSucc < i then 0 else 1
       monotone' j₁ j₂ h := by
-        by_cases hi : j₁.castSucc < i
-        · simp [if_pos hi]
-        · dsimp
-          rw [if_neg hi, if_neg (fun hj' ↦ hi (lt_of_le_of_lt (by simpa using h) hj'))] }
+        dsimp
+        split_ifs <;> grind }
 
 @[local grind =]
 private lemma objMk₁_apply {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) : 
