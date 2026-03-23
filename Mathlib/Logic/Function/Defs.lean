@@ -63,9 +63,9 @@ theorem bijective_id : Bijective (@id α) :=
 
 variable {f : α → β}
 
-/-- An explicit definitional unfolding for surjectivity. -/
-theorem surjective_def : Surjective f = (∀ b : β, ∃ a : α, f a = b) :=
-  rfl
+/-- An explicit reformulation of surjectivity. -/
+theorem surjective_iff : Surjective f ↔ (∀ b : β, ∃ a : α, f a = b) :=
+  Iff.rfl
 
 theorem Injective.beq_eq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {f : α → β}
     (I : Injective f) {a b : α} : (f a == f b) = (a == b) := by
