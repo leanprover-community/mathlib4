@@ -66,38 +66,38 @@ variable {R A B C F G : Type*} [CommSemiring R]
 section Semiring
 
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
-  [FunLike F A C] [AlgHomClass F R A C] [FunLike G B C] [AlgHomClass G R B C]
 
 /-- The subalgebra of pairs `(a, b) : A × B` such that `f a = g b`, i.e.,
   the pullback of f and g as a subalgebra of A × B. -/
-abbrev Pullback (f : F) (g : G) : Subalgebra R (A × B) := equalizer
-  ((f : A →ₐ[R] C).comp (fst R A B)) ((g : B →ₐ[R] C).comp (snd R A B))
+abbrev pullback (f : A →ₐ[R] C) (g : B →ₐ[R] C) : Subalgebra R (A × B) := equalizer
+  (f.comp (fst R A B)) (g.comp (snd R A B))
 
 /-- The first projection from the pullback of `f` and `g` to `A`. -/
-abbrev pullbackFst (f : F) (g : G) : Pullback f g →ₐ[R] A := (fst R A B).comp (Pullback f g).val
+abbrev pullbackFst (f : A →ₐ[R] C) (g : B →ₐ[R] C) : pullback f g →ₐ[R] A :=
+  (fst R A B).comp (pullback f g).val
 
 /-- The second projection from the pullback of `f` and `g` to `B`. -/
-abbrev pullbackSnd (f : F) (g : G) : Pullback f g →ₐ[R] B := (snd R A B).comp (Pullback f g).val
+abbrev pullbackSnd (f : A →ₐ[R] C) (g : B →ₐ[R] C) : pullback f g →ₐ[R] B :=
+  (snd R A B).comp (pullback f g).val
 
 end Semiring
 
 section Ring
 
 variable [Ring A] [Algebra R A] [Ring B] [Algebra R B] [Semiring C] [Algebra R C]
-  [FunLike F A C] [AlgHomClass F R A C] [FunLike G B C] [AlgHomClass G R B C]
 
-instance isLocalHom_pullbackFst (f : F) (g : G) [IsLocalHom g] : IsLocalHom (pullbackFst f g) :=
-  ⟨(RingHom.isLocalHom_pullbackFst f g).map_nonunit⟩
+instance isLocalHom_pullbackFst (f : A →ₐ[R] C) (g : B →ₐ[R] C) [IsLocalHom g] :
+    IsLocalHom (pullbackFst f g) := ⟨(RingHom.isLocalHom_pullbackFst f g).map_nonunit⟩
 
-instance isLocalHom_pullbackSnd (f : F) (g : G) [IsLocalHom f] : IsLocalHom (pullbackSnd f g) :=
-  ⟨(RingHom.isLocalHom_pullbackSnd f g).map_nonunit⟩
+instance isLocalHom_pullbackSnd (f : A →ₐ[R] C) (g : B →ₐ[R] C)[IsLocalHom f] :
+    IsLocalHom (pullbackSnd f g) := ⟨(RingHom.isLocalHom_pullbackSnd f g).map_nonunit⟩
 
-theorem surjective_pullbackFst_of_surjective (f : F) (g : G) (h : Function.Surjective g) :
-    Function.Surjective (pullbackFst f g) :=
+theorem surjective_pullbackFst_of_surjective (f : A →ₐ[R] C) (g : B →ₐ[R] C)
+    (h : Function.Surjective g) : Function.Surjective (pullbackFst f g) :=
   RingHom.surjective_pullbackFst_of_surjective (f : A →+* C) (g : B →+* C) h
 
-theorem surjective_pullbackSnd_of_surjective (f : F) (g : G) (h : Function.Surjective f) :
-    Function.Surjective (pullbackSnd f g) :=
+theorem surjective_pullbackSnd_of_surjective (f : A →ₐ[R] C) (g : B →ₐ[R] C)
+    (h : Function.Surjective f) : Function.Surjective (pullbackSnd f g) :=
   RingHom.surjective_pullbackSnd_of_surjective (f : A →+* C) (g : B →+* C) h
 
 end Ring
