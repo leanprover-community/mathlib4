@@ -693,22 +693,20 @@ lemma exists_maximal_isMatching (G : SimpleGraph V) :
   apply zorn_le₀ {M : Subgraph G | M.IsMatching}
   intro c hc hchain
   let M := sSup c
-  have : M.IsMatching := by
-    intro v hv
-    simp only [Subgraph.verts_sSup, Set.mem_iUnion, exists_prop, M] at hv
-    rcases hv with ⟨N, h_matching, hv⟩
-    rcases hc h_matching hv with ⟨w, hw⟩
-    refine ⟨w, ⟨N, h_matching, hw.1⟩, fun u huv ↦ ?_⟩
-    simp only [Subgraph.sSup_adj, M] at huv
-    rcases huv with ⟨N', ⟨hN'c, huv⟩⟩
-    by_cases hN'N : N' ≤ N
-    · exact hw.2 u (hN'N.2 huv)
-    specialize hchain h_matching hN'c (Ne.symm (ne_of_not_le hN'N))
-    simp only [hN'N, or_false] at hchain
-    obtain ⟨z, hz⟩ := hc hN'c (hchain.1 hv)
-    exact Eq.trans (hz.2 u huv) (Eq.symm (hz.2 w (hchain.2 hw.1)))
-  use M, this
-  exact fun _ hN ↦ le_sSup <| Set.mem_of_subset_of_mem (fun ⦃a⦄ a_1 ↦ a_1) hN
+  refine ⟨M, ?_, fun _ hN ↦ le_sSup <| Set.mem_of_subset_of_mem subset_rfl hN⟩
+  intro v hv
+  simp only [Subgraph.verts_sSup, Set.mem_iUnion, exists_prop, M] at hv
+  rcases hv with ⟨N, h_matching, hv⟩
+  rcases hc h_matching hv with ⟨w, hw⟩
+  refine ⟨w, ⟨N, h_matching, hw.1⟩, fun u huv ↦ ?_⟩
+  simp only [Subgraph.sSup_adj, M] at huv
+  rcases huv with ⟨N', ⟨hN'c, huv⟩⟩
+  by_cases hN'N : N' ≤ N
+  · exact hw.2 u (hN'N.2 huv)
+  specialize hchain h_matching hN'c (Ne.symm (ne_of_not_le hN'N))
+  simp only [hN'N, or_false] at hchain
+  obtain ⟨z, hz⟩ := hc hN'c (hchain.1 hv)
+  exact (hz.2 u huv).trans (hz.2 w (hchain.2 hw.1)).symm
 
 lemma matchingNumber.isAttained (G : SimpleGraph V) :
     ∃ (M : G.Subgraph), M.IsMatching ∧ M.edgeSet.encard = matchingNumber G := by
