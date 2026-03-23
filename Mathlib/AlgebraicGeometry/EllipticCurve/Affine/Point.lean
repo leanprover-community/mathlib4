@@ -847,7 +847,10 @@ namespace Point
 
 /-- This map sends an affine point `P` on `W'` to a representative of its image on ℙ¹
 under the x-coordinate map. We take `![1, 0]` for the point at infinity and `![x, 1]`,
-where `x` is the x-coordinate of `P` for a finite point. -/
+where `x` is the x-coordinate of `P` for a finite point.
+
+We define it in the general setting of a commutative base ring, even though the definition
+of points in this setting is not really correct. -/
 noncomputable def xRep : W'.Point → Fin 2 → R
   | 0 => ![1, 0]
   | some x _ _ => ![x, 1]
