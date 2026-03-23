@@ -277,7 +277,6 @@ instance (r) [IsWellOrder α r] : IsTrans α r where
     · exact asymm_of r hab hbc |>.elim
     · exact IsWellOrder.wf.asymmetric₃ a b c hab hbc hca |>.elim
 
-
 -- see Note [lower instance priority]
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] :
     IsStrictTotalOrder α r where
