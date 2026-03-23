@@ -23,7 +23,7 @@ attributed to Leohnard Euler in 1782 [euler1782].
 Basic examples include the multiplication table of any finite group or
 any completely solved Sudoku puzzle. Additionally, Latin squares are a
 special case and motivating example of combinatorial designs.  Like
-with a Sudoku puzzle, an interestnig question is when a "partially
+with a Sudoku puzzle, an interesting question is when a "partially
 filled" Latin square can be completed to a Latin square.  In general,
 it is an open question to figure out the number of distinct $n \times
 n$ Latin squares, up to equivalence, although bounds exist.
@@ -497,6 +497,7 @@ theorem latin_rectangle_extends_one_row
     exact h' h
   let halls := hallMatchingsOn.nonempty (B)
     (latin_rect_hall_property h Bj_size pre_property_H) (Finset.univ)
+
   set f := Classical.choice halls with hx
   simp only [hallMatchingsOn] at f
   obtain ⟨ f', hf⟩ := f
