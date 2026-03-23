@@ -350,7 +350,7 @@ variable {R : Type*} [NonUnitalSeminormedRing R] [IsCancelMulZero R]
 
 open BoundedContinuousFunction
 
-/-- If the product of continuous functions is zero, then the norm of their sum is the
+/-- If the product of continuous functions on a compact space is zero, then the norm of their sum is the
 maximum of their norms. -/
 lemma norm_add_eq_max {f g : C(α, R)} (h : f * g = 0) :
     ‖f + g‖ = max ‖f‖ ‖g‖ := by

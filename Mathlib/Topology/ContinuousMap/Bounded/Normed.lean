@@ -310,17 +310,9 @@ lemma norm_add_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
     ‖f + g‖ = max ‖f‖ ‖g‖ := by
   have hfg : ∀ x, f x = 0 ∨ g x = 0 := by simpa [DFunLike.ext_iff, mul_eq_zero] using h
   have hfg' x : ‖(f + g) x‖ = max ‖f x‖ ‖g x‖ := by obtain (h | h) := hfg x <;> simp [h]
-  apply le_antisymm
-  · rw [norm_le (by positivity)]
-    intro x
-    rw [hfg']
-    apply max_le <;> exact norm_coe_le_norm _ x |>.trans (by simp)
-  · apply max_le
-    all_goals
-      rw [norm_le (by positivity)]
-      intro x
-      grw [← (f + g).norm_coe_le_norm x, hfg']
-      simp
+  have key (c : ℝ) (hc : 0 ≤ c) : ‖f + g‖ ≤ c ↔ max ‖f‖ ‖g‖ ≤ c := by
+    simp_rw [norm_le hc, hfg', max_le_iff, norm_le hc, forall_and]
+  exact le_antisymm (by rw [key]; positivity) (by rw [← key]; positivity)
 
 /-- If the product of bounded continuous functions is zero, then the norm of their sum is the
 maximum of their norms. -/
