@@ -380,7 +380,7 @@ theorem cliqueFree_iff_top_free {β : Type*} [Fintype β] :
 theorem IsContained.not_cliqueFree_card [Fintype α] (f : completeGraph α ⊑ G) :
     ¬G.CliqueFree (card α) := by
   rw [not_cliqueFree_iff]
-  exact ⟨f.some.comp <| (Iso.completeGraph <| equivFin α).symm.toCopy⟩
+  exact (Iso.completeGraph <| equivFin α).isContained'.trans f
 
 @[deprecated (since := "2026-02-21")]
 alias not_cliqueFree_card_of_top_embedding := IsContained.not_cliqueFree_card
