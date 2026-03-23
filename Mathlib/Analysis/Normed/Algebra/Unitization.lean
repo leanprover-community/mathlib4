@@ -281,18 +281,18 @@ section
 
 variable {𝕜 A : Type*} [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A]
 
-protected theorem uniformContinuous_fst : UniformContinuous (fst : Unitization 𝕜 A → 𝕜) :=
+protected theorem uniformContinuous_fst : UniformContinuous (fun x : Unitization 𝕜 A ↦ x.fst) :=
   uniformContinuous_fst.comp Unitization.uniformEquivProd.uniformContinuous
 
-protected theorem uniformContinuous_snd : UniformContinuous (snd : Unitization 𝕜 A → A) :=
+protected theorem uniformContinuous_snd : UniformContinuous (fun x : Unitization 𝕜 A ↦ x.snd) :=
   uniformContinuous_snd.comp Unitization.uniformEquivProd.uniformContinuous
 
 @[fun_prop]
-protected theorem continuous_fst : Continuous (fst : Unitization 𝕜 A → 𝕜) :=
+protected theorem continuous_fst : Continuous (fun x : Unitization 𝕜 A ↦ x.fst) :=
   Unitization.uniformContinuous_fst.continuous
 
 @[fun_prop]
-protected theorem continuous_snd : Continuous (snd : Unitization 𝕜 A → A) :=
+protected theorem continuous_snd : Continuous (fun x : Unitization 𝕜 A ↦ x.snd) :=
   Unitization.uniformContinuous_snd.continuous
 
 end
