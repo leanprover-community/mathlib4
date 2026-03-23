@@ -130,7 +130,8 @@ theorem cof_omega_add_one (o : Ordinal) : (ω_ (o + 1)).cof = ℵ_ (o + 1) :=
 
 theorem _root_.Ordinal.iSup_lt_omega_one {α : Type*} [Countable α] {f : α → Ordinal}
     (hf : ∀ i, f i < ω₁) : ⨆ i, f i < ω₁ := by
-  apply iSup_lt_o
+  apply Ordinal.lift_iSup_lt_of_lt_cof _ hf
+  simpa
 
 section Omega1
 
