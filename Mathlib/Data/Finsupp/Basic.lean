@@ -1075,15 +1075,6 @@ lemma sumElim_add [AddZeroClass M] (a b : α →₀ M) (c d : β →₀ M) :
     a.sumElim c + b.sumElim d = (a + b).sumElim (c + d) := by
   ext (_ | _) <;> simp
 
-@[simp]
-lemma mapDomain_sumSwap_sumElim_comm [AddCommMonoid M] (x : α →₀ M) (y : β →₀ M) :
-    mapDomain Sum.swap (y.sumElim x) = x.sumElim y := by
-  ext (_ | _)
-  · rw [← Sum.swap_inr, mapDomain_apply Sum.swap_leftInverse.injective]
-    simp
-  · rw [← Sum.swap_inl, mapDomain_apply Sum.swap_leftInverse.injective]
-    simp
-
 /-- The equivalence between `(α ⊕ β) →₀ γ` and `(α →₀ γ) × (β →₀ γ)`.
 
 This is the `Finsupp` version of `Equiv.sum_arrow_equiv_prod_arrow`. -/
