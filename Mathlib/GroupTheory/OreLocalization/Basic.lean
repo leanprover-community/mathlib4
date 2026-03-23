@@ -236,11 +236,7 @@ private theorem smul'_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (u : S) (v : R)
   use s₄ * s₃
   use s₄ * r₃
   simp only [Submonoid.coe_mul, Submonoid.smul_def]
-  constructor
-  · rw [smul_smul, mul_assoc (c := v₀), ← hs₄]
-    simp only [smul_smul, mul_assoc]
-  · rw [← mul_assoc (b := (u₀ : R)), mul_assoc (c := (u₀ : R)), h₃]
-    simp only [mul_assoc]
+  grind [smul_smul]
 
 set_option backward.privateInPublic true in
 /-- The multiplication on the Ore localization of monoids. -/

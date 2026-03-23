@@ -556,14 +556,7 @@ theorem cycleOf_mem_cycleFactorsFinset_iff {f : Perm α} {x : α} :
     rw [notMem_support, ← cycleOf_eq_one_iff] at hc
     simp [hc]
   · intro hx
-    refine ⟨isCycle_cycleOf _ (mem_support.mp hx), ?_⟩
-    intro y hy
-    rw [mem_support] at hy
-    rw [cycleOf_apply]
-    split_ifs with H
-    · rfl
-    · rw [cycleOf_apply_of_not_sameCycle H] at hy
-      contradiction
+    exact ⟨isCycle_cycleOf _ (mem_support.mp hx), by grind [mem_support, cycleOf_apply]⟩
 
 lemma cycleOf_ne_one_iff_mem_cycleFactorsFinset {g : Equiv.Perm α} {x : α} :
     g.cycleOf x ≠ 1 ↔ g.cycleOf x ∈ g.cycleFactorsFinset := by
