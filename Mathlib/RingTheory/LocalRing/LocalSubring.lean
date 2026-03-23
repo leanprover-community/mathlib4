@@ -127,7 +127,7 @@ end LocalSubring
 
 instance isLocalRing_eqLocus {R S : Type*} [Ring R] [Semiring S] [IsLocalRing R] (f g : R →+* S) :
     IsLocalRing (f.eqLocus g) :=
-  Subring.isLocalRing_of_unit _ fun r r_in ↦ (isUnit_eqLocus_mk_iff f g r r_in).mpr
+  Subring.isLocalRing_of_unit _ fun r r_in ↦ (RingHom.isUnit_eqLocus_mk_iff f g r r_in).mpr
 
 instance isLocalRing_ringHomPullback {R S T F G : Type*} [Ring R] [Ring S] [Semiring T]
     [IsLocalRing R] [FunLike F R T] [RingHomClass F R T] [FunLike G S T] [RingHomClass G S T]
