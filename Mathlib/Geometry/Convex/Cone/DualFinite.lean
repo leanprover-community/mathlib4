@@ -50,7 +50,7 @@ lemma DualFG.exists_fg_dual {C : PointedCone R N} (hC : C.DualFG p) :
   obtain ⟨s, hs⟩ := hC; exact ⟨_, Submodule.fg_span s.finite_toSet, by simp [hs]⟩
 
 /-- A cone is DualFG if and only if it is the dual of an FG cone. -/
-lemma DualFG.iff_exists_fg_dual {C : PointedCone R N} (hC : C.DualFG p) :
+lemma DualFG.iff_exists_fg_dual {C : PointedCone R N} :
     C.DualFG p ↔ ∃ D : PointedCone R M, D.FG ∧ dual p D = C where
   mp h := h.exists_fg_dual
   mpr h := by
