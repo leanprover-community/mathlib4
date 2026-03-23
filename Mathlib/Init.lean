@@ -19,6 +19,7 @@ public import Mathlib.Tactic.Linter.TacticDocumentation
 -- The following import contains the environment extension for the unused tactic linter.
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UnusedTactic
+public import Mathlib.Tactic.Linter.InstanceDiamond
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.Whitespace
