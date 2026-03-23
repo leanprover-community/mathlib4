@@ -147,6 +147,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("bot", ["Top"]),
   ("inf", ["Sup"]),
   ("sup", ["Inf"]),
+  ("inf₂", ["Sup₂"]),
+  ("sup₂", ["Inf₂"]),
   ("min", ["Max"]),
   ("max", ["Min"]),
   ("untop", ["Unbot"]),
@@ -181,6 +183,10 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("l", ["U"]),
   ("next", ["Prev"]),
   ("prev", ["Next"]),
+  ("heyting", ["Coheyting"]),
+  ("coheyting", ["Heyting"]),
+  ("frame", ["Coframe"]),
+  ("coframe", ["Frame"]),
 
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/
@@ -233,7 +239,9 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("nhdsGT", "NhdsLT"),
   ("nhdsLE", "NhdsGE"),
   ("nhdsGE", "NhdsLE"),
-  ("neTop", "NeBot")
+  ("neTop", "NeBot"),
+  ("galoisInsertion", "GaloisCoinsertion"),
+  ("galoisCoinsertion", "GaloisInsertion"),
 ]
 
 /-- The bundle of environment extensions for `to_dual` -/

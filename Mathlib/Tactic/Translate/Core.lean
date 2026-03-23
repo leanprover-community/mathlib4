@@ -7,16 +7,16 @@ Jovan Gerbscheid
 module
 
 public meta import Lean.Compiler.NoncomputableAttr
-public meta import Lean.Elab.Tactic.Ext
+public meta import Lean.Elab.App
+public meta import Lean.Meta.Tactic.Ext
 public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
-public meta import Mathlib.Lean.Meta.Simp
-public meta import Mathlib.Tactic.Simps.Basic
 public meta import Lean.Meta.CoeAttr
+public meta import Mathlib.Lean.Meta.Simp
 public import Batteries.Lean.NameMapAttribute
 public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.Eqns
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Translate.Attributes
 public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.UnfoldBoundary
@@ -545,10 +545,17 @@ where
       return tmpLCtx.mkLambda (usedLetOnly := false) fvars e
 
 /-- Rename binder names in pi type. -/
-def renameBinderNames (t : TranslateData) (renameFun : Name → Option Name) (src : Expr) : Expr :=
-  src.mapForallBinderNames fun n => (renameFun n).getD <|
+def renameBinderNames (t : TranslateData) (rename : NameMap Name) (src : Expr) : Expr :=
+  src.mapForallBinderNames fun n => (rename.get? n).getD <|
     match n with
-    | .str p s => .str p (GuessName.guessName t.guessNameData s)
+    | .str p s => .str p <|
+      let s' := GuessName.guessName t.guessNameData s
+      if s' != s then s' else
+      -- If the name starts with `h`, translate the rest of the name, e.g. `hmax` ↦ `hmin`.
+      if let some suffix := s.dropPrefix? 'h' then
+        "h" ++ GuessName.guessName t.guessNameData suffix.toString
+      else
+        s
     | n => n
 
 /-- Run `applyReplacementFun` on an expression `∀ x₁ .. xₙ, e`,
@@ -614,7 +621,7 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let mut type := decl.type
   if let some b := unfoldBoundaries? then
     type ← b.insertBoundaries decl.type t.attrName
-  let (type', relevantArg₂) ← applyReplacementForall t dont <| renameBinderNames t rename.get? type
+  let (type', relevantArg₂) ← applyReplacementForall t dont <| renameBinderNames t rename type
   type ← reorderForall reorder type'
   if let some b := unfoldBoundaries? then
     type ← b.unfoldInsertions type
@@ -865,11 +872,11 @@ def translateLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Cor
     (desc : String) (ref : Syntax) (runAttr : Name → m (Array Name)) : m Unit := do
   let auxLemmas ← names.mapM runAttr
   let nLemmas := auxLemmas[0]!.size
-  for (nm, lemmas) in names.zip auxLemmas do
+  for nm in names, lemmas in auxLemmas do
     unless lemmas.size == nLemmas do
       throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
-  for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx! 0 do
-    for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
+  for srcLemmas in auxLemmas, tgtLemmas in auxLemmas.eraseIdx! 0 do
+    for srcLemma in srcLemmas, tgtLemma in tgtLemmas do
       insertTranslation t srcLemma tgtLemma reorder relevantArg ref
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
@@ -1134,8 +1141,6 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
     warnAttr cfg.ref Batteries.Tactic.transExt (·.values.contains ·) t.attrName `trans src tgt
     warnAttr cfg.ref Lean.Meta.coeExt (·.contains ·) t.attrName `coe src tgt
     warnParametricAttr cfg.ref Lean.Linter.deprecatedAttr t.attrName `deprecated src tgt
-    -- the next line also warns for `@[to_additive, simps]`, because of the application times
-    warnParametricAttr cfg.ref simpsAttr t.attrName `simps src tgt
     warnAttrCore cfg.ref Term.elabAsElim.hasTag t.attrName `elab_as_elim src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
@@ -1153,10 +1158,10 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
   if attrs.size > 0 then
     trace[translate_detail] "Applying attributes {attrs.map (·.stx)} to {allDecls}"
   for attr in attrs do
-    if attr.name == `simps then
+    if let some impl := (← generatingAttrs.get).find? attr.name then
       withRef attr.stx do withLogging do
         translateLemmas t allDecls reorder relevantArg "simps lemmas" cfg.ref
-          (simpsTacFromSyntax · attr.stx)
+          (impl · attr.stx attr.kind)
     else
       for decl in allDecls do
         Term.applyAttributes decl #[attr]
