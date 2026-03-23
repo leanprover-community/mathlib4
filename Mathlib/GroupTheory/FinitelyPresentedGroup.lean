@@ -43,14 +43,14 @@ lemma FreeGroup.lift_mulEquiv_image (iso : G ≃* H) (S : Set G) :
         (FreeGroup.freeGroupCongr (iso.toEquiv.image S).symm)) := by
   ext ⟨_, s, hs, rfl⟩; simp [Equiv.image]
 
-namespace Subgroup
-
 /-- Defines when a subgroup is the normal closure of a finite set. -/
-def IsNormalClosureFG (N : Subgroup G) : Prop :=
+def Subgroup.IsNormalClosureFG (N : Subgroup G) : Prop :=
   ∃ S : Set G, S.Finite ∧ Subgroup.normalClosure S = N
 
+namespace Subgroup.IsNormalClosureFG
+
 /-- Being the normal closure of a finite set is invariant under surjective homomorphism. -/
-theorem IsNormalClosureFG_map (f : G →* H) (hf : Function.Surjective f) (N : Subgroup G)
+protected theorem map (f : G →* H) (hf : Function.Surjective f) (N : Subgroup G)
     (hN : N.IsNormalClosureFG) : (N.map f).IsNormalClosureFG := by
   obtain ⟨S, hSfinite, hSclosure⟩ := hN
   refine ⟨f '' S, hSfinite.image _, ?_⟩
@@ -58,15 +58,15 @@ theorem IsNormalClosureFG_map (f : G →* H) (hf : Function.Surjective f) (N : S
 
 /-- Composing with a reindexing free group isomorphism preserves finite generation in
 normal closure of the kernel. -/
-lemma IsNormalClosureFG_ker_comp_freeGroupCongr (e : α ≃ β) (f : FreeGroup α →* G)
+lemma ker_comp_freeGroupCongr (e : α ≃ β) (f : FreeGroup α →* G)
     (hfker : f.ker.IsNormalClosureFG) :
     (f.comp (FreeGroup.freeGroupCongr e.symm : FreeGroup β →* FreeGroup α)).ker.IsNormalClosureFG
     := by
   simp only [MonoidHom.ker_comp_mulEquiv]
-  exact IsNormalClosureFG_map ((FreeGroup.freeGroupCongr e.symm).symm : FreeGroup α →* FreeGroup β)
-    (FreeGroup.freeGroupCongr e.symm).symm.surjective f.ker hfker
+  exact hfker.map ((FreeGroup.freeGroupCongr e.symm).symm : FreeGroup α →* FreeGroup β)
+    (FreeGroup.freeGroupCongr e.symm).symm.surjective f.ker
 
-end Subgroup
+end Subgroup.IsNormalClosureFG
 
 /-- A group is finitely presented if it has a finite generating set such that the kernel
 of the induced map from the free group on that set is the normal closure of finitely many
@@ -84,6 +84,6 @@ theorem of_mulEquiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPre
   use iso '' S, hSfinite.image iso,
     MonoidHom.closure_eq_top_image_of_surjective (iso : G →* H) iso.surjective hSclosure
   rw [FreeGroup.lift_mulEquiv_image, MonoidHom.ker_eq_of_comp_mulEquiv]
-  exact Subgroup.IsNormalClosureFG_ker_comp_freeGroupCongr (iso.toEquiv.image S) _ hker
+  exact hker.ker_comp_freeGroupCongr (iso.toEquiv.image S) _
 
 end IsFinitelyPresented
