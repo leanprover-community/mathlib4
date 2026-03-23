@@ -1001,8 +1001,7 @@ theorem mk_sup_mk [SemilatticeSup α] {P : α → Prop}
 /-- A subtype forms a distributive lattice if `⊔` and `⊓` preserve the property.
 See note [reducible non-instances]. -/
 protected abbrev distribLattice [DistribLattice α] {P : α → Prop}
-  (Psup : ∀ ⦃s t : α⦄, P s → P t → P (s ⊔ t))
-  (Pinf : ∀ ⦃s t : α⦄, P s → P t → P (s ⊓ t)) :
+    (Psup : ∀ ⦃s t : α⦄, P s → P t → P (s ⊔ t)) (Pinf : ∀ ⦃s t : α⦄, P s → P t → P (s ⊓ t)) :
     DistribLattice (Subtype P) where
   toLattice := Subtype.lattice Psup Pinf
   le_sup_inf a b c := by

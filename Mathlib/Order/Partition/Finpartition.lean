@@ -333,9 +333,9 @@ lemma _root_.Finset.sup_preimage_val_id_eq_sup_toSubtype_id {pr : α → Prop}
 under intersection and union and `pr ⊥` holds from a `P : Finpartition s` with explicit assumptions
 that `pr s` and `pr p` for each part `p`. -/
 noncomputable def toSubtype {s : α} (P : Finpartition s)
-  {pr : α → Prop} (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t))
-  (Pinf : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊓ t)) (hbot : pr (⊥ : α))
-  (hs : pr s) (hP : ∀ p ∈ P.parts, pr p) :
+    {pr : α → Prop} (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t))
+    (Pinf : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊓ t)) (hbot : pr (⊥ : α))
+    (hs : pr s) (hP : ∀ p ∈ P.parts, pr p) :
     @Finpartition (Subtype pr) (Subtype.lattice Psup Pinf) (Subtype.orderBot hbot) ⟨s, hs⟩ :=
   letI : Lattice (Subtype pr) := Subtype.lattice Psup Pinf
   letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
