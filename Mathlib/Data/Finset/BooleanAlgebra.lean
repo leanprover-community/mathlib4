@@ -85,11 +85,11 @@ theorem top_eq_univ : (⊤ : Finset α) = univ :=
   rfl
 
 theorem ssubset_univ_iff {s : Finset α} : s ⊂ univ ↔ s ≠ univ :=
-  @lt_top_iff_ne_top _ _ _ s
+  lt_top_iff_ne_top
 
 @[simp]
 theorem univ_subset_iff {s : Finset α} : univ ⊆ s ↔ s = univ :=
-  @top_le_iff _ _ _ s
+  top_le_iff
 
 theorem codisjoint_left : Codisjoint s t ↔ ∀ ⦃a⦄, a ∉ s → a ∈ t := by
   classical simp [codisjoint_iff, eq_univ_iff_forall, or_iff_not_imp_left]
@@ -118,16 +118,16 @@ theorem notMem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
 theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=
   Set.ext fun _ => mem_compl
 
-@[simp] lemma compl_subset_compl : sᶜ ⊆ tᶜ ↔ t ⊆ s := @compl_le_compl_iff_le (Finset α) _ _ _
-@[simp] lemma compl_ssubset_compl : sᶜ ⊂ tᶜ ↔ t ⊂ s := @compl_lt_compl_iff_lt (Finset α) _ _ _
+lemma compl_subset_compl : sᶜ ⊆ tᶜ ↔ t ⊆ s := compl_le_compl_iff_le
+lemma compl_ssubset_compl : sᶜ ⊂ tᶜ ↔ t ⊂ s := compl_lt_compl_iff_lt
 
-lemma subset_compl_comm : s ⊆ tᶜ ↔ t ⊆ sᶜ := le_compl_iff_le_compl (α := Finset α)
+lemma subset_compl_comm : s ⊆ tᶜ ↔ t ⊆ sᶜ := le_compl_iff_le_compl
 
 lemma subset_compl_iff_disjoint_right : s ⊆ tᶜ ↔ Disjoint s t :=
-  le_compl_iff_disjoint_right (α := Finset α)
+  le_compl_iff_disjoint_right
 
 lemma subset_compl_iff_disjoint_left : s ⊆ tᶜ ↔ Disjoint t s :=
-  le_compl_iff_disjoint_left (α := Finset α)
+  le_compl_iff_disjoint_left
 
 @[simp] lemma subset_compl_singleton : s ⊆ {a}ᶜ ↔ a ∉ s := by
   rw [subset_compl_comm, singleton_subset_iff, mem_compl]

@@ -138,16 +138,15 @@ theorem union_compl_self (s : Set α) : s ∪ sᶜ = univ :=
 theorem compl_union_self (s : Set α) : sᶜ ∪ s = univ := by rw [union_comm, union_compl_self]
 
 theorem compl_subset_comm : sᶜ ⊆ t ↔ tᶜ ⊆ s :=
-  @compl_le_iff_compl_le _ s _ _
+  compl_le_iff_compl_le
 
 theorem subset_compl_comm : s ⊆ tᶜ ↔ t ⊆ sᶜ :=
-  @le_compl_iff_le_compl _ _ _ t
+  le_compl_iff_le_compl
 
-@[simp]
 theorem compl_subset_compl : sᶜ ⊆ tᶜ ↔ t ⊆ s :=
-  @compl_le_compl_iff_le (Set α) _ _ _
+  compl_le_compl_iff_le
 
-@[gcongr] theorem compl_subset_compl_of_subset (h : t ⊆ s) : sᶜ ⊆ tᶜ := compl_subset_compl.2 h
+@[gcongr] theorem compl_subset_compl_of_subset (h : t ⊆ s) : sᶜ ⊆ tᶜ := compl_le_compl h
 
 theorem subset_union_compl_iff_inter_subset {s t u : Set α} : s ⊆ t ∪ uᶜ ↔ s ∩ u ⊆ t :=
   (@isCompl_compl _ u _).le_sup_right_iff_inf_left_le
@@ -198,7 +197,7 @@ theorem diff_eq_compl_inter {s t : Set α} : s \ t = tᶜ ∩ s := by rw [diff_e
 theorem diff_nonempty {s t : Set α} : (s \ t).Nonempty ↔ ¬s ⊆ t :=
   inter_compl_nonempty_iff
 
-theorem diff_subset {s t : Set α} : s \ t ⊆ s := show s \ t ≤ s from sdiff_le
+theorem diff_subset {s t : Set α} : s \ t ⊆ s := sdiff_le
 
 theorem diff_subset_compl (s t : Set α) : s \ t ⊆ tᶜ :=
   diff_eq_compl_inter ▸ inter_subset_left
@@ -257,7 +256,7 @@ theorem union_inter_compl_right_subset (s t : Set α) : (s ∪ t) ∩ tᶜ ⊆ s
 
 @[gcongr]
 theorem diff_subset_diff {s₁ s₂ t₁ t₂ : Set α} : s₁ ⊆ s₂ → t₂ ⊆ t₁ → s₁ \ t₁ ⊆ s₂ \ t₂ :=
-  show s₁ ≤ s₂ → t₂ ≤ t₁ → s₁ \ t₁ ≤ s₂ \ t₂ from sdiff_le_sdiff
+  sdiff_le_sdiff
 
 theorem diff_subset_diff_left {s₁ s₂ t : Set α} (h : s₁ ⊆ s₂) : s₁ \ t ⊆ s₂ \ t :=
   sdiff_le_sdiff_right ‹s₁ ≤ s₂›
@@ -294,18 +293,17 @@ theorem diff_diff {u : Set α} : (s \ t) \ u = s \ (t ∪ u) :=
 theorem diff_diff_comm {s t u : Set α} : (s \ t) \ u = (s \ u) \ t :=
   sdiff_sdiff_comm
 
-@[simp]
 theorem diff_subset_iff {s t u : Set α} : s \ t ⊆ u ↔ s ⊆ t ∪ u :=
-  show s \ t ≤ u ↔ s ≤ t ∪ u from sdiff_le_iff
+  sdiff_le_iff
 
 theorem subset_diff_union (s t : Set α) : s ⊆ s \ t ∪ t :=
-  show s ≤ s \ t ∪ t from le_sdiff_sup
+  le_sdiff_sup
 
 theorem diff_union_of_subset {s t : Set α} (h : t ⊆ s) : s \ t ∪ t = s :=
   Subset.antisymm (union_subset diff_subset h) (subset_diff_union _ _)
 
 theorem diff_subset_comm {s t u : Set α} : s \ t ⊆ u ↔ s \ u ⊆ t :=
-  show s \ t ≤ u ↔ s \ u ≤ t from sdiff_le_comm
+  sdiff_le_comm
 
 theorem diff_inter {s t u : Set α} : s \ (t ∩ u) = s \ t ∪ s \ u :=
   sdiff_inf
