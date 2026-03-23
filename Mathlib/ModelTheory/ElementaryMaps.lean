@@ -204,9 +204,10 @@ def liftWithConstants (f : M ↪ₑ[L] N) (A : Set M) :
       ↑A ⊕ Fin n → f.toEmbedding.withConstants A) =
     f ∘ Sum.elim (fun a ↦ ↑(L.con a)) x :=
     (Sum.comp_elim _ _ _).symm
-  have h' : (default : Fin 0 → N) = f ∘ (default : Fin 0 → M) := List.ofFn_inj.mp rfl
-  simp only [Formula.Realize, h', ← BoundedFormula.realize_constantsVarsEquiv, h]
-  exact f.map_boundedFormula _ _ _
+  simpa only [Formula.Realize, ← BoundedFormula.realize_constantsVarsEquiv, h] using
+    f.map_formula
+      (BoundedFormula.constantsVarsEquiv φ)
+      (Sum.elim (fun a ↦ ↑(L.con a)) x)
 
 end ElementaryEmbedding
 
