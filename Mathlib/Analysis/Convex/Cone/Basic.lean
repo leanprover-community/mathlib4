@@ -146,5 +146,22 @@ def positive : ProperCone R E where
 @[simp] lemma toPointedCone_positive : (positive R E).toPointedCone = .positive R E := rfl
 
 end PositiveCone
-
 end ProperCone
+
+/-!
+### Topological properties of convex cones
+
+This section proves topological results about convex cones.
+
+#### TODO
+
+This result generalises to G-submodules.
+-/
+
+-- FIXME: This is necessary for the proof below but triggers the `unusedSectionVars` linter.
+-- variable [IsStrictOrderedRing 𝕜] [IsTopologicalAddGroup M] in
+/-- This is true essentially by `Submodule.span_eq_iUnion_nat`, except that `Submodule` currently
+doesn't support that use case. See
+https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/G-submodules/with/514426583 -/
+proof_wanted PointedCone.isOpen_hull [Semifield 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] [Module 𝕜 E]
+    {s : Set E} (hs : IsOpen s) : IsOpen (hull 𝕜 s \ {0}: Set E)
