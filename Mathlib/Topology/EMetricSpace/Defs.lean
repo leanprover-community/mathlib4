@@ -794,7 +794,7 @@ class WeakPseudoEMetricSpace
   /-- The ambient topology on `α` matches the `edist` topology on balls of finite radius`. -/
   topology_eq_on_restrict :
     ∀ (x : α) (r : ℝ≥0∞),
-    IsOpen[instTopologicalSpaceSubtype (t := τ)] ((EMetric.ball x ⊤) ↓∩ (ball x r))
+    IsOpen ((EMetric.ball x ⊤) ↓∩ (ball x r))
 
 @[ext]
 protected theorem WeakPseudoEMetricSpace.ext
