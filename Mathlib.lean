@@ -6842,6 +6842,7 @@ public import Mathlib.SetTheory.Ordinal.Exponential
 public import Mathlib.SetTheory.Ordinal.Family
 public import Mathlib.SetTheory.Ordinal.FixedPoint
 public import Mathlib.SetTheory.Ordinal.FixedPointApproximants
+public import Mathlib.SetTheory.Ordinal.FundamentalSequence
 public import Mathlib.SetTheory.Ordinal.Notation
 public import Mathlib.SetTheory.Ordinal.Principal
 public import Mathlib.SetTheory.Ordinal.Rank
