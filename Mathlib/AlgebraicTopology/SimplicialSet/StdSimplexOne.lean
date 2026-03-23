@@ -165,9 +165,7 @@ lemma objMk₁_surjective {n : ℕ} : Function.Surjective (objMk₁.{u} (n := n)
     · simp only [Fin.castSucc_lt_castSucc_iff, Finset.lt_min'_iff, not_forall,
         not_lt] at h
       obtain ⟨j, hj, hij⟩ := h
-      replace hj : f j = 1 := by simpa [S] using hj
-      have : f j ≤ f i := (objEquiv f).toOrderHom.monotone hij
-      exact le_antisymm (by simpa [hj] using this) (by lia)
+      grind [ show f j ≤ f i from (objEquiv f).toOrderHom.monotone hij]
   · refine ⟨Fin.last _, ?_⟩
     ext i : 1
     dsimp [objMk₁]
