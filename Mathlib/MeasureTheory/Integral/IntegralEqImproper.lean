@@ -66,7 +66,7 @@ in analysis. In particular,
 - `MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonneg` gives the same result assuming that
   `g'` is nonnegative instead of integrable. Its automatic integrability in this context is proved
   in `MeasureTheory.integrableOn_Ioi_deriv_of_nonneg`.
-- `MeasureTheory.integral_comp_smul_deriv_Ioi` is a version of the change of variables formula
+- `MeasureTheory.integral_deriv_smul_comp_Ioi` is a version of the change of variables formula
   on semi-infinite intervals.
 - `MeasureTheory.tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi` shows that a function whose
   derivative is integrable on `(a, +∞)` has a limit at `+∞`.
@@ -1016,7 +1016,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Change-of-variables formula for `Ioi` integrals of vector-valued functions, proved by taking
 limits from the result for finite intervals. -/
-theorem integral_comp_smul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : ℝ}
+theorem integral_deriv_smul_comp_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : ℝ}
     (hf : ContinuousOn f <| Ici a) (hft : Tendsto f atTop atTop)
     (hff' : ∀ x ∈ Ioi a, HasDerivWithinAt f (f' x) (Ioi x) x)
     (hg_cont : ContinuousOn g <| f '' Ioi a) (hg1 : IntegrableOn g <| f '' Ici a)
@@ -1028,7 +1028,7 @@ theorem integral_comp_smul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : �
       exact Ioo_subset_Ioi_self
     have i2 : [[a, b]] ⊆ Ici a := by rw [uIcc_of_le hb.le]; exact Icc_subset_Ici_self
     refine
-      intervalIntegral.integral_comp_smul_deriv''' (hf.mono i2)
+      intervalIntegral.integral_deriv_smul_comp''' (hf.mono i2)
         (fun x hx => hff' x <| mem_of_mem_of_subset hx i1) (hg_cont.mono <| image_mono ?_)
         (hg1.mono_set <| image_mono ?_) (hg2.mono_set i2) <;> assumption
   rw [integrableOn_Ici_iff_integrableOn_Ioi] at hg2
@@ -1040,6 +1040,9 @@ theorem integral_comp_smul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : �
   have t1 := (intervalIntegral_tendsto_integral_Ioi _ (hg1.mono_set this) tendsto_id).comp hft
   exact tendsto_nhds_unique (Tendsto.congr' (eventuallyEq_of_mem (Ioi_mem_atTop a) eq) t2) t1
 
+@[deprecated (since := "2026-03-19")]
+alias integral_comp_smul_deriv_Ioi := integral_deriv_smul_comp_Ioi
+
 /-- Change-of-variables formula for `Ioi` integrals of scalar-valued functions -/
 theorem integral_comp_mul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → ℝ} {a : ℝ}
     (hf : ContinuousOn f <| Ici a) (hft : Tendsto f atTop atTop)
@@ -1048,7 +1051,7 @@ theorem integral_comp_mul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → ℝ} {a : 
     (hg2 : IntegrableOn (fun x => (g ∘ f) x * f' x) (Ici a)) :
     (∫ x in Ioi a, (g ∘ f) x * f' x) = ∫ u in Ioi (f a), g u := by
   have hg2' : IntegrableOn (fun x => f' x • (g ∘ f) x) (Ici a) := by simpa [mul_comm] using hg2
-  simpa [mul_comm] using integral_comp_smul_deriv_Ioi hf hft hff' hg_cont hg1 hg2'
+  simpa [mul_comm] using integral_deriv_smul_comp_Ioi hf hft hff' hg_cont hg1 hg2'
 
 /-- Substitution `y = x ^ p` in integrals over `Ioi 0` -/
 theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
@@ -1299,7 +1302,7 @@ theorem integral_Iic_deriv_mul_eq_sub
   simpa using integral_Iic_of_hasDerivAt_of_tendsto
     (continuousWithinAt_update_same.mpr h_zero) hderiv huv htendsto
 
-/-- **Integration by parts on (∞, a].**
+/-- **Integration by parts on $(∞, a]$.**
 For finite intervals, see: `intervalIntegral.integral_mul_deriv_eq_deriv_mul`. -/
 theorem integral_Iic_mul_deriv_eq_deriv_mul
     (hu : ∀ x ∈ Iio a, HasDerivAt u (u' x) x) (hv : ∀ x ∈ Iio a, HasDerivAt v (v' x) x)
