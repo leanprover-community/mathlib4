@@ -104,6 +104,8 @@ lemma IsCofinalFor.of_subset (hst : s ⊆ t) : IsCofinalFor s t :=
 @[to_dual]
 alias LE.le.isCofinalFor := IsCofinalFor.of_subset
 
+@[deprecated (since := "2026-03-23")] alias HasSubset.Subset.isCofinalFor := LE.le.isCofinalFor
+
 @[deprecated LE.le.isCofinalFor (since := "2026-01-08")]
 alias HasSubset.Subset.iscofinalfor := IsCofinalFor.of_subset
 @[deprecated LE.le.isCoinitialFor (since := "2026-01-08")]
