@@ -713,16 +713,19 @@ def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
             apply Quiver.Hom.op_inj
             dsimp
             apply ConeMorphism.w } }
-  unitIso := NatIso.ofComponents (fun c => Cocone.ext (Iso.refl _))
-  counitIso :=
-    NatIso.ofComponents
-      (fun c => (Cone.ext (Iso.refl c.unop.pt)).op)
-      (fun f ↦ Quiver.Hom.unop_inj (by cat_disch))
-  functor_unitIso_comp c := by
-    apply Quiver.Hom.unop_inj
-    apply ConeMorphism.ext
-    dsimp
-    apply comp_id
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
+/-- Cones on `F : J ⥤ C` are equivalent to cocones on `F.op : Jᵒᵖ ⥤ Cᵒᵖ`. -/
+@[to_dual (attr := simps)
+/-- Cocones on `F : J ⥤ C` are equivalent to cones on `F.op : Jᵒᵖ ⥤ Cᵒᵖ`. -/]
+def coneOpEquiv {F : J ⥤ C} : (Cone F)ᵒᵖ ≌ Cocone F.op where
+  functor.obj c := c.unop.op
+  functor.map f := { hom := f.unop.hom.op, w j := congr($(f.unop.w j.unop).op) }
+  inverse.obj c := .op <| c.unop
+  inverse.map f := ⟨{ hom := f.hom.unop, w j := congr($(f.w (.op j)).unop) }⟩
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 end
 
@@ -744,6 +747,17 @@ def coconeLeftOpOfCone (c : Cone F) : Cocone F.leftOp where
   pt := unop c.pt
   ι := NatTrans.leftOp c.π
 
+/-- Cones on `F : J ⥤ Cᵒᵖ` are equivalent to cocones on `F.leftOp : Jᵒᵖ ⥤ C`. -/
+@[to_dual (attr := simps)
+/-- Cocones on `F : J ⥤ Cᵒᵖ` are equivalent to cones on `F.leftOp : Jᵒᵖ ⥤ C`. -/]
+def coconeLeftOpOfConeEquiv {F : J ⥤ Cᵒᵖ} : (Cone F)ᵒᵖ ≌ Cocone F.leftOp where
+  functor.obj c := coconeLeftOpOfCone c.unop
+  functor.map f := { hom := f.unop.hom.unop, w j := congr($(f.unop.w j.unop).unop) }
+  inverse.obj c := .op <| coneOfCoconeLeftOp c
+  inverse.map f := ⟨{ hom := f.hom.op, w j := congr($(f.w (.op j)).op) }⟩
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
 end
 
 section
@@ -764,6 +778,17 @@ def coconeRightOpOfCone (c : Cone F) : Cocone F.rightOp where
   pt := op c.pt
   ι := NatTrans.rightOp c.π
 
+/-- Cones on `F : Jᵒᵖ ⥤ C` are equivalent to cocones on `F.rightOp : J ⥤ Cᵒᵖ`. -/
+@[to_dual (attr := simps)
+/-- Cocones on `F : Jᵒᵖ ⥤ C` are equivalent to cones on `F.rightOp : J ⥤ Cᵒᵖ`. -/]
+def coconeRightOpOfConeEquiv {F : Jᵒᵖ ⥤ C} : (Cone F)ᵒᵖ ≌ Cocone F.rightOp where
+  functor.obj c := coconeRightOpOfCone c.unop
+  functor.map f := { hom := f.unop.hom.op, w j := congr($(f.unop.w (.op j)).op) }
+  inverse.obj c := .op <| coneOfCoconeRightOp c
+  inverse.map f := ⟨{ hom := f.hom.unop, w j := congr($(f.w j.unop).unop) }⟩
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
 end
 
 section
@@ -783,6 +808,17 @@ def coneOfCoconeUnop (c : Cocone F.unop) : Cone F where
 def coconeUnopOfCone (c : Cone F) : Cocone F.unop where
   pt := unop c.pt
   ι := NatTrans.unop c.π
+
+/-- Cones on `F : Jᵒᵖ ⥤ Cᵒᵖ` are equivalent to cocones on `F.unop : J ⥤ C`. -/
+@[to_dual (attr := simps)
+/-- Cocones on `F : Jᵒᵖ ⥤ Cᵒᵖ` are equivalent to cones on `F.unop : J ⥤ C`. -/]
+def coconeUnopOfConeEquiv {F : Jᵒᵖ ⥤ Cᵒᵖ} : (Cone F)ᵒᵖ ≌ Cocone F.unop where
+  functor.obj c := coconeUnopOfCone c.unop
+  functor.map f := { hom := f.unop.hom.unop, w j := congr($(f.unop.w (.op j)).unop) }
+  inverse.obj c := .op <| coneOfCoconeUnop c
+  inverse.map f := ⟨{ hom := f.hom.op, w j := congr($(f.w j.unop).op) }⟩
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 end
 
