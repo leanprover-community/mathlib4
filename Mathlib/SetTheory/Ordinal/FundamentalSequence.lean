@@ -59,11 +59,11 @@ theorem ord_cof_eq (hf : IsFundamentalSeq f) : o.cof.ord = a := by
   rw [← hf.iSup_add_one_eq, cof_iSup_Iio_add_one hf.strictMono]
   exact ord_cof_le a
 
-theorem iSup_eq (hf : IsFundamentalSeq f) (ha : ω ≤ a) : ⨆ i, (f i).1 = o := by
+theorem iSup_eq (hf : IsFundamentalSeq f) (ha : 1 < a) : ⨆ i, (f i).1 = o := by
   rw [← iSup_Iio_add_one hf.strictMono, hf.iSup_add_one_eq]
   rw [← hf.ord_cof_eq]
   apply (isSuccLimit_ord _).isSuccPrelimit
-  rwa [← ord_le_ord, hf.ord_cof_eq, ord_aleph0]
+  rwa [aleph0_le_cof_iff, ← ord_lt_ord, hf.ord_cof_eq, ord_one]
 
 /-- A regular ordinal `o` has a fundamental sequence given by all smaller ordinals. -/
 protected theorem id (ho : o ≤ o.cof.ord) : IsFundamentalSeq (o := o) id where
