@@ -324,8 +324,8 @@ instance toRing {R} [Ring R] (s : Subring R) : Ring s := SubringClass.toRing s
 protected theorem zsmul_mem {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
   zsmul_mem hx n
 
-protected theorem pow_mem {R : Type*} [Ring R] (s : Subring R) {x : R} (hx : x ∈ s) (n : ℕ) : x ^ n ∈ s :=
-  pow_mem hx n
+protected theorem pow_mem {R : Type*} [Ring R] (s : Subring R) {x : R} (hx : x ∈ s) (n : ℕ) :
+    x ^ n ∈ s := pow_mem hx n
 
 @[simp, norm_cast]
 theorem coe_add (x y : s) : (↑(x + y) : R) = ↑x + ↑y :=
