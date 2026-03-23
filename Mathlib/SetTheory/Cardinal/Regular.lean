@@ -124,33 +124,35 @@ lemma isRegular_lift_iff {κ : Cardinal.{v}} :
     (Cardinal.lift.{u} κ).IsRegular ↔ κ.IsRegular :=
   ⟨fun ⟨h₁, h₂⟩ ↦ ⟨by simpa using h₁, by simpa [← lift_le.{u, v}]⟩, fun h ↦ h.lift⟩
 
+@[deprecated lift_iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem lsub_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c.ord) : Ordinal.lsub.{u, v} f < c.ord := by
   apply lift_iSup_add_one_lt_of_lt_cof _ hf
   rwa [lift_umax, c.ord.lift_id', hc.cof_eq]
 
+@[deprecated iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem lsub_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c.ord) → Ordinal.lsub f < c.ord :=
   iSup_add_one_lt_of_lt_cof (by rwa [hc.cof_eq])
 
--- TODO: generalize the universes of the iSup lemmas
-
+@[deprecated lift_iSup_lt_of_lt_cof (since := "2026-03-22")]
 theorem iSup_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c.ord) : iSup f < c.ord := by
   apply Ordinal.lift_iSup_lt_of_lt_cof _ hf
   rwa [lift_umax, Ordinal.lift_id', hc.cof_eq]
 
+@[deprecated iSup_lt_of_lt_cof (since := "2026-03-22")]
 theorem iSup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c.ord) → iSup f < c.ord :=
   Ordinal.iSup_lt_of_lt_cof (by rwa [hc.cof_eq])
 
-@[deprecated lsub_lt_ord_lift_of_isRegular (since := "2026-03-20")]
+@[deprecated lift_iSup_add_one_lt_of_lt_cof (since := "2026-03-20")]
 theorem blsub_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (ho : Cardinal.lift.{v, u} o.card < c) :
     (∀ i hi, f i hi < c.ord) → Ordinal.blsub.{u, v} o f < c.ord :=
   blsub_lt_ord_lift (by rwa [hc.cof_eq])
 
-@[deprecated lsub_lt_ord_of_isRegular (since := "2026-03-20")]
+@[deprecated lift_iSup_add_one_lt_of_lt_cof (since := "2026-03-20")]
 theorem blsub_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (ho : o.card < c) : (∀ i hi, f i hi < c.ord) → Ordinal.blsub o f < c.ord :=
   blsub_lt_ord (by rwa [hc.cof_eq])
@@ -161,23 +163,26 @@ theorem bsup_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c}
     (∀ i hi, f i hi < c.ord) → Ordinal.bsup.{u, v} o f < c.ord :=
   bsup_lt_ord_lift (by rwa [hc.cof_eq])
 
-@[deprecated iSup_lt_ord_of_isRegular (since := "2026-03-20")]
+@[deprecated lift_iSup_lt_of_lt_cof (since := "2026-03-20")]
 theorem bsup_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (hι : o.card < c) : (∀ i hi, f i hi < c.ord) → Ordinal.bsup o f < c.ord :=
   bsup_lt_ord (by rwa [hc.cof_eq])
 
+@[deprecated lift_iSup_lt_of_lt_cof (since := "2026-03-22")]
 theorem iSup_lt_lift_of_isRegular {ι} {f : ι → Cardinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c) : iSup f < c := by
   apply Cardinal.lift_iSup_lt_of_lt_cof _ hf
   rwa [lift_umax, c.lift_id', hc.cof_eq]
 
+@[deprecated iSup_lt_of_lt_cof (since := "2026-03-22")]
 theorem iSup_lt_of_isRegular {ι} {f : ι → Cardinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c) → iSup f < c :=
   Cardinal.iSup_lt_of_lt_cof (by rwa [hc.cof_eq])
 
 theorem sum_lt_lift_of_isRegular {ι : Type u} {f : ι → Cardinal} {c : Cardinal} (hc : IsRegular c)
-    (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c) : sum f < c :=
-  (sum_le_lift_mk_mul_iSup _).trans_lt <| mul_lt_of_lt hc.1 hι (iSup_lt_lift_of_isRegular hc hι hf)
+    (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c) : sum f < c := by
+  apply (sum_le_lift_mk_mul_iSup _).trans_lt <| mul_lt_of_lt hc.1 hι (lift_iSup_lt_of_lt_cof _ hf)
+  rwa [lift_umax, c.lift_id', hc.cof_eq]
 
 theorem sum_lt_of_isRegular {ι : Type u} {f : ι → Cardinal} {c : Cardinal} (hc : IsRegular c)
     (hι : #ι < c) : (∀ i, f i < c) → sum f < c :=
@@ -193,10 +198,10 @@ theorem card_iUnion_lt_iff_forall_of_isRegular {ι : Type u} {α : Type u} {t : 
     {c : Cardinal} (hc : c.IsRegular) (hι : #ι < c) : #(⋃ i, t i) < c ↔ ∀ i, #(t i) < c := by
   refine ⟨card_lt_of_card_iUnion_lt, fun h ↦ ?_⟩
   apply lt_of_le_of_lt (Cardinal.mk_sUnion_le _)
-  apply Cardinal.mul_lt_of_lt hc.aleph0_le
-    (lt_of_le_of_lt Cardinal.mk_range_le hι)
-  apply Cardinal.iSup_lt_of_isRegular hc (lt_of_le_of_lt Cardinal.mk_range_le hι)
-  simpa
+  apply Cardinal.mul_lt_of_lt hc.aleph0_le (mk_range_le.trans_lt hι)
+  apply Cardinal.iSup_lt_of_lt_cof (mk_range_le.trans_lt _)
+  · simpa
+  · rwa [hc.cof_eq]
 
 theorem card_lt_of_card_biUnion_lt {α β : Type u} {s : Set α} {t : ∀ a ∈ s, Set β} {c : Cardinal}
     (h : #(⋃ a ∈ s, t a ‹_›) < c) (a : α) (ha : a ∈ s) : #(t a ha) < c := by
