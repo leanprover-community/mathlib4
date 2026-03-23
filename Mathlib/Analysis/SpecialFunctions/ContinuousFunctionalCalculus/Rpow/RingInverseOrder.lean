@@ -13,12 +13,10 @@ import Mathlib.Analysis.Convex.Mul
 /-!
 # Order properties of `Ring.inverse` in C⋆-algebras
 
-This file shows that `Ring.inverse` is antitone and convex on strictly positive operators.
+This file shows that `Ring.inverse` is convex on strictly positive operators.
 
 ## Main declarations
 
-* `antitoneOn_ringInverse`: `Ring.inverse` is antitone on strictly positive operators, i.e.
-  the inverse is operator antitone.
 * `convexOn_ringInverse`: `Ring.inverse` is convex on strictly positive operators, i.e. the inverse
   is operator convex.
 -/
@@ -26,37 +24,6 @@ This file shows that `Ring.inverse` is antitone and convex on strictly positive 
 namespace CFC
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
-
-open Ring in
-public lemma antitoneOn_ringInverse : AntitoneOn Ring.inverse {a : A | IsStrictlyPositive a} := by
-  /- Suppose `a ≤ b`. Then, define `c = a^(-1/2) b a^(-1/2)`, and we have that `1 ≤ c`.
-  Now, `b⁻¹ ≤ a⁻¹` is equivalent to `c⁻¹ ≤ 1`, and this can be proven since `1` and `c` commute. -/
-  intro a (apos : IsStrictlyPositive a) b (bpos : IsStrictlyPositive b) hab
-  let c := conjSqrt (inverse a) b
-  have cpos : IsStrictlyPositive c := by grind
-  have hcont : ContinuousOn (fun r : ℝ => r⁻¹) (spectrum ℝ c) :=
-    ContinuousOn.mono continuousOn_inv₀ (by grind)
-  have hc₁ : 1 ≤ c := by
-    rw [← conjSqrt_ringInverse_self a]
-    unfold c
-    gcongr
-  have hc₂ : inverse c ≤ 1 := by
-    rw [inverse_eq_rpow_neg_one (by grind), CFC.rpow_neg_one_eq_cfc_inv, cfc_nnreal_eq_real _ _]
-    simp only [NNReal.coe_inv, Real.coe_toNNReal']
-    rw [CFC.one_le_iff c (R := ℝ)] at hc₁
-    apply cfc_le_one
-    grind [inv_le_one₀]
-  have hb₁ : inverse b = conjSqrt (inverse a) (inverse c) := by grind [inverse_conjSqrt]
-  rw [hb₁]
-  nth_rewrite 2 [← conjSqrt_one a, inverse_conjSqrt _ _]
-  gcongr
-  simp [hc₂]
-
-open Ring in
-@[gcongr]
-public lemma ringInverse_le_ringInverse {a b : A} (hab : a ≤ b)
-    (ha : IsStrictlyPositive a := by cfc_tac) : inverse b ≤ inverse a :=
-  antitoneOn_ringInverse ha (IsStrictlyPositive.of_le ha hab) hab
 
 open Ring in
 public lemma convexOn_ringInverse :
