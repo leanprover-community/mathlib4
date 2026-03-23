@@ -30,7 +30,7 @@ to `EMetricSpace` at the end.
 @[expose] public section
 
 
-assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding TendstoUniformlyOnFilter
+assert_not_exists Nat.instLocallyFiniteOrder TendstoUniformlyOnFilter
 
 open Filter Set Topology Set.Notation
 
@@ -60,10 +60,10 @@ section
 variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α} [EDist α]
 
 /-- `EMetric.ball x ε` is the set of all points `y` with `edist y x < ε` -/
-def EMetric.ball (x : α) (ε : ℝ≥0∞) : Set α :=
+def EMetric.eball (x : α) (ε : ℝ≥0∞) : Set α :=
   { y | edist y x < ε }
 
-@[simp] theorem EMetric.mem_ball : y ∈ ball x ε ↔ edist y x < ε := Iff.rfl
+@[simp] theorem EMetric.mem_ball : y ∈ eball x ε ↔ edist y x < ε := Iff.rfl
 
 end
 
@@ -399,7 +399,7 @@ namespace EMetric
 
 variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α}
 
-theorem mem_ball' : y ∈ ball x ε ↔ edist x y < ε := by rw [edist_comm, mem_ball]
+theorem mem_ball' : y ∈ eball x ε ↔ edist x y < ε := by rw [edist_comm, mem_ball]
 
 /-- `EMetric.closedBall x ε` is the set of all points `y` with `edist y x ≤ ε` -/
 def closedBall (x : α) (ε : ℝ≥0∞) :=
@@ -413,35 +413,35 @@ theorem mem_closedBall' : y ∈ closedBall x ε ↔ edist x y ≤ ε := by rw [e
 theorem closedBall_top (x : α) : closedBall x ∞ = univ :=
   eq_univ_of_forall fun _ => mem_setOf.2 le_top
 
-theorem ball_subset_closedBall : ball x ε ⊆ closedBall x ε := fun _ h => le_of_lt h.out
+theorem eball_subset_closedBall : eball x ε ⊆ closedBall x ε := fun _ h => le_of_lt h.out
 
-theorem pos_of_mem_ball (hy : y ∈ ball x ε) : 0 < ε :=
+theorem pos_of_mem_ball (hy : y ∈ eball x ε) : 0 < ε :=
   lt_of_le_of_lt (zero_le _) hy
 
-theorem mem_ball_self (h : 0 < ε) : x ∈ ball x ε := by
+theorem mem_ball_self (h : 0 < ε) : x ∈ eball x ε := by
   rwa [mem_ball, edist_self]
 
 theorem mem_closedBall_self : x ∈ closedBall x ε := by
   rw [mem_closedBall, edist_self]; apply zero_le
 
-theorem mem_ball_comm : x ∈ ball y ε ↔ y ∈ ball x ε := by rw [mem_ball', mem_ball]
+theorem mem_ball_comm : x ∈ eball y ε ↔ y ∈ eball x ε := by rw [mem_ball', mem_ball]
 
 theorem mem_closedBall_comm : x ∈ closedBall y ε ↔ y ∈ closedBall x ε := by
   rw [mem_closedBall', mem_closedBall]
 
 @[gcongr]
-theorem ball_subset_ball (h : ε₁ ≤ ε₂) : ball x ε₁ ⊆ ball x ε₂ := fun _y (yx : _ < ε₁) =>
+theorem eball_subset_ball (h : ε₁ ≤ ε₂) : eball x ε₁ ⊆ eball x ε₂ := fun _y (yx : _ < ε₁) =>
   lt_of_lt_of_le yx h
 
 @[gcongr]
 theorem closedBall_subset_closedBall (h : ε₁ ≤ ε₂) : closedBall x ε₁ ⊆ closedBall x ε₂ :=
   fun _y (yx : _ ≤ ε₁) => le_trans yx h
 
-theorem ball_disjoint (h : ε₁ + ε₂ ≤ edist x y) : Disjoint (ball x ε₁) (ball y ε₂) :=
+theorem eball_disjoint (h : ε₁ + ε₂ ≤ edist x y) : Disjoint (eball x ε₁) (eball y ε₂) :=
   Set.disjoint_left.mpr fun z h₁ h₂ =>
     (edist_triangle_left x y z).not_gt <| (ENNReal.add_lt_add h₁ h₂).trans_le h
 
-theorem ball_subset (h : edist x y + ε₁ ≤ ε₂) (h' : edist x y ≠ ∞) : ball x ε₁ ⊆ ball y ε₂ :=
+theorem eball_subset (h : edist x y + ε₁ ≤ ε₂) (h' : edist x y ≠ ∞) : eball x ε₁ ⊆ eball y ε₂ :=
   fun z zx =>
   calc
     edist z y ≤ edist z x + edist x y := edist_triangle _ _ _
@@ -449,12 +449,12 @@ theorem ball_subset (h : edist x y + ε₁ ≤ ε₂) (h' : edist x y ≠ ∞) :
     _ < edist x y + ε₁ := ENNReal.add_lt_add_left h' zx
     _ ≤ ε₂ := h
 
-theorem exists_ball_subset_ball (h : y ∈ ball x ε) : ∃ ε' > 0, ball y ε' ⊆ ball x ε := by
+theorem exists_ball_subset_ball (h : y ∈ eball x ε) : ∃ ε' > 0, eball y ε' ⊆ eball x ε := by
   have : 0 < ε - edist y x := by simpa using h
-  refine ⟨ε - edist y x, this, ball_subset ?_ (ne_top_of_lt h)⟩
+  refine ⟨ε - edist y x, this, eball_subset ?_ (ne_top_of_lt h)⟩
   exact (add_tsub_cancel_of_le (mem_ball.mp h).le).le
 
-theorem ball_eq_empty_iff : ball x ε = ∅ ↔ ε = 0 :=
+theorem ball_eq_empty_iff : eball x ε = ∅ ↔ ε = 0 :=
   eq_empty_iff_forall_notMem.trans
     ⟨fun h => le_bot_iff.1 (le_of_not_gt fun ε0 => h _ (mem_ball_self ε0)), fun ε0 _ h =>
       not_lt_of_ge (le_of_eq ε0) (pos_of_mem_ball h)⟩
@@ -463,8 +463,8 @@ theorem ordConnected_setOf_closedBall_subset (x : α) (s : Set α) :
     OrdConnected { r | closedBall x r ⊆ s } :=
   ⟨fun _ _ _ h₁ _ h₂ => (closedBall_subset_closedBall h₂.2).trans h₁⟩
 
-theorem ordConnected_setOf_ball_subset (x : α) (s : Set α) : OrdConnected { r | ball x r ⊆ s } :=
-  ⟨fun _ _ _ h₁ _ h₂ => (ball_subset_ball h₂.2).trans h₁⟩
+theorem ordConnected_setOf_ball_subset (x : α) (s : Set α) : OrdConnected { r | eball x r ⊆ s } :=
+  ⟨fun _ _ _ h₁ _ h₂ => (eball_subset_ball h₂.2).trans h₁⟩
 
 /-- Relation “two points are at a finite edistance” is an equivalence relation. -/
 def edistLtTopSetoid : Setoid α where
@@ -475,12 +475,12 @@ def edistLtTopSetoid : Setoid α where
         lt_of_le_of_lt (edist_triangle _ _ _) (ENNReal.add_lt_top.2 ⟨hxy, hyz⟩)⟩
 
 @[simp]
-theorem ball_zero : ball x 0 = ∅ := by rw [EMetric.ball_eq_empty_iff]
+theorem eball_zero : eball x 0 = ∅ := by rw [EMetric.ball_eq_empty_iff]
 
-theorem nhds_basis_eball : (𝓝 x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) (ball x) :=
+theorem nhds_basis_eball : (𝓝 x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) (eball x) :=
   nhds_basis_uniformity uniformity_basis_edist
 
-theorem nhdsWithin_basis_eball : (𝓝[s] x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) fun ε => ball x ε ∩ s :=
+theorem nhdsWithin_basis_eball : (𝓝[s] x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) fun ε => eball x ε ∩ s :=
   nhdsWithin_hasBasis nhds_basis_eball s
 
 theorem nhds_basis_closed_eball : (𝓝 x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) (closedBall x) :=
@@ -490,13 +490,13 @@ theorem nhdsWithin_basis_closed_eball :
     (𝓝[s] x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) fun ε => closedBall x ε ∩ s :=
   nhdsWithin_hasBasis nhds_basis_closed_eball s
 
-theorem nhds_eq : 𝓝 x = ⨅ ε > 0, 𝓟 (ball x ε) :=
+theorem nhds_eq : 𝓝 x = ⨅ ε > 0, 𝓟 (eball x ε) :=
   nhds_basis_eball.eq_biInf
 
-theorem mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ ε > 0, ball x ε ⊆ s :=
+theorem mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ ε > 0, eball x ε ⊆ s :=
   nhds_basis_eball.mem_iff
 
-theorem mem_nhdsWithin_iff : s ∈ 𝓝[t] x ↔ ∃ ε > 0, ball x ε ∩ t ⊆ s :=
+theorem mem_nhdsWithin_iff : s ∈ 𝓝[t] x ↔ ∃ ε > 0, eball x ε ∩ t ⊆ s :=
   nhdsWithin_basis_eball.mem_iff
 
 section
@@ -522,25 +522,25 @@ theorem tendsto_nhds_nhds {a b} :
 
 end
 
-theorem isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, ball x ε ⊆ s := by
+theorem isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, eball x ε ⊆ s := by
   simp [isOpen_iff_nhds, mem_nhds_iff]
 
-@[simp] theorem isOpen_ball : IsOpen (ball x ε) :=
+@[simp] theorem isOpen_ball : IsOpen (eball x ε) :=
   isOpen_iff.2 fun _ => exists_ball_subset_ball
 
-theorem isClosed_ball_top : IsClosed (ball x ⊤) :=
+theorem isClosed_ball_top : IsClosed (eball x ⊤) :=
   isOpen_compl_iff.1 <| isOpen_iff.2 fun _y hy =>
     ⟨⊤, ENNReal.coe_lt_top, fun _z hzy hzx =>
       hy (edistLtTopSetoid.trans (edistLtTopSetoid.symm hzy) hzx)⟩
 
-theorem ball_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : ball x ε ∈ 𝓝 x :=
+theorem eball_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : eball x ε ∈ 𝓝 x :=
   isOpen_ball.mem_nhds (mem_ball_self ε0)
 
 theorem closedBall_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : closedBall x ε ∈ 𝓝 x :=
-  mem_of_superset (ball_mem_nhds x ε0) ball_subset_closedBall
+  mem_of_superset (eball_mem_nhds x ε0) eball_subset_closedBall
 
-theorem ball_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
-    ball x r ×ˢ ball y r = ball (x, y) r :=
+theorem eball_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
+    eball x r ×ˢ eball y r = eball (x, y) r :=
   ext fun z => by simp [Prod.edist_eq]
 
 theorem closedBall_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
@@ -570,7 +570,7 @@ namespace Subtype
 
 @[simp]
 theorem preimage_emetricBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
-    Subtype.val ⁻¹' (ball a.1 r) = ball a r :=
+    Subtype.val ⁻¹' (eball a.1 r) = eball a r :=
   rfl
 
 @[simp]
@@ -580,7 +580,7 @@ theorem preimage_emetricClosedBall {p : α → Prop} (a : {a // p a}) (r : ℝ�
 
 @[simp]
 theorem image_emetricBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
-    Subtype.val '' (ball a r) = ball a.1 r ∩ {a | p a} := by
+    Subtype.val '' (eball a r) = eball a.1 r ∩ {a | p a} := by
   rw [← preimage_emetricBall, image_preimage_eq_inter_range, range_val_subtype]
 
 @[simp]
@@ -767,7 +767,7 @@ section
 /-- A `WeakPseudoEMetricSpace` is a topological space endowed with a `ℝ≥0∞`-value distance `edist`
 which is *almost* an extended pseudometric space: the `edist` is reflexive, commutative and
 satisfies the triangle inequality, but the topology on `α` need not *equal* the topology induced
-by the `edist`. (It must be at least as fine, and agree with it on balls of finite radius.)
+by the `edist`. (It must be at least as fine, and agree with it on eballs of finite radius.)
 
 This generalises both pseudo extended metric spaces and `ℝ≥0∞` (which have an extended distance,
 which does not induce the order topology there). -/
@@ -779,10 +779,10 @@ class WeakPseudoEMetricSpace
   /-- The topology on `α` is at most as fine as the topology generated by the `edist`: -/
   topology_le :
     (uniformSpaceOfEDist edist edist_self edist_comm edist_triangle).toTopologicalSpace ≤ τ
-  /-- The ambient topology on `α` matches the `edist` topology on balls of finite radius`. -/
+  /-- The ambient topology on `α` matches the `edist` topology on eballs of finite radius`. -/
   topology_eq_on_restrict :
     ∀ (x : α) (r : ℝ≥0∞),
-    IsOpen ((EMetric.ball x ⊤) ↓∩ (ball x r))
+    IsOpen ((EMetric.eball x ⊤) ↓∩ (eball x r))
 
 @[ext]
 protected theorem WeakPseudoEMetricSpace.ext
@@ -834,7 +834,7 @@ abbrev WeakPseudoEMetricSpace.induced
       obtain ⟨ε, εp, εh⟩ := th (f x) xh
       use ε
       refine ⟨εp, ?_⟩
-      have ss : ball x ε ⊆ f ⁻¹' (ball (f x) ε) := by
+      have ss : eball x ε ⊆ f ⁻¹' (eball (f x) ε) := by
         intro
         simp only [mem_ball, mem_preimage]
         exact id
@@ -846,8 +846,8 @@ abbrev WeakPseudoEMetricSpace.induced
       refine ⟨isOpen_induced hu, ?_⟩
       ext ⟨z, zh⟩
       simp only [mem_preimage, mem_ball]
-      have (i : { x_1 // x_1 ∈ ball (f x) ⊤ }) :
-          i ∈ Subtype.val ⁻¹' u ↔ i ∈ ball (f x) ⊤ ↓∩ ball (f x) r :=
+      have (i : { x_1 // x_1 ∈ eball (f x) ⊤ }) :
+          i ∈ Subtype.val ⁻¹' u ↔ i ∈ eball (f x) ⊤ ↓∩ eball (f x) r :=
         Iff.of_eq (congrFun uy i)
       simp only [mem_preimage, mem_ball, Subtype.forall] at this
       exact this (f z) zh
@@ -855,7 +855,7 @@ abbrev WeakPseudoEMetricSpace.induced
 
 /-- WeakPseudoEMetricSpace can be induced backwards. -/
 abbrev WeakPseudoEMetricSpace.IsInducing {α β : Type*} [e : TopologicalSpace α]
-    [n : TopologicalSpace β] {f : α → β} (hf : IsInducing f) (m : WeakPseudoEMetricSpace β) :
+  [n : TopologicalSpace β] {f : α → β} (hf : IsInducing f) (m : WeakPseudoEMetricSpace β) :
     WeakPseudoEMetricSpace α := by
   rw [(isInducing_iff f).mp hf]
   exact WeakPseudoEMetricSpace.induced f m
