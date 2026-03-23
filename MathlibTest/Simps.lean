@@ -865,7 +865,6 @@ example (x : Nat) : succFun' x = x + 1 := by
 
 end DsimpLhs
 
-
 -- test transparency setting
 structure SetPlus (α : Type) where
   (s : Set α)
