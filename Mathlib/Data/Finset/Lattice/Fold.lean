@@ -168,21 +168,21 @@ theorem comp_sup_eq_sup_comp [SemilatticeSup γ] [OrderBot γ] {s : Finset β} {
 theorem sup_coe {P : α → Prop} {Pbot : P ⊥} {Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)} (t : Finset β)
     (f : β → { x : α // P x }) :
     (@sup { x // P x } _ (Subtype.semilatticeSup Psup) (Subtype.orderBot Pbot) t f : α) =
-    t.sup fun x => ↑(f x) := by
+      t.sup fun x => ↑(f x) := by
   letI := Subtype.semilatticeSup Psup
   letI := Subtype.orderBot Pbot
   apply comp_sup_eq_sup_comp Subtype.val <;> intros <;> rfl
 
 lemma sup_image_val_eq_coe_sup_id [DecidableEq α] {pr : α → Prop}
     (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t)) (hbot : pr (⊥ : α)) {t : Finset (Subtype pr)} :
-    (t.image Subtype.val).sup id
-    = @sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot) t id := by
+    (t.image Subtype.val).sup id =
+      @sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot) t id := by
   simp [sup_coe]
 
 lemma sup_val_eq_coe_id {pr : α → Prop} (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t))
     (hbot : pr (⊥ : α)) {t : Finset (Subtype pr)} :
-    (t.sup Subtype.val)
-    = @sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot) t id := by
+    (t.sup Subtype.val) =
+      @sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot) t id := by
   simp [sup_coe]
 
 @[simp]

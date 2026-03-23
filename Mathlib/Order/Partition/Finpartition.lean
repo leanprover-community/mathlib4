@@ -320,8 +320,8 @@ lemma _root_.Finset.sup_preimage_val_id_eq_sup_toSubtype_id {pr : α → Prop}
     (ht : ∀ x ∈ t, pr x) :
     @sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot)
       (@preimage _ _ t (fun (x : Subtype pr) => x.val)
-      (Set.injOn_of_injective Subtype.val_injective)) id
-    = (⟨t.sup id, sup_induction hbot (fun _ h _ => Psup h) ht⟩ : Subtype pr) := by
+      (Set.injOn_of_injective Subtype.val_injective)) id =
+      (⟨t.sup id, sup_induction hbot (fun _ h _ => Psup h) ht⟩ : Subtype pr) := by
   letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
   ext
   simp only [sup_coe, id_eq]

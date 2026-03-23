@@ -111,8 +111,7 @@ theorem image_preimage [DecidableEq β] (f : α → β) (s : Finset β) [∀ x, 
 
 theorem preimage_eq_image_invFunOn_of_inj_mapsTo_rightInv {α β : Type*} [DecidableEq α] {f : α → β}
     {g : β → α} {s : Finset β} (finj : Set.InjOn f (f ⁻¹' s)) (fmt : Set.MapsTo f (f ⁻¹' s) s)
-    (hg : Set.RightInvOn g f s) :
-    s.preimage f finj = s.image g := by
+    (hg : Set.RightInvOn g f s) : s.preimage f finj = s.image g := by
   ext x
   simp only [mem_preimage, mem_image]
   constructor
