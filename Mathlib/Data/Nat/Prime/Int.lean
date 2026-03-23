@@ -16,7 +16,7 @@ public import Mathlib.Data.Int.Basic
 TODO: This file can probably be merged with `Mathlib/Data/Int/NatPrime.lean`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Nat

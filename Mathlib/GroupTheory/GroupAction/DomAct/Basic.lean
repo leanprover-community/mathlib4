@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.GroupWithZero.Action.Hom
 public import Mathlib.Algebra.Ring.Defs
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Type tags for right action on the domain of a function

@@ -13,18 +13,18 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 This file proves that:
 * `IntervalIntegrable.intervalIntegrable_slope`: If `f` is interval integrable on `a..(b + c)`
-where `a ≤ b` and `0 ≤ c`, then `fun x ↦ slope f x (x + c)` is interval integrable on `a..b`.
+  where `a ≤ b` and `0 ≤ c`, then `fun x ↦ slope f x (x + c)` is interval integrable on `a..b`.
 * `MonotoneOn.intervalIntegrable_slope`: If `f` is monotone on `a..(b + c)`
-where `a ≤ b` and `0 ≤ c`, then `fun x ↦ slope f x (x + c)` is interval integrable on `a..b`.
+  where `a ≤ b` and `0 ≤ c`, then `fun x ↦ slope f x (x + c)` is interval integrable on `a..b`.
 * `MonotoneOn.intervalIntegral_slope_le`:  If `f` is monotone on `a..(b + c)`
-where `a ≤ b` and `0 ≤ c`, then the interval integral of `fun x ↦ slope f x (x + c)` on `a..b` is
-at most `f (b + c) - f a`.
+  where `a ≤ b` and `0 ≤ c`, then the interval integral of `fun x ↦ slope f x (x + c)` on `a..b` is
+  at most `f (b + c) - f a`.
 
 ## Tags
 interval integrable, interval integral, monotone, slope
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Set
 

@@ -72,7 +72,7 @@ and takes nonnegative real values.
 
 /-- The complex-valued arithmetic function that is the convolution of the constant
 function `1` with `χ`. -/
-def zetaMul (χ : DirichletCharacter ℂ N) : ArithmeticFunction ℂ :=
+noncomputable def zetaMul (χ : DirichletCharacter ℂ N) : ArithmeticFunction ℂ :=
   .zeta * toArithmeticFunction (χ ·)
 
 /-- The arithmetic function `zetaMul χ` is multiplicative. -/
@@ -201,7 +201,7 @@ private theorem LFunction_apply_one_ne_zero_of_quadratic {χ : DirichletCharacte
     χ.LFunction 1 ≠ 0 := by
   intro hL
   -- construct a "bad character" and put together a contradiction.
-  let B : BadChar N := {χ := χ, χ_sq := hχ, hχ := hL, χ_ne := χ_ne}
+  let B : BadChar N := { χ := χ, χ_sq := hχ, hχ := hL, χ_ne := χ_ne }
   refine B.F_neg_two.not_gt ?_
   refine ArithmeticFunction.LSeries_positive_of_differentiable_of_eqOn (zetaMul_nonneg hχ)
     (χ.isMultiplicative_zetaMul.map_one ▸ zero_lt_one) B.F_differentiable ?_
@@ -230,7 +230,7 @@ private lemma re_log_comb_nonneg' {a : ℝ} (ha₀ : 0 ≤ a) (ha₁ : a < 1) {z
   simp only [← ofReal_pow, div_natCast_re, ofReal_re, mul_pow, mul_re, ofReal_im, zero_mul,
     sub_zero]
   rcases n.eq_zero_or_pos with rfl | hn
-  · simp only [pow_zero, Nat.cast_zero, div_zero, mul_zero, one_re, mul_one, add_zero, le_refl]
+  · simp
   · simp only [← mul_div_assoc, ← add_div]
     refine div_nonneg ?_ n.cast_nonneg
     rw [← pow_mul, pow_mul', sq, mul_re, ← sq, ← sq, ← sq_norm_sub_sq_re, norm_pow, hz]

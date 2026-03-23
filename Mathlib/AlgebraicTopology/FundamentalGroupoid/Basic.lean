@@ -5,8 +5,7 @@ Authors: Shing Tak Lam
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Grpd
-public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.Groupoid.Grpd.Basic
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Homotopy.Path
 public import Mathlib.Data.Set.Subsingleton
@@ -304,12 +303,21 @@ theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x.as
   map_id _ := rfl
   map_comp := by rintro _ _ _ ⟨p⟩ ⟨q⟩; exact congr_arg Quotient.mk'' (p.map_trans q f.continuous)
 
+@[simp]
+protected theorem map_id : map (.id X) = 𝟭 _ := by
+  simp only [map]; congr; ext x y ⟨p⟩; rfl
+
+@[simp]
+protected theorem map_comp {Z : Type*} [TopologicalSpace Z] (g : C(Y, Z)) (f : C(X, Y)) :
+    map (g.comp f) = map f ⋙ map g := by
+  simp only [map]; congr; ext x y ⟨p⟩; rfl
+
 /-- The functor sending a topological space `X` to its fundamental groupoid. -/
 def fundamentalGroupoidFunctor : TopCat ⥤ Grpd where
   obj X := { α := FundamentalGroupoid X }
   map f := map f.hom
-  map_id X := by simp only [map]; congr; ext x y ⟨p⟩; rfl
-  map_comp f g := by simp only [map]; congr; ext x y ⟨p⟩; rfl
+  map_id _ := FundamentalGroupoid.map_id
+  map_comp _ _ := FundamentalGroupoid.map_comp _ _
 
 @[inherit_doc] scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
 
@@ -340,6 +348,12 @@ abbrev toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
 fundamental groupoid of that space. -/
 abbrev fromPath {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
     FundamentalGroupoid.mk x₀ ⟶ FundamentalGroupoid.mk x₁ := p
+
+/-- Two paths are equal in the fundamental groupoid if and only if they are homotopic. -/
+theorem fromPath_eq_iff_homotopic {x₀ x₁ : X} (f : Path x₀ x₁) (g : Path x₀ x₁) :
+    fromPath (Path.Homotopic.Quotient.mk f) = fromPath (Path.Homotopic.Quotient.mk g) ↔
+      f.Homotopic g :=
+  ⟨fun ih ↦ Quotient.exact ih, fun h ↦ Quotient.sound h⟩
 
 lemma eqToHom_eq {x₀ x₁ : X} (h : x₀ = x₁) :
     eqToHom (congr_arg mk h) = ⟦(Path.refl x₁).cast h rfl⟧ := by subst h; rfl

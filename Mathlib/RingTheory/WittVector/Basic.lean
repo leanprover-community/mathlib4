@@ -229,15 +229,13 @@ private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
 
 variable [Fact p.Prime]
 
-@[local instance]
-private def comm_ring_aux₁ : CommRing (𝕎 (MvPolynomial R ℚ)) :=
+private local instance comm_ring_aux₁ : CommRing (𝕎 (MvPolynomial R ℚ)) :=
   (ghostEquiv' p (MvPolynomial R ℚ)).injective.commRing ghostFun ghostFun_zero ghostFun_one
     ghostFun_add ghostFun_mul ghostFun_neg ghostFun_sub ghostFun_nsmul ghostFun_zsmul
     ghostFun_pow ghostFun_natCast ghostFun_intCast
 
 set_option backward.privateInPublic true in
-@[local instance]
-private abbrev comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :=
+private local instance comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :=
   (mapFun.injective _ <| map_injective (Int.castRingHom ℚ) Int.cast_injective).commRing _
     (mapFun.zero _) (mapFun.one _) (mapFun.add _) (mapFun.mul _) (mapFun.neg _) (mapFun.sub _)
     (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.natCast _) (mapFun.intCast _)
@@ -303,6 +301,7 @@ def ghostComponent (n : ℕ) : 𝕎 R →+* R :=
 theorem ghostComponent_apply (n : ℕ) (x : 𝕎 R) : ghostComponent n x = aeval x.coeff (W_ ℤ n) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pow_dvd_ghostComponent_of_dvd_coeff {x : 𝕎 R} {n : ℕ}
     (hx : ∀ i ≤ n, (p : R) ∣ x.coeff i) : (p : R) ^ (n + 1) ∣ ghostComponent n x := by
   rw [WittVector.ghostComponent_apply, wittPolynomial, MvPolynomial.aeval_sum]

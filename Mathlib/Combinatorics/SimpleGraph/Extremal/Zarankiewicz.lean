@@ -44,9 +44,11 @@ theorem zarankiewicz_of_fintypeCard_eq
     zarankiewicz m n s t =
       sup { G : SimpleGraph (V ⊕ W) | G ≤ completeBipartiteGraph V W
         ∧ (completeBipartiteGraph α β).Free G} (#·.edgeFinset) := by
-  let e₁ := completeBipartiteGraph.overFinIso hm hn
+  let e₁ := completeBipartiteGraph.congr
+    (Fintype.equivFinOfCardEq hm) (Fintype.equivFinOfCardEq hn)
   let K := completeBipartiteGraph (Fin s) (Fin t)
-  let e₂ := completeBipartiteGraph.overFinIso hs ht
+  let e₂ := completeBipartiteGraph.congr
+    (Fintype.equivFinOfCardEq hs) (Fintype.equivFinOfCardEq ht)
   rw [zarankiewicz, le_antisymm_iff]
   and_intros
   on_goal 1 =>
@@ -116,9 +118,10 @@ theorem zarankiewicz_le_extremalNumber :
   simp_rw [zarankiewicz, Finset.sup_le_iff, mem_filter, mem_univ, true_and]
   intro B ⟨_, h⟩
   rw [(Iso.map finSumFinEquiv B).card_edgeFinset_eq]
-  exact card_edgeFinset_le_extremalNumber <|
-    (h.congr_left <| completeBipartiteGraph.overFinIso rfl rfl).congr_right
-      (Iso.map finSumFinEquiv B).symm
+  refine card_edgeFinset_le_extremalNumber <|
+    (h.congr_left ?_).congr_right (Iso.map finSumFinEquiv B).symm
+  exact completeBipartiteGraph.congr
+    (Fintype.equivFinOfCardEq rfl) (Fintype.equivFinOfCardEq rfl)
 
 /-- The symmetric Zarankiewicz function is at least twice a corresponding extremal number. -/
 theorem two_mul_extremalNumber_le_zarankiewicz_symm [Nonempty α] [Nonempty β] :
@@ -134,8 +137,9 @@ theorem two_mul_extremalNumber_le_zarankiewicz_symm [Nonempty α] [Nonempty β] 
   · simp_rw [mem_filter, mem_univ, true_and]
     refine ⟨bipartiteDoubleCover_le, ?_⟩
     contrapose! h
-    exact bipartiteDoubleCover_completeBipartiteGraph_isContained <|
-      h.trans' ⟨(completeBipartiteGraph.overFinIso rfl rfl).toCopy⟩
-  · convert bipartiteDoubleCover_card_edgeFinset.symm.le
+    refine completeBipartiteGraph_isContained_bipartiteDoubleCover.mp <| h.trans' ⟨Iso.toCopy ?_⟩
+    exact completeBipartiteGraph.congr
+      (Fintype.equivFinOfCardEq rfl) (Fintype.equivFinOfCardEq rfl)
+  · convert card_edgeFinset_bipartiteDoubleCover.symm.le
 
 end SimpleGraph

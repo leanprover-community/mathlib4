@@ -16,7 +16,7 @@ This file concerns evaluating polynomials where the map is `algebraMap`
 TODO: merge with parts of `Mathlib/Algebra/Polynomial/AlgebraMap.lean`?
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

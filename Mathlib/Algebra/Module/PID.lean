@@ -47,7 +47,7 @@ Then we get the general result using that a torsion free module is free (which h
 Finitely generated module, principal ideal domain, classification, structure theorem
 -/
 
-@[expose] public section
+public section
 
 -- We shouldn't need to know about topology to prove
 -- the structure theorem for finitely generated modules over a PID.
@@ -74,7 +74,7 @@ variable [IsDomain R]
 
 /-- A finitely generated torsion module over a PID is an internal direct sum of its
 `p i ^ e i`-torsion submodules for some primes `p i` and numbers `e i`. -/
-theorem Submodule.isInternal_prime_power_torsion_of_pid [DecidableEq (Ideal R)] [Module.Finite R M]
+theorem Submodule.isInternal_prime_power_torsion_of_pid [Module.Finite R M]
     (hM : Module.IsTorsion R M) :
     DirectSum.IsInternal fun p : (factors (⊤ : Submodule R M).annihilator).toFinset =>
       torsionBy R M
@@ -149,6 +149,7 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
 
 open Submodule.Quotient
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ pOrder hM z))
     {k : ℕ} (f : (R ⧸ R ∙ p ^ k) →ₗ[R] M ⧸ R ∙ z) :
     ∃ x : M, p ^ k • x = 0 ∧ Submodule.Quotient.mk (p := span R {z}) x = f 1 := by
@@ -165,6 +166,7 @@ theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ 
 
 open Finset Multiset
 
+set_option backward.isDefEq.respectTransparency false in
 omit dec in
 /-- A finitely generated `p ^ ∞`-torsion module over a PID is isomorphic to a direct sum of some
   `R ⧸ R ∙ (p ^ e i)` for some `e i`. -/
@@ -269,6 +271,7 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R M] :
           (h.prodCongr g).trans <| LinearEquiv.prodComm.{u, u} R _ (Fin n →₀ R) ⟩⟩
   rw [range_subtype, ker_mkQ]
 
+set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
 theorem exists_ker_toSpanSingleton_eq_annihilator [Module.Finite R M] :
     ∃ x : M, ker (toSpanSingleton R _ x) = annihilator R M := by

@@ -16,15 +16,15 @@ This file proves the interval version of the Lebesgue Differentiation Theorem. T
 versions in this file.
 
 * `LocallyIntegrable.ae_hasDerivAt_integral` is the global version. It states that if `f : ℝ → ℝ`
-is locally integrable, then for almost every `x`, for any `c : ℝ`, the derivative of
-`∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`.
+  is locally integrable, then for almost every `x`, for any `c : ℝ`, the derivative of
+  `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`.
 
 * `IntervalIntegrable.ae_hasDerivAt_integral` is the local version. It states that if `f : ℝ → ℝ`
-is interval integrable on `a..b`, then for almost every `x ∈ uIcc a b`, for any `c ∈ uIcc a b`, the
-derivative of `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`.
+  is interval integrable on `a..b`, then for almost every `x ∈ uIcc a b`, for any `c ∈ uIcc a b`,
+  the derivative of `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Set Filter Function IsUnifLocDoublingMeasure
 

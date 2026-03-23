@@ -91,6 +91,7 @@ end Cochains
 
 section Differentials
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The 0th differential in the complex of inhomogeneous cochains of `A : Rep k G`, as a
 `k`-linear map `A → Fun(G, A)`. It sends `(a, g) ↦ ρ_A(g)(a) - a.` -/
 @[simps!]
@@ -100,6 +101,7 @@ def d₀₁ : A.V ⟶ ModuleCat.of k (G → A) :=
     map_add' x y := funext fun g => by simp only [map_add, add_sub_add_comm]; rfl
     map_smul' r x := funext fun g => by dsimp; rw [map_smul, smul_sub] }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem d₀₁_ker_eq_invariants : LinearMap.ker (d₀₁ A).hom = invariants A.ρ := by
   ext x
   simp only [LinearMap.mem_ker, mem_invariants, ← @sub_eq_zero _ _ _ x, funext_iff]
@@ -229,6 +231,7 @@ theorem eq_d₂₃_comp_inv :
       d₂₃ A ≫ (cochainsIso₃ A).inv :=
   (CommSq.horiz_inv ⟨comp_d₂₃_eq A⟩).w
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem d₀₁_comp_d₁₂ : d₀₁ A ≫ d₁₂ A = 0 := by
   ext
@@ -321,6 +324,7 @@ theorem mem_cocycles₁_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
     simp only [Function.comp_apply, ofMul_mul, map_add,
       isTrivial_apply A.ρ g (f (Additive.ofMul h)), add_comm (f (Additive.ofMul g))]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
@@ -554,9 +558,6 @@ theorem isCocycle₁_of_mem_cocycles₁
     IsCocycle₁ f :=
   fun _ _ => (mem_cocycles₁_iff (A := Rep.ofDistribMulAction k G A) f).1 hf _ _
 
-@[deprecated (since := "2025-07-02")]
-alias isOneCocycle_of_mem_oneCocycles := isCocycle₁_of_mem_cocycles₁
-
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G → A` satisfying the 1-coboundary condition, produces a 1-coboundary for the representation
 on `A` induced by the `DistribMulAction`. -/
@@ -571,9 +572,6 @@ theorem isCoboundary₁_of_mem_coboundaries₁
   rcases hf with ⟨a, rfl⟩
   exact ⟨a, fun _ => rfl⟩
 
-@[deprecated (since := "2025-07-02")]
-alias isOneCoboundary_of_mem_oneCoboundaries := isCoboundary₁_of_mem_coboundaries₁
-
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G × G → A` satisfying the 2-cocycle condition, produces a 2-cocycle for the representation on
 `A` induced by the `DistribMulAction`. -/
@@ -585,9 +583,6 @@ def cocyclesOfIsCocycle₂ {f : G × G → A} (hf : IsCocycle₂ f) :
 theorem isCocycle₂_of_mem_cocycles₂
     (f : G × G → A) (hf : f ∈ cocycles₂ (Rep.ofDistribMulAction k G A)) :
     IsCocycle₂ f := (mem_cocycles₂_iff (A := Rep.ofDistribMulAction k G A) f).1 hf
-
-@[deprecated (since := "2025-07-02")]
-alias isTwoCocycle_of_mem_twoCocycles := isCocycle₂_of_mem_cocycles₂
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G × G → A` satisfying the 2-coboundary condition, produces a 2-coboundary for the
@@ -602,9 +597,6 @@ theorem isCoboundary₂_of_mem_coboundaries₂
     IsCoboundary₂ f := by
   rcases hf with ⟨a, rfl⟩
   exact ⟨a, fun _ _ => rfl⟩
-
-@[deprecated (since := "2025-07-02")]
-alias isTwoCoboundary_of_mem_twoCoboundaries := isCoboundary₂_of_mem_coboundaries₂
 
 end ofDistribMulAction
 
@@ -662,9 +654,6 @@ theorem smul_map_inv_div_map_inv_of_isMulCocycle₂
   simp only [mul_inv_cancel, inv_mul_cancel, map_one_fst_of_isMulCocycle₂ hf g] at this
   exact div_eq_div_iff_mul_eq_mul.2 this.symm
 
-@[deprecated (since := "2025-07-02")]
-alias smul_map_inv_div_map_inv_of_isMulTwoCocycle := smul_map_inv_div_map_inv_of_isMulCocycle₂
-
 end
 
 end IsMulCocycle
@@ -701,25 +690,19 @@ theorem isMulCocycle₁_of_mem_cocycles₁
     IsMulCocycle₁ (Additive.toMul ∘ f) :=
   (mem_cocycles₁_iff (A := Rep.ofMulDistribMulAction G M) f).1 hf
 
-@[deprecated (since := "2025-07-02")]
-alias isMulOneCocycle_of_mem_oneCocycles := isMulCocycle₁_of_mem_cocycles₁
-
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G → M` satisfying the multiplicative 1-coboundary condition, produces a
 1-coboundary for the representation on `Additive M` induced by the `MulDistribMulAction`. -/
 @[simps]
 def coboundariesOfIsMulCoboundary₁ {f : G → M} (hf : IsMulCoboundary₁ f) :
     coboundaries₁ (Rep.ofMulDistribMulAction G M) :=
-  ⟨f, hf.choose, funext hf.choose_spec⟩
+  ⟨Additive.ofMul ∘ f, hf.choose, funext hf.choose_spec⟩
 
 theorem isMulCoboundary₁_of_mem_coboundaries₁
     (f : G → M) (hf : f ∈ coboundaries₁ (Rep.ofMulDistribMulAction G M)) :
     IsMulCoboundary₁ (M := M) (Additive.ofMul ∘ f) := by
   rcases hf with ⟨x, rfl⟩
   exact ⟨x, fun _ =>  rfl⟩
-
-@[deprecated (since := "2025-07-02")]
-alias isMulOneCoboundary_of_mem_oneCoboundaries := isMulCoboundary₁_of_mem_coboundaries₁
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G × G → M` satisfying the multiplicative 2-cocycle condition, produces a 2-cocycle for the
@@ -734,24 +717,18 @@ theorem isMulCocycle₂_of_mem_cocycles₂
     IsMulCocycle₂ (Additive.toMul ∘ f) :=
   (mem_cocycles₂_iff (A := Rep.ofMulDistribMulAction G M) f).1 hf
 
-@[deprecated (since := "2025-07-02")]
-alias isMulTwoCocycle_of_mem_twoCocycles := isMulCocycle₂_of_mem_cocycles₂
-
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G × G → M` satisfying the multiplicative 2-coboundary condition, produces a
 2-coboundary for the representation on `M` induced by the `MulDistribMulAction`. -/
 def coboundariesOfIsMulCoboundary₂ {f : G × G → M} (hf : IsMulCoboundary₂ f) :
     coboundaries₂ (Rep.ofMulDistribMulAction G M) :=
-  ⟨f, hf.choose, funext fun g ↦ hf.choose_spec g.1 g.2⟩
+  ⟨Additive.ofMul ∘ f, hf.choose, funext fun g ↦ hf.choose_spec g.1 g.2⟩
 
 theorem isMulCoboundary₂_of_mem_coboundaries₂
     (f : G × G → M) (hf : f ∈ coboundaries₂ (Rep.ofMulDistribMulAction G M)) :
     IsMulCoboundary₂ (M := M) (Additive.toMul ∘ f) := by
   rcases hf with ⟨x, rfl⟩
   exact ⟨x, fun _ _ => rfl⟩
-
-@[deprecated (since := "2025-07-02")]
-alias isMulTwoCoboundary_of_mem_twoCoboundaries := isMulCoboundary₂_of_mem_coboundaries₂
 
 end ofMulDistribMulAction
 
@@ -786,23 +763,20 @@ def cocyclesIso₀ : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
     ((inhomogeneousCochains A).cyclesIsKernel 0 1 (by simp)) (shortComplexH0_exact A).fIsKernel
       (dArrowIso₀₁ A)
 
-@[deprecated (since := "2025-07-02")] noncomputable alias zeroCocyclesIso := cocyclesIso₀
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesIso₀_hom_comp_f :
     (cocyclesIso₀ A).hom ≫ (shortComplexH0 A).f = iCocycles A 0 ≫ (cochainsIso₀ A).hom := by
   dsimp [cocyclesIso₀]
   apply KernelFork.mapOfIsLimit_ι
 
-@[deprecated (since := "2025-07-02")]
-noncomputable alias zeroCocyclesIso_hom_comp_f := cocyclesIso₀_hom_comp_f
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesIso₀_inv_comp_iCocycles :
     (cocyclesIso₀ A).inv ≫ iCocycles A 0 =
       (shortComplexH0 A).f ≫ (cochainsIso₀ A).inv := by
   rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, cocyclesIso₀_hom_comp_f]
 
-@[deprecated (since := "2025-07-02")]
-noncomputable alias zeroCocyclesIso_inv_comp_iCocycles := cocyclesIso₀_inv_comp_iCocycles
+set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 lemma cocyclesMk₀_eq (x : A.ρ.invariants) :
     cocyclesMk ((cochainsIso₀ A).inv x.1) (by ext g; simp [cochainsIso₀, x.2 (g 0),
@@ -810,8 +784,6 @@ lemma cocyclesMk₀_eq (x : A.ρ.invariants) :
   (ModuleCat.mono_iff_injective <| iCocycles A 0).1 inferInstance <| by
     rw [iCocycles_mk]
     exact (cocyclesIso₀_inv_comp_iCocycles_apply A x).symm
-
-@[deprecated (since := "2025-07-02")] alias cocyclesMk_0_eq := cocyclesMk₀_eq
 
 end cocyclesIso₀
 
@@ -825,13 +797,12 @@ def isoShortComplexH1 : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
     isoMk (cochainsIso₀ A) (cochainsIso₁ A) (cochainsIso₂ A)
       (comp_d₀₁_eq A) (comp_d₁₂_eq A)
 
-@[deprecated (since := "2025-07-11")] noncomputable alias shortComplexH1Iso := isoShortComplexH1
-
 /-- The 1-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `cocycles₁ A`, which is a simpler type. -/
 def isoCocycles₁ : cocycles A 1 ≅ ModuleCat.of k (cocycles₁ A) :=
   cyclesMapIso' (isoShortComplexH1 A) _ (shortComplexH1 A).moduleCatLeftHomologyData
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₁_hom_comp_i :
     (isoCocycles₁ A).hom ≫ (shortComplexH1 A).moduleCatLeftHomologyData.i =
@@ -844,6 +815,7 @@ lemma isoCocycles₁_inv_comp_iCocycles :
       (shortComplexH1 A).moduleCatLeftHomologyData.i ≫ (cochainsIso₁ A).inv :=
   (CommSq.horiz_inv ⟨isoCocycles₁_hom_comp_i A⟩).w
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toCocycles_comp_isoCocycles₁_hom :
     toCocycles A 0 1 ≫ (isoCocycles₁ A).hom =
@@ -851,16 +823,15 @@ lemma toCocycles_comp_isoCocycles₁_hom :
   simp [← cancel_mono (shortComplexH1 A).moduleCatLeftHomologyData.i, comp_d₀₁_eq,
     shortComplexH1_f]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cocyclesMk₁_eq (x : cocycles₁ A) :
     cocyclesMk ((cochainsIso₁ A).inv x) (by
-      simp [← inhomogeneousCochains.d_def, cocycles₁.d₁₂_apply x]) =
+      simp +instances [← inhomogeneousCochains.d_def, cocycles₁.d₁₂_apply x]) =
       (isoCocycles₁ A).inv x := by
   apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 1) using
     (AddCommGrpCat.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
   simpa only [HomologicalComplex.i_cyclesMk] using
     (isoCocycles₁_inv_comp_iCocycles_apply _ x).symm
-
-@[deprecated (since := "2025-07-02")] alias cocyclesMk_1_eq := cocyclesMk₁_eq
 
 end isoCocycles₁
 
@@ -875,13 +846,12 @@ def isoShortComplexH2 :
     isoMk (cochainsIso₁ A) (cochainsIso₂ A) (cochainsIso₃ A)
       (comp_d₁₂_eq A) (comp_d₂₃_eq A)
 
-@[deprecated (since := "2025-07-11")] noncomputable alias shortComplexH2Iso := isoShortComplexH2
-
 /-- The 2-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `cocycles₂ A`, which is a simpler type. -/
 def isoCocycles₂ : cocycles A 2 ≅ ModuleCat.of k (cocycles₂ A) :=
   cyclesMapIso' (isoShortComplexH2 A) _ (shortComplexH2 A).moduleCatLeftHomologyData
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₂_hom_comp_i :
     (isoCocycles₂ A).hom ≫ (shortComplexH2 A).moduleCatLeftHomologyData.i =
@@ -894,6 +864,7 @@ lemma isoCocycles₂_inv_comp_iCocycles :
       (shortComplexH2 A).moduleCatLeftHomologyData.i ≫ (cochainsIso₂ A).inv :=
   (CommSq.horiz_inv ⟨isoCocycles₂_hom_comp_i A⟩).w
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toCocycles_comp_isoCocycles₂_hom :
     toCocycles A 1 2 ≫ (isoCocycles₂ A).hom =
@@ -901,16 +872,15 @@ lemma toCocycles_comp_isoCocycles₂_hom :
   simp [← cancel_mono (shortComplexH2 A).moduleCatLeftHomologyData.i, comp_d₁₂_eq,
     shortComplexH2_f]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cocyclesMk₂_eq (x : cocycles₂ A) :
     cocyclesMk ((cochainsIso₂ A).inv x) (by
-      simp [← inhomogeneousCochains.d_def, cocycles₂.d₂₃_apply x]) =
+      simp +instances [← inhomogeneousCochains.d_def, cocycles₂.d₂₃_apply x]) =
       (isoCocycles₂ A).inv x := by
   apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 2) using
     (AddCommGrpCat.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
   simpa only [HomologicalComplex.i_cyclesMk] using
     (isoCocycles₂_inv_comp_iCocycles_apply _ x).symm
-
-@[deprecated (since := "2025-07-02")] alias cocyclesMk_2_eq := cocyclesMk₂_eq
 
 end isoCocycles₂
 end CocyclesIso
@@ -928,6 +898,7 @@ cochains, is isomorphic to the invariants of the representation on `A`. -/
 def H0Iso : H0 A ≅ ModuleCat.of k A.ρ.invariants :=
   (CochainComplex.isoHomologyπ₀ _).symm ≪≫ cocyclesIso₀ A
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H0Iso_hom :
     π A 0 ≫ (H0Iso A).hom = (cocyclesIso₀ A).hom := by
@@ -946,10 +917,11 @@ variable [A.IsTrivial]
 def H0IsoOfIsTrivial :
     H0 A ≅ A.V := H0Iso A ≪≫ (LinearEquiv.ofTop _ (invariants_eq_top A.ρ)).toModuleIso
 
-@[simp, elementwise]
+@[simp]
 theorem H0IsoOfIsTrivial_hom :
     (H0IsoOfIsTrivial A).hom = (H0Iso A).hom ≫ (shortComplexH0 A).f := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 theorem π_comp_H0IsoOfIsTrivial_hom :
     π A 0 ≫ (H0IsoOfIsTrivial A).hom = iCocycles A 0 ≫ (cochainsIso₀ A).hom := by
@@ -972,10 +944,12 @@ abbrev H1 := groupCohomology A 1
 def H1π : ModuleCat.of k (cocycles₁ A) ⟶ H1 A :=
   (isoCocycles₁ A).inv ≫ π A 1
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Epi (H1π A) := by unfold H1π; infer_instance
 
 variable {A}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma H1π_eq_zero_iff (x : cocycles₁ A) : H1π A x = 0 ↔ ⇑x ∈ coboundaries₁ A := by
   have h := leftHomologyπ_naturality'_assoc (isoShortComplexH1 A).inv
     (shortComplexH1 A).moduleCatLeftHomologyData (leftHomologyData _)
@@ -1003,6 +977,7 @@ cochains, is isomorphic to `cocycles₁ A ⧸ coboundaries₁ A`, which is a sim
 def H1Iso : H1 A ≅ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
   (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH1 A) _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H1Iso_hom :
     π A 1 ≫ (H1Iso A).hom = (isoCocycles₁ A).hom ≫
@@ -1013,6 +988,7 @@ section IsTrivial
 
 variable [A.IsTrivial]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `A : Rep k G` is a trivial representation of `G`, `H¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
 def H1IsoOfIsTrivial :
@@ -1022,6 +998,7 @@ def H1IsoOfIsTrivial :
       Unique.eq_default (α := Fin 0 → G), Pi.zero_apply (M := fun _ => A)]).symm ≪≫
   isoCocycles₁ A ≪≫ cocycles₁IsoOfIsTrivial A
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem H1π_comp_H1IsoOfIsTrivial_hom :
     H1π A ≫ (H1IsoOfIsTrivial A).hom = (cocycles₁IsoOfIsTrivial A).hom := by
@@ -1048,10 +1025,12 @@ abbrev H2 := groupCohomology A 2
 def H2π : ModuleCat.of k (cocycles₂ A) ⟶ H2 A :=
   (isoCocycles₂ A).inv ≫ π A 2
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Epi (H2π A) := by unfold H2π; infer_instance
 
 variable {A}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma H2π_eq_zero_iff (x : cocycles₂ A) : H2π A x = 0 ↔ ⇑x ∈ coboundaries₂ A := by
   have h := leftHomologyπ_naturality'_assoc (isoShortComplexH2 A).inv
     (shortComplexH2 A).moduleCatLeftHomologyData (leftHomologyData _)
@@ -1079,6 +1058,7 @@ cochains, is isomorphic to `cocycles₂ A ⧸ coboundaries₂ A`, which is a sim
 def H2Iso : H2 A ≅ (shortComplexH2 A).moduleCatLeftHomologyData.H :=
   (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH2 A) _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H2Iso_hom :
     π A 2 ≫ (H2Iso A).hom = (isoCocycles₂ A).hom ≫

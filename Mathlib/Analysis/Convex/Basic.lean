@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Ring.Action.Pointwise.Set
 public import Mathlib.Analysis.Convex.Star
 public import Mathlib.Tactic.Field
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+public import Mathlib.Tactic.NoncommRing
 
 /-!
 # Convex sets
@@ -168,7 +169,7 @@ theorem convex_segment [IsOrderedRing 𝕜] (x y : E) : Convex 𝕜 [x -[𝕜] y
   · rw [add_add_add_comm, ← mul_add, ← mul_add, habp, habq, mul_one, mul_one, hab]
   · match_scalars <;> noncomm_ring
 
-/-- See `Convex.semilinear_image` for a version for semilinar maps, but requiring that `𝕜` be a
+/-- See `Convex.semilinear_image` for a version for semilinear maps, but requiring that `𝕜` be a
   linear order, instead of just a partial order. -/
 theorem Convex.linear_image (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) : Convex 𝕜 (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab
@@ -334,15 +335,16 @@ variable [AddCommMonoid E] [LinearOrder E] [IsOrderedAddMonoid E]
 theorem MonotoneOn.convex_le (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x ≤ r }) := fun x hx y hy _ _ ha hb hab =>
   ⟨hs hx.1 hy.1 ha hb hab,
-    (hf (hs hx.1 hy.1 ha hb hab) (max_rec' s hx.1 hy.1) (Convex.combo_le_max x y ha hb hab)).trans
-      (max_rec' { x | f x ≤ r } hx.2 hy.2)⟩
+    (hf (hs hx.1 hy.1 ha hb hab) (max_rec' (· ∈ s) hx.1 hy.1)
+      (Convex.combo_le_max x y ha hb hab)).trans
+      (max_rec' (f · ≤ r) hx.2 hy.2)⟩
 
 theorem MonotoneOn.convex_lt (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x < r }) := fun x hx y hy _ _ ha hb hab =>
   ⟨hs hx.1 hy.1 ha hb hab,
-    (hf (hs hx.1 hy.1 ha hb hab) (max_rec' s hx.1 hy.1)
+    (hf (hs hx.1 hy.1 ha hb hab) (max_rec' (· ∈ s) hx.1 hy.1)
           (Convex.combo_le_max x y ha hb hab)).trans_lt
-      (max_rec' { x | f x < r } hx.2 hy.2)⟩
+      (max_rec' (f · < r) hx.2 hy.2)⟩
 
 theorem MonotoneOn.convex_ge (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | r ≤ f x }) :=

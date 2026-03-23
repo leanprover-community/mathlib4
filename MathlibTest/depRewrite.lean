@@ -227,6 +227,7 @@ example (f : B n → Nat) (b : B n) :
   rewrite! [eq]
   exact test_sorry
 
+set_option backward.isDefEq.respectTransparency false in
 -- Test casting twice (from the LHS to `x` and back).
 theorem bool_dep_test
     (b : Bool)
@@ -446,3 +447,8 @@ example (x : Fin n) : P x := by
   rw! (castMode := .all) [eq]
   guard_target =ₐ Q (cast% eq ▸ x)
   exact test_sorry
+
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/rw!.3A.20unknown.20free.20variable.20_fvar.2E423/near/566619695
+example {x : Bool} (h : x = x) : x = x := by
+  rw! [h] at h
+  exact h

@@ -5,9 +5,7 @@ Authors: Leonardo de Moura
 -/
 module
 
-public import Batteries.Tactic.Alias
 public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.TypeStar
 
 /-!
 # Helper definitions and instances for `Ordering`

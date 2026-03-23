@@ -5,8 +5,7 @@ Authors: Anne Baanen, Mario Carneiro
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum.Basic
-public meta import Mathlib.Tactic.NormNum.Ineq
+public import Mathlib.Tactic.NormNum.Ineq
 
 /-!
 # `norm_num` extension for integer div/mod and divides

@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Ring.NegOnePow
 In this file, we collect various formulas about determinant of matrices.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 

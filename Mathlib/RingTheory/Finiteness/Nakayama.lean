@@ -19,7 +19,7 @@ public import Mathlib.RingTheory.Ideal.Operations
 
 -/
 
-@[expose] public section
+public section
 
 namespace Submodule
 

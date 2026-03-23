@@ -150,12 +150,14 @@ theorem tprod_cons (i : δ) (l : List δ) (μ : ∀ i, Measure (X i)) :
     Measure.tprod (i :: l) μ = (μ i).prod (Measure.tprod l μ) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance sigmaFinite_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, SigmaFinite (μ i)] :
     SigmaFinite (Measure.tprod l μ) := by
   induction l with
   | nil => rw [tprod_nil]; infer_instance
   | cons i l ih => rw [tprod_cons]; exact @prod.instSigmaFinite _ _ _ _ _ _ _ ih
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, SigmaFinite (μ i)]
     (s : ∀ i, Set (X i)) :
     Measure.tprod l μ (Set.tprod l s) = (l.map fun i => (μ i) (s i)).prod := by
@@ -202,7 +204,7 @@ theorem pi_caratheodory :
   intro t
   simp_rw [piPremeasure]
   refine Finset.prod_add_prod_le' (Finset.mem_univ i) ?_ ?_ ?_
-  · simp [image_inter_preimage, image_diff_preimage, measure_inter_add_diff _ hs, le_refl]
+  · simp [image_inter_preimage, image_diff_preimage, measure_inter_add_diff _ hs]
   · rintro j - _; gcongr; apply inter_subset_left
   · rintro j - _; gcongr; apply diff_subset
 
@@ -237,13 +239,13 @@ def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
     (Measure.pi μ).FiniteSpanningSetsIn (pi univ '' pi univ C) := by
   haveI := fun i => (hμ i).sigmaFinite
   haveI := Fintype.toEncodable ι
-  refine ⟨fun n => Set.pi univ fun i => (hμ i).set ((@decode (ι → ℕ) _ n).iget i),
+  refine ⟨fun n => Set.pi univ fun i => (hμ i).set ((@decode (ι → ℕ) _ n).getD default i),
     fun n => ?_, fun n => ?_, ?_⟩ <;>
   -- TODO (kmill) If this let comes before the refine, while the noncomputability checker
   -- correctly sees this definition is computable, the Lean VM fails to see the binding is
   -- computationally irrelevant. The `noncomputable section` doesn't help because all it does
   -- is insert `noncomputable` for you when necessary.
-  let e : ℕ → ι → ℕ := fun n => (@decode (ι → ℕ) _ n).iget
+  let e : ℕ → ι → ℕ := fun n => (@decode (ι → ℕ) _ n).getD default
   · refine mem_image_of_mem _ fun i _ => (hμ i).set_mem _
   · calc
       Measure.pi μ (Set.pi univ fun i => (hμ i).set (e n i)) ≤
@@ -253,7 +255,7 @@ def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
         (pi_pi_aux μ _ fun i => measurableSet_toMeasurable _ _)
       _ = ∏ i, μ i ((hμ i).set (e n i)) := by simp only [measure_toMeasurable]
       _ < ∞ := ENNReal.prod_lt_top fun i _ => (hμ i).finite _
-  · simp_rw [(surjective_decode_iget (ι → ℕ)).iUnion_comp fun x =>
+  · simp_rw [(surjective_decode_getD (ι → ℕ) default).iUnion_comp fun x =>
         Set.pi univ fun i => (hμ i).set (x i),
       iUnion_univ_pi fun i => (hμ i).set, (hμ _).spanning, Set.pi_univ]
 
@@ -288,7 +290,7 @@ theorem pi'_eq_pi [Encodable ι] [∀ i, SigmaFinite (μ i)] : pi' μ = Measure.
   Eq.symm <| pi_eq fun s _ => pi'_pi μ s
 
 @[simp]
-theorem pi_pi [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) :
+theorem pi_pi [∀ i, SigmaFinite (μ i)] (s : (i : ι) → Set (α i)) :
     Measure.pi μ (pi univ s) = ∏ i, μ i (s i) := by
   haveI : Encodable ι := Fintype.toEncodable ι
   rw [← pi'_eq_pi, pi'_pi]
@@ -311,6 +313,11 @@ instance {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, IsFiniteMeasur
 instance pi.instIsProbabilityMeasure [∀ i, IsProbabilityMeasure (μ i)] :
     IsProbabilityMeasure (Measure.pi μ) :=
   ⟨by simp only [Measure.pi_univ, measure_univ, Finset.prod_const_one]⟩
+
+@[simp]
+theorem pi_pi_finset [∀ i, IsProbabilityMeasure (μ i)] (f : (i : ι) → Set (α i)) (s : Finset ι) :
+    Measure.pi μ ((s : Set ι).pi f) = ∏ i ∈ s, μ i (f i) := by
+  classical simp [← Set.univ_pi_ite, pi_pi, apply_ite]
 
 instance {α : ι → Type*} [∀ i, MeasureSpace (α i)]
     [∀ i, IsProbabilityMeasure (volume : Measure (α i))] :
@@ -882,7 +889,7 @@ theorem measurePreserving_pi_empty {ι : Type u} {α : ι → Type v} [Fintype �
       (Measure.dirac ()) := by
   set e := MeasurableEquiv.ofUniqueOfUnique (∀ i, α i) Unit
   refine ⟨e.measurable, ?_⟩
-  rw [Measure.pi_of_empty, Measure.map_dirac e.measurable]
+  rw [Measure.pi_of_empty, Measure.map_dirac' e.measurable]
 
 theorem volume_preserving_pi_empty {ι : Type u} (α : ι → Type v) [Fintype ι] [IsEmpty ι]
     [∀ i, MeasureSpace (α i)] :

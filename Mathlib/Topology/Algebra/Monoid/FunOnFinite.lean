@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.Finsupp.Pi
 
 -/
 
-@[expose] public section
+public section
 
 namespace FunOnFinite
 

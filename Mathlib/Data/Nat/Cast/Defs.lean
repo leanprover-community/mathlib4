@@ -43,7 +43,7 @@ instance (priority := 100) instOfNatAtLeastTwo {n : ℕ} [NatCast R] [Nat.AtLeas
     OfNat R n where
   ofNat := n.cast
 
-library_note2 «no_index around OfNat.ofNat»
+library_note «no_index around OfNat.ofNat»
 /--
 When writing lemmas about `OfNat.ofNat` that assume `Nat.AtLeastTwo`, the term needs to be wrapped
 in `no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.

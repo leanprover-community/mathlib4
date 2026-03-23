@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.FreeAlgebra
 public import Mathlib.Algebra.RingQuot
-public import Mathlib.Algebra.TrivSqZeroExt
+public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.LinearAlgebra.Multilinear.Basic
 
@@ -100,6 +100,7 @@ example : (Ring.toIntAlgebra _ : Algebra ℤ (TensorAlgebra S M)) = instAlgebra 
 
 variable {M}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical linear map `M →ₗ[R] TensorAlgebra R M`.
 -/
 irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
@@ -186,7 +187,7 @@ theorem induction {C : TensorAlgebra R M → Prop}
     (a : TensorAlgebra R M) : C a := by
   -- the arguments are enough to construct a subalgebra, and a mapping into it from M
   let s : Subalgebra R (TensorAlgebra R M) :=
-    { carrier := C
+    { carrier := {a | C a}
       mul_mem' := @mul
       add_mem' := @add
       algebraMap_mem' := algebraMap }
@@ -264,6 +265,7 @@ def ιInv : TensorAlgebra R M →ₗ[R] M := by
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → TensorAlgebra R M) := fun x ↦ by
   simp [ιInv]
 
@@ -315,8 +317,6 @@ def tprod (n : ℕ) : MultilinearMap R (fun _ : Fin n => M) (TensorAlgebra R M) 
 @[simp]
 theorem tprod_apply {n : ℕ} (x : Fin n → M) : tprod R M n x = (List.ofFn fun i => ι R (x i)).prod :=
   rfl
-
-variable {R M}
 
 end TensorAlgebra
 

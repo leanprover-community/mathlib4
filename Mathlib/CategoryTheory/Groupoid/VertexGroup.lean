@@ -75,7 +75,7 @@ def vertexGroupIsomOfMap {c d : C} (f : c ⟶ d) : (c ⟶ c) ≃* (d ⟶ d) wher
 def vertexGroupIsomOfPath {c d : C} (p : Quiver.Path c d) : (c ⟶ c) ≃* (d ⟶ d) :=
   vertexGroupIsomOfMap (composePath p)
 
-/-- A functor defines a morphism of vertex group. -/
+/-- A functor defines a morphism of vertex groups. -/
 @[simps]
 def CategoryTheory.Functor.mapVertexGroup {D : Type v} [Groupoid D] (φ : C ⥤ D) (c : C) :
     (c ⟶ c) →* (φ.obj c ⟶ φ.obj c) where

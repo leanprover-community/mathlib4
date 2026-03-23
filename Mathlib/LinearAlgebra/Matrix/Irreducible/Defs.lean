@@ -50,6 +50,11 @@ Throughout we work over a `LinearOrderedRing R`. Some results require stronger a
 like `PosMulStrictMono R` or `Nontrivial R`. Some statements expand matrix powers and thus require
 `[DecidableEq n]` to reason about finite sums.
 
+## TODO
+
+Refactor to use digraphs instead of quivers. A prerequisite for this refactor
+is paths in digraphs.
+
 ## References
 
 * [E. Seneta, *Non-negative Matrices and Markov Chains*][seneta2006]
@@ -68,8 +73,9 @@ variable {n R : Type*} [Ring R] [LinearOrder R]
 
 /-- The directed graph (quiver) associated with a matrix `A`,
 with an edge `i ⟶ j` iff `0 < A i j`. -/
+@[implicit_reducible]
 def toQuiver (A : Matrix n n R) : Quiver n :=
-  ⟨fun i j => 0 < A i j⟩
+  ⟨fun i j => PLift (0 < A i j)⟩
 
 /-- A matrix `A` is irreducible if it is entrywise nonnegative and
 its quiver of positive entries (`toQuiver A`) is strongly connected. -/
@@ -92,14 +98,14 @@ lemma IsIrreducible.exists_pos [Nontrivial n]
   letI : Quiver n := toQuiver A
   by_contra h_row
   have no_out : ∀ j : n, IsEmpty (i ⟶ j) :=
-    fun j => ⟨fun e => h_row ⟨j, e⟩⟩
+    fun j => ⟨fun e => h_row ⟨j, e.down⟩⟩
   obtain ⟨j, hij⟩ := exists_pair_ne n
   obtain ⟨p, hp_pos⟩ := h_irr.connected i j
   have h_le : 1 ≤ p.length := Nat.succ_le_of_lt hp_pos
   have ⟨v, p₁, p₂, _hp_eq, hp₁_len⟩ := p.exists_eq_comp_of_le_length (n := 1) h_le
   have hlen_ne : p₁.length ≠ 0 := by simp [hp₁_len]
   obtain ⟨c, p', e, rfl⟩ := (Quiver.Path.length_ne_zero_iff_eq_cons (p := p₁)).1 (by lia)
-  obtain ⟨rfl⟩ : i = c := Quiver.Path.eq_of_length_zero p' (by aesop)
+  obtain ⟨rfl⟩ : i = c := Quiver.Path.eq_of_length_zero p' (by simp_all)
   exact (no_out _).false e
 
 /--
@@ -117,7 +123,7 @@ theorem pow_apply_pos_iff_nonempty_path
     refine ⟨fun h_pos ↦ ?_, fun ⟨p, hp⟩ ↦ ?_⟩
     · rcases eq_or_ne i j with rfl | h_eq
       · exact ⟨⟨Quiver.Path.nil, rfl⟩⟩
-      · simp_all only [pow_zero, ne_eq, not_false_eq_true, one_apply_ne, lt_self_iff_false]
+      · simp_all
     · simp [Quiver.Path.eq_of_length_zero p hp]
   | succ m ih =>
     rw [pow_succ, mul_apply]
@@ -133,7 +139,7 @@ theorem pow_apply_pos_iff_nonempty_path
       have h_Am : 0 < (A ^ m) i l := by by_contra! h; simp [le_antisymm h hAm_nonneg] at hl_pos
       have h_A : 0 < A l j := by by_contra! h; simp [le_antisymm h hA_nonneg'] at hl_pos
       obtain ⟨⟨p, rfl⟩⟩ := (ih i l).mp h_Am
-      exact ⟨p.cons h_A, by simp⟩
+      exact ⟨p.cons (PLift.up h_A), by simp⟩
     · rintro ⟨p, hp_len⟩
       cases p with
       | nil => simp [Quiver.Path.length] at hp_len
@@ -141,7 +147,7 @@ theorem pow_apply_pos_iff_nonempty_path
         simp only [Quiver.Path.length_cons, Nat.succ.injEq] at hp_len
         have h_Am_pos : 0 < (A ^ m) i b := (ih i b).mpr ⟨q, hp_len⟩
         let h_A_pos := e
-        have h_prod : 0 < (A ^ m) i b * A b j := mul_pos h_Am_pos h_A_pos
+        have h_prod : 0 < (A ^ m) i b * A b j := mul_pos h_Am_pos h_A_pos.down
         exact
           (Finset.sum_pos_iff_of_nonneg
             (fun x _ => mul_nonneg (pow_apply_nonneg hA m i x) (hA x j))).2
@@ -190,10 +196,10 @@ def transposePath {i j : n} (p : @Quiver.Path n A.toQuiver i j) :
   | nil =>
     exact (@Quiver.Path.nil _ (toQuiver Aᵀ) _)
   | @cons b c q e ih =>
-    have eT : @Quiver.Hom n (toQuiver Aᵀ) c b := by
-      change 0 < (Aᵀ) c b
-      simpa [Matrix.transpose_apply] using e
-    exact (@Quiver.Path.comp n (toQuiver Aᵀ) c b i (@Quiver.Hom.toPath n (toQuiver Aᵀ) c b eT) ih)
+    have eT : 0 < (Aᵀ) c b := by
+      simpa [Matrix.transpose_apply] using e.down
+    exact (@Quiver.Path.comp n (toQuiver Aᵀ) c b i (@Quiver.Hom.toPath n (toQuiver Aᵀ) c b
+      (PLift.up eT)) ih)
 
 /-- Irreducibility is invariant under transpose. -/
 theorem IsIrreducible.transpose (hA : IsIrreducible A) : IsIrreducible Aᵀ := by

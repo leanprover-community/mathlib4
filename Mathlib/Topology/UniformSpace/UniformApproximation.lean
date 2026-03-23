@@ -27,7 +27,7 @@ convergence from them.
 Uniform limit, uniform convergence, tends uniformly to
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

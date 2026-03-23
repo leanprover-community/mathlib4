@@ -19,11 +19,11 @@ We provide several constructors for pseudofunctors:
 
 * `Pseudofunctor.mkOfOplax` : construct a pseudofunctor from an oplax functor whose
   `mapId` and `mapComp` are isomorphisms. This constructor uses `Iso` to describe isomorphisms.
-* `pseudofunctor.mkOfOplax'` : similar to `mkOfOplax`, but uses `IsIso` to describe isomorphisms.
+* `Pseudofunctor.mkOfOplax'` : similar to `mkOfOplax`, but uses `IsIso` to describe isomorphisms.
 
 * `Pseudofunctor.mkOfLax` : construct a pseudofunctor from a lax functor whose
   `mapId` and `mapComp` are isomorphisms. This constructor uses `Iso` to describe isomorphisms.
-* `pseudofunctor.mkOfLax'` : similar to `mkOfLax`, but uses `IsIso` to describe isomorphisms.
+* `Pseudofunctor.mkOfLax'` : similar to `mkOfLax`, but uses `IsIso` to describe isomorphisms.
 
 ## Main definitions
 
@@ -47,11 +47,11 @@ variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
 /-- A pseudofunctor `F` between bicategories `B` and `C` consists of a function between objects
 `F.obj`, a function between 1-morphisms `F.map`, and a function between 2-morphisms `F.map₂`.
 
-Unlike functors between categories, `F.map` do not need to strictly commute with the compositions,
-and do not need to strictly preserve the identity. Instead, there are specified 2-isomorphisms
+Unlike functors between categories, `F.map` does not need to strictly commute with composition,
+and does not need to strictly preserve the identity. Instead, there are specified 2-isomorphisms
 `F.map (𝟙 a) ≅ 𝟙 (F.obj a)` and `F.map (f ≫ g) ≅ F.map f ≫ F.map g`.
 
-`F.map₂` strictly commute with compositions and preserve the identity. They also preserve the
+`F.map₂` strictly commutes with compositions and preserves the identity. It also preserves the
 associator, the left unitor, and the right unitor modulo some adjustments of domains and codomains
 of 2-morphisms.
 -/
@@ -121,7 +121,7 @@ def toOplax : B ⥤ᵒᵖᴸ C where
 instance hasCoeToOplax : Coe (B ⥤ᵖ C) (B ⥤ᵒᵖᴸ C) :=
   ⟨toOplax⟩
 
-/-- The Lax functor associated with a pseudofunctor. -/
+/-- The lax functor associated with a pseudofunctor. -/
 @[simps]
 def toLax : B ⥤ᴸ C where
   toPrelaxFunctor := F.toPrelaxFunctor
@@ -137,6 +137,7 @@ def toLax : B ⥤ᴸ C where
 instance hasCoeToLax : Coe (B ⥤ᵖ C) (B ⥤ᴸ C) :=
   ⟨toLax⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The identity pseudofunctor. -/
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : B ⥤ᵖ B where
@@ -147,18 +148,13 @@ def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : B ⥤ᵖ B where
 instance : Inhabited (B ⥤ᵖ B) :=
   ⟨id B⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of pseudofunctors. -/
 @[simps]
 def comp (F : B ⥤ᵖ C) (G : C ⥤ᵖ D) : B ⥤ᵖ D where
   toPrelaxFunctor := F.toPrelaxFunctor.comp G.toPrelaxFunctor
   mapId := fun a => G.map₂Iso (F.mapId a) ≪≫ G.mapId (F.obj a)
   mapComp := fun f g => (G.map₂Iso (F.mapComp f g)) ≪≫ G.mapComp (F.map f) (F.map g)
-  -- Note: whilst these are all provable by `cat_disch`, the proof is very slow
-  map₂_whisker_left f η := by simp
-  map₂_whisker_right η h := by simp
-  map₂_associator f g h := by simp
-  map₂_left_unitor f := by simp
-  map₂_right_unitor f := by simp
 
 section
 

@@ -254,7 +254,7 @@ protected def _root_.RingHom.withTopMap {R S : Type*}
     [NonAssocSemiring S] [PartialOrder S] [CanonicallyOrderedAdd S]
     [DecidableEq S] [Nontrivial S]
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
-  {MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with}
+  { MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with }
 
 variable [CommSemiring α] [PartialOrder α] [OrderBot α]
   [CanonicallyOrderedAdd α] [PosMulStrictMono α]
@@ -274,10 +274,7 @@ protected lemma mul_lt_mul (ha : a₁ < a₂) (hb : b₁ < b₂) : a₁ * b₁ <
   lift a₂ to α using ha₂
   lift b₂ to α using hb₂
   norm_cast at *
-  obtain rfl | hb₁ := eq_zero_or_pos b₁
-  · rw [mul_zero]
-    exact mul_pos (by simpa [bot_eq_zero] using ha.bot_lt) hb
-  · exact mul_lt_mul ha hb.le hb₁ (zero_le _)
+  exact CanonicallyOrderedAdd.mul_lt_mul_of_lt_of_lt ha hb
 
 variable [NoZeroDivisors α] [Nontrivial α] {a b : WithTop α}
 

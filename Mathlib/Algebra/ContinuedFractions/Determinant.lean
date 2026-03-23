@@ -28,7 +28,7 @@ Generalize this for `GenContFract` version:
 
 -/
 
-@[expose] public section
+public section
 
 open GenContFract
 
