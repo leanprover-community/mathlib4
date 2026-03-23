@@ -70,16 +70,14 @@ variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Alg
 
 /-- The subalgebra of pairs `(a, b) : A × B` such that `f a = g b`, i.e.,
   the pullback of f and g as a subalgebra of A × B. -/
-abbrev Pullback (f : F) (g : G) : Subalgebra R (A × B) := AlgHom.equalizer
-  ((f : A →ₐ[R] C).comp (AlgHom.fst R A B)) ((g : B →ₐ[R] C).comp (AlgHom.snd R A B))
+abbrev Pullback (f : F) (g : G) : Subalgebra R (A × B) := equalizer
+  ((f : A →ₐ[R] C).comp (fst R A B)) ((g : B →ₐ[R] C).comp (snd R A B))
 
 /-- The first projection from the pullback of `f` and `g` to `A`. -/
-abbrev pullbackFst (f : F) (g : G) : Pullback f g →ₐ[R] A :=
-  (AlgHom.fst R A B).comp (Pullback f g).val
+abbrev pullbackFst (f : F) (g : G) : Pullback f g →ₐ[R] A := (fst R A B).comp (Pullback f g).val
 
 /-- The second projection from the pullback of `f` and `g` to `B`. -/
-abbrev pullbackSnd (f : F) (g : G) : Pullback f g →ₐ[R] B :=
-  (AlgHom.snd R A B).comp (Pullback f g).val
+abbrev pullbackSnd (f : F) (g : G) : Pullback f g →ₐ[R] B := (snd R A B).comp (Pullback f g).val
 
 end Semiring
 
