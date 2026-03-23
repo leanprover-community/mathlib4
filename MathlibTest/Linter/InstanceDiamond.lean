@@ -66,7 +66,12 @@ warning: instance diamond at SubNegMonoid:
  AddGroup.toSubNegMonoid]
   produce results which are not definitionally equal
   at `with_reducible_and_instances` transparency.
-  Differing fields: [zsmul]
+  Differing fields:
+    zsmul:
+      lhs: { toSubNegMonoid := Pi.subNegMonoid, neg_add_cancel := ⋯ }
+      rhs: { toAddMonoid := instACGWO_test.toAddGroupWithOne.toAddMonoid,
+  toNeg := instACGWO_test.toAddGroupWithOne.toNeg, toSub := instACGWO_test.toAddGroupWithOne.toSub, sub_eq_add_neg := ⋯,
+  zsmul := AddGroupWithOne.zsmul, zsmul_zero' := ⋯, zsmul_succ' := ⋯, zsmul_neg' := ⋯, neg_add_cancel := ⋯ }
 example {n : Type u_1} {α : Type u_2} [inst : DecidableEq n] [inst : AddCommGroupWithOne α] :
     (instACGWO_test : AddCommGroupWithOne (M n α)).toAddCommGroup.toAddGroup.toSubNegMonoid =
     (instACGWO_test : AddCommGroupWithOne (M n α)).toAddGroupWithOne.toAddGroup.toSubNegMonoid := by

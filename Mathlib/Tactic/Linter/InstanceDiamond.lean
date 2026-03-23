@@ -54,6 +54,26 @@ private def applyProjectionPath (e : Expr) (path : List Name) : MetaM Expr := do
     e := mkAppN (.const projName us) (type.getAppArgs.push e)
   return e
 
+/-- Walk two expressions in parallel, finding the most specific subexpression where they diverge.
+Returns `(lhsSub, rhsSub)` — the smallest pair of differing subexpressions. -/
+private partial def findDivergence (lhs rhs : Expr) (fuel : Nat := 32) : MetaM (Expr × Expr) := do
+  if fuel == 0 || lhs == rhs then return (lhs, rhs)
+  -- If same head function, find first differing argument
+  if lhs.getAppFn == rhs.getAppFn && lhs.getAppNumArgs == rhs.getAppNumArgs then
+    let args1 := lhs.getAppArgs
+    let args2 := rhs.getAppArgs
+    for i in [:args1.size] do
+      if args1[i]! != args2[i]! then
+        return ← findDivergence args1[i]! args2[i]! (fuel - 1)
+    return (lhs, rhs)
+  -- If both are lambdas, descend into body (even if binder types differ,
+  -- since the interesting divergence is usually in the body, not the type)
+  match lhs, rhs with
+  | .lam _ t1 b1 bi, .lam _ _ b2 _ =>
+    withLocalDecl `x bi t1 fun x =>
+      findDivergence (b1.instantiate1 x) (b2.instantiate1 x) (fuel - 1)
+  | _, _ => return (lhs, rhs)
+
 /-- A single diamond failure: the warning message and the lhs/rhs expressions that failed defeq. -/
 private structure DiamondFailure where
   message : MessageData
@@ -117,9 +137,9 @@ private def findDiamondFailures (instExpr : Expr) (structName : Name) :
     let dominated := failedNames.any fun other =>
       other != ancestor && ancestorsOfThis.any (· == other)
     unless dominated do
-      -- Find which fields of the ancestor differ between the two paths
+      -- Find which fields of the ancestor differ, and show their reduced values
       let fields := getStructureFields env ancestor
-      let mut differingFields : Array Name := #[]
+      let mut differingFieldMsgs : Array MessageData := #[]
       for field in fields do
         try
           let projName := ancestor ++ field
@@ -127,10 +147,18 @@ private def findDiamondFailures (instExpr : Expr) (structName : Name) :
           let rhsField ← applyProjectionPath rhs [projName]
           let eq ← withNewMCtxDepth <| withReducibleAndInstances <| isDefEq lhsField rhsField
           unless eq do
-            differingFields := differingFields.push field
+            -- Find where the unreduced field expressions structurally diverge,
+            -- then whnf the divergence point to show the actual differing values.
+            let (divLhs, divRhs) ← findDivergence lhsField rhsField
+            let divLhs ← withReducibleAndInstances <| whnf divLhs
+            let divRhs ← withReducibleAndInstances <| whnf divRhs
+            let lhsFmt ← ppExpr divLhs
+            let rhsFmt ← ppExpr divRhs
+            differingFieldMsgs := differingFieldMsgs.push
+              m!"    {field}:\n      lhs: {lhsFmt}\n      rhs: {rhsFmt}"
         catch _ => pure ()
-      let fieldMsg := if differingFields.isEmpty then m!""
-        else m!"\n  Differing fields: {differingFields.toList}"
+      let fieldMsg := if differingFieldMsgs.isEmpty then m!""
+        else m!"\n  Differing fields:\n" ++ .joinSep differingFieldMsgs.toList "\n"
       failures := failures.push {
         message := m!"instance diamond at {ancestor}:\
            \n  the projection chains {fullPathI} and {fullPathJ}\
