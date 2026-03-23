@@ -89,7 +89,7 @@ variable [Ring A] [Algebra R A] [Ring B] [Algebra R B] [Semiring C] [Algebra R C
 instance isLocalHom_pullbackFst (f : A →ₐ[R] C) (g : B →ₐ[R] C) [IsLocalHom g] :
     IsLocalHom (pullbackFst f g) := ⟨(RingHom.isLocalHom_pullbackFst f g).map_nonunit⟩
 
-instance isLocalHom_pullbackSnd (f : A →ₐ[R] C) (g : B →ₐ[R] C)[IsLocalHom f] :
+instance isLocalHom_pullbackSnd (f : A →ₐ[R] C) (g : B →ₐ[R] C) [IsLocalHom f] :
     IsLocalHom (pullbackSnd f g) := ⟨(RingHom.isLocalHom_pullbackSnd f g).map_nonunit⟩
 
 theorem surjective_pullbackFst_of_surjective (f : A →ₐ[R] C) (g : B →ₐ[R] C)
