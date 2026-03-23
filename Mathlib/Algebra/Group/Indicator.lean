@@ -41,9 +41,10 @@ assert_not_exists MonoidWithZero
 
 open Function
 
-variable {α β M N : Type*}
+variable {α β γ M N : Type*}
 
 namespace Set
+
 section Monoid
 
 variable [MulOneClass M] {s t : Set α} {a : α}
@@ -195,6 +196,20 @@ theorem apply_mulIndicator_symmDiff {g : G → β} (hg : ∀ x, g x⁻¹ = g x)
   by_cases hs : x ∈ s <;> by_cases ht : x ∈ t <;> simp [mem_symmDiff, *]
 
 end Group
+
+section One
+
+@[to_additive]
+lemma mulSupport_subsingleton_of_disjoint [One β] {s : γ → Set α} (f : α → β)
+    (hs : Pairwise (Disjoint on s)) (i : α) (j : γ)
+    (hj : i ∈ s j) : Function.mulSupport (fun d ↦ (s d).mulIndicator f i) ⊆ {j} := by
+  intro d
+  by_cases h : d = j
+  · aesop
+  · simp only [Pairwise, ne_eq] at hs
+    simp [h, Disjoint.notMem_of_mem_left (hs fun a ↦ h ((Eq.symm a))) hj]
+
+end One
 
 /-! ### Relationship with `Pi.mulSingle`/`Pi.single` -/
 

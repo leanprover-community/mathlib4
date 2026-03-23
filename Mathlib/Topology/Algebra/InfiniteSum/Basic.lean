@@ -626,6 +626,27 @@ lemma tprod_extend_one {γ : Type*} {g : γ → β} (hg : Injective g) (f : γ �
   have : mulSupport (extend g f 1) ⊆ Set.range g := mulSupport_subset_iff'.2 <| extend_apply' _ _
   simp_rw [← hg.tprod_eq this, hg.extend_apply]
 
+@[to_additive]
+lemma tprod_mulIndicator_of_disjoint (s : γ → Set β) (hs : Pairwise (Disjoint on s)) (f : β → α)
+    (i : β) (hi : i ∈ ⋃ d, s d) : ∏' d, (s d).mulIndicator f i = f i := by
+  obtain ⟨j, hj⟩ := Set.mem_iUnion.mp hi
+  rw [← tprod_subtype_eq_of_mulSupport_subset (s := {j})
+      ((Set.mulSupport_subsingleton_of_disjoint f hs i j hj))]
+  aesop
+
+@[to_additive]
+lemma tprod_mulIndicator_of_nmem (s : γ → Set β) (f : β → α) (i : β) (hi : ∀ d, i ∉ s d) :
+    ∏' d, (s d).mulIndicator f i = 1 := by
+  aesop
+
+@[to_additive]
+lemma mulIndicator_iUnion_of_disjoint (s : γ → Set β) (hs : Pairwise (Disjoint on s)) (f : β → α)
+    (i : β) : (⋃ d, s d).mulIndicator f i = ∏' d, (s d).mulIndicator f i := by
+  by_cases h₀ : i ∈ ⋃ d, s d
+  · simp only [h₀, Set.mulIndicator_of_mem]
+    exact Eq.symm <| tprod_mulIndicator_of_disjoint s hs f i h₀
+  · aesop
+
 variable [T2Space α]
 
 @[to_additive]
