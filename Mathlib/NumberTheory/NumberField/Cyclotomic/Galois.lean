@@ -19,6 +19,8 @@ In this file, we study the Galois theory of cyclotomic extensions of `ℚ`.
 
 - `IsCyclotomicExtension.Rat.galEquivZMod`: the isomorphism between `Gal(ℚ(ζₙ)/ℚ)` and `(ℤ/nℤ)ˣ`
   that sends `σ` to the class `a` such that `σ (ζₙ) = ζₙ ^ a`.
+- `IsCyclotomicExtension.Rat.isInertiaField`: if `n = p ^ k * m` with `p` prime and `¬ p ∣ m`, then
+  `ℚ(ζₘ)` is the inertia field of any prime of `𝓞(ℚ(ζₙ))` lying over `p`.
 
 -/
 
@@ -82,6 +84,10 @@ end restrict
 open Ideal
 
 set_option backward.isDefEq.respectTransparency false in
+/--
+Let `K = ℚ(ζₙ)` with `n = p ^ k * m` where `p` is prime and `¬ p ∣ m`. Then the subfield
+`F = ℚ(ζₘ)` is the inertia field of any prime `P` of `𝓞 K` lying over `p`.
+-/
 theorem isInertiaField (m p k : ℕ) (hn : n = p ^ k * m) [hp : Fact (p.Prime)] (hm : ¬ p ∣ m)
     (F : IntermediateField ℚ K) [hF : IsCyclotomicExtension {m} ℚ F] (P : Ideal (𝓞 K))
     [P.IsMaximal] [P.LiesOver (span {(p : ℤ)})] :
