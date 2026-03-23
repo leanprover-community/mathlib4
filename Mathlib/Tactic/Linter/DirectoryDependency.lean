@@ -86,6 +86,9 @@ def NamePrefixRel := NameMap NameSet
 
 namespace NamePrefixRel
 
+-- The new behaviour of `inferInstanceAs` from leanprover/lean4#12897 needs to be updated,
+-- to ensure that if we are in a `meta` section then the auxiliary definitions are also `meta`.
+set_option backward.inferInstanceAs.wrap false in
 instance : EmptyCollection NamePrefixRel := inferInstanceAs (EmptyCollection (NameMap _))
 
 /-- Make all names with prefix `n₁` related to names with prefix `n₂`. -/

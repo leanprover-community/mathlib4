@@ -313,7 +313,6 @@ lemma AlgHom.tensorEqualizerEquiv_apply [Module.Flat R T]
 
 #adaptation_note /-- After nightly-2026-02-23 this requires more heartbeats. -/
 set_option maxHeartbeats 400000 in -- see note
-set_option backward.isDefEq.respectTransparency false in
 variable (R A) in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /--
