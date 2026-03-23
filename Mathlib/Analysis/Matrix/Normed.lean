@@ -182,7 +182,7 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 @[instance_reducible]
 protected def normedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) :=
-  Pi.normedAddCommGroup
+  fast_instance% Pi.normedAddCommGroup
 
 section NormedSpace
 
@@ -205,7 +205,7 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 @[instance_reducible]
 protected def normedSpace : NormedSpace R (Matrix m n α) :=
-  Pi.normedSpace
+  fast_instance% Pi.normedSpace
 
 namespace Norms.Elementwise
 
@@ -239,6 +239,7 @@ matrix. -/
 @[instance_reducible, local instance]
 protected def linftyOpSeminormedAddCommGroup [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
+  fast_instance%
   @Pi.seminormedAddCommGroup m _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α))
 
 /-- Normed group instance (using sup norm of L1 norm) for matrices over a normed ring.  Not
@@ -247,6 +248,7 @@ matrix. -/
 @[instance_reducible, local instance]
 protected def linftyOpNormedAddCommGroup [NormedAddCommGroup α] :
     NormedAddCommGroup (Matrix m n α) :=
+  fast_instance%
   @Pi.normedAddCommGroup m _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 1 (fun _ : n ↦ α))
 
 /-- This applies to the sup norm of L1 norm. -/
