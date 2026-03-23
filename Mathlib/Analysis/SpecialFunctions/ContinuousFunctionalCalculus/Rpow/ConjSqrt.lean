@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 
 /-!
-# Conjugating by the square root of a positive operator
+# Conjugating by the square root of a positive element in a C⋆-algebra
 
 This file defines `conjSqrt c a` as `sqrt c * a * sqrt c`, and develops API for this operation.
 
@@ -21,14 +21,14 @@ namespace CFC
 
 open Ring
 
-section ConjSqrt
+public section ConjSqrt
 
 variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
   [StarOrderedRing A] [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
   [NonnegSpectrumClass ℝ A] [SeparatelyContinuousMul A]
   [IsTopologicalRing A] [T2Space A]
 
-/-- Conjugation by the square root of an operator, i.e. `sqrt c * a * sqrt c`. -/
+/-- Conjugation by the square root of an element, i.e. `sqrt c * a * sqrt c`. -/
 @[expose]
 public noncomputable def conjSqrt (c : A) : A →L[ℝ] A where
   toFun a := sqrt c * a * sqrt c
