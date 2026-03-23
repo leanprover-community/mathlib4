@@ -79,9 +79,6 @@ instance {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
 instance [HasColimits C] : HasColimits (SimplicialObject C) :=
   ⟨inferInstance⟩
 
-instance [Preadditive C] : Preadditive (SimplicialObject C) :=
-  inferInstanceAs (Preadditive (SimplexCategoryᵒᵖ ⥤ C))
-
 variable {C}
 
 @[ext]
