@@ -24,6 +24,8 @@ This file defines compact systems of sets.
   gives a compact system.
 * `isCompactSystem_isCompact_isClosed`: The set of closed and compact sets is a compact system.
 * `isCompactSystem_isCompact`: In a `T2Space`, the set of compact sets is a compact system.
+* `IsCompactSystem.inter.isCompactSystem`: If `S` is a compact system, then the set of countable
+intersections of sets in `S` is a compact system.
 -/
 
 @[expose] public section
@@ -182,3 +184,64 @@ theorem isCompactSystem_insert_univ_isCompact_isClosed (α : Type*) [Topological
   (isCompactSystem_isCompact_isClosed α).insert_univ
 
 end IsCompactIsClosed
+
+section Inter
+
+namespace IsCompactSystem
+
+/-- Countable intersections of sets in a compact system. -/
+def inter (S : Set (Set α)) : Set (Set α) :=
+  sInter '' { L : Set (Set α) | L.Countable ∧ L ⊆ S}
+
+lemma inter.mem_iff (s : Set α) :
+    s ∈ inter S ↔ ∃ L : Set (Set α), L.Countable ∧ s = ⋂₀ L ∧ ↑L ⊆ S := by
+  refine ⟨fun ⟨L, hL⟩ ↦ ?_, fun h ↦ ?_⟩
+  · simp only [mem_setOf_eq] at hL
+    use L
+    simp [hL]
+  · obtain ⟨L, hL⟩ := h
+    use L
+    simp [hL.1, hL.2]
+
+/- If `IsCompactSystem S`, the set of countable intersections of sets in `S` is also a compact
+system. -/
+theorem inter.isCompactSystem (S : Set (Set α)) (hS : IsCompactSystem S) :
+    IsCompactSystem (inter S) := by
+  by_cases h : Nonempty α
+  · rw [IsCompactSystem] at hS ⊢
+    intro D hD₁ hD₂
+    simp_rw [inter.mem_iff] at hD₁
+    choose E hE₁ using hD₁
+    simp only [hE₁] at hD₂
+    rw [← sInter_iUnion] at hD₂
+    have hE₃ : (⋃ i, E i).Countable := by
+      simp [hE₁]
+    have hE₄ : (⋃ i, E i) ⊆ S := by
+      simp [hE₁]
+    haveI : Nonempty (⋃ i, E i) := by
+      contrapose! hD₂
+      rw [Set.eq_empty_of_isEmpty (⋃ i, E i)]
+      simp only [sInter_empty]
+      refine nonempty_iff_univ_nonempty.mp h
+    let ⟨x, hx⟩ := this
+    rw [← range_enumerateCountable_of_mem hE₃ hx, sInter_range] at hD₂
+    specialize hS (enumerateCountable hE₃ x)
+    obtain ⟨n, hn⟩ := hS (fun i ↦ hE₄ (enumerateCountable_mem hE₃ hx i)) hD₂
+    have g (i : ℕ) : ∃ j, enumerateCountable hE₃ x i ∈ E j := by
+      rw [← mem_iUnion]
+      exact enumerateCountable_mem hE₃ hx i
+    choose g hg using g
+    use (Finset.range (n + 1)).sup g
+    refine subset_eq_empty ?_ hn
+    simp only [dissipate, subset_iInter_iff]
+    intro i hi
+    apply le_trans (b := D (g i)) _ ((hE₁ (g i)).2.1 ▸ sInter_subset_of_mem (hg i))
+    apply biInter_subset_of_mem
+    change g i ≤ (Finset.range (n + 1)).sup g
+    exact le_sup (mem_range_succ_iff.mpr hi)
+  · simp only [not_nonempty_iff] at h
+    exact of_IsEmpty (inter S)
+
+end IsCompactSystem
+
+end Inter

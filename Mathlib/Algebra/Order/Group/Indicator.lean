@@ -168,6 +168,20 @@ lemma mulIndicator_iUnion_apply (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α
     simp only [mem_iUnion, not_exists] at hx
     simp [hx, ← h1]
 
+lemma Set.indicator_iUnion_of_disjoint [AddCommMonoid M] [TopologicalSpace M] (s : δ → Set α) (hs : Pairwise (Disjoint on s)) (f : α → M) (i : α) : (⋃ d, s d).indicator f i = tsum d, (s d).indicator f i := by
+  simp only [Set.indicator, Set.mem_iUnion]
+  by_cases h₀ : ∃ d, i ∈ s d <;> simp only [Set.mem_iUnion, h₀, ↓reduceIte]
+  · obtain ⟨j, hj⟩ := h₀
+    rw [ENNReal.tsum_eq_add_tsum_ite j]
+    simp only [hj, ↓reduceIte]
+    nth_rw 1 [← add_zero (f i)] ; congr
+    apply (ENNReal.tsum_eq_zero.mpr ?_).symm
+    simp only [ite_eq_left_iff, ite_eq_right_iff]
+    exact fun k hk hb ↦ False.elim <| Disjoint.notMem_of_mem_left (hs (id (Ne.symm hk))) hj hb
+  · refine (ENNReal.tsum_eq_zero.mpr (fun j ↦ ?_)).symm
+    push_neg at h₀
+    simp [h₀ j]
+
 variable [Nonempty ι]
 
 @[to_additive]
