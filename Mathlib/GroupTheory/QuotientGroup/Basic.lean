@@ -446,6 +446,8 @@ namespace QuotientGroup
 
 section powMonoidHom
 
+variable {ι : Type*} (A : ι → Type*) [∀ i, CommGroup (A i)] (n : ℕ)
+
 /-- The isomorphism between the quotient of a product by the image of the `n`th power map
 and the product of the quotients by the images of the `n`th power maps on the factors. -/
 @[to_additive
@@ -453,7 +455,7 @@ and the product of the quotients by the images of the `n`th power maps on the fa
   map and the product of the quotients by the images of the multiplication-by-`n` maps
   on the factors. -/ ]
 noncomputable
-def mulEquivPiModRangePowMonoidHom {ι : Type*} (A : ι → Type*) [∀ i, CommGroup (A i)] (n : ℕ) :
+def mulEquivPiModRangePowMonoidHom :
     ((i : ι) → A i) ⧸ (powMonoidHom n).range ≃* ((i : ι) → A i ⧸ (powMonoidHom n).range) :=
   let φ : ((i : ι) → A i) →* (i : ι) → A i ⧸ (powMonoidHom n).range := {
     toFun x := (x ·)
@@ -463,6 +465,16 @@ def mulEquivPiModRangePowMonoidHom {ι : Type*} (A : ι → Type*) [∀ i, CommG
   liftEquiv (φ := φ) _ (fun y ↦ ⟨fun i ↦ Quotient.out (y i), by simp [φ]⟩) <| by
     ext x : 1
     simpa [φ, funext_iff] using (Classical.skolem (p := fun i a ↦ a ^ n = x i)).symm
+
+@[to_additive (attr := simp)]
+lemma mulEquivPiModRangePowMonoidHom_apply (x : (i : ι) → A i) :
+    mulEquivPiModRangePowMonoidHom A n ↑x = fun i ↦ ↑(x i) :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma mulEquivPiModRangePowMonoidHom_apply_apply (x : (i : ι) → A i) (i : ι) :
+    mulEquivPiModRangePowMonoidHom A n ↑x i = ↑(x i) :=
+  rfl
 
 end powMonoidHom
 
