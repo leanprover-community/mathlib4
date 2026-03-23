@@ -637,9 +637,6 @@ theorem iSup_typein_succ {o : Ordinal} :
 
 end lsub
 
--- TODO: either deprecate this in favor of `lsub` when its universes are generalized, or deprecate
--- both of them at once.
-
 section blsub
 
 /-- The least strict upper bound of a family of ordinals indexed by the set of ordinals less than
@@ -877,17 +874,20 @@ theorem blsub_comp {o o' : Ordinal.{max u v}} {f : ∀ a < o, Ordinal.{max u v w
   @bsup_comp.{u, v, w} o _ (fun a ha => succ (f a ha))
     (fun {_ _} _ _ h => succ_le_succ_iff.2 (hf _ _ h)) g hg
 
+@[deprecated IsNormal.apply_of_isSuccLimit (since := "2026-03-23")]
 theorem IsNormal.bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f) {o : Ordinal.{u}}
     (h : IsSuccLimit o) : (Ordinal.bsup.{_, v} o fun x _ => f x) = f o := by
   rw [← IsNormal.bsup.{u, u, v} H (fun x _ => x) h.ne_bot, bsup_id_limit fun _ ↦ h.succ_lt]
 
 set_option linter.deprecated false in
-@[deprecated "blsub is deprecated" (since := "2026-03-23")]
+@[deprecated IsNormal.apply_of_isSuccLimit (since := "2026-03-23")]
 theorem IsNormal.blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f) {o : Ordinal.{u}}
     (h : IsSuccLimit o) : (blsub.{_, v} o fun x _ => f x) = f o := by
   rw [← IsNormal.bsup_eq.{u, v} H h, bsup_eq_blsub_of_lt_succ_limit h]
   exact fun a _ => H.strictMono (lt_succ a)
 
+set_option linter.deprecated false in
+@[deprecated isNormal_iff (since := "2026-03-23")]
 theorem isNormal_iff_lt_succ_and_bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}} :
     IsNormal f ↔ (∀ a, f a < f (succ a)) ∧
       ∀ o, IsSuccLimit o → (bsup.{_, v} o fun x _ => f x) = f o :=
@@ -896,6 +896,8 @@ theorem isNormal_iff_lt_succ_and_bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}}
       rw [← h₂ _ ho]
       simpa [IsLUB, upperBounds, lowerBounds, IsLeast, bsup_le_iff] using le_bsup _⟩
 
+set_option linter.deprecated false in
+@[deprecated isNormal_iff (since := "2026-03-23")]
 theorem isNormal_iff_lt_succ_and_blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}} :
     IsNormal f ↔ (∀ a, f a < f (succ a)) ∧
       ∀ o, IsSuccLimit o → (blsub.{_, v} o fun x _ => f x) = f o := by
