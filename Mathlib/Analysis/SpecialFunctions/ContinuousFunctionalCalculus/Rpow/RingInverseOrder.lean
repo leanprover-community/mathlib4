@@ -21,7 +21,9 @@ This file shows that `Ring.inverse` is convex on strictly positive operators.
   is operator convex.
 -/
 
-namespace CFC
+namespace CStarAlgebra
+
+open CFC
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -94,4 +96,4 @@ public lemma convexOn_ringInverse :
       _ = _ := by
         rw [← inverse_conjSqrt _ _ xpos, conjSqrt_conjSqrt_ringInverse _ _ xpos]
 
-end CFC
+end CStarAlgebra
