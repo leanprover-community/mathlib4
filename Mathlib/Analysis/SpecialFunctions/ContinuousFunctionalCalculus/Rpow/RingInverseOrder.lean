@@ -29,6 +29,8 @@ variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 open Ring in
 public lemma antitoneOn_ringInverse : AntitoneOn Ring.inverse {a : A | IsStrictlyPositive a} := by
+  /- Suppose `a ≤ b`. Then, define `c = a^(-1/2) b a^(-1/2)`, and we have that `1 ≤ c`.
+  Now, `b⁻¹ ≤ a⁻¹` is equivalent to `c⁻¹ ≤ 1`, and this can be proven since `1` and `c` commute. -/
   intro a (apos : IsStrictlyPositive a) b (bpos : IsStrictlyPositive b) hab
   let c := conjSqrt (inverse a) b
   have cpos : IsStrictlyPositive c := by grind
@@ -59,6 +61,9 @@ public lemma ringInverse_le_ringInverse {a b : A} (hab : a ≤ b)
 open Ring in
 public lemma convexOn_ringInverse :
     ConvexOn ℝ {a : A | IsStrictlyPositive a} Ring.inverse := by
+  /- We need to prove that `(a • x + b • y)⁻¹ ≤ a • x⁻¹ + b • y⁻¹`. To do this, we define
+  `z := x^(-1/2) y x^(-1/2)`. This turns the statement to prove into
+  `(a • 1 + b • z)⁻¹ ≤ a • 1⁻¹ + b • z⁻¹`, and this can be proven since everything now commutes. -/
   refine ⟨by grind [convex_iff_forall_pos], ?_⟩
   intro x (xpos : IsStrictlyPositive x) y (ypos : IsStrictlyPositive y) a b ha hb hab
   let z := conjSqrt (inverse x) y
