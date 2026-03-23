@@ -99,6 +99,10 @@ theorem hyperplane_separation' (C : ProperCone ℝ E) (hx₀ : x₀ ∉ C) :
   refine ⟨(InnerProductSpace.toDual ℝ E).symm f, ?_⟩
   simpa [← real_inner_comm _ ((InnerProductSpace.toDual ℝ E).symm f), *]
 
+@[deprecated (since := "2026-03-23")] alias
+  _root_.ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem :=
+  hyperplane_separation'
+
 /-- The inner dual of inner dual of a proper cone is itself. -/
 @[simp] theorem innerDual_innerDual (C : ProperCone ℝ E) :
     innerDual (innerDual (C : Set E)) = C := by
@@ -138,16 +142,5 @@ theorem hyperplane_separation_of_notMem (K : ProperCone ℝ E) {f : E →L[ℝ] 
     (disj : b ∉ K.map f) :
     ∃ y : F, ContinuousLinearMap.adjoint f y ∈ innerDual K ∧ ⟪b, y⟫_ℝ < 0 := by
   contrapose! disj; rwa [K.relative_hyperplane_separation]
-
-/-- Geometric interpretation of **Farkas' lemma**. Also stronger version of the
-**Hahn-Banach separation theorem** for proper cones. -/
-theorem hyperplane_separation_of_notMem_absolute (K : ProperCone ℝ E) {b : E} (disj : b ∉ K) :
-    ∃ y : E, y ∈ innerDual K ∧ ⟪b, y⟫_ℝ < 0 := by
-  simpa using K.hyperplane_separation_of_notMem
-    (f := ContinuousLinearMap.id ℝ E) (by simpa using disj)
-
-@[deprecated (since := "2026-03-23")] alias
-  _root_.ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem :=
-  hyperplane_separation_of_notMem_absolute
 
 end ProperCone
