@@ -126,7 +126,7 @@ theorem isRegular_preAleph_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (preAle
 
 theorem cof_preOmega_add_one {o : Ordinal} (h : ω ≤ o) :
     (preOmega (o + 1)).cof = preAleph (o + 1) := by
-  rw [← ord_preAleph, (isRegular_preAleph_add_one h).cof_eq]
+  rw [← ord_preAleph, (isRegular_preAleph_add_one h).cof_ord]
 
 theorem isRegular_aleph_add_one (o : Ordinal) : IsRegular (ℵ_ (o + 1)) := by
   rw [aleph_add_one]
