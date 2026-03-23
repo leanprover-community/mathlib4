@@ -21,6 +21,8 @@ namespace CFC
 
 open Ring
 
+section ConjSqrt
+
 variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
   [StarOrderedRing A] [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
   [NonnegSpectrumClass ℝ A] [SeparatelyContinuousMul A]
@@ -104,5 +106,7 @@ public lemma conjSqrt_monotone {c : A} : Monotone (conjSqrt c) := by
 @[gcongr]
 public lemma conjSqrt_le_conjSqrt {c a b : A} (h : a ≤ b) : conjSqrt c a ≤ conjSqrt c b :=
   conjSqrt_monotone h
+
+end ConjSqrt
 
 end CFC
