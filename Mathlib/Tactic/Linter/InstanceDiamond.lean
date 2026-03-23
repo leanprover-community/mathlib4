@@ -130,12 +130,13 @@ private def findDiamondFailures (instExpr : Expr) (structName : Name) :
             differingFields := differingFields.push field
         catch _ => pure ()
       let fieldMsg := if differingFields.isEmpty then m!""
-        else m!"\n  differing fields: {differingFields.toList}"
+        else m!"\n  Differing fields: {differingFields.toList}"
       failures := failures.push {
         message := m!"instance diamond at {ancestor}:\
            \n  the projection chains {fullPathI} and {fullPathJ}\
            \n  produce results which are not definitionally equal\
-           \n  at `with_reducible_and_instances` transparency{fieldMsg}"
+           \n  at `with_reducible_and_instances` transparency.\
+           {fieldMsg}"
         lhs, rhs
         pathI := fullPathI
         pathJ := fullPathJ }
