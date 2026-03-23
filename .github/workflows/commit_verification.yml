@@ -66,6 +66,7 @@ jobs:
           else
             echo "has_special=false" >> "$GITHUB_OUTPUT"
             echo "No transient or automated commits found"
+            echo "No transient or automated commits found; this comment should never be posted" > comment_body.md
           fi
 
       - name: Verify commits
