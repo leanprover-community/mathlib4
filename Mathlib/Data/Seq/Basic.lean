@@ -41,7 +41,6 @@ set_option linter.flexible false in -- simp followed by exact rfl
 @[simp]
 theorem length_nil : length (nil : Seq α) terminates_nil = 0 := by simp [length]; exact rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem length'_nil : length' (nil : Seq α) = 0 := by
   simp -implicitDefEqProofs [length']
@@ -51,7 +50,6 @@ theorem length_cons {x : α} {s : Seq α} (h : s.Terminates) :
   apply Nat.find_comp_succ
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem length'_cons (x : α) (s : Seq α) :
     (cons x s).length' = s.length' + 1 := by
@@ -909,6 +907,7 @@ theorem Pairwise_drop {R : α → α → Prop} {s : Seq α} (h : s.Pairwise R) {
 
 end Pairwise
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Coinductive principle for proving `b.length' ≤ a.length'` for two sequences `a` and `b`. -/
 theorem at_least_as_long_as_coind {a : Seq α} {b : Seq β}
     (motive : Seq α → Seq β → Prop) (base : motive a b)

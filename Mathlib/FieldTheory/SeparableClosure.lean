@@ -212,7 +212,7 @@ or `IsSepClosure.isGalois`, and every separable extension embeds into it (`IsSep
 abbrev SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
 
 instance SeparableClosure.isSepClosed : IsSepClosed (SeparableClosure F) :=
-  (inferInstanceAs (IsSepClosure F (SeparableClosure F))).sep_closed
+  (inferInstance : IsSepClosure F (SeparableClosure F)).sep_closed
 
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/

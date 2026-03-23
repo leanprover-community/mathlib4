@@ -212,7 +212,6 @@ section IsCyclotomicExtension
 
 variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any `S' : Solution'`, the multiplicity of `λ` in `S'.c` is finite. -/
 lemma Solution'.multiplicity_lambda_c_finite :
     FiniteMultiplicity (hζ.toInteger - 1) S'.c :=

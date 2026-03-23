@@ -1,4 +1,4 @@
-{"version": "1.1.0",
+{"version": "1.2.0",
  "packagesDir": ".lake/packages",
  "packages":
  [{"url": "https://github.com/leanprover-community/plausible",
@@ -45,10 +45,10 @@
    "type": "git",
    "subDir": null,
    "scope": "leanprover-community",
-   "rev": "61944418f2cf5a6d8b217ed2c5ed82a4d9f607b7",
+   "rev": "4b0425999c72ab996eec7f3131628f6b8ad2eadb",
    "name": "aesop",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "nightly-testing",
+   "inputRev": "lean-pr-testing-12895",
    "inherited": false,
    "configFile": "lakefile.toml"},
   {"url": "https://github.com/leanprover-community/quote4",
@@ -65,7 +65,7 @@
    "type": "git",
    "subDir": null,
    "scope": "leanprover-community",
-   "rev": "22f50046aa2bd8d7e31e066a274bfed54b079133",
+   "rev": "e373bdde267f0dfce3db9fb9a8a32a463333e3ef",
    "name": "batteries",
    "manifestFile": "lake-manifest.json",
    "inputRev": "nightly-testing",
@@ -82,4 +82,5 @@
    "inherited": true,
    "configFile": "lakefile.toml"}],
  "name": "mathlib",
- "lakeDir": ".lake"}
+ "lakeDir": ".lake",
+ "fixedToolchain": false}

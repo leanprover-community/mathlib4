@@ -275,7 +275,6 @@ variable {E : Type*} [NormedAddCommGroup E]
 
 variable {f : ℝ → E} {T : ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 A periodic function is interval integrable over every interval if it is interval integrable over one
 period.
@@ -342,7 +341,6 @@ theorem intervalIntegrable₀ (h₁f : Function.Periodic f T) (hT : T ≠ 0)
 
 variable [NormedSpace ℝ E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a periodic function with period `T`, then its integral over `[t, t + T]` does not
 depend on `t`. -/
 theorem intervalIntegral_add_eq (hf : Periodic f T) (t s : ℝ) :

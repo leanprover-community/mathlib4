@@ -37,7 +37,10 @@ variable (ι : Type v) (β : ι → Type w)
 Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι β`. -/
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   Π₀ i, β i
-deriving AddCommMonoid, Inhabited, DFunLike, CoeFun
+deriving AddCommMonoid, Inhabited, DFunLike
+
+set_option backward.inferInstanceAs.wrap.data false in
+deriving instance CoeFun for DirectSum
 
 /-- `⨁ i, f i` is notation for `DirectSum _ f` and equals the direct sum of `fun i ↦ f i`.
 Taking the direct sum over multiple arguments is possible, e.g. `⨁ (i) (j), f i j`. -/
@@ -78,6 +81,7 @@ variable [∀ i, AddCommGroup (β i)]
 
 instance : AddCommGroup (DirectSum ι β) :=
   inferInstanceAs (AddCommGroup (Π₀ i, β i))
+
 variable {β}
 
 @[simp]
