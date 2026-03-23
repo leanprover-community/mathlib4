@@ -620,4 +620,13 @@ lemma IsLocalization.normalizedCoprimeIntegerNormalization_degree_eq [IsDomain R
   rw [propext (map_ne_zero_iff (algebraMap R S) this)]
   exact nonZeroDivisors.ne_zero (hM hb1)
 
+variable {p} in
+theorem IsLocalization.normalizedCoprimeIntegerNormalization_IsPrimtive (hp : p ≠ 0) :
+    (normalizedCoprimeIntegerNormalization M p).IsPrimitive := by
+  simp [normalizedCoprimeIntegerNormalization, hp]
+
+
+  sorry
+
+
 end NormalizedGCDMonoid
