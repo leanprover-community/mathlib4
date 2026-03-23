@@ -681,7 +681,7 @@ of the matchings of `G` -/
 noncomputable def matchingNumber (G : SimpleGraph V) : ℕ∞ :=
   ⨆ (M : G.Subgraph) (_ : M.IsMatching), M.edgeSet.encard
 
-lemma Subgraph.IsMatching.edgeSet_encard_le_matchingNumber {G : SimpleGraph V} {M : Subgraph G}
+lemma Subgraph.IsMatching.encard_edgeSet_le_matchingNumber {G : SimpleGraph V} {M : Subgraph G}
    (hM : M.IsMatching) : M.edgeSet.encard ≤ matchingNumber G := le_iSup₂_of_le M hM (le_refl _)
 
 lemma matchingNumber.le_iff {G : SimpleGraph V} {k : ℕ∞} :
