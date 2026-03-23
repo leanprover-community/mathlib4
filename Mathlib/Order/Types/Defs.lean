@@ -237,7 +237,7 @@ theorem pos_iff_ne_zero {o : OrderType} : 0 < o ↔ o ≠ 0 where
     exact ⟨⟨Function.Embedding.ofIsEmpty, nofun⟩, fun ⟨f⟩ ↦ IsEmpty.elim inferInstance f.toFun⟩
 
 /-- The universe lift operation on order types. You can specify the universes explicitly with
-  `lift.{u v} : OrderType.{v} → OrderType.{max v u}` -/
+  `lift.{u, v} : OrderType.{v} → OrderType.{max v u}` -/
 @[pp_with_univ]
 def lift (o : OrderType.{v}) : OrderType.{max v u} :=
   o.liftOn (fun α _ ↦ type (ULift α)) fun _α _ _β _ e ↦
@@ -270,7 +270,7 @@ theorem lift_type_eq_iff : lift (type α) = lift (type β) ↔ Nonempty (α ≃o
   rw [← type_uLift, ← type_uLift, type_eq_type] at h
   exact ⟨(ULift.orderIso.symm.trans h.some).trans ULift.orderIso⟩
 
-theorem lift_type_lt_iff : lift (type α) ≤ lift (type β) ↔ Nonempty (α ↪o β) := by
+theorem lift_type_le_iff : lift (type α) ≤ lift (type β) ↔ Nonempty (α ↪o β) := by
  refine ⟨fun h ↦ ?_, fun ⟨h⟩ ↦ type_le_type <| (ULift.orderIso.toOrderEmbedding.trans h).trans
    ULift.orderIso.symm.toOrderEmbedding⟩
  rw [← type_uLift, ← type_uLift, type_le_type_iff] at h
