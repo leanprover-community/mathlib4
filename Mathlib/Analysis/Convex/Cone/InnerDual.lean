@@ -147,4 +147,8 @@ theorem hyperplane_separation_of_notMem_absolute
   simpa using K.hyperplane_separation_of_notMem
     (f := ContinuousLinearMap.id ℝ E) (by simpa using disj)
 
+@[deprecated (since := "2026-03-23")] alias
+  _root_.ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem :=
+  hyperplane_separation_of_notMem_absolute
+
 end ProperCone
