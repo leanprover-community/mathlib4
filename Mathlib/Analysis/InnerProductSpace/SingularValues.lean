@@ -192,7 +192,7 @@ theorem support_singularValues : T.singularValues.support = Finset.range (finran
   rw [← Finset.coe_Iio, Finset.coe_inj, Nat.Iio_eq_range] at hn
   simp [← card_support_singularValues, hn]
 
-theorem singularValues_pos_iff_lt_finrank_range_self {n : ℕ} :
+theorem singularValues_pos_iff_lt_finrank_range {n : ℕ} :
     0 < T.singularValues n ↔ n < finrank 𝕜 T.range := by
   rw [singularValues_pos_iff_ne_zero, ← Finsupp.mem_support_iff, support_singularValues,
     Finset.mem_range]
@@ -201,7 +201,7 @@ theorem singularValues_finrank_range_self : T.singularValues (finrank 𝕜 T.ran
   rw [← Finsupp.notMem_support_iff, support_singularValues]
   exact Finset.notMem_range_self
 
-theorem singularValues_eq_zero_iff_le_finrank_range_self {n : ℕ} :
+theorem singularValues_eq_zero_iff_le_finrank_range {n : ℕ} :
     T.singularValues n = 0 ↔ finrank 𝕜 T.range ≤ n := by
   rw [← Finsupp.notMem_support_iff, support_singularValues, Finset.mem_range, not_lt]
 
