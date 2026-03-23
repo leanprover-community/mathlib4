@@ -57,8 +57,6 @@ for the empty set by convention.
 * `ω` is a notation for the first infinite ordinal in the scope `Ordinal`.
 -/
 
-set_option linter.style.longFile 1700
-
 @[expose] public section
 
 assert_not_exists Module Field
