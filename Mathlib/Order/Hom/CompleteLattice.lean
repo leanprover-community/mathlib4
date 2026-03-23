@@ -75,6 +75,8 @@ structure CompleteLatticeHom (α β : Type*) [CompleteLattice α] [CompleteLatti
 
 attribute [to_dual existing] CompleteLatticeHom.tosSupHom
 
+attribute [nolint docBlame] CompleteLatticeHom.tosSupHom
+
 section
 
 /-- `sSupHomClass F α β` states that `F` is a type of `⨆`-preserving morphisms.
