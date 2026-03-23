@@ -32,32 +32,28 @@ def objMk₁ {n : ℕ} (i : Fin (n + 2)) : (Δ[1] _⦋n⦌ : Type u) :=
   objMk
     { toFun j := if j.castSucc < i then 0 else 1
       monotone' j₁ j₂ h := by
-        by_cases hi : j₁.castSucc < i
-        · simp [if_pos hi]
-        · dsimp
-          rw [if_neg hi, if_neg (fun hj' ↦ hi (lt_of_le_of_lt (by simpa using h) hj'))] }
+        dsimp
+        split_ifs <;> grind }
 
-set_option backward.isDefEq.respectTransparency false in
+@[local grind =]
+private lemma objMk₁_apply {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) :
+    dsimp% objMk₁ i j = if j.castSucc < i then 0 else 1 := rfl
+
 lemma objMk₁_apply_eq_zero_iff {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) :
     dsimp% objMk₁.{u} i j = 0 ↔ j.castSucc < i := by
-  by_cases hj : j.castSucc < i
-  · simpa [objMk₁, if_pos hj]
-  · simpa [objMk₁, if_neg hj] using hj
+  grind
 
 lemma objMk₁_of_castSucc_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : j.castSucc < i) :
     dsimp% objMk₁.{u} i j = 0 := by
-  simpa [objMk₁_apply_eq_zero_iff]
+  grind
 
-set_option backward.isDefEq.respectTransparency false in
 lemma objMk₁_apply_eq_one_iff {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) :
     dsimp% objMk₁.{u} i j = 1 ↔ i ≤ j.castSucc := by
-  by_cases hj : j.castSucc < i
-  · simpa [objMk₁, if_pos hj]
-  · simpa [objMk₁, if_neg hj] using hj
+  grind
 
 lemma objMk₁_of_le_castSucc {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : i ≤ j.castSucc) :
     dsimp% objMk₁.{u} i j = 1 := by
-  simpa [objMk₁_apply_eq_one_iff]
+  grind
 
 lemma δ_objMk₁_of_le {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : i ≤ j.castSucc) :
     Δ[1].δ j (objMk₁.{u} i) =
@@ -70,12 +66,7 @@ lemma δ_objMk₁_of_le {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : i ≤
   change objMk₁.{u} i.castSucc (j.succAbove k) = _
   rw [Fin.eq_iff_eq_zero_iff]
   simp only [objMk₁_apply_eq_zero_iff, Fin.castSucc_lt_castSucc_iff]
-  by_cases hk : k.castSucc < j
-  · rw [Fin.succAbove_of_castSucc_lt _ _ hk]
-  · simp only [not_lt] at hk
-    rw [Fin.succAbove_of_le_castSucc _ _ hk]
-    exact ⟨fun h' ↦ (Fin.lt_irrefl _
-      (lt_of_le_of_lt ((h.trans hk).trans k.castSucc_le_succ) h')).elim, by lia⟩
+  grind [Fin.succAbove]
 
 lemma δ_objMk₁_of_lt {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : j.castSucc < i) :
     Δ[1].δ j (objMk₁.{u} i) = objMk₁.{u} (i.pred (Fin.ne_zero_of_lt h)) := by
@@ -85,32 +76,19 @@ lemma δ_objMk₁_of_lt {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : j.cas
   change objMk₁.{u} i.succ (j.succAbove k) = _
   rw [Fin.eq_iff_eq_zero_iff]
   simp only [objMk₁_apply_eq_zero_iff]
-  by_cases hk : j ≤ k.castSucc
-  · rw [Fin.succAbove_of_le_castSucc _ _ hk,
-      Fin.castSucc_lt_succ_iff, Fin.castSucc_lt_iff_succ_le]
-  · simp only [not_le] at hk
-    rw [Fin.succAbove_of_castSucc_lt _ _ hk, Fin.castSucc_lt_succ_iff]
-    exact ⟨fun _ ↦ lt_of_lt_of_le hk (by simpa using h), fun h ↦ h.le⟩
+  grind [Fin.succAbove]
 
 lemma σ_objMk₁_of_le {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : i ≤ j.castSucc) :
     Δ[1].σ j (objMk₁.{u} i) = objMk₁ i.castSucc := by
   ext k : 1
   dsimp [SimplicialObject.σ, SimplexCategory.σ]
   change objMk₁.{u} i (j.predAbove k) = _
-  by_cases hk : k < i
-  · rw [Fin.predAbove_of_le_castSucc _ _ (by
-      rw [Fin.le_castSucc_iff]
-      exact lt_of_lt_of_le hk (h.trans j.castSucc_le_succ)),
-      objMk₁_of_castSucc_lt _ _ (by simpa),
-      objMk₁_of_castSucc_lt _ _ (by simpa using hk)]
-  · simp at hk
-    rw [objMk₁_of_le_castSucc, objMk₁_of_le_castSucc _ _ (by simpa)]
+  by_cases! hk : k < i
+  · grind [Fin.castPred, Fin.predAbove_of_le_castSucc, objMk₁_of_castSucc_lt]
+  · rw [objMk₁_of_le_castSucc, objMk₁_of_le_castSucc _ _ (by simpa)]
     by_cases hk' : k ≤ j.castSucc
     · rwa [Fin.predAbove_of_le_castSucc _ _ hk', Fin.castSucc_castPred]
-    · simp only [not_le] at hk'
-      rw [Fin.predAbove_of_castSucc_lt _ _ hk']
-      refine h.trans ?_
-      rwa [Fin.castSucc_le_castSucc_iff, Fin.le_pred_iff, ← Fin.castSucc_lt_iff_succ_le]
+    · grind [Fin.predAbove]
 
 lemma σ_objMk₁_of_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : j.castSucc < i) :
     Δ[1].σ j (objMk₁.{u} i) = objMk₁ i.succ := by
@@ -118,10 +96,7 @@ lemma σ_objMk₁_of_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : j.cas
   dsimp [SimplicialObject.σ, SimplexCategory.σ]
   change objMk₁.{u} i (j.predAbove k) = _
   by_cases hk : i < k
-  · obtain ⟨k, rfl⟩ := Fin.eq_succ_of_ne_zero (Fin.ne_zero_of_lt hk)
-    rw [Fin.predAbove_of_castSucc_lt _ _ (h.trans hk),
-      objMk₁_of_le_castSucc _ _ (by simpa [Fin.le_castSucc_iff]),
-      objMk₁_of_le_castSucc _ _ (by simpa [Fin.le_castSucc_iff])]
+  · grind [Fin.predAbove_of_castSucc_lt, objMk₁_of_le_castSucc]
   · simp only [not_lt] at hk
     rw [objMk₁_of_castSucc_lt i.succ k (by simpa),
       objMk₁_of_castSucc_lt]
@@ -135,10 +110,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma objMk₁_injective {n : ℕ} : Function.Injective (objMk₁.{u} (n := n)) := by
   intro i j h
   wlog hij : i < j generalizing i j
-  · simp only [not_lt] at hij
-    obtain hij | rfl := hij.lt_or_eq
-    · exact (this h.symm hij).symm
-    · rfl
+  · grind
   have := DFunLike.congr_fun (objMk_bijective.1 h)
     ⟨i.1, lt_of_lt_of_le hij (by dsimp; lia)⟩
   simp [if_pos hij] at this
@@ -152,22 +124,12 @@ lemma objMk₁_surjective {n : ℕ} : Function.Surjective (objMk₁.{u} (n := n)
     ext i : 1
     dsimp [objMk₁]
     split_ifs with h
-    · have hi : i ∉ S := fun hi ↦ by
-        have := S.min'_le _ hi
-        rw [Fin.le_iff_val_le_val] at this
-        rw [Fin.lt_def] at h
-        dsimp at h
-        lia
-      obtain ⟨j, hj⟩ : ∃ (j : Fin 2), f i = j := ⟨_, rfl⟩
-      fin_cases j
-      · exact hj.symm
-      · exact (hi (by simpa [S])).elim
+    · have hi : i ∉ S := fun hi ↦ by have := S.min'_le _ hi; grind
+      grind
     · simp only [Fin.castSucc_lt_castSucc_iff, Finset.lt_min'_iff, not_forall,
         not_lt] at h
       obtain ⟨j, hj, hij⟩ := h
-      replace hj : f j = 1 := by simpa [S] using hj
-      have : f j ≤ f i := (objEquiv f).toOrderHom.monotone hij
-      exact le_antisymm (by simpa [hj] using this) (by lia)
+      grind [show f j ≤ f i from (objEquiv f).toOrderHom.monotone hij]
   · refine ⟨Fin.last _, ?_⟩
     ext i : 1
     dsimp [objMk₁]
