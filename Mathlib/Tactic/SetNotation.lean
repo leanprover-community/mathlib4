@@ -100,6 +100,10 @@ def delabGt : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotati
 /-- This relation is an implementation detail of the `⊆` elatorator. -/
 opaque SubsetElabAux.{u} {α : Type u} : α → α → Prop
 
+/-- Elaborate a notation like `a ⊆ b` by elaborating `a` and `b`, and then deciding
+based on their type whether to return `a ⊆ b` or `a ≤ b`.
+Use `a ≤ b` whenever `useSetNotationFor` returns true for the type.
+If the type is not known, elaboration of this term is postponed. -/
 def elabSubsetLike (x y : Term) (le leCls sub subCls : Name) (expectedType? : Option Expr) :
     TermElabM Expr := do
   let rel ← `(SubsetElabAux $x $y)
@@ -110,7 +114,7 @@ def elabSubsetLike (x y : Term) (le leCls sub subCls : Name) (expectedType? : Op
   -- If the type cannot be determined yet, we postpone elaboration until it is known.
   -- This behaviour is inspired by `resolveLValLoop`.
   tryPostponeIfMVar α
-  if (← isMVarApp α) then
+  if ← isMVarApp α then
     synthesizeSyntheticMVarsUsingDefault
   if ← useSetNotationFor α then
     let inst ← mkInstMVar <| .app (.const leCls [u]) α
