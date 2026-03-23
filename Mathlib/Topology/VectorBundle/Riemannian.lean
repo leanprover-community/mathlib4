@@ -452,12 +452,6 @@ We use 80 as this is rather specialized, so we want other paths to be tried firs
 noncomputable instance (priority := 80)
     {B : Type*} {E : B → Type*} [(b : B) → TopologicalSpace (E b)]
     [(b : B) → AddCommGroup (E b)] [(b : B) → Module ℝ (E b)]
-    /- We are careful about the parameter order, putting `RiemannianBundle E`
-    before `IsTopologicalAddGroup` to avoid the following loop: to put a `IsTopologicalAddGroup`
-    structure on `E b`, one tries to find a `NormedAddCommGroup`, then one tries to apply the
-    current instance. If `IsTopologicalAddGroup (E b)` were before `RiemannianBundle`, then one
-    would try to find a `IsTopologicalAddGroup`, and loop. Normally, loops are detected by typeclass
-    inference but currently it is not in this specific complicated situation. -/
     [h : RiemannianBundle E] [∀ (b : B), IsTopologicalAddGroup (E b)]
     [∀ (b : B), ContinuousConstSMul ℝ (E b)] (b : B) :
     InnerProductSpace ℝ (E b) := fast_instance%
