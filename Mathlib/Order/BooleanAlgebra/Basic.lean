@@ -191,13 +191,7 @@ theorem inf_sdiff_eq_bot_iff (hz : z ≤ y) (hx : x ≤ y) : z ⊓ y \ x = ⊥ �
 
 -- cf. `IsCompl.left_le_iff` and `IsCompl.right_le_iff`
 theorem le_iff_eq_sup_sdiff (hz : z ≤ y) (hx : x ≤ y) : x ≤ z ↔ y = z ⊔ y \ x :=
-  ⟨fun H => by
-    apply le_antisymm
-    · conv_lhs => rw [← sup_inf_sdiff y x]
-      gcongr
-      rwa [inf_eq_right.2 hx]
-    · grw [hz]
-      rw [sup_sdiff_left],
+  ⟨fun H => (sup_sdiff_cancel' H hz).symm,
     fun H => by
     conv_lhs at H => rw [← sup_sdiff_cancel_right hx]
     refine le_of_inf_le_sup_le ?_ H.le
@@ -218,8 +212,7 @@ theorem sdiff_sup : y \ (x ⊔ z) = y \ x ⊓ y \ z :=
       y ⊓ (x ⊔ z) ⊓ (y \ x ⊓ y \ z) = y ⊓ x ⊓ (y \ x ⊓ y \ z) ⊔ y ⊓ z ⊓ (y \ x ⊓ y \ z) := by
           rw [inf_sup_left, inf_sup_right]
       _ = y ⊓ x ⊓ y \ x ⊓ y \ z ⊔ y \ x ⊓ (y \ z ⊓ (y ⊓ z)) := by ac_rfl
-      _ = ⊥ := by rw [inf_inf_sdiff, bot_inf_eq, bot_sup_eq, inf_comm (y \ z),
-                      inf_inf_sdiff, inf_bot_eq])
+      _ = ⊥ := by simp)
 
 theorem sdiff_eq_sdiff_iff_inf_eq_inf : y \ x = y \ z ↔ y ⊓ x = y ⊓ z :=
   ⟨fun h => eq_of_inf_eq_sup_eq (a := y \ x) (by rw [inf_inf_sdiff, h, inf_inf_sdiff])
@@ -265,7 +258,7 @@ theorem sdiff_sdiff_right : x \ (y \ z) = x \ y ⊔ x ⊓ y ⊓ z := by
           rw [sup_inf_self, sup_sdiff_left, ← sup_assoc, sup_inf_left, sdiff_sup_self',
             inf_sup_right, sup_comm y, inf_sdiff_sup_right, inf_sup_left x z y]
       _ = x ⊓ (y \ z ⊔ (x ⊓ z ⊔ (x ⊓ y ⊔ x \ y))) := by ac_rfl
-      _ = x := by rw [sup_inf_sdiff, sup_comm (x ⊓ z), sup_inf_self, sup_comm, inf_sup_self]
+      _ = x := by simp
   · calc
       x ⊓ y \ z ⊓ (z ⊓ x ⊔ x \ y) = x ⊓ y \ z ⊓ (z ⊓ x) ⊔ x ⊓ y \ z ⊓ x \ y := by rw [inf_sup_left]
       _ = x ⊓ (y \ z ⊓ z ⊓ x) ⊔ x ⊓ y \ z ⊓ x \ y := by ac_rfl
