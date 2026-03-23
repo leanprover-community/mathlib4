@@ -411,7 +411,7 @@ theorem preAleph_le_aleph (o : Ordinal) : preAleph o ≤ ℵ_ o :=
 theorem aleph_add_one (o : Ordinal) : ℵ_ (o + 1) = succ (ℵ_ o) := by
   rw [aleph_eq_preAleph, ← add_assoc, preAleph_add_one, aleph_eq_preAleph]
 
--- TODO: deprecate
+@[deprecated aleph_add_one (since := "2026-03-23")]
 theorem aleph_succ (o : Ordinal) : ℵ_ (succ o) = succ (ℵ_ o) :=
   aleph_add_one o
 

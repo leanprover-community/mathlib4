@@ -104,9 +104,15 @@ theorem isRegular_preAleph_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (preAle
   rw [preAleph_succ]
   exact isRegular_succ (aleph0_le_preAleph.2 h)
 
-theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (ℵ_ (succ o)) := by
-  rw [aleph_succ]
+theorem isRegular_aleph_add_one (o : Ordinal) : IsRegular (ℵ_ (o + 1)) := by
+  rw [aleph_add_one]
   exact isRegular_succ (aleph0_le_aleph o)
+
+@[deprecated (since := "2026-03-23")] alias isRegular_aleph_succ := isRegular_aleph_add_one
+
+@[simp]
+theorem cof_omega_add_one (o : Ordinal) : (ω_ (o + 1)).cof = ℵ_ (o + 1) :=
+  (isRegular_aleph_add_one o).cof_omega_eq
 
 lemma IsRegular.lift {κ : Cardinal.{v}} (h : κ.IsRegular) :
     (Cardinal.lift.{u} κ).IsRegular := by
