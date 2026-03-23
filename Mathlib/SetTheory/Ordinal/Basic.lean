@@ -66,8 +66,6 @@ noncomputable section
 open Function Cardinal Set Equiv Order
 open scoped Cardinal InitialSeg
 
-set_option linter.style.longFile 1700
-
 universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}
@@ -1510,3 +1508,5 @@ theorem List.SortedGT.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : Li
           (List.head_le_of_lt hmltl))
 
 @[deprecated (since := "2025-11-27")] alias List.Sorted.lt_ord_of_lt := List.SortedGT.lt_ord_of_lt
+
+set_option linter.style.longFile 1700
