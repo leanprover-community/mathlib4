@@ -161,7 +161,7 @@ theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
   · rw [aeval_mul, hp2, zero_mul]
   · rwa [Polynomial.Monic, leadingCoeff_mul, leadingCoeff_C, mul_inv_cancel₀]
 
-theorem eq_minpoly_of_irreducible [Nontrivial B] {p : A[X]} (hi : Irreducible p)
+theorem Irreducible.eq_minpoly [Nontrivial B] {p : A[X]} (hi : Irreducible p)
     (hx : Polynomial.aeval x p = 0) : p = C p.leadingCoeff * minpoly A x := by
   rw [← minpoly.eq_of_irreducible hi hx, mul_comm, mul_assoc, ← C_mul,
     inv_mul_cancel₀ (leadingCoeff_ne_zero.mpr hi.ne_zero), C_1, mul_one]

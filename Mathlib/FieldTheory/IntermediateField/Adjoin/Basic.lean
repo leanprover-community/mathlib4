@@ -549,7 +549,7 @@ theorem _root_.minpoly.degree_dvd {x : L} (hx : IsIntegral K x) :
   use finrank K⟮x⟯ L
   rw [mul_comm, finrank_mul_finrank]
 
-theorem _root_.Polynomial.natDegree_dvd_finrank_of_irreducible {f : K[X]} (hi : Irreducible f)
+theorem _root_.Polynomial.Irreducible.natDegree_dvd_finrank {f : K[X]} (hi : Irreducible f)
     (hs : (f.map (algebraMap K L)).Splits) : f.natDegree ∣ finrank K L := by
   have := hi.degree_pos.ne'
   rw [← f.degree_map (algebraMap K L)] at this

@@ -195,8 +195,7 @@ theorem _root_.Polynomial.splits_X_pow_nat_card_sub_X :
   · have := (IsSplittingField.splits (L := K) (X ^ (Fintype.card K) - X : K[X]))
     simpa [Algebra.algebraMap_self, map_sub, map_pow, map_X] using this
   · rw [← Polynomial.splits_neg_iff]
-    simp only [Nat.card_eq_zero_of_infinite, pow_zero, neg_sub]
-    exact Splits.X_sub_C _
+    simpa [Nat.card_eq_zero_of_infinite, pow_zero, neg_sub] using Splits.X_sub_C (1 : K)
 
 instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Algebra K K'] :
     IsGalois K K' := by
