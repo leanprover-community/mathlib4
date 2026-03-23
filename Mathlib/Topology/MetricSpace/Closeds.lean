@@ -214,6 +214,9 @@ theorem isometry_singleton : Isometry ({·} : α → Closeds α) :=
 theorem lipschitz_sup : LipschitzWith 1 fun p : Closeds α × Closeds α => p.1 ⊔ p.2 :=
   .of_edist_le fun _ _ => hausdorffEDist_union_le
 
+theorem lipschitz_prod : LipschitzWith 1 fun p : Closeds α × Closeds β => p.1 ×ˢ p.2 :=
+  .of_edist_le fun _ _ => hausdorffEDist_prod_le
+
 end Closeds
 
 namespace Compacts
@@ -304,13 +307,6 @@ theorem isClosed_in_closeds [CompleteSpace α] :
         _ < ε / 2 + ε / 2 := ENNReal.add_lt_add Dxz Dzy
         _ = ε := ENNReal.add_halves _
     exact mem_biUnion hy this
-
-/-- In a complete space, the type of nonempty compact subsets is complete. This follows
-from the same statement for closed subsets -/
-instance instCompleteSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts α) :=
-  (completeSpace_iff_isComplete_range
-        isometry_toCloseds.isUniformInducing).2 <|
-    isClosed_in_closeds.isComplete
 
 /-- In a second countable space, the type of nonempty compact subsets is second countable -/
 instance instSecondCountableTopology [SecondCountableTopology α] :

@@ -264,7 +264,7 @@ defines an isomorphism between `H/(H ∩ N)` and `(HN)/N`. -/
 subgroup `H` of the normalizer of `N` in `G`,
 defines an isomorphism between `H/(H ∩ N)` and `(H + N)/N` -/]
 noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
-    (hLE : H ≤ N.normalizer) :
+    (hLE : H ≤ normalizer N) :
     letI := Subgroup.normal_subgroupOf_of_le_normalizer hLE
     letI := Subgroup.normal_subgroupOf_sup_of_le_normalizer hLE
     H ⧸ N.subgroupOf H ≃* (H ⊔ N : Subgroup G) ⧸ N.subgroupOf (H ⊔ N) :=
