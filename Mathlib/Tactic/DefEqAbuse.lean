@@ -169,7 +169,7 @@ namespace Mathlib.Tactic.DefEqAbuse
 emoji prefix using the structured `TraceData.result?` to know exactly what was prepended.
 Needed because the same isDefEq check has different emoji prefixes across trace runs
 (✅️ when it succeeds, ❌️ when it fails), but we need to compare the content.
-See https://github.com/leanprover/lean4/issues/13069 for the upstream fix. -/
+See https://github.com/leanprover/lean4/pull/13070 for the upstream fix. -/
 private def stripHeaderEmoji (s : String) (result? : Option Lean.TraceResult) : String :=
   match result? with
   | some result =>
