@@ -137,10 +137,9 @@ theorem two_mul_extremalNumber_le_zarankiewicz_symm [Nonempty α] [Nonempty β] 
   · simp_rw [mem_filter, mem_univ, true_and]
     refine ⟨bipartiteDoubleCover_le, ?_⟩
     contrapose! h
-    refine bipartiteDoubleCover_completeBipartiteGraph_isContained <|
-      h.trans' ⟨Iso.toCopy ?_⟩
+    refine completeBipartiteGraph_isContained_bipartiteDoubleCover.mp <| h.trans' ⟨Iso.toCopy ?_⟩
     exact completeBipartiteGraph.congr
       (Fintype.equivFinOfCardEq rfl) (Fintype.equivFinOfCardEq rfl)
-  · convert bipartiteDoubleCover_card_edgeFinset.symm.le
+  · convert card_edgeFinset_bipartiteDoubleCover.symm.le
 
 end SimpleGraph
