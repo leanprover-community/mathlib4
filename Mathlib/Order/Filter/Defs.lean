@@ -107,6 +107,7 @@ protected theorem mem_sets : s ∈ f.sets ↔ s ∈ f :=
 theorem univ_mem : univ ∈ f :=
   f.univ_sets
 
+@[gcongr]
 theorem mem_of_superset {x y : Set α} (hx : x ∈ f) (hxy : x ⊆ y) : y ∈ f :=
   f.sets_of_superset hx hxy
 
@@ -300,6 +301,7 @@ def EventuallyEq (l : Filter α) (f g : α → β) : Prop :=
 notation:50 f " =ᶠ[" l:50 "] " g:50 => EventuallyEq l f g
 
 /-- A function `f` is eventually less than or equal to a function `g` at a filter `l`. -/
+@[to_dual self (reorder := f g)]
 def EventuallyLE [LE β] (l : Filter α) (f g : α → β) : Prop :=
   ∀ᶠ x in l, f x ≤ g x
 
