@@ -678,11 +678,10 @@ theorem comap_normalizer_eq_of_surjective (H : Subgroup G) {f : N →* G}
 theorem map_equiv_normalizer_eq (H : Subgroup G) (f : G ≃* N) :
     (normalizer H).map f.toMonoidHom = normalizer (H.map f.toMonoidHom) := by
   ext x
-  simp only [mem_normalizer_iff, mem_map_equiv]
+  simp only [mem_normalizer_iff, SetLike.mem_coe, mem_map_equiv]
   rw [f.toEquiv.forall_congr]
   intro
   simp
-  sorry
 
 /-- The image of the normalizer is equal to the normalizer of the image of a bijective
   function. -/
