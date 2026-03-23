@@ -164,14 +164,18 @@ namespace Mathlib.Tactic.DefEqAbuse
     unless (`Meta.isDefEq).isPrefixOf td.cls do return .descend
     f td header children
 
-/-- Strip the leading status emoji and space that `withTraceNodeBefore` prepends to trace headers.
-Headers have the form `"{emoji} {content}"`; this returns just `{content}`.
-Used to compare header strings across trace runs where the same check may have different results
-(and thus different emoji prefixes). -/
-private def stripHeaderEmoji (s : String) : String :=
-  match s.splitOn " " with
-  | _ :: rest => " ".intercalate rest
-  | _ => s
+/-- Strip the leading status emoji that `withTraceNodeBefore` prepends to trace headers.
+`withTraceNodeBefore` stores `m!"{result.toEmoji} {content}"` as the header; this strips the
+emoji prefix using the structured `TraceData.result?` to know exactly what was prepended.
+Needed because the same isDefEq check has different emoji prefixes across trace runs
+(✅️ when it succeeds, ❌️ when it fails), but we need to compare the content.
+See https://github.com/leanprover/lean4/issues/13069 for the upstream fix. -/
+private def stripHeaderEmoji (s : String) (result? : Option Lean.TraceResult) : String :=
+  match result? with
+  | some result =>
+    let emojiPrefix := s!"{result.toEmoji} "
+    if s.startsWith emojiPrefix then (s.drop emojiPrefix.length).toString else s
+  | none => s
 
 /-- Find the deepest failing `Meta.isDefEq` trace nodes (leaf failures).
 Skips `onFailure` retry nodes and ignores ✅️ branches (recovered failures aren't root causes). -/
@@ -190,7 +194,7 @@ partial def collectIsDefEqChecks (pred : Lean.TraceResult → Bool)
   msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
     if let some status := td.result? then
       if pred status then
-        let headerStr := stripHeaderEmoji (← header.toString)
+        let headerStr := stripHeaderEmoji (← header.toString) td.result?
         return .descend (butFirst := some {headerStr})
     return .descend
 
@@ -206,7 +210,7 @@ partial def findTransitionFailures (permSuccesses : Std.HashSet String)
   if permSuccesses.isEmpty then findLeafFailures msg
   else msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
     unless td.result? matches some .failure do return .descend
-    let headerStr := stripHeaderEmoji (← header.toString)
+    let headerStr := stripHeaderEmoji (← header.toString) td.result?
     if permSuccesses.contains headerStr && !permFailures.contains headerStr then
       -- Transition point: fails strict, succeeds permissive, doesn't also fail permissive.
       -- Look for deeper transition points among children.
