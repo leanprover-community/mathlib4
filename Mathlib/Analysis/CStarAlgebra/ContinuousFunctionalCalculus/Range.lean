@@ -109,7 +109,7 @@ variable [IsTopologicalRing A]
 variable [T2Space A] [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
 
 lemma range_cfc_nnreal_eq_image_cfc_real [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-    (a : A) (ha : 0 ≤ a) :
+    (a : A) (ha : 0 ≤ a := by cfc_tac) :
     Set.range (cfc (R := ℝ≥0) · a) = (cfc · a) '' {f | ∀ x ∈ spectrum ℝ a, 0 ≤ f x} := by
   ext
   constructor
@@ -123,7 +123,7 @@ lemma range_cfc_nnreal_eq_image_cfc_real [ContinuousFunctionalCalculus ℝ A IsS
 variable [ContinuousStar A] [StarModule ℝ A]
 
 lemma range_cfc_nnreal_subset
-    [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint] (a : A) (ha : 0 ≤ a) :
+    [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint] (a : A) (ha : 0 ≤ a := by cfc_tac) :
     Set.range (cfc (R := ℝ≥0) · a) ⊆ {x | x ∈ StarAlgebra.elemental ℝ a ∧ 0 ≤ x} := by
   grw [range_cfc_nnreal_eq_image_cfc_real a ha, Set.setOf_and, SetLike.setOf_mem_eq,
     ← range_cfc_subset ℝ ha.isSelfAdjoint, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
@@ -227,7 +227,7 @@ variable [StarOrderedRing A]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma range_cfcₙ_nnreal_eq_image_cfcₙ_real
-    [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] (a : A) (ha : 0 ≤ a) :
+    [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] (a : A) (ha : 0 ≤ a := by cfc_tac) :
     Set.range (cfcₙ (R := ℝ≥0) · a) = (cfcₙ · a) '' {f | ∀ x ∈ quasispectrum ℝ a, 0 ≤ f x} := by
   ext
   constructor
@@ -242,7 +242,7 @@ variable [StarModule ℝ A] [ContinuousStar A] [ContinuousConstSMul ℝ A]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma range_cfcₙ_nnreal_subset
-    [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] (a : A) (ha : 0 ≤ a) :
+    [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] (a : A) (ha : 0 ≤ a := by cfc_tac) :
     Set.range (cfcₙ (R := ℝ≥0) · a) ⊆ {x | x ∈ NonUnitalStarAlgebra.elemental ℝ a ∧ 0 ≤ x} := by
   grw [range_cfcₙ_nnreal_eq_image_cfcₙ_real a ha, Set.setOf_and, SetLike.setOf_mem_eq,
     ← range_cfcₙ_subset _ ha.isSelfAdjoint, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
@@ -250,7 +250,7 @@ lemma range_cfcₙ_nnreal_subset
 
 set_option backward.isDefEq.respectTransparency false in
 lemma range_cfcₙ_nnreal
-    [NonUnitalClosedEmbeddingContinuousFunctionalCalculus ℝ A IsSelfAdjoint] (a : A) (ha : 0 ≤ a) :
+    [NonUnitalClosedEmbeddingContinuousFunctionalCalculus ℝ A IsSelfAdjoint] (a : A) (ha : 0 ≤ a := by cfc_tac) :
     Set.range (cfcₙ (R := ℝ≥0) · a) = {x | x ∈ NonUnitalStarAlgebra.elemental ℝ a ∧ 0 ≤ x} := by
   rw [range_cfcₙ_nnreal_eq_image_cfcₙ_real a ha, Set.setOf_and, SetLike.setOf_mem_eq,
     ← range_cfcₙ _ ha.isSelfAdjoint, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
