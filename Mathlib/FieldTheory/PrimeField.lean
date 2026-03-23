@@ -6,9 +6,9 @@ Authors: Xavier Roblot, Kenny Lau
 module
 
 public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.Algebra.CharP.Algebra
-public import Mathlib.Tactic.NormNum
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.FieldTheory.IntermediateField.Basic
 
 /-!
 # Prime fields
@@ -58,3 +58,13 @@ theorem Subfield.bot_eq_of_zMod_algebra {K : Type*} (p : ℕ) [hp : Fact (Nat.Pr
     (⊥ : Subfield K) = (algebraMap (ZMod p) K).fieldRange := by
   rw [eq_comm, eq_bot_iff, ← Subfield.map_bot (algebraMap (ZMod p) K),
     subsingleton_iff_bot_eq_top.mpr inferInstance, ← RingHom.fieldRange_eq_map]
+
+/--
+The order-preserving bijection between the intermediate fields of `K/ℚ`,
+with `K` a field of characteristic `0`, and the subfields of `K`.
+-/
+def IntermediateFieldEquivSubfield_of_charZero (K : Type*) [Field K] [CharZero K] :
+    IntermediateField ℚ K ≃o Subfield K where
+  toFun := IntermediateField.toSubfield
+  invFun S := Subfield.toIntermediateField S fun _ ↦ SubfieldClass.ratCast_mem _ _
+  map_rel_iff' := by aesop

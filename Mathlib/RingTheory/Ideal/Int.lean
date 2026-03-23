@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 /-!
@@ -33,10 +34,24 @@ In particular, for `I` an ideal of a ring `R` extending `ℤ`, we prove several 
 
 @[expose] public section
 
+instance (n : ℕ) [NeZero n] : Finite (ℤ ⧸ (Ideal.span {(n : ℤ)})) :=
+  Ideal.finiteQuotientOfFreeOfNeBot _ <| by simpa using NeZero.ne _
+
+set_option backward.isDefEq.respectTransparency false in
+theorem Int.card_ideal_quot (n : ℕ) : Nat.card (ℤ ⧸ (Ideal.span {(n : ℤ)})) = n := by
+  simp [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply]
+
+
 instance Int.ideal_span_isMaximal_of_prime (p : ℕ) [Fact (Nat.Prime p)] :
     (Ideal.span {(p : ℤ)}).IsMaximal :=
   Ideal.Quotient.maximal_of_isField _ <|
     (Int.quotientSpanNatEquivZMod p).toMulEquiv.isField (Field.toIsField _)
+
+theorem Int.ringChar_idealQuot (n : ℕ) : ringChar (ℤ ⧸ Ideal.span {(n : ℤ)}) = n := by
+  refine ringChar.eq_iff.mpr <| (charP_iff _ _).mpr fun x ↦ ?_
+  change Ideal.Quotient.mk (Ideal.span {(n : ℤ)}) x = 0 ↔ _
+  rw [Ideal.Quotient.eq_zero_iff_mem, ← Int.cast_natCast, Ideal.mem_span_singleton,
+    Int.cast_natCast, Int.natCast_dvd_natCast]
 
 open Ideal
 

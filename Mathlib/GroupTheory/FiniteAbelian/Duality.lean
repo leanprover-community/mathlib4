@@ -98,7 +98,6 @@ theorem card_monoidHom_of_hasEnoughRootsOfUnity :
   Nat.card_congr (monoidHom_mulEquiv_of_hasEnoughRootsOfUnity G M).some.toEquiv
 
 variable {G}
-
 /--
 Let `G` be a finite commutative group and let `H` be a subgroup. If `M` is a commutative monoid
 such that `G →* Mˣ` and `H →* Mˣ` are both finite (this is the case for example if `M` is a
