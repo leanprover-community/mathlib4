@@ -36,10 +36,6 @@ namespace MorphismProperty
 
 variable {C : Type*} [Category* C] (P : MorphismProperty C) [MonoidalCategory C]
 
-/-- `widesubcat_ext` unfolds the definition of morphisms in a `WideSubcategory`. -/
-macro "widesubcat_ext" : tactic =>
-  `(tactic| (rw [Subtype.ext_iff]; try simp only [WideSubcategory.comp_def]))
-
 section IsStableUnderAssociator
 
 /-- A morphism property stable under associator isomorphisms of a monoidal category. -/
@@ -95,23 +91,17 @@ instance : MonoidalCategoryStruct (WideSubcategory P) where
     refine ⟨⟨(α_ c.obj c'.obj c''.obj).hom, ?_⟩, ⟨(α_ c.obj c'.obj c''.obj).inv, ?_⟩, ?_, ?_⟩
     · exact P.associator_hom_mem _ _ _
     · exact P.associator_inv_mem _ _ _
-    all_goals
-    widesubcat_ext
-    simp
+    all_goals cat_disch
   leftUnitor c := by
     refine ⟨⟨(λ_ c.obj).hom, ?_⟩, ⟨(λ_ c.obj).inv, ?_⟩, ?_, ?_⟩
     · exact P.leftUnitor_hom_mem _
     · exact P.leftUnitor_inv_mem _
-    all_goals
-    widesubcat_ext
-    simp
+    all_goals cat_disch
   rightUnitor c := by
     refine ⟨⟨(ρ_ c.obj).hom, ?_⟩, ⟨(ρ_ c.obj).inv, ?_⟩, ?_, ?_⟩
     · exact P.rightUnitor_hom_mem _
     · exact P.rightUnitor_inv_mem _
-    all_goals
-    widesubcat_ext
-    simp
+    all_goals cat_disch
   tensorHom f g := ⟨f.1 ⊗ₘ g.1, P.tensorHom_mem _ _ f.2 g.2⟩
 
 instance : MonoidalCategory (WideSubcategory P) := by
@@ -182,20 +172,18 @@ instance : BraidedCategory (WideSubcategory P) where
     refine ⟨⟨(β_ c.obj c'.obj).hom, ?_⟩, ⟨(β_ c.obj c'.obj).inv, ?_⟩, ?_, ?_⟩
     · exact P.braiding_hom_mem _ _
     · exact P.braiding_inv_mem _ _
-    all_goals
-    widesubcat_ext
-    simp
+    all_goals cat_disch
   braiding_naturality_right c c' c'' f := by
-    widesubcat_ext
-    exact BraidedCategory.braiding_naturality_right _ _
+    ext
+    exact BraidedCategory.braiding_naturality_right c.obj f.hom
   braiding_naturality_left f c := by
-    widesubcat_ext
+    ext
     exact BraidedCategory.braiding_naturality_left _ _
   hexagon_forward c c' c'' := by
-    widesubcat_ext
+    ext
     exact BraidedCategory.hexagon_forward _ _ _
   hexagon_reverse c c' c'' := by
-    widesubcat_ext
+    ext
     exact BraidedCategory.hexagon_reverse _ _ _
 
 end BraidedCategory
@@ -206,7 +194,7 @@ variable [SymmetricCategory C] [P.IsStableUnderBraiding]
 
 instance : SymmetricCategory (WideSubcategory P) where
   symmetry c c' := by
-    widesubcat_ext
+    ext
     exact SymmetricCategory.symmetry _ _
 
 end SymmetricCategory
@@ -232,20 +220,20 @@ instance {c : WideSubcategory P} : ComonObj c where
   counit := ⟨ε[c.obj], P.counit_mem _⟩
   comul := ⟨Δ[c.obj], P.comul_mem _⟩
   counit_comul := by
-    widesubcat_ext
+    ext
     exact ComonObj.counit_comul _
   comul_counit := by
-    widesubcat_ext
+    ext
     exact ComonObj.comul_counit _
   comul_assoc := by
-    widesubcat_ext
+    ext
     exact ComonObj.comul_assoc _
 
 variable [∀ {c : C}, IsCommComonObj c]
 
 instance {c : WideSubcategory P} : IsCommComonObj c where
   comul_comm := by
-    widesubcat_ext
+    ext
     exact IsCommComonObj.comul_comm _
 
 end IsStableUnderComonoid

@@ -53,10 +53,21 @@ instance InducedWideCategory.hasCoeToSort {α : Sort*} [CoeSort D α] :
     CoeSort (InducedWideCategory D F P) α :=
   ⟨fun c => F c⟩
 
+variable {F P} in
+/-- The type of morphisms in `InducedWideCategory D F P` between `X` and `Y`
+is a 2-field structure consisting of a morphism `F X ⟶ F Y` in `D` that satisfies
+the property `P`. -/
+@[ext]
+structure InducedWideCategory.Hom (X Y : InducedWideCategory D F P) where
+  /-- The underlying morphism. -/
+  hom : F X ⟶ F Y
+  /-- The property that the morphism satisfies. -/
+  property : P hom
+
 @[simps!]
 instance InducedWideCategory.category :
     Category (InducedWideCategory D F P) where
-  Hom X Y := {f : F X ⟶ F Y | P f}
+  Hom X Y := Hom X Y
   id X := ⟨𝟙 (F X), P.id_mem (F X)⟩
   comp {_ _ _} f g := ⟨f.1 ≫ g.1, P.comp_mem _ _ f.2 g.2⟩
 
@@ -91,6 +102,11 @@ structure WideSubcategory (_P : MorphismProperty C) [IsMultiplicative _P] where
 
 instance WideSubcategory.category : Category.{v₁} (WideSubcategory P) :=
   InducedWideCategory.category WideSubcategory.obj P
+
+@[ext]
+lemma WideSubcategory.hom_ext {X Y : WideSubcategory P} {f g : X ⟶ Y} (h : f.hom = g.hom) :
+    f = g :=
+  InducedWideCategory.Hom.ext h
 
 @[simp]
 lemma WideSubcategory.id_def (X : WideSubcategory P) : (CategoryStruct.id X).1 = 𝟙 X.obj := rfl
