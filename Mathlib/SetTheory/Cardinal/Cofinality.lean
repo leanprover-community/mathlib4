@@ -696,12 +696,20 @@ theorem IsFundamentalSequence.of_isNormal {f : Ordinal.{u} → Ordinal.{u}} (hf 
 @[deprecated (since := "2025-12-25")]
 alias IsNormal.isFundamentalSequence := IsFundamentalSequence.of_isNormal
 
+/-! ### Cofinality arithmetic -/
+
 @[simp]
-theorem cof_add (a b : Ordinal) : b ≠ 0 → cof (a + b) = cof b := fun h => by
+theorem cof_add (a : Ordinal) {b : Ordinal} (hb : b ≠ 0) : cof (a + b) = cof b := by
   rcases zero_or_succ_or_isSuccLimit b with (rfl | ⟨c, rfl⟩ | hb)
   · contradiction
   · rw [succ_eq_add_one, ← add_assoc, cof_add_one, cof_add_one]
   · exact cof_map_of_isNormal (isNormal_add_right a) hb
+
+@[simp]
+theorem cof_mul {a b : Ordinal} (ha : a ≠ 0) (hb : IsSuccPrelimit b) : cof (a * b) = cof b := by
+  by_cases hb' : IsMin b
+  · simp [hb'.eq_bot]
+  · exact cof_map_of_isNormal (isNormal_mul_right ha.pos) ⟨hb', hb⟩
 
 @[simp]
 theorem cof_preOmega {o : Ordinal} (ho : IsSuccPrelimit o) : (preOmega o).cof = o.cof := by
