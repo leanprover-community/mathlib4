@@ -457,9 +457,10 @@ TODO: Write a `simproc` that removes *all* (syntactic) zeros from a tuple in thi
 
 open Matrix
 
+variable {n : ℕ} (x : Fin n → K)
+
 @[simp]
-lemma mulHeight_vecCons_zero {n : ℕ} (x : Fin n → K) :
-    mulHeight (vecCons 0 x) = mulHeight x := by
+lemma mulHeight_vecCons_zero : mulHeight (vecCons 0 x) = mulHeight x := by
   let e := (Equiv.sumComm ..).trans <| finSumFinEquiv.trans <| finCongr n.one_add
   have he : Matrix.vecCons 0 x ∘ ⇑e = Sum.elim x 0 := by
     ext j : 1
@@ -470,29 +471,28 @@ lemma mulHeight_vecCons_zero {n : ℕ} (x : Fin n → K) :
   rw [← mulHeight_comp_equiv e, he, mulHeight_sumElim_zero_eq]
 
 @[simp]
-lemma logHeight_vecCons_zero {n : ℕ} (x : Fin n → K) :
-    logHeight (Matrix.vecCons 0 x) = logHeight x := by
+lemma logHeight_vecCons_zero : logHeight (Matrix.vecCons 0 x) = logHeight x := by
   simp [logHeight_eq_log_mulHeight]
 
 @[simp]
-lemma mulHeight_vecCons_vecCons_zero {n : ℕ} (a : K) (x : Fin n → K) :
+lemma mulHeight_vecCons_vecCons_zero (a : K) :
     mulHeight (vecCons a (vecCons 0 x)) = mulHeight (vecCons a x) := by
   rw [← mulHeight_comp_equiv (Equiv.swap 0 1)]
   simp
 
 @[simp]
-lemma logHeight_vecCons_vecCons_zero {n : ℕ} (a : K) (x : Fin n → K) :
+lemma logHeight_vecCons_vecCons_zero (a : K) :
     logHeight (vecCons a (vecCons 0 x)) = logHeight (vecCons a x) := by
   simp [logHeight_eq_log_mulHeight]
 
 @[simp]
-lemma mulHeight_vecCons_vecCons_vecCons_zero {n : ℕ} (a b : K) (x : Fin n → K) :
+lemma mulHeight_vecCons_vecCons_vecCons_zero (a b : K) :
     mulHeight (vecCons a (vecCons b (vecCons 0 x))) = mulHeight (vecCons a (vecCons b x)) := by
   rw [← mulHeight_comp_equiv (Equiv.swap (Fin.succ 0) (Fin.succ 1)), ← cons_swap]
   simp
 
 @[simp]
-lemma logHeight_vecCons_vecCons_vecCons_zero {n : ℕ} (a b : K) (x : Fin n → K) :
+lemma logHeight_vecCons_vecCons_vecCons_zero (a b : K) :
     logHeight (vecCons a (vecCons b (vecCons 0 x))) = logHeight (vecCons a (vecCons b x)) := by
   simp [logHeight_eq_log_mulHeight]
 
