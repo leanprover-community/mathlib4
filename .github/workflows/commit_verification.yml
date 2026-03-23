@@ -100,7 +100,6 @@ jobs:
           echo "$COMMENT" > comment_body.md
 
       - name: Prepare bridge outputs
-        if: steps.check.outputs.has_special == 'true'
         run: |
           jq -n \
             --arg has_special "${{ steps.check.outputs.has_special }}" \
