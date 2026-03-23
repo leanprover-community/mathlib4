@@ -11,16 +11,17 @@ public import Mathlib.RingTheory.Finiteness.Basic
 /-!
 # Duals of finitely generated cones
 
-This files defines the notion `FGDual` for cones that can be written as the dual of a finite set,
-or equivalently, that are duals of finitely generated cones. In geometric terms, a cone is
-FGDual if it can be written as the intersection of finitely many halfspaces. This is the counterpart
-to FG (finitely generated) which states that the cone is the span of a finite set.
+This files defines the notion of dually finitely generated cones. A cone is dually finitely
+generated (or `DualFG` for short) if it is the dual of a finite set, or equivalently, of a
+finitely generated cone. In geometric terms, a cone is DualFG if it can be written as the
+intersection of finitely many halfspaces. This is the counterpart to FG (finitely generated)
+which states that the cone is the span of a finite set.
 
-In finite dimensional vector spaces, FG is equivalent to FGDual by the Minkowski-Weyl theorem.
+In finite dimensional vector spaces, FG is equivalent to DualFG by the Minkowski-Weyl theorem.
 
 ## Main declarations
 
-- `PointedCone.FGDual` expresses that a cone is the dual of a finite set.
+- `PointedCone.DualFG` expresses that a cone is the dual of a finite set.
 
 -/
 
@@ -35,53 +36,53 @@ variable [AddCommGroup N] [Module R N]
 variable {p : M →ₗ[R] N →ₗ[R] R}
 
 variable (p) in
-/-- A cone is `FGDual` if it is the dual of a finite set. Equivalently, the cone can be written
-  as the intersection of finitely many halfspace. This is the counterpart to `FG` (finitely
-  generated) which states that the cone is the span of a finite set. -/
-def FGDual (C : PointedCone R N) : Prop := ∃ s : Finset M, dual p s = C
+/-- A cone is dually finitely generated (`DualFG`) if it is the dual of a finite set. Equivalently,
+  the cone can be written as the intersection of finitely many halfspace. This is the counterpart
+  to `FG` (finitely generated) which states that the cone is the span of a finite set. -/
+def DualFG (C : PointedCone R N) : Prop := ∃ s : Finset M, dual p s = C
 
-/-- The top cone is FGDual. -/
-lemma FGDual.top : FGDual p ⊤ := ⟨∅, by simp⟩
+/-- The top cone is DualFG. -/
+lemma DualFG.top : DualFG p ⊤ := ⟨∅, by simp⟩
 
-/-- An FGDual cone is the dual of an FG cone. -/
-lemma FGDual.exists_fg_dual {C : PointedCone R N} (hC : C.FGDual p) :
+/-- An DualFG cone is the dual of an FG cone. -/
+lemma DualFG.exists_fg_dual {C : PointedCone R N} (hC : C.DualFG p) :
     ∃ D : PointedCone R M, D.FG ∧ dual p D = C := by
   obtain ⟨s, hs⟩ := hC; exact ⟨_, Submodule.fg_span s.finite_toSet, by simp [hs]⟩
 
-/-- An FGDual cone is FGDual w.r.t. the identity pairing. -/
-lemma FGDual.to_fgdual_id {C : PointedCone R N} (hC : C.FGDual p) : C.FGDual .id := by classical
+/-- An DualFG cone is DualFG w.r.t. the identity pairing. -/
+lemma DualFG.to_DualFG_id {C : PointedCone R N} (hC : C.DualFG p) : C.DualFG .id := by classical
   obtain ⟨s, rfl⟩ := hC
   use Finset.image p s
   simp
 
 variable (p) in
-/-- The dual of a finite set is FGDual. -/
-lemma FGDual.of_dual_finset (s : Finset M) : (dual p s).FGDual p := by use s
+/-- The dual of a finite set is DualFG. -/
+lemma DualFG.of_dual_finset (s : Finset M) : (dual p s).DualFG p := by use s
 
 variable (p) in
-/-- The dual of an FG cone is FGDual. -/
-lemma FGDual.of_dual_fg {C : PointedCone R M} (hC : C.FG) : (dual p C).FGDual p := by
+/-- The dual of an FG cone is DualFG. -/
+lemma DualFG.of_dual_fg {C : PointedCone R M} (hC : C.FG) : (dual p C).DualFG p := by
   obtain ⟨s, rfl⟩ := hC
   use s; rw [← dual_span]
 
-alias FG.dual_fgdual := FGDual.of_dual_fg
+alias FG.dual_DualFG := DualFG.of_dual_fg
 
-/-- The intersection of two FGDual cones is FGDual. -/
-lemma FGDual.inf {C D : PointedCone R N} (hC : C.FGDual p) (hD : D.FGDual p) :
-    (C ⊓ D).FGDual p := by classical
+/-- The intersection of two DualFG cones is DualFG. -/
+lemma DualFG.inf {C D : PointedCone R N} (hC : C.DualFG p) (hD : D.DualFG p) :
+    (C ⊓ D).DualFG p := by classical
   obtain ⟨S, rfl⟩ := hC; obtain ⟨T, rfl⟩ := hD
   use S ∪ T; rw [Finset.coe_union, dual_union]
 
-/-- The double dual of an FGDual cone is the cone itself. -/
+/-- The double dual of an DualFG cone is the cone itself. -/
 @[simp]
-lemma FGDual.dual_dual_flip {C : PointedCone R N} (hC : C.FGDual p) :
+lemma DualFG.dual_dual_flip {C : PointedCone R N} (hC : C.DualFG p) :
     dual p (dual p.flip C) = C := by
-  obtain ⟨D, hfgdual, rfl⟩ := exists_fg_dual hC
+  obtain ⟨D, hDualFG, rfl⟩ := exists_fg_dual hC
   exact dual_dual_flip_dual (p := p) D
 
-/-- The double dual of an FGDual cone is the cone itself. -/
+/-- The double dual of an DualFG cone is the cone itself. -/
 @[simp]
-lemma FGDual.dual_flip_dual {C : PointedCone R M} (hC : C.FGDual p.flip) :
+lemma DualFG.dual_flip_dual {C : PointedCone R M} (hC : C.DualFG p.flip) :
     dual p.flip (dual p C) = C := hC.dual_dual_flip
 
 end PointedCone
