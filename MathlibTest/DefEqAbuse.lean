@@ -79,7 +79,6 @@ noncomputable example (s : MyPred ℕ) (a : ℕ) (ha : a ∉ s) : Disjoint s {a}
   #defeq_abuse in rw [myPred_disjoint_singleton_right]
   exact ha
 
-set_option trace.debug true
 /--
 warning: #defeq_abuse: command fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
 The following isDefEq checks are the root causes of the failure:
