@@ -23,15 +23,13 @@ The main application is the case where one has `Module ℂ E`, `Module ℂ F` an
 antilinearly on `F`. Such a graph cannot be a `Submodule ℂ (E × F)` because there is already the
 natural instance `Module ℂ (E × F)` where `ℂ` acts linearly on `F`.
 
-In order to implement this, note that defining a type synonym `R` of `ℂ` does not work, because one
-might want to take `E = F`, on which any `R : Ring` can have only one instance `Module R F`,
-in particular, there is already the canonical instance `Module R (E × F)`.
-This means that we cannot use the product module `E × F`, but we have to make a type synonym and
-duplicate code for `E ×[σ] F`. -/
+In order to implement this, defining a type synonym `R` of `ℂ` does not work, because one might want
+to take `E = F`, on which any `R : Ring` can have only one instance `Module R F`, in particular,
+there is already the canonical instance `Module R (E × F)`. This means that we cannot use the
+product module `E × F`, but we have to make a new type and duplicate code for `E ×[σ] F`. -/
 
 @[expose] public section
 
-set_option linter.unusedVariables false in
 /-- A `E ×[σ] F` or `E ×[σ] F` is a module structure on the product `E × F` with
 the `SMul` given by `s • (mk x y) := mk (s • x) (σ s • y)`. -/
 @[ext]
@@ -418,13 +416,27 @@ theorem coprodₛₗ_zero_left (g : F →ₗ[S] M) : (0 : E →ₛₗ[σ] M).cop
 theorem coprodₛₗ_zero_right (f : E →ₛₗ[σ] M) : f.coprodₛₗ (0 : F →ₗ[S] M) = f.comp (fstₛₗ σ E F) :=
   add_zero _
 
+variable (σ) in
+abbrev ring_comp_eq {T : Type*} [Semiring T] (σ₂ : S →+* T) :
+    RingHomCompTriple σ σ₂ (σ₂.comp σ) where
+  comp_eq := rfl
+
+abbrev ring_id_comp_eq {T : Type*} [Semiring T] (σ₂ : S →+* T) :
+    RingHomCompTriple (RingHom.id S) σ₂ (σ₂) where
+  comp_eq := rfl
+
+theorem comp_coprodₛₗ {M₂ : Type*} [AddCommGroup M₂] [Module S M₂] (f : M →ₗ[S] M₂)
+    (g₁ : E →ₛₗ[σ] M) (g₂ : F →ₗ[S] M) :
+    f.comp (g₁.coprodₛₗ g₂) = (f.comp g₁).coprodₛₗ (f.comp g₂) :=
+  ext fun x => f.map_add (g₁ x.1) (g₂ x.2)
+
 variable {R S : Type*} [Semiring R] [Semiring S] (σ : R ≃+* S)
   (E : Type*) [AddCommGroup E] [Module R E]
   (F : Type*) [AddCommGroup F] [Module S F]
   {M : Type*} [AddCommGroup M] [Module S M]
 
 abbrev comp_id_eq : RingHomCompTriple (RingHom.id R) (σ : R →+* S) (σ : R →+* S) where
-  comp_eq := by simp
+  comp_eq := rfl
 
 @[simp]
 theorem coprodₛₗ_inlₛₗ (f : E →ₛₗ[(σ : R →+* S)] M) (g : F →ₗ[S] M) :
@@ -439,10 +451,6 @@ theorem coprodₛₗ_inrₛₗ (f : E →ₛₗ[(σ : R →+* S)] M) (g : F →�
     @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (id_comp_eq σ) (coprodₛₗ f g) (inrₛₗ σ E F)
       = g := by
   ext; simp
-
--- theorem comp_coprod (f : M₃ →ₗ[R] M₄) (g₁ : M →ₗ[R] M₃) (g₂ : M₂ →ₗ[R] M₃) :
---     f.comp (g₁.coprod g₂) = (f.comp g₁).coprod (f.comp g₂) :=
---   ext fun x => f.map_add (g₁ x.1) (g₂ x.2)
 
 -- theorem fst_eq_coprod : fst R M M₂ = coprod LinearMap.id 0 := by ext; simp
 
