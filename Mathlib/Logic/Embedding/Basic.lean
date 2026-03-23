@@ -49,7 +49,7 @@ theorem exists_surjective_iff {α β : Sort*} :
 
 end Function
 
-section Equiv
+namespace Equiv
 
 variable {α : Sort u} {β : Sort v} (f : α ≃ β)
 
@@ -66,24 +66,22 @@ example (s : Finset (Fin 3)) (f : Equiv.Perm (Fin 3)) : s.map f.toEmbedding = s.
 example (s : Finset (Fin 3)) (f : Equiv.Perm (Fin 3)) : s.map f = s.map f.toEmbedding := by simp
 ```
 -/
-protected def Equiv.toEmbedding : α ↪ β :=
+@[reducible]
+protected def toEmbedding : α ↪ β :=
   ⟨f, f.injective⟩
 
 @[simp]
-theorem Equiv.coe_toEmbedding : (f.toEmbedding : α → β) = f :=
+theorem coe_toEmbedding : (f.toEmbedding : α → β) = f :=
   rfl
 
-theorem Equiv.toEmbedding_apply (a : α) : f.toEmbedding a = f a :=
+theorem toEmbedding_apply (a : α) : f.toEmbedding a = f a :=
   rfl
 
-theorem Equiv.toEmbedding_injective : Function.Injective (Equiv.toEmbedding : (α ≃ β) → (α ↪ β)) :=
+theorem toEmbedding_injective : Function.Injective (Equiv.toEmbedding : (α ≃ β) → (α ↪ β)) :=
   fun _ _ h ↦ by rwa [DFunLike.ext'_iff] at h ⊢
 
-instance Equiv.coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
+instance coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
   ⟨Equiv.toEmbedding⟩
-
-instance Equiv.Perm.coeEmbedding : Coe (Equiv.Perm α) (α ↪ α) :=
-  Equiv.coeEmbedding
 
 end Equiv
 
