@@ -50,7 +50,7 @@ lemma DualFG.exists_fg_dual {C : PointedCone R N} (hC : C.DualFG p) :
   obtain ⟨s, hs⟩ := hC; exact ⟨_, Submodule.fg_span s.finite_toSet, by simp [hs]⟩
 
 /-- An DualFG cone is DualFG w.r.t. the identity pairing. -/
-lemma DualFG.to_DualFG_id {C : PointedCone R N} (hC : C.DualFG p) : C.DualFG .id := by classical
+lemma DualFG.to_dualfg_id {C : PointedCone R N} (hC : C.DualFG p) : C.DualFG .id := by classical
   obtain ⟨s, rfl⟩ := hC
   use Finset.image p s
   simp
@@ -61,11 +61,11 @@ lemma DualFG.of_dual_finset (s : Finset M) : (dual p s).DualFG p := by use s
 
 variable (p) in
 /-- The dual of an FG cone is DualFG. -/
-lemma DualFG.of_dual_fg {C : PointedCone R M} (hC : C.FG) : (dual p C).DualFG p := by
+lemma DualFG.dual_of_fg {C : PointedCone R M} (hC : C.FG) : (dual p C).DualFG p := by
   obtain ⟨s, rfl⟩ := hC
   use s; rw [← dual_span]
 
-alias FG.dual_DualFG := DualFG.of_dual_fg
+alias FG.dual_dualfg := DualFG.dual_of_fg
 
 /-- The intersection of two DualFG cones is DualFG. -/
 lemma DualFG.inf {C D : PointedCone R N} (hC : C.DualFG p) (hD : D.DualFG p) :
