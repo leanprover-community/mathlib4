@@ -42,7 +42,7 @@ structure IsRegular (c : Cardinal) : Prop where
   /-- A regular cardinal is infinite. -/
   aleph0_le : ℵ₀ ≤ c
   /-- This condition is enough to prove `c.ord.cof = c`, see `IsRegular.cof_eq`. -/
-  le_cof : c ≤ c.ord.cof
+  le_cof_ord : c ≤ c.ord.cof
 
 theorem IsRegular.cof_eq {c : Cardinal} (H : c.IsRegular) : c.ord.cof = c :=
   (cof_ord_le c).antisymm H.2
