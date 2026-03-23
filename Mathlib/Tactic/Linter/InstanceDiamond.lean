@@ -59,6 +59,8 @@ private structure DiamondFailure where
   message : MessageData
   lhs : Expr
   rhs : Expr
+  pathI : List Name
+  pathJ : List Name
 
 /-- Find all diamond failures for an instance expression of the given class.
 
@@ -131,8 +133,12 @@ private def findDiamondFailures (instExpr : Expr) (structName : Name) :
         else m!"\n  differing fields: {differingFields.toList}"
       failures := failures.push {
         message := m!"instance diamond at {ancestor}:\
-           \n  {fullPathI} and {fullPathJ}{fieldMsg}"
-        lhs, rhs }
+           \n  the projection chains {fullPathI} and {fullPathJ}\
+           \n  produce results which are not definitionally equal\
+           \n  at `with_reducible_and_instances` transparency{fieldMsg}"
+        lhs, rhs
+        pathI := fullPathI
+        pathJ := fullPathJ }
   return failures
 
 /-- Check a single declaration for instance diamonds.
@@ -158,17 +164,34 @@ private def checkInstanceDiamond (declName : Name) :
     let failures ← findDiamondFailures instExpr structName
     if failures.isEmpty then return none
     -- Build example statements for each failure
+    -- Annotate the instance with its return type so implicit arguments can be inferred
+    let instStr := toString (← ppExpr instExpr)
+    let retTyStr := toString (← ppExpr retTy)
+    let annotatedInst := s!"({instStr} : {retTyStr})"
+    -- Format binders (shared across all failures)
+    let mut binderStrs : Array String := #[]
+    for arg in args do
+      let decl ← arg.fvarId!.getDecl
+      let name := decl.userName.eraseMacroScopes
+      let ty := toString (← ppExpr decl.type)
+      let binderStr := match decl.binderInfo with
+        | .default => s!"({name} : {ty})"
+        | .implicit => s!"\{{name} : {ty}}"
+        | .strictImplicit => s!"⦃{name} : {ty}⦄"
+        | .instImplicit => s!"[{name} : {ty}]"
+      binderStrs := binderStrs.push binderStr
+    let bindersStr := " ".intercalate binderStrs.toList
     let mut messages : Array MessageData := #[]
     let mut examples : Array String := #[]
     for f in failures do
-      let eq ← mkEq f.lhs f.rhs
-      let prop ← mkForallFVars args eq
-      let propStr := toString (← ppExpr prop)
-      let tactic := if args.isEmpty then
-        "with_reducible_and_instances rfl"
+      -- Build equation using explicit projection paths with type-annotated instance
+      let formatPath (path : List Name) : String :=
+        path.map (fun n => s!".{n.getString!}") |> String.join
+      let eqStr := s!"{annotatedInst}{formatPath f.pathI} =\n    {annotatedInst}{formatPath f.pathJ}"
+      let ex := if binderStrs.isEmpty then
+        s!"example : {eqStr} := by with_reducible_and_instances rfl"
       else
-        "intros; with_reducible_and_instances rfl"
-      let ex := s!"example : {propStr} := by {tactic}"
+        s!"example {bindersStr} :\n    {eqStr} := by\n  with_reducible_and_instances rfl"
       messages := messages.push (f.message ++ m!"\n{ex}")
       examples := examples.push ex
     return some (.joinSep messages.toList "\n", examples)

@@ -59,14 +59,18 @@ abbrev M (n : Type*) (α : Type*) := Matrix n n α
 
 /--
 warning: instance diamond at SubNegMonoid:
-  [AddCommGroupWithOne.toAddCommGroup,
+  the projection chains [AddCommGroupWithOne.toAddCommGroup,
  AddCommGroup.toAddGroup,
  AddGroup.toSubNegMonoid] and [AddCommGroupWithOne.toAddGroupWithOne,
  AddGroupWithOne.toAddGroup,
  AddGroup.toSubNegMonoid]
+  produce results which are not definitionally equal
+  at `with_reducible_and_instances` transparency
   differing fields: [zsmul]
-example : ∀ {n : Type u_1} {α : Type u_2} [inst : DecidableEq n] [inst_1 : AddCommGroupWithOne α],
-  instACGWO_test.toSubNegMonoid = instACGWO_test.toAddGroupWithOne.toAddGroup.toSubNegMonoid := by intros; with_reducible_and_instances rfl
+example {n : Type u_1} {α : Type u_2} [inst : DecidableEq n] [inst : AddCommGroupWithOne α] :
+    (instACGWO_test : AddCommGroupWithOne (M n α)).toAddCommGroup.toAddGroup.toSubNegMonoid =
+    (instACGWO_test : AddCommGroupWithOne (M n α)).toAddGroupWithOne.toAddGroup.toSubNegMonoid := by
+  with_reducible_and_instances rfl
 
 Note: This linter can be disabled with `set_option linter.instanceDiamond false`
 -/
@@ -76,6 +80,25 @@ noncomputable instance instACGWO_test
     AddCommGroupWithOne (M n α) where
   __ := Matrix.addCommGroup
   __ := Matrix.instAddGroupWithOne
+
+-- Verify the linter's example: the statement type-checks but rfl fails (the diamond is real)
+/--
+error: Tactic `rfl` failed: The left-hand side
+  @AddGroup.toSubNegMonoid (M n α) instACGWO_test.toAddGroup
+is not definitionally equal to the right-hand side
+  @AddGroup.toSubNegMonoid (M n α) instACGWO_test.toAddGroupWithOne.toAddGroup
+
+n : Type u_1
+α : Type u_2
+inst✝ : DecidableEq n
+inst : AddCommGroupWithOne α
+⊢ instACGWO_test.toSubNegMonoid = instACGWO_test.toAddGroupWithOne.toAddGroup.toSubNegMonoid
+-/
+#guard_msgs (error) in
+example {n : Type u_1} {α : Type u_2} [inst : DecidableEq n] [inst : AddCommGroupWithOne α] :
+    (instACGWO_test : AddCommGroupWithOne (M n α)).toAddCommGroup.toAddGroup.toSubNegMonoid =
+    (instACGWO_test : AddCommGroupWithOne (M n α)).toAddGroupWithOne.toAddGroup.toSubNegMonoid := by
+  with_reducible_and_instances rfl
 
 /-! ## Opt-out test: `set_option linter.instanceDiamond false` suppresses warnings -/
 
