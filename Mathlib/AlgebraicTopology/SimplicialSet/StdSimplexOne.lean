@@ -154,14 +154,8 @@ lemma objMk₁_surjective {n : ℕ} : Function.Surjective (objMk₁.{u} (n := n)
     split_ifs with h
     · have hi : i ∉ S := fun hi ↦ by
         have := S.min'_le _ hi
-        rw [Fin.le_iff_val_le_val] at this
-        rw [Fin.lt_def] at h
-        dsimp at h
-        lia
-      obtain ⟨j, hj⟩ : ∃ (j : Fin 2), f i = j := ⟨_, rfl⟩
-      fin_cases j
-      · exact hj.symm
-      · exact (hi (by simpa [S])).elim
+        grind
+      grind
     · simp only [Fin.castSucc_lt_castSucc_iff, Finset.lt_min'_iff, not_forall,
         not_lt] at h
       obtain ⟨j, hj, hij⟩ := h
