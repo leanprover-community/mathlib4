@@ -200,19 +200,17 @@ theorem exp_conj' (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
 
 set_option backward.isDefEq.respectTransparency false in
 theorem BlockTriangular.exp {α : Type*} {M : Matrix m m 𝔸} {b : m → α} [LinearOrder α]
-  (hM : BlockTriangular M b) : (NormedSpace.exp M).BlockTriangular b := by
+    (hM : BlockTriangular M b) : (NormedSpace.exp M).BlockTriangular b := by
   intro i j hji
-  letI : NormedRing (Matrix m m 𝔸) :=
-    Matrix.linftyOpNormedRing
-  letI : @NormedAlgebra ℚ (Matrix m m 𝔸) Rat.instNormedField Matrix.linftyOpSemiNormedRing :=
-    Matrix.linftyOpNormedAlgebra
+  letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
+  letI : NormedAlgebra ℚ (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
   obtain ⟨a, ha⟩ := NormedSpace.expSeries_summable' (𝕂 := ℚ) M
-  have hzero : ∀ n : ℕ, (M ^ n) i j = 0 := fun n => (BlockTriangular.pow hM n) hji
+  have hzero : ∀ n : ℕ, (M ^ n) i j = 0 := fun n ↦ (BlockTriangular.pow hM n) hji
   have h1 := (continuous_apply i).continuousAt.tendsto.comp ha
   have h2 := (continuous_apply j).continuousAt.tendsto.comp h1
   simp at h2
-  rw [← ((congr_fun NormedSpace.exp_eq_tsum_rat M).trans ha.tsum_eq).symm]
-  exact tendsto_nhds_unique  (h2.congr (fun s => by
+  rw [(congr_fun NormedSpace.exp_eq_tsum_rat M).trans ha.tsum_eq]
+  exact tendsto_nhds_unique (h2.congr (fun s ↦ by
     simp [Function.comp, Matrix.sum_apply, smul_apply, hzero]
   )) tendsto_const_nhds
 

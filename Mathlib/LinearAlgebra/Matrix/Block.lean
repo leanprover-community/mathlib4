@@ -188,7 +188,7 @@ theorem BlockTriangular.mul [Fintype m] [NonUnitalNonAssocSemiring R]
 
 
 theorem BlockTriangular.pow [DecidableEq m] [Fintype m] [Semiring R]
-  (hM : BlockTriangular M b) (n : ℕ) :
+    (hM : BlockTriangular M b) (n : ℕ) :
     BlockTriangular (M ^ n) b := by
   induction n with
   | zero => simp [blockTriangular_one]
