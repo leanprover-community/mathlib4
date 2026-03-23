@@ -1033,54 +1033,54 @@ variable {α β : Type*}
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [SMul R α] (S : Subring R) : SMul S α :=
-  (inferInstance : SMul S.toSubsemiring α)
+  inferInstance
 
 theorem smul_def [SMul R α] {S : Subring R} (g : S) (m : α) : g • m = (g : R) • m :=
   rfl
 
 instance smulCommClass_left [SMul R β] [SMul α β] [SMulCommClass R α β] (S : Subring R) :
     SMulCommClass S α β :=
-  (inferInstance : SMulCommClass S.toSubsemiring α β)
+  inferInstance
 
 instance smulCommClass_right [SMul α β] [SMul R β] [SMulCommClass α R β] (S : Subring R) :
     SMulCommClass α S β :=
-  (inferInstance : SMulCommClass α S.toSubsemiring β)
+  inferInstance
 
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
 instance [SMul α β] [SMul R α] [SMul R β] [IsScalarTower R α β] (S : Subring R) :
     IsScalarTower S α β :=
-  (inferInstance : IsScalarTower S.toSubsemiring α β)
+  inferInstance
 
 instance [SMul R α] [FaithfulSMul R α] (S : Subring R) : FaithfulSMul S α :=
-  (inferInstance : FaithfulSMul S.toSubsemiring α)
+  inferInstance
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [MulAction R α] (S : Subring R) : MulAction S α :=
-  (inferInstance : MulAction S.toSubsemiring α)
+  inferInstance
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [AddMonoid α] [DistribMulAction R α] (S : Subring R) : DistribMulAction S α :=
-  (inferInstance : DistribMulAction S.toSubsemiring α)
+  inferInstance
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [Monoid α] [MulDistribMulAction R α] (S : Subring R) : MulDistribMulAction S α :=
-  (inferInstance : MulDistribMulAction S.toSubsemiring α)
+  inferInstance
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [Zero α] [SMulWithZero R α] (S : Subring R) : SMulWithZero S α :=
-  (inferInstance : SMulWithZero S.toSubsemiring α)
+  inferInstance
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [Zero α] [MulActionWithZero R α] (S : Subring R) : MulActionWithZero S α :=
-  (inferInstance : MulActionWithZero S.toSubsemiring α)
+  inferInstance
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [AddCommMonoid α] [Module R α] (S : Subring R) : Module S α :=
-  (inferInstance : Module S.toSubsemiring α)
+  inferInstance
 
 /-- The action by a subsemiring is the action by the underlying ring. -/
 instance [Semiring α] [MulSemiringAction R α] (S : Subring R) : MulSemiringAction S α :=
-  (inferInstance : MulSemiringAction S.toSubmonoid α)
+  inferInstance
 
 /-- The center of a semiring acts commutatively on that semiring. -/
 instance center.smulCommClass_left : SMulCommClass (center R) R R :=
