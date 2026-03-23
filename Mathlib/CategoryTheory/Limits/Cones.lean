@@ -180,8 +180,8 @@ variable {F : J ⥤ C}
 namespace Cone
 
 /-- The isomorphism between a cone on `F` and an element of the functor `F.cones`. -/
-@[simps! +dsimpLhs]
-def equiv (F : J ⥤ C) : Cone F ≅ Σ X, F.cones.obj X where
+@[simps!]
+def equiv (F : J ⥤ C) : dsimp% Cone F ≅ Σ X, F.cones.obj X where
   hom := TypeCat.ofHom fun c ↦ ⟨op c.pt, c.π⟩
   inv := TypeCat.ofHom fun c ↦
     { pt := c.1.unop

@@ -175,11 +175,11 @@ def uliftYoneda [J.Subcanonical] : C ⥤ Sheaf J (Type (max v w)) :=
 
 /-- If `C` is a category with `[Category.{max w v} C]`, this is the isomorphism
 `uliftYoneda.{w} (C := C) ≅ yoneda`. -/
-@[simps! +dsimpLhs]
+@[simps!]
 def uliftYonedaIsoYoneda {C : Type u} [Category.{max w v} C] (J : GrothendieckTopology C)
     [J.Subcanonical] :
     GrothendieckTopology.uliftYoneda.{w} J ≅ J.yoneda :=
-  NatIso.ofComponents (fun _ => (fullyFaithfulSheafToPresheaf J _).preimageIso
+  dsimp% NatIso.ofComponents (fun _ => (fullyFaithfulSheafToPresheaf J _).preimageIso
     (NatIso.ofComponents (fun _ ↦ Equiv.ulift.toIso)))
 
 variable [Subcanonical J]
