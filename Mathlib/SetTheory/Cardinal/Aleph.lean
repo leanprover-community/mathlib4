@@ -315,7 +315,7 @@ theorem preAleph_zero : preAleph 0 = 0 :=
 theorem preAleph_add_one (o : Ordinal) : preAleph (o + 1) = succ (preAleph o) :=
   preAleph.map_succ o
 
--- TODO: deprecate
+@[deprecated preAleph_add_one (since := "2026-03-23")]
 theorem preAleph_succ (o : Ordinal) : preAleph (succ o) = succ (preAleph o) :=
   preAleph.map_succ o
 
