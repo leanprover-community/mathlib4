@@ -461,6 +461,15 @@ theorem iSup_lt_of_lt_cof {f : α → Ordinal.{u}} {a : Ordinal.{u}}
   rw [← Cardinal.lift_lt.{_, u}, lift_cof] at ha
   simpa using lift_iSup_lt_of_lt_cof ha hf
 
+theorem cof_lift_iSup_add_one_le [Small.{u} β] (f : β → Ordinal.{u}) :
+    cof (lift.{v} (⨆ i, f i + 1)) ≤ Cardinal.lift.{u} (#β) := by
+  by_contra! hf
+  apply (lift_iSup_add_one_lt_of_lt_cof hf _).false
+  exact fun i ↦ (lt_add_one _).trans_le (le_ciSup (bddAbove_of_small _) i)
+
+theorem cof_iSup_add_one_le (f : α → Ordinal.{u}) : cof (⨆ i, f i + 1) ≤ #α := by
+  simpa using cof_lift_iSup_add_one_le f
+
 theorem _root_.Cardinal.sSup_lt_of_lt_cof {s : Set Cardinal.{u}} {a : Cardinal.{u}}
     (ha : #s < (Cardinal.lift.{u + 1} a).ord.cof) (hs : ∀ i ∈ s, i < a) : sSup s < a := by
   rw [← ord_lt_ord, sSup_ord]
@@ -494,25 +503,8 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     sInf { a : Cardinal | ∃ (ι : Type u) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = a } := by
   refine le_antisymm (le_csInf (cof_lsub_def_nonempty o) ?_) (csInf_le' ?_)
   · rintro a ⟨ι, f, hf, rfl⟩
-    rw [← type_toType o, cof_type]
-    refine
-      (cof_le fun a => ?_).trans
-        (@mk_le_of_injective _ _
-          (fun s : typein ((· < ·) : o.ToType → o.ToType → Prop) ⁻¹' Set.range f =>
-            Classical.choose s.prop)
-          fun s t hst => by
-          let H := congr_arg f hst
-          rwa [Classical.choose_spec s.prop, Classical.choose_spec t.prop, typein_inj,
-            Subtype.coe_inj] at H)
-    have := typein_lt_self a
-    simp_rw [← hf, lt_lsub_iff] at this
-    obtain ⟨i, hi⟩ := this
-    refine ⟨enum (α := o.ToType) (· < ·) ⟨f i, ?_⟩, ?_, ?_⟩
-    · rw [type_toType, ← hf]
-      apply lt_lsub
-    · rw [mem_preimage, typein_enum]
-      exact mem_range_self i
-    · rwa [← not_lt, ← typein_le_typein, typein_enum]
+    rw [← hf]
+    exact cof_iSup_add_one_le f
   · rcases Order.cof_eq (α := o.ToType) with ⟨S, hS, hS'⟩
     let f : S → Ordinal := fun s => typein LT.lt s.val
     refine ⟨S, f, le_antisymm (lsub_le fun i => typein_lt_self (o := o) i)
@@ -527,17 +519,15 @@ theorem exists_lsub_cof (o : Ordinal) :
   rw [cof_eq_sInf_lsub]
   exact csInf_mem (cof_lsub_def_nonempty o)
 
-theorem cof_lsub_le {ι} (f : ι → Ordinal) : cof (lsub.{u, u} f) ≤ #ι := by
-  rw [cof_eq_sInf_lsub]
-  exact csInf_le' ⟨ι, f, rfl, rfl⟩
+@[deprecated cof_iSup_add_one_le (since := "2026-03-22")]
+theorem cof_lsub_le {ι} (f : ι → Ordinal) : cof (lsub.{u, u} f) ≤ #ι :=
+  cof_iSup_add_one_le f
 
+@[deprecated cof_lift_iSup_add_one_le (since := "2026-03-22")]
 theorem cof_lsub_le_lift {ι} (f : ι → Ordinal) :
     cof (lsub.{u, v} f) ≤ Cardinal.lift.{v, u} #ι := by
-  rw [← mk_uLift.{u, v}]
-  convert cof_lsub_le.{max u v} fun i : ULift.{v, u} ι => f i.down
-  exact
-    lsub_eq_of_range_eq.{u, max u v, max u v}
-      (Set.ext fun x => ⟨fun ⟨i, hi⟩ => ⟨ULift.up.{v, u} i, hi⟩, fun ⟨i, hi⟩ => ⟨_, hi⟩⟩)
+  rw [← lift_id'.{u} (lsub f), ← Cardinal.lift_umax.{u, v}]
+  exact cof_lift_iSup_add_one_le _
 
 theorem le_cof_iff_lsub {o : Ordinal} {a : Cardinal} :
     a ≤ cof o ↔ ∀ {ι} (f : ι → Ordinal), lsub.{u, u} f = o → a ≤ #ι := by
@@ -548,46 +538,48 @@ theorem le_cof_iff_lsub {o : Ordinal} {a : Cardinal} :
         rw [← hb]
         exact H _ hf⟩
 
-@[deprecated lift_iSup_add_one_lt_of_lt_cof (since := "2026-03-21")]
+@[deprecated lift_iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem lsub_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal}
     (hι : Cardinal.lift.{v, u} #ι < c.cof)
     (hf : ∀ i, f i < c) : lsub.{u, v} f < c := by
   apply lift_iSup_add_one_lt_of_lt_cof _ hf
   rwa [Cardinal.lift_umax, c.lift_id']
 
-@[deprecated iSup_add_one_lt_of_lt_cof (since := "2026-03-21")]
+@[deprecated iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem lsub_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
     (∀ i, f i < c) → lsub.{u, u} f < c :=
   iSup_add_one_lt_of_lt_cof hι
 
+@[deprecated lift_iSup_lt_of_lt_cof (since := "2026-03-22")]
 theorem cof_iSup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
     cof (iSup f) ≤ Cardinal.lift.{v, u} #ι := by
-  rw [← iSup_eq_lsub_iff_lt_iSup] at H
-  rw [H]
-  exact cof_lsub_le_lift f
+  by_contra! hf
+  apply (lift_iSup_lt_of_lt_cof _ H).false
+  rwa [Cardinal.lift_umax, lift_id']
 
+@[deprecated iSup_lt_of_lt_cof (since := "2026-03-22")]
 theorem cof_iSup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
     cof (iSup f) ≤ #ι := by
-  rw [← (#ι).lift_id]
-  exact cof_iSup_le_lift H
+  by_contra! hf
+  exact (iSup_lt_of_lt_cof hf H).false
 
-@[deprecated lift_iSup_lt_of_lt_cof (since := "2026-03-21")]
+@[deprecated lift_iSup_lt_of_lt_cof (since := "2026-03-22")]
 theorem iSup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.lift.{v, u} #ι < c.cof)
     (hf : ∀ i, f i < c) : iSup f < c := by
   apply lift_iSup_lt_of_lt_cof _ hf
   rwa [Cardinal.lift_umax, lift_id']
 
-@[deprecated (since := "2026-03-21")]
+@[deprecated (since := "2026-03-22")]
 alias iSup_lt_ord := iSup_lt_of_lt_cof
 
-@[deprecated lift_iSup_lt_of_lt_cof (since := "2026-03-21")]
+@[deprecated lift_iSup_lt_of_lt_cof (since := "2026-03-22")]
 theorem iSup_lt_lift {ι} {f : ι → Cardinal} {c : Cardinal}
     (hι : Cardinal.lift.{v, u} #ι < c.ord.cof)
     (hf : ∀ i, f i < c) : iSup f < c := by
   apply Cardinal.lift_iSup_lt_of_lt_cof _ hf
   rwa [Cardinal.lift_umax, c.lift_id']
 
-@[deprecated (since := "2026-03-21")]
+@[deprecated (since := "2026-03-22")]
 alias iSup_lt := Cardinal.iSup_lt_of_lt_cof
 
 theorem nfpFamily_lt_ord_lift {ι} {f : ι → Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
@@ -626,39 +618,55 @@ theorem le_cof_iff_blsub {b : Ordinal} {a : Cardinal} :
       rw [← @blsub_eq_lsub' ι r hr] at hf
       simpa using H _ hf⟩
 
+set_option linter.deprecated false in
+@[deprecated cof_lift_iSup_add_one_le (since := "2026-03-22")]
 theorem cof_blsub_le_lift {o} (f : ∀ a < o, Ordinal) :
     cof (blsub.{u, v} o f) ≤ Cardinal.lift.{v, u} o.card := by
   rw [← mk_toType o]
   exact cof_lsub_le_lift _
 
+set_option linter.deprecated false in
+@[deprecated cof_iSup_add_one_le (since := "2026-03-22")]
 theorem cof_blsub_le {o} (f : ∀ a < o, Ordinal) : cof (blsub.{u, u} o f) ≤ o.card := by
   rw [← o.card.lift_id]
   exact cof_blsub_le_lift f
 
+set_option linter.deprecated false in
+@[deprecated lift_iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem blsub_lt_ord_lift {o : Ordinal.{u}} {f : ∀ a < o, Ordinal} {c : Ordinal}
     (ho : Cardinal.lift.{v, u} o.card < c.cof) (hf : ∀ i hi, f i hi < c) : blsub.{u, v} o f < c :=
   lt_of_le_of_ne (blsub_le hf) fun h =>
     ho.not_ge (by simpa [← iSup_ord, hf, h] using cof_blsub_le_lift.{u, v} f)
 
+set_option linter.deprecated false in
+@[deprecated iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem blsub_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal} (ho : o.card < c.cof)
     (hf : ∀ i hi, f i hi < c) : blsub.{u, u} o f < c :=
   blsub_lt_ord_lift (by rwa [o.card.lift_id]) hf
 
+set_option linter.deprecated false in
+@[deprecated lift_iSup_lt_of_lt_cof (since := "2026-03-22")]
 theorem cof_bsup_le_lift {o : Ordinal} {f : ∀ a < o, Ordinal} (H : ∀ i h, f i h < bsup.{u, v} o f) :
     cof (bsup.{u, v} o f) ≤ Cardinal.lift.{v, u} o.card := by
   rw [← bsup_eq_blsub_iff_lt_bsup.{u, v}] at H
   rw [H]
   exact cof_blsub_le_lift.{u, v} f
 
+set_option linter.deprecated false in
+@[deprecated iSup_lt_of_lt_cof (since := "2026-03-22")]
 theorem cof_bsup_le {o : Ordinal} {f : ∀ a < o, Ordinal} :
     (∀ i h, f i h < bsup.{u, u} o f) → cof (bsup.{u, u} o f) ≤ o.card := by
   rw [← o.card.lift_id]
   exact cof_bsup_le_lift
 
+set_option linter.deprecated false in
+@[deprecated lift_iSup_lt_of_lt_cof (since := "2026-03-22")]
 theorem bsup_lt_ord_lift {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal}
     (ho : Cardinal.lift.{v, u} o.card < c.cof) (hf : ∀ i hi, f i hi < c) : bsup.{u, v} o f < c :=
   (bsup_le_blsub f).trans_lt (blsub_lt_ord_lift ho hf)
 
+set_option linter.deprecated false in
+@[deprecated iSup_lt_of_lt_cof (since := "2026-03-22")]
 theorem bsup_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal} (ho : o.card < c.cof) :
     (∀ i hi, f i hi < c) → bsup.{u, u} o f < c :=
   bsup_lt_ord_lift (by rwa [o.card.lift_id])
@@ -680,7 +688,10 @@ variable {a o : Ordinal.{u}} {f : ∀ b < o, Ordinal.{u}}
 protected theorem cof_eq (hf : IsFundamentalSequence a o f) : a.cof.ord = o :=
   hf.1.antisymm' <| by
     rw [← hf.2.2]
-    exact (ord_le_ord.2 (cof_blsub_le f)).trans (ord_card_le o)
+    apply (ord_le_ord.2 _).trans (ord_card_le o)
+    rw [← lsub_eq_blsub]
+    apply (cof_iSup_add_one_le _).trans
+    simp
 
 protected theorem strict_mono (hf : IsFundamentalSequence a o f) {i j} :
     ∀ hi hj, i < j → f i hi < f j hj :=
@@ -770,7 +781,7 @@ theorem IsFundamentalSequence.of_isNormal {f : Ordinal.{u} → Ordinal.{u}} (hf 
     rw [← hg.cof_eq, ord_le_ord, ← hι]
     suffices (lsub.{u, u} fun i => sInf { b : Ordinal | f' i ≤ f b }) = a by
       rw [← this]
-      apply cof_lsub_le
+      apply cof_iSup_add_one_le
     have H : ∀ i, ∃ b < a, f' i ≤ f b := fun i => by
       have := lt_lsub.{u, u} f' i
       rw [hf', ← IsNormal.blsub_eq.{u, u} hf ha, lt_blsub_iff] at this
