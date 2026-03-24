@@ -46,7 +46,7 @@ lemma toTopHomeo_naturality {n m : SimplexCategory} (f : n ⟶ m) :
     stdSimplex.map f ∘ n.toTopHomeo := by
   ext x : 1
   exact ULift.up_injective (congr_fun ((forget TopCat).congr_map
-    ((toTopSimplex.hom.naturality f))) x)
+    (toTopSimplex.hom.naturality f)) x)
 
 lemma toTopHomeo_naturality_apply {n m : SimplexCategory} (f : n ⟶ m)
     (x : |stdSimplex.obj n|) :
@@ -132,7 +132,7 @@ lemma δ_one_toSSetObjI :
   rw [← Adjunction.homEquiv_naturality_left, sSetTopAdj_homEquiv_stdSimplex_zero]
   congr 2
   have : stdSimplexHomeomorphUnitInterval (⦋1⦌.toTopHomeo
-      (((toTop.{u}.map (stdSimplex.δ 1)).hom) default)) = 0 := by
+      (toTop.{u}.map (stdSimplex.δ 1) default)) = 0 := by
     rw [← stdSimplexHomeomorphUnitInterval_zero]
     congr 1
     refine (SimplexCategory.toTopHomeo_naturality_apply _ _).trans ?_
@@ -147,7 +147,7 @@ lemma δ_zero_toSSetObjI :
   rw [← Adjunction.homEquiv_naturality_left, sSetTopAdj_homEquiv_stdSimplex_zero]
   congr 2
   have : stdSimplexHomeomorphUnitInterval (⦋1⦌.toTopHomeo
-      (((toTop.{u}.map (stdSimplex.δ 0)).hom) default)) = 1 := by
+      (toTop.{u}.map (stdSimplex.δ 0) default)) = 1 := by
     rw [← stdSimplexHomeomorphUnitInterval_one]
     congr 1
     refine (SimplexCategory.toTopHomeo_naturality_apply _ _).trans ?_
