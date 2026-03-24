@@ -67,6 +67,19 @@ lemma colimitsClosure_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
     P.colimitsClosure J ≤ Q.colimitsClosure J :=
   colimitsClosure_le (h.trans (Q.le_colimitsClosure J))
 
+lemma colimitsClosure_eq_self [P.IsClosedUnderIsomorphisms]
+    [∀ (a : α), P.IsClosedUnderColimitsOfShape (J a)] : P.colimitsClosure J = P :=
+  le_antisymm (colimitsClosure_le (le_refl P)) (P.le_colimitsClosure J)
+
+@[simp]
+lemma colimitsClosure_bot [∀ (a : α), Nonempty (J a)] :
+    colimitsClosure (⊥ : ObjectProperty C) J = ⊥ :=
+  colimitsClosure_eq_self _ _
+
+@[simp]
+lemma colimitsClosure_top : colimitsClosure (⊤ : ObjectProperty C) J = ⊤ :=
+  colimitsClosure_eq_self _ _
+
 lemma colimitsClosure_isoClosure :
     P.isoClosure.colimitsClosure J = P.colimitsClosure J := by
   refine le_antisymm (colimitsClosure_le ?_)
