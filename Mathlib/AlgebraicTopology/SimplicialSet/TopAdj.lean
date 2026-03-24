@@ -12,14 +12,20 @@ public import Mathlib.Topology.Category.TopCat.Monoidal
 /-!
 # Properties of the geometric realization
 
+In this file, we introduce some API in order to study the geometric
+realization functor (and its right adjoint the singular simplicial set functor):
+* `SimplexCategory.toTopHomeo`: the homeomorphism between the geometric
+realization of `Δ[n]` and `stdSimplex ℝ (Fin (n + 1))`;
+* `TopCat.toSSetObj₀Equiv : toSSet.obj X _⦋0⦌ ≃ X` for `X : TopCat`;
+* `SSet.stdSimplex.toTopObjIsoI : |Δ[1]| ≅ TopCat.I`;
+* `SSet.stdSimplex.toSSetObjI : Δ[1] ⟶ TopCat.toSSet.obj TopCat.I`:
+the morphism corresponding to `toTopObjIsoI.hom` by adjunction.
+
 -/
 
 @[expose] public section
 
 universe u
-
-/-- The geometric realization of a simplicial set. -/
-scoped [Simplicial] notation "|" X "|" => SSet.toTop.obj X
 
 noncomputable instance : TopCat.toSSet.{u}.Monoidal := .ofChosenFiniteProducts _
 
@@ -109,20 +115,20 @@ def TopCat.stdSimplexHomeomorphI :
 
 namespace SSet.stdSimplex
 
-/-- The geometric realization of `Δ[1]` is homeomorphic to `TopCat.I`. -/
-noncomputable def toTopObjHomeoI :
-    |(Δ[1] : SSet.{u})| ≃ₜ TopCat.I.{u} :=
-  (SimplexCategory.toTopHomeo _).trans TopCat.stdSimplexHomeomorphI
+/-- The geometric realization of `Δ[1]` is isomorphic to `TopCat.I`. -/
+noncomputable def toTopObjIsoI :
+    |(Δ[1] : SSet.{u})| ≅ TopCat.I.{u} :=
+  TopCat.isoOfHomeo ((SimplexCategory.toTopHomeo _).trans TopCat.stdSimplexHomeomorphI)
 
 /-- The canonical morphism `Δ[1] ⟶ TopCat.toSSet.obj TopCat.I`: by adjunction,
 it corresponds to the homeomorphism `toTopObjHomeoI : |Δ[1]| ≃ₜ TopCat.I`. -/
 noncomputable def toSSetObjI : Δ[1] ⟶ TopCat.toSSet.obj TopCat.I.{u} :=
-  sSetTopAdj.homEquiv _ _ (TopCat.ofHom (toContinuousMap toTopObjHomeoI))
+  sSetTopAdj.homEquiv _ _ toTopObjIsoI.hom
 
 @[simp]
 lemma δ_one_toSSetObjI :
     stdSimplex.δ 1 ≫ toSSetObjI.{u} = SSet.const (TopCat.toSSetObj₀Equiv.symm 0) := by
-  dsimp only [toSSetObjI, toTopObjHomeoI, TopCat.stdSimplexHomeomorphI]
+  dsimp only [toSSetObjI, toTopObjIsoI, TopCat.stdSimplexHomeomorphI]
   rw [← Adjunction.homEquiv_naturality_left, sSetTopAdj_homEquiv_stdSimplex_zero]
   congr 2
   have : stdSimplexHomeomorphUnitInterval (⦋1⦌.toTopHomeo
@@ -137,7 +143,7 @@ lemma δ_one_toSSetObjI :
 @[simp]
 lemma δ_zero_toSSetObjI :
     dsimp% stdSimplex.δ 0 ≫ toSSetObjI.{u} = SSet.const (TopCat.toSSetObj₀Equiv.symm 1) := by
-  dsimp only [toSSetObjI, toTopObjHomeoI, TopCat.stdSimplexHomeomorphI]
+  dsimp only [toSSetObjI, toTopObjIsoI, TopCat.stdSimplexHomeomorphI]
   rw [← Adjunction.homEquiv_naturality_left, sSetTopAdj_homEquiv_stdSimplex_zero]
   congr 2
   have : stdSimplexHomeomorphUnitInterval (⦋1⦌.toTopHomeo
