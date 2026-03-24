@@ -448,7 +448,6 @@ lemma fTowerLieSubmodule_eq_top
     exact hfTower_ne h_bot_sub
   · exact h_top
 
-@[simp]
 lemma fTowerSubmodule_eq_top [LieModule.IsIrreducible K L M]
     (hL : t.toLieSubalgebra K = ⊤)
     {μ : K} {m : M} (P : t.HasPrimitiveVectorWith m μ) :
@@ -548,7 +547,8 @@ lemma finrank_weightSpace_le_one_of_fTower
       rw [← hu_sum] at hu_mem
       rw [← hw_sum] at hw_mem
       -- put h inside the sum so that it acts on (((toEnd K L M) f ^ x) m)
-      simp [Finsupp.sum, map_sum, map_smul, Finset.smul_sum] at hu_mem hw_mem
+      simp only [Finsupp.sum, map_sum, map_smul, toEnd_apply_apply,
+        Finset.smul_sum] at hu_mem hw_mem
       simp_rw [P.lie_h_pow_toEnd_f] at hu_mem hw_mem
       simp_rw [smul_smul] at hu_mem hw_mem
       rw [← sub_eq_zero, ← Finset.sum_sub_distrib] at hu_mem hw_mem
@@ -804,3 +804,5 @@ theorem finrank_weightSpace_eq_one_of_isIrreducible
 end IsAlgClosedIrreducible
 
 end IsSl2Triple
+
+-- #lint
