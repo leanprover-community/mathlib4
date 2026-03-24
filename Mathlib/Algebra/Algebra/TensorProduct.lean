@@ -37,6 +37,7 @@ variable {N : Type*} [AddCommMonoid N] [Module R N] [Module A N] [IsScalarTower 
 open _root_.TensorProduct
 
 variable (R A M N) in
+/-- The relations on an `R`-tensor product `(M ⊗[R] N)` assuring `A`-linearity. -/
 abbrev rels := (Submodule.span A ({(a • m) ⊗ₜ[R] n - m ⊗ₜ[R] (a • n) | (a : A) (m: M) (n : N)}))
 
 variable (R A M N) in
