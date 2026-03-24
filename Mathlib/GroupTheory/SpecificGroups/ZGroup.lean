@@ -255,10 +255,11 @@ theorem normalizer_le_centralizer_or_le_commutator :
   refine (le_center_or_le_commutator Q).imp (fun h ↦ ?_) (fun h ↦ ?_)
   · rw [← SetLike.coe_subset_coe, ← Subgroup.centralizer_eq_top_iff_subset, eq_top_iff,
       ← Subgroup.map_subtype_le_map_subtype, ← MonoidHom.range_eq_map,
-      (Subgroup.normalizer P).range_subtype] at h
+      (Subgroup.normalizer (P : Set G)).range_subtype] at h
     replace h := h.trans (Subgroup.map_centralizer_le_centralizer_image _ _)
-    rwa [← Subgroup.coe_map, P.coe_subtype, Subgroup.map_subgroupOf_eq_of_le P.le_normalizer] at h
-  · rw [P.coe_subtype, ← Subgroup.map_subtype_le_map_subtype,
+    rwa [← Subgroup.coe_map, P.coe_subtype, ← P.coe_coe,
+      Subgroup.map_subgroupOf_eq_of_le P.le_normalizer] at h
+  · rw [P.coe_subtype, ← Subgroup.map_subtype_le_map_subtype, ← P.coe_coe,
       Subgroup.map_subgroupOf_eq_of_le P.le_normalizer, Subgroup.map_subtype_commutator] at h
     exact h.trans (Subgroup.commutator_mono le_top le_top)
 
