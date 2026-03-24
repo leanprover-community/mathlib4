@@ -34,7 +34,7 @@ variable {f g : X ⟶ Y} (H : Homotopy f g)
 
 /-- The morphism `X ⊗ I ⟶ Y` that is part of a homotopy between two morphisms in `TopCat`. -/
 def h (H : Homotopy f g) : X ⊗ I ⟶ Y :=
-  (β_ _ _).hom ≫ ofHom (H.toContinuousMap.comp (ContinuousMap.prodMap homeomorphI (.id _)))
+  (β_ _ _).hom ≫ ofHom (H.toContinuousMap.comp (ContinuousMap.prodMap I.homeomorph (.id _)))
 
 @[reassoc (attr := simp)]
 lemma ι₀_h : ι₀ ≫ H.h = f := by
