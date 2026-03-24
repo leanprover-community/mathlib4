@@ -160,8 +160,7 @@ instance [P.IsClosedUnderIsomorphisms] (G : Type*) [AddGroup G]
 lemma shiftClosure_eq_iSup [P.IsClosedUnderIsomorphisms] (G : Type*) [AddGroup G] [HasShift C G] :
     P.shiftClosure G = ⨆ (x : G), P.shift x := by
   apply le_antisymm
-  · haveI := P.isStableUnderShift_iSup_shift G
-    rw [shiftClosure_le_iff]
+  · rw [shiftClosure_le_iff]
     conv_lhs => rw [← P.shift_zero G]
     exact le_iSup P.shift (0 : G)
   · intro X hX
