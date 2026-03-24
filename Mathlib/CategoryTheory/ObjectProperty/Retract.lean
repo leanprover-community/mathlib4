@@ -21,8 +21,6 @@ universe w v u
 
 namespace CategoryTheory.ObjectProperty
 
-open Limits
-
 variable {C : Type u} [Category.{v} C] (P : ObjectProperty C)
 
 /-- A predicate `C → Prop` on the objects of a category is stable under retracts
