@@ -131,8 +131,8 @@ variable {A B M : Type*} [CommRing A] [CommRing B] [IsLocalRing A] [IsLocalRing 
 variable (B) in
 open IsLocalRing LinearMap Module Submodule TensorProduct.AlgebraTensorModule in
 theorem CovBy.length_baseChange {p q : Submodule A M} (h : p ⋖ q) :
-    Module.length B (q.baseChange B) = Module.length B (p.baseChange B) +
-      Module.length B (B ⧸ (IsLocalRing.maximalIdeal A).map (algebraMap A B)) := by
+    length B (q.baseChange B) =
+      length B (p.baseChange B) + length B (B ⧸ (maximalIdeal A).map (algebraMap A B)) := by
   have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
   rw [← (p.toBaseChangeEquiv B).length_eq, ← (q.toBaseChangeEquiv B).length_eq]
   let f : p →ₗ[A] q := inclusion h.le
@@ -173,6 +173,36 @@ theorem length_baseChange :
 variable [Module B M] [IsScalarTower A B M]
 
 set_option backward.isDefEq.respectTransparency false in
+variable (A) in
+open IsLocalRing LinearMap Module Submodule TensorProduct.AlgebraTensorModule in
+theorem length'_aux {p q : Submodule B M} (h : p ⋖ q) :
+    length A q = Module.length A p +
+      (Module.rank (ResidueField A) (ResidueField B)).toENat := by
+  have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
+  let f : p →ₗ[B] q := inclusion h.le
+  have key : IsSimpleModule B (q ⧸ f.range) := by
+    rwa [range_inclusion, ← covBy_iff_quot_is_simple h.le]
+  obtain ⟨m, hm, ⟨e⟩⟩ := isSimpleModule_iff_quot_maximal.mp key
+  rw [eq_maximalIdeal hm] at e
+  let g := e.comp f.range.mkQ
+  have : Function.Injective f := inclusion_injective _
+  have : Function.Surjective g := e.surjective.comp f.range.mkQ_surjective
+  have : Function.Exact f g := exact_iff.mpr ((e.ker_comp f.range.mkQ).trans f.range.ker_mkQ)
+  rw [length_eq_add_of_exact (f.restrictScalars A) (g.restrictScalars A)
+    (by simpa) (by simpa) (by simpa)]
+  suffices length A (B ⧸ maximalIdeal B) = length (ResidueField A) (ResidueField B) by
+    rw [this, Module.length_eq_rank]
+  have : Submodule A (ResidueField B) ≃o Submodule (ResidueField A) (ResidueField B) := by
+    have : RingHomSurjective (residue A) := ⟨residue_surjective⟩
+    apply Submodule.orderIsoMapComapOfBijective (σ₁₂ := residue A) { toFun := _root_.id
+                                                                     map_add' _ _ := rfl
+                                                                     map_smul' _ _ := rfl }
+    exact Function.Involutive.bijective (congrFun rfl)
+  rw [length, length]
+  congr 1
+  exact Order.krullDim_eq_of_orderIso this
+
+set_option backward.isDefEq.respectTransparency false in
 open IsLocalRing Module Submodule in
 theorem length' :
     length A M = length B M * (Module.rank (ResidueField A) (ResidueField B)).toENat := by
@@ -186,9 +216,7 @@ theorem length' :
     intro k
     induction k using Fin.induction
     case pos.zero => rw [← RelSeries.head, hs_bot]; simp
-    case pos.succ i hi =>
-      sorry
-      -- simpa [hi, add_one_mul] using (s.step i).length_baseChange B
+    case pos.succ i hi => simpa [hi, add_one_mul] using length'_aux A (s.step i)
   · have : ¬ IsFiniteLength A M := by
       contrapose! h
       rw [isFiniteLength_iff_isNoetherian_isArtinian] at h ⊢
