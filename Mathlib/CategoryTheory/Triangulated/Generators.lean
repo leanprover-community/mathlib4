@@ -15,9 +15,31 @@ public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 
 We define the notions of strong and classical generators in (pre)triangulated categories.
 
+## Main definitions
+
+- `ObjectProperty.triangEnvelopeIter P n`: The object property of all objects reachable from `P`
+  by shifts, binary products, retracts and at most `n` extensions.
+- `ObjectProperty.triangEnvelope P`: The triangulated envelope of `P`, i.e., the object property
+  of all objects reachable from `P` by shifts, binary products, retracts and extensions. This is
+  the smallest triangulated object property closed under retracts that contains `P`, see
+  `ObjectProperty.triangEnvelope_le_iff`.
+- `ObjectProperty.IsStrongTriangulatedGenerator P`: `P` is a strong triangulated generator if
+  there exists `n` such that every object is in `P.triangEnvelopeIter n`.
+- `ObjectProperty.IsClassicalTriangulatedGenerator P`: `P` is a classical triangulated generator
+  if every object is in `P.triangEnvelope`.
+
+## Main results
+
+- `ObjectProperty.triangEnvelope_le_iff`: The universal property of `P.triangEnvelope`: it is
+  the smallest triangulated object property closed under retracts that contains `P`.
+- `ObjectProperty.IsStrongTriangulatedGenerator.isClassicalTriangulatedGenerator`: A strong
+  triangulated generator is a classical triangulated generator.
+
 ## References
 
-TODO
+* [Bondal and Van den Bergh, *Generators and representability of functors in commutative and
+  noncommutative geometry*][bondal_vandenbergh_2003]
+* [Stacks 09SJ](https://stacks.math.columbia.edu/tag/09SJ)
 
 -/
 
@@ -102,8 +124,8 @@ extensions, for some fixed `n`. -/
 def IsStrongTriangulatedGenerator : Prop := ∃ n, ∀ X, P.triangEnvelopeIter n X
 
 /-- All objects that can be reached by shifts, binary products, retracts and extensions
-from objects in `P`. It is the smallest triangulated closed-under-retracts object property
-containing `P`. -/
+from objects in `P`. This is the smallest triangulated object property closed under retracts
+that contains `P`, see `ObjectProperty.triangEnvelope_le_iff`. -/
 def triangEnvelope : ObjectProperty C := ⨆ n, P.triangEnvelopeIter n
 
 lemma prop_triangEnvelope_iff (X : C) : P.triangEnvelope X ↔ ∃ n, P.triangEnvelopeIter n X :=
