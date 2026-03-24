@@ -39,7 +39,7 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
           (Code.primrec_evaln.to_comp.comp <| (snd.pair (const cf)).pair fst)
           (Code.primrec_evaln.to_comp.comp <| (snd.pair (const cg)).pair fst))
   refine ⟨_, this, fun n => ?_⟩
-  have : ∀ x ∈ rfindOpt fun k ↦ HOrElse.hOrElse (Code.evaln k cf n) fun _x ↦ Code.evaln k cg n,
+  have : ∀ x ∈ rfindOpt fun k ↦ Code.evaln k cf n <|> Code.evaln k cg n,
       x ∈ Code.eval cf n ∨ x ∈ Code.eval cg n := by
     intro x h
     obtain ⟨k, e⟩ := Nat.rfindOpt_spec h
