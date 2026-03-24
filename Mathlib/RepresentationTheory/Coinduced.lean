@@ -276,8 +276,8 @@ attribute [pp_with_univ] Rep coind
 set_option backward.isDefEq.respectTransparency false in
 -- set_option maxHeartbeats 10000000 in
 /-- Given a monoid homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
-`A`, there is a `k`-linear equivalence between the `G`-representation morphisms `B ⟶ A` and the
-`H`-representation morphisms `B ⟶ coind φ A`. -/
+`A`, there is a `k`-linear equivalence between the `G`-representation morphisms `res φ B ⟶ A` and
+the `H`-representation morphisms `B ⟶ coind φ A`. -/
 @[simps]
 def resCoindHomEquiv (B : Rep.{max w t} k H) (A : Rep.{max w t} k G) :
     (res φ B ⟶ A) ≃ₗ[k] (B ⟶ coind φ A) where
