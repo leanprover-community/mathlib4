@@ -99,7 +99,6 @@ noncomputable def udMap : Fin 14 → Plane
 lemma reflect_toEuclideanLin {x y : ℝ} : !![1, 0; 0, -1].toEuclideanLin !₂[x, y] = !₂[x, -y] := by
   ext i; match i with | 0 => simp | 1 => simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma udMap_reflect (i : Fin 14) : udMap i.rev = !![1, 0; 0, -1].toEuclideanLin (udMap i) := by
   fin_cases i <;> simp only [udMap, reflect_toEuclideanLin, Fin.reduceFinMk, Fin.reduceRev] <;>
   norm_num
