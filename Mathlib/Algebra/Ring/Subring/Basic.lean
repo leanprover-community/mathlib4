@@ -116,8 +116,7 @@ variable (s : Subring R)
 
 /-- Product of a list of elements in a subring is in the subring. -/
 protected theorem list_prod_mem {R} [Ring R] (s : Subring R) {l : List R} :
-    (∀ x ∈ l, x ∈ s) → l.prod ∈ s :=
-  list_prod_mem
+    (∀ x ∈ l, x ∈ s) → l.prod ∈ s := list_prod_mem
 
 /-- Sum of a list of elements in a subring is in the subring. -/
 protected theorem list_sum_mem {l : List R} : (∀ x ∈ l, x ∈ s) → l.sum ∈ s :=
@@ -396,7 +395,6 @@ theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 
 /-- The center is commutative. -/
-
 instance {R} [Ring R] : CommRing (center R) :=
   { (inferInstance : CommSemiring (Subsemiring.center R)), (center R).toRing with }
 
