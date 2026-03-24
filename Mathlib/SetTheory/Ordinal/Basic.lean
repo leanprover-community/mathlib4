@@ -913,7 +913,7 @@ theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :
   (add_assoc _ _ _).symm
 
 @[deprecated Order.one_le_iff_ne_zero (since := "2026-03-24")]
-theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 :=
+protected theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 :=
   Order.one_le_iff_ne_zero
 
 theorem succ_pos (o : Ordinal) : 0 < succ o :=
@@ -932,7 +932,7 @@ theorem lt_one_iff_zero {a : Ordinal} : a < 1 ↔ a = 0 :=
   Order.lt_one_iff
 
 @[deprecated Order.le_one_iff (since := "2026-03-24")]
-theorem le_one_iff {a : Ordinal} : a ≤ 1 ↔ a = 0 ∨ a = 1 :=
+protected theorem le_one_iff {a : Ordinal} : a ≤ 1 ↔ a = 0 ∨ a = 1 :=
   Order.le_one_iff
 
 @[deprecated card_add_one (since := "2026-02-27")]
