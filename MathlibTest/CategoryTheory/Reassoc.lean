@@ -1,6 +1,7 @@
 module
 
 public import Mathlib.Tactic.CategoryTheory.IsoReassoc
+public import Mathlib.Tactic.LinearMapReassoc
 
 open CategoryTheory
 namespace Tests.Reassoc
@@ -111,3 +112,32 @@ info: CategoryTheory.Iso.hom_inv_id_assoc_assoc.{v, u} {C : Type u} [Category.{v
 #check Iso.hom_inv_id_assoc_assoc
 
 end Tests.Reassoc
+
+namespace Tests.LinearMapReassoc
+
+universe u v₁ v₂ v₃
+
+variable {R : Type u} [Semiring R]
+  {M₁ : Type v₁} {M₁' : Type v₁} {M₂ : Type v₂} {M₃ : Type v₃}
+  [AddCommMonoid M₁] [AddCommMonoid M₁'] [AddCommMonoid M₂] [AddCommMonoid M₃]
+  [Module R M₁] [Module R M₁'] [Module R M₂] [Module R M₃]
+
+@[reassoc]
+lemma fooLinear (f : M₁ →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃) (h : M₁ →ₗ[R] M₃)
+    (w : g ∘ₗ f = h) : g ∘ₗ f = h := w
+
+/--
+info: Tests.LinearMapReassoc.fooLinear_assoc.{u, v₁, v₂, v₃} {R : Type u} [Semiring R] {M₁ : Type v₁} {M₂ : Type v₂}
+  {M₃ : Type v₃} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M₁] [Module R M₂] [Module R M₃]
+  (f : M₁ →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃) (h : M₁ →ₗ[R] M₃) (w : g ∘ₗ f = h) {M₁✝ : Type v₁} [AddCommMonoid M₁✝]
+  [Module R M₁✝] (h✝ : M₁✝ →ₗ[R] M₁) : g ∘ₗ f ∘ₗ h✝ = h ∘ₗ h✝
+-/
+#guard_msgs in
+#check fooLinear_assoc
+
+example (e : M₁' →ₗ[R] M₁) (f : M₁ →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃)
+    (h : M₁ →ₗ[R] M₃) (w : g ∘ₗ f = h) :
+    g ∘ₗ f ∘ₗ e = h ∘ₗ e := by
+  simpa using (reassoc_of% fooLinear f g h w) e
+
+end Tests.LinearMapReassoc

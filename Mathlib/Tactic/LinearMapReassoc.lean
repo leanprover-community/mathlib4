@@ -28,11 +28,11 @@ open Lean Meta Elab Tactic
 
 namespace Mathlib.Tactic.Reassoc
 
-universe u₁ u₂
+universe u₁ u₂ u₃
 
 theorem LinearMap.eq_whisker {R : Type u₁} [Semiring R]
-    {M₂ M₃ : Type u₂} [AddCommMonoid M₂] [AddCommMonoid M₃]
-    [Module R M₂] [Module R M₃]
+    {M₂ : Type u₂} [AddCommMonoid M₂] [Module R M₂]
+    {M₃ : Type u₃} [AddCommMonoid M₃] [Module R M₃]
     {f g : M₂ →ₗ[R] M₃} (w : f = g)
     {M₁ : Type u₂} [AddCommMonoid M₁] [Module R M₁] (h : M₁ →ₗ[R] M₂) :
     f ∘ₗ h = g ∘ₗ h := by
