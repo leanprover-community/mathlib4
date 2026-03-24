@@ -7834,5 +7834,6 @@ public import Mathlib.Util.TermReduce
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
 public import Mathlib.Util.WithWeakNamespace
+public import Mathlib.test
 
 set_option linter.style.longLine false

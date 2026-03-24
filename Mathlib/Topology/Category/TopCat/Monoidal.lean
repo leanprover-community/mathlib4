@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 /-!
 # The cartesian monoidal structure on `TopCat`
 
+We define the cartesian monoidal category structure on `TopCat`.
+We also introduce the unit interval as an object `TopCat.I` of `TopCat`.
+
 -/
 
 @[expose] public section
@@ -21,13 +24,6 @@ universe u
 open CategoryTheory Limits MonoidalCategory
 
 namespace TopCat
-
-def const {X Y : TopCat.{u}} (y : Y) : X ⟶ Y :=
-  ofHom ⟨fun _ ↦ y, by continuity⟩
-
-@[simp]
-lemma const_apply {X Y : TopCat.{0}} (y : Y) (x : X) :
-    const y x = y := rfl
 
 instance : CartesianMonoidalCategory TopCat.{u} :=
   .ofChosenFiniteProducts ⟨_, isTerminalPUnit⟩
@@ -125,23 +121,22 @@ def I : TopCat.{u} := TopCat.of (ULift unitInterval)
 instance : LocallyCompactSpace I :=
   inferInstanceAs (LocallyCompactSpace (ULift unitInterval))
 
+/-- The unit interval `TopCat.I` is homeomorphic to `unitInterval`. -/
 def homeomorphI : I ≃ₜ unitInterval := Homeomorph.ulift
 
+/-- Constructor for elements in `TopCat.I`. -/
 def I.mk (t : unitInterval) : I := ULift.up t
 
 @[continuity]
-lemma I.continuous_mk : Continuous I.mk.{u} := by
-  change Continuous ULift.up
-  continuity
+lemma I.continuous_mk : Continuous I.mk.{u} := continuous_uliftUp
 
-def I.symm : I.{u} → I.{u} := fun t ↦ I.mk (unitInterval.symm t.down)
+/-- The symmetrization map `TopCat.I ⟶ TopCat.I`. -/
+def I.symm : I.{u} → I := fun t ↦ I.mk (unitInterval.symm t.down)
 
 @[continuity]
 lemma I.continuous_symm : Continuous I.symm.{u} := by
   change Continuous ((I.mk.comp unitInterval.symm).comp ULift.down)
   continuity
-
-open NNReal
 
 instance : OfNat I 0 := ⟨I.mk 0⟩
 instance : OfNat I 1 := ⟨I.mk 1⟩
@@ -153,41 +148,35 @@ set_option backward.isDefEq.respectTransparency false in
 
 open CartesianMonoidalCategory
 
+/-- The inclusion `X ⟶ X ⊗ I` given by `0 : I` for `X : TopCat`. -/
 noncomputable def ι₀ {X : TopCat.{u}} : X ⟶ X ⊗ I :=
   lift (𝟙 X) (const 0)
 
 @[reassoc (attr := simp)]
-lemma ι₀_comp {X Y : TopCat.{u}} (f : X ⟶ Y) :
-    ι₀ ≫ f ▷ _ = f ≫ ι₀ := rfl
+lemma ι₀_comp {X Y : TopCat.{u}} (f : X ⟶ Y) : ι₀ ≫ f ▷ _ = f ≫ ι₀ := rfl
 
 @[reassoc (attr := simp)]
 lemma ι₀_fst (X : TopCat.{u}) : ι₀ ≫ fst X _ = 𝟙 X := rfl
 
 @[reassoc (attr := simp)]
-lemma ι₀_snd (X : TopCat.{u}) :
-    ι₀ ≫ snd X _ = TopCat.const 0 :=
-  rfl
+lemma ι₀_snd (X : TopCat.{u}) : ι₀ ≫ snd X _ = TopCat.const 0 := rfl
 
-@[simp]
-lemma ι₀_apply {X : TopCat.{u}} (x : X) : ι₀ x = ⟨x, 0⟩ := rfl
+@[simp] lemma ι₀_apply {X : TopCat.{u}} (x : X) : ι₀ x = ⟨x, 0⟩ := rfl
 
+/-- The inclusion `X ⟶ X ⊗ I` given by `1 : I` for `X : TopCat`. -/
 noncomputable def ι₁ {X : TopCat.{u}} : X ⟶ X ⊗ I :=
   lift (𝟙 X) (const 1)
 
 @[reassoc (attr := simp)]
-lemma ι₁_comp {X Y : TopCat.{u}} (f : X ⟶ Y) :
-    ι₁ ≫ f ▷ _ = f ≫ ι₁ := rfl
+lemma ι₁_comp {X Y : TopCat.{u}} (f : X ⟶ Y) : ι₁ ≫ f ▷ _ = f ≫ ι₁ := rfl
 
 @[reassoc (attr := simp)]
 lemma ι₁_fst (X : TopCat.{u}) : ι₁ ≫ fst X _ = 𝟙 X := rfl
 
 @[reassoc (attr := simp)]
-lemma ι₁_snd (X : TopCat.{u}) :
-    ι₁ ≫ snd X _ = const 1 :=
-  rfl
+lemma ι₁_snd (X : TopCat.{u}) : ι₁ ≫ snd X _ = const 1 := rfl
 
 @[simp]
-lemma ι₁_apply {X : TopCat.{u}} (x : X) : ι₁ x = ⟨x, 1⟩ :=
-  rfl
+lemma ι₁_apply {X : TopCat.{u}} (x : X) : ι₁ x = ⟨x, 1⟩ := rfl
 
 end TopCat
