@@ -835,32 +835,42 @@ end PrefixProjectionNames
 
 namespace DsimpLhs
 
-structure Fun (α : Sort _) (β : Sort _) where
-  toFun : α → β
+structure Functor where
+  obj : Type → Type
+  map {X Y : Type} (f : X → Y) : obj X → obj Y
 
-instance {α β} : CoeFun (Fun α β) (fun _ ↦ α → β) := ⟨Fun.toFun⟩
+structure NatIso (F G : Functor) where
+  app (X : Type) : Equiv (F.obj X) (G.obj X)
+  naturality {X Y : Type} (f : X → Y) : G.map f ∘ app X = app Y ∘ F.map f
 
-def wrap {α β : Sort _} (f : α → β) : α → β := f
+def NatIso.refl (F : Functor) : NatIso F F where
+  app X := Equiv.refl _
+  naturality := by simp
 
-@[simp]
-lemma wrap_eq {α β : Sort _} (f : α → β) : wrap f = f := rfl
+abbrev Functor.const (X : Type) : Functor where
+  obj _ := X
+  map _ := id
 
-/-- Intentionally wrapped custom projection. -/
-def Fun.Simps.toFun' {α β : Sort _} (f : Fun α β) : α → β := wrap f.toFun
+abbrev Functor.id : Functor where
+  obj X := X
+  map f := f
 
-initialize_simps_projections Fun (toFun → toFun')
+abbrev Functor.comp (F G : Functor) : Functor where
+  obj X := G.obj (F.obj X)
+  map f := G.map (F.map f)
 
-@[simps]
-def succFun : Fun Nat Nat := ⟨fun x ↦ x + 1⟩
+@[simps!]
+def iso (X : Type) : NatIso (Functor.id.comp (.const X)) (.const X) := NatIso.refl _
 
-example (x : Nat) : succFun x = x + 1 := by
+@[simps! +dsimpLhs]
+def iso' (X : Type) : NatIso (Functor.id.comp (.const X)) (.const X) := NatIso.refl _
+
+example (n : Nat) : (iso Nat).app Nat n = n := by
+  dsimp only
   fail_if_success simp
   rfl
 
-@[simps +dsimpLhs]
-def succFun' : Fun Nat Nat := ⟨Nat.succ⟩
-
-example (x : Nat) : succFun' x = x + 1 := by
+example (n : Nat) : (iso' Nat).app Nat n = n := by
   simp
 
 end DsimpLhs
