@@ -16,8 +16,6 @@ This file defines oracle computability using partial recursive functions.
 
 * `Nat.RecursiveIn O f`: A partial function `f : ℕ →. ℕ` is partial recursive given access to
   oracles in the set `O`.
-* `Nat.PrimrecIn O f`: A total function `f : ℕ → ℕ` is primitive recursive relative to oracles
-  in the set `O`.
 * `RecursiveIn O f`: Lifts `Nat.RecursiveIn` to partial functions between `Primcodable` types.
 * `ComputableIn O f`: A total function `f : α → σ` is computable given access to oracles in `O`.
 
@@ -80,42 +78,12 @@ protected inductive RecursiveIn (O : Set (ℕ →. ℕ)) : (ℕ →. ℕ) → Pr
       Nat.RecursiveIn O fun a =>
         Nat.rfind fun n => (fun m => m = 0) <$> f (Nat.pair a n)
 
-/-- The primitive recursive functions `ℕ → ℕ`, with respect to an oracle `O`. -/
-protected inductive PrimrecIn (O : Set (ℕ → ℕ)) : (ℕ → ℕ) → Prop
-  | zero : Nat.PrimrecIn O fun _ => 0
-  | protected succ : Nat.PrimrecIn O succ
-  | left : Nat.PrimrecIn O fun n => n.unpair.1
-  | right : Nat.PrimrecIn O fun n => n.unpair.2
-  | oracle : ∀ g ∈ O, Nat.PrimrecIn O g
-  | pair {f g} : Nat.PrimrecIn O f → Nat.PrimrecIn O g → Nat.PrimrecIn O fun n => pair (f n) (g n)
-  | comp {f g} : Nat.PrimrecIn O f → Nat.PrimrecIn O g → Nat.PrimrecIn O fun n => f (g n)
-  | prec {f g} :
-      Nat.PrimrecIn O f →
-        Nat.PrimrecIn O g →
-          Nat.PrimrecIn O (unpaired fun z n => n.rec (f z) fun y IH => g <| pair z <| pair y IH)
-
 end Nat
 
-/--
-Encode a partial function between `Primcodable` types as a partial function `ℕ →. ℕ`.
--/
-def PFun.liftPrim {α σ} [Primcodable α] [Primcodable σ] (f : α →. σ) : ℕ →. ℕ :=
-  fun n => Part.bind (decode (α := α) n) fun a => (f a).map encode
-
-/--
-Encode a total function between `Primcodable` types as a total function `ℕ → ℕ`.
-If decoding fails, the output defaults to `0`.
--/
-def Function.liftPrim {α σ} [Primcodable α] [Primcodable σ] (f : α → σ) : ℕ → ℕ :=
-  fun n => (decode (α := α) n).map (fun a => encode (f a)) |>.getD 0
-
-/-- Lift `Nat.RecursiveIn` from `ℕ →. ℕ` to partial functions between `Primcodable` types. -/
+/-- A partial function `f : α →. σ` between `Primcodable` types is recursive in a set of oracles
+`O` if its encoding as a function `ℕ →. ℕ` is `Nat.RecursiveIn O`. -/
 def RecursiveIn {α σ} [Primcodable α] [Primcodable σ] (O : Set (ℕ →. ℕ)) (f : α →. σ) : Prop :=
-  Nat.RecursiveIn O (PFun.liftPrim f)
-
-/-- Relative primitive recursion between primcodable types -/
-def PrimrecIn' {α σ} [Primcodable α] [Primcodable σ] (O : Set (ℕ → ℕ)) (f : α → σ) : Prop :=
-  Nat.PrimrecIn O (Function.liftPrim f)
+  Nat.RecursiveIn O fun n => Part.bind (decode (α := α) n) fun a => (f a).map encode
 
 /-- A binary partial function is recursive in `O` if the curried form is. -/
 def RecursiveIn₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ]
