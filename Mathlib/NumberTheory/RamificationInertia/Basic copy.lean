@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.Length
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # Ramification index
@@ -82,10 +83,6 @@ theorem IsArtinian.ofFaithfullyFlat (h : IsArtinian S (S ⊗[R] M)) : IsArtinian
   rw [isArtinian_iff] at h ⊢
   exact OrderEmbedding.wellFounded (Submodule.baseChangeOrderEmbedding R M S) h
 
-theorem IsFiniteLength.ofFaithfullyFlat (h : IsFiniteLength S (S ⊗[R] M)) : IsFiniteLength R M := by
-  rw [isFiniteLength_iff_isNoetherian_isArtinian] at h ⊢
-  exact h.imp IsNoetherian.ofFaithfullyFlat IsArtinian.ofFaithfullyFlat
-
 end temp
 
 section flatBaseChange
@@ -151,7 +148,7 @@ theorem CovBy.length_baseChange {p q : Submodule A M} (h : p ⋖ q) :
     (Algebra.TensorProduct.quotIdealMapEquivTensorQuot B (maximalIdeal A)).toLinearEquiv.length_eq]
 
 open IsLocalRing Module Submodule in
-theorem foo :
+theorem length_baseChange :
     length B (B ⊗[A] M) = length A M * length B (B ⧸ (maximalIdeal A).map (algebraMap A B)) := by
   have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
   by_cases h : IsFiniteLength A M
@@ -164,11 +161,42 @@ theorem foo :
     induction k using Fin.induction
     case pos.zero => rw [← RelSeries.head, hs_bot, baseChange_bot]; simp
     case pos.succ i hi => simpa [hi, add_one_mul] using (s.step i).length_baseChange B
-  · have : ¬ IsFiniteLength B (B ⊗[A] M) := mt IsFiniteLength.ofFaithfullyFlat h
+  · have : ¬ IsFiniteLength B (B ⊗[A] M) := by
+      contrapose! h
+      rw [isFiniteLength_iff_isNoetherian_isArtinian] at h ⊢
+      exact h.imp IsNoetherian.ofFaithfullyFlat IsArtinian.ofFaithfullyFlat
     rw [← length_ne_top_iff, not_ne_iff] at h this
     rw [h, this, ENat.top_mul]
     rw [← pos_iff_ne_zero, length_pos_iff, Quotient.nontrivial_iff]
     exact (map_maximalIdeal_lt_top (algebraMap A B)).ne
+
+variable [Module B M] [IsScalarTower A B M]
+
+set_option backward.isDefEq.respectTransparency false in
+open IsLocalRing Module Submodule in
+theorem length' :
+    length A M = length B M * (Module.rank (ResidueField A) (ResidueField B)).toENat := by
+  have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
+  by_cases h : IsFiniteLength B M
+  · obtain ⟨s, hs_bot, hs_top⟩ := isFiniteLength_iff_exists_compositionSeries.mp h
+    rw [← length_compositionSeries s hs_bot hs_top]
+    suffices ∀ k, length A (s k) = k * (Module.rank (ResidueField A) (ResidueField B)).toENat by
+      rw [← Fin.val_last s.length, ← this, ← RelSeries.last, hs_top]
+      exact length_top.symm
+    intro k
+    induction k using Fin.induction
+    case pos.zero => rw [← RelSeries.head, hs_bot]; simp
+    case pos.succ i hi =>
+      sorry
+      -- simpa [hi, add_one_mul] using (s.step i).length_baseChange B
+  · have : ¬ IsFiniteLength A M := by
+      contrapose! h
+      rw [isFiniteLength_iff_isNoetherian_isArtinian] at h ⊢
+      exact h.imp (isNoetherian_of_tower A) (isArtinian_of_tower A)
+    rw [← length_ne_top_iff, not_ne_iff] at h this
+    rw [h, this, ENat.top_mul]
+    rw [← pos_iff_ne_zero, pos_iff_ne_zero, ne_eq, Cardinal.toENat_eq_zero]
+    exact Module.rank_pos_of_free.ne'
 
 end flatBaseChange
 
@@ -188,12 +216,26 @@ theorem ramificationIdx_tower {R S T : Type*} [CommRing R] [CommRing S] [CommRin
   congr
   set Sq := Localization.AtPrime q
   set Tr := Localization.AtPrime r
-  have := foo (A := Sq) (B := Tr) (M := Sq ⧸ p.map (algebraMap R Sq))
+  have := length_baseChange (A := Sq) (B := Tr) (M := Sq ⧸ p.map (algebraMap R Sq))
   rw [← Localization.AtPrime.map_eq_maximalIdeal, map_map,
     ← IsScalarTower.algebraMap_eq] at this
   convert this
   let f := (Ideal.quotientEquivAlgOfEq Tr (by rw [map_map, ← IsScalarTower.algebraMap_eq])).trans
     (Algebra.TensorProduct.quotIdealMapEquivTensorQuot Tr (p.map (algebraMap R Sq)))
   exact f.toLinearEquiv.length_eq
+
+open Module TensorProduct in
+theorem sum_ramification_inertia
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] : False := by
+  let F := S ⊗[R] p.ResidueField
+  let q : Ideal S := sorry
+  have : q.IsPrime := sorry
+  have : q.LiesOver p := sorry
+  let Sq := Localization.AtPrime q
+  let A := Sq ⧸ p.map (algebraMap R Sq)
+  let e := (length Sq A).toNat
+  have := length' (A := Localization.AtPrime p) (B := Localization.AtPrime q) (M := A) -- e * f
+  sorry
 
 end Ideal
