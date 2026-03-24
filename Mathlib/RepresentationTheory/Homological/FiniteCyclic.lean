@@ -107,12 +107,10 @@ lemma range_norm_eq_ker_applyAsHom_sub (hg : ∀ x, x ∈ Subgroup.zpowers g) :
     rw [Representation.IntertwiningMap.toLinearMap_apply, applyAsHom_apply,
       Representation.IntertwiningMap.toLinearMap_apply, ← hom_comm_apply]
     simp [norm]) fun x hx => ⟨single 1 (x g), by
-    ext j;
+    ext
     have := apply_eq_of_leftRegular_eq_of_generator (k := k) g hg x
       (by simpa [sub_hom, sub_eq_zero] using hx)
     simp [norm, Representation.norm, this]⟩
-    -- using (apply_eq_of_leftRegular_eq_of_generator g hg _
-    --   (by simpa [sub_eq_zero] using hx) j).symm
 
 set_option backward.isDefEq.respectTransparency false in
 omit [Fintype G] in variable [Finite G] in
