@@ -26,7 +26,7 @@ tempered distribution `u` belongs to the Sobolev space `H^{s,p}` if
 
 ## Main statements
 
-* `SchwartzMap.memSobolev`: Each Schwartz function belongs every Sobolev space
+* `SchwartzMap.memSobolev`: Each Schwartz function belongs to every Sobolev space
 * `TemperedDistribution.memSobolev_two_iff_fourier`: The characterization of `p = 2` Sobolev
   functions
 * `TemperedDistribution.MemSobolev.fourierMultiplierCLM_of_bounded`: If `u` is a Sobolev
@@ -56,7 +56,10 @@ variable [NormedSpace ℂ F]
 
 variable (E F) in
 /-- The Bessel potential operator is the Fourier multiplier with the function
-`(1 + ‖x‖ ^ 2) ^ (s / 2)`. -/
+`(1 + ‖x‖ ^ 2) ^ (s / 2)`.
+
+Note that due to the convention of the Fourier transform, this is the operator
+`(1 - (2 * π) ^ 2 • Δ) ^ (s / 2)` not `(1 - Δ) ^ (s / 2)`. -/
 def besselPotential (s : ℝ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
   fourierMultiplierCLM F (fun x ↦ ((1 + ‖x‖ ^ 2) ^ (s / 2) : ℝ))
 
