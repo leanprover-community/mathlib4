@@ -132,6 +132,7 @@ allowing it would complicate matters in the most important use cases.
 variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
   [TopologicalSpace W] {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any `w`, the Fourier integral is convergent iff `f` is integrable. -/
 theorem fourierIntegral_convergent_iff (he : Continuous e)
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) {f : V → E} (w : W) :
@@ -181,6 +182,7 @@ variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [
 
 variable {σ : ℂ →+* ℂ} [RingHomIsometric σ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Fubini's theorem for the Fourier integral.
 
 This is the main technical step in proving both Parseval's identity and self-adjointness of the
