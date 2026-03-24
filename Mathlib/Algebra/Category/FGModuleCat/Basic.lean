@@ -59,6 +59,7 @@ abbrev FGModuleCat := (ModuleCat.isFG.{v} R).FullSubcategory
 variable {R}
 
 /-- A synonym for `M.obj.carrier`, which we can mark with `@[coe]`. -/
+@[reducible]
 def FGModuleCat.carrier (M : FGModuleCat.{v} R) : Type v := M.obj.carrier
 
 instance : CoeSort (FGModuleCat.{v} R) (Type v) :=
@@ -142,7 +143,6 @@ def _root_.LinearEquiv.toFGModuleCatIso
   hom_inv_id := by ext x; exact e.left_inv x
   inv_hom_id := by ext x; exact e.right_inv x
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Universe lifting as a functor on `FGModuleCat`. -/
 def ulift : FGModuleCat.{v} R ⥤ FGModuleCat.{max v w} R where
   obj M := .of R <| ULift M
