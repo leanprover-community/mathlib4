@@ -209,8 +209,7 @@ noncomputable abbrev chainsMap₃ :
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma chainsMap_f_0_comp_chainsIso₀ :
-    (chainsMap f φ).f 0 ≫ (chainsIso₀ B).hom = (chainsIso₀ A).hom ≫
-      ModuleCat.ofHom φ.hom.toLinearMap := by
+    (chainsMap f φ).f 0 ≫ (chainsIso₀ B).hom = (chainsIso₀ A).hom ≫ φ.toModuleCatHom := by
   ext
   simp [chainsMap_f, Unique.eq_default (α := Fin 0 → G), Unique.eq_default (α := Fin 0 → H),
     chainsIso₀]
@@ -243,19 +242,18 @@ section H0
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem cyclesMap_comp_cyclesIso₀_hom :
-    cyclesMap f φ 0 ≫ (cyclesIso₀ B).hom = (cyclesIso₀ A).hom ≫
-      ModuleCat.ofHom φ.hom.toLinearMap := by
+    cyclesMap f φ 0 ≫ (cyclesIso₀ B).hom = (cyclesIso₀ A).hom ≫ φ.toModuleCatHom := by
   simp [cyclesIso₀]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem cyclesIso₀_inv_comp_cyclesMap :
-    (cyclesIso₀ A).inv ≫ cyclesMap f φ 0 = ModuleCat.ofHom φ.hom.toLinearMap ≫ (cyclesIso₀ B).inv :=
+    (cyclesIso₀ A).inv ≫ cyclesMap f φ 0 = φ.toModuleCatHom ≫ (cyclesIso₀ B).inv :=
   (CommSq.vert_inv ⟨cyclesMap_comp_cyclesIso₀_hom f φ⟩).w.symm
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem H0π_comp_map :
-    H0π A ≫ map f φ 0 = ModuleCat.ofHom φ.hom.toLinearMap ≫ H0π B := by
+    H0π A ≫ map f φ 0 = φ.toModuleCatHom ≫ H0π B := by
   simp [H0π]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -287,7 +285,7 @@ noncomputable def mapShortComplexH1 :
     shortComplexH1 A ⟶ shortComplexH1 B where
   τ₁ := chainsMap₂ f φ
   τ₂ := chainsMap₁ f φ
-  τ₃ := ModuleCat.ofHom φ.hom.toLinearMap
+  τ₃ := φ.toModuleCatHom
   comm₁₂ := by
     simp only [shortComplexH1]
     ext : 3
@@ -310,8 +308,7 @@ theorem mapShortComplexH1_zero :
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapShortComplexH1_id : mapShortComplexH1 (MonoidHom.id G) (𝟙 A) = 𝟙 _ := by
-  simp only [shortComplexH1]
-  ext <;> simp
+  ext <;> simp [shortComplexH1]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem mapShortComplexH1_comp {G H K : Type u} [Group G] [Group H] [Group K]
