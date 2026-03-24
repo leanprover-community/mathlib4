@@ -125,6 +125,18 @@ theorem IsLocalRing.map_maximalIdeal_lt_top
     (IsLocalRing.maximalIdeal A).map f < ⊤ :=
   (IsLocalRing.map_maximalIdeal_le f).trans_lt (IsLocalRing.maximalIdeal.isMaximal B).lt_top
 
+theorem length_of_isScalarTower_of_surjective {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+    (h : Function.Surjective (algebraMap A B))
+    (M : Type*) [AddCommGroup M] [Module A M] [Module B M] [IsScalarTower A B M] :
+    Module.length A M = Module.length B M := by
+  have : RingHomSurjective (algebraMap A B) := ⟨h⟩
+  let f : M →ₛₗ[algebraMap A B] M :=
+  { __ := AddMonoidHom.id M
+    map_smul' := by simp }
+  let e := Submodule.orderIsoMapComapOfBijective f Function.bijective_id
+  rw [Module.length, Module.length, WithBot.unbot_eq_iff, WithBot.coe_unbot] -- better lemma
+  exact Order.krullDim_eq_of_orderIso e
+
 variable {A B M : Type*} [CommRing A] [CommRing B] [IsLocalRing A] [IsLocalRing B] [Algebra A B]
   [IsLocalHom (algebraMap A B)] [Module.Flat A B] [AddCommGroup M] [Module A M]
 
@@ -147,6 +159,7 @@ theorem CovBy.length_baseChange {p q : Submodule A M} (h : p ⋖ q) :
   rw [length_eq_add_of_exact (lTensor B B f) (lTensor B B g) (by simpa) (by simpa) (by simpa),
     (Algebra.TensorProduct.quotIdealMapEquivTensorQuot B (maximalIdeal A)).toLinearEquiv.length_eq]
 
+variable (A B M) in
 open IsLocalRing Module Submodule in
 theorem length_baseChange :
     length B (B ⊗[A] M) = length A M * length B (B ⧸ (maximalIdeal A).map (algebraMap A B)) := by
@@ -175,36 +188,26 @@ variable [Module B M] [IsScalarTower A B M]
 set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 open IsLocalRing LinearMap Module Submodule TensorProduct.AlgebraTensorModule in
-theorem length'_aux {p q : Submodule B M} (h : p ⋖ q) :
-    length A q = Module.length A p +
-      (Module.rank (ResidueField A) (ResidueField B)).toENat := by
+theorem CovBy.length_restrictScalars {p q : Submodule B M} (h : p ⋖ q) :
+    length A q = Module.length A p + (Module.rank (ResidueField A) (ResidueField B)).toENat := by
   have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
   let f : p →ₗ[B] q := inclusion h.le
   have key : IsSimpleModule B (q ⧸ f.range) := by
     rwa [range_inclusion, ← covBy_iff_quot_is_simple h.le]
   obtain ⟨m, hm, ⟨e⟩⟩ := isSimpleModule_iff_quot_maximal.mp key
   rw [eq_maximalIdeal hm] at e
-  let g := e.comp f.range.mkQ
+  let g : q →ₗ[B] ResidueField B := e.comp f.range.mkQ
   have : Function.Injective f := inclusion_injective _
   have : Function.Surjective g := e.surjective.comp f.range.mkQ_surjective
   have : Function.Exact f g := exact_iff.mpr ((e.ker_comp f.range.mkQ).trans f.range.ker_mkQ)
   rw [length_eq_add_of_exact (f.restrictScalars A) (g.restrictScalars A)
-    (by simpa) (by simpa) (by simpa)]
-  suffices length A (B ⧸ maximalIdeal B) = length (ResidueField A) (ResidueField B) by
-    rw [this, Module.length_eq_rank]
-  have : Submodule A (ResidueField B) ≃o Submodule (ResidueField A) (ResidueField B) := by
-    have : RingHomSurjective (residue A) := ⟨residue_surjective⟩
-    apply Submodule.orderIsoMapComapOfBijective (σ₁₂ := residue A) { toFun := _root_.id
-                                                                     map_add' _ _ := rfl
-                                                                     map_smul' _ _ := rfl }
-    exact Function.Involutive.bijective (congrFun rfl)
-  rw [length, length]
-  congr 1
-  exact Order.krullDim_eq_of_orderIso this
+    (by simpa) (by simpa) (by simpa), length_of_isScalarTower_of_surjective (A := A)
+    (B := ResidueField A) (M := ResidueField B) residue_surjective, Module.length_eq_rank]
 
+variable (A B M) in
 set_option backward.isDefEq.respectTransparency false in
 open IsLocalRing Module Submodule in
-theorem length' :
+theorem length_restrictScalars :
     length A M = length B M * (Module.rank (ResidueField A) (ResidueField B)).toENat := by
   have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
   by_cases h : IsFiniteLength B M
@@ -216,7 +219,7 @@ theorem length' :
     intro k
     induction k using Fin.induction
     case pos.zero => rw [← RelSeries.head, hs_bot]; simp
-    case pos.succ i hi => simpa [hi, add_one_mul] using length'_aux A (s.step i)
+    case pos.succ i hi => simpa [hi, add_one_mul] using (s.step i).length_restrictScalars A
   · have : ¬ IsFiniteLength A M := by
       contrapose! h
       rw [isFiniteLength_iff_isNoetherian_isArtinian] at h ⊢
@@ -263,7 +266,7 @@ theorem sum_ramification_inertia
   let Sq := Localization.AtPrime q
   let A := Sq ⧸ p.map (algebraMap R Sq)
   let e := (length Sq A).toNat
-  have := length' (A := Localization.AtPrime p) (B := Localization.AtPrime q) (M := A) -- e * f
+  have := length_restrictScalars (Localization.AtPrime p) (Localization.AtPrime q) A -- e * f
   sorry
 
 end Ideal
