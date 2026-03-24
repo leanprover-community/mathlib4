@@ -80,6 +80,7 @@ macro_rules
       zsmul_neg_trick, zsmul_neg_trick',
       add_neg_cancel_right, neg_add_cancel_right,
       neg_neg_trick,
+      sub_eq_add_neg,
       tsub_self, sub_self, add_neg_cancel, neg_add_cancel]
   $[at $location]?)
 
