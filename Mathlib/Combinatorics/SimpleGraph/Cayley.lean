@@ -39,7 +39,7 @@ variable [Mul M]
 @[to_additive]
 lemma mulCayley_adj' (u v : M) :
     (mulCayley s).Adj u v ↔ u ≠ v ∧ ∃ g ∈ s, u * g = v ∨ u = v * g := by
-  simp [mulCayley,← exists_or,← and_or_left, eq_comm]
+  simp [mulCayley, ← exists_or, ← and_or_left, eq_comm]
 
 @[to_additive]
 lemma mulCayley_le_iff (G : SimpleGraph M) :
@@ -48,7 +48,7 @@ lemma mulCayley_le_iff (G : SimpleGraph M) :
   simp only [mulCayley_adj', ne_eq, and_imp, forall_exists_index]
   constructor
   · intro h g hg a ha
-    exact (h (a * g) a ha g hg (Or.inr rfl))
+    exact h (a * g) a ha g hg (Or.inr rfl)
   · rintro h v w hvw g hg (rfl | rfl)
     · exact (h g hg v (hvw ·.symm)).symm
     · exact h g hg w hvw
@@ -65,7 +65,7 @@ variable (M) in
 lemma mulCayley_gc :
     GaloisConnection (mulCayley ·) ({g : M | ∀ a , a * g ≠ a → ·.Adj (a * g) a}) := by
   intro S G
-  simp [mulCayley_le_iff,Set.subset_def]
+  simp [mulCayley_le_iff, Set.subset_def]
 
 @[to_additive (attr := gcongr)]
 theorem mulCayley_mono ⦃U V : Set M⦄ (hUV : U ⊆ V) : mulCayley U ≤ mulCayley V :=
@@ -114,7 +114,7 @@ variable [Group M]
 @[to_additive]
 lemma mulCayley_adj (u v : M) :
     (mulCayley s).Adj u v ↔ u ≠ v ∧ (u⁻¹ * v ∈ s ∨ v⁻¹ * u ∈ s) := by
-  simp [mulCayley_adj',← eq_inv_mul_iff_mul_eq (b := u),← inv_mul_eq_iff_eq_mul (a := v),
+  simp [mulCayley_adj', ← eq_inv_mul_iff_mul_eq (b := u), ← inv_mul_eq_iff_eq_mul (a := v),
     and_or_left, exists_or]
 
 @[to_additive (attr := simp)]
