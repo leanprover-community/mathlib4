@@ -32,56 +32,66 @@ namespace CategoryTheory
 
 open scoped MonoidalCategory ComonObj
 
-namespace MorphismProperty
-
 variable {C : Type*} [Category* C] (P : MorphismProperty C) [MonoidalCategory C]
 
-section IsStableUnderAssociator
+namespace MorphismProperty
 
 /-- A morphism property stable under associator isomorphisms of a monoidal category. -/
-class IsStableUnderAssociator : Prop where
-  associator_hom (c c' c'' : C) : P ((α_ c c' c'').hom)
-  associator_inv (c c' c'' : C) : P ((α_ c c' c'').inv)
+class IsStableUnderAssociator (P : MorphismProperty C) : Prop where
+  associator_hom_mem (P) (c c' c'' : C) : P (α_ c c' c'').hom
+  associator_inv_mem (P) (c c' c'' : C) : P (α_ c c' c'').inv
 
-variable [P.IsStableUnderAssociator]
-
-lemma associator_hom_mem (c c' c'' : C) : P (α_ c c' c'').hom :=
-  IsStableUnderAssociator.associator_hom _ _ _
-
-lemma associator_inv_mem (c c' c'' : C) : P (α_ c c' c'').inv :=
-  IsStableUnderAssociator.associator_inv _ _ _
-
-end IsStableUnderAssociator
-
-section IsStableUnderUnitor
+export IsStableUnderAssociator (associator_hom_mem associator_inv_mem)
 
 /-- A morphism property stable under left and right unitor isomorphisms. -/
 class IsStableUnderUnitor : Prop where
-  leftUnitor_hom (c : C) : P ((λ_ c).hom)
-  leftUnitor_inv (c : C) : P ((λ_ c).inv)
-  rightUnitor_hom (c : C) : P ((ρ_ c).hom)
-  rightUnitor_inv (c : C) : P ((ρ_ c).inv)
+  leftUnitor_hom_mem (c : C) : P ((λ_ c).hom)
+  leftUnitor_inv_mem (c : C) : P ((λ_ c).inv)
+  rightUnitor_hom_mem (c : C) : P ((ρ_ c).hom)
+  rightUnitor_inv_mem (c : C) : P ((ρ_ c).inv)
 
-variable [P.IsStableUnderUnitor]
-
-lemma leftUnitor_hom_mem (c : C) : P (λ_ c).hom := IsStableUnderUnitor.leftUnitor_hom _
-
-lemma leftUnitor_inv_mem (c : C) : P (λ_ c).inv := IsStableUnderUnitor.leftUnitor_inv _
-
-lemma rightUnitor_hom_mem (c : C) : P (ρ_ c).hom := IsStableUnderUnitor.rightUnitor_hom _
-
-lemma rightUnitor_inv_mem (c : C) : P (ρ_ c).inv := IsStableUnderUnitor.rightUnitor_inv _
-
-end IsStableUnderUnitor
-
-section IsMonoidalStable
+export IsStableUnderUnitor (leftUnitor_hom_mem leftUnitor_inv_mem rightUnitor_hom_mem
+  rightUnitor_inv_mem)
 
 /-- A morphism property stable under tensoring, associators, and unitors. -/
 class IsMonoidalStable : Prop extends IsMonoidal P, IsStableUnderAssociator P,
     IsStableUnderUnitor P
 
+section IsStableUnderBraiding
+
+variable [BraidedCategory C]
+
+/-- A monoidal-stable morphism property also stable under braiding isomorphisms. -/
+class IsStableUnderBraiding : Prop extends IsMonoidalStable P where
+  braiding_hom_mem (c c' : C) : P ((β_ c c').hom)
+  braiding_inv_mem (c c' : C) : P ((β_ c c').inv)
+
+export IsStableUnderBraiding (braiding_hom_mem braiding_inv_mem)
+
+end IsStableUnderBraiding
+
+section IsStableUnderComonoid
+
+variable [BraidedCategory C] [∀ {c : C}, ComonObj c]
+
+/-- A braided-stable morphism property stable under comonoid counit and comultiplication. -/
+class IsStableUnderComonoid : Prop extends IsStableUnderBraiding P where
+  counit_mem (c : C) : P (ε[c])
+  comul_mem (c : C) : P (Δ[c])
+
+export IsStableUnderComonoid (counit_mem comul_mem)
+
+end IsStableUnderComonoid
+
+end MorphismProperty
+
+namespace WideSubcategory
+
+section MonoidalCategory
+
 variable [P.IsMonoidalStable]
 
+@[simps]
 instance : MonoidalCategoryStruct (WideSubcategory P) where
   tensorObj c c' := ⟨c.obj ⊗ c'.obj⟩
   whiskerLeft c c' c'' f := ⟨c.obj ◁ f.1, P.whiskerLeft_mem _ _ f.2⟩
@@ -104,68 +114,16 @@ instance : MonoidalCategoryStruct (WideSubcategory P) where
     all_goals cat_disch
   tensorHom f g := ⟨f.1 ⊗ₘ g.1, P.tensorHom_mem _ _ f.2 g.2⟩
 
-instance : MonoidalCategory (WideSubcategory P) := by
-  refine Monoidal.induced (wideSubcategoryInclusion P) ?_
-  refine ⟨fun c c' ↦ ?_, fun c c' c'' f ↦ ?_, fun f c'' ↦ ?_, fun f g ↦ ?_, ?_, fun c c' c'' ↦ ?_,
-    fun c ↦ ?_, fun c ↦ ?_⟩
-  · rfl
-  · simp only [wideSubcategoryInclusion.obj, wideSubcategoryInclusion.map, Iso.refl_inv,
-    Iso.refl_hom, Category.comp_id]
-    rw [Category.id_comp <| c.obj ◁ f.1]
-    rfl
-  · simp only [wideSubcategoryInclusion.obj, wideSubcategoryInclusion.map, Iso.refl_inv,
-      Iso.refl_hom, Category.comp_id]
-    rw [Category.id_comp <| f.1 ▷ c''.obj]
-    rfl
-  · simp only [wideSubcategoryInclusion.obj, wideSubcategoryInclusion.map, Iso.refl_inv,
-    Iso.refl_hom, Category.comp_id]
-    rw [Category.id_comp <| f.1 ⊗ₘ g.1]
-    rfl
-  · rfl
-  · simp only [wideSubcategoryInclusion.obj, wideSubcategoryInclusion.map, Iso.refl_symm,
-    Iso.trans_refl, Iso.trans_assoc, Iso.trans_hom, Iso.refl_hom,
-    MonoidalCategory.tensorIso_hom, MonoidalCategory.tensorHom_id,
-    MonoidalCategory.whiskerRight_tensor, MonoidalCategory.id_whiskerRight, Category.id_comp,
-    Iso.inv_hom_id, Category.comp_id]
-    rw [MonoidalCategory.id_whiskerRight <| c.obj ⊗ c'.obj,
-      Category.id_comp <| (α_ c.obj c'.obj c''.obj).hom]
-    rw [show 𝟙 ((c ⊗ c').obj ⊗ c''.obj) = 𝟙 ((c.obj ⊗ c'.obj) ⊗ c''.obj) by rfl,
-      Category.id_comp <| (α_ c.obj c'.obj c''.obj).hom]
-    rfl
-  · simp only [wideSubcategoryInclusion.obj, wideSubcategoryInclusion.map, Iso.refl_symm,
-    Iso.trans_assoc, Iso.trans_hom, Iso.refl_hom, MonoidalCategory.tensorIso_hom,
-    MonoidalCategory.tensorHom_id]
-    rw [MonoidalCategory.id_whiskerRight <| (𝟙_ C)]
-    rw [Category.id_comp (λ_ c.obj).hom]
-    rw [show 𝟙 ((𝟙_ (WideSubcategory P)).obj ⊗ c.obj) = 𝟙 (𝟙_ C ⊗ c.obj) by rfl,
-      Category.id_comp (λ_ c.obj).hom]
-    rfl
-  · simp only [wideSubcategoryInclusion.obj, wideSubcategoryInclusion.map, Iso.refl_symm,
-    Iso.trans_assoc, Iso.trans_hom, Iso.refl_hom, MonoidalCategory.tensorIso_hom,
-    MonoidalCategory.id_tensorHom]
-    rw [MonoidalCategory.whiskerLeft_id c.obj <| 𝟙_ C, Category.id_comp (ρ_ c.obj).hom]
-    rw [show 𝟙 (c.obj ⊗ (𝟙_ (WideSubcategory P)).obj) = 𝟙 (c.obj ⊗ 𝟙_ C) by rfl,
-      Category.id_comp (ρ_ c.obj).hom]
-    rfl
+instance : MonoidalCategory (WideSubcategory P) :=
+  Monoidal.induced (wideSubcategoryInclusion P)
+    { εIso := Iso.refl _
+      μIso _ _ := Iso.refl _ }
 
-end IsMonoidalStable
-
-section IsStableUnderBraiding
+end MonoidalCategory
 
 section BraidedCategory
 
-variable [BraidedCategory C]
-
-/-- A monoidal-stable morphism property also stable under braiding isomorphisms. -/
-class IsStableUnderBraiding : Prop extends IsMonoidalStable P where
-  braiding_hom (c c' : C) : P ((β_ c c').hom)
-  braiding_inv (c c' : C) : P ((β_ c c').inv)
-
-variable [P.IsStableUnderBraiding]
-
-lemma braiding_hom_mem (c c' : C) : P (β_ c c').hom := IsStableUnderBraiding.braiding_hom _ _
-
-lemma braiding_inv_mem (c c' : C) : P (β_ c c').inv := IsStableUnderBraiding.braiding_inv _ _
+variable [BraidedCategory C] [P.IsStableUnderBraiding]
 
 instance : BraidedCategory (WideSubcategory P) where
   braiding c c' := by
@@ -199,22 +157,9 @@ instance : SymmetricCategory (WideSubcategory P) where
 
 end SymmetricCategory
 
-end IsStableUnderBraiding
+section ComonObj
 
-section IsStableUnderComonoid
-
-variable [BraidedCategory C] [∀ {c : C}, ComonObj c]
-
-/-- A braided-stable morphism property stable under comonoid counit and comultiplication. -/
-class IsStableUnderComonoid : Prop extends IsStableUnderBraiding P where
-  counit (c : C) : P (ε[c])
-  comul (c : C) : P (Δ[c])
-
-variable [P.IsStableUnderComonoid]
-
-lemma counit_mem (c : C) : P (ε[c]) := IsStableUnderComonoid.counit _
-
-lemma comul_mem (c : C) : P (Δ[c]) := IsStableUnderComonoid.comul _
+variable [BraidedCategory C] [∀ {c : C}, ComonObj c] [P.IsStableUnderComonoid]
 
 instance {c : WideSubcategory P} : ComonObj c where
   counit := ⟨ε[c.obj], P.counit_mem _⟩
@@ -236,8 +181,8 @@ instance {c : WideSubcategory P} : IsCommComonObj c where
     ext
     exact IsCommComonObj.comul_comm _
 
-end IsStableUnderComonoid
+end ComonObj
 
-end MorphismProperty
+end WideSubcategory
 
 end CategoryTheory
