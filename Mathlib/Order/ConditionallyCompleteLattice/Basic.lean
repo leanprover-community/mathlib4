@@ -179,10 +179,10 @@ section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {s t : Set α} {a b : α}
 
-theorem isLUB_csSup (hn : s.Nonempty) (hb : BddAbove s) : IsLUB s (sSup s) :=
+theorem isLUB_csSup (hn : s.Nonempty) (hb : BddAbove s := by bddDefault) : IsLUB s (sSup s) :=
   ConditionallyCompleteLattice.isLUB_csSup _ hn hb
 
-theorem isGLB_csInf (hn : s.Nonempty) (hb : BddBelow s) : IsGLB s (sInf s) :=
+theorem isGLB_csInf (hn : s.Nonempty) (hb : BddBelow s := by bddDefault) : IsGLB s (sInf s) :=
   ConditionallyCompleteLattice.isGLB_csInf _ hn hb
 
 theorem le_csSup (h₁ : BddAbove s) (h₂ : a ∈ s) : a ≤ sSup s :=
@@ -306,8 +306,13 @@ theorem csInf_pair (a b : α) : sInf {a, b} = a ⊓ b :=
 
 /-- If a set is bounded below and above, and nonempty, its infimum is less than or equal to
 its supremum. -/
-theorem csInf_le_csSup (hb : BddBelow s) (ha : BddAbove s) (ne : s.Nonempty) : sInf s ≤ sSup s :=
+theorem csInf_le_csSup (ne : s.Nonempty) (hb : BddBelow s := by bddDefault)
+    (ha : BddAbove s := by bddDefault) : sInf s ≤ sSup s :=
   isGLB_le_isLUB (isGLB_csInf ne hb) (isLUB_csSup ne ha) ne
+
+theorem csInf_le_csSup_of_nonempty_inter (h : (s ∩ t).Nonempty) (hs : BddBelow s := by bddDefault)
+    (ht : BddAbove t := by bddDefault) : sInf s ≤ sSup t :=
+  isGLB_le_isLUB_of_nonempty_inter h (isGLB_csInf h.left hs) (isLUB_csSup h.right ht)
 
 /-- The `sSup` of a union of two sets is the max of the suprema of each subset, under the
 assumptions that all sets are bounded above and nonempty. -/
