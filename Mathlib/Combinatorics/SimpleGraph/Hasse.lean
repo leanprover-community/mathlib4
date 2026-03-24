@@ -144,7 +144,7 @@ theorem support_ofPathGraph : (ofPathGraph n).support = List.finRange (n + 1) :=
 theorem length_ofPathGraph : (ofPathGraph n).length = n := by
   grind [support_ofPathGraph, length_support]
 
-theorem IsPath.ofPathGraph : ofPathGraph n |>.IsPath :=
+protected theorem IsPath.ofPathGraph : ofPathGraph n |>.IsPath :=
   .mk' <| support_ofPathGraph n ▸ List.nodup_finRange (n + 1)
 
 variable {V : Type*} [DecidableEq V] {G : SimpleGraph V} {u v : V} (w : G.Walk u v)
