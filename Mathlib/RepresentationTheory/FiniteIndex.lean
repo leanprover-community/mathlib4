@@ -214,12 +214,13 @@ lemma resIndAdjunction_unit_app (B : Rep.{u} k G) :
     (resIndAdjunction k S).unit.app B = (resCoindAdjunction k S.subtype).unit.app B ≫
       (indCoindIso (res S.subtype B)).inv := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma resIndAdjunction_homEquiv_apply (A : Rep.{u} k S)
     {B : Rep.{u} k G} (f : res S.subtype B ⟶ A) :
     (resIndAdjunction k S).homEquiv _ _ f =
       resCoindHomEquiv S.subtype B A f ≫ (indCoindIso A).inv := by
-  simp only [resIndAdjunction, resCoindAdjunction, Adjunction.homEquiv_ofNatIsoRight_apply _]
-  rfl
+  rw [resIndAdjunction, Adjunction.homEquiv_ofNatIsoRight_apply]
+  simp [resCoindHomEquiv]
 
 lemma resIndAdjunction_homEquiv_symm_apply (A : Rep.{u} k S)
     {B : Rep.{u} k G}
