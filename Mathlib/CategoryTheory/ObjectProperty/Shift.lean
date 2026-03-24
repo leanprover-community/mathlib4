@@ -148,7 +148,7 @@ lemma isStableUnderShift_iff_shiftClosure_eq_self [P.IsClosedUnderIsomorphisms] 
     IsStableUnderShift P A ↔ shiftClosure P A = P :=
   ⟨fun _ ↦ shiftClosure_eq_self _, fun h ↦ by rw [← h]; infer_instance⟩
 
-lemma isStableUnderShift_iSup_shift [P.IsClosedUnderIsomorphisms] (G : Type*) [AddGroup G]
+instance [P.IsClosedUnderIsomorphisms] (G : Type*) [AddGroup G]
     [HasShift C G] : (⨆ (a : G), P.shift a).IsStableUnderShift G where
   isStableUnderShiftBy a := IsStableUnderShiftBy.mk <| by
     rw [shift_iSup]
