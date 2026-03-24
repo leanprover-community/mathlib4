@@ -298,7 +298,7 @@ structure IsInaccessible (c : Cardinal) : Prop where
   /-- An inaccessible cardinal is uncountable. -/
   aleph0_lt : ℵ₀ < c
   /-- An inaccessible cardinal is equal to its own cofinality, see `IsInaccessible.isRegular`. -/
-  le_cof : c ≤ c.ord.cof
+  le_cof_ord : c ≤ c.ord.cof
   /-- An inaccessible cardinal is a strong limit, see `IsInaccessible.isStrongLimit`. -/
   two_power_lt ⦃x⦄ : x < c → 2 ^ x < c
 
@@ -312,7 +312,7 @@ theorem IsInaccessible.ne_zero (h : IsInaccessible c) : c ≠ 0 :=
   h.pos.ne'
 
 theorem IsInaccessible.isRegular (h : IsInaccessible c) : IsRegular c :=
-  ⟨h.aleph0_lt.le, h.le_cof⟩
+  ⟨h.aleph0_lt.le, h.le_cof_ord⟩
 
 theorem IsInaccessible.isStrongLimit (h : IsInaccessible c) : IsStrongLimit c :=
   ⟨h.ne_zero, h.two_power_lt⟩
