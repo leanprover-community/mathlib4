@@ -80,6 +80,20 @@ abbrev pullbackFst (f : A →ₐ[R] C) (g : B →ₐ[R] C) : pullback f g →ₐ
 abbrev pullbackSnd (f : A →ₐ[R] C) (g : B →ₐ[R] C) : pullback f g →ₐ[R] B :=
   (snd R A B).comp (pullback f g).val
 
+@[simp]
+theorem pullbackFst_apply_eq_zero_iff (f : A →ₐ[R] C) (g : B →ₐ[R] C) {x : pullback f g} :
+    pullbackFst f g x = 0 ↔ x.val.1 = 0 ∧ g x.val.2 = 0 := by
+  rcases x with ⟨⟨⟩, h⟩
+  simp; simp at h
+  grind
+
+@[simp]
+theorem pullbackSnd_apply_eq_zero_iff (f : A →ₐ[R] C) (g : B →ₐ[R] C) {x : pullback f g} :
+    pullbackSnd f g x = 0 ↔ f x.val.1 = 0 ∧ x.val.2 = 0 := by
+  rcases x with ⟨⟨⟩, h⟩
+  simp; simp at h
+  grind
+
 end Semiring
 
 section Ring
