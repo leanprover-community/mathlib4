@@ -21,15 +21,17 @@ that `Data.PNat.Defs` can have very few imports.
 
 @[expose] public section
 
-deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
-  Add, Mul, Distrib for PNat
+deriving instance Add, Mul, Distrib, AddLeftCancelSemigroup, AddRightCancelSemigroup,
+  AddCommSemigroup for PNat
 
 namespace PNat
 
-instance instCommMonoid : CommMonoid ℕ+ := Positive.commMonoid
-instance instIsOrderedCancelMonoid : IsOrderedCancelMonoid ℕ+ := Positive.isOrderedCancelMonoid
+instance instCommMonoid : CommMonoid ℕ+ := inferInstanceAs <| CommMonoid { n : ℕ // 0 < n }
+instance instIsOrderedCancelMonoid : IsOrderedCancelMonoid ℕ+ :=
+  inferInstanceAs <| IsOrderedCancelMonoid { n : ℕ // 0 < n }
 instance instCancelCommMonoid : CancelCommMonoid ℕ+ where
-instance instWellFoundedLT : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
+instance instWellFoundedLT : WellFoundedLT ℕ+ :=
+  inferInstanceAs <| WellFoundedLT { n : ℕ // 0 < n }
 
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
