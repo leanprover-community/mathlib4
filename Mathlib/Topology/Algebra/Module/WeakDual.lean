@@ -62,7 +62,7 @@ def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [Conti
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E)
 deriving AddCommMonoid, Module 𝕜, TopologicalSpace, ContinuousAdd, Inhabited,
-  FunLike, ContinuousLinearMapClass
+  FunLike, LinearMapClass, ContinuousMapClass
 
 namespace WeakDual
 

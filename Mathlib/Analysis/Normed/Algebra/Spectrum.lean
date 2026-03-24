@@ -413,11 +413,10 @@ variable {F : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [C
 local notation "↑ₐ" => algebraMap 𝕜 A
 
 instance (priority := 100) [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜] :
-    ContinuousLinearMapClass F 𝕜 A 𝕜 :=
-  { AlgHomClass.linearMapClass with
-    map_continuous := fun φ =>
-      AddMonoidHomClass.continuous_of_bound φ ‖(1 : A)‖ fun a =>
-        mul_comm ‖a‖ ‖(1 : A)‖ ▸ spectrum.norm_le_norm_mul_of_mem (apply_mem_spectrum φ _) }
+    ContinuousMapClass F A 𝕜 where
+  map_continuous φ :=
+    AddMonoidHomClass.continuous_of_bound φ ‖(1 : A)‖ fun a =>
+      mul_comm ‖a‖ ‖(1 : A)‖ ▸ spectrum.norm_le_norm_mul_of_mem (apply_mem_spectrum φ _)
 
 /-- An algebra homomorphism into the base field, as a continuous linear map (since it is
 automatically bounded). -/
