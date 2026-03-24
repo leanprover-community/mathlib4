@@ -215,11 +215,8 @@ def tryNormNum (post := false) (e : Expr) : SimpM Simp.Step := do
   catch _ =>
     return .continue
 
-section
-variable (ctx : Simp.Context) (useSimp := true)
-
 /-- A `Methods` implementation which calls `norm_num`. -/
-def methods : Simp.Methods :=
+def methods (useSimp := true) : Simp.Methods :=
   if useSimp then {
     pre := Simp.preDefault #[] >> tryNormNum
     post := Simp.postDefault #[] >> tryNormNum (post := true)
@@ -231,14 +228,12 @@ def methods : Simp.Methods :=
   }
 
 /-- Traverses the given expression using simp and normalises any numbers it finds. -/
-def deriveSimp (e : Expr) : MetaM Simp.Result :=
+def deriveSimp (ctx : Simp.Context) (useSimp := true) (e : Expr) : MetaM Simp.Result :=
   (·.1) <$> Simp.main e ctx (methods := methods useSimp)
 
-/-- A discharger which calls `norm_num`, for use in downstream tactics. -/
-def discharge (e : Expr) : SimpM (Option Expr) := do
+/-- A discharger which calls `norm_num`, for use in downstream tactics populating `Simp.Methods`. -/
+def discharge (useSimp := true) (e : Expr) : SimpM (Option Expr) := do
   (← deriveSimp (← readThe Simp.Context) useSimp e).ofTrue
-
-end
 
 open Tactic in
 /-- Constructs a simp context from the simp argument syntax. -/
