@@ -265,6 +265,8 @@ def linearizeOfMulActionIso (H : Type w) [MulAction G H] :
     (linearize k G (Action.ofMulAction G H)).Equiv (ofMulAction k G H) :=
     .mk (LinearEquiv.refl _ _) fun g ↦ by rfl
 
+-- the following two lemmas are bad but necessary to fix the broken proofs, but once
+-- we refactor `Action` away these should be removed
 lemma linearizeOfMulActionIso_apply {H : Type w} [MulAction G H] (f : H →₀ k) :
     @DFunLike.coe ((Representation.ofMulAction k G H).Equiv (Representation.linearize k G
     (Action.ofMulAction G H))) (H →₀ k) (fun _ ↦ (Action.ofMulAction G H).V →₀ k)
