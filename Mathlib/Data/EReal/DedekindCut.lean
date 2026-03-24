@@ -30,14 +30,12 @@ noncomputable def factorEmbeddingRat : DedekindCut ℚ ↪o EReal :=
 theorem factorEmbeddingRat_apply (x : DedekindCut ℚ) :
   factorEmbeddingRat x = sSup ((fun (a : ℚ) ↦ ((a : ℝ) : EReal)) '' x.extent) := rfl
 
-theorem le_of_forall_lt_rat_imp_le {x y : EReal}
-    (h : ∀ q : ℚ, y < (q : ℝ) → x ≤ (q : ℝ)) : x ≤ y :=
+theorem le_of_forall_lt_rat_imp_le {x y : EReal} (h : ∀ q : ℚ, y < (q : ℝ) → x ≤ (q : ℝ)) : x ≤ y :=
   le_of_not_gt fun hyx =>
     let ⟨_, hy, hx⟩ := exists_rat_btwn_of_lt hyx
     hx.not_ge <| h _ hy
 
-theorem le_of_forall_rat_lt_imp_le {x y : EReal}
-    (h : ∀ q : ℚ, (q : ℝ) < x → (q : ℝ) ≤ y) : x ≤ y :=
+theorem le_of_forall_rat_lt_imp_le {x y : EReal} (h : ∀ q : ℚ, (q : ℝ) < x → (q : ℝ) ≤ y) : x ≤ y :=
   le_of_not_gt fun hyx =>
     let ⟨_, hy, hx⟩ := exists_rat_btwn_of_lt hyx
     hy.not_ge <| h _ hx
