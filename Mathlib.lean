@@ -1538,6 +1538,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
+public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.AlgebraicTopology.SingularHomology.HomotopyInvariance
 public import Mathlib.AlgebraicTopology.SingularSet
@@ -7826,6 +7827,5 @@ public import Mathlib.Util.TermReduce
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
 public import Mathlib.Util.WithWeakNamespace
-public import Mathlib.test
 
 set_option linter.style.longLine false

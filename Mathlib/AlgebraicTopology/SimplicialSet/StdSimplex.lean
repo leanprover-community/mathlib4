@@ -123,6 +123,23 @@ instance (X : SSet.{u}) (n : SimplexCategory) [DecidableEq (X.obj (op n))] :
     DecidableEq (stdSimplex.obj n ⟶ X) :=
   fun a b ↦ decidable_of_iff (yonedaEquiv a = yonedaEquiv b) (by simp)
 
+@[simp]
+lemma _root_.SSet.yonedaEquiv_symm_comp {X Y : SSet.{u}} {n : SimplexCategory} (x : X.obj (op n))
+    (f : X ⟶ Y) :
+    yonedaEquiv.symm x ≫ f = yonedaEquiv.symm (f.app _ x) :=
+  uliftYonedaEquiv_symm_comp ..
+
+set_option backward.isDefEq.respectTransparency false in
+lemma _root_.SSet.yonedaEquiv_const {X : SSet.{u}} (x : X _⦋0⦌) :
+    yonedaEquiv (const x : Δ[0] ⟶ X) = x := by
+  simp [yonedaEquiv, uliftYonedaEquiv]
+
+@[simp]
+lemma _root_.SSet.yonedaEquiv_symm_zero {X : SSet.{u}} (x : X _⦋0⦌) :
+    yonedaEquiv.symm x = const x := by
+  apply yonedaEquiv.injective
+  simp [yonedaEquiv_const]
+
 lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
     yonedaEquiv.{u} (stdSimplex.map f) = objEquiv.symm f :=
   yonedaEquiv.symm.injective rfl
@@ -142,6 +159,12 @@ def obj₀Equiv {n : ℕ} : Δ[n] _⦋0⦌ ≃ Fin (n + 1) where
   toFun x := x 0
   invFun i := const _ i _
   left_inv x := by ext i : 1; fin_cases i; rfl
+
+lemma δ_one_eq_const : stdSimplex.{u}.δ (1 : Fin 2) = SSet.const (obj₀Equiv.symm 0) := by
+  decide
+
+lemma δ_zero_eq_const : stdSimplex.{u}.δ (0 : Fin 2) = SSet.const (obj₀Equiv.symm 1) := by
+  decide
 
 /-- The edge of the standard simplex with endpoints `a` and `b`. -/
 def edge (n : ℕ) (a b : Fin (n + 1)) (hab : a ≤ b) : Δ[n] _⦋1⦌ := by
