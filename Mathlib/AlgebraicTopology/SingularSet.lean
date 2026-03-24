@@ -76,6 +76,9 @@ noncomputable def sSetTopAdj : SSet.toTop.{u} ⊣ TopCat.toSSet.{u} :=
     (SSet.stdSimplex.{u}.leftKanExtension SimplexCategory.toTop)
     (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.toTop)
 
+instance : SSet.toTop.{u}.IsLeftAdjoint := sSetTopAdj.isLeftAdjoint
+instance : TopCat.toSSet.{u}.IsRightAdjoint := sSetTopAdj.isRightAdjoint
+
 /-- The geometric realization of the representable simplicial sets agree
   with the usual topological simplices. -/
 noncomputable def SSet.toTopSimplex :

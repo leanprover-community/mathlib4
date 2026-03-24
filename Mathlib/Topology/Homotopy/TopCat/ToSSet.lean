@@ -5,14 +5,12 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SingularSet
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homotopy
-public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
-public import Mathlib.Topology.Category.TopCat.Monoidal
+public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
 public import Mathlib.Topology.Homotopy.TopCat.Basic
 
 /-!
-# The singular simplicial sets functor preserves homotopies
+# The singular simplicial set functor preserves homotopies
 
 -/
 
@@ -20,57 +18,13 @@ public import Mathlib.Topology.Homotopy.TopCat.Basic
 
 universe u
 
-open CategoryTheory MonoidalCategory Functor.LaxMonoidal Functor.Monoidal Simplicial
+open CategoryTheory MonoidalCategory Functor.LaxMonoidal
 
-section -- to be moved
-
-namespace TopCat
-
-instance : toSSet.{u}.IsRightAdjoint := sSetTopAdj.isRightAdjoint
-
-noncomputable instance : toSSet.{u}.Monoidal := .ofChosenFiniteProducts _
-
-end TopCat
-
-scoped [Simplicial] notation "|" X "|" => SSet.toTop.obj X
-
-namespace SSet.stdSimplex
-
--- these sorries are filled in https://github.com/joelriou/topcat-model-category
-
-noncomputable def toTopObjHomeoI :
-    |(Δ[1] : SSet.{u})| ≃ₜ TopCat.I.{u} :=
-  sorry
-
-noncomputable def toSSetObjI : Δ[1] ⟶ TopCat.toSSet.obj TopCat.I.{u} :=
-  sSetTopAdj.homEquiv _ _ (TopCat.ofHom (toContinuousMap toTopObjHomeoI))
-
-@[reassoc (attr := simp)]
-lemma ι₀_whiskerLeft_toSSetObjI_μ (X : TopCat.{u}) :
-    SSet.ι₀ ≫ TopCat.toSSet.obj X ◁ SSet.stdSimplex.toSSetObjI ≫
-      Functor.LaxMonoidal.μ TopCat.toSSet X TopCat.I = TopCat.toSSet.map TopCat.ι₀ := by
-  sorry
-
-@[reassoc (attr := simp)]
-lemma ι₁_whiskerLeft_toSSetObjI_μ (X : TopCat.{u}) :
-    SSet.ι₁ ≫ TopCat.toSSet.obj X ◁ SSet.stdSimplex.toSSetObjI ≫
-      Functor.LaxMonoidal.μ TopCat.toSSet X TopCat.I = TopCat.toSSet.map TopCat.ι₁ := by
-  sorry
-
-end SSet.stdSimplex
-
-end
-
-
-namespace TopCat
-
-variable {X Y : TopCat.{u}} {f g : X ⟶ Y}
-
-noncomputable def Homotopy.toSSet {X Y : TopCat.{u}} {f g : X ⟶ Y} (h : Homotopy f g) :
+/-- If two morphisms `f : X ⟶ Y` and `g : X ⟶ Y` in `TopCat` are homotopic, then so
+are their images by the functor `TopCat.toSSet : TopCat ⥤ SSet`. -/
+noncomputable def TopCat.Homotopy.toSSet {X Y : TopCat.{u}} {f g : X ⟶ Y} (h : Homotopy f g) :
     SSet.Homotopy (toSSet.map f) (toSSet.map g) where
   h := _ ◁ SSet.stdSimplex.toSSetObjI ≫ μ TopCat.toSSet _ _ ≫ TopCat.toSSet.map h.h
   h₀ := by simp [← Functor.map_comp]
   h₁ := by simp [← Functor.map_comp]
   rel := by ext _ ⟨⟨_, ⟨⟩⟩, _⟩
-
-end TopCat
