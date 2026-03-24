@@ -12,7 +12,6 @@ public import Mathlib.Order.TypeTags
 
 @[expose] public section
 
-set_option backward.inferInstanceAs.wrap.data false in
 /-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
 def ENat : Type := WithTop ℕ deriving Top, Inhabited
 
