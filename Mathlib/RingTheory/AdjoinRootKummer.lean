@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Category.MonCat.Basic
 
 ## Main definitions
 
-* Definition `KummerPolynomial := X^n - s`
+* Definition `KummerPolynomial n s := X^n - s`
 
 ## Main statements
 
@@ -78,7 +78,7 @@ lemma root_exists (n : ℕ) (s : R) : ∃ t : AdjoinRoot (KummerPolynomial n s),
 --These definitions are used to define a submersive presentation of AdjoinRoot KummerPolynomial
 --need better names?
 noncomputable def v (n : ℕ) (s : R) : ι → (MvPolynomial ι R) :=
-  fun _ => (X 0)^n - MvPolynomial.C s
+  fun 0 => (X 0)^n - MvPolynomial.C s
 
 noncomputable def I (n : ℕ) (s : R) :=  (Ideal.span <| Set.range (v n s))
 
