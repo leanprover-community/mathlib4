@@ -855,7 +855,7 @@ def H0Iso : H0 A ≅ (coinvariantsFunctor k G).obj A :=
 def H0π : A.V ⟶ H0 A := (cyclesIso₀ A).inv ≫ π A 0
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H0π A) := by unfold H0π; infer_instance
+instance : Epi (H0π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -920,7 +920,7 @@ def H1π : ModuleCat.of k (cycles₁ A) ⟶ H1 A :=
   (isoCycles₁ A).inv ≫ π A 1
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H1π A) := by unfold H1π; infer_instance
+instance : Epi (H1π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 variable {A}
 
@@ -1063,7 +1063,7 @@ def H2π : ModuleCat.of k (cycles₂ A) ⟶ H2 A :=
   (isoCycles₂ A).inv ≫ π A 2
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H2π A) := by unfold H2π; infer_instance
+instance : Epi (H2π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 variable {A}
 

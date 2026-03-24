@@ -286,9 +286,8 @@ subgroup itself, because this allows all the spaces `lp E p` (for varying `p`) t
 the same ambient group, which permits lemma statements like `lp.monotone` (below). -/
 @[nolint unusedArguments]
 def PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] : Type _ :=
-  ∀ i, E i --deriving AddCommGroup
-
-instance : AddCommGroup (PreLp E) := by unfold PreLp; infer_instance
+  ∀ i, E i
+deriving AddCommGroup
 
 instance PreLp.unique [IsEmpty α] : Unique (PreLp E) :=
   Pi.uniqueOfIsEmpty E

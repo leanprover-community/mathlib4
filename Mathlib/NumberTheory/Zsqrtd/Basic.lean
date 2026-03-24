@@ -582,8 +582,11 @@ instance : LE (ℤ√d) :=
 instance : LT (ℤ√d) :=
   ⟨fun a b => ¬b ≤ a⟩
 
-instance decidableNonnegg (c d a b) : Decidable (Nonnegg c d a b) := by
-  cases a <;> cases b <;> unfold Nonnegg SqLe <;> infer_instance
+instance decidableNonnegg (c d) : DecidableRel (Nonnegg c d)
+  | .ofNat _, .ofNat _ => inferInstanceAs <| Decidable True
+  | .ofNat _, .negSucc _ => inferInstanceAs <| Decidable (_ ≤ _)
+  | .negSucc _, .ofNat _ => inferInstanceAs <| Decidable (_ ≤ _)
+  | .negSucc _, .negSucc _ => inferInstanceAs <| Decidable False
 
 instance decidableNonneg : ∀ a : ℤ√d, Decidable (Nonneg a)
   | ⟨_, _⟩ => Zsqrtd.decidableNonnegg _ _ _ _
