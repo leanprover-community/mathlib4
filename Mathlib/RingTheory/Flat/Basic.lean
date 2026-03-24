@@ -404,11 +404,9 @@ variable (A) [Module.Flat R A] {M : Type*} [AddCommMonoid M] [Module R M] (p : S
 
 namespace Submodule
 
-theorem toBaseChange_injective : Function.Injective (p.toBaseChange A) := by
-  refine (LinearMap.injective_rangeRestrict_iff (LinearMap.baseChange A p.subtype)).mpr ?_
-  rw [LinearMap.baseChange_eq_ltensor]
-  apply Module.Flat.lTensor_preserves_injective_linearMap
-  exact injective_subtype p
+theorem toBaseChange_injective : Function.Injective (p.toBaseChange A) :=
+  (p.subtype.baseChange A).injective_rangeRestrict_iff.mpr
+    (Module.Flat.lTensor_preserves_injective_linearMap p.subtype (injective_subtype p))
 
 @[simps!]
 noncomputable def toBaseChangeEquiv : A ⊗[R] ↥p ≃ₗ[A] baseChange A p :=
