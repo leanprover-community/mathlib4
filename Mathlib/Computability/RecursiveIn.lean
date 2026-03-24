@@ -36,7 +36,9 @@ and is closed under pairing, composition, primitive recursion, and μ-recursion.
 
 ## References
 
-* [Piergiorgio Odifreddi, *Classical Recursion Theory: The Theory of Functions and Sets of Natural Numbers*][odifreddi1989]
+* [Piergiorgio Odifreddi,
+  *Classical Recursion Theory: The Theory of Functions and Sets of Natural
+  Numbers*][odifreddi1989]
 
 ## Tags
 
