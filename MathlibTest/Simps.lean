@@ -862,23 +862,66 @@ abbrev Functor.comp (F G : Functor) : Functor where
 @[simps!]
 def iso (X : Type) : NatIso (Functor.id.comp (.const X)) (.const X) := NatIso.refl _
 
-/-- info: DsimpLhs.iso_app_apply (X X✝ : Type) (a : (Functor.id.comp (Functor.const X)).obj X✝) : ((iso X).app X✝) a = a -/
+set_option pp.explicit true in
+/-- info: DsimpLhs.iso_app_apply (X X✝ : Type) (a : (Functor.id.comp (Functor.const X)).obj X✝) :
+  @Eq X
+    (@DFunLike.coe (Equiv ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝))
+      ((Functor.id.comp (Functor.const X)).obj X✝) (fun x => (Functor.id.comp (Functor.const X)).obj X✝)
+      (@EquivLike.toFunLike
+        (Equiv ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝))
+        ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝)
+        (@Equiv.instEquivLike ((Functor.id.comp (Functor.const X)).obj X✝)
+          ((Functor.id.comp (Functor.const X)).obj X✝)))
+      (@NatIso.app (Functor.id.comp (Functor.const X)) (Functor.const X) (iso X) X✝) a)
+    a -/
 #guard_msgs in
 #check iso_app_apply
 
-/-- info: DsimpLhs.iso_app_symm_apply (X X✝ : Type) (a : (Functor.id.comp (Functor.const X)).obj X✝) : ((iso X).app X✝).symm a = a -/
+set_option pp.explicit true in
+/-- info: DsimpLhs.iso_app_symm_apply (X X✝ : Type) (a : (Functor.id.comp (Functor.const X)).obj X✝) :
+  @Eq X
+    (@DFunLike.coe (Equiv ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝))
+      ((Functor.id.comp (Functor.const X)).obj X✝) (fun x => (Functor.id.comp (Functor.const X)).obj X✝)
+      (@EquivLike.toFunLike
+        (Equiv ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝))
+        ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝)
+        (@Equiv.instEquivLike ((Functor.id.comp (Functor.const X)).obj X✝)
+          ((Functor.id.comp (Functor.const X)).obj X✝)))
+      (@Equiv.symm ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝)
+        (@NatIso.app (Functor.id.comp (Functor.const X)) (Functor.const X) (iso X) X✝))
+      a)
+    a -/
 #guard_msgs in
 #check iso_app_symm_apply
 
 @[simps! +dsimpLhs]
 def iso' (X : Type) : NatIso (Functor.id.comp (.const X)) (.const X) := NatIso.refl _
 
-/-- info: DsimpLhs.iso'_app_apply (X X✝ : Type) (a : (Functor.id.comp (Functor.const X)).obj X✝) : ((iso' X).app X✝) a = a -/
+set_option pp.explicit true in
+/-- info: DsimpLhs.iso'_app_apply (X X✝ : Type) (a : (Functor.id.comp (Functor.const X)).obj X✝) :
+  @Eq X
+    (@DFunLike.coe (Equiv X X) X (fun x => X)
+      (@EquivLike.toFunLike
+        (Equiv ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝))
+        ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝)
+        (@Equiv.instEquivLike ((Functor.id.comp (Functor.const X)).obj X✝)
+          ((Functor.id.comp (Functor.const X)).obj X✝)))
+      (@NatIso.app (Functor.id.comp (Functor.const X)) (Functor.const X) (iso' X) X✝) a)
+    a -/
 #guard_msgs in
 #check iso'_app_apply
 
+set_option pp.explicit true in
 /-- info: DsimpLhs.iso'_app_symm_apply (X X✝ : Type) (a : (Functor.id.comp (Functor.const X)).obj X✝) :
-  ((iso' X).app X✝).symm a = a-/
+  @Eq X
+    (@DFunLike.coe (Equiv X X) X (fun x => X)
+      (@EquivLike.toFunLike
+        (Equiv ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝))
+        ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝)
+        (@Equiv.instEquivLike ((Functor.id.comp (Functor.const X)).obj X✝)
+          ((Functor.id.comp (Functor.const X)).obj X✝)))
+      (@Equiv.symm X X (@NatIso.app (Functor.id.comp (Functor.const X)) (Functor.const X) (iso' X) X✝)) a)
+    a -/
 #guard_msgs in
 #check iso'_app_symm_apply
 
