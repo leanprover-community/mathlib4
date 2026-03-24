@@ -166,20 +166,21 @@ lemma isStableUnderShift_iff_shiftClosure_eq_self [P.IsClosedUnderIsomorphisms] 
     IsStableUnderShift P A ↔ shiftClosure P A = P :=
   ⟨fun _ ↦ shiftClosure_eq_self _, fun h ↦ by rw [← h]; infer_instance⟩
 
-lemma shiftClosure_eq_iSup [P.IsClosedUnderIsomorphisms] {G : Type*} [AddGroup G] [HasShift C G] :
+lemma isStableUnderShift_iSup_shift [P.IsClosedUnderIsomorphisms] (G : Type*) [AddGroup G]
+    [HasShift C G] : (⨆ (a : G), P.shift a).IsStableUnderShift G where
+  isStableUnderShiftBy a := IsStableUnderShiftBy.mk <| by
+    rw [shift_iSup]
+    intro X hX
+    rw [prop_iSup_iff] at hX ⊢
+    obtain ⟨b, hb⟩ := hX
+    exact ⟨-a + b, by rwa [P.shift_shift _ _ _ (add_neg_cancel_left a b)]⟩
+
+lemma shiftClosure_eq_iSup [P.IsClosedUnderIsomorphisms] (G : Type*) [AddGroup G] [HasShift C G] :
     P.shiftClosure G = ⨆ (x : G), P.shift x := by
   apply le_antisymm
-  · have : (⨆ (a : G), P.shift a).IsStableUnderShift G :=
-      IsStableUnderShift.mk fun a => IsStableUnderShiftBy.mk <| by
-        rw [shift_iSup]
-        intro X hX
-        rw [prop_iSup_iff] at hX ⊢
-        obtain ⟨b, hb⟩ := hX
-        use -a+b
-        rwa [P.shift_shift _ _ b ?_]
-        exact add_neg_cancel_left a b
+  · haveI := P.isStableUnderShift_iSup_shift G
     rw [shiftClosure_le_iff]
-    nth_rw 1 [← P.shift_zero G]
+    conv_lhs => rw [← P.shift_zero G]
     exact le_iSup P.shift (0 : G)
   · intro X hX
     obtain ⟨a, ha⟩ := (prop_iSup_iff _ _).mp hX
