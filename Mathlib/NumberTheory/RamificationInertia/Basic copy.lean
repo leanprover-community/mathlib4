@@ -110,6 +110,24 @@ noncomputable def Submodule.toBaseChangeEquiv
   LinearEquiv.ofBijective (p.toBaseChange A)
     ⟨p.toBaseChange_injective A, p.toBaseChange_surjective A⟩
 
+-- PRed
+theorem IsLocalRing.map_maximalIdeal_le {A B : Type*} [CommRing A] [CommRing B] [IsLocalRing A]
+    [IsLocalRing B] (f : A →+* B) [IsLocalHom f] :
+    (IsLocalRing.maximalIdeal A).map f ≤ IsLocalRing.maximalIdeal B := by
+  rw [Ideal.map_le_iff_le_comap, IsLocalRing.maximalIdeal_comap]
+
+-- PRed
+theorem Ideal.IsMaximal.lt_top {R : Type*} [CommRing R] {I : Ideal R} (hI : IsMaximal I) :
+    I < ⊤ :=
+  lt_top_iff_ne_top.mpr hI.ne_top
+
+-- PRed
+theorem IsLocalRing.map_maximalIdeal_lt_top
+    {A B : Type*} [CommRing A] [CommRing B] [IsLocalRing A]
+    [IsLocalRing B] (f : A →+* B) [IsLocalHom f] :
+    (IsLocalRing.maximalIdeal A).map f < ⊤ :=
+  (IsLocalRing.map_maximalIdeal_le f).trans_lt (IsLocalRing.maximalIdeal.isMaximal B).lt_top
+
 variable {A B M : Type*} [CommRing A] [CommRing B] [IsLocalRing A] [IsLocalRing B] [Algebra A B]
   [IsLocalHom (algebraMap A B)] [Module.Flat A B] [AddCommGroup M] [Module A M]
 
@@ -124,11 +142,7 @@ theorem foo : (Module.length B (B ⊗[A] M)) =
     rw [← Module.length_ne_top_iff, not_ne_iff] at h this
     rw [h, this, ENat.top_mul]
     rw [← pos_iff_ne_zero, Module.length_pos_iff, Submodule.Quotient.nontrivial_iff]
-    have key1 : mB ≤ IsLocalRing.maximalIdeal B := by
-      rw [Ideal.map_le_iff_le_comap, IsLocalRing.maximalIdeal_comap]
-    have key := Ideal.IsMaximal.ne_top (IsLocalRing.maximalIdeal.isMaximal B)
-    contrapose! key
-    exact eq_top_mono key1 key
+    exact (IsLocalRing.map_maximalIdeal_lt_top (algebraMap A B)).ne
   · obtain ⟨s, hs_bot, hs_top⟩ := isFiniteLength_iff_exists_compositionSeries.mp h
     rw [← Module.length_compositionSeries s hs_bot hs_top]
     have key : ∀ k : Fin s.length.succ, (Order.height ((s k).baseChange B)) =
@@ -139,8 +153,7 @@ theorem foo : (Module.length B (B ⊗[A] M)) =
         rw [Fin.val_zero, Nat.cast_zero, zero_mul, ← RelSeries.head, hs_bot,
           Submodule.baseChange_bot, Order.height_bot]
       case succ i hi =>
-        have : (i.succ : ℕ) = (i.castSucc : ℕ).succ := by
-          rfl
+        have : (i.succ : ℕ) = (i.castSucc : ℕ).succ := rfl
         rw [this, Nat.cast_succ, add_one_mul, ← hi,
           ← Module.length_submodule, ← Module.length_submodule]
         let p := s i.castSucc
