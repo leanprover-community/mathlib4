@@ -275,16 +275,23 @@ instance instModule [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R
 
 variable (R A) in
 /-- The identity map between `Unitization R A` and `R × A` as an `AddEquiv`. -/
+@[simps! toEquiv apply symm_apply]
 def addEquiv [Add R] [Add A] : Unitization R A ≃+ R × A where
   toEquiv := equiv
   map_add' _ _ := rfl
 
+variable (R S A) in
 /-- The identity map between `Unitization R A` and `R × A` as a `LinearEquiv`. -/
+@[simps! apply symm_apply]
 def linearEquiv [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R] [Module S A] :
     Unitization R A ≃ₗ[S] R × A where
-  toEquiv := equiv
-  map_add' _ _ := rfl
+  toAddEquiv := addEquiv R A
   map_smul' _ _ := rfl
+
+@[simp]
+lemma toAddEquiv_linearEquiv [Semiring S] [AddCommMonoid R] [AddCommMonoid A]
+    [Module S R] [Module S A] : (linearEquiv S R A).toAddEquiv = addEquiv R A :=
+  rfl
 
 @[simp]
 theorem fst_zero [Zero R] [Zero A] : (0 : Unitization R A).fst = 0 :=
@@ -391,7 +398,7 @@ theorem ind {R A} [AddZeroClass R] [AddZeroClass A] {P : Unitization R A → Pro
 theorem linearMap_ext {N} [CommSemiring S] [AddCommMonoid R] [AddCommMonoid A] [AddCommMonoid N]
     [Module S R] [Module S A] [Module S N] ⦃f g : Unitization R A →ₗ[S] N⦄
     (hl : ∀ r, f (inl r) = g (inl r)) (hr : ∀ a : A, f a = g a) : f = g :=
-  linearEquiv.arrowCongr (.refl ..) |>.injective <|
+  (linearEquiv S R A).arrowCongr (.refl ..) |>.injective <|
     LinearMap.prod_ext (LinearMap.ext hl) (LinearMap.ext hr)
 
 variable (R A)
