@@ -25,6 +25,7 @@ section temp
 
 open TensorProduct
 
+-- PRed
 theorem Submodule.baseChange_mono {R M : Type*} (A : Type*) [CommSemiring R]
     [Semiring A] [Algebra R A] [AddCommMonoid M] [Module R M]
     {N N' : Submodule R M} (h : N ≤ N') :
@@ -33,6 +34,7 @@ theorem Submodule.baseChange_mono {R M : Type*} (A : Type*) [CommSemiring R]
     ← LinearMap.id_comp LinearMap.id, TensorProduct.AlgebraTensorModule.map_comp]
   apply LinearMap.range_comp_le_range
 
+-- PRed
 @[simp]
 theorem Submodule.baseChange_le_iff {R M A : Type*} [CommRing R]
     [Ring A] [Algebra R A] [Module.FaithfullyFlat R A] [AddCommGroup M] [Module R M]
@@ -43,12 +45,14 @@ theorem Submodule.baseChange_le_iff {R M A : Type*} [CommRing R]
     Module.FaithfullyFlat.zero_iff_lTensor_zero R A (N'.mkQ.comp N.subtype),
     LinearMap.lTensor_comp, ← LinearMap.range_le_ker_iff, lTensor_mkQ, ← restrictScalars_le R]
 
+-- PRed
 theorem Submodule.baseChange_inj {R M A : Type*} [CommRing R]
     [Ring A] [Algebra R A] [Module.FaithfullyFlat R A] [AddCommGroup M] [Module R M]
     {N N' : Submodule R M} :
     N.baseChange A = N'.baseChange A ↔ N = N' := by
   simp [le_antisymm_iff]
 
+-- PRed
 theorem Submodule.baseChange_injective {R M A : Type*} [CommRing R]
     [Ring A] [Algebra R A] [Module.FaithfullyFlat R A] [AddCommGroup M] [Module R M]
     {N N' : Submodule R M} (h : N.baseChange A = N'.baseChange A) :
@@ -58,6 +62,7 @@ theorem Submodule.baseChange_injective {R M A : Type*} [CommRing R]
 variable (R M S : Type*) [CommRing R] [CommRing S] [Algebra R S] [Module.FaithfullyFlat R S]
   [AddCommGroup M] [Module R M]
 
+-- PRed
 /-- `Submodule.baseChange` as an order embedding. -/
 def Submodule.baseChangeOrderEmbedding [Module.FaithfullyFlat R S] :
     Submodule R M ↪o Submodule S (S ⊗[R] M) where
@@ -67,10 +72,12 @@ def Submodule.baseChangeOrderEmbedding [Module.FaithfullyFlat R S] :
 
 variable {R M S}
 
+-- PRed
 theorem IsNoetherian.ofFaithfullyFlat (h : IsNoetherian S (S ⊗[R] M)) : IsNoetherian R M := by
   rw [isNoetherian_iff'] at h ⊢
   exact OrderEmbedding.wellFoundedGT (Submodule.baseChangeOrderEmbedding R M S)
 
+-- PRed
 theorem IsArtinian.ofFaithfullyFlat (h : IsArtinian S (S ⊗[R] M)) : IsArtinian R M := by
   rw [isArtinian_iff] at h ⊢
   exact OrderEmbedding.wellFounded (Submodule.baseChangeOrderEmbedding R M S) h
@@ -85,6 +92,7 @@ section flatBaseChange
 
 open TensorProduct
 
+-- PRed
 theorem Submodule.toBaseChange_injective {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [AddCommMonoid M] [Module R M] [Module.Flat R A] (p : Submodule R M) :
     Function.Injective (p.toBaseChange A) := by
@@ -93,6 +101,7 @@ theorem Submodule.toBaseChange_injective {R M : Type*} (A : Type*) [CommSemiring
   apply Module.Flat.lTensor_preserves_injective_linearMap
   exact injective_subtype p
 
+-- PRed
 @[simps!]
 noncomputable def Submodule.toBaseChangeEquiv
     {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A]
@@ -104,28 +113,31 @@ noncomputable def Submodule.toBaseChangeEquiv
 variable {A B M : Type*} [CommRing A] [CommRing B] [IsLocalRing A] [IsLocalRing B] [Algebra A B]
   [IsLocalHom (algebraMap A B)] [Module.Flat A B] [AddCommGroup M] [Module A M]
 
-theorem foo : (Module.length B (B ⊗[A] M)).toNat =
-    (Module.length A M).toNat *
-      (Module.length B (B ⧸ (IsLocalRing.maximalIdeal A).map (algebraMap A B))).toNat := by
+theorem foo : (Module.length B (B ⊗[A] M)) =
+    (Module.length A M) *
+      (Module.length B (B ⧸ (IsLocalRing.maximalIdeal A).map (algebraMap A B))) := by
   set mA := IsLocalRing.maximalIdeal A
   set mB := mA.map (algebraMap A B)
   have : Module.FaithfullyFlat A B := Module.FaithfullyFlat.of_flat_of_isLocalHom
   by_cases h : IsFiniteLength A M; swap
-  · suffices ¬ IsFiniteLength B (B ⊗[A] M) by
-      rw [← Module.length_ne_top_iff, not_ne_iff] at h this
-      rw [h, this, ENat.toNat_top, zero_mul]
-    exact mt IsFiniteLength.ofFaithfullyFlat h
-  · rw [isFiniteLength_iff_exists_compositionSeries] at h
-    obtain ⟨s, hs_bot, hs_top⟩ := h
-    rw [RelSeries.head] at hs_bot
-    rw [RelSeries.last] at hs_top
-    rw [← Module.length_compositionSeries s hs_bot hs_top, ENat.toNat_coe]
+  · have : ¬ IsFiniteLength B (B ⊗[A] M) := mt IsFiniteLength.ofFaithfullyFlat h
+    rw [← Module.length_ne_top_iff, not_ne_iff] at h this
+    rw [h, this, ENat.top_mul]
+    rw [← pos_iff_ne_zero, Module.length_pos_iff, Submodule.Quotient.nontrivial_iff]
+    have key1 : mB ≤ IsLocalRing.maximalIdeal B := by
+      rw [Ideal.map_le_iff_le_comap, IsLocalRing.maximalIdeal_comap]
+    have key := Ideal.IsMaximal.ne_top (IsLocalRing.maximalIdeal.isMaximal B)
+    contrapose! key
+    exact eq_top_mono key1 key
+  · obtain ⟨s, hs_bot, hs_top⟩ := isFiniteLength_iff_exists_compositionSeries.mp h
+    rw [← Module.length_compositionSeries s hs_bot hs_top]
     have key : ∀ k : Fin s.length.succ, (Order.height ((s k).baseChange B)) =
       k * (Module.length B (B ⧸ mB)) := by
       intro k
       induction k using Fin.induction
       case zero =>
-        rw [Fin.val_zero, Nat.cast_zero, zero_mul, hs_bot, Submodule.baseChange_bot, Order.height_bot]
+        rw [Fin.val_zero, Nat.cast_zero, zero_mul, ← RelSeries.head, hs_bot,
+          Submodule.baseChange_bot, Order.height_bot]
       case succ i hi =>
         have : (i.succ : ℕ) = (i.castSucc : ℕ).succ := by
           rfl
@@ -135,8 +147,8 @@ theorem foo : (Module.length B (B ⊗[A] M)).toNat =
         let q := s i.succ
         let f : p →ₗ[A] q := Submodule.inclusion (s.lt_succ i).le
         have key : IsSimpleModule A (q ⧸ f.range) := by
-          -- Jordan-Holder
-          sorry
+          rw [Submodule.range_inclusion, ← covBy_iff_quot_is_simple (s.lt_succ i).le]
+          exact s.step i
         obtain ⟨m, hm, ⟨e⟩⟩ := isSimpleModule_iff_quot_maximal.mp key
         rw [IsLocalRing.eq_maximalIdeal hm] at e
         let g := e.comp f.range.mkQ
@@ -159,8 +171,8 @@ theorem foo : (Module.length B (B ⊗[A] M)).toNat =
         have := Algebra.TensorProduct.quotIdealMapEquivTensorQuot B mA
         exact this.toLinearEquiv.length_eq.symm
     specialize key (Fin.last s.length)
-    rw [hs_top, Submodule.baseChange_top, Fin.val_last] at key
-    rw [Module.length_eq_height, key, ENat.toNat_mul, ENat.toNat_coe]
+    rw [← RelSeries.last, hs_top, Submodule.baseChange_top, Fin.val_last] at key
+    rw [Module.length_eq_height, key]
 
 end flatBaseChange
 
@@ -177,7 +189,8 @@ noncomputable def ramificationIdx : ℕ :=
 theorem ramificationIdx_tower [r.LiesOver q]
     [Module.Flat (Localization.AtPrime q) (Localization.AtPrime r)] :
     p.ramificationIdx r = p.ramificationIdx q * q.ramificationIdx r := by
-  simp_rw [ramificationIdx]
+  simp_rw [ramificationIdx, ← ENat.toNat_mul]
+  congr
   set Sq := Localization.AtPrime q
   set Tr := Localization.AtPrime r
   have := foo (A := Sq) (B := Tr) (M := Sq ⧸ p.map (algebraMap R Sq))
