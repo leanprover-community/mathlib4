@@ -528,7 +528,7 @@ end DistribLattice
 @[to_dual existing mk]
 abbrev DistribLattice.ofInfSupLe
     [Lattice α] (inf_sup_le : ∀ a b c : α, a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c) : DistribLattice α where
-  le_sup_inf := (@OrderDual.instDistribLattice αᵒᵈ { inferInstanceAs (Lattice αᵒᵈ) with
+  le_sup_inf := (@OrderDual.instDistribLattice αᵒᵈ { (inferInstance : Lattice αᵒᵈ) with
       le_sup_inf := inf_sup_le }).le_sup_inf
 
 /-!
@@ -983,6 +983,14 @@ protected abbrev Function.Injective.distribLattice [Max α] [Min α] [LE α] [LT
   le_sup_inf a b c := by
     rw [← le, map_inf, map_sup, map_sup, map_sup, map_inf]
     exact le_sup_inf
+
+/-- A subtype forms a distributive lattice if `⊔` and `⊓` preserve the property.
+See note [reducible non-instances]. -/
+protected abbrev Subtype.distribLattice [DistribLattice α] {P : α → Prop}
+    (Psup : ∀ ⦃s t : α⦄, P s → P t → P (s ⊔ t)) (Pinf : ∀ ⦃s t : α⦄, P s → P t → P (s ⊓ t)) :
+    DistribLattice (Subtype P) :=
+  letI := Subtype.lattice Psup Pinf
+  Subtype.coe_injective.distribLattice _ coe_le_coe coe_lt_coe (coe_sup Psup) (coe_inf Pinf)
 
 end lift
 
