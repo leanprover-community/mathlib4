@@ -34,6 +34,7 @@ lemma residue_def (x) : residue R x = Ideal.Quotient.mk (maximalIdeal R) x := rf
 lemma ker_residue : RingHom.ker (residue R) = maximalIdeal R :=
   Ideal.mk_ker
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma residue_eq_zero_iff (x : R) : residue R x = 0 ↔ x ∈ maximalIdeal R := by
   rw [← RingHom.mem_ker, ker_residue]
@@ -65,6 +66,7 @@ instance : IsLocalHom (IsLocalRing.residue R) :=
     Classical.not_not.mp (Ideal.Quotient.eq_zero_iff_mem.not.mp (isUnit_iff_ne_zero.mp ha))⟩
 
 #adaptation_note /-- Needed after leanprover/lean4#12564 -/
+set_option backward.inferInstanceAs.wrap false in
 instance {R₀} [CommRing R₀] [Algebra R₀ R] : Module R₀ (ResidueField R) :=
   inferInstanceAs <| Module R₀ (R ⧸ maximalIdeal R)
 
@@ -165,6 +167,7 @@ section MulSemiringAction
 
 variable (G : Type*) [Group G] [MulSemiringAction G R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `G` acts on `R` as a `MulSemiringAction`, then it also acts on `IsLocalRing.ResidueField R`.
 -/
 noncomputable instance : MulSemiringAction G (IsLocalRing.ResidueField R) :=
@@ -202,6 +205,7 @@ instance {R₀ : Type*} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsSca
   simp [← IsScalarTower.algebraMap_apply]
 
 #adaptation_note /-- Needed after leanprover/lean4#12564 -/
+set_option backward.inferInstanceAs.wrap false in
 instance : Module (ResidueField R) (ResidueField S) :=
   inferInstanceAs <| Module (R ⧸ maximalIdeal R) (S ⧸ maximalIdeal S)
 

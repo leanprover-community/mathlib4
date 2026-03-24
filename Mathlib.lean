@@ -1852,6 +1852,7 @@ public import Mathlib.Analysis.Convex.Join
 public import Mathlib.Analysis.Convex.KreinMilman
 public import Mathlib.Analysis.Convex.LinearIsometry
 public import Mathlib.Analysis.Convex.Measure
+public import Mathlib.Analysis.Convex.MetricSpace
 public import Mathlib.Analysis.Convex.Mul
 public import Mathlib.Analysis.Convex.NNReal
 public import Mathlib.Analysis.Convex.PartitionOfUnity
@@ -1952,6 +1953,7 @@ public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.Analysis.InnerProductSpace.Rayleigh
 public import Mathlib.Analysis.InnerProductSpace.Reproducing
 public import Mathlib.Analysis.InnerProductSpace.Semisimple
+public import Mathlib.Analysis.InnerProductSpace.SingularValues
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
 public import Mathlib.Analysis.InnerProductSpace.StandardSubspace
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
@@ -4657,6 +4659,7 @@ public import Mathlib.InformationTheory.Coding.KraftMcMillan
 public import Mathlib.InformationTheory.Coding.UniquelyDecodable
 public import Mathlib.InformationTheory.Hamming
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
+public import Mathlib.InformationTheory.KullbackLeibler.ChainRule
 public import Mathlib.InformationTheory.KullbackLeibler.KLFun
 public import Mathlib.Init
 public import Mathlib.Lean.ContextInfo
@@ -7716,8 +7719,10 @@ public import Mathlib.Topology.Sets.Opens
 public import Mathlib.Topology.Sets.Order
 public import Mathlib.Topology.Sets.VietorisTopology
 public import Mathlib.Topology.Sheaves.Abelian
+public import Mathlib.Topology.Sheaves.AddCommGrpCat
 public import Mathlib.Topology.Sheaves.Alexandrov
 public import Mathlib.Topology.Sheaves.CommRingCat
+public import Mathlib.Topology.Sheaves.Flasque
 public import Mathlib.Topology.Sheaves.Forget
 public import Mathlib.Topology.Sheaves.Functors
 public import Mathlib.Topology.Sheaves.Init

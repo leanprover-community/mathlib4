@@ -266,8 +266,8 @@ lemma isClosedUnderLimitsOfShape_inverseImage_iff (P : ObjectProperty D)
     [P.IsClosedUnderIsomorphisms] (e : C ≌ D) :
     (P.inverseImage e.functor).IsClosedUnderLimitsOfShape J ↔ P.IsClosedUnderLimitsOfShape J := by
   refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
-  convert inferInstanceAs
-    (((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderLimitsOfShape J)
+  convert (inferInstance :
+    ((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderLimitsOfShape J)
   ext X
   simpa using P.prop_iff_of_iso (e.counitIso.app X).symm
 
