@@ -6,8 +6,8 @@ Authors: Gaëtan Serré
 
 module
 
+public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
 public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
-public import Mathlib.CategoryTheory.Monoidal.Comon_
 public import Mathlib.CategoryTheory.Widesubcategory
 
 /-!
@@ -182,6 +182,26 @@ instance {c : WideSubcategory P} : IsCommComonObj c where
     exact IsCommComonObj.comul_comm _
 
 end ComonObj
+
+section CopyDiscardCategory
+
+variable [CopyDiscardCategory C] [P.IsStableUnderComonoid]
+
+instance : CopyDiscardCategory (WideSubcategory P) where
+  copy_tensor c c' := by
+    ext
+    exact CopyDiscardCategory.copy_tensor c.obj c'.obj
+  discard_tensor c c' := by
+    ext
+    exact CopyDiscardCategory.discard_tensor c.obj c'.obj
+  copy_unit := by
+    ext
+    exact CopyDiscardCategory.copy_unit (C := C)
+  discard_unit := by
+    ext
+    exact CopyDiscardCategory.discard_unit (C := C)
+
+end CopyDiscardCategory
 
 end WideSubcategory
 

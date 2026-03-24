@@ -76,24 +76,10 @@ instance : StochHom.IsStableUnderComonoid where
 /-- `Stoch` is the wide subcategory of `SFinKer` with Markov-kernel morphisms. -/
 abbrev Stoch := WideSubcategory StochHom
 
-noncomputable section
-
-instance : CopyDiscardCategory Stoch.{u} where
-  copy_tensor X Y := by
-    ext
-    exact CopyDiscardCategory.copy_tensor X.obj Y.obj
-  discard_tensor X Y := by
-    ext
-    exact CopyDiscardCategory.discard_tensor X.obj Y.obj
-  copy_unit := by
-    ext
-    exact CopyDiscardCategory.copy_unit (C := SFinKer.{u})
-
+noncomputable
 instance : MarkovCategory Stoch.{u} where
   discard_natural κ := by
     ext
     kernel_cat
     have : IsMarkovKernel κ.1.1 := κ.2
     exact κ.1.1.comp_discard
-
-end
