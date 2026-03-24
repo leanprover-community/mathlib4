@@ -350,7 +350,6 @@ multiplication in `G`. -/
 abbrev diagonalOneIsoLeftRegular :
     diagonal k G 1 ≅ leftRegular k G := Rep.mkIso (Representation.diagonalOneEquivLeftRegular k G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When `H = {1}`, the `G`-representation on `k[H]` induced by an action of `G` on `H` is
 isomorphic to the trivial representation on `k`. -/
 abbrev ofMulActionSubsingletonIsoTrivial
@@ -583,7 +582,7 @@ lemma smul_comp {M N O : Rep k G} (r : k) (f : M ⟶ N) (g : N ⟶ O) :
 
 lemma comp_smul {M N O : Rep k G} (f : M ⟶ N) (r : k) (g : N ⟶ O) :
     f ≫ (r • g) = r • (f ≫ g) := by
-  ext1
+  ext
   simp [smul_hom, Representation.IntertwiningMap.smul_comp]
 
 instance {M N : Rep k G} : Module k (M ⟶ N) := fast_instance% hom_injective.module
@@ -596,7 +595,7 @@ instance : Linear k (Rep k G) where
 set_option backward.isDefEq.respectTransparency false in
 instance : Functor.Linear k (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)) where
   map_smul {X Y} f r := by
-    ext1;
+    ext
     simp [smul_hom]
 
 /-- The equivalence between `IntertwiningMap`s and morphism between `X Y : Rep k G` is linear. -/
