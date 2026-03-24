@@ -60,6 +60,8 @@ structure Hom (X Y : TopPair) where
   /-- The proof that the two maps fit in the commutative square -/
   snd_map : snd ≫ Y.map = X.map ≫ fst := by cat_disch
 
+attribute [reassoc, elementwise] Hom.snd_map
+
 @[simps]
 instance : Category TopPair where
   Hom := Hom
@@ -68,6 +70,7 @@ instance : Category TopPair where
 
 /-- `TopPair` is equivalent to the full subcategory of the comma category with twice the identity
 functor of TopCat on the morphisms that are inducing. -/
+@[simps]
 def equivComma : TopPair ≌ MorphismProperty.Comma (𝟭 TopCat) (𝟭 TopCat)
     (fun X Y f ↦ Topology.IsInducing (f : TopCat.Hom X Y)) ⊤ ⊤ where
   functor.obj X :=
@@ -159,9 +162,11 @@ structure Homotopy (f g : X ⟶ Y) where
     TopCat.ofHom (ContinuousMap.prodMap (ContinuousMap.id I) X.map.hom) ≫
       TopCat.ofHom fst.toContinuousMap := by cat_disch
 
-attribute [reassoc] Homotopy.snd_map
+attribute [reassoc, elementwise] Homotopy.snd_map
 
 namespace Homotopy
+
+attribute [local simp] Homotopy.snd_map_apply Hom.snd_map_apply
 
 /-- Given a morphism `f` of topological pairs, we can define a `Homotopy f f` by
 `ContinuousMap.Homotopy.refl` on the first and second components.
@@ -170,12 +175,6 @@ namespace Homotopy
 def refl (f : X ⟶ Y) : Homotopy f f where
   fst := ContinuousMap.Homotopy.refl f.fst.hom
   snd := ContinuousMap.Homotopy.refl f.snd.hom
-  snd_map := by
-    ext ⟨_, _⟩
-    simp only [TopCat.hom_comp, TopCat.hom_ofHom, ContinuousMap.comp_apply,
-      ContinuousMap.Homotopy.coe_toContinuousMap, ContinuousMap.Homotopy.refl_apply,
-      ContinuousMap.prodMap_apply, ContinuousMap.coe_id, Prod.map_apply, id_eq]
-    rw [← TopCat.comp_app, f.snd_map, TopCat.comp_app]
 
 instance : Inhabited (Homotopy (𝟙 X) (𝟙 X)) :=
   ⟨Homotopy.refl _⟩
@@ -187,14 +186,6 @@ the first and second components.
 def symm {f₀ f₁ : X ⟶ Y} (F : Homotopy f₀ f₁) : Homotopy f₁ f₀ where
   fst := F.fst.symm
   snd := F.snd.symm
-  snd_map := by
-    ext ⟨t, x⟩
-    simp only [TopCat.hom_comp, TopCat.hom_ofHom, ContinuousMap.comp_apply,
-      ContinuousMap.Homotopy.coe_toContinuousMap, ContinuousMap.Homotopy.symm_apply,
-      ContinuousMap.prodMap_apply, ContinuousMap.coe_id, Prod.map_apply, id_eq]
-    rw [← ContinuousMap.Homotopy.coe_toContinuousMap F.snd,
-      ← TopCat.hom_ofHom F.snd.toContinuousMap, ← TopCat.comp_app]
-    simp [F.snd_map]
 
 @[simp]
 theorem symm_symm {f₀ f₁ : X ⟶ Y} (F : Homotopy f₀ f₁) : F.symm.symm = F := by
@@ -214,17 +205,10 @@ noncomputable def trans {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G :
   fst := F.fst.trans G.fst
   snd := F.snd.trans G.snd
   snd_map := by
-    ext ⟨t, x⟩
-    simp only [TopCat.hom_comp, TopCat.hom_ofHom, ContinuousMap.comp_apply,
-      ContinuousMap.Homotopy.coe_toContinuousMap, ContinuousMap.Homotopy.trans_apply, one_div,
-      ContinuousMap.prodMap_apply, ContinuousMap.coe_id, Prod.map_apply, id_eq]
-    split_ifs
-    · rw [← ContinuousMap.Homotopy.coe_toContinuousMap F.snd,
-        ← TopCat.hom_ofHom F.snd.toContinuousMap, ← TopCat.comp_app]
-      simp [F.snd_map]
-    · rw [← ContinuousMap.Homotopy.coe_toContinuousMap G.snd,
-        ← TopCat.hom_ofHom G.snd.toContinuousMap, ← TopCat.comp_app]
-      simp [G.snd_map]
+    ext
+    dsimp [ContinuousMap.Homotopy.trans_apply]
+    simp only [ContinuousMap.Homotopy.trans_apply, one_div]
+    cat_disch
 
 theorem symm_trans {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) :
     (F.trans G).symm = G.symm.trans F.symm := by
@@ -239,21 +223,8 @@ def comp {f₀ f₁ : X ⟶ Y} {g₀ g₁ : Y ⟶ Z} (G : Homotopy g₀ g₁) (F
   fst := G.fst.comp F.fst
   snd := G.snd.comp F.snd
   snd_map := by
-    ext ⟨t, x⟩
-    simp only [comp_snd, TopCat.hom_comp, TopCat.hom_ofHom, ContinuousMap.comp_apply,
-      ContinuousMap.Homotopy.coe_toContinuousMap, ContinuousMap.Homotopy.comp_apply, comp_fst,
-      ContinuousMap.prodMap_apply, ContinuousMap.coe_id, Prod.map_apply, id_eq]
-    rw [← ContinuousMap.Homotopy.coe_toContinuousMap G.snd,
-      ← TopCat.hom_ofHom G.snd.toContinuousMap, ← TopCat.comp_app]
-    simp only [G.snd_map, TopCat.hom_comp, TopCat.hom_ofHom, ContinuousMap.comp_apply,
-      ContinuousMap.prodMap_apply, ContinuousMap.coe_id, Prod.map_apply, id_eq,
-      ContinuousMap.Homotopy.coe_toContinuousMap]
-    rw [← ContinuousMap.Homotopy.coe_toContinuousMap F.snd,
-      ← TopCat.hom_ofHom F.snd.toContinuousMap, ← TopCat.comp_app]
-    simp only [F.snd_map, TopCat.hom_comp, TopCat.hom_ofHom, ContinuousMap.comp_apply,
-      ContinuousMap.prodMap_apply, ContinuousMap.coe_id, Prod.map_apply, id_eq,
-      ContinuousMap.Homotopy.coe_toContinuousMap]
-
+    ext
+    simp [F.snd_map_apply]
 
 /-- Composition of a `Homotopy g₀ g₁` and `f : X ⟶ Y` as a homotopy between `f ≫ g₀` and
 `f ≫ g₁`. -/
