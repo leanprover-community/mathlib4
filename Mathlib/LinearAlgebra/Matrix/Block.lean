@@ -189,7 +189,8 @@ theorem BlockTriangular.mul [Fintype m] [NonUnitalNonAssocSemiring R]
 variable (b) in
 /-- `BlockTriangular` matrices form a semiring. -/
 @[simps]
-def blockTriangularSubsemiring [DecidableEq m] [Fintype m] [Semiring R] : Subsemiring (Matrix m m R) where
+def blockTriangularSubsemiring [DecidableEq m] [Fintype m] [Semiring R] :
+    Subsemiring (Matrix m m R) where
   carrier := {M | BlockTriangular M b}
   zero_mem' := blockTriangular_zero
   one_mem' := blockTriangular_one
