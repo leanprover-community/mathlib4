@@ -144,6 +144,14 @@ lemma factorsThrough_iff_ker_unitsMap {d : ℕ} [NeZero n] (hd : d ∣ n) :
     simp_rw [changeLevel_toUnitHom, toUnitHom_eq, ofUnitHom_eq, Equiv.apply_symm_apply, hE,
       toUnitHom_eq]
 
+theorem factorsThrough_of_dvd_dvd {d m : ℕ} [NeZero n] (hχ : FactorsThrough χ d) (hd : d ∣ m)
+    (hm : m ∣ n) :
+    FactorsThrough χ m := by
+  refine (factorsThrough_iff_ker_unitsMap hm).mpr fun x hx ↦ ?_
+  apply (factorsThrough_iff_ker_unitsMap hχ.dvd).mp hχ
+  rw [MonoidHom.mem_ker] at hx ⊢
+  rw [← ZMod.unitsMap_comp hd hm, MonoidHom.comp_apply, hx, map_one]
+
 /--
 Let `χ` and `ψ` be Dirichlet characters of level `n` and `m` respectively. Assume that they agree
 at level `n * m`. Then `χ` factors through `gcd(n, m)`.
@@ -322,6 +330,14 @@ theorem conductor_dvd_of_mem_conductorSet {d : ℕ} (hn : n ≠ 0) (hd : d ∈ �
   rw [← changeLevel_trans, ← changeLevel_trans,
     changeLevel_trans _ hd (n.dvd_mul_left (d * χ.conductor)), ← hχ₀,
     changeLevel_trans χ.primitiveCharacter χ.conductor_dvd_level, changeLevel_primitiveCharacter]
+
+/-- A divisor `d` of `n` belongs to the conductor set of `χ` if and only if the conductor of `χ`
+divides `d`. -/
+theorem mem_conductorSet_iff_conductor_dvd (hn : n ≠ 0) {d : ℕ} (hd : d ∣ n) :
+    d ∈ χ.conductorSet ↔ χ.conductor ∣ d := by
+  refine ⟨fun h ↦ conductor_dvd_of_mem_conductorSet χ hn h, fun h ↦ ?_⟩
+  have : NeZero n := ⟨hn⟩
+  exact factorsThrough_of_dvd_dvd χ χ.factorsThrough_conductor h hd
 
 /-- Dirichlet character associated to multiplication of Dirichlet characters,
 after changing both levels to the same -/
