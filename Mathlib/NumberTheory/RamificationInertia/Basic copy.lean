@@ -131,61 +131,50 @@ theorem IsLocalRing.map_maximalIdeal_lt_top
 variable {A B M : Type*} [CommRing A] [CommRing B] [IsLocalRing A] [IsLocalRing B] [Algebra A B]
   [IsLocalHom (algebraMap A B)] [Module.Flat A B] [AddCommGroup M] [Module A M]
 
-theorem foo : (Module.length B (B ⊗[A] M)) =
-    (Module.length A M) *
-      (Module.length B (B ⧸ (IsLocalRing.maximalIdeal A).map (algebraMap A B))) := by
+variable (B) in
+open Module Submodule TensorProduct.AlgebraTensorModule in
+theorem CovBy.length_baseChange {p q : Submodule A M} (h : p ⋖ q) :
+    Module.length B (q.baseChange B) = Module.length B (p.baseChange B) +
+      Module.length B (B ⧸ (IsLocalRing.maximalIdeal A).map (algebraMap A B)) := by
   set mA := IsLocalRing.maximalIdeal A
   set mB := mA.map (algebraMap A B)
-  have : Module.FaithfullyFlat A B := Module.FaithfullyFlat.of_flat_of_isLocalHom
-  by_cases h : IsFiniteLength A M; swap
-  · have : ¬ IsFiniteLength B (B ⊗[A] M) := mt IsFiniteLength.ofFaithfullyFlat h
-    rw [← Module.length_ne_top_iff, not_ne_iff] at h this
-    rw [h, this, ENat.top_mul]
-    rw [← pos_iff_ne_zero, Module.length_pos_iff, Submodule.Quotient.nontrivial_iff]
-    exact (IsLocalRing.map_maximalIdeal_lt_top (algebraMap A B)).ne
+  have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
+  rw [← (p.toBaseChangeEquiv B).length_eq, ← (q.toBaseChangeEquiv B).length_eq]
+  let f : p →ₗ[A] q := inclusion h.le
+  have key : IsSimpleModule A (q ⧸ f.range) := by
+    rwa [range_inclusion, ← covBy_iff_quot_is_simple h.le]
+  obtain ⟨m, hm, ⟨e⟩⟩ := isSimpleModule_iff_quot_maximal.mp key
+  rw [IsLocalRing.eq_maximalIdeal hm] at e
+  let g := e.comp f.range.mkQ
+  have hf : Function.Injective f := inclusion_injective _
+  have hg : Function.Surjective g := e.surjective.comp f.range.mkQ_surjective
+  have hfg : Function.Exact f g :=
+    LinearMap.exact_iff.mpr ((e.ker_comp f.range.mkQ).trans f.range.ker_mkQ)
+  have key := length_eq_add_of_exact (lTensor B B f) (lTensor B B g) (by simpa) (by simpa) (by simpa)
+  rw [key]
+  congr
+  have := Algebra.TensorProduct.quotIdealMapEquivTensorQuot B mA
+  exact this.toLinearEquiv.length_eq.symm
+
+open IsLocalRing Module Submodule TensorProduct.AlgebraTensorModule in
+theorem foo :
+    length B (B ⊗[A] M) = length A M * length B (B ⧸ (maximalIdeal A).map (algebraMap A B)) := by
+  have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
+  by_cases h : IsFiniteLength A M
   · obtain ⟨s, hs_bot, hs_top⟩ := isFiniteLength_iff_exists_compositionSeries.mp h
-    rw [← Module.length_compositionSeries s hs_bot hs_top]
-    have key : ∀ k : Fin s.length.succ, (Order.height ((s k).baseChange B)) =
-      k * (Module.length B (B ⧸ mB)) := by
-      intro k
-      induction k using Fin.induction
-      case zero =>
-        rw [Fin.val_zero, Nat.cast_zero, zero_mul, ← RelSeries.head, hs_bot,
-          Submodule.baseChange_bot, Order.height_bot]
-      case succ i hi =>
-        have : (i.succ : ℕ) = (i.castSucc : ℕ).succ := rfl
-        rw [this, Nat.cast_succ, add_one_mul, ← hi,
-          ← Module.length_submodule, ← Module.length_submodule]
-        let p := s i.castSucc
-        let q := s i.succ
-        let f : p →ₗ[A] q := Submodule.inclusion (s.lt_succ i).le
-        have key : IsSimpleModule A (q ⧸ f.range) := by
-          rw [Submodule.range_inclusion, ← covBy_iff_quot_is_simple (s.lt_succ i).le]
-          exact s.step i
-        obtain ⟨m, hm, ⟨e⟩⟩ := isSimpleModule_iff_quot_maximal.mp key
-        rw [IsLocalRing.eq_maximalIdeal hm] at e
-        let g := e.comp f.range.mkQ
-        have hf : Function.Injective f := Submodule.inclusion_injective _
-        have hg : Function.Surjective g := e.surjective.comp f.range.mkQ_surjective
-        have hfg : Function.Exact f g := by
-          refine (LinearMap.exact_iff (f := f) (g := g)).mpr ?_
-          simp [g]
-        let f' := TensorProduct.AlgebraTensorModule.lTensor B B f
-        let g' := TensorProduct.AlgebraTensorModule.lTensor B B g
-        have hf' : Function.Injective f' := by simpa [f'] using hf
-        have hg' : Function.Surjective g' := by simpa [g'] using hg
-        have hfg' : Function.Exact f' g' := by simpa [f', g'] using hfg
-        have key := Module.length_eq_add_of_exact f' g' hf' hg' hfg'
-        have h1 := p.toBaseChangeEquiv B
-        have h2 := q.toBaseChangeEquiv B
-        rw [← h1.length_eq, ← h2.length_eq]
-        rw [key]
-        congr
-        have := Algebra.TensorProduct.quotIdealMapEquivTensorQuot B mA
-        exact this.toLinearEquiv.length_eq.symm
-    specialize key (Fin.last s.length)
-    rw [← RelSeries.last, hs_top, Submodule.baseChange_top, Fin.val_last] at key
-    rw [Module.length_eq_height, key]
+    rw [← length_compositionSeries s hs_bot hs_top]
+    suffices ∀ k, length B ((s k).baseChange B) =
+        k * length B (B ⧸ (maximalIdeal A).map (algebraMap A B)) by
+      rw [← Fin.val_last s.length, ← this, ← RelSeries.last, hs_top, baseChange_top, length_top]
+    intro k
+    induction k using Fin.induction
+    case pos.zero => rw [← RelSeries.head, hs_bot, baseChange_bot]; simp
+    case pos.succ i hi => simpa [hi, add_one_mul] using (s.step i).length_baseChange B
+  · have : ¬ IsFiniteLength B (B ⊗[A] M) := mt IsFiniteLength.ofFaithfullyFlat h
+    rw [← length_ne_top_iff, not_ne_iff] at h this
+    rw [h, this, ENat.top_mul]
+    rw [← pos_iff_ne_zero, length_pos_iff, Quotient.nontrivial_iff]
+    exact (map_maximalIdeal_lt_top (algebraMap A B)).ne
 
 end flatBaseChange
 
