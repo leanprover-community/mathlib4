@@ -30,6 +30,9 @@ private def returnsClass (type : Expr) : MetaM Bool := do
   forallTelescopeReducing type fun _ body => do
     match body.getAppFn with
     | Expr.const typeName _ =>
+        -- Ignore `Setoid`
+        if typeName == ``Setoid then
+          return false
         let typeExpr := mkConst typeName
         return (← isClass? typeExpr).isSome
     | _ =>
