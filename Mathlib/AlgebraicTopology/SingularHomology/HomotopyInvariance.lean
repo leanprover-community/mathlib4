@@ -18,40 +18,43 @@ on singular homology (with coefficients in an object of a preadditive category w
 
 @[expose] public section
 
-universe v u
+universe v u w
 
-open CategoryTheory SimplicialObject Homotopy
-open AlgebraicTopology.SSet
+open CategoryTheory Limits AlgebraicTopology.SSet
 
-variable (C : Type u) [Category.{v} C]
-variable [CategoryTheory.Preadditive C] [CategoryTheory.Limits.HasCoproducts C]
-variable {C}
-variable (R : C)
-variable {X Y : SSet} (f g : X ⟶ Y)
+variable {C : Type u} [Category.{v} C] [Preadditive C] [HasCoproducts.{w} C]
+  {X Y : SSet.{w}} {f g : X ⟶ Y}
+
+namespace CategoryTheory.SimplicialObject.Homotopy
 
 /--
 If `f` and `g` are simplicially homotopic maps of simplicial sets, then they induce chain-homotopic
 maps on the singular chain complexes with coefficients in `R`.
 -/
-noncomputable def singularChainComplexFunctor_mapHomotopy_of_simplicialHomotopy
-    (H : Homotopy f g) :
-    Homotopy
+noncomputable def singularChainComplexFunctorObjMap
+    (H : Homotopy f g) (R : C) :
+    _root_.Homotopy
       (((singularChainComplexFunctor C).obj R).map f)
-      (((singularChainComplexFunctor C).obj R).map g) := by
-  simpa using
-    toChainHomotopy (H.whiskerRight (_ : Type _ ⥤ C))
+      (((singularChainComplexFunctor C).obj R).map g) :=
+  toChainHomotopy (H.whiskerRight _)
 
+@[deprecated (since := "2026-03-24")]
+alias _root_.singularChainComplexFunctor_mapHomotopy_of_simplicialHomotopy :=
+  Homotopy.singularChainComplexFunctorObjMap
+
+open HomologicalComplex in
 /--
 Simplicially homotopic maps of simplicial sets induce the same map on homology of the singular
 chain complex (with coefficients in `R`).
 -/
-theorem singularChainComplexFunctor_map_homology_eq_of_simplicialHomotopy
-    [CategoryWithHomology C]
-    (H : Homotopy f g) (n : ℕ) :
-    (HomologicalComplex.homologyFunctor C _ n).map
-        (((singularChainComplexFunctor C).obj R).map f) =
-      (HomologicalComplex.homologyFunctor C _ n).map
-        (((singularChainComplexFunctor C).obj R).map g) := by
-  simpa using
-    (singularChainComplexFunctor_mapHomotopy_of_simplicialHomotopy
-        (C := C) (R := R) (f := f) (g := g) H).homologyMap_eq n
+theorem congr_homologyMap_singularChainComplexFunctor [CategoryWithHomology C]
+    (H : Homotopy f g) (R : C) (n : ℕ) :
+    homologyMap (((singularChainComplexFunctor C).obj R).map f) n =
+    homologyMap (((singularChainComplexFunctor C).obj R).map g) n :=
+  (H.singularChainComplexFunctorObjMap R).homologyMap_eq n
+
+@[deprecated (since := "2026-03-24")]
+alias singularChainComplexFunctor_map_homology_eq_of_simplicialHomotopy :=
+  congr_homologyMap_singularChainComplexFunctor
+
+end CategoryTheory.SimplicialObject.Homotopy
