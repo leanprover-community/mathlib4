@@ -136,9 +136,8 @@ instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
 
 @[reassoc (attr := simp)]
 theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
-    c.π.app j ≫ F.map f = c.π.app j' := by
-  rw [← c.π.naturality f]
-  apply id_comp
+    dsimp% c.π.app j ≫ F.map f = c.π.app j' := by
+  simpa using (c.π.naturality f).symm
 
 /-- A `c : Cocone F` is
 * an object `c.pt` and
@@ -167,11 +166,10 @@ instance inhabitedCocone (F : Discrete PUnit ⥤ C) : Inhabited (Cocone F) :=
            }
   }⟩
 
-@[reassoc]
+@[reassoc (attr := simp)]
 theorem Cocone.w {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j ⟶ j') :
-    F.map f ≫ c.ι.app j' = c.ι.app j := by
-  rw [c.ι.naturality f]
-  apply comp_id
+    dsimp% F.map f ≫ c.ι.app j' = c.ι.app j := by
+  simpa using c.ι.naturality f
 
 end
 
@@ -293,11 +291,10 @@ instance {c d : Cone F} (f : c ≅ d) : IsIso f.hom.hom := ⟨f.inv.hom, by simp
 
 instance {c d : Cone F} (f : c ≅ d) : IsIso f.inv.hom := ⟨f.hom.hom, by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ConeMorphism.map_w {c c' : Cone F} (f : c ⟶ c') (G : C ⥤ D) (j : J) :
     G.map f.hom ≫ G.map (c'.π.app j) = G.map (c.π.app j) := by
-  simp only [← map_comp, ConeMorphism.w]
+  simp [← map_comp]
 
 namespace Cone
 
@@ -388,7 +385,6 @@ def whiskering (E : K ⥤ J) : Cone F ⥤ Cone (E ⋙ F) where
   obj c := c.whisker E
   map f := { hom := f.hom }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Whiskering by an equivalence gives an equivalence between categories of cones.
 -/
 @[simps]
@@ -423,7 +419,6 @@ def forget : Cone F ⥤ C where
 
 variable (G : C ⥤ D)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A functor `G : C ⥤ D` sends cones over `F` to cones over `F ⋙ G` functorially. -/
 @[simps]
 def functoriality : Cone F ⥤ Cone (F ⋙ G) where
@@ -436,11 +431,10 @@ def functoriality : Cone F ⥤ Cone (F ⋙ G) where
     { hom := G.map f.hom
       w := ConeMorphism.map_w f G }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Functoriality is functorial. -/
 def functorialityCompFunctoriality (H : D ⥤ E) :
     functoriality F G ⋙ functoriality (F ⋙ G) H ≅ functoriality F (G ⋙ H) :=
-  NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp [functoriality])
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full where
   map_surjective t :=
@@ -451,7 +445,6 @@ instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful wher
   map_injective {_X} {_Y} f g h :=
     ConeMorphism.ext f g <| G.map_injective <| congr_arg ConeMorphism.hom h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
 equivalence between cones over `F` and cones over `F ⋙ e.functor`.
 -/
@@ -486,14 +479,13 @@ structure CoconeMorphism (A B : Cocone F) where
   /-- A morphism between the (co)vertex objects in `C` -/
   hom : A.pt ⟶ B.pt
   /-- The triangle made from the two natural transformations and `hom` commutes -/
-  w : ∀ j : J, A.ι.app j ≫ hom = B.ι.app j := by cat_disch
+  w : dsimp% ∀ j : J, A.ι.app j ≫ hom = B.ι.app j := by cat_disch
 
 instance inhabitedCoconeMorphism (A : Cocone F) : Inhabited (CoconeMorphism A A) :=
   ⟨{ hom := 𝟙 _ }⟩
 
 attribute [reassoc (attr := simp)] CoconeMorphism.w
 
-set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance Cocone.category : Category (Cocone F) where
   Hom A B := CoconeMorphism A B
@@ -521,11 +513,10 @@ instance {c d : Cocone F} (f : c ≅ d) : IsIso f.hom.hom := ⟨f.inv.hom, by si
 
 instance {c d : Cocone F} (f : c ≅ d) : IsIso f.inv.hom := ⟨f.hom.hom, by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma CoconeMorphism.map_w {c c' : Cocone F} (f : c ⟶ c') (G : C ⥤ D) (j : J) :
-    G.map (c.ι.app j) ≫ G.map f.hom = G.map (c'.ι.app j) := by
-  simp only [← map_comp, CoconeMorphism.w]
+    dsimp% G.map (c.ι.app j) ≫ G.map f.hom = G.map (c'.ι.app j) := by
+  simp [← map_comp]
 
 namespace Cocone
 
@@ -578,7 +569,6 @@ def extendIso (s : Cocone F) {X : C} (f : s.pt ≅ X) : s ≅ s.extend f.hom whe
 instance {s : Cocone F} {X : C} (f : s.pt ⟶ X) [IsIso f] : IsIso (s.extendHom f) :=
   ⟨(extendIso s (asIso f)).inv, by cat_disch⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Functorially precompose a cocone for `F` by a natural transformation `G ⟶ F` to give a cocone
 for `G`. -/
 @[simps]
@@ -608,7 +598,6 @@ def precomposeEquivalence {G : J ⥤ C} (α : G ≅ F) : Cocone F ≌ Cocone G w
   unitIso := NatIso.ofComponents fun s => ext (Iso.refl _)
   counitIso := NatIso.ofComponents fun s => ext (Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Whiskering on the left by `E : K ⥤ J` gives a functor from `Cocone F` to `Cocone (E ⋙ F)`.
 -/
 @[simps]
@@ -616,7 +605,6 @@ def whiskering (E : K ⥤ J) : Cocone F ⥤ Cocone (E ⋙ F) where
   obj c := c.whisker E
   map f := { hom := f.hom }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Whiskering by an equivalence gives an equivalence between categories of cones.
 -/
 @[simps]
@@ -651,7 +639,6 @@ def forget : Cocone F ⥤ C where
 
 variable (G : C ⥤ D)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A functor `G : C ⥤ D` sends cocones over `F` to cocones over `F ⋙ G` functorially. -/
 @[simps]
 def functoriality : Cocone F ⥤ Cocone (F ⋙ G) where
@@ -664,11 +651,10 @@ def functoriality : Cocone F ⥤ Cocone (F ⋙ G) where
     { hom := G.map f.hom
       w := CoconeMorphism.map_w f G }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Functoriality is functorial. -/
 def functorialityCompFunctoriality (H : D ⥤ E) :
     functoriality F G ⋙ functoriality (F ⋙ G) H ≅ functoriality F (G ⋙ H) :=
-  NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp [functoriality])
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full where
   map_surjective t :=
@@ -679,7 +665,6 @@ instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful wher
   map_injective {_X} {_Y} f g h :=
     CoconeMorphism.ext f g <| G.map_injective <| congr_arg CoconeMorphism.hom h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
 equivalence between cocones over `F` and cocones over `F ⋙ e.functor`.
 -/
@@ -981,8 +966,7 @@ def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
   counitIso :=
     NatIso.ofComponents
       (fun c => (Cone.ext (Iso.refl c.unop.pt)).op)
-      fun {X} {Y} f =>
-      Quiver.Hom.unop_inj (ConeMorphism.ext _ _ (by simp))
+      (fun f ↦ Quiver.Hom.unop_inj (by cat_disch))
   functor_unitIso_comp c := by
     apply Quiver.Hom.unop_inj
     apply ConeMorphism.ext
@@ -990,6 +974,16 @@ def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
     apply comp_id
 
 attribute [simps] coconeEquivalenceOpConeOp
+
+/-- Cones on `F : J ⥤ C` are equivalent to cocones on `F.op : Jᵒᵖ ⥤ Cᵒᵖ`. -/
+@[simps]
+def coneOpEquiv {F : J ⥤ C} : (Cone F)ᵒᵖ ≌ Cocone F.op where
+  functor.obj c := c.unop.op
+  functor.map f := { hom := f.unop.hom.op, w j := congr($(f.unop.w j.unop).op) }
+  inverse.obj c := .op <| c.unop
+  inverse.map f := ⟨{ hom := f.hom.unop, w j := congr($(f.w (.op j)).unop) }⟩
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 end
 
@@ -1021,6 +1015,26 @@ def coneLeftOpOfCocone (c : Cocone F) : Cone F.leftOp where
   pt := unop c.pt
   π := NatTrans.leftOp c.ι
 
+/-- Cones on `F : J ⥤ Cᵒᵖ` are equivalent to cocones on `F.leftOp : Jᵒᵖ ⥤ C`. -/
+@[simps]
+def coconeLeftOpOfConeEquiv {F : J ⥤ Cᵒᵖ} : (Cone F)ᵒᵖ ≌ Cocone F.leftOp where
+  functor.obj c := coconeLeftOpOfCone c.unop
+  functor.map f := { hom := f.unop.hom.unop, w j := congr($(f.unop.w j.unop).unop) }
+  inverse.obj c := .op <| coneOfCoconeLeftOp c
+  inverse.map f := ⟨{ hom := f.hom.op, w j := congr($(f.w (.op j)).op) }⟩
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
+/-- Cocones on `F : J ⥤ Cᵒᵖ` are equivalent to cones on `F.leftOp : Jᵒᵖ ⥤ C`. -/
+@[simps]
+def coneLeftOpOfCoconeEquiv {F : J ⥤ Cᵒᵖ} : (Cocone F)ᵒᵖ ≌ Cone F.leftOp where
+  functor.obj c := coneLeftOpOfCocone c.unop
+  functor.map f := { hom := f.unop.hom.unop, w j := congr($(f.unop.w j.unop).unop) }
+  inverse.obj c := .op <| coconeOfConeLeftOp c
+  inverse.map f := ⟨{ hom := f.hom.op, w j := congr($(f.w (.op j)).op) }⟩
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
 end
 
 section
@@ -1051,6 +1065,26 @@ def coneRightOpOfCocone (c : Cocone F) : Cone F.rightOp where
   pt := op c.pt
   π := NatTrans.rightOp c.ι
 
+/-- Cones on `F : Jᵒᵖ ⥤ C` are equivalent to cocones on `F.rightOp : J ⥤ Cᵒᵖ`. -/
+@[simps]
+def coconeRightOpOfConeEquiv {F : Jᵒᵖ ⥤ C} : (Cone F)ᵒᵖ ≌ Cocone F.rightOp where
+  functor.obj c := coconeRightOpOfCone c.unop
+  functor.map f := { hom := f.unop.hom.op, w j := congr($(f.unop.w (.op j)).op) }
+  inverse.obj c := .op <| coneOfCoconeRightOp c
+  inverse.map f := ⟨{ hom := f.hom.unop, w j := congr($(f.w j.unop).unop) }⟩
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
+/-- Cocones on `F : Jᵒᵖ ⥤ C` are equivalent to cones on `F.rightOp : J ⥤ Cᵒᵖ`. -/
+@[simps]
+def coneRightOpOfCoconeEquiv {F : Jᵒᵖ ⥤ C} : (Cocone F)ᵒᵖ ≌ Cone F.rightOp where
+  functor.obj c := coneRightOpOfCocone c.unop
+  functor.map f := { hom := f.unop.hom.op, w j := congr($(f.unop.w (.op j)).op) }
+  inverse.obj c := .op <| coconeOfConeRightOp c
+  inverse.map f := ⟨{ hom := f.hom.unop, w j := congr($(f.w j.unop).unop) }⟩
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
 end
 
 section
@@ -1080,6 +1114,26 @@ def coconeOfConeUnop (c : Cone F.unop) : Cocone F where
 def coneUnopOfCocone (c : Cocone F) : Cone F.unop where
   pt := unop c.pt
   π := NatTrans.unop c.ι
+
+/-- Cones on `F : Jᵒᵖ ⥤ Cᵒᵖ` are equivalent to cocones on `F.unop : J ⥤ C`. -/
+@[simps]
+def coconeUnopOfConeEquiv {F : Jᵒᵖ ⥤ Cᵒᵖ} : (Cone F)ᵒᵖ ≌ Cocone F.unop where
+  functor.obj c := coconeUnopOfCone c.unop
+  functor.map f := { hom := f.unop.hom.unop, w j := congr($(f.unop.w (.op j)).unop) }
+  inverse.obj c := .op <| coneOfCoconeUnop c
+  inverse.map f := ⟨{ hom := f.hom.op, w j := congr($(f.w j.unop).op) }⟩
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
+/-- Cocones on `F : Jᵒᵖ ⥤ Cᵒᵖ` are equivalent to cones on `F.unop : J ⥤ C`. -/
+@[simps]
+def coneUnopOfCoconeEquiv {F : Jᵒᵖ ⥤ Cᵒᵖ} : (Cocone F)ᵒᵖ ≌ Cone F.unop where
+  functor.obj c := coneUnopOfCocone c.unop
+  functor.map f := { hom := f.unop.hom.unop, w j := congr($(f.unop.w (.op j)).unop) }
+  inverse.obj c := .op <| coconeOfConeUnop c
+  inverse.map f := ⟨{ hom := f.hom.op, w j := congr($(f.w j.unop).op) }⟩
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 end
 

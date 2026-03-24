@@ -112,6 +112,25 @@ theorem restrict_apply' (hs : MeasurableSet s) : μ.restrict s t = μ (t ∩ s) 
     Measure.restrict_toOuterMeasure_eq_toOuterMeasure_restrict hs,
     OuterMeasure.restrict_apply s t _, toOuterMeasure_apply]
 
+theorem _root_.IsCountablySpanning.null_of_forall_inter_null {C : Set (Set α)}
+    (hC : IsCountablySpanning C) (ht : ∀ t ∈ C, μ (s ∩ t) = 0) :
+    μ s = 0 := by
+  obtain ⟨t, ht1, ht2⟩ := hC
+  rw [show s = ⋃ n, s ∩ t n by rw [← inter_iUnion, ht2, inter_univ], measure_iUnion_null_iff]
+  exact fun i => ht (t i) (ht1 i)
+
+theorem forall_measure_inter_isCountablySpanning_eq_zero {C : Set (Set α)}
+    (hC : IsCountablySpanning C) : (∀ t ∈ C, μ (s ∩ t) = 0) ↔ μ s = 0 where
+  mp := hC.null_of_forall_inter_null
+  mpr h t _ := measure_inter_null_of_null_left t h
+
+theorem _root_.IsCountablySpanning.null_of_forall_restrict_null {C : Set (Set α)}
+    (hC : IsCountablySpanning C) (hm : C ⊆ MeasurableSet) (ht : ∀ t ∈ C, μ.restrict t s = 0) :
+    μ s = 0 := by
+  rw [← forall_measure_inter_isCountablySpanning_eq_zero hC]
+  refine fun t htc => ?_
+  simpa [← μ.restrict_apply' (hm htc)] using ht t htc
+
 theorem restrict_apply₀' (hs : NullMeasurableSet s μ) : μ.restrict s t = μ (t ∩ s) := by
   rw [← restrict_congr_set hs.toMeasurable_ae_eq,
     restrict_apply' (measurableSet_toMeasurable _ _),
@@ -707,12 +726,12 @@ theorem self_mem_ae_restrict {s} (hs : MeasurableSet s) : s ∈ ae (μ.restrict 
   simp only [ae_restrict_eq hs, mem_principal, mem_inf_iff]
   exact ⟨_, univ_mem, s, Subset.rfl, (univ_inter s).symm⟩
 
-/-- If two measurable sets are ae_eq then any proposition that is almost everywhere true on one
+/-- If two measurable sets are `ae_eq` then any proposition that is almost everywhere true on one
 is almost everywhere true on the other -/
 theorem ae_restrict_of_ae_eq_of_ae_restrict {s t} (hst : s =ᵐ[μ] t) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) → ∀ᵐ x ∂μ.restrict t, p x := by simp [Measure.restrict_congr_set hst]
 
-/-- If two measurable sets are ae_eq then any proposition that is almost everywhere true on one
+/-- If two measurable sets are `ae_eq` then any proposition that is almost everywhere true on one
 is almost everywhere true on the other -/
 theorem ae_restrict_congr_set {s t} (hst : s =ᵐ[μ] t) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ.restrict t, p x :=

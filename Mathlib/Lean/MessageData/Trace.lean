@@ -36,12 +36,14 @@ public section
 
 namespace Lean.MessageData
 
+set_option linter.deprecated false in
 /-- The success/failure status of a trace node, as encoded by `withTraceNodeBefore`
 via emoji prefix on the rendered header.
 
 Intended to match `TraceResult` from [lean4#12698](https://github.com/leanprover/lean4/pull/12698).
 Once that PR is available, callers should prefer `td.result?` over parsing the header string with
 `traceResultOf`. -/
+@[deprecated Lean.TraceResult (since := "2026-03-23")]
 inductive TraceResult where
   /-- Header starts with ✅️ (checkEmoji) -/
   | success
@@ -51,28 +53,29 @@ inductive TraceResult where
   | error
   deriving DecidableEq, Repr
 
+set_option linter.deprecated false in
 /-- Determine the status of a trace node from its rendered header string.
 
 Lean's `withTraceNodeBefore` prepends `checkEmoji`/`crossEmoji`/`bombEmoji`
 (defined in `Lean.Util.Trace`) to trace headers to indicate outcomes.
 
 The `TraceResult` will be recorded in trace messages directly in [lean4#12698](https://github.com/leanprover/lean4/pull/12698).
-Once that PR is available, callers should prefer `td.result?` over calling this function.
-
-Note: the emoji constants include a variation selector (U+FE0F), but `String.startsWith`
-handles this since we check for the base codepoint which is always the prefix. -/
+Once that PR is available, callers should prefer `td.result?` over calling this function. -/
+@[deprecated Lean.TraceData.result? (since := "2026-03-23")]
 def traceResultOf (headerStr : String) : Option TraceResult :=
-  if headerStr.startsWith "✅" then some .success
-  else if headerStr.startsWith "❌" then some .failure
-  else if headerStr.startsWith "💥" then some .error
+  if headerStr.startsWith "✅️" then some .success
+  else if headerStr.startsWith "❌️" then some .failure
+  else if headerStr.startsWith "💥️" then some .error
   else none
 
+set_option linter.deprecated false in
 /-- Strip the leading status emoji and space from a trace header string,
 leaving just the semantic content for comparison across trace runs.
 
 Trace headers from `withTraceNodeBefore` have the form `"{emoji}[{VS16}] {content}"`.
 This strips everything through the first space. Returns the string unchanged if
 no recognized status prefix is present. -/
+@[deprecated Lean.TraceData (since := "2026-03-23")]
 def stripTraceResultPrefix (s : String) : String :=
   if (traceResultOf s).isNone then s else
     s.toSlice.dropPrefix (!·.isWhitespace) |>.dropPrefix ' ' |>.copy
