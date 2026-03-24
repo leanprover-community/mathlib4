@@ -348,7 +348,7 @@ end Salient
 
 section DirectedOrderRing
 
-variable {R : Type*} [Ring R] [PartialOrder R] [IsDirectedOrder R] [IsOrderedRing R]
+variable (R : Type*) [Ring R] [PartialOrder R] [IsDirectedOrder R] [IsOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -362,15 +362,9 @@ set_option backward.isDefEq.respectTransparency false in
     rw [← h, smul_neg, ← neg_smul, ← add_smul]
     abel_nf
 
-lemma hull_neg_sup_hull_eq_span (s : Set M) :
-    hull R (-s) ⊔ hull R s = span R s := by
+lemma span_eq_hull_neg_sup_hull (s : Set M) : span R s = hull R (-s) ⊔ hull R s := by
   ext x
   constructor <;> intro h
-  · obtain ⟨_, hn, _, hp, rfl⟩ := mem_sup.mp h
-    exact add_mem
-      (mem_span.mpr fun p hsp => mem_span.mp hn p <|
-        fun y hy => by simpa using p.neg_mem (hsp <| Set.mem_neg.mp hy))
-      (mem_span.mpr fun p hsp => mem_span.mp hp p hsp)
   · rw [restrictScalars_mem, mem_span_set'] at h
     obtain ⟨n, f, g, rfl⟩ := h
     have hx : ∑ i, f i • (g i : M) ∈ hull R (-s ∪ s) := by
@@ -386,27 +380,34 @@ lemma hull_neg_sup_hull_eq_span (s : Set M) :
         · rcases Set.mem_singleton_iff.mp hz with rfl
           exact Set.mem_union_right _ (g i).property) hpair
     simpa [span_union, sup_comm, Set.union_comm] using hx
+  · obtain ⟨_, hn, _, hp, rfl⟩ := mem_sup.mp h
+    exact add_mem
+      (mem_span.mpr fun p hsp => mem_span.mp hn p <|
+        fun y hy => by simpa using p.neg_mem (hsp <| Set.mem_neg.mp hy))
+      (mem_span.mpr fun p hsp => mem_span.mp hp p hsp)
 
 lemma span_eq_submodule_span_of_neg_eq {s : Set M} (hs : -s = s) :
     hull R s = span R s := by
-  rw [← hull_neg_sup_hull_eq_span, ← span_union]
-  simp [hs]
+  simp [span_eq_hull_neg_sup_hull, hs]
 
 section Pointwise
 
 open Pointwise
 
 lemma span_eq_neg_sup {C : PointedCone R M} : span R (C : Set M) = -C ⊔ C := by
-  simp [← hull_neg_sup_hull_eq_span, span_neg_eq_neg]
+  simp [span_eq_hull_neg_sup_hull, span_neg_eq_neg]
 
+variable {R} in
 lemma mem_span_iff_mem_neg_sup {C : PointedCone R M} {x : M} : x ∈ span R C ↔ x ∈ -C ⊔ C := by
   rw [← span_eq_neg_sup, mem_ofSubmodule_iff]
 
+variable {R} in
 lemma neg_le_iff_span_eq {C : PointedCone R M} : -C ≤ C ↔ span R (C : Set M) = C := by
   rw [span_eq_neg_sup, sup_eq_right]
 
 end Pointwise
 
+variable {R} in
 lemma mem_span {C : PointedCone R M} {x : M} :
     x ∈ span R C ↔ ∃ p ∈ C, ∃ n ∈ C, x = p - n := by
   simp_rw [mem_span_iff_mem_neg_sup, mem_sup, mem_neg]
