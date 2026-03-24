@@ -1169,7 +1169,7 @@ theorem one_add_of_omega0_le {o} (h : ω ≤ o) : 1 + o = o :=
   mod_cast natCast_add_of_omega0_le h 1
 
 theorem exists_omega0_mul_add_natCast (o : Ordinal) :
-    ∃ a b, ω * a + Nat.cast b = o :=
+    ∃ (a : Ordinal) (n : ℕ), ω * a + n = o :=
   have ⟨b, hb⟩ := lt_omega0.1 (mod_lt o omega0_ne_zero)
   ⟨_, b, hb ▸ div_add_mod ..⟩
 
