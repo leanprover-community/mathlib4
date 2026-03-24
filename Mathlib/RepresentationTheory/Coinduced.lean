@@ -237,14 +237,9 @@ set_option backward.isDefEq.respectTransparency false in
 given by `coindIso φ`. -/
 @[simps!]
 noncomputable def coindFunctorIso : coindFunctor k φ ≅ coindFunctor' k φ :=
-  NatIso.ofComponents (coindIso φ) fun {X Y} f => by
-    simp only [coindFunctor_obj, coindFunctor'_obj, coindFunctor_map, coindFunctor'_map]
-    ext : 2
-    simp only [coindMap, coindIso, hom_comp, mkIso_hom_hom, hom_ofHom,
-      Representation.IntertwiningMap.comp_toLinearMap, Representation.Equiv.toLinearMap_mk',
-      coindMap']
-    ext ⟨l, hl⟩ : 3
-    simp [Representation.coindMap]
+  NatIso.ofComponents (coindIso φ) fun _ => by
+    ext
+    exact coind'_ext _ fun _ ↦ by simp [coindIso, coindMap']
 
 end CoindIso
 
