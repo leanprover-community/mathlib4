@@ -370,8 +370,7 @@ alias principal_mul_of_le_two := isPrincipal_mul_of_le_two
 theorem isPrincipal_add_of_isPrincipal_mul (ho : IsPrincipal (· * ·) o) (ho₂ : o ≠ 2) :
     IsPrincipal (· + ·) o := by
   rcases lt_or_gt_of_ne ho₂ with ho₁ | ho₂
-  · rw [lt_two_iff] at ho₁
-    exact isPrincipal_add_of_le_one ho₁
+  · exact isPrincipal_add_of_le_one <| lt_two_iff.mp ho₁
   · simp_rw [isPrincipal_add_iff_add_self_lt, ← Ordinal.mul_two]
     exact fun a ha ↦ ho ha ho₂
 
