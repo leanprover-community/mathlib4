@@ -13,7 +13,19 @@ public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 /-!
 # Bases of semisimple Lie algebras
 
-In this file we define bases of semisimple Lie algebras.
+In this file we define bases of semisimple Lie algebras. Given an indexing type `ι`, a basis of a
+Lie algebra consists of a non-degenerate matrix of integers `A` indexed by `ι × ι` and generators
+`h i`, `e i`, `f i` indexed by `ι`, each forming an `sl₂` triple, and satisfying the Chevalley-Serre
+relations:
+* `⁅h i, h j⁆ = 0`
+* `⁅h j, e i⁆ =  A i j • e i`
+* `⁅h j, f i⁆ = -A i j • f i`
+* `⁅e i, f j⁆ = 0` (for `i ≠ j`)
+
+This concept appears not to have a name in the informal literature and so we call it simply a basis.
+With further axioms (constraining the structure constants which appear in products of the form
+`⁅e i, e j⁆`, `⁅f i, f j⁆`) one obtains the concept of a Weyl or Chevalley basis.
+See e.g., [serre1965](Ch. V, §4, §6).
 
 ## Main definitions / results:
 
@@ -37,7 +49,7 @@ noncomputable section
 namespace LieAlgebra
 
 /-- A basis for a semisimple Lie algebra distinguishes a natural Cartan subalgebra and a base
-for the associated root system, for which `A` is the Cartan matrix. -/
+for the associated root system. -/
 @[ext]
 structure Basis (ι R L : Type*) [Finite ι] [CommRing R] [LieRing L] [LieAlgebra R L] where
   /-- The Cartan matrix. -/
@@ -72,7 +84,7 @@ variable {ι R L : Type*} [Finite ι] [CommRing R] [LieRing L] [LieAlgebra R L] 
     rw [sub_smul, ofNat_smul_eq_nsmul, ← (b.sl2 i).lie_h_e_nsmul, b.lie_h_e i i]; abel
   rwa [IsAddTorsionFree.zsmul_eq_zero_iff_left (b.sl2 i).e_ne_zero, sub_eq_zero] at aux
 
-lemma coe_cartan_eq_span :
+@[simp] lemma coe_cartan_eq_span :
     b.cartan = Submodule.span R (range b.h) := by
   rw [b.cartan_eq_lieSpan]
   apply coe_lieSpan_eq_span_of_forall_lie_eq_zero
@@ -111,7 +123,8 @@ def h' (i : ι) : b.cartan := ⟨b.h i, b.cartan_eq_lieSpan ▸ subset_lieSpan <
 
 @[simp] lemma symm_h' (i : ι) : (b.symm.h' i) = -b.h' i := rfl
 
-lemma cartan_lie_mem_lieSpan_e {x y : L} (hx : x ∈ b.cartan) (hy : y ∈ lieSpan R L (range b.e)) :
+private lemma cartan_lie_mem_lieSpan_e {x y : L}
+    (hx : x ∈ b.cartan) (hy : y ∈ lieSpan R L (range b.e)) :
     ⁅x, y⁆ ∈ lieSpan R L (range b.e) := by
   induction hy using lieSpan_induction with
   | mem u hu =>
@@ -319,7 +332,7 @@ lemma linearIndependent_baseSupp [IsDomain R] [CharZero R] :
 variable [IsDomain R] [CharZero R]
 
 /-- Lemma 4.4 from [Geck](Geck2017). -/
-lemma borelUpper_le_bisup :
+lemma borelUpper_le_biSup :
     b.borelUpper ≤ ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • b.baseSupp i) := by
   classical
   intro x hx
@@ -361,9 +374,9 @@ lemma borelUpper_le_bisup :
     rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
 
 /-- Lemma 4.4 from [Geck](Geck2017). -/
-lemma borelLower_le_bisup :
+lemma borelLower_le_biSup :
     b.borelLower ≤ ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • (-b.baseSupp) i) := by
-  simpa only [symm_baseSupp] using b.symm.borelUpper_le_bisup
+  simpa only [symm_baseSupp] using b.symm.borelUpper_le_biSup
 
 private lemma cartan_borelLower_borelUpper_le :
     letI U := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • (-b.baseSupp) i)
@@ -372,8 +385,8 @@ private lemma cartan_borelLower_borelUpper_le :
   intro i
   fin_cases i
   · exact toLieSubmodule_le_rootSpace_zero R L b.cartan
-  · exact b.borelLower_le_bisup
-  · exact b.borelUpper_le_bisup
+  · exact b.borelLower_le_biSup
+  · exact b.borelUpper_le_biSup
 
 variable [IsTorsionFree R L]
 
