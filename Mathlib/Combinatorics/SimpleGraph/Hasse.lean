@@ -172,6 +172,7 @@ def ofPathGraph (n : ℕ) : (pathGraph (n + 1)).Walk 0 (Fin.last n) :=
     .cons (by simp [pathGraph_adj, Embedding.hasse]) <| ofPathGraph n |>.map <| Embedding.toHom <|
       .hasse (Fin.succOrderEmb _) <| by simp [← Set.Iio_union_Ioi, Set.Iio, Set.ordConnected_Ioi]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem support_ofPathGraph : (ofPathGraph n).support = List.finRange (n + 1) := by
   induction n with
