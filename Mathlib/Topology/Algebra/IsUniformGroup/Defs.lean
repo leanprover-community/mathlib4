@@ -575,6 +575,13 @@ theorem MonoidHom.isUniformInducing_of_isInducing {Hom : Type*} [UniformSpace β
   comap_uniformity := by
     simp [uniformity_eq_comap_nhds_one, comap_comap, Function.comp_def, h.nhds_eq_comap]
 
+@[to_additive]
+theorem MonoidHom.isUniformEmbedding_of_isEmbedding {Hom : Type*} [UniformSpace β] [Group β]
+    [IsUniformGroup β] [FunLike Hom α β] [MonoidHomClass Hom α β] {f : Hom} (h : IsEmbedding f) :
+    IsUniformEmbedding f where
+  toIsUniformInducing := MonoidHom.isUniformInducing_of_isInducing h.isInducing
+  injective := h.injective
+
 end IsUniformGroup
 
 section IsTopologicalGroup
