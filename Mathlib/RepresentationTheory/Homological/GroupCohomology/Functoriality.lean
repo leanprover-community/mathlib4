@@ -425,11 +425,11 @@ noncomputable def mapShortComplexH2 :
   comm₁₂ := by
     ext x
     funext g
-    simpa [shortComplexH2, d₁₂, cochainsMap₁, cochainsMap₂] using (hom_comm_apply φ _ _).symm
+    simp [shortComplexH2, ← hom_comm_apply φ]
   comm₂₃ := by
     ext x
     funext g
-    simpa [shortComplexH2, d₂₃, cochainsMap₂, cochainsMap₃] using (hom_comm_apply φ _ _).symm
+    simp [shortComplexH2, ← hom_comm_apply φ]
 
 @[simp]
 theorem mapShortComplexH2_zero :
