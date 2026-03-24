@@ -602,8 +602,7 @@ def equivalenceSingleObj : Mat R ≌ Mat_ (SingleObj Rᵐᵒᵖ) :=
   (equivalenceSingleObjInverse R).asEquivalence.symm
 
 instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) := by
-  change AddCommGroup (Matrix X Y R)
-  infer_instance
+  inferInstanceAs <| AddCommGroup (Matrix X Y R)
 
 variable {R}
 
