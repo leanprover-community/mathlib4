@@ -11,7 +11,8 @@ public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 public import Mathlib.Data.Complex.Basic
 public import Mathlib.Algebra.Lie.Semisimple.Basic
-public import Mathlib.Tactic
+-- ℂ to be generalized to get rid of analysis lib
+public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 /-!
 
@@ -250,21 +251,20 @@ lemma lie_h_pow_toEnd_e (t : IsSl2Triple h e f)
 
 section ComplexIrreducible
 
-variable {L : Type*} (M : Type*) [LieRing L] [LieAlgebra ℂ L]
+variable {L : Type*} {M : Type*} [LieRing L] [LieAlgebra ℂ L]
   [AddCommGroup M] [Module ℂ M] [LieRingModule L M] [LieModule ℂ L M]
-variable {h e f : L} (t : IsSl2Triple h e f)
+variable {h e f : L} {t : IsSl2Triple h e f}
 
 -- ℂ is algebraically closed and M fin-dim so h has eigenvalue μ and eigen-vector m in M.
 -- e acting on m raises the eigenvalue of m
 -- this must stop at some n otherwise the span would be of infinite dimension
 lemma exists_primitiveVector (t : IsSl2Triple h e f)
     [FiniteDimensional ℂ M] [Nontrivial M] :
-    ∃ (μ : ℂ) (m : M), m ≠ 0 ∧ t.HasPrimitiveVectorWith m μ := by
+    ∃ (μ : ℂ) (m : M), m ≠ 0 ∧ HasPrimitiveVectorWith t m μ := by
   -- Get an eigenvalue μ₀ and eigenvector m₀ for h.
   obtain ⟨μ₀, hμ₀⟩ := Module.End.exists_eigenvalue (toEnd ℂ L M h)
   obtain ⟨m₀, hm₀⟩ := hμ₀.exists_hasEigenvector
-  have h_m₀_ne : m₀ ≠ 0 := by
-    exact hm₀.2
+  have h_m₀_ne : m₀ ≠ 0 := hm₀.2
   let evals : ℕ → ℂ := fun n ↦ μ₀ + 2 * (n : ℂ)
   let e_vecs : ℕ → M := fun n ↦ ((toEnd ℂ L M e)^n) m₀
   -- prove that e_vecs vanishes at some k
@@ -296,7 +296,7 @@ lemma exists_primitiveVector (t : IsSl2Triple h e f)
           by_cases h_n : n = 0
           · unfold v
             rw [h_n_def, h_n]
-            simp [e_vecs]
+            simp only [pow_zero, End.one_apply, ne_eq, e_vecs]
             push_neg
             exact h_m₀_ne
           · apply contra
@@ -306,8 +306,8 @@ lemma exists_primitiveVector (t : IsSl2Triple h e f)
     have h_inj : Function.Injective evals := by
       intro a b hab
       dsimp only [evals] at hab
-      simp_all only [zero_lt_one, End.hasUnifEigenvalue_iff_hasUnifEigenvalue_one, ne_eq, add_right_inj,
-        mul_eq_mul_left_iff, Nat.cast_inj, OfNat.ofNat_ne_zero, or_false, evals, e_vecs]
+      simpa only [add_right_inj, mul_eq_mul_left_iff, Nat.cast_inj, OfNat.ofNat_ne_zero, or_false]
+      using hab
     have h_infty : (Set.range evals).Infinite := Set.infinite_range_of_injective h_inj
     have := h_indep.finite
     exact h_infty (Set.toFinite _)
@@ -323,10 +323,11 @@ lemma exists_primitiveVector (t : IsSl2Triple h e f)
   let n_prim := N - 1
   let m_prim := e_vecs n_prim
   let μ_prim := evals n_prim
-  have : n_prim < N := by simp_all only [zero_lt_one, End.hasUnifEigenvalue_iff_hasUnifEigenvalue_one, ne_eq,
-    Nat.exists_ne_zero, Nat.lt_find_iff, Std.le_refl, not_false_eq_true, implies_true, tsub_lt_self_iff,
-    nonpos_iff_eq_zero, pow_zero, End.one_apply, and_self, e_vecs, N, n_prim]
-
+  have : n_prim < N := by
+    by_contra! h
+    have h_eq : N = 0 := by omega
+    rw [h_eq] at hN_zero
+    exact h_m₀_ne hN_zero
   have m_prim_ne : m_prim ≠ 0 := hN_min n_prim this
   have m_prim_eq : t.HasPrimitiveVectorWith m_prim μ_prim := by
     refine ⟨m_prim_ne, ?_, ?_⟩
@@ -338,76 +339,65 @@ lemma exists_primitiveVector (t : IsSl2Triple h e f)
       exact hN_zero
   exact ⟨μ_prim, m_prim, m_prim_ne, m_prim_eq⟩
 
-/-- The `ℂ`-span of the f-tower `{f^k(m) | k ∈ ℕ}` for a primitive vector `m`. -/
-def fTowerSubmodule (t : IsSl2Triple h e f)
-    {μ : ℂ} {m : M} (P : t.HasPrimitiveVectorWith m μ) :
-    Submodule ℂ M :=
-    Submodule.span ℂ (Set.range (fun i : ℕ => ((toEnd ℂ L M f) ^ i) m))
-
--- f-tower invariant under the Lie action of h.
-lemma fTowerSubmodule_lie_h_mem
-    {μ : ℂ} {m : M} (P : t.HasPrimitiveVectorWith m μ) -- m is the primitive vector with eigenvalue μ
-    {v : M} (hv : v ∈ fTowerSubmodule M t P) :
-    ⁅h, v⁆ ∈ fTowerSubmodule M t P := by
-  unfold fTowerSubmodule
-  induction hv using Submodule.span_induction with
-    | zero => simp
-    | add x y hx hy ihx ihy => simpa only [lie_add] using add_mem ihx ihy
-    | smul t x hx hx' => simpa only [lie_smul] using Submodule.smul_mem _ t hx'
-    | mem x hx =>
-      obtain ⟨n, rfl⟩ := hx
-      dsimp
-      rw [P.lie_h_pow_toEnd_f]
-      apply SMulMemClass.smul_mem
-      apply Submodule.mem_span_of_mem
-      simp_all only [mem_range, exists_apply_eq_apply]
+/-- The `ℂ`-span of the f-tower `{f^k(m) | k ∈ ℕ}` for a vector `m`, not necessarily primitive -/
+def fTowerSubmodule (f : L) (m : M) : Submodule ℂ M :=
+  Submodule.span ℂ (Set.range (fun i : ℕ => ((toEnd ℂ L M f) ^ i) m))
 
 -- f-tower invariant under the Lie action of f.
 lemma fTowerSubmodule_lie_f_mem
     {μ : ℂ} {m : M} (P : t.HasPrimitiveVectorWith m μ)
-    {v : M} (hv : v ∈ fTowerSubmodule M t P) :
-    ⁅f, v⁆ ∈ fTowerSubmodule M t P := by
+    {v : M} (hv : v ∈ fTowerSubmodule f m) :
+    ⁅f, v⁆ ∈ fTowerSubmodule f m := by
   unfold fTowerSubmodule
   induction hv using Submodule.span_induction with
-    | zero => simp
-    | add x y hx hy ihx ihy => simpa only [lie_add] using add_mem ihx ihy
-    | smul t x hx hx' => simpa only [lie_smul] using Submodule.smul_mem _ t hx'
-    | mem x hx =>
-      obtain ⟨n, rfl⟩ := hx
-      dsimp
-      rw [P.lie_f_pow_toEnd_f]
-      apply Submodule.mem_span_of_mem --⁅f, v⁆ ∈ basis → ⁅f, v⁆ ∈ span
-      simp_all only [mem_range, exists_apply_eq_apply]
+  | zero => simp
+  | add _ _ _ _ ihx ihy => simpa only [lie_add] using add_mem ihx ihy
+  | smul c _ _ hx' => simpa only [lie_smul] using Submodule.smul_mem _ c hx'
+  | mem _ hx =>
+    obtain ⟨n, rfl⟩ := hx
+    rw [P.lie_f_pow_toEnd_f]
+    exact Submodule.subset_span ⟨_, rfl⟩
+
+-- f-tower invariant under the Lie action of h.
+lemma fTowerSubmodule_lie_h_mem
+    {μ : ℂ} {m : M} (P : t.HasPrimitiveVectorWith m μ)
+    {v : M} (hv : v ∈ fTowerSubmodule f m) :
+    ⁅h, v⁆ ∈ fTowerSubmodule f m := by
+  unfold fTowerSubmodule
+  induction hv using Submodule.span_induction with
+  | zero => simp
+  | add _ _ _ _ ihx ihy => simpa only [lie_add] using add_mem ihx ihy
+  | smul c _ _ hx' => simpa only [lie_smul] using Submodule.smul_mem _ c hx'
+  | mem _ hx =>
+    obtain ⟨n, rfl⟩ := hx
+    rw [P.lie_h_pow_toEnd_f]
+    exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨n, rfl⟩)
 
 -- f-tower invariant under the Lie action of e.
 lemma fTowerSubmodule_lie_e_mem
     {μ : ℂ} {m : M} (P : t.HasPrimitiveVectorWith m μ)
-    {v : M} (hv : v ∈ fTowerSubmodule M t P) :
-    ⁅e, v⁆ ∈ fTowerSubmodule M t P := by
+    {v : M} (hv : v ∈ fTowerSubmodule f m) :
+    ⁅e, v⁆ ∈ fTowerSubmodule f m := by
   unfold fTowerSubmodule
   induction hv using Submodule.span_induction with
-    | zero => simp
-    | add x y hx hy ihx ihy => simpa only [lie_add] using add_mem ihx ihy
-    | smul t x hx hx' => simpa only [lie_smul] using Submodule.smul_mem _ t hx'
-    | mem x hx =>
-      obtain ⟨n, rfl⟩ := hx
-      dsimp
-      cases n
-      · simp_all only [pow_zero, End.one_apply]
-        rw [P.lie_e]
-        simp_all only [zero_mem]
-      · rw [P.lie_e_pow_succ_toEnd_f]
-        apply SMulMemClass.smul_mem
-        apply Submodule.mem_span_of_mem
-        simp_all only [mem_range, exists_apply_eq_apply]
+  | zero => simp
+  | add _ _ _ _ ihx ihy => simpa only [lie_add] using add_mem ihx ihy
+  | smul c _ _ hx' => simpa only [lie_smul] using Submodule.smul_mem _ c hx'
+  | mem _ hx =>
+    obtain ⟨n, rfl⟩ := hx
+    cases n
+    · simp only [pow_zero, End.one_apply, P.lie_e, zero_mem]
+    · rw [P.lie_e_pow_succ_toEnd_f]
+      exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨_, rfl⟩)
 
--- f-tower invariant under sl₂ℂ
--- i.e. f-tower invariant under all of L when L is generated by the sl₂ triple.
+-- f-tower invariant under `sl₂ℂ`
+-- i.e. f-tower submodule is invariant under actions of L when L is generated by the `sl₂` triple.
 lemma fTowerSubmodule_lie_mem
     (hL : t.toLieSubalgebra ℂ = ⊤)
     {μ : ℂ} {m : M} (P : t.HasPrimitiveVectorWith m μ)
-    (x : L) {v : M} (hv : v ∈ fTowerSubmodule M t P) :
-    ⁅x, v⁆ ∈ fTowerSubmodule M t P := by
+    (x : L)
+    {v : M} (hv : v ∈ fTowerSubmodule f m) :
+    ⁅x, v⁆ ∈ fTowerSubmodule f m := by
   have hx_mem : x ∈ t.toLieSubalgebra ℂ := by
     rw[hL]
     simp
@@ -419,44 +409,49 @@ lemma fTowerSubmodule_lie_mem
   apply add_mem
   · apply add_mem
     · apply Submodule.smul_mem
-      exact fTowerSubmodule_lie_e_mem M t P hv
+      exact fTowerSubmodule_lie_e_mem P hv
     · apply Submodule.smul_mem
-      exact fTowerSubmodule_lie_f_mem M t P hv
+      exact fTowerSubmodule_lie_f_mem P hv
   · apply Submodule.smul_mem
-    exact fTowerSubmodule_lie_h_mem M t P hv
+    exact fTowerSubmodule_lie_h_mem P hv
 
 /-- The `fTowerSubmodule` equipped with the structure of a Lie submodule. -/
 def fTowerLieSubmodule (hL : t.toLieSubalgebra ℂ = ⊤)
     {μ : ℂ} {m : M} (P : t.HasPrimitiveVectorWith m μ) :
-    LieSubmodule ℂ L M :=
-  {
-    fTowerSubmodule M t P with
-    lie_mem := fun {x v} hv => fTowerSubmodule_lie_mem M t hL P x hv
-  }
+    LieSubmodule ℂ L M := {
+      fTowerSubmodule f m with
+      lie_mem := fun {x _} hv => fTowerSubmodule_lie_mem hL P x hv
+    }
 
 -- the f-tower spans M, using the irreducibility of representation
 lemma fTowerLieSubmodule_eq_top
     [LieModule.IsIrreducible ℂ L M]
     (hL : t.toLieSubalgebra ℂ = ⊤)
     {μ : ℂ} {m : M} (P : t.HasPrimitiveVectorWith m μ) :
-    fTowerLieSubmodule M t hL P = ⊤ := by
+    fTowerLieSubmodule hL P = ⊤ := by
     -- prove that the primitive vector 0 ≠ m ∈ M so M ≠ ⊥
-  have hm_mem : m ∈ fTowerSubmodule M t P := by
+  have hm_mem : m ∈ fTowerSubmodule f m := by
     rw [fTowerSubmodule]
     apply Submodule.mem_span_of_mem
-    simp_all only [mem_range]
+    simp only [mem_range]
     use 0
     rfl
-  have hfTower_ne : fTowerSubmodule M t P ≠ ⊥ := by
+  have hfTower_ne : fTowerSubmodule f m ≠ ⊥ := by
     rw [Submodule.ne_bot_iff]
     use m
     exact ⟨hm_mem, P.ne_zero⟩
-  rcases eq_bot_or_eq_top (fTowerLieSubmodule M t hL P) with h_bot | h_top
+  rcases eq_bot_or_eq_top (fTowerLieSubmodule hL P) with h_bot | h_top
   · by_contra!
-    have h_bot_sub : fTowerSubmodule M t P = ⊥ := congr_arg LieSubmodule.toSubmodule h_bot
+    have h_bot_sub : fTowerSubmodule f m = ⊥ := congr_arg LieSubmodule.toSubmodule h_bot
     exact hfTower_ne h_bot_sub
   · exact h_top
 
+@[simp]
+lemma fTowerSubmodule_eq_top [LieModule.IsIrreducible ℂ L M]
+    (hL : t.toLieSubalgebra ℂ = ⊤)
+    {μ : ℂ} {m : M} (P : t.HasPrimitiveVectorWith m μ) :
+    fTowerSubmodule f m = ⊤ :=
+  congr_arg LieSubmodule.toSubmodule (fTowerLieSubmodule_eq_top hL P)
 
 -- {f^k(m)} is linearly independent
 lemma fTower_linearIndependent
@@ -481,13 +476,11 @@ lemma fTower_linearIndependent
       let n : domain := Classical.choose hγ
       have h_γ_eq : evals n = γ := Classical.choose_spec hγ
       let v := e_vecs n
-      have h_v_ne : v ≠ 0 := n.property
-      have h_v_eq : (toEnd ℂ L M h) v = γ • v := by
-        rw [← h_γ_eq]
-        unfold evals
-        simp only [toEnd_apply_apply, ne_eq]
-        rw [P.lie_h_pow_toEnd_f]
-      exact ⟨h_v_eq, h_v_ne⟩
+      refine ⟨?_, n.property⟩
+      change (toEnd ℂ L M h) v = γ • v
+      rw [← h_γ_eq]
+      dsimp only [v, e_vecs, evals]
+      rw [toEnd_apply_apply, P.lie_h_pow_toEnd_f]
     )
   -- we still need to pull back the index from the set of eigenvalues to domain
   -- this part is proposed by Gemini3.1 pro
@@ -517,35 +510,32 @@ lemma fTower_linearIndependent
   apply h_evals_inj
   exact (Classical.choose_spec (Set.mem_range_self n)).symm
 
-/-- The weight space of a given weight `μ` with respect to the Cartan element `h` of the `sl₂` triple.
-`ℂ` may be later generalized to any algebraically closed field of characteristic 0. -/
+/-- The weight space of a given weight `μ` with respect to the Cartan element `h` of the `sl₂`
+triple. `ℂ` may be later generalized to any algebraically closed field of characteristic 0. -/
+abbrev weightSpace (h : L) (μ : ℂ) := End.eigenspace (toEnd ℂ L M h) μ
 
-abbrev weightSpace (t : IsSl2Triple h e f) (μ : ℂ) := End.eigenspace (toEnd ℂ L M h) μ
--- {f^k(m)} form a basis of M
--- each weight space corresponds to at most a single base vector hence has dimension ≤ 1.
 lemma finrank_weightSpace_le_one_of_fTower
     {μ : ℂ} {m : M} (P : t.HasPrimitiveVectorWith m μ)
-    (h_spans : fTowerSubmodule M t P = ⊤)
+    (h_spans : fTowerSubmodule f m = ⊤)
     {weight : ℂ} :
-    finrank ℂ (weightSpace M t weight) ≤ 1 := by
-  by_cases h_fin : Module.Finite ℂ (weightSpace M t weight)
-  · haveI : Module.Finite ℂ (weightSpace M t weight) := h_fin
+    finrank ℂ (weightSpace (M := M) h weight) ≤ 1 := by
+  by_cases h_fin : Module.Finite ℂ (weightSpace (M := M) h weight)
+  · haveI : Module.Finite ℂ (weightSpace (M := M) h weight) := h_fin
     rw [finrank_le_one_iff]
-    by_cases h_bot : weightSpace M t weight = ⊥
+    by_cases h_bot : weightSpace (M := M) h weight = ⊥
     · simp [h_bot]
     -- separate the case to obtain a non zero vector u
     · obtain ⟨u, hu_mem, hu_ne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot h_bot
       use ⟨u, hu_mem⟩
       rintro ⟨w, hw_mem⟩
-      simp [Subtype.ext_iff, Submodule.coe_smul]
-      have hu_mem_fTower : u ∈ fTowerSubmodule M t P := by
+      simp only [SetLike.mk_smul_mk, Subtype.mk.injEq]
+      have hu_mem_fTower : u ∈ fTowerSubmodule f m := by
         rw [h_spans]
         simp only [Submodule.mem_top]
-      have hw_mem_fTower : w ∈ fTowerSubmodule M t P := by
+      have hw_mem_fTower : w ∈ fTowerSubmodule f m := by
         rw [h_spans]
         simp only [Submodule.mem_top]
       rw [fTowerSubmodule] at hu_mem_fTower hw_mem_fTower
-
       -- represent u and w in the form of linear composition of f^i(m)
       obtain ⟨cu, hu_sum⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp hu_mem_fTower
       obtain ⟨cw, hw_sum⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp hw_mem_fTower
@@ -559,13 +549,11 @@ lemma finrank_weightSpace_le_one_of_fTower
       simp_rw [smul_smul] at hu_mem hw_mem
       rw [← sub_eq_zero, ← Finset.sum_sub_distrib] at hu_mem hw_mem
       simp_rw [← sub_smul] at hu_mem hw_mem
-
       -- Note: The code below largely relies on the help of Gemini 3.1 Pro.
       -- Define a predicate `p` for non-zero vectors.
       let p : ℕ → Prop := fun n ↦ ((toEnd ℂ L M) f ^ n) m ≠ 0
       -- Provide a decidability instance for filtering.
       haveI : DecidablePred p := Classical.decPred p
-
       -- Show the sum remains zero after filtering out zero vectors.
       have hu_filter : ∑ x ∈ cu.support.filter p, (cu x * (μ - 2 * ↑x) - weight * cu x) • ((toEnd ℂ L M) f ^ x) m = 0 := by
         rw [← hu_mem]
@@ -576,11 +564,9 @@ lemma finrank_weightSpace_le_one_of_fTower
           by_contra h_contra
           exact hpx h_contra
         rw [hpx_eq, smul_zero]
-
       -- Obtain the `linearIndependent_iff` formulation.
-      have h_indep := fTower_linearIndependent M t P
+      have h_indep := fTower_linearIndependent P
       have h_lin_iff := linearIndependent_iff'.mp h_indep
-
       -- Bridge the type gap between `Finset ℕ` and `Finset {n // p n}`.
       have H_map : Finset.map (Function.Embedding.subtype p) (cu.support.subtype p) = cu.support.filter p := by
         ext x
@@ -594,27 +580,23 @@ lemma finrank_weightSpace_le_one_of_fTower
           refine ⟨⟨x, hpx⟩, ?_, rfl⟩
           rw [Finset.mem_subtype]
           exact hx
-
       -- Rewrite the sum over the subtype.
       -- Use explicit coercions to prevent typeclass inference timeouts.
       have hu_subtype : ∑ n ∈ cu.support.subtype p, (cu (n : ℕ) * (μ - 2 * ((n : ℕ) : ℂ)) - weight * cu (n : ℕ)) • ((toEnd ℂ L M) f ^ (n : ℕ)) m = 0 := by
         have h_sum_map := Finset.sum_map (cu.support.subtype p) (Function.Embedding.subtype p) (fun x ↦ (cu x * (μ - 2 * (x : ℂ)) - weight * cu x) • ((toEnd ℂ L M) f ^ x) m)
         rw [H_map] at h_sum_map
         exact Eq.trans h_sum_map.symm hu_filter
-
       -- Separate instantiation and application to avoid timeouts.
       have hu_coeff_subtype : ∀ i ∈ cu.support.subtype p, cu (i : ℕ) * (μ - 2 * ((i : ℕ) : ℂ)) - weight * cu (i : ℕ) = 0 := by
         intro i hi
         -- Explicitly provide the coefficient function to ensure syntactic equality.
         have H := h_lin_iff (cu.support.subtype p) (fun n ↦ cu (n : ℕ) * (μ - 2 * ((n : ℕ) : ℂ)) - weight * cu (n : ℕ)) hu_subtype
         exact H i hi
-
       -- Pull the coefficient condition back to `ℕ`.
       have hu_coeff : ∀ x ∈ cu.support, ((toEnd ℂ L M) f ^ x) m ≠ 0 → cu x * (μ - 2 * (x : ℂ)) - weight * cu x = 0 := by
         intro x hx h_nonzero
         -- Resolve the subset membership condition.
         exact hu_coeff_subtype ⟨x, h_nonzero⟩ (Finset.mem_subtype.mpr hx)
-
       -- ==========================================================
       -- === 2. Repeat the same filtering and extraction for `w` ===
       -- ==========================================================
@@ -627,7 +609,6 @@ lemma finrank_weightSpace_le_one_of_fTower
           by_contra h_contra
           exact hpx h_contra
         rw [hpx_eq, smul_zero]
-
       have H_map_w : Finset.map (Function.Embedding.subtype p) (cw.support.subtype p) = cw.support.filter p := by
         ext x
         rw [Finset.mem_map, Finset.mem_filter]
@@ -640,21 +621,17 @@ lemma finrank_weightSpace_le_one_of_fTower
           refine ⟨⟨x, hpx⟩, ?_, rfl⟩
           rw [Finset.mem_subtype]
           exact hx
-
       have hw_subtype : ∑ n ∈ cw.support.subtype p, (cw (n : ℕ) * (μ - 2 * ((n : ℕ) : ℂ)) - weight * cw (n : ℕ)) • ((toEnd ℂ L M) f ^ (n : ℕ)) m = 0 := by
         have h_sum_map := Finset.sum_map (cw.support.subtype p) (Function.Embedding.subtype p) (fun x ↦ (cw x * (μ - 2 * (x : ℂ)) - weight * cw x) • ((toEnd ℂ L M) f ^ x) m)
         rw [H_map_w] at h_sum_map
         exact Eq.trans h_sum_map.symm hw_filter
-
       have hw_coeff_subtype : ∀ i ∈ cw.support.subtype p, cw (i : ℕ) * (μ - 2 * ((i : ℕ) : ℂ)) - weight * cw (i : ℕ) = 0 := by
         intro i hi
         have H := h_lin_iff (cw.support.subtype p) (fun n ↦ cw (n : ℕ) * (μ - 2 * ((n : ℕ) : ℂ)) - weight * cw (n : ℕ)) hw_subtype
         exact H i hi
-
       have hw_coeff : ∀ x ∈ cw.support, ((toEnd ℂ L M) f ^ x) m ≠ 0 → cw x * (μ - 2 * (x : ℂ)) - weight * cw x = 0 := by
         intro x hx h_nonzero
         exact hw_coeff_subtype ⟨x, h_nonzero⟩ (Finset.mem_subtype.mpr hx)
-
       -- ==========================================================
       -- === 3. Isolate the unique index `K` and show `u` and `w` are collinear ===
       -- ==========================================================
@@ -674,14 +651,11 @@ lemma finrank_weightSpace_le_one_of_fTower
               exact h_f (h_contra x hc)
             rw [h_cu_zero, zero_smul]
         exact hu_ne hu_zero
-
       obtain ⟨K, hK_cu, hK_f_ne_zero⟩ := h_exists_K
-
       have h_weight_eq : μ - 2 * (K : ℂ) = weight := by
         have h_eq := hu_coeff K (Finsupp.mem_support_iff.mpr hK_cu) hK_f_ne_zero
         rw [sub_eq_zero, mul_comm weight, mul_right_inj' hK_cu] at h_eq
         exact h_eq
-
       -- Simplify `u`: all terms except the `K`-th term vanish.
       have hu_simp : u = cu K • ((toEnd ℂ L M) f ^ K) m := by
         rw [← hu_sum]
@@ -716,7 +690,6 @@ lemma finrank_weightSpace_le_one_of_fTower
                 exact (hx_ne h_eq_nat.symm).elim
             rw [h_cu_zero, zero_smul]
         rw [h_erase_zero, add_zero]
-
       -- Simplify `w`: similarly, all non-`K` terms vanish.
       have hw_simp : w = cw K • ((toEnd ℂ L M) f ^ K) m := by
         rw [← hw_sum]
@@ -780,7 +753,6 @@ lemma finrank_weightSpace_le_one_of_fTower
             by_contra hc
             exact hK_mem_w (Finsupp.mem_support_iff.mpr hc)
           rw [h_w_zero, hcwK_zero, zero_smul]
-
       -- Conclude by providing the scalar ratio.
       use (cw K) / (cu K)
       rw [hu_simp, hw_simp]
@@ -796,8 +768,8 @@ theorem finrank_weightSpace_eq_one_of_isIrreducible
     (t : IsSl2Triple h e f)
     (hL : t.toLieSubalgebra ℂ = ⊤) --lie algebra sl(2,ℂ)
     [FiniteDimensional ℂ M] [LieModule.IsIrreducible ℂ L M] --fin-dim irrep
-    {μ : ℂ} (h_nontrivial : t.weightSpace M μ ≠ ⊥) : --non trivial weight space
-    finrank ℂ ( t.weightSpace M μ) = 1 := by
+    {μ : ℂ} (h_nontrivial : (weightSpace (M := M) h μ) ≠ ⊥) : --non trivial weight space
+    finrank ℂ (weightSpace (M := M) h μ) = 1 := by
   haveI : Nontrivial M := by
     rw [nontrivial_iff]
     by_contra h_triv
@@ -809,15 +781,15 @@ theorem finrank_weightSpace_eq_one_of_isIrreducible
     · intro _; exact h_triv x 0
     · intro h; rw [h]; exact Submodule.zero_mem _
   -- Get a primitive vector
-  obtain ⟨μ₀, m₀, hm₀_ne, P⟩ := exists_primitiveVector M t
+  obtain ⟨μ₀, m₀, hm₀_ne, P⟩ := exists_primitiveVector (M := M) t
   -- The f-tower spans M
-  have h_top_lie := fTowerLieSubmodule_eq_top M t hL P
+  have h_top_lie := fTowerLieSubmodule_eq_top hL P
   -- Each weight space has dimension ≤ 1
-  have h_le : finrank ℂ (t.weightSpace M μ) ≤ 1 := by
-    have h_top : fTowerSubmodule M t P = ⊤ := congr_arg LieSubmodule.toSubmodule h_top_lie
-    exact finrank_weightSpace_le_one_of_fTower M t P h_top
+  have h_le : finrank ℂ (weightSpace (M := M) h μ) ≤ 1 := by
+    have h_top : fTowerSubmodule f m₀ = ⊤ := congr_arg LieSubmodule.toSubmodule h_top_lie
+    exact finrank_weightSpace_le_one_of_fTower P h_top
   -- The given weight space has dimension ≥ 1 (since it's non-trivial)
-  have h_ge : 1 ≤ finrank ℂ (t.weightSpace M μ) := by
+  have h_ge : 1 ≤ finrank ℂ (weightSpace (M := M) h μ) := by
     rw [Nat.one_le_iff_ne_zero]
     intro h_eq
     apply h_nontrivial
