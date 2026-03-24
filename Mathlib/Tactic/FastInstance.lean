@@ -6,6 +6,7 @@ Authors: Eric Wieser, Kyle Miller, Jovan Gerbscheid
 module
 
 public import Mathlib.Init
+public meta import Lean.Meta.InstanceNormalForm
 
 /-!
 # The `fast_instance%` and `inferInstanceAs%` term elaborators
@@ -143,5 +144,33 @@ constructor applications. In that case, the parameters of the constructors will 
 using the expected type, so that the instance will unfold nicely during unification. -/
 macro "inferInstanceAs% " source:term : term =>
   `(fast_instance% _root_.inferInstanceAs <| $source)
+
+/--
+`normalize_instance% inst` normalizes an instance expression using Lean core's
+`normalizeInstance` (from lean4#12897).
+
+Like `fast_instance%`, it reduces `inst` to constructor applications and reuses existing
+canonical instances for sub-instance fields. Unlike `fast_instance%`, it works at `instances`
+transparency (not `reducible`) and may wrap data fields in auxiliary definitions.
+-/
+syntax (name := normalizeInstanceStx) "normalize_instance% " term : term
+
+@[term_elab normalizeInstanceStx, inherit_doc normalizeInstanceStx]
+public def elabNormalizeInstance : TermElab
+  | `(term| normalize_instance% $arg), expectedType? => do
+    let inst ← withSynthesize <| elabTerm arg expectedType?
+    let expectedType ← expectedType?.getDM (inferType inst)
+    let logCompileErrors := !(← read).isNoncomputableSection
+    let isMeta := (← read).isMetaSection
+    try
+      -- Telescope since it might be a family of instances.
+      forallTelescopeReducing expectedType fun xs expectedType => do
+        mkLambdaFVars xs <| ← withNewMCtxDepth <|
+          _root_.Lean.Meta.normalizeInstance inst expectedType
+            (logCompileErrors := logCompileErrors) (isMeta := isMeta)
+    catch e =>
+      logException e
+      return inst
+  | _, _ => Elab.throwUnsupportedSyntax
 
 end Mathlib.Elab.FastInstance
