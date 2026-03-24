@@ -6,6 +6,7 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.Data.ENNReal.Operations
+public import Mathlib.Order.Hom.WithTopBot
 
 /-!
 # The extended real numbers
@@ -57,6 +58,9 @@ instance : CharZero EReal := inferInstanceAs (CharZero (WithBot (WithTop ℝ)))
 
 /-- The canonical inclusion from reals to ereals. Registered as a coercion. -/
 @[coe] def Real.toEReal : ℝ → EReal := WithBot.some ∘ WithTop.some
+
+/-- The coercion `ℝ → EReal` bundled as a monotone map. -/
+def Real.coeOrderEmbedding : ℝ ↪o EReal := WithTop.coeOrderHom.trans WithBot.coeOrderHom
 
 namespace EReal
 

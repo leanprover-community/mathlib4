@@ -1,22 +1,12 @@
-import Mathlib
+import Mathlib.Data.EReal.Basic
+import Mathlib.Order.Completion
+import Mathlib.Tactic.Order
 
 open DedekindCut
 open Concept
 open Order
 
-def embedWithTop (α : Type*) [LE α] : α ↪o (WithTop α) where
-  toFun x := x
-  inj' := WithTop.coe_injective
-  map_rel_iff' := by simp
-
-def embedWithBot (α : Type*) [LE α] : α ↪o (WithBot α) where
-  toFun x := x
-  inj' := WithBot.coe_injective
-  map_rel_iff' := by simp
-
-def realEmbedEReal : ℝ ↪o EReal := (embedWithTop ℝ).trans (embedWithBot (WithTop ℝ))
-
-noncomputable def ratEmbedEReal : ℚ ↪o EReal := Rat.castOrderEmbedding.trans realEmbedEReal
+noncomputable def ratEmbedEReal : ℚ ↪o EReal := Rat.castOrderEmbedding.trans Real.coeOrderEmbedding
 
 theorem ratEmbedEReal_apply (x : ℚ) : ratEmbedEReal x = ((x : ℝ) : EReal) := rfl
 
@@ -77,7 +67,7 @@ theorem factorEmbeddingRat_leftInv_eRealEmbedDedekindCut :
     simp_rw [← x.lowerBounds_right, ← x.upperBounds_left, mem_lowerBounds, mem_upperBounds]
     intro r hr
     simp only [le_iSup_iff, iSup_le_iff] at z_le_sup
-    exact_mod_cast (z_le_sup ((r : ℝ) : EReal) (fun t th => by exact_mod_cast hr t th))
+    exact_mod_cast (z_le_sup ((r : ℝ) : EReal) (fun t ht => by exact_mod_cast hr t ht))
   · exact fun z_mem_extent ↦ le_iSup₂_of_le z z_mem_extent le_rfl
 
 theorem factorEmbeddingRat_rightInv_eRealEmbedDedekindCut :
