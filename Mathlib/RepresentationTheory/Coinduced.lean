@@ -171,19 +171,11 @@ noncomputable def _root_.Representation.coind' :
     map_add' _ _ := rfl
     map_smul' _ _ := rfl }
   map_one' := by
-    ext f : 3
-    simp only [res_obj_V, res_obj_ρ, LinearEquiv.trans_symm, LinearEquiv.coe_coe,
-      LinearEquiv.trans_apply, LinearEquiv.coe_symm_mk', Equiv.invFun_as_coe, LinearMap.coe_mk,
-      AddHom.coe_mk, hom_comp, hom_ofHom, Representation.IntertwiningMap.comp_toLinearMap,
-      Module.End.one_apply, homEquiv, Equiv.coe_fn_symm_mk, hom_ofHom]
-    ext; simp
+    ext
+    simp [homEquiv]
   map_mul' _ _ := by
-    ext f : 3
-    simp only [res_obj_V, res_obj_ρ, LinearEquiv.trans_symm, LinearEquiv.coe_coe,
-      LinearEquiv.trans_apply, LinearEquiv.coe_symm_mk', homEquiv, Equiv.invFun_as_coe,
-      Equiv.coe_fn_symm_mk, hom_ofHom, LinearMap.coe_mk, AddHom.coe_mk, hom_comp,
-      Representation.IntertwiningMap.comp_toLinearMap, Module.End.mul_apply]
-    ext; simp [mul_assoc]
+    ext
+    simp [homEquiv, mul_assoc]
 
 /--
 If `φ : G →* H` and `A : Rep k G` then `coind' φ A`, the coinduction of `A` along `φ`,
