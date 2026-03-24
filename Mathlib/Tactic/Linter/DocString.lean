@@ -38,6 +38,8 @@ public register_option linter.style.docString.empty : Bool := {
 
 /--
 The `docStringVerso` linter warns on docstrings that cannot be parsed by Verso.
+Since this linter only checks syntax, not semantics, it is no assurance that complying docstrings
+are actually accepted by Verso.
 -/
 public register_option linter.style.docStringVerso : Bool := {
   defValue := false
@@ -70,8 +72,8 @@ Try to parse `docComment` as a Verso docstring, and report any parse errors.
 `fileName` is the file where this docstring is defined (default: the file currently being
 elaborated).
 
-Based on `versoDocStringFromString`, which also does elaboration (but here we only report parse
-errors).
+This is a copy of the first half of `versoDocStringFromString`, which also does elaboration
+(but here we only report parse errors).
 -/
 def checkVersoSyntax (fileName : Option String := none) (docComment : String) :
     Elab.TermElabM (Array (String.Pos.Raw × SyntaxStack × Error)) := do
