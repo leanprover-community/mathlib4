@@ -17,8 +17,9 @@ the corresponding morphisms on the singular chain complexes
 are homotopic, and in particular the induced morphisms
 on singular homology are equal.
 
-The proof proceeds by observing that this resulst is a particular
-case of the homotopy invariance of the homology of simplicial sets,
+The proof proceeds by observing that this result is a particular
+case of the homotopy invariance of the homology of simplicial sets
+(see the file `Mathlib/AlgebraicTopology/SingularHomology/HomotopyInvariance.lean`),
 applied to the morphisms `TopCat.toSSet.map f` and `TopCat.toSSet.map g`
 between the singular simplicial sets of `X` and `Y`. That the homotopy `H`
 induces a homotopy between these morphisms of simplicial sets
@@ -38,10 +39,12 @@ namespace TopCat.Homotopy
 variable {C : Type u} [Category.{v} C] [Preadditive C] [HasCoproducts.{w} C]
   {X Y : TopCat.{w}} {f g : X ⟶ Y}
 
+/-- Two homotopic morphisms in `TopCat` induce homotopic morphisms on the
+singular chain complexes. -/
 noncomputable def singularChainComplexFunctorObjMap (H : TopCat.Homotopy f g) (R : C) :
     _root_.Homotopy (((singularChainComplexFunctor C).obj R).map f)
       (((singularChainComplexFunctor C).obj R).map g) :=
-  H.toSSet.toSimplicialObjectHomotopy.singularChainComplexFunctorObjMap R
+  H.toSSet.singularChainComplexFunctorObjMap R
 
 open HomologicalComplex in
 lemma congr_homologyMap_singularChainComplexFunctor [CategoryWithHomology C]
