@@ -38,7 +38,7 @@ The main ingredient is the chain rule for Radon-Nikodym derivatives:
 `∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η) = ∂μ/∂ν * ∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`.
 Then, omitting edge cases, the Kullback-Leibler divergence is an integral of a logarithm of the
 derivative on the left, which decomposes into a sum of two integrals of logarithms.
-We know give a more detailed outline of the proof.
+We now give a more detailed outline of the proof.
 
 The Kullback-Leibler divergence `klDiv μ ν` is defined with an if-then-else statement:
 if the measures are absolutely continuous (`μ ≪ ν`) and the log-likelihood ratio `llr μ ν` is
@@ -105,8 +105,7 @@ lemma rnDeriv_compProd_mul_log_eq_mul_add (h_ac : μ ⊗ₘ κ ≪ μ ⊗ₘ η)
       (((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal * (log ((∂μ/∂ν) p.1).toReal +
         log ((∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)) p).toReal)) := by
   filter_upwards [rnDeriv_compProd h_ac ν] with p hp
-  simp_rw [hp]
-  simp only [ENNReal.toReal_mul]
+  simp_rw [hp, ENNReal.toReal_mul]
   by_cases h_zero1 : ((∂μ/∂ν) p.1).toReal = 0
   · simp [h_zero1]
   by_cases h_zero2 : ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p).toReal = 0
@@ -118,20 +117,14 @@ lemma integrable_llr_compProd_iff (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
       Integrable (llr μ ν) μ ∧ Integrable (llr (μ ⊗ₘ κ) (μ ⊗ₘ η)) (μ ⊗ₘ κ) := by
   have ⟨h_ac_μν, h_ac_κη⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
   rw [← integrable_rnDeriv_mul_log_iff h_ac,
-    integrable_congr (rnDeriv_compProd_mul_log_eq_mul_add h_ac_κη)]
-  have : Integrable (fun x ↦ ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) x).toReal *
-        (log ((∂μ/∂ν) x.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) x).toReal)) (ν ⊗ₘ η) ↔
-      Integrable (fun x ↦ (log ((∂μ/∂ν) x.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) x).toReal))
-        (μ ⊗ₘ κ) := integrable_rnDeriv_smul_iff h_ac
-  rw [this]
+    integrable_congr (rnDeriv_compProd_mul_log_eq_mul_add h_ac_κη),
+    integrable_toReal_rnDeriv_mul_iff h_ac]
   have h_iff_κ : Integrable (llr μ ν) μ ↔ Integrable (fun x ↦ llr μ ν x.1) (μ ⊗ₘ κ) := by
     rw [Measure.integrable_compProd_iff]
     swap; · exact StronglyMeasurable.aestronglyMeasurable (by fun_prop)
     simp only [ne_eq, enorm_ne_top, not_false_eq_true, integrable_const_enorm,
-      Filter.eventually_true, norm_eq_abs, integral_const, probReal_univ, smul_eq_mul, one_mul,
-      true_and]
+      Filter.eventually_true, integral_const, probReal_univ, smul_eq_mul, one_mul, true_and]
     rw [← integrable_norm_iff (by fun_prop)]
-    simp
   rw [h_iff_κ]
   -- Goal of the form `Integrable (f + g) ↔ Integrable f ∧ Integrable g`
   refine ⟨fun h_int ↦ ?_, fun ⟨h_int1, h_int2⟩ ↦ h_int1.add h_int2⟩
@@ -145,13 +138,12 @@ lemma integrable_llr_compProd_iff (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
         log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) x).toReal) (μ ⊗ₘ κ) := by
     have ⟨h_ac_μν, h_ac_κη⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
     rw [← integrable_rnDeriv_mul_log_iff h_ac,
-     integrable_congr (rnDeriv_compProd_mul_log_eq_mul_add h_ac_κη)]
-    exact integrable_rnDeriv_smul_iff h_ac
-  rw [← h_int_iff] at h_int
-  have h_int1 := integrable_llr_of_integrable_llr_compProd h_ac h_int
+      integrable_congr (rnDeriv_compProd_mul_log_eq_mul_add h_ac_κη)]
+    exact integrable_toReal_rnDeriv_mul_iff h_ac
+  have h_int1 := integrable_llr_of_integrable_llr_compProd h_ac (h_int_iff.2 h_int)
   rw [h_iff_κ] at h_int1
-  rw [h_int_iff, integrable_add_iff_integrable_right'] at h_int
-  · refine ⟨h_int1, h_int⟩
+  rw [integrable_add_iff_integrable_right'] at h_int
+  · exact ⟨h_int1, h_int⟩
   · exact h_int1
 
 /-- Chain rule for the integral of the log-likelihood ratio, under absolute continuity and
@@ -165,10 +157,8 @@ lemma integral_llr_compProd_eq_add (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η)
   have h_int1 : Integrable (fun p ↦ log ((∂μ/∂ν) p.1).toReal) (μ ⊗ₘ κ) := by
     rw [Measure.integrable_compProd_iff]
     · simp only [ne_eq, enorm_ne_top, not_false_eq_true, integrable_const_enorm,
-        Filter.eventually_true, norm_eq_abs, integral_const, probReal_univ, smul_eq_mul, one_mul,
-        true_and]
-      rw [← integrable_norm_iff (by fun_prop)] at h_int_μν
-      convert h_int_μν
+      Filter.eventually_true, integral_const, probReal_univ, smul_eq_mul, one_mul, true_and]
+      rwa [← integrable_norm_iff (by fun_prop)] at h_int_μν
     · exact StronglyMeasurable.aestronglyMeasurable (by fun_prop)
   calc ∫ p, llr (μ ⊗ₘ κ) (ν ⊗ₘ η) p ∂μ ⊗ₘ κ
   _ = ∫ p, ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal * log ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal ∂(ν ⊗ₘ η) := by
@@ -185,8 +175,7 @@ lemma integral_llr_compProd_eq_add (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η)
   _ = ∫ a, llr μ ν a ∂μ + ∫ p, llr (μ ⊗ₘ κ) (μ ⊗ₘ η) p ∂(μ ⊗ₘ κ) := by
     congr
     rw [Measure.integral_compProd h_int1]
-    simp only [integral_const, probReal_univ, smul_eq_mul, one_mul]
-    rfl
+    simp [llr]
 
 variable (μ ν κ) in
 @[simp]
@@ -197,14 +186,13 @@ lemma klDiv_compProd_left : klDiv (μ ⊗ₘ κ) (ν ⊗ₘ κ) = klDiv μ ν :=
   · rw [klDiv_of_not_ac h_ac, klDiv_of_not_ac]
     rwa [Measure.absolutelyContinuous_compProd_left_iff] at h_ac
   -- we can now express the KL divergences with an integral of a log-likelihood ratio
-  rw [klDiv_eq_lintegral_klFun, if_pos h_ac, klDiv_eq_lintegral_klFun,
-    if_pos (Measure.absolutelyContinuous_compProd_left_iff.mp h_ac)]
+  rw [klDiv_eq_lintegral_klFun_of_ac h_ac,
+    klDiv_eq_lintegral_klFun_of_ac (Measure.absolutelyContinuous_compProd_left_iff.mp h_ac)]
   rw [Measure.absolutelyContinuous_compProd_left_iff] at h_ac
-  have h_ae_eq := rnDeriv_measure_compProd_left μ ν κ
   calc ∫⁻ p, ENNReal.ofReal (klFun ((∂μ ⊗ₘ κ/∂ν ⊗ₘ κ) p).toReal) ∂(ν ⊗ₘ κ)
   _ = ∫⁻ p, ENNReal.ofReal (klFun ((∂μ/∂ν) p.1).toReal) ∂(ν ⊗ₘ κ) := by
     refine lintegral_congr_ae ?_
-    filter_upwards [h_ae_eq] with p hp using by simp_rw [hp]
+    filter_upwards [rnDeriv_measure_compProd_left μ ν κ] with p hp using by simp_rw [hp]
   _ = ∫⁻ x, ENNReal.ofReal (klFun ((∂μ/∂ν) x).toReal) ∂ν := by
     rw [Measure.lintegral_compProd (by fun_prop)]
     simp
@@ -235,12 +223,11 @@ theorem klDiv_compProd_eq_add : klDiv (μ ⊗ₘ κ) (ν ⊗ₘ η) = klDiv μ �
   -- now we can use express the KL divergences with an integral of a log-likelihood ratio
   have ⟨h_ac_μν, h_ac_κη⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
   have ⟨h_int_μν, h_int_κη⟩ := (integrable_llr_compProd_iff h_ac).mp h_int
-  rw [klDiv_of_ac_of_integrable h_ac h_int, klDiv_of_ac_of_integrable h_ac_μν h_int_μν,
-    klDiv_of_ac_of_integrable h_ac_κη h_int_κη]
-  rw [← ENNReal.ofReal_add (integral_llr_add_sub_measure_univ_nonneg h_ac_μν h_int_μν)
-    (integral_llr_add_sub_measure_univ_nonneg h_ac_κη h_int_κη)]
-  simp_rw [measureReal_def, Measure.compProd_apply_univ]
-  rw [add_sub_cancel_right]
+  simp_rw [klDiv_of_ac_of_integrable h_ac h_int, klDiv_of_ac_of_integrable h_ac_μν h_int_μν,
+    klDiv_of_ac_of_integrable h_ac_κη h_int_κη,
+    ← ENNReal.ofReal_add (integral_llr_add_sub_measure_univ_nonneg h_ac_μν h_int_μν)
+    (integral_llr_add_sub_measure_univ_nonneg h_ac_κη h_int_κη), measureReal_def,
+    Measure.compProd_apply_univ, add_sub_cancel_right]
   -- it suffices to prove the chain rule for the integrals of log-likelihood ratios
   suffices ∫ p, llr (μ ⊗ₘ κ) (ν ⊗ₘ η) p ∂μ ⊗ₘ κ =
       ∫ a, llr μ ν a ∂μ + ∫ p, llr (μ ⊗ₘ κ) (μ ⊗ₘ η) p ∂(μ ⊗ₘ κ) by rw [this]; ring_nf

@@ -26,6 +26,14 @@ section LE
 
 variable [LE α]
 
+@[simp] lemma isRelUpperSet_true_iff_isUpperSet :
+    IsRelUpperSet s (fun _ ↦ True) ↔ IsUpperSet s := by
+  grind [IsUpperSet, IsRelUpperSet]
+
+@[simp] lemma isRelLowerSet_true_iff_isLowerSet :
+    IsRelLowerSet s (fun _ ↦ True) ↔ IsLowerSet s := by
+  grind [IsLowerSet, IsRelLowerSet]
+
 variable (P) in
 lemma IsUpperSet.isRelUpperSet_sep (hs : IsUpperSet s) : IsRelUpperSet {x ∈ s | P x} P :=
   fun _ h => ⟨h.2, fun _ ht hp => ⟨hs ht h.1, hp⟩⟩
