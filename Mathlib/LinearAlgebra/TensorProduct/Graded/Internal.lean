@@ -84,7 +84,7 @@ open TensorProduct
 scoped[TensorProduct] notation:100 𝒜 " ᵍ⊗[" R "] " ℬ:100 => GradedTensorProduct R 𝒜 ℬ
 
 instance instAddCommGroupWithOne : AddCommGroupWithOne (𝒜 ᵍ⊗[R] ℬ) :=
-  Algebra.TensorProduct.instAddCommGroupWithOne
+  fast_instance% Algebra.TensorProduct.instAddCommGroupWithOne
 instance : Module R (𝒜 ᵍ⊗[R] ℬ) := TensorProduct.leftModule
 
 variable (R) in
@@ -176,13 +176,12 @@ instance instMonoid : Monoid (𝒜 ᵍ⊗[R] ℬ) where
     simp_rw [mul_def, mulHom_apply, LinearEquiv.apply_symm_apply]
     rw [gradedMul_assoc]
 
-instance instRing : Ring (𝒜 ᵍ⊗[R] ℬ) where
-  __ := instAddCommGroupWithOne 𝒜 ℬ
-  __ := instMonoid 𝒜 ℬ
-  right_distrib x y z := by simp_rw [mul_def, LinearMap.map_add₂]
-  left_distrib x y z := by simp_rw [mul_def, map_add]
-  mul_zero x := by simp_rw [mul_def, map_zero]
-  zero_mul x := by simp_rw [mul_def, LinearMap.map_zero₂]
+instance instRing : Ring (𝒜 ᵍ⊗[R] ℬ) :=
+  fast_instance% { instAddCommGroupWithOne 𝒜 ℬ, instMonoid 𝒜 ℬ with
+    right_distrib := fun x y z => by simp_rw [mul_def, LinearMap.map_add₂]
+    left_distrib := fun x y z => by simp_rw [mul_def, map_add]
+    mul_zero := fun x => by simp_rw [mul_def, map_zero]
+    zero_mul := fun x => by simp_rw [mul_def, LinearMap.map_zero₂] }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The characterization of this multiplication on partially homogeneous elements. -/
