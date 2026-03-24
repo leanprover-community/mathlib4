@@ -161,6 +161,7 @@ section ComonObj
 
 variable [BraidedCategory C] [∀ {c : C}, ComonObj c] [P.IsStableUnderComonoid]
 
+@[simps]
 instance {c : WideSubcategory P} : ComonObj c where
   counit := ⟨ε[c.obj], P.counit_mem _⟩
   comul := ⟨Δ[c.obj], P.comul_mem _⟩
