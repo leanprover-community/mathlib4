@@ -81,14 +81,14 @@ instance : Linear R (FDRep R G) := by infer_instance
 instance : CoeSort (FDRep R G) (Type u) :=
   ⟨fun V => V.V⟩
 
-instance (V : FDRep R G) : AddCommGroup V := by
-  change AddCommGroup ((forget₂ (FDRep R G) (FGModuleCat R)).obj V).obj; infer_instance
+instance (V : FDRep R G) : AddCommGroup V :=
+  instAddCommGroupCarrier V.V
 
-instance (V : FDRep R G) : Module R V := by
-  change Module R ((forget₂ (FDRep R G) (FGModuleCat R)).obj V).obj; infer_instance
+instance (V : FDRep R G) : Module R V :=
+  instModuleCarrier V.V
 
-instance (V : FDRep R G) : Module.Finite R V := by
-  change Module.Finite R ((forget₂ (FDRep R G) (FGModuleCat R)).obj V); infer_instance
+instance (V : FDRep R G) : Module.Finite R V :=
+  inferInstanceAs <| Module.Finite R ((forget₂ (FDRep R G) (FGModuleCat R)).obj V)
 
 instance (V : FDRep k G) : FiniteDimensional k V := by
   infer_instance
@@ -202,10 +202,6 @@ end FDRep
 namespace FDRep
 
 variable {k G : Type u} [Field k] [Group G]
-
--- Verify that the right rigid structure is available when the monoid is a group.
-noncomputable instance : RightRigidCategory (FDRep k G) := by
-  change RightRigidCategory (Action (FGModuleCat k) G); infer_instance
 
 example : RigidCategory (FDRep k G) := by infer_instance
 

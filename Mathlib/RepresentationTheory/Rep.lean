@@ -55,12 +55,11 @@ variable [Monoid G]
 instance : CoeSort (Rep k G) (Type u) :=
   ⟨fun V => V.V⟩
 
-instance (V : Rep k G) : AddCommGroup V := by
-  change AddCommGroup ((forget₂ (Rep k G) (ModuleCat k)).obj V); infer_instance
+instance foo (V : Rep k G) : AddCommGroup V :=
+  V.V.isAddCommGroup
 
-instance (V : Rep k G) : Module k V := by
-  change Module k ((forget₂ (Rep k G) (ModuleCat k)).obj V)
-  infer_instance
+instance bar (V : Rep k G) : Module k V :=
+  V.V.isModule
 
 /-- Specialize the existing `Action.ρ`, changing the type to `Representation k G V`.
 -/
@@ -102,7 +101,6 @@ abbrev trivial (V : Type u) [AddCommGroup V] [Module k V] : Rep k G :=
 
 variable {k G}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) :
     (trivial k G V).ρ g = LinearMap.id :=
   rfl
@@ -119,15 +117,12 @@ abbrev IsTrivial (A : Rep k G) := A.ρ.IsTrivial
 
 instance (X : ModuleCat k) : ((trivialFunctor k G).obj X).IsTrivial where
 
-set_option backward.isDefEq.respectTransparency false in
 instance {V : Type u} [AddCommGroup V] [Module k V] :
     IsTrivial (Rep.trivial k G V) where
 
-set_option backward.isDefEq.respectTransparency false in
 instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
     IsTrivial (Rep.of ρ) where
 
-set_option backward.isDefEq.respectTransparency false in
 instance {H V : Type u} [Group H] [AddCommGroup V] [Module k V] (ρ : Representation k H V)
     (f : G →* H) [Representation.IsTrivial (ρ.comp f)] :
     Representation.IsTrivial ((Rep.of ρ).ρ.comp f) := ‹_›
@@ -137,7 +132,6 @@ section Commutative
 variable {k G : Type u} [CommRing k] [CommMonoid G]
 variable (A : Rep k G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a representation `A` of a commutative monoid `G`, the map `ρ_A(g)` is a representation
 morphism `A ⟶ A` for any `g : G`. -/
 @[simps]
@@ -145,7 +139,6 @@ def applyAsHom (g : G) : A ⟶ A where
   hom := ModuleCat.ofHom (A.ρ g)
   comm _ := by ext; simp [← Module.End.mul_apply, ← map_mul, mul_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 lemma applyAsHom_comm {A B : Rep k G} (f : A ⟶ B) (g : G) :
     A.applyAsHom g ≫ f = f ≫ B.applyAsHom g := by
@@ -393,7 +386,6 @@ end
 
 variable {k G}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an element `x : A`, there is a natural morphism of representations `k[G] ⟶ A` sending
 `g ↦ A.ρ(g)(x).` -/
 @[simps]
@@ -401,11 +393,9 @@ def leftRegularHom (A : Rep k G) (x : A) : leftRegular k G ⟶ A where
   hom := ModuleCat.ofHom <| Finsupp.lift A k G fun g => A.ρ g x
   comm _ := by ext; simp [ModuleCat.endRingEquiv]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem leftRegularHom_hom_single {A : Rep k G} (g : G) (x : A) (r : k) :
     (leftRegularHom A x).hom (Finsupp.single g r) = r • A.ρ g x := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
 representation morphisms `Hom(k[G], A)` and `A`. -/
 @[simps]
@@ -417,7 +407,6 @@ def leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) ≃ₗ[k] A wher
   left_inv f := by ext; simp [← hom_comm_apply f]
   right_inv x := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
     ((leftRegularHomEquiv A).symm x).hom (Finsupp.single g 1) = A.ρ g x := by
   simp
@@ -441,7 +430,6 @@ abbrev free : Rep k G :=
 
 variable {α}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `f : α → A`, the natural representation morphism `(α →₀ k[G]) ⟶ A` sending
 `single a (single g r) ↦ r • A.ρ g (f a)`. -/
 @[simps]
@@ -452,13 +440,11 @@ def freeLift (f : α → A) :
   comm _ := by
     ext; simp [ModuleCat.endRingEquiv]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 lemma freeLift_hom_single_single (f : α → A) (i : α) (g : G) (r : k) :
     (freeLift A f).hom (single i (single g r)) = r • A.ρ g (f i) := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 variable (α) in
 /-- The natural linear equivalence between functions `α → A` and representation morphisms
 `(α →₀ k[G]) ⟶ A`. -/
@@ -648,7 +634,6 @@ def diagonalHomEquiv :
 
 variable {n A}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
 the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that this
 sends a morphism of representations `f : k[Gⁿ⁺¹] ⟶ A` to the function
@@ -658,7 +643,6 @@ theorem diagonalHomEquiv_apply (f : Rep.diagonal k G (n + 1) ⟶ A) (x : Fin n �
   simp [diagonalHomEquiv, Linear.homCongr_apply,
     diagonalSuccIsoFree_inv_hom_single_single (k := k)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
 the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that the
 inverse map sends a function `f : Gⁿ → A` to the representation morphism sending
@@ -673,7 +657,6 @@ section
 
 variable [Fintype G] (A : Rep k G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a representation `A` of a finite group `G`, `norm A` is the representation morphism
 `A ⟶ A` defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/
 @[simps]
@@ -681,7 +664,6 @@ def norm : End A where
   hom := ModuleCat.ofHom <| Representation.norm A.ρ
   comm g := by ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 lemma norm_comm {A B : Rep k G} (f : A ⟶ B) : f ≫ norm B = norm A ≫ f := by
   ext
@@ -701,7 +683,6 @@ open MonoidalCategory Action
 
 variable (A B C : Rep k G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `(A, ρ₁)`, this is the 'internal Hom' functor sending
 `(B, ρ₂)` to the representation `Homₖ(A, B)` that maps `g : G` and `f : A →ₗ[k] B` to
 `(ρ₂ g) ∘ₗ f ∘ₗ (ρ₁ g⁻¹)`. -/
@@ -784,7 +765,6 @@ def MonoidalClosed.linearHomEquivComm : (A ⊗ B ⟶ C) ≃ₗ[k] A ⟶ B ⟶[Re
 
 variable {A B C}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem MonoidalClosed.linearHomEquiv_hom (f : A ⊗ B ⟶ C) :
     (MonoidalClosed.linearHomEquiv A B C f).hom =

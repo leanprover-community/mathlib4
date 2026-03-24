@@ -40,7 +40,7 @@ variable {k G : Type u} [CommRing k] [Group G]
 section definitions
 
 instance : (forget₂ (FDRep k G) (FGModuleCat k)).Monoidal := by
-  change (Action.forget _ _).Monoidal; infer_instance
+  inferInstanceAs <| (Action.forget _ _).Monoidal
 
 variable (k G) in
 /-- The monoidal forgetful functor from `FDRep k G` to `FGModuleCat k`. -/

@@ -103,7 +103,7 @@ instance : Inhabited (FGModuleCat.{v} R) :=
 
 /-- Lift an unbundled finitely generated module to `FGModuleCat R`. -/
 abbrev of (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] : FGModuleCat R :=
-  ⟨ModuleCat.of R V, by change Module.Finite R V; infer_instance⟩
+  ⟨ModuleCat.of R V, inferInstanceAs <| Module.Finite R V⟩
 
 @[simp]
 lemma of_carrier (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] :
