@@ -254,7 +254,7 @@ def resCoindToHom (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) : B ⟶ (coin
     dsimp; ext; simp⟩
 
 @[simp]
-lemma resCoindToHom_hom_hom_apply_coe (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) (c : ↑B.V)
+lemma resCoindToHom_hom_apply_coe (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) (c : ↑B.V)
     (i : H) : (DFunLike.coe (F := no_index(_)) (resCoindToHom φ B A f).hom c).1 i =
     (Hom.hom f) ((B.ρ i) c) := rfl
 
