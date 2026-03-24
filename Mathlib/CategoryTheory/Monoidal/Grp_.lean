@@ -75,6 +75,7 @@ abbrev toMon (A : Grp C) : Mon C := ⟨A.X⟩
 
 @[deprecated (since := "2025-09-15")] alias toMon_ := toMon
 
+set_option backward.inferInstanceAs.wrap.data false in
 variable (C) in
 /-- The trivial group object. -/
 @[simps!]

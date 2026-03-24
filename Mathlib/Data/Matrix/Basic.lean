@@ -784,7 +784,7 @@ end Subsemiring
 
 namespace Subring
 
-variable {R : Type*} [Ring R]
+variable {R : Type*} [NonAssocRing R]
 variable [Fintype n] [DecidableEq n]
 
 /-- A version of `Set.matrix` for `Subring`s.
