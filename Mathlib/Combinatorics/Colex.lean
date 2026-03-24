@@ -67,64 +67,9 @@ variable {α β : Type*}
 
 namespace Finset
 
-/-- Type synonym of `Finset α` equipped with the colexicographic order rather than the inclusion
-order. -/
-@[deprecated Colex (since := "2025-08-28")]
-protected structure Colex (α) where
-  /-- `toColex` is the "identity" function between `Finset α` and `Finset.Colex α`. -/
-  protected toColex ::
-  /-- `ofColex` is the "identity" function between `Finset.Colex α` and `Finset α`. -/
-  protected (ofColex : Finset α)
-
 open Colex
 
 instance : Inhabited (Colex (Finset α)) := ⟨toColex ∅⟩
-
-set_option linter.deprecated false in
-@[deprecated toColex_ofColex (since := "2025-08-28")]
-protected lemma toColex_ofColex (s : Finset.Colex α) :
-    Finset.Colex.toColex (Finset.Colex.ofColex s) = s :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated ofColex_toColex (since := "2025-08-28")]
-protected lemma ofColex_toColex (s : Finset α) :
-    Finset.Colex.ofColex (Finset.Colex.toColex s) = s :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated toColex_inj (since := "2025-08-28")]
-protected lemma toColex_inj {s t : Finset α} :
-    Finset.Colex.toColex s = Finset.Colex.toColex t ↔ s = t := by
-  simp
-
-set_option linter.deprecated false in
-@[deprecated ofColex_inj (since := "2025-08-28")]
-protected lemma ofColex_inj {s t : Finset.Colex α} :
-    Finset.Colex.ofColex s = Finset.Colex.ofColex t ↔ s = t := by
-  cases s; cases t; simp
-
-set_option linter.deprecated false in
-@[deprecated toColex_inj (since := "2025-08-28")]
-lemma toColex_ne_toColex {s t : Finset α} :
-    Finset.Colex.toColex s ≠ Finset.Colex.toColex t ↔ s ≠ t := by
-  simp
-
-set_option linter.deprecated false in
-@[deprecated ofColex_inj (since := "2025-08-28")]
-lemma ofColex_ne_ofColex {s t : Finset.Colex α} :
-    Finset.Colex.ofColex s ≠ Finset.Colex.ofColex t ↔ s ≠ t := by
-  simp [Finset.ofColex_inj]
-
-set_option linter.deprecated false in
-@[deprecated toColex_inj (since := "2025-08-28")]
-lemma toColex_injective : Injective (Finset.Colex.toColex : Finset α → Finset.Colex α) :=
-  fun _ _ ↦ Finset.toColex_inj.1
-
-set_option linter.deprecated false in
-@[deprecated ofColex_inj (since := "2025-08-28")]
-lemma ofColex_injective : Injective (Finset.Colex.ofColex : Finset.Colex α → Finset α) :=
-  fun _ _ ↦ Finset.ofColex_inj.1
 
 namespace Colex
 section PartialOrder
