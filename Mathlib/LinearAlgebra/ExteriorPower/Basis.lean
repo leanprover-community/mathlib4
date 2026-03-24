@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
-public import Mathlib.Order.Extension.Well
 public import Mathlib.RingTheory.Finiteness.Subalgebra
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
@@ -148,20 +147,21 @@ lemma basis_repr {I : Type*} [LinearOrder I] (b : Basis I R M) (s : powersetCard
 
 /-! ### Freeness and dimension of `⋀[R]^n M`. -/
 
+open Classical in
 /-- If `M` is a free module, then so is its `n`th exterior power. -/
 instance instFree [Module.Free R M] : Module.Free R (⋀[R]^n M) :=
   have ⟨I, b⟩ := Module.Free.exists_basis R M
-  letI : LinearOrder I := IsWellFounded.wellOrderExtension emptyWf.rel
+  letI : LinearOrder I := linearOrderOfSTO WellOrderingRel
   Module.Free.of_basis (b.exteriorPower n)
 
 variable [Nontrivial R]
 
+open Classical in
 /-- If `R` is non-trivial and `M` is finite free of rank `r`, then
 the `n`th exterior power of `M` is of finrank `Nat.choose r n`. -/
 lemma finrank_eq [Module.Free R M] [Module.Finite R M] :
     Module.finrank R (⋀[R]^n M) = Nat.choose (Module.finrank R M) n := by
-  letI : LinearOrder (Module.Free.ChooseBasisIndex R M) :=
-    IsWellFounded.wellOrderExtension emptyWf.rel
+  letI : LinearOrder (Module.Free.ChooseBasisIndex R M) := linearOrderOfSTO WellOrderingRel
   let B := (Module.Free.chooseBasis R M).exteriorPower n
   rw [Module.finrank_eq_card_basis (Module.Free.chooseBasis R M), Module.finrank_eq_card_basis B,
     Fintype.card_eq_nat_card, powersetCard.card, Fintype.card_eq_nat_card]
