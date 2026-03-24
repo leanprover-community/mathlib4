@@ -63,7 +63,7 @@ theorem isCyclic_of_card_le_two (hα : Nat.card α ≤ 2) :
 
 theorem isMulCommutative_of_card_le_two (hα : Nat.card α ≤ 2) :
     IsMulCommutative (Perm α) :=
-  (isCyclic_of_card_le_two hα).isMulCommutative
+  ⟨(isCyclic_of_card_le_two hα).commutative⟩
 
 variable [DecidableEq α]
 
