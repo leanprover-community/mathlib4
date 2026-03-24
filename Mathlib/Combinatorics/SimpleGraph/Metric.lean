@@ -159,7 +159,7 @@ lemma edist_eq_two_iff {u v : V} :
     exact ⟨w.adj_getVert_succ (by simp [hw]), (w.adj_getVert_succ (by simp [hw])).symm⟩
   · obtain ⟨w, hw⟩ := h.2.2
     rw [mem_commonNeighbors] at hw
-    have := (Walk.cons hw.1 <| .cons hw.2.symm .nil).edist_le
+    have := edist_le (Walk.cons (Adj.toStep hw.1) <| .cons (Adj.toStep hw.2.symm) .nil)
     simp_all
   · by_contra! hc
     cases ENat.le_one_iff_eq_zero_or_eq_one.mp (Order.le_of_lt_succ hc) <;> simp_all
