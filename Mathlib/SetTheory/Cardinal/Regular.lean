@@ -262,11 +262,28 @@ structure IsSingular (c : Cardinal) : Prop where
   /-- A singular cardinal is not regular, see `IsSingular.not_isRegular`. -/
   cof_ord_lt : c.ord.cof < c
 
-theorem IsSingular.not_isRegular (hc : c.IsSingular) : ¬c.IsRegular :=
+theorem IsSingular.not_isRegular (hc : c.IsSingular) : ¬ c.IsRegular :=
   fun hc' ↦ hc'.le_cof_ord.not_gt hc.cof_ord_lt
 
-theorem IsRegular.not_isSingular (hc : c.IsRegular) : ¬c.IsSingular :=
+theorem IsRegular.not_isSingular (hc : c.IsRegular) : ¬ c.IsSingular :=
   imp_not_comm.1 IsSingular.not_isRegular hc
+
+@[simp]
+theorem not_isSingular_aleph0 : ¬ IsSingular ℵ₀ :=
+  isRegular_aleph0.not_isSingular
+
+@[simp]
+theorem not_isSingular_succ (c : Cardinal) : ¬ IsSingular (succ c) := by
+  obtain hc | hc := lt_or_ge c ℵ₀
+  · obtain ⟨n, rfl⟩ := lt_aleph0.1 hc
+    refine fun h ↦ h.aleph0_le.not_gt ?_
+    rw [succ_natCast, ← Nat.cast_add_one]
+    exact natCast_lt_aleph0
+  · exact (isRegular_succ hc).not_isSingular
+
+@[simp]
+theorem not_isSingular_aleph_one : ¬ IsSingular ℵ₁ :=
+  isRegular_aleph_one.not_isSingular
 
 theorem IsSingular.natCast_lt (hc : c.IsSingular) (n : ℕ) : n < c :=
   natCast_lt_aleph0.trans_le hc.aleph0_le
@@ -283,13 +300,20 @@ theorem lt_aleph0_or_isRegular_or_isSingular : c < ℵ₀ ∨ c.IsRegular ∨ c.
   rw [← not_le]
   tauto
 
-@[simp]
-theorem isSingular_aleph_iff {o : Ordinal} (ho : IsSuccLimit o) :
-    (ℵ_ o).IsSingular ↔ o.cof < ℵ_ o := by
-  rw [isSingular_iff]
-  simp [ho]
+theorem isSingular_aleph_iff {o : Ordinal} : (ℵ_ o).IsSingular ↔ IsSuccLimit o ∧ o.cof < ℵ_ o := by
+  obtain rfl | ⟨a, rfl⟩ | ho := zero_or_succ_or_isSuccLimit o
+  · simp
+  · simp
+  · rw [isSingular_iff]
+    simp [ho]
 
-theorem isSingular_aleph_omega : (ℵ_ ω).IsSingular := by simp
+theorem isSingular_aleph_omega : (ℵ_ ω).IsSingular := by simp [isSingular_aleph_iff]
+
+theorem IsSingular.aleph_omega_le (hc : IsSingular c) : ℵ_ ω ≤ c := by
+  obtain ⟨o, rfl⟩ := mem_range_aleph_iff.2 hc.aleph0_le
+  rw [isSingular_aleph_iff] at hc
+  rw [aleph_le_aleph]
+  exact omega0_le_of_isSuccLimit hc.1
 
 /-! ### Inaccessible cardinals -/
 
