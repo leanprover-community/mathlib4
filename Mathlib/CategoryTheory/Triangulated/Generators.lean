@@ -14,6 +14,8 @@ public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 # Generators in triangulated categories
 
 We define the notions of strong and classical generators in (pre)triangulated categories.
+This is not to be confused with `ObjectProperty.IsStrongGenerator` defined in
+`CategoryTheory/Generator`.
 
 ## Main definitions
 
