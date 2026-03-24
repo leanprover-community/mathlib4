@@ -26,7 +26,6 @@ variable (R M)
 
 open scoped DirectSum
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A version of `ExteriorAlgebra.ι` that maps directly into the graded structure. This is
 primarily an auxiliary construction used to provide `ExteriorAlgebra.gradedAlgebra`. -/
 protected def GradedAlgebra.ι :
@@ -34,7 +33,6 @@ protected def GradedAlgebra.ι :
   DirectSum.lof R ℕ (fun i => ⋀[R]^i M) 1 ∘ₗ
     (ι R).codRestrict _ fun m => by simpa only [pow_one] using LinearMap.mem_range_self _ m
 
-set_option backward.isDefEq.respectTransparency false in
 theorem GradedAlgebra.ι_apply (m : M) :
     GradedAlgebra.ι R M m =
       DirectSum.of (fun i : ℕ => ⋀[R]^i M) 1
@@ -85,7 +83,6 @@ instance gradedAlgebra : GradedAlgebra (fun i : ℕ ↦ ⋀[R]^i M) :=
       rw [lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.coeAlgHom_of, Subtype.coe_mk])
     (by apply GradedAlgebra.liftι_eq R M)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The union of the images of the maps `ExteriorAlgebra.ιMulti R n` for `n` running through
 all natural numbers spans the exterior algebra. -/
 lemma ιMulti_span :
