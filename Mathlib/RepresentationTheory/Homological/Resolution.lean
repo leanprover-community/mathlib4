@@ -364,11 +364,10 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
     have eq2 (m : ℕ) (g : G) (f : Fin m → G) (r : k) :=
       Representation.linearizeMap_single (Action.diagonalSuccIsoTensorTrivial G m).inv (g, f) r
     simp only [Action.tensorObj_V, Action.trivial_V] at eq1 eq2
-    simp [linearizationTrivialIso, leftRegularTensorTrivialIsoFree, μ_hom, d_single (k := k),
-      Rep.mkIso_inv_hom_apply _, Representation.linearizeOfMulActionIso_symm_apply,
-      Representation.linearizeTrivialIso_symm_apply _, d_apply (k := k),
-      eq1, types_tensorObj_def, eq2, Action.diagonalSuccIsoTensorTrivial_inv_hom_apply _,
-      Representation.linearizeOfMulActionIso_symm_apply (G := G) (H := Fin _ → G) _]
+    simp [μ_hom, d_single (k := k), Rep.mkIso_inv_hom_apply _,
+      Representation.linearizeOfMulActionIso_symm_apply,
+      Representation.linearizeTrivialIso_symm_apply _, d_apply (k := k), eq1, eq2,
+      Action.diagonalSuccIsoTensorTrivial_inv_hom_apply _]
     simp [Fin.partialProd_contractNth, Fin.sum_univ_succ, Action.ofMulAction_V,
       show single (i 0 • Fin.partialProd fun i_1 ↦ i i_1.succ) (1 : k) =
       single (Fin.partialProd i ∘ Fin.succ) 1 by
