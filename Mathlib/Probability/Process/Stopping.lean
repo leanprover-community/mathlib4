@@ -737,7 +737,7 @@ theorem measurableSet_le_stopping_time [TopologicalSpace ι] [SecondCountableTop
   rw [hτ.measurableSet]
   refine ⟨measurableSet_le hτ.measurable' hπ.measurable', fun j ↦ ?_⟩
   have : {ω | τ ω ≤ π ω} ∩ {ω | τ ω ≤ j} = {ω | min (τ ω) j ≤ min (π ω) j} ∩ {ω | τ ω ≤ j} := by
-    ext x
+    ext
     simpa using fun a b ↦ Std.IsPreorder.le_trans _ _ _ a b
   rw [this]
   refine MeasurableSet.inter ?_ (hτ.measurableSet_le j)
