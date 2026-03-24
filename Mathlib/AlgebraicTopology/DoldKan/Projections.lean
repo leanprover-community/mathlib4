@@ -97,6 +97,7 @@ theorem of_P : ∀ q n : ℕ, HigherFacesVanish q ((P q).f (n + 1) : X _⦋n + 1
     simp only [P_succ]
     exact (of_P q n).induction
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish q φ) :
     φ ≫ (P q).f (n + 1) = φ := by
@@ -149,6 +150,7 @@ theorem Q_idem (q : ℕ) : (Q q : K[X] ⟶ K[X]) ≫ Q q = Q q := by
   ext n
   exact Q_f_idem q n
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For each `q`, `P q` is a natural transformation. -/
 @[simps]
 def natTransP (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
@@ -164,11 +166,13 @@ def natTransP (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComp
       erw [(natTransHσ q).naturality f]
       rfl
 
+set_option backward.isDefEq.respectTransparency false in -- This is needed in AlgebraicTopology/DoldKan/Decomposition.lean
 @[reassoc (attr := simp)]
 theorem P_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op ⦋n⦌) ≫ (P q).f n = (P q).f n ≫ f.app (op ⦋n⦌) :=
   HomologicalComplex.congr_hom ((natTransP q).naturality f) n
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem Q_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op ⦋n⦌) ≫ (Q q).f n = (Q q).f n ≫ f.app (op ⦋n⦌) := by
@@ -177,11 +181,13 @@ theorem Q_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
   dsimp
   simp only [comp_id, id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For each `q`, `Q q` is a natural transformation. -/
 @[simps]
 def natTransQ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
   app _ := Q q
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_P {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :
     G.map ((P q : K[X] ⟶ _).f n) = (P q : K[((whiskering C D).obj G).obj X] ⟶ _).f n := by
@@ -193,6 +199,7 @@ theorem map_P {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additiv
     simp only [P_succ, comp_add, HomologicalComplex.comp_f, HomologicalComplex.add_f_apply,
       comp_id, Functor.map_add, Functor.map_comp, hq, map_Hσ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_Q {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :
     G.map ((Q q : K[X] ⟶ _).f n) = (Q q : K[((whiskering C D).obj G).obj X] ⟶ _).f n := by

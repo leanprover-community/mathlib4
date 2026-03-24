@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Category.FGModuleCat.Colimits
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Braided  -- shake: keep (`example`)
 public import Mathlib.CategoryTheory.Preadditive.Schur
 public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.RepresentationTheory.Rep
+public import Mathlib.RepresentationTheory.Rep.Basic
 
 /-!
 # `FDRep k G` is the category of finite-dimensional `k`-linear representations of `G`.
@@ -123,6 +123,7 @@ lemma hom_hom_action_ρ (V : FDRep R G) (g : G) : (Action.ρ V g).hom.hom = (ρ 
 def isoToLinearEquiv {V W : FDRep R G} (i : V ≅ W) : V ≃ₗ[R] W :=
   FGModuleCat.isoToLinearEquiv ((Action.forget (FGModuleCat R) G).mapIso i)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Iso.conj_ρ {V W : FDRep R G} (i : V ≅ W) (g : G) :
     W.ρ g = (FDRep.isoToLinearEquiv i).conj (V.ρ g) := by
   rw [FDRep.isoToLinearEquiv, ← hom_hom_action_ρ V, ← FGModuleCat.Iso.conj_hom_eq_conj,
@@ -144,16 +145,16 @@ theorem of_ρ' {V : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V] (�
     (of ρ).ρ = ρ := rfl
 
 instance : HasForget₂ (FDRep R G) (Rep R G) where
-  forget₂ := (forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G
+  forget₂ := (forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G ⋙ Rep.ActionToRep R G
 
 theorem forget₂_ρ (V : FDRep R G) : ((forget₂ (FDRep R G) (Rep R G)).obj V).ρ = V.ρ := by
   ext g v; rfl
 
 instance [IsNoetherianRing R] : PreservesFiniteLimits (forget₂ (FDRep R G) (Rep R G)) :=
-  inferInstanceAs <| PreservesFiniteLimits <| (forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G
+  Limits.comp_preservesFiniteLimits _ _
 
 instance : PreservesFiniteColimits (forget₂ (FDRep R G) (Rep R G)) :=
-  inferInstanceAs <| PreservesFiniteColimits <| (forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G
+  Limits.comp_preservesFiniteColimits _ _
 
 -- Verify that the monoidal structure is available.
 example : MonoidalCategory (FDRep R G) := by infer_instance
@@ -179,14 +180,16 @@ theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FDRep k G) [Simple V] [
 def forget₂HomLinearEquiv (X Y : FDRep R G) :
     ((forget₂ (FDRep R G) (Rep R G)).obj X ⟶
       (forget₂ (FDRep R G) (Rep R G)).obj Y) ≃ₗ[R] X ⟶ Y where
-  toFun f := ⟨InducedCategory.homMk f.hom, fun g ↦ by
-    ext x
-    exact congr_fun ((forget _).congr_map (f.comm g)) x⟩
+  toFun f := ⟨InducedCategory.homMk (ModuleCat.ofHom <| f.hom.toLinearMap), fun g ↦ by
+    ext1
+    simp only [FGModuleCat.obj_carrier, ObjectProperty.FullSubcategory.comp_hom,
+      InducedCategory.homMk_hom, ModuleCat.hom_comp, hom_hom_action_ρ]
+    exact f.hom.2 g⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun f := ⟨(forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom, fun g ↦ by
+  invFun f := Rep.ofHom ⟨((forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom).hom, fun g ↦ by
     ext x
-    exact congr_fun ((forget _).congr_map (f.comm g)) x⟩
+    exact congr_fun ((forget (FGModuleCat R)).congr_map (f.comm g)) x⟩
 
 instance : (forget₂ (FDRep R G) (Rep R G)).Full := by
   dsimp [forget₂, HasForget₂.forget₂]

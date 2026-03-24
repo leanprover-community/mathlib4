@@ -581,6 +581,9 @@ theorem map_comp (p q : R[X]) : map f (p.comp q) = (map f p).comp (map f q) :=
       simp +contextual only [pow_succ, ← mul_assoc, comp, forall_const,
         eval₂_mul_X, imp_true_iff, map_X, Polynomial.map_mul])
 
+theorem eval_X_pow {x : R} (n : ℕ) : (X ^ n : R[X]).eval x = x ^ n := by
+  simp [eval]
+
 end Map
 
 end Semiring
@@ -608,9 +611,6 @@ theorem coe_evalRingHom (r : R) : (evalRingHom r : R[X] → R) = eval r :=
 @[simp]
 theorem eval_pow (n : ℕ) : (p ^ n).eval x = p.eval x ^ n :=
   eval₂_pow _ _ _
-
-theorem eval_X_pow (n : ℕ) : (X ^ n : R[X]).eval x = x ^ n := by
-  simp
 
 @[simp]
 theorem eval_comp : (p.comp q).eval x = p.eval (q.eval x) := by

@@ -185,13 +185,13 @@ theorem exists_real_pos_lt_infEDist_of_notMem_closure {x : α} {E : Set α} (h :
   exact ⟨ε, ⟨ENNReal.ofReal_pos.mp ε_pos, ε_lt⟩⟩
 
 theorem disjoint_closedEBall_of_lt_infEDist {r : ℝ≥0∞} (h : r < infEDist x s) :
-    Disjoint (EMetric.closedBall x r) s := by
+    Disjoint (Metric.closedEBall x r) s := by
   rw [disjoint_left]
   intro y hy h'y
   apply lt_irrefl (infEDist x s)
   calc
     infEDist x s ≤ edist x y := infEDist_le_edist_of_mem h'y
-    _ ≤ r := by rwa [EMetric.mem_closedBall, edist_comm] at hy
+    _ ≤ r := by rwa [Metric.mem_closedEBall, edist_comm] at hy
     _ < infEDist x s := h
 
 /-- The infimum edistance is invariant under isometries -/
@@ -229,7 +229,7 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
 
 theorem _root_.IsCompact.exists_infEDist_eq_edist (hs : IsCompact s) (hne : s.Nonempty) (x : α) :
     ∃ y ∈ s, infEDist x s = edist x y := by
-  have A : Continuous fun y => edist x y := continuous_const.edist continuous_id
+  have A : Continuous fun y => edist x y := by fun_prop
   obtain ⟨y, ys, hy⟩ := hs.exists_isMinOn hne A.continuousOn
   exact ⟨y, ys, le_antisymm (infEDist_le_edist_of_mem ys) (by rwa [le_infEDist])⟩
 

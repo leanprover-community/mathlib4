@@ -6,12 +6,13 @@ Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
-public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.Topology.Instances.ZMultiples
-public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 /-!
 # The action of the modular group SL(2, ℤ) on the upper half-plane
@@ -34,11 +35,11 @@ These notations are localized in the `Modular` scope and can be enabled via `ope
 
 ## Main results
 
-Any `z : ℍ` can be moved to `𝒟` by an element of `SL(2,ℤ)`:
-`exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2,ℤ), g • z ∈ 𝒟`
-
-If both `z` and `γ • z` are in the open domain `𝒟ᵒ` then `z = γ • z`:
-`eq_smul_self_of_mem_fdo_mem_fdo {z : ℍ} {g : SL(2,ℤ)} (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : z = g • z`
+* `ModularGroup.exists_smul_mem_fd`: Any `z : ℍ` can be moved to `𝒟` by an element of `SL(2,ℤ)`.
+* `ModularGroup.eq_smul_self_of_mem_fdo_mem_fdo`:
+  If both `z` and `γ • z` are in the open domain `𝒟ᵒ` then `z = γ • z`.
+* `ModularGroup.fdo_eq_interior_fd` and `ModularGroup.fd_eq_closure_fdo`: topological relations
+  between `fd` and `fdo`.
 
 ## Discussion
 
@@ -81,12 +82,12 @@ variable {g : SL(2, ℤ)} (z : ℍ)
 
 section BottomRow
 
-/-- The two numbers `c`, `d` in the "bottom_row" of `g=[[*,*],[c,d]]` in `SL(2, ℤ)` are coprime. -/
+/-- The two numbers `c`, `d` in the "bottom row" of `g=[[*,*],[c,d]]` in `SL(2, ℤ)` are coprime. -/
 theorem bottom_row_coprime {R : Type*} [CommRing R] (g : SL(2, R)) :
     IsCoprime ((↑g : Matrix (Fin 2) (Fin 2) R) 1 0) ((↑g : Matrix (Fin 2) (Fin 2) R) 1 1) :=
   isCoprime_row g 1
 
-/-- Every pair `![c, d]` of coprime integers is the "bottom_row" of some element `g=[[*,*],[c,d]]`
+/-- Every pair `![c, d]` of coprime integers is the "bottom row" of some element `g=[[*,*],[c,d]]`
 of `SL(2,ℤ)`. -/
 theorem bottom_row_surj {R : Type*} [CommRing R] :
     Set.SurjOn (fun g : SL(2, R) => (↑g : Matrix (Fin 2) (Fin 2) R) 1) Set.univ
@@ -108,6 +109,7 @@ open Filter ContinuousLinearMap
 
 attribute [local simp] ContinuousLinearMap.coe_smul
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The function `(c,d) → |cz+d|^2` is proper, that is, preimages of bounded-above sets are finite.
 -/
 theorem tendsto_normSq_coprime_pair :
@@ -183,6 +185,7 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       rw [neg_sq]
       exact hcd.sq_add_sq_ne_zero, LinearEquiv.refl ℝ (Fin 2 → ℝ)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `lcRow0` is proper, that is, preimages of cocompact sets are finite in
 `[[* , *], [c, d]]`. -/
 theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
@@ -244,6 +247,7 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
   simp [field]
   linear_combination -((z : ℂ) * (g 1 1 : ℂ) - g 1 0) * H
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
     Tendsto
       (fun g : { g : SL(2, ℤ) // g 1 = p } => |((g : SL(2, ℤ)) • z).re|) cofinite atTop := by
@@ -508,6 +512,135 @@ theorem eq_smul_self_of_mem_fdo_mem_fdo (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ �
 
 end UniqueRepresentative
 
+section Topology
+
+lemma fdo_subset_fd : 𝒟ᵒ ⊆ 𝒟 := fun _ ⟨hx, hx'⟩ ↦ ⟨hx.le, hx'.le⟩
+
+lemma isClosed_fd : IsClosed 𝒟 := by
+  refine .inter (.preimage (by fun_prop) isClosed_Ici) ?_
+  exact isClosed_le (f := fun z : ℍ ↦ |z.re|) (by fun_prop) continuous_const
+
+lemma isOpen_fdo : IsOpen 𝒟ᵒ := by
+  refine .inter (.preimage (by fun_prop) isOpen_Ioi) ?_
+  exact isOpen_lt (f := fun z : ℍ ↦ |z.re|) (by fun_prop) continuous_const
+
+/-- Explicit formula for the image of `ModularGroup.fdo` in `ℂ`. -/
+lemma coe_fdo : (↑) '' 𝒟ᵒ = {z : ℂ | 0 < z.im ∧ 1 < ‖z‖ ∧ |z.re| < 1/2} := by
+  ext x
+  refine ⟨?_, fun ⟨hxim, hxnorm, hxre⟩ ↦ ⟨⟨x, hxim⟩, ⟨one_lt_normSq_iff.mpr hxnorm, hxre⟩, rfl⟩⟩
+  rintro ⟨τ, hτ, rfl⟩
+  exact ⟨τ.im_pos, one_lt_normSq_iff.mp hτ.1, hτ.2⟩
+
+/-- Explicit formula for the image of `ModularGroup.fd` in `ℂ`. -/
+lemma coe_fd : (↑) '' 𝒟 = {z : ℂ | 0 < z.im ∧ 1 ≤ ‖z‖ ∧ |z.re| ≤ 1/2} := by
+  ext x
+  refine ⟨?_, fun ⟨hxim, hxnorm, hxre⟩ ↦ ⟨⟨x, hxim⟩, ⟨one_le_normSq_iff.mpr hxnorm, hxre⟩, rfl⟩⟩
+  rintro ⟨τ, hτ, rfl⟩
+  exact ⟨τ.im_pos, one_le_normSq_iff.mp hτ.1, hτ.2⟩
+
+/--
+The image of the fundamental domain `𝒟` in `ℂ` is closed.
+This is not immediate (unlike the analogous statement for `𝒟ᵒ`),
+since the inclusion of `ℍ` in `ℂ` is an open but not a closed map.
+-/
+lemma isClosed_coe_fd : IsClosed ((↑) '' 𝒟 : Set ℂ) := by
+  rw [coe_fd]
+  have : IsClosed {z : ℂ | 0 ≤ z.im ∧ 1 ≤ ‖z‖ ∧ |z.re| ≤ 1/2} := by
+    refine .inter ?_ (.inter ?_ ?_)
+    · exact isClosed_le continuous_const Complex.continuous_im
+    · exact isClosed_le continuous_const continuous_norm
+    · exact isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const
+  convert this using 1
+  ext x
+  refine ⟨fun ⟨him, hre, hnorm⟩ ↦ ⟨him.le, hre, hnorm⟩, fun ⟨him, hre, hnorm⟩ ↦ ⟨?_, hre, hnorm⟩⟩
+  exact him.lt_of_ne' <| by grind [abs_re_eq_norm]
+
+/--
+The points on the fundamental domain that aren't on the bottom "arc"
+are in the closure of the open fundamental domain.
+-/
+private lemma mem_closure_of_one_lt_norm {x : ℍ} (hxnorm : 1 < ‖(x : ℂ)‖) (hxre : |x.re| ≤ 1 / 2) :
+    x ∈ closure 𝒟ᵒ := by
+  -- Need to show that any `x` in this set is a limit of points in `𝒟ᵒ`.
+  -- Idea is to use a line segment through the origin and `x`, and show that points
+  -- a little below `x` are in `𝒟ᵒ`. There are some annoyances due
+  -- to subtypes, etc.
+  apply mem_closure_of_frequently_of_tendsto (α := ℝ)
+      (b := 𝓝[<] 1) (f := fun t ↦ ofComplex (t * x))
+  · apply Filter.Eventually.frequently
+    simp only [fdo, Set.mem_setOf, Filter.eventually_and, one_lt_normSq_iff]
+    refine ⟨Filter.Tendsto.eventually_const_lt hxnorm (.mono_left ?_ nhdsWithin_le_nhds), ?_⟩
+    · have : ContinuousAt (fun a : ℝ ↦ (ofComplex (a * x : ℂ) : ℂ)) 1 := by
+        refine .comp (by fun_prop) ((OpenPartialHomeomorph.continuousAt _ ?_).comp (by fun_prop))
+        simpa [ofComplex] using x.coe_im_pos
+      simpa [ofComplex_apply_of_im_pos x.coe_im_pos] using this.tendsto.norm
+    · simp only [eventually_nhdsWithin_iff]
+      filter_upwards [eventually_gt_nhds zero_lt_one] with a ha ha'
+      rw [← coe_re, ofComplex_apply_of_im_pos (by simpa using mul_pos ha x.coe_im_pos)]
+      suffices a * |x.re| < 1 / 2 by simpa [abs_of_pos ha]
+      nlinarith [Set.mem_Iio.mp ha']
+  · refine .mono_left ?_ nhdsWithin_le_nhds
+    rw [isOpenEmbedding_coe.tendsto_nhds_iff, Function.comp_def]
+    have : Filter.Tendsto (fun t : ℝ ↦ t * (x : ℂ)) (𝓝 1) (𝓝 (x : ℂ)) := by
+      rw [show 𝓝 (x : ℂ) = 𝓝 ((1 : ℝ) * (x : ℂ)) by simp]
+      exact Continuous.tendsto (by fun_prop) _
+    refine this.congr' ?_
+    filter_upwards [eventually_gt_nhds zero_lt_one] with a ha
+    rw [ofComplex_apply_of_im_pos (by simpa using mul_pos ha x.coe_im_pos)]
+
+open scoped NNReal in
+/-- The points on the bottom "arc" of the fundamental domain are in the closure
+of the open fundamental domain. -/
+private lemma mem_closure_of_arc {x : ℍ} (hxnorm : ‖(x : ℂ)‖ = 1) (hxre : |x.re| ≤ 1 / 2) :
+    x ∈ closure 𝒟ᵒ := by
+  -- We show that `x` is a limit of points known to be in the closure.
+  rw [← closure_closure]
+  -- Consider a vertical line going upwards from `x` (parametrized by `ℝ≥0`)
+  apply mem_closure_of_frequently_of_tendsto (b := 𝓝[>] 0)
+    (f := fun t : ℝ≥0 ↦ ⟨x + t * Complex.I, by
+      simpa using add_pos_of_pos_of_nonneg x.coe_im_pos t.property⟩)
+  · apply Filter.Eventually.frequently
+    filter_upwards [self_mem_nhdsWithin] with a (ha : 0 < a)
+    refine mem_closure_of_one_lt_norm ?_ (by simpa using hxre)
+    suffices 1 < ‖(x : ℂ)‖ ^ 2 + a ^ 2 + 2 * a * x.im by
+      rw [← one_lt_normSq_iff]
+      convert this
+      simp [← normSq_eq_norm_sq, normSq_apply]
+      ring
+    rw [hxnorm, one_pow, add_assoc, lt_add_iff_pos_right]
+    positivity
+  · refine .mono_left ?_ nhdsWithin_le_nhds
+    simpa [show 𝓝 (x : ℂ) = 𝓝 (x + (((0 : ℝ≥0) : ℝ) : ℂ) * Complex.I) by simp,
+      isOpenEmbedding_coe.tendsto_nhds_iff] using Continuous.tendsto (by fun_prop) _
+
+lemma fd_eq_closure_fdo : 𝒟 = closure 𝒟ᵒ := by
+  refine subset_antisymm ?_ (isClosed_fd.closure_subset_iff.mpr fdo_subset_fd)
+  intro x ⟨hx, hx'⟩
+  rw [one_le_normSq_iff] at hx
+  rcases lt_or_eq_of_le hx with hx | hx
+  · exact mem_closure_of_one_lt_norm hx hx'
+  · exact mem_closure_of_arc hx.symm hx'
+
+lemma fdo_eq_interior_fd : 𝒟ᵒ = interior 𝒟 := by
+  refine subset_antisymm (isOpen_fdo.subset_interior_iff.mpr fdo_subset_fd) ?_
+  have ho1 := isOpenMap_re.image_interior_subset 𝒟
+  have ho2 := isOpenMap_norm.image_interior_subset 𝒟
+  intro x hx
+  rw [Set.image_subset_iff] at *
+  constructor
+  · rw [one_lt_normSq_iff, ← Set.mem_Ioi, ← interior_Ici]
+    apply Set.mem_of_mem_of_subset (Set.mem_preimage.mp (ho2 hx)) (interior_mono ?_)
+    rw [Set.image_subset_iff]
+    intro ξ hξ
+    simpa [Set.mem_preimage, Set.mem_Ici, one_le_normSq_iff] using hξ.1
+  · rw [abs_lt, ← Set.mem_Ioo, ← interior_Icc]
+    apply Set.mem_of_mem_of_subset ((Set.mem_preimage.mp (ho1 hx))) (interior_mono ?_)
+    rw [Set.image_subset_iff]
+    intro ξ hξ
+    simpa [Set.mem_preimage, Set.mem_Icc, abs_le] using hξ.2
+
+end Topology
+
 section Truncated
 
 /-- The standard fundamental domain truncated at height `y`. -/
@@ -516,7 +649,7 @@ def truncatedFundamentalDomain (y : ℝ) : Set ℍ := { τ | τ ∈ 𝒟 ∧ τ.
 /-- Explicit description of the truncated fundamental domain as a subset of `ℂ`, given by
 obviously closed conditions. -/
 lemma coe_truncatedFundamentalDomain (y : ℝ) :
-    Subtype.val '' truncatedFundamentalDomain y =
+    UpperHalfPlane.coe '' truncatedFundamentalDomain y =
     {z | 0 ≤ z.im ∧ z.im ≤ y ∧ |z.re| ≤ 1 / 2 ∧ 1 ≤ ‖z‖} := by
   ext z
   constructor
@@ -533,7 +666,8 @@ lemma coe_truncatedFundamentalDomain (y : ℝ) :
 /-- For any `y : ℝ`, the standard fundamental domain truncated at height `y` is compact. -/
 lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
     IsCompact (truncatedFundamentalDomain y) := by
-  rw [Subtype.isCompact_iff, coe_truncatedFundamentalDomain, Metric.isCompact_iff_isClosed_bounded]
+  rw [isEmbedding_coe.isCompact_iff, coe_truncatedFundamentalDomain,
+    Metric.isCompact_iff_isClosed_bounded]
   constructor
   · -- show closed
     apply (isClosed_le continuous_const Complex.continuous_im).inter

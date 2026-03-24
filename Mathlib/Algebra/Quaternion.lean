@@ -501,7 +501,7 @@ end AddCommGroupWithOne
 variable [CommRing R]
 
 instance instRing : Ring ℍ[R,c₁,c₂,c₃] where
-  __ := inferInstanceAs (AddCommGroupWithOne ℍ[R,c₁,c₂,c₃])
+  __ := (inferInstance : AddCommGroupWithOne ℍ[R,c₁,c₂,c₃])
   left_distrib _ _ _ := by ext <;> simp <;> ring
   right_distrib _ _ _ := by ext <;> simp <;> ring
   zero_mul _ := by ext <;> simp
@@ -774,9 +774,9 @@ theorem Quaternion.equivTuple_apply (R : Type*) [Zero R] [One R] [Neg R] (x : �
   rfl
 
 instance {R : Type*} [Zero R] [One R] [Neg R] [Subsingleton R] : Subsingleton ℍ[R] :=
-  inferInstanceAs (Subsingleton <| ℍ[R,-1,0,-1])
+  (inferInstance : Subsingleton <| ℍ[R,-1,0,-1])
 instance {R : Type*} [Zero R] [One R] [Neg R] [Nontrivial R] : Nontrivial ℍ[R] :=
-  inferInstanceAs (Nontrivial <| ℍ[R,-1,0,-1])
+  (inferInstance : Nontrivial <| ℍ[R,-1,0,-1])
 
 namespace Quaternion
 
@@ -787,7 +787,7 @@ variable {S T R : Type*} [CommRing R] (r x y : R) (a b : ℍ[R])
 
 instance : CoeTC R ℍ[R] := ⟨coe⟩
 
-instance instRing : Ring ℍ[R] := QuaternionAlgebra.instRing
+instance instRing : Ring ℍ[R] := inferInstanceAs <| Ring ℍ[R,-1,0,-1]
 
 instance : Inhabited ℍ[R] := inferInstanceAs <| Inhabited ℍ[R,-1,0,-1]
 
@@ -1146,6 +1146,7 @@ theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R] = 4 :=
 theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R] = 4 :=
   QuaternionAlgebra.finrank_eq_four _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem re_star : (star a).re = a.re := by
   rw [QuaternionAlgebra.re_star, zero_mul, add_zero]
 
@@ -1227,6 +1228,7 @@ def starAe : ℍ[R] ≃ₐ[R] ℍ[R]ᵐᵒᵖ :=
 theorem coe_starAe : ⇑(starAe : ℍ[R] ≃ₐ[R] ℍ[R]ᵐᵒᵖ) = op ∘ star :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Square of the norm. -/
 def normSq : ℍ[R] →*₀ R where
   toFun a := (a * star a).re

@@ -59,11 +59,16 @@ def subalgebra (D : DescentAux A B) : Subalgebra R A :=
        (⋃ i, ⋃ x ∈ (D.p i).coeffs, x.coeffs)) : Set A)
 
 instance : CommRing (D.subalgebra R) := inferInstanceAs <| CommRing (Algebra.adjoin _ _)
+
 instance algebra₀ : Algebra R (D.subalgebra R) := inferInstanceAs <| Algebra R (Algebra.adjoin _ _)
+
 instance algebra₁ : Algebra (D.subalgebra R) A := inferInstanceAs <| Algebra (Algebra.adjoin _ _) A
+
 instance algebra₂ : Algebra (D.subalgebra R) B := inferInstanceAs <| Algebra (Algebra.adjoin _ _) B
+
 instance : IsScalarTower (D.subalgebra R) A B :=
   inferInstanceAs <| IsScalarTower (Algebra.adjoin _ _) _ _
+
 instance : FaithfulSMul (D.subalgebra R) A := inferInstanceAs <| FaithfulSMul (Algebra.adjoin _ _) _
 
 lemma fg_subalgebra [Finite D.vars] [Finite D.rels] : (D.subalgebra R).FG := by
@@ -108,6 +113,7 @@ lemma coeffs_q_subset (i) :
   grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra, Subalgebra.setRange_algebraMap,
     Algebra.subset_adjoin]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_kerSquareLift_comp_eq_id :
     ∃ (σ₀ : D.P.ModelOfHasCoeffs (D.subalgebra R) →ₐ[D.subalgebra R]
         MvPolynomial D.vars (D.subalgebra R) ⧸ (RingHom.ker f₀ ^ 2)),
@@ -155,6 +161,7 @@ end DescentAux
 
 variable (R A B)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an
 `R`-subalgebra of finite type `A₀` of `A` and a smooth `A₀`-algebra `B₀` such that

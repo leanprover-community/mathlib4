@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.CasesM
 
 set_option autoImplicit true

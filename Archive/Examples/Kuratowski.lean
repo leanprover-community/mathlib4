@@ -191,7 +191,7 @@ theorem kc_fourteenSet : k fourteenSetᶜ = (Ioo 0 1 ∪ Ioo 1 2)ᶜ := by
 
 theorem kck_fourteenSet : k (k fourteenSet)ᶜ = (Ioo 0 2 ∪ Ioo 4 5)ᶜ := by
   rw [closure_compl, k_fourteenSet,
-    interior_union_of_disjoint_closure, interior_union_of_disjoint_closure] <;>
+    interior_union_of_disjoint_closure, interior_union_of_disjoint_closure]
   all_goals
      simp [-union_singleton, disjoint_iff_inter_eq_empty, union_inter_distrib_right, Icc_inter_Icc]
   all_goals norm_num
