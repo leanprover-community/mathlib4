@@ -691,7 +691,6 @@ end FormalMultilinearSeries
 
 open FormalMultilinearSeries
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If two functions `g` and `f` have power series `q` and `p` respectively at `f x` and `x`, within
 two sets `s` and `t` such that `f` maps `s` to `t`, then `g ∘ f` admits the power
 series `q.comp p` at `x` within `s`. -/
