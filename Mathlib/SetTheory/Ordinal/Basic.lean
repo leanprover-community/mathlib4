@@ -912,8 +912,9 @@ theorem succ_one : succ (1 : Ordinal) = 2 := one_add_one_eq_two
 theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :=
   (add_assoc _ _ _).symm
 
-theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 := by
-  rw [Order.one_le_iff_pos, pos_iff_ne_zero]
+@[deprecated Order.one_le_iff_ne_zero (since := "2026-03-24")]
+theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 :=
+  Order.one_le_iff_ne_zero
 
 theorem succ_pos (o : Ordinal) : 0 < succ o :=
   bot_lt_succ o
@@ -926,12 +927,13 @@ theorem add_one_ne_zero (o : Ordinal) : o + 1 ≠ 0 :=
 theorem succ_ne_zero (o : Ordinal) : succ o ≠ 0 :=
   add_one_ne_zero o
 
-@[simp]
-theorem lt_one_iff_zero {a : Ordinal} : a < 1 ↔ a = 0 := by
-  simpa using @lt_succ_bot_iff _ _ _ a _ _
+@[deprecated Order.lt_one_iff (since := "2026-03-24")]
+theorem lt_one_iff_zero {a : Ordinal} : a < 1 ↔ a = 0 :=
+  Order.lt_one_iff
 
-theorem le_one_iff {a : Ordinal} : a ≤ 1 ↔ a = 0 ∨ a = 1 := by
-  simpa using @le_succ_bot_iff _ _ _ a _
+@[deprecated Order.le_one_iff (since := "2026-03-24")]
+theorem le_one_iff {a : Ordinal} : a ≤ 1 ↔ a = 0 ∨ a = 1 :=
+  Order.le_one_iff
 
 @[deprecated card_add_one (since := "2026-02-27")]
 theorem card_succ (o : Ordinal) : card (succ o) = card o + 1 := by
@@ -942,7 +944,7 @@ theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
 
 instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
   default := ⟨0, zero_lt_one' Ordinal⟩
-  uniq a := Subtype.ext <| lt_one_iff_zero.1 a.2
+  uniq a := Subtype.ext <| lt_one_iff.1 a.2
 
 @[simp]
 theorem Iio_one_default_eq : (default : Iio (1 : Ordinal)) = ⟨0, zero_lt_one' Ordinal⟩ :=
@@ -953,7 +955,7 @@ instance uniqueToTypeOne : Unique (ToType 1) where
   uniq a := by
     rw [← enum_typein (α := ToType 1) (· < ·) a]
     congr
-    rw [← lt_one_iff_zero]
+    rw [← lt_one_iff]
     apply typein_lt_self
 
 theorem one_toType_eq (x : ToType 1) : x = enum (· < ·) ⟨0, by simp⟩ :=
