@@ -8,9 +8,12 @@ module
 public import Mathlib.Algebra.BigOperators.Associated
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Data.Nat.Choose.Dvd
 public import Mathlib.Data.Nat.Prime.Basic
+
+import Mathlib.Data.Nat.Squarefree
 
 /-!
 # Primorial
@@ -49,6 +52,8 @@ theorem primorial_pos (n : ℕ) : 0 < n# :=
 theorem primorial_mono {m n : ℕ} (h : m ≤ n) : m# ≤ n# :=
   prod_le_prod_of_subset_of_one_le' (by gcongr) (by grind)
 
+theorem primorial_monotone : Monotone primorial := fun _ _ ↦ primorial_mono
+
 theorem primorial_dvd_primorial {m n : ℕ} (h : m ≤ n) : m# ∣ n# :=
   prod_dvd_prod_of_subset _ _ _ (by gcongr)
 
@@ -75,15 +80,20 @@ theorem primorial_add_dvd {m n : ℕ} (h : n ≤ m) : (m + n)# ∣ m# * choose (
 theorem primorial_add_le {m n : ℕ} (h : n ≤ m) : (m + n)# ≤ m# * choose (m + n) m :=
   le_of_dvd (mul_pos (primorial_pos _) (choose_pos <| Nat.le_add_right _ _)) (primorial_add_dvd h)
 
-lemma Nat.Prime.dvd_primorial_iff {p n : ℕ} (hp : Nat.Prime p) : p ∣ n# ↔ p ≤ n := by
+lemma Nat.Prime.dvd_primorial_iff {p n : ℕ} (hp : Prime p) : p ∣ n# ↔ p ≤ n := by
   refine ⟨?_, fun h ↦ dvd_prod_of_mem _ (by grind)⟩
   intro h
   simp only [primorial, hp.prime.dvd_finset_prod_iff, mem_filter, mem_range_succ_iff] at h
   obtain ⟨q, ⟨hqn, hq⟩, hpq⟩ := h
   exact (Nat.le_of_dvd hq.pos hpq).trans hqn
 
-lemma Nat.Prime.dvd_primorial {p : ℕ} (hp : Nat.Prime p) : p ∣ p# :=
+lemma Nat.Prime.dvd_primorial {p : ℕ} (hp : Prime p) : p ∣ p# :=
   hp.dvd_primorial_iff.2 le_rfl
+
+lemma Squarefree.dvd_primorial {n : ℕ} (hn : Squarefree n) : n ∣ n# := by
+  have : (∏ p ∈ n.primeFactors, p) ∣ (∏ p ∈ range (n + 1) with p.Prime, p) :=
+    Finset.prod_dvd_prod_of_subset _ _ _ (by grind [le_of_dvd])
+  rwa [Nat.prod_primeFactors_of_squarefree hn] at this
 
 lemma lt_primorial_self {n : ℕ} (hn : 2 < n) : n < n# := by
   have : 3 ≤ n# := single_le_prod' (f := id) (by grind [→ Prime.pos]) (by grind [prime_three])
