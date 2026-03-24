@@ -170,8 +170,6 @@ namespace Rep.standardComplex
 
 open classifyingSpaceUniversalCover AlgebraicTopology CategoryTheory.Limits
 
-variable [Monoid G]
-
 /-- The `k`-linear map underlying the differential in the standard resolution of `k` as a trivial
 `k`-linear `G`-representation. It sends `(g₀, ..., gₙ) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ)`. -/
 def d (G : Type u) (n : ℕ) : ((Fin (n + 1) → G) →₀ k) →ₗ[k] (Fin n → G) →₀ k :=
@@ -182,20 +180,20 @@ def d (G : Type u) (n : ℕ) : ((Fin (n + 1) → G) →₀ k) →ₗ[k] (Fin n �
 variable {k G}
 
 @[simp]
-theorem d_of {G : Type u} {n : ℕ} (c : Fin (n + 1) → G) :
+theorem d_of {n : ℕ} (c : Fin (n + 1) → G) :
     d k G n (Finsupp.single c 1) =
       Finset.univ.sum fun p : Fin (n + 1) =>
         Finsupp.single (c ∘ p.succAbove) ((-1 : k) ^ (p : ℕ)) := by
   simp [d]
 
-lemma d_single {G : Type u} {n : ℕ} (c : Fin (n + 1) → G) (r : k) :
+lemma d_single {n : ℕ} (c : Fin (n + 1) → G) (r : k) :
     d k G n (Finsupp.single c r) =
       Finset.univ.sum fun p : Fin (n + 1) =>
         Finsupp.single (c ∘ p.succAbove) (r * (-1 : k) ^ (p : ℕ)) := by
   rw [← mul_one r, ← smul_eq_mul, ← smul_single, map_smul, d_of]
   simp [Finset.smul_sum]
 
-variable (k G)
+variable (k G) [Monoid G]
 
 /-- The `n`th object of the standard resolution of `k` is definitionally isomorphic to `k[Gⁿ⁺¹]`
 equipped with the representation induced by the diagonal action of `G`. -/
