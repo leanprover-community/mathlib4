@@ -298,8 +298,9 @@ def toSubmodule : Subalgebra R A ↪o Submodule R A where
       inj' := fun _ _ h ↦ ext fun x ↦ SetLike.ext_iff.mp h x }
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
-/- TODO: bundle other forgetful maps between algebraic substructures, e.g.
+/-! TODO: bundle other forgetful maps between algebraic substructures, e.g.
   `toSubsemiring` and `toSubring` in this file. -/
+
 @[simp]
 theorem mem_toSubmodule {x} : x ∈ (toSubmodule S) ↔ x ∈ S := Iff.rfl
 
@@ -324,7 +325,7 @@ instance : Module R S :=
 instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
   inferInstanceAs (IsScalarTower R' R (toSubmodule S))
 
-/- More general form of `Subalgebra.algebra`.
+/-- More general form of `Subalgebra.algebra`.
 
 This instance should have low priority since it is slow to fail:
 before failing, it will cause a search through all `SMul R' R` instances,

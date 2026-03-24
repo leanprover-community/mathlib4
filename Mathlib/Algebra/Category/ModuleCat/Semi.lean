@@ -309,7 +309,7 @@ instance : AddCommMonoid (M ⟶ N) :=
   map_sum ({ toFun := SemimoduleCat.Hom.hom, map_zero' := SemimoduleCat.hom_zero,
              map_add' := hom_add } : (M ⟶ N) →+ (M →ₗ[R] N)) _ _
 
-/- TODO: generalize Preadditive and Functor.Additive, see #28826.
+/-! TODO: generalize Preadditive and Functor.Additive, see #28826.
 instance : Presemiadditive (SemimoduleCat.{v} R) where
 instance : (forget₂ (SemimoduleCat.{v} R) AddCommMonCat).Additive where -/
 
@@ -417,7 +417,7 @@ end
 
 end
 
-/- TODO: Declarations in #28826 from `endSemiringEquiv` to `forget₂_map_homMk` can be added back
+/-! TODO: Declarations in #28826 from `endSemiringEquiv` to `forget₂_map_homMk` can be added back
 after appropriate generalizations. -/
 
 instance : (forget (SemimoduleCat.{v} R)).ReflectsIsomorphisms where

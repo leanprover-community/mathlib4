@@ -886,7 +886,7 @@ theorem le_limsup_iff {x : β} (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by is
     rcases h' with ⟨z, z_x, hz⟩
     exact (h z z_x).mono <| fun w hw ↦ (or_iff_right (not_le_of_gt hw)).1 (hz (u w))
 
-/- A version of `le_limsup_iff` with large inequalities in densely ordered spaces.-/
+/-- A version of `le_limsup_iff` with large inequalities in densely ordered spaces. -/
 lemma le_limsup_iff' [DenselyOrdered β] {x : β}
     (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
     (h₂ : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :
@@ -901,7 +901,7 @@ theorem le_liminf_iff {x : β} (h₁ : f.IsCoboundedUnder (· ≥ ·) u := by is
     (h₂ : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
     x ≤ liminf u f ↔ ∀ y < x, ∀ᶠ a in f, y < u a := limsup_le_iff (β := βᵒᵈ) h₁ h₂
 
-/- A version of `le_liminf_iff` with large inequalities in densely ordered spaces.-/
+/-- A version of `le_liminf_iff` with large inequalities in densely ordered spaces. -/
 theorem le_liminf_iff' [DenselyOrdered β] {x : β}
     (h₁ : f.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault)
     (h₂ : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
@@ -911,7 +911,7 @@ theorem liminf_le_iff {x : β} (h₁ : f.IsCoboundedUnder (· ≥ ·) u := by is
     (h₂ : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
     liminf u f ≤ x ↔ ∀ y > x, ∃ᶠ a in f, u a < y := le_limsup_iff (β := βᵒᵈ) h₁ h₂
 
-/- A version of `liminf_le_iff` with large inequalities in densely ordered spaces.-/
+/-- A version of `liminf_le_iff` with large inequalities in densely ordered spaces. -/
 theorem liminf_le_iff' [DenselyOrdered β] {x : β}
     (h₁ : f.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault)
     (h₂ : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :

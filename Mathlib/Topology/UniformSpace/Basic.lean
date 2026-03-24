@@ -720,7 +720,7 @@ section Prod
 
 open UniformSpace
 
-/- a similar product space is possible on the function space (uniformity of pointwise convergence),
+/-! a similar product space is possible on the function space (uniformity of pointwise convergence),
   but we want to have the uniformity of uniform convergence on function spaces -/
 instance instUniformSpaceProd [u₁ : UniformSpace α] [u₂ : UniformSpace β] : UniformSpace (α × β) :=
   u₁.comap Prod.fst ⊓ u₂.comap Prod.snd

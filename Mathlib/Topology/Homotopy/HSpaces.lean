@@ -134,7 +134,7 @@ theorem one_eq_hSpace_e {G : Type u} [TopologicalSpace G] [Group G] [IsTopologic
     (1 : G) = HSpace.e :=
   rfl
 
-/- In the following example we see that the H-space structure on the product of two topological
+/-! In the following example we see that the H-space structure on the product of two topological
 groups is definitionally equally to the product H-space-structure of the two groups. -/
 example {G G' : Type u} [TopologicalSpace G] [Group G] [IsTopologicalGroup G] [TopologicalSpace G']
     [Group G'] [IsTopologicalGroup G'] : IsTopologicalGroup.hSpace (G × G') = HSpace.prod G G' := by

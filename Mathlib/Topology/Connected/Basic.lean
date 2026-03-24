@@ -329,7 +329,7 @@ theorem Topology.IsInducing.isPreconnected_image [TopologicalSpace β] {s : Set 
     ⟨_, ⟨z, hzs, rfl⟩, hzuv⟩
   exact ⟨z, hzs, hzuv⟩
 
-/- TODO: The following lemmas about connection of preimages hold more generally for strict maps
+/-! TODO: The following lemmas about connection of preimages hold more generally for strict maps
 (the quotient and subspace topologies of the image agree) whose fibers are preconnected. -/
 
 theorem IsPreconnected.preimage_of_isOpenMap [TopologicalSpace β] {f : α → β} {s : Set β}

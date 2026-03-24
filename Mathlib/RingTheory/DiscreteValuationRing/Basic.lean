@@ -296,7 +296,7 @@ theorem ofHasUnitMulPowIrreducibleFactorization {R : Type u} [CommRing R] [IsDom
   obtain ⟨p, hp, H⟩ := hR
   exact ⟨p, hp⟩
 
-/- If a ring is equivalent to a DVR, it is itself a DVR. -/
+/-- If a ring is equivalent to a DVR, it is itself a DVR. -/
 theorem RingEquivClass.isDiscreteValuationRing {A B E : Type*} [CommRing A] [IsDomain A]
     [CommRing B] [IsDomain B] [IsDiscreteValuationRing A] [EquivLike E A B] [RingEquivClass E A B]
     (e : E) : IsDiscreteValuationRing B where

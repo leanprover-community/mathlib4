@@ -43,7 +43,8 @@ open Topology
 
 variable {𝕜 : Type*} [TopologicalSpace 𝕜] [Ring 𝕜] [IsTopologicalRing 𝕜]
 variable (p : 𝕜) [T0Space (AddCircle p)]
-/- This instance can be supplied from:
+
+/-! This instance can be supplied from:
 - `[NormedSpace ℚ 𝕜]` (with import `Mathlib.Analysis.Normed.Module.Basic`), or
 - `[LinearOrder 𝕜] [IsOrderedMonoid 𝕜] [OrderTopology 𝕜]`
   (with import `Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete`)

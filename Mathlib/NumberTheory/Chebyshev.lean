@@ -368,7 +368,7 @@ theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt
   have : log x ^ 2 ≠ 0 := pow_ne_zero _ (log_ne_zero.mpr (by grind))
   fun_prop (disch := assumption)
 
-/- Simple bound on the integral from monotonicity.
+/-- Simple bound on the integral from monotonicity.
 We will bound the integral on 2..x by splitting into two intervals and using this result on both. -/
 private theorem integral_1_div_log_sq_le {a b : ℝ} (hab : a ≤ b) (one_lt : 1 < a) :
     ∫ x in a..b, 1 / log x ^ 2 ≤ (b - a) / log a ^ 2 := by
@@ -378,7 +378,7 @@ private theorem integral_1_div_log_sq_le {a b : ℝ} (hab : a ≤ b) (one_lt : 1
       apply intervalIntegrable_one_div_log_sq <;> linarith
   _ ≤ _ := by simp [field]
 
-/- Explicit integral bound, we expose a BigO version below since the constants and lower order term
+/-- Explicit integral bound, we expose a BigO version below since the constants and lower order term
 aren't very convenient. -/
 private theorem integral_one_div_log_sq_le_explicit {x : ℝ} (hx : 4 ≤ x) :
     ∫ t in 2..x, 1 / log t ^ 2 ≤ 4 * x / (log x) ^ 2 + x.sqrt / log 2 ^ 2 := by
@@ -392,7 +392,7 @@ private theorem integral_one_div_log_sq_le_explicit {x : ℝ} (hx : 4 ≤ x) :
     gcongr <;> linarith
   all_goals apply intervalIntegrable_one_div_log_sq <;> linarith
 
--- Somewhat arbitrary bound which we use to estimate the second term.
+/-- Somewhat arbitrary bound which we use to estimate the second term. -/
 private theorem sqrt_isLittleO :
     Real.sqrt =o[atTop] (fun x ↦ x / log x ^ 2) := by
   apply isLittleO_mul_iff_isLittleO_div _ |>.mp

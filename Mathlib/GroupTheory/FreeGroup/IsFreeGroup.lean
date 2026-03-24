@@ -208,7 +208,7 @@ theorem lift_of (f : Generators G → H) (a : Generators G) : lift f (of a) = f 
 theorem lift_symm_apply (f : G →* H) (a : Generators G) : (lift.symm f) a = f (of a) :=
   rfl
 
-/- Do not register this as an ext lemma, as `Generators G` is not canonical. -/
+/-- Do not register this as an ext lemma, as `Generators G` is not canonical. -/
 theorem ext_hom ⦃f g : G →* H⦄ (h : ∀ a : Generators G, f (of a) = g (of a)) : f = g :=
   lift.symm.injective (funext h)
 

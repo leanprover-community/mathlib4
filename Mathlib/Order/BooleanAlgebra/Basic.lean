@@ -155,7 +155,7 @@ lemma le_sdiff : x ≤ y \ z ↔ x ≤ y ∧ Disjoint x z :=
 @[simp] lemma sdiff_eq_left : x \ y = x ↔ Disjoint x y :=
   ⟨fun h ↦ disjoint_sdiff_self_left.mono_left h.ge, Disjoint.sdiff_eq_left⟩
 
-/- TODO: we could make an alternative constructor for `GeneralizedBooleanAlgebra` using
+/-- TODO: we could make an alternative constructor for `GeneralizedBooleanAlgebra` using
 `Disjoint x (y \ x)` and `x ⊔ (y \ x) = y` as axioms. -/
 theorem Disjoint.sdiff_eq_of_sup_eq (hi : Disjoint x z) (hs : x ⊔ z = y) : y \ x = z :=
   have h : y ⊓ x = x := inf_eq_right.2 <| le_sup_left.trans hs.le
@@ -455,7 +455,7 @@ instance (priority := 100) BooleanAlgebra.toBiheytingAlgebra : BiheytingAlgebra 
 theorem hnot_eq_compl : ￢x = xᶜ :=
   rfl
 
-/- NOTE: Is this theorem needed at all or can we use `top_sdiff'`. -/
+/-- NOTE: Is this theorem needed at all or can we use `top_sdiff'`. -/
 theorem top_sdiff : ⊤ \ x = xᶜ :=
   top_sdiff' x
 

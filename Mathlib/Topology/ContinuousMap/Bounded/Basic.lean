@@ -149,9 +149,10 @@ theorem dist_set_exists : ∃ C, 0 ≤ C ∧ ∀ x : α, dist (f x) (g x) ≤ C 
 theorem dist_coe_le_dist (x : α) : dist (f x) (g x) ≤ dist f g :=
   le_csInf dist_set_exists fun _ hb => hb.2 x
 
-/- This lemma will be needed in the proof of the metric space instance, but it will become
+/-! This lemma will be needed in the proof of the metric space instance, but it will become
 useless afterwards as it will be superseded by the general result that the distance is nonnegative
 in metric spaces. -/
+
 set_option backward.privateInPublic true in
 private theorem dist_nonneg' : 0 ≤ dist f g :=
   le_csInf dist_set_exists fun _ => And.left

@@ -411,11 +411,6 @@ theorem val_image_orbit {p : SubMulAction R M} (m : p) :
     Subtype.val '' MulAction.orbit R m = MulAction.orbit R (m : M) :=
   (Set.range_comp _ _).symm
 
-/- -- Previously, the relatively useless :
-lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
-    (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
--/
-
 @[to_additive]
 theorem val_preimage_orbit {p : SubMulAction R M} (m : p) :
     Subtype.val ⁻¹' MulAction.orbit R (m : M) = MulAction.orbit R m := by

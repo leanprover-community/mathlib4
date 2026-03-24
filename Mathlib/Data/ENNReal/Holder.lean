@@ -57,7 +57,7 @@ and a more canonical value of `r` can be used. -/
 lemma of (p q : ℝ≥0∞) : HolderTriple p q (p⁻¹ + q⁻¹)⁻¹ where
   inv_add_inv_eq_inv := inv_inv _ |>.symm
 
-/- This instance causes a trivial loop, but this is exactly the kind of loop that
+/-- This instance causes a trivial loop, but this is exactly the kind of loop that
 Lean should be able to detect and avoid. -/
 instance symm {p q r : ℝ≥0∞} [hpqr : HolderTriple p q r] : HolderTriple q p r where
   inv_add_inv_eq_inv := add_comm p⁻¹ q⁻¹ ▸ hpqr.inv_add_inv_eq_inv
@@ -125,7 +125,7 @@ end HolderTriple
 
 namespace HolderConjugate
 
-/- This instance causes a trivial loop, but this is exactly the kind of loop that
+/-- This instance causes a trivial loop, but this is exactly the kind of loop that
 Lean should be able to detect and avoid. -/
 instance symm {p q : ℝ≥0∞} [hpq : HolderConjugate p q] : HolderConjugate q p :=
   inferInstance

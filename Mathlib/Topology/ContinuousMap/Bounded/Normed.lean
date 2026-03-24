@@ -520,7 +520,7 @@ instance instModule' : Module (α →ᵇ 𝕜) (α →ᵇ β) :=
       (fun _ _ _ => ext fun _ => mul_smul _ _ _)
       (fun f => ext fun x => one_smul 𝕜 (f x))
 
-/- TODO: When `NormedModule` has been added to `Analysis.Normed.Module.Basic`, this
+/-- TODO: When `NormedModule` has been added to `Analysis.Normed.Module.Basic`, this
 shows that the space of bounded continuous functions from `α` to `β` is naturally a normed
 module over the algebra of bounded continuous functions from `α` to `𝕜`. -/
 instance : IsBoundedSMul (α →ᵇ 𝕜) (α →ᵇ β) :=
