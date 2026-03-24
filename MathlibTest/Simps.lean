@@ -862,8 +862,25 @@ abbrev Functor.comp (F G : Functor) : Functor where
 @[simps!]
 def iso (X : Type) : NatIso (Functor.id.comp (.const X)) (.const X) := NatIso.refl _
 
+/-- info: DsimpLhs.iso_app_apply (X X✝ : Type) (a : (Functor.id.comp (Functor.const X)).obj X✝) : ((iso X).app X✝) a = a -/
+#guard_msgs in
+#check iso_app_apply
+
+/-- info: DsimpLhs.iso_app_symm_apply (X X✝ : Type) (a : (Functor.id.comp (Functor.const X)).obj X✝) : ((iso X).app X✝).symm a = a -/
+#guard_msgs in
+#check iso_app_symm_apply
+
 @[simps! +dsimpLhs]
 def iso' (X : Type) : NatIso (Functor.id.comp (.const X)) (.const X) := NatIso.refl _
+
+/-- info: DsimpLhs.iso'_app_apply (X X✝ : Type) (a : (Functor.id.comp (Functor.const X)).obj X✝) : ((iso' X).app X✝) a = a -/
+#guard_msgs in
+#check iso'_app_apply
+
+/-- info: DsimpLhs.iso'_app_symm_apply (X X✝ : Type) (a : (Functor.id.comp (Functor.const X)).obj X✝) :
+  ((iso' X).app X✝).symm a = a-/
+#guard_msgs in
+#check iso'_app_symm_apply
 
 example (n : Nat) : (iso Nat).app Nat n = n := by
   dsimp only
