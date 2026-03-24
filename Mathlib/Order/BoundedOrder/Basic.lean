@@ -224,7 +224,7 @@ instance instTop [Bot α] : Top αᵒᵈ :=
 
 @[to_dual]
 instance instOrderTop [LE α] [OrderBot α] : OrderTop αᵒᵈ where
-  __ := inferInstanceAs (Top αᵒᵈ)
+  __ := (inferInstance : Top αᵒᵈ)
   le_top := @bot_le α _ _
 
 @[to_dual (attr := simp)] lemma ofDual_top [Bot α] : ofDual ⊤ = (⊥ : α) := rfl
@@ -257,8 +257,8 @@ attribute [to_dual self (reorder := 3 4)] BoundedOrder.mk
 attribute [to_dual existing] BoundedOrder.toOrderTop
 
 instance OrderDual.instBoundedOrder (α : Type u) [LE α] [BoundedOrder α] : BoundedOrder αᵒᵈ where
-  __ := inferInstanceAs (OrderTop αᵒᵈ)
-  __ := inferInstanceAs (OrderBot αᵒᵈ)
+  __ := (inferInstance : OrderTop αᵒᵈ)
+  __ := (inferInstance : OrderBot αᵒᵈ)
 
 section PartialOrder
 variable [PartialOrder α]
@@ -300,8 +300,8 @@ instance instOrderBot [∀ i, LE (α' i)] [∀ i, OrderBot (α' i)] : OrderBot (
 
 instance instBoundedOrder [∀ i, LE (α' i)] [∀ i, BoundedOrder (α' i)] :
     BoundedOrder (∀ i, α' i) where
-  __ := inferInstanceAs (OrderTop (∀ i, α' i))
-  __ := inferInstanceAs (OrderBot (∀ i, α' i))
+  __ := (inferInstance : OrderTop (∀ i, α' i))
+  __ := (inferInstance : OrderBot (∀ i, α' i))
 
 end Pi
 
@@ -411,13 +411,13 @@ instance instTop [Top α] [Top β] : Top (α × β) :=
 
 @[to_dual]
 instance instOrderTop [LE α] [LE β] [OrderTop α] [OrderTop β] : OrderTop (α × β) where
-  __ := inferInstanceAs (Top (α × β))
+  __ := (inferInstance : Top (α × β))
   le_top _ := ⟨le_top, le_top⟩
 
 instance instBoundedOrder [LE α] [LE β] [BoundedOrder α] [BoundedOrder β] :
     BoundedOrder (α × β) where
-  __ := inferInstanceAs (OrderTop (α × β))
-  __ := inferInstanceAs (OrderBot (α × β))
+  __ := (inferInstance : OrderTop (α × β))
+  __ := (inferInstance : OrderBot (α × β))
 
 end Prod
 
