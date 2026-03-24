@@ -878,12 +878,26 @@ abbrev pullback (f : R →+* T) (g : S →+* T) : Subring (R × S) :=
   (f.comp (RingHom.fst R S)).eqLocus <| g.comp (RingHom.snd R S)
 
 /-- The first projection from the pullback of `f` and `g` to `A`. -/
-abbrev pullbackFst (f : R →+* T) (g : S →+* T) : (f.pullback g) →+* R :=
+abbrev pullbackFst (f : R →+* T) (g : S →+* T) : f.pullback g →+* R :=
   (RingHom.fst R S).comp (RingHom.pullback f g).subtype
 
 /-- The second projection from the pullback of `f` and `g` to `B`. -/
-abbrev pullbackSnd (f : R →+* T) (g : S →+* T) : (f.pullback g) →+* S :=
+abbrev pullbackSnd (f : R →+* T) (g : S →+* T) : f.pullback g →+* S :=
   (RingHom.snd R S).comp (f.pullback g).subtype
+
+@[simp]
+lemma pullbackFst_eq_zero_iff (f : R →+* T) (g : S →+* T) {x : f.pullback g} :
+    f.pullbackFst g x = 0 ↔ x.val.1 = 0 ∧ g x.val.2 = 0 := by
+  rcases x with ⟨⟨⟩, h⟩
+  simp; simp at h
+  grind
+
+@[simp]
+lemma pullbackSnd_eq_zero_iff (f : R →+* T) (g : S →+* T) {x : f.pullback g} :
+    f.pullbackSnd g x = 0 ↔ f x.val.1 = 0 ∧ x.val.2 = 0 := by
+  rcases x with ⟨⟨⟩, h⟩
+  simp; simp at h
+  grind
 
 theorem isUnit_pullback_mk_iff (f : R →+* T) (g : S →+* T) (a : R × S) (a_in : a ∈ f.pullback g) :
     IsUnit (⟨a, a_in⟩ : f.pullback g) ↔ IsUnit a.1 ∧ IsUnit a.2 := by
