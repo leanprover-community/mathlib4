@@ -5,10 +5,10 @@ Authors: Paul Lezeau, Xavier Roblot, Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.Submodule
 public import Mathlib.RingTheory.PowerBasis
 
-import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
 # The conductor ideal
@@ -54,7 +54,7 @@ theorem conductor_eq_top_of_powerBasis (pb : PowerBasis R S) : conductor R pb.ge
 theorem adjoin_eq_top_of_conductor_eq_top {x : S} (h : conductor R x = ⊤) :
     Algebra.adjoin R {x} = ⊤ :=
   Algebra.eq_top_iff.mpr fun y ↦
-    one_mul y ▸ (mem_conductor_iff).mp ((Ideal.eq_top_iff_one (conductor R x)).mp h) y
+    one_mul y ▸ mem_conductor_iff.mp ((Ideal.eq_top_iff_one (conductor R x)).mp h) y
 
 theorem conductor_eq_top_iff_adjoin_eq_top {x : S} :
     conductor R x = ⊤ ↔ Algebra.adjoin R {x} = ⊤ :=
@@ -153,6 +153,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
     rw [IsScalarTower.algebraMap_eq R R<x> S, ← Ideal.map_map]
     apply Ideal.le_comap_map
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical morphism of rings from `R<x> ⧸ (I*R<x>)` to `S ⧸ (I*S)` is an isomorphism
 when `I` and `(conductor R x) ∩ R` are coprime. -/
 noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
@@ -195,3 +196,12 @@ theorem quotAdjoinEquivQuotMap_apply_mk (hx : (conductor R x).comap (algebraMap 
     (h_alg : Function.Injective (algebraMap R<x> S)) (a : R<x>) :
     quotAdjoinEquivQuotMap hx h_alg (Ideal.Quotient.mk (I.map (algebraMap R R<x>)) a) =
       Ideal.Quotient.mk (I.map (algebraMap R S)) ↑a := rfl
+
+lemma Localization.localRingHom_bijective_of_not_conductor_le
+    {P : Ideal S} [P.IsPrime] (hx : ¬ conductor R x ≤ P) {s : Subalgebra R S}
+    (hs : s = R<x>) (p : Ideal s) [p.IsPrime] [P.LiesOver p] :
+    Function.Bijective (Localization.localRingHom _ _ _ (P.over_def p)) := by
+  obtain ⟨a, ha, haP⟩ := SetLike.not_le_iff_exists.mp hx
+  replace ha (b : _) : a * b ∈ s := by simpa [hs] using ha b
+  exact Localization.localRingHom_bijective_of_saturated_inf_eq_top _
+    (top_le_iff.mp fun y _ ↦ ⟨a, ⟨haP, by simpa using ha 1⟩, ha _⟩) _

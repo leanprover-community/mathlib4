@@ -209,7 +209,7 @@ theorem union_of_isPrimitiveRoot [hB : IsCyclotomicExtension S A B] {r : B}
   by_cases hn : n = 0
   · rwa [hn, eq_self_sdiff_zero, Set.union_diff_right, ← eq_self_sdiff_zero]
   rw [iff_adjoin_eq_top]
-  refine ⟨fun m hm₁ hm₂ ↦ ?_, le_antisymm (by aesop) ?_⟩
+  refine ⟨fun m hm₁ hm₂ ↦ ?_, le_antisymm (by simp) ?_⟩
   · obtain hm₁ | rfl := hm₁
     · exact exists_isPrimitiveRoot A B hm₁ hm₂
     · use r
@@ -683,6 +683,7 @@ namespace CyclotomicField
 instance : Field (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance algebra : Algebra K (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
@@ -692,6 +693,7 @@ instance : Inhabited (CyclotomicField n K) := by
 instance [CharZero K] : CharZero (CyclotomicField n K) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
 
+set_option backward.isDefEq.respectTransparency false in
 instance isCyclotomicExtension [NeZero (n : K)] :
     IsCyclotomicExtension {n} K (CyclotomicField n K) := by
   have : NeZero (n : CyclotomicField n K) :=
@@ -768,6 +770,7 @@ namespace CyclotomicRing
 instance : CommRing (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsDomain (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
@@ -804,6 +807,7 @@ instance : IsTorsionFree (CyclotomicRing n A K) (CyclotomicField n K) :=
 instance : IsScalarTower A (CyclotomicRing n A K) (CyclotomicField n K) :=
   IsScalarTower.subalgebra' _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance isCyclotomicExtension [IsDomain A] [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
     IsCyclotomicExtension {n} A (CyclotomicRing n A K) where
   exists_isPrimitiveRoot {a} han _ := by
@@ -830,6 +834,7 @@ instance isCyclotomicExtension [IsDomain A] [IsFractionRing A K] [NeZero ((n : �
     · exact Subalgebra.add_mem _ hy hz
     · exact Subalgebra.mul_mem _ hy hz
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
     IsFractionRing (CyclotomicRing n A K) (CyclotomicField n K) where
   map_units := fun ⟨x, hx⟩ => by
@@ -946,6 +951,8 @@ theorem IsCyclotomicExtension.eq (C₁ C₂ : Subalgebra A B) [h₁ : IsCyclotom
     exact ⟨ζ, IsPrimitiveRoot.coe_submonoidClass_iff.mpr hζ⟩
   rw [(isCyclotomicExtension_iff_eq_adjoin S C₁ hC).mp h₁,
     (isCyclotomicExtension_iff_eq_adjoin S C₂ hC).mp h₂]
+
+set_option backward.isDefEq.respectTransparency false
 
 variable (n₁ n₂ : ℕ) (C₁ C₂ : Subalgebra A B) [h₁ : IsCyclotomicExtension {n₁} A C₁]
   [h₂ : IsCyclotomicExtension {n₂} A C₂]

@@ -36,7 +36,6 @@ number field, ring of integers
 
 @[expose] public section
 
-
 /-- A number field is a field which has characteristic zero and is finite
 dimensional over ℚ. -/
 @[stacks 09GA]
@@ -111,22 +110,34 @@ namespace RingOfIntegers
 
 instance : CommRing (𝓞 K) :=
   inferInstanceAs (CommRing (integralClosure _ _))
+
+set_option backward.inferInstanceAs.wrap.data false in
 instance : IsDomain (𝓞 K) :=
   inferInstanceAs (IsDomain (integralClosure _ _))
+
 instance [NumberField K] : CharZero (𝓞 K) :=
   inferInstanceAs (CharZero (integralClosure _ _))
+
+set_option backward.inferInstanceAs.wrap false in
 instance : Algebra (𝓞 K) K :=
   inferInstanceAs (Algebra (integralClosure _ _) _)
+
 instance : IsTorsionFree (𝓞 K) K :=
   inferInstanceAs (IsTorsionFree (integralClosure _ _) _)
+
 instance : Nontrivial (𝓞 K) :=
   inferInstanceAs (Nontrivial (integralClosure _ _))
+
+set_option backward.inferInstanceAs.wrap false in
 instance {L : Type*} [Ring L] [Algebra K L] : Algebra (𝓞 K) L :=
   inferInstanceAs (Algebra (integralClosure _ _) L)
+
 instance {L : Type*} [Ring L] [Algebra K L] : IsScalarTower (𝓞 K) K L :=
   inferInstanceAs (IsScalarTower (integralClosure _ _) K L)
+
 instance {G : Type*} [Group G] [MulSemiringAction G K] : MulSemiringAction G (𝓞 K) :=
   inferInstanceAs (MulSemiringAction G (integralClosure ℤ K))
+
 instance {G : Type*} [Group G] [MulSemiringAction G K] : SMulDistribClass G (𝓞 K) K :=
   inferInstanceAs (SMulDistribClass G (integralClosure ℤ K) K)
 
@@ -295,6 +306,9 @@ variable [NumberField K]
 instance : IsNoetherian ℤ (𝓞 K) :=
   IsIntegralClosure.isNoetherian _ ℚ K _
 
+instance : AddGroup.FG (𝓞 K) :=
+  Finite.iff_addGroup_fg.mp <| IsNoetherian.finite ℤ (𝓞 K)
+
 /-- The ring of integers of a number field is not a field. -/
 theorem not_isField : ¬IsField (𝓞 K) := by
   have h_inj : Function.Injective (algebraMap ℤ (𝓞 K)) := RingHom.injective_int (algebraMap ℤ (𝓞 K))
@@ -322,6 +336,7 @@ variable {K} {M : Type*}
 def restrict (f : M → K) (h : ∀ x, IsIntegral ℤ (f x)) (x : M) : 𝓞 K :=
   ⟨f x, h x⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `f : M →+ K` such that `∀ x, IsIntegral ℤ (f x)`, the corresponding function
 `M →+ 𝓞 K`. -/
 def restrict_addMonoidHom [AddZeroClass M] (f : M →+ K) (h : ∀ x, IsIntegral ℤ (f x)) :
@@ -330,6 +345,7 @@ def restrict_addMonoidHom [AddZeroClass M] (f : M →+ K) (h : ∀ x, IsIntegral
   map_zero' := by simp only [restrict, map_zero, mk_zero]
   map_add' x y := by simp only [restrict, map_add, mk_add_mk _]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `f : M →* K` such that `∀ x, IsIntegral ℤ (f x)`, the corresponding function
 `M →* 𝓞 K`. -/
 def restrict_monoidHom [MulOneClass M] (f : M →* K) (h : ∀ x, IsIntegral ℤ (f x)) : M →* 𝓞 K where

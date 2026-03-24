@@ -155,11 +155,11 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
       p ^ n.succ ∣ Q.coeff 0 ^ n.succ * ((-1) ^ (n.succ * n) * (minpoly R B.gen).coeff 0 ^ n) by
     have hndiv : ¬p ^ 2 ∣ (minpoly R B.gen).coeff 0 := fun h =>
       hei.notMem ((span_singleton_pow p 2).symm ▸ Ideal.mem_span_singleton.2 h)
-    refine @Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd R _ _ _ _ n hp (?_ : _ ∣ _) hndiv
+    refine hp.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd (n := n) (?_ : _ ∣ _) hndiv
     convert (IsUnit.dvd_mul_right ⟨(-1) ^ (n.succ * n), rfl⟩).mpr this using 1
     push_cast
     ring_nf
-    rw [mul_comm _ 2, pow_mul, neg_one_sq, one_pow, mul_one]
+    simp
   -- We claim the quotient of `Q^n * _` by `p^n` is the following `r`:
   have aux : ∀ i ∈ (range (Q.natDegree + 1)).erase 0, B.dim ≤ i + n := by grind
   have hintsum :
@@ -242,7 +242,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
   obtain ⟨Q₁, hQ⟩ := hz
   set Q := Q₁ %ₘ P with hQ₁
   replace hQ : aeval B.gen Q = p • z := by
-    rw [← modByMonic_add_div Q₁ (minpoly.monic hBint)] at hQ
+    rw [← modByMonic_add_div Q₁ (minpoly R B.gen)] at hQ
     simpa using hQ
   by_cases hQzero : Q = 0
   · simp only [hQzero, Algebra.smul_def, zero_eq_mul, aeval_zero] at hQ

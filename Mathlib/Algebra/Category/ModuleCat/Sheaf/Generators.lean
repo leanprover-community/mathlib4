@@ -75,6 +75,11 @@ lemma opEpi_id (σ : M.GeneratingSections) :
 lemma opEpi_comp (σ : M.GeneratingSections) (p : M ⟶ N) (q : N ⟶ P) [Epi p] [Epi q] :
     σ.ofEpi (p ≫ q) = (σ.ofEpi p).ofEpi q := rfl
 
+@[simp]
+lemma ofEpi_π (σ : M.GeneratingSections) (p : M ⟶ N) [Epi p] :
+    (σ.ofEpi p).π = σ.π ≫ p := by
+  simp [ofEpi, freeHomEquiv_symm_comp]
+
 /-- Two isomorphic sheaves of modules have equivalent families of generating sections. -/
 def equivOfIso (e : M ≅ N) :
     M.GeneratingSections ≃ N.GeneratingSections where

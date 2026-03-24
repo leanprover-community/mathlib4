@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Cylinders
@@ -73,6 +74,7 @@ def symm : Precylinder A where
   i₁ := P.i₀
   π := P.π
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The gluing of two precylinders. -/
 @[simps]
 noncomputable def trans (P' : Precylinder A) [HasPushout P.i₁ P'.i₀] :
@@ -91,9 +93,11 @@ a cylinder object for `A`. `P` shall be a *good* cylinder object
 when this morphism is a cofibration. -/
 noncomputable def i : A ⨿ A ⟶ P.I := coprod.desc P.i₀ P.i₁
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_i : coprod.inl ≫ P.i = P.i₀ := by simp [i]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_i : coprod.inr ≫ P.i = P.i₁ := by simp [i]
 
@@ -204,6 +208,7 @@ section
 variable (h : MorphismProperty.MapFactorizationData (cofibrations C) (trivialFibrations C)
     (codiag A))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cylinder object for `A` can be obtained from a factorization of the obvious
 map `A ⨿ A ⟶ A` as a cofibration followed by a trivial fibration. -/
 @[simps]
@@ -213,6 +218,7 @@ noncomputable def ofFactorizationData : Cylinder A where
   i₁ := coprod.inr ≫ h.i
   π := h.p
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ofFactorizationData_i : (ofFactorizationData h).i = h.i := by cat_disch
 
@@ -234,6 +240,7 @@ lemma exists_very_good :
 
 instance : Nonempty (Cylinder A) := ⟨(exists_very_good A).choose⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The gluing of two good cylinders. -/
 @[simps!]
 noncomputable def trans [IsCofibrant A] (P P' : Cylinder A) [P'.IsGood] :
@@ -248,6 +255,7 @@ noncomputable def trans [IsCofibrant A] (P P' : Cylinder A) [P'.IsGood] :
     dsimp
     apply weakEquivalence_of_precomp (P.i₀ ≫ pushout.inl _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IsCofibrant A] (P P' : Cylinder A) [P.IsGood] [P'.IsGood] :
     (P.trans P').IsGood where
   cofibration_i := by

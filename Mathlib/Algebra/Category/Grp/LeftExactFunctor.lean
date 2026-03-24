@@ -44,6 +44,8 @@ variable {C : Type u} [Category.{v} C] [Preadditive C] [HasFiniteBiproducts C]
 namespace leftExactFunctorForgetEquivalence
 
 attribute [local instance] hasFiniteProducts_of_hasFiniteBiproducts
+
+-- This was deprecated on 2025-10-10 but is still used as a local instance here!
 attribute [local instance] AddCommGrpCat.cartesianMonoidalCategoryAddCommGrp
 
 set_option backward.privateInPublic true in
@@ -71,6 +73,7 @@ noncomputable def inverse : (C ⥤ₗ Type v) ⥤ (C ⥤ₗ AddCommGrpCat.{v}) :
 
 open scoped MonObj
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
 /-- Implementation, see `leftExactFunctorForgetEquivalence`.
 This is the complicated bit, where we show that forgetting the group structure in the image of
