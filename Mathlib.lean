@@ -716,6 +716,7 @@ public import Mathlib.Algebra.Lie.LieTheorem
 public import Mathlib.Algebra.Lie.Loop
 public import Mathlib.Algebra.Lie.Matrix
 public import Mathlib.Algebra.Lie.Nilpotent
+public import Mathlib.Algebra.Lie.NilpotentOfTrace
 public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 public import Mathlib.Algebra.Lie.Normalizer
 public import Mathlib.Algebra.Lie.OfAssociative
