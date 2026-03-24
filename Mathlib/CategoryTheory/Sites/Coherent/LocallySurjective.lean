@@ -81,9 +81,8 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [Finita
     Functor.mapCone_pt, Cone.whisker_pt, Cocone.op_pt, Cofan.mk_pt, Functor.const_obj_obj,
     Functor.mapCone_π_app, Cone.whisker_π, Cocone.op_π, Functor.whiskerLeft_app, NatTrans.op_app,
     Cofan.mk_ι_app]
-  rw [← (h' a).choose_spec]
-  erw [← NatTrans.naturality_apply (φ := f)]
-  change f.app _ ((i.hom ≫ F.map (π a).op) y) = _
+  rw [← (h' a).choose_spec, ← NatTrans.naturality_apply (φ := f)]
+  simp only [IsLimit.conePointsIsoOfNatIso_hom, ← comp_apply, i]
   erw [IsLimit.map_π]
   rfl
 
