@@ -73,6 +73,14 @@ lemma limitsClosure_isoClosure :
   rw [isoClosure_le_iff]
   exact le_limitsClosure P J
 
+/-- The closure of a property of objects of a category under limits of
+shape `J` for a category `J`. -/
+abbrev limitClosure (J : Type*) [Category* J] : ObjectProperty C :=
+  P.limitsClosure (fun (_ : Unit) ↦ J)
+
+instance (J : Type*) [Category* J] : (P.limitClosure J).IsClosedUnderLimitsOfShape J :=
+  P.instIsClosedUnderLimitsOfShapeLimitsClosure _ ()
+
 /-- Given `P : ObjectProperty C` and a family of categories `J : α → Type _`,
 this property of objects contains `P` and all objects that are equal to `lim F`
 for some functor `F : J a ⥤ C` such that `F.obj j` satisfies `P` for any `j`. -/
@@ -171,7 +179,7 @@ lemma strictLimitsClosureStep_strictLimitsClosureIter_eq_self :
     obtain ⟨m, hm, hm'⟩ : ∃ (m : Ordinal.{w}) (hm : m < κ.ord), ∀ (j : J a), o j ≤ m := by
       refine ⟨⨆ j, o ((equivShrink.{w} (J a)).symm j),
           Ordinal.iSup_lt_ord ?_ (fun _ ↦ ho _), fun j ↦ ?_⟩
-      · rw [hκ.cof_eq, ← hasCardinalLT_iff_cardinal_mk_lt _ κ,
+      · rw [hκ.cof_ord, ← hasCardinalLT_iff_cardinal_mk_lt _ κ,
           ← hasCardinalLT_iff_of_equiv (equivShrink.{w} (J a))]
         exact h a
       · obtain ⟨j, rfl⟩ := (equivShrink.{w} (J a)).symm.surjective j

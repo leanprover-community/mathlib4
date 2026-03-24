@@ -33,9 +33,9 @@ By requiring `P.limitsOfShape J ≤ P`, we introduce a typeclass
 ## TODO
 
 * formalize the closure of `P` under finite limits (which require
-iterating over `ℕ`), and more generally the closure under limits
-indexed by a category whose type of arrows has a cardinality
-that is bounded by a certain regular cardinal (@joelriou)
+  iterating over `ℕ`), and more generally the closure under limits
+  indexed by a category whose type of arrows has a cardinality
+  that is bounded by a certain regular cardinal (@joelriou)
 
 -/
 
@@ -245,8 +245,8 @@ lemma isClosedUnderLimitsOfShape_inverseImage_iff (P : ObjectProperty D)
     [P.IsClosedUnderIsomorphisms] (e : C ≌ D) :
     (P.inverseImage e.functor).IsClosedUnderLimitsOfShape J ↔ P.IsClosedUnderLimitsOfShape J := by
   refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
-  convert inferInstanceAs
-    (((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderLimitsOfShape J)
+  convert (inferInstance :
+    ((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderLimitsOfShape J)
   ext X
   simpa using P.prop_iff_of_iso (e.counitIso.app X).symm
 

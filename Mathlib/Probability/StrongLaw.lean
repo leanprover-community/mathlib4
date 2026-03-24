@@ -627,7 +627,7 @@ theorem strong_law_ae_real {Ω : Type*} {m : MeasurableSpace Ω} {μ : Measure �
   convert hωpos.sub hωneg using 2
   · simp only [pos, neg, ← sub_div, ← sum_sub_distrib, max_zero_sub_max_neg_zero_eq_self,
       Function.comp_apply]
-  · simp only [pos, neg, ← integral_sub hint.pos_part hint.neg_part,
+  · simp +instances only [pos, neg, ← integral_sub hint.pos_part hint.neg_part,
       max_zero_sub_max_neg_zero_eq_self, Function.comp_apply, mΩ]
 
 end StrongLawAeReal

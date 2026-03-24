@@ -240,6 +240,7 @@ noncomputable
 def polyCharpolyAux : Polynomial (MvPolynomial ι R) :=
   (charpoly.univ R ιM).map <| MvPolynomial.bind₁ (φ.toMvPolynomial b bₘ.end)
 
+set_option backward.isDefEq.respectTransparency false in
 open Algebra.TensorProduct MvPolynomial in
 lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
     polyCharpolyAux (tensorProduct _ _ _ _ ∘ₗ φ.baseChange A) (basis A b) (basis A bₘ) =
@@ -322,6 +323,7 @@ lemma polyCharpolyAux_map_aeval
   congr
   exact DFunLike.ext _ _ fun f ↦ (MvPolynomial.eval_map (algebraMap R A) x f).symm
 
+set_option backward.isDefEq.respectTransparency false in
 open Algebra.TensorProduct MvPolynomial in
 /-- `LinearMap.polyCharpolyAux` is independent of the choice of basis of the target module.
 

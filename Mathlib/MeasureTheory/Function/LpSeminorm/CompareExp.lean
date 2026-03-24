@@ -183,8 +183,8 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (f : α → E) {g : 
     simp_rw [eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm, enorm_mul, enorm_norm]
     exact ENNReal.essSup_mul_le (‖f ·‖ₑ) (‖g ·‖ₑ)
   obtain ⟨hp₁, hp₂⟩ := ENNReal.toReal_pos_iff.mp hp
-  simp_rw [eLpNorm_eq_lintegral_rpow_enorm hp₁.ne' hp₂.ne, eLpNorm_exponent_top, eLpNormEssSup,
-    one_div, ENNReal.rpow_inv_le_iff hp, enorm_mul, enorm_norm]
+  simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp₁.ne' hp₂.ne, eLpNorm_exponent_top,
+    eLpNormEssSup, one_div, ENNReal.rpow_inv_le_iff hp, enorm_mul, enorm_norm]
   rw [ENNReal.mul_rpow_of_nonneg (hz := hp.le), ENNReal.rpow_inv_rpow hp.ne',
     ← lintegral_const_mul'' _ (by fun_prop)]
   simp only [← ENNReal.mul_rpow_of_nonneg (hz := hp.le)]

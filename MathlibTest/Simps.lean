@@ -586,7 +586,7 @@ end BSemigroup
 class ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G where
   new_axiom : ∀ x : G, x * - 0 ⊆ - x
 
-@[simps!] def bar : ExtendingStuff ℕ :=
+@[simps!, instance_reducible] def bar : ExtendingStuff ℕ :=
   { neg := Nat.succ
     Subset := fun _ _ ↦ True
     new_axiom := fun _ ↦ trivial }
@@ -599,7 +599,7 @@ end
 class new_ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G where
   new_axiom : ∀ x : G, x * - 0 ⊆ - x
 
-@[simps!] def new_bar : new_ExtendingStuff ℕ :=
+@[simps!, instance_reducible] def new_bar : new_ExtendingStuff ℕ :=
   { neg := Nat.succ
     Subset := fun _ _ ↦ True
     new_axiom := fun _ ↦ trivial }
@@ -1176,6 +1176,7 @@ initialize_simps_projections AddHomPlus2 (-myMul, myMul_toFun_toFun → mul)
 
 attribute [ext] Equiv'
 
+set_option warn.classDefReducibility false in
 @[simps]
 def thing (h : Bool ≃ (Bool ≃ Bool)) : AddHomPlus2 (fun _ : ℕ ↦ Bool) :=
   { myMul :=
@@ -1271,3 +1272,20 @@ example : foo.1 = 2 := by
   rfl
 
 end Grind
+
+def MyNat := Nat
+
+def MyNat.zero : MyNat := Nat.zero
+
+structure MyNatStruct where
+  n : MyNat
+
+@[simps]
+def zero : MyNatStruct where
+  n := MyNat.zero
+
+-- Verify that the equality type is not reduced from `MyNat` to `Nat`:
+set_option pp.explicit true in
+/-- info: zero_n : @Eq MyNat zero.n MyNat.zero -/
+#guard_msgs in
+#check zero_n

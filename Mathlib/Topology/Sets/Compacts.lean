@@ -99,10 +99,10 @@ instance : Bot (Compacts α) :=
   ⟨⟨∅, isCompact_empty⟩⟩
 
 instance : SemilatticeSup (Compacts α) :=
-  SetLike.coe_injective.semilatticeSup _ fun _ _ => rfl
+  SetLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 instance [T2Space α] : DistribLattice (Compacts α) :=
-  SetLike.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
+  SetLike.coe_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance : OrderBot (Compacts α) :=
   OrderBot.lift ((↑) : _ → Set α) (fun _ _ => id) rfl
@@ -268,6 +268,11 @@ theorem coe_prod (K : Compacts α) (L : Compacts β) :
   rfl
 
 @[simp]
+theorem toCloseds_prod [T2Space α] [T2Space β] (K : Compacts α) (L : Compacts β) :
+    (K ×ˢ L).toCloseds = K.toCloseds ×ˢ L.toCloseds := by
+  rfl
+
+@[simp]
 theorem singleton_prod_singleton (x : α) (y : β) :
     ({x} ×ˢ {y} : Compacts (α × β)) = {(x, y)} :=
   Compacts.ext Set.singleton_prod_singleton
@@ -359,7 +364,7 @@ instance [CompactSpace α] [Nonempty α] : Top (NonemptyCompacts α) :=
   ⟨⟨⊤, univ_nonempty⟩⟩
 
 instance : SemilatticeSup (NonemptyCompacts α) :=
-  SetLike.coe_injective.semilatticeSup _ fun _ _ => rfl
+  SetLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 instance [CompactSpace α] [Nonempty α] : OrderTop (NonemptyCompacts α) :=
   OrderTop.lift ((↑) : _ → Set α) (fun _ _ => id) rfl
@@ -498,6 +503,11 @@ theorem coe_prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
   rfl
 
 @[simp]
+theorem toCloseds_prod [T2Space α] [T2Space β] (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
+    (K ×ˢ L).toCloseds = K.toCloseds ×ˢ L.toCloseds := by
+  rfl
+
+@[simp]
 theorem singleton_prod_singleton (x : α) (y : β) :
     ({x} ×ˢ {y} : NonemptyCompacts (α × β)) = {(x, y)} :=
   NonemptyCompacts.ext Set.singleton_prod_singleton
@@ -564,7 +574,7 @@ instance [CompactSpace α] [Nonempty α] : Top (PositiveCompacts α) :=
   ⟨⟨⊤, interior_univ.symm.subst univ_nonempty⟩⟩
 
 instance : SemilatticeSup (PositiveCompacts α) :=
-  SetLike.coe_injective.semilatticeSup _ fun _ _ => rfl
+  SetLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 instance [CompactSpace α] [Nonempty α] : OrderTop (PositiveCompacts α) :=
   OrderTop.lift ((↑) : _ → Set α) (fun _ _ => id) rfl
@@ -695,7 +705,9 @@ instance : Bot (CompactOpens α) where bot := ⟨⊥, isOpen_empty⟩
 @[simp, norm_cast] lemma coe_sup (s t : CompactOpens α) : ↑(s ⊔ t) = (s ∪ t : Set α) := rfl
 @[simp, norm_cast] lemma coe_bot : ↑(⊥ : CompactOpens α) = (∅ : Set α) := rfl
 
-instance : SemilatticeSup (CompactOpens α) := SetLike.coe_injective.semilatticeSup _ coe_sup
+instance : SemilatticeSup (CompactOpens α) :=
+  SetLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
+
 instance : OrderBot (CompactOpens α) := OrderBot.lift ((↑) : _ → Set α) (fun _ _ => id) coe_bot
 
 @[simp]
@@ -717,7 +729,7 @@ instance instInf : Min (CompactOpens α) where
 @[simp, norm_cast] lemma coe_inf (s t : CompactOpens α) : ↑(s ⊓ t) = (s ∩ t : Set α) := rfl
 
 instance instSemilatticeInf : SemilatticeInf (CompactOpens α) :=
-  SetLike.coe_injective.semilatticeInf _ coe_inf
+  SetLike.coe_injective.semilatticeInf _ .rfl .rfl coe_inf
 
 end Inf
 
@@ -730,7 +742,7 @@ instance instSDiff : SDiff (CompactOpens α) where
 @[simp, norm_cast] lemma coe_sdiff (s t : CompactOpens α) : ↑(s \ t) = (s \ t : Set α) := rfl
 
 instance instGeneralizedBooleanAlgebra : GeneralizedBooleanAlgebra (CompactOpens α) :=
-  SetLike.coe_injective.generalizedBooleanAlgebra _ coe_sup coe_inf coe_bot coe_sdiff
+  SetLike.coe_injective.generalizedBooleanAlgebra _ .rfl .rfl coe_sup coe_inf coe_bot coe_sdiff
 
 end SDiff
 
@@ -759,8 +771,8 @@ instance instHImp : HImp (CompactOpens α) where
 @[simp, norm_cast] lemma coe_himp (s t : CompactOpens α) : ↑(s ⇨ t) = (s ⇨ t : Set α) := rfl
 
 instance instBooleanAlgebra : BooleanAlgebra (CompactOpens α) :=
-  SetLike.coe_injective.booleanAlgebra _ coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff
-    coe_himp
+  SetLike.coe_injective.booleanAlgebra _ .rfl .rfl coe_sup coe_inf coe_top coe_bot coe_compl
+    coe_sdiff coe_himp
 
 end Top.Compl
 

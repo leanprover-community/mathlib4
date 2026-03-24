@@ -6,7 +6,8 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.Lemma
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
 
@@ -126,13 +127,8 @@ section Propositional
 
 alias Iff.imp := imp_congr
 
--- This is a duplicate of `Classical.imp_iff_right_iff`. Deprecate?
-theorem imp_iff_right_iff {a b : Prop} : (a → b ↔ b) ↔ a ∨ b :=
-  open scoped Classical in Decidable.imp_iff_right_iff
-
--- This is a duplicate of `Classical.and_or_imp`. Deprecate?
-theorem and_or_imp {a b c : Prop} : a ∧ b ∨ (a → c) ↔ a → b ∨ c :=
-  open scoped Classical in Decidable.and_or_imp
+@[deprecated (since := "2026-01-30")] alias imp_iff_right_iff := Classical.imp_iff_right_iff
+@[deprecated (since := "2026-01-30")] alias and_or_imp := Classical.and_or_imp
 
 /-- Provide modus tollens (`mt`) as dot notation for implications. -/
 protected theorem Function.mt {a b : Prop} : (a → b) → ¬b → ¬a := mt
@@ -186,10 +182,12 @@ as arguments, but rather to use the `classical` tactic as needed.
 In the other direction, when `Decidable` instances do appear in the type signature,
 it is better to use explicitly introduced ones rather than allowing Lean to automatically infer
 classical ones, as these may cause instance mismatch errors later.
+
+Various types that (almost) never have provable decidability, such as `ℝ`, `Set α` or `Ideal R`,
+are given global `DecidableEq` instances, so that no decidable arguments have to be provided.
 -/
 
 export Classical (not_not)
-attribute [simp] not_not
 
 variable {a b : Prop}
 
@@ -295,7 +293,9 @@ theorem imp_iff_or_not {b a : Prop} : b → a ↔ a ∨ ¬b :=
 
 theorem not_imp_not : ¬a → ¬b ↔ b → a := open scoped Classical in Decidable.not_imp_not
 
-theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q := by simp
+@[deprecated Classical.imp_and_neg_imp_iff (since := "2026-01-30")]
+theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q :=
+  Classical.imp_and_neg_imp_iff p
 
 /-- Provide the reverse of modus tollens (`mt`) as dot notation for implications. -/
 protected theorem Function.mtr : (¬a → ¬b) → b → a := not_imp_not.mp
@@ -321,7 +321,7 @@ theorem imp_or {a b c : Prop} : a → b ∨ c ↔ (a → b) ∨ (a → c) :=
 theorem imp_or' {a : Sort*} {b c : Prop} : a → b ∨ c ↔ (a → b) ∨ (a → c) :=
   open scoped Classical in Decidable.imp_or'
 
-theorem not_imp : ¬(a → b) ↔ a ∧ ¬b := open scoped Classical in Decidable.not_imp_iff_and_not
+@[deprecated (since := "2026-01-30")] alias not_imp := Classical.not_imp
 
 theorem peirce (a b : Prop) : ((a → b) → a) → a := open scoped Classical in Decidable.peirce _ _
 
@@ -391,9 +391,6 @@ alias Ne.trans_eq := ne_of_ne_of_eq
 
 theorem eq_equivalence {α : Sort*} : Equivalence (@Eq α) :=
   ⟨Eq.refl, @Eq.symm _, @Eq.trans _⟩
-
--- These were migrated to Batteries but the `@[simp]` attributes were (mysteriously?) removed.
-attribute [simp] eq_mp_eq_cast eq_mpr_eq_cast
 
 -- @[simp] -- FIXME simp ignores proof rewrites
 theorem congr_refl_left {α β : Sort*} (f : α → β) {a b : α} (h : a = b) :
@@ -520,7 +517,7 @@ theorem forall_imp_iff_exists_imp {α : Sort*} {p : α → Prop} {b : Prop} [ha 
   classical
   let ⟨a⟩ := ha
   refine ⟨fun h ↦ not_forall_not.1 fun h' ↦ ?_, fun ⟨x, hx⟩ h ↦ hx (h x)⟩
-  exact if hb : b then h' a fun _ ↦ hb else hb <| h fun x ↦ (_root_.not_imp.1 (h' x)).1
+  exact if hb : b then h' a fun _ ↦ hb else hb <| h fun x ↦ (Classical.not_imp.1 (h' x)).1
 
 @[mfld_simps]
 theorem forall_true_iff : (α → True) ↔ True := imp_true_iff _
@@ -697,17 +694,21 @@ namespace Classical
 
 -- use shortened names to avoid conflict when classical namespace is open.
 /-- Any prop `p` is decidable classically. A shorthand for `Classical.propDecidable`. -/
+@[instance_reducible]
 noncomputable def dec (p : Prop) : Decidable p := by infer_instance
 
 variable {α : Sort*}
 
 /-- Any predicate `p` is decidable classically. -/
+@[implicit_reducible]
 noncomputable def decPred (p : α → Prop) : DecidablePred p := by infer_instance
 
 /-- Any relation `p` is decidable classically. -/
+@[implicit_reducible]
 noncomputable def decRel (p : α → α → Prop) : DecidableRel p := by infer_instance
 
 /-- Any type `α` has decidable equality classically. -/
+@[implicit_reducible]
 noncomputable def decEq (α : Sort*) : DecidableEq α := by infer_instance
 
 /-- Construct a function from a default value `H0`, and a function to use if there exists a value
@@ -963,6 +964,11 @@ theorem if_congr (h_c : P ↔ Q) (h_t : x = u) (h_e : y = v) : ite P x y = ite Q
   if_ctx_congr h_c (fun _ ↦ h_t) (fun _ ↦ h_e)
 
 end congr
+
+theorem Function.Injective.ite {α β : Sort*} {p : β → Prop} [DecidablePred p] {g : β → α}
+    (hg : g.Injective) {f : β → α} (hf : f.Injective) (h : ∀ x y, g x = f y → x = y) :
+    (fun x ↦ if p x then g x else f x).Injective :=
+  fun x y _ ↦ by rcases em (p x) with (hx | hx) <;> rcases em (p y) with (hy | hy) <;> grind
 
 end ite
 

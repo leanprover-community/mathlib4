@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.LinearDisjoint
 public import Mathlib.RingTheory.ClassGroup
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 public import Mathlib.RingTheory.LocalRing.Module
+public import Mathlib.RingTheory.UniqueFactorizationDomain.ClassGroup
 
 /-!
 # The Picard group of a commutative ring
@@ -50,7 +51,6 @@ invertible `R`-modules (in the sense that `M` is invertible if there exists anot
 ## TODO
 
 Show:
-- All unique factorization domains have trivial Picard group.
 - Invertible modules over a commutative ring have the same cardinality as the ring.
 
 - Establish other characterizations of invertible modules, e.g. they are modules that
@@ -568,6 +568,7 @@ theorem mapRingHom_mapRingHom {M : Pic R} :
     mapRingHom g (mapRingHom f M) = mapRingHom (g.comp f) M :=
   congr($mapRingHom_comp_mapRingHom M)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mapRingHom_id : mapRingHom (.id R) = .id _ := by
   rw [mapRingHom, mapAlgebra_self]
 
@@ -847,11 +848,18 @@ the group of the invertible `R`-submodules in `A` modulo the principal submodule
   (QuotientGroup.congr _ _ (.refl _) ((Subgroup.map_id _).trans (ker_unitsToPic R A).symm)).trans <|
   (quotientKerEquivRange _).trans <| .subgroupCongr (range_unitsToPic R A)
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 /-- The class group of a domain is isomorphic to the Picard group. -/
 @[simps!] noncomputable def ClassGroup.equivPic (R) [CommRing R] [IsDomain R] :
     ClassGroup R ≃* Pic R :=
   (mulEquivUnitsSubmoduleQuotRange R).trans <| .trans (Submodule.unitsQuotEquivRelPic R _) <|
     .trans (.subgroupCongr <| relPic_eq_top R _) Subgroup.topEquiv
+
+/-- The Picard group of a domain with normalizable gcd is trivial.
+This includes unique factorization domains. -/
+@[stacks 0BCH]
+instance (R) [CommRing R] [IsDomain R] [Nonempty (NormalizedGCDMonoid R)] : Subsingleton (Pic R) :=
+  Equiv.subsingleton (ClassGroup.equivPic R).toEquiv.symm
 
 end PicardGroup
 

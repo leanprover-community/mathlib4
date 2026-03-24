@@ -336,6 +336,9 @@ theorem leadingCoeff_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
     leadingCoeff (p * q) = leadingCoeff p * leadingCoeff q := by
   simp [← coeff_natDegree, natDegree_mul' h, coeff_mul_degree_add_degree]
 
+lemma Monic.leadingCoeff_C_mul (hp : p.Monic) (r : R) : (C r * p).leadingCoeff = r := by
+  by_cases hr : r = 0 <;> simp_all [leadingCoeff_mul']
+
 theorem leadingCoeff_pow' : leadingCoeff p ^ n ≠ 0 → leadingCoeff (p ^ n) = leadingCoeff p ^ n :=
   Nat.recOn n (by simp) fun n ih h => by
     have h₁ : leadingCoeff p ^ n ≠ 0 := fun h₁ => h <| by rw [pow_succ, h₁, zero_mul]
