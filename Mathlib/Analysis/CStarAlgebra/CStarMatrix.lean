@@ -144,7 +144,7 @@ instance instAddMonoid [AddMonoid A] : AddMonoid (CStarMatrix m n A) :=
   Pi.addMonoid
 
 instance instAddCommMonoid [AddCommMonoid A] : AddCommMonoid (CStarMatrix m n A) :=
-  Pi.addCommMonoid
+  inferInstanceAs <| AddCommMonoid (Matrix m n A)
 
 instance instNeg [Neg A] : Neg (CStarMatrix m n A) :=
   Pi.instNeg
@@ -156,7 +156,7 @@ instance instAddGroup [AddGroup A] : AddGroup (CStarMatrix m n A) :=
   Pi.addGroup
 
 instance instAddCommGroup [AddCommGroup A] : AddCommGroup (CStarMatrix m n A) :=
-  Pi.addCommGroup
+  inferInstanceAs <| AddCommGroup (Matrix m n A)
 
 instance instUnique [Unique A] : Unique (CStarMatrix m n A) :=
   Pi.unique

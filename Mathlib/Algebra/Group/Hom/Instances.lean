@@ -143,7 +143,7 @@ instance [MulOneClass M] [CommMonoid N] [IsCancelMul N] : IsCancelMul (M →* N)
 section End
 
 instance AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
-  AddMonoidHom.instAddCommMonoid
+  inferInstanceAs <| AddCommMonoid (M →+ M)
 
 @[simp]
 theorem AddMonoid.End.zero_apply [AddCommMonoid M] (m : M) : (0 : AddMonoid.End M) m = 0 :=
@@ -154,7 +154,7 @@ theorem AddMonoid.End.one_apply [AddZeroClass M] (m : M) : (1 : AddMonoid.End M)
   rfl
 
 instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
-  AddMonoidHom.instAddCommGroup
+  inferInstanceAs <| AddCommGroup (M →+ M)
 
 instance AddMonoid.End.instIntCast [AddCommGroup M] : IntCast (AddMonoid.End M) :=
   { intCast := fun z => z • (1 : AddMonoid.End M) }
