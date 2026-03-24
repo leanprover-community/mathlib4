@@ -601,7 +601,7 @@ and the category of matrices over that ring considered as a single-object catego
 def equivalenceSingleObj : Mat R ≌ Mat_ (SingleObj Rᵐᵒᵖ) :=
   (equivalenceSingleObjInverse R).asEquivalence.symm
 
-instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) := by
+instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) :=
   inferInstanceAs <| AddCommGroup (Matrix X Y R)
 
 variable {R}
