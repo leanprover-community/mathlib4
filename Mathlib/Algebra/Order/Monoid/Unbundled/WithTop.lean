@@ -396,7 +396,7 @@ namespace WithBot
 section One
 variable [One α] {a : α}
 
-@[to_additive] instance one : One (WithBot α) := WithTop.one
+@[to_additive] instance one : One (WithBot α) := inferInstanceAs <| One (WithTop α)
 
 @[to_additive (attr := simp, norm_cast)] lemma coe_one : ((1 : α) : WithBot α) = 1 := rfl
 
@@ -598,14 +598,14 @@ protected theorem map_add {F} [Add β] [FunLike F α β] [AddHomClass F α β]
 
 end Add
 
-instance AddSemigroup [AddSemigroup α] : AddSemigroup (WithBot α) :=
-  WithTop.addSemigroup
+instance addSemigroup [AddSemigroup α] : AddSemigroup (WithBot α) :=
+  inferInstanceAs <| AddSemigroup (WithTop α)
 
 instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithBot α) :=
-  WithTop.addCommSemigroup
+  inferInstanceAs <| AddCommSemigroup (WithTop α)
 
 instance addZeroClass [AddZeroClass α] : AddZeroClass (WithBot α) :=
-  WithTop.addZeroClass
+  inferInstanceAs <| AddZeroClass (WithTop α)
 
 section AddMonoid
 variable [AddMonoid α]
@@ -627,12 +627,13 @@ lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithBot α) :=
 end AddMonoid
 
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
-  WithTop.addCommMonoid
+  inferInstanceAs <| AddCommMonoid (WithTop α)
 
 section AddMonoidWithOne
 variable [AddMonoidWithOne α]
 
-instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWithOne
+instance addMonoidWithOne : AddMonoidWithOne (WithBot α) :=
+  inferInstanceAs <| AddMonoidWithOne (WithTop α)
 
 @[norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithBot α) = n := rfl
 
@@ -677,10 +678,10 @@ lemma natCast_eq_map_iff {f : β → α} {n : ℕ} {a : WithBot β} :
 end AddMonoidWithOne
 
 instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithBot α) :=
-  WithTop.charZero
+  inferInstanceAs <| CharZero (WithTop α)
 
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithBot α) :=
-  WithTop.addCommMonoidWithOne
+  inferInstanceAs <| AddCommMonoidWithOne (WithTop α)
 
 /-- A version of `WithBot.map` for `OneHom`s. -/
 @[to_additive (attr := simps -fullyApplied)
