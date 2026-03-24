@@ -121,6 +121,32 @@ theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
 
 namespace Walk
 
+variable (n : ℕ)
+
+/-- The walk in a path graph going through all vertices in order -/
+def ofPathGraph (n : ℕ) : (pathGraph (n + 1)).Walk 0 (Fin.last n) :=
+  match n with
+  | .zero => .nil
+  | .succ n =>
+    .cons (by simp [pathGraph_adj, Embedding.hasse]) <| ofPathGraph n |>.map <| Embedding.toHom <|
+      .hasse (Fin.succOrderEmb _) <| by simp [← Set.Iio_union_Ioi, Set.Iio, Set.ordConnected_Ioi]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem support_ofPathGraph : (ofPathGraph n).support = List.finRange (n + 1) := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    rw [ofPathGraph, support_cons, support_map, ih]
+    exact List.finRange_succ.symm
+
+@[simp]
+theorem length_ofPathGraph : (ofPathGraph n).length = n := by
+  grind [support_ofPathGraph, length_support]
+
+theorem IsPath.ofPathGraph : ofPathGraph n |>.IsPath :=
+  .mk' <| support_ofPathGraph n ▸ List.nodup_finRange (n + 1)
+
 variable {V : Type*} [DecidableEq V] {G : SimpleGraph V} {u v : V} (w : G.Walk u v)
 
 /-- The subgraph of a walk contains the path graph with the same number of vertices -/
@@ -157,36 +183,6 @@ omit [DecidableEq V] in
 theorem IsPath.isContained_pathGraph (hw : w.IsPath) : pathGraph (w.length + 1) ⊑ G := by
   classical
   exact ⟨hw.pathGraphCopy⟩
-
-end Walk
-
-namespace Walk
-
-variable (n : ℕ)
-
-/-- The walk in a path graph going through all vertices in order -/
-def ofPathGraph (n : ℕ) : (pathGraph (n + 1)).Walk 0 (Fin.last n) :=
-  match n with
-  | .zero => .nil
-  | .succ n =>
-    .cons (by simp [pathGraph_adj, Embedding.hasse]) <| ofPathGraph n |>.map <| Embedding.toHom <|
-      .hasse (Fin.succOrderEmb _) <| by simp [← Set.Iio_union_Ioi, Set.Iio, Set.ordConnected_Ioi]
-
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
-theorem support_ofPathGraph : (ofPathGraph n).support = List.finRange (n + 1) := by
-  induction n with
-  | zero => rfl
-  | succ n ih =>
-    rw [ofPathGraph, support_cons, support_map, ih]
-    exact List.finRange_succ.symm
-
-@[simp]
-theorem length_ofPathGraph : (ofPathGraph n).length = n := by
-  grind [support_ofPathGraph, length_support]
-
-theorem IsPath.ofPathGraph : ofPathGraph n |>.IsPath :=
-  .mk' <| support_ofPathGraph n ▸ List.nodup_finRange (n + 1)
 
 end Walk
 
