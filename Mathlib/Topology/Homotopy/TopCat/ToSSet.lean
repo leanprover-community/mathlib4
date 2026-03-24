@@ -46,13 +46,13 @@ noncomputable def toSSetObjI : Δ[1] ⟶ TopCat.toSSet.obj TopCat.I.{u} :=
   sSetTopAdj.homEquiv _ _ (TopCat.ofHom (toContinuousMap toTopObjHomeoUnitInterval))
 
 @[reassoc (attr := simp)]
-lemma sSetι₀_whiskerLeft_toSSetObjI_μIso_hom (X : TopCat.{u}) :
+lemma ι₀_whiskerLeft_toSSetObjI_μ (X : TopCat.{u}) :
     SSet.ι₀ ≫ TopCat.toSSet.obj X ◁ SSet.stdSimplex.toSSetObjI ≫
       Functor.LaxMonoidal.μ TopCat.toSSet X TopCat.I = TopCat.toSSet.map TopCat.ι₀ := by
   sorry
 
 @[reassoc (attr := simp)]
-lemma sSetι₁_whiskerLeft_toSSetObjI_μIso_hom (X : TopCat.{u}) :
+lemma ι₁_whiskerLeft_toSSetObjI_μ (X : TopCat.{u}) :
     SSet.ι₁ ≫ TopCat.toSSet.obj X ◁ SSet.stdSimplex.toSSetObjI ≫
       Functor.LaxMonoidal.μ TopCat.toSSet X TopCat.I = TopCat.toSSet.map TopCat.ι₁ := by
   sorry
