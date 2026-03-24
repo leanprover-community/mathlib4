@@ -309,8 +309,8 @@ theorem IsGLB.csInf_eq (H : IsGLB s a) (ne : s.Nonempty) : sInf s = a :=
 
 instance (priority := 100) ConditionallyCompleteLattice.toConditionallyCompletePartialOrder :
     ConditionallyCompletePartialOrder α where
-  isGLB_csInf_of_directed _ _ := isGLB_csInf
-  isLUB_csSup_of_directed _ _ := isLUB_csSup
+  isGLB_csInf_of_directed _ _ hn hb := isGLB_csInf hn hb
+  isLUB_csSup_of_directed _ _ hn hb := isLUB_csSup hn hb
 
 theorem subset_Icc_csInf_csSup (hb : BddBelow s) (ha : BddAbove s) : s ⊆ Icc (sInf s) (sSup s) :=
   fun _ hx => ⟨csInf_le hb hx, le_csSup ha hx⟩
