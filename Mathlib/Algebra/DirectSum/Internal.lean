@@ -379,7 +379,7 @@ variable [Ring R] [AddMonoid ι] [SetLike σ R] [AddSubgroupClass σ R]
 variable (A : ι → σ) [SetLike.GradedMonoid A]
 
 /-- The subring `A 0` of `R`. -/
-def subring : Subring R where
+@[implicit_reducible] def subring : Subring R where
   carrier := A 0
   __ := subsemiring A
   neg_mem' := neg_mem
