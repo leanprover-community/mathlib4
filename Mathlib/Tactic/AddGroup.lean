@@ -27,6 +27,9 @@ an `AddGroup`). Instead, we handle negation via `neg_add_rev` to distribute nega
 `zsmul_neg`/`neg_zsmul` for `n • (-a)`, and custom trick lemmas for combining `-b` with adjacent
 `zsmul` terms.
 
+Other than this issue, this is a direct port from Thomas Browning and Patrick Massot's `group`
+tactic.
+
 ## Tags
 
 group theory, additive group
