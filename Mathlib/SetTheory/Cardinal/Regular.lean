@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
+Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios, Nir Paz
 -/
 module
 
@@ -35,17 +35,19 @@ universe u v
 open Function Cardinal Set Order Ordinal
 
 namespace Cardinal
+variable {c : Cardinal}
 
 /-! ### Regular cardinals -/
 
 /-- A cardinal is regular if it is infinite and it equals its own cofinality. -/
+@[mk_iff]
 structure IsRegular (c : Cardinal) : Prop where
   /-- A regular cardinal is infinite. -/
   aleph0_le : ℵ₀ ≤ c
   /-- A cardinal equals its own cofinality. See `IsRegular.cof_eq`. -/
   le_cof_ord : c ≤ c.ord.cof
 
-theorem IsRegular.cof_ord {c : Cardinal} (H : c.IsRegular) : c.ord.cof = c :=
+theorem IsRegular.cof_ord (H : c.IsRegular) : c.ord.cof = c :=
   (cof_ord_le c).antisymm H.2
 
 @[deprecated (since := "2026-03-22")] alias IsRegular.cof_eq := IsRegular.cof_ord
@@ -53,13 +55,13 @@ theorem IsRegular.cof_ord {c : Cardinal} (H : c.IsRegular) : c.ord.cof = c :=
 theorem IsRegular.cof_omega_eq {o : Ordinal} (H : (ℵ_ o).IsRegular) : (ω_ o).cof = ℵ_ o := by
   rw [← ord_aleph, H.cof_ord]
 
-theorem IsRegular.pos {c : Cardinal} (H : c.IsRegular) : 0 < c :=
+theorem IsRegular.pos (H : c.IsRegular) : 0 < c :=
   aleph0_pos.trans_le H.1
 
-theorem IsRegular.nat_lt {c : Cardinal} (H : c.IsRegular) (n : ℕ) : n < c :=
+theorem IsRegular.nat_lt (H : c.IsRegular) (n : ℕ) : n < c :=
   lt_of_lt_of_le natCast_lt_aleph0 H.aleph0_le
 
-theorem IsRegular.ord_pos {c : Cardinal} (H : c.IsRegular) : 0 < c.ord := by
+theorem IsRegular.ord_pos (H : c.IsRegular) : 0 < c.ord := by
   rw [Cardinal.lt_ord, card_zero]
   exact H.pos
 
@@ -68,7 +70,7 @@ theorem isRegular_cof {o : Ordinal} (h : IsSuccLimit o) : IsRegular o.cof := by
   rwa [aleph0_le_cof_iff, one_lt_cof_iff]
 
 /-- If `c` is a regular cardinal, then `c.ord.ToType` has a least element. -/
-lemma IsRegular.ne_zero {c : Cardinal} (H : c.IsRegular) : c ≠ 0 :=
+lemma IsRegular.ne_zero (H : c.IsRegular) : c ≠ 0 :=
   H.pos.ne'
 
 theorem isRegular_aleph0 : IsRegular ℵ₀ :=
@@ -165,11 +167,11 @@ theorem iSup_lt_of_isRegular {ι} {f : ι → Cardinal} {c} (hc : IsRegular c) (
     (∀ i, f i < c) → iSup f < c :=
   iSup_lt (by rwa [hc.cof_ord])
 
-theorem sum_lt_lift_of_isRegular {ι : Type u} {f : ι → Cardinal} {c : Cardinal} (hc : IsRegular c)
+theorem sum_lt_lift_of_isRegular {ι : Type u} {f : ι → Cardinal} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c) : sum f < c :=
   (sum_le_lift_mk_mul_iSup _).trans_lt <| mul_lt_of_lt hc.1 hι (iSup_lt_lift_of_isRegular hc hι hf)
 
-theorem sum_lt_of_isRegular {ι : Type u} {f : ι → Cardinal} {c : Cardinal} (hc : IsRegular c)
+theorem sum_lt_of_isRegular {ι : Type u} {f : ι → Cardinal} (hc : IsRegular c)
     (hι : #ι < c) : (∀ i, f i < c) → sum f < c :=
   sum_lt_lift_of_isRegular.{u, u} hc (by rwa [lift_id])
 
@@ -180,7 +182,7 @@ theorem card_lt_of_card_iUnion_lt {ι : Type u} {α : Type u} {t : ι → Set α
 
 @[simp]
 theorem card_iUnion_lt_iff_forall_of_isRegular {ι : Type u} {α : Type u} {t : ι → Set α}
-    {c : Cardinal} (hc : c.IsRegular) (hι : #ι < c) : #(⋃ i, t i) < c ↔ ∀ i, #(t i) < c := by
+    (hc : c.IsRegular) (hι : #ι < c) : #(⋃ i, t i) < c ↔ ∀ i, #(t i) < c := by
   refine ⟨card_lt_of_card_iUnion_lt, fun h ↦ ?_⟩
   apply lt_of_le_of_lt (Cardinal.mk_sUnion_le _)
   apply Cardinal.mul_lt_of_lt hc.aleph0_le
@@ -195,7 +197,7 @@ theorem card_lt_of_card_biUnion_lt {α β : Type u} {s : Set α} {t : ∀ a ∈ 
   simp_all only [iUnion_coe_set, Subtype.forall]
 
 theorem card_biUnion_lt_iff_forall_of_isRegular {α β : Type u} {s : Set α} {t : ∀ a ∈ s, Set β}
-    {c : Cardinal} (hc : c.IsRegular) (hs : #s < c) :
+    (hc : c.IsRegular) (hs : #s < c) :
     #(⋃ a ∈ s, t a ‹_›) < c ↔ ∀ a (ha : a ∈ s), #(t a ha) < c := by
   rw [biUnion_eq_iUnion, card_iUnion_lt_iff_forall_of_isRegular hc hs, SetCoe.forall']
 
@@ -253,58 +255,41 @@ theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' :
 /-! ### Singular cardinals -/
 
 /-- A cardinal is singular if it is infinite and not regular. -/
+@[mk_iff]
 structure IsSingular (c : Cardinal) : Prop where
-  aleph0_le : ℵ₀ ≤ c 
-  ℵ₀ ≤ c ∧ ¬c.IsRegular
+  /-- A singular cardinal is infinite. -/
+  aleph0_le : ℵ₀ ≤ c
+  /-- A singular cardinal is not regular, see `IsSingular.not_isRegular`. -/
+  cof_ord_lt : c.ord.cof < c
 
-#exit
-theorem IsSingular.aleph0_le (H : c.IsSingular) : ℵ₀ ≤ c :=
-  H.1
+theorem IsSingular.not_isRegular (hc : c.IsSingular) : ¬c.IsRegular :=
+  fun hc' ↦ hc'.le_cof_ord.not_gt hc.cof_ord_lt
 
-theorem IsSingular.not_isRegular (H : c.IsSingular) : ¬c.IsRegular :=
-  H.2
+theorem IsRegular.not_isSingular (hc : c.IsRegular) : ¬c.IsSingular :=
+  imp_not_comm.1 IsSingular.not_isRegular hc
 
-theorem IsSingular.cof_ord_lt (H : c.IsSingular) : c.ord.cof < c :=
-  lt_of_le_of_ne (cof_ord_le c) (fun h ↦ H.2 ⟨H.1, h.symm.le⟩)
+theorem IsSingular.natCast_lt (hc : c.IsSingular) (n : ℕ) : n < c :=
+  natCast_lt_aleph0.trans_le hc.aleph0_le
 
-theorem IsSingular.natCast_lt (H : c.IsSingular) (n : ℕ) : n < c :=
-  (nat_lt_aleph0 n).trans_le H.aleph0_le
-
-theorem IsSingular.pos (H : c.IsSingular) : 0 < c :=
-  H.natCast_lt 0
-
-theorem IsRegular.not_isSingular (H : c.IsRegular) : ¬c.IsSingular :=
-  fun h ↦ h.2 H
-
-theorem isSingular_iff_cof_lt (h : ℵ₀ ≤ c) : c.IsSingular ↔ c.ord.cof < c :=
-  ⟨fun h ↦ h.cof_ord_lt, fun h' ↦ ⟨h, fun h ↦ h'.ne h.cof_eq⟩⟩
+theorem IsSingular.pos (hc : c.IsSingular) : 0 < c :=
+  hc.natCast_lt 0
 
 theorem isRegular_or_isSingular (h : ℵ₀ ≤ c) : c.IsRegular ∨ c.IsSingular := by
-  rw [IsSingular]
+  rw [isSingular_iff, ← not_le]
   tauto
 
-theorem isRegular_or_isSingular_or_lt_aleph0 :
-    c.IsRegular ∨ c.IsSingular ∨ c < ℵ₀ := by
-  rw [lt_iff_not_ge]
+theorem lt_aleph0_or_isRegular_or_isSingular : c < ℵ₀ ∨ c.IsRegular ∨ c.IsSingular := by
+  have := isRegular_or_isSingular (c := c)
+  rw [← not_le]
   tauto
 
-theorem isRegular.of_not_isSingular (h : ℵ₀ ≤ c) (H : ¬c.IsSingular) :
-    c.IsRegular := by
-  rw [IsSingular] at H
-  tauto
-
-theorem isSingular_aleph_iff {o : Ordinal} (ho : o.IsLimit) :
+@[simp]
+theorem isSingular_aleph_iff {o : Ordinal} (ho : IsSuccLimit o) :
     (aleph o).IsSingular ↔ o.cof < aleph o := by
-  constructor <;> intro h
-  · have := h.cof_ord_lt
-    rwa [aleph_cof ho] at this
-  · exact (isSingular_iff_cof_lt (aleph0_le_aleph o)).mpr ((aleph_cof ho) ▸ h)
+  rw [isSingular_iff]
+  simp [ho]
 
-theorem isSingular_aleph_omega : (aleph ω).IsSingular := by
-  rw [isSingular_aleph_iff omega0_isLimit, cof_omega0, ← aleph_zero, aleph_lt]
-  exact omega0_pos
-
-end Singular
+theorem isSingular_aleph_omega : (aleph ω).IsSingular := by simp
 
 /-! ### Inaccessible cardinals -/
 
@@ -317,23 +302,22 @@ structure IsInaccessible (c : Cardinal) : Prop where
   /-- An inaccessible cardinal is a strong limit, see `IsInaccessible.isStrongLimit`. -/
   two_power_lt ⦃x⦄ : x < c → 2 ^ x < c
 
-theorem IsInaccessible.nat_lt {c : Cardinal} (h : IsInaccessible c) (n : ℕ) : n < c :=
+theorem IsInaccessible.nat_lt (h : IsInaccessible c) (n : ℕ) : n < c :=
   natCast_lt_aleph0.trans h.1
 
-theorem IsInaccessible.pos {c : Cardinal} (h : IsInaccessible c) : 0 < c :=
+theorem IsInaccessible.pos (h : IsInaccessible c) : 0 < c :=
   aleph0_pos.trans h.1
 
-theorem IsInaccessible.ne_zero {c : Cardinal} (h : IsInaccessible c) : c ≠ 0 :=
+theorem IsInaccessible.ne_zero (h : IsInaccessible c) : c ≠ 0 :=
   h.pos.ne'
 
-theorem IsInaccessible.isRegular {c : Cardinal} (h : IsInaccessible c) : IsRegular c :=
+theorem IsInaccessible.isRegular (h : IsInaccessible c) : IsRegular c :=
   ⟨h.aleph0_lt.le, h.le_cof⟩
 
-theorem IsInaccessible.isStrongLimit {c : Cardinal} (h : IsInaccessible c) : IsStrongLimit c :=
+theorem IsInaccessible.isStrongLimit (h : IsInaccessible c) : IsStrongLimit c :=
   ⟨h.ne_zero, h.two_power_lt⟩
 
-theorem isInaccessible_def {c : Cardinal} :
-    IsInaccessible c ↔ ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c where
+theorem isInaccessible_def : IsInaccessible c ↔ ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c where
   mp h := ⟨h.aleph0_lt, h.isRegular, h.isStrongLimit⟩
   mpr := fun ⟨h₁, h₂, h₃⟩ ↦ ⟨h₁, h₂.2, h₃.two_power_lt⟩
 

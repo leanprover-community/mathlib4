@@ -1131,6 +1131,7 @@ theorem omega0_ne_zero : ω ≠ 0 :=
 @[simp]
 theorem one_lt_omega0 : 1 < ω := by simpa only [Nat.cast_one] using natCast_lt_omega0 1
 
+@[simp]
 theorem isSuccLimit_omega0 : IsSuccLimit ω := by
   rw [isSuccLimit_iff, isSuccPrelimit_iff_succ_lt]
   refine ⟨omega0_ne_zero, fun o h => ?_⟩
