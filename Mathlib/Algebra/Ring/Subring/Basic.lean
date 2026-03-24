@@ -850,7 +850,7 @@ theorem eq_of_eqOn_set_dense {s : Set R} (hs : closure s = ⊤) {f g : R →+* S
     f = g :=
   eq_of_eqOn_set_top <| hs ▸ eqOn_set_closure h
 
-theorem isUnit_eqLocus_mk_iff (f g : R →+* S) (r : R) (r_in : r ∈ f.eqLocus g) :
+theorem isUnit_eqLocus_mk_iff (f g : R →+* S) {r : R} (r_in : r ∈ f.eqLocus g) :
     IsUnit (⟨r, r_in⟩ : f.eqLocus g) ↔ IsUnit r := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simp [isUnit_iff_exists, ← Subtype.val_inj] at h ⊢
@@ -864,7 +864,7 @@ theorem isUnit_eqLocus_mk_iff (f g : R →+* S) (r : R) (r_in : r ∈ f.eqLocus 
     map_one, one_mul]
 
 instance isLocalHom_eqLocus_subtype (f g : R →+* S) : IsLocalHom (f.eqLocus g).subtype where
-  map_nonunit := by rintro ⟨r, r_in⟩; simpa using (RingHom.isUnit_eqLocus_mk_iff f g r r_in).mpr
+  map_nonunit := by rintro ⟨_, h⟩; simpa using (RingHom.isUnit_eqLocus_mk_iff f g h).mpr
 
 end eqLocus
 
@@ -899,7 +899,7 @@ lemma pullbackSnd_eq_zero_iff (f : R →+* T) (g : S →+* T) {x : f.pullback g}
   simp; simp at h
   grind
 
-theorem isUnit_pullback_mk_iff (f : R →+* T) (g : S →+* T) (a : R × S) (a_in : a ∈ f.pullback g) :
+theorem isUnit_pullback_mk_iff (f : R →+* T) (g : S →+* T) {a : R × S} (a_in : a ∈ f.pullback g) :
     IsUnit (⟨a, a_in⟩ : f.pullback g) ↔ IsUnit a.1 ∧ IsUnit a.2 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [← Prod.isUnit_iff]
