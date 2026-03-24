@@ -1006,4 +1006,66 @@ theorem mem_indepSetFinset_iff : s ∈ G.indepSetFinset n ↔ G.IsNIndepSet n s 
 
 end IndepSetFinset
 
+
+/-! ### Common neighbors and triangles -/
+
+section CommonNeighborsTriangles
+
+variable [Fintype α] [DecidableEq α] [DecidableRel G.Adj]
+
+/-- For adjacent vertices `u` and `v`, the number of their common neighbors equals the number of
+3-cliques containing both `u` and `v`. -/
+theorem card_commonNeighbors_eq_card_triangles_containing_edge {u v : α} (huv : G.Adj u v) :
+    (G.commonNeighbors u v).toFinset.card =
+      ((G.cliqueFinset 3).filter fun s => {u, v} ⊆ s).card := by
+  apply Finset.card_bij (fun w _ => ({u, v, w} : Finset α))
+  · intro w hw
+    simp only [Set.mem_toFinset, commonNeighbors, Set.mem_inter_iff, mem_neighborSet] at hw
+    simp only [Finset.mem_filter, mem_cliqueFinset_iff, is3Clique_iff]
+    exact ⟨⟨u, v, w, huv, hw.1, hw.2, rfl⟩, by simp [Finset.insert_subset_iff]⟩
+  · intro w₁ hw₁ w₂ _ heq
+    simp only [Set.mem_toFinset, commonNeighbors, Set.mem_inter_iff, mem_neighborSet] at hw₁
+    have : w₁ ∈ ({u, v, w₂} : Finset α) := heq ▸ by simp
+    simp only [Finset.mem_insert, Finset.mem_singleton] at this
+    rcases this with rfl | rfl | rfl
+    · exact absurd rfl (G.ne_of_adj hw₁.1)
+    · exact absurd rfl (G.ne_of_adj hw₁.2.symm)
+    · rfl
+  · intro s hs
+    simp only [Finset.mem_filter, mem_cliqueFinset_iff, is3Clique_iff] at hs
+    obtain ⟨⟨a, b, c, hab, hac, hbc, rfl⟩, hcontains⟩ := hs
+    have huv2 : ({u, v} : Finset α).card = 2 := Finset.card_pair huv.ne
+    have h3 : ({a, b, c} : Finset α).card = 3 := by
+      rw [Finset.card_eq_three]; exact ⟨a, b, c, hab.ne, hac.ne, hbc.ne, rfl⟩
+    have hsdiff : (({a, b, c} : Finset α) \ {u, v}).card = 1 := by
+      have := Finset.card_sdiff_add_card_inter ({a, b, c} : Finset α) {u, v}
+      rw [Finset.inter_eq_right.mpr hcontains, h3, huv2] at this; omega
+    obtain ⟨w, hw⟩ := Finset.card_eq_one.mp hsdiff
+    have hwmem : w ∈ ({a, b, c} : Finset α) :=
+      (Finset.mem_sdiff.mp (hw ▸ Finset.mem_singleton_self w)).1
+    have hwnuv : w ∉ ({u, v} : Finset α) :=
+      (Finset.mem_sdiff.mp (hw ▸ Finset.mem_singleton_self w)).2
+    have huw : u ≠ w := fun h => hwnuv (by simp [h])
+    have hvw : v ≠ w := fun h => hwnuv (by simp [h])
+    have hcliq : G.IsClique ({a, b, c} : Finset α) := by
+      rw [isClique_iff]; intro x hx y hy hne
+      simp only [Finset.mem_coe, Finset.mem_insert, Finset.mem_singleton] at hx hy
+      rcases hx with rfl | rfl | rfl <;> rcases hy with rfl | rfl | rfl <;>
+        first | exact absurd rfl hne | exact hab | exact hab.symm
+              | exact hac | exact hac.symm | exact hbc | exact hbc.symm
+    exact ⟨w,
+      by simp only [Set.mem_toFinset, commonNeighbors, Set.mem_inter_iff, mem_neighborSet]
+         exact ⟨hcliq (hcontains (by simp)) hwmem huw,
+                (hcliq (hcontains (by simp)) hwmem hvw)⟩,
+      by apply Finset.eq_of_subset_of_card_le
+         · intro x hx
+           simp only [Finset.mem_insert, Finset.mem_singleton] at hx
+           rcases hx with rfl | rfl | rfl
+           · exact hcontains (by simp)
+           · exact hcontains (by simp)
+           · exact hwmem
+         · rw [h3, Finset.card_eq_three.mpr ⟨u, v, w, huv.ne, huw, hvw, rfl⟩]⟩
+
+end CommonNeighborsTriangles
+
 end SimpleGraph
