@@ -272,14 +272,14 @@ theorem partrec_iff_forall_recursiveIn :
 
 @[simp]
 lemma Nat.recursiveIn_empty_iff_partrec :
-    Nat.RecursiveIn ({} : Set (ℕ →. ℕ)) f ↔ Nat.Partrec f :=
+    Nat.RecursiveIn {} f ↔ Nat.Partrec f :=
 ⟨
   fun hf =>
-    partrec_of_partrec_oracle (O := ({} : Set (ℕ →. ℕ))) (f := f)
+    @partrec_of_partrec_oracle f {}
       (fun g hg => ((Set.mem_empty_iff_false g).mp hg).elim)
       hf,
   fun hf =>
-    Nat.Partrec.recursiveIn (O := ({} : Set (ℕ →. ℕ))) hf
+    @Nat.Partrec.recursiveIn _ {} hf
 ⟩
 
 namespace Nat.RecursiveIn
