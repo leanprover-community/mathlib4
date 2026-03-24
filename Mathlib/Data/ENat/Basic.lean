@@ -42,14 +42,16 @@ open Function
 
 assert_not_exists Field
 
-set_option backward.inferInstanceAs.wrap.data false in
 deriving instance Nontrivial,
   Add, Sub, LE, LT, Bot,
-  Preorder, SuccOrder, LinearOrder, OrderTop, OrderBot, WellFoundedLT,
+  Preorder, LinearOrder, OrderTop, OrderBot, WellFoundedLT,
   AddMonoidWithOne, CommSemiring, LinearOrderedAddCommMonoidWithTop,
   ZeroLEOneClass, OrderedSub, CanonicallyOrderedAdd, IsOrderedRing,
   CharZero, NoZeroDivisors
   for ENat
+
+set_option backward.inferInstanceAs.wrap.data false in
+deriving instance SuccOrder for ENat
 
 namespace ENat
 
