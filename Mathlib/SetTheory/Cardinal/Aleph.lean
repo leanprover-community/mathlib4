@@ -441,8 +441,8 @@ theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ ℵ_ o := by
   exact le_self_add
 
 @[simp]
-theorem aleph0_lt_aleph {o : Ordinal} : ℵ₀ < ℵ_ o ↔ o ≠ 0 := by
-  rw [← aleph_zero, aleph_lt_aleph, pos_iff_ne_zero]
+theorem aleph0_lt_aleph {o : Ordinal} : ℵ₀ < ℵ_ o ↔ 0 < o := by
+  rw [← aleph_zero, aleph_lt_aleph]
 
 theorem aleph_pos (o : Ordinal) : 0 < ℵ_ o :=
   aleph0_pos.trans_le (aleph0_le_aleph o)
