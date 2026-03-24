@@ -44,14 +44,11 @@ assert_not_exists Field
 
 deriving instance Nontrivial,
   Add, Sub, LE, LT, Bot,
-  Preorder, LinearOrder, OrderTop, OrderBot, WellFoundedLT,
+  Preorder, LinearOrder, OrderTop, OrderBot, WellFoundedLT, SuccOrder,
   AddMonoidWithOne, CommSemiring, LinearOrderedAddCommMonoidWithTop,
   ZeroLEOneClass, OrderedSub, CanonicallyOrderedAdd, IsOrderedRing,
   CharZero, NoZeroDivisors
   for ENat
-
-set_option backward.inferInstanceAs.wrap.data false in
-deriving instance SuccOrder for ENat
 
 namespace ENat
 
@@ -63,9 +60,7 @@ variable {a b c d m n : ℕ∞}
 
 theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
-@[simp] theorem succ_coe (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := by
-  simp [SuccOrder.succ]
-  rfl
+@[simp] theorem succ_coe (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := WithTop.succ_coe
 
 @[simp] theorem succ_top : SuccOrder.succ (⊤ : ℕ∞) = ⊤ := rfl
 
