@@ -79,8 +79,8 @@ lemma mk_eq_tens_mapOfCompatibleSMul' : mk_eq_tens R A M N ∘ₗ (rels R A M N)
 
 variable (R A) in
 @[simp]
-lemma mk_eq_tens_tmul_apply (m : M) (n : N) : mk_eq_tens R A M N  ((rels R A M N).mkQ  (m⊗ₜ[R] n))
-    = m⊗ₜ[A] n := by
+lemma mk_eq_tens_tmul_apply (m : M) (n : N) :
+    mk_eq_tens R A M N  (Submodule.Quotient.mk (m⊗ₜ[R] n)) = m⊗ₜ[A] n := by
   unfold mk_eq_tens
   simp [Submodule.liftQ_apply]
 
