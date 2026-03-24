@@ -196,7 +196,7 @@ noncomputable def resIndAdjunction :
   (resCoindAdjunction k S.subtype).ofNatIsoRight (indCoindNatIso k S).symm
 
 omit [DecidableRel (QuotientGroup.rightRel S)] in
-@[instance]
+@[instance] -- Note: we must use `@[instance] theorem` here due to [lean4#5595](https://github.com/leanprover/lean4/issues/5595).
 theorem instIsRightAdjointSubtypeMemSubgroupIndFunctorSubtype :
     (indFunctor.{u} k S.subtype).IsRightAdjoint :=
   open scoped Classical in (resIndAdjunction k S).isRightAdjoint
@@ -237,7 +237,7 @@ noncomputable def coindResAdjunction :
   (indResAdjunction k S.subtype).ofNatIsoLeft (indCoindNatIso k S)
 
 omit [DecidableRel (QuotientGroup.rightRel S)] in
-@[instance]
+@[instance] -- Note: we must use `@[instance] theorem` here due to [lean4#5595](https://github.com/leanprover/lean4/issues/5595).
 theorem instIsLeftAdjointSubtypeMemSubgroupCoindFunctorSubtype :
     (coindFunctor.{u} k S.subtype).IsLeftAdjoint :=
   open scoped Classical in (coindResAdjunction k S).isLeftAdjoint
