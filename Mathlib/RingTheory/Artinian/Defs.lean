@@ -38,8 +38,6 @@ Artinian, artinian, Artinian ring, Artinian module, artinian ring, artinian modu
 
 @[expose] public section
 
-open Set Pointwise
-
 /-- `IsArtinian R M` is the proposition that `M` is an Artinian `R`-module,
 implemented as the well-foundedness of submodule inclusion. -/
 abbrev IsArtinian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop :=
