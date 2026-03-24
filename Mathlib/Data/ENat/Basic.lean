@@ -42,15 +42,23 @@ open Function
 
 assert_not_exists Field
 
-deriving instance Zero, Nontrivial,
+deriving instance Nontrivial,
   LinearOrder, Bot, Sub,
-  LinearOrderedAddCommMonoidWithTop,
   IsOrderedRing, CanonicallyOrderedAdd,
-  OrderBot, OrderTop, OrderedSub, SuccOrder,
+  OrderBot, OrderTop, OrderedSub,
   WellFoundedLT,
   CharZero,
-  NoZeroDivisors
+  NoZeroDivisors,
+  ZeroLEOneClass
   for ENat
+
+set_option backward.inferInstanceAs.wrap false in
+deriving instance LinearOrderedAddCommMonoidWithTop for ENat
+
+set_option backward.inferInstanceAs.wrap.data false in
+deriving instance SuccOrder for ENat
+
+deriving instance CanonicallyOrderedAdd for ENat
 
 #adaptation_note /-- Upon bumping to v4.29.0-rc3, we write out the `CommSemiring` instance rather
 than using `deriving`, to ensure that the `NatCast` instance is definitionally equal to the one
@@ -59,7 +67,7 @@ expected by `grind`. The `deriving` mechanism produces a `NatCast` instance
 See https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/576566138
 -/
 instance : CommSemiring ENat := {
-  __ := inferInstanceAs (CommSemiring (WithTop ℕ))
+  __ := (inferInstance : CommSemiring (WithTop ℕ))
   toNatCast := inferInstance
 }
 
@@ -73,9 +81,17 @@ variable {a b c d m n : ℕ∞}
 
 theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
-set_option backward.isDefEq.respectTransparency false in
+@[simp] theorem succ_coe (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := by
+  simp [SuccOrder.succ]
+  rfl
+
+@[simp] theorem succ_top : SuccOrder.succ (⊤ : ℕ∞) = ⊤ := rfl
+
+@[simp] theorem top_add {x : ℕ∞} : ⊤ + x = ⊤ := WithTop.top_add x
+@[simp] theorem add_top {x : ℕ∞} : x + ⊤ = ⊤ := WithTop.add_top x
+
 instance : SuccAddOrder ℕ∞ where
-  succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ]
+  succ_eq_add_one x := by cases x <;> simp
 
 theorem coe_zero : ((0 : ℕ) : ℕ∞) = 0 :=
   rfl
@@ -297,6 +313,12 @@ theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
 
 lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
   not_le.symm.trans one_le_iff_ne_zero.not_left
+
+lemma le_one_iff_eq_zero_or_eq_one : n ≤ 1 ↔ n = 0 ∨ n = 1 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by cases h <;> simp_all⟩
+  cases n
+  · simp at h
+  · rwa [← lt_one_iff_eq_zero, ← le_iff_lt_or_eq]
 
 theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
   Order.lt_add_one_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)

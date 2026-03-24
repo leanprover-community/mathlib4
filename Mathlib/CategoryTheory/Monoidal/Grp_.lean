@@ -75,6 +75,7 @@ abbrev toMon (A : Grp C) : Mon C := ⟨A.X⟩
 
 @[deprecated (since := "2025-09-15")] alias toMon_ := toMon
 
+set_option backward.inferInstanceAs.wrap.data false in
 variable (C) in
 /-- The trivial group object. -/
 @[simps!]
@@ -666,7 +667,6 @@ end Adjunction
 namespace Equivalence
 variable (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of categories lifts to an equivalence of their group objects. -/
 @[simps] def mapGrp : Grp C ≌ Grp D where
   functor := e.functor.mapGrp
