@@ -73,6 +73,14 @@ lemma limitsClosure_isoClosure :
   rw [isoClosure_le_iff]
   exact le_limitsClosure P J
 
+/-- The closure of a property of objects of a category under limits of
+shape `J` for a category `J`. -/
+abbrev limitClosure (J : Type*) [Category* J] : ObjectProperty C :=
+  P.limitsClosure (fun (_ : Unit) ↦ J)
+
+instance (J : Type*) [Category* J] : (P.limitClosure J).IsClosedUnderLimitsOfShape J :=
+  P.instIsClosedUnderLimitsOfShapeLimitsClosure _ ()
+
 /-- Given `P : ObjectProperty C` and a family of categories `J : α → Type _`,
 this property of objects contains `P` and all objects that are equal to `lim F`
 for some functor `F : J a ⥤ C` such that `F.obj j` satisfies `P` for any `j`. -/
