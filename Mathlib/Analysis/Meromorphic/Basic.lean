@@ -130,11 +130,8 @@ theorem fun_prod (h : ∀ σ ∈ s, MeromorphicAt (F σ) x) :
 theorem finprod {x : 𝕜} (hf : ∀ i, MeromorphicAt (F i) x) :
     MeromorphicAt (∏ᶠ i, F i) x := by
   by_cases h₂f : Function.HasFiniteMulSupport F
-  · simp_rw [finprod_eq_prod F h₂f]
-    apply prod
-    aesop
-  simp_rw [finprod_of_not_hasFiniteMulSupport h₂f]
-  apply MeromorphicAt.const
+  · simpa [finprod_eq_prod F h₂f] using prod (by aesop)
+  · exact finprod_of_not_hasFiniteMulSupport h₂f ▸ const (1 : 𝕜') x
 
 /-- Finite sums of meromorphic functions are meromorphic. -/
 @[fun_prop] -- TODO: to_fun generates an unreadable statement, see #32866
@@ -161,12 +158,9 @@ theorem fun_sum (h : ∀ σ ∈ s, MeromorphicAt (G σ) x) :
 @[fun_prop]
 theorem finsum (hF : ∀ i, MeromorphicAt (F i) x) :
     MeromorphicAt (∑ᶠ i, F i) x := by
-  by_cases h : Function.HasFiniteSupport F
-  · simp_rw [finsum_eq_sum F h]
-    apply sum
-    aesop
-  simp_rw [finsum_of_not_hasFiniteSupport h]
-  apply MeromorphicAt.const
+  by_cases h₂f : Function.HasFiniteSupport F
+  · simpa [finsum_eq_sum F h₂f] using sum (by aesop)
+  · exact finsum_of_not_hasFiniteSupport h₂f ▸ const (0 : 𝕜') x
 
 @[to_fun (attr := fun_prop)]
 lemma neg {f : 𝕜 → E} (hf : MeromorphicAt f x) : MeromorphicAt (-f) x := by

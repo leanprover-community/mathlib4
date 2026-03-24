@@ -274,8 +274,7 @@ theorem meromorphicNFAt_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι →
       AnalyticAt 𝕜 (f τ) x := by
     rw [← (h₁f τ h₁τ).meromorphicOrderAt_nonneg_iff_analyticAt]
     apply ((h₁f τ h₁τ).meromorphicOrderAt_eq_zero_iff.2 _).symm.le
-    rw [Finset.mem_filter, not_and] at h₂τ
-    exact h₂τ h₁τ
+    grind
   by_cases h₄f : {σ ∈ s | f σ x = 0} = ∅
   · exact (Finset.analyticAt_prod _ (fun σ hσ ↦ h₃f hσ (by aesop))).meromorphicNFAt
   rw [Finset.filter_eq_empty_iff] at h₄f
@@ -300,13 +299,11 @@ theorem meromorphicNFAt_finprod {x : 𝕜} {ι : Type*} {f : ι → 𝕜 → �
     MeromorphicNFAt (∏ᶠ i, f i) x := by
   by_cases h₃f : Function.HasFiniteMulSupport f
   · simp_rw [finprod_eq_prod f h₃f]
-    apply meromorphicNFAt_prod (by aesop) (fun _ _ _ _ ↦ by aesop)
-  simp_rw [finprod_of_not_hasFiniteMulSupport h₃f]
-  apply AnalyticAt.meromorphicNFAt
-  apply analyticAt_const
+    exact meromorphicNFAt_prod (by aesop) (fun _ _ _ _ ↦ by aesop)
+  · exact finprod_of_not_hasFiniteMulSupport h₃f ▸ analyticAt_const.meromorphicNFAt
 
 /--
-ZPowers of meromorphic functions in normal form are in normal form.
+Integer powers of meromorphic functions in normal form are in normal form.
 -/
 @[to_fun]
 theorem MeromorphicNFAt.zpow {f : 𝕜 → 𝕜} {n : ℤ} {x : 𝕜} (hf : MeromorphicNFAt f x) :
@@ -347,10 +344,8 @@ theorem MeromorphicNFAt.inv {f : 𝕜 → 𝕜} (hf : MeromorphicNFAt f x) :
 A function to 𝕜 is meromorphic in normal form at a point iff its inverse is.
 -/
 @[simp] theorem meromorphicNFAt_inv {f : 𝕜 → 𝕜} : MeromorphicNFAt f⁻¹ x ↔ MeromorphicNFAt f x where
-  mp := by
-    nth_rw 2 [← inv_inv f]
-    exact .inv
-  mpr hf := by simpa using hf.inv
+  mp hf := inv_inv f ▸ hf.inv
+  mpr hf := hf.inv
 
 /-!
 ### Continuous extension and conversion to normal form
@@ -598,7 +593,7 @@ theorem meromorphicNFOn_finprod {ι : Type*} {f : ι → 𝕜 → 𝕜} (h₁f :
   fun x hx ↦ meromorphicNFAt_finprod (h₁f · hx) (h₂f x hx)
 
 /--
-ZPowers of meromorphic functions in normal form are in normal form.
+Integer powers of meromorphic functions in normal form are in normal form.
 -/
 @[to_fun]
 theorem MeromorphicNFOn.zpow {f : 𝕜 → 𝕜} {n : ℤ} {U : Set 𝕜} (hf : MeromorphicNFOn f U) :

@@ -276,18 +276,17 @@ theorem divisor_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
   classical
   induction s using Finset.induction with
   | empty =>
-    rw [Finset.prod_empty, Finset.sum_empty]
+    rw [prod_empty, sum_empty]
     exact divisor_ofNat 1
   | insert a s ha hs =>
-    have : ∀ z ∈ U, meromorphicOrderAt (∏ i ∈ s, f i) z ≠ ⊤ := by
-      intro z hz
-      simpa [meromorphicOrderAt_prod (fun i hi ↦ h₁f i (Finset.mem_insert_of_mem hi) z hz)]
-        using fun i hi ↦ h₂f i (Finset.mem_insert_of_mem hi) z hz
-    rw [Finset.prod_insert ha, Finset.sum_insert ha, MeromorphicOn.divisor_mul (by aesop)
-        (MeromorphicOn.prod (fun i hi ↦ h₁f i (Finset.mem_insert_of_mem hi)))
-        (h₂f a (Finset.mem_insert_self a s)) this,
-      hs (fun i hi ↦ h₁f i (Finset.mem_insert_of_mem hi))
-        (fun i hi ↦ h₂f i (Finset.mem_insert_of_mem hi))]
+    have (z) (hz : z ∈ U) : meromorphicOrderAt (∏ i ∈ s, f i) z ≠ ⊤ := by
+      simpa [meromorphicOrderAt_prod (fun i hi ↦ h₁f i (mem_insert_of_mem hi) z hz)]
+        using fun i hi ↦ h₂f i (mem_insert_of_mem hi) z hz
+    rw [prod_insert ha, sum_insert ha, divisor_mul (by aesop)
+        (prod (fun i hi ↦ h₁f i (mem_insert_of_mem hi)))
+        (h₂f a (mem_insert_self a s)) this,
+      hs (fun i hi ↦ h₁f i (mem_insert_of_mem hi))
+        (fun i hi ↦ h₂f i (mem_insert_of_mem hi))]
 
 /-- The divisor of the inverse is the negative of the divisor. -/
 @[simp]
