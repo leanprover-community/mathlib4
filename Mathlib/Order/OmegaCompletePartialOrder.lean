@@ -504,7 +504,7 @@ lemma ωScottContinuous.inf (hf : ωScottContinuous f) (hg : ωScottContinuous g
     ωScottContinuous (f ⊓ g) := by
   refine ωScottContinuous.of_monotone_map_ωSup
     ⟨hf.monotone.inf hg.monotone, fun c ↦ eq_of_forall_ge_iff fun a ↦ ?_⟩
-  simp only [Pi.inf_apply, hf.map_ωSup c, hg.map_ωSup c, inf_le_iff, ωSup_le_iff, Chain.map_coe,
+  simp only [Pi.inf_apply, hf.map_ωSup c, hg.map_ωSup c, min_le_iff, ωSup_le_iff, Chain.map_coe,
     Function.comp, OrderHom.coe_mk, ← forall_or_left, ← forall_or_right]
   exact ⟨fun h _ ↦ h _ _, fun h i j ↦
     (h (max j i)).imp (le_trans <| hf.monotone <| c.mono <| le_max_left _ _)

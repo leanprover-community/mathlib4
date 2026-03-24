@@ -339,7 +339,7 @@ private theorem summable_mul_of_bigO_atTop_aux (m : ℕ)
   let C₂ := ∫ t in Set.Ioi (m : ℝ), ‖deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖‖
   refine summable_of_sum_range_norm_le (c := max (C₁ + C₂) 1) fun n ↦ ?_
   cases n with
-  | zero => simp only [range_zero, norm_mul, sum_empty, le_sup_iff, zero_le_one, or_true]
+  | zero => simp only [range_zero, norm_mul, sum_empty, le_max_iff, zero_le_one, or_true]
   | succ n =>
       rw [Nat.range_eq_Icc_zero_sub_one _ n.add_one_ne_zero, add_tsub_cancel_right]
       calc

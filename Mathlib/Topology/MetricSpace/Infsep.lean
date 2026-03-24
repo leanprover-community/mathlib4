@@ -124,7 +124,7 @@ theorem einfsep_insert_le : (insert x s).einfsep ≤ ⨅ (y ∈ s) (_ : x ≠ y)
   exact fun _ hy hxy => einfsep_le_edist_of_mem (mem_insert _ _) (mem_insert_of_mem _ hy) hxy
 
 theorem le_einfsep_pair : edist x y ⊓ edist y x ≤ ({x, y} : Set α).einfsep := by
-  simp_rw [le_einfsep_iff, inf_le_iff, mem_insert_iff, mem_singleton_iff]
+  simp_rw [le_einfsep_iff, min_le_iff, mem_insert_iff, mem_singleton_iff]
   rintro a (rfl | rfl) b (rfl | rfl) hab <;> (try simp only [le_refl, true_or, or_true]) <;>
     contradiction
 
@@ -184,7 +184,7 @@ theorem einfsep_pair (hxy : x ≠ y) : ({x, y} : Set α).einfsep = edist x y := 
 theorem einfsep_insert : einfsep (insert x s) =
     (⨅ (y ∈ s) (_ : x ≠ y), edist x y) ⊓ s.einfsep := by
   refine le_antisymm (le_min einfsep_insert_le (einfsep_anti (subset_insert _ _))) ?_
-  simp_rw [le_einfsep_iff, inf_le_iff, mem_insert_iff]
+  simp_rw [le_einfsep_iff, min_le_iff, mem_insert_iff]
   rintro y (rfl | hy) z (rfl | hz) hyz
   · exact False.elim (hyz rfl)
   · exact Or.inl (iInf_le_of_le _ (iInf₂_le hz hyz))

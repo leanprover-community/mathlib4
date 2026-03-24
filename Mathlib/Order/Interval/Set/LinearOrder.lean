@@ -465,7 +465,7 @@ theorem Ioo_subset_Ioo_union_Ioo (h₁ : a ≤ a₁) (h₂ : c < b) (h₃ : b₁
 
 @[to_dual (attr := simp)]
 theorem Ioi_inter_Ioi : Ioi a ∩ Ioi b = Ioi (a ⊔ b) :=
-  ext fun _ => sup_lt_iff.symm
+  ext fun _ => max_lt_iff.symm
 
 @[to_dual]
 theorem Ico_inter_Ico : Ico a₁ b₁ ∩ Ico a₂ b₂ = Ico (a₁ ⊔ a₂) (b₁ ⊓ b₂) := by

@@ -186,10 +186,10 @@ lemma IsUltra.finsetSup {Y : Type*} [AddCommMonoid R] [LinearOrder R] [AddLeftSt
   · simp
   simp_rw [finsetSup_apply hs]
   apply Finset.sup'_le
-  simp only [le_sup_iff, Finset.le_sup'_iff]
+  simp only [le_max_iff, Finset.le_sup'_iff]
   intro i hi
   have h := (h i hi).le_sup' x y z
-  simp only [le_sup_iff] at h
+  simp only [le_max_iff] at h
   refine h.imp ?_ ?_ <;>
   intro H <;>
   exact ⟨i, hi, H⟩

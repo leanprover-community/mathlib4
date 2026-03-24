@@ -403,7 +403,7 @@ theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p
     use ‖p 0‖ ⊔ (C * r)
     apply iSup_mono'
     intro h
-    simp only [le_refl, le_sup_iff, exists_prop, and_true]
+    simp only [le_refl, le_max_iff, exists_prop, and_true]
     intro n
     rcases n with - | m
     · simp
@@ -415,7 +415,7 @@ theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p
     use ‖p 1‖ ⊔ C / r
     apply iSup_mono'
     intro h
-    simp only [le_refl, le_sup_iff, exists_prop, and_true]
+    simp only [le_refl, le_max_iff, exists_prop, and_true]
     intro n
     cases eq_zero_or_pos r with
     | inl hr =>

@@ -964,13 +964,13 @@ abbrev LinearOrder.toBiheytingAlgebra [LinearOrder α] [BoundedOrder α] : Bihey
     le_himp_iff := fun a b c => by
       split_ifs with h
       · exact iff_of_true le_top (inf_le_of_right_le h)
-      · rw [inf_le_iff, or_iff_left h],
+      · rw [min_le_iff, or_iff_left h],
     himp_bot := fun _ => if_congr le_bot_iff rfl rfl, sdiff := fun a b => if a ≤ b then ⊥ else a,
     hnot := fun a => if a = ⊤ then ⊥ else ⊤,
     sdiff_le_iff := fun a b c => by
       split_ifs with h
       · exact iff_of_true bot_le (le_sup_of_le_left h)
-      · rw [le_sup_iff, or_iff_right h],
+      · rw [le_max_iff, or_iff_right h],
     top_sdiff := fun _ => if_congr top_le_iff rfl rfl }
 
 instance OrderDual.instBiheytingAlgebra [BiheytingAlgebra α] : BiheytingAlgebra αᵒᵈ where

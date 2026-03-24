@@ -88,11 +88,11 @@ theorem toInt_nlt_toInt : ¬toInt val i < toInt val j ↔ ¬val i < val j := by
 
 theorem toInt_sup_toInt_eq_toInt :
     toInt val i ⊔ toInt val j = toInt val k ↔ val i ⊔ val j = val k := by
-  simp [le_antisymm_iff, sup_le_iff, le_sup_iff, toInt_le_toInt]
+  simp [le_antisymm_iff, toInt_le_toInt]
 
 theorem toInt_inf_toInt_eq_toInt :
     toInt val i ⊓ toInt val j = toInt val k ↔ val i ⊓ val j = val k := by
-  simp [le_antisymm_iff, inf_le_iff, le_inf_iff, toInt_le_toInt]
+  simp [le_antisymm_iff, toInt_le_toInt]
 
 open Lean Meta Qq
 

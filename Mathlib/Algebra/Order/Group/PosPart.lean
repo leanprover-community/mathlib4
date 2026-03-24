@@ -251,7 +251,7 @@ variable [LinearOrder α] [Group α] {a b : α}
 lemma oneLePart_of_one_lt_oneLePart (ha : 1 < a⁺ᵐ) : a⁺ᵐ = a := by
   rw [oneLePart_def, right_lt_sup, not_le] at ha; exact oneLePart_eq_self.2 ha.le
 
-@[to_additive (attr := simp)] lemma oneLePart_lt : a⁺ᵐ < b ↔ a < b ∧ 1 < b := sup_lt_iff
+@[to_additive (attr := simp)] lemma oneLePart_lt : a⁺ᵐ < b ↔ a < b ∧ 1 < b := max_lt_iff
 
 section covariantmul
 variable [MulLeftMono α]
@@ -270,7 +270,7 @@ variable [MulLeftMono α]
 variable [MulRightMono α]
 
 @[to_additive (attr := simp)] lemma leOnePart_lt : a⁻ᵐ < b ↔ b⁻¹ < a ∧ 1 < b :=
-  sup_lt_iff.trans <| by rw [inv_lt']
+  max_lt_iff.trans <| by rw [inv_lt']
 
 end covariantmul
 end LinearOrder

@@ -159,7 +159,7 @@ variable {ι ι' : Sort*} [LinearOrder α]
 
 theorem isPiSystem_image_Iio (s : Set α) : IsPiSystem (Iio '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ -
-  exact ⟨a ⊓ b, inf_ind a b ha hb, Iio_inter_Iio.symm⟩
+  exact ⟨a ⊓ b, min_ind (fun _ ↦ ha) (fun _ ↦ hb), Iio_inter_Iio.symm⟩
 
 theorem isPiSystem_Iio : IsPiSystem (range Iio : Set (Set α)) :=
   @image_univ α _ Iio ▸ isPiSystem_image_Iio univ
@@ -172,7 +172,7 @@ theorem isPiSystem_Ioi : IsPiSystem (range Ioi : Set (Set α)) :=
 
 theorem isPiSystem_image_Iic (s : Set α) : IsPiSystem (Iic '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ -
-  exact ⟨a ⊓ b, inf_ind a b ha hb, Iic_inter_Iic.symm⟩
+  exact ⟨a ⊓ b, min_ind (fun _ ↦ ha) (fun _ ↦ hb), Iic_inter_Iic.symm⟩
 
 theorem isPiSystem_Iic : IsPiSystem (range Iic : Set (Set α)) :=
   @image_univ α _ Iic ▸ isPiSystem_image_Iic univ
@@ -189,7 +189,8 @@ theorem isPiSystem_Ixx_mem {Ixx : α → α → Set α} {p : α → α → Prop}
     IsPiSystem { S | ∃ᵉ (l ∈ s) (u ∈ t), p l u ∧ Ixx l u = S } := by
   rintro _ ⟨l₁, hls₁, u₁, hut₁, _, rfl⟩ _ ⟨l₂, hls₂, u₂, hut₂, _, rfl⟩
   simp only [Hi]
-  exact fun H => ⟨l₁ ⊔ l₂, sup_ind l₁ l₂ hls₁ hls₂, u₁ ⊓ u₂, inf_ind u₁ u₂ hut₁ hut₂, Hne H, rfl⟩
+  exact fun H => ⟨l₁ ⊔ l₂, max_ind (fun _ ↦ hls₁) (fun _ ↦ hls₂),
+                  u₁ ⊓ u₂, min_ind (fun _ ↦ hut₁) (fun _ ↦ hut₂), Hne H, rfl⟩
 
 theorem isPiSystem_Ixx {Ixx : α → α → Set α} {p : α → α → Prop}
     (Hne : ∀ {a b}, (Ixx a b).Nonempty → p a b)

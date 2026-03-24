@@ -96,7 +96,7 @@ theorem posLog_eq_log_max_one (hx : 0 ≤ x) : log⁺ x = log (max 1 x) := by
 /-- The function `log⁺` is monotone on the positive axis. -/
 theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
   intro x hx y hy hxy
-  simp only [posLog, le_sup_iff, sup_le_iff, le_refl, true_and]
+  simp only [posLog, le_max_iff, sup_le_iff, le_refl, true_and]
   by_cases! h : log x ≤ 0
   · tauto
   · right

@@ -101,7 +101,7 @@ lemma convergenceSet_BddAbove {f : PowerSeries R} (hf : IsRestricted c f) :
   obtain ⟨N, hf⟩ := by simpa using (hf 1)
   rw [bddAbove_def, convergenceSet]
   use max 1 (max' (image (fun i ↦ ‖coeff i f‖ * c ^ i) (range (N + 1))) (by simp))
-  simp only [Set.mem_setOf_eq, le_sup_iff, forall_exists_index, forall_apply_eq_imp_iff]
+  simp only [Set.mem_setOf_eq, le_max_iff, forall_exists_index, forall_apply_eq_imp_iff]
   intro i
   rcases le_total i N with h | h
   · right
