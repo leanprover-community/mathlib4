@@ -70,25 +70,22 @@ instance : Category TopPair where
 functor of TopCat on the morphisms that are inducing. -/
 def equivComma : TopPair ≌ MorphismProperty.Comma (𝟭 TopCat) (𝟭 TopCat)
     (fun X Y f ↦ Topology.IsInducing (f : TopCat.Hom X Y)) ⊤ ⊤ where
-  functor.obj X := {
-      left := X.snd
+  functor.obj X :=
+    { left := X.snd
       right := X.fst
       hom := X.map
-      prop := X.isInducing_map
-  }
-  functor.map f := {
-      left := f.snd
+      prop := X.isInducing_map }
+  functor.map f :=
+    { left := f.snd
       right := f.fst
       w := f.snd_map
       prop_hom_left := by simp
-      prop_hom_right := by simp
-  }
-  inverse.obj X := {
-      fst := X.right
+      prop_hom_right := by simp }
+  inverse.obj X :=
+    { fst := X.right
       snd := X.left
       map := X.hom
-      isInducing_map := X.prop
-  }
+      isInducing_map := X.prop }
   inverse.map f := { fst := f.right, snd := f.left, snd_map := f.w }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
@@ -128,11 +125,10 @@ instance : Inhabited TopPair := ⟨incl.obj TopCat.inhabited.default⟩
 @[simps]
 def inclAdjProj₁ : incl ⊣ proj₁ where
   unit.app X := 𝟙 X
-  counit.app X := {
-    fst := 𝟙 X.fst,
-    snd := TopCat.isInitialPEmpty.to _
-    snd_map := by ext x; induction x
-  }
+  counit.app X :=
+    { fst := 𝟙 X.fst,
+      snd := TopCat.isInitialPEmpty.to _
+      snd_map := by ext x; induction x }
   counit.naturality X Y f := Hom.ext (by simp) (by ext x; induction x)
   left_triangle_components X := Hom.ext (by simp) (by cat_disch)
 
@@ -189,8 +185,8 @@ the first and second components.
 -/
 @[simps]
 def symm {f₀ f₁ : X ⟶ Y} (F : Homotopy f₀ f₁) : Homotopy f₁ f₀ where
-  fst := ContinuousMap.Homotopy.symm F.fst
-  snd := ContinuousMap.Homotopy.symm F.snd
+  fst := F.fst.symm
+  snd := F.snd.symm
   snd_map := by
     ext ⟨t, x⟩
     simp only [TopCat.hom_comp, TopCat.hom_ofHom, ContinuousMap.comp_apply,
@@ -215,8 +211,8 @@ Given `Homotopy f₀ f₁` and `Homotopy f₁ f₂`, we can define a `Homotopy f
 @[simps]
 noncomputable def trans {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) :
     Homotopy f₀ f₂ where
-  fst := ContinuousMap.Homotopy.trans F.fst G.fst
-  snd := ContinuousMap.Homotopy.trans F.snd G.snd
+  fst := F.fst.trans G.fst
+  snd := F.snd.trans G.snd
   snd_map := by
     ext ⟨t, x⟩
     simp only [TopCat.hom_comp, TopCat.hom_ofHom, ContinuousMap.comp_apply,
@@ -232,11 +228,7 @@ noncomputable def trans {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G :
 
 theorem symm_trans {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) :
     (F.trans G).symm = G.symm.trans F.symm := by
-      apply Homotopy.ext
-      · simp only [symm_fst, trans_fst]
-        exact ContinuousMap.Homotopy.symm_trans _ _
-      · simp only [symm_snd, trans_snd]
-        exact ContinuousMap.Homotopy.symm_trans _ _
+      ext : 1 <;> exact ContinuousMap.Homotopy.symm_trans _ _
 
 /-- If we have a `Homotopy g₀ g₁` and a `Homotopy f₀ f₁`, then we can compose them and get a
 `Homotopy (f₀ ≫ g₀) (f₁ ≫ g₁)`.
@@ -244,23 +236,23 @@ theorem symm_trans {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G : Homo
 @[simps]
 def comp {f₀ f₁ : X ⟶ Y} {g₀ g₁ : Y ⟶ Z} (G : Homotopy g₀ g₁) (F : Homotopy f₀ f₁) :
     Homotopy (f₀ ≫ g₀) (f₁ ≫ g₁) where
-      fst := ContinuousMap.Homotopy.comp G.fst F.fst
-      snd := ContinuousMap.Homotopy.comp G.snd F.snd
-      snd_map := by
-        ext ⟨t, x⟩
-        simp only [comp_snd, TopCat.hom_comp, TopCat.hom_ofHom, ContinuousMap.comp_apply,
-          ContinuousMap.Homotopy.coe_toContinuousMap, ContinuousMap.Homotopy.comp_apply, comp_fst,
-          ContinuousMap.prodMap_apply, ContinuousMap.coe_id, Prod.map_apply, id_eq]
-        rw [← ContinuousMap.Homotopy.coe_toContinuousMap G.snd,
-          ← TopCat.hom_ofHom G.snd.toContinuousMap, ← TopCat.comp_app]
-        simp only [G.snd_map, TopCat.hom_comp, TopCat.hom_ofHom, ContinuousMap.comp_apply,
-          ContinuousMap.prodMap_apply, ContinuousMap.coe_id, Prod.map_apply, id_eq,
-          ContinuousMap.Homotopy.coe_toContinuousMap]
-        rw [← ContinuousMap.Homotopy.coe_toContinuousMap F.snd,
-          ← TopCat.hom_ofHom F.snd.toContinuousMap, ← TopCat.comp_app]
-        simp only [F.snd_map, TopCat.hom_comp, TopCat.hom_ofHom, ContinuousMap.comp_apply,
-          ContinuousMap.prodMap_apply, ContinuousMap.coe_id, Prod.map_apply, id_eq,
-          ContinuousMap.Homotopy.coe_toContinuousMap]
+  fst := G.fst.comp F.fst
+  snd := G.snd.comp F.snd
+  snd_map := by
+    ext ⟨t, x⟩
+    simp only [comp_snd, TopCat.hom_comp, TopCat.hom_ofHom, ContinuousMap.comp_apply,
+      ContinuousMap.Homotopy.coe_toContinuousMap, ContinuousMap.Homotopy.comp_apply, comp_fst,
+      ContinuousMap.prodMap_apply, ContinuousMap.coe_id, Prod.map_apply, id_eq]
+    rw [← ContinuousMap.Homotopy.coe_toContinuousMap G.snd,
+      ← TopCat.hom_ofHom G.snd.toContinuousMap, ← TopCat.comp_app]
+    simp only [G.snd_map, TopCat.hom_comp, TopCat.hom_ofHom, ContinuousMap.comp_apply,
+      ContinuousMap.prodMap_apply, ContinuousMap.coe_id, Prod.map_apply, id_eq,
+      ContinuousMap.Homotopy.coe_toContinuousMap]
+    rw [← ContinuousMap.Homotopy.coe_toContinuousMap F.snd,
+      ← TopCat.hom_ofHom F.snd.toContinuousMap, ← TopCat.comp_app]
+    simp only [F.snd_map, TopCat.hom_comp, TopCat.hom_ofHom, ContinuousMap.comp_apply,
+      ContinuousMap.prodMap_apply, ContinuousMap.coe_id, Prod.map_apply, id_eq,
+      ContinuousMap.Homotopy.coe_toContinuousMap]
 
 
 /-- Composition of a `Homotopy g₀ g₁` and `f : X ⟶ Y` as a homotopy between `f ≫ g₀` and
@@ -277,21 +269,9 @@ def Homotopic (f g : X ⟶ Y) := Nonempty (Homotopy f g)
 
 namespace Homotopic
 
-@[refl]
-theorem refl (f : X ⟶ Y) : Homotopic f f :=
-  ⟨Homotopy.refl f⟩
-
-@[symm]
-theorem symm ⦃f g : X ⟶ Y⦄ (h : Homotopic f g) : Homotopic g f :=
-  h.map Homotopy.symm
-
-@[trans]
-theorem trans ⦃f g h : X ⟶ Y⦄ (h₀ : Homotopic f g) (h₁ : Homotopic g h) : Homotopic f h :=
-  h₀.map2 Homotopy.trans h₁
-
 /-- Two maps of topological pairs being homotopic defines an equivalence relation. -/
 theorem equivalence : Equivalence (@Homotopic X Y) :=
-  ⟨refl, by apply symm, by apply trans⟩
+  ⟨fun f ↦ ⟨Homotopy.refl f⟩, fun h ↦ h.map Homotopy.symm, fun h₀ h₁ ↦ h₀.map2 Homotopy.trans h₁⟩
 
 end Homotopic
 
