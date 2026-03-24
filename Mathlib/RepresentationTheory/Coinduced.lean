@@ -236,7 +236,6 @@ noncomputable def coindVEquiv :
 set_option backward.isDefEq.respectTransparency false in
 /-- `coind φ A` and `coind' φ A` are isomorphic representations, with the underlying
 `k`-linear equivalence given by `coindVEquiv`. -/
--- @[simps! hom_hom_hom inv_hom_hom]
 noncomputable def coindIso : coind φ A ≅ coind' φ A :=
   Rep.mkIso <| .mk (coindVEquiv φ A) fun h => by ext; simp [homEquiv]
 
