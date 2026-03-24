@@ -64,7 +64,7 @@ noncomputable abbrev coinvariantsTensorResProjectiveResolutionIso
 /-- Shapiro's lemma: given a subgroup `S ≤ G` and an `S`-representation `A`, we have
 `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A).` -/
 noncomputable def indIso [DecidableEq G] (A : Rep.{u} k S) (n : ℕ) :
-    groupHomology (ind.{u,u,u,u} S.subtype A :) n ≅ groupHomology A n :=
+    groupHomology (ind S.subtype A) n ≅ groupHomology A n :=
   (HomologicalComplex.homologyFunctor (ModuleCat k) (ComplexShape.down ℕ) n).mapIso
   (inhomogeneousChainsIso (ind S.subtype A :) ≪≫
     (coinvariantsTensorResProjectiveResolutionIso S A (barResolution k G)).symm) ≪≫
