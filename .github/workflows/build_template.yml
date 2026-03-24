@@ -24,6 +24,9 @@ on:
         type: string
         required: false
         default: ''
+      cache_application_id:
+        type: string
+        required: true
 
 env:
   # Disable Lake's automatic fetching of cloud builds.
@@ -672,6 +675,9 @@ jobs:
     name: Upload to cache
     needs: [build]
     runs-on: ubuntu-latest # These steps run on a GitHub runner; no landrun sandboxing is needed.
+    permissions:
+      contents: read
+      id-token: write
     # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
     # but not if any earlier step failed or was cancelled.
     # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Some.20files.20not.20found.20in.20the.20cache/near/407183836
@@ -707,16 +713,41 @@ jobs:
           name: cache-staging
           path: cache-staging
 
+      - name: Azure CLI OIDC login and mint storage bearer token
+        id: mint_cache_bearer
+        continue-on-error: true
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@17db5ff55a65df98d55cbddcc67938f70d10dab2
+        with:
+          azure-client-id: ${{ inputs.cache_application_id }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+
+      - name: Fallback to SAS token if bearer mint fails (for ease of migration)
+        if: ${{ steps.mint_cache_bearer.outcome != 'success' }}
+        shell: bash
+        env:
+          MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
+        run: |
+          if [ -z "$MATHLIB_CACHE_SAS_RAW" ]; then
+            echo "Azure bearer mint failed and secrets.MATHLIB_CACHE_SAS is not set"
+            exit 1
+          fi
+
+          MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
+          if [ -z "$MATHLIB_CACHE_SAS" ]; then
+            echo "Azure bearer mint failed and secrets.MATHLIB_CACHE_SAS is empty after trimming"
+            exit 1
+          fi
+
+          echo "::add-mask::$MATHLIB_CACHE_SAS"
+          echo "MATHLIB_CACHE_AZURE_BEARER_TOKEN=" >> "$GITHUB_ENV"
+          echo "MATHLIB_CACHE_SAS=$MATHLIB_CACHE_SAS" >> "$GITHUB_ENV"
+          echo "Using SAS fallback because bearer mint step failed."
+
       - name: Upload staged cache to Azure
         shell: bash
         run: |
-          # Trim trailing whitespace from secrets to prevent issues with accidentally added spaces
-          export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
-
           echo "Uploading cache to Azure..."
           MATHLIB_CACHE_USE_CLOUDFLARE=0 lake env "$CACHE_BIN" put-staged --staging-dir="cache-staging" --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }}
-        env:
-          MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
   post_steps:
     name: Post-Build Step
