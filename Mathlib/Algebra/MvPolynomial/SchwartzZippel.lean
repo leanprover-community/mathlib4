@@ -184,6 +184,7 @@ lemma schwartz_zippel_sum_degreeOf {n} {p : MvPolynomial (Fin n) R} (hp : p ≠ 
     _ ≤ ∑ i, (p.degreeOf i / #(S i) : ℚ≥0) := Finset.sup_le fun s hs ↦ by
       gcongr with i; exact monomial_le_degreeOf i hs
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Schwartz-Zippel lemma**
 
 For a nonzero multivariable polynomial `p` over an integral domain, the probability that `p`

@@ -159,6 +159,7 @@ lemma changeOriginSeriesTerm_changeOriginIndexEquiv_symm (n t) :
     simp +unfoldPartialApp [Finset.piecewise]
   simp_rw [changeOriginSeriesTerm_apply, eq_comm]; apply this
 
+set_option backward.isDefEq.respectTransparency false in
 theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ≥0∞) < p.radius) :
     Summable fun s : Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
       ‖p (s.1 + s.2.1)‖₊ * r ^ s.2.1 * r' ^ s.1 := by
@@ -273,7 +274,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
     exact p.nnnorm_changeOriginSeriesTerm_apply_le _ _ _ _ _ _
   have hf : HasSum f ((p.changeOrigin x).sum y) := by
     refine HasSum.sigma_of_hasSum ((p.changeOrigin x).summable y_mem_ball).hasSum (fun k => ?_) hsf
-    · dsimp only [f]
+    · dsimp +instances only [f]
       refine ContinuousMultilinearMap.hasSum_eval ?_ _
       have := (p.hasFPowerSeriesOnBall_changeOrigin k radius_pos).hasSum x_mem_ball
       rw [zero_add] at this

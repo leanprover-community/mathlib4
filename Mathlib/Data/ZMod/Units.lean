@@ -77,6 +77,7 @@ lemma not_isUnit_of_mem_primeFactors {n p : ℕ} (h : p ∈ n.primeFactors) :
   rw [isUnit_iff_coprime]
   exact (Prime.dvd_iff_not_coprime <| prime_of_mem_primeFactors h).mp <| dvd_of_mem_primeFactors h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any element of `ZMod N` has the form `u * d` where `u` is a unit and `d` is a divisor of `N`. -/
 lemma eq_unit_mul_divisor {N : ℕ} (a : ZMod N) :
     ∃ d : ℕ, d ∣ N ∧ ∃ (u : ZMod N), IsUnit u ∧ a = u * d := by

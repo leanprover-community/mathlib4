@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Affine.Isometry
+public import Mathlib.Analysis.Normed.Operator.Compact
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.Normed.Module.RieszLemma
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
@@ -159,6 +160,7 @@ theorem AffineMap.lipschitzWith_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) :
 
 end Affine
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E => f.det := by
   change Continuous fun f : E →L[𝕜] E => LinearMap.det (f : E →ₗ[𝕜] E)
   -- TODO: this could be easier with `det_cases`
@@ -389,7 +391,7 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     rwa [this] at hC
   choose n hn using this
   set Φ := fun φ : E →L[𝕜] F => v.constrL <| u ∘ n φ
-  change ∀ z, dist z (Φ z) ≤ ε / 2 at hn
+  simp_rw [← dist_eq_norm] at hn
   use n
   intro x y hxy
   calc
@@ -539,6 +541,23 @@ lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E
     have : IsClosedEmbedding L := isClosedEmbedding_smul_left hv
     apply IsClosedEmbedding.locallyCompactSpace this
   .of_locallyCompactSpace 𝕜
+
+variable {𝕜 E}
+
+theorem isCompactOperator_id_iff_finiteDimensional [LocallyCompactSpace 𝕜] :
+    IsCompactOperator (_root_.id : E → E) ↔ FiniteDimensional 𝕜 E :=
+  isCompactOperator_id_iff_locallyCompactSpace.trans
+    ⟨fun _ ↦ .of_locallyCompactSpace 𝕜, fun _ ↦ .of_finiteDimensional_of_complete 𝕜 E⟩
+
+/-- If the identity operator of a Banach space over a nontrivially normed field is compact,
+then the space is finite dimensional. -/
+lemma FiniteDimensional.of_isCompactOperator_id (h : IsCompactOperator (id : E → E)) :
+    FiniteDimensional 𝕜 E := by
+  have := LocallyCompactSpace.of_isCompactOperator_id h
+  exact FiniteDimensional.of_locallyCompactSpace 𝕜
+
+@[deprecated (since := "2026-03-05")] alias IsCompactOperator.finiteDimensional :=
+  FiniteDimensional.of_isCompactOperator_id
 
 end Riesz
 
@@ -725,21 +744,40 @@ theorem summable_norm_mul_geometric_of_norm_lt_one' {F : Type*} [NormedRing F]
 theorem summable_of_isEquivalent {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ι → E} {g : ι → E} (hg : Summable g) (h : f ~[cofinite] g) :
     Summable f :=
-  hg.trans_sub (summable_of_isBigO' hg h.isLittleO.isBigO)
+  summable_of_isBigO' hg h.isBigO
 
 theorem summable_of_isEquivalent_nat {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (hg : Summable g) (h : f ~[atTop] g) :
     Summable f :=
-  hg.trans_sub (summable_of_isBigO_nat' hg h.isLittleO.isBigO)
+  summable_of_isBigO_nat' hg h.isBigO
 
-theorem IsEquivalent.summable_iff {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem Asymptotics.IsTheta.summable_iff {ι E F : Type*} [NormedAddCommGroup E]
+  [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F] [FiniteDimensional ℝ E]
+  [FiniteDimensional ℝ F] {f : ι → E} {g : ι → F} (h : f =Θ[cofinite] g) :
+    Summable f ↔ Summable g :=
+  ⟨fun hf => summable_of_isBigO' hf h.isBigO_symm, fun hg => summable_of_isBigO' hg h.isBigO⟩
+
+theorem Asymptotics.IsTheta.summable_iff_nat {E F : Type*} [NormedAddCommGroup E]
+  [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F] [FiniteDimensional ℝ E]
+  [FiniteDimensional ℝ F] {f : ℕ → E} {g : ℕ → F} (h : f =Θ[atTop] g) :
+    Summable f ↔ Summable g :=
+  IsTheta.summable_iff <| by simpa [← Nat.cofinite_eq_atTop] using h
+
+theorem Asymptotics.IsEquivalent.summable_iff {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ι → E} {g : ι → E} (h : f ~[cofinite] g) :
     Summable f ↔ Summable g :=
-  ⟨fun hf => summable_of_isEquivalent hf h.symm, fun hg => summable_of_isEquivalent hg h⟩
+  h.isTheta.summable_iff
 
-theorem IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (h : f ~[atTop] g) : Summable f ↔ Summable g :=
-  ⟨fun hf => summable_of_isEquivalent_nat hf h.symm, fun hg => summable_of_isEquivalent_nat hg h⟩
+@[deprecated (since := "2026-02-07")]
+alias IsEquivalent.summable_iff := Asymptotics.IsEquivalent.summable_iff
+
+theorem Asymptotics.IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (h : f ~[atTop] g) :
+    Summable f ↔ Summable g :=
+  h.isTheta.summable_iff_nat
+
+@[deprecated (since := "2026-02-07")]
+alias IsEquivalent.summable_iff_nat := Asymptotics.IsEquivalent.summable_iff_nat
 
 namespace Module.Basis
 
@@ -754,6 +792,7 @@ theorem continuous_coe_repr : Continuous (fun m : M => ⇑(B.repr m)) :=
   have := Finite.of_basis B
   LinearMap.continuous_of_finiteDimensional B.equivFun.toLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 -- Note: this could be generalized if we had some typeclass to indicate "each of the projections
 -- into the basis is continuous".
 theorem continuous_toMatrix : Continuous fun (v : ι → M) => B.toMatrix v :=

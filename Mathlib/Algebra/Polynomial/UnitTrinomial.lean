@@ -201,6 +201,7 @@ theorem isUnitTrinomial_iff'' (h : p * p.mirror = q * q.mirror) :
 
 namespace IsUnitTrinomial
 
+set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Units ℤ)
     (hp : p = trinomial k m n (u : ℤ) v w) :
     C (v : ℤ) * (C (u : ℤ) * X ^ (m + n) + C (w : ℤ) * X ^ (n - m + k + n)) =

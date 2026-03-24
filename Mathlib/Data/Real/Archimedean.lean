@@ -137,10 +137,8 @@ protected theorem isGLB_sInf (h₁ : s.Nonempty) (h₂ : BddBelow s) : IsGLB s (
 noncomputable instance : ConditionallyCompleteLinearOrder ℝ where
   __ := Real.linearOrder
   __ := Real.lattice
-  le_csSup s a hs ha := (Real.isLUB_sSup ⟨a, ha⟩ hs).1 ha
-  csSup_le s a hs ha := (Real.isLUB_sSup hs ⟨a, ha⟩).2 ha
-  csInf_le s a hs ha := (Real.isGLB_sInf ⟨a, ha⟩ hs).1 ha
-  le_csInf s a hs ha := (Real.isGLB_sInf hs ⟨a, ha⟩).2 ha
+  isLUB_csSup _ := Real.isLUB_sSup
+  isGLB_csInf _ := Real.isGLB_sInf
   csSup_of_not_bddAbove s hs := by simp [hs, sSup_def]
   csInf_of_not_bddBelow s hs := by simp [hs, sInf_def, sSup_def]
 
@@ -298,6 +296,11 @@ lemma sSup_nonneg (hs : ∀ x ∈ s, 0 ≤ x) : 0 ≤ sSup s := by
 /-- As `⨆ i, f i = 0` when the domain of the real-valued function `f` is empty or unbounded above,
 it suffices to show that all values of `f` are nonnegative to show that `0 ≤ ⨆ i, f i`. -/
 lemma iSup_nonneg (hf : ∀ i, 0 ≤ f i) : 0 ≤ ⨆ i, f i := sSup_nonneg <| Set.forall_mem_range.2 hf
+
+lemma iSup_nonneg_of_nonnegHomClass {ι F α : Type*} [FunLike F α ℝ] [NonnegHomClass F α ℝ] (f : F)
+    (g : ι → α) :
+    0 ≤ ⨆ i, f (g i) :=
+  iSup_nonneg (fun i ↦ apply_nonneg f (g i))
 
 /-- As `sInf s = 0` when `s` is a set of reals that's either empty or unbounded below,
 it suffices to show that all elements of `s` are nonpositive to show that `sInf s ≤ 0`. -/

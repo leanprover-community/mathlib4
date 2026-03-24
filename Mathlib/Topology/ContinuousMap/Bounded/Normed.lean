@@ -200,7 +200,7 @@ instance instAddCommGroup : AddCommGroup (α →ᵇ β) := fast_instance%
     fun _ _ => coe_zsmul _ _
 
 instance instSeminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) where
-  dist_eq f g := by simp only [norm_eq, dist_eq, dist_eq_norm, sub_apply]
+  dist_eq f g := by simp only [norm_eq, dist_eq, dist_eq_norm_neg_add, add_apply, neg_apply]
 
 instance instNormedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGroup β] :
     NormedAddCommGroup (α →ᵇ β) :=
@@ -527,13 +527,13 @@ instance instInf : Min (α →ᵇ β) where
 @[simp, norm_cast] lemma coe_inf (f g : α →ᵇ β) : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g := rfl
 
 instance instSemilatticeSup : SemilatticeSup (α →ᵇ β) := fast_instance%
-  DFunLike.coe_injective.semilatticeSup _ coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 instance instSemilatticeInf : SemilatticeInf (α →ᵇ β) := fast_instance%
-  DFunLike.coe_injective.semilatticeInf _ coe_inf
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl coe_inf
 
 instance instLattice : Lattice (α →ᵇ β) := fast_instance%
-  DFunLike.coe_injective.lattice _ coe_sup coe_inf
+  DFunLike.coe_injective.lattice _ .rfl .rfl coe_sup coe_inf
 
 @[simp, norm_cast] lemma coe_abs (f : α →ᵇ β) : ⇑|f| = |⇑f| := rfl
 @[simp, norm_cast] lemma coe_posPart (f : α →ᵇ β) : ⇑f⁺ = (⇑f)⁺ := rfl
@@ -606,7 +606,7 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
     0 ≤ const _ ‖f‖ - f := by
   intro x
   simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, coe_zero, Pi.zero_apply, coe_sub,
-    const_apply, Pi.sub_apply, sub_nonneg]
+    const_apply, Pi.sub_apply]
   linarith [(abs_le.mp (norm_coe_le_norm f x)).2]
 
 end
