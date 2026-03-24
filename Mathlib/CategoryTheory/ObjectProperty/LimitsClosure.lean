@@ -66,6 +66,19 @@ lemma limitsClosure_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
     P.limitsClosure J ≤ Q.limitsClosure J :=
   limitsClosure_le (h.trans (Q.le_limitsClosure J))
 
+lemma limitsClosure_eq_self [P.IsClosedUnderIsomorphisms]
+    [∀ (a : α), P.IsClosedUnderLimitsOfShape (J a)] : P.limitsClosure J = P :=
+  le_antisymm (limitsClosure_le (le_refl P)) (P.le_limitsClosure J)
+
+@[simp]
+lemma limitsClosure_bot [∀ (a : α), Nonempty (J a)] :
+    limitsClosure (⊥ : ObjectProperty C) J = ⊥ :=
+  limitsClosure_eq_self _ _
+
+@[simp]
+lemma limitsClosure_top : limitsClosure (⊤ : ObjectProperty C) J = ⊤ :=
+  limitsClosure_eq_self _ _
+
 lemma limitsClosure_isoClosure :
     P.isoClosure.limitsClosure J = P.limitsClosure J := by
   refine le_antisymm (limitsClosure_le ?_)
