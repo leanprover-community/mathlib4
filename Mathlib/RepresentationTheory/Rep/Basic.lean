@@ -266,9 +266,10 @@ lemma ofHom_zsmul (f : ρ.IntertwiningMap σ) (n : ℤ) : ofHom (n • f) = n �
 
 lemma zsmul_hom (f : A ⟶ B) (n : ℤ) : (n • f).hom = n • f.hom := rfl
 
+instance : AddCommGroup (A ⟶ B) := fast_instance% hom_injective.addCommGroup
+    Rep.Hom.hom zero_hom add_hom neg_hom sub_hom nsmul_hom zsmul_hom
+
 instance : Preadditive (Rep.{w} k G) where
-  homGroup _ _ := hom_injective.addCommGroup Rep.Hom.hom zero_hom add_hom neg_hom sub_hom
-    nsmul_hom zsmul_hom
   add_comp _ _ _ := add_comp
   comp_add _ _ _ := comp_add
 
@@ -587,8 +588,10 @@ lemma comp_smul {M N O : Rep k G} (f : M ⟶ N) (r : k) (g : N ⟶ O) :
   ext1
   simp [smul_hom, Representation.IntertwiningMap.smul_comp]
 
+instance {M N : Rep k G} : Module k (M ⟶ N) := fast_instance% hom_injective.module
+  _ ⟨⟨_, zero_hom⟩, add_hom⟩ <| by simp [smul_hom]
+
 instance : Linear k (Rep k G) where
-  homModule X Y := hom_injective.module _ ⟨⟨_, zero_hom⟩, add_hom⟩ <| by simp [smul_hom]
   smul_comp _ _ _ := smul_comp
   comp_smul _ _ _ := comp_smul
 
