@@ -2,6 +2,7 @@ module  -- shake: keep-all
 
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.AddGroup
 public import Mathlib.Tactic.Algebraize
 public import Mathlib.Tactic.ApplyAt
 public import Mathlib.Tactic.ApplyCongr
