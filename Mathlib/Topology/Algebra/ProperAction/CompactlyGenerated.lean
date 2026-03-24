@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Anatole Dedeker. All rights reserved.
+Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
@@ -17,10 +17,15 @@ generated, and if the action is continuous in the second variable, then the acti
 discontinuous if and only if it is proper. This is in particular true if `X` is first-countable or
 weakly locally compact.
 
-## Main statement
+## Main statements
+
 * `properlyDiscontinuousSMul_iff_properSMul`: If a discrete group acts on a T2 space `X` such that
   `X × X` is compactly generated, and if the action is continuous in the second variable,
   then the action is properly discontinuous if and only if it is proper.
+* `MulAction.properSMul_iff_isCompact_setOf_inter_nonempty`: if `G` is a topological group acting
+  continuously on a T2 space `X` such that `X × X` is compactly generated, then the action is
+  proper iff, for each pair of compacts `U, V ⊆ X`, the set of `g : G` such that `g • U` intersects
+  `V` is compact.
 
 ## Tags
 
@@ -63,7 +68,7 @@ Importing `Mathlib.Topology.Sequences` makes this implication available.
 -/]
 lemma MulAction.properSMul_iff_isCompact_setOf_inter_nonempty [ContinuousSMul G X] :
     ProperSMul G X ↔
-    (∀ {U V : Set X}, IsCompact U → IsCompact V → IsCompact {g : G | (U ∩ g • V).Nonempty}) := by
+    (∀ {U V : Set X}, IsCompact U → IsCompact V → IsCompact {g : G | (g • U ∩ V).Nonempty}) := by
   refine ⟨fun h ↦ ProperSMul.isCompact_setOf_inter_nonempty, fun h ↦ ⟨?_⟩⟩
   refine isProperMap_iff_isCompact_preimage.mpr ⟨by fun_prop, fun {K} hK ↦ ?_⟩
   -- First reduce to the case `K = U × V`.
@@ -74,9 +79,9 @@ lemma MulAction.properSMul_iff_isCompact_setOf_inter_nonempty [ContinuousSMul G 
   suffices IsCompact ((fun (gx : G × X) ↦ (gx.1 • gx.2, gx.2)) ⁻¹' (U ×ˢ V)) by
     apply this.of_isClosed_subset (hK.isClosed.preimage <| by fun_prop)
     exact Set.preimage_mono Set.subset_fst_image_prod_snd_image
-  apply ((h hU hV).prod hV).of_isClosed_subset
-  · exact (hU.isClosed.preimage <| by fun_prop).inter (hV.isClosed.preimage continuous_snd)
-  · exact fun ⟨g, x⟩ ⟨hgx, hgx'⟩ ↦ ⟨⟨g • x, hgx, Set.smul_mem_smul_set hgx'⟩, hgx'⟩
+  apply ((h hV hU).prod hV).of_isClosed_subset
+  · exact (hU.prod hV).isClosed.preimage (by fun_prop)
+  · exact fun ⟨g, x⟩ ⟨hgx, hgx'⟩ ↦ ⟨⟨g • x, smul_mem_smul_set hgx', hgx⟩, hgx'⟩
 
 /-- If a discrete group acts on a T2 space `X` such that `X × X` is compactly
 generated, and if the action is continuous in the second variable, then the action is properly
@@ -87,8 +92,6 @@ theorem properlyDiscontinuousSMul_iff_properSMul [DiscreteTopology G] [Continuou
     ProperlyDiscontinuousSMul G X ↔ ProperSMul G X := by
   have : ContinuousSMul G X := ⟨continuous_prod_of_discrete_left.mpr continuous_const_smul⟩
   simp only [MulAction.properSMul_iff_isCompact_setOf_inter_nonempty, isCompact_iff_finite]
-  rw [properlyDiscontinuousSMul_iff, forall_comm]
-  conv => enter [2, U, V]; rw [forall_comm]
-  simp [inter_comm]
+  rw [properlyDiscontinuousSMul_iff]
 
 end
