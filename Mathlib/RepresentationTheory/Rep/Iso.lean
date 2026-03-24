@@ -40,7 +40,7 @@ abbrev diagonalSuccIsoTensorTrivial :
   linearizationOfMulActionIso k G (Fin (n + 1) → G) ≪≫ (linearization k G).mapIso
     (Action.diagonalSuccIsoTensorTrivial G n) ≪≫
     (Functor.Monoidal.μIso (linearization k G) _ _).symm ≪≫
-    tensorIso (linearizationOfMulActionIso k G G) (linearizationTrivialIso k G (Fin n → G)) --≪≫
+    tensorIso (linearizationOfMulActionIso k G G) (linearizationTrivialIso k G (Fin n → G))
 
 /-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the right-hand representation is
 defined pointwise by the left regular representation on `k[G]`. The map sends
@@ -138,8 +138,7 @@ def counitIso (M : ModuleCat.{w} k[G]) :
   LinearEquiv.toModuleIso
     { counitIsoAddEquiv with
       map_smul' := fun r x => by
-        dsimp [counitIsoAddEquiv]
-        simp }
+        simp [counitIsoAddEquiv] }
 
 set_option backward.isDefEq.respectTransparency false in
 theorem unit_iso_comm (V : Rep.{w} k G) (g : G) (x : V) :
@@ -155,7 +154,7 @@ def unitIso (V : Rep.{w} k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidA
     map_smul' r x := show (RestrictScalars.addEquiv _ _ _).symm
       (V.ρ.asModuleEquiv.symm (r • x)) = _ by
       simp only [Representation.asModuleEquiv_symm_map_smul]
-      rfl } fun g ↦ by ext; apply unit_iso_comm
+      rfl } fun g ↦ by ext; exact unit_iso_comm ..
 
 /-- The categorical equivalence `Rep k G ≌ ModuleCat k[G]`. -/
 def equivalenceModuleMonoidAlgebra : Rep.{w} k G ≌ ModuleCat k[G] where
