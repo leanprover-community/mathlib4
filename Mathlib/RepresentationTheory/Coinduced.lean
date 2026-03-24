@@ -255,7 +255,8 @@ def resCoindToHom (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) : B ⟶ (coin
 
 @[simp]
 lemma resCoindToHom_hom_hom_apply_coe (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) (c : ↑B.V)
-    (i : H) : ((resCoindToHom φ B A f).hom c).1 i = (Hom.hom f) ((B.ρ i) c) := rfl
+    (i : H) : (DFunLike.coe (F := no_index(_)) (resCoindToHom φ B A f).hom c).1 i =
+    (Hom.hom f) ((B.ρ i) c) := rfl
 
 attribute [pp_with_univ] Rep coind
 
@@ -278,7 +279,7 @@ def resCoindHomEquiv (B : Rep.{max w t} k H) (A : Rep.{max w t} k G) :
       have := ((f.hom x).2 g 1).symm
       have := hom_comm_apply f (φ g) x
       simp_all⟩
-  left_inv x := by ext; simp [resCoindToHom_hom_hom_apply_coe _]
+  left_inv x := by ext; simp
   right_inv z := by
     ext (b : B.V)
     have := hom_comm_apply z

@@ -52,8 +52,7 @@ noncomputable def linearYonedaObjResProjectiveResolutionIso
   HomologicalComplex.Hom.isoOfComponents
     (fun _ ↦ (resCoindHomEquiv.{u} _ _ _).toModuleIso) fun _ _ _ ↦
       ModuleCat.hom_ext (LinearMap.ext fun f => Rep.hom_ext <| by
-        ext; simp [← ModuleCat.ofHom_comp, resCoindHomEquiv,
-          resCoindToHom_hom_hom_apply_coe S.subtype, hom_comm_apply])
+        ext; simp [← ModuleCat.ofHom_comp, resCoindHomEquiv, hom_comm_apply])
 
 /-- Shapiro's lemma: given a subgroup `S ≤ G` and an `S`-representation `A`, we have
 `Hⁿ(G, Coind_S^G(A)) ≅ Hⁿ(S, A).` -/
