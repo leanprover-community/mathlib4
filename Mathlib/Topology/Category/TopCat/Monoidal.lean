@@ -121,28 +121,32 @@ def I : TopCat.{u} := TopCat.of (ULift unitInterval)
 instance : LocallyCompactSpace I :=
   inferInstanceAs (LocallyCompactSpace (ULift unitInterval))
 
+namespace I
+
 /-- The unit interval `TopCat.I` is homeomorphic to `unitInterval`. -/
-def homeomorphI : I ≃ₜ unitInterval := Homeomorph.ulift
+def homeomorph : I ≃ₜ unitInterval := Homeomorph.ulift
+
+@[ext]
+lemma ext {x y : I.{u}} (h : homeomorph x = homeomorph y) : x = y :=
+  homeomorph.injective h
 
 /-- The symmetrization map `TopCat.I ⟶ TopCat.I`. -/
-def I.symm : I.{u} ⟶ I :=
-  ofHom ⟨homeomorphI.symm ∘ unitInterval.symm ∘ homeomorphI, by continuity⟩
+def symm : I.{u} ⟶ I :=
+  ofHom ⟨homeomorph.symm ∘ unitInterval.symm ∘ homeomorph, by continuity⟩
 
 @[simp]
-lemma I.homeomorphI_symm (x : I) :
-    homeomorphI (symm x) = unitInterval.symm (homeomorphI x) := rfl
+lemma homeomorph_symm (x : I) :
+    homeomorph (symm x) = unitInterval.symm (homeomorph x) := rfl
 
-instance : OfNat I.{u} 0 := ⟨homeomorphI.symm 0⟩
-instance : OfNat I.{u} 1 := ⟨homeomorphI.symm 1⟩
+instance : OfNat I.{u} 0 := ⟨homeomorph.symm 0⟩
+instance : OfNat I.{u} 1 := ⟨homeomorph.symm 1⟩
 
-@[simp] lemma I.homeomorphI_zero : homeomorphI (0 : I.{u}) = 0 := by simp [OfNat.ofNat]
-@[simp] lemma I.homeomorphI_one : homeomorphI (1 : I.{u}) = 1 := by simp [OfNat.ofNat]
+@[simp] lemma homeomorph_zero : homeomorph (0 : I.{u}) = 0 := by simp [OfNat.ofNat]
+@[simp] lemma homeomorph_one : homeomorph (1 : I.{u}) = 1 := by simp [OfNat.ofNat]
+@[simp] lemma symm_one : I.symm 1 = 0 := by aesop
+@[simp] lemma symm_zero : I.symm 0 = 1 := by aesop
 
-@[simp] lemma I.symm_one : I.symm 1 = 0 :=
-  homeomorphI.injective (by simp)
-
-@[simp] lemma I.symm_zero : I.symm 0 = 1 :=
-  homeomorphI.injective (by simp)
+end I
 
 open CartesianMonoidalCategory
 
