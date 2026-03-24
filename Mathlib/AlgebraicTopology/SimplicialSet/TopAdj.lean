@@ -117,11 +117,11 @@ namespace SSet.stdSimplex
 
 /-- The geometric realization of `Δ[1]` is isomorphic to `TopCat.I`. -/
 noncomputable def toTopObjIsoI :
-    |(Δ[1] : SSet.{u})| ≅ TopCat.I.{u} :=
+    |Δ[1]| ≅ TopCat.I.{u} :=
   TopCat.isoOfHomeo ((SimplexCategory.toTopHomeo _).trans TopCat.stdSimplexHomeomorphI)
 
 /-- The canonical morphism `Δ[1] ⟶ TopCat.toSSet.obj TopCat.I`: by adjunction,
-it corresponds to the homeomorphism `toTopObjHomeoI : |Δ[1]| ≃ₜ TopCat.I`. -/
+it corresponds to the isomorphism `toTopObjIsoI : |Δ[1]| ≅ TopCat.I`. -/
 noncomputable def toSSetObjI : Δ[1] ⟶ TopCat.toSSet.obj TopCat.I.{u} :=
   sSetTopAdj.homEquiv _ _ toTopObjIsoI.hom
 
