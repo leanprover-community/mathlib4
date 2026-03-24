@@ -285,11 +285,11 @@ theorem lt_aleph0_or_isRegular_or_isSingular : c < ℵ₀ ∨ c.IsRegular ∨ c.
 
 @[simp]
 theorem isSingular_aleph_iff {o : Ordinal} (ho : IsSuccLimit o) :
-    (aleph o).IsSingular ↔ o.cof < aleph o := by
+    (ℵ_ o).IsSingular ↔ o.cof < ℵ_ o := by
   rw [isSingular_iff]
   simp [ho]
 
-theorem isSingular_aleph_omega : (aleph ω).IsSingular := by simp
+theorem isSingular_aleph_omega : (ℵ_ ω).IsSingular := by simp
 
 /-! ### Inaccessible cardinals -/
 
