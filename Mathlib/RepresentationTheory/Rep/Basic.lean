@@ -350,7 +350,6 @@ multiplication in `G`. -/
 abbrev diagonalOneIsoLeftRegular :
     diagonal k G 1 ≅ leftRegular k G := Rep.mkIso (Representation.diagonalOneEquivLeftRegular k G)
 
-
 set_option backward.isDefEq.respectTransparency false in
 /-- When `H = {1}`, the `G`-representation on `k[H]` induced by an action of `G` on `H` is
 isomorphic to the trivial representation on `k`. -/
