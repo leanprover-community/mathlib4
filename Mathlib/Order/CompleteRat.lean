@@ -37,10 +37,6 @@ theorem ratLowerBounds_apply (x : EReal) :
 theorem mem_ratLowerBounds_iff (x : EReal) (q : ℚ) :
   q ∈ ratLowerBounds x ↔ ratEmbedEReal q ≤ x := by simp [ratLowerBounds]
 
-def isLowerSet_ratLowerBounds (x : EReal) : IsLowerSet (ratLowerBounds x) :=
-  IsLowerSet.preimage (by grind [lowerBounds_singleton, isLowerSet_Iic])
-    (OrderEmbedding.monotone ratEmbedEReal)
-
 theorem ratLowerBounds_eq_lowerBoundsUpperBounds (x : EReal) :
     lowerBounds (upperBounds (ratLowerBounds x)) = ratLowerBounds x := by
   refine Set.Subset.antisymm_iff.mpr ⟨?_, ?_⟩
