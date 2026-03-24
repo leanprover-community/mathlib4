@@ -6,8 +6,9 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.Topology.Algebra.Group.Matrix
 public import Mathlib.Topology.Algebra.ProperAction.CompactlyGenerated
-public import Mathlib.Topology.Instances.Matrix
 
 /-!
 # Transitivity and properness of actions
@@ -28,14 +29,15 @@ public section
 lemma Matrix.isCompact_forall_apply_le {R m n : Type*} [SeminormedAddCommGroup R]
     [ProperSpace R] (B : ℝ) [Finite m] [Finite n] :
     IsCompact {m : Matrix m n R | ∀ i j, ‖m i j‖ ≤ B} := by
-  let e : (m → n → R) ≃ₜ Matrix m n R := { Matrix.of with }
-  rcases isEmpty_or_nonempty m with hm | hm; · simp
-  rcases isEmpty_or_nonempty n with hn | hn; · simp
   have := Fintype.ofFinite m
   have := Fintype.ofFinite n
-  convert e.isCompact_image.mpr (isCompact_closedBall 0 B) using 1
-  ext t
-  simp [pi_norm_le_iff_of_nonempty, e]
+  let : SeminormedAddCommGroup (Matrix m n R) := Matrix.seminormedAddCommGroup
+  have : ProperSpace (Matrix m n R) := pi_properSpace
+  rcases isEmpty_or_nonempty m with hm | hm; · simp
+  rcases isEmpty_or_nonempty n with hn | hn; · simp
+  convert (isCompact_closedBall (0 : Matrix m n R) B) using 1
+  ext
+  simp [Metric.closedBall, Matrix.norm_def, pi_norm_le_iff_of_nonempty]
 
 namespace UpperHalfPlane
 
