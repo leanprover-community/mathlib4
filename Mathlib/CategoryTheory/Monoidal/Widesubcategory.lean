@@ -155,19 +155,13 @@ section CopyDiscardCategory
 
 variable [CopyDiscardCategory C] [P.IsStableUnderComonoid]
 
+@[simp]
+lemma tensorμ_hom (X Y Z T : WideSubcategory P) :
+    (MonoidalCategory.tensorμ X Y Z T).hom = MonoidalCategory.tensorμ _ _ _ _ := rfl
+
+open CopyDiscardCategory in
+attribute [local simp] copy_tensor discard_tensor copy_unit discard_unit in
 instance : CopyDiscardCategory (WideSubcategory P) where
-  copy_tensor c c' := by
-    ext
-    exact CopyDiscardCategory.copy_tensor c.obj c'.obj
-  discard_tensor c c' := by
-    ext
-    exact CopyDiscardCategory.discard_tensor c.obj c'.obj
-  copy_unit := by
-    ext
-    exact CopyDiscardCategory.copy_unit (C := C)
-  discard_unit := by
-    ext
-    exact CopyDiscardCategory.discard_unit (C := C)
 
 end CopyDiscardCategory
 
