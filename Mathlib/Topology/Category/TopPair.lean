@@ -226,13 +226,6 @@ def comp {f₀ f₁ : X ⟶ Y} {g₀ g₁ : Y ⟶ Z} (G : Homotopy g₀ g₁) (F
     ext
     simp [F.snd_map_apply]
 
-/-- Composition of a `Homotopy g₀ g₁` and `f : X ⟶ Y` as a homotopy between `f ≫ g₀` and
-`f ≫ g₁`. -/
-@[simps!]
-def compMap {g₀ g₁ : Y ⟶ Z} (G : Homotopy g₀ g₁) (f : X ⟶ Y) :
-    Homotopy (f ≫ g₀) (f ≫ g₁) :=
-  G.comp (.refl f)
-
 end Homotopy
 
 /-- Two maps between topological pairs are homotopic if there is a homotopy between them. -/
