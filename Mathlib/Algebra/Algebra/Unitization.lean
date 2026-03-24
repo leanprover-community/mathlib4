@@ -275,10 +275,14 @@ instance instModule [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R
 
 variable (R A) in
 /-- The identity map between `Unitization R A` and `R × A` as an `AddEquiv`. -/
-@[simps! toEquiv apply symm_apply]
+@[simps! apply symm_apply]
 def addEquiv [Add R] [Add A] : Unitization R A ≃+ R × A where
   toEquiv := equiv
   map_add' _ _ := rfl
+
+-- not marked `smip` because the LHS would not be in simp normal form.
+lemma toEquiv_addEquiv [Add R] [Add A] : (addEquiv R A).toEquiv = equiv :=
+  rfl
 
 variable (R S A) in
 /-- The identity map between `Unitization R A` and `R × A` as a `LinearEquiv`. -/
