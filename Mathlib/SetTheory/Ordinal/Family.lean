@@ -848,10 +848,10 @@ theorem isNormal_iff_lt_succ_and_blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}
   constructor <;> intro H o ho <;> have := H o ho <;>
     rwa [← bsup_eq_blsub_of_lt_succ_limit ho fun a _ => h a] at *
 
-@[deprecated IsNormal.ext (since := "2025-12-25")]
+@[deprecated IsNormal.ext_iff (since := "2025-12-25")]
 theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
     (hg : IsNormal g) : f = g ↔ f 0 = g 0 ∧ ∀ a, f a = g a → f (succ a) = g (succ a) :=
-  Order.IsNormal.ext hf hg
+  Order.IsNormal.ext_iff hf hg
 
 end blsub
 

@@ -277,14 +277,12 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
       rw [dif_neg hcj]
       simp [← hj', hc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mulArchimedean_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
     MulArchimedean (MonoidHom.mrange (Valued.v : Valuation K Γ₀)) := by
   rw [← Units.mulArchimedean_iff]
   obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
   exact MulArchimedean.of_locallyFiniteOrder
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
     IsPrincipalIdealRing 𝒪[K] := by
   -- The strategy to show that we have a PIR is by contradiction,
