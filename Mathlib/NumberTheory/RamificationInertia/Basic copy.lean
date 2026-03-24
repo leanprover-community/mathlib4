@@ -91,6 +91,8 @@ noncomputable def ramificationIdx : ℕ :=
   letI Sq := Localization.AtPrime q
   (Module.length Sq (Sq ⧸ p.map (algebraMap R Sq))).toNat
 
+#check CompositionSeries
+
 theorem ramificationIdx_tower [r.LiesOver q] [q.LiesOver p]
     [Module.Flat (Localization.AtPrime q) (Localization.AtPrime r)] :
     p.ramificationIdx r = p.ramificationIdx q * q.ramificationIdx r := by
@@ -100,8 +102,43 @@ theorem ramificationIdx_tower [r.LiesOver q] [q.LiesOver p]
   have : Module.FaithfullyFlat Sq Tr := Module.FaithfullyFlat.of_flat_of_isLocalHom
   by_cases h : IsFiniteLength Sq (Sq ⧸ p.map (algebraMap R Sq))
   · rw [isFiniteLength_iff_exists_compositionSeries] at h
-    obtain ⟨s, hs0, hs1⟩ := h
-    sorry
+    obtain ⟨s, hs_bot, hs_top⟩ := h
+    rw [RelSeries.head] at hs_bot
+    rw [RelSeries.last] at hs_top
+    nth_rewrite 2 [ramificationIdx]
+    rw [← Module.length_compositionSeries s hs_bot hs_top, ENat.toNat_coe]
+    rw [ramificationIdx, ramificationIdx]
+    let ψ : TensorProduct Sq Tr (Sq ⧸ map (algebraMap R Sq) p) ≃ₐ[Tr] Tr ⧸ map (algebraMap R Tr) p := by
+      sorry
+    let φ₀ : Submodule Sq (Sq ⧸ map (algebraMap R Sq) p) →
+        Submodule Tr (TensorProduct Sq Tr (Sq ⧸ map (algebraMap R Sq) p)) :=
+      Submodule.baseChange Tr
+    have hφ₀_bot : φ₀ ⊥ = ⊥ := by simp [φ₀]
+    have hφ₀_top : φ₀ ⊤ = ⊤ := by simp [φ₀]
+    let φ : Submodule Sq (Sq ⧸ map (algebraMap R Sq) p) →
+        Submodule Tr (Tr ⧸ map (algebraMap R Tr) p) := by
+      intro N
+      have key := N.baseChange Tr
+      sorry
+    have hφ_bot : φ ⊥ = ⊥ := by
+      sorry
+    have hφ_top : φ ⊤ = ⊤ := by
+      sorry
+    have key : ∀ k : Fin s.length.succ, (Order.height (φ (s k))).toNat =
+      k * (Module.length Tr (Tr ⧸ map (algebraMap S Tr) q)).toNat := by
+      intro k
+      induction k using Fin.induction
+      case zero =>
+
+        rw [Fin.val_zero, zero_mul, hs_bot, hφ_bot, Order.height_bot, ENat.toNat_zero]
+      case succ i hi =>
+        have : (i.succ : ℕ) = (i.castSucc : ℕ).succ := by
+          rfl
+        rw [this, Nat.succ_mul, ← hi, ← Module.length_submodule, ← Module.length_submodule]
+        sorry
+    specialize key (Fin.last s.length)
+    rw [hs_top, hφ_top, Fin.val_last] at key
+    rwa [Module.length_eq_height]
   · suffices ¬ IsFiniteLength Tr (Tr ⧸ p.map (algebraMap R Tr)) by
       rw [← Module.length_ne_top_iff, not_ne_iff] at h this
       rw [ramificationIdx, ramificationIdx, ramificationIdx, h, this, ENat.toNat_top, zero_mul]
