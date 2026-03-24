@@ -44,11 +44,11 @@ class IsStableUnderAssociator (P : MorphismProperty C) : Prop where
 export IsStableUnderAssociator (associator_hom_mem associator_inv_mem)
 
 /-- A morphism property stable under left and right unitor isomorphisms. -/
-class IsStableUnderUnitor : Prop where
-  leftUnitor_hom_mem (c : C) : P ((λ_ c).hom)
-  leftUnitor_inv_mem (c : C) : P ((λ_ c).inv)
-  rightUnitor_hom_mem (c : C) : P ((ρ_ c).hom)
-  rightUnitor_inv_mem (c : C) : P ((ρ_ c).inv)
+class IsStableUnderUnitor (P : MorphismProperty C) : Prop where
+  leftUnitor_hom_mem (P) (c : C) : P ((λ_ c).hom)
+  leftUnitor_inv_mem (P) (c : C) : P ((λ_ c).inv)
+  rightUnitor_hom_mem (P) (c : C) : P ((ρ_ c).hom)
+  rightUnitor_inv_mem (P) (c : C) : P ((ρ_ c).inv)
 
 export IsStableUnderUnitor (leftUnitor_hom_mem leftUnitor_inv_mem rightUnitor_hom_mem
   rightUnitor_inv_mem)
@@ -62,9 +62,9 @@ section IsStableUnderBraiding
 variable [BraidedCategory C]
 
 /-- A monoidal-stable morphism property also stable under braiding isomorphisms. -/
-class IsStableUnderBraiding : Prop extends IsMonoidalStable P where
-  braiding_hom_mem (c c' : C) : P ((β_ c c').hom)
-  braiding_inv_mem (c c' : C) : P ((β_ c c').inv)
+class IsStableUnderBraiding (P : MorphismProperty C) : Prop extends IsMonoidalStable P where
+  braiding_hom_mem (P) (c c' : C) : P ((β_ c c').hom)
+  braiding_inv_mem (P) (c c' : C) : P ((β_ c c').inv)
 
 export IsStableUnderBraiding (braiding_hom_mem braiding_inv_mem)
 
@@ -75,9 +75,9 @@ section IsStableUnderComonoid
 variable [BraidedCategory C] [∀ {c : C}, ComonObj c]
 
 /-- A braided-stable morphism property stable under comonoid counit and comultiplication. -/
-class IsStableUnderComonoid : Prop extends IsStableUnderBraiding P where
-  counit_mem (c : C) : P (ε[c])
-  comul_mem (c : C) : P (Δ[c])
+class IsStableUnderComonoid (P : MorphismProperty C) : Prop extends IsStableUnderBraiding P where
+  counit_mem (P) (c : C) : P (ε[c])
+  comul_mem (P) (c : C) : P (Δ[c])
 
 export IsStableUnderComonoid (counit_mem comul_mem)
 
