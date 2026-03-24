@@ -703,8 +703,9 @@ theorem mem_transvections_pow_mul_dilatransvections :
     simp [sub_eq_add_neg]
   have he_fixed : e.fixedSubmodule ≤ e'.fixedSubmodule := by
     intro x hx
-    rw [mem_fixedSubmodule_iff, he'_apply]
-    suffices f x = 0 by simp [mem_fixedSubmodule_iff.mp hx, this]
+    rw [mem_fixedSubmodule_iff, coe_coe, he'_apply]
+    simp only [mem_fixedSubmodule_iff, coe_coe] at hx
+    suffices f x = 0 by simp [hx, this]
     rw [← Submodule.mem_bot K, ← hfker]
     exact mem_map_of_mem (mem_sup_left hx)
   obtain ⟨a, hea⟩ := he.2.2
@@ -727,7 +728,7 @@ theorem mem_transvections_pow_mul_dilatransvections :
   have he'_fixed : e'.fixedSubmodule = e.fixedSubmodule := by
     apply le_antisymm _ he_fixed
     intro x hx'
-    simp only [mem_fixedSubmodule_iff, he'_apply] at hx'
+    simp only [mem_fixedSubmodule_iff, coe_coe, he'_apply] at hx'
     suffices f (e x) = 0 by simpa [this] using hx'
     rw [← Submodule.mem_bot K, ← hfker]
     apply mem_map_of_mem
