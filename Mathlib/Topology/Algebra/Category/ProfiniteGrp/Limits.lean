@@ -62,6 +62,7 @@ def toLimitFun (P : ProfiniteGrp.{u}) : P →* limit (diagram P) where
   map_one' := Subtype.val_inj.mp rfl
   map_mul' _ _ := Subtype.val_inj.mp rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toLimitFun_continuous (P : ProfiniteGrp.{u}) : Continuous (toLimitFun P) := by
   apply continuous_induced_rng.mpr (continuous_pi _)
   intro H
@@ -161,6 +162,6 @@ def cone (P : ProfiniteGrp.{u}) : Limits.Cone (diagram P) where
 /-- The canonical cone over `diagram P` is a limit cone. -/
 noncomputable def isLimitCone (P : ProfiniteGrp.{u}) : Limits.IsLimit P.cone :=
   Limits.IsLimit.ofIsoLimit (limitConeIsLimit _) <| .symm <|
-    Limits.Cones.ext (isoLimittoFiniteQuotientFunctor _) fun _ => rfl
+    Limits.Cone.ext (isoLimittoFiniteQuotientFunctor _) fun _ => rfl
 
 end ProfiniteGrp

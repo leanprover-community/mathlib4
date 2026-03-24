@@ -35,18 +35,18 @@ variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A]
   {X : Type*} [Module R A] [Coalgebra R A]
 
 variable (R A X) in
-@[to_additive (relevant_arg := X)]
+@[to_additive]
 instance instCoalgebra : Coalgebra R A[X] := Finsupp.instCoalgebra R X A
 
-@[to_additive (relevant_arg := X)]
+@[to_additive]
 instance instIsCocomm [IsCocomm R A] : IsCocomm R A[X] := Finsupp.instIsCocomm R X A
 
-@[to_additive (relevant_arg := X) (attr := simp)]
+@[to_additive (attr := simp)]
 lemma counit_single (x : X) (a : A) :
     Coalgebra.counit (single x a) = Coalgebra.counit (R := R) a :=
   Finsupp.counit_single _ _ _ _ _
 
-@[to_additive (relevant_arg := X) (attr := simp)]
+@[to_additive (attr := simp)]
 lemma comul_single (x : X) (a : A) :
     Coalgebra.comul (R := R) (single x a) =
       TensorProduct.map (lsingle x) (lsingle x) (Coalgebra.comul a) :=

@@ -32,7 +32,8 @@ open scoped NNReal ENNReal Uniformity
 variable {α β γ : Type*}
 
 /-- We say that `f : α → β` is `AntilipschitzWith K` if for any two points `x`, `y` we have
-`edist x y ≤ K * edist (f x) (f y)`. -/
+`edist x y ≤ K * edist (f x) (f y)`. This can also be used as a predicate for bounded below
+linear operators, see `antilipschitzWith_iff_exists_mul_le_norm`. -/
 def AntilipschitzWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β) :=
   ∀ x y, edist x y ≤ K * edist (f x) (f y)
 
@@ -192,6 +193,13 @@ theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f 
 protected theorem subsingleton {α β} [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
     (h : AntilipschitzWith 0 f) : Subsingleton α :=
   ⟨fun x y => edist_le_zero.1 <| (h x y).trans_eq <| zero_mul _⟩
+
+/-- If `f : α → β` is `K`-antilipschitz and `α` is nontrivial, `K` is positive. -/
+protected theorem pos {α} [EMetricSpace α] [Nontrivial α] {f : α → β}
+    (hf : AntilipschitzWith K f) : 0 < K := by
+  by_contra! h₀
+  obtain rfl : K = 0 := by rwa [le_zero_iff] at h₀
+  exact not_subsingleton α hf.subsingleton
 
 end AntilipschitzWith
 

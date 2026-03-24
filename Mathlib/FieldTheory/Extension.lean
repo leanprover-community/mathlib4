@@ -120,6 +120,7 @@ noncomputable def union : Lifts F E K :=
     _ le_rfl).comp
       (Subalgebra.equivOfEq _ _ <| toSubalgebra_iSup_of_directed dir)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_union ⦃σ : Lifts F E K⦄ (hσ : σ ∈ c) : σ ≤ union c hc :=
   have hσ := Set.mem_insert_of_mem ⊥ hσ
   let t (i : ↑(insert ⊥ c)) := i.val.carrier
@@ -261,7 +262,7 @@ theorem exists_algHom_adjoin_of_splits' :
     · ext x
       let y := (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)) x
       refine Eq.trans congr($hφ y) ?_
-      simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, Function.comp_apply, f']
+      simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, Function.comp_apply, f']
       exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
   letI : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingHom.toAlgebra
   have : IsScalarTower L L' E := IsScalarTower.of_algebraMap_eq' rfl
@@ -269,7 +270,7 @@ theorem exists_algHom_adjoin_of_splits' :
   convert (hK s hs).2
   ext
   simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
-    AlgHom.coe_comp, AlgHom.coe_coe, Function.comp_apply, f']
+    AlgHom.coe_comp, Function.comp_apply, f']
   exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
 
 include hK in
