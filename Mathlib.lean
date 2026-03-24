@@ -6032,6 +6032,7 @@ public import Mathlib.Probability.Martingale.Convergence
 public import Mathlib.Probability.Martingale.OptionalSampling
 public import Mathlib.Probability.Martingale.OptionalStopping
 public import Mathlib.Probability.Martingale.Upcrossing
+public import Mathlib.Probability.Martingale.Ville
 public import Mathlib.Probability.Moments.Basic
 public import Mathlib.Probability.Moments.ComplexMGF
 public import Mathlib.Probability.Moments.Covariance
