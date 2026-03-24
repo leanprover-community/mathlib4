@@ -262,6 +262,12 @@ structure IsSingular (c : Cardinal) : Prop where
   /-- A singular cardinal is not regular, see `IsSingular.not_isRegular`. -/
   cof_ord_lt : c.ord.cof < c
 
+theorem IsSingular.natCast_lt (hc : c.IsSingular) (n : ℕ) : n < c :=
+  natCast_lt_aleph0.trans_le hc.aleph0_le
+
+theorem IsSingular.pos (hc : c.IsSingular) : 0 < c :=
+  hc.natCast_lt 0
+
 theorem IsSingular.not_isRegular (hc : c.IsSingular) : ¬ c.IsRegular :=
   fun hc' ↦ hc'.le_cof_ord.not_gt hc.cof_ord_lt
 
@@ -273,6 +279,10 @@ theorem not_isSingular_aleph0 : ¬ IsSingular ℵ₀ :=
   isRegular_aleph0.not_isSingular
 
 @[simp]
+theorem not_isSingular_aleph_one : ¬ IsSingular ℵ₁ :=
+  isRegular_aleph_one.not_isSingular
+
+@[simp]
 theorem not_isSingular_succ (c : Cardinal) : ¬ IsSingular (succ c) := by
   obtain hc | hc := lt_or_ge c ℵ₀
   · obtain ⟨n, rfl⟩ := lt_aleph0.1 hc
@@ -280,16 +290,6 @@ theorem not_isSingular_succ (c : Cardinal) : ¬ IsSingular (succ c) := by
     rw [succ_natCast, ← Nat.cast_add_one]
     exact natCast_lt_aleph0
   · exact (isRegular_succ hc).not_isSingular
-
-@[simp]
-theorem not_isSingular_aleph_one : ¬ IsSingular ℵ₁ :=
-  isRegular_aleph_one.not_isSingular
-
-theorem IsSingular.natCast_lt (hc : c.IsSingular) (n : ℕ) : n < c :=
-  natCast_lt_aleph0.trans_le hc.aleph0_le
-
-theorem IsSingular.pos (hc : c.IsSingular) : 0 < c :=
-  hc.natCast_lt 0
 
 theorem isRegular_or_isSingular (h : ℵ₀ ≤ c) : c.IsRegular ∨ c.IsSingular := by
   rw [isSingular_iff, ← not_le]
