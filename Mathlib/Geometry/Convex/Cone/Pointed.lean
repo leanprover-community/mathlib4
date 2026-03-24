@@ -408,14 +408,11 @@ lemma neg_le_iff_span_eq {C : PointedCone R M} : -C ≤ C ↔ span R (C : Set M)
 end Pointwise
 
 lemma mem_span {C : PointedCone R M} {x : M} :
-    x ∈ span R C ↔ ∃ p ∈ C, ∃ n ∈ C, p = x + n := by
-  rw [← mem_ofSubmodule_iff, span_eq_neg_sup, mem_sup]
-  simp only [mem_neg]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨y, hy', z, hz, rfl⟩ := h
-    exact ⟨z, hz, -y, hy', by simp⟩
-  · obtain ⟨p, hp, n, hn, rfl⟩ := h
-    exact ⟨-n, by simp [hn], x + n, hp, by simp⟩
+    x ∈ span R C ↔ ∃ p ∈ C, ∃ n ∈ C, x = p - n := by
+  simp_rw [mem_span_iff_mem_neg_sup, mem_sup, mem_neg]
+  refine ⟨fun ⟨y, hy', z, hz, h⟩ ↦ ?_, fun ⟨p, hp, n, hn, h⟩ ↦ ?_⟩
+  · exact ⟨z, hz, -y, hy', by simp [← h, add_comm]⟩
+  · exact ⟨-n, by simp [hn], x + n, by simp [h, hp], by simp⟩
 
 end DirectedOrderRing
 
