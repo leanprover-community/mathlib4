@@ -336,7 +336,7 @@ lemma Spec_iff {R : CommRingCat} {f : X ⟶ Spec R} :
       change f = X.isoSpec.hom ≫ Spec.map φ
       simp only [Scheme.isoSpec, asIso_hom, Spec.map_comp, ← Scheme.toSpecΓ_naturality_assoc,
         ← SpecMap_ΓSpecIso_hom, φ]
-      simp only [← Spec.map_comp, Iso.inv_hom_id, Spec.map_id, Category.comp_id]
+      simp
   · rintro ⟨I, e, rfl⟩
     infer_instance
 
@@ -393,7 +393,7 @@ instance (f : X ⟶ Y) (V : Y.Opens) [IsClosedImmersion f] :
 instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersion f] :
     LocallyOfFiniteType f := by
   rw [HasRingHomProperty.eq_affineLocally @LocallyOfFiniteType,
-    ← and_iff_right (inferInstanceAs (IsAffineHom f)) (b := affineLocally _ _),
+    ← and_iff_right (inferInstance : IsAffineHom f) (b := affineLocally _ _),
     ← targetAffineLocally_affineAnd_iff_affineLocally RingHom.finiteType_isLocal]
   rw [HasAffineProperty.eq_targetAffineLocally @IsClosedImmersion] at h
   exact targetAffineLocally_affineAnd_le (RingHom.FiniteType.of_surjective _) _ h

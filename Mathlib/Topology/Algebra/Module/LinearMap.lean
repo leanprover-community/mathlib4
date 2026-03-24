@@ -37,7 +37,7 @@ ring `R`. -/
 structure ContinuousLinearMap {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     (M : Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂]
     [AddCommMonoid M₂] [Module R M] [Module S M₂] extends M →ₛₗ[σ] M₂ where
-  cont : Continuous toFun := by continuity
+  cont : Continuous toFun := by fun_prop
 
 attribute [inherit_doc ContinuousLinearMap] ContinuousLinearMap.cont
 
@@ -116,6 +116,10 @@ theorem coe_mk' (f : M₁ →ₛₗ[σ₁₂] M₂) (h) : (mk f h : M₁ → M�
 
 @[continuity, fun_prop]
 protected theorem continuous (f : M₁ →SL[σ₁₂] M₂) : Continuous f :=
+  f.2
+
+@[continuity, fun_prop]
+protected theorem continuous_toLinearMap (f : M₁ →SL[σ₁₂] M₂) : Continuous f.toLinearMap :=
   f.2
 
 @[simp]

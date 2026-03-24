@@ -258,7 +258,7 @@ theorem sdiff_sdiff_right : x \ (y \ z) = x \ y ⊔ x ⊓ y ⊓ z := by
           rw [sup_inf_self, sup_sdiff_left, ← sup_assoc, sup_inf_left, sdiff_sup_self',
             inf_sup_right, sup_comm y, inf_sdiff_sup_right, inf_sup_left x z y]
       _ = x ⊓ (y \ z ⊔ (x ⊓ z ⊔ (x ⊓ y ⊔ x \ y))) := by ac_rfl
-      _ = x := by rw [sup_inf_sdiff, sup_comm (x ⊓ z), sup_inf_self, sup_comm, inf_sup_self]
+      _ = x := by simp
   · calc
       x ⊓ y \ z ⊓ (z ⊓ x ⊔ x \ y) = x ⊓ y \ z ⊓ (z ⊓ x) ⊔ x ⊓ y \ z ⊓ x \ y := by rw [inf_sup_left]
       _ = x ⊓ (y \ z ⊓ z ⊓ x) ⊔ x ⊓ y \ z ⊓ x \ y := by ac_rfl

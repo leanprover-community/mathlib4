@@ -851,9 +851,9 @@ section coeff_mul
 
 variable [Semiring k]
 
-section Monoid
+section Mul
 
-variable [Monoid G] [MulSemiringAction G k]
+variable [Mul G] [SMulZeroClass G k]
 
 theorem coeff_mul [DecidableEq G] (f g : SkewMonoidAlgebra k G)
     (x : G) : (f * g).coeff x = f.sum fun a₁ b₁ ↦ g.sum fun a₂ b₂ ↦
@@ -919,10 +919,6 @@ theorem coeff_mul_single_aux (f : SkewMonoidAlgebra k G) {r : k} {x y z : G}
     _ = f.coeff y * y • r := by
       split_ifs with h <;> simp [support] at h <;> simp [h]
 
-theorem coeff_mul_single_one (f : SkewMonoidAlgebra k G) (r : k) (x : G) :
-    (f * single 1 r).coeff x = f.coeff x * x • r :=
-  f.coeff_mul_single_aux fun a ↦ by rw [mul_one]
-
 theorem coeff_mul_single_of_not_exists_mul (r : k) {g g' : G} (x : SkewMonoidAlgebra k G)
     (h : ∀ x, ¬g' = x * g) : (x * single g r).coeff g' = 0 := by
   classical
@@ -944,10 +940,6 @@ theorem coeff_single_mul_aux (f : SkewMonoidAlgebra k G) {r : k} {x y z : G}
     _ = if z ∈ f.support then r * x • f.coeff z else 0 := (f.support.sum_ite_eq' _ _)
     _ = _ := by split_ifs with h <;> simp [support] at h <;> simp [h]
 
-theorem coeff_single_one_mul (f : SkewMonoidAlgebra k G) (r : k) (x : G) :
-    (single (1 : G) r * f).coeff x = r * f.coeff x := by
-  simp [coeff_single_mul_aux, one_smul]
-
 theorem coeff_single_mul_of_not_exists_mul (r : k) {g g' : G} (x : SkewMonoidAlgebra k G)
     (h : ¬∃ d, g' = g * d) : (single g r * x).coeff g' = 0 := by
   classical
@@ -957,6 +949,20 @@ theorem coeff_single_mul_of_not_exists_mul (r : k) {g g' : G} (x : SkewMonoidAlg
     rintro g'' _hg'' rfl
     exact absurd ⟨_, rfl⟩ h
   · simp
+
+end Mul
+
+section Monoid
+
+variable [Monoid G] [MulSemiringAction G k]
+
+theorem coeff_mul_single_one (f : SkewMonoidAlgebra k G) (r : k) (x : G) :
+    (f * single 1 r).coeff x = f.coeff x * x • r :=
+  f.coeff_mul_single_aux fun a ↦ by rw [mul_one]
+
+theorem coeff_single_one_mul (f : SkewMonoidAlgebra k G) (r : k) (x : G) :
+    (single (1 : G) r * f).coeff x = r * f.coeff x := by
+  simp [coeff_single_mul_aux, one_smul]
 
 end Monoid
 

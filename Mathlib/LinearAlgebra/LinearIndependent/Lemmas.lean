@@ -169,8 +169,7 @@ theorem linearIndependent_inl_union_inr' {v : ι → M} {v' : ι' → M'}
     LinearIndependent R (Sum.elim (inl R M M' ∘ v) (inr R M M' ∘ v')) := by
   have : linearCombination R (Sum.elim (inl R M M' ∘ v) (inr R M M' ∘ v')) =
       .prodMap (linearCombination R v) (linearCombination R v') ∘ₗ
-      (sumFinsuppLEquivProdFinsupp R).toLinearMap := by
-    ext (_ | _) <;> simp [linearCombination_comapDomain]
+      (sumFinsuppLEquivProdFinsupp R).toLinearMap := by ext (_ | _) <;> simp
   rw [LinearIndependent, this]
   simpa [LinearMap.coe_prodMap] using ⟨hv, hv'⟩
 
