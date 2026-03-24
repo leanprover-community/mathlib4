@@ -254,8 +254,20 @@ def resCoindToHom (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) : B ⟶ (coin
     dsimp; ext; simp⟩
 
 @[simp]
-lemma resCoindToHom_hom_hom_apply_coe (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) (c : ↑B.V)
-    (i : H) : ((resCoindToHom φ B A f).hom c).1 i = (Hom.hom f) ((B.ρ i) c) := rfl
+lemma resCoindToHom_hom_apply_coe (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) (c : ↑B.V)
+    (i : H) : (DFunLike.coe (F := no_index(_)) (resCoindToHom φ B A f).hom c).1 i =
+    (Hom.hom f) ((B.ρ i) c) := rfl
+
+-- this `no_index` is to prevent simp discrimination tree from acting weird, i.e before
+-- adding it the discrimination tree looks like: _.1 (@DFunLike.coe
+-- (@Representation.IntertwiningMap _ _ _.1 (@Rep.mk✝ ..).1 ..)) which is bad because `Rep.mk` is
+-- private and should never be used.
+
+/--
+info: _.1 (@DFunLike.coe _ _.1 _ _ (@ConcreteCategory.hom (Rep _ _ _ _) _ _ _ _ _ _ _ (@resCoindToHom _ _ _ _ _ _ _ _ _ _)) _)
+-/
+#guard_msgs in
+#discr_tree_simp_key resCoindToHom_hom_apply_coe
 
 attribute [pp_with_univ] Rep coind
 
@@ -278,7 +290,7 @@ def resCoindHomEquiv (B : Rep.{max w t} k H) (A : Rep.{max w t} k G) :
       have := ((f.hom x).2 g 1).symm
       have := hom_comm_apply f (φ g) x
       simp_all⟩
-  left_inv x := by ext; simp [resCoindToHom_hom_hom_apply_coe _]
+  left_inv x := by ext; simp
   right_inv z := by ext; simp [resCoindToHom, hom_comm_apply z]
 
 #adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
