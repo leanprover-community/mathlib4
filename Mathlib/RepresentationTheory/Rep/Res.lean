@@ -6,8 +6,6 @@ Authors: Edison Xie
 module
 
 public import Mathlib.RepresentationTheory.Rep.Basic
-public import Mathlib.CategoryTheory.Action.Monoidal
-public import Mathlib.CategoryTheory.Action.Limits
 
 /-!
 # Restriction of representations
