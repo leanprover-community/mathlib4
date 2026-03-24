@@ -236,7 +236,7 @@ instance rootsOfUnity.fintype : Fintype (rootsOfUnity k R) := by
   exact Fintype.ofEquiv { x // x ∈ nthRoots k (1 : R) } (rootsOfUnityEquivNthRoots R k).symm
 
 instance rootsOfUnity.isCyclic : IsCyclic (rootsOfUnity k R) :=
-  isCyclic_of_subgroup_isDomain ((Units.coeHom R).comp (rootsOfUnity k R).subtype) coe_injective
+  isCyclic_of_injective_ringHom ((Units.coeHom R).comp (rootsOfUnity k R).subtype) coe_injective
 
 theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k := by
   classical

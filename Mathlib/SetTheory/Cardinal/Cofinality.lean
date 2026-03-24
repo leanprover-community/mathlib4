@@ -470,19 +470,19 @@ theorem cof_lift_iSup_add_one_le [Small.{u} β] (f : β → Ordinal.{u}) :
 theorem cof_iSup_add_one_le (f : α → Ordinal.{u}) : cof (⨆ i, f i + 1) ≤ #α := by
   simpa using cof_lift_iSup_add_one_le f
 
-theorem _root_.Cardinal.sSup_lt_of_lt_cof {s : Set Cardinal.{u}} {a : Cardinal.{u}}
+theorem _root_.Cardinal.sSup_lt_of_lt_cof_ord {s : Set Cardinal.{u}} {a : Cardinal.{u}}
     (ha : #s < (Cardinal.lift.{u + 1} a).ord.cof) (hs : ∀ i ∈ s, i < a) : sSup s < a := by
   rw [← ord_lt_ord, sSup_ord]
   apply Ordinal.sSup_lt_of_lt_cof
   · simpa [mk_image_eq ord_injective]
   · simpa
 
-theorem _root_.Cardinal.lift_iSup_lt_of_lt_cof {f : β → Cardinal.{u}} {a : Cardinal.{u}}
+theorem _root_.Cardinal.lift_iSup_lt_of_lt_cof_ord {f : β → Cardinal.{u}} {a : Cardinal.{u}}
     (ha : Cardinal.lift.{u} #β < a.lift.ord.cof) (hf : ∀ i, f i < a) : ⨆ i, f i < a := by
   rw [← ord_lt_ord, iSup_ord]
   apply Ordinal.lift_iSup_lt_of_lt_cof <;> simpa
 
-theorem _root_.Cardinal.iSup_lt_of_lt_cof {f : α → Cardinal.{u}} {a : Cardinal.{u}}
+theorem _root_.Cardinal.iSup_lt_of_lt_cof_ord {f : α → Cardinal.{u}} {a : Cardinal.{u}}
     (ha : #α < a.ord.cof) (hf : ∀ i, f i < a) : ⨆ i, f i < a := by
   rw [← ord_lt_ord, iSup_ord]
   apply Ordinal.iSup_lt_of_lt_cof <;> simpa
@@ -829,24 +829,11 @@ theorem cof_eq' (r : α → α → Prop) [H : IsWellOrder α r] (h : IsSuccLimit
   rwa [← not_bddAbove_iff_isCofinal, not_bddAbove_iff] at hs
 
 @[simp]
-theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
-  le_antisymm (cof_le_card _)
-    (by
-      refine le_of_forall_lt fun c h => ?_
-      rcases lt_univ'.1 h with ⟨c, rfl⟩
-      rcases Order.cof_eq Ordinal.{u} with ⟨S, H, Se⟩
-      rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u + 1, v, u}, Cardinal.lift_lt, cof_type, ← Se]
-      refine lt_of_not_ge fun h => ?_
-      obtain ⟨a, e⟩ := Cardinal.mem_range_lift_of_le h
-      induction a using Quotient.inductionOn
-      obtain ⟨f⟩ := Quotient.exact e
-      have f := Equiv.ulift.symm.trans f
-      let g a := (f a).1
-      let o := succ (iSup g)
-      rcases H o with ⟨b, h, l⟩
-      refine l.not_gt (lt_succ_iff.2 ?_)
-      rw [← show g (f.symm ⟨b, h⟩) = b by simp [g]]
-      apply Ordinal.le_iSup)
+theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} := by
+  apply (cof_le_card _).antisymm
+  simp_rw [univ, ← lift_cof, ← lift_card, Cardinal.lift_le, cof_type, card_type, le_cof_iff,
+    ← not_bddAbove_iff_isCofinal]
+  exact fun s hs ↦ mk_le_of_injective (enumOrdOrderIso s hs).injective
 
 end Ordinal
 

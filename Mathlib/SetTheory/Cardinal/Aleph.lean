@@ -292,13 +292,14 @@ theorem ord_preAleph (o : Ordinal) : (preAleph o).ord = preOmega o := by
   rw [← o.card_preOmega, (isInitial_preOmega o).ord_card]
 
 @[simp]
-theorem type_cardinal : typeLT Cardinal = Ordinal.univ.{u, u + 1} := by
-  rw [Ordinal.univ_id]
-  exact Quotient.sound ⟨preAleph.symm.toRelIsoLT⟩
+theorem _root_.Ordinal.type_lt_cardinal : typeLT Cardinal = Ordinal.univ.{u, u + 1} := by
+  simpa using preAleph.symm.toRelIsoLT.ordinal_type_eq
+
+@[deprecated (since := "2026-03-20")] alias type_cardinal := type_lt_cardinal
 
 @[simp]
 theorem mk_cardinal : #Cardinal = univ.{u, u + 1} := by
-  simpa only [card_type, card_univ] using congr_arg card type_cardinal
+  simpa only [card_type, card_univ] using congr_arg card type_lt_cardinal
 
 theorem preAleph_lt_preAleph {o₁ o₂ : Ordinal} : preAleph o₁ < preAleph o₂ ↔ o₁ < o₂ :=
   preAleph.lt_iff_lt
