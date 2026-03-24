@@ -70,7 +70,9 @@ noncomputable instance : Unique |(Δ[0] : SSet.{u})| := ⦋0⦌.toTopHomeo.uniqu
 
 namespace TopCat
 
-@[simps! -isSimp symm_apply]
+/-- Given `X : TopCat`, this is the bijection between `0`-simplices
+of the singular simplicial set of `X` and `X`. -/
+@[simps! -isSimp apply symm_apply]
 noncomputable def toSSetObj₀Equiv {X : TopCat.{u}} :
     toSSet.obj X _⦋0⦌ ≃ X :=
   (toSSetObjEquiv X _).trans
@@ -100,16 +102,20 @@ lemma sSetTopAdj_homEquiv_stdSimplex_zero {X : TopCat.{u}}
   rw [Adjunction.homEquiv_unit, TopCat.toSSetObj₀Equiv_symm_apply, this]
   rfl
 
+/-- The standard topological simplex of dimension `1` is homeomorphic to `TopCat.I`. -/
 def TopCat.stdSimplexHomeomorphI :
     _root_.stdSimplex ℝ (Fin 2) ≃ₜ TopCat.I.{u} :=
   stdSimplexHomeomorphUnitInterval.trans (Homeomorph.ulift.symm)
 
 namespace SSet.stdSimplex
 
+/-- The geometric realization of `Δ[1]` is homeomorphic to `TopCat.I`. -/
 noncomputable def toTopObjHomeoI :
     |(Δ[1] : SSet.{u})| ≃ₜ TopCat.I.{u} :=
   (SimplexCategory.toTopHomeo _).trans TopCat.stdSimplexHomeomorphI
 
+/-- The canonical morphism `Δ[1] ⟶ TopCat.toSSet.obj TopCat.I`: by adjunction,
+it corresponds to the homeomorphism `toTopObjHomeoI : |Δ[1]| ≃ₜ TopCat.I`. -/
 noncomputable def toSSetObjI : Δ[1] ⟶ TopCat.toSSet.obj TopCat.I.{u} :=
   sSetTopAdj.homEquiv _ _ (TopCat.ofHom (toContinuousMap toTopObjHomeoI))
 
