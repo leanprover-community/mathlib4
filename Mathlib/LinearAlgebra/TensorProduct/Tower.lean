@@ -813,8 +813,7 @@ lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
   exact span_le.2 fun _ ⟨a, m, h⟩ ↦ h ▸ tmul_mem_baseChange_of_mem _ trivial
 
 variable {p q} in
-theorem baseChange_mono (h : p ≤ q) :
-    p.baseChange A ≤ q.baseChange A := by
+theorem baseChange_mono (h : p ≤ q) : p.baseChange A ≤ q.baseChange A := by
   rw [baseChange, LinearMap.baseChange, ← subtype_comp_inclusion p q h,
     ← LinearMap.id_comp LinearMap.id, AlgebraTensorModule.map_comp]
   apply LinearMap.range_comp_le_range

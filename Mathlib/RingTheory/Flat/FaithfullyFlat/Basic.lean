@@ -6,8 +6,8 @@ Authors: Judith Ludwig, Florent Schaffhauser, Yunzhou Xie, Jujian Zhang
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Quotient
+public import Mathlib.RingTheory.Artinian.Defs
 public import Mathlib.RingTheory.Flat.Stability
-public import Mathlib.RingTheory.FiniteLength
 
 /-!
 # Faithfully flat modules
@@ -635,14 +635,9 @@ def baseChangeOrderEmbedding : Submodule R M ↪o Submodule A (A ⊗[R] M) where
 
 theorem IsNoetherian.ofFaithfullyFlat (h : IsNoetherian A (A ⊗[R] M)) : IsNoetherian R M := by
   rw [isNoetherian_iff'] at h ⊢
-  exact OrderEmbedding.wellFoundedGT (baseChangeOrderEmbedding R M A)
+  exact (baseChangeOrderEmbedding R M A).wellFoundedGT
 
-theorem IsArtinian.ofFaithfullyFlat (h : IsArtinian A (A ⊗[R] M)) : IsArtinian R M := by
-  rw [isArtinian_iff] at h ⊢
-  exact OrderEmbedding.wellFounded (baseChangeOrderEmbedding R M A) h
-
-theorem IsFiniteLength.ofFaithfullyFlat (h : IsFiniteLength A (A ⊗[R] M)) : IsFiniteLength R M := by
-  rw [isFiniteLength_iff_isNoetherian_isArtinian] at h ⊢
-  exact h.imp IsNoetherian.ofFaithfullyFlat IsArtinian.ofFaithfullyFlat
+theorem IsArtinian.ofFaithfullyFlat (h : IsArtinian A (A ⊗[R] M)) : IsArtinian R M :=
+  (baseChangeOrderEmbedding R M A).wellFoundedLT
 
 end Submodule
