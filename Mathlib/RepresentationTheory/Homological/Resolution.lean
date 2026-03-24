@@ -350,21 +350,20 @@ lemma d_single (x : Gⁿ⁺¹) :
         single (Fin.contractNth j (· * ·) x) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
   simp [d, ← Representation.IntertwiningMap.toLinearMap_apply]
 
+open scoped MonoidalCategory in
 @[simp]
 private lemma _root_.Representation.μ_apply_single_single_leftRegular (m : ℕ) (g : G) (r s : k)
     (f : Fin m → G) : @DFunLike.coe _ (TensorProduct k ((Action.leftRegular G).V →₀ k) _)
-    (fun _ ↦ MonoidalCategoryStruct.tensorObj (Action.leftRegular G).V (Fin m → G) →₀ k)
-    _ (Representation.LinearizeMonoidal.μ (Action.leftRegular G) (Action.trivial G (Fin m → G)))
+    (fun _ ↦ (Action.leftRegular G).V ⊗ (Fin m → G) →₀ k) _
+    (Representation.LinearizeMonoidal.μ (Action.leftRegular G) (Action.trivial G (Fin m → G)))
     (single g r ⊗ₜ[k] single f s) = single (g, f) (r * s) :=
   Representation.LinearizeMonoidal.μ_apply_single_single
     (X := Action.leftRegular G) (Y := Action.trivial G (Fin m → G)) g f r s
 
+open scoped MonoidalCategory in
 @[simp]
 private lemma _root_.Representation.linearizeMap_single_diagonal (m : ℕ) (g : G) (f : Fin m → G)
-    (r : k) : @DFunLike.coe ((Representation.linearize k G (MonoidalCategoryStruct.tensorObj
-    (Action.leftRegular G) (Action.trivial G (Fin m → G)))).IntertwiningMap
-    (Representation.linearize k G (Action.diagonal G (m + 1))))
-    (MonoidalCategoryStruct.tensorObj (Action.leftRegular G).V (Fin m → G) →₀ k)
+    (r : k) : @DFunLike.coe _ ((Action.leftRegular G).V ⊗ (Fin m → G) →₀ k)
     (fun _ ↦ (Action.diagonal G (m + 1)).V →₀ k) _
     (Representation.linearizeMap (Action.diagonalSuccIsoTensorTrivial G m).inv) (single (g, f) r)
     = single ((Action.diagonalSuccIsoTensorTrivial G m).inv.hom (g, f)) r :=
