@@ -164,7 +164,7 @@ set_option backward.inferInstanceAs.wrap false in
 -- This is needed or we get errors in UniversalFactorizationRing.lean
 set_option backward.inferInstanceAs.wrap false in
 @[to_additive] instance instCoeFun : CoeFun R[M] fun _ ↦ M → R :=
-  _root_.inferInstanceAs <| CoeFun (M →₀ R) fun _ ↦ M → R
+  inferInstanceAs <| CoeFun (M →₀ R) fun _ ↦ M → R
 
 /-- A copy of `Finsupp.ext` for `MonoidAlgebra`. -/
 @[to_additive (attr := ext) /-- A copy of `Finsupp.ext` for `AddMonoidAlgebra`. -/]
