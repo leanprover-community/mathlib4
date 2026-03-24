@@ -1,5 +1,7 @@
-import Mathlib.Data.EReal.Basic
-import Mathlib.Order.Completion
+module
+
+public import Mathlib.Data.EReal.Basic
+public import Mathlib.Order.Completion
 import Mathlib.Tactic.Order
 
 open DedekindCut
@@ -48,7 +50,7 @@ theorem extent_eRealEmbedDedekindCut_apply (x : EReal) :
   (ofIsExtent (· ≤ ·) (ratLowerBounds x) (isExtent_ratLowerBounds x)).extent =
   {q : ℚ | (q : ℝ) ≤ x} := rfl
 
-noncomputable def completeRat_iso_EReal : DedekindCut ℚ ≃o EReal where
+public noncomputable def completeRat_iso_EReal : DedekindCut ℚ ≃o EReal where
   toFun := factorEmbeddingRat
   invFun x := ofIsExtent (· ≤ ·) (ratLowerBounds x) (isExtent_ratLowerBounds x)
   left_inv := by
