@@ -408,6 +408,7 @@ theorem toBaseChange_injective : Function.Injective (p.toBaseChange A) :=
   (p.subtype.baseChange A).injective_rangeRestrict_iff.mpr
     (Module.Flat.lTensor_preserves_injective_linearMap p.subtype (injective_subtype p))
 
+/-- `Submodule.toBaseChange` as a `LinearEquiv`. -/
 @[simps!]
 noncomputable def toBaseChangeEquiv : A ⊗[R] ↥p ≃ₗ[A] baseChange A p :=
   .ofBijective (p.toBaseChange A) ⟨p.toBaseChange_injective A, p.toBaseChange_surjective A⟩
