@@ -304,23 +304,37 @@ If every element were covered by at most `k` sets, the left-hand side would be b
 Unlike the classical pigeonhole principle (see `Finset.exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to`),
 this formulation handles a *set-valued* assignment where elements may belong to
 multiple sets simultaneously. -/
-lemma exists_lt_card_fiber_of_card_biUnion_lt_card
+lemma exists_lt_card_cover_of_card_biUnion_lt_card
     {n : Type*} [DecidableEq n] [Fintype n]
     {α : Type*} [DecidableEq α]
     {B : n → Finset α}
-    {s : Finset n}
-    {k : Nat} [nek : NeZero k]
-    (h₁ : ∀ j, Finset.card (B j) = k)
+    {s : Finset n} 
+    -- {k : Nat} [nek : NeZero k]
+    -- (h₁ : ∀ j, Finset.card (B j) = k)
+    (hs : s.Nonempty)
+    (h₁ : ∀ j ∈ s, 0 < Finset.card (B j))
     (h₂ : (s.biUnion B).card < (s.card)) :
-    ∃ x ∈ s.biUnion B, k < (Finset.card {j | j ∈ s ∧ x ∈ B j}) := by
+    ∃ x ∈ s.biUnion B, (Finset.inf' s hs (fun j ↦ Finset.card (B j))) < (Finset.card {j | j ∈ s ∧ x ∈ B j}) := by
+  set k := Finset.inf' s hs (fun j ↦ Finset.card (B j)) with hk
+  have nek : NeZero k := by
+    constructor
+    rw [← Finset.lt_inf'_iff] at h₁
+    . grind
+    . exact hs
   by_contra! hc
   have hc' := Finset.sum_le_sum  (s := s.biUnion B) (ι := α)
     (f := fun x => Finset.card {j | j ∈ s ∧ x ∈ B j})
     (g := fun _ => k) (by grind)
   have : (Finset.card (s.biUnion B))*k < s.card*k :=
     Nat.mul_lt_mul_right (Nat.ne_zero_iff_zero_lt.mp nek.out) |>.mpr (by lia)
-  simp at hc'
-  simpa [← Finset.sum_card_eq_sum_card_fiber_biUnion B s, h₁] using Nat.lt_of_le_of_lt hc' this
+  --simpa [← Finset.sum_card_eq_sum_card_fiber_biUnion B s, h₁] using Nat.lt_of_le_of_lt hc' this
+  simp [← Finset.sum_card_eq_sum_card_fiber_biUnion B s] at hc' 
+  have h₃' : ∀ j ∈ s, k ≤ Finset.card (B j) := by sorry
+  have h₃ : (s.card)*k ≤ ∑ j ∈ s, Finset.card (B j) := by
+    have infh := Finset.sum_le_sum h₃'
+    simp only [sum_const, smul_eq_mul] at infh
+    exact infh
+  lia
 
 end Finset
 

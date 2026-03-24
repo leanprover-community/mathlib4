@@ -207,7 +207,7 @@ theorem card_le_card_of_forall_subsingleton' (ht : ∀ b ∈ t, ∃ a, a ∈ s �
 /-- Given a finite collection of finite subsets $B_1, \ldots, B_k$
 and, for every $x \in \bigcup_i B_i$, let $C_x$ be the set of indices
 of the $B_i$'s that contain $x$.  Then, $\sum_i |B_i| = \sum_x |C_x|$. -/
-lemma sum_card_eq_sum_card_fiber_biUnion
+lemma sum_card_eq_sum_card_cover_biUnion
     {α : Type*} [DecidableEq α]
     {ι : Type*} [Fintype ι] [DecidableEq ι]
     (B : ι → Finset α)
