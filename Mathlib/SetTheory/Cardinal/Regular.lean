@@ -260,7 +260,10 @@ structure IsSingular (c : Cardinal) : Prop where
   /-- A singular cardinal is infinite. -/
   aleph0_le : ℵ₀ ≤ c
   /-- A singular cardinal is not regular, see `IsSingular.not_isRegular`. -/
-  cof_ord_lt : c.ord.cof < c
+  cof_ord_ne : c.ord.cof ≠ c
+
+theorem IsSingular.cof_ord_lt (hc : c.IsSingular) : c.ord.cof < c :=
+  (cof_ord_le c).lt_of_ne hc.cof_ord_ne
 
 theorem IsSingular.natCast_lt (hc : c.IsSingular) (n : ℕ) : n < c :=
   natCast_lt_aleph0.trans_le hc.aleph0_le
@@ -291,8 +294,14 @@ theorem not_isSingular_succ (c : Cardinal) : ¬ IsSingular (succ c) := by
     exact natCast_lt_aleph0
   · exact (isRegular_succ hc).not_isSingular
 
+theorem IsSingular.isSuccLimit (hc : IsSingular c) : IsSuccLimit c := by
+  rw [Cardinal.isSuccLimit_iff, isSuccPrelimit_iff_succ_ne]
+  refine ⟨hc.pos.ne', ?_⟩
+  rintro c rfl
+  exact not_isSingular_succ c hc
+
 theorem isRegular_or_isSingular (h : ℵ₀ ≤ c) : c.IsRegular ∨ c.IsSingular := by
-  rw [isSingular_iff, ← not_le]
+  rw [isSingular_iff, ← (cof_ord_le c).lt_iff_ne, ← not_le]
   tauto
 
 theorem lt_aleph0_or_isRegular_or_isSingular : c < ℵ₀ ∨ c.IsRegular ∨ c.IsSingular := by
@@ -304,8 +313,11 @@ theorem isSingular_aleph_iff {o : Ordinal} : (ℵ_ o).IsSingular ↔ IsSuccLimit
   obtain rfl | ⟨a, rfl⟩ | ho := zero_or_succ_or_isSuccLimit o
   · simp
   · simp
-  · rw [isSingular_iff]
+  · rw [isSingular_iff, ← (cof_ord_le _).lt_iff_ne]
     simp [ho]
+
+theorem IsSingular.isSuccLimit_of_aleph {o : Ordinal} (hc : IsSingular (ℵ_ o)) : IsSuccLimit o :=
+  (isSingular_aleph_iff.1 hc).1
 
 theorem isSingular_aleph_omega : (ℵ_ ω).IsSingular := by simp [isSingular_aleph_iff]
 
