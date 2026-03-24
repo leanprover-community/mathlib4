@@ -276,21 +276,19 @@ theorem one_apply_ne' {i j} : j ≠ i → (1 : CStarMatrix n n A) i j = 0 := Mat
 
 end zero_one
 
-instance instAddMonoidWithOne [AddMonoidWithOne A] : AddMonoidWithOne (CStarMatrix n n A) where
+instance instAddMonoidWithOne [AddMonoidWithOne A] : AddMonoidWithOne (CStarMatrix n n A) :=
+  inferInstanceAs <| AddMonoidWithOne (Matrix n n A)
 
-instance instAddGroupWithOne [AddGroupWithOne A] : AddGroupWithOne (CStarMatrix n n A) where
-  __ := instAddGroup
-  __ := instAddMonoidWithOne
+instance instAddGroupWithOne [AddGroupWithOne A] : AddGroupWithOne (CStarMatrix n n A) :=
+  inferInstanceAs <| AddGroupWithOne (Matrix n n A)
 
 instance instAddCommMonoidWithOne [AddCommMonoidWithOne A] :
-    AddCommMonoidWithOne (CStarMatrix n n A) where
-  __ := instAddCommMonoid
-  __ := instAddMonoidWithOne
+    AddCommMonoidWithOne (CStarMatrix n n A) :=
+  inferInstanceAs <| AddCommMonoidWithOne (Matrix n n A)
 
 instance instAddCommGroupWithOne [AddCommGroupWithOne A] :
-    AddCommGroupWithOne (CStarMatrix n n A) where
-  __ := instAddCommGroup
-  __ := instAddGroupWithOne
+    AddCommGroupWithOne (CStarMatrix n n A) :=
+  inferInstanceAs <| AddCommGroupWithOne (Matrix n n A)
 
 -- We want to be lower priority than `instHMul`, but without this we can't have operands with
 -- implicit dimensions.
@@ -346,7 +344,6 @@ instance instNonUnitalSemiring [Fintype n] [NonUnitalSemiring A] :
     NonUnitalSemiring (CStarMatrix n n A) :=
   inferInstanceAs <| NonUnitalSemiring (Matrix n n A)
 
-set_option backward.inferInstanceAs.wrap false in
 instance instNonAssocSemiring [Fintype n] [DecidableEq n] [NonAssocSemiring A] :
     NonAssocSemiring (CStarMatrix n n A) :=
   inferInstanceAs <| NonAssocSemiring (Matrix n n A)
@@ -355,17 +352,14 @@ instance instNonUnitalRing [Fintype n] [NonUnitalRing A] :
     NonUnitalRing (CStarMatrix n n A) :=
   inferInstanceAs <| NonUnitalRing (Matrix n n A)
 
-set_option backward.inferInstanceAs.wrap false in
 instance instNonAssocRing [Fintype n] [DecidableEq n] [NonAssocRing A] :
     NonAssocRing (CStarMatrix n n A) :=
   inferInstanceAs <| NonAssocRing (Matrix n n A)
 
-set_option backward.inferInstanceAs.wrap false in
 instance instSemiring [Fintype n] [DecidableEq n] [Semiring A] :
     Semiring (CStarMatrix n n A) :=
   inferInstanceAs <| Semiring (Matrix n n A)
 
-set_option backward.inferInstanceAs.wrap false in
 instance instRing [Fintype n] [DecidableEq n] [Ring A] : Ring (CStarMatrix n n A) :=
   inferInstanceAs <| Ring (Matrix n n A)
 
@@ -583,7 +577,6 @@ lemma norm_def {M : CStarMatrix m n A} : ‖M‖ = ‖toCLM M‖ := rfl
 
 lemma norm_def' {M : CStarMatrix n n A} : ‖M‖ = ‖toCLMNonUnitalAlgHom (A := A) M‖ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma normedSpaceCore : NormedSpace.Core ℂ (CStarMatrix m n A) where
   norm_nonneg M := (toCLM M).opNorm_nonneg
   norm_smul c M := by rw [norm_def, norm_def, map_smul, norm_smul _ (toCLM M)]
@@ -638,13 +631,11 @@ namespace CStarMatrix
 variable {m n A : Type*} [Fintype m] [Fintype n]
   [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private noncomputable local instance normedAddCommGroupAux :
     NormedAddCommGroup (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
-set_option backward.isDefEq.respectTransparency false in
 @[implicit_reducible]
 private noncomputable def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
@@ -754,7 +745,6 @@ instance instContinuousSMul {R : Type*} [SMul R A] [TopologicalSpace R] [Continu
   inferInstanceAs <| ContinuousSMul R (Matrix m n A)
 
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 noncomputable instance instNormedAddCommGroup :
@@ -763,7 +753,6 @@ noncomputable instance instNormedAddCommGroup :
     CStarMatrix.uniformity_eq_aux.symm
       fun _ => Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
@@ -773,7 +762,6 @@ noncomputable instance instNonUnitalNormedRing :
   __ : NonUnitalRing (CStarMatrix n n A) := inferInstance
   norm_mul_le _ _ := by simpa only [norm_def', map_mul] using norm_mul_le _ _
 
-set_option backward.isDefEq.respectTransparency false in
 open ContinuousLinearMap CStarModule in
 /-- Matrices with entries in a C⋆-algebra form a C⋆-algebra. -/
 instance instCStarRing : CStarRing (CStarMatrix n n A) :=
