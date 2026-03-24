@@ -186,8 +186,7 @@ noncomputable abbrev cochainsMap₃ :
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cochainsMap_f_0_comp_cochainsIso₀ :
-    (cochainsMap f φ).f 0 ≫ (cochainsIso₀ B).hom = (cochainsIso₀ A).hom ≫
-      ModuleCat.ofHom φ.hom.toLinearMap := by
+    (cochainsMap f φ).f 0 ≫ (cochainsIso₀ B).hom = (cochainsIso₀ A).hom ≫ φ.toModuleCatHom := by
   ext x
   simp only [cochainsMap_f, Unique.eq_default (f ∘ _)]
   rfl
@@ -222,7 +221,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem map_H0Iso_hom_f :
     map f φ 0 ≫ (H0Iso B).hom ≫ (shortComplexH0 B).f =
-      (H0Iso A).hom ≫ (shortComplexH0 A).f ≫ ModuleCat.ofHom φ.hom.toLinearMap := by
+      (H0Iso A).hom ≫ (shortComplexH0 A).f ≫ φ.toModuleCatHom := by
   simp [← cancel_epi (π _ _)]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -243,7 +242,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 theorem cocyclesMap_cocyclesIso₀_hom_f :
     cocyclesMap f φ 0 ≫ (cocyclesIso₀ B).hom ≫ (shortComplexH0 B).f =
-      (cocyclesIso₀ A).hom ≫ (shortComplexH0 A).f ≫ ModuleCat.ofHom φ.hom.toLinearMap := by
+      (cocyclesIso₀ A).hom ≫ (shortComplexH0 A).f ≫ φ.toModuleCatHom := by
   simp
 
 end H0
@@ -256,7 +255,7 @@ to `B --d₀₁--> Fun(G, B) --d₁₂--> Fun(G × G, B)`. -/
 @[simps]
 noncomputable def mapShortComplexH1 :
     shortComplexH1 A ⟶ shortComplexH1 B where
-  τ₁ := ModuleCat.ofHom φ.hom.toLinearMap
+  τ₁ := φ.toModuleCatHom
   τ₂ := cochainsMap₁ f φ
   τ₃ := cochainsMap₂ f φ
   comm₁₂ := by
