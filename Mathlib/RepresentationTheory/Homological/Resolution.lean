@@ -59,6 +59,9 @@ computing group (co)homology.
  * `Rep.standardComplex.forget₂ToModuleCatHomotopyEquiv`
  * `Rep.standardResolution`
 
+TODO: There's bad DefEq abuses in `Action` and the way we do `Rep.standardComplex` should be
+  unified with continuous cohomology, therefore we should remove the use of `Action` in `Rep` which
+  would remove all the unification hints in this file.
 -/
 
 @[expose] public noncomputable section
@@ -347,8 +350,7 @@ lemma d_single (x : Gⁿ⁺¹) :
         single (Fin.contractNth j (· * ·) x) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
   simp [d, ← Representation.IntertwiningMap.toLinearMap_apply]
 
-open MonoidalCategory in
-unif_hint (X Y : Type _) where ⊢ X ⊗ Y ≟ X × Y in
+unif_hint (X Y : Type _) where ⊢ MonoidalCategoryStruct.tensorObj X Y ≟ X × Y in
 unif_hint (X : Type*) where ⊢ Action.V (Action.trivial G X) ≟ X in
 unif_hint where ⊢ (HomologicalComplex.X (standardComplex k G) n).V ≟ ((Fin (n + 1) → G) →₀ k) in
 set_option backward.isDefEq.respectTransparency false in
