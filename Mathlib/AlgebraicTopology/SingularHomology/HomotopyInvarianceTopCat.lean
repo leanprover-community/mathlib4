@@ -26,6 +26,9 @@ induces a homotopy between these morphisms of simplicial sets
 is the definition `TopCat.Homotopy.toSSet` which appeared in the file
 `Mathlib/Topology/Homotopy/TopCat/ToSSet.lean`.
 
+This result was first formalized in Lean 3 in 2022 by
+Brendan Seamus Murphy (with a different proof).
+
 -/
 
 @[expose] public section
