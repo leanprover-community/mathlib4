@@ -315,20 +315,6 @@ theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : #Q.parts ≤ #
 
 end Order
 
-lemma _root_.Finset.sup_preimage_val_id_eq_sup_toSubtype_id {pr : α → Prop}
-    (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t)) (hbot : pr (⊥ : α)) {t : Finset α}
-    (ht : ∀ x ∈ t, pr x) :
-    @sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot)
-      (@preimage _ _ t (fun (x : Subtype pr) => x.val)
-      (Set.injOn_of_injective Subtype.val_injective)) id =
-      (⟨t.sup id, sup_induction hbot (fun _ h _ => Psup h) ht⟩ : Subtype pr) := by
-  letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
-  ext
-  simp only [sup_coe, id_eq]
-  apply Finset.sup_preimage
-  refine ⟨Set.mapsTo_preimage _ _, Set.injOn_of_injective Subtype.val_injective, ?_⟩
-  intro x hx; simpa using ⟨hx, ht x hx⟩
-
 /-- A `Finpartition` constructor in `Subtype pr` for `pr : Set X → Prop` such that `pr` is closed
 under intersection and union and `pr ⊥` holds from a `P : Finpartition s` with explicit assumptions
 that `pr s` and `pr p` for each part `p`. -/

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Pi
 public import Mathlib.Data.Finset.Sigma
-public import Mathlib.Data.Finset.Sum
 public import Mathlib.Data.Set.Finite.Basic
 
 /-!
@@ -150,6 +149,20 @@ theorem sup_preimage {α β : Type*} [hnea : Nonempty α] [SemilatticeSup β] [O
   congr
   exact preimage_eq_image_invFunOn_of_inj_mapsTo_rightInv hf.2.1 hf.1
     (Set.BijOn.invOn_invFunOn hf).2
+
+lemma sup_preimage_val_id_eq_sup_toSubtype_id [Lattice α] [OrderBot α] {pr : α → Prop}
+    (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t)) (hbot : pr (⊥ : α)) {t : Finset α}
+    (ht : ∀ x ∈ t, pr x) :
+    @sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot)
+      (@preimage _ _ t (fun (x : Subtype pr) => x.val)
+      (Set.injOn_of_injective Subtype.val_injective)) id =
+      (⟨t.sup id, sup_induction hbot (fun _ h _ => Psup h) ht⟩ : Subtype pr) := by
+  letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
+  ext
+  simp only [sup_coe, id_eq]
+  apply Finset.sup_preimage
+  refine ⟨Set.mapsTo_preimage _ _, Set.injOn_of_injective Subtype.val_injective, ?_⟩
+  intro x hx; simpa using ⟨hx, ht x hx⟩
 
 theorem sigma_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σ a, β a)) (t : Finset α) :
     t.sigma (fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) = {a ∈ s | a.1 ∈ t} := by
