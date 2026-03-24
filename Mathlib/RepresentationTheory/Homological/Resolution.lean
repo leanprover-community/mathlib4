@@ -217,7 +217,7 @@ theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom.toLinearMap =
   simp [standardComplex, Action.ofMulAction_V, SimplicialObject.δ, SimplexCategory.δ,
     Fin.succAboveOrderEmb, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), ← ofHom_smul, ← ofHom_sum,
     Representation.IntertwiningMap.coe_toLinearMap, Representation.IntertwiningMap.sum_apply,
-    Representation.IntertwiningMap.smul_apply, Representation.linearizeMap_single _, smul_single,
+    Representation.IntertwiningMap.smul_apply, (Representation.linearizeMap_single), smul_single,
     smul_eq_mul, mul_one]
 
 lemma d_apply {n : ℕ} (f : (Fin (n + 1 + 1) → G) →₀ k) :
@@ -350,7 +350,26 @@ lemma d_single (x : Gⁿ⁺¹) :
         single (Fin.contractNth j (· * ·) x) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
   simp [d, ← Representation.IntertwiningMap.toLinearMap_apply]
 
-unif_hint (X Y : Type _) where ⊢ MonoidalCategoryStruct.tensorObj X Y ≟ X × Y in
+@[simp]
+private lemma _root_.Representation.μ_apply_single_single_leftRegular (m : ℕ) (g : G) (r s : k)
+    (f : Fin m → G) : @DFunLike.coe _ (TensorProduct k ((Action.leftRegular G).V →₀ k) _)
+    (fun _ ↦ MonoidalCategoryStruct.tensorObj (Action.leftRegular G).V (Fin m → G) →₀ k)
+    _ (Representation.LinearizeMonoidal.μ (Action.leftRegular G) (Action.trivial G (Fin m → G)))
+    (single g r ⊗ₜ[k] single f s) = single (g, f) (r * s) :=
+  Representation.LinearizeMonoidal.μ_apply_single_single
+    (X := Action.leftRegular G) (Y := Action.trivial G (Fin m → G)) g f r s
+
+@[simp]
+private lemma _root_.Representation.linearizeMap_single_diagonal (m : ℕ) (g : G) (f : Fin m → G)
+    (r : k) : @DFunLike.coe ((Representation.linearize k G (MonoidalCategoryStruct.tensorObj
+    (Action.leftRegular G) (Action.trivial G (Fin m → G)))).IntertwiningMap
+    (Representation.linearize k G (Action.diagonal G (m + 1))))
+    (MonoidalCategoryStruct.tensorObj (Action.leftRegular G).V (Fin m → G) →₀ k)
+    (fun _ ↦ (Action.diagonal G (m + 1)).V →₀ k) _
+    (Representation.linearizeMap (Action.diagonalSuccIsoTensorTrivial G m).inv) (single (g, f) r)
+    = single ((Action.diagonalSuccIsoTensorTrivial G m).inv.hom (g, f)) r :=
+  Representation.linearizeMap_single (Action.diagonalSuccIsoTensorTrivial G m).inv (g, f) r
+
 unif_hint (X : Type*) where ⊢ Action.V (Action.trivial G X) ≟ X in
 unif_hint where ⊢ (HomologicalComplex.X (standardComplex k G) n).V ≟ ((Fin (n + 1) → G) →₀ k) in
 set_option backward.isDefEq.respectTransparency false in
@@ -358,19 +377,15 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
     d k G n ≫ (diagonalSuccIsoFree k G n).inv =
       (diagonalSuccIsoFree k G (n + 1)).inv ≫ (standardComplex k G).d (n + 1) n :=
   free_ext k G _ _ _ fun i ↦ by
-    have eq1 (m : ℕ) (g : G) (r s : k) (f : Fin m → G) :=
-      Representation.LinearizeMonoidal.μ_apply_single_single
-      (X := Action.leftRegular G) (Y := Action.trivial G (Fin m → G)) g f r s
-    have eq2 (m : ℕ) (g : G) (f : Fin m → G) (r : k) :=
-      Representation.linearizeMap_single (Action.diagonalSuccIsoTensorTrivial G m).inv (g, f) r
     have eq3 : single (i 0 • Fin.partialProd fun i_1 ↦ i i_1.succ) (1 : k) =
       single (Fin.partialProd i ∘ Fin.succ) 1 := by
       congr; exact funext fun j ↦ Fin.partialProd_succ' i j|>.symm
-    simp only [Action.tensorObj_V, Action.trivial_V] at eq1 eq2
     simp [μ_hom, d_single (k := k), Rep.mkIso_inv_hom_apply _,
       Representation.linearizeOfMulActionIso_symm_apply,
-      Representation.linearizeTrivialIso_symm_apply _, d_apply (k := k), eq1, eq2,
-      Action.diagonalSuccIsoTensorTrivial_inv_hom_apply _]
+      Representation.linearizeTrivialIso_symm_apply _, d_apply (k := k),
+      Action.diagonalSuccIsoTensorTrivial_inv_hom_apply _,
+      Representation.μ_apply_single_single_leftRegular _,
+      Representation.linearizeMap_single_diagonal _]
     simp [Fin.partialProd_contractNth, Fin.sum_univ_succ, Action.ofMulAction_V, eq3]
 
 end barComplex
