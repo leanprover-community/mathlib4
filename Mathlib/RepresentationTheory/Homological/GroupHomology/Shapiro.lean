@@ -59,13 +59,16 @@ noncomputable abbrev coinvariantsTensorResProjectiveResolutionIso
 -- The smiley face in this proof can be avoided if you replace `ind` with `ind.{_, _, _, u}`.
 -- The proof still compiles without this, but it takes much longer because of universe
 -- unification issues.
+-- Similarly, replacing `resFunctor.{u}` with `resFunctor` works but makes the proof
+-- three times as slow.
 /-- Shapiro's lemma: given a subgroup `S ≤ G` and an `S`-representation `A`, we have
 `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A).` -/
-noncomputable def indIso [DecidableEq G] (A : Rep k S) (n : ℕ) :
-    groupHomology (ind S.subtype A) n ≅ groupHomology A n :=
+noncomputable def indIso [DecidableEq G] (A : Rep.{u} k S) (n : ℕ) :
+    groupHomology (ind.{u,u,u,u} S.subtype A :) n ≅ groupHomology A n :=
   (HomologicalComplex.homologyFunctor (ModuleCat k) (ComplexShape.down ℕ) n).mapIso
   (inhomogeneousChainsIso (ind S.subtype A :) ≪≫
     (coinvariantsTensorResProjectiveResolutionIso S A (barResolution k G)).symm) ≪≫
-  (groupHomologyIso A n ((resFunctor S.subtype).mapProjectiveResolution <| barResolution k G)).symm
+  (groupHomologyIso A n ((resFunctor.{u} S.subtype).mapProjectiveResolution <|
+    barResolution k G)).symm
 
 end groupHomology
