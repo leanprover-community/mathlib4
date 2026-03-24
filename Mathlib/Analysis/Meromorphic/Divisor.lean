@@ -265,6 +265,7 @@ theorem divisor_fun_mul {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ : MeromorphicOn f�
     divisor (fun z ↦ f₁ z * f₂ z) U = divisor f₁ U + divisor f₂ U :=
   divisor_smul h₁f₁ h₁f₂ h₂f₁ h₂f₂
 
+open Finset in
 /--
 If orders are finite, the divisor of a product of meromorphic functions is the sum of the divisors.
 -/
