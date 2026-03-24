@@ -82,7 +82,7 @@ attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
 
 /-- Transfer `MonObj` along an isomorphism. -/
 -- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
-@[simps! -isSimp]
+@[simps! -isSimp, implicit_reducible]
 def ofIso (e : M ≅ X) : MonObj X where
   one := η[M] ≫ e.hom
   mul := (e.inv ⊗ₘ e.inv) ≫ μ[M] ≫ e.hom
@@ -407,12 +407,12 @@ instance {f : X ⟶ Y} {g : Z ⟶ W} [IsMonHom f] [IsMonHom g] : IsMonHom (f ⊗
 instance : IsMonHom (𝟙 X) where
 
 instance {f : Y ⟶ Z} [IsMonHom f] : IsMonHom (X ◁ f) where
-  one_hom := by simpa using (inferInstanceAs <| IsMonHom (𝟙 X ⊗ₘ f)).one_hom
-  mul_hom := by simpa using (inferInstanceAs <| IsMonHom (𝟙 X ⊗ₘ f)).mul_hom
+  one_hom := by simpa using ((inferInstance : IsMonHom (𝟙 X ⊗ₘ f))).one_hom
+  mul_hom := by simpa using ((inferInstance : IsMonHom (𝟙 X ⊗ₘ f))).mul_hom
 
 instance {f : X ⟶ Y} [IsMonHom f] : IsMonHom (f ▷ Z) where
-  one_hom := by simpa using (inferInstanceAs <| IsMonHom (f ⊗ₘ (𝟙 Z))).one_hom
-  mul_hom := by simpa using (inferInstanceAs <| IsMonHom (f ⊗ₘ (𝟙 Z))).mul_hom
+  one_hom := by simpa using ((inferInstance : IsMonHom (f ⊗ₘ (𝟙 Z)))).one_hom
+  mul_hom := by simpa using ((inferInstance : IsMonHom (f ⊗ₘ (𝟙 Z)))).mul_hom
 
 instance : IsMonHom (α_ X Y Z).hom :=
   ⟨one_associator, mul_associator⟩
@@ -887,7 +887,6 @@ end Adjunction
 
 namespace Equivalence
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of categories lifts to an equivalence of their monoid objects. -/
 @[simps]
 def mapMon (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal] [e.IsMonoidal] :

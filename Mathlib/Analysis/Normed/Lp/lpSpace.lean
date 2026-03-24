@@ -782,7 +782,7 @@ section NormedRing
 variable {I : Type*} {B : I → Type*} [∀ i, NormedRing (B i)]
 
 instance _root_.PreLp.ring : Ring (PreLp B) :=
-  Pi.ring
+  inferInstanceAs (Ring (∀ i, B i))
 
 variable [∀ i, NormOneClass (B i)]
 

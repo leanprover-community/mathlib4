@@ -28,7 +28,7 @@ variable (R : Type u) {A : Type v} {B : Type w}
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- The minimal subalgebra that includes `s`. -/
-@[simps toSubsemiring]
+@[simps -isSimp toSubsemiring]
 def adjoin (s : Set A) : Subalgebra R A :=
   { Subsemiring.closure (Set.range (algebraMap R A) ∪ s) with
     algebraMap_mem' := fun r => Subsemiring.subset_closure <| Or.inl ⟨r, rfl⟩ }
@@ -335,7 +335,7 @@ instance _root_.AlgEquiv.subsingleton_right [Subsingleton (Subalgebra R B)] :
   ⟨fun f g => by rw [← f.symm_symm, Subsingleton.elim f.symm g.symm, g.symm_symm]⟩
 
 instance : Unique (Subalgebra R R) :=
-  { inferInstanceAs (Inhabited (Subalgebra R R)) with
+  { (inferInstance : Inhabited (Subalgebra R R)) with
     uniq := by
       intro S
       refine le_antisymm ?_ bot_le
@@ -925,6 +925,25 @@ lemma Algebra.adjoin_nonUnitalSubalgebra (s : Set A) :
 end CommSemiring
 
 namespace Subalgebra
+
+section toNonUnitalSubalgebra
+
+variable [CommSemiring R] [Semiring A] [Algebra R A]
+
+/-- The forgetful map from subalgebras to non-unital subalgebras, as an order embedding. -/
+def toNonUnitalSubalgebraOrderEmbedding : Subalgebra R A ↪o NonUnitalSubalgebra R A where
+  toFun := toNonUnitalSubalgebra
+  inj' := toNonUnitalSubalgebra_injective
+  map_rel_iff' := by simp [SetLike.le_def]
+
+@[simp]
+lemma toNonUnitalSubalgebra_le_toNonUnitalSubalgebra {S T : Subalgebra R A} :
+    S.toNonUnitalSubalgebra ≤ T.toNonUnitalSubalgebra ↔ S ≤ T :=
+  toNonUnitalSubalgebraOrderEmbedding.le_iff_le
+
+alias ⟨_, toNonUnitalSubalgebra_mono⟩ := toNonUnitalSubalgebra_le_toNonUnitalSubalgebra
+
+end toNonUnitalSubalgebra
 
 variable [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 

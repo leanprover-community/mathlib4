@@ -75,6 +75,7 @@ abbrev toMon (A : Grp C) : Mon C := ⟨A.X⟩
 
 @[deprecated (since := "2025-09-15")] alias toMon_ := toMon
 
+set_option backward.inferInstanceAs.wrap.data false in
 variable (C) in
 /-- The trivial group object. -/
 @[simps!]
@@ -303,6 +304,7 @@ lemma ext {X : C} (h₁ h₂ : GrpObj X) (H : h₁.toMonObj = h₂.toMonObj) : h
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A monoid object with invertible homs is a group object. -/
+@[implicit_reducible]
 def ofInvertible (G : C) [CartesianMonoidalCategory C] [MonObj G]
     (h : ∀ X (f : X ⟶ G), Invertible f) : GrpObj G where
   inv := Yoneda.fullyFaithful.preimage ⟨fun X f ↦ (h X.unop f).invOf, fun X Y f ↦ by
@@ -665,7 +667,6 @@ end Adjunction
 namespace Equivalence
 variable (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of categories lifts to an equivalence of their group objects. -/
 @[simps] def mapGrp : Grp C ≌ Grp D where
   functor := e.functor.mapGrp

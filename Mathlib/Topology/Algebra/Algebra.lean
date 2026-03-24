@@ -235,7 +235,9 @@ theorem ext_on [T2Space B] {s : Set A} (hs : Dense (Algebra.adjoin R s : Set A))
   ext fun x => eqOn_closure_adjoin h (hs x)
 
 /-- Interpret a `ContinuousAlgHom` as a `ContinuousLinearMap`. -/
-def toContinuousLinearMap (e : A →A[R] B) : A →L[R] B where toLinearMap := e.toAlgHom.toLinearMap
+def toContinuousLinearMap (e : A →A[R] B) : A →L[R] B where
+  toLinearMap := e.toAlgHom.toLinearMap
+  cont := by dsimp; fun_prop
 
 @[simp] theorem coe_toContinuousLinearMap (e : A →A[R] B) : ⇑e.toContinuousLinearMap = e := rfl
 

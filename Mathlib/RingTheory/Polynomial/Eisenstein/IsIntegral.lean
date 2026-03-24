@@ -159,7 +159,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
     convert (IsUnit.dvd_mul_right ⟨(-1) ^ (n.succ * n), rfl⟩).mpr this using 1
     push_cast
     ring_nf
-    rw [mul_comm _ 2, pow_mul, neg_one_sq, one_pow, mul_one]
+    simp
   -- We claim the quotient of `Q^n * _` by `p^n` is the following `r`:
   have aux : ∀ i ∈ (range (Q.natDegree + 1)).erase 0, B.dim ≤ i + n := by grind
   have hintsum :
