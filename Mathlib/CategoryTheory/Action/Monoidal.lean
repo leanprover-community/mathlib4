@@ -47,8 +47,6 @@ instance instMonoidalCategory : MonoidalCategory (Action V G) where
   tensorUnit := Action.mk (𝟙_ _) _
   __ := Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
-unif_hint (X Y : Action (Type _) G) where ⊢ (X ⊗ Y).V ≟ X.V × Y.V
-
 @[simp]
 theorem tensorUnit_ρ {g : G} :
     @DFunLike.coe (G →* End (𝟙_ V)) _ _ _ (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=

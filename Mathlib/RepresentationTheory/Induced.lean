@@ -103,7 +103,6 @@ noncomputable abbrev ind : Rep k H := Rep.of (A.ρ.ind φ)
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a group homomorphism `φ : G →* H`, a morphism of `G`-representations `f : A ⟶ B` induces
 a morphism of `H`-representations `(k[H] ⊗[k] A)_G ⟶ (k[H] ⊗[k] B)_G`. -/
--- @[simps!]
 noncomputable def indMap {A B : Rep k G} (f : A ⟶ B) : ind φ A ⟶ ind φ B := Rep.ofHom
   ⟨Representation.Coinvariants.map _ _ (f.hom.toLinearMap.lTensor _) (by
     simp [LinearMap.lTensor_comp_map, f.hom.2, LinearMap.map_comp_lTensor]),
@@ -158,7 +157,6 @@ set_option backward.isDefEq.respectTransparency false in
 variable (k) in
 /-- Given a group homomorphism `φ : G →* H`, the induction functor `Rep k G ⥤ Rep k H` is left
 adjoint to the restriction functor along `φ`. -/
--- @[simps! unit_app_hom_hom counit_app_hom_hom]
 noncomputable def indResAdjunction : indFunctor k φ ⊣ resFunctor.{max w v' u} φ :=
   Adjunction.mkOfHomEquiv {
     homEquiv A B := (indResHomEquiv φ A B).toEquiv
