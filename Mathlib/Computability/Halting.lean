@@ -43,11 +43,8 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
       x ∈ Code.eval cf n ∨ x ∈ Code.eval cg n := by
     intro x h
     obtain ⟨k, e⟩ := Nat.rfindOpt_spec h
-    rw [Option.mem_def, Option.orElse_eq_some,
-      ← Option.mem_def, ← Option.mem_def] at e
-    obtain e | ⟨-, e⟩ := e
-    · exact .inl (Code.evaln_sound e)
-    · exact .inr (Code.evaln_sound e)
+    rw [Option.mem_def, Option.orElse_eq_some, ← Option.mem_def, ← Option.mem_def] at e
+    obtain e | ⟨-, e⟩ := e <;> simp [Code.evaln_sound e]
   refine ⟨this, ⟨fun h => (this _ ⟨h, rfl⟩).imp Exists.fst Exists.fst, ?_⟩⟩
   intro h
   rw [Nat.rfindOpt_dom]
