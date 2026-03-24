@@ -415,7 +415,6 @@ We establish additivity of the order under multiplication and taking powers.
 /--
 The order is additive in products of meromorphic functions.
 -/
-@[to_fun]
 theorem meromorphicOrderAt_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
     (hf : ∀ i ∈ s, MeromorphicAt (f i) x) :
     meromorphicOrderAt (∏ i ∈ s, f i) x = ∑ i ∈ s, meromorphicOrderAt (f i) x := by
@@ -431,6 +430,15 @@ theorem meromorphicOrderAt_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι 
       (MeromorphicAt.prod (fun i hi ↦ hf i (Finset.mem_insert_of_mem hi)))]
     congr
     rw [hs (fun i hi ↦ hf i (Finset.mem_insert_of_mem hi))]
+
+/--
+The order is additive in products of meromorphic functions.
+-/
+theorem meromorphicOrderAt_fun_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
+    (hf : ∀ i ∈ s, MeromorphicAt (f i) x) :
+    meromorphicOrderAt (fun a ↦ ∏ i ∈ s, f i a) x = ∑ i ∈ s, meromorphicOrderAt (f i) x := by
+  convert meromorphicOrderAt_prod hf
+  exact (Finset.prod_apply _ s f).symm
 
 /-- The order multiplies by `n` when taking a meromorphic function to its `n`th power. -/
 @[to_fun] theorem meromorphicOrderAt_pow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) {n : ℕ} :

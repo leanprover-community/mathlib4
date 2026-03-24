@@ -264,7 +264,6 @@ theorem meromorphicNFAt_mul_iff_left {f : 𝕜 → 𝕜} (h₁g : AnalyticAt �
 A product of meromorphic functions in normal form is in normal form if at most one of the factors
 vanishes.
 -/
-@[to_fun]
 theorem meromorphicNFAt_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
     (h₁f : ∀ i ∈ s, MeromorphicNFAt (f i) x)
     (h₂f : Set.Subsingleton {σ ∈ s | f σ x = 0}) :
@@ -289,6 +288,17 @@ theorem meromorphicNFAt_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι →
   · apply Finset.analyticAt_prod _ (fun μ hμ ↦ h₃f (Finset.mem_of_mem_erase hμ) (by aesop))
   · rw [Finset.prod_apply, Finset.prod_ne_zero_iff]
     aesop
+
+/--
+A product of meromorphic functions in normal form is in normal form if at most one of the factors
+vanishes.
+-/
+theorem meromorphicNFAt_fun_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
+    (h₁f : ∀ i ∈ s, MeromorphicNFAt (f i) x)
+    (h₂f : Set.Subsingleton {σ ∈ s | f σ x = 0}) :
+    MeromorphicNFAt (fun a ↦ ∏ i ∈ s, f i a) x := by
+  convert meromorphicNFAt_prod h₁f h₂f
+  exact (Finset.prod_apply _ s f).symm
 
 /--
 A finprod of meromorphic functions in normal form is in normal form if at most one of the factors
@@ -576,12 +586,22 @@ theorem meromorphicNFOn_mul_iff_left_of_analyticOnNhd {f g : 𝕜 → 𝕜} (h�
 A product of meromorphic functions in normal form is in normal form if at most one of the factors
 vanishes.
 -/
-@[to_fun]
 theorem meromorphicNFOn_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
     (h₁f : ∀ i ∈ s, MeromorphicNFOn (f i) U)
     (h₂f : ∀ x ∈ U, Set.Subsingleton {σ ∈ s | f σ x = 0}) :
     MeromorphicNFOn (∏ i ∈ s, f i) U :=
   fun x hx ↦ meromorphicNFAt_prod (h₁f · · hx) (h₂f x hx)
+
+/--
+A product of meromorphic functions in normal form is in normal form if at most one of the factors
+vanishes.
+-/
+theorem meromorphicNFOn_fun_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
+    (h₁f : ∀ i ∈ s, MeromorphicNFOn (f i) U)
+    (h₂f : ∀ x ∈ U, Set.Subsingleton {σ ∈ s | f σ x = 0}) :
+    MeromorphicNFOn (fun x ↦ ∏ i ∈ s, f i x) U := by
+  convert meromorphicNFOn_prod h₁f h₂f
+  exact (Finset.prod_apply _ s f).symm
 
 /--
 A finprod of meromorphic functions in normal form is in normal form if at most one of the factors
@@ -602,11 +622,17 @@ theorem MeromorphicNFOn.zpow {f : 𝕜 → 𝕜} {n : ℤ} {U : Set 𝕜} (hf : 
 /--
 A function to 𝕜 is meromorphic in normal form on `U` iff its inverse is.
 -/
-@[to_fun]
 theorem meromorphicNFOn_inv {f : 𝕜 → 𝕜} :
     MeromorphicNFOn f⁻¹ U ↔ MeromorphicNFOn f U where
   mp h _ hx := meromorphicNFAt_inv.1 (h hx)
   mpr h _ hx := meromorphicNFAt_inv.2 (h hx)
+
+/--
+A function to 𝕜 is meromorphic in normal form on `U` iff its inverse is.
+-/
+theorem meromorphicNFOn_fun_inv {f : 𝕜 → 𝕜} :
+    MeromorphicNFOn (fun x ↦ (f x)⁻¹) U ↔ MeromorphicNFOn f U :=
+  meromorphicNFOn_inv
 
 /-!
 ### Continuous extension and conversion to normal form

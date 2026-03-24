@@ -269,7 +269,6 @@ open Finset in
 /--
 If orders are finite, the divisor of a product of meromorphic functions is the sum of the divisors.
 -/
-@[to_fun]
 theorem divisor_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
     (h₁f : ∀ i ∈ s, MeromorphicOn (f i) U)
     (h₂f : ∀ i ∈ s, ∀ z ∈ U, meromorphicOrderAt (f i) z ≠ ⊤) :
@@ -288,6 +287,16 @@ theorem divisor_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
         (h₂f a (mem_insert_self a s)) this,
       hs (fun i hi ↦ h₁f i (mem_insert_of_mem hi))
         (fun i hi ↦ h₂f i (mem_insert_of_mem hi))]
+
+/--
+If orders are finite, the divisor of a product of meromorphic functions is the sum of the divisors.
+-/
+theorem divisor_fun_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
+    (h₁f : ∀ i ∈ s, MeromorphicOn (f i) U)
+    (h₂f : ∀ i ∈ s, ∀ z ∈ U, meromorphicOrderAt (f i) z ≠ ⊤) :
+    divisor (fun x ↦ ∏ i ∈ s, f i x) U = ∑ i ∈ s, divisor (f i) U := by
+  convert divisor_prod h₁f h₂f
+  exact (Finset.prod_apply _ s f).symm
 
 /-- The divisor of the inverse is the negative of the divisor. -/
 @[simp]
