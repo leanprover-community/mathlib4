@@ -253,7 +253,6 @@ variable (𝕜 E) in
 This is the seminorm family associated to the weak-* topology via `topDualPairing`. -/
 def seminormFamily : SeminormFamily 𝕜 (WeakDual 𝕜 E) E := (topDualPairing 𝕜 E).toSeminormFamily
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma seminormFamily_apply (x : E) (f : WeakDual 𝕜 E) : seminormFamily 𝕜 E x f = ‖f x‖ := rfl
 
