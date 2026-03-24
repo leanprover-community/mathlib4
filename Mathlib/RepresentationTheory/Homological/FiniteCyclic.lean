@@ -126,7 +126,6 @@ lemma range_applyAsHom_sub_eq_ker_norm (hg : ∀ x, x ∈ Subgroup.zpowers g) :
 
 end leftRegular
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a finite group `G` and `g : G`, this is the functor `Rep k G ⥤ ChainComplex (Rep k G) ℕ`
 sending `A : Rep k G` to the periodic chain complex in `Rep k G` given by
 `... ⟶ A --N--> A --(ρ(g) - 𝟙)--> A --N--> A --(ρ(g) - 𝟙)--> A ⟶ 0`
