@@ -258,7 +258,7 @@ def const {X Y : TopCat.{u}} (y : Y) : X ⟶ Y :=
   ofHom ⟨fun _ ↦ y, by continuity⟩
 
 @[simp]
-lemma const_apply {X Y : TopCat.{0}} (y : Y) (x : X) :
+lemma const_apply {X Y : TopCat.{u}} (y : Y) (x : X) :
     const y x = y := rfl
 
 end TopCat
