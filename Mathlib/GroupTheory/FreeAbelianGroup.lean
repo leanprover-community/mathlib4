@@ -96,10 +96,8 @@ TODO: rename to `FreeAddCommGroup` and introduce a multiplicative version
 def FreeAbelianGroup : Type u :=
   Additive <| Abelianization <| FreeGroup α
 
--- FIXME: this is super broken, because the functions have type `Additive .. → ..`
--- instead of `FreeAbelianGroup α → ..` and those are not defeq!
 instance FreeAbelianGroup.addCommGroup : AddCommGroup (FreeAbelianGroup α) :=
-  @Additive.addCommGroup _ <| Abelianization.commGroup _
+  fast_instance% @Additive.addCommGroup _ <| Abelianization.commGroup _
 
 instance : Inhabited (FreeAbelianGroup α) :=
   ⟨0⟩
