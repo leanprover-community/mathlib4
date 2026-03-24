@@ -836,5 +836,4 @@ variable {F : J ⥤ C} (G : C ⥤ D)
 def mapConeOp (t : Cone F) : (mapCone G t).op ≅ mapCocone G.op t.op :=
   Cocone.ext (Iso.refl _)
 
-
 end CategoryTheory.Functor
