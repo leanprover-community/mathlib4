@@ -712,7 +712,7 @@ protected theorem zero {f : ∀ b < (0 : Ordinal), Ordinal} : IsFundamentalSeque
 protected theorem succ : IsFundamentalSequence (succ o) 1 fun _ _ => o := by
   refine ⟨?_, @fun i j hi hj h => ?_, blsub_const Ordinal.one_ne_zero o⟩
   · rw [cof_succ, ord_one]
-  · rw [Order.lt_one_iff] at hi hj
+  · rw [lt_one_iff] at hi hj
     rw [hi, hj] at h
     exact h.false.elim
 

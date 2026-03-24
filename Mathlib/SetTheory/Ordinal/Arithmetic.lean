@@ -924,7 +924,7 @@ theorem le_of_dvd : ∀ {a b : Ordinal}, b ≠ 0 → a ∣ b → a ≤ b
     subst e
     simpa only [mul_one] using
       mul_le_mul_right
-        (Order.one_le_iff_ne_zero.2 fun h : b = 0 => by simp [h] at b0)
+        (one_le_iff_ne_zero.2 fun h : b = 0 => by simp [h] at b0)
         a
 
 theorem dvd_antisymm {a b : Ordinal} (h₁ : a ∣ b) (h₂ : b ∣ a) : a = b :=
