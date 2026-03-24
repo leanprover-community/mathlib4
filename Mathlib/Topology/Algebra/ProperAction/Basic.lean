@@ -38,7 +38,7 @@ ultrafilters and show the transfer of proper action to a closed subgroup.
 Hausdorff, group action, proper action
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology Set Prod
 
@@ -258,3 +258,40 @@ but such a lemma can't be true in this level of generality. For a counterexample
 `ℚ` acting on `ℝ` by translation, and let `s : Set ℚ := univ`, `t : set ℝ := {0}`. Then `s` is
 closed and `t` is compact, but `s +ᵥ t` is the set of all rationals, which is definitely not
 closed in `ℝ`. -/
+
+open Pointwise in
+/-- If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
+the set of `g` such that `g • U` intersects `V` is compact.
+
+See `MulAction.properSMul_iff_isCompact_setOf_inter_nonempty` for the two-way implication
+under additional conditions on `G` and `X`. -/
+@[to_additive /-- If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
+the set of `g` such that `g +ᵥ U` intersects `V` is compact.
+
+See `AddAction.properVAdd_iff_isCompact_setOf_inter_nonempty` for the two-way implication
+under additional conditions on `G` and `X`. -/]
+lemma ProperSMul.isCompact_setOf_inter_nonempty
+    {G : Type*} [Group G] [MulAction G X] [TopologicalSpace G] [ProperSMul G X]
+    {U V : Set X} (hU : IsCompact U) (hV : IsCompact V) :
+    IsCompact {g : G | (g • U ∩ V).Nonempty} := by
+  convert ((ProperSMul.isProperMap_smul_pair (G := G)).isCompact_preimage
+    (hV.prod hU)).image continuous_fst
+  ext g
+  suffices (∃ v, v ∈ g • U ∧ v ∈ V) ↔ ∃ u, g • u ∈ V ∧ u ∈ U by simpa
+  rw [← (MulAction.toPerm g).exists_congr_right]
+  simp [and_comm]
+
+/-- If `G` acts transitively on `X`, and the orbit map of a point in `X` is a proper map, then the
+action is proper. -/
+@[to_additive]
+lemma MulAction.properSMul_of_proper_orbitMap
+    [ContinuousSMul G X] [IsTopologicalGroup G] [MulAction.IsPretransitive G X]
+    {x : X} (hx : IsProperMap fun g : G ↦ g • x) : ProperSMul G X := by
+  constructor
+  let f : G × G → G × X := Prod.map id (fun g ↦ g • x)
+  have hfsurj : f.Surjective := Function.surjective_id.prodMap (surjective_smul G x)
+  refine isProperMap_of_comp_of_surj (by fun_prop) (by fun_prop) ?_ hfsurj
+  simpa [Function.comp_def, Prod.map_apply, mul_smul]
+    using (hx.prodMap hx).comp (ProperSMul.isProperMap_smul_pair (G := G))
+
+end
