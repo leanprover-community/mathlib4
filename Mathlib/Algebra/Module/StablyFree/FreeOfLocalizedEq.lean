@@ -72,24 +72,20 @@ theorem Module.free_of_isStablyFree_of_localized_eq_ring [Nontrivial R] [Module.
     Module.Free R M := by
   have : Module.Projective R M := h.projective
   obtain ⟨N, _, _, _, _, _⟩ := h
-  obtain ⟨m0, hm0max, _⟩ := Ideal.exists_le_maximal (⊥ : Ideal R) (by simp)
-  let p0 : PrimeSpectrum R := PrimeSpectrum.mk m0 hm0max.isPrime
-  have hp0 : Module.rankAtStalk M p0 = 1 :=
-    Module.finrank_eq_card_basis ((Module.Basis.singleton (Fin 1) (Localization.AtPrime m0)).map
-      (hloc m0).symm) |>.trans (by simp)
+  obtain ⟨𝔪, h𝔪, _⟩ := Ideal.exists_le_maximal (⊥ : Ideal R) bot_ne_top
+  have h1 : Module.rankAtStalk M ⟨𝔪, h𝔪.isPrime⟩ = 1 :=
+    (Module.finrank_eq_card_basis ((Module.Basis.singleton (Fin 1) _).map (hloc 𝔪).symm)).trans
+      Fintype.card_unique
   let n := Module.finrank R N
-  have hp : Module.finrank R (M × N) = n + 1 :=
-    (congrArg (fun f => f p0) Module.rankAtStalk_eq_finrank_of_free).symm.trans <|
-      (congrArg (fun f => f p0) (Module.rankAtStalk_prod M N)).trans <| by
-        simp [← hp0, n, Nat.add_comm]
+  have hp : Module.finrank R (M × N) = n + 1 := (congrArg (fun f => f ⟨𝔪, h𝔪.isPrime⟩) <|
+    Module.rankAtStalk_eq_finrank_of_free.symm.trans (Module.rankAtStalk_prod M N)).trans <| by
+      simp [← h1, n, Nat.add_comm]
   let bN : Module.Basis (Fin n) R N := Module.finBasisOfFinrankEq R N rfl
-  let bF : Module.Basis (Fin (n + 1)) R (M × N) := Module.finBasisOfFinrankEq R (M × N) hp
-  let f : R →ₗ[R] M := cofactorToLeft bN ∘ₗ (topExteriorLinearEquiv bF).symm.toLinearMap
-  have hfs : Function.Surjective f := by
-    refine fun x ↦ ⟨topExteriorLinearEquiv bF
-      (exteriorPower.ιMulti R (n + 1) (Fin.cons (x, 0) fun i => (0, bN i))), ?_⟩
-    change cofactorToLeft bN ((topExteriorLinearEquiv bF).symm _) = x
-    simpa using cofactorToLeft_ιMulti_cons bN x
+  let b : Module.Basis (Fin (n + 1)) R (M × N) := Module.finBasisOfFinrankEq R (M × N) hp
+  let f : R →ₗ[R] M := cofactorToLeft bN ∘ₗ (topExteriorLinearEquiv b).symm.toLinearMap
+  have hfs : Function.Surjective f := fun x ↦
+    ⟨topExteriorLinearEquiv b (exteriorPower.ιMulti R (n + 1) (Fin.cons (x, 0) fun i => (0, bN i))),
+      by simpa [f] using cofactorToLeft_ιMulti_cons bN x⟩
   exact Module.Free.of_equiv <| LinearEquiv.ofBijective f <| bijective_of_localized_maximal f <| by
     intro m _
     have := Module.Invertible.congr (hloc m).symm
