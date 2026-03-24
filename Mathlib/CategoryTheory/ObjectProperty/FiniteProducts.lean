@@ -151,7 +151,7 @@ lemma IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms [HasInitial C]
       BinaryCofan.IsColimit.mk _ (fun _ f ↦ e.inv ≫ f) (by cat_disch) (by simp) (by cat_disch)
     exact P.prop_of_isColimit_binaryCofan h P.prop_initial hX
 
-/-- All objects that are binary products of objects in `P`. -/
+/-- All objects that are binary coproducts of objects in `P`. -/
 abbrev binaryCoproductsClosure (P : ObjectProperty C) : ObjectProperty C :=
   P.colimitClosure (Discrete WalkingPair)
 

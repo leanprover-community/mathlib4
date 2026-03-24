@@ -74,7 +74,7 @@ lemma colimitsClosure_isoClosure :
   rw [isoClosure_le_iff]
   exact le_colimitsClosure P J
 
-/-- The closure of a property of objects of a category under limits of
+/-- The closure of a property of objects of a category under colimits of
 shape `J` for a category `J`. -/
 abbrev colimitClosure (J : Type*) [Category* J] : ObjectProperty C :=
   P.colimitsClosure (fun (_ : Unit) ↦ J)
