@@ -172,7 +172,7 @@ Ring Theory:
     characteristic of a ring: 'ringChar'
     characteristic zero: 'CharZero'
     characteristic p: 'CharP'
-    Subfields: 'field_theory/subfield.html'
+    Subfields: 'Subfield'
     Frobenius morphisms: 'frobenius'
     field $\Q$ of rational numbers: 'Rat.instField'
     field $\R$ of real numbers: 'Real.instField'
@@ -185,7 +185,7 @@ Ring Theory:
     algebraically closed fields: 'IsAlgClosed'
     rupture fields: 'AdjoinRoot'
     splitting fields: 'Polynomial.SplittingField'
-    finite fields: 'field_theory/finite.html'
+    finite fields: 'Mathlib/FieldTheory/Finite/Basic.html'
     rational fraction fields with one indeterminate over a field: 'RatFunc'
     $\R(X)$-partial fraction decomposition: 'https://en.wikipedia.org/wiki/Partial_fraction_decomposition#General_result'
     $\C(X)$-partial fraction decomposition: 'https://en.wikipedia.org/wiki/Partial_fraction_decomposition#Statement'
@@ -283,7 +283,7 @@ Single Variable Real Analysis:
     convergence: 'Filter.Tendsto'
     limit point: 'MapClusterPt'
     recurrent sequences: 'Nat'
-    limit infimum and supremum: 'order/liminf_limsup.html'
+    limit infimum and supremum: 'Mathlib/Order/LiminfLimsup.html'
     Cauchy sequences: 'CauchySeq'
   Topology of R:
     metric structure: 'Real.metricSpace'
@@ -360,7 +360,7 @@ Single Variable Real Analysis:
       continuity: 'ConvexOn.continuousOn'
       differentiability: 'https://en.wikipedia.org/wiki/Convex_function#Functions_of_one_variable'
     characterizations of convexity: 'convexOn_of_deriv2_nonneg'
-    convexity inequalities: 'analysis/mean_inequalities.html'
+    convexity inequalities: 'Mathlib/Analysis/MeanInequalities.html'
 
 # 7.
 Single Variable Complex Analysis:

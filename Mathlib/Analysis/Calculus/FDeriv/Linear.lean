@@ -30,7 +30,7 @@ variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 variable (f : E →L[𝕜] F)
 variable {x : E}
 variable {s : Set E}
-variable {L : Filter E}
+variable {L : Filter (E × E)}
 
 /-!
 ### Bundled continuous linear maps
@@ -41,14 +41,13 @@ and the unbundled version (with a predicate `IsBoundedLinearMap`, requires norme
 This section deals with the first form, see below for the unbundled version
 -/
 
-@[fun_prop]
-protected theorem hasStrictFDerivAt : HasStrictFDerivAt f f x :=
+protected theorem hasFDerivAtFilter : HasFDerivAtFilter f f L :=
   .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun x => by
     simp only [f.map_sub, sub_self, Pi.zero_apply]
 
-protected theorem hasFDerivAtFilter : HasFDerivAtFilter f f x L :=
-  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun x => by
-    simp only [f.map_sub, sub_self, Pi.zero_apply]
+@[fun_prop]
+protected theorem hasStrictFDerivAt : HasStrictFDerivAt f f x :=
+  f.hasFDerivAtFilter
 
 @[fun_prop]
 protected theorem hasFDerivWithinAt : HasFDerivWithinAt f f s x :=
@@ -96,10 +95,10 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {f : E → F}
 variable {x : E}
 variable {s : Set E}
-variable {L : Filter E}
+variable {L : Filter (E × E)}
 
 theorem hasFDerivAtFilter (h : IsBoundedLinearMap 𝕜 f) :
-    HasFDerivAtFilter f h.toContinuousLinearMap x L :=
+    HasFDerivAtFilter f h.toContinuousLinearMap L :=
   h.toContinuousLinearMap.hasFDerivAtFilter
 
 @[fun_prop]

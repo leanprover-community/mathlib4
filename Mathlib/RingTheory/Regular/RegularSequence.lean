@@ -173,7 +173,7 @@ private lemma _root_.AddHom.map_smul_top_toAddSubgroup_of_surjective
   | @cons r s _ _ h _ ih =>
     conv => congr <;> rw [Ideal.ofList_cons, sup_smul, sup_toAddSubgroup,
       ideal_span_singleton_smul, pointwise_smul_toAddSubgroup,
-      top_toAddSubgroup, pointwise_smul_def]
+      top_toAddSubgroup, AddSubgroup.pointwise_smul_def]
     apply DFunLike.ext (f.comp (toAddMonoidEnd R M r))
       ((toAddMonoidEnd S M₂ s).comp f) at h
     rw [AddSubgroup.map_sup, ih, map_map, h, ← map_map,
@@ -240,6 +240,7 @@ lemma isWeaklyRegular_cons_iff (r : R) (rs : List R) :
       Iff.trans (forall_congr' fun i => (e i).isSMulRegular_congr (rs.get i))
         (isWeaklyRegular_iff_Fin _ _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isWeaklyRegular_cons_iff' (r : R) (rs : List R) :
     IsWeaklyRegular M (r :: rs) ↔
       IsSMulRegular M r ∧
@@ -255,6 +256,7 @@ lemma isRegular_cons_iff (r : R) (rs : List R) :
   rw [isRegular_iff, isRegular_iff, isWeaklyRegular_cons_iff M r rs,
     ne_eq, top_eq_ofList_cons_smul_iff, and_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isRegular_cons_iff' (r : R) (rs : List R) :
     IsRegular M (r :: rs) ↔
       IsSMulRegular M r ∧ IsRegular (QuotSMulTop r M)

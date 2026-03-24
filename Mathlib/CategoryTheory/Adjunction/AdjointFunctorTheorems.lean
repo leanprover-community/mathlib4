@@ -69,6 +69,7 @@ section GeneralAdjointFunctorTheorem
 variable {D : Type u₁} [Category.{v₁} D]
 variable (G : D ⥤ C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `G : D ⥤ C` is a right adjoint it satisfies the solution set condition. -/
 theorem solutionSetCondition_of_isRightAdjoint [G.IsRightAdjoint] : SolutionSetCondition.{w} G := by
   intro A

@@ -34,6 +34,7 @@ variable (C : Type*) [Category* C]
 ```
 -/
 
+namespace Mathlib.Tactic.CategoryStar
 open Lean Meta Elab Term
 
 /--
@@ -56,3 +57,5 @@ elab "Category*" ppSpace C:term:arg : term => commitIfNoEx <| withoutErrToSorry 
   let us := (collectLevelParams (collectLevelParams {} cExpr) tpCExpr).params
   let v ← mkFreshLevelParam `v (insertAfterLevels us)
   return .app (.const `CategoryTheory.Category [v, u]) cExpr
+
+end Mathlib.Tactic.CategoryStar

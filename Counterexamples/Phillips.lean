@@ -417,6 +417,7 @@ theorem continuousPart_evalCLM_eq_zero [TopologicalSpace α] [DiscreteTopology �
     _ = indicator (univ \ f.discreteSupport ∩ (s \ {x})) 1 x := rfl
     _ = 0 := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] (s : Set α)
     (hs : MeasurableSet s) :
     μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure s = μ.real s := by
@@ -430,6 +431,7 @@ theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMe
     apply Filter.Eventually.of_forall
     exact norm_indicator_le_one _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toFunctions_toMeasure_continuousPart [MeasurableSpace α] [MeasurableSingletonClass α]
     (μ : Measure α) [IsFiniteMeasure μ] [NoAtoms μ] (s : Set α) (hs : MeasurableSet s) :
     μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure.continuousPart s = μ.real s := by
@@ -508,6 +510,7 @@ functions of the different fibers of the Sierpinski pathological family -/
 def f (Hcont : #ℝ = ℵ₁) (x : ℝ) : DiscreteCopy ℝ →ᵇ ℝ :=
   ofNormedAddCommGroupDiscrete (indicator (spf Hcont x) 1) 1 (norm_indicator_le_one _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem apply_f_eq_continuousPart (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ)
     (x : ℝ) (hx : φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x = ∅) :
     φ (f Hcont x) = φ.toBoundedAdditiveMeasure.continuousPart univ := by
@@ -576,6 +579,7 @@ theorem measurable_comp (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ �
 theorem norm_bound (Hcont : #ℝ = ℵ₁) (x : ℝ) : ‖f Hcont x‖ ≤ 1 :=
   norm_ofNormedAddCommGroup_le _ zero_le_one (norm_indicator_le_one _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The function `f Hcont : ℝ → (DiscreteCopy ℝ →ᵇ ℝ)` has no Pettis integral. -/
 theorem no_pettis_integral (Hcont : #ℝ = ℵ₁) :
     ¬∃ g : DiscreteCopy ℝ →ᵇ ℝ,

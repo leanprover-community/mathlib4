@@ -543,6 +543,7 @@ theorem merge_node {ls ll lx lr rs rl rx rr} :
 /-! ### `insert` -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dual_insert [LE α] [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α) :
     ∀ t : Ordnode α, dual (Ordnode.insert x t) = @Ordnode.insert αᵒᵈ _ _ x (dual t)
   | nil => rfl
@@ -562,7 +563,7 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
     · rfl
     · rw [sr.eq_node'] at hr ⊢
       obtain - | ⟨rls, rll, rlx, rlr⟩ := rl <;> obtain - | ⟨rrs, rrl, rrx, rrr⟩ := rr <;>
-        dsimp [balance, balance']
+        dsimp +instances [balance, balance']
       · rfl
       · have : size rrl = 0 ∧ size rrr = 0 := by
           have := balancedSz_zero.1 hr.1.symm
@@ -769,6 +770,7 @@ theorem Bounded.dual :
   | nil, o₁, o₂, h => by cases o₁ <;> cases o₂ <;> trivial
   | node _ _ _ _, _, _, ⟨ol, Or⟩ => ⟨Or.dual, ol.dual⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Bounded.dual_iff {t : Ordnode α} {o₁ o₂} :
     Bounded t o₁ o₂ ↔ @Bounded αᵒᵈ _ (.dual t) o₂ o₁ :=
   ⟨Bounded.dual, fun h => by

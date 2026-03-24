@@ -334,7 +334,8 @@ def ofConvexRange
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
     simp [this, hint]
 
-@[deprecated (since := "2025-12-19")] alias of_convex_range := ModelWithCorners.ofConvexRange
+@[deprecated (since := "2025-12-19")] noncomputable alias of_convex_range :=
+  ModelWithCorners.ofConvexRange
 
 theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
   by_cases h : IsRCLikeNormedField 𝕜
@@ -521,6 +522,7 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     continuous_toFun := I.continuous_toFun.prodMap I'.continuous_toFun
     continuous_invFun := I.continuous_invFun.prodMap I'.continuous_invFun }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a finite family of `ModelWithCorners` `I i` on `(E i, H i)`, we define the model with
 corners `pi I` on `(Π i, E i, ModelPi H)`. See note [Manifold type tags] for explanation about
 `ModelPi H`. -/
@@ -837,10 +839,14 @@ class _root_.ENat.LEInfty (m : WithTop ℕ∞) where
 open ENat
 
 instance (n : ℕ∞) : LEInfty (n : WithTop ℕ∞) := ⟨mod_cast le_top⟩
+
 instance (n : ℕ) : LEInfty (n : WithTop ℕ∞) := ⟨mod_cast le_top⟩
+
 instance (n : ℕ) [n.AtLeastTwo] : LEInfty (no_index (OfNat.ofNat n) : WithTop ℕ∞) :=
   inferInstanceAs (LEInfty (n : WithTop ℕ∞))
+
 instance : LEInfty (1 : WithTop ℕ∞) := inferInstanceAs (LEInfty ((1 : ℕ) : WithTop ℕ∞))
+
 instance : LEInfty (0 : WithTop ℕ∞) := inferInstanceAs (LEInfty ((0 : ℕ) : WithTop ℕ∞))
 
 instance {a : WithTop ℕ∞} [IsManifold I ∞ M] [h : LEInfty a] :
@@ -919,6 +925,7 @@ theorem of_discreteTopology [DiscreteTopology M] [Unique E] :
 attribute [local instance] ChartedSpace.of_discreteTopology in
 example [Unique E] : IsManifold (𝓘(𝕜, E)) n (Fin 2) := of_discreteTopology _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of two `C^n` manifolds is naturally a `C^n` manifold. -/
 instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
@@ -940,6 +947,7 @@ variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
   [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {n : WithTop ℕ∞}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_maximalAtlas_prod [IsManifold I n M] [IsManifold I' n M']
     {e : OpenPartialHomeomorph M H} (he : e ∈ maximalAtlas I n M)
     {e' : OpenPartialHomeomorph M' H'} (he' : e' ∈ maximalAtlas I' n M') :
@@ -1045,6 +1053,16 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Identifying the tangent space at a normed space with the normed space itself.
+This canonical identification (which, in mathlib, is implemented using an abuse of definitional
+equality) is very prevalent in a number of places: this device allows making it explicit. -/
+def NormedSpace.fromTangentSpace (v : E) : TangentSpace 𝓘(𝕜, E) v ≃L[𝕜] E where
+  toFun v := v
+  invFun v := v
+  map_add' := by simp
+  map_smul' := by simp
 
 instance : Inhabited (TangentSpace I x) := ⟨0⟩
 
