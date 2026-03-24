@@ -89,7 +89,7 @@ attribute [instance] WellOrder.wo
 namespace WellOrder
 
 instance inhabited : Inhabited WellOrder :=
-  ⟨⟨PEmpty, _, inferInstanceAs (IsWellOrder PEmpty emptyRelation)⟩⟩
+  ⟨⟨PEmpty, _, (inferInstance : IsWellOrder PEmpty emptyRelation)⟩⟩
 
 end WellOrder
 
@@ -319,7 +319,7 @@ instance partialOrder : PartialOrder Ordinal where
       Quot.sound ⟨InitialSeg.antisymm h₁ h₂⟩
 
 instance : LinearOrder Ordinal :=
-  { inferInstanceAs (PartialOrder Ordinal) with
+  { (inferInstance : PartialOrder Ordinal) with
     le_total := fun a b => Quotient.inductionOn₂ a b fun ⟨_, r, _⟩ ⟨_, s, _⟩ =>
       (InitialSeg.total r s).recOn (fun f => Or.inl ⟨f⟩) fun f => Or.inr ⟨f⟩
     toDecidableLE := Classical.decRel _ }
@@ -1018,6 +1018,11 @@ theorem le_enum_succ {o : Ordinal} (a : (succ o).ToType) :
 def univ : Ordinal.{max (u + 1) v} :=
   lift.{v, u + 1} (typeLT Ordinal)
 
+@[simp]
+theorem type_lt_ordinal : typeLT Ordinal = univ.{u, u + 1} :=
+  (lift_id _).symm
+
+@[deprecated type_lt_ordinal (since := "2026-03-20")]
 theorem univ_id : univ.{u, u + 1} = typeLT Ordinal :=
   lift_id _
 
@@ -1065,8 +1070,9 @@ theorem liftPrincipalSeg_coe :
 theorem liftPrincipalSeg_top : (liftPrincipalSeg.{u, v}).top = univ.{u, v} :=
   rfl
 
+@[deprecated liftPrincipalSeg_top (since := "2026-03-20")]
 theorem liftPrincipalSeg_top' : liftPrincipalSeg.{u, u + 1}.top = typeLT Ordinal := by
-  simp only [liftPrincipalSeg_top, univ_id]
+  simp
 
 end Ordinal
 
@@ -1498,4 +1504,4 @@ theorem List.SortedGT.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : Li
 
 @[deprecated (since := "2025-11-27")] alias List.Sorted.lt_ord_of_lt := List.SortedGT.lt_ord_of_lt
 
-set_option linter.style.longFile 1600
+set_option linter.style.longFile 1700
