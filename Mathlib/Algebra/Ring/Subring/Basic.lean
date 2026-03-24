@@ -885,20 +885,6 @@ abbrev pullbackFst (f : R →+* T) (g : S →+* T) : f.pullback g →+* R :=
 abbrev pullbackSnd (f : R →+* T) (g : S →+* T) : f.pullback g →+* S :=
   (RingHom.snd R S).comp (f.pullback g).subtype
 
-@[simp]
-lemma pullbackFst_eq_zero_iff (f : R →+* T) (g : S →+* T) {x : f.pullback g} :
-    f.pullbackFst g x = 0 ↔ x.val.1 = 0 ∧ g x.val.2 = 0 := by
-  rcases x with ⟨⟨⟩, h⟩
-  simp; simp at h
-  grind
-
-@[simp]
-lemma pullbackSnd_eq_zero_iff (f : R →+* T) (g : S →+* T) {x : f.pullback g} :
-    f.pullbackSnd g x = 0 ↔ f x.val.1 = 0 ∧ x.val.2 = 0 := by
-  rcases x with ⟨⟨⟩, h⟩
-  simp; simp at h
-  grind
-
 theorem isUnit_pullback_mk_iff (f : R →+* T) (g : S →+* T) {a : R × S} (a_in : a ∈ f.pullback g) :
     IsUnit (⟨a, a_in⟩ : f.pullback g) ↔ IsUnit a.1 ∧ IsUnit a.2 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
