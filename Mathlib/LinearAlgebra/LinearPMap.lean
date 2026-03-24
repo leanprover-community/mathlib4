@@ -25,7 +25,7 @@ We define a `SemilatticeInf` with `OrderBot` instance on this, and define three 
 
 Moreover, we define
 * `LinearPMap.graph` is the graph of the partial linear map viewed as a submodule of `E × F`.
-TODO: This should be also generalized to semilinear maps, but one has to definea new type where `R`
+TODO: This should be also generalized to semilinear maps, but one has to define a new type where `R`
 acts on `E` normally while `R` acts on `F` through `σ`.
 
 Partially defined maps are currently used in `Mathlib` to prove the Hahn-Banach theorem
@@ -45,7 +45,7 @@ structure LinearPMap {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) (E : Type*
 
 @[inherit_doc] notation:25 E " →ₛₗ.[" σ:25 "] " F:0 => LinearPMap σ E F
 
-/-- `E →ₗ.[R] F` is the abbreviation of `E →ₛₗ.[RingHom.id R] F`. -/
+/-- `E →ₗ.[R] F` is the notation for `E →ₛₗ.[RingHom.id R] F`. -/
 notation:25 E " →ₗ.[" R:25 "] " F:0 => LinearPMap (RingHom.id R) E F
 
 variable {R S T : Type*} [Ring R] [Ring S] [Ring T] {σ : R →+* S} {τ : S →+* T} {E : Type*}
@@ -119,7 +119,8 @@ theorem map_smul (f : E →ₛₗ.[σ] F) (c : R) (x : f.domain) : f (c • x) =
   f.toFun.map_smulₛₗ c x
 
 @[simp]
-theorem mk_apply (p : Submodule R E) (f : p →ₛₗ[σ] F) (x : p) : mk p f x = f x := rfl
+theorem mk_apply (p : Submodule R E) (f : p →ₛₗ[σ] F) (x : p) : mk p f x = f x :=
+  rfl
 
 /-- The unique `LinearPMap` on `R ∙ x` that sends `x` to `y`. This version works for modules
 over rings, and requires a proof of `∀ c, c • x = 0 → c • y = 0`. -/
@@ -549,7 +550,7 @@ theorem supSpanSingleton_apply_mk (f : E →ₛₗ.[σ] F) (x : E) (y : F) (hx :
 @[simp]
 theorem supSpanSingleton_apply_smul_self (f : E →ₛₗ.[σ] F) {x : E} (y : F) (hx : x ∉ f.domain)
     (c : K) :
-    f.supSpanSingleton x y hx ⟨c • x, mem_sup_right <| mem_span_singleton.2 ⟨c, rfl⟩⟩
+    f.supSpanSingleton x y hx ⟨c • x, mem_sup_right <| mem_span_singleton.2 ⟨c, rfl⟩⟩ = σ c • y := by
     = σ c • y := by
   simpa [(mk_eq_zero _ _).mpr rfl] using supSpanSingleton_apply_mk f x y hx 0 (zero_mem _) c
 
@@ -656,7 +657,9 @@ theorem toPMap_domain (f : E →ₛₗ[σ] F) (p : Submodule R E) : (f.toPMap p)
 /-- Compose a linear map with a `LinearPMap` -/
 def compPMap (g : F →ₛₗ[τ] G) (f : E →ₛₗ.[σ] F) : E →ₛₗ.[τ.comp σ] G :=
   letI : RingHomCompTriple σ τ (τ.comp σ) := RingHomCompTriple.mk (by rfl)
-{ domain := f.domain
+  letI : RingHomCompTriple σ τ (τ.comp σ) := RingHomCompTriple.mk (by rfl)
+  { domain := f.domain
+    toFun := g.comp f.toFun }
   toFun := g.comp f.toFun }
 
 @[simp]
