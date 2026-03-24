@@ -888,4 +888,3 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 
 end extend
 end Cardinal
-#lint
