@@ -35,6 +35,11 @@ We define the notions of strong and classical generators in (pre)triangulated ca
 - `ObjectProperty.IsStrongTriangulatedGenerator.isClassicalTriangulatedGenerator`: A strong
   triangulated generator is a classical triangulated generator.
 
+## TODO
+
+* Prove that if `C` has a strong generator and `P` is a classical generator, then `P` is a
+  strong generator (stacks 0FXA).
+
 ## References
 
 * [Bondal and Van den Bergh, *Generators and representability of functors in commutative and
