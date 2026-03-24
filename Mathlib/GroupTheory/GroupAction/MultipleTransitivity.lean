@@ -535,10 +535,10 @@ theorem isMultiplyPretransitive (n : ℕ) :
     rw [← this y]
     simp only [add_comm, Cardinal.mk_sum_compl]
   rw [Cardinal.eq] at hxy
-  obtain ⟨φ⟩ := hxy
-  let φ' : α → α := Function.extend Subtype.val (fun a ↦ ↑(φ a)) id
-  set ψ : α → α := Function.extend x y φ'
-  have : Function.Bijective ψ := by
+  obtain ⟨e⟩ := hxy
+  let e' : α → α := Function.extend Subtype.val (fun a ↦ ↑(e a)) id
+  set f : α → α := Function.extend x y e'
+  have : Function.Bijective f := by
     constructor
     · intro a b hab
       by_cases ha : a ∈ range x
@@ -547,32 +547,32 @@ theorem isMultiplyPretransitive (n : ℕ) :
         · obtain ⟨j, rfl⟩ := hb
           simp only [f, x.injective.extend_apply, y.injective.eq_iff] at hab
           rw [hab]
-        · simp only [ψ, φ', x.injective.extend_apply] at hab
+        · simp only [f, e', x.injective.extend_apply] at hab
           rw [Function.extend_apply' _ _ _ hb] at hab
           rw [← Set.mem_compl_iff] at hb
           rw [← Subtype.coe_mk b hb, Subtype.val_injective.extend_apply] at hab
           exfalso
           have : y i ∈ (range y)ᶜ := by
             rw [hab]
-            exact Subtype.coe_prop (φ ⟨b, hb⟩)
+            exact Subtype.coe_prop (e ⟨b, hb⟩)
           rw [Set.mem_compl_iff] at this
           apply this
           exact mem_range_self i
       · by_cases hb : b ∈ range x
         · obtain ⟨j, rfl⟩ := hb
-          simp only [ψ, φ', x.injective.extend_apply] at hab
+          simp only [f, e', x.injective.extend_apply] at hab
           rw [Function.extend_apply' _ _ _ ha] at hab
           rw [← Set.mem_compl_iff] at ha
           rw [← Subtype.coe_mk a ha, Subtype.val_injective.extend_apply] at hab
           exfalso
           have : y j ∈ (range y)ᶜ := by
             rw [← hab]
-            exact Subtype.coe_prop (φ ⟨a, ha⟩)
+            exact Subtype.coe_prop (e ⟨a, ha⟩)
           rw [Set.mem_compl_iff] at this
           apply this
           exact mem_range_self j
-        · simp only [ψ, Function.extend_apply' _ _ _ ha,
-            Function.extend_apply' _ _ _ hb, φ'] at hab
+        · simp only [f, Function.extend_apply' _ _ _ ha,
+            Function.extend_apply' _ _ _ hb, e'] at hab
           rw [← Set.mem_compl_iff] at ha hb
           rw [← Subtype.coe_mk b hb, ← Subtype.coe_mk a ha] at hab
           rw [Subtype.val_injective.extend_apply, Subtype.val_injective.extend_apply] at hab
@@ -583,12 +583,12 @@ theorem isMultiplyPretransitive (n : ℕ) :
       · obtain ⟨i, rfl⟩ := hb
         use x i
         simp only [f, x.injective.extend_apply]
-      · use φ.invFun ⟨b, hb⟩
+      · use e.invFun ⟨b, hb⟩
         simp only [invFun_as_coe]
         grind [Function.extend_apply', Function.extend_val_apply]
-  use Equiv.ofBijective ψ this
+  use Equiv.ofBijective f this
   ext i
-  simp [ψ, x.injective.extend_apply]
+  simp [f, x.injective.extend_apply]
 
 /-- The action of the permutation group of `α` on `α` is preprimitive -/
 instance : IsPreprimitive (Perm α) α :=

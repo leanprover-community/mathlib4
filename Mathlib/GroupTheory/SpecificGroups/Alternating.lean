@@ -155,7 +155,7 @@ theorem isCyclic_of_card_le_three (hα : Nat.card α ≤ 3) :
 
 theorem isMulCommutative_of_card_le_three (hα : Nat.card α ≤ 3) :
     IsMulCommutative (alternatingGroup α) :=
-  (isCyclic_of_card_le_three hα).isMulCommutative
+  ⟨(isCyclic_of_card_le_three hα).commutative⟩
 
 open Equiv.Perm
 
