@@ -446,6 +446,56 @@ lemma logHeight_eq_zero_of_subsingleton {ι : Type*} [Subsingleton ι] (x : ι �
     logHeight x = 0 := by
   simp [logHeight_eq_log_mulHeight]
 
+section tuple
+
+/-
+This section contains `simp` lemmas that remove a zero from one of the first three positions
+in a tuple, when `mulHeight` or `logHeight` is applied to it.
+
+TODO: Write a `simproc` that removes *all* (syntactic) zeros from a tuple in this situation.
+-/
+
+open Matrix
+
+variable {n : ℕ} (a b : K) (x : Fin n → K)
+
+@[simp]
+lemma mulHeight_cons_zero : mulHeight (vecCons 0 x) = mulHeight x := by
+  let e := (Equiv.sumComm ..).trans <| finSumFinEquiv.trans <| finCongr n.one_add
+  have he : Matrix.vecCons 0 x ∘ ⇑e = Sum.elim x 0 := by
+    ext j : 1
+    match j with
+    | .inl _ => simp [e]
+    | .inr ⟨i, h⟩ =>
+      simp [show i = 0 by lia, e, show Fin.castAdd n 0 = 0 from Fin.castAdd_mk _ _ zero_lt_one]
+  rw [← mulHeight_comp_equiv e, he, mulHeight_sumElim_zero_eq]
+
+@[simp]
+lemma logHeight_cons_zero : logHeight (Matrix.vecCons 0 x) = logHeight x := by
+  simp [logHeight_eq_log_mulHeight]
+
+@[simp]
+lemma mulHeight_cons_cons_zero : mulHeight (vecCons a (vecCons 0 x)) = mulHeight (vecCons a x) := by
+  rw [← mulHeight_comp_equiv (Equiv.swap 0 1)]
+  simp
+
+@[simp]
+lemma logHeight_cons_cons_zero : logHeight (vecCons a (vecCons 0 x)) = logHeight (vecCons a x) := by
+  simp [logHeight_eq_log_mulHeight]
+
+@[simp]
+lemma mulHeight_cons_cons_cons_zero :
+    mulHeight (vecCons a (vecCons b (vecCons 0 x))) = mulHeight (vecCons a (vecCons b x)) := by
+  rw [← mulHeight_comp_equiv (Equiv.swap (Fin.succ 0) (Fin.succ 1)), ← cons_swap]
+  simp
+
+@[simp]
+lemma logHeight_cons_cons_cons_zero :
+    logHeight (vecCons a (vecCons b (vecCons 0 x))) = logHeight (vecCons a (vecCons b x)) := by
+  simp [logHeight_eq_log_mulHeight]
+
+end tuple
+
 end Height
 
 /-!
