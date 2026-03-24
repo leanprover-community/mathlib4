@@ -259,28 +259,27 @@ but such a lemma can't be true in this level of generality. For a counterexample
 closed and `t` is compact, but `s +ᵥ t` is the set of all rationals, which is definitely not
 closed in `ℝ`. -/
 
-
 open Pointwise in
 /-- If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
-the set of `g` such that `U` intersects `g • V` is compact.
+the set of `g` such that `g • U` intersects `V` is compact.
 
 See `MulAction.properSMul_iff_isCompact_setOf_inter_nonempty` for the two-way implication
 under additional conditions on `G` and `X`. -/
 @[to_additive /-- If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
-the set of `g` such that `U` intersects `g +ᵥ V` is compact.
+the set of `g` such that `g +ᵥ U` intersects `V` is compact.
 
 See `AddAction.properVAdd_iff_isCompact_setOf_inter_nonempty` for the two-way implication
 under additional conditions on `G` and `X`. -/]
 lemma ProperSMul.isCompact_setOf_inter_nonempty
     {G : Type*} [Group G] [MulAction G X] [TopologicalSpace G] [ProperSMul G X]
     {U V : Set X} (hU : IsCompact U) (hV : IsCompact V) :
-    IsCompact {g : G | (U ∩ g • V).Nonempty} := by
+    IsCompact {g : G | (g • U ∩ V).Nonempty} := by
   convert ((ProperSMul.isProperMap_smul_pair (G := G)).isCompact_preimage
-    (hU.prod hV)).image continuous_fst
-  ext x
-  suffices (∃ u ∈ U, u ∈ x • V) ↔ ∃ v, x • v ∈ U ∧ v ∈ V by simpa
-  rw [← (MulAction.toPerm x).exists_congr_right]
-  simp
+    (hV.prod hU)).image continuous_fst
+  ext g
+  suffices (∃ v, v ∈ g • U ∧ v ∈ V) ↔ ∃ u, g • u ∈ V ∧ u ∈ U by simpa
+  rw [← (MulAction.toPerm g).exists_congr_right]
+  simp [and_comm]
 
 /-- If `G` acts transitively on `X`, and the orbit map of a point in `X` is a proper map, then the
 action is proper. -/
