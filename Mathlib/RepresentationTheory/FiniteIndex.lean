@@ -29,7 +29,7 @@ TODO : Fix the universe constraint
 
 @[expose] public section
 
-universe t w w' u u' v v'
+universe u
 
 namespace Rep
 
