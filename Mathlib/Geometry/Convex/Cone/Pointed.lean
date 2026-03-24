@@ -351,22 +351,18 @@ section DirectedOrderRing
 variable {R : Type*} [Ring R] [PartialOrder R] [IsDirectedOrder R] [IsOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma hull_neg_pair_eq_span_singleton (x : M) : hull R {-x, x} = R ∙ x := by
   ext y
-  rw [← span_insert_eq_span <| neg_mem <| mem_span_singleton_self x]
-  simp only [restrictScalars_mem, mem_span_pair, smul_neg, Subtype.exists]
-  constructor
-  · rintro ⟨a, _, b, _, rfl⟩
-    exact ⟨a, b, rfl⟩
-  · rintro ⟨a, b, rfl⟩
-    obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
-    refine ⟨c - b, sub_nonneg.mpr hbc, c - a, sub_nonneg.mpr hac, ?_⟩
-    calc -((c - b) • x) + (c - a) • x
-        _ = (-(c - b) + (c - a)) • x  := by rw [← neg_smul, ← add_smul]
-        _ = (b - a) • x               := by rw [neg_sub, sub_add_sub_cancel]
-        _ = -(a • x) + b • x          := by rw [sub_smul]; abel
+  simp_rw [mem_span_pair, restrictScalars_mem, mem_span_singleton, Subtype.exists, Nonneg.mk_smul]
+  refine ⟨fun ⟨a, _, b, _, h⟩ ↦ ⟨-a + b, ?_⟩, fun ⟨a, h⟩ ↦ ?_⟩
+  · rw [← h, add_smul, smul_neg, neg_smul]
+  · obtain ⟨b, hab, hb⟩ := exists_ge_ge a 0
+    refine ⟨b - a, sub_nonneg.mpr hab, b, hb, ?_⟩
+    rw [← h, smul_neg, ← neg_smul, ← add_smul]
+    abel_nf
 
-@[simp] lemma hull_neg_sup_hull_eq_span (s : Set M) :
+lemma hull_neg_sup_hull_eq_span (s : Set M) :
     hull R (-s) ⊔ hull R s = span R s := by
   ext x
   constructor <;> intro h
@@ -393,27 +389,29 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 
 lemma span_eq_submodule_span_of_neg_eq {s : Set M} (hs : -s = s) :
     hull R s = span R s := by
-  nth_rw 1 [← Set.union_self s, hs.symm]
-  simp
+  rw [← hull_neg_sup_hull_eq_span, ← span_union]
+  simp [hs]
 
 section Pointwise
 
 open Pointwise
 
-lemma neg_sup_eq_span {C : PointedCone R M} : -C ⊔ C = span R (C : Set M) := by
-  nth_rw 1 2 [← span_eq C, ← span_neg_eq_neg]
-  exact hull_neg_sup_hull_eq_span _
+lemma span_eq_neg_sup {C : PointedCone R M} : span R (C : Set M) = -C ⊔ C := by
+  simp [← hull_neg_sup_hull_eq_span, span_neg_eq_neg]
+
+lemma mem_span_iff_mem_neg_sup {C : PointedCone R M} {x : M} : x ∈ span R C ↔ x ∈ -C ⊔ C := by
+  rw [← span_eq_neg_sup, mem_ofSubmodule_iff]
 
 lemma neg_le_iff_span_eq {C : PointedCone R M} : -C ≤ C ↔ span R (C : Set M) = C := by
-  rw [← neg_sup_eq_span, sup_eq_right]
+  rw [span_eq_neg_sup, sup_eq_right]
 
 end Pointwise
 
 lemma mem_span {C : PointedCone R M} {x : M} :
     x ∈ span R C ↔ ∃ p ∈ C, ∃ n ∈ C, p = x + n := by
-  rw [← mem_ofSubmodule_iff, ← neg_sup_eq_span, mem_sup]
+  rw [← mem_ofSubmodule_iff, span_eq_neg_sup, mem_sup]
   simp only [mem_neg]
-  constructor <;> intro h
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨y, hy', z, hz, rfl⟩ := h
     exact ⟨z, hz, -y, hy', by simp⟩
   · obtain ⟨p, hp, n, hn, rfl⟩ := h
