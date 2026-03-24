@@ -1048,7 +1048,8 @@ theorem card_commonNeighbors_eq_card_triangles_containing_edge {u v : α} (huv :
     have huw : u ≠ w := fun h => hwnuv (by simp [h])
     have hvw : v ≠ w := fun h => hwnuv (by simp [h])
     have hcliq : G.IsClique ({a, b, c} : Finset α) := by
-      rw [isClique_iff]; intro x hx y hy hne
+      rw [isClique_iff]
+      intro x hx y hy hne
       simp only [Finset.mem_coe, Finset.mem_insert, Finset.mem_singleton] at hx hy
       rcases hx with rfl | rfl | rfl <;> rcases hy with rfl | rfl | rfl <;>
         first | exact absurd rfl hne | exact hab | exact hab.symm
