@@ -20,7 +20,7 @@ a graph `G`, with vertices `V`, is a set `P` of disjoint nonempty subsets of `V`
 Graph partitions are graph colorings that do not name their colors.  They are adjoint in the
 following sense. Given a graph coloring, there is an associated partition from the set of color
 classes, and given a partition, there is an associated graph coloring from using the partition's
-subsets as colors.  Going from graph colorings to partitions and back makes a coloring "canonical":
+subsets as colors. Going from graph colorings to partitions and back makes a coloring "canonical":
 all colors are given a canonical name and unused colors are removed.  Going from partitions to
 graph colorings and back is the identity.
 
