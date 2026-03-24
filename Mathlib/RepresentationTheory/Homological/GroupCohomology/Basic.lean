@@ -148,7 +148,7 @@ to `Hom(P, A)`, where `P` is the bar resolution of `k` as a trivial `G`-represen
 def inhomogeneousCochainsIso :
     inhomogeneousCochains A ≅ (barComplex k G).linearYonedaObj k A := by
   refine HomologicalComplex.Hom.isoOfComponents
-    (fun i => (Rep.freeLiftLEquiv k G (Fin i → G) A).toModuleIso.symm) ?_
+    (fun i ↦ (Rep.freeLiftLEquiv k G (Fin i → G) A).toModuleIso.symm) ?_
   rintro i j (h : i + 1 = j)
   subst h
   simp [d_eq, -LinearEquiv.toModuleIso_hom, -LinearEquiv.toModuleIso_inv]
