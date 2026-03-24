@@ -134,6 +134,14 @@ theorem wideSubcategoryInclusion.map {X Y} {f : X ⟶ Y} :
 instance wideSubcategory.faithful : (wideSubcategoryInclusion P).Faithful :=
   inferInstanceAs (wideInducedFunctor WideSubcategory.obj P).Faithful
 
+variable {P} in
+/-- Build an isomorphism in `WideSubcategory P` from an isomorphism in `C`. -/
+@[simps!]
+def isoMk {X Y : WideSubcategory P} (e : X.obj ≅ Y.obj)
+    (h₁ : P e.hom) (h₂ : P e.inv) : X ≅ Y where
+  hom := ⟨e.hom, h₁⟩
+  inv := ⟨e.inv, h₂⟩
+
 end WideSubcategory
 
 end CategoryTheory

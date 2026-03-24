@@ -94,24 +94,15 @@ variable [P.IsMonoidalStable]
 @[simps]
 instance : MonoidalCategoryStruct (WideSubcategory P) where
   tensorObj c c' := ⟨c.obj ⊗ c'.obj⟩
-  whiskerLeft c c' c'' f := ⟨c.obj ◁ f.1, P.whiskerLeft_mem _ _ f.2⟩
+  whiskerLeft c _ _ f := ⟨c.obj ◁ f.1, P.whiskerLeft_mem _ _ f.2⟩
   whiskerRight f c' := ⟨f.1 ▷ c'.obj, P.whiskerRight_mem _ f.2 _⟩
   tensorUnit := ⟨𝟙_ C⟩
-  associator c c' c'' := by
-    refine ⟨⟨(α_ c.obj c'.obj c''.obj).hom, ?_⟩, ⟨(α_ c.obj c'.obj c''.obj).inv, ?_⟩, ?_, ?_⟩
-    · exact P.associator_hom_mem _ _ _
-    · exact P.associator_inv_mem _ _ _
-    all_goals cat_disch
-  leftUnitor c := by
-    refine ⟨⟨(λ_ c.obj).hom, ?_⟩, ⟨(λ_ c.obj).inv, ?_⟩, ?_, ?_⟩
-    · exact P.leftUnitor_hom_mem _
-    · exact P.leftUnitor_inv_mem _
-    all_goals cat_disch
-  rightUnitor c := by
-    refine ⟨⟨(ρ_ c.obj).hom, ?_⟩, ⟨(ρ_ c.obj).inv, ?_⟩, ?_, ?_⟩
-    · exact P.rightUnitor_hom_mem _
-    · exact P.rightUnitor_inv_mem _
-    all_goals cat_disch
+  associator _ _ _ :=
+    isoMk (α_ _ _ _) (P.associator_hom_mem _ _ _) (P.associator_inv_mem _ _ _)
+  leftUnitor _ :=
+    isoMk (λ_ _) (P.leftUnitor_hom_mem _) (P.leftUnitor_inv_mem _)
+  rightUnitor _ :=
+    isoMk (ρ_ _) (P.rightUnitor_hom_mem _) (P.rightUnitor_inv_mem _)
   tensorHom f g := ⟨f.1 ⊗ₘ g.1, P.tensorHom_mem _ _ f.2 g.2⟩
 
 instance : MonoidalCategory (WideSubcategory P) :=
@@ -126,23 +117,8 @@ section BraidedCategory
 variable [BraidedCategory C] [P.IsStableUnderBraiding]
 
 instance : BraidedCategory (WideSubcategory P) where
-  braiding c c' := by
-    refine ⟨⟨(β_ c.obj c'.obj).hom, ?_⟩, ⟨(β_ c.obj c'.obj).inv, ?_⟩, ?_, ?_⟩
-    · exact P.braiding_hom_mem _ _
-    · exact P.braiding_inv_mem _ _
-    all_goals cat_disch
-  braiding_naturality_right c c' c'' f := by
-    ext
-    exact BraidedCategory.braiding_naturality_right c.obj f.hom
-  braiding_naturality_left f c := by
-    ext
-    exact BraidedCategory.braiding_naturality_left _ _
-  hexagon_forward c c' c'' := by
-    ext
-    exact BraidedCategory.hexagon_forward _ _ _
-  hexagon_reverse c c' c'' := by
-    ext
-    exact BraidedCategory.hexagon_reverse _ _ _
+  braiding _ _ :=
+    isoMk (β_ _ _) (P.braiding_hom_mem _ _) (P.braiding_inv_mem _ _)
 
 end BraidedCategory
 
@@ -165,15 +141,6 @@ variable [BraidedCategory C] [∀ {c : C}, ComonObj c] [P.IsStableUnderComonoid]
 instance {c : WideSubcategory P} : ComonObj c where
   counit := ⟨ε[c.obj], P.counit_mem _⟩
   comul := ⟨Δ[c.obj], P.comul_mem _⟩
-  counit_comul := by
-    ext
-    exact ComonObj.counit_comul _
-  comul_counit := by
-    ext
-    exact ComonObj.comul_counit _
-  comul_assoc := by
-    ext
-    exact ComonObj.comul_assoc _
 
 variable [∀ {c : C}, IsCommComonObj c]
 
