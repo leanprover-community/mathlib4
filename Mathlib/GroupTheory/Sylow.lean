@@ -77,6 +77,10 @@ instance : SubgroupClass (Sylow p G) G where
   one_mem _ := Subgroup.one_mem _
   inv_mem := Subgroup.inv_mem _
 
+@[simp]
+protected theorem coe_coe (P : Sylow p G) : (P : Subgroup G) = (P : Set G) :=
+  rfl
+
 /-- A `p`-subgroup with index indivisible by `p` is a Sylow subgroup. -/
 def _root_.IsPGroup.toSylow [Fact p.Prime] {P : Subgroup G}
     (hP1 : IsPGroup p P) (hP2 : ¬ p ∣ P.index) : Sylow p G :=
@@ -256,26 +260,26 @@ theorem smul_subtype {P : Sylow p G} {H : Subgroup G} (hP : P ≤ H) (h : H) :
   ext (Subgroup.conj_smul_subgroupOf hP h)
 
 theorem smul_eq_iff_mem_normalizer {g : G} {P : Sylow p G} :
-    g • P = P ↔ g ∈ normalizer (P : Subgroup G) := by
-  rw [eq_comm, SetLike.ext_iff, ← inv_mem_iff (G := G) (H := normalizer P.toSubgroup),
-      mem_normalizer_iff, inv_inv]
+    g • P = P ↔ g ∈ normalizer P := by
+  rw [eq_comm, SetLike.ext_iff, ← inv_mem_iff (G := G) (H := normalizer P),
+      mem_set_normalizer_iff, inv_inv]
   exact
     forall_congr' fun h =>
       iff_congr Iff.rfl
         ⟨fun ⟨a, b, c⟩ => c ▸ by simpa [mul_assoc] using b,
           fun hh => ⟨(MulAut.conj g)⁻¹ h, hh, MulAut.apply_inv_self G (MulAut.conj g) h⟩⟩
 
-theorem smul_eq_of_normal {g : G} {P : Sylow p G} [h : P.Normal] :
-    g • P = P := by simp only [smul_eq_iff_mem_normalizer, P.normalizer_eq_top, mem_top]
+theorem smul_eq_of_normal {g : G} {P : Sylow p G} [h : P.Normal] : g • P = P := by
+  simp only [smul_eq_iff_mem_normalizer, ← P.coe_coe, P.normalizer_eq_top, mem_top]
 
 end Sylow
 
 theorem Subgroup.sylow_mem_fixedPoints_iff (H : Subgroup G) {P : Sylow p G} :
-    P ∈ fixedPoints H (Sylow p G) ↔ H ≤ normalizer (P : Subgroup G) := by
+    P ∈ fixedPoints H (Sylow p G) ↔ H ≤ normalizer P := by
   simp_rw [SetLike.le_def, ← Sylow.smul_eq_iff_mem_normalizer]; exact Subtype.forall
 
 theorem IsPGroup.inf_normalizer_sylow {P : Subgroup G} (hP : IsPGroup p P) (Q : Sylow p G) :
-    P ⊓ normalizer (Q : Subgroup G) = P ⊓ Q :=
+    P ⊓ normalizer Q = P ⊓ Q :=
   le_antisymm
     (le_inf inf_le_left
       (sup_eq_right.mp
