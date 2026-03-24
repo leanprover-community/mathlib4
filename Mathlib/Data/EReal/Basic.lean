@@ -32,7 +32,7 @@ noncomputable section
 
 /-- The type of extended real numbers `[-∞, ∞]`, constructed as `WithBot (WithTop ℝ)`. -/
 def EReal := WithBot (WithTop ℝ)
-  deriving Bot, Zero, One, Nontrivial, AddMonoid, AddCommMonoid, PartialOrder
+  deriving Bot, Zero, One, Nontrivial, AddMonoid, PartialOrder, AddCommMonoid
 
 instance : ZeroLEOneClass EReal := inferInstanceAs (ZeroLEOneClass (WithBot (WithTop ℝ)))
 instance : SupSet EReal := inferInstanceAs (SupSet (WithBot (WithTop ℝ)))
