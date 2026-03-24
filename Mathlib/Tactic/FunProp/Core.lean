@@ -185,7 +185,7 @@ For example, `e = q(Continuous fun x ↦ x)` and `funPropDecl` is `FunPropDecl` 
 def applyIdRule (goal : Goal) : FunPropM (Option Result) := do
   let thms ← getLambdaTheorems goal.decl.funPropName .id
   if thms.size = 0 then
-    let msg := s!"missing identity rule to prove `{← ppExpr (← goal.mkFreshExpr).2}`"
+    let msg := s!"missing identity rule to prove `{← goal.pp'}`"
     logError msg
     trace[Meta.Tactic.fun_prop] msg
     return none
@@ -205,7 +205,7 @@ def applyConstRule (goal : Goal) :
     FunPropM (Option Result) := do
   let thms ← getLambdaTheorems goal.decl.funPropName .const
   if thms.size = 0 then
-    let msg := s!"missing constant rule to prove `{← ppExpr (← goal.mkFreshExpr).2}`"
+    let msg := s!"missing constant rule to prove `{← goal.pp'}`"
     logError msg
     trace[Meta.Tactic.fun_prop] msg
     return none
@@ -240,7 +240,7 @@ def applyCompRule (goal : Goal) (f g : Expr) : FunPropM (Option Result) := do
 
   let thms ← getLambdaTheorems goal.decl.funPropName .comp
   if thms.size = 0 then
-    let msg := s!"missing composition rule to prove `{← ppExpr (← goal.mkFreshExpr).2}`"
+    let msg := s!"missing composition rule to prove `{← goal.pp'}`"
     logError msg
     trace[Meta.Tactic.fun_prop] msg
     return none
@@ -262,7 +262,7 @@ def applyPiRule (goal : Goal) : FunPropM (Option Result) := do
 
   let thms ← getLambdaTheorems goal.decl.funPropName .pi
   if thms.size = 0 then
-    let msg := s!"missing pi rule to prove `{← ppExpr (← goal.mkFreshExpr).2}`"
+    let msg := s!"missing pi rule to prove `{← goal.pp'}`"
     logError msg
     trace[Meta.Tactic.fun_prop] msg
     return none
@@ -326,11 +326,11 @@ def letCase (goal : Goal) (f : Expr) :
 def applyMorRules (goal : Goal) (fData : FunctionData) :
     FunPropM (Option Result) := do
   trace[Debug.Meta.Tactic.fun_prop]
-    "applying morphism theorems to {← ppExpr (← goal.mkFreshExpr).2}"
+    "applying morphism theorems to {← goal.pp}"
 
   match ← fData.isMorApplication with
   | .none => throwError
-    "fun_prop bug: invalid use of mor rules on {← ppExpr (← goal.mkFreshExpr).2}"
+    "fun_prop bug: invalid use of mor rules on {← goal.pp}"
   | .underApplied =>
     applyPiRule goal
   | .overApplied =>
@@ -564,7 +564,7 @@ def fvarAppCase (goal : Goal) (fData : FunctionData) :
 
     if thms.size = 0 then
       logError s!"No theorems found for `{← ppExpr (.fvar id)}` in order to prove \
-                  `{← ppExpr (← goal.mkFreshExpr).2}`"
+                  `{← goal.pp'}`"
 
     return none
 
@@ -595,7 +595,7 @@ def constAppCase (goal : Goal) (fData : FunctionData) :
   -- log error if no global or local theorems were found
   if globalThms.size = 0 && localThms.size = 0 then
      logError s!"No theorems found for `{funName}` in order to prove \
-                 `{← ppExpr (← goal.mkFreshExpr).2}`"
+                 `{← goal.pp'}`"
 
   if (← fData.isMorApplication) != .none then
     if let some r ← applyMorRules goal fData then
@@ -674,9 +674,6 @@ partial def funPropImpl (e : Expr) : FunPropM (Option Expr) := do
 
   let e ← instantiateMVars e
 
-  withTraceNode `Meta.Tactic.fun_prop
-    (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] {← ppExpr e}") do
-
   -- todo: enable caching again!!!
   -- -- check cache for successful goals
   -- if let some { expr := _, proof? := some proof } := (← get).cache.find? e then
@@ -703,6 +700,9 @@ partial def funPropImpl (e : Expr) : FunPropM (Option Expr) := do
     | .mdata _ e' => funPropImpl e'
     | _ =>
       let some goal ← getFunPropGoal? e | return none
+
+      withTraceNode `Meta.Tactic.fun_prop
+        (fun r => do pure m!"[{ExceptToEmoji.toEmoji r}] {← goal.pp}") do
 
       if let some r ← main goal then
         if ¬(← isDefEq e (← inferType r.proof)) then

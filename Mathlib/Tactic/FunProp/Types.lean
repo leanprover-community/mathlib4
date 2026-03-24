@@ -155,6 +155,16 @@ def Goal.updateMainFun (goal : Goal) (f : Expr) : MetaM Goal := do
     expr
     mainFun := f }
 
+def Goal.pp (goal : Goal) : MetaM MessageData := do
+  let (outputs, e) ← goal.mkFreshExpr
+  if outputs.size == 0 then
+    return e
+  else
+    return m!"{outputs.toList}, {e}"
+
+def Goal.pp' (goal : Goal) : MetaM String := do
+  (← goal.pp).toString
+
 /-- result of abstractAppArgsWithMVars -/
 structure AbstractArgsMVarsResult where
   args : Array Expr
