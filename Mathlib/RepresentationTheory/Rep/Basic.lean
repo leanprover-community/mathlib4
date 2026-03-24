@@ -322,7 +322,6 @@ lemma applyAsHom_comm {A B : Rep k G} (f : A ⟶ B) (g : G) :
 
 end Commutative
 
-
 end semiring
 
 section ring
