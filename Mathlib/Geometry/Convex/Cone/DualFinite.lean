@@ -57,8 +57,8 @@ cone. -/
 lemma DualFG.iff_exists_fg_dual {C : PointedCone R N} :
     C.DualFG p ↔ ∃ D : PointedCone R M, D.FG ∧ dual p D = C where
   mp h := h.exists_fg_dual
-  mpr h := by
-    obtain ⟨D, ⟨s, rfl⟩, rfl⟩ := h
+  mpr := by
+    rintro ⟨_, ⟨s, rfl⟩, rfl⟩
     use s; simp
 
 /-- A dually finitely generated cone is dually finitely generated w.r.t. the identity pairing. -/
