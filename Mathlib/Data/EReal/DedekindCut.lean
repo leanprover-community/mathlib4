@@ -31,16 +31,16 @@ theorem factorEmbeddingRat_apply (x : DedekindCut ℚ) :
   factorEmbeddingRat x = sSup ((fun (a : ℚ) ↦ ((a : ℝ) : EReal)) '' x.extent) := rfl
 
 theorem le_of_forall_lt_rat_imp_le {x y : EReal}
-    (h : ∀ q : ℚ, y < (q : ℝ) → x ≤ (q : ℝ)) : x ≤ y := by
-  by_contra!
-  obtain ⟨r, y_lt_r, r_lt_x⟩ := exists_rat_btwn_of_lt this
-  order [h r y_lt_r]
+    (h : ∀ q : ℚ, y < (q : ℝ) → x ≤ (q : ℝ)) : x ≤ y :=
+  le_of_not_gt fun hyx =>
+    let ⟨_, hy, hx⟩ := exists_rat_btwn_of_lt hyx
+    hx.not_ge <| h _ hy
 
 theorem le_of_forall_rat_lt_imp_le {x y : EReal}
-    (h : ∀ q : ℚ, (q : ℝ) < x → (q : ℝ) ≤ y) : x ≤ y := by
-  by_contra!
-  obtain ⟨r, y_lt_r, r_lt_x⟩ := exists_rat_btwn_of_lt this
-  order [h r r_lt_x]
+    (h : ∀ q : ℚ, (q : ℝ) < x → (q : ℝ) ≤ y) : x ≤ y :=
+  le_of_not_gt fun hyx =>
+    let ⟨_, hy, hx⟩ := exists_rat_btwn_of_lt hyx
+    hy.not_ge <| h _ hx
 
 theorem upperBounds_ratLowerBounds (x : EReal) :
     upperBounds {q : ℚ | (q : ℝ) ≤ x} = {q : ℚ | x ≤ (q : ℝ)} := by
@@ -68,6 +68,7 @@ theorem extent_eRealEmbedDedekindCut_apply (x : EReal) :
   (ofIsExtent (· ≤ ·) {q : ℚ | (q : ℝ) ≤ x} (isExtent_ratLowerBounds x)).extent =
   {q : ℚ | (q : ℝ) ≤ x} := rfl
 
+/-- The Dedekind completion of the rationals is order isomorphic to the extended reals. -/
 public noncomputable def completeRat_iso_EReal : DedekindCut ℚ ≃o EReal where
   toFun := factorEmbeddingRat
   invFun x := ofIsExtent (· ≤ ·) {q : ℚ | (q : ℝ) ≤ x} (isExtent_ratLowerBounds x)
