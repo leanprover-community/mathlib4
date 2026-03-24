@@ -132,31 +132,25 @@ variable {A B M : Type*} [CommRing A] [CommRing B] [IsLocalRing A] [IsLocalRing 
   [IsLocalHom (algebraMap A B)] [Module.Flat A B] [AddCommGroup M] [Module A M]
 
 variable (B) in
-open Module Submodule TensorProduct.AlgebraTensorModule in
+open IsLocalRing LinearMap Module Submodule TensorProduct.AlgebraTensorModule in
 theorem CovBy.length_baseChange {p q : Submodule A M} (h : p ⋖ q) :
     Module.length B (q.baseChange B) = Module.length B (p.baseChange B) +
       Module.length B (B ⧸ (IsLocalRing.maximalIdeal A).map (algebraMap A B)) := by
-  set mA := IsLocalRing.maximalIdeal A
-  set mB := mA.map (algebraMap A B)
   have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
   rw [← (p.toBaseChangeEquiv B).length_eq, ← (q.toBaseChangeEquiv B).length_eq]
   let f : p →ₗ[A] q := inclusion h.le
   have key : IsSimpleModule A (q ⧸ f.range) := by
     rwa [range_inclusion, ← covBy_iff_quot_is_simple h.le]
   obtain ⟨m, hm, ⟨e⟩⟩ := isSimpleModule_iff_quot_maximal.mp key
-  rw [IsLocalRing.eq_maximalIdeal hm] at e
+  rw [eq_maximalIdeal hm] at e
   let g := e.comp f.range.mkQ
-  have hf : Function.Injective f := inclusion_injective _
-  have hg : Function.Surjective g := e.surjective.comp f.range.mkQ_surjective
-  have hfg : Function.Exact f g :=
-    LinearMap.exact_iff.mpr ((e.ker_comp f.range.mkQ).trans f.range.ker_mkQ)
-  have key := length_eq_add_of_exact (lTensor B B f) (lTensor B B g) (by simpa) (by simpa) (by simpa)
-  rw [key]
-  congr
-  have := Algebra.TensorProduct.quotIdealMapEquivTensorQuot B mA
-  exact this.toLinearEquiv.length_eq.symm
+  have : Function.Injective f := inclusion_injective _
+  have : Function.Surjective g := e.surjective.comp f.range.mkQ_surjective
+  have : Function.Exact f g := exact_iff.mpr ((e.ker_comp f.range.mkQ).trans f.range.ker_mkQ)
+  rw [length_eq_add_of_exact (lTensor B B f) (lTensor B B g) (by simpa) (by simpa) (by simpa),
+    (Algebra.TensorProduct.quotIdealMapEquivTensorQuot B (maximalIdeal A)).toLinearEquiv.length_eq]
 
-open IsLocalRing Module Submodule TensorProduct.AlgebraTensorModule in
+open IsLocalRing Module Submodule in
 theorem foo :
     length B (B ⊗[A] M) = length A M * length B (B ⧸ (maximalIdeal A).map (algebraMap A B)) := by
   have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
