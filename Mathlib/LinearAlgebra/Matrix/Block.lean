@@ -186,13 +186,19 @@ theorem BlockTriangular.mul [Fintype m] [NonUnitalNonAssocSemiring R]
   · simp_rw [hM hki, zero_mul]
   · simp_rw [hN (lt_of_lt_of_le hij hki), mul_zero]
 
+variable (b) in
+/-- `BlockTriangular` matrices form a semiring. -/
+@[simps]
+def blockTriangularSubsemiring [DecidableEq m] [Fintype m] [Semiring R] : Subsemiring (Matrix m m R) where
+  carrier := {M | BlockTriangular M b}
+  zero_mem' := blockTriangular_zero
+  one_mem' := blockTriangular_one
+  mul_mem' := .mul
+  add_mem' := .add
+
 theorem BlockTriangular.pow [DecidableEq m] [Fintype m] [Semiring R] (hM : BlockTriangular M b)
-    (n : ℕ) : BlockTriangular (M ^ n) b := by
-  induction n with
-  | zero => simp [blockTriangular_one]
-  | succ n ih =>
-    rw [pow_succ]
-    exact ih.mul hM
+    (n : ℕ) : BlockTriangular (M ^ n) b :=
+  pow_mem (S := blockTriangularSubsemiring b) hM n
 
 end LinearOrder
 
