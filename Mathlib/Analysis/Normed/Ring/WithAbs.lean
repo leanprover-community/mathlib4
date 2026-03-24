@@ -165,7 +165,7 @@ section CommSemiring
 
 variable [CommSemiring R] (v : AbsoluteValue R S)
 
-instance : CommSemiring (WithAbs v) := fast_instance% (equiv v).commSemiring
+instance : CommSemiring (WithAbs v) := normalize_instance% (equiv v).commSemiring
 
 end CommSemiring
 
@@ -173,7 +173,7 @@ section Ring
 
 variable [Ring R]
 
-instance (v : AbsoluteValue R S) : Ring (WithAbs v) := fast_instance% (equiv v).ring
+instance (v : AbsoluteValue R S) : Ring (WithAbs v) := normalize_instance% (equiv v).ring
 
 noncomputable instance normedRing (v : AbsoluteValue R ℝ) : NormedRing (WithAbs v) :=
   letI := v.toNormedRing
@@ -199,7 +199,7 @@ section CommRing
 
 variable [CommRing R] (v : AbsoluteValue R S)
 
-instance : CommRing (WithAbs v) := fast_instance% (equiv v).commRing
+instance : CommRing (WithAbs v) := normalize_instance% (equiv v).commRing
 
 end CommRing
 

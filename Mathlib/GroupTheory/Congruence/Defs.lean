@@ -561,14 +561,14 @@ instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
 /-- The quotient of a semigroup by a congruence relation is a semigroup. -/
 @[to_additive /-- The quotient of an `AddSemigroup` by an additive congruence relation is
 an `AddSemigroup`. -/]
-instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient := fast_instance%
-  Function.Surjective.semigroup _ Quotient.mk''_surjective fun _ _ => rfl
+instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient :=
+  normalize_instance% Function.Surjective.semigroup _ Quotient.mk''_surjective fun _ _ => rfl
 
 /-- The quotient of a commutative magma by a congruence relation is a commutative magma. -/
 @[to_additive /-- The quotient of an `AddCommMagma` by an additive congruence relation is
 an `AddCommMagma`. -/]
-instance commMagma {M : Type*} [CommMagma M] (c : Con M) : CommMagma c.Quotient := fast_instance%
-  Function.Surjective.commMagma _ Quotient.mk''_surjective fun _ _ => rfl
+instance commMagma {M : Type*} [CommMagma M] (c : Con M) : CommMagma c.Quotient :=
+  normalize_instance% Function.Surjective.commMagma _ Quotient.mk''_surjective fun _ _ => rfl
 
 /-- The quotient of a commutative semigroup by a congruence relation is a semigroup. -/
 @[to_additive /-- The quotient of an `AddCommSemigroup` by an additive congruence relation is
@@ -579,14 +579,14 @@ instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup
 /-- The quotient of a monoid by a congruence relation is a monoid. -/
 @[to_additive /-- The quotient of an `AddMonoid` by an additive congruence relation is
 an `AddMonoid`. -/]
-instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient := fast_instance%
+instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient := normalize_instance%
   Function.Surjective.monoid _ Quotient.mk''_surjective rfl (fun _ _ => rfl) fun _ _ => rfl
 
 /-- The quotient of a `CommMonoid` by a congruence relation is a `CommMonoid`. -/
 @[to_additive /-- The quotient of an `AddCommMonoid` by an additive congruence
 relation is an `AddCommMonoid`. -/]
-instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient := fast_instance%
-  fast_instance% Function.Surjective.commMonoid _ Quotient.mk''_surjective rfl
+instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient :=
+  normalize_instance% Function.Surjective.commMonoid _ Quotient.mk''_surjective rfl
     (fun _ _ => rfl) fun _ _ => rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -658,16 +658,16 @@ instance instZPow : Pow c.Quotient ℤ :=
 /-- The quotient of a group by a congruence relation is a group. -/
 @[to_additive /-- The quotient of an `AddGroup` by an additive congruence relation is
 an `AddGroup`. -/]
-instance group : Group c.Quotient := fast_instance%
+instance group : Group c.Quotient := normalize_instance%
   Function.Surjective.group Quotient.mk'' Quotient.mk''_surjective
     rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 /-- The quotient of a `CommGroup` by a congruence relation is a `CommGroup`. -/
 @[to_additive /-- The quotient of an `AddCommGroup` by an additive congruence
 relation is an `AddCommGroup`. -/]
-instance commGroup {M : Type*} [CommGroup M] (c : Con M) : CommGroup c.Quotient := fast_instance%
-  Function.Surjective.commGroup _ Quotient.mk''_surjective rfl (fun _ _ => rfl) (fun _ => rfl)
-      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+instance commGroup {M : Type*} [CommGroup M] (c : Con M) : CommGroup c.Quotient :=
+  normalize_instance% Function.Surjective.commGroup _ Quotient.mk''_surjective rfl
+    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
 end Groups
 
