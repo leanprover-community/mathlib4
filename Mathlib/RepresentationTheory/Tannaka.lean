@@ -39,7 +39,7 @@ variable {k G : Type u} [CommRing k] [Group G]
 
 section definitions
 
-instance : (forget₂ (FDRep k G) (FGModuleCat k)).Monoidal := by
+instance : (forget₂ (FDRep k G) (FGModuleCat k)).Monoidal :=
   inferInstanceAs <| (Action.forget _ _).Monoidal
 
 variable (k G) in
