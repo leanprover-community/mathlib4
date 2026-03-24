@@ -1,0 +1,71 @@
+name: Remove unnecessary set_option lines
+
+on:
+  schedule:
+    - cron: "0 4 * * 1" # At 04:00 UTC on Monday.
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'If true, only scan and report without modifying files or opening a PR'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  build:
+    name: Remove unnecessary set_option lines
+    runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Configure Lean
+        uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: true
+
+      - name: Remove unnecessary set_option lines
+        id: rm_set_option
+        shell: bash
+        run: |
+          DRY_RUN_FLAG=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            DRY_RUN_FLAG="--dry-run"
+          fi
+          python3 scripts/rm_set_option.py $DRY_RUN_FLAG
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Generate app token
+        id: app-token
+        if: steps.rm_set_option.outputs.changed == 'true'
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        with:
+          app-id: ${{ secrets.MATHLIB_NOLINTS_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-nolints-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_PR_WRITERS }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+
+      - name: Create Pull Request
+        if: steps.rm_set_option.outputs.changed == 'true' && toJson(inputs.dry_run) != 'true'
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          author: "mathlib-nolints[bot] <258989889+mathlib-nolints[bot]@users.noreply.github.com>"
+          token: "${{ steps.app-token.outputs.token }}"
+          commit-message: "chore: remove unnecessary set_option lines"
+          branch: "rm-set-option"
+          base: master
+          title: "chore: remove unnecessary set_option lines"
+          body: |
+            I am happy to remove some unnecessary `set_option` lines for you!
+
+            ---
+
+            [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          # labels: "auto-merge-after-CI"
