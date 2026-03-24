@@ -45,8 +45,7 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
     obtain ⟨k, e⟩ := Nat.rfindOpt_spec h
     rw [Option.mem_def, Option.orElse_eq_some, ← Option.mem_def, ← Option.mem_def] at e
     obtain e | ⟨-, e⟩ := e <;> simp [Code.evaln_sound e]
-  refine ⟨this, ⟨fun h => (this _ ⟨h, rfl⟩).imp Exists.fst Exists.fst, ?_⟩⟩
-  intro h
+  refine ⟨this, fun h ↦ (this _ ⟨h, rfl⟩).imp Exists.fst Exists.fst, fun h ↦ ?_⟩
   rw [Nat.rfindOpt_dom]
   simp only [dom_iff_mem, Code.evaln_complete, Option.mem_def] at h
   obtain ⟨x, k, e⟩ | ⟨x, k, e⟩ := h
