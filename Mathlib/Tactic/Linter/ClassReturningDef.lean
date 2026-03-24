@@ -31,7 +31,7 @@ private def returnsClass (type : Expr) : MetaM Bool := do
     match body.getAppFn with
     | Expr.const typeName _ =>
         -- Ignore `Setoid`
-        if typeName == ``Setoid || typeName == ``Decidable then
+        if typeName == ``Setoid || typeName == ``Decidable || typeName == `Fintype then
           return false
         let typeExpr := mkConst typeName
         return (← isClass? typeExpr).isSome
