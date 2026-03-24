@@ -36,7 +36,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y} (
 
 include hf₁ hf₂
 
-/-- If `f : X → Y` is an open and closed map to and `Y` is connected, the number of connected
+/-- If `f : X → Y` is an open and closed map and `Y` is connected, the number of connected
 components of `X` is bounded by the cardinality of the fiber of any point. -/
 @[stacks 07VB]
 lemma IsOpenMap.enatCard_connectedComponents_le_encard_preimage_singleton [ConnectedSpace Y]
