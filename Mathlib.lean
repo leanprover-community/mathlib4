@@ -7431,6 +7431,7 @@ public import Mathlib.Topology.Compactness.Paracompact
 public import Mathlib.Topology.Compactness.PseudometrizableLindelof
 public import Mathlib.Topology.Compactness.SigmaCompact
 public import Mathlib.Topology.Connected.Basic
+public import Mathlib.Topology.Connected.CardComponents
 public import Mathlib.Topology.Connected.Clopen
 public import Mathlib.Topology.Connected.LocPathConnected
 public import Mathlib.Topology.Connected.LocallyConnected
