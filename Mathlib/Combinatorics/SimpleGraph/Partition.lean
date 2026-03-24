@@ -26,16 +26,16 @@ graph colorings and back is the identity.
 
 ## Main definitions
 
-* `SimpleGraph.Partition` is a structure to represent a partition of a simple graph
+* `SimpleGraph.Partition` is a structure to represent a partition of a simple graph.
 
 * `SimpleGraph.Partition.PartsCardLe` is whether a given partition is an `n`-partition.
   (a partition with at most `n` parts).
 
-* `SimpleGraph.Partitionable n` is whether a given graph is `n`-partite
+* `SimpleGraph.Partitionable n` is whether a given graph is `n`-partite.
 
-* `SimpleGraph.Partition.toColoring` creates colorings from partitions
+* `SimpleGraph.Partition.toColoring` creates colorings from partitions.
 
-* `SimpleGraph.Coloring.toPartition` creates partitions from colorings
+* `SimpleGraph.Coloring.toPartition` creates partitions from colorings.
 
 ## Main statements
 
@@ -54,18 +54,13 @@ namespace SimpleGraph
 
 variable {V : Type u} (G : SimpleGraph V)
 
-/-- A `Partition` of a simple graph `G` is a structure constituted by
-* `parts`: a set of subsets of the vertices `V` of `G`
-* `isPartition`: a proof that `parts` is a proper partition of `V`
-* `independent`: a proof that each element of `parts` doesn't have a pair of adjacent vertices
--/
+/-- A partition of the vertices of a simple graph into independent sets. -/
 structure Partition where
-  /-- `parts`: a set of subsets of the vertices `V` of `G`. -/
+  /-- A set of subsets of the vertices `V` of `G`. -/
   parts : Set (Set V)
-  /-- `isPartition`: a proof that `parts` is a proper partition of `V`. -/
+  /-- A proof that `parts` is a proper partition of `V`. -/
   isPartition : Setoid.IsPartition parts
-  /-- `independent`: a proof that each element of `parts` doesn't have a pair of adjacent vertices.
--/
+  /-- A proof that each element of `parts` doesn't have a pair of adjacent vertices. -/
   independent : ∀ s ∈ parts, IsAntichain G.Adj s
 
 /-- Whether a partition `P` has at most `n` parts. A graph with a partition
@@ -82,7 +77,7 @@ namespace Partition
 variable {G}
 variable (P : G.Partition)
 
-/-- The part in the partition that `v` belongs to -/
+/-- The part in the partition that `v` belongs to. -/
 def partOfVertex (v : V) : Set V := Classical.choose (P.isPartition.2 v)
 
 theorem partOfVertex_mem (v : V) : P.partOfVertex v ∈ P.parts := by
