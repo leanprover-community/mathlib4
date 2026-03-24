@@ -1243,6 +1243,10 @@ theorem ord_eq_one {a : Cardinal} : a.ord = 1 ↔ a = 1 :=
   ord_injective.eq_iff' ord_one
 
 @[simp]
+theorem ord_pos {a : Cardinal} : 0 < a.ord ↔ 0 < a := by
+  rw [← ord_zero, ord_lt_ord]
+
+@[simp]
 theorem omega0_le_ord {a : Cardinal} : ω ≤ a.ord ↔ ℵ₀ ≤ a := by
   rw [← ord_aleph0, ord_le_ord]
 
