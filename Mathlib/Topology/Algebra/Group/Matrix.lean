@@ -53,13 +53,13 @@ namespace Matrix.SpecialLinearGroup
 local notation "SL" => SpecialLinearGroup
 
 omit [IsTopologicalRing R] in
-instance : TopologicalSpace (SpecialLinearGroup n R) :=
-  instTopologicalSpaceSubtype
+instance : TopologicalSpace (SL n R) :=
+  inferInstanceAs <| TopologicalSpace (Subtype _)
 
 /-- If `R` is a commutative ring with the discrete topology, then `SL(n, R)` has the discrete
 topology. -/
 instance [DiscreteTopology R] : DiscreteTopology (SL n R) :=
-  instDiscreteTopologySubtype
+  inferInstanceAs <| DiscreteTopology (Subtype _)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The special linear group over a topological ring is a topological group. -/
