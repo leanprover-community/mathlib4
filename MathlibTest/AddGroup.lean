@@ -9,6 +9,9 @@ example (a b c : G) : (b + -c) + c + (a + b) + (-b + -a) + c = b + c := by add_g
 
 example (a b c : G) : -c + (b + -c) + c + (a + b) + (-b + -a + -b) + c = 0 := by add_group
 
+-- NB the Hall-Witt identity is here in the Group.lean test, but this involves commutators
+-- which have no additive analogue, so this test was not additivised.
+
 example (a : G) : 2 • a + a = 3 • a := by add_group
 
 example (n m : ℕ) (a : G) : n • a + m • a = (n + m) • a := by add_group
