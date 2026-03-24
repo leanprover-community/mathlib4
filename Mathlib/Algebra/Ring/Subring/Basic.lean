@@ -175,7 +175,7 @@ def topEquiv : (⊤ : Subring R) ≃+* R :=
   Subsemiring.topEquiv
 
 instance {R : Type*} [Ring R] [Fintype R] : Fintype (⊤ : Subring R) :=
-  inferInstanceAs (Fintype (⊤ : Set R))
+  (inferInstance : Fintype (⊤ : Set R))
 
 theorem card_top (R) [Ring R] [Fintype R] : Fintype.card (⊤ : Subring R) = Fintype.card R :=
   Fintype.card_congr topEquiv.toEquiv
@@ -396,7 +396,7 @@ theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
 
 /-- The center is commutative. -/
 instance : CommRing (center R) :=
-  { inferInstanceAs (CommSemiring (Subsemiring.center R)), (center R).toRing with }
+  { (inferInstance : CommSemiring (Subsemiring.center R)), (center R).toRing with }
 
 /-- The center of isomorphic (not necessarily associative) rings are isomorphic. -/
 @[simps!] def centerCongr (e : R ≃+* S) : center R ≃+* center S :=
@@ -601,15 +601,13 @@ abbrev closureCommRingOfComm {s : Set R} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * 
       have := closure_le_centralizer_centralizer s
       Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
 
--- TODO: find a good way to fix the non-terminal simp
-set_option linter.flexible false in
 theorem exists_list_of_mem_closure {s : Set R} {x : R} (hx : x ∈ closure s) :
     ∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s ∨ y = (-1 : R)) ∧ (L.map List.prod).sum = x := by
   rw [mem_closure_iff] at hx
   induction hx using AddSubgroup.closure_induction with
   | mem _ hx =>
     obtain ⟨l, hl, h⟩ := Submonoid.exists_list_of_mem_closure hx
-    exact ⟨[l], by simp [h]; clear_aux_decl; tauto⟩
+    exact ⟨[l], by simp_all⟩
   | zero => exact ⟨[], List.forall_mem_nil _, rfl⟩
   | add _ _ _ _ hL hM =>
     obtain ⟨⟨L, HL1, HL2⟩, ⟨M, HM1, HM2⟩⟩ := And.intro hL hM
@@ -882,6 +880,10 @@ def inclusion {S T : Subring R} (h : S ≤ T) : S →+* T :=
 theorem coe_inclusion {S T : Subring R} (h : S ≤ T) (x : S) :
     (Subring.inclusion h x : R) = x := by simp [Subring.inclusion]
 
+theorem inclusion_injective {S T : Subring R} (h : S ≤ T) :
+    Function.Injective (Subring.inclusion h) :=
+  RingHom.injective_codRestrict.mpr S.subtype_injective
+
 @[simp]
 theorem range_subtype (s : Subring R) : s.subtype.range = s :=
   SetLike.coe_injective <| (coe_rangeS _).trans Subtype.range_coe
@@ -1031,54 +1033,54 @@ variable {α β : Type*}
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [SMul R α] (S : Subring R) : SMul S α :=
-  inferInstanceAs (SMul S.toSubsemiring α)
+  (inferInstance : SMul S.toSubsemiring α)
 
 theorem smul_def [SMul R α] {S : Subring R} (g : S) (m : α) : g • m = (g : R) • m :=
   rfl
 
 instance smulCommClass_left [SMul R β] [SMul α β] [SMulCommClass R α β] (S : Subring R) :
     SMulCommClass S α β :=
-  inferInstanceAs (SMulCommClass S.toSubsemiring α β)
+  (inferInstance : SMulCommClass S.toSubsemiring α β)
 
 instance smulCommClass_right [SMul α β] [SMul R β] [SMulCommClass α R β] (S : Subring R) :
     SMulCommClass α S β :=
-  inferInstanceAs (SMulCommClass α S.toSubsemiring β)
+  (inferInstance : SMulCommClass α S.toSubsemiring β)
 
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
 instance [SMul α β] [SMul R α] [SMul R β] [IsScalarTower R α β] (S : Subring R) :
     IsScalarTower S α β :=
-  inferInstanceAs (IsScalarTower S.toSubsemiring α β)
+  (inferInstance : IsScalarTower S.toSubsemiring α β)
 
 instance [SMul R α] [FaithfulSMul R α] (S : Subring R) : FaithfulSMul S α :=
-  inferInstanceAs (FaithfulSMul S.toSubsemiring α)
+  (inferInstance : FaithfulSMul S.toSubsemiring α)
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [MulAction R α] (S : Subring R) : MulAction S α :=
-  inferInstanceAs (MulAction S.toSubsemiring α)
+  (inferInstance : MulAction S.toSubsemiring α)
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [AddMonoid α] [DistribMulAction R α] (S : Subring R) : DistribMulAction S α :=
-  inferInstanceAs (DistribMulAction S.toSubsemiring α)
+  (inferInstance : DistribMulAction S.toSubsemiring α)
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [Monoid α] [MulDistribMulAction R α] (S : Subring R) : MulDistribMulAction S α :=
-  inferInstanceAs (MulDistribMulAction S.toSubsemiring α)
+  (inferInstance : MulDistribMulAction S.toSubsemiring α)
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [Zero α] [SMulWithZero R α] (S : Subring R) : SMulWithZero S α :=
-  inferInstanceAs (SMulWithZero S.toSubsemiring α)
+  (inferInstance : SMulWithZero S.toSubsemiring α)
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [Zero α] [MulActionWithZero R α] (S : Subring R) : MulActionWithZero S α :=
-  inferInstanceAs (MulActionWithZero S.toSubsemiring α)
+  (inferInstance : MulActionWithZero S.toSubsemiring α)
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [AddCommMonoid α] [Module R α] (S : Subring R) : Module S α :=
-  inferInstanceAs (Module S.toSubsemiring α)
+  (inferInstance : Module S.toSubsemiring α)
 
 /-- The action by a subsemiring is the action by the underlying ring. -/
 instance [Semiring α] [MulSemiringAction R α] (S : Subring R) : MulSemiringAction S α :=
-  inferInstanceAs (MulSemiringAction S.toSubmonoid α)
+  (inferInstance : MulSemiringAction S.toSubmonoid α)
 
 /-- The center of a semiring acts commutatively on that semiring. -/
 instance center.smulCommClass_left : SMulCommClass (center R) R R :=
@@ -1091,12 +1093,12 @@ instance center.smulCommClass_right : SMulCommClass R (center R) R :=
 /-- The center of a semiring acts commutatively on any `R`-module -/
 instance {M : Type*} [MulAction R M] :
     SMulCommClass R (Subring.center R) M :=
-  inferInstanceAs <| SMulCommClass R (Submonoid.center R) M
+  (inferInstance : SMulCommClass R (Submonoid.center R) M)
 
 /-- The center of a semiring acts commutatively on any `R`-module -/
 instance {M : Type*} [MulAction R M] :
     SMulCommClass (Subring.center R) R M :=
-  inferInstanceAs <| SMulCommClass (Submonoid.center R) R M
+  (inferInstance : SMulCommClass (Submonoid.center R) R M)
 
 end Subring
 
