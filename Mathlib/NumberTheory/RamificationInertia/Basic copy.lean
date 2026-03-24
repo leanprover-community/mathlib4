@@ -125,6 +125,7 @@ theorem IsLocalRing.map_maximalIdeal_lt_top
     (IsLocalRing.maximalIdeal A).map f < ⊤ :=
   (IsLocalRing.map_maximalIdeal_le f).trans_lt (IsLocalRing.maximalIdeal.isMaximal B).lt_top
 
+-- PRed
 theorem length_of_isScalarTower_of_surjective {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
     (h : Function.Surjective (algebraMap A B))
     (M : Type*) [AddCommGroup M] [Module A M] [Module B M] [IsScalarTower A B M] :
@@ -233,17 +234,31 @@ end flatBaseChange
 
 namespace Ideal
 
+open Classical in
 noncomputable def ramificationIdx {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (p : Ideal R) (q : Ideal S) [q.IsPrime] : ℕ :=
-  letI Sq := Localization.AtPrime q
-  (Module.length Sq (Sq ⧸ p.map (algebraMap R Sq))).toNat
+    (p : Ideal R) (q : Ideal S) : ℕ :=
+  if _ : q.IsPrime then
+    letI Sq := Localization.AtPrime q
+    (Module.length Sq (Sq ⧸ p.map (algebraMap R Sq))).toNat
+  else 0
+
+noncomputable def ramificationIdx_def {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    (p : Ideal R) (q : Ideal S) [q.IsPrime] :
+    letI Sq := Localization.AtPrime q
+    p.ramificationIdx q = (Module.length Sq (Sq ⧸ p.map (algebraMap R Sq))).toNat :=
+  dif_pos _
+
+noncomputable def ramificationIdx_eq_zero {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    (p : Ideal R) (q : Ideal S) (hq : ¬ q.IsPrime) :
+    p.ramificationIdx q = 0 :=
+  dif_neg hq
 
 theorem ramificationIdx_tower {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     (p : Ideal R) (q : Ideal S) [q.IsPrime] (r : Ideal T) [r.IsPrime] [r.LiesOver q]
     [Module.Flat (Localization.AtPrime q) (Localization.AtPrime r)] :
     p.ramificationIdx r = p.ramificationIdx q * q.ramificationIdx r := by
-  simp_rw [ramificationIdx, ← ENat.toNat_mul]
+  simp_rw [ramificationIdx_def, ← ENat.toNat_mul]
   congr
   set Sq := Localization.AtPrime q
   set Tr := Localization.AtPrime r
@@ -254,6 +269,15 @@ theorem ramificationIdx_tower {R S T : Type*} [CommRing R] [CommRing S] [CommRin
   let f := (Ideal.quotientEquivAlgOfEq Tr (by rw [map_map, ← IsScalarTower.algebraMap_eq])).trans
     (Algebra.TensorProduct.quotIdealMapEquivTensorQuot Tr (p.map (algebraMap R Sq)))
   exact f.toLinearEquiv.length_eq
+
+theorem ramificationIdx_tower' {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    (p : Ideal R) (q : Ideal S) (r : Ideal T) [r.LiesOver q] [Module.Flat S T] :
+    p.ramificationIdx r = p.ramificationIdx q * q.ramificationIdx r := by
+  by_cases hr : r.IsPrime
+  · rw [Ideal.over_def r q]
+    apply ramificationIdx_tower
+  · rw [ramificationIdx_eq_zero p r hr, ramificationIdx_eq_zero q r hr, mul_zero]
 
 open Module TensorProduct in
 theorem sum_ramification_inertia
