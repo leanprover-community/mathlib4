@@ -384,7 +384,6 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDiffAt[s] f x)
   · simpa only [A] using mpullback_mfderivWithin_apply_smul hf
   · simp [B, ← Pi.smul_def', mpullback_smul (V := lieBracketWithin 𝕜 V' W' s'), f']
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[V, f • W] = (df V) • W + f • [V, W]`.
@@ -398,7 +397,6 @@ lemma mlieBracket_smul_right {f : M → 𝕜} (hf : MDiffAt f x)
   rw [← mlieBracketWithin_univ, ← mfderivWithin_univ]
   exact mlieBracketWithin_smul_right hf hW (uniqueMDiffWithinAt_univ I)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[f • V, W] = -(df W) • V + f • [V, W]`. Version within a set.
@@ -413,7 +411,6 @@ lemma mlieBracketWithin_smul_left {f : M → 𝕜} (hf : MDiffAt[s] f x)
     mlieBracketWithin_swap]
   simp; abel
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[f • V, W] = -(df W) • V + f • [V, W]`.

@@ -183,13 +183,35 @@ lemma Reachable.of_subsingleton {G : SimpleGraph V} [Subsingleton V] {u v : V} :
     Reachable G u v := by
   rw [Subsingleton.allEq u v]
 
-lemma not_reachable_of_left_degree_zero {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet u)]
-    (huv : u ≠ v) (hu : G.degree u = 0) : ¬Reachable G u v := by
-  rintro ⟨_ | @⟨u, x, v, hadj, w'⟩⟩
+lemma Reachable.nonempty_neighborSet_left {G : SimpleGraph V} {u v : V} (huv : u ≠ v)
+    (hreach : G.Reachable u v) : (G.neighborSet u).Nonempty := by
+  obtain ⟨_ | @⟨u, x, v, hadj, w'⟩⟩ := hreach
   · contradiction
-  · have : 0 < G.degree u := (G.degree_pos_iff_exists_adj u).mpr ⟨x, hadj.adj⟩
-    rw [hu] at this
-    contradiction
+  · exact ⟨x, hadj.adj⟩
+
+lemma Reachable.nonempty_neighborSet_right {G : SimpleGraph V} {u v : V} (huv : u ≠ v)
+    (hreach : G.Reachable u v) : (G.neighborSet v).Nonempty :=
+  hreach.symm.nonempty_neighborSet_left huv.symm
+
+lemma Reachable.degree_pos_left {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet u)]
+    (huv : u ≠ v) (hreach : G.Reachable u v) : 0 < G.degree u :=
+  degree_pos_iff_nonempty.mpr (hreach.nonempty_neighborSet_left huv)
+
+lemma Reachable.degree_pos_right {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet v)]
+    (huv : u ≠ v) (hreach : G.Reachable u v) : 0 < G.degree v :=
+  hreach.symm.degree_pos_left huv.symm
+
+lemma not_reachable_of_neighborSet_left_eq_empty {G : SimpleGraph V} {u v : V} (huv : u ≠ v)
+    (hu : G.neighborSet u = ∅) : ¬G.Reachable u v :=
+  (Reachable.nonempty_neighborSet_left huv).mt (Set.not_nonempty_iff_eq_empty.mpr hu)
+
+lemma not_reachable_of_neighborSet_right_eq_empty {G : SimpleGraph V} {u v : V} (huv : u ≠ v)
+    (hv : G.neighborSet v = ∅) : ¬G.Reachable u v :=
+  fun r ↦ not_reachable_of_neighborSet_left_eq_empty huv.symm hv r.symm
+
+lemma not_reachable_of_left_degree_zero {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet u)]
+    (huv : u ≠ v) (hu : G.degree u = 0) : ¬G.Reachable u v :=
+  (Reachable.degree_pos_left huv).mt (by simp [hu])
 
 lemma not_reachable_of_right_degree_zero {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet v)]
     (huv : u ≠ v) (hu : G.degree v = 0) : ¬Reachable G u v := by
