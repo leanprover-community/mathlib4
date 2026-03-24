@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.Length
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.QuasiFinite.Basic
 
 /-!
 # Ramification index
@@ -253,6 +254,7 @@ noncomputable def ramificationIdx_eq_zero {R S : Type*} [CommRing R] [CommRing S
     p.ramificationIdx q = 0 :=
   dif_neg hq
 
+/-- See `ramificationIdx_tower'` for a version that does not assume primality. -/
 theorem ramificationIdx_tower {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     (p : Ideal R) (q : Ideal S) [q.IsPrime] (r : Ideal T) [r.IsPrime] [r.LiesOver q]
@@ -279,11 +281,20 @@ theorem ramificationIdx_tower' {R S T : Type*} [CommRing R] [CommRing S] [CommRi
     apply ramificationIdx_tower
   · rw [ramificationIdx_eq_zero p r hr, ramificationIdx_eq_zero q r hr, mul_zero]
 
+-- generalize to QuasiFinite?
+
 open Module TensorProduct in
+set_option backward.isDefEq.respectTransparency false in
 theorem sum_ramification_inertia
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] : False := by
-  let F := S ⊗[R] p.ResidueField
+  -- prove: length of special fiber equals sum of e * f
+  let F := p.Fiber S
+  let n := Module.finrank p.ResidueField F
+  have : IsArtinianRing F := Algebra.QuasiFinite.instIsArtinianRingFiber p (S := S)
+  -- need: F factors as a product of Artinian local rings,
+  let e := PrimeSpectrum.primesOverOrderIsoFiber R S p
+  have : (p.primesOver S).Finite := Algebra.QuasiFinite.finite_primesOver p
   let q : Ideal S := sorry
   have : q.IsPrime := sorry
   have : q.LiesOver p := sorry
@@ -291,6 +302,7 @@ theorem sum_ramification_inertia
   let A := Sq ⧸ p.map (algebraMap R Sq)
   let e := (length Sq A).toNat
   have := length_restrictScalars (Localization.AtPrime p) (Localization.AtPrime q) A -- e * f
+  -- just need to
   sorry
 
 end Ideal
