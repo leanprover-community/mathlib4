@@ -365,7 +365,6 @@ dot notation. -/
 theorem Separable.natSepDegree_eq_natDegree (h : f.Separable) :
     f.natSepDegree = f.natDegree := natSepDegree_eq_natDegree_of_separable f h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a polynomial splits over `E`, then its separable degree is equal to
 the number of distinct roots of it over `E`. -/
 theorem natSepDegree_eq_of_splits [DecidableEq E] (h : (f.map (algebraMap F E)).Splits) :

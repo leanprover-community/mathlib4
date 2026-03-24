@@ -152,6 +152,9 @@ lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoef
 @[to_additive] instance unique [Subsingleton R] : Unique R[M] :=
   inferInstanceAs <| Unique <| M →₀ R
 
+#adaptation_note /-- Since v4.29.0-rc7,
+this is needed or we get errors in UniversalFactorizationRing.lean -/
+set_option backward.inferInstanceAs.wrap false in
 @[to_additive] instance addCommMonoid : AddCommMonoid R[M] :=
   inferInstanceAs <| AddCommMonoid <| M →₀ R
 
@@ -159,6 +162,9 @@ lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoef
   inferInstanceAs <| IsCancelAdd <| M →₀ R
 
 -- TODO: Replace this with `coeff`. See https://github.com/leanprover-community/mathlib4/pull/36746
+#adaptation_note /-- Since v4.29.0-rc7,
+this is needed or we get errors in UniversalFactorizationRing.lean -/
+set_option backward.inferInstanceAs.wrap false in
 @[to_additive] instance instCoeFun : CoeFun R[M] fun _ ↦ M → R :=
   inferInstanceAs <| CoeFun (M →₀ R) fun _ ↦ M → R
 
@@ -207,6 +213,39 @@ lemma ofCoeff_finsuppSum [AddCommMonoid N] (f : ι →₀ N) (g : ι → N → M
 /-- `AddMonoidAlgebra.single m r` for `m : M`, `r : R` is the element `rm : R[M]`. -/]
 abbrev single (m : M) (r : R) : R[M] := Finsupp.single m r
 
+/-- Remove a term from an element of the monoid algebra. -/
+@[to_additive /-- Remove a term from an element of the additive monoid algebra. -/]
+def erase (m : M) (x : R[M]) : R[M] := .ofCoeff <| .erase m x.coeff
+
+@[to_additive (attr := simp)]
+lemma coeff_erase (m : M) (x : R[M]) : (x.erase m).coeff = x.coeff.erase m := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_erase (m : M) (x : M →₀ R) : ofCoeff (x.erase m) = (ofCoeff x).erase m := rfl
+
+@[to_additive (attr := simp)]
+lemma erase_zero (m : M) : erase m (0 : R[M]) = 0 := by simp [erase]
+
+@[to_additive (attr := simp)]
+lemma erase_single (m : M) (r : R) : erase m (single m r) = 0 := by
+  simp [erase, ofCoeff, coeff]; rfl
+
+/-- Replace the `m`-th coefficient of an element `x` of the monoid algebra by a given value `r : R`.
+If `r = 0`, this is equal to `x.erase m`. -/
+@[to_additive
+/-- Replace the `m`-th coefficient of an element `x` of the monoid algebra by a given value `r : R`.
+If `r = 0`, this is equal to `x.erase m`. -/]
+def update (m : M) (r : R) (x : R[M]) : R[M] :=
+  ofCoeff (x.coeff.update m r)
+
+@[to_additive (attr := simp)]
+lemma coeff_update (m : M) (r : R) (x : R[M]) :
+    (x.update m r).coeff = x.coeff.update m r := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_update (m : M) (r : R) (x : M →₀ R) :
+    ofCoeff (x.update m r) = (ofCoeff x).update m r := rfl
+
 section SMul
 
 /-! ### Basic scalar multiplication instances
@@ -234,7 +273,8 @@ lemma smul_apply (a : A) (x : R[M]) (m : M) : (a • x) m = a • x m := rfl
 
 @[to_additive (attr := simp) (dont_translate := A) smul_single]
 lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r) := by
-  ext; simp [single, ← Finsupp.smul_single]
+  ext
+  simp [single, ← Finsupp.smul_single]
 
 @[to_additive (dont_translate := R) smul_single']
 lemma smul_single' (r' : R) (m : M) (r : R) : r' • single m r = single m (r' * r) := smul_single ..
