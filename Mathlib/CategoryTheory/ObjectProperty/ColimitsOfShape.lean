@@ -75,8 +75,7 @@ lemma strictColimitsOfShape_bot [Nonempty J] :
     strictColimitsOfShape (⊥ : ObjectProperty C) J = ⊥ := by
   rw [eq_bot_iff]
   rintro _ ⟨_, h⟩
-  let ⟨j⟩ := ‹Nonempty J›
-  exact h j
+  exact h (Classical.arbitrary J)
 
 /-- A structure expressing that `X : C` is the colimit of a functor
 `diag : J ⥤ C` such that `P (diag.obj j)` holds for all `j`. -/
@@ -150,8 +149,7 @@ lemma strictColimitsOfShape_le_colimitsOfShape :
 lemma colimitsOfShape_bot [Nonempty J] : colimitsOfShape (⊥ : ObjectProperty C) J = ⊥ := by
   rw [eq_bot_iff]
   rintro X ⟨⟨_, h⟩⟩
-  let ⟨j⟩ := ‹Nonempty J›
-  exact h j
+  exact h (Classical.arbitrary J)
 
 instance : (P.colimitsOfShape J).IsClosedUnderIsomorphisms where
   of_iso := by rintro _ _ e ⟨h⟩; exact ⟨h.ofIso e⟩
