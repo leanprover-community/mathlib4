@@ -103,7 +103,7 @@ variable (s) in
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma dual_span (s : Set M) : dual p (span R s) = dual p s := by
+lemma dual_hull (s : Set M) : dual p (hull R s) = dual p s := by
   refine le_antisymm (dual_anti Submodule.subset_span) (fun x hx y hy => ?_)
   induction hy using Submodule.span_induction with
   | mem _y h => exact hx h
@@ -111,8 +111,11 @@ lemma dual_span (s : Set M) : dual p (span R s) = dual p s := by
   | add y z _hy _hz hy hz => rw [map_add, add_apply]; exact add_nonneg hy hz
   | smul t y _hy hy => rw [map_smul_of_tower, Nonneg.mk_smul, smul_apply]; exact mul_nonneg t.2 hy
 
+@[deprecated "`PointedCone.span` was renamed to `PointedCone.hull`" (since := "2026-03-22")]
+alias dual_span := dual_hull
+
 @[simp] lemma dual_sup (C D : PointedCone R M) : dual p (C ⊔ D : PointedCone R M) = dual p (C ∪ D)
-  := by simp [← dual_span]
+  := by simp [← dual_hull]
 
 variable {M' : Type*} [AddCommGroup M'] [Module R M']
 

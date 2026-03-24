@@ -407,12 +407,12 @@ instance {f : X ⟶ Y} {g : Z ⟶ W} [IsMonHom f] [IsMonHom g] : IsMonHom (f ⊗
 instance : IsMonHom (𝟙 X) where
 
 instance {f : Y ⟶ Z} [IsMonHom f] : IsMonHom (X ◁ f) where
-  one_hom := by simpa using (inferInstanceAs <| IsMonHom (𝟙 X ⊗ₘ f)).one_hom
-  mul_hom := by simpa using (inferInstanceAs <| IsMonHom (𝟙 X ⊗ₘ f)).mul_hom
+  one_hom := by simpa using ((inferInstance : IsMonHom (𝟙 X ⊗ₘ f))).one_hom
+  mul_hom := by simpa using ((inferInstance : IsMonHom (𝟙 X ⊗ₘ f))).mul_hom
 
 instance {f : X ⟶ Y} [IsMonHom f] : IsMonHom (f ▷ Z) where
-  one_hom := by simpa using (inferInstanceAs <| IsMonHom (f ⊗ₘ (𝟙 Z))).one_hom
-  mul_hom := by simpa using (inferInstanceAs <| IsMonHom (f ⊗ₘ (𝟙 Z))).mul_hom
+  one_hom := by simpa using ((inferInstance : IsMonHom (f ⊗ₘ (𝟙 Z)))).one_hom
+  mul_hom := by simpa using ((inferInstance : IsMonHom (f ⊗ₘ (𝟙 Z)))).mul_hom
 
 instance : IsMonHom (α_ X Y Z).hom :=
   ⟨one_associator, mul_associator⟩
