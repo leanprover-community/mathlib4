@@ -184,6 +184,14 @@ theorem IsPath.isContained_pathGraph (hw : w.IsPath) : pathGraph (w.length + 1) 
   classical
   exact ⟨hw.pathGraphCopy⟩
 
+omit [DecidableEq V] in
+theorem exists_path_iff_isContained_pathGraph :
+    (∃ (u v : V) (p : G.Path u v), p.val.length = n) ↔ pathGraph (n + 1) ⊑ G := by
+  classical
+  refine ⟨fun ⟨u, v, p, hp⟩ ↦ hp ▸ ⟨p.isPath.pathGraphCopy⟩, fun ⟨f⟩ ↦ ?_⟩
+  refine ⟨_, _, ⟨_, map_isPath_of_injective f.injective <| .ofPathGraph n⟩, ?_⟩
+  simp
+
 end Walk
 
 end SimpleGraph
