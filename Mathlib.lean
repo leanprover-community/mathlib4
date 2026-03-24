@@ -7393,6 +7393,7 @@ public import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
 public import Mathlib.Topology.Category.TopCat.Limits.Konig
 public import Mathlib.Topology.Category.TopCat.Limits.Products
 public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+public import Mathlib.Topology.Category.TopCat.Monoidal
 public import Mathlib.Topology.Category.TopCat.OpenNhds
 public import Mathlib.Topology.Category.TopCat.Opens
 public import Mathlib.Topology.Category.TopCat.Sphere
@@ -7825,5 +7826,6 @@ public import Mathlib.Util.TermReduce
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
 public import Mathlib.Util.WithWeakNamespace
+public import Mathlib.test
 
 set_option linter.style.longLine false
