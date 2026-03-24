@@ -121,7 +121,7 @@ noncomputable def toTopObjIsoI :
   TopCat.isoOfHomeo ((SimplexCategory.toTopHomeo _).trans TopCat.stdSimplexHomeomorphI)
 
 /-- The canonical morphism `Δ[1] ⟶ TopCat.toSSet.obj TopCat.I`: by adjunction,
-it corresponds to the homeomorphism `toTopObjHomeoI : |Δ[1]| ≃ₜ TopCat.I`. -/
+it corresponds to the isomorphism `toTopObjIsoI : |Δ[1]| ≅ TopCat.I`. -/
 noncomputable def toSSetObjI : Δ[1] ⟶ TopCat.toSSet.obj TopCat.I.{u} :=
   sSetTopAdj.homEquiv _ _ toTopObjIsoI.hom
 
@@ -132,7 +132,7 @@ lemma δ_one_toSSetObjI :
   rw [← Adjunction.homEquiv_naturality_left, sSetTopAdj_homEquiv_stdSimplex_zero]
   congr 2
   have : stdSimplexHomeomorphUnitInterval (⦋1⦌.toTopHomeo
-      (toTop.{u}.map (stdSimplex.δ 1) default)) = 0 := by
+      (((toTop.{u}.map (stdSimplex.δ 1)).hom) default)) = 0 := by
     rw [← stdSimplexHomeomorphUnitInterval_zero]
     congr 1
     refine (SimplexCategory.toTopHomeo_naturality_apply _ _).trans ?_
@@ -147,7 +147,7 @@ lemma δ_zero_toSSetObjI :
   rw [← Adjunction.homEquiv_naturality_left, sSetTopAdj_homEquiv_stdSimplex_zero]
   congr 2
   have : stdSimplexHomeomorphUnitInterval (⦋1⦌.toTopHomeo
-      (toTop.{u}.map (stdSimplex.δ 0) default)) = 1 := by
+      (((toTop.{u}.map (stdSimplex.δ 0)).hom) default)) = 1 := by
     rw [← stdSimplexHomeomorphUnitInterval_one]
     congr 1
     refine (SimplexCategory.toTopHomeo_naturality_apply _ _).trans ?_
