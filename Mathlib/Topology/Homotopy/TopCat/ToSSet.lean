@@ -38,12 +38,12 @@ namespace SSet.stdSimplex
 
 -- these sorries are filled in https://github.com/joelriou/topcat-model-category
 
-noncomputable def toTopObjHomeoUnitInterval :
+noncomputable def toTopObjHomeoI :
     |(Δ[1] : SSet.{u})| ≃ₜ TopCat.I.{u} :=
   sorry
 
 noncomputable def toSSetObjI : Δ[1] ⟶ TopCat.toSSet.obj TopCat.I.{u} :=
-  sSetTopAdj.homEquiv _ _ (TopCat.ofHom (toContinuousMap toTopObjHomeoUnitInterval))
+  sSetTopAdj.homEquiv _ _ (TopCat.ofHom (toContinuousMap toTopObjHomeoI))
 
 @[reassoc (attr := simp)]
 lemma ι₀_whiskerLeft_toSSetObjI_μ (X : TopCat.{u}) :
