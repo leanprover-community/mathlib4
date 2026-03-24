@@ -26,6 +26,7 @@ variable {X : TopCat.{u}} {U : Opens X}
 
 namespace TopCat
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Presheaf.sections_exact_of_exact
     {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)}
     (hS : S.Exact) {s : S.X₂.obj (Opposite.op U)} (h : S.g.app (Opposite.op U) s = 0) :
