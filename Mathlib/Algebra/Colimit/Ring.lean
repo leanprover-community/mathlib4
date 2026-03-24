@@ -61,11 +61,14 @@ def DirectLimit : Type _ :=
 
 namespace DirectLimit
 
+instance addCommMonoid : AddCommMonoid (DirectLimit G f) :=
+  inferInstanceAs <| AddCommMonoid (FreeCommRing (Σ i, G i) ⧸ _)
+
+instance addCommGroup : AddCommGroup (DirectLimit G f) :=
+  inferInstanceAs <| AddCommGroup (FreeCommRing (Σ i, G i) ⧸ _)
+
 instance commRing : CommRing (DirectLimit G f) :=
   Ideal.Quotient.commRing _
-
-instance ring : Ring (DirectLimit G f) :=
-  CommRing.toRing
 
 -- Porting note: Added a `Zero` instance to get rid of `0` errors.
 instance zero : Zero (DirectLimit G f) := by

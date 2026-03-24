@@ -545,11 +545,14 @@ instance : Inhabited ℚ_[p] :=
   ⟨0⟩
 
 -- short circuits
+instance : AddCommMonoid ℚ_[p] :=
+  inferInstanceAs <| AddCommMonoid (CauSeq.Completion.Cauchy (padicNorm p))
+
+instance : AddCommGroup ℚ_[p] :=
+  inferInstanceAs <| AddCommGroup (CauSeq.Completion.Cauchy (padicNorm p))
+
 instance : CommRing ℚ_[p] :=
   Cauchy.commRing
-
-instance : Ring ℚ_[p] :=
-  Cauchy.ring
 
 instance : Zero ℚ_[p] := by infer_instance
 
@@ -564,8 +567,6 @@ instance : Sub ℚ_[p] := by infer_instance
 instance : Neg ℚ_[p] := by infer_instance
 
 instance : Div ℚ_[p] := by infer_instance
-
-instance : AddCommGroup ℚ_[p] := by infer_instance
 
 /-- Builds the equivalence class of a Cauchy sequence of rationals. -/
 def mk : PadicSeq p → ℚ_[p] :=
