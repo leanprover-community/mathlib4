@@ -183,7 +183,7 @@ Its cohomology is the group cohomology of `A`. -/
 noncomputable abbrev moduleCatCochainComplex : CochainComplex (ModuleCat k) ℕ :=
   HomologicalComplex.alternatingConst (ModuleCat.of k A.V) (φ := ModuleCat.ofHom (applyAsHom A g -
     𝟙 A).hom.toLinearMap) (ψ := ModuleCat.ofHom A.norm.hom.toLinearMap)
-    (by ext;  simp [sub_hom, applyAsHom, norm]) (by ext;  simp [sub_hom, applyAsHom, norm])
+    (by ext; simp [sub_hom, applyAsHom, norm]) (by ext; simp [sub_hom, applyAsHom, norm])
     fun _ _ => ComplexShape.up_nat_odd_add
 
 variable (k)
