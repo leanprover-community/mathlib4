@@ -124,27 +124,25 @@ instance : LocallyCompactSpace I :=
 /-- The unit interval `TopCat.I` is homeomorphic to `unitInterval`. -/
 def homeomorphI : I ≃ₜ unitInterval := Homeomorph.ulift
 
-/-- Constructor for elements in `TopCat.I`. -/
-def I.mk (t : unitInterval) : I := ULift.up t
-
-@[continuity]
-lemma I.continuous_mk : Continuous I.mk.{u} := continuous_uliftUp
-
 /-- The symmetrization map `TopCat.I ⟶ TopCat.I`. -/
-def I.symm : I.{u} → I := fun t ↦ I.mk (unitInterval.symm t.down)
+def I.symm : I.{u} ⟶ I :=
+  ofHom ⟨homeomorphI.symm ∘ unitInterval.symm ∘ homeomorphI, by continuity⟩
 
-@[continuity]
-lemma I.continuous_symm : Continuous I.symm.{u} := by
-  change Continuous ((I.mk.comp unitInterval.symm).comp ULift.down)
-  continuity
+@[simp]
+lemma I.homeomorphI_symm (x : I) :
+    homeomorphI (symm x) = unitInterval.symm (homeomorphI x) := rfl
 
-instance : OfNat I 0 := ⟨I.mk 0⟩
-instance : OfNat I 1 := ⟨I.mk 1⟩
+instance : OfNat I.{u} 0 := ⟨homeomorphI.symm 0⟩
+instance : OfNat I.{u} 1 := ⟨homeomorphI.symm 1⟩
 
-set_option backward.isDefEq.respectTransparency false in
-@[simp] lemma I.symm_one : I.symm 1 = 0 := by simp [I.symm]; rfl
-set_option backward.isDefEq.respectTransparency false in
-@[simp] lemma I.symm_zero : I.symm 0 = 1 := by simp [I.symm]; rfl
+@[simp] lemma I.homeomorphI_zero : homeomorphI (0 : I.{u}) = 0 := by simp [OfNat.ofNat]
+@[simp] lemma I.homeomorphI_one : homeomorphI (1 : I.{u}) = 1 := by simp [OfNat.ofNat]
+
+@[simp] lemma I.symm_one : I.symm 1 = 0 :=
+  homeomorphI.injective (by simp)
+
+@[simp] lemma I.symm_zero : I.symm 0 = 1 :=
+  homeomorphI.injective (by simp)
 
 open CartesianMonoidalCategory
 
