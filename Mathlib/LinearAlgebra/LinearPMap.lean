@@ -40,7 +40,9 @@ They are also the basis for the theory of unbounded operators.
 /-- A `LinearPMap σ E F` or `E →ₛₗ.[σ] F` is a (semi)linear map from a submodule of `E` to `F`. -/
 structure LinearPMap {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) (E : Type*)
     [AddCommGroup E] [Module R E] (F : Type*) [AddCommGroup F] [Module S F] where
+  /-- The domain of the (semi)linear map. -/
   domain : Submodule R E
+  /-- The (semi)linear map itself. -/
   toFun : domain →ₛₗ[σ] F
 
 @[inherit_doc] notation:25 E " →ₛₗ.[" σ:25 "] " F:0 => LinearPMap σ E F
@@ -56,6 +58,7 @@ namespace LinearPMap
 
 open Submodule
 
+/-- The (semi)linear map as just a function. -/
 @[coe]
 def toFun' (f : E →ₛₗ.[σ] F) : f.domain → F := f.toFun
 
@@ -119,8 +122,7 @@ theorem map_smul (f : E →ₛₗ.[σ] F) (c : R) (x : f.domain) : f (c • x) =
   f.toFun.map_smulₛₗ c x
 
 @[simp]
-theorem mk_apply (p : Submodule R E) (f : p →ₛₗ[σ] F) (x : p) : mk p f x = f x :=
-  rfl
+theorem mk_apply (p : Submodule R E) (f : p →ₛₗ[σ] F) (x : p) : mk p f x = f x := rfl
 
 /-- The unique `LinearPMap` on `R ∙ x` that sends `x` to `y`. This version works for modules
 over rings, and requires a proof of `∀ c, c • x = 0 → c • y = 0`. -/
@@ -550,8 +552,8 @@ theorem supSpanSingleton_apply_mk (f : E →ₛₗ.[σ] F) (x : E) (y : F) (hx :
 @[simp]
 theorem supSpanSingleton_apply_smul_self (f : E →ₛₗ.[σ] F) {x : E} (y : F) (hx : x ∉ f.domain)
     (c : K) :
-    f.supSpanSingleton x y hx ⟨c • x, mem_sup_right <| mem_span_singleton.2 ⟨c, rfl⟩⟩ = σ c • y := by
-    = σ c • y := by
+    f.supSpanSingleton x y hx ⟨c • x, mem_sup_right <| mem_span_singleton.2 ⟨c, rfl⟩⟩ =
+      σ c • y := by
   simpa [(mk_eq_zero _ _).mpr rfl] using supSpanSingleton_apply_mk f x y hx 0 (zero_mem _) c
 
 @[simp]
@@ -605,6 +607,9 @@ private theorem sSup_aux (c : Set (E →ₛₗ.[σ] F)) (hc : DirectedOn (· ≤
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
+/-- For a family of (semi)linear maps with a directed domains such that the one defined on a larger
+domain restricts to the one defined on the smaller domain, this defines the (semi)linear map defined
+on the union of the domains extending all the (semi)linear maps in the family. -/
 protected noncomputable def sSup (c : Set (E →ₛₗ.[σ] F)) (hc : DirectedOn (· ≤ ·) c) :
     E →ₛₗ.[σ] F :=
   ⟨_, Classical.choose <| sSup_aux c hc⟩
@@ -657,10 +662,8 @@ theorem toPMap_domain (f : E →ₛₗ[σ] F) (p : Submodule R E) : (f.toPMap p)
 /-- Compose a linear map with a `LinearPMap` -/
 def compPMap (g : F →ₛₗ[τ] G) (f : E →ₛₗ.[σ] F) : E →ₛₗ.[τ.comp σ] G :=
   letI : RingHomCompTriple σ τ (τ.comp σ) := RingHomCompTriple.mk (by rfl)
-  letI : RingHomCompTriple σ τ (τ.comp σ) := RingHomCompTriple.mk (by rfl)
   { domain := f.domain
     toFun := g.comp f.toFun }
-  toFun := g.comp f.toFun }
 
 @[simp]
 theorem compPMap_apply (g : F →ₛₗ[τ] G) (f : E →ₛₗ.[σ] F) (x) : g.compPMap f x = g (f x) :=
