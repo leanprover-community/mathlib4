@@ -15,6 +15,9 @@ public import Mathlib.Combinatorics.Quiver.SingleObj
 
 This module defines Schreier graphs as quivers with labeled edges.
 
+Given a monoid `M` acting on a type `V` and a map `ι : S → M`, the Schreier graph has
+vertices `V` and a directed edge `x → ι(s) • x` for each `x : V` and `s : S`.
+
 ## Main definitions
 
 * `SchreierGraph V ι` - The Schreier graph of an action, with vertices of type `V` and edges
@@ -45,19 +48,26 @@ section Basic
 
 variable (V : Type*) {M : Type*} [SMul M V] {S : Type*} (ι : S → M)
 
-/-- The type of vertices in a Schreier graph. This is just an alias for `V` to distinguish
-the graph structure. -/
-@[nolint unusedArguments]
-def SchreierGraph (V : Type*) {M : Type*} [SMul M V] {S : Type*} (_ι : S → M) : Type _ := V
+/-- A Schreier graph for a monoid `M` acting on `V` with generators `ι : S → M`.
+Vertices are elements of `V`, and there is an edge from `x` to `y` for each `s : S`
+such that `ι s • x = y`. -/
+@[nolint unusedArguments, ext]
+structure SchreierGraph (V : Type*) {M : Type*} [SMul M V] {S : Type*} (_ι : S → M) where
+  /-- The underlying vertex. -/
+  toVertex : V
 
 /-- Equivalence between the original vertex type and the Schreier graph type. -/
-@[simps!]
+@[simps]
 def equivSchreierGraph (V : Type*) {M : Type*} [SMul M V] {S : Type*} (ι : S → M) :
-    V ≃ SchreierGraph V ι := Equiv.refl V
+    V ≃ SchreierGraph V ι where
+  toFun := SchreierGraph.mk
+  invFun := SchreierGraph.toVertex
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- Transport the scalar multiplication to the Schreier graph vertices. -/
 instance schreierGraphSMul : SMul M (SchreierGraph V ι) where
-  smul x y := equivSchreierGraph V ι (x • (equivSchreierGraph V ι).symm y)
+  smul x y := ⟨x • y.toVertex⟩
 
 /-- The quiver structure on a Schreier graph. An arrow from `x` to `y` exists when
 there is an `s : S` such that `(ι s) • x = y`. -/
@@ -85,15 +95,12 @@ variable (V : Type*) {M : Type*} [Group M] [MulAction M V] {S : Type*} (ι : S �
 
 /-- The group acts on the Schreier graph vertices. -/
 instance schreierGraphMulAction : MulAction M (SchreierGraph V ι) where
-  smul := SMul.smul
   one_smul x := by
-    change equivSchreierGraph V ι (1 • (equivSchreierGraph V ι).symm x) = x
-    simp
+    ext
+    exact one_smul M x.toVertex
   mul_smul a b x := by
-    change equivSchreierGraph V ι ((a * b) • (equivSchreierGraph V ι).symm x) =
-      equivSchreierGraph V ι (a • (equivSchreierGraph V ι).symm
-        (equivSchreierGraph V ι (b • (equivSchreierGraph V ι).symm x)))
-    simp [mul_smul]
+    ext
+    exact mul_smul a b x.toVertex
 
 /-- The star map of the labelling prefunctor is bijective. This is a component of the
 covering property, extracted as a separate lemma for modularity. -/
