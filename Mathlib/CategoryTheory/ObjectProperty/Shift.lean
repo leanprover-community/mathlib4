@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
 public import Mathlib.CategoryTheory.Shift.CommShift
