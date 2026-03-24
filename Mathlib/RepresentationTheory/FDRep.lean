@@ -203,6 +203,7 @@ namespace FDRep
 
 variable {k G : Type u} [Field k] [Group G]
 
+-- Verify that the right rigid structure is available when the monoid is a group.
 example : RigidCategory (FDRep k G) := by infer_instance
 
 end FDRep
