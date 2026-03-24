@@ -71,8 +71,6 @@ noncomputable def Homotopy.toSSet {X Y : TopCat.{u}} {f g : X ⟶ Y} (h : Homoto
   h := _ ◁ SSet.stdSimplex.toSSetObjI ≫ μ TopCat.toSSet _ _ ≫ TopCat.toSSet.map h.h
   h₀ := by simp [← Functor.map_comp]
   h₁ := by simp [← Functor.map_comp]
-  rel := by
-    ext _ ⟨⟨_, h⟩, _⟩
-    simp at h
+  rel := by ext _ ⟨⟨_, ⟨⟩⟩, _⟩
 
 end TopCat
