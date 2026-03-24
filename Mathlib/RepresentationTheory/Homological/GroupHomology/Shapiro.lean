@@ -64,7 +64,7 @@ noncomputable def indIso [DecidableEq G] (A : Rep k S) (n : ℕ) :
   letI e := coinvariantsTensorResProjectiveResolutionIso (k := k) (G := G) S A
     (barResolution k G)|>.symm
   (HomologicalComplex.homologyFunctor (ModuleCat k) (ComplexShape.down ℕ) n).mapIso
-  (inhomogeneousChainsIso (ind S.subtype A) ≪≫ by exact e) ≪≫
+  (inhomogeneousChainsIso (ind S.subtype A) ≪≫ by convert e) ≪≫
   (groupHomologyIso A n ((resFunctor S.subtype).mapProjectiveResolution <| barResolution k G)).symm
 
 

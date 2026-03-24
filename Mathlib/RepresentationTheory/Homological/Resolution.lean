@@ -409,7 +409,7 @@ end barComplex
 @[simps complex]
 def barResolution : ProjectiveResolution (Rep.trivial k G k) where
   complex := barComplex k G
-  projective n := inferInstanceAs <| Projective (free k G (Fin n → G))
+  projective n := (inferInstance : Projective (free k G (Fin n → G)))
   π := (isoStandardComplex k G).hom ≫ standardComplex.εToSingle₀ k G
 
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is the trivial `k`-linear
