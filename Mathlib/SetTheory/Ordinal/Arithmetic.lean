@@ -1168,11 +1168,6 @@ theorem natCast_add_of_omega0_le {o} (h : ω ≤ o) (n : ℕ) : n + o = o := by
 theorem one_add_of_omega0_le {o} (h : ω ≤ o) : 1 + o = o :=
   mod_cast natCast_add_of_omega0_le h 1
 
-theorem exists_omega0_mul_add_natCast (o : Ordinal) :
-    ∃ (a : Ordinal) (n : ℕ), ω * a + n = o :=
-  have ⟨b, hb⟩ := lt_omega0.1 (mod_lt o omega0_ne_zero)
-  ⟨_, b, hb ▸ div_add_mod ..⟩
-
 open Ordinal
 
 theorem isSuccPrelimit_iff_omega0_dvd {a : Ordinal} : IsSuccPrelimit a ↔ ω ∣ a := by
