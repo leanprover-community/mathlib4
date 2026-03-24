@@ -197,6 +197,7 @@ theorem toCocone_ι_app (B : Bicone F) (j : Discrete J) : B.toCocone.ι.app j = 
 
 theorem toCocone_ι_app_mk (B : Bicone F) (j : J) : B.toCocone.ι.app ⟨j⟩ = B.ι j := rfl
 
+/-- The retract of a bicone `B` given by `B.ι j` and `B.π j`. -/
 def retract (B : Bicone F) (j : J) : Retract (F j) B.pt where
   i := B.ι j
   r := B.π j

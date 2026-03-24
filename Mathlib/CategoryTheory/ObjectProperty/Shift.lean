@@ -5,10 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
-public import Mathlib.CategoryTheory.ObjectProperty.Retract
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
+public import Mathlib.CategoryTheory.ObjectProperty.Retract
 public import Mathlib.CategoryTheory.Shift.CommShift
 
 /-!
@@ -166,7 +164,7 @@ lemma isStableUnderShift_iff_shiftClosure_eq_self [P.IsClosedUnderIsomorphisms] 
     IsStableUnderShift P A ↔ shiftClosure P A = P :=
   ⟨fun _ ↦ shiftClosure_eq_self _, fun h ↦ by rw [← h]; infer_instance⟩
 
-lemma isStableUnderShift_iSup_shift [P.IsClosedUnderIsomorphisms] (G : Type*) [AddGroup G]
+instance [P.IsClosedUnderIsomorphisms] (G : Type*) [AddGroup G]
     [HasShift C G] : (⨆ (a : G), P.shift a).IsStableUnderShift G where
   isStableUnderShiftBy a := IsStableUnderShiftBy.mk <| by
     rw [shift_iSup]
@@ -178,8 +176,7 @@ lemma isStableUnderShift_iSup_shift [P.IsClosedUnderIsomorphisms] (G : Type*) [A
 lemma shiftClosure_eq_iSup [P.IsClosedUnderIsomorphisms] (G : Type*) [AddGroup G] [HasShift C G] :
     P.shiftClosure G = ⨆ (x : G), P.shift x := by
   apply le_antisymm
-  · haveI := P.isStableUnderShift_iSup_shift G
-    rw [shiftClosure_le_iff]
+  · rw [shiftClosure_le_iff]
     conv_lhs => rw [← P.shift_zero G]
     exact le_iSup P.shift (0 : G)
   · intro X hX

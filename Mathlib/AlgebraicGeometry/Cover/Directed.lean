@@ -316,6 +316,7 @@ def directedAffineCover : X.OpenCover where
       (isBasis_iff_nbhd.mp X.isBasis_affineOpens (mem_top x)).choose_spec.1⟩
     simpa using (isBasis_iff_nbhd.mp X.isBasis_affineOpens (mem_top x)).choose_spec.2.1
 
+set_option backward.inferInstanceAs.wrap false in
 instance : Preorder X.directedAffineCover.I₀ := inferInstanceAs <| Preorder X.affineOpens
 
 instance : Scheme.Cover.LocallyDirected X.directedAffineCover :=

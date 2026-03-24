@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 public import Mathlib.CategoryTheory.Limits.FullSubcategory
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
 
@@ -150,6 +151,17 @@ lemma IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms [HasInitial C]
     let h : IsColimit (BinaryCofan.mk (initial.to Y) e.hom) :=
       BinaryCofan.IsColimit.mk _ (fun _ f ↦ e.inv ≫ f) (by cat_disch) (by simp) (by cat_disch)
     exact P.prop_of_isColimit_binaryCofan h P.prop_initial hX
+
+/-- All objects that are binary coproducts of objects in `P`. -/
+abbrev binaryCoproductsClosure (P : ObjectProperty C) : ObjectProperty C :=
+  P.colimitClosure (Discrete WalkingPair)
+
+lemma binaryCoproductsClosure_le_iff [HasInitial C] {P Q : ObjectProperty C}
+    [Q.IsClosedUnderBinaryCoproducts] [Q.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] :
+    P.binaryCoproductsClosure ≤ Q ↔ P ≤ Q := by
+  refine ⟨fun h ↦ (P.le_colimitsClosure _).trans h, fun h ↦ ?_⟩
+  letI : Q.IsClosedUnderIsomorphisms := IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms Q
+  exact colimitsClosure_le h
 
 /-- The typeclass saying that `P : ObjectProperty C` is stable under finite coproducts. -/
 class IsClosedUnderFiniteCoproducts : Prop where

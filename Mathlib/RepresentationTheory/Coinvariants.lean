@@ -58,7 +58,6 @@ namespace Coinvariants
 
 instance : AddCommGroup (Coinvariants ρ) := inferInstanceAs <| AddCommGroup (_ ⧸ _)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Module k (Coinvariants ρ) := inferInstanceAs <| Module k (_ ⧸ _)
 
 variable {ρ}

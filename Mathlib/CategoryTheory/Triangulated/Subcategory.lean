@@ -262,7 +262,7 @@ lemma extensionProduct_le_of_isTriangulatedClosed₂ {P₁ P₂ Q : ObjectProper
   intro _ ⟨_, _, _, _, _, hT, hY, hZ⟩
   exact ext_of_isTriangulatedClosed₂ Q _ hT (h₁ _ hY) (h₂ _ hZ)
 
-@[stacks 0FX2]
+@[stacks 0FX2 "first part"]
 lemma extensionProduct_retractClosure_retractClosure_le :
     extensionProduct P.retractClosure Q.retractClosure ≤
       (extensionProduct P Q).retractClosure := by
@@ -279,6 +279,7 @@ lemma extensionProduct_retractClosure_retractClosure_le :
   haveI : IsIso (a₂ ≫ b₂) := isIso₂_of_isIso₁₃ φ hT hT (IsIso.id _) (IsIso.id _)
   exact ⟨a₂, b₂ ≫ inv (a₂ ≫ b₂), by grind⟩
 
+@[stacks 0FX2 "second part"]
 lemma retractClosure_extensionProduct_retractClosure_retractClosure :
     (extensionProduct P.retractClosure Q.retractClosure).retractClosure =
       (extensionProduct P Q).retractClosure := by
