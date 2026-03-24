@@ -37,7 +37,10 @@ variable (ι : Type v) (β : ι → Type w)
 Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι β`. -/
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   Π₀ i, β i
-deriving AddCommMonoid, Inhabited, DFunLike, CoeFun
+deriving AddCommMonoid, Inhabited, DFunLike
+
+set_option backward.inferInstanceAs.wrap.data false in
+deriving instance CoeFun for DirectSum
 
 /-- `⨁ i, f i` is notation for `DirectSum _ f` and equals the direct sum of `fun i ↦ f i`.
 Taking the direct sum over multiple arguments is possible, e.g. `⨁ (i) (j), f i j`. -/
@@ -78,6 +81,7 @@ variable [∀ i, AddCommGroup (β i)]
 
 instance : AddCommGroup (DirectSum ι β) :=
   inferInstanceAs (AddCommGroup (Π₀ i, β i))
+
 variable {β}
 
 @[simp]
@@ -132,13 +136,15 @@ lemma of_apply {i : ι} (j : ι) (x : β i) : of β i x j = if h : i = j then Eq
 
 theorem mk_apply_of_mem {s : Finset ι} {f : ∀ i : (↑s : Set ι), β i.val} {n : ι} (hn : n ∈ s) :
     mk β s f n = f ⟨n, hn⟩ := by
-  dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk, DFinsupp.mk_apply]
-  rw [dif_pos hn]
+  dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
+  -- Previously, `DFinsupp.mk_apply` was in the `dsimp only`
+  rw [DFinsupp.mk_apply, dif_pos hn]
 
 theorem mk_apply_of_notMem {s : Finset ι} {f : ∀ i : (↑s : Set ι), β i.val} {n : ι} (hn : n ∉ s) :
     mk β s f n = 0 := by
-  dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk, DFinsupp.mk_apply]
-  rw [dif_neg hn]
+  dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
+  -- Previously, `DFinsupp.mk_apply` was in the `dsimp only`
+  rw [DFinsupp.mk_apply, dif_neg hn]
 
 @[simp]
 theorem support_zero [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] : (0 : ⨁ i, β i).support = ∅ :=

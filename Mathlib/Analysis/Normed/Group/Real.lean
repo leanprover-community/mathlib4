@@ -39,7 +39,7 @@ instance : ENorm ℝ≥0∞ where
 
 @[simp] lemma enorm_eq_self (x : ℝ≥0∞) : ‖x‖ₑ = x := rfl
 
-instance : ENormedAddCommMonoid ℝ≥0∞ where
+noncomputable instance : ENormedAddCommMonoid ℝ≥0∞ where
   continuous_enorm := continuous_id
   enorm_zero := by simp
   enorm_eq_zero := by simp
