@@ -1051,9 +1051,7 @@ theorem card_commonNeighbors_eq_card_triangles_containing_edge {u v : α} (huv :
       rw [isClique_iff]
       intro x hx y hy hne
       simp only [Finset.mem_coe, Finset.mem_insert, Finset.mem_singleton] at hx hy
-      rcases hx with rfl | rfl | rfl <;> rcases hy with rfl | rfl | rfl <;>
-        first | exact absurd rfl hne | exact hab | exact hab.symm
-              | exact hac | exact hac.symm | exact hbc | exact hbc.symm
+      grind [Adj.symm]
     exact ⟨w,
       by simp only [Set.mem_toFinset, commonNeighbors, Set.mem_inter_iff, mem_neighborSet]
          exact ⟨hcliq (hcontains (by simp)) hwmem huw,
