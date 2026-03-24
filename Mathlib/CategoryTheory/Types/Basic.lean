@@ -26,7 +26,7 @@ the `ConcreteCategory` instance is `TypeCat.Fun`. This double nesting allows us 
 `FunLike` instance on bare functions, which would give two non-reducibly-defeq coercions from
 morphisms in `Type u` to functions.
 
-To promote a function to a morphism in this category, we provode the abbreviation `TypeCat.ofHom f`,
+To promote a function to a morphism in this category, we provide the abbreviation `TypeCat.ofHom f`,
 as well as a corresponding notation `↾ f`. (Entered as `\upr `.)
 
 ## Main definitions
