@@ -197,7 +197,7 @@ theorem Units.val_set_image_rootsOfUnity_two [NoZeroDivisors R] :
 
 theorem mem_rootsOfUnity_iff_isRoot (k : ℕ) (ζ : Rˣ) :
     ζ ∈ rootsOfUnity k R ↔ (X ^ k - 1 : R[X]).IsRoot ζ := by
-  simp only [mem_rootsOfUnity', IsRoot, eval_sub, eval_pow, eval_X, eval_one, sub_eq_zero]
+  simp [-mem_rootsOfUnity, mem_rootsOfUnity', sub_eq_zero]
 
 end CommRing
 
