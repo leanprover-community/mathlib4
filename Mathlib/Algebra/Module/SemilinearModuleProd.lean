@@ -8,6 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.Algebra.Module.Submodule.Ker
 public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.Algebra.Module.Prod
 
 /-!
 # Twisted product module by a ring homomorphism
@@ -276,11 +277,13 @@ variable {σ E F}
 
 /-- Combine a linear map `f : M →ₗ[R] E` and a semilinear map
 `g : M →ₛₗ[σ] F` into a linear map with target `E ×[σ] F`. -/
+@[simps]
 def prodₛₗ (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) : M →ₗ[R] E ×[σ] F where
   toFun x := SemilinearProdModule.mk (f x) (g x)
   map_add' x y := by ext <;> simp
   map_smul' c x := by ext <;> simp
 
+-- not adapted because no function exist corresponding to `Pi.prod`
 -- theorem coe_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : ⇑(f.prod g) = Pi.prod f g :=
 --   rfl
 
@@ -293,24 +296,28 @@ def prodₛₗ (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) : M →ₗ[R] E ×[σ
 @[simp] lemma sndₛₗ_prodₛₗ (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) :
     (sndₛₗ σ E F).comp (prodₛₗ f g) = g := by ext x; rfl
 
--- @[simp]
--- theorem pair_fst_snd : prod (fst R M M₂) (snd R M M₂) = LinearMap.id := rfl
+@[simp]
+theorem pair_fstₛₗ_sndₛₗ : prodₛₗ (fstₛₗ σ E F) (sndₛₗ σ E F) = LinearMap.id := rfl
 
--- theorem prod_comp (f : M₂ →ₗ[R] M₃) (g : M₂ →ₗ[R] M₄)
---     (h : M →ₗ[R] M₂) : (f.prod g).comp h = (f.comp h).prod (g.comp h) :=
---   rfl
+theorem prod_compₛₗ {M₂ : Type*} [AddCommGroup M₂] [Module R M₂] (f : M₂ →ₗ[R] E) (g : M₂ →ₛₗ[σ] F)
+    (h : M →ₗ[R] M₂) : (f.prodₛₗ g).comp h = (f.comp h).prodₛₗ (g.comp h) :=
+  rfl
 
--- /-- Taking the product of two maps with the same domain is equivalent to taking the product of
--- their codomains.
+/-- Taking the twisted product of two maps with the same domain is equivalent to taking the twisted
+product of their codomains.
 
--- See note [bundled maps over different rings] for why separate `R` and `S` semirings are used. -/
--- @[simps]
--- def prodEquiv [Module S M₂] [Module S M₃] [SMulCommClass R S M₂] [SMulCommClass R S M₃] :
---     ((M →ₗ[R] M₂) × (M →ₗ[R] M₃)) ≃ₗ[S] M →ₗ[R] M₂ × M₃ where
---   toFun f := f.1.prod f.2
---   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
---   map_add' _ _ := rfl
---   map_smul' _ _ := rfl
+Note that, differently from `LinearMap.prodEquiv`, we do not take separate semirings, as we do not
+clearly see applications of such generalization. -/
+@[simps]
+def prodEquivₛₗ {R S : Type*} [CommSemiring R] [Semiring S] (σ : R →+* S)
+  {E : Type*} [AddCommGroup E] [Module R E]
+  {F : Type*} [AddCommGroup F] [Module S F]
+  {M : Type*} [AddCommGroup M] [Module R M] [SMulCommClass S S F] :
+    ((M →ₗ[R] E) ×[σ] (M →ₛₗ[σ] F)) ≃ₗ[R] M →ₗ[R] E ×[σ] F where
+  toFun f := f.1.prodₛₗ f.2
+  invFun f := SemilinearProdModule.mk ((fstₛₗ _ _ _).comp f) ((sndₛₗ _ _ _).comp f)
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 end prodₛₗ
 
