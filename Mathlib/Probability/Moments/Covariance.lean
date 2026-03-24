@@ -202,7 +202,7 @@ lemma covariance_sub_const_left [IsProbabilityMeasure μ] (hX : Integrable X μ)
 @[simp]
 lemma covariance_const_sub_left [IsProbabilityMeasure μ] (hX : Integrable X μ) (c : ℝ) :
     cov[fun ω ↦ c - X ω, Y; μ] = -cov[X, Y; μ] := by
-  simp [sub_eq_add_neg, hX.neg']
+  simp [sub_eq_add_neg, hX.fun_neg]
 
 @[simp]
 lemma covariance_sub_const_right [IsProbabilityMeasure μ] (hY : Integrable Y μ) (c : ℝ) :
@@ -212,7 +212,7 @@ lemma covariance_sub_const_right [IsProbabilityMeasure μ] (hY : Integrable Y μ
 @[simp]
 lemma covariance_const_sub_right [IsProbabilityMeasure μ] (hY : Integrable Y μ) (c : ℝ) :
     cov[X, fun ω ↦ c - Y ω; μ] = -cov[X, Y; μ] := by
-  simp [sub_eq_add_neg, hY.neg']
+  simp [sub_eq_add_neg, hY.fun_neg]
 
 section Sum
 
