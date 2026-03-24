@@ -142,7 +142,7 @@ instance : OfNat I 0 := ⟨I.mk 0⟩
 instance : OfNat I 1 := ⟨I.mk 1⟩
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp] lemma I.symm_one : I.symm 1 = 0 := by simp [I.symm];rfl
+@[simp] lemma I.symm_one : I.symm 1 = 0 := by simp [I.symm]; rfl
 set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma I.symm_zero : I.symm 0 = 1 := by simp [I.symm]; rfl
 
