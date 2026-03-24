@@ -42,34 +42,14 @@ open Function
 
 assert_not_exists Field
 
-deriving instance Nontrivial,
-  LinearOrder, Bot, Sub,
-  IsOrderedRing, CanonicallyOrderedAdd,
-  OrderBot, OrderTop, OrderedSub,
-  WellFoundedLT,
-  CharZero,
-  NoZeroDivisors,
-  ZeroLEOneClass
-  for ENat
-
-set_option backward.inferInstanceAs.wrap false in
-deriving instance LinearOrderedAddCommMonoidWithTop for ENat
-
 set_option backward.inferInstanceAs.wrap.data false in
-deriving instance SuccOrder for ENat
-
-deriving instance CanonicallyOrderedAdd for ENat
-
-#adaptation_note /-- Upon bumping to v4.29.0-rc3, we write out the `CommSemiring` instance rather
-than using `deriving`, to ensure that the `NatCast` instance is definitionally equal to the one
-expected by `grind`. The `deriving` mechanism produces a `NatCast` instance
-(`ENat.instNatCast`) that is not reducibly defeq to `Lean.Grind.Semiring.natCast`.
-See https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/576566138
--/
-instance : CommSemiring ENat := {
-  __ := (inferInstance : CommSemiring (WithTop ℕ))
-  toNatCast := inferInstance
-}
+deriving instance Nontrivial,
+  Add, Sub, LE, LT, Bot,
+  Preorder, SuccOrder, LinearOrder, OrderTop, OrderBot, WellFoundedLT,
+  AddMonoidWithOne, CommSemiring, LinearOrderedAddCommMonoidWithTop,
+  ZeroLEOneClass, OrderedSub, CanonicallyOrderedAdd, IsOrderedRing,
+  CharZero, NoZeroDivisors
+  for ENat
 
 namespace ENat
 
