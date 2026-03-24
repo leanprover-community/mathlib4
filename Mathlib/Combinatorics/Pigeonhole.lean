@@ -312,7 +312,7 @@ lemma exists_lt_card_cover_of_card_biUnion_lt_card
     (hs : s.Nonempty)
     (h₁ : ∀ j ∈ s, 0 < Finset.card (B j))
     (h₂ : (s.biUnion B).card < (s.card)) :
-    ∃ x ∈ s.biUnion B, 
+    ∃ x ∈ s.biUnion B,
     (Finset.inf' s hs (fun j ↦ Finset.card (B j))) < (Finset.card {j | j ∈ s ∧ x ∈ B j}) := by
   set k := Finset.inf' s hs (fun j ↦ Finset.card (B j)) with hk
   have nek : NeZero k := by
@@ -327,7 +327,7 @@ lemma exists_lt_card_cover_of_card_biUnion_lt_card
   have : (Finset.card (s.biUnion B))*k < s.card*k :=
     Nat.mul_lt_mul_right (Nat.ne_zero_iff_zero_lt.mp nek.out) |>.mpr (by lia)
   simp only [← Finset.sum_card_eq_sum_card_fiber_biUnion B s, sum_const, smul_eq_mul] at hc'
-  have h₃' : ∀ j ∈ s, k ≤ Finset.card (B j) := by 
+  have h₃' : ∀ j ∈ s, k ≤ Finset.card (B j) := by
     unfold k
     apply Finset.inf'_le
   have h₃ : (s.card)*k ≤ ∑ j ∈ s, Finset.card (B j) := by
@@ -353,7 +353,7 @@ lemma exists_lt_card_fiber_of_card_biUnion_lt_card'
   have hs : 0 < s.card := by lia
   rw [Finset.card_pos] at hs
   have hinf := exists_lt_card_cover_of_card_biUnion_lt_card hs h₁' h₂
-  have h₃ : (s.inf' hs fun j ↦ #(B j)) = k := by 
+  have h₃ : (s.inf' hs fun j ↦ #(B j)) = k := by
     apply Finset.inf'_eq_of_forall
     simp [h₁]
   grind
