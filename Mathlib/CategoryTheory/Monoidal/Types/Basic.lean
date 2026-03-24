@@ -29,11 +29,7 @@ instance typesCartesianMonoidalCategory : CartesianMonoidalCategory (Type u) whe
 
 instance : BraidedCategory (Type u) := .ofCartesianMonoidalCategory
 
-unif_hint {X Y : Type u} where ⊢ X ⊗ Y ≟ (X × Y)
-
 theorem types_tensorObj_def {X Y : Type u} : X ⊗ Y = (X × Y) := rfl
-
-unif_hint where ⊢ 𝟙_ (Type u) ≟ PUnit
 
 theorem types_tensorUnit_def : 𝟙_ (Type u) = PUnit := rfl
 

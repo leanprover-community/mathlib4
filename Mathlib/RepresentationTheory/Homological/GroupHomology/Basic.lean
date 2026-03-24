@@ -179,7 +179,6 @@ theorem inhomogeneousChains.d_def (n : ℕ) :
 
 theorem inhomogeneousChains.d_comp_d :
     d A (n + 1) ≫ d A n = 0 := by
-  have := (inhomogeneousChains (k := k) (G := G) A).d_comp_d (n + 2) (n + 1) n
   simpa [ChainComplex.of] using ((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n)
 
 set_option backward.isDefEq.respectTransparency false in
