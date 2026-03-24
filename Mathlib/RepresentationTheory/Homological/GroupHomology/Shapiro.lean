@@ -56,7 +56,6 @@ noncomputable abbrev coinvariantsTensorResProjectiveResolutionIso
       P.complex.coinvariantsTensorObj (ind S.subtype A) :=
   (NatIso.mapHomologicalComplex (coinvariantsTensorIndNatIso S.subtype A).symm _).app _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Shapiro's lemma: given a subgroup `S ≤ G` and an `S`-representation `A`, we have
 `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A).` -/
 noncomputable def indIso [DecidableEq G] (A : Rep k S) (n : ℕ) :
