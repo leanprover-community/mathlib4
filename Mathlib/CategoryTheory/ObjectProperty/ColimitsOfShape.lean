@@ -403,6 +403,4 @@ instance [P.IsClosedUnderColimitsOfShape WalkingParallelPair] :
 
 end ObjectProperty
 
-namespace Limits
-
-end CategoryTheory.Limits
+end CategoryTheory

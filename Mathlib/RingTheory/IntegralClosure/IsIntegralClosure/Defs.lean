@@ -30,6 +30,3 @@ class IsIntegralClosure (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing 
   algebraMap_injective (A R B) : Function.Injective (algebraMap A B)
   isIntegral_iff : ∀ {x : B}, IsIntegral R x ↔ ∃ y, algebraMap A B y = x
 
-namespace IsIntegralClosure
-
-end IsIntegralClosure

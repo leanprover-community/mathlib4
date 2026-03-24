@@ -273,6 +273,4 @@ lemma isClosedUnderLimitsOfShape_inverseImage_iff (P : ObjectProperty D)
 
 end ObjectProperty
 
-namespace Limits
-
-end CategoryTheory.Limits
+end CategoryTheory

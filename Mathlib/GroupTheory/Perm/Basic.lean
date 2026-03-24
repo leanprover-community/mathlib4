@@ -33,10 +33,6 @@ namespace Equiv
 
 variable {α : Type u} {β : Type v}
 
-namespace Perm
-
-end Perm
-
 section Swap
 
 variable [DecidableEq α]
