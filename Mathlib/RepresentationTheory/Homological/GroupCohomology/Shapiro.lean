@@ -40,26 +40,21 @@ open CategoryTheory Finsupp TensorProduct Rep
 
 variable {k G : Type u} [CommRing k] [Group G] {S : Subgroup G} (A : Rep k S)
 
+-- Note: this proof breaks if `resCoindHomEquiv.{u}` is replaced with `resCoindHomEquiv`.
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a projective resolution `P` of `k` as a `k`-linear `G`-representation, a subgroup
 `S ≤ G`, and a `k`-linear `S`-representation `A`, this is an isomorphism of complexes
 `Hom(Res(S)(P), A) ≅ Hom(P, Coind_S^G(A)).` -/
 noncomputable def linearYonedaObjResProjectiveResolutionIso
-    (P : ProjectiveResolution (trivial k G k)) (A : Rep k S) :
+    (P : ProjectiveResolution (trivial k G k)) (A : Rep.{u} k S) :
     ((resFunctor S.subtype).mapProjectiveResolution P).complex.linearYonedaObj k A ≅
       P.complex.linearYonedaObj k (coind S.subtype A) :=
   HomologicalComplex.Hom.isoOfComponents
-    (fun _ => (resCoindHomEquiv _ _ _).toModuleIso) fun _ _ _ =>
+    (fun _ => (resCoindHomEquiv.{u} _ _ _).toModuleIso) fun _ _ _ =>
       ModuleCat.hom_ext (LinearMap.ext fun f => Rep.hom_ext <| by
-        -- ext; simp [← ModuleCat.ofHom_comp, hom_comm_apply]
-        simp only [Functor.mapProjectiveResolution_complex, ChainComplex.linearYonedaObj_X,
-          Functor.mapHomologicalComplex_obj_X, linearYoneda_obj_obj_carrier,
-          LinearEquiv.toModuleIso_hom, ChainComplex.linearYonedaObj_d,
-          Functor.mapHomologicalComplex_obj_d]
-        rw [← ModuleCat.ofHom_comp, ← ModuleCat.ofHom_comp, ModuleCat.hom_ofHom,
-          ModuleCat.hom_ofHom]
-        ext
-        simp [resCoindHomEquiv, resCoindToHom_hom_hom_apply_coe S.subtype, hom_comm_apply])
+        ext; simp [← ModuleCat.ofHom_comp, resCoindHomEquiv,
+          resCoindToHom_hom_hom_apply_coe S.subtype, hom_comm_apply]
+        )
 
 /-- Shapiro's lemma: given a subgroup `S ≤ G` and an `S`-representation `A`, we have
 `Hⁿ(G, Coind_S^G(A)) ≅ Hⁿ(S, A).` -/
