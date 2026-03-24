@@ -174,15 +174,14 @@ end flatBaseChange
 
 namespace Ideal
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-  [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-  (p : Ideal R) (q : Ideal S) [q.IsPrime] (r : Ideal T) [r.IsPrime]
-
-noncomputable def ramificationIdx : ℕ :=
+noncomputable def ramificationIdx {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    (p : Ideal R) (q : Ideal S) [q.IsPrime] : ℕ :=
   letI Sq := Localization.AtPrime q
   (Module.length Sq (Sq ⧸ p.map (algebraMap R Sq))).toNat
 
-theorem ramificationIdx_tower [r.LiesOver q]
+theorem ramificationIdx_tower {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    (p : Ideal R) (q : Ideal S) [q.IsPrime] (r : Ideal T) [r.IsPrime] [r.LiesOver q]
     [Module.Flat (Localization.AtPrime q) (Localization.AtPrime r)] :
     p.ramificationIdx r = p.ramificationIdx q * q.ramificationIdx r := by
   simp_rw [ramificationIdx, ← ENat.toNat_mul]
