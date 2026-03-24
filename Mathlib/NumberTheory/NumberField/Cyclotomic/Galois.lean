@@ -29,6 +29,9 @@ defined by `(n, χ) ↦ χ n`.
   that sends `σ` to the class `a` such that `σ (ζₙ) = ζₙ ^ a`.
 - `IsCyclotomicExtension.Rat.intermediateFieldEquivSubgroupChar`: the bijection between the
   intermediate fields of `ℚ(ζₙ)/ℚ` and subgroups of `Xₙ`.
+- `IsCyclotomicExtension.Rat.mem_intermediateFieldEquivSubgroupChar_iff` : assume that `m ∣ n`,
+  then the image of `ℚ(ζₘ) ⊆ ℚ(ζₙ)` by `intermediateFieldEquivSubgroupChar` is the set of
+  characters whose conductor divides `m`.
 
 -/
 
@@ -89,7 +92,7 @@ theorem galEquivZMod_restrictNormal_apply (h : m ∣ n) (σ : Gal(K/ℚ)) :
 
 end restrict
 
-open MulChar
+open MulChar DirichletCharacter
 
 variable (R : Type*) [CommRing R] [HasEnoughRootsOfUnity R (Monoid.exponent (ZMod n)ˣ)]
 
@@ -137,17 +140,18 @@ theorem mem_intermediateFieldEquivSubgroupChar (F : IntermediateField ℚ K)
 set_option backward.isDefEq.respectTransparency false in
 /--
 Assume that `m ∣ n`, then the image of `ℚ(ζₘ) ⊆ ℚ(ζₙ)` by `intermediateFieldEquivSubgroupChar` is
-the orthogonal of the kernel of the reduction map `(ℤ/nℤ)ˣ → (ℤ/mℤ)ˣ`.
+the set of characters whose conductor divides `m`.
 -/
-theorem intermediateFieldEquivSubgroupChar_of_isCyclotomicExtension (F : IntermediateField ℚ K)
-    {m : ℕ} [NeZero m] [IsGalois ℚ F] [IsCyclotomicExtension {m} ℚ F] (hdiv : m ∣ n) :
-    intermediateFieldEquivSubgroupChar n K R F =
-      (MulChar.subgroupOrderIsoSubgroupMulChar (ZMod n) R (ZMod.unitsMap hdiv).ker).ofDual := by
-  ext χ
-  simp only [mem_intermediateFieldEquivSubgroupChar, mem_subgroupOrderIsoSubgroupMulChar_iff,
-    MonoidHom.mem_ker, ← (galEquivZMod n K).forall_congr_right, MulEquiv.toEquiv_eq_coe,
-    EquivLike.coe_coe, ← (galEquivZMod_restrictNormal_apply n K F hdiv _),
-    EmbeddingLike.map_eq_one_iff, AlgEquiv.restrictNormal_eq_one_iff]
-  simp
+theorem mem_intermediateFieldEquivSubgroupChar_iff (F : IntermediateField ℚ K)
+    {m : ℕ} [NeZero m] [IsGalois ℚ F] [IsCyclotomicExtension {m} ℚ F] (hdiv : m ∣ n)
+    (χ : DirichletCharacter R n) :
+    χ ∈ intermediateFieldEquivSubgroupChar n K R F ↔ χ.conductor ∣ m := by
+  simp_rw [← χ.mem_conductorSet_iff_conductor_dvd (NeZero.ne n) hdiv, χ.mem_conductorSet_iff,
+    factorsThrough_iff_ker_unitsMap hdiv, mem_intermediateFieldEquivSubgroupChar,
+    SetLike.le_def, ← (galEquivZMod n K).forall_congr_right, MonoidHom.mem_ker,
+    MulEquiv.toEquiv_eq_coe, EquivLike.coe_coe, ← (galEquivZMod_restrictNormal_apply n K F hdiv _),
+    EmbeddingLike.map_eq_one_iff, AlgEquiv.restrictNormal_eq_one_iff,
+    IntermediateField.mem_fixingSubgroup_iff, Units.ext_iff, toUnitHom_eq, coe_equivToUnitHom,
+    Units.val_one]
 
 end IsCyclotomicExtension.Rat
