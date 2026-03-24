@@ -311,8 +311,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoCocycles₁_hom :
     cocyclesMap f φ 1 ≫ (isoCocycles₁ B).hom = (isoCocycles₁ A).hom ≫ mapCocycles₁.{u, u} f φ := by
-  simp [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, mapShortComplexH1,
-    cochainsMap_f_1_comp_cochainsIso₁ f]
+  simp [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
