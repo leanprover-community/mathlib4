@@ -496,7 +496,7 @@ variable {s t : Finset ℕ} {n : ℕ}
 
 lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k ∈ ofColex s, n ^ k := by
   intro s t hst
-  rw [lt_iff_exists_forall_lt] at hst
+  rw [Colex.lt_iff_exists_forall_lt] at hst
   obtain ⟨a, hat, has, ha⟩ := hst
   rw [← sum_sdiff_lt_sum_sdiff]
   exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by lia) <|
