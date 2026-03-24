@@ -27,6 +27,8 @@ jobs:
     with:
       concurrency_group: ${{ github.workflow }}-${{ github.ref }}-${{ github.run_id }}
       pr_branch_ref: ${{ github.sha }}
+      # Note bors is contributing to the 'master' cache
+      cache_application_id: ${{ vars.CACHE_MASTER_WRITER_AZURE_APP_ID }}
       # bors runs should build the tools from their commit-under-test: after all, we are trying to
       # test 'what would happen if this was merged', so we need to use the 'would-be-post-merge' tools
       tools_branch_ref: ${{ github.sha }}
