@@ -89,8 +89,6 @@ section CommSemiring
 
 section Instances
 
-set_option backward.inferInstanceAs.wrap.data false
-
 instance decidableEqMvPolynomial [CommSemiring R] [DecidableEq σ] [DecidableEq R] :
     DecidableEq (MvPolynomial σ R) :=
   Finsupp.instDecidableEq
@@ -100,6 +98,10 @@ instance commSemiring [CommSemiring R] : CommSemiring (MvPolynomial σ R) :=
 
 instance inhabited [CommSemiring R] : Inhabited (MvPolynomial σ R) :=
   ⟨0⟩
+
+instance smul [CommSemiring S₁] [SMulZeroClass R S₁] :
+    SMul R (MvPolynomial σ S₁) where
+  smul a v := v.mapRange (a • ·) (smul_zero _)
 
 instance distribuMulAction [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] :
     DistribMulAction R (MvPolynomial σ S₁) :=
