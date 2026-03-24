@@ -588,11 +588,7 @@ instance : Epi (H1CoresCoinf A S).g := by
   have : d₁₀ _ Y ∈ Coinvariants.ker (A.ρ.comp S.subtype) := by
     have h' := congr($((mapShortComplexH1 (B := toCoinvariants A S)
       (MonoidHom.id G) (toCoinvariantsMkQ A S)).comm₂₃) Y)
-    simp only [shortComplexH1, mapShortComplexH1_τ₂, ModuleCat.ofHom_comp, MonoidHom.coe_id,
-      lmapDomain_id, ModuleCat.ofHom_id, res_obj_ρ, hom_ofHom, Category.id_comp, ModuleCat.hom_comp,
-      ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply, mapRange.linearMap_apply,
-      mapShortComplexH1_τ₃] at h'
-    simp [← Coinvariants.mk_eq_zero, ← h', hY]
+    simp_all [shortComplexH1, ← Coinvariants.mk_eq_zero]
   /- Thus we can pick a representation of `d(Y)` as a sum `∑ ρ(sᵢ⁻¹)(aᵢ) - aᵢ`, `sᵢ ∈ S, aᵢ ∈ A`,
 and `Y - ∑ aᵢ·sᵢ` is a cycle. -/
   rcases chains₁ToCoinvariantsKer_surjective
