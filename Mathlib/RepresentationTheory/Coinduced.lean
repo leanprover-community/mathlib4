@@ -255,8 +255,7 @@ def resCoindToHom (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) : B ⟶ (coin
 
 @[simp]
 lemma resCoindToHom_hom_hom_apply_coe (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) (c : ↑B.V)
-    (i : H) : (DFunLike.coe (F := no_index(_)) (resCoindToHom φ B A f).hom c).1 i =
-    (Hom.hom f) ((B.ρ i) c) := rfl
+    (i : H) : ((resCoindToHom φ B A f).hom c).1 i = (Hom.hom f) ((B.ρ i) c) := rfl
 
 attribute [pp_with_univ] Rep coind
 
@@ -279,16 +278,8 @@ def resCoindHomEquiv (B : Rep.{max w t} k H) (A : Rep.{max w t} k G) :
       have := ((f.hom x).2 g 1).symm
       have := hom_comm_apply f (φ g) x
       simp_all⟩
-  left_inv x := by ext; simp
-  right_inv z := by
-    ext (b : B.V)
-    have := hom_comm_apply z
-    simp only [Representation.coind_apply, resCoindToHom, res_obj_V, res_obj_ρ, hom_ofHom,
-      Representation.IntertwiningMap.toLinearMap_mk, LinearMap.codRestrict_apply,
-      LinearMap.pi_apply, LinearMap.coe_comp, LinearMap.coe_proj, Submodule.coe_subtype,
-      Function.comp_apply, Function.eval,
-      Representation.IntertwiningMap.toLinearMap_apply] at this ⊢
-    simp [this]
+  left_inv x := by ext; simp [resCoindToHom_hom_hom_apply_coe _]
+  right_inv z := by ext; simp [resCoindToHom, hom_comm_apply z]
 
 #adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
 the simpNF linter complains about `@[simps! counit_app_hom_hom unit_app_hom_hom]`,
