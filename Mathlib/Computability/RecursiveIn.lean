@@ -177,14 +177,14 @@ theorem none {O : Set (ℕ →. ℕ)} : Nat.RecursiveIn O (fun _ => Part.none) :
 
 end Nat.RecursiveIn
 
-theorem Primrec.to_computableIn {α σ} [Primcodable α] [Primcodable σ]
+theorem Primrec.computableIn {α σ} [Primcodable α] [Primcodable σ]
     {f : α → σ} (hf : Primrec f) (O : Set (ℕ →. ℕ)) :
     ComputableIn O f := Computable.computableIn (Primrec.to_comp hf)
 
-nonrec theorem Primrec₂.to_computableIn₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ]
+nonrec theorem Primrec₂.computableIn₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ]
     {f : α → β → σ} (hf : Primrec₂ f) (O : Set (ℕ →. ℕ)) :
     ComputableIn₂ O f :=
-  Primrec.to_computableIn hf O
+  hf.computableIn O
 
 protected theorem ComputableIn.recursiveIn {α σ} [Primcodable α] [Primcodable σ]
     {f : α → σ} {O} (hf : ComputableIn O f) :
@@ -196,29 +196,33 @@ protected theorem ComputableIn₂.recursiveIn₂ {α β σ} [Primcodable α] [Pr
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
-theorem const_in (O : Set (ℕ →. ℕ)) (s : σ) : ComputableIn O (fun _ : α => s) :=
-  Primrec.to_computableIn (Primrec.const s) O
+namespace ComputableIn
 
-theorem id_in (O : Set (ℕ →. ℕ)) : ComputableIn O (@id α) :=
-  Primrec.to_computableIn Primrec.id O
+protected theorem const (O : Set (ℕ →. ℕ)) (s : σ) : ComputableIn O (fun _ : α => s) :=
+  (Primrec.const s).computableIn O
 
-theorem fst_in (O : Set (ℕ →. ℕ)) : ComputableIn O (@Prod.fst α β) :=
-  Primrec.to_computableIn Primrec.fst O
+protected theorem id (O : Set (ℕ →. ℕ)) : ComputableIn O (@id α) :=
+  Primrec.id.computableIn O
 
-theorem snd_in (O : Set (ℕ →. ℕ)) : ComputableIn O (@Prod.snd α β) :=
-  Primrec.to_computableIn Primrec.snd O
+protected theorem fst (O : Set (ℕ →. ℕ)) : ComputableIn O (@Prod.fst α β) :=
+  Primrec.fst.computableIn O
 
-theorem unpair_in (O : Set (ℕ →. ℕ)) : ComputableIn O Nat.unpair :=
-  Primrec.to_computableIn Primrec.unpair O
+protected theorem snd (O : Set (ℕ →. ℕ)) : ComputableIn O (@Prod.snd α β) :=
+  Primrec.snd.computableIn O
 
-theorem succ_in (O : Set (ℕ →. ℕ)) : ComputableIn O Nat.succ :=
-  Primrec.to_computableIn Primrec.succ O
+protected theorem unpair (O : Set (ℕ →. ℕ)) : ComputableIn O Nat.unpair :=
+  Primrec.unpair.computableIn O
 
-theorem sumInl_in (O : Set (ℕ →. ℕ)) : ComputableIn O (@Sum.inl α β) :=
-  Primrec.to_computableIn Primrec.sumInl O
+protected theorem succ (O : Set (ℕ →. ℕ)) : ComputableIn O Nat.succ :=
+  Primrec.succ.computableIn O
 
-theorem sumInr_in (O : Set (ℕ →. ℕ)) : ComputableIn O (@Sum.inr α β) :=
-  Primrec.to_computableIn Primrec.sumInr O
+protected theorem sumInl (O : Set (ℕ →. ℕ)) : ComputableIn O (@Sum.inl α β) :=
+  Primrec.sumInl.computableIn O
+
+protected theorem sumInr (O : Set (ℕ →. ℕ)) : ComputableIn O (@Sum.inr α β) :=
+  Primrec.sumInr.computableIn O
+
+end ComputableIn
 
 /--
 If every function in `O` is partial recursive,
