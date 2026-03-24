@@ -38,10 +38,9 @@ point `c₁.pt ⊗ c₂.pt`. -/
 noncomputable abbrev tensor : CokernelCofork (coprod.desc (f₁ ▷ Y₂) (Y₁ ◁ f₂)) :=
   CokernelCofork.ofπ (c₁.π ⊗ₘ c₂.π) (by
     ext
-    · simp [tensorHom_def, ← comp_whiskerRight_assoc]
-    · simp [tensorHom_def', ← whiskerLeft_comp_assoc])
+    · simp [tensorHom_def, ← comp_whiskerRight_assoc, coprod.inl_desc]
+    · simp [tensorHom_def', ← whiskerLeft_comp_assoc, coprod.inr_desc])
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given two colimit cokernel coforks `c₁` and `c₂` for `f₁ : X₁ ⟶ Y₁` and
 `f₂ : X₂ ⟶ Y₂`, if the cokernels of `f₁` and `f₂` are preserves by suitable
 tensor products, then `c₁.pt ⊗ c₂.pt` is the cokernel of the
@@ -54,6 +53,6 @@ noncomputable def isColimitTensor
   have : HasBinaryCoproduct (((curriedTensor C).obj X₁).obj Y₂)
     (((curriedTensor C).obj Y₁).obj X₂) := by assumption
   IsColimit.ofIsoColimit (isColimitMapBifunctor hc₁ hc₂ (curriedTensor C))
-    (Cofork.ext (Iso.refl _) (by simp [tensorHom_def]))
+    (Cofork.ext (Iso.refl _) (by dsimp only [Cofork.π]; simp [tensorHom_def]))
 
 end CategoryTheory.Limits.CokernelCofork
