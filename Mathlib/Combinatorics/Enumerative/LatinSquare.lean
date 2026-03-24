@@ -497,7 +497,6 @@ theorem latin_rectangle_extends_one_row
     exact h' h
   let halls := hallMatchingsOn.nonempty (B)
     (latin_rect_hall_property h Bj_size pre_property_H) (Finset.univ)
-
   set f := Classical.choice halls with hx
   simp only [hallMatchingsOn] at f
   obtain ⟨ f', hf⟩ := f
