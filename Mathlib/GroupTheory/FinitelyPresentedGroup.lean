@@ -16,13 +16,14 @@ public import Mathlib.GroupTheory.FreeGroup.Basic
 This file defines finitely presented groups.
 
 ## Main definitions
-* `Subgroup.IsNormalClosureFG`: defines when a subgroup is the normal closure of a finite set.
+* `Subgroup.IsNormalClosureFG N`: says that the subgroup `N` is the normal closure of a
+  finitely generated subgroup.
 * `IsFinitelyPresented`: defines when a group is finitely presented.
 
 ## Main results
-* `Subgroup.IsNormalClosureFG_map`: being the normal closure of a finite set is invariant
-  under surjective homomorphism.
-* `IsFinitelyPresented.of_mulEquiv`: finitely presented groups are closed under isomorphism.
+* `Subgroup.IsNormalClosureFG_map`: Being the normal closure of a finite set is preserved under
+  surjective homomorphism.
+* `IsFinitelyPresented.mulEquiv`: finitely presented groups are closed under isomorphism.
 
 ## Tags
 finitely presented group, finitely generated normal closure
