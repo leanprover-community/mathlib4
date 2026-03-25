@@ -29,7 +29,7 @@ The main results are the following:
 
 @[expose] public section
 
-open Set Function Filter
+open Set Function Filter NormedSpace
 open scoped Topology Manifold ContDiff
 
 noncomputable section
@@ -207,6 +207,7 @@ theorem mlieBracketWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
     mlieBracketWithin I V W s =ᶠ[𝓝 x] mlieBracketWithin I V W t :=
   mlieBracketWithin_eventually_congr_set' x <| h.filter_mono inf_le_left
 
+set_option backward.inferInstanceAs.wrap false in
 theorem _root_.Filter.EventuallyEq.mlieBracketWithin_vectorField_eq
     (hV : V₁ =ᶠ[𝓝[s] x] V) (hxV : V₁ x = V x) (hW : W₁ =ᶠ[𝓝[s] x] W) (hxW : W₁ x = W x) :
     mlieBracketWithin I V₁ W₁ s x = mlieBracketWithin I V W s x := by
@@ -361,7 +362,8 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDiffAt[s] f x)
     (hW : MDiffAt[s] (fun x ↦ (W x : TangentBundle I M)) x)
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I V (f • W) s x =
-      (mfderivWithin I 𝓘(𝕜) f s x) (V x) • (W x) + (f x) • mlieBracketWithin I V W s x := by
+      (fromTangentSpace (f x) (mfderiv[s] f x (V x))) • (W x)
+      + (f x) • mlieBracketWithin I V W s x := by
   simp only [mlieBracketWithin, mpullbackWithin_smul]
   -- Simplify local notation a bit.
   set V' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I)
@@ -383,19 +385,19 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDiffAt[s] f x)
   · simpa only [A] using mpullback_mfderivWithin_apply_smul hf
   · simp [B, ← Pi.smul_def', mpullback_smul (V := lieBracketWithin 𝕜 V' W' s'), f']
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[V, f • W] = (df V) • W + f • [V, W]`.
 -/
 lemma mlieBracket_smul_right {f : M → 𝕜} (hf : MDiffAt f x)
     (hW : MDiffAt (fun x ↦ (W x : TangentBundle I M)) x) :
-    mlieBracket I V (f • W) x = (mfderiv% f x) (V x) • (W x) + (f x) • mlieBracket I V W x := by
+    mlieBracket I V (f • W) x =
+      (fromTangentSpace (f x) (mfderiv% f x (V x))) • (W x)
+      + (f x) • mlieBracket I V W x := by
   rw [← mdifferentiableWithinAt_univ] at hf hW
   rw [← mlieBracketWithin_univ, ← mfderivWithin_univ]
   exact mlieBracketWithin_smul_right hf hW (uniqueMDiffWithinAt_univ I)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[f • V, W] = -(df W) • V + f • [V, W]`. Version within a set.
@@ -404,12 +406,12 @@ lemma mlieBracketWithin_smul_left {f : M → 𝕜} (hf : MDiffAt[s] f x)
     (hV : MDiffAt[s] (fun x ↦ (V x : TangentBundle I M)) x)
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I (f • V) W s x =
-      -(mfderivWithin I 𝓘(𝕜) f s x) (W x) • (V x) + (f x) • mlieBracketWithin I V W s x := by
+      -(fromTangentSpace (f x) (mfderiv[s] f x (W x))) • (V x)
+      + (f x) • mlieBracketWithin I V W s x := by
   rw [mlieBracketWithin_swap, Pi.neg_apply, mlieBracketWithin_smul_right hf hV (V := W) hs,
     mlieBracketWithin_swap]
   simp; abel
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[f • V, W] = -(df W) • V + f • [V, W]`.
@@ -417,12 +419,12 @@ Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a 
 lemma mlieBracket_smul_left {f : M → 𝕜} (hf : MDiffAt f x)
     (hV : MDiffAt (fun x ↦ (V x : TangentBundle I M)) x) :
     mlieBracket I (f • V) W x =
-      -(mfderiv% f x) (W x) • (V x) + (f x) • mlieBracket I V W x := by
+      - (fromTangentSpace (f x) (mfderiv% f x (W x))) • (V x)
+      + (f x) • mlieBracket I V W x := by
   rw [← mdifferentiableWithinAt_univ] at hf hV
   rw [← mlieBracketWithin_univ, ← mfderivWithin_univ]
   exact mlieBracketWithin_smul_left hf hV (uniqueMDiffWithinAt_univ I)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mlieBracketWithin_const_smul_left
     (hV : MDiffAt[s] (T% V) x) (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I (c • V) W s x = c • mlieBracketWithin I V W s x := by
@@ -434,7 +436,6 @@ lemma mlieBracket_const_smul_left (hV : MDiffAt (T% V) x) :
   simp only [← mlieBracketWithin_univ] at hV ⊢
   exact mlieBracketWithin_const_smul_left hV (uniqueMDiffWithinAt_univ _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mlieBracketWithin_const_smul_right
     (hW : MDiffAt[s] (T% W) x) (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I V (c • W) s x = c • mlieBracketWithin I V W s x := by

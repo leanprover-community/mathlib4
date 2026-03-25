@@ -79,7 +79,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
     have hlub : IsLUB t (sSup t) := isLUB_csSup hne hbdd
     let ⟨y, hyt⟩ := hne
     classical
-      refine ⟨succ (sSup t), succ_ne_zero _, fun x _ => if x ∈ t then x else y, fun x _ => ?_, ?_⟩
+      refine ⟨sSup t + 1, add_one_ne_zero _, fun x _ => if x ∈ t then x else y, fun x _ => ?_, ?_⟩
       · simp only
         split_ifs with h <;> exact hts ‹_›
       · refine le_antisymm (bsup_le fun x _ => ?_) (csSup_le hne fun x hx => ?_)
@@ -141,11 +141,6 @@ theorem isClosed_iff_bsup :
 @[deprecated SuccOrder.isSuccLimit_of_mem_frontier (since := "2026-01-20")]
 theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a :=
   SuccOrder.isSuccLimit_of_mem_frontier ha
-
-@[deprecated Order.isNormal_iff_strictMono_and_continuous (since := "2025-08-21")]
-theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u}) :
-    IsNormal f ↔ StrictMono f ∧ Continuous f :=
-  Order.isNormal_iff_strictMono_and_continuous
 
 theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     IsNormal (enumOrd s) ↔ IsClosed s := by

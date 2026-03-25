@@ -166,7 +166,7 @@ theorem differentiableAt_cuspFunction (hh : h ≠ 0) (hf : Periodic f h)
   have hL : 𝕢 h ∘ L =ᶠ[𝓝 q] (id : ℂ → ℂ) :=
     (qdiff.hasStrictFDerivAt_equiv diff_ne).eventually_right_inverse
   -- Thus, if F = cuspFunction h f, we have F q' = f (L q') for q' near q.
-  -- Since L is differentiable at q, and f is diff'ble at L q [ = z], we conclude
+  -- Since L is differentiable at q, and f is differentiable at L q [ = z], we conclude
   -- that F is differentiable at q.
   have hF := hL.fun_comp (cuspFunction h f)
   have : cuspFunction h f ∘ 𝕢 h ∘ L = f ∘ L := funext fun z ↦ eq_cuspFunction hh hf (L z)
