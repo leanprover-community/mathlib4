@@ -441,19 +441,21 @@ def subst {α β : Type} (L : Language α) (f : α → Language β) : Language �
 /-- We can model concatenation / multiplication of languages using substitution -/
 theorem subst_pair_eq_mul {β : Type} (f : Bool → Language β) :
     ({[false, true]} : Language Bool).subst f = f false * f true := by
-      -- To prove equality of sets, we show each set is a subset of the other.
-      apply Set.ext
-      intro u
-      simp only [subst, Set.mem_setOf_eq, mul_def, Set.mem_image2]
-      simp only [List.prod]
-      apply Iff.intro
-      · simp [Language.mul_def, Language.one_def] at *
-        grind
-      · intro h
-        obtain ⟨a, ha, b, hb, hab⟩ := h
-        use [false, true]
-        simp only [List.map_cons, List.map_nil, List.foldr_cons, List.foldr_nil, mul_one]
-        exact ⟨ rfl, ⟨ a, ha, b, hb, hab ⟩ ⟩
+  apply Set.ext
+  intro u
+  simp only [subst, Set.mem_setOf_eq, Language.mul_def, Set.mem_image2]
+  -- don't want to unfold mul_def again
+  simp only [List.prod]
+  constructor
+  · simp [Language.mul_def, Language.one_def] at *
+    grind
+  · intro h
+    obtain ⟨a, ha, b, hb, hab⟩ := h
+    use [false, true]
+    constructor
+    · exact rfl
+    · simp only [List.map_cons, List.map_nil, List.foldr_cons, List.foldr_nil, mul_one]
+      exact ⟨ a, ha, b, hb, hab ⟩
 
 /-- We can model union / addition of languages using substitution -/
 theorem subst_singletons_eq_add {β : Type}
