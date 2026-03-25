@@ -169,11 +169,11 @@ lemma disjoint_subtype_iff {pr : α → Prop} (Pinf : ∀ ⦃s t : α⦄, pr s �
     (hbot : pr (⊥ : α)) {a b : Subtype pr} :
     letI : SemilatticeInf (Subtype pr) := Subtype.semilatticeInf Pinf
     letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
-    Disjoint a.val b.val ↔ Disjoint a b := by
+    Disjoint a b ↔ Disjoint a.val b.val := by
   letI : SemilatticeInf (Subtype pr) := Subtype.semilatticeInf Pinf
   letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
   rw [disjoint_iff, disjoint_iff, ← Subtype.coe_inf Pinf, ← Subtype.coe_bot hbot]
-  exact Subtype.coe_inj
+  exact Subtype.coe_inj.symm
 
 @[to_dual top_le]
 theorem Disjoint.le_bot : Disjoint a b → a ⊓ b ≤ ⊥ :=

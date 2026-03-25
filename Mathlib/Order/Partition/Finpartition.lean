@@ -34,6 +34,7 @@ We provide many ways to build finpartitions:
 * `Finpartition.indiscrete`: The indiscrete, aka trivial, aka pure, finpartition made of a single
   part.
 * `Finpartition.discrete`: The discrete finpartition of `s : Finset α` made of singletons.
+* `Finpartition.toSubtype`: Turns a finpartition of a type to one of a subtype.
 * `Finpartition.bind`: Puts together the finpartitions of the parts of a finpartition into a new
   finpartition.
 * `Finpartition.extend`: Extends a finpartition of `a` to a finpartition of `a ⊔ b` by adding `b`
@@ -51,7 +52,6 @@ We provide many ways to build finpartitions:
 * `Finpartition.atomise`: Makes a finpartition of `s : Finset α` by breaking `s` along all finsets
   in `F : Finset (Finset α)`. Two elements of `s` belong to the same part iff they belong to the
   same elements of `F`.
-* `Finpartition.toSubtype`: Turns a finpartition of a type to one of a subtype.
 
 `Finpartition.indiscrete` and `Finpartition.bind` together form the monadic structure of
 `Finpartition`.
@@ -334,7 +334,7 @@ noncomputable def toSubtype {s : α} (P : Finpartition s)
       classical
       intro t ht i hi hi'
       simp_all only [id_eq]
-      rw [← disjoint_subtype_iff Pinf hbot, ← sup_image_val_eq_coe_sup_id Psup hbot]
+      rw [disjoint_subtype_iff Prinf Prbot, ← sup_image_val_eq_coe_sup_id Prsup Prbot]
       apply P.supIndep
       · simpa [image_subset_iff_subset_preimage] using ht
       · simpa using hi
