@@ -203,6 +203,8 @@ instance symm_adj (f : ι → V) : Std.Symm fun i j ↦ G.Adj (f i) (f j) where 
 
 section Order
 
+/-- The relation that one `SimpleGraph` is a subgraph of another.
+Note that this should be spelled `≤`. -/
 @[deprecated "use `≤` instead" (since := "2026-03-25")]
 def IsSubgraph (x y : SimpleGraph V) : Prop :=
   ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w
