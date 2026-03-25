@@ -75,12 +75,12 @@ structure CoxeterMatrix (B : Type*) where
 
 namespace CoxeterMatrix
 
-variable {B : Type*}
+variable {B B' : Type*} (e : B ≃ B')
 
 /-- A Coxeter matrix can be coerced to a matrix. -/
-instance : CoeFun (CoxeterMatrix B) fun _ ↦ (Matrix B B ℕ) := ⟨M⟩
+instance : CoeFun (CoxeterMatrix B) fun _ ↦ Matrix B B ℕ := ⟨M⟩
 
-variable {B' : Type*} (e : B ≃ B') (M : CoxeterMatrix B)
+variable (M : CoxeterMatrix B)
 
 attribute [simp] diagonal
 
