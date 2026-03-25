@@ -399,6 +399,11 @@ def natural (u : (i : ι) → Ω → β i) (hum : ∀ i, StronglyMeasurable (u i
     rintro j _ s ⟨t, ht, rfl⟩
     exact (hum j).measurable ht
 
+lemma natural_eq_comap (u : (i : ι) → Ω → β i) (hum : ∀ (i : ι), StronglyMeasurable (u i)) (i : ι) :
+    natural u hum i = .comap (fun ω (j : Set.Iic i) ↦ u j ω) inferInstance := by
+  simp_rw [natural, MeasurableSpace.comap_process_pi, iSup_subtype']
+  rfl
+
 section
 
 open MeasurableSpace

@@ -616,6 +616,15 @@ lemma integral_continuousLinearMap_prod (hμ : Integrable id μ) (hν : Integrab
   integral_continuousLinearMap_prod' (ContinuousLinearMap.integrable_comp _ hμ)
     (ContinuousLinearMap.integrable_comp _ hν)
 
+variable {μ : Measure α} {ν : Measure β} [NormedAddCommGroup E]
+  [SFinite ν] [NormedSpace ℝ E] [SFinite μ]
+
+lemma integral_continuousBilin_prod {f : α → E} {g : β → F} (hf : Integrable f μ)
+    (hg : Integrable g ν) (B : E →L[ℝ] F →L[ℝ] G) :
+    ∫ p, B (f p.1) (g p.2) ∂μ.prod ν = B (∫ a, f a ∂μ) (∫ b, g b ∂ν) := by
+  revert f
+  apply Integrable.induction
+
 end ContinuousLinearMap
 
 section

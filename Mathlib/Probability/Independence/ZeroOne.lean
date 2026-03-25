@@ -61,10 +61,23 @@ theorem Kernel.measure_eq_zero_or_one_of_indepSet_self [h : ∀ a, IsFiniteMeasu
     ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 :=
   Kernel.measure_eq_zero_or_one_of_indepSet_self' (ae_of_all μα h) h_indep
 
+lemma Kernel.measure_eq_zero_or_one_of_indep_self [IsZeroOrMarkovKernel κ]
+    (hm1 : m ≤ m0) (hm2 : Indep m m κ μα) {A : Set Ω} (hA : MeasurableSet[m] A) :
+    ∀ᵐ a ∂μα, κ a A = 0 ∨ κ a A = 1 := by
+  rw [Indep, indepSets_iff_singleton_indepSets] at hm2
+  replace hm2 := indepSets_iff_singleton_indepSets.1 (hm2 A hA).symm A hA
+  exact measure_eq_zero_or_one_of_indepSet_self <|
+    (indepSet_iff_indepSets_singleton (hm1 A hA) (hm1 A hA) κ μα).2 hm2
+
 theorem measure_eq_zero_or_one_of_indepSet_self [IsFiniteMeasure μ] {t : Set Ω}
     (h_indep : IndepSet t t μ) : μ t = 0 ∨ μ t = 1 := by
   simpa only [ae_dirac_eq, Filter.eventually_pure]
     using Kernel.measure_eq_zero_or_one_of_indepSet_self h_indep
+
+lemma measure_eq_zero_or_one_of_indep_self [IsZeroOrProbabilityMeasure μ]
+    (hm1 : m ≤ m0) (hm2 : Indep m m μ) {A : Set Ω} (hA : MeasurableSet[m] A) :
+    μ A = 0 ∨ μ A = 1 := by
+  simpa using Kernel.measure_eq_zero_or_one_of_indep_self hm1 hm2 hA
 
 theorem condExp_eq_zero_or_one_of_condIndepSet_self
     [StandardBorelSpace Ω]
