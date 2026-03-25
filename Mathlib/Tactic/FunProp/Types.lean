@@ -97,7 +97,7 @@ structure Context where
   constToUnfold : TreeSet Name Name.quickCmp :=
     .ofArray defaultNamesToUnfold _
   /-- Custom discharger to satisfy theorem hypotheses. -/
-  disch : Expr → MetaM (Option Expr) := fun _ => pure none
+  disch : Expr → SimpM (Option Expr) := fun _ => pure none
   /-- current transition depth -/
   transitionDepth := 0
 
@@ -280,7 +280,7 @@ def Context.increaseTransitionDepth (ctx : Context) : Context :=
   {ctx with transitionDepth := ctx.transitionDepth + 1}
 
 /-- Monad to run `fun_prop` tactic in. -/
-abbrev FunPropM := ReaderT FunProp.Context <| StateT FunProp.State MetaM
+abbrev FunPropM := ReaderT FunProp.Context <| StateT FunProp.State SimpM
 
 /-- Default names to unfold -/
 def defaultUnfoldPred : Name → Bool :=

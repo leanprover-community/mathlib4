@@ -100,15 +100,22 @@ def funPropTac : Tactic
 
       let namesToUnfold := namesToUnfold.append defaultNamesToUnfold
 
+      -- fun_prop context and state
       let ctx : Context :=
         { config := cfg,
-          disch := disch
+          disch := fun e => disch e
           constToUnfold := .ofArray namesToUnfold _}
       let env ← getEnv
       let s := {
         morTheorems        := morTheoremsExt.getState env
         transitionTheorems := transitionTheoremsExt.getState env }
-      let (r?, s) ← funProp goalType ctx |>.run s
+
+      -- simp context and state
+      let mthds ← Simp.mkDefaultMethods
+      let simpCtx ← Simp.mkContext
+      let simpState : IO.Ref Simp.State ← IO.mkRef {}
+
+      let (r?, s) ← funProp goalType ctx |>.run s mthds.toMethodsRef simpCtx simpState
       if let some r := r? then
         goal.assign r.proof
       else
