@@ -11,6 +11,7 @@ public import Mathlib.Data.Ordering.Basic
 public import Mathlib.Order.MinMax
 public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Use
+public import Mathlib.Tactic.GRewrite
 
 /-!
 # Ordered monoids
@@ -1111,7 +1112,7 @@ variable [PartialOrder α]
 to the appropriate covariant class. -/
 /-- A semigroup with a partial order and satisfying `LeftCancelSemigroup`
 (i.e. `a * c < b * c → a < b`) is a `LeftCancelSemigroup`. -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
 /-- An additive semigroup with a partial order and satisfying `AddLeftCancelSemigroup`
 (i.e. `c + a < c + b → a < b`) is a `AddLeftCancelSemigroup`. -/]
 def Contravariant.toLeftCancelSemigroup [MulLeftReflectLE α] :
@@ -1122,7 +1123,7 @@ def Contravariant.toLeftCancelSemigroup [MulLeftReflectLE α] :
 to the appropriate covariant class. -/
 /-- A semigroup with a partial order and satisfying `RightCancelSemigroup`
 (i.e. `a * c < b * c → a < b`) is a `RightCancelSemigroup`. -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
 /-- An additive semigroup with a partial order and satisfying `AddRightCancelSemigroup`
 (`a + c < b + c → a < b`) is a `AddRightCancelSemigroup`. -/]
 def Contravariant.toRightCancelSemigroup [MulRightReflectLE α] :

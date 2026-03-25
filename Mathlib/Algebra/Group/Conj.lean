@@ -110,6 +110,7 @@ namespace IsConj
 /- This small quotient API is largely copied from the API of `Associates`;
 where possible, try to keep them in sync -/
 /-- The setoid of the relation `IsConj` iff there is a unit `u` such that `u * x = y * u` -/
+@[instance_reducible]
 protected def setoid (α : Type*) [Monoid α] : Setoid α where
   r := IsConj
   iseqv := ⟨IsConj.refl, IsConj.symm, IsConj.trans⟩
@@ -168,15 +169,16 @@ theorem map_surjective {f : α →* β} (hf : Function.Surjective f) :
   obtain ⟨a, rfl⟩ := hf b
   exact ⟨ConjClasses.mk a, rfl⟩
 
-library_note2 «slow-failing instance priority» /--
+library_note «slow-failing instance priority» /--
 Certain instances trigger further searches when they are considered as candidate instances;
 these instances should be assigned a priority lower than the default of 1000 (for example, 900).
 
 The conditions for this rule are as follows:
-* a class `C` has instances `instT : C T` and `instT' : C T'`
-* types `T` and `T'` are both reducible specializations of another type `S`
+* a class `C` has instances `instT : C T` and `instT' : C T'`;
+* types `T` and `T'` are both reducible specializations of another type `S`;
 * the parameters supplied to `S` to produce `T` are not (fully) determined by `instT`,
-  instead they have to be found by instance search
+  instead they have to be found by instance search.
+
 If those conditions hold, the instance `instT` should be assigned lower priority.
 
 Note that there is no issue unless `T` and `T'` are reducibly equal to `S`, Otherwise the instance

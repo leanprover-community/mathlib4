@@ -107,6 +107,7 @@ theorem coePNat_prime (v : PrimeMultiset) (p : ℕ+) (h : p ∈ (v : Multiset �
 instance coeMultisetPNatNat : Coe (Multiset ℕ+) (Multiset ℕ) :=
   ⟨fun v => v.map (↑)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coePNat_nat (v : PrimeMultiset) : ((v : Multiset ℕ+) : Multiset ℕ) = (v : Multiset ℕ) := by
   change (v.map ((↑) : Nat.Primes → ℕ+)).map Subtype.val = v.map Subtype.val
   rw [Multiset.map_map]
@@ -205,6 +206,7 @@ theorem prod_add (u v : PrimeMultiset) : (u + v).prod = u.prod * v.prod := by
   rw [coePNatMonoidHom.map_add]
   exact Multiset.prod_add _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prod_smul (d : ℕ) (u : PrimeMultiset) : (d • u).prod = u.prod ^ d := by
   induction d with
@@ -265,6 +267,7 @@ def factorMultisetEquiv : ℕ+ ≃ PrimeMultiset where
   left_inv := prod_factorMultiset
   right_inv := PrimeMultiset.factorMultiset_prod
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Factoring gives a homomorphism from the multiplicative
 monoid ℕ+ to the additive monoid of multisets. -/
 @[simp]
@@ -296,6 +299,7 @@ theorem factorMultiset_ofPrime (p : Nat.Primes) :
   change (p : ℕ+).factorMultiset.prod = (PrimeMultiset.ofPrime p).prod
   rw [(p : ℕ+).prod_factorMultiset, PrimeMultiset.prod_ofPrime]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We now have four different results that all encode the
 idea that inequality of multisets corresponds to divisibility
 of positive integers. -/
@@ -365,6 +369,7 @@ theorem factorMultiset_lcm (m n : ℕ+) :
     · exact dvd_lcm_left m n
     · exact dvd_lcm_right m n
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The number of occurrences of p in the factor multiset of m
 is the same as the p-adic valuation of m. -/
 theorem count_factorMultiset (m : ℕ+) (p : Nat.Primes) (k : ℕ) :

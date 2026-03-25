@@ -18,10 +18,10 @@ Prove some results on the fractional ideals of number fields.
 ## Main definitions and results
 
   * `NumberField.basisOfFractionalIdeal`: A `ℚ`-basis of `K` that spans `I` over `ℤ` where `I` is
-  a fractional ideal of a number field `K`.
+    a fractional ideal of a number field `K`.
   * `NumberField.det_basisOfFractionalIdeal_eq_absNorm`: for `I` a fractional ideal of a number
-  field `K`, the absolute value of the determinant of the base change from `integralBasis` to
-  `basisOfFractionalIdeal I` is equal to the norm of `I`.
+    field `K`, the absolute value of the determinant of the base change from `integralBasis` to
+    `basisOfFractionalIdeal I` is equal to the norm of `I`.
 -/
 
 @[expose] public section
@@ -58,8 +58,7 @@ instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     obtain ⟨⟨a, _, d, hd, rfl⟩, h⟩ := IsLocalization.surj (Algebra.algebraMapSubmonoid (𝓞 K) ℤ⁰) x
     refine ⟨⟨⟨Ideal.absNorm I.1.num * (algebraMap _ K a), I.1.num_le ?_⟩, d * Ideal.absNorm I.1.num,
       ?_⟩, ?_⟩
-    · simp_rw [FractionalIdeal.val_eq_coe, FractionalIdeal.coe_coeIdeal]
-      refine (IsLocalization.mem_coeSubmodule _ _).mpr ⟨Ideal.absNorm I.1.num * a, ?_, ?_⟩
+    · refine (IsLocalization.mem_coeSubmodule _ _).mpr ⟨Ideal.absNorm I.1.num * a, ?_, ?_⟩
       · exact Ideal.mul_mem_right _ _ I.1.num.absNorm_mem
       · rw [map_mul, map_natCast]
     · refine Submonoid.mul_mem _ hd (mem_nonZeroDivisors_of_ne_zero ?_)

@@ -165,6 +165,7 @@ theorem restrictNormalHom_continuous (L : IntermediateField k K) [Normal k L] :
     exact SetLike.coe_eq_coe.mp this
   · exact ⟨IntermediateField.fixingSubgroup_isOpen (IntermediateField.lift L'), congrFun rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma algEquivToLimit_continuous : Continuous (algEquivToLimit k K) := by
   rw [continuous_induced_rng]
   refine continuous_pi (fun L ↦ ?_)
@@ -294,6 +295,7 @@ lemma krullTopology_mem_nhds_one_iff_of_isGalois [IsGalois k K] (A : Set Gal(K/k
   exact ⟨fun ⟨L, _, hL, hsub⟩ ↦ ⟨{ toIntermediateField := L, isGalois := ⟨⟩ }, hsub⟩,
     fun ⟨L, hL⟩ ↦ ⟨L, inferInstance, inferInstance, hL⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isOpen_mulEquivToLimit_image_fixingSubgroup [IsGalois k K]
     (L : FiniteGaloisIntermediateField k K) : IsOpen (mulEquivToLimit k K '' L.fixingSubgroup) := by
   let fix1 : Set (Π L, (asProfiniteGaloisGroupFunctor k K).obj L) := {f | f (op L) = 1}
@@ -304,6 +306,7 @@ lemma isOpen_mulEquivToLimit_image_fixingSubgroup [IsGalois k K]
   obtain ⟨σ, rfl⟩ := (mulEquivToLimit k K).surjective x
   simpa using FiniteGaloisIntermediateField.mem_fixingSubgroup_iff _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLimit k K).symm := by
   apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _)
   simp only [map_one, krullTopology_mem_nhds_one_iff_of_isGalois, ← MulEquiv.coe_toEquiv_symm,

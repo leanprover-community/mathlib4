@@ -49,9 +49,6 @@ theorem continuousOn_univ {f : α → β} : ContinuousOn f univ ↔ Continuous f
   simp [continuous_iff_continuousAt, ContinuousOn, ContinuousAt, ContinuousWithinAt,
     nhdsWithin_univ]
 
-@[deprecated (since := "2025-07-04")]
-alias continuous_iff_continuousOn_univ := continuousOn_univ
-
 theorem continuousWithinAt_iff_continuousAt_restrict (f : α → β) {x : α} {s : Set α} (h : x ∈ s) :
     ContinuousWithinAt f s x ↔ ContinuousAt (s.restrict f) ⟨x, h⟩ :=
   tendsto_nhdsWithin_iff_subtype h f _
@@ -115,9 +112,6 @@ alias ⟨ContinuousOn.restrict, _⟩ := continuousOn_iff_continuous_restrict
 theorem ContinuousOn.mapsToRestrict {t : Set β} (hf : ContinuousOn f s) (ht : MapsTo f s t) :
     Continuous (ht.restrict f s t) :=
   hf.restrict.codRestrict _
-
-@[deprecated (since := "05-09-2025")]
-alias ContinuousOn.restrict_mapsTo := ContinuousOn.mapsToRestrict
 
 theorem continuousOn_iff' :
     ContinuousOn f s ↔ ∀ t : Set β, IsOpen t → ∃ u, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
@@ -882,10 +876,13 @@ theorem ContinuousOn.union_of_isClosed {f : α → β} (hfs : ContinuousOn f s) 
     rwa [ht.closure_eq]
 
 /-- A function is continuous on two closed sets iff it is also continuous on their union. -/
-theorem continouousOn_union_iff_of_isClosed {f : α → β} (hs : IsClosed s) (ht : IsClosed t) :
+theorem continuousOn_union_iff_of_isClosed {f : α → β} (hs : IsClosed s) (ht : IsClosed t) :
     ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
   ⟨fun h ↦ ⟨h.mono s.subset_union_left, h.mono s.subset_union_right⟩,
    fun h ↦ h.left.union_of_isClosed h.right hs ht⟩
+
+@[deprecated (since := "2026-02-20")]
+alias continouousOn_union_iff_of_isClosed := continuousOn_union_iff_of_isClosed
 
 /-- If a function is continuous on two open sets, it is also continuous on their union. -/
 theorem ContinuousOn.union_of_isOpen {f : α → β} (hfs : ContinuousOn f s) (hft : ContinuousOn f t)
@@ -893,10 +890,13 @@ theorem ContinuousOn.union_of_isOpen {f : α → β} (hfs : ContinuousOn f s) (h
   union_continuousAt hs hfs fun _ hx ↦ ht.continuousOn_iff.mp hft hx
 
 /-- A function is continuous on two open sets iff it is also continuous on their union. -/
-theorem continouousOn_union_iff_of_isOpen {f : α → β} (hs : IsOpen s) (ht : IsOpen t) :
+theorem continuousOn_union_iff_of_isOpen {f : α → β} (hs : IsOpen s) (ht : IsOpen t) :
     ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
   ⟨fun h ↦ ⟨h.mono s.subset_union_left, h.mono s.subset_union_right⟩,
    fun h ↦ h.left.union_of_isOpen h.right hs ht⟩
+
+@[deprecated (since := "2026-02-20")]
+alias continouousOn_union_iff_of_isOpen := continuousOn_union_iff_of_isOpen
 
 /-- If a function is continuous on open sets `s i`, it is continuous on their union -/
 lemma ContinuousOn.iUnion_of_isOpen {ι : Type*} {s : ι → Set α}

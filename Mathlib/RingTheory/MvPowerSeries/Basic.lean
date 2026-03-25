@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Antidiag.Finsupp
 public import Mathlib.Data.Finsupp.Weight
-public import Mathlib.Tactic.Linarith
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.Algebra.MvPolynomial.Basic
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Formal (multivariate) power series
@@ -28,7 +28,7 @@ We provide the natural inclusion from multivariate polynomials to multivariate f
 - `MvPowerSeries.X`: the indeterminates
 
 - `MvPowerSeries.coeff`, `MvPowerSeries.constantCoeff`:
-the coefficients of a `MvPowerSeries`, its constant coefficient
+  the coefficients of a `MvPowerSeries`, its constant coefficient
 
 - `MvPowerSeries.monomial`: the monomials
 
@@ -39,12 +39,12 @@ the coefficients of a `MvPowerSeries`, its constant coefficient
 - `MvPowerSeries.coeff_pow` : computes the coefficients of powers of a `MvPowerSeries`
 
 - `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`: if the constant coefficient
-of a `MvPowerSeries` is nilpotent, then some coefficients of its powers are automatically zero
+  of a `MvPowerSeries` is nilpotent, then some coefficients of its powers are automatically zero
 
 - `MvPowerSeries.map`: apply a `RingHom` to the coefficients of a `MvPowerSeries` (as a `RingHom`).
 
 - `MvPowerSeries.X_pow_dvd_iff`, `MvPowerSeries.X_dvd_iff`: equivalent
-conditions for (a power of) an indeterminate to divide a `MvPowerSeries`
+  conditions for (a power of) an indeterminate to divide a `MvPowerSeries`
 
 - `MvPolynomial.toMvPowerSeries`: the canonical coercion from `MvPolynomial` to `MvPowerSeries`
 
@@ -93,32 +93,32 @@ open Finsupp
 variable {σ R : Type*}
 
 instance [Inhabited R] : Inhabited (MvPowerSeries σ R) :=
-  ⟨fun _ => default⟩
+  inferInstanceAs <| Inhabited ((σ →₀ ℕ) → R)
 
 instance [Zero R] : Zero (MvPowerSeries σ R) :=
-  Pi.instZero
+  inferInstanceAs <| Zero ((σ →₀ ℕ) → R)
 
 instance [AddMonoid R] : AddMonoid (MvPowerSeries σ R) :=
-  Pi.addMonoid
+  inferInstanceAs <| AddMonoid ((σ →₀ ℕ) → R)
 
 instance [AddGroup R] : AddGroup (MvPowerSeries σ R) :=
-  Pi.addGroup
+  inferInstanceAs <| AddGroup ((σ →₀ ℕ) → R)
 
 instance [AddCommMonoid R] : AddCommMonoid (MvPowerSeries σ R) :=
-  Pi.addCommMonoid
+  inferInstanceAs <| AddCommMonoid ((σ →₀ ℕ) → R)
 
 instance [AddCommGroup R] : AddCommGroup (MvPowerSeries σ R) :=
-  Pi.addCommGroup
+  inferInstanceAs <| AddCommGroup ((σ →₀ ℕ) → R)
 
 instance [Nontrivial R] : Nontrivial (MvPowerSeries σ R) :=
-  Function.nontrivial
+  inferInstanceAs <| Nontrivial ((σ →₀ ℕ) → R)
 
 instance {A} [Semiring R] [AddCommMonoid A] [Module R A] : Module R (MvPowerSeries σ A) :=
-  Pi.module _ _ _
+  inferInstanceAs <| Module R ((σ →₀ ℕ) → A)
 
 instance {A S} [Semiring R] [Semiring S] [AddCommMonoid A] [Module R A] [Module S A] [SMul R S]
     [IsScalarTower R S A] : IsScalarTower R S (MvPowerSeries σ A) :=
-  Pi.isScalarTower
+  inferInstanceAs <| IsScalarTower R S ((σ →₀ ℕ) → A)
 
 section Semiring
 
@@ -149,12 +149,14 @@ theorem ext {φ ψ : MvPowerSeries σ R} (h : ∀ n : σ →₀ ℕ, coeff n φ 
 if and only if all their coefficients are equal. -/
 add_decl_doc MvPowerSeries.ext_iff
 
+set_option backward.isDefEq.respectTransparency false in
 theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
     monomial n = LinearMap.single R (fun _ ↦ R) n := by
   rw [monomial]
   -- unify the `Decidable` arguments
   convert rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
     coeff m (monomial n a) = if m = n then a else 0 := by
   dsimp only [coeff, MvPowerSeries]
@@ -290,9 +292,9 @@ protected theorem mul_assoc (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * �
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;> aesop (add simp [add_assoc, mul_assoc])
 
 instance : Semiring (MvPowerSeries σ R) :=
-  { inferInstanceAs (AddMonoidWithOne (MvPowerSeries σ R)),
-    inferInstanceAs (Mul (MvPowerSeries σ R)),
-    inferInstanceAs (AddCommMonoid (MvPowerSeries σ R)) with
+  { (inferInstance : AddMonoidWithOne (MvPowerSeries σ R)),
+    (inferInstance : Mul (MvPowerSeries σ R)),
+    (inferInstance : AddCommMonoid (MvPowerSeries σ R)) with
     mul_one := MvPowerSeries.mul_one
     one_mul := MvPowerSeries.one_mul
     mul_assoc := MvPowerSeries.mul_assoc
@@ -312,12 +314,12 @@ instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) :=
           sum_antidiagonal_swap n fun a b => coeff a φ * coeff b ψ }
 
 instance [Ring R] : Ring (MvPowerSeries σ R) :=
-  { inferInstanceAs (Semiring (MvPowerSeries σ R)),
-    inferInstanceAs (AddCommGroup (MvPowerSeries σ R)) with }
+  { (inferInstance : Semiring (MvPowerSeries σ R)),
+    (inferInstance : AddCommGroup (MvPowerSeries σ R)) with }
 
 instance [CommRing R] : CommRing (MvPowerSeries σ R) :=
-  { inferInstanceAs (CommSemiring (MvPowerSeries σ R)),
-    inferInstanceAs (AddCommGroup (MvPowerSeries σ R)) with }
+  { (inferInstance : CommSemiring (MvPowerSeries σ R)),
+    (inferInstance : AddCommGroup (MvPowerSeries σ R)) with }
 
 section Semiring
 
@@ -392,7 +394,7 @@ theorem commute_X_pow (φ : MvPowerSeries σ R) (s : σ) (n : ℕ) : Commute φ 
 theorem X_pow_mul {φ : MvPowerSeries σ R} {s : σ} {n : ℕ} : X s ^ n * φ = φ * X s ^ n :=
   φ.commute_X_pow s n |>.symm.eq
 
-theorem X_def (s : σ) : X s = monomial (single s 1) 1 :=
+theorem X_def (s : σ) : X s = monomial (single s 1) (1 : R) :=
   rfl
 
 theorem X_pow_eq (s : σ) (n : ℕ) : (X s : MvPowerSeries σ R) ^ n = monomial (single s n) 1 := by

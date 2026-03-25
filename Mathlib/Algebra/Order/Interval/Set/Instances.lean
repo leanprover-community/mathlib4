@@ -22,7 +22,8 @@ Note: Instances for the interval `Ici 0` are dealt with in
 ## Main definitions
 
 The strongest typeclass provided on each interval is:
-* `Set.Icc.cancelCommMonoidWithZero`
+* `Set.Icc.commMonoidWithZero`
+* `Set.Icc.instIsCancelMulZero`
 * `Set.Ico.commSemigroup`
 * `Set.Ioc.commMonoid`
 * `Set.Ioo.commSemigroup`
@@ -136,17 +137,11 @@ instance instCommMonoidWithZero {R : Type*} [CommSemiring R] [PartialOrder R] [I
     CommMonoidWithZero (Icc (0 : R) 1) := fast_instance%
   Subtype.coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
-instance instCancelMonoidWithZero {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R]
+instance instIsCancelMulZero {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R]
     [NoZeroDivisors R] :
-    CancelMonoidWithZero (Icc (0 : R) 1) := fast_instance%
-  @Function.Injective.cancelMonoidWithZero R _ NoZeroDivisors.toCancelMonoidWithZero _ _ _ _
-    (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
-
-instance instCancelCommMonoidWithZero {R : Type*} [CommRing R] [PartialOrder R] [IsOrderedRing R]
-    [NoZeroDivisors R] :
-    CancelCommMonoidWithZero (Icc (0 : R) 1) := fast_instance%
-  @Function.Injective.cancelCommMonoidWithZero R _ NoZeroDivisors.toCancelCommMonoidWithZero _ _ _ _
-    (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
+    IsCancelMulZero (Icc (0 : R) 1) :=
+  @Function.Injective.isCancelMulZero _ R _ _ _ _ _ Subtype.coe_injective coe_zero coe_mul
+    NoZeroDivisors.toIsCancelMulZero
 
 variable {β : Type*} [Ring β] [PartialOrder β] [IsOrderedRing β]
 

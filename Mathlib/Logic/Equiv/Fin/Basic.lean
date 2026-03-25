@@ -343,13 +343,11 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
         calc
           (y.1 + n * x.1) / n = y.1 / n + x.1 := Nat.add_mul_div_left _ _ H
           _ = 0 + x.1 := by rw [Nat.div_eq_of_lt y.2]
-          _ = x.1 := Nat.zero_add x.1
-          )
+          _ = x.1 := Nat.zero_add x.1)
       (Fin.eq_of_val_eq <|
         calc
           (y.1 + n * x.1) % n = y.1 % n := Nat.add_mul_mod_self_left _ _ _
-          _ = y.1 := Nat.mod_eq_of_lt y.2
-          )
+          _ = y.1 := Nat.mod_eq_of_lt y.2)
   right_inv _ := Fin.eq_of_val_eq <| Nat.mod_add_div _ _
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.

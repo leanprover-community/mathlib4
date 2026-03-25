@@ -5,11 +5,9 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.ConditionalProbability
 public import Mathlib.Probability.Kernel.Basic
-public import Mathlib.Probability.Kernel.Composition.MeasureComp
 public import Mathlib.Tactic.Peel
-public import Mathlib.MeasureTheory.MeasurableSpace.Pi
+public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Independence of families of sets with respect to a kernel and a measure
@@ -66,7 +64,7 @@ variable {_mα : MeasurableSpace α}
 /-- A family of sets of sets `π : ι → Set (Set Ω)` is independent with respect to a kernel `κ` and
 a measure `μ` if for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
 `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then `∀ᵐ a ∂μ, κ a (⋂ i in s, f i) = ∏ i ∈ s, κ a (f i)`.
-It will be used for families of pi_systems. -/
+It will be used for families of π-systems. -/
 def iIndepSets {_mΩ : MeasurableSpace Ω}
     (π : ι → Set (Set Ω)) (κ : Kernel α Ω) (μ : Measure α := by volume_tac) : Prop :=
   ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → f i ∈ π i),
@@ -323,6 +321,11 @@ theorem indep_of_indep_of_le_right {m₁ m₂ m₃ : MeasurableSpace Ω} {_mΩ :
     {κ : Kernel α Ω} {μ : Measure α} (h_indep : Indep m₁ m₂ κ μ) (h32 : m₃ ≤ m₂) :
     Indep m₁ m₃ κ μ :=
   fun t1 t2 ht1 ht2 => h_indep t1 t2 ht1 (h32 _ ht2)
+
+theorem iIndep_of_iIndep_of_le {m₁ m₂ : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
+    {κ : Kernel α Ω} {μ : Measure α} (h_indep : iIndep m₂ κ μ) (h_le : ∀ i, m₁ i ≤ m₂ i) :
+    iIndep m₁ κ μ :=
+  fun s t ht ↦ h_indep s fun i hi ↦ h_le i (t i) <| ht i hi
 
 theorem IndepSets.union {s₁ s₂ s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α}
@@ -714,9 +717,7 @@ theorem iIndepSets.iIndep (m : ι → MeasurableSpace Ω)
   apply iIndep.congr (Filter.EventuallyEq.symm η_eq)
   intro s f
   refine Finset.induction ?_ ?_ s
-  · simp only [Finset.notMem_empty, Set.mem_setOf_eq, IsEmpty.forall_iff, implies_true,
-      Set.iInter_of_empty, Set.iInter_univ, measure_univ, Finset.prod_empty,
-      Filter.eventually_true]
+  · simp
   · intro a S ha_notin_S h_rec hf_m
     have hf_m_S : ∀ x ∈ S, MeasurableSet[m x] (f x) := fun x hx => hf_m x (by simp [hx])
     let p := piiUnionInter π S

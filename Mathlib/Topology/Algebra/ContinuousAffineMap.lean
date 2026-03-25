@@ -149,6 +149,12 @@ theorem comp_id (f : P →ᴬ[R] Q) : f.comp (id R P) = f :=
 theorem id_comp (f : P →ᴬ[R] Q) : (id R Q).comp f = f :=
   ext fun _ => rfl
 
+/-- Applying a `ContinuousAffineMap` commutes with `AffineMap.lineMap`. -/
+@[simp]
+theorem apply_lineMap (f : P →ᴬ[R] Q) (p₀ p₁ : P) (c : R) :
+    f (AffineMap.lineMap p₀ p₁ c) = AffineMap.lineMap (f p₀) (f p₁) c := by
+  rw [← ContinuousAffineMap.coe_toAffineMap, AffineMap.apply_lineMap]
+
 /-- The continuous affine map sending `0` to `p₀` and `1` to `p₁` -/
 def lineMap (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
     [ContinuousSMul R V] [ContinuousVAdd V P] : R →ᴬ[R] P where
@@ -162,6 +168,14 @@ def lineMap (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
 lemma coe_lineMap_eq (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
     [ContinuousSMul R V] [ContinuousVAdd V P] :
     ⇑(ContinuousAffineMap.lineMap p₀ p₁) = ⇑(AffineMap.lineMap (k := R) p₀ p₁) := rfl
+
+/-- Applying a `ContinuousAffineMap` commutes with `ContinuousAffineMap.lineMap`. -/
+@[simp]
+theorem apply_lineMap' [TopologicalSpace R] [TopologicalSpace V] [TopologicalSpace W]
+    [ContinuousSMul R V] [ContinuousSMul R W] [ContinuousVAdd V P] [ContinuousVAdd W Q]
+    (f : P →ᴬ[R] Q) (p₀ p₁ : P) (c : R) :
+    f (lineMap p₀ p₁ c) = lineMap (f p₀) (f p₁) c := by
+  simp_rw [coe_lineMap_eq, apply_lineMap]
 
 section IsTopologicalAddTorsor
 
@@ -188,9 +202,6 @@ theorem coe_contLinear_eq_linear (f : P →ᴬ[R] Q) :
 theorem coe_mk_contLinear_eq_linear (f : P →ᵃ[R] Q) (h) :
     ((⟨f, h⟩ : P →ᴬ[R] Q).contLinear : V → W) = f.linear :=
   rfl
-
-@[deprecated (since := "2025-09-17")]
-alias coe_mk_const_linear_eq_linear := coe_mk_contLinear_eq_linear
 
 theorem coe_linear_eq_coe_contLinear (f : P →ᴬ[R] Q) :
     ((f : P →ᵃ[R] Q).linear : V → W) = (⇑f.contLinear : V → W) :=
@@ -356,6 +367,13 @@ instance : AddTorsor (P →ᴬ[R] W) (P →ᴬ[R] Q) where
     (f -ᵥ g).toAffineMap = f.toAffineMap -ᵥ g.toAffineMap :=
   rfl
 
+/-- Interpolating between `ContinuousAffineMap`s with `AffineMap.lineMap` commutes with
+evaluation. -/
+@[simp]
+lemma lineMap_apply' [ContinuousConstSMul R W] [SMulCommClass R R W] (f g : P →ᴬ[R] Q) (c : R)
+    (p : P) : AffineMap.lineMap f g c p = AffineMap.lineMap (f p) (g p) c := by
+  simp [AffineMap.lineMap_apply]
+
 variable [TopologicalSpace V] [IsTopologicalAddTorsor P]
 
 @[simp] lemma vadd_contLinear (f : P →ᴬ[R] W) (g : P →ᴬ[R] Q) :
@@ -446,9 +464,6 @@ variable [IsTopologicalAddGroup V] [IsTopologicalAddGroup W]
 @[simp]
 theorem toContinuousAffineMap_contLinear (f : V →L[R] W) : f.toContinuousAffineMap.contLinear = f :=
   rfl
-
-@[deprecated (since := "2025-09-23")]
-alias _root_.ContinuousAffineMap.to_affine_map_contLinear := toContinuousAffineMap_contLinear
 
 theorem _root_.ContinuousAffineMap.decomp (f : V →ᴬ[R] W) :
     (f : V → W) = f.contLinear + Function.const V (f 0) := by
