@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 public import Mathlib.CategoryTheory.Monad.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Adjunctions related to the over category
