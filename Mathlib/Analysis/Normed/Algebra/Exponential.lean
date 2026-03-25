@@ -209,7 +209,7 @@ theorem star_exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] (x : 𝔸)
 
 /-- A subalgebra of `𝔸` that is closed topologically and under `ℚ`-scaling is closed under `exp`. -/
 theorem exp_mem
-    {R S : Type*} [CommSemiring R] [SMul ℚ R] [Algebra ℚ 𝔸] [Algebra R 𝔸] [IsScalarTower ℚ R 𝔸]
+    {R S : Type*} [Monoid R] [SMul ℚ R] [MulAction R 𝔸] [Algebra ℚ 𝔸] [IsScalarTower ℚ R 𝔸]
     [SetLike S 𝔸] [SubsemiringClass S 𝔸] [SMulMemClass S R 𝔸] {s : S}
     (h_closed : IsClosed (s : Set 𝔸)) {x : 𝔸} (h : x ∈ s) :
     exp x ∈ s := by
