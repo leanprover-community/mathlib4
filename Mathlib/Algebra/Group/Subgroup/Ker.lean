@@ -271,7 +271,7 @@ lemma ker_comp_mulEquiv {P : Type*} [MulOneClass P] (g : N →* P) (iso : G ≃*
 lemma ker_mulEquiv_comp {P : Type*} [MulOneClass P] (f : G →* N) (iso : N ≃* P) :
     ((iso : N →* P).comp f).ker = f.ker := by
   ext
-  simp only [mem_ker, coe_comp, coe_coe, Function.comp_apply, EmbeddingLike.map_eq_one_iff]
+  simp
 
 @[to_additive (attr := simp)]
 theorem comap_bot (f : G →* N) : (⊥ : Subgroup N).comap f = f.ker :=
