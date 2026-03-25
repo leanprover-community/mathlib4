@@ -228,7 +228,8 @@ namespace Subcomplex
 
 variable {X Y : SSet.{u}} (S : X.Subcomplex) (T : Y.Subcomplex)
 
-noncomputable def unionProd : (X ⊗ Y).Subcomplex := ((⊤ : X.Subcomplex).prod T) ⊔ (S.prod ⊤)
+/-- Given `S ≤ X` and `T ≤ Y`, this is the subcomplex of `X ⊗ Y` given by `(X ⊗ T) ⊔ (S ⊗ Y)`. -/
+def unionProd : (X ⊗ Y).Subcomplex := ((⊤ : X.Subcomplex).prod T) ⊔ (S.prod ⊤)
 
 lemma mem_unionProd_iff {n : SimplexCategoryᵒᵖ} (x : (X ⊗ Y).obj n) :
     x ∈ (unionProd S T).obj _ ↔ x.2 ∈ T.obj _ ∨ x.1 ∈ S.obj _ := by
@@ -245,11 +246,13 @@ lemma prod_le_unionProd : S.prod T ≤ S.unionProd T :=
 
 namespace unionProd
 
+/-- The inclusion `X ⊗ T ⟶ S.unionProd T` as simplicial sets. -/
 noncomputable def ι₁ : X ⊗ T ⟶ S.unionProd T :=
   lift (X ◁ T.ι) (by
     rintro m _ ⟨⟨y₁, y₂⟩, ⟨⟩⟩
     exact Or.inl ⟨Set.mem_univ _, Subtype.coe_prop _⟩)
 
+/-- The inclusion `S ⊗ Y ⟶ S.unionProd T` as simplicial sets -/
 noncomputable def ι₂ : (S : SSet.{u}) ⊗ Y ⟶ (unionProd S T : SSet.{u}) :=
   lift (S.ι ▷ Y) (by
     rintro m _ ⟨⟨y₁, y₂⟩, ⟨⟩⟩
@@ -291,16 +294,13 @@ lemma image_β_hom : (unionProd S T).image (β_ _ _).hom = unionProd T S := by
   rw [← preimage_β_hom, preimage_image_of_isIso]
 
 @[simp]
-lemma image_β_inv : (unionProd S T).image (β_ _ _).hom = unionProd T S := by
+lemma image_β_inv : (unionProd S T).image (β_ _ _).inv = unionProd T S := by
   apply image_β_hom
 
+/-- The isomorphism `unionProd S T ≅ unionProd T S` as simplicial sets. -/
 noncomputable def symmIso : (unionProd S T : SSet) ≅ (unionProd T S : SSet) where
-  hom := lift ((unionProd S T).ι ≫ (β_ _ _).hom) (by
-    simp only [Subcomplex.preimage_eq_top_iff, range_comp, Subpresheaf.range_ι, image_β_hom,
-      le_refl])
-  inv := lift ((unionProd T S).ι ≫ (β_ _ _).hom) (by
-    simp only [Subcomplex.preimage_eq_top_iff, range_comp, Subpresheaf.range_ι, image_β_hom,
-      le_refl])
+  hom := lift ((unionProd S T).ι ≫ (β_ _ _).hom) (by simp [range_comp])
+  inv := lift ((unionProd T S).ι ≫ (β_ _ _).hom) (by simp [range_comp])
 
 end unionProd
 
