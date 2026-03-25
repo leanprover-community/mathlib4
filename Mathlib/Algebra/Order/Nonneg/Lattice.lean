@@ -27,26 +27,26 @@ namespace Nonneg
 The `Set.Ici` data fields are definitionally equal, but that requires unfolding semireducible
 definitions, so type-class inference won't see this. -/
 instance orderBot [Preorder α] {a : α} : OrderBot { x : α // a ≤ x } :=
-  inferInstanceAs <| OrderBot (Ici a)
+  { Set.Ici.orderBot with }
 
 theorem bot_eq [Preorder α] {a : α} : (⊥ : { x : α // a ≤ x }) = ⟨a, le_rfl⟩ :=
   rfl
 
 instance noMaxOrder [PartialOrder α] [NoMaxOrder α] {a : α} : NoMaxOrder { x : α // a ≤ x } :=
-  inferInstanceAs <| NoMaxOrder (Ici a)
+  show NoMaxOrder (Ici a) by infer_instance
 
 instance semilatticeSup [SemilatticeSup α] {a : α} : SemilatticeSup { x : α // a ≤ x } :=
-  inferInstanceAs <| SemilatticeSup (Ici a)
+  Set.Ici.semilatticeSup
 
 instance semilatticeInf [SemilatticeInf α] {a : α} : SemilatticeInf { x : α // a ≤ x } :=
-  inferInstanceAs <| SemilatticeInf (Ici a)
+  Set.Ici.semilatticeInf
 
 instance distribLattice [DistribLattice α] {a : α} : DistribLattice { x : α // a ≤ x } :=
-  inferInstanceAs <| DistribLattice (Ici a)
+  Set.Ici.distribLattice
 
 instance instDenselyOrdered [Preorder α] [DenselyOrdered α] {a : α} :
     DenselyOrdered { x : α // a ≤ x } :=
-  inferInstanceAs <| DenselyOrdered (Ici a)
+  show DenselyOrdered (Ici a) from Set.instDenselyOrdered
 
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrder`. -/
 protected noncomputable abbrev conditionallyCompleteLinearOrder [ConditionallyCompleteLinearOrder α]
