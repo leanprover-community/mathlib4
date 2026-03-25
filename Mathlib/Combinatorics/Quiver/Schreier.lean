@@ -22,12 +22,12 @@ vertices `V` and a directed edge `x → ι(s) • x` for each `x : V` and `s : S
 
 * `SchreierGraph V ι` - The Schreier graph of an action, with vertices of type `V` and edges
   labeled by elements of `S` via `ι : S → M`.
-* `schreierGraphLabelling` - The prefunctor from a Schreier graph to `SingleObj S` that
+* `SchreierGraph.labelling` - The prefunctor from a Schreier graph to `SingleObj S` that
   extracts edge labels.
 
 ## Main results
 
-* `schreierGraphLabelling_isCovering` - The labelling prefunctor is a covering when we have
+* `SchreierGraph.labelling_isCovering` - The labelling prefunctor is a covering when we have
   a group action.
 
 ## Implementation notes
@@ -44,10 +44,6 @@ rather than the simpler `SimpleGraph` approach.
 
 namespace Quiver
 
-section Basic
-
-variable (V : Type*) {M : Type*} [SMul M V] {S : Type*} (ι : S → M)
-
 /-- A Schreier graph for a monoid `M` acting on `V` with generators `ι : S → M`.
 Vertices are elements of `V`, and there is an edge from `x` to `y` for each `s : S`
 such that `ι s • x = y`. -/
@@ -56,9 +52,15 @@ structure SchreierGraph (V : Type*) {M : Type*} [SMul M V] {S : Type*} (_ι : S 
   /-- The underlying vertex. -/
   toVertex : V
 
+namespace SchreierGraph
+
+section Basic
+
+variable (V : Type*) {M : Type*} [SMul M V] {S : Type*} (ι : S → M)
+
 /-- Equivalence between the original vertex type and the Schreier graph type. -/
 @[simps]
-def equivSchreierGraph (V : Type*) {M : Type*} [SMul M V] {S : Type*} (ι : S → M) :
+def equiv (V : Type*) {M : Type*} [SMul M V] {S : Type*} (ι : S → M) :
     V ≃ SchreierGraph V ι where
   toFun := SchreierGraph.mk
   invFun := SchreierGraph.toVertex
@@ -77,7 +79,7 @@ instance schreierGraphQuiver : Quiver (SchreierGraph V ι) where
 /-- The labelling of arrows in a Schreier graph by elements of `S`.
 This is encoded as a prefunctor to `SingleObj S`. -/
 @[simps]
-def schreierGraphLabelling : SchreierGraph V ι ⥤q SingleObj S where
+def labelling : SchreierGraph V ι ⥤q SingleObj S where
   obj _ := SingleObj.star S
   map e := e.val
 
@@ -104,12 +106,12 @@ instance schreierGraphMulAction : MulAction M (SchreierGraph V ι) where
 
 /-- The star map of the labelling prefunctor is bijective. This is a component of the
 covering property, extracted as a separate lemma for modularity. -/
-lemma schreierGraphLabelling_star_bijective (x : SchreierGraph V ι) :
-    ((schreierGraphLabelling V ι).star x).Bijective := by
+lemma labelling_star_bijective (x : SchreierGraph V ι) :
+    ((labelling V ι).star x).Bijective := by
   constructor
   · -- injective
     intro ⟨v, ⟨s, hs⟩⟩ ⟨w, ⟨t, ht⟩⟩ h
-    simp only [Prefunctor.star_apply, schreierGraphLabelling_map] at h
+    simp only [Prefunctor.star_apply, labelling_map] at h
     cases h
     have vw_eq : v = w := calc
       v = (ι s) • x := hs.symm
@@ -119,17 +121,17 @@ lemma schreierGraphLabelling_star_bijective (x : SchreierGraph V ι) :
   · -- surjective
     intro ⟨v', s⟩
     use ⟨ι s • x, ⟨s, rfl⟩⟩
-    simp only [Prefunctor.star_apply, schreierGraphLabelling_map]
+    simp only [Prefunctor.star_apply, labelling_map]
     rfl
 
 /-- The costar map of the labelling prefunctor is bijective. This is a component of the
 covering property, extracted as a separate lemma for modularity. -/
-lemma schreierGraphLabelling_costar_bijective (x : SchreierGraph V ι) :
-    ((schreierGraphLabelling V ι).costar x).Bijective := by
+lemma labelling_costar_bijective (x : SchreierGraph V ι) :
+    ((labelling V ι).costar x).Bijective := by
   constructor
   · -- injective
     intro ⟨v, ⟨s, hs⟩⟩ ⟨w, ⟨t, ht⟩⟩ h
-    simp only [Prefunctor.costar_apply, schreierGraphLabelling_map] at h
+    simp only [Prefunctor.costar_apply, labelling_map] at h
     cases h
     have vw_eq : v = w := calc
       v = (ι s)⁻¹ • ((ι s) • v) := by rw [inv_smul_smul]
@@ -141,24 +143,24 @@ lemma schreierGraphLabelling_costar_bijective (x : SchreierGraph V ι) :
   · -- surjective
     intro ⟨v', s⟩
     use ⟨(ι s)⁻¹ • x, ⟨s, by simp⟩⟩
-    simp only [Prefunctor.costar_apply, schreierGraphLabelling_map]
+    simp only [Prefunctor.costar_apply, labelling_map]
     rfl
 
 /-- The labelling prefunctor is a covering for Schreier graphs with group actions. -/
-theorem schreierGraphLabelling_isCovering : (schreierGraphLabelling V ι).IsCovering := by
+theorem labelling_isCovering : (labelling V ι).IsCovering := by
   constructor
   · -- star_bijective
     intro u
-    exact schreierGraphLabelling_star_bijective V ι u
+    exact labelling_star_bijective V ι u
   · -- costar_bijective
     intro u
-    exact schreierGraphLabelling_costar_bijective V ι u
+    exact labelling_costar_bijective V ι u
 
 /-- If a prefunctor φ on a Schreier graph commutes with the labelling (i.e., labels are preserved),
 then φ commutes with the group action. In other words, morphisms that preserve edge labels also
 preserve the group structure. -/
-lemma schreierGraph_action_commute (φ : SchreierGraph V ι ⥤q SchreierGraph V ι)
-    (φm : φ ⋙q schreierGraphLabelling V ι = schreierGraphLabelling V ι)
+lemma action_commute (φ : SchreierGraph V ι ⥤q SchreierGraph V ι)
+    (φm : φ ⋙q labelling V ι = labelling V ι)
     (v : SchreierGraph V ι) (s : S) : φ.obj (ι s • v) = ι s • (φ.obj v) := by
   -- The key is that φ preserves labels, so edges labeled 's' stay labeled 's'
   let e : v ⟶ ι s • v := ⟨s, rfl⟩
@@ -169,13 +171,15 @@ lemma schreierGraph_action_commute (φ : SchreierGraph V ι ⥤q SchreierGraph V
   have label_eq : (φ.map e).val = s := by
     -- `φm` says `φ ⋙q labelling = labelling`
     -- So `(φ ⋙q labelling).map e = labelling.map e`
-    have : (φ ⋙q schreierGraphLabelling V ι).map e = (schreierGraphLabelling V ι).map e := by
+    have : (φ ⋙q labelling V ι).map e = (labelling V ι).map e := by
       rw [φm]
-    simp only [Prefunctor.comp_map, schreierGraphLabelling_map] at this
+    simp only [Prefunctor.comp_map, labelling_map] at this
     exact this
   rw [label_eq] at h
   exact h.symm
 
 end GroupAction
+
+end SchreierGraph
 
 end Quiver
