@@ -528,7 +528,7 @@ theorem image_uIcc_eq_Icc (h : ContinuousOn f [[a, b]]) :
 theorem image_uIcc (h : ContinuousOn f <| [[a, b]]) :
     f '' [[a, b]] = [[sInf (f '' [[a, b]]), sSup (f '' [[a, b]])]] := by
   refine h.image_uIcc_eq_Icc.trans (uIcc_of_le ?_).symm
-  refine csInf_le_csSup ?_ ?_ (nonempty_uIcc.image _) <;> rw [h.image_uIcc_eq_Icc]
+  refine csInf_le_csSup (nonempty_uIcc.image _) ?_ ?_ <;> rw [h.image_uIcc_eq_Icc]
   exacts [bddBelow_Icc, bddAbove_Icc]
 
 theorem sInf_image_Icc_le (h : ContinuousOn f <| Icc a b) (hc : c ∈ Icc a b) :

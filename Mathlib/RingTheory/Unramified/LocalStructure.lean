@@ -296,7 +296,7 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_finite
     (R := R) (S := S') ⟨⟨x, Algebra.self_mem_adjoin_singleton _ _⟩, Subalgebra.map_injective
       (f := S'.val) Subtype.val_injective (by simp [Subalgebra.range_val, S'])⟩ Q'
   obtain ⟨P, φ, hP⟩ := hf.of_dvd (g := f * r) (by simp)
-  exact ⟨_, (inferInstanceAs Q'.IsPrime).mul_notMem hfQ' hrQ', .mk
+  exact ⟨_, (inferInstance : Q'.IsPrime).mul_notMem hfQ' hrQ', .mk
     (f := IsScalarTower.toAlgHom R S' S (f * r))
     ((Localization.awayMapₐ (IsScalarTower.toAlgHom _ _ S) (f * r)).comp φ)
     (by exact (H _ (by simp)).surjective.comp hP)⟩
@@ -307,7 +307,6 @@ instance (priority := low)
     [Algebra.EssFiniteType R S] [Algebra.FormallyUnramified R S] : Algebra.QuasiFinite R S where
   finite_fiber _ _ := Algebra.FormallyUnramified.finite_of_free _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_hasStandardEtaleSurjectionOn
     (Q : Ideal S) [Q.IsPrime] [FiniteType R S] [IsUnramifiedAt R Q] :
     ∃ f ∉ Q, HasStandardEtaleSurjectionOn R f := by

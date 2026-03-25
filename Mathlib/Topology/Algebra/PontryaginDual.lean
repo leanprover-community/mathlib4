@@ -37,6 +37,7 @@ def PontryaginDual :=
   A →ₜ* Circle
 deriving TopologicalSpace
 
+set_option backward.isDefEq.respectTransparency false in
 instance [LocallyCompactSpace H] : LocallyCompactSpace (PontryaginDual H) := by
   let Vn : ℕ → Set Circle :=
     fun n ↦ Circle.exp '' { x | |x| < Real.pi / 2 ^ (n + 1)}
@@ -71,6 +72,7 @@ namespace PontryaginDual
 
 open ContinuousMonoidHom
 
+set_option backward.isDefEq.respectTransparency false in
 deriving instance
   T2Space, CommGroup, IsTopologicalGroup,
   Inhabited, FunLike, ContinuousMapClass, MonoidHomClass,
