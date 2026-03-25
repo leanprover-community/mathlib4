@@ -12,7 +12,6 @@ public import Mathlib.Tactic.SimpRw
 public import Mathlib.Order.Defs.Unbundled
 public import Batteries.Logic
 public import Batteries.Tactic.Trans
-public import Mathlib.Tactic.Basic
 
 /-!
 # Relation closures
@@ -741,6 +740,7 @@ theorem is_equivalence : Equivalence (@EqvGen α r) :=
 
 The motivation for this definition is that `Quot r` behaves like `Quotient (EqvGen.setoid r)`,
 see for example `Quot.eqvGen_exact` and `Quot.eqvGen_sound`. -/
+@[implicit_reducible]
 def setoid : Setoid α :=
   Setoid.mk _ (EqvGen.is_equivalence r)
 

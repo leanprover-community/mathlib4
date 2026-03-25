@@ -125,9 +125,6 @@ theorem integral_biUnion_finset {ι : Type*} (t : Finset ι) {s : ι → Set X}
       exact fun i hi => (h's.2 i hi (ne_of_mem_of_not_mem hi hat).symm).1
     · exact Finset.measurableSet_biUnion _ hs.2
 
-@[deprecated (since := "2025-08-28")]
-alias integral_finset_biUnion := integral_biUnion_finset
-
 theorem integral_iUnion_fintype {ι : Type*} [Fintype ι] {s : ι → Set X}
     (hs : ∀ i, MeasurableSet (s i)) (h's : Pairwise (Disjoint on s))
     (hf : ∀ i, IntegrableOn f (s i) μ) : ∫ x in ⋃ i, s i, f x ∂μ = ∑ i, ∫ x in s i, f x ∂μ := by
@@ -135,14 +132,14 @@ theorem integral_iUnion_fintype {ι : Type*} [Fintype ι] {s : ι → Set X}
   · simp
   · simp [pairwise_univ, h's]
 
-@[deprecated (since := "2025-08-28")]
-alias integral_fintype_iUnion := integral_iUnion_fintype
-
-
 theorem setIntegral_empty : ∫ x in ∅, f x ∂μ = 0 := by
   rw [Measure.restrict_empty, integral_zero_measure]
 
 theorem setIntegral_univ : ∫ x in univ, f x ∂μ = ∫ x, f x ∂μ := by rw [Measure.restrict_univ]
+
+lemma integral_eq_setIntegral (hs : ∀ᵐ x ∂μ, x ∈ s) (f : X → E) :
+    ∫ x, f x ∂μ = ∫ x in s, f x ∂μ := by
+  rw [← setIntegral_univ, ← setIntegral_congr_set]; rwa [ae_eq_univ]
 
 theorem integral_add_compl₀ (hs : NullMeasurableSet s μ) (hfi : Integrable f μ) :
     ∫ x in s, f x ∂μ + ∫ x in sᶜ, f x ∂μ = ∫ x, f x ∂μ := by
@@ -692,6 +689,9 @@ theorem integral_Ioc_eq_integral_Ioo : ∫ t in Ioc x y, f t ∂μ = ∫ t in Io
 
 theorem integral_Ico_eq_integral_Ioo : ∫ t in Ico x y, f t ∂μ = ∫ t in Ioo x y, f t ∂μ :=
   integral_Ico_eq_integral_Ioo' <| measure_singleton x
+
+theorem integral_Ico_eq_integral_Ioc : ∫ t in Ico x y, f t ∂μ = ∫ t in Ioc x y, f t ∂μ := by
+  rw [integral_Ico_eq_integral_Ioo, integral_Ioc_eq_integral_Ioo]
 
 theorem integral_Icc_eq_integral_Ioo : ∫ t in Icc x y, f t ∂μ = ∫ t in Ioo x y, f t ∂μ := by
   rw [integral_Icc_eq_integral_Ico, integral_Ico_eq_integral_Ioo]
