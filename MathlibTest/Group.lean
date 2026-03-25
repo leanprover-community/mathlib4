@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Group
 
 open scoped commutatorElement

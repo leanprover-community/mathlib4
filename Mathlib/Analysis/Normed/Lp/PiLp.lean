@@ -137,6 +137,67 @@ end
 
 lemma toLp_apply (x : ∀ i, α i) (i : ι) : toLp p x i = x i := rfl
 
+section Single
+variable [DecidableEq ι]
+variable {β}
+
+section Zero
+variable [∀ i, Zero (β i)]
+
+/-- The vector given in `PiLp` by being `a : β i` at coordinate `i : ι` and `0 : β j` at
+all other coordinates `j`. -/
+def single (i : ι) (a : β i) : PiLp p β := toLp p (Pi.single i a)
+
+@[simp]
+lemma ofLp_single (i : ι) (a : β i) : ofLp (single p i a) = Pi.single i a := rfl
+
+@[simp]
+lemma toLp_single (i : ι) (a : β i) : toLp p (Pi.single i a) = single p i a := rfl
+
+@[simp]
+lemma single_eq_same (i : ι) (a : β i) : single p i a i = a := by
+  rw [ofLp_single, Pi.single_eq_same]
+
+@[simp]
+lemma single_eq_of_ne {i i' : ι} (h : i' ≠ i) (a : β i) : single p i a i' = 0 := by
+  rw [ofLp_single, Pi.single_eq_of_ne h]
+
+/-- Changing the hypothesis direction in `PiLp.single_eq_of_ne` for for ease of use by simp. -/
+@[simp]
+lemma single_eq_of_ne' {i i' : ι} (h : i ≠ i') (a : β i) : single p i a i' = 0 := by
+  rw [ofLp_single, Pi.single_eq_of_ne' h]
+
+end Zero
+
+@[simp]
+lemma single_apply [Zero 𝕜] (i : ι) (a : 𝕜) (j : ι) :
+    (single p i a : PiLp p (fun _ ↦ 𝕜)) j = ite (j = i) a 0 := by
+  rw [← toLp_single, PiLp.toLp_apply, ← Pi.single_apply i a j]
+
+section AddCommGroup
+variable [∀ i, AddCommGroup (β i)]
+
+@[simp]
+theorem single_eq_zero_iff (p : ℝ≥0∞) (i : ι) {a : β i} :
+    single p i a = 0 ↔ a = 0 :=
+  (toLp_eq_zero p).trans Pi.single_eq_zero_iff
+
+lemma single_add (p : ℝ≥0∞) (i : ι) {a b : β i} :
+    single p i (a + b) = single p i a + single p i b := by
+  simp_rw [← toLp_single, Pi.single_add, toLp_add]
+
+lemma single_sub (p : ℝ≥0∞) (i : ι) {a b : β i} :
+    single p i (a - b) = single p i a - single p i b := by
+  simp_rw [← toLp_single, Pi.single_sub, toLp_sub]
+
+lemma single_neg (p : ℝ≥0∞) (i : ι) {a : β i} :
+    single p i (-a) = -single p i a := by
+  simp_rw [← toLp_single, Pi.single_neg, toLp_neg]
+
+end AddCommGroup
+
+end Single
+
 section DistNorm
 
 variable [Fintype ι]
@@ -798,8 +859,7 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_symm (e : ι ≃ ι') :
 @[simp high]
 theorem _root_.LinearIsometryEquiv.piLpCongrLeft_single [DecidableEq ι] [DecidableEq ι']
     (e : ι ≃ ι') (i : ι) (v : E) :
-    LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e (toLp p <| Pi.single i v) =
-      toLp p (Pi.single (e i) v) := by
+    LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e (single p i v) = single p (e i) v := by
   ext x
   simp [LinearIsometryEquiv.piLpCongrLeft_apply, Equiv.piCongrLeft',
     Pi.single, Function.update, Equiv.symm_apply_eq]
@@ -847,8 +907,7 @@ theorem _root_.LinearIsometryEquiv.piLpCongrRight_symm (e : ∀ i, α i ≃ₗ�
 @[simp high]
 theorem _root_.LinearIsometryEquiv.piLpCongrRight_single (e : ∀ i, α i ≃ₗᵢ[𝕜] β i) [DecidableEq ι]
     (i : ι) (v : α i) :
-    LinearIsometryEquiv.piLpCongrRight p e (toLp p <| Pi.single i v) =
-      toLp p (Pi.single i (e _ v)) :=
+    LinearIsometryEquiv.piLpCongrRight p e (single p i v) = single p i (e _ v) :=
   PiLp.ext <| Pi.apply_single (e ·) (fun _ => map_zero _) _ _
 
 end piLpCongrRight
@@ -927,8 +986,7 @@ variable [DecidableEq ι]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem nnnorm_toLp_single (i : ι) (b : β i) :
-    ‖toLp p (Pi.single i b)‖₊ = ‖b‖₊ := by
+theorem nnnorm_single (i : ι) (b : β i) : ‖single p i b‖₊ = ‖b‖₊ := by
   haveI : Nonempty ι := ⟨i⟩
   induction p generalizing hp with
   | top =>
@@ -936,37 +994,60 @@ theorem nnnorm_toLp_single (i : ι) (b : β i) :
     refine
       ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun j => ?_) fun n hn => ⟨i, hn.trans_eq ?_⟩
     · obtain rfl | hij := Decidable.eq_or_ne i j
-      · rw [Pi.single_eq_same]
-      · rw [Pi.single_eq_of_ne' hij, nnnorm_zero]
+      · rw [single_eq_same]
+      · rw [single_eq_of_ne' _ hij, nnnorm_zero]
         exact zero_le _
-    · rw [Pi.single_eq_same]
+    · rw [single_eq_same]
   | coe p =>
     have hp0 : (p : ℝ) ≠ 0 :=
       mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
     rw [nnnorm_eq_sum ENNReal.coe_ne_top, ENNReal.coe_toReal, Fintype.sum_eq_single i,
-      toLp_apply, Pi.single_eq_same, ← NNReal.rpow_mul, one_div,
+      toLp_apply, single_eq_same, ← NNReal.rpow_mul, one_div,
       mul_inv_cancel₀ hp0, NNReal.rpow_one]
     intro j hij
-    rw [toLp_apply, Pi.single_eq_of_ne hij, nnnorm_zero, NNReal.zero_rpow hp0]
+    rw [toLp_apply, single_eq_of_ne _ hij, nnnorm_zero, NNReal.zero_rpow hp0]
+
+@[deprecated nnnorm_single (since := "2026-03-15")]
+theorem nnnorm_toLp_single (i : ι) (b : β i) : ‖toLp p (Pi.single i b)‖₊ = ‖b‖₊ :=
+  nnnorm_single p β i b
 
 @[simp]
+lemma norm_single (i : ι) (b : β i) : ‖single p i b‖ = ‖b‖ :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_single p β i b
+
+@[deprecated norm_single (since := "2026-03-15")]
 lemma norm_toLp_single (i : ι) (b : β i) : ‖toLp p (Pi.single i b)‖ = ‖b‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_toLp_single p β i b
+  norm_single p β i b
 
 @[simp]
+lemma nndist_single_same (i : ι) (b₁ b₂ : β i) :
+    nndist (single p i b₁) (single p i b₂) = nndist b₁ b₂ := by
+  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← single_sub, nnnorm_single]
+
+@[deprecated nndist_single_same (since := "2026-03-15")]
 lemma nndist_toLp_single_same (i : ι) (b₁ b₂ : β i) :
-    nndist (toLp p (Pi.single i b₁)) (toLp p (Pi.single i b₂)) = nndist b₁ b₂ := by
-  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← toLp_sub, ← Pi.single_sub, nnnorm_toLp_single]
+    nndist (toLp p (Pi.single i b₁)) (toLp p (Pi.single i b₂)) = nndist b₁ b₂ :=
+  nndist_single_same p β i b₁ b₂
 
 @[simp]
+lemma dist_single_same (i : ι) (b₁ b₂ : β i) :
+    dist (single p i b₁) (single p i b₂) = dist b₁ b₂ :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_single_same p β i b₁ b₂
+
+@[deprecated dist_single_same (since := "2026-03-15")]
 lemma dist_toLp_single_same (i : ι) (b₁ b₂ : β i) :
     dist (toLp p (Pi.single i b₁)) (toLp p (Pi.single i b₂)) = dist b₁ b₂ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_toLp_single_same p β i b₁ b₂
+  dist_single_same p β i b₁ b₂
 
 @[simp]
+lemma edist_single_same (i : ι) (b₁ b₂ : β i) :
+    edist (single p i b₁) (single p i b₂) = edist b₁ b₂ := by
+  simp only [edist_nndist, nndist_single_same p β i b₁ b₂]
+
+@[deprecated edist_single_same (since := "2026-03-15")]
 lemma edist_toLp_single_same (i : ι) (b₁ b₂ : β i) :
-    edist (toLp p (Pi.single i b₁)) (toLp p (Pi.single i b₂)) = edist b₁ b₂ := by
-  simp only [edist_nndist, nndist_toLp_single_same p β i b₁ b₂]
+    edist (toLp p (Pi.single i b₁)) (toLp p (Pi.single i b₂)) = edist b₁ b₂ :=
+  edist_single_same p β i b₁ b₂
 
 end Single
 
@@ -1061,8 +1142,8 @@ def basisFun : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜) :=
 
 @[simp]
 theorem basisFun_apply [DecidableEq ι] (i) :
-    basisFun p 𝕜 ι i = toLp p (Pi.single i 1) := by
-  simp_rw [basisFun, Basis.coe_ofEquivFun, WithLp.coe_symm_linearEquiv]
+    basisFun p 𝕜 ι i = single p i 1 := by
+  simp_rw [basisFun, Basis.coe_ofEquivFun, WithLp.coe_symm_linearEquiv, toLp_single]
 
 @[simp]
 theorem basisFun_repr (x : PiLp p fun _ : ι => 𝕜) (i : ι) : (basisFun p 𝕜 ι).repr x i = x i :=

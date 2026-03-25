@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
-public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
 
 /-!
@@ -172,7 +170,7 @@ def Presentation.map : Presentation (F.obj M) :=
     (P.mapRelations_mapGenerators F η) <| by
     refine IsColimit.equivOfNatIsoOfIso (parallelPairIsoMk (mapFree F η _) (mapFree F η _)
       (by simp [Presentation.mapRelations]) (by simp)) _ _ ?_ (isColimitOfPreserves F P.isColimit)
-    exact (Cocones.ext (Iso.refl _) <| by rintro (_ | _)
+    exact (Cocone.ext (Iso.refl _) <| by rintro (_ | _)
       <;> simp [Presentation.mapRelations, Presentation.mapGenerators, ← Functor.map_comp])
 
 theorem Presentation.map_π_eq :
