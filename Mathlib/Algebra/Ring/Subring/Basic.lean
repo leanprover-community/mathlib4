@@ -609,7 +609,7 @@ abbrev closureCommRingOfComm {R} [Ring R] {s : Set R} (hcomm : ∀ x ∈ s, ∀ 
   have := isMulCommutative_closure hcomm
   inferInstance
 
-instance instIsMulCommutative_closure {S : Type*} [SetLike S R] [MulMemClass S R] (s : S)
+instance instIsMulCommutative_closure {S R : Type*} [Ring R] [SetLike S R] [MulMemClass S R] (s : S)
     [IsMulCommutative s] : IsMulCommutative (closure (s : Set R)) :=
   isMulCommutative_closure fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
 
