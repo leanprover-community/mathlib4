@@ -464,18 +464,14 @@ theorem subst_singletons_eq_add {β : Type}
   ext u
   constructor
   · rintro ⟨ w, hw, hu ⟩
-    rcases hw with ( rfl | rfl ) <;> simp_all only [List.prod, List.map_cons, List.map_nil,
-      List.foldr_cons, List.foldr_nil, mul_one]
-    · exact Or.inl hu
-    · exact Or.inr hu
+    simp only [mem_add]
+    rcases hw with ( rfl | rfl ) <;> simp_all
   · intro hu
     rcases hu with hu_false | hu_true
-    · exact ⟨[false], by tauto,
-        by simp only [List.map_cons, List.map_nil, List.prod_cons, List.prod_nil, mul_one]
-           exact hu_false⟩
-    · exact ⟨[true], by tauto,
-        by simp only [List.map_cons, List.map_nil, List.prod_cons, List.prod_nil, mul_one]
-           exact hu_true⟩
+    · refine ⟨[false], by tauto, ?_⟩
+      · simpa [List.map_cons, List.map_nil, List.prod_cons, List.prod_nil, mul_one]
+    · refine ⟨[true], by tauto, ?_⟩
+      · simpa [List.map_cons, List.map_nil, List.prod_cons, List.prod_nil, mul_one]
 
 /-- We can model the Kleene star of a language using substitution -/
 theorem subst_univ_unit_eq_kstar {β : Type} (f : Unit → Language β) :
