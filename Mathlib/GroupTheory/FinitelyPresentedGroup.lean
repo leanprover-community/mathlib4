@@ -52,8 +52,7 @@ of the induced map from the free group on that set is the normal closure of fini
 relations. -/
 @[mk_iff]
 class Group.IsFinitelyPresented (G : Type*) [Group G] : Prop where
-  out : ∃ (n : ℕ) (φ : FreeGroup (Fin n) →* G), Function.Surjective φ ∧
-  φ.ker.IsNormalClosureFG
+  out : ∃ (n : ℕ) (φ : FreeGroup (Fin n) →* G), Function.Surjective φ ∧ φ.ker.IsNormalClosureFG
 
 namespace Group.IsFinitelyPresented
 
