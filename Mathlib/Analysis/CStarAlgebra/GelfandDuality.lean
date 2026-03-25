@@ -213,6 +213,14 @@ lemma CommCStarAlgebra.norm_add_eq_max {a b : A} (h : a * b = 0) :
 lemma CommCStarAlgebra.nnnorm_add_eq_max {a b : A} (h : a * b = 0) :
     ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   NNReal.eq <| CommCStarAlgebra.norm_add_eq_max h
+  
+lemma CommCStarAlgebra.norm_sub_eq_max {a b : A} (h : a * b = 0) :
+    ‖a - b‖ = max ‖a‖ ‖b‖ := by
+  simpa [sub_eq_add_neg] using norm_add_eq_max (a := a) (b := -b) (by simpa)
+
+lemma CommCStarAlgebra.nnnorm_sub_eq_max {a b : A} (h : a * b = 0) :
+    ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
+  NNReal.eq <| norm_sub_eq_max h
 
 end NonUnitalComm
 
@@ -244,10 +252,7 @@ lemma IsSelfAdjoint.nnnorm_add_eq_max {a b : A} (hab : a * b = 0)
 lemma IsSelfAdjoint.norm_sub_eq_max {a b : A} (hab : a * b = 0)
     (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) :
     ‖a - b‖ = max ‖a‖ ‖b‖ := by
-  rw [← sq_eq_sq₀ (by positivity) (by positivity)]
-  simp only [sq, ← ha.norm_add_eq_max hab hb, ← CStarRing.norm_star_mul_self]
-  have : b * a = 0 := by simpa [ha.star_eq, hb.star_eq] using congr(star $hab)
-  simp [sub_mul, mul_sub, hb.star_eq, ha.star_eq, hab, this, add_mul, mul_add]
+  simpa [sub_eq_add_neg] using ha.norm_add_eq_max (by simpa) hb.neg
 
 lemma IsSelfAdjoint.nnnorm_sub_eq_max {a b : A} (hab : a * b = 0)
     (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) :
