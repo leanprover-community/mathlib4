@@ -27,6 +27,7 @@ theorem factorEmbeddingRat_apply (x : DedekindCut ℚ) :
   factorEmbedding (Rat.castOrderEmbedding.trans Real.coeOrderEmbedding) x =
   sSup ((fun (a : ℚ) ↦ ((a : ℝ) : EReal)) '' x.extent) := rfl
 
+-- TODO: order dualize the theorem and remove manual dual
 @[simp]
 theorem upperBounds_setOf_ratCast_le (x : EReal) :
     upperBounds {q : ℚ | (q : ℝ) ≤ x} = {q : ℚ | x ≤ (q : ℝ)} := by
