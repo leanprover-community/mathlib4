@@ -180,12 +180,8 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁).t
     have q : ∀ ⦃Z : C⦄ (g : Z ⟶ X) (_ : S g), M.pullback g = N.pullback g :=
       fun Z g hg => congr_arg Subtype.val ((hM₂ g hg).trans (hN₂ g hg).symm)
     have MSNS : M ⊓ S = N ⊓ S := by
-      ext Z g
-      rw [Sieve.inter_apply, Sieve.inter_apply]
-      simp only [and_comm]
-      apply and_congr_right
-      intro hg
-      rw [Sieve.mem_iff_pullback_eq_top, Sieve.mem_iff_pullback_eq_top, q g hg]
+      ext
+      grind [Sieve.inter_apply, Sieve.mem_iff_pullback_eq_top]
     constructor
     · intro hf
       rw [J₁.covers_iff]

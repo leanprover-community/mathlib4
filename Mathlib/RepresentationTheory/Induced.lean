@@ -100,7 +100,6 @@ section Ind
 to `⟦h₁h⁻¹ ⊗ₜ a⟧`. -/
 noncomputable abbrev ind : Rep k H := Rep.of (A.ρ.ind φ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group homomorphism `φ : G →* H`, a morphism of `G`-representations `f : A ⟶ B` induces
 a morphism of `H`-representations `(k[H] ⊗[k] A)_G ⟶ (k[H] ⊗[k] B)_G`. -/
 noncomputable def indMap {A B : Rep k G} (f : A ⟶ B) : ind φ A ⟶ ind φ B := Rep.ofHom
