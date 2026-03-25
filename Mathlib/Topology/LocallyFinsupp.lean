@@ -355,12 +355,11 @@ instance [AddCommMonoid Y] : AddCommMonoid (locallyFinsuppWithin U Y) :=
   induction s using Finset.induction with
   | empty => simp_all
   | insert => simp_all
+
 @[simp] lemma coe_finsum {ι : Type*} {F : ι → locallyFinsuppWithin U ℤ} :
     (↑(∑ᶠ i, F i) : X → ℤ) = ∑ᶠ i, (F i : X → ℤ) := by
   have : F.support = (fun i ↦ (F i : X → ℤ)).support := by
-    ext i
-    contrapose
-    exact ⟨by simp_all, by simpa using (F i).coe_injective (a₂ := 0)⟩
+    simp [Set.ext_iff, DFunLike.ext_iff, funext_iff]
   by_cases h : F.support.Finite
   · rw [finsum_eq_sum F h, Function.locallyFinsuppWithin.coe_sum]
     have h₂ : (fun i ↦ (F i : X → ℤ)).support.Finite := by simp_all
