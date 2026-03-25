@@ -184,11 +184,13 @@ theorem qsmul_def (a : ℚ) (x : DivisibleHull M) :
 theorem zero_qsmul (x : DivisibleHull M) : (0 : ℚ) • x = 0 := by
   simp [qsmul_def]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem qsmul_of_nonneg {a : ℚ} (h : 0 ≤ a) (x : DivisibleHull M) :
     a • x = (show ℚ≥0 from ⟨a, h⟩) • x := by
   have := h.eq_or_lt
   aesop (add simp [qsmul_def, abs_of_pos])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem qsmul_of_nonpos {a : ℚ} (h : a ≤ 0) (x : DivisibleHull M) :
     a • x = -((show ℚ≥0 from ⟨-a, Left.nonneg_neg_iff.mpr h⟩) • x) := by
   have := h.eq_or_lt
@@ -207,6 +209,7 @@ theorem qsmul_mk (a : ℚ) (m : M) (s : ℕ+) :
       simpa using h
     simp [nnqsmul_mk, this, ← neg_mk]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable
 instance : Module ℚ (DivisibleHull M) where
   one_smul x := by
@@ -237,6 +240,7 @@ instance : Module ℚ (DivisibleHull M) where
       ring_nf
     rw [Rat.mul_num_den']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem zsmul_mk (a : ℤ) (m : M) (s : ℕ+) : a • mk m s = mk (a • m) s := by
   simp [← Int.cast_smul_eq_zsmul ℚ a, qsmul_mk]
 

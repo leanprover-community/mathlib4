@@ -72,6 +72,7 @@ theorem associated_norm_zeta_sub_one : Associated (Algebra.norm ℤ (hζ.toInteg
       rw [hζ.norm_toInteger_sub_one_of_eq_two_pow, h, Int.ofNat_two]
   · rw [hζ.norm_toInteger_sub_one_of_prime_ne_two h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem absNorm_span_zeta_sub_one : absNorm (span {hζ.toInteger - 1}) = p := by
   simpa using congr_arg absNorm <|
     span_singleton_eq_span_singleton.mpr <| associated_norm_zeta_sub_one p k hζ
@@ -301,6 +302,7 @@ section general
 
 variable {m p k} [IsCyclotomicExtension {n} ℚ K]
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 private theorem inertiaDegIn_ramificationIdxIn_aux (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
     𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) ∧
@@ -327,15 +329,12 @@ private theorem inertiaDegIn_ramificationIdxIn_aux (hn : n = p ^ (k + 1) * m) (h
     (isCyclotomicExtension_singleton_iff_eq_adjoin _ _ _ _ hζₚ).mpr rfl
   -- A prime ideal of `Fₚ` above `𝒑`
   obtain ⟨Pₚ, hP₁, _⟩ := exists_maximal_ideal_liesOver_of_isIntegral 𝒑 (S := 𝓞 Fₚ)
-  have hPp : Ideal.map (algebraMap (𝓞 Fₚ) (𝓞 K)) Pₚ ≠ ⊥ :=
-    map_ne_bot_of_ne_bot <| Ring.ne_bot_of_isMaximal_of_not_isField hP₁ <| not_isField Fₚ
   suffices Pₚ.ramificationIdxIn (𝓞 K) *
       Pₘ.inertiaDegIn (𝓞 K) * (Pₘ.primesOver (𝓞 K)).ncard = 1 by
     replace this := Nat.eq_one_of_mul_eq_one_right this
     rw [← inertiaDegIn_mul_inertiaDegIn 𝒑 Pₘ Gal(Fₘ/ℚ) _ Gal(K/ℚ) Gal(K/Fₘ),
-      ← ramificationIdxIn_mul_ramificationIdxIn Pₚ Gal(Fₚ/ℚ) _ Gal(K/ℚ) Gal(K/Fₚ)
-      (map_ne_bot_of_ne_bot hp') hPp, Nat.eq_one_of_mul_eq_one_left this,
-      Nat.eq_one_of_mul_eq_one_right this, mul_one, mul_one,
+      ← ramificationIdxIn_mul_ramificationIdxIn' Pₚ Gal(Fₚ/ℚ) _ Gal(K/ℚ) Gal(K/Fₚ),
+      Nat.eq_one_of_mul_eq_one_left this, Nat.eq_one_of_mul_eq_one_right this, mul_one, mul_one,
       inertiaDegIn_eq_of_not_dvd p _ hm, ramificationIdxIn_eq_of_prime_pow p k Fₚ]
     exact ⟨rfl, rfl⟩
   have h_main : Module.finrank ℚ Fₘ * Module.finrank ℚ Fₚ = Module.finrank ℚ K := by
@@ -352,9 +351,9 @@ private theorem inertiaDegIn_ramificationIdxIn_aux (hn : n = p ^ (k + 1) * m) (h
     mul_right_inj' (primesOver_ncard_ne_zero 𝒑 _), ← mul_assoc, ← mul_rotate (𝒑.inertiaDegIn (𝓞 K)),
     ← inertiaDegIn_mul_inertiaDegIn 𝒑 Pₘ Gal(Fₘ/ℚ) (𝓞 K) Gal(K/ℚ) Gal(K/Fₘ), mul_assoc, mul_assoc,
     mul_right_inj' (inertiaDegIn_ne_zero Gal(Fₘ/ℚ)), ← mul_rotate',
-    ← ramificationIdxIn_mul_ramificationIdxIn (p := 𝒑) Pₚ Gal(Fₚ/ℚ) (𝓞 K) Gal(K/ℚ) Gal(K/Fₚ)
-    (map_ne_bot_of_ne_bot hp') hPp, eq_comm, mul_assoc,
-    mul_eq_left₀ (ramificationIdxIn_ne_zero Gal(Fₚ/ℚ) hp'), ← mul_assoc] at h_main
+    ← ramificationIdxIn_mul_ramificationIdxIn' (p := 𝒑) Pₚ Gal(Fₚ/ℚ) (𝓞 K) Gal(K/ℚ) Gal(K/Fₚ),
+    eq_comm, mul_assoc, mul_eq_left₀ (ramificationIdxIn_ne_zero Gal(Fₚ/ℚ) hp'), ← mul_assoc]
+    at h_main
 
 /--
 Write `n = p ^ (k + 1) * m` where the prime `p` does not divide `m`, then the inertia degree of

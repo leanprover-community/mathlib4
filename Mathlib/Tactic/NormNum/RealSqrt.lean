@@ -24,6 +24,7 @@ lemma isNat_realSqrt {x : ℝ} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx
 lemma isNat_nnrealSqrt {x : ℝ≥0} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx) :
     IsNat (NNReal.sqrt x) ny := ⟨by simp [h.out, ← hy]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isNNRat_nnrealSqrt_of_isNNRat {x : ℝ≥0} {n sn : ℕ} {d sd : ℕ} (hn : sn * sn = n)
     (hd : sd * sd = d) (h : IsNNRat x n d) :
     IsNNRat (NNReal.sqrt x) sn sd := by

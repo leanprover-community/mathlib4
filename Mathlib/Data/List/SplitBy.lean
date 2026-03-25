@@ -122,8 +122,6 @@ theorem isChain_of_mem_splitBy {r : α → α → Bool} {l : List α} (h : m ∈
   match l, h with
   | a::l, h => apply isChain_of_mem_splitByLoop _ _ h <;> simp
 
-@[deprecated (since := "2025-09-24")] alias chain'_of_mem_splitBy := isChain_of_mem_splitBy
-
 private theorem isChain_getLast_head_splitByLoop {r : α → α → Bool} (l : List α) {a : α}
     {g : List α} {gs : List (List α)} (hgs' : [] ∉ gs)
     (hgs : gs.IsChain fun b a ↦ ∃ ha hb, r (a.getLast ha) (b.head hb) = false)
@@ -247,8 +245,5 @@ theorem splitBy_append_cons {r : α → α → Bool} {l : List α} {a : α} (m :
 theorem splitBy_beq_replicate {n : ℕ} (hn : n ≠ 0) (a : α) [DecidableEq α] :
     splitBy (· == ·) (replicate n a) = [replicate n a] := by
   simp [hn, splitBy_eq_singleton, isChain_replicate_of_rel]
-
-@[deprecated (since := "2025-09-24")]
-alias chain'_getLast_head_splitBy := isChain_getLast_head_splitBy
 
 end List

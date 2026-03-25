@@ -55,6 +55,7 @@ instance (priority := low) Functor.preservesProjectiveObjects_of_isEquivalence {
     [IsEquivalence F] : F.PreservesProjectiveObjects :=
   preservesProjectiveObjects_of_adjunction_of_preservesEpimorphisms F.asEquivalence.toAdjunction
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Functor.preservesEpimorphisms_of_adjunction_of_preservesProjectiveObjects
     [EnoughProjectives C] {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.PreservesProjectiveObjects] :
     G.PreservesEpimorphisms where

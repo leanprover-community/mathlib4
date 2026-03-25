@@ -247,15 +247,13 @@ theorem conjTranspose_smul_self [Mul α] [StarMul α] (c : α) (M : Matrix m n �
     (c • M)ᴴ = MulOpposite.op (star c) • Mᴴ :=
   conjTranspose_smul_non_comm c M star_mul
 
-@[simp]
 theorem conjTranspose_nsmul [AddMonoid α] [StarAddMonoid α] (c : ℕ) (M : Matrix m n α) :
-    (c • M)ᴴ = c • Mᴴ :=
-  Matrix.ext <| by simp
+    (c • M)ᴴ = c • Mᴴ := by
+  simp
 
-@[simp]
 theorem conjTranspose_zsmul [AddGroup α] [StarAddMonoid α] (c : ℤ) (M : Matrix m n α) :
-    (c • M)ᴴ = c • Mᴴ :=
-  Matrix.ext <| by simp
+    (c • M)ᴴ = c • Mᴴ := by
+  simp
 
 @[simp]
 theorem conjTranspose_natCast_smul [Semiring R] [AddCommMonoid α] [StarAddMonoid α] [Module R α]

@@ -356,13 +356,13 @@ theorem blimsup_false {f : Filter β} {u : β → α} : (blimsup u f fun _ => Fa
 theorem bliminf_false {f : Filter β} {u : β → α} : (bliminf u f fun _ => False) = ⊤ := by
   simp [bliminf_eq]
 
-/-- Same as limsup_const applied to `⊥` but without the `NeBot f` assumption -/
+/-- Same as `limsup_const` applied to `⊥` but without the `NeBot f` assumption -/
 @[simp]
 theorem limsup_const_bot {f : Filter β} : limsup (fun _ : β => (⊥ : α)) f = (⊥ : α) := by
   rw [limsup_eq, eq_bot_iff]
   exact sInf_le (Eventually.of_forall fun _ => le_rfl)
 
-/-- Same as limsup_const applied to `⊤` but without the `NeBot f` assumption -/
+/-- Same as `limsup_const` applied to `⊤` but without the `NeBot f` assumption -/
 @[simp]
 theorem liminf_const_top {f : Filter β} : liminf (fun _ : β => (⊤ : α)) f = (⊤ : α) :=
   limsup_const_bot (α := αᵒᵈ)
@@ -589,6 +589,7 @@ theorem bliminf_or_le_inf_aux_left : (bliminf u f fun x => p x ∨ q x) ≤ blim
 theorem bliminf_or_le_inf_aux_right : (bliminf u f fun x => p x ∨ q x) ≤ bliminf u f q :=
   bliminf_or_le_inf.trans inf_le_right
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.OrderIso.apply_blimsup [CompleteLattice γ] (e : α ≃o γ) :
     e (blimsup u f p) = blimsup (e ∘ u) f p := by
   simp only [blimsup_eq, map_sInf, Function.comp_apply, e.image_eq_preimage_symm,

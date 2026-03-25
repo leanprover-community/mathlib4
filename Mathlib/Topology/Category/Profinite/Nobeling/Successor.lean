@@ -374,6 +374,7 @@ def SumEval : GoodProducts (π C (ord I · < o)) ⊕ MaxProducts C ho →
     LocallyConstant C ℤ :=
   Sum.elim (fun l ↦ l.1.eval C) (fun l ↦ l.1.eval C)
 
+set_option backward.isDefEq.respectTransparency false in
 include hsC in
 theorem linearIndependent_iff_sum :
     LinearIndependent ℤ (eval C) ↔ LinearIndependent ℤ (SumEval C ho) := by
@@ -381,6 +382,7 @@ theorem linearIndependent_iff_sum :
     ← sum_equiv_comp_eval_eq_elim C hsC ho]
   exact Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 include hsC in
 theorem span_sum : Set.range (eval C) = Set.range (Sum.elim
     (fun (l : GoodProducts (π C (ord I · < o))) ↦ Products.eval C l.1)
@@ -504,8 +506,6 @@ theorem isChain_cons_of_lt (l : MaxProducts C ho)
   · have := l.val.prop
     rw [max_eq_o_cons_tail C hsC ho l, List.isChain_iff_pairwise] at this
     exact List.rel_of_pairwise_cons this (List.head!_mem_self hM)
-
-@[deprecated (since := "2025-09-24")] alias chain'_cons_of_lt := isChain_cons_of_lt
 
 include hsC in
 theorem good_lt_maxProducts (q : GoodProducts (π C (ord I · < o)))

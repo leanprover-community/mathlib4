@@ -5,7 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
+public import Mathlib.Topology.Algebra.Module.StrongTopology
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
 public import Mathlib.Topology.Algebra.SeparationQuotient.Section
 public import Mathlib.Topology.Hom.ContinuousEvalConst
@@ -152,6 +154,7 @@ variable (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' �
   [∀ i, Module 𝕜' (E i)] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
   [∀ i, ContinuousSMul 𝕜 (E i)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isUniformEmbedding_restrictScalars :
     IsUniformEmbedding
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) := by
@@ -210,6 +213,53 @@ theorem hasBasis_nhds_zero :
       (fun SV : Set (Π i, E i) × Set F => IsVonNBounded 𝕜 SV.1 ∧ SV.2 ∈ 𝓝 0) fun SV =>
       { f | MapsTo f SV.1 SV.2 } :=
   hasBasis_nhds_zero_of_basis (Filter.basis_sets _)
+
+theorem eventually_nhds_zero_mapsTo {s : Set (∀ i, E i)} (hs : IsVonNBounded 𝕜 s)
+    {U : Set F} (hu : U ∈ 𝓝 0) :
+    ∀ᶠ f : ContinuousMultilinearMap 𝕜 E F in 𝓝 0, MapsTo f s U :=
+  hasBasis_nhds_zero.mem_of_mem (i := (s, U)) ⟨hs, hu⟩
+
+theorem isVonNBounded_image2_apply [ContinuousConstSMul 𝕜 F]
+    {S : Set (ContinuousMultilinearMap 𝕜 E F)} (hS : IsVonNBounded 𝕜 S)
+    {s : Set (∀ i, E i)} (hs : IsVonNBounded 𝕜 s) :
+    IsVonNBounded 𝕜 (Set.image2 (fun f x ↦ f x) S s) := by
+  intro U hU
+  filter_upwards [hS (eventually_nhds_zero_mapsTo hs hU)] with c hc
+  rw [image2_subset_iff]
+  intro f hf x hx
+  rcases hc hf with ⟨g, hg, rfl⟩
+  exact smul_mem_smul_set (hg hx)
+
+section CompContinuousLinearMap
+variable {E₁ : ι → Type*} [∀ i, TopologicalSpace (E₁ i)] [ContinuousConstSMul 𝕜 F]
+  [∀ i, AddCommGroup (E₁ i)] [∀ i, Module 𝕜 (E₁ i)]
+
+/-- `ContinuousMultilinearMap.compContinuousLinearMap` as a bundled continuous linear map.
+Given a family of continuous linear maps `f : Π i, E i →L[𝕜] E₁ i`,
+this function returns a continuous linear maps between the spaces of continuous multilinear maps
+on `Π i, E₁ i` and on `Π i, E i`.
+The map sends `g` to the map given by `v ↦ g (fun i ↦ f i (v i))`.
+
+Actually, the map is multilinear in `f`,
+see `ContinuousMultilinearMap.compContinuousLinearMapContinuousMultilinear`.
+
+For a version fixing `g` and varying `f`, see `compContinuousLinearMapLRight`. -/
+@[simps! apply]
+def compContinuousLinearMapL (f : ∀ i, E i →L[𝕜] E₁ i) :
+    ContinuousMultilinearMap 𝕜 E₁ F →L[𝕜] ContinuousMultilinearMap 𝕜 E F :=
+  letI aux : ContinuousMultilinearMap 𝕜 E₁ F →ₗ[𝕜] ContinuousMultilinearMap 𝕜 E F :=
+    { toFun g := g.compContinuousLinearMap f
+      map_add' _ _ := by ext; simp
+      map_smul' _ _ := by ext; simp }
+  { toLinearMap := aux
+    cont := by
+      apply continuous_of_tendsto_nhds_zero aux
+      rw [hasBasis_nhds_zero.tendsto_iff hasBasis_nhds_zero]
+      rintro ⟨U, V⟩ ⟨hU, hV⟩
+      set φ : (∀ i, E i) →L[𝕜] (∀ i, E₁ i) := .piMap f
+      exact ⟨(φ '' U, V), ⟨hU.image φ, hV⟩, fun g hg ↦ hg.comp (mapsTo_image _ _)⟩ }
+
+end CompContinuousLinearMap
 
 variable [∀ i, ContinuousSMul 𝕜 (E i)]
 
@@ -279,3 +329,127 @@ theorem tsum_eval [T2Space F] {α : Type*} {p : α → ContinuousMultilinearMap 
   (hasSum_eval hp.hasSum m).tsum_eq.symm
 
 end ContinuousMultilinearMap
+
+namespace ContinuousLinearMap
+
+variable {𝕜 ι : Type*} {E : ι → Type*} {F G : Type*} [NormedField 𝕜] [∀ i, TopologicalSpace (E i)]
+  [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [ContinuousConstSMul 𝕜 F]
+  [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G] [IsTopologicalAddGroup G]
+  [ContinuousConstSMul 𝕜 G]
+
+variable (𝕜 E F G) in
+/-- `ContinuousLinearMap.compContinuousMultilinearMap` as a bundled continuous bilinear map.
+
+Given a continuous linear map `f : F →L[𝕜] G`
+and a continuous multilinear map `g` from `Π i, E i` to `F`,
+this function returns `f ∘ g` as a continuous multilinear map.
+
+With this order of arguments, the function is continuous in `g` (for each fixed `f`)
+and is continuous in `f` (as a function to the space of continuous linear maps).
+Note that for general topological vector spaces, it is not guaranteed to be continuous in `(g, f)`.
+-/
+def compContinuousMultilinearMapL :
+    (F →L[𝕜] G) →L[𝕜] ContinuousMultilinearMap 𝕜 E F →L[𝕜] ContinuousMultilinearMap 𝕜 E G :=
+  letI aux : (F →L[𝕜] G) →ₗ[𝕜]
+      ContinuousMultilinearMap 𝕜 E F →L[𝕜] ContinuousMultilinearMap 𝕜 E G :=
+    { toFun g :=
+        letI aux₁ : ContinuousMultilinearMap 𝕜 E F →ₗ[𝕜] ContinuousMultilinearMap 𝕜 E G :=
+          { toFun := g.compContinuousMultilinearMap
+            map_add' _ _ := by ext; simp
+            map_smul' _ _ := by ext; simp }
+        { toLinearMap := aux₁
+          cont := by
+            apply continuous_of_tendsto_nhds_zero aux₁
+            rw [ContinuousMultilinearMap.hasBasis_nhds_zero.tendsto_iff
+              ContinuousMultilinearMap.hasBasis_nhds_zero]
+            rintro ⟨U, V⟩ ⟨hU, hV⟩
+            refine ⟨(U, g ⁻¹' V), ⟨hU, ?_⟩, ?_⟩
+            · exact (map_continuous g).tendsto 0 <| by simpa
+            · exact fun f hf ↦ hf
+        }
+      map_add' _ _ := by ext; simp
+      map_smul' _ _ := by ext; simp }
+  { toLinearMap := aux
+    cont := by
+      apply continuous_of_tendsto_nhds_zero aux
+      rw [ContinuousLinearMap.hasBasis_nhds_zero.tendsto_iff <|
+        ContinuousLinearMap.hasBasis_nhds_zero_of_basis <|
+        ContinuousMultilinearMap.hasBasis_nhds_zero]
+      rintro ⟨U, V, W⟩ ⟨hU, hV, hW⟩
+      refine ⟨(.image2 (fun f v ↦ f v) U V, W), ⟨?_, hW⟩, ?_⟩
+      · exact ContinuousMultilinearMap.isVonNBounded_image2_apply hU hV
+      · exact fun g hg f hf m hm ↦ hg _ <| mem_image2_of_mem hf hm }
+
+@[simp]
+theorem compContinuousMultilinearMapL_apply (g : F →L[𝕜] G) (f : ContinuousMultilinearMap 𝕜 E F) :
+    compContinuousMultilinearMapL 𝕜 E F G g f = g.compContinuousMultilinearMap f :=
+  rfl
+
+end ContinuousLinearMap
+
+namespace ContinuousLinearEquiv
+
+variable {𝕜 ι : Type*} {E E₁ : ι → Type*} {F G : Type*} [NormedField 𝕜]
+  [∀ i, TopologicalSpace (E i)] [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+  [∀ i, TopologicalSpace (E₁ i)] [∀ i, AddCommGroup (E₁ i)] [∀ i, Module 𝕜 (E₁ i)]
+  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [ContinuousConstSMul 𝕜 F]
+  [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G] [IsTopologicalAddGroup G]
+  [ContinuousConstSMul 𝕜 G]
+
+variable (F) in
+/-- `ContinuousMultilinearMap.compContinuousLinearMap` as a bundled continuous linear equiv.
+Given a family of continuous linear equivalences `f : Π i, E i ≃L[𝕜] E₁ i`,
+this function returns a continuous linear equivalence
+between the space of continuous multilinear maps with domain `Π i, E i` and codomain `F`
+and the space of multilinear maps with domain `Π i, E₁ i` and the same codomain,
+by composing the multilinear maps with `f`. -/
+def continuousMultilinearMapCongrLeft (f : ∀ i, E i ≃L[𝕜] E₁ i) :
+    ContinuousMultilinearMap 𝕜 E₁ F ≃L[𝕜] ContinuousMultilinearMap 𝕜 E F where
+  __ := ContinuousMultilinearMap.compContinuousLinearMapL fun i ↦ ↑(f i)
+  invFun := ContinuousMultilinearMap.compContinuousLinearMapL fun i ↦ ↑(f i).symm
+  left_inv g := by ext; simp
+  right_inv g := by ext; simp
+
+@[simp]
+theorem continuousMultilinearMapCongrLeft_symm
+    (f : ∀ i, E i ≃L[𝕜] E₁ i) :
+    (ContinuousLinearEquiv.continuousMultilinearMapCongrLeft F f).symm =
+      .continuousMultilinearMapCongrLeft F fun i : ι ↦ (f i).symm :=
+  rfl
+
+@[simp]
+theorem continuousMultilinearMapCongrLeft_apply
+    (g : ContinuousMultilinearMap 𝕜 E₁ F) (f : ∀ i, E i ≃L[𝕜] E₁ i) :
+    ContinuousLinearEquiv.continuousMultilinearMapCongrLeft F f g =
+      g.compContinuousLinearMap fun i ↦ (f i : E i →L[𝕜] E₁ i) :=
+  rfl
+
+variable (E) in
+/-- `ContinuousLinearMap.compContinuousMultilinearMap` as a bundled continuous linear equiv.
+Given a continuous linear equivalence `g : F ≃L[𝕜] G`,
+this function builds a continuous linear equivalence
+between the space of continuous multilinear maps with codomain `F`
+and the space of continuous multilinear maps with codomain `G`,
+by composing these maps with `g` or `g.symm`. -/
+def continuousMultilinearMapCongrRight (g : F ≃L[𝕜] G) :
+    ContinuousMultilinearMap 𝕜 E F ≃L[𝕜] ContinuousMultilinearMap 𝕜 E G where
+  __ := ContinuousLinearMap.compContinuousMultilinearMapL _ _ _ _ g
+  invFun := ContinuousLinearMap.compContinuousMultilinearMapL _ _ _ _ g.symm
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
+@[simp]
+theorem continuousMultilinearMapCongrRight_symm (g : F ≃L[𝕜] G) :
+    (g.continuousMultilinearMapCongrRight E).symm = g.symm.continuousMultilinearMapCongrRight E :=
+  rfl
+
+@[simp]
+theorem continuousMultilinearMapCongrRight_apply (g : F ≃L[𝕜] G)
+    (f : ContinuousMultilinearMap 𝕜 E F) :
+    g.continuousMultilinearMapCongrRight E f = (g : F →L[𝕜] G).compContinuousMultilinearMap f :=
+  rfl
+
+end ContinuousLinearEquiv

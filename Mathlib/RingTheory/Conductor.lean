@@ -54,7 +54,7 @@ theorem conductor_eq_top_of_powerBasis (pb : PowerBasis R S) : conductor R pb.ge
 theorem adjoin_eq_top_of_conductor_eq_top {x : S} (h : conductor R x = ⊤) :
     Algebra.adjoin R {x} = ⊤ :=
   Algebra.eq_top_iff.mpr fun y ↦
-    one_mul y ▸ (mem_conductor_iff).mp ((Ideal.eq_top_iff_one (conductor R x)).mp h) y
+    one_mul y ▸ mem_conductor_iff.mp ((Ideal.eq_top_iff_one (conductor R x)).mp h) y
 
 theorem conductor_eq_top_iff_adjoin_eq_top {x : S} :
     conductor R x = ⊤ ↔ Algebra.adjoin R {x} = ⊤ :=
@@ -153,6 +153,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
     rw [IsScalarTower.algebraMap_eq R R<x> S, ← Ideal.map_map]
     apply Ideal.le_comap_map
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical morphism of rings from `R<x> ⧸ (I*R<x>)` to `S ⧸ (I*S)` is an isomorphism
 when `I` and `(conductor R x) ∩ R` are coprime. -/
 noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)

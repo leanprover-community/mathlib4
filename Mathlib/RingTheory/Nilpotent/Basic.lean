@@ -6,6 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Algebra.Ring.GeomSum
@@ -171,7 +172,7 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
     (hf : ∀ b, IsNilpotent (f b)) (h_comm : ∀ i j, Commute (f i) (f j)) :
     IsNilpotent (finsum f) := by
   classical
-  by_cases h : Set.Finite f.support
+  by_cases h : HasFiniteSupport f
   · rw [finsum_def, dif_pos h]
     exact Commute.isNilpotent_sum (fun b _ ↦ hf b) (fun _ _ _ _ ↦ h_comm _ _)
   · simp only [finsum_def, dif_neg h, IsNilpotent.zero]

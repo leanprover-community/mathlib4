@@ -65,6 +65,7 @@ lemma leftInverse_exp_arg : LeftInverse exp (arg ∘ (↑)) := exp_arg
 lemma invOn_arg_exp : InvOn (arg ∘ (↑)) exp (Ioc (-π) π) univ := argPartialEquiv.symm.invOn
 lemma surjOn_exp_neg_pi_pi : SurjOn exp (Ioc (-π) π) univ := argPartialEquiv.symm.surjOn
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exp_eq_exp {x y : ℝ} : exp x = exp y ↔ ∃ m : ℤ, x = y + m * (2 * π) := by
   rw [Subtype.ext_iff, coe_exp, coe_exp, exp_eq_exp_iff_exists_int]
   refine exists_congr fun n => ?_
@@ -76,7 +77,7 @@ lemma periodic_exp : Periodic exp (2 * π) := fun z ↦ exp_eq_exp.2 ⟨1, by rw
 @[simp] lemma exp_two_pi : exp (2 * π) = 1 := periodic_exp.eq.trans exp_zero
 
 lemma exp_int_mul_two_pi (n : ℤ) : exp (n * (2 * π)) = 1 :=
-  ext <| by simpa [mul_assoc] using Complex.exp_int_mul_two_pi_mul_I n
+  ext <| by simp
 
 lemma exp_two_pi_mul_int (n : ℤ) : exp (2 * π * n) = 1 := by
   simpa only [mul_comm] using exp_int_mul_two_pi n
@@ -161,6 +162,7 @@ theorem toCircle_nsmul (x : AddCircle T) (n : ℕ) : toCircle (n • x) = toCirc
 theorem toCircle_zsmul (x : AddCircle T) (n : ℤ) : toCircle (n • x) = toCircle x ^ n := by
   cases n <;> simp [toCircle_nsmul, toCircle_neg]
 
+@[fun_prop, continuity]
 theorem continuous_toCircle : Continuous (@toCircle T) :=
   continuous_coinduced_dom.mpr (Circle.exp.continuous.comp <| by fun_prop)
 
@@ -219,6 +221,7 @@ lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp :=
 topological groups to show the `n`th power map is open (see https://www.mathematik.tu-darmstadt.de/media/mathematik/forschung/preprint/preprints/2480.pdf
 and https://www.math.uwaterloo.ca/~cgodsil/pdfs/topology/topgr.pdf), and discreteness of the
 kernel (see https://gemini.google.com/share/6e9ab4abcb95). -/
+set_option backward.isDefEq.respectTransparency false in
 theorem Circle.isQuotientCoveringMap_zpow (n : ℤ) [NeZero n] :
     IsQuotientCoveringMap (· ^ n : Circle → _) (zpowGroupHom (α := Circle) n).ker := by
   have hn : IsUnit (n : ℝ) := by simpa using NeZero.ne n
