@@ -110,7 +110,7 @@ def funPropTac : Tactic
         transitionTheorems := transitionTheoremsExt.getState env }
       let (r?, s) ← funProp goalType ctx |>.run s
       if let some r := r? then
-        goal.assign r
+        goal.assign r.proof
       else
         let mut msg := s!"`fun_prop` was unable to prove `{← Meta.ppExpr goalType}`\n\n"
 

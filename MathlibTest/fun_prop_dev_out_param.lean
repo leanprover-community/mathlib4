@@ -27,7 +27,7 @@ set_option linter.unusedVariables false
 -- define function propositions --
 ----------------------------------
 
-@[fun_prop f'] opaque HasDeriv {α β} (f : α → β) (f' : α → α → β) : Prop
+@[fun_prop out f'] opaque HasDeriv {α β} (f : α → β) (f' : α → α → β) : Prop
 
 
 @[fun_prop]

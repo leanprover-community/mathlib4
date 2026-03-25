@@ -24,15 +24,6 @@ open Lean Meta Qq
 
 namespace Meta.FunProp
 
-def funProp' (e : Expr) : FunPropM (Option Result) := do
-  let some prf ← funProp e | return none
-  if ¬(← isDefEq e (← inferType prf)) then
-    throwError "failed to assign metavariables in the goal"
-  return some {
-    proof := prf
-    outputs := #[] -- todo: correctly set this!
-  }
-
 
 /-- Synthesize instance of type `type` and
   1. assign it to `x` if `x` is meta variable
@@ -69,8 +60,8 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) :
           continue
       else if (← isFunPropGoal type) then
         -- try function property
-        if let some proof ← funProp type then
-          if (← isDefEq x proof) then
+        if let some r ← funProp type then
+          if (← isDefEq x r.proof) then
             continue
           else do
             trace[Meta.Tactic.fun_prop]
@@ -117,7 +108,7 @@ def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (goal : Goal)
   withTraceNode `Meta.Tactic.fun_prop
     (fun r => return s!"[{ExceptToEmoji.toEmoji r}] applying: {← ppOrigin' thmId}") do
 
-  let (outputs, e) ← goal.mkFreshExpr
+  let (_outputs, e) ← goal.mkFreshExpr
 
   if (← isDefEq type e) then
 
@@ -125,9 +116,7 @@ def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (goal : Goal)
       return none
     let proof ← instantiateMVars (mkAppN val xs)
 
-    return some {
-      proof := proof,
-      outputs := ← outputs.mapM instantiateMVars }
+    return some { proof := proof }
   else
     trace[Meta.Tactic.fun_prop] "failed to unify {← ppOrigin thmId}\n{type}\nwith\n{e}"
     return none
@@ -301,7 +290,7 @@ def letCase (goal : Goal) (f : Expr) :
       let body := yBody.swapBVars 0 1
       let e' := mkLet yName yType yValue
         (goal.expr.setArg (goal.decl.funArgId) (.lam xName xType body xBi))
-      return ← funProp' e'
+      return ← funProp e'
 
     match (yBody.hasLooseBVar 0), (yBody.hasLooseBVar 1) with
     | true, true =>
@@ -317,7 +306,7 @@ def letCase (goal : Goal) (f : Expr) :
 
     | false, _ =>
       let f := Expr.lam xName xType (yBody.lowerLooseBVars 1 1) xBi
-      funProp' (goal.expr.setArg (goal.decl.funArgId) f)
+      funProp (goal.expr.setArg (goal.decl.funArgId) f)
 
   | _ => throwError "expected expression of the form `fun x ↦ lam y := ..; ..`"
 
@@ -551,7 +540,7 @@ def fvarAppCase (goal : Goal) (fData : FunctionData) :
     if let some f ← fData.unfoldHeadFVar? then
       trace[Meta.Tactic.fun_prop] m!"unfolded local function {fData.fn}, {goal.mainFun} ==> {f}"
       let goal' ← goal.updateMainFun f
-      if let some r ← funProp' (← goal'.mkFreshExpr).2 then
+      if let some r ← funProp (← goal'.mkFreshExpr).2 then
         return r
 
     if (← fData.isMorApplication) != .none then
@@ -620,14 +609,14 @@ def constAppCase (goal : Goal) (fData : FunctionData) :
   return none
 
 
--- /-- Cache result if it does not have any subgoals. -/
--- def cacheResult (e : Expr) (r : Result) : FunPropM Result := do -- return proof?
---   modify (fun s => { s with cache := s.cache.insert e { expr := q(True), proof? := r.proof} })
---   return r
+/-- Cache result if it does not have any subgoals. -/
+def cacheResult (goal : Goal) (r : Result) : FunPropM Result := do
+  modify (fun s => { s with cache := s.cache.insert goal r })
+  return r
 
 /-- Cache for failed goals such that `fun_prop` can fail fast next time. -/
-def cacheFailure (e : Expr) : FunPropM Unit := do -- return proof?
-  modify (fun s => { s with failureCache := s.failureCache.insert e })
+def cacheFailure (goal : Goal) : FunPropM Unit := do -- return proof?
+  modify (fun s => { s with failureCache := s.failureCache.insert goal })
 
 
 /-- Main `funProp` function. Returns proof of `e`. -/
@@ -637,7 +626,7 @@ partial def main (goal : Goal) : FunPropM (Option Result) := do
 
   -- if function starts with let bindings move them the top of `e` and try again
   if goal.mainFun.isLet then
-    return ← funProp' (← mapLetTelescope goal.mainFun
+    return ← funProp (← mapLetTelescope goal.mainFun
       fun _ b => do pure <| (← goal.mkFreshExpr).2.setArg goal.decl.funArgId b)
 
   match ← getFunctionData? goal.mainFun (← unfoldNamePred) with
@@ -669,53 +658,32 @@ partial def main (goal : Goal) : FunPropM (Option Result) := do
         trace[Debug.Meta.Tactic.fun_prop] "unknown case, ctor: {goal.mainFun.ctorName}\n{goal.expr}"
         return none
 
-/-- Main `funProp` function. Returns proof of `e`. -/
-partial def funPropImpl (e : Expr) : FunPropM (Option Expr) := do
+/-- Wrapper around `main` that does caching. -/
+def funPropCoreImpl (goal : Goal) : FunPropM (Option Result) := do
 
-  let e ← instantiateMVars e
+  withTraceNode `Meta.Tactic.fun_prop
+    (fun r => do pure m!"[{ExceptToEmoji.toEmoji r}] {← goal.pp}") do
 
-  -- todo: enable caching again!!!
-  -- -- check cache for successful goals
-  -- if let some { expr := _, proof? := some proof } := (← get).cache.find? e then
-  --   trace[Meta.Tactic.fun_prop] "reusing previously found proof for {e}"
-  --   return some { proof := proof }
-  -- else if (← get).failureCache.contains e then
-  --   trace[Meta.Tactic.fun_prop] "skipping proof search, proving {e} was tried already and failed"
-  --   return none
-  -- else
-    -- take care of forall and let binders and run main
-    match e with
-    | .letE .. =>
-      letTelescope e fun xs b => do
-        let some r ← funPropImpl b
-          | return none
-        -- cacheResult e {proof := ← mkLambdaFVars (generalizeNondepLet := false) xs r.proof }
-        mkLambdaFVars (generalizeNondepLet := false) xs r
-    | .forallE .. =>
-      forallTelescope e fun xs b => do
-        let some r ← funPropImpl b
-          | return none
-        -- cacheResult e {proof := ← mkLambdaFVars xs r.proof }
-        mkLambdaFVars xs r
-    | .mdata _ e' => funPropImpl e'
-    | _ =>
-      let some goal ← getFunPropGoal? e | return none
-
-      withTraceNode `Meta.Tactic.fun_prop
-        (fun r => do pure m!"[{ExceptToEmoji.toEmoji r}] {← goal.pp}") do
-
-      if let some r ← main goal then
-        if ¬(← isDefEq e (← inferType r.proof)) then
-          throwError m!"Failed to fill in metavariables in {e} with\n{← inferType r.proof}"
-        return some r.proof
-        -- cacheResult e r
-      else
-        cacheFailure e
-        return none
+  -- check cache for successful goals
+  if let some r := (← get).cache.get? goal then
+    trace[Meta.Tactic.fun_prop] "reusing previously found proof for {← goal.pp}"
+    return some r
+  else if (← get).failureCache.contains goal then
+    trace[Meta.Tactic.fun_prop]
+      "skipping proof search, proving {← goal.pp} was tried already and failed"
+    return none
+  else
+    -- run main
+    if let some r ← main goal then
+      cacheResult goal r
+    else
+      cacheFailure goal
+      return none
 
 
 -- initialize the forward declaration with the actual implementation
-initialize funPropImplRef.set funPropImpl
+initialize funPropCoreImplRef.set funPropCoreImpl
+
 
 end Meta.FunProp
 

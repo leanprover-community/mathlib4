@@ -145,6 +145,8 @@ deriving BEq, Hashable
 /-- Return goal expression with fresh metavariables for every output parameters. -/
 def Goal.mkFreshExpr (goal : Goal) : MetaM (Array Expr × Expr) := do
   let (xs, _, b) ← lambdaMetaTelescope goal.expr
+  for x in xs, (_,name) in goal.decl.outArgIds do
+    x.mvarId!.setUserName name
   return (xs, b)
 
 -- e.setArg funPropDecl.funArgId b
@@ -163,7 +165,12 @@ def Goal.pp (goal : Goal) : MetaM MessageData := do
     return m!"{outputs.toList}, {e}"
 
 def Goal.pp' (goal : Goal) : MetaM String := do
-  (← goal.pp).toString
+  let (outputs, e) ← goal.mkFreshExpr
+  if outputs.size == 0 then
+    return s!"{← ppExpr e}"
+  else
+    return s!"{← outputs.toList.mapM ppExpr}, {← ppExpr e}"
+
 
 /-- result of abstractAppArgsWithMVars -/
 structure AbstractArgsMVarsResult where
@@ -248,21 +255,17 @@ def getFunPropGoal? (e : Expr) : MetaM (Option Goal) := do
     mainFun := f
   }
 
-set_option linter.style.docString.empty false in
-/-- Result of `funProp`, it is a proof of function property `P f` -/
+/-- Result of `funProp`, it is a proof of function property `P f`. -/
 structure Result where
-  /-- -/
+  /-- Proof term of the result. -/
   proof : Expr
-  /-- Concrete values for output parameters -/
-  outputs : Array Expr
 
 /-- `fun_prop` state -/
 structure State where
-  /-- Simp's cache is used as the `fun_prop` tactic is designed to be used inside of simp and
-  utilize its cache. It holds successful goals. -/
+  /-- Cache storing succesfull goals. -/
   cache : Std.HashMap Goal Result := {}
   /-- Cache storing failed goals such that they are not tried again. -/
-  failureCache : ExprSet := {}
+  failureCache : Std.HashSet Goal := {}
   /-- Count the number of steps and stop when maxSteps is reached. -/
   numSteps := 0
   /-- Log progress and failures messages that should be displayed to the user at the end. -/
@@ -326,14 +329,48 @@ def logError (msg : String) : FunPropM Unit := do
         else
           msg::s.msgLog}
 
+
 /-- Forward declaration of main `funProp` function -/
-initialize funPropImplRef : IO.Ref (Expr → FunPropM (Option Expr)) ←
+initialize funPropCoreImplRef : IO.Ref (Goal → FunPropM (Option Result)) ←
   .mkRef fun _ => return none
 
 /-- Solve fun_prop goal like `Continuous f` or `Differentiable ℝ fun x : ℝ => exp x + x` -/
-def funProp (goal : Expr) : FunPropM (Option Expr) := do
-  let impl ← funPropImplRef.get
+def funPropCore (goal : Goal) : FunPropM (Option Result) := do
+  let impl ← funPropCoreImplRef.get
   impl goal
+
+/-- Main `funProp` function. Returns proof of `e`. -/
+partial def funProp (e : Expr) : FunPropM (Option Result) := do
+
+  let e ← instantiateMVars e
+
+  match e with
+  | .letE .. =>
+    letTelescope e fun xs b => do
+      let some r ← funProp b
+        | return none
+      -- cacheResult e {proof := ← mkLambdaFVars (generalizeNondepLet := false) xs r.proof }
+      return some { proof := ← mkLambdaFVars (generalizeNondepLet := false) xs r.proof }
+  | .forallE .. =>
+    forallTelescope e fun xs b => do
+      let some r ← funProp b
+        | return none
+      -- cacheResult e {proof := ← mkLambdaFVars xs r.proof }
+      return some { proof := ← mkLambdaFVars xs r.proof }
+  | .mdata _ e' => funProp e'
+  | _ =>
+    let some goal ← getFunPropGoal? e | return none
+
+    if let some r ← funPropCore goal then
+      -- assign mvars in `e` from the result throuh defeq check
+      let t ← inferType r.proof
+      if (← isDefEq e t) then
+        return r
+      else
+        logError s!"Failed to assign result {← ppExpr t} to {← ppExpr e}!"
+        return none
+    else
+      return none
 
 end Meta.FunProp
 
