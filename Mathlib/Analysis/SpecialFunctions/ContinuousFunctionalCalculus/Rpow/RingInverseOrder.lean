@@ -68,7 +68,7 @@ public lemma convexOn_ringInverse :
   calc _ = (a • conjSqrt x 1 + b • conjSqrt x z)⁻¹ʳ := by
         rw [conjSqrt_conjSqrt_ringInverse _ _ xpos, conjSqrt_one _ xpos]
       _ = (conjSqrt x (a • 1 + b • z))⁻¹ʳ := by simp
-      _ = conjSqrt x⁻¹ʳ (a • 1 + b • z)⁻¹ʳ := by rw [inverse_conjSqrt _ _ xpos]
+      _ = conjSqrt x⁻¹ʳ (a • 1 + b • z)⁻¹ʳ := by rw [ringInverse_conjSqrt _ _ xpos]
       _ = conjSqrt x⁻¹ʳ ((a • 1 + b • z) ^ (-1 : ℝ)) := by
         rw [← inverse_eq_rpow_neg_one]
       _ ≤ conjSqrt x⁻¹ʳ (a • 1 + b • z ^ (-1 : ℝ)) := by
@@ -94,6 +94,6 @@ public lemma convexOn_ringInverse :
       _ = a • inverse x + b • conjSqrt x⁻¹ʳ z⁻¹ʳ := by
         simp [conjSqrt_one _ xinvpos]
       _ = _ := by
-        rw [← inverse_conjSqrt _ _ xpos, conjSqrt_conjSqrt_ringInverse _ _ xpos]
+        rw [← ringInverse_conjSqrt _ _ xpos, conjSqrt_conjSqrt_ringInverse _ _ xpos]
 
 end CStarAlgebra

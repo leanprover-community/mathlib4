@@ -633,6 +633,8 @@ end pi
 
 section unital_vs_nonunital
 
+open Ring
+
 variable [IsTopologicalRing A] [T2Space A]
 
 -- provides instance `ContinuousFunctionalCalculus.compactSpace_spectrum`

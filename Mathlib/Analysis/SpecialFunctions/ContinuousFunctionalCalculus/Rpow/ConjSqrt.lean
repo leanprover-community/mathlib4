@@ -50,7 +50,7 @@ lemma ringInverse_conjSqrt (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
     (conjSqrt c a)⁻¹ʳ = conjSqrt c⁻¹ʳ a⁻¹ʳ := by
   by_cases ha : IsUnit a
   · grind [conjSqrt_apply, sqrt_ringInverse]
-  · have : ¬IsUnit (conjSqrt c a) := by grind [conjSqrt_apply]
+  · have : ¬IsUnit (conjSqrt c a) := by grind [conjSqrt_apply, IsUnit.mul_left_iff]
     rw [inverse_non_unit a ha, inverse_non_unit _ this]
     simp
 
@@ -93,16 +93,19 @@ lemma conjSqrt_ringInverse_self (c : A) (hc : IsStrictlyPositive c := by cfc_tac
     have : conjSqrt c 1 = c
     finish
 
+omit [IsTopologicalRing A] [T2Space A] in
 lemma conjSqrt_of_not_nonneg {c a : A} (hc : ¬0 ≤ c) : conjSqrt c a = 0 := by
   have : sqrt c = 0 := by rw [sqrt_of_not_nonneg hc]
   simp [conjSqrt_apply, this]
 
+omit [IsTopologicalRing A] [T2Space A] in
 lemma conjSqrt_monotone {c : A} : Monotone (conjSqrt c) := by
   intro a b hab
   by_cases hc : 0 ≤ c
   · exact IsSelfAdjoint.conjugate_le_conjugate hab (by cfc_tac)
   · simp [conjSqrt_of_not_nonneg hc]
 
+omit [IsTopologicalRing A] [T2Space A] in
 @[gcongr]
 lemma conjSqrt_le_conjSqrt {c a b : A} (h : a ≤ b) : conjSqrt c a ≤ conjSqrt c b :=
   conjSqrt_monotone h
