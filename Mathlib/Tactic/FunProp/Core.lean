@@ -662,7 +662,7 @@ partial def main (goal : Goal) : FunPropM (Option Result) := do
 def funPropCoreImpl (goal : Goal) : FunPropM (Option Result) := do
 
   withTraceNode `Meta.Tactic.fun_prop
-    (fun r => do pure m!"[{ExceptToEmoji.toEmoji r}] {← goal.pp}") do
+    (fun _ => do pure m!"{← goal.pp}") do
 
   -- check cache for successful goals
   if let some r := (← get).cache.get? goal then
