@@ -244,7 +244,7 @@ For a discrete valuation ring `R` with fraction ring `K`,
 multiplicative kernel of `ordFrac R` is precisely the elements of `K`
 which are in the image of a unit of `R` under the algebra map.
 -/
-lemma mker_ordFrac_eq_units [IsDiscreteValuationRing R] :
+lemma mker_ordFrac_eq_isUnitSubmonoid [IsDiscreteValuationRing R] :
     MonoidHom.mker (ordFrac R) = (IsUnit.submonoid R).map (algebraMap R K) := by
   ext a
   simp only [MonoidHom.mem_mker, Submonoid.mem_map]
@@ -296,10 +296,8 @@ In a discrete valuation ring `R` with fraction ring `K`, if `x y : K` and
 theorem associated_of_ordFrac_eq [IsDiscreteValuationRing R] (x y : K)
     (h : ordFrac R x = ordFrac R y) : ∃ u : Rˣ, u • x = y := by
   by_cases hx : x = 0
-  · simp_all only [map_zero, smul_zero, exists_const]
-    by_contra!
-    have : ordFrac R y ≠ 0 := by simp [this.symm]
-    exact this h.symm
+  · rw [eq_comm] at h
+    simp_all
   by_cases hy : y = 0
   · simp_all
   have : (y / x) ∈ MonoidHom.mker (ordFrac R) := by simp_all
