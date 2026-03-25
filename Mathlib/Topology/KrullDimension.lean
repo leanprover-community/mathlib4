@@ -82,29 +82,10 @@ lemma Topology.IsOpenEmbedding.coheight_map {U X : Type*} [TopologicalSpace U]
     [TopologicalSpace X] {f : U → X} (hf : IsOpenEmbedding f)
     (Z : TopologicalSpace.IrreducibleCloseds U) :
     Order.coheight (map f hf.continuous Z) = Order.coheight Z := by
-  rw [← coheight_orderIso (mapOrderIso f hf) Z]
-  let g : {V : IrreducibleCloseds X | (f ⁻¹' ↑V).Nonempty} ↪o
-      IrreducibleCloseds X :=
-    OrderEmbedding.subtype {V : IrreducibleCloseds X | (f ⁻¹' V).Nonempty}
-  let a := (mapOrderIso f hf) Z
-  have : ∀ p : LTSeries (IrreducibleCloseds X), p.head = g a →
-         ∃ p' : LTSeries ({V : IrreducibleCloseds X | (f ⁻¹' ↑V).Nonempty}),
-           p'.head = a ∧ p = p'.map g (OrderEmbedding.strictMono g) := fun p hp ↦ by
-    let p' : LTSeries {V : IrreducibleCloseds X | (f ⁻¹' ↑V).Nonempty} := {
-      length := p.length
-      toFun i := {
-        val := p i
-        property := by
-          suffices  ¬ f ⁻¹' a = ∅ by
-            rw[← Ne, ← nonempty_iff_ne_empty] at this
-            exact Nonempty.mono (fun _ b ↦ (hp ▸ LTSeries.head_le p i) b) this
-          exact nonempty_iff_ne_empty.mp a.2
-      }
-      step := p.step
-    }
-    exact ⟨p', SetCoe.ext hp, rfl⟩
-  exact (coheight_eq_of_strictMono g (fun _ _ a ↦ a)
-     ((mapOrderIso f hf) Z) this).symm
+  rw [← coheight_orderIso (orderIsoOfIsOpenEmbedding f hf) Z]
+  refine .symm (coheight_eq_of_strictMono Subtype.val (Subtype.strictMono_coe _) ?_ _)
+  intro a b hlt
+  exact ⟨⟨b, a.2.mono (Set.preimage_mono hlt.le)⟩, hlt, rfl⟩
 
 attribute [local instance] specializationOrder
 

@@ -334,7 +334,21 @@ lemma height_eq_of_strictMono (f : α → β) (hf : StrictMono f) (a : α)
   have := le_iSup (α := ℕ∞) (fun p ↦ ⨆ (_ : RelSeries.last p = a), p.length) p'
   rwa [(ciSup_pos hp'.1 : (⨆ (_ : RelSeries.last p' = a), p'.length : ℕ∞) = p'.length)] at this
 
-lemma coheight_eq_of_strictMono (f : α → β) (hf : StrictMono f) (a : α)
+lemma coheight_eq_of_strictMono {α β : Type*} [Preorder α] [Preorder β]
+    (f : α → β) (hf : StrictMono f)
+    (h : ∀ a : α, ∀ b : β, f a < b → ∃ (a' : α), a < a' ∧ f a' = b) (a : α) :
+    coheight a = coheight (f a) := by
+  refine le_antisymm (Order.coheight_le_coheight_apply_of_strictMono _ hf _) ?_
+  refine coheight_le_iff'.mpr fun p hp ↦ ?_
+  induction p using RelSeries.inductionOn generalizing a with
+  | singleton x => simp
+  | cons p x hx ih =>
+    simp only [RelSeries.head_cons] at hp
+    obtain ⟨a', haa', ha'⟩ := h a p.head (by grind)
+    grw [RelSeries.cons_length, Nat.cast_add, Nat.cast_one, ih a' ha'.symm]
+    exact coheight_add_one_le haa'
+
+lemma coheight_eq_of_strictMono' (f : α → β) (hf : StrictMono f) (a : α)
     (h : ∀ p : LTSeries β, p.head = f a → ∃ p' :
     LTSeries α, p'.head = a ∧ p = p'.map f hf) : coheight a = coheight (f a) := by
   apply le_antisymm <|

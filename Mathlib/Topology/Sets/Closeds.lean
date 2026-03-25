@@ -504,11 +504,6 @@ lemma map_strictMono_of_isInducing {f : β → α} (hf : IsInducing f) :
     StrictMono (map f hf.continuous) :=
   Monotone.strictMono_of_injective (map_mono hf.continuous) (map_injective_of_isInducing hf)
 
-lemma map_preimage_nonemtpy (f : β → α) (h : Continuous f) (T : IrreducibleCloseds β) :
-    (f ⁻¹' (map f h T)).Nonempty :=
-  (Nonempty.mono (closure_subset_preimage_closure_image h (s := T))
-      (closure_nonempty_iff.mpr T.2.nonempty))
-
 lemma IsPreirreducible.closure_image_preimage (f : β → α) (h : IsOpenMap f) (s : Set α)
     (hne : (f ⁻¹' s).Nonempty) (hs : IsPreirreducible s) (hs' : IsClosed s) :
     closure (f '' (f ⁻¹' s)) = s := by
@@ -529,9 +524,9 @@ Given `f : U → X` a continuous open embedding, the irreducble closeds of `U` a
 to the irreducible closeds of `X` nontrivially intersecting the range of `f`.
 -/
 noncomputable
-def mapOrderIso (f : β → α) (h : IsOpenEmbedding f) :
+def orderIsoOfIsOpenEmbedding (f : β → α) (h : IsOpenEmbedding f) :
     IrreducibleCloseds β ≃o {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty} where
-  toFun T := ⟨map f h.continuous T, map_preimage_nonemtpy f h.continuous T⟩
+  toFun T := ⟨map f h.continuous T, map_preimage_nonemtpy h.continuous T T.2.nonempty⟩
   invFun V := {
       carrier := f ⁻¹' V
       isIrreducible' := ⟨V.2, IsPreirreducible.preimage (IsIrreducible.isPreirreducible V.1.2) h⟩

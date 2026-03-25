@@ -348,14 +348,8 @@ lemma coheight_eq_of_isOpenImmersion {U X : Scheme} {x : U} (f : U ⟶ X)
     [IsOpenImmersion f] : Order.coheight (f.base x) = Order.coheight x :=
   f.isOpenEmbedding.coheight_eq
 
-lemma primeSpectrum_preorder_eq_orderDual_spec_preorder (R : CommRingCat) :
-    PrimeSpectrum.instPartialOrder.toPreorder = OrderDual.instPreorder ↥(Spec R) := by
-  ext
-  simp only [PrimeSpectrum.instPartialOrder, PartialOrder.lift, PrimeSpectrum.le_iff_specializes]
-  exact Eq.to_iff rfl
-
 open Order in
-lemma ideal_height_eq_coheight (R : CommRingCat) (x : Spec R) :
+lemma idealHeight_eq_coheight (R : CommRingCat) (x : Spec R) :
     x.asIdeal.height = coheight x := by
   rw [Ideal.height_eq_primeHeight x.asIdeal, Ideal.primeHeight]
   congr
@@ -378,7 +372,7 @@ lemma ringKrullDim_stalk_eq_coheight {X : Scheme} (x : X) :
     StructureSheaf.IsLocalization.to_stalk R x
   rw [IsLocalization.AtPrime.ringKrullDim_eq_height x.asIdeal ((Spec R).presheaf.stalk x)]
   apply WithBot.coe_eq_coe.mpr
-  exact ideal_height_eq_coheight R x
+  exact idealHeight_eq_coheight R x
 
 lemma isField_of_isIntegral_of_subsingleton (X : Scheme.{u}) [IsIntegral X] [Subsingleton X] :
     IsField Γ(X, ⊤) := by
