@@ -298,6 +298,11 @@ theorem isClosed_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
     IsClosed (toStrongDual ⁻¹' closedBall x' r) :=
   isClosed_induced_iff'.2 (ContinuousLinearMap.is_weak_closed_closedBall x' r)
 
+/-- Closed balls are bounded in the weak dual. -/
+theorem isBounded_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
+    IsBounded (toStrongDual ⁻¹' closedBall x' r) :=
+  isBounded_toStrongDual_preimage_iff_isBounded.mpr Metric.isBounded_closedBall
+
 /-- The weak-* closure of a norm-bounded set is norm-bounded, because norm-closed balls
 are weak-* closed. -/
 theorem isBounded_closure {s : Set (WeakDual 𝕜 E)} (hb : IsBounded s) :
@@ -305,11 +310,6 @@ theorem isBounded_closure {s : Set (WeakDual 𝕜 E)} (hb : IsBounded s) :
   obtain ⟨R, hR⟩ := (Metric.isBounded_iff_subset_closedBall (0 : StrongDual 𝕜 E)).mp hb
   exact (isBounded_closedBall 0 R).subset
     (closure_minimal (fun y hy => hR (a := toStrongDual y) hy) (isClosed_closedBall 0 R))
-
-/-- Closed balls are bounded in the weak dual. -/
-theorem isBounded_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
-    IsBounded (toStrongDual ⁻¹' closedBall x' r) :=
-  isBounded_toStrongDual_preimage_iff_isBounded.mpr Metric.isBounded_closedBall
 
 /-- The **Banach-Alaoglu theorem**: closed balls of the dual of a normed space `E` are compact in
 the weak-star topology. -/
