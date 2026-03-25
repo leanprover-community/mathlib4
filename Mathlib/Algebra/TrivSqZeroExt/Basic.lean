@@ -655,7 +655,7 @@ theorem snd_list_prod [Monoid R] [AddCommMonoid M] [DistribMulAction R M] [Distr
 
 instance ring [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] :
     Ring (tsze R M) :=
-  fast_instance% { TrivSqZeroExt.semiring, TrivSqZeroExt.nonAssocRing with }
+  { TrivSqZeroExt.semiring, TrivSqZeroExt.nonAssocRing with }
 
 instance commMonoid [CommMonoid R] [AddCommMonoid M] [DistribMulAction R M]
     [DistribMulAction Rᵐᵒᵖ M] [IsCentralScalar R M] : CommMonoid (tsze R M) :=
