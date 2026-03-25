@@ -125,6 +125,14 @@ lemma LinearEquiv.length_eq {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃
   rw [Module.coe_length, Module.coe_length,
     Order.krullDim_eq_of_orderIso (Submodule.orderIsoMapComap e)]
 
+theorem Module.length_eq_of_surjective {S : Type*} [CommRing S] [Algebra S R] [Module S M]
+    [IsScalarTower S R M] (h : Function.Surjective (algebraMap S R)) :
+    Module.length S M = Module.length R M := by
+  have : RingHomSurjective (algebraMap S R) := ⟨h⟩
+  let f : M →ₛₗ[algebraMap S R] M := ⟨AddHom.id M, by simp⟩
+  rw [Module.length, Module.length, WithBot.unbot_inj,
+    Order.krullDim_eq_of_orderIso (Submodule.orderIsoMapComapOfBijective f Function.bijective_id)]
+
 lemma Module.length_bot :
     Module.length R (⊥ : Submodule R M) = 0 :=
   Module.length_eq_zero
