@@ -14,50 +14,55 @@ public import Mathlib
 
 @[expose] public section
 
-open MeasureTheory Metric Complex ComplexConjugate
+variable {𝕜 A : Type*}
 
-theorem complex_resolvent_def (z : ℂ) :
-    resolvent (R := ℝ) z = fun x : ℝ ↦ (x - z)⁻¹ := by
-  ext x
-  simp [resolvent, Ring.inverse_eq_inv']
+open MeasureTheory Measure spectrum
 
-@[fun_prop]
-theorem continuous_complex_resolvent {z : ℂ} (hz : z.im ≠ 0) :
-    Continuous (resolvent (R := ℝ) z) := by
-  rw [complex_resolvent_def]
-  have h (x : ℝ) : x - z ≠ 0 := by
-    intro h
-    absurd hz
-    simpa using congrArg im h
-  fun_prop (disch := exact h)
+open scoped NNReal Topology Ring
 
-theorem hasDerivAt_complex_resolvent {z : ℂ} (hz : z.im ≠ 0) (x : ℝ) :
-    HasDerivAt (resolvent (R := ℝ) · x) (resolvent z x ^ 2) z := by
-  simp only [resolvent, coe_algebraMap, Ring.inverse_eq_inv', inv_pow]
-  have h : x - z ≠ 0 := by
-    intro h
-    absurd hz
-    simpa using congrArg im h
-  convert HasDerivAt.comp z (hasDerivAt_inv h) ((hasDerivAt_id z).const_sub (x : ℂ)) using 1
-  simp
+-- theorem integrable_resolvent [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra ℝ A]
+--     [CompleteSpace A] {μ : Measure ℝ} [IsFiniteMeasure μ] {a : A}
+--     (ha : a ∉ algebraMap ℝ A '' μ.support) :
+--     Integrable (resolvent a) μ := by
+--   refine ⟨by sorry, ?_⟩
+--   apply HasFiniteIntegral.of_bounded
 
-theorem complex_resolvent_bound {z : ℂ} (hz : z.im ≠ 0) (x : ℝ) :
-    ‖resolvent z x‖ ≤ |z.im|⁻¹ := by
-  have h : x - z ≠ 0 := by
-    intro h
-    absurd hz
-    simpa using congrArg im h
-  rw [complex_resolvent_def, norm_inv, inv_le_inv₀ (by positivity [h]) (by positivity)]
-  convert abs_im_le_norm (x - z) using 1
-  simp
+-- theorem complex_resolvent_def (z : ℂ) :
+--     resolvent (R := ℝ) z = fun x : ℝ ↦ (x - z)⁻¹ := by
+--   ext x
+--   simp [resolvent, Ring.inverse_eq_inv']
 
-@[fun_prop]
-theorem complex_resolvent_integrable (μ : Measure ℝ) [IsFiniteMeasure μ] {z : ℂ} (hz : z.im ≠ 0) :
-    Integrable (resolvent z) μ := by
-  refine ⟨by fun_prop (disch := exact hz), ?_⟩
-  apply HasFiniteIntegral.of_bounded
-  · filter_upwards with x
-    apply complex_resolvent_bound hz
+-- @[fun_prop]
+-- theorem continuous_complex_resolvent {z : ℂ} (hz : z.im ≠ 0) :
+--     Continuous (resolvent (R := ℝ) z) := by
+--   rw [complex_resolvent_def]
+--   have h (x : ℝ) : x - z ≠ 0 := by
+--     intro h
+--     absurd hz
+--     simpa using congrArg im h
+--   fun_prop (disch := exact h)
+
+-- theorem hasDerivAt_complex_resolvent {z : ℂ} (x : ℝ) (hx : x ∈ resolventSet ℝ z) :
+--     HasDerivAt (resolvent (R := ℝ) · x) (resolvent z x ^ 2) z := by
+--   apply hasDerivAt_resolvent' hx
+
+-- theorem complex_resolvent_bound {z : ℂ} (x : ℝ) (hx : x ∈ resolventSet ℝ z) :
+--     ‖resolvent z x‖ ≤ |z.im|⁻¹ := by
+--   have h : x - z ≠ 0 := by
+--     intro h
+--     absurd hz
+--     simpa using congrArg im h
+--   rw [complex_resolvent_def, norm_inv, inv_le_inv₀ (by positivity [h]) (by positivity)]
+--   convert abs_im_le_norm (x - z) using 1
+--   simp
+
+-- @[fun_prop]
+-- theorem complex_resolvent_integrable (μ : Measure ℝ) [IsFiniteMeasure μ] {z : ℂ} (hz : z.im ≠ 0) :
+--     Integrable (resolvent z) μ := by
+--   refine ⟨by fun_prop (disch := exact hz), ?_⟩
+--   apply HasFiniteIntegral.of_bounded
+--   · filter_upwards with x
+--     apply complex_resolvent_bound hz
 
 noncomputable def stieltjesTransform (μ : Measure ℝ) (z : ℂ) :=
   ∫ x, resolvent z x ∂μ
