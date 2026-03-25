@@ -141,16 +141,20 @@ end inductionOn'
 
 /-- See `Int.inductionOn'` for an induction in both directions. -/
 @[elab_as_elim]
-protected lemma le_induction {m : ℤ} {motive : ∀ n, m ≤ n → Prop} (base : motive m m.le_refl)
-    (succ : ∀ n hmn, motive n hmn → motive (n + 1) (le_add_one hmn)) : ∀ n hmn, motive n hmn := by
-  refine fun n ↦ Int.inductionOn' n m ?_ ?_ ?_ <;> grind
+protected def leInduction {m : ℤ} {motive : ∀ n, m ≤ n → Sort*} (base : motive m m.le_refl)
+    (succ : ∀ n hmn, motive n hmn → motive (n + 1) (le_add_one hmn)) : ∀ n hmn, motive n hmn :=
+  fun n ↦ Int.inductionOn' n m (fun _ ↦ base) (fun n hmn ih _ ↦ succ n hmn <| ih hmn) <| by lia
+
+@[deprecated (since := "2026-03-25")] protected alias le_induction := Int.leInduction
 
 /-- See `Int.inductionOn'` for an induction in both directions. -/
 @[elab_as_elim]
-protected lemma le_induction_down {m : ℤ} {motive : ∀ n, n ≤ m → Prop} (base : motive m m.le_refl)
+protected def leInductionDown {m : ℤ} {motive : ∀ n, n ≤ m → Sort*} (base : motive m m.le_refl)
     (pred : ∀ n hmn, motive n hmn → motive (n - 1) (by lia)) : ∀ n hmn, motive n hmn := fun n ↦
   Int.inductionOn' n m (fun _ ↦ base) (fun k hle _ hle' ↦ by lia)
     fun k hle hi _ ↦ pred k hle (hi hle)
+
+@[deprecated (since := "2026-03-25")] protected alias le_induction_down := Int.leInductionDown
 
 section strongRec
 

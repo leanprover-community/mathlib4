@@ -1019,7 +1019,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
           smul_set_mono ((hXYdisj j i).union_left <| hYdisj hij.symm).subset_compl_right
         _ ⊆ X i := by
           clear hnne0 hlt
-          induction n, h1n using Int.le_induction with
+          induction n, h1n using Int.leInduction with
           | base => rw [zpow_one]; exact hX i
           | succ n _hle hi =>
             calc
@@ -1037,7 +1037,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
           smul_set_mono ((hXdisj hij.symm).union_left (hXYdisj i j).symm).subset_compl_right
         _ ⊆ Y i := by
           clear hnne0 hgt
-          induction n, h1n using Int.le_induction_down with
+          induction n, h1n using Int.leInductionDown with
           | base => rw [zpow_neg, zpow_one]; exact hY i
           | pred n hle hi =>
             calc
