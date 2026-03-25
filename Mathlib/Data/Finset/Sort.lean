@@ -369,36 +369,33 @@ lemma LinearOrder.strong_induction_of_finite
   refine Fin.strong_induction_on (fun j hj ↦ h _ (fun k hk ↦ ?_))
   simpa using hj (e.symm k) (by simpa [← e.lt_iff_lt])
 
-lemma Fintype.orderEmbedding_eq_of_range_eq
-    {α β : Type*} [LinearOrder α] [PartialOrder β] [Fintype α] [DecidableEq β]
-    {f g : α ↪o β}
-    (h : Set.range f = Set.range g) :
+lemma LinearOrder.orderEmbedding_eq_of_range_eq
+    {α β : Type*} [LinearOrder α] [PartialOrder β] [Finite α]
+    {f g : α ↪o β} (h : Set.range f = Set.range g) :
     f = g := by
   let ef := (f.strictMono.strictMonoOn .univ).orderIso
   let eg := (g.strictMono.strictMonoOn .univ).orderIso
-  replace h : f '' .univ = g '' .univ := by simpa using h
-  let i : (f '' .univ) ≃o (g '' .univ) :=
-  { __ := Equiv.setCongr h
-    map_rel_iff' := by intro x y; exact Iff.rfl }
-  have : (ef.trans i).trans eg.symm = .refl _ := Subsingleton.elim _ _
+  let i : f '' .univ ≃o g '' .univ :=
+    { __ := Equiv.setCongr (by simpa using h)
+      map_rel_iff' := by rfl }
+  have : (ef.trans i).trans eg.symm = .refl _ := by
+    exact Subsingleton.elim _ _
   ext x
   simpa only [OrderIso.trans_apply, OrderIso.apply_symm_apply, OrderIso.refl_apply, Subtype.ext_iff]
     using congr(eg ($this ⟨x, Set.mem_univ x⟩))
 
-lemma Finset.orderHom_eq_of_image_eq {α β : Type*} [LinearOrder α] [PartialOrder β]
-    [Fintype α] [DecidableEq β] {f g : α →o β}
+lemma OrderHom.eq_of_range_eq {α β : Type*} [LinearOrder α] [PartialOrder β]
+    [Finite α] {f g : α →o β}
     (hf : Function.Injective f) (hg : Function.Injective g)
-    (h : Finset.image f .univ = Finset.image g .univ) :
+    (h : Set.range f = Set.range g) :
     f = g := by
   ext : 2
-  exact DFunLike.congr_fun (Finset.orderEmbedding_eq_of_image_eq
-    (f := OrderEmbedding.ofStrictMono f (f.monotone.strictMono_of_injective hf))
-    (g := OrderEmbedding.ofStrictMono g (g.monotone.strictMono_of_injective hg))
-    (by simpa)) _
+  exact DFunLike.congr_fun (LinearOrder.orderEmbedding_eq_of_range_eq
+    (f := .ofStrictMono f (f.monotone.strictMono_of_injective hf))
+    (g := .ofStrictMono g (g.monotone.strictMono_of_injective hg)) (by simpa)) _
 
 lemma OrderHom.eq_id_of_injective {α : Type*} [LinearOrder α] [Finite α] (f : α →o α)
     (hf : Function.Injective f) :
     f = .id :=
-  let := Fintype.ofFinite α
-  Finset.orderHom_eq_of_image_eq hf Function.injective_id
-    (by simpa using Finset.image_univ_of_surjective (Finite.surjective_of_injective hf))
+  eq_of_range_eq hf Function.injective_id (by
+    simpa [Set.range_eq_univ] using Finite.surjective_of_injective hf)
