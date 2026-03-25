@@ -11,6 +11,10 @@ public import Mathlib.SetTheory.Ordinal.Arithmetic
 # Ordinal arithmetic commutativity
 
 Results on the commutativity of ordinal arithmetic operations.
+
+## References
+
+* [Wacław Sierpiński, *Cardinal and Ordinal Numbers*][sierpinski1958]
 -/
 
 public section
