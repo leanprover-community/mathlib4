@@ -6827,6 +6827,7 @@ public import Mathlib.SetTheory.Ordinal.Exponential
 public import Mathlib.SetTheory.Ordinal.Family
 public import Mathlib.SetTheory.Ordinal.FixedPoint
 public import Mathlib.SetTheory.Ordinal.FixedPointApproximants
+public import Mathlib.SetTheory.Ordinal.FundamentalSequence
 public import Mathlib.SetTheory.Ordinal.Notation
 public import Mathlib.SetTheory.Ordinal.Principal
 public import Mathlib.SetTheory.Ordinal.Rank
@@ -7400,6 +7401,7 @@ public import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
 public import Mathlib.Topology.Category.TopCat.Limits.Konig
 public import Mathlib.Topology.Category.TopCat.Limits.Products
 public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+public import Mathlib.Topology.Category.TopCat.Monoidal
 public import Mathlib.Topology.Category.TopCat.OpenNhds
 public import Mathlib.Topology.Category.TopCat.Opens
 public import Mathlib.Topology.Category.TopCat.Sphere
