@@ -575,12 +575,6 @@ instance : MulLeftMono (FractionalIdeal S P) where
 instance : MulRightMono (FractionalIdeal S P) where
   elim I J J' h := by simpa only [mul_def] using mul_le.mpr fun x hx y hy => mul_mem_mul (h hx) hy
 
-@[deprecated _root_.mul_right_mono (since := "2025-09-09")]
-protected theorem mul_left_mono (I : FractionalIdeal S P) : Monotone (I * ·) := mul_right_mono
-
-@[deprecated _root_.mul_left_mono (since := "2025-09-09")]
-protected lemma mul_right_mono (I : FractionalIdeal S P) : Monotone fun J => J * I := mul_left_mono
-
 theorem mul_mem_mul {I J : FractionalIdeal S P} {i j : P} (hi : i ∈ I) (hj : j ∈ J) :
     i * j ∈ I * J := by
   simp only [mul_def]
@@ -639,22 +633,6 @@ def coeSubmoduleHom : FractionalIdeal S P →+* Submodule R P where
 variable {S P}
 
 section Order
-
-@[deprecated _root_.add_le_add_right (since := "2025-09-14")]
-theorem add_le_add_left {I J : FractionalIdeal S P} (hIJ : I ≤ J) (J' : FractionalIdeal S P) :
-    J' + I ≤ J' + J := _root_.add_le_add_right hIJ _
-
-@[deprecated mul_le_mul_right (since := "2025-09-14")]
-theorem mul_le_mul_left {I J : FractionalIdeal S P} (hIJ : I ≤ J) (J' : FractionalIdeal S P) :
-    J' * I ≤ J' * J := mul_le_mul_right hIJ _
-
-@[deprecated le_mul_of_one_le_left' (since := "2025-09-14")]
-theorem le_self_mul_self {I : FractionalIdeal S P} (hI : 1 ≤ I) : I ≤ I * I :=
-  le_mul_of_one_le_left' hI
-
-@[deprecated mul_le_of_le_one_left' (since := "2025-09-14")]
-theorem mul_self_le_self {I : FractionalIdeal S P} (hI : I ≤ 1) : I * I ≤ I :=
-  mul_le_of_le_one_left' hI
 
 theorem coeIdeal_le_one {I : Ideal R} : (I : FractionalIdeal S P) ≤ 1 := fun _ hx =>
   let ⟨y, _, hy⟩ := (mem_coeIdeal S).mp hx
