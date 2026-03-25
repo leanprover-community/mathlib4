@@ -29,6 +29,7 @@ open Finset
 open scoped ArithmeticFunction
 namespace PNat
 
+set_option backward.isDefEq.respectTransparency false in
 instance instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) :=
   /- The set of divisors of a positive natural number.
 This is `Nat.divisorsAntidiagonal` without a special case for `n = 0`. -/
@@ -306,6 +307,6 @@ open scoped ArithmeticFunction.omega in -- access notation `ω`
 theorem card_pair_lcm_eq {n : ℕ} (hn : Squarefree n) :
     #{p ∈ (n.divisors ×ˢ n.divisors) | p.1.lcm p.2 = n} = 3 ^ ω n := by
   rw [← card_finMulAntidiag_of_squarefree hn, eq_comm]
-  apply Finset.card_bij f (f_img hn) (f_inj) (f_surj hn.ne_zero)
+  apply Finset.card_bij f (f_img hn) f_inj (f_surj hn.ne_zero)
 
 end Nat

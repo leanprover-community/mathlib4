@@ -190,7 +190,7 @@ protected theorem mul_inv_rev (φ ψ : k⟦X⟧) : (φ * ψ)⁻¹ = ψ⁻¹ * φ
   MvPowerSeries.mul_inv_rev _ _
 
 instance : InvOneClass k⟦X⟧ :=
-  { inferInstanceAs <| InvOneClass <| MvPowerSeries Unit k with }
+  { (inferInstance : InvOneClass <| MvPowerSeries Unit k) with }
 
 @[simp]
 theorem C_inv (r : k) : (C r)⁻¹ = C r⁻¹ :=
@@ -276,7 +276,7 @@ variable [IsLocalRing R]
 
 set_option backward.isDefEq.respectTransparency false in
 instance : IsLocalRing R⟦X⟧ :=
-  { inferInstanceAs <| IsLocalRing <| MvPowerSeries Unit R with }
+  { (inferInstance : IsLocalRing <| MvPowerSeries Unit R) with }
 
 
 end IsLocalRing
@@ -382,7 +382,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The ring isomorphism between the residue field of the ring of power series valued in a field `K`
 and `K` itself. -/
 def residueFieldOfPowerSeries : ResidueField k⟦X⟧ ≃+* k :=
-  (Ideal.quotEquivOfEq (ker_coeff_eq_max_ideal).symm).trans
+  Ideal.quotEquivOfEq (ker_coeff_eq_max_ideal).symm |>.trans
     (RingHom.quotientKerEquivOfSurjective constantCoeff_surj)
 
 end IsDiscreteValuationRing

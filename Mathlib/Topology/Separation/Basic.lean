@@ -314,6 +314,7 @@ variable (X) in
 /-- In an R₀ space, relatively compact sets form a bornology.
 Its cobounded filter is `Filter.coclosedCompact`.
 See also `Bornology.inCompact` the bornology of sets contained in a compact set. -/
+@[implicit_reducible]
 def Bornology.relativelyCompact : Bornology X where
   cobounded := Filter.coclosedCompact X
   le_cofinite := Filter.coclosedCompact_le_cofinite
@@ -731,9 +732,6 @@ theorem ContinuousWithinAt.eq_const_of_mem_closure [TopologicalSpace Y] [T1Space
     (ht : ∀ y ∈ s, f y = c) : f x = c := by
   rw [← Set.mem_singleton_iff, ← closure_singleton]
   exact h.mem_closure hx ht
-
-@[deprecated (since := "2025-08-22")] alias ContinousWithinAt.eq_const_of_mem_closure :=
-  ContinuousWithinAt.eq_const_of_mem_closure
 
 theorem ContinuousWithinAt.eqOn_const_closure [TopologicalSpace Y] [T1Space Y]
     {f : X → Y} {s : Set X} {c : Y} (h : ∀ x ∈ closure s, ContinuousWithinAt f s x)

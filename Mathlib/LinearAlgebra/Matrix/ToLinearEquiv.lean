@@ -28,7 +28,7 @@ to linear equivs.
 
 ## Tags
 
-matrix, linear_equiv, determinant, inverse
+matrix, linear equivalence, linear isomorphism, determinant, inverse
 
 -/
 

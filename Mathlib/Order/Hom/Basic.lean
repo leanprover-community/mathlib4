@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.Disjoint
 public import Mathlib.Order.RelIso.Basic
 public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Order homomorphisms
@@ -120,6 +121,8 @@ section
 /-- `OrderHomClass F α b` asserts that `F` is a type of `≤`-preserving morphisms. -/
 abbrev OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLike F α β] :=
   RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
+
+to_dual_insert_cast OrderHomClass := by grind only [RelHomClass]
 
 /-- `OrderIsoClass F α β` states that `F` is a type of order isomorphisms.
 
@@ -603,15 +606,15 @@ also has `(· > ·)` well-founded. -/]
 protected theorem wellFoundedLT [WellFoundedLT β] (f : α ↪o β) : WellFoundedLT α where
   wf := f.wellFounded IsWellFounded.wf
 
--- `to_dual` cannot yet reorder arguments of arguments
 /-- To define an order embedding from a partial order to a preorder it suffices to give a function
 together with a proof that it satisfies `f a ≤ f b ↔ a ≤ b`.
 -/
+@[to_dual self]
 def ofMapLEIff {α β} [PartialOrder α] [Preorder β] (f : α → β) (hf : ∀ a b, f a ≤ f b ↔ a ≤ b) :
     α ↪o β :=
   RelEmbedding.ofMapRelIff f hf
 
-@[simp]
+@[simp, to_dual self]
 theorem coe_ofMapLEIff {α β} [PartialOrder α] [Preorder β] {f : α → β} (h) :
     ⇑(ofMapLEIff f h) = f :=
   rfl

@@ -99,12 +99,10 @@ theorem reverse_eq_id :
     (reverse : CliffordAlgebra (0 : QuadraticForm R Unit) →ₗ[R] _) = LinearMap.id :=
   LinearMap.ext reverse_apply
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem involute_eq_id :
     (involute : CliffordAlgebra (0 : QuadraticForm R Unit) →ₐ[R] _) = AlgHom.id R _ := by ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The clifford algebra over a 0-dimensional vector space is isomorphic to its scalars. -/
 protected def equiv : CliffordAlgebra (0 : QuadraticForm R Unit) ≃ₐ[R] R :=
   AlgEquiv.ofAlgHom
@@ -177,7 +175,6 @@ theorem toComplex_comp_ofComplex : toComplex.comp ofComplex = AlgHom.id ℝ ℂ 
 theorem toComplex_ofComplex (c : ℂ) : toComplex (ofComplex c) = c :=
   AlgHom.congr_fun toComplex_comp_ofComplex c
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofComplex_comp_toComplex : ofComplex.comp toComplex = AlgHom.id ℝ (CliffordAlgebra Q) := by
   ext
@@ -298,7 +295,6 @@ theorem ofQuaternion_mk (a₁ a₂ a₃ a₄ : R) :
         a₄ • (ι (Q c₁ c₂) (1, 0) * ι (Q c₁ c₂) (0, 1)) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofQuaternion_comp_toQuaternion :
     ofQuaternion.comp toQuaternion = AlgHom.id R (CliffordAlgebra (Q c₁ c₂)) := by
