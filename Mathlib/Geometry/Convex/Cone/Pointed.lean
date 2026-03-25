@@ -316,7 +316,7 @@ variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R 
 @[simp] lemma neg_ofSubmodule_le {S : Submodule R E} : -(ofSubmodule S) ≤ S := by
   intro x; simp
 
-@[simp] lemma ofSubmodule_le_neg {S : Submodule R E} : S ≤ -(ofSubmodule S) := by
+@[simp] lemma le_neg_ofSubmodule {S : Submodule R E} : S ≤ -(ofSubmodule S) := by
   intro x; simp
 
 @[simp] lemma neg_ofSubmodule {S : Submodule R E} : -(ofSubmodule S) = S := by
