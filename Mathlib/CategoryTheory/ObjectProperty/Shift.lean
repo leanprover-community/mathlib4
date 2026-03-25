@@ -72,6 +72,12 @@ class IsStableUnderShiftBy (a : A) : Prop where
 lemma le_shift (a : A) [P.IsStableUnderShiftBy a] :
     P ≤ P.shift a := IsStableUnderShiftBy.le_shift
 
+instance (a : A) : IsStableUnderShiftBy (⊥ : ObjectProperty C) a where
+  le_shift _ h := False.elim h
+
+instance (a : A) : IsStableUnderShiftBy (⊤ : ObjectProperty C) a where
+  le_shift _ _ := by trivial
+
 instance (a : A) [P.IsStableUnderShiftBy a] :
     P.isoClosure.IsStableUnderShiftBy a where
   le_shift := by
@@ -96,6 +102,10 @@ instance [P.IsStableUnderShift A] :
 
 instance [P.IsStableUnderShift A]
     [Q.IsStableUnderShift A] : (P ⊓ Q).IsStableUnderShift A where
+
+instance : IsStableUnderShift (⊥ : ObjectProperty C) A where
+
+instance : IsStableUnderShift (⊤ : ObjectProperty C) A where
 
 lemma prop_shift_iff_of_isStableUnderShift {G : Type*} [AddGroup G] [HasShift C G]
     [P.IsStableUnderShift G] [P.IsClosedUnderIsomorphisms] (X : C) (g : G) :
@@ -125,6 +135,12 @@ lemma shiftClosure_eq_self [P.IsClosedUnderIsomorphisms] [P.IsStableUnderShift A
   refine le_antisymm ?_ P.le_shiftClosure
   rintro X ⟨Y, a, i, hY⟩
   exact P.prop_of_iso i.symm (P.le_shift a Y hY)
+
+@[simp]
+lemma shiftClosure_bot : shiftClosure (⊥ : ObjectProperty C) A = ⊥ := shiftClosure_eq_self _
+
+@[simp]
+lemma shiftClosure_top : shiftClosure (⊤ : ObjectProperty C) A = ⊤ := shiftClosure_eq_self _
 
 lemma shiftClosure_le_iff [IsClosedUnderIsomorphisms Q] [Q.IsStableUnderShift A] :
     shiftClosure P A ≤ Q ↔ P ≤ Q :=
