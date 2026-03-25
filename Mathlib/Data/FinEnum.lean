@@ -251,6 +251,62 @@ sure that there aren't two definitionally differing instances around. -/
 @[implicit_reducible]
 def ofUnique [Unique α] : FinEnum α := default
 
+instance : FinEnum UInt8 where
+  card := 2 ^ 8
+  equiv := ⟨UInt8.toFin, UInt8.ofFin, fun x => by simp, fun x => by simp⟩
+
+instance : FinEnum UInt16 where
+  card := 2 ^ 16
+  equiv := ⟨UInt16.toFin, UInt16.ofFin, fun x => by simp, fun x => by simp⟩
+
+instance : FinEnum UInt32 where
+  card := 2 ^ 32
+  equiv := ⟨UInt32.toFin, UInt32.ofFin, fun x => by simp, fun x => by simp⟩
+
+instance : FinEnum UInt64 where
+  card := 2 ^ 64
+  equiv := ⟨UInt64.toFin, UInt64.ofFin, fun x => by simp, fun x => by simp⟩
+
+instance : FinEnum USize where
+  card := 2 ^ System.Platform.numBits
+  equiv := ⟨USize.toFin, USize.ofFin, fun x => by simp, fun x => by simp⟩
+
+instance : FinEnum Int8 where
+  card := 2 ^ 8
+  equiv := ⟨BitVec.toFin ∘ Int8.toBitVec, Int8.ofBitVec ∘ BitVec.ofFin,
+    fun x => by simp, fun x => by simp⟩
+
+instance : FinEnum Int16 where
+  card := 2 ^ 16
+  equiv := ⟨BitVec.toFin ∘ Int16.toBitVec, Int16.ofBitVec ∘ BitVec.ofFin,
+    fun x => by simp, fun x => by simp⟩
+
+instance : FinEnum Int32 where
+  card := 2 ^ 32
+  equiv := ⟨BitVec.toFin ∘ Int32.toBitVec, Int32.ofBitVec ∘ BitVec.ofFin,
+    fun x => by simp, fun x => by simp⟩
+
+instance : FinEnum Int64 where
+  card := 2 ^ 64
+  equiv := ⟨BitVec.toFin ∘ Int64.toBitVec, Int64.ofBitVec ∘ BitVec.ofFin,
+    fun x => by simp, fun x => by simp⟩
+
+instance : FinEnum ISize where
+  card := 2 ^ System.Platform.numBits
+  equiv := ⟨BitVec.toFin ∘ ISize.toBitVec, ISize.ofBitVec ∘ BitVec.ofFin,
+    fun x => by simp, fun x => by simp⟩
+
+@[simp, grind =] lemma card_UInt8 : card UInt8 = 2 ^ 8 := rfl
+@[simp, grind =] lemma card_UInt16 : card UInt16 = 2 ^ 16 := rfl
+@[simp, grind =] lemma card_UInt32 : card UInt32 = 2 ^ 32 := rfl
+@[simp, grind =] lemma card_UInt64 : card UInt64 = 2 ^ 64 := rfl
+@[simp, grind =] lemma card_USize : card USize = 2 ^ System.Platform.numBits := rfl
+@[simp, grind =] lemma card_Int8 : card Int8 = 2 ^ 8 := rfl
+@[simp, grind =] lemma card_Int16 : card Int16 = 2 ^ 16 := rfl
+@[simp, grind =] lemma card_Int32 : card Int32 = 2 ^ 32 := rfl
+@[simp, grind =] lemma card_Int64 : card Int64 = 2 ^ 64 := rfl
+@[simp, grind =] lemma card_ISize : card ISize = 2 ^ System.Platform.numBits := rfl
+
 end FinEnum
 
 namespace List
