@@ -415,15 +415,9 @@ section OrderBot
 variable [OrderBot α] {s : Finset ι} {f : ι → α} {a : α}
 
 @[to_dual]
-theorem comp_sup_eq_sup_comp_of_linearOrder [SemilatticeSup β] [OrderBot β] (g : α → β)
+theorem comp_sup_eq_sup_comp_of_is_total [SemilatticeSup β] [OrderBot β] (g : α → β)
     (mono_g : Monotone g) (bot : g ⊥ = ⊥) : g (s.sup f) = s.sup (g ∘ f) :=
   comp_sup_eq_sup_comp g mono_g.map_sup bot
-
-@[deprecated (since := "2026-03-23")]
-alias comp_sup_eq_sup_comp_of_is_total := comp_sup_eq_sup_comp_of_linearOrder
-
-@[deprecated (since := "2026-03-23")]
-alias comp_inf_eq_inf_comp_of_is_total := comp_inf_eq_inf_comp_of_linearOrder
 
 @[to_dual (attr := simp) inf_le_iff]
 protected theorem le_sup_iff (ha : ⊥ < a) : a ≤ s.sup f ↔ ∃ b ∈ s, a ≤ f b := by
@@ -501,8 +495,8 @@ theorem sup_of_mem {s : Finset β} (f : β → α) {b : β} (h : b ∈ s) :
 /-- Given nonempty finset `s` then `s.sup' H f` is the supremum of its image under `f` in (possibly
 unbounded) join-semilattice `α`, where `H` is a proof of nonemptiness. If `α` has a bottom element
 you may instead use `Finset.sup` which does not require `s` nonempty. -/
-@[to_dual /--
-Given nonempty finset `s` then `s.inf' H f` is the infimum of its image under `f` in (possibly
+@[to_dual
+/-- Given nonempty finset `s` then `s.inf' H f` is the infimum of its image under `f` in (possibly
 unbounded) meet-semilattice `α`, where `H` is a proof of nonemptiness. If `α` has a top element you
 may instead use `Finset.inf` which does not require `s` nonempty. -/]
 def sup' (s : Finset β) (H : s.Nonempty) (f : β → α) : α :=
@@ -534,14 +528,15 @@ theorem sup'_singleton {b : β} : ({b} : Finset β).sup' (singleton_nonempty _) 
 theorem sup'_le_iff {a : α} : s.sup' H f ≤ a ↔ ∀ b ∈ s, f b ≤ a := by
   simp_rw [← @WithBot.coe_le_coe α, coe_sup', Finset.sup_le_iff]; rfl
 
-@[to_dual le_inf']
 alias ⟨_, sup'_le⟩ := sup'_le_iff
+
+@[to_dual existing sup'_le]
+alias ⟨_, le_inf'⟩ := le_inf'_iff
 
 @[to_dual inf'_le]
 theorem le_sup' {b : β} (h : b ∈ s) : f b ≤ s.sup' ⟨b, h⟩ f :=
   (sup'_le_iff ⟨b, h⟩ f).1 le_rfl b h
 
-set_option linter.docPrime false in
 @[to_dual]
 theorem isLUB_sup' {s : Finset α} (hs : s.Nonempty) : IsLUB s (sup' s hs id) :=
   ⟨fun x h => id_eq x ▸ le_sup' id h, fun _ h => Finset.sup'_le hs id h⟩
@@ -768,11 +763,9 @@ end Multiset
 namespace Finset
 variable [DecidableEq α] {s : Finset ι} {f : ι → Finset α} {a : α}
 
-set_option linter.docPrime false in
 @[simp] lemma mem_sup' (hs) : a ∈ s.sup' hs f ↔ ∃ i ∈ s, a ∈ f i := by
   induction hs using Nonempty.cons_induction <;> simp [*]
 
-set_option linter.docPrime false in
 @[simp] lemma mem_inf' (hs) : a ∈ s.inf' hs f ↔ ∀ i ∈ s, a ∈ f i := by
   induction hs using Nonempty.cons_induction <;> simp [*]
 

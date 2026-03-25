@@ -186,7 +186,7 @@ instance _root_.Pi.cstarRing : CStarRing (∀ i, R i) where
     simp only [norm, Pi.mul_apply, Pi.star_apply, nnnorm_star_mul_self, ← sq]
     norm_cast
     exact
-      (Finset.comp_sup_eq_sup_comp_of_linearOrder (fun x : NNReal => x ^ 2)
+      (Finset.comp_sup_eq_sup_comp_of_is_total (fun x : NNReal => x ^ 2)
           (fun x y h => by simpa only [sq] using mul_le_mul' h h) (by simp)).symm
 
 instance _root_.Pi.cstarRing' : CStarRing (ι → R₁) :=
