@@ -283,10 +283,9 @@ instance natCast [NatCast α] : NatCast (WithTop α) :=
 section AddMonoidWithOne
 variable [AddMonoidWithOne α]
 
-instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
-  { WithTop.one, WithTop.addMonoid, WithTop.natCast with
-    natCast_zero := by simp [NatCast.natCast]
-    natCast_succ := fun n => by simp [NatCast.natCast] }
+instance addMonoidWithOne : AddMonoidWithOne (WithTop α) where
+  natCast_zero := by simp [NatCast.natCast]
+  natCast_succ := fun n => by simp [NatCast.natCast]
 
 @[simp, norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithTop α) = n := rfl
 
