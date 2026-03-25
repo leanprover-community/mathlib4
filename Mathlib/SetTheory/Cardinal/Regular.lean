@@ -107,7 +107,7 @@ theorem cof_omega_one : cof ω₁ = ℵ₁ := by
   simpa using isRegular_aleph_one.cof_omega_eq
 
 theorem isRegular_preAleph_add_one {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (o + 1)) := by
-  rw [preAleph_add_one]
+  rw [← succ_preAleph]
   exact isRegular_succ (aleph0_le_preAleph.2 h)
 
 @[deprecated isRegular_preAleph_add_one (since := "2026-03-23")]
@@ -116,10 +116,10 @@ theorem isRegular_preAleph_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (preAle
 
 theorem cof_preOmega_add_one {o : Ordinal} (h : ω ≤ o) :
     (preOmega (o + 1)).cof = preAleph (o + 1) := by
-  rw [← ord_preAleph, (isRegular_preAleph_add_one h).cof_eq]
+  rw [← ord_preAleph, (isRegular_preAleph_add_one h).cof_ord]
 
 theorem isRegular_aleph_add_one (o : Ordinal) : IsRegular (ℵ_ (o + 1)) := by
-  rw [aleph_add_one]
+  rw [← succ_aleph]
   exact isRegular_succ (aleph0_le_aleph o)
 
 @[deprecated isRegular_aleph_add_one (since := "2026-03-23")]
