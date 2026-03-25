@@ -270,6 +270,14 @@ def fixingSubgroupEquiv : fixingSubgroup K ≃* Gal(E/K) where
   invFun ϕ := ⟨ϕ.restrictScalars _, ϕ.commutes⟩
   map_mul' _ _ := by ext; rfl
 
+@[simp]
+theorem fixingSubgroupEquiv_apply_apply (σ : fixingSubgroup K) (x : E) :
+    fixingSubgroupEquiv K σ x = σ • x := rfl
+
+@[simp]
+theorem fixingSubgroupEquiv_symm_apply_apply (σ : Gal(E/K)) (x : E) :
+    (fixingSubgroupEquiv K).symm σ • x = σ x := rfl
+
 theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixedField H) = H := by
   have H_le : H ≤ fixingSubgroup (fixedField H) := (le_iff_le _ _).mp le_rfl
   classical
@@ -358,6 +366,11 @@ def intermediateFieldEquivSubgroup [FiniteDimensional F E] [IsGalois F E] :
   map_rel_iff' {K L} := by
     rw [← fixedField_fixingSubgroup L, IntermediateField.le_iff_le, fixedField_fixingSubgroup L]
     rfl
+
+theorem _root_.IntermediateField.fixingSubgroup_inf [FiniteDimensional F E] [IsGalois F E]
+    {K L : IntermediateField F E} :
+    (K ⊓ L).fixingSubgroup = K.fixingSubgroup ⊔ L.fixingSubgroup :=
+  intermediateFieldEquivSubgroup.map_inf K L
 
 section
 variable [FiniteDimensional F E] [IsGalois F E]
