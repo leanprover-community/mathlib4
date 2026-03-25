@@ -43,7 +43,10 @@ lemma FreeGroup.lift_mulEquiv_image (iso : G ≃* H) (S : Set G) :
         (FreeGroup.freeGroupCongr (iso.toEquiv.image S).symm)) := by
   ext ⟨_, s, hs, rfl⟩; simp [Equiv.image]
 
-/-- Defines when a subgroup is the normal closure of a finite set. -/
+/--
+`IsNormalClosureFG N` says that the subgroup `N` is the normal closure of a finitely-generated
+subgroup.
+-/
 def Subgroup.IsNormalClosureFG (N : Subgroup G) : Prop :=
   ∃ S : Set G, S.Finite ∧ Subgroup.normalClosure S = N
 
