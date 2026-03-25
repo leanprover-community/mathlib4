@@ -300,12 +300,11 @@ theorem isClosed_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
 
 /-- The weak-* closure of a norm-bounded set is norm-bounded, because norm-closed balls
 are weak-* closed. -/
-theorem isBounded_closure {s : Set (WeakDual 𝕜 E)} (hb : IsBounded (StrongDual.toWeakDual ⁻¹' s)) :
-    IsBounded (StrongDual.toWeakDual ⁻¹' (closure s)) := by
+theorem isBounded_closure {s : Set (WeakDual 𝕜 E)} (hb : IsBounded s) :
+    IsBounded (closure s) := by
   obtain ⟨R, hR⟩ := (Metric.isBounded_iff_subset_closedBall (0 : StrongDual 𝕜 E)).mp hb
-  have h_sub : closure s ⊆ toStrongDual ⁻¹' Metric.closedBall 0 R :=
-    closure_minimal (fun y hy => hR (a := toStrongDual y) hy) (isClosed_closedBall 0 R)
-  exact Metric.isBounded_closedBall.subset (Set.preimage_mono h_sub)
+  exact (isBounded_closedBall 0 R).subset
+    (closure_minimal (fun y hy => hR (a := toStrongDual y) hy) (isClosed_closedBall 0 R))
 
 /-- Closed balls are bounded in the weak dual. -/
 theorem isBounded_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
