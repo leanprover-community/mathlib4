@@ -16,7 +16,11 @@ public import Mathlib.Algebra.Module.Submodule.Basic
 * `DirectSum.Decomposition ℳ`: A typeclass to provide a constructive decomposition from
   an additive monoid `M` into a family of additive submonoids `ℳ`
 * `DirectSum.decompose ℳ`: The canonical equivalence provided by the above typeclass
-
+* `SetLike.Rel.IsPureHomogeneous`:
+  a relation `r` is `PureHomogeneous` iff `r a b` implies that
+  `a` and `b` are homogeneous of the same degree.
+* `SetLike.Rel.IsHomogeneous`: a relation is `Homogeneous` iff
+  `r a b` implies that the components of `a` and `b` are related by `r`.
 
 ## Main statements
 
@@ -96,6 +100,17 @@ def decompose : M ≃ ⨁ i, ℳ i where
   left_inv := Decomposition.left_inv
   right_inv := Decomposition.right_inv
 
+/-- A relation `r` is `PureHomogeneous` with respect to a family `ℳ : ι → σ` (where `SetLike σ M`)
+  iff `r a b` implies that `a` and `b` are homogeneous of the same degree. -/
+def Rel.IsPureHomogeneous (r : M → M → Prop) : Prop :=
+  ∀ {a b : M} (_ : r a b), ∃ i, a ∈ ℳ i ∧ b ∈ ℳ i
+
+/-- A relation `r` is `Homogeneous` for a `DirectSum.Decomposition` iff
+`r a b` implies that the components of `a` and `b` are related by `r` -/
+def Rel.IsHomogeneous [DecidableEq ι] [DirectSum.Decomposition ℳ]
+  (r : M → M → Prop) : Prop :=
+  ∀ {a b : M} (_ : r a b), ∀ i, r (decompose ℳ a i) (decompose ℳ b i)
+
 omit [AddSubmonoidClass σ M] in
 /-- A substructure `p ⊆ M` is homogeneous if for every `m ∈ p`, all homogeneous components
   of `m` are in `p`. -/
@@ -145,6 +160,43 @@ theorem decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j
 theorem degree_eq_of_mem_mem {x : M} {i j : ι} (hxi : x ∈ ℳ i) (hxj : x ∈ ℳ j) (hx : x ≠ 0) :
     i = j := by
   contrapose! hx; rw [← decompose_of_mem_same ℳ hxj, decompose_of_mem_ne ℳ hxi hx]
+
+theorem mem_iff_forall_ne_decompose_eq_zero {m : M} {i : ι} :
+    m ∈ ℳ i ↔ ∀ j ≠ i, decompose ℳ m j = 0 := by
+  constructor
+  · intro hm j hj
+    simpa using DirectSum.decompose_of_mem_ne ℳ hm (Ne.symm hj)
+  · intro hm
+    suffices m = (((decompose ℳ) m) i) by
+      rw [this]
+      exact SetLike.coe_mem (((decompose ℳ) m) i)
+    suffices decompose ℳ m = DirectSum.of (fun j ↦ ℳ j) i (decompose ℳ m i) by
+      replace this := congr((decompose ℳ).symm $this)
+      simpa only [Equiv.symm_apply_apply, decompose_symm_of] using this
+    ext j
+    by_cases hj : j = i
+    · subst hj; simp
+    · rw [SetLike.coe_eq_coe, hm j hj, eq_comm, of_eq_of_ne _ _ _ hj]
+
+lemma IsPureHomogeneous.isHomogeneous (r : M → M → Prop)
+    (hr0 : r 0 0) (hr : Rel.IsPureHomogeneous ℳ r) :
+    Rel.IsHomogeneous ℳ r := by
+  intro a b h i
+  obtain ⟨j, ha, hb⟩ := hr h
+  by_cases hij : j = i
+  · rw [← hij]
+    simp only [decompose_of_mem_same, ha, hb, h]
+  · simp only [decompose_of_mem_ne _ ha hij, decompose_of_mem_ne _ hb hij, hr0]
+
+open Relation in
+theorem Rel.IsHomogeneous.eqvGenIsHomogeneous (r : M → M → Prop) (hr : Rel.IsHomogeneous ℳ r) :
+    Rel.IsHomogeneous ℳ (EqvGen r) := by
+  intro a b h
+  induction h with
+  | rel a b h => exact fun i => EqvGen.rel _ _ (hr h i)
+  | refl a => exact fun i => EqvGen.refl _
+  | symm a b _ k => exact fun i => EqvGen.symm _ _ (k i)
+  | trans a b c _ _ k k' => exact fun i => EqvGen.trans _ _ _ (k i) (k' i)
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 an additive monoid to a direct sum of components. -/
