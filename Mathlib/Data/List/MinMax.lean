@@ -50,11 +50,10 @@ theorem foldl_argAux_eq_none : l.foldl (argAux r) o = none ↔ l = [] ∧ o = no
       split_ifs <;> simp
 
 private theorem foldl_argAux_mem (l) : ∀ a m : α, m ∈ foldl (argAux r) (some a) l → m ∈ a :: l :=
-  List.reverseRecOn l (by simp [eq_comm])
-    (by
-      intro _ _ _ _
-      simp only [foldl_append, foldl_cons, foldl_nil, argAux]
-      cases _ : foldl _ _ _ <;> grind)
+  List.reverseRecOn l (by simp [eq_comm]) <| by
+    intro _ _ _ _
+    simp only [foldl_append, foldl_cons, foldl_nil, argAux]
+    cases _ : foldl _ _ _ <;> grind
 
 @[simp]
 theorem argAux_self (hr₀ : Std.Irrefl r) (a : α) : argAux r (some a) a = a :=
