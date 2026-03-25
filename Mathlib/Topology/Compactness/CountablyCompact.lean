@@ -222,8 +222,9 @@ theorem isCountablyCompact_iff_infinite_subset_has_accPt [T1Space E] {A : Set E}
         intro hBfin
         apply hfin
         rw [← Set.inter_union_diff (range x) A]
-        exact hBfin.union <| (h_cofin.image x).subset
-          (by rintro _ ⟨⟨n, rfl⟩, hnA⟩; exact ⟨n, hnA, rfl⟩)
+        refine hBfin.union ((h_cofin.image x).subset ?_)
+        rintro _ ⟨⟨n, rfl⟩, hnA⟩
+        exact ⟨n, hnA, rfl⟩
       obtain ⟨a, haA, hacc⟩ := h B inter_subset_right hB_inf
       refine ⟨a, haA, mapClusterPt_iff_frequently.mpr fun U hU =>
         Nat.frequently_atTop_iff_infinite.mpr ?_⟩
