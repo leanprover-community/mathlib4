@@ -37,7 +37,7 @@ universe u
 /-- Morphism property selecting Markov kernels in `SFinKer`. -/
 abbrev StochHom : MorphismProperty SFinKer := fun _ _ κ => IsMarkovKernel κ.1
 
-instance : StochHom.IsStableUnderComonoid where
+instance : StochHom.IsStableUnderBraiding where
   whiskerLeft X Y Z κ hκ := by
     kernel_cat
     infer_instance
@@ -70,8 +70,10 @@ instance : StochHom.IsStableUnderComonoid where
     exact Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
   braiding_hom_mem X Y := Kernel.instIsMarkovKernelProdSwap
   braiding_inv_mem X Y := Kernel.instIsMarkovKernelProdSwap
-  counit_mem X := Kernel.instIsMarkovKernelPUnitDiscard
-  comul_mem X := Kernel.instIsMarkovKernelProdCopy
+
+instance {X} : StochHom.IsStableUnderComonoid X where
+  counit_mem := Kernel.instIsMarkovKernelPUnitDiscard
+  comul_mem := Kernel.instIsMarkovKernelProdCopy
 
 /-- `Stoch` is the wide subcategory of `SFinKer` with Markov-kernel morphisms. -/
 abbrev Stoch := WideSubcategory StochHom

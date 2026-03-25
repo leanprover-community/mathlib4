@@ -72,12 +72,12 @@ end IsStableUnderBraiding
 
 section IsStableUnderComonoid
 
-variable [BraidedCategory C] [∀ {c : C}, ComonObj c]
+variable [BraidedCategory C] (c : C) [ComonObj c]
 
 /-- A braided-stable morphism property stable under comonoid counit and comultiplication. -/
-class IsStableUnderComonoid (P : MorphismProperty C) : Prop extends IsStableUnderBraiding P where
-  counit_mem (P) (c : C) : P (ε[c])
-  comul_mem (P) (c : C) : P (Δ[c])
+class IsStableUnderComonoid (P : MorphismProperty C) : Prop where
+  counit_mem (P) : P (ε[c])
+  comul_mem (P) : P (Δ[c])
 
 export IsStableUnderComonoid (counit_mem comul_mem)
 
@@ -135,16 +135,17 @@ end SymmetricCategory
 
 section ComonObj
 
-variable [BraidedCategory C] [∀ {c : C}, ComonObj c] [P.IsStableUnderComonoid]
+variable [BraidedCategory C] [P.IsStableUnderBraiding] (c : WideSubcategory P) [ComonObj c.obj]
+  [P.IsStableUnderComonoid c.obj]
 
 @[simps]
-instance {c : WideSubcategory P} : ComonObj c where
-  counit := ⟨ε[c.obj], P.counit_mem _⟩
-  comul := ⟨Δ[c.obj], P.comul_mem _⟩
+instance : ComonObj c where
+  counit := ⟨ε[c.obj], P.counit_mem⟩
+  comul := ⟨Δ[c.obj], P.comul_mem⟩
 
-variable [∀ {c : C}, IsCommComonObj c]
+variable [IsCommComonObj c.obj]
 
-instance {c : WideSubcategory P} : IsCommComonObj c where
+instance : IsCommComonObj c where
   comul_comm := by
     ext
     exact IsCommComonObj.comul_comm _
@@ -153,7 +154,7 @@ end ComonObj
 
 section CopyDiscardCategory
 
-variable [CopyDiscardCategory C] [P.IsStableUnderComonoid]
+variable [CopyDiscardCategory C] [P.IsStableUnderBraiding]
 
 @[simp]
 lemma tensorμ_hom (X Y Z T : WideSubcategory P) :
@@ -161,7 +162,7 @@ lemma tensorμ_hom (X Y Z T : WideSubcategory P) :
 
 open CopyDiscardCategory in
 attribute [local simp] copy_tensor discard_tensor copy_unit discard_unit in
-instance : CopyDiscardCategory (WideSubcategory P) where
+instance [∀ c, P.IsStableUnderComonoid c] : CopyDiscardCategory (WideSubcategory P) where
 
 end CopyDiscardCategory
 
