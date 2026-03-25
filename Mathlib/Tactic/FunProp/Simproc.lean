@@ -50,11 +50,17 @@ def mkFunPropSimproc (simprocName : Name) (thm : Name) : Simp.Simproc := fun e =
   unless ← isFunPropGoal hfType do
     throwError m!"{simprocName} error: expected `fun_prop` goal, got {hfType} instead!"
 
-  let disch? := (← Simp.getMethods).discharge?
-  let state : FunProp.State := { morTheorems := default, transitionTheorems := default }
+  let ctx : Context :=
+    { config := {},
+      disch := (← Simp.getMethods).discharge?
+      constToUnfold := .ofArray defaultNamesToUnfold _}
+  let env ← getEnv
+  let state : State := {
+    morTheorems        := morTheoremsExt.getState env
+    transitionTheorems := transitionTheoremsExt.getState env }
 
   -- run fun_prop
-  let (some r,_) ← funProp hfType { disch := disch? } state
+  let (some r,_) ← funProp hfType ctx state
     | return .continue
 
   unless ← isDefEq hf r.proof do

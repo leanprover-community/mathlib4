@@ -241,7 +241,8 @@ For example calling on `e` equal to `Continuous f` might return theorems implyin
 from linearity over finite-dimensional spaces or differentiability. -/
 def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let thms := (← get).transitionTheorems.theorems
-  let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+  let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) do
+    trace[Debug.Meta.Tactic.fun_prop] m!"look up key {← RefinedDiscrTree.encodeExpr e true}"
     thms.getMatch e false true
   modify ({ · with transitionTheorems := ⟨thms⟩ })
   return (← MonadExcept.ofExcept candidates).toArray
@@ -263,7 +264,8 @@ For example calling on `e` equal to `Continuous f` for `f : X→L[ℝ] Y` would 
 inferring continuity from the bundled morphism. -/
 def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let thms := (← get).morTheorems.theorems
-  let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+  let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) do
+    trace[Debug.Meta.Tactic.fun_prop] m!"look up key {← RefinedDiscrTree.encodeExpr e true}"
     thms.getMatch e false true
   modify ({ · with morTheorems := ⟨thms⟩ })
   return (← MonadExcept.ofExcept candidates).toArray
