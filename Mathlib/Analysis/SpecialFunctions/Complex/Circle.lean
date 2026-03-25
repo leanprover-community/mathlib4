@@ -65,6 +65,7 @@ lemma leftInverse_exp_arg : LeftInverse exp (arg ∘ (↑)) := exp_arg
 lemma invOn_arg_exp : InvOn (arg ∘ (↑)) exp (Ioc (-π) π) univ := argPartialEquiv.symm.invOn
 lemma surjOn_exp_neg_pi_pi : SurjOn exp (Ioc (-π) π) univ := argPartialEquiv.symm.surjOn
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exp_eq_exp {x y : ℝ} : exp x = exp y ↔ ∃ m : ℤ, x = y + m * (2 * π) := by
   rw [Subtype.ext_iff, coe_exp, coe_exp, exp_eq_exp_iff_exists_int]
   refine exists_congr fun n => ?_
@@ -220,6 +221,7 @@ lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp :=
 topological groups to show the `n`th power map is open (see https://www.mathematik.tu-darmstadt.de/media/mathematik/forschung/preprint/preprints/2480.pdf
 and https://www.math.uwaterloo.ca/~cgodsil/pdfs/topology/topgr.pdf), and discreteness of the
 kernel (see https://gemini.google.com/share/6e9ab4abcb95). -/
+set_option backward.isDefEq.respectTransparency false in
 theorem Circle.isQuotientCoveringMap_zpow (n : ℤ) [NeZero n] :
     IsQuotientCoveringMap (· ^ n : Circle → _) (zpowGroupHom (α := Circle) n).ker := by
   have hn : IsUnit (n : ℝ) := by simpa using NeZero.ne n

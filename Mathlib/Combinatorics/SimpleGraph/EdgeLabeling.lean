@@ -152,12 +152,14 @@ theorem labelGraph_le (C : EdgeLabeling G K) {k : K} : C.labelGraph k ≤ G := b
   intro x y
   grind [labelGraph_adj]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pairwise_disjoint_labelGraph {C : EdgeLabeling G K} :
     Pairwise fun k l ↦ Disjoint (C.labelGraph k) (C.labelGraph l) := by
   intro _ _ h
   rw [disjoint_left]
   grind [labelGraph_adj]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pairwiseDisjoint_univ_labelGraph {C : EdgeLabeling G K} :
     Set.PairwiseDisjoint (@Set.univ K) C.labelGraph := by
   intro _ _ _ _ h

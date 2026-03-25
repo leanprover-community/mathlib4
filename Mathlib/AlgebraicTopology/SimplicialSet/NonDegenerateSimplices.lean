@@ -73,6 +73,7 @@ lemma dim_le_of_le {x y : X.N} (h : x ≤ y) : x.dim ≤ y.dim := by
   obtain ⟨f, hf, _⟩ := h
   exact SimplexCategory.len_le_of_mono f
 
+set_option backward.isDefEq.respectTransparency false in
 lemma dim_lt_of_lt {x y : X.N} (h : x < y) : x.dim < y.dim := by
   obtain h' | h' := (dim_le_of_le h.le).lt_or_eq
   · exact h'
@@ -84,6 +85,7 @@ lemma dim_lt_of_lt {x y : X.N} (h : x < y) : x.dim < y.dim := by
     obtain rfl : y = x := by simpa using hf
     simp at h
 
+set_option backward.isDefEq.respectTransparency false in
 instance : PartialOrder X.N where
   le_antisymm x₁ x₂ h h' := by
     obtain ⟨n₁, ⟨x₁, hx₁⟩, rfl⟩ := x₁.mk_surjective

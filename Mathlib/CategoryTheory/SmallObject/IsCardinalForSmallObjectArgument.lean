@@ -216,6 +216,7 @@ instance {j₁ j₂ : κ.ord.ToType} (φ : j₁ ⟶ j₂) (f : Arrow C) :
     IsIso (((iterationFunctor I κ).map φ).app f).right :=
   inferInstanceAs (IsIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).F.map φ))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any `f : Arrow C`, the object `((iteration I κ).obj f).right`
 identifies to `f.right`. -/
 @[simps! hom]
@@ -223,6 +224,7 @@ noncomputable def iterationObjRightIso (f : Arrow C) :
     f.right ≅ ((iteration I κ).obj f).right :=
   asIso ((ιIteration I κ).app f).right
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any `f : Arrow C` and `j : κ.ord.ToType`, the object
 `(((iterationFunctor I κ).obj j).obj f).right` identifies to `f.right`. -/
 noncomputable def iterationFunctorObjObjRightIso (f : Arrow C) (j : κ.ord.ToType) :
@@ -242,6 +244,7 @@ lemma prop_iterationFunctor_map_succ (j : κ.ord.ToType) :
   have := Cardinal.noMaxOrder (Fact.elim inferInstance : κ.IsRegular).aleph0_le
   exact (succStruct I κ).prop_iterationFunctor_map_succ j (not_isMax j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any `f : Arrow C` and `j : κ.ord.ToType`, the morphism
 `((iterationFunctor I κ).map (homOfLE (Order.le_succ j))).app f` identifies
 to a morphism given by `SmallObject.ε I.homFamily`. -/
@@ -265,6 +268,7 @@ noncomputable def iterationFunctorMapSuccAppArrowIso (f : Arrow C) (j : κ.ord.T
 lemma iterationFunctorMapSuccAppArrowIso_hom_left (f : Arrow C) (j : κ.ord.ToType) :
     (iterationFunctorMapSuccAppArrowIso I κ f j).hom.left = 𝟙 _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in -- Needed below
 @[reassoc (attr := simp)]
 lemma iterationFunctorMapSuccAppArrowIso_hom_right_right_comp
     (f : Arrow C) (j : κ.ord.ToType) :
@@ -287,6 +291,7 @@ noncomputable def obj : C := ((iteration I κ).obj (Arrow.mk f)).left
 the small object argument. -/
 noncomputable def ιObj : X ⟶ obj I κ f := ((ιIteration I κ).app (Arrow.mk f)).left
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The "projection" morphism in the factorization given by
 the small object argument. -/
 noncomputable def πObj : obj I κ f ⟶ Y :=
@@ -297,6 +302,7 @@ lemma πObj_ιIteration_app_right :
     πObj I κ f ≫ ((ιIteration I κ).app f).right =
       ((iteration I κ).obj (Arrow.mk f)).hom := by simp [πObj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ιObj_πObj : ιObj I κ f ≫ πObj I κ f = f := by
   simp [ιObj, πObj]
@@ -342,6 +348,7 @@ lemma ιFunctorObj_eq (j : κ.ord.ToType) :
         (relativeCellComplexιObjFObjSuccIso I κ f j).hom := by
   simpa using Arrow.leftFunc.congr_map (iterationFunctorMapSuccAppArrowIso I κ f j).hom.w
 
+set_option backward.isDefEq.respectTransparency false in
 lemma πFunctorObj_eq (j : κ.ord.ToType) :
     letI := hasColimitsOfShape_discrete I κ
     letI := hasPushouts I κ
@@ -365,6 +372,7 @@ lemma πFunctorObj_eq (j : κ.ord.ToType) :
     NatTrans.comp_app, Arrow.comp_right,
     iterationFunctorMapSuccAppArrowIso_hom_right_right_comp_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasRightLiftingProperty_πObj {A B : C} (i : A ⟶ B) (hi : I i) (f : X ⟶ Y) :
     HasLiftingProperty i (πObj I κ f) := ⟨by
   haveI := hasColimitsOfShape_discrete I κ
@@ -417,6 +425,7 @@ lemma ιObj_naturality {f g : Arrow C} (φ : f ⟶ g) :
     ιObj I κ f.hom ≫ objMap I κ φ = φ.left ≫ ιObj I κ g.hom :=
   Arrow.leftFunc.congr_map ((ιIteration I κ).naturality φ).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma πObj_naturality {f g : Arrow C} (φ : f ⟶ g) :
     objMap I κ φ ≫ πObj I κ g.hom = πObj I κ f.hom ≫ φ.right := by
@@ -433,6 +442,7 @@ lemma πObj_naturality {f g : Arrow C} (φ : f ⟶ g) :
   rw [← assoc]
   apply comp_id
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functorial factorization `ιObj I κ f ≫ πObj I κ f.hom = f`
 with `ιObj I κ f` in `I.rlp.llp` and `πObj I κ f.hom` in `I.rlp`. -/
 @[simps]

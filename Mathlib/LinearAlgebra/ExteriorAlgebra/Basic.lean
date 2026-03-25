@@ -202,6 +202,7 @@ def ιInv : ExteriorAlgebra R M →ₗ[R] M := by
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → ExteriorAlgebra R M) := fun x => by
   simp [ιInv]
 
@@ -312,6 +313,18 @@ theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
       (LinearMap.mulLeft R (ι R m)).compAlternatingMap (ιMulti R n) := by
   ext; simp
 
+lemma ιMulti_eq_zero_of_not_inj {n : ℕ} {v : Fin n → M} (hv : ¬Function.Injective v) :
+    ιMulti R n v = 0 :=
+  (ιMulti R n).map_eq_zero_of_not_injective v hv
+
+lemma ιMulti_mul_ιMulti {m n : ℕ} (a : Fin m → M) (b : Fin n → M) :
+    ιMulti R m a * ιMulti R n b = ιMulti R (m + n) (Fin.append a b) := by
+  simp only [ιMulti_apply]
+  change _ = (List.ofFn ((ι R) ∘ Fin.append a b)).prod
+  rw [← List.map_ofFn, List.ofFn_fin_append, List.map_append, List.prod_append]
+  simp only [List.map_ofFn]
+  congr
+
 variable (R)
 
 /-- The image of `ExteriorAlgebra.ιMulti R n` is contained in the `n`th exterior power. -/
@@ -344,6 +357,39 @@ family of `n`fold exterior products of elements of `v`, seen as members of the e
 abbrev ιMulti_family (n : ℕ) {I : Type*} [LinearOrder I] (v : I → M)
     (s : Set.powersetCard I n) : ExteriorAlgebra R M :=
   ιMulti R n (v ∘ (Set.powersetCard.ofFinEmbEquiv.symm s))
+
+open Set Set.powersetCard
+
+lemma ιMulti_family_mul_of_not_disjoint {m n : ℕ} {I : Type*} [LinearOrder I] (v : I → M)
+    (s : powersetCard I m) (t : powersetCard I n) (h : ¬Disjoint s.val t.val) :
+    ιMulti_family R m v s * ιMulti_family R n v t = 0 := by
+  rw [Finset.not_disjoint_iff] at h
+  obtain ⟨i, his, hit⟩ := h
+  obtain ⟨j, hj⟩ := (mem_range_ofFinEmbEquiv_symm_iff_mem s i).mpr his
+  obtain ⟨k, hk⟩ := (mem_range_ofFinEmbEquiv_symm_iff_mem t i).mpr hit
+  simp only [ιMulti_family, ιMulti_mul_ιMulti]
+  apply AlternatingMap.map_eq_zero_of_eq (i := Fin.castAdd n j) (j := Fin.natAdd m k)
+  · simp [hj, hk]
+  · apply ne_of_lt
+    apply lt_of_lt_of_le (b := m) <;> simp
+
+lemma ιMulti_family_mul_of_disjoint {m n : ℕ} {I : Type*} [LinearOrder I] (v : I → M)
+    (s : powersetCard I m) (t : powersetCard I n) (h : Disjoint s.val t.val) :
+    ιMulti_family R m v s * ιMulti_family R n v t =
+      (permOfDisjoint h).sign • ιMulti_family R (m + n) v (disjUnion h) := by
+  simp only [ιMulti_family, ιMulti_mul_ιMulti]
+  rw [← AlternatingMap.map_perm, permOfDisjoint]
+  congr
+  ext i
+  let e := powersetCard.orderIsoOfFin (powersetCard.disjUnion h)
+  change _ = v (e (e.symm _))
+  by_cases! hi : i < m
+  · rw [← Fin.castAdd_castLT n i hi, Fin.append_left, OrderIso.apply_symm_apply,
+      finSumFinEquiv_symm_apply_castAdd]
+    aesop
+  · rw [← Fin.natAdd_subNat_cast hi, Fin.append_right, OrderIso.apply_symm_apply,
+      finSumFinEquiv_symm_apply_natAdd]
+    aesop
 
 variable {R}
 
@@ -404,6 +450,7 @@ theorem toTrivSqZeroExt_comp_map [Module Rᵐᵒᵖ M] [IsCentralScalar R M] [Mo
   simp only [AlgHom.comp_toLinearMap, LinearMap.coe_comp, Function.comp_apply,
     AlgHom.toLinearMap_apply, map_apply_ι, toTrivSqZeroExt_ι, TrivSqZeroExt.map_inr, forall_const]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ιInv_comp_map (f : M →ₗ[R] N) :
     ιInv.comp (map f).toLinearMap = f.comp ιInv := by
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
@@ -431,6 +478,7 @@ lemma map_injective {f : M →ₗ[R] N} (hf : ∃ (g : N →ₗ[R] M), g.comp f 
     Function.Injective (map f) :=
   let ⟨_, hgf⟩ := hf; (leftInverse_map_iff.mpr (DFunLike.congr_fun hgf)).injective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A morphism of modules is surjective if and only the morphism of exterior algebras that it
 induces is surjective. -/
 @[simp]

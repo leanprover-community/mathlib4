@@ -58,6 +58,7 @@ variable {C : Type u₁} {D : Type u₂}
 variable [Category.{v₁} C] [Category.{v₁} D]
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The "main pair" for a coalgebra `(A, α)` is the pair of morphisms `(G α, η_GA)`. It is always a
 coreflexive pair, and will be used to construct the left adjoint to the comparison functor and show
 it is an equivalence.
@@ -84,6 +85,7 @@ def comparisonRightAdjointObj (A : adj.toComonad.Coalgebra)
     [HasEqualizer (G.map A.a) (adj.unit.app _)] : C :=
   equalizer (G.map A.a) (adj.unit.app _)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 We have a bijection of homsets which will be used to construct the right adjoint to the comparison
 functor.
@@ -109,6 +111,7 @@ def comparisonRightAdjointHomEquiv (A : adj.toComonad.Coalgebra) (B : C)
       left_inv f := by aesop
       right_inv f := by apply equalizer.hom_ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct the adjunction to the comparison functor.
 -/
 def rightAdjointComparison
@@ -158,6 +161,7 @@ theorem unitFork_ι (A : adj.toComonad.Coalgebra)
     (counitFork A).ι = F.map (equalizer.ι (G.map A.a) (adj.unit.app (G.obj A.A))) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comparisonAdjunction_counit_f
     [∀ A : adj.toComonad.Coalgebra, HasEqualizer (G.map A.a)
       (adj.unit.app (G.obj A.A))]
@@ -200,6 +204,7 @@ instance
     (G.map ((comparison adj).obj B).a)
     (adj.unit.app (G.obj ((comparison adj).obj B).A))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comparisonAdjunction_unit_app
     [∀ A : adj.toComonad.Coalgebra, HasEqualizer (G.map A.a) (adj.unit.app (G.obj A.A))] (B : C) :
     (comparisonAdjunction adj).unit.app B = limit.lift _ (unitFork adj B) := by
@@ -222,6 +227,7 @@ variable (G) in
 If `F` is comonadic, it creates limits of `F`-cosplit pairs. This is the "boring" direction of
 Beck's comonadicity theorem, the converse is given in `comonadicOfCreatesFSplitEqualizers`.
 -/
+@[implicit_reducible]
 def createsFSplitEqualizersOfComonadic [ComonadicLeftAdjoint F] ⦃A B⦄ (f g : A ⟶ B)
     [F.IsCosplitPair f g] : CreatesLimit (parallelPair f g) F := by
   apply +allowSynthFailures comonadicCreatesLimitOfPreservesLimit
@@ -270,6 +276,7 @@ instance [ReflectsLimitOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
 /-- To show `F` is a comonadic left adjoint, we can show it preserves and reflects `F`-split
 equalizers, and `C` has them.
 -/
+@[implicit_reducible]
 def comonadicOfHasPreservesReflectsFSplitEqualizers [HasEqualizerOfIsCosplitPair F]
     [PreservesLimitOfIsCosplitPair F] [ReflectsLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F where
@@ -317,6 +324,7 @@ Beck's comonadicity theorem. If `F` has a right adjoint and creates equalizers o
 then it is comonadic.
 This is the converse of `createsFSplitEqualizersOfComonadic`.
 -/
+@[implicit_reducible]
 def comonadicOfCreatesFSplitEqualizers [CreatesLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F := by
   have I {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] : HasLimit (parallelPair f g ⋙ F) := by
@@ -330,6 +338,7 @@ def comonadicOfCreatesFSplitEqualizers [CreatesLimitOfIsCosplitPair F] :
 /-- An alternate version of Beck's comonadicity theorem. If `F` reflects isomorphisms, preserves
 equalizers of `F`-cosplit pairs and `C` has equalizers of `F`-cosplit pairs, then it is comonadic.
 -/
+@[implicit_reducible]
 def comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms [F.ReflectsIsomorphisms]
     [HasEqualizerOfIsCosplitPair F] [PreservesLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F := by
@@ -359,9 +368,11 @@ instance [PreservesLimitOfIsCoreflexivePair F] : ∀ X : Coalgebra adj.toComonad
 
 variable [PreservesLimitOfIsCoreflexivePair F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Coreflexive (crude) comonadicity theorem. If `F` has a right adjoint, `C` has and `F` preserves
 coreflexive equalizers and `F` reflects isomorphisms, then `F` is comonadic.
 -/
+@[implicit_reducible]
 def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
     ComonadicLeftAdjoint F where
   R := G

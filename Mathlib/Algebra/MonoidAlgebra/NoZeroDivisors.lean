@@ -93,6 +93,7 @@ instance [NoZeroDivisors R] [Mul A] [UniqueProds A] : NoZeroDivisors R[A] where
     rw [mem_support_iff] at a0 b0 ⊢
     exact mul_apply_mul_eq_mul_of_uniqueMul h ▸ mul_ne_zero a0 b0
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
 instance [IsCancelAdd R] [IsLeftCancelMulZero R] [Mul A] [UniqueProds A] :
     IsLeftCancelMulZero R[A] where

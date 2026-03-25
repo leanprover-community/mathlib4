@@ -6,8 +6,9 @@ Authors: Kim Morrison, Minchao Wu
 module
 
 public import Mathlib.Data.Prod.Basic
-public import Mathlib.Order.Lattice
 public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Lattice
+public import Mathlib.Order.Lex
 public import Mathlib.Tactic.Tauto
 
 /-!
@@ -154,9 +155,11 @@ theorem _root_.lexOrd_eq [Ord α] [Ord β] : @lexOrd α β _ _ = instOrdLexProd 
 
 theorem _root_.Ord.lex_eq [oα : Ord α] [oβ : Ord β] : Ord.lex oα oβ = instOrdLexProd := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Ord α] [Ord β] [Std.OrientedOrd α] [Std.OrientedOrd β] : Std.OrientedOrd (α ×ₗ β) :=
   inferInstanceAs (Std.OrientedCmp (compareLex _ _))
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Ord α] [Ord β] [Std.TransOrd α] [Std.TransOrd β] : Std.TransOrd (α ×ₗ β) :=
   inferInstanceAs (Std.TransCmp (compareLex _ _))
 

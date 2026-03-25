@@ -282,7 +282,7 @@ theorem one_snd : (1 : X q).2 = 0 :=
   rfl
 
 instance : Monoid (X q) :=
-  { inferInstanceAs (Mul (X q)), inferInstanceAs (One (X q)) with
+  { (inferInstance : Mul (X q)), (inferInstance : One (X q)) with
     mul_assoc := fun x y z => by ext <;> dsimp <;> ring
     one_mul := fun x => by ext <;> simp
     mul_one := fun x => by ext <;> simp }
@@ -303,8 +303,8 @@ instance : NatCast (X q) where
   rfl
 
 instance : AddGroupWithOne (X q) :=
-  { inferInstanceAs (Monoid (X q)), inferInstanceAs (AddCommGroup (X q)),
-      inferInstanceAs (NatCast (X q)) with
+  { (inferInstance : Monoid (X q)), (inferInstance : AddCommGroup (X q)),
+      (inferInstance : NatCast (X q)) with
     natCast_zero := by ext <;> simp
     natCast_succ := fun _ ↦ by ext <;> simp
     intCast := fun n => ⟨n, 0⟩
@@ -318,15 +318,15 @@ theorem right_distrib (x y z : X q) : (x + y) * z = x * z + y * z := by
   ext <;> dsimp <;> ring
 
 instance : Ring (X q) :=
-  { inferInstanceAs (AddGroupWithOne (X q)), inferInstanceAs (AddCommGroup (X q)),
-      inferInstanceAs (Monoid (X q)) with
+  { (inferInstance : AddGroupWithOne (X q)), (inferInstance : AddCommGroup (X q)),
+      (inferInstance : Monoid (X q)) with
     left_distrib := left_distrib
     right_distrib := right_distrib
     mul_zero := fun _ ↦ by ext <;> simp
     zero_mul := fun _ ↦ by ext <;> simp }
 
 instance : CommRing (X q) :=
-  { inferInstanceAs (Ring (X q)) with
+  { (inferInstance : Ring (X q)) with
     mul_comm := fun _ _ ↦ by ext <;> dsimp <;> ring }
 
 instance [Fact (1 < (q : ℕ))] : Nontrivial (X q) :=
@@ -382,7 +382,7 @@ def α : X q := (0, 1)
   ext <;> simp [α, sq]
 
 @[simp] lemma one_add_α_sq : ((1 + α) ^ 2 : X q) = 2 * ω := by
-  ext <;> simpa [α, ω, sq] using by norm_num
+  ext <;> simp [α, ω, sq] <;> norm_num
 
 lemma α_pow (i : ℕ) : (α : X q) ^ (2 * i + 1) = 3 ^ i * α := by
   rw [pow_succ, pow_mul, α_sq]
@@ -461,6 +461,7 @@ lemma ω_pow_trace [Fact q.Prime] (odd : Odd q)
 
 variable [NeZero q]
 
+set_option backward.inferInstanceAs.wrap false in
 instance : Fintype (X q) := inferInstanceAs (Fintype (ZMod q × ZMod q))
 
 /-- The cardinality of `X` is `q^2`. -/
@@ -512,6 +513,7 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   have : 1 ≤ 2 ^ (p' + 2) := Nat.one_le_pow _ _ (by decide)
   exact mod_cast h
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: fix non-terminal simp (acting on two goals with different simp sets)
 set_option linter.flexible false in
 /-- `q` is the minimum factor of `mersenne p`, so `M p = 0` in `X q`. -/
@@ -588,6 +590,7 @@ theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (
   have h := lt_of_lt_of_le h₁ h₂
   exact not_lt_of_ge (Nat.sub_le _ _) h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `2^p - 1` is prime then the Lucas-Lehmer test holds, `s (p - 2) % (2^p - 1) = 0`. -/
 theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) (hp : (mersenne p).Prime) :
     LucasLehmerTest p := by

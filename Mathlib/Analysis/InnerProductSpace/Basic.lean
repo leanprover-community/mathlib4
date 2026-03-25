@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.InnerProductSpace.Defs
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 
 /-!
 # Properties of inner product spaces
@@ -153,7 +154,7 @@ variable {F}
 variable {𝕜}
 
 @[deprecated (since := "2025-12-26")] alias sesqFormOfInner := innerₛₗ
-@[deprecated (since := "2025-12-26")] alias bilinFormOfRealInner := innerₗ
+@[deprecated (since := "2025-12-26")] noncomputable alias bilinFormOfRealInner := innerₗ
 
 /-- An inner product with a sum on the left. -/
 theorem sum_inner {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
@@ -481,16 +482,26 @@ lemma inner_eq_zero_of_right (x : E) {y : E} (h : ‖y‖ = 0) : ⟪x, y⟫_𝕜
 variable (𝕜)
 
 include 𝕜 in
-theorem parallelogram_law_with_norm (x y : E) :
+theorem parallelogram_law_with_norm_mul (x y : E) :
     ‖x + y‖ * ‖x + y‖ + ‖x - y‖ * ‖x - y‖ = 2 * (‖x‖ * ‖x‖ + ‖y‖ * ‖y‖) := by
   simp only [← @inner_self_eq_norm_mul_norm 𝕜]
   rw [← re.map_add, parallelogram_law, two_mul, two_mul]
   simp only [re.map_add]
 
 include 𝕜 in
-theorem parallelogram_law_with_nnnorm (x y : E) :
+theorem parallelogram_law_with_norm (x y : E) :
+    ‖x + y‖ ^ 2 + ‖x - y‖ ^ 2 = 2 * (‖x‖ ^ 2 + ‖y‖ ^ 2) := by
+  simp_rw [sq, parallelogram_law_with_norm_mul 𝕜 x y]
+
+include 𝕜 in
+theorem parallelogram_law_with_nnnorm_mul (x y : E) :
     ‖x + y‖₊ * ‖x + y‖₊ + ‖x - y‖₊ * ‖x - y‖₊ = 2 * (‖x‖₊ * ‖x‖₊ + ‖y‖₊ * ‖y‖₊) :=
-  Subtype.ext <| parallelogram_law_with_norm 𝕜 x y
+  Subtype.ext <| parallelogram_law_with_norm_mul 𝕜 x y
+
+include 𝕜 in
+theorem parallelogram_law_with_nnnorm (x y : E) :
+    ‖x + y‖₊ ^ 2 + ‖x - y‖₊ ^ 2 = 2 * (‖x‖₊ ^ 2 + ‖y‖₊ ^ 2) := by
+  simp_rw [sq, parallelogram_law_with_nnnorm_mul 𝕜 x y]
 
 variable {𝕜}
 
@@ -902,6 +913,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- A general inner product implies a real inner product. This is not registered as an instance
 since `𝕜` does not appear in the return type `Inner ℝ E`. -/
+@[implicit_reducible]
 def Inner.rclikeToReal : Inner ℝ E where inner x y := re ⟪x, y⟫
 
 /-- A general inner product space structure implies a real inner product structure.
@@ -920,11 +932,11 @@ abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
     norm_sq_eq_re_inner := norm_sq_eq_re_inner
     conj_inner_symm := fun _ _ => inner_re_symm _ _
     add_left := fun x y z => by
-      simp only [Inner.rclikeToReal, inner_add_left, map_add]
+      simp +instances only [Inner.rclikeToReal, inner_add_left, map_add]
     smul_left := fun x y r => by
       letI := NormedSpace.restrictScalars ℝ 𝕜 E
       have : r • x = (r : 𝕜) • x := rfl
-      simp only [Inner.rclikeToReal, this, conj_trivial, inner_smul_left, conj_ofReal,
+      simp +instances only [Inner.rclikeToReal, this, conj_trivial, inner_smul_left, conj_ofReal,
         re_ofReal_mul] }
 
 variable {E}
@@ -940,6 +952,7 @@ theorem real_inner_I_smul_self (x : E) :
 /-- A complex inner product implies a real inner product. This cannot be an instance since it
 creates a diamond with `PiLp.innerProductSpace` because `re (sum i, ⟪x i, y i⟫)` and
 `sum i, re ⟪x i, y i⟫` are not defeq. -/
+@[implicit_reducible]
 def InnerProductSpace.complexToReal [SeminormedAddCommGroup G] [InnerProductSpace ℂ G] :
     InnerProductSpace ℝ G :=
   InnerProductSpace.rclikeToReal ℂ G
@@ -968,3 +981,19 @@ example : (innerProductSpace : InnerProductSpace ℝ ℝ) = RCLike.toInnerProduc
 example :
     (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal :=
   rfl
+
+section IsPosSemidef
+
+variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+
+lemma isSymm_inner : LinearMap.IsSymm (innerₗ E) where
+  eq x y := by simp [real_inner_comm]
+
+lemma isNonneg_inner : LinearMap.IsNonneg (innerₗ E) where
+  nonneg x := by simp
+
+lemma isPosSemidef_inner : LinearMap.IsPosSemidef (innerₗ E) where
+  isSymm := isSymm_inner
+  isNonneg := isNonneg_inner
+
+end IsPosSemidef
