@@ -55,12 +55,6 @@ variable [Monoid G]
 instance : CoeSort (Rep k G) (Type u) :=
   ⟨fun V => V.V⟩
 
-instance (V : Rep k G) : AddCommGroup V :=
-  V.V.isAddCommGroup
-
-instance (V : Rep k G) : Module k V :=
-  V.V.isModule
-
 /-- Specialize the existing `Action.ρ`, changing the type to `Representation k G V`.
 -/
 def ρ (V : Rep k G) : Representation k G V :=

@@ -68,30 +68,16 @@ namespace FDRep
 
 variable {R k G : Type u} [CommRing R] [Field k] [Monoid G]
 
--- The `LargeCategory, ConcreteCategory, Preadditive, HasFiniteLimits` instances should be
--- constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance : LargeCategory (FDRep R G) := inferInstance
-instance : ConcreteCategory (FDRep R G) (Action.HomSubtype _ _) := inferInstance
-instance : Preadditive (FDRep R G) := inferInstance
-instance : HasFiniteLimits (FDRep k G) := inferInstance
-
-instance : Linear R (FDRep R G) := by infer_instance
+example : LargeCategory (FDRep R G) := by infer_instance
+example : ConcreteCategory (FDRep R G) (Action.HomSubtype _ _) := by infer_instance
+example : Preadditive (FDRep R G) := by infer_instance
+example : HasFiniteLimits (FDRep k G) := by infer_instance
+example : Linear R (FDRep R G) := by infer_instance
 
 instance : CoeSort (FDRep R G) (Type u) :=
   ⟨fun V => V.V⟩
 
-instance (V : FDRep R G) : AddCommGroup V :=
-  instAddCommGroupCarrier V.V
-
-instance (V : FDRep R G) : Module R V :=
-  instModuleCarrier V.V
-
-instance (V : FDRep R G) : Module.Finite R V :=
-  inferInstanceAs <| Module.Finite R ((forget₂ (FDRep R G) (FGModuleCat R)).obj V)
-
-instance (V : FDRep k G) : FiniteDimensional k V := by
-  infer_instance
+example (V : FDRep R G) : Module.Finite R V := by infer_instance
 
 /-- All hom spaces are finite dimensional. -/
 instance (V W : FDRep k G) : FiniteDimensional k (V ⟶ W) :=

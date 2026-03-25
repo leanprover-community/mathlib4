@@ -69,16 +69,7 @@ attribute [coe] FGModuleCat.carrier
 
 @[simp] lemma FGModuleCat.obj_carrier (M : FGModuleCat.{v} R) : M.obj.carrier = M.carrier := rfl
 
-instance (M : FGModuleCat.{v} R) : AddCommGroup M :=
-  M.obj.isAddCommGroup
-
-instance (M : FGModuleCat.{v} R) : Module R M :=
-  M.obj.isModule
-
 instance (M : FGModuleCat.{v} R) : Module.Finite R M :=
-  M.property
-
-instance (M : FGModuleCat.{v} R) : Module.Finite R M.1 :=
   M.property
 
 end Ring
