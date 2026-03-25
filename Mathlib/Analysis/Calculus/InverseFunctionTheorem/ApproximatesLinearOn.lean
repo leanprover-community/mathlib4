@@ -158,7 +158,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
     to the desired point `x`. Instead of appealing to general results, we check this by hand.
 
     The main point is that `f (u n)` becomes exponentially close to `y`, and therefore
-    `dist (u (n+1)) (u n)` becomes exponentally small, making it possible to get an inductive
+    `dist (u (n+1)) (u n)` becomes exponentially small, making it possible to get an inductive
     bound on `dist (u n) b`, from which one checks that `u n` stays in the ball on which one has a
     control. Therefore, the bound can be checked at the next step, and so on inductively.
     -/
@@ -210,7 +210,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
         exact mem_closedBall'.1 hy
       _ = ε * (1 - c * f'symm.nnnorm) := by field
   /- Main inductive control: `f (u n)` becomes exponentially close to `y`, and therefore
-    `dist (u (n+1)) (u n)` becomes exponentally small, making it possible to get an inductive
+    `dist (u (n+1)) (u n)` becomes exponentially small, making it possible to get an inductive
     bound on `dist (u n) b`, from which one checks that `u n` remains in the ball on which we
     have estimates. -/
   have D : ∀ n : ℕ, dist (f (u n)) y ≤ ((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y ∧
@@ -285,8 +285,8 @@ theorem open_image (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRi
 theorem image_mem_nhds (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse)
     {x : E} (hs : s ∈ 𝓝 x) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : f '' s ∈ 𝓝 (f x) := by
   obtain ⟨t, hts, ht, xt⟩ : ∃ t, t ⊆ s ∧ IsOpen t ∧ x ∈ t := _root_.mem_nhds_iff.1 hs
-  have := IsOpen.mem_nhds ((hf.mono_set hts).open_image f'symm ht hc) (mem_image_of_mem _ xt)
-  exact mem_of_superset this (image_mono hts)
+  grw [← hts]
+  exact IsOpen.mem_nhds ((hf.mono_set hts).open_image f'symm ht hc) (mem_image_of_mem _ xt)
 
 theorem map_nhds_eq (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse) {x : E}
     (hs : s ∈ 𝓝 x) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : map f (𝓝 x) = 𝓝 (f x) := by

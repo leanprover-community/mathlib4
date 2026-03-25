@@ -208,6 +208,7 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierSMulRight
 
 variable {f}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Main theorem of this section: if both `f` and `x ↦ ‖x‖ * ‖f x‖` are integrable, then the
 Fourier transform of `f` has a Fréchet derivative (everywhere in its domain) and its derivative is
 the Fourier transform of `smulRight L f`. -/

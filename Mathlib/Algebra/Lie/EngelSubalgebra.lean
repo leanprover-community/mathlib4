@@ -82,7 +82,7 @@ lemma engel_zero : engel R (0 : L) = ⊤ := by
 /-- Engel subalgebras are self-normalizing.
 See `LieSubalgebra.normalizer_eq_self_of_engel_le` for a proof that Lie-subalgebras
 containing an Engel subalgebra are also self-normalizing,
-provided that the ambient Lie algebra is artinina. -/
+provided that the ambient Lie algebra is Artinian. -/
 @[simp]
 lemma normalizer_engel (x : L) : normalizer (engel R x) = engel R x := by
   apply le_antisymm _ (le_normalizer _)

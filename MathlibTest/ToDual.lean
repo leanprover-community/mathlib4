@@ -361,3 +361,24 @@ private abbrev WithBotPrivate := WithBot
 private theorem WithBotPrivate.coe_le_top : WithTop.coe a ≤ .top := .le_top (WithTop.coe a)
 
 run_meta guard <| (← getEnv).contains ``WithTopPrivate.coe_le_bot
+
+set_option linter.unusedVariables false in
+@[to_dual (rename := x → y, Pbot ↔ Ptop) renameTest']
+def renameTest [Top α] [Bot α] (x : α) {P : α → Prop} (Ptop : P ⊤) (Pbot : P ⊥) : True := trivial
+
+/--
+info: renameTest' {α : Type} [Bot α] [Top α] (y : α) {P : α → Prop} (Pbot : P ⊥) (Ptop : P ⊤) : True
+-/
+#guard_msgs in
+#check renameTest'
+
+-- Test translation of binder names starting with `h`: `hmax` turns into `hmin`.
+@[to_dual]
+theorem eq_of_min_of_max (hmax : ∀ x, x ≤ a) (hmin : ∀ x, a ≤ x) : a = b :=
+  le_antisymm (hmin b) (hmax b)
+
+/--
+info: eq_of_max_of_min {α : Type} [PartialOrder α] (a b : α) (hmin : ∀ (x : α), a ≤ x) (hmax : ∀ (x : α), x ≤ a) : a = b
+-/
+#guard_msgs in
+#check eq_of_max_of_min

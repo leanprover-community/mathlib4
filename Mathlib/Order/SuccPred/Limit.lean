@@ -133,6 +133,12 @@ theorem IsSuccLimit.nonempty_Iio (h : IsSuccLimit a) : (Set.Iio a).Nonempty :=
   not_isMin_iff.1 h.1
 
 @[to_dual]
+theorem IsSuccPrelimit.noMaxOrder_Iio (h : IsSuccPrelimit a) : NoMaxOrder (Set.Iio a) := by
+  refine ⟨fun ⟨b, hb⟩ ↦ ?_⟩
+  obtain ⟨c, hbc, hca⟩ := (not_covBy_iff hb).1 (h b)
+  exact ⟨⟨c, hca⟩, hbc⟩
+
+@[to_dual]
 theorem isSuccPrelimit_bot [OrderBot α] : IsSuccPrelimit (⊥ : α) :=
   isMin_bot.isSuccPrelimit
 

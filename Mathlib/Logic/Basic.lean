@@ -6,7 +6,8 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.Lemma
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
 
@@ -707,6 +708,7 @@ noncomputable def decPred (p : α → Prop) : DecidablePred p := by infer_instan
 noncomputable def decRel (p : α → α → Prop) : DecidableRel p := by infer_instance
 
 /-- Any type `α` has decidable equality classically. -/
+@[implicit_reducible]
 noncomputable def decEq (α : Sort*) : DecidableEq α := by infer_instance
 
 /-- Construct a function from a default value `H0`, and a function to use if there exists a value
@@ -962,6 +964,11 @@ theorem if_congr (h_c : P ↔ Q) (h_t : x = u) (h_e : y = v) : ite P x y = ite Q
   if_ctx_congr h_c (fun _ ↦ h_t) (fun _ ↦ h_e)
 
 end congr
+
+theorem Function.Injective.ite {α β : Sort*} {p : β → Prop} [DecidablePred p] {g : β → α}
+    (hg : g.Injective) {f : β → α} (hf : f.Injective) (h : ∀ x y, g x = f y → x = y) :
+    (fun x ↦ if p x then g x else f x).Injective :=
+  fun x y _ ↦ by rcases em (p x) with (hx | hx) <;> rcases em (p y) with (hy | hy) <;> grind
 
 end ite
 
