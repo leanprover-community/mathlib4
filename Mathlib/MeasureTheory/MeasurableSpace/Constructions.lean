@@ -228,6 +228,10 @@ theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable
   hs.2 ▸ by simp only [← preimage_comp, Function.comp_def, hf hs.1]
 
 @[fun_prop]
+theorem Measurable.codRestrict {s : Set β} {f : α → β} (hf : Measurable f)
+    (h : ∀ y, f y ∈ s) : Measurable (codRestrict f s h) := hf.subtype_mk
+
+@[fun_prop]
 protected theorem Measurable.rangeFactorization {f : α → β} (hf : Measurable f) :
     Measurable (rangeFactorization f) :=
   hf.subtype_mk
@@ -345,7 +349,6 @@ lemma measurableAtom_eq_of_mem {x y : β} (hx : x ∈ measurableAtom y) :
   specialize hx sᶜ hys hs.compl
   exact hx hxs
 
-set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_measurableAtom_of_notMem {x y : β} (hx : x ∉ measurableAtom y) :
     Disjoint (measurableAtom x) (measurableAtom y) := by
   rw [Set.disjoint_iff_inter_eq_empty]
@@ -362,6 +365,7 @@ end Atoms
 section Prod
 
 /-- A `MeasurableSpace` structure on the product of two measurable spaces. -/
+@[implicit_reducible]
 def MeasurableSpace.prod {α β} (m₁ : MeasurableSpace α) (m₂ : MeasurableSpace β) :
     MeasurableSpace (α × β) :=
   m₁.comap Prod.fst ⊔ m₂.comap Prod.snd
@@ -485,9 +489,6 @@ lemma measurable_from_prod_countable_right' [Countable α] {f : α × β → γ}
     (h'f : ∀ x x' y, x' ∈ measurableAtom x → f (x', y) = f (x, y)) : Measurable f := by
   change Measurable ((fun p ↦ f (p.2, p.1)) ∘ Prod.swap)
   exact (measurable_from_prod_countable_left' hf h'f).comp measurable_swap
-
-@[deprecated (since := "2025-08-17")]
-alias measurable_from_prod_countable' := measurable_from_prod_countable_left'
 
 /-- For the version where the first space in the product is countable,
 see `measurable_from_prod_countable_right`. -/
@@ -699,6 +700,10 @@ protected theorem MeasurableSet.pi {s : Set δ} {t : ∀ i : δ, Set (X i)} (hs 
 protected theorem MeasurableSet.univ_pi [Countable δ] {t : ∀ i : δ, Set (X i)}
     (ht : ∀ i, MeasurableSet (t i)) : MeasurableSet (pi univ t) :=
   MeasurableSet.pi (to_countable _) fun i _ => ht i
+
+theorem MeasurableSet.univ_pi' [Countable δ] {t : ∀ i : δ, Set (X i)}
+    (ht : ∀ i, MeasurableSet (t i)) : MeasurableSet {f : ∀ i : δ, X i | ∀ i : δ, f i ∈ t i} :=
+  (MeasurableSet.univ_pi ht).congr (by grind)
 
 theorem measurableSet_pi_of_nonempty {s : Set δ} {t : ∀ i, Set (X i)} (hs : s.Countable)
     (h : (pi s t).Nonempty) : MeasurableSet (pi s t) ↔ ∀ i ∈ s, MeasurableSet (t i) := by

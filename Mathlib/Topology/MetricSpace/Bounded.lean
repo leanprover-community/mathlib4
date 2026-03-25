@@ -31,7 +31,7 @@ This file contains one definition, and various results on boundedness in pseudo-
 
 ## Tags
 
-metric, pseudo_metric, bounded, diameter, Heine-Borel theorem
+metric, pseudometric space, bounded, diameter, Heine-Borel theorem
 -/
 
 @[expose] public section
@@ -174,6 +174,8 @@ theorem _root_.TotallyBounded.isBounded {s : Set α} (h : TotallyBounded s) : Is
 theorem _root_.IsCompact.isBounded {s : Set α} (h : IsCompact s) : IsBounded s :=
   -- A compact set is totally bounded, thus bounded
   h.totallyBounded.isBounded
+
+instance (priority := low) [CompactSpace α] : BoundedSpace α := ⟨isCompact_univ.isBounded⟩
 
 theorem cobounded_le_cocompact : cobounded α ≤ cocompact α :=
   hasBasis_cocompact.ge_iff.2 fun _s hs ↦ hs.isBounded

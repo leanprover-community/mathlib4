@@ -52,6 +52,7 @@ theorem getD_reverse {l : List α} (i) (h : i < length l) :
 
 /-- An empty list can always be decidably checked for the presence of an element.
 Not an instance because it would clash with `DecidableEq α`. -/
+@[implicit_reducible]
 def decidableGetDNilNe (a : α) : DecidablePred fun i : ℕ => getD ([] : List α) i a ≠ a :=
   fun _ => isFalse fun H => H getD_nil
 

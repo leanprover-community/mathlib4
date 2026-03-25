@@ -36,24 +36,36 @@ capture some details (like binders), so the following works without error.
 ```
 recall Nat.add_comm {n m : Nat} : n + m = m + n
 ```
+
+Docstrings are permitted but are ignored:
+```
+/-- The additive commutativity of natural numbers. -/
+recall Nat.add_comm (n m : Nat) : n + m = m + n
+```
 -/
-syntax (name := recall) "recall " ident ppIndent(optDeclSig) (declVal)? : command
+syntax (name := recall) (docComment)? "recall " ident ppIndent(optDeclSig) (declVal)? : command
 
 open Lean Meta Elab Command Term
 
 elab_rules : command
-  | `(recall $id $sig:optDeclSig $[$val?]?) => withoutModifyingEnv do
+  | `($[$_doc?:docComment]? recall $id $sig:optDeclSig $[$val?]?) =>
+    -- `recall` doesn't introduce new definitions, so suppress the unused variable linter.
+    withScope (fun sc => { sc with opts := sc.opts.set `linter.unusedVariables false }) <|
+    withoutModifyingEnv do
     let declName := id.getId
     addConstInfo id declName
     let info ← getConstInfo declName
     let declConst : Expr := mkConst declName <| info.levelParams.map Level.param
-    let newId := ({ namePrefix := declName : DeclNameGenerator }.mkUniqueName (← getEnv) `recall).1
-    let newId := mkIdentFrom id newId
+    let recallName := Name.mkSimple
+      s!"_recall_{(← liftTermElabM Lean.mkFreshId)}"
+    let newId := mkIdentFrom id recallName
     if let some val := val? then
       let some infoVal := info.value?
         | throwErrorAt val "constant '{declName}' has no defined value"
       elabCommand <| ← `(noncomputable def $newId $sig:optDeclSig $val)
-      let some newInfo := (← getEnv).find? newId.getId | return -- def already threw
+      let ns ← getCurrNamespace
+      let some newInfo := (← getEnv).find? (ns ++ recallName)
+        | return -- def already threw
       liftTermElabM do
         let mvs ← newInfo.levelParams.mapM fun _ => mkFreshLevelMVar
         let newType := newInfo.type.instantiateLevelParams newInfo.levelParams mvs

@@ -253,7 +253,8 @@ attribute [local instance] OfCoimageImageComparisonIsIso.isNormalEpiCategory
 in which the coimage-image comparison morphism is always an isomorphism,
 is an abelian category. -/
 @[stacks 0109
-"The Stacks project uses this characterisation at the definition of an abelian category."]
+"The Stacks project uses this characterisation at the definition of an abelian category.",
+  implicit_reducible]
 def ofCoimageImageComparisonIsIso : Abelian C where
 
 end CategoryTheory.Abelian
@@ -822,6 +823,7 @@ namespace CategoryTheory.NonPreadditiveAbelian
 variable (C : Type u) [Category.{v} C] [NonPreadditiveAbelian C]
 
 /-- Every `NonPreadditiveAbelian` category can be promoted to an abelian category. -/
+@[implicit_reducible]
 def abelian : Abelian C where
   toPreadditive := NonPreadditiveAbelian.preadditive
   normalMonoOfMono := fun f _ ↦ ⟨normalMonoOfMono f⟩
@@ -864,11 +866,13 @@ attribute [reassoc (attr := simp)] ι_imageπ imageι_π fac
 
 end AbelianStruct
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for abelian categories. We assume that the category `C` is
 preadditive, has finite products, and that any morphism `f : X ⟶ Y` has
 a kernel `i : K ⟶ X`, a cokernel `p : Y ⟶ Q` such that `f` factors as `f = π ≫ ι`
 where `π : X ⟶ I` is a cokernel of `i` and `ι : I ⟶ Y` is a kernel of `p`.
 This assumption is packaged in a structure `AbelianStruct f`. -/
+@[implicit_reducible]
 noncomputable def mk' [HasFiniteProducts C]
     (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), Nonempty (AbelianStruct f)) :
     Abelian C where
