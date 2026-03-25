@@ -660,10 +660,3 @@ theorem roots_mem_integralClosure {f : R[X]} (hf : f.Monic) {a : S}
   ⟨f, hf, (eval₂_eq_eval_map _).trans <| (mem_roots <| (hf.map _).ne_zero).1 ha⟩
 
 end IsDomain
-
-theorem RingHom.ker_isMaximal_of_isIntegral (R k : Type*) [CommRing R] [Field k]
-    [Algebra R k] [Algebra.IsIntegral R k] : (RingHom.ker (algebraMap R k)).IsMaximal := by
-  have := Ideal.bot_isMaximal (K := k)
-  rw [ker, Ideal.Quotient.maximal_ideal_iff_isField_quotient]
-  exact isField_of_isIntegral_of_isField Ideal.algebraMap_quotient_injective
-    (Ideal.Quotient.field _).toIsField
