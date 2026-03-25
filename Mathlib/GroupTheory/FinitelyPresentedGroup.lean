@@ -57,7 +57,7 @@ class Group.IsFinitelyPresented (G : Type*) [Group G] : Prop where
 namespace Group.IsFinitelyPresented
 
 /-- Finitely presented groups are closed under isomorphism. -/
-theorem of_mulEquiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented H := by
+theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented H := by
   obtain ⟨n, φ, hφsurj, hNC⟩ := h
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
   rwa [MonoidHom.ker_mulEquiv_comp φ iso]
