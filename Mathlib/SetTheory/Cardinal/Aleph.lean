@@ -321,7 +321,7 @@ theorem succ_preAleph (o : Ordinal) : succ (preAleph o) = preAleph (o + 1) :=
 theorem preAleph_add_one (o : Ordinal) : preAleph (o + 1) = succ (preAleph o) :=
   preAleph.map_succ o
 
-@[deprecated succ_preAleph (since := "2026-03-23")]
+@[deprecated succ_preAleph (since := "2026-03-24")]
 theorem preAleph_succ (o : Ordinal) : preAleph (succ o) = succ (preAleph o) :=
   preAleph.map_succ o
 
@@ -421,7 +421,7 @@ theorem succ_aleph (o : Ordinal) : succ (ℵ_ o) = ℵ_ (o + 1) := by
 theorem aleph_add_one (o : Ordinal) : ℵ_ (o + 1) = succ (ℵ_ o) := by
   simp
 
-@[deprecated succ_aleph (since := "2026-03-23")]
+@[deprecated succ_aleph (since := "2026-03-24")]
 theorem aleph_succ (o : Ordinal) : ℵ_ (succ o) = succ (ℵ_ o) :=
   (succ_aleph o).symm
 
