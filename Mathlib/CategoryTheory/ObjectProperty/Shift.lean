@@ -5,10 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
-public import Mathlib.CategoryTheory.ObjectProperty.Retract
+public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Properties of objects on categories equipped with shift
@@ -213,22 +212,6 @@ noncomputable instance [F.CommShift A] :
   Functor.CommShift.ofComp_compatibility _ _
 
 end
-
-instance [P.IsStableUnderShift A] : P.retractClosure.IsStableUnderShift A where
-  isStableUnderShiftBy a := IsStableUnderShiftBy.mk <| by
-    intro X ⟨Y, hY, ⟨⟨i, r, w⟩⟩⟩
-    exact ⟨Y⟦a⟧, IsStableUnderShiftBy.le_shift Y hY, ⟨⟨i⟦a⟧', r⟦a⟧', by grind⟩⟩⟩
-
-instance {G : Type*} [AddGroup G] [HasShift C G] {α : Type*} {J : α → Type*}
-    [∀ (i : α), Category (J i)] [P.IsStableUnderShift G] :
-    (P.limitsClosure J).IsStableUnderShift G where
-  isStableUnderShiftBy a := IsStableUnderShiftBy.mk <| by
-    intro X hX
-    induction hX with
-    | of_mem X hX => exact limitsClosure.of_mem _ (IsStableUnderShiftBy.le_shift X hX)
-    | of_isoClosure e hX hX' => exact limitsClosure.of_isoClosure ((shiftFunctor C a).mapIso e) hX'
-    | of_limitPresentation pres h h' =>
-      exact limitsClosure.of_limitPresentation (pres.map (shiftFunctor C a)) h'
 
 instance [P.IsClosedUnderIsomorphisms] (F : E ⥤ C) [F.CommShift A] :
     (P.inverseImage F).IsStableUnderShift A where
