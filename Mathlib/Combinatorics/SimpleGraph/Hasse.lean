@@ -23,7 +23,6 @@ path graph on `n` vertices.
 
 * `SimpleGraph.hasse`: Hasse diagram of an order.
 * `SimpleGraph.pathGraph`: Path graph on `n` vertices.
-* `SimpleGraph.cliqueFree_hasse_three`: The Hasse diagram is triangle-free.
 -/
 
 @[expose] public section
@@ -64,14 +63,14 @@ theorem hasseDualIso_symm_apply (a : α) : hasseDualIso.symm a = toDual a :=
   rfl
 
 /-- The Hasse diagram of a preorder is triangle-free. This is the graph-theoretic formulation of
-`not_covBy_of_lt_of_lt`: if `a ⋖ b` and `b ⋖ c` then `¬ a ⋖ c`. -/
+`not_covBy_of_lt_of_lt`: if `a ⋖ b` and `b ⋖ c` then `¬a ⋖ c`. -/
 theorem cliqueFree_hasse_three : (hasse α).CliqueFree 3 := by
   classical
   intro s ⟨hc, hcard⟩
   obtain ⟨a, b, c, hab, hac, hbc, rfl⟩ := Finset.card_eq_three.mp hcard
-  have h1 := hasse_adj.mp (hc (by simp) (by simp) hab)
-  have h2 := hasse_adj.mp (hc (by simp) (by simp) hbc)
-  have h3 := hasse_adj.mp (hc (by simp) (by simp) hac)
+  have h1 := hc (by simp) (by simp) hab
+  have h2 := hc (by simp) (by simp) hbc
+  have h3 := hc (by simp) (by simp) hac
   grind [hasse_adj, CovBy]
 
 end Preorder
