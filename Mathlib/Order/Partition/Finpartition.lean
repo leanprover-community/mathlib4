@@ -329,16 +329,13 @@ noncomputable def toSubtype {s : α} (P : Finpartition s)
   letI : Lattice (Subtype Pr) := Subtype.lattice Prsup Prinf
   letI : OrderBot (Subtype Pr) := Subtype.orderBot Prbot
   { parts := preimage P.parts (fun (p : Subtype Pr) => p.val)
-      (Set.injOn_of_injective Subtype.val_injective)
+      Subtype.val_injective.injOn
     supIndep := by
       classical
-      rw [SupIndep]
-      have hPd := P.supIndep
-      rw [SupIndep] at hPd
       intro t ht i hi hi'
       simp_all only [id_eq]
-      rw [← disjoint_subtype_iff Prinf Prbot, ← sup_image_val_eq_coe_sup_id Prsup Prbot]
-      apply hPd
+      rw [← disjoint_subtype_iff Pinf hbot, ← sup_image_val_eq_coe_sup_id Psup hbot]
+      apply P.supIndep
       · simpa [image_subset_iff_subset_preimage] using ht
       · simpa using hi
       · simpa [i.property] using hi'
