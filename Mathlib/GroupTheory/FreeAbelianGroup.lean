@@ -98,7 +98,7 @@ def FreeAbelianGroup : Type u :=
 deriving Inhabited, AddCommGroup
 
 instance [IsEmpty α] : Unique (FreeAbelianGroup α) :=
-  inferInstanceAs <| Unique (Additive (Abelianization (FreeGroup α)))
+  inferInstanceAs <| Unique (delta% FreeAbelianGroup α)
 
 variable {α}
 
