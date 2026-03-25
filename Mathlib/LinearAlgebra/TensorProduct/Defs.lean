@@ -80,7 +80,7 @@ variable (R) in
 The localized notations are `M ⊗ N` and `M ⊗[R] N`, accessed by `open scoped TensorProduct`. -/
 def TensorProduct : Type _ :=
   (addConGen (TensorProduct.Eqv R M N)).Quotient
-deriving Zero, Add, AddMonoid, AddSemigroup
+deriving Zero, Add, AddZeroClass, AddSemigroup, AddMonoid
 
 set_option quotPrecheck false in
 @[inherit_doc TensorProduct] scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
