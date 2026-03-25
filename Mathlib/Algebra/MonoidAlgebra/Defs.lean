@@ -152,6 +152,9 @@ lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoef
 @[to_additive] instance unique [Subsingleton R] : Unique R[M] :=
   inferInstanceAs <| Unique <| M →₀ R
 
+#adaptation_note /-- Since v4.29.0-rc7,
+this is needed or we get errors in UniversalFactorizationRing.lean -/
+set_option backward.inferInstanceAs.wrap false in
 @[to_additive] instance addCommMonoid : AddCommMonoid R[M] :=
   inferInstanceAs <| AddCommMonoid <| M →₀ R
 
@@ -159,6 +162,9 @@ lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoef
   inferInstanceAs <| IsCancelAdd <| M →₀ R
 
 -- TODO: Replace this with `coeff`. See https://github.com/leanprover-community/mathlib4/pull/36746
+#adaptation_note /-- Since v4.29.0-rc7,
+this is needed or we get errors in UniversalFactorizationRing.lean -/
+set_option backward.inferInstanceAs.wrap false in
 @[to_additive] instance instCoeFun : CoeFun R[M] fun _ ↦ M → R :=
   inferInstanceAs <| CoeFun (M →₀ R) fun _ ↦ M → R
 
@@ -267,7 +273,8 @@ lemma smul_apply (a : A) (x : R[M]) (m : M) : (a • x) m = a • x m := rfl
 
 @[to_additive (attr := simp) (dont_translate := A) smul_single]
 lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r) := by
-  ext; simp [single, ← Finsupp.smul_single]
+  ext
+  simp [single, ← Finsupp.smul_single]
 
 @[to_additive (dont_translate := R) smul_single']
 lemma smul_single' (r' : R) (m : M) (r : R) : r' • single m r = single m (r' * r) := smul_single ..
