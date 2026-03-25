@@ -369,10 +369,11 @@ lemma LinearOrder.strong_induction_of_finite
   refine Fin.strong_induction_on (fun j hj ↦ h _ (fun k hk ↦ ?_))
   simpa using hj (e.symm k) (by simpa [← e.lt_iff_lt])
 
-lemma OrderEmbedding.eq_of_range_eq
+lemma OrderEmbedding.range_eq_iff
     {α β : Type*} [LinearOrder α] [PartialOrder β] [Finite α]
-    {f g : α ↪o β} (h : Set.range f = Set.range g) :
-    f = g := by
+    {f g : α ↪o β} :
+    Set.range f = Set.range g ↔ f = g := by
+  refine ⟨fun h ↦ ?_, by rintro rfl; rfl⟩
   let ef := (f.strictMono.strictMonoOn .univ).orderIso
   let eg := (g.strictMono.strictMonoOn .univ).orderIso
   let i : f '' .univ ≃o g '' .univ :=
@@ -384,18 +385,18 @@ lemma OrderEmbedding.eq_of_range_eq
   simpa only [OrderIso.trans_apply, OrderIso.apply_symm_apply, OrderIso.refl_apply, Subtype.ext_iff]
     using congr(eg ($this ⟨x, Set.mem_univ x⟩))
 
-lemma OrderHom.eq_of_range_eq {α β : Type*} [LinearOrder α] [PartialOrder β]
+lemma OrderHom.range_eq_iff {α β : Type*} [LinearOrder α] [PartialOrder β]
     [Finite α] {f g : α →o β}
-    (hf : Function.Injective f) (hg : Function.Injective g)
-    (h : Set.range f = Set.range g) :
-    f = g := by
+    (hf : Function.Injective f) (hg : Function.Injective g) :
+    Set.range f = Set.range g ↔ f = g := by
+  refine ⟨fun h ↦ ?_, by rintro rfl; rfl⟩
   ext : 2
-  exact DFunLike.congr_fun (OrderEmbedding.eq_of_range_eq
+  exact DFunLike.congr_fun ((OrderEmbedding.range_eq_iff
     (f := .ofStrictMono f (f.monotone.strictMono_of_injective hf))
-    (g := .ofStrictMono g (g.monotone.strictMono_of_injective hg)) (by simpa)) _
+    (g := .ofStrictMono g (g.monotone.strictMono_of_injective hg))).1 (by simpa)) _
 
 lemma OrderHom.eq_id_of_injective {α : Type*} [LinearOrder α] [Finite α] (f : α →o α)
     (hf : Function.Injective f) :
     f = .id :=
-  eq_of_range_eq hf Function.injective_id (by
+  (range_eq_iff hf Function.injective_id).1 (by
     simpa [Set.range_eq_univ] using Finite.surjective_of_injective hf)
