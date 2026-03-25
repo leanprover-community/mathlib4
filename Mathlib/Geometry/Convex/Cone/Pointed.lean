@@ -313,12 +313,6 @@ open Pointwise
 
 variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
 
-@[simp] lemma neg_ofSubmodule_le {S : Submodule R E} : -(ofSubmodule S) ≤ S := by
-  intro x; simp
-
-@[simp] lemma le_neg_ofSubmodule {S : Submodule R E} : S ≤ -(ofSubmodule S) := by
-  intro x; simp
-
 @[simp] lemma neg_ofSubmodule {S : Submodule R E} : -(ofSubmodule S) = S := by
   ext x; simp
 
@@ -400,7 +394,7 @@ open Pointwise
 
 @[simp] lemma coe_toSubmodule (hC : -C = C) : (C.toSubmodule hC : Set E) = C := rfl
 
-@[simp] lemma mem_toSubmodule {hC : -C = C} : x ∈ C.toSubmodule hC ↔ x ∈ C := .rfl
+lemma mem_toSubmodule {hC : -C = C} : x ∈ C.toSubmodule hC ↔ x ∈ C := .rfl
 
 instance : CanLift (PointedCone R E) (Submodule R E) ofSubmodule (fun C => -C = C) where
   prf _ h := ⟨toSubmodule h, ofSubmodule_toSubmodule h⟩
