@@ -380,12 +380,12 @@ variable [NonUnitalRing R]
 
 instance instIsTopologicalRing [IsTopologicalRing R] (S : NonUnitalSubring R) :
     IsTopologicalRing S :=
-  { S.toSubsemigroup.continuousMul, inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup) with }
+  { S.toSubsemigroup.continuousMul, (inferInstance : IsTopologicalAddGroup S.toAddSubgroup) with }
 
 instance instIsSemitopologicalRing [IsSemitopologicalRing R] (S : NonUnitalSubring R) :
     IsSemitopologicalRing S :=
   { S.toSubsemigroup.separatelyContinuousMul,
-    inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup) with }
+    (inferInstanceAs : IsTopologicalAddGroup S.toAddSubgroup) with }
 
 variable [IsSemitopologicalRing R]
 
@@ -424,12 +424,12 @@ variable [Ring R]
 
 instance Subring.instIsTopologicalRing [IsTopologicalRing R] (S : Subring R) :
     IsTopologicalRing S :=
-  { S.toSubmonoid.continuousMul, inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup) with }
+  { S.toSubmonoid.continuousMul, (inferInstanceAs : IsTopologicalAddGroup S.toAddSubgroup) with }
 
 instance Subring.instIsSemitopologicalRing [IsSemitopologicalRing R] (S : Subring R) :
     IsSemitopologicalRing S :=
   { S.toSubmonoid.separatelyContinuousMul,
-    inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup) with }
+    (inferInstanceAs : IsTopologicalAddGroup S.toAddSubgroup) with }
 
 variable [IsSemitopologicalRing R]
 
