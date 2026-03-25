@@ -61,10 +61,10 @@ variable [AddCommGroup M] [Module R M]
 
 open Module
 
-/-- If a pointed cone `C` is contained in the conic span of a basis `b`, then the coordinate
+/-- If a pointed cone `C` is contained in the conic hull of a basis `b`, then the coordinate
 functionals of `b` lie in the dual cone of `C`. -/
 lemma basis_coord_mem_dual {ι : Type*} (b : Basis ι R M) (C : PointedCone R M)
-    (hC : (C : Set M) ⊆ (span R (Set.range b) : Set M)) (i : ι) :
+    (hC : (C : Set M) ⊆ (hull R (Set.range b) : Set M)) (i : ι) :
     b.coord i ∈ dual (dualPairing R M).flip (C : Set M) := by
   classical
   refine dual_le_dual hC ?_
@@ -89,8 +89,17 @@ theorem minTensorProduct_eq_max_of_simplicial_generating_left (C₁ : PointedCon
   classical
   obtain ⟨s, hs_fin, hs_lin, hs_span⟩ := h₁_simp
   haveI : Fintype s := hs_fin.fintype
+  -- The conic hull (R≥0-span) is contained in the linear span (ℝ-span)
+  have hull_sub_span : (hull ℝ s : Set E) ⊆ Submodule.span ℝ s := by
+    intro x hx
+    rw [SetLike.mem_coe, PointedCone.mem_hull_set] at hx
+    obtain ⟨c, hc_supp, _, hc_sum⟩ := hx
+    exact hc_sum ▸ Submodule.sum_mem _ fun m hm =>
+      Submodule.smul_mem _ _ (Submodule.subset_span (hc_supp hm))
   -- Extract basis from `C₁.IsSimplicial` + generating
-  let b := Basis.mk hs_lin <| by simp [← h₁_gen, ← hs_span]
+  let b := Basis.mk hs_lin <| by
+    simpa only [id_eq, Subtype.range_coe] using
+      h₁_gen ▸ hs_span ▸ Submodule.span_le.mpr hull_sub_span
   -- Dual basis elements are in C₁*
   have h_coord_dual : ∀ i, b.coord i ∈ dual (dualPairing ℝ E).flip C₁ :=
     basis_coord_mem_dual _ _ (hs_span ▸ (Submodule.span_mono <| by simp [b]))
@@ -102,7 +111,7 @@ theorem minTensorProduct_eq_max_of_simplicial_generating_left (C₁ : PointedCon
     TensorProduct.equivFinsuppOfBasisLeft_symm_apply, Finsupp.sum_fintype _ _ (by simp)]
   -- Show z ∈ min by showing b_i ∈ C₁ and y_i ∈ C₂
   refine Submodule.sum_mem _ fun i _ => tmul_mem_minTensorProduct ?_ ?_
-  · simpa only [b, Basis.coe_mk] using (hs_span ▸ subset_span) i.prop
+  · simpa only [b, Basis.coe_mk] using (hs_span ▸ subset_hull) i.prop
   · simp only [equivFinsuppOfBasisLeft_apply]
     rw [← ProperCone.dual_dual_flip (topDualPairing ℝ F) C₂]
     intro f (hf : (f : F →ₗ[ℝ] ℝ) ∈ dual (dualPairing ℝ F).flip (C₂ : Set F))
