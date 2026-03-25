@@ -188,7 +188,4 @@ lemma stronglyMeasurable_geometricPMFReal : StronglyMeasurable (geometricPMFReal
 
 end GeometricPMF
 
-@[deprecated (since := "2025-08-28")] alias isProbabilityMeasureGeometric :=
-  isProbabilityMeasure_geometricMeasure
-
 end ProbabilityTheory
