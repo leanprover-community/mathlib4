@@ -137,8 +137,7 @@ theorem disjoint_prod_perm {l₁ l₂ : List (Perm α)} (hl : l₁.Pairwise Disj
 theorem nodup_of_pairwise_disjoint {l : List (Perm α)} (h1 : (1 : Perm α) ∉ l)
     (h2 : l.Pairwise Disjoint) : l.Nodup := by
   refine List.Pairwise.imp_of_mem ?_ h2
-  intro τ σ h_mem _ h_disjoint _
-  subst τ
+  rintro τ σ h_mem _ h_disjoint rfl
   suffices (σ : Perm α) = 1 by
     rw [this] at h_mem
     exact h1 h_mem
