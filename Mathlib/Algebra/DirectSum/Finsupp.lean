@@ -26,6 +26,11 @@ open DirectSum
 
 open LinearMap Submodule
 
+@[simp] theorem DirectSum.finsuppSum_apply {ι : Type*} {M : ι → Type*} [∀ i, AddCommMonoid (M i)]
+    {κ α : Type*} [Zero α] (s : κ →₀ α) (f : κ → α → ⨁ i, M i) {j : ι} :
+    (s.sum f) j = s.sum fun r x ↦ f r x j :=
+  DirectSum.sum_apply ..
+
 variable {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
 
 section finsuppLequivDirectSum

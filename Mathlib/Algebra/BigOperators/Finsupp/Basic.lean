@@ -174,6 +174,12 @@ theorem _root_.SubmonoidClass.finsuppProd_mem {S : Type*} [SetLike S N] [Submono
     (s : S) (f : α →₀ M) (g : α → M → N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : f.prod g ∈ s :=
   prod_mem fun _i hi => h _ (Finsupp.mem_support_iff.mp hi)
 
+@[to_additive (attr := simp)] theorem _root_.SubmonoidClass.coe_finsuppProd {B M : Type*}
+    [CommMonoid M] [SetLike B M] [SubmonoidClass B M] {S : B}
+    {κ α : Type*} [Zero α] (s : κ →₀ α) (f : κ → α → S) :
+    (↑(s.prod f) : M) = s.prod fun r x ↦ (f r x : M) :=
+  map_prod (SubmonoidClass.subtype S) ..
+
 -- Note: Using `gcongr` since `congr` doesn't accept this lemma.
 @[to_additive (attr := gcongr)]
 theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.support, g1 x (f x) = g2 x (f x)) :
