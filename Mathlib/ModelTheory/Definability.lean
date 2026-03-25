@@ -160,9 +160,6 @@ theorem definable_iUnion_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α 
   convert definable_finset_sup hf Finset.univ using 1
   simp
 
-@[deprecated (since := "2025-08-28")]
-alias definable_finset_biUnion := definable_biUnion_finset
-
 @[simp]
 theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L sᶜ := by
   rcases hf with ⟨φ, hφ⟩
