@@ -453,7 +453,7 @@ section Add
 variable [Add α] {w x y z : WithBot α} {a b : α}
 
 instance add : Add (WithBot α) :=
-  ⟨fun x y ↦ show WithBot α from Option.map₂ (· + ·) x y⟩
+  ⟨WithBot.map₂ (· + ·)⟩
 
 @[simp, norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithBot α) := rfl
 
