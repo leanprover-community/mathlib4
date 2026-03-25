@@ -629,7 +629,7 @@ theorem intervalIntegral_tendsto_integral_Iic (b : ℝ) (hfi : IntegrableOn f (I
 
 theorem integral_Iic_tendsto_zero {b : ℝ} (hfi : IntegrableOn f (Iic b) μ)
     (ha : Tendsto a l atBot) :
-    Tendsto (fun i ↦ ∫ x in Iic (a i), f x ∂μ) l (𝓝 0) := by
+    Tendsto (fun i => ∫ x in Iic (a i), f x ∂μ) l (𝓝 0) := by
   have : ∀ᶠ i in l, ∫ x in Iic b, f x ∂μ - ∫ x in a i..b, f x ∂μ = ∫ x in Iic (a i), f x ∂μ := by
     filter_upwards [ha.eventually_mem (Iic_mem_atBot b)] with i hi
     rw [sub_eq_iff_comm, intervalIntegral.integral_Iic_sub_Iic
@@ -639,13 +639,13 @@ theorem integral_Iic_tendsto_zero {b : ℝ} (hfi : IntegrableOn f (Iic b) μ)
 
 theorem integral_Ico_tendsto_integral_Iio (b : ℝ) (hfi : IntegrableOn f (Iio b) μ)
     (ha : Tendsto a l atBot) :
-    Tendsto (fun i ↦ ∫ x in Ico (a i) b, f x ∂μ) l (𝓝 <| ∫ x in Iio b, f x ∂μ) :=
+    Tendsto (fun i => ∫ x in Ico (a i) b, f x ∂μ) l (𝓝 <| ∫ x in Iio b, f x ∂μ) :=
   ((aecover_Iio_of_Ico tendsto_const_nhds ha).integral_tendsto_of_countably_generated hfi).congr'
     (by simp)
 
 theorem integral_Iio_tendsto_zero (b : ℝ) (hfi : IntegrableOn f (Iio b) μ)
     (ha : Tendsto a l atBot) :
-    Tendsto (fun i ↦ ∫ x in Iio (a i), f x ∂μ) l (𝓝 0) := by
+    Tendsto (fun i => ∫ x in Iio (a i), f x ∂μ) l (𝓝 0) := by
   have : ∀ᶠ i in l, ∫ x in Iio b, f x ∂μ - ∫ x in Ico (a i) b, f x ∂μ
     = ∫ x in Iio (a i), f x ∂μ := by
     filter_upwards [ha.eventually_mem (Iic_mem_atBot b)] with i hi
@@ -655,7 +655,7 @@ theorem integral_Iio_tendsto_zero (b : ℝ) (hfi : IntegrableOn f (Iio b) μ)
 
 theorem intervalIntegral_tendsto_integral_Ioi (a : ℝ) (hfi : IntegrableOn f (Ioi a) μ)
     (hb : Tendsto b l atTop) :
-    Tendsto (fun i ↦ ∫ x in a..b i, f x ∂μ) l (𝓝 <| ∫ x in Ioi a, f x ∂μ) := by
+    Tendsto (fun i => ∫ x in a..b i, f x ∂μ) l (𝓝 <| ∫ x in Ioi a, f x ∂μ) := by
   let φ i := Iic (b i)
   have hφ : AECover (μ.restrict <| Ioi a) l φ := aecover_Iic hb
   refine (hφ.integral_tendsto_of_countably_generated hfi).congr' ?_
@@ -666,7 +666,7 @@ theorem intervalIntegral_tendsto_integral_Ioi (a : ℝ) (hfi : IntegrableOn f (I
 
 theorem integral_Ioi_tendsto_zero (a : ℝ) (hfi : IntegrableOn f (Ioi a) μ)
     (hb : Tendsto b l atTop) :
-    Tendsto (fun i ↦ ∫ x in Ioi (b i), f x ∂μ) l (𝓝 0) := by
+    Tendsto (fun i => ∫ x in Ioi (b i), f x ∂μ) l (𝓝 0) := by
   have : ∀ᶠ i in l, ∫ x in Ioi a, f x ∂μ - ∫ x in a..b i, f x ∂μ = ∫ x in Ioi (b i), f x ∂μ := by
     filter_upwards [hb.eventually_mem (Ici_mem_atTop a)] with i hi
     rw [sub_eq_iff_eq_add', intervalIntegral.integral_interval_add_Ioi hfi
@@ -676,12 +676,12 @@ theorem integral_Ioi_tendsto_zero (a : ℝ) (hfi : IntegrableOn f (Ioi a) μ)
 
 theorem integral_Ico_tendsto_integral_Ici (b : ℝ) (hfi : IntegrableOn f (Ici b) μ)
     (ha : Tendsto a l atTop) :
-    Tendsto (fun i ↦ ∫ x in Ico b (a i), f x ∂μ) l (𝓝 <| ∫ x in Ici b, f x ∂μ) :=
+    Tendsto (fun i => ∫ x in Ico b (a i), f x ∂μ) l (𝓝 <| ∫ x in Ici b, f x ∂μ) :=
   ((aecover_Ici_of_Ico ha).integral_tendsto_of_countably_generated hfi).congr' (by simp)
 
 theorem integral_Ici_tendsto_zero (b : ℝ) (hfi : IntegrableOn f (Ici b) μ)
     (ha : Tendsto a l atTop) :
-    Tendsto (fun i ↦ ∫ x in Ici (a i), f x ∂μ) l (𝓝 0) := by
+    Tendsto (fun i => ∫ x in Ici (a i), f x ∂μ) l (𝓝 0) := by
   have : ∀ᶠ i in l, ∫ x in Ici b, f x ∂μ - ∫ x in Ico b (a i), f x ∂μ
     = ∫ x in Ici (a i), f x ∂μ := by
     filter_upwards [ha.eventually_mem (Ici_mem_atTop b)] with i hi
