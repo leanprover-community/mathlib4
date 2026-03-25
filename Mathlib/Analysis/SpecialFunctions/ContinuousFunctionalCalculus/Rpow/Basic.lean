@@ -255,6 +255,10 @@ lemma sqrt_eq_nnrpow (a : A) : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
   ext
   exact_mod_cast NNReal.sqrt_eq_rpow _
 
+set_option backward.isDefEq.respectTransparency false in
+lemma sqrt_of_not_nonneg {a : A} (ha : ¬0 ≤ a) : sqrt a = 0 :=
+  cfcₙ_apply_of_not_predicate a ha
+
 @[simp]
 lemma sqrt_zero : sqrt (0 : A) = 0 := by simp [sqrt]
 
@@ -434,10 +438,10 @@ lemma cfc_comp_rpow [IsTopologicalRing A] [T2Space A] {a : A} {y : ℝ} {f : ℝ
     (hf₁ : ∀ x ∈ spectrum ℝ a, 0 < f x) (hf₂ : ContinuousOn f (spectrum ℝ a) := by cfc_cont_tac)
     (ha : IsSelfAdjoint a := by cfc_tac) : cfc f a ^ y = cfc (fun r => f r ^ y) a := by
   rw [CFC.rpow_eq_cfc_real (by grind [cfc_nonneg])]
-  · have hg : ContinuousOn (fun r => r ^ y) (f '' spectrum ℝ a) :=
-      ContinuousOn.rpow_const (f := id) (by fun_prop) (by grind)
-    rw [← cfc_comp _ _ a ha]
-    congr
+  have hg : ContinuousOn (fun r => r ^ y) (f '' spectrum ℝ a) :=
+    ContinuousOn.rpow_const (f := id) (by fun_prop) (by grind)
+  rw [← cfc_comp _ _ a ha]
+  congr
 
 lemma rpow_one (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (1 : ℝ) = a := by
   simp only [rpow_def, NNReal.rpow_one, cfc_id' ℝ≥0 a]
@@ -647,10 +651,6 @@ lemma sqrt_eq_cfc {a : A} : sqrt a = cfc NNReal.sqrt a := by
   unfold sqrt
   rw [cfcₙ_eq_cfc]
 
-lemma sqrt_of_not_nonneg {a : A} (ha : ¬0 ≤ a) : sqrt a = 0 := by
-  rw [sqrt_eq_cfc]
-  exact cfc_apply_of_not_predicate _ ha
-
 lemma sqrt_sq (a : A) (ha : 0 ≤ a := by cfc_tac) : sqrt (a ^ 2) = a := by
   rw [pow_two, sqrt_mul_self (A := A) a]
 
@@ -795,13 +795,7 @@ omit [IsTopologicalRing A] [T2Space A] in
 open Ring in
 lemma ringInverse_nonneg_iff_nonneg_of_isUnit {a : A} (ha : IsUnit a) :
     0 ≤ inverse a ↔ 0 ≤ a := by
-  refine ⟨?_, ?_⟩
-  · grind =>
-      have : IsStrictlyPositive (inverse a)
-      finish
-  · grind =>
-      have : IsStrictlyPositive (inverse a)
-      finish
+  grind [isStrictlyPositive_ringInverse_iff]
 
 open Ring in
 lemma sqrt_ringInverse {a : A} : sqrt (inverse a) = inverse (sqrt a) := by

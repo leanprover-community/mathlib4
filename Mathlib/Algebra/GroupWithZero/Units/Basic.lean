@@ -157,33 +157,14 @@ theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
 @[grind =]
 theorem Ring.inverse_mul {a b : M₀} (h : IsUnit a ∨ IsUnit b) :
     inverse (a * b) = inverse b * inverse a := by
-  cases h
-  case inl ha =>
-    by_cases hb : IsUnit b
-    · have h₁ : a * b = ha.unit * hb.unit := rfl
-      rw [← Units.val_mul] at h₁
-      rw [h₁, Ring.inverse_unit, Ring.inverse_of_isUnit ha, Ring.inverse_of_isUnit hb]
-      simp
-    · have h₁ : ¬IsUnit (a * b) := by
-        intro H
-        grind =>
-          have : IsUnit (inverse a * (a * b)) := ha.ringInverse.mul H
-          have : inverse a * a = 1 := Ring.inverse_mul_cancel _ ha
-          finish
-      simp [inverse_non_unit _ h₁, inverse_non_unit _ hb]
-  case inr hb =>
-    by_cases ha : IsUnit a
-    · have h₁ : a * b = ha.unit * hb.unit := rfl
-      rw [← Units.val_mul] at h₁
-      rw [h₁, Ring.inverse_unit, Ring.inverse_of_isUnit ha, Ring.inverse_of_isUnit hb]
-      simp
-    · have h₁ : ¬IsUnit (a * b) := by
-        intro H
-        grind =>
-          have : IsUnit ((a * b) * inverse b) := H.mul hb.ringInverse
-          have : b * inverse b = 1 := Ring.mul_inverse_cancel _ hb
-          finish
-      simp [inverse_non_unit _ h₁, inverse_non_unit _ ha]
+  obtain (⟨ha, hb⟩ | ⟨ha, hb⟩ | ⟨ha, hb⟩) :
+      (IsUnit a ∧ ¬ IsUnit b) ∨ (¬ IsUnit a ∧ IsUnit b) ∨ (IsUnit a ∧ IsUnit b) := by grind
+  · have : ¬ IsUnit (a * b) := by simpa [ha.mul_left_iff]
+    simp [Ring.inverse_non_unit, hb, this]
+  · have : ¬ IsUnit (a * b) := by simpa [hb.mul_right_iff]
+    simp [Ring.inverse_non_unit, ha, this]
+  · simp [Ring.inverse_of_isUnit, ha, hb, ha.mul hb, ← Units.val_mul, ← mul_inv_rev]
+    simp
 
 namespace Units
 
