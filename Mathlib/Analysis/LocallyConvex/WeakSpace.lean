@@ -122,5 +122,5 @@ instance {R V : Type*} [CommRing R] [TopologicalSpace R] [T2Space R]
     [TopologicalSpace V] [SeparatingDual R V] : T2Space (WeakSpace R V) :=
   (WeakBilin.isEmbedding (B := (topDualPairing R V).flip) fun _ _ h => by
     by_contra hne
-    obtain ⟨f, hf⟩ := SeparatingDual.exists_separating_of_ne hne
+    obtain ⟨f, hf⟩ := SeparatingDual.exists_separating_of_ne (R := R) hne
     exact hf (DFunLike.congr_fun h f)).t2Space
