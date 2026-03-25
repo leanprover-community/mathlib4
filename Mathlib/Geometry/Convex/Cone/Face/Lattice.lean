@@ -117,12 +117,10 @@ section Field
 variable [Field R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M]
   [AddCommGroup N] [Module R N] {C C₁ : PointedCone R M} {C₂ : PointedCone R N}
 
-/-- The lineality space of a cone `C` as a face of `C`. It is contained in all faces of `C`. -/
-def lineal : Face C := ⟨_, .lineal C⟩
-
-/-- The lineality space of `C` is its bottom face. -/
-theorem lineal_eq_bot : lineal = (⊥ : Face C) :=
-  le_antisymm (⊥ : Face C).isFaceOf.lineal_le bot_le
+/-- The bottom face of `C` is its lineality space. -/
+theorem lineal_eq_bot : ((⊥ : Face C) : PointedCone R M) = C.lineal := by
+  apply le_antisymm _ (⊥ : Face C).isFaceOf.lineal_le
+  exact fun x hx => bot_le (α := Face C) (a := ⟨_, IsFaceOf.lineal C⟩) hx
 
 /-!
 ### Product
