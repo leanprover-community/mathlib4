@@ -67,19 +67,19 @@ instance [p.IsPrime] [q.IsPrime] [Algebra.IsIntegral A B] :
 
 namespace IsLocalRing
 
-instance ResidueField.algebraOfIsIntegral {k : Type*} [IsLocalRing R] [Field k]
-    [Algebra R k] [Algebra.IsIntegral R k] : Algebra (ResidueField R) k :=
-  (Ideal.Quotient.lift (maximalIdeal R) (algebraMap R k)
-    (by simp [← eq_maximalIdeal (RingHom.ker_isMaximal_of_isIntegral R k)])).toAlgebra
+variable {R k : Type*} [CommRing R] [IsLocalRing R] [Field k] [Algebra R k]
 
-instance ResidueField.isScalarTowerOfIsIntegral {k : Type*} [IsLocalRing R]
-    [Field k] [Algebra R k] [Algebra.IsIntegral R k] : IsScalarTower R (ResidueField R) k :=
+instance ResidueField.algebraOfIsIntegral [Algebra.IsIntegral R k] : Algebra (ResidueField R) k :=
+  (Ideal.Quotient.lift (maximalIdeal R) (algebraMap R k)
+    (by simp [← eq_maximalIdeal (Algebra.ker_algebraMap_isMaximal_of_isIntegral R k)])).toAlgebra
+
+instance ResidueField.isScalarTowerOfIsIntegral [Algebra.IsIntegral R k] :
+    IsScalarTower R (ResidueField R) k :=
   .of_algebraMap_eq fun _ ↦ rfl
 
-instance {k : Type*} [IsLocalRing R] [Field k] [Algebra R k] [Module.Finite R k] :
-    Module.Finite (ResidueField R) k := .of_equiv_equiv
+instance [Module.Finite R k] : Module.Finite (ResidueField R) k := .of_equiv_equiv
   (Ideal.quotEquivOfEq (show Ideal.comap (algebraMap R k) ⊥ = maximalIdeal R by
-    rw [← eq_maximalIdeal (RingHom.ker_isMaximal_of_isIntegral R k), RingHom.ker]))
+    rw [← eq_maximalIdeal (Algebra.ker_algebraMap_isMaximal_of_isIntegral R k), RingHom.ker]))
   (RingEquiv.quotientBot k) (by ext; rfl)
 
 end IsLocalRing
