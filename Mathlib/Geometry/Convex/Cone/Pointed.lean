@@ -377,6 +377,7 @@ variable {C : PointedCone R E} {x : E}
 
 open Pointwise
 
+/-- A cone that is identical to its pointwise negative is a submodule. -/
 abbrev toSubmodule (hC : -C = C) : Submodule R E where
   __ := C
   smul_mem' a x hx := by
