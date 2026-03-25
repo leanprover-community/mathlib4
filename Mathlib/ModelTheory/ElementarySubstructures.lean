@@ -144,18 +144,18 @@ def toElementarySubstructure (S : L.Substructure M)
 
 end Substructure
 
-/-- A set satisfies the Tarski-Vaught property if it meets every nonempty definable subset. -/
-def TarskiVaught (A : Set M) : Prop :=
+/-- A set meets definable sets if it meets every nonempty definable subset. -/
+def MeetsDefinable (A : Set M) : Prop :=
   ∀ (D : Set M), D.Nonempty → A.Definable₁ L D → (D ∩ A).Nonempty
 
-namespace TarskiVaught
+namespace MeetsDefinable
 
 open Set Substructure
 
 variable {A : Set M}
 
-/-- The closure of a set with the Tarski-Vaught property equals to itself. -/
-theorem closure_eq_self (hA : L.TarskiVaught A) :
+/-- The closure of a set meeting definable sets is equal to itself. -/
+theorem closure_eq_self (hA : L.MeetsDefinable A) :
     closure L A = A := by
   refine Subset.antisymm ?_ subset_closure
   rw [coe_closure_eq_range_term_realize]
@@ -166,8 +166,8 @@ theorem closure_eq_self (hA : L.TarskiVaught A) :
     simp [Set.ext_iff]
   exact singleton_inter_nonempty.mp <| hA _ (singleton_nonempty x) this
 
-/-- The closure of a set with the Tarski-Vaught property is an elementary substructure. -/
-theorem isElementary_closure (hA : L.TarskiVaught A) :
+/-- The closure of a set meeting definable sets is an elementary substructure. -/
+theorem isElementary_closure (hA : L.MeetsDefinable A) :
     (closure L A).IsElementary := by
   refine isElementary_of_exists ((closure L).toFun A) ?_
   intro n φ x a hφ
@@ -191,12 +191,12 @@ theorem isElementary_closure (hA : L.TarskiVaught A) :
   obtain ⟨b, hbD, hbA⟩ := hA D hD_ne hD
   exact ⟨⟨b, by rwa [← hA.closure_eq_self] at hbA⟩, hbD⟩
 
-/-- Bundles the closure of a set with the Tarski-Vaught property as an elementary substructure. -/
-def toElementarySubstructure (hA : L.TarskiVaught A) :
+/-- Bundles the closure of a set meeting definable sets as an elementary substructure. -/
+def toElementarySubstructure (hA : L.MeetsDefinable A) :
     L.ElementarySubstructure M :=
   ⟨closure L A, hA.isElementary_closure⟩
 
-end TarskiVaught
+end MeetsDefinable
 
 end Language
 
