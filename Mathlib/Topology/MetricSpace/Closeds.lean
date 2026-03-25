@@ -34,7 +34,6 @@ namespace Metric
 
 variable {α : Type*} [PseudoEMetricSpace α]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_hausdorffEntourage_of_hausdorffEDist_lt {s t : Set α} {δ : ℝ≥0∞}
     (h : hausdorffEDist s t < δ) : (s, t) ∈ hausdorffEntourage {p | edist p.1 p.2 < δ} := by
   rw [hausdorffEDist, max_lt_iff] at h
@@ -46,7 +45,6 @@ theorem mem_hausdorffEntourage_of_hausdorffEDist_lt {s t : Set α} {δ : ℝ≥0
     simpa only [infEDist, iInf_lt_iff, exists_prop] using (le_iSup₂ x hx).trans_lt h
   exact ⟨this h.1, this h.2⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hausdorffEDist_le_of_mem_hausdorffEntourage {s t : Set α} {δ : ℝ≥0∞}
     (h : (s, t) ∈ hausdorffEntourage {p | edist p.1 p.2 ≤ δ}) : hausdorffEDist s t ≤ δ := by
   rw [hausdorffEDist, max_le_iff]
@@ -407,9 +405,6 @@ open Metric
 alias NonemptyCompacts.continuous_toCloseds :=
   TopologicalSpace.NonemptyCompacts.continuous_toCloseds
 
-@[deprecated (since := "2025-08-20")]
-alias isClosed_subsets_of_isClosed := TopologicalSpace.Closeds.isClosed_subsets_of_isClosed
-
 @[deprecated (since := "2025-11-19")]
 alias NonemptyCompacts.isClosed_subsets_of_isClosed :=
   TopologicalSpace.NonemptyCompacts.isClosed_subsets_of_isClosed
@@ -441,10 +436,6 @@ alias Closeds.lipschitz_sup := TopologicalSpace.Closeds.lipschitz_sup
 @[deprecated (since := "2026-01-08")]
 alias NonemptyCompacts.isometry_toCloseds :=
   TopologicalSpace.NonemptyCompacts.isometry_toCloseds
-
-@[deprecated (since := "2025-08-20")]
-alias NonemptyCompacts.ToCloseds.isUniformEmbedding :=
-  TopologicalSpace.NonemptyCompacts.isUniformEmbedding_toCloseds
 
 @[deprecated (since := "2025-11-19")]
 alias NonemptyCompacts.isUniformEmbedding_toCloseds :=
