@@ -198,10 +198,6 @@ lemma ordFrac_le_smul {S : Type*} [CommRing S] [Algebra S R] [Algebra S K]
   apply ordFrac_ge_one_of_ne_zero
   exact ha
 
-/--
-The analogue of `ord_of_isUnit` for `ordFrac`, saying `ordFrac R (algebraMap R K x) = 1` for some
-unit `x`.
--/
 @[simp]
 lemma ordFrac_of_isUnit (x : R) (hx : IsUnit x) : ordFrac R (algebraMap R K x) = 1 := by
   have : x ≠ 0 := IsUnit.ne_zero hx

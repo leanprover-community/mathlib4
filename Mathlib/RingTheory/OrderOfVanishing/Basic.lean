@@ -151,15 +151,6 @@ theorem ord_pow (x : R) (hx : x ∈ nonZeroDivisors R) (n : ℕ) : ord R (x ^ n)
     rw [pow_succ, ord_mul, ih, succ_nsmul]
     exact hx
 
-/--
-For `x : R` a non zero divisor, `ord R (-x) = ord R x`.
--/
-@[simp]
-lemma ord_neg (x : R) : ord R (-x) = ord R x:= by
-  simp only [ord]
-  congr 2
-  all_goals exact Ideal.span_singleton_neg x
-
 @[simp]
 lemma ord_mul_of_isUnit_left (a : R) (h : IsUnit a) (x : R) : ord R (a * x) = ord R x := by
   rw [ord, ord, Ideal.span_singleton_mul_left_unit h x]
@@ -168,9 +159,13 @@ lemma ord_mul_of_isUnit_left (a : R) (h : IsUnit a) (x : R) : ord R (a * x) = or
 lemma ord_mul_of_isUnit_right (a : R) (h : IsUnit a) (x : R) : ord R (x * a) = ord R x := by
   rw [ord, ord, Ideal.span_singleton_mul_right_unit h x]
 
-lemma ord_mul_of_associated (x y : R) (h : Associated x y) : ord R x = ord R y := by
+lemma ord_eq_of_associated (x y : R) (h : Associated x y) : ord R x = ord R y := by
   obtain ⟨a, rfl⟩ := h
   simp
+
+@[simp]
+lemma ord_neg (x : R) : ord R (-x) = ord R x:= by
+    simp [ord_eq_of_associated (-x) (x) (by simp)]
 
 /--
 In an `S` algebra `R`, the order of vanishing of `x : R` is equal to the order of vanishing
@@ -183,8 +178,8 @@ lemma ord_smul_of_isUnit {S : Type*} [CommRing S] [Algebra S R]
   exact ord_mul_of_isUnit_left ((algebraMap S R) a) (RingHom.isUnit_map (algebraMap S R) h) x
 
 /-
-Simple lemma saying `ord (x) ≤ ord (a * x)`. One should note that the order here
-is the order on `ℕ∞` where `∞` is a top element.
+Note that the order here is the order on `ℕ∞` where `∞` is a top element, rather than the order on
+`ℤᵐ⁰` which also comes up when working with orders of vanishing.
 -/
 lemma ord_le_ord_mul (a : R) (x : R) : ord R x ≤ ord R (a * x) := by
   simp only [ord]
@@ -193,6 +188,11 @@ lemma ord_le_ord_mul (a : R) (x : R) : ord R x ≤ ord R (a * x) := by
     refine Module.length_le_of_surjective (Submodule.factor this) (Submodule.factor_surjective this)
   rw [@Ideal.span_singleton_le_span_singleton]
   exact Dvd.intro_left (Algebra.algebraMap a) rfl
+
+lemma ord_le_ord_of_dvd (a : R) (x : R) (h : a ∣ x) : ord R a ≤ ord R x := by
+  obtain ⟨b, rfl⟩ := h
+  rw [mul_comm]
+  exact ord_le_ord_mul b a
 
 /--
 In an `S` algebra `R`, the order of vanishing of `x : R` is less than or equal
