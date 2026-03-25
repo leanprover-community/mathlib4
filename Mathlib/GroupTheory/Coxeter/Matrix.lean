@@ -75,12 +75,12 @@ structure CoxeterMatrix (B : Type*) where
 
 namespace CoxeterMatrix
 
-variable {B B' : Type*} (e : B ≃ B')
+variable {B : Type*}
 
 /-- A Coxeter matrix can be coerced to a matrix. -/
-instance : CoeFun (CoxeterMatrix B) fun _ ↦ Matrix B B ℕ := ⟨M⟩
+instance : CoeFun (CoxeterMatrix B) fun _ ↦ (Matrix B B ℕ) := ⟨M⟩
 
-variable (M : CoxeterMatrix B)
+variable {B' : Type*} (e : B ≃ B') (M : CoxeterMatrix B)
 
 attribute [simp] diagonal
 
@@ -94,8 +94,6 @@ protected def reindex : CoxeterMatrix B' where
   off_diagonal i i' h := M.off_diagonal (e.symm i) (e.symm i') (e.symm.injective.ne h)
 
 theorem reindex_apply (i i' : B') : M.reindex e i i' = M (e.symm i) (e.symm i') := rfl
-
-/-! ### Special matrices -/
 
 variable (n : ℕ)
 
