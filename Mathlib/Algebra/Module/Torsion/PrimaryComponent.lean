@@ -140,9 +140,9 @@ end CommRing
 
 end Module
 
-namespace HeightOneSpectrum
+namespace IsDedekindDomain.HeightOneSpectrum
 
-open IsDedekindDomain Submodule
+open Submodule
 
 variable (P : HeightOneSpectrum A) [AddCommMonoid M] [Module A M]
 
@@ -150,4 +150,4 @@ variable (P : HeightOneSpectrum A) [AddCommMonoid M] [Module A M]
 The `P`-primaryComponent component of a module `M` where `P` is of type `HeigtOneSpectrum A`. -/
 abbrev primaryComponent := Module.primaryComponent M P.asIdeal
 
-end HeightOneSpectrum
+end IsDedekindDomain.HeightOneSpectrum
