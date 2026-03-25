@@ -230,6 +230,7 @@ instance (M : Submonoid S) [QuasiFinite R S] : QuasiFinite R (Localization M) :=
 instance (priority := low) [IsFractionRing R S] : QuasiFinite R S :=
   of_isLocalization (nonZeroDivisors R)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (P : Ideal S) [P.IsPrime] [QuasiFinite R S] : QuasiFinite R P.ResidueField :=
   .trans _ (S ⧸ P) _
 
@@ -280,6 +281,7 @@ lemma eq_of_le_of_under_eq [QuasiFinite R S] (P Q : Ideal S) [P.IsPrime] [Q.IsPr
     (a := ⟨P, ‹_›⟩) (b := ⟨Q, ‹_›⟩) (by simpa [← PrimeSpectrum.le_iff_specializes]) rfl
     (PrimeSpectrum.ext h₂.symm)).1)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [QuasiFinite R S] (P : Ideal R) [P.IsPrime] (Q : Ideal S) [Q.IsPrime] [Q.LiesOver P] :
     Module.Finite P.ResidueField Q.ResidueField :=
   have : QuasiFinite P.ResidueField Q.ResidueField := .of_restrictScalars R _ _

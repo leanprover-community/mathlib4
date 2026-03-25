@@ -250,12 +250,30 @@ initialize URL : String ← do
       "https://lakecache.blob.core.windows.net/mathlib4"
   return url?.getD defaultUrl
 
-/-- Retrieves the azure token from the environment -/
-def getToken : IO String := do
-  let envVar := if useCloudflareCache then "MATHLIB_CACHE_S3_TOKEN" else "MATHLIB_CACHE_SAS"
-  let some token ← IO.getEnv envVar
-    | throw <| IO.userError s!"environment variable {envVar} must be set to upload caches"
-  return token
+/-- Authentication method used for cache upload operations. -/
+inductive UploadAuth where
+  | cloudflareS3 (token : String)
+  | azureSas (token : String)
+  | azureBearer (token : String)
+
+/-- Retrieves upload credentials from the environment. -/
+def getUploadAuth : IO UploadAuth := do
+  if useCloudflareCache then
+    let envVar := "MATHLIB_CACHE_S3_TOKEN"
+    let some token ← IO.getEnv envVar
+      | throw <| IO.userError s!"environment variable {envVar} must be set to upload caches"
+    return .cloudflareS3 token
+  else
+    if let some token ← IO.getEnv "MATHLIB_CACHE_AZURE_BEARER_TOKEN" then
+      let token := token.trimAscii.copy
+      if !token.isEmpty then
+        return .azureBearer token
+    if let some token ← IO.getEnv "MATHLIB_CACHE_SAS" then
+      let token := token.trimAscii.copy
+      if !token.isEmpty then
+        return .azureSas token
+    throw <| IO.userError
+      "environment variable MATHLIB_CACHE_AZURE_BEARER_TOKEN or MATHLIB_CACHE_SAS must be set to upload caches"
 
 /-- The full name of the main Mathlib GitHub repository. -/
 def MATHLIBREPO := "leanprover-community/mathlib4"
@@ -731,9 +749,20 @@ initialize UPLOAD_URL : String ← do
       "https://lakecache.blob.core.windows.net/mathlib4"
   return url?.getD defaultUrl
 
+def azureBearerApiVersionHeader : String := "x-ms-version: 2026-02-06"
+
+def getAzureDateHeader : IO String := do
+  let out ← IO.Process.output
+    { cmd := "date", args := #["-u", "+%a, %d %b %Y %H:%M:%S GMT"] }
+  unless out.exitCode == 0 do
+    throw <| IO.userError s!"failed to produce x-ms-date header (exit code {out.exitCode})"
+  return s!"x-ms-date: {out.stdout.trimAscii.copy}"
+
 /-- Formats the config file for `curl`, containing the list of files to be uploaded -/
-def mkPutConfigContent (repo : String) (files : Array FilePath) (token : String) : IO String := do
-  let token := if useCloudflareCache then "" else s!"?{token}" -- the Cloudflare cache doesn't pass the token here
+def mkPutConfigContent (repo : String) (files : Array FilePath) (auth : UploadAuth) : IO String := do
+  let token := match auth with
+    | .azureSas token => s!"?{token}"
+    | _ => ""
   let l ← files.toList.mapM fun file : FilePath => do
     pure s!"-T {file.toString}\nurl = {mkFileURL repo UPLOAD_URL file.fileName.get!}{token}"
   return "\n".intercalate l
@@ -741,21 +770,32 @@ def mkPutConfigContent (repo : String) (files : Array FilePath) (token : String)
 /-- Calls `curl` to send a set of files to the server -/
 def putFilesAbsolute
   (repo : String) (files : Array FilePath) (tempConfigFilePath : FilePath)
-  (overwrite : Bool) (token : String) : IO Unit := do
+  (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
   -- TODO: reimplement using HEAD requests?
   let _ := overwrite
   let size := files.size
   if size > 0 then
-    IO.FS.writeFile tempConfigFilePath (← mkPutConfigContent repo files token)
+    IO.FS.writeFile tempConfigFilePath (← mkPutConfigContent repo files auth)
     IO.println s!"Attempting to upload {size} file(s) to {repo} cache"
-    let args := if useCloudflareCache then
-      -- TODO: reimplement using HEAD requests?
-      let _ := overwrite
-      #["--aws-sigv4", "aws:amz:auto:s3", "--user", token]
-    else if overwrite then
-      #["-H", "x-ms-blob-type: BlockBlob"]
-    else
-      #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
+    let azureDateHeader ← getAzureDateHeader
+    let args := match auth with
+      | .cloudflareS3 token =>
+        -- TODO: reimplement using HEAD requests?
+        let _ := overwrite
+        #["--aws-sigv4", "aws:amz:auto:s3", "--user", token]
+      | .azureSas _ =>
+        if overwrite then
+          #["-H", "x-ms-blob-type: BlockBlob"]
+        else
+          #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
+      | .azureBearer token =>
+        if overwrite then
+          #["-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader, "-H",
+            azureDateHeader,
+            "--oauth2-bearer", token]
+        else
+          #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
+            azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
     let args := args ++ #[
       "-X", "PUT", "--parallel",
       "--retry", "5", -- there seem to be some intermittent failures
@@ -767,10 +807,10 @@ def putFilesAbsolute
 /-- Calls `curl` to send a set of cached files to the server -/
 def putFiles
   (repo : String) (fileNames : Array String)
-  (overwrite : Bool) (token : String) : IO Unit := do
+  (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
   -- TODO: reimplement using HEAD requests?
   let files : Array FilePath := fileNames.map (fun (f : String) => (IO.CACHEDIR / f))
-  putFilesAbsolute repo files IO.CURLCFG overwrite token
+  putFilesAbsolute repo files IO.CURLCFG overwrite auth
 end Put
 
 section Stage
@@ -828,21 +868,31 @@ Sends a commit file to the server, containing the hashes of the respective commi
 
 The file name is the current Git hash and the `c/` prefix means that it's a commit file.
 -/
-def commit (hashMap : IO.ModuleHashMap) (overwrite : Bool) (token : String) : IO Unit := do
+def commit (hashMap : IO.ModuleHashMap) (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
   let hash ← getGitCommitHash
   let path := IO.CACHEDIR / hash
   IO.FS.createDirAll IO.CACHEDIR
   IO.FS.writeFile path <| ("\n".intercalate <| hashMap.hashes.toList.map toString) ++ "\n"
-  if useCloudflareCache then
+  let azureDateHeader ← getAzureDateHeader
+  match auth with
+  | .cloudflareS3 token =>
     -- TODO: reimplement using HEAD requests?
     let _ := overwrite
     discard <| IO.runCurl #["-T", path.toString,
       "--aws-sigv4", "aws:amz:auto:s3", "--user", token, s!"{UPLOAD_URL}/c/{hash}"]
-  else
+  | .azureSas token =>
     let params := if overwrite
       then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
       else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
     discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{URL}/c/{hash}?{token}"]
+  | .azureBearer token =>
+    let params := if overwrite
+      then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader,
+        "-H", azureDateHeader,
+        "--oauth2-bearer", token]
+      else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
+        azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
+    discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{URL}/c/{hash}"]
   IO.FS.removeFile path
 
 end Commit
