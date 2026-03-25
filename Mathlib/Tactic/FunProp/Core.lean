@@ -106,7 +106,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) :
 def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (goal : Goal)
     (thmId : Origin) : FunPropM (Option Result) := do
   withTraceNode `Meta.Tactic.fun_prop
-    (fun r => return s!"[{ExceptToEmoji.toEmoji r}] applying: {← ppOrigin' thmId}") do
+    (fun _ => return s!"applying: {← ppOrigin' thmId}") do
 
   let (_outputs, e) ← goal.mkFreshExpr
 
