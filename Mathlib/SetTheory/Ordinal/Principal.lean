@@ -344,9 +344,8 @@ alias principal_mul_one := isPrincipal_mul_one
 
 theorem isPrincipal_mul_two : IsPrincipal (· * ·) 2 := by
   intro a b ha hb
-  rw [← one_add_one_eq_two, lt_add_one_iff] at *
-  convert mul_le_mul' ha hb
-  exact (mul_one 1).symm
+  rw [lt_two_iff] at *
+  simpa using mul_le_mul' ha hb
 
 @[deprecated (since := "2026-03-17")]
 alias principal_mul_two := isPrincipal_mul_two
