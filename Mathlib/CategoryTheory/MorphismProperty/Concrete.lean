@@ -30,7 +30,7 @@ universe v u
 namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C] {FC : C → C → Type*} {CC : C → Type*}
-variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
+variable {_ : ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)} [ConcreteCategory C FC]
 
 namespace MorphismProperty
 

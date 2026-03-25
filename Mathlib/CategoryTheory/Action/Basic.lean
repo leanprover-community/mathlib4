@@ -248,20 +248,22 @@ def forget : Action V G ⥤ V where
 
 instance : (forget V G).Faithful where map_injective w := Hom.ext w
 
+section CongreteCategory
+
+variable {FV : V → V → Type*} {CV : V → Type*}
+  {_ : ∀ X Y, FunLike (FV X Y) (CV X) (CV Y)} [ConcreteCategory V FV]
+
 /-- The type of `V`-morphisms that can be lifted back to morphisms in the category `Action`. -/
-abbrev HomSubtype {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
-    [ConcreteCategory V FV] (M N : Action V G) :=
+abbrev HomSubtype (M N : Action V G) :=
   { f : FV M.V N.V // ∀ g : G,
       f ∘ ConcreteCategory.hom (M.ρ g) = ConcreteCategory.hom (N.ρ g) ∘ f }
 
-instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
-    [ConcreteCategory V FV] (M N : Action V G) :
+instance (M N : Action V G) :
     FunLike (HomSubtype V G M N) (CV M.V) (CV N.V) where
   coe f := f.1
   coe_injective' _ _ h := Subtype.ext (DFunLike.coe_injective h)
 
-instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
-    [ConcreteCategory V FV] : ConcreteCategory (Action V G) (HomSubtype V G) where
+instance : ConcreteCategory (Action V G) (HomSubtype V G) where
   hom f := ⟨ConcreteCategory.hom (C := V) f.1, fun g => by
     ext
     simpa using CategoryTheory.congr_fun (f.2 g) _⟩
@@ -272,8 +274,9 @@ instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) 
   id_apply := ConcreteCategory.id_apply (C := V)
   comp_apply _ _ := ConcreteCategory.comp_apply (C := V) _ _
 
-instance hasForgetToV {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
-    [ConcreteCategory V FV] : HasForget₂ (Action V G) V where forget₂ := forget V G
+instance hasForgetToV : HasForget₂ (Action V G) V where forget₂ := forget V G
+
+end CongreteCategory
 
 /-- The forgetful functor is intertwined by `functorCategoryEquivalence` with
 evaluation at `PUnit.star`. -/

@@ -249,8 +249,8 @@ end Preservation
 
 section Concrete
 
-instance {FC : outParam <| C → C → Type*} {CC : outParam <| C → Type*}
-    [outParam <| ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
+instance {FC : C → C → Type*} {CC : C → Type*}
+    {_ : ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)} [ConcreteCategory C FC]
     [PreservesColimitsOfShape (Discrete WalkingPair) (forget C)]
     [ReflectsMonomorphisms (forget C)] : MonoCoprod C :=
   monoCoprod_of_preservesCoprod_of_reflectsMono (forget C)

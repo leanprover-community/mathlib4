@@ -30,7 +30,7 @@ universe w v v' u u'
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type w}
-variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{w} C FC]
+variable {_ : ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)} [ConcreteCategory.{w} C FC]
 
 open Limits MorphismProperty
 
@@ -46,10 +46,10 @@ theorem mono_of_injective {X Y : C} (f : X ⟶ Y) (i : Function.Injective f) :
 instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
     [Category.{v} C] [Category.{v'} D]
     {FC : C → C → Type*} {CC : C → Type w}
-    [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+    {_ : ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)}
     [ConcreteCategory C FC]
     {FD : D → D → Type*} {CD : D → Type w}
-    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+    {_ : ∀ X Y, FunLike (FD X Y) (CD X) (CD Y)}
     [ConcreteCategory D FD]
     [HasForget₂ C D] [(forget C).PreservesMonomorphisms] :
     (forget₂ C D).PreservesMonomorphisms :=
@@ -61,10 +61,10 @@ instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
 instance forget₂_preservesEpimorphisms (C : Type u) (D : Type u')
     [Category.{v} C] [Category.{v'} D]
     {FC : C → C → Type*} {CC : C → Type w}
-    [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+    {_ : ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)}
     [ConcreteCategory C FC]
     {FD : D → D → Type*} {CD : D → Type w}
-    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+    {_ : ∀ X Y, FunLike (FD X Y) (CD X) (CD Y)}
     [ConcreteCategory D FD]
     [HasForget₂ C D] [(forget C).PreservesEpimorphisms] :
     (forget₂ C D).PreservesEpimorphisms :=

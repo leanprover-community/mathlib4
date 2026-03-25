@@ -32,7 +32,7 @@ of `HasForget₂` instances.
 open CategoryTheory Limits
 
 variable (V : Type*) [Category* V] {FV : V → V → Type*} {CV : V → Type*}
-    [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV] [HasForget₂ V TopCat]
+    {_ : ∀ X Y, FunLike (FV X Y) (CV X) (CV Y)} [ConcreteCategory V FV] [HasForget₂ V TopCat]
 variable (G : Type*) [Monoid G] [TopologicalSpace G]
 
 namespace Action

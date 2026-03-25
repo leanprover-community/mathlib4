@@ -128,7 +128,7 @@ theorem toSheafify_comp_sheafifyCompIso_inv :
 section
 
 -- We will sheafify `D`-valued presheaves in this section.
-variable {FD : D → D → Type*} {CD : D → Type*} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+variable {FD : D → D → Type*} {CD : D → Type*} {_ : ∀ X Y, FunLike (FD X Y) (CD X) (CD Y)}
 variable [ConcreteCategory D FD] [PreservesLimitsOfSize.{max v u, max v u} (forget D)]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [(forget D).ReflectsIsomorphisms]
 

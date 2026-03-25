@@ -29,7 +29,7 @@ namespace LightProfinite
 
 variable (A : Type u') [Category.{u} A] [HasLimits A] [HasColimits A]
   {FA : A → A → Type v} {CA : A → Type u}
-  [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]
+  {_ : ∀ X Y, FunLike (FA X Y) (CA X) (CA Y)} [ConcreteCategory A FA]
   [PreservesFilteredColimits (forget A)]
   [PreservesLimits (forget A)] [(forget A).ReflectsIsomorphisms]
 

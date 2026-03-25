@@ -315,7 +315,7 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
         ι_colimMap, Functor.whiskerLeft_app]
       rfl)
 
-variable {FE : E → E → Type*} {CE : E → Type u₁} [∀ X Y, FunLike (FE X Y) (CE X) (CE Y)]
+variable {FE : E → E → Type*} {CE : E → Type u₁} {_ : ∀ X Y, FunLike (FE X Y) (CE X) (CE Y)}
     [ConcreteCategory E FE] [HasLimits E] [HasColimits E]
 variable [ReflectsLimits (forget E)] [PreservesFilteredColimits (forget E)]
 variable [PreservesLimits (forget E)]

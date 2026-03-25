@@ -49,7 +49,7 @@ section LocallySurjective
 open scoped AlgebraicGeometry
 
 variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type v}
-variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC] {X : TopCat.{v}}
+variable {_ : ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)} [ConcreteCategory C FC] {X : TopCat.{v}}
 variable {ℱ 𝒢 : X.Presheaf C}
 
 /-- A map of presheaves `T : ℱ ⟶ 𝒢` is **locally surjective** if for any open set `U`,
@@ -123,7 +123,7 @@ end LocallySurjective
 end TopCat.Presheaf
 
 theorem TopCat.Sheaf.isLocallySurjective_iff_epi {X : TopCat.{v}} {C : Type u} [Category.{v} C]
-    {FC : C → C → Type*} {CC : C → Type v} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+    {FC : C → C → Type*} {CC : C → Type v} {_ : ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)}
     [ConcreteCategory C FC] [Balanced (CategoryTheory.Sheaf (Opens.grothendieckTopology X) C)]
     [(Opens.grothendieckTopology X).HasSheafCompose (CategoryTheory.forget C)]
     [HasSheafify (Opens.grothendieckTopology X) C]

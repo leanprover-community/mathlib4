@@ -290,7 +290,7 @@ lemma PreservesSheafification.transport
 
 variable [Functor.IsContinuous G K J] [(G.sheafPushforwardContinuous A K J).EssSurj]
 variable [G.IsCocontinuous K J] {FA : A → A → Type*} {CA : A → Type*}
-variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]
+variable {_ : ∀ X Y, FunLike (FA X Y) (CA X) (CA Y)} [ConcreteCategory A FA]
 variable [K.WEqualsLocallyBijective A]
 
 lemma WEqualsLocallyBijective.transport (hG : CoverPreserving K J G) :

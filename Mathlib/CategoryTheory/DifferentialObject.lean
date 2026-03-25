@@ -214,7 +214,7 @@ section ConcreteCategory
 
 variable (S : Type*) [AddMonoidWithOne S]
 variable (C : Type (u + 1)) [LargeCategory C] [HasZeroMorphisms C]
-variable {FC : C → C → Type*} {CC : C → Type*} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+variable {FC : C → C → Type*} {CC : C → Type*} {_ : ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)}
 variable [ConcreteCategory C FC] [HasShift C S]
 
 /--

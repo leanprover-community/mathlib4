@@ -158,14 +158,14 @@ instance hasSheafCompose_of_preservesLimitsOfSize [PreservesLimitsOfSize.{v₁, 
 variable {J}
 
 lemma Sheaf.isSeparated {FA : A → A → Type*} {CA : A → Type*}
-    [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA] [J.HasSheafCompose (forget A)]
-    (F : Sheaf J A) : Presheaf.IsSeparated J F.obj := by
+    {_ : ∀ X Y, FunLike (FA X Y) (CA X) (CA Y)} [ConcreteCategory A FA]
+    [J.HasSheafCompose (forget A)] (F : Sheaf J A) : Presheaf.IsSeparated J F.obj := by
   rintro X S hS x y h
   exact (((isSheaf_iff_isSheaf_of_type _ _).1
     ((sheafCompose J (forget A)).obj F).2).isSeparated S hS).ext (fun _ _ hf => h _ _ hf)
 
 lemma Presheaf.IsSheaf.isSeparated {F : Cᵒᵖ ⥤ A} {FA : A → A → Type*} {CA : A → Type*}
-    [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]
+    {_ : ∀ X Y, FunLike (FA X Y) (CA X) (CA Y)} [ConcreteCategory A FA]
     [J.HasSheafCompose (forget A)] (hF : Presheaf.IsSheaf J F) :
     Presheaf.IsSeparated J F :=
   Sheaf.isSeparated ⟨F, hF⟩

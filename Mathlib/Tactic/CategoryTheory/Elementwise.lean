@@ -51,8 +51,8 @@ theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
 theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : DFunLike.coe f = f := rfl
 
 theorem hom_elementwise {C : Type*} [Category* C]
-    {FC : outParam <| C → C → Type*} {CC : outParam <| C → Type*}
-    {_ : outParam <| ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)} [ConcreteCategory C FC]
+    {FC : C → C → Type*} {CC : C → Type*}
+    {_ : ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)} [ConcreteCategory C FC]
     {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : CC X) : f x = g x := by rw [h]
 
 end theorems

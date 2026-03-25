@@ -29,7 +29,7 @@ namespace CategoryTheory
 namespace Presheaf
 
 variable {FA : A → A → Type*} {CA : A → Type*}
-variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]
+variable {_ : ∀ X Y, FunLike (FA X Y) (CA X) (CA Y)} [ConcreteCategory A FA]
 
 
 lemma isLocallyInjective_whisker [H.IsCocontinuous J K] [IsLocallyInjective K f] :

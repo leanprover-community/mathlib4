@@ -114,7 +114,7 @@ lemma map_germ_eq_Γgerm (F : X.Presheaf C) {U : Opens X} {i : U ⟶ ⊤} (x : X
     F.map i.op ≫ F.germ U x hx = F.Γgerm x :=
   germ_res F i x hx
 
-variable {FC : C → C → Type*} {CC : C → Type*} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+variable {FC : C → C → Type*} {CC : C → Type*} {_ : ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)}
 
 theorem germ_res_apply (F : X.Presheaf C)
     {U V : Opens X} (i : U ⟶ V) (x : X) (hx : x ∈ U) [ConcreteCategory C FC] (s) :
