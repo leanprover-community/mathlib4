@@ -69,8 +69,7 @@ deriving instance
   for NNReal
 
 noncomputable section
-deriving instance LinearOrder, LinearOrderedCommGroupWithZero
-  for NNReal
+deriving instance LinearOrder for NNReal
 end
 
 
@@ -105,6 +104,10 @@ noncomputable instance : Semifield ℝ≥0 := fast_instance%
   Function.Injective.semifield toReal Subtype.val_injective
     rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
+
+noncomputable section
+deriving instance LinearOrderedCommGroupWithZero for NNReal
+end
 
 example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
   with_reducible_and_instances exact inv_anti₀ h1p h2p
