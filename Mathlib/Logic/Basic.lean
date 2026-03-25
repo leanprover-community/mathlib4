@@ -413,17 +413,9 @@ theorem congr_fun_rfl {α β : Sort*} (f : α → β) (a : α) : congr_fun (Eq.r
 theorem congr_fun_congr_arg {α β γ : Sort*} (f : α → β → γ) {a a' : α} (p : a = a') (b : β) :
     congr_fun (congr_arg f p) b = congr_arg (fun a ↦ f a b) p := rfl
 
-@[deprecated (since := "2025-09-16")] alias Eq.rec_eq_cast := eqRec_eq_cast
-
-@[deprecated (since := "2025-09-16")] alias eqRec_heq' := eqRec_heq_self
-
 theorem rec_heq_of_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β}
     (e : a = b) (h : x ≍ y) : e ▸ x ≍ y :=
   eqRec_heq_iff_heq.mpr h
-
-@[deprecated (since := "2025-09-16")] alias rec_heq_iff_heq := eqRec_heq_iff_heq
-
-@[deprecated (since := "2025-09-16")] alias heq_rec_iff_heq := heq_eqRec_iff_heq
 
 @[simp]
 theorem cast_heq_iff_heq {α β γ : Sort _} (e : α = β) (a : α) (c : γ) :
@@ -708,6 +700,7 @@ noncomputable def decPred (p : α → Prop) : DecidablePred p := by infer_instan
 noncomputable def decRel (p : α → α → Prop) : DecidableRel p := by infer_instance
 
 /-- Any type `α` has decidable equality classically. -/
+@[implicit_reducible]
 noncomputable def decEq (α : Sort*) : DecidableEq α := by infer_instance
 
 /-- Construct a function from a default value `H0`, and a function to use if there exists a value
@@ -963,6 +956,11 @@ theorem if_congr (h_c : P ↔ Q) (h_t : x = u) (h_e : y = v) : ite P x y = ite Q
   if_ctx_congr h_c (fun _ ↦ h_t) (fun _ ↦ h_e)
 
 end congr
+
+theorem Function.Injective.ite {α β : Sort*} {p : β → Prop} [DecidablePred p] {g : β → α}
+    (hg : g.Injective) {f : β → α} (hf : f.Injective) (h : ∀ x y, g x = f y → x = y) :
+    (fun x ↦ if p x then g x else f x).Injective :=
+  fun x y _ ↦ by rcases em (p x) with (hx | hx) <;> rcases em (p y) with (hy | hy) <;> grind
 
 end ite
 

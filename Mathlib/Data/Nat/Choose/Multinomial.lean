@@ -14,13 +14,16 @@ public import Mathlib.Data.Nat.Factorial.DoubleFactorial
 /-!
 # Multinomial
 
-This file defines the multinomial coefficient and several small lemma's for manipulating it.
+This file defines the multinomial coefficients and several small lemmas for manipulating them.
 
-## Main declarations
+- `Nat.multinomial`: the multinomial coefficient,
+  Given a function `f : α → ℕ` and `s : Finset α`, this is the number of strings
+  consisting of symbols from `s`, where `c ∈ s` appears with multiplicity `f c`.
 
-- `Nat.multinomial`: the multinomial coefficient
+  It is defined as `(∑ i ∈ s, f i)! / ∏ i ∈ s, (f i)!`.
 
-## Main results
+- `Multiset.countPerms`: multinomial coefficient associated with the `Multiset.count` function
+  of a multiset. This is the number of lists that induce the given multiset.
 
 - `Finset.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
 
@@ -166,7 +169,6 @@ end Nat
 
 /-! ### Alternative definitions -/
 
-
 namespace Finsupp
 
 variable {α : Type*}
@@ -206,15 +208,13 @@ namespace Multiset
 
 variable {α : Type*}
 
-/-- Alternative definition of multinomial based on `Multiset` delegating to the
-  finsupp definition
--/
-noncomputable def multinomial [DecidableEq α] (m : Multiset α) : ℕ :=
+/-- The number of permutations of a given multiset. -/
+noncomputable def countPerms [DecidableEq α] (m : Multiset α) : ℕ :=
   m.toFinsupp.multinomial
 
-theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
-    m.multinomial = m.card.choose (m.count a) * (m.filter (a ≠ ·)).multinomial := by
-  dsimp only [multinomial]
+theorem countPerms_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
+    m.countPerms = m.card.choose (m.count a) * (m.filter (a ≠ ·)).countPerms := by
+  dsimp only [countPerms]
   convert Finsupp.multinomial_update a _
   · rw [← Finsupp.card_toMultiset, m.toFinsupp_toMultiset]
   · ext1 a
@@ -224,8 +224,8 @@ theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
     · rw [not_ne_iff.1 h, Function.update_self]
 
 @[simp]
-theorem multinomial_zero [DecidableEq α] : multinomial (0 : Multiset α) = 1 := by
-  simp [multinomial, Finsupp.multinomial]
+theorem countPerms_zero [DecidableEq α] : countPerms (0 : Multiset α) = 1 := by
+  simp [countPerms, Finsupp.multinomial]
 
 end Multiset
 
@@ -289,7 +289,7 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
     ∀ n,
       s.sum x ^ n =
         ∑ k : s.sym n,
-          k.1.1.multinomial *
+          k.1.1.countPerms *
             (k.1.1.map <| x).noncommProd
               (Multiset.map_set_pairwise <| hc.mono <| mem_sym_iff.1 k.2) := by
   induction s using Finset.induction with
@@ -312,7 +312,7 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
       (ne_of_mem_of_not_mem hb ha).symm
   · simp_rw [ih, mul_sum, sum_mul, sum_sigma', univ_sigma_univ]
     refine (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m => ?_).symm
-    rw [m.1.1.multinomial_filter_ne a]
+    rw [m.1.1.countPerms_filter_ne a]
     conv in m.1.1.map _ => rw [← m.1.1.filter_add_not (a = ·), Multiset.map_add]
     simp_rw [Multiset.noncommProd_add, m.1.1.filter_eq, Multiset.map_replicate, m.1.2]
     rw [Multiset.noncommProd_eq_pow_card _ _ _ fun _ => Multiset.eq_of_mem_replicate]
@@ -330,7 +330,7 @@ lemma sum_pow_eq_sum_piAntidiag (s : Finset α) (f : α → R) (n : ℕ) :
   rw [← sum_pow_eq_sum_piAntidiag_of_commute _ _ fun _ _ _ _ _ ↦ Commute.all ..]
 
 theorem sum_pow (x : α → R) (n : ℕ) :
-    s.sum x ^ n = ∑ k ∈ s.sym n, k.val.multinomial * (k.val.map x).prod := by
+    s.sum x ^ n = ∑ k ∈ s.sym n, k.val.countPerms * (k.val.map x).prod := by
   conv_rhs => rw [← sum_coe_sort]
   convert sum_pow_of_commute x s (fun _ _ _ _ _ ↦ Commute.all ..) n
   rw [Multiset.noncommProd_eq_prod]
@@ -364,9 +364,9 @@ namespace Sym
 
 variable {n : ℕ} {α : Type*} [DecidableEq α]
 
-theorem multinomial_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
-    (fill x m s : Multiset α).multinomial = n.choose m * (s : Multiset α).multinomial := by
-  rw [Multiset.multinomial_filter_ne x]
+theorem countPerms_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
+    (fill x m s : Multiset α).countPerms = n.choose m * (s : Multiset α).countPerms := by
+  rw [Multiset.countPerms_filter_ne x]
   rw [← mem_coe] at hx
   refine congrArg₂ _ ?_ ?_
   · rw [card_coe, count_coe_fill_self_of_notMem hx]
