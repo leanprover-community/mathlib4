@@ -107,17 +107,18 @@ section Embedding
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 variable (X : Type*) [SeminormedAddCommGroup X] [NormedSpace 𝕜 X]
 
-/-- The map from a normed space with the weak topology into the weak-star bidual.
-This is `inclusionInDoubleDual` composed with `StrongDual.toWeakDual`, bundling the topology
-change on both sides. -/
-def inclusionInDoubleDualWeak (x : WeakSpace 𝕜 X) : WeakDual 𝕜 (StrongDual 𝕜 X) :=
-  StrongDual.toWeakDual (inclusionInDoubleDual 𝕜 X x)
+/-- The map from a normed space with the weak topology into the weak-star bidual, as a linear map.
+Built using `LinearEquiv.arrowCongr` to properly bundle the topology changes
+via `toWeakSpace` and `StrongDual.toWeakDual`. -/
+def inclusionInDoubleDualWeak : WeakSpace 𝕜 X →ₗ[𝕜] WeakDual 𝕜 (StrongDual 𝕜 X) :=
+  (LinearEquiv.arrowCongr (toWeakSpace 𝕜 X) StrongDual.toWeakDual)
+    (inclusionInDoubleDual 𝕜 X).toLinearMap
 
-/-- The embedding into the weak-star bidual evaluates to `f x`. -/
+/-- The embedding into the weak-star bidual evaluates to `f` applied to the underlying element. -/
 @[simp]
 theorem inclusionInDoubleDualWeak_apply (x : WeakSpace 𝕜 X) (f : StrongDual 𝕜 X) :
-    (inclusionInDoubleDualWeak 𝕜 X x) f = f x :=
-  rfl
+    (inclusionInDoubleDualWeak 𝕜 X x) f = f ((toWeakSpace 𝕜 X).symm x) := by
+  simp [inclusionInDoubleDualWeak, LinearEquiv.arrowCongr_apply]
 
 /-- `inclusionInDoubleDualWeak` is inducing: the weak topology on `X` coincides with the topology
 pulled back from the weak-star topology on the bidual. -/
