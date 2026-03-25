@@ -106,6 +106,7 @@ theorem isRegular_aleph_one : IsRegular ℵ₁ := by
 theorem cof_omega_one : cof ω₁ = ℵ₁ := by
   simpa using isRegular_aleph_one.cof_omega_eq
 
+/-- A countable supremum of countable ordinals is countable. -/
 theorem _root_.Ordinal.iSup_lt_omega_one {α : Type*} [Countable α] {f : α → Ordinal} :
     (∀ i, f i < ω₁) → ⨆ i, f i < ω₁ :=
   Ordinal.lift_iSup_lt_of_lt_cof (by simp)
