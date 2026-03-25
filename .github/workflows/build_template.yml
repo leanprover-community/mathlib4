@@ -713,19 +713,10 @@ jobs:
           name: cache-staging
           path: cache-staging
 
-      - name: Azure CLI OIDC login and mint storage bearer token
-        id: mint_cache_bearer
-        continue-on-error: true
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@17db5ff55a65df98d55cbddcc67938f70d10dab2
-        with:
-          azure-client-id: ${{ inputs.cache_application_id }}
-          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
-
       - name: Fallback to SAS token if bearer mint fails (for ease of migration)
-        if: ${{ steps.mint_cache_bearer.outcome != 'success' }}
         shell: bash
         env:
-          MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
+          MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS_ALT }}
         run: |
           if [ -z "$MATHLIB_CACHE_SAS_RAW" ]; then
             echo "Azure bearer mint failed and secrets.MATHLIB_CACHE_SAS is not set"
