@@ -87,12 +87,8 @@ end MorphismProperty
 
 namespace WideSubcategory
 
-section MonoidalCategory
-
-variable [P.IsMonoidalStable]
-
 @[simps]
-instance : MonoidalCategoryStruct (WideSubcategory P) where
+instance [P.IsMonoidalStable] : MonoidalCategoryStruct (WideSubcategory P) where
   tensorObj c c' := ⟨c.obj ⊗ c'.obj⟩
   whiskerLeft c _ _ f := ⟨c.obj ◁ f.1, P.whiskerLeft_mem _ _ f.2⟩
   whiskerRight f c' := ⟨f.1 ▷ c'.obj, P.whiskerRight_mem _ f.2 _⟩
@@ -105,28 +101,21 @@ instance : MonoidalCategoryStruct (WideSubcategory P) where
     isoMk (ρ_ _) (P.rightUnitor_hom_mem _) (P.rightUnitor_inv_mem _)
   tensorHom f g := ⟨f.1 ⊗ₘ g.1, P.tensorHom_mem _ _ f.2 g.2⟩
 
-instance : MonoidalCategory (WideSubcategory P) :=
+instance [P.IsMonoidalStable] : MonoidalCategory (WideSubcategory P) :=
   Monoidal.induced (wideSubcategoryInclusion P)
     { εIso := Iso.refl _
       μIso _ _ := Iso.refl _ }
-
-end MonoidalCategory
 
 instance [BraidedCategory C] [P.IsStableUnderBraiding] :
     BraidedCategory (WideSubcategory P) where
   braiding _ _ :=
     isoMk (β_ _ _) (P.braiding_hom_mem _ _) (P.braiding_inv_mem _ _)
 
-section SymmetricCategory
-
-variable [SymmetricCategory C] [P.IsStableUnderBraiding]
-
-instance : SymmetricCategory (WideSubcategory P) where
+instance [SymmetricCategory C] [P.IsStableUnderBraiding] :
+    SymmetricCategory (WideSubcategory P) where
   symmetry c c' := by
     ext
     exact SymmetricCategory.symmetry _ _
-
-end SymmetricCategory
 
 section ComonObj
 
