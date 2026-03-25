@@ -111,7 +111,7 @@ lemma sSetTopAdj_homEquiv_stdSimplex_zero {X : TopCat.{u}}
 /-- The standard topological simplex of dimension `1` is homeomorphic to `TopCat.I`. -/
 def TopCat.stdSimplexHomeomorphI :
     _root_.stdSimplex ℝ (Fin 2) ≃ₜ TopCat.I.{u} :=
-  stdSimplexHomeomorphUnitInterval.trans (Homeomorph.ulift.symm)
+  stdSimplexHomeomorphUnitInterval.trans Homeomorph.ulift.symm
 
 namespace SSet.stdSimplex
 
