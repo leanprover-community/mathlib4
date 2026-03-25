@@ -150,15 +150,25 @@ example : HasFDerivAt (fun t ↦ x ^ n * Real.exp (t * x))
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 
 @[fun_prop]
 theorem hasFDerivAt_fun_id (x : E) : HasFDerivAt (fun x : E => x) (.id 𝕜 E) x :=
   hasFDerivAtFilter_id _
 
+protected theorem HasFDerivAt.fderiv_forall {f : E → F} {f' : E → E →L[𝕜] F}
+    [ContinuousAdd E] [ContinuousSMul 𝕜 E] [ContinuousAdd F] [ContinuousSMul 𝕜 F] [T2Space F]
+    (h : ∀ x, HasFDerivAt f (f' x) x) :
+    fderiv 𝕜 f = f' := by
+  funext x; apply (h x).fderiv
+
 simproc_decl fderiv_simproc_at (fderiv _ _ _) :=
   Mathlib.Meta.FunProp.mkFunPropSimproc decl_name% ``HasFDerivAt.fderiv
 
-attribute [deriv_simproc] fderiv_simproc_at
+simproc_decl fderiv_simproc_forall (fderiv _ _) :=
+  Mathlib.Meta.FunProp.mkFunPropSimproc decl_name% ``HasFDerivAt.fderiv_forall
+
+attribute [deriv_simproc] fderiv_simproc_at fderiv_simproc_forall
 
 example (t₀) : fderiv ℝ (fun t ↦ x ^ n * Real.exp (t * x)) t₀ 1
                =
@@ -185,12 +195,6 @@ attribute [fun_prop]
   HasDerivAt.fun_smul
   HasDerivAt.fun_div
   HasDerivAt.fun_inv
-
-
-alias ⟨_, HasFDerivAt.hasDerivAt'⟩ := hasDerivAt_iff_hasFDerivAt
-
-alias ⟨_, HasDerivAt.hasFDerivAt'⟩ := hasFDerivAt_iff_hasDerivAt
-
 
 attribute [fun_prop]
   HasFDerivAt.hasDerivAt
@@ -227,7 +231,7 @@ example (f : ℝ → ℝ) (f' : ℝ) (hf : HasDerivAt (𝕜:=ℝ) f f' x₀) : H
 
 example (f : ℝ → ℝ) (f' : ℝ) (hf : HasDerivAt (𝕜:=ℝ) f f' x₀) :
     fderiv ℝ (fun x => f x) x₀ 1 = f' := by
-  simp only [fderiv_simproc_at]
+  simp only [deriv_simproc]
   simp
 
 example (g : ℝ → ℝ) (g' : ℝ →L[ℝ] ℝ) (hf : HasFDerivAt g g' x₀): HasDerivAt (𝕜:=ℝ) g (g' 1) x₀ := by
