@@ -177,66 +177,66 @@ section Additive
 variable {T : Type*} {S : Type*} {R : Type u} {M : Type v}
 
 instance inhabited [Inhabited R] [Inhabited M] : Inhabited (tsze R M) :=
-  instInhabitedProd
+  inferInstanceAs <| Inhabited (R × M)
 
 instance zero [Zero R] [Zero M] : Zero (tsze R M) :=
-  Prod.instZero
+  inferInstanceAs <| Zero (R × M)
 
 instance add [Add R] [Add M] : Add (tsze R M) :=
-  Prod.instAdd
+  inferInstanceAs <| Add (R × M)
 
 instance sub [Sub R] [Sub M] : Sub (tsze R M) :=
-  Prod.instSub
+  inferInstanceAs <| Sub (R × M)
 
 instance neg [Neg R] [Neg M] : Neg (tsze R M) :=
-  Prod.instNeg
+  inferInstanceAs <| Neg (R × M)
 
 instance addSemigroup [AddSemigroup R] [AddSemigroup M] : AddSemigroup (tsze R M) :=
-  Prod.instAddSemigroup
+  inferInstanceAs <| AddSemigroup (R × M)
 
 instance addZeroClass [AddZeroClass R] [AddZeroClass M] : AddZeroClass (tsze R M) :=
-  Prod.instAddZeroClass
+  inferInstanceAs <| AddZeroClass (R × M)
 
 instance addMonoid [AddMonoid R] [AddMonoid M] : AddMonoid (tsze R M) :=
-  Prod.instAddMonoid
+  inferInstanceAs <| AddMonoid (R × M)
 
 instance addGroup [AddGroup R] [AddGroup M] : AddGroup (tsze R M) :=
-  Prod.instAddGroup
+  inferInstanceAs <| AddGroup (R × M)
 
 instance addCommSemigroup [AddCommSemigroup R] [AddCommSemigroup M] : AddCommSemigroup (tsze R M) :=
-  Prod.instAddCommSemigroup
+  inferInstanceAs <| AddCommSemigroup (R × M)
 
 instance addCommMonoid [AddCommMonoid R] [AddCommMonoid M] : AddCommMonoid (tsze R M) :=
-  Prod.instAddCommMonoid
+  inferInstanceAs <| AddCommMonoid (R × M)
 
 instance addCommGroup [AddCommGroup R] [AddCommGroup M] : AddCommGroup (tsze R M) :=
-  Prod.instAddCommGroup
+  inferInstanceAs <| AddCommGroup (R × M)
 
 instance smul [SMul S R] [SMul S M] : SMul S (tsze R M) :=
-  Prod.instSMul
+  inferInstanceAs <| SMul S (R × M)
 
 instance isScalarTower [SMul T R] [SMul T M] [SMul S R] [SMul S M] [SMul T S]
     [IsScalarTower T S R] [IsScalarTower T S M] : IsScalarTower T S (tsze R M) :=
-  Prod.isScalarTower
+  inferInstanceAs <| IsScalarTower T S (R × M)
 
 instance smulCommClass [SMul T R] [SMul T M] [SMul S R] [SMul S M]
     [SMulCommClass T S R] [SMulCommClass T S M] : SMulCommClass T S (tsze R M) :=
-  Prod.smulCommClass
+  inferInstanceAs <| SMulCommClass T S (R × M)
 
 instance isCentralScalar [SMul S R] [SMul S M] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsCentralScalar S R]
     [IsCentralScalar S M] : IsCentralScalar S (tsze R M) :=
-  Prod.isCentralScalar
+  inferInstanceAs <| IsCentralScalar S (R × M)
 
 instance mulAction [Monoid S] [MulAction S R] [MulAction S M] : MulAction S (tsze R M) :=
-  Prod.mulAction
+  inferInstanceAs <| MulAction S (R × M)
 
 instance distribMulAction [Monoid S] [AddMonoid R] [AddMonoid M]
     [DistribMulAction S R] [DistribMulAction S M] : DistribMulAction S (tsze R M) :=
-  Prod.distribMulAction
+  inferInstanceAs <| DistribMulAction S (R × M)
 
 instance module [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [Module S M] :
     Module S (tsze R M) :=
-  Prod.instModule
+  inferInstanceAs <| Module S (R × M)
 
 /-- The trivial square-zero extension is nontrivial if it is over a nontrivial ring. -/
 instance instNontrivial_of_left {R M : Type*} [Nontrivial R] [Nonempty M] :
