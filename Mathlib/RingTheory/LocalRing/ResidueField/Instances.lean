@@ -83,25 +83,4 @@ instance {k : Type*} [IsLocalRing R] [Field k] [Algebra R k] [Module.Finite R k]
     rw [← eq_maximalIdeal (RingHom.ker_isMaximal_of_isIntegral R k), RingHom.ker]))
   (RingEquiv.quotientBot k) (by ext; rfl)
 
-theorem ResidueField.finrank_eq_length {k : Type*} [IsLocalRing R] [Field k] [Algebra R k]
-    [Module.Finite R k] : Module.finrank (ResidueField R) k = Module.length R k := by
-  rw [← Module.length_eq_finrank, ← WithBot.coe_inj, Module.coe_length, Module.coe_length]
-  let e_aux : Submodule (ResidueField R) k ↪o Submodule R k :=
-    Submodule.restrictScalarsEmbedding R (ResidueField R) k
-  have : Function.Surjective e_aux := fun p ↦ by
-    let q : Submodule (ResidueField R) k := {
-      carrier := p
-      add_mem' := p.add_mem
-      zero_mem' := p.zero_mem
-      smul_mem' r a a_in := by
-        induction r using Submodule.Quotient.induction_on (maximalIdeal R) with
-        | H r =>
-          change residue R r • a ∈ p
-          rw [Algebra.smul_def, ← ResidueField.algebraMap_eq, ← IsScalarTower.algebraMap_apply,
-            ← Algebra.smul_def]
-          exact Submodule.smul_mem p r a_in
-    }
-    exact ⟨q, rfl⟩
-  rw [Order.krullDim_eq_of_orderIso (RelIso.ofSurjective e_aux this)]
-
 end IsLocalRing
