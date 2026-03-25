@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Nat.Cast.WithTop
 public import Mathlib.Order.Nat
-public import Mathlib.Tactic.DefEqAbuse
 
 /-!
 # `WithBot ℕ`
