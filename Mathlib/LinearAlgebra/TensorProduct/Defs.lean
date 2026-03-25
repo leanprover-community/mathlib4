@@ -80,7 +80,7 @@ variable (R) in
 The localized notations are `M ⊗ N` and `M ⊗[R] N`, accessed by `open scoped TensorProduct`. -/
 def TensorProduct : Type _ :=
   (addConGen (TensorProduct.Eqv R M N)).Quotient
-deriving Zero, Add, AddZeroClass, AddSemigroup, AddMonoid
+deriving Zero, Add, AddZeroClass, AddSemigroup
 
 set_option quotPrecheck false in
 @[inherit_doc TensorProduct] scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
@@ -95,8 +95,6 @@ instance addCommSemigroup : AddCommSemigroup (M ⊗[R] N) where
   add_comm := fun x y =>
     AddCon.induction_on₂ x y fun _ _ =>
       Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _
-
-instance addCommMonoid : AddCommMonoid (M ⊗[R] N) where
 
 instance : Inhabited (M ⊗[R] N) :=
   ⟨0⟩
@@ -271,6 +269,14 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
     (fun m n => by simp_rw [this, add_smul, add_tmul]) fun x y ihx ihy => by
     simp_rw [TensorProduct.smul_add]
     rw [ihx, ihy, add_add_add_comm]
+
+instance addMonoid : AddMonoid (M ⊗[R] N) where
+  nsmul := fun n v => n • v
+  nsmul_zero := by simp [TensorProduct.zero_smul]
+  nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
+    forall_const]
+
+instance addCommMonoid : AddCommMonoid (M ⊗[R] N) where
 
 variable (R)
 
