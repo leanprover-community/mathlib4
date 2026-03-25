@@ -611,7 +611,8 @@ instance addZeroClass [AddZeroClass α] : AddZeroClass (WithBot α) :=
 section AddMonoid
 variable [AddMonoid α]
 
-instance addMonoid : AddMonoid (WithBot α) := WithTop.addMonoid
+instance addMonoid : AddMonoid (WithBot α) :=
+  inferInstanceAs <| AddMonoid (WithTop α)
 
 /-- Coercion from `α` to `WithBot α` as an `AddMonoidHom`. -/
 def addHom : α →+ WithBot α where
