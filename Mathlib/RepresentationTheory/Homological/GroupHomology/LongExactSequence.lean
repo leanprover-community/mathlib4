@@ -45,10 +45,11 @@ lemma map_chainsFunctor_shortExact :
   letI := hX.mono_f
   HomologicalComplex.shortExact_of_degreewise_shortExact _ fun i => {
     exact := by
-      have : LinearMap.range X.f.hom.hom = LinearMap.ker X.g.hom.hom :=
+      have : LinearMap.range X.f.hom.toLinearMap = LinearMap.ker X.g.hom.toLinearMap :=
         (hX.exact.map (forget₂ (Rep k G) (ModuleCat k))).moduleCat_range_eq_ker
-      simp [moduleCat_exact_iff_range_eq_ker, ker_mapRange, range_mapRange_linearMap X.f.hom.hom
-        (LinearMap.ker_eq_bot.2 <| (ModuleCat.mono_iff_injective _).1 _), this]
+      simp [moduleCat_exact_iff_range_eq_ker, ker_mapRange,
+        range_mapRange_linearMap X.f.hom.toLinearMap (LinearMap.ker_eq_bot.2 <|
+        (Rep.mono_iff_injective X.f).1 hX.mono_f), this]
     mono_f := chainsMap_id_f_map_mono X.f i
     epi_g := letI := hX.epi_g; chainsMap_id_f_map_epi X.g i }
 
@@ -108,7 +109,7 @@ set_option backward.isDefEq.respectTransparency false in
 `δ_apply`. -/
 noncomputable abbrev cyclesMkOfCompEqD {i j : ℕ} {y : (Fin i → G) →₀ X.X₂}
     {x : (Fin j → G) →₀ X.X₁}
-    (hx : mapRange.linearMap X.f.hom.hom x = (inhomogeneousChains X.X₂).d i j y) :
+    (hx : mapRange.linearMap X.f.hom.toLinearMap x = (inhomogeneousChains X.X₂).d i j y) :
     cycles X.X₁ j :=
   cyclesMk j _ rfl x <| by
     simpa using (map_chainsFunctor_shortExact hX).d_eq_zero_of_f_eq_d_apply i j y x
@@ -124,7 +125,7 @@ theorem δ_apply {i j : ℕ} (hij : j + 1 = i)
     -- Let `x` be an `j`-chain for `X₁` such that `f ∘ x = d(y)`
     (x : (Fin j → G) →₀ X.X₁)
     -- Then `x` is an `j`-cycle and `δ z = x` in `Hⱼ(X₁)`.
-    (hx : mapRange.linearMap X.f.hom.hom x = (inhomogeneousChains X.X₂).d i j y) :
+    (hx : mapRange.linearMap X.f.hom.toLinearMap x = (inhomogeneousChains X.X₂).d i j y) :
     δ hX i j hij (π X.X₃ i <| cyclesMk i j (by simp [← hij]) z (by simpa using hz)) =
       π X.X₁ j (cyclesMkOfCompEqD hX hx) := by
   exact (map_chainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x (by simpa using hx) _ rfl
@@ -133,7 +134,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem δ₀_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
     -- Let `z` by a 1-cycle for `X₃` and `y` a 1-chain for `X₂` such that `g ∘ y = z`.
-    (z : cycles₁ X.X₃) (y : G →₀ X.X₂) (hy : mapRange.linearMap X.g.hom.hom y = z.1)
+    (z : cycles₁ X.X₃) (y : G →₀ X.X₂) (hy : mapRange.linearMap X.g.hom.toLinearMap y = z.1)
     -- Let `x : X₁` be such that `f(x) = d(y)`.
     (x : X.X₁) (hx : X.f.hom x = d₁₀ X.X₂ y) :
     -- Then `δ z = x` in `H₀(X₁)`.
@@ -147,7 +148,8 @@ theorem δ₀_apply
 set_option backward.isDefEq.respectTransparency false in
 /-- Stated for readability of `δ₁_apply`. -/
 theorem mem_cycles₁_of_comp_eq_d₂₁
-    {y : G × G →₀ X.X₂} {x : G →₀ X.X₁} (hx : mapRange.linearMap X.f.hom.hom x = d₂₁ X.X₂ y) :
+    {y : G × G →₀ X.X₂} {x : G →₀ X.X₁} (hx : mapRange.linearMap X.f.hom.toLinearMap x =
+    d₂₁ X.X₂ y) :
     x ∈ cycles₁ X.X₁ := LinearMap.mem_ker.2 <| (Rep.mono_iff_injective X.f).1 hX.2 <| by
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH1]
@@ -156,9 +158,9 @@ set_option backward.isDefEq.respectTransparency false in
 theorem δ₁_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
     -- Let `z` by a 2-cycle for `X₃` and `y` a 2-chain for `X₂` such that `g ∘ y = z`.
-    (z : cycles₂ X.X₃) (y : G × G →₀ X.X₂) (hy : mapRange.linearMap X.g.hom.hom y = z.1)
+    (z : cycles₂ X.X₃) (y : G × G →₀ X.X₂) (hy : mapRange.linearMap X.g.hom.toLinearMap y = z.1)
     -- Let `x` be a 1-chain for `X₁` such that `f ∘ x = d(y)`.
-    (x : G →₀ X.X₁) (hx : mapRange.linearMap X.f.hom.hom x = d₂₁ X.X₂ y) :
+    (x : G →₀ X.X₁) (hx : mapRange.linearMap X.f.hom.toLinearMap x = d₂₁ X.X₂ y) :
     -- Then `x` is a 1-cycle and `δ z = x` in `H₁(X₁)`.
     δ hX 2 1 rfl (H2π X.X₃ z) = H1π X.X₁ ⟨x, mem_cycles₁_of_comp_eq_d₂₁ hX hx⟩ := by
   simpa only [H2π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply, H1π,
