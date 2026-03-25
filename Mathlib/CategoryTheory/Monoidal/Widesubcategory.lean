@@ -112,15 +112,10 @@ instance : MonoidalCategory (WideSubcategory P) :=
 
 end MonoidalCategory
 
-section BraidedCategory
-
-variable [BraidedCategory C] [P.IsStableUnderBraiding]
-
-instance : BraidedCategory (WideSubcategory P) where
+instance [BraidedCategory C] [P.IsStableUnderBraiding] :
+    BraidedCategory (WideSubcategory P) where
   braiding _ _ :=
     isoMk (β_ _ _) (P.braiding_hom_mem _ _) (P.braiding_inv_mem _ _)
-
-end BraidedCategory
 
 section SymmetricCategory
 
