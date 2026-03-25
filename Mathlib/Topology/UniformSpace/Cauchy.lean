@@ -747,9 +747,6 @@ theorem TotallyBounded.isCompact_of_isComplete {s : Set α} (ht : TotallyBounded
 theorem TotallyBounded.isCompact_of_isClosed [CompleteSpace α] {s : Set α} (ht : TotallyBounded s)
     (hc : IsClosed s) : IsCompact s := ht.isCompact_of_isComplete hc.isComplete
 
-@[deprecated (since := "2025-08-30")] alias isCompact_of_totallyBounded_isClosed :=
-    TotallyBounded.isCompact_of_isClosed
-
 theorem Filter.TotallyBounded.isCompact_setOf_clusterPt
     [CompleteSpace α] {f : Filter α} (hf : f.TotallyBounded) : IsCompact {x | ClusterPt x f} :=
   hf.totallyBounded_setOf_clusterPt.isCompact_of_isClosed isClosed_setOf_clusterPt
