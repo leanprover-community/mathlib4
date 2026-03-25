@@ -5,7 +5,8 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.NumberTheory.Height.MvPolynomial
+public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-!
 # The approximate parallelogram law on elliptic curves
@@ -142,3 +143,4 @@ lemma addSubMap_ne_zero {x : Fin 3 → K} (hx : x ≠ 0) : (fun i ↦ (addSubMap
 end WeierstrassCurve
 
 end
+#min_imports
