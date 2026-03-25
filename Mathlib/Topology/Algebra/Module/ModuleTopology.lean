@@ -540,7 +540,7 @@ instance instProd : IsModuleTopology R (M × N) := by
   change @Continuous (M × N) P instTopologicalSpaceProd τP i
   -- But `i` can be written as (m, n) ↦ (m, 0) + (0, n)
   -- or equivalently as i₁ ∘ pr₁ + i₂ ∘ pr₂, where prᵢ are the projections,
-  -- the iⱼ's are linear inclusions M → P and N → P, and the addition is P × P → P.
+  -- the maps i₁ and i₂ are linear inclusions M → P and N → P, and the addition is P × P → P.
   let i₁ : M →ₗ[R] P := LinearMap.inl R M N
   let i₂ : N →ₗ[R] P := LinearMap.inr R M N
   rw [show (i : M × N → P) =

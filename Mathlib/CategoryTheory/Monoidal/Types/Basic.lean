@@ -21,8 +21,11 @@ universe v u
 
 namespace CategoryTheory
 
-instance typesCartesianMonoidalCategory : CartesianMonoidalCategory (Type u) :=
-  .ofChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
+instance typesCartesianMonoidalCategory : CartesianMonoidalCategory (Type u) where
+  tensorObj X Y := X × Y
+  tensorUnit := PUnit
+  __ := CartesianMonoidalCategory.ofChosenFiniteProducts
+    Types.terminalLimitCone Types.binaryProductLimitCone
 
 instance : BraidedCategory (Type u) := .ofCartesianMonoidalCategory
 
