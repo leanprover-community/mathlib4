@@ -57,8 +57,7 @@ namespace CoxeterSystem
 
 open List Matrix Function
 
-variable {B : Type*}
-variable {W : Type*} [Group W]
+variable {B W : Type*} [Group W]
 variable {M : CoxeterMatrix B} (cs : CoxeterSystem M W)
 
 local prefix:100 "s " => cs.simple
@@ -66,17 +65,14 @@ local prefix:100 "π " => cs.wordProd
 
 /-! ### Length -/
 
-set_option backward.privateInPublic true in
 private theorem exists_word_with_prod (w : W) : ∃ n ω, ω.length = n ∧ π ω = w := by
   rcases cs.wordProd_surjective w with ⟨ω, rfl⟩
   use ω.length, ω
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 open scoped Classical in
 /-- The length of `w`; i.e., the minimum number of simple reflections that
 must be multiplied to form `w`. -/
-noncomputable def length (w : W) : ℕ := Nat.find (cs.exists_word_with_prod w)
+@[no_expose] noncomputable def length (w : W) : ℕ := Nat.find (cs.exists_word_with_prod w)
 
 local prefix:100 "ℓ " => cs.length
 
