@@ -648,7 +648,7 @@ noncomputable def quotNilradicalEquivPi :
 /-- The quotient of a commutative Artinian ring by a power of its nilradical is isomorphic to
 a finite product of local rings, namely the quotients by the powers of the maximal ideals. -/
 @[simps!]
-noncomputable def IsArtinainRing.quotNilradicalPowEquivPi (n : ℕ) :
+noncomputable def quotNilradicalPowEquivPi (n : ℕ) :
     (R ⧸ nilradical R ^ n) ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal ^ n :=
   (Ideal.quotientEquivAlgOfEq R (nilradical_pow_eq_iInf R n)).trans
     { __ := Ideal.quotientInfRingEquivPiQuotient _ fun I _ ↦ .pow ∘ I.isCoprime_of_ne
@@ -656,10 +656,9 @@ noncomputable def IsArtinainRing.quotNilradicalPowEquivPi (n : ℕ) :
 
 /-- A reduced commutative Artinian ring is isomorphic to a finite product of fields,
 namely the quotients by the maximal ideals. -/
-noncomputable def equivPi [IsReduced R] : R ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal where
-  __ := RingEquiv.trans (.symm <| .quotientBot R) <| .trans
-    (Ideal.quotEquivOfEq (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
-  commutes' _ := rfl
+noncomputable def equivPi [IsReduced R] : R ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
+  .trans (.symm <| .quotientBot R R) <| .trans
+    (Ideal.quotientEquivAlgOfEq R (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
