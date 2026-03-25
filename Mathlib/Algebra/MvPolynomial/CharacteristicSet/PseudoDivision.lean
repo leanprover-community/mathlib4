@@ -70,96 +70,113 @@ structure SetPseudoResult (α : Type*) where
 
 section CommRing
 
-variable {R σ : Type*} [CommRing R] (i : σ) (g f : MvPolynomial σ R)
+variable {R σ : Type*} [CommRing R] [NoZeroDivisors R] (i : σ) (g f : MvPolynomial σ R)
 
 /-- The recursive algorithm of pseudo-division -/
-noncomputable def pseudoOf.go (I : MvPolynomial σ R) (n fuel : ℕ) (s : ℕ)
-    (q r : MvPolynomial σ R) : PseudoResult (MvPolynomial σ R) :=
-  if fuel = 0 then ⟨s, q, r⟩
-  else if r.degreeOf i < n then ⟨s, q, r⟩
+noncomputable def pseudoOf.go [NoZeroDivisors R] (i : σ) (f : MvPolynomial σ R) (s : ℕ)
+    (q r : MvPolynomial σ R) (h : f.degreeOf i ≠ 0) : PseudoResult (MvPolynomial σ R) :=
+  if r.degreeOf i < f.degreeOf i then ⟨s, q, r⟩
   else
     letI d := r.degreeOf i
     letI Ic_r := r.initialOf i
-    letI x_power := X i ^ (d - n)
+    letI x_power := X i ^ (d - f.degreeOf i)
     let term := Ic_r * x_power
+    let I := f.initialOf i
     let q' := I * q + term
     let r' := I * r - term * f
-    go I n (fuel - 1) (s + 1) q' r'
+    go i f (s + 1) q' r' h
+  termination_by r.degreeOf i
+  decreasing_by
+    expose_names
+    suffices r'.degreeOf i ≤ r.degreeOf i - 1 by
+      change r'.degreeOf i < r.degreeOf i
+      refine (Nat.le_sub_one_iff_lt ?_).mp this
+      exact lt_of_lt_of_le (Nat.ne_zero_iff_zero_lt.mp h) (Nat.not_lt.mp h_1)
+    unfold r'
+    have Id : I.degreeOf i = 0 := by rw [degreeOf_initialOf_self]
+    have : (I * r).degreeOf i - 1 ≤ r.degreeOf i - 1 := by
+      apply Nat.sub_le_sub_right
+      rewrite [← zero_add (r.degreeOf i), ← Id]
+      exact degreeOf_mul_le ..
+    refine le_trans ?_ this
+    apply degreeOf_sub_lt_of_initialOf_eq
+    repeat1' rewrite [mul_assoc, mul_comm _ f, ← mul_assoc]
+    · rewrite [initialOf_mul_X_self_pow, initialOf_mul_eq, initialOf_mul_eq]
+      rw [initialOf_initialOf_self, initialOf_initialOf_self, mul_comm]
+    have f_ne : f ≠ 0 := ne_zero_of_degreeOf_ne_zero h
+    have I_ne : I ≠ 0 := initialOf_ne_zero i f_ne
+    have r_ne : r ≠ 0 := by
+      contrapose! h_1
+      rewrite [h_1, degreeOf_zero]
+      exact Nat.zero_lt_of_ne_zero h
+    have Ir_ne : r.initialOf i ≠ 0 := initialOf_ne_zero i r_ne
+    rewrite [degreeOf_mul_X_self_pow_eq_add_of_ne_zero _ _ (mul_ne_zero_iff.mpr ⟨Ir_ne ,f_ne⟩)]
+    rewrite [degreeOf_mul_eq I_ne r_ne, degreeOf_mul_eq Ir_ne f_ne]
+    simpa [I] using (Nat.add_sub_of_le <| Nat.le_of_not_lt h_1).symm
 
 /-- Pseudo-division of `g` by `f` regarding the variable `i`.
 This algorithm computes `q` and `r` such that `initᵢ(f) ^ s * g = q * f + r`,
 where `degᵢ(r) < degᵢ(f)`.
 It uses a `fuel` parameter to guarantee termination. -/
-noncomputable def pseudoOf : PseudoResult (MvPolynomial σ R) :=
-  let I := f.initialOf i
-  let n := f.degreeOf i
-  pseudoOf.go i f I n (g.degreeOf i + 1 - n) 0 0 g
+noncomputable def pseudoOf [NoZeroDivisors R] (i : σ) (f : MvPolynomial σ R)
+    : PseudoResult (MvPolynomial σ R) :=
+  if h : f.degreeOf i = 0 then ⟨1, g, 0⟩
+  else pseudoOf.go i f 0 0 g h
 
-@[simp] theorem zero_pseudoOf : (0 : MvPolynomial σ R).pseudoOf i f = ⟨1 - f.degreeOf i, 0, 0⟩ := by
-  rewrite [pseudoOf, degreeOf_zero, zero_add]
-  by_cases fd : f.degreeOf i = 0
-  · simp [fd, tsub_zero, pseudoOf.go]
-  have : 1 - f.degreeOf i = 0 := Nat.sub_eq_zero_of_le (Nat.pos_of_ne_zero fd)
-  simp only [this, pseudoOf.go, ↓reduceIte]
+theorem zero_pseudoOf : (0 : MvPolynomial σ R).pseudoOf i f = ⟨1 - f.degreeOf i, 0, 0⟩ := by
+  rewrite [pseudoOf]
+  split_ifs with h
+  · rw [h]
+  rewrite [pseudoOf.go, degreeOf_zero, zero_add]
+  have : 1 - f.degreeOf i = 0 := Nat.sub_eq_zero_of_le (Nat.pos_of_ne_zero h)
+  simp only [Nat.pos_of_ne_zero h, this, ↓reduceIte]
 
-@[simp] theorem pseudoOf_self : f.pseudoOf i f = ⟨1, f.initialOf i, 0⟩ := by
-  simp [pseudoOf, pseudoOf.go]
+theorem pseudoOf_self : f.pseudoOf i f = ⟨1, f.initialOf i, 0⟩ := by
+  rewrite [pseudoOf]
+  split_ifs with h
+  · rw [initialOf_eq_of_degreeOf_eq_zero h]
+  simp [pseudoOf.go, Nat.pos_of_ne_zero h]
 
-lemma pseudoOfGo_next {i : σ} (f I : MvPolynomial σ R) {n : ℕ} (fuel s : ℕ) (q : MvPolynomial σ R)
-    {r : MvPolynomial σ R} (hn : n ≤ r.degreeOf i) :
-    let term := r.initialOf i * X i ^ (r.degreeOf i - n);
-    pseudoOf.go i f I n (fuel + 1) s q r =
-      pseudoOf.go i f I n fuel (s + 1) (I * q + term) (I * r - term * f) := by
+lemma pseudoOfGo_next (h : f.degreeOf i ≠ 0) (s : ℕ) (q : MvPolynomial σ R) {r : MvPolynomial σ R}
+    (hn : f.degreeOf i ≤ r.degreeOf i) :
+    let term := r.initialOf i * X i ^ (r.degreeOf i - f.degreeOf i);
+    pseudoOf.go i f s q r h =
+      pseudoOf.go i f  (s + 1) (f.initialOf i * q + term) (f.initialOf i * r - term * f) h := by
   rewrite [pseudoOf.go]; simp [hn]
 
-lemma pseudoOfGo_equation (I : MvPolynomial σ R) (n : ℕ) : ∀ (fuel s : ℕ) (q r : MvPolynomial σ R),
-    I ^ s * g = q * f + r → letI result := pseudoOf.go i f I n fuel s q r;
-    I ^ result.exponent * g = result.quotient * f + result.remainder := fun fuel ↦ by
-  induction fuel with
-  | zero => simp only [pseudoOf.go, ↓reduceIte, imp_self, implies_true]
-  | succ fuel ih =>
-    intro s q r eq
-    by_cases dlt : r.degreeOf i < n
-    · simp only [pseudoOf.go, Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte, dlt, eq]
-    letI d := r.degreeOf i
-    letI Ic_r := r.initialOf i
-    letI x_power := (X i : MvPolynomial σ R) ^ (d - n)
-    let term := Ic_r * x_power
-    let q' := I * q + term
-    let r' := I * r - term * f
-    have := pseudoOfGo_next f I fuel s q (le_of_not_gt dlt)
-    have heq' : I ^ (s + 1) * g = q' * f + r' := by
-      unfold q' r'
-      have : (I * q + term) * f + (I * r - term * f) = I * (q * f + r) + (term - term) * f :=
-        by ring
-      nth_rewrite 1 [this, ← eq]
-      ring
-    rw [this, ih (s + 1) q' r' heq']
+lemma pseudoOfGo_equation (h : f.degreeOf i ≠ 0) (s : ℕ) (q r : MvPolynomial σ R) :
+    f.initialOf i ^ s * g = q * f + r → letI result := pseudoOf.go i f s q r h;
+    f.initialOf i ^ result.exponent * g = result.quotient * f + result.remainder := by
+  induction s, q, r using pseudoOf.go.induct i f h with
+  | case1 s q r dlt => rewrite [pseudoOf.go]; simp only [dlt, ↓reduceIte, imp_self]
+  | case2 s q r dlt term I q' r' ih =>
+    intro heq
+    suffices I ^ (s + 1) * g = q' * f + r' by
+      rw [pseudoOfGo_next i f h s q (le_of_not_gt dlt), ih this]
+    unfold q' r'
+    have : (I * q + term) * f + (I * r - term * f) = I * (q * f + r) + (term - term) * f :=
+      by ring
+    nth_rewrite 1 [this, ← heq]
+    ring
 
 /-- The fundamental equation of pseudo-division: `initᵢ(f) ^ s * g = q * f + r` -/
 theorem pseudoOf_equation : f.initialOf i ^ (g.pseudoOf i f).exponent * g
-    = (g.pseudoOf i f).quotient * f + (g.pseudoOf i f).remainder :=
-  g.pseudoOfGo_equation _ _ _ _ _ _ _ _ (by ring)
+    = (g.pseudoOf i f).quotient * f + (g.pseudoOf i f).remainder := by
+  rewrite [pseudoOf]
+  split_ifs with h
+  · rw [pow_one, add_zero, initialOf_eq_of_degreeOf_eq_zero h, mul_comm]
+  exact g.pseudoOfGo_equation _ _ _ _ _ _ (by ring)
 
-lemma degreeOf_pseudoOfGo_remainder_le_of_degreeOf_eq_zero {i j : σ} {f I : MvPolynomial σ R}
-    (n : ℕ) (hi : i ≠ j) (hj : f.degreeOf j = 0) (hI : I = f.initialOf i) : ∀ (fuel s) (q r),
-    (pseudoOf.go i f I n fuel s q r).remainder.degreeOf j ≤ r.degreeOf j := fun fuel ↦ by
-  induction fuel with
-  | zero => simp only [pseudoOf.go, ↓reduceIte, le_refl, implies_true]
-  | succ fuel ih =>
-    intro s q r
-    by_cases dlt : r.degreeOf i < n
-    · simp only [pseudoOf.go, Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte, dlt, le_refl]
-    letI d := r.degreeOf i
-    letI Ic_r := r.initialOf i
-    letI x_power := (X i : MvPolynomial σ R) ^ (d - n)
-    let term := Ic_r * x_power
-    let q' := I * q + term
-    let r' := I * r - term * f
-    apply le_trans (pseudoOfGo_next f I fuel s q (le_of_not_gt dlt) ▸ ih (s + 1) q' r')
+lemma degreeOf_pseudoOfGo_remainder_le_of_degreeOf_eq_zero {i j : σ} {f : MvPolynomial σ R}
+    (h : f.degreeOf i ≠ 0) (hi : i ≠ j) (hj : f.degreeOf j = 0) (s : ℕ) (q r : MvPolynomial σ R) :
+    (pseudoOf.go i f s q r h).remainder.degreeOf j ≤ r.degreeOf j := by
+  induction s, q, r using pseudoOf.go.induct i f h with
+  | case1 s q r h => rewrite [pseudoOf.go]; simp only [h, ↓reduceIte, Std.le_refl]
+  | case2 s q r dlt term I q' r' ih =>
+    apply le_trans (pseudoOfGo_next i f h s q (le_of_not_gt dlt) ▸ ih)
     apply le_trans (degreeOf_sub_le ..)
     apply max_le <;> apply le_trans (degreeOf_mul_le ..)
-    · have Id : I.degreeOf j = 0 := Nat.eq_zero_of_le_zero <| hj ▸ hI ▸ degreeOf_initialOf_le i j f
+    · have Id : I.degreeOf j = 0 := Nat.eq_zero_of_le_zero <| hj ▸ degreeOf_initialOf_le i j f
       simp only [Id, zero_add, le_refl]
     simp only [hj, add_zero, term]
     apply le_trans (degreeOf_mul_le ..)
@@ -168,8 +185,11 @@ lemma degreeOf_pseudoOfGo_remainder_le_of_degreeOf_eq_zero {i j : σ} {f I : MvP
 
 theorem degreeOf_pseudoOf_remainder_le_of_degreeOf_eq_zero {i j : σ} (g : MvPolynomial σ R)
     {f : MvPolynomial σ R} (hi : i ≠ j) (hj : f.degreeOf j = 0) :
-    (g.pseudoOf i f).remainder.degreeOf j ≤ g.degreeOf j :=
-  degreeOf_pseudoOfGo_remainder_le_of_degreeOf_eq_zero _ hi hj rfl ..
+    (g.pseudoOf i f).remainder.degreeOf j ≤ g.degreeOf j := by
+  rewrite [pseudoOf]
+  split_ifs with h
+  · exact (@degreeOf_zero R _ _ _) ▸ Nat.zero_le _
+  exact degreeOf_pseudoOfGo_remainder_le_of_degreeOf_eq_zero h hi hj ..
 
 theorem dvd_pseudoOf_remainder_of_dvd (i : σ) {g f : MvPolynomial σ R} (h : f ∣ g) :
     f ∣ (g.pseudoOf i f).remainder := by
@@ -181,79 +201,23 @@ theorem dvd_pseudoOf_remainder_of_dvd (i : σ) {g f : MvPolynomial σ R} (h : f 
 
 theorem pseudoOf_remainder_eq_of_degreeOf_eq_zero {i : σ} {g f : MvPolynomial σ R}
     (h1 : g.degreeOf i = 0) (h2 : f.degreeOf i ≠ 0) : (g.pseudoOf i f).remainder = g := by
-  rewrite [pseudoOf, h1, zero_add]
-  have h2 : 1 - f.degreeOf i = 0 := Nat.sub_eq_zero_of_le (Nat.pos_of_ne_zero h2)
-  simp only [h2, pseudoOf.go, ↓reduceIte]
+  have : g.pseudoOf i f = pseudoOf.go i f 0 0 g h2 := by simp only [pseudoOf, h2, ↓reduceDIte]
+  rw [this, pseudoOf.go, h1, if_pos (Nat.ne_zero_iff_zero_lt.mp h2)]
 
-variable [NoZeroDivisors R]
-
-lemma degreeOf_pseudoOfGo_remainder_lt_of_degreeOf_ne_zero {i : σ} {f I : MvPolynomial σ R}
-    {n : ℕ} (hI : I = f.initialOf i) (hn : n ≠ 0) (hnd : n = f.degreeOf i) :
-    ∀ (fuel s : ℕ) (q r : MvPolynomial σ R), fuel ≥ r.degreeOf i + 1 - n →
-    (pseudoOf.go i f I n fuel s q r).remainder.degreeOf i < f.degreeOf i := fun fuel ↦ by
-  induction fuel with
-  | zero =>
-    intro s q r h
-    simpa [pseudoOf.go] using hnd ▸ tsub_nonpos.mp h
-  | succ fuel ih =>
-    intro s q r h
-    by_cases dlt : r.degreeOf i < n
-    · have : degreeOf i r + 1 - n ≤ 0 := Nat.sub_le_iff_le_add'.mpr dlt
-      have := ih s q r <| le_trans this (Nat.le_add_left 0 fuel)
-      simpa [pseudoOf.go, dlt] using this
-    letI d := r.degreeOf i
-    letI Ic_r := r.initialOf i
-    letI x_power := (X i : MvPolynomial σ R) ^ (d - n)
-    let term := Ic_r * x_power
-    let q' := I * q + term
-    let r' := I * r - term * f
-    suffices fuel ≥ r'.degreeOf i + 1 - n by
-      unfold pseudoOf.go
-      simpa [dlt] using (ih (s + 1) q' r') this
-    have hle : r'.degreeOf i ≤ r.degreeOf i - 1 := by
-      unfold r' term x_power Ic_r d
-      have Id : I.degreeOf i = 0 := by rw [hI, degreeOf_initialOf_self]
-      have : (I * r).degreeOf i - 1 ≤ r.degreeOf i - 1 := by
-        apply Nat.sub_le_sub_right
-        rewrite [← zero_add (r.degreeOf i), ← Id]
-        exact degreeOf_mul_le ..
-      refine le_trans ?_ this
-      apply degreeOf_sub_lt_of_initialOf_eq
-      repeat1' rewrite [mul_assoc, mul_comm _ f, ← mul_assoc]
-      · rewrite [initialOf_mul_X_self_pow, initialOf_mul_eq, initialOf_mul_eq, hI]
-        rw [initialOf_initialOf_self, initialOf_initialOf_self, mul_comm]
-      have f_ne : f ≠ 0 := ne_zero_of_degreeOf_ne_zero (hnd ▸ hn)
-      have I_ne : I ≠ 0 := hI ▸ initialOf_ne_zero i f_ne
-      have r_ne : r ≠ 0 := by
-        contrapose! dlt
-        rewrite [dlt, hnd, degreeOf_zero]
-        exact Nat.zero_lt_of_ne_zero (hnd ▸ hn)
-      have Ir_ne : Ic_r ≠ 0 := initialOf_ne_zero i r_ne
-      rewrite [degreeOf_mul_X_self_pow_eq_add_of_ne_zero _ _ (mul_ne_zero_iff.mpr ⟨Ir_ne ,f_ne⟩)]
-      rewrite [degreeOf_mul_eq I_ne r_ne, degreeOf_mul_eq Ir_ne f_ne, hI, ← hnd]
-      simpa [Ic_r] using (Nat.add_sub_of_le <| Nat.le_of_not_lt dlt).symm
-    simp only [ge_iff_le, tsub_le_iff_right] at h ⊢
-    by_cases hr : r.degreeOf i = 0
-    · rewrite [hr] at hle
-      have : r'.degreeOf i = 0 := Nat.eq_zero_of_le_zero hle
-      simp only [hr, this, zero_add] at h ⊢
-      by_contra con
-      have : fuel + n = 0 := Nat.eq_zero_of_not_pos con
-      absurd Nat.eq_zero_of_add_eq_zero_left this
-      exact hn
-    have hr : r.degreeOf i > 0 := Nat.zero_lt_of_ne_zero hr
-    rewrite [add_assoc, add_comm 1 n, ← add_assoc] at h
-    have h := Nat.le_of_add_le_add_right h
-    by_cases hr' : r'.degreeOf i = r.degreeOf i - 1
-    · rewrite [hr', Nat.sub_add_cancel hr]
-      exact h
-    have hr' := Nat.add_lt_of_lt_sub <| lt_of_le_of_ne hle hr'
-    exact le_of_lt <| lt_of_lt_of_le hr' h
+theorem degreeOf_pseudoOfGo_remainder_lt_of_degreeOf_ne_zero {i : σ} {f : MvPolynomial σ R}
+    (h : f.degreeOf i ≠ 0) (s : ℕ) (q r : MvPolynomial σ R) :
+    (pseudoOf.go i f s q r h).remainder.degreeOf i < f.degreeOf i := by
+  induction s, q, r using pseudoOf.go.induct i f h with
+  | case1 s q r h => rewrite [pseudoOf.go]; simp only [h, ↓reduceIte]
+  | case2 s q r dlt term I q' r' ih =>
+    refine lt_of_eq_of_lt ?_ ih
+    rw [pseudoOfGo_next _ _ h _ _ (Nat.not_lt.mp dlt)]
 
 theorem degreeOf_pseudoOf_remainder_lt_of_degreeOf_ne_zero {i : σ} (g : MvPolynomial σ R)
-    {f : MvPolynomial σ R} (hi : f.degreeOf i ≠ 0) :
-    (g.pseudoOf i f).remainder.degreeOf i < f.degreeOf i :=
-  degreeOf_pseudoOfGo_remainder_lt_of_degreeOf_ne_zero rfl hi rfl _ _ _ _ (le_refl _)
+    {f : MvPolynomial σ R} (h : f.degreeOf i ≠ 0) :
+    (g.pseudoOf i f).remainder.degreeOf i < f.degreeOf i := by
+  simp only [pseudoOf, h, ↓reduceDIte]
+  exact degreeOf_pseudoOfGo_remainder_lt_of_degreeOf_ne_zero h 0 0 g
 
 theorem pseudoOf_remainder_eq_zero_of_dvd {i : σ} {g f : MvPolynomial σ R} (h1 : f ∣ g)
     (h2 : f.degreeOf i ≠ 0) : (g.pseudoOf i f).remainder = 0 := by
