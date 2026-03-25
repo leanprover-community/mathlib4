@@ -44,7 +44,7 @@ variable {β : α → Type u} {δ : α → Sort v} {s : Finset α} {t : ∀ a, F
 section
 variable [DecidableEq α]
 
-/-- Given a finset `s` of `α` and for all `a : α` a finset `t a` of `δ a`, then one can define the
+/-- Given a finset `s` of `α` and for all `a : α` a finset `t a` of `β a`, then one can define the
 finset `s.pi t` of all functions defined on elements of `s` taking values in `t a` for `a ∈ s`.
 Note that the elements of `s.pi t` are only partially defined, on `s`. -/
 def pi (s : Finset α) (t : ∀ a, Finset (β a)) : Finset (∀ a ∈ s, β a) :=
@@ -186,7 +186,6 @@ theorem restrict₂_comp_restrict₂ (hst : s ⊆ t) (htu : t ⊆ u) :
 lemma dependsOn_restrict (s : Finset ι) : DependsOn (s.restrict (π := π)) s :=
   (s : Set ι).dependsOn_restrict
 
-set_option backward.isDefEq.respectTransparency false in
 lemma restrict_preimage_univ [DecidablePred (· ∈ s)] (t : (i : s) → Set (π i)) :
     s.restrict ⁻¹' (Set.univ.pi t) =
       Set.pi s (fun i ↦ if h : i ∈ s then t ⟨i, h⟩ else Set.univ) := by

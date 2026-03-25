@@ -215,6 +215,7 @@ theorem Int.emultiplicity_pow_add_pow {x y : ℤ} (hxy : ↑p ∣ x + y) (hx : �
   rw [← sub_neg_eq_add, ← sub_neg_eq_add, ← Odd.neg_pow hn]
   exact Int.emultiplicity_pow_sub_pow hp hp1 hxy hx n
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Nat.emultiplicity_pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p ∣ x) (n : ℕ) :
     emultiplicity p (x ^ n - y ^ n) = emultiplicity p (x - y) + emultiplicity p n := by
   obtain hyx | hyx := le_total y x
@@ -284,7 +285,6 @@ theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hx
   intro x hx
   rw [pow_succ', mul_comm, pow_mul, Int.sq_mod_four_eq_one_of_odd hx.pow]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Int.two_pow_two_pow_sub_pow_two_pow {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2 ∣ x) :
     emultiplicity 2 (x ^ 2 ^ n - y ^ 2 ^ n) = emultiplicity 2 (x - y) + n := by
   simp only [pow_two_pow_sub_pow_two_pow n, emultiplicity_mul Int.prime_two,
@@ -315,7 +315,6 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   conv_rhs => rw [hk]
   exact mul_dvd_mul_left _ hpn
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Lifting the exponent lemma** for `p = 2` -/
 theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) (hn : Even n) :
     emultiplicity 2 (x ^ n - y ^ n) + 1 =
@@ -344,6 +343,7 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
     apply Odd.pow
     simp only [← Int.not_even_iff_odd, even_iff_two_dvd, hx, not_false_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : ℕ} (hn : Even n) :
     emultiplicity 2 (x ^ n - y ^ n) + 1 =
       emultiplicity 2 (x + y) + emultiplicity 2 (x - y) + emultiplicity 2 n := by
@@ -364,6 +364,7 @@ namespace padicValNat
 
 variable {x y : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : ℕ} (hn : n ≠ 0)
     (hneven : Even n) :
     padicValNat 2 (x ^ n - y ^ n) + 1 =
@@ -385,13 +386,15 @@ lemma pow_two_sub_one_ge (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0) (hneven :
     padicValNat 2 n + 2 ≤ padicValNat 2 (x ^ n - 1) := by
   have : padicValNat 2 ((x + 1) * (x - 1)) ≥ 3 := by
     refine (padicValNat_dvd_iff_le (by grind [mul_ne_zero])).mp ?_
-    simpa [← Nat.pow_two_sub_pow_two x 1] using by grind [Nat.eight_dvd_sq_sub_one_of_odd]
+    simp [← Nat.pow_two_sub_pow_two x 1]
+    grind [Nat.eight_dvd_sq_sub_one_of_odd]
   have := pow_two_sub_one h1x hx hn hneven
   grind [← padicValNat.mul]
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 include hp hp1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ} (hn : n ≠ 0) :
     padicValNat p (x ^ n - y ^ n) = padicValNat p (x - y) + padicValNat p n := by
   rw [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
@@ -401,6 +404,7 @@ theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ}
   · exact Nat.sub_ne_zero_of_lt hyx
   · exact Nat.sub_ne_zero_of_lt (Nat.pow_lt_pow_left hyx hn)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
     padicValNat p (x ^ n + y ^ n) = padicValNat p (x + y) + padicValNat p n := by
   rcases y with - | y

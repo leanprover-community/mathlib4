@@ -294,7 +294,7 @@ namespace NonUnitalSubring
 variable [NonUnitalRing R] [IsTopologicalRing R]
 
 instance instIsTopologicalRing (S : NonUnitalSubring R) : IsTopologicalRing S :=
-  { S.toSubsemigroup.continuousMul, inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup) with }
+  { S.toSubsemigroup.continuousMul, (inferInstance : IsTopologicalAddGroup S.toAddSubgroup) with }
 
 /-- The (topological) closure of a non-unital subring of a non-unital topological ring is
 itself a non-unital subring. -/
@@ -330,7 +330,7 @@ end NonUnitalSubring
 variable [Ring R] [IsTopologicalRing R]
 
 instance Subring.instIsTopologicalRing (S : Subring R) : IsTopologicalRing S :=
-  { S.toSubmonoid.continuousMul, inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup) with }
+  { S.toSubmonoid.continuousMul, (inferInstance : IsTopologicalAddGroup S.toAddSubgroup) with }
 
 instance Subring.continuousSMul (s : Subring R) (X) [TopologicalSpace X] [MulAction R X]
     [ContinuousSMul R X] : ContinuousSMul s X :=
@@ -429,8 +429,7 @@ The supremum of two ring topologies `s` and `t` is the infimum of the family of 
 contained in the intersection of `s` and `t`. -/
 instance : CompleteSemilatticeInf (RingTopology R) where
   sInf := def_sInf
-  sInf_le := fun _ a haS => sInf_le (α := TopologicalSpace R) ⟨a, ⟨haS, rfl⟩⟩
-  le_sInf := fun _ _ h => le_sInf (α := TopologicalSpace R) <| forall_mem_image.2 h
+  isGLB_sInf _ := .of_image (f := toTopologicalSpace) .rfl (isGLB_sInf _)
 
 instance : CompleteLattice (RingTopology R) :=
   completeLatticeOfCompleteSemilatticeInf _

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Lie.Derivation.Basic
 public import Mathlib.Algebra.Lie.Extension
+public import Mathlib.Algebra.Lie.Prod
 
 /-!
 # Semi-direct products
@@ -50,6 +51,8 @@ namespace SemiDirectSum
 variable {R : Type*} [CommRing R]
 variable {K : Type*} [LieRing K] [LieAlgebra R K]
 variable {L : Type*} [LieRing L] [LieAlgebra R L]
+
+section
 variable (ψ : L →ₗ⁅R⁆ LieDerivation R K K)
 
 variable {ψ} in
@@ -59,6 +62,8 @@ def toProd : K ⋊⁅ψ⁆ L ≃ K × L where
   invFun x := ⟨x.fst, x.snd⟩
   left_inv _ := rfl
   right_inv _ := rfl
+
+@[simp] lemma toProd_apply (x : K ⋊⁅ψ⁆ L) : toProd (x) = ⟨x.left, x.right⟩ := rfl
 
 instance : AddCommGroup (K ⋊⁅ψ⁆ L) := toProd.addCommGroup
 
@@ -70,8 +75,10 @@ def toProdl : (K ⋊⁅ψ⁆ L) ≃ₗ[R] K × L :=
     map_add' _ _ := rfl
     map_smul' _ _ := rfl }
 
+@[simp] lemma toProdl_coe (x : K ⋊⁅ψ⁆ L) : toProdl ψ x = toProd x := rfl
+
 instance : Bracket (K ⋊⁅ψ⁆ L) (K ⋊⁅ψ⁆ L) where
-  bracket x y :=  ⟨⁅x.left, y.left⁆ + ψ x.right y.left - ψ y.right x.left, ⁅x.right, y.right⁆⟩
+  bracket x y := ⟨⁅x.left, y.left⁆ + ψ x.right y.left - ψ y.right x.left, ⁅x.right, y.right⁆⟩
 
 @[simp] lemma zero_eq_mk : (0 : K ⋊⁅ψ⁆ L) = ⟨0, 0⟩ := rfl
 @[simp] lemma add_eq_mk (x y : K ⋊⁅ψ⁆ L) : x + y = ⟨x.left + y.left, x.right + y.right⟩ := rfl
@@ -84,7 +91,7 @@ instance : Bracket (K ⋊⁅ψ⁆ L) (K ⋊⁅ψ⁆ L) where
 
 instance : LieRing (K ⋊⁅ψ⁆ L) where
   add_lie _ _ _ := by simp; abel
-  lie_add _ _ _:= by simp; abel
+  lie_add _ _ _ := by simp; abel
   lie_self _ := by simp
   leibniz_lie _ _ _ := by simp; grind [lie_skew]
 
@@ -141,6 +148,15 @@ instance : LieAlgebra.IsExtension (inl ψ) (projr ψ) where
   ker_eq_bot := by simp [LieHom.ker_eq_bot]
   range_eq_top := by simp [LieHom.range_eq_top]
   exact := by ext ⟨x, y⟩; aesop
+
+end
+
+variable (R K L) in
+/-- The product of two Lie algebras realized through a semidirect sum with trivial `ψ` -/
+@[simps!]
+def prod_iso : (K ⋊⁅(0 : L→ₗ⁅R⁆ (LieDerivation R K K))⁆ L) ≃ₗ⁅R⁆ (K × L) where
+  __ := toProdl 0
+  map_lie' {_ _} := by simp
 
 end SemiDirectSum
 end LieAlgebra

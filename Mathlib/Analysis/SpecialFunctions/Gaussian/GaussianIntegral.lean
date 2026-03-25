@@ -129,7 +129,6 @@ theorem integrable_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) :
     Integrable fun x : ℝ => exp (-b * x ^ 2) := by
   simpa using integrable_rpow_mul_exp_neg_mul_sq hb (by simp : (-1 : ℝ) < 0)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integrableOn_Ioi_exp_neg_mul_sq_iff {b : ℝ} :
     IntegrableOn (fun x : ℝ => exp (-b * x ^ 2)) (Ioi 0) ↔ 0 < b := by
   refine ⟨fun h => ?_, fun h => (integrable_exp_neg_mul_sq h).integrableOn⟩
@@ -326,7 +325,6 @@ theorem integral_gaussian_Ioi (b : ℝ) :
     · simp
     · exact (div_pos pi_pos hb).le
 
-set_option backward.isDefEq.respectTransparency false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/
