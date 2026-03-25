@@ -137,7 +137,7 @@ theorem inverse_zero : (0 : M₀)⁻¹ʳ = 0 := by
   exact inverse_non_unit _ not_isUnit_zero
 
 @[grind =]
-theorem inverse_inverse {a : M₀} (h : IsUnit a) : inverse (inverse a) = a := by
+theorem inverse_inverse {a : M₀} (h : IsUnit a) : a⁻¹ʳ⁻¹ʳ = a := by
   obtain ⟨u, rfl⟩ := h
   rw [inverse_unit, inverse_unit, inv_inv]
 
@@ -192,11 +192,6 @@ theorem Ring.isUnit_iff_inverse_mul_cancel (x : M₀) : IsUnit x ↔ x⁻¹ʳ * 
   simp +contextual [not_isUnit_iff_inverse_eq_zero]
 
 grind_pattern Ring.isUnit_iff_inverse_mul_cancel => IsUnit x, x⁻¹ʳ
-
-@[grind =]
-theorem Ring.inverse_inverse {a : M₀} (h : IsUnit a) : a⁻¹ʳ⁻¹ʳ = a := by
-  obtain ⟨u, rfl⟩ := h
-  rw [inverse_unit, inverse_unit, inv_inv]
 
 @[simp, grind =]
 theorem Ring.inverse_inverse_inverse {a : M₀} : a⁻¹ʳ⁻¹ʳ⁻¹ʳ = a⁻¹ʳ := by

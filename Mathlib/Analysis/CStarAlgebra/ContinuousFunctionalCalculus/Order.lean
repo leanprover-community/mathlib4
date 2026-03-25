@@ -419,7 +419,7 @@ lemma antitoneOn_ringInverse : AntitoneOn Ring.inverse {a : A | IsStrictlyPositi
 open Ring in
 @[gcongr]
 lemma ringInverse_le_ringInverse {a b : A} (hab : a ≤ b) (ha : IsStrictlyPositive a := by cfc_tac) :
-    inverse b ≤ inverse a :=
+    b⁻¹ʳ ≤ a⁻¹ʳ :=
   antitoneOn_ringInverse ha (IsStrictlyPositive.of_le ha hab) hab
 
 end CStarAlgebra

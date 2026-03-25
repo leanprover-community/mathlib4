@@ -46,8 +46,8 @@ lemma isStrictlyPositive_conjSqrt_iff (c a : A) (hc : IsStrictlyPositive c := by
   by_cases ha : IsSelfAdjoint a <;> grind
 
 @[grind _=_]
-lemma inverse_conjSqrt (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
-    inverse (conjSqrt c a) = conjSqrt (inverse c) (inverse a) := by
+lemma ringInverse_conjSqrt (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
+    (conjSqrt c a)⁻¹ʳ = conjSqrt c⁻¹ʳ a⁻¹ʳ := by
   by_cases ha : IsUnit a
   · grind [conjSqrt_apply, sqrt_ringInverse]
   · have : ¬IsUnit (conjSqrt c a) := by grind [conjSqrt_apply]
@@ -56,13 +56,13 @@ lemma inverse_conjSqrt (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
 
 @[grind =]
 lemma conjSqrt_ringInverse_conjSqrt (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
-    conjSqrt (inverse c) (conjSqrt c a) = a := by
+    conjSqrt c⁻¹ʳ (conjSqrt c a) = a := by
   rw [conjSqrt_apply, conjSqrt_apply]
-  have : sqrt (inverse c) * sqrt c = 1 := by
+  have : sqrt c⁻¹ʳ * sqrt c = 1 := by
     simp_rw [sqrt_eq_rpow]
     rw [inverse_eq_rpow_neg_one, rpow_rpow _ _ _ (by grind), ← rpow_add (by grind)]
     grind [rpow_zero]
-  have : sqrt c * sqrt (inverse c) = 1 := by
+  have : sqrt c * sqrt c⁻¹ʳ = 1 := by
     simp_rw [sqrt_eq_rpow]
     rw [inverse_eq_rpow_neg_one, rpow_rpow _ _ _ (by grind), ← rpow_add (by grind)]
     grind [rpow_zero]
@@ -70,13 +70,13 @@ lemma conjSqrt_ringInverse_conjSqrt (c a : A) (hc : IsStrictlyPositive c := by c
 
 @[grind =]
 lemma conjSqrt_conjSqrt_ringInverse (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
-    conjSqrt c (conjSqrt (inverse c) a) = a := by
+    conjSqrt c (conjSqrt c⁻¹ʳ a) = a := by
   rw [conjSqrt_apply, conjSqrt_apply]
-  have : sqrt (inverse c) * sqrt c = 1 := by
+  have : sqrt c⁻¹ʳ * sqrt c = 1 := by
     simp_rw [sqrt_eq_rpow]
     rw [inverse_eq_rpow_neg_one, rpow_rpow _ _ _ (by grind), ← rpow_add (by grind)]
     grind [rpow_zero]
-  have : sqrt c * sqrt (inverse c) = 1 := by
+  have : sqrt c * sqrt c⁻¹ʳ = 1 := by
     simp_rw [sqrt_eq_rpow]
     rw [inverse_eq_rpow_neg_one, rpow_rpow _ _ _ (by grind), ← rpow_add (by grind)]
     grind [rpow_zero]
@@ -88,7 +88,7 @@ lemma conjSqrt_one (c : A) (hc : IsStrictlyPositive c := by cfc_tac) : conjSqrt 
 
 @[grind =]
 lemma conjSqrt_ringInverse_self (c : A) (hc : IsStrictlyPositive c := by cfc_tac) :
-    conjSqrt (inverse c) c = 1 := by
+    conjSqrt c⁻¹ʳ c = 1 := by
   grind =>
     have : conjSqrt c 1 = c
     finish

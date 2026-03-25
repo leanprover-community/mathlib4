@@ -35,10 +35,10 @@ public lemma convexOn_ringInverse :
   `(a • 1 + b • z)⁻¹ ≤ a • 1⁻¹ + b • z⁻¹`, and this can be proven since everything now commutes. -/
   refine ⟨by grind [convex_iff_forall_pos], ?_⟩
   intro x (xpos : IsStrictlyPositive x) y (ypos : IsStrictlyPositive y) a b ha hb hab
-  let z := conjSqrt (inverse x) y
+  let z := conjSqrt x⁻¹ʳ y
   have hz : IsStrictlyPositive z := ypos.conjugate_of_isSelfAdjoint (by grind) (by cfc_tac)
   have zpos : IsStrictlyPositive z := by grind
-  have xinvpos : IsStrictlyPositive (inverse x) := by grind
+  have xinvpos : IsStrictlyPositive x⁻¹ʳ := by grind
   have hsp : IsStrictlyPositive (a • 1 + b • z) := by
     have : 0 ≤ b • z := by grind [smul_nonneg]
     have : 0 ≤ a • (1 : A) := smul_nonneg ha zero_le_one
@@ -65,13 +65,13 @@ public lemma convexOn_ringInverse :
     refine cfc_congr ?_
     intro r hr
     simp
-  calc _ = inverse (a • conjSqrt x 1 + b • conjSqrt x z) := by
+  calc _ = (a • conjSqrt x 1 + b • conjSqrt x z)⁻¹ʳ := by
         rw [conjSqrt_conjSqrt_ringInverse _ _ xpos, conjSqrt_one _ xpos]
-      _ = inverse (conjSqrt x (a • 1 + b • z)) := by simp
-      _ = conjSqrt (inverse x) (inverse (a • 1 + b • z)) := by rw [inverse_conjSqrt _ _ xpos]
-      _ = conjSqrt (inverse x) ((a • 1 + b • z) ^ (-1 : ℝ)) := by
+      _ = (conjSqrt x (a • 1 + b • z))⁻¹ʳ := by simp
+      _ = conjSqrt x⁻¹ʳ (a • 1 + b • z)⁻¹ʳ := by rw [inverse_conjSqrt _ _ xpos]
+      _ = conjSqrt x⁻¹ʳ ((a • 1 + b • z) ^ (-1 : ℝ)) := by
         rw [← inverse_eq_rpow_neg_one]
-      _ ≤ conjSqrt (inverse x) (a • 1 + b • z ^ (-1 : ℝ)) := by
+      _ ≤ conjSqrt x⁻¹ʳ (a • 1 + b • z ^ (-1 : ℝ)) := by
         gcongr
         rw [h₁, h₂]
         refine (cfc_le_iff _ _ _ ?_ ?_).mpr ?_
@@ -90,8 +90,8 @@ public lemma convexOn_ringInverse :
             simpa using this
           have : ConvexOn ℝ (Set.Ioi 0) (fun z : ℝ => z ^ (-1 : ℤ)) := convexOn_zpow (-1)
           grind [ConvexOn, IsStrictlyPositive.spectrum_pos]
-      _ = conjSqrt (inverse x) (a • 1 + b • (inverse z)) := by rw [← inverse_eq_rpow_neg_one]
-      _ = a • inverse x + b • conjSqrt (inverse x) (inverse z) := by
+      _ = conjSqrt x⁻¹ʳ (a • 1 + b • z⁻¹ʳ) := by rw [← inverse_eq_rpow_neg_one]
+      _ = a • inverse x + b • conjSqrt x⁻¹ʳ z⁻¹ʳ := by
         simp [conjSqrt_one _ xinvpos]
       _ = _ := by
         rw [← inverse_conjSqrt _ _ xpos, conjSqrt_conjSqrt_ringInverse _ _ xpos]

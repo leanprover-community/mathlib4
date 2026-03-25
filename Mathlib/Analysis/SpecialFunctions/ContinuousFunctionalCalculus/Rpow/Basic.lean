@@ -773,14 +773,14 @@ lemma inverse_rpow (a : A) (x : ℝ) (hx : x ≠ 0) (ha : IsStrictlyPositive a :
 omit [IsTopologicalRing A] [T2Space A] in
 @[aesop safe apply]
 lemma _root_.IsStrictlyPositive.ringInverse {a : A} (ha : IsStrictlyPositive a) :
-    IsStrictlyPositive (Ring.inverse a) := by
+    IsStrictlyPositive a⁻¹ʳ := by
   rw [CFC.inverse_eq_rpow_neg_one]
   cfc_tac
 
 omit [IsTopologicalRing A] [T2Space A] in
 @[grind =]
 lemma _root_.isStrictlyPositive_ringInverse_iff {a : A} :
-    IsStrictlyPositive (Ring.inverse a) ↔ IsStrictlyPositive a := by
+    IsStrictlyPositive a⁻¹ʳ ↔ IsStrictlyPositive a := by
   nontriviality A
   refine ⟨fun h => ?_, IsStrictlyPositive.ringInverse⟩
   have ha : IsUnit a := by
@@ -794,11 +794,11 @@ lemma _root_.isStrictlyPositive_ringInverse_iff {a : A} :
 omit [IsTopologicalRing A] [T2Space A] in
 open Ring in
 lemma ringInverse_nonneg_iff_nonneg_of_isUnit {a : A} (ha : IsUnit a) :
-    0 ≤ inverse a ↔ 0 ≤ a := by
+    0 ≤ a⁻¹ʳ ↔ 0 ≤ a := by
   grind [isStrictlyPositive_ringInverse_iff]
 
 open Ring in
-lemma sqrt_ringInverse {a : A} : sqrt (inverse a) = inverse (sqrt a) := by
+lemma sqrt_ringInverse {a : A} : sqrt a⁻¹ʳ = (sqrt a)⁻¹ʳ := by
   by_cases ha : IsStrictlyPositive a
   · rw [sqrt_eq_rpow, sqrt_eq_rpow, inverse_rpow _ _ (by grind),
         inverse_eq_rpow_neg_one, rpow_rpow _ _ _ (by grind)]
