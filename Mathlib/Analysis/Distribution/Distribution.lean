@@ -6,7 +6,6 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Distribution.TestFunction
-public import Mathlib.Analysis.LocallyConvex.StrongTopology
 
 /-!
 # Distributions
@@ -53,7 +52,7 @@ We could introduce another notation `∞` for `⊤ : ℕ∞`, but we believe it 
 
 ### `abbrev` or `def`
 
-At this point in time, it is not clear wether we should enforce a separation between the API
+At this point in time, it is not clear whether we should enforce a separation between the API
 for `𝓓'(Ω, F)` and the more generic API about `𝓓(Ω, ℝ) →L_c[ℝ] F`.
 For now, we have made the "default" choice to implement `Distribution` as an `abbrev`, which means
 that we get a lot of instances for free, but also that there is no such separation of APIs.
@@ -180,8 +179,8 @@ section mapCLM
 /-- Any continuous linear map `A : F →L[ℝ] G` induces a continuous linear map
 `𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, G)`. On locally integrable functions, this corresponds to applying `A`
 pointwise. -/
-def mapCLM (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F') :=
-  A.postcomp_uniformConvergenceCLM _
+noncomputable def mapCLM (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F') :=
+  A.postcompUniformConvergenceCLM _
 
 @[simp]
 lemma mapCLM_apply {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :

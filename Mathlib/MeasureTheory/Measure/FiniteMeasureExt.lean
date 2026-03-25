@@ -18,7 +18,7 @@ the integrals of all elements of `A` with respect to two finite measures `P, P'`
 measures coincide. In other words: If a subalgebra separates points, it separates finite measures.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Filter Real RCLike BoundedContinuousFunction
 

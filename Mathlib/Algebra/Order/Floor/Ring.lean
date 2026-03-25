@@ -27,7 +27,7 @@ fractional part operator.
 rounding, floor, ceil
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
@@ -39,13 +39,11 @@ open Lean.Meta Qq
 
 variable {α : Type*}
 
-set_option backward.privateInPublic true in -- used by the positivity tactic
-private theorem int_floor_nonneg [Ring α] [LinearOrder α] [FloorRing α] {a : α} (ha : 0 ≤ a) :
+theorem int_floor_nonneg [Ring α] [LinearOrder α] [FloorRing α] {a : α} (ha : 0 ≤ a) :
     0 ≤ ⌊a⌋ :=
   Int.floor_nonneg.2 ha
 
-set_option backward.privateInPublic true in -- used by the positivity tactic
-private theorem int_floor_nonneg_of_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α}
+theorem int_floor_nonneg_of_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α}
     (ha : 0 < a) :
     0 ≤ ⌊a⌋ :=
   int_floor_nonneg ha.le
@@ -65,8 +63,7 @@ meta def evalIntFloor : PositivityExt where eval {u α} _zα _pα e := do
     | _ => pure .none
   | _, _, _ => throwError "failed to match on Int.floor application"
 
-set_option backward.privateInPublic true in -- used by the positivity tactic
-private theorem nat_ceil_pos [Semiring α] [LinearOrder α] [FloorSemiring α] {a : α} :
+theorem nat_ceil_pos [Semiring α] [LinearOrder α] [FloorSemiring α] {a : α} :
     0 < a → 0 < ⌈a⌉₊ :=
   Nat.ceil_pos.2
 
@@ -85,8 +82,7 @@ meta def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
     | _ => pure .none
   | _, _, _ => throwError "failed to match on Nat.ceil application"
 
-set_option backward.privateInPublic true in -- used by the positivity tactic
-private theorem int_ceil_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α} : 0 < a → 0 < ⌈a⌉ :=
+theorem int_ceil_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α} : 0 < a → 0 < ⌈a⌉ :=
   Int.ceil_pos.2
 
 /-- Extension for the `positivity` tactic: `Int.ceil` is positive/nonnegative if its input is. -/
@@ -243,15 +239,15 @@ theorem floor_sub_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] :
     ⌊a - ofNat(n)⌋ = ⌊a⌋ - ofNat(n) :=
   floor_sub_natCast a n
 
-theorem abs_sub_lt_one_of_floor_eq_floor {R : Type*}
-    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
-    {a b : R} (h : ⌊a⌋ = ⌊b⌋) : |a - b| < 1 := by
-  have : a < ⌊a⌋ + 1 := lt_floor_add_one a
-  have : b < ⌊b⌋ + 1 := lt_floor_add_one b
-  have : (⌊a⌋ : R) = ⌊b⌋ := Int.cast_inj.2 h
-  have : (⌊a⌋ : R) ≤ a := floor_le a
-  have : (⌊b⌋ : R) ≤ b := floor_le b
-  exact abs_sub_lt_iff.2 ⟨by linarith, by linarith⟩
+theorem abs_sub_lt_one_of_floor_eq_floor {a b : R} (h : ⌊a⌋ = ⌊b⌋) : |a - b| < 1 := by
+  wlog h0 : b ≤ a generalizing a b
+  · rw [abs_sub_comm]
+    exact this h.symm (le_of_not_ge h0)
+  calc |a - b|
+    _ = a - b := abs_of_nonneg (sub_nonneg_of_le h0)
+    _ < ⌊a⌋ + 1 - b := sub_lt_sub_right (lt_floor_add_one a) _
+    _ ≤ ⌊a⌋ + 1 - ⌊b⌋ := sub_le_sub_left (floor_le b) _
+    _ = 1 := by rw [h, add_sub_cancel_left]
 
 lemma floor_eq_self_iff_mem (a : R) : ⌊a⌋ = a ↔ a ∈ Set.range Int.cast := by
   aesop

@@ -22,9 +22,9 @@ This file contains the usual formulas (and existence assertions) for the derivat
 * taking the pointwise multiplicative inverse (i.e. `Inv.inv` or `Ring.inverse`) of a function
 -/
 
-@[expose] public section
+public section
 
-
+open scoped Ring
 open Asymptotics ContinuousLinearMap Topology
 
 section
@@ -43,14 +43,14 @@ section SMul
 /-! ### Derivative of the product of a scalar-valued function and a vector-valued function
 
 If `c` is a differentiable scalar-valued function and `f` is a differentiable vector-valued
-function, then `fun x ↦ c x • f x` is differentiable as well. Lemmas in this section works for
-function `c` taking values in the base field, as well as in a normed algebra over the base
+function, then `fun x ↦ c x • f x` is differentiable as well. Lemmas in this section work for
+functions `c` taking values in the base field, as well as in a normed algebra over the base
 field: e.g., they work for `c : E → ℂ` and `f : E → F` provided that `F` is a complex
 normed vector space.
 -/
 
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
+variable {𝕜' : Type*} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F]
 
 variable {c : E → 𝕜'} {c' : E →L[𝕜] 𝕜'}
@@ -391,6 +391,7 @@ variable {ι : Type*} {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing �
   [NormedAlgebra 𝕜 𝔸'] {u : Finset ι} {f : ι → E → 𝔸} {f' : ι → E →L[𝕜] 𝔸} {g : ι → E → 𝔸'}
   {g' : ι → E →L[𝕜] 𝔸'}
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem hasStrictFDerivAt_list_prod' [Finite ι] {l : List ι} {x : ι → 𝔸} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
@@ -434,7 +435,7 @@ theorem hasFDerivAt_list_prod_finRange' {n : ℕ} {x : Fin n → 𝔸} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ ((List.finRange n).map x).prod)
       (∑ i : Fin n, (((List.finRange n).take i).map x).prod •
         proj i <• (((List.finRange n).drop (.succ i)).map x).prod) x :=
-  (hasStrictFDerivAt_list_prod_finRange').hasFDerivAt
+  hasStrictFDerivAt_list_prod_finRange'.hasFDerivAt
 
 @[fun_prop]
 theorem hasFDerivAt_list_prod_attach' {l : List ι} {x : {i // i ∈ l} → 𝔸} :
@@ -642,10 +643,10 @@ TODO (low prio): prove a version without assumption `[HasSummableGeomSeries R]` 
 of units. -/
 @[fun_prop]
 theorem hasFDerivAt_ringInverse (x : Rˣ) :
-    HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x :=
+    HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x := by
   have : (fun t : R => Ring.inverse (↑x + t) - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =o[𝓝 0] id :=
     (inverse_add_norm_diff_second_order x).trans_isLittleO (isLittleO_norm_pow_id one_lt_two)
-  by simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using this
+  simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using this
 
 @[fun_prop]
 theorem differentiableAt_inverse {x : R} (hx : IsUnit x) :
@@ -673,21 +674,21 @@ variable {h : E → R} {z : E} {S : Set E}
 
 @[fun_prop]
 theorem DifferentiableWithinAt.inverse (hf : DifferentiableWithinAt 𝕜 h S z) (hz : IsUnit (h z)) :
-    DifferentiableWithinAt 𝕜 (fun x => Ring.inverse (h x)) S z :=
+    DifferentiableWithinAt 𝕜 (fun x => (h x)⁻¹ʳ) S z :=
   (differentiableAt_inverse hz).comp_differentiableWithinAt z hf
 
 @[simp, fun_prop]
 theorem DifferentiableAt.inverse (hf : DifferentiableAt 𝕜 h z) (hz : IsUnit (h z)) :
-    DifferentiableAt 𝕜 (fun x => Ring.inverse (h x)) z :=
+    DifferentiableAt 𝕜 (fun x => (h x)⁻¹ʳ) z :=
   (differentiableAt_inverse hz).comp z hf
 
 @[fun_prop]
 theorem DifferentiableOn.inverse (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x ∈ S, IsUnit (h x)) :
-    DifferentiableOn 𝕜 (fun x => Ring.inverse (h x)) S := fun x h => (hf x h).inverse (hz x h)
+    DifferentiableOn 𝕜 (fun x => (h x)⁻¹ʳ) S := fun x h => (hf x h).inverse (hz x h)
 
 @[simp, fun_prop]
 theorem Differentiable.inverse (hf : Differentiable 𝕜 h) (hz : ∀ x, IsUnit (h x)) :
-    Differentiable 𝕜 fun x => Ring.inverse (h x) := fun x => (hf x).inverse (hz x)
+    Differentiable 𝕜 fun x => (h x)⁻¹ʳ := fun x => (hf x).inverse (hz x)
 
 end AlgebraInverse
 

@@ -31,7 +31,7 @@ Often, `Associated a b` is everything one needs, and it is more convenient to us
 other version for completeness.
 -/
 
-@[expose] public section
+public section
 
 open Polynomial Finset Nat
 
@@ -116,8 +116,8 @@ theorem associated_pow_add_sub_sub_one (hζ : IsPrimitiveRoot ζ n) (hn : 2 ≤ 
     simp [← this, mul_assoc]
   grind [mul_geom_sum]
 
-/-- If `p` is prime and `ζ` is a `p`-th primitive root of unit, then `ζ - 1` and `η₁ - η₂` are
-  associated for all distincts `p`-th root of unit `η₁` and `η₂`. -/
+/-- If `p` is prime and `ζ` is a `p`-th primitive root of unity, then `ζ - 1` and `η₁ - η₂` are
+  associated for all distinct `p`-th roots of unity `η₁` and `η₂`. -/
 lemma ntRootsFinset_pairwise_associated_sub_one_sub_of_prime (hζ : IsPrimitiveRoot ζ p)
     (hp : p.Prime) :
     Set.Pairwise (nthRootsFinset p (1 : A)) (fun η₁ η₂ ↦ Associated (ζ - 1) (η₁ - η₂)) := by

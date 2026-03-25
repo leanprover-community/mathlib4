@@ -551,7 +551,7 @@ theorem getElem?_take_succ (n : ℕ) (s : Stream' α) :
 theorem append_take_drop (n : ℕ) (s : Stream' α) : appendStream' (take n s) (drop n s) = s := by
   induction n generalizing s with
   | zero => rfl
-  | succ n ih =>rw [take_succ, drop_succ, cons_append_stream, ih (tail s), Stream'.eta]
+  | succ n ih => rw [take_succ, drop_succ, cons_append_stream, ih (tail s), Stream'.eta]
 
 lemma append_take : x ++ (a.take n) = (x ++ₛ a).take (x.length + n) := by
   induction x <;> simp [take, Nat.add_comm, cons_append_stream, *]

@@ -6,6 +6,7 @@ Authors: Markus Himmel, Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.MonCat.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon_
 
@@ -22,6 +23,26 @@ showing that it is fully faithful and its (essential) image is the representable
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
 namespace CategoryTheory
+
+section SemiCartesianMonoidalCategory
+
+variable {D : Type*} [Category* D] [SemiCartesianMonoidalCategory D]
+
+@[simps]
+instance uniqueHomToTrivial (A : Mon D) : Unique (A ⟶ Mon.trivial D) where
+  default.hom := toUnit A.X
+  default.isMonHom_hom.mul_hom := toUnit_unique _ _
+  uniq f := Mon.Hom.ext (toUnit_unique _ _)
+
+instance : HasZeroObject (Mon D) where
+  zero := ⟨Mon.trivial D,
+    fun A ↦ nonempty_unique (Mon.trivial D ⟶ A),
+    fun A ↦ nonempty_unique (A ⟶ Mon.trivial D)⟩
+
+noncomputable instance : HasZeroMorphisms (Mon D) := HasZeroObject.zeroMorphismsOfZeroObject
+
+end SemiCartesianMonoidalCategory
+
 universe w v u
 variable {C D : Type*} [Category.{v} C] [CartesianMonoidalCategory C]
   [Category.{w} D] [CartesianMonoidalCategory D]
@@ -68,6 +89,7 @@ end MonObj
 namespace Mon
 variable [BraidedCategory C]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] tensorObj.one_def tensorObj.mul_def in
 instance : CartesianMonoidalCategory (Mon C) where
   isTerminalTensorUnit := .ofUniqueHom (fun M ↦ ⟨toUnit _⟩) fun M f ↦ by ext; exact toUnit_unique ..
@@ -100,9 +122,10 @@ instance [IsCommMonObj M.X] : IsCommMonObj M where
 
 end Mon
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
-@[simps]
+@[simps, implicit_reducible]
 def MonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
     MonObj X where
   one := α.homEquiv.symm 1
@@ -134,10 +157,6 @@ def MonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget _)
     simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_mul, _root_.mul_assoc]
     simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
     simp
-
-@[deprecated (since := "2025-09-09")] alias Mon_Class.ofRepresentableBy := MonObj.ofRepresentableBy
-
-@[deprecated (since := "2025-09-09")] alias Mon_ClassOfRepresentableBy := MonObj.ofRepresentableBy
 
 /-- If `M` is a monoid object, then `Hom(X, M)` has a monoid structure. -/
 abbrev Hom.monoid : Monoid (X ⟶ M) where
@@ -175,10 +194,7 @@ variable (F : C ⥤ D) [F.Monoidal]
 open scoped Obj
 
 protected lemma map_mul (f g : X ⟶ M) : F.map (f * g) = F.map f * F.map g := by
-  simp only [Hom.mul_def, map_comp, obj.μ_def, ← Category.assoc]
-  congr 1
-  rw [← IsIso.comp_inv_eq]
-  ext <;> simp
+  simp [Hom.mul_def]
 
 @[simp] protected lemma map_one : F.map (1 : X ⟶ M) = 1 := by simp [Hom.one_def]
 
@@ -235,6 +251,7 @@ def yonedaMonObj : Cᵒᵖ ⥤ MonCat.{v} where
   map_id _ := MonCat.hom_ext (MonoidHom.ext Category.id_comp)
   map_comp _ _ := MonCat.hom_ext (MonoidHom.ext (Category.assoc _ _))
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of monoids `F`, then `Hom(-, X)` is isomorphic to `F` as
 a presheaf of monoids. -/
@@ -282,14 +299,7 @@ lemma MonObj.ofRepresentableBy_yonedaMonObjRepresentableBy :
     ofRepresentableBy M _ (yonedaMonObjRepresentableBy M) = ‹_› := by
   ext; change lift (fst M M) (snd M M) ≫ μ = μ; rw [lift_fst_snd, Category.id_comp]
 
-@[deprecated (since := "2025-09-09")]
-alias Mon_Class.ofRepresentableBy_yonedaMonObjRepresentableBy :=
-  MonObj.ofRepresentableBy_yonedaMonObjRepresentableBy
-
-@[deprecated (since := "2025-09-09")]
-alias Mon_ClassOfRepresentableBy_yonedaMonObjRepresentableBy :=
-  MonObj.ofRepresentableBy_yonedaMonObjRepresentableBy
-
+set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding for `Mon_C` is fully faithful. -/
 def yonedaMonFullyFaithful : yonedaMon (C := C).FullyFaithful where
   preimage {M N} α :=
@@ -319,7 +329,7 @@ instance : yonedaMon (C := C).Full := yonedaMonFullyFaithful.full
 instance : yonedaMon (C := C).Faithful := yonedaMonFullyFaithful.faithful
 
 lemma essImage_yonedaMon :
-    yonedaMon (C := C).essImage = (· ⋙ forget _) ⁻¹' setOf Functor.IsRepresentable := by
+    yonedaMon (C := C).essImage = fun F ↦ (F ⋙ forget _).IsRepresentable := by
   ext F
   constructor
   · rintro ⟨M, ⟨α⟩⟩
@@ -331,50 +341,34 @@ lemma essImage_yonedaMon :
 @[reassoc (attr := simp)]
 lemma MonObj.one_comp (f : M ⟶ N) [IsMonHom f] : (1 : X ⟶ M) ≫ f = 1 := by simp [Hom.one_def]
 
-@[deprecated (since := "2025-09-09")] alias Mon_Class.one_comp := MonObj.one_comp
-
 @[reassoc]
 lemma MonObj.mul_comp (f₁ f₂ : X ⟶ M) (g : M ⟶ N) [IsMonHom g] :
     (f₁ * f₂) ≫ g = f₁ ≫ g * f₂ ≫ g := by simp [Hom.mul_def]
-
-@[deprecated (since := "2025-09-09")] alias Mon_Class.mul_comp := MonObj.mul_comp
 
 @[reassoc]
 lemma MonObj.pow_comp (f : X ⟶ M) (n : ℕ) (g : M ⟶ N) [IsMonHom g] :
     (f ^ n) ≫ g = (f ≫ g) ^ n := by
   induction n <;> simp [pow_succ, MonObj.mul_comp, *]
 
-@[deprecated (since := "2025-09-09")] alias Mon_Class.pow_comp := MonObj.pow_comp
-
 @[reassoc (attr := simp)]
 lemma MonObj.comp_one (f : X ⟶ Y) : f ≫ (1 : Y ⟶ M) = 1 :=
   ((yonedaMon.obj <| .mk M).map f.op).hom.map_one
-
-@[deprecated (since := "2025-09-09")] alias Mon_Class.comp_one := MonObj.comp_one
 
 @[reassoc]
 lemma MonObj.comp_mul (f : X ⟶ Y) (g₁ g₂ : Y ⟶ M) : f ≫ (g₁ * g₂) = f ≫ g₁ * f ≫ g₂ :=
   ((yonedaMon.obj <| .mk M).map f.op).hom.map_mul _ _
 
-@[deprecated (since := "2025-09-09")] alias Mon_Class.comp_mul := MonObj.comp_mul
-
 @[reassoc]
 lemma MonObj.comp_pow (f : X ⟶ M) (n : ℕ) (h : Y ⟶ X) : h ≫ f ^ n = (h ≫ f) ^ n := by
   induction n <;> simp [pow_succ, MonObj.comp_mul, *]
-
-@[deprecated (since := "2025-09-09")] alias Mon_Class.comp_pow := MonObj.comp_pow
 
 variable (M) in
 lemma MonObj.one_eq_one : η = (1 : _ ⟶ M) :=
   show _ = _ ≫ _ by rw [toUnit_unique (toUnit _) (𝟙 _), Category.id_comp]
 
-@[deprecated (since := "2025-09-09")] alias Mon_Class.one_eq_one := MonObj.one_eq_one
-
 variable (M) in
 lemma MonObj.mul_eq_mul : μ = fst M M * snd _ _ :=
   show _ = _ ≫ _ by rw [lift_fst_snd, Category.id_comp]
-
-@[deprecated (since := "2025-09-09")] alias Mon_Class.mul_eq_mul := MonObj.mul_eq_mul
 
 namespace Hom
 
@@ -385,4 +379,10 @@ def mulEquivCongrRight (e : M ≅ N) [IsMonHom e.hom] (X : C) : (X ⟶ M) ≃* (
   ((yonedaMon.mapIso <| Mon.mkIso' e).app <| .op X).monCatIsoToMulEquiv
 
 end Hom
+
+/-- A monoid object `M` is commutative if and only if `X ⟶ M` is commutative for all `X`. -/
+lemma isCommMonObj_iff_isMulCommutative (M : C) [MonObj M] [BraidedCategory C] :
+    IsCommMonObj M ↔ ∀ (X : C), IsMulCommutative (X ⟶ M) := by
+  exact ⟨fun h X ↦ ⟨⟨by simp [mul_comm]⟩⟩, fun h ↦ ⟨by simp [mul_eq_mul, comp_mul, mul_comm]⟩⟩
+
 end CategoryTheory

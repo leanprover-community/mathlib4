@@ -97,7 +97,7 @@ instance [Algebra R S] (p : PrimeSpectrum S) :
   over := rfl
 
 /-- `RingHom.comap` of an isomorphism of rings as an equivalence of their prime spectra. -/
-@[simps apply symm_apply]
+@[simps apply]
 def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃o PrimeSpectrum S where
   toFun := comap e.symm.toRingHom
   invFun := comap e.toRingHom
@@ -110,6 +110,8 @@ def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃o PrimeSpectrum S where
       RingEquiv.toRingHom_eq_coe, RingEquiv.comp_symm]
     rfl
   map_rel_iff' {I J} := Ideal.comap_le_comap_iff_of_surjective _ e.symm.surjective ..
+
+@[simp] lemma comapEquiv_symm (e : R ≃+* S) : (comapEquiv e).symm = comapEquiv e.symm := rfl
 
 section Pi
 
@@ -145,7 +147,7 @@ theorem exists_maximal_notMem_range_sigmaToPi_of_infinite :
     smul_mem' := by
       rintro r _ ⟨x, rfl⟩
       refine ⟨.mk x.support fun i ↦ r i * x i, funext fun i ↦ show dite _ _ _ = _ from ?_⟩
-      simp_rw [DFinsupp.coeFnAddMonoidHom]
+      simp_rw +instances [DFinsupp.coeFnAddMonoidHom]
       refine dite_eq_left_iff.mpr fun h ↦ ?_
       rw [DFinsupp.notMem_support_iff.mp h, mul_zero] }
   have ⟨I, max, le⟩ := J.exists_le_maximal <| (Ideal.ne_top_iff_one _).mpr <| by
@@ -289,6 +291,7 @@ lemma PrimeSpectrum.mem_range_comap_iff {p : PrimeSpectrum R} :
 
 open TensorProduct
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A prime `p` is in the range of `Spec S → Spec R` if the fiber over `p` is nontrivial. -/
 lemma PrimeSpectrum.nontrivial_iff_mem_rangeComap {S : Type*} [CommRing S]
     [Algebra R S] (p : PrimeSpectrum R) :

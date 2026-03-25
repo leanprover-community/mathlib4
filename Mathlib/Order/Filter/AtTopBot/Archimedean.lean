@@ -37,6 +37,10 @@ theorem tendsto_natCast_atTop_iff [Semiring R] [PartialOrder R] [IsStrictOrdered
     {l : Filter α} : Tendsto (fun n => (f n : R)) l atTop ↔ Tendsto f l atTop :=
   tendsto_atTop_embedding (fun _ _ => Nat.cast_le) exists_nat_ge
 
+theorem PNat.tendsto_comp_val_iff {β : Type*} {f : ℕ → β} {l : Filter β} :
+    Tendsto (fun x : ℕ+ => f x) atTop l ↔ Tendsto f atTop l := by
+  exact tendsto_comp_val_Ioi_atTop
+
 theorem tendsto_natCast_atTop_atTop [Semiring R] [PartialOrder R] [IsOrderedRing R]
     [Archimedean R] :
     Tendsto ((↑) : ℕ → R) atTop atTop :=

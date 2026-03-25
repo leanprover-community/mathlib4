@@ -19,10 +19,11 @@ order to avoid some unnecessary hypotheses that appear when specialising the gen
 measure-theoretic result.
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- **Tannery's theorem**: topological sums commute with termwise limits, when the norms of the
 summands are eventually uniformly bounded by a summable function.
 

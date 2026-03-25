@@ -24,7 +24,7 @@ This file defines bundled isomorphisms of `R`-algebras.
 
 @[expose] public section
 
-universe u v w u₁ v₁
+universe u v w u₁ v₁ u₂ u₃
 
 /-- An equivalence of algebras (denoted as `A ≃ₐ[R] B`)
 is an equivalence of rings commuting with the actions of scalars. -/
@@ -97,8 +97,8 @@ instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
   left_inv f := f.left_inv
   right_inv f := f.right_inv
   coe_injective' f g h₁ h₂ := by
-    obtain ⟨⟨f,_⟩,_⟩ := f
-    obtain ⟨⟨g,_⟩,_⟩ := g
+    obtain ⟨⟨f, _⟩, _⟩ := f
+    obtain ⟨⟨g, _⟩, _⟩ := g
     congr
 
 /-- Helper instance since the coercion is not always found. -/
@@ -180,6 +180,9 @@ def toAlgHom : A₁ →ₐ[R] A₂ :=
 
 @[simp]
 theorem toAlgHom_eq_coe : e.toAlgHom = e :=
+  rfl
+
+theorem toAlgHom_apply (x : A₁) : e.toAlgHom x = e x :=
   rfl
 
 @[simp, norm_cast]
@@ -293,8 +296,7 @@ theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅) :
 theorem refl_symm : (AlgEquiv.refl : A₁ ≃ₐ[R] A₁).symm = AlgEquiv.refl :=
   rfl
 
---this should be a simp lemma but causes a lint timeout
-theorem toRingEquiv_symm (f : A₁ ≃ₐ[R] A₁) : (f : A₁ ≃+* A₁).symm = f.symm :=
+theorem toRingEquiv_symm : (e : A₁ ≃+* A₂).symm = e.symm :=
   rfl
 
 @[simp]
@@ -545,6 +547,18 @@ theorem toLinearMap_injective : Function.Injective (toLinearMap : _ → A₁ →
 theorem trans_toLinearMap (f : A₁ ≃ₐ[R] A₂) (g : A₂ ≃ₐ[R] A₃) :
     (f.trans g).toLinearMap = g.toLinearMap.comp f.toLinearMap :=
   rfl
+
+@[simp] theorem linearEquivConj_mulLeft (f : A₁ ≃ₐ[R] A₂) (x : A₁) :
+    f.toLinearEquiv.conj (.mulLeft R x) = .mulLeft R (f x) := by
+  ext; simp
+
+@[simp] theorem linearEquivConj_mulRight (f : A₁ ≃ₐ[R] A₂) (x : A₁) :
+    f.toLinearEquiv.conj (.mulRight R x) = .mulRight R (f x) := by
+  ext; simp
+
+@[simp] theorem linearEquivConj_mulLeftRight (f : A₁ ≃ₐ[R] A₂) (x : A₁ × A₁) :
+    f.toLinearEquiv.conj (.mulLeftRight R x) = .mulLeftRight R (Prod.map f f x) := by
+  cases x; ext; simp
 
 /-- Promotes a bijective algebra homomorphism to an algebra equivalence. -/
 noncomputable def ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) : A₁ ≃ₐ[R] A₂ :=
@@ -818,11 +832,41 @@ lemma AlgEquiv.default_apply [Subsingleton S] [Subsingleton T] (x : S) :
 end
 
 /-- The algebra equivalence between `ULift A` and `A`. -/
-@[simps! -isSimp apply]
+@[simps! apply, simps! -isSimp symm_apply, pp_with_univ]
 def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A] :
     ULift.{w} A ≃ₐ[R] A where
   __ := ULift.ringEquiv
   commutes' _ := rfl
+
+@[simp]
+lemma ULift.down_algEquiv_symm_apply {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    (a : A) :
+    (ULift.algEquiv (R := R).symm a).down = a :=
+  rfl
+
+section
+
+variable {R S T : Type*} [CommSemiring R] [Semiring S]
+  [Semiring T] [Algebra R S] [Algebra R T]
+
+attribute [local instance] ULift.algebra' in
+/-- `ULift` is functorial for algebra homomorphisms. -/
+@[pp_with_univ]
+def AlgHom.ulift (f : S →ₐ[R] T) :
+    ULift.{u₁} S →ₐ[ULift.{u₂} R] ULift.{u₃} T where
+  __ := AlgHom.comp ULift.algEquiv.symm.toAlgHom (f.comp ULift.algEquiv.toAlgHom)
+  commutes' _ := by simp
+
+@[simp]
+lemma AlgHom.down_ulift_apply (f : S →ₐ[R] T) (x : ULift S) :
+    (f.ulift x).down = f x.down :=
+  rfl
+
+lemma AlgHom.ulift_apply (f : S →ₐ[R] T) (x : ULift S) :
+    f.ulift x = ⟨f x.down⟩ :=
+  rfl
+
+end
 
 /-- If an `R`-algebra `A` is isomorphic to `R` as `R`-module, then the canonical map `R → A` is an
 equivalence of `R`-algebras.

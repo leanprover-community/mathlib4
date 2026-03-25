@@ -6,7 +6,6 @@ Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 module
 
 public import Mathlib.CategoryTheory.Functor.Category
-public import Mathlib.CategoryTheory.Iso
 
 /-!
 # Natural isomorphisms
@@ -56,28 +55,31 @@ def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
   hom := α.hom.app X
   inv := α.inv.app X
 
-@[reassoc (attr := simp), grind =]
+set_option linter.existingAttributeWarning false in
+attribute [to_dual existing app_inv] app_hom
+
+@[reassoc +to_dual (attr := simp), grind =]
 theorem hom_inv_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.hom.app X ≫ α.inv.app X = 𝟙 (F.obj X) := by cat_disch
 
-@[reassoc (attr := simp), grind =]
+@[reassoc +to_dual (attr := simp), grind =]
 theorem inv_hom_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.inv.app X ≫ α.hom.app X = 𝟙 (G.obj X) := by cat_disch
 
-@[reassoc (attr := simp)]
+@[reassoc +to_dual (attr := simp)]
 lemma hom_inv_id_app_app {F G : C ⥤ D ⥤ E} (e : F ≅ G) (X₁ : C) (X₂ : D) :
     (e.hom.app X₁).app X₂ ≫ (e.inv.app X₁).app X₂ = 𝟙 _ := by cat_disch
 
-@[reassoc (attr := simp)]
+@[reassoc +to_dual (attr := simp)]
 lemma inv_hom_id_app_app {F G : C ⥤ D ⥤ E} (e : F ≅ G) (X₁ : C) (X₂ : D) :
     (e.inv.app X₁).app X₂ ≫ (e.hom.app X₁).app X₂ = 𝟙 _ := by cat_disch
 
-@[reassoc (attr := simp)]
+@[reassoc +to_dual (attr := simp)]
 lemma hom_inv_id_app_app_app {F G : C ⥤ D ⥤ E ⥤ E'} (e : F ≅ G)
     (X₁ : C) (X₂ : D) (X₃ : E) :
     ((e.hom.app X₁).app X₂).app X₃ ≫ ((e.inv.app X₁).app X₂).app X₃ = 𝟙 _ := by cat_disch
 
-@[reassoc (attr := simp)]
+@[reassoc +to_dual (attr := simp)]
 lemma inv_hom_id_app_app_app {F G : C ⥤ D ⥤ E ⥤ E'} (e : F ≅ G)
     (X₁ : C) (X₂ : D) (X₃ : E) :
     ((e.inv.app X₁).app X₂).app X₃ ≫ ((e.hom.app X₁).app X₂).app X₃ = 𝟙 _ := by cat_disch
@@ -95,11 +97,9 @@ theorem trans_app {F G H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) (X : C) :
 
 variable {F G : C ⥤ D}
 
+@[to_dual inv_app_isIso]
 instance hom_app_isIso (α : F ≅ G) (X : C) : IsIso (α.hom.app X) :=
   ⟨⟨α.inv.app X, ⟨by grind, by grind⟩⟩⟩
-
-instance inv_app_isIso (α : F ≅ G) (X : C) : IsIso (α.inv.app X) :=
-  ⟨⟨α.hom.app X, ⟨by grind, by grind⟩⟩⟩
 
 section
 
@@ -117,37 +117,27 @@ but for now it breaks too many proofs.
 
 variable (α : F ≅ G)
 
-@[simp]
-theorem cancel_natIso_hom_left {X : C} {Z : D} (g g' : G.obj X ⟶ Z) :
+@[to_dual (attr := simp) cancel_natIso_inv_right]
+theorem cancel_natIso_hom_left {X : C} {Y : D} (g g' : G.obj X ⟶ Y) :
     α.hom.app X ≫ g = α.hom.app X ≫ g' ↔ g = g' := by simp only [cancel_epi, refl]
 
-@[simp]
-theorem cancel_natIso_inv_left {X : C} {Z : D} (g g' : F.obj X ⟶ Z) :
+@[to_dual (attr := simp) cancel_natIso_hom_right]
+theorem cancel_natIso_inv_left {X : C} {Y : D} (g g' : F.obj X ⟶ Y) :
     α.inv.app X ≫ g = α.inv.app X ≫ g' ↔ g = g' := by simp only [cancel_epi, refl]
 
-@[simp]
-theorem cancel_natIso_hom_right {X : D} {Y : C} (f f' : X ⟶ F.obj Y) :
-    f ≫ α.hom.app Y = f' ≫ α.hom.app Y ↔ f = f' := by simp only [cancel_mono, refl]
-
-@[simp]
-theorem cancel_natIso_inv_right {X : D} {Y : C} (f f' : X ⟶ G.obj Y) :
-    f ≫ α.inv.app Y = f' ≫ α.inv.app Y ↔ f = f' := by simp only [cancel_mono, refl]
-
-@[simp]
+@[simp, to_dual none]
 theorem cancel_natIso_hom_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X ⟶ F.obj Y)
     (f' : W ⟶ X') (g' : X' ⟶ F.obj Y) :
     f ≫ g ≫ α.hom.app Y = f' ≫ g' ≫ α.hom.app Y ↔ f ≫ g = f' ≫ g' := by
   simp only [← Category.assoc, cancel_mono, refl]
 
-@[simp]
+@[simp, to_dual none]
 theorem cancel_natIso_inv_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X ⟶ G.obj Y)
     (f' : W ⟶ X') (g' : X' ⟶ G.obj Y) :
     f ≫ g ≫ α.inv.app Y = f' ≫ g' ≫ α.inv.app Y ↔ f ≫ g = f' ≫ g' := by
   simp only [← Category.assoc, cancel_mono, refl]
 
-attribute [grind ←=] CategoryTheory.IsIso.inv_eq_of_hom_inv_id
-
-@[simp]
+@[to_dual (attr := simp) inv_hom_app]
 theorem inv_inv_app {F G : C ⥤ D} (e : F ≅ G) (X : C) : inv (e.inv.app X) = e.hom.app X := by
   cat_disch
 
@@ -155,38 +145,39 @@ end
 
 variable {X Y : C}
 
-@[reassoc]
+@[to_dual none, reassoc]
 theorem naturality_1 (α : F ≅ G) (f : X ⟶ Y) : α.inv.app X ≫ F.map f ≫ α.hom.app Y = G.map f := by
   simp
 
-@[reassoc]
+@[to_dual none, reassoc]
 theorem naturality_2 (α : F ≅ G) (f : X ⟶ Y) : α.hom.app X ≫ G.map f ≫ α.inv.app Y = F.map f := by
   simp
 
-@[reassoc]
+@[to_dual none, reassoc]
 theorem naturality_1' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app X)} :
     inv (α.app X) ≫ F.map f ≫ α.app Y = G.map f := by simp
 
-@[reassoc (attr := simp)]
+@[to_dual none, reassoc (attr := simp)]
 theorem naturality_2' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app Y)} :
     α.app X ≫ G.map f ≫ inv (α.app Y) = F.map f := by cat_disch
 
-/-- The components of a natural isomorphism are isomorphisms.
--/
+/-- The components of a natural isomorphism are isomorphisms. -/
+@[to_dual self]
 instance isIso_app_of_isIso (α : F ⟶ G) [IsIso α] (X) : IsIso (α.app X) :=
   ⟨⟨(inv α).app X, ⟨by grind, by grind⟩⟩⟩
 
-@[simp]
-theorem isIso_inv_app (α : F ⟶ G) {_ : IsIso α} (X) : (inv α).app X = inv (α.app X) := by cat_disch
+@[simp, push ←, to_dual self]
+theorem isIso_inv_app (α : F ⟶ G) [IsIso α] (X) : (inv α).app X = inv (α.app X) := by cat_disch
 
-@[simp]
+@[to_dual (attr := simp) inv_map_hom_app]
 theorem inv_map_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     inv ((F.map e.inv).app Z) = (F.map e.hom).app Z := by cat_disch
 
 /-- Construct a natural isomorphism between functors by giving object level isomorphisms,
 and checking naturality only in the forward direction.
 -/
-@[simps (attr := grind =)]
+@[to_dual (attr := simps (attr := grind =)) ofComponents'
+/-- The dual of `ofComponents` -/]
 def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
     (naturality : ∀ {X Y : C} (f : X ⟶ Y),
       F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f := by cat_disch) :
@@ -199,7 +190,15 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
         simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id] at h
         exact h }
 
-@[simp]
+set_option linter.translateOverwrite false in
+set_option linter.existingAttributeWarning false in
+attribute [to_dual existing ofComponents'_inv_app] ofComponents_hom_app
+
+set_option linter.translateOverwrite false in
+set_option linter.existingAttributeWarning false in
+attribute [to_dual existing ofComponents'_hom_app] ofComponents_inv_app
+
+@[to_dual (attr := simp)]
 theorem ofComponents.app (app' : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (X) :
     (ofComponents app' naturality).app X = app' X := by cat_disch
 
@@ -215,6 +214,10 @@ def hcomp {F G : C ⥤ D} {H I : D ⥤ E} (α : F ≅ G) (β : H ≅ I) : F ⋙ 
   hom := α.hom ◫ β.hom
   inv := α.inv ◫ β.inv
 
+set_option linter.existingAttributeWarning false in
+attribute [to_dual existing hcomp_inv] hcomp_hom
+
+@[to_dual self]
 theorem isIso_map_iff {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) {X Y : C} (f : X ⟶ Y) :
     IsIso (F₁.map f) ↔ IsIso (F₂.map f) := by
   revert F₁ F₂
@@ -225,6 +228,7 @@ theorem isIso_map_iff {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) {X Y : C} (f : X
 
 end NatIso
 
+@[to_dual self]
 lemma NatTrans.isIso_iff_isIso_app {F G : C ⥤ D} (τ : F ⟶ G) :
     IsIso τ ↔ ∀ X, IsIso (τ.app X) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ NatIso.isIso_of_isIso_app _⟩
@@ -247,5 +251,15 @@ def isoCopyObj : F ≅ F.copyObj obj e :=
   NatIso.ofComponents e (by simp [Functor.copyObj])
 
 end Functor
+
+@[to_dual none, reassoc]
+lemma NatTrans.naturality_1 {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
+    F.map e.inv ≫ α.app X ≫ G.map e.hom = α.app Y := by
+  simp
+
+@[to_dual none, reassoc]
+lemma NatTrans.naturality_2 {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
+    F.map e.hom ≫ α.app Y ≫ G.map e.inv = α.app X := by
+  simp
 
 end CategoryTheory

@@ -20,7 +20,7 @@ Notable examples include principal ideal rings, valuation rings, and the ring of
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

@@ -22,8 +22,8 @@ not what is called "the category of simplices of `X`" in the literature
 ## TODO (@joelriou)
 
 * Extend the `S` structure to define the type of nondegenerate
-simplices of a simplicial set `X`, and also the type of nondegenerate
-simplices of a simplicial set `X` which do not belong to a given subcomplex.
+  simplices of a simplicial set `X`, and also the type of nondegenerate
+  simplices of a simplicial set `X` which do not belong to a given subcomplex.
 
 -/
 

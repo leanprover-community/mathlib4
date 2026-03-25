@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Algebra.Ring.GrindInstances
 
 /-!
 # Partial sums of geometric series in a ring
@@ -20,7 +21,7 @@ which `x` and `y` commute. Even versions not using division or subtraction, vali
 are recorded.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field IsOrderedRing
 
@@ -338,13 +339,8 @@ protected lemma sub_dvd_pow_sub_pow : x - y ∣ x ^ n - y ^ n := by
   · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_left h.le _
     exact (Nat.sub_eq_zero_of_le this).symm ▸ dvd_zero (x - y)
 
-@[deprecated (since := "2025-08-23")] alias nat_sub_dvd_pow_sub_pow := Nat.sub_dvd_pow_sub_pow
-
 lemma sub_one_dvd_pow_sub_one : x - 1 ∣ x ^ n - 1 := by
   simpa using x.sub_dvd_pow_sub_pow 1 n
-
-@[deprecated (since := "2025-08-23")]
-alias nat_pow_one_sub_dvd_pow_mul_sub_one := Nat.sub_one_dvd_pow_sub_one
 
 lemma pow_sub_pow_dvd_pow_sub_pow (hmk : m ∣ k) : x ^ m - y ^ m ∣ x ^ k - y ^ k := by
   obtain ⟨n, rfl⟩ := hmk; simpa [pow_mul] using (x ^ m).sub_dvd_pow_sub_pow (y ^ m) n

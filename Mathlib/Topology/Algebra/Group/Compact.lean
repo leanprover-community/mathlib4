@@ -15,7 +15,7 @@ A result on topological groups that has been separated out
 as it requires more substantial imports developing positive compacts.
 -/
 
-@[expose] public section
+public section
 
 
 universe u

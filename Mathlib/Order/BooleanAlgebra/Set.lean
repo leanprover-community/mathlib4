@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Data.Set.Insert
 public import Mathlib.Order.BooleanAlgebra.Basic
+public import Mathlib.Tactic.Tauto
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Boolean algebra of sets
@@ -32,11 +34,11 @@ open Function
 namespace Set
 variable {α β : Type*} {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
-instance instBooleanAlgebra : BooleanAlgebra (Set α) where
-  __ : DistribLattice (Set α) := inferInstance
-  __ : BooleanAlgebra (α → Prop) := inferInstance
-  compl := (·ᶜ)
-  sdiff := (· \ ·)
+instance : HImp (Set α) where
+  himp s t := {x | x ∈ s → x ∈ t}
+
+instance instBooleanAlgebra : BooleanAlgebra (Set α) :=
+  fast_instance% { (inferInstance : BooleanAlgebra (α → Prop)) with }
 
 /-- See also `Set.sdiff_inter_right_comm`. -/
 lemma inter_diff_assoc (a b c : Set α) : (a ∩ b) \ c = a ∩ (b \ c) := inf_sdiff_assoc ..
@@ -117,8 +119,7 @@ theorem compl_ne_univ : sᶜ ≠ univ ↔ s.Nonempty :=
 
 lemma inl_compl_union_inr_compl {s : Set α} {t : Set β} :
     Sum.inl '' sᶜ ∪ Sum.inr '' tᶜ = (Sum.inl '' s ∪ Sum.inr '' t)ᶜ := by
-  rw [compl_union]
-  aesop
+  grind
 
 theorem nonempty_compl : sᶜ.Nonempty ↔ s ≠ univ :=
   (ne_univ_iff_exists_notMem s).symm
@@ -293,6 +294,7 @@ theorem diff_diff {u : Set α} : (s \ t) \ u = s \ (t ∪ u) :=
 theorem diff_diff_comm {s t u : Set α} : (s \ t) \ u = (s \ u) \ t :=
   sdiff_sdiff_comm
 
+@[simp]
 theorem diff_subset_iff {s t u : Set α} : s \ t ⊆ u ↔ s ⊆ t ∪ u :=
   show s \ t ≤ u ↔ s ≤ t ∪ u from sdiff_le_iff
 
@@ -383,12 +385,10 @@ lemma _root_.HasSubset.Subset.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.N
   simpa [inter_eq_self_of_subset_right hst]
 
 lemma ssubset_iff_sdiff_singleton : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t \ {a} := by
-  simp [ssubset_iff_insert, subset_diff, insert_subset_iff]; aesop
+  grind
 
-@[simp]
 lemma diff_singleton_subset_iff : s \ {a} ⊆ t ↔ s ⊆ insert a t := by
-  rw [← union_singleton, union_comm]
-  apply diff_subset_iff
+  simp
 
 lemma subset_diff_singleton (h : s ⊆ t) (ha : a ∉ s) : s ⊆ t \ {a} :=
   subset_inter h <| subset_compl_comm.1 <| singleton_subset_iff.2 ha
@@ -499,7 +499,7 @@ theorem ite_empty_right (t s : Set α) : t.ite s ∅ = s ∩ t := by simp [Set.i
 
 theorem ite_mono (t : Set α) {s₁ s₁' s₂ s₂' : Set α} (h : s₁ ⊆ s₂) (h' : s₁' ⊆ s₂') :
     t.ite s₁ s₁' ⊆ t.ite s₂ s₂' :=
-  union_subset_union (inter_subset_inter_left _ h) (inter_subset_inter_left _ h')
+  union_subset_union (inter_subset_inter_left _ h) (diff_subset_diff_left h')
 
 theorem ite_subset_union (t s s' : Set α) : t.ite s s' ⊆ s ∪ s' :=
   union_subset_union inter_subset_left diff_subset
@@ -510,7 +510,8 @@ theorem inter_subset_ite (t s s' : Set α) : s ∩ s' ⊆ t.ite s s' :=
 theorem ite_inter_inter (t s₁ s₂ s₁' s₂' : Set α) :
     t.ite (s₁ ∩ s₂) (s₁' ∩ s₂') = t.ite s₁ s₁' ∩ t.ite s₂ s₂' := by
   ext x
-  simp only [Set.ite, Set.mem_inter_iff, Set.mem_diff, Set.mem_union]
+  unfold Set.ite
+  push _ ∈ _
   tauto
 
 theorem ite_inter (t s₁ s₂ s : Set α) : t.ite (s₁ ∩ s) (s₂ ∩ s) = t.ite s₁ s₂ ∩ s := by

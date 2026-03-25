@@ -18,7 +18,7 @@ public import Mathlib.Data.Nat.Choose.Multinomial
   derivative of `f` is bounded by `D ^ i`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -35,6 +35,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {D : Type uD} [NormedAddC
 
 /-!## Quantitative bounds -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Bounding the norm of the iterated derivative of `B (f x) (g x)` within a set in terms of the
 iterated derivatives of `f` and `g` when `B` is bilinear. This lemma is an auxiliary version
 assuming all spaces live in the same universe, to enable an induction. Use instead
@@ -110,7 +111,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
     have A' : ContDiffOn 𝕜 n (fun y => B.precompL Du (fderivWithin 𝕜 f s y) (g y)) s :=
       (B.precompL Du).isBoundedBilinearMap.contDiff.comp₂_contDiffOn (hf.fderivWithin hs In)
         (hg.of_le (Nat.cast_le.2 (Nat.le_succ n)))
-    rw [iteratedFDerivWithin_add_apply' (A.contDiffWithinAt hx) (A'.contDiffWithinAt hx) hs hx]
+    rw [fun_iteratedFDerivWithin_add_apply (A.contDiffWithinAt hx) (A'.contDiffWithinAt hx) hs hx]
     apply (norm_add_le _ _).trans ((add_le_add I1 I2).trans (le_of_eq ?_))
     simp_rw [← mul_add, mul_assoc]
     congr 1
@@ -283,11 +284,12 @@ theorem norm_iteratedFDeriv_mul_le {f : E → A} {g : E → A} {N : WithTop ℕ�
 
 -- TODO: Add `norm_iteratedFDeriv[Within]_list_prod_le` for non-commutative `NormedRing A`.
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u : Finset ι}
     {f : ι → E → A'} {N : WithTop ℕ∞} (hf : ∀ i ∈ u, ContDiffOn 𝕜 N (f i) s)
     (hs : UniqueDiffOn 𝕜 s) {x : E} (hx : x ∈ s) {n : ℕ} (hn : n ≤ N) :
     ‖iteratedFDerivWithin 𝕜 n (∏ j ∈ u, f j ·) s x‖ ≤
-      ∑ p ∈ u.sym n, (p : Multiset ι).multinomial *
+      ∑ p ∈ u.sym n, (p : Multiset ι).countPerms *
         ∏ j ∈ u, ‖iteratedFDerivWithin 𝕜 (Multiset.count j p) (f j) s x‖ := by
   induction u using Finset.induction generalizing n with
   | empty =>
@@ -300,12 +302,12 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
     refine le_trans (norm_iteratedFDerivWithin_mul_le hf.1 (contDiffOn_prod hf.2) hs hx hn) ?_
     rw [← Finset.sum_coe_sort (Finset.sym _ _)]
     rw [Finset.sum_equiv (Finset.symInsertEquiv hi) (t := Finset.univ)
-      (g := (fun v ↦ v.multinomial *
+      (g := (fun v ↦ v.countPerms *
           ∏ j ∈ insert i u, ‖iteratedFDerivWithin 𝕜 (v.count j) (f j) s x‖) ∘
         Sym.toMultiset ∘ Subtype.val ∘ (Finset.symInsertEquiv hi).symm)
       (by simp) (by simp only [← comp_apply (g := Finset.symInsertEquiv hi), comp_assoc]; simp)]
     rw [← Finset.univ_sigma_univ, Finset.sum_sigma, Finset.sum_range]
-    simp only [comp_apply, Finset.symInsertEquiv_symm_apply_coe]
+    simp +instances only [comp_apply, Finset.symInsertEquiv_symm_apply_coe]
     refine Finset.sum_le_sum ?_
     intro m _
     specialize IH hf.2 (n := n - m) (le_trans (by exact_mod_cast n.sub_le m) hn)
@@ -317,7 +319,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
     refine le_of_eq ?_
     rw [Finset.prod_insert hi]
     have hip : i ∉ p := mt (hp i) hi
-    rw [Sym.count_coe_fill_self_of_notMem hip, Sym.multinomial_coe_fill_of_notMem hip]
+    rw [Sym.count_coe_fill_self_of_notMem hip, Sym.countPerms_coe_fill_of_notMem hip]
     suffices ∏ j ∈ u, ‖iteratedFDerivWithin 𝕜 (Multiset.count j p) (f j) s x‖ =
         ∏ j ∈ u, ‖iteratedFDerivWithin 𝕜 (Multiset.count j (Sym.fill i m p)) (f j) s x‖ by
       rw [this, Nat.cast_mul]
@@ -331,7 +333,7 @@ theorem norm_iteratedFDeriv_prod_le [DecidableEq ι] [NormOneClass A'] {u : Fins
     {f : ι → E → A'} {N : WithTop ℕ∞} (hf : ∀ i ∈ u, ContDiff 𝕜 N (f i)) {x : E} {n : ℕ}
     (hn : n ≤ N) :
     ‖iteratedFDeriv 𝕜 n (∏ j ∈ u, f j ·) x‖ ≤
-      ∑ p ∈ u.sym n, (p : Multiset ι).multinomial *
+      ∑ p ∈ u.sym n, (p : Multiset ι).countPerms *
         ∏ j ∈ u, ‖iteratedFDeriv 𝕜 ((p : Multiset ι).count j) (f j) x‖ := by
   simpa [iteratedFDerivWithin_univ] using
     norm_iteratedFDerivWithin_prod_le (fun i hi ↦ (hf i hi).contDiffOn) uniqueDiffOn_univ
@@ -339,6 +341,7 @@ theorem norm_iteratedFDeriv_prod_le [DecidableEq ι] [NormOneClass A'] {u : Fins
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the derivatives within a set of `g` at `f x` are bounded by `C`, and the `i`-th derivative
 within a set of `f` at `x` is bounded by `D^i` for all `1 ≤ i ≤ n`, then the `n`-th derivative
 of `g ∘ f` is bounded by `n! * C * D^n`.

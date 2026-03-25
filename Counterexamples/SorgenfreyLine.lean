@@ -3,15 +3,14 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Analysis.Real.Cardinality
 import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Topology.Instances.Irrational
-import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Compactness.Paracompact
-import Mathlib.Topology.Metrizable.Urysohn
-import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.Topology.Separation.NotNormal
 import Mathlib.Topology.Baire.Lemmas
 import Mathlib.Topology.Baire.LocallyCompactRegular
+import Mathlib.Topology.EMetricSpace.Paracompact
+import Mathlib.Topology.Instances.Irrational
+import Mathlib.Topology.Metrizable.Urysohn
+import Mathlib.Topology.Separation.NotNormal
 
 /-!
 # Sorgenfrey line
@@ -254,6 +253,7 @@ theorem nhds_prod_antitone_basis_inv_pnat (x y : ℝₗ) :
   rw [nhds_prod_eq]
   exact (nhds_antitone_basis_Ico_inv_pnat x).prod (nhds_antitone_basis_Ico_inv_pnat y)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sets of rational and irrational points of the antidiagonal `{(x, y) | x + y = 0}` cannot be
 separated by open neighborhoods. This implies that `ℝₗ × ℝₗ` is not a normal space. -/
 theorem not_separatedNhds_rat_irrational_antidiag :

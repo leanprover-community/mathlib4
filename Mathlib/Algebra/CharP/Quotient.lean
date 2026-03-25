@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Defs
 # Characteristic of quotient rings
 -/
 
-@[expose] public section
+public section
 
 theorem CharP.ker_intAlgebraMap_eq_span
     {R : Type*} [Ring R] (p : ℕ) [CharP R p] :
@@ -64,10 +64,12 @@ theorem quotient_iff_le_ker_natCast (n : ℕ) [CharP R n] (I : Ideal R) :
 
 end CharP
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.natCast_mem_of_charP_quotient (p : ℕ) (I : Ideal R) [CharP (R ⧸ I) p] :
     (p : R) ∈ I :=
   Ideal.Quotient.eq_zero_iff_mem.mp <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Ideal.Quotient.index_eq_zero (I : Ideal R) : (↑I.toAddSubgroup.index : R ⧸ I) = 0 := by
   rw [AddSubgroup.index, Nat.card_eq]
   split_ifs with hq; swap

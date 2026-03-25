@@ -14,7 +14,7 @@ public import Mathlib.Data.Finset.Prod
 This file is concerned with folding binary lattice operations over finsets.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedMonoid MonoidWithZero
 
