@@ -258,8 +258,8 @@ instance : SMul G (NormalWord d) where
   smul := fun g w => { w with head := g * w.head }
 
 instance : MulAction G (NormalWord d) where
-  one_smul := by simp +instances [instHSMul]
-  mul_smul := by simp +instances [instHSMul, mul_assoc]
+  one_smul := by simp +instances [instHSMul, instSMul]
+  mul_smul := by simp +instances [instHSMul, instSMul, mul_assoc]
 
 theorem group_smul_def (g : G) (w : NormalWord d) :
     g • w = { w with head := g * w.head } := rfl

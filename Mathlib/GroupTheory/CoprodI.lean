@@ -479,7 +479,7 @@ instance summandAction (i) : MulAction (M i) (Word M) where
     apply (equivPair i).symm_apply_eq.mpr
     simp [equivPair]
   mul_smul m m' w := by
-    dsimp +instances [instHSMul]
+    dsimp +instances [instHSMul, instSMul]
     simp [mul_assoc, ← equivPair_symm, Equiv.apply_symm_apply]
 
 instance : MulAction (CoprodI M) (Word M) :=
