@@ -85,9 +85,8 @@ some component of the directed system. -/
 theorem exists_of [Nonempty ι] [IsDirectedOrder ι] (z : DirectLimit G f) :
     ∃ i x, of G f i x = z := by
   obtain ⟨z, rfl⟩ := Ideal.Quotient.mk_surjective z
-  refine z.induction_on ⟨Classical.arbitrary ι, -1, by simp_rw [map_neg, map_one]; rfl⟩
-    (fun ⟨i, x⟩ ↦ ⟨i, x, rfl⟩) ?_ ?_
-  all_goals rintro x' y' ⟨i, x, hx⟩ ⟨j, y, hy⟩; have ⟨k, hik, hjk⟩ := exists_ge_ge i j
+  refine z.induction_on ⟨Classical.arbitrary ι, -1, by simp; rfl⟩ (fun ⟨i, x⟩ ↦ ⟨i, x, rfl⟩) ?_ ?_
+    <;> rintro x' y' ⟨i, x, hx⟩ ⟨j, y, hy⟩ <;> have ⟨k, hik, hjk⟩ := exists_ge_ge i j
   · exact ⟨k, f i k hik x + f j k hjk y, by rw [map_add, of_f, of_f, hx, hy]; rfl⟩
   · exact ⟨k, f i k hik x * f j k hjk y, by rw [map_mul, of_f, of_f, hx, hy]; rfl⟩
 
