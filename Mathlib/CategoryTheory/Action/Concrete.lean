@@ -189,9 +189,11 @@ section ToMulAction
 variable {V : Type (u + 1)} [LargeCategory V] {FV : V → V → Type*} {CV : V → Type*}
 variable [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV]
 
+instance {G : Type*} [Monoid G] (X : Action V G) : SMul G (ToType X) where
+  smul g x := ConcreteCategory.hom (X.ρ g) x
+
 instance instMulAction {G : Type*} [Monoid G] (X : Action V G) :
     MulAction G (ToType X) where
-  smul g x := ConcreteCategory.hom (X.ρ g) x
   one_smul x := by
     change ConcreteCategory.hom (X.ρ 1) x = x
     simp

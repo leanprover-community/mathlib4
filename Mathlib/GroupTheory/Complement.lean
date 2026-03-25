@@ -570,7 +570,7 @@ abbrev RightTransversal (H : Subgroup G) := {T : Set G // IsComplement H T}
 variable {F : Type*} [Group F] [MulAction F G] [QuotientAction F H]
 
 @[to_additive]
-noncomputable instance : MulAction F H.LeftTransversal where
+noncomputable instance : SMul F H.LeftTransversal where
   smul f T :=
     ⟨f • (T : Set G), by
       refine isComplement_iff_existsUnique_inv_mul_mem.mpr fun g => ?_
@@ -581,6 +581,9 @@ noncomputable instance : MulAction F H.LeftTransversal where
         replace h := QuotientAction.inv_mul_mem f⁻¹ h
         simp only [Subtype.ext_iff, smul_left_cancel_iff, inv_smul_smul] at h ⊢
         exact Subtype.ext_iff.mp (ht2 ⟨t', ht'⟩ h)⟩
+
+@[to_additive]
+noncomputable instance : MulAction F H.LeftTransversal where
   one_smul T := Subtype.ext (one_smul F (T : Set G))
   mul_smul f₁ f₂ T := Subtype.ext (mul_smul f₁ f₂ (T : Set G))
 

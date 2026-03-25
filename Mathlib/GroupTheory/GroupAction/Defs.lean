@@ -90,8 +90,11 @@ theorem orbit_smul_subset (m : M) (a : α) : orbit M (m • a) ⊆ orbit M a :=
   Set.range_subset_iff.2 fun m' => mul_smul m' m a ▸ mem_orbit _ _
 
 @[to_additive]
-instance {a : α} : MulAction M (orbit M a) where
+instance {a : α} : SMul M (orbit M a) where
   smul m := (mapsTo_smul_orbit m a).restrict _ _ _
+
+@[to_additive]
+instance {a : α} : MulAction M (orbit M a) where
   one_smul m := Subtype.ext (one_smul M (m : α))
   mul_smul m m' a' := Subtype.ext (mul_smul m m' (a' : α))
 
@@ -410,8 +413,11 @@ nonrec lemma orbitRel.Quotient.mapsTo_smul_orbit (g : G) (x : orbitRel.Quotient 
   exact mapsTo_smul_orbit g x.out
 
 @[to_additive]
-instance (x : orbitRel.Quotient G α) : MulAction G x.orbit where
+instance (x : orbitRel.Quotient G α) : SMul G x.orbit where
   smul g := (orbitRel.Quotient.mapsTo_smul_orbit g x).restrict _ _ _
+
+@[to_additive]
+instance (x : orbitRel.Quotient G α) : MulAction G x.orbit where
   one_smul a := Subtype.ext (one_smul G (a : α))
   mul_smul g g' a' := Subtype.ext (mul_smul g g' (a' : α))
 

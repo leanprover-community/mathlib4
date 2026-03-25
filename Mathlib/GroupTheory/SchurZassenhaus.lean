@@ -63,13 +63,15 @@ theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
 variable {H}
 variable [Normal H]
 
-noncomputable instance : MulAction G H.QuotientDiff where
+noncomputable instance : SMul G H.QuotientDiff where
   smul g :=
     Quotient.map' (fun α => op g⁻¹ • α) fun α β h =>
       Subtype.ext
         (by
           rwa [smul_diff_smul', coe_mk, coe_one, mul_eq_one_iff_eq_inv, mul_eq_left, ←
             coe_one, ← Subtype.ext_iff])
+
+noncomputable instance : MulAction G H.QuotientDiff where
   mul_smul g₁ g₂ q :=
     Quotient.inductionOn' q fun T =>
       congr_arg Quotient.mk'' (by rw [mul_inv_rev]; exact mul_smul (op g₁⁻¹) (op g₂⁻¹) T)

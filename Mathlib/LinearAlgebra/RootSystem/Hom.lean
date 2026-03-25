@@ -698,8 +698,10 @@ instance : SMulCommClass P.Autᵐᵒᵖ R N where
     change unop (coweightHom P (unop w)) (t • x) = t • unop (coweightHom P (unop w)) x
     simp
 
-instance : MulAction P.Aut ι where
+instance : SMul P.Aut ι where
   smul w i := Equiv.indexHom P w i
+
+instance : MulAction P.Aut ι where
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 

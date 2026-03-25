@@ -471,8 +471,10 @@ theorem equivPair_head {i : ι} {w : Word M} :
     · subst hi; simp
     · simp [hi, Ne.symm hi]
 
-instance summandAction (i) : MulAction (M i) (Word M) where
+instance (i) : SMul (M i) (Word M) where
   smul m w := rcons { equivPair i w with head := m * (equivPair i w).head }
+
+instance summandAction (i) : MulAction (M i) (Word M) where
   one_smul w := by
     apply (equivPair i).symm_apply_eq.mpr
     simp [equivPair]

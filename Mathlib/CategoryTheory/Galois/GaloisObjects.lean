@@ -49,9 +49,11 @@ class IsGalois {C : Type u₁} [Category.{u₂, u₁} C] [GaloisCategory C] (X :
 
 variable {C : Type u₁} [Category.{u₂, u₁} C]
 
+instance (F : C ⥤ FintypeCat.{w}) (X : C) : SMul (Aut X) (F.obj X) where
+  smul σ a := F.map σ.hom a
+
 /-- The natural action of `Aut X` on `F.obj X`. -/
 instance autMulFiber (F : C ⥤ FintypeCat.{w}) (X : C) : MulAction (Aut X) (F.obj X) where
-  smul σ a := F.map σ.hom a
   one_smul a := by
     change F.map (𝟙 X) a = a
     simp only [map_id, FintypeCat.id_apply]

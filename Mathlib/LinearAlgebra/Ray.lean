@@ -274,19 +274,23 @@ section Action
 
 variable {G : Type*} [Group G] [DistribMulAction G M]
 
+instance {R : Type*} : SMul G (RayVector R M) where
+  smul r := Subtype.map (r • ·) fun _ => (smul_ne_zero_iff_ne _).2
+
 /-- Any invertible action preserves the non-zeroness of ray vectors. This is primarily of interest
 when `G = Rˣ` -/
 instance {R : Type*} : MulAction G (RayVector R M) where
-  smul r := Subtype.map (r • ·) fun _ => (smul_ne_zero_iff_ne _).2
   mul_smul a b _ := Subtype.ext <| mul_smul a b _
   one_smul _ := Subtype.ext <| one_smul _ _
 
 variable [SMulCommClass R G M]
 
+instance : SMul G (Module.Ray R M) where
+  smul r := Quotient.map (r • ·) fun _ _ h => h.smul _
+
 /-- Any invertible action preserves the non-zeroness of rays. This is primarily of interest when
 `G = Rˣ` -/
 instance : MulAction G (Module.Ray R M) where
-  smul r := Quotient.map (r • ·) fun _ _ h => h.smul _
   mul_smul a b := Quotient.ind fun _ => congr_arg Quotient.mk' <| mul_smul a b _
   one_smul := Quotient.ind fun _ => congr_arg Quotient.mk' <| one_smul _ _
 

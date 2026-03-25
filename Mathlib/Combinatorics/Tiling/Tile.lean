@@ -257,7 +257,6 @@ set_option backward.isDefEq.respectTransparency false in
   simp [coeSet, mul_smul]
 
 instance : MulAction G (PlacedTile ps) where
-  __ : SMul G (PlacedTile ps) := inferInstance
   one_smul pt := by
     induction pt using PlacedTile.induction_on
     simp

@@ -284,10 +284,12 @@ theorem ext {w₁ w₂ : NormalWord d} (hhead : w₁.head = w₂.head)
 
 open Subgroup.IsComplement
 
+instance : SMul H (NormalWord d) :=
+  smul := fun h w => { w with head := h * w.head },
+
 instance baseAction : MulAction H (NormalWord d) :=
-  { smul := fun h w => { w with head := h * w.head },
-    one_smul := by simp +instances [instHSMul]
-    mul_smul := by simp +instances [instHSMul, mul_assoc] }
+  one_smul := by simp +instances [instHSMul]
+  mul_smul := by simp +instances [instHSMul, mul_assoc]
 
 theorem base_smul_def' (h : H) (w : NormalWord d) :
     h • w = { w with head := h * w.head } := rfl
@@ -438,17 +440,19 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
     left_inv := leftInv
     right_inv := fun _ => rcons_injective (leftInv _) }
 
+noncomputable instance (i : ι) : SMul (G i) (NormalWord d) :=
+  smul := fun g w => (equivPair i).symm
+    { equivPair i w with
+      head := g * (equivPair i w).head }
+
 noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :=
-  { smul := fun g w => (equivPair i).symm
-      { equivPair i w with
-        head := g * (equivPair i w).head }
-    one_smul := fun _ => by
-      dsimp +instances [instHSMul]
-      rw [one_mul]
-      exact (equivPair i).symm_apply_apply _
-    mul_smul := fun _ _ _ => by
-      dsimp +instances [instHSMul]
-      simp [mul_assoc, Equiv.apply_symm_apply] }
+  one_smul := fun _ => by
+    dsimp +instances [instHSMul]
+    rw [one_mul]
+    exact (equivPair i).symm_apply_apply _
+  mul_smul := fun _ _ _ => by
+    dsimp +instances [instHSMul]
+    simp [mul_assoc, Equiv.apply_symm_apply]
 
 theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
     g • w = (equivPair i).symm
