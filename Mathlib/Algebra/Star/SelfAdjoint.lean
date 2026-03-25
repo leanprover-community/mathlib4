@@ -215,6 +215,8 @@ end Monoid
 
 section Semiring
 
+open Ring
+
 variable [NonAssocSemiring R] [StarRing R]
 
 @[simp]
