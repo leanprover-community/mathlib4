@@ -41,14 +41,17 @@ lemma zpow_right_strictAnti (ha : a < 1) : StrictAnti fun n : ℤ ↦ a ^ n := b
 lemma zpow_right_inj (ha : 1 < a) {m n : ℤ} : a ^ m = a ^ n ↔ m = n :=
   (zpow_right_strictMono ha).injective.eq_iff
 
-@[to_additive zsmul_left_mono]
-lemma zpow_right_mono (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := by
+@[to_additive zsmul_left_monotone]
+lemma zpow_right_monotone (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := by
   refine monotone_int_of_le_succ fun n ↦ ?_
   rw [zpow_add_one]
   exact le_mul_of_one_le_right' ha
 
+@[deprecated (since :="2026-03-18")] alias zsmul_left_mono := zsmul_left_monotone
+@[deprecated (since :="2026-03-18")] alias zpow_right_mono := zpow_right_monotone
+
 @[to_additive (attr := gcongr) zsmul_le_zsmul_left]
-lemma zpow_le_zpow_right (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := zpow_right_mono ha h
+lemma zpow_le_zpow_right (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := zpow_right_monotone ha h
 
 @[to_additive (attr := gcongr) zsmul_lt_zsmul_left]
 lemma zpow_lt_zpow_right (ha : 1 < a) (h : m < n) : a ^ m < a ^ n := zpow_right_strictMono ha h
@@ -67,14 +70,17 @@ variable (α)
 lemma zpow_left_strictMono (hn : 0 < n) : StrictMono ((· ^ n) : α → α) := fun a b hab => by
   rw [← one_lt_div', ← div_zpow]; exact one_lt_zpow (one_lt_div'.2 hab) hn
 
-@[to_additive zsmul_mono_right]
-lemma zpow_left_mono (hn : 0 ≤ n) : Monotone ((· ^ n) : α → α) := fun a b hab => by
+@[to_additive zsmul_right_monotone]
+lemma zpow_left_monotone (hn : 0 ≤ n) : Monotone ((· ^ n) : α → α) := fun a b hab => by
   rw [← one_le_div', ← div_zpow]; exact one_le_zpow (one_le_div'.2 hab) hn
+
+@[deprecated (since :="2026-03-18")] alias zsmul_mono_right := zsmul_right_monotone
+@[deprecated (since :="2026-03-18")] alias zpow_left_mono := zpow_left_monotone
 
 variable {α}
 
 @[to_additive (attr := gcongr) zsmul_le_zsmul_right]
-lemma zpow_le_zpow_left (hn : 0 ≤ n) (h : a ≤ b) : a ^ n ≤ b ^ n := zpow_left_mono α hn h
+lemma zpow_le_zpow_left (hn : 0 ≤ n) (h : a ≤ b) : a ^ n ≤ b ^ n := zpow_left_monotone α hn h
 
 @[to_additive (attr := gcongr) zsmul_lt_zsmul_right]
 lemma zpow_lt_zpow_left (hn : 0 < n) (h : a < b) : a ^ n < b ^ n := zpow_left_strictMono α hn h

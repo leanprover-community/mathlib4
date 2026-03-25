@@ -588,7 +588,7 @@ lemma mulHeight_pow (x : ι → K) (n : ℕ) :
     simp only [Pi.pow_apply, map_pow]
     simp +singlePass only [← coe_toNNReal _ (v.nonneg _)]
     norm_cast
-    exact (pow_left_mono n).map_ciSup_of_continuousAt (continuous_pow n).continuousAt
+    exact (pow_left_monotone n).map_ciSup_of_continuousAt (continuous_pow n).continuousAt
       (Finite.bddAbove_range _) |>.symm
   have hxn : x ^ n ≠ 0 := by simp [hx]
   simp only [mulHeight_eq hx, mulHeight_eq hxn, H, mul_pow,

@@ -160,7 +160,7 @@ variable {l : Filter α} {f : α → R} {r : R}
 
 theorem map_add_atTop_eq [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
     [IsDirectedOrder α] (k : α) : map (fun a => a + k) atTop = atTop :=
-  map_atTop_eq_of_gc (fun a => a - k) 0 add_left_mono (by simp [le_sub_iff_add_le]) (by simp)
+  map_atTop_eq_of_gc (fun a => a - k) 0 add_left_monotone (by simp [le_sub_iff_add_le]) (by simp)
 
 theorem map_sub_atTop_eq [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
     [IsDirectedOrder α] (k : α) : map (fun a => a - k) atTop = atTop := by

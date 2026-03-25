@@ -575,11 +575,12 @@ instance : MulLeftMono (FractionalIdeal S P) where
 instance : MulRightMono (FractionalIdeal S P) where
   elim I J J' h := by simpa only [mul_def] using mul_le.mpr fun x hx y hy => mul_mem_mul (h hx) hy
 
-@[deprecated _root_.mul_right_mono (since := "2025-09-09")]
-protected theorem mul_left_mono (I : FractionalIdeal S P) : Monotone (I * ·) := mul_right_mono
+@[deprecated _root_.mul_right_monotone (since := "2025-09-09")]
+protected theorem mul_left_mono (I : FractionalIdeal S P) : Monotone (I * ·) := mul_right_monotone
 
-@[deprecated _root_.mul_left_mono (since := "2025-09-09")]
-protected lemma mul_right_mono (I : FractionalIdeal S P) : Monotone fun J => J * I := mul_left_mono
+@[deprecated _root_.mul_left_monotone (since := "2025-09-09")]
+protected lemma mul_right_mono (I : FractionalIdeal S P) : Monotone fun J => J * I :=
+  mul_left_monotone
 
 theorem mul_mem_mul {I J : FractionalIdeal S P} {i j : P} (hi : i ∈ I) (hj : j ∈ J) :
     i * j ∈ I * J := by

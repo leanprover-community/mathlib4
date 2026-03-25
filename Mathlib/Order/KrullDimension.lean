@@ -35,9 +35,9 @@ coheight is defined to be `sup {n | a ≤ a₀ < a₁ < ... < aₙ}` .
 
 * The height in the dual order equals the coheight, and vice versa.
 
-* The height is monotone (`height_mono`), and strictly monotone if finite (`height_strictMono`).
+* The height is monotone (`height_monotone`), and strictly monotone if finite (`height_strictMono`).
 
-* The coheight is antitone (`coheight_anti`), and strictly antitone if finite
+* The coheight is antitone (`coheight_antitone`), and strictly antitone if finite
   (`coheight_strictAnti`).
 
 * The height is the supremum of the successor of the height of all smaller elements
@@ -265,12 +265,16 @@ lemma coheight_eq_index_of_length_eq_head_coheight {p : LTSeries α} (h : p.leng
   simpa using height_eq_index_of_length_eq_height_last (α := αᵒᵈ) (p := p.reverse) (by simpa) i.rev
 
 @[gcongr]
-lemma height_mono : Monotone (α := α) height :=
+lemma height_monotone : Monotone (α := α) height :=
   fun _ _ hab ↦ biSup_mono (fun _ hla => hla.trans hab)
 
+@[deprecated (since :="2026-03-18")] alias height_mono := height_monotone
+
 @[gcongr]
-lemma coheight_anti : Antitone (α := α) coheight :=
-  (height_mono (α := αᵒᵈ)).dual_left
+lemma coheight_antitone : Antitone (α := α) coheight :=
+  (height_monotone (α := αᵒᵈ)).dual_left
+
+@[deprecated (since :="2026-03-18")] alias coheight_anti := coheight_antitone
 
 private lemma height_add_const (a : α) (n : ℕ∞) :
     height a + n = ⨆ (p : LTSeries α) (_ : p.last = a), p.length + n := by
@@ -490,7 +494,7 @@ lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
       simp [Fin.last]; lia
     · exact height_eq_index_of_length_eq_height_last (by simp [hlen, hp, hx]) ⟨n, by lia⟩
   mpr := fun ⟨y, hyx, hy⟩ =>
-    hy ▸ height_strictMono hyx (lt_of_le_of_lt (height_mono hyx.le) hfin)
+    hy ▸ height_strictMono hyx (lt_of_le_of_lt (height_monotone hyx.le) hfin)
 
 lemma coe_lt_coheight_iff {x : α} {n : ℕ} (hfin : coheight x < ⊤) :
     n < coheight x ↔ ∃ y > x, coheight y = n :=
@@ -1099,7 +1103,7 @@ lemma height_le_of_krullDim_preimage_le (x : α) :
     let i : Fin (p.length + 1) := ⟨p.length - (m + 1), Nat.sub_lt_succ p.length _⟩
     suffices h'' : f (p i) < f x by
       obtain ⟨n', hn'⟩ : ∃ (n' : ℕ), n' = height (f (p i)) := ENat.ne_top_iff_exists.mp
-        ((height_mono h''.le).trans_lt (h' ▸ ENat.coe_lt_top _)).ne
+        ((height_monotone h''.le).trans_lt (h' ▸ ENat.coe_lt_top _)).ne
       have h_lt : n' < n := ENat.coe_lt_coe.mp
         (h' ▸ hn' ▸ height_strictMono h'' (hn' ▸ ENat.coe_lt_top _))
       have := (length_le_height_last (p := p.take i)).trans <| ih n' h_lt (p i) hn'.symm

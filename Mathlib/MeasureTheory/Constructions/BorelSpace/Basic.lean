@@ -53,8 +53,10 @@ open MeasurableSpace TopologicalSpace
 def borel (α : Type u) [TopologicalSpace α] : MeasurableSpace α :=
   generateFrom { s : Set α | IsOpen s }
 
-theorem borel_anti : Antitone (@borel α) := fun _ _ h =>
+theorem borel_antitone : Antitone (@borel α) := fun _ _ h =>
   MeasurableSpace.generateFrom_le fun _ hs => .basic _ (h _ hs)
+
+@[deprecated (since :="2026-03-18")] alias borel_anti := borel_antitone
 
 theorem borel_eq_top_of_discrete [TopologicalSpace α] [DiscreteTopology α] : borel α = ⊤ :=
   top_le_iff.1 fun s _ => GenerateMeasurable.basic s (isOpen_discrete s)

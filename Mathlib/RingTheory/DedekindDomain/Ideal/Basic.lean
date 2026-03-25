@@ -107,7 +107,7 @@ noncomputable abbrev commGroupWithZero : CommGroupWithZero (FractionalIdeal A⁰
     · simp [inv_zero']
     refine le_antisymm ?_ ((FractionalIdeal.le_div_iff_mul_le hJ).2 ?_)
     · suffices I / J * J ≤ I by
-        simpa [mul_assoc, isDedekindDomainInv_iff.mp h _ hJ] using mul_left_mono (a := J⁻¹) this
+        simpa [mul_assoc, isDedekindDomainInv_iff.mp h _ hJ] using mul_left_monotone (a := J⁻¹) this
       simp [FractionalIdeal.mul_le, mem_div_iff_of_ne_zero hJ]
     · rw [mul_assoc, mul_comm _ J, isDedekindDomainInv_iff.mp h _ hJ, mul_one]
 
@@ -344,10 +344,10 @@ instance : PosMulStrictMono (FractionalIdeal A⁰ K) := PosMulMono.toPosMulStric
 instance : MulPosStrictMono (FractionalIdeal A⁰ K) := MulPosMono.toMulPosStrictMono
 
 instance : PosMulReflectLE (FractionalIdeal A⁰ K) where
-  elim I J K hJK := by simpa [I.2.ne'] using mul_right_mono (a := I.1⁻¹) hJK
+  elim I J K hJK := by simpa [I.2.ne'] using mul_right_monotone (a := I.1⁻¹) hJK
 
 instance : MulPosReflectLE (FractionalIdeal A⁰ K) where
-  elim I J K hJK := by simpa [I.2.ne'] using mul_left_mono (a := I.1⁻¹) hJK
+  elim I J K hJK := by simpa [I.2.ne'] using mul_left_monotone (a := I.1⁻¹) hJK
 
 @[deprecated mul_inv_cancel₀ (since := "2025-09-14")]
 protected theorem mul_inv_cancel {I : FractionalIdeal A⁰ K} (hne : I ≠ 0) : I * I⁻¹ = 1 :=

@@ -143,11 +143,14 @@ theorem lowerPolar_upperPolar_lowerPolar (t : Set β) :
     lowerPolar r (upperPolar r <| lowerPolar r t) = lowerPolar r t :=
   upperPolar_lowerPolar_upperPolar _ t
 
-theorem upperPolar_anti : Antitone (upperPolar r) :=
+theorem upperPolar_antitone : Antitone (upperPolar r) :=
   (gc_upperPolar_lowerPolar r).monotone_l
 
-theorem lowerPolar_anti : Antitone (lowerPolar r) :=
-  upperPolar_anti _
+theorem lowerPolar_antitone : Antitone (lowerPolar r) :=
+  upperPolar_antitone _
+
+@[deprecated (since := "2026-03-18")] alias upperPolar_anti := upperPolar_antitone
+@[deprecated (since := "2026-03-18")] alias lowerPolar_anti := lowerPolar_antitone
 
 theorem lowerPolar_upperPolar_monotone : Monotone (lowerPolar r ∘ upperPolar r) :=
   (gc_upperPolar_lowerPolar r).monotone_u_comp_l
@@ -444,9 +447,9 @@ theorem extent_ssubset_extent_iff : c.extent ⊂ d.extent ↔ c < d :=
 theorem intent_subset_intent_iff : c.intent ⊆ d.intent ↔ d ≤ c := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [← extent_subset_extent_iff, ← c.lowerPolar_intent, ← d.lowerPolar_intent]
-    exact lowerPolar_anti _ h
+    exact lowerPolar_antitone _ h
   · rw [← c.upperPolar_extent, ← d.upperPolar_extent]
-    exact upperPolar_anti _ h
+    exact upperPolar_antitone _ h
 
 @[simp]
 theorem intent_ssubset_intent_iff : c.intent ⊂ d.intent ↔ d < c := by
@@ -514,7 +517,7 @@ theorem ofObjects_le_iff : ofObjects r s ≤ c ↔ s ⊆ c.extent := by
     (isExtent_extent c).lowerPolar_upperPolar_subset⟩
 
 theorem le_ofObjects_of_extent_subset (h : c.extent ⊆ s) : c ≤ ofObjects r s := by
-  simpa using (lowerPolar_anti r).comp (upperPolar_anti r) h
+  simpa using (lowerPolar_antitone r).comp (upperPolar_antitone r) h
 
 @[simp]
 theorem le_ofAttributes_iff : c ≤ ofAttributes r t ↔ t ⊆ c.intent := by
@@ -524,7 +527,7 @@ theorem le_ofAttributes_iff : c ≤ ofAttributes r t ↔ t ⊆ c.intent := by
 
 theorem ofAttributes_le_of_intent_subset (h : c.intent ⊆ t) : ofAttributes r t ≤ c := by
   rw [← intent_subset_intent_iff]
-  simpa using (upperPolar_anti r).comp (lowerPolar_anti r) h
+  simpa using (upperPolar_antitone r).comp (lowerPolar_antitone r) h
 
 theorem ofObject_le_ofAttribute_iff {a b} : ofObject r a ≤ ofAttribute r b ↔ r a b := by
   simp

@@ -719,16 +719,18 @@ theorem compl_bot : (⊥ : α)ᶜ = ⊤ := by rw [← himp_bot, himp_self]
 theorem le_compl_compl : a ≤ aᶜᶜ :=
   disjoint_compl_right.le_compl_right
 
-theorem compl_anti : Antitone (compl : α → α) := fun _ _ h =>
+theorem compl_antitone : Antitone (compl : α → α) := fun _ _ h =>
   le_compl_comm.1 <| h.trans le_compl_compl
+
+@[deprecated (since :="2026-03-18")] alias compl_anti := compl_antitone
 
 @[gcongr]
 theorem compl_le_compl (h : a ≤ b) : bᶜ ≤ aᶜ :=
-  compl_anti h
+  compl_antitone h
 
 @[simp]
 theorem compl_compl_compl (a : α) : aᶜᶜᶜ = aᶜ :=
-  (compl_anti le_compl_compl).antisymm le_compl_compl
+  (compl_antitone le_compl_compl).antisymm le_compl_compl
 
 @[simp]
 theorem disjoint_compl_compl_left_iff : Disjoint aᶜᶜ b ↔ Disjoint a b := by
@@ -739,10 +741,10 @@ theorem disjoint_compl_compl_right_iff : Disjoint a bᶜᶜ ↔ Disjoint a b := 
   simp_rw [← le_compl_iff_disjoint_right, compl_compl_compl]
 
 theorem compl_sup_compl_le : aᶜ ⊔ bᶜ ≤ (a ⊓ b)ᶜ :=
-  sup_le (compl_anti inf_le_left) <| compl_anti inf_le_right
+  sup_le (compl_antitone inf_le_left) <| compl_antitone inf_le_right
 
 theorem compl_compl_inf_distrib (a b : α) : (a ⊓ b)ᶜᶜ = aᶜᶜ ⊓ bᶜᶜ := by
-  refine ((compl_anti compl_sup_compl_le).trans (compl_sup_distrib _ _).le).antisymm ?_
+  refine ((compl_antitone compl_sup_compl_le).trans (compl_sup_distrib _ _).le).antisymm ?_
   rw [le_compl_iff_disjoint_right, disjoint_assoc, disjoint_compl_compl_left_iff,
     disjoint_left_comm, disjoint_compl_compl_left_iff, ← disjoint_assoc, inf_comm]
   exact disjoint_compl_right
@@ -750,8 +752,8 @@ theorem compl_compl_inf_distrib (a b : α) : (a ⊓ b)ᶜᶜ = aᶜᶜ ⊓ bᶜ�
 theorem compl_compl_himp_distrib (a b : α) : (a ⇨ b)ᶜᶜ = aᶜᶜ ⇨ bᶜᶜ := by
   apply le_antisymm
   · rw [le_himp_iff, ← compl_compl_inf_distrib]
-    exact compl_anti (compl_anti himp_inf_le)
-  · refine le_compl_comm.1 ((compl_anti compl_sup_le_himp).trans ?_)
+    exact compl_antitone (compl_antitone himp_inf_le)
+  · refine le_compl_comm.1 ((compl_antitone compl_sup_le_himp).trans ?_)
     rw [compl_sup_distrib, le_compl_iff_disjoint_right, disjoint_right_comm, ←
       le_compl_iff_disjoint_right]
     exact inf_himp_le
@@ -860,15 +862,18 @@ theorem hnot_top : ￢(⊤ : α) = ⊥ := by rw [← top_sdiff', sdiff_self]
 theorem hnot_hnot_le : ￢￢a ≤ a :=
   codisjoint_hnot_right.hnot_le_left
 
-theorem hnot_anti : Antitone (hnot : α → α) := fun _ _ h => hnot_le_comm.1 <| hnot_hnot_le.trans h
+theorem hnot_antitone : Antitone (hnot : α → α) :=
+  fun _ _ h => hnot_le_comm.1 <| hnot_hnot_le.trans h
+
+@[deprecated (since :="2026-03-18")] alias hnot_anti := hnot_antitone
 
 @[gcongr]
 theorem hnot_le_hnot (h : a ≤ b) : ￢b ≤ ￢a :=
-  hnot_anti h
+  hnot_antitone h
 
 @[simp]
 theorem hnot_hnot_hnot (a : α) : ￢￢￢a = ￢a :=
-  hnot_hnot_le.antisymm <| hnot_anti hnot_hnot_le
+  hnot_hnot_le.antisymm <| hnot_antitone hnot_hnot_le
 
 @[simp]
 theorem codisjoint_hnot_hnot_left_iff : Codisjoint (￢￢a) b ↔ Codisjoint a b := by
@@ -879,22 +884,22 @@ theorem codisjoint_hnot_hnot_right_iff : Codisjoint a (￢￢b) ↔ Codisjoint a
   simp_rw [← hnot_le_iff_codisjoint_left, hnot_hnot_hnot]
 
 theorem le_hnot_inf_hnot : ￢(a ⊔ b) ≤ ￢a ⊓ ￢b :=
-  le_inf (hnot_anti le_sup_left) <| hnot_anti le_sup_right
+  le_inf (hnot_antitone le_sup_left) <| hnot_antitone le_sup_right
 
 theorem hnot_hnot_sup_distrib (a b : α) : ￢￢(a ⊔ b) = ￢￢a ⊔ ￢￢b := by
-  refine ((hnot_inf_distrib _ _).ge.trans <| hnot_anti le_hnot_inf_hnot).antisymm' ?_
+  refine ((hnot_inf_distrib _ _).ge.trans <| hnot_antitone le_hnot_inf_hnot).antisymm' ?_
   rw [hnot_le_iff_codisjoint_left, codisjoint_assoc, codisjoint_hnot_hnot_left_iff,
     codisjoint_left_comm, codisjoint_hnot_hnot_left_iff, ← codisjoint_assoc, sup_comm]
   exact codisjoint_hnot_right
 
 theorem hnot_hnot_sdiff_distrib (a b : α) : ￢￢(a \ b) = ￢￢a \ ￢￢b := by
   apply le_antisymm
-  · refine hnot_le_comm.1 ((hnot_anti sdiff_le_inf_hnot).trans' ?_)
+  · refine hnot_le_comm.1 ((hnot_antitone sdiff_le_inf_hnot).trans' ?_)
     rw [hnot_inf_distrib, hnot_le_iff_codisjoint_right, codisjoint_left_comm, ←
       hnot_le_iff_codisjoint_right]
     exact le_sdiff_sup
   · rw [sdiff_le_iff, ← hnot_hnot_sup_distrib]
-    exact hnot_anti (hnot_anti le_sup_sdiff)
+    exact hnot_antitone (hnot_antitone le_sup_sdiff)
 
 instance OrderDual.instHeytingAlgebra : HeytingAlgebra αᵒᵈ where
   compl := toDual ∘ hnot ∘ ofDual

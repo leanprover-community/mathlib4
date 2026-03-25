@@ -372,14 +372,17 @@ lemma zero_pow_le_one [ZeroLEOneClass M₀] : ∀ n : ℕ, (0 : M₀) ^ n ≤ 1
   | 0 => (pow_zero _).le
   | n + 1 => by rw [zero_pow n.succ_ne_zero]; exact zero_le_one
 
-lemma pow_right_anti₀ [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : Antitone (fun n : ℕ ↦ a ^ n) :=
+lemma pow_right_antitone₀ [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) :
+    Antitone (fun n : ℕ ↦ a ^ n) :=
   antitone_nat_of_succ_le fun n ↦ by
     have : ZeroLEOneClass M₀ := ⟨ha₀.trans ha₁⟩
     rw [← mul_one (a ^ n), pow_succ]
     exact mul_le_mul_of_nonneg_left ha₁ (pow_nonneg ha₀ n)
 
+@[deprecated (since :="2026-03-18")] alias pow_right_anti₀ := pow_right_antitone₀
+
 lemma pow_le_pow_of_le_one [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) {m n : ℕ}
-    (hmn : m ≤ n) : a ^ n ≤ a ^ m := pow_right_anti₀ ha₀ ha₁ hmn
+    (hmn : m ≤ n) : a ^ n ≤ a ^ m := pow_right_antitone₀ ha₀ ha₁ hmn
 
 lemma pow_le_of_le_one [PosMulMono M₀] (h₀ : 0 ≤ a) (h₁ : a ≤ 1) (hn : n ≠ 0) : a ^ n ≤ a :=
   (pow_one a).subst (pow_le_pow_of_le_one h₀ h₁ (Nat.pos_of_ne_zero hn))
@@ -388,7 +391,7 @@ lemma sq_le [PosMulMono M₀] (h₀ : 0 ≤ a) (h₁ : a ≤ 1) : a ^ 2 ≤ a :=
   pow_le_of_le_one h₀ h₁ two_ne_zero
 
 lemma pow_le_one₀ [PosMulMono M₀] {n : ℕ} (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : a ^ n ≤ 1 :=
-  pow_zero a ▸ pow_right_anti₀ ha₀ ha₁ (Nat.zero_le n)
+  pow_zero a ▸ pow_right_antitone₀ ha₀ ha₁ (Nat.zero_le n)
 
 lemma one_le_mul_of_one_le_of_one_le [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 ≤ a) (hb : 1 ≤ b) :
     (1 : M₀) ≤ a * b := ha.trans <| le_mul_of_one_le_right (zero_le_one.trans ha) hb
@@ -421,12 +424,14 @@ lemma pow_lt_one₀ [PosMulMono M₀] (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n :
   | n + 1, _ => by
     rw [pow_succ']; exact mul_lt_one_of_nonneg_of_lt_one_left h₀ h₁ (pow_le_one₀ h₀ h₁.le)
 
-lemma pow_right_mono₀ [ZeroLEOneClass M₀] [PosMulMono M₀] (h : 1 ≤ a) : Monotone (a ^ ·) :=
+lemma pow_right_monotone₀ [ZeroLEOneClass M₀] [PosMulMono M₀] (h : 1 ≤ a) : Monotone (a ^ ·) :=
   monotone_nat_of_le_succ fun n => by
     rw [pow_succ]; exact le_mul_of_one_le_right (pow_nonneg (zero_le_one.trans h) _) h
 
+@[deprecated (since :="2026-03-18")] alias pow_right_mono₀ := pow_right_monotone₀
+
 lemma one_le_pow₀ [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 ≤ a) {n : ℕ} : 1 ≤ a ^ n :=
-  pow_zero a ▸ pow_right_mono₀ ha n.zero_le
+  pow_zero a ▸ pow_right_monotone₀ ha n.zero_le
 
 lemma one_lt_pow₀ [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 < a) : ∀ {n : ℕ}, n ≠ 0 → 1 < a ^ n
   | 0, h => (h rfl).elim
@@ -438,13 +443,13 @@ lemma Bound.pow_le_pow_right_of_le_one_or_one_le [ZeroLEOneClass M₀] [PosMulMo
     (h : 1 ≤ a ∧ n ≤ m ∨ 0 ≤ a ∧ a ≤ 1 ∧ m ≤ n) :
     a ^ n ≤ a ^ m := by
   obtain ⟨a1, nm⟩ | ⟨a0, a1, mn⟩ := h
-  · exact pow_right_mono₀ a1 nm
+  · exact pow_right_monotone₀ a1 nm
   · exact pow_le_pow_of_le_one a0 a1 mn
 
 @[gcongr]
 lemma pow_le_pow_right₀ [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 ≤ a) (hmn : m ≤ n) :
     a ^ m ≤ a ^ n :=
-  pow_right_mono₀ ha hmn
+  pow_right_monotone₀ ha hmn
 
 lemma le_self_pow₀ [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 ≤ a) (hn : n ≠ 0) : a ≤ a ^ n := by
   simpa only [pow_one] using pow_le_pow_right₀ ha <| Nat.pos_iff_ne_zero.2 hn
@@ -958,15 +963,19 @@ lemma zpow_pos (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
   | (n : ℕ) => by rw [zpow_natCast]; exact pow_pos ha _
   | -(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_natCast]; exact pow_pos ha _
 
-lemma zpow_right_mono₀ (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := by
+lemma zpow_right_monotone₀ (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := by
   refine monotone_int_of_le_succ fun n ↦ ?_
   rw [zpow_add_one₀ (zero_lt_one.trans_le ha).ne']
   exact le_mul_of_one_le_right (zpow_nonneg (zero_le_one.trans ha) _) ha
 
-lemma zpow_right_anti₀ (ha₀ : 0 < a) (ha₁ : a ≤ 1) : Antitone fun n : ℤ ↦ a ^ n := by
+@[deprecated (since :="2026-03-18")] alias zpow_right_mono₀ := zpow_right_monotone₀
+
+lemma zpow_right_antitone₀ (ha₀ : 0 < a) (ha₁ : a ≤ 1) : Antitone fun n : ℤ ↦ a ^ n := by
   refine antitone_int_of_succ_le fun n ↦ ?_
   rw [zpow_add_one₀ ha₀.ne']
   exact mul_le_of_le_one_right (zpow_nonneg ha₀.le _) ha₁
+
+@[deprecated (since :="2026-03-18")] alias zpow_right_anti₀ := zpow_right_antitone₀
 
 lemma zpow_right_strictMono₀ (ha : 1 < a) : StrictMono fun n : ℤ ↦ a ^ n := by
   refine strictMono_int_of_lt_succ fun n ↦ ?_
@@ -979,21 +988,22 @@ lemma zpow_right_strictAnti₀ (ha₀ : 0 < a) (ha₁ : a < 1) : StrictAnti fun 
   exact mul_lt_of_lt_one_right (zpow_pos ha₀ _) ha₁
 
 @[gcongr]
-lemma zpow_le_zpow_right₀ (ha : 1 ≤ a) (hmn : m ≤ n) : a ^ m ≤ a ^ n := zpow_right_mono₀ ha hmn
+lemma zpow_le_zpow_right₀ (ha : 1 ≤ a) (hmn : m ≤ n) : a ^ m ≤ a ^ n := zpow_right_monotone₀ ha hmn
 
 lemma zpow_le_zpow_right_of_le_one₀ (ha₀ : 0 < a) (ha₁ : a ≤ 1) (hmn : m ≤ n) : a ^ n ≤ a ^ m :=
-  zpow_right_anti₀ ha₀ ha₁ hmn
+  zpow_right_antitone₀ ha₀ ha₁ hmn
 
-lemma one_le_zpow₀ (ha : 1 ≤ a) (hn : 0 ≤ n) : 1 ≤ a ^ n := by simpa using zpow_right_mono₀ ha hn
+lemma one_le_zpow₀ (ha : 1 ≤ a) (hn : 0 ≤ n) : 1 ≤ a ^ n := by
+  simpa using zpow_right_monotone₀ ha hn
 
 lemma zpow_le_one₀ (ha₀ : 0 < a) (ha₁ : a ≤ 1) (hn : 0 ≤ n) : a ^ n ≤ 1 := by
-  simpa using zpow_right_anti₀ ha₀ ha₁ hn
+  simpa using zpow_right_antitone₀ ha₀ ha₁ hn
 
 lemma zpow_le_one_of_nonpos₀ (ha : 1 ≤ a) (hn : n ≤ 0) : a ^ n ≤ 1 := by
-  simpa using zpow_right_mono₀ ha hn
+  simpa using zpow_right_monotone₀ ha hn
 
 lemma one_le_zpow_of_nonpos₀ (ha₀ : 0 < a) (ha₁ : a ≤ 1) (hn : n ≤ 0) : 1 ≤ a ^ n := by
-  simpa using zpow_right_anti₀ ha₀ ha₁ hn
+  simpa using zpow_right_antitone₀ ha₀ ha₁ hn
 
 @[gcongr]
 lemma zpow_lt_zpow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n :=
