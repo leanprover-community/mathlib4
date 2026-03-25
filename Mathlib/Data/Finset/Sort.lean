@@ -364,14 +364,9 @@ lemma Finset.orderEmbedding_eq_of_image_eq
     f = g := by
   suffices ∀ {n : ℕ} (f g : Fin n ↪o β) (h : Finset.image f ⊤ = Finset.image g ⊤), f = g by
     let e := Fintype.orderIsoFinOfCardEq α rfl
-    replace h := this (e.toOrderEmbedding.trans f) (e.toOrderEmbedding.trans g) (by
-      ext x
-      suffices Finset.image (f ∘ e) .univ = Finset.image (g ∘ e) .univ by
-        simpa using congrFun (congrArg Membership.mem this) x
-      simpa only [← Finset.image_image, Finset.image_univ_of_surjective e.surjective])
-    ext x
-    obtain ⟨x, rfl⟩ := e.surjective x
-    exact DFunLike.congr_fun (congr_arg OrderEmbedding.toOrderHom h) x
+    replace h := this (e.toOrderEmbedding.trans f) (e.toOrderEmbedding.trans g)
+      (by simpa [Finset.ext_iff, e.surjective.exists] using h)
+    simpa [DFunLike.ext_iff, e.surjective.forall] using h
   suffices ∀ {n : ℕ} {f g : Fin n ↪o β} (h : Finset.image f ⊤ = Finset.image g ⊤) (i : Fin n)
       (h' : ∀ (j : Fin n), j < i → f j = g j), f i ≤ g i from fun n f g h ↦ by
     ext i
