@@ -102,6 +102,7 @@ variable (R) (s)
   product of all the `s i`'s. This is denoted by `⨂[R] i, s i`. -/
 def PiTensorProduct : Type _ :=
   (addConGen (PiTensorProduct.Eqv R s)).Quotient
+deriving Zero, AddMonoid
 
 variable {R}
 
@@ -115,11 +116,10 @@ namespace PiTensorProduct
 
 section Module
 
-instance : AddCommMonoid (⨂[R] i, s i) :=
-  { (addConGen (PiTensorProduct.Eqv R s)).addMonoid with
-    add_comm := fun x y ↦
-      AddCon.induction_on₂ x y fun _ _ ↦
-        Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _ }
+instance : AddCommMonoid (⨂[R] i, s i) where
+  add_comm := fun x y ↦
+    AddCon.induction_on₂ x y fun _ _ ↦
+      Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _
 
 instance : Inhabited (⨂[R] i, s i) := ⟨0⟩
 

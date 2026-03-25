@@ -80,6 +80,7 @@ variable (R) in
 The localized notations are `M ⊗ N` and `M ⊗[R] N`, accessed by `open scoped TensorProduct`. -/
 def TensorProduct : Type _ :=
   (addConGen (TensorProduct.Eqv R M N)).Quotient
+deriving Zero, Add, AddMonoid, AddSemigroup
 
 set_option quotPrecheck false in
 @[inherit_doc TensorProduct] scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
@@ -90,30 +91,12 @@ namespace TensorProduct
 
 section Module
 
-protected instance zero : Zero (M ⊗[R] N) :=
-  (addConGen (TensorProduct.Eqv R M N)).zero
+instance addCommSemigroup : AddCommSemigroup (M ⊗[R] N) where
+  add_comm := fun x y =>
+    AddCon.induction_on₂ x y fun _ _ =>
+      Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _
 
-protected instance add : Add (M ⊗[R] N) :=
-  (addConGen (TensorProduct.Eqv R M N)).hasAdd
-
-instance addZeroClass : AddZeroClass (M ⊗[R] N) :=
-  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
-    /- The `toAdd` field is given explicitly as `TensorProduct.add` for performance reasons.
-    This avoids any need to unfold `Con.addMonoid` when the type checker is checking
-    that instance diagrams commute -/
-    toAdd := TensorProduct.add _ _
-    toZero := TensorProduct.zero _ _ }
-
-instance addSemigroup : AddSemigroup (M ⊗[R] N) :=
-  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
-    toAdd := TensorProduct.add _ _ }
-
-instance addCommSemigroup : AddCommSemigroup (M ⊗[R] N) :=
-  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
-    toAddSemigroup := TensorProduct.addSemigroup _ _
-    add_comm := fun x y =>
-      AddCon.induction_on₂ x y fun _ _ =>
-        Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _ }
+instance addCommMonoid : AddCommMonoid (M ⊗[R] N) where
 
 instance : Inhabited (M ⊗[R] N) :=
   ⟨0⟩
@@ -230,6 +213,7 @@ theorem SMul.aux_of {R' : Type*} [SMul R' M] (r : R') (m : M) (n : N) :
 
 variable [SMulCommClass R R' M] [SMulCommClass R R'' M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given two modules over a commutative semiring `R`, if one of the factors carries a
 (distributive) action of a second type of scalars `R'`, which commutes with the action of `R`, then
 the tensor product (over `R`) carries an action of `R'`.
@@ -287,19 +271,6 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
     (fun m n => by simp_rw [this, add_smul, add_tmul]) fun x y ihx ihy => by
     simp_rw [TensorProduct.smul_add]
     rw [ihx, ihy, add_add_add_comm]
-
-instance addMonoid : AddMonoid (M ⊗[R] N) :=
-  { TensorProduct.addZeroClass _ _ with
-    toAddSemigroup := TensorProduct.addSemigroup _ _
-    toZero := TensorProduct.zero _ _
-    nsmul := fun n v => n • v
-    nsmul_zero := by simp [TensorProduct.zero_smul]
-    nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
-      forall_const] }
-
-instance addCommMonoid : AddCommMonoid (M ⊗[R] N) :=
-  { TensorProduct.addCommSemigroup _ _ with
-    toAddMonoid := TensorProduct.addMonoid }
 
 variable (R)
 
