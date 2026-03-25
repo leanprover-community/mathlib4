@@ -95,7 +95,7 @@ section Add
 variable [Add α] {w x y z : WithTop α} {a b : α}
 
 instance add : Add (WithTop α) :=
-  ⟨Option.map₂ (· + ·)⟩
+  ⟨fun x y ↦ show WithTop α from Option.map₂ (· + ·) x y⟩
 
 @[simp, norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithTop α) := rfl
 
@@ -454,7 +454,7 @@ section Add
 variable [Add α] {w x y z : WithBot α} {a b : α}
 
 instance add : Add (WithBot α) :=
-  ⟨Option.map₂ (· + ·)⟩
+  ⟨fun x y ↦ show WithBot α from Option.map₂ (· + ·) x y⟩
 
 @[simp, norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithBot α) := rfl
 
@@ -633,14 +633,12 @@ instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
 section AddMonoidWithOne
 variable [AddMonoidWithOne α]
 
+/- Register by hand to avoid a leaky instance otherwise -/
+instance natCast : NatCast (WithBot α) :=
+  ⟨fun n ↦ (n : α)⟩
+
 instance addMonoidWithOne : AddMonoidWithOne (WithBot α) :=
   inferInstanceAs <| AddMonoidWithOne (WithTop α)
-
-#print WithBot.addMonoidWithOne
-
-#print WithBot.addMonoidWithOne._aux_1
-
-#exit
 
 @[norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithBot α) = n := rfl
 

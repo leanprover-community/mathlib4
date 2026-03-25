@@ -63,33 +63,6 @@ theorem coe_nonneg {n : ℕ} : 0 ≤ (n : WithBot ℕ) := by
 @[simp]
 theorem lt_zero_iff {n : WithBot ℕ} : n < 0 ↔ n = ⊥ := WithBot.lt_coe_bot
 
--- #defeq_abuse in
-set_option backward.isDefEq.respectTransparency false in
---instance foo : NeZero (1 : WithBot ℕ) := by infer_instance
-
-#synth NeZero (1 : WithBot ℕ)
-
-
-#synth CharZero (WithBot ℕ)
-
-#print WithBot.charZero
-
-#print NeZero.charZero_one
-
-#print WithBot.addMonoidWithOne
-
-#print WithBot.addMonoidWithOne._aux_1
-
-lemma foo : NeZero ((1 : ℕ) : WithBot ℕ) := by
-  sorry
-
-#exit
-
-#synth (NatCast (WithBot ℕ))
-
-#check WithBot.addMonoidWithOne
-
--- set_option backward.isDefEq.respectTransparency true
 theorem one_le_iff_zero_lt {x : WithBot ℕ} : 1 ≤ x ↔ 0 < x := by
   refine ⟨?_, fun h => ?_⟩
   · intro x
