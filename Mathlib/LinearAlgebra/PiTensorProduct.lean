@@ -916,7 +916,7 @@ variable {s : ι → Type*} [∀ i, AddCommGroup (s i)] [∀ i, Module R (s i)]
 /- Unlike for the binary tensor product, we require `R` to be a `CommRing` here, otherwise
 this is false in the case where `ι` is empty. -/
 instance : AddCommGroup (⨂[R] i, s i) :=
-  Module.addCommMonoidToAddCommGroup R
+  fast_instance% Module.addCommMonoidToAddCommGroup R
 
 end PiTensorProduct
 

@@ -43,19 +43,20 @@ def ofDFinsuppEquiv :
 
 @[simp]
 theorem ofDFinsuppEquiv_tprod_single (p : Π i, κ i) (x : Π i, M i (p i)) :
-    ofDFinsuppEquiv (⨂ₜ[R] i, DFinsupp.single (p i) (x i)) =
-      DFinsupp.single p (⨂ₜ[R] i, x i) := by
+    ofDFinsuppEquiv.toFun
+      (⨂ₜ[R] i, DFinsupp.single (p i) (x i) : (⨂[R] i, (Π₀ j : κ i, M i j))) =
+    DFinsupp.single p (⨂ₜ[R] i, x i) := by
   simp [ofDFinsuppEquiv]
 
 @[simp]
 theorem ofDFinsuppEquiv_symm_single_tprod (p : Π i, κ i) (x : Π i, M i (p i)) :
-    ofDFinsuppEquiv.symm (DFinsupp.single p (tprod R x)) =
+    ofDFinsuppEquiv.symm.toFun (DFinsupp.single p (tprod R x)) =
       (⨂ₜ[R] i, DFinsupp.single (p i) (x i)) := by
   simp [ofDFinsuppEquiv]
 
 @[simp]
 theorem ofDFinsuppEquiv_tprod_apply (x : Π i, Π₀ j, M i j) (p : Π i, κ i) :
-    ofDFinsuppEquiv (tprod R x) p = ⨂ₜ[R] i, x i (p i) := by
+    ofDFinsuppEquiv.toFun (tprod R x) p = ⨂ₜ[R] i, x i (p i) := by
   classical
   simpa [ofDFinsuppEquiv, MultilinearMap.fromDFinsuppEquiv_apply] using fun i hi ↦
     ((tprod R).map_coord_zero (m := fun i ↦ x i (p i)) i hi).symm
