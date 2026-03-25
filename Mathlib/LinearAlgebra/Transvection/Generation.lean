@@ -1063,7 +1063,7 @@ theorem mem_dilatransvections_pow :
   induction hn : finrank K (V ⧸ e.fixedSubmodule) generalizing e with
   | zero =>
     suffices e = 1 by simp [this]
-    rw [← fixedSubmodule_eq_top_iff]
+    rw [one_eq_refl, ← fixedSubmodule_eq_top_iff]
     apply eq_top_of_finrank_eq
     rw [← finrank_quotient_add_finrank e.fixedSubmodule]
     simpa only [Nat.right_eq_add]
@@ -1099,7 +1099,7 @@ theorem mem_dilatransvections_pow :
       have hc : c ≠ 0 := by
         contrapose hv
         simp only [hv, zero_smul, add_zero] at hxcv
-        simp only [mem_fixedSubmodule_iff] at hx ⊢
+        simp only [mem_fixedSubmodule_iff, coe_coe] at hx ⊢
         apply e.injective
         rwa [← hxcv]
       obtain ⟨l, hlv, hle⟩ := Submodule.exists_dual_map_eq_bot_of_notMem hv inferInstance
@@ -1116,7 +1116,7 @@ theorem mem_dilatransvections_pow :
         use LinearEquiv.dilatransvection this
         refine ⟨dilatransvection_mem_dilatransvections, ?_, ?_⟩
         · intro x hx
-          simp [dilatransvection.apply, hle x hx]
+          simp [LinearMap.transvection.apply, hle x hx]
         · rw [← hxcv, dilatransvection.apply, map_add, hle x hx, zero_add, LinearMap.map_smul]
           simp only [y, smul_eq_mul, ← mul_smul]
           rw [mul_inv_cancel₀ (by simp_all), one_smul]
@@ -1134,7 +1134,7 @@ theorem mem_dilatransvections_pow :
         have hlw : l w = 0 := by simp [w, hlv]
         refine ⟨LinearEquiv.transvection hlw, ?_, fun x hx ↦ ?_, ?_⟩
         · exact transvection_mem_dilatransvections hlw
-        · rw [mem_fixedSubmodule_iff, transvection.apply, add_eq_left]
+        · rw [mem_fixedSubmodule_iff, coe_coe, transvection.apply, add_eq_left]
           convert zero_smul K _
           rw [← Submodule.mem_bot K, ← hle]
           exact mem_map_of_mem hx
