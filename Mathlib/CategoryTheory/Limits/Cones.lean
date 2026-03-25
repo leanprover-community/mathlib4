@@ -123,22 +123,6 @@ structure Cone (F : J ⥤ C) where
   /-- A natural transformation from the constant functor at `X` to `F` -/
   π : (const J).obj pt ⟶ F
 
-instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
-  ⟨{  pt := F.obj ⟨⟨⟩⟩
-      π := { app := fun ⟨⟨⟩⟩ => 𝟙 _
-             naturality := by
-              intro X Y f
-              match X, Y, f with
-              | .mk A, .mk B, .up g =>
-                cat_disch
-           }
-  }⟩
-
-@[reassoc (attr := simp, elementwise nosimp)]
-theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
-    dsimp% c.π.app j ≫ F.map f = c.π.app j' := by
-  simpa using (c.π.naturality f).symm
-
 /-- A `c : Cocone F` is
 * an object `c.pt` and
 * a natural transformation `c.ι : F ⟶ c.pt` from `F` to the constant `c.pt` functor.
@@ -168,12 +152,13 @@ instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
            }
   }⟩
 
-@[reassoc (attr := simp)]
-theorem Cocone.w {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j ⟶ j') :
-    dsimp% F.map f ≫ c.ι.app j' = c.ι.app j := by
-  simpa using c.ι.naturality f
+@[to_dual (attr := reassoc (attr := simp))]
+theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
+    dsimp% c.π.app j ≫ F.map f = c.π.app j' := by
+  simpa using (c.π.naturality f).symm
 
-attribute [elementwise] Cocone.w
+attribute [elementwise] Cocone.w Cone.w
+
 
 end
 
@@ -241,20 +226,6 @@ def equiv (F : J ⥤ C) : Cocone F ≅ Σ X, F.cocones.obj X where
 @[simps]
 def extensions (c : Cocone F) : coyoneda.obj (op c.pt) ⋙ uliftFunctor.{u₁} ⟶ F.cocones where
   app _ := TypeCat.ofHom (fun f ↦ c.ι ≫ (const J).map f.down)
-
-/-- A map from the vertex of a cocone induces a cocone by composition. -/
-@[simps! pt ι_app]
-def extend (c : Cocone F) {Y : C} (f : c.pt ⟶ Y) : Cocone F where
-  pt := Y
-  ι := c.extensions.app Y ⟨f⟩
-
-/-- Whisker a cocone by precomposition of a functor. See `whiskering` for a functorial
-version.
--/
-@[simps]
-def whisker (E : K ⥤ J) (c : Cocone F) : Cocone (E ⋙ F) where
-  pt := c.pt
-  ι := whiskerLeft E c.ι
 
 end Cocone
 

@@ -74,6 +74,11 @@ theorem associator_hom_apply {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
   rfl
 
 @[simp]
+theorem associator_hom_apply' {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
+    dsimp% [types_tensorObj_def] (α_ X Y Z).hom ((x, y), z) = (x, (y, z)) :=
+  rfl
+
+@[simp]
 theorem associator_inv_apply {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
     (α_ X Y Z).inv (x, (y, z)) = ((x, y), z) :=
   rfl

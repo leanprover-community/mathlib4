@@ -140,7 +140,6 @@ lemma μ_comp_lTensor (f : X ⟶ Y) (Z : Action (Type w) G) :
   ext : 6; simp [linearizeMap_single _]; rfl
 
 variable (X Y Z) in
-set_option backward.isDefEq.respectTransparency false in
 lemma μ_comp_assoc : ((linearizeMap (α_ X Y Z).hom).comp
     (μ (X ⊗ Y) Z)).comp ((μ X Y).rTensor (linearize k G Z)) = ((μ X (Y ⊗ Z)).comp
     ((μ Y Z).lTensor (linearize k G X))).comp (assoc (linearize k G X) (linearize k G Y)
@@ -155,10 +154,8 @@ lemma μ_comp_assoc : ((linearizeMap (α_ X Y Z).hom).comp
     TensorProduct.assoc_tmul, LinearMap.lTensor_tmul, toLinearMap_apply]
   -- after fixing the defeq problems in `Action` and in the monoidal category structure of `types`
   -- this line should close the goal so this is left as an indicator.
-  with_reducible convert linearizeMap_single (α_ X Y Z).hom ((x, y), z) _
-  with_reducible simp only [Action.tensorObj_V, types_tensorObj_def, Action.associator_hom_hom]
-  with_reducible refine Prod.ext ?_ (Prod.ext ?_ ?_)
-  <;>  with_reducible simp
+  with_reducible convert dsimp% linearizeMap_single (α_ X Y Z).hom ((x, y), z) (1 : k)
+  all_goals with_reducible simp
 
 variable (X) in
 lemma μ_leftUnitor : (lid k (linearize k G X)).toIntertwiningMap =

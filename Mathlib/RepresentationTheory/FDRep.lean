@@ -161,13 +161,16 @@ theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FDRep k G) [Simple V] [
     finrank k (V ⟶ W) = if Nonempty (V ≅ W) then 1 else 0 :=
   CategoryTheory.finrank_hom_simple_simple k V W
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful functor to `Rep k G` preserves hom-sets and their vector space structure. -/
 def forget₂HomLinearEquiv (X Y : FDRep R G) :
     ((forget₂ (FDRep R G) (Rep R G)).obj X ⟶
       (forget₂ (FDRep R G) (Rep R G)).obj Y) ≃ₗ[R] X ⟶ Y where
-  toFun f := ⟨InducedCategory.homMk f.hom, fun g ↦ by
-    ext x
-    exact ConcreteCategory.congr_hom ((forget (ModuleCat R)).congr_map (f.comm g)) x⟩
+  toFun f := ⟨InducedCategory.homMk (ModuleCat.ofHom <| f.hom.toLinearMap), fun g ↦ by
+    ext1
+    simp only [FGModuleCat.obj_carrier, ObjectProperty.FullSubcategory.comp_hom,
+      InducedCategory.homMk_hom, ModuleCat.hom_comp, hom_hom_action_ρ]
+    exact f.hom.2 g⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := Rep.ofHom ⟨((forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom).hom, fun g ↦ by

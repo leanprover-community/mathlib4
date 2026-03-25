@@ -28,7 +28,7 @@ open CategoryTheory Limits
 
 namespace TypeCat
 
-instance (X : Type u) : CoeFun (End X) (fun _ ↦ X → X) := inferInstanceAs <| CoeFun (X ⟶ X) _
+instance (X : Type u) : CoeFun (End X) (fun _ ↦ X → X) := (inferInstance : CoeFun (X ⟶ X) _)
 
 /-- The group isomorphism between `Function.End X` and `CategoryTheory.End X`. -/
 @[simps apply symm_apply]
