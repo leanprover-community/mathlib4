@@ -58,13 +58,12 @@ open Function
 def NNReal := { r : ℝ // 0 ≤ r }
 
 deriving instance
-  Inhabited, SemilatticeInf, DistribLattice for NNReal
-
--- This is needed here or we get errors in `Mathlib/Data/ENNReal/Basic.lean` or downstream.
-set_option backward.inferInstanceAs.wrap false in
-deriving instance
-  Zero, One, Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
-  PartialOrder, SemilatticeSup, Nontrivial for NNReal
+  Zero, One, Bot, Inhabited, SemilatticeInf, DistribLattice,
+  Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
+  PartialOrder, SemilatticeSup, Nontrivial,
+  CanonicallyOrderedAdd, NoZeroDivisors, DenselyOrdered,
+  OrderBot, Archimedean, MulArchimedean, Sub, OrderedSub,
+  LinearOrder, ConditionallyCompleteLinearOrderBot for NNReal
 
 namespace NNReal
 
@@ -75,22 +74,21 @@ namespace NNReal
 
 instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 
-instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
-instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
-instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
-instance : OrderBot ℝ≥0 := Nonneg.orderBot
-instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
-instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
+--instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
+--instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
+--instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
+--instance : OrderBot ℝ≥0 := Nonneg.orderBot
+--instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
+--instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
 instance : Min ℝ≥0 := SemilatticeInf.toMin
 instance : Max ℝ≥0 := SemilatticeSup.toMax
-instance : Sub ℝ≥0 := Nonneg.sub
-instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
+--instance : Sub ℝ≥0 := Nonneg.sub
+--instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
 -- a computable copy of `Nonneg.instNNRatCast`
 instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, r.cast_nonneg⟩
 
-noncomputable instance : LinearOrder ℝ≥0 :=
-  Subtype.instLinearOrder _
+--noncomputable instance : LinearOrder ℝ≥0 := Subtype.instLinearOrder _
 
 noncomputable instance : Inv ℝ≥0 where
   inv x := ⟨(x : ℝ)⁻¹, inv_nonneg.mpr x.2⟩
@@ -120,7 +118,8 @@ instance : IsStrictOrderedRing ℝ≥0 :=
   Nonneg.isStrictOrderedRing
 
 noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
-  Nonneg.linearOrderedCommGroupWithZero
+  inferInstanceAs <| LinearOrderedCommGroupWithZero ({ r : ℝ // 0 ≤ r })
+  -- Nonneg.linearOrderedCommGroupWithZero
 
 example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
   with_reducible_and_instances exact inv_anti₀ h1p h2p
@@ -439,8 +438,8 @@ theorem bddAbove_coe {s : Set ℝ≥0} : BddAbove (((↑) : ℝ≥0 → ℝ) '' 
 theorem bddBelow_coe (s : Set ℝ≥0) : BddBelow (((↑) : ℝ≥0 → ℝ) '' s) :=
   ⟨0, fun _ ⟨q, _, eq⟩ => eq ▸ q.2⟩
 
-noncomputable instance : ConditionallyCompleteLinearOrderBot ℝ≥0 :=
-  Nonneg.conditionallyCompleteLinearOrderBot 0
+--noncomputable instance : ConditionallyCompleteLinearOrderBot ℝ≥0 :=
+--  Nonneg.conditionallyCompleteLinearOrderBot 0
 
 @[norm_cast]
 theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥0 → ℝ) '' s) := by
