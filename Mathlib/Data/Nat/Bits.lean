@@ -112,14 +112,8 @@ lemma div2_val (n) : div2 n = n / 2 := by
 lemma bit_bodd_div2 (n : Nat) : bit (bodd n) (div2 n) = n :=
   (bit_val _ _).trans <| (Nat.add_comm _ _).trans <| bodd_add_div2 _
 
-@[deprecated (since := "2025-09-24")]
-alias bit_decomp := bit_bodd_div2
-
 lemma bit_false_zero : bit false 0 = 0 :=
   rfl
-
-@[deprecated (since := "2025-09-24")]
-alias bit_zero := bit_false_zero
 
 /-- `shiftLeft' b m n` performs a left shift of `m` `n` times
 and adds the bit `b` as the least significant bit each time.
