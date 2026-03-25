@@ -75,7 +75,7 @@ protected theorem id (ho : o ≤ o.cof.ord) : IsFundamentalSeq (o := o) id where
 protected theorem zero (f : Iio 0 → Iio 0) : IsFundamentalSeq f where
   strictMono _ := by simp
   le_ord_cof := by simp
-  isCofinal_range := .of_isEmpty _
+  isCofinal_range := by rw [range_eq_empty, isCofinal_empty_iff]; infer_instance
 
 /-- The length one sequence `(o)` is a fundamental sequence for `o + 1`. -/
 protected theorem add_one (o : Ordinal) :
@@ -83,13 +83,6 @@ protected theorem add_one (o : Ordinal) :
   strictMono _ := by simp
   le_ord_cof := by simp
   isCofinal_range := by simp [IsTop]
-
-theorem apply_of_add_one {o a : Ordinal} {f : Iio a → Iio (o + 1)} (hf : IsFundamentalSeq f)
-    (x : Iio a) : f x = ⟨o, lt_add_one o⟩ := by
-  cases x with | mk x hx
-  obtain rfl : 1 = a := by simpa using hf.ord_cof
-  obtain rfl : x = 0 := by simpa using hx
-  simpa [← Subtype.val_inj] using hf.iSup_add_one_eq
 
 protected theorem comp (hf : IsFundamentalSeq f) (hg : IsFundamentalSeq g) :
     IsFundamentalSeq (f ∘ g) where
