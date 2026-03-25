@@ -71,6 +71,8 @@ The spectrum is simply the complement of the resolvent set. -/
 def spectrum (a : A) : Set R :=
   (resolventSet R a)ᶜ
 
+theorem spectrum_def (a : A) : spectrum R a = (resolventSet R a)ᶜ := rfl
+
 variable {R}
 
 /-- Given an `a : A` where `A` is an `R`-algebra, the *resolvent* is
@@ -101,6 +103,10 @@ local notation "↑ₐ" => algebraMap R A
 
 theorem mem_iff {r : R} {a : A} : r ∈ σ a ↔ ¬IsUnit (↑ₐ r - a) :=
   Iff.rfl
+
+@[simp]
+theorem resolvent_zero_of_mem_spectrum {r : R} {a : A} (hr : r ∈ σ a) :
+    resolvent a r = 0 := Ring.inverse_non_unit _ (mem_iff.mp hr)
 
 theorem notMem_iff {r : R} {a : A} : r ∉ σ a ↔ IsUnit (↑ₐ r - a) := by
   simp [mem_iff]
