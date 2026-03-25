@@ -207,6 +207,7 @@ theorem mlieBracketWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
     mlieBracketWithin I V W s =ᶠ[𝓝 x] mlieBracketWithin I V W t :=
   mlieBracketWithin_eventually_congr_set' x <| h.filter_mono inf_le_left
 
+set_option backward.inferInstanceAs.wrap false in
 theorem _root_.Filter.EventuallyEq.mlieBracketWithin_vectorField_eq
     (hV : V₁ =ᶠ[𝓝[s] x] V) (hxV : V₁ x = V x) (hW : W₁ =ᶠ[𝓝[s] x] W) (hxW : W₁ x = W x) :
     mlieBracketWithin I V₁ W₁ s x = mlieBracketWithin I V W s x := by
@@ -384,7 +385,6 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDiffAt[s] f x)
   · simpa only [A] using mpullback_mfderivWithin_apply_smul hf
   · simp [B, ← Pi.smul_def', mpullback_smul (V := lieBracketWithin 𝕜 V' W' s'), f']
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[V, f • W] = (df V) • W + f • [V, W]`.
@@ -398,7 +398,6 @@ lemma mlieBracket_smul_right {f : M → 𝕜} (hf : MDiffAt f x)
   rw [← mlieBracketWithin_univ, ← mfderivWithin_univ]
   exact mlieBracketWithin_smul_right hf hW (uniqueMDiffWithinAt_univ I)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[f • V, W] = -(df W) • V + f • [V, W]`. Version within a set.
@@ -413,7 +412,6 @@ lemma mlieBracketWithin_smul_left {f : M → 𝕜} (hf : MDiffAt[s] f x)
     mlieBracketWithin_swap]
   simp; abel
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[f • V, W] = -(df W) • V + f • [V, W]`.

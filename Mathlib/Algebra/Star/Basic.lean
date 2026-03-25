@@ -37,6 +37,8 @@ Our star rings are actually star non-unital, non-associative, semirings, but of 
 
 assert_not_exists Finset Subgroup Rat.instField
 
+open scoped Ring
+
 universe u v w
 
 open MulOpposite
@@ -469,7 +471,7 @@ theorem isUnit_star [Monoid R] [StarMul R] {a : R} : IsUnit (star a) ↔ IsUnit 
 
 @[grind _=_]
 theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
-    Ring.inverse (star a) = star (Ring.inverse a) := by
+    (star a)⁻¹ʳ = star (a⁻¹ʳ) := by
   by_cases ha : IsUnit a
   · obtain ⟨u, rfl⟩ := ha
     rw [Ring.inverse_unit, ← Units.coe_star, Ring.inverse_unit, ← Units.coe_star_inv]
