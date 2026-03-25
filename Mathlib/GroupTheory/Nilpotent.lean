@@ -997,3 +997,122 @@ theorem Group.isNilpotent_of_finite_tfae :
   tfae_finish
 
 end WithFiniteGroup
+
+open Group
+
+@[deprecated (since := "2026-03-25")] alias upperCentralSeriesStep := upperCentralSeriesStep
+@[deprecated (since := "2026-03-25")] alias mem_upperCentralSeriesStep := mem_upperCentralSeriesStep
+@[deprecated (since := "2026-03-25")] alias upperCentralSeriesStep_eq_comap_center :=
+  upperCentralSeriesStep_eq_comap_center
+@[deprecated (since := "2026-03-25")] alias upperCentralSeriesAux := upperCentralSeriesAux
+@[deprecated (since := "2026-03-25")] alias upperCentralSeries := upperCentralSeries
+@[deprecated (since := "2026-03-25")] alias upperCentralSeries_zero := upperCentralSeries_zero
+@[deprecated (since := "2026-03-25")] alias upperCentralSeries_one := upperCentralSeries_one
+@[deprecated (since := "2026-03-25")] alias mem_upperCentralSeries_succ_iff :=
+  mem_upperCentralSeries_succ_iff
+@[deprecated (since := "2026-03-25")] alias comap_upperCentralSeries := comap_upperCentralSeries
+@[deprecated (since := "2026-03-25")] alias IsAscendingCentralSeries := IsAscendingCentralSeries
+@[deprecated (since := "2026-03-25")] alias IsDescendingCentralSeries := IsDescendingCentralSeries
+@[deprecated (since := "2026-03-25")] alias ascending_central_series_le_upper :=
+  ascending_central_series_le_upper
+@[deprecated (since := "2026-03-25")] alias upperCentralSeries_isAscendingCentralSeries :=
+  upperCentralSeries_isAscendingCentralSeries
+@[deprecated (since := "2026-03-25")] alias upperCentralSeries_mono := upperCentralSeries_mono
+@[deprecated (since := "2026-03-25")] alias nilpotent_iff_finite_ascending_central_series :=
+  nilpotent_iff_finite_ascending_central_series
+@[deprecated (since := "2026-03-25")] alias is_descending_rev_series_of_is_ascending :=
+  is_descending_rev_series_of_is_ascending
+@[deprecated (since := "2026-03-25")] alias is_ascending_rev_series_of_is_descending :=
+  is_ascending_rev_series_of_is_descending
+@[deprecated (since := "2026-03-25")] alias nilpotent_iff_finite_descending_central_series :=
+  nilpotent_iff_finite_descending_central_series
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries := lowerCentralSeries
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_zero := lowerCentralSeries_zero
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_one := lowerCentralSeries_one
+@[deprecated (since := "2026-03-25")] alias mem_lowerCentralSeries_succ_iff :=
+  mem_lowerCentralSeries_succ_iff
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_succ := lowerCentralSeries_succ
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_antitone :=
+  lowerCentralSeries_antitone
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_isDescendingCentralSeries :=
+  lowerCentralSeries_isDescendingCentralSeries
+@[deprecated (since := "2026-03-25")] alias descending_central_series_ge_lower :=
+  descending_central_series_ge_lower
+@[deprecated (since := "2026-03-25")] alias nilpotent_iff_lowerCentralSeries :=
+  nilpotent_iff_lowerCentralSeries
+@[deprecated (since := "2026-03-25")] alias upperCentralSeries_nilpotencyClass :=
+  upperCentralSeries_nilpotencyClass
+@[deprecated (since := "2026-03-25")] alias upperCentralSeries_eq_top_iff_nilpotencyClass_le :=
+  upperCentralSeries_eq_top_iff_nilpotencyClass_le
+@[deprecated (since := "2026-03-25")]
+alias least_ascending_central_series_length_eq_nilpotencyClass :=
+  least_ascending_central_series_length_eq_nilpotencyClass
+@[deprecated (since := "2026-03-25")]
+alias least_descending_central_series_length_eq_nilpotencyClass :=
+  least_descending_central_series_length_eq_nilpotencyClass
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_length_eq_nilpotencyClass :=
+  lowerCentralSeries_length_eq_nilpotencyClass
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_nilpotencyClass :=
+  lowerCentralSeries_nilpotencyClass
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_eq_bot_iff_nilpotencyClass_le :=
+  lowerCentralSeries_eq_bot_iff_nilpotencyClass_le
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_map_subtype_le :=
+  lowerCentralSeries_map_subtype_le
+@[deprecated (since := "2026-03-25")] alias upperCentralSeries.map := upperCentralSeries.map
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries.map := lowerCentralSeries.map
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_succ_eq_bot :=
+  lowerCentralSeries_succ_eq_bot
+@[deprecated (since := "2026-03-25")] alias isNilpotent_of_ker_le_center :=
+  isNilpotent_of_ker_le_center
+@[deprecated (since := "2026-03-25")] alias nilpotencyClass_le_of_ker_le_center :=
+  nilpotencyClass_le_of_ker_le_center
+@[deprecated (since := "2026-03-25")] alias nilpotent_of_surjective := nilpotent_of_surjective
+@[deprecated (since := "2026-03-25")] alias nilpotencyClass_le_of_surjective :=
+  nilpotencyClass_le_of_surjective
+@[deprecated (since := "2026-03-25")] alias nilpotent_of_mulEquiv := nilpotent_of_mulEquiv
+@[deprecated (since := "2026-03-25")] alias nilpotent_quotient_of_nilpotent :=
+  nilpotent_quotient_of_nilpotent
+@[deprecated (since := "2026-03-25")] alias nilpotencyClass_quotient_le :=
+  nilpotencyClass_quotient_le
+@[deprecated (since := "2026-03-25")] alias comap_upperCentralSeries_quotient_center :=
+  comap_upperCentralSeries_quotient_center
+@[deprecated (since := "2026-03-25")] alias nilpotencyClass_zero_iff_subsingleton :=
+  nilpotencyClass_zero_iff_subsingleton
+@[deprecated (since := "2026-03-25")] alias of_quotient_center_nilpotent :=
+  of_quotient_center_nilpotent
+@[deprecated (since := "2026-03-25")] alias nilpotencyClass_quotient_center :=
+  nilpotencyClass_quotient_center
+@[deprecated (since := "2026-03-25")] alias nilpotencyClass_eq_quotient_center_plus_one :=
+  nilpotencyClass_eq_quotient_center_plus_one
+@[deprecated (since := "2026-03-25")] alias nilpotent_center_quotient_ind :=
+  nilpotent_center_quotient_ind
+@[deprecated (since := "2026-03-25")] alias derived_le_lower_central := derived_le_lower_central
+@[deprecated (since := "2026-03-25")] alias upperCentralSeries.eq_ge_of_eq_succ :=
+  upperCentralSeries.eq_ge_of_eq_succ
+@[deprecated (since := "2026-03-25")] alias upperCentralSeries.eq_ge_of_eq_gt :=
+  upperCentralSeries.eq_ge_of_eq_gt
+@[deprecated (since := "2026-03-25")] alias upperCentralSeries.eq_top := upperCentralSeries.eq_top
+@[deprecated (since := "2026-03-25")] alias nilpotencyClass_le_of_upperCentralSeries_eq :=
+  nilpotencyClass_le_of_upperCentralSeries_eq
+@[deprecated (since := "2026-03-25")] alias upperCentralSeries.StrictMonoOn :=
+  upperCentralSeries.StrictMonoOn
+@[deprecated (since := "2026-03-25")]
+alias upperCentralSeries.card_image_eq_of_le_nilpotencyClass :=
+  upperCentralSeries.card_image_eq_of_le_nilpotencyClass
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_prod := lowerCentralSeries_prod
+@[deprecated (since := "2026-03-25")] alias isNilpotent_prod := isNilpotent_prod
+@[deprecated (since := "2026-03-25")] alias nilpotencyClass_prod := nilpotencyClass_prod
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_pi_le := lowerCentralSeries_pi_le
+@[deprecated (since := "2026-03-25")] alias isNilpotent_pi_of_bounded_class :=
+  isNilpotent_pi_of_bounded_class
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_pi_of_finite :=
+  lowerCentralSeries_pi_of_finite
+@[deprecated (since := "2026-03-25")] alias isNilpotent_pi := isNilpotent_pi
+@[deprecated (since := "2026-03-25")] alias nilpotencyClass_pi := nilpotencyClass_pi
+@[deprecated (since := "2026-03-25")] alias nilpotencyClass_le_one_of_isSimple_of_isNilpotent :=
+  nilpotencyClass_le_one_of_isSimple_of_isNilpotent
+@[deprecated (since := "2026-03-25")] alias normalizerCondition_of_isNilpotent :=
+  normalizerCondition_of_isNilpotent
+@[deprecated (since := "2026-03-25")] alias isNilpotent_of_product_of_sylow_group :=
+  isNilpotent_of_product_of_sylow_group
+@[deprecated (since := "2026-03-25")] alias isNilpotent_of_finite_tfae := isNilpotent_of_finite_tfae
