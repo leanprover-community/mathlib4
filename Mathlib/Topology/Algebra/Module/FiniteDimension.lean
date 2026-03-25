@@ -597,10 +597,10 @@ theorem FiniteDimensional.of_totallyBounded_nhds_zero {U : Set E} (hU_nhds : U �
     (c • U) ((set_smul_mem_nhds_zero_iff hc_ne).mpr hU_nhds)
   let M : Submodule 𝕜 E := Submodule.span 𝕜 F
   letI : FiniteDimensional 𝕜 M := Finite.span_of_finite 𝕜 hF_finite
-  have h_cover : U ⊆ (M : Set E) + c • U := fun x hx ↦ by
+  have h_cover : U ⊆ M + c • U := fun x hx ↦ by
     obtain ⟨f, hf, y, hy, rfl⟩ := Set.mem_iUnion₂.mp <| hF_cover hx
     exact ⟨f, Submodule.subset_span hf, y, hy, rfl⟩
-  have h_ind (n : ℕ) : U ⊆ (M : Set E) + c ^ n • U := by
+  have h_ind (n : ℕ) : U ⊆ M + c ^ n • U := by
     induction n with
     | zero => simpa using fun x hx ↦ ⟨0, M.zero_mem, x, hx, zero_add x⟩
     | succ n ih =>
@@ -612,18 +612,18 @@ theorem FiniteDimensional.of_totallyBounded_nhds_zero {U : Set E} (hU_nhds : U �
           congr!
           lift c to 𝕜ˣ using isUnit_iff_ne_zero.mpr hc_ne
           simp [← Units.val_pow_eq_pow_val, ← Units.smul_def]
-  have h_small : Filter.Tendsto (fun n ↦ c ^ n • U) Filter.atTop (𝓝 0).smallSets :=
+  have h_small : Tendsto (fun n ↦ c ^ n • U) atTop (𝓝 0).smallSets :=
     (TotallyBounded.isVonNBounded 𝕜 hU_tb).tendsto_smallSets_nhds.comp
     (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc1)
   have hU_sub_M : U ⊆ M := by
     intro x hx
     choose m hm u hu h_eq using fun n ↦ h_ind n hx
-    have hu_tendsto : Filter.Tendsto u Filter.atTop (𝓝 0) := by
+    have hu_tendsto : Tendsto u atTop (𝓝 0) := by
       intro W hW
-      exact (Filter.tendsto_smallSets_iff.mp h_small W hW).mono fun n hn ↦ hn (hu n)
-    have hm_tendsto : Filter.Tendsto m Filter.atTop (𝓝 x) := by
+      exact (tendsto_smallSets_iff.mp h_small W hW).mono fun n hn ↦ hn (hu n)
+    have hm_tendsto : Tendsto m atTop (𝓝 x) := by
       simpa [show m = fun n ↦ x - u n by grind] using tendsto_const_nhds.sub hu_tendsto
-    exact M.closed_of_finiteDimensional.mem_of_tendsto hm_tendsto (Filter.Eventually.of_forall hm)
+    exact M.closed_of_finiteDimensional.mem_of_tendsto hm_tendsto (Eventually.of_forall hm)
   have hM_top : M = ⊤ := absorbent_nhds_zero (𝕜 := 𝕜) hU_nhds |>.mono hU_sub_M |>.submodule_eq_top
   exact FiniteDimensional.of_surjective M.subtype fun x ↦ ⟨⟨x, by simp [hM_top]⟩, rfl⟩
 
