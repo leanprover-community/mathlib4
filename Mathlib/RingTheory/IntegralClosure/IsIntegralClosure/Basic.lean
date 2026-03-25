@@ -632,6 +632,14 @@ theorem Algebra.IsIntegral.isField_iff_isField [IsDomain S]
     (hRS : Function.Injective (algebraMap R S)) : IsField R ↔ IsField S :=
   ⟨isField_of_isIntegral_of_isField', isField_of_isIntegral_of_isField hRS⟩
 
+variable (R)
+theorem Algebra.ker_algebraMap_isMaximal_of_isIntegral (k : Type*) [Field k] [Algebra R k]
+    [Algebra.IsIntegral R k] : (RingHom.ker (algebraMap R k)).IsMaximal := by
+  have := Ideal.bot_isMaximal (K := k)
+  rw [RingHom.ker, Ideal.Quotient.maximal_ideal_iff_isField_quotient]
+  exact isField_of_isIntegral_of_isField Ideal.algebraMap_quotient_injective
+    (Ideal.Quotient.field _).toIsField
+
 end Algebra
 
 theorem integralClosure_idem {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] :
