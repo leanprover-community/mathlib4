@@ -534,8 +534,6 @@ variable (R)
 theorem isUnitSubmonoid_eq [IsArtinianRing R] : IsUnit.submonoid R = R⁰ := by
   ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors]
 
-@[deprecated (since := "2025-08-26")] alias isUnit_submonoid_eq := isUnitSubmonoid_eq
-
 theorem isUnitSubmonoid_eq_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] :
     IsUnit.submonoid R = R⁰ := by
   ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors_of_mulOpposite]

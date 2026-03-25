@@ -960,12 +960,10 @@ theorem coeff_erase (p : R[X]) (n i : ℕ) :
   simp only [erase_def, coeff]
   exact ite_congr rfl (fun _ => rfl) (fun _ => rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem erase_zero (n : ℕ) : (0 : R[X]).erase n = 0 :=
   toFinsupp_injective <| by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem erase_monomial {n : ℕ} {a : R} : erase n (monomial n a) = 0 :=
   toFinsupp_injective <| by simp
