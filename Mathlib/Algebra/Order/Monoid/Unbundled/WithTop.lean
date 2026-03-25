@@ -94,7 +94,7 @@ section Add
 variable [Add α] {w x y z : WithTop α} {a b : α}
 
 instance add : Add (WithTop α) :=
-  ⟨fun x y ↦ show WithTop α from Option.map₂ (· + ·) x y⟩
+  ⟨WithTop.map₂ (· + ·)⟩
 
 @[simp, norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithTop α) := rfl
 
