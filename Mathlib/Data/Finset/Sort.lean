@@ -369,7 +369,7 @@ lemma LinearOrder.strong_induction_of_finite
   refine Fin.strong_induction_on (fun j hj ↦ h _ (fun k hk ↦ ?_))
   simpa using hj (e.symm k) (by simpa [← e.lt_iff_lt])
 
-lemma LinearOrder.orderEmbedding_eq_of_range_eq
+lemma OrderEmbedding.eq_of_range_eq
     {α β : Type*} [LinearOrder α] [PartialOrder β] [Finite α]
     {f g : α ↪o β} (h : Set.range f = Set.range g) :
     f = g := by
@@ -390,7 +390,7 @@ lemma OrderHom.eq_of_range_eq {α β : Type*} [LinearOrder α] [PartialOrder β]
     (h : Set.range f = Set.range g) :
     f = g := by
   ext : 2
-  exact DFunLike.congr_fun (LinearOrder.orderEmbedding_eq_of_range_eq
+  exact DFunLike.congr_fun (OrderEmbedding.eq_of_range_eq
     (f := .ofStrictMono f (f.monotone.strictMono_of_injective hf))
     (g := .ofStrictMono g (g.monotone.strictMono_of_injective hg)) (by simpa)) _
 
