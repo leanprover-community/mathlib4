@@ -5,10 +5,8 @@ Authors: Justus Springer
 -/
 module
 
+public import Mathlib.CategoryTheory.ObjectProperty.ClosureShift
 public import Mathlib.CategoryTheory.Triangulated.Subcategory
-public import Mathlib.CategoryTheory.Triangulated.Triangulated
-public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
-public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 
 /-!
 # Generators in triangulated categories
