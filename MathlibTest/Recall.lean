@@ -93,3 +93,6 @@ axiom bar : Nat
 #guard_msgs in recall bar := bar
 
 recall List.cons_append (a : α) (as bs : List α) : (a :: as) ++ bs = a :: (as ++ bs) := rfl
+
+/-- Recalling `Nat.add_comm`. -/
+recall Nat.add_comm (n m : Nat) : n + m = m + n
