@@ -361,7 +361,7 @@ alias principal_mul_two := isPrincipal_mul_two
 
 theorem isPrincipal_mul_of_le_two (ho : o ≤ 2) : IsPrincipal (· * ·) o := by
   rw [le_iff_lt_or_eq, lt_two_iff, le_one_iff] at ho
-  obtain ((rfl | rfl) | rfl) := ho
+  rcases ho with (rfl | rfl) | rfl
   exacts [isPrincipal_zero, isPrincipal_mul_one, isPrincipal_mul_two]
 
 @[deprecated (since := "2026-03-17")]
