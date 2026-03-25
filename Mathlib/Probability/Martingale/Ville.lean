@@ -48,7 +48,6 @@ theorem Supermartingale.integral_le
 theorem Supermartingale.integral_stoppedValue_le
     (hf : Supermartingale f ℱ μ) [SigmaFiniteFiltration μ ℱ]
     [IsFiniteMeasure μ]
-    (hnn : ∀ n ω, 0 ≤ f n ω)
     {τ : Ω → ℕ∞} (hτ : IsStoppingTime ℱ τ)
     {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) :
     ∫ ω, stoppedValue f τ ω ∂μ ≤ ∫ ω, f 0 ω ∂μ := by
@@ -125,7 +124,7 @@ theorem Supermartingale.measureReal_sup_le_div
       obtain ⟨i, hi, hfi⟩ := hω
       exact stoppedValue_hittingBtwn_mem ⟨i, ⟨Nat.zero_le i, hi⟩, hfi⟩
     have hEτ : ∫ ω, stoppedValue f τ ω ∂μ ≤ ∫ ω, f 0 ω ∂μ :=
-      hf.integral_stoppedValue_le hnn hτst hτbdd
+      hf.integral_stoppedValue_le hτst hτbdd
     have hA_meas : MeasurableSet (A n) := by
       apply MeasurableSet.iUnion; intro i
       apply MeasurableSet.iUnion; intro _
