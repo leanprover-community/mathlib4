@@ -32,17 +32,6 @@ finitely presented group, finitely generated normal closure
 
 variable {G H α β : Type*} [Group G] [Group H]
 
-/-- This is a statement about the following commutative diagram:
-suppose that `G` and `H` are isomorphic via `iso`, and `S` is a set in `G`,
-then the canonical inclusion map from `FreeGroup(iso '' S)` to `H` is given by
-first taking the inverse isomorphism between the `FreeGroup (S)` and `FreeGroup (iso '' S)`, then
-composing with the canonical inclusion map from `FreeGroup(S)` to `G` and then taking `iso`. -/
-lemma FreeGroup.lift_mulEquiv_image (iso : G ≃* H) (S : Set G) :
-    FreeGroup.lift ((↑) : ↥(↑iso '' S) → H) =
-      (↑iso : G →* H).comp ((FreeGroup.lift ((↑) : S → G)).comp
-        (FreeGroup.freeGroupCongr (iso.toEquiv.image S).symm)) := by
-  ext ⟨_, s, hs, rfl⟩; simp [Equiv.image]
-
 /-- Defines when a subgroup is the normal closure of a finite set. -/
 def Subgroup.IsNormalClosureFG (N : Subgroup G) : Prop :=
   ∃ S : Set G, S.Finite ∧ Subgroup.normalClosure S = N
@@ -56,13 +45,6 @@ protected theorem map {N : Subgroup G} (hN : IsNormalClosureFG N)
   refine ⟨f '' S, hSfinite.image _, ?_⟩
   rw [ ← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
-/-- Composing with a reindexing free group isomorphism preserves finite generation in
-normal closure of the kernel. -/
-lemma ker_comp_freeGroupCongr (e : β ≃ α) (f : FreeGroup α →* G) (hfker : IsNormalClosureFG f.ker) :
-    (f.comp (FreeGroup.freeGroupCongr e : FreeGroup β →* FreeGroup α)).ker.IsNormalClosureFG := by
-  rw [MonoidHom.ker_comp_mulEquiv]
-  exact hfker.map (FreeGroup.freeGroupCongr e).symm.surjective
-
 end Subgroup.IsNormalClosureFG
 
 /-- A group is finitely presented if it has a finite generating set such that the kernel
@@ -70,17 +52,16 @@ of the induced map from the free group on that set is the normal closure of fini
 relations. -/
 @[mk_iff]
 class IsFinitelyPresented (G : Type*) [Group G] : Prop where
-  out : ∃ S : Set G, S.Finite ∧ Subgroup.closure S = ⊤ ∧
-    (FreeGroup.lift ((↑) : S → G)).ker.IsNormalClosureFG
+  out : ∃ (n : ℕ) (φ : FreeGroup (Fin n) →* G), Function.Surjective φ ∧
+  φ.ker.IsNormalClosureFG
 
 namespace IsFinitelyPresented
 
 /-- Finitely presented groups are closed under isomorphism. -/
 theorem of_mulEquiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented H := by
-  obtain ⟨S, hSfinite, hSclosure, hker⟩ := h
-  use iso '' S, hSfinite.image iso,
-    MonoidHom.closure_eq_top_image_of_surjective (iso : G →* H) iso.surjective hSclosure
-  rw [FreeGroup.lift_mulEquiv_image, MonoidHom.ker_eq_of_comp_mulEquiv]
-  exact hker.ker_comp_freeGroupCongr (iso.toEquiv.image S).symm _
+  obtain ⟨n, φ, hφsurj, hNC⟩ := h
+  refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
+  rwa [MonoidHom.ker_mulEquiv_comp φ iso]
+
 
 end IsFinitelyPresented
