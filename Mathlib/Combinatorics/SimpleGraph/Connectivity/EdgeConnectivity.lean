@@ -119,7 +119,7 @@ lemma isEdgeReachable_add_one (hk : k ≠ 0) :
 
 lemma isEdgeConnected_add_one (hk : k ≠ 0) :
     G.IsEdgeConnected (k + 1) ↔ ∀ e, (G.deleteEdges {e}).IsEdgeConnected k := by
-  simp [IsEdgeConnected, isEdgeReachable_add_one hk, forall_swap (α := Sym2 _)]
+  simp [IsEdgeConnected, isEdgeReachable_add_one hk, forall_comm (α := Sym2 _)]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- An edge is a bridge iff its endpoints are adjacent and not 2-edge-reachable. -/
