@@ -176,6 +176,7 @@ theorem pow_smul_top_eq_ker_eval {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I 
 
 variable {I} in
 /-- `AdicCompletion I M` is adic complete when `I` is finitely generated. -/
+@[stacks 05GG "(1)"]
 theorem isAdicComplete (h : I.FG) : IsAdicComplete I (AdicCompletion I M) where
   prec' x hx := by
     let L : AdicCompletion I M := {
