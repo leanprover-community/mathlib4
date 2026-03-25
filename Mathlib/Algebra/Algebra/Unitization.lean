@@ -491,7 +491,7 @@ instance instNonAssocRing [CommRing R] [NonUnitalNonAssocRing A] [Module R A] :
 
 instance instRing [CommRing R] [NonUnitalRing A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : Ring (Unitization R A) :=
-  fast_instance% { Unitization.instAddCommGroup, Unitization.instSemiring with }
+  { Unitization.instAddCommGroup, Unitization.instSemiring with }
 
 instance instCommRing [CommRing R] [NonUnitalCommRing A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : CommRing (Unitization R A) :=
