@@ -17,7 +17,7 @@ import Mathlib.Tactic.Attr.Register
 
 The `zify` tactic is used to shift propositions from `Nat` to `Int`.
 This is often useful since `Int` has well-behaved subtraction.
-Another line for cache invalidation, that I can modify again
+Another line for cache invalidation, that I can modify
 ```
 example (a b c x y z : Nat) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   zify
