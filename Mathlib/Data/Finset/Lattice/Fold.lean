@@ -178,10 +178,16 @@ theorem sup_sdiff_right {α β : Type*} [GeneralizedBooleanAlgebra α] (s : Fins
   | cons _ _ _ h => rw [sup_cons, sup_cons, h, sup_sdiff]
 
 @[to_dual]
-theorem comp_sup_eq_sup_comp [SemilatticeSup γ] [OrderBot γ] {s : Finset β} {f : β → α} (g : α → γ)
+theorem apply_sup_eq_sup_comp [SemilatticeSup γ] [OrderBot γ] {s : Finset β} {f : β → α} (g : α → γ)
     (g_sup : ∀ x y, g (x ⊔ y) = g x ⊔ g y) (bot : g ⊥ = ⊥) : g (s.sup f) = s.sup (g ∘ f) :=
   Finset.cons_induction_on s bot fun c t hc ih => by
     rw [sup_cons, sup_cons, g_sup, ih, Function.comp_apply]
+
+@[deprecated (since := "2026-03-25")]
+alias comp_sup_eq_sup_comp := apply_sup_eq_sup_comp
+
+@[deprecated (since := "2026-03-25")]
+alias comp_inf_eq_inf_comp := apply_inf_eq_inf_comp
 
 /-- Computing `sup` in a subtype (closed under `sup`) is the same as computing it in `α`. -/
 @[to_dual (rename := Pbot → Ptop, Psup → Pinf)
@@ -193,12 +199,12 @@ theorem sup_coe {P : α → Prop} {Pbot : P ⊥} {Psup : ∀ ⦃x y⦄, P x → 
     (t.sup f).val = t.sup fun x => ↑(f x) := by
   letI := Subtype.semilatticeSup Psup
   letI := Subtype.orderBot Pbot
-  apply comp_sup_eq_sup_comp Subtype.val <;> intros <;> rfl
+  apply apply_sup_eq_sup_comp Subtype.val <;> intros <;> rfl
 
 @[simp]
 theorem sup_toFinset {α β} [DecidableEq β] (s : Finset α) (f : α → Multiset β) :
     (s.sup f).toFinset = s.sup fun x => (f x).toFinset :=
-  comp_sup_eq_sup_comp Multiset.toFinset toFinset_union rfl
+  apply_sup_eq_sup_comp Multiset.toFinset toFinset_union rfl
 
 @[to_dual]
 theorem _root_.List.foldr_sup_eq_sup_toFinset [DecidableEq α] (l : List α) :
@@ -416,9 +422,15 @@ section OrderBot
 variable [OrderBot α] {s : Finset ι} {f : ι → α} {a : α}
 
 @[to_dual]
-theorem comp_sup_eq_sup_comp_of_is_total [SemilatticeSup β] [OrderBot β] (g : α → β)
+theorem apply_sup_eq_sup_comp_of_linearOrder [SemilatticeSup β] [OrderBot β] (g : α → β)
     (mono_g : Monotone g) (bot : g ⊥ = ⊥) : g (s.sup f) = s.sup (g ∘ f) :=
-  comp_sup_eq_sup_comp g mono_g.map_sup bot
+  apply_sup_eq_sup_comp g mono_g.map_sup bot
+
+@[deprecated (since := "2026-03-25")]
+alias comp_sup_eq_sup_comp_of_is_total := apply_sup_eq_sup_comp_of_linearOrder
+
+@[deprecated (since := "2026-03-25")]
+alias comp_inf_eq_inf_comp_of_is_total := apply_inf_eq_inf_comp_of_linearOrder
 
 @[to_dual (attr := simp) inf_le_iff]
 protected theorem le_sup_iff (ha : ⊥ < a) : a ≤ s.sup f ↔ ∃ b ∈ s, a ≤ f b := by
@@ -591,9 +603,15 @@ theorem sup'_congr {t : Finset β} {f g : β → α} (h₁ : s = t) (h₂ : ∀ 
   simp +contextual only [sup'_le_iff, h₂]
 
 @[to_dual]
-theorem comp_sup'_eq_sup'_comp [SemilatticeSup γ] {s : Finset β} (H : s.Nonempty) {f : β → α}
+theorem apply_sup'_eq_sup'_comp [SemilatticeSup γ] {s : Finset β} (H : s.Nonempty) {f : β → α}
     (g : α → γ) (g_sup : ∀ x y, g (x ⊔ y) = g x ⊔ g y) : g (s.sup' H f) = s.sup' H (g ∘ f) := by
   refine H.cons_induction ?_ ?_ <;> intros <;> simp [*]
+
+@[deprecated (since := "2026-03-25")]
+alias comp_sup'_eq_sup'_comp := apply_sup'_eq_sup'_comp
+
+@[deprecated (since := "2026-03-25")]
+alias comp_inf'_eq_inf'_comp := apply_sup'_eq_sup'_comp
 
 @[to_dual (attr := simp)]
 theorem _root_.map_finset_sup' [SemilatticeSup β] [FunLike F α β] [SupHomClass F α β]
@@ -661,13 +679,13 @@ end Sup
 protected theorem sup_apply {C : β → Type*} [∀ b : β, SemilatticeSup (C b)]
     [∀ b : β, OrderBot (C b)] (s : Finset α) (f : α → ∀ b : β, C b) (b : β) :
     s.sup f b = s.sup fun a => f a b :=
-  comp_sup_eq_sup_comp (fun x : ∀ b : β, C b => x b) (fun _ _ => rfl) rfl
+  apply_sup_eq_sup_comp (fun x : ∀ b : β, C b => x b) (fun _ _ => rfl) rfl
 
 @[to_dual (attr := simp)]
 protected theorem sup'_apply {C : β → Type*} [∀ b : β, SemilatticeSup (C b)]
     {s : Finset α} (H : s.Nonempty) (f : α → ∀ b : β, C b) (b : β) :
     s.sup' H f b = s.sup' H fun a => f a b :=
-  comp_sup'_eq_sup'_comp H (fun x : ∀ b : β, C b => x b) fun _ _ => rfl
+  apply_sup'_eq_sup'_comp H (fun x : ∀ b : β, C b => x b) fun _ _ => rfl
 
 @[to_dual (attr := simp)]
 theorem toDual_sup' [SemilatticeSup α] {s : Finset ι} (hs : s.Nonempty) (f : ι → α) :
@@ -705,7 +723,7 @@ variable [LinearOrder α] {s : Finset ι} (H : s.Nonempty) {f : ι → α} {a : 
 theorem apply_sup_eq_sup_comp_of_nonempty [OrderBot α] [SemilatticeSup β] [OrderBot β]
     {g : α → β} (mono_g : Monotone g) (H : s.Nonempty) : g (s.sup f) = s.sup (g ∘ f) := by
   rw [← Finset.sup'_eq_sup H, ← Finset.sup'_eq_sup H]
-  exact Finset.comp_sup'_eq_sup'_comp H g (fun x y ↦ Monotone.map_sup mono_g x y)
+  exact Finset.apply_sup'_eq_sup'_comp H g (fun x y ↦ Monotone.map_sup mono_g x y)
 
 @[deprecated (since := "2026-03-25")]
 alias comp_sup_eq_sup_comp_of_nonempty := apply_sup_eq_sup_comp_of_nonempty
@@ -749,7 +767,7 @@ namespace Multiset
 
 theorem map_finset_sup [DecidableEq α] [DecidableEq β] (s : Finset γ) (f : γ → Multiset β)
     (g : β → α) (hg : Function.Injective g) : map g (s.sup f) = s.sup (map g ∘ f) :=
-  Finset.comp_sup_eq_sup_comp _ (fun _ _ => map_union hg) (map_zero _)
+  Finset.apply_sup_eq_sup_comp _ (fun _ _ => map_union hg) (map_zero _)
 
 theorem count_finset_sup [DecidableEq β] (s : Finset α) (f : α → Multiset β) (b : β) :
     count b (s.sup f) = s.sup fun a => count b (f a) := by

@@ -364,7 +364,7 @@ lemma norm_prod_eq_sup'_of_pairwise_ne {s : Finset ι} {f : ι → M} (hs' : s.N
     (hs : Set.Pairwise s (fun i j ↦ ‖f i‖ ≠ ‖f j‖)) :
     ‖∏ i ∈ s, f i‖ = s.sup' hs' (fun i ↦ ‖f i‖) := by
   rw [← coe_nnnorm', nnnorm_prod_eq_sup_of_pairwise_ne, ← Finset.sup'_eq_sup hs']
-  · exact s.comp_sup'_eq_sup'_comp hs' _ (by tauto)
+  · exact s.apply_sup'_eq_sup'_comp hs' _ (by tauto)
   · simpa [← NNReal.coe_inj] using hs
 
 end CommGroup

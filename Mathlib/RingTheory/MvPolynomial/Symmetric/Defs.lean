@@ -293,7 +293,7 @@ theorem degrees_esymm [Nontrivial R] {n : ℕ} (hpos : 0 < n) (hn : n ≤ Fintyp
     rw [degrees_def, support_esymm, sup_image, this]
     have : ((powersetCard n univ).sup (fun (x : Finset σ) => x)).val
         = sup (powersetCard n univ) val := by
-      refine comp_sup_eq_sup_comp _ ?_ ?_ <;> simp
+      refine apply_sup_eq_sup_comp _ ?_ ?_ <;> simp
     rw [← this]
     obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hpos.ne'
     simpa using powersetCard_sup _ _ (Nat.lt_of_succ_le hn)
