@@ -1243,6 +1243,7 @@ instance [e'.functor.Monoidal] : (e.trans e').functor.Monoidal :=
 instance [e'.inverse.Monoidal] : (e.trans e').inverse.Monoidal :=
   inferInstanceAs (e'.inverse ⋙ e.inverse).Monoidal
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composition of two monoidal category equivalences is monoidal. -/
 instance isMonoidal_trans [e'.functor.Monoidal] [e'.inverse.Monoidal] [e'.IsMonoidal] :
     (e.trans e').IsMonoidal := by

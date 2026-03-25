@@ -106,6 +106,26 @@ theorem cof_eq_one_iff : cof α = 1 ↔ ∃ x : α, IsTop x := by
 theorem cof_eq_one [OrderTop α] : cof α = 1 :=
   cof_eq_one_iff.2 ⟨⊤, isTop_top⟩
 
+theorem cof_ne_one_iff : cof α ≠ 1 ↔ NoTopOrder α := by
+  rw [← not_iff_not, not_not, noTopOrder_iff, cof_eq_one_iff]
+  simp
+
+@[simp]
+theorem cof_ne_one [h : NoTopOrder α] : cof α ≠ 1 :=
+  cof_ne_one_iff.2 h
+
+theorem cof_le_one_iff [Nonempty α] : cof α ≤ 1 ↔ ∃ x : α, IsTop x := by
+  rw [le_iff_lt_or_eq, Cardinal.lt_one_iff_zero, cof_eq_one_iff]
+  simp
+
+theorem one_lt_cof_iff [Nonempty α] : 1 < cof α ↔ NoTopOrder α := by
+  rw [← not_iff_not, not_lt, noTopOrder_iff, cof_le_one_iff]
+  simp
+
+@[simp]
+theorem one_lt_cof [Nonempty α] [h : NoTopOrder α] : 1 < cof α :=
+  one_lt_cof_iff.2 h
+
 end Preorder
 
 section LinearOrder
@@ -127,6 +147,21 @@ theorem lift_cof_congr_of_strictMono {f : α → β} (hf : StrictMono f) (hf' : 
 theorem cof_congr_of_strictMono {f : α → γ} (hf : StrictMono f) (hf' : IsCofinal (range f)) :
     cof α = cof γ := by
   simpa using lift_cof_congr_of_strictMono hf hf'
+
+@[simp]
+theorem cof_lt_aleph0_iff : Order.cof α < ℵ₀ ↔ Order.cof α ≤ 1 := by
+  refine ⟨fun h ↦ ?_, (lt_of_le_of_lt · one_lt_aleph0)⟩
+  obtain ⟨s, hs, hs'⟩ := Order.cof_eq α
+  have hf : s.Finite := by
+    rw [Set.Finite, ← mk_lt_aleph0_iff]
+    exact hs'.trans_lt h
+  obtain ⟨t, ht, ht'⟩ := hf.exists_subsingleton_isCofinal hs
+  apply (cof_le ht').trans
+  simpa
+
+@[simp]
+theorem aleph0_le_cof_iff : ℵ₀ ≤ Order.cof α ↔ 1 < Order.cof α := by
+  simp [← not_lt]
 
 end LinearOrder
 end Order
@@ -255,40 +290,29 @@ theorem cof_one : cof 1 = 1 := by
 theorem cof_succ (o) : cof (succ o) = 1 :=
   cof_add_one o
 
-theorem cof_iSup_Iio {f} (hf : StrictMono f) {a} (ha : IsSuccPrelimit a) :
-    cof (⨆ i : Iio a, f i.1) = cof a := by
-  have : StrictMono (β := Iio (⨆ i : Iio a, f i.1)) (fun i : Iio a ↦ ⟨f i, ?_⟩) := fun x y h ↦ hf h
-  · have := cof_congr_of_strictMono this ?_
-    · simpa [← lift_cof] using this.symm
-    · intro ⟨b, hb⟩
-      rw [mem_Iio, lt_ciSup_iff' (bddAbove_of_small _)] at hb
-      obtain ⟨i, hi⟩ := hb
-      exact ⟨_, Set.mem_range_self i, hi.le⟩
-  · exact (hf (lt_add_one _)).trans_le <|
-      le_ciSup (ι := Iio a) (bddAbove_of_small _) ⟨_, ha.succ_lt i.2⟩
+theorem one_lt_cof_iff {o : Ordinal} : 1 < cof o ↔ IsSuccLimit o := by
+  rw [← not_iff_not, not_lt, Cardinal.le_one_iff, isSuccLimit_iff,
+    not_and_or, not_ne_iff, not_isSuccPrelimit_iff', cof_eq_zero, cof_eq_one_iff]
 
-theorem cof_map_of_isNormal {f} (hf : IsNormal f) {a} (ha : IsSuccLimit a) : cof (f a) = cof a := by
-  rw [hf.apply_of_isSuccLimit ha, cof_iSup_Iio hf.strictMono ha.isSuccPrelimit]
+@[simp]
+theorem cof_lt_aleph0_iff {o : Ordinal} : cof o < ℵ₀ ↔ cof o ≤ 1 := by
+  simpa using Order.cof_lt_aleph0_iff (α := o.ToType)
 
-@[deprecated (since := "2026-03-19")]
-alias cof_eq_of_isNormal := cof_map_of_isNormal
+@[simp]
+theorem aleph0_le_cof_iff {o : Ordinal} : ℵ₀ ≤ cof o ↔ 1 < cof o := by
+  simp [← not_lt]
 
-@[deprecated (since := "2025-12-25")]
-alias IsNormal.cof_eq := cof_eq_of_isNormal
+@[deprecated one_lt_cof_iff (since := "2026-03-22")]
+theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsSuccLimit o := by
+  rw [aleph0_le_cof_iff, one_lt_cof_iff]
 
-theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) := by
-  rcases zero_or_succ_or_isSuccLimit a with (rfl | ⟨b, rfl⟩ | ha)
-  · rw [cof_zero]
-    exact zero_le _
-  · rw [cof_succ, Cardinal.one_le_iff_ne_zero, cof_eq_zero.ne, ← pos_iff_ne_zero]
-    exact (zero_le (f b)).trans_lt (hf.strictMono (lt_succ b))
-  · rw [cof_map_of_isNormal hf ha]
-
-@[deprecated (since := "2026-03-19")]
-alias cof_le_of_isNormal := le_cof_map_of_isNormal
-
-@[deprecated (since := "2025-12-25")]
-alias IsNormal.cof_le := le_cof_map_of_isNormal
+@[simp]
+theorem cof_omega0 : cof ω = ℵ₀ := by
+  apply le_antisymm
+  · rw [← card_omega0]
+    exact cof_le_card ω
+  · rw [aleph0_le_cof_iff, one_lt_cof_iff]
+    exact isSuccLimit_omega0
 
 @[deprecated (since := "2026-02-18")] alias cof_eq_one_iff_is_succ := cof_eq_one_iff
 
@@ -319,12 +343,153 @@ theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α
     exact fun t ht ↦ (cof_le (hs.trans ht)).trans_eq (mk_image_eq Subtype.val_injective)
 
 @[simp]
-theorem cof_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
+theorem cof_ord_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
   simpa using Order.cof_ord_cof o.ToType
+
+@[deprecated (since := "2026-03-21")] alias cof_cof := cof_ord_cof
+
+/-! ### Cofinalities and suprema -/
+
+section LinearOrder
+variable [LinearOrder β] [LinearOrder γ]
+
+theorem lift_cof_iSup_add_one [Small.{u} β] {f : β → Ordinal} (hf : StrictMono f) :
+    Cardinal.lift.{v} (cof (⨆ i, f i + 1)) = Cardinal.lift.{u} (Order.cof β) := by
+  have : StrictMono (β := Iio (⨆ i, f i + 1)) (fun i ↦ ⟨f i, ?_⟩) := fun x y h ↦ hf h
+  · have := lift_cof_congr_of_strictMono this ?_
+    · rw [← Cardinal.lift_inj.{_, max (u + 1) v}, Cardinal.lift_lift.{_, _, v},
+        Cardinal.lift_umax.{_, u + 1}, Cardinal.lift_umax.{_, u + 1}, this]
+      simp
+    · intro ⟨b, hb⟩
+      rw [mem_Iio, lt_ciSup_iff' (bddAbove_of_small _)] at hb
+      obtain ⟨i, hi⟩ := hb
+      rw [lt_add_one_iff] at hi
+      exact ⟨_, Set.mem_range_self i, hi⟩
+  · rw [mem_Iio]
+    exact (lt_add_one _).trans_le <| le_ciSup  (bddAbove_of_small _) _
+
+theorem cof_iSup_add_one {f : γ → Ordinal} (hf : StrictMono f) :
+    cof (⨆ i, f i + 1) = Order.cof γ := by
+  simpa using lift_cof_iSup_add_one hf
+
+theorem lift_cof_iSup [Small.{u} β] [NoMaxOrder β] {f : β → Ordinal} (hf : StrictMono f) :
+    Cardinal.lift.{v} (cof (⨆ i, f i)) = Cardinal.lift.{u} (Order.cof β) := by
+  rw [← iSup_add_one hf, lift_cof_iSup_add_one hf]
+
+theorem cof_iSup [NoMaxOrder γ] {f : γ → Ordinal} (hf : StrictMono f) :
+    cof (⨆ i, f i) = Order.cof γ := by
+  simpa using lift_cof_iSup hf
+
+end LinearOrder
+
+theorem cof_iSup_Iio_add_one {a} {f : Iio a → Ordinal} (hf : StrictMono f) :
+    cof (⨆ i, f i + 1) = cof a := by
+  simpa [← lift_cof] using lift_cof_iSup_add_one hf
+
+theorem cof_iSup_Iio {a} {f : Iio a → Ordinal} (hf : StrictMono f) (ha : IsSuccPrelimit a) :
+    cof (⨆ i, f i) = cof a := by
+  rw [← iSup_Iio_add_one hf ha, cof_iSup_Iio_add_one hf]
+
+theorem cof_map_of_isNormal {f} (hf : IsNormal f) {a} (ha : IsSuccLimit a) : cof (f a) = cof a := by
+  rw [hf.apply_of_isSuccLimit ha, cof_iSup_Iio _ ha.isSuccPrelimit]
+  exact hf.strictMono.comp <| Subtype.strictMono_coe _
+
+@[deprecated (since := "2026-03-19")]
+alias cof_eq_of_isNormal := cof_map_of_isNormal
+
+@[deprecated (since := "2025-12-25")]
+alias IsNormal.cof_eq := cof_eq_of_isNormal
+
+theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) := by
+  rcases zero_or_succ_or_isSuccLimit a with (rfl | ⟨b, rfl⟩ | ha)
+  · rw [cof_zero]
+    exact zero_le _
+  · rw [cof_succ, Cardinal.one_le_iff_ne_zero, cof_eq_zero.ne, ← pos_iff_ne_zero]
+    exact (zero_le (f b)).trans_lt (hf.strictMono (lt_succ b))
+  · rw [cof_map_of_isNormal hf ha]
+
+@[deprecated (since := "2026-03-19")]
+alias cof_le_of_isNormal := le_cof_map_of_isNormal
+
+@[deprecated (since := "2025-12-25")]
+alias IsNormal.cof_le := le_cof_map_of_isNormal
+
+theorem sSup_add_one_lt_of_lt_cof {s : Set Ordinal.{u}} {a : Ordinal.{u}}
+    (ha : #s < (lift.{u + 1} a).cof) (hs : ∀ i ∈ s, i < a) : sSup ((· + 1) '' s) < a := by
+  let f := OrderIso.ofRelIsoLT (enum (α := s) (· < ·))
+  have : Small.{u} (Iio (typeLT s)) := by
+    refine small_of_injective (β := Iio a) (f := fun x ↦ ⟨f x, hs _ (f x).2⟩) fun _ ↦ ?_
+    simp [Subtype.val_inj]
+  have : range (fun i ↦ (f i).1 + 1) = (· + 1) '' s := by
+    convert range_comp (· + 1) (fun i ↦ (f i).1)
+    rw [range_comp', f.range_eq]
+    simp
+  rw [← this, sSup_range]
+  apply lt_of_le_of_ne
+  · rw [Ordinal.iSup_le_iff]
+    simp [hs]
+  · rintro rfl
+    rw [← lift_cof, ← Cardinal.lift_lt.{_, u + 2}, Cardinal.lift_lift,
+      lift_cof_iSup_add_one fun _ ↦ by simp, cof_Iio, ← lift_cof, cof_type,
+      Cardinal.lift_lift, Cardinal.lift_lt] at ha
+    exact ha.not_ge (cof_le_cardinalMk _)
+
+theorem sSup_lt_of_lt_cof {s : Set Ordinal.{u}} {a : Ordinal.{u}}
+    (ha : #s < (lift.{u + 1} a).cof) (hs : ∀ i ∈ s, i < a) : sSup s < a :=
+  (sSup_le_sSup_add_one s).trans_lt (sSup_add_one_lt_of_lt_cof ha hs)
+
+theorem lift_iSup_add_one_lt_of_lt_cof {f : β → Ordinal.{u}} {a : Ordinal.{u}}
+    (ha : Cardinal.lift.{u} #β < (lift.{v} a).cof) (hf : ∀ i, f i < a) : ⨆ i, f i + 1 < a := by
+  rw [iSup, range_comp' (· + 1)]
+  apply sSup_add_one_lt_of_lt_cof _ (by simpa)
+  rw [← Cardinal.lift_lt.{_, v}]
+  apply mk_range_le_lift.trans_lt
+  rw [← Cardinal.lift_lt.{_, u + 1}] at ha
+  simpa [← lift_cof] using ha
+
+theorem iSup_add_one_lt_of_lt_cof {f : α → Ordinal.{u}} {a : Ordinal.{u}}
+    (ha : #α < a.cof) (hf : ∀ i, f i < a) : ⨆ i, f i + 1 < a := by
+  rw [← Cardinal.lift_lt.{_, u}, lift_cof] at ha
+  simpa using lift_iSup_add_one_lt_of_lt_cof ha hf
+
+theorem lift_iSup_lt_of_lt_cof {f : β → Ordinal.{u}} {a : Ordinal.{u}}
+    (ha : Cardinal.lift.{u} #β < (lift.{v} a).cof) (hf : ∀ i, f i < a) : ⨆ i, f i < a :=
+  (iSup_le_iSup_add_one f).trans_lt (lift_iSup_add_one_lt_of_lt_cof ha hf)
+
+theorem iSup_lt_of_lt_cof {f : α → Ordinal.{u}} {a : Ordinal.{u}}
+    (ha : #α < a.cof) (hf : ∀ i, f i < a) : ⨆ i, f i < a := by
+  rw [← Cardinal.lift_lt.{_, u}, lift_cof] at ha
+  simpa using lift_iSup_lt_of_lt_cof ha hf
+
+theorem cof_lift_iSup_add_one_le [Small.{u} β] (f : β → Ordinal.{u}) :
+    cof (lift.{v} (⨆ i, f i + 1)) ≤ Cardinal.lift.{u} (#β) := by
+  by_contra! hf
+  apply (lift_iSup_add_one_lt_of_lt_cof hf _).false
+  exact fun i ↦ (lt_add_one _).trans_le (le_ciSup (bddAbove_of_small _) i)
+
+theorem cof_iSup_add_one_le (f : α → Ordinal.{u}) : cof (⨆ i, f i + 1) ≤ #α := by
+  simpa using cof_lift_iSup_add_one_le f
+
+theorem _root_.Cardinal.sSup_lt_of_lt_cof_ord {s : Set Cardinal.{u}} {a : Cardinal.{u}}
+    (ha : #s < (Cardinal.lift.{u + 1} a).ord.cof) (hs : ∀ i ∈ s, i < a) : sSup s < a := by
+  rw [← ord_lt_ord, sSup_ord]
+  apply Ordinal.sSup_lt_of_lt_cof
+  · simpa [mk_image_eq ord_injective]
+  · simpa
+
+theorem _root_.Cardinal.lift_iSup_lt_of_lt_cof_ord {f : β → Cardinal.{u}} {a : Cardinal.{u}}
+    (ha : Cardinal.lift.{u} #β < a.lift.ord.cof) (hf : ∀ i, f i < a) : ⨆ i, f i < a := by
+  rw [← ord_lt_ord, iSup_ord]
+  apply Ordinal.lift_iSup_lt_of_lt_cof <;> simpa
+
+theorem _root_.Cardinal.iSup_lt_of_lt_cof_ord {f : α → Cardinal.{u}} {a : Cardinal.{u}}
+    (ha : #α < a.ord.cof) (hf : ∀ i, f i < a) : ⨆ i, f i < a := by
+  rw [← ord_lt_ord, iSup_ord]
+  apply Ordinal.iSup_lt_of_lt_cof <;> simpa
 
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
--- TODO: use `⨆ i, succ (f i)` instead of `lsub`
+-- TODO: use `⨆ i, f i + 1` instead of `lsub`
 
 private theorem card_mem_cof {o} : ∃ (ι : _) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = o.card :=
   ⟨_, _, lsub_typein o, mk_toType o⟩
@@ -642,23 +807,6 @@ theorem cof_add (a b : Ordinal) : b ≠ 0 → cof (a + b) = cof b := fun h => by
   · rw [succ_eq_add_one, ← add_assoc, cof_add_one, cof_add_one]
   · exact cof_map_of_isNormal (isNormal_add_right a) hb
 
-theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsSuccLimit o := by
-  rcases zero_or_succ_or_isSuccLimit o with (rfl | ⟨o, rfl⟩ | l)
-  · simp [Cardinal.aleph0_ne_zero]
-  · simp
-  · simp only [l, iff_true]
-    refine le_of_not_gt fun h => ?_
-    obtain ⟨n, e⟩ := Cardinal.lt_aleph0.1 h
-    have := cof_cof o
-    rw [e, ord_nat] at this
-    cases n
-    · apply l.ne_bot
-      simpa using e
-    · rw [natCast_succ, cof_succ] at this
-      rw [← this, cof_eq_one_iff] at e
-      rcases e with ⟨a, rfl⟩
-      exact not_isSuccLimit_succ _ l
-
 @[simp]
 theorem cof_preOmega {o : Ordinal} (ho : IsSuccPrelimit o) : (preOmega o).cof = o.cof := by
   by_cases h : IsMin o
@@ -668,12 +816,6 @@ theorem cof_preOmega {o : Ordinal} (ho : IsSuccPrelimit o) : (preOmega o).cof = 
 @[simp]
 theorem cof_omega {o : Ordinal} (ho : IsSuccLimit o) : (ω_ o).cof = o.cof :=
   cof_map_of_isNormal isNormal_omega ho
-
-@[simp]
-theorem cof_omega0 : cof ω = ℵ₀ :=
-  (aleph0_le_cof.2 isSuccLimit_omega0).antisymm' <| by
-    rw [← card_omega0]
-    apply cof_le_card
 
 -- TODO: deprecate in favor of `Order.cof_eq`
 theorem cof_eq' (r : α → α → Prop) [H : IsWellOrder α r] (h : IsSuccLimit (type r)) :
@@ -687,24 +829,11 @@ theorem cof_eq' (r : α → α → Prop) [H : IsWellOrder α r] (h : IsSuccLimit
   rwa [← not_bddAbove_iff_isCofinal, not_bddAbove_iff] at hs
 
 @[simp]
-theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
-  le_antisymm (cof_le_card _)
-    (by
-      refine le_of_forall_lt fun c h => ?_
-      rcases lt_univ'.1 h with ⟨c, rfl⟩
-      rcases Order.cof_eq Ordinal.{u} with ⟨S, H, Se⟩
-      rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u + 1, v, u}, Cardinal.lift_lt, cof_type, ← Se]
-      refine lt_of_not_ge fun h => ?_
-      obtain ⟨a, e⟩ := Cardinal.mem_range_lift_of_le h
-      induction a using Quotient.inductionOn
-      obtain ⟨f⟩ := Quotient.exact e
-      have f := Equiv.ulift.symm.trans f
-      let g a := (f a).1
-      let o := succ (iSup g)
-      rcases H o with ⟨b, h, l⟩
-      refine l.not_gt (lt_succ_iff.2 ?_)
-      rw [← show g (f.symm ⟨b, h⟩) = b by simp [g]]
-      apply Ordinal.le_iSup)
+theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} := by
+  apply (cof_le_card _).antisymm
+  simp_rw [univ, ← lift_cof, ← lift_card, Cardinal.lift_le, cof_type, card_type, le_cof_iff,
+    ← not_bddAbove_iff_isCofinal]
+  exact fun s hs ↦ mk_le_of_injective (enumOrdOrderIso s hs).injective
 
 end Ordinal
 
@@ -763,8 +892,8 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) :
     simp_rw [IsCofinal, ← not_lt]
     exact hs
   · refine @mk_le_of_injective α _ (fun x => Subtype.mk {x} ?_) ?_
-    · rw [mk_singleton]
-      exact one_lt_aleph0.trans_le (aleph0_le_cof.2 (isSuccLimit_ord h'.aleph0_le))
+    · rw [mk_singleton, one_lt_cof_iff]
+      exact isSuccLimit_ord h'.aleph0_le
     · intro a b hab
       simpa [singleton_eq_singleton_iff] using hab
 
