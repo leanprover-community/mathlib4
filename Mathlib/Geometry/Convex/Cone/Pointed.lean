@@ -377,7 +377,7 @@ variable {C : PointedCone R E} {x : E}
 
 open Pointwise
 
-@[reducible] def toSubmodule (hC : -C = C) : Submodule R E where
+abbrev toSubmodule (hC : -C = C) : Submodule R E where
   __ := C
   smul_mem' a x hx := by
     obtain ⟨b, hab, hb⟩ := exists_ge_ge a 0
