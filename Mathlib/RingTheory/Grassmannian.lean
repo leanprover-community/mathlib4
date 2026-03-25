@@ -175,7 +175,7 @@ theorem map_comp (N : G(k, A ⊗[R] M; A)) :
   change x ∈ fAC.ker ↔ x ∈ fBC.ker
   rw [show fAC = e.toLinearMap.comp fBC from hcomp.symm, LinearEquiv.ker_comp]
 
--- /-- The Grassmannian functor sends an `R`-algebra `A` to `G(k, A ⊗[R] M; A)`. -/
+/-- The Grassmannian functor sends an `R`-algebra `A` to `G(k, A ⊗[R] M; A)`. -/
 def functor : CommAlgCat.{w, u} R ⥤ Type (max v w) where
   obj A := G(k, (A ⊗[R] M); A)
   map f := map f.hom
