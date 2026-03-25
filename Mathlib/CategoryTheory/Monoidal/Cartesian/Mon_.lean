@@ -186,10 +186,6 @@ def MonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget _)
     simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
     simp
 
-@[deprecated (since := "2025-09-09")] alias Mon_Class.ofRepresentableBy := MonObj.ofRepresentableBy
-
-@[deprecated (since := "2025-09-09")] alias Mon_ClassOfRepresentableBy := MonObj.ofRepresentableBy
-
 /-- If `M` is a monoid object, then `Hom(X, M)` has a monoid structure. -/
 @[to_additive
 /-- If `M` is an additive monoid object, then `Hom(X, M)` has an additive monoid structure. -/]
@@ -352,14 +348,6 @@ lemma MonObj.ofRepresentableBy_yonedaMonObjRepresentableBy :
     ofRepresentableBy M _ (yonedaMonObjRepresentableBy M) = ‹_› := by
   ext; change lift (fst M M) (snd M M) ≫ μ = μ; rw [lift_fst_snd, Category.id_comp]
 
-@[deprecated (since := "2025-09-09")]
-alias Mon_Class.ofRepresentableBy_yonedaMonObjRepresentableBy :=
-  MonObj.ofRepresentableBy_yonedaMonObjRepresentableBy
-
-@[deprecated (since := "2025-09-09")]
-alias Mon_ClassOfRepresentableBy_yonedaMonObjRepresentableBy :=
-  MonObj.ofRepresentableBy_yonedaMonObjRepresentableBy
-
 set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding for `Mon C` is fully faithful. -/
 @[to_additive /-- The yoneda embedding for `AddMon C` is fully faithful. -/]
@@ -406,52 +394,36 @@ lemma essImage_yonedaMon :
 @[to_additive (attr := reassoc (attr := simp))]
 lemma MonObj.one_comp (f : M ⟶ N) [IsMonHom f] : (1 : X ⟶ M) ≫ f = 1 := by simp [Hom.one_def]
 
-@[deprecated (since := "2025-09-09")] alias Mon_Class.one_comp := MonObj.one_comp
-
 @[to_additive (attr := reassoc)]
 lemma MonObj.mul_comp (f₁ f₂ : X ⟶ M) (g : M ⟶ N) [IsMonHom g] :
     (f₁ * f₂) ≫ g = f₁ ≫ g * f₂ ≫ g := by simp [Hom.mul_def]
-
-@[deprecated (since := "2025-09-09")] alias Mon_Class.mul_comp := MonObj.mul_comp
 
 @[to_additive (attr := reassoc)]
 lemma MonObj.pow_comp (f : X ⟶ M) (n : ℕ) (g : M ⟶ N) [IsMonHom g] :
     (f ^ n) ≫ g = (f ≫ g) ^ n := by
   induction n <;> simp [pow_succ, MonObj.mul_comp, *]
 
-@[deprecated (since := "2025-09-09")] alias Mon_Class.pow_comp := MonObj.pow_comp
-
 @[to_additive (attr := reassoc (attr := simp))]
 lemma MonObj.comp_one (f : X ⟶ Y) : f ≫ (1 : Y ⟶ M) = 1 :=
   ((yonedaMon.obj <| .mk M).map f.op).hom.map_one
-
-@[deprecated (since := "2025-09-09")] alias Mon_Class.comp_one := MonObj.comp_one
 
 @[to_additive (attr := reassoc)]
 lemma MonObj.comp_mul (f : X ⟶ Y) (g₁ g₂ : Y ⟶ M) : f ≫ (g₁ * g₂) = f ≫ g₁ * f ≫ g₂ :=
   ((yonedaMon.obj <| .mk M).map f.op).hom.map_mul _ _
 
-@[deprecated (since := "2025-09-09")] alias Mon_Class.comp_mul := MonObj.comp_mul
-
 @[to_additive (attr := reassoc)]
 lemma MonObj.comp_pow (f : X ⟶ M) (n : ℕ) (h : Y ⟶ X) : h ≫ f ^ n = (h ≫ f) ^ n := by
   induction n <;> simp [pow_succ, MonObj.comp_mul, *]
-
-@[deprecated (since := "2025-09-09")] alias Mon_Class.comp_pow := MonObj.comp_pow
 
 variable (M) in
 @[to_additive]
 lemma MonObj.one_eq_one : η = (1 : _ ⟶ M) :=
   show _ = _ ≫ _ by rw [toUnit_unique (toUnit _) (𝟙 _), Category.id_comp]
 
-@[deprecated (since := "2025-09-09")] alias Mon_Class.one_eq_one := MonObj.one_eq_one
-
 variable (M) in
 @[to_additive]
 lemma MonObj.mul_eq_mul : μ = fst M M * snd _ _ :=
   show _ = _ ≫ _ by rw [lift_fst_snd, Category.id_comp]
-
-@[deprecated (since := "2025-09-09")] alias Mon_Class.mul_eq_mul := MonObj.mul_eq_mul
 
 namespace Hom
 

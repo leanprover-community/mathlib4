@@ -84,8 +84,6 @@ class MonObj (X : C) where
   -- The heuristic is that unitors and associators "don't have much weight".
   mul_assoc (X) : (mul ▷ X) ≫ mul = (α_ X X X).hom ≫ (X ◁ mul) ≫ mul := by cat_disch
 
-@[deprecated (since := "2025-09-09")] alias Mon_Class := MonObj
-
 namespace AddMonObj
 
 variable {M : C} [MonObj M]
@@ -219,8 +217,6 @@ class IsMonHom (f : M ⟶ N) : Prop where
   one_hom (f) : η ≫ f = η := by cat_disch
   mul_hom (f) : μ ≫ f = (f ⊗ₘ f) ≫ μ := by cat_disch
 
-@[deprecated (since := "2025-09-15")] alias IsMon_Hom := IsMonHom
-
 attribute [to_additive existing (attr := reassoc (attr := simp))] IsMonHom.one_hom IsMonHom.mul_hom
 
 @[to_additive]
@@ -263,8 +259,6 @@ structure Mon where
   /-- The underlying object in the ambient monoidal category -/
   X : C
   [mon : MonObj X]
-
-@[deprecated (since := "2025-09-15")] alias Mon_ := Mon
 
 attribute [instance] Mon.mon AddMon.addMon
 
@@ -479,13 +473,13 @@ instance : IsMonHom (𝟙 X) where
 
 @[to_additive]
 instance {f : Y ⟶ Z} [IsMonHom f] : IsMonHom (X ◁ f) where
-  one_hom := by simpa using (inferInstanceAs <| IsMonHom (𝟙 X ⊗ₘ f)).one_hom
-  mul_hom := by simpa using (inferInstanceAs <| IsMonHom (𝟙 X ⊗ₘ f)).mul_hom
+  one_hom := by simpa using ((inferInstance : IsMonHom (𝟙 X ⊗ₘ f))).one_hom
+  mul_hom := by simpa using ((inferInstance : IsMonHom (𝟙 X ⊗ₘ f))).mul_hom
 
 @[to_additive]
 instance {f : X ⟶ Y} [IsMonHom f] : IsMonHom (f ▷ Z) where
-  one_hom := by simpa using (inferInstanceAs <| IsMonHom (f ⊗ₘ (𝟙 Z))).one_hom
-  mul_hom := by simpa using (inferInstanceAs <| IsMonHom (f ⊗ₘ (𝟙 Z))).mul_hom
+  one_hom := by simpa using ((inferInstance : IsMonHom (f ⊗ₘ (𝟙 Z)))).one_hom
+  mul_hom := by simpa using ((inferInstance : IsMonHom (f ⊗ₘ (𝟙 Z)))).mul_hom
 
 @[to_additive]
 instance : IsMonHom (α_ X Y Z).hom :=
@@ -832,8 +826,6 @@ abbrev monObjObj : MonObj (F.obj X) where
     slice_lhs 3 4 => rw [← F.map_comp, MonObj.mul_assoc]
     simp
 
-@[deprecated (since := "2025-09-09")] alias mon_ClassObj := monObjObj
-
 scoped[CategoryTheory.Obj] attribute [instance] CategoryTheory.Functor.monObjObj
   CategoryTheory.Functor.addMonObjObj
 
@@ -932,8 +924,6 @@ abbrev FullyFaithful.monObj (hF : F.FullyFaithful) (X : C) [MonObj (F.obj X)] : 
   one_mul := hF.map_injective <| by simp [← δ_natural_left_assoc]
   mul_one := hF.map_injective <| by simp [← δ_natural_right_assoc]
   mul_assoc := hF.map_injective <| by simp [← δ_natural_left_assoc, ← δ_natural_right_assoc]
-
-@[deprecated (since := "2025-09-09")] alias FullyFaithful.mon_Class := FullyFaithful.monObj
 
 end OplaxMonoidal
 
@@ -1159,8 +1149,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem isMonHom_counitIsoAux (F : Mon C) :
     IsMonHom (counitIsoAux C F).hom where
 
-@[deprecated (since := "2025-09-15")] alias counitIsoAux_IsMon_Hom := isMonHom_counitIsoAux
-
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `Mon.equivLaxMonoidalFunctorPUnit`. -/
 @[to_additive (attr := simps!)
@@ -1206,8 +1194,6 @@ class IsCommAddMonObj (X : C) [AddMonObj X] where
 class IsCommMonObj (X : C) [MonObj X] where
   mul_comm (X) : (β_ X X).hom ≫ μ = μ := by cat_disch
 
-@[deprecated (since := "2025-09-14")] alias IsCommMon := IsCommMonObj
-
 open scoped MonObj
 
 namespace IsCommMonObj
@@ -1229,14 +1215,10 @@ variable (M) in
 lemma MonObj.mul_mul_mul_comm [IsCommMonObj M] :
     tensorμ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp only [mon_tauto]
 
-@[deprecated (since := "2025-09-09")] alias Mon_Class.mul_mul_mul_comm := MonObj.mul_mul_mul_comm
-
 variable (M) in
 @[to_additive (attr := reassoc (attr := simp))]
 lemma MonObj.mul_mul_mul_comm' [IsCommMonObj M] :
     tensorδ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp only [mon_tauto]
-
-@[deprecated (since := "2025-09-09")] alias Mon_Class.mul_mul_mul_comm' := MonObj.mul_mul_mul_comm'
 
 end
 

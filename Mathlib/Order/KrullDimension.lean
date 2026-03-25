@@ -828,7 +828,6 @@ lemma krullDim_eq_iSup_height_add_coheight_of_nonempty [Nonempty α] :
         obtain ⟨p₂, hhead, hlen₂⟩ := exists_series_of_coheight_eq_coe a hch
         apply le_iSup_of_le ((p₁.smash p₂) (by simp [*])) (by simp [*])
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The Krull dimension is the supremum of the elements' heights.
 
@@ -840,7 +839,6 @@ lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), ↑(height a) := by
   | inl h => rw [krullDim_eq_bot, ciSup_of_empty]
   | inr h => rw [krullDim_eq_iSup_height_of_nonempty, WithBot.coe_iSup (OrderTop.bddAbove _)]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The Krull dimension is the supremum of the elements' coheights.
 
@@ -1077,6 +1075,7 @@ lemma height_enat (n : ℕ∞) : height n = n := by
   | top => simp only [← WithBot.coe_eq_coe, height_top_eq_krullDim, krullDim_enat, WithBot.coe_top]
   | coe n => exact (height_coe_withTop _).trans (height_nat _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coheight_coe_enat (n : ℕ) : coheight (n : ℕ∞) = ⊤ := by
   apply (coheight_coe_withTop _).trans
