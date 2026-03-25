@@ -172,8 +172,7 @@ theorem pow_smul_top_eq_ker_eval {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I 
       smul_top_eq_range_lsum]
     simp
   rcases map_surjective I this x with ⟨x, rfl⟩
-  use x
-  rw [ofPowSMul, ← LinearMap.comp_apply, map_comp, LinearMap.subtype_comp_codRestrict]
+  exact ⟨x, by rw [← LinearMap.comp_apply, map_comp, LinearMap.subtype_comp_codRestrict]⟩
 
 variable {I} in
 /-- `AdicCompletion I M` is adic complete when `I` is finitely generated. -/
