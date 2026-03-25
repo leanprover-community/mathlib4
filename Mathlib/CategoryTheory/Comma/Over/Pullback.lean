@@ -108,10 +108,6 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasPullbacksAlong f] [
   conjugateIsoEquiv (mapPullbackAdj _) ((mapPullbackAdj _).comp (mapPullbackAdj _))
     (Over.mapComp _ _).symm
 
-end Over
-
-namespace Over
-
 instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
     (pullback f).IsRightAdjoint :=
   ⟨_, ⟨mapPullbackAdj f⟩⟩
