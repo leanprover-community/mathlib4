@@ -1028,30 +1028,28 @@ section primesOverFinset
 
 open UniqueFactorizationMonoid Ideal
 
+variable {A : Type*} [CommRing A] (p : Ideal A) (B : Type*) [CommRing B] [Algebra A B]
+
 open scoped Classical in
 /-- The finite set of all prime factors of the pushforward of `p`. -/
-noncomputable abbrev primesOverFinset {A : Type*} [CommRing A] (p : Ideal A) (B : Type*)
-    [CommRing B] [IsDedekindDomain B] [Algebra A B] : Finset (Ideal B) :=
-  (factors (p.map (algebraMap A B))).toFinset
+noncomputable abbrev primesOverFinset [hf : Finite (p.primesOver B)] : Finset (Ideal B) :=
+  Set.Finite.toFinset hf
 
-variable {A : Type*} [CommRing A] {p : Ideal A} (hpb : p ≠ ⊥) [hpm : p.IsMaximal]
-  (B : Type*) [CommRing B] [IsDedekindDomain B] [Algebra A B] [IsDomain A] [IsTorsionFree A B]
+theorem coe_primesOverFinset [hf : Finite (p.primesOver B)] :
+    primesOverFinset p B = primesOver p B :=
+  Set.Finite.coe_toFinset hf
+
+theorem mem_primesOverFinset_iff [Finite (p.primesOver B)] {P : Ideal B} :
+    P ∈ primesOverFinset p B ↔ P ∈ primesOver p B := by
+  rw [← Finset.mem_coe, coe_primesOverFinset]
+
+variable {p} (hpb : p ≠ ⊥) [hpm : p.IsMaximal] [IsDedekindDomain B] [IsDomain A] [IsTorsionFree A B]
 
 include hpb in
-theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
-  ext
-  simpa using (mem_primesOver_iff_mem_normalizedFactors _ hpb).symm
-
-include hpb in
-theorem mem_primesOverFinset_iff {P : Ideal B} : P ∈ primesOverFinset p B ↔ P ∈ primesOver p B := by
-  rw [← Finset.mem_coe, coe_primesOverFinset hpb]
-
-variable {R} (A) in
-theorem IsLocalRing.primesOverFinset_eq [IsLocalRing A] [IsDedekindDomain A]
-    [Algebra R A] [FaithfulSMul R A] [Module.Finite R A] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
-    primesOverFinset p A = {IsLocalRing.maximalIdeal A} := by
-  have : IsDomain R := .of_faithfulSMul R A
-  rw [← Finset.coe_eq_singleton, coe_primesOverFinset hp0, IsLocalRing.primesOver_eq A hp0]
+theorem IsLocalRing.primesOverFinset_eq
+    [IsLocalRing B] [Module.Finite A B] [Finite (p.primesOver B)] :
+    primesOverFinset p B = {IsLocalRing.maximalIdeal B} := by
+  rw [← Finset.coe_eq_singleton, coe_primesOverFinset, IsLocalRing.primesOver_eq B hpb]
 
 namespace IsDedekindDomain.HeightOneSpectrum
 
@@ -1090,8 +1088,11 @@ theorem primesOver_finite : (primesOver p B).Finite := by
     haveI : IsDomain A := IsDomain.of_bot_isPrime A
     rw [primesOver_bot A B]
     exact Set.finite_singleton ⊥
-  · rw [← coe_primesOverFinset hpb B]
-    exact (primesOverFinset p B).finite_toSet
+  · have : p.primesOver B = (normalizedFactors (p.map (algebraMap A B))).toFinset := by
+      ext P
+      simp [mem_primesOver_iff_mem_normalizedFactors B hpb]
+    rw [this]
+    apply Finset.finite_toSet
 
 noncomputable instance : Fintype (p.primesOver B) := Set.Finite.fintype (primesOver_finite p B)
 
