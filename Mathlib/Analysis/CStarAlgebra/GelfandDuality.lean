@@ -213,7 +213,7 @@ lemma CommCStarAlgebra.norm_add_eq_max {a b : A} (h : a * b = 0) :
 lemma CommCStarAlgebra.nnnorm_add_eq_max {a b : A} (h : a * b = 0) :
     ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   NNReal.eq <| CommCStarAlgebra.norm_add_eq_max h
-  
+
 lemma CommCStarAlgebra.norm_sub_eq_max {a b : A} (h : a * b = 0) :
     ‖a - b‖ = max ‖a‖ ‖b‖ := by
   simpa [sub_eq_add_neg] using norm_add_eq_max (a := a) (b := -b) (by simpa)
