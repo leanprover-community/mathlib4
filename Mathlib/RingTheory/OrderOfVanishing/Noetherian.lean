@@ -275,7 +275,7 @@ unit `x`.
 lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing [IsDiscreteValuationRing R] (x : R) :
     IsUnit x ↔ ordFrac R (algebraMap R K x) = 1 := by
   change IsUnit x ↔ algebraMap R K x ∈ MonoidHom.mker (ordFrac R)
-  simp [mker_ordFrac_eq_units, IsUnit.mem_submonoid_iff]
+  simp [mker_ordFrac_eq_isUnitSubmonoid, IsUnit.mem_submonoid_iff]
 
 /--
 For `x y : R`, if `x + y ≠ 0` then `min (ordFrac R x) (ordFrac R y) ≤ ordFrac R (x + y)`. The
@@ -301,7 +301,7 @@ theorem associated_of_ordFrac_eq [IsDiscreteValuationRing R] (x y : K)
   by_cases hy : y = 0
   · simp_all
   have : (y / x) ∈ MonoidHom.mker (ordFrac R) := by simp_all
-  rw [mker_ordFrac_eq_units] at this
+  rw [mker_ordFrac_eq_isUnitSubmonoid] at this
   obtain ⟨u, h⟩ := this
   use IsUnit.unit h.1
   simp only [Units.smul_def, Algebra.smul_def, IsUnit.unit_spec, h.2]

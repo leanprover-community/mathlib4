@@ -267,6 +267,12 @@ theorem ordMonoidWithZeroHom_eq_ord [Nontrivial R] (x : R) (h : x ∈ nonZeroDiv
     ordMonoidWithZeroHom R x =
   WithZero.map' (Nat.castAddMonoidHom ℤ).toMultiplicative (Ring.ord R x) := dif_pos h
 
+lemma ordMonoidWithZeroHom_eq_coe
+    [Nontrivial R] {x : R} (hx : x ∈ nonZeroDivisors R) {n : ℕ} (hn : Ring.ord R x = n) :
+    ordMonoidWithZeroHom R x = Multiplicative.ofAdd (n : ℤ) := by
+  rw [ordMonoidWithZeroHom_eq_ord x hx, hn]
+  rfl
+
 variable {R} in
 /--
 If `x` is not a non zero divisor, `ordMonoidWithZeroHom` is equal to `0`.
