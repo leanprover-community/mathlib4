@@ -28,6 +28,7 @@ section artinian
 
 open Submodule
 
+-- PRed
 theorem MaximalSpectrum.nilradical_pow_eq_iInf (R : Type*) [CommRing R] [IsArtinianRing R] (n : ℕ) :
     nilradical R ^ n = iInf fun I : MaximalSpectrum R ↦ I.1 ^ n := by
   haveI h0 {I J : MaximalSpectrum R} (h : I ≠ J) : IsCoprime I.1 J.1 :=
@@ -39,6 +40,7 @@ theorem MaximalSpectrum.nilradical_pow_eq_iInf (R : Type*) [CommRing R] [IsArtin
     Finset.prod_pow, Ideal.prod_eq_iInf_of_pairwise_isCoprime fun _ _ _ _ ↦ h0]
   simp [Finset.mem_univ, iInf, IsArtinianRing.primeSpectrum_asIdeal_range_eq]
 
+-- PRed
 @[simps!]
 noncomputable def IsArtinainRing.quotNilradicalPowEquivPi
     (R : Type*) [CommRing R] [IsArtinianRing R] (n : ℕ) :
@@ -115,8 +117,6 @@ theorem IsArtinianRing.equivPiLocalization_apply_apply (R : Type*) [CommRing R] 
   rfl
 
 end artinian
-
-#exit
 
 section temp
 
@@ -221,19 +221,6 @@ theorem IsLocalRing.map_maximalIdeal_lt_top
     (IsLocalRing.maximalIdeal A).map f < ⊤ :=
   (IsLocalRing.map_maximalIdeal_le f).trans_lt (IsLocalRing.maximalIdeal.isMaximal B).lt_top
 
--- PRed
-theorem length_of_isScalarTower_of_surjective {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-    (h : Function.Surjective (algebraMap A B))
-    (M : Type*) [AddCommGroup M] [Module A M] [Module B M] [IsScalarTower A B M] :
-    Module.length A M = Module.length B M := by
-  have : RingHomSurjective (algebraMap A B) := ⟨h⟩
-  let f : M →ₛₗ[algebraMap A B] M :=
-  { __ := AddMonoidHom.id M
-    map_smul' := by simp }
-  let e := Submodule.orderIsoMapComapOfBijective f Function.bijective_id
-  rw [Module.length, Module.length, WithBot.unbot_eq_iff, WithBot.coe_unbot] -- better lemma
-  exact Order.krullDim_eq_of_orderIso e
-
 variable {A B M : Type*} [CommRing A] [CommRing B] [IsLocalRing A] [IsLocalRing B] [Algebra A B]
   [IsLocalHom (algebraMap A B)] [Module.Flat A B] [AddCommGroup M] [Module A M]
 
@@ -298,8 +285,8 @@ theorem CovBy.length_restrictScalars {p q : Submodule B M} (h : p ⋖ q) :
   have : Function.Surjective g := e.surjective.comp f.range.mkQ_surjective
   have : Function.Exact f g := exact_iff.mpr ((e.ker_comp f.range.mkQ).trans f.range.ker_mkQ)
   rw [length_eq_add_of_exact (f.restrictScalars A) (g.restrictScalars A)
-    (by simpa) (by simpa) (by simpa), length_of_isScalarTower_of_surjective (A := A)
-    (B := ResidueField A) (M := ResidueField B) residue_surjective, Module.length_eq_rank]
+    (by simpa) (by simpa) (by simpa), Module.length_eq_of_surjective (M := ResidueField B)
+      (residue_surjective (R := A)), Module.length_eq_rank]
 
 variable (A B M) in
 set_option backward.isDefEq.respectTransparency false in
