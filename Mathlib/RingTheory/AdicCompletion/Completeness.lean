@@ -124,10 +124,10 @@ set_option backward.isDefEq.respectTransparency false in
 `AdicCompletion.finsuppSum` (the `Finsupp` version of `AdicCompletion.sum`).
 It proves the equality of two linear maps:
 
-The LHS evaluates a linear combination with coefficients `f i` on 
+The LHS evaluates a linear combination with coefficients `f i` on
 the direct sum of the completed modules `AdicCompletion I M`.
 
-The RHS first commutes the direct sum and the completion via `sumEquivOfFintype`, 
+The RHS first commutes the direct sum and the completion via `sumEquivOfFintype`,
 and then applies the completion of the standard linear combination operator on `M`. -/
 private lemma lsum_smul_comp_finsuppLEquivDirectSum_symm {ι : Type*} [DecidableEq ι] [Fintype ι]
     (f : ι → R) : ((lsum (AdicCompletion I R))
