@@ -184,8 +184,7 @@ theorem isPrincipal_add_iff_add_self_lt : IsPrincipal (· + ·) a ↔ ∀ b < a,
   isPrincipal_iff_of_monotone
     (fun x _ _ h ↦ add_le_add_right h x) (fun x _ _ h ↦ add_le_add_left h x)
 
-theorem isPrincipal_add_one : IsPrincipal (· + ·) 1 :=
-  isPrincipal_one_iff.2 <| zero_add 0
+theorem isPrincipal_add_one : IsPrincipal (· + ·) 1 := by simp
 
 @[deprecated (since := "2026-03-17")]
 alias principal_add_one := isPrincipal_add_one
@@ -338,9 +337,7 @@ alias principal_add_mul_of_principal_add := isPrincipal_add_mul_of_isPrincipal_a
 
 /-! #### Multiplicative principal ordinals -/
 
-theorem isPrincipal_mul_one : IsPrincipal (· * ·) 1 := by
-  rw [isPrincipal_one_iff]
-  exact zero_mul _
+theorem isPrincipal_mul_one : IsPrincipal (· * ·) 1 := by simp
 
 @[deprecated (since := "2026-03-17")]
 alias principal_mul_one := isPrincipal_mul_one
