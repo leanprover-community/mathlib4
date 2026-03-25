@@ -491,7 +491,9 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE 
     norm_cast at x0
     exact le_of_mul_le_mul_right h x0
 
-set_option backward.isDefEq.respectTransparency false in
+variable [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
+    [CanonicallyOrderedAdd α] [NoZeroDivisors α] [Nontrivial α]
+
 instance instIsOrderedRing [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
     [CanonicallyOrderedAdd α] [NoZeroDivisors α] [Nontrivial α] :
     IsOrderedRing (WithBot α) where

@@ -278,16 +278,16 @@ end AddMonoid
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithTop α) :=
   { WithTop.addMonoid, WithTop.addCommSemigroup with }
 
+instance natCast [NatCast α] : NatCast (WithTop α) :=
+  ⟨fun n => ↑(n : α)⟩
+
 section AddMonoidWithOne
 variable [AddMonoidWithOne α]
 
 instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
-  { WithTop.one, WithTop.addMonoid with
-    natCast := fun n => ↑(n : α),
-    natCast_zero := by
-      simp only [Nat.cast_zero, WithTop.coe_zero],
-    natCast_succ := fun n => by
-      simp only [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one] }
+  { WithTop.one, WithTop.addMonoid, WithTop.natCast with
+    natCast_zero := by simp [NatCast.natCast]
+    natCast_succ := fun n => by simp [NatCast.natCast] }
 
 @[simp, norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithTop α) = n := rfl
 
@@ -630,12 +630,11 @@ end AddMonoid
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
   inferInstanceAs <| AddCommMonoid (WithTop α)
 
+instance natCast [NatCast α] : NatCast (WithBot α) :=
+  ⟨fun n ↦ (n : α)⟩
+
 section AddMonoidWithOne
 variable [AddMonoidWithOne α]
-
-/- Register by hand to avoid a leaky instance otherwise -/
-instance natCast : NatCast (WithBot α) :=
-  ⟨fun n ↦ (n : α)⟩
 
 instance addMonoidWithOne : AddMonoidWithOne (WithBot α) :=
   inferInstanceAs <| AddMonoidWithOne (WithTop α)
