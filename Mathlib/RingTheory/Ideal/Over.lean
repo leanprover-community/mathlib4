@@ -367,6 +367,20 @@ theorem ne_bot_of_mem_primesOver [IsDomain R] {S : Type*} [Ring S] [Algebra R S]
     [Module.IsTorsionFree R S] {p : Ideal R} (hp : p ≠ ⊥) {P : Ideal S} (hP : P ∈ p.primesOver S) :
     P ≠ ⊥ := by have : P.LiesOver p := hP.2; exact ne_bot_of_liesOver_of_ne_bot hp P
 
+variable (B)
+
+/-- The finset of all prime factors of the pushforward of `p`. -/
+noncomputable abbrev primesOverFinset [hf : Finite (p.primesOver B)] : Finset (Ideal B) :=
+  Set.Finite.toFinset hf
+
+theorem coe_primesOverFinset [hf : Finite (p.primesOver B)] :
+    primesOverFinset p B = primesOver p B :=
+  Set.Finite.coe_toFinset hf
+
+theorem mem_primesOverFinset_iff [Finite (p.primesOver B)] {P : Ideal B} :
+    P ∈ primesOverFinset p B ↔ P ∈ primesOver p B := by
+  rw [← Finset.mem_coe, coe_primesOverFinset]
+
 end primesOver
 
 end Ideal
