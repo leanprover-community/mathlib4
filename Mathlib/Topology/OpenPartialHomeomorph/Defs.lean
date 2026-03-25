@@ -58,8 +58,6 @@ structure OpenPartialHomeomorph (X : Type*) (Y : Type*) [TopologicalSpace X]
   continuousOn_toFun : ContinuousOn toFun source
   continuousOn_invFun : ContinuousOn invFun target
 
-@[deprecated (since := "2025-08-29")] alias PartialHomeomorph := OpenPartialHomeomorph
-
 namespace OpenPartialHomeomorph
 
 variable (e : OpenPartialHomeomorph X Y)
@@ -191,17 +189,11 @@ def _root_.Homeomorph.toOpenPartialHomeomorphOfImageEq (e : X ≃ₜ Y) (s : Set
   continuousOn_toFun := e.continuous.continuousOn
   continuousOn_invFun := e.symm.continuous.continuousOn
 
-@[deprecated (since := "2025-08-29")] alias
-_root_.Homeomorph.toPartialHomeomorphOfImageEq := _root_.Homeomorph.toOpenPartialHomeomorphOfImageEq
-
 /-- A homeomorphism induces an open partial homeomorphism on the whole space -/
 @[simps! (attr := mfld_simps) -fullyApplied]
 def _root_.Homeomorph.toOpenPartialHomeomorph (e : X ≃ₜ Y) : OpenPartialHomeomorph X Y :=
   e.toOpenPartialHomeomorphOfImageEq univ isOpen_univ univ <|
     by rw [image_univ, e.surjective.range_eq]
-
-@[deprecated (since := "2025-08-29")] alias
-_root_.Homeomorph.toPartialHomeomorph := _root_.Homeomorph.toOpenPartialHomeomorph
 
 /-- Replace `toPartialEquiv` field to provide better definitional equalities. -/
 def replaceEquiv (e : OpenPartialHomeomorph X Y) (e' : PartialEquiv X Y)

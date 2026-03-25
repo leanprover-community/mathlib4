@@ -405,9 +405,6 @@ open Metric
 alias NonemptyCompacts.continuous_toCloseds :=
   TopologicalSpace.NonemptyCompacts.continuous_toCloseds
 
-@[deprecated (since := "2025-08-20")]
-alias isClosed_subsets_of_isClosed := TopologicalSpace.Closeds.isClosed_subsets_of_isClosed
-
 @[deprecated (since := "2025-11-19")]
 alias NonemptyCompacts.isClosed_subsets_of_isClosed :=
   TopologicalSpace.NonemptyCompacts.isClosed_subsets_of_isClosed
@@ -439,10 +436,6 @@ alias Closeds.lipschitz_sup := TopologicalSpace.Closeds.lipschitz_sup
 @[deprecated (since := "2026-01-08")]
 alias NonemptyCompacts.isometry_toCloseds :=
   TopologicalSpace.NonemptyCompacts.isometry_toCloseds
-
-@[deprecated (since := "2025-08-20")]
-alias NonemptyCompacts.ToCloseds.isUniformEmbedding :=
-  TopologicalSpace.NonemptyCompacts.isUniformEmbedding_toCloseds
 
 @[deprecated (since := "2025-11-19")]
 alias NonemptyCompacts.isUniformEmbedding_toCloseds :=
