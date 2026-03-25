@@ -859,13 +859,11 @@ theorem lt_iff_exists_real_btwn {a b : EReal} : a < b ↔ ∃ x : ℝ, a < x ∧
     ⟨(x : ℝ), ax, xb⟩,
     fun ⟨_x, ax, xb⟩ => ax.trans xb⟩
 
--- TODO: order dualize the theorem
 theorem le_of_forall_lt_rat_imp_le {a b : EReal} (h : ∀ q : ℚ, b < (q : ℝ) → a ≤ (q : ℝ)) : a ≤ b :=
   le_of_not_gt fun hba =>
     let ⟨_, hb, ha⟩ := exists_rat_btwn_of_lt hba
     ha.not_ge <| h _ hb
 
--- TODO: order dualize the theorem
 theorem le_of_forall_rat_lt_imp_le {a b : EReal} (h : ∀ q : ℚ, (q : ℝ) < a → (q : ℝ) ≤ b) : a ≤ b :=
   le_of_not_gt fun hba =>
     let ⟨_, hb, ha⟩ := exists_rat_btwn_of_lt hba
