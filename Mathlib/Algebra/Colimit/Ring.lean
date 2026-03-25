@@ -33,7 +33,6 @@ the disjoint union so as to make the operations (addition etc.) "computable".
 assert_not_exists Cardinal
 
 suppress_compilation
-noncomputable section -- needed for `deriving`
 
 variable {ι : Type*} [Preorder ι] (G : ι → Type*)
 
@@ -59,9 +58,22 @@ def DirectLimit : Type _ :=
           (∃ i, of (⟨i, 1⟩ : Σ i, G i) - 1 = a) ∨
             (∃ i x y, of (⟨i, x + y⟩ : Σ i, G i) - (of ⟨i, x⟩ + of ⟨i, y⟩) = a) ∨
               ∃ i x y, of (⟨i, x * y⟩ : Σ i, G i) - of ⟨i, x⟩ * of ⟨i, y⟩ = a }
-deriving Ring, CommRing
 
 namespace DirectLimit
+
+instance commRing : CommRing (DirectLimit G f) :=
+  Ideal.Quotient.commRing _
+
+instance ring : Ring (DirectLimit G f) :=
+  CommRing.toRing
+
+-- Porting note: Added a `Zero` instance to get rid of `0` errors.
+instance zero : Zero (DirectLimit G f) := by
+  unfold DirectLimit
+  exact ⟨0⟩
+
+instance : Inhabited (DirectLimit G f) :=
+  ⟨0⟩
 
 /-- The canonical map from a component to the direct limit. -/
 nonrec def of (i) : G i →+* DirectLimit G f :=
@@ -80,7 +92,7 @@ theorem quotientMk_of (i x) : Ideal.Quotient.mk _ (.of ⟨i, x⟩) = of G f i x 
 @[simp] theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x :=
   Ideal.Quotient.eq.2 <| subset_span <| Or.inl ⟨i, j, hij, x, rfl⟩
 
--- set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency false in
 /-- Every element of the direct limit corresponds to some element in
 some component of the directed system. -/
 theorem exists_of [Nonempty ι] [IsDirectedOrder ι] (z : DirectLimit G f) :
