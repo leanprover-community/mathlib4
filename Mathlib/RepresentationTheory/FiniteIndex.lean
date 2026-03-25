@@ -119,7 +119,7 @@ variable (A) in
 @[simps]
 noncomputable def coindToInd : coind S.subtype A →ₗ[k] ind S.subtype A where
   toFun f := ∑ g : Quotient (QuotientGroup.rightRel S), Quotient.liftOn g (fun g =>
-    IndV.mk S.subtype _ g (f.1 g)) fun g₁ g₂ ⟨s, (hs : s * g₂ = g₁)⟩ =>
+    IndV.mk S.subtype _ g (f.1 g)) fun g₁ g₂ ⟨s, (hs : _ * _ = _)⟩ =>
       (Submodule.Quotient.eq _).2 <| Coinvariants.mem_ker_of_eq s
         (single g₂ 1 ⊗ₜ[k] f.1 g₂) _ <| by have := f.2 s g₂; simp_all
   map_add' _ _ := by simpa [← Finset.sum_add_distrib, TensorProduct.tmul_add] using

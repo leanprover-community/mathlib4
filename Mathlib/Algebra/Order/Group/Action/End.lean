@@ -20,11 +20,9 @@ assert_not_exists MonoidWithZero
 namespace RelHom
 variable {α : Type*} {r : α → α → Prop}
 
-instance : SMul (r →r r) α where
-  smul := (⇑)
-
 /-- The tautological action by `r →r r` on `α`. -/
 instance applyMulAction : MulAction (r →r r) α where
+  smul := (⇑)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
@@ -37,11 +35,9 @@ end RelHom
 namespace RelEmbedding
 variable {α : Type*} {r : α → α → Prop}
 
-instance : SMul (r ↪r r) α where
-  smul := (⇑)
-
 /-- The tautological action by `r ↪r r` on `α`. -/
 instance applyMulAction : MulAction (r ↪r r) α where
+  smul := (⇑)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
@@ -54,11 +50,9 @@ end RelEmbedding
 namespace RelIso
 variable {α : Type*} {r : α → α → Prop}
 
-instance : SMul (r ≃r r) α where
-  smul := (⇑)
-
 /-- The tautological action by `r ≃r r` on `α`. -/
 instance applyMulAction : MulAction (r ≃r r) α where
+  smul := (⇑)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 

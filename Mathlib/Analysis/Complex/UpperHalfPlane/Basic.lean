@@ -177,10 +177,8 @@ lemma ne_natCast (z : ℍ) (n : ℕ) : (z : ℂ) ≠ n := mod_cast ne_intCast z 
 
 section PosRealAction
 
-instance : SMul {x : ℝ // 0 < x} ℍ where
-  smul x z := mk ((x : ℝ) • (z : ℂ)) <| by simpa using mul_pos x.2 z.im_pos
-
 instance posRealAction : MulAction {x : ℝ // 0 < x} ℍ where
+  smul x z := mk ((x : ℝ) • (z : ℂ)) <| by simpa using mul_pos x.2 z.im_pos
   one_smul _ := UpperHalfPlane.ext <| one_smul _ _
   mul_smul x y z := UpperHalfPlane.ext <| mul_smul (x : ℝ) y (z : ℂ)
 

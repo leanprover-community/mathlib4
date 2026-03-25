@@ -78,13 +78,10 @@ instance right_quotientAction' [hH : H.Normal] : QuotientAction αᵐᵒᵖ H :=
       mul_inv_cancel_right]⟩
 
 @[to_additive]
-instance [QuotientAction β H] : SMul β (α ⧸ H) where
+instance quotient [QuotientAction β H] : MulAction β (α ⧸ H) where
   smul b :=
     Quotient.map' (b • ·) fun _ _ h =>
       leftRel_apply.mpr <| QuotientAction.inv_mul_mem b <| leftRel_apply.mp h
-
-@[to_additive]
-instance quotient [QuotientAction β H] : MulAction β (α ⧸ H) where
   one_smul q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (one_smul β a)
   mul_smul b b' q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (mul_smul b b' a)
 

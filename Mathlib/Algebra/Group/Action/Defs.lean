@@ -454,6 +454,7 @@ This is promoted to a module by `Semiring.toModule`. -/
 
 This is promoted to an `AddTorsor` by `addGroup_is_addTorsor`. -/]
 instance (priority := 910) Monoid.toMulAction : MulAction M M where
+  smul := (· * ·)
   one_smul := one_mul
   mul_smul := mul_assoc
 

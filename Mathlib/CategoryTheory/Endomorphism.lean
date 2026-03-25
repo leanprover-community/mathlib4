@@ -80,17 +80,13 @@ variable {C : Type u} [Category.{v} C]
 
 open Opposite
 
-instance {X Y : C} : SMul (End Y) (X ⟶ Y) where
-  smul r f := f ≫ r
-
 instance mulActionRight {X Y : C} : MulAction (End Y) (X ⟶ Y) where
+  smul r f := f ≫ r
   one_smul := Category.comp_id
   mul_smul _ _ _ := Eq.symm <| Category.assoc _ _ _
 
-instance {X Y : C} : SMul (End X)ᵐᵒᵖ (X ⟶ Y) where
-  smul r f := r.unop ≫ f
-
 instance mulActionLeft {X Y : C} : MulAction (End X)ᵐᵒᵖ (X ⟶ Y) where
+  smul r f := r.unop ≫ f
   one_smul := Category.id_comp
   mul_smul _ _ _ := Category.assoc _ _ _
 

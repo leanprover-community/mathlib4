@@ -471,15 +471,13 @@ theorem equivPair_head {i : ι} {w : Word M} :
     · subst hi; simp
     · simp [hi, Ne.symm hi]
 
-instance (i) : SMul (M i) (Word M) where
-  smul m w := rcons { equivPair i w with head := m * (equivPair i w).head }
-
 instance summandAction (i) : MulAction (M i) (Word M) where
+  smul m w := rcons { equivPair i w with head := m * (equivPair i w).head }
   one_smul w := by
     apply (equivPair i).symm_apply_eq.mpr
     simp [equivPair]
   mul_smul m m' w := by
-    dsimp +instances [instHSMul, instSMul]
+    dsimp +instances [instHSMul]
     simp [mul_assoc, ← equivPair_symm, Equiv.apply_symm_apply]
 
 instance : MulAction (CoprodI M) (Word M) :=

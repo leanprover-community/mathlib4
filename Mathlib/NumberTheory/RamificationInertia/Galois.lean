@@ -74,10 +74,8 @@ section MulAction
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
   {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
-instance : SMul G (primesOver p B) where
-  smul σ Q := primesOver.mk p (σ • Q.1)
-
 instance : MulAction G (primesOver p B) where
+  smul σ Q := primesOver.mk p (σ • Q.1)
   one_smul Q := Subtype.ext (one_smul G Q.1)
   mul_smul σ τ Q := Subtype.ext (mul_smul σ τ Q.1)
 
@@ -94,10 +92,8 @@ variable (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [A
   [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
   [IsIntegralClosure B A L] [FiniteDimensional K L]
 
-noncomputable instance : SMul Gal(L/K) (primesOver p B) where
-  smul σ Q := primesOver.mk p (map (galRestrict A K L B σ) Q.1)
-
 noncomputable instance : MulAction Gal(L/K) (primesOver p B) where
+  smul σ Q := primesOver.mk p (map (galRestrict A K L B σ) Q.1)
   one_smul Q := by
     apply Subtype.val_inj.mp
     change map _ Q.1 = Q.1

@@ -107,11 +107,9 @@ end Equiv.Perm
 namespace MulAut
 variable [Monoid M]
 
-instance : SMul (MulAut M) M where
-  smul := (· <| ·)
-
 /-- The tautological action by `MulAut M` on `M`. -/
 instance applyMulAction : MulAction (MulAut M) M where
+  smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
@@ -119,6 +117,9 @@ instance applyMulAction : MulAction (MulAut M) M where
 
 This generalizes `Function.End.applyMulAction`. -/
 instance applyMulDistribMulAction : MulDistribMulAction (MulAut M) M where
+  smul := (· <| ·)
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
   smul_one := map_one
   smul_mul := map_mul
 
@@ -134,11 +135,9 @@ end MulAut
 namespace AddAut
 variable [AddMonoid M]
 
-instance : SMul (AddAut M) M where
-  smul := (· <| ·)
-
 /-- The tautological action by `AddAut M` on `M`. -/
 instance applyMulAction : MulAction (AddAut M) M where
+  smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 

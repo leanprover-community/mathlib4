@@ -219,17 +219,15 @@ theorem finite_of_finiteIndex (P : Sylow p G) [P.FiniteIndex] : Finite (Sylow p 
 
 open Pointwise
 
-instance {α : Type*} [Group α] [MulDistribMulAction α G] : SMul α (Sylow p G) where
+/-- `Subgroup.pointwiseMulAction` preserves Sylow subgroups. -/
+instance pointwiseMulAction {α : Type*} [Group α] [MulDistribMulAction α G] :
+    MulAction α (Sylow p G) where
   smul g P :=
     ⟨g • P.toSubgroup, P.2.map _, fun {Q} hQ hS =>
       inv_smul_eq_iff.mp
         (P.3 (hQ.map _) fun s hs =>
           (congr_arg (· ∈ g⁻¹ • Q) (inv_smul_smul g s)).mp
             (smul_mem_pointwise_smul (g • s) g⁻¹ Q (hS (smul_mem_pointwise_smul s g P hs))))⟩
-
-/-- `Subgroup.pointwiseMulAction` preserves Sylow subgroups. -/
-instance pointwiseMulAction {α : Type*} [Group α] [MulDistribMulAction α G] :
-    MulAction α (Sylow p G) where
   one_smul P := ext (one_smul α P.toSubgroup)
   mul_smul g h P := ext (mul_smul g h P.toSubgroup)
 
