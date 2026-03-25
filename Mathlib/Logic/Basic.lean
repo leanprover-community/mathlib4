@@ -41,7 +41,7 @@ meta def Lean.Meta.Simp.withoutTheorems {α} (declNames : Array Name) (e : SimpM
     procs := procs.erase name
   let oldMethods ← getMethods
   let methods := mkMethods #[procs] oldMethods.discharge? oldMethods.wellBehavedDischarge
-  withSimpTheorems theorems do
+  withPreservedCache <| withSimpTheorems theorems do
     let (x, s) ← e.run (← getContext) (← get) methods
     set s
     return x
@@ -53,10 +53,10 @@ theorem iff_comm_eq (a b : Prop) : (a ↔ b) = (b ↔ a) := by rw [@iff_comm a b
 simproc eqComm (_ = _) := fun e => do
   let_expr Eq x y := e | return .continue
   let symmExpr ← mkEq y x
-  let r ← withoutTheorems #[`eqComm] do
-    withTraceNode `Meta.Tactic.simp (fun _ => return m!"commuting the equality {e}") <| simp symmExpr
+  let r ← withoutTheorems #[`eqComm, ``eq_comm] do
+    withTraceNode `Meta.Tactic.simp (fun _ => return m!"commuting the eq {e}") <| simp symmExpr
   -- Don't do anything if we didn't make progress.
-  if r.expr == symmExpr then return .continue
+  if r.expr == symmExpr || r.expr == e then return .continue
   let symmR ← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``eq_comm_eq #[x, y] } r
   -- If we go `x = y` --symm-> `y = x` --simp--> `y' = x'`, then we want to end up with `x' = y'`.
   match_expr r.expr with
@@ -70,10 +70,12 @@ simproc eqComm (_ = _) := fun e => do
 simproc ↓ iffComm (_ ↔ _) := fun e => do
   let_expr Iff x y := e | return .continue
   let symmExpr := .app (.app (.const ``Iff []) y) x
-  let r ← withoutTheorems #[`iffComm, ``and_congr_right_iff] do -- this theorem isn't commute-resistant
+  let r ← withoutTheorems #[`iffComm,
+      -- These theorems aren't commute-resistant
+      ``and_congr_right_iff, ``Iff.comm] do
     withTraceNode `Meta.Tactic.simp (fun _ => return m!"commuting the iff {e}") <| simp symmExpr
   -- Don't do anything if we didn't make progress.
-  if r.expr == symmExpr then return .continue
+  if r.expr == symmExpr || r.expr == e then return .continue
   let symmR ← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``iff_comm_eq #[x, y] } r
   -- If we go `x ↔ y` --symm-> `y ↔ x` --simp--> `y' ↔ x'`, then we want to end up with `x' ↔ y'`.
   match_expr r.expr with
