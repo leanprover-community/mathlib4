@@ -150,14 +150,14 @@ theorem sup_preimage {α β : Type*} [hnea : Nonempty α] [SemilatticeSup β] [O
   exact preimage_eq_image_invFunOn_of_inj_mapsTo_rightInv hf.2.1 hf.1
     (Set.BijOn.invOn_invFunOn hf).2
 
-lemma sup_preimage_val_id_eq_sup_toSubtype_id [Lattice α] [OrderBot α] {pr : α → Prop}
-    (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t)) (hbot : pr (⊥ : α)) {t : Finset α}
-    (ht : ∀ x ∈ t, pr x) :
-    @sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot)
-      (@preimage _ _ t (fun (x : Subtype pr) => x.val)
-      (Set.injOn_of_injective Subtype.val_injective)) id =
-      (⟨t.sup id, sup_induction hbot (fun _ h _ => Psup h) ht⟩ : Subtype pr) := by
-  letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
+lemma sup_preimage_val_id_eq_sup_toSubtype_id [Lattice α] [OrderBot α] {P : α → Prop}
+    (Psup : ∀ ⦃s t : α⦄, P s → P t → P (s ⊔ t)) (Pbot : P (⊥ : α)) {t : Finset α}
+    (ht : ∀ x ∈ t, P x) :
+    letI := Subtype.semilatticeSup Psup
+    letI := Subtype.orderBot Pbot
+    (t.preimage (fun (x : Subtype P) => x.val) (Subtype.val_injective.injOn)).sup id =
+      (⟨t.sup id, sup_induction Pbot (fun _ h _ => Psup h) ht⟩ : Subtype P) := by
+  letI : OrderBot (Subtype P) := Subtype.orderBot Pbot
   ext
   simp only [sup_coe, id_eq]
   apply Finset.sup_preimage

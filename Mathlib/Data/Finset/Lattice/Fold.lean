@@ -173,16 +173,18 @@ theorem sup_coe {P : α → Prop} {Pbot : P ⊥} {Psup : ∀ ⦃x y⦄, P x → 
   letI := Subtype.orderBot Pbot
   apply comp_sup_eq_sup_comp Subtype.val <;> intros <;> rfl
 
-lemma sup_image_val_eq_coe_sup_id [DecidableEq α] {pr : α → Prop}
-    (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t)) (hbot : pr (⊥ : α)) {t : Finset (Subtype pr)} :
-    (t.image Subtype.val).sup id =
-      @sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot) t id := by
+lemma sup_image_val_eq_coe_sup_id [DecidableEq α] {P : α → Prop}
+    (Psup : ∀ ⦃s t : α⦄, P s → P t → P (s ⊔ t)) (Pbot : P (⊥ : α)) {t : Finset (Subtype P)} :
+    letI := Subtype.semilatticeSup Psup
+    letI := Subtype.orderBot Pbot
+    (t.image Subtype.val).sup id = t.sup id := by
   simp [sup_coe]
 
-lemma sup_val_eq_coe_id {pr : α → Prop} (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t))
-    (hbot : pr (⊥ : α)) {t : Finset (Subtype pr)} :
-    (t.sup Subtype.val) =
-      @sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot) t id := by
+lemma sup_val_eq_coe_id {P : α → Prop} (Psup : ∀ ⦃s t : α⦄, P s → P t → P (s ⊔ t))
+    (Pbot : P (⊥ : α)) {t : Finset (Subtype P)} :
+    letI := Subtype.semilatticeSup Psup
+    letI := Subtype.orderBot Pbot
+    (t.sup Subtype.val) = t.sup id := by
   simp [sup_coe]
 
 @[simp]

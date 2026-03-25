@@ -51,6 +51,7 @@ We provide many ways to build finpartitions:
 * `Finpartition.atomise`: Makes a finpartition of `s : Finset α` by breaking `s` along all finsets
   in `F : Finset (Finset α)`. Two elements of `s` belong to the same part iff they belong to the
   same elements of `F`.
+* `Finpartition.toSubtype`: Turns a finpartition of a type to one of a subtype.
 
 `Finpartition.indiscrete` and `Finpartition.bind` together form the monadic structure of
 `Finpartition`.
@@ -315,17 +316,19 @@ theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : #Q.parts ≤ #
 
 end Order
 
-/-- A `Finpartition` constructor in `Subtype pr` for `pr : Set X → Prop` such that `pr` is closed
-under intersection and union and `pr ⊥` holds from a `P : Finpartition s` with explicit assumptions
-that `pr s` and `pr p` for each part `p`. -/
+/-- A `Finpartition` constructor in `Subtype Pr` for `Pr : Set X → Prop` such that `Pr` is closed
+under intersection and union and `Pr ⊥` holds from a `P : Finpartition s` with explicit assumptions
+that `Pr s` and `Pr p` for each part `p`. -/
 noncomputable def toSubtype {s : α} (P : Finpartition s)
-    {pr : α → Prop} (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t))
-    (Pinf : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊓ t)) (hbot : pr (⊥ : α))
-    (hs : pr s) (hP : ∀ p ∈ P.parts, pr p) :
-    @Finpartition (Subtype pr) (Subtype.lattice Psup Pinf) (Subtype.orderBot hbot) ⟨s, hs⟩ :=
-  letI : Lattice (Subtype pr) := Subtype.lattice Psup Pinf
-  letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
-  { parts := preimage P.parts (fun (p : Subtype pr) => p.val)
+    {Pr : α → Prop} (Prsup : ∀ ⦃s t : α⦄, Pr s → Pr t → Pr (s ⊔ t))
+    (Prinf : ∀ ⦃s t : α⦄, Pr s → Pr t → Pr (s ⊓ t)) (Prbot : Pr (⊥ : α))
+    (hs : Pr s) (hP : ∀ p ∈ P.parts, Pr p) :
+    letI : Lattice (Subtype Pr) := Subtype.lattice Prsup Prinf
+    letI : OrderBot (Subtype Pr) := Subtype.orderBot Prbot
+    Finpartition (⟨s, hs⟩ : Subtype Pr) :=
+  letI : Lattice (Subtype Pr) := Subtype.lattice Prsup Prinf
+  letI : OrderBot (Subtype Pr) := Subtype.orderBot Prbot
+  { parts := preimage P.parts (fun (p : Subtype Pr) => p.val)
       (Set.injOn_of_injective Subtype.val_injective)
     supIndep := by
       classical
@@ -334,20 +337,21 @@ noncomputable def toSubtype {s : α} (P : Finpartition s)
       rw [SupIndep] at hPd
       intro t ht i hi hi'
       simp_all only [id_eq]
-      rw [← disjoint_subtype_iff Pinf hbot, ← sup_image_val_eq_coe_sup_id Psup hbot]
+      rw [← disjoint_subtype_iff Prinf Prbot, ← sup_image_val_eq_coe_sup_id Prsup Prbot]
       apply hPd
       · simpa [image_subset_iff_subset_preimage] using ht
       · simpa using hi
       · simpa [i.property] using hi'
     sup_parts := by
       ext
-      rw [@sup_coe _ _ _ _ _ hbot Psup]
+      rw [@sup_coe _ _ _ _ _ Prbot Prsup]
       simp only [id_eq]
-      rw [sup_val_eq_coe_id Psup hbot, Finset.sup_preimage_val_id_eq_sup_toSubtype_id Psup hbot hP]
+      rw [sup_val_eq_coe_id Prsup Prbot,
+        Finset.sup_preimage_val_id_eq_sup_toSubtype_id Prsup Prbot hP]
       simpa using P.sup_parts
     bot_notMem := by
       simp only [mem_preimage]
-      rw [Subtype.coe_bot hbot]
+      rw [Subtype.coe_bot Prbot]
       exact P.bot_notMem }
 
 end Lattice
