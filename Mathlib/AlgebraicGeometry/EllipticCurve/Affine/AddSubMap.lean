@@ -22,9 +22,7 @@ when `K` has the Northcott property.
 
 public section
 
-namespace Height
-
-namespace EllipticCurve
+namespace WeierstrassCurve
 
 /-!
 ### The addition-and-subtraction map on x-coordinates
@@ -141,32 +139,6 @@ lemma addSubMap_ne_zero {x : Fin 3 → K} (hx : x ≠ 0) : (fun i ↦ (addSubMap
     exact hx i
   simpa [hx] using (addSubMapCoeff_condition hab x i).symm
 
-variable [AdmissibleAbsValues K]
-
-include hab in
-/-- If `a b : K` and  `D := 32*a^3 + 216*b^2` is nonzero, then the map `F : ℙ² → ℙ²` given by
-`(s : t : u) ↦ (s^2 - 2*a*s*u - 4*b*t*u + a²*u² : 2*s*t + 2*a*t*u + 4*b*u² : t² - 4*s*u)`
-(called `addSubMap` here) is a morphism.
-
-This implies that `|logHeight (F x) - 2 * logHeight x| ≤ C` for a constant `C`,
-where `x = ![s, t, u]` and `F` acts on the coordinate vector. -/
-theorem abs_logHeight_addSubMap_sub_two_mul_logHeight_le :
-    ∃ C, ∀ x : Fin 3 → K,
-      |logHeight (fun i ↦ (addSubMap a b i).eval x) - 2 * logHeight x| ≤ C := by
-  obtain ⟨C₁, hC₁⟩ : ∃ C₁, ∀ x : Fin 3 → K,
-      logHeight (fun i ↦ (addSubMap a b i).eval x) ≤ C₁ + 2 * logHeight x :=
-    logHeight_eval_le' <| isHomogeneous_addSubMap a b
-  obtain ⟨C₂, hC₂⟩ : ∃ C₂, ∀ x : Fin 3 → K,
-      logHeight (fun i ↦ (addSubMap a b i).eval x) ≥ C₂ + 2 * logHeight x := by
-    have H (ij : Fin 3 × Fin 3) :
-        (C ((32 * a ^ 3 + 216 * b ^ 2)⁻¹) * addSubMapCoeff a b ij).IsHomogeneous 2 :=
-      IsHomogeneous.C_mul (isHomogenous_addSubMapCoeff a b ij) _
-    obtain ⟨C₂, h⟩ := logHeight_eval_ge' H
-    exact ⟨C₂, fun x ↦ h _ <| addSubMapCoeff_condition hab x⟩
-  refine ⟨max C₁ (-C₂), fun x ↦ abs_sub_le_iff.mpr ⟨?_, ?_⟩⟩ <;> grind
-
-end EllipticCurve
-
-end Height
+end WeierstrassCurve
 
 end
