@@ -35,23 +35,18 @@ def centralizer (s : Set G) : Subgroup G where
 theorem mem_centralizer_iff {g : G} {s : Set G} : g ∈ centralizer s ↔ ∀ h ∈ s, h * g = g * h :=
   Iff.rfl
 
+open scoped commutatorElement in
+@[to_additive]
 theorem mem_centralizer_iff_commutator_eq_one {g : G} {s : Set G} :
     g ∈ centralizer s ↔ ∀ h ∈ s, ⁅h, g⁆ = 1 := by
   simp only [commutatorElement_def, mem_centralizer_iff, mul_inv_eq_iff_eq_mul, one_mul]
 
-theorem _root_.AddSubgroup.mem_centralizer_iff_commutator_eq_zero {G : Type*} [AddGroup G] {g : G}
-    {s : Set G} : g ∈ AddSubgroup.centralizer s ↔ ∀ h ∈ s, h + g + -h + -g = 0 := by
-  simp only [AddSubgroup.mem_centralizer_iff, add_neg_eq_iff_eq_add, zero_add]
-
+open scoped commutatorElement in
+@[to_additive]
 theorem mem_centralizer_iff_commutator_eq_one' {g : G} {s : Set G} :
     g ∈ centralizer s ↔ ∀ h ∈ s, ⁅g, h⁆ = 1 := by
   refine forall₂_congr fun _ _ ↦ ?_
   rw [commutatorElement_def, mul_inv_eq_iff_eq_mul, mul_inv_eq_iff_eq_mul, one_mul, eq_comm]
-
-theorem _root_.AddSubgroup.mem_centralizer_iff_commutator_eq_zero' {G : Type*} [AddGroup G] {g : G}
-    {s : Set G} : g ∈ AddSubgroup.centralizer s ↔ ∀ h ∈ s, g + h + -g + -h = 0 := by
-  refine forall₂_congr fun _ _ ↦ ?_
-  rw [add_neg_eq_iff_eq_add, add_neg_eq_iff_eq_add, zero_add, eq_comm]
 
 @[to_additive]
 lemma mem_centralizer_singleton_iff {g k : G} :
@@ -152,21 +147,13 @@ theorem centralizer_le_normalizer (s : Set G) : centralizer s ≤ normalizer s :
   · convert hh
     simpa using hg _ hh
 
+@[to_additive]
 instance normal_subgroupOf_centralizer_normalizer (s : Set G) :
     (centralizer s |>.subgroupOf <| normalizer s).Normal := by
   refine (Subgroup.normal_subgroupOf_iff <| centralizer_le_normalizer s).mpr fun c n hc hn ↦ ?_
   refine mem_centralizer_iff_commutator_eq_one'.mpr fun g hg ↦ ?_
   suffices n * (c * (n⁻¹ * g * n) * c⁻¹ * n⁻¹ * g⁻¹) = 1 by simpa [commutatorElement_def, mul_assoc]
   simp [← hc _ <| mem_normalizer_iff''.mp hn g |>.mp hg]
-
-instance _root_.AddSubgroup.normal_addSubgroupOf_centralizer_normalizer {G : Type*} [AddGroup G]
-    (s : Set G) :
-    (AddSubgroup.centralizer s |>.addSubgroupOf <| AddSubgroup.normalizer s).Normal := by
-  refine (AddSubgroup.normal_addSubgroupOf_iff <| AddSubgroup.centralizer_le_normalizer s).mpr ?_
-  intro c n hc hn
-  refine AddSubgroup.mem_centralizer_iff_commutator_eq_zero'.mpr fun g hg ↦ ?_
-  suffices n + (c + (-n + g + n) + -c + -n + -g) = 0 by simpa [add_assoc]
-  simp [← hc _ <| AddSubgroup.mem_normalizer_iff''.mp hn g |>.mp hg]
 
 @[to_additive]
 theorem normalizer_singleton (g : G) : normalizer {g} = centralizer {g} := by
