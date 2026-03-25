@@ -102,7 +102,6 @@ variable (R) (s)
   product of all the `s i`'s. This is denoted by `⨂[R] i, s i`. -/
 def PiTensorProduct : Type _ :=
   (addConGen (PiTensorProduct.Eqv R s)).Quotient
-deriving Zero, AddMonoid
 
 variable {R}
 
@@ -116,10 +115,11 @@ namespace PiTensorProduct
 
 section Module
 
-instance : AddCommMonoid (⨂[R] i, s i) where
-  add_comm := fun x y ↦
-    AddCon.induction_on₂ x y fun _ _ ↦
-      Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _
+instance : AddCommMonoid (⨂[R] i, s i) :=
+  { (addConGen (PiTensorProduct.Eqv R s)).addMonoid with
+    add_comm := fun x y ↦
+      AddCon.induction_on₂ x y fun _ _ ↦
+        Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _ }
 
 instance : Inhabited (⨂[R] i, s i) := ⟨0⟩
 
@@ -916,7 +916,7 @@ variable {s : ι → Type*} [∀ i, AddCommGroup (s i)] [∀ i, Module R (s i)]
 /- Unlike for the binary tensor product, we require `R` to be a `CommRing` here, otherwise
 this is false in the case where `ι` is empty. -/
 instance : AddCommGroup (⨂[R] i, s i) :=
-  fast_instance% Module.addCommMonoidToAddCommGroup R
+  Module.addCommMonoidToAddCommGroup R
 
 end PiTensorProduct
 
