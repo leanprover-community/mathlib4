@@ -213,7 +213,7 @@ lemma CommCStarAlgebra.norm_add_eq_max {a b : A} (h : a * b = 0) :
 lemma CommCStarAlgebra.nnnorm_add_eq_max {a b : A} (h : a * b = 0) :
     ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   NNReal.eq <| CommCStarAlgebra.norm_add_eq_max h
-  
+
 lemma CommCStarAlgebra.norm_sub_eq_max {a b : A} (h : a * b = 0) :
     ‖a - b‖ = max ‖a‖ ‖b‖ := by
   simpa [sub_eq_add_neg] using norm_add_eq_max (a := a) (b := -b) (by simpa)
@@ -258,8 +258,6 @@ lemma IsSelfAdjoint.nnnorm_sub_eq_max {a b : A} (hab : a * b = 0)
     (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) :
     ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   NNReal.eq <| IsSelfAdjoint.norm_sub_eq_max hab ha hb
-
-attribute [aesop safe apply (rule_sets := [CStarAlgebra])] isSelfAdjoint_sum
 
 open scoped Function in
 lemma IsSelfAdjoint.nnnorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι)
