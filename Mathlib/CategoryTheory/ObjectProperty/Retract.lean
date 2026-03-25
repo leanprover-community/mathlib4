@@ -36,6 +36,12 @@ class IsStableUnderRetracts where
 lemma prop_of_retract [IsStableUnderRetracts P] {X Y : C} (h : Retract X Y) (hY : P Y) : P X :=
   IsStableUnderRetracts.of_retract h hY
 
+instance : IsStableUnderRetracts (⊥ : ObjectProperty C) where
+  of_retract _ h := h
+
+instance : IsStableUnderRetracts (⊤ : ObjectProperty C) where
+  of_retract _ _ := by trivial
+
 namespace IsStableUnderRetracts
 
 open scoped ZeroObject
@@ -97,6 +103,14 @@ lemma retractClosure_eq_self [IsStableUnderRetracts P] : retractClosure P = P :=
   · intro X ⟨Y, hY, ⟨e⟩⟩
     exact prop_of_retract P e hY
   · exact le_retractClosure P
+
+@[simp]
+lemma retractClosure_bot : retractClosure (⊥ : ObjectProperty C) = ⊥ :=
+  retractClosure_eq_self _
+
+@[simp]
+lemma retractClosure_top : retractClosure (⊤ : ObjectProperty C) = ⊤ :=
+  retractClosure_eq_self _
 
 lemma retractClosure_le_iff (Q : ObjectProperty C) [IsStableUnderRetracts Q] :
     retractClosure P ≤ Q ↔ P ≤ Q :=

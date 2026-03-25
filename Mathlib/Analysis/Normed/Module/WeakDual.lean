@@ -127,21 +127,13 @@ mapping). It is a linear equivalence. -/
 def toWeakDual : StrongDual R M ≃ₗ[R] WeakDual R M :=
   LinearEquiv.refl R (StrongDual R M)
 
-@[deprecated (since := "2025-08-03")] alias _root_.NormedSpace.Dual.toWeakDual := toWeakDual
-
 theorem coe_toWeakDual (x' : StrongDual R M) : (toWeakDual x' : M → R) = x' := rfl
 
 @[simp]
 theorem toWeakDual_apply (x' : StrongDual R M) (y : M) : (toWeakDual x') y = x' y := rfl
 
-@[deprecated (since := "2025-08-03")]
-alias _root_.NormedSpace.Dual.coe_toWeakDual := coe_toWeakDual
-
 theorem toWeakDual_inj (x' y' : StrongDual R M) : toWeakDual x' = toWeakDual y' ↔ x' = y' :=
   (LinearEquiv.injective toWeakDual).eq_iff
-
-@[deprecated (since := "2025-08-03")]
-alias _root_.NormedSpace.Dual.toWeakDual_inj := toWeakDual_inj
 
 end
 
