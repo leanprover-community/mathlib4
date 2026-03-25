@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.EllipticCurve.AddSubMap
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.AddSubMap
 public import Mathlib.NumberTheory.Height.MvPolynomial
 
 /-!
@@ -32,6 +32,8 @@ is some real constant depending only on the Weierstrass model.
 public section
 
 namespace WeierstrassCurve
+
+open Height
 
 variable {K : Type*} [Field K] [AdmissibleAbsValues K] {a b : K}
   (hab : 32 * a ^ 3 + 216 * b ^ 2 ≠ 0)
