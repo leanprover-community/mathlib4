@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Analysis.LocallyConvex.Separation
+public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.Topology.Algebra.Module.WeakDual
 
@@ -114,3 +115,11 @@ theorem LinearEquiv.image_closure_of_convex' {s : Set E} (hs : Convex ℝ s) (e 
   refine e.image_closure_of_convex hs ?_ ?_
   · simpa [← he] using fun f ↦ map_continuous (e_dual f)
   · simpa [← he'] using fun f ↦ map_continuous (e_dual.symm f)
+
+/-- The weak topology on a space with separating dual is T2 (Hausdorff). -/
+instance WeakSpace.instT2Space {R V : Type*} [CommRing R] [TopologicalSpace R] [T2Space R]
+    [ContinuousAdd R] [ContinuousConstSMul R R] [AddCommGroup V] [Module R V]
+    [TopologicalSpace V] [SeparatingDual R V] : T2Space (WeakSpace R V) :=
+  (WeakBilin.isEmbedding (B := (topDualPairing R V).flip) fun x y h =>
+    not_not.mp fun hne =>
+      (SeparatingDual.exists_separating_of_ne hne).elim fun _ hf => hf (congr_fun h _)).t2Space
