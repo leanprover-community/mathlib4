@@ -645,7 +645,7 @@ theorem cycleFactorsFinset_eq_singleton_iff {f g : Perm α} :
     f.cycleFactorsFinset = {g} ↔ f.IsCycle ∧ f = g := by
   suffices f = g → (g.IsCycle ↔ f.IsCycle) by
     rw [cycleFactorsFinset_eq_finset]
-    simpa [eq_comm, -iffComm]
+    simpa [eq_comm]
   rintro rfl
   exact Iff.rfl
 

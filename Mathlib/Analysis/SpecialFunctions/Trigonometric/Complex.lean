@@ -66,7 +66,7 @@ See also `Complex.tan_eq_zero_iff'`. -/
 theorem tan_eq_zero_iff {θ : ℂ} : tan θ = 0 ↔ ∃ k : ℤ, k * π / 2 = θ := by
   rw [tan, div_eq_zero_iff, ← mul_eq_zero, ← mul_right_inj' two_ne_zero, mul_zero,
     ← mul_assoc, ← sin_two_mul, sin_eq_zero_iff]
-  simp [field, mul_comm, eq_comm, -iffComm]
+  simp [field, mul_comm, eq_comm]
 
 theorem tan_ne_zero_iff {θ : ℂ} : tan θ ≠ 0 ↔ ∀ k : ℤ, (k * π / 2 : ℂ) ≠ θ := by
   contrapose!; exact tan_eq_zero_iff
@@ -90,7 +90,7 @@ theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * 
     _ ↔ sin ((x - y) / 2) = 0 ∨ sin ((x + y) / 2) = 0 := or_comm
     _ ↔ (∃ k : ℤ, y = 2 * k * π + x) ∨ ∃ k : ℤ, y = 2 * k * π - x := by
       apply or_congr <;>
-        simp [-iffComm, field, sin_eq_zero_iff, eq_sub_iff_add_eq',
+        simp [field, sin_eq_zero_iff, eq_sub_iff_add_eq',
           sub_eq_iff_eq_add, mul_comm (2 : ℂ), mul_right_comm _ (2 : ℂ)]
       constructor <;> · rintro ⟨k, rfl⟩; use -k; simp
     _ ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x := exists_or.symm
@@ -224,7 +224,7 @@ theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
 theorem cos_eq_iff_quadratic {z w : ℂ} :
     cos z = w ↔ exp (z * I) ^ 2 - 2 * w * exp (z * I) + 1 = 0 := by
   rw [← sub_eq_zero]
-  simpa [field, cos, exp_neg, -iffComm] using Eq.congr (by ring) rfl
+  simpa [field, cos, exp_neg] using Eq.congr (by ring) rfl
 
 theorem cos_surjective : Function.Surjective cos := by
   intro x

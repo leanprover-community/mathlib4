@@ -347,12 +347,7 @@ theorem liftPropWithinAt_congr_set (hu : s =ᶠ[𝓝 x] t) :
   rw [← hG.liftPropWithinAt_inter (s := s) hu, ← hG.liftPropWithinAt_inter (s := t) hu,
     ← eq_iff_iff]
   congr 1
-  -- aesop? output:
-  simp_all only [eq_iff_iff]
-  ext x_1 : 1
-  simp_all only [mem_inter_iff, mem_setOf_eq, and_congr_left_iff]
-  intro a
-  exact a
+  aesop
 
 theorem liftPropAt_of_liftPropWithinAt (h : LiftPropWithinAt P g s x) (hs : s ∈ 𝓝 x) :
     LiftPropAt P g x := by

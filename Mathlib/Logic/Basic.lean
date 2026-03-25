@@ -71,8 +71,12 @@ simproc ↓ iffComm (_ ↔ _) := fun e => do
   let_expr Iff x y := e | return .continue
   let symmExpr := .app (.app (.const ``Iff []) y) x
   let r ← withoutTheorems #[`iffComm,
-      -- These theorems aren't commute-resistant
-      ``and_congr_right_iff, ``Iff.comm] do
+      -- These theorems would cause an infinite loop:
+      ``Iff.comm,
+      -- These theorems aren't commute-resistant (they turn an iff into a non-iff in a
+      -- non-commutative way).
+      ``and_congr_left_iff, ``and_congr_right_iff,  ``iff_def, ``iff_def',
+      ``iff_iff_implies_and_implies, ``Bool.coe_iff_coe] do
     withTraceNode `Meta.Tactic.simp (fun _ => return m!"commuting the iff {e}") <| simp symmExpr
   -- Don't do anything if we didn't make progress.
   if r.expr == symmExpr || r.expr == e then return .continue

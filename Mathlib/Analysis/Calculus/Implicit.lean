@@ -286,7 +286,7 @@ theorem map_implicitFunction_nhdsWithin_preimage (φ : ImplicitFunctionData 𝕜
     ext x
     suffices x ∈ φ.toOpenPartialHomeomorph.source → φ.leftFun x = φ.leftFun φ.pt →
         (φ.toOpenPartialHomeomorph.symm (φ.leftFun φ.pt, φ.rightFun x) ∈ s ↔ x ∈ s) by
-      simpa [@and_comm (_ = _), -iffComm]
+      simpa [@and_comm (_ = _)]
     intro hxs hx_eq
     rw [← hx_eq, ← prodFun_apply, ← toOpenPartialHomeomorph_coe,
       φ.toOpenPartialHomeomorph.leftInvOn hxs]

@@ -145,6 +145,6 @@ lemma pullSub_adjunction (S T : tree A) (x : List A) : pullSub S x ≤ T ↔ S �
         [skip; replace h := by simpa [List.take_take] using h.take x.length] <;>
         cases hp <| List.prefix_iff_eq_take.mpr (h.eq_of_length (by simpa)).symm
   · rw [mem_pullSub_short hl, mem_pullSub_short (by simp), mem_pullSub_short (by simp; lia)]
-    simpa using fun _ ↦ (z.isPrefix_append_of_length hl)
+    simpa using fun _ ↦ (z.isPrefix_append_of_length hl).symm
 
 end Descriptive.Tree
