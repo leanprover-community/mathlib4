@@ -83,7 +83,8 @@ def basis :
     apply LieSubalgebra.lie_mem <;>
       exact LieSubalgebra.subset_lieSpan <| by simp
 
-set_option backward.isDefEq.respectTransparency false in -- TODO Remove
+@[simp] lemma basis_A_eq : (basis b).A = b.cartanMatrix := rfl
+
 instance : (cartanSubalgebra' b).IsCartanSubalgebra :=
   inferInstanceAs (basis b).cartan.IsCartanSubalgebra
 
@@ -92,14 +93,11 @@ instance : (cartanSubalgebra' b).IsCartanSubalgebra :=
 -- https://github.com/leanprover-community/mathlib4/issues/10068
 variable [LieAlgebra.IsKilling K (lieAlgebra b)]
 
-set_option backward.isDefEq.respectTransparency false in -- TODO Remove
 open LieAlgebra.IsKilling in
 /-- Up to equivalence, `LieAlgebra.IsKilling.rootSystem` is left inverse to
 `RootPairing.GeckConstruction.lieAlgebra`. -/
 def equivRootSystem [IsAlgClosed K] :
-    P.Equiv (rootSystem (basis b).cartan) := by
-  refine b.equivOfCartanMatrixEq _ (basis b).baseSupportEquiv fun i j ↦ ?_
-  have := (basis b).cartanMatrix_base_eq
-  simp_all [basis]
+    P.Equiv (rootSystem (basis b).cartan) :=
+  b.equivOfCartanMatrixEq _ (basis b).baseSupportEquiv <| by simp [(basis b).cartanMatrix_base_eq]
 
 end RootPairing.GeckConstruction
