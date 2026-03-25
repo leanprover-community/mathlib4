@@ -64,6 +64,13 @@ def mkFunPropSimproc (simprocName : Name) (thm : Name) : Simp.Simproc := fun e =
 
   return .visit { expr := rhs, proof? := prf }
 
+
+/-- Simproc simplifying `deriv _ _` or `fderiv _ _ _` expressions.
+
+More preciselly, this is a simp attribute that registers four separate simprocs for `deriv _`,
+`deriv _ _`, `fderiv _ _`, `fderiv _ _ _` -/
+register_simp_attr deriv_simproc
+
 end Meta.FunProp
 
 end Mathlib

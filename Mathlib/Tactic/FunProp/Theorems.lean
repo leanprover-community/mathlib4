@@ -350,6 +350,10 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
     | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
+
+      let b' ← abstractAppArgs b' decl.outArgIds
+      let (_,_,b') ← lambdaMetaTelescope b'
+
       let keys ← RefinedDiscrTree.initializeLazyEntryWithEta b'
       let thm : GeneralTheorem := {
         funPropName := funPropName
@@ -394,12 +398,14 @@ form: {toString thm.form} form"
   | .mor thm =>
     trace[Meta.Tactic.fun_prop.attr] "\
 morphism theorem: {thm.thmName}
-function property: {thm.funPropName}"
+function property: {thm.funPropName}
+keys: {← thm.keys.mapM (fun (k, l) => do return (k :: (← l.toList)))}"
     morTheoremsExt.add thm attrKind
   | .transition thm =>
     trace[Meta.Tactic.fun_prop.attr] "\
 transition theorem: {thm.thmName}
-function property: {thm.funPropName}"
+function property: {thm.funPropName}
+keys: {← thm.keys.mapM (fun (k, l) => do return (k :: (← l.toList)))}"
     transitionTheoremsExt.add thm attrKind
 
 end Meta.FunProp
