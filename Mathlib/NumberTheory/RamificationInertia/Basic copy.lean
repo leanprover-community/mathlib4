@@ -16,6 +16,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+public import Mathlib.NumberTheory.RamificationInertia.Inertia
 
 /-!
 # Ramification index
@@ -317,13 +318,6 @@ end flatBaseChange
 
 namespace Ideal
 
-noncomputable def inertiaDeg {R S : Type*} [CommRing R] [CommRing S]
-    (p : Ideal R) (P : Ideal S) [Algebra R S] : ℕ :=
-  if hPp : P.comap (algebraMap R S) = p then
-    letI : Algebra (R ⧸ p) (S ⧸ P) := Quotient.algebraQuotientOfLEComap hPp.ge
-    Module.finrank (R ⧸ p) (S ⧸ P)
-  else 0
-
 open Classical in
 noncomputable def ramificationIdx
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
@@ -388,11 +382,12 @@ theorem ramificationIdx_tower'
     apply ramificationIdx_tower
   · rw [ramificationIdx_of_not_isPrime p r hr, ramificationIdx_of_not_isPrime q r hr, mul_zero]
 
--- generalize to QuasiFinite?
-
+-- todo: generalize primesOverFinset
 noncomputable def primesOverFinset' {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     [Algebra.QuasiFinite R S] (p : Ideal R) [p.IsPrime] : Finset (Ideal S) :=
   (Algebra.QuasiFinite.finite_primesOver p (S := S)).toFinset
+
+-- generalize to QuasiFinite?
 
 open Module TensorProduct in
 set_option backward.isDefEq.respectTransparency false in
