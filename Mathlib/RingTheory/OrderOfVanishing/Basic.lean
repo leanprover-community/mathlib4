@@ -325,6 +325,4 @@ lemma ordFrac_eq_div (a : nonZeroDivisors R) (b : nonZeroDivisors R) :
     ordFrac R (IsLocalization.mk' K a.1 b) =
       ordMonoidWithZeroHom R a / ordMonoidWithZeroHom R b := by
   simp [ordFrac_eq_ord]
-
-
 end Ring
