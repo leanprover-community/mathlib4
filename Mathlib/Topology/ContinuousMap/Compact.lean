@@ -350,22 +350,30 @@ variable {R : Type*} [NonUnitalSeminormedRing R] [IsCancelMulZero R]
 
 open BoundedContinuousFunction
 
-/-- If the product of continuous functions is zero, then the norm of their sum is the
-maximum of their norms. -/
+/-- If the product of continuous functions on a compact space is zero, then the norm of their sum
+is the maximum of their norms. -/
 lemma norm_add_eq_max {f g : C(α, R)} (h : f * g = 0) :
     ‖f + g‖ = max ‖f‖ ‖g‖ := by
   replace h : mkOfCompact f * mkOfCompact g = 0 := by ext x; simpa using congr($h x)
   simpa using BoundedContinuousFunction.norm_add_eq_max h
 
-/-- If the product of bounded continuous functions is zero, then the norm of their sum is the
-maximum of their norms. -/
+/-- If the product of continuous functions on a compact space is zero, then the norm of their sum
+is the maximum of their norms. -/
 lemma nnnorm_add_eq_max {f g : C(α, R)} (h : f * g = 0) :
     ‖f + g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   NNReal.eq <| norm_add_eq_max h
 
+lemma norm_sub_eq_max {f g : C(α, R)} (h : f * g = 0) :
+    ‖f - g‖ = max ‖f‖ ‖g‖ := by
+  simpa [sub_eq_add_neg] using norm_add_eq_max (f := f) (g := -g) (by simpa)
+
+lemma nnnorm_sub_eq_max {f g : C(α, R)} (h : f * g = 0) :
+    ‖f - g‖₊ = max ‖f‖₊ ‖g‖₊ :=
+  NNReal.eq <| norm_sub_eq_max h
+
 open scoped Function
-/-- If the pairwise products of bounded continuous functions are all zero, then the norm of their
-sum is the maximum of their norms. -/
+/-- If the pairwise products of continuous functions on a compact space are all zero, then the norm
+of their sum is the maximum of their norms. -/
 lemma nnnorm_sum_eq_sup {ι : Type*} {f : ι → C(α, R)} (s : Finset ι)
     (h : Pairwise ((· * · = 0) on f)) :
     ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) := by
@@ -438,7 +446,6 @@ open TopologicalSpace
 variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X]
 variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by
   classical

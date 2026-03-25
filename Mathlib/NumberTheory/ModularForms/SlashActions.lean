@@ -61,6 +61,7 @@ attribute [simp] SlashAction.zero_slash SlashAction.slash_one SlashAction.add_sl
   | insert i t hi IH => simp [hi, IH]
 
 /-- `SlashAction` induced by a monoid homomorphism. -/
+@[implicit_reducible]
 def monoidHomSlashAction {β G H α : Type*} [Monoid G] [AddMonoid α] [Monoid H]
     [SlashAction β G α] (h : H →* G) : SlashAction β H α where
   map k g := SlashAction.map k (h g)
@@ -91,10 +92,6 @@ private def privateSlash (k : ℤ) (γ : GL (Fin 2) ℝ) (f : ℍ → ℂ) (x : 
   σ γ (f (γ • x)) * |γ.det.val| ^ (k - 1) * UpperHalfPlane.denom γ x ^ (-k)
 
 -- Why is `noncomputable` flag needed here, when we're in a noncomputable section already?
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-@[deprecated (since := "2025-09-19")] noncomputable alias slash := privateSlash
-
 -- temporary notation until the instance is built
 local notation:100 f " ∣[" k "] " γ:100 => ModularForm.privateSlash k γ f
 

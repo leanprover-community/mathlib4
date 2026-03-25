@@ -154,7 +154,6 @@ lemma lintegral_fderiv_lineMap_eq_edist {x y : E} :
   exact fderivWithin_eq_fderiv (uniqueDiffOn_Icc zero_lt_one _ hz)
     (ContinuousAffineMap.differentiableAt _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An inner product vector space is a Riemannian manifold, i.e., the distance between two points
 is the infimum of the lengths of paths between these points. -/
 instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
@@ -382,9 +381,6 @@ lemma eventually_riemannianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
   · exact Or.inl (mod_cast C_pos.ne')
   · simp
 
-@[deprecated (since := "2025-09-18")]
-alias eventually_riemmanianEDist_lt := eventually_riemannianEDist_lt
-
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
 Riemannian distance, `ℝ≥0` version. -/
 lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
@@ -497,18 +493,12 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   simp only [Function.comp_apply, γ', (extChartAt I x).left_inv <| uc <| t₁_mem
     (right_mem_Icc.mpr ht₁0)]
 
-@[deprecated (since := "2025-09-18")]
-alias setOf_riemmanianEDist_lt_subset_nhds := setOf_riemannianEDist_lt_subset_nhds
-
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
 Riemannian distance, `ℝ≥0∞` version. -/
 lemma setOf_riemannianEDist_lt_subset_nhds' [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
     ∃ c > 0, {y | riemannianEDist I x y < c} ⊆ s := by
   rcases setOf_riemannianEDist_lt_subset_nhds I hs with ⟨c, c_pos, hc⟩
   exact ⟨c, mod_cast c_pos, hc⟩
-
-@[deprecated (since := "2025-09-18")]
-alias setOf_riemmanianEDist_lt_subset_nhds' := setOf_riemannianEDist_lt_subset_nhds'
 
 variable (M) in
 /-- The pseudoemetric space structure associated to a Riemannian metric on a manifold. Designed
