@@ -32,10 +32,13 @@ section CommSimproc
 
 open Lean Meta Simp
 
-/-- Run `e` while `declName` is erased from the default `simp` set. -/
-meta def Lean.Meta.Simp.withoutTheorem {α} (declName : Name) (e : SimpM α) : SimpM α := do
-  let theorems := (← getSimpTheorems).eraseTheorem (.decl declName)
-  let procs := (← getSimprocs).erase declName
+/-- Run `e` while the entries in `declNames` are erased from the default `simp` set. -/
+meta def Lean.Meta.Simp.withoutTheorems {α} (declNames : Array Name) (e : SimpM α) : SimpM α := do
+  let mut theorems ← getSimpTheorems
+  let mut procs ← getSimprocs
+  for name in declNames do
+    theorems := theorems.eraseTheorem (.decl name)
+    procs := procs.erase name
   let oldMethods ← getMethods
   let methods := mkMethods #[procs] oldMethods.discharge? oldMethods.wellBehavedDischarge
   withSimpTheorems theorems do
@@ -50,13 +53,16 @@ theorem iff_comm_eq (a b : Prop) : (a ↔ b) = (b ↔ a) := by rw [@iff_comm a b
 simproc eqComm (_ = _) := fun e => do
   let_expr Eq x y := e | return .continue
   let symmExpr ← mkEq y x
-  let r ← withoutTheorem `eqComm <| simp symmExpr
+  let r ← withoutTheorems #[`eqComm] do
+    withTraceNode `Meta.Tactic.simp (fun _ => return m!"commuting the equality {e}") <| simp symmExpr
   -- Don't do anything if we didn't make progress.
   if r.expr == symmExpr then return .continue
   let symmR ← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``eq_comm_eq #[x, y] } r
   -- If we go `x = y` --symm-> `y = x` --simp--> `y' = x'`, then we want to end up with `x' = y'`.
   match_expr r.expr with
-  | Eq y' x' => return .visit (← symmR.mkEqTrans
+  | Eq y' x' => do
+    trace[Meta.Tactic.simp] m!"decommuting the equality {r.expr}"
+    return .visit (← symmR.mkEqTrans
       { expr := ← mkEq x' y', proof? := ← mkAppM ``eq_comm_eq #[y', x'] })
   | _ => return .done symmR
 
@@ -64,15 +70,20 @@ simproc eqComm (_ = _) := fun e => do
 simproc ↓ iffComm (_ ↔ _) := fun e => do
   let_expr Iff x y := e | return .continue
   let symmExpr := .app (.app (.const ``Iff []) y) x
-  let r ← withoutTheorem `iffComm <| simp symmExpr
+  let r ← withoutTheorems #[`iffComm, ``and_congr_right_iff] do -- this theorem isn't commute-resistant
+    withTraceNode `Meta.Tactic.simp (fun _ => return m!"commuting the iff {e}") <| simp symmExpr
   -- Don't do anything if we didn't make progress.
   if r.expr == symmExpr then return .continue
   let symmR ← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``iff_comm_eq #[x, y] } r
   -- If we go `x ↔ y` --symm-> `y ↔ x` --simp--> `y' ↔ x'`, then we want to end up with `x' ↔ y'`.
   match_expr r.expr with
-  | Iff y' x' => return .visit (← symmR.mkEqTrans
+  | Iff y' x' => do
+    trace[Meta.Tactic.simp] m!"decommuting the iff {r.expr}"
+    return .visit (← symmR.mkEqTrans
       { expr := .app (.app (.const ``Iff []) x') y', proof? := ← mkAppM ``iff_comm_eq #[y', x'] })
-  | _ => return .done symmR
+  | _ => do
+   trace[Meta.Tactic.simp] "no decommuting the iff needed in {r.expr}"
+   return .done symmR
 
 end CommSimproc
 
