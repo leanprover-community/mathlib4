@@ -346,6 +346,6 @@ protected theorem Language.IsContextFree.of_reverse (L : Language T) (h : L.reve
 @[simp]
 theorem Language.isContextFree_reverse {L : Language T} :
     L.reverse.IsContextFree ↔ L.IsContextFree :=
-      ⟨.of_reverse L, .reverse L⟩
+  ⟨.of_reverse L, .reverse L⟩
 
 end closure_reversal
