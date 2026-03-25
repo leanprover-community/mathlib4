@@ -56,13 +56,23 @@ open Function
 
 /-- Nonnegative real numbers, denoted as `ℝ≥0` within the NNReal namespace -/
 def NNReal := { r : ℝ // 0 ≤ r }
-deriving
+
+namespace NNReal
+
+deriving instance
   Nontrivial, Inhabited,
   PartialOrder, SemilatticeSup, SemilatticeInf, DistribLattice,
   Zero, One, Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
-  Sub, OrderedSub, OrderBot
+  Sub, OrderedSub, OrderBot,
+  CanonicallyOrderedAdd, NoZeroDivisors, DenselyOrdered,
+  Archimedean, MulArchimedean, IsOrderedRing, IsStrictOrderedRing
+  for NNReal
 
-namespace NNReal
+noncomputable section
+deriving instance LinearOrder, LinearOrderedCommGroupWithZero
+  for NNReal
+end
+
 
 @[inherit_doc] scoped notation "ℝ≥0" => NNReal
 
@@ -71,17 +81,9 @@ namespace NNReal
 
 instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 
-instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
-instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
-instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
-instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
-instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
 
 -- a computable copy of `Nonneg.instNNRatCast`
 instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, r.cast_nonneg⟩
-
-noncomputable instance : LinearOrder ℝ≥0 :=
-  inferInstanceAs <| LinearOrder (Subtype _)
 
 noncomputable instance : Inv ℝ≥0 where
   inv x := ⟨(x : ℝ)⁻¹, inv_nonneg.mpr x.2⟩
@@ -103,15 +105,6 @@ noncomputable instance : Semifield ℝ≥0 := fast_instance%
   Function.Injective.semifield toReal Subtype.val_injective
     rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
-
-instance : IsOrderedRing ℝ≥0 :=
-  Nonneg.isOrderedRing
-
-instance : IsStrictOrderedRing ℝ≥0 :=
-  Nonneg.isStrictOrderedRing
-
-noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
-  inferInstanceAs <| LinearOrderedCommGroupWithZero (Subtype _)
 
 example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
   with_reducible_and_instances exact inv_anti₀ h1p h2p
