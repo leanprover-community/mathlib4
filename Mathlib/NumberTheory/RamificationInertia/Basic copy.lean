@@ -235,27 +235,51 @@ end flatBaseChange
 
 namespace Ideal
 
+noncomputable def inertiaDeg {R S : Type*} [CommRing R] [CommRing S]
+    (p : Ideal R) (P : Ideal S) [Algebra R S] : ℕ :=
+  if hPp : P.comap (algebraMap R S) = p then
+    letI : Algebra (R ⧸ p) (S ⧸ P) := Quotient.algebraQuotientOfLEComap hPp.ge
+    Module.finrank (R ⧸ p) (S ⧸ P)
+  else 0
+
 open Classical in
-noncomputable def ramificationIdx {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+noncomputable def ramificationIdx
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     (p : Ideal R) (q : Ideal S) : ℕ :=
   if _ : q.IsPrime then
     letI Sq := Localization.AtPrime q
     (Module.length Sq (Sq ⧸ p.map (algebraMap R Sq))).toNat
   else 0
 
-noncomputable def ramificationIdx_def {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+noncomputable def ramificationIdx_def
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     (p : Ideal R) (q : Ideal S) [q.IsPrime] :
     letI Sq := Localization.AtPrime q
     p.ramificationIdx q = (Module.length Sq (Sq ⧸ p.map (algebraMap R Sq))).toNat :=
   dif_pos _
 
-noncomputable def ramificationIdx_eq_zero {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+noncomputable def ramificationIdx_of_not_isPrime
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     (p : Ideal R) (q : Ideal S) (hq : ¬ q.IsPrime) :
     p.ramificationIdx q = 0 :=
   dif_neg hq
 
+theorem ramificationIdx_of_not_le
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    (p : Ideal R) (q : Ideal S) (h : ¬ p.map (algebraMap R S) ≤ q) : p.ramificationIdx q = 0 := by
+  by_cases hq : q.IsPrime
+  · suffices map (algebraMap R (Localization.AtPrime q)) p = ⊤ by
+      rw [← Submodule.Quotient.subsingleton_iff] at this
+      rw [ramificationIdx_def, Module.length_eq_zero, ENat.toNat_zero]
+    rw [IsScalarTower.algebraMap_eq R S (Localization.AtPrime q), ← map_map]
+    contrapose! h
+    rw [IsLocalization.map_algebraMap_ne_top_iff_disjoint q.primeCompl] at h
+    exact disjoint_compl_left_iff.mp h
+  · rw [ramificationIdx_of_not_isPrime p q hq]
+
 /-- See `ramificationIdx_tower'` for a version that does not assume primality. -/
-theorem ramificationIdx_tower {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+theorem ramificationIdx_tower
+    {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     (p : Ideal R) (q : Ideal S) [q.IsPrime] (r : Ideal T) [r.IsPrime] [r.LiesOver q]
     [Module.Flat (Localization.AtPrime q) (Localization.AtPrime r)] :
@@ -272,25 +296,31 @@ theorem ramificationIdx_tower {R S T : Type*} [CommRing R] [CommRing S] [CommRin
     (Algebra.TensorProduct.quotIdealMapEquivTensorQuot Tr (p.map (algebraMap R Sq)))
   exact f.toLinearEquiv.length_eq
 
-theorem ramificationIdx_tower' {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+theorem ramificationIdx_tower'
+    {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     (p : Ideal R) (q : Ideal S) (r : Ideal T) [r.LiesOver q] [Module.Flat S T] :
     p.ramificationIdx r = p.ramificationIdx q * q.ramificationIdx r := by
   by_cases hr : r.IsPrime
   · rw [Ideal.over_def r q]
     apply ramificationIdx_tower
-  · rw [ramificationIdx_eq_zero p r hr, ramificationIdx_eq_zero q r hr, mul_zero]
+  · rw [ramificationIdx_of_not_isPrime p r hr, ramificationIdx_of_not_isPrime q r hr, mul_zero]
 
 -- generalize to QuasiFinite?
+
+noncomputable def primesOverFinset' {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    [Algebra.QuasiFinite R S] (p : Ideal R) [p.IsPrime] : Finset (Ideal S) :=
+  (Algebra.QuasiFinite.finite_primesOver p (S := S)).toFinset
 
 open Module TensorProduct in
 set_option backward.isDefEq.respectTransparency false in
 theorem sum_ramification_inertia
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] : False := by
-  -- prove: length of special fiber equals sum of e * f
+    [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] :
+    Module.finrank p.ResidueField (p.Fiber S) =
+      ∑ q ∈ (Algebra.QuasiFinite.finite_primesOver p (S := S)).toFinset,
+        p.ramificationIdx q * p.inertiaDeg q := by
   let F := p.Fiber S
-  let n := Module.finrank p.ResidueField F
   have : IsArtinianRing F := Algebra.QuasiFinite.instIsArtinianRingFiber p (S := S)
   -- need: F factors as a product of Artinian local rings,
   let e := PrimeSpectrum.primesOverOrderIsoFiber R S p
