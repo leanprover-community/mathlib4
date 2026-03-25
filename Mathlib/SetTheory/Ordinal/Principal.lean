@@ -92,9 +92,7 @@ alias not_principal_iff_of_monotone := not_isPrincipal_iff_of_monotone
 @[deprecated (since := "2026-03-17")]
 alias principal_zero := isPrincipal_zero
 
-@[simp]
-theorem isPrincipal_one_iff : IsPrincipal op 1 ↔ op 0 0 = 0 := by
-  simp [IsPrincipal]
+@[simp] theorem isPrincipal_one_iff : IsPrincipal op 1 ↔ op 0 0 = 0 := by simp [IsPrincipal]
 
 @[deprecated (since := "2026-03-17")]
 alias principal_one_iff := isPrincipal_one_iff
