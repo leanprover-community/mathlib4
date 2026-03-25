@@ -23,7 +23,7 @@ path graph on `n` vertices.
 
 * `SimpleGraph.hasse`: Hasse diagram of an order.
 * `SimpleGraph.pathGraph`: Path graph on `n` vertices.
-* `SimpleGraph.hasse_cliqueFree_three`: The Hasse diagram is triangle-free.
+* `SimpleGraph.cliqueFree_hasse_three`: The Hasse diagram is triangle-free.
 -/
 
 @[expose] public section
@@ -64,25 +64,15 @@ theorem hasseDualIso_symm_apply (a : α) : hasseDualIso.symm a = toDual a :=
   rfl
 
 /-- The Hasse diagram of a preorder is triangle-free. This is the graph-theoretic formulation of
-`not_covBy_of_lt_of_lt`: if `a ⋖ b` and `b ⋖ c` then `¬a ⋖ c`. -/
-theorem hasse_cliqueFree_three : (hasse α).CliqueFree 3 := by
+`not_covBy_of_lt_of_lt`: if `a ⋖ b` and `b ⋖ c` then `¬ a ⋖ c`. -/
+theorem cliqueFree_hasse_three : (hasse α).CliqueFree 3 := by
   classical
   intro s ⟨hc, hcard⟩
   obtain ⟨a, b, c, hab, hac, hbc, rfl⟩ := Finset.card_eq_three.mp hcard
   have h1 := hasse_adj.mp (hc (by simp) (by simp) hab)
   have h2 := hasse_adj.mp (hc (by simp) (by simp) hbc)
   have h3 := hasse_adj.mp (hc (by simp) (by simp) hac)
-  rcases h1 with h1 | h1 <;>
-    rcases h2 with h2 | h2 <;>
-    rcases h3 with h3 | h3
-  · exact not_covBy_of_lt_of_lt h1.lt h2.lt h3
-  · exact absurd h3.lt (lt_asymm (h1.lt.trans h2.lt))
-  · exact not_covBy_of_lt_of_lt h3.lt h2.lt h1
-  · exact not_covBy_of_lt_of_lt h3.lt h1.lt h2
-  · exact not_covBy_of_lt_of_lt h1.lt h3.lt h2
-  · exact not_covBy_of_lt_of_lt h2.lt h3.lt h1
-  · exact absurd h3.lt (lt_asymm (h2.lt.trans h1.lt))
-  · exact not_covBy_of_lt_of_lt h2.lt h1.lt h3
+  grind [hasse_adj, CovBy]
 
 end Preorder
 
