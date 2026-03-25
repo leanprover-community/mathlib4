@@ -369,30 +369,21 @@ lemma LinearOrder.strong_induction_of_finite
   refine Fin.strong_induction_on (fun j hj ↦ h _ (fun k hk ↦ ?_))
   simpa using hj (e.symm k) (by simpa [← e.lt_iff_lt])
 
-lemma Finset.orderEmbedding_eq_of_image_eq
+lemma Fintype.orderEmbedding_eq_of_range_eq
     {α β : Type*} [LinearOrder α] [PartialOrder β] [Fintype α] [DecidableEq β]
     {f g : α ↪o β}
-    (h : Finset.image f .univ = Finset.image g .univ) :
+    (h : Set.range f = Set.range g) :
     f = g := by
-  suffices ∀ {n : ℕ} (f g : Fin n ↪o β) (h : Finset.image f ⊤ = Finset.image g ⊤), f = g by
-    let e := Fintype.orderIsoFinOfCardEq α rfl
-    replace h := this (e.toOrderEmbedding.trans f) (e.toOrderEmbedding.trans g)
-      (by simpa [Finset.ext_iff, e.surjective.exists] using h)
-    simpa [DFunLike.ext_iff, e.surjective.forall] using h
-  suffices ∀ {n : ℕ} {f g : Fin n ↪o β} (h : Finset.image f ⊤ = Finset.image g ⊤) (i : Fin n)
-      (h' : ∀ (j : Fin n), j < i → f j = g j), f i ≤ g i from fun n f g h ↦ by
-    ext i
-    induction i using Fin.strong_induction_on with
-    | h i hi => exact le_antisymm (this h _ hi) (this h.symm _ (fun j hj ↦ (hi j hj).symm))
-  intro n f g h i h'
-  have : g i ∈ Finset.image f ⊤ := by rw [h]; simp
-  simp only [Finset.top_eq_univ, Finset.mem_image, Finset.mem_univ, true_and] at this
-  obtain ⟨j, hj⟩ := this
-  rw [← hj]
-  apply f.monotone
-  by_contra!
-  rw [h' j this, EmbeddingLike.apply_eq_iff_eq] at hj
-  lia
+  let ef := (f.strictMono.strictMonoOn .univ).orderIso
+  let eg := (g.strictMono.strictMonoOn .univ).orderIso
+  replace h : f '' .univ = g '' .univ := by simpa using h
+  let i : (f '' .univ) ≃o (g '' .univ) :=
+  { __ := Equiv.setCongr h
+    map_rel_iff' := by intro x y; exact Iff.rfl }
+  have : (ef.trans i).trans eg.symm = .refl _ := Subsingleton.elim _ _
+  ext x
+  simpa only [OrderIso.trans_apply, OrderIso.apply_symm_apply, OrderIso.refl_apply, Subtype.ext_iff]
+    using congr(eg ($this ⟨x, Set.mem_univ x⟩))
 
 lemma Finset.orderHom_eq_of_image_eq {α β : Type*} [LinearOrder α] [PartialOrder β]
     [Fintype α] [DecidableEq β] {f g : α →o β}
