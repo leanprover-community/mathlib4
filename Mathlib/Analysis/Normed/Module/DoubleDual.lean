@@ -20,8 +20,7 @@ basic properties.
   `StrongDual`, considered as a bounded linear map.
 * `NormedSpace.inclusionInDoubleDualLi` is the same map as a linear isometry (for `𝕜 = ℝ` or
   `𝕜 = ℂ`).
-* `NormedSpace.inclusionInDoubleDualWeak` is the canonical map from the weak space into the
-  weak-star bidual.
+* `NormedSpace.inclusionInDoubleDualWeak` is the map from the weak space into the weak-star bidual.
 * `NormedSpace.inclusionInDoubleDualWeak_isEmbedding` shows that `inclusionInDoubleDualWeak` is
   a topological embedding.
 * `NormedSpace.inclusionInDoubleDualWeak_homeomorph` is the same map as a homeomorphism onto
@@ -35,7 +34,7 @@ basic properties.
 
 ## Tags
 
-double dual, inclusion, isometry, embedding
+double dual, inclusion, isometry, embedding, weak-star topology
 -/
 
 @[expose] public section
@@ -48,11 +47,10 @@ universe u v
 
 namespace NormedSpace
 
-section General
+section inclusionInDoubleDual
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 variable (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- The inclusion of a normed space in its double (topological) strong dual, considered
 as a bounded linear map. -/
@@ -74,7 +72,7 @@ theorem inclusionInDoubleDual_norm_le : ‖inclusionInDoubleDual 𝕜 E‖ ≤ 1
 theorem double_dual_bound (x : E) : ‖(inclusionInDoubleDual 𝕜 E) x‖ ≤ ‖x‖ := by
   simpa using ContinuousLinearMap.le_of_opNorm_le _ (inclusionInDoubleDual_norm_le 𝕜 E) x
 
-end General
+end inclusionInDoubleDual
 
 section BidualIsometry
 
@@ -106,26 +104,28 @@ end BidualIsometry
 
 section Embedding
 
-variable (𝕜 : Type*) [RCLike 𝕜] (X : Type*) [NormedAddCommGroup X] [NormedSpace 𝕜 X]
+variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+variable (X : Type*) [SeminormedAddCommGroup X] [NormedSpace 𝕜 X]
 
-/-- The canonical map from a normed space (with the weak topology) into the weak-star bidual.
+/-- The map from a normed space with the weak topology into the weak-star bidual.
 This is `inclusionInDoubleDual` composed with `StrongDual.toWeakDual`, bundling the topology
 change on both sides. -/
 def inclusionInDoubleDualWeak (x : WeakSpace 𝕜 X) : WeakDual 𝕜 (StrongDual 𝕜 X) :=
   StrongDual.toWeakDual (inclusionInDoubleDual 𝕜 X x)
 
-/-- The canonical embedding into the weak-star bidual evaluates to `f x`. -/
+/-- The embedding into the weak-star bidual evaluates to `f x`. -/
 @[simp]
 theorem inclusionInDoubleDualWeak_apply (x : WeakSpace 𝕜 X) (f : StrongDual 𝕜 X) :
     (inclusionInDoubleDualWeak 𝕜 X x) f = f x :=
   rfl
 
 /-- `inclusionInDoubleDualWeak` is inducing: the weak topology on `X` coincides with the topology
-pulled back from the weak-star topology on the bidual. Both are the topology of pointwise
-convergence against `StrongDual 𝕜 X`. -/
+pulled back from the weak-star topology on the bidual. -/
 theorem inclusionInDoubleDualWeak_isInducing :
     IsInducing (inclusionInDoubleDualWeak 𝕜 X) where
   eq_induced := Eq.symm <| induced_compose (f := inclusionInDoubleDualWeak 𝕜 X)
+
+variable (𝕜 : Type*) [RCLike 𝕜] (X : Type*) [NormedAddCommGroup X] [NormedSpace 𝕜 X]
 
 /-- `inclusionInDoubleDualWeak` is a topological embedding from the weak topology to the weak-star
 topology. -/
@@ -141,13 +141,14 @@ def inclusionInDoubleDualWeak_homeomorph :
     WeakSpace 𝕜 X ≃ₜ Set.range (inclusionInDoubleDualWeak 𝕜 X) :=
   (inclusionInDoubleDualWeak_isEmbedding 𝕜 X).toHomeomorph
 
-/-- If `S` is bounded and the weak-star closure of its image under the canonical embedding into the
-double dual lies in the range of that embedding, then `closure S` is compact in the weak topology.
+/-- If `S` is bounded set in `WeakSpace X` and the weak-star closure of its image under
+the embedding into the weak-star double dual lies in the range of that embedding,
+then `closure S` is compact in the weak topology.
 
 This combines Banach–Alaoglu (compactness of bounded weak-star–closed sets) with the topological
 embedding `inclusionInDoubleDualWeak_isEmbedding` to transfer compactness back to the weak
 topology on `X`. -/
-theorem isCompact_closure_of_isBounded {S : Set (WeakSpace 𝕜 X)}
+theorem isCompact_closure_of_isBounded (S : Set (WeakSpace 𝕜 X))
     (hb : IsBounded ((toWeakSpace 𝕜 X) ⁻¹' S))
     (hrange : closure (inclusionInDoubleDualWeak 𝕜 X '' S) ⊆
       Set.range (inclusionInDoubleDualWeak 𝕜 X)) :

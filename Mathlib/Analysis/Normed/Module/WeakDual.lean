@@ -309,7 +309,7 @@ theorem isBounded_closure {s : Set (WeakDual 𝕜 E)} (hb : IsBounded s) :
     IsBounded (closure s) := by
   obtain ⟨R, hR⟩ := (Metric.isBounded_iff_subset_closedBall (0 : StrongDual 𝕜 E)).mp hb
   exact (isBounded_closedBall 0 R).subset
-    (closure_minimal (fun y hy => hR (a := toStrongDual y) hy) (isClosed_closedBall 0 R))
+    (closure_minimal (fun y hy ↦ hR (a := toStrongDual y) hy) (isClosed_closedBall 0 R))
 
 /-- The **Banach-Alaoglu theorem**: closed balls of the dual of a normed space `E` are compact in
 the weak-star topology. -/
