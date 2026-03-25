@@ -63,7 +63,7 @@ extension to a (unital) algebra homomorphism from `Unitization R A` to `B`.
 @[expose] public section
 
 
-/-- The minimal unitization of a non-unital `R`-algebra `A`. This is just a type synonym for
+/-- The minimal unitization of a non-unital `R`-algebra `A`. This is just a structure wrapper for
 `R × A`. -/
 @[ext]
 structure Unitization (R A : Type*) extends R × A
@@ -280,7 +280,7 @@ def addEquiv [Add R] [Add A] : Unitization R A ≃+ R × A where
   toEquiv := equiv
   map_add' _ _ := rfl
 
--- not marked `smip` because the LHS would not be in simp normal form.
+-- not marked `simp` because the LHS would not be in simp normal form.
 lemma toEquiv_addEquiv [Add R] [Add A] : (addEquiv R A).toEquiv = equiv :=
   rfl
 
