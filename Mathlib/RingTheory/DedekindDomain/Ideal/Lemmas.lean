@@ -1088,11 +1088,9 @@ theorem primesOver_finite : (primesOver p B).Finite := by
     haveI : IsDomain A := IsDomain.of_bot_isPrime A
     rw [primesOver_bot A B]
     exact Set.finite_singleton ⊥
-  · have : p.primesOver B = (normalizedFactors (p.map (algebraMap A B))).toFinset := by
-      ext P
-      simp [mem_primesOver_iff_mem_normalizedFactors B hpb]
-    rw [this]
-    apply Finset.finite_toSet
+  · convert Finset.finite_toSet (normalizedFactors (p.map (algebraMap A B))).toFinset
+    ext P
+    simp [mem_primesOver_iff_mem_normalizedFactors B hpb]
 
 noncomputable instance : Fintype (p.primesOver B) := Set.Finite.fintype (primesOver_finite p B)
 
