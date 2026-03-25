@@ -183,10 +183,10 @@ instance instAddCommSemigroup [AddCommSemigroup R] [AddCommSemigroup A] :
   Prod.instAddCommSemigroup
 
 instance instAddCommMonoid [AddCommMonoid R] [AddCommMonoid A] : AddCommMonoid (Unitization R A) :=
-  inferInstanceAs <| AddCommMonoid (R × A)
+  Prod.instAddCommMonoid
 
 instance instAddCommGroup [AddCommGroup R] [AddCommGroup A] : AddCommGroup (Unitization R A) :=
-  inferInstanceAs <| AddCommGroup (R × A)
+  Prod.instAddCommGroup
 
 instance instSMul [SMul S R] [SMul S A] : SMul S (Unitization R A) :=
   Prod.instSMul
