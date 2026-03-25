@@ -228,6 +228,10 @@ theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable
   hs.2 ▸ by simp only [← preimage_comp, Function.comp_def, hf hs.1]
 
 @[fun_prop]
+theorem Measurable.codRestrict {s : Set β} {f : α → β} (hf : Measurable f)
+    (h : ∀ y, f y ∈ s) : Measurable (codRestrict f s h) := hf.subtype_mk
+
+@[fun_prop]
 protected theorem Measurable.rangeFactorization {f : α → β} (hf : Measurable f) :
     Measurable (rangeFactorization f) :=
   hf.subtype_mk
@@ -485,9 +489,6 @@ lemma measurable_from_prod_countable_right' [Countable α] {f : α × β → γ}
     (h'f : ∀ x x' y, x' ∈ measurableAtom x → f (x', y) = f (x, y)) : Measurable f := by
   change Measurable ((fun p ↦ f (p.2, p.1)) ∘ Prod.swap)
   exact (measurable_from_prod_countable_left' hf h'f).comp measurable_swap
-
-@[deprecated (since := "2025-08-17")]
-alias measurable_from_prod_countable' := measurable_from_prod_countable_left'
 
 /-- For the version where the first space in the product is countable,
 see `measurable_from_prod_countable_right`. -/

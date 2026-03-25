@@ -636,9 +636,10 @@ def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
     trans
       max ((Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) q)
         ((Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) r)
-    · exact Quotient.inductionOn₂ q r <| PadicSeq.norm_nonarchimedean
-    refine max_le_add_of_nonneg (Quotient.inductionOn q <| PadicSeq.norm_nonneg) ?_
-    exact Quotient.inductionOn r <| PadicSeq.norm_nonneg
+    · induction q, r using Quotient.inductionOn₂; apply PadicSeq.norm_nonarchimedean
+    · apply max_le_add_of_nonneg
+      · induction q using Quotient.inductionOn; apply PadicSeq.norm_nonneg
+      · induction r using Quotient.inductionOn; apply PadicSeq.norm_nonneg
 
 namespace padicNormE
 
@@ -997,13 +998,9 @@ theorem norm_eq_of_norm_add_lt_right {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z
   _root_.by_contradiction fun hne ↦
     not_lt_of_ge (by rw [add_eq_max_of_ne hne]; apply le_max_right) h
 
-@[deprecated (since := "2025-09-17")] alias eq_of_norm_add_lt_right := norm_eq_of_norm_add_lt_right
-
 theorem norm_eq_of_norm_add_lt_left {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z1‖) : ‖z1‖ = ‖z2‖ :=
   _root_.by_contradiction fun hne ↦
     not_lt_of_ge (by rw [add_eq_max_of_ne hne]; apply le_max_left) h
-
-@[deprecated (since := "2025-09-17")] alias eq_of_norm_add_lt_left := norm_eq_of_norm_add_lt_left
 
 theorem norm_eq_of_norm_sub_lt_right {z1 z2 : ℚ_[p]} (h : ‖z1 - z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ := by
   rw [← norm_neg z2]
@@ -1083,7 +1080,8 @@ theorem valuation_zero : valuation (0 : ℚ_[p]) = 0 :=
   dif_pos ((const_equiv p).2 rfl)
 
 theorem norm_eq_zpow_neg_valuation {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.valuation) := by
-  refine Quotient.inductionOn' x fun f hf => ?_
+  induction x using Quotient.inductionOn with | _ f
+  intro hf
   change (PadicSeq.norm _ : ℝ) = (p : ℝ) ^ (-PadicSeq.valuation _)
   rw [PadicSeq.norm_eq_zpow_neg_valuation]
   · rw [Rat.cast_zpow, Rat.cast_natCast]

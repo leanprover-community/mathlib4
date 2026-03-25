@@ -163,7 +163,6 @@ reconstructed using `PullbackCone.mk`. -/
 def eta (t : PullbackCone f g) : t ≅ mk t.fst t.snd t.condition :=
   PullbackCone.ext (Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is a slightly more convenient method to verify that a pullback cone is a limit cone. It
 only asks for a proof of facts that carry any mathematical content -/
 def isLimitAux (t : PullbackCone f g) (lift : ∀ s : PullbackCone f g, s.pt ⟶ t.pt)
@@ -289,7 +288,6 @@ def PullbackCone.ofCone {F : WalkingCospan ⥤ C} (t : Cone F) :
   pt := t.pt
   π := t.π ≫ (diagramIsoCospan F).hom
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A diagram `WalkingCospan ⥤ C` is isomorphic to some `PullbackCone.mk` after
 composing with `diagramIsoCospan`. -/
 @[simps!]
@@ -508,7 +506,6 @@ def PushoutCocone.ofCocone {F : WalkingSpan ⥤ C} (t : Cocone F) :
   pt := t.pt
   ι := (diagramIsoSpan F).inv ≫ t.ι
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A diagram `WalkingSpan ⥤ C` is isomorphic to some `PushoutCocone.mk` after composing with
 `diagramIsoSpan`. -/
 @[simps!]

@@ -57,7 +57,7 @@ variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 namespace WeakSpace
 
 instance instModule' [CommSemiring 𝕝] [Module 𝕝 E] : Module 𝕝 (WeakSpace 𝕜 E) :=
-  WeakBilin.instModule' (topDualPairing 𝕜 E).flip
+  inferInstanceAs <| Module 𝕝 (WeakBilin (topDualPairing 𝕜 E).flip)
 
 instance instIsScalarTower [CommSemiring 𝕝] [Module 𝕝 𝕜] [Module 𝕝 E] [IsScalarTower 𝕝 𝕜 E] :
     IsScalarTower 𝕝 𝕜 (WeakSpace 𝕜 E) :=
@@ -127,7 +127,7 @@ variable [CommRing 𝕜] [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜] [C
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
 
 instance instAddCommGroup : AddCommGroup (WeakSpace 𝕜 E) :=
-  WeakBilin.instAddCommGroup (topDualPairing 𝕜 E).flip
+  inferInstanceAs <| AddCommGroup (WeakBilin (topDualPairing 𝕜 E).flip)
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakSpace 𝕜 E) :=
   WeakBilin.instIsTopologicalAddGroup (topDualPairing 𝕜 E).flip

@@ -13,29 +13,27 @@ public import Mathlib.SetTheory.Ordinal.Basic
 /-!
 # Ordinal arithmetic
 
-Ordinals have an addition (corresponding to disjoint union) that turns them into an additive
+Ordinals have an addition (corresponding to the disjoint union) that turns them into an additive
 monoid, and a multiplication (corresponding to the lexicographic order on the product) that turns
-them into a monoid. One can also define correspondingly a subtraction, a division, a successor
-function, a power function and a logarithm function.
+them into a monoid. One can also define (truncated) subtraction and division operators.
 
-We also define limit ordinals and prove the basic induction principle on ordinals separating
-successor ordinals and limit ordinals, in `limitRecOn`.
+Ordinal powers and logarithms are defined in `Mathlib.SetTheory.Ordinal.Exponential`.
 
 ## Main definitions and results
 
-* `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
-  every element of `o₁` is smaller than every element of `o₂`.
-* `o₁ - o₂` is the unique ordinal `o` such that `o₂ + o = o₁`, when `o₂ ≤ o₁`.
-* `o₁ * o₂` is the lexicographic order on `o₂ × o₁`.
-* `o₁ / o₂` is the ordinal `o` such that `o₁ = o₂ * o + o'` with `o' < o₂`. We also define the
+* `a + b` is the order type of the lexicographic sum `a ⊕ₗ b`.
+* `a - b` is the unique ordinal `c` such that `b + c = a`, when `b ≤ a`.
+* `a * b` is the order type of the lexicographic product `b ×ₗ a`.
+* `a / b` is the ordinal `q` such that `a = b * q + r` with `r < b`. We also define the
   divisibility predicate, and a modulo operation.
-* `limitRecOn` is the main induction principle of ordinals: if one can prove a property by
-  induction at successor ordinals and at limit ordinals, then it holds for all ordinals.
+* `limitRecOn` is limit recursion on ordinals, i.e. well-founded recursion separating out the zero,
+  successor, and limit cases.
 
 We discuss the properties of casts of natural numbers of and of `ω` with respect to these
 operations.
 
-Note that some basic functions and properties of ordinals have been generalized to other orders:
+Note that some basic functions and properties of ordinals have been generalized to other orders, and
+exist on other files:
 
 * `Order.succ o = o + 1` is the successor of `o`.
 * `Order.IsSuccLimit o`: an ordinal is a limit ordinal if it is neither `0` nor a successor.
@@ -46,14 +44,11 @@ Note that some basic functions and properties of ordinals have been generalized 
 Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 assert_not_exists Field Module
 
-noncomputable section
-
 open Function Cardinal Set Equiv Order
-open scoped Ordinal
 
 universe u v w
 
@@ -252,8 +247,9 @@ theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSu
 @[simp]
 theorem typein_ordinal (o : Ordinal.{u}) :
     @typein Ordinal (· < ·) _ o = Ordinal.lift.{u + 1} o := by
-  refine Quotient.inductionOn o ?_
-  rintro ⟨α, r, wo⟩; apply Quotient.sound
+  induction o using Quotient.inductionOn with | _ w
+  obtain ⟨α, r, wo⟩ := w
+  apply Quotient.sound
   constructor; refine ((RelIso.preimage Equiv.ulift r).trans (enum r).symm).symm
 
 theorem mk_Iio_ordinal (o : Ordinal.{u}) :
@@ -263,7 +259,7 @@ theorem mk_Iio_ordinal (o : Ordinal.{u}) :
 
 /-! ### The predecessor of an ordinal -/
 
-/-- The ordinal predecessor of `o` is `o'` if `o = succ o'`, and `o` otherwise. -/
+/-- The ordinal predecessor of `a` is `b` if `a = succ b`, and `a` otherwise. -/
 def pred (o : Ordinal) : Ordinal :=
   isSuccPrelimitRecOn o (fun a _ ↦ a) (fun a _ ↦ a)
 
@@ -536,8 +532,8 @@ theorem isSuccLimit_sub {a b : Ordinal} (ha : IsSuccPrelimit a) (h : b < a) :
 
 /-! ### Multiplication of ordinals -/
 
-/-- The multiplication of ordinals `o₁` and `o₂` is the (well-founded) lexicographic order on
-`o₂ × o₁`. -/
+/-- The multiplication of ordinals `a` and `b` is the order type of the lexicographic order on
+`b × a`. -/
 instance monoid : Monoid Ordinal.{u} where
   mul a b :=
     Quotient.liftOn₂ a b
@@ -668,15 +664,10 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
         Sum.lex_inl_inl] using h
 
 theorem mul_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
-    a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c :=
-  ⟨fun h _ l => (mul_le_mul_right l.le _).trans h, fun H =>
-    -- We use the `induction` tactic in order to change `h`/`H` too.
-    le_of_not_gt <| by
-      induction a using inductionOn with
-      | H α r =>
-        induction b using inductionOn with
-        | H β s =>
-          exact mul_le_of_limit_aux h H⟩
+    a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c := by
+  refine ⟨fun h _ l ↦ (mul_le_mul_right l.le _).trans h, fun H ↦ le_of_not_gt ?_⟩
+  induction a, b using inductionOn₂ with | type α r β s
+  exact mul_le_of_limit_aux h H
 
 theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) := by
   refine .of_succ_lt (fun b ↦ ?_) fun hb ↦ ?_
@@ -695,34 +686,6 @@ theorem lt_mul_add_one_iff {a b c : Ordinal} : a < b * (c + 1) ↔ ∃ d < b, a 
 
 instance : PosMulStrictMono Ordinal where
   mul_lt_mul_of_pos_left _a ha := (isNormal_mul_right ha).strictMono
-
-@[deprecated mul_lt_mul_iff_right₀ (since := "2025-08-26")]
-theorem mul_lt_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b < a * c ↔ b < c :=
-  mul_lt_mul_iff_right₀ a0
-
-@[deprecated mul_le_mul_left (since := "2025-08-26")]
-theorem mul_le_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b ≤ a * c ↔ b ≤ c :=
-  mul_le_mul_iff_right₀ a0
-
-@[deprecated mul_lt_mul_of_pos_left (since := "2025-08-26")]
-protected lemma mul_lt_mul_of_pos_left {a b c : Ordinal} (h : a < b) (c0 : 0 < c) : c * a < c * b :=
-  mul_lt_mul_of_pos_left h c0
-
-@[deprecated mul_pos (since := "2025-08-26")]
-protected theorem mul_pos {a b : Ordinal} (h₁ : 0 < a) (h₂ : 0 < b) : 0 < a * b :=
-  mul_pos h₁ h₂
-
-@[deprecated mul_ne_zero (since := "2025-08-26")]
-protected theorem mul_ne_zero {a b : Ordinal} (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 :=
-  mul_ne_zero ha hb
-
-@[deprecated mul_le_mul_left (since := "2025-08-26")]
-theorem le_of_mul_le_mul_left {a b c : Ordinal} (h : c * a ≤ c * b) (h0 : 0 < c) : a ≤ b :=
-  (mul_le_mul_iff_right₀ h0).mp h
-
-@[deprecated mul_left_cancel_iff_of_pos (since := "2025-08-26")]
-theorem mul_right_inj {a b c : Ordinal} (a0 : 0 < a) : a * b = a * c ↔ b = c :=
-  mul_left_cancel_iff_of_pos a0
 
 instance : IsLeftCancelMulZero Ordinal where
   mul_left_cancel_of_ne_zero h0 _ _ := mul_left_cancel_iff_of_pos h0.pos |>.mp
