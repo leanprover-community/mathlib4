@@ -83,7 +83,7 @@ theorem exists_reduced_word (w : W) : ∃ ω, ω.length = ℓ w ∧ w = π ω :=
 
 open scoped Classical in
 theorem length_wordProd_le (ω : List B) : ℓ (π ω) ≤ ω.length :=
-  Nat.find_min' (cs.exists_word_with_prod (π ω)) ⟨ω, by tauto⟩
+  Nat.find_min' (cs.exists_word_with_prod (π ω)) ⟨ω, rfl, rfl⟩
 
 @[simp] theorem length_one : ℓ (1 : W) = 0 := Nat.eq_zero_of_le_zero (cs.length_wordProd_le [])
 
