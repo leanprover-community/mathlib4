@@ -17,12 +17,12 @@ This file defines finitely presented groups.
 
 ## Main definitions
 * `Subgroup.IsNormalClosureFG`: defines when a subgroup is the normal closure of a finite set.
-* `IsFinitelyPresented`: defines when a group is finitely presented.
+* `Group.IsFinitelyPresented`: defines when a group is finitely presented.
 
 ## Main results
-* `Subgroup.IsNormalClosureFG_map`: being the normal closure of a finite set is invariant
+* `Subgroup.IsNormalClosureFG.map`: being the normal closure of a finite set is invariant
   under surjective homomorphism.
-* `IsFinitelyPresented.of_mulEquiv`: finitely presented groups are closed under isomorphism.
+* `Group.IsFinitelyPresented.of_mulEquiv`: finitely presented groups are closed under isomorphism.
 
 ## Tags
 finitely presented group, finitely generated normal closure
