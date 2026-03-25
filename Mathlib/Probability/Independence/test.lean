@@ -71,13 +71,17 @@ theorem lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator {Mf mΩ : M
     fun g h_mg => mB.comp <| h_mg.prodMk (measurable_const.indicator h_meas_T)
   apply @Measurable.ennreal_induction _ Mf
   · intro c' s' h_meas_s'
-    simp_rw [← inter_indicator_mul]
+    simp_rw [← indicator_bilin]
     rw [lintegral_indicator (MeasurableSet.inter (hMf _ h_meas_s') h_meas_T),
       lintegral_indicator (hMf _ h_meas_s'), lintegral_indicator h_meas_T]
     simp only [lintegral_const, univ_inter,
       MeasurableSet.univ, Measure.restrict_apply]
     rw [IndepSets_iff] at h_ind
-    rw [mul_mul_mul_comm, h_ind s' T h_meas_s' (Set.mem_singleton _)]
+    rw [mul_comm c', mul_comm c]
+    simp_rw [← smul_eq_mul]
+    rw [map_smul, map_smul, ← LinearMap.smul_apply, smul_smul, mul_comm,
+      ← h_ind s' T h_meas_s' (Set.mem_singleton _), LinearMap.smul_apply, smul_eq_mul,
+      smul_eq_mul, mul_comm]
   · intro f' g _ h_meas_f' _ h_ind_f' h_ind_g
     have h_measM_f' : Measurable f' := h_meas_f'.mono hMf le_rfl
     simp_rw [Pi.add_apply, right_distrib]

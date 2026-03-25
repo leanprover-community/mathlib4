@@ -99,7 +99,7 @@ lemma ProbabilityTheory.singleton_indepSets_comap_iff {Ω M : Type*} {mΩ : Meas
     rw [IndepFun_iff_Indep, ← MeasurableSpace.generateFrom_singleton_eq_comap_indicator_one c]
     exact h.indep (MeasurableSpace.generateFrom_le (by simpa)) hX.comap_le (by simp [IsPiSystem])
       (@MeasurableSpace.isPiSystem_measurableSet _ (m𝓧.comap X)) rfl (by simp)
-  mpr h := IndepFun.singleton_indepSets_of_indicator h
+  mpr h := IndepFun.singleton_indepSets_of_indicator' c h
 
 lemma IndepSets.setIntegral_eq_mul {Ω 𝓧 : Type*} {mΩ : MeasurableSpace Ω}
     {μ : Measure Ω} [m𝓧 : MeasurableSpace 𝓧] {X : Ω → 𝓧} [IsZeroOrProbabilityMeasure μ]
@@ -115,7 +115,7 @@ lemma IndepSets.setIntegral_eq_mul {Ω 𝓧 : Type*} {mΩ : MeasurableSpace Ω}
   _ = μ.real A * ∫ ω, f (X ω) ∂μ := by
     rw [IndepFun.integral_fun_comp_mul_comp]
     · simp [integral_indicator_one hA2]
-    · exact (singleton_indepSets_comap_iff hX hA2).1 hA1
+    · exact (singleton_indepSets_comap_iff 1 hX hA2).1 hA1
     · exact (aemeasurable_indicator_const_iff 1).2 hA2.nullMeasurableSet
     · exact hX.aemeasurable
     · fun_prop
