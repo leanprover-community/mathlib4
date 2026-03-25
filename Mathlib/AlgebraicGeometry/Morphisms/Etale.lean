@@ -149,7 +149,7 @@ namespace Scheme
 
 /-- The category `Etale X` is the category of schemes étale over `X`. -/
 protected def Etale (X : Scheme.{u}) : Type _ := MorphismProperty.Over @Etale ⊤ X
-deriving HasPullbacks, Category
+deriving Category, HasPullbacks
 
 variable (X : Scheme.{u})
 
