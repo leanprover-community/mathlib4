@@ -55,8 +55,8 @@ lemma toTopHomeo_naturality_apply {n m : SimplexCategory} (f : n ⟶ m)
   congr_fun (toTopHomeo_naturality f) x
 
 lemma toTopHomeo_symm_naturality {n m : SimplexCategory} (f : n ⟶ m) :
-    m.toTopHomeo.invFun.comp (stdSimplex.map f) =
-      (SSet.toTop.{u}.map (SSet.stdSimplex.map f)).hom.1.comp n.toTopHomeo.invFun := by
+    m.toTopHomeo.symm ∘ stdSimplex.map f =
+      (SSet.toTop.{u}.map (SSet.stdSimplex.map f)).hom ∘ n.toTopHomeo.symm := by
   ext x : 1
   exact congr_fun ((forget _).congr_map
     (toTopSimplex.inv.naturality f)) _
