@@ -207,11 +207,13 @@ theorem star_exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] (x : 𝔸)
     simp_rw [exp_eq_tsum ℚ, ← star_pow, ← star_inv_natCast_smul, ← tsum_star]
   · rw [exp, exp, dif_neg h, dif_neg h, star_one]
 
-/-- A ℚ-subalgebra of 𝔸 that is topologically closed is closed under `exp`. -/
+/-- A subalgebra of `𝔸` that is closed topologically and under `ℚ`-scaling is closed under `exp`. -/
 theorem exp_mem
-    {S : Type*} [Algebra ℚ 𝔸] [SetLike S 𝔸] [SubsemiringClass S 𝔸] [SMulMemClass S ℚ 𝔸] {s : S}
-    (h_closed : IsClosed (s : Set 𝔸)) (x : 𝔸) (h : x ∈ s) :
+    {R S : Type*} [CommSemiring R] [SMul ℚ R] [Algebra ℚ 𝔸] [Algebra R 𝔸] [IsScalarTower ℚ R 𝔸]
+    [SetLike S 𝔸] [SubsemiringClass S 𝔸] [SMulMemClass S R 𝔸] {s : S}
+    (h_closed : IsClosed (s : Set 𝔸)) {x : 𝔸} (h : x ∈ s) :
     exp x ∈ s := by
+  have := SMulMemClass.ofIsScalarTower S ℚ R 𝔸
   rw [exp_eq_tsum ℚ]
   exact tsum_mem h_closed fun i => SMulMemClass.smul_mem _ <| pow_mem h _
 
