@@ -10,6 +10,11 @@ public import Mathlib.Data.Bracket
 
 /-!
 # The bracket on a group given by commutator.
+
+## Notation
+
+After `open scoped commutatorElement`, `⁅g₁, g₂⁆` is syntax for `g₁ * g₂ * g₁⁻¹ * g₂⁻¹`.
+
 -/
 
 @[expose] public section

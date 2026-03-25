@@ -546,7 +546,7 @@ theorem normalClosure_closure_eq_normalClosure {s : Set G} :
   le_antisymm (normalClosure_le_normal closure_le_normalClosure) (normalClosure_mono subset_closure)
 
 /-- The normal closure of an empty set is the trivial subgroup. -/
-@[simp]
+@[to_additive (attr := simp)]
 lemma normalClosure_empty : normalClosure (∅ : Set G) = (⊥ : Subgroup G) := by
   rw [← normalClosure_closure_eq_normalClosure, closure_empty, normalClosure_eq_self]
 
