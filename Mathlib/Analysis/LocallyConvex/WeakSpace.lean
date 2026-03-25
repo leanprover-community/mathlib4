@@ -122,4 +122,4 @@ instance WeakSpace.instT2Space {R V : Type*} [CommRing R] [TopologicalSpace R] [
     [TopologicalSpace V] [SeparatingDual R V] : T2Space (WeakSpace R V) :=
   (WeakBilin.isEmbedding (B := (topDualPairing R V).flip) fun x y h =>
     not_not.mp fun hne =>
-      (SeparatingDual.exists_separating_of_ne hne).elim fun _ hf => hf (congr_fun h _)).t2Space
+      (SeparatingDual.exists_separating_of_ne hne).elim fun _ hf => hf (DFunLike.congr_fun h _)).t2Space
