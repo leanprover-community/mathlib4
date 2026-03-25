@@ -1,4 +1,5 @@
 -- tests for by_contra! tactic
+module
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.Set

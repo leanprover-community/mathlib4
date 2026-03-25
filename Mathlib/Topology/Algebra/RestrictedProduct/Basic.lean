@@ -241,12 +241,8 @@ lemma div_apply [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)]
     (x y : Πʳ i, [R i, B i]_[𝓕]) (i : ι) : (x / y) i = x i / y i :=
   rfl
 
-instance instNSMul [Π i, AddMonoid (R i)] [∀ i, AddSubmonoidClass (S i) (R i)] :
-    SMul ℕ (Πʳ i, [R i, B i]_[𝓕]) where
-  smul n x := ⟨fun i ↦ n • (x i), x.2.mono fun _ hi ↦ nsmul_mem hi n⟩
-
-@[to_additive existing instNSMul]
-instance [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
+@[to_additive]
+instance instPow [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℕ where
   pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ pow_mem hi n⟩
 
@@ -265,12 +261,8 @@ instance [Π i, CommMonoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     CommMonoid (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.commMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
-instance instZSMul [Π i, SubNegMonoid (R i)] [∀ i, AddSubgroupClass (S i) (R i)] :
-    SMul ℤ (Πʳ i, [R i, B i]_[𝓕]) where
-  smul n x := ⟨fun i ↦ n • x i, x.2.mono fun _ hi ↦ zsmul_mem hi n⟩
-
-@[to_additive existing instZSMul]
-instance [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
+@[to_additive]
+instance instZPow [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℤ where
   pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ zpow_mem hi n⟩
 
@@ -573,7 +565,7 @@ lemma mulSingle_pow [∀ i, Monoid (G i)] [∀ i, SubmonoidClass (S i) (G i)]
 @[to_additive]
 lemma mulSingle_zpow [∀ i, Group (G i)] [∀ i, SubgroupClass (S i) (G i)]
     (i : ι) (r : G i) (n : ℤ) :
-    mulSingle A i (r  ^ n) = mulSingle A i r ^ n := by
+    mulSingle A i (r ^ n) = mulSingle A i r ^ n := by
   ext; simp [Pi.mulSingle_zpow, RestrictedProduct.zpow_apply]
 
 end single

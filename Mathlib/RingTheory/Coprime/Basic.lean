@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Action.Units
 public import Mathlib.Algebra.Group.Nat.Units
-public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Logic.Basic
@@ -160,6 +160,10 @@ theorem IsCoprime.mono (h₁ : x ∣ y) (h₂ : z ∣ w) (h : IsCoprime y w) : I
 theorem IsCoprime.isUnit_of_dvd (H : IsCoprime x y) (d : x ∣ y) : IsUnit x :=
   let ⟨k, hk⟩ := d
   isCoprime_self.1 <| IsCoprime.of_mul_right_left <| show IsCoprime x (x * k) from hk ▸ H
+
+theorem IsCoprime.isUnit_of_associated {x y : R} (h₁ : IsCoprime x y) (h₂ : Associated x y) :
+    IsUnit x ∧ IsUnit y :=
+  ⟨h₁.isUnit_of_dvd (h₂.dvd), h₁.symm.isUnit_of_dvd (h₂.dvd')⟩
 
 theorem IsCoprime.isUnit_of_dvd' {a b x : R} (h : IsCoprime a b) (ha : x ∣ a) (hb : x ∣ b) :
     IsUnit x :=

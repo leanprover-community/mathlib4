@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.InnerProductSpace.Defs
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 
 /-!
 # Properties of inner product spaces
@@ -700,7 +701,6 @@ theorem real_inner_div_norm_mul_norm_eq_neg_one_of_ne_zero_of_neg_mul {x : F} {r
     mul_assoc, abs_of_neg hr, neg_mul, div_neg_eq_neg_div, div_self]
   exact mul_ne_zero hr.ne (mul_self_ne_zero.2 (norm_ne_zero_iff.2 hx))
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 theorem norm_inner_eq_norm_tfae (x y : E) :
     List.TFAE [‖⟪x, y⟫‖ = ‖x‖ * ‖y‖,
@@ -805,7 +805,6 @@ theorem real_inner_div_norm_mul_norm_eq_one_iff (x y : F) :
   · rintro ⟨hx, ⟨r, ⟨hr, rfl⟩⟩⟩
     exact real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_pos_mul hx hr
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inner product of two vectors, divided by the product of their
 norms, has value -1 if and only if they are nonzero and one is
 a negative multiple of the other. -/
@@ -914,9 +913,9 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- A general inner product implies a real inner product. This is not registered as an instance
 since `𝕜` does not appear in the return type `Inner ℝ E`. -/
+@[implicit_reducible]
 def Inner.rclikeToReal : Inner ℝ E where inner x y := re ⟪x, y⟫
 
-set_option backward.whnf.reducibleClassField false in
 /-- A general inner product space structure implies a real inner product structure.
 
 This is not registered as an instance since
@@ -953,6 +952,7 @@ theorem real_inner_I_smul_self (x : E) :
 /-- A complex inner product implies a real inner product. This cannot be an instance since it
 creates a diamond with `PiLp.innerProductSpace` because `re (sum i, ⟪x i, y i⟫)` and
 `sum i, re ⟪x i, y i⟫` are not defeq. -/
+@[implicit_reducible]
 def InnerProductSpace.complexToReal [SeminormedAddCommGroup G] [InnerProductSpace ℂ G] :
     InnerProductSpace ℝ G :=
   InnerProductSpace.rclikeToReal ℂ G
@@ -981,3 +981,19 @@ example : (innerProductSpace : InnerProductSpace ℝ ℝ) = RCLike.toInnerProduc
 example :
     (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal :=
   rfl
+
+section IsPosSemidef
+
+variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+
+lemma isSymm_inner : LinearMap.IsSymm (innerₗ E) where
+  eq x y := by simp [real_inner_comm]
+
+lemma isNonneg_inner : LinearMap.IsNonneg (innerₗ E) where
+  nonneg x := by simp
+
+lemma isPosSemidef_inner : LinearMap.IsPosSemidef (innerₗ E) where
+  isSymm := isSymm_inner
+  isNonneg := isNonneg_inner
+
+end IsPosSemidef

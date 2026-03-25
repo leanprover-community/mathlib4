@@ -54,12 +54,17 @@ assert_not_exists TrivialStar
 
 open Function
 
--- to ensure these instances are computable
 /-- Nonnegative real numbers, denoted as `ℝ≥0` within the NNReal namespace -/
-def NNReal := { r : ℝ // 0 ≤ r } deriving
+def NNReal := { r : ℝ // 0 ≤ r }
+
+deriving instance
+  Inhabited, SemilatticeInf, DistribLattice for NNReal
+
+-- This is needed here or we get errors in `Mathlib/Data/ENNReal/Basic.lean` or downstream.
+set_option backward.inferInstanceAs.wrap false in
+deriving instance
   Zero, One, Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
-  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice,
-  Nontrivial, Inhabited
+  PartialOrder, SemilatticeSup, Nontrivial for NNReal
 
 namespace NNReal
 
@@ -99,7 +104,6 @@ noncomputable instance : SMul ℚ≥0 ℝ≥0 where
 noncomputable instance zpow : Pow ℝ≥0 ℤ where
   pow x n := ⟨(x : ℝ) ^ n, zpow_nonneg x.2 _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Redo the `Nonneg.semifield` instance, because this will get unfolded a lot,
 and ends up inserting the non-reducible defeq `ℝ≥0 = { x // x ≥ 0 }` in places where
 it needs to be reducible(-with-instances).
@@ -904,18 +908,15 @@ theorem nnabs_coe (x : ℝ≥0) : nnabs x = x := by simp
 theorem coe_toNNReal_le (x : ℝ) : (toNNReal x : ℝ) ≤ |x| :=
   max_le (le_abs_self _) (abs_nonneg _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma toNNReal_abs (x : ℝ) : |x|.toNNReal = nnabs x := NNReal.coe_injective <| by simp
 
 theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := by
   ext
   rw [NNReal.coe_natCast, Nat.cast_natAbs, Real.coe_nnabs, Int.cast_abs]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nnabs_pos {x : ℝ} : 0 < x.nnabs ↔ x ≠ 0 := by simp [← NNReal.coe_pos]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every real number nonnegative or nonpositive, phrased using `ℝ≥0`. -/
 lemma nnreal_dichotomy (r : ℝ) : ∃ x : ℝ≥0, r = x ∨ r = -x := by
   obtain (hr | hr) : 0 ≤ r ∨ 0 ≤ -r := by simpa using le_total ..

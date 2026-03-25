@@ -576,9 +576,8 @@ end
 set_option backward.privateInPublic true in
 private theorem sSup_aux (c : Set (E →ₛₗ.[σ] F)) (hc : DirectedOn (· ≤ ·) c) :
     ∃ f : ↥(sSup (domain '' c)) →ₛₗ[σ] F, (⟨_, f⟩ : E →ₛₗ.[σ] F) ∈ upperBounds c := by
-  rcases c.eq_empty_or_nonempty with ceq | cne
-  · subst c
-    simp
+  rcases c.eq_empty_or_nonempty with rfl | cne
+  · simp
   have hdir : DirectedOn (· ≤ ·) (domain '' c) :=
     directedOn_image.2 (hc.mono @(domain_mono.monotone))
   have P : ∀ x : ↥(sSup (domain '' c)), { p : c // (x : E) ∈ p.val.domain } := by
@@ -673,13 +672,11 @@ end LinearMap
 
 namespace LinearPMap
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Restrict codomain of a `LinearPMap` -/
 def codRestrict (f : E →ₛₗ.[σ] F) (p : Submodule S F) (H : ∀ x, f x ∈ p) : E →ₛₗ.[σ] p where
   domain := f.domain
   toFun := f.toFun.codRestrict p H
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Compose two `LinearPMap`s -/
 def comp (g : F →ₛₗ.[τ] G) (f : E →ₛₗ.[σ] F) (H : ∀ x : f.domain, f x ∈ g.domain) :
     E →ₛₗ.[τ.comp σ] G :=

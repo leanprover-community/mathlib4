@@ -290,8 +290,6 @@ def range : LieSubalgebra R L₂ :=
 theorem coe_range : (f.range : Set L₂) = Set.range f :=
   LinearMap.coe_range (f : L →ₗ[R] L₂)
 
-@[deprecated (since := "2025-08-31")] alias range_coe := coe_range
-
 @[simp]
 theorem mem_range (x : L₂) : x ∈ f.range ↔ ∃ y : L, f y = x :=
   LinearMap.mem_range
@@ -449,8 +447,6 @@ instance : InfSet (LieSubalgebra R L) :=
 theorem coe_inf : (↑(K ⊓ K') : Set L) = (K : Set L) ∩ (K' : Set L) :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias inf_coe := coe_inf
-
 @[simp]
 theorem sInf_toSubmodule (S : Set (LieSubalgebra R L)) :
     (↑(sInf S) : Submodule R L) = sInf {(s : Submodule R L) | s ∈ S} :=
@@ -461,8 +457,6 @@ theorem coe_sInf (S : Set (LieSubalgebra R L)) : (↑(sInf S) : Set L) = ⋂ s �
   rw [← coe_toSubmodule, sInf_toSubmodule, Submodule.coe_sInf]
   ext x
   simp
-
-@[deprecated (since := "2025-08-31")] alias sInf_coe := coe_sInf
 
 theorem sInf_glb (S : Set (LieSubalgebra R L)) : IsGLB S (sInf S) := by
   have h : ∀ K K' : LieSubalgebra R L, (K : Set L) ≤ K' ↔ K ≤ K' := by
@@ -523,12 +517,10 @@ theorem mem_inf (x : L) : x ∈ K ⊓ K' ↔ x ∈ K ∧ x ∈ K' := by
   rw [← mem_toSubmodule, ← mem_toSubmodule, ← mem_toSubmodule, inf_toSubmodule,
     Submodule.mem_inf]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_bot_iff : K = ⊥ ↔ ∀ x : L, x ∈ K → x = 0 := by
   rw [_root_.eq_bot_iff]
   exact Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance subsingleton_of_bot : Subsingleton (LieSubalgebra R (⊥ : LieSubalgebra R L)) := by
   apply subsingleton_of_bot_eq_top
   ext ⟨x, hx⟩; change x ∈ ⊥ at hx; rw [LieSubalgebra.mem_bot] at hx; subst hx
@@ -537,6 +529,11 @@ instance subsingleton_of_bot : Subsingleton (LieSubalgebra R (⊥ : LieSubalgebr
 
 theorem subsingleton_bot : Subsingleton (⊥ : LieSubalgebra R L) :=
   show Subsingleton ((⊥ : LieSubalgebra R L) : Set L) by simp
+
+variable {K K'} in
+@[simp] lemma disjoint_toSubmodule :
+    Disjoint (K : Submodule R L) (K' : Submodule R L) ↔ Disjoint K K' := by
+  simp [disjoint_iff, ← toSubmodule_inj]
 
 variable (R L)
 
@@ -680,12 +677,10 @@ protected def gi : GaloisInsertion (lieSpan R L : Set L → LieSubalgebra R L) (
   le_l_u _ := subset_lieSpan
   choice_eq _ _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem span_empty : lieSpan R L (∅ : Set L) = ⊥ :=
   (LieSubalgebra.gi R L).gc.l_bot
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem span_univ : lieSpan R L (Set.univ : Set L) = ⊤ :=
   eq_top_iff.2 <| SetLike.le_def.2 <| subset_lieSpan
@@ -716,6 +711,17 @@ theorem lieSpan_induction {p : (x : L) → x ∈ lieSpan R L s → Prop}
       smul_mem' := fun r ↦ fun ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩
       lie_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, lie _ _ _ _ hpx hpy⟩ }
   exact lieSpan_le (K := p) |>.mpr (fun y hy ↦ ⟨subset_lieSpan hy, mem y hy⟩) hx |>.elim fun _ ↦ id
+
+@[simp] lemma lieSpan_neg : lieSpan R L (-s) = lieSpan R L s := by
+  suffices ∀ s : Set L, lieSpan R L (-s) ≤ lieSpan R L s from
+    le_antisymm (this s) <| by simpa using (this (-s))
+  intro s x hx
+  induction hx using lieSpan_induction with
+  | mem y h => exact neg_mem_iff.mp <| subset_lieSpan <| Set.mem_neg.mp h
+  | zero => exact zero_mem _
+  | add _ _ _ _ hu hv => exact add_mem hu hv
+  | smul t _ _ hu => exact SMulMemClass.smul_mem t hu
+  | lie _ _ _ _ hu hv => exact lie_mem _ hu hv
 
 end LieSpan
 
