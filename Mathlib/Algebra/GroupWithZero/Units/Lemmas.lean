@@ -18,6 +18,8 @@ public import Mathlib.Algebra.GroupWithZero.Hom
 
 assert_not_exists DenselyOrdered MulAction Ring
 
+open scoped Ring
+
 variable {M M₀ G₀ M₀' G₀' F F' : Type*}
 variable [MonoidWithZero M₀]
 
@@ -133,7 +135,7 @@ theorem MonoidWithZero.coe_inverse {M : Type*} [CommMonoidWithZero M] :
 
 @[simp]
 theorem MonoidWithZero.inverse_apply {M : Type*} [CommMonoidWithZero M] (a : M) :
-    MonoidWithZero.inverse a = Ring.inverse a :=
+    MonoidWithZero.inverse a = a⁻¹ʳ :=
   rfl
 
 /-- Inversion on a commutative group with zero, considered as a monoid with zero homomorphism. -/
