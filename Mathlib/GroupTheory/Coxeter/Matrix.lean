@@ -75,12 +75,12 @@ structure CoxeterMatrix (B : Type*) where
 
 namespace CoxeterMatrix
 
-variable {B : Type*}
+variable {B B' : Type*} (e : B ≃ B')
 
 /-- A Coxeter matrix can be coerced to a matrix. -/
-instance : CoeFun (CoxeterMatrix B) fun _ ↦ (Matrix B B ℕ) := ⟨M⟩
+instance : CoeFun (CoxeterMatrix B) fun _ ↦ Matrix B B ℕ := ⟨M⟩
 
-variable {B' : Type*} (e : B ≃ B') (M : CoxeterMatrix B)
+variable (M : CoxeterMatrix B)
 
 attribute [simp] diagonal
 
@@ -95,6 +95,8 @@ protected def reindex : CoxeterMatrix B' where
 
 theorem reindex_apply (i i' : B') : M.reindex e i i' = M (e.symm i) (e.symm i') := rfl
 
+/-! ### Special matrices -/
+
 variable (n : ℕ)
 
 /-- The Coxeter matrix of type Aₙ.
@@ -104,13 +106,15 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-def Aₙ : CoxeterMatrix (Fin n) where
+protected def A : CoxeterMatrix (Fin n) where
   M := Matrix.of fun i j : Fin n ↦
     if i = j then 1
       else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2)
   isSymm := by unfold Matrix.IsSymm; aesop
   diagonal := by simp
   off_diagonal := by aesop
+
+@[deprecated (since := "2026-03-25")] alias Aₙ := CoxeterMatrix.A
 
 /-- The Coxeter matrix of type Bₙ.
 
@@ -120,7 +124,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-def Bₙ : CoxeterMatrix (Fin n) where
+protected def B : CoxeterMatrix (Fin n) where
   M := Matrix.of fun i j : Fin n ↦
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 2 ∨ j = n - 1 ∧ i = n - 2 then 4
@@ -128,6 +132,8 @@ def Bₙ : CoxeterMatrix (Fin n) where
   isSymm := by unfold Matrix.IsSymm; aesop
   diagonal := by simp
   off_diagonal := by aesop
+
+@[deprecated (since := "2026-03-25")] alias Bₙ := CoxeterMatrix.B
 
 /-- The Coxeter matrix of type Dₙ.
 
@@ -140,7 +146,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o
 ```
 -/
-def Dₙ : CoxeterMatrix (Fin n) where
+protected def D : CoxeterMatrix (Fin n) where
   M := Matrix.of fun i j : Fin n ↦
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 3 ∨ j = n - 1 ∧ i = n - 3 then 3
@@ -148,6 +154,8 @@ def Dₙ : CoxeterMatrix (Fin n) where
   isSymm := by unfold Matrix.IsSymm; aesop
   diagonal := by simp
   off_diagonal := by aesop
+
+@[deprecated (since := "2026-03-25")] alias Dₙ := CoxeterMatrix.D
 
 /-- The Coxeter matrix of type I₂(m).
 
@@ -157,11 +165,13 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o
 ```
 -/
-def I₂ₘ (m : ℕ) : CoxeterMatrix (Fin 2) where
+protected def I (m : ℕ) : CoxeterMatrix (Fin 2) where
   M := Matrix.of fun i j => if i = j then 1 else m + 2
   isSymm := by unfold Matrix.IsSymm; aesop
   diagonal := by simp
   off_diagonal := by simp
+
+@[deprecated (since := "2026-03-25")] alias I₂ₙ := CoxeterMatrix.I
 
 /-- The Coxeter matrix of type E₆.
 
