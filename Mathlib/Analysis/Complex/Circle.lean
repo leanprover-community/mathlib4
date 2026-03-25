@@ -57,8 +57,8 @@ variable {x y : Circle}
 
 instance instCoeOut : CoeOut Circle ℂ := subtypeCoe
 
-instance instCommGroup : CommGroup Circle := Metric.sphere.instCommGroup
-instance instMetricSpace : MetricSpace Circle := Subtype.metricSpace
+instance instCommGroup : CommGroup Circle := inferInstanceAs <| CommGroup (sphere _ _)
+instance instMetricSpace : MetricSpace Circle := inferInstanceAs <| MetricSpace (sphere _ _)
 
 @[ext] lemma ext : (x : ℂ) = y → x = y := Subtype.ext
 
@@ -161,33 +161,38 @@ lemma starRingEnd_addChar (x : ℝ) : starRingEnd ℂ (e x) = e (-x) := star_add
 
 variable {α β M : Type*}
 
-instance instSMul [SMul ℂ α] : SMul Circle α := Submonoid.smul _
+instance instSMul [SMul ℂ α] : SMul Circle α := inferInstanceAs <| SMul (Submonoid.unitSphere _) α
 
 instance instSMulCommClass_left [SMul ℂ β] [SMul α β] [SMulCommClass ℂ α β] :
-    SMulCommClass Circle α β := Submonoid.smulCommClass_left _
+    SMulCommClass Circle α β :=
+  inferInstanceAs <| SMulCommClass (Submonoid.unitSphere _) α β
 
 instance instSMulCommClass_right [SMul ℂ β] [SMul α β] [SMulCommClass α ℂ β] :
-    SMulCommClass α Circle β := Submonoid.smulCommClass_right _
+    SMulCommClass α Circle β :=
+  inferInstanceAs <| SMulCommClass α (Submonoid.unitSphere _) β
 
 instance instIsScalarTower [SMul ℂ α] [SMul ℂ β] [SMul α β] [IsScalarTower ℂ α β] :
-    IsScalarTower Circle α β := Submonoid.isScalarTower _
+    IsScalarTower Circle α β :=
+  inferInstanceAs <| IsScalarTower (Submonoid.unitSphere _) α β
 
-instance instMulAction [MulAction ℂ α] : MulAction Circle α := Submonoid.mulAction _
+instance instMulAction [MulAction ℂ α] : MulAction Circle α :=
+  inferInstanceAs <| MulAction (Submonoid.unitSphere _) α
 
 instance instDistribMulAction [AddMonoid M] [DistribMulAction ℂ M] :
-    DistribMulAction Circle M := Submonoid.distribMulAction _
+    DistribMulAction Circle M :=
+  inferInstanceAs <| DistribMulAction (Submonoid.unitSphere _) M
 
 lemma smul_def [SMul ℂ α] (z : Circle) (a : α) : z • a = (z : ℂ) • a := rfl
 
 instance instContinuousSMul [TopologicalSpace α] [MulAction ℂ α] [ContinuousSMul ℂ α] :
-    ContinuousSMul Circle α := Submonoid.continuousSMul
+    ContinuousSMul Circle α :=
+  inferInstanceAs <| ContinuousSMul (Submonoid.unitSphere _) α
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
     (u : Circle) (v : E) :
     ‖u • v‖ = ‖v‖ := by
-  rw [Submonoid.smul_def, norm_smul, norm_eq_of_mem_sphere, one_mul]
+  rw [smul_def, norm_smul, norm_eq_of_mem_sphere, one_mul]
 
 end Circle
 
