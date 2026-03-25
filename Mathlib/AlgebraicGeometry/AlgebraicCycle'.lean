@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.Topology.LocallyFinsupp
 public import Mathlib.Algebra.GradedMonoid
 public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.Topology.Spectral.ConstructibleTopology
 
 /-!
 # Algebraic Cycles
@@ -57,15 +58,24 @@ of a point z : Y along a morphism `f : X ⟶ Y`.
 -/
 def preimageSupport (c : locallyFinsupp X R) (z : Y) : Set X :=
   f ⁻¹' {z} ∩ c.support
+#check T2Space
 
+lemma test {X : Type*} [TopologicalSpace X] [T0Space X] [QuasiSober X] [PrespectralSpace X] :
+    T2Space (WithConstructibleTopology X) := by sorry
+
+def WithConstructibleTopology.lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (f : X → Y) : WithConstructibleTopology X → WithConstructibleTopology Y := f
 /--
 Implementation detail for the pushforward; the support of a cycle on X intersected with the preimage
 of a point z : Y along a quasicompact morphism f : X ⟶ Y is finite.
 -/
 lemma preimageSupport_finite (c : locallyFinsupp X R) (hf : IsSpectralMap f) (z : Y) :
     (preimageSupport f c z).Finite := by
-
+  have : @Continuous _ _ (constructibleTopology X) (constructibleTopology Y) f := by sorry
+  have : T2Space (WithConstructibleTopology X) := sorry
+  have : T2Space (WithConstructibleTopology Y) := sorry
   sorry
+
 
 
 end Zero
