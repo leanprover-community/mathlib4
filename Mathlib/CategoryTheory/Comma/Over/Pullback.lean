@@ -110,53 +110,6 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasPullbacksAlong f] [
 
 end Over
 
-section IsPullbackOverPullback
-
-open Over Limits
-
-variable {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullbacksAlong f]
-
-namespace IsPullback
-
-/-- An `IsPullback` square yields an isomorphism `Over.mk fst ≅ (Over.pullback f).obj (Over.mk g)`
-in `Over X`. -/
-noncomputable def isoOverPullback {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
-    (h : IsPullback fst snd f g) :
-    Over.mk fst ≅ (Over.pullback f).obj (Over.mk g) :=
-  Over.isoMk (h.flip.isoIsPullback _ _ (IsPullback.of_hasPullback g f)) (by simp)
-
-@[simp]
-lemma isoOverPullback_hom_left_comp_fst {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
-    (h : IsPullback fst snd f g) :
-    h.isoOverPullback.hom.left ≫ pullback.fst g f = snd :=
-  h.flip.isoIsPullback_hom_fst _ _ (IsPullback.of_hasPullback g f)
-
-/-- An isomorphism `Over.mk p ≅ (Over.pullback f).obj (Over.mk g)` in `Over X` yields
-an `IsPullback` square. -/
-lemma ofIsoOverPullback {P : C} {p : P ⟶ X}
-    (e : Over.mk p ≅ (Over.pullback f).obj (Over.mk g)) :
-    IsPullback p (e.hom.left ≫ pullback.fst g f) f g :=
-  (IsPullback.of_hasPullback g f).flip.of_iso'
-    ((Over.forget X).mapIso e) (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    (by simpa using Over.w e.hom) (by simp) (by simp) (by simp)
-
-/-- An `IsPullback` square over a cospan `(f, g)` is equivalent to an isomorphism
-`Over.mk fst ≅ (Over.pullback f).obj (Over.mk g)` in `Over X`, together with the
-second projection being determined by the isomorphism. -/
-theorem overPullback_iff {P : C} {p : P ⟶ X} {q : P ⟶ Y} :
-    IsPullback p q f g ↔
-    ∃ e : Over.mk p ≅ (Over.pullback f).obj (Over.mk g),
-      q = e.hom.left ≫ pullback.fst g f := by
-  constructor
-  · intro h
-    exact ⟨h.isoOverPullback, h.isoOverPullback_hom_left_comp_fst.symm⟩
-  · rintro ⟨e, rfl⟩
-    exact ofIsoOverPullback e
-
-end IsPullback
-
-end IsPullbackOverPullback
-
 namespace Over
 
 instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :

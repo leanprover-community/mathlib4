@@ -5,6 +5,7 @@ Authors: Kim Morrison, Joël Riou, Calle Sönne
 -/
 module
 
+public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
@@ -865,5 +866,52 @@ lemma IsPushout.iff_app [HasPushouts D] {F₁ F₂ F₃ F₄ : C ⥤ D}
   ⟨.app, .of_forall_isPushout_app⟩
 
 end Functor
+
+section IsPullbackOverPullback
+
+open Limits
+
+variable {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullbacksAlong f]
+
+namespace IsPullback
+
+/-- An `IsPullback` square yields an isomorphism `Over.mk fst ≅ Over.mk (pullback.snd g f)`
+in `Over X`. -/
+noncomputable def isoOverPullback {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
+    (h : IsPullback fst snd f g) :
+    Over.mk fst ≅ Over.mk (pullback.snd g f) :=
+  Over.isoMk (h.flip.isoIsPullback _ _ (IsPullback.of_hasPullback g f)) (by simp)
+
+@[simp]
+lemma isoOverPullback_hom_left_comp_fst {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
+    (h : IsPullback fst snd f g) :
+    dsimp% h.isoOverPullback.hom.left ≫ pullback.fst g f = snd :=
+  h.flip.isoIsPullback_hom_fst _ _ (IsPullback.of_hasPullback g f)
+
+/-- An isomorphism `Over.mk p ≅ Over.mk (pullback.snd g f)` in `Over X` yields
+an `IsPullback` square. -/
+lemma of_over_iso {P : C} {p : P ⟶ X}
+    (e : Over.mk p ≅ Over.mk (pullback.snd g f)) :
+    IsPullback p (e.hom.left ≫ pullback.fst g f) f g :=
+  (IsPullback.of_hasPullback g f).flip.of_iso'
+    ((Over.forget X).mapIso e) (Iso.refl _) (Iso.refl _) (Iso.refl _)
+    (by simpa using Over.w e.hom) (by simp) (by simp) (by simp)
+
+/-- An `IsPullback` square over a cospan `(f, g)` is equivalent to an isomorphism
+`Over.mk fst ≅ Over.mk (pullback.snd g f)` in `Over X`, together with the
+second projection being determined by the isomorphism. -/
+theorem iff_exists_over_iso {P : C} {p : P ⟶ X} {q : P ⟶ Y} :
+    IsPullback p q f g ↔
+    ∃ e : Over.mk p ≅ Over.mk (pullback.snd g f),
+      q = e.hom.left ≫ pullback.fst g f := by
+  constructor
+  · intro h
+    exact ⟨h.isoOverPullback, by simp⟩
+  · rintro ⟨e, rfl⟩
+    exact of_over_iso e
+
+end IsPullback
+
+end IsPullbackOverPullback
 
 end CategoryTheory
