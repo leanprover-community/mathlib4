@@ -461,40 +461,40 @@ theorem subst_pair_eq_mul {β : Type} (f : Bool → Language β) :
 theorem subst_singletons_eq_add {β : Type}
     (f : Bool → Language β) :
     ({[false], [true]} : Language Bool).subst f = f false + f true := by
-      ext u
-      constructor
-      · rintro ⟨ w, hw, hu ⟩
-        rcases hw with ( rfl | rfl ) <;> simp_all only [List.prod, List.map_cons, List.map_nil,
-          List.foldr_cons, List.foldr_nil, mul_one]
-        · exact Or.inl hu
-        · exact Or.inr hu
-      · intro hu
-        rcases hu with hu_false | hu_true
-        · exact ⟨[false], by tauto,
-            by simp only [List.map_cons, List.map_nil, List.prod_cons, List.prod_nil, mul_one]
-               exact hu_false⟩
-        · exact ⟨[true], by tauto,
-            by simp only [List.map_cons, List.map_nil, List.prod_cons, List.prod_nil, mul_one]
-               exact hu_true⟩
+  ext u
+  constructor
+  · rintro ⟨ w, hw, hu ⟩
+    rcases hw with ( rfl | rfl ) <;> simp_all only [List.prod, List.map_cons, List.map_nil,
+      List.foldr_cons, List.foldr_nil, mul_one]
+    · exact Or.inl hu
+    · exact Or.inr hu
+  · intro hu
+    rcases hu with hu_false | hu_true
+    · exact ⟨[false], by tauto,
+        by simp only [List.map_cons, List.map_nil, List.prod_cons, List.prod_nil, mul_one]
+           exact hu_false⟩
+    · exact ⟨[true], by tauto,
+        by simp only [List.map_cons, List.map_nil, List.prod_cons, List.prod_nil, mul_one]
+           exact hu_true⟩
 
 /-- We can model the Kleene star of a language using substitution -/
 theorem subst_univ_unit_eq_kstar {β : Type} (f : Unit → Language β) :
     Language.subst (Set.univ : Language Unit) f = KStar.kstar (f ()) := by
-      ext u
-      constructor
-      · rintro ⟨ w, hw, hu ⟩
-        induction w generalizing u with
-        | nil => exact ⟨ [ ], by simpa using hu ⟩
-        | cons _ _ ih =>
-          rcases hu with ⟨ u₁, hu₁, u₂, hu₂, rfl ⟩
-          obtain ⟨ L, hL₁, hL₂ ⟩ := ih u₂ ( Set.mem_univ _ ) hu₂
-          exact ⟨ [ u₁ ] ++ L, by aesop ⟩
-      · rintro ⟨ L, rfl, hL ⟩
-        use List.replicate L.length ()
-        induction L
-        · trivial
-        · exact ⟨ Set.mem_univ _,
-            Set.mem_image2_of_mem (List.forall_mem_cons.mp hL).1 (by aesop) ⟩
+  ext u
+  constructor
+  · rintro ⟨ w, hw, hu ⟩
+    induction w generalizing u with
+    | nil => exact ⟨ [ ], by simpa using hu ⟩
+    | cons _ _ ih =>
+      rcases hu with ⟨ u₁, hu₁, u₂, hu₂, rfl ⟩
+      obtain ⟨ L, hL₁, hL₂ ⟩ := ih u₂ ( Set.mem_univ _ ) hu₂
+      exact ⟨ [ u₁ ] ++ L, by aesop ⟩
+  · rintro ⟨ L, rfl, hL ⟩
+    use List.replicate L.length ()
+    induction L
+    · trivial
+    · exact ⟨ Set.mem_univ _,
+        Set.mem_image2_of_mem (List.forall_mem_cons.mp hL).1 (by aesop) ⟩
 
 end Language
 
