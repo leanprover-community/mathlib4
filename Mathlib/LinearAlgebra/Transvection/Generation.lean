@@ -785,7 +785,7 @@ theorem reduce_mem_transvections {W : Submodule K V}
     simp [he1]
   have hf : W ≤ ker f := fun x hx ↦ by
     replace hx := hW hx
-    simp only [he, mem_fixedSubmodule_iff, transvection.coe_apply, LinearMap.transvection.apply,
+    simp only [he, mem_fixedSubmodule_iff, coe_coe, transvection.apply,
       add_eq_left, smul_eq_zero, ← mem_ker] at hx
     apply Or.resolve_right hx
     contrapose he1
@@ -861,7 +861,7 @@ theorem fixedReduce_mem_transvections_pow_mul_dilatransvections
     apply Submodule.eq_of_le_of_finrank_le
     · simp_rw [← hfg, ← hf, List.ofFn_eq_map]
       apply le_trans (inf_le_inf_right _ _)
-        (inf_fixedSubmodule_le_fixedSubmodule_mul _ _)
+        (fixedSubmodule_inf_fixedSubmodule_le_comp _ _)
       apply iInf_fixedSubmodule_le_fixedSubmodule_prod
     · rw [← Nat.add_le_add_iff_left, finrank_quotient_add_finrank]
       rw [← finrank_quotient_add_finrank, Nat.add_le_add_iff_right]
@@ -899,8 +899,7 @@ theorem fixedReduce_mem_transvections_pow_mul_dilatransvections
       simp only [← iInf_eq, inf_le_right]
   simp only [fixedReduce, ← hfg, ← hf, List.ofFn_eq_map, List.prod_map_hom, ← map_mul]
   apply congr_arg
-  rw [← Subtype.coe_inj]
-  aesop
+  simp [← Subtype.coe_inj, Function.comp_def]
 
 theorem fixedReduce_mem_transvections_mul_dilatransvections_pow
     (hV : 1 ≤ finrank K (V ⧸ e.fixedSubmodule))
@@ -916,7 +915,7 @@ theorem fixedReduce_mem_transvections_mul_dilatransvections_pow
     apply Submodule.eq_of_le_of_finrank_le
     · simp_rw [← hfg, ← hg, List.ofFn_eq_map]
       apply le_trans (inf_le_inf_left _ _)
-        (inf_fixedSubmodule_le_fixedSubmodule_mul _ _)
+        (fixedSubmodule_inf_fixedSubmodule_le_comp _ _)
       apply iInf_fixedSubmodule_le_fixedSubmodule_prod
     · rw [← Nat.add_le_add_iff_left, finrank_quotient_add_finrank]
       rw [← finrank_quotient_add_finrank, Nat.add_le_add_iff_right]
@@ -954,8 +953,7 @@ theorem fixedReduce_mem_transvections_mul_dilatransvections_pow
       exact le_trans inf_le_right (iInf_le _ _)
   simp only [fixedReduce, ← hfg, ← hg, List.ofFn_eq_map, List.prod_map_hom, ← map_mul]
   apply congr_arg
-  rw [← Subtype.coe_inj]
-  aesop
+  simp [← Subtype.coe_inj, Function.comp_def]
 
 theorem not_mem_transvections_mul_dilatransvections_pow
   (hV : 1 ≤ finrank K V) (a : K) (ha : a ≠ 1) (hea : ∀ x, e x = a • x) :
@@ -971,7 +969,7 @@ theorem not_mem_transvections_mul_dilatransvections_pow
   rw [eq_bot_iff]
   intro x hx
   simp only [mem_bot]
-  simp only [mem_fixedSubmodule_iff] at hx
+  simp only [mem_fixedSubmodule_iff, coe_coe] at hx
   obtain ⟨l, v, hlv, hf⟩ := hf
   rw [← eq_inv_mul_iff_mul_eq, LinearEquiv.ext_iff] at he
   specialize he x
