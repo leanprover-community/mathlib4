@@ -9,26 +9,28 @@ public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 
 /-!
-# P-Primary Components of modules
+# I-Primary Components of modules
 
-Let `A` be a commutative ring and `P`, a nonzero prime ideal of `A`.
-Given an `A`-Module `M` it's `P`-primary component is defined as
-  $$M(P) := \bigcup_{i : \mathbb{N}} \text{torsionBySet A  M }  P ^ i.$$
+Let `A` be a commutative ring and `I`, a nonzero prime ideal of `A`.
+Given an `A`-Module `M` it's `I`-primary component is defined as
+  $$M(I) := \bigcup_{i : \mathbb{N}} \text{torsionBySet A  M }  I ^ i.$$
 
-The main result of this file (TODO) is that
-  $$M = \bigoplus_{P} M(P).$$
+For `P : HeightOneSpectrum A`, the main result of this file (TODO) is that
+  $$M \cong \bigoplus_{P} M(P).$$
 
 ## Main definitions
 
-* `Module.primaryComponent` : The `P`-primary component of an `A`-module `M`.
+* `Module.primaryComponent` : The `I`-primary component of an `A`-module `M`.
 
 -/
 
 @[expose] public section
 
-variable {A M M₁ M₂ : Type*} [CommRing A] (P : IsDedekindDomain.HeightOneSpectrum A)
+variable {A M M₁ M₂ : Type*} [CommRing A]
 
 namespace Module
+
+variable (I : Ideal A)
 
 section CommRing
 
@@ -41,12 +43,12 @@ open Set Function Submodule Module
 
 variable (M)
 /--
-The `P`-primaryComponent component of a module `M`. -/
-def primaryComponent := (⨆ i : ℕ, torsionBySet A M ↑(P.asIdeal ^ i))
+The `I`-primaryComponent component of a module `M` where `I` is an ideal of `A`. -/
+def primaryComponent := (⨆ i : ℕ, torsionBySet A M ↑(I ^ i))
 
 @[simp]
 theorem primaryComponent_mem (x : M) :
-    x ∈ primaryComponent M P ↔ ∃ n, x ∈ torsionBySet A M ↑(P.asIdeal ^ n) := by
+    x ∈ primaryComponent M I ↔ ∃ n, x ∈ torsionBySet A M ↑(I ^ n) := by
   simp only [primaryComponent, mem_torsionBySet_iff, SetLike.coe_sort_coe, Subtype.forall]
   constructor
   · intro a
@@ -57,8 +59,8 @@ theorem primaryComponent_mem (x : M) :
       aesop (add safe torsionBySet_le_torsionBySet_pow)
   · aesop (add norm Submodule.mem_iSup)
 
-theorem primaryComponent_map_mem (φ : M₁ →ₗ[A] M₂) (c : primaryComponent M₁ P) :
-    φ c ∈ primaryComponent M₂ P := by
+theorem primaryComponent_map_mem (φ : M₁ →ₗ[A] M₂) (c : primaryComponent M₁ I) :
+    φ c ∈ primaryComponent M₂ I := by
   obtain ⟨c, hc⟩ := c
   simp only [primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe, Subtype.forall,
     ← map_smul] at ⊢ hc
@@ -67,33 +69,34 @@ theorem primaryComponent_map_mem (φ : M₁ →ₗ[A] M₂) (c : primaryComponen
   grind
 
 /-- Given an A-linear map between M₁ and M₂, `primaryComponent.map` is the
-restriction to the P-primaryComponent components of M₁ and M₂. -/
+restriction to the I-primaryComponent components of M₁ and M₂. -/
 def primaryComponent.map (φ : M₁ →ₗ[A] M₂) :
-    primaryComponent M₁ P →ₗ[A] primaryComponent M₂ P :=
-  (φ.domRestrict (primaryComponent M₁ P)).codRestrict (primaryComponent M₂ P) (fun c ↦
-    by simpa only [LinearMap.domRestrict_apply] using primaryComponent_map_mem P φ c)
+    primaryComponent M₁ I →ₗ[A] primaryComponent M₂ I :=
+  (φ.domRestrict (primaryComponent M₁ I)).codRestrict (primaryComponent M₂ I) (fun c ↦
+    by simpa only [LinearMap.domRestrict_apply] using primaryComponent_map_mem I φ c)
 
 theorem primaryComponent.map_ker_eq (φ : M₁ →ₗ[A] M₂) :
-    (primaryComponent.map P φ).ker.map (primaryComponent M₁ P).subtype =
-      (primaryComponent φ.ker P).map φ.ker.subtype := by
+    (primaryComponent.map I φ).ker.map (primaryComponent M₁ I).subtype =
+      (primaryComponent φ.ker I).map φ.ker.subtype := by
   aesop (add norm [map, Subtype.ext_iff])
 
 theorem primaryComponent_of_torsion_eq_inf (I : Ideal A) :
-    (primaryComponent (torsionBySet A M ↑I) P).map (Submodule.subtype _) =
-    (primaryComponent M P) ⊓ (torsionBySet A M ↑I) := by
+    (primaryComponent (torsionBySet A M ↑I) I).map (Submodule.subtype _) =
+    (primaryComponent M I) ⊓ (torsionBySet A M ↑I) := by
   ext x
   simp_all only [mem_map, primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe,
     Subtype.forall, subtype_apply, Subtype.exists, SetLike.mk_smul_mk, mk_eq_zero, exists_and_left,
     exists_prop, exists_eq_right_right, mem_inf]
 
-theorem primaryComponent_torsion_of_coprime (I : Ideal A)
-    (hD : P.asIdeal ⊔ I = ⊤) : primaryComponent (torsionBySet A M ↑I) P = ⊥ := by
-  have (n : ℕ) : Disjoint (torsionBySet A M ↑(P.asIdeal ^ n)) (torsionBySet A M ↑I) :=
+theorem primaryComponent_torsion_of_coprime (J : Ideal A)
+    (hD : I ⊔ J = ⊤) : primaryComponent (torsionBySet A M ↑J) I = ⊥ := by
+  have (n : ℕ) : Disjoint (torsionBySet A M ↑(I ^ n)) (torsionBySet A M ↑J) :=
     Submodule.disjoint_torsionBySet_ideal (M := M) (Ideal.pow_sup_eq_top hD)
-  apply Submodule.map_injective_of_injective (Submodule.subtype_injective (torsionBySet A M ↑I))
+  apply Submodule.map_injective_of_injective (Submodule.subtype_injective (torsionBySet A M ↑J))
   ext x
-  simp only [primaryComponent_of_torsion_eq_inf, mem_inf, primaryComponent_mem,
-    mem_torsionBySet_iff, SetLike.coe_sort_coe, Subtype.forall, Submodule.map_bot, mem_bot]
+  simp only [mem_map, primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe,
+    Subtype.forall, subtype_apply, Subtype.exists, SetLike.mk_smul_mk, mk_eq_zero, exists_and_left,
+    exists_prop, exists_eq_right_right, Submodule.map_bot, mem_bot]
   constructor
   · rintro ⟨⟨n, hn⟩, h₂⟩
     specialize this n
@@ -109,8 +112,8 @@ variable [AddCommGroup M] [Module A M]
 
 open Submodule in
 theorem primaryComponent_sup (N₁ N₂ : Submodule A M) (hD : Disjoint N₁ N₂) :
-    (primaryComponent ↥(N₁ ⊔ N₂) P).map (N₁ ⊔ N₂).subtype =
-    ((primaryComponent N₁ P).map N₁.subtype) ⊔ (primaryComponent N₂ P).map N₂.subtype := by
+    (primaryComponent ↥(N₁ ⊔ N₂) I).map (N₁ ⊔ N₂).subtype =
+    ((primaryComponent N₁ I).map N₁.subtype) ⊔ (primaryComponent N₂ I).map N₂.subtype := by
   ext x
   simp_all only [mem_map, primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe,
     Subtype.forall, subtype_apply, Subtype.exists, SetLike.mk_smul_mk, mk_eq_zero, exists_and_left,
@@ -136,3 +139,15 @@ end AddCommGroup
 end CommRing
 
 end Module
+
+namespace HeightOneSpectrum
+
+open IsDedekindDomain Submodule
+
+variable (P : HeightOneSpectrum A) [AddCommMonoid M] [Module A M]
+
+/--
+The `P`-primaryComponent component of a module `M` where `P` is of type `HeigtOneSpectrum A`. -/
+abbrev primaryComponent := Module.primaryComponent M P.asIdeal
+
+end HeightOneSpectrum
