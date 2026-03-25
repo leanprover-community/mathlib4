@@ -11,6 +11,10 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplexOne
 /-!
 # Binary products `Δ[n] ⊗ Δ[1]`
 
+In this file, we define a bijection `SSet.prodStdSimplex.nonDegenerateEquiv₁`
+between `Fin (p + 1)` and the type of nondegerate `(p + 1)`-simplices
+of `Δ[p] ⊗ Δ[1]`.
+
 -/
 
 @[expose] public section
