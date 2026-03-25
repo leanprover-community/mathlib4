@@ -210,4 +210,43 @@ theorem Affine.Simplex.closedInterior_inter_shift
       obtain hq := Set.mem_of_mem_of_subset hq (s.faceOpposite i).closedInterior_subset_affineSpan
       exact Set.mem_of_mem_of_subset hq (affineSpan_mono _ (by simp))
 
+/-- Draw a subspace parallel to `Affine.Simplex.faceOpposite`. It is disjoint from the closed
+interior of the simplex if the shift parameter is outside $[0, 1]$. -/
+theorem Affine.Simplex.closedInterior_inter_shift_eq_empty
+    {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) {x : k} (hx : x ∉ Set.Icc 0 1) :
+    s.closedInterior ∩ (affineSpan k (Set.range (s.faceOpposite i).points)).shift (s.points i) x =
+    ∅ := by
+  have hx0 : x ≠ 0 := by
+    contrapose! hx
+    simp [hx]
+  by_contra! h
+  obtain ⟨z, hzi, hzs⟩ := h
+  rw [AffineSubspace.shift_eq_map_homothety _ _ (IsUnit.mk0 _ hx0)] at hzs
+  obtain hz := Set.mem_of_mem_of_subset hzi s.closedInterior_subset_affineSpan
+  obtain ⟨w, hw1, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hz
+  rw [s.affineCombination_mem_closedInterior_iff hw1] at hzi
+  have hxi : 1 - x⁻¹ + x⁻¹ * w i ≠ 0 := by
+    contrapose! hx
+    have : w i = 1 - x := by grind
+    specialize hzi i
+    rw [this] at hzi
+    grind
+  obtain hzs := AffineSubspace.mem_map_of_mem (AffineMap.homothety (s.points i) x⁻¹) hzs
+  obtain p := Classical.arbitrary (affineSpan k (Set.range (s.faceOpposite i).points))
+  rw [AffineSubspace.map_map, ← AffineMap.homothety_mul, inv_mul_cancel₀ hx0,
+    AffineMap.homothety_one, AffineSubspace.map_id,
+    Finset.homothety_affineCombination _ _ _ (by simp),
+    ← AffineSubspace.vsub_right_mem_direction_iff_mem p.prop,
+    ← Finset.sum_smul_vsub_const_eq_affineCombination_vsub _ _ _ _ (by
+      simp [AffineMap.lineMap_apply_module, Finset.sum_add_distrib, ← Finset.mul_sum, hw1]),
+    ← Finset.sum_erase_add _ _ (show i ∈ Finset.univ by simp),
+    Submodule.add_mem_iff_right _ (Submodule.sum_mem _ fun j hj ↦ by
+      apply smul_mem
+      refine AffineSubspace.vsub_mem_direction (mem_affineSpan _ ?_) p.prop
+      suffices ∃ k, k ≠ i ∧ s.points k = s.points j by simpa
+      exact ⟨j, by simpa using hj⟩), AffineMap.lineMap_apply_module, Pi.add_apply, Pi.smul_apply,
+    Pi.smul_apply, Finset.affineCombinationSingleWeights_apply_self, smul_eq_mul, smul_eq_mul,
+    mul_one, smul_mem_iff _ hxi, AffineSubspace.vsub_right_mem_direction_iff_mem p.prop] at hzs
+  exact s.points_notMem_affineSpan_faceOpposite i hzs
+
 end LinearField
