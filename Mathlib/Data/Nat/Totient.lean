@@ -239,7 +239,6 @@ theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
     p.Prime ↔ Fintype.card (ZMod p)ˣ = p - 1 := by
   rcases eq_zero_or_neZero p with rfl | hp
   · simp [ZMod, not_prime_zero, zero_tsub]
-    simp
   rw [ZMod.card_units_eq_totient, Nat.totient_eq_iff_prime <| NeZero.pos p]
 
 @[simp]
