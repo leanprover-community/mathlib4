@@ -314,7 +314,7 @@ instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) :=
           sum_antidiagonal_swap n fun a b => coeff a φ * coeff b ψ }
 
 instance [Ring R] : Ring (MvPowerSeries σ R) :=
-  fast_instance% { (inferInstance : Semiring (MvPowerSeries σ R)),
+  { (inferInstance : Semiring (MvPowerSeries σ R)),
     (inferInstance : AddCommGroup (MvPowerSeries σ R)) with }
 
 instance [CommRing R] : CommRing (MvPowerSeries σ R) :=
