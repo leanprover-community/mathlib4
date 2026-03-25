@@ -118,7 +118,7 @@ protected theorem one_left {o : Ordinal} (ho : o ≠ 0) : CNF 1 o = [(0, o)] := 
 alias _root_.Ordinal.one_CNF := CNF.one_left
 
 protected theorem of_le_one {b o : Ordinal} (hb : b ≤ 1) (ho : o ≠ 0) : CNF b o = [(0, o)] := by
-  rcases le_one_iff.1 hb with (rfl | rfl)
+  rcases Order.le_one_iff.1 hb with (rfl | rfl)
   exacts [CNF.zero_left ho, CNF.one_left ho]
 
 @[deprecated (since := "2025-08-18")]
