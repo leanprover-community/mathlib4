@@ -250,12 +250,6 @@ lemma not_preconnected_bot [Nontrivial V] : ¬(⊥ : SimpleGraph V).Preconnected
 @[simp] lemma preconnected_top : (⊤ : SimpleGraph V).Preconnected := fun x y => by
   if h : x = y then rw [h] else exact Adj.reachable h
 
-@[deprecated (since := "2025-09-23")] alias bot_preconnected := preconnected_bot
-@[deprecated (since := "2025-09-23")]
-alias bot_preconnected_iff_subsingleton := preconnected_bot_iff_subsingleton
-@[deprecated (since := "2025-09-23")] alias bot_not_preconnected := not_preconnected_bot
-@[deprecated (since := "2025-09-23")] alias top_preconnected := preconnected_top
-
 @[nontriviality]
 lemma Preconnected.of_subsingleton {G : SimpleGraph V} [Subsingleton V] : G.Preconnected :=
   fun _ _ ↦ .of_subsingleton
@@ -348,9 +342,6 @@ lemma not_connected_bot [Nontrivial V] : ¬(⊥ : SimpleGraph V).Connected := by
 lemma connected_top_iff : (completeGraph V).Connected ↔ Nonempty V := by simp [connected_iff]
 
 @[simp] lemma connected_top [Nonempty V] : (completeGraph V).Connected := by rwa [connected_top_iff]
-
-@[deprecated (since := "2025-09-23")] alias bot_not_connected := not_connected_bot
-@[deprecated (since := "2025-09-23")] alias top_connected := connected_top
 
 @[nontriviality]
 lemma Connected.of_subsingleton {G : SimpleGraph V} [Nonempty V] [Subsingleton V] :

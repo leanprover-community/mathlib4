@@ -273,13 +273,4 @@ lemma isClosedUnderLimitsOfShape_inverseImage_iff (P : ObjectProperty D)
 
 end ObjectProperty
 
-namespace Limits
-
-@[deprecated (since := "2025-09-22")] alias ClosedUnderLimitsOfShape :=
-  ObjectProperty.IsClosedUnderLimitsOfShape
-@[deprecated (since := "2025-09-22")] alias closedUnderLimitsOfShape_of_limit :=
-  ObjectProperty.IsClosedUnderLimitsOfShape.mk'
-@[deprecated (since := "2025-09-22")] alias ClosedUnderLimitsOfShape.limit :=
-  ObjectProperty.prop_limit
-
-end CategoryTheory.Limits
+end CategoryTheory
