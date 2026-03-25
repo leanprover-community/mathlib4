@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Order.WithBot
+public import Mathlib.Tactic.DefEqAbuse
 
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
@@ -634,6 +635,12 @@ variable [AddMonoidWithOne α]
 
 instance addMonoidWithOne : AddMonoidWithOne (WithBot α) :=
   inferInstanceAs <| AddMonoidWithOne (WithTop α)
+
+#print WithBot.addMonoidWithOne
+
+#print WithBot.addMonoidWithOne._aux_1
+
+#exit
 
 @[norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithBot α) = n := rfl
 

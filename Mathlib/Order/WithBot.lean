@@ -35,10 +35,11 @@ variable {a b : α}
 
 @[to_dual]
 instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
-  Option.nontrivial
+  inferInstanceAs <| Nontrivial (Option α)
 
 @[to_dual]
-instance [IsEmpty α] : Unique (WithBot α) := Option.instUniqueOfIsEmpty
+instance [IsEmpty α] : Unique (WithBot α) :=
+  inferInstanceAs <| Unique (Option α)
 
 open Function
 
