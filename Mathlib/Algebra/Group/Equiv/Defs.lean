@@ -71,7 +71,7 @@ add_decl_doc AddEquiv.toEquiv
 add_decl_doc AddEquiv.toAddHom
 
 /-- `MulEquiv α β` is the type of an equiv `α ≃ β` which preserves multiplication. -/
-@[to_additive]
+@[to_additive, to_additive_dont_translate]
 structure MulEquiv (M N : Type*) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
 
 /-- The `Equiv` underlying a `MulEquiv`. -/
