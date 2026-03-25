@@ -49,12 +49,12 @@ jobs:
           DRY_RUN: ${{ inputs.dry_run }}
           GLOBAL_TIMEOUT: ${{ inputs.global_timeout }}
         run: |
-          DRY_RUN_FLAG=""
+          ARGS=()
           if [ "$DRY_RUN" = "true" ]; then
-            DRY_RUN_FLAG="--dry-run"
+            ARGS+=("--dry-run")
           fi
           TIMEOUT="${GLOBAL_TIMEOUT:-18000}"
-          python3 scripts/rm_set_option.py $DRY_RUN_FLAG --global-timeout "$TIMEOUT"
+          python3 scripts/rm_set_option.py "${ARGS[@]}" --global-timeout "$TIMEOUT"
           if git diff --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else

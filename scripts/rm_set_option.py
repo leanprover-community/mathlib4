@@ -11,7 +11,6 @@ import argparse
 import hashlib
 import json
 import os
-import re
 import subprocess
 import threading
 import time
@@ -461,6 +460,7 @@ def main():
 
     traverser = DAGTraverser()
 
+    _timer = None
     if args.global_timeout:
         def _global_timeout_handler():
             print(
@@ -495,6 +495,8 @@ def main():
         traverser.force_exit(1)
     finally:
         display.stop()
+        if _timer is not None:
+            _timer.cancel()
 
     # Step 6: summarize (only count target modules, not skipped ones)
     target_results = [tr for tr in results if tr.module_name in target_modules]
