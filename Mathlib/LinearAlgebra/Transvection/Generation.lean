@@ -120,7 +120,7 @@ theorem iInf_fixedSubmodule_le_fixedSubmodule_prod
     intro x hx
     simp only [mem_iInf] at hx
     simp only [finRange_succ, map_cons, map_map, prod_cons]
-    apply inf_fixedSubmodule_le_fixedSubmodule_mul
+    apply fixedSubmodule_inf_fixedSubmodule_le_comp
     simp only [mem_inf, hx 0, true_and]
     apply hind
     simp_all
@@ -138,7 +138,12 @@ theorem finrank_quotient_inf_le_finrank_quotient_add_finrank_quotient'
   rw [← LinearMap.ker_eq_bot, eq_bot_iff]
   intro x
   obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
-  simp [mem_ker, mem_bot]
+  simp only [mem_ker, mem_bot]
+  simp only [mkQ_apply, prod_apply, Pi.prod, mapQ_apply, id_coe, id_eq, Prod.mk_eq_zero, and_imp]
+  simp only [← mkQ_apply, ← mem_ker, ker_mkQ, mem_inf]
+  intro hP hQ
+  exact ⟨hP, hQ⟩
+
 
 variable {K : Type*} [DivisionRing K]
     {V : Type*} [AddCommGroup V] [Module K V] [Module.Finite K V]
@@ -229,7 +234,7 @@ theorem finrank_quotient_fixedSubmodule_of_mem_dilatransvections_pow
     finrank K (V ⧸ e.fixedSubmodule) ≤ n := by
   induction n generalizing e with
   | zero =>
-    simp only [pow_zero, Set.mem_one, ← fixedSubmodule_eq_top_iff] at he
+    simp only [pow_zero, Set.mem_one, LinearEquiv.one_eq_refl, ← fixedSubmodule_eq_top_iff] at he
     rw [← Nat.add_le_add_iff_right, finrank_quotient_add_finrank, zero_add]
     rw [he, finrank_top]
   | succ n hind =>
