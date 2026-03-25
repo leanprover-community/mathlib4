@@ -8,6 +8,7 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+public import Mathlib.CategoryTheory.Monoidal.Arrow
 public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 
@@ -247,13 +248,13 @@ lemma prod_le_unionProd : S.prod T ≤ S.unionProd T :=
 namespace unionProd
 
 /-- The inclusion `X ⊗ T ⟶ S.unionProd T` as simplicial sets. -/
-noncomputable def ι₁ : X ⊗ T ⟶ S.unionProd T :=
+def ι₁ : X ⊗ T ⟶ S.unionProd T :=
   lift (X ◁ T.ι) (by
     rintro m _ ⟨⟨y₁, y₂⟩, ⟨⟩⟩
     exact Or.inl ⟨Set.mem_univ _, Subtype.coe_prop _⟩)
 
 /-- The inclusion `S ⊗ Y ⟶ S.unionProd T` as simplicial sets -/
-noncomputable def ι₂ : (S : SSet.{u}) ⊗ Y ⟶ (unionProd S T : SSet.{u}) :=
+def ι₂ : (S : SSet.{u}) ⊗ Y ⟶ (unionProd S T : SSet.{u}) :=
   lift (S.ι ▷ Y) (by
     rintro m _ ⟨⟨y₁, y₂⟩, ⟨⟩⟩
     exact Or.inr ⟨Subtype.coe_prop _, Set.mem_univ _⟩)
@@ -298,9 +299,22 @@ lemma image_β_inv : (unionProd S T).image (β_ _ _).inv = unionProd T S := by
   apply image_β_hom
 
 /-- The isomorphism `unionProd S T ≅ unionProd T S` as simplicial sets. -/
-noncomputable def symmIso : (unionProd S T : SSet) ≅ (unionProd T S : SSet) where
+def symmIso : (unionProd S T : SSet) ≅ (unionProd T S : SSet) where
   hom := lift ((unionProd S T).ι ≫ (β_ _ _).hom) (by simp [range_comp])
   inv := lift ((unionProd T S).ι ≫ (β_ _ _).hom) (by simp [range_comp])
+
+noncomputable
+def unionProdιIso : Arrow.mk (S.unionProd T).ι ≅ S.ι □ T.ι := by
+  refine Arrow.isoMk' _ _ (unionProd.isPushout S T).isoPushout (Iso.refl _) ?_
+  · apply (unionProd.isPushout S T).hom_ext
+    ·
+      have : (Functor.PushoutObjObj.ofHasPushout (curriedTensor SSet) S.ι T.ι).inl =
+          ι₁ S T ≫ (unionProd.isPushout S T).isoPushout.hom := by
+        simp [Functor.PushoutObjObj.ofHasPushout_inl]
+      erw [← Category.assoc, ← this]
+      exact Functor.PushoutObjObj.inl_ι ..
+    · simp
+      sorry
 
 end unionProd
 
