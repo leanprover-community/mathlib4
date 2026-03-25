@@ -101,8 +101,6 @@ recall List.cons_append (a : α) (as bs : List α) : (a :: as) ++ bs = a :: (as 
 recall Nat.add_comm (n m : Nat) : n + m = m + n
 
 -- Test that the unused variable linter does not fire on `recall`.
--- The argument `(h : a = b)` only appears in the type, not the proof body,
--- so without suppression it would trigger an "unused variable" warning.
 #guard_msgs in
 recall Eq.symm {α : Sort _} {a b : α} (h : a = b) : b = a
 
@@ -111,11 +109,9 @@ universe u v
 class RecallUnivTest (R : Type u) : Prop where
   test : True
 
-set_option linter.unusedVariables false in
 recall RecallUnivTest (R : Type v) : Prop
 
 -- Test that `recall` works with `Type*`.
-set_option linter.unusedVariables false in
 recall RecallUnivTest (R : Type*) : Prop
 
 -- Test that `recall` works inside namespaces (https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/recall.20doesn.27t.20work.20in.20namespaces/near/430877189)
