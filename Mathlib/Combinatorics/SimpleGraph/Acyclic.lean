@@ -569,7 +569,7 @@ lemma Connected.exists_preconnected_induce_compl_singleton_of_finite [Finite V]
 
 /-- Removing a leaf from a tree gives another tree. -/
 lemma IsTree.induce_compl_singleton_of_degree_eq_one (v : V) [Fintype ↑(G.neighborSet v)]
-(h₁ : G.IsTree) (h₂ : G.degree v = 1) : (G.induce {v}ᶜ).IsTree :=
+    (h₁ : G.IsTree) (h₂ : G.degree v = 1) : (G.induce {v}ᶜ).IsTree :=
   ⟨h₁.connected.induce_compl_singleton_of_degree_eq_one h₂, h₁.isAcyclic.induce {v}ᶜ⟩
 
 lemma IsAcyclic.dist_ne_of_adj (hG : G.IsAcyclic) {u v w : V} (hadj : G.Adj v w)
