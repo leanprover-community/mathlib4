@@ -73,6 +73,9 @@ theorem associator_hom_apply {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
     (α_ X Y Z).hom ((x, y), z) = (x, (y, z)) :=
   rfl
 
+-- Added to make this visible to `simp` in `Representation.LinearizeMonoidal.μ_comp_assoc`
+-- (see the file `RepresentationTheory.Action`)
+-- Presumably this is what we should be doing with all these simp lemmas.
 @[simp]
 theorem associator_hom_apply' {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
     dsimp% [types_tensorObj_def] (α_ X Y Z).hom ((x, y), z) = (x, (y, z)) :=
