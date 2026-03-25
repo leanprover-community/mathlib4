@@ -607,20 +607,25 @@ lemma restrictMonoidHom_apply [AddCommGroup Y] {V : Set X} (D : locallyFinsuppWi
     restrictMonoidHom h D = D.restrict h := by rfl
 
 /--
-Present a function with with finite support as a linear combination of singleton indicator
-functions.
+Present a function with with finite support as a finsum of singleton indicator functions.
 -/
-@[simp] lemma sum_apply_smul_single_eq_self [DecidableEq X] {U : Set X}
-    {F : Function.locallyFinsuppWithin U ℤ} (h : F.support.Finite) :
-    ∑ x ∈ h.toFinset, (F x) • ((single x (1 : ℤ)).restrict (subset_univ U)) = F := by
+@[simp] lemma sum_apply_smul_single_eq_self [DecidableEq X] [AddCommMonoid Y] {U : Set X}
+    {F : Function.locallyFinsuppWithin U Y} (h : F.support.Finite) :
+    ∑ᶠ x, ((single x (F x)).restrict (subset_univ U)) = F := by
+  have : (fun x ↦ (single x (F x)).restrict (subset_univ U)).support ⊆ h.toFinset := by
+    intro x
+    contrapose
+    intro hx
+    rw [mem_support, ne_eq, not_not]
+    ext z
+    simp_all [restrict_apply]
+  rw [finsum_eq_sum_of_support_subset _ this]
   ext z
   by_cases hz : z ∉ U
   · aesop
-  simp only [coe_sum, coe_zsmul, zsmul_eq_mul, Finset.sum_apply, Pi.mul_apply, Pi.intCast_apply,
-    Int.cast_eq, restrict_apply]
+  simp [restrict_apply]
   by_cases hz : z ∈ F.support
-  · rw [← Finset.add_sum_erase _ _ (by aesop : z ∈ h.toFinset), Finset.sum_eq_zero (by aesop)]
-    aesop
+  · aesop
   · aesop
 
 /-- Restriction as a lattice morphism -/
