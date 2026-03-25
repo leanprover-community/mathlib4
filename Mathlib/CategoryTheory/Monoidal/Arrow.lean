@@ -212,14 +212,6 @@ end
 
 noncomputable section
 
-local instance [MonoidalCategory C] [MonoidalClosed C] :
-    ∀ S : C, PreservesColimitsOfSize (tensorLeft S) := fun S ↦
-  (ihom.adjunction S).leftAdjoint_preservesColimits
-
-local instance [MonoidalCategory C] [MonoidalClosed C] [BraidedCategory C] :
-    ∀ S : C, PreservesColimitsOfSize (tensorRight S) := fun S ↦
-  preservesColimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight S)
-
 /-- The monoidal category instance induced by the pushout-product. -/
 @[simps]
 scoped instance [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [MonoidalClosed C]
