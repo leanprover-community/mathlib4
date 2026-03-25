@@ -88,24 +88,30 @@ section Functor
 
 open CategoryTheory TensorProduct AlgebraTensorModule
 
-variable (A : Type w) [CommRing A] [Algebra R A]
-variable (B : Type w) [CommRing B] [Algebra R B]
-variable [Algebra A B] [IsScalarTower R A B]
+variable {A : Type w} [CommRing A] [Algebra R A]
+variable {B : Type w} [CommRing B] [Algebra R B]
+variable (f : A →ₐ[R] B)
 
 lemma baseChange_mkQ_surjective (N : G(k, (A ⊗[R] M); A)) :
+    letI : Algebra A B := f.toAlgebra
+    letI : IsScalarTower R A B :=
+      IsScalarTower.of_algebraMap_eq' <| IsScalarTower.algebraMap_eq R A B
     Function.Surjective (N.toSubmodule.mkQ.baseChange B ∘ₗ
       (cancelBaseChange R A B B M).symm.toLinearMap) := by
+  algebraize [f.toRingHom]
   apply ((cancelBaseChange R A B B M).symm.surjective_comp (LinearMap.baseChange B N.mkQ)).mpr
   rw [LinearMap.baseChange_eq_ltensor]
   exact LinearMap.lTensor_surjective _ <| Submodule.mkQ_surjective N.toSubmodule
 
 /-- The map on Grassmannians induced by base change along an algebra map `A → B`.
 Given a submodule `N` of `A ⊗[R] M`, the image is the kernel of the composition
-`B ⊗[R] M ≃ B ⊗[A] (A ⊗[R] M) → B ⊗[A] ((A ⊗[R] M) ⧸ N)`. -/
+B ⊗[R] M ≃ B ⊗[A] (A ⊗[R] M) → B ⊗[A] ((A ⊗[R] M) ⧸ N)`. -/
 def map (N : G(k, (A ⊗[R] M); A)) : G(k, (B ⊗[R] M); B) :=
-  letI f := N.toSubmodule.mkQ.baseChange B ∘ₗ (cancelBaseChange R A B B M).symm.toLinearMap
-  haveI equiv := f.quotKerEquivOfSurjective (baseChange_mkQ_surjective A B N)
-  { toSubmodule := f.ker
+  letI : Algebra A B := f.toAlgebra
+  letI : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' <| IsScalarTower.algebraMap_eq R A B
+  letI f' := N.toSubmodule.mkQ.baseChange B ∘ₗ (cancelBaseChange R A B B M).symm.toLinearMap
+  haveI equiv := f'.quotKerEquivOfSurjective (baseChange_mkQ_surjective f N)
+  { toSubmodule := f'.ker
     finite_quotient := Module.Finite.equiv equiv.symm
     projective_quotient := Module.Projective.of_equiv equiv.symm
     rankAtStalk_eq p := by
@@ -117,57 +123,64 @@ def map (N : G(k, (A ⊗[R] M); A)) : G(k, (B ⊗[R] M); B) :=
           simpa using Module.rankAtStalk_baseChange ..
         _ = k := N.rankAtStalk_eq _ }
 
-variable (R M k)
+variable (k)
 
-theorem map_id (A : CommAlgCat R) : map A A = 𝟙 G(k, A ⊗[R] M; A)  := by
+theorem map_id (A : CommAlgCat R) : map (.id R A) = 𝟙 G(k, A ⊗[R] M; A)  := by
   ext1 N
   rw [types_id_apply]
   ext x
-  simp only [map, cancelBaseChange_self_eq_lid, LinearMap.mem_ker, LinearMap.coe_comp,
-              LinearEquiv.coe_coe, Function.comp_apply, TensorProduct.lid_symm_apply,
-              LinearMap.baseChange_tmul, Submodule.mkQ_apply]
-  rw [← (TensorProduct.lid A ((A ⊗[R] M) ⧸ N.toSubmodule)).injective.eq_iff]
-  simp only [TensorProduct.lid_tmul, map_zero, one_smul, Submodule.Quotient.mk_eq_zero]
+  simp only [map, LinearMap.mem_ker, LinearMap.coe_comp,
+              LinearEquiv.coe_coe, Function.comp_apply]
+  erw [cancelBaseChange_self_eq_lid, TensorProduct.lid_symm_apply]
+  change 1 ⊗ₜ[↑A] N.mkQ x = 0 ↔ x ∈ N.toSubmodule
+  rw [← (TensorProduct.lid (↑A) ((↑A ⊗[R] M) ⧸ N.toSubmodule)).injective.eq_iff]
+  simp [TensorProduct.lid_tmul, map_zero, one_smul, Submodule.Quotient.mk_eq_zero,
+        Submodule.mkQ_apply]
 
-theorem map_comp {A B C : CommAlgCat R} [Algebra A B] [Algebra B C] [Algebra A C]
-    [IsScalarTower R A B] [IsScalarTower R B C] [IsScalarTower R A C]
-    [IsScalarTower A B C] (N : G(k, A ⊗[R] M; A)) : map A C N = map B C (map A B N) := by
+variable {C : Type w} [CommRing C] [Algebra R C]
+variable (g : B →ₐ[R] C)
+
+theorem map_comp (N : G(k, A ⊗[R] M; A)) :
+    map (g.comp f) N = map g (map f N) := by
+  algebraize [f.toRingHom, g.toRingHom, (g.comp f).toRingHom]
+  letI : IsScalarTower A B C := by
+    apply IsScalarTower.of_algebraMap_eq'
+    ext a
+    change g (f a) = (g.comp f) a
+    simp [AlgHom.comp_apply]
   ext x
-  let fAB := N.toSubmodule.mkQ.baseChange B ∘ₗ (cancelBaseChange _ _ _ _ _).symm.toLinearMap
-  let fAC := N.toSubmodule.mkQ.baseChange C ∘ₗ (cancelBaseChange _ _ _ _ _).symm.toLinearMap
-  let fBC := fAB.ker.mkQ.baseChange C ∘ₗ (cancelBaseChange _ _ _ _ _).symm.toLinearMap
-  let e := (fAB.quotKerEquivOfSurjective (baseChange_mkQ_surjective _ _ _)).baseChange _ _
-      ≪≫ₗ cancelBaseChange _ _ _ C _
+  let fAB := N.toSubmodule.mkQ.baseChange B ∘ₗ
+    (cancelBaseChange _ _ _ _ _).symm.toLinearMap
+  let fAC := N.toSubmodule.mkQ.baseChange C ∘ₗ
+    (cancelBaseChange _ _ _ _ _).symm.toLinearMap
+  let fBC := fAB.ker.mkQ.baseChange C ∘ₗ
+    (cancelBaseChange _ _ _ _ _).symm.toLinearMap
+  let e := (fAB.quotKerEquivOfSurjective
+    (baseChange_mkQ_surjective f N)).baseChange _ _ ≪≫ₗ
+    cancelBaseChange _ _ _ C _
   have hcomp : e.toLinearMap.comp fBC = fAC := by
     apply LinearMap.ext
     intro z
     induction z using TensorProduct.induction_on with
     | zero => simp [fAC, fBC, e]
     | tmul c m =>
-      simp [fAB, fAC, fBC, e, LinearMap.baseChange_tmul, cancelBaseChange_symm_tmul,
-        LinearEquiv.baseChange_tmul, cancelBaseChange_tmul,
+      simp [fAB, fAC, fBC, e, LinearMap.baseChange_tmul,
+        cancelBaseChange_symm_tmul, LinearEquiv.baseChange_tmul,
+        cancelBaseChange_tmul,
         LinearMap.quotKerEquivOfSurjective_apply_mk]
     | add x y hx hy =>
-      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, map_add] at *
+      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe,
+        Function.comp_apply, map_add] at *
       rw [hx, hy]
-  simp [map, fAB, fAC, fBC, hcomp ▸ LinearEquiv.ker_comp e fBC]; rfl
+  change x ∈ fAC.ker ↔ x ∈ fBC.ker
+  rw [show fAC = e.toLinearMap.comp fBC from hcomp.symm, LinearEquiv.ker_comp]
 
-/-- The Grassmannian functor sends an `R`-algebra `A` to `G(k, A ⊗[R] M; A)`. -/
+-- /-- The Grassmannian functor sends an `R`-algebra `A` to `G(k, A ⊗[R] M; A)`. -/
 def functor : CommAlgCat.{w, u} R ⥤ Type (max v w) where
   obj A := G(k, (A ⊗[R] M); A)
-  map {A B} f := by
-    letI : Algebra A B := f.hom.toAlgebra
-    haveI : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' (by
-      ext r; simp only [RingHom.comp_apply]; exact (f.hom.commutes r).symm)
-    exact map A B
-  map_id A := map_id R M k A
-  map_comp {A B C} f g  := by
-    algebraize [f.hom.toRingHom, g.hom.toRingHom, (f ≫ g).hom.toRingHom]
-    haveI : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' (by
-      ext a
-      change ((g.hom.comp f.hom) a) = g.hom (f.hom a)
-      simp [AlgHom.comp_apply])
-    exact funext (map_comp R M k)
+  map f := map f.hom
+  map_id A := map_id k A
+  map_comp f g := funext (map_comp k f.hom g.hom)
 
 end Functor
 
