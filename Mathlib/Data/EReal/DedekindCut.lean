@@ -23,24 +23,12 @@ open DedekindCut Concept Order
 theorem ratEmbedEReal_apply (x : ℚ) :
   Rat.castOrderEmbedding.trans Real.coeOrderEmbedding x = ((x : ℝ) : EReal) := rfl
 
-/-- The order embedding from the completion of `ℚ` to `EReal` -/
-noncomputable def factorEmbeddingRat : DedekindCut ℚ ↪o EReal :=
-  factorEmbedding (Rat.castOrderEmbedding.trans Real.coeOrderEmbedding)
-
 theorem factorEmbeddingRat_apply (x : DedekindCut ℚ) :
-  factorEmbeddingRat x = sSup ((fun (a : ℚ) ↦ ((a : ℝ) : EReal)) '' x.extent) := rfl
+  factorEmbedding (Rat.castOrderEmbedding.trans Real.coeOrderEmbedding) x =
+  sSup ((fun (a : ℚ) ↦ ((a : ℝ) : EReal)) '' x.extent) := rfl
 
-theorem le_of_forall_lt_rat_imp_le {x y : EReal} (h : ∀ q : ℚ, y < (q : ℝ) → x ≤ (q : ℝ)) : x ≤ y :=
-  le_of_not_gt fun hyx =>
-    let ⟨_, hy, hx⟩ := exists_rat_btwn_of_lt hyx
-    hx.not_ge <| h _ hy
-
-theorem le_of_forall_rat_lt_imp_le {x y : EReal} (h : ∀ q : ℚ, (q : ℝ) < x → (q : ℝ) ≤ y) : x ≤ y :=
-  le_of_not_gt fun hyx =>
-    let ⟨_, hy, hx⟩ := exists_rat_btwn_of_lt hyx
-    hy.not_ge <| h _ hx
-
-theorem upperBounds_ratLowerBounds (x : EReal) :
+@[simp]
+theorem upperBounds_setOf_ratCast_le (x : EReal) :
     upperBounds {q : ℚ | (q : ℝ) ≤ x} = {q : ℚ | x ≤ (q : ℝ)} := by
   ext y
   constructor
@@ -49,7 +37,8 @@ theorem upperBounds_ratLowerBounds (x : EReal) :
   · intro hy z hz
     simpa using le_trans (b := x) hz hy
 
-theorem lowerBounds_ratUpperBounds (x : EReal) :
+@[simp]
+theorem lowerBounds_setOf_le_ratCast (x : EReal) :
     lowerBounds {q : ℚ | x ≤ (q : ℝ)} = {q : ℚ | (q : ℝ) ≤ x} := by
   ext y
   constructor
@@ -58,22 +47,14 @@ theorem lowerBounds_ratUpperBounds (x : EReal) :
   · intro hy z hz
     simpa using le_trans (b := x) hy hz
 
-def isExtent_ratLowerBounds (x : EReal) : IsExtent (· ≤ ·) {q : ℚ | (q : ℝ) ≤ x} := by
-  simp only [isExtent_iff, upperPolar_le, lowerPolar_le, upperBounds_ratLowerBounds,
-    lowerBounds_ratUpperBounds]
-
-theorem extent_eRealEmbedDedekindCut_apply (x : EReal) :
-  (ofIsExtent (· ≤ ·) {q : ℚ | (q : ℝ) ≤ x} (isExtent_ratLowerBounds x)).extent =
-  {q : ℚ | (q : ℝ) ≤ x} := rfl
-
 /-- The Dedekind completion of the rationals is order isomorphic to the extended reals. -/
-public noncomputable def completeRat_iso_EReal : DedekindCut ℚ ≃o EReal where
-  toFun := factorEmbeddingRat
-  invFun x := ofIsExtent (· ≤ ·) {q : ℚ | (q : ℝ) ≤ x} (isExtent_ratLowerBounds x)
+public noncomputable def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
+  toFun := factorEmbedding (Rat.castOrderEmbedding.trans Real.coeOrderEmbedding)
+  invFun x := ofIsExtent (· ≤ ·) {q : ℚ | (q : ℝ) ≤ x} (by simp [isExtent_iff])
   left_inv := by
     intro x
     ext z
-    simp only [factorEmbeddingRat_apply, extent_eRealEmbedDedekindCut_apply, Set.mem_setOf_eq,
+    simp only [factorEmbeddingRat_apply, Concept.extent_ofIsExtent, Set.mem_setOf_eq,
       sSup_image]
     constructor
     · intro z_le_sup
@@ -84,7 +65,7 @@ public noncomputable def completeRat_iso_EReal : DedekindCut ℚ ≃o EReal wher
     · exact fun z_mem_extent ↦ le_iSup₂_of_le z z_mem_extent le_rfl
   right_inv := by
     intro x
-    simp only [factorEmbeddingRat_apply, extent_eRealEmbedDedekindCut_apply]
+    simp only [factorEmbeddingRat_apply, Concept.extent_ofIsExtent]
     apply sSup_eq_of_forall_le_of_forall_lt_exists_gt
     · simp
     · simp only [Set.mem_image, exists_exists_and_eq_and]
