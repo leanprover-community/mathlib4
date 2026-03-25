@@ -53,6 +53,7 @@ jobs:
           azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
       - name: Create Pull Request
+        id: pr
         if: steps.rm_set_option.outputs.changed == 'true' && toJson(inputs.dry_run) != 'true'
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
@@ -69,3 +70,31 @@ jobs:
 
             [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
           # labels: "auto-merge-after-CI"
+
+      - name: Send Zulip message (success)
+        if: steps.pr.outcome == 'success'
+        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'nightly-testing'
+          type: 'stream'
+          topic: 'Mathlib `remove unnecessary set_option lines`'
+          content: |
+            Please review #${{ steps.pr.outputs.pull-request-number }}, which removes unnecessary set_option lines.
+
+      - name: Send Zulip message (failure)
+        if: ${{ toJson(inputs.dry_run) != 'true' && failure() }}
+        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'nightly-testing'
+          type: 'stream'
+          topic: 'Mathlib `remove unnecessary set_option lines`'
+          content: |
+            [`remove unnecessary set_option lines` workflow run failed](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            triggered by: `${{ github.event_name }}`
