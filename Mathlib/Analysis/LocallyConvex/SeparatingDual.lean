@@ -85,14 +85,13 @@ protected theorem t2Space [T2Space R] : T2Space V := by
   rcases exists_separating_of_ne (R := R) hxy with ⟨f, hf⟩
   exact separated_by_continuous f.continuous hf
 
-theorem eq_zero_of_forall_dual_eq_zero {x : V} (h : ∀ f : StrongDual R V, f x = 0) :
-    x = 0 := by
+theorem eq_zero_of_forall_dual_eq_zero {x : V} (h : ∀ f : StrongDual R V, f x = 0) : x = 0 := by
   by_contra hx
   rcases exists_ne_zero (R := R) hx with ⟨f, hf⟩
   exact hf (h f)
 
 theorem eq_zero_iff_forall_dual_eq_zero (x : V) : x = 0 ↔ ∀ g : StrongDual R V, g x = 0 :=
-  ⟨fun hx => by simp [hx], fun h => eq_zero_of_forall_dual_eq_zero (R := R) h⟩
+  ⟨by simp +contextual, fun h => eq_zero_of_forall_dual_eq_zero (R := R) h⟩
 
 /-- See also `geometric_hahn_banach_point_point`. -/
 theorem eq_iff_forall_dual_eq {x y : V} : x = y ↔ ∀ g : StrongDual R V, g x = g y := by
