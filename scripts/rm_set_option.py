@@ -10,6 +10,7 @@ whether the file still builds. Processes files in reverse import-DAG order
 import argparse
 import hashlib
 import json
+import os
 import re
 import subprocess
 import threading
@@ -307,6 +308,18 @@ def print_summary(summary: Summary):
     print(f"  Duration:               {summary.duration:.0f}s")
 
 
+def write_github_outputs(summary: Summary):
+    """Write key stats to $GITHUB_OUTPUT when running in GitHub Actions."""
+    output_file = os.environ.get("GITHUB_OUTPUT")
+    if not output_file:
+        return
+    files_modified = summary.files_fully_cleaned + summary.files_partially_cleaned
+    with open(output_file, "a") as f:
+        f.write(f"lines_removed={summary.total_removed}\n")
+        f.write(f"files_modified={files_modified}\n")
+        f.write(f"files_timed_out={summary.files_timed_out}\n")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Remove unnecessary set_option ... false in lines"
@@ -508,6 +521,7 @@ def main():
             summary.files_unchanged += 1
 
     print_summary(summary)
+    write_github_outputs(summary)
 
     # Clean up progress file only when the run fully completed without errors.
     # If a global timeout fired or there were errors, keep it for the next run.

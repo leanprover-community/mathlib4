@@ -45,13 +45,15 @@ jobs:
       - name: Remove unnecessary set_option lines
         id: rm_set_option
         shell: bash
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+          GLOBAL_TIMEOUT: ${{ inputs.global_timeout }}
         run: |
           DRY_RUN_FLAG=""
-          if [ "${{ inputs.dry_run }}" = "true" ]; then
+          if [ "$DRY_RUN" = "true" ]; then
             DRY_RUN_FLAG="--dry-run"
           fi
-          TIMEOUT="${{ inputs.global_timeout }}"
-          TIMEOUT="${TIMEOUT:-18000}"
+          TIMEOUT="${GLOBAL_TIMEOUT:-18000}"
           python3 scripts/rm_set_option.py $DRY_RUN_FLAG --global-timeout "$TIMEOUT"
           if git diff --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
@@ -68,6 +70,30 @@ jobs:
         with:
           path: scripts/.rm_set_option_progress.jsonl
           key: rm-set-option-progress-${{ hashFiles('lean-toolchain') }}-${{ github.run_id }}
+
+      - name: Build PR body
+        id: pr_body
+        if: steps.rm_set_option.outputs.changed == 'true' && toJson(inputs.dry_run) != 'true'
+        shell: bash
+        env:
+          LINES_REMOVED: ${{ steps.rm_set_option.outputs.lines_removed }}
+          FILES_MODIFIED: ${{ steps.rm_set_option.outputs.files_modified }}
+          FILES_TIMED_OUT: ${{ steps.rm_set_option.outputs.files_timed_out }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          {
+            echo "body<<EOF"
+            echo "I removed ${LINES_REMOVED} unnecessary \`set_option\` line(s) across ${FILES_MODIFIED} file(s)."
+            if [ "${FILES_TIMED_OUT}" != "0" ]; then
+              echo ""
+              echo "⚠️ This is a partial run — ${FILES_TIMED_OUT} file(s) still to be processed. The next scheduled run will continue automatically."
+            fi
+            echo ""
+            echo "---"
+            echo ""
+            echo "[workflow run for this PR](${RUN_URL})"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Generate app token
         id: app-token
@@ -91,12 +117,7 @@ jobs:
           branch: "rm-set-option"
           base: master
           title: "chore: remove unnecessary set_option lines"
-          body: |
-            I am happy to remove some unnecessary `set_option` lines for you!
-
-            ---
-
-            [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          body: ${{ steps.pr_body.outputs.body }}
           # labels: "auto-merge-after-CI"
 
       - name: Send Zulip message (success)
@@ -110,7 +131,7 @@ jobs:
           type: 'stream'
           topic: 'Mathlib `remove unnecessary set_option lines`'
           content: |
-            Please review #${{ steps.pr.outputs.pull-request-number }}, which removes unnecessary set_option lines.
+            Please review #${{ steps.pr.outputs.pull-request-number }}, which removes ${{ steps.rm_set_option.outputs.lines_removed }} unnecessary `set_option` line(s) across ${{ steps.rm_set_option.outputs.files_modified }} file(s).
 
       - name: Send Zulip message (failure)
         if: ${{ toJson(inputs.dry_run) != 'true' && failure() }}
