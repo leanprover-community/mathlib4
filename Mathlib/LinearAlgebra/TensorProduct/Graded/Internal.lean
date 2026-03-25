@@ -84,11 +84,6 @@ open TensorProduct
 @[inherit_doc GradedTensorProduct]
 scoped[TensorProduct] notation:100 𝒜 " ᵍ⊗[" R "] " ℬ:100 => GradedTensorProduct R 𝒜 ℬ
 
-instance instAddCommGroupWithOne : AddCommGroupWithOne (𝒜 ᵍ⊗[R] ℬ) :=
-  fast_instance% Algebra.TensorProduct.instAddCommGroupWithOne
-
-instance : Module R (𝒜 ᵍ⊗[R] ℬ) := TensorProduct.leftModule
-
 variable (R) in
 /-- The casting equivalence to move between regular and graded tensor products. -/
 def of : A ⊗[R] B ≃ₗ[R] 𝒜 ᵍ⊗[R] ℬ := LinearEquiv.refl _ _
@@ -177,12 +172,11 @@ instance instMonoid : Monoid (𝒜 ᵍ⊗[R] ℬ) where
     simp_rw [mul_def, mulHom_apply, LinearEquiv.apply_symm_apply]
     rw [gradedMul_assoc]
 
-instance instRing : Ring (𝒜 ᵍ⊗[R] ℬ) :=
-  fast_instance% { instAddCommGroupWithOne 𝒜 ℬ, instMonoid 𝒜 ℬ with
-    right_distrib x y z := by simp_rw [mul_def, LinearMap.map_add₂]
-    left_distrib x y z := by simp_rw [mul_def, map_add]
-    mul_zero x := by simp_rw [mul_def, map_zero]
-    zero_mul x := by simp_rw [mul_def, LinearMap.map_zero₂] }
+instance instRing : Ring (𝒜 ᵍ⊗[R] ℬ) where
+  right_distrib x y z := by simp_rw [mul_def, LinearMap.map_add₂]
+  left_distrib x y z := by simp_rw [mul_def, map_add]
+  mul_zero x := by simp_rw [mul_def, map_zero]
+  zero_mul x := by simp_rw [mul_def, LinearMap.map_zero₂]
 
 /-- The characterization of this multiplication on partially homogeneous elements. -/
 theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : B) :
