@@ -96,3 +96,15 @@ recall List.cons_append (a : α) (as bs : List α) : (a :: as) ++ bs = a :: (as 
 
 /-- Recalling `Nat.add_comm`. -/
 recall Nat.add_comm (n m : Nat) : n + m = m + n
+
+-- Test that `recall` works with different universe variable names (issue #37144).
+universe u v
+class RecallUnivTest (R : Type u) : Prop where
+  test : True
+
+set_option linter.unusedVariables false in
+recall RecallUnivTest (R : Type v) : Prop
+
+-- Test that `recall` works with `Type*`.
+set_option linter.unusedVariables false in
+recall RecallUnivTest (R : Type*) : Prop
