@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Complex.Liouville
+public import Mathlib.Analysis.Normed.Operator.Mul
 import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.Analytic.RadiusLiminf
 
@@ -53,6 +53,22 @@ theorem hasDerivAt_resolvent [NontriviallyNormedField 𝕜] [NormedRing A] [Norm
   have H₂ : HasDerivAt (fun k => algebraMap 𝕜 A k - a) 1 k := by
     simpa using (Algebra.linearMap 𝕜 A).hasDerivAt.sub_const a
   simpa [resolvent, sq, hk.unit_spec, ← Ring.inverse_unit hk.unit] using H₁.comp_hasDerivAt k H₂
+
+theorem hasFDerivAt_resolvent [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
+    [CompleteSpace A] {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
+    HasFDerivAt (resolvent · k)
+      (((ContinuousLinearMap.mulLeftRight 𝕜 A) (resolvent a k)) (resolvent a k)) a := by
+  have H₁ : HasFDerivAt Ring.inverse _ (algebraMap 𝕜 A k - a) :=
+    hasFDerivAt_ringInverse (𝕜 := 𝕜) hk.unit
+  have H₂ : HasFDerivAt (fun a => algebraMap 𝕜 A k - a) (- .id 𝕜 A) a := by
+    simpa using (hasFDerivAt_const _ _).sub (hasFDerivAt_id (𝕜 := 𝕜) _)
+  simpa [resolvent_eq hk] using H₁.comp a H₂
+
+theorem hasDerivAt_resolvent' [NontriviallyNormedField 𝕜] [NontriviallyNormedField A]
+    [NormedAlgebra 𝕜 A] [CompleteSpace A] {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
+    HasDerivAt (resolvent · k) (resolvent a k ^ 2) a := by
+  convert hasFDerivAt_resolvent (𝕜 := A) hk |>.hasDerivAt
+  simp [resolvent, pow_two]
 
 open ENNReal in
 /-- In a Banach algebra `A` over `𝕜`, for `a : A` the function `fun z ↦ (1 - z • a)⁻¹` is
