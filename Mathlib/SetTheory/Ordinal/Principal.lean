@@ -95,9 +95,9 @@ alias principal_zero := isPrincipal_zero
 @[simp]
 theorem isPrincipal_one_iff : IsPrincipal op 1 ↔ op 0 0 = 0 := by
   refine ⟨fun h => ?_, fun h a b ha hb => ?_⟩
-  · rw [← lt_one_iff_zero]
+  · rw [← lt_one_iff]
     exact h zero_lt_one zero_lt_one
-  · rwa [lt_one_iff_zero, ha, hb] at *
+  · rwa [lt_one_iff, ha, hb] at *
 
 @[deprecated (since := "2026-03-17")]
 alias principal_one_iff := isPrincipal_one_iff
@@ -218,7 +218,7 @@ theorem isPrincipal_add_iff_add_left_eq_self : IsPrincipal (· + ·) o ↔ ∀ a
         (isSuccLimit_of_isPrincipal_add ho₁ ho)
     · rcases le_one_iff.1 ho₁ with (rfl | rfl)
       · exact (not_lt_zero hao).elim
-      · rw [lt_one_iff_zero] at hao
+      · rw [lt_one_iff] at hao
         rw [hao, zero_add]
   · rw [← h a hao]
     exact (isNormal_add_right a).strictMono hbo
@@ -360,8 +360,7 @@ theorem isPrincipal_mul_two : IsPrincipal (· * ·) 2 := by
 alias principal_mul_two := isPrincipal_mul_two
 
 theorem isPrincipal_mul_of_le_two (ho : o ≤ 2) : IsPrincipal (· * ·) o := by
-  rw [le_iff_lt_or_eq, lt_two_iff, le_one_iff] at ho
-  rcases ho with (rfl | rfl) | rfl
+  obtain (rfl | rfl) | rfl := le_two_iff.1 ho
   exacts [isPrincipal_zero, isPrincipal_mul_one, isPrincipal_mul_two]
 
 @[deprecated (since := "2026-03-17")]
