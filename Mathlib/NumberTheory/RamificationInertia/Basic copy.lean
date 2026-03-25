@@ -23,6 +23,22 @@ public import Mathlib.RingTheory.QuasiFinite.Basic
 
 @[expose] public section
 
+section artinian
+
+open Submodule
+
+noncomputable def quotNilradicalPowEquivPi (R : Type*) [CommRing R] [IsArtinianRing R] (n : ℕ) :
+    R ⧸ (⨅ I : MaximalSpectrum R, I.1 ^ n) ≃+* ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal ^ n :=
+  Ideal.quotientInfRingEquivPiQuotient (fun I : MaximalSpectrum R ↦ I.1 ^ n) fun I J h ↦
+    .pow <| Ideal.isCoprime_iff_sup_eq.mpr <| I.2.coprime_of_ne J.2 <| mt MaximalSpectrum.ext h
+
+noncomputable def IsArtinianRing.equivPi' (R : Type*) [CommRing R] [IsArtinianRing R] (n : ℕ)
+    (h : nilradical R ^ n = ⊥) :
+    R ≃ₐ[R] (I : MaximalSpectrum R) → ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal ^ n := by
+  sorry
+
+end artinian
+
 section temp
 
 open TensorProduct
