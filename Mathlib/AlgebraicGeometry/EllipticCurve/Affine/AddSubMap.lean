@@ -143,4 +143,3 @@ lemma addSubMap_ne_zero {x : Fin 3 → K} (hx : x ≠ 0) : (fun i ↦ (addSubMap
 end WeierstrassCurve
 
 end
-#min_imports
