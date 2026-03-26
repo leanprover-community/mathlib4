@@ -382,85 +382,91 @@ theorem ramificationIdx_tower'
     apply ramificationIdx_tower
   · rw [ramificationIdx_of_not_isPrime p r hr, ramificationIdx_of_not_isPrime q r hr, mul_zero]
 
--- todo: generalize primesOverFinset
-noncomputable def primesOverFinset' {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    [Algebra.QuasiFinite R S] (p : Ideal R) [p.IsPrime] : Finset (Ideal S) :=
-  (Algebra.QuasiFinite.finite_primesOver p (S := S)).toFinset
-
 noncomputable instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] : Fintype (p.primesOver S) :=
   (Algebra.QuasiFinite.finite_primesOver p).fintype
 
--- generalize to QuasiFinite
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
 
-open Module TensorProduct in
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable instance : Algebra p.ResidueField (p.Fiber S) :=
+  inferInstance
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable instance [Algebra.QuasiFinite R S] : Fintype (MaximalSpectrum (p.Fiber S)) :=
+  Fintype.ofFinite (MaximalSpectrum (p.Fiber S))
+
 set_option backward.isDefEq.respectTransparency false in
 set_option synthInstance.maxHeartbeats 1000000 in
 set_option maxHeartbeats 1000000 in
+instance [Algebra.QuasiFinite R S] (q : MaximalSpectrum (p.Fiber S)) :
+    Module.Finite p.ResidueField (Localization.AtPrime q.1) :=
+  Module.Finite.of_quasiFinite
+
+set_option backward.isDefEq.respectTransparency false in
+set_option synthInstance.maxHeartbeats 1000000 in
+set_option maxHeartbeats 1000000 in
+theorem foo1 [Algebra.QuasiFinite R S] : Module.finrank p.ResidueField (p.Fiber S) =
+    ∑ q : MaximalSpectrum (p.Fiber S),
+      Module.finrank p.ResidueField (Localization.AtPrime q.1) := by
+  have key := (IsArtinianRing.equivPiLocalization (p.Fiber S)).restrictScalars p.ResidueField
+  rw [key.toLinearEquiv.finrank_eq, Module.finrank_pi_fintype]
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable def equiv [Algebra.QuasiFinite R S] : p.primesOver S ≃ MaximalSpectrum (p.Fiber S) :=
+  (PrimeSpectrum.primesOverOrderIsoFiber R S p).toEquiv.trans
+    IsArtinianRing.primeSpectrumEquivMaximalSpectrum
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable instance : Algebra S (p.Fiber S) := Algebra.TensorProduct.rightAlgebra
+
+set_option backward.isDefEq.respectTransparency false in
+theorem equiv_symm_apply [Algebra.QuasiFinite R S] (q : MaximalSpectrum (p.Fiber S)) :
+    (equiv p).symm q = q.1.comap (algebraMap S (p.Fiber S)) := by
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
+set_option synthInstance.maxHeartbeats 1000000 in
+set_option maxHeartbeats 1000000 in
+theorem foo3 [Algebra.QuasiFinite R S] [Module.Flat R S] (q : MaximalSpectrum (p.Fiber S)) :
+    letI r := q.1.comap (algebraMap S (p.Fiber S))
+    letI Sr := Localization.AtPrime r
+    letI A := Sr ⧸ p.map (algebraMap R Sr)
+    Module.length (Localization.AtPrime p) (Localization.AtPrime q.1) =
+      Module.length (Localization.AtPrime p) A := by
+  apply LinearEquiv.length_eq
+  sorry
+
+set_option backward.isDefEq.respectTransparency false in
+set_option synthInstance.maxHeartbeats 1000000 in
+set_option maxHeartbeats 1000000 in
+theorem foo2 [Algebra.QuasiFinite R S] [Module.Flat R S] (q : MaximalSpectrum (p.Fiber S)) :
+    Module.finrank p.ResidueField (Localization.AtPrime q.1) =
+      p.ramificationIdx (q.1.comap (algebraMap S (p.Fiber S))) *
+        Module.finrank p.ResidueField (q.1.comap (algebraMap S (p.Fiber S))).ResidueField := by
+  set r := q.1.comap (algebraMap S (p.Fiber S))
+  set Sr := Localization.AtPrime r
+  set A := Sr ⧸ p.map (algebraMap R Sr)
+  have := length_restrictScalars (Localization.AtPrime p) (Localization.AtPrime r) A
+  replace this := congrArg ENat.toNat this
+  rw [ENat.toNat_mul, Cardinal.toNat_toENat] at this
+  convert this
+  · rw [← foo3, Module.length_eq_of_surjective
+      (IsLocalRing.residue_surjective (R := Localization.AtPrime p)),
+      Module.length_eq_finrank, ENat.toNat_coe]
+  · rw [ramificationIdx_def]
+
+set_option backward.isDefEq.respectTransparency false in
 theorem sum_ramification_inertia
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] :
     Module.finrank p.ResidueField (p.Fiber S) =
-      ∑ q : p.primesOver S, p.ramificationIdx q.1 * p.inertiaDeg q.1 := by
-  let F := p.Fiber S
-  have : Algebra S F := Algebra.TensorProduct.rightAlgebra
-  have : IsArtinianRing F := inferInstance
-  have (I : MaximalSpectrum F) : Module.Finite p.ResidueField F := inferInstance
-  have (I : MaximalSpectrum F) : Module.Finite p.ResidueField (Localization.AtPrime I.1) :=
-    Finite.of_quasiFinite
-  have : Fintype (MaximalSpectrum F) := Fintype.ofFinite _
-  let : Field p.ResidueField := IsLocalRing.ResidueField.field (Localization.AtPrime p)
-  let (I : MaximalSpectrum F) : Algebra p.ResidueField (Localization.AtPrime I.1) := inferInstance
-  let h (I : MaximalSpectrum F) : Free p.ResidueField (Localization.AtPrime I.1) := inferInstance
-  have (I : MaximalSpectrum F) : IsScalarTower p.ResidueField F (Localization.AtPrime I.1) :=
-    inferInstance
-  have key := (IsArtinianRing.equivPiLocalization F).restrictScalars p.ResidueField
-  have key' := key.toLinearEquiv.finrank_eq
-  rw [key.toLinearEquiv.finrank_eq, finrank_pi_fintype]
-  let e := (PrimeSpectrum.primesOverOrderIsoFiber R S p).toEquiv.trans
-    IsArtinianRing.primeSpectrumEquivMaximalSpectrum
-  classical
-  rw [← e.sum_comp]
+      ∑ q : p.primesOver S, p.ramificationIdx q.1 *
+        Module.finrank p.ResidueField q.1.ResidueField := by
+  rw [foo1, ← (equiv p).symm.sum_comp]
   apply Finset.sum_congr rfl
-  rintro ⟨q, hq1, hq2⟩ -
-  let Sq := Localization.AtPrime q
-  let A := Sq ⧸ p.map (algebraMap R Sq)
-  have : _ = _ * _ := length_restrictScalars (Localization.AtPrime p) (Localization.AtPrime q) A -- e * f
-  replace this := congrArg ENat.toNat this
-  simp only [ENat.toNat_mul, Cardinal.toNat_toENat] at this
-  change _ = _ * Module.finrank _ _ at this
-  convert this
-  · rw [← ENat.coe_inj, ← length_eq_finrank]
-    refine (Module.length_eq_of_surjective
-      (IsLocalRing.residue_surjective (R := Localization.AtPrime p))).symm.trans ?_
-    rw [ENat.coe_toNat]
-    · apply LinearEquiv.length_eq
-      sorry
-    · -- this is probably the wrong way to go about things...
-      let : Algebra p.ResidueField A := by
-        change Algebra (Localization.AtPrime p ⧸ _) (Localization.AtPrime q ⧸ _)
-        rw [IsScalarTower.algebraMap_eq R (Localization.AtPrime p), ← map_map,
-          Localization.AtPrime.map_eq_maximalIdeal]
-        infer_instance
-      have : IsScalarTower (Localization.AtPrime p) p.ResidueField A := by
-        apply IsScalarTower.of_algebraMap_eq
-        intro x
-        rfl
-      have : Module.Finite p.ResidueField A := by
-        change Module.Finite (Localization.AtPrime p ⧸ _) (Localization.AtPrime q ⧸ _)
-        rw [IsScalarTower.algebraMap_eq R (Localization.AtPrime p), ← map_map,
-          Localization.AtPrime.map_eq_maximalIdeal]
-        infer_instance
-      have : IsArtinian (Localization.AtPrime p) A := by
-        apply isArtinian_of_surjective_algebraMap (R := p.ResidueField)
-        exact Ideal.Quotient.mk_surjective
-      have : IsNoetherian (Localization.AtPrime p) A := by
-        apply isNoetherian_of_surjective (R := p.ResidueField) (M := A)
-      exact length_ne_top
-  · rw [ramificationIdx_def]
-  · rw [inertiaDeg_algebraMap]
-    simp
-    -- might need to assume that p is maximal
-    sorry
+  intros
+  apply foo2
 
 end Ideal
