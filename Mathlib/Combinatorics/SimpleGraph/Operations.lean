@@ -82,7 +82,7 @@ theorem edgeSet_replaceVertex_of_adj (ha : G.Adj s t) : (G.replaceVertex s t).ed
 
 variable [Fintype V] [DecidableRel G.Adj]
 
-instance : DecidableRel (G.replaceVertex s t).Adj := by unfold replaceVertex; infer_instance
+instance : DecidableRel (G.replaceVertex s t).Adj := inferInstanceAs <| DecidableRel (mk _ _ _).Adj
 
 theorem edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s t).edgeFinset =
     G.edgeFinset \ G.incidenceFinset t ∪ (G.neighborFinset s).image (s(·, t)) := by

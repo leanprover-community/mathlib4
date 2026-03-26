@@ -50,17 +50,15 @@ The strategy is the following:
 
 -/
 
-@[expose] public section
-
 section case1
 
 open ZMod
 
-private lemma cube_of_castHom_ne_zero {n : ZMod 9} :
+lemma cube_of_castHom_ne_zero {n : ZMod 9} :
     castHom (show 3 ∣ 9 by simp) (ZMod 3) n ≠ 0 → n ^ 3 = 1 ∨ n ^ 3 = 8 := by
   revert n; decide
 
-private lemma cube_of_not_dvd {n : ℤ} (h : ¬ 3 ∣ n) :
+lemma cube_of_not_dvd {n : ℤ} (h : ¬ 3 ∣ n) :
     (n : ZMod 9) ^ 3 = 1 ∨ (n : ZMod 9) ^ 3 = 8 := by
   apply cube_of_castHom_ne_zero
   rwa [map_intCast, Ne, ZMod.intCast_zmod_eq_zero_iff_dvd]
@@ -80,7 +78,7 @@ end case1
 
 section case2
 
-private lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a ≠ 0)
+lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a ≠ 0)
     (Hgcd : Finset.gcd {a, b, c} id = 1) (h3a : 3 ∣ a) (HF : a ^ 3 + b ^ 3 + c ^ 3 = 0)
     (H : ∀ a b c : ℤ, c ≠ 0 → ¬ 3 ∣ a → ¬ 3 ∣ b → 3 ∣ c → IsCoprime a b → a ^ 3 + b ^ 3 ≠ c ^ 3) :
     3 ∣ b := by
@@ -101,7 +99,7 @@ private lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a 
     ring
 
 open Finset in
-private lemma fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a ≠ 0)
+lemma fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a ≠ 0)
     (h3a : 3 ∣ a) (Hgcd : Finset.gcd {a, b, c} id = 1)
     (H : ∀ a b c : ℤ, c ≠ 0 → ¬ 3 ∣ a → ¬ 3 ∣ b → 3 ∣ c → IsCoprime a b → a ^ 3 + b ^ 3 ≠ c ^ 3) :
     a ^ 3 + b ^ 3 + c ^ 3 ≠ 0 := by
@@ -175,10 +173,8 @@ lemma FermatLastTheoremForThree_of_FermatLastTheoremThreeGen
   · rwa [← Ideal.norm_dvd_iff (hζ.prime_norm_toInteger_sub_one_of_prime_ne_two' (by decide)),
       hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)] at hdvd
   · exact dvd_trans hζ.toInteger_sub_one_dvd_prime' ⟨x, by simp [hx]⟩
-  · rw [show a = algebraMap _ (𝓞 K) a by simp, show b = algebraMap _ (𝓞 K) b by simp]
-    exact hcoprime.map _
-  · simp only [Units.val_one, one_mul]
-    exact_mod_cast h
+  · exact IsCoprime.intCast hcoprime
+  · simpa using mod_cast h
 
 namespace FermatLastTheoremForThreeGen
 
@@ -212,7 +208,6 @@ section IsCyclotomicExtension
 
 variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any `S' : Solution'`, the multiplicity of `λ` in `S'.c` is finite. -/
 lemma Solution'.multiplicity_lambda_c_finite :
     FiniteMultiplicity (hζ.toInteger - 1) S'.c :=
@@ -283,17 +278,11 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides `S'.c`. -/
 lemma lambda_sq_dvd_c : λ ^ 2 ∣ S'.c := by
   have hm := S'.multiplicity_lambda_c_finite
-  suffices 2 ≤ multiplicity (hζ.toInteger - 1) S'.c by
-    obtain ⟨x, hx⟩ := pow_multiplicity_dvd (hζ.toInteger - 1) S'.c
-    refine ⟨λ ^ (multiplicity (hζ.toInteger - 1) S'.c - 2) * x, ?_⟩
-    rw [← mul_assoc, ← pow_add]
-    convert hx using 3
-    simp [this]
   have := lambda_pow_four_dvd_c_cube S'
   rw [pow_dvd_iff_le_emultiplicity, emultiplicity_pow hζ.zeta_sub_one_prime',
     hm.emultiplicity_eq_multiplicity] at this
   norm_cast at this
-  lia
+  exact (FiniteMultiplicity.pow_dvd_iff_le_multiplicity hm).mpr (by lia)
 
 /-- Given `S' : Solution'`, we have that `2 ≤ S'.multiplicity`. -/
 lemma Solution'.two_le_multiplicity : 2 ≤ S'.multiplicity := by
@@ -468,29 +457,29 @@ lemma associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (
 end IsCyclotomicExtension
 
 /-- Given `S : Solution`, we let `S.y` be any element such that `S.a + η * S.b = λ * S.y` -/
-private noncomputable def y := (lambda_dvd_a_add_eta_mul_b S).choose
-private lemma y_spec : S.a + η * S.b = λ * S.y :=
+noncomputable def y := (lambda_dvd_a_add_eta_mul_b S).choose
+lemma y_spec : S.a + η * S.b = λ * S.y :=
   (lambda_dvd_a_add_eta_mul_b S).choose_spec
 
 /-- Given `S : Solution`, we let `S.z` be any element such that `S.a + η ^ 2 * S.b = λ * S.z` -/
-private noncomputable def z := (lambda_dvd_a_add_eta_sq_mul_b S).choose
-private lemma z_spec : S.a + η ^ 2 * S.b = λ * S.z :=
+noncomputable def z := (lambda_dvd_a_add_eta_sq_mul_b S).choose
+lemma z_spec : S.a + η ^ 2 * S.b = λ * S.z :=
   (lambda_dvd_a_add_eta_sq_mul_b S).choose_spec
 
 variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 
-private lemma lambda_not_dvd_y : ¬ λ ∣ S.y := fun h ↦ by
+lemma lambda_not_dvd_y : ¬ λ ∣ S.y := fun h ↦ by
   replace h := mul_dvd_mul_left ((η : 𝓞 K) - 1) h
   rw [coe_eta, ← y_spec, ← pow_two] at h
   exact lambda_sq_not_dvd_a_add_eta_mul_b _ h
 
-private lemma lambda_not_dvd_z : ¬ λ ∣ S.z := fun h ↦ by
+lemma lambda_not_dvd_z : ¬ λ ∣ S.z := fun h ↦ by
   replace h := mul_dvd_mul_left ((η : 𝓞 K) - 1) h
   rw [coe_eta, ← z_spec, ← pow_two] at h
   exact lambda_sq_not_dvd_a_add_eta_sq_mul_b _ h
 
 /-- We have that `λ ^ (3*S.multiplicity-2)` divides `S.a + S.b`. -/
-private lemma lambda_pow_dvd_a_add_b : λ ^ (3 * S.multiplicity - 2) ∣ S.a + S.b := by
+lemma lambda_pow_dvd_a_add_b : λ ^ (3 * S.multiplicity - 2) ∣ S.a + S.b := by
   have h : λ ^ S.multiplicity ∣ S.c := pow_multiplicity_dvd _ _
   replace h : (λ ^ multiplicity S) ^ 3 ∣ S.u * S.c ^ 3 := by simp [h]
   rw [← S.H, a_cube_add_b_cube_eq_mul, ← pow_mul, mul_comm, y_spec, z_spec] at h
@@ -504,25 +493,25 @@ private lemma lambda_pow_dvd_a_add_b : λ ^ (3 * S.multiplicity - 2) ∣ S.a + S
 
 /-- Given `S : Solution`, we let `S.x` be any element such that
 `S.a + S.b = λ ^ (3*S.multiplicity-2) * S.x` -/
-private noncomputable def x := (lambda_pow_dvd_a_add_b S).choose
-private lemma x_spec : S.a + S.b = λ ^ (3 * S.multiplicity - 2) * S.x :=
+noncomputable def x := (lambda_pow_dvd_a_add_b S).choose
+lemma x_spec : S.a + S.b = λ ^ (3 * S.multiplicity - 2) * S.x :=
   (lambda_pow_dvd_a_add_b S).choose_spec
 
 /-- Given `S : Solution`, we let `S.w` be any element such that `S.c = λ ^ S.multiplicity * S.w` -/
-private noncomputable def w :=
+noncomputable def w :=
   (pow_multiplicity_dvd (hζ.toInteger - 1) S.c).choose
 
 omit [NumberField K] [IsCyclotomicExtension {3} ℚ K] in
-private lemma w_spec : S.c = λ ^ S.multiplicity * S.w :=
+lemma w_spec : S.c = λ ^ S.multiplicity * S.w :=
   (pow_multiplicity_dvd (hζ.toInteger - 1) S.c).choose_spec
 
-private lemma lambda_not_dvd_w : ¬ λ ∣ S.w := fun h ↦ by
+lemma lambda_not_dvd_w : ¬ λ ∣ S.w := fun h ↦ by
   refine S.toSolution'.multiplicity_lambda_c_finite.not_pow_dvd_of_multiplicity_lt
     (lt_add_one S.multiplicity) ?_
   rw [pow_succ', mul_comm]
   exact S.w_spec ▸ (mul_dvd_mul_left (λ ^ S.multiplicity) h)
 
-private lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
+lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
   replace h := mul_dvd_mul_left (λ ^ (3 * S.multiplicity - 2)) h
   rw [mul_comm, ← x_spec] at h
   replace h :=
@@ -537,29 +526,29 @@ private lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
 
 attribute [local instance] IsCyclotomicExtension.Rat.three_pid
 
-private lemma isCoprime_helper {r s t w : 𝓞 K} (hr : ¬ λ ∣ r) (hs : ¬ λ ∣ s)
+lemma isCoprime_helper {r s t w : 𝓞 K} (hr : ¬ λ ∣ r) (hs : ¬ λ ∣ s)
     (Hp : ∀ {p}, Prime p → p ∣ t → p ∣ w → Associated p λ) (H₁ : ∀ {q}, q ∣ r → q ∣ t)
     (H₂ : ∀ {q}, q ∣ s → q ∣ w) : IsCoprime r s := by
   refine isCoprime_of_prime_dvd (not_and.2 (fun _ hz ↦ hs (by simp [hz])))
     (fun p hp p_dvd_r p_dvd_s ↦ hr ?_)
   rwa [← Associated.dvd_iff_dvd_left <| Hp hp (H₁ p_dvd_r) (H₂ p_dvd_s)]
 
-private lemma isCoprime_x_y : IsCoprime S.x S.y :=
+lemma isCoprime_x_y : IsCoprime S.x S.y :=
   isCoprime_helper (lambda_not_dvd_x S) (lambda_not_dvd_y S)
     (associated_of_dvd_a_add_b_of_dvd_a_add_eta_mul_b S) (fun hq ↦ x_spec S ▸ hq.mul_left _)
       (fun hq ↦ y_spec S ▸ hq.mul_left _)
 
-private lemma isCoprime_x_z : IsCoprime S.x S.z :=
+lemma isCoprime_x_z : IsCoprime S.x S.z :=
   isCoprime_helper (lambda_not_dvd_x S) (lambda_not_dvd_z S)
     (associated_of_dvd_a_add_b_of_dvd_a_add_eta_sq_mul_b S) (fun hq ↦ x_spec S ▸ hq.mul_left _)
       (fun hq ↦ z_spec S ▸ hq.mul_left _)
 
-private lemma isCoprime_y_z : IsCoprime S.y S.z :=
+lemma isCoprime_y_z : IsCoprime S.y S.z :=
   isCoprime_helper (lambda_not_dvd_y S) (lambda_not_dvd_z S)
     (associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b S)
     (fun hq ↦ y_spec S ▸ hq.mul_left _) (fun hq ↦ z_spec S ▸ hq.mul_left _)
 
-private lemma x_mul_y_mul_z_eq_u_mul_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 := by
+lemma x_mul_y_mul_z_eq_u_mul_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 := by
   suffices hh : λ ^ (3 * S.multiplicity - 2) * S.x * λ * S.y * λ * S.z =
       S.u * λ ^ (3 * S.multiplicity) * S.w ^ 3 by
     rw [show λ ^ (3 * multiplicity S - 2) * x S * λ * y S * λ * z S =
@@ -576,7 +565,7 @@ private lemma x_mul_y_mul_z_eq_u_mul_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 :=
   rw [mul_comm 3, pow_mul, ← mul_pow, ← w_spec, ← S.H, a_cube_add_b_cube_eq_mul]
   ring
 
-private lemma exists_cube_associated :
+lemma exists_cube_associated :
     (∃ X, Associated (X ^ 3) S.x) ∧ (∃ Y, Associated (Y ^ 3) S.y) ∧
       ∃ Z, Associated (Z ^ 3) S.z := by classical
   have h₁ := S.isCoprime_x_z.mul_left S.isCoprime_y_z
@@ -587,47 +576,40 @@ private lemma exists_cube_associated :
     exists_associated_pow_of_associated_pow_mul S.isCoprime_x_y.symm (mul_comm _ S.x ▸ h₃),
     exists_associated_pow_of_associated_pow_mul h₁.symm (mul_comm _ S.z ▸ h₂)⟩
 
-set_option backward.privateInPublic true in
 /-- Given `S : Solution`, we let `S.u₁` and `S.X` be any elements such that
 `S.X ^ 3 * S.u₁ = S.x` -/
-private noncomputable def X := (exists_cube_associated S).1.choose
-private noncomputable def u₁ := (exists_cube_associated S).1.choose_spec.choose
-private lemma X_u₁_spec : S.X ^ 3 * S.u₁ = S.x :=
+noncomputable def X := (exists_cube_associated S).1.choose
+noncomputable def u₁ := (exists_cube_associated S).1.choose_spec.choose
+lemma X_u₁_spec : S.X ^ 3 * S.u₁ = S.x :=
   (exists_cube_associated S).1.choose_spec.choose_spec
 
-set_option backward.privateInPublic true in
 /-- Given `S : Solution`, we let `S.u₂` and `S.Y` be any elements such that
 `S.Y ^ 3 * S.u₂ = S.y` -/
-private noncomputable def Y := (exists_cube_associated S).2.1.choose
-private noncomputable def u₂ := (exists_cube_associated S).2.1.choose_spec.choose
-private lemma Y_u₂_spec : S.Y ^ 3 * S.u₂ = S.y :=
+noncomputable def Y := (exists_cube_associated S).2.1.choose
+noncomputable def u₂ := (exists_cube_associated S).2.1.choose_spec.choose
+lemma Y_u₂_spec : S.Y ^ 3 * S.u₂ = S.y :=
   (exists_cube_associated S).2.1.choose_spec.choose_spec
 
-set_option backward.privateInPublic true in
 /-- Given `S : Solution`, we let `S.u₃` and `S.Z` be any elements such that
 `S.Z ^ 3 * S.u₃ = S.z` -/
-private noncomputable def Z := (exists_cube_associated S).2.2.choose
-private noncomputable def u₃ := (exists_cube_associated S).2.2.choose_spec.choose
-private lemma Z_u₃_spec : S.Z ^ 3 * S.u₃ = S.z :=
+noncomputable def Z := (exists_cube_associated S).2.2.choose
+noncomputable def u₃ := (exists_cube_associated S).2.2.choose_spec.choose
+lemma Z_u₃_spec : S.Z ^ 3 * S.u₃ = S.z :=
   (exists_cube_associated S).2.2.choose_spec.choose_spec
 
-set_option backward.privateInPublic true in
-private lemma X_ne_zero : S.X ≠ 0 :=
+lemma X_ne_zero : S.X ≠ 0 :=
   fun h ↦ lambda_not_dvd_x S <| by simp [← X_u₁_spec, h]
 
-private lemma lambda_not_dvd_X : ¬ λ ∣ S.X :=
+lemma lambda_not_dvd_X : ¬ λ ∣ S.X :=
   fun h ↦ lambda_not_dvd_x S <| X_u₁_spec S ▸ dvd_mul_of_dvd_left (dvd_pow h (by decide)) _
 
-set_option backward.privateInPublic true in
-private lemma lambda_not_dvd_Y : ¬ λ ∣ S.Y :=
+lemma lambda_not_dvd_Y : ¬ λ ∣ S.Y :=
   fun h ↦ lambda_not_dvd_y S <| Y_u₂_spec S ▸ dvd_mul_of_dvd_left (dvd_pow h (by decide)) _
 
-set_option backward.privateInPublic true in
-private lemma lambda_not_dvd_Z : ¬ λ ∣ S.Z :=
+lemma lambda_not_dvd_Z : ¬ λ ∣ S.Z :=
   fun h ↦ lambda_not_dvd_z S <| Z_u₃_spec S ▸ dvd_mul_of_dvd_left (dvd_pow h (by decide)) _
 
-set_option backward.privateInPublic true in
-private lemma isCoprime_Y_Z : IsCoprime S.Y S.Z := by
+lemma isCoprime_Y_Z : IsCoprime S.Y S.Z := by
   rw [← IsCoprime.pow_iff (m := 3) (n := 3) (by decide) (by decide),
     ← isCoprime_mul_unit_right_left S.u₂.isUnit, ← isCoprime_mul_unit_right_right S.u₃.isUnit,
     Y_u₂_spec, Z_u₃_spec]
@@ -635,27 +617,25 @@ private lemma isCoprime_Y_Z : IsCoprime S.Y S.Z := by
 
 -- This is just a computation and the formulas are too long.
 set_option linter.style.whitespace false in
-private lemma formula1 : S.X^3*S.u₁*λ^(3*S.multiplicity-2)+S.Y^3*S.u₂*λ*η+S.Z^3*S.u₃*λ*η^2 = 0 := by
+lemma formula1 : S.X^3*S.u₁*λ^(3*S.multiplicity-2)+S.Y^3*S.u₂*λ*η+S.Z^3*S.u₃*λ*η^2 = 0 := by
   rw [X_u₁_spec, Y_u₂_spec, Z_u₃_spec, mul_comm S.x, ← x_spec, mul_comm S.y, ← y_spec, mul_comm S.z,
     ← z_spec, eta_sq]
   calc _ = S.a+S.b+η^2*S.b-S.a+η^2*S.b+2*η*S.b+S.b := by ring
   _ = 0 := by rw [eta_sq]; ring
 
-set_option backward.privateInPublic true in
 /-- Let `u₄ := η * S.u₃ * S.u₂⁻¹` -/
-private noncomputable def u₄ := η * S.u₃ * S.u₂⁻¹
-private lemma u₄_def : S.u₄ = η * S.u₃ * S.u₂⁻¹ := rfl
-set_option backward.privateInPublic true in
+noncomputable def u₄ := η * S.u₃ * S.u₂⁻¹
+lemma u₄_def : S.u₄ = η * S.u₃ * S.u₂⁻¹ := rfl
 /-- Let `u₅ := -η ^ 2 * S.u₁ * S.u₂⁻¹` -/
-private noncomputable def u₅ := -η ^ 2 * S.u₁ * S.u₂⁻¹
-private lemma u₅_def : S.u₅ = -η ^ 2 * S.u₁ * S.u₂⁻¹ := rfl
+noncomputable def u₅ := -η ^ 2 * S.u₁ * S.u₂⁻¹
+lemma u₅_def : S.u₅ = -η ^ 2 * S.u₁ * S.u₂⁻¹ := rfl
 
 example (a b : 𝓞 K) (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 := by
   exact mul_ne_zero ha hb
 
 -- This is just a computation and the formulas are too long.
 set_option linter.style.whitespace false in
-private lemma formula2 :
+lemma formula2 :
     S.Y ^ 3 + S.u₄ * S.Z ^ 3 = S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
   rw [u₅_def, neg_mul, neg_mul, Units.val_neg, neg_mul, eq_neg_iff_add_eq_zero, add_assoc,
     add_comm (S.u₄ * S.Z ^ 3), ← add_assoc, add_comm (S.Y ^ 3)]
@@ -674,14 +654,14 @@ private lemma formula2 :
 
 -- This is just a computation and the formulas are too long.
 set_option linter.style.whitespace false in
-private lemma lambda_sq_div_u₅_mul : λ ^ 2 ∣ S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
+lemma lambda_sq_div_u₅_mul : λ ^ 2 ∣ S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
   use λ^(3*S.multiplicity-5)*S.u₅*(S.X^3)
   have : 3*(S.multiplicity-1) = 2+(3*S.multiplicity-5) := by have := S.two_le_multiplicity; lia
   calc _ = λ^(3*(S.multiplicity-1))*S.u₅*S.X^3 := by ring
   _ = λ^2*λ^(3*S.multiplicity-5)*S.u₅*S.X^3 := by rw [this, pow_add]
   _ = λ^2*(λ^(3*S.multiplicity-5)*S.u₅*S.X^3) := by ring
 
-private lemma u₄_eq_one_or_neg_one : S.u₄ = 1 ∨ S.u₄ = -1 := by
+lemma u₄_eq_one_or_neg_one : S.u₄ = 1 ∨ S.u₄ = -1 := by
   have : λ ^ 2 ∣ λ ^ 4 := ⟨λ ^ 2, by ring⟩
   have h := S.lambda_sq_div_u₅_mul
   apply IsCyclotomicExtension.Rat.Three.eq_one_or_neg_one_of_unit_of_congruent hζ
@@ -707,20 +687,17 @@ private lemma u₄_eq_one_or_neg_one : S.u₄ = 1 ∨ S.u₄ = -1 := by
       ← hX, ← hY, ← hZ, ← formula2]
     ring
 
-private lemma u₄_sq : S.u₄ ^ 2 = 1 := by
+lemma u₄_sq : S.u₄ ^ 2 = 1 := by
   rcases S.u₄_eq_one_or_neg_one with h | h <;> simp [h]
 
-set_option backward.privateInPublic true in
 /-- Given `S : Solution`, we have that
 `S.Y ^ 3 + (S.u₄ * S.Z) ^ 3 = S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3`. -/
-private lemma formula3 :
+lemma formula3 :
     S.Y ^ 3 + (S.u₄ * S.Z) ^ 3 = S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 :=
   calc S.Y ^ 3 + (S.u₄ * S.Z) ^ 3 = S.Y ^ 3 + S.u₄ ^ 2 * S.u₄ * S.Z ^ 3 := by ring
   _ = S.Y ^ 3 + S.u₄ * S.Z ^ 3 := by simp [← Units.val_pow_eq_pow_val, S.u₄_sq]
   _ = S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := S.formula2
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Given `S : Solution`, we construct `S₁ : Solution'`, with smaller multiplicity of `λ` in
   `c` (see `Solution'_descent_multiplicity_lt` below.). -/
 noncomputable def Solution'_descent : Solution' hζ where
@@ -772,7 +749,7 @@ end case2
 set_option backward.isDefEq.respectTransparency false in
 /-- Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all non-zero then
 `a ^ 3 + b ^ 3 ≠ c ^ 3`. -/
-theorem fermatLastTheoremThree : FermatLastTheoremFor 3 := by
+public theorem fermatLastTheoremThree : FermatLastTheoremFor 3 := by
   classical
   let K := CyclotomicField 3 ℚ
   let hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K

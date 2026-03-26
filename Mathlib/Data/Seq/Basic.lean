@@ -184,8 +184,7 @@ theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
     rw [← hl, take, head_eq_some h_get]
     simp
   | succ k ih =>
-    obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_lt h_mn
-    subst hl
+    obtain ⟨l, rfl⟩ := Nat.exists_eq_add_of_lt h_mn
     have : ∃ y, s.get? 0 = some y := by
       apply ge_stable _ _ h_get
       simp
@@ -528,6 +527,7 @@ theorem drop_nil {n : ℕ} : (@nil α).drop n = nil := by
   | zero => simp [drop]
   | succ m ih => simp [← dropn_tail, ih]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem drop_length' {n : ℕ} {s : Seq α} :
     (s.drop n).length' = s.length' - n := by
@@ -906,6 +906,7 @@ theorem Pairwise_drop {R : α → α → Prop} {s : Seq α} (h : s.Pairwise R) {
 
 end Pairwise
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Coinductive principle for proving `b.length' ≤ a.length'` for two sequences `a` and `b`. -/
 theorem at_least_as_long_as_coind {a : Seq α} {b : Seq β}
     (motive : Seq α → Seq β → Prop) (base : motive a b)
