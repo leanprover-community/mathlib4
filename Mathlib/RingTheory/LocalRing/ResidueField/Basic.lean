@@ -49,9 +49,10 @@ lemma residue_surjective :
 variable (R)
 
 instance ResidueField.algebra {R₀} [CommRing R₀] [Algebra R₀ R] :
-    Algebra R₀ (ResidueField R) :=
+    Algebra R₀ (ResidueField R) := fast_instance%
   Ideal.Quotient.algebra _
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R₁ R₂} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ R₂] [Algebra R₁ R] [Algebra R₂ R] [IsScalarTower R₁ R₂ R] :
     IsScalarTower R₁ R₂ (IsLocalRing.ResidueField R) := by

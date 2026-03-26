@@ -383,11 +383,10 @@ theorem ramificationIdx_tower'
   · rw [ramificationIdx_of_not_isPrime p r hr, ramificationIdx_of_not_isPrime q r hr, mul_zero]
 
 noncomputable instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] : Fintype (p.primesOver S) :=
+    [Algebra.QuasiFinite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] : Fintype (p.primesOver S) :=
   (Algebra.QuasiFinite.finite_primesOver p).fintype
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
-
 
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : Algebra p.ResidueField (p.Fiber S) :=
@@ -397,16 +396,45 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable instance [Algebra.QuasiFinite R S] : Fintype (MaximalSpectrum (p.Fiber S)) :=
   Fintype.ofFinite (MaximalSpectrum (p.Fiber S))
 
+instance : IsArtinianRing p.ResidueField :=
+  inferInstance
+
+instance : IsLocalRing (Localization.AtPrime p) :=
+  inferInstance
+
+instance {R : Type*} [Semiring R] : Module R R :=
+  inferInstance
+
 set_option backward.isDefEq.respectTransparency false in
-set_option synthInstance.maxHeartbeats 1000000 in
-set_option maxHeartbeats 1000000 in
+instance : CommRing (p.Fiber S) :=
+  inferInstance
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable instance (q : MaximalSpectrum (p.Fiber S)) :
+    Algebra p.ResidueField (Localization.AtPrime q.1) :=
+  inferInstance
+
+-- attribute [local instance 9999] Algebra.toModule
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable instance (q : MaximalSpectrum (p.Fiber S)) :
+    Module p.ResidueField (Localization.AtPrime q.1) :=
+  Algebra.toModule
+
+instance {R : Type*} [CommSemiring R] : IsLocalHom (algebraMap R R) := by
+  exact { map_nonunit := fun a a_1 ↦ a_1 }
+
+instance foobar [CommRing R] : DistribMulAction R R :=
+  inferInstance
+
+attribute [local instance 9999] foobar
+
+set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.QuasiFinite R S] (q : MaximalSpectrum (p.Fiber S)) :
     Module.Finite p.ResidueField (Localization.AtPrime q.1) :=
   Module.Finite.of_quasiFinite
 
 set_option backward.isDefEq.respectTransparency false in
-set_option synthInstance.maxHeartbeats 1000000 in
-set_option maxHeartbeats 1000000 in
 theorem foo1 [Algebra.QuasiFinite R S] : Module.finrank p.ResidueField (p.Fiber S) =
     ∑ q : MaximalSpectrum (p.Fiber S),
       Module.finrank p.ResidueField (Localization.AtPrime q.1) := by
@@ -427,8 +455,6 @@ theorem equiv_symm_apply [Algebra.QuasiFinite R S] (q : MaximalSpectrum (p.Fiber
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-set_option synthInstance.maxHeartbeats 1000000 in
-set_option maxHeartbeats 1000000 in
 theorem foo3 [Algebra.QuasiFinite R S] [Module.Flat R S] (q : MaximalSpectrum (p.Fiber S)) :
     letI r := q.1.comap (algebraMap S (p.Fiber S))
     letI Sr := Localization.AtPrime r
@@ -439,8 +465,6 @@ theorem foo3 [Algebra.QuasiFinite R S] [Module.Flat R S] (q : MaximalSpectrum (p
   sorry
 
 set_option backward.isDefEq.respectTransparency false in
-set_option synthInstance.maxHeartbeats 1000000 in
-set_option maxHeartbeats 1000000 in
 theorem foo2 [Algebra.QuasiFinite R S] [Module.Flat R S] (q : MaximalSpectrum (p.Fiber S)) :
     Module.finrank p.ResidueField (Localization.AtPrime q.1) =
       p.ramificationIdx (q.1.comap (algebraMap S (p.Fiber S))) *
@@ -460,7 +484,7 @@ theorem foo2 [Algebra.QuasiFinite R S] [Module.Flat R S] (q : MaximalSpectrum (p
 set_option backward.isDefEq.respectTransparency false in
 theorem sum_ramification_inertia
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] :
+    [Algebra.QuasiFinite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] :
     Module.finrank p.ResidueField (p.Fiber S) =
       ∑ q : p.primesOver S, p.ramificationIdx q.1 *
         Module.finrank p.ResidueField q.1.ResidueField := by
@@ -468,5 +492,15 @@ theorem sum_ramification_inertia
   apply Finset.sum_congr rfl
   intros
   apply foo2
+
+set_option backward.isDefEq.respectTransparency false in
+theorem sum_ramification_inertia'
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    [Module.Finite R S] [Module.Free R S] (p : Ideal R) [p.IsPrime] :
+    Module.finrank R S =
+      ∑ q : p.primesOver S, p.ramificationIdx q.1 *
+        Module.finrank p.ResidueField q.1.ResidueField := by
+  rw [← sum_ramification_inertia]
+  sorry
 
 end Ideal
