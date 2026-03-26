@@ -61,12 +61,6 @@ open AddSubgroup
 
 @[simp] lemma range_castAddHom {A : Type*} [AddGroupWithOne A] :
     (castAddHom A).range = zmultiples 1 := by
-namespace Int
-
-open AddSubgroup
-
-@[simp] lemma range_castAddHom {A : Type*} [AddGroupWithOne A] :
-    (castAddHom A).range = zmultiples 1 := by
   ext a
   simp_rw [AddMonoidHom.mem_range, Int.coe_castAddHom, AddSubgroup.mem_zmultiples_iff, zsmul_one]
 
