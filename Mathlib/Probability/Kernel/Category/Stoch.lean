@@ -45,7 +45,7 @@ instance : StochHom.IsStableUnderBraiding where
     dsimp [MonoidalCategory.whiskerRight, StochHom]
     infer_instance
   id_mem X := by
-    simp only [SFinKer.id_def]
+    dsimp [CategoryStruct.id]
     infer_instance
   comp_mem κ η hκ hη := by
     dsimp [CategoryStruct.comp]
@@ -76,7 +76,6 @@ noncomputable
 instance : MarkovCategory Stoch.{u} where
   discard_natural κ := by
     ext : 2
-    simp only [WideSubcategory.tensorUnit_obj, tensorUnit_carrier, WideSubcategory.comp_def,
-      SFinKer.comp_def]
+    simp only [WideSubcategory.tensorUnit_obj, tensorUnit_carrier, WideSubcategory.comp_def]
     have : IsMarkovKernel κ.1.1 := κ.2
     exact κ.1.1.comp_discard
