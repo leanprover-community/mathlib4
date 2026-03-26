@@ -372,7 +372,7 @@ class Monoidal (F : C ⥤ D) extends F.LaxMonoidal, F.OplaxMonoidal where
 
 namespace Monoidal
 
-attribute [reassoc (attr := simp)] ε_η η_ε μ_δ δ_μ
+attribute [map (attr := reassoc (attr := simp))] ε_η η_ε μ_δ δ_μ
 
 section
 
@@ -395,21 +395,17 @@ instance : IsIso (η F) := (εIso F).isIso_inv
 instance (X Y : C) : IsIso (μ F X Y) := (μIso F X Y).isIso_hom
 instance (X Y : C) : IsIso (δ F X Y) := (μIso F X Y).isIso_inv
 
-@[reassoc (attr := simp)]
-lemma map_ε_η (G : D ⥤ C') : G.map (ε F) ≫ G.map (η F) = 𝟙 _ :=
-  (εIso F).map_hom_inv_id G
+@[deprecated ε_η_map (since := "2026-03-25")]
+lemma map_ε_η (G : D ⥤ C') : G.map (ε F) ≫ G.map (η F) = 𝟙 _ := by simp
 
-@[reassoc (attr := simp)]
-lemma map_η_ε (G : D ⥤ C') : G.map (η F) ≫ G.map (ε F) = 𝟙 _ :=
-  (εIso F).map_inv_hom_id G
+@[deprecated η_ε_map (since := "2026-03-25")]
+lemma map_η_ε (G : D ⥤ C') : G.map (η F) ≫ G.map (ε F) = 𝟙 _ := by simp
 
-@[reassoc (attr := simp)]
-lemma map_μ_δ (G : D ⥤ C') (X Y : C) : G.map (μ F X Y) ≫ G.map (δ F X Y) = 𝟙 _ :=
-  (μIso F X Y).map_hom_inv_id G
+@[deprecated μ_δ_map (since := "2026-03-25")]
+lemma map_μ_δ (G : D ⥤ C') (X Y : C) : G.map (μ F X Y) ≫ G.map (δ F X Y) = 𝟙 _ := by simp
 
-@[reassoc (attr := simp)]
-lemma map_δ_μ (G : D ⥤ C') (X Y : C) : G.map (δ F X Y) ≫ G.map (μ F X Y) = 𝟙 _ :=
-  (μIso F X Y).map_inv_hom_id G
+@[deprecated δ_μ_map (since := "2026-03-25")]
+lemma map_δ_μ (G : D ⥤ C') (X Y : C) : G.map (δ F X Y) ≫ G.map (μ F X Y) = 𝟙 _ := by simp
 
 @[reassoc (attr := simp)]
 lemma whiskerRight_ε_η (T : D) : ε F ▷ T ≫ η F ▷ T = 𝟙 _ := by
@@ -467,7 +463,7 @@ theorem map_associator_inv (X Y Z : C) :
     F.map (α_ X Y Z).inv =
       δ F X (Y ⊗ Z) ≫ F.obj X ◁ δ F Y Z ≫
         (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv ≫ μ F X Y ▷ F.obj Z ≫ μ F (X ⊗ Y) Z := by
-  rw [← cancel_epi (F.map (α_ X Y Z).hom), Iso.map_hom_inv_id, map_associator,
+  rw [← cancel_epi (F.map (α_ X Y Z).hom), Iso.hom_inv_id_map, map_associator,
     assoc, assoc, assoc, assoc, OplaxMonoidal.associativity_inv_assoc,
     whiskerRight_δ_μ_assoc, δ_μ, comp_id, LaxMonoidal.associativity_inv,
     Iso.hom_inv_id_assoc, whiskerRight_δ_μ_assoc, δ_μ]
@@ -677,10 +673,10 @@ def toOplaxMonoidal : F.OplaxMonoidal where
       associativity_assoc, Iso.hom_inv_id_assoc, whiskerLeft_hom_inv, comp_id]
   oplax_left_unitality _ := by
     rw [← cancel_epi (λ_ _).hom, Iso.hom_inv_id, h.left_unitality, assoc, assoc,
-      Iso.map_hom_inv_id_assoc, Iso.hom_inv_id_assoc, hom_inv_whiskerRight]
+      Iso.hom_inv_id_map_assoc, Iso.hom_inv_id_assoc, hom_inv_whiskerRight]
   oplax_right_unitality _ := by
     rw [← cancel_epi (ρ_ _).hom, Iso.hom_inv_id, h.right_unitality, assoc, assoc,
-      Iso.map_hom_inv_id_assoc, Iso.hom_inv_id_assoc, whiskerLeft_hom_inv]
+      Iso.hom_inv_id_map_assoc, Iso.hom_inv_id_assoc, whiskerLeft_hom_inv]
 
 attribute [local simp] toLaxMonoidal_ε toLaxMonoidal_μ toOplaxMonoidal_η toOplaxMonoidal_δ in
 /-- The monoidal functor structure induced by a `Functor.CoreMonoidal` structure. -/
@@ -1156,7 +1152,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma counitIso_inv_app_comp_functor_map_η_inverse :
     e.counitIso.inv.app (𝟙_ D) ≫ e.functor.map (η e.inverse) = ε e.functor := by
   rw [← cancel_epi (η e.functor), Monoidal.η_ε, ← functor_map_ε_inverse_comp_counitIso_hom_app,
-    Category.assoc, Iso.hom_inv_id_app_assoc, Monoidal.map_ε_η]
+    Category.assoc, Iso.hom_inv_id_app_assoc, Monoidal.ε_η_map]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
@@ -1196,7 +1192,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma counitInv_app_comp_functor_map_η_inverse :
     e.counitInv.app (𝟙_ D) ≫ e.functor.map (η e.inverse) = ε e.functor := by
   rw [← cancel_epi (η e.functor), Monoidal.η_ε, ← functor_map_ε_inverse_comp_counitIso_hom_app,
-    Category.assoc, Iso.hom_inv_id_app_assoc, Monoidal.map_ε_η]
+    Category.assoc, Iso.hom_inv_id_app_assoc, Monoidal.ε_η_map]
 
 @[reassoc]
 lemma counitInv_app_tensor_comp_functor_map_δ_inverse (X Y : C) :

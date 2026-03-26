@@ -465,6 +465,8 @@ lemma map_hom_inv_id (F : C ⥤ D) :
 lemma map_inv_hom_id (F : C ⥤ D) :
     F.map e.inv ≫ F.map e.hom = 𝟙 _ := by grind
 
+@[deprecated (since := "2026-03-25")] alias map_hom_inv_id_assoc := hom_inv_id_map_assoc
+@[deprecated (since := "2026-03-25")] alias map_inv_hom_id_assoc := inv_hom_id_map_assoc
 end
 
 end Iso
