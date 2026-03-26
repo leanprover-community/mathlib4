@@ -456,7 +456,7 @@ protected def measurableSpace (hτ : IsStoppingTime f τ) : MeasurableSpace Ω w
   measurableSet_iUnion s hs := by
     refine ⟨MeasurableSet.iUnion fun i ↦ (hs i).1, fun i ↦ ?_⟩
     replace hs := fun i ↦ (hs i).2
-    rw [forall_swap] at hs
+    rw [forall_comm] at hs
     rw [Set.iUnion_inter]
     exact MeasurableSet.iUnion (hs i)
 
