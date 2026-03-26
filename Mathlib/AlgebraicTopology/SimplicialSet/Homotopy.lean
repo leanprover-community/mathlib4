@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -11,6 +11,13 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.RelativeMorphism
 
 /-!
 # Simplicial homotopies
+
+In this file, we define the notion of homotopies (`SSet.Homotopy`) between
+morphisms `f : X ⟶ Y` and `g : X ⟶ Y` of simplicial sets: it involves
+a morphism `X ⊗ Δ[1] ⟶ Y` inducing both `f` and `g`. We show that
+from `H : SSet.Homotopy f g`, we can obtain a combinatorial
+homotopy `SimplicialObject.Homotopy f g` (where the data involve
+a family of maps `X _⦋n⦌ → Y _⦋n + 1⦌` for all `n : ℕ` and `i : Fin (n + 1)`.)
 
 -/
 
