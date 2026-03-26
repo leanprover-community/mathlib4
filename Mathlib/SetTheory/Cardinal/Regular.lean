@@ -38,11 +38,11 @@ namespace Cardinal
 /-! ### Regular cardinals -/
 
 /-- A cardinal is regular if it is infinite and it equals its own cofinality. -/
-def IsRegular (c : Cardinal) : Prop :=
-  ℵ₀ ≤ c ∧ c ≤ c.ord.cof
-
-theorem IsRegular.aleph0_le {c : Cardinal} (H : c.IsRegular) : ℵ₀ ≤ c :=
-  H.1
+structure IsRegular (c : Cardinal) : Prop where
+  /-- A regular cardinal is infinite. -/
+  aleph0_le : ℵ₀ ≤ c
+  /-- A cardinal equals its own cofinality. See `IsRegular.cof_eq`. -/
+  le_cof_ord : c ≤ c.ord.cof
 
 theorem IsRegular.cof_ord {c : Cardinal} (H : c.IsRegular) : c.ord.cof = c :=
   (cof_ord_le c).antisymm H.2
@@ -252,11 +252,13 @@ theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' :
 /-! ### Inaccessible cardinals -/
 
 /-- A cardinal is inaccessible if it is an uncountable regular strong limit cardinal. -/
-def IsInaccessible (c : Cardinal) : Prop :=
-  ℵ₀ < c ∧ c ≤ c.ord.cof ∧ ∀ x < c, 2 ^ x < c
-
-theorem IsInaccessible.aleph0_lt {c : Cardinal} (h : IsInaccessible c) : ℵ₀ < c :=
-  h.1
+structure IsInaccessible (c : Cardinal) : Prop where
+  /-- An inaccessible cardinal is uncountable. -/
+  aleph0_lt : ℵ₀ < c
+  /-- An inaccessible cardinal is equal to its own cofinality, see `IsInaccessible.isRegular`. -/
+  le_cof_ord : c ≤ c.ord.cof
+  /-- An inaccessible cardinal is a strong limit, see `IsInaccessible.isStrongLimit`. -/
+  two_power_lt ⦃x⦄ : x < c → 2 ^ x < c
 
 theorem IsInaccessible.nat_lt {c : Cardinal} (h : IsInaccessible c) (n : ℕ) : n < c :=
   natCast_lt_aleph0.trans h.1
@@ -268,17 +270,15 @@ theorem IsInaccessible.ne_zero {c : Cardinal} (h : IsInaccessible c) : c ≠ 0 :
   h.pos.ne'
 
 theorem IsInaccessible.isRegular {c : Cardinal} (h : IsInaccessible c) : IsRegular c :=
-  ⟨h.aleph0_lt.le, h.2.1⟩
+  ⟨h.aleph0_lt.le, h.le_cof_ord⟩
 
 theorem IsInaccessible.isStrongLimit {c : Cardinal} (h : IsInaccessible c) : IsStrongLimit c :=
-  ⟨h.ne_zero, h.2.2⟩
+  ⟨h.ne_zero, h.two_power_lt⟩
 
 theorem isInaccessible_def {c : Cardinal} :
     IsInaccessible c ↔ ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c where
   mp h := ⟨h.aleph0_lt, h.isRegular, h.isStrongLimit⟩
   mpr := fun ⟨h₁, h₂, h₃⟩ ↦ ⟨h₁, h₂.2, h₃.two_power_lt⟩
-
-@[deprecated (since := "2025-08-20")] alias isInaccesible_def := isInaccessible_def
 
 -- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals
 theorem IsInaccessible.univ : IsInaccessible univ.{u, v} :=
