@@ -790,6 +790,10 @@ theorem norm_map_iff_adjoint_comp_self (u : H →L[𝕜] K) :
     (∀ x : H, ‖u x‖ = ‖x‖) ↔ adjoint u ∘L u = 1 := by
   rw [LinearMap.norm_map_iff_inner_map_map u, u.inner_map_map_iff_adjoint_comp_self]
 
+theorem isometry_iff_adjoint_comp_self (u : H →L[𝕜] K) :
+    Isometry u ↔ adjoint u ∘L u = 1 := by
+  rw [AddMonoidHomClass.isometry_iff_norm, norm_map_iff_adjoint_comp_self]
+
 @[simp]
 lemma _root_.LinearIsometryEquiv.adjoint_eq_symm (e : H ≃ₗᵢ[𝕜] K) :
     adjoint (e : H →L[𝕜] K) = e.symm :=
@@ -1017,8 +1021,12 @@ theorem LinearIsometry.adjoint_comp_self {E E' : Type*}
     [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] [FiniteDimensional 𝕜 E'] (f : E →ₗᵢ[𝕜] E') :
     f.adjoint ∘ₗ f.toLinearMap = LinearMap.id := by
+  haveI := FiniteDimensional.complete 𝕜 E
+  haveI := FiniteDimensional.complete 𝕜 E'
   ext x
-  exact ext_inner_left 𝕜 fun y ↦ by simp [LinearMap.adjoint_inner_right]
+  have : f.toContinuousLinearMap.adjoint ∘L f.toContinuousLinearMap = 1 :=
+    f.toContinuousLinearMap.isometry_iff_adjoint_comp_self.mp f.isometry
+  simpa using congr($this x)
 
 theorem LinearIsometryEquiv.toMatrix_mem_unitaryGroup {ι E E' : Type*} [Fintype ι] [DecidableEq ι]
     [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
