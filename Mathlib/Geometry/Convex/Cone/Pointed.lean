@@ -171,7 +171,6 @@ end toPointedCone
 
 /-- Construct a pointed cone from closure under two-element conical combinations.
 I.e., a nonempty set closed under two-element conical combinations is a pointed cone. -/
-@[simps!]
 def ofConeComb (s : Set E) (nonempty : s.Nonempty)
     (coneComb : ∀ x ∈ s, ∀ y ∈ s, ∀ a : R, 0 ≤ a → ∀ b : R, 0 ≤ b → a • x + b • y ∈ s) :
     PointedCone R E :=
