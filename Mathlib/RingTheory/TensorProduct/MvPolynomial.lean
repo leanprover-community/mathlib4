@@ -144,7 +144,7 @@ lemma coeff_rTensorAlgHom_tmul
   rw [AlgHom.coe_comp, IsScalarTower.coe_toAlgHom', Function.comp_apply,
     Algebra.TensorProduct.includeRight_apply]
   rw [algebraMap_eq, mul_comm, coeff_C_mul]
-  simp [mapAlgHom, coeff_map]
+  simp [coeff_map]
 
 section DecidableEq
 variable [DecidableEq σ]
