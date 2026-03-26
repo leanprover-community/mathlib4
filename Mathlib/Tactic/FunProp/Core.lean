@@ -434,6 +434,7 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
       let b ← whnfR b
       let some (decl, f) ← getFunProp? b | return none
       unless decl.funPropName = funPropDecl.funPropName do return none
+
       let .data fData ← getFunctionData? f (← unfoldNamePred)
         | return none
       unless (fData.getFnOrigin == funOrigin) do return none
@@ -465,6 +466,7 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
       | .lt => true
       | .gt => false
       | .eq => t.mainArgs.size < s.mainArgs.size)
+
   return thms
 
 
