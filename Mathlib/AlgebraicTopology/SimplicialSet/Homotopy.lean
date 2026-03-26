@@ -12,7 +12,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.RelativeMorphism
 /-!
 # Simplicial homotopies
 
-In this file, we define the notion of homotopies (`SSet.Homotopy`) between
+In this file, we define the notion of homotopy (`SSet.Homotopy`) between
 morphisms `f : X ⟶ Y` and `g : X ⟶ Y` of simplicial sets: it involves
 a morphism `X ⊗ Δ[1] ⟶ Y` inducing both `f` and `g`. We show that
 from `H : SSet.Homotopy f g`, we can obtain a combinatorial
