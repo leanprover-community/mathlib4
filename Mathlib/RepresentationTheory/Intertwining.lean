@@ -5,7 +5,7 @@ Authors: Stepan Nesterov, Edison Xie
 -/
 module
 
-public import Mathlib.RepresentationTheory.Basic
+public import Mathlib.RepresentationTheory.Subrepresentation
 
 /-!
 # Intertwining maps
@@ -114,20 +114,23 @@ instance instAddCommMonoid : AddCommMonoid (IntertwiningMap ρ σ) :=
   DFunLike.coe_injective.addCommMonoid _ (coe_zero ρ σ) (coe_add ρ σ) (by intro f n; rw [coe_nsmul])
 
 /-- The range of an intertwining map from `V` to `W` is a subrepresentation of `W`. -/
-def range (f : IntertwiningMap ρ σ) : Representation A G (LinearMap.range f.toLinearMap) :=
-    σ.subrepresentation (LinearMap.range f.toLinearMap) <| fun g a h ↦ ⟨(ρ g) h.choose, by
-      simpa [f.isIntertwining] using congr((σ g) $h.choose_spec)⟩
+def range (f : IntertwiningMap ρ σ) : Subrepresentation σ where
+  toSubmodule := LinearMap.range f.toLinearMap
+  apply_mem_toSubmodule g {w} := fun ⟨v, hv⟩ ↦ ⟨(ρ g) v, by
+    simp [f.isIntertwining, (f.toLinearMap_apply _ _ _).symm.trans hv]⟩
 
+@[simp]
 lemma mem_range (f : IntertwiningMap ρ σ) (w : W) :
-    w ∈ LinearMap.range f.toLinearMap ↔ ∃ v, f v = w := by simp
+    w ∈ f.range ↔ ∃ v, f v = w := by rfl
 
 /-- The kernel of an intertwining map from `V` to `W` is a subrepresentation of `V`. -/
-def ker (f : IntertwiningMap ρ σ) : Representation A G (LinearMap.ker f.toLinearMap) :=
-    ρ.subrepresentation (LinearMap.ker f.toLinearMap) <| fun g ↦ by
-      simp +contextual [SetLike.le_def, f.isIntertwining]
+def ker (f : IntertwiningMap ρ σ) : Subrepresentation ρ where
+  toSubmodule := LinearMap.ker f.toLinearMap
+  apply_mem_toSubmodule g := by simp +contextual [f.isIntertwining]
 
+@[simp]
 lemma mem_ker (f : IntertwiningMap ρ σ) (v : V) :
-    v ∈ LinearMap.ker f.toLinearMap ↔ f v = 0 := by simp
+    v ∈ f.ker ↔ f v = 0 := by rfl
 
 lemma toLinearMap_sum {ι : Type*} (s : Finset ι) (f : ι → IntertwiningMap ρ σ) :
     (∑ i ∈ s, f i : IntertwiningMap ρ σ).toLinearMap = ∑ i ∈ s, (f i).toLinearMap := by
