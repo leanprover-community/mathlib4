@@ -335,7 +335,7 @@ theorem natDegree_le (h : Conditions r p n a q μ) (s : Multiset (Fin (a + 1))) 
     _ ≤ _ := by simp [-map_natCast]
 
 /-- Here we use the assumption that `p` is not a prime power. -/
-theorem aux_le (h : Conditions r p n a q μ) :
+theorem sp2_le (h : Conditions r p n a q μ) :
     (sp2 h).ncard ≤ (n : ℝ) ^ (√(se2 h).ncard) ∧ (sp2 h).Finite := by
   obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
     is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
@@ -440,7 +440,7 @@ theorem se2_choose_le_sp2 (h : Conditions r p n a q μ) :
       simp [hn, ss, ← Set.ncard_eq_toFinset_card]
   rw [sp2]
   refine le_trans (b := ((eval μ ·) '' (sp1 h '' {x | x.card ≤ (se2 h).ncard - 1}
-    )).ncard) ?_ (Set.ncard_le_ncard (by grind) (aux_le h).2)
+    )).ncard) ?_ (Set.ncard_le_ncard (by grind) (sp2_le h).2)
   rw [hsinj.ncard_image , Set.ncard_image_of_injective _ (injective_sp1 h)]
   apply le_of_eq
   have hsiccf := Set.finite_Icc 0 ((se2 h).ncard - 1)
@@ -572,7 +572,7 @@ theorem not_aux_le (h : Conditions r p n a q μ) :
       exact_mod_cast h2
 
 theorem aux (h : Conditions r p n a q μ) : False := by
-  grind [aux_le h, not_aux_le h]
+  grind [sp2_le h, not_aux_le h]
 
 end Rest
 
