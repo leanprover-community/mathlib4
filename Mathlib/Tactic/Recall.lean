@@ -36,13 +36,22 @@ capture some details (like binders), so the following works without error.
 ```
 recall Nat.add_comm {n m : Nat} : n + m = m + n
 ```
+
+Docstrings are permitted but are ignored:
+```
+/-- The additive commutativity of natural numbers. -/
+recall Nat.add_comm (n m : Nat) : n + m = m + n
+```
 -/
-syntax (name := recall) "recall " ident ppIndent(optDeclSig) (declVal)? : command
+syntax (name := recall) (docComment)? "recall " ident ppIndent(optDeclSig) (declVal)? : command
 
 open Lean Meta Elab Command Term
 
 elab_rules : command
-  | `(recall $id $sig:optDeclSig $[$val?]?) => withoutModifyingEnv do
+  | `($[$_doc?:docComment]? recall $id $sig:optDeclSig $[$val?]?) =>
+    -- `recall` doesn't introduce new definitions, so suppress the unused variable linter.
+    withScope (fun sc => { sc with opts := sc.opts.set `linter.unusedVariables false }) <|
+    withoutModifyingEnv do
     let declName := id.getId
     addConstInfo id declName
     let info ← getConstInfo declName
@@ -79,7 +88,10 @@ elab_rules : command
               Term.synthesizeSyntheticMVarsNoPostponing
               let type ← mkForallFVars xs type
               let type ← mkForallFVars vars type (usedOnly := true)
-              unless (← isDefEq info.type type) do
+              let infoType ← do
+                let mvs ← info.levelParams.mapM fun _ => mkFreshLevelMVar
+                pure <| info.type.instantiateLevelParams info.levelParams mvs
+              unless (← isDefEq infoType type) do
                 throwTypeMismatchError none info.type type declConst
       else
         unless binders.getNumArgs == 0 do

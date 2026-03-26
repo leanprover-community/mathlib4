@@ -120,6 +120,7 @@ theorem is_zero_preprimitive : IsMultiplyPreprimitive M α 0 where
   isMultiplyPretransitive := MulAction.is_zero_pretransitive
   isPreprimitive_ofFixingSubgroup hs := by simp at hs
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An action is preprimitive iff it is `1`-preprimitive. -/
 @[to_additive
 /-- An action is preprimitive iff it is `1`-preprimitive. -/]

@@ -563,7 +563,6 @@ theorem _root_.Polynomial.Irreducible.natDegree_dvd_finrank {f : K[X]} (hi : Irr
   contrapose! hi
   rwa [hi, mul_zero] at key
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: generalize to `Sort`
 /-- A compositum of algebraic extensions is algebraic -/
 theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}

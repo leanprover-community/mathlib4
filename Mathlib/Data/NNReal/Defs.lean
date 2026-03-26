@@ -54,12 +54,17 @@ assert_not_exists TrivialStar
 
 open Function
 
--- to ensure these instances are computable
 /-- Nonnegative real numbers, denoted as `ℝ≥0` within the NNReal namespace -/
-def NNReal := { r : ℝ // 0 ≤ r } deriving
+def NNReal := { r : ℝ // 0 ≤ r }
+
+deriving instance
+  Inhabited, SemilatticeInf, DistribLattice for NNReal
+
+-- This is needed here or we get errors in `Mathlib/Data/ENNReal/Basic.lean` or downstream.
+set_option backward.inferInstanceAs.wrap false in
+deriving instance
   Zero, One, Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
-  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice,
-  Nontrivial, Inhabited
+  PartialOrder, SemilatticeSup, Nontrivial for NNReal
 
 namespace NNReal
 
