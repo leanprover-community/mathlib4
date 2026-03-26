@@ -36,7 +36,7 @@ which states that if `f` is sufficiently smooth, then
 * `exists_taylor_mean_remainder_bound`: Taylor's theorem for vector-valued functions with a
   polynomial bound on the remainder
 * `taylor_integral_remainder_of_absolutelyContinuous`,
-`taylor_integral_remainder_of_contDiffOn_succ`: Taylor's theorem with the integral form of the
+`taylor_integral_remainder`: Taylor's theorem with the integral form of the
 remainder
 
 ## TODO
@@ -440,7 +440,9 @@ theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
   refine taylor_mean_remainder_bound hab hf hx fun y => ?_
   exact (hf.continuousOn_iteratedDerivWithin rfl.le <| uniqueDiffOn_Icc h).norm.le_sSup_image_Icc
 
-/-- **Taylor's theorem** with the Integral form of the remainder.
+/-- **Taylor's theorem** with the Integral form of the remainder. This is an auxiliary theorem
+which is used to prove the two useful versions `taylor_integral_remainder_of_absolutelyContinuous`
+and `taylor_integral_remainder`.
 
 We assume that for any `k ≤ n`, the following equation on integration by parts hold:
 $$\int_{x_0}^x \frac{f^{(k+1)}(t) (x - t)^k}{k!} =
@@ -449,7 +451,7 @@ Then
 $$f(x) - (P_n f)(x₀, x) = \int_{x_0}^x \frac{f^{(n+1)}(t) (x - t)^n}{n!} dt,$$
 where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
 derivative. -/
-theorem taylor_integral_remainder_of_byParts [NormedAddCommGroup F] [NormedSpace ℝ F]
+theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
     {f : ℝ → F} {x x₀ : ℝ} {n : ℕ}
     (hf : ∀ k ≤ n, let u := fun t ↦ (x - t) ^ k / k !;
       let v := fun t ↦ iteratedDerivWithin k f [[x₀, x]] t;
@@ -511,7 +513,7 @@ theorem taylor_integral_remainder_of_absolutelyContinuous {f : ℝ → ℝ} {x x
       ∫ t in x₀..x, ((x - t) ^ n / n !) * iteratedDerivWithin (n + 1) f (uIcc x₀ x) t := by
   rcases eq_or_ne x₀ x with rfl | this
   · simp
-  apply taylor_integral_remainder_of_byParts
+  apply taylor_integral_remainder_aux
   intro k hk
   apply AbsolutelyContinuousOnInterval.integral_mul_deriv_eq_deriv_mul
   · apply ContDiffOn.absolutelyContinuousOnInterval
@@ -529,7 +531,7 @@ We assume that `f` is `n+1`-times continuously differentiable on the closed set 
 $$f(x) - (P_n f)(x₀, x) = \int_{x_0}^x \frac{f^{(n+1)}(t) (x - t)^n}{n!} dt,$$
 where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
 derivative. -/
-theorem taylor_integral_remainder_of_contDiffOn_succ [NormedAddCommGroup F] [NormedSpace ℝ F]
+theorem taylor_integral_remainder [NormedAddCommGroup F] [NormedSpace ℝ F]
     [CompleteSpace F] {f : ℝ → F} {x x₀ : ℝ} {n : ℕ}
     (hf : ContDiffOn ℝ (n + 1 : ℕ) f (uIcc x₀ x)) :
     f x - taylorWithinEval f n (uIcc x₀ x) x₀ x =
@@ -537,7 +539,7 @@ theorem taylor_integral_remainder_of_contDiffOn_succ [NormedAddCommGroup F] [Nor
   rcases eq_or_ne x₀ x with rfl | this
   · simp
   have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_Icc (by grind)
-  apply taylor_integral_remainder_of_byParts
+  apply taylor_integral_remainder_aux
   intro k hk
   apply intervalIntegral.integral_smul_deriv_eq_deriv_smul_of_hasDerivAt
     (u := fun t ↦ (x - t) ^ k / k !) (v := fun t ↦ iteratedDerivWithin k f (uIcc x₀ x) t)
