@@ -265,14 +265,7 @@ noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
     Rep k G ⥤ Rep k (G ⧸ S) where
   obj X := X.quotientToInvariants S
   map {X Y} f := Rep.ofHom ⟨((invariantsFunctor k S).map ((Rep.resFunctor S.subtype).map f)).hom,
-    fun g ↦ by
-      ext x
-      simp only [IntertwiningMap.coe_eq_toLinearMap, invariantsFunctor_map_hom, hom_ofHom,
-        Representation.quotientToInvariants, LinearMap.comp_codRestrict,
-        LinearMap.codRestrict_apply, LinearMap.coe_comp, IntertwiningMap.coe_toLinearMap,
-        Submodule.coe_subtype, Function.comp_apply]
-      induction g using QuotientGroup.induction_on with
-      | H g => simp [hom_comm_apply]⟩
+    fun g ↦ QuotientGroup.induction_on g fun g ↦ by ext x; simp [hom_comm_apply]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the functor equipping a module with the trivial representation, and

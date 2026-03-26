@@ -70,8 +70,9 @@ instance : LinearMapClass (IntertwiningMap ρ σ) A V W where
   map_add f := f.map_add
   map_smulₛₗ f := f.map_smul
 
--- the point of this lemma is that we should almost always use `toLinearMap`
--- instead of the coercion created by `LinearMapClass` which is bad
+-- Despite the other bundled homs having the inverse direction as simp lemmas,
+-- we are actively moving away from these design decisions.
+-- See e.g. https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Concrete.20homomorphism.20type.20vs.20abstract.20class/with/492579416
 @[simp]
 lemma coe_eq_toLinearMap {f : IntertwiningMap ρ σ} :
   SemilinearMapClass.semilinearMap f = f.toLinearMap := rfl
