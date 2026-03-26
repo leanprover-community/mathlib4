@@ -5036,7 +5036,6 @@ public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.LinearAlgebra.TensorProduct.Vanishing
 public import Mathlib.LinearAlgebra.Trace
-public import Mathlib.LinearAlgebra.Transvection
 public import Mathlib.LinearAlgebra.Transvection.Basic
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.LinearAlgebra.Vandermonde
