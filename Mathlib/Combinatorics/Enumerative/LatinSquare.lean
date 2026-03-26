@@ -143,7 +143,7 @@ def groupToCayleyTable (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
       exact Group.mulRight_bijective (G := G))
 
 
-@[expose] public section Equivalence
+section Equivalence
 
 /-- Given relabeling maps for the rows, columns, and symbols,
     produce the relabeled Latin rectangle. -/
