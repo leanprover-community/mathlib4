@@ -212,7 +212,6 @@ lemma egauge_smul_right (h : c = 0 → s.Nonempty) (x : E) :
     refine (le_egauge_smul_right _ _ _).trans_eq ?_
     rw [inv_smul_smul₀ hc]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The extended gauge of a point `(a, b)` with respect to the product of balanced sets `U` and `V`
 is equal to the maximum of the extended gauges of `a` with respect to `U`
 and `b` with respect to `V`.

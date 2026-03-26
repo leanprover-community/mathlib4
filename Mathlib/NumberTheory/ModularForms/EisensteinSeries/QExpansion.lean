@@ -11,6 +11,7 @@ public import Mathlib.NumberTheory.LSeries.Dirichlet
 public import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
+import Mathlib.Topology.EMetricSpace.Paracompact
 
 /-!
 # Eisenstein series q-expansions
@@ -203,7 +204,6 @@ theorem EisensteinSeries.qExpansion_identity_pnat {k : ℕ} (hk : 1 ≤ k) (z : 
   · apply (summable_pow_mul_cexp k 1 z).congr
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma summable_eisSummand {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
     Summable (eisSummand k · z) :=
   summable_norm_iff.mp <| summable_norm_eisSummand (Int.toNat_le.mp hk) z
