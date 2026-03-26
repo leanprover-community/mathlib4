@@ -113,7 +113,7 @@ instance instAddCommMonoid : AddCommMonoid (IntertwiningMap ρ σ) :=
   fast_instance%
   DFunLike.coe_injective.addCommMonoid _ (coe_zero ρ σ) (coe_add ρ σ) (by intro f n; rw [coe_nsmul])
 
-/-- The range of an intertwining map from `V` to `W` is a subrepresentation of `W`. -/
+/-- The range of an intertwining map from `V` to `W` as a subrepresentation of `W`. -/
 @[simps]
 def range (f : IntertwiningMap ρ σ) : Subrepresentation σ where
   toSubmodule := LinearMap.range f.toLinearMap
