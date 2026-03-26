@@ -71,8 +71,6 @@ The spectrum is simply the complement of the resolvent set. -/
 def spectrum (a : A) : Set R :=
   (resolventSet R a)ᶜ
 
-theorem spectrum_def (a : A) : spectrum R a = (resolventSet R a)ᶜ := rfl
-
 variable {R}
 
 /-- Given an `a : A` where `A` is an `R`-algebra, the *resolvent* is
