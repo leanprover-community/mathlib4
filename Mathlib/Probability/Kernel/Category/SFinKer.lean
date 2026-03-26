@@ -55,8 +55,8 @@ structure Hom (X Y : SFinKer.{u}) where
 
 instance {X Y : SFinKer.{u}} {κ : Hom X Y} : IsSFiniteKernel κ.hom := κ.property
 
-noncomputable
-instance : LargeCategory SFinKer where
+@[simps]
+noncomputable instance : LargeCategory SFinKer where
   Hom X Y := Hom X Y
   id X := ⟨Kernel.id, inferInstance⟩
   comp κ η := ⟨η.1 ∘ₖ κ.1, inferInstance⟩
