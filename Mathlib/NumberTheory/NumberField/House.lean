@@ -133,6 +133,7 @@ private theorem c_nonneg : 0 ≤ c K := by
   rw [c]
   positivity
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
@@ -184,6 +185,7 @@ private def asiegel : Matrix (α × (K →+* ℂ)) (β × (K →+* ℂ)) ℤ := 
 
 variable (ha : a ≠ 0)
 
+set_option backward.isDefEq.respectTransparency false in
 include ha in
 private theorem asiegel_ne_0 : asiegel K a ≠ 0 := by
   simp +unfoldPartialApp only [asiegel, a']

@@ -118,6 +118,10 @@ lemma SurjectiveOnStalks.of_comp (hg : SurjectiveOnStalks (g.comp f)) :
     RingHom.coe_comp] at this
   exact this.of_comp
 
+lemma SurjectiveOnStalks.localRingHom_surjective (hf : SurjectiveOnStalks f)
+    (P : Ideal R) [P.IsPrime] (Q : Ideal S) [Q.IsPrime] (e : P = Q.comap f) :
+    Function.Surjective (Localization.localRingHom P Q f e) :=
+  e ▸ hf Q _
 
 open TensorProduct
 

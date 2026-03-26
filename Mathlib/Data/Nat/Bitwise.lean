@@ -127,8 +127,6 @@ theorem testBit_land : ∀ m n k, testBit (m &&& n) k = (testBit m k && testBit 
 theorem testBit_ldiff : ∀ m n k, testBit (ldiff m n) k = (testBit m k && not (testBit n k)) :=
   testBit_bitwise rfl
 
-attribute [simp] testBit_xor
-
 end
 
 /-- An alternative for `bitwise_bit` which replaces the `f false false = false` assumption
@@ -336,7 +334,8 @@ theorem xor_one_of_even {n : ℕ} (h : Even n) : n ^^^ 1 = n + 1 := by
   cases n with
   | zero => rfl
   | succ n =>
-    simp [HXor.hXor, instXorOp, xor, bitwise, even_iff.mp h, ← mul_two, div_two_mul_two_of_even h]
+    simp +instances [HXor.hXor, instXorOp, xor, bitwise, even_iff.mp h, ← mul_two,
+      div_two_mul_two_of_even h]
 
 @[simp]
 theorem xor_one_of_odd {n : ℕ} (h : Odd n) : n ^^^ 1 = n - 1 := by
@@ -344,7 +343,7 @@ theorem xor_one_of_odd {n : ℕ} (h : Odd n) : n ^^^ 1 = n - 1 := by
   | zero =>
     exact not_odd_zero h |>.elim
   | succ n =>
-    simp only [HXor.hXor, instXorOp, xor, bitwise, reduceDiv, bitwise_zero_right]
+    simp +instances only [HXor.hXor, instXorOp, xor, bitwise, reduceDiv, bitwise_zero_right]
     grind
 
 /-- The xor of the numbers from 0 to n can be easily calculated using `n mod 4`. -/
