@@ -124,7 +124,7 @@ def range (f : IntertwiningMap ρ σ) : Subrepresentation σ where
 lemma mem_range (f : IntertwiningMap ρ σ) (w : W) :
     w ∈ f.range ↔ ∃ v, f v = w := Iff.rfl
 
-/-- The kernel of an intertwining map from `V` to `W` is a subrepresentation of `V`. -/
+/-- The kernel of an intertwining map from `V` to `W` as a subrepresentation of `V`. -/
 @[simps]
 def ker (f : IntertwiningMap ρ σ) : Subrepresentation ρ where
   toSubmodule := LinearMap.ker f.toLinearMap
