@@ -49,6 +49,8 @@ Vertices are elements of `V`, and there is an edge from `x` to `y` for each `s :
 such that `ι s • x = y`. -/
 @[nolint unusedArguments, ext]
 structure SchreierGraph (V : Type*) {M : Type*} [SMul M V] {S : Type*} (_ι : S → M) where
+  /-- Wraps a vertex of the acted-upon type into the Schreier graph. -/
+  ofVertex ::
   /-- The underlying vertex. -/
   toVertex : V
 
@@ -62,7 +64,7 @@ variable (V : Type*) {M : Type*} [SMul M V] {S : Type*} (ι : S → M)
 @[simps]
 def equiv (V : Type*) {M : Type*} [SMul M V] {S : Type*} (ι : S → M) :
     V ≃ SchreierGraph V ι where
-  toFun := SchreierGraph.mk
+  toFun := SchreierGraph.ofVertex
   invFun := SchreierGraph.toVertex
   left_inv _ := rfl
   right_inv _ := rfl
@@ -95,8 +97,8 @@ When we have a group action, the labelling becomes a covering.
 
 variable (V : Type*) {M : Type*} [Group M] [MulAction M V] {S : Type*} (ι : S → M)
 
-/-- The group acts on the Schreier graph vertices. -/
-instance schreierGraphMulAction : MulAction M (SchreierGraph V ι) where
+/-- The group acts on the vertices of the Schreier graph. -/
+instance instMulAction : MulAction M (SchreierGraph V ι) where
   one_smul x := by
     ext
     exact one_smul M x.toVertex
