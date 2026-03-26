@@ -172,9 +172,9 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable
 def braiding [BraidedCategory C] (X₁ X₂ : Arrow C) : (X₁ □ X₂) ≅ X₂ □ X₁ :=
   Arrow.isoMk (pushoutSymmetry _ _ ≪≫
-    (HasColimit.isoOfNatIso (spanExt (β_ _ _) (β_ _ _) (β_ _ _)
+    HasColimit.isoOfNatIso (spanExt (β_ _ _) (β_ _ _) (β_ _ _)
     (BraidedCategory.braiding_naturality_right _ _).symm
-    (BraidedCategory.braiding_naturality_left _ _).symm))) (β_ _ _) (by cat_disch)
+    (BraidedCategory.braiding_naturality_left _ _).symm)) (β_ _ _) (by cat_disch)
 
 end Monoidal
 
