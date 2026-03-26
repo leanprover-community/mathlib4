@@ -99,6 +99,20 @@ def onHighestNode? {α} (t : InfoTree) (ctx? : Option ContextInfo)
     (f : ContextInfo → Info → PersistentArray InfoTree → α) : Option α :=
   t.findSome? (ctx? := ctx?) fun ctx i ch => some (f ctx i ch)
 
+/-- Gets top level decls with a body. -/
+partial def getTopLevelDeclsByBody : InfoTree → Array Name :=
+  go none #[]
+where
+  go (ctx? : Option ContextInfo) (acc : Array Name) : InfoTree → Array Name
+    | .context ctx t => go (ctx.mergeIntoOuter? ctx?) acc t
+    | .node i ts => Id.run do
+      if let .ofCustomInfo i := i then
+        if i.value.typeName == ``Lean.Elab.Term.BodyInfo then
+          if let some decl := ctx?.bind (·.parentDecl?) then
+            return acc.push decl-- don't descend into `ts`
+      ts.foldl (init := acc) (go ctx?)
+    | .hole _ => acc
+
 /--
 Get the `parentDecl`s of every elaborated body.
 

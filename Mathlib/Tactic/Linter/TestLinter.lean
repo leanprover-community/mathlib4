@@ -16,6 +16,6 @@ namespace Mathlib.Tactic
 def workLinter : Linter where
   run _ := do
     for t in ← getInfoTrees do
-      let _ := t.getDeclsByBody
+      let _ := t.getTopLevelDeclsByBody
 
 initialize addLinter workLinter
