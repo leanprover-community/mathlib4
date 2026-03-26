@@ -414,8 +414,6 @@ noncomputable instance (q : MaximalSpectrum (p.Fiber S)) :
     Algebra p.ResidueField (Localization.AtPrime q.1) :=
   inferInstance
 
--- attribute [local instance 9999] Algebra.toModule
-
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (q : MaximalSpectrum (p.Fiber S)) :
     Module p.ResidueField (Localization.AtPrime q.1) :=
@@ -426,8 +424,6 @@ instance {R : Type*} [CommSemiring R] : IsLocalHom (algebraMap R R) := by
 
 instance foobar [CommRing R] : DistribMulAction R R :=
   inferInstance
-
-attribute [local instance 9999] foobar
 
 set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.QuasiFinite R S] (q : MaximalSpectrum (p.Fiber S)) :
