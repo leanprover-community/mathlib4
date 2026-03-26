@@ -46,31 +46,26 @@ public lemma convexOn_ringInverse :
   have h₁ : (a • 1 + b • z) ^ (-1 : ℝ) = cfc (fun r => (a + b * r) ^ (-1 : ℝ)) z := by
     rw [← cfc_smul_id (R := ℝ) (S := ℝ) b z, ← Algebra.algebraMap_eq_smul_one,
         ← cfc_const_add a (fun r => b • r) z]
+    simp only [smul_eq_mul]
     rw [cfc_comp_rpow]
-    · congr
-    · intro r hr
-      by_cases ha' : a = 0
-      · have hb' : b = 1 := by grind
-        simp [hb', ha']
-        grind
-      · apply add_pos_of_pos_of_nonneg
-        · grind
-        · exact smul_nonneg hb (by grind)
+    intro r hr
+    by_cases ha' : a = 0
+    · have hb' : b = 1 := by grind
+      simp only [ha', hb', one_mul, zero_add, gt_iff_lt]
+      grind
+    · grind [add_pos_of_pos_of_nonneg, mul_nonneg]
   have h₂ : (a • 1 + b • z ^ (-1 : ℝ)) = cfc (fun r => (a + b * r ^ (-1 : ℝ))) z := by
     rw [CFC.rpow_eq_cfc_real hz.nonneg]
     have hcont : ContinuousOn (fun r : ℝ => (r ^ (-1 : ℝ))) (spectrum ℝ z) :=
       ContinuousOn.rpow_const (f := id) (by fun_prop) (by grind)
-    rw [← cfc_smul b _ z hcont]
-    rw [← Algebra.algebraMap_eq_smul_one, ← cfc_const_add a _ z]
-    refine cfc_congr ?_
-    intro r hr
+    rw [← cfc_smul b _ z hcont, ← Algebra.algebraMap_eq_smul_one, ← cfc_const_add a _ z]
+    refine cfc_congr fun r hr => ?_
     simp
   calc _ = (a • conjSqrt x 1 + b • conjSqrt x z)⁻¹ʳ := by
         rw [conjSqrt_conjSqrt_ringInverse _ _ xpos, conjSqrt_one _ xpos]
       _ = (conjSqrt x (a • 1 + b • z))⁻¹ʳ := by simp
-      _ = conjSqrt x⁻¹ʳ (a • 1 + b • z)⁻¹ʳ := by rw [ringInverse_conjSqrt _ _ xpos]
       _ = conjSqrt x⁻¹ʳ ((a • 1 + b • z) ^ (-1 : ℝ)) := by
-        rw [← inverse_eq_rpow_neg_one]
+        rw [ringInverse_conjSqrt _ _ xpos, ← inverse_eq_rpow_neg_one]
       _ ≤ conjSqrt x⁻¹ʳ (a • 1 + b • z ^ (-1 : ℝ)) := by
         gcongr
         rw [h₁, h₂]
@@ -78,10 +73,8 @@ public lemma convexOn_ringInverse :
         · apply ContinuousOn.rpow_const (by fun_prop)
           intro r hr
           have := hz.spectrum_pos hr
-          obtain hcase|hcase := lt_or_eq_of_le ha
-          · have : 0 ≤ b * r := by positivity
-            grind
-          · grind
+          have : 0 ≤ b * r := by positivity
+          cases lt_or_eq_of_le ha <;> grind
         · refine ContinuousOn.const_add (ContinuousOn.const_mul ?_ _) _
           exact ContinuousOn.rpow_const (by fun_prop) (by grind)
         · intro r hr
