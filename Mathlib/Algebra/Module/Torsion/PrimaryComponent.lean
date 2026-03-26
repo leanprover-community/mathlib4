@@ -28,7 +28,7 @@ For `P : HeightOneSpectrum A`, the main result of this file (TODO) is that
 
 variable {A M M₁ M₂ : Type*} [CommRing A]
 
-namespace Module
+namespace Ideal
 
 variable (I : Ideal A)
 
@@ -84,9 +84,7 @@ theorem primaryComponent_of_torsion_eq_inf (I : Ideal A) :
     (primaryComponent (torsionBySet A M ↑I) I).map (Submodule.subtype _) =
     (primaryComponent M I) ⊓ (torsionBySet A M ↑I) := by
   ext x
-  simp_all only [mem_map, primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe,
-    Subtype.forall, subtype_apply, Subtype.exists, SetLike.mk_smul_mk, mk_eq_zero, exists_and_left,
-    exists_prop, exists_eq_right_right, mem_inf]
+  simp
 
 theorem primaryComponent_torsion_of_coprime (J : Ideal A)
     (hD : I ⊔ J = ⊤) : primaryComponent (torsionBySet A M ↑J) I = ⊥ := by
@@ -96,13 +94,10 @@ theorem primaryComponent_torsion_of_coprime (J : Ideal A)
   ext x
   simp only [mem_map, primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe,
     Subtype.forall, subtype_apply, Subtype.exists, SetLike.mk_smul_mk, mk_eq_zero, exists_and_left,
-    exists_prop, exists_eq_right_right, Submodule.map_bot, mem_bot]
-  constructor
-  · rintro ⟨⟨n, hn⟩, h₂⟩
-    specialize this n
-    simp_all only [disjoint_def, mem_torsionBySet_iff, SetLike.coe_sort_coe, Subtype.forall,
-      smul_zero, implies_true]
-  · simp_all
+    exists_prop, exists_eq_right_right, Submodule.map_bot, Submodule.mem_bot]
+  refine ⟨fun ⟨⟨n, _⟩, _⟩ ↦ ?_, by simp_all⟩
+  specialize this n
+  simp_all [disjoint_def]
 
 end AddCommMonoid
 
@@ -138,7 +133,7 @@ end AddCommGroup
 
 end CommRing
 
-end Module
+end Ideal
 
 namespace IsDedekindDomain.HeightOneSpectrum
 
@@ -148,6 +143,6 @@ variable (P : HeightOneSpectrum A) [AddCommMonoid M] [Module A M]
 
 /--
 The `P`-primaryComponent component of a module `M` where `P` is of type `HeigtOneSpectrum A`. -/
-abbrev primaryComponent := Module.primaryComponent M P.asIdeal
+abbrev primaryComponent := P.asIdeal.primaryComponent M
 
 end IsDedekindDomain.HeightOneSpectrum
