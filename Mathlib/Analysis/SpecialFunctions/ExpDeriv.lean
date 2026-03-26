@@ -155,14 +155,17 @@ section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → ℂ} {f' : E →L[𝕜] ℂ} {x : E} {s : Set E}
 
+@[fun_prop]
 theorem HasStrictFDerivAt.cexp (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => Complex.exp (f x)) (Complex.exp (f x) • f') x :=
   (Complex.hasStrictDerivAt_exp (f x)).comp_hasStrictFDerivAt x hf
 
+@[fun_prop]
 theorem HasFDerivWithinAt.cexp (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (fun x => Complex.exp (f x)) (Complex.exp (f x) • f') s x :=
   (Complex.hasDerivAt_exp (f x)).comp_hasFDerivWithinAt x hf
 
+@[fun_prop]
 theorem HasFDerivAt.cexp (hf : HasFDerivAt f f' x) :
     HasFDerivAt (fun x => Complex.exp (f x)) (Complex.exp (f x) • f') x :=
   hasFDerivWithinAt_univ.1 <| hf.hasFDerivWithinAt.cexp
