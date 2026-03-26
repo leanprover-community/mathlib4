@@ -410,8 +410,14 @@ instance [Inhabited α] : Inhabited (WithScott α) := ‹Inhabited α›
 
 variable [Preorder α]
 
-instance : Preorder (WithScott α) := ‹Preorder α›
-instance : TopologicalSpace (WithScott α) := scott α univ
+instance : Preorder (WithScott α) :=
+  inferInstanceAs <| Preorder α
+
+instance : TopologicalSpace (WithScott α) :=
+  -- fast_instance% scott α univ fails
+  letI : TopologicalSpace α := scott α univ
+  inferInstanceAs <| TopologicalSpace α
+
 instance : IsScott (WithScott α) univ := ⟨rfl⟩
 
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :

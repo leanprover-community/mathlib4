@@ -73,6 +73,7 @@ def equiv : WithGeneratedByTopology X Y ≃ Y := Equiv.refl _
 
 instance {Y : Type v} [TopologicalSpace Y] :
     TopologicalSpace (WithGeneratedByTopology X Y) :=
+  -- fast_instance% .generatedBy X (Y := Y) fails
   letI : TopologicalSpace Y := .generatedBy X (Y := Y)
   inferInstanceAs <| TopologicalSpace Y
 
