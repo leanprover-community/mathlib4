@@ -187,6 +187,7 @@ lemma toENatAux_eq_nat {x : Cardinal} {n : ℕ} : toENatAux x = n ↔ x = n := b
 
 lemma toENatAux_eq_zero {x : Cardinal} : toENatAux x = 0 ↔ x = 0 := toENatAux_eq_nat
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Projection from cardinals to `ℕ∞`. Sends all infinite cardinals to `⊤`.
 
 We define this function as a bundled monotone ring homomorphism. -/
@@ -205,7 +206,7 @@ noncomputable def toENat : Cardinal.{u} →+*o ℕ∞ where
       · simp only [toENatAux_eq_top hy]
         rw [toENatAux_eq_top, ENat.mul_top]
         · rwa [Ne, toENatAux_eq_zero]
-        · exact le_mul_of_one_le_of_le (one_le_iff_ne_zero.2 hx) hy
+        · exact le_mul_of_one_le_of_le (Cardinal.one_le_iff_ne_zero.2 hx) hy
   map_add' x y := by
     wlog hle : x ≤ y; · rw [add_comm, this y x (le_of_not_ge hle), add_comm]
     cases lt_or_ge y ℵ₀ with

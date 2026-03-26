@@ -163,7 +163,9 @@ lemma universalFactorizationMap_comp_map :
   · dsimp [universalFactorizationMap, mapEquivMonic]
     simp only [map_X, aeval_X, ← AlgHom.coe_toRingHom, ← Polynomial.coeff_map, Polynomial.map_mul,
       Polynomial.map_map, ← map_map_freeMonic (f := algebraMap R S)]
-    congr <;> ext <;> simp [← algebraMap_apply]
+    congr 2 <;> ext <;> simp
+    · congr
+    congr
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Lifts along `universalFactorizationMap` corresponds to factorization of `p` into
@@ -327,8 +329,8 @@ lemma universalFactorizationMapPresentation_jacobian :
   rw [← (aeval _).coe_toRingHom, ← Polynomial.resultant_map_map,
     Polynomial.map_map, Polynomial.map_map]
   congr 2
-  · ext <;> simp [-algebraMap_apply, ← algebraMap_eq]
-  · ext <;> simp [-algebraMap_apply, ← algebraMap_eq]
+  · ext <;> simp [-algebraMap_apply, -AddMonoidAlgebra.coe_algebraMap, ← algebraMap_eq]
+  · ext <;> simp [-algebraMap_apply, -AddMonoidAlgebra.coe_algebraMap, ← algebraMap_eq]
   · rw [(monic_freeMonic ..).natDegree_map, natDegree_freeMonic]
   · rw [(monic_freeMonic ..).natDegree_map, natDegree_freeMonic]
 
@@ -651,6 +653,7 @@ lemma UniversalCoprimeFactorizationRing.homEquiv_comp_snd {T : Type*} [CommRing 
   simp [homEquiv, UniversalFactorizationRing.homEquiv, Polynomial.map_map]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a monic polynomial `p : R[X]` factors into a product of coprime monic polynomials `p = f * g`
 in the residue field `κ(P)` of some `P : Spec R`,
 then there exists `Q : Spec R_univ` in the universal coprime factorization ring lying over `P`,
