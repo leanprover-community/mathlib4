@@ -298,7 +298,7 @@ theorem injective_sp1 (h : Conditions r p n a q μ) : (sp1 h).Injective := by
       ((ModEq.dvd_iff rfl p_dvd_n).mp p_dvd_n) (dvd_refl p) (icc_coprime p (by grind))
   grind [(CharP.natCast_injOn_Iio K p) (hm x2) (hm y2)]
 
-theorem sp2_lt_sp3 (h : Conditions r p n a q μ) : (se2 h).ncard < (se3 h).ncard := by
+theorem se2_lt_se3 (h : Conditions r p n a q μ) : (se2 h).ncard < (se3 h).ncard := by
   unfold se3
   rw [Set.ncard_image_of_injective _ (injective_f h), Set.ncard_prod, ← sq,
     Set.ncard_Icc_nat, Nat.sub_zero]
@@ -346,7 +346,7 @@ theorem aux_le (h : Conditions r p n a q μ) :
       revert b
       exact Set.image_mono (by grind)
     grind
-  obtain ⟨x, hx, y, hy, ⟨hne, heq⟩⟩ := Set.exists_ne_map_eq_of_ncard_lt_of_maps_to (sp2_lt_sp3 h) hm
+  obtain ⟨x, hx, y, hy, ⟨hne, heq⟩⟩ := Set.exists_ne_map_eq_of_ncard_lt_of_maps_to (se2_lt_se3 h) hm
   have hn0 : (X : K[X]) ^ x - X ^ y ≠ 0 := by
     rw [← coeffs_nonempty_iff]
     have _ : ((X : K[X]) ^ x - X ^ y).coeff x ≠ 0 := by
