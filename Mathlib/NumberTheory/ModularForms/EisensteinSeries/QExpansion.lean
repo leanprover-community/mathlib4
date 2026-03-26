@@ -19,10 +19,14 @@ import Mathlib.Topology.EMetricSpace.Paracompact
 
 We give the q-expansion of Eisenstein series of weight `k` and level 1. In particular, we prove
 `EisensteinSeries.q_expansion_bernoulli` which says that for even `k` with `3 ≤ k`
-Eisenstein series can we written as `1 - (2k / bernoulli k) ∑' n, σ_{k-1}(n) q^n` where
+Eisenstein series can be written as `1 - (2k / bernoulli k) ∑' n, σ_{k-1}(n) q^n` where
 `q = exp(2πiz)` and `σ_{k-1}(n)` is the sum of the `(k-1)`-th powers of the divisors of `n`.
 We need `k` to be even so that the Eisenstein series are non-zero and we require `k ≥ 3` so that
 the series converges absolutely.
+
+We also identify the q-expansion coefficients as a `PowerSeries` via
+`EisensteinSeries.E_qExpansion_coeff`, and use this to prove that the normalised Eisenstein series
+is non-zero (`EisensteinSeries.E_ne_zero`).
 
 The proof relies on the identity
 `∑' n : ℤ, 1 / (z + n) ^ (k + 1) = ((-2πi)^(k+1) / k!) ∑' n : ℕ, n^k q^n` which comes from
