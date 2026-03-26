@@ -50,8 +50,6 @@ noncomputable def extendTopEquiv : F ≃ₐ[K] (F.extendTop M) := F.equivMap (Al
 
 namespace extendTop
 
-set_option backward.isDefEq.respectTransparency false
-
 variable (R S : Type*) [CommRing R] [CommRing S] [Algebra S F]
 
 variable [Algebra S M] [IsScalarTower S F M]
