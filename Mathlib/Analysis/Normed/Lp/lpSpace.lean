@@ -449,7 +449,8 @@ theorem hasSum_norm (hp : 0 < p.toReal) (f : lp E p) :
   rw [norm_rpow_eq_tsum hp]
   exact ((lp.memℓp f).summable hp).hasSum
 
-/-- The sequence of norms of `x : lp E p` as a term of `ℓ^p(α, ℝ)`. -/
+/-- The sequence of norms of `x : lp E p` as a term of `ℓ^p(α, ℝ)`. Here `E : α → Type*`
+is a dependent type and `ℓ^p(α, ℝ)` is the non-dependent `ℝ`-valued `lp` space. -/
 @[simps]
 def toNorm {p : ℝ≥0∞} (x : lp E p) : ℓ^p(α, ℝ) :=
   ⟨fun i ↦ ‖x i‖, lp.memℓp x |>.norm⟩
