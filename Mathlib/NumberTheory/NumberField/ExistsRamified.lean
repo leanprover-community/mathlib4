@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
 public import Mathlib.NumberTheory.RamificationInertia.Galois
+public import Mathlib.RingTheory.Unramified.Dedekind
 
 /-!
 # Every number field has a ramified prime over `ℚ`
@@ -17,8 +18,9 @@ This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_pow_mem` an
 `NumberField.abs_discr_gt_two` but is placed in a separate file to avoid large imports.
 
 -/
-
 @[expose] public section
+
+open scoped NumberField nonZeroDivisors
 
 variable {K 𝒪 : Type*} [Field K] [NumberField K] [CommRing 𝒪] [Algebra 𝒪 K]
 variable [IsIntegralClosure 𝒪 ℤ K]
@@ -45,41 +47,19 @@ lemma NumberField.finrank_eq_one_of_unramified [Algebra.Unramified ℤ 𝒪] :
   obtain ⟨P, _, _, H⟩ := NumberField.exists_not_isUramifiedAt_int (𝒪 := 𝒪) H
   exact H inferInstance
 
-open scoped NumberField
-
-/-- If `K` is a number field with positive rank, then there exists some maximal ideal of `𝓞 K`
-that is ramified over `ℤ`. -/
-lemma NumberField.finrank_eq_one_of_isUnramifiedAt
+/-- If `𝒪` is a domain that is a finite and unramified extension of `ℤ`, then `𝒪 = ℤ`. -/
+lemma bijective_algebraMap_int_of_finite_of_unramified
     [Module.Finite ℤ 𝒪] [Algebra.Unramified ℤ 𝒪] [IsDomain 𝒪] [FaithfulSMul ℤ 𝒪] :
     Function.Bijective (algebraMap ℤ 𝒪) := by
-  suffices Function.Surjective (algebraMap ℤ 𝒪) from ⟨FaithfulSMul.algebraMap_injective _ _, this⟩
-  wlog _ : IsIntegrallyClosed 𝒪
-  · let K := FractionRing 𝒪
-    letI inst : Algebra ℤ K := Ring.toIntAlgebra K
-    have inst : NumberField K := sorry
-    let f : 𝒪 →+* 𝓞 K := RingHom.codRestrict (algebraMap 𝒪 K) _ fun x ↦
-      (Algebra.IsIntegral.isIntegral x).algebraMap
-    have hf : Function.Injective f :=
-      RingHom.injective_codRestrict.mpr (FaithfulSMul.algebraMap_injective _ _)
-    let inst := f.toAlgebra
-    have inst : IsScalarTower 𝒪 (𝓞 K) K := .of_algebraMap_eq' rfl
-    have inst : IsLocalization ((IsUnit.submonoid _).comap f) (𝓞 K) := by
-      refine ⟨fun x ↦ x.2, fun ⟨z, hz⟩ ↦ ?_, ?_⟩; swap
-      · simpa [RingHom.algebraMap_toAlgebra', hf.eq_iff] using
-          ⟨1, ((IsUnit.submonoid _).comap f).one_mem⟩
-      obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := 𝒪) z
-      simp only [mem_nonZeroDivisors_iff_ne_zero, ne_eq] at hy
-      suffices ∃ a b, IsUnit (f b) ∧ x * b = a * y by
-        simpa [RingOfIntegers.ext_iff, ← IsScalarTower.algebraMap_apply, IsUnit.mem_submonoid_iff,
-          div_mul_eq_mul_div₀, div_eq_iff, hy, ← map_mul (algebraMap 𝒪 K), -map_mul,
-          map_mul (algebraMap (𝓞 K) K)]
-      sorry
-    have inst : Algebra.FormallyUnramified 𝒪 (𝓞 K) := .of_restrictScalars _ _ K
-    have inst : Algebra.Unramified ℤ (𝓞 K) := sorry
-    have := this (𝒪 := 𝓞 K) inferInstance
-    simp only [IsScalarTower.algebraMap_eq ℤ 𝒪 (𝓞 K), RingHom.coe_comp] at this
-    exact .of_comp_left this hf
-
+  have := isDedekindDomain.of_formallyUnramified ℤ 𝒪
+  let K := FractionRing 𝒪
+  let : Algebra ℤ K := Ring.toIntAlgebra K
+  have : CharZero 𝒪 := Algebra.charZero_of_charZero ℤ _
+  have : NumberField K := { to_finiteDimensional := Module.Finite.of_isLocalization ℤ 𝒪 ℤ⁰ }
+  have := NumberField.finrank_eq_one_of_unramified (K := K) (𝒪 := 𝒪)
+  have : IsIntegralClosure ℤ ℤ K := .of_algEquiv _ (.ofBijective (IsScalarTower.toAlgHom _ _ _)
+    (Algebra.finrank_eq_one_iff_bijective_algebraMap.mp this)) (by simp)
+  exact bijective_algebraMap_of_linearEquiv (IsIntegralClosure.equiv ℤ ℤ K 𝒪).toLinearEquiv
 
 attribute [local simp] Ideal.span_le in
 /-- If `K` is a number field with positive rank such that `K/ℚ` is galois, then there exists
@@ -94,7 +74,7 @@ lemma NumberField.exists_not_isUramifiedAt_int_of_isGalois [IsGalois ℚ K]
   have := CharZero.of_module (R := 𝒪) K
   let : MulSemiringAction Gal(K/ℚ) 𝒪 := IsIntegralClosure.MulSemiringAction ℤ ℚ K 𝒪
   have := IsGaloisGroup.of_isFractionRing Gal(K/ℚ) ℤ 𝒪 ℚ K
-  obtain ⟨P, _, hP, hP'⟩ := NumberField.exists_not_isUramifiedAt_int (𝒪 := 𝒪) H
+  obtain ⟨P, _, hP, hP'⟩ := NumberField.exists_not_isUramifiedAt_int (𝒪 := 𝒪) H.ne'
   obtain ⟨p, hp : _ = Ideal.span _⟩ := IsPrincipalIdealRing.principal (P.under ℤ)
   have hp0 : p ≠ 0 := fun hp0 ↦ hP (Ideal.eq_bot_of_comap_eq_bot (hp.trans (by aesop)))
   have : Prime p := by rw [← Ideal.span_singleton_prime hp0, ← hp]; infer_instance
