@@ -46,6 +46,8 @@ The versions vary by:
   (`∀ x ∈ s, f x ∈ t`), or assume that for `y ∉ t`, the total weight of the pigeons in this
   pigeonhole `∑ x ∈ s with f x = y, w x` is nonpositive or nonnegative depending on
   the inequality we are proving.
+* in the case where the "holes" are not necessarily disjoint, that is, a pigeon could be in multiple
+  holes at the same time, a set-valued version is provided.
 
 Lemma names follow `mathlib` convention (e.g.,
 `Finset.exists_lt_sum_fiber_of_maps_to_of_nsmul_lt_sum`); "pigeonhole principle" is mentioned in the
@@ -291,72 +293,46 @@ theorem exists_card_fiber_le_of_card_le_mul (ht : t.Nonempty) (hn : #s ≤ #t * 
 
 /-- A version of the pigeonhole principle for set-valued functions.
 
-Given a family of sets `B : n → Finset α`, each of cardinality `k`, indexed by a finite set
-`s : Finset n`, if the cardinality of the union `s.biUnion B` is less than `s.card`, then
-there exists an element `x ∈ s.biUnion B` which is covered by more than `k` of the sets
-`B j` (i.e., `k < #{j ∈ s | x ∈ B j}`).
+Given a family of sets `f : α → Finset β` and a choice of indices `s : Finset α`.
+Let `k` denote the minimum cardinality of the `f j`'s.
+If the cardinality of the union `s.biUnion f` is less than `s.card`, then
+there exists an element `x ∈ s.biUnion f` which is covered by more than `k` of the sets
+`f j` (i.e., `k < #{j ∈ s | x ∈ f j}`).
 
-This is a double-counting variant of the pigeonhole principle. The key identity is
-`∑ x ∈ s.biUnion B, #{j ∈ s | x ∈ B j} = ∑ j ∈ s, (B j).card = s.card * k`.
-If every element were covered by at most `k` sets, the left-hand side would be bounded by
-`(s.biUnion B).card * k < s.card * k`, a contradiction.
-
-Unlike the classical pigeonhole principle (see `Finset.exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to`),
+This is a double-counting variant of the pigeonhole principle.
+Unlike the classical pigeonhole principle (see
+`Finset.exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to`),
 this formulation handles a *set-valued* assignment where elements may belong to
 multiple sets simultaneously. -/
 lemma exists_lt_card_cover_of_card_biUnion_lt_card
-    {n : Type*} [DecidableEq n] [Fintype n]
-    {α : Type*} [DecidableEq α]
-    {B : n → Finset α}
-    {s : Finset n}
-    (hs : s.Nonempty)
-    (h₁ : ∀ j ∈ s, 0 < Finset.card (B j))
-    (h₂ : (s.biUnion B).card < (s.card)) :
-    ∃ x ∈ s.biUnion B,
-    (Finset.inf' s hs (fun j ↦ Finset.card (B j))) < (Finset.card {j | j ∈ s ∧ x ∈ B j}) := by
-  set k := Finset.inf' s hs (fun j ↦ Finset.card (B j)) with hk
+    [DecidableEq α] [Fintype α]
+    {f : α → Finset β}
+    (h₁ : s.Nonempty)
+    (h₂ : ∀ j ∈ s, 0 < Finset.card (f j))
+    (h₃ : (s.biUnion f).card < (s.card)) :
+    ∃ x ∈ s.biUnion f,
+    (Finset.inf' s h₁ (fun j ↦ Finset.card (f j))) < (Finset.card {j | j ∈ s ∧ x ∈ f j}) := by
+  set k := Finset.inf' s h₁ (fun j ↦ Finset.card (f j)) with hk
   have nek : NeZero k := by
     constructor
-    rw [← Finset.lt_inf'_iff] at h₁
+    rw [← Finset.lt_inf'_iff] at h₂
     · grind
-    · exact hs
+    · exact h₁
   by_contra! hc
-  have hc' := Finset.sum_le_sum  (s := s.biUnion B) (ι := α)
-    (f := fun x => Finset.card {j | j ∈ s ∧ x ∈ B j})
+  have hc' := Finset.sum_le_sum  (s := s.biUnion f) (ι := β)
+    (f := fun x => Finset.card {j | j ∈ s ∧ x ∈ f j})
     (g := fun _ => k) (by grind)
-  have : (Finset.card (s.biUnion B))*k < s.card*k :=
+  have : (Finset.card (s.biUnion f))*k < s.card*k :=
     Nat.mul_lt_mul_right (Nat.ne_zero_iff_zero_lt.mp nek.out) |>.mpr (by lia)
-  simp only [← Finset.sum_card_eq_sum_card_fiber_biUnion B s, sum_const, smul_eq_mul] at hc'
-  have h₃' : ∀ j ∈ s, k ≤ Finset.card (B j) := by
+  simp only [← Finset.sum_card_eq_sum_card_cover_biUnion f s, sum_const, smul_eq_mul] at hc'
+  have h₄ : ∀ j ∈ s, k ≤ Finset.card (f j) := by
     unfold k
     apply Finset.inf'_le
-  have h₃ : (s.card)*k ≤ ∑ j ∈ s, Finset.card (B j) := by
-    have infh := Finset.sum_le_sum h₃'
+  have : (s.card)*k ≤ ∑ j ∈ s, Finset.card (f j) := by
+    have infh := Finset.sum_le_sum h₄
     simp only [sum_const, smul_eq_mul] at infh
     exact infh
   lia
-
-lemma exists_lt_card_fiber_of_card_biUnion_lt_card'
-    {n : Type*} [DecidableEq n] [Fintype n]
-    {α : Type*} [DecidableEq α]
-    {B : n → Finset α}
-    {s : Finset n}
-    {k : Nat} [nek : NeZero k]
-    (h₁ : ∀ j, Finset.card (B j) = k)
-    (h₂ : (s.biUnion B).card < (s.card)) :
-    ∃ x ∈ s.biUnion B, k < (Finset.card {j | j ∈ s ∧ x ∈ B j}) := by
-  have h₁' : ∀ j ∈ s, 0 < Finset.card (B j) := by
-    intro j
-    specialize h₁ j
-    have _ := nek.out
-    lia
-  have hs : 0 < s.card := by lia
-  rw [Finset.card_pos] at hs
-  have hinf := exists_lt_card_cover_of_card_biUnion_lt_card hs h₁' h₂
-  have h₃ : (s.inf' hs fun j ↦ #(B j)) = k := by
-    apply Finset.inf'_eq_of_forall
-    simp [h₁]
-  grind
 
 end Finset
 
