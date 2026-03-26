@@ -40,6 +40,7 @@ then tries closing it by "cheap" (reducible) `rfl`.
 This tactic supports the operators `+`, `*`, `-`, `^` and `•` (for scalar multiplication by
 natural numbers or integers).
 
+If the ring is commutative, prefer the `ring` tactic instead, which is more powerful and efficient.
 The tactic is implemented as a combination of `simp only [...]` and `abel`. The precise invocation
 of `simp only` can be customized using the options listed below.
 
