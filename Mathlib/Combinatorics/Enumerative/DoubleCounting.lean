@@ -203,23 +203,22 @@ theorem card_le_card_of_forall_subsingleton' (ht : ∀ b ∈ t, ∃ a, a ∈ s �
     (hs : ∀ a ∈ s, ({ b ∈ t | r a b } : Set β).Subsingleton) : #t ≤ #s :=
   card_le_card_of_forall_subsingleton (swap r) ht hs
 
-
 /-- Given a finite collection of finite subsets $B_1, \ldots, B_k$
 and, for every $x \in \bigcup_i B_i$, let $C_x$ be the set of indices
 of the $B_i$'s that contain $x$.  Then, $\sum_i |B_i| = \sum_x |C_x|$. -/
 lemma sum_card_eq_sum_card_cover_biUnion
-    {α : Type*} [DecidableEq α]
-    {ι : Type*} [Fintype ι] [DecidableEq ι]
-    (B : ι → Finset α)
-    (s : Finset ι) :
+    [Fintype α] [DecidableEq α]
+    [DecidableEq β]
+    (B : α → Finset β)
+    (s : Finset α) :
     ∑ j ∈ s, (Finset.card (B j)) =
     ∑ x ∈ (s.biUnion B), Finset.card {j | j ∈ s ∧ x ∈ B j} := by
-  let r : ι → α → Prop := fun j x => x ∈ B j
+  let r : α → β → Prop := fun j x => x ∈ B j
   have g := Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow r (s := s)
     (t := s.biUnion B)
   unfold Finset.bipartiteAbove Finset.bipartiteBelow r at g
   have hB : ∀ j ∈ s, {b ∈ s.biUnion B | b ∈ B j} = B j := by grind
-  have hB' : ∀ b, ({a ∈ s | b ∈ B a} : Finset ι) = ({j | j ∈ s ∧ b ∈ B j} : Finset ι) := by
+  have hB' : ∀ b, ({a ∈ s | b ∈ B a} : Finset α) = ({j | j ∈ s ∧ b ∈ B j} : Finset α) := by
     grind
   rw [Finset.sum_congr rfl (fun j hj => by rw [hB j hj])] at g
   simp [hB', g]
