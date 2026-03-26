@@ -182,11 +182,20 @@ theorem intValuation_def {r : R} :
     exp (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
   rfl
 
-open scoped Classical in
 theorem intValuation_if_neg {r : R} (hr : r ≠ 0) :
     v.intValuation r = exp
         (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
   intValuationDef_if_neg _ hr
+
+theorem intValuation_eq_exp_neg_multiplicity {r : R} (hr : r ≠ 0) :
+    v.intValuation r = exp (-multiplicity v.asIdeal (Ideal.span {r}) : ℤ) := by
+  have hsr : Ideal.span {r} ≠ 0 := Submodule.span_singleton_eq_bot.mp.mt hr
+  have hfm : FiniteMultiplicity v.asIdeal (Ideal.span {r}) :=
+    FiniteMultiplicity.of_prime_left v.prime hsr
+  rw [v.intValuation_if_neg hr, exp_inj, neg_inj, Int.natCast_inj, ← ENat.coe_inj,
+    ← FiniteMultiplicity.emultiplicity_eq_multiplicity hfm,
+    UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors (irreducible v) hsr,
+    normalize_eq, Ideal.count_associates_factors_eq hsr v.isPrime v.ne_bot]
 
 /-- Nonzero elements have nonzero adic valuation. -/
 theorem intValuation_ne_zero (x : R) (hx : x ≠ 0) : v.intValuation x ≠ 0 := by
@@ -248,6 +257,19 @@ theorem intValuation_le_pow_iff_dvd (r : R) (n : ℕ) :
 theorem intValuation_le_pow_iff_mem (r : R) (n : ℕ) :
     v.intValuation r ≤ exp (-(n : ℤ)) ↔ r ∈ v.asIdeal ^ n := by
   rw [intValuation_le_pow_iff_dvd, Ideal.dvd_span_singleton]
+
+theorem intValuation_le_exp_iff_le_emultiplicity (r : R) (n : ℕ) :
+    v.intValuation r ≤ exp (-(n : ℤ)) ↔ n ≤ emultiplicity v.asIdeal (Ideal.span {r}) := by
+  rw [intValuation_le_pow_iff_dvd, pow_dvd_iff_le_emultiplicity]
+
+theorem exp_le_intValuation_iff_emultiplicity_le (r : R) (n : ℕ) :
+    exp (-(n : ℤ)) ≤ v.intValuation r ↔ emultiplicity v.asIdeal (Ideal.span {r}) ≤ n := by
+  rw [← ENat.lt_coe_add_one_iff, ← ENat.coe_one, ← ENat.coe_add, emultiplicity_lt_iff_not_dvd,
+    ← intValuation_le_pow_iff_dvd, not_le, Nat.cast_add, Nat.cast_one, neg_add, exp_add,
+    exp_neg 1, mul_inv_lt_iff₀ (by simp)]
+  by_cases hv : v.intValuation r = 0
+  · simp [hv]
+  · rw [lt_mul_exp_iff_le hv]
 
 /-- There exists `π : R` with `v`-adic valuation `WithZero.exp (-1)`. -/
 theorem intValuation_exists_uniformizer :
@@ -470,6 +492,11 @@ instance : IsDedekindDomain (valuationSubringAtPrime K v) :=
 instance : Ring.KrullDimLE 1 (valuationSubringAtPrime K v) :=
   Ring.KrullDimLE.mk₁' (fun _ a _ ↦ IsPrime.to_maximal_ideal a)
 
+instance : IsLocalization (v.asIdeal.primeCompl) (valuationSubringAtPrime K v) :=
+  Localization.subalgebra.isLocalization_ofField K (v.asIdeal.primeCompl) _
+
+end Localization
+
 /-- Given `v : HeightOneSpectrum R`, the valuation associated to `v` has the localization of
   `R` at `v` as valuation subring. -/
 theorem valuationSubringAtPrime_eq_valuationSubring :
@@ -477,23 +504,14 @@ theorem valuationSubringAtPrime_eq_valuationSubring :
   ValuationSubring.eq_of_le_of_ne_top _ (valuationSubringAtPrime_le_valuation v)
     (by simp only [ne_eq, Valuation.valuationSubring_eq_top_iff, not_not]; infer_instance)
 
-end Localization
-
-set_option backward.isDefEq.respectTransparency false in
 /-- All `x : K` can be written as `n / d` or `d / n` with `n : R` and `d ∈ v.asIdealᶜ`. -/
 lemma exists_primeCompl_mul_eq_or_mul_eq (x : K) :
     ∃ (n : R) (d : v.asIdeal.primeCompl), x * (algebraMap R K d) = (algebraMap R K n) ∨
         x * (algebraMap R K n) = (algebraMap R K d) := by
-  -- `K` is an algebra over the localization of `R` at `v`.
-  letI : Algebra (Localization v.asIdeal.primeCompl) K :=
-    RingHom.toAlgebra <| Localization.mapToFractionRing K v.asIdeal.primeCompl
-      (Localization v.asIdeal.primeCompl) (Ideal.primeCompl_le_nonZeroDivisors v.asIdeal)
-  have : IsFractionRing (Localization v.asIdeal.primeCompl) K := by
-    apply IsFractionRing.isFractionRing_of_isDomain_of_isLocalization v.asIdeal.primeCompl
   -- It's already known that the localization of `R` at `v` is a (discrete) valuation ring, so
   -- write `x` or `x⁻¹` as `n / d` with `d ∈ vᶜ`.
   obtain (⟨r, hr⟩ | ⟨r, hr⟩) :=
-    ValuationRing.isInteger_or_isInteger (Localization v.asIdeal.primeCompl) x
+    ValuationRing.isInteger_or_isInteger (valuationSubringAtPrime K v) x
   <;> obtain ⟨⟨n, d⟩, hnd⟩ := IsLocalization.surj v.asIdeal.primeCompl r
   <;> use n, d
   <;> apply_fun algebraMap _ K at hnd
@@ -509,6 +527,49 @@ theorem exists_primeCompl_mul_eq_of_integer (x : K) (hv : v.valuation K x ≤ 1)
     apply eq_one_of_one_le_mul_right hv (intValuation_le_one v n)
     rw [← (v.intValuation_eq_one_iff_mem_primeCompl d).mpr d.prop,
       ← valuation_of_algebraMap (K := K), ← valuation_of_algebraMap (K := K), ← map_mul, hnd]
+
+/-- Given `a, b ∈ A` and `v b ≤ v a` we can find `y : A` such that `y * a` is close to `b` by
+the valuation `v`. -/
+theorem exists_intValuation_mul_sub_lt {a : R} (b : R) (hv : v.intValuation b ≤ v.intValuation a)
+    (γ : Multiplicative ℤ) : ∃ y, v.intValuation (b - y * a) < γ := by
+  -- If `a = 0`, then `b = 0`, so we can take `y = 0`.
+  by_cases ha: a = 0
+  · subst ha
+    rw [map_zero, le_zero_iff] at hv
+    exact ⟨0, by simp [hv]⟩
+  · have hvaz := intValuation_ne_zero v a ha
+    have hγz : WithZero.coe γ ≠ 0 := WithZero.coe_ne_zero
+    -- Otherwise, find `n : ℕ` such that `exp (-n) < γ` and `exp(-n) < v a`.
+    obtain ⟨n, hna, hnγ⟩ := exists_exp_neg_natCast_lt_and_lt hvaz hγz
+    apply Exists.imp (fun _ h ↦ lt_of_le_of_lt h hnγ)
+    -- `v b ≤ v a`, so `b ∈ v.asIdeal ^ -log (v a)`.
+    -- From `irreducible_pow_sup_of_ge` we know that
+    -- `v.asIdeal ^ -log (v a) = v.asIdeal ^ n ⊔ Ideal.span {a}`.
+    -- So, `∃ z ∈ v.asIdeal ^ n, ∃ (y: R), b = z + y * a`. This gives `z` and `y` such that
+    -- `b - y * a = z` and `v z ≤ exp (-n)`, as required.
+    have hvn : emultiplicity v.asIdeal (Ideal.span {a}) ≤ n := by
+      grw [← exp_le_intValuation_iff_emultiplicity_le, hna]
+    have hb : b ∈ v.asIdeal ^ multiplicity v.asIdeal (Ideal.span {a}) := by
+      rwa [← intValuation_le_pow_iff_mem, ← v.intValuation_eq_exp_neg_multiplicity ha]
+    have hnz : Ideal.span {a} ≠ ⊥ := by rwa [ne_eq, Ideal.span_singleton_eq_bot]
+    simpa [← Ideal.irreducible_pow_sup_of_ge hnz v.irreducible n hvn, Submodule.mem_sup,
+      ← eq_sub_iff_add_eq, ← intValuation_le_pow_iff_mem, Ideal.mem_span_singleton'] using hb
+
+/-- Given `x ∈ 𝒪[K]` we can find `a : A` such that `a` is close to `x` by the valuation `v`. -/
+theorem exists_valuation_sub_lt_of_integer (x : K) (hv : v.valuation K x ≤ 1)
+    (γ : (ℤᵐ⁰)ˣ) : ∃a, v.valuation K (algebraMap R K a - x) < γ := by
+  -- Write `x = n / d`, with `v d = 1`.
+  obtain ⟨n, ⟨d, hd⟩, hnd⟩ := exists_primeCompl_mul_eq_of_integer v x hv
+  rw [← intValuation_eq_one_iff_mem_primeCompl] at hd
+  have hd' : v.intValuation n ≤ v.intValuation d := by grw [v.intValuation_le_one n, hd]
+  -- Get `a` such that `v (n - a * d) < γ` from the previous theorem.
+  obtain ⟨a, hval⟩ := exists_intValuation_mul_sub_lt v n hd' (WithZero.unitsWithZeroEquiv γ)
+  rw [unitsWithZeroEquiv_apply, coe_unzero] at hval
+  use a
+  -- `v d = 1`, so `v (a - x) = v (x - a) = v (x - a) * v d = v (n - a * d) < γ`.
+  suffices h : v.valuation K (algebraMap R K a - x) = v.intValuation (n - a * d) by rwa [h]
+  rw [← valuation_of_algebraMap (K := K), Algebra.cast, map_sub _ n, map_mul, ← hnd, ← sub_mul,
+    map_mul, valuation_of_algebraMap, hd, mul_one, Valuation.map_sub_swap]
 
 /-! ### Completions with respect to adic valuations
 
