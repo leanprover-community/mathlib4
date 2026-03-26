@@ -538,7 +538,7 @@ abbrev liftLattice [Lattice β] (gi : GaloisCoinsertion l u) : Lattice α :=
 -- See note [reducible non-instances]
 /-- Lift the bot along a Galois coinsertion -/
 abbrev liftOrderBot [Preorder β] [OrderBot β] (gi : GaloisCoinsertion l u) : OrderBot α :=
-  { @OrderDual.instOrderBot _ _ gi.dual.liftOrderTop with bot := gi.choice ⊥ <| bot_le }
+  { @OrderDual.instOrderBotOfOrderTop _ _ gi.dual.liftOrderTop with bot := gi.choice ⊥ <| bot_le }
 
 -- See note [reducible non-instances]
 /-- Lift the top, bottom, suprema, and infima along a Galois coinsertion -/
