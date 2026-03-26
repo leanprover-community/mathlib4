@@ -31,10 +31,6 @@ private noncomputable def cofactorLinear (bN : Module.Basis (Fin n) R N) :
   map_add' x y := AlternatingMap.ext fun _ ↦ by simp
   map_smul' c x := AlternatingMap.ext fun _ ↦ by simp [smul_smul, mul_comm]
 
-private lemma cofactorLinear_apply (bN : Module.Basis (Fin n) R N) (x : M × N)
-    (v : Fin n → M × N) : cofactorLinear bN x v = (bN.det fun k => (v k).2) • x.1 := by
-  simp [cofactorLinear, AlternatingMap.smulRight_apply]
-
 /-- The linear map from the top exterior power of `M × N` to `M` induced by the cofactor
 expansion along the `M`-summand. -/
 private noncomputable def cofactorToLeft (bN : Module.Basis (Fin n) R N) :
@@ -42,11 +38,9 @@ private noncomputable def cofactorToLeft (bN : Module.Basis (Fin n) R N) :
   exteriorPower.alternatingMapLinearEquiv (AlternatingMap.alternatizeUncurryFin (cofactorLinear bN))
 
 private lemma cofactorToLeft_ιMulti_cons (bN : Module.Basis (Fin n) R N) (m : M) :
-    cofactorToLeft bN
-      (exteriorPower.ιMulti R (n + 1) (Fin.cons (m, 0) fun i => (0, bN i))) = m := by
-  rw [cofactorToLeft, exteriorPower.alternatingMapLinearEquiv_apply_ιMulti]
-  rw [AlternatingMap.alternatizeUncurryFin_apply, Fin.sum_univ_succ]
-  simp [cofactorLinear_apply, Module.Basis.det_self, Fin.removeNth_zero]
+    cofactorToLeft bN (exteriorPower.ιMulti R (n + 1) (Fin.cons (m, 0) fun i ↦ (0, bN i))) = m := by
+  simp [cofactorToLeft, cofactorLinear, AlternatingMap.alternatizeUncurryFin_apply,
+    Fin.sum_univ_succ, Module.Basis.det_self]
 
 /-- The linear equivalence from the top exterior power of a finite free module to the base ring
 associated to a chosen basis. -/
@@ -55,14 +49,12 @@ noncomputable def topExteriorLinearEquiv (b : Module.Basis (Fin n) R M) : ⋀[R]
     (LinearMap.id.smulRight (exteriorPower.ιMulti R n b)) ?_ ?_
   · ext
     simp [Module.Basis.det_self]
-  · refine exteriorPower.linearMap_ext <| Module.Basis.ext_alternating b (fun v hv => ?_)
-    let e : Equiv.Perm (Fin n) := Equiv.ofBijective v ⟨hv, Finite.injective_iff_surjective.mp hv⟩
-    have hdet : b.det (b ∘ e) = (Equiv.Perm.sign e : R) :=
-      (AlternatingMap.map_perm b.det b e).trans <| by simp [Units.smul_def, Module.Basis.det_self]
-    have hω : _ = (Equiv.Perm.sign e : R) • (exteriorPower.ιMulti R n b) :=
-      AlternatingMap.map_perm (exteriorPower.ιMulti R n) b e
-    simp [show (fun i => b (v i)) = (b ∘ e) from rfl]
-    simp [hdet, hω]
+  · refine exteriorPower.linearMap_ext <| Module.Basis.ext_alternating b (fun v hv ↦ ?_)
+    let e : Equiv.Perm (Fin n) := Equiv.ofBijective v hv.bijective_of_finite
+    have hdet : b.det (b ∘ e) = (Equiv.Perm.sign e : R) := by
+      simpa [Units.smul_def, Module.Basis.det_self] using AlternatingMap.map_perm b.det b e
+    simpa [show (fun i ↦ b (v i)) = (b ∘ e) from rfl, hdet] using
+      (AlternatingMap.map_perm (exteriorPower.ιMulti R n) b e).symm
 
 /-- Let `R` be a commutative ring, `M` be a finite stably free `R`-module.
   If `Mₘ ≃ Rₘ` for any maximal ideal `m` of `R`, then `M` is free. -/
@@ -72,19 +64,18 @@ theorem Module.free_of_isStablyFree_of_localized_eq_ring [Nontrivial R] [Module.
     Module.Free R M := by
   have : Module.Projective R M := h.projective
   obtain ⟨N, _, _, _, _, _⟩ := h
-  obtain ⟨𝔪, h𝔪, _⟩ := Ideal.exists_le_maximal (⊥ : Ideal R) bot_ne_top
-  have h1 : Module.rankAtStalk M ⟨𝔪, h𝔪.isPrime⟩ = 1 :=
-    (Module.finrank_eq_card_basis ((Module.Basis.singleton (Fin 1) _).map (hloc 𝔪).symm)).trans
-      Fintype.card_unique
+  obtain ⟨𝔪, h𝔪⟩ := Ideal.exists_maximal R
+  have h1 : Module.rankAtStalk M ⟨𝔪, h𝔪.isPrime⟩ = 1 := by
+    simpa [Module.rankAtStalk] using LinearEquiv.finrank_eq (hloc 𝔪)
   let n := Module.finrank R N
-  have hp : Module.finrank R (M × N) = n + 1 := (congrArg (fun f => f ⟨𝔪, h𝔪.isPrime⟩) <|
+  have hp : Module.finrank R (M × N) = n + 1 := (congrArg (fun f ↦ f ⟨𝔪, h𝔪.isPrime⟩) <|
     Module.rankAtStalk_eq_finrank_of_free.symm.trans (Module.rankAtStalk_prod M N)).trans <| by
       simp [← h1, n, Nat.add_comm]
   let bN : Module.Basis (Fin n) R N := Module.finBasisOfFinrankEq R N rfl
   let b : Module.Basis (Fin (n + 1)) R (M × N) := Module.finBasisOfFinrankEq R (M × N) hp
   let f : R →ₗ[R] M := cofactorToLeft bN ∘ₗ (topExteriorLinearEquiv b).symm.toLinearMap
   have hfs : Function.Surjective f := fun x ↦
-    ⟨topExteriorLinearEquiv b (exteriorPower.ιMulti R (n + 1) (Fin.cons (x, 0) fun i => (0, bN i))),
+    ⟨topExteriorLinearEquiv b (exteriorPower.ιMulti R (n + 1) (Fin.cons (x, 0) fun i ↦ (0, bN i))),
       by simpa [f] using cofactorToLeft_ιMulti_cons bN x⟩
   exact Module.Free.of_equiv <| LinearEquiv.ofBijective f <| bijective_of_localized_maximal f <| by
     intro m _
