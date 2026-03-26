@@ -3,7 +3,12 @@ Copyright (c) 2025 Yongxi Lin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongxi Lin
 -/
-import Mathlib
+module
+
+public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
+public import Mathlib.MeasureTheory.Measure.Regular
 
 /-!
 # Uniformly distributed measures
@@ -16,22 +21,30 @@ application, we prove that the restriction of the `n - 1`-dimensional Hausdorff 
 
 * `isUniformlyDistributed_eq_smul`: Uniformly distributed outer regular measures in a
   pseudometric space are unique up to a finite constant.
-* `hausdorff_eq_measure.toSphere` : The restriction of the `n - 1`-dimensional Hausdorff measure
-  onto an `n`-dimensional sphere coincides with the spherical measure.
 
 -/
+
+@[expose] public section
 
 open Filter MeasureTheory Measure Metric Set
 
 open scoped ENNReal NNReal Topology
 
-variable {X : Type*} [PseudoMetricSpace X] [MeasurableSpace X] [OpensMeasurableSpace X]
+variable {X : Type*} [PseudoMetricSpace X] [MeasurableSpace X]
 
 namespace MeasureTheory
 
-lemma exists_density_of_mem_open {U : Set X} (hU : IsOpen U) {x : X} (hx : x ∈ U) (μ : Measure X) :
-    Tendsto (fun r => μ (U ∩ ball x r) / μ (ball x r)) (𝓝 0) (𝓝 1) := by
-  sorry
+/-- At a point `x` in an open set `U`, if `μ` is nonzero and bounded for small balls centered at
+`x`, then the density of `U` at `x` is `1`. -/
+lemma exists_density_of_mem_open {U : Set X} (hU : IsOpen U) {x : X} (hx : x ∈ U)
+    (μ : Measure X) (hμz : ∀ᶠ a in 𝓝[>] 0, 0 < μ (ball x a))
+    (hμt : ∀ᶠ a in 𝓝[>] 0, μ (ball x a) < ∞) :
+    Tendsto (fun r => μ (U ∩ ball x r) / μ (ball x r)) (𝓝[>] 0) (𝓝 1) := by
+  apply EventuallyEq.tendsto
+  obtain ⟨r, hr⟩ := Metric.isOpen_iff.1 hU x hx
+  filter_upwards [Ioo_mem_nhdsGT hr.1, hμz, hμt] with a ha hz ht
+  rw [Set.inter_eq_right.2 ((ball_subset_ball ha.2.le).trans hr.2),
+    ENNReal.div_self hz.ne.symm ht.ne]
 
 namespace Measure
 
@@ -40,14 +53,52 @@ class UniformlyDistributed (μ : Measure X) : Prop where
   zero_lt : ∀ ⦃r : ℝ⦄, 0 < r → ∀ x, 0 < μ (ball x r)
   lt_top : ∀ ⦃r : ℝ⦄, 0 < r → ∀ x, μ (ball x r) < ⊤
 
-private lemma isUniformlyDistributed_le_smul (μ ν : Measure X) {U : Set X} (hU : IsOpen U) (x : X) :
-    μ U ≤ (liminf (fun r => (ν (ball x r))⁻¹ * μ (ball x r)) (𝓝[>] 0)) • (ν U) := by
-  sorry
+private lemma isUniformlyDistributed_le_smul (μ ν : Measure X) [OpensMeasurableSpace X]
+    [UniformlyDistributed μ] [UniformlyDistributed ν] {U : Set X} (hU : IsOpen U) (x : X) :
+    μ U ≤ (liminf (fun r => (ν (ball x r))⁻¹ * μ (ball x r)) (𝓝[>] 0)) • (ν U) := calc
+  _ = ∫⁻ a in U, liminf (fun r => (ν (ball a r))⁻¹ * ν (U ∩ ball a r)) (𝓝[>] 0) ∂μ := by
+    rw [← setLIntegral_one]
+    refine setLIntegral_congr_fun hU.measurableSet fun x hx => (Tendsto.liminf_eq ?_).symm
+    have hνz : ∀ᶠ a in 𝓝[>] 0, 0 < ν (ball x a) := by
+      filter_upwards [self_mem_nhdsWithin] with a ha
+      exact UniformlyDistributed.zero_lt ha x
+    have hνt : ∀ᶠ a in 𝓝[>] 0, ν (ball x a) < ∞ := by
+      filter_upwards [self_mem_nhdsWithin] with a ha
+      exact UniformlyDistributed.lt_top ha x
+    apply (exists_density_of_mem_open hU hx ν hνz hνt).congr'
+    simp [ENNReal.div_eq_inv_mul]
+  -- apply Fatou's lemma
+  _ ≤ liminf (fun r => ∫⁻ a in U, (ν (ball a r))⁻¹ * ν (U ∩ ball a r) ∂μ) (𝓝[>] 0) := by sorry
+  -- remove the dependence of `ν (ball a r)` on `a`
+  _ = liminf (fun r => ∫⁻ a in U, (ν (ball x r))⁻¹ * ν (U ∩ ball a r) ∂μ) (𝓝[>] 0) := by
+    apply liminf_congr
+    filter_upwards [self_mem_nhdsWithin] with r hr
+    have (u : X) : ν (ball u r) = ν (ball x r) := UniformlyDistributed.eq_measure hr u x
+    simp_all
+  _ = liminf (fun r => (ν (ball x r))⁻¹ * ∫⁻ a in U, ν (U ∩ ball a r) ∂μ) (𝓝[>] 0) := by sorry
+  -- apply Fubini
+  _ = liminf (fun r => (ν (ball x r))⁻¹ * ∫⁻ a in U, μ (ball a r) ∂ν) (𝓝[>] 0) := by
+    congr with r
+    have : ∫⁻ a in U, ν (U ∩ ball a r) ∂μ =  ∫⁻ a in U, μ (ball a r) ∂ν := by sorry
+    congr
+  -- remove the dependence of `μ (ball a r)` on `a`
+  _ = liminf (fun r => (ν (ball x r))⁻¹ * ∫⁻ a in U, μ (ball x r) ∂ν) (𝓝[>] 0) := by
+    apply liminf_congr
+    filter_upwards [self_mem_nhdsWithin] with r hr
+    have (u : X) : μ (ball u r) = μ (ball x r) := UniformlyDistributed.eq_measure hr u x
+    simp_all
+  _ = liminf (fun r => (ν (ball x r))⁻¹ * μ (ball x r) * ν U) (𝓝[>] 0) := by
+    congr with r
+    rw [mul_assoc]
+    have :  ∫⁻ a in U, μ (ball x r) ∂ν = μ (ball x r) * ν U := by rw [setLIntegral_const]
+    congr
+  _ = _ := by sorry
 
 /-- **Christensen's Lemma**: Uniformly distributed outerregular measures are unique up to
 a finite constant. -/
-theorem isUniformlyDistributed_eq_smul (μ ν : Measure X) [OuterRegular μ] [OuterRegular ν]
-    [UniformlyDistributed μ] [UniformlyDistributed ν] : ∃ c : ℝ≥0, μ = c • ν := by
+theorem isUniformlyDistributed_eq_smul (μ ν : Measure X) [OpensMeasurableSpace X]
+    [OuterRegular μ] [OuterRegular ν] [UniformlyDistributed μ] [UniformlyDistributed ν] :
+    ∃ c : ℝ≥0, μ = c • ν := by
   by_cases! hX : IsEmpty X
   · simp [eq_zero_of_isEmpty]
   · obtain ⟨c, hc⟩ : ∃ c : ℝ≥0∞, ∀ U, IsOpen U → μ U = (c • ν) U := by
@@ -66,10 +117,7 @@ theorem isUniformlyDistributed_eq_smul (μ ν : Measure X) [OuterRegular μ] [Ou
         have : limsup (fun r ↦ (ν (ball hX.some r))⁻¹ * μ (ball hX.some r)) (𝓝[>] 0) =
           limsup (fun i ↦ ((μ (ball hX.some i))⁻¹ * ν (ball hX.some i))⁻¹) (𝓝[>] 0) := by
           apply limsup_congr
-          have : Ioi 0 ∈ 𝓝[>] (0 : ℝ) := by
-            rw [mem_nhdsGT_iff_exists_Ioo_subset]
-            exact ⟨1, by grind, by grind⟩
-          filter_upwards [this] with a ha
+          filter_upwards [self_mem_nhdsWithin] with a ha
           rw [ENNReal.mul_inv, mul_comm, inv_inv]
           · exact Or.inr (UniformlyDistributed.lt_top ha hX.some).ne
           · exact Or.inr (UniformlyDistributed.zero_lt ha hX.some).ne.symm
@@ -90,44 +138,6 @@ theorem isUniformlyDistributed_eq_smul (μ ν : Measure X) [OuterRegular μ] [Ou
     have : (c • ν).OuterRegular := OuterRegular.smul ν hci
     exact (ENNReal.exists_ne_top (p := fun r => μ = r • ν)).1
       ⟨c, hci, OuterRegular.ext_isOpen fun U hU => hc U hU⟩
-
-variable {E : Type u_1} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
-  [BorelSpace E] [FiniteDimensional ℝ E]
-
-/-- The spherical measure is uniformly distributed. -/
-instance measure_toSphere_uniformlydist (m : Measure E) (he : 0 < Module.finrank ℝ E)
-    [m.IsAddHaarMeasure] : UniformlyDistributed m.toSphere := by
-  constructor
-  intro r hr x y
-  constructor
-  · rw [toSphere_apply' _ measurableSet_ball, toSphere_apply' _ measurableSet_ball]
-    refine (ENNReal.mul_right_inj ?_ ?_).mpr ?_
-    · sorry
-    · sorry
-    · sorry
-  · constructor
-    · rw [toSphere_apply' _ measurableSet_ball]
-      refine CanonicallyOrderedAdd.mul_pos.mpr ⟨by simp [he], ?_⟩
-      refine measure_pos_of_nonempty_interior m ?_
-      sorry
-    · exact measure_ball_lt_top
-
-instance hausdorffMeasure_outerRegular (d : ℝ) : OuterRegular (μH[d] : Measure E) := by sorry
-
-instance hausdorffMeasure_restirct_sphere_outerRegular : OuterRegular
-    (μH[↑(Module.finrank ℝ E) - 1].comap Subtype.val : Measure (sphere (0 : E) 1)) := by
-  refine OuterRegular.comap' μH[↑(Module.finrank ℝ E) - 1] ?_ ?_
-
-instance hausdorffMeasure_restrict_sphere_uniformlydist : UniformlyDistributed
-    (μH[↑(Module.finrank ℝ E) - 1].comap Subtype.val : Measure (sphere (0 : E) 1)) := by
-  sorry
-
-/-- The restriction of the `n - 1`-dimensional Hausdorff measure onto an `n`-dimensional sphere
-coincides with the spherical measure. -/
-theorem hausdorff_eq_measure.toSphere (m : Measure E) [m.IsAddHaarMeasure] :
-    (μH[↑(Module.finrank ℝ E) - 1].comap Subtype.val : Measure (sphere (0 : E) 1)) =
-    m.toSphere := by
-  sorry
 
 end Measure
 
