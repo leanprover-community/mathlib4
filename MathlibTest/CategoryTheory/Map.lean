@@ -27,14 +27,14 @@ lemma comp_map {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ 
 #check comp_map_assoc_map
 
 @[map (attr := reassoc)]
-lemma comp_map' {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) :
+lemma comp_map_reassoc {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) :
     f ≫ g = h := w
 
-/-- info: Tests.Map.comp_map'_map_assoc.{u✝, v✝, u_1, u_2} {C : Type u_1} [Category.{u_2, u_1} C] {x y z : C} (f : x ⟶ y)
+/-- info: Tests.Map.comp_map_reassoc_map_assoc.{u✝, v✝, u_1, u_2} {C : Type u_1} [Category.{u_2, u_1} C] {x y z : C} (f : x ⟶ y)
   (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) {D : Type u✝} [instD : Category.{v✝, u✝} D] (F : C ⥤ D) {Z : D}
   (h✝ : F.obj z ⟶ Z) : F.map f ≫ F.map g ≫ h✝ = F.map h ≫ h✝ -/
 #guard_msgs in
-#check comp_map'_map_assoc
+#check comp_map_reassoc_map_assoc
 
 @[map]
 lemma comp_eq_id {x y : C} (f : x ⟶ y) (g : y ⟶ x) (w : f ≫ g = 𝟙 _) :
