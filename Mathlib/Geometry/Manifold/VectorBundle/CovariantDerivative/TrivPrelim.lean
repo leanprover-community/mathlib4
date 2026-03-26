@@ -244,6 +244,11 @@ variable {R B F : Type*} {E : B → Type*} [Semiring R]
   (e : Trivialization F (π F E))
   [AddCommMonoid F] [Module R F] [(x : B) → AddCommMonoid (E x)] [(x : B) → Module R (E x)]
 
+@[simp]
+lemma linearMapAt_funToSec [Trivialization.IsLinear R e] {x : B} (hx : x ∈ e.baseSet) (s : B → F) :
+    (Trivialization.linearMapAt R e x) (e.funToSec s x) = s x := by
+  simp [funToSec, hx]
+
 lemma map_smul [Trivialization.IsLinear R e]
     {b : B} (hb : b ∈ e.baseSet) (a : R) (v : E b) :
     (e ⟨b, a • v⟩).2 = a • (e ⟨b, v⟩).2 :=
@@ -312,7 +317,12 @@ lemma symm_map_smul [Trivialization.IsLinear R e] {x : B} (a : R) (f : F) :
     e.symm x (a • f) = a • e.symm x f :=
   (e.symmL R x).map_smul a f
 
-lemma funToSec_map_smul [Trivialization.IsLinear R e] (a : R) (s : B → F) :
+lemma funToSec_map_smul_const [Trivialization.IsLinear R e] (a : R) (s : B → F) :
+    e.funToSec (a • s) = a • e.funToSec s := by
+  ext b
+  simp [funToSec, e.symm_map_smul]
+
+lemma funToSec_map_smul [Trivialization.IsLinear R e] (a : B → R) (s : B → F) :
     e.funToSec (a • s) = a • e.funToSec s := by
   ext b
   simp [funToSec, e.symm_map_smul]
