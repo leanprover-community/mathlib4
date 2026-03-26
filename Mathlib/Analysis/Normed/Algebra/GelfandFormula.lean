@@ -20,7 +20,8 @@ complex Banach algebra has nonempty spectrum.
 
 ## Main results
 
-* `spectrum.hasDerivAt_resolvent`: the resolvent function is differentiable on the resolvent set.
+* `spectrum.hasDerivAt_resolvent_const_left`: the resolvent function is differentiable on the
+  resolvent set.
 * `spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius`: Gelfand's formula for the
   spectral radius in Banach algebras over `ℂ`.
 * `spectrum.nonempty`: the spectrum of any element in a complex Banach algebra is nonempty.
