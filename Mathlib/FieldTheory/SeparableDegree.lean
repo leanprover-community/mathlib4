@@ -365,7 +365,6 @@ dot notation. -/
 theorem Separable.natSepDegree_eq_natDegree (h : f.Separable) :
     f.natSepDegree = f.natDegree := natSepDegree_eq_natDegree_of_separable f h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a polynomial splits over `E`, then its separable degree is equal to
 the number of distinct roots of it over `E`. -/
 theorem natSepDegree_eq_of_splits [DecidableEq E] (h : (f.map (algebraMap F E)).Splits) :
@@ -813,7 +812,7 @@ theorem IsSeparable.of_algebra_isSeparable_of_isSeparable [Algebra E K] [IsScala
   let g : E'[X] := f.toSubring E'.toSubring (subset_adjoin F _)
   have h : g.map (algebraMap E' E) = f := f.map_toSubring E'.toSubring (subset_adjoin F _)
   clear_value g
-  have hx : x ∈ restrictScalars F E'⟮x⟯ := mem_adjoin_simple_self _ x
+  have hx : x ∈ E'⟮x⟯.restrictScalars F := mem_adjoin_simple_self _ x
   have hzero : aeval x g = 0 := by
     simpa only [← hf, ← h, aeval_map_algebraMap] using minpoly.aeval E x
   have halg : IsIntegral E' x :=
