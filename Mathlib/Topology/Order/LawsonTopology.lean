@@ -140,8 +140,7 @@ instance [Inhabited α] : Inhabited (WithLawson α) := ‹Inhabited α›
 
 variable [Preorder α]
 
-instance instPreorder : Preorder (WithLawson α) :=
-  inferInstanceAs <| Preorder α
+instance instPreorder : Preorder (WithLawson α) := ‹Preorder α›
 
 instance instTopologicalSpace : TopologicalSpace (WithLawson α) :=
   -- fast_instance% lawson α fails
