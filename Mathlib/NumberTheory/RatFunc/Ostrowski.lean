@@ -181,7 +181,6 @@ lemma exists_zpow_uniformizingPolynomial {f : RatFunc K} (hf : f ≠ 0) :
       valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one hle
         (p := p) (by aesop)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma uniformizingPolynomial_isUniformizer [hv : IsRankOneDiscrete v] :
     v.IsUniformizer πᵥ := by
   have h0 : v πᵥ ≠ 0 := by simpa using uniformizingPolynomial_ne_zero hle
@@ -194,15 +193,16 @@ lemma uniformizingPolynomial_isUniformizer [hv : IsRankOneDiscrete v] :
       map_eq_zero, Subgroup.mem_zpowers_iff]
     refine ⟨fun ⟨k, hk⟩ ↦ ?_, fun ⟨a, ha, b, hab⟩ ↦ ?_⟩
     · use 1, one_ne_zero, πᵥ ^ k
-      simp only [← Units.val_inj, Units.val_zpow_eq_zpow_val, h0.isUnit.unit_spec] at hk
+      simp only [← Units.val_inj, Units.val_zpow_eq_zpow_val] at hk
       simp [← hk]
     · obtain ⟨ka, hka⟩ := exists_zpow_uniformizingPolynomial hle ha
       obtain ⟨kb, hkb⟩ := exists_zpow_uniformizingPolynomial hle (f := b) (by aesop)
-      rw [hka, hkb] at hab
+      rw [MonoidWithZeroHom.coe_coe, hka, hkb] at hab
       use kb - ka
       have : v ↑πᵥ ^ ka ≠ 0 := zpow_ne_zero _ h0
-      simp only [zpow_sub, ← Units.val_inj, Units.val_mul, Units.val_zpow_eq_zpow_val,
-        h0.isUnit.unit_spec, Units.val_inv_eq_inv_val, ← hab, field]
+      simp at hab
+      simp [zpow_sub, ← Units.val_inj, ← hab, field]
+      aesop
 
 lemma valuation_isEquiv_valuationIdeal_adic_of_valuation_X_le_one [IsRankOneDiscrete v] :
     v.IsEquiv ((Pᵥ).valuation (RatFunc K)) := by

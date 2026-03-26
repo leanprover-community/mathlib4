@@ -23,7 +23,7 @@ public section
 
 namespace ValuativeRel
 
-variable {R : Type*} [CommRing R] [ValuativeRel R]
+variable {R : Type*} [Ring R] [ValuativeRel R]
 
 open WithZero
 
