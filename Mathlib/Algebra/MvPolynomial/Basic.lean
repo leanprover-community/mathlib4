@@ -94,53 +94,57 @@ instance decidableEqMvPolynomial [CommSemiring R] [DecidableEq σ] [DecidableEq 
   Finsupp.instDecidableEq
 
 instance commSemiring [CommSemiring R] : CommSemiring (MvPolynomial σ R) :=
-  AddMonoidAlgebra.commSemiring
+  inferInstanceAs <| CommSemiring (AddMonoidAlgebra R _)
 
 instance inhabited [CommSemiring R] : Inhabited (MvPolynomial σ R) :=
   ⟨0⟩
 
+instance smul [CommSemiring S₁] [SMulZeroClass R S₁] :
+    SMul R (MvPolynomial σ S₁) where
+  smul a v := v.mapRange (a • ·) (smul_zero _)
+
 instance distribuMulAction [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] :
     DistribMulAction R (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.distribMulAction
+  inferInstanceAs <| DistribMulAction R (AddMonoidAlgebra S₁ (σ →₀ ℕ))
 
 instance smulZeroClass [CommSemiring S₁] [SMulZeroClass R S₁] :
     SMulZeroClass R (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.smulZeroClass
+  inferInstanceAs <| SMulZeroClass R (AddMonoidAlgebra S₁ (σ →₀ ℕ))
 
 instance faithfulSMul [CommSemiring S₁] [SMulZeroClass R S₁] [FaithfulSMul R S₁] :
     FaithfulSMul R (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.faithfulSMul
+  inferInstanceAs <| FaithfulSMul R (AddMonoidAlgebra S₁ (σ →₀ ℕ))
 
 instance module [Semiring R] [CommSemiring S₁] [Module R S₁] : Module R (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.module
+  inferInstanceAs <| Module R (AddMonoidAlgebra S₁ (σ →₀ ℕ))
 
 instance isScalarTower [CommSemiring S₂] [SMul R S₁] [SMulZeroClass R S₂] [SMulZeroClass S₁ S₂]
     [IsScalarTower R S₁ S₂] : IsScalarTower R S₁ (MvPolynomial σ S₂) :=
-  AddMonoidAlgebra.isScalarTower
+  inferInstanceAs <| IsScalarTower R S₁ (AddMonoidAlgebra S₂ (σ →₀ ℕ))
 
 instance smulCommClass [CommSemiring S₂] [SMulZeroClass R S₂] [SMulZeroClass S₁ S₂]
     [SMulCommClass R S₁ S₂] : SMulCommClass R S₁ (MvPolynomial σ S₂) :=
-  AddMonoidAlgebra.smulCommClass
+  inferInstanceAs <| SMulCommClass R S₁ (AddMonoidAlgebra S₂ (σ →₀ ℕ))
 
 instance isCentralScalar [CommSemiring S₁] [SMulZeroClass R S₁] [SMulZeroClass Rᵐᵒᵖ S₁]
     [IsCentralScalar R S₁] : IsCentralScalar R (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.isCentralScalar
+  inferInstanceAs <| IsCentralScalar R (AddMonoidAlgebra S₁ (σ →₀ ℕ))
 
 instance algebra [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
     Algebra R (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.algebra
+  inferInstanceAs <| Algebra R (AddMonoidAlgebra S₁ (σ →₀ ℕ))
 
 instance isScalarTower_right [CommSemiring S₁] [DistribSMul R S₁] [IsScalarTower R S₁ S₁] :
     IsScalarTower R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.isScalarTower_self _
+  inferInstanceAs <| IsScalarTower R (AddMonoidAlgebra S₁ (σ →₀ ℕ)) (AddMonoidAlgebra S₁ (σ →₀ ℕ))
 
 instance smulCommClass_right [CommSemiring S₁] [DistribSMul R S₁] [SMulCommClass R S₁ S₁] :
     SMulCommClass R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.smulCommClass_self _
+  inferInstanceAs <| SMulCommClass R (AddMonoidAlgebra S₁ (σ →₀ ℕ)) (AddMonoidAlgebra S₁ (σ →₀ ℕ))
 
 /-- If `R` is a subsingleton, then `MvPolynomial σ R` has a unique element -/
 instance unique [CommSemiring R] [Subsingleton R] : Unique (MvPolynomial σ R) :=
-  AddMonoidAlgebra.unique
+  inferInstanceAs <| Unique (AddMonoidAlgebra R (σ →₀ ℕ))
 
 end Instances
 
@@ -198,11 +202,10 @@ theorem C_0 : C 0 = (0 : MvPolynomial σ R) := map_zero _
 theorem C_1 : C 1 = (1 : MvPolynomial σ R) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem C_mul_monomial : C a * monomial s a' = monomial s (a * a') := by
-  -- Porting note: this `change` feels like defeq abuse, but I can't find the appropriate lemmas
-  change AddMonoidAlgebra.single _ _ * AddMonoidAlgebra.single _ _ = AddMonoidAlgebra.single _ _
-  simp [single_mul_single]
+  have := single_mul_single 0 s a a'
+  rw [zero_add] at this
+  exact this
 
 @[simp]
 theorem C_add : (C (a + a') : MvPolynomial σ R) = C a + C a' :=
@@ -582,7 +585,7 @@ theorem coeff_add (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p + q
 @[simp]
 theorem coeff_smul {S₁ : Type*} [SMulZeroClass S₁ R] (m : σ →₀ ℕ) (C : S₁) (p : MvPolynomial σ R) :
     coeff m (C • p) = C • coeff m p :=
-  smul_apply C p m
+  AddMonoidAlgebra.smul_apply C p m
 
 @[simp]
 theorem coeff_zero (m : σ →₀ ℕ) : coeff m (0 : MvPolynomial σ R) = 0 :=
@@ -594,8 +597,7 @@ theorem coeff_zero_X (i : σ) : coeff 0 (X i : MvPolynomial σ R) = 0 :=
 
 @[simp]
 theorem coeff_mapRange (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) (m) :
-    coeff m (mapRange g hg φ) = g (coeff m φ) := by
-  simp [mapRange, coeff]
+    coeff m (mapRange g hg φ) = g (coeff m φ) := rfl
 
 /-- `MvPolynomial.coeff m` but promoted to an `AddMonoidHom`. -/
 @[simps]
@@ -1083,12 +1085,10 @@ lemma coeffsIn_mul (M N : Submodule R S) : coeffsIn σ (M * N) = coeffsIn σ M *
     rw [MvPolynomial.coeff_mul]
     exact sum_mem fun c hc ↦ Submodule.mul_mem_mul (hx _) (hy _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coeffsIn_pow : ∀ {n}, n ≠ 0 → ∀ M : Submodule R S, coeffsIn σ (M ^ n) = coeffsIn σ M ^ n
   | 1, _, M => by simp
   | n + 2, _, M => by rw [pow_succ, coeffsIn_mul, coeffsIn_pow, ← pow_succ]; exact n.succ_ne_zero
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_coeffsIn_pow : ∀ {n}, coeffsIn σ M ^ n ≤ coeffsIn σ (M ^ n)
   | 0 => by simpa using ⟨1, map_one _⟩
   | n + 1 => (coeffsIn_pow n.succ_ne_zero _).ge

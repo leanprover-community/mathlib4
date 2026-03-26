@@ -602,6 +602,15 @@ lemma finprod_le_finprod {M : Type*} [CommMonoidWithZero M] [PartialOrder M] [Ze
     finprod_eq_finset_prod_of_mulSupport_subset g (show g.mulSupport ⊆ s by grind)]
   exact Finset.prod_le_prod (fun i _ ↦ hf₀ i) fun i _ ↦ h i
 
+lemma finprod_zero_le_one {M α : Type*} [CommMonoidWithZero M] [PartialOrder M]
+    [ZeroLEOneClass M] [PosMulMono M] :
+    ∏ᶠ _ : α, (0 : M) ≤ 1 := by
+  rw [← finprod_one (α := α)]
+  by_cases H : (fun _ : α ↦ (0 : M)).HasFiniteMulSupport
+  · exact finprod_le_finprod H (fun _ ↦ le_rfl) (by fun_prop) fun _ ↦ zero_le_one
+  · rw [finprod_of_not_hasFiniteMulSupport H]
+    exact finprod_one.symm.le
+
 /-!
 ### Distributivity w.r.t. addition, subtraction, and (scalar) multiplication
 -/

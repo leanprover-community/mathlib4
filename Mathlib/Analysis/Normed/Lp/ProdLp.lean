@@ -360,7 +360,6 @@ attribute [local instance] WithLp.prodPseudoEMetricAux
 
 variable {α β}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma used twice in the proof of `WithLp.prodPseudoMetricAux` below. Not intended
 for use outside this file. -/
 theorem prod_sup_edist_ne_top_aux [PseudoMetricSpace α] [PseudoMetricSpace β]
@@ -1121,7 +1120,6 @@ def withLpProdCongr (f : α ≃ᵢ α') (g : β ≃ᵢ β') : WithLp p (α × β
   __ := WithLp.congr p (f.toEquiv.prodCongr g.toEquiv)
   isometry_toFun := f.isometry.withLpProdMap p g.isometry
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Commutativity of the `L^p` product as an isometric equivalence. -/
 def withLpProdComm : WithLp p (α × β) ≃ᵢ WithLp p (β × α) where
   __ := WithLp.congr p (Equiv.prodComm α β)
@@ -1140,7 +1138,6 @@ theorem withLpProdComm_apply (x : WithLp p (α × β)) :
 theorem withLpProdComm_symm : (withLpProdComm p α β).symm = withLpProdComm p β α :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Associativity of the `L^p` product as an isometric equivalence. -/
 @[simps apply symm_apply]
 def withLpProdAssoc : WithLp p (WithLp p (α × β) × γ) ≃ᵢ WithLp p (α × WithLp p (β × γ)) where

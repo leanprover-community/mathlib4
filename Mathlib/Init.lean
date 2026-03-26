@@ -23,6 +23,7 @@ public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.Whitespace
 public import Mathlib.Tactic.TacticAnalysis.Declarations
+public import Mathlib.Tactic.TypeStar
 -- This is a redundant import, but it is needed so that
 -- the linter doesn't complain about `ParseCommand` not importing `Header`.
 -- This can be removed after https://github.com/leanprover-community/mathlib4/pull/32419
@@ -120,6 +121,7 @@ register_linter_set linter.nightlyRegressionSet :=
 -/
 register_linter_set linter.weeklyLintSet :=
   linter.tacticAnalysis.mergeWithGrind
+  linter.style.docStringVerso
 
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
 open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType
