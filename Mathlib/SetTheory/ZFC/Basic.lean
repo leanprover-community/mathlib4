@@ -147,6 +147,7 @@ namespace Classical
 open PSet ZFSet
 
 /-- All functions are classically definable. -/
+@[implicit_reducible]
 noncomputable def allZFSetDefinable {n} (F : (Fin n → ZFSet.{u}) → ZFSet.{u}) : Definable n F where
   out xs := (F (mk <| xs ·)).out
 
@@ -184,6 +185,8 @@ theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
 instance : SetLike ZFSet.{u} ZFSet.{u} where
   coe x := {y | y ∈ x}
   coe_injective' x y hxy := by ext z; exact congr(z ∈ $hxy)
+
+instance : PartialOrder ZFSet.{u} := .ofSetLike ZFSet.{u} ZFSet.{u}
 
 /-- Convert a ZFC set into a `Set` of ZFC sets -/
 @[deprecated SetLike.coe (since := "2025-11-05")]
@@ -276,6 +279,7 @@ instance : Inhabited ZFSet :=
 theorem notMem_empty (x) : x ∉ (∅ : ZFSet.{u}) :=
   Quotient.inductionOn x PSet.notMem_empty
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] lemma coe_empty : ((∅ : ZFSet.{u}) : Set ZFSet.{u}) = ∅ := by ext; simp
 
 @[deprecated (since := "2025-11-05")] alias toSet_empty := coe_empty
@@ -337,6 +341,7 @@ theorem mem_insert (x y : ZFSet) : x ∈ insert x y :=
 theorem mem_insert_of_mem {y z : ZFSet} (x) (h : z ∈ y) : z ∈ insert x y :=
   mem_insert_iff.2 <| Or.inr h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_insert (x y : ZFSet) : ↑(insert x y) = (insert x ↑y : Set ZFSet) := by ext; simp
 
@@ -349,6 +354,7 @@ theorem mem_singleton {x y : ZFSet.{u}} : x ∈ ({y} : ZFSet.{u}) ↔ x = y :=
 theorem notMem_singleton {x y : ZFSet.{u}} : x ∉ ({y} : ZFSet.{u}) ↔ x ≠ y :=
   mem_singleton.not
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_singleton (x : ZFSet) : (({x} : ZFSet) : Set ZFSet) = {x} := by ext; simp
 
@@ -426,6 +432,7 @@ theorem sep_empty (p : ZFSet → Prop) : (∅ : ZFSet).sep p = ∅ :=
 theorem sep_subset {x p} : ZFSet.sep p x ⊆ x :=
   fun _ h => (mem_sep.1 h).1
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_sep (a : ZFSet) (p : ZFSet → Prop) : (ZFSet.sep p a : Set ZFSet) = {x ∈ a | p x} := by
   ext
@@ -438,12 +445,12 @@ def powerset : ZFSet → ZFSet :=
   Quotient.map PSet.powerset
     fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ =>
       ⟨fun p =>
-        ⟨{ b | ∃ a, p a ∧ Equiv (A a) (B b) }, fun ⟨a, pa⟩ =>
+        ⟨{ b | ∃ a, a ∈ p ∧ Equiv (A a) (B b) }, fun ⟨a, pa⟩ =>
           let ⟨b, ab⟩ := αβ a
           ⟨⟨b, a, pa, ab⟩, ab⟩,
           fun ⟨_, a, pa, ab⟩ => ⟨⟨a, pa⟩, ab⟩⟩,
         fun q =>
-        ⟨{ a | ∃ b, q b ∧ Equiv (A a) (B b) }, fun ⟨_, b, qb, ab⟩ => ⟨⟨b, qb⟩, ab⟩, fun ⟨b, qb⟩ =>
+        ⟨{ a | ∃ b, b ∈ q ∧ Equiv (A a) (B b) }, fun ⟨_, b, qb, ab⟩ => ⟨⟨b, qb⟩, ab⟩, fun ⟨b, qb⟩ =>
           let ⟨a, ab⟩ := βα b
           ⟨⟨a, b, qb, ab⟩, ab⟩⟩⟩
 
@@ -527,6 +534,7 @@ theorem sUnion_singleton {x : ZFSet.{u}} : ⋃₀ ({x} : ZFSet) = x :=
 theorem sInter_singleton {x : ZFSet.{u}} : ⋂₀ ({x} : ZFSet) = x :=
   ext fun y => by simp_rw [mem_sInter (singleton_nonempty x), mem_singleton, forall_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_sUnion (x : ZFSet.{u}) : (⋃₀ x : Set ZFSet) = ⋃₀ (SetLike.coe '' (x : Set ZFSet)) := by
   ext
@@ -534,6 +542,7 @@ lemma coe_sUnion (x : ZFSet.{u}) : (⋃₀ x : Set ZFSet) = ⋃₀ (SetLike.coe 
 
 @[deprecated (since := "2025-11-05")] alias toSet_sUnion := coe_sUnion
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_sInter (h : x.Nonempty) : (⋂₀ x : Set ZFSet) = ⋂₀ (SetLike.coe '' (x : Set ZFSet)) := by
   ext
@@ -581,16 +590,19 @@ instance : SDiff ZFSet :=
 
 @[deprecated (since := "2025-11-06")] alias mem_diff := mem_sdiff
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_union (x y : ZFSet.{u}) : ↑(x ∪ y) = (↑x ∪ ↑y : Set ZFSet) := by ext; simp
 
 @[deprecated (since := "2025-11-05")] alias toSet_union := coe_union
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_inter (x y : ZFSet.{u}) : ↑(x ∩ y) = (↑x ∩ ↑y : Set ZFSet) := by ext; simp
 
 @[deprecated (since := "2025-11-05")] alias toSet_inter := coe_inter
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_sdiff (x y : ZFSet.{u}) : ↑(x \ y) = (↑x \ ↑y : Set ZFSet) := by ext; simp
 
@@ -599,6 +611,7 @@ lemma coe_sdiff (x y : ZFSet.{u}) : ↑(x \ y) = (↑x \ ↑y : Set ZFSet) := by
 @[simp] lemma inter_eq_left_of_subset (hxy : x ⊆ y) : x ∩ y = x := by ext; simpa using @hxy _
 @[simp] lemma inter_eq_right_of_subset (hyx : y ⊆ x) : x ∩ y = y := by ext; simpa using @hyx _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `ZFSet.powerset` is equivalent to `Set.powerset`. -/
 def powersetEquiv (x : ZFSet.{u}) : x.powerset ≃ 𝒫 (x : Set ZFSet) where
   toFun y := ⟨y.1, Set.mem_powerset (mem_powerset.1 y.2)⟩
@@ -668,6 +681,7 @@ theorem mem_image {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f] {x y : ZFSet.{u
     ⟨fun ⟨a, ya⟩ => ⟨⟦A a⟧, Mem.mk A a, ((Quotient.sound ya).trans Definable₁.mk_out).symm⟩,
       fun ⟨_, hz, e⟩ => e ▸ image.mk _ _ hz⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_image (f : ZFSet → ZFSet) [Definable₁ f] (x : ZFSet) :
     (image f x : Set ZFSet) = f '' x := by ext; simp
@@ -692,6 +706,7 @@ theorem mem_range {f : α → ZFSet.{u}} {x : ZFSet.{u}} : x ∈ range f ↔ ∃
       use equivShrink α z
       simpa [hz] using PSet.Equiv.symm (Quotient.mk_out y)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_range (f : α → ZFSet.{u}) : (range f : Set ZFSet) = .range f := by ext; simp
 
@@ -709,6 +724,7 @@ noncomputable def iUnion (f : α → ZFSet.{u}) : ZFSet.{u} :=
 theorem mem_iUnion {f : α → ZFSet.{u}} {x : ZFSet.{u}} : x ∈ ⋃ i, f i ↔ ∃ i, x ∈ f i := by
   simp [iUnion]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_iUnion (f : α → ZFSet.{u}) : ↑(⋃ i, f i) = ⋃ i, (f i : Set ZFSet) := by
   ext
@@ -782,7 +798,7 @@ theorem mem_funs {x y f : ZFSet.{u}} : f ∈ funs x y ↔ IsFunc x y f := by sim
 
 instance : Definable₁ ({·}) := .mk ({·}) (fun _ ↦ rfl)
 instance : Definable₂ insert := .mk insert (fun _ _ ↦ rfl)
-instance : Definable₂ pair := by unfold pair; infer_instance
+instance : Definable₂ pair := inferInstanceAs <| Definable₂ fun x y ↦ {{x}, {x, y}}
 
 /-- Graph of a function: `map f x` is the ZFC function which maps `a ∈ x` to `f a` -/
 def map (f : ZFSet → ZFSet) [Definable₁ f] : ZFSet → ZFSet :=

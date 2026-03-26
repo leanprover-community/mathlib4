@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 public import Mathlib.RingTheory.Polynomial.SeparableDegree
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
+
 /-!
 
 # Separable degree
@@ -247,6 +248,7 @@ def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgeb
         (IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K)
           (AlgebraicClosure E)).restrictScalars F).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the field extension `E / F` is transcendental, then `Field.Emb F E` is infinite. -/
 instance infinite_emb_of_transcendental [H : Algebra.Transcendental F E] : Infinite (Emb F E) := by
   obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' F E
@@ -369,7 +371,7 @@ theorem natSepDegree_eq_of_splits [DecidableEq E] (h : (f.map (algebraMap F E)).
     f.natSepDegree = (f.aroots E).toFinset.card := by
   classical
   rw [aroots, ← (SplittingField.lift f h).comp_algebraMap, ← map_map,
-    (SplittingField.splits f).map_roots,
+    (SplittingField.splits f).roots_map,
     Multiset.toFinset_map, Finset.card_image_of_injective _ (RingHom.injective _), natSepDegree]
 
 variable (E) in
@@ -810,7 +812,7 @@ theorem IsSeparable.of_algebra_isSeparable_of_isSeparable [Algebra E K] [IsScala
   let g : E'[X] := f.toSubring E'.toSubring (subset_adjoin F _)
   have h : g.map (algebraMap E' E) = f := f.map_toSubring E'.toSubring (subset_adjoin F _)
   clear_value g
-  have hx : x ∈ restrictScalars F E'⟮x⟯ := mem_adjoin_simple_self _ x
+  have hx : x ∈ E'⟮x⟯.restrictScalars F := mem_adjoin_simple_self _ x
   have hzero : aeval x g = 0 := by
     simpa only [← hf, ← h, aeval_map_algebraMap] using minpoly.aeval E x
   have halg : IsIntegral E' x :=

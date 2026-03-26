@@ -50,6 +50,7 @@ section
 
 variable [HasZeroObject C] [HasZeroMorphisms C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `lift`. -/
 def liftFZero {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y) (Q : ProjectiveResolution Z) :
     P.complex.X 0 ⟶ Q.complex.X 0 :=
@@ -65,6 +66,7 @@ lemma exact₀ {Z : C} (P : ProjectiveResolution Z) :
     (ShortComplex.mk _ _ P.complex_d_comp_π_f_zero).Exact :=
   ShortComplex.exact_of_g_is_cokernel _ P.isColimitCokernelCofork
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `lift`. -/
 def liftFOne {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y) (Q : ProjectiveResolution Z) :
     P.complex.X 1 ⟶ Q.complex.X 1 :=
@@ -232,6 +234,7 @@ def ProjectiveResolution.iso {X : C} (P : ProjectiveResolution X) :
       (HomotopyCategory.quotient _ _).obj P.complex :=
   HomotopyCategory.isoOfHomotopyEquiv (homotopyEquiv _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ProjectiveResolution.iso_inv_naturality {X Y : C} (f : X ⟶ Y)
     (P : ProjectiveResolution X) (Q : ProjectiveResolution Y)
@@ -256,6 +259,7 @@ end
 
 variable [EnoughProjectives C]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 theorem exact_d_f {X Y : C} (f : X ⟶ Y) :
     (ShortComplex.mk (d f) f (by simp)).Exact := by
@@ -307,6 +311,7 @@ lemma ofComplex_exactAt_succ (n : ℕ) :
 instance (n : ℕ) : Projective ((ofComplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Projective.projective_over
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In any abelian category with enough projectives,
 `ProjectiveResolution.of Z` constructs a projective resolution of the object `Z`.
 -/

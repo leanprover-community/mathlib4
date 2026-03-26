@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.Nakayama
 
-import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
 
@@ -34,6 +33,7 @@ namespace IsLocalRing
 local notation "p" => maximalIdeal R
 local notation "pS" => Ideal.map (algebraMap R S) p
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotient_span_eq_top_iff_span_eq_top (s : Set S) :
     span (R ⧸ p) ((Ideal.Quotient.mk (I := pS)) '' s) = ⊤ ↔ span R s = ⊤ := by
   have H : (span (R ⧸ p) ((Ideal.Quotient.mk (I := pS)) '' s)).restrictScalars R =
@@ -49,7 +49,7 @@ theorem quotient_span_eq_top_iff_span_eq_top (s : Set S) :
     · rw [Ideal.smul_top_eq_map]
       rintro x -
       have : LinearMap.ker (IsScalarTower.toAlgHom R S (S ⧸ pS) : S →ₗ[R] S ⧸ pS) =
-          restrictScalars R pS := by
+          Submodule.restrictScalars R pS := by
         ext; simp [Ideal.Quotient.eq_zero_iff_mem]
       rw [← this, ← comap_map_eq, mem_comap, ← H, hs, restrictScalars_top]
       exact mem_top
