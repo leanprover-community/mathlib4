@@ -885,8 +885,8 @@ theorem image_eq_preimage_of_leftInvOn_injOn_mapsTo {f : α → β} {g : β → 
     (hgf : LeftInvOn g f s) (ginj : Set.InjOn g (g ⁻¹' s)) : image f s = preimage g s := by
   ext x
   constructor
-  · rintro ⟨y, hy, rfl⟩
-    rw [← hyx, hgf hy]; exact hy
+  · rintro ⟨y, hy, hyx⟩
+    rw [mem_preimage, ← hyx, hgf hy]; exact hy
   · intro hx
     have : ∀ y ∈ s, f y ∈ (g ⁻¹' s) := by intro y hy; simpa [mem_preimage, hgf hy] using hy
     use g x
