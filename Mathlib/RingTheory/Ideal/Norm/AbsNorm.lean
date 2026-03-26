@@ -478,6 +478,7 @@ theorem Int.ideal_span_absNorm_eq_self (J : Ideal ℤ) :
   obtain ⟨g, rfl⟩ := IsPrincipalIdealRing.principal J
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Int.prime_absNorm (J : Ideal ℤ) :
     (absNorm J).Prime ↔ Prime J := by
