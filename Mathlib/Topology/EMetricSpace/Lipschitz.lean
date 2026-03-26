@@ -123,9 +123,6 @@ lemma Set.MapsTo.lipschitzOnWith_iff_restrict {t : Set β} (h : MapsTo f s t) :
 
 alias ⟨LipschitzOnWith.mapsToRestrict, _⟩ := Set.MapsTo.lipschitzOnWith_iff_restrict
 
-@[deprecated (since := "2025-09-05")]
-alias LipschitzOnWith.to_restric_mapsTo := LipschitzOnWith.mapsToRestrict
-
 end PseudoEMetricSpace
 
 namespace LipschitzWith

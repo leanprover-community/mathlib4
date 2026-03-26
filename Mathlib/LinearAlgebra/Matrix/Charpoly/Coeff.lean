@@ -41,6 +41,7 @@ noncomputable section
 universe u v w z
 
 open Finset Matrix Polynomial
+open scoped Ring
 
 variable {R : Type u} [CommRing R]
 variable {n G : Type v} [DecidableEq n] [Fintype n]
@@ -311,7 +312,7 @@ lemma reverse_charpoly (M : Matrix n n R) :
   simp [t_inv, map_sub, map_one, map_mul, t, smul_eq_diagonal_mul]
 
 theorem charpoly_inv (A : Matrix n n R) (h : IsUnit A) :
-    A⁻¹.charpoly = (-1) ^ Fintype.card n * C (Ring.inverse A.det) * A.charpolyRev := by
+    A⁻¹.charpoly = (-1) ^ Fintype.card n * C A.det⁻¹ʳ * A.charpolyRev := by
   have : Invertible A := h.invertible
   calc
   _ = (scalar n X - C.mapMatrix A⁻¹).det := rfl

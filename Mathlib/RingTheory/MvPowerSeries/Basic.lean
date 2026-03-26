@@ -93,32 +93,32 @@ open Finsupp
 variable {σ R : Type*}
 
 instance [Inhabited R] : Inhabited (MvPowerSeries σ R) :=
-  ⟨fun _ => default⟩
+  inferInstanceAs <| Inhabited ((σ →₀ ℕ) → R)
 
 instance [Zero R] : Zero (MvPowerSeries σ R) :=
-  Pi.instZero
+  inferInstanceAs <| Zero ((σ →₀ ℕ) → R)
 
 instance [AddMonoid R] : AddMonoid (MvPowerSeries σ R) :=
-  Pi.addMonoid
+  inferInstanceAs <| AddMonoid ((σ →₀ ℕ) → R)
 
 instance [AddGroup R] : AddGroup (MvPowerSeries σ R) :=
-  Pi.addGroup
+  inferInstanceAs <| AddGroup ((σ →₀ ℕ) → R)
 
 instance [AddCommMonoid R] : AddCommMonoid (MvPowerSeries σ R) :=
-  Pi.addCommMonoid
+  inferInstanceAs <| AddCommMonoid ((σ →₀ ℕ) → R)
 
 instance [AddCommGroup R] : AddCommGroup (MvPowerSeries σ R) :=
-  Pi.addCommGroup
+  inferInstanceAs <| AddCommGroup ((σ →₀ ℕ) → R)
 
 instance [Nontrivial R] : Nontrivial (MvPowerSeries σ R) :=
-  Function.nontrivial
+  inferInstanceAs <| Nontrivial ((σ →₀ ℕ) → R)
 
 instance {A} [Semiring R] [AddCommMonoid A] [Module R A] : Module R (MvPowerSeries σ A) :=
-  Pi.module _ _ _
+  inferInstanceAs <| Module R ((σ →₀ ℕ) → A)
 
 instance {A S} [Semiring R] [Semiring S] [AddCommMonoid A] [Module R A] [Module S A] [SMul R S]
     [IsScalarTower R S A] : IsScalarTower R S (MvPowerSeries σ A) :=
-  Pi.isScalarTower
+  inferInstanceAs <| IsScalarTower R S ((σ →₀ ℕ) → A)
 
 section Semiring
 

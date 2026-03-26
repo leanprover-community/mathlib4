@@ -108,18 +108,11 @@ theorem image_preimage [DecidableEq β] (f : α → β) (s : Finset β) [∀ x, 
     simp only [coe_image, coe_preimage, coe_filter, Set.image_preimage_eq_inter_range,
       ← Set.sep_mem_eq]; rfl
 
-theorem preimage_eq_image_invFunOn_of_inj_mapsTo_rightInv {α β : Type*} [DecidableEq α] {f : α → β}
-    {g : β → α} {s : Finset β} (finj : Set.InjOn f (f ⁻¹' s)) (fmt : Set.MapsTo f (f ⁻¹' s) s)
-    (hg : Set.RightInvOn g f s) : s.preimage f finj = s.image g := by
-  ext x
-  simp only [mem_preimage, mem_image]
-  constructor
-  · intro hx
-    have : ∀ y ∈ s, g y ∈ (f ⁻¹' s) := by intro y hy; simpa [hg hy] using hy
-    exact ⟨f x, ⟨hx, (Set.InjOn.rightInvOn_of_leftInvOn finj hg fmt this hx)⟩⟩
-  · intro hx
-    obtain ⟨y, hy, hyx⟩ := hx
-    rw [← hyx, hg hy]; exact hy
+theorem image_eq_preimage_of_leftInvOn_injOn {α β : Type*} [DecidableEq β] {f : α → β}
+    {g : β → α} {s : Finset α} (hgf : Set.LeftInvOn g f s) (ginj : Set.InjOn g (g ⁻¹' s)) :
+    s.image f = s.preimage g ginj := by
+  simp only [SetLike.ext'_iff, coe_preimage, coe_image]
+  rw [Set.image_eq_preimage_of_leftInvOn_injOn_mapsTo hgf ginj]
 
 theorem image_preimage_of_bij [DecidableEq β] (f : α → β) (s : Finset β)
     (hf : Set.BijOn f (f ⁻¹' ↑s) ↑s) : image f (preimage s f hf.injOn) = s :=

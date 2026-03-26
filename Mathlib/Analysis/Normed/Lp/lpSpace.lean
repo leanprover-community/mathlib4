@@ -286,12 +286,11 @@ subgroup itself, because this allows all the spaces `lp E p` (for varying `p`) t
 the same ambient group, which permits lemma statements like `lp.monotone` (below). -/
 @[nolint unusedArguments]
 def PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] : Type _ :=
-  ∀ i, E i --deriving AddCommGroup
-
-instance : AddCommGroup (PreLp E) := by unfold PreLp; infer_instance
+  ∀ i, E i
+deriving AddCommGroup
 
 instance PreLp.unique [IsEmpty α] : Unique (PreLp E) :=
-  Pi.uniqueOfIsEmpty E
+  inferInstanceAs <| Unique (∀ _, _)
 
 /-- lp space
 The `p=∞` case has notation `ℓ^∞(ι, E)` resp. `ℓ^∞(ι)` (for `E = ℝ`) in the `lp` namespace. -/
@@ -306,11 +305,10 @@ def lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : A
 
 namespace lp
 
-instance : CoeOut (lp E p) (∀ i, E i) :=
-  ⟨Subtype.val (α := ∀ i, E i)⟩
-
+-- TODO: this instance is bad because it inserts `Subtype.val` as the casting function,
+-- which abuses definitional equality.
 instance coeFun : CoeFun (lp E p) fun _ => ∀ i, E i :=
-  ⟨fun f => (f : ∀ i, E i)⟩
+  ⟨Subtype.val (α := ∀ i, E i)⟩
 
 @[ext]
 theorem ext {f g : lp E p} (h : (f : ∀ i, E i) = g) : f = g :=
@@ -350,10 +348,9 @@ def coeFnAddMonoidHom : lp E p →+ (∀ i, E i) where
 @[simp]
 theorem coeFnAddMonoidHom_apply (x : lp E p) : coeFnAddMonoidHom E p x = ⇑x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
-    ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, ⇑(f i) := by
-  simp
+    ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, ⇑(f i) :=
+  (lp E p).val_finset_sum f s
 
 @[simp]
 theorem coeFn_sub (f g : lp E p) : ⇑(f - g) = f - g :=
@@ -386,11 +383,7 @@ theorem norm_rpow_eq_tsum (hp : 0 < p.toReal) (f : lp E p) :
   rw [norm_eq_tsum_rpow hp, ← Real.rpow_mul]
   · field_simp
     simp
-  apply tsum_nonneg
-  intro i
-  calc
-    (0 : ℝ) = (0 : ℝ) ^ p.toReal := by rw [Real.zero_rpow hp.ne']
-    _ ≤ _ := by gcongr; apply norm_nonneg
+  positivity
 
 theorem hasSum_norm (hp : 0 < p.toReal) (f : lp E p) :
     HasSum (fun i => ‖f i‖ ^ p.toReal) (‖f‖ ^ p.toReal) := by
@@ -459,7 +452,7 @@ theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
     simpa only [coeFn_neg, Pi.neg_apply, _root_.norm_neg] using lp.hasSum_norm hp f
 
 instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) :=
-  AddGroupNorm.toNormedAddCommGroup
+  fast_instance% AddGroupNorm.toNormedAddCommGroup
     { toFun := norm
       map_zero' := norm_zero
       neg' := norm_neg
@@ -558,16 +551,16 @@ variable [NormedRing 𝕜] [NormedRing 𝕜']
 variable [∀ i, Module 𝕜 (E i)] [∀ i, Module 𝕜' (E i)]
 
 instance : Module 𝕜 (PreLp E) :=
-  Pi.module α E 𝕜
+  inferInstanceAs <| Module 𝕜 (∀ i, E i)
 
 instance [∀ i, SMulCommClass 𝕜' 𝕜 (E i)] : SMulCommClass 𝕜' 𝕜 (PreLp E) :=
-  Pi.smulCommClass
+  inferInstanceAs <| SMulCommClass 𝕜' 𝕜 (∀ i, E i)
 
 instance [SMul 𝕜' 𝕜] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] : IsScalarTower 𝕜' 𝕜 (PreLp E) :=
-  Pi.isScalarTower
+  inferInstanceAs <| IsScalarTower 𝕜' 𝕜 (∀ i, E i)
 
 instance [∀ i, Module 𝕜ᵐᵒᵖ (E i)] [∀ i, IsCentralScalar 𝕜 (E i)] : IsCentralScalar 𝕜 (PreLp E) :=
-  Pi.isCentralScalar
+  inferInstanceAs <| IsCentralScalar 𝕜 (∀ i, E i)
 
 variable [∀ i, IsBoundedSMul 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜' (E i)]
 
@@ -587,7 +580,7 @@ theorem coe_lpSubmodule : (lpSubmodule 𝕜 E p).toAddSubgroup = lp E p :=
   rfl
 
 instance : Module 𝕜 (lp E p) :=
-  { (lpSubmodule 𝕜 E p).module with }
+  inferInstanceAs <| Module 𝕜 (lpSubmodule 𝕜 E p)
 
 @[simp]
 theorem coeFn_smul (c : 𝕜) (f : lp E p) : ⇑(c • f) = c • ⇑f :=
@@ -707,7 +700,7 @@ variable [Star 𝕜] [NormedRing 𝕜]
 variable [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
 
 instance : StarModule 𝕜 (lp E p) where
-  star_smul _r _f := ext <| star_smul (A := ∀ i, E i) _ _
+  star_smul _r _f := ext <| star_smul (R := 𝕜) (A := ∀ i, E i) _ _
 
 end NormedStarGroup
 
