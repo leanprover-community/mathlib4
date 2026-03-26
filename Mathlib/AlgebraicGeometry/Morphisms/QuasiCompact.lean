@@ -204,10 +204,11 @@ instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] [CompactSpace X] : Compact
   QuasiCompact.compactSpace_of_compactSpace (pullback.fst _ _)
 
 lemma compactSpace_iff_exists :
-    CompactSpace X ↔ ∃ R, ∃ f : Spec R ⟶ X, Function.Surjective f := by
-  refine ⟨fun h ↦ ?_, fun ⟨R, f, hf⟩ ↦ ⟨hf.range_eq ▸ isCompact_range f.continuous⟩⟩
-  let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
-  exact ⟨Γ(∐ 𝒰.X, ⊤), (∐ 𝒰.X).isoSpec.inv ≫ Sigma.desc 𝒰.f, Surjective.surj⟩
+    CompactSpace X ↔ ∃ R, ∃ f : Spec R ⟶ X, Function.Surjective f where
+  mp _ := let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
+    ⟨Γ(∐ 𝒰.X, ⊤), (∐ 𝒰.X).isoSpec.inv ≫ Sigma.desc 𝒰.f, Surjective.surj⟩
+  mpr := fun ⟨_, f, hf⟩ ↦ ⟨hf.range_eq ▸ isCompact_range f.continuous⟩
+
 
 lemma isCompact_iff_exists {U : X.Opens} :
     IsCompact (U : Set X) ↔ ∃ R, ∃ f : Spec R ⟶ X, Set.range f = U := by
