@@ -50,18 +50,12 @@ instance : StochHom.IsStableUnderBraiding where
   comp_mem κ η hκ hη := by
     dsimp [CategoryStruct.comp]
     infer_instance
-  associator_hom_mem X Y Z := by
-    exact Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
-  associator_inv_mem X Y Z := by
-    exact Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
-  leftUnitor_hom_mem X := by
-    exact Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
-  leftUnitor_inv_mem X := by
-    exact Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
-  rightUnitor_hom_mem X := by
-    exact Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
-  rightUnitor_inv_mem X := by
-    exact Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
+  associator_hom_mem X Y Z := Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
+  associator_inv_mem X Y Z := Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
+  leftUnitor_hom_mem X := Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
+  leftUnitor_inv_mem X := Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
+  rightUnitor_hom_mem X := Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
+  rightUnitor_inv_mem X := Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
   braiding_hom_mem X Y := Kernel.instIsMarkovKernelProdSwap
   braiding_inv_mem X Y := Kernel.instIsMarkovKernelProdSwap
 
@@ -72,10 +66,8 @@ instance {X} : StochHom.IsStableUnderComonoid X where
 /-- `Stoch` is the wide subcategory of `SFinKer` with Markov-kernel morphisms. -/
 abbrev Stoch := WideSubcategory StochHom
 
+instance {X Y : Stoch} (κ : X ⟶ Y) : IsMarkovKernel κ.hom.hom := κ.2
+
 noncomputable
 instance : MarkovCategory Stoch.{u} where
-  discard_natural κ := by
-    ext : 2
-    simp only [WideSubcategory.tensorUnit_obj, tensorUnit_carrier, WideSubcategory.comp_def]
-    have : IsMarkovKernel κ.1.1 := κ.2
-    exact κ.1.1.comp_discard
+  discard_natural κ := by ext : 2; simp
