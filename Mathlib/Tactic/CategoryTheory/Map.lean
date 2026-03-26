@@ -101,8 +101,6 @@ def mapExprMVars (pf : Expr) : MetaM Expr := do
 def mapExprElab (pf : Expr) : TermElabM Expr :=
   liftMetaM <| mapExprMVars pf
 
-syntax toDualOpt := " +" &"to_dual"
-
 /--
 Adding `@[map]` to a lemma named `H` of shape `∀ .., f = g`, where `f` and `g` are morphisms
 in some category `C`, creates a new lemma named `H_map` of the form
@@ -112,21 +110,17 @@ in some category `C`, creates a new lemma named `H_map` of the form
 Use `@[map (attr := simp)]` to mark both the original lemma and `H_map` as `simp` lemmas, and
 `@[reassoc (attr := map)]` to generate `_map` versions of both the original lemma the reassociated
 version.
-
-If the original declaration is tagged with `to_dual`, then `H_map` gets `@[to_dual none]`. In the
-rare case that only `H_map` should be tagged with `to_dual`, use `@[map +to_dual]`.
 -/
-syntax (name := map) "map" (toDualOpt)? optAttrArg : attr
+syntax (name := map) "map" optAttrArg : attr
 
 initialize registerBuiltinAttribute {
   name := `map
   descr := ""
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
-  | `(attr| map $[$toDual:toDualOpt]? $optAttr) => MetaM.run' do
+  | `(attr| map $optAttr) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`map` can only be used as a global attribute"
-    let toDual := toDual.isSome || (Translate.findTranslation? (← getEnv) ToDual.data src).isSome
     let tgt := src.appendAfter "_map"
     addRelatedDecl src tgt ref optAttr fun value levels => do
       Term.TermElabM.run' <| Term.withSynthesize do
@@ -136,9 +130,6 @@ initialize registerBuiltinAttribute {
         let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) pf
         let outLevels := tgtLevelNames.toList ++ r.newParamNames.toList
         pure (r.expr, outLevels)
-    if toDual then
-      liftCommandElabM <| Command.elabCommand <| ←
-        `(command| attribute [to_dual none] $(mkIdent tgt))
   | _ => throwUnsupportedSyntax }
 
 /--

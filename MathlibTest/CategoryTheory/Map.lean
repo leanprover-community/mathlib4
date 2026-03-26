@@ -45,6 +45,16 @@ lemma comp_eq_id {x y : C} (f : x ⟶ y) (g : y ⟶ x) (w : f ≫ g = 𝟙 _) :
 #guard_msgs in
 #check comp_eq_id_map
 
+@[to_dual (attr := map) comp_map_dual]
+lemma comp_map_to_dual {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) :
+    f ≫ g = h := w
+
+/-- info: Tests.Map.comp_map_dual_map.{u✝, v✝, u_1, u_2} {C : Type u_1} [Category.{u_2, u_1} C] {x y z : C} (f : y ⟶ x)
+  (g : z ⟶ y) (h : z ⟶ x) (w : g ≫ f = h) {D : Type u✝} [instD : Category.{v✝, u✝} D] (F : C ⥤ D) :
+  F.map g ≫ F.map f = F.map h -/
+#guard_msgs in
+#check comp_map_dual_map
+
 /-!
 `map_of%` pushes `Functor.map` through an equality and applies `simp only [Functor.map_comp, Functor.map_id]` on each
 side.
