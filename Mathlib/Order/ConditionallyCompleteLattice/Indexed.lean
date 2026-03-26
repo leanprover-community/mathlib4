@@ -146,6 +146,20 @@ theorem le_ciSup {f : ι → α} (H : BddAbove (range f)) (c : ι) : f c ≤ iSu
 theorem le_ciSup_of_le {f : ι → α} (H : BddAbove (range f)) (c : ι) (h : a ≤ f c) : a ≤ iSup f :=
   le_trans h (le_ciSup H c)
 
+/-- If the set of all `f i j` is bounded above, then so is the set of the supremums of every row -/
+theorem BddAbove.range_iSup_of_iUnion_range {κ : ι → Sort*} {f : ∀ i, κ i → α}
+    (H : BddAbove <| ⋃ i, range (f i)) : BddAbove <| range fun i ↦ ⨆ j, f i j := by
+  have ⟨a, h⟩ := H
+  refine ⟨a ⊔ (sSup ∅), fun x ⟨i, hx⟩ ↦ hx ▸ ?_⟩
+  cases isEmpty_or_nonempty <| κ i
+  · exact iSup_of_empty' (f i) ▸ le_sup_right
+  exact ciSup_le fun j ↦ le_sup_of_le_left <| h ⟨_, ⟨i, rfl⟩, ⟨j, rfl⟩⟩
+
+theorem le_ciSup₂ {κ : ι → Sort*} {f : ∀ i, κ i → α} (H : BddAbove <| ⋃ i, range (f i)) (i : ι)
+    (j : κ i) : f i j ≤ ⨆ (i) (j), f i j :=
+  le_ciSup_of_le H.range_iSup_of_iUnion_range i <|
+    le_ciSup (H.mono <| subset_iUnion (range <| f ·) i) j
+
 /-- The indexed suprema of two functions are comparable if the functions are pointwise comparable -/
 @[gcongr low]
 theorem ciSup_mono {f g : ι → α} (B : BddAbove (range g)) (H : ∀ x, f x ≤ g x) :
@@ -174,6 +188,20 @@ theorem ciInf_le {f : ι → α} (H : BddBelow (range f)) (c : ι) : iInf f ≤ 
 theorem ciInf_le_of_le {f : ι → α} (H : BddBelow (range f)) (c : ι) (h : f c ≤ a) : iInf f ≤ a :=
   le_ciSup_of_le (α := αᵒᵈ) H c h
 
+/-- If the set of all `f i j` is bounded below, then so is the set of the infimums of every row -/
+theorem BddBelow.range_iInf_of_iUnion_range {κ : ι → Sort*} {f : ∀ i, κ i → α}
+    (H : BddBelow <| ⋃ i, range (f i)) : BddBelow <| range fun i ↦ ⨅ j, f i j := by
+  have ⟨a, h⟩ := H
+  refine ⟨a ⊓ (sInf ∅), fun x ⟨i, hx⟩ ↦ hx ▸ ?_⟩
+  cases isEmpty_or_nonempty <| κ i
+  · exact iInf_of_isEmpty (f i) ▸ inf_le_right
+  exact le_ciInf fun j ↦ inf_le_of_left_le <| h ⟨_, ⟨i, rfl⟩, ⟨j, rfl⟩⟩
+
+theorem ciInf₂_le {κ : ι → Sort*} {f : ∀ i, κ i → α} (H : BddBelow <| ⋃ i, range (f i)) (i : ι)
+    (j : κ i) : ⨅ (i) (j), f i j ≤ f i j :=
+  ciInf_le_of_le H.range_iInf_of_iUnion_range i <|
+    ciInf_le (H.mono <| subset_iUnion (range <| f ·) i) j
+
 theorem ciInf_set_le {f : β → α} {s : Set β} (H : BddBelow (f '' s)) {c : β} (hc : c ∈ s) :
     ⨅ i : s, f i ≤ f c :=
   le_ciSup_set (α := αᵒᵈ) H hc
@@ -181,6 +209,31 @@ theorem ciInf_set_le {f : β → α} {s : Set β} (H : BddBelow (f '' s)) {c : �
 lemma ciInf_le_ciSup [Nonempty ι] {f : ι → α} (hf : BddBelow (range f)) (hf' : BddAbove (range f)) :
     ⨅ i, f i ≤ ⨆ i, f i :=
   (ciInf_le hf (Classical.arbitrary _)).trans <| le_ciSup hf' (Classical.arbitrary _)
+
+lemma ciSup_prod {f : β × γ → α} (hf : BddAbove (Set.range f)) :
+    ⨆ p, f p = ⨆ b, ⨆ c, f (b, c) := by
+  rcases isEmpty_or_nonempty β
+  · simp [iSup_of_empty']
+  rcases isEmpty_or_nonempty γ
+  · simp [iSup_of_empty']
+  have h₁ : BddAbove (Set.range fun b ↦ ⨆ c, f (b, c)) := by
+    rw [bddAbove_def] at hf ⊢
+    obtain ⟨B, hB⟩ := hf
+    refine ⟨B, fun y hy ↦ ?_⟩
+    obtain ⟨z, rfl⟩ := Set.mem_range.mp hy
+    exact ciSup_le fun c ↦ by grind
+  have h₂ b : BddAbove (Set.range fun c ↦ f (b, c)) := by
+    rw [bddAbove_def] at hf ⊢
+    obtain ⟨B, hB⟩ := hf
+    exact ⟨B, by grind⟩
+  refine eq_of_forall_ge_iff fun c ↦ ?_
+  rw [ciSup_le_iff (bddAbove_iff_subset_Iic.mpr hf), ciSup_le_iff h₁]
+  conv_rhs => enter [b]; rw [ciSup_le_iff (h₂ b)]
+  simp [Prod.forall]
+
+lemma ciInf_prod {f : β × γ → α} (hf : BddBelow (Set.range f)) :
+    ⨅ p, f p = ⨅ b, ⨅ c, f (b, c) :=
+  ciSup_prod (α := αᵒᵈ) hf
 
 /-- Introduction rule to prove that `b` is the supremum of `f`: it suffices to check that `b`
 is larger than `f i` for all `i`, and that this is not the case of any `w<b`.
@@ -217,13 +270,7 @@ theorem ciSup_subtype [Nonempty ι] {p : ι → Prop} [Nonempty (Subtype p)] {f 
     refine le_ciSup (f := (fun i : ι ↦ ⨆ (h : p i), f ⟨i, h⟩)) ?_ i
     simp_rw [ciSup_eq_ite]
     refine (hf.union (bddAbove_singleton (a := sSup ∅))).mono ?_
-    intro
-    simp only [Set.mem_range, Set.union_singleton, Set.mem_insert_iff, Subtype.exists,
-      forall_exists_index]
-    intro b hb
-    split_ifs at hb
-    · exact Or.inr ⟨_, _, hb⟩
-    · simp_all
+    grind
   · refine ciSup_le fun i ↦ ?_
     simp_rw [ciSup_eq_ite]
     split_ifs

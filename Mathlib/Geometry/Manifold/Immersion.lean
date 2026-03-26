@@ -405,11 +405,7 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
     (chart_mem_maximalAtlas y) (chart_mem_maximalAtlas y.val)
   intro x hx
   suffices I ((chartAt H ↑y) ((chartAt H y).symm (I.symm x))) = x by simpa +contextual
-  trans I (I.symm x)
-  · congr 1
-    apply OpenPartialHomeomorph.right_inv
-    simp_all
-  · exact I.right_inv (by simp_all)
+  simp_all
 
 @[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
