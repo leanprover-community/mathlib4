@@ -12,7 +12,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.RelativeMorphism
 /-!
 # Simplicial homotopies
 
-In this file, we define the notion of homotopies (`SSet.Homotopy`) between
+In this file, we define the notion of homotopy (`SSet.Homotopy`) between
 morphisms `f : X ⟶ Y` and `g : X ⟶ Y` of simplicial sets: it involves
 a morphism `X ⊗ Δ[1] ⟶ Y` inducing both `f` and `g`. We show that
 from `H : SSet.Homotopy f g`, we can obtain a combinatorial
@@ -29,45 +29,16 @@ universe u
 
 namespace SSet
 
--- to be moved
-namespace stdSimplex
-
-@[simp]
-lemma δ_objEquiv_symm_apply
-    {n : ℕ} {m : SimplexCategory} (f : .mk (n + 1) ⟶ m) (i : Fin (n + 2)) :
-    (stdSimplex.obj _).δ i (objEquiv.symm f) =
-      (objEquiv (n := m) (m := op ⦋n⦌)).symm (SimplexCategory.δ i ≫ f) := by
-  rfl
-
-@[simp]
-lemma σ_objEquiv_symm_apply
-    {n : ℕ} {m : SimplexCategory} (f : .mk n ⟶ m) (i : Fin (n + 1)) :
-    (stdSimplex.obj _).σ i (objEquiv.symm f) =
-      (objEquiv (n := m) (m := op ⦋n + 1⦌)).symm (SimplexCategory.σ i ≫ f) := by
-  rfl
-
-lemma yonedaEquiv_symm_app_objEquiv_symm {X : SSet.{u}} {n : SimplexCategory}
-    (x : X.obj (op n)) {m : SimplexCategoryᵒᵖ} (f : unop m ⟶ n) :
-    (yonedaEquiv.symm x).app _ (stdSimplex.objEquiv.symm f) =
-      X.map f.op x :=
-  rfl
-
-end stdSimplex
-
 variable {X Y : SSet.{u}}
-
-namespace RelativeMorphism
 
 /-- Morphisms relatively to the `⊥` subcomplexes of `X` and `Y`
 identify to morphisms `X ⟶ Y`. -/
 @[simps]
-def botEquiv :
+def RelativeMorphism.botEquiv :
     RelativeMorphism (⊥ : X.Subcomplex) (⊥ : Y.Subcomplex)
       (Subcomplex.isInitialBot.to _) ≃ (X ⟶ Y) where
   toFun f := f.map
   invFun f := { map := f }
-
-end RelativeMorphism
 
 /-- The type of homotopies between morphisms `X ⟶ Y` of simplicial sets.
 The data consists of a morphism `h : X ⊗ Δ[1] ⟶ Y`. -/
@@ -78,19 +49,13 @@ namespace Homotopy
 
 variable {f g : X ⟶ Y}
 
-section
-
-variable (H : Homotopy f g)
-
 @[reassoc (attr := simp high)]
-lemma h₀ : ι₀ ≫ H.h = f :=
+lemma h₀ (H : Homotopy f g) : ι₀ ≫ H.h = f :=
   RelativeMorphism.Homotopy.h₀ H
 
 @[reassoc (attr := simp high)]
-lemma h₁ : ι₁ ≫ H.h = g :=
+lemma h₁ (H : Homotopy f g) : ι₁ ≫ H.h = g :=
   RelativeMorphism.Homotopy.h₁ H
-
-end
 
 /-- If `H : Homotopy f g` is a homotopy between morphisms of simplicial sets
 `f : X ⟶ Y` and `g : X ⟶ Y` (i.e. `H.h` is a morphism `X ⊗ Δ[1] ⟶ Y` inducing
