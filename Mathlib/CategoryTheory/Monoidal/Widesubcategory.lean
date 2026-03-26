@@ -65,18 +65,12 @@ class IsStableUnderBraiding [BraidedCategory C] (P : MorphismProperty C) : Prop
 
 export IsStableUnderBraiding (braiding_hom_mem braiding_inv_mem)
 
-section IsStableUnderComonoid
-
-variable [BraidedCategory C] (c : C) [ComonObj c]
-
 /-- A braided-stable morphism property stable under comonoid counit and comultiplication. -/
-class IsStableUnderComonoid (P : MorphismProperty C) : Prop where
-  counit_mem (P) : P (ε[c])
-  comul_mem (P) : P (Δ[c])
+class IsStableUnderComonoid (P : MorphismProperty C) (c : C) [ComonObj c] : Prop where
+  counit_mem (P) : P ε[c]
+  comul_mem (P) : P Δ[c]
 
 export IsStableUnderComonoid (counit_mem comul_mem)
-
-end IsStableUnderComonoid
 
 end MorphismProperty
 
