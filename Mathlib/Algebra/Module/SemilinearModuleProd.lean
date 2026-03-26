@@ -97,6 +97,24 @@ lemma prodEquiv_snd (x : (E ×[σ] F)) : (prodEquiv σ E F x).snd = x.snd := rfl
 @[simp] lemma prodEquiv_snd_mem (x : (E ×[σ] F)) (s : Set F) :
     (prodEquiv σ E F x).snd ∈ s ↔ x.snd ∈ s := by simp
 
+instance : Zero (E ×[σ] F) where
+  zero := mk 0 0
+
+@[simp]
+lemma zero_fst : (0 : E ×[σ] F).fst = 0 := rfl
+
+@[simp]
+lemma zero_snd : (0 : E ×[σ] F).snd = 0 := rfl
+
+instance : AddCommMonoid (E ×[σ] F) where
+  add_assoc x y z := by ext <;> simpa using add_assoc _ _ _
+  zero_add x := by ext <;> simp
+  add_zero x := by ext <;> simp
+  nsmul n x := mk (n • x.fst) (n • x.snd)
+  add_comm x y := by ext <;> simpa using add_comm _ _
+  nsmul_zero x := by ext <;> simp
+  nsmul_succ n x := by ext <;> simp [add_smul]
+
 end Add
 
 section AddCommGroup
@@ -113,23 +131,10 @@ lemma neg_fst (x : E ×[σ] F) : (-x).fst = -x.fst := rfl
 @[simp]
 lemma neg_snd (x : E ×[σ] F) : (-x).snd = -x.snd := rfl
 
-instance : Zero (E ×[σ] F) where
-  zero := mk 0 0
-
-@[simp]
-lemma zero_fst : (0 : E ×[σ] F).fst = 0 := rfl
-
-@[simp]
-lemma zero_snd : (0 : E ×[σ] F).snd = 0 := rfl
-
 instance : AddCommGroup (E ×[σ] F) where
-  add_assoc x y z := by ext <;> simpa using add_assoc _ _ _
-  zero_add x := by ext <;> simp
-  add_zero x := by ext <;> simp
   nsmul n x := mk (n • x.fst) (n • x.snd)
   zsmul n x := mk (n • x.fst) (n • x.snd)
   neg_add_cancel x := by ext <;> simp
-  add_comm x y := by ext <;> simpa using add_comm _ _
   zsmul_zero' x := by ext <;> simp
   zsmul_succ' n x := by ext <;> simp [add_smul]
   nsmul_zero x := by ext <;> simp
@@ -141,7 +146,7 @@ end AddCommGroup
 section Module
 
 variable {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
-  {E : Type*} [AddCommGroup E] [Module R E] {F : Type*} [AddCommGroup F] [Module S F]
+  {E : Type*} [AddCommMonoid E] [Module R E] {F : Type*} [AddCommMonoid F] [Module S F]
 
 instance : Module R (E ×[σ] F) where
   mul_smul s t x := by ext <;> simp [mul_smul]
@@ -163,31 +168,31 @@ open Submodule
 variable (s : Submodule R E) (t : Submodule S F)
 
 /-- The product of two submodules as a submodule of `(E ×[σ] F)`. -/
-def prod : Submodule R (E ×[σ] F) where
+def prodₛₗ : Submodule R (E ×[σ] F) where
   carrier := {x | x.fst ∈ s ∧ x.snd ∈ t }
   add_mem' hx hy := ⟨add_mem hx.1 hy.1, add_mem hx.2 hy.2⟩
   zero_mem' := by simp
   smul_mem' c x hx := ⟨s.smul_mem c hx.1, t.smul_mem (σ c) hx.2⟩
 
 @[simp]
-theorem mem_prod {s : Submodule R E} {t : Submodule S F} {p : E ×[σ] F} :
-    p ∈ SemilinearProdModule.prod σ s t ↔ p.fst ∈ s ∧ p.snd ∈ t :=
+theorem mem_prodₛₗ {s : Submodule R E} {t : Submodule S F} {p : E ×[σ] F} :
+    p ∈ SemilinearProdModule.prodₛₗ σ s t ↔ p.fst ∈ s ∧ p.snd ∈ t :=
   Iff.rfl
 
 theorem prod_mono {s₁ s₂ : Submodule R E} {t₁ t₂ : Submodule S F} (hs : s₁ ≤ s₂) (ht : t₁ ≤ t₂) :
-    SemilinearProdModule.prod σ s₁ t₁ ≤ SemilinearProdModule.prod σ s₂ t₂ :=
-  fun _ hx ↦ by rw [mem_prod]; exact ⟨hs hx.1, ht hx.2⟩
+    SemilinearProdModule.prodₛₗ σ s₁ t₁ ≤ SemilinearProdModule.prodₛₗ σ s₂ t₂ :=
+  fun _ hx ↦ by rw [mem_prodₛₗ]; exact ⟨hs hx.1, ht hx.2⟩
 
 @[simp]
 theorem top_prod_top :
-    SemilinearProdModule.prod σ (⊤ : Submodule R E) (⊤ : Submodule S F) = ⊤ :=
+    SemilinearProdModule.prodₛₗ σ (⊤ : Submodule R E) (⊤ : Submodule S F) = ⊤ :=
   ext fun _ => by simp
 
 @[simp]
 theorem bot_prod_bot :
-    SemilinearProdModule.prod σ (⊥ : Submodule R E) (⊥ : Submodule S F) = ⊥ := by
+    SemilinearProdModule.prodₛₗ σ (⊥ : Submodule R E) (⊥ : Submodule S F) = ⊥ := by
   ext x
-  simp only [mem_prod, mem_bot]
+  simp only [mem_prodₛₗ, mem_bot]
   constructor
   · intro h
     ext
@@ -196,15 +201,15 @@ theorem bot_prod_bot :
   · intro h; rw [h]; exact Prod.mk_eq_zero.mp rfl
 
 /-- The product of submodules as `(E ×[σ] F)` is additively isomorphic to their product. -/
-def prodEquivSubmodule (s : Submodule R E) (t : Submodule S F) :
-    SemilinearProdModule.prod σ s t ≃+ s × t where
+def prodEquivSubmoduleₛₗ (s : Submodule R E) (t : Submodule S F) :
+    SemilinearProdModule.prodₛₗ σ s t ≃+ s × t where
   toFun := fun x =>
-    ⟨⟨x.val.fst, ((mem_prod σ).mp x.property).1⟩, x.val.snd, ((mem_prod σ).mp x.property).2⟩
-  invFun := fun x => ⟨mk x.fst x.snd, (mem_prod σ).mpr ⟨x.fst.property, x.snd.property⟩⟩
+    ⟨⟨x.val.fst, ((mem_prodₛₗ σ).mp x.property).1⟩, x.val.snd, ((mem_prodₛₗ σ).mp x.property).2⟩
+  invFun := fun x => ⟨mk x.fst x.snd, (mem_prodₛₗ σ).mpr ⟨x.fst.property, x.snd.property⟩⟩
   map_add' x y := by simp
 
 theorem span_prod_le (s : Set E) (t : Set F) :
-    span R ((prodEquiv σ E F).toFun ⁻¹'  (s ×ˢ t)) ≤ prod σ (span R s) (span S t) := by
+    span R ((prodEquiv σ E F).toFun ⁻¹'  (s ×ˢ t)) ≤ prodₛₗ σ (span R s) (span S t) := by
   apply span_le.mpr
   intro x hx
   simp only [AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, Set.mem_preimage,
@@ -213,18 +218,18 @@ theorem span_prod_le (s : Set E) (t : Set F) :
 
 @[simp]
 theorem prod_inf_prod {p p' : Submodule R E} {q q' : Submodule S F} :
-    prod σ p q ⊓ prod σ p' q' = prod σ (p ⊓ p') (q ⊓ q') := by
+    prodₛₗ σ p q ⊓ prodₛₗ σ p' q' = prodₛₗ σ (p ⊓ p') (q ⊓ q') := by
   ext x; exact ⟨by intro _; simp_all, by intro _; simp_all⟩
 
 @[simp]
 theorem prod_sup_prod {p p' : Submodule R E} {q q' : Submodule S F} :
-    prod σ p q ⊔ prod σ p' q' = prod σ (p ⊔ p') (q ⊔ q') := by
+    prodₛₗ σ p q ⊔ prodₛₗ σ p' q' = prodₛₗ σ (p ⊔ p') (q ⊔ q') := by
   apply le_antisymm
   · rw [sup_le_iff]
     exact ⟨by apply prod_mono <;> exact le_sup_left, by apply prod_mono <;> exact le_sup_right⟩
   · intro x hx
-    rw [mem_prod, mem_sup, mem_sup] at hx
-    simp_rw [mem_sup, mem_prod]
+    rw [mem_prodₛₗ, mem_sup, mem_sup] at hx
+    simp_rw [mem_sup, mem_prodₛₗ]
     obtain ⟨y, hy, z, hz, h⟩ := hx.1
     obtain ⟨y', hy', z', hz', h'⟩ := hx.2
     refine ⟨mk y y', ⟨hy, hy'⟩, mk z z', ⟨hz, hz'⟩, ?_⟩
@@ -381,7 +386,6 @@ abbrev comp_symm_eq_id : RingHomCompTriple (σ.symm : S →+* R) (σ : R →+* S
     @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (comp_symm_eq_id σ)
       (sndₛₗ (σ : R →+* S) E F) (inrₛₗ σ E F) = id := by ext; simp
 
-
 @[simp]
 theorem coe_inlₛₗ :
     (inlₛₗ σ E F : E → E ×[(σ : R →+* S)] F) = fun x => SemilinearProdModule.mk x 0 := rfl
@@ -437,6 +441,12 @@ theorem comp_coprodₛₗ {M₂ : Type*} [AddCommGroup M₂] [Module S M₂] (f 
     f.comp (g₁.coprodₛₗ g₂) = (f.comp g₁).coprodₛₗ (f.comp g₂) :=
   ext fun x => f.map_add (g₁ x.1) (g₂ x.2)
 
+-- This does not make sense because `fstₛₗ σ E F` is `R`-linear but
+-- `coprodₛₗ _ _` is `σ`-semilinear.
+--theorem fstₛₗ_eq_coprodₛₗ : fstₛₗ σ E F = coprodₛₗ LinearMap.id 0 := by ext; simp
+
+theorem sndₛₗ_eq_coprodₛₗ : sndₛₗ σ E F = coprodₛₗ 0 LinearMap.id := by ext; simp
+
 variable {R S : Type*} [Semiring R] [Semiring S] (σ : R ≃+* S)
   (E : Type*) [AddCommGroup E] [Module R E]
   (F : Type*) [AddCommGroup F] [Module S F]
@@ -459,56 +469,82 @@ theorem coprodₛₗ_inrₛₗ (f : E →ₛₗ[(σ : R →+* S)] M) (g : F →�
       = g := by
   ext; simp
 
--- theorem fst_eq_coprod : fst R M M₂ = coprod LinearMap.id 0 := by ext; simp
+@[simp]
+theorem coprodₛₗ_comp_prodₛₗ {N : Type*} [AddCommGroup N] [Module R N]
+    (f : E →ₛₗ[σ] M) (g : F →ₗ[S] M) (f' : N →ₗ[R] E) (g' : N →ₛₗ[σ] F) :
+    (f.coprodₛₗ g).comp (f'.prodₛₗ g') = f.comp f' + g.comp g' := rfl
 
--- theorem snd_eq_coprod : snd R M M₂ = coprod 0 LinearMap.id := by ext; simp
+@[simp]
+theorem coprodₛₗ_map_prodₛₗ (f : E →ₛₗ[(σ : R →+* S)] M) (g : F →ₗ[S] M) (K : Submodule R E)
+    (K' : Submodule S F) :
+    (SemilinearProdModule.prodₛₗ (σ : R →+* S) K K').map (LinearMap.coprodₛₗ f g) =
+      K.map f ⊔ K'.map g :=
+  SetLike.coe_injective <| by
+    simp only [LinearMap.coprodₛₗ_apply, Submodule.coe_sup, Submodule.map_coe]
+    rw [← Set.image2_add, Set.image2_image_left, Set.image2_image_right]
+    ext x
+    simp only [Set.mem_image, SetLike.mem_coe, SemilinearProdModule.mem_prodₛₗ, Set.mem_image2]
+    constructor
+    · intro h
+      obtain ⟨y, hy⟩ := h
+      exact ⟨y.fst, hy.1.1, y.snd, hy.1.2, hy.2⟩
+    · intro h
+      obtain ⟨a, ha, b, hb, hab⟩ := h
+      use SemilinearProdModule.mk a b
 
--- @[simp]
--- theorem coprod_comp_prod (f : M₂ →ₗ[R] M₄) (g : M₃ →ₗ[R] M₄) (f' : M →ₗ[R] M₂) (g' : M →ₗ[R] M₃) :
---     (f.coprod g).comp (f'.prod g') = f.comp f' + g.comp g' :=
---   rfl
+abbrev symm_comp_id_eq :
+    RingHomCompTriple (σ.symm : S →+* R) (RingHom.id R) (σ.symm : S →+* R) where
+  comp_eq := by simp
 
--- @[simp]
--- theorem coprod_map_prod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) (S : Submodule R M)
---     (S' : Submodule R M₂) : (Submodule.prod S S').map (LinearMap.coprod f g) = S.map f ⊔ S'.map g :=
---   SetLike.coe_injective <| by
---     simp only [LinearMap.coprod_apply, Submodule.coe_sup, Submodule.map_coe]
---     rw [← Set.image2_add, Set.image2_image_left, Set.image2_image_right]
---     exact Set.image_prod fun m m₂ => f m + g m₂
+@[simp]
+theorem coprodₛₗ_comp_inlₛₗ_inrₛₗ (f : E ×[(σ : R →+* S)] F →ₛₗ[σ] M) :
+    (f.comp (inlₛₗ σ E F)).coprodₛₗ
+      (@comp _ _ _ _ _ _  _ _ _ _ _ _ _ _ _ _  _ _ (comp_symm_eq_id  σ) f (inrₛₗ σ E F)) = f := by
+  ext x
+  simp only [coprodₛₗ_apply, coe_comp, coe_inlₛₗ, Function.comp_apply, coe_inrₛₗ]
+  rw [← f.map_add]
+  congr; ext <;> simp
 
--- @[simp]
--- theorem coprod_comp_inl_inr (f : M × M₂ →ₗ[R] M₃) :
---     (f.comp (inl R M M₂)).coprod (f.comp (inr R M M₂)) = f := by
---   rw [← comp_coprod, coprod_inl_inr, comp_id]
+instance : RingHomInvPair (σ : R →+* S) (σ.symm : S →+* R) where
+  comp_eq := by simp
+  comp_eq₂ := by simp
 
--- /-- Taking the product of two maps with the same codomain is equivalent to taking the product of
--- their domains.
+instance : RingHomInvPair (σ.symm : S →+* R) (σ : R →+* S) where
+  comp_eq := by simp
+  comp_eq₂ := by simp
 
--- See note [bundled maps over different rings] for why separate `R` and `S` semirings are used. -/
--- @[simps]
--- def coprodEquiv [Module S M₃] [SMulCommClass R S M₃] :
---     ((M →ₗ[R] M₃) × (M₂ →ₗ[R] M₃)) ≃ₗ[S] M × M₂ →ₗ[R] M₃ where
---   toFun f := f.1.coprod f.2
---   invFun f := (f.comp (inl _ _ _), f.comp (inr _ _ _))
---   left_inv f := by simp only [coprod_inl, coprod_inr]
---   right_inv f := by simp only [← comp_coprod, comp_id, coprod_inl_inr]
---   map_add' a b := by
---     ext
---     simp only [Prod.snd_add, add_apply, coprod_apply, Prod.fst_add, add_add_add_comm]
---   map_smul' r a := by
---     dsimp
---     ext
---     simp only [smul_add, smul_apply, coprod_apply]
+/-- Taking the product of two maps with the same codomain is equivalent to taking the product of
+their domains.
 
--- theorem prod_ext_iff {f g : M × M₂ →ₗ[R] M₃} :
---     f = g ↔ f.comp (inl _ _ _) = g.comp (inl _ _ _) ∧ f.comp (inr _ _ _) = g.comp (inr _ _ _) :=
---   (coprodEquiv ℕ).symm.injective.eq_iff.symm.trans Prod.ext_iff
+There is a `Module S (E →ₛₗ[(σ : R →+* S)] M)` structure, and this is a one possible statement. -/
+@[simps]
+def coprodEquivₛₗ [SMulCommClass S S M] :
+    ((E →ₛₗ[(σ : R →+* S)] M) × (F →ₗ[S] M)) ≃ₗ[S]
+      E ×[(σ : R →+* S)] F →ₛₗ[(σ : R →+* S)] M where
+  toFun f := f.1.coprodₛₗ f.2
+  invFun f := (f.comp (inlₛₗ σ E F), f.comp (inrₛₗ σ E F))
+  left_inv f := by simp
+  right_inv f := by simp
+  map_add' a b := by ext; simpa using add_add_add_comm _ _ _ _
+  map_smul' r a := by ext; simp
+
+theorem prodₛₗ_ext_iff [SMulCommClass S S M] {f g : E ×[(σ : R →+* S)] F →ₛₗ[(σ : R →+* S)] M} :
+    f = g ↔
+      f.comp (inlₛₗ _ _ _) = g.comp (inlₛₗ _ _ _) ∧ f.comp (inrₛₗ _ _ _) = g.comp (inrₛₗ σ E F) :=
+  (coprodEquivₛₗ σ E F).symm.injective.eq_iff.symm.trans Prod.ext_iff
 
 end coprodₛₗ
 
 -- prodMap ignored
 
 section Graph
+
+section
+
+variable {R S : Type*} [Semiring R] [Semiring S] {σ : R →+* S}
+  {E : Type*} [AddCommMonoid E] [Module R E]
+  {F : Type*} [AddCommMonoid F] [Module S F]
+  {M : Type*} [AddCommMonoid M] [Module S M]
 
 open LinearMap
 
@@ -529,6 +565,16 @@ def graphₛₗ : Submodule R (E ×[σ] F) where
 theorem mem_graphₛₗ_iff (x : E ×[σ] F) : x ∈ f.graphₛₗ ↔ x.2 = f x.1 :=
   Iff.rfl
 
+end
+
+section
+
+variable {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
+  {E : Type*} [AddCommGroup E] [Module R E]
+  {F : Type*} [AddCommGroup F] [Module S F]
+  {M : Type*} [AddCommGroup M] [Module S M]
+  (f : E →ₛₗ[σ] F)
+
 theorem graphₛₗ_eq_ker_coprodₛₗ : f.graphₛₗ = ker (coprodₛₗ (-f) LinearMap.id) := by
   ext x
   change _ = _ ↔ -f x.1 + x.2 = _
@@ -541,41 +587,79 @@ theorem graphₛₗ_eq_range_prodₛₗ : f.graphₛₗ = range (prodₛₗ Line
   · simp
   · simpa using hx.symm
 
--- section LineTest
+end
 
--- open Set Function
+section LineTest
 
--- variable {R S G H I : Type*}
---   [Semiring R] [Semiring S] {σ : R →+* S} [RingHomSurjective σ]
---   [AddCommMonoid G] [Module R G]
---   [AddCommMonoid H] [Module S H]
---   [AddCommMonoid I] [Module S I]
+open Set Function
 
--- /-- **Vertical line test** for linear maps.
+variable {R S T G H I : Type*}
+  [Semiring R] [Semiring S] [Semiring T] {σ : R →+* S} {ρ : S →+* T} [RingHomSurjective σ]
+  [AddCommMonoid G] [Module R G]
+  [AddCommMonoid H] [Module S H]
+  [AddCommMonoid I] [Module T I]
 
--- Let `f : G → H × I` be a linear (or semilinear) map to a product. Assume that `f` is surjective on
--- the first factor and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` at
--- most once. Then the image of `f` is the graph of some linear map `f' : H → I`. -/
--- lemma LinearMap.exists_range_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surjective (Prod.fst ∘ f))
---     (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 → (f g₁).2 = (f g₂).2) :
---     ∃ f' : H →ₗ[S] I, LinearMap.range f = LinearMap.graph f' := by
---   obtain ⟨f', hf'⟩ :=
---     AddMonoidHom.exists_mrange_eq_mgraph (G := G) (H := H) (I := I) (f := f) hf₁ hf
---   simp only [SetLike.ext_iff, AddMonoidHom.mem_mrange, AddMonoidHom.coe_coe,
---     AddMonoidHom.mem_mgraph] at hf'
---   use
---   { toFun := f'.toFun
---     map_add' := f'.map_add'
---     map_smul' := by
---       intro s h
---       simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, RingHom.id_apply]
---       refine (hf' (s • h, _)).mp ?_
---       rw [← Prod.smul_mk, ← LinearMap.mem_range]
---       apply Submodule.smul_mem
---       rw [LinearMap.mem_range, hf'] }
---   ext x
---   simpa only [mem_range, Eq.comm, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, mem_graph_iff,
---     coe_mk, AddHom.coe_mk, AddMonoidHom.coe_coe, Set.mem_range] using hf' x
+variable {f : G →ₛₗ[σ] H ×[ρ] I} (f' : H →ₛₗ[ρ] I)
+
+#check LinearMap.range f
+#check graphₛₗ f'
+
+/-- **Vertical line test** for linear maps.
+
+Let `f : G → H × I` be a linear (or semilinear) map to a product. Assume that `f` is surjective on
+the first factor and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` at
+most once. Then the image of `f` is the graph of some linear map `f' : H → I`. -/
+lemma exists_range_eq_graphₛₗ {f : G →ₛₗ[σ] H ×[ρ] I}
+    (hf₁ : Surjective (SemilinearProdModule.fst ∘ f))
+    (hf : ∀ g₁ g₂, (f g₁).fst = (f g₂).fst → (f g₁).snd = (f g₂).snd) :
+    ∃ f' : H →ₛₗ[ρ] I, LinearMap.range f = graphₛₗ f' := by
+  have hf₁' : Surjective (Prod.fst ∘ (SemilinearProdModule.prodEquiv ρ H I) ∘ f) := by
+    intro y
+    obtain ⟨x, hx⟩ := hf₁ y
+    use x
+    simp_all
+  have hf' : ∀ g₁ g₂, (((SemilinearProdModule.prodEquiv ρ H I) ∘ f) g₁).fst =
+    (((SemilinearProdModule.prodEquiv ρ H I) ∘ f) g₂).fst →
+    (((SemilinearProdModule.prodEquiv ρ H I) ∘ f) g₁).snd =
+    (((SemilinearProdModule.prodEquiv ρ H I) ∘ f) g₂).snd := by simpa using hf
+  obtain ⟨f', hf'⟩ :=
+    Set.exists_range_eq_graphOn_univ hf₁' hf'
+  have apply_f (x : H) : ∃ (y : G), x = (f y).fst ∧ f' x = (f y).snd := by
+    sorry
+  use
+  { toFun := f'
+    map_add' x y := by
+      sorry
+    map_smul' s x:= by
+      sorry
+  }
+  ext x
+  simp only [mem_range, mem_graphₛₗ_iff, coe_mk, AddHom.coe_mk]
+  constructor
+  · intro h
+    obtain ⟨y, hy⟩ := h
+    have : ⟨x.fst, x.snd⟩ ∈ Set.range ((SemilinearProdModule.prodEquiv ρ H I) ∘ f) := by
+      simp only [Set.mem_range, Function.comp_apply]
+      use y
+      ext
+      · simp only [SemilinearProdModule.prodEquiv_fst]; congr
+      · simp only [SemilinearProdModule.prodEquiv_snd]; congr
+    rw [hf'] at this
+    symm
+    simpa using this
+  · intro h
+    have : ⟨x.fst, x.snd⟩ ∈ graphOn f' univ := by
+      simp only [mem_graphOn, mem_univ, true_and]
+      symm; exact h
+    rw [← hf', Set.mem_range] at this
+    obtain ⟨y, hy⟩ := this
+    use y
+    simp only [Function.comp_apply] at hy
+    rw [SemilinearProdModule.prodEquiv_apply] at hy
+    ext
+    · grind
+    · grind
+
 
 -- /-- **Vertical line test** for linear maps.
 
@@ -621,7 +705,8 @@ theorem graphₛₗ_eq_range_prodₛₗ : f.graphₛₗ = range (prodₛₗ Line
 --   simpa only [range_subtype] using LinearMap.exists_linearEquiv_eq_graph
 --     hG₁.surjective hG₂.surjective fun _ _ ↦ hG₁.injective.eq_iff.trans hG₂.injective.eq_iff.symm
 
--- end LineTest
+end LineTest
+
 end Graph
 
 end LinearMap
