@@ -104,6 +104,10 @@ lemma objMk_apply {n m : ℕ} (f : Fin (m + 1) →o Fin (n + 1)) (i : Fin (m + 1
     objMk.{u} (n := ⦋n⦌) (m := op ⦋m⦌) f i = f i :=
   rfl
 
+lemma objMk_bijective {n : SimplexCategory} {m : SimplexCategoryᵒᵖ} :
+    Function.Bijective (objMk (n := n) (m := m)) :=
+  (objEquiv.trans homEquivOrderHom).symm.bijective
+
 /-- The `m`-simplices of the `n`-th standard simplex are
 the monotone maps from `Fin (m+1)` to `Fin (n+1)`. -/
 def asOrderHom {n} {m} (α : Δ[n].obj m) : OrderHom (Fin (m.unop.len + 1)) (Fin (n + 1)) :=
@@ -255,7 +259,7 @@ def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
     { toFun f := ⟨objMk ((OrderHom.Subtype.val (· ∈ S)).comp
           (e.toOrderEmbedding.toOrderHom.comp f.toOrderHom)), fun _ ↦ by aesop⟩
       invFun := fun ⟨x, hx⟩ ↦ SimplexCategory.Hom.mk
-        { toFun i := e.symm ⟨(objEquiv x).toOrderHom i, hx (by aesop)⟩
+        { toFun i := e.symm ⟨(objEquiv x).toOrderHom i, hx (by simp)⟩
           monotone' i₁ i₂ h := e.symm.monotone (by
             simp only [Subtype.mk_le_mk]
             exact OrderHom.monotone _ h) }

@@ -206,9 +206,6 @@ theorem sum_le_lift_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{max u v}) :
 theorem sum_le_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * ⨆ i, f i := by
   simpa using sum_le_lift_mk_mul_iSup_lift f
 
-@[deprecated (since := "2025-09-04")] alias sum_le_iSup_lift := sum_le_lift_mk_mul_iSup
-@[deprecated (since := "2025-09-04")] alias sum_le_iSup := sum_le_mk_mul_iSup
-
 /-- The lift of a supremum is the supremum of the lifts. -/
 theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
     lift.{u} (sSup s) = sSup (lift.{u} '' s) := by
@@ -324,6 +321,9 @@ theorem one_le_iff_ne_zero {c : Cardinal} : 1 ≤ c ↔ c ≠ 0 := by
 @[simp]
 theorem lt_one_iff_zero {c : Cardinal} : c < 1 ↔ c = 0 := by
   simpa using lt_succ_bot_iff (a := c)
+
+theorem le_one_iff {c : Cardinal} : c ≤ 1 ↔ c = 0 ∨ c = 1 := by
+  simpa using le_succ_bot_iff (a := c)
 
 /-! ### Properties about `aleph0` -/
 
@@ -1044,5 +1044,11 @@ theorem zero_powerlt {a : Cardinal} (h : a ≠ 0) : 0 ^< a = 1 := by
 theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
   convert Cardinal.iSup_of_empty _
   exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_gt
+
+/-- The cardinality of a set is an upper-bound for the amount of elements before the set's mex
+(minimum excluded value) -/
+theorem _root_.WellFounded.cardinalMk_subtype_lt_min_compl_le {r : α → α → Prop}
+    (wf : WellFounded r) {s : Set α} (hs : sᶜ.Nonempty) : #{ x // r x (wf.min sᶜ hs) } ≤ #s :=
+  Cardinal.mk_le_mk_of_subset fun _ ↦ wf.mem_of_lt_min_compl
 
 end Cardinal

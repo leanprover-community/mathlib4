@@ -93,3 +93,35 @@ axiom bar : Nat
 #guard_msgs in recall bar := bar
 
 recall List.cons_append (a : α) (as bs : List α) : (a :: as) ++ bs = a :: (as ++ bs) := rfl
+
+/-- Recalling `Nat.add_comm`. -/
+recall Nat.add_comm (n m : Nat) : n + m = m + n
+
+-- Test that the unused variable linter does not fire on `recall`.
+#guard_msgs in
+recall Eq.symm {α : Sort _} {a b : α} (h : a = b) : b = a
+
+-- Test that `recall` works with different universe variable names (issue #37144).
+universe u v
+class RecallUnivTest (R : Type u) : Prop where
+  test : True
+
+set_option linter.unusedVariables false in
+recall RecallUnivTest (R : Type v) : Prop
+
+-- Test that `recall` works with `Type*`.
+set_option linter.unusedVariables false in
+recall RecallUnivTest (R : Type*) : Prop
+
+-- Test that `recall` works inside namespaces (https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/recall.20doesn.27t.20work.20in.20namespaces/near/430877189)
+namespace RecallTest
+def myDef := 42
+end RecallTest
+
+namespace RecallTest
+recall myDef : Nat
+end RecallTest
+
+-- Test that `recall` works with `open` namespaces.
+open RecallTest in
+recall myDef : Nat
