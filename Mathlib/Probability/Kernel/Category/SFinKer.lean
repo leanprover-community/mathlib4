@@ -159,9 +159,6 @@ instance : MonoidalCategory SFinKer.{u} where
     exact Kernel.parallelComp_comp_parallelComp
   associator_naturality κ₁ κ₂ η := by
     ext : 1; dsimp
-    have := κ₁.2
-    have := κ₂.2
-    have := η.2
     simp only [Kernel.comp_id_parallelComp]
     rw [Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop),
       Kernel.deterministic_comp_eq_map, Kernel.comp_deterministic_eq_comap]
