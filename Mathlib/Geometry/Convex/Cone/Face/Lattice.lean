@@ -41,6 +41,10 @@ section Semiring
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M]
 variable {C C₁ C₂ : PointedCone R M} {F F₁ F₂ : Face C}
 
+-- TODO: This should not be required if we say
+-- `structure Face (C : PointedCone R M) extends toPointedCone : PointedCone R M where`
+-- but it seems like it still is.
+-- see https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Structure.20extensions.20vs.20abbrev.20difference.20in.20dot.20notation/with/581169071
 /-- Converts a face of a pointed cone into a pointed cone. -/
 @[coe]
 abbrev toPointedCone {C : PointedCone R M} (F : Face C) : PointedCone R M := F.toSubmodule
