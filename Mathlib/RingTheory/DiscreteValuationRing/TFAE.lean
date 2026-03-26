@@ -255,6 +255,10 @@ lemma IsDiscreteValuationRing.not_krullDimLE_zero [IsDomain R] [IsDiscreteValuat
       ¬ KrullDimLE 0 R := by
   simp [krullDimLE_iff, ringKrullDim_eq_one R]
 
+open Ring in
+instance [IsDomain R] [IsDiscreteValuationRing R] : KrullDimLE 1 R :=
+    krullDimLE_iff.mpr (IsDiscreteValuationRing.ringKrullDim_eq_one R).le
+
 instance (priority := 100) IsDedekindDomain.isPrincipalIdealRing
     [IsLocalRing R] [IsDedekindDomain R] : IsPrincipalIdealRing R :=
   ((tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain R).out 2 0).mp ‹_›
