@@ -32,7 +32,7 @@ structure FunPropDecl where
   /-- argument index of a function this function property talks about.
   For example, this would be 4 for `@Continuous α β _ _ f` -/
   funArgId : Nat
-  /-- output argument indices -/
+  /-- output argument indices and names -/
   outArgIds : List (Nat × Name)
   deriving Inhabited, BEq, Hashable
 
@@ -42,8 +42,7 @@ structure FunPropDecls where
   decls : DiscrTree FunPropDecl := {}
   deriving Inhabited
 
-set_option linter.style.docString.empty false in
-/-- -/
+/-- Extension storing function properties. -/
 abbrev FunPropDeclsExt := SimpleScopedEnvExtension FunPropDecl FunPropDecls
 
 /-- Extension storing function properties tracked and used by the `fun_prop` attribute and tactic,

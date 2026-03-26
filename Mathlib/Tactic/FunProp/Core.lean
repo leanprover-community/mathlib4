@@ -108,7 +108,7 @@ def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (goal : Goal)
   withTraceNode `Meta.Tactic.fun_prop
     (fun _ => return s!"applying: {← ppOrigin' thmId}") do
 
-  let (_outputs, e) ← goal.mkFreshExpr
+  let e ← goal.mkFreshExpr
 
   if (← isDefEq type e) then
 
@@ -288,8 +288,9 @@ def letCase (goal : Goal) (f : Expr) :
     -- let binding can be pulled out of the lambda function
     if ¬(yValue.hasLooseBVar 0) then
       let body := yBody.swapBVars 0 1
+      let e ← goal.mkFreshExpr
       let e' := mkLet yName yType yValue
-        (goal.expr.setArg (goal.decl.funArgId) (.lam xName xType body xBi))
+        (e.setArg (goal.decl.funArgId) (.lam xName xType body xBi))
       return ← funProp e'
 
     match (yBody.hasLooseBVar 0), (yBody.hasLooseBVar 1) with
@@ -306,7 +307,8 @@ def letCase (goal : Goal) (f : Expr) :
 
     | false, _ =>
       let f := Expr.lam xName xType (yBody.lowerLooseBVars 1 1) xBi
-      funProp (goal.expr.setArg (goal.decl.funArgId) f)
+      let e ← goal.mkFreshExpr
+      funProp (e.setArg (goal.decl.funArgId) f)
 
   | _ => throwError "expected expression of the form `fun x ↦ lam y := ..; ..`"
 
@@ -327,7 +329,7 @@ def applyMorRules (goal : Goal) (fData : FunctionData) :
     applyCompRule goal f g
   | .exact =>
 
-    let candidates ← getMorphismTheorems goal.expr
+    let candidates ← getMorphismTheorems (← goal.mkFreshExpr)
 
     trace[Meta.Tactic.fun_prop]
       "candidate morphism theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
@@ -344,7 +346,7 @@ def applyTransitionRules (goal : Goal) :
     FunPropM (Option Result) := do
   withIncreasedTransitionDepth do
 
-  let candidates ← getTransitionTheorems (← goal.mkFreshExpr).2
+  let candidates ← getTransitionTheorems (← goal.mkFreshExpr)
 
   trace[Meta.Tactic.fun_prop]
     "candidate transition theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
@@ -368,7 +370,7 @@ def removeArgRule (goal : Goal) (fData : FunctionData) :
     FunPropM (Option Result) := do
 
   match h : fData.args.size with
-  | 0 => throwError "fun_prop bug: invalid use of remove arg case {←ppExpr (← goal.mkFreshExpr).2}"
+  | 0 => throwError "fun_prop bug: invalid use of remove arg case {←ppExpr (← goal.mkFreshExpr)}"
   | n + 1 =>
     let arg := fData.args[n]
 
@@ -627,7 +629,7 @@ partial def main (goal : Goal) : FunPropM (Option Result) := do
   -- if function starts with let bindings move them the top of `e` and try again
   if goal.mainFun.isLet then
     return ← funProp (← mapLetTelescope goal.mainFun
-      fun _ b => do pure <| (← goal.mkFreshExpr).2.setArg goal.decl.funArgId b)
+      fun _ b => do pure <| (← goal.mkFreshExpr).setArg goal.decl.funArgId b)
 
   match ← getFunctionData? goal.mainFun (← unfoldNamePred) with
   | .letE f =>
@@ -655,7 +657,7 @@ partial def main (goal : Goal) : FunPropM (Option Result) := do
       | .const .. | .proj .. => do
         constAppCase goal fData
       | _ =>
-        trace[Debug.Meta.Tactic.fun_prop] "unknown case, ctor: {goal.mainFun.ctorName}\n{goal.expr}"
+        trace[Debug.Meta.Tactic.fun_prop] "unknown case, ctor: {goal.mainFun.ctorName}\n{← goal.pp}"
         return none
 
 /-- Wrapper around `main` that does caching. -/

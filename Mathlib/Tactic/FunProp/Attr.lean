@@ -22,6 +22,11 @@ namespace Meta.FunProp
 private def funPropHelpString : String :=
 "`fun_prop` tactic to prove function properties like `Continuous`, `Differentiable`, `IsLinearMap`"
 
+/-- Attribute for marking `fun_prop` definitions and theorems.
+
+For `fun_prop` definition like `HasFDerivAt` you can additionally specify the output argument `f'`
+as `fun_prop out f'`. With this `fun_prop` can solve `HasFDerivAt f ?f' x` by filling the
+metavariable `?f'` first and then proving the proposition.  -/
 syntax (name:=fun_prop) "fun_prop" (&"out" ident*)? : attr
 
 /-- Initialization of `funProp` attribute -/

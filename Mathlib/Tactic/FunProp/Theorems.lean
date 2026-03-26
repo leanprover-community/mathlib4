@@ -401,13 +401,13 @@ form: {toString thm.form} form"
     trace[Meta.Tactic.fun_prop.attr] "\
 morphism theorem: {thm.thmName}
 function property: {thm.funPropName}
-keys: {← thm.keys.mapM (fun (k, l) => do return (k :: (← l.toList)))}"
+keys: {← thm.keys.mapM (fun (k, l) => do return (k, (← l.toList)))}"
     morTheoremsExt.add thm attrKind
   | .transition thm =>
     trace[Meta.Tactic.fun_prop.attr] "\
 transition theorem: {thm.thmName}
 function property: {thm.funPropName}
-keys: {← thm.keys.mapM (fun (k, l) => do return (k :: (← l.toList)))}"
+keys: {← thm.keys.mapM (fun (k, l) => do return (k, (← l.toList)))}"
     transitionTheoremsExt.add thm attrKind
 
 end Meta.FunProp
