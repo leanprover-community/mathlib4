@@ -113,6 +113,22 @@ instance instAddCommMonoid : AddCommMonoid (IntertwiningMap ρ σ) :=
   fast_instance%
   DFunLike.coe_injective.addCommMonoid _ (coe_zero ρ σ) (coe_add ρ σ) (by intro f n; rw [coe_nsmul])
 
+/-- The range of an intertwining map from `V` to `W` is a subrepresentation of `W`. -/
+def range (f : IntertwiningMap ρ σ) : Representation A G (LinearMap.range f.toLinearMap) :=
+    σ.subrepresentation (LinearMap.range f.toLinearMap) <| fun g a h ↦ ⟨(ρ g) h.choose, by
+      simpa [f.isIntertwining] using congr((σ g) $h.choose_spec)⟩
+
+lemma mem_range (f : IntertwiningMap ρ σ) (w : W) :
+    w ∈ LinearMap.range f.toLinearMap ↔ ∃ v, f v = w := by simp
+
+/-- The kernel of an intertwining map from `V` to `W` is a subrepresentation of `V`. -/
+def ker (f : IntertwiningMap ρ σ) : Representation A G (LinearMap.ker f.toLinearMap) :=
+    ρ.subrepresentation (LinearMap.ker f.toLinearMap) <| fun g ↦ by
+      simp +contextual [SetLike.le_def, f.isIntertwining]
+
+lemma mem_ker (f : IntertwiningMap ρ σ) (v : V) :
+    v ∈ LinearMap.ker f.toLinearMap ↔ f v = 0 := by simp
+
 lemma toLinearMap_sum {ι : Type*} (s : Finset ι) (f : ι → IntertwiningMap ρ σ) :
     (∑ i ∈ s, f i : IntertwiningMap ρ σ).toLinearMap = ∑ i ∈ s, (f i).toLinearMap := by
   classical induction s using Finset.induction with
