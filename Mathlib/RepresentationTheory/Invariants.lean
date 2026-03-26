@@ -267,12 +267,10 @@ noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
   map {X Y} f := Rep.ofHom ⟨((invariantsFunctor k S).map ((Rep.resFunctor S.subtype).map f)).hom,
     fun g ↦ by
       ext x
-      simp only [invariantsFunctor_map_hom, hom_ofHom, Representation.quotientToInvariants,
-        LinearMap.comp_codRestrict, LinearMap.codRestrict_apply, LinearMap.coe_comp,
-        LinearMap.coe_coe, IntertwiningMap.coe_mk, Submodule.coe_subtype, Function.comp_apply]
-      -- this change is unnecessary but just for clearness
-      change _ = ((((Y.ρ.toInvariants S).ofQuotient S) g) ((LinearMap.codRestrict _
-          (f.hom.toLinearMap ∘ₗ (invariants (MonoidHom.comp X.ρ S.subtype)).subtype) _) x)).1
+      simp only [IntertwiningMap.coe_eq_toLinearMap, invariantsFunctor_map_hom, hom_ofHom,
+        Representation.quotientToInvariants, LinearMap.comp_codRestrict,
+        LinearMap.codRestrict_apply, LinearMap.coe_comp, IntertwiningMap.coe_toLinearMap,
+        Submodule.coe_subtype, Function.comp_apply]
       induction g using QuotientGroup.induction_on with
       | H g => simp [hom_comm_apply]⟩
 
