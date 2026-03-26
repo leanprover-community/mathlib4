@@ -309,7 +309,7 @@ theorem sp2_lt_sp3 (h : Conditions r p n a q μ) : (se2 h).ncard < (se3 h).ncard
   rw [abs_of_nonneg (by positivity), abs_of_nonneg (by positivity)]
   exact Real.real_sqrt_lt_nat_sqrt_succ
 
-theorem se3_le {h : Conditions r p n a q μ} {x : ℕ} (hx : x ∈ (se3 h)) :
+theorem le_pow_floor_sqrt_se2 {h : Conditions r p n a q μ} {x : ℕ} (hx : x ∈ (se3 h)) :
     x ≤ n ^ ⌊√(se2 h).ncard⌋₊ := by
   unfold se3 f at hx
   simp only [Set.Icc_prod_Icc, Set.mem_image, Set.mem_Icc,
@@ -387,7 +387,7 @@ theorem aux_le (h : Conditions r p n a q μ) :
     _ ≤ max x y := by
       repeat rw [← monomial_one_right_eq_X_pow]
       rw [natDegree_monomial_eq x (one_ne_zero' K), natDegree_monomial_eq y (one_ne_zero' K)]
-    _ ≤ _ := max_le (se3_le hx) (se3_le hy)
+    _ ≤ _ := max_le (le_pow_floor_sqrt_se2 hx) (le_pow_floor_sqrt_se2 hy)
 
 theorem se2_choose_le_sp2 (h : Conditions r p n a q μ) :
     ((se2 h).ncard + a).choose ((se2 h).ncard - 1) ≤ (sp2 h).ncard := by
