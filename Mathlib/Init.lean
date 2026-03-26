@@ -16,6 +16,7 @@ public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.TacticDocumentation
+public import Mathlib.Tactic.Linter.TestLinter
 -- The following import contains the environment extension for the unused tactic linter.
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UnusedTactic
