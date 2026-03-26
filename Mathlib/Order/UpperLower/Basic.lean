@@ -245,12 +245,7 @@ variable [LinearOrder α] {s t : Set α}
 
 @[to_dual]
 theorem IsUpperSet.total (hs : IsUpperSet s) (ht : IsUpperSet t) : s ⊆ t ∨ t ⊆ s := by
-  by_contra! h
-  simp_rw [Set.not_subset] at h
-  obtain ⟨⟨a, has, hat⟩, b, hbt, hbs⟩ := h
-  obtain hab | hba := le_total a b
-  · exact hbs (hs hab has)
-  · exact hat (ht hba hbt)
+  grind [isUpperSet_iff_forall_lt]
 
 @[to_dual]
 theorem IsUpperSet.eq_empty_or_Ici [WellFoundedLT α] (h : IsUpperSet s) :

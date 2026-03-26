@@ -34,7 +34,4 @@ lemma IsCommMonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommMonCat) (α : (F ⋙ f
     Equiv.apply_symm_apply, map_mul, ← α.homEquiv'_comp, op_tensorObj,
     braiding_hom_fst, braiding_hom_snd, _root_.mul_comm]
 
-@[deprecated (since := "2025-09-14")]
-alias IsCommMon.ofRepresentableBy := IsCommMonObj.ofRepresentableBy
-
 end CategoryTheory

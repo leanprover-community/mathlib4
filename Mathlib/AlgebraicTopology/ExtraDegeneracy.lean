@@ -175,8 +175,7 @@ def shift {n : ℕ} {Δ : SimplexCategory} (f : ⦋n⦌ ⟶ Δ) : ⦋n + 1⦌ �
         · subst h₁
           simp only [shiftFun_zero, Fin.zero_le]
         · have h₂ : i₂ ≠ 0 := by
-            intro h₂
-            subst h₂
+            rintro rfl
             exact h₁ (le_antisymm hi (Fin.zero_le _))
           obtain ⟨j₁, hj₁⟩ := Fin.eq_succ_of_ne_zero h₁
           obtain ⟨j₂, hj₂⟩ := Fin.eq_succ_of_ne_zero h₂
