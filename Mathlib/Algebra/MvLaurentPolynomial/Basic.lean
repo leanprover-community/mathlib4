@@ -184,20 +184,6 @@ theorem monomial_mul {d e : σ →₀ ℤ} {r s : R} :
     monomial d r * monomial e s = monomial (d + e) (r * s) :=
   AddMonoidAlgebra.single_mul_single ..
 
-@[simp]
-theorem monomial_mul_monomial_neg (d : σ →₀ ℤ) :
-    monomial d (1 : R) * monomial (-d) 1 = 1 := by
-  rw [monomial_mul, add_neg_cancel, one_mul, ← one_def]
-
-@[simp]
-theorem monomial_neg_mul_monomial (d : σ →₀ ℤ) :
-    monomial (-d) (1 : R) * monomial d 1 = 1 := by
-  rw [mul_comm, monomial_mul_monomial_neg]
-
-theorem isUnit_monomial (d : σ →₀ ℤ) :
-    IsUnit (monomial d (1 : R) : MvLaurentPolynomial σ R) :=
-  ⟨⟨monomial d 1, monomial (-d) 1, monomial_mul_monomial_neg d, monomial_neg_mul_monomial d⟩, rfl⟩
-
 theorem monomial_add_single (d : σ →₀ ℤ) (n : σ) (e : ℕ) (r : R) :
     monomial (d + Finsupp.single n (e : ℤ)) r = monomial d r * X n ^ e := by
   rw [X_pow_eq_monomial, monomial_mul, mul_one]
@@ -225,6 +211,9 @@ theorem monomial_zero' : (monomial (0 : σ →₀ ℤ) : R → MvLaurentPolynomi
 @[simp]
 theorem monomial_eq_zero {d : σ →₀ ℤ} {r : R} : monomial d r = 0 ↔ r = 0 :=
   Finsupp.single_eq_zero
+
+theorem isUnit_monomial (d : σ →₀ ℤ) : IsUnit (monomial d (1 : R) : MvLaurentPolynomial σ R) :=
+  ⟨⟨monomial d 1, monomial (-d) 1, by simp, by simp⟩, rfl⟩
 
 @[simp]
 theorem sum_monomial_eq {A : Type*} [AddCommMonoid A] {d : σ →₀ ℤ} {r : R}
