@@ -604,6 +604,9 @@ theorem coe_prod (a : ι → R) : (↑(∏ i ∈ s, a i : R) : A) = ∏ i ∈ s,
 theorem coe_sum (a : ι → R) : ↑(∑ i ∈ s, a i) = ∑ i ∈ s, (↑(a i) : A) :=
   map_sum (algebraMap R A) a s
 
+instance (priority := 1100) : IsLocalHom (algebraMap R R) where
+  map_nonunit _ h := h
+
 end CommSemiringCommSemiring
 
 end algebraMap
