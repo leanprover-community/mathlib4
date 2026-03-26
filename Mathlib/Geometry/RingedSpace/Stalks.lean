@@ -112,12 +112,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem id (X : PresheafedSpace.{_, _, v} C) (x : X) :
     (𝟙 X : X ⟶ X).stalkMap x = 𝟙 (X.presheaf.stalk x) := by
   dsimp [Hom.stalkMap]
-  simp only [stalkPushforward.id]
-  rw [← map_comp]
-  convert (stalkFunctor C x).map_id X.presheaf
   ext
-  simp only [id_c, id_comp, Pushforward.id_hom_app]
-  rfl
+  simp
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

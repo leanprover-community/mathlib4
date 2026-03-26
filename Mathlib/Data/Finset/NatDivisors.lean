@@ -11,7 +11,7 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.GCDMonoid.Nat
 
 /-!
-# `Nat.divisors` as a multiplicative homomorpism
+# `Nat.divisors` as a multiplicative homomorphism
 
 The main definition of this file is `Nat.divisorsHom : ℕ →* Finset ℕ`,
 exhibiting `Nat.divisors` as a multiplicative homomorphism from `ℕ` to `Finset ℕ`.
