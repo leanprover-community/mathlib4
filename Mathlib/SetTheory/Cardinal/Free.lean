@@ -42,11 +42,7 @@ instance [Nonempty α] : Infinite (FreeGroup α) := by
 instance [Nonempty α] : Infinite (FreeAbelianGroup α) :=
   (FreeAbelianGroup.equivFinsupp α).toEquiv.infinite_iff.2 inferInstance
 
-instance : Infinite (FreeRing α) :=
-  inferInstanceAs <| Infinite (FreeAbelianGroup (FreeMonoid α))
-
-instance : Infinite (FreeCommRing α) :=
-  inferInstanceAs <| Infinite (FreeAbelianGroup (Multiplicative (Multiset α)))
+deriving instance Infinite for FreeRing, FreeCommRing
 
 end Infinite
 
