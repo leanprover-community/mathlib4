@@ -57,17 +57,17 @@ lemma relIndex_nsmul (n : ℕ) (S : AddSubgroup M) [Free ℤ ↥S.toIntSubmodule
 multiplication by `n : ℕ` is injective (when `n ≠ 0`). -/
 lemma distribSMulToLinearMap_injective_of_isTorsionFree [IsTorsionFree ℤ M] {n : ℕ} (hn : n ≠ 0) :
     Function.Injective (DistribSMul.toLinearMap ℤ M n) := by
-    refine LinearMap.ker_eq_bot.mp <| (Submodule.eq_bot_iff _).mpr fun x hx ↦ ?_
-    simp only [LinearMap.mem_ker, DistribSMul.toLinearMap_apply, ← natCast_zsmul] at hx
-    exact (smul_eq_zero_iff_right <| mod_cast hn).mp hx
+  refine LinearMap.ker_eq_bot.mp <| (Submodule.eq_bot_iff _).mpr fun x hx ↦ ?_
+  simp only [LinearMap.mem_ker, DistribSMul.toLinearMap_apply, ← natCast_zsmul] at hx
+  exact (smul_eq_zero_iff_right <| mod_cast hn).mp hx
 
 /-- On an additive group that is torsion-free as a `ℤ`-module, the multiplication-by-`n` map
 is injective (when `n ≠ 0`). -/
 lemma nsmulAddMonoidHom_injective_of_isTorsionFree [IsTorsionFree ℤ M] {n : ℕ} (hn : n ≠ 0) :
     Function.Injective (nsmulAddMonoidHom (α := M) n) := by
-    refine (AddMonoidHom.ker_eq_bot_iff _).mp <| (eq_bot_iff_forall _).mpr fun x hx ↦ ?_
-    simp only [AddMonoidHom.mem_ker, nsmulAddMonoidHom_apply, ← natCast_zsmul] at hx
-    exact (smul_eq_zero_iff_right <| mod_cast hn).mp hx
+  refine (AddMonoidHom.ker_eq_bot_iff _).mp <| (eq_bot_iff_forall _).mpr fun x hx ↦ ?_
+  simp only [AddMonoidHom.mem_ker, nsmulAddMonoidHom_apply, ← natCast_zsmul] at hx
+  exact (smul_eq_zero_iff_right <| mod_cast hn).mp hx
 
 /-- If `A` is a subgroup of finite index of an additive group `M` that is finitely generated
 and torsion-free as a `ℤ`-module, then `A` and `M` have the same rank. -/
