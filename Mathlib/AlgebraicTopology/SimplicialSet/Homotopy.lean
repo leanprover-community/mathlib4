@@ -85,8 +85,7 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     ext k
     · simp [dsimp% SimplexCategory.δ_comp_σ_succ (i := Fin.last n),
         stdSimplex.yonedaEquiv_symm_app_objEquiv_symm.{u}]
-    · rw [stdSimplex.δ_objMk₁_of_le _ _ (by simp)]
-      simp [stdSimplex.objMk₁_apply_eq_zero_iff, ← Fin.castSucc_succ]
+    · simp [stdSimplex.δ_objMk₁_of_le, stdSimplex.objMk₁_apply_eq_zero_iff, ← Fin.castSucc_succ]
   h_succ_comp_δ_castSucc_of_lt {n} i j hij := by
     ext x
     simp only [types_comp_apply, ← SSet.δ_naturality_apply]
