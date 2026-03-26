@@ -39,34 +39,28 @@ abbrev StochHom : MorphismProperty SFinKer := fun _ _ κ => IsMarkovKernel κ.1
 
 instance : StochHom.IsStableUnderBraiding where
   whiskerLeft X Y Z κ hκ := by
-    kernel_cat
+    dsimp [MonoidalCategory.whiskerLeft, StochHom]
     infer_instance
   whiskerRight κ hκ Y := by
-    kernel_cat
+    dsimp [MonoidalCategory.whiskerRight, StochHom]
     infer_instance
   id_mem X := by
-    kernel_cat
+    simp only [SFinKer.id_def]
     infer_instance
   comp_mem κ η hκ hη := by
-    kernel_cat
+    dsimp [CategoryStruct.comp]
     infer_instance
   associator_hom_mem X Y Z := by
-    kernel_cat
     exact Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
   associator_inv_mem X Y Z := by
-    kernel_cat
     exact Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
   leftUnitor_hom_mem X := by
-    kernel_cat
     exact Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
   leftUnitor_inv_mem X := by
-    kernel_cat
     exact Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
   rightUnitor_hom_mem X := by
-    kernel_cat
     exact Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
   rightUnitor_inv_mem X := by
-    kernel_cat
     exact Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
   braiding_hom_mem X Y := Kernel.instIsMarkovKernelProdSwap
   braiding_inv_mem X Y := Kernel.instIsMarkovKernelProdSwap
@@ -81,7 +75,8 @@ abbrev Stoch := WideSubcategory StochHom
 noncomputable
 instance : MarkovCategory Stoch.{u} where
   discard_natural κ := by
-    ext
-    kernel_cat
+    ext : 2
+    simp only [WideSubcategory.tensorUnit_obj, tensorUnit_carrier, WideSubcategory.comp_def,
+      SFinKer.comp_def]
     have : IsMarkovKernel κ.1.1 := κ.2
     exact κ.1.1.comp_discard
