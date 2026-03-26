@@ -211,7 +211,7 @@ lemma induced_latin_rectangle_is_equiv
 
 end Equivalence
 
-@[expose] public section Nonvacuous
+section Nonvacuous
 
 instance Zn_nonempty {n : Nat} [NeZero n] : LatinSquare (ZMod n) (ZMod n) :=
   addGroupToCayleyTable (ZMod n)
