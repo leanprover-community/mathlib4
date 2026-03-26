@@ -155,7 +155,7 @@ def Goal.mkFreshExprWithOutputs (goal : Goal) : MetaM (Array Expr × Expr) := do
 def Goal.mkFreshExpr (goal : Goal) : MetaM Expr := do
   return (← goal.mkFreshExprWithOutputs).2
 
--- e.setArg funPropDecl.funArgId b
+/-- Update main function in fun_prop goal -/
 def Goal.updateMainFun (goal : Goal) (f : Expr) : MetaM Goal := do
   let expr ← lambdaTelescope goal.expr fun xs e =>
     mkLambdaFVars xs (e.setArg goal.decl.funArgId f)
