@@ -192,11 +192,10 @@ lemma Prime.isMaximal_span_singleton [NoZeroDivisors R] [Ring.KrullDimLE 1 R]
     {a : R} (ha : Prime a) : (Ideal.span {a}).IsMaximal :=
   ((Ideal.span_singleton_prime ha.ne_zero).mpr ha).isMaximal_of_ne_bot (by simpa using ha.ne_zero)
 
-lemma Ideal.liesOver_span_iff
-    {A B : Type*} [CommRing A] [IsDomain A] [Ring.KrullDimLE 1 A] [CommRing B] [Algebra A B]
-    {P : Ideal B} {p : A} (hP : P ≠ ⊤) (hp : Prime p) :
-      P.LiesOver (.span {p}) ↔ algebraMap A B p ∈ P := by
-  have hP : P.under A ≠ ⊤ := by exact Ideal.comap_ne_top (algebraMap A B) hP
+lemma Ideal.liesOver_span_iff [NoZeroDivisors R] [Ring.KrullDimLE 1 R] [Algebra R S]
+    {P : Ideal S} {p : R} (hP : P ≠ ⊤) (hp : Prime p) :
+      P.LiesOver (.span {p}) ↔ algebraMap R S p ∈ P := by
+  have hP : P.under S ≠ ⊤ := Ideal.comap_ne_top _ hP
   simp [Ideal.liesOver_iff, Ideal.IsMaximal.eq_iff_le hp.isMaximal_span_singleton hP]
 
 end One
