@@ -5,15 +5,11 @@ Authors: metakunt
 -/
 module
 
-public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Analysis.SpecialFunctions.Log.Base
-public import Mathlib.Data.Finite.Vector
 public import Mathlib.Data.Set.Card.Arithmetic
 public import Mathlib.Data.Sym.Card
-public import Mathlib.Order.BourbakiWitt
 public import Mathlib.Order.Interval.Set.Nat
 public import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
-public import Mathlib.RingTheory.SimpleRing.Principal
 /-!
 # Existence of a polynomially bounded runtime primality testing algorithm
 
