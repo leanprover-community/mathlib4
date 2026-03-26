@@ -48,7 +48,7 @@ lemma analyticOrderAt_eq_succ_iff_deriv_order_eq_pred {z₀ : ℂ} {f : ℂ → 
     cases n' with
     | zero => exact hf.analyticOrderAt_eq_zero.mp Hn' hzero |>.elim
     | succ n'' =>
-      have := horder ▸ Complex.analyticOrderAt_deriv_of_pos hf Hn'
+      have := horder ▸ analyticOrderAt_deriv_of_pos hf Hn'
       norm_cast at this ⊢
       have hchar : ringChar ℂ = 0 := by aesop
       aesop
@@ -66,10 +66,10 @@ lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero {z₀ : ℂ} (n : ℕ) :
       · exact analyticOrderAt_eq_succ_iff_deriv_order_eq_pred hf (hz 0 (by grind))
           (by simpa using ((IH').1 ⟨fun k hk => hz (k + 1) (Nat.succ_lt_succ hk), hnz⟩))
     · refine fun ho ↦ ⟨fun k hk ↦ (analyticOrderAt_ne_zero.mp ?_).2, ?_⟩
-      · grind only [(Complex.analyticOrderAt_iterated_deriv (f:=f) hf k (n := (n + 1))
+      · grind only [(analyticOrderAt_iterated_deriv (f:=f) hf (n := (n + 1))
           ho.symm (by grind) hk.le), Nat.cast_ne_zero]
-      · have := Complex.analyticOrderAt_iterated_deriv (f := f) hf (n + 1) (n := n + 1)
-          ho.symm (by grind) (by grind)
+      · have := analyticOrderAt_iterated_deriv (f := f) hf (k := n + 1) (n := n + 1)
+          ho.symm (by grind) (by omega)
         grind only [AnalyticAt.analyticOrderAt_eq_zero (hf := iterated_deriv hf (n + 1))]
 
 lemma analyticOrderAt_eq_nat_imp_iteratedDeriv_eq_zero {f : ℂ → ℂ} {z₀ : ℂ} (hf : AnalyticAt ℂ f z₀)
