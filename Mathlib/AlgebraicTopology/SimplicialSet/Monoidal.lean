@@ -147,6 +147,7 @@ lemma range_tensorHom {X₁ X₂ Y₁ Y₂ : SSet.{u}} (f₁ : X₁ ⟶ Y₁) (f
     exact ⟨⟨x₁, x₂⟩, rfl⟩
 
 /-- The isomorphism `(A.prod B).toSSet ≅ A.toSSet ⊗ B.toSSet`. -/
+@[simps]
 def prodIso {X Y : SSet.{u}} (A : X.Subcomplex) (B : Y.Subcomplex) :
     (A.prod B).toSSet ≅ A ⊗ B where
   hom := CartesianMonoidalCategory.lift
