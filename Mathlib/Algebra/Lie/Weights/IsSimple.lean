@@ -475,29 +475,27 @@ lemma restr_invtSubmoduleToLieIdeal_eq_iSup (q : Submodule K (Dual K H))
 lemma mem_rootSet_invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap)
     {α : H.root} :
-    α ∈ (invtSubmoduleToLieIdeal q hq).rootSet (H := H) ↔
-      (rootSystem H).root α ∈ q := by
+    α ∈ (invtSubmoduleToLieIdeal q hq).rootSet (H := H) ↔ (rootSystem H).root α ∈ q := by
   set J := invtSubmoduleToLieIdeal q hq
-  rw [LieIdeal.mem_rootSet]
   constructor
   · intro hα_mem; by_contra hα_not
     have hα_nz : (↑α : Weight K H L).IsNonZero := (Finset.mem_filter.mp α.property).2
-    have absurd_eq (χ : Weight K H L) (hχ : ↑χ ∈ q)
-        (heq : (χ : H → K) = ((↑α : Weight K H L) : H → K)) : False :=
-      hα_not (by simpa [rootSystem_root_apply] using DFunLike.coe_injective heq ▸ hχ)
-    have : Disjoint (rootSpace H (↑α : Weight K H L)) (J.restr H) := by
+    have hne (χ : Weight K H L) (hχ : ↑χ ∈ q) :
+        (χ : H → K) ≠ ((↑α : Weight K H L) : H → K) :=
+      fun heq ↦ hα_not (by simpa [rootSystem_root_apply] using DFunLike.coe_injective heq ▸ hχ)
+    have h_le :
+        J.restr H ≤ ⨆ (χ : H → K) (_ : χ ≠ ↑(↑α : Weight K H L)), genWeightSpace L χ := by
       rw [restr_invtSubmoduleToLieIdeal_eq_iSup]
-      refine Disjoint.mono_right ?_ (iSupIndep_genWeightSpace K H L (↑(↑α : Weight K H L)))
-      exact iSup_le fun ⟨β, hβ_mem, hβ_nz⟩ ↦ by
-              rw [sl2SubmoduleOfRoot_eq_sup]
-              exact sup_le (sup_le
-                (le_iSup₂_of_le _ (fun h ↦ (absurd_eq β hβ_mem h).elim) le_rfl)
-                (le_iSup₂_of_le _ (fun h ↦ (absurd_eq (-β)
-                  (by rw [Weight.toLinear_neg]; exact q.neg_mem hβ_mem) h).elim) le_rfl))
-                ((LieSubmodule.map_incl_le.trans (rootSpace_zero_eq K L H).symm.le).trans
-                  (le_iSup₂_of_le 0 (fun h ↦ hα_nz h.symm) le_rfl))
-    exact (↑α : Weight K H L).genWeightSpace_ne_bot L (eq_bot_iff.mpr (le_of_le_of_eq
-      (le_inf le_rfl hα_mem) (disjoint_iff.mp this)))
+      refine iSup_le fun ⟨β, hβ_mem, hβ_nz⟩ ↦ ?_
+      rw [sl2SubmoduleOfRoot_eq_sup]
+      refine sup_le (sup_le ?_ ?_) ?_
+      · exact le_iSup₂_of_le _ (hne β hβ_mem) le_rfl
+      · exact le_iSup₂_of_le _
+          (hne (-β) (by rw [Weight.toLinear_neg]; exact q.neg_mem hβ_mem)) le_rfl
+      · exact (LieSubmodule.map_incl_le.trans (rootSpace_zero_eq K L H).symm.le).trans
+          (le_iSup₂_of_le 0 (fun h ↦ hα_nz h.symm) le_rfl)
+    exact (↑α : Weight K H L).genWeightSpace_ne_bot L (disjoint_self.mp
+      (((iSupIndep_genWeightSpace K H L _).mono_right h_le).mono_right hα_mem))
   · intro hα
     rw [rootSystem_root_apply] at hα
     calc rootSpace H (↑α : Weight K H L)
