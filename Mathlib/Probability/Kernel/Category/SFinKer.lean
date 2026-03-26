@@ -45,6 +45,7 @@ instance : CoeSort SFinKer Type* :=
 
 namespace SFinKer
 
+/-- The morphisms in `SFinKer` from `X` to `Y` are the s-finite kernels from `X` to `Y`. -/
 @[ext]
 structure Hom (X Y : SFinKer.{u}) where
   /-- The underlying morphism. -/
