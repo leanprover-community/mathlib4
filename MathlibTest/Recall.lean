@@ -112,3 +112,16 @@ recall RecallUnivTest (R : Type v) : Prop
 -- Test that `recall` works with `Type*`.
 set_option linter.unusedVariables false in
 recall RecallUnivTest (R : Type*) : Prop
+
+-- Test that `recall` works inside namespaces (https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/recall.20doesn.27t.20work.20in.20namespaces/near/430877189)
+namespace RecallTest
+def myDef := 42
+end RecallTest
+
+namespace RecallTest
+recall myDef : Nat
+end RecallTest
+
+-- Test that `recall` works with `open` namespaces.
+open RecallTest in
+recall myDef : Nat
