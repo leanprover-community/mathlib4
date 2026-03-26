@@ -480,7 +480,7 @@ theorem pow_2_lt_choose {x : ℕ} (h : 2 ≤ x) : 2 ^ (x + 1) < (2 * x + 1).choo
   · grind
   · grind [choose_le_succ, choose_le_middle]
 
-theorem not_aux_le (h : Conditions r p n a q μ) :
+theorem lt_sp2 (h : Conditions r p n a q μ) :
     (n : ℝ) ^ (√(se2 h).ncard) < (sp2 h).ncard := by
   obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
     is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
@@ -572,7 +572,7 @@ theorem not_aux_le (h : Conditions r p n a q μ) :
       exact_mod_cast h2
 
 theorem aux (h : Conditions r p n a q μ) : False := by
-  grind [sp2_le h, not_aux_le h]
+  grind [sp2_le h, lt_sp2 h]
 
 end Rest
 
