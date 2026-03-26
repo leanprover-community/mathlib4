@@ -52,7 +52,7 @@ elab_rules : command
     -- `recall` doesn't introduce new definitions, so suppress the unused variable linter.
     withScope (fun sc => { sc with opts := sc.opts.set `linter.unusedVariables false }) <|
     withoutModifyingEnv do
-    let declName := id.getId
+    let declName ← resolveGlobalConstNoOverload id
     addConstInfo id declName
     let info ← getConstInfo declName
     let declConst : Expr := mkConst declName <| info.levelParams.map Level.param
