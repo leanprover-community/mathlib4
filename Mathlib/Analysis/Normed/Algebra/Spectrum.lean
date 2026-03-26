@@ -173,7 +173,6 @@ section QuasispectrumCompact
 variable {B : Type*} [NonUnitalNormedRing B] [NormedSpace 𝕜 B] [CompleteSpace B]
 variable [IsScalarTower 𝕜 B B] [SMulCommClass 𝕜 B B] [ProperSpace 𝕜]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem _root_.quasispectrum.isCompact (a : B) : IsCompact (quasispectrum 𝕜 a) := by
   rw [Unitization.quasispectrum_eq_spectrum_inr' 𝕜 𝕜,
@@ -733,7 +732,6 @@ theorem upperHemicontinuous_spectrum_nnreal [NormedRing A] [NormedAlgebra ℝ A]
   obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := NNReal.isClosedEmbedding_coe
   exact upperHemicontinuous_spectrum ℝ A |>.isInducing_comp h₁ h₂
 
-set_option backward.isDefEq.respectTransparency false in
 open WithLp in
 /-- The map `a ↦ quasispectrum 𝕜 a` is upper hemicontinuous. -/
 theorem upperHemicontinuous_quasispectrum [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]

@@ -173,7 +173,6 @@ lemma agm_comm : agm x y = agm y x := by
 
 lemma agm_eq_ciInf : agm x y = ⨅ n, (agmSequences x y n).2 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_agmSequences_snd_agm : Tendsto (fun n ↦ (agmSequences x y n).2) atTop (𝓝 (agm x y)) :=
   tendsto_atTop_ciInf agmSequences_snd_antitone (OrderBot.bddBelow _)
 
@@ -194,7 +193,6 @@ lemma bddAbove_range_agmSequences_fst : BddAbove (Set.range fun n ↦ (agmSequen
   simp_rw [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
   exact fun _ ↦ agmSequences_fst_le_snd ..
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The AGM is also the supremum of the geometric means. -/
 lemma agm_eq_ciSup : agm x y = ⨆ n, (agmSequences x y n).1 := by
   refine tendsto_nhds_unique (tendsto_agmSequences_snd_agm.congr_dist ?_)
@@ -204,7 +202,6 @@ lemma agm_eq_ciSup : agm x y = ⨆ n, (agmSequences x y n).1 := by
     rw [dist_comm]
   exact tendsto_dist_agmSequences_atTop_zero
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_agmSequences_fst_agm :
     Tendsto (fun n ↦ (agmSequences x y n).1) atTop (𝓝 (agm x y)) := by
   rw [agm_eq_ciSup]

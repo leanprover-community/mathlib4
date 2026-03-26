@@ -679,7 +679,6 @@ theorem nf_repr_split' : ∀ {o o' m} [NF o], split' o = (o', m) → NF o' ∧ r
       · rw [this]
         simp [mul_add, mul_assoc, add_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem scale_eq_mul (x) [NF x] : ∀ (o) [NF o], scale x o = oadd x 1 0 * o
   | 0, _ => rfl
   | oadd e n a, h => by

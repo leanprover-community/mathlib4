@@ -270,7 +270,6 @@ section CommRing
 variable (R)
 variable [Fintype σ] [CommRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 /- Also holds for a cancellative CommSemiring. -/
 lemma esymmAlgHom_fin_injective (h : n ≤ m) :
     Function.Injective (esymmAlgHom (Fin m) R n) := by

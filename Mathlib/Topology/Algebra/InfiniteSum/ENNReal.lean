@@ -387,7 +387,6 @@ theorem hasSum_iff_tendsto_nat {f : ℕ → ℝ≥0} {r : ℝ≥0} :
   simp only [← ENNReal.coe_finset_sum]
   exact ENNReal.tendsto_coe
 
-set_option backward.isDefEq.respectTransparency false in
 theorem not_summable_iff_tendsto_nat_atTop {f : ℕ → ℝ≥0} :
     ¬Summable f ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop atTop := by
   constructor

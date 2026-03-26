@@ -187,7 +187,6 @@ section LiftingTheExponent
 variable (hp : Nat.Prime p) (hp1 : Odd p)
 include hp hp1
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Lifting the exponent lemma** for odd primes. -/
 theorem Int.emultiplicity_pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x) (n : ℕ) :
     emultiplicity (↑p) (x ^ n - y ^ n) = emultiplicity (↑p) (x - y) + emultiplicity p n := by
@@ -215,7 +214,6 @@ theorem Int.emultiplicity_pow_add_pow {x y : ℤ} (hxy : ↑p ∣ x + y) (hx : �
   rw [← sub_neg_eq_add, ← sub_neg_eq_add, ← Odd.neg_pow hn]
   exact Int.emultiplicity_pow_sub_pow hp hp1 hxy hx n
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Nat.emultiplicity_pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p ∣ x) (n : ℕ) :
     emultiplicity p (x ^ n - y ^ n) = emultiplicity p (x - y) + emultiplicity p n := by
   obtain hyx | hyx := le_total y x
@@ -291,7 +289,6 @@ theorem Int.two_pow_two_pow_sub_pow_two_pow {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x
     Finset.emultiplicity_prod Int.prime_two, add_comm, Nat.cast_one, Finset.sum_const,
     Finset.card_range, nsmul_one, Int.two_pow_two_pow_add_two_pow_two_pow hx hxy]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2 ∣ x) :
     emultiplicity 2 (x ^ n - y ^ n) = emultiplicity 2 (x - y) + emultiplicity (2 : ℤ) n := by
   have hx_odd : Odd x := by rwa [← Int.not_even_iff_odd, even_iff_two_dvd]
@@ -343,7 +340,6 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
     apply Odd.pow
     simp only [← Int.not_even_iff_odd, even_iff_two_dvd, hx, not_false_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : ℕ} (hn : Even n) :
     emultiplicity 2 (x ^ n - y ^ n) + 1 =
       emultiplicity 2 (x + y) + emultiplicity 2 (x - y) + emultiplicity 2 n := by
@@ -364,7 +360,6 @@ namespace padicValNat
 
 variable {x y : ℕ}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : ℕ} (hn : n ≠ 0)
     (hneven : Even n) :
     padicValNat 2 (x ^ n - y ^ n) + 1 =
@@ -394,7 +389,6 @@ lemma pow_two_sub_one_ge (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0) (hneven :
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 include hp hp1
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ} (hn : n ≠ 0) :
     padicValNat p (x ^ n - y ^ n) = padicValNat p (x - y) + padicValNat p n := by
   rw [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
@@ -404,7 +398,6 @@ theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ}
   · exact Nat.sub_ne_zero_of_lt hyx
   · exact Nat.sub_ne_zero_of_lt (Nat.pow_lt_pow_left hyx hn)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
     padicValNat p (x ^ n + y ^ n) = padicValNat p (x + y) + padicValNat p n := by
   rcases y with - | y

@@ -128,7 +128,6 @@ lemma nnnorm_div_eq_max_of_nnnorm_div_ne_nnnorm_div (x y z : S) (h : ‖x / y‖
   simpa only [← NNReal.coe_inj, NNReal.coe_max] using
     norm_div_eq_max_of_norm_div_ne_norm_div _ _ _ (NNReal.coe_injective.ne h)
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma nnnorm_pow_le (x : S) (n : ℕ) :
     ‖x ^ n‖₊ ≤ ‖x‖₊ := by

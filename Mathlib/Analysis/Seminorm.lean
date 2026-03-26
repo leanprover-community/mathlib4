@@ -816,7 +816,6 @@ theorem ball_finset_sup_eq_iInter (p : ι → Seminorm 𝕜 E) (s : Finset ι) (
   simp_rw [ball, iInter_setOf, finset_sup_apply, NNReal.coe_lt_coe,
     Finset.sup_lt_iff (show ⊥ < r from hr), ← NNReal.coe_lt_coe, NNReal.coe_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem closedBall_finset_sup_eq_iInter (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ}
     (hr : 0 ≤ r) : closedBall (s.sup p) x r = ⋂ i ∈ s, closedBall (p i) x r := by
   lift r to NNReal using hr

@@ -991,7 +991,6 @@ lemma sPolynomial_leadingTerm_mul' [NoZeroDivisors R] (p₁ p₂ q₁ q₂ : MvP
   · (obtain rfl | rfl | rfl | rfl := H) <;> simp
   simp [H, leadingTerm, sPolynomial_monomial_mul, degree_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
     {B : Finset ι} {g : ι → MvPolynomial σ R}
     (hd : ∀ b ∈ B,

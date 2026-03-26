@@ -648,7 +648,6 @@ variable [Fact p.Prime] [Fact (¬ IsUnit (p : O))]
 instance : CommRing (PreTilt O p) :=
   inferInstanceAs <| CommRing <| Perfection _ _
 
-set_option backward.isDefEq.respectTransparency false in
 instance : CharP (PreTilt O p) p :=
   inferInstanceAs <| CharP (Perfection _ _) _
 

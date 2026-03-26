@@ -242,7 +242,6 @@ lemma norm_sub_mul_self_le {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOr
     ‖z - y * z‖ ≤ c :=
   nnnorm_sub_mul_self_le z hx₀ hy h (c := ⟨c, hc⟩)
 
-set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 /-- A variant of `norm_sub_mul_self_le` for non-unital algebras that passes to the unitization. -/
 lemma norm_sub_mul_self_le_of_inr {x y : A} (z : A) (hx₀ : 0 ≤ x) (hxy : x ≤ y) (hy₁ : ‖y‖ ≤ 1)

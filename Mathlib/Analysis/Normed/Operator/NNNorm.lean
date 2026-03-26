@@ -164,7 +164,6 @@ theorem sSup_unit_ball_eq_norm (f : E →SL[σ₁₂] F) :
     sSup ((fun x => ‖f x‖) '' ball 0 1) = ‖f‖ := by
   simpa only [NNReal.coe_sSup, Set.image_image] using NNReal.coe_inj.2 f.sSup_unit_ball_eq_nnnorm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sSup_unitClosedBall_eq_nnnorm (f : E →SL[σ₁₂] F) :
     sSup ((fun x => ‖f x‖₊) '' closedBall 0 1) = ‖f‖₊ := by
   have hbdd : ∀ y ∈ (fun x => ‖f x‖₊) '' closedBall 0 1, y ≤ ‖f‖₊ := by
