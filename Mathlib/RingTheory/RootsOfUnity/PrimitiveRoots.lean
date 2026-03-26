@@ -372,10 +372,17 @@ end DivisionCommMonoid
 
 section CommRing
 
-variable [CommRing R] {n : ℕ} {ζ : R}
+variable [CommRing R] {n n' : ℕ} {ζ : R}
 
 theorem sub_one_ne_zero (hn : 1 < n) (hζ : IsPrimitiveRoot ζ n) : ζ - 1 ≠ 0 :=
   sub_ne_zero.mpr <| hζ.ne_one hn
+
+theorem isRoot (hζ : IsPrimitiveRoot ζ n) : (X ^ n - 1 : R[X]).IsRoot ζ := by
+  simp [hζ.pow_eq_one]
+
+theorem isRoot_of_dvd (hζ : IsPrimitiveRoot ζ n) : n ∣ n' → (X ^ n' - 1 : R[X]).IsRoot ζ := by
+  rintro ⟨k, rfl⟩
+  simp [pow_mul, hζ.pow_eq_one]
 
 end CommRing
 
@@ -423,6 +430,10 @@ theorem geom_sum_eq_zero [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk 
     ∑ i ∈ range k, ζ ^ i = 0 := by
   refine eq_zero_of_ne_zero_of_mul_left_eq_zero (sub_ne_zero_of_ne (hζ.ne_one hk).symm) ?_
   rw [mul_neg_geom_sum, hζ.pow_eq_one, sub_self]
+
+theorem isRoot_geom_sum [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
+    (∑ i ∈ range k, X ^ i).IsRoot ζ := by
+  simp [geom_sum_eq_zero hζ hk]
 
 /-- If `1 < k`, then `ζ ^ k.pred = -(∑ i ∈ range k.pred, ζ ^ i)`. -/
 theorem pow_sub_one_eq [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
