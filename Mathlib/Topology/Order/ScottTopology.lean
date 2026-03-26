@@ -217,7 +217,6 @@ theorem isOpen_iff_dirSupInacc [IsScottHausdorff α .univ] : IsOpen s ↔ DirSup
   mpr h := by
     rw [IsScottHausdorff.isOpen_iff (D := .univ)]
     intro t _ ht₀ ht₁ a ha has
-    have := h ht₀ ht₁ ha has
     by_contra! H
     have H : ∀ b : t, ∃ c, b.1 ≤ c ∧ c ∈ t ∧ c ∉ s := by simpa [not_subset, and_assoc] using H
     choose f hf using H
