@@ -206,6 +206,11 @@ theorem gnpowRec_succ (n : ℕ) (a : GradedMonoid A) :
 
 end GMonoid
 
+/-- A tactic to for use as an optional value for `GMonoid.gnpow_zero'`. -/
+macro "apply_gmonoid_gnpowRec_zero_tac" : tactic => `(tactic| apply GMonoid.gnpowRec_zero)
+/-- A tactic to for use as an optional value for `GMonoid.gnpow_succ'`. -/
+macro "apply_gmonoid_gnpowRec_succ_tac" : tactic => `(tactic| apply GMonoid.gnpowRec_succ)
+
 /-- A graded version of `Monoid`
 
 Like `Monoid.npow`, this has an optional `GMonoid.gnpow` field to allow definitional control of
@@ -221,12 +226,12 @@ class GMonoid [AddMonoid ι] extends GMul A, GOne A where
   gnpow : ∀ (n : ℕ) {i}, A i → A (n • i) := GMonoid.gnpowRec
   /-- The zeroth power will yield 1 -/
   gnpow_zero' : ∀ a : GradedMonoid A, GradedMonoid.mk _ (gnpow 0 a.snd) = 1 := by
-    apply GMonoid.gnpowRec_zero
+    apply_gmonoid_gnpowRec_zero_tac
   /-- Successor powers behave as expected -/
   gnpow_succ' :
     ∀ (n : ℕ) (a : GradedMonoid A),
       (GradedMonoid.mk _ <| gnpow n.succ a.snd) = ⟨_, gnpow n a.snd⟩ * a := by
-    apply GMonoid.gnpowRec_succ
+    apply_gmonoid_gnpowRec_succ_tac
 
 /-- `GMonoid` implies a `Monoid (GradedMonoid A)`. -/
 instance GMonoid.toMonoid [AddMonoid ι] [GMonoid A] : Monoid (GradedMonoid A) where
