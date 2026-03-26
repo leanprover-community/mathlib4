@@ -432,7 +432,7 @@ theorem geom_sum_eq_zero [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk 
   rw [mul_neg_geom_sum, hζ.pow_eq_one, sub_self]
 
 theorem isRoot_geom_sum [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
-    ∑ i ∈ range k, X ^ i |>.IsRoot ζ := by
+    (∑ i ∈ range k, X ^ i).IsRoot ζ := by
   simp [geom_sum_eq_zero hζ hk]
 
 /-- If `1 < k`, then `ζ ^ k.pred = -(∑ i ∈ range k.pred, ζ ^ i)`. -/
