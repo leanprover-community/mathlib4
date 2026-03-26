@@ -94,6 +94,7 @@ section Definition
 
 variable [NormedField 𝕜] [NormedRing A] [NormedAlgebra ℝ A] [NormedAlgebra 𝕜 A] [MeasurableSpace 𝕜]
 
+/-- The resolvent transform of a measure of a measure `μ`. -/
 noncomputable
 def resolventTransform (μ : Measure 𝕜) (a : A) :=
   ∫ x, resolvent a x ∂μ
@@ -110,7 +111,7 @@ lemma resolventTransform_zero_measure : resolventTransform (0 : Measure 𝕜) = 
   simp [resolventTransform]
 
 @[simp]
-lemma resolventTransform_dirac [OpensMeasurableSpace 𝕜] [MeasurableSpace A] [CompleteSpace A]
+lemma resolventTransform_dirac [OpensMeasurableSpace 𝕜] [CompleteSpace A]
     (x : 𝕜) (a : A) : resolventTransform (.dirac x) a = resolvent a x := by
   simp [resolventTransform_def]
 
