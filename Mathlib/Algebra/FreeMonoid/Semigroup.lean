@@ -68,6 +68,9 @@ end FreeSemigroup
 
 open FreeSemigroup FreeMonoid WithOne
 
+/--
+The free monoid on `α` is isomorphic to the free semigroup on `α` with a `1` added.
+-/
 @[expose, simps]
 def equivWithOneFreeSemigroup : FreeMonoid α ≃* WithOne (FreeSemigroup α) where
   toFun := lift fun x ↦ ↑(FreeSemigroup.of x)
