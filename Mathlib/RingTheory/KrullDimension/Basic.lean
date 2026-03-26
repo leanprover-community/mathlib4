@@ -170,6 +170,16 @@ lemma Ring.krullDimLE_one_iff_of_noZeroDivisors [NoZeroDivisors R] :
   · exact iff_of_true inferInstance fun I h ↦ (h <| Subsingleton.elim ..).elim
   exact Ring.krullDimLE_one_iff_of_isPrime_bot
 
+lemma Ideal.IsPrime.isMaximal_of_ne_bot [NoZeroDivisors R] [Ring.KrullDimLE 1 R]
+    {I : Ideal R} (hI : I.IsPrime) (hI' : I ≠ ⊥) :
+    I.IsMaximal :=
+  Ring.krullDimLE_one_iff_of_noZeroDivisors.mp ‹_› _ hI' hI
+
+lemma Ideal.isMaximal_of_isPrime_of_ne_bot [NoZeroDivisors R] [Ring.KrullDimLE 1 R]
+    (I : Ideal R) [I.IsPrime] (hI' : I ≠ ⊥) :
+    I.IsMaximal :=
+  Ideal.IsPrime.isMaximal_of_ne_bot ‹_› hI'
+
 /-- Alternative constructor for `Ring.KrullDimLE 1`, convenient for domains. -/
 lemma Ring.KrullDimLE.mk₁' (H : ∀ I : Ideal R, I ≠ ⊥ → I.IsPrime → I.IsMaximal) :
     Ring.KrullDimLE 1 R := by
@@ -177,5 +187,16 @@ lemma Ring.KrullDimLE.mk₁' (H : ∀ I : Ideal R, I ≠ ⊥ → I.IsPrime → I
   · rwa [Ring.krullDimLE_one_iff_of_isPrime_bot]
   suffices Ring.KrullDimLE 0 R from inferInstance
   exact .mk₀ fun I hI ↦ H I (fun e ↦ hR (e ▸ hI)) hI
+
+lemma Prime.isMaximal_span_singleton [NoZeroDivisors R] [Ring.KrullDimLE 1 R]
+    {a : R} (ha : Prime a) : (Ideal.span {a}).IsMaximal :=
+  ((Ideal.span_singleton_prime ha.ne_zero).mpr ha).isMaximal_of_ne_bot (by simpa using ha.ne_zero)
+
+lemma Ideal.liesOver_span_iff
+    {A B : Type*} [CommRing A] [IsDomain A] [Ring.KrullDimLE 1 A] [CommRing B] [Algebra A B]
+    {P : Ideal B} {p : A} (hP : P ≠ ⊤) (hp : Prime p) :
+      P.LiesOver (.span {p}) ↔ algebraMap A B p ∈ P := by
+  have hP : P.under A ≠ ⊤ := by exact Ideal.comap_ne_top (algebraMap A B) hP
+  simp [Ideal.liesOver_iff, Ideal.IsMaximal.eq_iff_le hp.isMaximal_span_singleton hP]
 
 end One

@@ -192,34 +192,6 @@ lemma not_dvd_discr_iff_forall_liesOver [IsIntegralClosure 𝒪 ℤ K] {p : ℤ}
     obtain ⟨P, hP, h₁, h₂⟩ := Ideal.exists_isMaximal_dvd_of_dvd_absNorm hp _ h
     exact H P hP ⟨h₁.symm⟩ h₂
 
-theorem _root_.Ideal.IsMaximal.eq_iff_le {α : Type*} [CommRing α]
-    {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) : I = J ↔ I ≤ J :=
-  ⟨by aesop, Ideal.IsMaximal.eq_of_le hI hJ⟩
-
-lemma _root_.Ideal.IsPrime.isMaximal_of_ne_bot {R : Type*} [CommSemiring R] [Nontrivial R]
-    [NoZeroDivisors R] [Ring.KrullDimLE 1 R] {I : Ideal R} (hI : I.IsPrime) (hI' : I ≠ ⊥) :
-    I.IsMaximal :=
-  Ring.krullDimLE_one_iff_of_isPrime_bot.mp ‹_› _ hI' hI
-
-lemma _root_.Ideal.isMaximal_of_isPrime_of_ne_bot {R : Type*} [CommSemiring R] [Nontrivial R]
-    [NoZeroDivisors R] [Ring.KrullDimLE 1 R] (I : Ideal R) [I.IsPrime] (hI' : I ≠ ⊥) :
-    I.IsMaximal :=
-  Ideal.IsPrime.isMaximal_of_ne_bot ‹_› hI'
-
-lemma _root_.Prime.isMaximal_span_singleton {A : Type*} [CommRing A] [IsDomain A]
-    [Ring.KrullDimLE 1 A] {a : A} (ha : Prime a) : (Ideal.span {a}).IsMaximal :=
-  ((Ideal.span_singleton_prime ha.ne_zero).mpr ha).isMaximal_of_ne_bot (by simpa using ha.ne_zero)
-
-lemma Ideal.liesOver_span_iff
-    {A B : Type*} [CommRing A] [IsDomain A] [Ring.KrullDimLE 1 A] [CommRing B] [Algebra A B]
-    {P : Ideal B} {p : A} (hP : P ≠ ⊤) (hp : Prime p) :
-      P.LiesOver (.span {p}) ↔ algebraMap A B p ∈ P := by
-  have hP : P.under A ≠ ⊤ := by exact Ideal.comap_ne_top (algebraMap A B) hP
-  simp [Ideal.liesOver_iff, Ideal.IsMaximal.eq_iff_le hp.isMaximal_span_singleton hP]
-
-instance (priority := low) {R : Type*} [CommRing R] [IsDedekindDomain R] : Ring.KrullDimLE 1 R :=
-  .mk₁' fun _ hI hI' ↦ hI'.isMaximal hI
-
 /-- Also see `not_dvd_discr_iff_forall_liesOver` for a slightly easier to prove RHS. -/
 lemma not_dvd_discr_iff_forall_mem [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp : Prime p) :
     ¬ p ∣ discr K ↔ ∀ (P : Ideal 𝒪) (_ : P.IsPrime), ↑p ∈ P →
