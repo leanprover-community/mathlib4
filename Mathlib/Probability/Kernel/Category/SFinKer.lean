@@ -132,12 +132,6 @@ instance : MonoidalCategory SFinKer.{u} where
         Kernel.deterministic_map hf₁ hf₂]
       ext : 1
       simp [Kernel.deterministic_apply, Kernel.id_apply, f₁]
-  whiskerLeft_id X Y := by
-    ext : 1; simp
-  id_whiskerRight X Y := by
-    ext : 1; simp
-  id_tensorHom_id X₁ X₂ := by
-    ext : 1; simp
   leftUnitor_naturality κ := by
     ext : 1; dsimp
     rw [Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop)]
