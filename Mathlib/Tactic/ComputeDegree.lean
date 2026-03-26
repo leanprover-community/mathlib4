@@ -14,11 +14,11 @@ public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 This file defines two related tactics: `compute_degree` and `monicity`.
 
 Using `compute_degree` when the goal is of one of the seven forms
-*  `natDegree f ≤ d` (or `<`),
-*  `degree f ≤ d` (or `<`),
-*  `natDegree f = d`,
-*  `degree f = d`,
-*  `coeff f d = r`, if `d` is the degree of `f`,
+* `natDegree f ≤ d` (or `<`),
+* `degree f ≤ d` (or `<`),
+* `natDegree f = d`,
+* `degree f = d`,
+* `coeff f d = r`, if `d` is the degree of `f`,
 
 tries to solve the goal.
 It may leave side-goals, in case it is not entirely successful.
@@ -413,19 +413,19 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
   return (progress.flatten, static ++ curr_static)
 
 /-- `miscomputedDegree? deg false_goals` takes as input
-*  an `Expr`ession `deg`, representing the degree of a polynomial
+* an `Expr`ession `deg`, representing the degree of a polynomial
   (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
-*  a list of `MVarId`s `false_goals`.
+* a list of `MVarId`s `false_goals`.
 
 Although inconsequential for this function, the list of goals `false_goals` reduces to `False`
 if `norm_num`med.
 `miscomputedDegree?` extracts error information from goals of the form
-*  `a ≠ b`, assuming it comes from `⊢ coeff_of_given_degree ≠ 0`
-  --- reducing to `False` means that the coefficient that was supposed to vanish, does not;
-*  `a ≤ b`, assuming it comes from `⊢ degree_of_subterm ≤ degree_of_polynomial`
-  --- reducing to `False` means that there is a term of degree that is apparently too large;
-*  `a = b`, assuming it comes from `⊢ computed_degree ≤ given_degree`
-  --- reducing to `False` means that there is a term of degree that is apparently too large.
+* `a ≠ b`, assuming it comes from `⊢ coeff_of_given_degree ≠ 0` —
+  reducing to `False` means that the coefficient that was supposed to vanish, does not;
+* `a ≤ b`, assuming it comes from `⊢ degree_of_subterm ≤ degree_of_polynomial` —
+  reducing to `False` means that there is a term of degree that is apparently too large;
+* `a = b`, assuming it comes from `⊢ computed_degree ≤ given_degree` —
+  reducing to `False` means that there is a term of degree that is apparently too large.
 
 The cases `a ≠ b` and `a = b` are not a perfect match with the top coefficient:
 reducing to `False` is not exactly correlated with a coefficient being non-zero.
