@@ -162,6 +162,32 @@ behaviour. They share a common DAG traversal library that parallelises work in i
   you can convert `pick abc # x scripts/auto_commit.sh cmd` to `x scripts/auto_commit.sh cmd`
   (by deleting the "pick abc # " prefix), and git will re-run the command via exec.
   Example: `scripts/auto_commit.sh lake exe mk_all`
+**Nightly testing**
+- `nightly-testing-checklist.lean` reports and fixes the state of `nightly-testing` branches
+  at Batteries and Mathlib. Run via `lake exe nightly-testing-checklist`.
+
+  **What it checks:**
+  - Whether each repo's toolchain matches the latest lean4 nightly
+  - Whether upstream dependencies (e.g. Batteries in Mathlib) are up to date
+  - CI status, with inline display of failing jobs and Lean error messages
+
+  **What it can fix:**
+  - Bumps stale `lean-toolchain` files
+  - Runs `lake update` for stale upstream dependencies
+  - Removes duplicate declarations ("has already been declared" errors) using Lean's parser
+    to identify command boundaries
+
+  **Flags:**
+  - `--watch`: wait for in-progress CI runs to complete (wakes on first job failure)
+  - `--fix`: commit and push fixes (default is dry-run: generate `.patch` files)
+  - `--no-clone`: report only, don't clone repos to `/tmp`
+  - `--no-build`: clone and update deps, but don't build or fix errors
+
+- `find_command_range.lean` is a helper used by `nightly-testing-checklist.lean`.
+  Given a file and position, it uses Lean's parser to find the byte range of the enclosing
+  top-level command (including preceding attributes and doc comments). It is copied to
+  cloned repos at runtime and executed via `lake env lean --run`.
+
 **Managing downstream repos**
 - `downstream_repos.yml` contains basic information about significant downstream repositories.
 - `downstream-tags.py` is a script to check whether a given tag exists on the downstream
