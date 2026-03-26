@@ -416,38 +416,12 @@ variable {X : TopCat.{u}}
 
 open TopologicalSpace
 
-def modulesSpecToSheaf_comp_forget :
-    Scheme.Modules.toPresheaf (Spec R) ≅
-    modulesSpecToSheaf ⋙ TopCat.Sheaf.forget (ModuleCat R) (Spec R) ⋙
-    (Functor.whiskeringRight _ _ _).obj (forget₂ (ModuleCat R) AddCommGrpCat) := .refl _
-
-theorem CategoryTheory.Functor.reflectsIsomorphisms.of_iso {C : Type*}
-    [Category* C] {D : Type*} [Category* D] {F G : C ⥤ D} (α : F ≅ G) [F.ReflectsIsomorphisms] :
-    G.ReflectsIsomorphisms where
-  reflects := by
-    intro A B f _
-    rw [← isIso_iff_of_reflects_iso _ F]
-    haveI : IsIso (α.hom.app A ≫ G.map f) := IsIso.comp_isIso
-    rw [← α.hom.naturality f] at this
-    rwa [← isIso_comp_right_iff _ (α.hom.app B)]
-
-theorem CategoryTheory.Functor.reflectsIsomorphisms.iso_iff {C : Type*}
-    [Category* C] {D : Type*} [Category* D] {F G : C ⥤ D} (α : F ≅ G) :
-    F.ReflectsIsomorphisms ↔ G.ReflectsIsomorphisms :=
-  ⟨fun _ => Functor.reflectsIsomorphisms.of_iso α,
-  fun _ => Functor.reflectsIsomorphisms.of_iso α.symm⟩
-
-set_option backward.isDefEq.respectTransparency false in
 instance : (modulesSpecToSheaf (R := R)).ReflectsIsomorphisms :=
-  haveI := CategoryTheory.Functor.reflectsIsomorphisms.of_iso (modulesSpecToSheaf_comp_forget (R := R))
-  reflectsIsomorphisms_of_comp _ (TopCat.Sheaf.forget _ (Spec R) ⋙
-    (Functor.whiskeringRight _ _ _).obj (forget₂ _ AddCommGrpCat))
+  SpecModulesToSheafFullyFaithful.reflectsIsomorphisms
 
-set_option backward.isDefEq.respectTransparency false in
-instance : (modulesSpecToSheaf (R := R)).Faithful :=
-  haveI := Functor.Faithful.of_iso (modulesSpecToSheaf_comp_forget (R := R))
-  Functor.Faithful.of_comp _ (TopCat.Sheaf.forget _ (Spec R) ⋙
-    (Functor.whiskeringRight _ _ _).obj (forget₂ _ AddCommGrpCat))
+instance : (modulesSpecToSheaf (R := R)).Faithful := SpecModulesToSheafFullyFaithful.faithful
+
+instance : (modulesSpecToSheaf (R := R)).Full := SpecModulesToSheafFullyFaithful.full
 
 abbrev IsLocalizing (M : TopCat.Sheaf (ModuleCat R) (Spec R)) : Prop :=
     ∀ f : R, IsLocalizedModule (.powers f) (M.obj.map (basicOpen f).leTop.op).hom
