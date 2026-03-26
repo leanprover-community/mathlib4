@@ -156,9 +156,7 @@ lemma μ_comp_assoc : ((linearizeMap (α_ X Y Z).hom).comp
   -- after fixing the defeq problems in `Action` and in the monoidal category structure of `types`
   -- this line should close the goal so this is left as an indicator.
   with_reducible convert linearizeMap_single (α_ X Y Z).hom ((x, y), z) _
-  with_reducible simp only [Action.tensorObj_V, types_tensorObj_def, Action.associator_hom_hom]
-  with_reducible refine Prod.ext ?_ (Prod.ext ?_ ?_)
-  <;>  with_reducible simp
+  with_reducible simp
 
 variable (X) in
 lemma μ_leftUnitor : (lid k (linearize k G X)).toIntertwiningMap =
