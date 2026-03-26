@@ -144,6 +144,14 @@ lemma factorsThrough_iff_ker_unitsMap {d : ℕ} [NeZero n] (hd : d ∣ n) :
     simp_rw [changeLevel_toUnitHom, toUnitHom_eq, ofUnitHom_eq, Equiv.apply_symm_apply, hE,
       toUnitHom_eq]
 
+theorem factorsThrough_of_dvd_dvd {d m : ℕ} [NeZero n] (hχ : FactorsThrough χ d) (hd : d ∣ m)
+    (hm : m ∣ n) :
+    FactorsThrough χ m := by
+  refine (factorsThrough_iff_ker_unitsMap hm).mpr fun x hx ↦ ?_
+  apply (factorsThrough_iff_ker_unitsMap hχ.dvd).mp hχ
+  rw [MonoidHom.mem_ker] at hx ⊢
+  rw [← ZMod.unitsMap_comp hd hm, MonoidHom.comp_apply, hx, map_one]
+
 /--
 Let `χ` and `ψ` be Dirichlet characters of level `n` and `m` respectively. Assume that they agree
 at level `n * m`. Then `χ` factors through `gcd(n, m)`.
@@ -323,6 +331,28 @@ theorem conductor_dvd_of_mem_conductorSet {d : ℕ} (hn : n ≠ 0) (hd : d ∈ �
     changeLevel_trans _ hd (n.dvd_mul_left (d * χ.conductor)), ← hχ₀,
     changeLevel_trans χ.primitiveCharacter χ.conductor_dvd_level, changeLevel_primitiveCharacter]
 
+/-- A divisor `d` of `n` belongs to the conductor set of `χ` if and only if the conductor of `χ`
+divides `d`. -/
+theorem mem_conductorSet_iff_conductor_dvd (hn : n ≠ 0) {d : ℕ} (hd : d ∣ n) :
+    d ∈ χ.conductorSet ↔ χ.conductor ∣ d := by
+  refine ⟨fun h ↦ conductor_dvd_of_mem_conductorSet χ hn h, fun h ↦ ?_⟩
+  have : NeZero n := ⟨hn⟩
+  exact factorsThrough_of_dvd_dvd χ χ.factorsThrough_conductor h hd
+
+private theorem conductor_inv_aux (χ : DirichletCharacter R n) :
+    χ⁻¹.conductor ∣ χ.conductor := by
+  obtain hn | hn := eq_or_ne n 0
+  · rw [conductor_eq_zero_iff_level_eq_zero.mpr hn, conductor_eq_zero_iff_level_eq_zero.mpr hn]
+  rw [← mem_conductorSet_iff_conductor_dvd _ hn χ.conductor_dvd_level, mem_conductorSet_iff]
+  refine ⟨χ.conductor_dvd_level, χ.primitiveCharacter⁻¹, ?_⟩
+  rw [MonoidHom.map_inv, changeLevel_primitiveCharacter]
+
+theorem conductor_inv (χ : DirichletCharacter R n) :
+    χ⁻¹.conductor = χ.conductor := by
+  refine dvd_antisymm χ.conductor_inv_aux ?_
+  convert conductor_inv_aux χ⁻¹
+  rw [inv_inv]
+
 /-- Dirichlet character associated to multiplication of Dirichlet characters,
 after changing both levels to the same -/
 noncomputable def mul {m : ℕ} (χ₁ : DirichletCharacter R n) (χ₂ : DirichletCharacter R m) :
@@ -342,6 +372,29 @@ lemma mul_def {n m : ℕ} {χ : DirichletCharacter R n} {ψ : DirichletCharacter
 lemma primitive_mul_isPrimitive {m : ℕ} (ψ : DirichletCharacter R m) :
     IsPrimitive (primitive_mul χ ψ) :=
   primitiveCharacter_isPrimitive _
+
+theorem conductor_mul_dvd_lcm_conductor (hn : n ≠ 0) (χ ψ : DirichletCharacter R n) :
+    (χ * ψ).conductor ∣ χ.conductor.lcm ψ.conductor := by
+  have h := Nat.lcm_dvd χ.conductor_dvd_level ψ.conductor_dvd_level
+  rw [← mem_conductorSet_iff_conductor_dvd _ hn h, mem_conductorSet_iff]
+  refine ⟨h, χ.primitiveCharacter.mul ψ.primitiveCharacter, ?_⟩
+  rw [mul, MonoidHom.map_mul, ← changeLevel_trans, ← changeLevel_trans,
+    changeLevel_primitiveCharacter, changeLevel_primitiveCharacter]
+
+/-- The subgroup of Dirichlet characters of level `n` whose conductor is coprime to `d`. -/
+def subgroupOfCoprimeConductor [NeZero n] (d : ℕ) :
+    Subgroup (DirichletCharacter R n) where
+  carrier := {χ | d.Coprime χ.conductor}
+  mul_mem' hχ hψ := by
+    apply Nat.Coprime.of_dvd_right (conductor_mul_dvd_lcm_conductor (NeZero.ne n) _ _)
+    exact (Nat.Coprime.mul_right hχ hψ).coprime_div_right <| Nat.gcd_dvd_mul _ _
+  one_mem' := by simp [conductor_one (NeZero.ne n)]
+  inv_mem' hχ := by rwa [Set.mem_setOf, conductor_inv]
+
+@[simp]
+lemma mem_subgroupOfCoprimeConductor [NeZero n] (d : ℕ) (χ : DirichletCharacter R n) :
+    χ ∈ subgroupOfCoprimeConductor d ↔ d.Coprime χ.conductor := Iff.rfl
+
 
 /-
 ### Even and odd characters
