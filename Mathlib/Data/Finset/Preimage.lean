@@ -155,7 +155,7 @@ lemma sup_preimage_val_id_eq_sup_toSubtype_id [Lattice α] [OrderBot α] {P : α
     (ht : ∀ x ∈ t, P x) :
     letI := Subtype.semilatticeSup Psup
     letI := Subtype.orderBot Pbot
-    (t.preimage (fun (x : Subtype P) => x.val) (Subtype.val_injective.injOn)).sup id =
+    (t.preimage Subtype.val Subtype.val_injective.injOn).sup id =
       (⟨t.sup id, sup_induction Pbot (fun _ h _ => Psup h) ht⟩ : Subtype P) := by
   letI : OrderBot (Subtype P) := Subtype.orderBot Pbot
   ext

@@ -185,7 +185,7 @@ lemma sup_val_eq_coe_id {P : α → Prop} (Psup : ∀ ⦃s t : α⦄, P s → P 
     (Pbot : P (⊥ : α)) {t : Finset (Subtype P)} :
     letI := Subtype.semilatticeSup Psup
     letI := Subtype.orderBot Pbot
-    (t.sup Subtype.val) = (t.sup id).val := by
+    t.sup Subtype.val = (t.sup id).val := by
   simp [sup_coe]
 
 @[simp]
