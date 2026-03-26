@@ -85,6 +85,8 @@ instance [Ring R] [h : IsDomain R] : IsDomain Rᵒᵈ where
 
 end OrderDual
 
+open OrderDual
+
 @[simp]
 theorem toDual_natCast [NatCast R] (n : ℕ) : toDual (n : R) = n :=
   rfl
