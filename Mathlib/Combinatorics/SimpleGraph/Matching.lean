@@ -564,15 +564,13 @@ lemma IsAlternating.sup_edge {u x : V} (halt : G.IsAlternating G') (hnadj : ¬G'
   · exact halt hww' hl h1
   · rw [G'.adj_congr_of_sym2 (by grind : s(v, w') = s(u, x))]
     simp only [hnadj, not_false_eq_true, iff_true]
-    rcases h2.1 with ⟨h2l1, h2l2⟩ | ⟨h2r1, h2r2⟩
-    · subst h2l1 h2l2
-      exact (hx' _ hww' hl.symm).symm
+    rcases h2.1 with ⟨rfl, rfl⟩ | ⟨h2r1, h2r2⟩
+    · exact (hx' _ hww' hl.symm).symm
     · simp_all
   · rw [G'.adj_congr_of_sym2 (by grind : s(v, w) = s(u, x))]
     simp only [hnadj, false_iff, not_not]
-    rcases hr.1 with ⟨hrl1, hrl2⟩ | ⟨hrr1, hrr2⟩
-    · subst hrl1 hrl2
-      exact (hx' _ hww'.symm h1.symm).symm
+    rcases hr.1 with ⟨rfl, rfl⟩ | ⟨hrr1, hrr2⟩
+    · exact (hx' _ hww'.symm h1.symm).symm
     · grind
   · grind
 
