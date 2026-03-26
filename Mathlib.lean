@@ -2516,6 +2516,7 @@ public import Mathlib.CategoryTheory.ConnectedComponents
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Cartesian
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Deterministic
+public import Mathlib.CategoryTheory.CopyDiscardCategory.Widesubcategory
 public import Mathlib.CategoryTheory.Core
 public import Mathlib.CategoryTheory.Countable
 public import Mathlib.CategoryTheory.Dialectica.Basic
@@ -5997,7 +5998,6 @@ public import Mathlib.Probability.Independence.ZeroOne
 public import Mathlib.Probability.Kernel.Basic
 public import Mathlib.Probability.Kernel.Category.SFinKer
 public import Mathlib.Probability.Kernel.Category.Stoch
-public import Mathlib.Probability.Kernel.Category.Tactics
 public import Mathlib.Probability.Kernel.CompProdEqIff
 public import Mathlib.Probability.Kernel.Composition.AbsolutelyContinuous
 public import Mathlib.Probability.Kernel.Composition.Comp
