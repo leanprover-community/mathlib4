@@ -38,7 +38,7 @@ section IsTopologicalSemiring
 
 variable (R : Type*)
 
-/-- a topological semiring is a semiring `R` where addition and multiplication are continuous.
+/-- A topological semiring is a semiring `R` where addition and multiplication are continuous.
 We allow for non-unital and non-associative semirings as well.
 
 The `IsTopologicalSemiring` class should *only* be instantiated in the presence of a
@@ -57,7 +57,7 @@ and `IsTopologicalSemiring.toIsTopologicalRing`) -/
 class IsTopologicalRing [TopologicalSpace R] [NonUnitalNonAssocRing R] : Prop
     extends IsTopologicalSemiring R, ContinuousNeg R
 
-/-- a semitopological semiring is a semiring `R` where addition is jointly continuous and
+/-- A semitopological semiring is a semiring `R` where addition is jointly continuous and
 multiplication is continuous in each variable separately.
 We allow for non-unital and non-associative semirings as well.
 
@@ -69,7 +69,7 @@ are mathematically equivalent (see `IsTopologicalSemiring.continuousNeg_of_mul` 
 class IsSemitopologicalSemiring (R : Type*) [TopologicalSpace R] [NonUnitalNonAssocSemiring R]
   extends ContinuousAdd R, SeparatelyContinuousMul R
 
-/-- a semitopological ring is a ring `R` where addition is jointly continuous and
+/-- A semitopological ring is a ring `R` where addition is jointly continuous and
 multiplication is continuous in each variable separately, and negation is continuous as well.
 We allow for non-unital and non-associative rings as well.
 
@@ -113,7 +113,7 @@ instance (priority := 100) IsTopologicalSemiring.toIsSemitopologicalSemiring (R 
     IsSemitopologicalSemiring R where
 
 -- See note [lower instance priority]
-instance (priority := 100) IsWeakTopologicalRing.to_topologicalAddGroup [NonUnitalNonAssocRing R]
+instance (priority := 100) IsSemitopologicalRing.toIsTopologicalAddGroup [NonUnitalNonAssocRing R]
     [TopologicalSpace R] [IsSemitopologicalRing R] : IsTopologicalAddGroup R := ⟨⟩
 
 -- kept just to avoid breaking manual usage of the previous instance
