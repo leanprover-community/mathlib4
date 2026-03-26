@@ -79,6 +79,8 @@ lemma exists_common_field_of_isAlgebraic (α β γ : ℂ) (hα : IsAlgebraic ℚ
 
 variable {K} [Field K] [NumberField K]
 
+namespace GelfondSchneider
+
 lemma exists_int_smul_isIntegral {K : Type*} [Field K] [NumberField K] (α : K) :
     ∃ k : ℤ, k ≠ 0 ∧ IsIntegral ℤ (k • α) := by
   obtain ⟨y, hy, hf⟩ := exists_integral_multiples ℤ ℚ (L := K) {α}
@@ -805,4 +807,4 @@ lemma house_eta_le_c₄_pow : house (algebraMap (𝓞 h7.K) h7.K (h7.η q hq0 h2
       · apply rpow_nonneg (le_trans zero_le_one h7.one_le_c₃)
     · apply rpow_nonneg; simp only [Nat.cast_nonneg]
 
-end Setup
+end GelfondSchneider.Setup
