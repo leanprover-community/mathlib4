@@ -30,7 +30,7 @@ open MiuAtom Nat List
 
 Suppose `st : Miustr`. Then `count I st` is the number of `I`s in `st`. We'll show, if
 `Derivable st`, then `count I st` must be 1 or 2 modulo 3. To do this, it suffices to show that if
-the `en : Miustr` is derived from `st`, then `count I en` moudulo 3 is either equal to or is twice
+the `en : Miustr` is derived from `st`, then `count I en` modulo 3 is either equal to or is twice
 `count I st`, modulo 3.
 -/
 
@@ -103,9 +103,7 @@ string to be derivable, namely that the string must start with an M and contain 
 -/
 def Goodm (xs : Miustr) : Prop :=
   List.headI xs = M ∧ M ∉ List.tail xs
-
-set_option backward.isDefEq.respectTransparency false in
-instance : DecidablePred Goodm := by unfold Goodm; infer_instance
+deriving Decidable
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Demonstration that `"MI"` starts with `M` and has no `M` in its tail.
@@ -197,8 +195,7 @@ that `en` has no `M` in its tail. We automatically derive that this is a decidab
 -/
 def Decstr (en : Miustr) :=
   Goodm en ∧ (count I en % 3 = 1 ∨ count I en % 3 = 2)
-
-instance : DecidablePred Decstr := by unfold Decstr; infer_instance
+deriving Decidable
 
 /-- Suppose `en : Miustr`. If `en` is `Derivable`, then the condition `Decstr en` holds.
 -/

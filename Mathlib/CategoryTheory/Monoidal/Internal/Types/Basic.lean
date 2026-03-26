@@ -44,6 +44,7 @@ noncomputable def functor : Mon (Type u) ⥤ MonCat.{u} where
       map_one' := congr_fun (IsMonHom.one_hom f.hom) PUnit.unit
       map_mul' x y := congr_fun (IsMonHom.mul_hom f.hom) (x, y) }
 
+attribute [local simp] types_tensorObj_def types_tensorUnit_def in
 /-- Converting a bundled monoid to a monoid object in `Type`.
 -/
 noncomputable def inverse : MonCat.{u} ⥤ Mon (Type u) where

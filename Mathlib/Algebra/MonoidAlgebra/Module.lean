@@ -48,20 +48,21 @@ variable {S : Type*}
 @[to_additive (dont_translate := R) distribMulAction]
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
     DistribMulAction R k[G] :=
-  Finsupp.distribMulAction G k
+  inferInstanceAs <| DistribMulAction R (G →₀ k)
 
 @[to_additive (dont_translate := R)]
 instance module [Semiring R] [Semiring k] [Module R k] : Module R k[G] :=
-  Finsupp.module G k
+  inferInstanceAs <| Module R (G →₀ k)
 
 @[to_additive (dont_translate := R)]
 instance instIsTorsionFree [Semiring R] [Semiring k] [Module R k] [Module.IsTorsionFree R k] :
-    Module.IsTorsionFree R (MonoidAlgebra k G) := Finsupp.moduleIsTorsionFree
+    Module.IsTorsionFree R (MonoidAlgebra k G) :=
+  inferInstanceAs <| IsTorsionFree R (G →₀ k)
 
 @[to_additive (dont_translate := R) faithfulSMul]
 instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
     FaithfulSMul R k[G] :=
-  Finsupp.faithfulSMul
+  inferInstanceAs <| FaithfulSMul R (G →₀ k)
 
 /-- The standard basis for a monoid algebra. -/
 @[to_additive /-- The standard basis for an additive monoid algebra. -/]
@@ -78,8 +79,9 @@ lemma basis_apply (k) [Semiring k] (r : R) :
 TODO: Change the type to `DistribMulAction Gᵈᵐᵃ k[G]` and then it can be an instance.
 TODO: Generalise to a group acting on another, instead of just the left multiplication action.
 -/
+@[implicit_reducible]
 def comapDistribMulActionSelf [Group G] [Semiring k] : DistribMulAction G k[G] :=
-  Finsupp.comapDistribMulAction
+  fast_instance% Finsupp.comapDistribMulAction
 
 end SMul
 

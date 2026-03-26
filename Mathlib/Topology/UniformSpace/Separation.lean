@@ -116,7 +116,6 @@ instance (priority := 100) UniformSpace.to_regularSpace : RegularSpace α :=
     (fun _ ↦ nhds_basis_uniformity' uniformity_hasBasis_closed)
     fun a _V hV ↦ isClosed_ball a hV.2
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If the uniformity has a linearly ordered basis, then the space is completely normal.
 -/
