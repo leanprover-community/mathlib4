@@ -266,6 +266,7 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) �
       leftRegularTensorIso_hom_hom, tensor_ρ, tensor_apply, ofMulAction_apply]
     <;> simp [ofMulAction_V, types_tensorObj_def, Fin.tail]
 
+attribute [local simp] types_tensorObj_def types_tensorUnit_def in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n → G) :
