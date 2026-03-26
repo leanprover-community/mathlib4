@@ -516,7 +516,7 @@ theorem csInf_mem (hs : s.Nonempty) : sInf s ∈ s :=
 
 lemma csInf_eq_iff (hs : s.Nonempty) (n : α) :
      sInf s = n ↔ n ∈ s ∧ ∀ a ∈ s, n ≤ a := by
-  have : OrderBot α := WellFoundedLT.toOrderBot
+  have : OrderBot α := WellFoundedLT.toOrderBot α
   constructor
   · intro rfl
     exact ⟨csInf_mem hs, fun _ ↦ csInf_le (OrderBot.bddBelow s)⟩

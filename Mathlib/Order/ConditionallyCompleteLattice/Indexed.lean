@@ -426,7 +426,7 @@ theorem ciInf_mem [Nonempty ι] (f : ι → α) : iInf f ∈ range f :=
 
 lemma ciInf_eq_iff [Nonempty ι] (f : ι → α) (n : α) :
     ⨅ i, (f i) = n ↔ (∃ i, f i = n) ∧ ∀ i, n ≤ f i := by
-  have : OrderBot α := WellFoundedLT.toOrderBot
+  have : OrderBot α := WellFoundedLT.toOrderBot α
   refine ⟨(· ▸ ⟨ciInf_mem f, ciInf_le (OrderBot.bddBelow ..)⟩), fun ⟨⟨i, hi⟩, h⟩ ↦ ?_⟩
   exact le_antisymm (hi ▸ ciInf_le (OrderBot.bddBelow ..) _) (le_ciInf h)
 
