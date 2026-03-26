@@ -210,9 +210,9 @@ lemma isClosed_of_isUpperSet [IsScottHausdorff α univ] (h : IsUpperSet s) : IsC
 end Preorder
 
 section PartialOrder
-variable [PartialOrder α]
+variable [PartialOrder α] [IsScottHausdorff α .univ]
 
-theorem isOpen_iff_dirSupInacc [IsScottHausdorff α .univ] : IsOpen s ↔ DirSupInacc s where
+theorem isOpen_iff_dirSupInacc : IsOpen s ↔ DirSupInacc s where
   mp h := dirSupInaccOn_univ.1 <| Topology.IsScottHausdorff.dirSupInaccOn_of_isOpen h
   mpr h := by
     rw [IsScottHausdorff.isOpen_iff (D := .univ)]
@@ -231,7 +231,7 @@ theorem isOpen_iff_dirSupInacc [IsScottHausdorff α .univ] : IsOpen s ↔ DirSup
     · exact ⟨upperBounds_mono_set hft ha.1,
         fun b hb ↦ ha.2 fun c hc ↦ (hf ⟨c, hc⟩).1.trans (hb <| by simp)⟩
 
-theorem isClosed_iff_dirSupClosed [IsScottHausdorff α .univ] : IsClosed s ↔ DirSupClosed s := by
+theorem isClosed_iff_dirSupClosed : IsClosed s ↔ DirSupClosed s := by
   rw [← isOpen_compl_iff, isOpen_iff_dirSupInacc, dirSupInacc_compl]
 
 end PartialOrder
