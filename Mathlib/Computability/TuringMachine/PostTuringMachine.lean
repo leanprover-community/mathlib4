@@ -134,9 +134,7 @@ instance Stmt.inhabited [Inhabited Γ] : Inhabited (Stmt Γ) :=
 @[nolint unusedArguments] -- this is a deliberate addition, see comment
 def Machine [Inhabited Λ] :=
   Λ → Γ → Option (Λ × (Stmt Γ))
-
-instance Machine.inhabited [Inhabited Λ] : Inhabited (Machine Γ Λ) := by
-  unfold Machine; infer_instance
+deriving Inhabited
 
 /-- The configuration state of a Turing machine during operation
   consists of a label (machine state), and a tape.
