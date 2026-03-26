@@ -298,6 +298,7 @@ lemma image_β_inv : (unionProd S T).image (β_ _ _).inv = unionProd T S := by
   apply image_β_hom
 
 /-- The isomorphism `unionProd S T ≅ unionProd T S` as simplicial sets. -/
+@[simps]
 noncomputable def symmIso : (unionProd S T : SSet) ≅ (unionProd T S : SSet) where
   hom := lift ((unionProd S T).ι ≫ (β_ _ _).hom) (by simp [range_comp])
   inv := lift ((unionProd T S).ι ≫ (β_ _ _).hom) (by simp [range_comp])
