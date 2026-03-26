@@ -26,8 +26,10 @@ variable {X : Type*} [PseudoMetricSpace X] [MeasurableSpace X] [OpensMeasurableS
 variable {μ ν : Measure X}
 
 class UniformlyDistributed (μ : Measure X) : Prop where
-  protected uniformlydistributed :
-   ∀ ⦃r : ℝ⦄, 0 < r → ∀ x y : X, μ (ball x r) = μ (ball y r) ∧ 0 < μ (ball x r) ∧ μ (ball x r) < ⊤
+  uniformlydistributed :
+    ∀ ⦃r : ℝ⦄, 0 < r → ∀ x y : X, μ (ball x r) = μ (ball y r) ∧ 0 < μ (ball x r) ∧ μ (ball x r) < ⊤
+
+lemma density_exists {U : Set X} (hU : IsOpen U) :
 
 /-- **Christensen's Lemma**: Uniformly distributed outerregular measures are unique up to
 a finite constant. -/
