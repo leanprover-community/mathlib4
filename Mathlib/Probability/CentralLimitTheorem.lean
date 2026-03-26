@@ -38,12 +38,13 @@ open scoped Real Topology
 
 namespace ProbabilityTheory
 
-variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X : ℕ → Ω → ℝ}
+variable {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'}
+  {P : Measure Ω} {P' : Measure Ω'} {X : ℕ → Ω → ℝ} {Y : Ω' → ℝ}
 
 lemma charFun_sqrt_inv_mul_sum (hindep : iIndepFun X P)
     (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) {n : ℕ} {t : ℝ} :
     charFun (P.map (fun ω ↦ (√n)⁻¹ * ∑ k ∈ Finset.range n, X k ω)) t =
-      charFun (P.map (X 0)) ((√n)⁻¹ * t) ^ n := by
+      (charFun (P.map (X 0)) ((√n)⁻¹ * t)) ^ n := by
   have mX n := (hident n).aemeasurable_fst
   rw [charFun_map_mul_comp, (hindep.restrict _).charFun_map_fun_finset_sum_eq_prod (fun _  _↦ mX _)]
   · simp [fun i ↦ (hident i).map_eq]
@@ -53,7 +54,7 @@ variable [IsProbabilityMeasure P]
 
 lemma tendsto_charFun_sqrt_inv_mul_pow {X : Ω → ℝ}
     (hX : AEMeasurable X P) (h0 : P[X] = 0) (h1 : P[X ^ 2] = 1) (t : ℝ) :
-    Tendsto (fun (n : ℕ) ↦ charFun (P.map X) ((√n)⁻¹ * t) ^ n) atTop (𝓝 (exp (- t ^ 2 / 2))) := by
+    Tendsto (fun (n : ℕ) ↦ (charFun (P.map X) ((√n)⁻¹ * t)) ^ n) atTop (𝓝 (exp (- t ^ 2 / 2))) := by
   apply tendsto_pow_exp_of_isLittleO_sub_add_div
   suffices (fun (n : ℕ) ↦ charFun (Measure.map X P) ((√n)⁻¹ * t) -
       (1 + (-(((√n)⁻¹ * t) ^ 2 / 2) : ℂ))) =o[atTop] fun n ↦ ((√n)⁻¹ * t) ^ 2 by
@@ -71,32 +72,35 @@ lemma tendsto_charFun_sqrt_inv_mul_pow {X : Ω → ℝ}
 
 /-- **Central Limit Theorem:** Given a sequence of random variables `X : ℕ → Ω → ℝ` that are
 independent, identically distributed, centered and with variance `1` and a random variable
-`Y : Ω → ℝ` following `gaussianReal 0 1`, the sequence
+`Y : Ω' → ℝ` following `gaussianReal 0 1`, the sequence
 `n ↦ (√n)⁻¹ * ∑ k ∈ Finset.range n, X k` converges to `Y` in distribution. -/
-theorem tendstoInDistribution_sqrt_inv_mul_sum {Y : Ω → ℝ} (hY : HasLaw Y (gaussianReal 0 1) P)
+theorem tendstoInDistribution_sqrt_inv_mul_sum (hY : HasLaw Y (gaussianReal 0 1) P')
     (h0 : P[X 0] = 0) (h1 : P[X 0 ^ 2] = 1) (hindep : iIndepFun X P)
     (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) :
+    haveI := hY.isProbabilityMeasure
     TendstoInDistribution (fun (n : ℕ) ω ↦ (√n)⁻¹ * ∑ k ∈ Finset.range n, X k ω) atTop Y
-      (fun _ ↦ P) P where
-  forall_aemeasurable n :=
-    .const_mul (Finset.aemeasurable_fun_sum _ fun _ _ ↦ (hident _).aemeasurable_fst) _
-  tendsto := by
-    refine ProbabilityMeasure.tendsto_iff_tendsto_charFun.2 fun t ↦ ?_
-    rw! [hY.map_eq]
-    simpa [charFun_sqrt_inv_mul_sum hindep hident, charFun_gaussianReal, neg_div] using
-      tendsto_charFun_sqrt_inv_mul_pow (hident 0).aemeasurable_fst h0 h1 t
+      (fun _ ↦ P) P' :=
+  haveI := hY.isProbabilityMeasure
+  { forall_aemeasurable n :=
+      .const_mul (Finset.aemeasurable_fun_sum _ fun _ _ ↦ (hident _).aemeasurable_fst) _
+    tendsto := by
+      refine ProbabilityMeasure.tendsto_iff_tendsto_charFun.2 fun t ↦ ?_
+      rw! [hY.map_eq]
+      simpa [charFun_sqrt_inv_mul_sum hindep hident, charFun_gaussianReal, neg_div] using
+        tendsto_charFun_sqrt_inv_mul_pow (hident 0).aemeasurable_fst h0 h1 t }
 
 /-- **Central Limit Theorem:** Given a sequence of random variables `X : ℕ → Ω → ℝ` that are
 independent, identically distributed with mean `μ` and non-zero variance `v`, and a random variable
 `Y : Ω → ℝ` following `gaussianReal 0 1`, the sequence
 `n ↦ (√(n * v)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * μ)` converges to `Y` in distribution. -/
-private theorem tendstoInDistribution_sqrt_mul_var_inv_mul_sum_sub {Y : Ω → ℝ}
-    (hY : HasLaw Y (gaussianReal 0 1) P)
+private theorem tendstoInDistribution_sqrt_mul_var_inv_mul_sum_sub
+    (hY : HasLaw Y (gaussianReal 0 1) P')
     (hX : Var[X 0; P] ≠ 0) (hindep : iIndepFun X P)
     (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) :
+    haveI := hY.isProbabilityMeasure
     TendstoInDistribution
       (fun (n : ℕ) ω ↦ (√(n * Var[X 0; P]))⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * P[X 0]))
-      atTop Y (fun _ ↦ P) P := by
+      atTop Y (fun _ ↦ P) P' := by
   have mX0 := (hident 0).aemeasurable_fst
   have intX0 : Integrable (X 0) P := memLp_one_iff_integrable.1 <|
     (memLp_two_of_variance_ne_zero mX0.aestronglyMeasurable hX).mono_exponent (by simp)
@@ -117,14 +121,15 @@ private theorem tendstoInDistribution_sqrt_mul_var_inv_mul_sum_sub {Y : Ω → �
 independent, identically distributed with mean `μ` and non-zero variance `v`, and a random variable
 `Y : Ω → ℝ` following `gaussianReal 0 v`, the sequence
 `n ↦ (√(n)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * μ)` converges to `Y` in distribution. -/
-theorem tendstoInDistribution_sqrt_inv_mul_sum_sub {Y : Ω → ℝ}
-    (hY : HasLaw Y (gaussianReal 0 Var[X 0; P].toNNReal) P)
+theorem tendstoInDistribution_sqrt_inv_mul_sum_sub
+    (hY : HasLaw Y (gaussianReal 0 Var[X 0; P].toNNReal) P')
     (hX : Var[X 0; P] ≠ 0) (hindep : iIndepFun X P)
     (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) :
+    haveI := hY.isProbabilityMeasure
     TendstoInDistribution
       (fun (n : ℕ) ω ↦ (√n)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * P[X 0]))
-      atTop Y (fun _ ↦ P) P := by
-  have : HasLaw (fun ω ↦ Y ω / √Var[X 0; P]) (gaussianReal 0 1) P := by
+      atTop Y (fun _ ↦ P) P' := by
+  have : HasLaw (fun ω ↦ Y ω / √Var[X 0; P]) (gaussianReal 0 1) P' := by
     convert gaussianReal_div_const hY _
     · simp
     · ext; simp [hX]
