@@ -521,7 +521,7 @@ lemma csInf_eq_iff (hs : s.Nonempty) (n : α) :
   · intro rfl
     exact ⟨csInf_mem hs, fun _ ↦ csInf_le (OrderBot.bddBelow s)⟩
   · intro ⟨hn, hle⟩
-    apply le_antisymm (csInf_le (OrderBot.bddBelow s) hn) (le_csInf hs hle)
+    exact le_antisymm (csInf_le (OrderBot.bddBelow s) hn) (le_csInf hs hle)
 
 theorem MonotoneOn.map_csInf {β : Type*} [ConditionallyCompleteLattice β] {f : α → β}
     (hf : MonotoneOn f s) (hs : s.Nonempty) : f (sInf s) = sInf (f '' s) :=
