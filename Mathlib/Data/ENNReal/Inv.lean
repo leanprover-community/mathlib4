@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.ENNReal.Operations
 
 /-!
-# Results about division in extended non-negative real
+# Results about division in extended non-negative reals
 This file establishes basic properties related to the inversion and division operations on `ℝ≥0∞`.
 For instance, as a consequence of being a `DivInvOneMonoid`, `ℝ≥0∞` inherits a power operation
 with integer exponent.
