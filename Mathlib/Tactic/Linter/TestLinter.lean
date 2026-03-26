@@ -8,6 +8,8 @@ module
 public import Lean.Elab.Command
 import Mathlib.Lean.Elab.InfoTree
 
+/-! For benching. -/
+
 open Lean Elab
 
 namespace Mathlib.Tactic
