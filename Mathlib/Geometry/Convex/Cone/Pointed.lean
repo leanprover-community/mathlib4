@@ -399,7 +399,8 @@ instance : CanLift (PointedCone R E) (Submodule R E) ofSubmodule (fun C => -C = 
 
 variable (R)
 
-@[simp] lemma hull_neg_pair_eq_span_singleton (x : E) : hull R {-x, x} = R ∙ x := by
+variable (x) in
+@[simp] lemma hull_neg_pair_eq_span_singleton : hull R {-x, x} = R ∙ x := by
   suffices R ∙ x = (hull R {-x, x}).toSubmodule
                       (by simp [← span_neg_eq_neg, Set.pair_comm]) by simp [this]
   exact span_eq_of_le _ (by aesop) <| by
@@ -418,8 +419,9 @@ lemma span_eq_submodule_span_of_neg_eq {s : Set E} (hs : -s = s) :
     hull R s = span R s := by
   simp [span_eq_hull_neg_sup_hull, hs]
 
-variable {R} (C)
+variable {R}
 
+variable (C) in
 lemma span_eq_neg_sup : span R (C : Set E) = -C ⊔ C := by
   simp [span_eq_hull_neg_sup_hull, span_neg_eq_neg]
 
