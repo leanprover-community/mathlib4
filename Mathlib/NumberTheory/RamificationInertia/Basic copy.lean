@@ -327,14 +327,14 @@ noncomputable def ramificationIdx
     (Module.length Sq (Sq ⧸ p.map (algebraMap R Sq))).toNat
   else 0
 
-noncomputable def ramificationIdx_def
+theorem ramificationIdx_def
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     (p : Ideal R) (q : Ideal S) [q.IsPrime] :
     letI Sq := Localization.AtPrime q
     p.ramificationIdx q = (Module.length Sq (Sq ⧸ p.map (algebraMap R Sq))).toNat :=
   dif_pos _
 
-noncomputable def ramificationIdx_of_not_isPrime
+theorem ramificationIdx_of_not_isPrime
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     (p : Ideal R) (q : Ideal S) (hq : ¬ q.IsPrime) :
     p.ramificationIdx q = 0 :=
@@ -382,11 +382,10 @@ theorem ramificationIdx_tower'
     apply ramificationIdx_tower
   · rw [ramificationIdx_of_not_isPrime p r hr, ramificationIdx_of_not_isPrime q r hr, mul_zero]
 
-noncomputable instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    [Algebra.QuasiFinite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] : Fintype (p.primesOver S) :=
-  (Algebra.QuasiFinite.finite_primesOver p).fintype
-
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
+
+noncomputable instance [Algebra.QuasiFinite R S] : Fintype (p.primesOver S) :=
+  (Algebra.QuasiFinite.finite_primesOver p).fintype
 
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : Algebra p.ResidueField (p.Fiber S) :=
@@ -419,6 +418,7 @@ noncomputable instance (q : MaximalSpectrum (p.Fiber S)) :
     Module p.ResidueField (Localization.AtPrime q.1) :=
   Algebra.toModule
 
+-- PRed
 instance {R : Type*} [CommSemiring R] : IsLocalHom (algebraMap R R) := by
   exact { map_nonunit := fun a a_1 ↦ a_1 }
 
@@ -442,7 +442,6 @@ noncomputable def equiv [Algebra.QuasiFinite R S] : p.primesOver S ≃ MaximalSp
   (PrimeSpectrum.primesOverOrderIsoFiber R S p).toEquiv.trans
     IsArtinianRing.primeSpectrumEquivMaximalSpectrum
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : Algebra S (p.Fiber S) := Algebra.TensorProduct.rightAlgebra
 
 set_option backward.isDefEq.respectTransparency false in
@@ -477,7 +476,6 @@ theorem foo2 [Algebra.QuasiFinite R S] [Module.Flat R S] (q : MaximalSpectrum (p
       Module.length_eq_finrank, ENat.toNat_coe]
   · rw [ramificationIdx_def]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sum_ramification_inertia
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     [Algebra.QuasiFinite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] :
@@ -492,7 +490,7 @@ theorem sum_ramification_inertia
 set_option backward.isDefEq.respectTransparency false in
 theorem sum_ramification_inertia'
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    [Module.Finite R S] [Module.Free R S] (p : Ideal R) [p.IsPrime] :
+    [Module.Finite R S] [Module.Projective R S] (p : Ideal R) [p.IsPrime] :
     Module.finrank R S =
       ∑ q : p.primesOver S, p.ramificationIdx q.1 *
         Module.finrank p.ResidueField q.1.ResidueField := by
