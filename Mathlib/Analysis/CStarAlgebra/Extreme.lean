@@ -25,10 +25,11 @@ variable {A : Type*} [NonUnitalCStarAlgebra A]
 set_option backward.isDefEq.respectTransparency false in
 /-- The star projections in a non-unital C⋆-algebra are exactly the extreme points of
 the nonnegative closed unit ball. -/
-theorem isStarProjection_iff_mem_extremePoints_nonneg_and_mem_unitClosedBall
+theorem isStarProjection_iff_mem_extremePoints_nonneg_inter_unitClosedBall
     [PartialOrder A] [StarOrderedRing A] {e : A} :
-    IsStarProjection e ↔ e ∈ extremePoints ℝ {x : A | 0 ≤ x ∧ x ∈ closedBall 0 1} := by
-  simp only [mem_closedBall, dist_zero_right, mem_extremePoints_iff_left, mem_setOf_eq, and_imp]
+    IsStarProjection e ↔ e ∈ extremePoints ℝ ({x : A | 0 ≤ x} ∩ closedBall 0 1) := by
+  simp only [mem_closedBall_zero_iff, mem_extremePoints_iff_left, mem_inter_iff,
+    mem_setOf_eq, and_imp]
   refine ⟨fun he ↦ ⟨⟨he.nonneg, he.norm_le⟩,
     fun a ha ha1 b hb hb1 ⟨t, s, h0t, h0s, hts, hlin⟩ ↦ ?_⟩, fun ⟨⟨h1, h2⟩, h3⟩ ↦ ?_⟩
   · /- Suppose `e` is a star projection, and `a` and `b` are in the nonnegative closed unit ball
