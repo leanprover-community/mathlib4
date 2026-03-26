@@ -97,6 +97,10 @@ recall List.cons_append (a : α) (as bs : List α) : (a :: as) ++ bs = a :: (as 
 /-- Recalling `Nat.add_comm`. -/
 recall Nat.add_comm (n m : Nat) : n + m = m + n
 
+-- Test that the unused variable linter does not fire on `recall`.
+#guard_msgs in
+recall Eq.symm {α : Sort _} {a b : α} (h : a = b) : b = a
+
 -- Test that `recall` works with different universe variable names (issue #37144).
 universe u v
 class RecallUnivTest (R : Type u) : Prop where

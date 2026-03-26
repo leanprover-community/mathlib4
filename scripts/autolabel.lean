@@ -302,7 +302,8 @@ partial def collectLabelsAndDependentLabels (labels: Array Label) : Array Label 
 /-- Reduce a list of labels to not include any which are dependencies of other
 labels in the list -/
 def dropDependentLabels (labels: Array Label) : Array Label :=
-  let dependentLabels := collectLabelsAndDependentLabels labels
+  let dependentLabels := collectLabelsAndDependentLabels <|
+    labels.flatMap fun label ↦ (mathlibLabelData label).dependencies
   labels.filter (!dependentLabels.contains ·)
 
 /-!
