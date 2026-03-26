@@ -477,10 +477,6 @@ theorem measurableSpace_mono (hτ : IsStoppingTime f τ) (hπ : IsStoppingTime f
 
 theorem measurableSpace_le (hτ : IsStoppingTime f τ) : hτ.measurableSpace ≤ m := fun _ hs ↦ hs.1
 
-@[deprecated (since := "2025-09-08")] alias measurableSpace_le_of_countable := measurableSpace_le
-@[deprecated (since := "2025-09-08")] alias measurableSpace_le_of_countable_range :=
-    measurableSpace_le
-
 @[simp]
 theorem measurableSpace_const (f : Filtration ι m) (i : ι) :
     (isStoppingTime_const f i).measurableSpace = f i := by
@@ -737,13 +733,8 @@ theorem measurableSet_le_stopping_time [TopologicalSpace ι] [SecondCountableTop
   rw [hτ.measurableSet]
   refine ⟨measurableSet_le hτ.measurable' hπ.measurable', fun j ↦ ?_⟩
   have : {ω | τ ω ≤ π ω} ∩ {ω | τ ω ≤ j} = {ω | min (τ ω) j ≤ min (π ω) j} ∩ {ω | τ ω ≤ j} := by
-    ext1 ω
-    simp only [Set.mem_inter_iff, Set.mem_setOf_eq, min_le_iff, le_min_iff, le_refl,
-      and_congr_left_iff]
-    intro h
-    simp only [h, or_self_iff, and_true]
-    rw [Iff.comm, or_iff_left_iff_imp]
-    exact h.trans
+    ext
+    simpa using fun a b ↦ Std.IsPreorder.le_trans _ _ _ a b
   rw [this]
   refine MeasurableSet.inter ?_ (hτ.measurableSet_le j)
   apply @measurableSet_le _ _ _ _ _ (Filtration.seq f j) _ _ _ _ _ ?_ ?_
@@ -781,9 +772,6 @@ theorem measurableSet_eq_stopping_time [TopologicalSpace ι] [OrderTopology ι]
   have h := measurableSet_eq_stopping_time_min hτ hπ
   rw [measurableSet_min_iff hτ hπ] at h
   exact h.1
-
-@[deprecated (since := "2025-09-08")] alias measurableSet_eq_stopping_time_of_countable :=
-  measurableSet_eq_stopping_time
 
 end LinearOrder
 

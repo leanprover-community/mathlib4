@@ -87,9 +87,6 @@ theorem toPretopology_grothendieckTopology :
     rcases hR x hx with ⟨U, f, hf, hU⟩
     exact ⟨U, f, Sieve.le_generate R U _ hf, hU⟩
 
-@[deprecated (since := "2025-09-19")]
-alias pretopology_ofGrothendieck := toPretopology_grothendieckTopology
-
 set_option backward.isDefEq.respectTransparency false in
 /-- The pretopology associated to a space induces the Grothendieck topology associated to the space.
 -/

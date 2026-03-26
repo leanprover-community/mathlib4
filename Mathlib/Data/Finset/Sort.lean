@@ -357,50 +357,46 @@ lemma nonempty_orderEmbedding_of_finite_infinite
   obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq β (Fintype.card α)
   exact ⟨((Fintype.orderIsoFinOfCardEq α rfl).symm.toOrderEmbedding).trans (s.orderEmbOfFin hs)⟩
 
-lemma Finset.orderEmbedding_eq_of_image_eq
-    {α β : Type*} [LinearOrder α] [PartialOrder β] [Fintype α] [DecidableEq β]
-    {f g : α ↪o β}
-    (h : Finset.image f .univ = Finset.image g .univ) :
-    f = g := by
-  suffices ∀ {n : ℕ} (f g : Fin n ↪o β) (h : Finset.image f ⊤ = Finset.image g ⊤), f = g by
-    let e := Fintype.orderIsoFinOfCardEq α rfl
-    replace h := this (e.toOrderEmbedding.trans f) (e.toOrderEmbedding.trans g) (by
-      ext x
-      suffices Finset.image (f ∘ e) .univ = Finset.image (g ∘ e) .univ by
-        simpa using congrFun (congrArg Membership.mem this) x
-      simpa only [← Finset.image_image, Finset.image_univ_of_surjective e.surjective])
-    ext x
-    obtain ⟨x, rfl⟩ := e.surjective x
-    exact DFunLike.congr_fun (congr_arg OrderEmbedding.toOrderHom h) x
-  suffices ∀ {n : ℕ} {f g : Fin n ↪o β} (h : Finset.image f ⊤ = Finset.image g ⊤) (i : Fin n)
-      (h' : ∀ (j : Fin n), j < i → f j = g j), f i ≤ g i from fun n f g h ↦ by
-    ext i
-    induction i using Fin.strong_induction_on with
-    | h i hi => exact le_antisymm (this h _ hi) (this h.symm _ (fun j hj ↦ (hi j hj).symm))
-  intro n f g h i h'
-  have : g i ∈ Finset.image f ⊤ := by rw [h]; simp
-  simp only [Finset.top_eq_univ, Finset.mem_image, Finset.mem_univ, true_and] at this
-  obtain ⟨j, hj⟩ := this
-  rw [← hj]
-  apply f.monotone
-  by_contra!
-  rw [h' j this, EmbeddingLike.apply_eq_iff_eq] at hj
-  lia
+@[elab_as_elim]
+lemma LinearOrder.strong_induction_of_finite
+    {α : Type*} [LinearOrder α] [Finite α] {motive : α → Prop}
+    (h : ∀ (j : α) (_ : ∀ (k : α), k < j → motive k), motive j) (i : α) :
+    motive i := by
+  have := Fintype.ofFinite α
+  let e := Fintype.orderIsoFinOfCardEq α rfl
+  revert i
+  rw [e.surjective.forall]
+  refine Fin.strong_induction_on (fun j hj ↦ h _ (fun k hk ↦ ?_))
+  simpa using hj (e.symm k) (by simpa [← e.lt_iff_lt])
 
-lemma Finset.orderHom_eq_of_image_eq {α β : Type*} [LinearOrder α] [PartialOrder β]
-    [Fintype α] [DecidableEq β] {f g : α →o β}
-    (hf : Function.Injective f) (hg : Function.Injective g)
-    (h : Finset.image f .univ = Finset.image g .univ) :
-    f = g := by
+lemma OrderEmbedding.range_eq_iff
+    {α β : Type*} [LinearOrder α] [PartialOrder β] [Finite α]
+    {f g : α ↪o β} :
+    Set.range f = Set.range g ↔ f = g := by
+  refine ⟨fun h ↦ ?_, by rintro rfl; rfl⟩
+  let ef := (f.strictMono.strictMonoOn .univ).orderIso
+  let eg := (g.strictMono.strictMonoOn .univ).orderIso
+  let i : f '' .univ ≃o g '' .univ :=
+    { __ := Equiv.setCongr (by simpa using h)
+      map_rel_iff' := by rfl }
+  have : (ef.trans i).trans eg.symm = .refl _ := by
+    exact Subsingleton.elim _ _
+  ext x
+  simpa only [OrderIso.trans_apply, OrderIso.apply_symm_apply, OrderIso.refl_apply, Subtype.ext_iff]
+    using congr(eg ($this ⟨x, Set.mem_univ x⟩))
+
+lemma OrderHom.range_eq_iff {α β : Type*} [LinearOrder α] [PartialOrder β]
+    [Finite α] {f g : α →o β}
+    (hf : Function.Injective f) (hg : Function.Injective g) :
+    Set.range f = Set.range g ↔ f = g := by
+  refine ⟨fun h ↦ ?_, by rintro rfl; rfl⟩
   ext : 2
-  exact DFunLike.congr_fun (Finset.orderEmbedding_eq_of_image_eq
-    (f := OrderEmbedding.ofStrictMono f (f.monotone.strictMono_of_injective hf))
-    (g := OrderEmbedding.ofStrictMono g (g.monotone.strictMono_of_injective hg))
-    (by simpa)) _
+  exact DFunLike.congr_fun ((OrderEmbedding.range_eq_iff
+    (f := .ofStrictMono f (f.monotone.strictMono_of_injective hf))
+    (g := .ofStrictMono g (g.monotone.strictMono_of_injective hg))).1 (by simpa)) _
 
 lemma OrderHom.eq_id_of_injective {α : Type*} [LinearOrder α] [Finite α] (f : α →o α)
     (hf : Function.Injective f) :
     f = .id :=
-  let := Fintype.ofFinite α
-  Finset.orderHom_eq_of_image_eq hf Function.injective_id
-    (by simpa using Finset.image_univ_of_surjective (Finite.surjective_of_injective hf))
+  (range_eq_iff hf Function.injective_id).1 (by
+    simpa [Set.range_eq_univ] using Finite.surjective_of_injective hf)

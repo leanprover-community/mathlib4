@@ -143,13 +143,10 @@ instance : (Δ[p] ⊗ Δ[q] : SSet.{u}).Finite :=
 
 lemma le_orderHomOfSimplex {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n) {m : ℕ}
     (hm : p + q = m) (i : Fin (n + 1)) : i.1 ≤ orderHomOfSimplex x.1 hm i := by
-  obtain ⟨i, hi⟩ := i
-  induction i with
+  induction i using Fin.induction with
   | zero => simp
-  | succ i hi' =>
-    have h : (⟨i, by lia⟩ : Fin (n + 1)) < ⟨i + 1, hi⟩ := by simp
-    simpa only [Nat.succ_le_iff] using
-      lt_of_le_of_lt (hi' (by lia)) (strictMono_orderHomOfSimplex x hm h)
+  | succ i hi =>
+    simpa using lt_of_le_of_lt hi (strictMono_orderHomOfSimplex x hm Fin.castSucc_lt_succ)
 
 lemma nonDegenerate_max_dim_iff {n : ℕ} (z : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌)
     (hn : p + q = n := by lia) :

@@ -821,7 +821,7 @@ If `p` is a maximal ideal, then the lift of `p` in an extension is the product o
 over `p` to the power the ramification index.
 -/
 theorem Ideal.map_algebraMap_eq_finset_prod_pow {p : Ideal S} [p.IsMaximal] (hp : p ≠ 0) :
-    map (algebraMap S R) p = ∏ P ∈ p.primesOver R, P ^ p.ramificationIdx (algebraMap S R) P := by
+    map (algebraMap S R) p = ∏ P ∈ p.primesOver R, P ^ p.ramificationIdx P := by
   classical
   have h : map (algebraMap S R) p ≠ 0 := map_ne_bot_of_ne_bot hp
   rw [← finprod_heightOneSpectrum_factorization (I := p.map (algebraMap S R)) h]
