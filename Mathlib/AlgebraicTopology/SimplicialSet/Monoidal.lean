@@ -148,6 +148,7 @@ lemma range_tensorHom {X₁ X₂ Y₁ Y₂ : SSet.{u}} (f₁ : X₁ ⟶ Y₁) (f
     exact ⟨⟨x₁, x₂⟩, rfl⟩
 
 /-- The isomorphism `(A.prod B).toSSet ≅ A.toSSet ⊗ B.toSSet`. -/
+@[simps]
 def prodIso {X Y : SSet.{u}} (A : X.Subcomplex) (B : Y.Subcomplex) :
     (A.prod B).toSSet ≅ A ⊗ B where
   hom := CartesianMonoidalCategory.lift
@@ -248,12 +249,14 @@ lemma prod_le_unionProd : S.prod T ≤ S.unionProd T :=
 namespace unionProd
 
 /-- The inclusion `X ⊗ T ⟶ S.unionProd T` as simplicial sets. -/
+@[simps!]
 def ι₁ : X ⊗ T ⟶ S.unionProd T :=
   lift (X ◁ T.ι) (by
     rintro m _ ⟨⟨y₁, y₂⟩, ⟨⟩⟩
     exact Or.inl ⟨Set.mem_univ _, Subtype.coe_prop _⟩)
 
 /-- The inclusion `S ⊗ Y ⟶ S.unionProd T` as simplicial sets -/
+@[simps!]
 def ι₂ : (S : SSet.{u}) ⊗ Y ⟶ (unionProd S T : SSet.{u}) :=
   lift (S.ι ▷ Y) (by
     rintro m _ ⟨⟨y₁, y₂⟩, ⟨⟩⟩
@@ -299,24 +302,23 @@ lemma image_β_inv : (unionProd S T).image (β_ _ _).inv = unionProd T S := by
   apply image_β_hom
 
 /-- The isomorphism `unionProd S T ≅ unionProd T S` as simplicial sets. -/
+@[simps]
 def symmIso : (unionProd S T : SSet) ≅ (unionProd T S : SSet) where
   hom := lift ((unionProd S T).ι ≫ (β_ _ _).hom) (by simp [range_comp])
   inv := lift ((unionProd T S).ι ≫ (β_ _ _).hom) (by simp [range_comp])
 
-noncomputable
-def unionProdιIso : Arrow.mk (S.unionProd T).ι ≅ S.ι □ T.ι := by
-  refine Arrow.isoMk' _ _ (unionProd.isPushout S T).isoPushout (Iso.refl _) ?_
-  · apply (unionProd.isPushout S T).hom_ext
-    ·
-      have : (Functor.PushoutObjObj.ofHasPushout (curriedTensor SSet) S.ι T.ι).inl =
-          ι₁ S T ≫ (unionProd.isPushout S T).isoPushout.hom := by
-        simp [Functor.PushoutObjObj.ofHasPushout_inl]
-      erw [← Category.assoc, ← this]
-      exact Functor.PushoutObjObj.inl_ι ..
-    · simp
-      sorry
-
 end unionProd
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The inclusion `(S.unionProd T).toSSet ⟶ X ⊗ Y` is isomorphic to the pushout-product
+`S.ι □ T.ι`. -/
+@[simps!]
+noncomputable
+def unionProdιIso : Arrow.mk (S.unionProd T).ι ≅ S.ι □ T.ι :=
+  Arrow.isoMk' _ _ (unionProd.isPushout S T).isoPushout (Iso.refl _)
+    ((unionProd.isPushout S T).hom_ext
+    (by simp [Functor.PushoutObjObj.ofHasPushout_ι])
+    (by simp [Functor.PushoutObjObj.ofHasPushout_ι]))
 
 end Subcomplex
 
