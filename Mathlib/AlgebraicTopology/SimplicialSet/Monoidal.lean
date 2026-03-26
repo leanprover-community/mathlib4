@@ -155,6 +155,10 @@ lemma ι₀_snd (X : SSet.{u}) : ι₀ ≫ snd X _ = const (stdSimplex.obj₀Equ
 @[simp]
 lemma ι₀_app_fst {X : SSet.{u}} {m} (x : X.obj m) : (ι₀.app _ x).1 = x := rfl
 
+@[simp]
+lemma ι₀_app_snd_apply {X : SSet.{u}} {m : ℕ} (x : X _⦋m⦌) (k : Fin (m + 1)) :
+    (ι₀.app _ x).2 k = 0 := rfl
+
 /-- The inclusion `X ⟶ X ⊗ Δ[1]` which is `1` on the second factor. -/
 noncomputable def ι₁ {X : SSet.{u}} : X ⟶ X ⊗ Δ[1] :=
   lift (𝟙 X) (const (stdSimplex.obj₀Equiv.{u}.symm 1))
@@ -171,6 +175,10 @@ lemma ι₁_comp {X Y : SSet.{u}} (f : X ⟶ Y) :
 
 @[simp]
 lemma ι₁_app_fst {X : SSet.{u}} {m} (x : X.obj m) : (ι₁.app _ x).1 = x := rfl
+
+@[simp]
+lemma ι₁_app_snd_apply {X : SSet.{u}} {m : ℕ} (x : X _⦋m⦌) (k : Fin (m + 1)) :
+    (ι₁.app _ x).2 k = 1 := rfl
 
 section
 
