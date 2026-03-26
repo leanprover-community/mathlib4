@@ -116,12 +116,12 @@ theorem ofList_nil : ofList ([] : List α) = 1 := rfl
 
 -- TODO: this statement uses defeq abuse, but so does much of the downstream use of `FreeMonoid`.
 -- This should be removed from the simp set and deprecated once those defeq abuses are cleaned up.
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "no" (since := "now"))]
 theorem toList_nil : toList ([] : FreeMonoid α) = [] := rfl
 
 -- TODO: this statement uses defeq abuse, but so does much of the downstream use of `FreeMonoid`.
 -- This should be removed from the simp set and deprecated once those defeq abuses are cleaned up.
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "no" (since := "now"))]
 theorem toList_cons (x : α) (xs : FreeMonoid α) : toList (x :: xs) = x :: toList xs := rfl
 
 @[to_additive (attr := simp)]
