@@ -28,7 +28,7 @@ variable [IsIntegralClosure 𝒪 ℤ K]
 /-- If `K` is a number field with positive rank, then there exists some maximal ideal of `𝓞 K`
 that is ramified over `ℤ`. -/
 lemma NumberField.exists_not_isUramifiedAt_int (H : Module.finrank ℚ K ≠ 1) :
-    ∃ (P : Ideal 𝒪) (_ : P.IsMaximal), P ≠ ⊥ ∧ ¬ Algebra.IsUnramifiedAt ℤ P := by
+    ∃ (P : Ideal 𝒪) (_ : P.IsMaximal), ¬ Algebra.IsUnramifiedAt ℤ P := by
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
   have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
   have := CharZero.of_module (R := 𝒪) K
@@ -38,13 +38,13 @@ lemma NumberField.exists_not_isUramifiedAt_int (H : Module.finrank ℚ K ≠ 1) 
   have := (not_dvd_discr_iff_forall_mem K 𝒪 hq).not_right.mp hqK
   push_neg at this
   obtain ⟨P, hP, h, H⟩ := this
-  exact ⟨P, hP.isMaximal (by aesop), by aesop, H⟩
+  exact ⟨P, hP.isMaximal (by aesop), H⟩
 
 /-- Any number field that is unramified over `ℚ` has rank `1`. -/
 lemma NumberField.finrank_eq_one_of_unramified [Algebra.Unramified ℤ 𝒪] :
     Module.finrank ℚ K = 1 := by
   by_contra H
-  obtain ⟨P, _, _, H⟩ := NumberField.exists_not_isUramifiedAt_int (𝒪 := 𝒪) H
+  obtain ⟨P, _, H⟩ := NumberField.exists_not_isUramifiedAt_int (𝒪 := 𝒪) H
   exact H inferInstance
 
 /-- If `𝒪` is a domain that is a finite and unramified extension of `ℤ`, then `𝒪 = ℤ`. -/
@@ -61,9 +61,8 @@ lemma bijective_algebraMap_int_of_finite_of_unramified
     (Algebra.finrank_eq_one_iff_bijective_algebraMap.mp this)) (by simp)
   exact bijective_algebraMap_of_linearEquiv (IsIntegralClosure.equiv ℤ ℤ K 𝒪).toLinearEquiv
 
-attribute [local simp] Ideal.span_le in
 /-- If `K` is a number field with positive rank such that `K/ℚ` is galois, then there exists
-some rational prime `p : ℤ` such that every prime of `K` over `P` is unramified. -/
+some rational prime `p : ℕ` such that every prime of `K` over `P` is unramified. -/
 lemma NumberField.exists_not_isUramifiedAt_int_of_isGalois [IsGalois ℚ K]
     (H : 1 < Module.finrank ℚ K) :
     ∃ p : ℕ, p.Prime ∧ ∀ (P : Ideal 𝒪) (_ : P.IsPrime), ↑p ∈ P → ¬ Algebra.IsUnramifiedAt ℤ P := by
@@ -74,16 +73,17 @@ lemma NumberField.exists_not_isUramifiedAt_int_of_isGalois [IsGalois ℚ K]
   have := CharZero.of_module (R := 𝒪) K
   let : MulSemiringAction Gal(K/ℚ) 𝒪 := IsIntegralClosure.MulSemiringAction ℤ ℚ K 𝒪
   have := IsGaloisGroup.of_isFractionRing Gal(K/ℚ) ℤ 𝒪 ℚ K
-  obtain ⟨P, _, hP, hP'⟩ := NumberField.exists_not_isUramifiedAt_int (𝒪 := 𝒪) H.ne'
+  obtain ⟨P, _, hP'⟩ := NumberField.exists_not_isUramifiedAt_int (𝒪 := 𝒪) H.ne'
   obtain ⟨p, hp : _ = Ideal.span _⟩ := IsPrincipalIdealRing.principal (P.under ℤ)
-  have hp0 : p ≠ 0 := fun hp0 ↦ hP (Ideal.eq_bot_of_comap_eq_bot (hp.trans (by aesop)))
+  have hp0 : p ≠ 0 := fun hp0 ↦ Ideal.IsMaximal.ne_bot_of_isIntegral_int _
+    (Ideal.eq_bot_of_comap_eq_bot (hp.trans (by aesop)))
   have : Prime p := by rw [← Ideal.span_singleton_prime hp0, ← hp]; infer_instance
   refine ⟨p.natAbs, Int.prime_iff_natAbs_prime.mp this, fun Q _ hQ ↦ ?_⟩
   replace hQ : (p : 𝒪) ∈ Q := Q.mem_of_dvd
     (map_dvd (algebraMap _ _) p.associated_natAbs.symm.dvd) (by simpa using hQ)
-  have : .span {p} = Ideal.under ℤ Q := (Ideal.IsPrime.isMaximal (hp ▸ inferInstance) (by simpa))
-    |>.eq_of_le Ideal.IsPrime.ne_top' (by simpa)
+  have : .span {p} = Ideal.under ℤ Q :=
+    ((Ideal.liesOver_span_iff Ideal.IsPrime.ne_top' this).mpr hQ).1
   rwa [Algebra.isUnramifiedAt_iff_of_isDedekindDomain (by aesop),
     ← Ideal.ramificationIdxIn_eq_ramificationIdx _ _ Gal(K/ℚ), ← this, ← hp,
     Ideal.ramificationIdxIn_eq_ramificationIdx _ P Gal(K/ℚ),
-    ← Algebra.isUnramifiedAt_iff_of_isDedekindDomain hP]
+    ← Algebra.isUnramifiedAt_iff_of_isDedekindDomain (Ideal.IsMaximal.ne_bot_of_isIntegral_int _)]

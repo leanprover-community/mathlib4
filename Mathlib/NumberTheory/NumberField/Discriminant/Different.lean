@@ -30,7 +30,12 @@ public section
 namespace NumberField
 
 variable (K 𝒪 : Type*) [Field K] [NumberField K] [CommRing 𝒪] [Algebra 𝒪 K]
-variable [IsFractionRing 𝒪 K] [IsIntegralClosure 𝒪 ℤ K] [IsDedekindDomain 𝒪] [CharZero 𝒪]
+
+open IntermediateField IsDedekindDomain
+
+section
+
+variable [IsFractionRing 𝒪 K] [IsDedekindDomain 𝒪] [CharZero 𝒪]
 variable [Module.Finite ℤ 𝒪]
 
 open nonZeroDivisors IntermediateField Module
@@ -142,8 +147,6 @@ theorem linearDisjoint_of_isGalois_isCoprime_discr (K₁ K₂ : IntermediateFiel
     exact Int.isUnit_iff_abs_eq.not.mpr <| by linarith [abs_discr_gt_two this]
   exact h.isUnit_of_dvd' (NumberField.discr_dvd_discr _ _) (NumberField.discr_dvd_discr _ _)
 
-open IntermediateField IsDedekindDomain
-
 /--
 Let `K₁` and `K₂` be two number fields and assume that their different ideals (over ℤ) are coprime.
 Then, the absolute value of the discriminant of their compositum is equal to
@@ -166,8 +169,10 @@ theorem natAbs_discr_eq_natAbs_discr_pow_mul_natAbs_discr_pow (K₁ K₂ : Inter
   exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv (𝓞 K₁) K₁)
     (FractionRing.algEquiv (𝓞 L) L) _
 
-omit [IsFractionRing 𝒪 K] [IsDedekindDomain 𝒪] [CharZero 𝒪] [Module.Finite ℤ 𝒪] in
-lemma not_dvd_discr_iff_forall_liesOver {p : ℤ} (hp : Prime p) :
+end
+
+/-- Also see `not_dvd_discr_iff_forall_mem` for a slightly easier to use RHS. -/
+lemma not_dvd_discr_iff_forall_liesOver [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp : Prime p) :
     ¬ p ∣ discr K ↔ ∀ (P : Ideal 𝒪) (_ : P.IsMaximal), P.LiesOver (.span {p}) →
       Algebra.IsUnramifiedAt ℤ P := by
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
@@ -187,18 +192,44 @@ lemma not_dvd_discr_iff_forall_liesOver {p : ℤ} (hp : Prime p) :
     obtain ⟨P, hP, h₁, h₂⟩ := Ideal.exists_isMaximal_dvd_of_dvd_absNorm hp _ h
     exact H P hP ⟨h₁.symm⟩ h₂
 
-attribute [local simp] Ideal.span_le in
-omit [IsFractionRing 𝒪 K] [IsDedekindDomain 𝒪] [CharZero 𝒪] [Module.Finite ℤ 𝒪] in
-lemma not_dvd_discr_iff_forall_mem {p : ℤ} (hp : Prime p) :
+theorem _root_.Ideal.IsMaximal.eq_iff_le {α : Type*} [CommRing α]
+    {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) : I = J ↔ I ≤ J :=
+  ⟨by aesop, Ideal.IsMaximal.eq_of_le hI hJ⟩
+
+lemma _root_.Ideal.IsPrime.isMaximal_of_ne_bot {R : Type*} [CommSemiring R] [Nontrivial R]
+    [NoZeroDivisors R] [Ring.KrullDimLE 1 R] {I : Ideal R} (hI : I.IsPrime) (hI' : I ≠ ⊥) :
+    I.IsMaximal :=
+  Ring.krullDimLE_one_iff_of_isPrime_bot.mp ‹_› _ hI' hI
+
+lemma _root_.Ideal.isMaximal_of_isPrime_of_ne_bot {R : Type*} [CommSemiring R] [Nontrivial R]
+    [NoZeroDivisors R] [Ring.KrullDimLE 1 R] (I : Ideal R) [I.IsPrime] (hI' : I ≠ ⊥) :
+    I.IsMaximal :=
+  Ideal.IsPrime.isMaximal_of_ne_bot ‹_› hI'
+
+lemma _root_.Prime.isMaximal_span_singleton {A : Type*} [CommRing A] [IsDomain A]
+    [Ring.KrullDimLE 1 A] {a : A} (ha : Prime a) : (Ideal.span {a}).IsMaximal :=
+  ((Ideal.span_singleton_prime ha.ne_zero).mpr ha).isMaximal_of_ne_bot (by simpa using ha.ne_zero)
+
+lemma Ideal.liesOver_span_iff
+    {A B : Type*} [CommRing A] [IsDomain A] [Ring.KrullDimLE 1 A] [CommRing B] [Algebra A B]
+    {P : Ideal B} {p : A} (hP : P ≠ ⊤) (hp : Prime p) :
+      P.LiesOver (.span {p}) ↔ algebraMap A B p ∈ P := by
+  have hP : P.under A ≠ ⊤ := by exact Ideal.comap_ne_top (algebraMap A B) hP
+  simp [Ideal.liesOver_iff, Ideal.IsMaximal.eq_iff_le hp.isMaximal_span_singleton hP]
+
+instance (priority := low) {R : Type*} [CommRing R] [IsDedekindDomain R] : Ring.KrullDimLE 1 R :=
+  .mk₁' fun _ hI hI' ↦ hI'.isMaximal hI
+
+/-- Also see `not_dvd_discr_iff_forall_liesOver` for a slightly easier to prove RHS. -/
+lemma not_dvd_discr_iff_forall_mem [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp : Prime p) :
     ¬ p ∣ discr K ↔ ∀ (P : Ideal 𝒪) (_ : P.IsPrime), ↑p ∈ P →
       Algebra.IsUnramifiedAt ℤ P := by
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
   have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
   have := CharZero.of_module (R := 𝒪) K
-  have h := (Ideal.isPrime_of_prime
-    (Ideal.prime_span_singleton_iff.mpr hp)).isMaximal (by simp [hp.ne_zero])
   rw [NumberField.not_dvd_discr_iff_forall_liesOver K 𝒪 hp]
-  exact ⟨fun H P hP _ ↦ H P (hP.isMaximal (by aesop)) ⟨h.eq_of_le Ideal.IsPrime.ne_top' (by simpa)⟩,
+  exact ⟨fun H P hP h ↦ H P (hP.isMaximal (by aesop))
+    ((Ideal.liesOver_span_iff hP.ne_top hp).mpr h),
     fun H P _ h ↦ H P _ (h.1.le (Ideal.mem_span_singleton_self _))⟩
 
 end NumberField
