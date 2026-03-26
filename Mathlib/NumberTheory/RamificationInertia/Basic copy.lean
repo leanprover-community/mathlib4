@@ -387,6 +387,10 @@ noncomputable def primesOverFinset' {R S : Type*} [CommRing R] [CommRing S] [Alg
     [Algebra.QuasiFinite R S] (p : Ideal R) [p.IsPrime] : Finset (Ideal S) :=
   (Algebra.QuasiFinite.finite_primesOver p (S := S)).toFinset
 
+noncomputable instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] : Fintype (p.primesOver S) :=
+  (Algebra.QuasiFinite.finite_primesOver p).fintype
+
 -- generalize to QuasiFinite
 
 open Module TensorProduct in
@@ -397,8 +401,7 @@ theorem sum_ramification_inertia
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] :
     Module.finrank p.ResidueField (p.Fiber S) =
-      ∑ q ∈ (Algebra.QuasiFinite.finite_primesOver p (S := S)).toFinset,
-        p.ramificationIdx q * p.inertiaDeg q := by
+      ∑ q : p.primesOver S, p.ramificationIdx q.1 * p.inertiaDeg q.1 := by
   let F := p.Fiber S
   have : Algebra S F := Algebra.TensorProduct.rightAlgebra
   have : IsArtinianRing F := inferInstance
@@ -416,15 +419,8 @@ theorem sum_ramification_inertia
   rw [key.toLinearEquiv.finrank_eq, finrank_pi_fintype]
   let e := (PrimeSpectrum.primesOverOrderIsoFiber R S p).toEquiv.trans
     IsArtinianRing.primeSpectrumEquivMaximalSpectrum
-  have he (I) : (e I).1.comap (algebraMap S F) = (I : Ideal S) := by
-    simp [e]
-    sorry
-  have he' (I) : (e I).1 = (I : Ideal S).map (algebraMap S F) := by
-    simp [e]
-    sorry
-  have : Fintype (p.primesOver S) := Fintype.ofEquiv _ e.symm
   classical
-  rw [← e.sum_comp, Set.toFinite_toFinset, ← Finset.sum_set_coe]
+  rw [← e.sum_comp]
   apply Finset.sum_congr rfl
   rintro ⟨q, hq1, hq2⟩ -
   let Sq := Localization.AtPrime q
