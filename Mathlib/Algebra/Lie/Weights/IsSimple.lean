@@ -189,12 +189,11 @@ lemma restr_inf_cartan_eq_biSup_corootSubmodule (I : LieIdeal K L) :
     exact LinearMap.mem_ker.mpr (congr_fun hμ b)
 
 lemma mem_rootSet_of_mem_rootSpan (I : LieIdeal K L)
-    {α : H.root} (hα_span : (↑α : Dual K H) ∈ I.rootSpan (H := H)) :
-    α ∈ I.rootSet (H := H) := by
+    {α : H.root} (hα_span : (↑α : Dual K H) ∈ I.rootSpan) :
+    α ∈ I.rootSet := by
   by_contra hα_not
   have hα_nz : (↑α : Weight K H L).IsNonZero := (Finset.mem_filter.mp α.property).2
-  have : I.rootSpan (H := H) ≤
-      LinearMap.ker (Dual.eval K H (coroot (↑α : Weight K H L))) := by
+  have : I.rootSpan ≤ LinearMap.ker (Dual.eval K H (coroot (↑α : Weight K H L))) := by
     rw [LieIdeal.rootSpan]; apply Submodule.span_le.mpr
     rintro _ ⟨γ, hγ, rfl⟩
     simp only [SetLike.mem_coe, LinearMap.mem_ker, Dual.eval_apply, rootSystem_root_apply]
@@ -204,8 +203,8 @@ lemma mem_rootSet_of_mem_rootSpan (I : LieIdeal K L)
   exact absurd this two_ne_zero
 
 lemma restr_eq_iSup_sl2SubmoduleOfRoot (I : LieIdeal K L) :
-    I.restr H = ⨆ (α : H.root) (_ : α ∈ I.rootSet (H := H)),
-      sl2SubmoduleOfRoot (H.isNonZero_coe_root α) := by
+    I.restr H =
+      ⨆ (α : H.root) (_ : α ∈ I.rootSet), sl2SubmoduleOfRoot (H.isNonZero_coe_root α) := by
   apply le_antisymm
   · rw [lieIdeal_eq_inf_cartan_sup_biSup_rootSpace, restr_inf_cartan_eq_biSup_corootSubmodule]
     apply sup_le
@@ -472,10 +471,9 @@ lemma restr_invtSubmoduleToLieIdeal_eq_iSup (q : Submodule K (Dual K H))
   rw [← LieSubmodule.toSubmodule_inj, LieSubmodule.restr_toSubmodule,
     coe_invtSubmoduleToLieIdeal_eq_iSup, LieSubmodule.iSup_toSubmodule]
 
-lemma mem_rootSet_invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
-    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap)
-    {α : H.root} :
-    α ∈ (invtSubmoduleToLieIdeal q hq).rootSet (H := H) ↔ (rootSystem H).root α ∈ q := by
+@[simp] lemma mem_rootSet_invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap) {α : H.root} :
+    α ∈ (invtSubmoduleToLieIdeal q hq).rootSet ↔ (rootSystem H).root α ∈ q := by
   set J := invtSubmoduleToLieIdeal q hq
   constructor
   · intro hα_mem; by_contra hα_not
