@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Category.ULift
 public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.Functor.EpiMono
 public import Mathlib.Logic.Equiv.Basic
-public import Mathlib.Tactic.CategoryTheory.Map
 
 /-!
 # Existence of limits and colimits
@@ -373,7 +372,7 @@ def limit.pre : limit F ⟶ limit (E ⋙ F) :=
   limit.lift (E ⋙ F) ((limit.cone F).whisker E)
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp), map]
+@[reassoc (attr := simp)]
 theorem limit.pre_π (k : K) : limit.pre F E ≫ limit.π (E ⋙ F) k = limit.π F (E.obj k) := by
   simp [limit.pre]
 
@@ -385,7 +384,7 @@ theorem limit.lift_pre (c : Cone F) :
 variable {L : Type u₃} [Category.{v₃} L]
 variable (D : L ⥤ K)
 
-@[map (attr := simp)]
+@[simp]
 theorem limit.pre_pre [h : HasLimit (D ⋙ E ⋙ F)] : haveI : HasLimit ((D ⋙ E) ⋙ F) := h
     limit.pre F E ≫ limit.pre (E ⋙ F) D = limit.pre F (D ⋙ E) := by
   haveI : HasLimit ((D ⋙ E) ⋙ F) := h
