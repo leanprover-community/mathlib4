@@ -25,7 +25,7 @@ A trivial valuative relation is equivalent to the value group being isomorphic t
 
 namespace ValuativeRel
 
-variable {R Γ : Type} [CommRing R] [DecidableEq R] [IsDomain R]
+variable {R Γ : Type} [Ring R] [DecidableEq R] [IsDomain R]
   [LinearOrderedCommGroupWithZero Γ]
 
 open WithZero
@@ -42,6 +42,7 @@ def trivialRel : ValuativeRel R where
   mul_vle_mul_left _ _ := by split_ifs at * <;> simp_all
   vle_mul_cancel _ := by split_ifs <;> simp_all
   not_vle_one_zero := by split_ifs <;> simp_all
+  vle_mul_comm {_ _} := by simpa using Or.symm
 
 lemma eq_trivialRel_of_compatible_one [h : ValuativeRel R]
     [hv : Valuation.Compatible (1 : Valuation R Γ)] : h = trivialRel := by

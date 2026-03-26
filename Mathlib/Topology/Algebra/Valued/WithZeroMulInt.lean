@@ -33,7 +33,7 @@ lemma tendsto_zero_pow_of_v_lt_one [MulArchimedean Γ₀] [Valued R Γ₀] {x : 
   intro y
   let v : Valuation R Γ₀ := Valued.v
   obtain ⟨n, hn⟩ := exists_pow_lt₀ hx
-    (Units.map (MonoidWithZeroHom.ValueGroup₀.embedding (f := v)) y)
+    (Units.map (MonoidWithZeroHom.ValueGroup₀.embedding (f := (v : R →*₀ Γ₀))) y)
   refine ⟨n, fun m hm ↦ ?_⟩
   rw [← map_pow, Valuation.restrict_lt_iff_lt_embedding]
   refine hn.trans_le' ?_
