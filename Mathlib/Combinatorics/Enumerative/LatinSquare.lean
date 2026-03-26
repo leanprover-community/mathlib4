@@ -232,7 +232,7 @@ noncomputable instance n_nonempty
 
 end Nonvacuous
 
-@[expose] public section Completion
+section Completion
 
 variable {n : Type*} [Fintype n] [Nonempty n] [DecidableEq n]
 variable {k : Type*} [Fintype k] [Nonempty k] [DecidableEq k]
