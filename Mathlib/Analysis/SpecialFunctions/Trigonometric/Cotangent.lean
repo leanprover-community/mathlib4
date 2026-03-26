@@ -70,7 +70,7 @@ section MittagLeffler
 
 open Filter Function
 
-open scoped Topology BigOperators Nat Complex
+open scoped Topology Nat Complex
 
 variable {x : ℂ} {Z : Set ℂ}
 

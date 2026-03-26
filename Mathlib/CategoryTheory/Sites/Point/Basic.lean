@@ -285,8 +285,8 @@ variable (F : A ⥤ B) [LocallySmall.{w} C] [PreservesFilteredColimitsOfSize.{w,
 /-- If `Φ` is a point of a site and `F : A ⥤ B` is a functor which preserves
 filtered colimits, then taking fibers of presheaves at `Φ` commutes with `F`. -/
 noncomputable def presheafFiberCompIso :
-  (Functor.whiskeringRight _ _ _).obj F ⋙ Φ.presheafFiber ≅
-    Φ.presheafFiber ⋙ F :=
+    (Functor.whiskeringRight _ _ _).obj F ⋙ Φ.presheafFiber ≅
+      Φ.presheafFiber ⋙ F :=
   haveI := Functor.Final.preservesColimitsOfShape_of_final
     (FinallySmall.fromFilteredFinalModel.{w} (Φ.fiber.Elementsᵒᵖ)) F
   Functor.isoWhiskerLeft

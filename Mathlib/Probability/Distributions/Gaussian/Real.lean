@@ -347,7 +347,7 @@ lemma gaussianReal_map_const_sub (y : ℝ) :
   rw [this, ← Measure.map_map (by fun_prop) (by fun_prop), gaussianReal_map_neg,
     gaussianReal_map_const_add, add_comm]
 
-variable {Ω : Type} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X : Ω → ℝ}
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X : Ω → ℝ}
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X + y`
 has Gaussian law with mean `μ + y` and variance `v`. -/

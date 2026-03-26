@@ -206,6 +206,11 @@ def toModuleAut : S →* M ≃ₗ[R] M where
 
 end DistribMulAction
 
+theorem LinearEquiv.smul_refl [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M]
+    [SMulCommClass R S M] [SMul S R] [IsScalarTower S R M] (α : Sˣ) :
+    letI := SMulCommClass.symm R Sˣ M
+    α • refl R M = DistribMulAction.toLinearEquiv R M α := rfl
+
 namespace AddEquiv
 
 section AddCommMonoid

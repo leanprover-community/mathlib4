@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Thomas Murrills
 -/
 module
 
-public meta import Mathlib.Algebra.Group.Invertible.Defs
-public meta import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Group.Invertible.Defs
+public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Data.Nat.Cast.Commute
@@ -25,18 +25,29 @@ This file adds `norm_num` plugins for
 See other files in this directory for many more plugins.
 -/
 
-public meta section
+public section
 
 universe u
 
-namespace Mathlib
-open Lean
-open Meta
+namespace Mathlib.Meta.NormNum
 
-namespace Meta.NormNum
-open Qq
+/-- If `b` divides `a` and `a` is invertible, then `b` is invertible. -/
+def invertibleOfMul {α} [Semiring α] (k : ℕ) (b : α) :
+    ∀ (a : α) [Invertible a], a = k * b → Invertible b
+  | _, ⟨c, hc1, hc2⟩, rfl => by
+    rw [← mul_assoc] at hc1
+    rw [Nat.cast_commute k, mul_assoc, Nat.cast_commute k] at hc2
+    exact ⟨_, hc1, hc2⟩
+
+/-- If `b` divides `a` and `a` is invertible, then `b` is invertible. -/
+def invertibleOfMul' {α} [Semiring α] {a k b : ℕ} [Invertible (a : α)]
+    (h : a = k * b) : Invertible (b : α) := invertibleOfMul k (b:α) ↑a (by simp [h])
 
 theorem IsInt.raw_refl (n : ℤ) : IsInt n n := ⟨rfl⟩
+
+meta section
+
+open Lean Meta Qq
 
 /-! ### Constructors and constants -/
 
@@ -178,18 +189,6 @@ theorem isNat_add {α} [AddMonoidWithOne α] : ∀ {f : α → α → α} {a b :
 theorem isInt_add {α} [Ring α] : ∀ {f : α → α → α} {a b : α} {a' b' c : ℤ},
     f = HAdd.hAdd → IsInt a a' → IsInt b b' → Int.add a' b' = c → IsInt (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_add ..).symm⟩
-
-/-- If `b` divides `a` and `a` is invertible, then `b` is invertible. -/
-def invertibleOfMul {α} [Semiring α] (k : ℕ) (b : α) :
-    ∀ (a : α) [Invertible a], a = k * b → Invertible b
-  | _, ⟨c, hc1, hc2⟩, rfl => by
-    rw [← mul_assoc] at hc1
-    rw [Nat.cast_commute k, mul_assoc, Nat.cast_commute k] at hc2
-    exact ⟨_, hc1, hc2⟩
-
-/-- If `b` divides `a` and `a` is invertible, then `b` is invertible. -/
-def invertibleOfMul' {α} [Semiring α] {a k b : ℕ} [Invertible (a : α)]
-    (h : a = k * b) : Invertible (b : α) := invertibleOfMul k (b:α) ↑a (by simp [h])
 
 -- see note [norm_num lemma function equality]
 theorem isNNRat_add {α} [Semiring α] {f : α → α → α} {a b : α} {na nb nc : ℕ} {da db dc k : ℕ} :
@@ -731,8 +730,6 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     have : Q(Nat.mod $nb $na = Nat.succ $nc) := (q(Eq.refl (Nat.succ $nc)) : Expr)
     return .isFalse q(isNat_dvd_false $pa $pb $this)
 
-end NormNum
+end
 
-end Meta
-
-end Mathlib
+end Mathlib.Meta.NormNum

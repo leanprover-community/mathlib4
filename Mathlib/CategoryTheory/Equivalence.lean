@@ -360,6 +360,12 @@ def symm (e : C ≌ D) : D ≌ C :=
 @[simp]
 lemma mkHom_id_inverse {e : C ≌ D} : mkHom (𝟙 e.inverse) = 𝟙 e.symm := rfl
 
+@[simp]
+lemma symm_counit (e : C ≌ D) : e.symm.counit = e.unitInv := rfl
+
+@[simp]
+lemma symm_unit (e : C ≌ D) : e.symm.unit = e.counitInv := rfl
+
 variable {E : Type u₃} [Category.{v₃} E]
 
 /-- Equivalence of categories is transitive. -/

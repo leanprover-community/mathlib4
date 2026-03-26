@@ -26,8 +26,6 @@ underlying set of a simplex.
 
 ## Notation
 
-`s ∈ K` means that `s` is a face of `K`.
-
 `K ≤ L` means that the faces of `K` are faces of `L`.
 
 ## Implementation notes
@@ -73,10 +71,6 @@ namespace SimplicialComplex
 
 variable {𝕜 E}
 variable {K : SimplicialComplex 𝕜 E} {s t : Finset E} {x : E}
-
-/-- A `Finset` belongs to a `SimplicialComplex` if it's a face of it. -/
-instance : Membership (Finset E) (SimplicialComplex 𝕜 E) :=
-  ⟨fun K s => s ∈ K.faces⟩
 
 lemma nonempty_of_mem_faces (hs : s ∈ K.faces) : s.Nonempty := by
   by_contra! rfl; exact K.empty_notMem hs

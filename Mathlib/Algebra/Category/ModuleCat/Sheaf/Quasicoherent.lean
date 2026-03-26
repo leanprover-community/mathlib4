@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
+public import Mathlib.CategoryTheory.FiberedCategory.HomLift
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
 
 /-!
 # Quasicoherent sheaves
@@ -23,11 +25,11 @@ When these coproducts are finite, we say that the sheaf is of finite presentatio
 
 @[expose] public section
 
-universe u v' u'
+universe w u v₁ v₂ u₁ u₂
 
 open CategoryTheory Limits
 
-variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
+variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C}
   {R : Sheaf J RingCat.{u}}
 
 namespace SheafOfModules
@@ -59,7 +61,7 @@ end
 
 noncomputable section
 
-variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat}
+variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
   [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
   [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)] {ι σ : Type u}
 
@@ -121,13 +123,17 @@ def Presentation.isColimit {M : SheafOfModules.{u} R} (P : Presentation M) :
   isCokernelEpiComp (c := CokernelCofork.ofπ _ (kernel.condition P.generators.π))
       (Abelian.epiIsCokernelOfKernel _ <| limit.isLimit _) _ rfl
 
-variable {C' : Type u'} [Category.{v'} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat}
+variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
   [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat]
   [J'.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
 
-variable {M : SheafOfModules.{u'} R} (P : Presentation M)
-  (F : SheafOfModules.{u'} R ⥤ SheafOfModules.{u'} S) [PreservesColimits F]
+variable {M : SheafOfModules.{u} R} (P : Presentation M)
+  (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) [PreservesColimitsOfSize.{u, u} F]
   (η : F.obj (unit R) ≅ unit S)
+
+-- `preservesColimitsOfSize_shrink` is not a global instance because it loops indefinitely.
+-- But here it is fine as an instance since the universe `u` is inferrable from the type of `F`.
+local instance : PreservesColimitsOfSize.{0, 0} F := preservesColimitsOfSize_shrink _
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
@@ -166,6 +172,8 @@ theorem Presentation.map_π_eq :
 
 end
 
+section
+
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   [∀ X, HasWeakSheafify (J.over X) AddCommGrpCat.{u}]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
@@ -174,7 +182,7 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
 the terminal object, and of a presentation of `M.over (X i)` for all `i`. -/
 structure QuasicoherentData (M : SheafOfModules.{u} R) where
   /-- the index type of the covering -/
-  I : Type u'
+  I : Type u₁
   /-- a family of objects which cover the terminal object -/
   X : I → C
   coversTop : J.CoversTop X
@@ -243,5 +251,39 @@ instance (M : SheafOfModules.{u} R) [M.IsFinitePresentation] :
 noncomputable def quasicoherentDataOfIsFinitePresentation
     (M : SheafOfModules.{u} R) [M.IsFinitePresentation] : M.QuasicoherentData :=
   (IsFinitePresentation.exists_quasicoherentData M).choose
+
+end
+
+noncomputable section
+
+open CategoryTheory Limits
+
+variable {C : Type u₁} [Category.{v₁} C] [HasBinaryProducts C] {J : GrothendieckTopology C}
+  {R : Sheaf J RingCat.{u}} [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
+  [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
+
+variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
+  [∀ X, HasSheafify (J.over X) AddCommGrpCat]
+  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat]
+
+/-- Given a sheaf of `R`-modules `M` and a `Presentation M`, we may construct the quasi-coherent
+data on the trivial cover. -/
+@[simps]
+def Presentation.quasicoherentData {M : SheafOfModules.{u} R} (P : Presentation M) :
+    QuasicoherentData M where
+  I := C
+  X := id
+  coversTop x := GrothendieckTopology.covering_of_eq_top J <| by
+    rw [Sieve.ext_iff]
+    intro _ f
+    simpa [Sieve.top_apply, iff_true] using ⟨x, Nonempty.intro f⟩
+  presentation x := P.map (pushforward (𝟙 (R.over x))) (by rfl)
+
+/-- If a sheaf of `R`-modules `M` has a presentation, then `M` is quasi-coherent. -/
+theorem Presentation.isQuasicoherent {M : SheafOfModules.{u} R} (P : Presentation M) :
+    IsQuasicoherent M where
+  nonempty_quasicoherentData := Nonempty.intro (Presentation.quasicoherentData P)
+
+end
 
 end SheafOfModules

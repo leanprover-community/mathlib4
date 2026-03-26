@@ -67,6 +67,10 @@ protected lemma map_smul {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (m : M.obj 
 lemma congr_map_apply {X Y : Cᵒᵖ} {f g : X ⟶ Y} (h : f = g) (m : M.obj X) :
     M.map f m = M.map g m := by rw [h]
 
+lemma map_comp_apply {U V W : Cᵒᵖ} (i : U ⟶ V) (j : V ⟶ W) (x) :
+    M.map (i ≫ j) x = M.map j (M.map i x) := by
+  rw [M.map_comp]; rfl
+
 /-- A morphism of presheaves of modules consists of a family of linear maps which
 satisfy the naturality condition. -/
 @[ext]

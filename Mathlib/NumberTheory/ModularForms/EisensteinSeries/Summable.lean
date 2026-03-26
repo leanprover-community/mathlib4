@@ -23,7 +23,7 @@ noncomputable section
 
 open Complex UpperHalfPlane Set Finset Topology Filter Asymptotics
 
-open scoped UpperHalfPlane Topology BigOperators Nat
+open scoped UpperHalfPlane Topology Nat
 
 variable (z : ℍ)
 

@@ -14,6 +14,8 @@ public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 public import Mathlib.RingTheory.Polynomial.SeparableDegree
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
+import Mathlib.RingTheory.Polynomial.Subring
+
 /-!
 
 # Separable degree

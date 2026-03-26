@@ -157,7 +157,8 @@ def restrictSupportIdeal (s : Set (σ →₀ ℕ)) (hs : IsUpperSet s) :
 
 @[simp]
 lemma restrictScalars_restrictSupportIdeal (s : Set (σ →₀ ℕ)) (hs) :
-  (restrictSupportIdeal (R := R) s hs).restrictScalars R = restrictSupport R s := by rfl
+    (restrictSupportIdeal (R := R) s hs).restrictScalars R = restrictSupport R s :=
+  rfl
 
 variable (σ)
 

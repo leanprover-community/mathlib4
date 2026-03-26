@@ -159,6 +159,7 @@ theorem cons_left_injective (s : Seq α) : Function.Injective fun x => cons x s 
 theorem cons_right_injective (x : α) : Function.Injective (cons x) :=
   cons_injective2.right _
 
+@[simp]
 theorem cons_eq_cons {x x' : α} {s s' : Seq α} :
     (cons x s = cons x' s') ↔ (x = x' ∧ s = s') := by
   constructor

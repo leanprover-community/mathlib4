@@ -7,29 +7,30 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
-public import Mathlib.RingTheory.RingHom.StandardSmooth
+public import Mathlib.AlgebraicGeometry.Morphisms.Flat
+public import Mathlib.RingTheory.RingHom.LocallyStandardSmooth
+public import Mathlib.RingTheory.Smooth.Flat
 
 /-!
 
 # Smooth morphisms
 
-A morphism of schemes `f : X ⟶ Y` is smooth (of relative dimension `n`) if for each `x : X` there
-exists an affine open neighborhood `V` of `x` and an affine open neighborhood `U` of
-`f.base x` with `V ≤ f ⁻¹ᵁ U` such that the induced map `Γ(Y, U) ⟶ Γ(X, V)` is
-standard smooth (of relative dimension `n`).
+In this file we define smooth morphisms. The main definitions are:
 
-In other words, smooth (resp. smooth of relative dimension `n`) for scheme morphisms is associated
-to the property of ring homomorphisms `Locally IsStandardSmooth`
-(resp. `Locally (IsStandardSmoothOfRelativeDimension n)`).
+- `AlgebraicGeometry.Smooth`: A morphism of schemes `f : X ⟶ Y` is smooth if for each affine `U ⊆ Y`
+  and `V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is smooth.
 
-## Implementation details
+- `AlgebraicGeometry.SmoothOfRelativeDimension`: A morphism of schemes `f : X ⟶ Y` is smooth of
+  relative dimension `n` if for each `x : X` there exists an affine open neighborhood `V` of `x`
+  and an affine open neighborhood `U` of `f.base x` with `V ≤ f ⁻¹ᵁ U` such that the induced
+  map `Γ(Y, U) ⟶ Γ(X, V)` is standard smooth (of relative dimension `n`).
 
-- Our definition is equivalent to defining `IsSmooth` as the associated scheme morphism property of
-the property of ring maps induced by `Algebra.Smooth`. The equivalence will follow from the
-equivalence of `Locally IsStandardSmooth` and `Algebra.IsSmooth`, but the latter is a (hard) TODO.
+## Main results
 
-The reason why we choose the definition via `IsStandardSmooth`, is because verifying that
-`Algebra.IsSmooth` is local in the sense of `RingHom.PropertyIsLocal` is a (hard) TODO.
+- `AlgebraicGeometry.Smooth.iff_forall_exists_isStandardSmooth`: A morphism of schemes is smooth
+  if and only if for each `x : X` there exists an affine open neighborhood `V` of `x`
+  and an affine open neighborhood `U` of `f.base x` with `V ≤ f ⁻¹ᵁ U` such that the induced
+  map `Γ(Y, U) ⟶ Γ(X, V)` is standard smooth.
 
 ## Notes
 
@@ -40,10 +41,9 @@ June 2024.
 
 @[expose] public section
 
-
 noncomputable section
 
-open CategoryTheory
+open CategoryTheory Limits
 
 universe t w v u
 
@@ -53,41 +53,69 @@ open RingHom
 
 variable (n m : ℕ) {X Y : Scheme.{u}} (f : X ⟶ Y)
 
-/--
-A morphism of schemes `f : X ⟶ Y` is smooth if for each `x : X` there
-exists an affine open neighborhood `V` of `x` and an affine open neighborhood `U` of
-`f.base x` with `V ≤ f ⁻¹ᵁ U` such that the induced map `Γ(Y, U) ⟶ Γ(X, V)` is
-standard smooth.
--/
+/-- A morphism of schemes `f : X ⟶ Y` is smooth if for each affine `U ⊆ Y` and
+`V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is smooth. -/
 @[mk_iff]
-class IsSmooth : Prop where
-  exists_isStandardSmooth : ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.1)
-    (e : V.1 ≤ f ⁻¹ᵁ U.1), IsStandardSmooth (f.appLE U V e).hom
+class Smooth (f : X ⟶ Y) : Prop where
+  smooth_appLE (f) :
+    ∀ {U : Y.Opens} (_ : IsAffineOpen U) {V : X.Opens} (_ : IsAffineOpen V) (e : V ≤ f ⁻¹ᵁ U),
+      (f.appLE U V e).hom.Smooth
 
-/-- The property of scheme morphisms `IsSmooth` is associated with the ring
-homomorphism property `Locally IsStandardSmooth`. -/
-instance : HasRingHomProperty @IsSmooth (Locally IsStandardSmooth) := by
-  apply HasRingHomProperty.locally_of_iff
-  · exact isStandardSmooth_localizationPreserves.away
-  · exact isStandardSmooth_stableUnderCompositionWithLocalizationAway
-  · intro X Y f
-    rw [isSmooth_iff]
+alias Scheme.Hom.smooth_appLE := Smooth.smooth_appLE
+
+@[deprecated (since := "2026-02-09")] alias IsSmooth := Smooth
+
+/-- The property of scheme morphisms `Smooth` is associated with the ring
+homomorphism property `Smooth`. -/
+instance : HasRingHomProperty @Smooth RingHom.Smooth where
+  isLocal_ringHomProperty := RingHom.Smooth.propertyIsLocal
+  eq_affineLocally' := by
+    ext X Y f
+    rw [smooth_iff, affineLocally_iff_forall_isAffineOpen]
+
+/--
+A morphism of schemes is smooth if and only if for each `x : X` there exists an affine open
+neighborhood `V` of `x` and an affine open neighborhood `U` of `f.base x` with `V ≤ f ⁻¹ᵁ U`
+such that the induced map `Γ(Y, U) ⟶ Γ(X, V)` is standard smooth.
+-/
+lemma Smooth.iff_forall_exists_isStandardSmooth (f : X ⟶ Y) :
+    Smooth f ↔
+      ∀ (x : X), ∃ (U : Y.Opens) (_ : IsAffineOpen U) (V : X.Opens) (_ : IsAffineOpen V) (_ : x ∈ V)
+        (e : V ≤ f ⁻¹ᵁ U), (f.appLE U V e).hom.IsStandardSmooth := by
+  have : HasRingHomProperty @Smooth.{u} (Locally IsStandardSmooth) := by
+    convert (inferInstanceAs <| HasRingHomProperty @Smooth.{u} RingHom.Smooth)
+    ext f
+    rw [RingHom.smooth_iff_locally_isStandardSmooth]
+  rw [HasRingHomProperty.iff_exists_appLE_locally (P := @Smooth)]
+  · congr!
+    simp [Subtype.exists]
+    grind [Scheme.affineOpens]
+  · exact isStandardSmooth_stableUnderCompositionWithLocalizationAway.left
+  · exact isStandardSmooth_respectsIso
+
+lemma Smooth.exists_isStandardSmooth (f : X ⟶ Y) [Smooth f] (x : X) :
+    ∃ (U : Y.Opens) (_ : IsAffineOpen U) (V : X.Opens) (_ : IsAffineOpen V) (_ : x ∈ V)
+        (e : V ≤ f ⁻¹ᵁ U), (f.appLE U V e).hom.IsStandardSmooth :=
+  (iff_forall_exists_isStandardSmooth f).mp ‹_› x
 
 /-- Being smooth is stable under composition. -/
-instance : MorphismProperty.IsStableUnderComposition @IsSmooth :=
-  HasRingHomProperty.stableUnderComposition <| locally_stableUnderComposition
-    isStandardSmooth_respectsIso isStandardSmooth_localizationPreserves
-      isStandardSmooth_stableUnderComposition
+instance : MorphismProperty.IsStableUnderComposition @Smooth :=
+  HasRingHomProperty.stableUnderComposition Smooth.stableUnderComposition
 
 /-- The composition of smooth morphisms is smooth. -/
-instance isSmooth_comp {Z : Scheme.{u}} (g : Y ⟶ Z) [IsSmooth f] [IsSmooth g] :
-    IsSmooth (f ≫ g) :=
-  MorphismProperty.comp_mem _ f g ‹IsSmooth f› ‹IsSmooth g›
+instance smooth_comp {Z : Scheme.{u}} (g : Y ⟶ Z) [Smooth f] [Smooth g] :
+    Smooth (f ≫ g) :=
+  MorphismProperty.comp_mem _ f g ‹Smooth f› ‹Smooth g›
 
-/-- Smooth of relative dimension `n` is stable under base change. -/
-lemma isSmooth_isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsSmooth :=
-  HasRingHomProperty.isStableUnderBaseChange <| locally_isStableUnderBaseChange
-    isStandardSmooth_respectsIso isStandardSmooth_isStableUnderBaseChange
+instance (priority := low) [Smooth f] : Flat f where
+  flat_appLE {_} hU {_} hV e := (f.smooth_appLE hU hV e).flat
+
+/-- Smooth is stable under base change. -/
+instance smooth_isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @Smooth :=
+  HasRingHomProperty.isStableUnderBaseChange Smooth.isStableUnderBaseChange
+
+@[deprecated (since := "2026-02-09")]
+alias isSmooth_isStableUnderBaseChange := smooth_isStableUnderBaseChange
 
 /--
 A morphism of schemes `f : X ⟶ Y` is smooth of relative dimension `n` if for each `x : X` there
@@ -96,56 +124,85 @@ exists an affine open neighborhood `V` of `x` and an affine open neighborhood `U
 standard smooth of relative dimension `n`.
 -/
 @[mk_iff]
-class IsSmoothOfRelativeDimension : Prop where
-  exists_isStandardSmoothOfRelativeDimension : ∀ (x : X), ∃ (U : Y.affineOpens)
-    (V : X.affineOpens) (_ : x ∈ V.1) (e : V.1 ≤ f ⁻¹ᵁ U.1),
+class SmoothOfRelativeDimension : Prop where
+  exists_isStandardSmoothOfRelativeDimension : ∀ (x : X), ∃ (U : Y.Opens) (_ : IsAffineOpen U)
+    (V : X.Opens) (_ : IsAffineOpen V) (_ : x ∈ V) (e : V ≤ f ⁻¹ᵁ U),
     IsStandardSmoothOfRelativeDimension n (f.appLE U V e).hom
 
-/-- If `f` is smooth of any relative dimension, it is smooth. -/
-lemma IsSmoothOfRelativeDimension.isSmooth [IsSmoothOfRelativeDimension n f] : IsSmooth f where
-  exists_isStandardSmooth x := by
-    obtain ⟨U, V, hx, e, hf⟩ := exists_isStandardSmoothOfRelativeDimension (n := n) (f := f) x
-    exact ⟨U, V, hx, e, hf.isStandardSmooth⟩
+@[deprecated (since := "2026-02-09")] alias IsSmoothOfRelativeDimension := SmoothOfRelativeDimension
 
-/-- The property of scheme morphisms `IsSmoothOfRelativeDimension n` is associated with the ring
+/-- If `f` is smooth of any relative dimension, it is smooth. -/
+lemma SmoothOfRelativeDimension.smooth [SmoothOfRelativeDimension n f] : Smooth f := by
+  rw [Smooth.iff_forall_exists_isStandardSmooth]
+  intro x
+  obtain ⟨U, hU, V, hV, hx, e, hf⟩ := exists_isStandardSmoothOfRelativeDimension (n := n) (f := f) x
+  exact ⟨U, hU, V, hV, hx, e, hf.isStandardSmooth⟩
+
+@[deprecated (since := "2026-02-09")]
+alias IsSmoothOfRelativeDimension.isSmooth := SmoothOfRelativeDimension.smooth
+
+/-- The property of scheme morphisms `SmoothOfRelativeDimension n` is associated with the ring
 homomorphism property `Locally (IsStandardSmoothOfRelativeDimension n)`. -/
-instance : HasRingHomProperty (@IsSmoothOfRelativeDimension n)
+instance : HasRingHomProperty (@SmoothOfRelativeDimension n)
     (Locally (IsStandardSmoothOfRelativeDimension n)) := by
   apply HasRingHomProperty.locally_of_iff
   · exact (isStandardSmoothOfRelativeDimension_localizationPreserves n).away
   · exact isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway n
   · intro X Y f
-    rw [isSmoothOfRelativeDimension_iff]
+    rw [smoothOfRelativeDimension_iff]
+    congr!
+    simp [Subtype.exists]
+    grind [Scheme.affineOpens]
 
 /-- Smooth of relative dimension `n` is stable under base change. -/
-lemma isSmoothOfRelativeDimension_isStableUnderBaseChange :
-    MorphismProperty.IsStableUnderBaseChange (@IsSmoothOfRelativeDimension n) :=
+lemma smoothOfRelativeDimension_isStableUnderBaseChange :
+    MorphismProperty.IsStableUnderBaseChange (@SmoothOfRelativeDimension n) :=
   HasRingHomProperty.isStableUnderBaseChange <| locally_isStableUnderBaseChange
     isStandardSmoothOfRelativeDimension_respectsIso
     (isStandardSmoothOfRelativeDimension_isStableUnderBaseChange n)
 
+@[deprecated (since := "2026-02-09")]
+alias isSmoothOfRelativeDimension_isStableUnderBaseChange :=
+  smoothOfRelativeDimension_isStableUnderBaseChange
+
 /-- Open immersions are smooth of relative dimension `0`. -/
-instance (priority := 900) [IsOpenImmersion f] : IsSmoothOfRelativeDimension 0 f :=
+instance (priority := 900) [IsOpenImmersion f] : SmoothOfRelativeDimension 0 f :=
   HasRingHomProperty.of_isOpenImmersion
     (locally_holdsForLocalizationAway <|
       isStandardSmoothOfRelativeDimension_holdsForLocalizationAway).containsIdentities
 
 /-- Open immersions are smooth. -/
-instance (priority := 900) [IsOpenImmersion f] : IsSmooth f :=
-  IsSmoothOfRelativeDimension.isSmooth 0 f
+instance (priority := 900) [IsOpenImmersion f] : Smooth f :=
+  SmoothOfRelativeDimension.smooth 0 f
+
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Smooth g] :
+    Smooth (pullback.fst f g) :=
+  MorphismProperty.pullback_fst f g inferInstance
+
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Smooth f] :
+    Smooth (pullback.snd f g) :=
+  MorphismProperty.pullback_snd f g inferInstance
+
+instance (f : X ⟶ Y) (V : Y.Opens) [Smooth f] : Smooth (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
+
+instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [Smooth f] :
+    Smooth (f.resLE V U e) := by
+  delta Scheme.Hom.resLE; infer_instance
 
 /-- If `f` is smooth of relative dimension `n` and `g` is smooth of relative dimension
 `m`, then `f ≫ g` is smooth of relative dimension `n + m`. -/
-instance isSmoothOfRelativeDimension_comp {Z : Scheme.{u}} (g : Y ⟶ Z)
-    [hf : IsSmoothOfRelativeDimension n f] [hg : IsSmoothOfRelativeDimension m g] :
-    IsSmoothOfRelativeDimension (n + m) (f ≫ g) where
+instance smoothOfRelativeDimension_comp {Z : Scheme.{u}} (g : Y ⟶ Z)
+    [hf : SmoothOfRelativeDimension n f] [hg : SmoothOfRelativeDimension m g] :
+    SmoothOfRelativeDimension (n + m) (f ≫ g) where
   exists_isStandardSmoothOfRelativeDimension x := by
-    obtain ⟨U₂, V₂, hfx₂, e₂, hf₂⟩ := hg.exists_isStandardSmoothOfRelativeDimension (f x)
-    obtain ⟨U₁', V₁', hx₁', e₁', hf₁'⟩ := hf.exists_isStandardSmoothOfRelativeDimension x
+    obtain ⟨U₂, hU₂, V₂, hV₂, hfx₂, e₂, hf₂⟩ := hg.exists_isStandardSmoothOfRelativeDimension (f x)
+    obtain ⟨U₁', hU₁', V₁', hV₁', hx₁', e₁', hf₁'⟩ :=
+      hf.exists_isStandardSmoothOfRelativeDimension x
     obtain ⟨r, s, hx₁, e₁, hf₁⟩ := exists_basicOpen_le_appLE_of_appLE_of_isAffine
       (isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway n).right
       (isStandardSmoothOfRelativeDimension_localizationPreserves n).away
-      x V₂ U₁' V₁' V₁' hx₁' hx₁' e₁' hf₁' hfx₂
+      x ⟨V₂, hV₂⟩ ⟨U₁', hU₁'⟩ ⟨V₁', hV₁'⟩ ⟨V₁', hV₁'⟩ hx₁' hx₁' e₁' hf₁' hfx₂
     have e : X.basicOpen s ≤ (f ≫ g) ⁻¹ᵁ U₂ :=
       le_trans e₁ <| f.preimage_mono <| le_trans (Y.basicOpen_le r) e₂
     have heq : (f ≫ g).appLE U₂ (X.basicOpen s) e = g.appLE U₂ V₂ e₂ ≫
@@ -153,34 +210,26 @@ instance isSmoothOfRelativeDimension_comp {Z : Scheme.{u}} (g : Y ⟶ Z)
           f.appLE (Y.basicOpen r) (X.basicOpen s) e₁ := by
       rw [RingHom.algebraMap_toAlgebra, CommRingCat.ofHom_hom,
         g.appLE_map_assoc, Scheme.Hom.appLE_comp_appLE]
-    refine ⟨U₂, ⟨X.basicOpen s, V₁'.2.basicOpen s⟩, hx₁, e, heq ▸ ?_⟩
+    refine ⟨U₂, hU₂, X.basicOpen s, hV₁'.basicOpen s, hx₁, e, heq ▸ ?_⟩
     apply IsStandardSmoothOfRelativeDimension.comp ?_ hf₂
-    haveI : IsLocalization.Away r Γ(Y, Y.basicOpen r) := V₂.2.isLocalization_basicOpen r
+    haveI : IsLocalization.Away r Γ(Y, Y.basicOpen r) := hV₂.isLocalization_basicOpen r
     exact (isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway n).left
       _ r _ hf₁
 
-instance {Z : Scheme.{u}} (g : Y ⟶ Z) [IsSmoothOfRelativeDimension 0 f]
-    [IsSmoothOfRelativeDimension 0 g] :
-    IsSmoothOfRelativeDimension 0 (f ≫ g) :=
-  inferInstanceAs <| IsSmoothOfRelativeDimension (0 + 0) (f ≫ g)
+instance {Z : Scheme.{u}} (g : Y ⟶ Z) [SmoothOfRelativeDimension 0 f]
+    [SmoothOfRelativeDimension 0 g] :
+    SmoothOfRelativeDimension 0 (f ≫ g) :=
+  inferInstanceAs <| SmoothOfRelativeDimension (0 + 0) (f ≫ g)
 
 /-- Smooth of relative dimension `0` is multiplicative. -/
-instance : MorphismProperty.IsMultiplicative (@IsSmoothOfRelativeDimension 0) where
+instance : MorphismProperty.IsMultiplicative (@SmoothOfRelativeDimension 0) where
   id_mem _ := inferInstance
   comp_mem _ _ _ _ := inferInstance
 
 /-- Smooth morphisms are locally of finite presentation. -/
-instance (priority := 100) [hf : IsSmooth f] : LocallyOfFinitePresentation f := by
+instance (priority := 100) [hf : Smooth f] : LocallyOfFinitePresentation f := by
   rw [HasRingHomProperty.eq_affineLocally @LocallyOfFinitePresentation]
-  rw [HasRingHomProperty.eq_affineLocally @IsSmooth] at hf
-  refine affineLocally_le (fun hf ↦ ?_) f hf
-  apply RingHom.locally_of_locally (Q := RingHom.FinitePresentation) at hf
-  · rwa [RingHom.locally_iff_of_localizationSpanTarget finitePresentation_respectsIso
-      finitePresentation_ofLocalizationSpanTarget] at hf
-  · introv hf
-    algebraize [f]
-    -- TODO: why is `algebraize` not generating the following instance?
-    haveI : Algebra.IsStandardSmooth R S := hf
-    exact this.finitePresentation
+  rw [HasRingHomProperty.eq_affineLocally @Smooth] at hf
+  exact affineLocally_le (fun hf ↦ hf.finitePresentation) f hf
 
 end AlgebraicGeometry

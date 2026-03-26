@@ -74,8 +74,8 @@ theorem logb_abs_base (b x : ℝ) : logb |b| x = logb b x := by rw [logb, logb, 
 theorem logb_abs (b x : ℝ) : logb b |x| = logb b x := by rw [logb, logb, log_abs]
 
 @[simp]
-theorem logb_neg_base_eq_logb (b x : ℝ) : logb (-b) x = logb b x := by
-  rw [← logb_abs_base b x, ← logb_abs_base (-b) x, abs_neg]
+theorem logb_neg_base_eq_logb (b : ℝ) : logb (-b) = logb b := by
+  ext x; rw [← logb_abs_base b x, ← logb_abs_base (-b) x, abs_neg]
 
 @[simp]
 theorem logb_neg_eq_logb (b x : ℝ) : logb b (-x) = logb b x := by
@@ -522,6 +522,32 @@ theorem isLittleO_const_logb_atTop {c : ℝ} (hb : b ≠ -1 ∧ b ≠ 0 ∧ b �
   rw [Asymptotics.isLittleO_const_left, or_iff_not_imp_left]
   intro hc
   exact tendsto_abs_logb_atTop hb
+
+theorem isBigO_logb_log : logb b =O[⊤] log := by
+  by_cases! h : b = -1 ∨ b = 0 ∨ b = 1
+  · obtain rfl | rfl | rfl := h
+    all_goals simpa [-Asymptotics.isBigO_top] using Asymptotics.isBigO_zero log ⊤
+  · simpa [logb, div_eq_mul_inv, mul_comm]
+      using (Asymptotics.isBigO_refl log ⊤).const_mul_left (log b)⁻¹
+
+theorem isBigO_log_const_mul_log_atTop (c : ℝ) : (fun x ↦ log (c * x)) =O[atTop] log := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa using isLittleO_const_log_atTop.isBigO
+  · calc (fun x ↦ log (c * x))
+      =ᶠ[atTop] (fun x => log c + log x) := by
+          filter_upwards [eventually_gt_atTop 0] with a ha using log_mul hc ha.ne'
+      _ =O[atTop] log :=
+          isLittleO_const_log_atTop.isBigO.add (Asymptotics.isBigO_refl ..)
+
+theorem isBigO_log_mul_const_log_atTop (c : ℝ) : (fun x ↦ log (x * c)) =O[atTop] log := by
+  simpa [mul_comm] using isBigO_log_const_mul_log_atTop c
+
+theorem isBigO_logb_const_mul_log_atTop (c : ℝ) : (fun x ↦ logb b (c * x)) =O[atTop] log := by
+  simpa [logb, div_eq_mul_inv, mul_comm]
+    using (isBigO_log_const_mul_log_atTop c).const_mul_left (log b)⁻¹
+
+theorem isBigO_logb_mul_const_log_atTop (c : ℝ) : (fun x ↦ logb b (x * c)) =O[atTop] log := by
+  simpa [mul_comm] using isBigO_logb_const_mul_log_atTop c
 
 end Real
 

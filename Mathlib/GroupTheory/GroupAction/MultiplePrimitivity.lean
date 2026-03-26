@@ -38,7 +38,7 @@ is `m`-primitive.
 
 @[expose] public section
 
-open scoped BigOperators Pointwise Cardinal
+open scoped Pointwise Cardinal
 
 namespace MulAction
 

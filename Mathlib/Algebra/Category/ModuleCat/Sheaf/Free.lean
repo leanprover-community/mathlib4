@@ -26,10 +26,10 @@ a type `I` to the coproduct of copies indexed by `I` of `unit R`.
 
 @[expose] public section
 
-universe u v' u'
+universe u v₁ v₂ u₁ u₂
 open CategoryTheory Limits
 
-variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
+variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
   [HasWeakSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
   [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
@@ -124,7 +124,7 @@ noncomputable def freeFunctor : Type u ⥤ SheafOfModules.{u} R where
 
 section
 
-variable {C' : Type u'} [Category.{v'} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
+variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
   [HasSheafify J' AddCommGrpCat.{u}] [J'.WEqualsLocallyBijective AddCommGrpCat.{u}]
   [J'.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S)
