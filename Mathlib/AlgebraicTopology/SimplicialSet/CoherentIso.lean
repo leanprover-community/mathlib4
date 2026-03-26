@@ -61,7 +61,6 @@ def one : WalkingIso.{w} := .mk (.up true)
 /-- The isomorphism at the heart of `WalkingIso` -/
 def iso : zero.{w} ≅ one := Codiscrete.iso zero one
 
-/-- TODO: Fix universe levels -/
 lemma eq_iso_hom (f : zero.{w} ⟶ one) : f = iso.{w}.hom := Codiscrete.eq_iso_hom f
 
 lemma eq_iso_inv (f : one.{w} ⟶ zero) : f = iso.{w}.inv := Codiscrete.eq_iso_inv f
@@ -76,6 +75,8 @@ universe z
 
 variable {motive : WalkingIso.{u} → Sort z} (zero : motive zero) (one : motive one)
 
+/-- The recursor for WalkingIso, which constructs a term of `∏ (x : WalkingIso), A x` from
+a term of `A zero` and a term of `A one`. -/
 @[elab_as_elim, induction_eliminator]
 protected def rec : ∀ a, motive a
   | .mk (.up false) => zero
@@ -89,12 +90,8 @@ end induction
 /-- From an isomorphism in a category, true can build a functor out of `WalkingIso` to
   that category. -/
 def fromIso {X Y : C} (e : X ≅ Y) : WalkingIso.{w} ⥤ C where
-  obj x := by
-    induction x
-    · exact X
-    · exact Y
-  map {x y} _ := by
-    induction x <;> induction y; exacts [𝟙 X, e.hom, e.inv, 𝟙 Y]
+  obj x := by induction x ; exacts [X, Y]
+  map {x y} _ := by induction x <;> induction y; exacts [𝟙 X, e.hom, e.inv, 𝟙 Y]
   map_comp {x y z} _ _ := by induction x <;> induction y <;> induction z <;> simp
   map_id {x} := by induction x <;> rfl
 
