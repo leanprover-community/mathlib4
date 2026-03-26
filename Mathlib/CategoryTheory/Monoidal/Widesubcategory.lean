@@ -131,19 +131,10 @@ instance : IsCommComonObj c where
 
 end ComonObj
 
-section CopyDiscardCategory
-
-variable [CopyDiscardCategory C] [P.IsStableUnderBraiding]
-
-@[simp]
-lemma tensorμ_hom (X Y Z T : WideSubcategory P) :
-    (MonoidalCategory.tensorμ X Y Z T).hom = MonoidalCategory.tensorμ _ _ _ _ := rfl
-
 open CopyDiscardCategory in
 attribute [local simp] copy_tensor discard_tensor copy_unit discard_unit in
-instance [∀ c, P.IsStableUnderComonoid c] : CopyDiscardCategory (WideSubcategory P) where
-
-end CopyDiscardCategory
+instance [CopyDiscardCategory C] [P.IsStableUnderBraiding] [∀ c, P.IsStableUnderComonoid c] :
+    CopyDiscardCategory (WideSubcategory P) where
 
 end WideSubcategory
 
