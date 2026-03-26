@@ -12,7 +12,7 @@ public meta import Lean.Elab.Tactic.ElabTerm
 # The `clear*` tactic
 
 This file provides a variant of the `clear` tactic, which clears all hypotheses it can
-besides a provided list.
+besides a provided list, class instances, and auxiliary declarations.
 -/
 
 public meta section
@@ -37,11 +37,13 @@ def clearExcept (preserve : Array FVarId) (goal : MVarId) : MetaM MVarId := do
   let toClear ← getVarsToClear preserve
   goal.tryClearMany toClear
 
-/-- Clears all hypotheses it can, except those provided after a minus sign. Example:
+/-- Clears all hypotheses it can, except those provided after a minus sign, class instances, and
+hidden auxiliary declarations (for example recursive hypotheses). Example:
 ```
   clear * - h₁ h₂
 ```
--/
+The intent is that `clear * -` only clears user-visible local declarations; hidden auxiliary
+declarations should be handled by more specific mechanisms when needed. -/
 syntax (name := clearExceptTactic) "clear " "*" " -" (ppSpace colGt ident)* : tactic
 
 elab_rules : tactic
