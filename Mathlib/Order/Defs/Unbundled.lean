@@ -53,6 +53,9 @@ abbrev IsAntisymm (α : Sort*) (r : α → α → Prop) : Prop := Std.Antisymm r
 class IsTrans (α : Sort*) (r : α → α → Prop) : Prop where
   trans : ∀ a b c, r a b → r b c → r a c
 
+lemma isTrans_def {α : Sort*} {r : α → α → Prop} : IsTrans α r ↔ ∀ ⦃a b c⦄, r a b → r b c → r a c :=
+  ⟨(·.trans), .mk⟩
+
 instance {α : Sort*} {r : α → α → Prop} [IsTrans α r] : Trans r r r :=
   ⟨IsTrans.trans _ _ _⟩
 

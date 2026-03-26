@@ -976,7 +976,7 @@ theorem realize_antisymmetric :
 
 @[simp]
 theorem realize_transitive : M ⊨ r.transitive ↔ IsTrans M fun x y ↦ RelMap r ![x, y] := by
-  refine .trans ?_ ⟨IsTrans.mk, (·.trans)⟩
+  rw [isTrans_def]
   exact forall₃_congr fun _ _ _ ↦ imp_congr realize_rel₂ <| imp_congr realize_rel₂ realize_rel₂
 
 @[simp]
