@@ -350,4 +350,73 @@ theorem condExp_zero_or_one_of_measurableSet_limsup_atBot [StandardBorelSpace Ω
 
 end AtBot
 
+/-! ### Self-independence of measurable functions
+
+This section proves that if a measurable function `Y` is independent of itself (`Y ⟂ᵢ[μ] Y`),
+then `Y` is independent of any other measurable function.
+
+We also prove that under additional assumptions (`MeasurableSingletonClass` and `Countable`),
+self-independence implies that the function is a.e. equal to a constant.
+-/
+
+/-- If `Y ⟂ᵢ[μ] Y`, then `μ (Y ⁻¹' s)` equals `0` or `1` for every measurable set `s`. -/
+lemma IndepFun.measure_preimage_eq_zero_or_one {Ω : Type*} {mΩ : MeasurableSpace Ω}
+    {μ : Measure Ω} {B : Type*} [MeasurableSpace B]
+    [IsProbabilityMeasure μ] {Y : Ω → B}
+    (hY : Y ⟂ᵢ[μ] Y) (hYm : Measurable Y)
+    {s : Set B} (hs : MeasurableSet s) :
+    μ (Y ⁻¹' s) = 0 ∨ μ (Y ⁻¹' s) = 1 := by
+  apply measure_eq_zero_or_one_of_indepSet_self
+  exact (indepFun_iff_indepSet_preimage hYm hYm).mp hY s s hs hs
+
+/-- If a measurable function `Y` is independent of itself and `B` has measurable singletons
+and is countable, then `Y` is a.e. equal to a constant. -/
+theorem IndepFun.ae_eq_const_of_self {Ω : Type*} {mΩ : MeasurableSpace Ω}
+    {μ : Measure Ω} {B : Type*} [MeasurableSpace B]
+    [MeasurableSingletonClass B] [Countable B]
+    [IsProbabilityMeasure μ] {Y : Ω → B}
+    (hY : Y ⟂ᵢ[μ] Y) (hYm : Measurable Y) :
+    ∃ c : B, Y =ᵐ[μ] fun _ ↦ c := by
+  have h_preimage : ∀ b : B, μ (Y ⁻¹' {b}) = 0 ∨ μ (Y ⁻¹' {b}) = 1 :=
+    fun b => IndepFun.measure_preimage_eq_zero_or_one hY hYm (measurableSet_singleton b)
+  have h_sum : ∃ c, μ (Y ⁻¹' {c}) = 1 := by
+    by_contra h_no_c
+    push_neg at h_no_c
+    have h_zero : μ (⋃ b, Y ⁻¹' {b}) = 0 :=
+      measure_iUnion_null fun b => Or.resolve_right (h_preimage b) (h_no_c b)
+    have : (⋃ b, Y ⁻¹' {b}) = Set.univ := by ext x; simp
+    rw [this, measure_univ] at h_zero
+    exact one_ne_zero h_zero
+  obtain ⟨c, hc⟩ := h_sum
+  exact ⟨c, by
+    rw [Filter.EventuallyEq, ae_iff]
+    have : {a | ¬Y a = c} = (Y ⁻¹' {c})ᶜ := by ext; simp
+    rw [this, measure_compl (hYm (measurableSet_singleton c)) (measure_ne_top μ _), hc]
+    simp⟩
+
+/-- If `Y` is independent of itself, then `X` and `Y` are independent for any `X`. -/
+theorem IndepFun.of_self {Ω : Type*} {mΩ : MeasurableSpace Ω}
+    {μ : Measure Ω} {A B : Type*} [MeasurableSpace A] [MeasurableSpace B]
+    [IsProbabilityMeasure μ] {X : Ω → A} {Y : Ω → B}
+    (hY : Y ⟂ᵢ[μ] Y) (hYm : Measurable Y) :
+    X ⟂ᵢ[μ] Y := by
+  suffices h_indep : ∀ s t, MeasurableSet s → MeasurableSet t →
+      μ (X ⁻¹' s ∩ Y ⁻¹' t) = μ (X ⁻¹' s) * μ (Y ⁻¹' t) by
+    exact indepFun_iff_measure_inter_preimage_eq_mul.mpr h_indep
+  intro s t hs ht
+  have h_cases : μ (Y ⁻¹' t) = 0 ∨ μ (Y ⁻¹' t) = 1 :=
+    IndepFun.measure_preimage_eq_zero_or_one hY hYm ht
+  cases h_cases with
+  | inl h =>
+    have : μ (X ⁻¹' s ∩ Y ⁻¹' t) = 0 := measure_mono_null Set.inter_subset_right h
+    rw [this, h, mul_zero]
+  | inr h =>
+    have h_compl : μ (Y ⁻¹' tᶜ) = 0 := by
+      rw [Set.preimage_compl,
+        measure_compl (hYm ht) (measure_ne_top μ _), h, measure_univ]
+      simp
+    have h_diff : μ (X ⁻¹' s \ Y ⁻¹' t) = 0 :=
+      measure_mono_null (fun _ hx => hx.2) h_compl
+    rw [measure_inter_conull' h_diff, h, mul_one]
+
 end ProbabilityTheory
