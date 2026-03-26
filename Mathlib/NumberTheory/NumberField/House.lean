@@ -127,7 +127,7 @@ variable [DecidableEq (K →+* ℂ)]
 set_option backward.privateInPublic true in
 /-- `c` is defined as the product of the maximum absolute
   value of the entries of the inverse of the matrix `basisMatrix` and  `finrank ℚ K`. -/
-private def c := (finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖
+def c := (finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖
 
 private theorem c_nonneg : 0 ≤ c K := by
   rw [c]
