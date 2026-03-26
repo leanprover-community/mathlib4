@@ -84,12 +84,9 @@ instance (F : D ⥤ E) [F.ReflectsIsomorphisms] :
 
 lemma reflectsIsomorphisms_of_iso {F G : C ⥤ D} (α : F ≅ G) [F.ReflectsIsomorphisms] :
     G.ReflectsIsomorphisms where
-  reflects := by
-    intro A B f _
-    rw [← isIso_iff_of_reflects_iso _ F]
-    haveI : IsIso (α.hom.app A ≫ G.map f) := IsIso.comp_isIso
-    rw [← α.hom.naturality f] at this
-    rwa [← isIso_comp_right_iff _ (α.hom.app B)]
+  reflects f _ := by
+    rw [← isIso_iff_of_reflects_iso _ F, ← NatIso.naturality_2 α f]
+    infer_instance
 
 lemma reflectsIsomorphisms_iso_iff {F G : C ⥤ D} (α : F ≅ G) :
     F.ReflectsIsomorphisms ↔ G.ReflectsIsomorphisms :=
