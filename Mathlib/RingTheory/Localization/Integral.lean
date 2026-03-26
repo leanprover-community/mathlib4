@@ -572,61 +572,85 @@ lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field
     apply IsIntegral.map (IsScalarTower.toAlgHom R S L)
     exact Algebra.IsIntegral.isIntegral (s : S)
 
+namespace IsLocalization
+
 section NormalizedGCDMonoid
 
-open IsLocalization
-
-variable {R S : Type*} [Nontrivial R] [CommRing R] [NormalizedGCDMonoid R]
+variable {R S : Type*} [CommRing R] [NormalizedGCDMonoid R]
 (M : Submonoid R) [CommRing S] [Algebra R S] [IsLocalization M S]
 (p : Polynomial S)
 
-private lemma aux_ne_zero :
+private lemma aux_ne_zero [Nontrivial R] :
     normalize (integerNormalization M p).primPart ≠ 0 := by
   rw [ne_eq, normalize_eq_zero]
   exact primPart_ne_zero (integerNormalization M p)
 
-noncomputable def IsLocalization.normalizedCoprimeIntegerNormalization :=
+noncomputable def normalizedPrimPartIntegerNormalization :=
   letI := Classical.decEq S
   if p = 0 then 0 else
   normalize (integerNormalization M p).primPart
 
-lemma IsLocalization.normalizedCoprimeIntegerNormalization_eq_zero_iff :
-    normalizedCoprimeIntegerNormalization M p = 0 ↔ p = 0 := by
-  simp [normalizedCoprimeIntegerNormalization, aux_ne_zero M p]
+lemma normalizedPrimPartIntegerNormalization_eq_zero_iff [Nontrivial R] :
+    normalizedPrimPartIntegerNormalization M p = 0 ↔ p = 0 := by
+  simp [normalizedPrimPartIntegerNormalization, aux_ne_zero M p]
 
-lemma IsLocalization.normalizedCoprimeIntegerNormalization_degree_eq [IsDomain R]
-    (hM : M ≤ nonZeroDivisors R) :
-    (normalizedCoprimeIntegerNormalization M p).degree = p.degree := by
-  have := isDomain_of_le_nonZeroDivisors S hM
-  rcases eq_or_ne p 0 with (rfl | hp)
-  · simp [normalizedCoprimeIntegerNormalization]
-  convert_to (normalizedCoprimeIntegerNormalization M p).natDegree = p.natDegree
-  · simp [degree_eq_natDegree, degree_eq_natDegree,
-      normalizedCoprimeIntegerNormalization_eq_zero_iff, hp]
-  simp only [normalizedCoprimeIntegerNormalization, hp, ↓reduceIte]
-  rw [normalize_apply, natDegree_mul (primPart_ne_zero _) (by simp), coe_normUnit, natDegree_C,
-    add_zero, natDegree_primPart]
-  obtain ⟨b, hb1, hb2⟩ := integerNormalization_spec M p
-  have : ((integerNormalization M p).map (algebraMap R S)).natDegree =
-    (integerNormalization M p).natDegree := by
-    apply natDegree_map_of_leadingCoeff_ne_zero (algebraMap R S)
-      <| (map_ne_zero_iff (algebraMap R S) (IsLocalization.injective S hM)).mpr _
-    rwa [leadingCoeff_ne_zero, ne_eq, integerNormalization_eq_zero_iff hM]
-  rw [← this, hb2]
-  have : Function.Injective (algebraMap R S) := by
-    exact IsLocalization.injective S hM
-  rw [← IsScalarTower.algebraMap_smul (A := S)]
-  rw [natDegree_smul]
-  rw [propext (map_ne_zero_iff (algebraMap R S) this)]
-  exact nonZeroDivisors.ne_zero (hM hb1)
+@[simp]
+lemma normalizedPrimPartIntegerNormalization_ne_zero [Nontrivial R] (hp : p ≠ 0) :
+    normalizedPrimPartIntegerNormalization M p ≠  0 := by
+  simp [normalizedPrimPartIntegerNormalization_eq_zero_iff, hp]
 
 variable {p} in
-theorem IsLocalization.normalizedCoprimeIntegerNormalization_IsPrimtive (hp : p ≠ 0) :
-    (normalizedCoprimeIntegerNormalization M p).IsPrimitive := by
-  simp [normalizedCoprimeIntegerNormalization, hp]
+theorem normalizedPrimPartIntegerNormalization_IsPrimtive (hp : p ≠ 0) :
+    (normalizedPrimPartIntegerNormalization M p).IsPrimitive := by
+  simp [normalizedPrimPartIntegerNormalization, hp, isPrimitive_iff_content_eq_one, normalize_apply,
+    content_primPart]
 
+theorem normalizedPrimPartIntegerNormalization_dvd' [IsDomain R] :
+    ∃ c : S, p = C c * (normalizedPrimPartIntegerNormalization M p).map (algebraMap R S) := by
+  rcases eq_or_ne p 0 with (rfl | hp)
+  · simp [normalizedPrimPartIntegerNormalization]
+  obtain ⟨b, hb1, hb2⟩ := integerNormalization_spec M p
+  obtain ⟨u, hu⟩ := IsLocalization.map_units S ⟨b, hb1⟩
+  have : p = (u⁻¹).val • (integerNormalization M p).map (algebraMap R S) := by
+    rw [hb2, ← invOf_smul_eq_iff, invOf_units, inv_inv, hu, algebraMap_smul]
+  nth_rw 1 [this]
+  rw [eq_C_content_mul_primPart (integerNormalization M p), smul_eq_C_mul]
+  simp only [Polynomial.map_mul, map_C, normalizedPrimPartIntegerNormalization, hp, ↓reduceIte,
+    normalize_apply, coe_normUnit]
+  let v := (normUnit (integerNormalization M p).primPart.leadingCoeff)⁻¹
+  use (u⁻¹).val * ((algebraMap R S) (integerNormalization M p).content) * algebraMap R S v
+  simp only [map_mul, v]
+  conv => enter [2]; rw [mul_assoc]
+  conv => enter [2,2]; rw [mul_comm, mul_assoc, ← map_mul, ← map_mul, Units.mul_inv,
+    map_one]
+  simp [mul_assoc]
+
+theorem normalizedPrimPartIntegerNormalization_dvd [IsDomain R] :
+    (normalizedPrimPartIntegerNormalization M p).map (algebraMap R S) ∣ p := by
+  obtain ⟨c, hc⟩ := normalizedPrimPartIntegerNormalization_dvd' M p
+  use C c
+  grind
+
+lemma normalizedPrimPartIntegerNormalization_degree_eq [IsDomain R]
+    (hM : M ≤ nonZeroDivisors R) :
+    (normalizedPrimPartIntegerNormalization M p).degree = p.degree := by
+  rcases eq_or_ne p 0 with (rfl | hp)
+  · simp [normalizedPrimPartIntegerNormalization]
+  letI := isDomain_of_le_nonZeroDivisors S hM
+  obtain ⟨_, hc⟩ := normalizedPrimPartIntegerNormalization_dvd' M p
+  nth_rw 2 [hc]
+  rw [degree_mul, degree_C (by grind), zero_add, degree_eq_natDegree (by simp [hp]),
+    degree_eq_natDegree (by grind), natDegree_map_of_leadingCoeff_ne_zero _
+    (by simp [map_ne_zero_iff, IsLocalization.injective _ hM, hp])]
+
+theorem normalizedPrimPartIntegerNormalization_irreducible_iff [IsDomain R] (hpirr : Irreducible p):
+    Irreducible (normalizedPrimPartIntegerNormalization M p) := by
+
+  obtain ⟨c, hc⟩ := normalizedPrimPartIntegerNormalization_dvd' M p
+  nth_rw 2 [hc]
 
   sorry
 
-
 end NormalizedGCDMonoid
+
+end IsLocalization
