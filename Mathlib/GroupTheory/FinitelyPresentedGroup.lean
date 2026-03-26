@@ -33,7 +33,10 @@ finitely presented group, finitely generated normal closure
 
 variable {G H α β : Type*} [Group G] [Group H]
 
-/-- Defines when a subgroup is the normal closure of a finite set. -/
+/--
+`IsNormalClosureFG N` says that the subgroup `N` is the normal closure of a finitely-generated
+subgroup.
+-/
 def Subgroup.IsNormalClosureFG (N : Subgroup G) : Prop :=
   ∃ S : Set G, S.Finite ∧ Subgroup.normalClosure S = N
 
