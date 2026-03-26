@@ -318,7 +318,6 @@ theorem _root_.ContDiffOn.absolutelyContinuousOnInterval {E : Type*} [NormedAddC
   obtain ⟨K, hK⟩ := hf.exists_lipschitzOnWith (by decide) (convex_Icc _ _) isCompact_Icc
   exact hK.absolutelyContinuousOnInterval
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` has bounded variation on `uIcc a b`. -/
 theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
     BoundedVariationOn f (uIcc a b) := by
