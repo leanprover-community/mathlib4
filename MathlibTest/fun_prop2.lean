@@ -4,7 +4,6 @@ import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
-import Mathlib.Tactic.FunProp.Simproc
 
 
 noncomputable
