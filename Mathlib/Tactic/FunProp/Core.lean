@@ -128,7 +128,8 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
     FunPropM (Option Result) := do
   let go : FunPropM (Option Result) := do
     let thmProof ← thmOrigin.getValue
-    let type ← inferType thmProof
+    -- for `fvar`s we need to instantiate the metavariables of its type.
+    let type ← instantiateMVars <| ← inferType thmProof
     let (xs, _, type) ← forallMetaTelescope type
 
     for (i,x) in hint do
@@ -433,7 +434,6 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
       let b ← whnfR b
       let some (decl, f) ← getFunProp? b | return none
       unless decl.funPropName = funPropDecl.funPropName do return none
-
       let .data fData ← getFunctionData? f (← unfoldNamePred)
         | return none
       unless (fData.getFnOrigin == funOrigin) do return none
@@ -465,7 +465,6 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
       | .lt => true
       | .gt => false
       | .eq => t.mainArgs.size < s.mainArgs.size)
-
   return thms
 
 
