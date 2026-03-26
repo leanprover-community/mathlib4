@@ -474,7 +474,7 @@ theorem se2_choose_le_sp2 (h : Conditions r p n a q μ) :
     exact Equiv.mk (fun x ↦ ⟨Sym.mk x.1 x.2, by simp⟩) (fun x ↦ ⟨x , by simp⟩)
       (fun _ ↦ rfl) (fun _ ↦ rfl)
 
-theorem pow_2_le_choose {x : ℕ} (h : 2 ≤ x) : 2 ^ (x + 1) < (2 * x + 1).choose x := by
+theorem pow_2_lt_choose {x : ℕ} (h : 2 ≤ x) : 2 ^ (x + 1) < (2 * x + 1).choose x := by
   have _ : Nat.choose 5 2 = 10 := rfl
   induction x, h using Nat.le_induction (m := 2)
   · grind
@@ -530,7 +530,7 @@ theorem not_aux_le (h : Conditions r p n a q μ) :
         apply Real.logb_le_logb_of_le (by norm_num) (by norm_num)
         norm_cast
         grind [Nat.pow_le_pow_left n_ge_3 2]
-  apply lt_of_lt_of_le (pow_2_le_choose h1)
+  apply lt_of_lt_of_le (pow_2_lt_choose h1)
   refine le_trans ?_ (se2_choose_le_sp2 h)
   replace logb_pos : 0 ≤ Real.logb 2 n := by grind
   have _ : ⌊Real.logb 2 n * √e⌋₊ ≤ e - 1 := by
