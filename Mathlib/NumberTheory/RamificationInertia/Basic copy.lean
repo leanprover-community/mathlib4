@@ -387,10 +387,12 @@ noncomputable def primesOverFinset' {R S : Type*} [CommRing R] [CommRing S] [Alg
     [Algebra.QuasiFinite R S] (p : Ideal R) [p.IsPrime] : Finset (Ideal S) :=
   (Algebra.QuasiFinite.finite_primesOver p (S := S)).toFinset
 
--- generalize to QuasiFinite?
+-- generalize to QuasiFinite
 
 open Module TensorProduct in
 set_option backward.isDefEq.respectTransparency false in
+set_option synthInstance.maxHeartbeats 1000000 in
+set_option maxHeartbeats 1000000 in
 theorem sum_ramification_inertia
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] :
@@ -398,30 +400,70 @@ theorem sum_ramification_inertia
       ∑ q ∈ (Algebra.QuasiFinite.finite_primesOver p (S := S)).toFinset,
         p.ramificationIdx q * p.inertiaDeg q := by
   let F := p.Fiber S
+  have : Algebra S F := Algebra.TensorProduct.rightAlgebra
   have : IsArtinianRing F := inferInstance
+  have (I : MaximalSpectrum F) : Module.Finite p.ResidueField F := inferInstance
+  have (I : MaximalSpectrum F) : Module.Finite p.ResidueField (Localization.AtPrime I.1) :=
+    Finite.of_quasiFinite
   have : Fintype (MaximalSpectrum F) := Fintype.ofFinite _
+  let : Field p.ResidueField := IsLocalRing.ResidueField.field (Localization.AtPrime p)
   let (I : MaximalSpectrum F) : Algebra p.ResidueField (Localization.AtPrime I.1) := inferInstance
-  have (I : MaximalSpectrum F) : IsScalarTower p.ResidueField F (Localization.AtPrime I.1) := inferInstance
-  let (I : MaximalSpectrum F) : Module p.ResidueField (Localization.AtPrime I.1) := Algebra.toModule
-  have (I : MaximalSpectrum F) : Module.Finite p.ResidueField (Localization.AtPrime I.1) := by
-    sorry
+  let h (I : MaximalSpectrum F) : Free p.ResidueField (Localization.AtPrime I.1) := inferInstance
+  have (I : MaximalSpectrum F) : IsScalarTower p.ResidueField F (Localization.AtPrime I.1) :=
+    inferInstance
   have key := (IsArtinianRing.equivPiLocalization F).restrictScalars p.ResidueField
-  have key' := (key.toLinearEquiv).finrank_eq
-  rw [key']
-  -- rw [finrank_pi_fintype]
-  sorry
-
-  -- need: F factors as a product of Artinian local rings,
-  let e := PrimeSpectrum.primesOverOrderIsoFiber R S p
-  have : (p.primesOver S).Finite := Algebra.QuasiFinite.finite_primesOver p
-  let q : Ideal S := sorry
-  have : q.IsPrime := sorry
-  have : q.LiesOver p := sorry
+  have key' := key.toLinearEquiv.finrank_eq
+  rw [key.toLinearEquiv.finrank_eq, finrank_pi_fintype]
+  let e := (PrimeSpectrum.primesOverOrderIsoFiber R S p).toEquiv.trans
+    IsArtinianRing.primeSpectrumEquivMaximalSpectrum
+  have he (I) : (e I).1.comap (algebraMap S F) = (I : Ideal S) := by
+    simp [e]
+    sorry
+  have he' (I) : (e I).1 = (I : Ideal S).map (algebraMap S F) := by
+    simp [e]
+    sorry
+  have : Fintype (p.primesOver S) := Fintype.ofEquiv _ e.symm
+  classical
+  rw [← e.sum_comp, Set.toFinite_toFinset, ← Finset.sum_set_coe]
+  apply Finset.sum_congr rfl
+  rintro ⟨q, hq1, hq2⟩ -
   let Sq := Localization.AtPrime q
   let A := Sq ⧸ p.map (algebraMap R Sq)
-  let e := (length Sq A).toNat
-  have := length_restrictScalars (Localization.AtPrime p) (Localization.AtPrime q) A -- e * f
-  -- just need to
-  sorry
+  have : _ = _ * _ := length_restrictScalars (Localization.AtPrime p) (Localization.AtPrime q) A -- e * f
+  replace this := congrArg ENat.toNat this
+  simp only [ENat.toNat_mul, Cardinal.toNat_toENat] at this
+  change _ = _ * Module.finrank _ _ at this
+  convert this
+  · rw [← ENat.coe_inj, ← length_eq_finrank]
+    refine (Module.length_eq_of_surjective
+      (IsLocalRing.residue_surjective (R := Localization.AtPrime p))).symm.trans ?_
+    rw [ENat.coe_toNat]
+    · apply LinearEquiv.length_eq
+      sorry
+    · let : Algebra p.ResidueField A := by
+        change Algebra (Localization.AtPrime p ⧸ _) (Localization.AtPrime q ⧸ _)
+        rw [IsScalarTower.algebraMap_eq R (Localization.AtPrime p), ← map_map,
+          Localization.AtPrime.map_eq_maximalIdeal]
+        infer_instance
+      have : IsScalarTower (Localization.AtPrime p) p.ResidueField A := by
+        apply IsScalarTower.of_algebraMap_eq
+        intro x
+        rfl
+      have : Module.Finite p.ResidueField A := by
+        change Module.Finite (Localization.AtPrime p ⧸ _) (Localization.AtPrime q ⧸ _)
+        rw [IsScalarTower.algebraMap_eq R (Localization.AtPrime p), ← map_map,
+          Localization.AtPrime.map_eq_maximalIdeal]
+        infer_instance
+      have : IsArtinian (Localization.AtPrime p) A := by
+        apply isArtinian_of_surjective_algebraMap (R := p.ResidueField)
+      have : IsNoetherian (Localization.AtPrime p) A := by
+        apply isNoetherian_of_surjective (R := p.ResidueField) (M := A)
+      exact length_ne_top
+      sorry
+  · rw [ramificationIdx_def]
+  · rw [inertiaDeg_algebraMap]
+    simp
+    -- might need to assume that p is maximal
+    sorry
 
 end Ideal
