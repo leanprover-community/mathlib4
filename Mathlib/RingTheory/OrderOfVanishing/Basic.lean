@@ -35,9 +35,6 @@ Order of vanishing function for elements of a ring.
 noncomputable
 def ord (x : R) : ℕ∞ := Module.length R (R ⧸ Ideal.span {x})
 
-/--
-The order of vanishing of `1` is `0`.
--/
 @[simp]
 lemma ord_one : ord R 1 = 0 := by
   simp_all [ord,
