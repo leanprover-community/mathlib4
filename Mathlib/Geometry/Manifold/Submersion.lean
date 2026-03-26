@@ -5,7 +5,10 @@ Authors: Michael Rothgang, Samantha Naranjo Guevara
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Immersion
+public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
+public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
+public import Mathlib.Analysis.Normed.Module.Shrink
+public import Mathlib.Topology.Algebra.Module.TransferInstance
 
 /-! # Smooth submersions
 
@@ -59,9 +62,9 @@ if there exist charts near `x` and `f x` in which `f` looks like the standard pr
 * To avoid a free universe variable in `IsSubmersion(At)`, we require the complement to be taken in
   the same universe as the model normed space for `N`. We also offer convenience constructors that
   relax this requirement to preserve usability. This relies on the observation that the equivalence
-  in the definition of immersions allows the universe of the complement to be reduced,
-  as implemented in `IsImmersion(At)OfComplement.small`
-  and  `IsImmersion(At)OfComplement.smallEquiv`.
+  in the definition of submersions allows the universe of the complement to be reduced,
+  as implemented in `IsSubmersion(At)OfComplement.small`
+  and  `IsSubmersion(At)OfComplement.smallEquiv`.
 
 ## TODO
 * `IsSubmersionAt.contMDiffAt`: if f is a submersion at `x`, it is a `C^n` map at `x`.
@@ -147,7 +150,7 @@ in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficien
 Implicit in this definition is an abstract choice `F` of a complement of `E''` in `E`: being
 a submersion at `x` includes a choice of linear isomorphism between `E` and `E'' × F`, which is
 where the choice of `F` enters.
-If you need stronger control over the complement `F`, use `IsImmersionAtOfComplement` instead.
+If you need stronger control over the complement `F`, use `IsSubmersionAtOfComplement` instead.
 -/
 irreducible_def IsSubmersionAt (I : ModelWithCorners 𝕜 E H) (J : ModelWithCorners 𝕜 E'' G)
     (n : WithTop ℕ∞) (f : M → N) (x : M) : Prop :=
@@ -327,7 +330,7 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
   rw [φ₁.extend_prod φ₂, ψ₁.extend_prod, PartialEquiv.prod_target, eqOn_prod_iff]
   exact ⟨fun x ⟨hx, hx'⟩ ↦ by simpa using hfprop hx, fun x ⟨hx, hx'⟩ ↦ by simpa using hgprop hx'⟩
 
-/-- If `f` is an immersion at `x` w.r.t. some complement `F`, it is an immersion at `x`. -/
+/-- If `f` is an submersion at `x` w.r.t. some complement `F`, it is an submersion at `x`. -/
 lemma isSubmersionAt (h : IsSubmersionAtOfComplement F I J n f x) :
     IsSubmersionAt I J n f x := by
   rw [IsSubmersionAt_def]
@@ -491,7 +494,7 @@ In other words, `f` is a submersion at each `x ∈ M`.
 def IsSubmersionOfComplement (f : M → N) : Prop := ∀ x, IsSubmersionAtOfComplement F I J n f x
 
 variable (I J n) in
-/-- `f : M → N` is a `C^n` immersion if around each point `x ∈ M`,
+/-- `f : M → N` is a `C^n` submersion if around each point `x ∈ M`,
 there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively
 such that in these charts, `f` looks like `(u, v) ↦ u`.
 
@@ -540,7 +543,7 @@ theorem prodMap {f : M → N} {g : M' → N'}
 /-- If `f` is a submersion w.r.t. some complement `F`, it is a submersion.
 
 Note that the proof contains a small formalisation-related subtlety: `F` can live in any universe,
-while being an immersion requires the existence of a complement in the same universe as
+while being an submersion requires the existence of a complement in the same universe as
 the model normed space of `N`. This is solved by `smallComplement` and `smallEquiv`.
 -/
 lemma isSubmersion (h : IsSubmersionOfComplement F I J n f) : IsSubmersion I J n f := by
@@ -575,7 +578,7 @@ lemma isSubmersionOfComplement_complement (h : IsSubmersion I J n f) :
 
 /-- If `f` is a submersion, it is an submersion at each point.
 -/
-lemma isImmersionAt (h : IsSubmersion I J n f) (x : M) : IsSubmersionAt I J n f x := by
+lemma isSubmersionAt (h : IsSubmersion I J n f) (x : M) : IsSubmersionAt I J n f x := by
   rw [IsSubmersionAt_def]
   use h.complement, by infer_instance, by infer_instance, h.isSubmersionOfComplement_complement x
 
