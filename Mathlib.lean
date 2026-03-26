@@ -4535,6 +4535,7 @@ public import Mathlib.GroupTheory.Exponent
 public import Mathlib.GroupTheory.FiniteAbelian.Basic
 public import Mathlib.GroupTheory.FiniteAbelian.Duality
 public import Mathlib.GroupTheory.FiniteIndexNormalSubgroup
+public import Mathlib.GroupTheory.FinitelyPresentedGroup
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.GroupTheory.FixedPointFree
 public import Mathlib.GroupTheory.Focal
