@@ -168,6 +168,13 @@ lemma CovariantDerivative.lift_vec_eq_iff {v : TotalSpace F V} (u : TangentSpace
       simp [h, t.symm_map_zero 𝕜]
     · rw [← h', t.mfderiv_proj_fst_deriv mem]
 
+lemma CovariantDerivative.lift_vec_eq_iff' {v : TotalSpace F V} (u : TangentSpace I v.proj)
+    (w : TangentSpace (I.prod 𝓘(𝕜, F)) v) :
+    cov.lift_vec v u = w  ↔
+      w ∈ cov.horiz v ∧
+      mfderiv (I.prod 𝓘(𝕜, F)) I (TotalSpace.proj : TotalSpace F V → M) v w = u := by
+  simp [CovariantDerivative.lift_vec_eq_iff, horiz]
+
 -- noncomputable
 -- def CovariantDerivative.lift_vec'
 --   (p : TotalSpace E ((TotalSpace.proj : (TotalSpace F V → M)) *ᵖ (TangentSpace I))) :

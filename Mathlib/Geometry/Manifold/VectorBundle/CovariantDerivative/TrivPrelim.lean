@@ -78,6 +78,11 @@ lemma bijective_symm [(x : B) → Zero (E x)]
 def secToFun (σ : (b : B) → E b) : B → F :=
   fun b ↦ e (σ b) |>.2
 
+@[simp]
+lemma secToFun_apply_of_eq {σ : (b : B) → E b} {v : TotalSpace F E} (h : σ v.proj = v) :
+    e.secToFun σ v.proj = (e v).2 := by
+  simp [secToFun, h]
+
 lemma secToFun_congr {σ σ' : (b : B) → E b} {b : B} (h : σ b = σ' b) :
     e.secToFun σ b = e.secToFun σ' b := by
   simp [secToFun, h]
@@ -96,6 +101,22 @@ variable [(x : B) → Zero (E x)]
 /-- Turn functions into the model fiber of a fiber bundle into sections using a trivialization. -/
 noncomputable def funToSec (s : B → F) : (b : B) → E b :=
   fun b ↦ e.symm b (s b)
+
+@[simp]
+lemma snd_apply_funToSec {x : B} (hx : x ∈ e.baseSet) (s : B → F) :
+    (e ⟨x, e.funToSec s x⟩).2 = s x := by
+  simp [funToSec, e.apply_mk_symm hx]
+
+@[simp]
+lemma funToSec_proj_eq {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) {s : B → F}
+    (hsv : s v.proj = (e v).2) :
+    e.funToSec s v.proj = v.2 := by
+  simp [funToSec, hsv, e.symm_proj_apply v hv]
+
+@[simp]
+lemma mk_funToSec_of_eq {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) {s : B → F}
+    (h : s v.proj = (e v).2) : (⟨v.proj, e.funToSec s v.proj⟩ : TotalSpace F E) = v := by
+  simp [funToSec, h, hv]
 
 lemma funToSec_congr {s s' : B → F} {b : B} (h : s b = s' b) :
     e.funToSec s b = e.funToSec s' b := by
@@ -128,9 +149,8 @@ lemma funToSec_secToFun {x : B} (hx : x ∈ e.baseSet) (σ : (b : B) → E b) :
   (e.funToSec_secToFun_eventually_eq hx σ).self_of_nhds
 
 section
-variable (σ : (b : B) → E b) [(b : B) → TopologicalSpace (E b)] [FiberBundle F E]
+variable (σ : (b : B) → E b)
 
-set_option linter.unusedSectionVars false in
 @[simp]
 lemma total_funToSec_secToFun_eventuallyEq {x : B} (hx : x ∈ e.baseSet) (σ : (b : B) → E b) :
     T% (e.funToSec <| e.secToFun σ) =ᶠ[𝓝 x] T% σ := by
@@ -468,10 +488,32 @@ lemma mdifferentiableAt_secToFun_funToSec
     MDiffAt (e.secToFun <| e.funToSec s) x ↔ MDiffAt s x :=
   e.secToFun_funToSec_eventuallyEq hx s |>.mdifferentiableAt_iff
 
-lemma mfderiv_total_funToSec_fst_deriv {s : M → F}
-    (v : TotalSpace F V) (w : TangentSpace (I.prod 𝓘(𝕜, F)) v) :
-    mfderiv% (T% (e.funToSec s)) v.proj (e.deriv I v w).1 = w := by
+lemma mfderiv_total_funToSec {s : M → F} {x : M} (hx : x ∈ e.baseSet) :
+    mfderiv% (T% (e.funToSec s)) x =
+      e.derivInv I (e.funToSec s x) ∘L .prod (.id 𝕜 <| TangentSpace I x) (mfderiv% s x) := by
   sorry
+
+lemma mfderiv_secToFun
+    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
+    {σ : (x : M) → V x} {x : M} (hσ : MDiffAt (T% σ) x) (hx : x ∈ e.baseSet) :
+    mfderiv% (e.secToFun σ) x =
+      .snd 𝕜 (TangentSpace I x) F ∘L (e.deriv I (σ x)) ∘L (mfderiv% T%σ x) := by
+  rw [show e.secToFun σ = Prod.snd ∘ e ∘ T%σ from rfl]
+  have mdiffe : MDifferentiableAt (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) e (σ x) :=
+    e.mdifferentiableAt hx _
+  have : mfderiv% (e ∘ T%σ) x = (e.deriv I (σ x)) ∘L (mfderiv% T%σ x) :=
+    mfderiv_comp x mdiffe hσ
+  -- TODO use  mfderiv_comp_section or factor out stuff
+  sorry
+
+lemma mfderiv_secToFun_apply
+    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
+    {σ : (x : M) → V x} {x : M} (hσ : MDiffAt (T% σ) x) (hx : x ∈ e.baseSet)
+    (u : TangentSpace I x) :
+    mfderiv% (e.secToFun σ) x u =
+      (e.deriv I (σ x) (mfderiv% T%σ x u)).2 := by
+  simp [e.mfderiv_secToFun hσ hx]
+  rfl
 
 noncomputable def _root_.Bundle.vert (v : TotalSpace F V) :
     Submodule 𝕜 (TangentSpace (I.prod 𝓘(𝕜, F)) v) :=
