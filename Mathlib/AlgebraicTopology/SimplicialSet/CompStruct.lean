@@ -267,7 +267,7 @@ end CompStruct
 
 /-- For `hom` an edge, `InvStruct hom` encodes that there is a backward edge `inv`, and
 there are 2-simplices witnessing that `hom` and `inv` compose to the identity on their endpoints.
-This means that `hom` becomes an isomorphism in the homotopy category. -/
+This implies that `hom` becomes an isomorphism in the homotopy category. -/
 @[ext]
 structure InvStruct (hom : Edge x₀ x₁) where
   /-- The backwards edge -/
@@ -293,7 +293,7 @@ def invStructInv {hom : Edge x₀ x₁} (I : InvStruct hom) : InvStruct I.inv wh
   homInvId := I.invHomId
   invHomId := I.homInvId
 
-/-- Maps an inverse along an SSet morphism. -/
+/-- Maps an inverse along an morphism of simplicial sets. -/
 @[simps]
 def map {hom : Edge x₀ x₁} (I : InvStruct hom) (f : X ⟶ Y) : InvStruct (hom.map f) where
   inv := I.inv.map f

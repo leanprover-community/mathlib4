@@ -301,9 +301,8 @@ lemma yonedaEquiv_naturality {X : SSet} {m n : SimplexCategory}
 lemma yonedaEquiv_symm_naturality_left {X : SSet} {m n : SimplexCategory}
     (f : m ⟶ n) (g : X.obj (Opposite.op n)) :
     stdSimplex.map f ≫ yonedaEquiv.symm g = yonedaEquiv.symm (X.map f.op g) := by
-  rw [← yonedaEquiv.apply_eq_iff_eq_symm_apply]
-  rw [← yonedaEquiv_naturality]
-  rw [yonedaEquiv.apply_symm_apply]
+  rw [← yonedaEquiv.apply_eq_iff_eq_symm_apply, ← yonedaEquiv_naturality,
+    yonedaEquiv.apply_symm_apply]
 
 namespace Subcomplex
 

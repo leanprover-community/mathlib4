@@ -32,80 +32,93 @@ if `g` sends `hom` to `f`, then `f` has an inverse.
 
 @[expose] public section
 
-universe u v w
+universe w u v
 
 open CategoryTheory
 
 namespace CategoryTheory
 
 /-- This is the free-living isomorphism as the codiscrete category on `Bool`. -/
-abbrev WalkingIso : Type u := Codiscrete (ULift Bool)
+abbrev WalkingIso : Type w := Codiscrete (ULift Bool)
 
 namespace WalkingIso
 
 /-- The underlying type of `WalkingIso` is equivalent to `Bool`, since they both have 2 elements. -/
-def equivBool : WalkingIso.{u} ≃ Bool := codiscreteEquiv.trans Equiv.ulift
+def equivBool : WalkingIso.{w} ≃ Bool := codiscreteEquiv.trans Equiv.ulift
 
-instance homUnique {x y : WalkingIso.{u}} : Unique (x ⟶ y) := inferInstanceAs (Unique Unit)
+instance homUnique {x y : WalkingIso.{w}} : Unique (x ⟶ y) := inferInstanceAs (Unique Unit)
 
 section
 
 variable {C : Type u} [Category.{v} C]
 
 /-- The domain of the isomorphism -/
-def zero : WalkingIso := .mk (ULift.up false)
+def zero : WalkingIso.{w} := .mk (.up false)
 
 /-- The codomain of the isomorphism -/
-def one : WalkingIso := .mk (ULift.up true)
+def one : WalkingIso.{w} := .mk (.up true)
 
 /-- The isomorphism at the heart of `WalkingIso` -/
-def iso : zero ≅ one := Codiscrete.iso zero one
+def iso : zero.{w} ≅ one := Codiscrete.iso zero one
 
-lemma eq_iso_hom (f : zero ⟶ one) : f = iso.hom := Codiscrete.eq_iso_hom f
+/-- TODO: Fix universe levels -/
+lemma eq_iso_hom (f : zero.{w} ⟶ one) : f = iso.{w}.hom := Codiscrete.eq_iso_hom f
 
-lemma eq_iso_inv (f : one ⟶ zero) : f = iso.inv := Codiscrete.eq_iso_inv f
+lemma eq_iso_inv (f : one.{w} ⟶ zero) : f = iso.{w}.inv := Codiscrete.eq_iso_inv f
 
 /-- Functors out of `WalkingIso` define isomorphisms in the target category. -/
 @[simps!]
 def toIso (F : WalkingIso.{w} ⥤ C) : F.obj zero ≅ F.obj one := F.mapIso iso
 
+section induction
+
+universe z
+
+variable {motive : WalkingIso.{u} → Sort z} (zero : motive zero) (one : motive one)
+
+@[elab_as_elim, induction_eliminator]
+protected def rec : ∀ a, motive a
+  | .mk (.up false) => zero
+  | .mk (.up true) => one
+
+@[simp] lemma rec_zero : WalkingIso.rec zero one .zero = zero := rfl
+@[simp] lemma rec_one : WalkingIso.rec zero one .one = one := rfl
+
+end induction
+
 /-- From an isomorphism in a category, true can build a functor out of `WalkingIso` to
   that category. -/
 def fromIso {X Y : C} (e : X ≅ Y) : WalkingIso.{w} ⥤ C where
   obj x := by
-    rcases ULift.down x.as
+    induction x
     · exact X
     · exact Y
-  map {x} {y} _ := by
-    rcases ULift.down x.as <;> rcases ULift.down y.as
-    · exact 𝟙 _
-    · exact e.hom
-    · exact e.inv
-    · exact 𝟙 _
-  map_comp := by rintro (_ | _) (_ | _) (_ | _) <;> simp
-  map_id := by rintro (_ | _) <;> rfl
+  map {x y} _ := by
+    induction x <;> induction y; exacts [𝟙 X, e.hom, e.inv, 𝟙 Y]
+  map_comp {x y z} _ _ := by induction x <;> induction y <;> induction z <;> simp
+  map_id {x} := by induction x <;> rfl
 
 section
 
 variable {X Y : C} (e : X ≅ Y)
 
 @[simp]
-lemma fromIso_zero : (fromIso e).obj .zero = X := rfl
+lemma fromIso_zero : (fromIso.{w} e).obj .zero = X := rfl
 
 @[simp]
-lemma fromIso_one : (fromIso e).obj .one = Y := rfl
+lemma fromIso_one : (fromIso.{w} e).obj .one = Y := rfl
 
 @[simp]
-lemma fromIso_map_zero_zero (f : zero ⟶ zero) : (fromIso e).map f = 𝟙 X := rfl
+lemma fromIso_map_zero_zero (f : zero ⟶ zero) : (fromIso.{w} e).map f = 𝟙 X := rfl
 
 @[simp]
-lemma fromIso_hom (f : zero ⟶ one) : (fromIso e).map f = e.hom := rfl
+lemma fromIso_hom (f : zero ⟶ one) : (fromIso.{w} e).map f = e.hom := rfl
 
 @[simp]
-lemma fromIso_inv (f : one ⟶ zero) : (fromIso e).map f = e.inv := rfl
+lemma fromIso_inv (f : one ⟶ zero) : (fromIso.{w} e).map f = e.inv := rfl
 
 @[simp]
-lemma fromIso_map_one_one (f : one ⟶ one) : (fromIso e).map f = 𝟙 Y := rfl
+lemma fromIso_map_one_one (f : one ⟶ one) : (fromIso.{w} e).map f = 𝟙 Y := rfl
 
 end
 
@@ -123,9 +136,6 @@ def equiv : (WalkingIso.{w} ⥤ C) ≃ Σ (X : C) (Y : C), (X ≅ Y) where
       dsimp
       try rw [← F.map_id]
       rfl )
-
-/- TODO: Extend the above to an equivalence of categories between
-the functor category `WalkingIso.{w} ⥤ C` and `Core C`. -/
 
 end
 
@@ -156,22 +166,20 @@ open Simplicial Edge
 
 /-- The simplicial set that encodes a single isomorphism.
   Its n-simplices are formal compositions of arrows in WalkingIso. -/
-def coherentIso : SSet := nerve WalkingIso.{u}
+abbrev coherentIso : SSet := nerve WalkingIso.{u}
 
 namespace coherentIso
 
-instance : IsStrictSegal coherentIso := inferInstanceAs (IsStrictSegal (nerve _))
-
-instance {n : ℕ} : DecidableEq (coherentIso _⦋n⦌) :=
+instance {n : ℕ} : DecidableEq (coherentIso.{u} _⦋n⦌) :=
   inferInstanceAs (DecidableEq (nerve (Codiscrete _) _⦋n⦌))
 
 /-- The source vertex of `coherentIso`. -/
-def x₀ : coherentIso _⦋0⦌ :=
-  ComposableArrows.mk₀ WalkingIso.zero.{u}
+def x₀ : coherentIso.{u} _⦋0⦌ :=
+  ComposableArrows.mk₀ WalkingIso.zero
 
 /-- The target vertex of `coherentIso`. -/
-def x₁ : coherentIso _⦋0⦌ :=
-  ComposableArrows.mk₀ WalkingIso.one.{u}
+def x₁ : coherentIso.{u} _⦋0⦌ :=
+  ComposableArrows.mk₀ WalkingIso.one
 
 /-- The forwards edge of `coherentIso`. -/
 def hom : Edge.{u} x₀ x₁ where
@@ -206,7 +214,7 @@ def invStructHom : Edge.InvStruct.{u} coherentIso.hom where
   homInvId := homInvId
   invHomId := invHomId
 
-/-- If an edge is equal to the image of `hom` under an SSet morphism,
+/-- If an edge is equal to the image of `hom` under a morphism of simplicial sets,
   this edge has an inverse. -/
 def invStructOfEqMapHom {X : SSet.{u}} {x₀ x₁ : X _⦋0⦌}
     {f : Edge x₀ x₁}
