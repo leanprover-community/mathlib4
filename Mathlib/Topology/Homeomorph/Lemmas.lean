@@ -346,6 +346,8 @@ def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
 @[simps! -fullyApplied]
 def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
   toEquiv := Equiv.Set.univ X
+  -- TODO: `fun_prop` cannot apply `Continuous.subtype_mk`
+  continuous_invFun := continuous_id.subtype_mk _
 
 /-- `s ×ˢ t` is homeomorphic to `s × t`. -/
 @[simps!]
