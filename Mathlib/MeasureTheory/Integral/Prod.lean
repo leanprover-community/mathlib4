@@ -616,14 +616,29 @@ lemma integral_continuousLinearMap_prod (hμ : Integrable id μ) (hν : Integrab
   integral_continuousLinearMap_prod' (ContinuousLinearMap.integrable_comp _ hμ)
     (ContinuousLinearMap.integrable_comp _ hν)
 
-variable {μ : Measure α} {ν : Measure β} [NormedAddCommGroup E]
-  [SFinite ν] [NormedSpace ℝ E] [SFinite μ]
+variable {μ : Measure α} {ν : Measure β}
+  [SFinite ν] [SFinite μ]
+  [CompleteSpace F] [CompleteSpace E]
 
 lemma integral_continuousBilin_prod {f : α → E} {g : β → F} (hf : Integrable f μ)
     (hg : Integrable g ν) (B : E →L[ℝ] F →L[ℝ] G) :
     ∫ p, B (f p.1) (g p.2) ∂μ.prod ν = B (∫ a, f a ∂μ) (∫ b, g b ∂ν) := by
-  revert f
-  apply Integrable.induction
+  let C (x : F) : E →L[ℝ] G :=
+    { toFun y := B y x
+      map_add' y z := by simp
+      map_smul' m y := by simp
+      cont := by fun_prop }
+  rw [integral_prod_symm, ← (B _).integral_comp_comm hg]
+  · congr with b
+    exact (C (g b)).integral_comp_comm hf
+  refine .mono' (g := fun p ↦ ‖B‖ * (‖f p.1‖ * ‖g p.2‖)) ?_ ?_ ?_
+  · refine .const_mul ?_ _
+    exact hf.norm.mul_prod hg.norm
+  · refine Continuous.comp_aestronglyMeasurable₂ (g := fun x y ↦ B x y) ?_
+      hf.aestronglyMeasurable.comp_fst hg.aestronglyMeasurable.comp_snd
+    fun_prop
+  · refine .of_forall fun p ↦ ?_
+    grw [(B _).le_opNorm, B.le_opNorm, mul_assoc]
 
 end ContinuousLinearMap
 

@@ -216,26 +216,15 @@ lemma IndepFun.integral_bilin_fun_comp_mul_comp {𝓧 𝓨 E F G : Type*} {m𝓧
     ∫ ω, B (f (X ω)) (g (Y ω)) ∂μ = B (∫ ω, f (X ω) ∂μ) (∫ ω, g (Y ω) ∂μ) := by
   change ∫ ω, (fun p ↦ B (f p.1) (g p.2)) (X ω, Y ω) ∂μ = _
   rw [← integral_map (f := fun p ↦ B (f p.1) (g p.2)) (φ := fun ω ↦ (X ω, Y ω)),
-      (indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY, integral_continuousLinearMap_prod, integral_prod_mul, integral_map,
-      integral_map]
-  have hfXgY := (hXY.comp₀ hX hY hf.aemeasurable hg.aemeasurable)
-  have hfX := (hf.comp_aemeasurable hX)
-  have hgY := (hg.comp_aemeasurable hY)
-  by_cases h : Integrable (fun ω ↦ B (f (X ω)) (g (Y ω))) μ
-  · have :=
-      (hfXgY.integrable_left_of_integrable_mul h hfX hgY h'Y).isProbabilityMeasure_of_indepFun
-        _ _ h'X hfXgY
-    change ∫ ω, (fun x ↦ f x.1 * g x.2) (X ω, Y ω) ∂μ = _
-    rw [← integral_map (f := fun x ↦ f x.1 * g x.2) (φ := fun ω ↦ (X ω, Y ω)),
-      (indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY, integral_prod_mul, integral_map,
-      integral_map]
-    any_goals fun_prop
-    rw [(indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY]
-    exact hf.comp_fst.mul hg.comp_snd
-  · rw [integral_undef h]
-    obtain h | h : ¬(Integrable (fun ω ↦ f (X ω)) μ) ∨ ¬(Integrable (fun ω ↦ g (Y ω)) μ) :=
-      not_and_or.1 fun ⟨HX, HY⟩ ↦ h (hfXgY.integrable_mul HX HY)
-    all_goals simp [integral_undef h]
+      (indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY, integral_continuousBilin_prod,
+      integral_map, integral_map]
+  any_goals fun_prop
+  · exact (integrable_map_measure hf hX).2 h1
+  · exact (integrable_map_measure hg hY).2 h2
+  · rw [(indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY]
+    refine Continuous.comp_aestronglyMeasurable₂ (g := fun x y ↦ B x y) ?_
+      hf.comp_fst hg.comp_snd
+    fun_prop
 
 lemma IndepFun.integral_fun_comp_mul_comp {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpace 𝓧}
     {m𝓨 : MeasurableSpace 𝓨} {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → 𝕜}
