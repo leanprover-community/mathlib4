@@ -114,6 +114,7 @@ instance instAddCommMonoid : AddCommMonoid (IntertwiningMap ρ σ) :=
   DFunLike.coe_injective.addCommMonoid _ (coe_zero ρ σ) (coe_add ρ σ) (by intro f n; rw [coe_nsmul])
 
 /-- The range of an intertwining map from `V` to `W` is a subrepresentation of `W`. -/
+@[simps]
 def range (f : IntertwiningMap ρ σ) : Subrepresentation σ where
   toSubmodule := LinearMap.range f.toLinearMap
   apply_mem_toSubmodule g {w} := fun ⟨v, hv⟩ ↦ ⟨(ρ g) v, by
@@ -124,6 +125,7 @@ lemma mem_range (f : IntertwiningMap ρ σ) (w : W) :
     w ∈ f.range ↔ ∃ v, f v = w := Iff.rfl
 
 /-- The kernel of an intertwining map from `V` to `W` is a subrepresentation of `V`. -/
+@[simps]
 def ker (f : IntertwiningMap ρ σ) : Subrepresentation ρ where
   toSubmodule := LinearMap.ker f.toLinearMap
   apply_mem_toSubmodule g := by simp +contextual [f.isIntertwining]
