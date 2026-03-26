@@ -16,11 +16,22 @@ Many definitions and theorems expected on metric spaces are already introduced o
 topological spaces. This includes open and closed sets, compactness, completeness, continuity
 and uniform continuity.
 
-TODO (anyone): Add "Main results" section.
+## Main results
+
+* `MetricSpace.ofDistTopology`: construct a metric space from a compatible topology and
+  distance.
+* `dist_eq_zero`, `zero_eq_dist`, `dist_pos`, `nndist_eq_zero`: equality and inequality
+  characterized by distance.
+* `eq_of_forall_dist_le`, `eq_of_nndist_eq_zero`: extensionality criteria via vanishing or
+  arbitrarily small distance.
+* `Metric.closedBall_zero`, `Metric.sphere_zero`, `Metric.subsingleton_closedBall`,
+  `Metric.subsingleton_sphere`: zero-radius and nonpositive-radius behavior.
+* `MetricSpace.replaceUniformity_eq`, `MetricSpace.replaceTopology_eq`,
+  `MetricSpace.replaceBornology_eq`: replacing bundled structures while preserving the metric.
 
 ## Implementation notes
 A lot of elementary properties don't require `eq_of_dist_eq_zero`, hence are stated and proven
-for `PseudoMetricSpace`s in `PseudoMetric.lean`.
+for `PseudoMetricSpace`s in `Mathlib/Topology/MetricSpace/Pseudo/Defs.lean`.
 
 ## Tags
 
