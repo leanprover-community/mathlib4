@@ -234,8 +234,7 @@ def unionProd : (X ⊗ Y).Subcomplex := ((⊤ : X.Subcomplex).prod T) ⊔ (S.pro
 lemma mem_unionProd_iff {n : SimplexCategoryᵒᵖ} (x : (X ⊗ Y).obj n) :
     x ∈ (unionProd S T).obj _ ↔ x.2 ∈ T.obj _ ∨ x.1 ∈ S.obj _ := by
   dsimp [unionProd, Set.prod]
-  simp only [Set.mem_univ, true_and, and_true]
-  exact Set.mem_union _ _ _
+  cat_disch
 
 lemma top_prod_le_unionProd : (⊤ : X.Subcomplex).prod T ≤ S.unionProd T := le_sup_left
 
