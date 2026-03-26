@@ -7,6 +7,8 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.LinearAlgebra.Transvection
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.Algebra.Central.End
 
 /-!
 # Center of the algebra of linear endomorphisms
@@ -53,6 +55,13 @@ open Module LinearMap LinearEquiv Set Finsupp
 namespace LinearMap
 
 variable {R V : Type*}
+
+theorem mem_center_of_apply_eq_smul [Semiring R] [AddCommMonoid V]
+    [Module R V] {f : V →ₗ[R] V} {a : R}
+    (hf : ∀ x, f x = a • x) :
+    f ∈ Subsemiring.center (End R V) := by
+  simp only [Subsemiring.mem_center_iff]
+  intro; ext; simp [hf]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A linear endomorphism of a free module of rank at least 2
@@ -224,7 +233,47 @@ theorem exists_eq_smul_id_of_forall_notLinearIndependent
     intro i
     nth_rewrite 1 [← b.linearCombination_repr (f (b i))]
     simp [linearCombination_unique]
+  -- obtain ⟨a, _, hfa⟩ := exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent hV1 h
+  -- refine ⟨a, by ext; simp [hfa]⟩
   obtain ⟨a, rfl⟩ := exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent hV1 h
   refine ⟨a, by simp [Subring.smul_def]⟩
+
+/-- The map from the the center of `R` to the center of `V →ₗ[R] V`
+given by homotheties with central ratio. -/
+def centerMap [Semiring R] [AddCommMonoid V] [Module R V] :
+    Subsemiring.center R →+* Subsemiring.center (V →ₗ[R] V) where
+  toFun a := ⟨{
+    toFun x := a • x
+    map_add' := by simp
+    map_smul' r x := by
+      simp only [Subsemiring.smul_def, ← mul_smul, RingHom.id_apply,
+        Subsemiring.mem_center_iff.mp a.prop] }, by
+    rw [Subsemiring.mem_center_iff]
+    intro; ext; simp ⟩
+  map_add' _ _ := by rw [← Subtype.coe_inj]; ext; simp [add_smul]
+  map_mul' _ _ := by rw [← Subtype.coe_inj]; ext; simp [mul_comm, smul_smul]
+  map_one' := by ext; simp
+  map_zero' := by ext; simp
+
+end LinearMap
+
+open Module.Free Module.Basis
+
+variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] [Free R M]
+
+/-- The center of endomorphisms on a free module is trivial,
+in other words, it is a central algebra. -/
+example (f : End R M) (hf : f ∈ Subsemiring.center (End R M)) :
+    ∃ a ∈ Subsemiring.center R, ∀ x, f x = a • x := by
+  nontriviality M
+  let b := Free.chooseBasis R M
+  let i := b.index_nonempty.some
+  simp_rw [Subsemiring.mem_center_iff] at hf ⊢
+  suffices _ by
+    refine ⟨b.coord i (f (b i)),
+      fun r ↦ by simpa using congr(b.coord i $(this (r • b i))),
+      this⟩
+  intro y
+  simpa using congr($(hf ((b.coord i).smulRight y)) (b i)).symm
 
 end LinearMap
