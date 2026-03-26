@@ -155,19 +155,10 @@ lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoef
 @[to_additive] instance instDecidableEq [DecidableEq R] [DecidableEq M] : DecidableEq R[M] :=
   inferInstanceAs <| DecidableEq <| M →₀ R
 
-@[to_additive] instance : Zero R[M] :=
-  inferInstanceAs <| Zero <| M →₀ R
-
-@[to_additive (dont_translate := A) smulZeroClass]
-instance smulZeroClass {A : Type*} [SMulZeroClass A R] : SMulZeroClass A R[M] :=
-  inferInstanceAs <| SMulZeroClass A (M →₀ R)
-
+-- TODO: this instance abuses definitional equality with `Finsupp.mapRange`
 @[to_additive] instance addCommMonoid : AddCommMonoid R[M] :=
-  fast_instance% { (inferInstance : AddCommMonoid <| M →₀ R) with nsmul := SMul.smul }
-
--- Ensure that the different smul instances do not create a diamond.
-example : (smulZeroClass (A := ℕ) (R := R) (M := M)).toSMul = addCommMonoid.toNSMul := by
-  with_reducible_and_instances rfl
+  fast_instance% { (inferInstance : AddCommMonoid <| M →₀ R) with
+    nsmul n x := x.mapRange (n • ·) (smul_zero _) }
 
 @[to_additive] instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd R[M] :=
   inferInstanceAs <| IsCancelAdd <| M →₀ R
@@ -268,6 +259,24 @@ Further results on scalar multiplication can be found in
 -/
 
 variable {A : Type*} [SMulZeroClass A R]
+
+-- TODO: this instance abuses definitional equality with `Finsupp.mapRange`
+@[to_additive (dont_translate := A) smulZeroClass]
+instance smulZeroClass : SMulZeroClass A R[M] :=
+  fast_instance% { (inferInstance : SMulZeroClass A (M →₀ R)) with
+    smul a x := x.mapRange (a • ·) (smul_zero _) }
+
+section
+-- Ensure that the different smul instances do not create a diamond.
+example : (smulZeroClass (A := ℕ) (R := R) (M := M)).toSMul = addCommMonoid.toNSMul := by
+  with_reducible_and_instances rfl
+
+-- Enusre that smul has good defeq properties
+private local instance {α} [Monoid M] [SMul M α] : SMul Mˣ α where smul m a := (m : M) • a
+example [Monoid A] [SMulZeroClass A R] (a : Units A) (x : R[M]) :
+    a • x = (a : A) • x := by
+  with_reducible_and_instances rfl
+end
 
 @[to_additive (dont_translate := A) (attr := simp) coeff_smul]
 lemma coeff_smul (a : A) (x : R[M]) : coeff (a • x) = a • coeff x := rfl
