@@ -1018,7 +1018,7 @@ instance model_infiniteTheory [h : Infinite M] : M ⊨ L.infiniteTheory :=
 @[simp]
 theorem model_nonemptyTheory_iff : M ⊨ L.nonemptyTheory ↔ Nonempty M := by
   simp only [nonemptyTheory, Theory.model_iff, Set.mem_singleton_iff, forall_eq,
-    Sentence.realize_cardGe, Nat.cast_one, one_le_iff_ne_zero, mk_ne_zero_iff]
+    Sentence.realize_cardGe, Nat.cast_one, Cardinal.one_le_iff_ne_zero, mk_ne_zero_iff]
 
 instance model_nonempty [h : Nonempty M] : M ⊨ L.nonemptyTheory :=
   L.model_nonemptyTheory_iff.2 h
