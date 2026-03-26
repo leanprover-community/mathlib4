@@ -198,6 +198,42 @@ def toElementarySubstructure (hA : L.MeetsDefinable A) :
 
 end MeetsDefinable
 
+namespace ElementarySubstructure
+
+open Set Formula
+
+/-- An elementary substructure, regarded as a subset of the ambient structure, meets definable
+sets. -/
+theorem meetsDefinable (S : L.ElementarySubstructure M) : L.MeetsDefinable (S : Set M) := by
+  classical
+  rintro D ⟨x, hx⟩ ⟨φ, hφ⟩
+  have hφx : φ.Realize ![x] := by
+    change ![x] ∈ setOf φ.Realize
+    simpa [← hφ] using hx
+  let ψ : L[[@Elem M ↑S]].Sentence := (φ.relabel Sum.inr).iExs
+  have hψM : ψ.Realize M := by
+    simpa only [Sentence.Realize, SetLike.coe_sort_coe, Formula.realize_iExs,
+      Formula.realize_relabel, Sum.elim_comp_inr, ψ] using
+        (⟨![x], hφx⟩ : ∃ w : Fin 1 → M, φ.Realize w)
+  have hψS : ψ.Realize S := by
+    rwa [← Formula.realize_equivSentence_symm_con, ← S.subtype.map_formula,
+      Formula.realize_equivSentence_symm]
+  simp only [Sentence.Realize, SetLike.coe_sort_coe, Formula.realize_iExs,
+    Formula.realize_relabel, Sum.elim_comp_inr, ψ] at hψS
+  obtain ⟨v', hv'⟩ := hψS
+  refine ⟨v' 0, ?_, by simp⟩
+  have hv'' : φ.Realize (Subtype.val ∘ v') := by
+    simp only [Formula.Realize, ← BoundedFormula.realize_constantsVarsEquiv,
+      ← S.subtype.map_boundedFormula] at hv'
+    simp only [Formula.Realize, ← BoundedFormula.realize_constantsVarsEquiv]
+    convert hv' using 1
+    funext i
+    cases i <;> rfl
+  change (Subtype.val ∘ v') ∈ {x | x 0 ∈ D}
+  simpa [hφ] using hv''
+
+end ElementarySubstructure
+
 end Language
 
 end FirstOrder
