@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Independence.Kernel.IndepFun
+public import Mathlib.Probability.Independence.ZeroOne
 public import Mathlib.MeasureTheory.Constructions.Pi
 public import Mathlib.MeasureTheory.Group.Convolution
 
@@ -698,48 +699,65 @@ theorem indepFun_iff_map_prod_eq_prod_map_map' {mβ : MeasurableSpace β} {mβ' 
   · intro h s t hs ht
     rw [(h₀ hs ht).1, (h₀ hs ht).2, h, Measure.prod_prod]
 
-/-- If `Y` is independent of itself under a probability measure, then for any
-measurable set `s`, the measure `μ (Y ⁻¹' s)` is either `0` or `1`. -/
-theorem IndepFun.measure_preimage_eq_zero_or_one
-    {Ω B : Type*} [MeasurableSpace Ω] [MeasurableSpace B]
-    {μ : Measure Ω} [IsProbabilityMeasure μ] {Y : Ω → B}
-    (hY : IndepFun Y Y μ) {s : Set B} (hs : MeasurableSet s) :
+/-- If `Y ⊥ᵢ[μ] Y`, then `μ (Y ⁻¹' s)` equals `0` or `1` for every measurable set `s`. -/
+lemma IndepFun.measure_preimage_eq_zero_or_one {Ω : Type*} {mΩ : MeasurableSpace Ω}
+    {μ : Measure Ω} {B : Type*} [MeasurableSpace B]
+    [IsProbabilityMeasure μ] {Y : Ω → B}
+    (hY : Y ⊥ᵢ[μ] Y) (hYm : Measurable Y)
+    {s : Set B} (hs : MeasurableSet s) :
     μ (Y ⁻¹' s) = 0 ∨ μ (Y ⁻¹' s) = 1 := by
-  have h_eq : μ (Y ⁻¹' s) = μ (Y ⁻¹' s) * μ (Y ⁻¹' s) := by
-    have := (indepFun_iff_measure_inter_preimage_eq_mul.mp hY) s s hs hs
-    rwa [Set.inter_self] at this
-  rcases eq_or_ne (μ (Y ⁻¹' s)) 0 with h0 | h0
-  · exact Or.inl h0
-  · exact Or.inr ((ENNReal.mul_eq_right h0 (measure_ne_top _ _)).mp h_eq.symm)
+  apply measure_eq_zero_or_one_of_indepSet_self
+  exact (indepFun_iff_indepSet_preimage hYm hYm).mp hY s s hs hs
 
-/-- If `Y` is independent of itself under a probability measure, then `X` and `Y`
-are independent. Self-independence implies `Y` is a.e. constant. -/
-theorem IndepFun.of_self {Ω A B : Type*} [MeasurableSpace Ω]
-    [MeasurableSpace A] [MeasurableSpace B] {μ : Measure Ω}
+/-- If a measurable function `Y` is independent of itself and `B` has measurable singletons
+and is countable, then `Y` is a.e. equal to a constant. -/
+theorem IndepFun.ae_eq_const_of_self {Ω : Type*} {mΩ : MeasurableSpace Ω}
+    {μ : Measure Ω} {B : Type*} [MeasurableSpace B]
+    [MeasurableSingletonClass B] [Countable B]
+    [IsProbabilityMeasure μ] {Y : Ω → B}
+    (hY : Y ⊥ᵢ[μ] Y) (hYm : Measurable Y) :
+    ∃ c : B, Y =ᵐ[μ] fun _ ↦ c := by
+  have h_preimage : ∀ b : B, μ (Y ⁻¹' {b}) = 0 ∨ μ (Y ⁻¹' {b}) = 1 :=
+    fun b => IndepFun.measure_preimage_eq_zero_or_one hY hYm (measurableSet_singleton b)
+  have h_sum : ∃ c, μ (Y ⁻¹' {c}) = 1 := by
+    by_contra h_no_c
+    push_neg at h_no_c
+    have h_zero : μ (⋃ b, Y ⁻¹' {b}) = 0 :=
+      measure_iUnion_null fun b => Or.resolve_right (h_preimage b) (h_no_c b)
+    have : (⋃ b, Y ⁻¹' {b}) = Set.univ := by ext x; simp
+    rw [this, measure_univ] at h_zero
+    exact one_ne_zero h_zero
+  obtain ⟨c, hc⟩ := h_sum
+  exact ⟨c, by
+    rw [Filter.EventuallyEq, ae_iff]
+    have : {a | ¬Y a = c} = (Y ⁻¹' {c})ᶜ := by ext; simp
+    rw [this, measure_compl (hYm (measurableSet_singleton c)) (measure_ne_top μ _), hc]
+    simp⟩
+
+/-- If `Y` is independent of itself, then `X` and `Y` are independent for any `X`. -/
+theorem IndepFun.of_self {Ω : Type*} {mΩ : MeasurableSpace Ω}
+    {μ : Measure Ω} {A B : Type*} [MeasurableSpace A] [MeasurableSpace B]
     [IsProbabilityMeasure μ] {X : Ω → A} {Y : Ω → B}
-    (hY : IndepFun Y Y μ) : IndepFun X Y μ := by
-  rw [indepFun_iff_measure_inter_preimage_eq_mul]
+    (hY : Y ⊥ᵢ[μ] Y) (hYm : Measurable Y) :
+    X ⊥ᵢ[μ] Y := by
+  suffices h_indep : ∀ s t, MeasurableSet s → MeasurableSet t →
+      μ (X ⁻¹' s ∩ Y ⁻¹' t) = μ (X ⁻¹' s) * μ (Y ⁻¹' t) by
+    exact indepFun_iff_measure_inter_preimage_eq_mul.mpr h_indep
   intro s t hs ht
-  cases hY.measure_preimage_eq_zero_or_one ht with
-  | inl h_zero =>
-    rw [h_zero, mul_zero]
-    exact measure_mono_null Set.inter_subset_right h_zero
-  | inr h_one =>
-    rw [h_one, mul_one]
-    have hY_compl : μ (Y ⁻¹' tᶜ) = 0 := by
-      have key := (indepFun_iff_measure_inter_preimage_eq_mul.mp hY) t tᶜ ht ht.compl
-      rw [show Y ⁻¹' t ∩ Y ⁻¹' tᶜ = ∅ from by
-        rw [← Set.preimage_inter, Set.inter_compl_self, Set.preimage_empty]] at key
-      rw [measure_empty, h_one, one_mul] at key
-      exact key.symm
-    refine measure_congr (ae_eq_set.mpr ⟨?_, ?_⟩)
-    · rw [Set.diff_eq_empty.mpr Set.inter_subset_left]
-      exact measure_empty
-    · refine measure_mono_null ?_ hY_compl
-      intro x ⟨hxs, hxnint⟩
-      rw [Set.mem_preimage, Set.mem_compl_iff]
-      exact fun hxt => hxnint ⟨hxs, Set.mem_preimage.mpr hxt⟩
-
+  have h_cases : μ (Y ⁻¹' t) = 0 ∨ μ (Y ⁻¹' t) = 1 :=
+    IndepFun.measure_preimage_eq_zero_or_one hY hYm ht
+  cases h_cases with
+  | inl h =>
+    have : μ (X ⁻¹' s ∩ Y ⁻¹' t) = 0 := measure_mono_null Set.inter_subset_right h
+    rw [this, h, mul_zero]
+  | inr h =>
+    have h_compl : μ (Y ⁻¹' tᶜ) = 0 := by
+      rw [Set.preimage_compl,
+        measure_compl (hYm ht) (measure_ne_top μ _), h, measure_univ]
+      simp
+    have h_diff : μ (X ⁻¹' s \ Y ⁻¹' t) = 0 :=
+      measure_mono_null (fun _ hx => hx.2) h_compl
+    rw [measure_inter_conull' h_diff, h, mul_one]
 theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsFiniteMeasure μ] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     f ⟂ᵢ[μ] g ↔ μ.map (fun ω ↦ (f ω, g ω)) = (μ.map f).prod (μ.map g) := by
