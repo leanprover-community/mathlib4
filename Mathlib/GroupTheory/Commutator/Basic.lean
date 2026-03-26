@@ -272,6 +272,9 @@ variable (G)
 def commutator : Subgroup G := ⁅(⊤ : Subgroup G), ⊤⁆
 deriving Subgroup.Normal, Subgroup.Characteristic
 
+attribute [to_additive] instNormalCommutator
+attribute [to_additive] instCharacteristicCommutator
+
 @[to_additive]
 lemma commutator_def : commutator G = ⁅(⊤ : Subgroup G), ⊤⁆ :=
   rfl
@@ -294,6 +297,11 @@ variable {G} in
 @[to_additive]
 lemma Subgroup.commutator_le_self (H : Subgroup G) : ⁅H, H⁆ ≤ H :=
   H.map_subtype_commutator.symm.trans_le (map_subtype_le _)
+
+@[to_additive]
+theorem Subgroup.Normal.of_commutator_le {H : Subgroup G} (h : _root_.commutator G ≤ H) :
+    H.Normal :=
+  commutator_top_left_le_iff.mp <| commutator_mono le_top le_top |>.trans h
 
 @[to_additive]
 theorem commutator_eq_bot_iff_center_eq_top : commutator G = ⊥ ↔ Subgroup.center G = ⊤ := by
@@ -379,6 +387,10 @@ theorem Subgroup.Normal.quotient_commutative_iff_commutator_le {N : Subgroup G} 
     apply hGN
     rw [commutator_eq_closure]
     exact Subgroup.subset_closure (commutator_mem_commutatorSet x y)
+
+@[to_additive]
+instance : IsMulCommutative <| G ⧸ commutator G where
+  is_comm := Subgroup.Normal.quotient_commutative_iff_commutator_le.mpr <| le_refl _
 
 /-- If `N` is a normal subgroup of `G` and `H` a commutative subgroup such that `H ⊔ N = ⊤`,
   then `N` contains `commutator G`. -/
