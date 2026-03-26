@@ -155,12 +155,12 @@ instance {ε : Type*} [MonadExceptOf ε M] : MonadExceptOf ε (WriterT ω M) whe
   tryCatch := fun cmd c ↦ WriterT.mk <| tryCatch cmd.run fun e ↦ (c e).run
 
 @[simp]
-theorem run_throw {M} {ε : Type*} [MonadExcept ε M] (e : ε) :
+theorem run_throw {M} {ε : Type*} [MonadExceptOf ε M] (e : ε) :
     (throw e : WriterT ω M α).run = throw e :=
   rfl
 
 @[simp]
-theorem run_tryCatch {M} {ε : Type*} [MonadExcept ε M]
+theorem run_tryCatch {M} {ε : Type*} [MonadExceptOf ε M]
     (cmd : WriterT ω M α) (c : ε → WriterT ω M α) :
     (tryCatch cmd c : WriterT ω M α).run = tryCatch cmd.run fun e ↦ (c e).run :=
   rfl
