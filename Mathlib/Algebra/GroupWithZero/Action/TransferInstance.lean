@@ -53,37 +53,23 @@ protected abbrev mulActionWithZero (e : A ≃ B) [MonoidWithZero M₀] [Zero B]
   letI := e.zero
   exact { e.smulWithZero M₀, e.mulAction M₀ with }
 
-end Equiv
-
 variable (M) in
-/-- Transfer `DistribSMul` across an `AddEquiv` -/
-protected abbrev AddEquiv.distribSMul [AddZeroClass A] [AddZeroClass B] (e : A ≃+ B)
-    [DistribSMul M B] :
-    DistribSMul M A where
-  __ := e.smul M
-  smul_zero := by simp [Equiv.smul_def]
-  smul_add := by simp [Equiv.smul_def, smul_add]
-
-variable (M) in
-/-- Transfer `DistribMulAction` across an `AddEquiv` -/
-protected abbrev AddEquiv.distribMulAction [Monoid M] [AddMonoid A] [AddMonoid B]
-    [DistribMulAction M B] (e : A ≃+ B) :
-    DistribMulAction M A where
-  __ := e.distribSMul M
-  mul_smul := by simp [Equiv.smul_def, mul_smul]
-  one_smul := by simp [Equiv.smul_def]
-
-variable (M) in
-protected abbrev Equiv.distribSMul (e : A ≃ B) [AddZeroClass B] [DistribSMul M B] :
+/-- Transfer `DistribSMul` across an `Equiv` -/
+protected abbrev distribSMul (e : A ≃ B) [AddZeroClass B] [DistribSMul M B] :
     letI := e.addZeroClass
-    DistribSMul M A :=
+    DistribSMul M A := by
   letI := e.addZeroClass
-  e.addEquiv.distribSMul M
+  exact {
+    e.smulZeroClass M with
+    smul_add := by simp [add_def, smul_def, smul_add]
+  }
 
 variable (M) in
-protected abbrev Equiv.distribMulAction
-    (e : A ≃ B) [Monoid M] [AddMonoid B] [DistribMulAction M B] :
+/-- Transfer `DistribMulAction` across an `Equiv` -/
+protected abbrev distribMulAction (e : A ≃ B) [Monoid M] [AddMonoid B] [DistribMulAction M B] :
     letI := e.addMonoid
-    DistribMulAction M A :=
+    DistribMulAction M A := by
   letI := e.addMonoid
-  e.addEquiv.distribMulAction M
+  exact { e.distribSMul M, e.mulAction M with }
+
+end Equiv
