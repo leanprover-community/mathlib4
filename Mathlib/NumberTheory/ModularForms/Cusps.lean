@@ -84,18 +84,12 @@ lemma isCusp_iff_of_relIndex_ne_zero {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
   rw [Nat.pos_iff_ne_zero] at hn
   rwa [(hgp.pow hn).smul_eq_self_iff, hgp.parabolicFixedPoint_pow hn, ← hgp.smul_eq_self_iff]
 
-@[deprecated (since := "2025-09-13")]
-alias isCusp_iff_of_relindex_ne_zero := isCusp_iff_of_relIndex_ne_zero
-
 lemma Subgroup.Commensurable.isCusp_iff {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
     (h𝒢 : Commensurable 𝒢 𝒢') {c : OnePoint ℝ} :
     IsCusp c 𝒢 ↔ IsCusp c 𝒢' := by
   rw [← isCusp_iff_of_relIndex_ne_zero inf_le_left, isCusp_iff_of_relIndex_ne_zero inf_le_right]
   · simpa [Subgroup.inf_relIndex_right] using h𝒢.1
   · simpa [Subgroup.inf_relIndex_left] using h𝒢.2
-
-@[deprecated (since := "2025-09-17")]
-alias Commensurable.isCusp_iff := Subgroup.Commensurable.isCusp_iff
 
 lemma IsCusp.mono {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c : OnePoint ℝ} (hGH : 𝒢 ≤ ℋ)
     (hc : IsCusp c 𝒢) : IsCusp c ℋ :=

@@ -319,7 +319,7 @@ def directedAffineCover : X.OpenCover where
 instance : Preorder X.directedAffineCover.I₀ := inferInstanceAs <| Preorder X.affineOpens
 
 instance : Scheme.Cover.LocallyDirected X.directedAffineCover :=
-  .ofIsBasisOpensRange (by simp) <| by
+  .ofIsBasisOpensRange (by intros; simp; rfl) <| by
     convert X.isBasis_affineOpens
     simp
 
