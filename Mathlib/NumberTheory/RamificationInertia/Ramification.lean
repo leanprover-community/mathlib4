@@ -198,8 +198,10 @@ theorem ramificationIdx_map_self_eq_one [IsDedekindDomain S] (h₁ : map f p ≠
 variable (p P) in
 theorem ramificationIdx_le_ramificationIdx {T : Type*} [CommRing T] [Algebra R T]
     [Algebra S T] [IsScalarTower R S T] (Q : Ideal T) (hp : p = Ideal.comap f P)
-    (h : BddAbove {n | map (algebraMap R T) p ≤ Q ^ n}) :
+    (h : ramificationIdx p Q ≠ 0) :
     Ideal.ramificationIdx P Q ≤ Ideal.ramificationIdx p Q := by
+  have h : BddAbove {n | map (algebraMap R T) p ≤ Q ^ n} :=
+    not_not.mp <| Nat.sSup_of_not_bddAbove.mt h
   refine csSup_le_csSup' h fun n hn ↦ ?_
   rw [Set.mem_setOf_eq, IsScalarTower.algebraMap_eq R S T, ← map_map, map_le_iff_le_comap,
     map_le_iff_le_comap, hp]
@@ -273,16 +275,13 @@ lemma ramificationIdx_eq_one_iff
   rw [← not_ne_iff, IsLocalization.map_algebraMap_ne_top_iff_disjoint P.primeCompl]
   simpa [primeCompl, Set.disjoint_compl_left_iff_subset]
 
-theorem ramificationIdx_le_ramificationIdx [IsDomain R] [Module.IsTorsionFree R S] {S₀ : Type*}
+theorem ramificationIdx_le_ramificationIdx [IsDomain R] [IsTorsionFree R S] {S₀ : Type*}
     [CommRing S₀] [Algebra R S₀] [Algebra S₀ S] [IsScalarTower R S₀ S] (p : Ideal R)
     (P : Ideal S₀) (Q : Ideal S) [Q.LiesOver p] [P.LiesOver p] [Q.IsPrime] (hp : p ≠ ⊥) :
     Ideal.ramificationIdx P Q ≤ Ideal.ramificationIdx p Q := by
   refine Ideal.ramificationIdx_le_ramificationIdx p P Q ?_ ?_
   · rwa [← under_def, ← liesOver_iff]
-  · suffices ramificationIdx p Q ≠ 0 by
-      contrapose! this
-      exact ramificationIdx_eq_zero (by rwa [not_bddAbove_iff] at this)
-    exact ramificationIdx_ne_zero_of_liesOver _ hp
+  · exact ramificationIdx_ne_zero_of_liesOver _ hp
 
 theorem emultiplicity_map_eq_zero_of_ne [IsDedekindDomain R] {v : Ideal R}
     {w : Ideal S} {p : Ideal R} (hv : Irreducible v) (hp : Prime p) (hvp : v ≠ p) [w.LiesOver v] :
