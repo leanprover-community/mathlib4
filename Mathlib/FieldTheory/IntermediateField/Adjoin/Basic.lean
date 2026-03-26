@@ -12,7 +12,6 @@ public import Mathlib.FieldTheory.SplittingField.IsSplittingField
 public import Mathlib.RingTheory.Adjoin.Dimension
 public import Mathlib.RingTheory.TensorProduct.Finite
 
-import Mathlib.RingTheory.Polynomial.Subring
 
 /-!
 # Adjoining Elements to Fields
@@ -288,13 +287,15 @@ protected theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := b
 @[simp] theorem rank_bot' : Module.rank (⊥ : IntermediateField F E) E = Module.rank F E := by
   rw [← rank_mul_rank F (⊥ : IntermediateField F E) E, IntermediateField.rank_bot, one_mul]
 
-@[simp] theorem finrank_bot' : finrank (⊥ : IntermediateField F E) E = finrank F E :=
+@[simp, nolint simpNF] -- `simpNF` hits a (deterministic) timeout at `typeclass`
+theorem finrank_bot' : finrank (⊥ : IntermediateField F E) E = finrank F E :=
   congr(Cardinal.toNat $(rank_bot'))
 
 @[simp] protected theorem rank_top : Module.rank (⊤ : IntermediateField F E) E = 1 :=
   Subalgebra.bot_eq_top_iff_rank_eq_one.mp <| top_le_iff.mp fun x _ ↦ ⟨⟨x, trivial⟩, rfl⟩
 
-@[simp] protected theorem finrank_top : finrank (⊤ : IntermediateField F E) E = 1 :=
+@[simp, nolint simpNF] -- `simpNF` hits a (deterministic) timeout at `typeclass`
+protected theorem finrank_top : finrank (⊤ : IntermediateField F E) E = 1 :=
   rank_eq_one_iff_finrank_eq_one.mp IntermediateField.rank_top
 
 @[simp] theorem rank_top' : Module.rank F (⊤ : IntermediateField F E) = Module.rank F E :=
@@ -434,6 +435,7 @@ section PowerBasis
 
 variable {L : Type*} [Field L] [Algebra K L]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The elements `1, x, ..., x ^ (d - 1)` form a basis for `K⟮x⟯`,
 where `d` is the degree of the minimal polynomial of `x`. -/
 noncomputable def powerBasisAux {x : L} (hx : IsIntegral K x) :
@@ -442,6 +444,7 @@ noncomputable def powerBasisAux {x : L} (hx : IsIntegral K x) :
     |>.map (adjoinRootEquivAdjoin K hx).toLinearEquiv
     |>.reindex (finCongr rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The power basis `1, x, ..., x ^ (d - 1)` for `K⟮x⟯`,
 where `d` is the degree of the minimal polynomial of `x`. -/
 @[simps]
@@ -546,6 +549,20 @@ theorem _root_.minpoly.degree_dvd {x : L} (hx : IsIntegral K x) :
   use finrank K⟮x⟯ L
   rw [mul_comm, finrank_mul_finrank]
 
+theorem _root_.Polynomial.Irreducible.natDegree_dvd_finrank {f : K[X]} (hi : Irreducible f)
+    (hs : (f.map (algebraMap K L)).Splits) : f.natDegree ∣ finrank K L := by
+  have := hi.degree_pos.ne'
+  rw [← f.degree_map (algebraMap K L)] at this
+  obtain ⟨x, hx⟩ := hs.exists_eval_eq_zero this
+  rw [eval_map_algebraMap] at hx
+  have key := minpoly.Irreducible.eq_minpoly hi hx
+  replace hi := hi.ne_zero
+  rw [key, natDegree_C_mul (leadingCoeff_ne_zero.mpr hi)]
+  apply minpoly.degree_dvd
+  rw [← minpoly.ne_zero_iff]
+  contrapose! hi
+  rwa [hi, mul_zero] at key
+
 -- TODO: generalize to `Sort`
 /-- A compositum of algebraic extensions is algebraic -/
 theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
@@ -590,6 +607,7 @@ lemma algHomAdjoinIntegralEquiv_symm_apply_gen (h : IsIntegral F α)
     rw [adjoin.powerBasis_gen, minpoly_gen]; exact (mem_aroots.mp x.2).2
 
 /-- Fintype of algebra homomorphism `F⟮α⟯ →ₐ[F] K` -/
+@[implicit_reducible]
 noncomputable def fintypeOfAlgHomAdjoinIntegral (h : IsIntegral F α) : Fintype (F⟮α⟯ →ₐ[F] K) :=
   PowerBasis.AlgHom.fintype (adjoin.powerBasis h)
 
@@ -601,6 +619,7 @@ theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F
     simp only [IsSeparable, adjoin.powerBasis_dim, adjoin.powerBasis_gen, minpoly_gen, h_splits]
   exact h_sep
 
+set_option backward.isDefEq.respectTransparency false in
 -- Apparently `K⟮root f⟯ →+* K⟮root f⟯` is expensive to unify during instance synthesis.
 open Module AdjoinRoot in
 /-- Let `f, g` be monic polynomials over `K`. If `f` is irreducible, and `g(x) - α` is irreducible

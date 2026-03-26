@@ -39,7 +39,7 @@ As in other polynomial files, we typically use the notation:
 + `R : Type*` `[CommSemiring R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
+  This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
 
 + `r : R`
 
@@ -201,7 +201,7 @@ section DegreeOf
 /-! ### `degreeOf` -/
 
 
-/-- `degreeOf n p` gives the highest power of X_n that appears in `p` -/
+/-- `degreeOf n p` gives the highest power of $X_n$ that appears in `p` -/
 def degreeOf (n : σ) (p : MvPolynomial σ R) : ℕ :=
   letI := Classical.decEq σ
   p.degrees.count n
@@ -293,8 +293,8 @@ theorem degreeOf_mul_X_of_ne {i j : σ} (f : MvPolynomial σ R) (h : i ≠ j) :
   simp only [degreeOf_eq_sup i, support_mul_X, Finset.sup_map]
   congr
   ext
-  simp only [Finsupp.single, add_eq_left, addRightEmbedding_apply, coe_mk,
-    Pi.add_apply, comp_apply, Finsupp.coe_add, Pi.single_eq_of_ne h]
+  simp only [Finsupp.single, addRightEmbedding_apply, coe_mk,
+    Pi.add_apply, comp_apply, Finsupp.coe_add, Pi.single_eq_of_ne h, add_zero]
 
 theorem degreeOf_mul_X_self (j : σ) (f : MvPolynomial σ R) :
     degreeOf j (f * X j) ≤ degreeOf j f + 1 := by
@@ -561,6 +561,7 @@ lemma degreesLE_add : degreesLE R σ (s + t) = degreesLE R σ s * degreesLE R σ
     (Nat.eq_zero_of_le_zero (x.totalDegree_le_degrees_card.trans (by simp [hx])))
   exact ⟨x.coeff 0, by simp [Algebra.smul_def, ← this]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable (s) in
 lemma degreesLE_nsmul : ∀ n, degreesLE R σ (n • s) = degreesLE R σ s ^ n
   | 0 => by simp

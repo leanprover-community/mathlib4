@@ -18,7 +18,7 @@ variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
 variable {E : Type _} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {F : Type _} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 recall HasFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) :=
-  HasFDerivAtFilter f f' x (nhds x)
+  HasFDerivAtFilter f f' (nhds x ×ˢ pure x)
 end
 
 /--
@@ -93,3 +93,10 @@ axiom bar : Nat
 #guard_msgs in recall bar := bar
 
 recall List.cons_append (a : α) (as bs : List α) : (a :: as) ++ bs = a :: (as ++ bs) := rfl
+
+/-- Recalling `Nat.add_comm`. -/
+recall Nat.add_comm (n m : Nat) : n + m = m + n
+
+-- Test that the unused variable linter does not fire on `recall`.
+#guard_msgs in
+recall Eq.symm {α : Sort _} {a b : α} (h : a = b) : b = a

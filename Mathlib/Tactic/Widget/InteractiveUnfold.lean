@@ -11,7 +11,6 @@ public meta import Mathlib.Lean.Meta.KAbstractPositions
 public import Lean.Server.Rpc.RequestHandling
 public import Mathlib.Tactic.NthRewrite
 public import Mathlib.Tactic.Widget.SelectPanelUtils
-public import ProofWidgets.Cancellable
 public import ProofWidgets.Component.Basic
 public import ProofWidgets.Component.OfRpcMethod
 
