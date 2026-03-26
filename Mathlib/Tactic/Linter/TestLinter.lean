@@ -12,6 +12,7 @@ open Lean Elab
 
 namespace Mathlib.Tactic
 
+/-- Does work. -/
 def workLinter : Linter where
   run _ := do
     for t in ← getInfoTrees do
