@@ -57,18 +57,13 @@ export IsStableUnderUnitor (leftUnitor_hom_mem leftUnitor_inv_mem rightUnitor_ho
 class IsMonoidalStable : Prop extends IsMonoidal P, IsStableUnderAssociator P,
     IsStableUnderUnitor P
 
-section IsStableUnderBraiding
-
-variable [BraidedCategory C]
-
 /-- A monoidal-stable morphism property also stable under braiding isomorphisms. -/
-class IsStableUnderBraiding (P : MorphismProperty C) : Prop extends IsMonoidalStable P where
-  braiding_hom_mem (P) (c c' : C) : P ((β_ c c').hom)
-  braiding_inv_mem (P) (c c' : C) : P ((β_ c c').inv)
+class IsStableUnderBraiding [BraidedCategory C] (P : MorphismProperty C) : Prop
+    extends IsMonoidalStable P where
+  braiding_hom_mem (P) (c c' : C) : P (β_ c c').hom
+  braiding_inv_mem (P) (c c' : C) : P (β_ c c').inv
 
 export IsStableUnderBraiding (braiding_hom_mem braiding_inv_mem)
-
-end IsStableUnderBraiding
 
 section IsStableUnderComonoid
 
