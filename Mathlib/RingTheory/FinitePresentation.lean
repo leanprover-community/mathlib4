@@ -206,8 +206,8 @@ instance polynomial [FinitePresentation R A] : FinitePresentation R A[X] :=
 
 open MvPolynomial
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: extract out helper lemmas and tidy proof.
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 0561]
 theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A B]
     [FinitePresentation.{w₁, w₃} R B] [FiniteType R A] :
