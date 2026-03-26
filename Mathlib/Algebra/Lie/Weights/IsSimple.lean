@@ -192,7 +192,7 @@ lemma mem_rootSet_of_mem_rootSpan (I : LieIdeal K L)
     {α : H.root} (hα_span : (α : Dual K H) ∈ I.rootSpan) :
     α ∈ I.rootSet := by
   by_contra hα_not
-  have hα_nz : (α : Weight K H L).IsNonZero := (Finset.mem_filter.mp α.property).2
+  have hα_nz := H.isNonZero_coe_root α
   have : I.rootSpan ≤ LinearMap.ker (Dual.eval K H (coroot (α : Weight K H L))) := by
     rw [LieIdeal.rootSpan, Submodule.span_le]
     rintro _ ⟨γ, hγ, rfl⟩
