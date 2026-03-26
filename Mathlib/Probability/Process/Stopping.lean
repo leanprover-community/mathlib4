@@ -285,7 +285,7 @@ lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous' [hf : f.IsRightCo
     IsStoppingTime f τ := by
   intro t
   by_cases ht : 𝓝[>] t = ⊥
-  · have h_eq : {ω | τ ω ≤ t} = {ω | τ ω < t} ∪ {ω | τ ω = t} := by ext; simp; grind
+  · have h_eq : {ω | τ ω ≤ t} = {ω | τ ω < t} ∪ {ω | τ ω = t} := by ext; grind
     rw [h_eq]
     exact (hτ1 t).union (hτ2 t ht)
   have : (𝓝[>] t).NeBot := ⟨ht⟩
