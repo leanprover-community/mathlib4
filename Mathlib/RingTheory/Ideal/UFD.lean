@@ -29,62 +29,31 @@ variable {R : Type*} [CommRing R] [IsNoetherianRing R] [IsDomain R]
 theorem Ideal.ufd_iff_height_one_primes_principal :
     UniqueFactorizationMonoid R ↔
     ∀ (p : Ideal R) [p.IsPrime], p.primeHeight = 1 → p.IsPrincipal := by
-  apply (UniqueFactorizationMonoid.iff_exists_prime_mem_of_isPrime).trans
+  apply UniqueFactorizationMonoid.iff_exists_prime_mem_of_isPrime.trans
   constructor
-  · intro hufd p hp h1
-    have hp_ne_bot : p ≠ ⊥ := by
-      intro hp
-      simp_rw [hp] at h1
-      exact zero_ne_one ((Order.height_bot (PrimeSpectrum R)).symm.trans h1)
-    rcases hufd p hp_ne_bot hp with ⟨x, hxmem, hxprime⟩
-    have hx0 : x ≠ 0 := hxprime.ne_zero
-    have hspan_prime : (Ideal.span {x}).IsPrime := (Ideal.span_singleton_prime hx0).2 hxprime
-    have hspan_eq : Ideal.span {x} = p := by
-      by_contra hne
-      have hp_height_le : p.height ≤ 1 := by rw [Ideal.height_eq_primeHeight p, h1]
-      have hspan_height_lt : (Ideal.span {x}).height < 1 :=
-        (Ideal.height_le_iff.mp hp_height_le) _ hspan_prime <|
-          lt_of_le_of_ne ((Ideal.span_singleton_le_iff_mem p).2 hxmem) hne
-      have hspan_min : Ideal.span {x} ∈ minimalPrimes R :=
-        Ideal.primeHeight_eq_zero_iff.1 <| by
-          simpa [Ideal.height_eq_primeHeight (Ideal.span {x})] using
-            ENat.lt_one_iff_eq_zero.mp hspan_height_lt
-      rw [IsDomain.minimalPrimes_eq_singleton_bot R] at hspan_min
-      have hspan_bot : Ideal.span {x} = ⊥ := Set.mem_singleton_iff.mp hspan_min
-      exact hx0 ((Ideal.span_singleton_eq_bot).1 hspan_bot)
-    rw [← hspan_eq]
-    infer_instance
-  · intro hprincipal I hI_ne_bot hI_prime
-    rcases (Submodule.ne_bot_iff I).1 hI_ne_bot with ⟨x, hxI, hx0⟩
-    rcases Ideal.exists_minimalPrimes_le ((Ideal.span_singleton_le_iff_mem I).2 hxI) with
-      ⟨p, hpmin, hp_le_I⟩
+  · intro h p hp h1
+    have hpn : p ≠ ⊥ := p.primeHeight_eq_zero_iff_eq_bot.not.1 (ne_zero_of_eq_one h1)
+    rcases h p hpn hp with ⟨x, hxmem, hxp⟩
+    exact ⟨x, p.eq_span_singleton_of_primeHeight_eq_one h1 hxmem hxp⟩
+  · intro h I hIn _
+    rcases I.ne_bot_iff.1 hIn with ⟨x, hxI, hx0⟩
+    rcases Ideal.exists_minimalPrimes_le (I.span_singleton_le_iff_mem.2 hxI) with ⟨p, hpmin, hpl⟩
     have : p.IsPrime := Ideal.minimalPrimes_isPrime hpmin
-    have hp_ne_bot : p ≠ ⊥ := by
-      intro hp_bot
-      exact hx0 (Ideal.span_singleton_eq_bot.1 (le_antisymm (hp_bot ▸ hpmin.1.2) bot_le))
-    have hp_primeHeight_le : p.primeHeight ≤ 1 := by
-      simpa [Ideal.height_eq_primeHeight p] using
+    have hpn : p ≠ ⊥ := fun hp_bot ↦
+      hx0 (Ideal.span_singleton_eq_bot.1 (le_antisymm (hp_bot ▸ hpmin.1.2) bot_le))
+    have hpp : p.IsPrincipal := h p <| by
+      refine le_antisymm ?_ <| ENat.one_le_iff_ne_zero.2 <|
+        p.primeHeight_eq_zero_iff_eq_bot.not.2 hpn
+      exact p.height_eq_primeHeight.symm.trans_le <|
         Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes (Ideal.span {x}) p hpmin
-    have hp_primeHeight_ne_zero : p.primeHeight ≠ 0 := by
-      intro hp_zero
-      have hp_min : p ∈ minimalPrimes R := Ideal.primeHeight_eq_zero_iff.1 hp_zero
-      rw [IsDomain.minimalPrimes_eq_singleton_bot R] at hp_min
-      exact hp_ne_bot (Set.mem_singleton_iff.mp hp_min)
-    have : p.IsPrincipal := hprincipal p <|
-      le_antisymm hp_primeHeight_le (ENat.one_le_iff_ne_zero.2 hp_primeHeight_ne_zero)
-    exact ⟨Submodule.IsPrincipal.generator p, hp_le_I (Submodule.IsPrincipal.generator_mem p),
-      Submodule.IsPrincipal.prime_generator_of_isPrime p hp_ne_bot⟩
+    exact ⟨hpp.generator p, hpl (hpp.generator_mem p), hpp.prime_generator_of_isPrime p hpn⟩
 
 theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
     {x : R} (hx : Prime x) {p : Ideal R} [p.IsPrime] (hxp : x ∉ p)
     (hp : (map (algebraMap R (Localization.Away x)) p).IsPrincipal) : p.IsPrincipal := by
   let M : Submonoid R := Submonoid.powers x
   have hM : M ≤ nonZeroDivisors R := powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero
-  have hd : Disjoint (M : Set R) (p : Set R) :=
-    (Ideal.disjoint_powers_iff_notMem x (IsPrime.isRadical ‹_›)).mpr hxp
-  have hcomap :
-      comap (algebraMap R (Localization.Away x)) (map (algebraMap R (Localization.Away x)) p) = p :=
-    IsLocalization.comap_map_of_isPrime_disjoint M (Localization.Away x) ‹_› hd
+  have hd := (Ideal.disjoint_powers_iff_notMem x (IsPrime.isRadical ‹_›)).mpr hxp
   have : IsDomain (Localization.Away x) := Localization.Away.isDomain hx.ne_zero
   by_cases hpbot : p = ⊥
   · simpa [hpbot] using bot_isPrincipal
@@ -95,21 +64,18 @@ theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
     obtain ⟨g, hg⟩ := hp
     obtain ⟨a, s, hgs⟩ := IsLocalization.exists_mk'_eq M g
     refine ⟨span {a}, a, ?_, rfl, ?_⟩
-    · rw [← hcomap, span_singleton_le_iff_mem, mem_comap]
-      rw [← IsLocalization.mk'_spec (Localization.Away x) a s, hgs]
+    · rw [← IsLocalization.comap_map_of_isPrime_disjoint M (Localization.Away x) ‹_› hd]
+      rw [span_singleton_le_iff_mem, mem_comap, ← IsLocalization.mk'_spec _ a s, hgs]
       exact Ideal.mul_mem_right _ _ (by simp [hg, mem_span_singleton_self])
     · rw [hg, submodule_span_eq, map_span, Set.image_singleton, span_singleton_eq_span_singleton]
       rw [← hgs, ← IsLocalization.mk'_spec (Localization.Away x) a s]
       exact associated_mul_unit_left _ _ (IsLocalization.map_units (Localization.Away x) s)
   have hpb : map (algebraMap R (Localization.Away x)) p ≠ ⊥ := by
-    intro h
-    rw [h, comap_bot_of_injective _ (IsLocalization.injective (Localization.Away x) hM)] at hcomap
-    exact hpbot hcomap.symm
+    simpa [Ideal.map_eq_bot_iff_of_injective (IsLocalization.injective _ hM)] using hpbot
   have hyb : span {y} ≠ ⊥ := fun hbot ↦ hpb <| by rw [← hy, hbot, map_bot]
   have hy0 : y ≠ 0 := fun hy0 ↦ by simp [hy0] at hyb
   have hxy : ¬ x ∣ y := by
-    intro hxy
-    rcases hxy with ⟨b, rfl⟩
+    rintro ⟨b, rfl⟩
     have hsp : span {b} ∈ S := by
       refine ⟨b, p.span_singleton_le_iff_mem.2 <|
         (IsPrime.mem_or_mem ‹_› (by simpa using hyp)).resolve_left hxp, rfl, ?_⟩
@@ -117,8 +83,7 @@ theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
       · rw [← hy, map_span, Set.image_singleton]
       · rw [map_mul]
         exact associated_unit_mul_left _ _ (IsLocalization.Away.algebraMap_isUnit x)
-    have hxb : span {x * b} ≤ span {b} :=
-      span_singleton_le_span_singleton.2 ⟨x, mul_comm x b⟩
+    have hxb : span {x * b} ≤ span {b} := span_singleton_le_span_singleton.2 ⟨x, mul_comm x b⟩
     have hb0 : b ≠ 0 := fun hb0 ↦ hy0 <| by simp [hb0]
     exact hImax (span {b}) hsp <| lt_of_le_of_ne hxb <| by
       intro hEq
@@ -150,19 +115,11 @@ theorem ufd_of_ufd_localization_away_of_prime {x : R} (hx : Prime x)
   rw [Ideal.ufd_iff_height_one_primes_principal]
   intro p hp h1
   by_cases hxp : x ∈ p
-  · have : (Ideal.span {x}).IsPrime := (Ideal.span_singleton_prime hx.ne_zero).2 hx
-    rcases lt_or_eq_of_le (p.span_singleton_le_iff_mem.mpr hxp) with lt | eq
-    · absurd Ideal.primeHeight_strict_mono lt
-      have htmp : (⊥ : Ideal R).primeHeight + 1 ≤ (Ideal.span {x}).primeHeight :=
-        Ideal.primeHeight_add_one_le_of_lt <| by
-          simpa [bot_lt_iff_ne_bot, Ideal.span_singleton_eq_bot] using hx.ne_zero
-      simpa [h1, ← Ideal.height_eq_primeHeight, Ideal.height_bot] using htmp
-    · exact ⟨x, eq.symm⟩
-  · have hd : Disjoint (M : Set R) (p : Set R) :=
-      (Ideal.disjoint_powers_iff_notMem x (Ideal.IsPrime.isRadical ‹_›)).mpr hxp
+  · exact ⟨x, p.eq_span_singleton_of_primeHeight_eq_one h1 hxp hx⟩
+  · have hd := (Ideal.disjoint_powers_iff_notMem x (Ideal.IsPrime.isRadical hp)).mpr hxp
     have : (Ideal.map (algebraMap R (Localization.Away x)) p).IsPrime :=
       IsLocalization.isPrime_of_isPrime_disjoint M (Localization.Away x) p ‹_› hd
     exact p.isPrincipal_of_isPrincipal_localization_away_of_prime hx hxp <|
       Ideal.ufd_iff_height_one_primes_principal.1 ‹_› _ <| by
-        simpa [IsLocalization.comap_map_of_isPrime_disjoint M _ ‹_› hd, h1] using
-          (IsLocalization.primeHeight_comap M (p.map (algebraMap R (Localization.Away x)))).symm
+        rw [← IsLocalization.primeHeight_comap M (Ideal.map (algebraMap R (Localization.Away x)) p)]
+        simp_rw [IsLocalization.comap_map_of_isPrime_disjoint M (Localization.Away x) ‹_› hd, h1]

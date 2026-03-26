@@ -197,6 +197,10 @@ lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
   · rintro ⟨hI, hI'⟩ b hb
     exact hI' (y := b.asIdeal) b.isPrime hb
 
+lemma Ideal.primeHeight_eq_zero_iff_eq_bot [IsDomain R] {p : Ideal R} [p.IsPrime] :
+    p.primeHeight = 0 ↔ p = ⊥ := by
+  rw [primeHeight_eq_zero_iff, IsDomain.minimalPrimes_eq_singleton_bot R, Set.mem_singleton_iff]
+
 @[simp]
 lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
   obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes (R := R) (I := ⊥) top_ne_bot.symm
@@ -481,3 +485,12 @@ lemma Ring.krullDimLE_of_isLocalization_maximal {n : ℕ}
   exact h P
 
 end isLocalization
+
+lemma Ideal.eq_span_singleton_of_primeHeight_eq_one [IsDomain R] {p : Ideal R} [p.IsPrime]
+    (h1 : p.primeHeight = 1) {x : R} (hxmem : x ∈ p) (hxp : Prime x) : p = span {x} := by
+  have : (span {x}).IsPrime := (span_singleton_prime hxp.ne_zero).2 hxp
+  have : p.FiniteHeight := p.finiteHeight_iff.mpr <| Or.inr <| by simp [height_eq_primeHeight, h1]
+  by_contra! hne
+  exact hxp.ne_zero <| span_singleton_eq_bot.1 <| (span {x}).primeHeight_eq_zero_iff_eq_bot.mp <|
+    ENat.lt_one_iff_eq_zero.mp <| primeHeight_strict_mono
+      (lt_of_le_of_ne ((span_singleton_le_iff_mem p).2 hxmem) hne.symm) |>.trans_eq h1
