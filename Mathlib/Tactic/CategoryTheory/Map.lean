@@ -14,8 +14,13 @@ public import Mathlib.Util.AddRelatedDecl
 
 Adding `@[map]` to a lemma named `H` of shape `∀ .., f = g`, where `f` and `g` are morphisms
 in some category `C`, creates a new lemma named `H_map` of the form
-`∀ .. {D} (func : C ⥤ D), F.map f = F.map g` and then applies
+`∀ .. {D} (F : C ⥤ D), F.map f = F.map g` and then applies
 `simp only [Functor.map_comp, Functor.map_id]`.
+
+Declarations tagged with `@[map_functor]` register concrete functors. For each registered functor
+compatible with the source category of `H`, `@[map]` also generates a specialized lemma
+`H_map_<functorDeclName>` by specializing `F` to that functor and simplifying the result with
+`dsimp`.
 
 There is also a term elaborator `map_of% t` for use within proofs.
 -/
@@ -27,10 +32,55 @@ open CategoryTheory
 
 namespace Mathlib.Tactic.CategoryTheory.Map
 
+initialize mapFunctorExt : SimplePersistentEnvExtension Name (Array Name) ←
+  registerSimplePersistentEnvExtension {
+    addEntryFn := Array.push
+    addImportedFn := fun as => as.foldl (init := #[]) (· ++ ·)
+  }
+
+/-- Flatten a declaration name into an underscore-separated suffix. -/
+private def flattenName : Name → String
+  | .anonymous => ""
+  | .str .anonymous s => s
+  | .num .anonymous n => toString n
+  | .str p s => s!"{flattenName p}_{s}"
+  | .num p n => s!"{flattenName p}_{n}"
+
+/-- The target name for the `@[map]` specialization at a registered functor. -/
+private def specializedMapName (src functorName : Name) : Name :=
+  src.appendAfter s!"_map_{flattenName (privateToUserName functorName)}"
+
+/-- Read the registered `@[map_functor]` functors. -/
+private def getMapFunctors : CoreM (Array Name) :=
+  return mapFunctorExt.getState (← getEnv)
+
+/-- Extract the source and target categories from a functor type. -/
+private def extractFunctorType? (ty : Expr) : MetaM (Option (Expr × Expr)) := do
+  let ty ← whnf (← instantiateMVars ty)
+  let (``CategoryTheory.Functor, args) := ty.getAppFnArgs | return none
+  if args.size == 4 then
+    return some (args[0]!, args[2]!)
+  else
+    return none
+
+/-- Validate that a declaration tagged with `@[map_functor]` is a concrete functor constant. -/
+private def validateMapFunctorDecl (declName : Name) : MetaM Unit := do
+  let F ← mkConstWithFreshMVarLevels declName
+  let Fty := (← inferType F).cleanupAnnotations
+  if Fty.isForall then
+    throwError "`map_functor` expects a declaration whose type is directly a functor, not a family"
+  unless (← extractFunctorType? Fty).isSome do
+    throwError "`map_functor` expects a declaration whose type reduces to `C ⥤ D`"
+
 /-- `simp only` with `Functor.map_comp` and `Functor.map_id` on a single expression
 (used on each side via `simpEq`). -/
 def mapCompSimp (e : Expr) : MetaM Simp.Result :=
   simpOnlyNames [``Functor.map_comp, ``Functor.map_id] e (config := { decide := false })
+
+/-- Apply `dsimp` to an expression. -/
+def dsimpExpr (e : Expr) : MetaM Expr := do
+  let ctx ← Simp.Context.mkDefault
+  return (← Meta.dsimp (← instantiateMVars e) ctx #[]).1
 
 private def extractCatInstanceFromEq (eqTy : Expr) : MetaM (Expr × Expr) := do
   let some (α, _, _) := eqTy.cleanupAnnotations.eq? | throwError "`@[map]` expects an equality"
@@ -102,16 +152,51 @@ def mapExprElab (pf : Expr) : TermElabM Expr :=
   liftMetaM <| mapExprMVars pf
 
 /--
+Produce the `@[map]`-specialized proof obtained by fixing `F` to a registered concrete functor and
+then simplifying with `dsimp`. Returns `none` when the functor has an incompatible source category.
+-/
+def mapSpecializedExpr (pf F : Expr) : MetaM (Option Expr) := do
+  let Fty := (← inferType F).cleanupAnnotations
+  let some (CF, _) ← extractFunctorType? Fty
+    | throwError "`@[map]` internal error: registered declaration is not a functor"
+  forallTelescopeReducing (← inferType pf) fun xs _ => do
+    let pfApp := mkAppN pf xs
+    let eqTy := (← inferType pfApp).cleanupAnnotations
+    let (C, _) ← extractCatInstanceFromEq eqTy
+    unless ← isDefEq C CF do
+      return none
+    let pf₀ ← mkAppM ``CategoryTheory.Functor.congr_map #[F, pfApp]
+    let ty ← instantiateMVars (← inferType pf₀)
+    let (ty', pf') ← simpEq (fun e => mapCompSimp e) ty pf₀
+    let ty'' ← dsimpExpr ty'
+    let pf'' ← mkExpectedTypeHint pf' ty''
+    return some (← mkLambdaFVars xs pf'')
+
+/--
 Adding `@[map]` to a lemma named `H` of shape `∀ .., f = g`, where `f` and `g` are morphisms
 in some category `C`, creates a new lemma named `H_map` of the form
 `∀ .. {D} (F : C ⥤ D), F.map f = F.map g` and then applies
-`simp only [Functor.map_comp, Functor.map_id]`.
+`simp only [Functor.map_comp, Functor.map_id]`. For each compatible registered `@[map_functor]`
+declaration `G`, it also creates `H_map_<G>` by specializing `F := G` and applying `dsimp`.
 
 Use `@[map (attr := simp)]` to mark both the original lemma and `H_map` as `simp` lemmas, and
 `@[reassoc (attr := map)]` to generate `_map` versions of both the original lemma the reassociated
 version.
 -/
 syntax (name := map) "map" optAttrArg : attr
+syntax (name := map_functor) "map_functor" : attr
+
+initialize registerBuiltinAttribute {
+  name := `map_functor
+  descr := "Register a concrete functor for specialized `@[map]` lemmas."
+  applicationTime := .afterTypeChecking
+  add := fun declName stx kind => match stx with
+  | `(attr| map_functor) => do
+    if kind != AttributeKind.global then
+      throwError "`map_functor` can only be used as a global attribute"
+    MetaM.run' do validateMapFunctorDecl declName
+    modifyEnv (mapFunctorExt.addEntry · declName)
+  | _ => throwUnsupportedSyntax }
 
 initialize registerBuiltinAttribute {
   name := `map
@@ -130,6 +215,22 @@ initialize registerBuiltinAttribute {
         let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) pf
         let outLevels := tgtLevelNames.toList ++ r.newParamNames.toList
         pure (r.expr, outLevels)
+    for functorName in ← getMapFunctors do
+      let info ← withoutExporting <| getConstInfo src
+      let levelMVars ← info.levelParams.mapM fun _ => mkFreshLevelMVar
+      let value := (Expr.const src (info.levelParams.map mkLevelParam)).instantiateLevelParams
+        info.levelParams levelMVars
+      let F ← mkConstWithFreshMVarLevels functorName
+      if (← mapSpecializedExpr value F).isSome then
+        addRelatedDecl src (specializedMapName src functorName) ref optAttr fun value levels => do
+          Term.TermElabM.run' <| Term.withSynthesize do
+            let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
+            let value := value.instantiateLevelParams levels levelMVars
+            let F ← mkConstWithFreshMVarLevels functorName
+            let some pf ← mapSpecializedExpr value F
+              | throwError "`@[map]` internal error: specialization disappeared unexpectedly"
+            let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) pf
+            pure (r.expr, r.newParamNames.toList)
   | _ => throwUnsupportedSyntax }
 
 /--
