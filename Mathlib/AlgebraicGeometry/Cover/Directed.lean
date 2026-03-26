@@ -87,13 +87,9 @@ set_option backward.isDefEq.respectTransparency false in
 lemma exists_of_trans_eq_trans {i j k : 𝒰.I₀} (fi : i ⟶ k) (fj : j ⟶ k) (xi : 𝒰.X i)
     (xj : 𝒰.X j) (h : 𝒰.trans fi xi = 𝒰.trans fj xj) :
     ∃ (l : 𝒰.I₀) (fli : l ⟶ i) (flj : l ⟶ j) (x : 𝒰.X l),
-      𝒰.trans fli x = xi ∧ 𝒰.trans flj x = xj := by
-  have : 𝒰.f i xi = 𝒰.f j xj := by
-    rw [← 𝒰.trans_map fi, ← 𝒰.trans_map fj, Hom.comp_base, Hom.comp_base,
-      ConcreteCategory.comp_apply, h, ConcreteCategory.comp_apply]
-  obtain ⟨z, rfl, rfl⟩ := Scheme.Pullback.exists_preimage_pullback xi xj this
-  obtain ⟨l, gi, gj, y, rfl⟩ := 𝒰.exists_lift_trans_eq z
-  refine ⟨l, gi, gj, y, ?_, ?_⟩ <;> simp [← Scheme.Hom.comp_apply]
+      𝒰.trans fli x = xi ∧ 𝒰.trans flj x = xj := exists_of_f_eq_f _ _ _ <| by
+  rw [← 𝒰.trans_map fi, ← 𝒰.trans_map fj, Hom.comp_base, Hom.comp_base,
+    ConcreteCategory.comp_apply, h, ConcreteCategory.comp_apply]
 
 lemma property_trans {i j : 𝒰.I₀} (hij : i ⟶ j) : P (𝒰.trans hij) :=
   LocallyDirected.property_trans hij
@@ -157,7 +153,6 @@ variable [P.IsStableUnderBaseChange] (𝒰 : X.Cover (precoverage P))
 instance : Category (𝒰.pullback₁ f).I₀ := inferInstanceAs <| Category 𝒰.I₀
 
 set_option backward.isDefEq.respectTransparency false in
-set_option linter.flexible false in -- TODO: fix the non-terminal simp at the end
 instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ f) where
   trans {i j} hij := pullback.map f (𝒰.f i) f (𝒰.f j) (𝟙 _) (𝒰.trans hij) (𝟙 _)
     (by simp) (by simp)
@@ -188,7 +183,8 @@ instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ 
     let iso : pullback f (𝒰.f i) ≅ pullback (pullback.snd f (𝒰.f j)) (𝒰.trans hij) :=
       pullback.congrHom rfl (by simp) ≪≫ (pullbackLeftPullbackSndIso _ _ _).symm
     rw [← P.cancel_left_of_respectsIso iso.inv]
-    simp [Iso.trans_inv, Iso.symm_inv, pullback.congrHom_inv,
+    simp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
+      PreZeroHypercover.pullback₁_X, Iso.trans_inv, Iso.symm_inv, pullback.congrHom_inv,
       Category.assoc, iso]
     convert P.pullback_fst (pullback.snd f (𝒰.f j)) _ (𝒰.property_trans hij)
     apply pullback.hom_ext <;> simp [pullback.condition]
@@ -261,6 +257,7 @@ end OpenCover
 
 /-- If `𝒰` is an open cover such that the images of the components form a basis of the topology
 of `X`, `𝒰` is directed by the ordering of subset inclusion of the images. -/
+@[implicit_reducible]
 def Cover.LocallyDirected.ofIsBasisOpensRange {𝒰 : X.OpenCover} [Preorder 𝒰.I₀]
     (hle : ∀ {i j : 𝒰.I₀}, i ≤ j ↔ (𝒰.f i).opensRange ≤ (𝒰.f j).opensRange)
     (H : TopologicalSpace.Opens.IsBasis (Set.range <| fun i ↦ (𝒰.f i).opensRange)) :
@@ -318,7 +315,7 @@ def directedAffineCover : X.OpenCover where
 instance : Preorder X.directedAffineCover.I₀ := inferInstanceAs <| Preorder X.affineOpens
 
 instance : Scheme.Cover.LocallyDirected X.directedAffineCover :=
-  .ofIsBasisOpensRange (by simp) <| by
+  .ofIsBasisOpensRange (by intros; simp; rfl) <| by
     convert X.isBasis_affineOpens
     simp
 

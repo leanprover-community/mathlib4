@@ -53,7 +53,7 @@ noncomputable section
 
 open CategoryTheory Limits Representation Rep Finsupp
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
+variable {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G)
 
 namespace groupHomology
 
@@ -61,7 +61,7 @@ section Chains
 
 /-- The 0th object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
-def chainsIso₀ : (inhomogeneousChains A).X 0 ≅ A.V :=
+def chainsIso₀ : (inhomogeneousChains A).X 0 ≅ ModuleCat.of k A.V :=
   (LinearEquiv.finsuppUnique _ _ _).toModuleIso
 
 /-- The 1st object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
@@ -87,7 +87,7 @@ section Differentials
 set_option backward.isDefEq.respectTransparency false in
 /-- The 0th differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
 `k`-linear map `(G →₀ A) → A`. It is defined by `single g a ↦ ρ_A(g⁻¹)(a) - a.` -/
-def d₁₀ : ModuleCat.of k (G →₀ A) ⟶ A.V :=
+def d₁₀ : ModuleCat.of k (G →₀ A) ⟶ ModuleCat.of k A.V :=
   ModuleCat.ofHom <| lsum k fun g => A.ρ g⁻¹ - LinearMap.id
 
 set_option backward.isDefEq.respectTransparency false in
@@ -704,7 +704,7 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   rfl
 
 /-- The 0-cycles of the complex of inhomogeneous chains of `A` are isomorphic to `A`. -/
-def cyclesIso₀ : cycles A 0 ≅ A.V :=
+def cyclesIso₀ : cycles A 0 ≅ ModuleCat.of k A.V :=
   (inhomogeneousChains A).iCyclesIso _ 0 (by simp) (by simp) ≪≫ chainsIso₀ A
 
 set_option backward.isDefEq.respectTransparency false in
@@ -852,10 +852,10 @@ def H0Iso : H0 A ≅ (coinvariantsFunctor k G).obj A :=
   (ChainComplex.isoHomologyι₀ _) ≪≫ opcyclesIso₀ A
 
 /-- The quotient map from `A` to `H₀(G, A)`. -/
-def H0π : A.V ⟶ H0 A := (cyclesIso₀ A).inv ≫ π A 0
+def H0π : ModuleCat.of k A.V ⟶ H0 A := (cyclesIso₀ A).inv ≫ π A 0
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H0π A) := by unfold H0π; infer_instance
+instance : Epi (H0π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -890,7 +890,7 @@ variable [A.IsTrivial]
 set_option backward.isDefEq.respectTransparency false in
 /-- When the representation on `A` is trivial, then `H₀(G, A)` is all of `A.` -/
 def H0IsoOfIsTrivial :
-    H0 A ≅ A.V :=
+    H0 A ≅ ModuleCat.of k A.V :=
   ((inhomogeneousChains A).isoHomologyπ 1 0 (by simp) <| by
     ext; simp [inhomogeneousChains.d_def, inhomogeneousChains.d_single (G := G),
        Unique.eq_default (α := Fin 0 → G)]).symm ≪≫ cyclesIso₀ A
@@ -920,7 +920,7 @@ def H1π : ModuleCat.of k (cycles₁ A) ⟶ H1 A :=
   (isoCycles₁ A).inv ≫ π A 1
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H1π A) := by unfold H1π; infer_instance
+instance : Epi (H1π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 variable {A}
 
@@ -1063,7 +1063,7 @@ def H2π : ModuleCat.of k (cycles₂ A) ⟶ H2 A :=
   (isoCycles₂ A).inv ≫ π A 2
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H2π A) := by unfold H2π; infer_instance
+instance : Epi (H2π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 variable {A}
 
