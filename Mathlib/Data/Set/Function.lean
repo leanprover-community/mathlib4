@@ -882,15 +882,15 @@ theorem SurjOn.leftInvOn_of_rightInvOn (hf : SurjOn f s t) (hf' : RightInvOn f f
   rw [← heq, hf' hx]
 
 theorem image_eq_preimage_of_leftInvOn_injOn_mapsTo {f : α → β} {g : β → α} {s : Set α}
-    (hgf : LeftInvOn g f s) (ginj : Set.InjOn g (g ⁻¹' s)) : image f s = preimage g s := by
+    (hgf : LeftInvOn g f s) (ginj : Set.InjOn g (g ⁻¹' s)) : f '' s = g ⁻¹' s := by
   ext x
   constructor
-  · rintro ⟨y, hy, hyx⟩
-    rw [mem_preimage, ← hyx, hgf hy]; exact hy
+  · rintro ⟨y, hy, rfl⟩
+    rw [mem_preimage, hgf hy]; exact hy
   · intro hx
-    have : ∀ y ∈ s, f y ∈ (g ⁻¹' s) := by intro y hy; simpa [mem_preimage, hgf hy] using hy
-    use g x
-    exact ⟨hx, (Set.InjOn.rightInvOn_of_leftInvOn ginj hgf (Set.mapsTo_preimage g s) this hx)⟩
+    refine ⟨g x, hx, Set.InjOn.rightInvOn_of_leftInvOn ginj hgf (Set.mapsTo_preimage g s) ?_ hx⟩
+    intro y hy
+    simpa [hgf hy] using hy
 
 end RightInvOn
 
