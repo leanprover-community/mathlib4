@@ -156,7 +156,6 @@ theorem memℓp_norm_iff {f : (i : α) → E i} :
 alias ⟨Memℓp.of_norm, Memℓp.norm⟩ := memℓp_norm_iff
 namespace Memℓp
 
-
 theorem mono {f : (i : α) → E i} {g : α → ℝ}
     (hg : Memℓp g p) (hfg : ∀ i, ‖f i‖ ≤ g i) :
     Memℓp f p := by
