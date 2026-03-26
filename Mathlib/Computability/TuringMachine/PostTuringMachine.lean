@@ -824,8 +824,7 @@ theorem stepAux_read (f : Γ → Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (L R : Li
     exact this n f (L.flatMap (fun x => (enc x).1.reverse) _)
       (R.flatMap (fun x => (enc x).1) _) [] _ (enc a).2
   clear f L a R
-  intro i f L' R' l₁ l₂ _
-  subst i
+  rintro _ f L' R' l₁ l₂ rfl
   induction l₂ generalizing l₁ with
   | nil => rfl
   | cons a l₂ IH =>
