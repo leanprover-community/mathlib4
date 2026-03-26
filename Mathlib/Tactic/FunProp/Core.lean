@@ -542,7 +542,7 @@ def fvarAppCase (goal : Goal) (fData : FunctionData) :
     if let some f ← fData.unfoldHeadFVar? then
       trace[Meta.Tactic.fun_prop] m!"unfolded local function {fData.fn}, {goal.mainFun} ==> {f}"
       let goal' ← goal.updateMainFun f
-      if let some r ← funProp (← goal'.mkFreshExpr).2 then
+      if let some r ← funProp (← goal'.mkFreshExpr) then
         return r
 
     if (← fData.isMorApplication) != .none then
