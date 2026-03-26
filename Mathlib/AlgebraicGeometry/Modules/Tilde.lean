@@ -83,6 +83,13 @@ def SpecModulesToSheafFullyFaithful : (modulesSpecToSheaf (R := R)).FullyFaithfu
   map_preimage f := rfl
   preimage_map f := rfl
 
+instance : (modulesSpecToSheaf (R := R)).ReflectsIsomorphisms :=
+  SpecModulesToSheafFullyFaithful.reflectsIsomorphisms
+
+instance : (modulesSpecToSheaf (R := R)).Faithful := SpecModulesToSheafFullyFaithful.faithful
+
+instance : (modulesSpecToSheaf (R := R)).Full := SpecModulesToSheafFullyFaithful.full
+
 /--
 `M^~` as a sheaf of `𝒪_{Spec R}`-modules
 -/
@@ -415,13 +422,6 @@ variable (M : (Spec R).Modules) (f : R) {S : CommRingCat.{u}} (φ : R ⟶ S)
 variable {X : TopCat.{u}}
 
 open TopologicalSpace
-
-instance : (modulesSpecToSheaf (R := R)).ReflectsIsomorphisms :=
-  SpecModulesToSheafFullyFaithful.reflectsIsomorphisms
-
-instance : (modulesSpecToSheaf (R := R)).Faithful := SpecModulesToSheafFullyFaithful.faithful
-
-instance : (modulesSpecToSheaf (R := R)).Full := SpecModulesToSheafFullyFaithful.full
 
 abbrev IsLocalizing (M : TopCat.Sheaf (ModuleCat R) (Spec R)) : Prop :=
     ∀ f : R, IsLocalizedModule (.powers f) (M.obj.map (basicOpen f).leTop.op).hom
