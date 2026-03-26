@@ -36,7 +36,7 @@ abbrev PointedCone (R E)
 
 namespace PointedCone
 
-open Function Submodule
+open Function Submodule Pointwise
 
 section Submodule
 
@@ -124,6 +124,9 @@ theorem pointed_toConvexCone (C : PointedCone R E) : (C : ConvexCone R E).Pointe
 @[ext] lemma ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
 
 lemma convex (C : PointedCone R E) : Convex R (C : Set E) := C.toConvexCone.convex
+
+instance instZero (C : PointedCone R E) : Zero C :=
+  ⟨0, C.zero_mem⟩
 
 @[aesop 90% (rule_sets := [SetLike])]
 nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
@@ -309,8 +312,6 @@ end OrderedAddCommGroup
 
 section Ring
 
-open Pointwise
-
 variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
 
 @[simp] lemma neg_ofSubmodule {S : Submodule R E} : -(ofSubmodule S) = S := by
@@ -319,7 +320,6 @@ variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R 
 end Ring
 
 section Lineal
-
 
 variable [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
 
@@ -333,7 +333,6 @@ def lineal (C : PointedCone R E) : Submodule R E where
     · have hr := le_of_lt <| neg_pos_of_neg <| lt_of_not_ge hr
       simpa using And.intro (C.smul_mem hr hx.2) (C.smul_mem hr hx.1)
 
-open Pointwise in
 @[simp] lemma ofSubmodule_lineal (C : PointedCone R E) : C.lineal = C ⊓ -C :=
   rfl
 
@@ -375,9 +374,7 @@ variable {R : Type*} [Ring R] [PartialOrder R] [IsDirectedOrder R] [IsOrderedRin
 variable {E : Type*} [AddCommGroup E] [Module R E]
 variable {C : PointedCone R E} {x : E}
 
-open Pointwise
-
-/-- A cone that is identical to its pointwise negative is a submodule. -/
+/-- A cone that is closed under negation forms a submodule. -/
 abbrev toSubmodule (hC : -C = C) : Submodule R E where
   __ := C
   smul_mem' a x hx := by
@@ -393,9 +390,9 @@ abbrev toSubmodule (hC : -C = C) : Submodule R E where
 
 @[simp] lemma ofSubmodule_toSubmodule (hC : -C = C) : C.toSubmodule hC = C := rfl
 
-@[simp] lemma coe_toSubmodule (hC : -C = C) : (C.toSubmodule hC : Set E) = C := rfl
+lemma coe_toSubmodule (hC : -C = C) : (C.toSubmodule hC : Set E) = C := by simp
 
-lemma mem_toSubmodule {hC : -C = C} : x ∈ C.toSubmodule hC ↔ x ∈ C := .rfl
+lemma mem_toSubmodule {hC : -C = C} : x ∈ C.toSubmodule hC ↔ x ∈ C := by simp
 
 instance : CanLift (PointedCone R E) (Submodule R E) ofSubmodule (fun C => -C = C) where
   prf _ h := ⟨toSubmodule h, ofSubmodule_toSubmodule h⟩
@@ -421,14 +418,14 @@ lemma span_eq_submodule_span_of_neg_eq {s : Set E} (hs : -s = s) :
     hull R s = span R s := by
   simp [span_eq_hull_neg_sup_hull, hs]
 
+variable {R} (C)
+
 lemma span_eq_neg_sup : span R (C : Set E) = -C ⊔ C := by
   simp [span_eq_hull_neg_sup_hull, span_neg_eq_neg]
 
-variable {R} in
 lemma mem_span_iff_mem_neg_sup : x ∈ span R C ↔ x ∈ -C ⊔ C := by
   rw [← span_eq_neg_sup, mem_ofSubmodule_iff]
 
-variable {R} in
 lemma mem_span : x ∈ span R C ↔ ∃ p ∈ C, ∃ n ∈ C, x = p - n := by
   simp_rw [mem_span_iff_mem_neg_sup, mem_sup, mem_neg]
   refine ⟨fun ⟨y, hy', z, hz, h⟩ ↦ ?_, fun ⟨p, hp, n, hn, h⟩ ↦ ?_⟩
