@@ -360,7 +360,6 @@ attribute [local instance] WithLp.prodPseudoEMetricAux
 
 variable {α β}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma used twice in the proof of `WithLp.prodPseudoMetricAux` below. Not intended
 for use outside this file. -/
 theorem prod_sup_edist_ne_top_aux [PseudoMetricSpace α] [PseudoMetricSpace β]
@@ -680,10 +679,10 @@ instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedA
     SeminormedAddCommGroup (WithLp p (α × β)) where
   dist_eq x y := by
     rcases p.dichotomy with (rfl | h)
-    · simp only [prod_dist_eq_sup, prod_norm_eq_sup, dist_eq_norm]
+    · simp only [prod_dist_eq_sup, prod_norm_eq_sup, dist_eq_norm, ← norm_neg_add]
       rfl
     · simp only [prod_dist_eq_add (zero_lt_one.trans_le h),
-        prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm]
+        prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm, ← norm_neg_add]
       rfl
 
 lemma isUniformInducing_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
@@ -1039,7 +1038,7 @@ abbrev seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCo
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToProd p α β
   dist_eq x y := by
-    rw [dist_pseudoMetricSpaceToProd, SeminormedAddCommGroup.dist_eq, toLp_sub]
+    rw [dist_pseudoMetricSpaceToProd, SeminormedAddCommGroup.dist_eq, toLp_add, toLp_neg]
 
 lemma norm_seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
     (x : α × β) :
@@ -1050,7 +1049,6 @@ lemma nnnorm_seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [Seminorme
     @NNNorm.nnnorm _ (seminormedAddCommGroupToProd p α β).toSeminormedAddGroup.toNNNorm x =
     ‖toLp p x‖₊ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isBoundedSMulSeminormedAddCommGroupToProd
     [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [SeminormedRing R]
     [Module R α] [Module R β] [IsBoundedSMul R α] [IsBoundedSMul R β] :
@@ -1087,7 +1085,7 @@ abbrev normedAddCommGroupToProd [NormedAddCommGroup α] [NormedAddCommGroup β] 
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToProd p α β
   dist_eq x y := by
-    rw [dist_pseudoMetricSpaceToProd, SeminormedAddCommGroup.dist_eq, toLp_sub]
+    rw [dist_pseudoMetricSpaceToProd, SeminormedAddCommGroup.dist_eq, toLp_add, toLp_neg]
   eq_of_dist_eq_zero {x y} h := by
     rw [dist_pseudoMetricSpaceToProd] at h
     exact toLp_injective p (eq_of_dist_eq_zero h)
@@ -1122,7 +1120,6 @@ def withLpProdCongr (f : α ≃ᵢ α') (g : β ≃ᵢ β') : WithLp p (α × β
   __ := WithLp.congr p (f.toEquiv.prodCongr g.toEquiv)
   isometry_toFun := f.isometry.withLpProdMap p g.isometry
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Commutativity of the `L^p` product as an isometric equivalence. -/
 def withLpProdComm : WithLp p (α × β) ≃ᵢ WithLp p (β × α) where
   __ := WithLp.congr p (Equiv.prodComm α β)
@@ -1141,7 +1138,6 @@ theorem withLpProdComm_apply (x : WithLp p (α × β)) :
 theorem withLpProdComm_symm : (withLpProdComm p α β).symm = withLpProdComm p β α :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Associativity of the `L^p` product as an isometric equivalence. -/
 @[simps apply symm_apply]
 def withLpProdAssoc : WithLp p (WithLp p (α × β) × γ) ≃ᵢ WithLp p (α × WithLp p (β × γ)) where

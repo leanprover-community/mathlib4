@@ -365,7 +365,6 @@ theorem realize_mapTermRel_id [L'.Structure M]
   | imp _ _ ih1 ih2 => simp [mapTermRel, Realize, ih1, ih2]
   | all _ ih => simp only [mapTermRel, Realize, ih, id]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem realize_mapTermRel_add_castLe [L'.Structure M] {k : ℕ}
     {ft : ∀ n, L.Term (α ⊕ (Fin n)) → L'.Term (β ⊕ (Fin (k + n)))}
     {fr : ∀ n, L.Relations n → L'.Relations n} {n} {φ : L.BoundedFormula α n}
@@ -384,7 +383,6 @@ theorem realize_mapTermRel_add_castLe [L'.Structure M] {k : ℕ}
   | imp _ _ ih1 ih2 => simp [mapTermRel, Realize, ih1, ih2]
   | all _ ih => simp [mapTermRel, Realize, ih, hv]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem realize_relabel {m n : ℕ} {φ : L.BoundedFormula α n} {g : α → β ⊕ (Fin m)} {v : β → M}
     {xs : Fin (m + n) → M} :
@@ -1019,7 +1017,7 @@ instance model_infiniteTheory [h : Infinite M] : M ⊨ L.infiniteTheory :=
 @[simp]
 theorem model_nonemptyTheory_iff : M ⊨ L.nonemptyTheory ↔ Nonempty M := by
   simp only [nonemptyTheory, Theory.model_iff, Set.mem_singleton_iff, forall_eq,
-    Sentence.realize_cardGe, Nat.cast_one, one_le_iff_ne_zero, mk_ne_zero_iff]
+    Sentence.realize_cardGe, Nat.cast_one, Cardinal.one_le_iff_ne_zero, mk_ne_zero_iff]
 
 instance model_nonempty [h : Nonempty M] : M ⊨ L.nonemptyTheory :=
   L.model_nonemptyTheory_iff.2 h

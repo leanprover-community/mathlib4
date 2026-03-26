@@ -36,7 +36,6 @@ private theorem rexp_neg_image_aux : rexp ∘ Neg.neg '' univ = Ioi 0 := by
 private theorem rexp_neg_injOn_aux : univ.InjOn (rexp ∘ Neg.neg) :=
   Real.exp_injective.injOn.comp neg_injective.injOn (univ.mapsTo_univ _)
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem rexp_cexp_aux (x : ℝ) (s : ℂ) (f : E) :
     rexp (-x) • cexp (-↑x) ^ (s - 1) • f = cexp (-s * ↑x) • f := by
   change (rexp (-x) : ℂ) • _ = _ • f

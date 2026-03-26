@@ -163,7 +163,6 @@ def alternatizeUncurryFinLM : (M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) →ₗ[R] M
 @[deprecated (since := "2025-09-30")]
 alias uncurryFinLM := alternatizeUncurryFinLM
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a bilinear map taking values in the space of alternating maps,
 then evaluation of the twice uncurried `f` on a tuple of vectors `v`
 can be represented as a sum of
@@ -174,7 +173,7 @@ f(v_j, v_i; v_0, \dots, \hat{v_i}, \dots, \hat{v_j}-)
 $$
 
 over all `(i j : Fin (n + 2))`, `i < j`, taken with appropriate signs.
-Here $\hat{v_i}$$ and $\hat{v_j}$$ mean that these vectors are removed from the tuple.
+Here $\hat{v_i}$ and $\hat{v_j}$ mean that these vectors are removed from the tuple.
 
 We use pairs of `i j : Fin (n + 1)`, `i ≤ j`,
 to encode pairs `(i.castSucc : Fin (n + 2), j.succ : Fin (n + 2))`,

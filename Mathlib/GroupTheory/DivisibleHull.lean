@@ -136,7 +136,6 @@ def coeAddMonoidHom : M →+ DivisibleHull M where
   map_zero' := by simp
   map_add' := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nsmul_mk (a : ℕ) (m : M) (s : ℕ+) : a • mk m s = mk (a • m) s := by
   induction a with
   | zero => simp
@@ -241,6 +240,7 @@ instance : Module ℚ (DivisibleHull M) where
       ring_nf
     rw [Rat.mul_num_den']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem zsmul_mk (a : ℤ) (m : M) (s : ℕ+) : a • mk m s = mk (a • m) s := by
   simp [← Int.cast_smul_eq_zsmul ℚ a, qsmul_mk]
 
@@ -314,7 +314,6 @@ instance : IsOrderedCancelAddMonoid (DivisibleHull M) :=
     simp_rw [PNat.mul_coe, smul_smul] at this
     convert this using 3 <;> ring)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsStrictOrderedModule ℚ≥0 (DivisibleHull M) where
   smul_lt_smul_of_pos_left a ha b c h := by
     induction b with | mk mb sb
@@ -336,7 +335,6 @@ end LinearOrder
 section OrderedGroup
 variable {M : Type*} [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsStrictOrderedModule ℚ (DivisibleHull M) where
   smul_lt_smul_of_pos_left a ha b c h := by
     simp_rw [qsmul_of_nonneg ha.le]

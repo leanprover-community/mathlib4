@@ -135,12 +135,10 @@ protected lemma posPart_add_negPart (a : A) (ha : IsSelfAdjoint a := by cfc_tac)
   rw [CFC.posPart_def, CFC.negPart_def, ← cfcₙ_add .., abs_eq_cfcₙ_norm a ha]
   exact cfcₙ_congr fun x hx ↦ posPart_add_negPart x
 
-set_option backward.isDefEq.respectTransparency false in
 lemma abs_sub_self (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : abs a - a = 2 • a⁻ := by
   simpa [two_smul] using
     congr($(CFC.posPart_add_negPart a) - $(CFC.posPart_sub_negPart a)).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma abs_add_self (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : abs a + a = 2 • a⁺ := by
   simpa [two_smul] using
     congr($(CFC.posPart_add_negPart a) + $(CFC.posPart_sub_negPart a)).symm
@@ -228,9 +226,12 @@ lemma abs_eq_cfc_norm (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
     abs a = cfc (‖·‖) a := by
   rw [abs_eq_cfcₙ_norm _, cfcₙ_eq_cfc]
 
-@[simp]
-lemma abs_one : abs (1 : A) = 1 := by
-  simp [abs]
+theorem abs_coe_unitary (U : unitary A) : abs (U : A) = 1 := by simp [abs]
+
+@[simp] theorem abs_of_mem_unitary {U : A} (hU : U ∈ unitary A) : abs U = 1 :=
+  abs_coe_unitary ⟨U, hU⟩
+
+lemma abs_one : abs (1 : A) = 1 := by simp
 
 variable [StarModule ℝ A]
 

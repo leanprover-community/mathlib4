@@ -96,11 +96,14 @@ protected def involutivePointwiseNeg : InvolutiveNeg (Submodule R M) where
 scoped[Pointwise] attribute [instance] Submodule.involutivePointwiseNeg
 
 @[simp]
-theorem neg_le_neg (S T : Submodule R M) : -S ≤ -T ↔ S ≤ T :=
+theorem neg_le_neg {S T : Submodule R M} : -S ≤ -T ↔ S ≤ T :=
   SetLike.coe_subset_coe.symm.trans Set.neg_subset_neg
 
-theorem neg_le (S T : Submodule R M) : -S ≤ T ↔ S ≤ -T :=
+theorem neg_le {S T : Submodule R M} : -S ≤ T ↔ S ≤ -T :=
   SetLike.coe_subset_coe.symm.trans Set.neg_subset
+
+theorem neg_eq_self_iff_neg_le {S : Submodule R M} : -S = S ↔ -S ≤ S :=
+  ⟨le_of_eq, fun h => antisymm h <| neg_le.mp h⟩
 
 /-- `Submodule.pointwiseNeg` as an order isomorphism. -/
 def negOrderIso : Submodule R M ≃o Submodule R M where
@@ -197,6 +200,9 @@ protected def pointwiseDistribMulAction : DistribMulAction α (Submodule R M) wh
   smul_add _a _S₁ _S₂ := map_sup _ _ _
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseDistribMulAction
+
+theorem pointwise_smul_def {a : α} {S : Submodule R M} :
+    a • S = S.map (DistribSMul.toLinearMap R M a) := rfl
 
 open Pointwise
 
@@ -309,7 +315,7 @@ When we consider subset of `R` acting on `M`
 
 #### Notes
 - If we assume the addition on subsets of `R` is the `⊔` and subtraction `⊓` i.e. use `SetSemiring`,
-then this action actually gives a module structure on submodules of `M` over subsets of `R`.
+  then this action actually gives a module structure on submodules of `M` over subsets of `R`.
 - If we generalize so that `r • N` makes sense for all `r : S`, then `Submodule.singleton_set_smul`
   and `Submodule.singleton_set_smul` can be generalized as well.
 -/
@@ -419,7 +425,6 @@ lemma set_smul_inductionOn {motive : (x : M) → (_ : x ∈ s • N) → Prop}
     (fun _ _ mem mem' ↦ ⟨mem_set_smul_of_mem_mem mem mem', smul₀ mem mem'⟩) hx
   h
 
-set_option backward.isDefEq.respectTransparency false in
 -- Implementation note: if `N` is both an `R`-submodule and `S`-submodule and `SMulCommClass R S M`,
 -- this lemma is also true for any `s : Set S`.
 lemma set_smul_eq_map [SMulCommClass R R N] :
@@ -448,7 +453,6 @@ lemma set_smul_eq_map [SMulCommClass R R N] :
         exact fun p hp ↦ hp hr hn
       · simp_all
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_set_smul (x : M) [SMulCommClass R R N] :
     x ∈ sR • N ↔ ∃ (c : R →₀ N), (c.support : Set R) ⊆ sR ∧ x = c.sum fun r m ↦ r • m := by
   fconstructor
@@ -511,7 +515,6 @@ lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → 
     subst hr
     exact smul₀ n hn
 
-set_option backward.isDefEq.respectTransparency false in
 -- Note that this can't be generalized to `Set S`, because even though `SMulCommClass R R M` implies
 -- `SMulComm R R N` for all `R`-submodules `N`, `SMulCommClass R S N` for all `R`-submodules `N`
 -- does not make sense. If we just focus on `R`-submodules that are also `S`-submodule, then this
@@ -562,5 +565,25 @@ lemma sup_set_smul (s t : Set S) :
     (sup_le (set_smul_mono_left _ le_sup_left) (set_smul_mono_left _ le_sup_right))
 
 end set_acting_on_submodules
+
+section group
+
+variable {R G M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [Group G] [DistribMulAction G M] [SMulCommClass G R M]
+    {S : Submodule R M}
+
+open MulAction
+
+lemma stabilizer_coe :
+    stabilizer G S = stabilizer G (S : Set M) := by
+  ext
+  rw [mem_stabilizer_iff, SetLike.ext'_iff, coe_pointwise_smul,
+    ← mem_stabilizer_iff]
+
+theorem mem_stabilizer_submodule_iff_map_eq {e : G} :
+    e ∈ stabilizer G S ↔ S.map (DistribSMul.toLinearMap R M e) = S := by
+  rfl
+
+end group
 
 end Submodule

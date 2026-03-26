@@ -273,8 +273,8 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A monomorphism is injective on pseudoelements. -/
 theorem pseudo_injective_of_mono {P Q : C} (f : P ⟶ Q) [Mono f] : Function.Injective f := by
   intro abar abar'
-  refine Quotient.inductionOn₂ abar abar' fun a a' ha => ?_
-  apply Quotient.sound
+  induction abar, abar' using Quotient.inductionOn₂ with | _ a a'
+  refine fun ha ↦ Quotient.sound ?_
   have : (⟦(a.hom ≫ f : Over Q)⟧ : Quotient (setoid Q)) = ⟦↑(a'.hom ≫ f)⟧ := by convert ha
   have ⟨R, p, q, ep, Eq, comm⟩ := Quotient.exact this
   exact ⟨R, p, q, ep, Eq, (cancel_mono f).1 <| by

@@ -55,7 +55,6 @@ private lemma auxDFT_neg (Φ : ZMod N → E) : auxDFT (fun j ↦ Φ (-j)) = fun 
   ext1 k; simpa only [auxDFT] using
     Fintype.sum_equiv (Equiv.neg _) _ _ (fun j ↦ by rw [Equiv.neg_apply, neg_mul_neg])
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Fourier inversion formula, discrete case. -/
 private lemma auxDFT_auxDFT (Φ : ZMod N → E) : auxDFT (auxDFT Φ) = fun j ↦ (N : ℂ) • Φ (-j) := by
   ext1 j
@@ -138,7 +137,7 @@ lemma dft_eq_fourier {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [Com
     (Φ : ZMod N → E) (k : ZMod N) :
     𝓕 Φ k = Fourier.fourierIntegral toCircle Measure.count Φ k := by
   simp only [dft_apply, stdAddChar_apply, Fourier.fourierIntegral_def, Circle.smul_def,
-    integral_countable' <| .of_finite .., count_real_singleton, one_smul, tsum_fintype]
+    integral_countable <| .of_finite .., count_real_singleton, one_smul, tsum_fintype]
 
 end defs
 

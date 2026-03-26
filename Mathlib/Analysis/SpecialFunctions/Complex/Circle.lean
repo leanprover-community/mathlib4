@@ -86,7 +86,6 @@ lemma exp_eq_one {r : ℝ} : exp r = 1 ↔ ∃ n : ℤ, r = n * (2 * π) := by
   simp [Circle.ext_iff, Complex.exp_eq_one_iff, ← mul_assoc, Complex.I_ne_zero,
     ← Complex.ofReal_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exp_inj {r s : ℝ} : exp r = exp s ↔ r ≡ s [PMOD (2 * π)] := by
   simp [AddCommGroup.modEq_iff_zsmul', ← exp_eq_one, div_eq_one, eq_comm (a := exp r)]
 
@@ -167,7 +166,6 @@ theorem toCircle_zsmul (x : AddCircle T) (n : ℤ) : toCircle (n • x) = toCirc
 theorem continuous_toCircle : Continuous (@toCircle T) :=
   continuous_coinduced_dom.mpr (Circle.exp.continuous.comp <| by fun_prop)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := by
   intro a b h
   induction a using QuotientAddGroup.induction_on
@@ -223,6 +221,7 @@ lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp :=
 topological groups to show the `n`th power map is open (see https://www.mathematik.tu-darmstadt.de/media/mathematik/forschung/preprint/preprints/2480.pdf
 and https://www.math.uwaterloo.ca/~cgodsil/pdfs/topology/topgr.pdf), and discreteness of the
 kernel (see https://gemini.google.com/share/6e9ab4abcb95). -/
+set_option backward.isDefEq.respectTransparency false in
 theorem Circle.isQuotientCoveringMap_zpow (n : ℤ) [NeZero n] :
     IsQuotientCoveringMap (· ^ n : Circle → _) (zpowGroupHom (α := Circle) n).ker := by
   have hn : IsUnit (n : ℝ) := by simpa using NeZero.ne n

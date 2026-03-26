@@ -30,7 +30,7 @@ open MiuAtom Nat List
 
 Suppose `st : Miustr`. Then `count I st` is the number of `I`s in `st`. We'll show, if
 `Derivable st`, then `count I st` must be 1 or 2 modulo 3. To do this, it suffices to show that if
-the `en : Miustr` is derived from `st`, then `count I en` moudulo 3 is either equal to or is twice
+the `en : Miustr` is derived from `st`, then `count I en` modulo 3 is either equal to or is twice
 `count I st`, modulo 3.
 -/
 
@@ -59,7 +59,6 @@ theorem mod3_eq_1_or_mod3_eq_2 {a b : ℕ} (h1 : a % 3 = 1 ∨ a % 3 = 2)
     · right; simp [h2, mul_mod, h1]
     · left; simp only [h2, mul_mod, h1, mod_mod]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `count_equiv_one_or_two_mod3_of_derivable` shows any derivable string must have a `count I` that
 is 1 or 2 modulo 3.
 -/
@@ -78,7 +77,7 @@ theorem count_equiv_one_or_two_mod3_of_derivable (en : Miustr) :
     apply mod3_eq_1_or_mod3_eq_2 h_ih; left
     rw [count_append, count_append, count_append]
     simp_rw [count_cons_self, count_nil, count_cons, beq_iff_eq, reduceCtorEq, ite_false,
-      add_right_comm, add_mod_right]
+      add_right_comm, add_mod_right, add_zero]
   | r4 _ h_ih =>
     apply mod3_eq_1_or_mod3_eq_2 h_ih; left
     rw [count_append, count_append, count_append]
@@ -104,9 +103,7 @@ string to be derivable, namely that the string must start with an M and contain 
 -/
 def Goodm (xs : Miustr) : Prop :=
   List.headI xs = M ∧ M ∉ List.tail xs
-
-set_option backward.isDefEq.respectTransparency false in
-instance : DecidablePred Goodm := by unfold Goodm; infer_instance
+deriving Decidable
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Demonstration that `"MI"` starts with `M` and has no `M` in its tail.
@@ -198,8 +195,7 @@ that `en` has no `M` in its tail. We automatically derive that this is a decidab
 -/
 def Decstr (en : Miustr) :=
   Goodm en ∧ (count I en % 3 = 1 ∨ count I en % 3 = 2)
-
-instance : DecidablePred Decstr := by unfold Decstr; infer_instance
+deriving Decidable
 
 /-- Suppose `en : Miustr`. If `en` is `Derivable`, then the condition `Decstr en` holds.
 -/

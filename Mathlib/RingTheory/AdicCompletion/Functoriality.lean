@@ -63,8 +63,7 @@ def reduceModIdeal (f : M →ₗ[R] N) :
   toFun := f.reduceModIdealAux I
   map_add' := by simp
   map_smul' r x := by
-    refine Quotient.inductionOn' r (fun r ↦ ?_)
-    refine Quotient.inductionOn' x (fun x ↦ ?_)
+    induction r, x using Quotient.inductionOn₂ with | _ r x
     simp only [Submodule.Quotient.mk''_eq_mk, Ideal.Quotient.mk_eq_mk, Module.Quotient.mk_smul_mk,
       Submodule.Quotient.mk_smul, LinearMapClass.map_smul, reduceModIdealAux_apply,
       RingHomCompTriple.comp_apply]
@@ -133,7 +132,6 @@ private theorem adicCompletionAux_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : A
     (adicCompletionAux I f x).val n = f.reduceModIdeal (I ^ n) (x.val n) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A linear map induces a map on adic completions. -/

@@ -55,9 +55,9 @@ theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
     p ^ 2 ∣ (x + p) ^ n - x ^ (n - 1) * p * n - x ^ n := by
   rcases n with - | n
   · simp only [pow_zero, Nat.cast_zero, sub_zero, sub_self, dvd_zero, mul_zero]
-  · simp only [Nat.succ_sub_succ_eq_sub, Nat.cast_succ, add_pow, Finset.sum_range_succ,
-      Nat.choose_self, tsub_self, pow_one, Nat.choose_succ_self_right, pow_zero,
-      mul_one, Nat.cast_zero, zero_add, add_tsub_cancel_left]
+  · simp only [add_pow, sum_range_succ, add_tsub_cancel_left, pow_one, Nat.choose_succ_self_right,
+      Nat.cast_succ, tsub_self, pow_zero, mul_one, Nat.choose_self, Nat.cast_zero, zero_add,
+      Nat.succ_sub_succ_eq_sub, Nat.sub_zero]
     suffices p ^ 2 ∣ ∑ i ∈ range n, x ^ i * p ^ (n + 1 - i) * ↑((n + 1).choose i) by
       convert this; abel
     apply Finset.dvd_sum
@@ -268,7 +268,6 @@ lemma Nat.eight_dvd_sq_sub_one_of_odd {k : ℕ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 :
   have eq : (2 * m + 1) ^ 2 - 1 = 4 * (m * (m + 1)) := by grind
   simpa [eq] using (mul_dvd_mul_iff_left four_ne_zero).mpr (two_dvd_mul_add_one m)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hxy : 4 ∣ x - y) (i : ℕ) :
     emultiplicity 2 (x ^ 2 ^ i + y ^ 2 ^ i) = ↑(1 : ℕ) := by
   have hx_odd : Odd x := by rwa [← Int.not_even_iff_odd, even_iff_two_dvd]
@@ -286,7 +285,6 @@ theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hx
   intro x hx
   rw [pow_succ', mul_comm, pow_mul, Int.sq_mod_four_eq_one_of_odd hx.pow]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Int.two_pow_two_pow_sub_pow_two_pow {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2 ∣ x) :
     emultiplicity 2 (x ^ 2 ^ n - y ^ 2 ^ n) = emultiplicity 2 (x - y) + n := by
   simp only [pow_two_pow_sub_pow_two_pow n, emultiplicity_mul Int.prime_two,
@@ -317,7 +315,6 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   conv_rhs => rw [hk]
   exact mul_dvd_mul_left _ hpn
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Lifting the exponent lemma** for `p = 2` -/
 theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) (hn : Even n) :
     emultiplicity 2 (x ^ n - y ^ n) + 1 =
@@ -327,8 +324,7 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
     replace hxy := (@even_neg _ _ (x - y)).mpr (even_iff_two_dvd.mpr hxy)
     convert Even.add_odd hxy hx
     abel
-  obtain ⟨d, hd⟩ := hn
-  subst hd
+  obtain ⟨d, rfl⟩ := hn
   simp only [← two_mul, pow_mul]
   have hxy4 : 4 ∣ x ^ 2 - y ^ 2 := by
     rw [Int.dvd_iff_emod_eq_zero, Int.sub_emod, Int.sq_mod_four_eq_one_of_odd _,
@@ -389,13 +385,15 @@ lemma pow_two_sub_one_ge (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0) (hneven :
     padicValNat 2 n + 2 ≤ padicValNat 2 (x ^ n - 1) := by
   have : padicValNat 2 ((x + 1) * (x - 1)) ≥ 3 := by
     refine (padicValNat_dvd_iff_le (by grind [mul_ne_zero])).mp ?_
-    simpa [← Nat.pow_two_sub_pow_two x 1] using by grind [Nat.eight_dvd_sq_sub_one_of_odd]
+    simp [← Nat.pow_two_sub_pow_two x 1]
+    grind [Nat.eight_dvd_sq_sub_one_of_odd]
   have := pow_two_sub_one h1x hx hn hneven
   grind [← padicValNat.mul]
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 include hp hp1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ} (hn : n ≠ 0) :
     padicValNat p (x ^ n - y ^ n) = padicValNat p (x - y) + padicValNat p n := by
   rw [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]

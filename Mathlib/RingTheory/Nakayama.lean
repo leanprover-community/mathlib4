@@ -207,7 +207,6 @@ lemma eq_of_map_mkQ_eq_map_mkQ_of_le_jacobson_bot
     simp only [comap_map_mkQ, smul_le_right, sup_of_le_right] at hmaple
     rw [hmaple]; apply le_sup_right
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 **Nakayama's Lemma** - Statement (8) in
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).

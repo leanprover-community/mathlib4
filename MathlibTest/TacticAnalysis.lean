@@ -1,6 +1,7 @@
 import Mathlib.Tactic.TacticAnalysis.Declarations
 import Mathlib.Tactic.AdaptationNote
 import Lean.LibrarySuggestions
+import Mathlib.Algebra.BigOperators.Associated
 
 section terminalReplacement
 
@@ -26,7 +27,7 @@ warning: `simp only` failed where `simp` succeeded.
 Original tactic:
   simp
 Counterexample:
-  import Init.Data.List.Basic
+  import Mathlib.Algebra.GroupWithZero.Nat
 -/
 -- The counterexample name contains a number that varies between runs, so we can't fully test this.
 #guard_msgs (substring := true) in
@@ -59,13 +60,13 @@ example : x = z := by
 
 -- Definitions using `where` clauses did not get picked up by the framework,
 -- since apparently their syntax bounds do not match the original.
-structure Fact (p : Prop) : Prop where
+structure Fact' (p : Prop) : Prop where
   out : p
 /--
 warning: Try this: rw [xy, yz]
 -/
 #guard_msgs in
-example : Fact (x = z) where
+example : Fact' (x = z) where
   out := by
     rw [xy]
     rw [yz]
@@ -153,6 +154,20 @@ example : 0 = 0 := by
 
 set_option linter.unusedTactic true
 
+-- This is a false positive. Before `convert_to`, there is an mvar for the `DecidableEq` instance
+-- used with `Finset.instInsert` that is not properly handled
+
+/-- warning: 'convert_to Associated (∏ i ∈ insert j s, f i) (∏ i ∈ insert j s, g i); grind' can be replaced with 'grind' -/
+#guard_msgs in
+theorem Associated.prod' {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) (f : ι → M)
+    (g : ι → M) (h : ∀ i, i ∈ s → Associated (f i) (g i)) : Associated (∏ i ∈ s, f i) (∏ i ∈ s, g i) := by
+  induction s using Finset.induction with
+  | empty => grind [Associated.prod]
+  | insert j s hjs IH =>
+    classical
+    convert_to Associated (∏ i ∈ insert j s, f i) (∏ i ∈ insert j s, g i)
+    grind [Associated.mul_mul]
+
 end mergeWithGrind
 
 section replaceWithGrind
@@ -191,7 +206,7 @@ example {α : Type u} (f : α → Type max u v) : 1 = 1 := by
 -- Ensure the effects of `classical` are picked up. Otherwise we get an error like:
 -- failed to synthesize
 --   Decidable b
-theorem forall_imp_iff_exists_imp {α : Type} {p : α → Prop} {b : Prop} [ha : Nonempty α] :
+theorem forall_imp_iff_exists_imp' {α : Type} {p : α → Prop} {b : Prop} [ha : Nonempty α] :
     (∀ x, p x) → b ↔ ∃ x, p x → b := by
   classical
   let ⟨a⟩ := ha
