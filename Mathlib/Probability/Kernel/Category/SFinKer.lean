@@ -53,7 +53,7 @@ structure Hom (X Y : SFinKer.{u}) where
   /-- The property that the morphism satisfies. -/
   property : IsSFiniteKernel hom
 
-instance {X Y : SFinKer.{u}} {κ : Hom X Y} : IsSFiniteKernel κ.hom := κ.property
+instance {X Y : SFinKer} {κ : Hom X Y} : IsSFiniteKernel κ.hom := κ.property
 
 @[simps]
 noncomputable instance : LargeCategory SFinKer where
