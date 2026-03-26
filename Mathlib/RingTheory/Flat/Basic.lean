@@ -206,7 +206,7 @@ variable {ι : Type v} {M : ι → Type w} [Π i, AddCommMonoid (M i)] [Π i, Mo
 
 theorem directSum_iff : Flat R (⨁ i, M i) ↔ ∀ i, Flat R (M i) := by
   classical
-  simp_rw [iff_rTensor_injectiveₛ, ← EquivLike.comp_injective _ (directSumRight R _ _),
+  simp_rw [iff_rTensor_injectiveₛ, ← EquivLike.comp_injective _ (directSumRight R R _ _),
     ← LinearEquiv.coe_coe, ← coe_comp, directSumRight_comp_rTensor, coe_comp, LinearEquiv.coe_coe,
     EquivLike.injective_comp, lmap_injective]
   constructor <;> (intro h; intros; apply h)
@@ -591,7 +591,6 @@ theorem IsSMulRegular.of_flat {x : R} (reg : IsSMulRegular R x) :
 
 end IsSMulRegular
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `R` be a commutative semiring, let `C` be a commutative `R`-algebra, and let `A` be an
   `R`-algebra. If `C ⊗[R] B` is reduced for all finitely generated subalgebras `B` of `A`, then
   `C ⊗[R] A` is also reduced. -/

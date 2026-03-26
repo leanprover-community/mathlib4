@@ -41,9 +41,11 @@ variable [MonoidalCategory V]
 
 @[simps! tensorUnit_V tensorObj_V tensorHom_hom whiskerLeft_hom whiskerRight_hom
   associator_hom_hom associator_inv_hom leftUnitor_hom_hom leftUnitor_inv_hom
-  rightUnitor_hom_hom rightUnitor_inv_hom]
-instance instMonoidalCategory : MonoidalCategory (Action V G) :=
-  Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
+  rightUnitor_hom_hom rightUnitor_inv_hom, reducible]
+instance instMonoidalCategory : MonoidalCategory (Action V G) where
+  tensorObj X Y := Action.mk (X.V ⊗ Y.V) _
+  tensorUnit := Action.mk (𝟙_ _) _
+  __ := Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
 @[simp]
 theorem tensorUnit_ρ {g : G} :
@@ -190,11 +192,9 @@ theorem rightDual_v [RightRigidCategory V] : Xᘁ.V = X.Vᘁ :=
 theorem leftDual_v [LeftRigidCategory V] : (ᘁX).V = ᘁX.V :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem rightDual_ρ [RightRigidCategory V] (h : H) : Xᘁ.ρ h = (X.ρ (h⁻¹ : H))ᘁ := by
   rw [← SingleObj.inv_as_inv]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem leftDual_ρ [LeftRigidCategory V] (h : H) : (ᘁX).ρ h = ᘁX.ρ (h⁻¹ : H) := by
   rw [← SingleObj.inv_as_inv]; rfl
 

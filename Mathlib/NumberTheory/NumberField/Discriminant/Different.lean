@@ -35,7 +35,6 @@ variable [Module.Finite ℤ 𝒪]
 
 open nonZeroDivisors IntermediateField Module
 
-set_option backward.isDefEq.respectTransparency false in
 lemma absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (discr K).natAbs := by
   refine (differentIdeal ℤ 𝒪).toAddSubgroup.relIndex_top_right.symm.trans ?_
   rw [← Submodule.comap_map_eq_of_injective (f := Algebra.linearMap 𝒪 K)
@@ -145,7 +144,6 @@ theorem linearDisjoint_of_isGalois_isCoprime_discr (K₁ K₂ : IntermediateFiel
 
 open IntermediateField IsDedekindDomain
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Let `K₁` and `K₂` be two number fields and assume that their different ideals (over ℤ) are coprime.
 Then, the absolute value of the discriminant of their compositum is equal to

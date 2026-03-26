@@ -39,7 +39,7 @@ instance : ENorm ℝ≥0∞ where
 
 @[simp] lemma enorm_eq_self (x : ℝ≥0∞) : ‖x‖ₑ = x := rfl
 
-instance : ENormedAddCommMonoid ℝ≥0∞ where
+noncomputable instance : ENormedAddCommMonoid ℝ≥0∞ where
   continuous_enorm := continuous_id
   enorm_zero := by simp
   enorm_eq_zero := by simp
@@ -57,7 +57,7 @@ theorem norm_eq_abs (r : ℝ) : ‖r‖ = |r| :=
   rfl
 
 instance normedAddCommGroup : NormedAddCommGroup ℝ :=
-  ⟨fun _r _y => rfl⟩
+  ⟨fun _r _y => by rw [Real.dist_eq, ← abs_neg, neg_sub, add_comm, sub_eq_add_neg, norm_eq_abs]⟩
 
 theorem norm_of_nonneg (hr : 0 ≤ r) : ‖r‖ = r :=
   abs_of_nonneg hr

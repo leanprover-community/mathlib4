@@ -55,7 +55,6 @@ namespace IsGood
 variable {f : ℕ+ → ℕ} (hf : IsGood f)
 include hf
 
-set_option backward.isDefEq.respectTransparency false in
 lemma f₁ : f 1 = 0 := by
   have h : f 2 = 2 * f 1 ∨ f 2 = 2 * f 1 + 1 := by rw [two_mul]; exact hf.rel 1 1
   obtain h₁ | h₂ := hf.f₂ ▸ h
@@ -71,6 +70,7 @@ lemma f₃ : f 3 = 1 := by
 
 lemma superadditive {m n : ℕ+} : f m + f n ≤ f (m + n) := by have h := hf.rel m n; grind
 
+set_option backward.isDefEq.respectTransparency false in
 lemma superhomogeneous {m n : ℕ+} : ↑n * f m ≤ f (n * m) := by
   induction n with
   | one => simp
@@ -84,6 +84,7 @@ lemma superhomogeneous {m n : ℕ+} : ↑n * f m ≤ f (n * m) := by
 lemma superlinear {a b c d : ℕ+} : a * f b + c * f d ≤ f (a * b + c * d) :=
   (add_le_add hf.superhomogeneous hf.superhomogeneous).trans hf.superadditive
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_mul_three_apply (n : ℕ+) : n ≤ f (3 * n) := by
   rw [← mul_one (n : ℕ), ← hf.f₃, mul_comm 3]
   exact hf.superhomogeneous

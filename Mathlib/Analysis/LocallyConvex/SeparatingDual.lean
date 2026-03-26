@@ -53,9 +53,9 @@ instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [IsTopologicalAddGrou
 
 instance {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
   ⟨fun x hx ↦
-    let : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
-    let : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
-    have : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower ℝ 𝕜 E
+    let : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
+    let : Module ℝ E := .restrictScalars ℝ 𝕜 E
+    have : IsScalarTower ℝ 𝕜 E := .restrictScalars ℝ 𝕜 E
     have : LocallyConvexSpace ℝ E := NormedSpace.toLocallyConvexSpace' 𝕜
     RCLike.geometric_hahn_banach_point_point hx |>.imp fun f hf hf' ↦ by simp [hf'] at hf⟩
 
@@ -163,7 +163,6 @@ instance _root_.Algebra.IsCentral.instContinuousLinearMap [Algebra.IsCentral S R
     have (y : V) := by simpa [hg] using congr($(Subalgebra.mem_center_iff.mp hf (g.smulRight y)) x)
     exact ⟨g (f x), by simp [this, ContinuousLinearMap.ext_iff]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open ContinuousLinearMap ContinuousLinearEquiv in
 theorem _root_.ContinuousLinearEquiv.conjContinuousAlgEquiv_ext_iff
     {R V W : Type*} [NormedField R] [AddCommGroup V] [AddCommGroup W] [TopologicalSpace R]

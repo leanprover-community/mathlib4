@@ -51,7 +51,6 @@ theorem ι_mul_ι_mem_evenOdd_zero (m₁ m₂ : M) : ι Q m₁ * ι Q m₂ ∈ e
         Submodule.mul_mem_mul (LinearMap.mem_range_self (ι Q) m₁)
           (LinearMap.mem_range_self (ι Q) m₂))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem evenOdd_mul_le (i j : ZMod 2) : evenOdd Q i * evenOdd Q j ≤ evenOdd Q (i + j) := by
   simp_rw [evenOdd, Submodule.iSup_eq_span, Submodule.span_mul_span]
   apply Submodule.span_mono
@@ -124,7 +123,6 @@ instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
       rw [lift_ι_apply, GradedAlgebra.ι_apply Q, DirectSum.coeAlgHom_of, Subtype.coe_mk])
     (by apply GradedAlgebra.lift_ι_eq Q)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := by
   rw [← (DirectSum.Decomposition.isInternal (evenOdd Q)).submodule_iSup_eq_top, eq_comm]
   calc
@@ -136,13 +134,11 @@ theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := 
     _ = ⨆ i : ℕ, LinearMap.range (ι Q) ^ i :=
       Function.Surjective.iSup_congr (fun i => i.2) (fun i => ⟨⟨_, i, rfl⟩, rfl⟩) fun _ => rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem evenOdd_isCompl : IsCompl (evenOdd Q 0) (evenOdd Q 1) :=
   (DirectSum.Decomposition.isInternal (evenOdd Q)).isCompl zero_ne_one <| by
     have : (Finset.univ : Finset (ZMod 2)) = {0, 1} := rfl
     simpa using congr_arg ((↑) : Finset (ZMod 2) → Set (ZMod 2)) this
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To show a property is true on the even or odd part, it suffices to show it is true on the
 scalars or vectors (respectively), closed under addition, and under left-multiplication by a pair
 of vectors. -/

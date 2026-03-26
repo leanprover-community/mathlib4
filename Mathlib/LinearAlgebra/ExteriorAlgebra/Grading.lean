@@ -83,7 +83,6 @@ instance gradedAlgebra : GradedAlgebra (fun i : ℕ ↦ ⋀[R]^i M) :=
       rw [lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.coeAlgHom_of, Subtype.coe_mk])
     (by apply GradedAlgebra.liftι_eq R M)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The union of the images of the maps `ExteriorAlgebra.ιMulti R n` for `n` running through
 all natural numbers spans the exterior algebra. -/
 lemma ιMulti_span :

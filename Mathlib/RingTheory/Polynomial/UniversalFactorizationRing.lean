@@ -124,6 +124,7 @@ lemma mapEquivMonic_symm_map_algebraMap
       (IsScalarTower.toAlgHom R S T).comp ((mapEquivMonic R S n).symm p) := by
   rw [← mapEquivMonic_symm_map, IsScalarTower.coe_toAlgHom]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In light of the fact that `MonicDegreeEq · n` is representable by `R[X₁,...,Xₙ]`,
 this is the map `R[X₁,...,Xₘ₊ₖ] → R[X₁,...,Xₘ] ⊗ R[X₁,...,Xₖ]` corresponding to the multiplication
 `MonicDegreeEq · m × MonicDegreeEq · k → MonicDegreeEq · (m + k)`. -/
@@ -140,6 +141,7 @@ def universalFactorizationMap (hn : n = m + k) :
     rw [((monic_freeMonic R m).map _).natDegree_mul ((monic_freeMonic R k).map _)]
     simp_rw [(monic_freeMonic R _).natDegree_map, natDegree_freeMonic, hn]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma universalFactorizationMap_freeMonic :
     (freeMonic R n).map (toRingHom <| universalFactorizationMap R n m k hn) =
       (freeMonic R m).map (algebraMap _ _) *
@@ -161,7 +163,9 @@ lemma universalFactorizationMap_comp_map :
   · dsimp [universalFactorizationMap, mapEquivMonic]
     simp only [map_X, aeval_X, ← AlgHom.coe_toRingHom, ← Polynomial.coeff_map, Polynomial.map_mul,
       Polynomial.map_map, ← map_map_freeMonic (f := algebraMap R S)]
-    congr <;> ext <;> simp [← algebraMap_apply]
+    congr 2 <;> ext <;> simp
+    · congr
+    congr
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Lifts along `universalFactorizationMap` corresponds to factorization of `p` into
@@ -279,9 +283,8 @@ lemma pderiv_inr_universalFactorizationMap_X (i j) :
       Pi.single_apply, Fin.ext_iff, ← ite_and]
   · obtain h | h := lt_or_ge j.1 i.1
     · rw [Finset.sum_eq_zero, if_pos h]
-      simp only [Finset.mem_antidiagonal, Prod.forall]
-      intro a b hab
-      simp [show b ≠ i by lia]
+      simp only [Finset.mem_antidiagonal]
+      lia
     rw [Finset.sum_eq_single ⟨j.1 - i.1, i.1⟩, if_neg h.not_gt]
     · simp
     · simp only [Finset.mem_antidiagonal, ne_eq, ite_eq_right_iff, Prod.forall, Prod.mk.injEq]
@@ -326,8 +329,8 @@ lemma universalFactorizationMapPresentation_jacobian :
   rw [← (aeval _).coe_toRingHom, ← Polynomial.resultant_map_map,
     Polynomial.map_map, Polynomial.map_map]
   congr 2
-  · ext <;> simp [-algebraMap_apply, ← algebraMap_eq]
-  · ext <;> simp [-algebraMap_apply, ← algebraMap_eq]
+  · ext <;> simp [-algebraMap_apply, -AddMonoidAlgebra.coe_algebraMap, ← algebraMap_eq]
+  · ext <;> simp [-algebraMap_apply, -AddMonoidAlgebra.coe_algebraMap, ← algebraMap_eq]
   · rw [(monic_freeMonic ..).natDegree_map, natDegree_freeMonic]
   · rw [(monic_freeMonic ..).natDegree_map, natDegree_freeMonic]
 
@@ -650,6 +653,7 @@ lemma UniversalCoprimeFactorizationRing.homEquiv_comp_snd {T : Type*} [CommRing 
   simp [homEquiv, UniversalFactorizationRing.homEquiv, Polynomial.map_map]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a monic polynomial `p : R[X]` factors into a product of coprime monic polynomials `p = f * g`
 in the residue field `κ(P)` of some `P : Spec R`,
 then there exists `Q : Spec R_univ` in the universal coprime factorization ring lying over `P`,
@@ -693,6 +697,7 @@ lemma UniversalCoprimeFactorizationRing.exists_liesOver_residueFieldMap_bijectiv
         MonicDegreeEq.map, Polynomial.map_map]
       rfl
 
+set_option maxHeartbeats 400000 in -- Needed after v4.29.0-rc4
 open UniversalCoprimeFactorizationRing in
 /-- If a monic polynomial `p : R[X]` factors into a product of coprime monic polynomials `p = f * g`
 in the residue field `κ(P)` of some `P : Spec R`,

@@ -283,7 +283,6 @@ lemma LieAlgebra.ad_lie (x y z : L) :
     (ad R L x) ⁅y, z⁆ = ⁅ad R L x y, z⁆ + ⁅y, ad R L x z⁆ :=
   toEnd_lie _ x y z
 
-set_option backward.isDefEq.respectTransparency false in
 open Finset in
 lemma LieModule.toEnd_pow_lie (x y : L) (z : M) (n : ℕ) :
     ((φ x) ^ n) ⁅y, z⁆ =

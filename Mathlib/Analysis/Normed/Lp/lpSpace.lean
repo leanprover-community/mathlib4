@@ -386,11 +386,7 @@ theorem norm_rpow_eq_tsum (hp : 0 < p.toReal) (f : lp E p) :
   rw [norm_eq_tsum_rpow hp, ← Real.rpow_mul]
   · field_simp
     simp
-  apply tsum_nonneg
-  intro i
-  calc
-    (0 : ℝ) = (0 : ℝ) ^ p.toReal := by rw [Real.zero_rpow hp.ne']
-    _ ≤ _ := by gcongr; apply norm_nonneg
+  positivity
 
 theorem hasSum_norm (hp : 0 < p.toReal) (f : lp E p) :
     HasSum (fun i => ‖f i‖ ^ p.toReal) (‖f‖ ^ p.toReal) := by
@@ -782,7 +778,7 @@ section NormedRing
 variable {I : Type*} {B : I → Type*} [∀ i, NormedRing (B i)]
 
 instance _root_.PreLp.ring : Ring (PreLp B) :=
-  Pi.ring
+  inferInstanceAs (Ring (∀ i, B i))
 
 variable [∀ i, NormOneClass (B i)]
 
@@ -1171,6 +1167,7 @@ theorem tendsto_lp_of_tendsto_pi {F : ℕ → lp E p} (hF : CauchySeq F) {f : lp
     NormedAddCommGroup.uniformity_basis_dist.mem_of_mem hε
   refine (hF.eventually_eventually hε').mono ?_
   rintro n (hn : ∀ᶠ l in atTop, ‖(fun f => F n - f) (F l)‖ < ε)
+  rw [mem_closedBall_iff_norm]
   refine norm_le_of_tendsto (hn.mono fun k hk => hk.le) ?_
   rw [tendsto_pi_nhds]
   intro a
@@ -1218,9 +1215,12 @@ theorem LipschitzOnWith.coordinate [PseudoMetricSpace α] (f : α → ℓ^∞(ι
   constructor
   · intro hfl i x hx y hy
     calc
-      dist (f x i) (f y i) ≤ dist (f x) (f y) := lp.norm_apply_le_norm top_ne_zero (f x - f y) i
+      dist (f x i) (f y i) ≤ dist (f x) (f y) := by
+        simp only [dist_eq_norm]
+        exact lp.norm_apply_le_norm top_ne_zero (f x - f y) i
       _ ≤ K * dist x y := hfl x hx y hy
   · intro hgl x hx y hy
+    rw [dist_eq_norm]
     apply lp.norm_le_of_forall_le
     · positivity
     intro i

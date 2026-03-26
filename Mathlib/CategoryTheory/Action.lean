@@ -163,9 +163,6 @@ protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*
   cases inv_smul_eq_iff.mpr h.symm
   rfl
 
-@[deprecated (since := "2025-08-21")]
-alias cases' := ActionCategory.cases
-
 variable {H : Type*} [Group H]
 
 /-- Given `G` acting on `X`, a functor from the corresponding action groupoid to a group `H`
@@ -189,7 +186,6 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
       · exact F_map_eq.symm.trans (F.map_comp (homOfPair (g⁻¹ • b) h) (homOfPair b g))
       rfl }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `G` acting on `X`, a group homomorphism `φ : G →* (X → H) ⋊ G` can be uncurried to
 a functor from the action groupoid to `H`, provided that `φ g = (_, g)` for all `g`. -/
 @[simps]
