@@ -326,7 +326,7 @@ theorem le_pow_floor_sqrt_se2 {h : Conditions r p n a q μ} {x : ℕ} (hx : x �
       Nat.mul_le_mul (Nat.pow_le_pow_right hppos ha) (Nat.pow_le_pow_right hnppos hb)
     _ = _ := by rw [← mul_pow, mul_div_eq_iff_dvd.mpr p_dvd_n]
 
-theorem natDegree_eq (h : Conditions r p n a q μ) (s : Multiset (Fin (a + 1))) :
+theorem natDegree_le (h : Conditions r p n a q μ) (s : Multiset (Fin (a + 1))) :
     (sp1 h s).natDegree ≤ s.card := by
   unfold sp1
   simp only [ofMultiset_apply, Multiset.map_map, Function.comp_apply]
@@ -400,7 +400,7 @@ theorem se2_choose_le_sp2 (h : Conditions r p n a q μ) :
     obtain ⟨hf, hf1, hf2⟩ := hf
     obtain ⟨hg, hg1, hg2⟩ := hg
     have hk : max f.natDegree g.natDegree ≤ (se2 h).ncard - 1 := by
-      grind [natDegree_eq h hf, natDegree_eq h hg]
+      grind [natDegree_le h hf, natDegree_le h hg]
     refine and_not_self (a := (f - g).roots.card ≤ (se2 h).ncard - 1) ⟨?_, ?_⟩
     · calc
         _ ≤ _ := card_roots' (f - g)
