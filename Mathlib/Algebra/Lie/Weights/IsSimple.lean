@@ -215,8 +215,7 @@ lemma restr_eq_iSup_sl2SubmoduleOfRoot (I : LieIdeal K L) :
   · exact iSup₂_le fun α hα ↦ by
       rw [sl2SubmoduleOfRoot_eq_sup]
       exact sup_le (sup_le hα (I.rootSpace_le_of_apply_coroot_ne_zero hα (by
-        simp only [Pi.neg_apply, ne_eq, neg_eq_zero]
-        exact_mod_cast root_apply_coroot (H.isNonZero_coe_root α) ▸ two_ne_zero)))
+        simp [Pi.neg_apply, root_apply_coroot (H.isNonZero_coe_root α)])))
         (I.corootSubmodule_le hα)
 
 end LieIdeal
