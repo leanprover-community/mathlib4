@@ -436,7 +436,8 @@ theorem sum_ramification_inertia
     rw [ENat.coe_toNat]
     · apply LinearEquiv.length_eq
       sorry
-    · let : Algebra p.ResidueField A := by
+    · -- this is probably the wrong way to go about things...
+      let : Algebra p.ResidueField A := by
         change Algebra (Localization.AtPrime p ⧸ _) (Localization.AtPrime q ⧸ _)
         rw [IsScalarTower.algebraMap_eq R (Localization.AtPrime p), ← map_map,
           Localization.AtPrime.map_eq_maximalIdeal]
@@ -452,10 +453,10 @@ theorem sum_ramification_inertia
         infer_instance
       have : IsArtinian (Localization.AtPrime p) A := by
         apply isArtinian_of_surjective_algebraMap (R := p.ResidueField)
+        exact Ideal.Quotient.mk_surjective
       have : IsNoetherian (Localization.AtPrime p) A := by
         apply isNoetherian_of_surjective (R := p.ResidueField) (M := A)
       exact length_ne_top
-      sorry
   · rw [ramificationIdx_def]
   · rw [inertiaDeg_algebraMap]
     simp
