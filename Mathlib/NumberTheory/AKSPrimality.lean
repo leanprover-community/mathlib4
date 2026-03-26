@@ -478,7 +478,7 @@ theorem pow_2_le_choose {x : ℕ} (h : 2 ≤ x) : 2 ^ (x + 1) < (2 * x + 1).choo
   have _ : Nat.choose 5 2 = 10 := rfl
   induction x, h using Nat.le_induction (m := 2)
   · grind
-  · grind [choose_succ_succ, choose_le_succ, choose_le_middle]
+  · grind [choose_le_succ, choose_le_middle]
 
 theorem not_aux_le (h : Conditions r p n a q μ) :
     (n : ℝ) ^ (√(se2 h).ncard) < (sp2 h).ncard := by
