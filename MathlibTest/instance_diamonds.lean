@@ -27,13 +27,11 @@ open scoped Polynomial
 example : (SubNegMonoid.toZSMul : SMul ℤ ℂ) = (Complex.SMul.instSMulRealComplex : SMul ℤ ℂ) := by
   with_reducible_and_instances rfl
 
-set_option backward.isDefEq.respectTransparency false in
 example : Module.restrictScalars ℝ ℂ ℂ = Complex.instModule := by
   with_reducible_and_instances rfl
 
--- fails `with_reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example : Algebra.restrictScalars ℝ ℂ ℂ = Complex.instAlgebraOfReal := by
-  rfl
+  with_reducible_and_instances rfl
 
 example (α β : Type _) [AddMonoid α] [AddMonoid β] :
     (Prod.instSMul : SMul ℕ (α × β)) = AddMonoid.toNSMul := by
@@ -57,7 +55,6 @@ open scoped TensorProduct
 
 open Complex
 
-set_option backward.isDefEq.respectTransparency false in
 /- `TensorProduct.Algebra.module` forms a diamond with `instSMulOfMul` and
 `algebra.tensor_product.tensor_product.semiring`. Given a commutative semiring `A` over a
 commutative semiring `R`, we get two mathematically different scalar actions of `A ⊗[R] A` on
@@ -259,9 +256,9 @@ that at least some potential diamonds are avoided. -/
 
 section complexToReal
 
--- fails `with_reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 -- the two ways to get `Algebra ℝ ℂ` are definitionally equal
-example : (Algebra.id ℂ).complexToReal = Complex.instAlgebraOfReal := rfl
+example : (Algebra.id ℂ).complexToReal = Complex.instAlgebraOfReal := by
+  with_reducible_and_instances rfl
 
 -- fails `with_reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 /- The complexification of an `ℝ`-algebra `A` (i.e., `ℂ ⊗[ℝ] A`) is a `ℂ`-algebra. Viewing this

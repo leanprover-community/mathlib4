@@ -36,7 +36,8 @@ variable (A : ι → Type*)
 variable [CommSemiring R] [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
 
 instance algebra : Algebra R (Π i, A i) where
-  algebraMap := Pi.ringHom fun i ↦ algebraMap R (A i)
+  algebraMap.__ := Pi.ringHom fun i ↦ algebraMap R (A i)
+  algebraMap.toFun x i := algebraMap R (A i) x
   commutes' := fun a f ↦ by ext; simp [Algebra.commutes]
   smul_def' := fun a f ↦ by ext; simp [Algebra.smul_def]
 

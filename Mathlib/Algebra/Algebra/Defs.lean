@@ -104,6 +104,7 @@ class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SM
 end Prio
 
 /-- Embedding `R →+* A` given by `Algebra` structure. -/
+@[implicit_reducible]
 def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] : R →+* A :=
   Algebra.algebraMap
 
@@ -350,7 +351,8 @@ This is the algebra version of `Module.compHom`.
 -/
 abbrev compHom : Algebra S A where
   __ := Module.compHom A f
-  algebraMap := (algebraMap R A).comp f
+  algebraMap.__ := (algebraMap R A).comp f
+  algebraMap.toFun x := algebraMap R A (f x)
   commutes' _ _ := Algebra.commutes _ _
   smul_def' _ _ := Algebra.smul_def _ _
 

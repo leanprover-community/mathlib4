@@ -37,7 +37,8 @@ variable (R A B)
 open Algebra
 
 instance algebra : Algebra R (A × B) where
-  algebraMap := RingHom.prod (algebraMap R A) (algebraMap R B)
+  algebraMap.__ := RingHom.prod (algebraMap R A) (algebraMap R B)
+  algebraMap.toFun x := (algebraMap R A x, algebraMap R B x)
   commutes' := by
     rintro r ⟨a, b⟩
     dsimp

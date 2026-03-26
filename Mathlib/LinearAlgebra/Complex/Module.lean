@@ -98,7 +98,8 @@ instance (priority := 100) instModule [Semiring R] [Module R ℝ] : Module R ℂ
 
 -- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
 instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ where
-  algebraMap := Complex.ofRealHom.comp (algebraMap R ℝ)
+  algebraMap.__ := Complex.ofRealHom.comp (algebraMap R ℝ)
+  algebraMap.toFun x := algebraMap R ℝ x
   smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
   commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [Algebra.commutes]
 
@@ -166,15 +167,18 @@ instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algeb
     Algebra ℝ A :=
   .restrictScalars ℝ ℂ A
 
--- try to make sure we're not introducing diamonds but we will need
--- `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
-example : Prod.algebra ℝ ℂ ℂ = (Prod.algebra ℂ ℂ ℂ).complexToReal := rfl
+-- make sure that there's no semireducible steps in the definition of the algebraMap
+example (x : ℝ) : (algebraMap ℝ ℂ x).re  = x := by
+  with_reducible_and_instances exact rfl
 
--- try to make sure we're not introducing diamonds but we will need
--- `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
+-- try to make sure we're not introducing diamonds
+example : Prod.algebra ℝ ℂ ℂ = (Prod.algebra ℂ ℂ ℂ).complexToReal := by
+  with_reducible_and_instances rfl
+
+-- try to make sure we're not introducing diamonds
 example {ι : Type*} [Fintype ι] :
-    Pi.algebra (R := ℝ) ι (fun _ ↦ ℂ) = (Pi.algebra (R := ℂ) ι (fun _ ↦ ℂ)).complexToReal :=
-  rfl
+    Pi.algebra (R := ℝ) ι (fun _ ↦ ℂ) = (Pi.algebra (R := ℂ) ι (fun _ ↦ ℂ)).complexToReal := by
+  with_reducible_and_instances rfl
 
 example {A : Type*} [Ring A] [inst : Algebra ℂ A] :
     (inst.complexToReal).toModule = (inst.toModule).complexToReal := by
