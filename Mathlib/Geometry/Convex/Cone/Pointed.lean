@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Apurva Nakade
+Authors: Apurva Nakade, Yury Kudryashov, Frédéric Dupuis
 -/
 module
 
@@ -28,6 +28,11 @@ the M. Riesz extension theorem and a form of the Hahn-Banach theorem.
 In `Mathlib/Analysis/Convex/Cone/Dual.lean` we prove
 a variant of the hyperplane separation theorem.
 
+## References
+
+* https://en.wikipedia.org/wiki/Convex_cone
+* [Stephen P. Boyd and Lieven Vandenberghe, *Convex Optimization*][boydVandenberghe2004]
+* [Emo Welzl and Bernd Gärtner, *Cone Programming*][welzl_garter]
 -/
 
 @[expose] public section
@@ -105,13 +110,9 @@ variable {C C₁ C₂ : PointedCone R E} {x : E} {r : R}
 
 @[ext] lemma ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
 
+@[aesop 90% (rule_sets := [SetLike])]
 nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
   C.smul_mem ⟨r, hr⟩ hx
-
-lemma smul_mem_iff {𝕜 M : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-    [AddCommMonoid M] [Module 𝕜 M] (C : PointedCone 𝕜 M)
-    {c : 𝕜} (hc : 0 < c) {x : M} : c • x ∈ C ↔ x ∈ C :=
-  ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ C.smul_mem (inv_pos.2 hc).le h, C.smul_mem hc.le⟩
 
 lemma convex (C : PointedCone R E) : Convex R (C : Set E) :=
   convex_iff_add_mem.2 fun _ hx _ hy _ _ ha hb _ ↦ add_mem (C.smul_mem ha hx) (C.smul_mem hb hy)
@@ -220,6 +221,17 @@ theorem mem_comap {f : E →ₗ[R] F} {C : PointedCone R F} {x : E} : x ∈ C.co
 
 end Maps
 
+section LinearOrderedField
+
+variable {𝕜 M : Type} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+         [AddCommMonoid M] [Module 𝕜 M]
+
+lemma smul_mem_iff (C : PointedCone 𝕜 M)
+    {c : 𝕜} (hc : 0 < c) {x : M} : c • x ∈ C ↔ x ∈ C :=
+  ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ C.smul_mem (inv_pos.2 hc).le h, C.smul_mem hc.le⟩
+
+end LinearOrderedField
+
 section PositiveCone
 
 variable (R E)
@@ -228,6 +240,7 @@ variable [AddCommMonoid E] [PartialOrder E] [IsOrderedAddMonoid E] [Module R E] 
 
 /-- The positive cone is the pointed cone formed by the set of nonnegative elements in an ordered
 module. -/
+@[simps]
 def positive : PointedCone R E where
   carrier := Set.Ici 0
   zero_mem' := by simp
@@ -289,5 +302,8 @@ theorem lineal_eq_sSup (C : PointedCone R E) : C.lineal = sSup {S : Submodule R 
   simp_rw [gc_ofSubmodule_lineal.le_iff_le, Set.Iic_def, csSup_Iic]
 
 end Lineal
+
+@[deprecated (since := "2026-03-26")]
+alias salient_iff_inter_neg_eq_singleton := isPointed_iff_support_eq_bot
 
 end PointedCone

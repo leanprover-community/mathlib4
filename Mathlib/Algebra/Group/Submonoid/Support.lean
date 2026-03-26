@@ -92,6 +92,10 @@ alias ⟨mulSupport_eq_bot, _⟩ := isMulPointed_iff_mulSupport_eq_bot
 @[to_additive]
 alias ⟨_, of_mulSupport_eq_bot⟩ := isMulPointed_iff_mulSupport_eq_bot
 
+@[to_additive]
+theorem of_ge {N : Submonoid G} (hM : M.IsMulPointed) (h : N ≤ M) :
+    N.IsMulPointed := by aesop
+
 end IsMulPointed
 
 variable (M) in
