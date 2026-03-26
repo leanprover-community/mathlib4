@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Set
 /-!
 # The evaluation functor on subcomplexes
 
-We define an evaluation functor `SSet.Subcomplex.evalution : X.Subcomplex ⥤ Set (X.obj j)`
+We define an evaluation functor `SSet.Subcomplex.evaluation : X.Subcomplex ⥤ Set (X.obj j)`
 when `X : SSet` and `j : SimplexCategoryᵒᵖ`. We use it to show that the functor
 `Subcomplex.toSSetFunctor : X.Subcomplex ⥤ SSet` preserves filtered colimits.
 
@@ -42,7 +42,7 @@ instance {J : Type*} [Category J] {X : SSet.{u}} [IsFilteredOrEmpty J] :
         (evaluationJointlyReflectsColimits _ (fun j ↦ IsColimit.ofIsoColimit
           (isColimitOfPreserves Set.functorToTypes
               ((Preorder.colimitCoconeOfIsLUB (F ⋙ evaluation _ j) isLUB_iSup).isColimit))
-                (Cocones.ext (Set.functorToTypes.mapIso
+                (Cocone.ext (Set.functorToTypes.mapIso
                   (CategoryTheory.eqToIso (by cat_disch))))))
 
 end SSet.Subcomplex

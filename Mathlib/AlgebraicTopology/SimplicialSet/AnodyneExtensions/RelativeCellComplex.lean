@@ -280,7 +280,7 @@ noncomputable def relativeCellComplex : RelativeCellComplex f.basicCell A.ι whe
     IsColimit.ofIsoColimit (isColimitOfPreserves Subcomplex.toSSetFunctor
       (Preorder.colimitCoconeOfIsLUB f.filtration_monotone.functor (pt := ⊤)
         (by rw [← f.iSup_filtration]; apply isLUB_iSup)).isColimit)
-        (Cocones.ext (Subcomplex.topIso _))
+        (Cocone.ext (Subcomplex.topIso _))
   isWellOrderContinuous :=
     ⟨fun m hm ↦ ⟨isColimitOfPreserves Subcomplex.toSSetFunctor
       (Functor.isColimitOfIsWellOrderContinuous f.filtration_monotone.functor m hm)⟩⟩
