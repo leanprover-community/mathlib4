@@ -61,21 +61,21 @@ instance (α : Type*) [h : Min α] : Max αᵒᵈ :=
   ⟨fun a b ↦ h.min a b⟩
 
 instance [LE α] [T : IsTrans α LE.le] : IsTrans αᵒᵈ LE.le where
-  trans  _ _ _ hab hbc := T.trans _ _ _ hbc hab
+  trans _ _ _ hab hbc := T.trans _ _ _ hbc hab
 
 instance [LT α] [T : IsTrans α LT.lt] : IsTrans αᵒᵈ LT.lt where
-  trans  _ _ _ hab hbc := T.trans _ _ _ hbc hab
+  trans _ _ _ hab hbc := T.trans _ _ _ hbc hab
 
 instance [LT α] [T : @Std.Trichotomous α LT.lt] : @Std.Trichotomous αᵒᵈ LT.lt where
   trichotomous a b := by rw [eq_comm]; exact T.trichotomous b a
 
 instance (α : Type*) [Preorder α] : Preorder αᵒᵈ where
-  le_refl  _ := le_refl _
-  le_trans  _ _ _ hab hbc := hbc.trans hab
-  lt_iff_le_not_ge  _ _ := lt_iff_le_not_ge
+  le_refl _ := le_refl _
+  le_trans _ _ _ hab hbc := hbc.trans hab
+  lt_iff_le_not_ge _ _ := lt_iff_le_not_ge
 
 instance (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ where
-  le_antisymm  a b hab hba := @le_antisymm α _ a b hba hab
+  le_antisymm a b hab hba := @le_antisymm α _ a b hba hab
 
 instance (α : Type*) [DecidableEq α] : DecidableEq αᵒᵈ := ‹DecidableEq α›
 
