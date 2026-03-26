@@ -341,11 +341,12 @@ noncomputable def toSubtype {s : α} (P : Finpartition s)
       · simpa [i.property] using hi'
     sup_parts := by
       ext
-      rw [@sup_coe _ _ _ _ _ Prbot Prsup]
-      simp only [id_eq]
-      rw [sup_val_eq_coe_id Prsup Prbot,
-        Finset.sup_preimage_val_id_eq_sup_toSubtype_id Prsup Prbot hP]
-      simpa using P.sup_parts
+      rw [sup_coe]
+      · simp only [id_eq]
+        rw [sup_val_eq_coe_id Prsup Prbot,
+          Finset.sup_preimage_val_id_eq_sup_toSubtype_id Prsup Prbot hP]
+        simpa using P.sup_parts
+      exact Prsup
     bot_notMem := by
       simp only [mem_preimage]
       rw [Subtype.coe_bot Prbot]
