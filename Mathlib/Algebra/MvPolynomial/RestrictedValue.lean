@@ -5,8 +5,9 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Funext
+public import Mathlib.Algebra.Group.ForwardDiff
 public import Mathlib.RingTheory.Binomial
+public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 
 /-!
 ## Multivariate polynomials with restricted values
@@ -20,7 +21,8 @@ the form `Ring.choose (X i) n`.
 
 * `MvPolynomial.restrictedValue`: A polynomial `φ ψ : MvPolynomial σ S` is `R`-valued if
 evaluation at elements of `R` yields an element of `R`.
-
+* `MvPolynomial.fwdDiff`: The difference between a translate of a polynomial and itself, expressed
+as a linear map on `MvPolynomial σ R`.
 -/
 
 @[expose] public section
@@ -59,6 +61,132 @@ def restrictedValue (σ) (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] :
     obtain ⟨x0, hx0⟩ := RingHom.mem_range.mp (hx g)
     use -x0
     simp [hx0]
+
+lemma mem_restrictedValue_iff (σ) (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+    (f : MvPolynomial σ S) :
+    f ∈ restrictedValue σ R S ↔
+      ∀ g : σ → R, eval ((algebraMap R S) ∘ g) f ∈ (algebraMap R S).range :=
+  Iff.of_eq rfl
+
+variable {R : Type*} [CommRing R]
+
+/-- The equivalence of multivariable polynomials given by shifting the variables by a constant. -/
+@[simps]
+noncomputable def shiftEquiv (h : σ → R) : MvPolynomial σ R ≃ₐ[R] MvPolynomial σ R where
+  toFun f := aeval (fun i ↦ X i + C (h i)) f
+  invFun f := aeval (fun i ↦ X i - C (h i)) f
+  left_inv f := by simpa [comp_aeval_apply] using aeval_X_left_apply f
+  right_inv f := by simpa [comp_aeval_apply] using aeval_X_left_apply f
+  map_mul' x y := map_mul _ x y
+  map_add' x y := map_add _ x y
+  commutes' r := by simp
+--#find_home! shiftEquiv --[Mathlib.Algebra.MvPolynomial.CommRing]
+
+open scoped MonomialOrder in
+lemma degree_shiftEquiv (m : MonomialOrder σ) (f : MvPolynomial σ R) (h : σ → R) :
+    m.degree (shiftEquiv h f) = m.degree f := by
+  induction f using MvPolynomial.induction_on'' with
+  | C a => simp
+  | monomial_add a b f ha hb ih1 ih2 =>
+    by_cases hd : m.degree (monomial a b) ≺[m] m.degree f
+    · rw [map_add, add_comm, MonomialOrder.degree_add_of_lt (by rwa [ih2, ih1]), add_comm,
+        MonomialOrder.degree_add_of_lt hd, ih1]
+    · by_cases hf : f = 0; · simp_all
+      have : m.degree f ≺[m] m.degree ((monomial a) b) := by
+        refine Std.lt_of_le_of_ne (Std.not_lt.mp hd) ?_
+        classical
+        simp only [MonomialOrder.degree_monomial, hb, ↓reduceIte, ne_eq,
+          EmbeddingLike.apply_eq_iff_eq]
+        contrapose! ha
+        rw [← ha]
+        exact m.degree_mem_support hf
+      rw [map_add, MonomialOrder.degree_add_of_lt this,
+        MonomialOrder.degree_add_of_lt (by rwa [ih2, ih1]), ih2]
+  | mul_X p n ih =>
+    by_cases hp : p = 0; · simp [hp]
+    have : Nontrivial R := by
+        contrapose! hp
+        exact Subsingleton.eq_zero p
+    have hCX : m.degree (C (h n)) ≺[m] m.degree (X (R := R) n) := by
+      rw [MonomialOrder.degree_C, MonomialOrder.degree_X, map_zero]
+      exact m.toSyn_lt_iff_ne_zero.mpr <| (AddEquiv.map_ne_zero_iff m.toSyn).mpr <|
+        Finsupp.single_ne_zero.mpr Nat.one_ne_zero
+    rw [map_mul, m.degree_mul_of_mul_leadingCoeff_ne_zero, m.degree_mul_of_mul_leadingCoeff_ne_zero,
+      ih, add_left_cancel_iff]
+    · rw [shiftEquiv_apply, aeval_X, MonomialOrder.degree_add_of_lt hCX]
+    · rwa [MonomialOrder.leadingCoeff_X, mul_one, MonomialOrder.leadingCoeff_ne_zero_iff]
+    · have : m.leadingCoeff ((shiftEquiv h) (X n)) = 1 := by
+        rw [shiftEquiv_apply, aeval_X, MonomialOrder.leadingCoeff_add_of_lt hCX,
+          MonomialOrder.leadingCoeff_X]
+      rw [this, mul_one]
+      refine MonomialOrder.leadingCoeff_ne_zero_iff.mpr ?_
+      exact EmbeddingLike.map_ne_zero_iff.mpr hp
+
+/-- The forward difference operator on polynomials, as a linear map. -/
+@[simps]
+noncomputable def fwdDiff (h : σ → R) :
+    letI : Module R (MvPolynomial σ R) := module -- I don't understand why this is necessary.
+    MvPolynomial σ R →ₗ[R] MvPolynomial σ R :=
+  letI : Module R (MvPolynomial σ R) := module
+  { toFun f := shiftEquiv h f - f
+    map_add' f₁ f₂ := by simp; abel
+    map_smul' r x := by simp [smul_sub] }
+--#find_home! fwdDiff --[Mathlib.Algebra.MvPolynomial.CommRing]
+
+lemma fwdDiff_eval (f : MvPolynomial σ R) (x h : σ → R) :
+    _root_.fwdDiff h (fun x ↦ eval x f) x = eval x (fwdDiff h f) := by
+  simp only [_root_.fwdDiff, fwdDiff_apply, shiftEquiv_apply, map_sub, map_aeval, algebraMap_eq,
+    map_add, eval_X, eval_C, coe_eval₂Hom, sub_left_inj]
+  rw [eval₂_eq, eval_eq]
+  exact Finset.sum_congr rfl (fun _ _ ↦ by simp)
+
+lemma fwdDiff_mem_restrictedValue {σ} (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+    (f : restrictedValue σ R S) (h : σ → R) :
+    fwdDiff (algebraMap R S ∘ h) f.val ∈ restrictedValue σ R S := by
+  obtain ⟨f, hf⟩ := f
+  simp only [fwdDiff_apply, shiftEquiv_apply, Function.comp_apply]
+  refine (mem_restrictedValue_iff σ R S _).mpr ?_
+  intro x
+  have hxc : (fun i ↦ (eval (algebraMap R S ∘ x)) (X i + C (algebraMap R S (h i)))) =
+      fun i ↦ (algebraMap R S) ((x + h) i) := by ext; simp
+  have hid : (eval (algebraMap R S ∘ x)).comp C = RingHom.id S := by ext; simp
+  rw [map_sub, map_aeval, algebraMap_eq, hxc, hid]
+  exact Subring.sub_mem (algebraMap R S).range (hf (x + h)) (hf x)
+
+open scoped MonomialOrder in
+lemma MonomialOrder.degree_sub_lt (p q : MvPolynomial σ R) (m : MonomialOrder σ)
+    (hd : m.degree p = m.degree q) (hp0 : m.degree p ≠ 0)
+    (hlc : m.leadingCoeff p = m.leadingCoeff q) :
+    m.degree (p - q) ≺[m] m.degree p := by
+  refine Std.lt_of_le_of_ne ?_ ?_
+  · rw [sub_eq_add_neg]
+    exact le_of_le_of_eq (MonomialOrder.degree_add_le) <| max_eq_left (by simp [hd])
+  · by_cases hpq : p - q = 0; · exact m.toSyn.injective.ne (by simpa [hpq] using hp0.symm)
+    have h := m.degree_mem_support hpq
+    contrapose! h
+    have : m.degree p ∉ (p - q).support := by
+      simp only [MonomialOrder.leadingCoeff] at hlc
+      rw [mem_support_iff, coeff_sub, ne_eq, not_not, sub_eq_zero, hlc, hd]
+    rwa [(EmbeddingLike.apply_eq_iff_eq m.toSyn).mp h]
+--#find_home! MonomialOrder.degree_sub_lt --[Mathlib.RingTheory.MvPolynomial.MonomialOrder]
+
+
+/-
+Something went wrong in the above theorem - all uses of ≺[m] get broken after it.
+
+open scoped MonomialOrder in
+lemma fwdDiff_degree_lt (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+    (m : MonomialOrder σ) (f : restrictedValue σ R S) (hf : m.degree f.val ≠ 0) (h : σ → R) :
+    m.degree (fwdDiff (algebraMap R S ∘ h) f.val) ≺[m] m.degree f.val := by
+  obtain ⟨f, hf⟩ := f
+  rw [fwdDiff_apply]
+
+  rw [MonomialOrder.degree_lt_iff hf]
+  simp only [fwdDiff_apply, shiftEquiv_apply, Function.comp_apply]
+
+
+-/
+-- degree lemmas
 
 section IntegerValued
 
@@ -127,20 +255,81 @@ lemma choose_support [DecidableEq σ] (i : σ) (n : ℕ) :
       exact fun h ↦ Finsupp.notMem_support_iff.mp h
     · simp [hij, Finsupp.mapDomain]
 
+set_option backward.isDefEq.respectTransparency false in
+lemma degree_choose (m : MonomialOrder σ) (i : σ) (n : ℕ) :
+    m.degree (Ring.choose (X i : MvPolynomial σ ℚ) n) = Finsupp.single i n := by
+  rw [← MonomialOrder.degree_smul_of_isRegular (IsUnit.isRegular <| Ne.isUnit <|
+    Nat.cast_ne_zero.mpr <| Nat.factorial_ne_zero n), choose_eq, smul_smul,
+    Rat.mul_inv_cancel _ <| Nat.cast_ne_zero.mpr <| Nat.factorial_ne_zero n, one_smul]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [descPochhammer_succ_right, pUnitAlgEquiv_symm_apply, Polynomial.eval₂_mul,
+      ← pUnitAlgEquiv_symm_apply, map_mul, MonomialOrder.degree_mul_of_mul_leadingCoeff_ne_zero, ih,
+      Finsupp.single_add, add_right_inj]
+    · simp only [Polynomial.eval₂_sub, Polynomial.eval₂_X, Polynomial.eval₂_natCast, map_sub,
+        rename_X, map_natCast]
+      rw [sub_eq_add_neg, MonomialOrder.degree_add_of_lt, MonomialOrder.degree_X]
+      rw [MonomialOrder.degree_neg, MonomialOrder.degree_X, ← map_natCast' (monomial 0) rfl n,
+        monomial_zero', MonomialOrder.degree_C, map_zero, MonomialOrder.toSyn_lt_iff_ne_zero]
+      exact (AddEquiv.map_ne_zero_iff m.toSyn).mpr <| Finsupp.single_ne_zero.mpr Nat.one_ne_zero
+    · rw [mul_ne_zero_iff, MonomialOrder.leadingCoeff_ne_zero_iff,
+        MonomialOrder.leadingCoeff_ne_zero_iff]
+      by_cases hn : n = 0 ; · simp [hn]
+      constructor
+      · refine m.ne_zero_of_degree_ne_zero ?_
+        rw [ih]
+        exact Finsupp.single_ne_zero.mpr hn
+      · simp only [Polynomial.eval₂_sub, Polynomial.eval₂_X, Polynomial.eval₂_natCast, map_sub,
+        rename_X, map_natCast, ne_eq]
+        refine ne_zero_iff.mpr ?_
+        use 0
+        rw [coeff_sub, sub_ne_zero, coeff_zero_X, ← map_natCast' (monomial 0) rfl n, monomial_zero',
+          coeff_zero_C]
+        exact Ne.symm <| (Nat.cast_ne_zero (R := ℚ)).mpr hn
+
+set_option backward.isDefEq.respectTransparency false in
+lemma leadingCoeff_choose (m : MonomialOrder σ) (i : σ) (n : ℕ) :
+    m.leadingCoeff (Ring.choose (X i : MvPolynomial σ ℚ) n) = (n.factorial : ℚ)⁻¹ := by
+  refine (inv_eq_of_mul_eq_one_right ?_).symm
+  rw [← MonomialOrder.leadingCoeff_C (m := m) (n.factorial : ℚ), ← MonomialOrder.leadingCoeff_mul,
+    choose_eq, C_mul', smul_smul, Rat.mul_inv_cancel _ <| Nat.cast_ne_zero.mpr <|
+    Nat.factorial_ne_zero n, one_smul]
+  refine MonomialOrder.Monic.leadingCoeff_eq_one ?_
+  induction n with
+  | zero =>
+    simp only [MonomialOrder.Monic, descPochhammer_zero, map_one]
+    exact MonomialOrder.leadingCoeff_one
+  | succ n ih =>
+    simp only [descPochhammer_succ_right, pUnitAlgEquiv_symm_apply]
+    simp only [Polynomial.eval₂_mul, Polynomial.eval₂_sub, Polynomial.eval₂_X,
+      Polynomial.eval₂_natCast, map_mul, map_sub, rename_X, map_natCast]
+    refine MonomialOrder.Monic.mul ih ?_
+    simp only [MonomialOrder.Monic, MonomialOrder.leadingCoeff, coeff_sub]
+    have : m.degree (n : MvPolynomial σ ℚ) = 0 := by
+      rw [MonomialOrder.degree_eq_zero_iff_totalDegree_eq_zero, ← map_natCast' (monomial 0) rfl n,
+        monomial_zero', totalDegree_C]
+    rw [sub_eq_add_neg, sub_eq_add_neg, MonomialOrder.degree_add_of_lt, MonomialOrder.degree_X,
+      coeff_X, MonomialOrder.coeff_eq_zero_of_lt (m := m), Rat.neg_zero, Rat.add_zero]
+    · rw [this, AddEquiv.map_zero, MonomialOrder.toSyn_lt_iff_ne_zero]
+      exact (AddEquiv.map_ne_zero_iff m.toSyn).mpr <| Finsupp.single_ne_zero.mpr Nat.one_ne_zero
+    · rw [MonomialOrder.degree_neg, this, MonomialOrder.degree_X, AddEquiv.map_zero,
+        MonomialOrder.toSyn_lt_iff_ne_zero]
+      exact (AddEquiv.map_ne_zero_iff m.toSyn).mpr <| Finsupp.single_ne_zero.mpr Nat.one_ne_zero
+
+set_option backward.isDefEq.respectTransparency false in
+lemma leadingCoeff_choose_prod (m : MonomialOrder σ) (n : σ →₀ ℕ) :
+    m.leadingCoeff (∏ i ∈ n.support, Ring.choose (X i : MvPolynomial σ ℚ) (n i)) =
+      ∏ i ∈ n.support, ((n i).factorial : ℚ)⁻¹ := by
+  induction n.support using Finset.cons_induction_on with
+  | empty => simp [MonomialOrder.leadingCoeff_one]
+  | cons a s h ih =>
+    simp only [Finset.prod_cons, MonomialOrder.leadingCoeff_mul, ih, Finset.prod_inv_distrib,
+      mul_inv_rev]
+    rw [mul_comm, leadingCoeff_choose]
+
 end IntegerValued
 /-
-lemma leadingCoeff_of_choose [LinearOrder σ] (i : σ) (n : ℕ) :
-    (Ring.choose (X i : MvPolynomial σ ℚ) n).leadingCoeff toLex = (n.factorial : ℚ)⁻¹ := by
-  rw [leadingCoeff_toLex]
-  sorry
-
-
-lemma leadingCoeff_of_choose_prod [LinearOrder σ] (n : σ →₀ ℕ) :
-    (∏ i ∈ n.support, Ring.choose (X i : MvPolynomial σ ℚ) (n i)).leadingCoeff toLex =
-      ∏ i ∈ n.support, ((n i).factorial : ℚ)⁻¹ := by
-  rw [@leadingCoeff_toLex]
-
-  sorry
 
 
 lemma restrictedValue_subset_span_choose [LinearOrder σ] (p : restrictedValue σ ℤ ℚ) :
