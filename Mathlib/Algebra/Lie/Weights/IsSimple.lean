@@ -477,7 +477,7 @@ lemma restr_invtSubmoduleToLieIdeal_eq_iSup (q : Submodule K (Dual K H))
   set J := invtSubmoduleToLieIdeal q hq
   constructor
   · intro hα_mem; by_contra hα_not
-    have hα_nz : (↑α : Weight K H L).IsNonZero := (Finset.mem_filter.mp α.property).2
+    have hα_nz := H.isNonZero_coe_root α
     have hne (χ : Weight K H L) (hχ : ↑χ ∈ q) :
         (χ : H → K) ≠ ((↑α : Weight K H L) : H → K) :=
       fun heq ↦ hα_not (by simpa [rootSystem_root_apply] using DFunLike.coe_injective heq ▸ hχ)
