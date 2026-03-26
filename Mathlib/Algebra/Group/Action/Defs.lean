@@ -53,8 +53,6 @@ open Function (Injective Surjective)
 
 variable {M N G H α β γ δ : Type*}
 
-@[deprecated instSMulOfMul (since := "2025-10-18"), implicit_reducible]
-
 /-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
 @[to_additive /-- See also `AddMonoid.toAddAction` -/]
 instance (priority := 1100) Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
