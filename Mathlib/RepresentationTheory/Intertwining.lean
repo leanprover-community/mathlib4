@@ -70,6 +70,10 @@ instance : LinearMapClass (IntertwiningMap ρ σ) A V W where
   map_add f := f.map_add
   map_smulₛₗ f := f.map_smul
 
+-- @[simp]
+-- lemma coe_eq_toLinearMap {f : IntertwiningMap ρ σ} :
+--   SemilinearMapClass.semilinearmap f = f.toLinearMap := rfl
+
 @[simp] theorem coe_mk (f : V →ₗ[A] W) (h) : ⇑(⟨f, h⟩ : IntertwiningMap ρ σ) = f := rfl
 
 lemma toLinearMap_mk (f : V →ₗ[A] W) (h) :
