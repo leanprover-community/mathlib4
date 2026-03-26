@@ -155,10 +155,6 @@ instance : MonoidalCategory SFinKer.{u} where
     congr
   tensorHom_comp_tensorHom κ₁ κ₂ η₁ η₂ := by
     ext : 1; dsimp
-    have := η₂.2
-    have := η₁.2
-    have := κ₁.2
-    have := κ₂.2
     simp only [Kernel.comp_id_parallelComp]
     exact Kernel.parallelComp_comp_parallelComp
   associator_naturality κ₁ κ₂ η := by
