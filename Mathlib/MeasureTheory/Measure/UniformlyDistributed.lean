@@ -63,10 +63,17 @@ theorem isUniformlyDistributed_eq_smul (μ ν : Measure X) [OuterRegular μ] [Ou
       _ = (liminf (fun r => (μ (ball hX.some r))⁻¹ * ν (ball hX.some r)) (𝓝[>] 0))⁻¹ *
         ((liminf (fun r => (μ (ball hX.some r))⁻¹ * ν (ball hX.some r)) (𝓝[>] 0)) * (μ U)) := by
         rw [ENNReal.inv_liminf]
-        congr with r
-        rw [ENNReal.mul_inv, mul_comm, inv_inv]
-        · exact Or.inr (UniformlyDistributed.lt_top _ hX.some).ne.symm
-        · exact Or.inr (UniformlyDistributed.zero_lt _ hX.some).ne.symm
+        have : limsup (fun r ↦ (ν (ball hX.some r))⁻¹ * μ (ball hX.some r)) (𝓝[>] 0) =
+          limsup (fun i ↦ ((μ (ball hX.some i))⁻¹ * ν (ball hX.some i))⁻¹) (𝓝[>] 0) := by
+          apply limsup_congr
+          have : Ioi 0 ∈ 𝓝[>] (0 : ℝ) := by
+            rw [mem_nhdsGT_iff_exists_Ioo_subset]
+            exact ⟨1, by grind, by grind⟩
+          filter_upwards [this] with a ha
+          rw [ENNReal.mul_inv, mul_comm, inv_inv]
+          · exact Or.inr (UniformlyDistributed.lt_top ha hX.some).ne
+          · exact Or.inr (UniformlyDistributed.zero_lt ha hX.some).ne.symm
+        congr
       _ ≤ (μ U) := by
         nth_rw 2 [← one_mul (μ U)]
         rw [← mul_assoc]
