@@ -12,10 +12,10 @@ public import Mathlib.Util.AddRelatedDecl
 /-!
 # The `map` attribute
 
-Adding `@[map]` to a lemma named `F` of shape `∀ .., f = g`, where `f` and `g` are morphisms
-in some category, creates a new lemma named `F_map` that universally quantifies over every target
-category `D` and every functor `F : C ⥤ D`, states the corresponding `F.map` equality, then applies
-`simp only [Functor.map_comp]` independently to the left- and right-hand sides of that equality.
+Adding `@[map]` to a lemma named `H` of shape `∀ .., f = g`, where `f` and `g` are morphisms
+in some category `C`, creates a new lemma named `H_map` of the form
+`∀ .. {D} (func : C ⥤ D), F.map f = F.map g` and then applies
+`simp only [Functor.map_comp, Functor.map_id]`.
 
 There is also a term elaborator `map_of% t` for use within proofs.
 -/
@@ -27,11 +27,10 @@ open CategoryTheory
 
 namespace Mathlib.Tactic.CategoryTheory.Map
 
-/-- `simp only` with `Functor.map_comp` and other standard `CategoryTheory`
-lemmas on a single expression (used on each side via `simpEq`). -/
+/-- `simp only` with `Functor.map_comp` and `Functor.map_id` on a single expression
+(used on each side via `simpEq`). -/
 def mapCompSimp (e : Expr) : MetaM Simp.Result :=
-  simpOnlyNames [``Functor.map_comp, ``Functor.map_id, ``Category.id_comp, ``Category.comp_id,
-    ``Category.assoc] e (config := { decide := false })
+  simpOnlyNames [``Functor.map_comp, ``Functor.map_id] e (config := { decide := false })
 
 private def extractCatInstanceFromEq (eqTy : Expr) : MetaM (Expr × Expr) := do
   let some (α, _, _) := eqTy.cleanupAnnotations.eq? | throwError "`@[map]` expects an equality"
@@ -60,8 +59,8 @@ def mapExprHomAux (e : Expr) (uLev vLev : Level) : MetaM Expr := do
 
 /--
 For `e : f = g`, build `∀ ⦃D⦄ [Category D] (F : C ⥤ D), …` with
-`simp only [Functor.map_comp]` on each side of `F.map f = F.map g`, using fresh level names `uD`
-(objects) and `vD` (morphisms) for the target category (for `@[map]` declarations).
+`simp only [Functor.map_comp, Functor.map_id]` on each side of `F.map f = F.map g`, using fresh
+level names `uD` (objects) and `vD` (morphisms) for the target category (for `@[map]` declarations).
 -/
 def mapExprHom (e : Expr) (uD vD : Name) : MetaM Expr :=
   mapExprHomAux e (Level.param uD) (Level.param vD)
@@ -102,19 +101,21 @@ def mapExprMVars (pf : Expr) : MetaM Expr := do
 def mapExprElab (pf : Expr) : TermElabM Expr :=
   liftMetaM <| mapExprMVars pf
 
-/--
-Adding `@[map]` to a lemma named `F` of shape `∀ .., f = g`, where `f` and `g` are morphisms in a
-category, generates `F_map`, quantifying over every target category `D` (fresh universes) and every
-functor `F : C ⥤ D`, then `simp only [Functor.map_comp]` on each side of the `F.map` equation.
-
-Use `@[map (attr := simp)]` to mark both the original lemma and `F_map` as `simp` lemmas (see
-`@[reassoc (attr := simp)]`).
-
-If the original declaration is tagged with `to_dual`, then `F_map` gets `@[to_dual none]`. In the
-rare case that only `F_map` should be tagged with `to_dual`, use `@[map +to_dual]`.
--/
 syntax toDualOpt := " +" &"to_dual"
 
+/--
+Adding `@[map]` to a lemma named `H` of shape `∀ .., f = g`, where `f` and `g` are morphisms
+in some category `C`, creates a new lemma named `H_map` of the form
+`∀ .. {D} (F : C ⥤ D), F.map f = F.map g` and then applies
+`simp only [Functor.map_comp, Functor.map_id]`.
+
+Use `@[map (attr := simp)]` to mark both the original lemma and `H_map` as `simp` lemmas, and
+`@[reassoc (attr := map)]` to generate `_map` versions of both the original lemma the reassociated
+version.
+
+If the original declaration is tagged with `to_dual`, then `H_map` gets `@[to_dual none]`. In the
+rare case that only `H_map` should be tagged with `to_dual`, use `@[map +to_dual]`.
+-/
 syntax (name := map) "map" (toDualOpt)? optAttrArg : attr
 
 initialize registerBuiltinAttribute {
@@ -142,8 +143,8 @@ initialize registerBuiltinAttribute {
 
 /--
 `map_of% t`, where `t` is an equality `f = g` between morphisms (possibly under `∀` binders),
-produces the corresponding statement with a functor applied and `simp only [Functor.map_comp]` on
-each side.
+produces the corresponding statement with a functor applied and
+`simp only [Functor.map_comp, Functor.map_id]` on each side.
 -/
 elab "map_of% " t:term : term => do
   let e ← Term.withSynthesizeLight <| Term.elabTerm t none

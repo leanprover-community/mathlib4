@@ -15,22 +15,38 @@ variable {C : Type u₁} [Category.{v₁} C]
 lemma comp_map {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) :
     f ≫ g = h := w
 
-/--
-info: Tests.Map.comp_map_map.{u✝, v✝, u_1, u_2} {C : Type u_1} [Category.{u_2, u_1} C] {x y z : C} (f : x ⟶ y) (g : y ⟶ z)
-  (h : x ⟶ z) (w : f ≫ g = h) {D : Type u✝} [instD : Category.{v✝, u✝} D] (F : C ⥤ D) : F.map f ≫ F.map g = F.map h
--/
+/-- info: Tests.Map.comp_map_map.{u✝, v✝, u_1, u_2} {C : Type u_1} [Category.{u_2, u_1} C] {x y z : C} (f : x ⟶ y) (g : y ⟶ z)
+  (h : x ⟶ z) (w : f ≫ g = h) {D : Type u✝} [instD : Category.{v✝, u✝} D] (F : C ⥤ D) : F.map f ≫ F.map g = F.map h -/
 #guard_msgs in
 #check comp_map_map
 
-/--
-info: Tests.Map.comp_map_assoc_map.{u✝, v✝, u_1, u_2} {C : Type u_1} [Category.{u_2, u_1} C] {x y z : C} (f : x ⟶ y)
+/-- info: Tests.Map.comp_map_assoc_map.{u✝, v✝, u_1, u_2} {C : Type u_1} [Category.{u_2, u_1} C] {x y z : C} (f : x ⟶ y)
   (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) {Z : C} (h✝ : z ⟶ Z) {D : Type u✝} [instD : Category.{v✝, u✝} D] (F : C ⥤ D) :
-  F.map f ≫ F.map g ≫ F.map h✝ = F.map h ≫ F.map h✝-/
+  F.map f ≫ F.map g ≫ F.map h✝ = F.map h ≫ F.map h✝ -/
 #guard_msgs in
 #check comp_map_assoc_map
 
+@[map (attr := reassoc)]
+lemma comp_map' {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) :
+    f ≫ g = h := w
+
+/-- info: Tests.Map.comp_map'_map_assoc.{u✝, v✝, u_1, u_2} {C : Type u_1} [Category.{u_2, u_1} C] {x y z : C} (f : x ⟶ y)
+  (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) {D : Type u✝} [instD : Category.{v✝, u✝} D] (F : C ⥤ D) {Z : D}
+  (h✝ : F.obj z ⟶ Z) : F.map f ≫ F.map g ≫ h✝ = F.map h ≫ h✝ -/
+#guard_msgs in
+#check comp_map'_map_assoc
+
+@[map]
+lemma comp_eq_id {x y : C} (f : x ⟶ y) (g : y ⟶ x) (w : f ≫ g = 𝟙 _) :
+    f ≫ g = 𝟙 _ := w
+
+/-- info: Tests.Map.comp_eq_id_map.{u✝, v✝, u_1, u_2} {C : Type u_1} [Category.{u_2, u_1} C] {x y : C} (f : x ⟶ y) (g : y ⟶ x)
+  (w : f ≫ g = 𝟙 x) {D : Type u✝} [instD : Category.{v✝, u✝} D] (F : C ⥤ D) : F.map f ≫ F.map g = 𝟙 (F.obj x) -/
+#guard_msgs in
+#check comp_eq_id_map
+
 /-!
-`map_of%` pushes `Functor.map` through an equality and applies `simp only [Functor.map_comp]` on each
+`map_of%` pushes `Functor.map` through an equality and applies `simp only [Functor.map_comp, Functor.map_id]` on each
 side.
 -/
 example {x y z : C} {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D) (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z)
