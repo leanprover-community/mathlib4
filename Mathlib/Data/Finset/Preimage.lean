@@ -110,10 +110,10 @@ theorem image_preimage [DecidableEq β] (f : α → β) (s : Finset β) [∀ x, 
       ← Set.sep_mem_eq]; rfl
 
 theorem image_eq_preimage_of_leftInvOn_injOn_mapsTo {α β : Type*} [DecidableEq β] {f : α → β}
-    {g : β → α} {s : Finset α} (hgf : Set.LeftInvOn g f s) (ginj : Set.InjOn g (g ⁻¹' s))
-    (gmt : Set.MapsTo g (g ⁻¹' s) s) : s.image f = s.preimage g ginj := by
+    {g : β → α} {s : Finset α} (hgf : Set.LeftInvOn g f s) (ginj : Set.InjOn g (g ⁻¹' s)) :
+    s.image f = s.preimage g ginj := by
   simp only [SetLike.ext'_iff, coe_preimage, coe_image]
-  rw [Set.image_eq_preimage_of_invOn hgf ginj gmt]
+  rw [Set.image_eq_preimage_of_leftInvOn_injOn_mapsTo hgf ginj]
 
 theorem image_preimage_of_bij [DecidableEq β] (f : α → β) (s : Finset β)
     (hf : Set.BijOn f (f ⁻¹' ↑s) ↑s) : image f (preimage s f hf.injOn) = s :=
