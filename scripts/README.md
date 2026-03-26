@@ -4,9 +4,17 @@ This directory contains miscellaneous scripts that are useful for working on or 
 When adding a new script, please make sure to document it here, so other readers have a chance
 to learn about it as well!
 
-Note: CI automation scripts have been moved to `mathlib-ci`.
-Workflows that use those scripts now execute them from external checkouts (typically
-under `ci-tools/`).
+## Where does a new script belong?
+
+A script belongs in [**`leanprover-community/mathlib-ci`**](https://github.com/leanprover-community/mathlib-ci)
+if it is a CI automation script that interacts with GitHub (e.g. managing labels, posting
+comments, triggering bots), runs from a trusted external checkout in CI, or requires access
+to secrets. CI automation scripts have been moved there; workflows that use them execute
+them from external checkouts (typically under `ci-tools/`).
+
+A script belongs in **this directory** (`scripts/`) if it is a developer or maintainer tool
+to be run locally, a code maintenance or analysis utility, a style linting tool, or a data
+file used by the library's own linters.
 
 
 ## Current scripts and their purpose
