@@ -46,7 +46,7 @@ lemma toTopHomeo_naturality {n m : SimplexCategory} (f : n ⟶ m) :
     stdSimplex.map f ∘ n.toTopHomeo := by
   ext x : 1
   exact ULift.up_injective (congr_fun ((forget TopCat).congr_map
-    ((toTopSimplex.hom.naturality f))) x)
+    (toTopSimplex.hom.naturality f)) x)
 
 lemma toTopHomeo_naturality_apply {n m : SimplexCategory} (f : n ⟶ m)
     (x : |stdSimplex.obj n|) :
@@ -55,8 +55,8 @@ lemma toTopHomeo_naturality_apply {n m : SimplexCategory} (f : n ⟶ m)
   congr_fun (toTopHomeo_naturality f) x
 
 lemma toTopHomeo_symm_naturality {n m : SimplexCategory} (f : n ⟶ m) :
-    m.toTopHomeo.invFun.comp (stdSimplex.map f) =
-      (SSet.toTop.{u}.map (SSet.stdSimplex.map f)).hom.1.comp n.toTopHomeo.invFun := by
+    m.toTopHomeo.symm ∘ stdSimplex.map f =
+      (SSet.toTop.{u}.map (SSet.stdSimplex.map f)).hom ∘ n.toTopHomeo.symm := by
   ext x : 1
   exact congr_fun ((forget _).congr_map
     (toTopSimplex.inv.naturality f)) _
@@ -111,13 +111,13 @@ lemma sSetTopAdj_homEquiv_stdSimplex_zero {X : TopCat.{u}}
 /-- The standard topological simplex of dimension `1` is homeomorphic to `TopCat.I`. -/
 def TopCat.stdSimplexHomeomorphI :
     _root_.stdSimplex ℝ (Fin 2) ≃ₜ TopCat.I.{u} :=
-  stdSimplexHomeomorphUnitInterval.trans (Homeomorph.ulift.symm)
+  stdSimplexHomeomorphUnitInterval.trans Homeomorph.ulift.symm
 
 namespace SSet.stdSimplex
 
 /-- The geometric realization of `Δ[1]` is isomorphic to `TopCat.I`. -/
 noncomputable def toTopObjIsoI :
-    |Δ[1]| ≅ TopCat.I.{u} :=
+    |(Δ[1] : SSet.{u})| ≅ TopCat.I.{u} :=
   TopCat.isoOfHomeo ((SimplexCategory.toTopHomeo _).trans TopCat.stdSimplexHomeomorphI)
 
 /-- The canonical morphism `Δ[1] ⟶ TopCat.toSSet.obj TopCat.I`: by adjunction,
