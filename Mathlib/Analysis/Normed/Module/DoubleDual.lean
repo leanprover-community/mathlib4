@@ -11,8 +11,10 @@ public import Mathlib.Analysis.Normed.Module.WeakDual
 /-!
 # The double dual of a normed space
 
-In this file we define the inclusion of a normed space into its double strong dual and prove
-basic properties.
+In this file we define the inclusion of a normed space into its double strong dual,
+prove that it is an isometry (for `𝕜 = ℝ` or `𝕜 = ℂ`), and use the corresponding weak-topology
+embedding together with Banach–Alaoglu to transfer compactness from the weak-star bidual back to
+the weak topology.
 
 ## Main definitions
 
@@ -20,13 +22,12 @@ basic properties.
   `StrongDual`, considered as a bounded linear map.
 * `NormedSpace.inclusionInDoubleDualLi` is the same map as a linear isometry (for `𝕜 = ℝ` or
   `𝕜 = ℂ`).
-* `NormedSpace.inclusionInDoubleDualWeak` is the map from the weak space into the weak-star bidual.
-* `NormedSpace.inclusionInDoubleDualWeak_isEmbedding` shows that `inclusionInDoubleDualWeak` is
+* `NormedSpace.inclusionInDoubleDualWeak` is the map from the weak space into the weak-star bidual,
+  as a continuous linear map.
+* `NormedSpace.isEmbedding_inclusionInDoubleDualWeak` shows that `inclusionInDoubleDualWeak` is
   a topological embedding.
-* `NormedSpace.inclusionInDoubleDualWeak_homeomorph` is the same map as a homeomorphism onto
-  its range.
 * `NormedSpace.isCompact_closure_of_isBounded` transfers compactness from the weak-star topology
-  on the bidual back to the weak topology on `X` via Banach–Alaoglu.
+  on the bidual back to the weak topology on `X`.
 
 ## References
 
@@ -107,40 +108,32 @@ section Embedding
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 variable (X : Type*) [SeminormedAddCommGroup X] [NormedSpace 𝕜 X]
 
-/-- The map from a normed space with the weak topology into the weak-star bidual, as a linear map.
-Built using `LinearEquiv.arrowCongr` to properly bundle the topology changes
-via `toWeakSpace` and `StrongDual.toWeakDual`. -/
-def inclusionInDoubleDualWeak : WeakSpace 𝕜 X →ₗ[𝕜] WeakDual 𝕜 (StrongDual 𝕜 X) :=
-  (LinearEquiv.arrowCongr (toWeakSpace 𝕜 X) StrongDual.toWeakDual)
+/-- The map from a normed space with the weak topology into the weak-star bidual, as a continuous
+linear map. Built using `LinearEquiv.arrowCongr` to properly bundle the topology changes via
+`toWeakSpace` and `StrongDual.toWeakDual`. -/
+@[simps! -isSimp apply apply_apply]
+def inclusionInDoubleDualWeak : WeakSpace 𝕜 X →L[𝕜] WeakDual 𝕜 (StrongDual 𝕜 X) where
+  toLinearMap := (toWeakSpace 𝕜 X).arrowCongr StrongDual.toWeakDual
     (inclusionInDoubleDual 𝕜 X).toLinearMap
+  cont := Topology.IsInducing.continuous ⟨Eq.symm induced_compose⟩
 
-/-- The embedding into the weak-star bidual evaluates to `f` applied to the underlying element. -/
+attribute [simp] inclusionInDoubleDualWeak_apply_apply
+
 @[simp]
-theorem inclusionInDoubleDualWeak_apply (x : WeakSpace 𝕜 X) (f : StrongDual 𝕜 X) :
-    (inclusionInDoubleDualWeak 𝕜 X x) f = f ((toWeakSpace 𝕜 X).symm x) := by
-  simp [inclusionInDoubleDualWeak, LinearEquiv.arrowCongr_apply]
-
-/-- `inclusionInDoubleDualWeak` is inducing: the weak topology on `X` coincides with the topology
-pulled back from the weak-star topology on the bidual. -/
-theorem inclusionInDoubleDualWeak_isInducing :
-    IsInducing (inclusionInDoubleDualWeak 𝕜 X) where
-  eq_induced := Eq.symm <| induced_compose (f := inclusionInDoubleDualWeak 𝕜 X)
+lemma toLinearMap_inclusionInDoubleDualWeak :
+    (inclusionInDoubleDualWeak 𝕜 X).toLinearMap =
+      (toWeakSpace 𝕜 X).arrowCongr StrongDual.toWeakDual (inclusionInDoubleDual 𝕜 X).toLinearMap :=
+  rfl
 
 variable (𝕜 : Type*) [RCLike 𝕜] (X : Type*) [NormedAddCommGroup X] [NormedSpace 𝕜 X]
 
 /-- `inclusionInDoubleDualWeak` is a topological embedding from the weak topology to the weak-star
 topology. -/
-theorem inclusionInDoubleDualWeak_isEmbedding :
+theorem isEmbedding_inclusionInDoubleDualWeak :
     IsEmbedding (inclusionInDoubleDualWeak 𝕜 X) where
-  toIsInducing := inclusionInDoubleDualWeak_isInducing 𝕜 X
+  eq_induced := Eq.symm induced_compose
   injective := StrongDual.toWeakDual.injective.comp
     (inclusionInDoubleDualLi (𝕜 := 𝕜) (E := X)).injective
-
-/-- The inclusion of a normed space into its double dual, as a homeomorphism onto its range,
-where the domain carries the weak topology and the codomain the weak-star topology. -/
-def inclusionInDoubleDualWeak_homeomorph :
-    WeakSpace 𝕜 X ≃ₜ Set.range (inclusionInDoubleDualWeak 𝕜 X) :=
-  (inclusionInDoubleDualWeak_isEmbedding 𝕜 X).toHomeomorph
 
 /-- If `S` is bounded set in `WeakSpace X` and the weak-star closure of its image under
 the embedding into the weak-star double dual lies in the range of that embedding,
@@ -154,8 +147,8 @@ theorem isCompact_closure_of_isBounded (S : Set (WeakSpace 𝕜 X))
     (hrange : closure (inclusionInDoubleDualWeak 𝕜 X '' S) ⊆
       Set.range (inclusionInDoubleDualWeak 𝕜 X)) :
     IsCompact (closure S) := by
-  rw [(inclusionInDoubleDualWeak_isInducing 𝕜 X).closure_eq_preimage_closure_image]
-  apply (inclusionInDoubleDualWeak_isInducing 𝕜 X).isCompact_preimage' _ hrange
+  rw [(isEmbedding_inclusionInDoubleDualWeak 𝕜 X).closure_eq_preimage_closure_image]
+  apply (isEmbedding_inclusionInDoubleDualWeak 𝕜 X).isCompact_preimage' _ hrange
   exact WeakDual.isCompact_of_bounded_of_closed
     (WeakDual.isBounded_closure ((inclusionInDoubleDual 𝕜 X).lipschitz.isBounded_image hb))
     isClosed_closure
