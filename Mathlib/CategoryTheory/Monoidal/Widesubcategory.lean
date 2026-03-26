@@ -100,6 +100,12 @@ instance [BraidedCategory C] [P.IsStableUnderBraiding] :
   braiding _ _ :=
     isoMk (β_ _ _) (P.braiding_hom_mem _ _) (P.braiding_inv_mem _ _)
 
+variable {P} in
+open MonoidalCategory in
+@[simp]
+lemma tensorμ_hom [BraidedCategory C] [P.IsStableUnderBraiding] (X Y Z T : WideSubcategory P) :
+    (tensorμ X Y Z T).hom = tensorμ _ _ _ _ := rfl
+
 instance [SymmetricCategory C] [P.IsStableUnderBraiding] :
     SymmetricCategory (WideSubcategory P) where
   symmetry c c' := by
