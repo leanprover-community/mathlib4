@@ -111,13 +111,13 @@ structure HasFDerivAtFilter (f : E → F) (f' : E →L[𝕜] F) (L : Filter (E �
 
 /-- A function `f` has the continuous linear map `f'` as derivative at `x` within a set `s` if
 `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` tends to `x` inside `s`. -/
-@[fun_prop out f']
+@[fun_prop]
 def HasFDerivWithinAt (f : E → F) (f' : E →L[𝕜] F) (s : Set E) (x : E) :=
   HasFDerivAtFilter f f' (𝓝[s] x ×ˢ pure x)
 
 /-- A function `f` has the continuous linear map `f'` as derivative at `x` if
 `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` tends to `x`. -/
-@[fun_prop out f']
+@[fun_prop]
 def HasFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) :=
   HasFDerivAtFilter f f' (𝓝 x ×ˢ pure x)
 
@@ -125,7 +125,7 @@ def HasFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) :=
 if `f x - f y - f' (x - y) = o(x - y)` as `x, y → a`. This form of differentiability is required,
 e.g., by the inverse function theorem. Any `C^1` function on a vector space over `ℝ` is strictly
 differentiable but this definition works, e.g., for vector spaces over `p`-adic numbers. -/
-@[fun_prop out f']
+@[fun_prop]
 def HasStrictFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) :=
   HasFDerivAtFilter f f' (𝓝 (x, x))
 
