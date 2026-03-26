@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Widesubcategory
 
 Given a monoidal category `C` and a morphism property `P : MorphismProperty C`,
 this file studies conditions on `P` ensuring that `WideSubcategory P` inherits
-additional structure.
+additional structures.
 
 We define stability classes under associators, unitors, and braidings, and use
 them to construct monoidal, braided, and symmetric structures on
