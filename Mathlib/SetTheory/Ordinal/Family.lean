@@ -848,10 +848,10 @@ theorem isNormal_iff_lt_succ_and_blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}
   constructor <;> intro H o ho <;> have := H o ho <;>
     rwa [← bsup_eq_blsub_of_lt_succ_limit ho fun a _ => h a] at *
 
-@[deprecated IsNormal.ext (since := "2025-12-25")]
+@[deprecated IsNormal.ext_iff (since := "2025-12-25")]
 theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
     (hg : IsNormal g) : f = g ↔ f 0 = g 0 ∧ ∀ a, f a = g a → f (succ a) = g (succ a) :=
-  Order.IsNormal.ext hf hg
+  Order.IsNormal.ext_iff hf hg
 
 end blsub
 
@@ -870,12 +870,6 @@ theorem not_surjective_of_ordinal {α : Type*} [Small.{u} α] (f : α → Ordina
 
 theorem not_injective_of_ordinal {α : Type*} [Small.{u} α] (f : Ordinal.{u} → α) :
     ¬ Injective f := fun h ↦ not_surjective_of_ordinal _ (invFun_surjective h)
-
-@[deprecated (since := "2025-08-21")]
-alias not_surjective_of_ordinal_of_small := not_surjective_of_ordinal
-
-@[deprecated (since := "2025-08-21")]
-alias not_injective_of_ordinal_of_small := not_injective_of_ordinal
 
 /-- The type of ordinals in universe `u` is not `Small.{u}`. This is the type-theoretic analog of
 the Burali-Forti paradox. -/
