@@ -66,13 +66,6 @@ instance : LargeCategory SFinKer where
 lemma hom_ext {X Y : SFinKer.{u}} {κ η : X ⟶ Y} (h : κ.hom = η.hom) :
     κ = η := SFinKer.Hom.ext h
 
-@[simp]
-lemma id_def (X : SFinKer) : (𝟙 X) = ⟨Kernel.id, inferInstance⟩ := rfl
-
-@[simp]
-lemma comp_def {X Y Z : SFinKer.{u}} (κ : X ⟶ Y) (η : Y ⟶ Z) :
-    (κ ≫ η).1 = η.1 ∘ₖ κ.1 := rfl
-
 end SFinKer
 
 noncomputable section
