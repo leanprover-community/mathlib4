@@ -23,7 +23,7 @@ This file defines finitely presented groups.
 ## Main results
 * `Subgroup.IsNormalClosureFG_map`: Being the normal closure of a finite set is preserved under
   surjective homomorphism.
-* `IsFinitelyPresented.mulEquiv`: finitely presented groups are closed under isomorphism.
+* `IsFinitelyPresented.equiv`: finitely presented groups are closed under isomorphism.
 
 ## Tags
 finitely presented group, finitely generated normal closure
