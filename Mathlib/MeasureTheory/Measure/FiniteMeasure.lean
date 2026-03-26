@@ -260,7 +260,7 @@ theorem coeFn_smul [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure
   funext; simp [← ENNReal.coe_inj, ENNReal.coe_smul]
 
 set_option backward.isDefEq.respectTransparency false in
-instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) :=
+instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) := fast_instance%
   toMeasure_injective.addCommMonoid _ toMeasure_zero toMeasure_add fun _ _ ↦ toMeasure_smul _ _
 
 /-- Coercion is an `AddMonoidHom`. -/
@@ -331,7 +331,8 @@ theorem restrict_nonzero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict 
   simp
 
 /-- The type of finite measures is a measurable space when equipped with the Giry monad. -/
-instance : MeasurableSpace (FiniteMeasure Ω) := Subtype.instMeasurableSpace
+instance : MeasurableSpace (FiniteMeasure Ω) :=
+  inferInstanceAs <| MeasurableSpace (Subtype _)
 
 /-- The set of all finite measures is a measurable set in the Giry monad. -/
 lemma measurableSet_isFiniteMeasure : MeasurableSet { μ : Measure Ω | IsFiniteMeasure μ } := by

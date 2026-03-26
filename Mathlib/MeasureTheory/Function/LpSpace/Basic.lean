@@ -416,7 +416,8 @@ theorem coe_LpSubmodule : (LpSubmodule 𝕜 E p μ).toAddSubgroup = Lp E p μ :=
   rfl
 
 instance instModule : Module 𝕜 (Lp E p μ) :=
-  { (LpSubmodule 𝕜 E p μ).module with }
+  letI := (LpSubmodule 𝕜 E p μ).module
+  inferInstanceAs <| Module 𝕜 (LpSubmodule 𝕜 E p μ)
 
 theorem coeFn_smul (c : 𝕜) (f : Lp E p μ) : ⇑(c • f) =ᵐ[μ] c • ⇑f :=
   AEEqFun.coeFn_smul _ _

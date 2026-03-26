@@ -85,7 +85,8 @@ instance NullMeasurableSpace.instSubsingleton [h : Subsingleton α] :
   h
 
 instance NullMeasurableSpace.instMeasurableSpace : MeasurableSpace (NullMeasurableSpace α μ) :=
-  @eventuallyMeasurableSpace α inferInstance (ae μ) _
+  letI : MeasurableSpace α := @eventuallyMeasurableSpace α inferInstance (ae μ) _
+  inferInstanceAs <| MeasurableSpace α
 
 /-- A set is called `NullMeasurableSet` if it can be approximated by a measurable set up to
 a set of null measure. -/
