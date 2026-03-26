@@ -121,6 +121,40 @@ private def findSomeLocalHyp? {α} (p : Expr → Expr → MetaM (Option α)) : M
     let type ← whnfR <| ← instantiateMVars decl.type
     p decl.toExpr type
 
+/-- Given `V : Expr` representing `E : B → Type*`, try to find a model fiber for `E`
+by searching in local context for either a `FiberBundle F E` or
+`TopologicalSpace (TotalSpace F E)` instance.
+
+We could try a more systematic search of `TotalSpace F E` anywhere in the local context,
+but the current heuristic is faster and sufficient so far. -/
+private def findModelFiber? (V : Expr) : MetaM (Option Expr) := do
+  withTraceNode `Elab.DiffGeo.TotalSpaceMk
+    (fun _ ↦ do return m!"Searching for a model fiber for {← ppExpr V}") do
+  trace[Elab.DiffGeo.TotalSpaceMk] "Searching for relevant `FiberBundle` instance in context"
+  let f? ← findSomeLocalInstanceOf? `FiberBundle fun _ declType ↦ do
+    /- Note: we do not use `match_expr` here since that would require importing
+    `Mathlib.Topology.FiberBundle.Basic` to resolve `FiberBundle`. -/
+    match declType with
+    | mkApp7 (.const `FiberBundle _) _ F _ _ E _ _ => do
+      if ← withReducible (pureIsDefEq E V) then
+        trace[Elab.DiffGeo.TotalSpaceMk] "found `FiberBundle` instance for model fiber {← ppExpr F}"
+        return some F
+      else return none
+    | _ => return none
+  if f?.isSome then
+    return f?
+  else
+    trace[Elab.DiffGeo.TotalSpaceMk] "Could not find a relevant `FiberBundle` instance in context"
+    trace[Elab.DiffGeo.TotalSpaceMk] "Searching for a relevant \
+      `TopologicalSpace (Bundle.TotalSpace _ _)` instance in context"
+    return ← findSomeLocalInstanceOf? `TopologicalSpace fun _ declType ↦ do
+      match declType with
+      | mkApp (.const `TopologicalSpace _) (mkApp3 (.const `Bundle.TotalSpace _) _ F E) => do
+        if ← withReducible (pureIsDefEq E V) then
+          trace[Elab.DiffGeo.TotalSpaceMk] "It worked! model fiber is {← ppExpr F}"
+          return some F
+        else return none
+      | _ => return none
 /--
 Utility for sections in a fibre bundle: if an expression `e` is a section
 `s : Π x : M, V x` as a dependent function, convert it to a non-dependent function into the total
@@ -162,18 +196,10 @@ def totalSpaceMk (e : Expr) : MetaM Expr := do
     | _ => match (← instantiateMVars tgt).cleanupAnnotations with
       | .app V _ =>
         trace[Elab.DiffGeo.TotalSpaceMk] "Section of a bundle as a dependent function"
-        let f? ← findSomeLocalInstanceOf? `FiberBundle fun _ declType ↦
-          /- Note: we do not use `match_expr` here since that would require importing
-          `Mathlib.Topology.FiberBundle.Basic` to resolve `FiberBundle`. -/
-          match declType with
-          | mkApp7 (.const `FiberBundle _) _ F _ _ E _ _ => do
-            if ← withReducible (pureIsDefEq E V) then
+        match ← findModelFiber? V with
+        | some F =>
               let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, (e.app x).headBeta]
-              some <$> mkLambdaFVars #[x] body
-            else return none
-          | _ => return none
-        match f? with
-        | some e => return e.headBeta
+              return (← mkLambdaFVars #[x] body).headBeta
         | none =>
           -- future: special-case `Bundle.TotalSpace` for V;
           -- if so, say "there is no need to apply T% twice"
@@ -280,7 +306,7 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM FindModelRe
     TermElabM (Option FindModelResult) := do
   let s ← saveState
   try
-    withTraceNode `Elab.DiffGeo.MDiff (fun e => pure m!"{e.emoji} {strategyDescr}") do
+    withTraceNode `Elab.DiffGeo.MDiff (fun _ => pure m!"{strategyDescr}") do
       let e ←
         try
           Term.withoutErrToSorry <| Term.withSynthesize x
