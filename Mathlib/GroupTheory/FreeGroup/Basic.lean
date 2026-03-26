@@ -514,7 +514,7 @@ instance : Inhabited (FreeGroup α) :=
   ⟨1⟩
 
 @[to_additive]
-instance [IsEmpty α] : Unique (FreeGroup α) := by unfold FreeGroup; infer_instance
+instance [IsEmpty α] : Unique (FreeGroup α) := inferInstanceAs <| Unique (Quot _)
 
 @[to_additive]
 instance : Mul (FreeGroup α) :=

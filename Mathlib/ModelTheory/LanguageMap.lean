@@ -327,15 +327,12 @@ def constantsOnFunc : ℕ → Type u'
 /-- A language with constants indexed by a type. -/
 @[simps]
 def constantsOn : Language.{u', 0} := ⟨constantsOnFunc α, fun _ => Empty⟩
+deriving IsAlgebraic
 
 variable {α}
 
 theorem constantsOn_constants : (constantsOn α).Constants = α :=
   rfl
-
-instance isAlgebraic_constantsOn : IsAlgebraic (constantsOn α) := by
-  unfold constantsOn
-  infer_instance
 
 instance isEmpty_functions_constantsOn_succ {n : ℕ} : IsEmpty ((constantsOn α).Functions (n + 1)) :=
   inferInstanceAs (IsEmpty PEmpty)
