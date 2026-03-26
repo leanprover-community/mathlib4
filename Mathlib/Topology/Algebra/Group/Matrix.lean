@@ -34,7 +34,7 @@ namespace Matrix.GeneralLinearGroup
 /-- The determinant is continuous as a map from the general linear group to the units. -/
 @[continuity, fun_prop] protected lemma continuous_det :
     Continuous (det : GL n R → Rˣ) := by
-  simp_rw [Units.continuous_iff, ← map_invm, Function.comp_def, val_det_apply]
+  simp_rw [Units.continuous_iff, ← map_inv, Function.comp_def, val_det_apply]
   constructor <;> fun_prop
 
 @[continuity, fun_prop]
