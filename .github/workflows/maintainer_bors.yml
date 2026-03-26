@@ -25,7 +25,15 @@ jobs:
       HAS_DELEGATED_LABEL: ${{ contains(github.event.issue.labels.*.name, 'delegated') }}
     name: Add ready-to-merge or delegated label
     runs-on: ubuntu-latest
-    if: github.repository == 'leanprover-community/mathlib4'
+    if: >- # coarse prefilter to avoid running on irrelevant comments/reviews
+      github.repository == 'leanprover-community/mathlib4' &&
+      (github.event_name != 'issue_comment' || github.event.issue.pull_request != null) &&
+      (
+        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'bors merge') ||
+        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'bors d') ||
+        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'bors r') ||
+        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'Build failed:')
+      )
     steps:
       - name: Find bors merge/delegate
         id: merge_or_delegate
