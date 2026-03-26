@@ -3,17 +3,39 @@ Copyright (c) 2026 David Ledvinka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Ledvinka
 -/
-
 module
 
-public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.Calculus.ParametricIntegral
-public import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 public import Mathlib.MeasureTheory.Measure.Support
-public import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.Normed.Algebra.GelfandFormula
+import Mathlib.Analysis.Complex.CauchyIntegral
 
 /-!
-# Stieltjes Transform of a Borel Measure
+# Resolvent Transform of a Measure
+
+Given a normed algebra `A` over a normed field `𝕜`, and `μ : Measure 𝕜`, we define the
+resolvent transform of `μ` by the formula
+
+`resolventTransform μ a = ∫ x, resolvent a x ∂μ`
+
+This is not a standard notion in the literature, but specializes to a few standard notions,
+namely the case `𝕜 = ℝ` and `A = ℂ` is the Stieltjes transform, and the case `𝕜 = A = ℂ` is the
+Cauchy transform.
+
+## Main definitions
+
+* `MeasureTheory.resolventTransform μ a`: The resolvent transform of a measure `μ` at `a`
+
+## Main statements
+
+* `MeasureTheory.hasDerivAt_resolventTransform` : For any `a` not in the support of `μ`,
+  the `resolventTransform` has derivative `∫ x, resolvent a x ^ 2 ∂u` at `a`.
+* `MeasureTheory.analyticOn_resolventTransform` : In the case `A = ℂ`, the `resolventTransform`
+  is holomorphic on the compliment of `μ.support`.
+
+## Tags
+
+resolvent transform, stieljes transform, cauchy transform
 -/
 
 @[expose] public section
@@ -24,10 +46,16 @@ open MeasureTheory Measure Metric Filter Complex spectrum
 
 open scoped NNReal Topology Ring ComplexConjugate
 
+namespace MeasureTheory
+
+section resolvent
+
+variable [NontriviallyNormedField 𝕜] [MeasurableSpace 𝕜]
+
 @[fun_prop]
-theorem measurable_resolvent {a : A} [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
-  [CompleteSpace A] [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [MeasurableSpace A]
-  [BorelSpace A] : Measurable (resolvent (R := 𝕜) a) := by
+theorem measurable_resolvent {a : A} [OpensMeasurableSpace 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
+  [CompleteSpace A] [MeasurableSpace A] [BorelSpace A] :
+  Measurable (resolvent (R := 𝕜) a) := by
   classical
   have h1 : ContinuousOn (resolvent (R := 𝕜) a) (resolventSet 𝕜 a) :=
     HasDerivAt.continuousOn (fun _ hx ↦ hasDerivAt_resolvent hx)
@@ -38,9 +66,9 @@ theorem measurable_resolvent {a : A} [NontriviallyNormedField 𝕜] [NormedRing 
   have h3 : MeasurableSet (resolventSet 𝕜 a) := (isOpen_resolventSet a).measurableSet
   simpa using h1.measurable_piecewise h2 h3
 
-theorem norm_resolvent_le_inv_infDist_support [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-    [NormedDivisionRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] [MeasurableSpace 𝕜]
-    [BorelSpace 𝕜] [MeasurableSpace A] [BorelSpace A] {μ : Measure 𝕜} [IsFiniteMeasure μ] {a : A}
+variable [CompleteSpace 𝕜] [NormedDivisionRing A] [NormedAlgebra 𝕜 A]
+
+theorem norm_resolvent_le_inv_infDist_support {μ : Measure 𝕜} [IsFiniteMeasure μ] {a : A}
     (hz : a ∉ algebraMap 𝕜 A '' μ.support) {x : 𝕜} (hx : x ∈ μ.support) :
     ‖resolvent a x‖ ≤ (infDist a (algebraMap 𝕜 A '' μ.support))⁻¹ := by
   have : 0 < (infDist a (algebraMap 𝕜 A '' μ.support)) := by
@@ -52,15 +80,15 @@ theorem norm_resolvent_le_inv_infDist_support [NontriviallyNormedField 𝕜] [Co
     simp [hx]
   grw [resolvent, Ring.inverse_eq_inv', norm_inv, inv_le_inv₀ (by linarith) (by positivity), this]
 
-theorem integrable_resolvent [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-    [HereditarilyLindelofSpace 𝕜] [NormedDivisionRing A] [SecondCountableTopology A]
-    [NormedAlgebra 𝕜 A] [CompleteSpace A] [MeasurableSpace 𝕜] [BorelSpace 𝕜] [MeasurableSpace A]
-    [BorelSpace A] {μ : Measure 𝕜} [IsFiniteMeasure μ]
-    {a : A} (hz : a ∉ algebraMap 𝕜 A '' μ.support) :
+theorem integrable_resolvent [HereditarilyLindelofSpace 𝕜] [OpensMeasurableSpace 𝕜]
+    [CompleteSpace A] [SecondCountableTopology A] [MeasurableSpace A] [BorelSpace A]
+    {μ : Measure 𝕜} [IsFiniteMeasure μ] {a : A} (hz : a ∉ algebraMap 𝕜 A '' μ.support) :
     Integrable (resolvent a) μ := by
   refine ⟨by fun_prop, ?_⟩
   apply HasFiniteIntegral.of_bounded
   filter_upwards [support_mem_ae] with x hx using norm_resolvent_le_inv_infDist_support hz hx
+
+end resolvent
 
 section Definition
 
@@ -87,12 +115,14 @@ lemma resolventTransform_dirac [OpensMeasurableSpace 𝕜] [MeasurableSpace A] [
   simp [resolventTransform_def]
 
 end Definition
-section RCLike
 
-theorem hasDerivAt_resolventTransform [NontriviallyNormedField 𝕜] [RCLike A]
-    [HereditarilyLindelofSpace 𝕜] [NormedAlgebra 𝕜 A] [CompleteSpace 𝕜]
-    [MeasurableSpace 𝕜] [BorelSpace 𝕜] (μ : Measure 𝕜) [IsFiniteMeasure μ]
-    (a : A) (ha : a ∉ algebraMap 𝕜 A '' μ.support) :
+section Deriv
+
+variable [NontriviallyNormedField 𝕜] [HereditarilyLindelofSpace 𝕜] [CompleteSpace 𝕜]
+  [MeasurableSpace 𝕜] [BorelSpace 𝕜]
+
+theorem hasDerivAt_resolventTransform [RCLike A] [NormedAlgebra 𝕜 A] (μ : Measure 𝕜)
+    [IsFiniteMeasure μ] (a : A) (ha : a ∉ algebraMap 𝕜 A '' μ.support) :
     HasDerivAt (resolventTransform μ) (∫ x, resolvent a x ^ 2 ∂μ) a := by
   by_cases h : μ.support.Nonempty; swap
   · have : μ = 0 := by contrapose! h; exact nonempty_support h
@@ -138,9 +168,7 @@ theorem hasDerivAt_resolventTransform [NontriviallyNormedField 𝕜] [RCLike A]
   exact hasDerivAt_integral_of_dominated_loc_of_deriv_le hs_z resolvent_meas
     (integrable_resolvent (by simp [ha])) (by fun_prop) resolvent'_bound (by fun_prop) h_deriv |>.2
 
-theorem analyticOn_resolventTransform [NontriviallyNormedField 𝕜]
-    [HereditarilyLindelofSpace 𝕜] [NormedAlgebra 𝕜 ℂ] [CompleteSpace 𝕜]
-    [MeasurableSpace 𝕜] [BorelSpace 𝕜] (μ : Measure 𝕜) [IsFiniteMeasure μ] :
+theorem analyticOn_resolventTransform [NormedAlgebra 𝕜 ℂ] (μ : Measure 𝕜) [IsFiniteMeasure μ] :
     AnalyticOn ℂ (resolventTransform μ) (algebraMap 𝕜 ℂ '' μ.support)ᶜ := by
   rw [analyticOn_iff_differentiableOn]
   · intro z hz
@@ -151,6 +179,6 @@ theorem analyticOn_resolventTransform [NontriviallyNormedField 𝕜]
   refine (Topology.IsClosedEmbedding.isClosed_iff_image_isClosed ?_).mp isClosed_support
   exact (algebraMap_isometry 𝕜 ℂ).isClosedEmbedding
 
-end RCLike
+end Deriv
 
-section Test
+end MeasureTheory
