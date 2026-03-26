@@ -66,6 +66,8 @@ instance setLike : SetLike (TwoSidedIdeal R) R where
       rw [← h] at H'
       convert t₁.add H' (t₁.refl b) using 1 <;> abel
 
+instance : PartialOrder (TwoSidedIdeal R) := .ofSetLike (TwoSidedIdeal R) R
+
 lemma mem_iff (x : R) : x ∈ I ↔ I.ringCon x 0 := Iff.rfl
 
 @[simp]

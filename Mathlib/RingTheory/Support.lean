@@ -5,11 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Localization.Finiteness
 public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.QuotSMulTop
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 
@@ -227,6 +229,14 @@ lemma LocalizedModule.exists_subsingleton_away (p : Ideal R) [p.IsPrime]
   obtain ⟨f, hf, hf'⟩ := this
   exact ⟨f, by simpa using hf', subsingleton_iff.mpr
     fun m ↦ ⟨f, Submonoid.mem_powers f, Module.mem_annihilator.mp hf _⟩⟩
+
+lemma IsLocalizedModule.exists_subsingleton_away {M' : Type*} [AddCommMonoid M'] [Module R M']
+    (l : M →ₗ[R] M') (p : Ideal R) [p.IsPrime] [IsLocalizedModule p.primeCompl l]
+    [Subsingleton M'] :
+    ∃ f ∉ p, Subsingleton (LocalizedModule (.powers f) M) := by
+  let e := IsLocalizedModule.iso p.primeCompl l
+  have : Subsingleton (LocalizedModule p.primeCompl M) := e.subsingleton
+  exact LocalizedModule.exists_subsingleton_away p
 
 /-- `Supp(M/IM) = Supp(M) ∩ Z(I)`. -/
 @[stacks 00L3 "(1)"]

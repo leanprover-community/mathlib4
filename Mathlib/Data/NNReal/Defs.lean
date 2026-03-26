@@ -54,14 +54,24 @@ assert_not_exists TrivialStar
 
 open Function
 
--- to ensure these instances are computable
 /-- Nonnegative real numbers, denoted as `ℝ≥0` within the NNReal namespace -/
-def NNReal := { r : ℝ // 0 ≤ r } deriving
-  Zero, One, Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
-  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice,
-  Nontrivial, Inhabited
+def NNReal := { r : ℝ // 0 ≤ r }
 
 namespace NNReal
+
+deriving instance
+  Nontrivial, Inhabited,
+  PartialOrder, SemilatticeSup, SemilatticeInf, DistribLattice,
+  Zero, One, Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
+  Sub, OrderedSub, OrderBot,
+  CanonicallyOrderedAdd, NoZeroDivisors, DenselyOrdered,
+  Archimedean, MulArchimedean, IsOrderedRing, IsStrictOrderedRing
+  for NNReal
+
+noncomputable section
+deriving instance LinearOrder for NNReal
+end
+
 
 @[inherit_doc] scoped notation "ℝ≥0" => NNReal
 
@@ -70,22 +80,9 @@ namespace NNReal
 
 instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 
-instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
-instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
-instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
-instance : OrderBot ℝ≥0 := Nonneg.orderBot
-instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
-instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
-instance : Min ℝ≥0 := SemilatticeInf.toMin
-instance : Max ℝ≥0 := SemilatticeSup.toMax
-instance : Sub ℝ≥0 := Nonneg.sub
-instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
 -- a computable copy of `Nonneg.instNNRatCast`
 instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, r.cast_nonneg⟩
-
-noncomputable instance : LinearOrder ℝ≥0 :=
-  Subtype.instLinearOrder _
 
 noncomputable instance : Inv ℝ≥0 where
   inv x := ⟨(x : ℝ)⁻¹, inv_nonneg.mpr x.2⟩
@@ -108,14 +105,9 @@ noncomputable instance : Semifield ℝ≥0 := fast_instance%
     rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
-instance : IsOrderedRing ℝ≥0 :=
-  Nonneg.isOrderedRing
-
-instance : IsStrictOrderedRing ℝ≥0 :=
-  Nonneg.isStrictOrderedRing
-
-noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
-  Nonneg.linearOrderedCommGroupWithZero
+noncomputable section
+deriving instance LinearOrderedCommGroupWithZero for NNReal
+end
 
 example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
   with_reducible_and_instances exact inv_anti₀ h1p h2p
@@ -314,14 +306,12 @@ lemma algebraMap_eq_coe : (algebraMap ℝ≥0 ℝ : ℝ≥0 → ℝ) = (↑) := 
 
 noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
-@[simp, norm_cast] lemma coe_le_coe : (r₁ : ℝ) ≤ r₂ ↔ r₁ ≤ r₂ := Iff.rfl
+@[simp, norm_cast, gcongr] lemma coe_le_coe : (r₁ : ℝ) ≤ r₂ ↔ r₁ ≤ r₂ := Iff.rfl
 
-@[simp, norm_cast] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
+@[simp, norm_cast, gcongr] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
 
 set_option backward.privateInPublic true in
-@[gcongr] private alias ⟨_, GCongr.coe_le_coe_of_le⟩ := coe_le_coe
-set_option backward.privateInPublic true in
-@[gcongr, bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
+@[bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
 
 @[simp, norm_cast] lemma coe_pos : (0 : ℝ) < r ↔ 0 < r := Iff.rfl
 
@@ -334,9 +324,6 @@ set_option backward.privateInPublic true in
 @[simp, norm_cast] lemma coe_lt_one : (r : ℝ) < 1 ↔ r < 1 := by rw [← coe_lt_coe, coe_one]
 
 @[mono] lemma coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ => NNReal.coe_le_coe.2
-
-/-- Alias for the use of `gcongr` -/
-@[gcongr] alias ⟨_, GCongr.toReal_le_toReal⟩ := coe_le_coe
 
 protected theorem _root_.Real.toNNReal_monotone : Monotone Real.toNNReal := fun _ _ h =>
   max_le_max_right _ h
@@ -440,7 +427,7 @@ theorem bddBelow_coe (s : Set ℝ≥0) : BddBelow (((↑) : ℝ≥0 → ℝ) '' 
   ⟨0, fun _ ⟨q, _, eq⟩ => eq ▸ q.2⟩
 
 noncomputable instance : ConditionallyCompleteLinearOrderBot ℝ≥0 :=
-  Nonneg.conditionallyCompleteLinearOrderBot 0
+  fast_instance% Nonneg.conditionallyCompleteLinearOrderBot 0
 
 @[norm_cast]
 theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥0 → ℝ) '' s) := by
@@ -517,7 +504,7 @@ theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
 
 instance instIsStrictOrderedModule {M : Type*} [AddCommMonoid M] [PartialOrder M]
     [Module ℝ M] [IsStrictOrderedModule ℝ M] :
-    IsStrictOrderedModule ℝ≥0 M := Nonneg.instIsStrictOrderedModule
+    IsStrictOrderedModule ℝ≥0 M := inferInstanceAs <| IsStrictOrderedModule (Subtype _) M
 
 end NNReal
 
@@ -838,6 +825,7 @@ theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨆ i, f i = 0 := ciSup_o
 theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
   rw [_root_.iInf_of_isEmpty, sInf_empty]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma iSup_eq_zero (hf : BddAbove (range f)) : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 := by
   cases isEmpty_or_nonempty ι
   · simp
@@ -884,6 +872,7 @@ end Set
 
 namespace Real
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The absolute value on `ℝ` as a map to `ℝ≥0`. -/
 @[pp_nodot]
 def nnabs : ℝ →*₀ ℝ≥0 where
@@ -1002,7 +991,7 @@ meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
     | _ => pure (.nonnegative q(NNReal.coe_nonneg $a))
   | _, _, _ => throwError "not NNReal.toReal"
 
-/-- Extension for the `positivity` tactic: `Real.toNNReal. -/
+/-- Extension for the `positivity` tactic: `Real.toNNReal` -/
 @[positivity Real.toNNReal _]
 meta def evalRealToNNReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
@@ -1015,7 +1004,7 @@ meta def evalRealToNNReal : PositivityExt where eval {u α} _zα _pα e := do
 
 alias ⟨_, nnabs_pos_of_pos⟩ := Real.nnabs_pos
 
-/-- Extension for the `positivity` tactic: `Real.nnabs. -/
+/-- Extension for the `positivity` tactic: `Real.nnabs` -/
 @[positivity Real.nnabs _]
 meta def evalRealNNAbs : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with

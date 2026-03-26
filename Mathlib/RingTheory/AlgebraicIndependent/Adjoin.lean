@@ -51,6 +51,7 @@ theorem aevalEquivField_apply_coe (a : FractionRing (MvPolynomial ι F)) :
     hx.aevalEquivField a =
       IsFractionRing.lift (algebraicIndependent_iff_injective_aeval.2 hx) a := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem aevalEquivField_algebraMap_apply_coe (a : MvPolynomial ι F) :
     hx.aevalEquivField (algebraMap _ _ a) = aeval x a := by
   simp
