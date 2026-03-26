@@ -19,7 +19,7 @@ We prove the central limit theorem in dimension 1.
 
 ## Main statement
 
-* `tendstoInDistribution_sqrt_mul_var_inv_mul_sum_sub`: Given a sequence of random variables
+* `tendstoInDistribution_inv_sqrt_mul_var_mul_sum_sub`: Given a sequence of random variables
   `X : ℕ → Ω → ℝ` that are independent, identically distributed with mean `μ` and non-zero
   variance `v`, and a random variable `Y : Ω → ℝ` following `gaussianReal 0 1`, the sequence
   `n ↦ (√(n * v)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * μ)` converges to `Y` in distribution.
@@ -41,7 +41,7 @@ namespace ProbabilityTheory
 variable {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'}
   {P : Measure Ω} {P' : Measure Ω'} {X : ℕ → Ω → ℝ} {Y : Ω' → ℝ}
 
-lemma charFun_sqrt_inv_mul_sum (hindep : iIndepFun X P)
+lemma charFun_inv_sqrt_mul_sum (hindep : iIndepFun X P)
     (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) {n : ℕ} {t : ℝ} :
     charFun (P.map (fun ω ↦ (√n)⁻¹ * ∑ k ∈ Finset.range n, X k ω)) t =
       (charFun (P.map (X 0)) ((√n)⁻¹ * t)) ^ n := by
@@ -52,7 +52,7 @@ lemma charFun_sqrt_inv_mul_sum (hindep : iIndepFun X P)
 
 variable [IsProbabilityMeasure P]
 
-lemma tendsto_charFun_sqrt_inv_mul_pow {X : Ω → ℝ}
+lemma tendsto_charFun_inv_sqrt_mul_pow {X : Ω → ℝ}
     (hX : AEMeasurable X P) (h0 : P[X] = 0) (h1 : P[X ^ 2] = 1) (t : ℝ) :
     Tendsto (fun (n : ℕ) ↦ (charFun (P.map X) ((√n)⁻¹ * t)) ^ n) atTop (𝓝 (exp (- t ^ 2 / 2))) := by
   apply tendsto_pow_exp_of_isLittleO_sub_add_div
@@ -70,34 +70,33 @@ lemma tendsto_charFun_sqrt_inv_mul_pow {X : Ω → ℝ}
   simp
   ring
 
+variable [IsProbabilityMeasure P']
+
 /-- **Central Limit Theorem:** Given a sequence of random variables `X : ℕ → Ω → ℝ` that are
 independent, identically distributed, centered and with variance `1` and a random variable
 `Y : Ω' → ℝ` following `gaussianReal 0 1`, the sequence
 `n ↦ (√n)⁻¹ * ∑ k ∈ Finset.range n, X k` converges to `Y` in distribution. -/
-theorem tendstoInDistribution_sqrt_inv_mul_sum (hY : HasLaw Y (gaussianReal 0 1) P')
+theorem tendstoInDistribution_inv_sqrt_mul_sum (hY : HasLaw Y (gaussianReal 0 1) P')
     (h0 : P[X 0] = 0) (h1 : P[X 0 ^ 2] = 1) (hindep : iIndepFun X P)
     (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) :
-    haveI := hY.isProbabilityMeasure
     TendstoInDistribution (fun (n : ℕ) ω ↦ (√n)⁻¹ * ∑ k ∈ Finset.range n, X k ω) atTop Y
-      (fun _ ↦ P) P' :=
-  haveI := hY.isProbabilityMeasure
-  { forall_aemeasurable n :=
-      .const_mul (Finset.aemeasurable_fun_sum _ fun _ _ ↦ (hident _).aemeasurable_fst) _
-    tendsto := by
-      refine ProbabilityMeasure.tendsto_iff_tendsto_charFun.2 fun t ↦ ?_
-      rw! [hY.map_eq]
-      simpa [charFun_sqrt_inv_mul_sum hindep hident, charFun_gaussianReal, neg_div] using
-        tendsto_charFun_sqrt_inv_mul_pow (hident 0).aemeasurable_fst h0 h1 t }
+      (fun _ ↦ P) P' where
+  forall_aemeasurable n :=
+    .const_mul (Finset.aemeasurable_fun_sum _ fun _ _ ↦ (hident _).aemeasurable_fst) _
+  tendsto := by
+    refine ProbabilityMeasure.tendsto_iff_tendsto_charFun.2 fun t ↦ ?_
+    rw! [hY.map_eq]
+    simpa [charFun_inv_sqrt_mul_sum hindep hident, charFun_gaussianReal, neg_div] using
+      tendsto_charFun_inv_sqrt_mul_pow (hident 0).aemeasurable_fst h0 h1 t
 
 /-- **Central Limit Theorem:** Given a sequence of random variables `X : ℕ → Ω → ℝ` that are
 independent, identically distributed with mean `μ` and non-zero variance `v`, and a random variable
 `Y : Ω → ℝ` following `gaussianReal 0 1`, the sequence
 `n ↦ (√(n * v)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * μ)` converges to `Y` in distribution. -/
-private theorem tendstoInDistribution_sqrt_mul_var_inv_mul_sum_sub
+private theorem tendstoInDistribution_inv_sqrt_mul_var_mul_sum_sub
     (hY : HasLaw Y (gaussianReal 0 1) P')
     (hX : Var[X 0; P] ≠ 0) (hindep : iIndepFun X P)
     (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) :
-    haveI := hY.isProbabilityMeasure
     TendstoInDistribution
       (fun (n : ℕ) ω ↦ (√(n * Var[X 0; P]))⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * P[X 0]))
       atTop Y (fun _ ↦ P) P' := by
@@ -109,7 +108,7 @@ private theorem tendstoInDistribution_sqrt_mul_var_inv_mul_sum_sub
     rw [← Finset.sum_div, Finset.sum_sub_distrib]
     simp [field]
   simp_rw [this]
-  convert tendstoInDistribution_sqrt_inv_mul_sum hY ?_ ?_ ?_ ?_
+  convert tendstoInDistribution_inv_sqrt_mul_sum hY ?_ ?_ ?_ ?_
   · rw [integral_div, integral_sub intX0 (by simp)]
     simp
   · simp only [Pi.pow_apply, div_pow]
@@ -121,11 +120,10 @@ private theorem tendstoInDistribution_sqrt_mul_var_inv_mul_sum_sub
 independent, identically distributed with mean `μ` and non-zero variance `v`, and a random variable
 `Y : Ω → ℝ` following `gaussianReal 0 v`, the sequence
 `n ↦ (√(n)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * μ)` converges to `Y` in distribution. -/
-theorem tendstoInDistribution_sqrt_inv_mul_sum_sub
+theorem tendstoInDistribution_inv_sqrt_mul_sum_sub
     (hY : HasLaw Y (gaussianReal 0 Var[X 0; P].toNNReal) P')
     (hX : Var[X 0; P] ≠ 0) (hindep : iIndepFun X P)
     (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) :
-    haveI := hY.isProbabilityMeasure
     TendstoInDistribution
       (fun (n : ℕ) ω ↦ (√n)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * P[X 0]))
       atTop Y (fun _ ↦ P) P' := by
@@ -133,7 +131,7 @@ theorem tendstoInDistribution_sqrt_inv_mul_sum_sub
     convert gaussianReal_div_const hY _
     · simp
     · ext; simp [hX]
-  have := tendstoInDistribution_sqrt_mul_var_inv_mul_sum_sub this hX hindep hident
+  have := tendstoInDistribution_inv_sqrt_mul_var_mul_sum_sub this hX hindep hident
   convert this.continuous_comp (g := (√Var[X 0; P] * ·)) (by fun_prop)
   · simp [field] -- simp [field, hX] triggers the unused simp arguments linter
     field_simp [hX]
