@@ -189,11 +189,11 @@ theorem isAdicComplete (h : I.FG) : IsAdicComplete I (AdicCompletion I M) where
       property {m n} h' := by
         simp only [transitionMap_comp_eval_apply]
         specialize hx h'
-        rwa [SModEq.sub_mem, pow_smul_top_eq_eval_ker h, LinearMap.mem_ker, _root_.map_sub,
+        rwa [SModEq.sub_mem, pow_smul_top_eq_ker_eval h, LinearMap.mem_ker, _root_.map_sub,
           sub_eq_zero, eval_apply, eval_apply, eq_comm] at hx
     }
     use L; intro i
-    rw [SModEq.sub_mem, pow_smul_top_eq_eval_ker h]
+    rw [SModEq.sub_mem, pow_smul_top_eq_ker_eval h]
     simp [L]
 
 end AdicCompletion
