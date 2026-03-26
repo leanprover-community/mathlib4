@@ -68,7 +68,7 @@ theorem measurable_resolvent {a : A} [OpensMeasurableSpace 𝕜] [NormedRing A] 
 
 variable [CompleteSpace 𝕜] [NormedDivisionRing A] [NormedAlgebra 𝕜 A]
 
-theorem norm_resolvent_le_inv_infDist_support {μ : Measure 𝕜} [IsFiniteMeasure μ] {a : A}
+theorem norm_resolvent_le_inv_infDist_support {μ : Measure 𝕜} {a : A}
     (hz : a ∉ algebraMap 𝕜 A '' μ.support) {x : 𝕜} (hx : x ∈ μ.support) :
     ‖resolvent a x‖ ≤ (infDist a (algebraMap 𝕜 A '' μ.support))⁻¹ := by
   have : 0 < (infDist a (algebraMap 𝕜 A '' μ.support)) := by
