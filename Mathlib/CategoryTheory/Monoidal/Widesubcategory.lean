@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Widesubcategory
 # Monoidal structures on wide subcategories
 
 Given a monoidal category `C` and a morphism property `P : MorphismProperty C`,
-this file studies conditions on `P` ensuring that `WideSubcategory P` inherits
+this file introduces conditions on `P` ensuring that `WideSubcategory P` inherits
 additional structures.
 
 We define stability classes under associators, unitors, and braidings, and use
@@ -65,13 +65,6 @@ class IsStableUnderBraiding [BraidedCategory C] (P : MorphismProperty C) : Prop
 
 export IsStableUnderBraiding (braiding_hom_mem braiding_inv_mem)
 
-/-- A braided-stable morphism property stable under comonoid counit and comultiplication. -/
-class IsStableUnderComonoid (P : MorphismProperty C) (c : C) [ComonObj c] : Prop where
-  counit_mem (P) : P ε[c]
-  comul_mem (P) : P Δ[c]
-
-export IsStableUnderComonoid (counit_mem comul_mem)
-
 end MorphismProperty
 
 namespace WideSubcategory
@@ -111,30 +104,6 @@ instance [SymmetricCategory C] [P.IsStableUnderBraiding] :
   symmetry c c' := by
     ext
     exact SymmetricCategory.symmetry _ _
-
-section ComonObj
-
-variable [BraidedCategory C] [P.IsStableUnderBraiding] (c : WideSubcategory P) [ComonObj c.obj]
-  [P.IsStableUnderComonoid c.obj]
-
-@[simps]
-instance : ComonObj c where
-  counit := ⟨ε[c.obj], P.counit_mem⟩
-  comul := ⟨Δ[c.obj], P.comul_mem⟩
-
-variable [IsCommComonObj c.obj]
-
-instance : IsCommComonObj c where
-  comul_comm := by
-    ext
-    exact IsCommComonObj.comul_comm _
-
-end ComonObj
-
-open CopyDiscardCategory in
-attribute [local simp] copy_tensor discard_tensor copy_unit discard_unit in
-instance [CopyDiscardCategory C] [P.IsStableUnderBraiding] [∀ c, P.IsStableUnderComonoid c] :
-    CopyDiscardCategory (WideSubcategory P) where
 
 end WideSubcategory
 
