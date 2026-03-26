@@ -44,7 +44,7 @@ abbrev dim : ℕ := c.1.1.dim
 noncomputable def index : Fin (c.dim + 2) :=
   (P.isUniquelyCodimOneFace c.1).index rfl
 
-protected noncomputable def horn :
+protected noncomputable abbrev horn :
     (Δ[c.dim + 1] : SSet.{u}).Subcomplex :=
   SSet.horn _ c.index
 
@@ -52,9 +52,14 @@ abbrev cast : A.N := (P.p c.1).1.cast (P.isUniquelyCodimOneFace c.1).dim_eq
 
 abbrev simplex : X _⦋c.dim + 1⦌ := c.cast.simplex
 
-abbrev map {j : ι} (c : f.Cells j) :
+abbrev map :
     Δ[c.dim + 1] ⟶ X :=
   yonedaEquiv.symm c.simplex
+
+lemma map_add_objEquiv_symm_δ_index :
+    c.map.app (op ⦋_⦌) (stdSimplex.objEquiv.symm (SimplexCategory.δ c.index)) =
+      c.1.1.simplex :=
+  (P.isUniquelyCodimOneFace c.1).δ_index rfl
 
 end Cells
 
@@ -160,6 +165,22 @@ lemma Cells.mapToSucc_ι {j : ι} [SuccOrder ι] [NoMaxOrder ι] (c : f.Cells j)
     c.mapToSucc ≫ (f.filtration (Order.succ j)).ι = c.map :=
   rfl
 
+variable {f} in
+lemma Cells.simplex_not_mem_filtration_obj {j : ι} (x : f.Cells j) :
+    x.1.1.simplex ∉ (f.filtration j).obj _ := by
+  simp only [filtration, Subfunctor.max_obj, Subfunctor.iSup_obj, Set.mem_union,
+    Set.mem_iUnion, not_or, not_exists]
+  refine ⟨x.1.1.notMem, fun i hi y h ↦ ?_⟩
+  rw [← x.2, ← y.2] at hi
+  have : P.AncestralRel x.1 y.1 := by
+    refine ⟨fun hxy ↦ ?_, lt_of_le_of_ne ?_ ((P.ne _ _).symm)⟩
+    · rw [hxy] at hi
+      exact (lt_irrefl _ hi).elim
+    · rw [← ofSimplex_le_iff] at h
+      rw [Subcomplex.N.le_iff, SSet.N.le_iff]
+      exact le_of_le_of_eq h (S.subcomplex_cast _ (by simp))
+  exact lt_irrefl _ (hi.trans (f.lt this))
+
 section
 
 noncomputable abbrev sigmaHorn (j : ι) := ∐ (fun (c : f.Cells j) ↦ (c.horn : SSet))
@@ -173,6 +194,14 @@ noncomputable abbrev sigmaStdSimplex (j : ι) := ∐ (fun (i : f.Cells j) ↦ Δ
 noncomputable abbrev Cells.ιSigmaStdSimplex {j : ι} (c : f.Cells j) :
     Δ[c.dim + 1] ⟶ f.sigmaStdSimplex j :=
   Sigma.ι (fun (c : f.Cells j) ↦ Δ[c.dim + 1]) c
+
+omit [P.IsProper] in
+lemma ιSigmaStdSimplex_jointly_surjective
+    {d : ℕ} {j : ι} (a : (f.sigmaStdSimplex j) _⦋d⦌) :
+    ∃ (c : f.Cells j) (x :  Δ[c.dim + 1] _⦋d⦌), c.ιSigmaStdSimplex.app _ x = a :=
+  Limits.Cofan.inj_jointly_surjective_of_isColimit
+    ((isColimitCofanMkObjOfIsColimit ((CategoryTheory.evaluation _ _).obj _) _ _
+      (coproductIsCoproduct _))) a
 
 noncomputable def m (j : ι) : f.sigmaHorn j ⟶ f.sigmaStdSimplex j :=
   Limits.Sigma.map (basicCell _ _)
@@ -192,8 +221,12 @@ lemma Cells.ιSigmaHorn_m {j : ι} (c : f.Cells j) :
 @[simp]
 lemma Cells.preimage_filtration_map {j : ι} (c : f.Cells j) :
     (f.filtration j).preimage c.map = c.horn := by
-  obtain ⟨x, hx⟩ := c
-  sorry
+  refine le_antisymm ?_ ?_
+  · rw [stdSimplex.subcomplex_le_horn_iff, stdSimplex.face_singleton_compl,
+      Subfunctor.ofSection_le_iff, preimage_obj, Set.mem_preimage]
+    refine fun h ↦ c.simplex_not_mem_filtration_obj ?_
+    rwa [Cells.map_add_objEquiv_symm_δ_index] at h
+  · sorry
 
 noncomputable def Cells.mapHorn {j : ι} (c : f.Cells j) : (c.horn : SSet) ⟶ f.filtration j :=
   Subcomplex.lift (c.horn.ι ≫ c.map) (by
@@ -208,7 +241,7 @@ noncomputable def t (j : ι) : f.sigmaHorn j ⟶ f.filtration j :=
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
-lemma Cells.ιSigmaHorn_t {j : ι} (c : f.Cells j) :
+lemma Cells.ι_t {j : ι} (c : f.Cells j) :
     c.ιSigmaHorn ≫ f.t j = c.mapHorn:= by
   simp [t]
 
@@ -220,7 +253,7 @@ noncomputable def b (j : ι) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
-lemma ι_b {j : ι} (c : f.Cells j) :
+lemma Cells.ι_b {j : ι} (c : f.Cells j) :
     c.ιSigmaStdSimplex ≫ f.b j = c.mapToSucc := by simp [b]
 
 @[reassoc]
@@ -229,8 +262,8 @@ lemma w (j : ι) :
   ext c : 1
   simp [← cancel_mono (Subcomplex.ι _)]
 
-set_option backward.isDefEq.respectTransparency false in
-lemma isPullback (j : ι) (hj : ¬ IsMax j) :
+--set_option backward.isDefEq.respectTransparency false in
+lemma isPullback (j : ι) (_ : ¬ IsMax j) :
     IsPullback (f.t j) (f.m j)
       (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
   w := f.w j
@@ -240,13 +273,23 @@ lemma isPullback (j : ι) (hj : ¬ IsMax j) :
     induction d using SimplexCategory.rec with | _ d
     rw [Types.isPullback_iff]
     dsimp
-    refine ⟨congr_app (f.w j) (op ⦋d⦌), ?_, ?_⟩
-    · intro a₁ a₂ ⟨ht, hm⟩
-      have : Mono (f.m j) := inferInstance
-      rw [NatTrans.mono_iff_mono_app] at this
-      exact (mono_iff_injective _).1 (this _) hm
-    · sorry
-    )⟩
+    refine ⟨congr_app (f.w j) (op ⦋d⦌),
+      fun a₁ a₂ h ↦ (mono_iff_injective _).1
+        ((NatTrans.mono_iff_mono_app (f.m j)).1 inferInstance _) h.2, fun y b h ↦ ?_⟩
+    obtain ⟨x, b, rfl⟩ := f.ιSigmaStdSimplex_jointly_surjective b
+    have hb : b ∈ Λ[_, x.index].obj _ := by
+      obtain ⟨y, hy⟩ := y
+      simp only [← x.preimage_filtration_map]
+      rw [Subtype.ext_iff] at h
+      dsimp at h
+      subst h
+      rwa [← FunctorToTypes.comp, x.ι_b] at hy
+    refine ⟨x.ιSigmaHorn.app _ ⟨b, hb⟩, ?_, by simp [← FunctorToTypes.comp]⟩
+    rw [Subtype.ext_iff] at h ⊢
+    dsimp at h
+    rw [← FunctorToTypes.comp, x.ι_b] at h
+    rw [← FunctorToTypes.comp, x.ι_t]
+    exact h.symm)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isPushout (j : ι) (hj : ¬ IsMax j) :
@@ -260,8 +303,7 @@ lemma isPushout (j : ι) (hj : ¬ IsMax j) :
     dsimp
     refine Limits.Types.isPushout_of_isPullback_of_mono'
       ((f.isPullback j hj).map ((CategoryTheory.evaluation _ _).obj (op ⦋d⦌)))
-      sorry sorry
-    )⟩
+      sorry sorry)⟩
 
 end
 

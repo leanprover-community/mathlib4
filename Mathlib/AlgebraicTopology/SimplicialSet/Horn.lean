@@ -83,6 +83,22 @@ lemma horn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
   fin_cases a
   exact Ne.symm hk.2
 
+lemma stdSimplex.subcomplex_le_horn_iff {n : ℕ}
+    (A : (Δ[n + 1] : SSet.{u}).Subcomplex) (i : Fin (n + 2)) :
+    A ≤ horn (n + 1) i ↔ ¬ face {i}ᶜ ≤ A := by
+  refine ⟨fun hA h ↦ ?_, fun h ↦ ?_⟩
+  · replace h := h.trans hA
+    rw [face_singleton_compl, Subcomplex.ofSimplex_le_iff, mem_horn_iff] at h
+    apply h
+    change Set.range (Fin.succAboveOrderEmb i) ∪ _ = _
+    rw [Fin.range_succAboveOrderEmb]
+    exact Set.compl_union_self {i}
+  · rw [Subcomplex.le_iff_contains_nonDegenerate]
+    intro d x hx
+    by_cases! hd : d < n
+    · sorry
+    · sorry
+
 namespace horn
 
 open SimplexCategory Finset Opposite
