@@ -477,13 +477,12 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     α ∈ (invtSubmoduleToLieIdeal q hq).rootSet ↔ (rootSystem H).root α ∈ q := by
   set J := invtSubmoduleToLieIdeal q hq
   constructor
-  · intro hα_mem; by_contra hα_not
+  · intro hα_mem
+    by_contra hα_not
     have hα_nz := H.isNonZero_coe_root α
-    have hne (χ : Weight K H L) (hχ : ↑χ ∈ q) :
-        (χ : H → K) ≠ ((↑α : Weight K H L) : H → K) :=
+    have hne (χ : Weight K H L) (hχ : ↑χ ∈ q) : (χ : H → K) ≠ ((α : Weight K H L) : H → K) :=
       fun heq ↦ hα_not (by simpa [rootSystem_root_apply] using DFunLike.coe_injective heq ▸ hχ)
-    have h_le :
-        J.restr H ≤ ⨆ (χ : H → K) (_ : χ ≠ ↑(↑α : Weight K H L)), genWeightSpace L χ := by
+    have h_le : J.restr H ≤ ⨆ (χ : H → K) (_ : χ ≠ (α : Weight K H L)), genWeightSpace L χ := by
       rw [restr_invtSubmoduleToLieIdeal_eq_iSup]
       refine iSup_le fun ⟨β, hβ_mem, hβ_nz⟩ ↦ ?_
       rw [sl2SubmoduleOfRoot_eq_sup]
@@ -497,7 +496,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       (((iSupIndep_genWeightSpace K H L _).mono_right h_le).mono_right hα_mem))
   · intro hα
     rw [rootSystem_root_apply] at hα
-    calc rootSpace H (↑α : Weight K H L)
+    calc rootSpace H (α : Weight K H L)
         ≤ sl2SubmoduleOfRoot (H.isNonZero_coe_root α) := by
           rw [sl2SubmoduleOfRoot_eq_sup]; exact le_sup_of_le_left le_sup_left
       _ ≤ ⨆ x : {β : Weight K H L // ↑β ∈ q ∧ β.IsNonZero}, sl2SubmoduleOfRoot x.2.2 :=
