@@ -102,7 +102,16 @@ variable [(x : B) → Zero (E x)]
 noncomputable def funToSec (s : B → F) : (b : B) → E b :=
   fun b ↦ e.symm b (s b)
 
+lemma totalSpace_mk_funToSec {x : B} (hx : x ∈ e.baseSet) (s : B → F) :
+    T% (e.funToSec s) =ᶠ[𝓝 x] e.invFun ∘ fun x ↦ (x, s x) := by
+  filter_upwards [e.baseSet_mem_nhds hx] with y hy
+  exact mk_symm e hy (s y)
+
 @[simp]
+lemma apply_funToSec {x : B} (hx : x ∈ e.baseSet) (s : B → F) :
+    e ⟨x, e.funToSec s x⟩ = (x, s x) := by
+  simp [funToSec, e.apply_mk_symm hx]
+
 lemma snd_apply_funToSec {x : B} (hx : x ∈ e.baseSet) (s : B → F) :
     (e ⟨x, e.funToSec s x⟩).2 = s x := by
   simp [funToSec, e.apply_mk_symm hx]
@@ -488,32 +497,25 @@ lemma mdifferentiableAt_secToFun_funToSec
     MDiffAt (e.secToFun <| e.funToSec s) x ↔ MDiffAt s x :=
   e.secToFun_funToSec_eventuallyEq hx s |>.mdifferentiableAt_iff
 
-lemma mfderiv_total_funToSec {s : M → F} {x : M} (hx : x ∈ e.baseSet) :
+lemma mfderiv_total_funToSec
+    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
+    {s : M → F} {x : M} (hs : MDiffAt s x)
+    (hx : x ∈ e.baseSet) :
     mfderiv% (T% (e.funToSec s)) x =
       e.derivInv I (e.funToSec s x) ∘L .prod (.id 𝕜 <| TangentSpace I x) (mfderiv% s x) := by
-  sorry
+  -- TODO build a world where this proof is not pure pain.
+  rw [(e.totalSpace_mk_funToSec hx s).mfderiv_eq,
+      mfderiv_comp x (e.mdifferentiableAt_invFun (I := I) hx (s x))]
+  · congr 2
+    · simp [hx]
+    · rw [mfderiv_prodMk]
+      · erw [mfderiv_id]
+        rfl
+      · exact mdifferentiableAt_id
+      · exact hs
+  · exact mdifferentiableAt_id.prodMk hs
 
-lemma mfderiv_secToFun
-    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-    {σ : (x : M) → V x} {x : M} (hσ : MDiffAt (T% σ) x) (hx : x ∈ e.baseSet) :
-    mfderiv% (e.secToFun σ) x =
-      .snd 𝕜 (TangentSpace I x) F ∘L (e.deriv I (σ x)) ∘L (mfderiv% T%σ x) := by
-  rw [show e.secToFun σ = Prod.snd ∘ e ∘ T%σ from rfl]
-  have mdiffe : MDifferentiableAt (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) e (σ x) :=
-    e.mdifferentiableAt hx _
-  have : mfderiv% (e ∘ T%σ) x = (e.deriv I (σ x)) ∘L (mfderiv% T%σ x) :=
-    mfderiv_comp x mdiffe hσ
-  -- TODO use  mfderiv_comp_section or factor out stuff
-  sorry
 
-lemma mfderiv_secToFun_apply
-    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-    {σ : (x : M) → V x} {x : M} (hσ : MDiffAt (T% σ) x) (hx : x ∈ e.baseSet)
-    (u : TangentSpace I x) :
-    mfderiv% (e.secToFun σ) x u =
-      (e.deriv I (σ x) (mfderiv% T%σ x u)).2 := by
-  simp [e.mfderiv_secToFun hσ hx]
-  rfl
 
 noncomputable def _root_.Bundle.vert (v : TotalSpace F V) :
     Submodule 𝕜 (TangentSpace (I.prod 𝓘(𝕜, F)) v) :=
@@ -559,6 +561,28 @@ lemma mfderiv_comp_section
     simp
   · apply mdifferentiableAt_id
   · exact (e.mdifferentiableAt_section_iff I σ hx).mp hσ
+
+lemma mfderiv_secToFun_apply
+    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
+    {σ : (x : M) → V x} {x : M} (hσ : MDiffAt (T% σ) x) (hx : x ∈ e.baseSet)
+    (u : TangentSpace I x) :
+    mfderiv% (e.secToFun σ) x u =
+      (e.deriv I (σ x) (mfderiv% T%σ x u)).2 := by
+  -- TODO: Fix the erw
+  --  instModuleTangentSpace 𝓘(𝕜, F) (e.secToFun (E := V) σ x)
+  -- and
+  --  NormedSpace.toModule
+  -- are not defeq, but they are at default transparency.
+  -- Does it mean the statement of this lemma is bad?
+  erw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.comp_apply]
+  exact congr(Prod.snd $(e.mfderiv_comp_section hσ u hx)).symm
+
+lemma mfderiv_secToFun
+    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
+    {σ : (x : M) → V x} {x : M} (hσ : MDiffAt (T% σ) x) (hx : x ∈ e.baseSet) :
+    mfderiv% (e.secToFun σ) x =
+      .snd 𝕜 (TangentSpace I x) F ∘L (e.deriv I (σ x)) ∘L (mfderiv% T%σ x) :=
+  ContinuousLinearMap.ext fun u ↦ mfderiv_secToFun_apply e hσ hx u
 
 @[simp]
 lemma _root_.mdifferentiableAt_total_trivial_iff {s : M → F} {x : M} :
