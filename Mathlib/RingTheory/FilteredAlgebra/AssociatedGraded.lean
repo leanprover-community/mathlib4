@@ -19,7 +19,6 @@ In this file we define `GradedPiece` for `IsFiltration F F_lt` on abelian groups
 
 * `GradedPiece` : Direct summand of the associated graded abelian group to `IsFiltration F F_lt`
   with every `F i` of some `AddSubgroupClass`, defined as `F i` quotient by `F_lt i`.
-1
 * `AssociatedGraded` : The direct sum of `GradedPiece`s.
 
 -/
@@ -46,7 +45,8 @@ def GradedPiece (i : ι) :=
     (AddSubgroup.ofClass (F_lt i)).addSubgroupOf (AddSubgroup.ofClass (F i))
 deriving AddCommGroup
 
-/-- Direct sum of `GradedPiece`s. -/
+/-- The associated graded abelian group of `IsFiltration F F_lt`, defined as the direct sum of
+`GradedPiece F F_lt`.-/
 def AssociatedGraded :=
   DirectSum ι (GradedPiece F F_lt)
 deriving AddCommGroup, CoeFun
