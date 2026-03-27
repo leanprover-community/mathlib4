@@ -119,7 +119,6 @@ theorem restrictScalars_range_ofPowSMul_eq_ker_eval {n : ℕ} :
   simp only [LinearMap.mem_ker, coe_eval] at hx
   use ofValEqZero I hx; simp
 
-set_option backward.isDefEq.respectTransparency false in
 /- An intermediate helper lemma for the theorem below to avoid introducing
 `AdicCompletion.finsuppSum` (the `Finsupp` version of `AdicCompletion.sum`).
 It proves the equality of two linear maps:
@@ -145,7 +144,6 @@ private lemma lsum_smul_comp_finsuppLEquivDirectSum_symm {ι : Type*} [Decidable
     sumEquivOfFintype_apply, sum_lof, map_mk, AdicCauchySequence.map_apply_coe, map_smul]
   rw [← Ideal.Quotient.algebraMap_eq, algebraMap_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {I} in
 @[stacks 05GG "(2)"]
 theorem pow_smul_top_eq_ker_eval {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I M n).ker := by
