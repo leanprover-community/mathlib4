@@ -188,24 +188,12 @@ theorem DirSupClosed.union (hs : DirSupClosed s) (ht : DirSupClosed t) :
         obtain ⟨z, hz, hz'⟩ := hd₁ _ (.inr (key hx)) _ (.inr (key hy))
         rw [hdst] at hz
         exact ⟨z, ⟨⟨hz, mt hz'.1.trans hx.2⟩, hz'⟩⟩
-      · constructor
-        · intro x hx
-          apply ha.1 hx.1
-        · intro x hx
-          apply ha.2
-          intro y hy
-          by_cases hyb : y ≤ b
-          · obtain ⟨w, hw⟩ := Hn
-            rw [← hdst] at hy
-            obtain ⟨z, hz, hxz, hyz⟩ := hd₁ _ (hy) _ (.inr (key hw))
-            rw [hdst] at hz
-            apply hxz.trans
-            apply hx
-            use hz
-            intro hzb
-            apply hw.2
-            exact hyz.trans hzb
-          · apply hx ⟨hy, hyb⟩
+      · refine ⟨fun x hx ↦ ha.1 hx.1, fun x hx ↦ ha.2 fun y hy ↦ ?_⟩
+        by_cases hyb : y ≤ b
+        · obtain ⟨w, hw⟩ := Hn
+          obtain ⟨z, hz, hxz, hyz⟩ := hd₁ _ (hdst ▸ hy) _ (.inr (key hw))
+          exact hxz.trans (hx ⟨hdst ▸ hz, fun hzb ↦ hw.2 (hyz.trans hzb)⟩)
+        · exact hx ⟨hy, hyb⟩
 
 
 #exit
