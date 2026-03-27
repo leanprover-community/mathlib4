@@ -615,14 +615,11 @@ theorem iSup_typein_limit {o : Ordinal.{u}} (ho : ∀ a, a < o → succ a < o) :
 @[simp]
 theorem iSup_typein_succ {o : Ordinal} :
     iSup (typein ((· < ·) : (succ o).ToType → (succ o).ToType → Prop)) = o := by
-  rcases iSup_eq_lsub_or_succ_iSup_eq_lsub
-      (typein ((· < ·) : (succ o).ToType → (succ o).ToType → Prop)) with h | h
-  · rw [iSup_eq_lsub_iff] at h
-    simp only [lsub_typein] at h
-    exact (h o (lt_succ o)).false.elim
-  rw [← succ_eq_succ_iff, h]
-  apply lsub_typein
+  rw [← csSup_Iic (a := o), iSup, PrincipalSeg.range_eq]
+  congr
+  simp 
 
+#exit
 @[deprecated (since := "2025-10-01")] alias sup_eq_lsub := iSup_eq_lsub
 @[deprecated (since := "2025-10-01")] alias sup_le_lsub := iSup_le_lsub
 @[deprecated (since := "2025-10-01")] alias lsub_le_sup_succ := lsub_le_succ_iSup
