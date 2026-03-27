@@ -26,11 +26,11 @@ open CategoryTheory.Limits CategoryTheory.Functor
 
 open Opposite
 
-universe w₁ w₂ v u
+universe v u
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-variable {D : Type w₁} [Category.{max v u} D]
-variable {E : Type w₂} [Category.{max v u} E]
+variable {D : Type*} [Category* D]
+variable {E : Type*} [Category* E]
 variable (F : D ⥤ E)
 
 variable [∀ (J : MulticospanShape.{max v u, max v u}), HasLimitsOfShape (WalkingMulticospan J) D]
@@ -63,6 +63,7 @@ noncomputable def sheafificationWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
   refine isoWhiskerRight ?_ _
   exact J.plusFunctorWhiskerLeftIso _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sheafificationWhiskerLeftIso_hom_app (P : Cᵒᵖ ⥤ D) (F : D ⥤ E)
     [∀ (F : D ⥤ E) (X : C), PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
@@ -92,6 +93,7 @@ noncomputable def sheafificationWhiskerRightIso :
   refine (associator _ _ _).symm ≪≫ ?_
   exact isoWhiskerRight (J.plusFunctorWhiskerRightIso _) (J.plusFunctor E)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sheafificationWhiskerRightIso_hom_app :
     (J.sheafificationWhiskerRightIso F).hom.app P = (J.sheafifyCompIso F P).hom := by
@@ -99,6 +101,7 @@ theorem sheafificationWhiskerRightIso_hom_app :
   simp only [Category.id_comp, Category.comp_id]
   erw [Category.id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sheafificationWhiskerRightIso_inv_app :
     (J.sheafificationWhiskerRightIso F).inv.app P = (J.sheafifyCompIso F P).inv := by
@@ -106,6 +109,7 @@ theorem sheafificationWhiskerRightIso_inv_app :
   simp only [Category.comp_id]
   erw [Category.id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem whiskerRight_toSheafify_sheafifyCompIso_hom :
     whiskerRight (J.toSheafify _) _ ≫ (J.sheafifyCompIso F P).hom = J.toSheafify _ := by
@@ -124,8 +128,8 @@ theorem toSheafify_comp_sheafifyCompIso_inv :
 section
 
 -- We will sheafify `D`-valued presheaves in this section.
-variable {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
-variable [ConcreteCategory.{max v u} D FD] [PreservesLimits (forget D)]
+variable {FD : D → D → Type*} {CD : D → Type*} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+variable [ConcreteCategory D FD] [PreservesLimitsOfSize.{max v u, max v u} (forget D)]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [(forget D).ReflectsIsomorphisms]
 
 @[simp]

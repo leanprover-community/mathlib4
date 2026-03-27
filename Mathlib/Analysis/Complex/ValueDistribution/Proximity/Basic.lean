@@ -28,7 +28,7 @@ Approximation*][MR3156076] for a detailed discussion.
 
 @[expose] public section
 
-open Metric Real Set
+open Filter Metric Real Set
 
 namespace ValueDistribution
 
@@ -82,6 +82,28 @@ lemma proximity_top : proximity f ⊤ = circleAverage (log⁺ ‖f ·‖) 0 := b
 -/
 
 /--
+If two functions differ only on a discrete set, then their proximity functions
+agree, except perhaps at radius 0.
+-/
+lemma proximity_congr_codiscreteWithin {f g : ℂ → E} {a : WithTop E} {r : ℝ}
+    (hfg : f =ᶠ[codiscreteWithin (sphere 0 |r|)] g) (hr : r ≠ 0) :
+    proximity f a r = proximity g a r := by
+  by_cases h : a = ⊤
+  all_goals
+    simp only [proximity, h, ↓reduceDIte]
+    apply circleAverage_congr_codiscreteWithin _ hr
+    filter_upwards [hfg] using by aesop
+
+/--
+If two functions differ only on a discrete set, then their proximity functions
+agree, except perhaps at radius 0.
+-/
+lemma proximity_congr_codiscrete {f g : ℂ → E} {a : WithTop E} {r : ℝ}
+    (hfg : f =ᶠ[codiscrete ℂ] g) (hr : r ≠ 0) :
+    proximity f a r = proximity g a r :=
+  proximity_congr_codiscreteWithin (hfg.filter_mono (codiscreteWithin.mono (by tauto))) hr
+
+/--
 For finite values `a₀`, the proximity function `proximity f a₀` equals the proximity function for
 the value zero of the shifted function `f - a₀`.
 -/
@@ -126,6 +148,10 @@ theorem proximity_nonneg {a : WithTop E} :
   · intro r
     simpa [proximity, h] using circleAverage_nonneg_of_nonneg (fun x _ ↦ posLog_nonneg)
 
+@[simp] lemma proximity_const {c : E} {r : ℝ} :
+    proximity (fun _ ↦ c) ⊤ r = log⁺ ‖c‖ := by
+  simp [proximity, circleAverage_const]
+
 /-!
 ## Behaviour under Arithmetic Operations
 -/
@@ -135,19 +161,17 @@ The proximity function of a sum of functions at `⊤` is less than or equal to t
 proximity functions of the summand, plus `log` of the number of summands.
 -/
 theorem proximity_sum_top_le [NormedSpace ℂ E] {α : Type*} (s : Finset α) (f : α → ℂ → E)
-    (hf : ∀ a, Meromorphic (f a)) :
+    (hf : ∀ a ∈ s, Meromorphic (f a)) :
     proximity (∑ a ∈ s, f a) ⊤ ≤ ∑ a ∈ s, (proximity (f a) ⊤) + (fun _ ↦ log s.card) := by
   simp only [proximity_top, Finset.sum_apply]
   intro r
   have h₂f : ∀ i ∈ s, CircleIntegrable (log⁺ ‖f i ·‖) 0 r :=
-    fun i _ ↦ circleIntegrable_posLog_norm_meromorphicOn (fun x _ ↦ hf i x)
+    fun i hi ↦ circleIntegrable_posLog_norm_meromorphicOn (fun x hx ↦ hf i hi x)
   simp only [Pi.add_apply, Finset.sum_apply]
   calc circleAverage (log⁺ ‖∑ c ∈ s, f c ·‖) 0 r
     _ ≤ circleAverage (∑ c ∈ s, log⁺ ‖f c ·‖ + log s.card) 0 r := by
       apply circleAverage_mono
-      · apply circleIntegrable_posLog_norm_meromorphicOn
-        apply Meromorphic.meromorphicOn
-        fun_prop
+      · apply circleIntegrable_posLog_norm_meromorphicOn (Meromorphic.fun_sum hf).meromorphicOn
       · apply (CircleIntegrable.fun_sum s h₂f).add (circleIntegrable_const _ _ _)
       · intro x hx
         rw [add_comm]
@@ -168,7 +192,7 @@ theorem proximity_add_top_le [NormedSpace ℂ E] {f₁ f₂ : ℂ → E} (h₁f�
     (h₁f₂ : Meromorphic f₂) :
     proximity (f₁ + f₂) ⊤ ≤ (proximity f₁ ⊤) + (proximity f₂ ⊤) + (fun _ ↦ log 2) := by
   simpa using proximity_sum_top_le Finset.univ ![f₁, f₂]
-    (fun i ↦ by fin_cases i <;> assumption)
+    (fun i ↦ by fin_cases i <;> aesop)
 
 /--
 The proximity function `f * g` at `⊤` is less than or equal to the sum of the proximity functions of

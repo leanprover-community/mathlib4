@@ -152,6 +152,7 @@ lemma compactSpace_of_universallyClosed
   rw [comap_basicOpen, show φ (.X i) = 0 by simpa [φ] using (hx i · hi₂), basicOpen_zero] at hi₁
   cases hi₁
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 04XU]
 lemma Scheme.Hom.isProperMap (f : X ⟶ Y) [UniversallyClosed f] : IsProperMap f := by
   rw [isProperMap_iff_isClosedMap_and_compact_fibers]

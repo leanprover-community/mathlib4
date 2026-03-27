@@ -34,8 +34,7 @@ noncomputable def quotientKerRightHomEquivRight : E ⧸ S.rightHom.ker ≃* G :=
 /-- The isomorphism `E ⧸ S.inl.range ≃* G` induced by `S.rightHom` -/
 @[to_additive /-- The isomorphism `E ⧸ S.inl.range ≃+ G` induced by `S.rightHom` -/]
 noncomputable def quotientRangeInlEquivRight : E ⧸ S.inl.range ≃* G :=
-  (QuotientGroup.quotientMulEquivOfEq S.range_inl_eq_ker_rightHom).trans
-    S.quotientKerRightHomEquivRight
+  QuotientGroup.liftEquiv _ S.rightHom_surjective S.range_inl_eq_ker_rightHom
 
 /-- An arbitrarily chosen section -/
 @[to_additive surjInvRightHom /-- An arbitrarily chosen section -/]

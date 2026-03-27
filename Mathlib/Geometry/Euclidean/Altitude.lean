@@ -180,6 +180,7 @@ def altitudeFoot {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 
   simp only [altitudeFoot, reindex_points, Function.comp_apply]
   exact orthogonalProjectionSpan_congr (s.range_faceOpposite_reindex e i) rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma altitudeFoot_map {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂)
     (i : Fin (n + 1)) :
     (s.map f.toAffineMap f.injective).altitudeFoot i = f (s.altitudeFoot i) := by
@@ -226,6 +227,10 @@ lemma altitudeFoot_mem_altitude {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : 
   rw [← affineSpan_pair_altitudeFoot_eq_altitude]
   exact left_mem_affineSpan_pair _ _ _
 
+@[simp] lemma altitudeFoot_eq_point_rev (s : Simplex ℝ P 1) (i : Fin 2) :
+    s.altitudeFoot i = s.points i.rev := by
+  simp [altitudeFoot, faceOpposite_point_eq_point_rev]
+
 /-- The height of a vertex of a simplex is the distance between it and the foot of the altitude
 from that vertex. -/
 def height {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
@@ -265,9 +270,31 @@ meta def evalHeight : PositivityExt where eval {u α} _ _ e := do
 example {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
   positivity
 
+/-- The height of a 1-dimensional simplex equals to the distance between the two vertices. -/
+@[simp] lemma height_eq_dist (s : Simplex ℝ P 1) (i : Fin 2) :
+    s.height i = dist (s.points 0) (s.points 1) := by
+  fin_cases i
+  · simp [height]
+  · rw [dist_comm]
+    simp [height]
+
 open scoped RealInnerProductSpace
 
 variable {n : ℕ} (s : Simplex ℝ P n)
+
+/-- Altitudes are perpendicular to the faces containing their foot. -/
+lemma inner_vsub_altitudeFoot_vsub_altitudeFoot_eq_zero {i j : Fin (n + 1)} (h : i ≠ j) :
+    have : NeZero n := by grind [neZero_iff]
+    ⟪s.points j -ᵥ s.altitudeFoot i, s.points i -ᵥ s.altitudeFoot i⟫ = 0 := by
+  haveI : NeZero n := by grind [neZero_iff]
+  refine Submodule.inner_right_of_mem_orthogonal
+    (K := vectorSpan ℝ (s.points '' {i}ᶜ))
+    (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
+      (s.mem_affineSpan_image_iff.2 h.symm)
+      (Affine.Simplex.altitudeFoot_mem_affineSpan_image_compl _ _))
+    ?_
+  rw [← direction_affineSpan, ← Affine.Simplex.range_faceOpposite_points]
+  exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
 
 /-- The inner product of an edge from `j` to `i` and the vector from the foot of `i` to `i`
 is the square of the height. -/
@@ -275,14 +302,7 @@ lemma inner_vsub_vsub_altitudeFoot_eq_height_sq [NeZero n] {i j : Fin (n + 1)} (
     ⟪s.points i -ᵥ s.points j, s.points i -ᵥ s.altitudeFoot i⟫ = s.height i ^ 2 := by
   suffices ⟪s.points j -ᵥ s.altitudeFoot i, s.points i -ᵥ s.altitudeFoot i⟫ = 0 by
     rwa [height, inner_vsub_vsub_left_eq_dist_sq_right_iff, inner_vsub_left_eq_zero_symm]
-  refine Submodule.inner_right_of_mem_orthogonal
-      (K := vectorSpan ℝ (s.points '' {i}ᶜ))
-      (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
-        (s.mem_affineSpan_image_iff.2 h.symm)
-        (altitudeFoot_mem_affineSpan_image_compl _ _))
-      ?_
-  rw [← direction_affineSpan, ← range_faceOpposite_points]
-  exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
+  exact s.inner_vsub_altitudeFoot_vsub_altitudeFoot_eq_zero h
 
 variable [Nat.AtLeastTwo n]
 

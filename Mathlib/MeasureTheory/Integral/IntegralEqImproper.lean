@@ -66,7 +66,7 @@ in analysis. In particular,
 - `MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonneg` gives the same result assuming that
   `g'` is nonnegative instead of integrable. Its automatic integrability in this context is proved
   in `MeasureTheory.integrableOn_Ioi_deriv_of_nonneg`.
-- `MeasureTheory.integral_comp_smul_deriv_Ioi` is a version of the change of variables formula
+- `MeasureTheory.integral_deriv_smul_comp_Ioi` is a version of the change of variables formula
   on semi-infinite intervals.
 - `MeasureTheory.tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi` shows that a function whose
   derivative is integrable on `(a, +∞)` has a limit at `+∞`.
@@ -1016,7 +1016,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Change-of-variables formula for `Ioi` integrals of vector-valued functions, proved by taking
 limits from the result for finite intervals. -/
-theorem integral_comp_smul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : ℝ}
+theorem integral_deriv_smul_comp_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : ℝ}
     (hf : ContinuousOn f <| Ici a) (hft : Tendsto f atTop atTop)
     (hff' : ∀ x ∈ Ioi a, HasDerivWithinAt f (f' x) (Ioi x) x)
     (hg_cont : ContinuousOn g <| f '' Ioi a) (hg1 : IntegrableOn g <| f '' Ici a)
@@ -1028,7 +1028,7 @@ theorem integral_comp_smul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : �
       exact Ioo_subset_Ioi_self
     have i2 : [[a, b]] ⊆ Ici a := by rw [uIcc_of_le hb.le]; exact Icc_subset_Ici_self
     refine
-      intervalIntegral.integral_comp_smul_deriv''' (hf.mono i2)
+      intervalIntegral.integral_deriv_smul_comp''' (hf.mono i2)
         (fun x hx => hff' x <| mem_of_mem_of_subset hx i1) (hg_cont.mono <| image_mono ?_)
         (hg1.mono_set <| image_mono ?_) (hg2.mono_set i2) <;> assumption
   rw [integrableOn_Ici_iff_integrableOn_Ioi] at hg2
@@ -1040,6 +1040,9 @@ theorem integral_comp_smul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : �
   have t1 := (intervalIntegral_tendsto_integral_Ioi _ (hg1.mono_set this) tendsto_id).comp hft
   exact tendsto_nhds_unique (Tendsto.congr' (eventuallyEq_of_mem (Ioi_mem_atTop a) eq) t2) t1
 
+@[deprecated (since := "2026-03-19")]
+alias integral_comp_smul_deriv_Ioi := integral_deriv_smul_comp_Ioi
+
 /-- Change-of-variables formula for `Ioi` integrals of scalar-valued functions -/
 theorem integral_comp_mul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → ℝ} {a : ℝ}
     (hf : ContinuousOn f <| Ici a) (hft : Tendsto f atTop atTop)
@@ -1048,7 +1051,7 @@ theorem integral_comp_mul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → ℝ} {a : 
     (hg2 : IntegrableOn (fun x => (g ∘ f) x * f' x) (Ici a)) :
     (∫ x in Ioi a, (g ∘ f) x * f' x) = ∫ u in Ioi (f a), g u := by
   have hg2' : IntegrableOn (fun x => f' x • (g ∘ f) x) (Ici a) := by simpa [mul_comm] using hg2
-  simpa [mul_comm] using integral_comp_smul_deriv_Ioi hf hft hff' hg_cont hg1 hg2'
+  simpa [mul_comm] using integral_deriv_smul_comp_Ioi hf hft hff' hg_cont hg1 hg2'
 
 /-- Substitution `y = x ^ p` in integrals over `Ioi 0` -/
 theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
@@ -1087,7 +1090,7 @@ theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 <
     ← abs_of_pos (inv_pos.mpr hb), ← Measure.integral_comp_mul_left]
   congr
   ext1 x
-  rw [← indicator_comp_right, preimage_const_mul_Ioi _ hb, mul_div_cancel_left₀ _ hb.ne',
+  rw [← indicator_comp_right, preimage_const_mul_Ioi₀ _ hb, mul_div_cancel_left₀ _ hb.ne',
     Function.comp_def]
 
 theorem integral_comp_mul_right_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
@@ -1142,7 +1145,7 @@ theorem integrableOn_Ioi_comp_mul_left_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (
   rw [← integrable_indicator_iff (measurableSet_Ioi : MeasurableSet <| Ioi <| a * c)]
   convert integrable_comp_mul_left_iff ((Ioi (a * c)).indicator f) ha.ne' using 2
   ext1 x
-  rw [← indicator_comp_right, preimage_const_mul_Ioi _ ha, mul_comm a c,
+  rw [← indicator_comp_right, preimage_const_mul_Ioi₀ _ ha, mul_comm a c,
     mul_div_cancel_right₀ _ ha.ne', Function.comp_def]
 
 theorem integrableOn_Ioi_comp_mul_right_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (ha : 0 < a) :
@@ -1163,7 +1166,8 @@ variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {m n : G}
 
 theorem integral_bilinear_hasDerivAt_eq_sub [CompleteSpace G]
-    (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
+    (hu : ∀ x ∈ tsupport v, HasDerivAt u (u' x) x)
+    (hv : ∀ x ∈ tsupport u, HasDerivAt v (v' x) x)
     (huv : Integrable (fun x ↦ L (u x) (v' x) + L (u' x) (v x)))
     (h_bot : Tendsto (fun x ↦ L (u x) (v x)) atBot (𝓝 m))
     (h_top : Tendsto (fun x ↦ L (u x) (v x)) atTop (𝓝 n)) :
@@ -1175,7 +1179,8 @@ theorem integral_bilinear_hasDerivAt_eq_sub [CompleteSpace G]
 With respect to a general bilinear form. For the specific case of multiplication, see
 `integral_mul_deriv_eq_deriv_mul`. -/
 theorem integral_bilinear_hasDerivAt_right_eq_sub [CompleteSpace G]
-    (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
+    (hu : ∀ x ∈ tsupport v, HasDerivAt u (u' x) x)
+    (hv : ∀ x ∈ tsupport u, HasDerivAt v (v' x) x)
     (huv' : Integrable (fun x ↦ L (u x) (v' x))) (hu'v : Integrable (fun x ↦ L (u' x) (v x)))
     (h_bot : Tendsto (fun x ↦ L (u x) (v x)) atBot (𝓝 m))
     (h_top : Tendsto (fun x ↦ L (u x) (v x)) atTop (𝓝 n)) :
@@ -1187,7 +1192,8 @@ theorem integral_bilinear_hasDerivAt_right_eq_sub [CompleteSpace G]
 With respect to a general bilinear form, assuming moreover that the total function is integrable.
 -/
 theorem integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable
-    (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
+    (hu : ∀ x ∈ tsupport v, HasDerivAt u (u' x) x)
+    (hv : ∀ x ∈ tsupport u, HasDerivAt v (v' x) x)
     (huv' : Integrable (fun x ↦ L (u x) (v' x))) (hu'v : Integrable (fun x ↦ L (u' x) (v x)))
     (huv : Integrable (fun x ↦ L (u x) (v x))) :
     ∫ (x : ℝ), L (u x) (v' x) = - ∫ (x : ℝ), L (u' x) (v x) := by
@@ -1212,16 +1218,19 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
 
 /-- For finite intervals, see: `intervalIntegral.integral_deriv_mul_eq_sub`. -/
 theorem integral_deriv_mul_eq_sub [CompleteSpace A]
-    (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
+    (hu : ∀ x ∈ tsupport v, HasDerivAt u (u' x) x)
+    (hv : ∀ x ∈ tsupport u, HasDerivAt v (v' x) x)
     (huv : Integrable (u' * v + u * v'))
     (h_bot : Tendsto (u * v) atBot (𝓝 a')) (h_top : Tendsto (u * v) atTop (𝓝 b')) :
-    ∫ (x : ℝ), u' x * v x + u x * v' x = b' - a' :=
-  integral_of_hasDerivAt_of_tendsto (fun x ↦ (hu x).mul (hv x)) huv h_bot h_top
+    ∫ (x : ℝ), u' x * v x + u x * v' x = b' - a' := by
+  refine integral_of_hasDerivAt_of_tendsto (fun x ↦ ?_) huv h_bot h_top
+  simpa [add_comm] using (ContinuousLinearMap.mul ℝ A).hasDerivAt_of_bilinear (hu x) (hv x)
 
 /-- **Integration by parts on (-∞, ∞).**
 For finite intervals, see: `intervalIntegral.integral_mul_deriv_eq_deriv_mul`. -/
 theorem integral_mul_deriv_eq_deriv_mul [CompleteSpace A]
-    (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
+    (hu : ∀ x ∈ tsupport v, HasDerivAt u (u' x) x)
+    (hv : ∀ x ∈ tsupport u, HasDerivAt v (v' x) x)
     (huv' : Integrable (u * v')) (hu'v : Integrable (u' * v))
     (h_bot : Tendsto (u * v) atBot (𝓝 a')) (h_top : Tendsto (u * v) atTop (𝓝 b')) :
     ∫ (x : ℝ), u x * v' x = b' - a' - ∫ (x : ℝ), u' x * v x :=
@@ -1231,7 +1240,8 @@ theorem integral_mul_deriv_eq_deriv_mul [CompleteSpace A]
 /-- **Integration by parts on (-∞, ∞).**
 Version assuming that the total function is integrable -/
 theorem integral_mul_deriv_eq_deriv_mul_of_integrable
-    (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
+    (hu : ∀ x ∈ tsupport v, HasDerivAt u (u' x) x)
+    (hv : ∀ x ∈ tsupport u, HasDerivAt v (v' x) x)
     (huv' : Integrable (u * v')) (hu'v : Integrable (u' * v)) (huv : Integrable (u * v)) :
     ∫ (x : ℝ), u x * v' x = - ∫ (x : ℝ), u' x * v x :=
   integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable (L := ContinuousLinearMap.mul ℝ A)
@@ -1292,7 +1302,7 @@ theorem integral_Iic_deriv_mul_eq_sub
   simpa using integral_Iic_of_hasDerivAt_of_tendsto
     (continuousWithinAt_update_same.mpr h_zero) hderiv huv htendsto
 
-/-- **Integration by parts on (∞, a].**
+/-- **Integration by parts on $(∞, a]$.**
 For finite intervals, see: `intervalIntegral.integral_mul_deriv_eq_deriv_mul`. -/
 theorem integral_Iic_mul_deriv_eq_deriv_mul
     (hu : ∀ x ∈ Iio a, HasDerivAt u (u' x) x) (hv : ∀ x ∈ Iio a, HasDerivAt v (v' x) x)

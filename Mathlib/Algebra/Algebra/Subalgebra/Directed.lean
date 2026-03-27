@@ -29,14 +29,14 @@ variable (S : Subalgebra R A)
 
 variable {ι : Type*} [Nonempty ι] {K : ι → Subalgebra R A}
 
-theorem coe_iSup_of_directed (dir : Directed (· ≤ ·) K) : ↑(iSup K) = ⋃ i, (K i : Set A) :=
+theorem coe_iSup_of_directed (dir : Directed (· ≤ ·) K) : ↑(iSup K) = ⋃ i, (K i : Set A) := by
   let s : Subalgebra R A :=
     { __ := Subsemiring.copy _ _ (Subsemiring.coe_iSup_of_directed dir).symm
       algebraMap_mem' := fun _ ↦ Set.mem_iUnion.2
         ⟨Classical.arbitrary ι, Subalgebra.algebraMap_mem _ _⟩ }
   have : iSup K = s := le_antisymm
     (iSup_le fun i ↦ le_iSup (fun i ↦ (K i : Set A)) i) (Set.iUnion_subset fun _ ↦ le_iSup K _)
-  this.symm ▸ rfl
+  simp [this, s]
 
 variable (K)
 
@@ -44,8 +44,7 @@ variable (K)
 it on each subalgebra, and proving that it agrees on the intersection of subalgebras. -/
 noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ[R] B)
     (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
-    (T : Subalgebra R A) (hT : T ≤ iSup K) : ↥T →ₐ[R] B :=
-by
+    (T : Subalgebra R A) (hT : T ≤ iSup K) : ↥T →ₐ[R] B := by
   let compat :
       ∀ (i j) (x : A) (hxi : x ∈ (K i : Set A)) (hxj : x ∈ (K j : Set A)),
         f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩ := by
@@ -85,7 +84,7 @@ theorem iSupLift_inclusion {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ
     iSupLift K dir f hf T hT (inclusion h x) = f i x := by
   dsimp [iSupLift, inclusion]
   rw [Set.iUnionLift_inclusion]
-  exact SetLike.coe_subset_coe.mpr fun ⦃x⦄ a ↦ hT (h a)
+  exact SetLike.coe_subset_coe.mpr <| h.trans hT
 
 @[simp]
 theorem iSupLift_comp_inclusion {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}

@@ -89,6 +89,10 @@ theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.Is
   intro x y
   rw [add_apply, inner_add_left, hT x y, hS x y, ← inner_add_right, add_apply]
 
+theorem isSymmetric_sum {ι : Type*} {T : ι → (E →ₗ[𝕜] E)} (s : Finset ι)
+    (hT : ∀ i ∈ s, (T i).IsSymmetric) : (∑ i ∈ s, T i).IsSymmetric := fun _ _ ↦ by
+  simpa [sum_inner, inner_sum] using Finset.sum_congr rfl fun _ hi ↦ hT _ hi _ _
+
 @[aesop safe apply]
 theorem IsSymmetric.sub {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
     (T - S).IsSymmetric := by
@@ -134,7 +138,7 @@ theorem IsSymmetric.restrict_invariant {T : E →ₗ[𝕜] E} (hT : IsSymmetric 
 
 theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
     letI := InnerProductSpace.rclikeToReal 𝕜 E
-    letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
+    haveI := IsScalarTower.restrictScalars ℝ 𝕜 E
     (T.restrictScalars ℝ).IsSymmetric :=
   fun x y => by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars ℝ]
 
