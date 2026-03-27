@@ -6,6 +6,7 @@ public import Mathlib.Lean.Linter -- linter utilities; will be transitively impo
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
+public import Mathlib.Tactic.FastInstance -- for `fast_instance%`, `inferInstanceAs%`, and `#check_instance`
 public import Mathlib.Tactic.Linter.DocPrime
 public import Mathlib.Tactic.Linter.DocString
 public import Mathlib.Tactic.Linter.EmptyLine

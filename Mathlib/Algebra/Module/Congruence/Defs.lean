@@ -122,6 +122,7 @@ instance [Zero S] [Zero M] [Add M] [SMulWithZero S M] (c : ModuleCon S M) :
 instance [Monoid S] [Add M] [MulAction S M] (c : ModuleCon S M) : MulAction S c.Quotient :=
   inferInstanceAs (MulAction S c.toSMulCon.Quotient)
 
+set_option Elab.fast_instance.warnLeakySubInstances false in
 instance [AddZeroClass M] [DistribSMul S M] (c : ModuleCon S M) : DistribSMul S c.Quotient :=
   fast_instance% Quotient.mk''_surjective.distribSMul c.mk' fun _ _ ↦ rfl
 
