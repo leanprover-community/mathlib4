@@ -46,7 +46,7 @@ def GradedPiece (i : ι) :=
 deriving AddCommGroup
 
 /-- The associated graded abelian group of `IsFiltration F F_lt`, defined as the direct sum of
-`GradedPiece F F_lt`.-/
+`GradedPiece F F_lt`. -/
 def AssociatedGraded :=
   DirectSum ι (GradedPiece F F_lt)
 deriving AddCommGroup, CoeFun
