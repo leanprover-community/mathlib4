@@ -395,8 +395,7 @@ lemma ccSc_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ :=
     rw [pageD_eq X data r hr pq pq' h
           (homOfLE (data.le₀₁' r hr pq' hi₀ hi₁)) (homOfLE (data.le₁₂' pq' hi₁ hi₂))
           (homOfLE (data.le₂₃' r hr pq' hi₂ hi₃)) (homOfLE (data.le₃₃' hrr' hr pq' hi₃ hi₃'))
-          (show i₃' ⟶ data.i₃ r pq from homOfLE (by
-            simpa only [hi₃', data.i₃_next r r' pq pq' h] using data.le₂₃ r pq))
+          (homOfLE (data.le₂₃' r hr pq (by rw [hi₃', data.i₃_next r r' pq pq' h]) rfl))
           hi₀ hi₁ (hi₂.trans (data.hc₀₂ r pq pq' h).symm)
           (hi₃.trans (data.hc₁₃ r pq pq' h).symm) (hi₃'.trans (data.i₃_next r r' pq pq' h)) rfl
           (n₀ - 1) n₀ n₁ n₂ (by have := data.hc r _ _ h; lia),
