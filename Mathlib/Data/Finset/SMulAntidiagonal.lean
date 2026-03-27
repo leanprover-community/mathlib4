@@ -90,14 +90,8 @@ theorem smulAntidiagonal_mono_right {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : v
 
 @[to_additive]
 theorem support_smulAntidiagonal_subset_smul {hs : s.IsPWO} {ht : t.IsPWO} :
-    { a | (SMulAntidiagonal hs ht a).Nonempty } ⊆ (s • t) :=
-  fun a ⟨b, hb⟩ => by
-  rw [mem_smulAntidiagonal] at hb
-  rw [Set.mem_smul]
-  use b.1
-  refine { left := hb.1, right := ?_ }
-  use b.2
-  exact { left := hb.2.1, right := hb.2.2 }
+    { a | (SMulAntidiagonal hs ht a).Nonempty } ⊆ (s • t) := by
+  grind [mem_smul, mem_smulAntidiagonal]
 
 @[to_additive]
 theorem isPWO_support_smulAntidiagonal {hs : s.IsPWO} {ht : t.IsPWO} :

@@ -205,7 +205,7 @@ namespace NormedSpace
 namespace Dual
 
 theorem toWeakDual_continuous : Continuous fun x' : StrongDual 𝕜 E => StrongDual.toWeakDual x' :=
-  WeakBilin.continuous_of_continuous_eval _ fun z => (inclusionInDoubleDual 𝕜 E z).continuous
+  WeakBilin.continuous_of_continuous_eval _ fun z => (ContinuousLinearMap.apply 𝕜 𝕜 z).continuous
 
 /-- For a normed space `E`, according to `toWeakDual_continuous` the "identity mapping"
 `StrongDual 𝕜 E → WeakDual 𝕜 E` is continuous. This definition implements it as a continuous linear
@@ -239,7 +239,6 @@ Uniform Boundedness Principle, it coincides with the von Neumann bornology whene
 $E$ is a Banach space.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜 E) in
 /-- The family of seminorms on `WeakDual 𝕜 E` given by `fun x f ↦ ‖f x‖`, indexed by `E`.
 This is the seminorm family associated to the weak-* topology via `topDualPairing`. -/
@@ -248,12 +247,10 @@ def seminormFamily : SeminormFamily 𝕜 (WeakDual 𝕜 E) E := (topDualPairing 
 @[simp]
 lemma seminormFamily_apply (x : E) (f : WeakDual 𝕜 E) : seminormFamily 𝕜 E x f = ‖f x‖ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜 E) in
 lemma withSeminorms : WithSeminorms (seminormFamily 𝕜 E) :=
   (topDualPairing 𝕜 E).weakBilin_withSeminorms
 
-set_option backward.isDefEq.respectTransparency false in
 /-- By the Uniform Boundedness Principle, norm-boundedness (the default bornology)
 and pointwise-boundedness (`IsVonNBounded`) coincide on the weak dual of a Banach space. -/
 theorem isBounded_iff_isVonNBounded [CompleteSpace E] {s : Set (WeakDual 𝕜 E)} :
@@ -302,6 +299,14 @@ theorem isClosed_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
 theorem isBounded_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
     IsBounded (toStrongDual ⁻¹' closedBall x' r) :=
   isBounded_toStrongDual_preimage_iff_isBounded.mpr Metric.isBounded_closedBall
+
+/-- The weak-* closure of a norm-bounded set is norm-bounded, because norm-closed balls
+are weak-* closed. -/
+theorem isBounded_closure {s : Set (WeakDual 𝕜 E)} (hb : IsBounded s) :
+    IsBounded (closure s) := by
+  obtain ⟨R, hR⟩ := (Metric.isBounded_iff_subset_closedBall (0 : StrongDual 𝕜 E)).mp hb
+  exact (isBounded_closedBall 0 R).subset
+    (closure_minimal (fun y hy ↦ hR (a := toStrongDual y) hy) (isClosed_closedBall 0 R))
 
 /-- The **Banach-Alaoglu theorem**: closed balls of the dual of a normed space `E` are compact in
 the weak-star topology. -/
