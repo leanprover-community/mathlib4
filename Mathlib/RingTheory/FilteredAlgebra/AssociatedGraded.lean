@@ -32,7 +32,7 @@ variable {ι : Type*}
 
 variable {A : Type*} [AddCommGroup A] {σ : Type*} [SetLike σ A] [AddSubgroupClass σ A]
 
-variable (F : ι → σ) (F_lt : outParam <| ι → σ)
+variable (F : ι → σ) (F_lt : ι → σ)
 
 @[nolint unusedArguments]
 instance [Preorder ι] [IsFiltration F F_lt] (i : ι) : Setoid (AddSubgroup.ofClass (F i)) :=
