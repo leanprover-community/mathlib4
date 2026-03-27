@@ -271,6 +271,10 @@ theorem cof_ne_zero {o} : cof o ≠ 0 ↔ o ≠ 0 :=
   cof_eq_zero.not
 
 @[simp]
+theorem cof_pos {o} : 0 < cof o ↔ 0 < o := by
+  simp [pos_iff_ne_zero]
+
+@[simp]
 theorem cof_zero : cof 0 = 0 :=
   cof_eq_zero.2 rfl
 
