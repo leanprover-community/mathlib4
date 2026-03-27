@@ -551,7 +551,8 @@ In this section we define the quotient of a topological space by the `Inseparabl
 -/
 
 variable (X) in
-instance : TopologicalSpace (SeparationQuotient X) := instTopologicalSpaceQuotient
+instance : TopologicalSpace (SeparationQuotient X) :=
+  inferInstanceAs <| TopologicalSpace (Quotient _)
 
 variable {t : Set (SeparationQuotient X)}
 

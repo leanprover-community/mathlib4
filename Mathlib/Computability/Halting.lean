@@ -27,7 +27,6 @@ namespace Nat.Partrec
 
 open Computable Part
 
-set_option linter.flexible false in -- simp acts on two goals with different simp sets
 theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
     ∃ h, Nat.Partrec h ∧
       ∀ a, (∀ x ∈ h a, x ∈ f a ∨ x ∈ g a) ∧ ((h a).Dom ↔ (f a).Dom ∨ (g a).Dom) := by
@@ -40,27 +39,21 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
           (Code.primrec_evaln.to_comp.comp <| (snd.pair (const cf)).pair fst)
           (Code.primrec_evaln.to_comp.comp <| (snd.pair (const cg)).pair fst))
   refine ⟨_, this, fun n => ?_⟩
-  have : ∀ x ∈ rfindOpt fun k ↦ HOrElse.hOrElse (Code.evaln k cf n) fun _x ↦ Code.evaln k cg n,
+  have : ∀ x ∈ rfindOpt fun k ↦ Code.evaln k cf n <|> Code.evaln k cg n,
       x ∈ Code.eval cf n ∨ x ∈ Code.eval cg n := by
     intro x h
     obtain ⟨k, e⟩ := Nat.rfindOpt_spec h
-    revert e
-    simp only [Option.mem_def]
-    rcases e' : cf.evaln k n with - | y <;> simp <;> intro e
-    · exact Or.inr (Code.evaln_sound e)
-    · subst y
-      exact Or.inl (Code.evaln_sound e')
-  refine ⟨this, ⟨fun h => (this _ ⟨h, rfl⟩).imp Exists.fst Exists.fst, ?_⟩⟩
-  intro h
+    rw [Option.mem_def, Option.orElse_eq_some, ← Option.mem_def, ← Option.mem_def] at e
+    obtain e | ⟨-, e⟩ := e <;> simp [Code.evaln_sound e]
+  refine ⟨this, fun h ↦ (this _ ⟨h, rfl⟩).imp Exists.fst Exists.fst, fun h ↦ ?_⟩
   rw [Nat.rfindOpt_dom]
   simp only [dom_iff_mem, Code.evaln_complete, Option.mem_def] at h
   obtain ⟨x, k, e⟩ | ⟨x, k, e⟩ := h
-  · refine ⟨k, x, ?_⟩
-    simp only [e, Option.orElse_some, Option.mem_def, Option.orElse_eq_orElse]
+  · exact ⟨k, x, by simp [e]⟩
   · refine ⟨k, ?_⟩
     rcases cf.evaln k n with - | y
-    · exact ⟨x, by simp only [e, Option.mem_def, Option.orElse_eq_orElse, Option.orElse_none]⟩
-    · exact ⟨y, by simp only [Option.orElse_eq_orElse, Option.orElse_some, Option.mem_def]⟩
+    · exact ⟨x, by simp [e]⟩
+    · exact ⟨y, by simp⟩
 
 end Nat.Partrec
 
@@ -221,13 +214,7 @@ theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C)
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
           ((Partrec.nat_iff.2 hf).comp snd).to₂).to₂
   simp only [Bool.cond_decide] at e
-  by_cases H : eval c ∈ C
-  · simp only [H, if_true] at e
-    change (fun b => g b) ∈ C
-    rwa [← e]
-  · simp only [H, if_false] at e
-    rw [e] at H
-    contradiction
+  by_cases H : eval c ∈ C <;> simp_all
 
 theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C ↔ cg ∈ C)) :
     (ComputablePred fun c => c ∈ C) ↔ C = ∅ ∨ C = Set.univ := by
@@ -326,18 +313,15 @@ theorem of_prim {n} {f : List.Vector ℕ n → ℕ} (hf : Primrec f) : @Partrec'
 theorem head {n : ℕ} : @Partrec' n.succ (@head ℕ n) :=
   prim Nat.Primrec'.head
 
-set_option backward.isDefEq.respectTransparency false in
-set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ fun v => f v.tail :=
   (hf.comp _ fun i => @prim _ _ <| Nat.Primrec'.get i.succ).of_eq fun v => by
-    simp; rw [← ofFn_get v.tail]; congr; funext i; simp
+    rw [← ofFn_get v.tail, funext (get_tail_succ v)]
+    simp
 
-set_option linter.flexible false in -- simp acts on two goals with different simp sets
 protected theorem bind {n f g} (hf : @Partrec' n f) (hg : @Partrec' (n + 1) g) :
     @Partrec' n fun v => (f v).bind fun a => g (a ::ᵥ v) :=
-  (@comp n (n + 1) g (fun i => Fin.cases f (fun i v => some (v.get i)) i) hg fun i => by
-      refine Fin.cases ?_ (fun i => ?_) i <;> simp [*]
-      exact prim (Nat.Primrec'.get _)).of_eq
+  (@comp n (n + 1) g (Fin.cases f (fun i v => some (v.get i))) hg <|
+      Fin.cases (by simpa using hf) (fun i => by simpa using prim (Nat.Primrec'.get i))).of_eq
     fun v => by simp [mOfFn, Part.bind_assoc, pure]
 
 protected theorem map {n f} {g : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f)

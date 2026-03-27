@@ -21,7 +21,7 @@ A coequalizer is the dual concept.
 
 ## Main definitions
 
-* `WalkingParallelPair` is the indexing category used for (co)equalizer_diagrams
+* `WalkingParallelPair` is the indexing category used for (co)equalizer diagrams
 * `parallelPair` is a functor from `WalkingParallelPair` to our category `C`.
 * a `fork` is a cone over a parallel pair.
   * there is really only one interesting morphism in a fork: the arrow from the vertex of the fork
@@ -327,7 +327,7 @@ variable {f g : X ⟶ Y}
 /-- A fork `t` on the parallel pair `f g : X ⟶ Y` consists of two morphisms
 `t.π.app zero : t.pt ⟶ X` and `t.π.app one : t.pt ⟶ Y`. Of these,
 only the first one is interesting, and we give it the shorter name `Fork.ι t`. -/
-def Fork.ι (t : Fork f g) :=
+def Fork.ι (t : Fork f g) : t.pt ⟶ X :=
   t.π.app zero
 
 @[simp]
@@ -337,7 +337,7 @@ theorem Fork.app_zero_eq_ι (t : Fork f g) : t.π.app zero = t.ι :=
 /-- A cofork `t` on the parallelPair `f g : X ⟶ Y` consists of two morphisms
 `t.ι.app zero : X ⟶ t.pt` and `t.ι.app one : Y ⟶ t.pt`. Of these, only the second one is
 interesting, and we give it the shorter name `Cofork.π t`. -/
-def Cofork.π (t : Cofork f g) :=
+def Cofork.π (t : Cofork f g) : Y ⟶ t.pt :=
   t.ι.app one
 
 @[simp]
@@ -394,11 +394,11 @@ theorem Fork.ι_ofι {P : C} (ι : P ⟶ X) (w : ι ≫ f = ι ≫ g) : (Fork.of
 theorem Cofork.π_ofπ {P : C} (π : Y ⟶ P) (w : f ≫ π = g ≫ π) : (Cofork.ofπ π w).π = π :=
   rfl
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem Fork.condition (t : Fork f g) : t.ι ≫ f = t.ι ≫ g := by
   rw [← t.app_one_eq_ι_comp_left, ← t.app_one_eq_ι_comp_right]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem Cofork.condition (t : Cofork f g) : f ≫ t.π = g ≫ t.π := by
   rw [← t.app_zero_eq_comp_π_left, ← t.app_zero_eq_comp_π_right]
 
@@ -646,13 +646,13 @@ theorem Cofork.ofCocone_ι {F : WalkingParallelPair ⥤ C} (t : Cocone F) (j) :
 
 @[simp]
 theorem Fork.ι_postcompose {f' g' : X ⟶ Y} {α : parallelPair f g ⟶ parallelPair f' g'}
-    {c : Fork f g} : Fork.ι ((Cone.postcompose α).obj c) = c.ι ≫ α.app _ :=
+    {c : Fork f g} : Fork.ι ((Cone.postcompose α).obj c) = c.ι ≫ α.app .zero :=
   rfl
 
 @[simp]
 theorem Cofork.π_precompose {f' g' : X ⟶ Y} {α : parallelPair f g ⟶ parallelPair f' g'}
-    {c : Cofork f' g'} : Cofork.π ((Cocone.precompose α).obj c) = α.app _ ≫ c.π :=
-  rfl
+    {c : Cofork f' g'} :
+    Cofork.π ((Cocone.precompose α).obj c) = α.app .one ≫ c.π := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Helper function for constructing morphisms between equalizer forks.
@@ -684,7 +684,7 @@ def ForkOfι.ext {P : C} {ι ι' : P ⟶ X} (w : ι ≫ f = ι ≫ g) (w' : ι' 
 /-- Every fork is isomorphic to one of the form `Fork.of_ι _ _`. -/
 @[simps!]
 def Fork.isoForkOfι (c : Fork f g) : c ≅ Fork.ofι c.ι c.condition :=
-  Fork.ext (by simp only [Fork.ofι_pt, Functor.const_obj_obj]; rfl) (by simp)
+  Fork.ext (Iso.refl _)
 
 /--
 If `f, g : X ⟶ Y` and `f', g : X' ⟶ Y'` pairwise form a commutative square with isomorphisms
@@ -778,7 +778,7 @@ def CoforkOfπ.ext {P : C} {π π' : Y ⟶ P} (w : f ≫ π = g ≫ π) (w' : f 
 
 /-- Every cofork is isomorphic to one of the form `Cofork.ofπ _ _`. -/
 def Cofork.isoCoforkOfπ (c : Cofork f g) : c ≅ Cofork.ofπ c.π c.condition :=
-  Cofork.ext (by simp only [Cofork.ofπ_pt, Functor.const_obj_obj]; rfl) (by simp)
+  Cofork.ext (Iso.refl _)
 
 /--
 Given two coforks with isomorphic components in such a way that the natural diagrams commute, then
@@ -986,11 +986,7 @@ def liftPrecomp {s : Fork f g} (hs : IsLimit s) {c : PullbackCone s.ι h} (hc : 
     (s' : Fork (h ≫ f) (h ≫ g)) :
     s'.pt ⟶ (precompFork h s c).pt :=
   hc.lift <| PullbackCone.mk
-    (hs.lift <| Fork.ofι (s'.ι ≫ h)
-      (by
-        simp only [Functor.const_obj_obj, parallelPair_obj_zero, Category.assoc]
-        rw [s'.condition]))
-    s'.ι
+    (hs.lift <| Fork.ofι (s'.ι ≫ h) (by simp [s'.condition])) s'.ι
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The pullback of an equalizer is an equalizer. -/

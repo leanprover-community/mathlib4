@@ -106,7 +106,7 @@ theorem IsVonNBounded.of_subsingleton [Subsingleton E] {s : Set E} : IsVonNBound
 @[simp]
 theorem isVonNBounded_iUnion {ι : Sort*} [Finite ι] {s : ι → Set E} :
     IsVonNBounded 𝕜 (⋃ i, s i) ↔ ∀ i, IsVonNBounded 𝕜 (s i) := by
-  simp only [IsVonNBounded, absorbs_iUnion, @forall_swap ι]
+  simp only [IsVonNBounded, absorbs_iUnion, @forall_comm ι]
 
 theorem isVonNBounded_biUnion {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set E} :
     IsVonNBounded 𝕜 (⋃ i ∈ I, s i) ↔ ∀ i ∈ I, IsVonNBounded 𝕜 (s i) := by
@@ -425,7 +425,6 @@ theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [
   haveI := isUniformAddGroup_of_addCommGroup (G := E)
   hf.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 protected theorem Bornology.IsVonNBounded.restrict_scalars_of_nontrivial
     [NormedField 𝕜] [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Nontrivial 𝕜']

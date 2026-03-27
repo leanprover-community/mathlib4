@@ -317,6 +317,11 @@ theorem LinearIndepOn.of_comp (f : M →ₗ[R] M') (hfv : LinearIndepOn R (f ∘
     LinearIndepOn R v s :=
   LinearIndependent.of_comp f hfv
 
+lemma LinearIndependent.of_linearIndependent_subset (s : Set ι') {v : ι → ι' → R}
+    (hv : LinearIndependent R fun (i : ι) (j : s) ↦ v i j) :
+    LinearIndependent R v :=
+  hv.of_comp ⟨⟨s.restrict, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩
+
 /-- If `f` is a linear map injective on the span of the range of `v`, then the family `f ∘ v`
 is linearly independent if and only if the family `v` is linearly independent.
 See `LinearMap.linearIndependent_iff_of_disjoint` for the version with `Set.InjOn` replaced
