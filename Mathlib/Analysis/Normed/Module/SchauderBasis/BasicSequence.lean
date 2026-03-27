@@ -19,34 +19,29 @@ and many constructions in the theory reduce to manipulations of basic sequences.
 
 The key criterion for recognizing basic sequences is the **Grünblum condition**: a sequence `e` is
 basic if and only if all partial sums `∑ i < m, a i · e i` are bounded by a constant `K` times the
-full sum `∑ i < n, a i · e i` whenever `m ≤ n`. The analogous condition for unconditional basic
-sequences, where subsets replace initial segments, is called the **Nikolskii condition**.
+full sum `∑ i < n, a i · e i` whenever `m ≤ n`.
 
 ## Main Definitions
 
 * `BasicSequence`: A bundled ℕ-indexed sequence that forms a Schauder basis for its span.
-* `UnconditionalBasicSequence`: A bundled sequence forming an unconditional Schauder basis.
 * `SatisfiesGrunblumCondition`: The Grünblum condition with a constant.
-* `SatisfiesNikolskiiCondition`: The Nikolskii condition with a constant.
 
 ## Main Results
 
 * `SatisfiesGrunblumCondition.basicSequence`: A nonzero sequence satisfying the Grünblum condition
   is a basic sequence, with an explicit bound on the basis constant.
-* `SatisfiesNikolskiiCondition.unconditionalBasicSequence`: The analogous result for unconditional
-  basic sequences under the Nikolskii condition.
 
 ## Implementation Notes
 
 In the literature, a basic sequence is defined as a sequence that forms a Schauder basis for the
-closure of its linear span. In this file, the `SchauderBasis` in `BasicSequence` and
-`UnconditionalBasicSequence` lives on the algebraic span `Submodule.span 𝕜 (Set.range e)` rather
+closure of its linear span. In this file, the `SchauderBasis` in `BasicSequence` lives on the
+algebraic span `Submodule.span 𝕜 (Set.range e)` rather
 than its topological closure, and we additionally bundle a finite projection bound
 (`SchauderBasis.enormProjBound < ⊤`). These two conditions are equivalent: a Schauder basis with
 finite projection bound on the algebraic span extends to a Schauder basis for the topological
 closure of the span. Our formulation is easier to verify:
 the projection bound only needs to be checked on elements of the algebraic span, which are finite
-linear combinations, so the Grünblum and Nikolskii conditions apply directly without density or
+linear combinations, so the Grünblum condition apply directly without density or
 extension arguments. Working with the topological closure would also require cumbersome coercions
 between elements of the closed subspace and the ambient space throughout the proofs.
 
