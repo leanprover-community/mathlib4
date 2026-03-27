@@ -8,7 +8,6 @@ module
 public import Mathlib.Init
 public meta import Lean.Elab.Command
 public meta import Lean.Server.InfoUtils
-public meta import Mathlib.Tactic.DeclarationNames
 
 /-!
 # The `have` vs `let` linter
@@ -27,7 +26,7 @@ TODO:
   should the linter act on them as well?
 -/
 
-public meta section
+meta section
 
 open Lean Elab Command Meta
 
@@ -42,7 +41,7 @@ There are three settings:
 
 The default value is `1`.
 -/
-register_option linter.haveLet : Nat := {
+public register_option linter.haveLet : Nat := {
   defValue := 0
   descr := "enable the `have` vs `let` linter:\n\
             * 0 -- inactive;\n\
@@ -87,7 +86,7 @@ def toFormat_propTypes (ctx : ContextInfo) (lc : LocalContext) (es : Array (Expr
 
 /-- returns the `have` syntax whose corresponding hypothesis does not have Type `Prop` and
 also a `Format`ted version of the corresponding Type. -/
-partial
+public partial
 def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format)) :=
   InfoTree.foldInfoM (init := #[]) fun ctx info args => return args ++ (← do
     let .ofTacticInfo i := info | return #[]

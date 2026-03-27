@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Stream.Init
+public import Mathlib.Logic.Relator
 public import Mathlib.Tactic.Common
+public import Batteries.Tactic.Lint.Simp
 
 /-!
 # Coinductive formalization of unbounded computations.
@@ -220,8 +222,7 @@ theorem corec_eq (f : β → α ⊕ β) (b : β) : destruct (corec f b) = rmap (
     dsimp [Corec.f, Stream'.corec', Stream'.corec, Stream'.map, Stream'.get, Stream'.iterate]
     match (f b) with
     | Sum.inl x => rfl
-    | Sum.inr x => rfl
-    ]
+    | Sum.inr x => rfl]
   rcases h : f b with a | b'; · rfl
   dsimp [Corec.f, destruct]
   apply congr_arg; apply Subtype.ext
@@ -347,8 +348,6 @@ theorem of_think_terminates {s : Computation α} : Terminates (think s) → Term
 
 theorem notMem_empty (a : α) : a ∉ empty α := fun ⟨n, h⟩ => by contradiction
 
-@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
-
 theorem not_terminates_empty : ¬Terminates (empty α) := fun ⟨⟨a, h⟩⟩ => notMem_empty a h
 
 theorem eq_empty_of_not_terminates {s} (H : ¬Terminates s) : s = empty α := by
@@ -412,7 +411,6 @@ theorem get_thinkN (n) : get (thinkN s n) = get s :=
 theorem get_promises : s ~> get s := fun _ => get_eq_of_mem _
 
 theorem mem_of_promises {a} (p : s ~> a) : a ∈ s := by
-  obtain ⟨h⟩ := h
   obtain ⟨a', h⟩ := h
   rw [p h]
   exact h
@@ -894,19 +892,19 @@ theorem LiftRel.symm (R : α → α → Prop) (H : Symmetric R) : Symmetric (Lif
     let ⟨b, b2, ab⟩ := l a1
     ⟨b, b2, H ab⟩⟩
 
-theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (LiftRel R) :=
-  fun _ _ _ ⟨l1, r1⟩ ⟨l2, r2⟩ =>
-  ⟨fun {_} a1 =>
-    let ⟨_, b2, ab⟩ := l1 a1
+theorem LiftRel.trans (R : α → α → Prop) (H : IsTrans α R) : IsTrans _ (LiftRel R) :=
+  ⟨fun _ _ _ ⟨l1, r1⟩ ⟨l2, r2⟩ =>
+  ⟨fun {a} a1 =>
+    let ⟨b, b2, ab⟩ := l1 a1
     let ⟨c, c3, bc⟩ := l2 b2
-    ⟨c, c3, H ab bc⟩,
-    fun {_} c3 =>
-    let ⟨_, b2, bc⟩ := r2 c3
+    ⟨c, c3, H.trans a b c ab bc⟩,
+    fun {c} c3 =>
+    let ⟨b, b2, bc⟩ := r2 c3
     let ⟨a, a1, ab⟩ := r1 b2
-    ⟨a, a1, H ab bc⟩⟩
+    ⟨a, a1, H.trans a b c ab bc⟩⟩⟩
 
-theorem LiftRel.equiv (R : α → α → Prop) : Equivalence R → Equivalence (LiftRel R)
-  | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, @LiftRel.symm _ R @symm, @LiftRel.trans _ R @trans⟩
+theorem LiftRel.equiv (R : α → α → Prop) (H : Equivalence R) : Equivalence (LiftRel R) :=
+  ⟨LiftRel.refl R H.refl, @LiftRel.symm _ R @H.symm, LiftRel.trans R H.isTrans |>.trans _ _ _⟩
 
 theorem LiftRel.imp {R S : α → β → Prop} (H : ∀ {a b}, R a b → S a b) (s t) :
     LiftRel R s t → LiftRel S s t

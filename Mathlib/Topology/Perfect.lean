@@ -191,6 +191,12 @@ lemma IsPreconnected.preperfect_of_nontrivial [T1Space α] {U : Set α} (hu : U.
       ← accPt_principal_iff_clusterPt] at h
     exact h
 
+instance [T1Space α] [ConnectedSpace α] [Nontrivial α] : PerfectSpace α := by
+  constructor
+  apply isPreconnected_univ.preperfect_of_nontrivial
+  rw [Set.nontrivial_univ_iff]
+  infer_instance
+
 end Preperfect
 
 section Kernel
@@ -206,8 +212,8 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
   have Vct : (V ∩ C).Countable := by
     simp only [V, iUnion_inter]
     apply Countable.biUnion
-    · exact Countable.mono inter_subset_left bct
-    · exact inter_subset_right
+    · exact bct.mono (sep_subset _ _)
+    · exact sep_subset_setOf _ _
   refine ⟨V ∩ C, D, Vct, ⟨?_, ?_⟩, ?_⟩
   · refine hclosed.sdiff (isOpen_biUnion fun _ ↦ ?_)
     exact fun ⟨Ub, _⟩ ↦ IsTopologicalBasis.isOpen bbasis Ub

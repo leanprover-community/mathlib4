@@ -101,6 +101,14 @@ theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
     (h_finrank : finrank F L = finrank E L) : F = E :=
   eq_of_le_of_finrank_le' h_le h_finrank.le
 
+lemma finrank_lt_of_gt [FiniteDimensional F L] (H : F < E) :
+    Module.finrank E L < Module.finrank F L := by
+  letI := (IntermediateField.inclusion H.le).toAlgebra
+  have : IsScalarTower F E L := .of_algebraMap_eq' rfl
+  refine lt_of_le_of_ne ?_ ?_
+  · exact Module.finrank_top_le_finrank_of_isScalarTower _ _ _
+  · exact .symm (mt (eq_of_le_of_finrank_eq' H.le) H.ne)
+
 theorem finrank_dvd_of_le_left (h : F ≤ E) : finrank E L ∣ finrank F L := by
   let _ := (inclusion h).toRingHom.toAlgebra
   have : IsScalarTower F E L := IsScalarTower.of_algebraMap_eq fun x ↦ rfl
@@ -121,9 +129,6 @@ a finite-dimensional intermediate field. -/
 instance finiteDimensional_map (f : L →ₐ[K] L) [FiniteDimensional K E] :
     FiniteDimensional K (E.map f) :=
   LinearEquiv.finiteDimensional (IntermediateField.equivMap E f).toLinearEquiv
-
-@[deprecated (since := "2025-05-02")]
-alias _root_.im_finiteDimensional := IntermediateField.finiteDimensional_map
 
 end FiniteDimensional
 

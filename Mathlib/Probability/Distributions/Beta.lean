@@ -94,15 +94,16 @@ lemma betaPDFReal_pos {α β x : ℝ} (hx1 : 0 < x) (hx2 : x < 1) (hα : 0 < α)
     (Real.rpow_pos_of_pos (by linarith) (β - 1))
 
 /-- The beta pdf is measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_betaPDFReal (α β : ℝ) : Measurable (betaPDFReal α β) :=
   Measurable.ite measurableSet_Ioo (by fun_prop) (by fun_prop)
 
 /-- The beta pdf is strongly measurable. -/
-@[measurability]
+@[fun_prop]
 lemma stronglyMeasurable_betaPDFReal (α β : ℝ) :
     StronglyMeasurable (betaPDFReal α β) := (measurable_betaPDFReal α β).stronglyMeasurable
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pdf of the beta distribution integrates to 1. -/
 @[simp]
 lemma lintegral_betaPDF_eq_one {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :

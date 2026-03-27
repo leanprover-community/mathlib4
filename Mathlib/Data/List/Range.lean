@@ -54,11 +54,6 @@ theorem isChain_cons_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
     ← isChain_range_succ, range_succ_eq_map]
   exact fun _ => Iff.rfl
 
-@[deprecated (since := "2025-09-21")]
-alias chain_range_succ := isChain_cons_range_succ
-@[deprecated (since := "2025-09-24")]
-alias chain'_range_succ := isChain_range_succ
-
 section Ranges
 
 /--
@@ -82,7 +77,7 @@ theorem ranges_disjoint (l : List ℕ) :
       intro u hu
       rw [mem_map]
       rw [mem_range] at hu
-      cutsat
+      lia
     · rw [pairwise_map]
       apply Pairwise.imp _ hl
       intro u v

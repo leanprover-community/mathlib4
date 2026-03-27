@@ -23,9 +23,10 @@ of `S` lying above `q`, there exists a prime `P ≤ Q` of `S` lying above `p`.
   to generalizations lifting along `Spec S → Spec R`.
 - `Algebra.HasGoingDown.of_flat`: flat algebras satisfy going down.
 
-## TODOs
+## Note
 
-- An integral extension of domains with normal base satisfies going down.
+- For the fact that an integral extension of domains with normal base satisfies going down,
+  see `Mathlib/RingTheory/IntegralClosure/GoingDown.lean`.
 
 -/
 
@@ -72,7 +73,7 @@ lemma Ideal.exists_ltSeries_of_hasGoingDown [Algebra.HasGoingDown R S]
     ∃ (L : LTSeries (PrimeSpectrum S)),
       L.length = l.length ∧
       L.last = ⟨P, inferInstance⟩ ∧
-      List.map (algebraMap R S).specComap L.toList = l.toList := by
+      List.map (PrimeSpectrum.comap (algebraMap R S)) L.toList = l.toList := by
   induction l using RelSeries.inductionOn generalizing P with
   | singleton q =>
     use RelSeries.singleton _ ⟨P, inferInstance⟩
@@ -86,9 +87,10 @@ lemma Ideal.exists_ltSeries_of_hasGoingDown [Algebra.HasGoingDown R S]
     have : L.head.asIdeal.LiesOver l.head.asIdeal := by
       constructor
       rw [← L.toList_getElem_zero_eq_head, ← l.toList_getElem_zero_eq_head, Ideal.under_def]
-      have : l.toList[0] = (algebraMap R S).specComap L.toList[0] := by
-        rw [List.getElem_map_rev (algebraMap R S).specComap, List.getElem_of_eq spec.symm _]
-      rwa [RingHom.specComap, PrimeSpectrum.ext_iff] at this
+      have : l.toList[0] = (PrimeSpectrum.comap (algebraMap R S)) L.toList[0] := by
+        rw [List.getElem_map_rev (PrimeSpectrum.comap (algebraMap R S)),
+          List.getElem_of_eq spec.symm _]
+      rwa [PrimeSpectrum.ext_iff] at this
     obtain ⟨Q, Qlt, hQ, Qlo⟩ := Ideal.exists_ideal_lt_liesOver_of_lt L.head.asIdeal lt
     use L.cons ⟨Q, hQ⟩ Qlt
     simp only [RelSeries.cons_length, add_left_inj, RelSeries.last_cons]
@@ -124,16 +126,16 @@ lemma trans (T : Type*) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower 
     [Algebra.HasGoingDown R S] [Algebra.HasGoingDown S T] :
     Algebra.HasGoingDown R T := by
   rw [iff_generalizingMap_primeSpectrumComap, IsScalarTower.algebraMap_eq R S T]
-  simp only [PrimeSpectrum.comap_comp, ContinuousMap.coe_comp]
+  simp only [PrimeSpectrum.comap_comp]
   apply GeneralizingMap.comp
   · rwa [← iff_generalizingMap_primeSpectrumComap]
   · rwa [← iff_generalizingMap_primeSpectrumComap]
 
 /-- If for every prime of `S`, the map `Spec Sₚ → Spec Rₚ` is surjective,
 the algebra satisfies going down. -/
-lemma of_specComap_localRingHom_surjective
+lemma of_comap_localRingHom_surjective
     (H : ∀ (P : Ideal S) [P.IsPrime], Function.Surjective
-      (Localization.localRingHom (P.under R) P (algebraMap R S) rfl).specComap) :
+      (PrimeSpectrum.comap <| Localization.localRingHom (P.under R) P (algebraMap R S) rfl)) :
     Algebra.HasGoingDown R S where
   exists_ideal_le_liesOver_of_lt {p} _ Q _ hlt := by
     let pl : Ideal (Localization.AtPrime <| Q.under R) := p.map (algebraMap R _)
@@ -142,20 +144,20 @@ lemma of_specComap_localRingHom_surjective
     obtain ⟨⟨Pl, _⟩, hl⟩ := H Q ⟨pl, inferInstance⟩
     refine ⟨Pl.under S, ?_, Ideal.IsPrime.under S Pl, ⟨?_⟩⟩
     · exact (IsLocalization.AtPrime.orderIsoOfPrime _ Q ⟨Pl, inferInstance⟩).2.2
-    · replace hl : Pl.under _ = pl := by simpa using hl
+    · replace hl : Pl.under _ = pl := by simpa [PrimeSpectrum.ext_iff] using hl
       rw [Ideal.under_under, ← Ideal.under_under (B := (Localization.AtPrime <| Q.under R)) Pl, hl,
         Ideal.under_map_of_isLocalizationAtPrime (Q.under R) hlt.le]
 
 /-- Flat algebras satisfy the going down property. -/
 @[stacks 00HS]
 instance of_flat [Module.Flat R S] : Algebra.HasGoingDown R S := by
-  apply of_specComap_localRingHom_surjective
+  apply of_comap_localRingHom_surjective
   intro P hP
   have : IsLocalHom (algebraMap (Localization.AtPrime <| P.under R) (Localization.AtPrime P)) := by
     rw [RingHom.algebraMap_toAlgebra]
     exact Localization.isLocalHom_localRingHom (P.under R) P (algebraMap R S) Ideal.LiesOver.over
   have : Module.FaithfullyFlat (Localization.AtPrime (P.under R)) (Localization.AtPrime P) :=
     Module.FaithfullyFlat.of_flat_of_isLocalHom
-  apply PrimeSpectrum.specComap_surjective_of_faithfullyFlat
+  apply PrimeSpectrum.comap_surjective_of_faithfullyFlat
 
 end Algebra.HasGoingDown

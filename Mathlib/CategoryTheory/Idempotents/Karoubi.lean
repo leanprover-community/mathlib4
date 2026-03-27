@@ -17,9 +17,9 @@ In this file, we define the Karoubi envelope `Karoubi C` of a category `C`.
 ## Main constructions and definitions
 
 - `Karoubi C` is the Karoubi envelope of a category `C`: it is an idempotent
-complete category. It is also preadditive when `C` is preadditive.
+  complete category. It is also preadditive when `C` is preadditive.
 - `toKaroubi C : C ⥤ Karoubi C` is a fully faithful functor, which is an equivalence
-(`toKaroubiIsEquivalence`) when `C` is idempotent complete.
+  (`toKaroubiIsEquivalence`) when `C` is idempotent complete.
 
 -/
 
@@ -31,7 +31,7 @@ open CategoryTheory.Category CategoryTheory.Preadditive CategoryTheory.Limits
 
 namespace CategoryTheory
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 namespace Idempotents
 
@@ -222,8 +222,8 @@ instance [IsIdempotentComplete C] : (toKaroubi C).EssSurj :=
     use Y
     exact
       Nonempty.intro
-        { hom := ⟨i, by erw [id_comp, ← h₂, ← assoc, h₁, id_comp]⟩
-          inv := ⟨e, by erw [comp_id, ← h₂, assoc, h₁, comp_id]⟩ }⟩
+        { hom := ⟨i, by simp [← Category.assoc, h₁, ← h₂]⟩
+          inv := ⟨e, by simp [Category.assoc, h₁, ← h₂]⟩ }⟩
 
 /-- If `C` is idempotent complete, the functor `toKaroubi : C ⥤ Karoubi C` is an equivalence. -/
 instance toKaroubi_isEquivalence [IsIdempotentComplete C] : (toKaroubi C).IsEquivalence where
@@ -234,7 +234,7 @@ def toKaroubiEquivalence [IsIdempotentComplete C] : C ≌ Karoubi C :=
 
 instance toKaroubiEquivalence_functor_additive [Preadditive C] [IsIdempotentComplete C] :
     (toKaroubiEquivalence C).functor.Additive :=
-  (inferInstance : (toKaroubi C).Additive)
+  inferInstanceAs <| (toKaroubi C).Additive
 
 namespace Karoubi
 
@@ -287,12 +287,14 @@ def retract (X : Karoubi C) : Retract X ((toKaroubi C).obj X.X) where
 
 end Karoubi
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (toKaroubi C).PreservesEpimorphisms where
   preserves f _ := ⟨fun g h eq ↦ by
     ext
     rw [← cancel_epi f]
     simpa using eq⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (toKaroubi C).PreservesMonomorphisms where
   preserves f _ := ⟨fun g h eq ↦ by
     ext

@@ -22,7 +22,7 @@ equals `log ‖meromorphicTrailingCoeffAt g c‖` plus a correction term that ac
 poles of `g` within the ball.
 -/
 
-@[expose] public section
+public section
 
 open Filter MeromorphicAt MeromorphicOn Metric Real
 
@@ -85,7 +85,7 @@ function of Value Distribution Theory, as discussed in
 `Mathlib/Analysis/Complex/ValueDistribution/CountingFunction.lean`.
 -/
 lemma countingFunction_finsum_eq_finsum_add {c : ℂ} {R : ℝ} {D : ℂ → ℤ} (hR : R ≠ 0)
-    (hD : D.support.Finite) :
+    (hD : D.HasFiniteSupport) :
     ∑ᶠ u, D u * (log R - log ‖c - u‖) = ∑ᶠ u, D u * log (R * ‖c - u‖⁻¹) + D c * log R := by
   by_cases h : c ∈ D.support
   · have {g : ℂ → ℝ} : (fun u ↦ D u * g u).support ⊆ hD.toFinset :=
@@ -108,7 +108,7 @@ lemma countingFunction_finsum_eq_finsum_add {c : ℂ} {R : ℝ} {D : ℂ → ℤ
 ## Jensen's Formula
 -/
 
-/-!
+/--
 **Jensen's Formula**: If `f : ℂ → ℂ` is meromorphic on the closed ball with center `c` and radius
 `R`, then the `circleAverage (log ‖f ·‖) c R` equals `log ‖meromorphicTrailingCoeffAt f c‖` plus a
 correction term that accounts for the zeros and poles of `f` within the ball.
@@ -136,7 +136,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
       circleAverage_add (circleIntegrable_log_norm_factorizedRational (divisor f CB))
         (circleIntegrable_log_norm_meromorphicOn (h₁g.mono sphere_subset_closedBall).meromorphicOn)
     _ = ∑ᶠ u, divisor f CB u * log R + log ‖g c‖ := by
-      simp [h₁g]
+      simp only [circleAverage_log_norm_factorizedRational, add_right_inj]
       rw [h₁g.circleAverage_log_norm_of_ne_zero]
       exact fun u hu ↦ h₂g ⟨u, hu⟩
     _ = ∑ᶠ u, divisor f CB u * log R

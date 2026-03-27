@@ -33,8 +33,8 @@ Note that this design decision is also compatible with that of `Coalgebra`. The 
 docstring for these convoluted fields attempts to explain what is going on.
 
 The constructor `Bialgebra.ofAlgHom` is dual to the default constructor: For `R` is a commutative
-semiring and `A` a `R`-algebra, it consumes the counit and comultiplication as algebra homomorphisms
-that satisfy the coalgebra axioms to define a bialgebra structure on `A`.
+semiring and `A` an `R`-algebra, it consumes the counit and comultiplication as algebra
+homomorphisms that satisfy the coalgebra axioms to define a bialgebra structure on `A`.
 
 ## References
 
@@ -103,6 +103,7 @@ is an `R`-algebra with a coalgebra structure, then `Bialgebra.mk'`
 consumes proofs that the counit and comultiplication preserve
 the identity and multiplication, and produces a bialgebra
 structure on `A`. -/
+@[implicit_reducible]
 def mk' (R : Type u) (A : Type v) [CommSemiring R] [Semiring A]
     [Algebra R A] [C : Coalgebra R A] (counit_one : C.counit 1 = 1)
     (counit_mul : ∀ {a b}, C.counit (a * b) = C.counit a * C.counit b)
@@ -177,7 +178,7 @@ then `Bialgebra.ofAlgHom` consumes the counit and comultiplication
 as algebra homomorphisms that satisfy the coalgebra axioms to define
 a bialgebra structure on `A`. -/
 abbrev ofAlgHom (comul : A →ₐ[R] (A ⊗[R] A)) (counit : A →ₐ[R] R)
-    (h_coassoc : (Algebra.TensorProduct.assoc R R A A A).toAlgHom.comp
+    (h_coassoc : (Algebra.TensorProduct.assoc R R R A A A).toAlgHom.comp
       ((Algebra.TensorProduct.map comul (.id R A)).comp comul)
       = (Algebra.TensorProduct.map (.id R A) comul).comp comul)
     (h_rTensor : (Algebra.TensorProduct.map counit (.id R A)).comp comul

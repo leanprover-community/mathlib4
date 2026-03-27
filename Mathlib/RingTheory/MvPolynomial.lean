@@ -19,7 +19,7 @@ dimension of the space of multivariate polynomials over a field is equal to the 
 finitely supported functions from the indexing set to `ℕ`.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -32,6 +32,7 @@ namespace MvPolynomial
 
 variable (σ : Type u) (K : Type v)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotient_mk_comp_C_injective [Field K] (I : Ideal (MvPolynomial σ K)) (hI : I ≠ ⊤) :
     Function.Injective ((Ideal.Quotient.mk I).comp MvPolynomial.C) := by
   refine (injective_iff_map_eq_zero _).2 fun x hx => ?_
@@ -44,10 +45,13 @@ variable {σ K} [CommRing K] [Nontrivial K]
 open Cardinal
 
 theorem rank_eq_lift : Module.rank K (MvPolynomial σ K) = lift.{v} #(σ →₀ ℕ) := by
-  rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank, lift_lift, lift_umax.{u,v}]
+  rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank, lift_lift, lift_umax.{u, v}]
 
 theorem rank_eq {σ : Type v} : Module.rank K (MvPolynomial σ K) = #(σ →₀ ℕ) := by
   rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank]
+
+instance : Module K (MvPolynomial σ K) :=
+  inferInstanceAs <| Module K (AddMonoidAlgebra K (σ →₀ ℕ))
 
 theorem finrank_eq_zero [Nonempty σ] : Module.finrank K (MvPolynomial σ K) = 0 :=
   (basisMonomials σ K).linearIndependent.finrank_eq_zero_of_infinite

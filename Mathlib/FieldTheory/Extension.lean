@@ -117,9 +117,10 @@ noncomputable def union : Lifts F E K :=
       rw [AlgHom.comp_apply, ← inclusion]
       dsimp only [coe_type_toSubalgebra]
       rw [← hji.snd (inclusion h x), inclusion_inclusion, inclusion_self, AlgHom.id_apply x])
-    _ rfl).comp
+    _ le_rfl).comp
       (Subalgebra.equivOfEq _ _ <| toSubalgebra_iSup_of_directed dir)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_union ⦃σ : Lifts F E K⦄ (hσ : σ ∈ c) : σ ≤ union c hc :=
   have hσ := Set.mem_insert_of_mem ⊥ hσ
   let t (i : ↑(insert ⊥ c)) := i.val.carrier
@@ -158,7 +159,7 @@ theorem union_isExtendible [alg : Algebra.IsAlgebraic F E]
     · exact (this _ _ <| (hc.total π₁.2 π₂.2).resolve_left h).symm
     refine .inl (le_iff.mpr ⟨?_, algHom_ext_of_eq_adjoin _ (eq _) ?_⟩)
     · rw [eq, eq]; exact adjoin.mono _ _ _ (Set.union_subset_union_left _ h.1)
-    rintro x (hx|hx)
+    rintro x (hx | hx)
     · change (θ π₂).emb (inclusion (ge π₂).1 <| inclusion h.1 ⟨x, hx⟩) =
         (θ π₁).emb (inclusion (ge π₁).1 ⟨x, hx⟩)
       rw [(ge π₁).2, (ge π₂).2, h.2]
@@ -211,9 +212,9 @@ theorem exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral x.carr
   let carrier := x.carrier⟮s⟯.restrictScalars F
   letI : Algebra x.carrier carrier := x.carrier⟮s⟯.toSubalgebra.algebra
   let φ : carrier →ₐ[x.carrier] K := ((algHomAdjoinIntegralEquiv x.carrier h1).symm
-    ⟨rootOfSplits x.emb.toRingHom h2 I2, by
+    ⟨rootOfSplits h2 (by rwa [degree_map]), by
       rw [mem_aroots, and_iff_right (minpoly.ne_zero h1)]
-      exact map_rootOfSplits x.emb.toRingHom h2 I2⟩)
+      exact (eval_map _ _).symm.trans (eval_rootOfSplits _ _)⟩)
   ⟨⟨carrier, (@algHomEquivSigma F x.carrier carrier K _ _ _ _ _ _ _ _
       (IsScalarTower.of_algebraMap_eq fun _ ↦ rfl)).symm ⟨x.emb, φ⟩⟩,
     ⟨fun z hz ↦ algebraMap_mem x.carrier⟮s⟯ ⟨z, hz⟩, φ.commutes⟩,
@@ -261,7 +262,7 @@ theorem exists_algHom_adjoin_of_splits' :
     · ext x
       let y := (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)) x
       refine Eq.trans congr($hφ y) ?_
-      simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, Function.comp_apply, f']
+      simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, Function.comp_apply, f']
       exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
   letI : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingHom.toAlgebra
   have : IsScalarTower L L' E := IsScalarTower.of_algebraMap_eq' rfl
@@ -269,7 +270,7 @@ theorem exists_algHom_adjoin_of_splits' :
   convert (hK s hs).2
   ext
   simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
-    AlgHom.coe_comp, AlgHom.coe_coe, Function.comp_apply, f']
+    AlgHom.coe_comp, Function.comp_apply, f']
   exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
 
 include hK in

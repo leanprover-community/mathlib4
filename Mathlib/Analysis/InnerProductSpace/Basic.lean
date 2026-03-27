@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.InnerProductSpace.Defs
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 
 /-!
 # Properties of inner product spaces
@@ -62,7 +63,7 @@ theorem inner_eq_zero_symm {x y : E} : ⟪x, y⟫ = 0 ↔ ⟪y, x⟫ = 0 := by
   rw [← inner_conj_symm]
   exact star_eq_zero
 
-instance {ι : Sort*} (v : ι → E) : IsSymm ι fun i j => ⟪v i, v j⟫ = 0 where
+instance {ι : Sort*} (v : ι → E) : Std.Symm fun i j => ⟪v i, v j⟫ = 0 where
   symm _ _ := inner_eq_zero_symm.1
 
 theorem inner_self_im (x : E) : im ⟪x, x⟫ = 0 := by
@@ -72,7 +73,7 @@ theorem inner_add_left (x y z : E) : ⟪x + y, z⟫ = ⟪x, z⟫ + ⟪y, z⟫ :=
   InnerProductSpace.add_left _ _ _
 
 theorem inner_add_right (x y z : E) : ⟪x, y + z⟫ = ⟪x, y⟫ + ⟪x, z⟫ := by
-  rw [← inner_conj_symm, inner_add_left, RingHom.map_add]
+  rw [← inner_conj_symm, inner_add_left, map_add]
   simp only [inner_conj_symm]
 
 theorem inner_re_symm (x y : E) : re ⟪x, y⟫ = re ⟪y, x⟫ := by rw [← inner_conj_symm, conj_re]
@@ -120,42 +121,60 @@ theorem real_inner_smul_right (x y : F) (r : ℝ) : ⟪x, r • y⟫_ℝ = r * �
 theorem inner_smul_real_right (x y : E) (r : ℝ) : ⟪x, (r : 𝕜) • y⟫ = r • ⟪x, y⟫ := by
   rw [inner_smul_right, Algebra.smul_def]
 
-/-- The inner product as a sesquilinear form.
+
+variable (𝕜)
+
+/-- The inner product as a sesquilinear map.
 
 Note that in the case `𝕜 = ℝ` this is a bilinear form. -/
-@[simps!]
-def sesqFormOfInner : E →ₗ[𝕜] E →ₗ⋆[𝕜] 𝕜 :=
-  LinearMap.mk₂'ₛₗ (RingHom.id 𝕜) (starRingEnd _) (fun x y => ⟪y, x⟫)
-    (fun _x _y _z => inner_add_right _ _ _) (fun _r _x _y => inner_smul_right _ _ _)
-    (fun _x _y _z => inner_add_left _ _ _) fun _r _x _y => inner_smul_left _ _ _
+def innerₛₗ : E →ₗ⋆[𝕜] E →ₗ[𝕜] 𝕜 :=
+  LinearMap.mk₂'ₛₗ _ _ (fun v w => ⟪v, w⟫) inner_add_left (fun _ _ _ => inner_smul_left _ _ _)
+    inner_add_right fun _ _ _ => inner_smul_right _ _ _
 
-/-- The real inner product as a bilinear form.
+@[simp]
+theorem coe_innerₛₗ_apply (v : E) : ⇑(innerₛₗ 𝕜 v) = fun w => ⟪v, w⟫ :=
+  rfl
 
-Note that unlike `sesqFormOfInner`, this does not reverse the order of the arguments. -/
-@[simps!]
-def bilinFormOfRealInner : BilinForm ℝ F := sesqFormOfInner.flip
+@[simp]
+theorem innerₛₗ_apply_apply (v w : E) : innerₛₗ 𝕜 v w = ⟪v, w⟫ :=
+  rfl
+
+variable (F)
+/-- The inner product as a bilinear map in the real case. -/
+def innerₗ : F →ₗ[ℝ] F →ₗ[ℝ] ℝ := innerₛₗ ℝ
+
+@[simp] lemma flip_innerₗ : (innerₗ F).flip = innerₗ F := by
+  ext v w
+  exact real_inner_comm v w
+
+variable {F}
+
+@[simp] lemma innerₗ_apply_apply (v w : F) : innerₗ F v w = ⟪v, w⟫_ℝ := rfl
+
+variable {𝕜}
+
+@[deprecated (since := "2025-12-26")] alias sesqFormOfInner := innerₛₗ
+@[deprecated (since := "2025-12-26")] noncomputable alias bilinFormOfRealInner := innerₗ
 
 /-- An inner product with a sum on the left. -/
 theorem sum_inner {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
     ⟪∑ i ∈ s, f i, x⟫ = ∑ i ∈ s, ⟪f i, x⟫ :=
-  map_sum (sesqFormOfInner (𝕜 := 𝕜) (E := E) x) _ _
+  map_sum ((innerₛₗ 𝕜).flip x) _ _
 
 /-- An inner product with a sum on the right. -/
 theorem inner_sum {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
     ⟪x, ∑ i ∈ s, f i⟫ = ∑ i ∈ s, ⟪x, f i⟫ :=
-  map_sum (LinearMap.flip sesqFormOfInner x) _ _
+  map_sum (innerₛₗ 𝕜 x) _ _
 
 /-- An inner product with a sum on the left, `Finsupp` version. -/
-protected theorem Finsupp.sum_inner {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
-    ⟪l.sum fun (i : ι) (a : 𝕜) => a • v i, x⟫ = l.sum fun (i : ι) (a : 𝕜) => conj a • ⟪v i, x⟫ := by
-  convert sum_inner (𝕜 := 𝕜) l.support (fun a => l a • v a) x
-  simp only [inner_smul_left, Finsupp.sum, smul_eq_mul]
+protected theorem Finsupp.sum_inner {ι : Type*} {M : Type*} [Zero M] (l : ι →₀ M)
+    (v : ι → M → E) (x : E) : ⟪l.sum v, x⟫ = l.sum fun (i : ι) (a : M) ↦ ⟪v i a, x⟫ := by
+  simp [sum, sum_inner]
 
 /-- An inner product with a sum on the right, `Finsupp` version. -/
-protected theorem Finsupp.inner_sum {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
-    ⟪x, l.sum fun (i : ι) (a : 𝕜) => a • v i⟫ = l.sum fun (i : ι) (a : 𝕜) => a • ⟪x, v i⟫ := by
-  convert inner_sum (𝕜 := 𝕜) l.support (fun a => l a • v a) x
-  simp only [inner_smul_right, Finsupp.sum, smul_eq_mul]
+protected theorem Finsupp.inner_sum {ι : Type*} {M : Type*} [Zero M] (l : ι →₀ M)
+    (v : ι → M → E) (x : E) : ⟪x, l.sum v⟫ = l.sum fun (i : ι) (a : M) ↦ ⟪x, v i a⟫ := by
+  simp [sum, inner_sum]
 
 protected theorem DFinsupp.sum_inner {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
@@ -169,17 +188,17 @@ protected theorem DFinsupp.inner_sum {ι : Type*} [DecidableEq ι] {α : ι → 
 
 @[simp]
 theorem inner_zero_left (x : E) : ⟪0, x⟫ = 0 := by
-  rw [← zero_smul 𝕜 (0 : E), inner_smul_left, RingHom.map_zero, zero_mul]
+  rw [← zero_smul 𝕜 (0 : E), inner_smul_left, map_zero, zero_mul]
 
 theorem inner_re_zero_left (x : E) : re ⟪0, x⟫ = 0 := by
-  simp only [inner_zero_left, AddMonoidHom.map_zero]
+  simp only [inner_zero_left, map_zero]
 
 @[simp]
 theorem inner_zero_right (x : E) : ⟪x, 0⟫ = 0 := by
-  rw [← inner_conj_symm, inner_zero_left, RingHom.map_zero]
+  rw [← inner_conj_symm, inner_zero_left, map_zero]
 
 theorem inner_re_zero_right (x : E) : re ⟪x, 0⟫ = 0 := by
-  simp only [inner_zero_right, AddMonoidHom.map_zero]
+  simp only [inner_zero_right, map_zero]
 
 theorem inner_self_nonneg {x : E} : 0 ≤ re ⟪x, x⟫ :=
   PreInnerProductSpace.toCore.re_inner_nonneg x
@@ -215,7 +234,7 @@ theorem inner_neg_left (x y : E) : ⟪-x, y⟫ = -⟪x, y⟫ := by
 
 @[simp]
 theorem inner_neg_right (x y : E) : ⟪x, -y⟫ = -⟪x, y⟫ := by
-  rw [← inner_conj_symm, inner_neg_left]; simp only [RingHom.map_neg, inner_conj_symm]
+  rw [← inner_conj_symm, inner_neg_left]; simp only [map_neg, inner_conj_symm]
 
 theorem inner_neg_neg (x y : E) : ⟪-x, -y⟫ = ⟪x, y⟫ := by simp
 
@@ -322,9 +341,6 @@ theorem re_inner_self_nonpos {x : E} : re ⟪x, x⟫ ≤ 0 ↔ x = 0 := by
 lemma re_inner_self_pos {x : E} : 0 < re ⟪x, x⟫ ↔ x ≠ 0 := by
   simp [sq_pos_iff]
 
-@[deprecated (since := "2025-04-22")] alias inner_self_nonpos := re_inner_self_nonpos
-@[deprecated (since := "2025-04-22")] alias inner_self_pos := re_inner_self_pos
-
 open scoped InnerProductSpace in
 theorem real_inner_self_nonpos {x : F} : ⟪x, x⟫_ℝ ≤ 0 ↔ x = 0 := re_inner_self_nonpos (𝕜 := ℝ)
 
@@ -365,8 +381,6 @@ theorem norm_eq_sqrt_re_inner (x : E) : ‖x‖ = √(re ⟪x, x⟫) :=
     ‖x‖ = √(‖x‖ ^ 2) := (sqrt_sq (norm_nonneg _)).symm
     _ = √(re ⟪x, x⟫) := congr_arg _ (norm_sq_eq_re_inner _)
 
-@[deprecated (since := "2025-04-22")] alias norm_eq_sqrt_inner := norm_eq_sqrt_re_inner
-
 theorem norm_eq_sqrt_real_inner (x : F) : ‖x‖ = √⟪x, x⟫_ℝ :=
   @norm_eq_sqrt_re_inner ℝ _ _ _ _ x
 
@@ -388,7 +402,7 @@ theorem real_inner_self_eq_norm_sq (x : F) : ⟪x, x⟫_ℝ = ‖x‖ ^ 2 := by
 theorem norm_add_sq (x y : E) : ‖x + y‖ ^ 2 = ‖x‖ ^ 2 + 2 * re ⟪x, y⟫ + ‖y‖ ^ 2 := by
   repeat' rw [sq (M := ℝ), ← @inner_self_eq_norm_mul_norm 𝕜]
   rw [inner_add_add_self, two_mul]
-  simp only [add_assoc, add_left_inj, add_right_inj, AddMonoidHom.map_add]
+  simp only [add_assoc, add_left_inj, add_right_inj, map_add]
   rw [← inner_conj_symm, conj_re]
 
 alias norm_add_pow_two := norm_add_sq
@@ -468,16 +482,26 @@ lemma inner_eq_zero_of_right (x : E) {y : E} (h : ‖y‖ = 0) : ⟪x, y⟫_𝕜
 variable (𝕜)
 
 include 𝕜 in
-theorem parallelogram_law_with_norm (x y : E) :
+theorem parallelogram_law_with_norm_mul (x y : E) :
     ‖x + y‖ * ‖x + y‖ + ‖x - y‖ * ‖x - y‖ = 2 * (‖x‖ * ‖x‖ + ‖y‖ * ‖y‖) := by
   simp only [← @inner_self_eq_norm_mul_norm 𝕜]
   rw [← re.map_add, parallelogram_law, two_mul, two_mul]
   simp only [re.map_add]
 
 include 𝕜 in
-theorem parallelogram_law_with_nnnorm (x y : E) :
+theorem parallelogram_law_with_norm (x y : E) :
+    ‖x + y‖ ^ 2 + ‖x - y‖ ^ 2 = 2 * (‖x‖ ^ 2 + ‖y‖ ^ 2) := by
+  simp_rw [sq, parallelogram_law_with_norm_mul 𝕜 x y]
+
+include 𝕜 in
+theorem parallelogram_law_with_nnnorm_mul (x y : E) :
     ‖x + y‖₊ * ‖x + y‖₊ + ‖x - y‖₊ * ‖x - y‖₊ = 2 * (‖x‖₊ * ‖x‖₊ + ‖y‖₊ * ‖y‖₊) :=
-  Subtype.ext <| parallelogram_law_with_norm 𝕜 x y
+  Subtype.ext <| parallelogram_law_with_norm_mul 𝕜 x y
+
+include 𝕜 in
+theorem parallelogram_law_with_nnnorm (x y : E) :
+    ‖x + y‖₊ ^ 2 + ‖x - y‖₊ ^ 2 = 2 * (‖x‖₊ ^ 2 + ‖y‖₊ ^ 2) := by
+  simp_rw [sq, parallelogram_law_with_nnnorm_mul 𝕜 x y]
 
 variable {𝕜}
 
@@ -797,6 +821,27 @@ theorem inner_eq_one_iff_of_norm_eq_one {x y : E} (hx : ‖x‖ = 1) (hy : ‖y�
     ⟪x, y⟫ = 1 ↔ x = y := by
   convert inner_eq_norm_mul_iff (𝕜 := 𝕜) (E := E) using 2 <;> simp [hx, hy]
 
+/-- If the inner product of two unit vectors is `-1`, then the two vectors are negations of each
+other. -/
+theorem inner_eq_neg_one_iff_of_norm_eq_one {x y : E} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+    ⟪x, y⟫ = -1 ↔ x = -y := by
+  rw [← neg_eq_iff_eq_neg, ← inner_neg_right, inner_eq_one_iff_of_norm_eq_one hx (norm_neg y ▸ hy)]
+
+/-- The inner product of two unit vectors is less than or equal to `1`. -/
+theorem real_inner_le_one_of_norm_eq_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+    ⟪x, y⟫_ℝ ≤ 1 := by
+  simpa [hx, hy] using real_inner_le_norm x y
+
+/-- The inner product of two unit vectors is greater than or equal to `-1`. -/
+theorem neg_one_le_real_inner_of_norm_eq_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+    -1 ≤ ⟪x, y⟫_ℝ := by
+  simpa [hx, hy] using neg_le_of_abs_le (abs_real_inner_le_norm x y)
+
+/-- If `x` and `y` are unit vectors, then `-1 ≤ ⟪x, y⟫ ≤ 1`. -/
+theorem real_inner_mem_Icc_of_norm_eq_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+    ⟪x, y⟫_ℝ ∈ Set.Icc (-1) 1 :=
+  ⟨neg_one_le_real_inner_of_norm_eq_one hx hy, real_inner_le_one_of_norm_eq_one hx hy⟩
+
 theorem inner_self_eq_one_of_norm_eq_one {x : E} (hx : ‖x‖ = 1) : ⟪x, x⟫_𝕜 = 1 :=
   (inner_eq_one_iff_of_norm_eq_one hx hx).mpr rfl
 
@@ -868,6 +913,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- A general inner product implies a real inner product. This is not registered as an instance
 since `𝕜` does not appear in the return type `Inner ℝ E`. -/
+@[implicit_reducible]
 def Inner.rclikeToReal : Inner ℝ E where inner x y := re ⟪x, y⟫
 
 /-- A general inner product space structure implies a real inner product structure.
@@ -886,11 +932,11 @@ abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
     norm_sq_eq_re_inner := norm_sq_eq_re_inner
     conj_inner_symm := fun _ _ => inner_re_symm _ _
     add_left := fun x y z => by
-      simp only [Inner.rclikeToReal, inner_add_left, map_add]
+      simp +instances only [Inner.rclikeToReal, inner_add_left, map_add]
     smul_left := fun x y r => by
       letI := NormedSpace.restrictScalars ℝ 𝕜 E
       have : r • x = (r : 𝕜) • x := rfl
-      simp only [Inner.rclikeToReal, this, conj_trivial, inner_smul_left, conj_ofReal,
+      simp +instances only [Inner.rclikeToReal, this, conj_trivial, inner_smul_left, conj_ofReal,
         re_ofReal_mul] }
 
 variable {E}
@@ -906,6 +952,7 @@ theorem real_inner_I_smul_self (x : E) :
 /-- A complex inner product implies a real inner product. This cannot be an instance since it
 creates a diamond with `PiLp.innerProductSpace` because `re (sum i, ⟪x i, y i⟫)` and
 `sum i, re ⟪x i, y i⟫` are not defeq. -/
+@[implicit_reducible]
 def InnerProductSpace.complexToReal [SeminormedAddCommGroup G] [InnerProductSpace ℂ G] :
     InnerProductSpace ℝ G :=
   InnerProductSpace.rclikeToReal ℂ G
@@ -934,3 +981,19 @@ example : (innerProductSpace : InnerProductSpace ℝ ℝ) = RCLike.toInnerProduc
 example :
     (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal :=
   rfl
+
+section IsPosSemidef
+
+variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+
+lemma isSymm_inner : LinearMap.IsSymm (innerₗ E) where
+  eq x y := by simp [real_inner_comm]
+
+lemma isNonneg_inner : LinearMap.IsNonneg (innerₗ E) where
+  nonneg x := by simp
+
+lemma isPosSemidef_inner : LinearMap.IsPosSemidef (innerₗ E) where
+  isSymm := isSymm_inner
+  isNonneg := isNonneg_inner
+
+end IsPosSemidef

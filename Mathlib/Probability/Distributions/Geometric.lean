@@ -67,11 +67,11 @@ def geometricPMF (hp_pos : 0 < p) (hp_le_one : p ≤ 1) : PMF ℕ :=
       (fun n ↦ geometricPMFReal_nonneg hp_pos hp_le_one)⟩
 
 /-- The geometric pmf is measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_geometricPMFReal : Measurable (geometricPMFReal p) := by
   fun_prop
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_geometricPMFReal : StronglyMeasurable (geometricPMFReal p) :=
   stronglyMeasurable_iff_measurable.mpr measurable_geometricPMFReal
 
@@ -85,8 +85,5 @@ def geometricMeasure (hp_pos : 0 < p) (hp_le_one : p ≤ 1) : Measure ℕ :=
 lemma isProbabilityMeasure_geometricMeasure (hp_pos : 0 < p) (hp_le_one : p ≤ 1) :
     IsProbabilityMeasure (geometricMeasure hp_pos hp_le_one) :=
   PMF.toMeasure.isProbabilityMeasure (geometricPMF hp_pos hp_le_one)
-
-@[deprecated (since := "2025-08-28")] alias isProbabilityMeasureGeometric :=
-  isProbabilityMeasure_geometricMeasure
 
 end ProbabilityTheory

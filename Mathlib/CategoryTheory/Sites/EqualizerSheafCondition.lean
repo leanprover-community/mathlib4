@@ -130,6 +130,7 @@ theorem w : forkMap P (S : Presieve X) ≫ firstMap P S = forkMap P S ≫ second
   ext
   simp [firstMap, secondMap, forkMap]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The family of elements given by `x : FirstObj P S` is compatible iff `firstMap` and `secondMap`
 map it to the same point.
@@ -206,6 +207,7 @@ def secondMap : FirstObj P R ⟶ SecondObj P R :=
     haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 
+set_option backward.isDefEq.respectTransparency false in
 theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
   dsimp
   ext fg
@@ -215,6 +217,7 @@ theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
   rw [← P.map_comp, ← op_comp, pullback.condition]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The family of elements given by `x : FirstObj P S` is compatible iff `firstMap` and `secondMap`
 map it to the same point.
@@ -280,7 +283,7 @@ The difference between this and `Equalizer.Presieve.SecondObj P (ofArrows X π)`
 family of arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
 -/
 @[stacks 00VM "The rightmost object of the fork diagram there."]
-def SecondObj : Type w  :=
+def SecondObj : Type w :=
   ∏ᶜ (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2))))
 
 @[ext]

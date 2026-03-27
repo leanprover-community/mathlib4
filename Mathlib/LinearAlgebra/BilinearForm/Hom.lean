@@ -75,7 +75,7 @@ theorem sum_right {α} (t : Finset α) (w : M) (g : α → M) :
 
 theorem sum_apply {α} (t : Finset α) (B : α → BilinForm R M) (v w : M) :
     (∑ i ∈ t, B i) v w = ∑ i ∈ t, B i v w := by
-  simp only [coeFn_sum, Finset.sum_apply]
+  simp only [coe_sum, Finset.sum_apply]
 
 variable {B}
 
@@ -184,10 +184,8 @@ theorem comp_inj (B₁ B₂ : BilinForm R M') {l r : M →ₗ[R] M'} (hₗ : Fun
   constructor <;> intro h
   · -- B₁.comp l r = B₂.comp l r → B₁ = B₂
     ext x y
-    obtain ⟨x', hx⟩ := hₗ x
-    subst hx
-    obtain ⟨y', hy⟩ := hᵣ y
-    subst hy
+    obtain ⟨x', rfl⟩ := hₗ x
+    obtain ⟨y', rfl⟩ := hᵣ y
     rw [← comp_apply, ← comp_apply, h]
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     rw [h]

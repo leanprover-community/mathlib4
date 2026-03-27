@@ -6,6 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Algebra.Group.Invertible.Defs
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.CategoryTheory.Preadditive.Basic
@@ -27,7 +28,7 @@ This makes for longer signatures than would be ideal.
 
 ## Future work
 
-It would be nice to have a usable framework of enriched categories in which this just became
+It would be nice to have a usable framework of enriched categories in which this would just be
 a category enriched in `Module R`.
 
 -/
@@ -53,7 +54,7 @@ class Linear (R : Type w) [Semiring R] (C : Type u) [Category.{v} C] [Preadditiv
   comp_smul : ∀ (X Y Z : C) (f : X ⟶ Y) (r : R) (g : Y ⟶ Z), f ≫ (r • g) = r • f ≫ g := by
     cat_disch
 
-attribute [instance] Linear.homModule
+attribute [instance_reducible, instance] Linear.homModule
 
 attribute [simp] Linear.smul_comp Linear.comp_smul
 
@@ -78,6 +79,7 @@ section End
 
 variable {R : Type w}
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Semiring R] [Linear R C] (X : C) : Module R (End X) := by
   dsimp [End]
   infer_instance
@@ -98,16 +100,24 @@ universe u'
 variable {D : Type u'} (F : D → C)
 
 instance inducedCategory : Linear.{w, v} R (InducedCategory C F) where
-  homModule X Y := @Linear.homModule R _ C _ _ _ (F X) (F Y)
-  smul_comp _ _ _ _ _ _ := smul_comp _ _ _ _ _ _
-  comp_smul _ _ _ _ _ _ := comp_smul _ _ _ _ _ _
+  homModule X Y := Equiv.module _ InducedCategory.homEquiv
+  smul_comp _ _ _ _ _ _ := by ext; apply smul_comp
+  comp_smul _ _ _ _ _ _ := by ext; apply comp_smul
+
+variable {F} in
+/-- The linear equivalence `(X ⟶ Y) ≃+ (F X ⟶ F Y)` when `F : D → C` and
+`C` is a `R`-linear category. -/
+@[simps!]
+def _root_.CategoryTheory.InducedCategory.homLinearEquiv
+    {X Y : InducedCategory C F} :
+    (X ⟶ Y) ≃ₗ[R] (F X ⟶ F Y) where
+  toAddEquiv := InducedCategory.homAddEquiv
+  map_smul' := by cat_disch
 
 end InducedCategory
 
-instance fullSubcategory (Z : ObjectProperty C) : Linear.{w, v} R Z.FullSubcategory where
-  homModule X Y := @Linear.homModule R _ C _ _ _ X.obj Y.obj
-  smul_comp _ _ _ _ _ _ := smul_comp _ _ _ _ _ _
-  comp_smul _ _ _ _ _ _ := comp_smul _ _ _ _ _ _
+instance fullSubcategory (Z : ObjectProperty C) : Linear.{w, v} R Z.FullSubcategory :=
+  inducedCategory _
 
 variable (R)
 
@@ -137,7 +147,7 @@ instance {X Y : C} (f : X ⟶ Y) [Mono f] (r : R) [Invertible r] : Mono (r • f
 
 /-- Given isomorphic objects `X ≅ Y, W ≅ Z` in a `k`-linear category, we have a `k`-linear
 isomorphism between `Hom(X, W)` and `Hom(Y, Z).` -/
-def homCongr (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C] [Linear k C]
+def homCongr (k : Type*) {C : Type*} [Category* C] [Semiring k] [Preadditive C] [Linear k C]
     {X Y W Z : C} (f₁ : X ≅ Y) (f₂ : W ≅ Z) : (X ⟶ W) ≃ₗ[k] Y ⟶ Z :=
   {
     (rightComp k Y f₂.hom).comp
@@ -153,12 +163,12 @@ def homCongr (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C] [
         leftComp_apply, LinearMap.toFun_eq_coe, Iso.inv_hom_id_assoc, Category.assoc,
         Iso.inv_hom_id, Category.comp_id] }
 
-theorem homCongr_apply (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C]
+theorem homCongr_apply (k : Type*) {C : Type*} [Category* C] [Semiring k] [Preadditive C]
     [Linear k C] {X Y W Z : C} (f₁ : X ≅ Y) (f₂ : W ≅ Z) (f : X ⟶ W) :
     homCongr k f₁ f₂ f = (f₁.inv ≫ f) ≫ f₂.hom :=
   rfl
 
-theorem homCongr_symm_apply (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C]
+theorem homCongr_symm_apply (k : Type*) {C : Type*} [Category* C] [Semiring k] [Preadditive C]
     [Linear k C] {X Y W Z : C} (f₁ : X ≅ Y) (f₂ : W ≅ Z) (f : Y ⟶ Z) :
     (homCongr k f₁ f₂).symm f = f₁.hom ≫ f ≫ f₂.inv :=
   rfl

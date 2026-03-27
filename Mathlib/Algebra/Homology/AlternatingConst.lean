@@ -44,7 +44,7 @@ namespace HomologicalComplex
 
 open ShortComplex
 
-variable {C : Type*} [Category C] [Limits.HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [Limits.HasZeroMorphisms C]
   (A : C) {φ : A ⟶ A} {ψ : A ⟶ A} (hOdd : φ ≫ ψ = 0) (hEven : ψ ≫ φ = 0)
 
 /-- Let `c : ComplexShape ℕ` be such that `i j : ℕ` have opposite parity if they are related by
@@ -74,6 +74,7 @@ variable {c : ComplexShape ℕ} [DecidableRel c.Rel] (hc : ∀ i j, c.Rel i j �
 
 open HomologicalComplex hiding mk
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `i, j, k`th short complex associated to the alternating constant complex on `φ, ψ : A ⟶ A`
 is `A --ψ--> A --φ--> A` when `i ~ j, j ~ k` and `j` is even. -/
 noncomputable def alternatingConstScIsoEven
@@ -88,6 +89,7 @@ noncomputable def alternatingConstScIsoEven
       exact False.elim <| Nat.not_odd_iff_even.2 hi <| by simp_all [Nat.odd_add])
     (by simp_all [alternatingConst])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `i, j, k`th short complex associated to the alternating constant complex on `φ, ψ : A ⟶ A`
 is `A --φ--> A --ψ--> A` when `i ~ j, j ~ k` and `j` is even. -/
 noncomputable def alternatingConstScIsoOdd
@@ -102,6 +104,7 @@ noncomputable def alternatingConstScIsoOdd
       exact False.elim <| Nat.not_even_iff_odd.2 h <| by simp_all [Nat.odd_add])
     (by simp_all [alternatingConst])
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma alternatingConst_iCycles_even_comp [CategoryWithHomology C]
     {j : ℕ} (hpj : c.Rel (c.prev j) j) (hnj : c.Rel j (c.next j)) (h : Even j) :
@@ -113,6 +116,7 @@ lemma alternatingConst_iCycles_even_comp [CategoryWithHomology C]
     Category.id_comp (X := (alternatingConst A hOdd hEven hc).X _)]
     using (ShortComplex.mk ψ φ hEven).iCycles_g
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma alternatingConst_iCycles_odd_comp [CategoryWithHomology C]
     {j : ℕ} (hpj : c.Rel (c.prev j) j) (hnj : c.Rel j (c.next j)) (h : Odd j) :
@@ -142,7 +146,7 @@ end HomologicalComplex
 
 open CategoryTheory Limits AlgebraicTopology
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace ChainComplex
 
@@ -160,6 +164,7 @@ variable [HasZeroMorphisms C] [HasZeroObject C]
 
 open ZeroObject
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `n`-th homology of the alternating constant complex is zero for non-zero even `n`. -/
 noncomputable
 def alternatingConstHomologyDataEvenNEZero (X : C) (n : ℕ) (hn : Even n) (h₀ : n ≠ 0) :
@@ -167,12 +172,14 @@ def alternatingConstHomologyDataEvenNEZero (X : C) (n : ℕ) (hn : Even n) (h₀
   .ofIsLimitKernelFork _ (by simp [Nat.even_add_one, hn]) _
     (Limits.zeroKernelOfCancelZero _ (by cases n <;> simp_all))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `n`-th homology of the alternating constant complex is zero for odd `n`. -/
 noncomputable
 def alternatingConstHomologyDataOdd (X : C) (n : ℕ) (hn : Odd n) :
     ((alternatingConst.obj X).sc n).HomologyData :=
   .ofIsColimitCokernelCofork _ (by simp [hn]) _ (Limits.zeroCokernelOfZeroCancel _ (by simp [hn]))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `n`-th homology of the alternating constant complex is `X` for `n = 0`. -/
 noncomputable
 def alternatingConstHomologyDataZero (X : C) (n : ℕ) (hn : n = 0) :
@@ -202,6 +209,7 @@ end ChainComplex
 
 variable [Preadditive C] [HasZeroObject C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The alternating face complex of the constant complex is the alternating constant complex. -/
 noncomputable def AlgebraicTopology.alternatingFaceMapComplexConst :
     Functor.const _ ⋙ alternatingFaceMapComplex C ≅ ChainComplex.alternatingConst :=

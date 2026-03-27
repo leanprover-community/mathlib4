@@ -140,7 +140,7 @@ theorem sup_mono (h : s₁ ⊆ s₂) : s₁.sup f ≤ s₂.sup f :=
 
 protected theorem sup_comm (s : Finset β) (t : Finset γ) (f : β → γ → α) :
     (s.sup fun b => t.sup (f b)) = t.sup fun c => s.sup fun b => f b c :=
-  eq_of_forall_ge_iff fun a => by simpa using forall₂_swap
+  eq_of_forall_ge_iff fun a => by simpa using forall₂_comm
 
 @[simp]
 theorem sup_attach (s : Finset β) (f : β → α) : (s.attach.sup fun x => f x) = s.sup f :=
@@ -241,16 +241,12 @@ theorem sup_eq_bot_of_isEmpty [IsEmpty β] (f : β → α) (S : Finset β) : S.s
 theorem le_sup_dite_pos (p : β → Prop) [DecidablePred p]
     {f : (b : β) → p b → α} {g : (b : β) → ¬p b → α} {b : β} (h₀ : b ∈ s) (h₁ : p b) :
     f b h₁ ≤ s.sup fun i ↦ if h : p i then f i h else g i h := by
-  have : f b h₁ = (fun i ↦ if h : p i then f i h else g i h) b := by simp [h₁]
-  rw [this]
-  apply le_sup h₀
+  grind [le_sup_of_le]
 
 theorem le_sup_dite_neg (p : β → Prop) [DecidablePred p]
     {f : (b : β) → p b → α} {g : (b : β) → ¬p b → α} {b : β} (h₀ : b ∈ s) (h₁ : ¬p b) :
     g b h₁ ≤ s.sup fun i ↦ if h : p i then f i h else g i h := by
-  have : g b h₁ = (fun i ↦ if h : p i then f i h else g i h) b := by simp [h₁]
-  rw [this]
-  apply le_sup h₀
+  grind [le_sup_of_le]
 
 end Sup
 
@@ -281,7 +277,7 @@ theorem exists_sup_ge [SemilatticeSup β] [OrderBot β] [WellFoundedGT β] (f : 
   refine ⟨t, fun a ↦ ?_⟩
   classical
   have := ht (f a ⊔ t.sup f) ⟨insert a t, by simp⟩
-  rwa [GT.gt, right_lt_sup, not_not] at this
+  rwa [right_lt_sup, not_not] at this
 
 theorem exists_sup_eq_iSup [CompleteLattice β] [WellFoundedGT β] (f : α → β) :
     ∃ t : Finset α, t.sup f = ⨆ a, f a :=
@@ -753,7 +749,7 @@ theorem sup'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempt
 
 protected theorem sup'_comm {t : Finset γ} (hs : s.Nonempty) (ht : t.Nonempty) (f : β → γ → α) :
     (s.sup' hs fun b => t.sup' ht (f b)) = t.sup' ht fun c => s.sup' hs fun b => f b c :=
-  eq_of_forall_ge_iff fun a => by simpa using forall₂_swap
+  eq_of_forall_ge_iff fun a => by simpa using forall₂_comm
 
 theorem sup'_induction {p : α → Prop} (hp : ∀ a₁, p a₁ → ∀ a₂, p a₂ → p (a₁ ⊔ a₂))
     (hs : ∀ b ∈ s, p (f b)) : p (s.sup' H f) := by
@@ -1139,14 +1135,8 @@ theorem sup_singleton_apply (s : Finset β) (f : β → α) :
   rw [mem_sup, mem_image]
   simp only [mem_singleton, eq_comm]
 
-@[deprecated (since := "2025-05-24")]
-alias sup_singleton'' := sup_singleton_apply
-
 @[simp]
 theorem sup_singleton_eq_self (s : Finset α) : s.sup singleton = s :=
   (s.sup_singleton_apply _).trans image_id
-
-@[deprecated (since := "2025-05-24")]
-alias sup_singleton' := sup_singleton_eq_self
 
 end Finset

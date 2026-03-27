@@ -27,7 +27,7 @@ relation is `G.Adj` for `G : SimpleGraph α`, this corresponds to independent se
 
 assert_not_exists CompleteLattice
 
-open Function Set
+open Function Set Set.Notation
 
 section General
 
@@ -66,10 +66,12 @@ protected theorem eq' (hs : IsAntichain r s) {a b : α} (ha : a ∈ s) (hb : b �
     a = b :=
   (hs.eq hb ha h).symm
 
-protected theorem isAntisymm (h : IsAntichain r univ) : IsAntisymm α r :=
+protected theorem antisymm (h : IsAntichain r univ) : Std.Antisymm r :=
   ⟨fun _ _ ha _ => h.eq trivial trivial ha⟩
 
-protected theorem subsingleton [IsTrichotomous α r] (h : IsAntichain r s) : s.Subsingleton := by
+@[deprecated (since := "2026-01-06")] protected alias isAntisymm := antisymm
+
+protected theorem subsingleton [Std.Trichotomous r] (h : IsAntichain r s) : s.Subsingleton := by
   rintro a ha b hb
   obtain hab | hab | hab := trichotomous_of r a b
   · exact h.eq ha hb hab
@@ -173,15 +175,22 @@ theorem preimage_compl [BooleanAlgebra α] (hs : IsAntichain (· ≤ ·) s) :
     IsAntichain (· ≤ ·) (compl ⁻¹' s) := fun _ ha _ ha' hne hle =>
   hs ha' ha (fun h => hne (compl_inj_iff.mp h.symm)) (compl_le_compl hle)
 
+@[simp] protected theorem diff {s t : Set α} (h : IsAntichain r s) : IsAntichain r (s \ t) :=
+  h.subset Set.diff_subset
+
 end IsAntichain
+
+theorem isAntichain_preimage_subtypeVal (s t : Set α) :
+    @IsAntichain ↑s (r · ·) (s ↓∩ t) ↔ IsAntichain r (s ∩ t) := by
+  simp [IsAntichain, Set.Pairwise]
+
+theorem isAntichain_coe_univ_iff {s : Set α} : @IsAntichain ↑s (r · ·) univ ↔ IsAntichain r s := by
+  simpa using isAntichain_preimage_subtypeVal s univ
 
 theorem isAntichain_union :
     IsAntichain r (s ∪ t) ↔
       IsAntichain r s ∧ IsAntichain r t ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → rᶜ a b ∧ rᶜ b a := by
   rw [IsAntichain, IsAntichain, IsAntichain, pairwise_union]
-
-@[deprecated (since := "2025-09-20")]
-alias isAntichain_singleton := IsAntichain.singleton
 
 theorem Set.Subsingleton.isAntichain (hs : s.Subsingleton) (r : α → α → Prop) : IsAntichain r s :=
   hs.pairwise _
@@ -312,7 +321,7 @@ theorem eq (hs : IsStrongAntichain r s) {a b c : α} (ha : a ∈ s) (hb : b ∈ 
   (Set.Pairwise.eq hs ha hb) fun h =>
     False.elim <| (h c).elim (not_not_intro hac) (not_not_intro hbc)
 
-protected theorem isAntichain [IsRefl α r] (h : IsStrongAntichain r s) : IsAntichain r s :=
+protected theorem isAntichain [Std.Refl r] (h : IsStrongAntichain r s) : IsAntichain r s :=
   h.imp fun _ b hab => (hab b).resolve_right (not_not_intro <| refl _)
 
 protected theorem subsingleton [IsDirected α r] (h : IsStrongAntichain r s) : s.Subsingleton :=
@@ -320,10 +329,10 @@ protected theorem subsingleton [IsDirected α r] (h : IsStrongAntichain r s) : s
   let ⟨_, hac, hbc⟩ := directed_of r a b
   h.eq ha hb hac hbc
 
-protected theorem flip [IsSymm α r] (hs : IsStrongAntichain r s) : IsStrongAntichain (flip r) s :=
+protected theorem flip [Std.Symm r] (hs : IsStrongAntichain r s) : IsStrongAntichain (flip r) s :=
   fun _ ha _ hb h c => (hs ha hb h c).imp (mt <| symm_of r) (mt <| symm_of r)
 
-theorem swap [IsSymm α r] (hs : IsStrongAntichain r s) : IsStrongAntichain (swap r) s :=
+theorem swap [Std.Symm r] (hs : IsStrongAntichain r s) : IsStrongAntichain (swap r) s :=
   hs.flip
 
 theorem image (hs : IsStrongAntichain r s) {f : α → β} (hf : Surjective f)
@@ -378,8 +387,8 @@ protected theorem isEmpty_iff (h : IsMaxAntichain r s) : IsEmpty α ↔ s = ∅ 
   simp only [IsMaxAntichain, h', IsAntichain.empty, empty_subset, forall_const, true_and] at h
   exact singleton_ne_empty x (h IsAntichain.singleton).symm
 
-protected theorem nonempty_iff (h : IsMaxAntichain r s) : Nonempty α ↔ s ≠ ∅ := by
-  grind [not_nonempty_iff, IsMaxAntichain.isEmpty_iff]
+protected theorem nonempty_iff (h : IsMaxAntichain r s) : Nonempty α ↔ s.Nonempty :=
+  not_iff_not.mp <| by simpa [Set.not_nonempty_iff_eq_empty] using h.isEmpty_iff
 
 protected theorem symm (h : IsMaxAntichain r s) : IsMaxAntichain (flip r) s :=
   ⟨h.isAntichain.flip, fun _ ht₁ ht₂ ↦ h.2 ht₁.flip ht₂⟩

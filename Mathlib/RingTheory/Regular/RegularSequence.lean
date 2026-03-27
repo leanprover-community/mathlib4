@@ -18,7 +18,7 @@ Properties of regular sequences encode information about singularities of a
 ring and regularity of a sequence can be tested homologically.
 However the notion of a regular sequence is only really sensible for Noetherian local rings.
 
-TODO: Koszul regular sequences, H_1-regular sequences, quasi-regular sequences, depth.
+TODO: Koszul regular sequences, `H_1`-regular sequences, quasi-regular sequences, depth.
 
 ## Tags
 
@@ -70,12 +70,6 @@ end Ideal
 
 namespace Submodule
 
-lemma smul_top_le_comap_smul_top [Semiring R] [AddCommMonoid M]
-    [AddCommMonoid M₂] [Module R M] [Module R M₂] (I : Ideal R)
-    (f : M →ₗ[R] M₂) : I • ⊤ ≤ comap f (I • ⊤) :=
-  map_le_iff_le_comap.mp <| le_of_eq_of_le (map_smul'' _ _ _) <|
-    smul_mono_right _ le_top
-
 variable (M) [CommRing R] [AddCommGroup M] [AddCommGroup M₂]
     [Module R M] [Module R M₂] (r : R) (rs : List R)
 
@@ -107,7 +101,7 @@ lemma quotOfListConsSMulTopEquivQuotSMulTopInner_naturality (f : M →ₗ[R] M�
 lemma top_eq_ofList_cons_smul_iff :
     (⊤ : Submodule R M) = Ideal.ofList (r :: rs) • ⊤ ↔
       (⊤ : Submodule R (QuotSMulTop r M)) = Ideal.ofList rs • ⊤ := by
-  conv => congr <;> rw [eq_comm, ← subsingleton_quotient_iff_eq_top]
+  conv => congr <;> rw [eq_comm, ← Quotient.subsingleton_iff]
   exact (quotOfListConsSMulTopEquivQuotSMulTopInner M r rs).toEquiv.subsingleton_congr
 
 end Submodule
@@ -173,7 +167,7 @@ private lemma _root_.AddHom.map_smul_top_toAddSubgroup_of_surjective
   | @cons r s _ _ h _ ih =>
     conv => congr <;> rw [Ideal.ofList_cons, sup_smul, sup_toAddSubgroup,
       ideal_span_singleton_smul, pointwise_smul_toAddSubgroup,
-      top_toAddSubgroup, pointwise_smul_def]
+      top_toAddSubgroup, AddSubgroup.pointwise_smul_def]
     apply DFunLike.ext (f.comp (toAddMonoidEnd R M r))
       ((toAddMonoidEnd S M₂ s).comp f) at h
     rw [AddSubgroup.map_sup, ih, map_map, h, ← map_map,
@@ -203,11 +197,10 @@ lemma _root_.LinearEquiv.isWeaklyRegular_congr [Module R M₂] (e : M ≃ₗ[R] 
 lemma _root_.AddEquiv.isRegular_congr {e : M ≃+ M₂} {as bs}
     (h : List.Forall₂ (fun (r : R) (s : S) => ∀ x, e (r • x) = s • e x) as bs) :
     IsRegular M as ↔ IsRegular M₂ bs := by
-  conv => congr <;> rw [isRegular_iff, ne_eq, eq_comm,
-    ← subsingleton_quotient_iff_eq_top]
+  conv => congr <;> rw [isRegular_iff, ne_comm, ← Quotient.nontrivial_iff]
   let e' := QuotientAddGroup.congr _ _ e <|
     AddHom.map_smul_top_toAddSubgroup_of_surjective e.surjective h
-  exact and_congr (e.isWeaklyRegular_congr h) e'.subsingleton_congr.not
+  exact and_congr (e.isWeaklyRegular_congr h) e'.nontrivial_congr
 
 lemma _root_.LinearEquiv.isRegular_congr' (e : M ≃ₛₗ[σ] M₂) (rs : List R) :
     IsRegular M rs ↔ IsRegular M₂ (rs.map σ) :=
@@ -241,6 +234,7 @@ lemma isWeaklyRegular_cons_iff (r : R) (rs : List R) :
       Iff.trans (forall_congr' fun i => (e i).isSMulRegular_congr (rs.get i))
         (isWeaklyRegular_iff_Fin _ _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isWeaklyRegular_cons_iff' (r : R) (rs : List R) :
     IsWeaklyRegular M (r :: rs) ↔
       IsSMulRegular M r ∧
@@ -256,6 +250,7 @@ lemma isRegular_cons_iff (r : R) (rs : List R) :
   rw [isRegular_iff, isRegular_iff, isWeaklyRegular_cons_iff M r rs,
     ne_eq, top_eq_ofList_cons_smul_iff, and_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isRegular_cons_iff' (r : R) (rs : List R) :
     IsRegular M (r :: rs) ↔
       IsSMulRegular M r ∧ IsRegular (QuotSMulTop r M)
@@ -498,8 +493,8 @@ def ndrecIterModByRegularWithRing
 
 lemma quot_ofList_smul_nontrivial {rs : List R} (h : IsRegular M rs)
     (N : Submodule R M) : Nontrivial (M ⧸ Ideal.ofList rs • N) :=
-  Submodule.Quotient.nontrivial_of_lt_top _ <|
-    lt_of_le_of_lt (smul_mono_right _ le_top) h.top_ne_smul.symm.lt_top
+  Submodule.Quotient.nontrivial_iff.mpr <|
+    ne_top_of_le_ne_top h.top_ne_smul.symm (smul_mono_right _ le_top)
 
 lemma nontrivial {rs : List R} (h : IsRegular M rs) : Nontrivial M :=
   haveI := quot_ofList_smul_nontrivial h ⊤
@@ -674,3 +669,23 @@ lemma _root_.IsLocalRing.isRegular_of_perm [IsLocalRing R] [IsNoetherian R M]
     exact Set.ext fun _ => h2.mem_iff
 
 end RingTheory.Sequence
+
+section IsLocalRing
+
+variable {R : Type*} [CommRing R] [IsLocalRing R]
+variable (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L]
+
+open IsLocalRing
+
+lemma nontrivial_quotSMulTop_of_mem_maximalIdeal {x : R} (mem : x ∈ maximalIdeal R) :
+    Nontrivial (QuotSMulTop x L) := by
+  apply Submodule.Quotient.nontrivial_iff.mpr (Ne.symm _)
+  exact Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator (maximalIdeal_le_jacobson _ mem)
+
+lemma RingTheory.Sequence.IsRegular.of_isWeaklyRegular_of_mem_maximalIdeal {rs : List R}
+    (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) (reg : IsWeaklyRegular L rs) :
+    IsRegular L rs :=
+  ⟨reg, Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
+    ((Ideal.span_le.mpr mem).trans (maximalIdeal_le_jacobson _))⟩
+
+end IsLocalRing

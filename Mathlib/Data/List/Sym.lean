@@ -81,12 +81,7 @@ theorem mk_mem_sym2 {xs : List α} {a b : α} (ha : a ∈ xs) (hb : b ∈ xs) :
   | nil => simp at ha
   | cons x xs ih =>
     rw [mem_sym2_cons_iff]
-    rw [mem_cons] at ha hb
-    obtain (rfl | ha) := ha <;> obtain (rfl | hb) := hb
-    · left; rfl
-    · right; left; use b
-    · right; left; rw [Sym2.eq_swap]; use a
-    · right; right; exact ih ha hb
+    grind
 
 theorem mk_mem_sym2_iff {xs : List α} {a b : α} :
     s(a, b) ∈ xs.sym2 ↔ a ∈ xs ∧ b ∈ xs := by
@@ -146,30 +141,7 @@ theorem map_mk_disjoint_sym2 (x : α) (xs : List α) (h : x ∉ xs) :
     (map (fun y ↦ s(x, y)) xs).Disjoint xs.sym2 := by
   induction xs with
   | nil => simp
-  | cons x' xs ih =>
-    simp only [mem_cons, not_or] at h
-    rw [List.sym2, map_cons, map_cons, disjoint_cons_left, disjoint_append_right,
-      disjoint_cons_right]
-    refine ⟨?_, ⟨?_, ?_⟩, ?_⟩
-    · refine not_mem_cons_of_ne_of_not_mem ?_ (not_mem_append ?_ ?_)
-      · simp [h.1]
-      · simp_rw [mem_map, not_exists, not_and]
-        intro x'' hx
-        simp_rw [Sym2.mk_eq_mk_iff, Prod.swap_prod_mk, Prod.mk.injEq, true_and]
-        rintro (⟨rfl, rfl⟩ | rfl)
-        · exact h.2 hx
-        · exact h.2 hx
-      · simp [mk_mem_sym2_iff, h.2]
-    · simp [h.1]
-    · intro z hx hy
-      rw [List.mem_map] at hx hy
-      obtain ⟨a, hx, rfl⟩ := hx
-      obtain ⟨b, hy, hx⟩ := hy
-      simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Ne.symm h.1, false_and, Prod.swap_prod_mk,
-        false_or] at hx
-      obtain ⟨rfl, rfl⟩ := hx
-      exact h.2 hy
-    · exact ih h.2
+  | cons x' xs ih => aesop (add simp mk_mem_sym2_iff, unfold safe List.Disjoint)
 
 theorem dedup_sym2 [DecidableEq α] (xs : List α) : xs.sym2.dedup = xs.dedup.sym2 := by
   induction xs with

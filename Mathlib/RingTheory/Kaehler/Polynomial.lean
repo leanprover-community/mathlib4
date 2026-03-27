@@ -48,7 +48,7 @@ def KaehlerDifferential.mvPolynomialEquiv (σ : Type*) :
     | add => simp only [map_add, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom] at *; simp only [*]
     | single a b =>
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Finsupp.linearCombination_single,
-        LinearMap.map_smul, Derivation.liftKaehlerDifferential_comp_D]
+        map_smul, Derivation.liftKaehlerDifferential_comp_D]
       congr 1
       induction a using MvPolynomial.induction_on
       · simp only [MvPolynomial.derivation_C, map_zero]
@@ -84,7 +84,6 @@ lemma KaehlerDifferential.mvPolynomialBasis_repr_apply (σ) (x) (i) :
     (mvPolynomialBasis R σ).repr.toLinearMap).compDer (D _ _) = MvPolynomial.pderiv i by
     rw [← this]; rfl
   apply MvPolynomial.derivation_ext
-  intro j
   simp [Finsupp.single_apply, Pi.single_apply]
 
 lemma KaehlerDifferential.mvPolynomialBasis_repr_symm_single (σ) (i) (x) :

@@ -211,12 +211,11 @@ instance {X : C} [Simple X] : Nontrivial (Subobject X) :=
   nontrivial_of_not_isZero (Simple.not_isZero X)
 
 instance {X : C} [Simple X] : IsSimpleOrder (Subobject X) where
-  eq_bot_or_eq_top := by
-    rintro ⟨⟨⟨Y : C, ⟨⟨⟩⟩, f : Y ⟶ X⟩, m : Mono f⟩⟩
-    change mk f = ⊥ ∨ mk f = ⊤
-    by_cases h : f = 0
+  eq_bot_or_eq_top a := by
+    obtain ⟨Y, i, _, rfl⟩ := Subobject.mk_surjective a
+    by_cases h : i = 0
     · exact Or.inl (mk_eq_bot_iff_zero.mpr h)
-    · refine Or.inr ((isIso_iff_mk_eq_top _).mp ((Simple.mono_isIso_iff_nonzero f).mpr h))
+    · exact Or.inr ((isIso_iff_mk_eq_top _).mp ((Simple.mono_isIso_iff_nonzero i).mpr h))
 
 /-- If `X` has subobject lattice `{⊥, ⊤}`, then `X` is simple. -/
 theorem simple_of_isSimpleOrder_subobject (X : C) [IsSimpleOrder (Subobject X)] : Simple X := by

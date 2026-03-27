@@ -85,6 +85,7 @@ def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
         erw [AddHom.coe_mk]
         simp [h] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The projection map onto one component, as a morphism of Lie modules. -/
 def lieModuleComponent (j : ι) : (⨁ i, M i) →ₗ⁅R,L⁆ M j :=
   { component R ι M j with
@@ -155,6 +156,7 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
     toFun := of L j
     map_lie' := fun {x y} => (lie_of_same L x y).symm }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The projection map onto one component, as a morphism of Lie algebras. -/
 @[simps]
 def lieAlgebraComponent (j : ι) : (⨁ i, L i) →ₗ⁅R⁆ L j :=
@@ -196,7 +198,7 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
             ⁅toModule R ι L' f' (of L j x), toModule R ι L' f' (of L i y)⁆ by
         intro i y
         rw [← lie_skew x, ← lie_skew (toModule R ι L' f' x)]
-        simp only [LinearMap.map_neg, neg_inj, ← LieAlgebra.ad_apply R]
+        simp only [map_neg, neg_inj, ← LieAlgebra.ad_apply R]
         rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
         congr; clear x; ext j x; exact this j i x y
       intro i j y x

@@ -48,6 +48,7 @@ lemma egirth_eq_top : G.egirth = ⊤ ↔ G.IsAcyclic := by simp [egirth, IsAcycl
 
 protected alias ⟨_, IsAcyclic.egirth_eq_top⟩ := egirth_eq_top
 
+set_option backward.isDefEq.respectTransparency false in
 lemma egirth_anti : Antitone (egirth : SimpleGraph α → ℕ∞) :=
   fun G H h ↦ iInf_mono fun a ↦ iInf₂_mono' fun w hw ↦ ⟨w.mapLe h, hw.mapLe _, by simp⟩
 
@@ -61,13 +62,7 @@ lemma exists_egirth_eq_length :
     exact ciInf_mem _
 
 lemma three_le_egirth : 3 ≤ G.egirth := by
-  by_cases h : G.IsAcyclic
-  · rw [← egirth_eq_top] at h
-    rw [h]
-    apply le_top
-  · rw [← exists_egirth_eq_length] at h
-    have ⟨_, _, _⟩ := h
-    simp_all only [Nat.cast_inj, Nat.ofNat_le_cast, Walk.IsCycle.three_le_length]
+  simpa using fun _ _ a ↦ Walk.IsCycle.three_le_length a
 
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
 
@@ -90,7 +85,7 @@ lemma three_le_girth (hG : ¬ G.IsAcyclic) : 3 ≤ G.girth :=
   ENat.toNat_le_toNat three_le_egirth <| egirth_eq_top.not.mpr hG
 
 lemma girth_eq_zero : G.girth = 0 ↔ G.IsAcyclic :=
-  ⟨fun h ↦ not_not.mp <| three_le_girth.mt <| by cutsat, fun h ↦ by simp [girth, h]⟩
+  ⟨fun h ↦ not_not.mp <| three_le_girth.mt <| by lia, fun h ↦ by simp [girth, h]⟩
 
 protected alias ⟨_, IsAcyclic.girth_eq_zero⟩ := girth_eq_zero
 

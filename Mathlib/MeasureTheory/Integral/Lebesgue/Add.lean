@@ -18,7 +18,7 @@ several variants of this theorem, then uses it to show that the Lebesgue integra
 a constant.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 
@@ -399,7 +399,7 @@ theorem lintegral_const_mul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r �
     exact rinv
   have := lintegral_const_mul_le (μ := μ) r⁻¹ fun x => r * f x
   simp only [(mul_assoc _ _ _).symm, rinv'] at this
-  simpa [(mul_assoc _ _ _).symm, rinv] using mul_le_mul_left' this r
+  simpa [(mul_assoc _ _ _).symm, rinv] using mul_le_mul_right this r
 
 theorem lintegral_mul_const (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ a, f a * r ∂μ = (∫⁻ a, f a ∂μ) * r := by simp_rw [mul_comm, lintegral_const_mul r hf]
@@ -450,6 +450,18 @@ theorem lintegral_trim_ae {μ : Measure α} (hm : m ≤ m0) {f : α → ℝ≥0�
     (hf : AEMeasurable f (μ.trim hm)) : ∫⁻ a, f a ∂μ.trim hm = ∫⁻ a, f a ∂μ := by
   rw [lintegral_congr_ae (ae_eq_of_ae_eq_trim hf.ae_eq_mk), lintegral_congr_ae hf.ae_eq_mk,
     lintegral_trim hm hf.measurable_mk]
+
+theorem setLIntegral_trim_ae {μ : Measure α} (hm : m ≤ m0) {f : α → ℝ≥0∞}
+    (hf : AEMeasurable f (μ.trim hm)) {s : Set α} (hs : MeasurableSet[m] s) :
+    ∫⁻ x in s, f x ∂μ.trim hm = ∫⁻ x in s, f x ∂μ := by
+  rw [← lintegral_trim_ae hm]
+  all_goals rw [← restrict_trim hm _ hs]
+  exact hf.restrict
+
+theorem setLIntegral_trim {μ : Measure α} (hm : m ≤ m0) {f : α → ℝ≥0∞}
+    (hf : Measurable[m] f) {s : Set α} (hs : MeasurableSet[m] s) :
+    ∫⁻ x in s, f x ∂μ.trim hm = ∫⁻ x in s, f x ∂μ :=
+  setLIntegral_trim_ae _ hf.aemeasurable hs
 
 end Trim
 

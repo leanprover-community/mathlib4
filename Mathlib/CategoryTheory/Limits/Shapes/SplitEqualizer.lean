@@ -58,7 +58,7 @@ satisfying `ι ≫ f = ι ≫ g` together with morphisms
 
 satisfying `ι ≫ r = 𝟙 W`, `g ≫ t = 𝟙 X` and `f ≫ t = r ≫ ι`.
 
-The name "equalizer" is appropriate, since any split equalizer is a equalizer, see
+The name "equalizer" is appropriate, since any split equalizer is an equalizer, see
 `CategoryTheory.IsSplitEqualizer.isEqualizer`.
 Split equalizers are also absolute, since a functor preserves all the structure above.
 -/
@@ -111,6 +111,7 @@ def IsSplitEqualizer.asFork {W : C} {h : W ⟶ X} (t : IsSplitEqualizer f g h) :
 theorem IsSplitEqualizer.asFork_ι {W : C} {h : W ⟶ X} (t : IsSplitEqualizer f g h) :
     t.asFork.ι = h := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The fork induced by a split equalizer is an equalizer, justifying the name. In some cases it
 is more convenient to show a given fork is an equalizer by showing it is split.
@@ -161,7 +162,7 @@ instance map_is_cosplit_pair [HasSplitEqualizer f g] : HasSplitEqualizer (G.map 
 
 namespace Limits
 
-/-- If a pair has a split equalizer, it has a equalizer. -/
+/-- If a pair has a split equalizer, it has an equalizer. -/
 instance (priority := 1) hasEqualizer_of_hasSplitEqualizer [HasSplitEqualizer f g] :
     HasEqualizer f g :=
   HasLimit.mk ⟨_, (HasSplitEqualizer.isSplitEqualizer f g).isEqualizer⟩

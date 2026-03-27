@@ -63,6 +63,7 @@ def iteratedDerivWithin (n : ℕ) (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) : F
 
 variable {n : ℕ} {f : 𝕜 → F} {s : Set 𝕜} {x : 𝕜}
 
+@[simp]
 theorem iteratedDerivWithin_univ : iteratedDerivWithin n f univ = iteratedDeriv n f := by
   ext x
   rw [iteratedDerivWithin, iteratedDeriv, iteratedFDerivWithin_univ]
@@ -310,7 +311,7 @@ theorem iteratedDeriv_eq_iterate : iteratedDeriv n f = deriv^[n] f := by
 theorem iteratedDerivWithin_of_isOpen (hs : IsOpen s) :
     Set.EqOn (iteratedDerivWithin n f s) (iteratedDeriv n f) s := by
   intro x hx
-  simp_rw [iteratedDerivWithin, iteratedDeriv,iteratedFDerivWithin_of_isOpen n hs hx]
+  simp_rw [iteratedDerivWithin, iteratedDeriv, iteratedFDerivWithin_of_isOpen n hs hx]
 
 theorem iteratedDerivWithin_congr_right_of_isOpen (f : 𝕜 → F) (n : ℕ) {s t : Set 𝕜} (hs : IsOpen s)
     (ht : IsOpen t) : (s ∩ t).EqOn (iteratedDerivWithin n f s) (iteratedDerivWithin n f t) := by
@@ -345,3 +346,33 @@ lemma AnalyticAt.hasFPowerSeriesAt {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   rw [div_eq_iff, mul_comm, h_fact_smul, ← iteratedDeriv_eq_iteratedFDeriv]
   norm_cast
   positivity
+
+theorem iteratedDeriv_const {n : ℕ} {c : F} {x : 𝕜} :
+    iteratedDeriv n (fun _ ↦ c) x = if n = 0 then c else 0 := by
+  induction n generalizing c with
+  | zero => simp
+  | succ n h => simp [iteratedDeriv_succ', h]
+
+theorem iteratedDerivWithin_const {n : ℕ} {c : F} {s : Set 𝕜} {x : 𝕜} :
+    iteratedDerivWithin n (fun _ ↦ c) s x = if n = 0 then c else 0 := by
+  induction n generalizing c with
+  | zero => simp
+  | succ n h => simp [iteratedDerivWithin_succ', Pi.zero_def, h]
+
+@[simp]
+lemma iteratedDeriv_fun_const_zero : iteratedDeriv n (fun _ ↦ 0) x = (0 : F) := by
+  simpa using @iteratedDeriv_const 𝕜 _ F _ _ n 0
+
+@[simp]
+lemma iteratedDeriv_const_zero : iteratedDeriv n (0 : 𝕜 → F) x = (0 : F) := by
+  simp [Pi.zero_def]
+
+@[simp]
+lemma iteratedDerivWithin_fun_const_zero {s : Set 𝕜} :
+    iteratedDerivWithin n (fun _ ↦ 0) s x = (0 : F) := by
+  simpa using @iteratedDerivWithin_const 𝕜 _ F _ _ n 0
+
+@[simp]
+lemma iteratedDerivWithin_const_zero {s : Set 𝕜} :
+    iteratedDerivWithin n (0 : 𝕜 → F) s x = (0 : F) := by
+  simp [Pi.zero_def]

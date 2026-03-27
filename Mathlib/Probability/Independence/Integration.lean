@@ -29,7 +29,7 @@ example [M1 : MeasurableSpace Ω] {M2 : MeasurableSpace Ω} {μ : Measure Ω} : 
 
 -/
 
-@[expose] public section
+public section
 
 
 open Set MeasureTheory
@@ -72,7 +72,7 @@ theorem lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator {Mf mΩ : M
     rw [lintegral_iSup h_measM_f h_mono_f, lintegral_iSup, ENNReal.iSup_mul]
     · simp_rw [← h_ind_f]
     · exact fun n => h_mul_indicator _ (h_measM_f n)
-    · exact fun m n h_le a => mul_le_mul_right' (h_mono_f h_le a) _
+    · exact fun m n h_le a => mul_le_mul_left (h_mono_f h_le a) _
 
 /--
 If `f` and `g` are independent random variables with values in `ℝ≥0∞`,
@@ -103,7 +103,7 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace
     rw [lintegral_iSup, lintegral_iSup h_measM_f' h_mono_f', ENNReal.mul_iSup]
     · simp_rw [← h_ind_f']
     · exact fun n => h_measM_f.mul (h_measM_f' n)
-    · exact fun n m (h_le : n ≤ m) a => mul_le_mul_left' (h_mono_f' h_le a) _
+    · exact fun n m (h_le : n ≤ m) a => mul_le_mul_right (h_mono_f' h_le a) _
 
 /-- If `f` and `g` are independent random variables with values in `ℝ≥0∞`,
 then `E[f * g] = E[f] * E[g]`. -/
@@ -254,18 +254,6 @@ lemma IndepFun.integral_fun_mul_eq_mul_integral
     (hXY : X ⟂ᵢ[μ] Y) (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :
     ∫ ω, X ω * Y ω ∂μ = μ[X] * μ[Y] :=
   hXY.integral_mul_eq_mul_integral hX hY
-
-@[deprecated (since := "2025-07-30")] alias IndepFun.integral_mul_of_nonneg :=
-  IndepFun.integral_mul_eq_mul_integral
-
-@[deprecated (since := "2025-07-30")] alias IndepFun.integral_mul_of_integrable :=
-  IndepFun.integral_mul_eq_mul_integral
-
-@[deprecated (since := "2025-07-30")] alias IndepFun.integral_mul :=
-  IndepFun.integral_mul_eq_mul_integral
-
-@[deprecated (since := "2025-07-30")] alias IndepFun.integral_mul' :=
-  IndepFun.integral_fun_mul_eq_mul_integral
 
 /-- Independence of functions `f` and `g` into arbitrary types is characterized by the relation
   `E[(φ ∘ f) * (ψ ∘ g)] = E[φ ∘ f] * E[ψ ∘ g]` for all measurable `φ` and `ψ` with values in `ℝ`

@@ -21,11 +21,11 @@ We collect facts about factorials in context of modular arithmetic.
 ## See also
 
 For the prime case and involving `factorial` rather than `descFactorial`, see Wilson's theorem:
-* Nat.prime_iff_fac_equiv_neg_one
+* `Nat.prime_iff_fac_equiv_neg_one`
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 

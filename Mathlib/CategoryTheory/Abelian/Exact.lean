@@ -23,7 +23,7 @@ true in more general settings.
 * A short complex `S` is exact iff `imageSubobject S.f = kernelSubobject S.g`.
 * If `(f, g)` is exact, then `image.ι f` has the universal property of the kernel of `g`.
 * `f` is a monomorphism iff `kernel.ι f = 0` iff `Exact 0 f`, and `f` is an epimorphism iff
-  `cokernel.π = 0` iff `Exact f 0`.
+  `cokernel.π f = 0` iff `Exact f 0`.
 * A faithful functor between abelian categories that preserves zero morphisms reflects exact
   sequences.
 * `X ⟶ Y ⟶ Z ⟶ 0` is exact if and only if the second map is a cokernel of the first, and
@@ -68,6 +68,11 @@ theorem exact_iff_epi_imageToKernel : S.Exact ↔ Epi (imageToKernel S.f S.g S.z
   apply (MorphismProperty.epimorphisms C).arrow_mk_iso_iff
   exact Arrow.isoMk (imageSubobjectIso S.f).symm (kernelSubobjectIso S.g).symm
 
+lemma exact_iff_isIso_imageToKernel' : S.Exact ↔ IsIso (imageToKernel' S.f S.g S.zero) := by
+  simp only [S.exact_iff_epi_imageToKernel', isIso_iff_mono_and_epi, iff_and_self]
+  intro
+  apply Limits.kernel.lift_mono
+
 theorem exact_iff_isIso_imageToKernel : S.Exact ↔ IsIso (imageToKernel S.f S.g S.zero) := by
   rw [S.exact_iff_epi_imageToKernel]
   constructor
@@ -75,6 +80,12 @@ theorem exact_iff_isIso_imageToKernel : S.Exact ↔ IsIso (imageToKernel S.f S.g
     apply isIso_of_mono_of_epi
   · intro
     infer_instance
+
+lemma Exact.isIso_imageToKernel (hS : S.Exact) : IsIso (imageToKernel S.f S.g S.zero) :=
+  S.exact_iff_isIso_imageToKernel.1 hS
+
+lemma Exact.isIso_imageToKernel' (hS : S.Exact) : IsIso (imageToKernel' S.f S.g S.zero) :=
+  S.exact_iff_isIso_imageToKernel'.1 hS
 
 /-- In an abelian category, a short complex `S` is exact
 iff `imageSubobject S.f = kernelSubobject S.g`.
@@ -87,6 +98,7 @@ theorem exact_iff_image_eq_kernel : S.Exact ↔ imageSubobject S.f = kernelSubob
   · intro h
     exact ⟨Subobject.ofLE _ _ h.ge, by ext; simp, by ext; simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exact_iff_of_forks {cg : KernelFork S.g} (hg : IsLimit cg) {cf : CokernelCofork S.f}
     (hf : IsColimit cf) : S.Exact ↔ cg.ι ≫ cf.π = 0 := by
   rw [exact_iff_kernel_ι_comp_cokernel_π_zero]
@@ -132,6 +144,7 @@ def Exact.isColimitCoimage (h : S.Exact) :
   ext
   rw [hm, cokernel.π_desc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `(f, g)` is exact, then `factorThruImage g` is a cokernel of `f`. -/
 def Exact.isColimitImage (h : S.Exact) :
     IsColimit (CokernelCofork.ofπ (Limits.factorThruImage S.g)
@@ -197,6 +210,7 @@ section
 variable {D : Type u₂} [Category.{v₂} D] [Abelian D]
 variable (F : C ⥤ D) [PreservesZeroMorphisms F]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma reflects_exact_of_faithful [F.Faithful] (S : ShortComplex C) (hS : (S.map F).Exact) :
     S.Exact := by
   rw [ShortComplex.exact_iff_kernel_ι_comp_cokernel_π_zero] at hS ⊢
@@ -269,6 +283,7 @@ end
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A functor preserving zero morphisms, monos, and cokernels preserves homology. -/
 lemma preservesHomology_of_preservesMonos_and_cokernels [PreservesZeroMorphisms L]
     [PreservesMonomorphisms L] [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) L] :
@@ -286,6 +301,7 @@ lemma preservesHomology_of_preservesMonos_and_cokernels [PreservesZeroMorphisms 
   apply ShortComplex.exact_of_g_is_cokernel
   exact CokernelCofork.mapIsColimit _ ((S.exact_iff_exact_coimage_π).1 hS).gIsCokernel L
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A functor preserving zero morphisms, epis, and kernels preserves homology. -/
 lemma preservesHomology_of_preservesEpis_and_kernels [PreservesZeroMorphisms L]
     [PreservesEpimorphisms L] [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) L] :

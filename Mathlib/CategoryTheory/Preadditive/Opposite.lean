@@ -22,7 +22,7 @@ open Opposite
 
 namespace CategoryTheory
 
-variable (C : Type*) [Category C] [Preadditive C]
+variable (C : Type*) [Category* C] [Preadditive C]
 
 instance : Preadditive Cᵒᵖ where
   homGroup X Y := Equiv.addCommGroup (opEquiv X Y)
@@ -40,6 +40,10 @@ theorem unop_add {X Y : Cᵒᵖ} (f g : X ⟶ Y) : (f + g).unop = f.unop + g.uno
   rfl
 
 @[simp]
+theorem unop_sub {X Y : Cᵒᵖ} (f g : X ⟶ Y) : (f - g).unop = f.unop - g.unop :=
+  rfl
+
+@[simp]
 theorem unop_zsmul {X Y : Cᵒᵖ} (k : ℤ) (f : X ⟶ Y) : (k • f).unop = k • f.unop :=
   rfl
 
@@ -49,6 +53,10 @@ theorem unop_neg {X Y : Cᵒᵖ} (f : X ⟶ Y) : (-f).unop = -f.unop :=
 
 @[simp]
 theorem op_add {X Y : C} (f g : X ⟶ Y) : (f + g).op = f.op + g.op :=
+  rfl
+
+@[simp]
+theorem op_sub {X Y : C} (f g : X ⟶ Y) : (f - g).op = f.op - g.op :=
   rfl
 
 @[simp]
@@ -91,7 +99,7 @@ def Preadditive.homSelfLinearEquivEndMulOpposite (G : C) : (G ⟶ G) ≃ₗ[(End
   left_inv := by cat_disch
   right_inv := by cat_disch
 
-variable {D : Type*} [Category D] [Preadditive D]
+variable {D : Type*} [Category* D] [Preadditive D]
 
 instance Functor.op_additive (F : C ⥤ D) [F.Additive] : F.op.Additive where
 

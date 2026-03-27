@@ -59,6 +59,12 @@ protected theorem id (μ : Measure α) : MeasurePreserving id μ μ :=
 protected theorem aemeasurable {f : α → β} (hf : MeasurePreserving f μa μb) : AEMeasurable f μa :=
   hf.1.aemeasurable
 
+protected theorem congr {f f' : α → β} (hf : MeasurePreserving f μa μb) (hf' : Measurable f')
+    (h : f =ᵐ[μa] f') : MeasurePreserving f' μa μb := by
+  refine ⟨hf', ?_⟩
+  rw [Measure.map_congr h.symm]
+  exact hf.map_eq
+
 @[nontriviality]
 theorem of_isEmpty [IsEmpty β] (f : α → β) (μa : Measure α) (μb : Measure β) :
     MeasurePreserving f μa μb :=
@@ -197,7 +203,7 @@ lemma measure_symmDiff_preimage_iterate_le
   | zero => simp
   | succ n ih =>
     simp only [add_smul, one_smul]
-    grw [← ih, measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)]
+    grw [← ih, measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n + 1] ⁻¹' s)]
     replace hs : NullMeasurableSet (s ∆ (f ⁻¹' s)) μ :=
       hs.symmDiff <| hs.preimage hf.quasiMeasurePreserving
     rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]

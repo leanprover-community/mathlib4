@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Ring.Action.End
 public import Mathlib.RingTheory.Finiteness.Cardinality
 public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.Ideal.Over
 
 /-!
 
@@ -33,6 +34,7 @@ lemma residue_def (x) : residue R x = Ideal.Quotient.mk (maximalIdeal R) x := rf
 lemma ker_residue : RingHom.ker (residue R) = maximalIdeal R :=
   Ideal.mk_ker
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma residue_eq_zero_iff (x : R) : residue R x = 0 ↔ x ∈ maximalIdeal R := by
   rw [← RingHom.mem_ker, ker_residue]
@@ -63,6 +65,9 @@ instance : IsLocalHom (IsLocalRing.residue R) :=
   ⟨fun _ ha =>
     Classical.not_not.mp (Ideal.Quotient.eq_zero_iff_mem.not.mp (isUnit_iff_ne_zero.mp ha))⟩
 
+noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] : Module R₀ (ResidueField R) :=
+  inferInstanceAs <| Module R₀ (R ⧸ maximalIdeal R)
+
 instance {R₀} [CommRing R₀] [Algebra R₀ R] [Module.Finite R₀ R] :
     Module.Finite R₀ (ResidueField R) :=
   .of_surjective (IsScalarTower.toAlgHom R₀ R _).toLinearMap Ideal.Quotient.mk_surjective
@@ -86,6 +91,7 @@ theorem lift_residue_apply {R S : Type*} [CommRing R] [IsLocalRing R] [Field S] 
     [IsLocalHom f] (x) : lift f (residue R x) = f x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map on residue fields induced by a local homomorphism between local rings -/
 noncomputable def map (f : R →+* S) [IsLocalHom f] : ResidueField R →+* ResidueField S :=
   Ideal.Quotient.lift (maximalIdeal R) ((Ideal.Quotient.mk _).comp f) fun a ha => by
@@ -131,8 +137,8 @@ noncomputable def mapEquiv (f : R ≃+* S) :
   invFun := map (f.symm : S →+* R)
   left_inv x := by simp only [map_map, RingEquiv.symm_comp, map_id, RingHom.id_apply]
   right_inv x := by simp only [map_map, RingEquiv.comp_symm, map_id, RingHom.id_apply]
-  map_mul' := RingHom.map_mul _
-  map_add' := RingHom.map_add _
+  map_mul' := map_mul _
+  map_add' := map_add _
 
 @[simp]
 theorem mapEquiv.symm (f : R ≃+* S) : (mapEquiv f).symm = mapEquiv f.symm :=
@@ -159,6 +165,7 @@ section MulSemiringAction
 
 variable (G : Type*) [Group G] [MulSemiringAction G R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `G` acts on `R` as a `MulSemiringAction`, then it also acts on `IsLocalRing.ResidueField R`.
 -/
 noncomputable instance : MulSemiringAction G (IsLocalRing.ResidueField R) :=
@@ -174,11 +181,29 @@ section FiniteDimensional
 
 variable [Algebra R S] [IsLocalHom (algebraMap R S)]
 
-noncomputable instance : Algebra (ResidueField R) (ResidueField S) :=
-  (ResidueField.map (algebraMap R S)).toAlgebra
+instance : (maximalIdeal S).LiesOver (maximalIdeal R) :=
+  ⟨(((local_hom_TFAE (algebraMap R S)).out 0 4 rfl rfl).mp inferInstance).symm⟩
 
-instance : IsScalarTower R (ResidueField R) (ResidueField S) :=
-  IsScalarTower.of_algebraMap_eq (congrFun rfl)
+instance : Algebra (ResidueField R) (ResidueField S) :=
+  Ideal.Quotient.algebraOfLiesOver _ _
+
+@[simp] lemma algebraMap_residue (x : R) :
+    algebraMap (ResidueField R) (ResidueField S) (residue R x) =
+      residue S (algebraMap R S x) := rfl
+
+instance {R₀ : Type*} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
+    IsScalarTower R₀ (ResidueField R) (ResidueField S) :=
+  Ideal.Quotient.isScalarTower_of_liesOver ..
+
+instance {R₀ : Type*} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
+    [IsLocalRing R₀] [IsLocalHom (algebraMap R₀ R)] [IsLocalHom (algebraMap R₀ S)] :
+    IsScalarTower (ResidueField R₀) (ResidueField R) (ResidueField S) := by
+  refine .of_algebraMap_eq fun x ↦ ?_
+  obtain ⟨x, rfl⟩ := residue_surjective x
+  simp [← IsScalarTower.algebraMap_apply]
+
+noncomputable instance : Module (ResidueField R) (ResidueField S) :=
+  inferInstanceAs <| Module (R ⧸ maximalIdeal R) (S ⧸ maximalIdeal S)
 
 instance finite_of_module_finite [Module.Finite R S] :
     Module.Finite (ResidueField R) (ResidueField S) :=

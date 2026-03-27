@@ -16,6 +16,6 @@ visible once the file in which they're declared is imported, so we must put this
 declaration into its own file.
 -/
 
-@[expose] public section
+public section
 
 declare_aesop_rule_sets [Sym2]

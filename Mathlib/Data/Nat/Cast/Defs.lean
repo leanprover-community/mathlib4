@@ -43,7 +43,7 @@ instance (priority := 100) instOfNatAtLeastTwo {n : ℕ} [NatCast R] [Nat.AtLeas
     OfNat R n where
   ofNat := n.cast
 
-library_note2 «no_index around OfNat.ofNat»
+library_note «no_index around OfNat.ofNat»
 /--
 When writing lemmas about `OfNat.ofNat` that assume `Nat.AtLeastTwo`, the term needs to be wrapped
 in `no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.
@@ -70,22 +70,6 @@ class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
 
 /-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`. -/
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
-
-library_note2 «coercion into rings»
-/--
-Coercions such as `Nat.castCoe` that go from a concrete structure such as
-`ℕ` to an arbitrary ring `R` should be set up as follows:
-```lean
-instance : CoeTail ℕ R where coe := ...
-instance : CoeHTCT ℕ R where coe := ...
-```
-
-It needs to be `CoeTail` instead of `Coe` because otherwise type-class
-inference would loop when constructing the transitive coercion `ℕ → ℕ → ℕ → ...`.
-Sometimes we also need to declare the `CoeHTCT` instance
-if we need to shadow another coercion
-(e.g. `Nat.cast` should be used over `Int.ofNat`).
--/
 
 namespace Nat
 

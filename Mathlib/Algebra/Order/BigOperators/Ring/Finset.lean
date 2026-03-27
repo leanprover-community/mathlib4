@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
 public import Mathlib.Tactic.Ring
 
@@ -21,71 +22,11 @@ In particular, this file contains the standard form of the Cauchy-Schwarz inequa
 some of its immediate consequences.
 -/
 
-@[expose] public section
+public section
 
 variable {ι R S : Type*}
 
 namespace Finset
-
-section CommMonoidWithZero
-variable [CommMonoidWithZero R] [PartialOrder R] [ZeroLEOneClass R]
-
-section PosMulMono
-variable [PosMulMono R] {f g : ι → R} {s t : Finset ι}
-
-lemma prod_nonneg (h0 : ∀ i ∈ s, 0 ≤ f i) : 0 ≤ ∏ i ∈ s, f i :=
-  prod_induction f (fun i ↦ 0 ≤ i) (fun _ _ ha hb ↦ mul_nonneg ha hb) zero_le_one h0
-
-/-- If all `f i`, `i ∈ s`, are nonnegative and each `f i` is less than or equal to `g i`, then the
-product of `f i` is less than or equal to the product of `g i`. See also `Finset.prod_le_prod'` for
-the case of an ordered commutative multiplicative monoid. -/
-@[gcongr]
-lemma prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i) :
-    ∏ i ∈ s, f i ≤ ∏ i ∈ s, g i := by
-  induction s using Finset.cons_induction with
-  | empty => simp
-  | cons a s has ih =>
-    simp only [prod_cons, forall_mem_cons] at h0 h1 ⊢
-    have := posMulMono_iff_mulPosMono.1 ‹PosMulMono R›
-    gcongr
-    exacts [prod_nonneg h0.2, h0.1.trans h1.1, h1.1, ih h0.2 h1.2]
-
-/-- If each `f i`, `i ∈ s` belongs to `[0, 1]`, then their product is less than or equal to one.
-See also `Finset.prod_le_one'` for the case of an ordered commutative multiplicative monoid. -/
-lemma prod_le_one (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1) : ∏ i ∈ s, f i ≤ 1 := by
-  convert ← prod_le_prod h0 h1
-  exact Finset.prod_const_one
-
-end PosMulMono
-
-section PosMulStrictMono
-variable [PosMulStrictMono R] [Nontrivial R] {f g : ι → R} {s t : Finset ι}
-
-lemma prod_pos (h0 : ∀ i ∈ s, 0 < f i) : 0 < ∏ i ∈ s, f i :=
-  prod_induction f (fun x ↦ 0 < x) (fun _ _ ha hb ↦ mul_pos ha hb) zero_lt_one h0
-
-lemma prod_lt_prod (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f i ≤ g i)
-    (hlt : ∃ i ∈ s, f i < g i) :
-    ∏ i ∈ s, f i < ∏ i ∈ s, g i := by
-  classical
-  obtain ⟨i, hi, hilt⟩ := hlt
-  rw [← insert_erase hi, prod_insert (notMem_erase _ _), prod_insert (notMem_erase _ _)]
-  have := posMulStrictMono_iff_mulPosStrictMono.1 ‹PosMulStrictMono R›
-  refine mul_lt_mul_of_pos_of_nonneg' hilt ?_ ?_ ?_
-  · exact prod_le_prod (fun j hj => le_of_lt (hf j (mem_of_mem_erase hj)))
-      (fun _ hj ↦ hfg _ <| mem_of_mem_erase hj)
-  · exact prod_pos fun j hj => hf j (mem_of_mem_erase hj)
-  · exact (hf i hi).le.trans hilt.le
-
-lemma prod_lt_prod_of_nonempty (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f i < g i)
-    (h_ne : s.Nonempty) :
-    ∏ i ∈ s, f i < ∏ i ∈ s, g i := by
-  apply prod_lt_prod hf fun i hi => le_of_lt (hfg i hi)
-  obtain ⟨i, hi⟩ := h_ne
-  exact ⟨i, hi, hfg i hi⟩
-
-end PosMulStrictMono
-end CommMonoidWithZero
 
 section OrderedSemiring
 
@@ -111,7 +52,7 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
     (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j) (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) (hg : ∀ i ∈ s, 0 ≤ g i)
     (hh : ∀ i ∈ s, 0 ≤ h i) : ((∏ i ∈ s, g i) + ∏ i ∈ s, h i) ≤ ∏ i ∈ s, f i := by
   classical
-  simp_rw [prod_eq_mul_prod_diff_singleton hi]
+  simp_rw [prod_eq_mul_prod_diff_singleton_of_mem hi]
   refine le_trans ?_ (mul_le_mul_of_nonneg_right h2i ?_)
   · rw [right_distrib]
     gcongr with j hj <;> aesop
@@ -169,7 +110,7 @@ variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
 lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j)
     (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) : ((∏ i ∈ s, g i) + ∏ i ∈ s, h i) ≤ ∏ i ∈ s, f i := by
   classical
-  simp_rw [prod_eq_mul_prod_diff_singleton hi]
+  simp_rw [prod_eq_mul_prod_diff_singleton_of_mem hi]
   grw [← h2i, right_distrib]
   gcongr with j hj j hj <;> simp_all
 
@@ -262,7 +203,7 @@ end AbsoluteValue
 namespace Mathlib.Meta.Positivity
 open Qq Lean Meta Finset
 
-private alias ⟨_, prod_ne_zero⟩ := prod_ne_zero_iff
+alias ⟨_, prod_ne_zero⟩ := prod_ne_zero_iff
 
 attribute [local instance] monadLiftOptionMetaM in
 /-- The `positivity` extension which proves that `∏ i ∈ s, f i` is nonnegative if `f` is, and

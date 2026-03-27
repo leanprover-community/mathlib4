@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Bornology.Constructions
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
-public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Products of pseudometric spaces and other constructions
@@ -41,6 +40,7 @@ abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace 
 /-- Pull back a pseudometric space structure by an inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `TopologicalSpace`
 structure. -/
+@[implicit_reducible]
 def Topology.IsInducing.comapPseudoMetricSpace {α β : Type*} [TopologicalSpace α]
     [m : PseudoMetricSpace β] {f : α → β} (hf : IsInducing f) : PseudoMetricSpace α :=
   .replaceTopology (.induced f m) hf.eq_induced
@@ -48,16 +48,42 @@ def Topology.IsInducing.comapPseudoMetricSpace {α β : Type*} [TopologicalSpace
 /-- Pull back a pseudometric space structure by a uniform inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `UniformSpace`
 structure. -/
+@[implicit_reducible]
 def IsUniformInducing.comapPseudoMetricSpace {α β} [UniformSpace α] [m : PseudoMetricSpace β]
     (f : α → β) (h : IsUniformInducing f) : PseudoMetricSpace α :=
   .replaceUniformity (.induced f m) h.comap_uniformity.symm
 
-instance Subtype.pseudoMetricSpace {p : α → Prop} : PseudoMetricSpace (Subtype p) :=
+namespace Subtype
+
+variable {p : α → Prop}
+
+instance pseudoMetricSpace : PseudoMetricSpace (Subtype p) :=
   PseudoMetricSpace.induced Subtype.val ‹_›
 
-lemma Subtype.dist_eq {p : α → Prop} (x y : Subtype p) : dist x y = dist (x : α) y := rfl
+lemma dist_eq (x y : Subtype p) : dist x y = dist (x : α) y := rfl
 
-lemma Subtype.nndist_eq {p : α → Prop} (x y : Subtype p) : nndist x y = nndist (x : α) y := rfl
+lemma nndist_eq (x y : Subtype p) : nndist x y = nndist (x : α) y := rfl
+
+@[simp]
+theorem preimage_ball (a : {a // p a}) (r : ℝ) : Subtype.val ⁻¹' (ball a.1 r) = ball a r :=
+  rfl
+
+@[simp]
+theorem preimage_closedBall {p : α → Prop} (a : {a // p a}) (r : ℝ) :
+    Subtype.val ⁻¹' (closedBall a.1 r) = closedBall a r :=
+  rfl
+
+@[simp]
+theorem image_ball {p : α → Prop} (a : {a // p a}) (r : ℝ) :
+    Subtype.val '' (ball a r) = ball a.1 r ∩ {a | p a} := by
+  rw [← preimage_ball, image_preimage_eq_inter_range, range_val_subtype]
+
+@[simp]
+theorem image_closedBall {p : α → Prop} (a : {a // p a}) (r : ℝ) :
+    Subtype.val '' (closedBall a r) = closedBall a.1 r ∩ {a | p a} := by
+  rw [← preimage_closedBall, image_preimage_eq_inter_range, range_val_subtype]
+
+end Subtype
 
 namespace MulOpposite
 
@@ -81,7 +107,8 @@ end MulOpposite
 
 section NNReal
 
-instance : PseudoMetricSpace ℝ≥0 := Subtype.pseudoMetricSpace
+instance : PseudoMetricSpace ℝ≥0 :=
+  inferInstanceAs <| PseudoMetricSpace (Subtype _)
 
 lemma NNReal.dist_eq (a b : ℝ≥0) : dist a b = |(a : ℝ) - b| := rfl
 
@@ -129,7 +156,8 @@ end NNReal
 namespace ULift
 variable [PseudoMetricSpace β]
 
-instance : PseudoMetricSpace (ULift β) := PseudoMetricSpace.induced ULift.down ‹_›
+instance : PseudoMetricSpace (ULift β) :=
+  fast_instance% PseudoMetricSpace.induced ULift.down ‹_›
 
 lemma dist_eq (x y : ULift β) : dist x y = dist x.down y.down := rfl
 

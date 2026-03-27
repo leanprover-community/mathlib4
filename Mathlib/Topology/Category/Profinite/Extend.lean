@@ -45,9 +45,9 @@ lemma exists_hom (hc : IsLimit c) {X : FintypeCat} (f : c.pt ⟶ toProfinite.obj
   let _ : TopologicalSpace X := ⊥
   have : DiscreteTopology (toProfinite.obj X) := ⟨rfl⟩
   let f' : LocallyConstant c.pt (toProfinite.obj X) :=
-    ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.hom.continuous⟩
+    ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.hom.hom.continuous⟩
   obtain ⟨i, g, h⟩ := exists_locallyConstant.{_, u} c hc f'
-  refine ⟨i, (g : _ → _), ?_⟩
+  refine ⟨i, ⟨(g : _ → _)⟩, ?_⟩
   ext x
   exact LocallyConstant.congr_fun h x
 
@@ -77,6 +77,7 @@ def functorOp : Iᵒᵖ ⥤ CostructuredArrow toProfinite.op ⟨c.pt⟩ :=
 -- We check that the opposite of the original diagram factors through `Profinite.Extend.functorOp`.
 example : functorOp c ⋙ CostructuredArrow.proj toProfinite.op ⟨c.pt⟩ ≅ F.op := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] uliftCategory in
 /--
 If the projection maps in the cone are epimorphic and the cone is limiting, then
@@ -108,14 +109,15 @@ If the projection maps in the cone are epimorphic and the cone is limiting, then
 -/
 lemma functorOp_final (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Final (functorOp c) := by
   have := functor_initial c hc
-  have : ((StructuredArrow.toCostructuredArrow toProfinite c.pt)).IsEquivalence  :=
-    (inferInstance : (structuredArrowOpEquivalence _ _).functor.IsEquivalence )
+  have : ((StructuredArrow.toCostructuredArrow toProfinite c.pt)).IsEquivalence :=
+    (inferInstance : (structuredArrowOpEquivalence _ _).functor.IsEquivalence)
   exact Functor.final_comp (functor c).op _
 
 section Limit
 
-variable {C : Type*} [Category C] (G : Profinite ⥤ C)
+variable {C : Type*} [Category* C] (G : Profinite ⥤ C)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a functor `G` from `Profinite` and `S : Profinite`, we obtain a cone on
 `(StructuredArrow.proj S toProfinite ⋙ toProfinite ⋙ G)` with cone point `G.obj S`.
@@ -145,7 +147,7 @@ end Limit
 
 section Colimit
 
-variable {C : Type*} [Category C] (G : Profiniteᵒᵖ ⥤ C)
+variable {C : Type*} [Category* C] (G : Profiniteᵒᵖ ⥤ C)
 
 /--
 Given a functor `G` from `Profiniteᵒᵖ` and `S : Profinite`, we obtain a cocone on

@@ -208,7 +208,7 @@ noncomputable def quotientKerEquivRange (f : M →* P) : (ker f).Quotient ≃* M
         ⟨fun x y h =>
           kerLift_injective f <| by rcases x with ⟨⟩; rcases y with ⟨⟩; injections,
           fun ⟨w, z, hz⟩ => ⟨z, by rcases hz with ⟨⟩; rfl⟩⟩) with
-    map_mul' := MonoidHom.map_mul _ }
+    map_mul' := map_mul _ }
 
 /-- The first isomorphism theorem for monoids in the case of a homomorphism with right inverse. -/
 @[to_additive (attr := simps)

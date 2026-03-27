@@ -5,7 +5,6 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
-public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.Algebra.Field.Equiv
 public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
@@ -110,6 +109,15 @@ theorem of_field [Field K] [Algebra R K] [FaithfulSMul R K]
   exists_of_eq eq := ⟨1, by simpa using inj eq⟩ }
 
 variable {R K}
+
+section CommSemiring
+
+theorem of_ringEquiv_left {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S]
+    {K : Type*} [CommSemiring K] [Algebra R K] (e : R ≃+* S) [Algebra S K]
+    (h : ∀ x, algebraMap R K x = algebraMap S K (e x)) [IsFractionRing S K] :
+    IsFractionRing R K := IsLocalization.of_ringEquiv_left e (MulEquivClass.map_nonZeroDivisors e) h
+
+end CommSemiring
 
 section CommRing
 
@@ -242,6 +250,7 @@ theorem mk'_mk_eq_div {r s} (hs : s ∈ nonZeroDivisors A) :
 theorem mk'_eq_div {r} (s : nonZeroDivisors A) : mk' K r s = algebraMap A K r / algebraMap A K s :=
   mk'_mk_eq_div s.2
 
+variable (A) in
 theorem div_surjective (z : K) :
     ∃ x y : A, y ∈ nonZeroDivisors A ∧ algebraMap _ _ x / algebraMap _ _ y = z :=
   let ⟨x, ⟨y, hy⟩, h⟩ := exists_mk'_eq (nonZeroDivisors A) z
@@ -278,7 +287,7 @@ omit [IsDomain B]
 
 theorem algHom_commutes (e : K₁ →ₐ[A] K₂) (f : L₁ →ₐ[B] L₂) (x : K₁) :
     algebraMap K₂ L₂ (e x) = f (algebraMap K₁ L₁ x) := by
-  obtain ⟨r, s, hs, rfl⟩ := IsFractionRing.div_surjective (A := A) x
+  obtain ⟨r, s, hs, rfl⟩ := IsFractionRing.div_surjective A x
   simp_rw [map_div₀, AlgHom.commutes, ← IsScalarTower.algebraMap_apply,
     IsScalarTower.algebraMap_apply A B L₁, AlgHom.commutes, ← IsScalarTower.algebraMap_apply]
 
@@ -295,7 +304,7 @@ variable (A K) in
 the image of `algebraMap A K` is equal to the whole field `K`. -/
 theorem closure_range_algebraMap : Subfield.closure (Set.range (algebraMap A K)) = ⊤ :=
   top_unique fun z _ ↦ by
-    obtain ⟨_, _, -, rfl⟩ := div_surjective (A := A) z
+    obtain ⟨_, _, -, rfl⟩ := div_surjective A z
     apply div_mem <;> exact Subfield.subset_closure ⟨_, rfl⟩
 
 variable {L : Type*} [Field L] {g : A →+* L} {f : K →+* L}
@@ -335,7 +344,7 @@ theorem lift_unique (hg : Function.Injective g) {f : K →+* L}
 theorem ringHom_ext {f1 f2 : K →+* L}
     (hf : ∀ x : A, f1 (algebraMap A K x) = f2 (algebraMap A K x)) : f1 = f2 := by
   ext z
-  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := A) z
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective A z
   rw [map_div₀, map_div₀, hf, hf]
 
 theorem injective_comp_algebraMap :
@@ -466,7 +475,7 @@ variable {A B C D : Type*}
 noncomputable def fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) : FB ≃ₐ[FA] FC where
   __ := IsFractionRing.ringEquivOfRingEquiv f.toRingEquiv
   commutes' x := by
-    obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := A) x
+    obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective A x
     simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B FB]
     simp [← IsScalarTower.algebraMap_apply A C FC]
 
@@ -486,14 +495,14 @@ variable (A B) in
 lemma fieldEquivOfAlgEquiv_refl :
     fieldEquivOfAlgEquiv FA FB FB (AlgEquiv.refl : B ≃ₐ[A] B) = AlgEquiv.refl := by
   ext x
-  obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := B) x
+  obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective B x
   simp
 
 lemma fieldEquivOfAlgEquiv_trans (f : B ≃ₐ[A] C) (g : C ≃ₐ[A] D) :
     fieldEquivOfAlgEquiv FA FB FD (f.trans g) =
       (fieldEquivOfAlgEquiv FA FB FC f).trans (fieldEquivOfAlgEquiv FA FC FD g) := by
   ext x
-  obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := B) x
+  obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective B x
   simp
 
 end fieldEquivOfAlgEquiv
@@ -538,11 +547,10 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
 variable (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [h : IsFractionRing R S]
 
 theorem nontrivial_iff_nontrivial : Nontrivial R ↔ Nontrivial S := by
-  by_contra! h'
-  rcases h' with ⟨_, _⟩ | ⟨_, _⟩
+  by_contra! ⟨_, _⟩ | ⟨_, _⟩
   · obtain ⟨c, hc⟩ := h.exists_of_eq (x := 1) (y := 0) (Subsingleton.elim _ _)
     simp at hc
-  · apply (h.map_units 1).ne_zero
+  · apply (h.map_units S 1).ne_zero
     rw [Subsingleton.eq_zero ((1 : nonZeroDivisors R) : R), map_zero]
 
 protected theorem nontrivial [hR : Nontrivial R] : Nontrivial S :=
@@ -587,6 +595,14 @@ instance unique [Subsingleton R] : Unique (FractionRing R) := inferInstance
 
 instance [Nontrivial R] : Nontrivial (FractionRing R) := inferInstance
 
+variable {R} in
+instance [DecidableEq R] : DecidableEq (FractionRing R) := by
+  intro x y
+  apply Localization.recOnSubsingleton₂ x y (r := fun x y ↦ Decidable (x = y))
+  intro a c b d
+  simp only [Localization.mk_eq_mk_iff, Localization.r_iff_of_le_nonZeroDivisors (le_refl _)]
+  infer_instance
+
 variable [IsDomain A]
 
 noncomputable instance field : Field (FractionRing A) := inferInstance
@@ -605,18 +621,18 @@ variable [Field K] [Algebra R K] [FaithfulSMul R K]
 Should usually be introduced locally along with `isScalarTower_liftAlgebra`
 See note [reducible non-instances]. -/
 noncomputable abbrev liftAlgebra : Algebra (FractionRing R) K :=
-  have := (FaithfulSMul.algebraMap_injective R K).isDomain
+  have := IsDomain.of_faithfulSMul R K
   RingHom.toAlgebra (IsFractionRing.lift (FaithfulSMul.algebraMap_injective R K))
 
 attribute [local instance] liftAlgebra
 
 instance isScalarTower_liftAlgebra : IsScalarTower R (FractionRing R) K :=
-  have := (FaithfulSMul.algebraMap_injective R K).isDomain
+  have := IsDomain.of_faithfulSMul R K
   .of_algebraMap_eq fun x ↦
     (IsFractionRing.lift_algebraMap (FaithfulSMul.algebraMap_injective R K) x).symm
 
 lemma algebraMap_liftAlgebra :
-    have := (FaithfulSMul.algebraMap_injective R K).isDomain
+    have := IsDomain.of_faithfulSMul R K
     algebraMap (FractionRing R) K = IsFractionRing.lift (FaithfulSMul.algebraMap_injective R _) :=
   rfl
 

@@ -50,13 +50,23 @@ instance instCommMonoid : CommMonoid ℕ where
   npow_zero := Nat.pow_zero
   npow_succ _ _ := rfl
 
+-- These instances can also be found from the `LinearOrderedCommMonoidWithZero ℕ` instance by
+-- typeclass search, but it is better practice to not rely on algebraic order theory to prove
+-- purely algebraic results on concrete types. Eg the results can be made available earlier.
+
+instance instIsMulTorsionFree : IsMulTorsionFree ℕ where
+  pow_left_injective _ h _ _ := (Nat.pow_left_inj h).mp
+
+instance instIsAddTorsionFree : IsAddTorsionFree ℕ where
+  nsmul_right_injective _n hn _x _y hxy := Nat.mul_left_cancel (Nat.pos_of_ne_zero hn) hxy
+
 /-!
 ### Extra instances to short-circuit type class resolution
 
 These also prevent non-computable instances being used to construct these instances non-computably.
 -/
 
-set_option linter.style.commandStart false
+set_option linter.style.whitespace false -- manual alignment is not recognised
 
 instance instAddCommMonoid    : AddCommMonoid ℕ    := by infer_instance
 instance instAddMonoid        : AddMonoid ℕ        := by infer_instance
@@ -67,10 +77,7 @@ instance instAddCommSemigroup : AddCommSemigroup ℕ := by infer_instance
 instance instAddSemigroup     : AddSemigroup ℕ     := by infer_instance
 instance instOne              : One ℕ              := inferInstance
 
-instance instIsAddTorsionFree : IsAddTorsionFree ℕ where
-  nsmul_right_injective _n hn _x _y hxy := Nat.mul_left_cancel (Nat.pos_of_ne_zero hn) hxy
-
-set_option linter.style.commandStart true
+set_option linter.style.whitespace true
 
 /-! ### Miscellaneous lemmas -/
 

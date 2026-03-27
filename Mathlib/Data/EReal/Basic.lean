@@ -115,13 +115,26 @@ theorem coe_one : ((1 : ℝ) : EReal) = 1 := rfl
 
 /-- A recursor for `EReal` in terms of the coercion.
 
-When working in term mode, note that pattern matching can be used directly. -/
+When working in term mode, note that pattern matching can be used directly,
+although this is prone to leaking the implementation details in terms of `Option`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 protected def rec {motive : EReal → Sort*}
     (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) : ∀ a : EReal, motive a
   | ⊥ => bot
   | (a : ℝ) => coe a
   | ⊤ => top
+
+@[simp] theorem rec_bot {motive : EReal → Sort*}
+    (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) : EReal.rec bot coe top ⊥ = bot :=
+  rfl
+
+@[simp] theorem rec_top {motive : EReal → Sort*}
+    (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) : EReal.rec bot coe top ⊤ = top :=
+  rfl
+
+@[simp] theorem rec_coe {motive : EReal → Sort*}
+    (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) (a : ℝ) :
+    EReal.rec bot coe top a = coe a := rfl
 
 protected lemma «forall» {p : EReal → Prop} : (∀ r, p r) ↔ p ⊥ ∧ p ⊤ ∧ ∀ r : ℝ, p r where
   mp h := ⟨h _, h _, fun _ ↦ h _⟩
@@ -190,7 +203,7 @@ theorem induction₂_symm {P : EReal → EReal → Prop} (symm : ∀ {x y}, P x 
     (fun _ h => symm <| pos_bot _ h) (symm zero_bot) (fun _ h => symm <| neg_bot _ h) bot_bot
 
 protected theorem mul_comm (x y : EReal) : x * y = y * x := by
-  induction x <;> induction y  <;>
+  induction x <;> induction y <;>
     try { rfl }
   rw [← coe_mul, ← coe_mul, mul_comm]
 
@@ -366,6 +379,36 @@ lemma toReal_nonpos {x : EReal} (hx : x ≤ 0) : x.toReal ≤ 0 := by
   · exact toReal_coe _ ▸ EReal.coe_nonpos.mp hx
   · simp
 
+lemma toReal_pos {x : EReal} (hx : 0 < x) (h'x : x ≠ ⊤) : 0 < x.toReal := by
+  lift x to ℝ using by aesop
+  simpa using hx
+
+set_option backward.isDefEq.respectTransparency false in
+lemma toReal_neg {x : EReal} (hx : x < 0) (h'x : x ≠ ⊥) : x.toReal < 0 := by
+  lift x to ℝ using by aesop
+  simpa using hx
+
+@[simp] lemma toReal_image_Ioo_zero_top : toReal '' (Ioo 0 ⊤) = Ioi 0 := by
+  ext x
+  constructor
+  · rintro ⟨y, ⟨hy0, _⟩, rfl⟩
+    lift y to ℝ using by aesop
+    simpa using hy0
+  · intro hx
+    use (x : EReal)
+    simpa using hx
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp] lemma toReal_image_Ioo_bot_zero : toReal '' (Ioo ⊥ 0) = Iio 0 := by
+  ext x
+  constructor
+  · rintro ⟨y, ⟨_, hy0⟩, rfl⟩
+    lift y to ℝ using by aesop
+    simpa using hy0
+  · intro hx
+    use (x : EReal)
+    simpa using hx
+
 theorem toReal_le_toReal {x y : EReal} (h : x ≤ y) (hx : x ≠ ⊥) (hy : y ≠ ⊤) :
     x.toReal ≤ y.toReal := by
   lift x to ℝ using ⟨ne_top_of_le_ne_top hy h, hx⟩
@@ -381,6 +424,7 @@ theorem le_coe_toReal {x : EReal} (h : x ≠ ⊤) : x ≤ x.toReal := by
   · simp only [h', bot_le]
   · simp only [le_refl, coe_toReal h h']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_toReal_le {x : EReal} (h : x ≠ ⊥) : ↑x.toReal ≤ x := by
   by_cases h' : x = ⊤
   · simp only [h', le_top]
@@ -471,6 +515,7 @@ lemma preimage_coe_Ioi (x : ℝ) : Real.toEReal ⁻¹' Ioi x = Ioi x := by
   refine preimage_comp.trans ?_
   simp only [WithBot.preimage_coe_Ioi, WithTop.preimage_coe_Ioi]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma preimage_coe_Ioi_bot : Real.toEReal ⁻¹' Ioi ⊥ = univ := by
   change (WithBot.some ∘ WithTop.some) ⁻¹' (Ioi ⊥) = _
@@ -489,6 +534,7 @@ lemma preimage_coe_Iio (y : ℝ) : Real.toEReal ⁻¹' Iio y = Iio y := by
   refine preimage_comp.trans ?_
   simp only [WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma preimage_coe_Iio_top : Real.toEReal ⁻¹' Iio ⊤ = univ := by
   change (WithBot.some ∘ WithTop.some) ⁻¹' (Iio (WithBot.some ⊤)) = _
@@ -695,6 +741,7 @@ lemma toENNReal_of_nonpos {x : EReal} (hx : x ≤ 0) : x.toENNReal = 0 := by
 lemma toENNReal_bot : (⊥ : EReal).toENNReal = 0 := toENNReal_of_nonpos bot_le
 lemma toENNReal_zero : (0 : EReal).toENNReal = 0 := toENNReal_of_nonpos le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toENNReal_eq_zero_iff {x : EReal} : x.toENNReal = 0 ↔ x ≤ 0 := by
   induction x <;> simp [toENNReal]
 
@@ -739,6 +786,7 @@ lemma toENNReal_eq_toENNReal {x y : EReal} (hx : 0 ≤ x) (hy : 0 ≤ y) :
     x.toENNReal = y.toENNReal ↔ x = y := by
   induction x <;> induction y <;> simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toENNReal_le_toENNReal {x y : EReal} (h : x ≤ y) : x.toENNReal ≤ y.toENNReal := by
   induction x
   · simp

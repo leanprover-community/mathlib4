@@ -16,7 +16,7 @@ if and only if it is surjective, and that a continuous function is a monomorphis
 topological spaces if and only if it is injective.
 -/
 
-@[expose] public section
+public section
 
 
 universe u

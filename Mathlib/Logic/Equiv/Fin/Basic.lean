@@ -320,8 +320,8 @@ theorem finAddFlip_apply_mk_left {k : ℕ} (h : k < m) (hk : k < m + n := Nat.lt
 
 @[simp]
 theorem finAddFlip_apply_mk_right {k : ℕ} (h₁ : m ≤ k) (h₂ : k < m + n) :
-    finAddFlip (⟨k, h₂⟩ : Fin (m + n)) = ⟨k - m, by cutsat⟩ := by
-  convert @finAddFlip_apply_natAdd n ⟨k - m, by cutsat⟩ m
+    finAddFlip (⟨k, h₂⟩ : Fin (m + n)) = ⟨k - m, by lia⟩ := by
+  convert @finAddFlip_apply_natAdd n ⟨k - m, by lia⟩ m
   simp [Nat.add_sub_cancel' h₁]
 
 /-- Equivalence between `Fin m × Fin n` and `Fin (m * n)` -/
@@ -343,13 +343,11 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
         calc
           (y.1 + n * x.1) / n = y.1 / n + x.1 := Nat.add_mul_div_left _ _ H
           _ = 0 + x.1 := by rw [Nat.div_eq_of_lt y.2]
-          _ = x.1 := Nat.zero_add x.1
-          )
+          _ = x.1 := Nat.zero_add x.1)
       (Fin.eq_of_val_eq <|
         calc
           (y.1 + n * x.1) % n = y.1 % n := Nat.add_mul_mod_self_left _ _ _
-          _ = y.1 := Nat.mod_eq_of_lt y.2
-          )
+          _ = y.1 := Nat.mod_eq_of_lt y.2)
   right_inv _ := Fin.eq_of_val_eq <| Nat.mod_add_div _ _
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
@@ -396,14 +394,6 @@ def Fin.castLEquiv {n m : ℕ} (h : n ≤ m) : Fin n ≃ { i : Fin m // (i : ℕ
   invFun i := ⟨i, i.prop⟩
   left_inv _ := by simp
   right_inv _ := by simp
-
-@[deprecated Fin.subsingleton_zero (since := "2025-06-03")]
-theorem subsingleton_fin_zero : Subsingleton (Fin 0) :=
-  Fin.subsingleton_zero
-
-@[deprecated Fin.subsingleton_one (since := "2025-06-03")]
-theorem subsingleton_fin_one : Subsingleton (Fin 1) :=
-  Fin.subsingleton_one
 
 /-- The natural `Equiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α` -/
 @[simps]

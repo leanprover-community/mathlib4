@@ -19,13 +19,13 @@ categories.
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 open GrothendieckTopology
 
 namespace Equivalence
 
-variable {D : Type*} [Category D]
+variable {D : Type*} [Category* D]
 
 section Coherent
 
@@ -43,7 +43,7 @@ instance (e : C ≌ D) : haveI := precoherent e
     rw [coherentTopology.eq_induced e.inverse]
     simp only [Functor.mem_inducedTopology_sieves_iff, implies_true]
 
-variable (A : Type*) [Category A]
+variable (A : Type*) [Category* A]
 
 /--
 Equivalent precoherent categories give equivalent coherent toposes.
@@ -59,9 +59,9 @@ The coherent sheaf condition can be checked after precomposing with the equivale
 -/
 theorem precoherent_isSheaf_iff (e : C ≌ D) (F : Cᵒᵖ ⥤ A) : haveI := e.precoherent
     IsSheaf (coherentTopology C) F ↔ IsSheaf (coherentTopology D) (e.inverse.op ⋙ F) := by
-  refine ⟨fun hF ↦ ((e.sheafCongrPrecoherent A).functor.obj ⟨F, hF⟩).cond, fun hF ↦ ?_⟩
+  refine ⟨fun hF ↦ ((e.sheafCongrPrecoherent A).functor.obj ⟨F, hF⟩).property, fun hF ↦ ?_⟩
   rw [isSheaf_of_iso_iff (P' := e.functor.op ⋙ e.inverse.op ⋙ F)]
-  · exact (e.sheafCongrPrecoherent A).inverse.obj ⟨e.inverse.op ⋙ F, hF⟩ |>.cond
+  · exact (e.sheafCongrPrecoherent A).inverse.obj ⟨e.inverse.op ⋙ F, hF⟩ |>.property
   · exact Functor.isoWhiskerRight e.op.unitIso F
 
 /--
@@ -91,7 +91,7 @@ instance (e : C ≌ D) : haveI := preregular e
     rw [regularTopology.eq_induced e.inverse]
     simp only [Functor.mem_inducedTopology_sieves_iff, implies_true]
 
-variable (A : Type*) [Category A]
+variable (A : Type*) [Category* A]
 
 /--
 Equivalent preregular categories give equivalent regular toposes.
@@ -107,9 +107,9 @@ The regular sheaf condition can be checked after precomposing with the equivalen
 -/
 theorem preregular_isSheaf_iff (e : C ≌ D) (F : Cᵒᵖ ⥤ A) : haveI := e.preregular
     IsSheaf (regularTopology C) F ↔ IsSheaf (regularTopology D) (e.inverse.op ⋙ F) := by
-  refine ⟨fun hF ↦ ((e.sheafCongrPreregular A).functor.obj ⟨F, hF⟩).cond, fun hF ↦ ?_⟩
+  refine ⟨fun hF ↦ ((e.sheafCongrPreregular A).functor.obj ⟨F, hF⟩).property, fun hF ↦ ?_⟩
   rw [isSheaf_of_iso_iff (P' := e.functor.op ⋙ e.inverse.op ⋙ F)]
-  · exact (e.sheafCongrPreregular A).inverse.obj ⟨e.inverse.op ⋙ F, hF⟩ |>.cond
+  · exact (e.sheafCongrPreregular A).inverse.obj ⟨e.inverse.op ⋙ F, hF⟩ |>.property
   · exact Functor.isoWhiskerRight e.op.unitIso F
 
 /--

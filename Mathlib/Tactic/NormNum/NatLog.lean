@@ -6,7 +6,8 @@ Authors: Kyle Miller, Andreas Gittis
 module
 
 public meta import Mathlib.Data.Nat.Log
-public meta import Mathlib.Tactic.NormNum
+public import Mathlib.Data.Nat.Log
+public import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extensions for `Nat.log` and `Nat.clog`
 
@@ -62,7 +63,7 @@ Evaluates the `Nat.log` function.
 @[norm_num Nat.log _ _]
 def evalNatLog : NormNumExt where eval {u α} e := do
   let mkApp2 _ (b : Q(ℕ)) (n : Q(ℕ)) ← Meta.whnfR e | failure
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨eb, pb⟩ ← deriveNat b sℕ
   let ⟨en, pn⟩ ← deriveNat n sℕ
   let ⟨ek, pf⟩ := proveNatLog eb en
@@ -80,7 +81,7 @@ theorem nat_clog_helper {b m n : ℕ} (hb : Nat.blt 1 b = true)
   rw [Nat.blt_eq] at hb
   rw [Nat.blt_eq, ← Nat.lt_clog_iff_pow_lt hb] at h₁
   rw [Nat.ble_eq, ← Nat.clog_le_iff_le_pow hb] at h₂
-  cutsat
+  lia
 
 private theorem isNat_clog : {b nb n nn k : ℕ} → IsNat b nb → IsNat n nn →
     Nat.clog nb nn = k → IsNat (Nat.clog b n) k
@@ -103,7 +104,7 @@ def proveNatClog (eb en : Q(ℕ)) : (ek : Q(ℕ)) × Q(Nat.clog $eb $en = $ek) :
   else
     match h : Nat.clog b n with
     | 0 => False.elim <|
-      Nat.ne_of_gt (Nat.clog_pos (by cutsat) (by cutsat)) h
+      Nat.ne_of_gt (Nat.clog_pos (by lia) (by lia)) h
     | k + 1 =>
       have ek : Q(ℕ) := mkRawNatLit k
       have ek1 : Q(ℕ) := mkRawNatLit (k + 1)
@@ -119,7 +120,7 @@ Evaluates the `Nat.clog` function.
 @[norm_num Nat.clog _ _]
 def evalNatClog : NormNumExt where eval {u α} e := do
   let mkApp2 _ (b : Q(ℕ)) (n : Q(ℕ)) ← Meta.whnfR e | failure
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨eb, pb⟩ ← deriveNat b sℕ
   let ⟨en, pn⟩ ← deriveNat n sℕ
   let ⟨ek, pf⟩ := proveNatClog eb en
