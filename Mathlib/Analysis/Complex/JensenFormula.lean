@@ -211,14 +211,10 @@ theorem AnalyticOnNhd.sum_divisor_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
   · exact map_finsum (Int.castRingHom ℝ)
       ((divisor _ _).finiteSupport <| isCompact_closedBall ..) |>.le
   -- Rearrange: move `log R/r` to the LHS and inside the sum.
+  have hrR : 1 < |R / r| := by simpa [abs_div, one_lt_div r_pos]
   suffices ∑ᶠ u, divisor f (closedBall c |r|) u * Real.log (R / r) ≤ Real.log (M / ‖f c‖) by
-    conv at this => lhs; arg 1; ext; rw [← smul_eq_mul]
-    rw [← finsum_smul, smul_eq_mul] at this
-    apply le_div_iff₀ _|>.mpr this
-    rw [← log_abs]
-    apply log_pos
-    rw [abs_div]
-    exact one_lt_div r_pos|>.mpr r_lt_R
+    rwa [← finsum_mul, ← le_div_iff₀] at this
+    simpa using log_pos hrR
   have jensen := h₁f.circleAverage_log_norm (abs_ne_zero.mp (by linarith)) h₂f
   -- Estimate the circleAverage using the bound on f
   have integral_bound : circleAverage (fun x ↦ Real.log ‖f x‖) c R ≤ Real.log M := by
