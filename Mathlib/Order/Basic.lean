@@ -870,7 +870,7 @@ instance : LE (α × β) where le p q := p.1 ≤ q.1 ∧ p.2 ≤ q.2
 
 @[to_dual self]
 instance instDecidableLE [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) :=
-  (inferInstance : Decidable (x.1 ≤ y.1 ∧ x.2 ≤ y.2))
+  inferInstanceAs <| Decidable (x.1 ≤ y.1 ∧ x.2 ≤ y.2)
 
 @[to_dual self] lemma le_def : x ≤ y ↔ x.1 ≤ y.1 ∧ x.2 ≤ y.2 := .rfl
 
