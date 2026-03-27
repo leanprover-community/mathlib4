@@ -117,7 +117,7 @@ lemma ZariskisMainProperty.trans [Algebra S T] [IsScalarTower R S T] (p : Ideal 
   obtain ⟨m, hm⟩ := Hs t
   refine ⟨algebraMap _ _ (s ^ (m + 1) * t), ?_, fun x ↦ ?_⟩
   · simpa using ‹p.IsPrime›.mul_notMem
-      (mt ((inferInstanceAs (p.under S).IsPrime).mem_of_pow_mem (m + 1)) hsp) htp
+      (mt ((inferInstance : (p.under S).IsPrime).mem_of_pow_mem (m + 1)) hsp) htp
   obtain ⟨_, ⟨n, rfl⟩, a, ha⟩ := Ht.ge (Set.mem_univ x)
   obtain ⟨k, hk⟩ := Hs a
   refine ⟨k + n, ?_⟩
@@ -548,7 +548,6 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
   · refine ⟨⟨x, by simpa using hx 1⟩, hxp, top_le_iff.mp fun s _ ↦ ⟨_, ⟨1, rfl⟩, ?_⟩⟩
     simpa [Algebra.mem_bot] using hx s
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Pointwise in
 -- Subsumed by `ZariskisMainProperty.of_finiteType`.
 private lemma ZariskisMainProperty.of_algHom_mvPolynomial
