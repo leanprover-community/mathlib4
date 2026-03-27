@@ -144,7 +144,8 @@ lemma factorsThrough_iff_ker_unitsMap {d : ℕ} [NeZero n] (hd : d ∣ n) :
     simp_rw [changeLevel_toUnitHom, toUnitHom_eq, ofUnitHom_eq, Equiv.apply_symm_apply, hE,
       toUnitHom_eq]
 
-theorem factorsThrough_of_dvd_dvd {d m : ℕ} [NeZero n] (hχ : FactorsThrough χ d) (hd : d ∣ m)
+/-- If `χ` factors through `d` and `d ∣ m ∣ n`, then `χ` also factors through `m`. -/
+theorem FactorsThrough.mono {d m : ℕ} [NeZero n] (hχ : FactorsThrough χ d) (hd : d ∣ m)
     (hm : m ∣ n) :
     FactorsThrough χ m := by
   refine (factorsThrough_iff_ker_unitsMap hm).mpr fun x hx ↦ ?_
@@ -337,7 +338,7 @@ theorem mem_conductorSet_iff_conductor_dvd (hn : n ≠ 0) {d : ℕ} (hd : d ∣ 
     d ∈ χ.conductorSet ↔ χ.conductor ∣ d := by
   refine ⟨fun h ↦ conductor_dvd_of_mem_conductorSet χ hn h, fun h ↦ ?_⟩
   have : NeZero n := ⟨hn⟩
-  exact factorsThrough_of_dvd_dvd χ χ.factorsThrough_conductor h hd
+  exact χ.factorsThrough_conductor.mono χ h hd
 
 /-- Dirichlet character associated to multiplication of Dirichlet characters,
 after changing both levels to the same -/
