@@ -9,6 +9,7 @@ public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Data.ZMod.Defs
 public import Mathlib.LinearAlgebra.Matrix.Defs
+public import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 # LatinSquare
@@ -84,12 +85,9 @@ class LatinRectangle (m : Type*) (n : Type*) (α : Type*)
 attribute [coe] LatinRectangle.M
 
 /-- Pretty printing of Latin rectangles. -/
-instance {m n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [ToString α] :
+instance {m n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [ToString α] [Repr α] :
   Repr (LatinRectangle (Fin m) (Fin n) α) where
-  reprPrec L _ :=
-    let row (i : Fin m) :=
-      String.intercalate " " (List.ofFn (fun j => (toString (L.M i j))));
-      String.intercalate "\n" (List.ofFn row)
+  reprPrec L _ := repr L.M
 
 /-- A LatinSquare is a Square LatinRectangle -/
 abbrev LatinSquare (n : Type*) [Fintype n] (α : Type*) [Fintype α] [DecidableEq α] :=
@@ -102,10 +100,10 @@ instance {m : Type*} {n : Type*} {α : Type*} [Fintype m]
   coe A := A.M
 
 /-- Get a specific column of the `LatinRectangle`. -/
-abbrev col (A : LatinRectangle m n α) : n → m → α := Matrix.col A
+abbrev LatinRectangle.col (A : LatinRectangle m n α) : n → m → α := Matrix.col A
 
 /-- Get a specific row of the `LatinRectangle`. -/
-abbrev row (A : LatinRectangle m n α) : m → n → α := Matrix.row A
+abbrev LatinRectangle.row (A : LatinRectangle m n α) : m → n → α := Matrix.row A
 
 /-- Alernative constructor for LatinSquares using the OncePerColumn property -/
 @[reducible]
@@ -124,7 +122,6 @@ def LatinSquareFromOncePerColumn
 /-- Every Finite Group's Cayley table is an example of a Latin Square. -/
 @[to_additive /-- Every Additive Finite Group's Cayley table is an example of a Latin Square -/,
   reducible]
-@[to_additive]
 def groupToCayleyTable (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
     LatinSquare G G :=
   LatinSquareFromOncePerColumn
@@ -136,7 +133,6 @@ def groupToCayleyTable (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
     (once_per_column := by
       simp only [Matrix.col]
       exact Group.mulRight_bijective (G := G))
-
 
 section Equivalence
 
@@ -178,7 +174,7 @@ def renameLatinRectangle
   }
 
 /-- An equivalence of Latin Rectangles -/
-structure LREquiv (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) where
+structure LatinRectangle.Equiv (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) where
   /-- A row relabeling. -/
   (f : m ≃ m')
   /-- A column relabeling. -/
@@ -191,11 +187,11 @@ structure LREquiv (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) whe
 
 /-- Two Latin rectangles are equivalent if one can be obtained from the other by some combination
     of relabeling the row indices, column indices, and symbols. -/
-def LatinRectangleEquivRelation (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) :=
-    Nonempty (LREquiv A A')
+def LatinRectangle.EquivRelation (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) :=
+    Nonempty (LatinRectangle.Equiv A A')
 
 /-- Notation for two `LatinRectangle`s to be equivalent. -/
-infixl:25 " ≃ " => LatinRectangleEquivRelation
+infixl:25 " ≃ " => LatinRectangle.EquivRelation
 
 lemma induced_latin_rectangle_is_equiv
     (f : m ≃ m')
@@ -238,7 +234,7 @@ def IsSubrect (A : LatinRectangle m n α) (B : LatinRectangle m' n' α) :=
 
 /-- A map returning the set of symbols in α not in column j. -/
 def symbolsNotIn (A : LatinRectangle k n α) (j : n) :=
-  let D := Finset.image (col A j) Finset.univ
+  let D := Finset.image (LatinRectangle.col A j) Finset.univ
   Finset.univ \ D
 
 /-- Given a finite collection of finite subsets $B_1, \ldots, B_k$ and, for every
@@ -314,7 +310,7 @@ lemma col_card
     {k : Type*} [Fintype k]
     {n : Type*} [Fintype n]
     (A : LatinRectangle k n α) :
-    ∀ j, (Finset.image (col A j) Finset.univ).card = Fintype.card k := by
+    ∀ j, (Finset.image (LatinRectangle.col A j) Finset.univ).card = Fintype.card k := by
   intro j
   have h_inj := A.distinct_col_entries
   exact Finset.card_image_of_injective Finset.univ (h_inj j)
@@ -392,9 +388,9 @@ theorem latin_rectangle_extends_one_row
   have exactly_n_minus_k_cols_without_x : ∀ x,
     (Finset.card {j | x ∈ B j}) = Fintype.card n - Fintype.card k := by
     intro x
-    set As : Finset (n) := {j | ∃ i, col A j i = x} with hA -- column indices with x
+    set As : Finset (n) := {j | ∃ i, LatinRectangle.col A j i = x} with hA -- column indices with x
     set Bs : Finset (n) := {j | x ∈ B j} with hB -- column indices without x
-    set Cs : Finset (k) := {i | ∃ j, row A i j = x} with hC -- row indices with x
+    set Cs : Finset (k) := {i | ∃ j, LatinRectangle.row A i j = x} with hC -- row indices with x
     set Ds : Finset (k × n) := {(i, j) | A.M i j = x}
     have h := row_entry_to_column_entry A x
     obtain ⟨f, hf⟩ := h
