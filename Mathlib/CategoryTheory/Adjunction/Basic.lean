@@ -121,6 +121,16 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
 /-- The notation `F ⊣ G` stands for `Adjunction F G` representing that `F` is left adjoint to `G` -/
 infixl:15 " ⊣ " => Adjunction
 
+@[map (attr := reassoc (attr := simp))]
+theorem Adjunction.counit_naturality {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) {X Y : D} (f : X ⟶ Y) :
+    F.map (G.map f) ≫ adj.counit.app Y = adj.counit.app X ≫ f :=
+  adj.counit.naturality f
+
+@[map (attr := reassoc (attr := simp))]
+theorem Adjunction.unit_naturality {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) {X Y : C} (f : X ⟶ Y) :
+    adj.unit.app X ≫ G.map (F.map f) = f ≫ adj.unit.app Y :=
+  (adj.unit.naturality f).symm
+
 namespace Functor
 
 /-- A class asserting the existence of a right adjoint. -/
@@ -153,7 +163,7 @@ noncomputable def Adjunction.ofIsRightAdjoint (right : C ⥤ D) [right.IsRightAd
 
 namespace Adjunction
 
-attribute [reassoc (attr := simp)] left_triangle_components right_triangle_components
+attribute [map (attr := reassoc (attr := simp))] left_triangle_components right_triangle_components
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The hom set equivalence associated to an adjunction. -/
@@ -162,14 +172,8 @@ def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
     (F.obj X ⟶ Y) ≃ (X ⟶ G.obj Y) where
   toFun := fun f => adj.unit.app X ≫ G.map f
   invFun := fun g => F.map g ≫ adj.counit.app Y
-  left_inv := fun f => by
-    dsimp
-    rw [F.map_comp, assoc, ← Functor.comp_map, adj.counit.naturality, ← assoc]
-    simp
-  right_inv := fun g => by
-    simp only [Functor.comp_obj, Functor.map_comp]
-    rw [← assoc, ← Functor.comp_map, ← adj.unit.naturality]
-    simp
+  left_inv := fun f => by simp
+  right_inv := fun g => by simp
 
 alias homEquiv_unit := homEquiv_apply
 alias homEquiv_counit := homEquiv_symm_apply
@@ -275,16 +279,6 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem right_triangle : whiskerLeft G adj.unit ≫ whiskerRight adj.counit G = 𝟙 _ := by
   ext; simp
-
-@[reassoc (attr := simp)]
-theorem counit_naturality {X Y : D} (f : X ⟶ Y) :
-    F.map (G.map f) ≫ adj.counit.app Y = adj.counit.app X ≫ f :=
-  adj.counit.naturality f
-
-@[reassoc (attr := simp)]
-theorem unit_naturality {X Y : C} (f : X ⟶ Y) :
-    adj.unit.app X ≫ G.map (F.map f) = f ≫ adj.unit.app Y :=
-  (adj.unit.naturality f).symm
 
 set_option backward.isDefEq.respectTransparency false in
 lemma unit_comp_map_eq_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :

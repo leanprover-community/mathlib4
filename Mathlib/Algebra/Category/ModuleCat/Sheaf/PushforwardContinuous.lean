@@ -212,9 +212,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   (H₂ : φ.hom ≫ F.op.whiskerLeft ψ.hom ≫
     Functor.whiskerRight (NatTrans.op adj.unit) S.obj = 𝟙 S.obj)
 
-attribute [map (attr := simp)] Adjunction.right_triangle_components
-attribute [simp] Adjunction.right_triangle_components_op_map
-
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F ⊣ G`, then the pushforwards along `F` and `G` are also adjoint. -/
 noncomputable
@@ -231,7 +228,6 @@ def pushforwardPushforwardAdj : pushforward.{v} φ ⊣ pushforward.{v} ψ where
     ext U x
     change (X.val.presheaf.map (adj.counit.app (F.obj U.unop)).op ≫
       X.val.presheaf.map (F.map (adj.unit.app U.unop)).op) _ = _
-    rw [← Functor.map_comp, ← op_comp, adj.left_triangle_components]
     simp
   right_triangle_components X := by
     ext U x

@@ -64,6 +64,13 @@ private def applyOptAttrsToDecl (decl : Name) (attrs : TSyntax ``optAttrArg) : M
     let attrs ← elabOptAttrArg attrs
     Term.applyAttributes decl attrs
 
+/-- Apply just the named attributes from an `(attr := ...)` bundle to a declaration. -/
+private def applySelectedOptAttrsToDecl (decl : Name) (attrs : TSyntax ``optAttrArg)
+    (names : List Name) : MetaM Unit :=
+  Term.TermElabM.run' do
+    let attrs ← elabOptAttrArg attrs
+    Term.applyAttributes decl <| attrs.filter (fun attr => attr.name ∈ names)
+
 /-- Build `Category Cᵒᵖ` from `C` and `[Category C]` using matching universe levels. -/
 private def mkOppositeCategoryInst (C instC : Expr) : MetaM Expr := do
   let instCty ← inferType instC
@@ -311,9 +318,9 @@ in some category `C`, creates `H_op`, `H_map`, and `H_op_map`.
 For each compatible registered `@[map_functor]` declaration `G`, it also creates
 `H_map_<G>` by specializing `F := G` and applying `dsimp`.
 
-Use `@[map (attr := simp)]` to mark both the original lemma and `H_map` as `simp` lemmas, and
-`@[reassoc (attr := map)]` to generate `_map` versions of both the original lemma the reassociated
-version.
+Use `@[map (attr := simp)]` to mark the original lemma and all generated `map` lemmas as
+`simp` lemmas. Other copied attributes continue to apply to the original lemma, `H_map`, and the
+specialized `H_map_<G>` lemmas.
 -/
 syntax (name := map) "map" optAttrArg : attr
 syntax (name := map_functor) "map_functor" : attr
@@ -386,6 +393,8 @@ initialize registerBuiltinAttribute {
         specializedTargets := specializedTargets.push specializedTgt
     applyOptAttrsToDecl src optAttr
     applyOptAttrsToDecl tgt optAttr
+    applySelectedOptAttrsToDecl opTgt optAttr [`simp]
+    applySelectedOptAttrsToDecl opMapTgt optAttr [`simp]
     for specializedTgt in specializedTargets do
       applyOptAttrsToDecl specializedTgt optAttr
   | _ => throwUnsupportedSyntax }

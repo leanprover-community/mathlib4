@@ -4,6 +4,7 @@ public import Mathlib.Tactic.CategoryTheory.Map
 public import Mathlib.Tactic.CategoryTheory.Reassoc
 public import Mathlib.CategoryTheory.Types.Basic
 
+open Lean Meta Elab Term Command
 open CategoryTheory
 
 namespace Tests.Map
@@ -56,6 +57,14 @@ lemma comp_eq_id {x y : C} (f : x ⟶ y) (g : y ⟶ x) (w : f ≫ g = 𝟙 _) :
   (w : f ≫ g = 𝟙 x) {D : Type u✝} [instD : Category.{v✝, u✝} D] (F : C ⥤ D) : F.map f ≫ F.map g = 𝟙 (F.obj x) -/
 #guard_msgs in
 #check comp_eq_id_map
+
+@[map (attr := simp)]
+lemma comp_map_simp {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) :
+    f ≫ g = h := w
+
+/-- Tests whether `declName` has the `@[simp]` attribute in `env`. -/
+def hasSimpAttribute (env : Environment) (declName : Name) : Bool :=
+  simpExtension.getState env |>.lemmaNames.contains <| .decl declName
 
 @[to_dual (attr := map) comp_map_dual]
 lemma comp_map_to_dual {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) :
