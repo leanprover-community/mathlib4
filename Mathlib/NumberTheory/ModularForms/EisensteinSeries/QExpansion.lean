@@ -351,7 +351,6 @@ lemma EisensteinSeries.E_qExpansion_coeff_zero {k : ℕ} (hk : 3 ≤ k) (hk2 : E
 
 /-- Normalised Eisenstein series of even weight `k ≥ 3` are non-zero. -/
 theorem EisensteinSeries.E_ne_zero {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) : E hk ≠ 0 :=
-  fun h ↦ one_ne_zero <|
-    (E_qExpansion_coeff_zero hk hk2).symm.trans (by simp [h, qExpansion_zero])
+  fun h ↦ one_ne_zero <| (E_qExpansion_coeff_zero hk hk2).symm.trans (by simp [h, qExpansion_zero])
 
 end NonZero
