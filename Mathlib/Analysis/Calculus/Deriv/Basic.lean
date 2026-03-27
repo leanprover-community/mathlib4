@@ -120,6 +120,7 @@ def HasDerivAtFilter (f : 𝕜 → F) (f' : F) (L : Filter (𝕜 × 𝕜)) :=
 
 That is, `f x' = f x + (x' - x) • f' + o(x' - x)` where `x'` converges to `x` inside `s`.
 -/
+@[fun_prop out f']
 def HasDerivWithinAt (f : 𝕜 → F) (f' : F) (s : Set 𝕜) (x : 𝕜) :=
   HasDerivAtFilter f f' (𝓝[s] x ×ˢ pure x)
 
@@ -127,12 +128,14 @@ def HasDerivWithinAt (f : 𝕜 → F) (f' : F) (s : Set 𝕜) (x : 𝕜) :=
 
 That is, `f x' = f x + (x' - x) • f' + o(x' - x)` where `x'` converges to `x`.
 -/
+@[fun_prop out f']
 def HasDerivAt (f : 𝕜 → F) (f' : F) (x : 𝕜) :=
   HasDerivAtFilter f f' (𝓝 x ×ˢ pure x)
 
 /-- `f` has the derivative `f'` at the point `x` in the sense of strict differentiability.
 
 That is, `f y - f z = (y - z) • f' + o(y - z)` as `y, z → x`. -/
+@[fun_prop out f']
 def HasStrictDerivAt (f : 𝕜 → F) (f' : F) (x : 𝕜) :=
   HasDerivAtFilter f f' (𝓝 (x, x))
 
@@ -178,6 +181,7 @@ theorem hasFDerivWithinAt_iff_hasDerivWithinAt {f' : 𝕜 →L[𝕜] F} :
     HasFDerivWithinAt f f' s x ↔ HasDerivWithinAt f (f' 1) s x :=
   hasFDerivAtFilter_iff_hasDerivAtFilter
 
+@[fun_prop]
 alias ⟨HasFDerivWithinAt.hasDerivWithinAt, _⟩ := hasFDerivWithinAt_iff_hasDerivWithinAt
 
 /-- Expressing `HasDerivWithinAt f f' s x` in terms of `HasFDerivWithinAt` -/
@@ -185,6 +189,7 @@ theorem hasDerivWithinAt_iff_hasFDerivWithinAt {f' : F} :
     HasDerivWithinAt f f' s x ↔ HasFDerivWithinAt f (toSpanSingleton 𝕜 f') s x :=
   Iff.rfl
 
+@[fun_prop]
 alias ⟨HasDerivWithinAt.hasFDerivWithinAt, _⟩ :=
   hasDerivWithinAt_iff_hasFDerivWithinAt
 
@@ -192,6 +197,7 @@ alias ⟨HasDerivWithinAt.hasFDerivWithinAt, _⟩ :=
 theorem hasFDerivAt_iff_hasDerivAt {f' : 𝕜 →L[𝕜] F} : HasFDerivAt f f' x ↔ HasDerivAt f (f' 1) x :=
   hasFDerivAtFilter_iff_hasDerivAtFilter
 
+@[fun_prop]
 alias ⟨HasFDerivAt.hasDerivAt, _⟩ := hasFDerivAt_iff_hasDerivAt
 
 /-- Expressing `HasDerivAt f f' x` in terms of `HasFDerivAt` -/
@@ -199,12 +205,14 @@ theorem hasDerivAt_iff_hasFDerivAt {f' : F} :
     HasDerivAt f f' x ↔ HasFDerivAt f (toSpanSingleton 𝕜 f') x :=
   Iff.rfl
 
+@[fun_prop]
 alias ⟨HasDerivAt.hasFDerivAt, _⟩ := hasDerivAt_iff_hasFDerivAt
 
 theorem hasStrictFDerivAt_iff_hasStrictDerivAt {f' : 𝕜 →L[𝕜] F} :
     HasStrictFDerivAt f f' x ↔ HasStrictDerivAt f (f' 1) x :=
   hasFDerivAtFilter_iff_hasDerivAtFilter
 
+@[fun_prop]
 protected alias ⟨HasStrictFDerivAt.hasStrictDerivAt, _⟩ :=
   hasStrictFDerivAt_iff_hasStrictDerivAt
 
@@ -212,6 +220,7 @@ theorem hasStrictDerivAt_iff_hasStrictFDerivAt :
     HasStrictDerivAt f f' x ↔ HasStrictFDerivAt f (toSpanSingleton 𝕜 f') x :=
   Iff.rfl
 
+@[fun_prop]
 alias ⟨HasStrictDerivAt.hasStrictFDerivAt, _⟩ := hasStrictDerivAt_iff_hasStrictFDerivAt
 
 end
@@ -321,6 +330,7 @@ theorem HasDerivAtFilter.isBigO_sub_rev (hf : HasDerivAtFilter f f' L) (hf' : f'
     (fun p => p.1 - p.2) =O[L] fun p => f p.1 - f p.2 :=
   hf.isTheta_sub hf' |>.isBigO_symm
 
+@[fun_prop]
 theorem HasStrictDerivAt.hasDerivAt (h : HasStrictDerivAt f f' x) : HasDerivAt f f' x :=
   h.hasStrictFDerivAt.hasFDerivAt
 
@@ -379,6 +389,7 @@ theorem HasDerivAt.hasDerivAtFilter (h : HasDerivAt f f' x) (hL : L ≤ 𝓝 x �
     HasDerivAtFilter f f' L :=
   HasFDerivAt.hasFDerivAtFilter h hL
 
+@[fun_prop]
 theorem HasDerivAt.hasDerivWithinAt (h : HasDerivAt f f' x) : HasDerivWithinAt f f' s x :=
   HasFDerivAt.hasFDerivWithinAt h
 
@@ -432,8 +443,20 @@ theorem DifferentiableOn.hasDerivAt (h : DifferentiableOn 𝕜 f s) (hs : s ∈ 
     HasDerivAt f (deriv f x) x :=
   (h.hasFDerivAt hs).hasDerivAt
 
-theorem HasDerivAt.deriv (h : HasDerivAt f f' x) : deriv f x = f' :=
+protected theorem HasDerivAt.deriv (h : HasDerivAt f f' x) : deriv f x = f' :=
   h.differentiableAt.hasDerivAt.unique h
+
+theorem HasDerivAt.deriv_forall {f' : 𝕜 → F} (h : ∀ x, HasDerivAt f (f' x) x) :
+    deriv f = f' := by
+  funext x; exact (h x).deriv
+
+simproc_decl deriv_simproc_at (deriv _ _) :=
+  Mathlib.Meta.FunProp.mkFunPropSimproc decl_name% ``HasDerivAt.deriv
+
+simproc_decl deriv_simproc_forall (deriv _) :=
+  Mathlib.Meta.FunProp.mkFunPropSimproc decl_name% ``HasDerivAt.deriv_forall
+
+attribute [deriv_simproc] deriv_simproc_at deriv_simproc_forall
 
 theorem deriv_eq {f' : 𝕜 → F} (h : ∀ x, HasDerivAt f (f' x) x) : deriv f = f' :=
   funext fun x => (h x).deriv
@@ -664,16 +687,28 @@ variable (s x L)
 theorem hasDerivAtFilter_id : HasDerivAtFilter id 1 L :=
   (hasFDerivAtFilter_id L).hasDerivAtFilter
 
+@[fun_prop]
 theorem hasDerivWithinAt_id : HasDerivWithinAt id 1 s x :=
   hasDerivAtFilter_id _
 
+@[fun_prop]
+theorem hasDerivWithinAt_fun_id : HasDerivWithinAt (fun x => x)  1 s x :=
+  hasDerivAtFilter_id _
+
+@[fun_prop]
 theorem hasDerivAt_id : HasDerivAt id 1 x :=
   hasDerivAtFilter_id _
 
+@[fun_prop]
 theorem hasDerivAt_id' : HasDerivAt (fun x : 𝕜 => x) 1 x :=
   hasDerivAtFilter_id _
 
+@[fun_prop]
 theorem hasStrictDerivAt_id : HasStrictDerivAt id 1 x :=
+  hasDerivAtFilter_id _
+
+@[fun_prop]
+theorem hasStrictDerivAt_fun_id : HasStrictDerivAt (fun x => x) 1 x :=
   hasDerivAtFilter_id _
 
 theorem deriv_id : deriv id x = 1 :=
