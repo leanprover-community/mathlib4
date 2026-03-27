@@ -200,14 +200,23 @@ end Group
 section One
 
 @[to_additive]
+lemma mulSupport_subsingleton [One β] {s : γ → Set α} (f : α → β)
+  (i : α) (j : γ) (hj : i ∈ s j) (hs : ∀ ⦃j' : γ⦄ (_ : i ∈ s j') (_ : f i ≠ 1), j' = j) :
+    Function.mulSupport (fun d ↦ (s d).mulIndicator f i) ⊆ {j} := by
+  aesop
+
+@[to_additive]
 lemma mulSupport_subsingleton_of_disjoint [One β] {s : γ → Set α} (f : α → β)
     (hs : Pairwise (Disjoint on s)) (i : α) (j : γ)
     (hj : i ∈ s j) : Function.mulSupport (fun d ↦ (s d).mulIndicator f i) ⊆ {j} := by
-  intro d
-  by_cases h : d = j
-  · aesop
-  · simp only [Pairwise, ne_eq] at hs
-    simp [h, Disjoint.notMem_of_mem_left (hs fun a ↦ h ((Eq.symm a))) hj]
+  have hs : ∀ ⦃j' : γ⦄ (_ : i ∈ s j') (_ : f i ≠ 1), j' = j := by
+    simp only [Pairwise, ne_eq, Disjoint, le_eq_subset, bot_eq_empty, subset_empty_iff] at hs
+    intro j' hj' hi
+    simp_rw [← singleton_subset_iff] at hj hj'
+    by_contra hjj'
+    specialize hs hjj' hj' hj
+    simp_all only [empty_subset, ne_eq, singleton_ne_empty]
+  exact mulSupport_subsingleton f i j hj hs
 
 end One
 

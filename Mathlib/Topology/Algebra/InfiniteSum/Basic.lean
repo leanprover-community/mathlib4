@@ -627,21 +627,43 @@ lemma tprod_extend_one {γ : Type*} {g : γ → β} (hg : Injective g) (f : γ �
   simp_rw [← hg.tprod_eq this, hg.extend_apply]
 
 @[to_additive]
-lemma tprod_mulIndicator_of_disjoint (s : γ → Set β) (hs : Pairwise (Disjoint on s)) (f : β → α)
-    (i : β) (hi : i ∈ ⋃ d, s d) : ∏' d, (s d).mulIndicator f i = f i := by
+lemma tprod_mulIndicator_of_mem (s : γ → Set β) (f : β → α)
+    (i : β) (hi : i ∈ ⋃ d, s d) (hi' : ∀ d d', i ∈ s d → i ∈ s d' → f i ≠ 1 → d = d') :
+    ∏' d, (s d).mulIndicator f i = f i := by
   obtain ⟨j, hj⟩ := Set.mem_iUnion.mp hi
-  rw [← tprod_subtype_eq_of_mulSupport_subset (s := {j})
-      ((Set.mulSupport_subsingleton_of_disjoint f hs i j hj))]
-  aesop
+  rw [← tprod_subtype_eq_of_mulSupport_subset (s := {j})]
+  · aesop
+  · apply Set.mulSupport_subsingleton f i j hj <| fun j' hj' hf ↦ hi' j' j hj' hj hf
 
 @[to_additive]
-lemma tprod_mulIndicator_of_nmem (s : γ → Set β) (f : β → α) (i : β) (hi : ∀ d, i ∉ s d) :
+lemma tprod_mulIndicator_of_disjoint (s : γ → Set β) (hs : Pairwise (Disjoint on s)) (f : β → α)
+    (i : β) (hi : i ∈ ⋃ d, s d) : ∏' d, (s d).mulIndicator f i = f i := by
+  apply tprod_mulIndicator_of_mem _ _ _ hi
+  simp only [Pairwise, ne_eq, Disjoint, Set.le_eq_subset, Set.bot_eq_empty,
+    Set.subset_empty_iff] at hs
+  simp_rw [← Set.singleton_subset_iff]
+  intro d d' hd hd' hf
+  by_contra
+  apply False.elim <| Set.singleton_ne_empty i <| hs this hd hd'
+
+@[to_additive]
+lemma tprod_mulIndicator_of_notMem (s : γ → Set β) (f : β → α) (i : β) (hi : ∀ d, i ∉ s d) :
     ∏' d, (s d).mulIndicator f i = 1 := by
   aesop
 
 @[to_additive]
-lemma mulIndicator_iUnion_of_disjoint (s : γ → Set β) (hs : Pairwise (Disjoint on s)) (f : β → α)
-    (i : β) : (⋃ d, s d).mulIndicator f i = ∏' d, (s d).mulIndicator f i := by
+lemma mulIndicator_iUnion_of_mem_inter (s : γ → Set β) (f : β → α)
+    (i : β) (hi : ∀ d d', i ∈ s d → i ∈ s d' → f i ≠ 1 → d = d') :
+    (⋃ d, s d).mulIndicator f i = ∏' d, (s d).mulIndicator f i := by
+  by_cases h₀ : i ∈ ⋃ d, s d
+  · simp only [h₀, Set.mulIndicator_of_mem]
+    apply Eq.symm <| tprod_mulIndicator_of_mem _ _ _ h₀ hi
+  · aesop
+
+@[to_additive]
+lemma mulIndicator_iUnion_of_disjoint (s : γ → Set β) (hs : Pairwise (Disjoint on s)) (f : β → α) :
+    (⋃ d, s d).mulIndicator f = fun i ↦ ∏' d, (s d).mulIndicator f i := by
+  ext i
   by_cases h₀ : i ∈ ⋃ d, s d
   · simp only [h₀, Set.mulIndicator_of_mem]
     exact Eq.symm <| tprod_mulIndicator_of_disjoint s hs f i h₀
