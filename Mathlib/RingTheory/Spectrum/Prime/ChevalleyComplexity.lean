@@ -799,7 +799,6 @@ end ChevalleyThm
 
 open ChevalleyThm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Chevalley's theorem** with complexity bound.
 
 A constructible set of complexity at most `M` in `Spec R[X₁, ..., Xₘ]` gets mapped under

@@ -179,22 +179,39 @@ theorem bddAbove_range_comp {ι : Type u} {f : ι → Ordinal.{v}} (hf : BddAbov
 
 /-- `le_ciSup` whenever the input type is small in the output universe. This lemma sometimes
 fails to infer `f` in simple cases and needs it to be given explicitly. -/
-protected theorem le_iSup {ι} (f : ι → Ordinal.{u}) [Small.{u} ι] : ∀ i, f i ≤ iSup f :=
+protected theorem le_iSup {ι} (f : ι → Ordinal.{u}) [Small.{u} ι] : ∀ i, f i ≤ ⨆ i, f i :=
   le_ciSup (bddAbove_of_small _)
 
 /-- `ciSup_le_iff'` whenever the input type is small in the output universe. -/
+@[simp]
 protected theorem iSup_le_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
-    iSup f ≤ a ↔ ∀ i, f i ≤ a :=
+    ⨆ i, f i ≤ a ↔ ∀ i, f i ≤ a :=
   ciSup_le_iff' (bddAbove_of_small _)
 
 /-- An alias of `ciSup_le'` for discoverability. -/
-protected theorem iSup_le {ι} {f : ι → Ordinal} {a} : (∀ i, f i ≤ a) → iSup f ≤ a :=
+protected theorem iSup_le {ι} {f : ι → Ordinal} {a} : (∀ i, f i ≤ a) → ⨆ i, f i ≤ a :=
   ciSup_le'
 
 /-- `lt_ciSup_iff'` whenever the input type is small in the output universe. -/
+@[simp]
 protected theorem lt_iSup_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
-    a < iSup f ↔ ∃ i, a < f i :=
+    a < ⨆ i, f i ↔ ∃ i, a < f i :=
   lt_ciSup_iff' (bddAbove_of_small _)
+
+theorem lt_iSup_add_one {ι} (f : ι → Ordinal.{u}) [Small.{u} ι] (i) : f i < ⨆ i, f i + 1 := by
+  rw [← add_one_le_iff]
+  apply Ordinal.le_iSup
+
+theorem iSup_add_one_le_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
+    ⨆ i, f i + 1 ≤ a ↔ ∀ i, f i < a := by
+  simp
+
+theorem iSup_add_one_le {ι} {f : ι → Ordinal.{u}} {a} (h : ∀ i, f i < a) : ⨆ i, f i + 1 ≤ a :=
+  ciSup_le' (by simpa)
+
+theorem lt_iSup_add_one_iff {ι} {f : ι → Ordinal.{u}} {a} [Small.{u} ι] :
+    a < ⨆ i, f i + 1 ↔ ∃ i, a ≤ f i := by
+  simp
 
 -- TODO: state in terms of `IsSuccLimit`.
 theorem succ_lt_iSup_of_ne_iSup {ι} {f : ι → Ordinal.{u}} [Small.{u} ι]
@@ -494,14 +511,14 @@ def lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal :=
 theorem iSup_eq_lsub {ι} (f : ι → Ordinal) : iSup (succ ∘ f) = lsub f :=
   rfl
 
-theorem lsub_le_iff {ι} {f : ι → Ordinal} {a} : lsub f ≤ a ↔ ∀ i, f i < a := by
-  simpa using Ordinal.iSup_le_iff (f := succ ∘ f)
+theorem lsub_le_iff {ι} {f : ι → Ordinal} {a} : lsub f ≤ a ↔ ∀ i, f i < a :=
+  Ordinal.iSup_add_one_le_iff
 
 theorem lsub_le {ι} {f : ι → Ordinal} {a} : (∀ i, f i < a) → lsub f ≤ a :=
   lsub_le_iff.2
 
 theorem lt_lsub {ι} (f : ι → Ordinal) (i) : f i < lsub f :=
-  succ_le_iff.1 (Ordinal.le_iSup _ i)
+  Ordinal.lt_iSup_add_one f i
 
 theorem lt_lsub_iff {ι} {f : ι → Ordinal} {a} : a < lsub f ↔ ∃ i, a ≤ f i := by
   simpa only [not_forall, not_lt, not_le] using not_congr lsub_le_iff
@@ -870,12 +887,6 @@ theorem not_surjective_of_ordinal {α : Type*} [Small.{u} α] (f : α → Ordina
 
 theorem not_injective_of_ordinal {α : Type*} [Small.{u} α] (f : Ordinal.{u} → α) :
     ¬ Injective f := fun h ↦ not_surjective_of_ordinal _ (invFun_surjective h)
-
-@[deprecated (since := "2025-08-21")]
-alias not_surjective_of_ordinal_of_small := not_surjective_of_ordinal
-
-@[deprecated (since := "2025-08-21")]
-alias not_injective_of_ordinal_of_small := not_injective_of_ordinal
 
 /-- The type of ordinals in universe `u` is not `Small.{u}`. This is the type-theoretic analog of
 the Burali-Forti paradox. -/

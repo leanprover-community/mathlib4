@@ -127,21 +127,13 @@ mapping). It is a linear equivalence. -/
 def toWeakDual : StrongDual R M ≃ₗ[R] WeakDual R M :=
   LinearEquiv.refl R (StrongDual R M)
 
-@[deprecated (since := "2025-08-03")] alias _root_.NormedSpace.Dual.toWeakDual := toWeakDual
-
 theorem coe_toWeakDual (x' : StrongDual R M) : (toWeakDual x' : M → R) = x' := rfl
 
 @[simp]
 theorem toWeakDual_apply (x' : StrongDual R M) (y : M) : (toWeakDual x') y = x' y := rfl
 
-@[deprecated (since := "2025-08-03")]
-alias _root_.NormedSpace.Dual.coe_toWeakDual := coe_toWeakDual
-
 theorem toWeakDual_inj (x' y' : StrongDual R M) : toWeakDual x' = toWeakDual y' ↔ x' = y' :=
   (LinearEquiv.injective toWeakDual).eq_iff
-
-@[deprecated (since := "2025-08-03")]
-alias _root_.NormedSpace.Dual.toWeakDual_inj := toWeakDual_inj
 
 end
 
@@ -247,7 +239,6 @@ Uniform Boundedness Principle, it coincides with the von Neumann bornology whene
 $E$ is a Banach space.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜 E) in
 /-- The family of seminorms on `WeakDual 𝕜 E` given by `fun x f ↦ ‖f x‖`, indexed by `E`.
 This is the seminorm family associated to the weak-* topology via `topDualPairing`. -/
@@ -256,12 +247,10 @@ def seminormFamily : SeminormFamily 𝕜 (WeakDual 𝕜 E) E := (topDualPairing 
 @[simp]
 lemma seminormFamily_apply (x : E) (f : WeakDual 𝕜 E) : seminormFamily 𝕜 E x f = ‖f x‖ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜 E) in
 lemma withSeminorms : WithSeminorms (seminormFamily 𝕜 E) :=
   (topDualPairing 𝕜 E).weakBilin_withSeminorms
 
-set_option backward.isDefEq.respectTransparency false in
 /-- By the Uniform Boundedness Principle, norm-boundedness (the default bornology)
 and pointwise-boundedness (`IsVonNBounded`) coincide on the weak dual of a Banach space. -/
 theorem isBounded_iff_isVonNBounded [CompleteSpace E] {s : Set (WeakDual 𝕜 E)} :

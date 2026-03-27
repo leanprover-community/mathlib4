@@ -12,7 +12,7 @@ public import Mathlib.FieldTheory.IntermediateField.Basic
 
 In this file we introduce the notion of adjoining elements to fields.
 This isn't quite the same as adjoining elements to rings.
-For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
+For example, `K[x]` might not include `x⁻¹`.
 
 ## Notation
 
