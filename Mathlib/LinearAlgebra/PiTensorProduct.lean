@@ -299,7 +299,6 @@ equal to the sum of `a • ⨂ₜ[R] i, m i` over all the entries `(a, m)` of `p
 lemma _root_.FreeAddMonoid.toPiTensorProduct (p : FreeAddMonoid (R × Π i, s i)) :
     AddCon.toQuotient (c := addConGen (PiTensorProduct.Eqv R s)) p =
     List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p.toList) := by
-  -- TODO: this is defeq abuse: `p` is not a `List`.
   induction p using FreeAddMonoid.inductionOn' with
   | zero => rfl
   | add_of b a ih =>
