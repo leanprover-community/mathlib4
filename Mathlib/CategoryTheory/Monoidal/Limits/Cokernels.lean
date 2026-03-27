@@ -50,7 +50,7 @@ noncomputable def isColimitTensor
     [PreservesColimit (parallelPair f₁ 0) (tensorRight Y₂)]
     [PreservesColimit (parallelPair f₁ 0) (tensorRight X₂)] :
     IsColimit (c₁.tensor c₂) :=
-  have : HasBinaryCoproduct (((curriedTensor C).obj X₁).obj Y₂)
+  haveI : HasBinaryCoproduct (((curriedTensor C).obj X₁).obj Y₂)
     (((curriedTensor C).obj Y₁).obj X₂) := by assumption
   IsColimit.ofIsoColimit (isColimitMapBifunctor hc₁ hc₂ (curriedTensor C))
     (Cofork.ext (Iso.refl _) (by dsimp only [Cofork.π]; simp [tensorHom_def]))
