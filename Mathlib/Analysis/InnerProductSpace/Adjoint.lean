@@ -457,7 +457,7 @@ theorem orthogonal_mem_invtSubmodule {T : E →L[𝕜] E} {U : Submodule 𝕜 E}
     Uᗮ ∈ invtSubmodule T.toLinearMap := by
   simp only [mem_invtSubmodule_iff_forall_mem_of_mem, coe_coe, mem_orthogonal] at h ⊢
   grind [T.adjoint_inner_left]
- 
+
 open Module End in
 theorem mem_invtSubmodule_adjoint_iff {T : E →L[𝕜] E} {U : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] :
