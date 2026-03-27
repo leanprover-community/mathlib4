@@ -1001,7 +1001,7 @@ lemma coeffsIn_eq_span_monomial : coeffsIn σ M = .span R {monomial i m | (m ∈
 lemma coeffsIn_le {N : Submodule R (MvPolynomial σ S)} :
     coeffsIn σ M ≤ N ↔ ∀ m ∈ M, ∀ i, monomial i m ∈ N := by
   simp [coeffsIn_eq_span_monomial, Submodule.span_le, Set.subset_def,
-    forall_swap (α := MvPolynomial σ S)]
+    forall_comm (α := MvPolynomial σ S)]
 
 lemma mem_coeffsIn_iff_coeffs_subset : p ∈ coeffsIn σ M ↔ (p.coeffs : Set S) ⊆ M := by
   simp only [mem_coeffsIn, coeffs, Finset.coe_image, image_subset_iff]

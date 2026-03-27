@@ -1025,7 +1025,7 @@ lemma isClopen_iff_mul_add {s : Set (PrimeSpectrum R)} :
 
 lemma isClopen_iff_mul_add_zeroLocus {s : Set (PrimeSpectrum R)} :
     IsClopen s ↔ ∃ e f : R, e * f = 0 ∧ e + f = 1 ∧ s = zeroLocus {e} := by
-  rw [isClopen_iff_mul_add, exists_swap]
+  rw [isClopen_iff_mul_add, exists_comm]
   refine exists₂_congr fun e f ↦ ?_
   rw [mul_comm, add_comm, ← and_assoc, ← and_assoc, and_congr_right]
   intro ⟨mul, add⟩
