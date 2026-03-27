@@ -65,16 +65,17 @@ lemma test {X : Type*} [TopologicalSpace X] [T0Space X] [QuasiSober X] [Prespect
 
 def WithConstructibleTopology.lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (f : X → Y) : WithConstructibleTopology X → WithConstructibleTopology Y := f
-/--
+/-
 Implementation detail for the pushforward; the support of a cycle on X intersected with the preimage
 of a point z : Y along a quasicompact morphism f : X ⟶ Y is finite.
 -/
-lemma preimageSupport_finite (c : locallyFinsupp X R) (hf : IsSpectralMap f) (z : Y) :
-    (preimageSupport f c z).Finite := by
-  have : @Continuous _ _ (constructibleTopology X) (constructibleTopology Y) f := by sorry
-  have : T2Space (WithConstructibleTopology X) := sorry
-  have : T2Space (WithConstructibleTopology Y) := sorry
-  sorry
+--lemma preimageSupport_finite (c : locallyFinsupp X R) (hf : IsSpectralMap f) (z : Y) :
+    --(preimageSupport f c z).Finite := by
+
+  --have : @Continuous _ _ (constructibleTopology X) (constructibleTopology Y) f := by sorry
+  --have : T2Space (WithConstructibleTopology X) := sorry
+  --have : T2Space (WithConstructibleTopology Y) := sorry
+  --sorry
 
 
 
@@ -112,7 +113,8 @@ lemma preimage_inter_support_finite_of_isAffineOpen (hf : IsSpectralMap f) (hW :
   LocallyFiniteSupport.finite_inter_support_of_isCompact c.locallyFiniteSupport <|
   hf.2 W.is_open' hW
 
-lemma iUnion_preimage_inter_support_finite_of_isAffineOpen (hf : IsSpectralMap f) (hW : IsCompact W.1) :
+lemma iUnion_preimage_inter_support_finite_of_isAffineOpen (hf : IsSpectralMap f)
+    (hW : IsCompact W.1) :
     (⋃ _ : Y, f ⁻¹' W.carrier ∩ c.support).Finite := by
   suffices (f ⁻¹' W.carrier ∩ c.support).Finite by
     apply Finite.subset this
@@ -142,13 +144,12 @@ variable {N : Type*}
 /--
 The pushforward of an algebraic cycle has locally finite support.
 -/
-lemma map_locally_finite :
+lemma map_locally_finite (hf : IsSpectralMap f) (h : ∀ z, (preimageSupport f c z).Finite) :
     ∀ z : Y, ∃ t ∈ 𝓝 z, (t ∩ Function.support fun z ↦
-    ∑ x ∈ (preimageSupport_finite c hf z).toFinset, (c x) * w x).Finite := by
+    ∑ x ∈ (h z).toFinset, (c x) * w x).Finite := by
   intro y
   have : ∃ W : TopologicalSpace.Opens Y, IsCompact W.1 ∧ y ∈ W := sorry
   obtain ⟨W, hW⟩ := this
-  --obtain ⟨W, hW⟩ := exists_isAffineOpen_mem_and_subset (x := y) (U := ⊤) (by simp)
   use W
   refine ⟨IsOpen.mem_nhds (Opens.isOpen W) hW.2, ?_⟩
   suffices (W.carrier ∩ {z : Y | (preimageSupport f c z).Nonempty}).Finite by
@@ -171,11 +172,12 @@ Note that usually the pushforward is only defined for proper morphisms, and inde
 properness to prove that the pushforward preserves rational equivalence.
 -/
 noncomputable
-def map : Function.locallyFinsupp Y R
+def map (hf : IsSpectralMap f) (h : ∀ z, (preimageSupport f c z).Finite) :
+    Function.locallyFinsupp Y R
     where
-  toFun z := (∑ x ∈ (preimageSupport_finite c hf z).toFinset, (c x) * w x)
+  toFun z := (∑ x ∈ (h z).toFinset, (c x) * w x)
   supportWithinDomain' := by simp
-  supportLocallyFiniteWithinDomain' z _ := map_locally_finite hf w c z
+  supportLocallyFiniteWithinDomain' z _ := map_locally_finite w c hf h z
 
 /--
 Pushforward preserves cycles of pure dimension `d` in the dimension grading.

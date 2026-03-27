@@ -190,6 +190,8 @@ lemma testing {X : Type*} [TopologicalSpace X] [PrespectralSpace X]
 lemma IsLocallySpectral.fiber (f : X → Y) (hf : IsSpectralMap f) (y : Y) :
     f ⁻¹' {y} = ⋂ s ∈ {x ∈ 𝓝 y | IsOpen x ∧ IsCompact x}, f ⁻¹' s := sorry
 
+
+
 lemma IsLocallySpectral.isCompact_of_preimage_singleton (f : X → Y) (hf : IsSpectralMap f) (y : Y) :
     IsCompact (f ⁻¹' {y}) := by
   obtain ⟨U, hU⟩ := IsLocallySpectral.exists_spectral_nhd y
@@ -201,22 +203,28 @@ lemma IsLocallySpectral.isCompact_of_preimage_singleton (f : X → Y) (hf : IsSp
   -- Step 3: Set up typeclass instances on f⁻¹(U) and U
   have oe_fU := hfUo.isOpenEmbedding_subtypeVal
   have oe_U := hUo.isOpenEmbedding_subtypeVal
-  haveI : CompactSpace ↥(f ⁻¹' U) := isCompact_iff_compactSpace.mp hfUc
-  haveI : T0Space ↥(f ⁻¹' U) := oe_fU.isEmbedding.t0Space
-  haveI : QuasiSober ↥(f ⁻¹' U) := oe_fU.quasiSober
-  haveI : PrespectralSpace ↥(f ⁻¹' U) := oe_fU.prespectralSpace
-  haveI : T0Space ↥U := oe_U.isEmbedding.t0Space
-  haveI : QuasiSober ↥U := oe_U.quasiSober
-  haveI : PrespectralSpace ↥U := oe_U.prespectralSpace
+  have : CompactSpace ↥(f ⁻¹' U) := isCompact_iff_compactSpace.mp hfUc
+  have : T0Space ↥(f ⁻¹' U) := oe_fU.isEmbedding.t0Space
+  have : QuasiSober ↥(f ⁻¹' U) := oe_fU.quasiSober
+  have : PrespectralSpace ↥(f ⁻¹' U) := oe_fU.prespectralSpace
+  have : T0Space ↥U := oe_U.isEmbedding.t0Space
+  have : QuasiSober ↥U := oe_U.quasiSober
+  have : PrespectralSpace ↥U := oe_U.prespectralSpace
   -- KEY SORRY: need f⁻¹(U) quasi-separated for compactSpace_withConstructibleTopology.
   -- For schemes this follows from the morphism being quasi-separated.
-  haveI : QuasiSeparatedSpace ↥(f ⁻¹' U) :=
+  have : QuasiSeparatedSpace ↥(f ⁻¹' U) := by
+    constructor
+    intro A B hA1 hA2 hB1 hB2
+
     /-
     `f ⁻¹ U` is covered by spectral opens since it is locally spectral - we just take the cover
     indexed by all the points in `f ⁻¹ U`
 
     Hence, we must have that `f ⁻¹ U` is covered by a finite number of quasiseparated sets,
-    and hence must itself be quasiseparated.
+    and hence must itself be quasiseparated?
+
+    I don't think this is true. Indeed, a quasicompact morphism may not in general be
+    quasiseparated
     -/
 
 
