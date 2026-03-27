@@ -383,7 +383,7 @@ def α : X q := (0, 1)
   ext <;> simp [α, sq]
 
 @[simp] lemma one_add_α_sq : ((1 + α) ^ 2 : X q) = 2 * ω := by
-  ext <;> simpa [α, ω, sq] using by norm_num
+  ext <;> simp [α, ω, sq] <;> norm_num
 
 lemma α_pow (i : ℕ) : (α : X q) ^ (2 * i + 1) = 3 ^ i * α := by
   rw [pow_succ, pow_mul, α_sq]

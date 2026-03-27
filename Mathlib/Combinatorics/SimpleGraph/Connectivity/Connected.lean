@@ -197,6 +197,7 @@ lemma not_reachable_of_right_degree_zero {G : SimpleGraph V} {u v : V} [Fintype 
   exact not_reachable_of_left_degree_zero huv.symm hu
 
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
+@[implicit_reducible]
 def reachableSetoid : Setoid V := Setoid.mk _ G.reachable_is_equivalence
 
 /-- A graph is preconnected if every pair of vertices is reachable from one another. -/
@@ -693,7 +694,6 @@ def homOfConnectedComponents (G : SimpleGraph V) {H : SimpleGraph V'}
     convert (C (G.connectedComponentMk _)).map_rel h using 3 <;>
       rw [ConnectedComponent.connectedComponentMk_eq_of_adj hab]
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: Extract as lemma about general equivalence relation
 lemma pairwise_disjoint_supp_connectedComponent (G : SimpleGraph V) :
     Pairwise fun c c' : ConnectedComponent G ↦ Disjoint c.supp c'.supp := by

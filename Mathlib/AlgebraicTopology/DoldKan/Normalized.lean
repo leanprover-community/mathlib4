@@ -48,7 +48,7 @@ theorem HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
     HigherFacesVanish (n + 1) ((inclusionOfMooreComplexMap X).f (n + 1)) := fun j _ => by
   dsimp [AlgebraicTopology.inclusionOfMooreComplexMap, NormalizedMooreComplex.objX]
   rw [← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ j
-    (by simp only [Finset.mem_univ])), assoc, kernelSubobject_arrow_comp, comp_zero]
+    (by simp)), assoc, kernelSubobject_arrow_comp, comp_zero]
 
 theorem factors_normalizedMooreComplex_PInfty (n : ℕ) :
     Subobject.Factors (NormalizedMooreComplex.objX X n) (PInfty.f n) := by

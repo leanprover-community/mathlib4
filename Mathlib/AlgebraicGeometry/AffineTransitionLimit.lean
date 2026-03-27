@@ -94,7 +94,7 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
     let α : F ⟶ Over.forget _ ⋙ D := Functor.whiskerRight
       (Functor.whiskerLeft (Over.post D) (Over.mapPullbackAdj (𝒰.f j)).counit) (Over.forget _)
     exact this.map (((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc).lift
-        ((Cones.postcompose α).obj c'.1))
+        ((Cone.postcompose α).obj c'.1))
 
 set_option backward.isDefEq.respectTransparency false in
 include hc in
@@ -132,7 +132,7 @@ lemma exists_mem_of_isClosed_of_nonempty
     { app i := subschemeMap _ _ (c.π.app i) (by simp [le_map_iff_comap_le, le_iSup_of_le i])
       naturality {i j} f := by simp [D', ← cancel_mono (subschemeι _)] } }
   let hc' : IsLimit c' :=
-  { lift s := IsClosedImmersion.lift (subschemeι _) (hc.lift ((Cones.postcompose ι).obj s)) (by
+  { lift s := IsClosedImmersion.lift (subschemeι _) (hc.lift ((Cone.postcompose ι).obj s)) (by
       suffices ∀ i, vanishingIdeal ⟨Z i, hZc i⟩ ≤ (s.π.app i ≫ ι.app i).ker by
         simpa [← le_map_iff_comap_le, ← Scheme.Hom.ker_comp]
       refine fun i ↦ .trans ?_ (Scheme.Hom.le_ker_comp _ _)
@@ -421,9 +421,9 @@ private nonrec lemma Scheme.exists_hom_hom_comp_eq_comp_of_isAffine_of_locallyOf
     have inst : IsIso e := NatIso.isIso_of_isIso_app e
     have inst (i) : IsAffine ((D ⋙ Scheme.Γ.rightOp ⋙ Scheme.Spec).obj i) := by
       dsimp; infer_instance
-    have inst : IsAffine ((Cones.postcompose (asIso e).hom).obj c).pt := by
+    have inst : IsAffine ((Cone.postcompose (asIso e).hom).obj c).pt := by
       dsimp; infer_instance
-    have := this (D ⋙ Scheme.Γ.rightOp ⋙ Scheme.Spec) ((Cones.postcompose (asIso e).hom).obj c)
+    have := this (D ⋙ Scheme.Γ.rightOp ⋙ Scheme.Spec) ((Cone.postcompose (asIso e).hom).obj c)
       ((IsLimit.postcomposeHomEquiv (asIso e) c).symm hc) (inv e ≫ t)
       ((inv e).app _ ≫ a) ((inv e).app _ ≫ b) (by simp [hab]) (by simp [ha]) (by simp [hb])
       ⟨D ⋙ Scheme.Γ.rightOp, rfl⟩
@@ -1122,7 +1122,7 @@ private nonrec lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
   wlog hc' : ∃ c' : Cocone D.leftOp, c = Scheme.Spec.mapCone (coneOfCoconeLeftOp c') generalizing c
   · have inst : IsAffine c.pt := isAffine_of_isLimit _ hc
     let e' : (D ⋙ Scheme.Spec).op ⋙ Γ ≅ D.leftOp := D.leftOp.isoWhiskerLeft SpecΓIdentity
-    let c' := coneOfCoconeLeftOp ((Cocones.precompose e'.inv).obj (Γ.mapCocone c.op))
+    let c' := coneOfCoconeLeftOp ((Cocone.precompose e'.inv).obj (Γ.mapCocone c.op))
     have inst : ∀ i, IsAffine ((D ⋙ Scheme.Spec).op.obj i).unop := by dsimp; infer_instance
     obtain ⟨i, f, hf⟩ := this (Scheme.Spec.mapCone c') (isLimitOfPreserves _
       (isLimitConeOfCoconeLeftOp _ ((IsColimit.precomposeHomEquiv e'.symm _).symm

@@ -165,17 +165,18 @@ def sheafComposeNatTrans :
     dsimp
     erw [← adj₂.homEquiv_naturality_left_symm,
       ← adj₂.homEquiv_naturality_right_symm]
-    dsimp
-    rw [← whiskerRight_comp, ← whiskerRight_comp]
-    erw [adj₁.unit.naturality f]
-    rfl
+    congr 1
+    ext X
+    have := NatTrans.congr_app (adj₁.unit.naturality f) X
+    dsimp at this ⊢
+    grind
 
 set_option backward.isDefEq.respectTransparency false in
 lemma sheafComposeNatTrans_fac (P : Cᵒᵖ ⥤ A) :
     adj₂.unit.app (P ⋙ F) ≫
       (sheafToPresheaf J B).map ((sheafComposeNatTrans J F adj₁ adj₂).app P) =
         whiskerRight (adj₁.unit.app P) F := by
-  simp [sheafComposeNatTrans, -sheafToPresheaf_obj, -sheafToPresheaf_map,
+  simp [sheafComposeNatTrans, -ObjectProperty.ι_obj, -ObjectProperty.ι_map,
     Adjunction.homEquiv_counit]
 
 set_option backward.isDefEq.respectTransparency false in

@@ -209,7 +209,7 @@ instance : IsIntegralHom f.fromNormalization := by
   rw [← cancel_mono U.2.fromSpec]
   simp [IsAffineOpen.isoSpec_hom, e, ι_fromNormalization]
 
-/-- The sections of the relative normalization on the preimage of an affine open is isomorpic to
+/-- The sections of the relative normalization on the preimage of an affine open is isomorphic to
 the integral closure. -/
 noncomputable
 def normalizationObjIso {U : Y.Opens} (hU : IsAffineOpen U) :

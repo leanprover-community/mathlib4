@@ -295,10 +295,10 @@ set_option backward.isDefEq.respectTransparency false in
 composing with `diagramIsoCospan`. -/
 @[simps!]
 def PullbackCone.isoMk {F : WalkingCospan ⥤ C} (t : Cone F) :
-    (Cones.postcompose (diagramIsoCospan.{v} _).hom).obj t ≅
+    (Cone.postcompose (diagramIsoCospan.{v} _).hom).obj t ≅
       PullbackCone.mk (t.π.app WalkingCospan.left) (t.π.app WalkingCospan.right)
         ((t.π.naturality inl).symm.trans (t.π.naturality inr :)) :=
-  Cones.ext (Iso.refl _) <| by
+  Cone.ext (Iso.refl _) <| by
     rintro (_ | (_ | _)) <;> simp
 
 /-- A pushout cocone is just a cocone on the span formed by two morphisms `f : X ⟶ Y` and
@@ -515,10 +515,10 @@ set_option backward.isDefEq.respectTransparency false in
 `diagramIsoSpan`. -/
 @[simps!]
 def PushoutCocone.isoMk {F : WalkingSpan ⥤ C} (t : Cocone F) :
-    (Cocones.precompose (diagramIsoSpan.{v} _).inv).obj t ≅
+    (Cocone.precompose (diagramIsoSpan.{v} _).inv).obj t ≅
       PushoutCocone.mk (t.ι.app WalkingSpan.left) (t.ι.app WalkingSpan.right)
         ((t.ι.naturality fst).trans (t.ι.naturality snd).symm) :=
-  Cocones.ext (Iso.refl _) <| by
+  Cocone.ext (Iso.refl _) <| by
     rintro (_ | (_ | _)) <;> simp
 
 end Limits

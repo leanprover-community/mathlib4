@@ -81,7 +81,6 @@ open scoped Classical in
 /-- `botSet` is the set of all bottom elements. -/
 def botSet : Set R := {x | IsBot x}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma Ioc_diff_botSet (a b : R) : Ioc a b \ botSet = Ioc a b := by
   rw [sdiff_eq_left, disjoint_iff_forall_ne]
   rintro c ⟨hc, _⟩ _ hc' rfl
@@ -475,7 +474,6 @@ theorem measurableSet_Ioi {c : R} : MeasurableSet[f.outer.caratheodory] (Ioi c) 
   · simp only [hac, hbc, Ioc_inter_Ioi, Ioc_diff_Ioi, f.length_Ioc, min_eq_right,
       le_refl, Ioc_eq_empty, add_zero, max_eq_left, f.length_empty, not_lt]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
     f.outer.trim = f.outer := by
   refine le_antisymm (fun s => ?_) (OuterMeasure.le_trim _)
@@ -539,7 +537,6 @@ theorem measure_Ioc (a b : R) : f.measure (Ioc a b) = ofReal (f b - f a) := by
   rw [StieltjesFunction.measure]
   exact f.outer_Ioc a b
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem measure_singleton (a : R) : f.measure {a} = ofReal (f a - leftLim f a) := by
   by_cases ha : IsBot a
@@ -579,7 +576,6 @@ theorem measure_singleton (a : R) : f.measure {a} = ofReal (f a - leftLim f a) :
     exact ENNReal.continuous_ofReal.continuousAt.tendsto.comp (tendsto_const_nhds.sub this)
   exact tendsto_nhds_unique L1 L2
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem measure_Icc (a b : R) : f.measure (Icc a b) = ofReal (f b - leftLim f a) := by
   rcases le_or_gt a b with (hab | hab)
@@ -590,7 +586,6 @@ theorem measure_Icc (a b : R) : f.measure (Icc a b) = ofReal (f b - leftLim f a)
     symm
     simp [ENNReal.ofReal_eq_zero, f.mono.le_leftLim hab]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem measure_Ioo {a b : R} : f.measure (Ioo a b) = ofReal (leftLim f b - f a) := by
   rcases le_or_gt b a with (hab | hab)
@@ -607,7 +602,6 @@ theorem measure_Ioo {a b : R} : f.measure (Ioo a b) = ofReal (leftLim f b - f a)
     · simp only [f.mono.leftLim_le le_rfl, sub_nonneg]
     · simp only [f.mono.le_leftLim hab, sub_nonneg]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem measure_Ico (a b : R) : f.measure (Ico a b) = ofReal (leftLim f b - leftLim f a) := by
   rcases le_or_gt b a with (hab | hab)

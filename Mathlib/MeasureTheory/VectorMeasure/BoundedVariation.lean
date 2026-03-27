@@ -171,7 +171,6 @@ lemma vectorMeasure_singleton (hf : BoundedVariationOn f univ) :
     exact (leftLim_rightLim (hf.tendsto_leftLim _)).symm
   exact tendsto_nhds_unique L1 L2
 
-set_option backward.isDefEq.respectTransparency false in
 lemma vectorMeasure_Icc (hf : BoundedVariationOn f univ) (h : a ≤ b) :
     hf.vectorMeasure (Icc a b) = f.rightLim b - f.leftLim a := by
   rw [← Icc_union_Ioc_eq_Icc le_rfl h, VectorMeasure.of_union (by simp)
@@ -179,7 +178,6 @@ lemma vectorMeasure_Icc (hf : BoundedVariationOn f univ) (h : a ≤ b) :
     hf.vectorMeasure_Ioc h]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem vectorMeasure_Ioo (hf : BoundedVariationOn f univ) (h : a < b) :
     hf.vectorMeasure (Ioo a b) = f.leftLim b - f.rightLim a := by
   have := hf.vectorMeasure_Ioc h.le
@@ -187,7 +185,6 @@ theorem vectorMeasure_Ioo (hf : BoundedVariationOn f univ) (h : a < b) :
     measurableSet_Icc, hf.vectorMeasure_Icc le_rfl] at this
   grind
 
-set_option backward.isDefEq.respectTransparency false in
 theorem vectorMeasure_Ico (hf : BoundedVariationOn f univ) (h : a ≤ b) :
     hf.vectorMeasure (Ico a b) = f.leftLim b - f.leftLim a := by
   rcases h.eq_or_lt with rfl | h'
@@ -224,7 +221,6 @@ theorem vectorMeasure_Ici (hf : BoundedVariationOn f univ) (a : α) :
     exact (tendsto_rightLim_atTop_of_tendsto hlim).comp hu
   exact tendsto_nhds_unique A B
 
-set_option backward.isDefEq.respectTransparency false in
 theorem vectorMeasure_Ioi (hf : BoundedVariationOn f univ) (a : α) :
     hf.vectorMeasure (Ioi a) = limUnder atTop f - f.rightLim a := by
   have := hf.vectorMeasure_Ici a
@@ -260,7 +256,6 @@ theorem vectorMeasure_Iic (hf : BoundedVariationOn f univ) (a : α) :
     exact (tendsto_leftLim_atBot_of_tendsto hf.tendsto_atBot_limUnder).comp hu
   exact tendsto_nhds_unique A B
 
-set_option backward.isDefEq.respectTransparency false in
 theorem vectorMeasure_Iio (hf : BoundedVariationOn f univ) (a : α) :
     hf.vectorMeasure (Iio a) = f.leftLim a - limUnder atBot f := by
   have := hf.vectorMeasure_Iic a

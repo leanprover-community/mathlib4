@@ -478,6 +478,7 @@ theorem finrank_self : finrank R R = 1 :=
   finrank_eq_of_rank_eq (by simp)
 
 /-- Given a basis of a ring over itself indexed by a type `ι`, then `ι` is `Unique`. -/
+@[implicit_reducible]
 noncomputable def _root_.Module.Basis.unique {ι : Type*} (b : Basis ι R R) : Unique ι := by
   have : Cardinal.mk ι = ↑(Module.finrank R R) := (Module.mk_finrank_eq_card_basis b).symm
   have : Subsingleton ι ∧ Nonempty ι := by simpa [Cardinal.eq_one_iff_unique]
@@ -510,6 +511,11 @@ theorem finrank_eq_zero_iff_of_free [Module.Free R M] [Module.Finite R M] :
   have := Module.rank_lt_aleph0 R M
   rw [← not_le] at this
   simp [Module.finrank, this, Module.rank_zero_iff_of_free]
+
+@[simp]
+theorem finrank_eq_zero_of_subsingleton [Module.Free R M] [Module.Finite R M] [Subsingleton M] :
+    Module.finrank R M = 0 :=
+  (finrank_eq_zero_iff_of_free R M).mpr inferInstance
 
 theorem finrank_pos_iff_of_free [Module.Free R M] [Module.Finite R M] :
     0 < Module.finrank R M ↔ Nontrivial M := by

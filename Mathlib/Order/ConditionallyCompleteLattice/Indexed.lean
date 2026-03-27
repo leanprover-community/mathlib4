@@ -182,6 +182,31 @@ lemma ciInf_le_ciSup [Nonempty ι] {f : ι → α} (hf : BddBelow (range f)) (hf
     ⨅ i, f i ≤ ⨆ i, f i :=
   (ciInf_le hf (Classical.arbitrary _)).trans <| le_ciSup hf' (Classical.arbitrary _)
 
+lemma ciSup_prod {f : β × γ → α} (hf : BddAbove (Set.range f)) :
+    ⨆ p, f p = ⨆ b, ⨆ c, f (b, c) := by
+  rcases isEmpty_or_nonempty β
+  · simp [iSup_of_empty']
+  rcases isEmpty_or_nonempty γ
+  · simp [iSup_of_empty']
+  have h₁ : BddAbove (Set.range fun b ↦ ⨆ c, f (b, c)) := by
+    rw [bddAbove_def] at hf ⊢
+    obtain ⟨B, hB⟩ := hf
+    refine ⟨B, fun y hy ↦ ?_⟩
+    obtain ⟨z, rfl⟩ := Set.mem_range.mp hy
+    exact ciSup_le fun c ↦ by grind
+  have h₂ b : BddAbove (Set.range fun c ↦ f (b, c)) := by
+    rw [bddAbove_def] at hf ⊢
+    obtain ⟨B, hB⟩ := hf
+    exact ⟨B, by grind⟩
+  refine eq_of_forall_ge_iff fun c ↦ ?_
+  rw [ciSup_le_iff (bddAbove_iff_subset_Iic.mpr hf), ciSup_le_iff h₁]
+  conv_rhs => enter [b]; rw [ciSup_le_iff (h₂ b)]
+  simp [Prod.forall]
+
+lemma ciInf_prod {f : β × γ → α} (hf : BddBelow (Set.range f)) :
+    ⨅ p, f p = ⨅ b, ⨅ c, f (b, c) :=
+  ciSup_prod (α := αᵒᵈ) hf
+
 /-- Introduction rule to prove that `b` is the supremum of `f`: it suffices to check that `b`
 is larger than `f i` for all `i`, and that this is not the case of any `w<b`.
 See `iSup_eq_of_forall_le_of_forall_lt_exists_gt` for a version in complete lattices. -/
@@ -549,7 +574,6 @@ lemma iSup_coe_lt_top : ⨆ x, (f x : WithTop α) < ⊤ ↔ BddAbove (range f) :
 
 lemma iInf_coe_eq_top : ⨅ x, (f x : WithTop α) = ⊤ ↔ IsEmpty ι := by simp [isEmpty_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma iInf_coe_lt_top : ⨅ i, (f i : WithTop α) < ⊤ ↔ Nonempty ι := by
   rw [lt_top_iff_ne_top, Ne, iInf_coe_eq_top, not_isEmpty_iff]
 

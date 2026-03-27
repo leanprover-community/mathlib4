@@ -172,6 +172,7 @@ lemma toBasisAt_coe (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) (i : ι) :
 
 /-- If `{sᵢ}` is a local frame on a vector bundle, `F` being finite-dimensional implies the
 indexing set being finite. -/
+@[implicit_reducible]
 noncomputable def fintypeOfFiniteDimensional [VectorBundle 𝕜 F V] [FiniteDimensional 𝕜 F]
     (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) : Fintype ι := by
   have : FiniteDimensional 𝕜 (V x) := by

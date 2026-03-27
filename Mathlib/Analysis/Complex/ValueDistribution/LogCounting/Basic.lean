@@ -274,7 +274,6 @@ noncomputable def logCounting : ℝ → ℝ := by
   · exact (divisor f univ)⁻.logCounting
   · exact (divisor (f · - a.untop₀) univ)⁺.logCounting
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Relation between `ValueDistribution.logCounting` and `locallyFinsuppWithin.logCounting`.
 -/
@@ -482,7 +481,7 @@ theorem logCounting_sum_top_eventuallyLE {α : Type*} (s : Finset α) (f : α �
   filter_upwards [eventually_ge_atTop 1] using fun _ hr ↦ logCounting_sum_top_le s f h₁f hr
 
 /--
-For `1 ≤ r`, the logarithmis counting function for the zeros of `f * g` is less than or equal to the
+For `1 ≤ r`, the logarithmic counting function for the zeros of `f * g` is less than or equal to the
 sum of the logarithmic counting functions for the zeros of `f` and `g`, respectively.
 
 Note: The statement proven here is found at the top of page 169 of [Lang: Introduction to Complex
@@ -578,7 +577,6 @@ For `𝕜 = ℂ`, the theorems below describe the logarithmic counting function 
 averages.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Over the complex numbers, present the logarithmic counting function attached to the divisor of a
 meromorphic function `f` as a circle average over `log ‖f ·‖`.

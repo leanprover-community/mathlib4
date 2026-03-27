@@ -465,7 +465,7 @@ variable {C D E : Type*} [Category* C] [Category* D]
 set_option backward.isDefEq.respectTransparency false in
 /-- If `e : F ≅ G` is an isomorphism of functors and if `F` commutes with the
 shift, then `G` also commutes with the shift. -/
-@[simps! -isSimp commShiftIso_hom_app commShiftIso_inv_app]
+@[simps! -isSimp commShiftIso_hom_app commShiftIso_inv_app, implicit_reducible]
 def ofIso : G.CommShift A where
   commShiftIso a := isoWhiskerLeft _ e.symm ≪≫ F.commShiftIso a ≪≫ isoWhiskerRight e _
   commShiftIso_zero := by
@@ -506,6 +506,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ D` is a fully faithful functor which is used
 to construct a shift by `A` on `C` from a shift on `D`,
 then the functor `F` itself commutes with the shift by `A`. -/
+@[implicit_reducible]
 def ofHasShiftOfFullyFaithful :
     letI := hF.hasShift s i; F.CommShift A := by
   letI := hF.hasShift s i
@@ -591,6 +592,7 @@ end OfComp
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an isomorphism `e : F ⋙ G ≅ H` where `G` is fully faithful,
 the functor `F` commutes with shifts by `A` if `G` and `H` do. -/
+@[implicit_reducible]
 noncomputable def ofComp : F.CommShift A where
   commShiftIso := OfComp.iso e
   commShiftIso_zero := by

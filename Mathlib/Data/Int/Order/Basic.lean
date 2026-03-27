@@ -20,12 +20,14 @@ open Nat
 
 namespace Int
 
-theorem le.elim {a b : ℤ} (h : a ≤ b) {P : Prop} (h' : ∀ n : ℕ, a + ↑n = b → P) : P :=
+variable {a b : ℤ}
+
+theorem le.elim (h : a ≤ b) {P : Prop} (h' : ∀ n : ℕ, a + ↑n = b → P) : P :=
   Exists.elim (le.dest h) h'
 
 alias ⟨le_of_ofNat_le_ofNat, ofNat_le_ofNat_of_le⟩ := ofNat_le
 
-theorem lt.elim {a b : ℤ} (h : a < b) {P : Prop} (h' : ∀ n : ℕ, a + ↑(Nat.succ n) = b → P) : P :=
+theorem lt.elim (h : a < b) {P : Prop} (h' : ∀ n : ℕ, a + ↑(Nat.succ n) = b → P) : P :=
   Exists.elim (lt.dest h) h'
 
 alias ⟨lt_of_ofNat_lt_ofNat, ofNat_lt_ofNat_of_lt⟩ := ofNat_lt
@@ -40,27 +42,39 @@ instance instLinearOrder : LinearOrder ℤ where
   toDecidableLE := decLe
   toDecidableLT := decLt
 
-protected theorem eq_zero_or_eq_zero_of_mul_eq_zero {a b : ℤ} (h : a * b = 0) : a = 0 ∨ b = 0 :=
-  Int.mul_eq_zero.mp h
+protected alias ⟨eq_zero_or_eq_zero_of_mul_eq_zero, _⟩ := Int.mul_eq_zero
 
-theorem nonneg_or_nonpos_of_mul_nonneg {a b : ℤ} : 0 ≤ a * b → 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
+theorem nonneg_or_nonpos_of_mul_nonneg : 0 ≤ a * b → 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
   intro h
   by_cases! ha : 0 ≤ a <;> by_cases! hb : 0 ≤ b
   · exact .inl ⟨ha, hb⟩
   · refine .inr ⟨?_, le_of_lt hb⟩
     obtain _ | _ := Int.mul_eq_zero.mp <|
-      Int.le_antisymm (Int.mul_nonpos_of_nonneg_of_nonpos ha <| le_of_lt hb) h
+      le_antisymm (Int.mul_nonpos_of_nonneg_of_nonpos ha <| le_of_lt hb) h
     all_goals lia
   · refine .inr ⟨le_of_lt ha, ?_⟩
     obtain _ | _ := Int.mul_eq_zero.mp <|
-      Int.le_antisymm (Int.mul_nonpos_of_nonpos_of_nonneg (le_of_lt ha) hb) h
+      le_antisymm (Int.mul_nonpos_of_nonpos_of_nonneg (le_of_lt ha) hb) h
     all_goals lia
   · exact .inr ⟨le_of_lt ha, le_of_lt hb⟩
 
-theorem mul_nonneg_of_nonneg_or_nonpos {a b : ℤ} : 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 → 0 ≤ a * b
+theorem mul_nonneg_of_nonneg_or_nonpos : 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 → 0 ≤ a * b
   | .inl ⟨ha, hb⟩ => Int.mul_nonneg ha hb
   | .inr ⟨ha, hb⟩ => Int.mul_nonneg_of_nonpos_of_nonpos ha hb
 
-protected theorem mul_nonneg_iff {a b : ℤ} : 0 ≤ a * b ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 :=
+protected theorem mul_nonneg_iff : 0 ≤ a * b ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 :=
   ⟨nonneg_or_nonpos_of_mul_nonneg, mul_nonneg_of_nonneg_or_nonpos⟩
+
+protected theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
+  rw [Int.lt_iff_le_and_ne, Int.mul_nonneg_iff, ne_comm, Int.mul_ne_zero_iff]
+  lia
+
+protected theorem mul_nonpos_iff : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 ≤ b := by
+  rw [← not_iff_not, not_le, Int.mul_pos_iff]
+  lia
+
+protected theorem mul_neg_iff : a * b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
+  rw [← not_iff_not, not_lt, Int.mul_nonneg_iff]
+  lia
+
 end Int

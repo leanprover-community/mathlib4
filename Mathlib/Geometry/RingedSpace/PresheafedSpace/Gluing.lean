@@ -150,7 +150,7 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
           (D.V _).presheaf.map
             (eqToHom
               (by
-                delta IsOpenImmersion.opensFunctor
+                delta IsOpenImmersion.opensFunctor IsOpenEmbedding.functor
                 dsimp only [Functor.op, IsOpenMap.functor, Opens.map, unop_op]
                 congr
                 apply pullback_base)) := by
@@ -176,7 +176,7 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
         (D.t' k i j).c.app _ ≫ (π₁⁻¹ k, j, i) (unop _) := by
   fconstructor
   -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
-  · delta IsOpenImmersion.opensFunctor
+  · delta IsOpenImmersion.opensFunctor IsOpenEmbedding.functor
     dsimp only [Functor.op, Opens.map, IsOpenMap.functor, unop_op, Opens.coe_mk]
     congr 2
     have := (𝖣.t_fac k i j).symm
@@ -235,7 +235,7 @@ variable [HasLimits C]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
-    (Opens.map (𝖣.ι j).base).obj ((D.ι_isOpenEmbedding i).isOpenMap.functor.obj U) =
+    (Opens.map (𝖣.ι j).base).obj ((D.ι_isOpenEmbedding i).functor.obj U) =
       (opensFunctor (D.f j i)).obj
         ((Opens.map (𝖣.t j i).base).obj ((Opens.map (𝖣.f i j).base).obj U)) := by
   ext1
@@ -260,7 +260,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
 def opensImagePreimageMap (i j : D.J) (U : Opens (D.U i).carrier) :
     (D.U i).presheaf.obj (op U) ⟶
     (D.U j).presheaf.obj (op <|
-      (Opens.map (𝖣.ι j).base).obj ((D.ι_isOpenEmbedding i).isOpenMap.functor.obj U)) :=
+      (Opens.map (𝖣.ι j).base).obj ((D.ι_isOpenEmbedding i).functor.obj U)) :=
   (D.f i j).c.app (op U) ≫
     (D.t j i).c.app _ ≫
       (D.f_open j i).invApp _ (unop _) ≫
@@ -307,7 +307,7 @@ theorem opensImagePreimageMap_app_assoc (i j k : D.J) (U : Opens (D.U i).carrier
 the image `ι '' U` in the glued space is the limit of this diagram. -/
 abbrev diagramOverOpen {i : D.J} (U : Opens (D.U i).carrier) :
     (WalkingMultispan (.prod D.J))ᵒᵖ ⥤ C :=
-  componentwiseDiagram 𝖣.diagram.multispan ((D.ι_isOpenEmbedding i).isOpenMap.functor.obj U)
+  componentwiseDiagram 𝖣.diagram.multispan ((D.ι_isOpenEmbedding i).functor.obj U)
 
 /-- (Implementation)
 The projection from the limit of `diagram_over_open` to a component of `D.U j`. -/

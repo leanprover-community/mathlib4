@@ -255,7 +255,7 @@ def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
     { toFun f := ⟨objMk ((OrderHom.Subtype.val (· ∈ S)).comp
           (e.toOrderEmbedding.toOrderHom.comp f.toOrderHom)), fun _ ↦ by aesop⟩
       invFun := fun ⟨x, hx⟩ ↦ SimplexCategory.Hom.mk
-        { toFun i := e.symm ⟨(objEquiv x).toOrderHom i, hx (by aesop)⟩
+        { toFun i := e.symm ⟨(objEquiv x).toOrderHom i, hx (by simp)⟩
           monotone' i₁ i₂ h := e.symm.monotone (by
             simp only [Subtype.mk_le_mk]
             exact OrderHom.monotone _ h) }
@@ -340,7 +340,6 @@ def nonDegenerateEquiv {n d : ℕ} :
     simpa [mem_nonDegenerate_iff_strictMono] using s.strictMono⟩
   left_inv _ := by aesop
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : (Δ[n] : SSet.{u}).HasDimensionLE n where
   degenerate_eq_top i hi := by
     ext x

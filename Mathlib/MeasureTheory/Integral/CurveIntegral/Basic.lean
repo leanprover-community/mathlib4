@@ -215,7 +215,6 @@ theorem curveIntegral_symm (ω : E → E →L[𝕜] F) (γ : Path a b) :
     ∫ᶜ x in γ.symm, ω x = -∫ᶜ x in γ, ω x := by
   simp [curveIntegral, curveIntegralFun_symm]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem curveIntegralFun_trans_of_lt_half (ω : E → E →L[𝕜] F) (γab : Path a b) (γbc : Path b c)
     (ht : t < 1 / 2) :
     curveIntegralFun ω (γab.trans γbc) t = (2 : ℕ) • curveIntegralFun ω γab (2 * t) := by

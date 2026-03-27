@@ -261,3 +261,42 @@ noncomputable def tensorQuotMapSMulEquivTensorQuot (I : Ideal R) :
           (tensorQuotEquivQuotSMul M I).baseChange R S _ _
 
 end TensorProduct
+
+open TensorProduct
+
+namespace TensorProduct.AlgebraTensorModule
+
+variable {R : Type*} (A B : Type*) [CommRing R] [CommRing A] [Algebra R A]
+  [CommRing B] [Algebra R B]
+variable (M : Type*) [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
+variable {N : Type*} [AddCommGroup N] [Module R N] [Module B N] [IsScalarTower R B N]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- More linear version of `TensorProduct.tensorQuotientEquiv`. -/
+noncomputable def tensorQuotientEquiv (n : Submodule B N) :
+    M ⊗[R] (N ⧸ n) ≃ₗ[A]
+      (M ⊗[R] N) ⧸ LinearMap.range (lTensor A M (n.subtype.restrictScalars R)) where
+  __ := TensorProduct.tensorQuotientEquiv M (n.restrictScalars R)
+  map_smul' m x := by
+    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe]
+    induction x with
+    | zero => simp
+    | add x y hx hy => simp [hx, hy]
+    | tmul x y =>
+      obtain ⟨y, rfl⟩ := Submodule.Quotient.mk_surjective _ y
+      rw [smul_tmul']
+      rfl
+
+@[simp]
+lemma tensorQuotientEquiv_apply_tmul (n : Submodule B N) (x : M) (y : N) :
+    tensorQuotientEquiv A B M n (x ⊗ₜ[R] Submodule.Quotient.mk y) =
+      Submodule.Quotient.mk (x ⊗ₜ[R] y) :=
+  rfl
+
+@[simp]
+lemma tensorQuotientEquiv_symm_apply_mk_tmul (n : Submodule B N) (x : M) (y : N) :
+    (tensorQuotientEquiv A B M n).symm (Submodule.Quotient.mk (x ⊗ₜ[R] y)) =
+      x ⊗ₜ[R] Submodule.Quotient.mk y :=
+  rfl
+
+end TensorProduct.AlgebraTensorModule

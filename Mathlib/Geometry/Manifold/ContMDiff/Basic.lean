@@ -25,6 +25,8 @@ chain rule, manifolds, higher derivative
 
 public section
 
+assert_not_exists mfderiv
+
 open Filter Function Set Topology
 open scoped Manifold ContDiff
 
@@ -147,7 +149,6 @@ end Composition
 
 section id
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contMDiff_id : ContMDiff I I n (id : M → M) :=
   ContMDiff.of_le
     ((contDiffWithinAt_localInvariantProp ⊤).liftProp_id contDiffWithinAtProp_id) le_top

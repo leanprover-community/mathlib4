@@ -654,6 +654,7 @@ variable (X) in
 /-- Sets that are contained in a compact set form a bornology. Its `cobounded` filter is
 `Filter.cocompact`. See also `Bornology.relativelyCompact` the bornology of sets with compact
 closure. -/
+@[implicit_reducible]
 def inCompact : Bornology X where
   cobounded := Filter.cocompact X
   le_cofinite := Filter.cocompact_le_cofinite

@@ -109,6 +109,7 @@ theorem dist_le_dist_coe_div_sqrt (z w : ℍ) : dist z w ≤ dist (z : ℂ) w / 
 
 /-- An auxiliary `MetricSpace` instance on the upper half-plane. This instance has bad projection
 to `TopologicalSpace`. We replace it later. -/
+@[implicit_reducible]
 def metricSpaceAux : MetricSpace ℍ where
   dist := dist
   dist_self z := by rw [dist_eq, dist_self, zero_div, arsinh_zero, mul_zero]

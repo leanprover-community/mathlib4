@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Sites.Hypercover.ZeroFamily
+public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 public import Mathlib.AlgebraicGeometry.Cover.QuasiCompact
 
 /-!
@@ -111,6 +112,12 @@ abbrev propQCPrecoverage (P : MorphismProperty Scheme.{u}) : Precoverage Scheme.
 lemma propQCPrecoverage_le_precoverage : propQCPrecoverage P ≤ precoverage P :=
   inf_le_right
 
+lemma zariskiPrecoverage_le_propQCPrecoverage [P.ContainsIdentities] [IsZariskiLocalAtSource P] :
+    zariskiPrecoverage ≤ propQCPrecoverage P := by
+  rw [propQCPrecoverage, le_inf_iff]
+  refine ⟨zariskiPrecoverage_le_qcPrecoverage, precoverage_mono fun X Y f hf ↦ ?_⟩
+  apply IsZariskiLocalAtSource.of_isOpenImmersion
+
 instance {S : Scheme.{u}} (𝒰 : Scheme.Cover (propQCPrecoverage P) S) :
     QuasiCompactCover 𝒰.toPreZeroHypercover := by
   rw [← Scheme.presieve₀_mem_qcPrecoverage_iff]
@@ -191,6 +198,17 @@ lemma Cover.mem_propQCTopology {S : Scheme.{u}} (𝒰 : Cover.{u} (precoverage P
     .ofArrows 𝒰.X 𝒰.f ∈ propQCTopology P S := by
   refine Precoverage.generate_mem_toGrothendieck ⟨?_, 𝒰.mem₀⟩
   rwa [presieve₀_mem_qcPrecoverage_iff]
+
+lemma zariskiTopology_le_propQCTopology [P.IsMultiplicative] [IsZariskiLocalAtSource P] :
+    zariskiTopology ≤ propQCTopology P := by
+  apply Precoverage.toGrothendieck_mono
+  rw [le_inf_iff]
+  refine ⟨?_, ?_⟩
+  · apply zariskiPrecoverage_le_qcPrecoverage
+  · rw [precoverage, precoverage]
+    gcongr
+    refine MorphismProperty.precoverage_monotone fun X Y h hf ↦
+      IsZariskiLocalAtSource.of_isOpenImmersion _
 
 end Property
 

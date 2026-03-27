@@ -126,6 +126,7 @@ noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
 Monoidal structure on `F`, given that `F` lifts along `L` to a monoidal functor `G`,
 where `L` is a monoidal localization functor.
 -/
+@[implicit_reducible]
 noncomputable def functorMonoidalOfComp : F.Monoidal :=
   (functorCoreMonoidalOfComp L W F G).toMonoidal
 

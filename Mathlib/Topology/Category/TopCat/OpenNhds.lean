@@ -158,13 +158,35 @@ def adjunctionNhds (h : IsOpenMap f) (x : X) : IsOpenMap.functorNhds h x ⊣ Ope
 
 end IsOpenMap
 
+section
+
+variable {f}
+
+/--
+An open embedding `f : X ⟶ Y` induces a functor `OpenNhds x ⥤ OpenNhds (f x)`.
+We define `IsOpenEmbedding.functorNhds` as `IsOpenEmbedding.isOpenMap.functorNds`, so it won't
+default to `IsInducing.functorNhds` (which is equal but not defeq).
+-/
+abbrev Topology.IsOpenEmbedding.functorNhds (h : Topology.IsOpenEmbedding f) (x : X) :=
+    h.isOpenMap.functorNhds x
+
+/--
+An open enbedding `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and `OpenNhds (f x)`.
+We define `IsOpenEmbedding.adjunctionNhds` as `IsOpenEmbedding.isOpenMap.adjunctionNds`, so it
+won't default to `IsInducing.adjunctionNhds`, which is an adjunction in the other direction.
+-/
+abbrev Topology.IsOpenEmbedding.adjunctionNhds (h : Topology.IsOpenEmbedding f) (x : X) :=
+  h.isOpenMap.adjunctionNhds x
+
+end
+
 namespace Topology.IsInducing
 
 open TopologicalSpace
 
 variable {f}
 
-/-- An inducing map `f : X ⟶ Y` induces a functor `open_nhds x ⥤ open_nhds (f x)`. -/
+/-- An inducing map `f : X ⟶ Y` induces a functor `OpenNhds x ⥤ OpenNhds (f x)`. -/
 @[simps]
 def functorNhds (h : IsInducing f) (x : X) :
     OpenNhds x ⥤ OpenNhds (f x) where
@@ -172,7 +194,7 @@ def functorNhds (h : IsInducing f) (x : X) :
   map := h.functor.map
 
 /--
-An inducing map `f : X ⟶ Y` induces an adjunction between `open_nhds x` and `open_nhds (f x)`.
+An inducing map `f : X ⟶ Y` induces an adjunction between `OpenNhds (f x)` and `OpenNhds x`.
 -/
 def adjunctionNhds (h : IsInducing f) (x : X) :
     OpenNhds.map f x ⊣ h.functorNhds x where

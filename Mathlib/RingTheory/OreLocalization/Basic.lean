@@ -78,11 +78,11 @@ section DistribMulAction
 variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S] {X : Type*} [AddMonoid X]
 variable [DistribMulAction R X]
 
-set_option backward.privateInPublic true in
-private def add'' (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
+/-- Auxiliary definition for addition on the Ore localization. -/
+def add'' (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
   (oreDenom (s₁ : R) s₂ • r₁ + oreNum (s₁ : R) s₂ • r₂) /ₒ (oreDenom (s₁ : R) s₂ * s₁)
 
-private theorem add''_char (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) (rb : R) (sb : R)
+theorem add''_char (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) (rb : R) (sb : R)
     (hb : sb * s₁ = rb * s₂) (h : sb * s₁ ∈ S) :
     add'' r₁ s₁ r₂ s₂ = (sb • r₁ + rb • r₂) /ₒ ⟨sb * s₁, h⟩ := by
   simp only [add'']
@@ -103,8 +103,8 @@ private theorem add''_char (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) (rb : R) 
 
 attribute [local instance] OreLocalization.oreEqv
 
-set_option backward.privateInPublic true in
-private def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
+/-- Auxiliary definition for addition on the Ore localization, with one argument fixed. -/
+def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
   (--plus tilde
       Quotient.lift
       fun r₁s₁ : X × S => add'' r₁s₁.1 r₁s₁.2 r₂ s₂) <| by
@@ -126,10 +126,9 @@ private def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
     simp only [mul_smul, smul_add, one_smul, OneMemClass.coe_one, one_mul, true_and]
     rw [this, hc, mul_assoc]
 
-set_option backward.privateInPublic true in
 /-- The addition on the Ore localization. -/
 @[irreducible]
-private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
+def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
   Quotient.lift (fun rs : X × S => add' rs.1 rs.2 x)
     (by
       rintro ⟨r₁, s₁⟩ ⟨r₂, s₂⟩ ⟨sb, rb, hb, hb'⟩
@@ -148,8 +147,6 @@ private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
       simp only [one_smul, one_mul, mul_smul, ← hb, Submonoid.smul_def, ← mul_assoc, and_true]
       simp only [smul_smul, hd])
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Add X[S⁻¹] :=
   ⟨add⟩
 
@@ -205,12 +202,10 @@ protected theorem add_zero (x : X[S⁻¹]) : x + 0 = x := by
   induction x
   rw [← zero_oreDiv, add_oreDiv]; simp
 
-set_option backward.privateInPublic true in
+/-- Scalar multiplication by natural numbers on the Ore localization. -/
 @[irreducible]
-private def nsmul : ℕ → X[S⁻¹] → X[S⁻¹] := nsmulRec
+def nsmul : ℕ → X[S⁻¹] → X[S⁻¹] := nsmulRec
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : AddMonoid X[S⁻¹] where
     add_assoc := OreLocalization.add_assoc
     zero_add := OreLocalization.zero_add

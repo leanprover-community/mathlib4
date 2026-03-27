@@ -148,7 +148,7 @@ attribute [notation_class mod] HMod
 attribute [notation_class append] HAppend
 attribute [notation_class pow Simps.copyFirst] HPow
 attribute [notation_class andThen] HAndThen
-attribute [notation_class] Neg Dvd LE LT HasEquiv HasSubset HasSSubset Union Inter SDiff Insert
+attribute [notation_class] Neg Inv Dvd LE LT HasEquiv HasSubset HasSSubset Union Inter SDiff Insert
   Singleton Sep Membership
 attribute [notation_class one Simps.findOneArgs] OfNat
 attribute [notation_class zero Simps.findZeroArgs] OfNat

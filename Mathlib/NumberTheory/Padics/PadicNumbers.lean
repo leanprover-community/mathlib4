@@ -1189,7 +1189,6 @@ theorem AddValuation.map_mul (x y : ℚ_[p]) :
     · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← WithTop.coe_add, WithTop.coe_eq_coe,
         valuation_mul hx hy]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem AddValuation.map_add (x y : ℚ_[p]) :
     min (addValuationDef x) (addValuationDef y) ≤ addValuationDef (x + y : ℚ_[p]) := by
   simp only [addValuationDef]

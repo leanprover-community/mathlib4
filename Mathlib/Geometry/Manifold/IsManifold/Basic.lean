@@ -845,10 +845,8 @@ class _root_.ENat.LEInfty (m : WithTop ℕ∞) where
 
 open ENat
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ∞) : LEInfty (n : WithTop ℕ∞) := ⟨mod_cast le_top⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : LEInfty (n : WithTop ℕ∞) := ⟨mod_cast le_top⟩
 
 instance (n : ℕ) [n.AtLeastTwo] : LEInfty (no_index (OfNat.ofNat n) : WithTop ℕ∞) :=
@@ -862,7 +860,6 @@ instance {a : WithTop ℕ∞} [IsManifold I ∞ M] [h : LEInfty a] :
     IsManifold I a M :=
   IsManifold.of_le h.out
 
-set_option backward.isDefEq.respectTransparency false in
 instance {a : WithTop ℕ∞} [IsManifold I ω M] :
     IsManifold I a M :=
   IsManifold.of_le le_top
@@ -878,7 +875,6 @@ instance [IsManifold I 2 M] :
     IsManifold I 1 M :=
   IsManifold.of_le one_le_two
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsManifold I 3 M] : IsManifold I 2 M := IsManifold.of_le (n := 3) (by norm_cast)
 
 variable (I n M) in
@@ -1064,6 +1060,16 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Identifying the tangent space at a normed space with the normed space itself.
+This canonical identification (which, in mathlib, is implemented using an abuse of definitional
+equality) is very prevalent in a number of places: this device allows making it explicit. -/
+def NormedSpace.fromTangentSpace (v : E) : TangentSpace 𝓘(𝕜, E) v ≃L[𝕜] E where
+  toFun v := v
+  invFun v := v
+  map_add' := by simp
+  map_smul' := by simp
 
 instance : Inhabited (TangentSpace I x) := ⟨0⟩
 

@@ -187,7 +187,6 @@ theorem deriv_tsum (hu : Summable u) (hg : ∀ n, Differentiable 𝕜 (g n))
 
 /-! ### Higher smoothness -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Consider a series of `C^n` functions, with summable uniform bounds on the successive
 derivatives. Then the iterated derivative of the sum is the sum of the iterated derivative. -/
 theorem iteratedFDeriv_tsum (hf : ∀ i, ContDiff 𝕜 N (f i))
@@ -223,7 +222,6 @@ theorem iteratedFDeriv_tsum_apply (hf : ∀ i, ContDiff 𝕜 N (f i))
     iteratedFDeriv 𝕜 k (fun y => ∑' n, f n y) x = ∑' n, iteratedFDeriv 𝕜 k (f n) x := by
   rw [iteratedFDeriv_tsum hf hv h'f hk]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Consider a series of functions `∑' i, f i x`. Assume that each individual function `f i` is of
 class `C^N`, and moreover there is a uniform summable upper bound on the `k`-th derivative
 for each `k ≤ N`. Then the series is also `C^N`. -/
@@ -250,7 +248,6 @@ theorem contDiff_tsum (hf : ∀ i, ContDiff 𝕜 N (f i)) (hv : ∀ k : ℕ, (k 
     rw [fderiv_iteratedFDeriv, comp_apply, LinearIsometryEquiv.norm_map]
     exact h'f _ _ _ h'm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Consider a series of functions `∑' i, f i x`. Assume that each individual function `f i` is of
 class `C^N`, and moreover there is a uniform summable upper bound on the `k`-th derivative
 for each `k ≤ N` (except maybe for finitely many `i`s). Then the series is also `C^N`. -/
