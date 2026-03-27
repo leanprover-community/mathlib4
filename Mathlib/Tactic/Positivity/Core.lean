@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 module
 
 public meta import Mathlib.Control.Basic
-public meta import Qq
 public import Mathlib.Algebra.Order.Invertible
 public import Mathlib.Algebra.Order.Ring.Cast
 public import Mathlib.Tactic.HaveI
@@ -88,7 +87,7 @@ initialize positivityExt : PersistentEnvExtension Entry (Entry × PositivityExt)
     (List Entry × DiscrTree PositivityExt) ←
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq PositivityExt := ⟨fun _ _ => false⟩
-  let insert kss v dt := kss.foldl (fun dt ks => dt.insertCore ks v) dt
+  let insert kss v dt := kss.foldl (fun dt ks => dt.insertKeyValue ks v) dt
   registerPersistentEnvExtension {
     mkInitial := pure ([], {})
     addImportedFn := fun s => do
@@ -203,10 +202,9 @@ def catchNone {e : Q($α)} (t : MetaM (Strictness zα pα e)) : MetaM (Strictnes
 variable {zα pα} in
 /-- Converts a `MetaM Strictness` which can return `.none`
 into one which never returns `.none` but fails instead. -/
-def throwNone {m : Type → Type*} {e : Q($α)} [Monad m] [Alternative m]
-    (t : m (Strictness zα pα e)) : m (Strictness zα pα e) := do
+def throwNone {e : Q($α)} (t : MetaM (Strictness zα pα e)) : MetaM (Strictness zα pα e) := do
   match ← t with
-  | .none => failure
+  | .none => throwError "Strictness result was `{.ofConstName ``Strictness.none}`."
   | r => pure r
 
 /-- Attempts to prove a `Strictness` result when `e` evaluates to a literal number. -/

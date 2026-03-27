@@ -76,6 +76,7 @@ class HasCoeffs (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S]
     [IsScalarTower R₀ R S] where
   coeffs_subset_range : P.coeffs ⊆ Set.range (algebraMap R₀ R)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : P.HasCoeffs P.Core where
   coeffs_subset_range := by
     refine subset_trans P.coeffs_subset_core ?_
@@ -149,6 +150,7 @@ lemma tensorModelOfHasCoeffsHom_tmul (x : R) (y : MvPolynomial ι R₀) :
     P.tensorModelOfHasCoeffsHom R₀ (x ⊗ₜ y) = algebraMap R S x * MvPolynomial.aeval P.val y :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable (P) in
 /-- (Implementation detail): The inverse of `tensorModelOfHasCoeffsHom`. -/
 noncomputable def tensorModelOfHasCoeffsInv : S →ₐ[R] R ⊗[R₀] P.ModelOfHasCoeffs R₀ :=
@@ -230,6 +232,7 @@ namespace Algebra.SubmersivePresentation
 
 variable [Finite σ] (P : Algebra.SubmersivePresentation R S ι σ)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_sum_eq_σ_jacobian_mul_σ_jacobian_inv_sub_one
     [DecidableEq σ] [Fintype σ] :
     ∃ v : σ → MvPolynomial ι R, ∑ i, v i * P.relation i =
@@ -337,11 +340,12 @@ lemma map_jacobianRelationsOfHasCoeffs (i : σ) :
 
 lemma sum_jacobianRelationsOfHasCoeffs_mul_relationOfHasCoeffs [FaithfulSMul R₀ R] [Fintype σ] :
     ∑ i, P.jacobianRelationsOfHasCoeffs R₀ i * P.relationOfHasCoeffs R₀ i =
-        P.jacobianOfHasCoeffs R₀ * P.invJacobianOfHasCoeffs R₀ - 1 := by
+      P.jacobianOfHasCoeffs R₀ * P.invJacobianOfHasCoeffs R₀ - 1 := by
   classical
   apply MvPolynomial.map_injective _ (FaithfulSMul.algebraMap_injective R₀ R)
   simp [P.map_relationOfHasCoeffs, jacobianRelations_spec]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The submersive presentation on `P.ModelOfHasCoeffs R₀` provided `P.HasCoeffs R₀`. -/
 noncomputable
 def ofHasCoeffs [FaithfulSMul R₀ R] :
@@ -356,6 +360,6 @@ def ofHasCoeffs [FaithfulSMul R₀ R] :
       map_sub, map_one, @eq_comm (P.ModelOfHasCoeffs R₀) 0, sub_eq_zero] at this
     convert IsUnit.of_mul_eq_one _ this
     rw [PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det]
-    rfl
+    simp [jacobianOfHasCoeffs]
 
 end Algebra.SubmersivePresentation

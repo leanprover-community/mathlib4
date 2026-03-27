@@ -87,6 +87,7 @@ end proper_ideal
 
 section faithful
 
+set_option backward.isDefEq.respectTransparency false in
 instance rTensor_nontrivial
     [fl : FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
     Nontrivial (N ⊗[R] M) := by
@@ -196,7 +197,7 @@ instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddComm
   obtain ⟨x, y, hxy⟩ := Nontrivial.exists_pair_ne (α := M i ⊗[R] N)
   haveI : Nontrivial (⨁ (i : ι), M i ⊗[R] N) :=
     ⟨DirectSum.of _ i x, DirectSum.of _ i y, fun h ↦ hxy (DirectSum.of_injective i h)⟩
-  apply (TensorProduct.directSumLeft R M N).toEquiv.nontrivial
+  apply (TensorProduct.directSumLeft R R M N).toEquiv.nontrivial
 
 /-- Free `R`-modules over discrete types are flat. -/
 instance finsupp (ι : Type v) [Nonempty ι] : FaithfullyFlat R (ι →₀ R) := by
@@ -393,6 +394,11 @@ lemma lTensor_surjective_iff_surjective [Module.FaithfullyFlat R M] :
     ← LinearMap.exact_zero_iff_surjective Unit]
   conv_rhs => rw [← lTensor_exact_iff_exact R M]
   simp
+
+@[simp]
+lemma lTensor_bijective_iff_bijective [Module.FaithfullyFlat R M] :
+    Function.Bijective (f.lTensor M) ↔ Function.Bijective f := by
+  simp [Function.Bijective]
 
 end
 

@@ -101,7 +101,7 @@ theorem isIntegral_of_smul_mem_submodule [IsDomain A] {M : Type*} [AddCommGroup 
       algebraMap_mem' := fun r n hn => (algebraMap_smul A r n).symm ▸ N.smul_mem r hn }
   let f : A' →ₐ[R] Module.End R N :=
     AlgHom.ofLinearMap
-      { toFun := fun x => (DistribMulAction.toLinearMap R M x).restrict x.prop
+      { toFun := fun x => (DistribSMul.toLinearMap R M x).restrict x.prop
         map_add' := by intro x y; ext; exact add_smul _ _ _
         map_smul' := by intro r s; ext; apply smul_assoc }
       (by ext; apply one_smul)

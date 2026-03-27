@@ -15,13 +15,13 @@ import Mathlib.Algebra.Order.Interval.Set.Group
 
 This file proves that:
 * `MonotoneOn.intervalIntegrable_deriv`: If `f` is monotone on `a..b`, then `f'` is interval
-integrable on `a..b`.
+  integrable on `a..b`.
 * `MonotoneOn.intervalIntegral_deriv_mem_uIcc`: If `f` is monotone on `a..b`, then the integral of
-`f'` on `a..b` is in `uIcc 0 (f b - f a)`.
+  `f'` on `a..b` is in `uIcc 0 (f b - f a)`.
 * `BoundedVariationOn.intervalIntegrable_deriv`: If `f` has bounded variation on `a..b`,
-then `f'` is interval integrable on `a..b`.
+  then `f'` is interval integrable on `a..b`.
 * `AbsolutelyContinuousOnInterval.intervalIntegrable_deriv`: If `f` is absolutely continuous on
-`a..b`, then `f'` is interval integrable on `a..b`.
+  `a..b`, then `f'` is interval integrable on `a..b`.
 
 ## Tags
 interval integrable, monotone, bounded variation, absolutely continuous

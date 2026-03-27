@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Algebra.MvPolynomial.Equiv
-public import Mathlib.Algebra.Polynomial.Degree.Definitions
+public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Data.Finsupp.MonomialOrder.DegLex
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.MvPolynomial.Groebner
@@ -194,8 +194,6 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
       simp [Set.range_const, Set.mem_singleton_iff, hj]
 
 variable [Finite σ]
-
-open scoped BigOperators
 
 /-- The **Combinatorial Nullstellensatz**.
 

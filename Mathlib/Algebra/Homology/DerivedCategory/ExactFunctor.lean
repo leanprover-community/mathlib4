@@ -82,6 +82,7 @@ instance : NatTrans.CommShift F.mapDerivedCategoryFactorsh.hom ℤ :=
         (F.mapHomotopyCategory _ ⋙ DerivedCategory.Qh)
           F.mapDerivedCategory).hom ℤ)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : NatTrans.CommShift F.mapDerivedCategoryFactors.hom ℤ :=
   NatTrans.CommShift.verticalComposition (DerivedCategory.quotientCompQhIso C₁).inv
     (DerivedCategory.quotientCompQhIso C₂).hom

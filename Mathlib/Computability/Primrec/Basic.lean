@@ -6,8 +6,8 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Order.Ring.Nat
-public import Mathlib.Logic.Encodable.Pi
 public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Logic.Denumerable
 
 /-!
 # The primitive recursive functions
@@ -45,7 +45,6 @@ other design choices in this formalization, see [carneiro2019].
 
 @[expose] public section
 
-open List (Vector)
 open Denumerable Encodable Function
 
 namespace Nat
@@ -141,6 +140,7 @@ instance (priority := 10) ofDenumerable (α) [Denumerable α] : Primcodable α :
   ⟨Nat.Primrec.succ.of_eq <| by simp⟩
 
 /-- Builds a `Primcodable` instance from an equivalence to a `Primcodable` type. -/
+@[implicit_reducible]
 def ofEquiv (α) {β} [Primcodable α] (e : β ≃ α) : Primcodable β :=
   { __ := Encodable.ofEquiv α e
     prim := (Primcodable.prim α).of_eq fun n => by
@@ -688,8 +688,6 @@ theorem dom_finite [Finite α] (f : α → σ) : Primrec f :=
     refine ((list_getElem?₁ (l.map f)).comp (list_idxOf₁ l)).of_eq fun a => ?_
     rw [List.getElem?_map, List.getElem?_idxOf (m a), Option.map_some]
 
-@[deprecated (since := "2025-08-23")] alias dom_fintype := dom_finite
-
 /-- A function is `PrimrecBounded` if its size is bounded by a primitive recursive function -/
 def PrimrecBounded (f : α → β) : Prop :=
   ∃ g : α → ℕ, Primrec g ∧ ∀ x, encode (f x) ≤ g x
@@ -813,6 +811,7 @@ variable {α : Type*} [Primcodable α]
 open Primrec
 
 /-- A subtype of a primitive recursive predicate is `Primcodable`. -/
+@[implicit_reducible]
 def subtype {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) : Primcodable (Subtype p) :=
   ⟨have : Primrec fun n => (@decode α _ n).bind fun a => Option.guard p a :=
     option_bind .decode (option_guard (hp.comp snd).primrecRel snd)

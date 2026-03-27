@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.TrivSqZeroExt
+public import Mathlib.Algebra.TrivSqZeroExt.Basic
 
 /-!
 # Dual numbers
@@ -60,7 +60,7 @@ open DualNumber
 
 namespace DualNumber
 
-open TrivSqZeroExt
+open TrivSqZeroExt Algebra
 
 @[simp]
 theorem fst_eps [Zero R] [One R] : fst ε = (0 : R) :=
@@ -192,12 +192,12 @@ theorem range_inlAlgHom_sup_adjoin_eps :
   refine add_mem ?_ (mul_mem ?_ ?_)
   · exact le_sup_left (α := Subalgebra R _) <| Set.mem_range_self x.fst
   · exact le_sup_left (α := Subalgebra R _) <| Set.mem_range_self x.snd
-  · refine le_sup_right (α := Subalgebra R _) <| Algebra.subset_adjoin <| Set.mem_singleton ε
+  · refine le_sup_right (α := Subalgebra R _) <| subset_adjoin <| Set.mem_singleton ε
 
 @[simp]
 theorem range_lift
     (fe : {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)}) :
-    (lift fe).range = fe.1.1.range ⊔ Algebra.adjoin R {fe.1.2} := by
+    (lift fe).range = fe.1.1.range ⊔ R[fe.1.2] := by
   simp_rw [← Algebra.map_top, ← range_inlAlgHom_sup_adjoin_eps, Algebra.map_sup,
     AlgHom.map_adjoin, ← AlgHom.range_comp, Set.image_singleton, lift_apply_eps, lift_comp_inlHom,
     Algebra.map_top]
