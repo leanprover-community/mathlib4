@@ -79,7 +79,7 @@ def prod [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMon
     (g : ∀ i, β i → γ) : γ :=
   ∏ i ∈ f.support, g i (f i)
 
-theorem sum_of_support_le [∀ i, AddCommMonoid (β i)]
+theorem sum_of_support_subset [∀ i, AddCommMonoid (β i)]
     [∀ (i) (x : β i), Decidable (x ≠ 0)] [AddCommMonoid γ]
     {f : Π₀ i, β i} {g : (i : ι) → (β i →+ γ)} {s : Finset ι} (hs : f.support ⊆ s) :
     f.sum (fun i x ↦ g i x) = ∑ i ∈ s, g i (f i) := by
@@ -215,6 +215,15 @@ theorem prod_eq_prod_fintype [Fintype ι] [∀ i, Zero (β i)] [∀ (i : ι) (x 
   intro i _ hi
   rw [mem_support_iff, not_not] at hi
   rw [hi, hf]
+
+lemma rel_sum_sum {A : Type*} [AddCommMonoid A] {r : A → A → Prop} [∀ i, AddCommMonoid (β i)]
+    (hr_zero : r 0 0) (hr_add : ∀ {a b c d}, r a c → r b d → r (a + b) (c + d))
+    [∀ i (y : β i), Decidable (y ≠ 0)] (h : (i : ι) → (β i →+ A)) (h' : (i : ι) → (β i →+ A))
+    {f g : Π₀ i, β i} (H : ∀ i, r (h i (f i)) (h' i (g i))) :
+    r (f.sum fun i y => h i y) (g.sum fun i y => h' i y) := by
+  rw [sum_of_support_subset (Finset.subset_union_left (s₁ := f.support) (s₂ := g.support)),
+    sum_of_support_subset (Finset.subset_union_right (s₁ := f.support) (s₂ := g.support))]
+  exact Finset.rel_sum_sum hr_zero hr_add (fun i _ ↦ H i)
 
 section CommMonoidWithZero
 variable [Π i, Zero (β i)] [CommMonoidWithZero γ] [Nontrivial γ] [NoZeroDivisors γ]

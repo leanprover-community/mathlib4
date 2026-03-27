@@ -16,11 +16,10 @@ public import Mathlib.Algebra.Module.Submodule.Basic
 * `DirectSum.Decomposition ℳ`: A typeclass to provide a constructive decomposition from
   an additive monoid `M` into a family of additive submonoids `ℳ`
 * `DirectSum.decompose ℳ`: The canonical equivalence provided by the above typeclass
-* `SetLike.Rel.IsPureHomogeneous`:
-  a relation `r` is `PureHomogeneous` iff `r a b` implies that
+* `DirectSum.Rel.IsPureHomogeneous`: a relation `r` is `PureHomogeneous` iff `r a b` implies that
   `a` and `b` are homogeneous of the same degree.
-* `SetLike.Rel.IsHomogeneous`: a relation is `Homogeneous` iff
-  `r a b` implies that the components of `a` and `b` are related by `r`.
+* `DirecSum.Rel.IsHomogeneous`: a relation is `Homogeneous` iff `r a b` implies that the components
+  of `a` and `b` are related by `r`.
 
 ## Main statements
 
@@ -106,7 +105,7 @@ def Rel.IsPureHomogeneous (r : M → M → Prop) : Prop :=
   ∀ {a b : M} (_ : r a b), ∃ i, a ∈ ℳ i ∧ b ∈ ℳ i
 
 /-- A relation `r` is `Homogeneous` for a `DirectSum.Decomposition` iff
-`r a b` implies that the components of `a` and `b` are related by `r` -/
+`r a b` implies that the components of `a` and `b` are related by `r`. -/
 def Rel.IsHomogeneous [DecidableEq ι] [DirectSum.Decomposition ℳ]
   (r : M → M → Prop) : Prop :=
   ∀ {a b : M} (_ : r a b), ∀ i, r (decompose ℳ a i) (decompose ℳ b i)
@@ -178,14 +177,13 @@ theorem mem_iff_forall_ne_decompose_eq_zero {m : M} {i : ι} :
     · subst hj; simp
     · rw [SetLike.coe_eq_coe, hm j hj, eq_comm, of_eq_of_ne _ _ _ hj]
 
-lemma IsPureHomogeneous.isHomogeneous (r : M → M → Prop)
+lemma Rel.IsPureHomogeneous.isHomogeneous (r : M → M → Prop)
     (hr0 : r 0 0) (hr : Rel.IsPureHomogeneous ℳ r) :
     Rel.IsHomogeneous ℳ r := by
   intro a b h i
   obtain ⟨j, ha, hb⟩ := hr h
   by_cases hij : j = i
-  · rw [← hij]
-    simp only [decompose_of_mem_same, ha, hb, h]
+  · simp only [← hij, decompose_of_mem_same, ha, hb, h]
   · simp only [decompose_of_mem_ne _ ha hij, decompose_of_mem_ne _ hb hij, hr0]
 
 open Relation in
