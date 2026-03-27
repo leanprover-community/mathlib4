@@ -47,7 +47,7 @@ open Limits MonoidalCategory CartesianMonoidalCategory
 variable {C : Type u} [Category.{v} C]
 
 /--
-in any braided category, the following is a pullback square:
+In any braided category, the following is a pullback square:
 ```
 X₁ ⊗ X₂  -β→  X₂ ⊗ X₁
    |              |
@@ -64,7 +64,7 @@ lemma IsPullback.tensorHom_braiding [MonoidalCategory C] [BraidedCategory C] {X�
 variable [CartesianMonoidalCategory C]
 
 /--
-The following is a pullback square:
+In a cartesian monoidal category, the following is a pullback square:
 ```
      (f ▷ Z)
 X ⊗ Z  →  Y ⊗ Z
@@ -80,15 +80,14 @@ lemma IsPullback.whiskerRight_horiz {X Y : C} (f : X ⟶ Y) (Z : C) :
   apply PullbackCone.IsLimit.mk _ fun s => CartesianMonoidalCategory.lift s.snd (s.fst ≫ snd _ _)
   · intro s
     ext <;> simp [s.condition]
-  · intro s
-    simp
+  · cat_disch
   · intro s m hm₁ hm₂
     ext
     · simpa
     · simp [← hm₁]
 
 /--
-The following is a pullback square:
+In a cartesian monoidal category, the following is a pullback square:
 ```
     (Z ◁ f)
 Z ⊗ X  →  Z ⊗ Y
@@ -108,7 +107,7 @@ lemma IsPullback.whiskerLeft_horiz {X Y : C} (f : X ⟶ Y) (Z : C) :
 
 
 /--
-given two pullback squares:
+In a cartesian monoidal category, given two pullback squares:
 ```
 X₁ -f₁→ X₂
 
@@ -150,7 +149,7 @@ lemma IsPullback.tensor
       (IsPullback.whiskerLeft_horiz _ _)
 
 /--
-If we have a pullback square,
+In a cartesian monoidal category, if we have a pullback square,
 ```
 X₁ -f₁→ X₂
 
@@ -198,7 +197,7 @@ lemma IsPullback.pullback_monoidal {X₁ X₂ X₃ X₄ : C}
       · simpa [hm₁] using hm₂.right
 
 /--
-If we have that the following square is a pullback square,
+In a cartesian monoidal category, if we have that the following square is a pullback square,
 ```
    W  -d→  Z
    |       |
@@ -225,8 +224,7 @@ lemma IsPullback.of_pullback_monoidal {W X Y Z : C}
   w := by
     rw [Category.assoc, Category.assoc, ← tensorHom_fst f g, ← tensorHom_snd f g, ← hpb.w_assoc,
       ← hpb.w_assoc, CartesianMonoidalCategory.lift_fst, CartesianMonoidalCategory.lift_snd]
-  isLimit' := ⟨by
-    fapply PullbackCone.IsLimit.mk _
+  isLimit' := ⟨PullbackCone.IsLimit.mk _
       (fun s => hpb.lift
         (s.fst ≫ f) (CartesianMonoidalCategory.lift s.fst s.snd) (by simp [s.condition]))
       (by
@@ -288,7 +286,7 @@ lemma IsPullback.equalizer_monoidal {X Y : C} (f g : X ⟶ Y) [HasEqualizer f g]
       simp [equalizer.lift_ι, hm₁]
 
 /--
-If we have that the following square is a pullback square,
+In a cartesian monoidal category, if we have that the following square is a pullback square,
 ```
 W  -ι→  X
 |       |
