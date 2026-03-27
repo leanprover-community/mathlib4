@@ -71,13 +71,13 @@ prove in `PiTensorProduct.norm_eval_le_injectiveSeminorm` that this gives the sa
 -/
 @[deprecated
   "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
-  (since := "2026-02-19")]
+  (since := "2026-03-27")]
 noncomputable irreducible_def injectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) :=
   sSup {p | ∃ (G : Type (max uι u𝕜 uE)) (_ : SeminormedAddCommGroup G)
   (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
   (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}
 
-@[deprecated "no replacement" (since := "2026-02-19")]
+@[deprecated "no replacement" (since := "2026-03-27")]
 lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max uι u𝕜 uE))
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G),
     p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
@@ -90,7 +90,7 @@ lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max uι u𝕜 uE))
 set_option linter.deprecated false in
 @[deprecated
   "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
-  (since := "2026-02-19")]
+  (since := "2026-03-27")]
 theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     injectiveSeminorm x = ⨆ p : {p | ∃ (G : Type (max uι u𝕜 uE))
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜
@@ -104,7 +104,7 @@ set_option linter.deprecated false in
 set_option backward.isDefEq.respectTransparency false in
 @[deprecated
   "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
-  (since := "2026-02-19")]
+  (since := "2026-03-27")]
 theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
     ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * injectiveSeminorm x := by
     /- If `F` were in `Type (max uι u𝕜 uE)` (which is the type of `⨂[𝕜] i, E i`), then the
@@ -161,7 +161,7 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
 set_option linter.deprecated false in
 @[deprecated
   "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
-  (since := "2026-02-19")]
+  (since := "2026-03-27")]
 theorem injectiveSeminorm_le_projectiveSeminorm :
     injectiveSeminorm (𝕜 := 𝕜) (E := E) ≤ projectiveSeminorm := by
   rw [injectiveSeminorm]
@@ -182,7 +182,7 @@ theorem injectiveSeminorm_le_projectiveSeminorm :
 set_option linter.deprecated false in
 @[deprecated
   "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
-  (since := "2026-02-19")]
+  (since := "2026-03-27")]
 theorem injectiveSeminorm_tprod_le (m : Π (i : ι), E i) :
     injectiveSeminorm (⨂ₜ[𝕜] i, m i) ≤ ∏ i, ‖m i‖ :=
   le_trans (injectiveSeminorm_le_projectiveSeminorm _) (projectiveSeminorm_tprod_le m)
