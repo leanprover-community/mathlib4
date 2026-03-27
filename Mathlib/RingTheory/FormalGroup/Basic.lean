@@ -73,13 +73,9 @@ structure FormalGroup where
   assoc : subst ![subst ![Y₀, Y₁] toFun, Y₂] toFun
     = subst ![Y₀, subst ![Y₁, Y₂] toFun] toFun (S := R)
 
-/-- A formal group is commutative if it satisfies $F(X, Y) = F(Y, X)$. -/
+/-- Given a formal group `F`, `F.IsComm` is a proposition that $F(X,Y) = F(Y,X)$. -/
 class FormalGroup.IsComm (F : FormalGroup R) : Prop where
   comm : F.toFun = F.toFun.subst ![X₁, X₀]
-
-/-- Given a formal group `F`, `F.comm` is a proposition that `F(X,Y) = F(Y,X)`. -/
-def FormalGroup.comm (F : FormalGroup R) : Prop :=
-  F.toFun = MvPowerSeries.subst ![X₁, X₀] F.toFun
 
 section Lemma
 
@@ -107,15 +103,16 @@ end Lemma
 
 namespace FormalGroup
 
-/-- addition of two multi variate power series under the formal group `F` sense, namely
-`f₀ + [F] f₁ := F (f₀, f₁)` -/
-abbrev add (F : FormalGroup R) (f₀ f₁ : MvPowerSeries σ R) : MvPowerSeries σ R :=
-  subst ![f₀, f₁] F.toFun
+variable {σ : Type} (F : FormalGroup R)
 
-/-- `f₀ +[F] f₁` means `F (f₀, f₁)`. -/
-scoped[FormalGroup] notation:65 f₀:65 " +[" F:0 "] " f₁:66 => add F f₀ f₁
+set_option linter.unusedVariables false in
+/-- This is a synonym of multivariate power series. -/
+def Point (F : FormalGroup R) (σ : Type) := MvPowerSeries σ R
 
-variable (F : FormalGroup R)
+instance : Add (F.Point σ) where
+  add x y := subst ![x, y] F.toFun
+
+/- TODO : Zero, SMul, Inv instance. -/
 
 /-- Additive formal group law `Gₐ(X,Y) = X + Y`. -/
 def Gₐ : FormalGroup R where
