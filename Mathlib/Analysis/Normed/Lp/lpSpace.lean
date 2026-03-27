@@ -792,7 +792,7 @@ def _root_.lpInftySubring : Subring (PreLp B) :=
     mul_mem' := Memℓp.infty_mul }
 
 instance inftyRing : Ring (lp B ∞) :=
-  (lpInftySubring B).toRing
+  inferInstanceAs <| Ring (lpInftySubring B)
 
 theorem _root_.Memℓp.infty_pow {f : ∀ i, B i} (hf : Memℓp f ∞) (n : ℕ) : Memℓp (f ^ n) ∞ :=
   (lpInftySubring B).pow_mem hf n
@@ -841,12 +841,8 @@ section Algebra
 variable {I : Type*} {B : I → Type*}
 variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
-/-- A variant of `Pi.algebra` that lean can't find otherwise. -/
-instance _root_.Pi.algebraOfNormedAlgebra : Algebra 𝕜 (∀ i, B i) :=
-  @Pi.algebra I 𝕜 B _ _ fun _ => NormedAlgebra.toAlgebra
-
 instance _root_.PreLp.algebra : Algebra 𝕜 (PreLp B) :=
-  Pi.algebraOfNormedAlgebra
+  inferInstanceAs <| Algebra 𝕜 (∀ i, B i)
 
 variable [∀ i, NormOneClass (B i)]
 
@@ -865,8 +861,10 @@ def _root_.lpInftySubalgebra : Subalgebra 𝕜 (PreLp B) :=
 
 variable {𝕜 B}
 
-instance inftyNormedAlgebra : NormedAlgebra 𝕜 (lp B ∞) :=
-  { (lpInftySubalgebra 𝕜 B).algebra, (lp.instNormedSpace : NormedSpace 𝕜 (lp B ∞)) with }
+instance : Algebra 𝕜 (lp B ∞) := inferInstanceAs <| Algebra 𝕜 (lpInftySubalgebra 𝕜 B)
+
+instance inftyNormedAlgebra : NormedAlgebra 𝕜 (lp B ∞) where
+  norm_smul_le := norm_smul_le
 
 end Algebra
 
