@@ -261,5 +261,4 @@ theorem AnalyticOnNhd.sum_divisor_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
           linarith
         simp [h1, this]
   _ ≤ Real.log M - Real.log ‖f c‖ := by linarith --Uses jensen and integral_bound
-  _ = _ := by
-    rw [← log_div (by linarith) (norm_ne_zero_iff.mpr h₂f)]
+  _ = _ := by rw [← log_div (by linarith) (norm_ne_zero_iff.mpr h₂f)]
