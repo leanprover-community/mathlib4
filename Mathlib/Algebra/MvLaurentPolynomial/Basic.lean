@@ -96,7 +96,6 @@ theorem X_pow_eq_monomial (v : σ → M) (i : σ) (e : ℕ) :
   simp only [X, monomial, Finsupp.linearCombination_single, one_smul, lsingle_apply, single_pow,
     one_pow, natCast_zsmul]
 
-@[simp]
 theorem monomial_mul (v : σ → M) {d e : σ →₀ ℤ} {r s : R} :
     monomial v d r * monomial v e s = monomial v (d + e) (r * s) := by
   simp [monomial, AddMonoidAlgebra.single_mul_single]
@@ -113,17 +112,14 @@ theorem monomial_single_add (v : σ → M) (d : σ →₀ ℤ) (i : σ) (e : ℕ
     monomial v (Finsupp.single i (e : ℤ) + d) r = X v i ^ e * monomial v d r := by
   rw [X_pow_eq_monomial, monomial_mul, one_mul]
 
-@[simp]
 theorem monomial_zero (v : σ → M) {d : σ →₀ ℤ} : monomial v d (0 : R) = 0 := by
   rw [monomial]
   exact Finsupp.single_eq_zero.2 rfl
 
-@[simp]
 theorem monomial_eq_zero (v : σ → M) {d : σ →₀ ℤ} {r : R} :
     monomial v d r = 0 ↔ r = 0 := by
-  simp [monomial]
+  simp
 
-@[simp]
 theorem sum_monomial_eq {A : Type*} [AddCommMonoid A] (v : σ → M) {d : σ →₀ ℤ} {r : R}
     {f : M → R → A} (h0 : f ((Finsupp.linearCombination ℤ v) d) 0 = 0) :
     (monomial v d r).sum f = f (Finsupp.linearCombination ℤ v d) r := by
@@ -149,7 +145,6 @@ theorem X_ne_zero (v : σ → M) [Nontrivial R] (i : σ) :
 
 section AsSum
 
-@[simp]
 theorem support_sum_monomial_coeff (v : Basis σ ℤ M) (p : AddMonoidAlgebra R M) :
     (∑ m ∈ p.support, monomial v (v.repr m) (p m)) = p := by
   simpa [Finsupp.sum, monomial] using (Finsupp.sum_single p)
@@ -176,7 +171,6 @@ def laurentBasisAlgEquiv (v : Basis σ ℤ M) :
     AddMonoidAlgebra R M ≃ₐ[R] AddMonoidAlgebra R (σ →₀ ℤ) :=
   AddMonoidAlgebra.domCongr R R v.repr.toAddEquiv
 
-@[simp]
 theorem laurentBasisAlgEquiv_monomial (v : Basis σ ℤ M) (d : σ →₀ ℤ) (r : R) :
     laurentBasisAlgEquiv v (monomial v d r) = AddMonoidAlgebra.single d r := by
   ext e
