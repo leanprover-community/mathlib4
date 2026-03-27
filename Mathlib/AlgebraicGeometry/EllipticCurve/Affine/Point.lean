@@ -834,16 +834,12 @@ lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalar
   have : Subsingleton (F →ₐ[F] L) := inferInstance
   convert map_map (Algebra.ofId F K) f P
 
-end Point
-
 /-!
 ### The x-coordinate map to ℙ¹
 
 We define the map from affine points of an affine Weierstrass curve over `R` to the projective line
 by producing a coordinate vector in `Fin 2 → R` that represents the projective point.
 -/
-
-namespace Point
 
 /-- This map sends an affine point `P` on `W'` to a representative of its image on ℙ¹
 under the x-coordinate map. We take `![1, 0]` for the point at infinity and `![x, 1]`,
