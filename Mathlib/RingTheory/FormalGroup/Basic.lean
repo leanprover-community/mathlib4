@@ -107,6 +107,7 @@ variable {σ : Type} (F : FormalGroup R)
 
 set_option linter.unusedVariables false in
 /-- This is a synonym of multivariate power series. -/
+@[nolint unusedArguments]
 def Point (F : FormalGroup R) (σ : Type) := MvPowerSeries σ R
 
 instance : Add (F.Point σ) where
