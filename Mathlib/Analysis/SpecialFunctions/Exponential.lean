@@ -189,19 +189,23 @@ variable {𝕂 : Type*} [RCLike 𝕂]
 
 /-- The exponential map in `𝕂 = ℝ` or `𝕂 = ℂ` has strict derivative `NormedSpace.exp x`
 at any point `x`. -/
+@[fun_prop]
 theorem hasStrictDerivAt_exp {x : 𝕂} : HasStrictDerivAt exp (exp x) x :=
   hasStrictDerivAt_exp_of_mem_ball ((expSeries_radius_eq_top 𝕂 𝕂).symm ▸ edist_lt_top _ _)
 
 /-- The exponential map in `𝕂 = ℝ` or `𝕂 = ℂ` has derivative `NormedSpace.exp x`
 at any point `x`. -/
+@[fun_prop]
 theorem hasDerivAt_exp {x : 𝕂} : HasDerivAt exp (exp x) x :=
   hasStrictDerivAt_exp.hasDerivAt
 
 /-- The exponential map in `𝕂 = ℝ` or `𝕂 = ℂ` has strict derivative `1` at zero. -/
+@[fun_prop]
 theorem hasStrictDerivAt_exp_zero : HasStrictDerivAt exp (1 : 𝕂) 0 :=
   hasStrictDerivAt_exp_zero_of_radius_pos (expSeries_radius_pos 𝕂 𝕂)
 
 /-- The exponential map in `𝕂 = ℝ` or `𝕂 = ℂ` has derivative `1` at zero. -/
+@[fun_prop]
 theorem hasDerivAt_exp_zero : HasDerivAt exp (1 : 𝕂) 0 :=
   hasStrictDerivAt_exp_zero.hasDerivAt
 

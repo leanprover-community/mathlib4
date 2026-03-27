@@ -35,6 +35,7 @@ namespace Real
 
 variable {x : ℝ}
 
+@[fun_prop]
 theorem hasStrictDerivAt_log_of_pos (hx : 0 < x) : HasStrictDerivAt log x⁻¹ x := by
   have : HasStrictDerivAt log (exp <| log x)⁻¹ x :=
     (hasStrictDerivAt_exp <| log x).of_local_left_inverse (continuousAt_log hx.ne')
@@ -42,6 +43,7 @@ theorem hasStrictDerivAt_log_of_pos (hx : 0 < x) : HasStrictDerivAt log x⁻¹ x
       Eventually.mono (lt_mem_nhds hx) @exp_log
   rwa [exp_log hx] at this
 
+@[fun_prop]
 theorem hasStrictDerivAt_log (hx : x ≠ 0) : HasStrictDerivAt log x⁻¹ x := by
   rcases hx.lt_or_gt with hx | hx
   · convert (hasStrictDerivAt_log_of_pos (neg_pos.mpr hx)).comp x (hasStrictDerivAt_neg x) using 1
@@ -49,6 +51,7 @@ theorem hasStrictDerivAt_log (hx : x ≠ 0) : HasStrictDerivAt log x⁻¹ x := b
     · ring
   · exact hasStrictDerivAt_log_of_pos hx
 
+@[fun_prop]
 theorem hasDerivAt_log (hx : x ≠ 0) : HasDerivAt log x⁻¹ x :=
   (hasStrictDerivAt_log hx).hasDerivAt
 
@@ -104,16 +107,19 @@ section deriv
 
 variable {f : ℝ → ℝ} {x f' : ℝ} {s : Set ℝ}
 
+@[fun_prop]
 theorem HasDerivWithinAt.log (hf : HasDerivWithinAt f f' s x) (hx : f x ≠ 0) :
     HasDerivWithinAt (fun y => log (f y)) (f' / f x) s x := by
   rw [div_eq_inv_mul]
   exact (hasDerivAt_log hx).comp_hasDerivWithinAt x hf
 
+@[fun_prop]
 theorem HasDerivAt.log (hf : HasDerivAt f f' x) (hx : f x ≠ 0) :
     HasDerivAt (fun y => log (f y)) (f' / f x) x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hf.log hx
 
+@[fun_prop]
 theorem HasStrictDerivAt.log (hf : HasStrictDerivAt f f' x) (hx : f x ≠ 0) :
     HasStrictDerivAt (fun y => log (f y)) (f' / f x) x := by
   rw [div_eq_inv_mul]
