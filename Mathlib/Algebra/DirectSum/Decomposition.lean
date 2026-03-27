@@ -76,6 +76,7 @@ abbrev Decomposition.ofAddHom (decompose : M →+ ⨁ i, ℳ i)
   right_inv := DFunLike.congr_fun h_right_inv
 
 /-- Noncomputably conjure a decomposition instance from a `DirectSum.IsInternal` proof. -/
+@[implicit_reducible]
 noncomputable def IsInternal.chooseDecomposition (h : IsInternal ℳ) :
     DirectSum.Decomposition ℳ where
   decompose' := (Equiv.ofBijective _ h).symm
@@ -205,16 +206,6 @@ theorem AddSubmonoidClass.IsHomogeneous.ext
   exact forall_congr' fun i ↦ hpq i _ (decompose ℳ _ i).2
 
 end AddCommMonoid
-
-/-- The `-` in the statements below doesn't resolve without this line.
-
-This seems to be a problem of synthesized vs inferred typeclasses disagreeing. If we replace
-the statement of `decompose_neg` with `@Eq (⨁ i, ℳ i) (decompose ℳ (-x)) (-decompose ℳ x)`
-instead of `decompose ℳ (-x) = -decompose ℳ x`, which forces the typeclasses needed by `⨁ i, ℳ i`
-to be found by unification rather than synthesis, then everything works fine without this
-instance. -/
-instance addCommGroupSetLike [AddCommGroup M] [SetLike σ M] [AddSubgroupClass σ M] (ℳ : ι → σ) :
-    AddCommGroup (⨁ i, ℳ i) := by infer_instance
 
 section AddCommGroup
 

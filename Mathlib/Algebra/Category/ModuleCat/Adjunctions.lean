@@ -142,7 +142,6 @@ def μIso (X Y : Type u) :
     (free R).obj X ⊗ (free R).obj Y ≅ (free R).obj (X ⊗ Y) :=
   (finsuppTensorFinsupp' R _ _).toModuleIso
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma μIso_hom_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
     (μIso R X Y).hom (freeMk x ⊗ₜ freeMk y) = freeMk ⟨x, y⟩ := by
@@ -158,8 +157,6 @@ lemma μIso_inv_freeMk {X Y : Type u} (z : X ⊗ Y) :
   erw [finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
 
 end FreeMonoidal
-
-set_option backward.isDefEq.respectTransparency false in
 open FreeMonoidal in
 /-- The free functor `Type u ⥤ ModuleCat R` is a monoidal functor. -/
 instance : (free R).Monoidal :=

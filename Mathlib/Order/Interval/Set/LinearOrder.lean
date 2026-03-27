@@ -40,45 +40,25 @@ theorem compl_Iic : (Iic a)ᶜ = Ioi a :=
 theorem compl_Iio : (Iio a)ᶜ = Ici a :=
   ext fun _ => not_lt
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Ici_diff_Ici : Ici a \ Ici b = Ico a b := by rw [diff_eq, compl_Ici, Ici_inter_Iio]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Ici_diff_Ioi : Ici a \ Ioi b = Icc a b := by rw [diff_eq, compl_Ioi, Ici_inter_Iic]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Ioi_diff_Ioi : Ioi a \ Ioi b = Ioc a b := by rw [diff_eq, compl_Ioi, Ioi_inter_Iic]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Ioi_diff_Ici : Ioi a \ Ici b = Ioo a b := by rw [diff_eq, compl_Ici, Ioi_inter_Iio]
 
-@[simp]
-theorem Iic_diff_Iic : Iic b \ Iic a = Ioc a b := by
-  rw [diff_eq, compl_Iic, inter_comm, Ioi_inter_Iic]
-
-@[simp]
-theorem Iio_diff_Iic : Iio b \ Iic a = Ioo a b := by
-  rw [diff_eq, compl_Iic, inter_comm, Ioi_inter_Iio]
-
-@[simp]
-theorem Iic_diff_Iio : Iic b \ Iio a = Icc a b := by
-  rw [diff_eq, compl_Iio, inter_comm, Ici_inter_Iic]
-
-@[simp]
-theorem Iio_diff_Iio : Iio b \ Iio a = Ico a b := by
-  rw [diff_eq, compl_Iio, inter_comm, Ici_inter_Iio]
-
+@[to_dual]
 theorem Ioi_injective : Injective (Ioi : α → Set α) := fun _ _ =>
   eq_of_forall_gt_iff ∘ Set.ext_iff.1
 
-theorem Iio_injective : Injective (Iio : α → Set α) := fun _ _ =>
-  eq_of_forall_lt_iff ∘ Set.ext_iff.1
-
+@[to_dual]
 theorem Ioi_inj : Ioi a = Ioi b ↔ a = b :=
   Ioi_injective.eq_iff
-
-theorem Iio_inj : Iio a = Iio b ↔ a = b :=
-  Iio_injective.eq_iff
 
 theorem Ico_subset_Ico_iff (h₁ : a₁ < b₁) : Ico a₁ b₁ ⊆ Ico a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ :=
   ⟨fun h =>
@@ -92,13 +72,13 @@ theorem Ioc_subset_Ioc_iff (h₁ : a₁ < b₁) : Ioc a₁ b₁ ⊆ Ioc a₂ b�
 theorem Ico_eq_Ico_iff (h : a < b ∨ c < d) : Ico a b = Ico c d ↔ a = c ∧ b = d := by
   refine ⟨fun h ↦ ?_, by grind⟩
   have : c ≤ a ∧ b ≤ d := (Ico_subset_Ico_iff (show a < b by grind [Set.nonempty_Ico])).1 h.subset
-  have : a ≤ c ∧ d ≤ b := (Ico_subset_Ico_iff (show c < d by grind [Set.nonempty_Ico])).1 h.superset
+  have : a ≤ c ∧ d ≤ b := (Ico_subset_Ico_iff (show c < d by grind)).1 h.superset
   grind
 
 theorem Ioc_eq_Ioc_iff (hab : a < b ∨ c < d) : Ioc a b = Ioc c d ↔ a = c ∧ b = d := by
   refine ⟨fun h ↦ ?_, by grind⟩
   have : b ≤ d ∧ c ≤ a := (Ioc_subset_Ioc_iff (show a < b by grind [Set.nonempty_Ioc])).1 h.subset
-  have : d ≤ b ∧ a ≤ c := (Ioc_subset_Ioc_iff (show c < d by grind [Set.nonempty_Ioc])).1 h.superset
+  have : d ≤ b ∧ a ≤ c := (Ioc_subset_Ioc_iff (show c < d by grind)).1 h.superset
   grind
 
 theorem Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
@@ -112,6 +92,7 @@ theorem Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
       exact lt_irrefl _ (h ⟨ab, h'⟩).2,
     fun ⟨h₁, h₂⟩ => Ioo_subset_Ioo h₁ h₂⟩
 
+@[to_dual]
 lemma Ici_eq_singleton_iff_isTop {x : α} : (Ici x = {x}) ↔ IsTop x := by
   refine ⟨fun h y ↦ ?_, fun h ↦ by ext y; simp [(h y).ge_iff_eq]⟩
   by_contra! H
@@ -119,40 +100,24 @@ lemma Ici_eq_singleton_iff_isTop {x : α} : (Ici x = {x}) ↔ IsTop x := by
   rw [h, mem_singleton_iff] at this
   exact lt_irrefl y (this.le.trans_lt H)
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Ioi_subset_Ioi_iff : Ioi b ⊆ Ioi a ↔ a ≤ b := by
   refine ⟨fun h => ?_, Ioi_subset_Ioi⟩
   by_contra ba
   exact lt_irrefl _ (h (not_le.mp ba))
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Ioi_ssubset_Ioi_iff : Ioi b ⊂ Ioi a ↔ a < b := by
   refine ⟨fun h => ?_, Ioi_ssubset_Ioi⟩
   obtain ⟨_, c, ac, cb⟩ := ssubset_iff_exists.mp h
   exact ac.trans_le (le_of_not_gt cb)
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Ioi_subset_Ici_iff [DenselyOrdered α] : Ioi b ⊆ Ici a ↔ a ≤ b := by
   refine ⟨fun h => ?_, Ioi_subset_Ici⟩
   by_contra ba
   obtain ⟨c, bc, ca⟩ : ∃ c, b < c ∧ c < a := exists_between (not_le.mp ba)
   exact lt_irrefl _ (ca.trans_le (h bc))
-
-@[simp]
-theorem Iio_subset_Iio_iff : Iio a ⊆ Iio b ↔ a ≤ b := by
-  refine ⟨fun h => ?_, Iio_subset_Iio⟩
-  by_contra ab
-  exact lt_irrefl _ (h (not_le.mp ab))
-
-@[simp]
-theorem Iio_ssubset_Iio_iff : Iio a ⊂ Iio b ↔ a < b := by
-  refine ⟨fun h => ?_, Iio_ssubset_Iio⟩
-  obtain ⟨_, c, cb, ac⟩ := ssubset_iff_exists.mp h
-  exact (le_of_not_gt ac).trans_lt cb
-
-@[simp]
-theorem Iio_subset_Iic_iff [DenselyOrdered α] : Iio a ⊆ Iic b ↔ a ≤ b := by
-  rw [← diff_eq_empty, Iio_diff_Iic, Ioo_eq_empty_iff, not_lt]
 
 /-! ### Two infinite intervals -/
 
@@ -498,33 +463,24 @@ theorem Ioo_subset_Ioo_union_Ioo (h₁ : a ≤ a₁) (h₂ : c < b) (h₃ : b₁
 
 /-! ### Intersection, difference, complement -/
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Ioi_inter_Ioi : Ioi a ∩ Ioi b = Ioi (a ⊔ b) :=
   ext fun _ => sup_lt_iff.symm
 
-@[simp]
-theorem Iio_inter_Iio : Iio a ∩ Iio b = Iio (a ⊓ b) :=
-  ext fun _ => lt_inf_iff.symm
-
+@[to_dual]
 theorem Ico_inter_Ico : Ico a₁ b₁ ∩ Ico a₂ b₂ = Ico (a₁ ⊔ a₂) (b₁ ⊓ b₂) := by
   grind
 
-theorem Ioc_inter_Ioc : Ioc a₁ b₁ ∩ Ioc a₂ b₂ = Ioc (a₁ ⊔ a₂) (b₁ ⊓ b₂) := by
-  grind
-
+@[to_dual self]
 theorem Ioo_inter_Ioo : Ioo a₁ b₁ ∩ Ioo a₂ b₂ = Ioo (a₁ ⊔ a₂) (b₁ ⊓ b₂) := by
   grind
 
+@[to_dual]
 theorem Ioo_inter_Iio : Ioo a b ∩ Iio c = Ioo a (min b c) := by
   grind
 
+@[to_dual]
 theorem Iio_inter_Ioo : Iio a ∩ Ioo b c = Ioo b (min a c) := by
-  grind
-
-theorem Ioo_inter_Ioi : Ioo a b ∩ Ioi c = Ioo (max a c) b := by
-  grind
-
-theorem Ioi_inter_Ioo : Set.Ioi a ∩ Set.Ioo b c = Set.Ioo (max a b) c := by
   grind
 
 theorem Ioc_inter_Ioo_of_left_lt (h : b₁ < b₂) : Ioc a₁ b₁ ∩ Ioo a₂ b₂ = Ioc (max a₁ a₂) b₁ := by
@@ -563,6 +519,10 @@ theorem compl_Ioc : (Ioc a b)ᶜ = Iic a ∪ Ioi b := by
   grind
 
 theorem Iic_diff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
+  grind
+
+@[simp]
+theorem Ioi_diff_Ioc : Ioi a \ Ioc a b = Ioi (max a b) := by
   grind
 
 theorem Iic_diff_Ioc_self_of_le (hab : a ≤ b) : Iic b \ Ioc a b = Iic a := by

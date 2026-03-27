@@ -75,14 +75,4 @@ lemma toTop_map_δ_apply {n : ℕ} (i : Fin (n + 2)) (j : Fin (⦋n + 1⦌.len +
       (if h : i > j then σ.down.1 ⟨j, by simp_all; lia⟩ else 0) :=
   stdSimplex.map_δ_apply ..
 
-@[deprecated (since := "2025-08-25")] alias toTopObj := toTop₀
-@[deprecated (since := "2025-08-25")] alias toTopObj.ext := stdSimplex.ext
-@[deprecated (since := "2025-08-25")] alias toTopObj_zero_apply_zero := stdSimplex.eq_one_of_unique
-@[deprecated (since := "2025-08-25")] alias toTopObj_one_add_eq_one := stdSimplex.add_eq_one
-@[deprecated (since := "2025-08-25")] alias toTopObj_one_coe_add_coe_eq_one := stdSimplex.add_eq_one
-@[deprecated (since := "2025-08-25")] alias toTopObjOneHomeo := stdSimplexHomeomorphUnitInterval
-@[deprecated (since := "2025-08-25")] alias toTopMap := toTop₀
-@[deprecated (since := "2025-08-25")] alias coe_toTopMap := FunOnFinite.linearMap_apply_apply
-@[deprecated (since := "2025-08-25")] alias continuous_toTopMap := stdSimplex.continuous_map
-
 end SimplexCategory

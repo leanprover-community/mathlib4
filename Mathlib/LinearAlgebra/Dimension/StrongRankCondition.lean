@@ -478,6 +478,7 @@ theorem finrank_self : finrank R R = 1 :=
   finrank_eq_of_rank_eq (by simp)
 
 /-- Given a basis of a ring over itself indexed by a type `ι`, then `ι` is `Unique`. -/
+@[implicit_reducible]
 noncomputable def _root_.Module.Basis.unique {ι : Type*} (b : Basis ι R R) : Unique ι := by
   have : Cardinal.mk ι = ↑(Module.finrank R R) := (Module.mk_finrank_eq_card_basis b).symm
   have : Subsingleton ι ∧ Nonempty ι := by simpa [Cardinal.eq_one_iff_unique]
@@ -589,7 +590,7 @@ theorem strongRankCondition_iff_forall_zero_lt_finrank [Nontrivial R] :
   refine ⟨fun ⟨n, le⟩ ↦ ⟨n + 1, n.succ_pos, ?_⟩, fun ⟨n, pos, eq⟩ ↦ ⟨n, ?_⟩⟩
   · exact .inr <| le.trans <| LinearMap.rank_le_of_injective
       (ExtendByZero.linearMap R _) <| extend_injective (Fin.castSucc_injective n) _
-  · rw [or_iff_not_imp_left, ← Ne, ← one_le_iff_ne_zero, one_le_rank_iff] at eq
+  · rw [or_iff_not_imp_left, ← Ne, ← Cardinal.one_le_iff_ne_zero, one_le_rank_iff] at eq
     rw [← n.succ_pred_eq_of_pos pos] at eq ⊢
     exact eq ⟨.single R (fun _ ↦ _) 0, Pi.single_injective (M := fun _ ↦ _) _⟩
 

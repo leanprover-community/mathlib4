@@ -189,6 +189,10 @@ theorem subst_add (ha : HasSubst a) (f g : PowerSeries R) :
     subst a (f + g) = subst a f + subst a g := by
   rw [← coe_substAlgHom ha, map_add]
 
+theorem subst_sub (ha : HasSubst a) (f g : PowerSeries R) :
+    subst a (f - g) = subst a f - subst a g := by
+  rw [← coe_substAlgHom ha, map_sub]
+
 theorem subst_pow (ha : HasSubst a) (f : PowerSeries R) (n : ℕ) :
     subst a (f ^ n) = (subst a f) ^ n := by
   rw [← coe_substAlgHom ha, map_pow]
@@ -304,6 +308,9 @@ theorem subst_coe (ha : HasSubst a) (p : Polynomial R) :
     subst a (p : PowerSeries R) = (Polynomial.aeval a p) := by
   rw [← coe_substAlgHom ha, substAlgHom_coe]
 
+@[simp]
+theorem subst_C (r : S) : (C r).subst a = MvPowerSeries.C r:= MvPowerSeries.subst_C _
+
 theorem subst_X (ha : HasSubst a) :
     subst a (X : R⟦X⟧) = a := by
   rw [← coe_substAlgHom ha, substAlgHom_X]
@@ -416,7 +423,6 @@ lemma subst_rescale_of_degree_eq_one (a : R) {σ : Type*} (p : MvPowerSeries σ 
     apply HasSubst.of_constantCoeff_zero
     rw [← MvPowerSeries.coeff_zero_eq_constantCoeff_apply, MvPowerSeries.coeff_apply]
     have : (p 0 ≠ 0) → (0 : σ →₀ ℕ).degree = 1 := hp_lin 0
-    have : Finsupp.degree (0 : σ →₀ ℕ) = 0 := map_zero _
     grind
   rw [rescale_eq_subst, MvPowerSeries.rescale_eq_subst,
     subst_comp_subst_apply (HasSubst.smul_X' a) hp]
