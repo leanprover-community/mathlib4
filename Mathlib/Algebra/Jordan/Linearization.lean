@@ -37,7 +37,7 @@ namespace IsCommJordan
 
 variable {A : Type*} [NonUnitalNonAssocCommRing A] [IsCommJordan A]
 
-/-- **First linearization of the commutative Jordan identity.** -/
+/-- First linearization of the commutative Jordan identity -/
 theorem four_nsmul_associator_mul_add (a b c : A) :
     4 • associator a b (a * c) + 2 • associator c b (a * a) = 0 := by
   simp only [associator]
@@ -48,7 +48,8 @@ theorem four_nsmul_associator_mul_add (a b c : A) :
   convert sub_eq_zero.mpr (hplus.trans hminus.symm) using 1
   abel
 
-/-- **First linearization, simplified for 2-torsion-free rings.** -/
+/-- A simplified form of the first linearization of the commutative Jordan
+identity for 2-torsion-free rings -/
 theorem associator_mul_add (hreg : IsSMulRegular A 2) (a b c : A) :
     2 • associator a b (a * c) + associator c b (a * a) = 0 := by
   apply hreg.right_eq_zero_of_smul
