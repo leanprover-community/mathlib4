@@ -609,7 +609,6 @@ section monoidal
 open MonoidalCategory CategoryTheory Representation.IntertwiningMap
   Representation.TensorProduct
 
-set_option backward.isDefEq.respectTransparency false in
 instance : MonoidalCategory (Rep.{u} k G) where
   tensorObj X Y := of (X.ρ.tprod Y.ρ)
   whiskerLeft X _ _ f := ofHom (lTensor X.ρ f.hom)

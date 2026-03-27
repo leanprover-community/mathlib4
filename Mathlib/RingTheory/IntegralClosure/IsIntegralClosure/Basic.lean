@@ -270,7 +270,6 @@ theorem Algebra.IsPushout.isIntegral [h : IsPushout R S A SA] : Algebra.IsIntegr
 attribute [local instance] Polynomial.algebra in
 instance : Algebra.IsIntegral R[X] S[X] := Algebra.IsPushout.isIntegral R _ S _
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] MvPolynomial.algebraMvPolynomial in
 instance {σ} : Algebra.IsIntegral (MvPolynomial σ R) (MvPolynomial σ S) :=
   Algebra.IsPushout.isIntegral R _ S _
