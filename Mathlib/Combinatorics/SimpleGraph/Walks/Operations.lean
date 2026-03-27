@@ -580,6 +580,11 @@ lemma take_support_eq_support_take_succ {u v} (p : G.Walk u v) (n : ℕ) :
     (p.take n).support = p.support.take (n + 1) := by
   induction p generalizing n <;> cases n <;> simp [*, take]
 
+lemma take_take (p : G.Walk u v) (n m : ℕ) :
+    (p.take n).take m = (p.take (min n m)).copy rfl (p.take_getVert n m).symm := by
+  apply ext_support
+  simp [take_support_eq_support_take_succ, List.take_take, Nat.min_left_comm]
+
 lemma take_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     p.take n = p.copy rfl (p.getVert_of_length_le h).symm := by
   induction n generalizing p u with
@@ -652,8 +657,6 @@ lemma tail_cons_nil (h : G.Adj u v) : (Walk.cons h .nil).tail = .nil := rfl
 lemma tail_cons (h : G.Adj u v) (p : G.Walk v w) :
     (p.cons h).tail = p.copy (getVert_zero p).symm rfl := by
   cases p <;> rfl
-
-@[deprecated (since := "2025-08-19")] alias tail_cons_eq := tail_cons
 
 @[simp]
 lemma dropLast_nil : (@nil _ G v).dropLast = nil := rfl
@@ -742,8 +745,6 @@ lemma drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
 lemma support_tail_of_not_nil (p : G.Walk u v) (hp : ¬ p.Nil) :
     p.tail.support = p.support.tail := by
   rw [← cons_support_tail p hp, List.tail_cons]
-
-@[deprecated (since := "2025-08-26")] alias support_tail := support_tail_of_not_nil
 
 @[simp] lemma getVert_copy {u v w x : V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
     (p.copy h h').getVert i = p.getVert i := by

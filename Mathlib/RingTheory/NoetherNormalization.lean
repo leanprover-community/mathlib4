@@ -138,7 +138,6 @@ private lemma leadingCoeff_finSuccEquiv_t :
     simp only [this, one_pow, Finset.prod_const_one, mul_one]
   exact fun i ↦ pow_zero _
 
-set_option backward.isDefEq.respectTransparency false in
 /- `T` maps `f` into some polynomial in `X_0` such that the leading coefficient is invertible. -/
 private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
     IsUnit (finSuccEquiv k n (T f f)).leadingCoeff := by
