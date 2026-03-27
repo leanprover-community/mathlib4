@@ -28,7 +28,7 @@ In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul 
   many `γ:Γ` move `K` to have nontrivial intersection with `L`.
 * `Homeomorph.smul`: scalar multiplication by an element of a group `Γ` acting on `T`
   is a homeomorphism of `T`.
-*`Homeomorph.smulOfNeZero`: if a group with zero `G₀` (e.g., a field) acts on `X` and `c : G₀`
+* `Homeomorph.smulOfNeZero`: if a group with zero `G₀` (e.g., a field) acts on `X` and `c : G₀`
   is a nonzero element of `G₀`, then scalar multiplication by `c` is a homeomorphism of `X`;
 * `Homeomorph.smul`: scalar multiplication by an element of a group `G` acting on `X`
   is a homeomorphism of `X`.
@@ -511,6 +511,12 @@ attribute [to_additive] ProperlyDiscontinuousSMul
 export ProperlyDiscontinuousSMul (finite_disjoint_inter_image)
 export ProperlyDiscontinuousVAdd (finite_disjoint_inter_image)
 
+@[to_additive]
+lemma properlyDiscontinuousSMul_iff [TopologicalSpace α] [SMul M α] :
+    ProperlyDiscontinuousSMul M α ↔
+      ∀ {K L : Set α}, IsCompact K → IsCompact L → {m : M | (m • K ∩ L).Nonempty}.Finite :=
+  ⟨fun _ _ _ ↦ ProperlyDiscontinuousSMul.finite_disjoint_inter_image, .mk⟩
+
 section
 
 variable (Γ : Type*) {T : Type*}
@@ -536,7 +542,6 @@ variable [T2Space T] [LocallyCompactSpace T] [ContinuousConstSMul Γ T] (x : T)
   let γ : Γ₀ := ⟨γ, ⟨_, ⟨z, hz.1, rfl⟩, hγz.1⟩, h⟩
   exact (u_v_disjoint γ).le_bot ⟨(hz.2 γ).1, (hγz.2 γ).2⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive] lemma ProperlyDiscontinuousSMul.exists_nhds_disjoint_image :
     ∃ U ∈ 𝓝 x, ∀ γ : Γ, γ • x ≠ x → Disjoint ((γ • ·) '' U) U := by
   convert exists_nhds_image_smul_eq_self Γ x using 4

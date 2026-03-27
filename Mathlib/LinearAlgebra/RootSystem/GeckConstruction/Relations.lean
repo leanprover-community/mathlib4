@@ -41,7 +41,6 @@ variable {ι R M N : Type*} [Finite ι] [CommRing R] [IsDomain R] [CharZero R]
 
 attribute [local simp] Ring.lie_def Matrix.mul_apply Matrix.one_apply Matrix.diagonal_apply
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Lemma 3.3 (a) from [Geck](Geck2017). -/
 lemma lie_h_e :
     ⁅h j, e i⁆ = b.cartanMatrix i j • e i := by
@@ -69,7 +68,6 @@ lemma lie_h_e :
     simp only [pairingIn_eq_add_of_root_eq_add hkil, Int.cast_add]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Lemma 3.3 (b) from [Geck](Geck2017). -/
 lemma lie_h_f :
     ⁅h j, f i⁆ = -b.cartanMatrix i j • f i := by
@@ -186,7 +184,6 @@ lemma lie_e_f_same :
     · exact lie_e_f_same_aux i k hki hki'
     · simp_all [h, e, f]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSl2Triple [DecidableEq ι] :
     IsSl2Triple (h i) (e i) (f i) where
   h_ne_zero := fun contra ↦ by simpa [h] using congr_fun₂ contra (.inr i) (.inr i)
@@ -249,7 +246,6 @@ private lemma lie_e_f_ne_aux₁ :
         rintro x - ⟨hx, -⟩; exact hij_mem ⟨x, hx⟩
       simp [Finset.sum_ite_of_false aux, b.cartanMatrix_apply_eq_zero_iff hij, hij_mem]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma en route to `RootPairing.Base.lie_e_f_ne`. -/
 private lemma lie_e_f_ne_aux₂ :
     letI := P.indexNeg
@@ -263,7 +259,6 @@ private lemma lie_e_f_ne_aux₂ :
       Matrix.transpose_mul, Matrix.mul_apply', lie_e_f_ne_aux₁ hij.symm]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Lemma 3.5 from [Geck](Geck2017). -/
 lemma lie_e_f_ne [P.IsReduced] [P.IsIrreducible] :
     ⁅e i, f j⁆ = 0 := by
