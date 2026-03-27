@@ -1017,6 +1017,13 @@ theorem Matrix.toEuclideanLin_conjTranspose_eq_adjoint (A : Matrix m n 𝕜) :
 end Matrix
 
 @[simp]
+theorem LinearIsometry.continuousLinearMapAdjoint_comp_self {E E' : Type*}
+    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
+    [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] [CompleteSpace E'] (f : E →ₗᵢ[𝕜] E') :
+    f.toContinuousLinearMap.adjoint ∘L f.toContinuousLinearMap = 1 :=
+  f.toContinuousLinearMap.isometry_iff_adjoint_comp_self.mp f.isometry
+
+@[simp]
 theorem LinearIsometry.adjoint_comp_self {E E' : Type*}
     [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] [FiniteDimensional 𝕜 E'] (f : E →ₗᵢ[𝕜] E') :
@@ -1024,9 +1031,7 @@ theorem LinearIsometry.adjoint_comp_self {E E' : Type*}
   haveI := FiniteDimensional.complete 𝕜 E
   haveI := FiniteDimensional.complete 𝕜 E'
   ext x
-  have : f.toContinuousLinearMap.adjoint ∘L f.toContinuousLinearMap = 1 :=
-    f.toContinuousLinearMap.isometry_iff_adjoint_comp_self.mp f.isometry
-  simpa using congr($this x)
+  exact congr($(f.continuousLinearMapAdjoint_comp_self) x)
 
 theorem LinearIsometryEquiv.toMatrix_mem_unitaryGroup {ι E E' : Type*} [Fintype ι] [DecidableEq ι]
     [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
