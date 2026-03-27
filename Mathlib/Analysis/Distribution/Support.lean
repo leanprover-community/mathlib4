@@ -9,19 +9,19 @@ public import Mathlib.Analysis.Distribution.TemperedDistribution
 
 /-! # Support of distributions
 
-We define the support of a distribution, `dsupport u`, as the intersection of all closed sets on
-which `u` vanishes.
+We define the support of a distribution, `dsupport u`, as the intersection of all closed sets for
+which `u` vanishes on the complement.
 For this we also define a predicate `IsVanishingOn` that asserts that a map `f : F → V` vanishes on
 `s : Set α` if for all `u : F` with `tsupport u ⊆ s` it follows that `f u = 0`.
 
 These definitions work independently of a specific class of distributions (classical, tempered, or
-compactly supported) and all basic properties are proved an abstract setting using `FunLike`.
+compactly supported) and all basic properties are proved in an abstract setting using `FunLike`.
 
 ## Main definitions
 * `IsVanishingOn`: A distribution vanishes on a set if it acts trivially on all test functions
   supported in that subset.
-* `dsupport`: The support of a distribution is the intersection of all closed sets on which that
-  distribution vanishes.
+* `dsupport`: The support of a distribution is the intersection of all closed sets for which that
+  distribution vanishes on the complement of the set.
 
 ## Main statements
 * `TemperedDistribution.dsupport_delta`: The support of the delta distribution is a single point.
@@ -57,8 +57,13 @@ def IsVanishingOn (f : F → V) (s : Set α) : Prop :=
     ∀ (u : F), tsupport u ⊆ s → f u = 0
 
 @[gcongr]
-theorem IsVanishingOn.mono (hs : s₂ ⊆ s₁) (hf : IsVanishingOn f s₁) : IsVanishingOn f s₂ :=
-  fun u hu ↦ hf u (hu.trans hs)
+theorem IsVanishingOn.mono ⦃s₁ s₂ : Set α⦄ (hs : s₂ ⊆ s₁) (hf : IsVanishingOn f s₁) :
+    IsVanishingOn f s₂ :=
+  (hf · <| ·.trans hs)
+
+theorem not_isVanishingOn_mono ⦃s₁ s₂ : Set α⦄ (hs : s₁ ⊆ s₂) (hf : ¬ IsVanishingOn f s₁) :
+    ¬ IsVanishingOn f s₂ :=
+  (hf <| ·.mono hs)
 
 theorem not_isVanishingOn_iff :
     ¬ IsVanishingOn f s ↔ ∃ u : F, tsupport u ⊆ s ∧ f u ≠ 0 := by
@@ -89,7 +94,7 @@ theorem mem_dsupport_iff (x : α) :
     x ∈ dsupport f ↔ ∀ (s : Set α), IsVanishingOn f sᶜ → IsClosed s → x ∈ s := by
   simp [dsupport]
 
-/-- The complement of the support is given by all open sets on which `f` vanishes. -/
+/-- The complement of the support is the largest open set on which `f` vanishes. -/
 theorem dsupport_compl_eq : (dsupport f)ᶜ = ⋃₀ { a | IsVanishingOn f a ∧ IsOpen a } := by
   simp [dsupport, Set.compl_sInter, Set.compl_image_set_of]
 
@@ -107,15 +112,15 @@ theorem mem_dsupport_iff_forall_exists_ne (x : α) :
   simp_rw [mem_dsupport_iff_not_isVanishingOn, not_isVanishingOn_iff]
 
 theorem mem_dsupport_iff_frequently {x : α} :
-    x ∈ dsupport f ↔ ∃ᶠ u in (nhds x).smallSets, ¬ IsVanishingOn f u := by
-  rw [nhds_basis_opens x |>.frequently_smallSets (fun s t hst hs ht ↦ hs (ht.mono hst))]
+    x ∈ dsupport f ↔ ∃ᶠ u in (𝓝 x).smallSets, ¬ IsVanishingOn f u := by
+  rw [nhds_basis_opens x |>.frequently_smallSets not_isVanishingOn_mono]
   simpa using mem_dsupport_iff_not_isVanishingOn x
 
 theorem _root_.Filter.HasBasis.mem_dsupport {ι : Sort*} {p : ι → Prop}
     {s : ι → Set α} {x : α} (hl : (𝓝 x).HasBasis p s) :
     x ∈ dsupport f ↔ ∀ (i : ι), p i → ¬ IsVanishingOn f (s i) := by
   rw [mem_dsupport_iff_frequently]
-  exact hl.frequently_smallSets (fun s t hst hs ht ↦ hs (ht.mono hst))
+  exact hl.frequently_smallSets not_isVanishingOn_mono
 
 theorem notMem_dsupport_iff_eventually {x : α} :
     x ∉ dsupport f ↔ ∀ᶠ u in (𝓝 x).smallSets, IsVanishingOn f u := by
@@ -126,7 +131,7 @@ theorem _root_.Filter.HasBasis.notMem_dsupport {ι : Sort*} {p : ι → Prop}
     x ∉ dsupport f ↔ ∃ i, p i ∧ IsVanishingOn f (s i) := by
   simp [hl.mem_dsupport]
 
-@[grind .]
+@[gcongr]
 theorem dsupport_subset_dsupport
     (h : ∀ (s : Set α) (_ : IsOpen s), IsVanishingOn g s → IsVanishingOn f s) :
     dsupport f ⊆ dsupport g :=
@@ -155,12 +160,7 @@ variable {f : F → V}
 theorem compl_dsupport_eq_sUnion_isBounded :
     (dsupport f)ᶜ = ⋃₀ { a | IsVanishingOn f a ∧ IsOpen a ∧ Bornology.IsBounded a } := by
   ext x
-  rw [Set.mem_compl_iff, (Metric.hasBasis_nhds_isOpen_isBounded x).notMem_dsupport, Set.mem_sUnion]
-  constructor
-  · intro ⟨i, ⟨hx, h₁, h₂⟩, h₃⟩
-    use i, ⟨h₃, ⟨h₁, h₂⟩⟩, hx
-  · intro ⟨i, ⟨⟨h₁, h₂, h₃⟩, hx⟩⟩
-    use i, ⟨hx, h₂, h₃⟩, h₁
+  grind [(Metric.hasBasis_nhds_isOpen_isBounded x).notMem_dsupport]
 
 end normed
 
@@ -214,14 +214,17 @@ end IsVanishingOn
 section Support
 
 theorem dsupport_smulLeftCLM_subset {g : E → ℂ} (hg : g.HasTemperateGrowth) :
-    dsupport (smulLeftCLM F g f) ⊆ dsupport f := by grind
+    dsupport (smulLeftCLM F g f) ⊆ dsupport f := by
+  gcongr; grind
 
 open LineDeriv
 
-theorem dsupport_lineDerivOp_subset (m : E) : dsupport (∂_{m} f : 𝓢'(E, F)) ⊆ dsupport f := by grind
+theorem dsupport_lineDerivOp_subset (m : E) : dsupport (∂_{m} f : 𝓢'(E, F)) ⊆ dsupport f := by
+  gcongr; grind
 
 theorem dsupport_iteratedLineDerivOp_subset {n : ℕ} (m : Fin n → E) :
-    dsupport (∂^{m} f : 𝓢'(E, F)) ⊆ dsupport f := by grind
+    dsupport (∂^{m} f : 𝓢'(E, F)) ⊆ dsupport f := by
+  gcongr; grind
 
 theorem dsupport_delta [FiniteDimensional ℝ E] (x : E) :
     dsupport (TemperedDistribution.delta x) = {x} := by
