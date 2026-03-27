@@ -21,9 +21,6 @@ We define stability classes under associators, unitors, and braidings, and use
 them to construct monoidal, braided, and symmetric structures on
 `WideSubcategory P`.
 
-Assuming every object of `C` carries a comonoid structure, and that `P` is also
-stable under counit and comultiplication, we construct `ComonObj` (and
-commutative comonoid) instances on `WideSubcategory P`.
 -/
 
 @[expose] public section
