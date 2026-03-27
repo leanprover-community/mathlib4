@@ -73,6 +73,14 @@ namespace Matrix
 
 section Topological
 
+theorem isClosed_setOf_blockTriangular {α : Type*} {b : m → α} [LinearOrder α] [Zero 𝔸]
+    [TopologicalSpace 𝔸] [T2Space 𝔸] : IsClosed {M : Matrix m m 𝔸 | M.BlockTriangular b} := by
+  simp only [BlockTriangular, Set.setOf_forall]
+  apply isClosed_iInter; intro i
+  apply isClosed_iInter; intro j
+  apply isClosed_iInter; intro _
+  exact isClosed_eq (continuous_id.matrix_elem i j) continuous_const
+
 section Ring
 
 variable [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype (n' i)]
@@ -170,14 +178,6 @@ theorem exp_units_conj' (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
 end Normed
 
 section NormedComm
-
-theorem isClosed_setOf_blockTriangular {α : Type*} {b : m → α} [LinearOrder α] [Zero 𝔸]
-    [TopologicalSpace 𝔸] [T2Space 𝔸] : IsClosed {M : Matrix m m 𝔸 | M.BlockTriangular b} := by
-  simp only [BlockTriangular, Set.setOf_forall]
-  apply isClosed_iInter; intro i
-  apply isClosed_iInter; intro j
-  apply isClosed_iInter; intro _
-  exact isClosed_eq (continuous_id.matrix_elem i j) continuous_const
 
 variable [Fintype m] [DecidableEq m]
   [NormedCommRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
