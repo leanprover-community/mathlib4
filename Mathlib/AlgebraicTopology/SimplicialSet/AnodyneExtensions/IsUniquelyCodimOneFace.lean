@@ -95,6 +95,13 @@ lemma le : x ≤ y := by
     ← this]
   exact ⟨(SimplexCategory.δ _).op, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
+include hxy in
+lemma unique (f : ⦋d⦌ ⟶ ⦋d + 1⦌) [Mono f]
+    (hf : X.map f.op (y.cast (by rw [hxy.dim_eq, hd])).simplex = (x.cast hd).simplex) :
+    f = SimplexCategory.δ (hxy.index hd) :=
+  (hxy.cast hd).2.unique ⟨inferInstance, hf⟩ ⟨inferInstance, hxy.δ_index hd⟩
+
 end
 
 end IsUniquelyCodimOneFace

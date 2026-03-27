@@ -25,13 +25,23 @@ universe v u
 
 open CategoryTheory HomotopicalAlgebra Simplicial Limits Opposite
 
+namespace SSet
+
+lemma stdSimplex.map_objEquiv_op_apply
+    {X : SSet.{u}} {n : SimplexCategory} (x : X.obj (op n))
+    {m : SimplexCategoryᵒᵖ} (y : (stdSimplex.obj n).obj m) :
+    X.map (stdSimplex.objEquiv y).op x = (yonedaEquiv.symm x).app m y :=
+  rfl
+
+end SSet
+
 namespace SSet.Subcomplex.Pairing
 
 variable {X : SSet.{u}} {A : X.Subcomplex} {P : A.Pairing}
 
 namespace RankFunction
 
-variable [P.IsProper] {ι : Type v} [LinearOrder ι] (f : P.RankFunction ι)
+variable {ι : Type v} [LinearOrder ι] (f : P.RankFunction ι)
 
 def Cells (i : ι) : Type u := { s : P.II // f.rank s = i }
 
@@ -40,6 +50,8 @@ namespace Cells
 variable {f} {i : ι} (c : f.Cells i)
 
 abbrev dim : ℕ := c.1.1.dim
+
+variable [P.IsProper]
 
 noncomputable def index : Fin (c.dim + 2) :=
   (P.isUniquelyCodimOneFace c.1).index rfl
@@ -50,26 +62,66 @@ protected noncomputable abbrev horn :
 
 abbrev cast : A.N := (P.p c.1).1.cast (P.isUniquelyCodimOneFace c.1).dim_eq
 
-abbrev simplex : X _⦋c.dim + 1⦌ := c.cast.simplex
+--abbrev simplex : X _⦋c.dim + 1⦌ := c.cast.simplex
+
+/-lemma ofSimplex_simplex :
+    Subcomplex.ofSimplex c.simplex = (P.p c.1).1.subcomplex := by
+  rw [S.ofSimplex_eq_subcomplex_mk]
+  congr 1
+  exact S.cast_eq_self _ (by simp)-/
 
 abbrev map :
     Δ[c.dim + 1] ⟶ X :=
-  yonedaEquiv.symm c.simplex
+  yonedaEquiv.symm c.cast.simplex
+
+@[simp]
+lemma range_map : Subcomplex.range c.map = (P.p c.1).1.subcomplex := by
+  rw [range_eq_ofSimplex, Equiv.apply_symm_apply, S.ofSimplex_eq_subcomplex_mk,
+    ← S.cast_eq_self _ (P.dim_p c.1)]
+  rfl
 
 lemma map_add_objEquiv_symm_δ_index :
     c.map.app (op ⦋_⦌) (stdSimplex.objEquiv.symm (SimplexCategory.δ c.index)) =
       c.1.1.simplex :=
   (P.isUniquelyCodimOneFace c.1).δ_index rfl
 
+lemma subcomplex_not_le_image_horn :
+    ¬ c.1.1.subcomplex ≤ c.horn.image c.map := by
+  intro h
+  simp only [Subfunctor.ofSection_le_iff, image_obj, Set.mem_image] at h
+  obtain ⟨x, h₁, h₂⟩ := h
+  obtain ⟨g, rfl⟩ := stdSimplex.objEquiv.symm.surjective x
+  dsimp at g
+  rw [← stdSimplex.map_objEquiv_op_apply, Equiv.apply_symm_apply] at h₂
+  have := mono_of_nonDegenerate (x:= ⟨_, c.1.1.nonDegenerate⟩) _ _ _ h₂
+  obtain rfl := (P.isUniquelyCodimOneFace c.1).unique rfl _ h₂
+  rw [← ofSimplex_le_iff, stdSimplex.subcomplex_le_horn_iff,
+    ← stdSimplex.face_singleton_compl] at h₁
+  tauto
+
+lemma image_horn_lt_subcomplex :
+    c.horn.image c.map < (P.p c.1).1.subcomplex := by
+  rw [lt_iff_le_and_ne]
+  refine ⟨by simpa using image_le_range c.horn c.map,
+    fun h ↦ c.subcomplex_not_le_image_horn (by simpa only [h] using P.le c.1)⟩
+
+@[simp]
+lemma image_face_index_compl :
+    (stdSimplex.face {c.index}ᶜ).image c.map = c.1.1.subcomplex := by
+  rw [stdSimplex.face_singleton_compl, image_ofSimplex]
+  congr 1
+  exact (P.isUniquelyCodimOneFace c.1).δ_index rfl
+
 end Cells
 
+variable [P.IsProper] in
 noncomputable abbrev basicCell (i : ι) (c : f.Cells i) := c.horn.ι
 
 def filtration (i : ι) : X.Subcomplex :=
-  A ⊔ ⨆ (j : ι) (_ : j < i) (c : f.Cells j), .ofSimplex c.simplex
+  A ⊔ ⨆ (j : ι) (_ : j < i) (c : f.Cells j), (P.p c.1).1.subcomplex
 
-lemma simplex_le_filtration {j : ι} (c : f.Cells j) {i : ι} (h : j < i) :
-    Subcomplex.ofSimplex c.simplex ≤ f.filtration i := by
+lemma subcomplex_le_filtration {j : ι} (c : f.Cells j) {i : ι} (h : j < i) :
+    (P.p c.1).1.subcomplex ≤ f.filtration i := by
   refine le_trans ?_ le_sup_right
   refine le_trans ?_ (le_iSup _ j)
   refine le_trans ?_ (le_iSup _ h)
@@ -78,6 +130,7 @@ lemma simplex_le_filtration {j : ι} (c : f.Cells j) {i : ι} (h : j < i) :
 @[simp]
 lemma le_filtration (i : ι) : A ≤ f.filtration i := le_sup_left
 
+@[simp]
 lemma filtration_bot [OrderBot ι] : f.filtration ⊥ = A := by
   simp [filtration]
 
@@ -86,22 +139,22 @@ lemma filtration_monotone : Monotone f.filtration := by
   rw [filtration]
   simp only [sup_le_iff, iSup_le_iff, le_filtration, true_and]
   intro j hj c
-  exact f.simplex_le_filtration c (lt_of_lt_of_le hj h)
+  exact f.subcomplex_le_filtration c (lt_of_lt_of_le hj h)
 
 lemma filtration_succ [SuccOrder ι] (i : ι) (hi : ¬ IsMax i) :
     f.filtration (Order.succ i) =
-      f.filtration i ⊔ ⨆ (c : f.Cells i), .ofSimplex c.simplex := by
+      f.filtration i ⊔ ⨆ (c : f.Cells i), (P.p c.1).1.subcomplex := by
   apply le_antisymm
   · rw [filtration]
     simp only [sup_le_iff, iSup_le_iff]
     refine ⟨(f.le_filtration _).trans le_sup_left, fun j hj c ↦ ?_⟩
     rw [Order.lt_succ_iff_of_not_isMax hi] at hj
     obtain hj | rfl := hj.lt_or_eq
-    · exact (f.simplex_le_filtration _ hj).trans le_sup_left
+    · exact (f.subcomplex_le_filtration _ hj).trans le_sup_left
     · exact le_trans (le_trans (by rfl) (le_iSup _ c)) le_sup_right
   · simp only [sup_le_iff, iSup_le_iff]
     exact ⟨f.filtration_monotone (Order.le_succ i),
-      fun c ↦ f.simplex_le_filtration _ (Order.lt_succ_of_not_isMax hi)⟩
+      fun c ↦ f.subcomplex_le_filtration _ (Order.lt_succ_of_not_isMax hi)⟩
 
 lemma filtration_of_isSuccLimit [OrderBot ι] [SuccOrder ι]
     (i : ι) (hi : Order.IsSuccLimit i) :
@@ -115,32 +168,10 @@ lemma filtration_of_isSuccLimit [OrderBot ι] [SuccOrder ι]
     · refine le_trans ?_ (le_iSup _ (Order.succ j))
       refine le_trans ?_ (le_iSup _
         (by rwa [← Order.IsSuccLimit.succ_lt_iff hi] at hj))
-      exact f.simplex_le_filtration _ (Order.lt_succ_of_not_isMax hj.not_isMax)
+      exact f.subcomplex_le_filtration _ (Order.lt_succ_of_not_isMax hj.not_isMax)
   · simp only [iSup_le_iff]
     intro j hj
     exact f.filtration_monotone hj.le
-
-set_option backward.isDefEq.respectTransparency false in
-lemma iSup_filtration [OrderBot ι] [SuccOrder ι] [NoMaxOrder ι] :
-    ⨆ (i : ι), f.filtration i = ⊤ := by
-  let B := ⨆ (i : ι), f.filtration i
-  suffices ∀ (s : A.N), s.simplex ∈ B.obj _ by
-    rw [eq_top_iff_contains_nonDegenerate]
-    intro n s hs
-    by_cases hs₀ : s ∈ A.obj _
-    · exact le_iSup f.filtration ⊥ _ (by rwa [filtration_bot])
-    · exact this (N.mk _ hs hs₀)
-  suffices ∀ (y : P.II), ofSimplex (P.p y).1.simplex ≤ B by
-    intro s
-    obtain ⟨y, (rfl | rfl)⟩ := P.exists_or s
-    · rw [← Subcomplex.ofSimplex_le_iff]
-      refine ((S.le_def ..).1 (P.isUniquelyCodimOneFace y).le).trans (this y)
-    · rw [← Subcomplex.ofSimplex_le_iff]
-      exact this y
-  intro y
-  exact le_trans (by simp [Cells.simplex])
-    ((f.simplex_le_filtration ⟨y, rfl⟩ (Order.lt_succ (f.rank y))).trans
-      (le_iSup f.filtration _))
 
 lemma iSup_filtration_iio [OrderBot ι] [SuccOrder ι] (m : ι) (hm : Order.IsSuccLimit m) :
     ⨆ (i : Set.Iio m), f.filtration i = f.filtration m :=
@@ -151,23 +182,43 @@ lemma iSup_filtration_iio [OrderBot ι] [SuccOrder ι] (m : ι) (hm : Order.IsSu
     rw [filtration]
     simp only [sup_le_iff, iSup_le_iff, ← f.filtration_bot]
     exact ⟨le_trans (by rfl) (le_iSup _ ⟨⊥, hm.bot_lt⟩), fun j hj c ↦
-      (f.simplex_le_filtration c (Order.lt_succ_of_not_isMax (not_isMax_of_lt hj))).trans
+      (f.subcomplex_le_filtration c (Order.lt_succ_of_not_isMax (not_isMax_of_lt hj))).trans
         (le_trans (by rfl) (le_iSup _ ⟨Order.succ j, hm.succ_lt_iff.2 hj⟩))⟩)
+
+variable [P.IsProper]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma iSup_filtration [OrderBot ι] [SuccOrder ι] [NoMaxOrder ι] :
+    ⨆ (i : ι), f.filtration i = ⊤ := by
+  refine le_antisymm (by simp) ?_
+  rw [N.subcomplex_le_iff]
+  intro s _
+  induction s using SSet.Subcomplex.N.cases A with
+  | mem s hs => exact hs.trans (le_trans (by simp) (le_iSup _ ⊥))
+  | notMem s =>
+    obtain ⟨t, ht⟩ := P.exists_or s
+    refine le_trans ?_
+      (le_trans (f.subcomplex_le_filtration ⟨t, rfl⟩ (Order.lt_succ _)) (le_iSup _ _))
+    obtain rfl | rfl := ht
+    · exact P.le t
+    · rfl
 
 def Cells.mapToSucc {j : ι} [SuccOrder ι] [NoMaxOrder ι] (c : f.Cells j) :
     Δ[c.dim + 1] ⟶ f.filtration (Order.succ j) :=
   Subcomplex.lift c.map (by
-    rw [range_eq_ofSimplex, Cells.map, Equiv.apply_symm_apply]
-    exact f.simplex_le_filtration c (Order.lt_succ _))
+    rw [range_map]
+    exact f.subcomplex_le_filtration c (Order.lt_succ _))
 
 @[reassoc (attr := simp)]
 lemma Cells.mapToSucc_ι {j : ι} [SuccOrder ι] [NoMaxOrder ι] (c : f.Cells j) :
     c.mapToSucc ≫ (f.filtration (Order.succ j)).ι = c.map :=
   rfl
 
+omit [P.IsProper] in
 variable {f} in
-lemma Cells.simplex_not_mem_filtration_obj {j : ι} (x : f.Cells j) :
-    x.1.1.simplex ∉ (f.filtration j).obj _ := by
+lemma Cells.subcomplex_not_le_filtration {j : ι} (x : f.Cells j) :
+    ¬ x.1.1.subcomplex ≤ f.filtration j := by
+  rw [ofSimplex_le_iff]
   simp only [filtration, Subfunctor.max_obj, Subfunctor.iSup_obj, Set.mem_union,
     Set.mem_iUnion, not_or, not_exists]
   refine ⟨x.1.1.notMem, fun i hi y h ↦ ?_⟩
@@ -177,8 +228,7 @@ lemma Cells.simplex_not_mem_filtration_obj {j : ι} (x : f.Cells j) :
     · rw [hxy] at hi
       exact (lt_irrefl _ hi).elim
     · rw [← ofSimplex_le_iff] at h
-      rw [Subcomplex.N.le_iff, SSet.N.le_iff]
-      exact le_of_le_of_eq h (S.subcomplex_cast _ (by simp))
+      rwa [Subcomplex.N.le_iff, SSet.N.le_iff]
   exact lt_irrefl _ (hi.trans (f.lt this))
 
 section
@@ -222,11 +272,34 @@ lemma Cells.ιSigmaHorn_m {j : ι} (c : f.Cells j) :
 lemma Cells.preimage_filtration_map {j : ι} (c : f.Cells j) :
     (f.filtration j).preimage c.map = c.horn := by
   refine le_antisymm ?_ ?_
-  · rw [stdSimplex.subcomplex_le_horn_iff, stdSimplex.face_singleton_compl,
+  · simpa only [stdSimplex.subcomplex_le_horn_iff, ← Subcomplex.image_le_iff,
+      Cells.image_face_index_compl] using c.subcomplex_not_le_filtration
+    /-rw [stdSimplex.subcomplex_le_horn_iff, stdSimplex.face_singleton_compl,
       Subfunctor.ofSection_le_iff, preimage_obj, Set.mem_preimage]
     refine fun h ↦ c.simplex_not_mem_filtration_obj ?_
-    rwa [Cells.map_add_objEquiv_symm_δ_index] at h
-  · sorry
+    rwa [Cells.map_add_objEquiv_symm_δ_index] at h-/
+  · rw [← Subcomplex.image_le_iff, N.subcomplex_le_iff]
+    intro s hs
+    induction s using SSet.Subcomplex.N.cases A with
+    | mem s hs' => exact hs'.trans (by simp)
+    | notMem s =>
+      obtain ⟨t, ht⟩ := P.exists_or s
+      rw [← c.prop]
+      refine le_trans ?_ (f.subcomplex_le_filtration ⟨t, rfl⟩ (f.lt ?_))
+      · obtain rfl | rfl := ht
+        · exact P.le t
+        · simp
+      · replace hs : t.1.subcomplex ≤ c.horn.image c.map := by
+          obtain rfl | rfl := ht
+          · exact hs
+          · refine le_trans ?_ hs
+            rw [← S.le_def]
+            exact (P.isUniquelyCodimOneFace t).le
+        refine ⟨?_, ?_⟩
+        · rintro rfl
+          exact c.subcomplex_not_le_image_horn hs
+        · rw [Subcomplex.N.lt_iff, SSet.N.lt_iff]
+          exact lt_of_le_of_lt hs (c.image_horn_lt_subcomplex)
 
 noncomputable def Cells.mapHorn {j : ι} (c : f.Cells j) : (c.horn : SSet) ⟶ f.filtration j :=
   Subcomplex.lift (c.horn.ι ≫ c.map) (by

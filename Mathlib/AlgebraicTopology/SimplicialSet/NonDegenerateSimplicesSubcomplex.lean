@@ -57,11 +57,26 @@ lemma ext_iff (x y : A.N) :
     x = y ↔ x.toN = y.toN := by
   grind [cases SSet.Subcomplex.N]
 
+variable (A) in
+@[elab_as_elim]
+lemma cases {motive : X.N → Prop}
+    (mem : ∀ (s : X.N), s.subcomplex ≤ A → motive s)
+    (notMem : ∀ (s : A.N), motive s.toN)
+    (s : X.N) :
+    motive s := by
+  by_cases hs : s.subcomplex ≤ A
+  · exact mem s hs
+  · exact notMem (.mk' s (by simpa using hs))
+
 instance : PartialOrder A.N :=
   PartialOrder.lift toN (fun _ _ ↦ by simp [ext_iff])
 
 lemma le_iff {x y : A.N} : x ≤ y ↔ x.toN ≤ y.toN :=
   Iff.rfl
+
+lemma lt_iff {x y : A.N} : x < y ↔ x.toN < y.toN :=
+  Iff.rfl
+
 section
 
 variable (s : A.N) {d : ℕ} (hd : s.dim = d)

@@ -134,6 +134,14 @@ lemma ne (x : P.I) (y : P.II) :
   have : x ∈ P.I ∩ P.II := ⟨hx, hy⟩
   simp [P.inter] at this
 
+lemma le [P.IsProper] (x : P.II) :
+    x.1 ≤ (P.p x).1 :=
+  (P.isUniquelyCodimOneFace x).le
+
+lemma lt [P.IsProper] (x : P.II) :
+    x.1 < (P.p x).1 :=
+  lt_of_le_of_ne' (P.le x) (P.ne _ _)
+
 end Pairing
 
 end SSet.Subcomplex

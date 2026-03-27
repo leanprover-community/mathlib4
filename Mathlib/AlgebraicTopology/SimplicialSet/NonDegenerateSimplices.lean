@@ -53,6 +53,12 @@ lemma mk_surjective (x : X.N) :
     ∃ (n : ℕ) (y : X.nonDegenerate n), x = N.mk _ y.prop :=
   ⟨x.dim, ⟨_, x.nonDegenerate⟩, rfl⟩
 
+@[elab_as_elim]
+def induction {motive : X.N → Sort*}
+    (mk : ∀ (n : ℕ) (x : X.nonDegenerate n), motive (mk x.1 x.2)) (s : X.N) :
+    motive s :=
+  mk s.dim ⟨_, s.nonDegenerate⟩
+
 lemma ext_iff (x y : X.N) :
     x = y ↔ x.toS = y.toS := by
   grind [cases SSet.N]
@@ -60,6 +66,9 @@ lemma ext_iff (x y : X.N) :
 instance : Preorder X.N := Preorder.lift toS
 
 lemma le_iff {x y : X.N} : x ≤ y ↔ x.subcomplex ≤ y.subcomplex :=
+  Iff.rfl
+
+lemma lt_iff {x y : X.N} : x < y ↔ x.subcomplex < y.subcomplex :=
   Iff.rfl
 
 lemma le_iff_exists_mono {x y : X.N} :
@@ -135,6 +144,17 @@ lemma iSup_subcomplex_eq_top :
     rw [← Subcomplex.iSup_ofSimplex_nonDegenerate_eq_top X, iSup_le_iff]
     rintro ⟨d, s, hs⟩
     exact le_trans (by rfl) (le_iSup _ (N.mk _ hs)))
+
+lemma subcomplex_le_iff {A B : X.Subcomplex} :
+    A ≤ B ↔ ∀ (s : X.N), s.subcomplex ≤ A → s.subcomplex ≤ B := by
+  rw [Subcomplex.le_iff_contains_nonDegenerate]
+  refine ⟨fun h s ↦ ?_, fun h n x hx ↦ ?_⟩
+  · induction s using N.induction with
+    | mk n x =>
+      intro hx
+      simp only [Subfunctor.ofSection_le_iff, mk_dim, mk_simplex] at hx ⊢
+      exact h _ _ hx
+  · simpa using h (N.mk _ x.prop) (by simpa)
 
 end N
 

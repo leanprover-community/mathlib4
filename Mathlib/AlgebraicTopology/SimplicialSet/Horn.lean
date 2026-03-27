@@ -83,6 +83,26 @@ lemma horn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
   fin_cases a
   exact Ne.symm hk.2
 
+set_option backward.isDefEq.respectTransparency false in
+lemma horn_obj_eq_top {n : ℕ} (i : Fin (n + 1)) (m : ℕ) (h : m + 1 < n := by lia) :
+    (horn.{u} n i).obj (op ⦋m⦌) = ⊤ := by
+  ext x
+  obtain ⟨f, rfl⟩ := stdSimplex.objEquiv.symm.surjective x
+  obtain ⟨j, hij, hj⟩ : ∃ (j : Fin (n + 1)), j ≠ i ∧ j ∉ Set.range f.toOrderHom := by
+    by_contra!
+    have : Finset.image f.toOrderHom ⊤ ∪ {i} = ⊤ := by
+      ext k
+      by_cases k = i <;> aesop
+    have := (congr_arg Finset.card this).symm.le.trans (Finset.card_union_le _ _)
+    simp only [SimplexCategory.len_mk, Finset.top_eq_univ, Finset.card_univ, Fintype.card_fin,
+      Finset.card_singleton, add_le_add_iff_right] at this
+    have : n ≤ m + 1 := by simpa using this.trans Finset.card_image_le
+    lia
+  simp only [Set.top_eq_univ, horn_eq_iSup, Subfunctor.iSup_obj, Set.iUnion_coe_set,
+    Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff,
+    Finset.mem_compl, Finset.mem_singleton, exists_prop, Set.mem_univ, iff_true]
+  exact ⟨j, hij, fun k hk ↦ hj ⟨k, hk⟩⟩
+
 lemma stdSimplex.subcomplex_le_horn_iff {n : ℕ}
     (A : (Δ[n + 1] : SSet.{u}).Subcomplex) (i : Fin (n + 2)) :
     A ≤ horn (n + 1) i ↔ ¬ face {i}ᶜ ≤ A := by
@@ -96,8 +116,24 @@ lemma stdSimplex.subcomplex_le_horn_iff {n : ℕ}
   · rw [Subcomplex.le_iff_contains_nonDegenerate]
     intro d x hx
     by_cases! hd : d < n
-    · sorry
-    · sorry
+    · simp [horn_obj_eq_top i d]
+    · obtain ⟨⟨S, hS⟩, rfl⟩ := stdSimplex.nonDegenerateEquiv'.symm.surjective x
+      dsimp at hS
+      simp only [stdSimplex.nonDegenerateEquiv'_symm_mem_iff_face_le] at hx ⊢
+      obtain hd | rfl := hd.lt_or_eq
+      · obtain rfl : S = .univ := by
+          rw [← Finset.card_eq_iff_eq_univ, Fintype.card_fin]
+          exact le_antisymm (card_finset_fin_le S) (by lia)
+        exact (h (le_trans (by simp) hx)).elim
+      · replace hS : Sᶜ.card = 1 := by
+          have := S.card_compl_add_card
+          rw [Fintype.card_fin] at this
+          lia
+        obtain ⟨j, rfl⟩ : ∃ j, S = {j}ᶜ := by
+          rw [Finset.card_eq_one] at hS
+          obtain ⟨j, hS⟩ := hS
+          exact ⟨j, by simp [← hS]⟩
+        exact face_le_horn _ _ (by rintro rfl; tauto)
 
 namespace horn
 
