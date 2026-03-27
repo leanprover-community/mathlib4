@@ -58,28 +58,28 @@ def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
 set_option linter.existingAttributeWarning false in
 attribute [to_dual existing app_inv] app_hom
 
-@[reassoc +to_dual (attr := simp), grind =]
+@[map (attr := reassoc +to_dual (attr := simp)), grind =]
 theorem hom_inv_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.hom.app X ≫ α.inv.app X = 𝟙 (F.obj X) := by cat_disch
 
-@[reassoc +to_dual (attr := simp), grind =]
+@[map (attr := reassoc +to_dual (attr := simp)), grind =]
 theorem inv_hom_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.inv.app X ≫ α.hom.app X = 𝟙 (G.obj X) := by cat_disch
 
-@[reassoc +to_dual (attr := simp)]
+@[map (attr := reassoc +to_dual (attr := simp))]
 lemma hom_inv_id_app_app {F G : C ⥤ D ⥤ E} (e : F ≅ G) (X₁ : C) (X₂ : D) :
     (e.hom.app X₁).app X₂ ≫ (e.inv.app X₁).app X₂ = 𝟙 _ := by cat_disch
 
-@[reassoc +to_dual (attr := simp)]
+@[map (attr := reassoc +to_dual (attr := simp))]
 lemma inv_hom_id_app_app {F G : C ⥤ D ⥤ E} (e : F ≅ G) (X₁ : C) (X₂ : D) :
     (e.inv.app X₁).app X₂ ≫ (e.hom.app X₁).app X₂ = 𝟙 _ := by cat_disch
 
-@[reassoc +to_dual (attr := simp)]
+@[map (attr := reassoc +to_dual (attr := simp))]
 lemma hom_inv_id_app_app_app {F G : C ⥤ D ⥤ E ⥤ E'} (e : F ≅ G)
     (X₁ : C) (X₂ : D) (X₃ : E) :
     ((e.hom.app X₁).app X₂).app X₃ ≫ ((e.inv.app X₁).app X₂).app X₃ = 𝟙 _ := by cat_disch
 
-@[reassoc +to_dual (attr := simp)]
+@[map (attr := reassoc +to_dual (attr := simp))]
 lemma inv_hom_id_app_app_app {F G : C ⥤ D ⥤ E ⥤ E'} (e : F ≅ G)
     (X₁ : C) (X₂ : D) (X₃ : E) :
     ((e.inv.app X₁).app X₂).app X₃ ≫ ((e.hom.app X₁).app X₂).app X₃ = 𝟙 _ := by cat_disch
