@@ -150,12 +150,6 @@ theorem log_le_log_iff (h : 0 < x) (h₁ : 0 < y) : log x ≤ log y ↔ x ≤ y 
 lemma log_le_log (hx : 0 < x) (hxy : x ≤ y) : log x ≤ log y :=
   (log_le_log_iff hx (hx.trans_le hxy)).2 hxy
 
-/-- Exploits the Mathlib convention that `log x = log |x|`. -/
-lemma log_le_log_of_abs_le_abs {x y : ℝ} (h0 : 0 < |x|) (h : |x| ≤ |y|) :
-    Real.log x ≤ Real.log y := by
-  rw [← log_abs, ← log_abs y]
-  exact log_le_log h0 h
-
 @[gcongr, bound]
 theorem log_lt_log (hx : 0 < x) (h : x < y) : log x < log y := by
   rwa [← exp_lt_exp, exp_log hx, exp_log (lt_trans hx h)]
