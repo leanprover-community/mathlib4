@@ -25,15 +25,12 @@ of graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
 
 ## Notes
 
-* `GraphLike α β` generalizes `SimpleGraph`, `Digraph`, and `Graph`. When multi-digraph and
-  hypergraphs are formalized, they can also use this typeclass.
-* `SymmGraphLike α β`, (defined in `Symm.lean`) generalizes `SimpleGraph` and `Graph` but not
-  `Digraph`.
+* `GraphLike α β` generalizes `SimpleGraph`, `Digraph`, and `Graph`. When multi-digraph,
+  hypergraphs and other kinds of graphs are formalized, they can also use this typeclass.
 * `GraphLike α (α × α)` generalizes `SimpleGraph` and `Digraph` but not `Graph`.
 
 ## TODO
 * Migrate from `SimpleGraph` all the results that only depend on the adjacency relation.
-* Define the degree of a graph.
 -/
 
 @[expose] public section
@@ -49,12 +46,12 @@ class DartLike (α β : Type*) where
 def DartLike.toProd {α β : Type*} [DartLike α β] (d : β) : α × α := (DartLike.fst d, DartLike.snd d)
 
 /-- The `GraphLike` typeclass abstracts over graph-like structures by encoding the minimal structure
-required to reason about directed edges ("darts") and adjacency. This terminology comes from
+required to reason about directed edges ("darts") and adjacency. The "darts" terminology comes from
 combinatorial maps, and they are also known as "half-edges" or "bonds." -/
 class GraphLike (α β : outParam Type*) [DartLike α β] (Gr : Type*) where
   /-- The set of vertices of a graph-like structure. -/
   verts : Gr → Set α
-  /-- The type of darts (oriented edges) of a graph-like structure. -/
+  /-- The set of darts (oriented edges) of a graph-like structure. -/
   darts : Gr → Set β
   fst_mem_of_darts {G : Gr} {d : β} : d ∈ darts G → DartLike.fst d ∈ verts G
   snd_mem_of_darts {G : Gr} {d : β} : d ∈ darts G → DartLike.snd d ∈ verts G
@@ -69,13 +66,12 @@ namespace GraphLike
 @[inherit_doc verts]
 scoped notation "V(" G ")" => verts G
 
-variable {α β Gr : Type*} {G : Gr} {u v w : α} {d : β}
+variable {α β Gr : Type*} {G : Gr} {u u' v v' w : α} {d : β}
 
 section GraphLike
 
 variable [DartLike α β] [GraphLike α β Gr]
 
-/-- Dot notation for reverse direction of `adj_iff_nonempty_dart`. -/
 lemma adj_of_mem_darts (hd : d ∈ darts G) : Adj G (fst d) (snd d) :=
   exists_darts_iff_adj.mp ⟨d, hd, rfl, rfl⟩
 
@@ -112,14 +108,14 @@ lemma step.right_mem (h : step G u v) : v ∈ V(G) := by
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact snd_mem_of_darts hd
 
-lemma step.left_eq_of_val {u' v' : α} {s₁ : step G u v} {s₂ : step G u' v'} (h : s₁.val = s₂.val) :
+lemma step.left_eq_of_val_eq {s₁ : step G u v} {s₂ : step G u' v'} (h : s₁.val = s₂.val) :
     u = u' := by
   obtain ⟨d₁, hd₁, rfl, rfl⟩ := s₁
   obtain ⟨d₂, hd₂, rfl, rfl⟩ := s₂
   obtain rfl : d₁ = d₂ := h
   rfl
 
-lemma step.right_eq_of_val {u' v' : α} {s₁ : step G u v} {s₂ : step G u' v'} (h : s₁.val = s₂.val) :
+lemma step.right_eq_of_val_eq {s₁ : step G u v} {s₂ : step G u' v'} (h : s₁.val = s₂.val) :
     v = v' := by
   obtain ⟨d₁, hd₁, rfl, rfl⟩ := s₁
   obtain ⟨d₂, hd₂, rfl, rfl⟩ := s₂
@@ -211,7 +207,7 @@ instance : Subsingleton (step G u v) where
     exact Subtype.ext rfl
 
 @[simp]
-lemma step_val_eq {s : step G u v} : s.val = (u, v) := by
+lemma val_step_eq {s : step G u v} : s.val = (u, v) := by
   rw [Subsingleton.elim s s.adj.toStep]
   rfl
 
