@@ -576,8 +576,6 @@ open LieSubmodule in
     exact sl2SubmoduleOfRoot_ne_bot i.1 hα₀ h_sl2_le
   · simp [h, invtSubmoduleToLieIdeal]
 
-/-! ### The order isomorphism -/
-
 @[gcongr]
 lemma invtSubmoduleToLieIdeal_mono {q₁ q₂ : Submodule K (Dual K H)}
     (hq₁ : ∀ i, q₁ ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap)
