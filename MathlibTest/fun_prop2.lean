@@ -216,5 +216,4 @@ example (hx₀ : x₀ ∈ Set.Ioo 0 1) :
   have ⟨_,_⟩ := hx₀
   simp (disch := nlinarith) [deriv_simproc]
 
-
 end HasDerivAtTests
