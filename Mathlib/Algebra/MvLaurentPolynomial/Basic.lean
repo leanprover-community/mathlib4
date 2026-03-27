@@ -5,258 +5,206 @@ Authors: Yuma Mizuno
 -/
 module
 
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Algebra.MvPolynomial.Basic
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
-# Multivariate Laurent polynomials
+# Laurent monomials relative to a basis
 
-This file defines `MvLaurentPolynomial σ R`, the type of multivariate Laurent polynomials
-with coefficients in a commutative semiring `R` and variables indexed by `σ`.
+This file develops a basis-parametric Laurent-monomial API on `AddMonoidAlgebra R M`, where
+`M` is an additive abelian group equipped with a chosen basis `v : Basis σ ℤ M`. In this setting,
+`AddMonoidAlgebra R M` can be thought of as the algebra of multivariate Laurent polynomials whose
+variables are indexed by `σ`.
 
-The exponent vectors live in `σ →₀ ℤ`, so negative exponents are allowed.
-The implementation is `AddMonoidAlgebra R (σ →₀ ℤ)`.
+## Important definitions
 
-## Definitions
-
-Let `R` be a commutative semiring and let `σ` be an arbitrary type.
-
-* `MvLaurentPolynomial σ R` : the type of multivariate Laurent polynomials in variables indexed by
-  `σ` and coefficients in `R`
-* `MvLaurentPolynomial.monomial d r` : the Laurent monomial with exponent vector `d` and
-  coefficient `r`
-* `MvLaurentPolynomial.C r` : the constant Laurent polynomial with value `r`
-* `MvLaurentPolynomial.X n` : the Laurent monomial corresponding to the variable `n`
-* `MvLaurentPolynomial.coeff d p` : the coefficient of the monomial `d` in `p`
+* `MvLaurentPolynomial.monomial v d r` : the Laurent monomial with exponent vector `d` and
+  coefficient `r` with respect to the basis `v`
+* `MvLaurentPolynomial.X v n` : the Laurent monomial corresponding to the variable `n` with respect
+  to the basis `v`
+* `MvLaurentPolynomial.basisAlgEquiv v` : the algebra equivalence from `AddMonoidAlgebra R M` to
+  the coordinate Laurent model `AddMonoidAlgebra R (σ →₀ ℤ)` induced by `v`
 * `MvPolynomial.toMvLaurent` : the natural inclusion from multivariate polynomials to
-  multivariate Laurent polynomials
+  Laurent monomials written in the basis `v`
 
 -/
 
 @[expose] public section
 
-open Function Finsupp AddMonoidAlgebra
+open Function AddMonoidAlgebra Module
 
 noncomputable section
 
-variable {R : Type*} {S : Type*} {σ : Type*}
-
-/-- Multivariate Laurent polynomials over `R` in variables indexed by `σ`. -/
-abbrev MvLaurentPolynomial (σ : Type*) (R : Type*) [CommSemiring R] :=
-  AddMonoidAlgebra R (σ →₀ ℤ)
+variable {R : Type*} {S : Type*} {σ : Type*} {M : Type*}
 
 namespace MvLaurentPolynomial
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring S] {p q : MvLaurentPolynomial σ R}
+variable [CommSemiring R] [AddCommGroup M] {p q : AddMonoidAlgebra R M}
 
-/-- The coefficient of the monomial `d` in the multivariate Laurent polynomial `p`. -/
-def coeff (d : σ →₀ ℤ) (p : MvLaurentPolynomial σ R) : R :=
-  p d
+/-- The Laurent monomial with exponent vector `d`, expressed in the basis `v`. -/
+def monomial (v : Basis σ ℤ M) (d : σ →₀ ℤ) : R →ₗ[R] AddMonoidAlgebra R M :=
+  AddMonoidAlgebra.lsingle (v.repr.symm d)
 
-/-- `monomial d r` is the Laurent monomial with coefficient `r` and exponent vector `d`. -/
-def monomial (d : σ →₀ ℤ) : R →ₗ[R] MvLaurentPolynomial σ R :=
-  AddMonoidAlgebra.lsingle d
+theorem one_def (v : Basis σ ℤ M) : (1 : AddMonoidAlgebra R M) = monomial v 0 1 := by
+  simp [monomial, AddMonoidAlgebra.one_def]
 
-theorem one_def : (1 : MvLaurentPolynomial σ R) = monomial 0 1 :=
+theorem single_eq_monomial (v : Basis σ ℤ M) (d : σ →₀ ℤ) (r : R) :
+    (AddMonoidAlgebra.single (v.repr.symm d) r : AddMonoidAlgebra R M) = monomial v d r :=
   rfl
 
-theorem single_eq_monomial (d : σ →₀ ℤ) (r : R) :
-    (Finsupp.single d r : MvLaurentPolynomial σ R) = monomial d r :=
+theorem mul_def (v : Basis σ ℤ M) :
+    p * q = p.sum fun d r ↦ q.sum fun e s ↦ monomial v (v.repr d + v.repr e) (r * s) := by
+  simp [AddMonoidAlgebra.mul_def, monomial]
+
+/-- The Laurent variable corresponding to the basis vector indexed by `i`. -/
+abbrev X (v : σ → M) (i : σ) : AddMonoidAlgebra R M := AddMonoidAlgebra.single (v i) (1 : R)
+
+theorem X_eq_monomial (v : Basis σ ℤ M) (i : σ) : X v i = monomial v (Finsupp.single i 1) (1 : R) :=
   rfl
 
-theorem mul_def : p * q = p.sum fun d r ↦ q.sum fun e s ↦ monomial (d + e) (r * s) :=
-  AddMonoidAlgebra.mul_def ..
-
-/-- `X n` is the Laurent monomial with exponent vector `Finsupp.single n 1`. -/
-def X (n : σ) : MvLaurentPolynomial σ R :=
-  monomial (Finsupp.single n 1) 1
-
-theorem monomial_left_injective {r : R} (hr : r ≠ 0) :
-    Function.Injective fun d : σ →₀ ℤ ↦ monomial d r :=
-  Finsupp.single_left_injective hr
+theorem monomial_left_injective (v : Basis σ ℤ M) {r : R} (hr : r ≠ 0) :
+    Function.Injective fun d : σ →₀ ℤ => monomial v d r := by
+  intro d e h
+  exact v.repr.symm.injective (Finsupp.single_left_injective hr h)
 
 @[simp]
-theorem monomial_left_inj {d e : σ →₀ ℤ} {r : R} (hr : r ≠ 0) :
-    monomial d r = monomial e r ↔ d = e :=
-  Finsupp.single_left_inj hr
+theorem monomial_left_inj (v : Basis σ ℤ M) {d e : σ →₀ ℤ} {r : R} (hr : r ≠ 0) :
+    monomial v d r = monomial v e r ↔ d = e :=
+  (monomial_left_injective v hr).eq_iff
 
-theorem smul_monomial {T : Type*} [SMulZeroClass T R] (t : T) (d : σ →₀ ℤ) (r : R) :
-    t • monomial d r = monomial d (t • r) :=
-  Finsupp.smul_single _ _ _
+theorem smul_monomial {T : Type*} [SMulZeroClass T R] (t : T) (v : Basis σ ℤ M)
+    (d : σ →₀ ℤ) (r : R) : t • monomial v d r = monomial v d (t • r) := by
+  simp [monomial]
 
-theorem X_injective [Nontrivial R] : Function.Injective (X : σ → MvLaurentPolynomial σ R) :=
-  (monomial_left_injective one_ne_zero).comp (Finsupp.single_left_injective one_ne_zero)
-
-@[simp]
-theorem X_inj [Nontrivial R] (m n : σ) : X m = (X n : MvLaurentPolynomial σ R) ↔ m = n :=
-  X_injective.eq_iff
-
-theorem monomial_pow (d : σ →₀ ℤ) (r : R) (n : ℕ) :
-    monomial d r ^ n = monomial (n • d) (r ^ n) :=
-  AddMonoidAlgebra.single_pow ..
-
-theorem X_pow_eq_monomial (n : σ) (e : ℕ) :
-    X n ^ e = monomial (Finsupp.single n (e : ℤ)) (1 : R) := by
-  simp [X, monomial_pow]
+theorem X_injective (v : Basis σ ℤ M) [Nontrivial R] :
+    Function.Injective (X v : σ → AddMonoidAlgebra R M) :=
+  (monomial_left_injective v one_ne_zero).comp (Finsupp.single_left_injective (one_ne_zero))
 
 @[simp]
-theorem monomial_mul {d e : σ →₀ ℤ} {r s : R} :
-    monomial d r * monomial e s = monomial (d + e) (r * s) :=
-  AddMonoidAlgebra.single_mul_single ..
+theorem X_inj (v : Basis σ ℤ M) [Nontrivial R] {i j : σ} :
+    X v i = (X v j : AddMonoidAlgebra R M) ↔ i = j := by
+  constructor
+  · intro h
+    exact X_injective v h
+  · intro h
+    simp [h]
 
-theorem monomial_add_single (d : σ →₀ ℤ) (n : σ) (e : ℕ) (r : R) :
-    monomial (d + Finsupp.single n (e : ℤ)) r = monomial d r * X n ^ e := by
+theorem monomial_pow (v : Basis σ ℤ M) (d : σ →₀ ℤ) (r : R) (n : ℕ) :
+    monomial v d r ^ n = monomial v (n • d) (r ^ n) := by
+  simp only [monomial, Basis.repr_symm_apply, lsingle_apply, single_pow,
+    LinearMap.map_smul_of_tower]
+
+theorem X_pow_eq_monomial (v : Basis σ ℤ M) (i : σ) (e : ℕ) :
+    X v i ^ e = monomial v (Finsupp.single i (e : ℤ)) (1 : R) := by
+  simp only [X, single_pow, one_pow]
+  simp [monomial]
+
+@[simp]
+theorem monomial_mul (v : Basis σ ℤ M) {d e : σ →₀ ℤ} {r s : R} :
+    monomial v d r * monomial v e s = monomial v (d + e) (r * s) := by
+  simp [monomial, AddMonoidAlgebra.single_mul_single]
+
+@[simp]
+theorem monomial_mul_monomial_neg (v : Basis σ ℤ M) (d : σ →₀ ℤ) :
+    monomial v d (1 : R) * monomial v (-d) 1 = 1 := by
+  rw [monomial_mul, add_neg_cancel, one_mul, ← one_def v]
+
+@[simp]
+theorem monomial_neg_mul_monomial (v : Basis σ ℤ M) (d : σ →₀ ℤ) :
+    monomial v (-d) (1 : R) * monomial v d 1 = 1 := by
+  rw [mul_comm, monomial_mul_monomial_neg]
+
+theorem isUnit_monomial (v : Basis σ ℤ M) (d : σ →₀ ℤ) :
+    IsUnit (monomial v d (1 : R) : AddMonoidAlgebra R M) := by
+  refine ⟨⟨monomial v d 1, monomial v (-d) 1, monomial_mul_monomial_neg v d,
+      monomial_neg_mul_monomial v d⟩, rfl⟩
+
+theorem monomial_add_single (v : Basis σ ℤ M) (d : σ →₀ ℤ) (i : σ) (e : ℕ) (r : R) :
+    monomial v (d + Finsupp.single i (e : ℤ)) r = monomial v d r * X v i ^ e := by
   rw [X_pow_eq_monomial, monomial_mul, mul_one]
 
-theorem monomial_single_add (d : σ →₀ ℤ) (n : σ) (e : ℕ) (r : R) :
-    monomial (Finsupp.single n (e : ℤ) + d) r = X n ^ e * monomial d r := by
+theorem monomial_single_add (v : Basis σ ℤ M) (d : σ →₀ ℤ) (i : σ) (e : ℕ) (r : R) :
+    monomial v (Finsupp.single i (e : ℤ) + d) r = X v i ^ e * monomial v d r := by
   rw [X_pow_eq_monomial, monomial_mul, one_mul]
 
 @[simp]
-theorem monomial_zero {d : σ →₀ ℤ} : monomial d (0 : R) = 0 :=
-  Finsupp.single_zero _
+theorem monomial_zero (v : Basis σ ℤ M) {d : σ →₀ ℤ} : monomial v d (0 : R) = 0 := by
+  rw [monomial, AddMonoidAlgebra.lsingle_apply]
+  exact Finsupp.single_eq_zero.2 rfl
 
 @[simp]
-theorem monomial_eq_zero {d : σ →₀ ℤ} {r : R} : monomial d r = 0 ↔ r = 0 :=
-  Finsupp.single_eq_zero
-
-theorem isUnit_monomial (d : σ →₀ ℤ) : IsUnit (monomial d (1 : R) : MvLaurentPolynomial σ R) :=
-  ⟨⟨monomial d 1, monomial (-d) 1, by sorry, by sorry⟩, rfl⟩
+theorem monomial_eq_zero (v : Basis σ ℤ M) {d : σ →₀ ℤ} {r : R} :
+    monomial v d r = 0 ↔ r = 0 := by
+  simp [monomial]
 
 @[simp]
-theorem sum_monomial_eq {A : Type*} [AddCommMonoid A] {d : σ →₀ ℤ} {r : R}
-    {f : (σ →₀ ℤ) → R → A} (h0 : f d 0 = 0) :
-    sum (monomial d r) f = f d r :=
-  Finsupp.sum_single_index h0
+theorem sum_monomial_eq {A : Type*} [AddCommMonoid A] (v : Basis σ ℤ M) {d : σ →₀ ℤ} {r : R}
+    {f : M → R → A} (h0 : f (v.repr.symm d) 0 = 0) :
+    (monomial v d r).sum f = f (v.repr.symm d) r := by
+  simpa [monomial] using (Finsupp.sum_single_index h0 : _)
 
-theorem support_monomial {d : σ →₀ ℤ} {r : R} [Decidable (r = 0)] :
-    (monomial d r : MvLaurentPolynomial σ R).support = if r = 0 then ∅ else {d} := by
+theorem support_monomial (v : Basis σ ℤ M) {d : σ →₀ ℤ} {r : R} [Decidable (r = 0)] :
+    (monomial v d r : AddMonoidAlgebra R M).support = if r = 0 then ∅ else {v.repr.symm d} := by
   by_cases hr : r = 0
   · simp [monomial, hr]
-  · simpa [monomial, hr] using (Finsupp.support_single_ne_zero d hr)
+  · simpa [monomial, hr] using Finsupp.support_single_ne_zero (v.repr.symm d) hr
 
-theorem support_monomial_subset (d : σ →₀ ℤ) (r : R) :
-    (monomial d r : MvLaurentPolynomial σ R).support ⊆ {d} := by
-  by_cases hr : r = 0
-  · subst r
-    intro e he
-    have h0 : coeff e (0 : MvLaurentPolynomial σ R) ≠ 0 := by simpa using he
-    exact (h0 rfl).elim
-  · classical
-    simp [support_monomial, hr]
-
-@[simp]
-theorem coeff_zero (d : σ →₀ ℤ) : coeff d (0 : MvLaurentPolynomial σ R) = 0 :=
-  rfl
-
-@[simp]
-theorem coeff_monomial (d e : σ →₀ ℤ) [Decidable (e = d)] (r : R) :
-    coeff d (monomial e r : MvLaurentPolynomial σ R) = if e = d then r else 0 := by
-  rw [coeff, monomial, AddMonoidAlgebra.lsingle_apply, Finsupp.single_apply]
-
-theorem coeff_X' (n : σ) (d : σ →₀ ℤ) [Decidable (Finsupp.single n 1 = d)] :
-    coeff d (X n : MvLaurentPolynomial σ R) = if Finsupp.single n 1 = d then 1 else 0 := by
-  rw [X, coeff_monomial]
-
-@[simp]
-theorem coeff_X (n : σ) :
-    coeff (Finsupp.single n 1) (X n : MvLaurentPolynomial σ R) = 1 := by
+theorem support_monomial_subset (v : Basis σ ℤ M) (d : σ →₀ ℤ) (r : R) :
+    (monomial v d r : AddMonoidAlgebra R M).support ⊆ {v.repr.symm d} := by
   classical
-  simp [coeff_X']
+  by_cases hr : r = 0
+  · simp [monomial, hr]
+  · simp [support_monomial v, hr]
 
 @[simp]
-theorem coeff_mul_monomial (m : σ →₀ ℤ) (s : σ →₀ ℤ) (r : R) (p : MvLaurentPolynomial σ R) :
-    coeff (m + s) (p * monomial s r) = coeff m p * r :=
-  AddMonoidAlgebra.mul_single_apply_aux fun _ _ ↦ add_left_inj _
-
-@[simp]
-theorem coeff_monomial_mul (m : σ →₀ ℤ) (s : σ →₀ ℤ) (r : R) (p : MvLaurentPolynomial σ R) :
-    coeff (s + m) (monomial s r * p) = r * coeff m p :=
-  AddMonoidAlgebra.single_mul_apply_aux fun _ _ ↦ add_right_inj _
-
-theorem coeff_mul_monomial' (m : σ →₀ ℤ) (s : σ →₀ ℤ) (r : R) (p : MvLaurentPolynomial σ R) :
-    coeff m (p * monomial s r) = coeff (m - s) p * r := by
-  simpa [sub_eq_add_neg, add_assoc] using coeff_mul_monomial (m - s) s r p
-
-theorem coeff_monomial_mul' (m : σ →₀ ℤ) (s : σ →₀ ℤ) (r : R) (p : MvLaurentPolynomial σ R) :
-    coeff m (monomial s r * p) = r * coeff (m - s) p := by
-  simpa [sub_eq_add_neg, add_assoc] using coeff_monomial_mul (m - s) s r p
-
-@[simp]
-theorem mem_support_iff {p : MvLaurentPolynomial σ R} {d : σ →₀ ℤ} :
-    d ∈ p.support ↔ p.coeff d ≠ 0 := by
-  simp [coeff]
-
-theorem notMem_support_iff {p : MvLaurentPolynomial σ R} {d : σ →₀ ℤ} :
-    d ∉ p.support ↔ p.coeff d = 0 := by
-  simp [coeff]
-
-@[simp]
-theorem support_zero : (0 : MvLaurentPolynomial σ R).support = ∅ :=
-  rfl
-
-@[simp]
-theorem support_eq_empty {p : MvLaurentPolynomial σ R} : p.support = ∅ ↔ p = 0 :=
-  Finsupp.support_eq_empty
-
-@[simp]
-theorem support_X [Nontrivial R] (n : σ) :
-    (X n : MvLaurentPolynomial σ R).support = {Finsupp.single n 1} :=
-  Finsupp.support_single_ne_zero _ one_ne_zero
-
-theorem eq_zero_iff {p : MvLaurentPolynomial σ R} : p = 0 ↔ ∀ d, coeff d p = 0 := by
-  constructor
-  · intro hp d
-    subst hp
-    exact coeff_zero d
-  · intro hp
-    ext d
-    simpa using hp d
-
-theorem ne_zero_iff {p : MvLaurentPolynomial σ R} : p ≠ 0 ↔ ∃ d, coeff d p ≠ 0 := by
-  rw [Ne, eq_zero_iff]
-  push_neg
-  rfl
-
-@[simp]
-theorem support_nonempty {p : MvLaurentPolynomial σ R} : p.support.Nonempty ↔ p ≠ 0 := by
-  rw [Finset.nonempty_iff_ne_empty, ne_eq, support_eq_empty]
-
-theorem exists_coeff_ne_zero {p : MvLaurentPolynomial σ R} (hp : p ≠ 0) :
-    ∃ d, coeff d p ≠ 0 :=
-  ne_zero_iff.mp hp
-
-@[simp]
-theorem X_ne_zero [Nontrivial R] (n : σ) :
-    X n ≠ (0 : MvLaurentPolynomial σ R) := by
-  rw [ne_zero_iff]
-  exact ⟨Finsupp.single n 1, by simp⟩
+theorem X_ne_zero (v : Basis σ ℤ M) [Nontrivial R] (i : σ) :
+    X v i ≠ (0 : AddMonoidAlgebra R M) :=
+  (monomial_eq_zero v).not.2 one_ne_zero
 
 section AsSum
 
 @[simp]
-theorem support_sum_monomial_coeff (p : MvLaurentPolynomial σ R) :
-    (∑ d ∈ p.support, monomial d (coeff d p)) = p :=
-  Finsupp.sum_single p
+theorem support_sum_monomial_coeff (v : Basis σ ℤ M) (p : AddMonoidAlgebra R M) :
+    (∑ m ∈ p.support, monomial v (v.repr m) (p m)) = p := by
+  simpa [Finsupp.sum, monomial] using (Finsupp.sum_single p)
 
-theorem as_sum (p : MvLaurentPolynomial σ R) :
-    p = ∑ d ∈ p.support, monomial d (coeff d p) :=
-  (support_sum_monomial_coeff p).symm
+theorem as_sum (v : Basis σ ℤ M) (p : AddMonoidAlgebra R M) :
+    p = ∑ m ∈ p.support, monomial v (v.repr m) (p m) :=
+  (support_sum_monomial_coeff v p).symm
 
 end AsSum
 
-/-- To prove something about multivariate Laurent polynomials, it suffices to prove it for
+/-- To prove something about Laurent monomials relative to `v`, it suffices to prove it for
 monomials and to show that it is preserved by addition. -/
 @[elab_as_elim]
-theorem induction_on' {P : MvLaurentPolynomial σ R → Prop} (p : MvLaurentPolynomial σ R)
-    (monomial : ∀ (d : σ →₀ ℤ) (r : R), P (MvLaurentPolynomial.monomial d r))
-    (add : ∀ p q : MvLaurentPolynomial σ R, P p → P q → P (p + q)) : P p :=
-  Finsupp.induction p
-    (suffices P (MvLaurentPolynomial.monomial 0 0) by
-      rwa [monomial_zero] at this
-    show P (MvLaurentPolynomial.monomial 0 0) from monomial 0 0)
-    fun _ _ _ _ha _hb hp ↦ add _ _ (monomial _ _) hp
+theorem induction_on' (v : Basis σ ℤ M) {P : AddMonoidAlgebra R M → Prop} (p : AddMonoidAlgebra R M)
+    (hmonomial : ∀ (d : σ →₀ ℤ) (r : R), P (monomial v d r))
+    (hadd : ∀ p q : AddMonoidAlgebra R M, P p → P q → P (p + q)) : P p := by
+  refine Finsupp.induction p ?_ ?_
+  · simpa [monomial] using hmonomial 0 0
+  · intro m r p _ _ hp
+    simpa [monomial] using hadd (monomial v (v.repr m) r) p (hmonomial (v.repr m) r) hp
+
+/-- The algebra equivalence to the coordinate Laurent model induced by the basis `v`. -/
+def basisAlgEquiv (v : Basis σ ℤ M) :
+    AddMonoidAlgebra R M ≃ₐ[R] AddMonoidAlgebra R (σ →₀ ℤ) :=
+  AddMonoidAlgebra.domCongr R R v.repr.toAddEquiv
+
+@[simp]
+theorem basisAlgEquiv_monomial (v : Basis σ ℤ M) (d : σ →₀ ℤ) (r : R) :
+    basisAlgEquiv v (monomial v d r) = AddMonoidAlgebra.single d r := by
+  ext e
+  simp [basisAlgEquiv, monomial]
+
+@[simp]
+theorem basisAlgEquiv_apply (v : Basis σ ℤ M) (p : AddMonoidAlgebra R M) (d : σ →₀ ℤ) :
+    basisAlgEquiv v p d = p (v.repr.symm d) := by
+  simp [basisAlgEquiv]
 
 end CommSemiring
 
@@ -266,49 +214,57 @@ namespace MvPolynomial
 
 section CommSemiring
 
-variable [CommSemiring R]
+variable [CommSemiring R] [AddCommGroup M]
 
-/-- The natural inclusion from multivariate polynomials to multivariate Laurent polynomials. -/
-def toMvLaurent : MvPolynomial σ R →+* MvLaurentPolynomial σ R :=
-  AddMonoidAlgebra.mapDomainRingHom R <| Finsupp.mapRange.addMonoidHom (Int.ofNatHom : ℕ →+ ℤ)
-
-/-- The natural inclusion from multivariate polynomials to multivariate Laurent polynomials as an
-`R`-algebra homomorphism. -/
-def toMvLaurentAlg : MvPolynomial σ R →ₐ[R] MvLaurentPolynomial σ R :=
-  AddMonoidAlgebra.mapDomainAlgHom R R <| Finsupp.mapRange.addMonoidHom (Int.ofNatHom : ℕ →+ ℤ)
+/-- The natural inclusion from multivariate polynomials to Laurent monomials written in the basis
+`v`. -/
+def toMvLaurent (v : Basis σ ℤ M) : MvPolynomial σ R →ₐ[R] AddMonoidAlgebra R M :=
+  (MvLaurentPolynomial.basisAlgEquiv v).symm.toAlgHom.comp
+    (AddMonoidAlgebra.mapDomainAlgHom R R
+      (Finsupp.mapRange.addMonoidHom (Int.ofNatHom : ℕ →+ ℤ)))
 
 @[simp]
-theorem coe_toMvLaurentAlg :
-    ((toMvLaurentAlg : MvPolynomial σ R →ₐ[R] MvLaurentPolynomial σ R) :
-      MvPolynomial σ R → MvLaurentPolynomial σ R) = toMvLaurent :=
+theorem basisAlgEquiv_toMvLaurent (v : Basis σ ℤ M) (p : MvPolynomial σ R) :
+    MvLaurentPolynomial.basisAlgEquiv v (p.toMvLaurent v) =
+      (AddMonoidAlgebra.mapDomainAlgHom R R
+        (Finsupp.mapRange.addMonoidHom (Int.ofNatHom : ℕ →+ ℤ))) p := by
+  simp only [toMvLaurent, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, comp_apply,
+    AlgEquiv.apply_symm_apply, mapDomainAlgHom_apply]
   rfl
 
-theorem toMvLaurentAlg_apply (p : MvPolynomial σ R) : toMvLaurentAlg p = toMvLaurent p :=
-  rfl
+@[simp]
+theorem toMvLaurent_monomial (v : Basis σ ℤ M) (d : σ →₀ ℕ) (r : R) :
+    (MvPolynomial.monomial d r).toMvLaurent v =
+      MvLaurentPolynomial.monomial v (d.mapRange Int.ofNat (by simp)) r := by
+  apply (MvLaurentPolynomial.basisAlgEquiv v).injective
+  simp only [basisAlgEquiv_toMvLaurent, mapDomainAlgHom_apply,
+    MvLaurentPolynomial.basisAlgEquiv_monomial]
+  apply mapDomain_single
 
 @[simp]
-theorem toMvLaurent_monomial (d : σ →₀ ℕ) (r : R) :
-    toMvLaurent (monomial d r) = MvLaurentPolynomial.monomial (d.mapRange Int.ofNat (by simp)) r :=
-  AddMonoidAlgebra.mapDomain_single
+theorem toMvLaurent_X (v : Basis σ ℤ M) (i : σ) :
+    (MvPolynomial.X i : MvPolynomial σ R).toMvLaurent v = MvLaurentPolynomial.X v i := by
+  simp only [X, toMvLaurent_monomial, Finsupp.mapRange_single, Int.ofNat_eq_natCast, Nat.cast_one,
+    MvLaurentPolynomial.X_eq_monomial]
 
-@[simp]
-theorem toMvLaurent_X (n : σ) :
-    toMvLaurent (X n : MvPolynomial σ R) = MvLaurentPolynomial.X n := by
-  simp [MvPolynomial.X, MvLaurentPolynomial.X, toMvLaurent_monomial]
-
-theorem toMvLaurent_injective :
-    Function.Injective (toMvLaurent : MvPolynomial σ R →+* MvLaurentPolynomial σ R) :=
-  AddMonoidAlgebra.mapDomain_injective
+theorem toMvLaurent_injective (v : Basis σ ℤ M) :
+    Function.Injective fun p : MvPolynomial σ R ↦ p.toMvLaurent v := by
+  intro p q hpq
+  apply AddMonoidAlgebra.mapDomain_injective
     (Finsupp.mapRange_injective Int.ofNat (by simp) Int.ofNat_injective)
+  simpa [basisAlgEquiv_toMvLaurent] using congrArg (MvLaurentPolynomial.basisAlgEquiv v) hpq
 
-theorem toMvLaurent_inj (p q : MvPolynomial σ R) : toMvLaurent p = toMvLaurent q ↔ p = q :=
-  toMvLaurent_injective.eq_iff
+theorem toMvLaurent_inj (v : Basis σ ℤ M) {p q : MvPolynomial σ R} :
+    p.toMvLaurent v = q.toMvLaurent v ↔ p = q :=
+  (toMvLaurent_injective v).eq_iff
 
-theorem toMvLaurent_eq_zero {p : MvPolynomial σ R} : toMvLaurent p = 0 ↔ p = 0 :=
-  map_eq_zero_iff _ toMvLaurent_injective
+theorem toMvLaurent_eq_zero (v : Basis σ ℤ M) {p : MvPolynomial σ R} :
+    p.toMvLaurent v = 0 ↔ p = 0 :=
+  map_eq_zero_iff _ (toMvLaurent_injective v)
 
-theorem toMvLaurent_ne_zero {p : MvPolynomial σ R} : toMvLaurent p ≠ 0 ↔ p ≠ 0 :=
-  map_ne_zero_iff _ toMvLaurent_injective
+theorem toMvLaurent_ne_zero (v : Basis σ ℤ M) {p : MvPolynomial σ R} :
+    p.toMvLaurent v ≠ 0 ↔ p ≠ 0 :=
+  map_ne_zero_iff _ (toMvLaurent_injective v)
 
 end CommSemiring
 
@@ -318,14 +274,16 @@ namespace MvLaurentPolynomial
 
 section CommSemiring
 
-variable [CommSemiring R]
+variable [CommSemiring R] [AddCommGroup M] [Free ℤ M]
 
-instance algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvLaurentPolynomial σ R) where
-  __ := MvPolynomial.toMvLaurent.toAlgebra
+instance algebraMvPolynomial :
+    Algebra (MvPolynomial (Free.ChooseBasisIndex ℤ M) R) (AddMonoidAlgebra R M) where
+  __ := (MvPolynomial.toMvLaurent <| Free.chooseBasis ℤ M).toAlgebra
 
 @[simp]
-theorem algebraMap_eq_toMvLaurent (p : MvPolynomial σ R) :
-    algebraMap (MvPolynomial σ R) (MvLaurentPolynomial σ R) p = MvPolynomial.toMvLaurent p :=
+theorem algebraMap_eq_toMvLaurent (p : MvPolynomial (Free.ChooseBasisIndex ℤ M) R) :
+    algebraMap (MvPolynomial (Free.ChooseBasisIndex ℤ M) R) (AddMonoidAlgebra R M) p =
+      p.toMvLaurent (Free.chooseBasis ℤ M) :=
   rfl
 
 end CommSemiring
