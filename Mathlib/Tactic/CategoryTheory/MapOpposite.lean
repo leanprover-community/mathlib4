@@ -22,6 +22,10 @@ open CategoryTheory
 local instance {C : Type*} [CategoryTheory.Category C] :
     CategoryTheory.CategoryStruct Cᵒᵖ := mapOppositeCategoryStruct (C := C)
 
+instance (priority := low) oppositeCategoryStruct {C : Type*} [CategoryTheory.Category C] :
+    CategoryTheory.CategoryStruct Cᵒᵖ :=
+  mapOppositeCategoryStruct (C := C)
+
 theorem mapUnop_id {C : Type*} [CategoryTheory.Category C] {X : Cᵒᵖ} :
     Quiver.Hom.unop (CategoryTheory.CategoryStruct.id X) =
       CategoryTheory.CategoryStruct.id (Opposite.unop X) :=
@@ -51,6 +55,10 @@ theorem mapOp_comp_unop {C : Type*} [CategoryTheory.Category C] {X Y Z : Cᵒᵖ
     rw [← mapOp_comp_unop, mapUnop_id, CategoryTheory.Category.comp_id, mapOp_unop]
   assoc f g h := by
     simp only [← mapOp_comp_unop, mapUnop_op, CategoryTheory.Category.assoc]
+
+instance (priority := low) oppositeCategory {C : Type*} [CategoryTheory.Category C] :
+    CategoryTheory.Category Cᵒᵖ :=
+  mapOppositeCategory (C := C)
 
 theorem mapOp_comp {C : Type*} [CategoryTheory.Category C] {X Y Z : C}
     (f : X ⟶ Y) (g : Y ⟶ Z) :

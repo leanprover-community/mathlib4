@@ -393,8 +393,8 @@ initialize registerBuiltinAttribute {
         specializedTargets := specializedTargets.push specializedTgt
     applyOptAttrsToDecl src optAttr
     applyOptAttrsToDecl tgt optAttr
-    applySelectedOptAttrsToDecl opTgt optAttr [`simp]
-    applySelectedOptAttrsToDecl opMapTgt optAttr [`simp]
+    applyOptAttrsToDecl opTgt optAttr
+    applyOptAttrsToDecl opMapTgt optAttr
     for specializedTgt in specializedTargets do
       applyOptAttrsToDecl specializedTgt optAttr
   | _ => throwUnsupportedSyntax }

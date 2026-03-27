@@ -15,5 +15,9 @@ run_cmd liftTermElabM do
   guard <| hasSimpAttribute env `Tests.MapSimp.comp_map_simp_map
   guard <| hasSimpAttribute env `Tests.MapSimp.comp_map_simp_op
   guard <| hasSimpAttribute env `Tests.MapSimp.comp_map_simp_op_map
+  guard <| hasSimpAttribute env `Tests.MapSimp.comp_map_simp_assoc
+  guard <| hasSimpAttribute env `Tests.MapSimp.comp_map_simp_map_assoc
+  guard <| hasSimpAttribute env `Tests.MapSimp.comp_map_simp_op_assoc
+  guard <| hasSimpAttribute env `Tests.MapSimp.comp_map_simp_op_map_assoc
 
 end Tests.MapSimpCheck
