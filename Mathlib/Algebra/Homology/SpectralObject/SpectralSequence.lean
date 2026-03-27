@@ -387,7 +387,14 @@ lemma ccSc_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ :=
         (by rw [hi₃', data.i₃_next r r' _ _ h]) rfl _ _ _ (by have := data.hc r _ _ h; lia))
       (pageXIso X data _ hr _ _ _ _ _ hi₀ hi₁ hi₂ hi₃ _ _ _ hn₁') (Iso.refl _) ?_ (by simp)
     dsimp
-    rw [pageD_eq X data r hr pq pq' h _ _ _ _ _ hi₀ hi₁ _ _ _ _ (n₀ - 1) n₀ n₁ n₂,
+    rw [pageD_eq X data r hr pq pq' h
+          (homOfLE (data.le₀₁' r hr pq' hi₀ hi₁)) (homOfLE (data.le₁₂' pq' hi₁ hi₂))
+          (homOfLE (data.le₂₃' r hr pq' hi₂ hi₃)) (homOfLE (data.le₃₃' hrr' hr pq' hi₃ hi₃'))
+          (show i₃' ⟶ data.i₃ r pq from homOfLE (by
+            simpa only [hi₃', data.i₃_next r r' pq pq' h] using data.le₂₃ r pq))
+          hi₀ hi₁ (hi₂.trans (data.hc₀₂ r pq pq' h).symm)
+          (hi₃.trans (data.hc₁₃ r pq pq' h).symm) (hi₃'.trans (data.i₃_next r r' pq pq' h)) rfl
+          (n₀ - 1) n₀ n₁ n₂ (by have := data.hc r _ _ h; lia),
         Category.assoc, Category.assoc, Iso.inv_hom_id, Category.comp_id]
   · refine (ShortComplex.exact_iff_mono _ ((page X data r hr).shape _ _ h)).mpr ?_
     have := isIso_mapFourδ₄Toδ₃' X data r r' hrr' hr pq pq' hpq
