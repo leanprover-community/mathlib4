@@ -11,6 +11,8 @@ public import Mathlib.Topology.Homotopy.Basic
 /-!
 # Homotopies between morphisms in `TopCat`
 
+In this file, we define the type `TopCat.Homotopy` of homotopies
+between two morphisms in the category `TopCat`.
 
 -/
 
