@@ -228,7 +228,7 @@ jobs:
         then
           # Format each changed workflow path as a Markdown bullet: "- `path`"
           workflowFilesChangedMarkdown="$(sed "s|^|- \`|; s|\$|\`|" <<< "${workflowFilesChanged}")"
-          workflowDocsReminder="$(printf "### Workflow documentation reminder\nThis PR modifies files under \`.github/workflows/\`.\nPlease update \`docs/workflows.md\` if the workflow inventory, triggers, or behavior changed.\n\nModified workflow files:\n%s\n" "${workflowFilesChangedMarkdown}")"
+          workflowDocsReminder="$(printf "### ⚠️ Workflow documentation reminder\nThis PR modifies files under \`.github/workflows/\`.\nPlease update \`docs/workflows.md\` if the workflow inventory, triggers, or behavior changed.\n\nModified workflow files:\n%s\n" "${workflowFilesChangedMarkdown}")"
         else
           workflowDocsReminder=""
         fi
@@ -239,7 +239,7 @@ jobs:
         then
           # Format each added scripts path as a Markdown bullet: "- `path`"
           scriptsFilesAddedMarkdown="$(sed "s|^|- \`|; s|\$|\`|" <<< "${scriptsFilesAdded}")"
-          scriptsLocationReminder="$(printf "### Scripts folder reminder\nThis PR adds files under \`scripts/\`.\nPlease consider whether each added script belongs in this repository or in \`leanprover-community/mathlib-ci\`.\n\nAdded scripts files:\n%s\n" "${scriptsFilesAddedMarkdown}")"
+          scriptsLocationReminder="$(printf "### ⚠️ Scripts folder reminder\nThis PR adds files under \`scripts/\`.\nPlease consider whether each added script belongs in this repository or in [\`leanprover-community/mathlib-ci\`](https://github.com/leanprover-community/mathlib-ci).\n\nA script belongs in **\`mathlib-ci\`** if it is a CI automation script that interacts with GitHub (e.g. managing labels, posting comments, triggering bots), runs from a trusted external checkout in CI, or requires access to secrets.\n\nA script belongs in **this repository** (\`scripts/\`) if it is a developer or maintainer tool to be run locally, a code maintenance or analysis utility, a style linting tool, or a data file used by the library's own linters.\n\nSee the [\`mathlib-ci\` README](https://github.com/leanprover-community/mathlib-ci) for more details.\n\nAdded scripts files:\n%s\n" "${scriptsFilesAddedMarkdown}")"
         else
           scriptsLocationReminder=""
         fi
