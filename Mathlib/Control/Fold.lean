@@ -111,7 +111,7 @@ abbrev Foldl (α : Type u) : Type u :=
   (End α)ᵐᵒᵖ
 
 def Foldl.mk (f : α → α) : Foldl α :=
-  op (TypeCat.ofHom (f))
+  op (TypeCat.ofHom f)
 
 def Foldl.get (x : Foldl α) : α → α :=
   ConcreteCategory.hom (unop x)
@@ -150,7 +150,7 @@ def foldlM.mk (f : α → m α) : foldlM m α :=
   op f
 
 def foldlM.get (x : foldlM m α) : α → m α :=
-  (unop x)
+  unop x
 
 @[simps]
 def foldlM.ofFreeMonoid [LawfulMonad m] (f : β → α → m β) : FreeMonoid α →* Monoid.foldlM m β where
@@ -371,14 +371,14 @@ set_option backward.isDefEq.respectTransparency false in
 theorem foldlm_toList {f : α → β → m α} {x : α} {xs : t β} :
     foldlm f x xs = List.foldlM f x (toList xs) :=
   calc foldlm f x xs
-    _ = (unop (foldlM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs))) x := by
+    _ = unop (foldlM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs)) x := by
       simp only [foldlm, toList_spec, foldMap_hom_free (foldlM.ofFreeMonoid f),
         foldlm.ofFreeMonoid_comp_of, foldlM.get, FreeMonoid.ofList_toList]
     _ = List.foldlM f x (toList xs) := by simp [foldlM.ofFreeMonoid, unop_op, flip]
 
 theorem foldrm_toList (f : α → β → m β) (x : β) (xs : t α) :
     foldrm f x xs = List.foldrM f x (toList xs) := by
-  change _ = (foldrM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs)) x
+  change _ = foldrM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs) x
   simp only [foldrm, toList_spec, foldMap_hom_free (foldrM.ofFreeMonoid f),
     foldrm.ofFreeMonoid_comp_of, foldrM.get, FreeMonoid.ofList_toList]
 
