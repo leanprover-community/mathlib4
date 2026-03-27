@@ -42,6 +42,7 @@ namespace Valued.integer
 
 -- should we do this all in the Valuation namespace instead?
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An element is in the valuation ring if the norm is bounded by 1. This is a variant of
 `Valuation.mem_integer_iff`, phrased using norms instead of the valuation. -/
 lemma mem_iff {x : K} : x ∈ 𝒪[K] ↔ ‖x‖ ≤ 1 := by

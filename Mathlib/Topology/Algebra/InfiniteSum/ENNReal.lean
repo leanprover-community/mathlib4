@@ -351,6 +351,7 @@ end ENNReal
 namespace NNReal
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tsum_eq_toNNReal_tsum {f : β → ℝ≥0} : ∑' b, f b = (∑' b, (f b : ℝ≥0∞)).toNNReal := by
   by_cases h : Summable f
   · rw [← ENNReal.coe_tsum h, ENNReal.toNNReal_coe]
@@ -472,6 +473,7 @@ theorem tsum_strict_mono {f g : α → ℝ≥0} (hg : Summable g) (h : f < g) : 
 theorem tsum_pos {g : α → ℝ≥0} (hg : Summable g) (i : α) (hi : 0 < g i) : 0 < ∑' b, g b := by
   simpa using tsum_lt_tsum (fun a => zero_le _) hi hg
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 theorem tsum_eq_add_tsum_ite {f : α → ℝ≥0} (hf : Summable f) (i : α) :
     ∑' x, f x = f i + ∑' x, ite (x = i) 0 (f x) := by
