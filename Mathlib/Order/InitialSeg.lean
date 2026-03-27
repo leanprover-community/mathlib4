@@ -642,6 +642,9 @@ variable [PartialOrder β] {a a' : α} {b : β}
 theorem mem_range_of_le [LT α] (f : α <i β) (h : b ≤ f a) : b ∈ Set.range f :=
   (f : α ≤i β).mem_range_of_le h
 
+theorem range_eq_Iio [LT α] (f : α <i β) : Set.range f = Set.Iio f.top :=
+  f.range_eq
+
 theorem isLowerSet_range [LT α] (f : α <i β) : IsLowerSet (Set.range f) :=
   (f : α ≤i β).isLowerSet_range
 
