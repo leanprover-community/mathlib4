@@ -124,8 +124,10 @@ def LatinSquareFromOncePerColumn
 /-- Every Finite Group's Cayley table is an example of a Latin Square. -/
 @[to_additive /-- Every Additive Finite Group's Cayley table is an example of a Latin Square -/,
   reducible]
+@[to_additive]
 def groupToCayleyTable (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
-  LatinSquare G G := LatinSquareFromOncePerColumn
+    LatinSquare G G :=
+  LatinSquareFromOncePerColumn
     (M := fun i j ↦ i * j)
     (exactly_n_symbols := by rfl)
     (once_per_row := by
