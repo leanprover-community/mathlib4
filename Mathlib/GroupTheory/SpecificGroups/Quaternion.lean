@@ -226,9 +226,8 @@ theorem quaternionGroup_one_isCyclic : IsCyclic (QuaternionGroup 1) := by
 -/
 @[simp]
 theorem orderOf_a_one : orderOf (a 1 : QuaternionGroup n) = 2 * n := by
-  rcases eq_zero_or_neZero n with hn | hn
-  · subst hn
-    simp_rw [mul_zero, orderOf_eq_zero_iff']
+  rcases eq_zero_or_neZero n with rfl | hn
+  · simp_rw [mul_zero, orderOf_eq_zero_iff']
     intro n h
     rw [one_def, a_one_pow]
     apply mt a.inj
@@ -253,9 +252,8 @@ theorem orderOf_a [NeZero n] (i : ZMod (2 * n)) :
 theorem exponent : Monoid.exponent (QuaternionGroup n) = 2 * lcm n 2 := by
   rw [← normalize_eq 2, ← lcm_mul_left, normalize_eq]
   norm_num
-  rcases eq_zero_or_neZero n with hn | hn
-  · subst hn
-    simp only [lcm_zero_left, mul_zero]
+  rcases eq_zero_or_neZero n with rfl | hn
+  · simp only [lcm_zero_left, mul_zero]
     exact Monoid.exponent_eq_zero_of_order_zero orderOf_a_one
   apply Nat.dvd_antisymm
   · apply Monoid.exponent_dvd_of_forall_pow_eq_one

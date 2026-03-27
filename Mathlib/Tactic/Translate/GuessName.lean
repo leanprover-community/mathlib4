@@ -58,7 +58,7 @@ def endCapitalNames : TreeMap String (List String) compare :=
 
 open String in
 /-- This function takes a String and splits it into separate parts based on the following
-[naming conventions](https://github.com/leanprover-community/mathlib4/wiki#naming-convention).
+[naming conventions](https://leanprover-community.github.io/contribute/naming.html).
 
 E.g. `#eval "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
 `["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`. -/
