@@ -96,10 +96,10 @@ theorem image_sumElim_product_antidiagonal {α β : Type*} [DecidableEq α] [Dec
     antidiagonal (x.sumElim y) := by
   ext ⟨u, v⟩
   simp only [mem_antidiagonal, mem_image, mem_product, Prod.mk.injEq, Prod.exists]
-  refine ⟨fun ⟨a, b, a', b', h1, h2, h3⟩ ↦ ?_, fun h ↦ ⟨u.comapDomain Sum.inl Sum.inl_injective.injOn,
-    v.comapDomain Sum.inl Sum.inl_injective.injOn, u.comapDomain Sum.inr Sum.inr_injective.injOn,
-    v.comapDomain Sum.inr Sum.inr_injective.injOn, ⟨?_, ?_⟩, comapDomain_sumElim_comapDomain ..,
-    comapDomain_sumElim_comapDomain ..⟩⟩
+  refine ⟨fun ⟨a, b, a', b', h1, h2, h3⟩ ↦ ?_, fun h ↦
+    ⟨u.comapDomain Sum.inl Sum.inl_injective.injOn, v.comapDomain Sum.inl Sum.inl_injective.injOn,
+    u.comapDomain Sum.inr Sum.inr_injective.injOn, v.comapDomain Sum.inr Sum.inr_injective.injOn,
+    ⟨?_, ?_⟩, comapDomain_sumElim_comapDomain .., comapDomain_sumElim_comapDomain ..⟩⟩
   · rw [← h2, ← h3, ← sumElim_add, h1.left, h1.right]
   · rw [← comapDomain_add_of_injective Sum.inl_injective, h, comapDomain_inl_sumElim]
   · rw [← comapDomain_add_of_injective Sum.inr_injective, h, comapDomain_inr_sumElim]
