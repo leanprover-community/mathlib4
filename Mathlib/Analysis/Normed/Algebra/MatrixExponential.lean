@@ -74,6 +74,12 @@ namespace Matrix
 
 section Topological
 
+set_option backward.isDefEq.respectTransparency false in
+theorem BlockTriangular.exp {α : Type*} {M : Matrix m m 𝔸} {b : m → α} [LinearOrder α] [Ring 𝔸]
+    [TopologicalSpace 𝔸] [Algebra ℚ 𝔸] [Fintype m] [DecidableEq m] [IsTopologicalRing 𝔸] [T2Space 𝔸]
+    (hM : BlockTriangular M b) : (NormedSpace.exp M).BlockTriangular b := NormedSpace.exp_mem
+    (s := blockTriangularSubalgebra (R := ℚ) b) isClosed_setOf_blockTriangular hM
+
 section Ring
 
 variable [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype (n' i)]
@@ -104,7 +110,6 @@ theorem IsHermitian.exp [StarRing 𝔸] [ContinuousStar 𝔸] {A : Matrix m m �
     (exp A).IsHermitian :=
   (exp_conjTranspose _).symm.trans <| congr_arg _ h
 
-
 end Ring
 
 section CommRing
@@ -119,11 +124,6 @@ theorem exp_transpose (A : Matrix m m 𝔸) : exp Aᵀ = (exp A)ᵀ := by
 set_option backward.isDefEq.respectTransparency false in
 theorem IsSymm.exp {A : Matrix m m 𝔸} (h : A.IsSymm) : (exp A).IsSymm :=
   (exp_transpose _).symm.trans <| congr_arg _ h
-
-set_option backward.isDefEq.respectTransparency false in
-theorem BlockTriangular.exp {α : Type*} {M : Matrix m m 𝔸} {b : m → α} [LinearOrder α]
-    (hM : BlockTriangular M b) : (NormedSpace.exp M).BlockTriangular b := NormedSpace.exp_mem
-    (s := blockTriangularSubalgebra (R := ℚ) b) isClosed_setOf_blockTriangular hM
 
 end CommRing
 
