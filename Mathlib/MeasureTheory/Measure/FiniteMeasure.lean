@@ -797,14 +797,14 @@ integrals of every continuous bounded nonnegative function are continuous. -/
 lemma continuous_iff_forall_continuous_lintegral :
     Continuous μs ↔ ∀ f : Ω →ᵇ ℝ≥0, Continuous fun x ↦ ∫⁻ ω, f ω ∂(μs x) := by
   simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_lintegral_tendsto,
-    forall_swap (α := X)]
+    forall_comm (α := X)]
 
 /-- The characterization of weak convergence of finite measures by the usual (defining)
 condition that the integrals of every continuous bounded function are continuous. -/
 lemma continuous_iff_forall_continuous_integral :
     Continuous μs ↔ ∀ f : Ω →ᵇ ℝ, Continuous fun x ↦ ∫ ω, f ω ∂(μs x) := by
   simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_integral_tendsto,
-    forall_swap (α := X)]
+    forall_comm (α := X)]
 
 @[fun_prop]
 lemma continuous_lintegral_boundedContinuousFunction [MeasurableSpace X] [OpensMeasurableSpace X]
