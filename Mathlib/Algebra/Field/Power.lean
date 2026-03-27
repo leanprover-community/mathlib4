@@ -5,7 +5,6 @@ Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Ring.Int.Parity
 
 /-!
@@ -18,10 +17,9 @@ beyond those needed for the basic definition.
 
 public section
 
-
 variable {α : Type*}
 
-section DivisionRing
+section DivisionMonoid
 
 variable [DivisionMonoid α] [HasDistribNeg α] {n : ℤ}
 
@@ -40,4 +38,4 @@ theorem Odd.neg_zpow {n : ℤ} {α : Type*} [DivisionMonoid α] [HasDistribNeg �
 
 theorem Odd.neg_one_zpow (h : Odd n) : (-1 : α) ^ n = -1 := by rw [h.neg_zpow, one_zpow]
 
-end DivisionRing
+end DivisionMonoid
