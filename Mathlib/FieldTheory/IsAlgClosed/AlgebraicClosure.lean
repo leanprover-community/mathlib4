@@ -120,18 +120,16 @@ theorem le_maxIdeal : spanCoeffs k ≤ maxIdeal k :=
 
 end AlgebraicClosure
 
+attribute [local instance] Ideal.Quotient.field in
 open AlgebraicClosure in
 /-- The canonical algebraic closure of a field, the direct limit of adding roots to the field for
 each polynomial over the field. -/
 @[stacks 09GT]
 def AlgebraicClosure : Type u :=
   MvPolynomial (Vars k) k ⧸ maxIdeal k
-deriving CommRing, Inhabited
+deriving CommRing, Field, Inhabited
 
 namespace AlgebraicClosure
-
-instance instField : Field (AlgebraicClosure k) :=
-  fast_instance% Ideal.Quotient.field _
 
 instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) :=
   inferInstanceAs <| SMul S (_ ⧸ _)
