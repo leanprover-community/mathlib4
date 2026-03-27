@@ -202,13 +202,8 @@ theorem exp_conj' (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
 set_option backward.isDefEq.respectTransparency false in
 omit [CompleteSpace 𝔸] in
 theorem BlockTriangular.exp {α : Type*} {M : Matrix m m 𝔸} {b : m → α} [LinearOrder α]
-    (hM : BlockTriangular M b) : (NormedSpace.exp M).BlockTriangular b := by
-  have : IsClosed (↑(blockTriangularSubsemiring (R := 𝔸) b) : Set (Matrix m m 𝔸)) :=
-    isClosed_setOf_blockTriangular
-  rw [exp_eq_tsum_rat]
-  apply tsum_mem this
-  intro i j k h
-  rw [smul_apply, (hM.pow i) h, smul_zero]
+    (hM : BlockTriangular M b) : (NormedSpace.exp M).BlockTriangular b := NormedSpace.exp_mem
+    (s := blockTriangularSubalgebra (R := ℚ) b) isClosed_setOf_blockTriangular hM
 
 end NormedComm
 
