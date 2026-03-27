@@ -64,6 +64,7 @@ inductive GenerateOpen (g : Set (Set α)) : Set α → Prop
   | sUnion : ∀ S : Set (Set α), (∀ s ∈ S, GenerateOpen g s) → GenerateOpen g (⋃₀ S)
 
 /-- The smallest topological space containing the collection `g` of basic sets -/
+@[implicit_reducible]
 def generateFrom (g : Set (Set α)) : TopologicalSpace α where
   IsOpen := GenerateOpen g
   isOpen_univ := GenerateOpen.univ
@@ -90,10 +91,11 @@ theorem nhds_generateFrom {g : Set (Set α)} {a : α} :
 
 lemma tendsto_nhds_generateFrom_iff {β : Type*} {m : α → β} {f : Filter α} {g : Set (Set β)}
     {b : β} : Tendsto m f (@nhds β (generateFrom g) b) ↔ ∀ s ∈ g, b ∈ s → m ⁻¹' s ∈ f := by
-  simp only [nhds_generateFrom, @forall_swap (b ∈ _), tendsto_iInf, mem_setOf_eq, and_imp,
+  simp only [nhds_generateFrom, @forall_comm (b ∈ _), tendsto_iInf, mem_setOf_eq, and_imp,
     tendsto_principal]; rfl
 
 /-- Construct a topology on α given the filter of neighborhoods of each point of α. -/
+@[implicit_reducible]
 protected def mkOfNhds (n : α → Filter α) : TopologicalSpace α where
   IsOpen s := ∀ a ∈ s, s ∈ n a
   isOpen_univ _ _ := univ_mem
@@ -111,7 +113,7 @@ theorem nhds_mkOfNhds_of_hasBasis {n : α → Filter α} {ι : α → Sort*} {p 
     replace hpure : pure ≤ n := fun x ↦ (hb x).ge_iff.2 (hpure x)
     refine mem_nhds_iff.2 ⟨{x | U ∈ n x}, fun x hx ↦ hpure x hx, fun x hx ↦ ?_, hU⟩
     rcases (hb x).mem_iff.1 hx with ⟨i, hpi, hi⟩
-    exact (hopen x i hpi).mono fun y hy ↦ mem_of_superset hy hi
+    exact (hopen x i hpi).mono fun y ↦ by gcongr
   · exact (nhds_basis_opens a).ge_iff.2 fun U ⟨haU, hUo⟩ ↦ hUo a haU
 
 theorem nhds_mkOfNhds (n : α → Filter α) (a : α) (h₀ : pure ≤ n)
@@ -155,6 +157,7 @@ theorem le_generateFrom_iff_subset_isOpen {g : Set (Set α)} {t : TopologicalSpa
 
 /-- If `s` equals the collection of open sets in the topology it generates, then `s` defines a
 topology. -/
+@[implicit_reducible]
 protected def mkOfClosure (s : Set (Set α)) (hs : { u | GenerateOpen s u } = s) :
     TopologicalSpace α where
   IsOpen u := u ∈ s
@@ -200,7 +203,7 @@ theorem generateFrom_setOf_isOpen (t : TopologicalSpace α) :
 
 theorem leftInverse_generateFrom :
     LeftInverse generateFrom fun t : TopologicalSpace α => { s | IsOpen[t] s } :=
-  (gciGenerateFrom α).u_l_leftInverse
+  (gciGenerateFrom α).leftInverse_u_l
 
 theorem generateFrom_surjective : Surjective (generateFrom : Set (Set α) → TopologicalSpace α) :=
   (gciGenerateFrom α).u_surjective
@@ -277,6 +280,21 @@ theorem IndiscreteTopology.isOpen_iff [IndiscreteTopology α] (U : Set α) :
 
 theorem TopologicalSpace.isOpen_top_iff {α} (U : Set α) : IsOpen[⊤] U ↔ U = ∅ ∨ U = univ :=
   letI : TopologicalSpace α := ⊤; IndiscreteTopology.isOpen_iff _
+
+theorem IndiscreteTopology.isClosed_iff [IndiscreteTopology α] (C : Set α) :
+    IsClosed C ↔ C = ∅ ∨ C = Set.univ := by
+  simp [← isOpen_compl_iff, IndiscreteTopology.isOpen_iff, Or.comm]
+
+theorem dense_indiscrete [IndiscreteTopology α] {s : Set α} (h : s.Nonempty) : Dense s := by
+  simp [dense_iff_inter_open, IndiscreteTopology.isOpen_iff, h]
+
+theorem closure_indiscrete [IndiscreteTopology α] {s : Set α} (h : s.Nonempty) :
+    closure s = Set.univ := Dense.closure_eq (dense_indiscrete h)
+
+/-- Every function to the indiscrete topology is continuous -/
+theorem continuous_of_indiscreteTopology {β} [TopologicalSpace β] [IndiscreteTopology β]
+    {f : α → β} : Continuous f where
+  isOpen_preimage := by simp [IndiscreteTopology.isOpen_iff]
 
 /-- A topological space is discrete if every set is open, that is,
   its topology equals the discrete topology `⊥`. -/
@@ -616,6 +634,7 @@ lemma generateFrom_insert_empty {α : Type*} {s : Set (Set α)} :
 
 /-- This construction is left adjoint to the operation sending a topology on `α`
   to its neighborhood filter at a fixed point `a : α`. -/
+@[implicit_reducible]
 def nhdsAdjoint (a : α) (f : Filter α) : TopologicalSpace α where
   IsOpen s := a ∈ s → s ∈ f
   isOpen_univ _ := univ_mem
@@ -690,6 +709,10 @@ theorem IndiscreteTopology.nhds_eq [TopologicalSpace α] [IndiscreteTopology α]
     nhds a = ⊤ := by
   cases IndiscreteTopology.eq_top α
   exact nhds_top
+
+theorem clusterPt_of_indiscreteTopology [TopologicalSpace α] [IndiscreteTopology α]
+    {x : α} {f : Filter α} [f.NeBot] : ClusterPt x f := by
+  simpa [ClusterPt, IndiscreteTopology.nhds_eq]
 
 /-- In the indiscrete topology no points are separable.
 
