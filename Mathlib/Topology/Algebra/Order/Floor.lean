@@ -237,50 +237,24 @@ theorem ContinuousOn.comp_fract'' {f : α → β} (h : ContinuousOn f I) (hf : f
 /-!
 ## Regular grids and `Nat.floor`
 
-These results relate `⌊(t - a) / h⌋₊` to membership in a regular grid of intervals
-`[a + n * h, a + (n + 1) * h)` with step size `h > 0`. They are used, for example,
-to construct piecewise linear interpolations and prove their continuity.
+Relate `⌊(t - a) / h⌋₊` to membership in a regular grid of intervals `[a + n * h, a + (n + 1) * h)`
+with step size `h > 0`. Used, for example, to construct interpolations.
 -/
 
 section RegularGrid
 
 variable {K : Type*} [Field K] [LinearOrder K] [FloorSemiring K] [IsStrictOrderedRing K]
 
-/-- If `t ∈ [a + n * h, a + (n + 1) * h)` and `0 < h`, then `⌊(t - a) / h⌋₊ = n`. -/
-theorem Nat.floor_div_eq_of_mem_Ico {h : K} (hh : 0 < h) {a : K}
-    {n : ℕ} {t : K} (ht : t ∈ Ico (a + n * h) (a + (n + 1) * h)) :
-    ⌊(t - a) / h⌋₊ = n := by
-  refine Nat.floor_eq_on_Ico n _ ⟨?_, ?_⟩ <;>
-    (first | rw [le_div_iff₀ hh] | rw [div_lt_iff₀ hh]) <;> linarith [ht.1, ht.2]
-
-/-- If `0 < h` and `a ≤ t`, then `t` lies in the floor interval
-`[a + ⌊(t - a) / h⌋₊ * h, a + (⌊(t - a) / h⌋₊ + 1) * h)`. -/
-theorem mem_Ico_Nat_floor_div {h : K} (hh : 0 < h) {a t : K} (hat : a ≤ t) :
-    t ∈ Ico (a + ⌊(t - a) / h⌋₊ * h) (a + (↑⌊(t - a) / h⌋₊ + 1) * h) := by
-  constructor <;> nlinarith [Nat.floor_le (div_nonneg (sub_nonneg.mpr hat) hh.le),
-    Nat.lt_floor_add_one ((t - a) / h), mul_div_cancel₀ (t - a) hh.ne']
-
-variable [TopologicalSpace K] [OrderTopology K]
-
-/-- The regular grid of closed intervals `[a + n * h, a + (n + 1) * h]` is locally finite. -/
-theorem locallyFinite_Icc_grid {h : K} (hh : 0 < h) (a : K) :
-    LocallyFinite fun n : ℕ => Icc (a + n * h) (a + (↑n + 1) * h) := by
-  intro x
-  refine ⟨Ioo (x - h) (x + h), Ioo_mem_nhds (by linarith) (by linarith),
-    (finite_Icc (⌊(x - h - a) / h⌋₊) (⌈(x + h - a) / h⌉₊)).subset ?_⟩
-  rintro n ⟨z, ⟨hz1, hz2⟩, hz3, hz4⟩
-  refine ⟨Nat.lt_add_one_iff.mp ((Nat.floor_lt' (by linarith)).mpr ?_),
-    Nat.cast_le.mp ((?_ : (n : K) ≤ _).trans (Nat.le_ceil _))⟩ <;>
-    (first | rw [div_lt_iff₀ hh] | rw [le_div_iff₀ hh]) <;> push_cast <;> nlinarith
-
-/-- A function continuous on each cell `[a + n * h, a + (n + 1) * h]` is continuous
-on `[a, ∞)`. -/
-theorem ContinuousOn.of_Icc_grid {E : Type*} [TopologicalSpace E]
-    {f : K → E} {h : K} (hh : 0 < h) {a : K}
-    (hf : ∀ n : ℕ, ContinuousOn f (Icc (a + n * h) (a + (n + 1) * h))) :
-    ContinuousOn f (Ici a) :=
-  ((locallyFinite_Icc_grid hh a).continuousOn_iUnion (fun _ => isClosed_Icc) (hf ·)).mono
-    fun t (hat : a ≤ t) =>
-      mem_iUnion.mpr ⟨_, Ico_subset_Icc_self (mem_Ico_Nat_floor_div hh hat)⟩
+/-- `⌊(t - a) / h⌋₊ = n` iff `t ∈ [a + n * h, a + (n + 1) * h)`, given `0 < h` and `a ≤ t`. -/
+theorem Nat.floor_div_eq_iff_mem_Ico {h : K} (hh : 0 < h) {a t : K} (hat : a ≤ t) {n : ℕ} :
+    ⌊(t - a) / h⌋₊ = n ↔ t ∈ Ico (a + n * h) (a + (n + 1) * h) := by
+  constructor
+  · intro h_eq
+    rw [← h_eq]
+    constructor <;> nlinarith [Nat.floor_le (div_nonneg (sub_nonneg.mpr hat) hh.le),
+      Nat.lt_floor_add_one ((t - a) / h), mul_div_cancel₀ (t - a) hh.ne']
+  · intro ht
+    exact Nat.floor_eq_on_Ico n _ ⟨(le_div_iff₀ hh).mpr (by linarith [ht.1]),
+      (div_lt_iff₀ hh).mpr (by linarith [ht.2])⟩
 
 end RegularGrid
