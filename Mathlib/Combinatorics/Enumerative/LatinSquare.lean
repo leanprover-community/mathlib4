@@ -47,9 +47,6 @@ square; this theorem is formalized as
 
 ## TODO
 
-* [DONE] Add theorem that a k-1 × n Latin rectangle can be extended to a k × n Latin rectangle.
-* [DONE] Corollary, any k x n Latin rectangle can be extneded to a Latin square.
-* [DONE] Add that a n x n Latin rectangle is a Latin square.
 * Add Ryser's theorem using partial Latin squares.
 * Add Evan's Conjeture.
 * Add isomorphism to quasigroups.
