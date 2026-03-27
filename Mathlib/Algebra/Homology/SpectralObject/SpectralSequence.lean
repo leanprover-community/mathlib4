@@ -601,7 +601,7 @@ lemma spectralSequence_iso (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1
       (X.spectralSequenceHomologyData data r r' hrr' hr pq pq' pq'' hpq hpq'
       i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁').left.homologyIso ≪≫
         (X.spectralSequencePageXIso data r' (by lia) _ _ _ _ _
-          hi₀' hi₁ hi₂ hi₃' _ _ _ hn₁' hn₁ hn₂).symm := by
+          hi₀' hi₁ hi₂ hi₃' _ _ _ hn₁').symm := by
   obtain rfl : n₀ = n₁ - 1 := by lia
   obtain rfl : n₂ = n₁ + 1 := by lia
   subst hpq hpq' hn₁' hi₀ hi₁ hi₂ hi₃ hi₀' hi₃'
