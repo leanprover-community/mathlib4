@@ -25,7 +25,7 @@ the corresponding morphisms on the simplicial objects in `C` that are
 obtained after applying the "free object" functor `sigmaConst.obj R : Type _ ⥤ C`
 degreewise, and that a combinatoral homotopy of simplicial objects
 in a preadditive category induces a homotopy on the alternating face map
-complexes (see `SimplicialObject.Homotopy.toChainHomotopy`, that is defined
+complexes (see `SimplicialObject.Homotopy.toChainHomotopy`, which is defined
 in the file `Mathlib/AlgebraicTopology/SimplicialObject/ChainHomotopy.lean`).
 
 Secondly, in the case the homotopy between `f` and `g` is given
