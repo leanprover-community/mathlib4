@@ -68,6 +68,7 @@ protected def con : Con G where
       _ = (a * c)⁻¹ * (b * d) := by
         simp only [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
 
+set_option backward.inferInstanceAs.wrap.data false in
 @[to_additive]
 instance Quotient.group : Group (G ⧸ N) :=
   inferInstanceAs <| Group (QuotientGroup.con N).Quotient
