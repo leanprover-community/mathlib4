@@ -69,7 +69,6 @@ theorem IsCompact.matrix [TopologicalSpace R] {S : Set R} (hS : IsCompact S) :
     IsCompact (S.matrix : Set (Matrix m n R)) :=
   isCompact_pi_infinite fun _ => isCompact_pi_infinite fun _ => hS
 
-
 end Set
 
 /-! ### Lemmas about continuity of operations -/
