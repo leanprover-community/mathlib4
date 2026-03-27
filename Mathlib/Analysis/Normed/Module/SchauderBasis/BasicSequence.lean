@@ -14,7 +14,7 @@ public import Mathlib.Analysis.LocallyConvex.Separation
 
 A **basic sequence** in a Banach space is a sequence that forms a Schauder basis for the closure of
 its linear span. Basic sequences are a central tool in the structural theory of Banach spaces:
-every infinite-dimensional Banach space contains a basic sequence (the Bessaga–Pełczyński theorem),
+every infinite-dimensional Banach space contains a basic sequence,
 and many constructions in the theory reduce to manipulations of basic sequences.
 
 The key criterion for recognizing basic sequences is the **Grünblum condition**: a sequence `e` is
