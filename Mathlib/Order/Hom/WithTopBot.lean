@@ -271,7 +271,7 @@ theorem withTop_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
   DFunLike.coe_injective <| Eq.symm <| WithTop.map_comp_map _ _
 
 /-- Adjoins a `⊤` and `⊥` to the domain and codomain of a `LatticeHom`. -/
-@[to_dual]
+@[to_dual /-- Adjoins a `⊥` and `⊤` to the domain and codomain of a `LatticeHom`. -/]
 def withTopWithBot (f : LatticeHom α β) :
     BoundedLatticeHom (WithTop <| WithBot α) (WithTop <| WithBot β) :=
   ⟨f.withBot.withTop, rfl, rfl⟩
@@ -305,8 +305,8 @@ def withTop' [OrderTop β] (f : LatticeHom α β) : LatticeHom (WithTop α) β :
 def withBot' [OrderBot β] (f : LatticeHom α β) : LatticeHom (WithBot α) β :=
   { f.toSupHom.withBot', f.toInfHom.withBot' with }
 
-/-- Adjoins a `⊤` and `⊥` to the codomain of a `LatticeHom`. -/
-@[to_dual (attr := simps!)]
+/-- Adjoins a `⊤` and `⊥` to the domain of a `LatticeHom`. -/
+@[to_dual (attr := simps!) /-- Adjoins a `⊥` and `⊤` to the domain of a `LatticeHom`. -/]
 def withTopWithBot' [BoundedOrder β] (f : LatticeHom α β) :
     BoundedLatticeHom (WithTop <| WithBot α) β where
   toLatticeHom := f.withBot'.withTop'
