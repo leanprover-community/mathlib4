@@ -873,9 +873,9 @@ nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [ContinuousMul G
   isHaarMeasure_map μ e.toMonoidHom he e.surjective f.isClosedEmbedding.tendsto_cocompact
 
 /--
-A convenience wrapper for MeasureTheory.Measure.isHaarMeasure_map.
+A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`.
 -/
-@[to_additive /-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map. -/]
+@[to_additive /-- A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`. -/]
 instance _root_.ContinuousMulEquiv.isHaarMeasure_map [BorelSpace G] [IsTopologicalGroup G]
     {H : Type*} [Group H] [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
     [IsTopologicalGroup H] (e : G ≃ₜ* H) : (μ.map e).IsHaarMeasure :=
