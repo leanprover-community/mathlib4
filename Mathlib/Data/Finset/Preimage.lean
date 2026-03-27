@@ -131,16 +131,14 @@ theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
   simp_rw [map_eq_image, subset_image_iff, eq_comm]
 
 @[simp]
-theorem sup_preimage {α β : Type*} [hnea : Nonempty α] [SemilatticeSup β] [OrderBot β]
+theorem sup_preimage_eq_sup_id_of_bij {α β : Type*} [Nonempty α] [SemilatticeSup β] [OrderBot β]
     {s : Finset β} {f : α → β} (hf : Set.BijOn f (f ⁻¹' ↑s) s) :
     (preimage s f hf.2.1).sup f = s.sup id := by
   classical
-  let finvs := invFunOn f (f ⁻¹' ↑s)
-  have hfinvs : ∀ x ∈ s, f (finvs x) = x := (Set.BijOn.invOn_invFunOn hf).2
-  have hfinvs' : ∀ x ∈ s, (f ∘ finvs) x = id x := (Set.BijOn.invOn_invFunOn hf).2
-  rw [← sup_congr (Eq.refl s) hfinvs', ← sup_image]
+  have hfinvs : ∀ x ∈ s, (f ∘ (invFunOn f (f ⁻¹' ↑s))) x = id x := (Set.BijOn.invOn_invFunOn hf).2
+  rw [← sup_congr (Eq.refl s) hfinvs, ← sup_image]
   congr
-  exact (Finset.image_eq_preimage_of_leftInvOn_injOn (Set.BijOn.invOn_invFunOn hf).2 hf.2.1).symm
+  exact (image_eq_preimage_of_leftInvOn_injOn (Set.BijOn.invOn_invFunOn hf).2 hf.2.1).symm
 
 lemma sup_preimage_val_id_eq_sup_toSubtype_id [Lattice α] [OrderBot α] {P : α → Prop}
     (Psup : ∀ ⦃s t : α⦄, P s → P t → P (s ⊔ t)) (Pbot : P (⊥ : α)) {t : Finset α}
@@ -152,8 +150,8 @@ lemma sup_preimage_val_id_eq_sup_toSubtype_id [Lattice α] [OrderBot α] {P : α
   letI : OrderBot (Subtype P) := Subtype.orderBot Pbot
   ext
   simp only [sup_coe, id_eq]
-  apply Finset.sup_preimage
-  refine ⟨Set.mapsTo_preimage _ _, Set.injOn_of_injective Subtype.val_injective, ?_⟩
+  apply sup_preimage_eq_sup_id_of_bij
+  refine ⟨mapsTo_preimage _ _, injOn_of_injective Subtype.val_injective, ?_⟩
   intro x hx; simpa using ⟨hx, ht x hx⟩
 
 theorem sigma_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σ a, β a)) (t : Finset α) :
