@@ -649,7 +649,8 @@ lemma add_one_le_natCast_iff (n : WithBot ℕ∞) (m : ℕ) : n + 1 ≤ m ↔ n 
   induction n with
   | bot => simp
   | coe n =>
-    simp [← coe_eq_natCast, ← WithBot.coe_one, ← WithBot.coe_add, add_one_le_iff']
+    norm_cast
+    simp [add_one_le_iff']
 
 lemma add_one_le_zero_iff (n : WithBot ℕ∞) : n + 1 ≤ 0 ↔ n = ⊥ :=
   (add_one_le_natCast_iff n 0).trans (WithBot.lt_zero_iff_eq_bot n)
