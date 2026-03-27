@@ -62,6 +62,11 @@ lemma IsCovariantDerivativeOn.projection_lift_vec (x : M) (f : F) :
   ext u
   simp
 
+lemma IsCovariantDerivativeOn.lift_vec_mem_horiz (x : M) (f : F) (u : TangentSpace I x) :
+    hcov.lift_vec x f u ∈ hcov.horiz x f := by
+  rw [horiz]
+  simp
+
 lemma IsCovariantDerivativeOn.lift_vec_eq_iff
   {x : M} {f : F} {u : TangentSpace I x} {w : TangentSpace I x × F} :
     hcov.lift_vec x f u = w ↔ hcov.projection x f w = 0 ∧ w.1 = u := by
@@ -102,21 +107,6 @@ lemma CovariantDerivative.lift_vec_apply {v : TotalSpace F V} (u : TangentSpace 
     haveI hcov := cov.isCovariantDerivativeOn_pushCovDer t
     letI tlift := hcov.lift_vec v.proj (t v).2
     cov.lift_vec v u = t.derivInv I v (tlift u) := rfl
-
-/-- We can compute `lift_vec v` using any trivialization whose
-base set contains `v.proj`. This is crucial to prove smoothness
-of `lift_vec`. -/
-lemma CovariantDerivative.lift_vec_eq {v : TotalSpace F V}
-    {e : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e]
-    (hv : v.proj ∈ e.baseSet)
-    (u : TangentSpace I v.proj) :
-    haveI hcov := cov.isCovariantDerivativeOn_pushCovDer e
-    cov.lift_vec v u = e.derivInv I v (hcov.lift_vec v.proj (e v).2 u) := by
-  rw [cov.lift_vec_apply]
-  set t := trivializationAt F V v.proj
-  have hcov := cov.isCovariantDerivativeOn_pushCovDer t
-  refold_let t
-  sorry
 
 @[simp]
 lemma CovariantDerivative.lift_vec_horiz {v : TotalSpace F V} (u : TangentSpace I v.proj) :
@@ -174,6 +164,25 @@ lemma CovariantDerivative.lift_vec_eq_iff' {v : TotalSpace F V} (u : TangentSpac
       w ∈ cov.horiz v ∧
       mfderiv (I.prod 𝓘(𝕜, F)) I (TotalSpace.proj : TotalSpace F V → M) v w = u := by
   simp [CovariantDerivative.lift_vec_eq_iff, horiz]
+
+/-- We can compute `lift_vec v` using any trivialization whose
+base set contains `v.proj`. This is crucial to prove smoothness
+of `lift_vec`. -/
+lemma CovariantDerivative.lift_vec_eq [FiniteDimensional 𝕜 E] {v : TotalSpace F V}
+    {e : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e]
+    (hv : v.proj ∈ e.baseSet)
+    (u : TangentSpace I v.proj) :
+    haveI hcov := cov.isCovariantDerivativeOn_pushCovDer e
+    cov.lift_vec v u = e.derivInv I v (hcov.lift_vec v.proj (e v).2 u) := by
+  apply (cov.lift_vec_eq_iff' _ _).mpr ⟨?_, ?_⟩
+  · rw [cov.mem_horiz_iff_exists]
+    have hcov := cov.isCovariantDerivativeOn_pushCovDer e
+    have := hcov.lift_vec_mem_horiz v.proj (e v).2 u
+    rw [hcov.mem_horiz_iff_exists] at this
+    rcases this with ⟨s, sdiff, sval, mfderivs, covs⟩
+    use e.funToSec s
+    sorry
+  · simp [hv]
 
 -- noncomputable
 -- def CovariantDerivative.lift_vec'
