@@ -326,8 +326,8 @@ lemma EisensteinSeries.E_qExpansion_coeff {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k
     if m = 0 then 1 else -(2 * k / bernoulli k : ℂ) * ↑(σ (k - 1) m) := by
   set β : ℂ := -(2 * k / bernoulli k : ℂ)
   set c : ℕ → ℂ := fun m ↦ if m = 0 then 1 else β * ↑(σ (k - 1) m)
-  suffices hsuff : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 (1 : ℝ) τ ^ m) (E hk τ) by
-    exact (qExpansion_coeff_unique one_pos one_mem_strictPeriods_SL2Z hsuff m).symm
+  suffices ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 (1 : ℝ) τ ^ m) (E hk τ) from
+    (qExpansion_coeff_unique one_pos one_mem_strictPeriods_SL2Z this m).symm
   intro τ
   have hS : Summable fun n : ℕ ↦ (σ (k - 1) (n + 1) : ℂ) * cexp (2 * π * I * τ) ^ (n + 1) :=
     (summable_nat_add_iff 1).mpr (summable_sigma_mul_cexp_pow (by omega) τ)
@@ -335,7 +335,7 @@ lemma EisensteinSeries.E_qExpansion_coeff {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k
   simp only [Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte, smul_eq_mul, Finset.range_one,
     ite_mul, one_mul, Finset.sum_singleton, pow_zero, c]
   have hval : E hk τ - 1 = β * ∑' n : ℕ, (σ (k - 1) (n + 1)) * cexp (2 * π * I * τ) ^ (n + 1) := by
-    have := (q_expansion_bernoulli hk hk2 τ)
+    have := q_expansion_bernoulli hk hk2 τ
     simp_rw [zpow_natCast] at this
     rw [this, ← tsum_pnat_eq_tsum_succ (f := fun n ↦ (σ (k - 1) n : ℂ) * cexp (2 * π * I * τ) ^ n)]
     ring
@@ -350,10 +350,8 @@ lemma EisensteinSeries.E_qExpansion_coeff_zero {k : ℕ} (hk : 3 ≤ k) (hk2 : E
   simpa using E_qExpansion_coeff hk hk2 0
 
 /-- Normalised Eisenstein series of even weight `k ≥ 3` are non-zero. -/
-theorem EisensteinSeries.E_ne_zero {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) : E hk ≠ 0 := by
-  intro h
-  have h2 : (qExpansion (1 : ℝ) (E hk : ℍ → ℂ)).coeff 0 = 0 := by
-    simp [h, qExpansion_zero]
-  exact absurd ((E_qExpansion_coeff_zero hk hk2).symm.trans h2) one_ne_zero
+theorem EisensteinSeries.E_ne_zero {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) : E hk ≠ 0 :=
+  fun h ↦ one_ne_zero <|
+    (E_qExpansion_coeff_zero hk hk2).symm.trans (by simp [h, qExpansion_zero])
 
 end NonZero
