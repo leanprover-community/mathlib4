@@ -104,7 +104,6 @@ theorem mk_eq_mk (x : R) : (Submodule.Quotient.mk x : R ⧸ I) = mk I x := rfl
 theorem eq_zero_iff_mem : mk I a = 0 ↔ a ∈ I :=
   Submodule.Quotient.mk_eq_zero _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mk_eq_mk_iff_sub_mem (x y : R) : mk I x = mk I y ↔ x - y ∈ I := by
   rw [← eq_zero_iff_mem, map_sub, sub_eq_zero]
 
