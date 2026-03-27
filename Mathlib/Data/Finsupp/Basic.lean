@@ -1042,28 +1042,24 @@ lemma prod_sumElim {ι₁ ι₂ α M : Type*} [Zero α] [CommMonoid M]
   simp [Finsupp.prod, Finset.prod_disjSum]
 
 @[simp]
-lemma comapDomain_sumInl_sumElim (f : α →₀ γ) (g : β →₀ γ) :
+lemma comapDomain_inl_sumElim (f : α →₀ γ) (g : β →₀ γ) :
     comapDomain Sum.inl (f.sumElim g) Sum.inl_injective.injOn = f := by
   ext; simp
 
 @[simp]
-lemma comapDomain_sumInr_sumElim (f : α →₀ γ) (g : β →₀ γ) :
+lemma comapDomain_inr_sumElim (f : α →₀ γ) (g : β →₀ γ) :
     comapDomain Sum.inr (f.sumElim g) Sum.inr_injective.injOn = g := by
   ext; simp
 
 @[simp]
-lemma embDomain_embeddingInr (b : β →₀ γ) :
-    embDomain Function.Embedding.inr b = sumElim (0 : α →₀ γ) b := by
-  ext (_ | _)
-  · simp [embDomain_notin_range]
-  · rw [coe_sumElim, coe_zero, Sum.elim_inr, ← Function.Embedding.inr_apply, embDomain_apply_self]
+lemma embDomain_inl (a : α →₀ γ) :
+    embDomain Function.Embedding.inl a = sumElim a (0 : β →₀ γ) := by
+  ext (_ | _) <;> simp [embDomain_apply]
 
 @[simp]
-lemma embDomain_embeddingInl (a : α →₀ γ) :
-    embDomain Function.Embedding.inl a = sumElim a (0 : β →₀ γ) := by
-  ext (_ | _)
-  · rw [coe_sumElim, coe_zero, Sum.elim_inl, ← Function.Embedding.inl_apply, embDomain_apply_self]
-  · simp [embDomain_notin_range]
+lemma embDomain_inr (b : β →₀ γ) :
+    embDomain Function.Embedding.inr b = sumElim (0 : α →₀ γ) b := by
+  ext (_ | _) <;> simp [embDomain_apply]
 
 @[simp]
 lemma comapDomain_sumElim_comapDomain (c : α ⊕ β →₀ γ) :
@@ -1071,8 +1067,9 @@ lemma comapDomain_sumElim_comapDomain (c : α ⊕ β →₀ γ) :
       (comapDomain Sum.inr c Sum.inr_injective.injOn) = c := by
   ext (_ | _) <;> simp
 
+@[simp]
 lemma sumElim_add [AddZeroClass M] (a b : α →₀ M) (c d : β →₀ M) :
-    a.sumElim c + b.sumElim d = (a + b).sumElim (c + d) := by
+    (a + b).sumElim (c + d) = a.sumElim c + b.sumElim d := by
   ext (_ | _) <;> simp
 
 /-- The equivalence between `(α ⊕ β) →₀ γ` and `(α →₀ γ) × (β →₀ γ)`.
