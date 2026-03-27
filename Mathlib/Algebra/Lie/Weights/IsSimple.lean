@@ -637,6 +637,7 @@ theorem isSimple_of_isIrreducible (hIrr : (rootSystem H).IsIrreducible) : IsSimp
     haveI : Subsingleton L := subsingleton_of_forall_eq 0 h_zero
     exact not_nontrivial (Dual K H) hIrr.1
 
+/-- The root system of a simple Killing Lie algebra is irreducible. -/
 instance [IsSimple K L] : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L
   exact RootPairing.IsIrreducible.mk' (rootSystem H) <| fun q h₀ h₁ ↦ by
