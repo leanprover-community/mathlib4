@@ -112,7 +112,7 @@ theorem rank_eq_one_iff [Module.Free K V] :
     haveI : Subsingleton V := .intro fun _ _ ↦ by simp_rw [← hv]
     exact one_ne_zero (h ▸ rank_subsingleton' K V)
   · by_contra H
-    rw [not_le, lt_one_iff_zero] at H
+    rw [not_le, Cardinal.lt_one_iff] at H
     obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := K) (M := V)
     haveI := mk_eq_zero_iff.1 (H ▸ b.mk_eq_rank'')
     haveI := b.repr.toEquiv.subsingleton
@@ -249,7 +249,7 @@ theorem eq_bot_of_rank_le_one (h : Module.rank F S ≤ 1) [Module.Free F S] : S 
     obtain ⟨y, hy⟩ := (bijective_algebraMap_of_linearEquiv (b.repr ≪≫ₗ
       Finsupp.LinearEquiv.finsuppUnique _ _ _).symm).surjective ⟨x, hx⟩
     exact ⟨y, congr(Subtype.val $(hy))⟩
-  haveI := mk_eq_zero_iff.1 (b.mk_eq_rank''.symm ▸ lt_one_iff_zero.1 (h.lt_of_ne h1))
+  haveI := mk_eq_zero_iff.1 (b.mk_eq_rank''.symm ▸ Cardinal.lt_one_iff.1 (h.lt_of_ne h1))
   haveI := b.repr.toEquiv.subsingleton
   exact False.elim <| one_ne_zero congr(S.val $(Subsingleton.elim 1 0))
 
@@ -268,7 +268,7 @@ theorem rank_eq_one_iff [Nontrivial E] [Module.Free F S] : Module.rank F S = 1 �
     rwa [← one_eq_range, rank_self, lift_one, lift_le_one_iff,
       ← Algebra.toSubmodule_bot, rank_toSubmodule] at this
   · by_contra H
-    rw [not_le, lt_one_iff_zero] at H
+    rw [not_le, Cardinal.lt_one_iff] at H
     haveI := mk_eq_zero_iff.1 (H ▸ b.mk_eq_rank'')
     haveI := b.repr.toEquiv.subsingleton
     exact one_ne_zero congr((⊥ : Subalgebra F E).val $(Subsingleton.elim 1 0))

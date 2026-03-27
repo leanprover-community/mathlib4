@@ -79,26 +79,21 @@ variable [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype
   [∀ i, DecidableEq (n' i)] [Ring 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸]
   [T2Space 𝔸]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exp_diagonal [Algebra ℚ 𝔸] (v : m → 𝔸) : exp (diagonal v) = diagonal (exp v) := by
   simp_rw [exp_eq_tsum_rat, diagonal_pow, ← diagonal_smul, ← diagonal_tsum]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exp_blockDiagonal [Algebra ℚ 𝔸] (v : m → Matrix n n 𝔸) :
     exp (blockDiagonal v) = blockDiagonal (exp v) := by
   simp_rw [exp_eq_tsum_rat, ← blockDiagonal_pow, ← blockDiagonal_smul, ← blockDiagonal_tsum]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exp_blockDiagonal' [Algebra ℚ 𝔸] (v : ∀ i, Matrix (n' i) (n' i) 𝔸) :
     exp (blockDiagonal' v) = blockDiagonal' (exp v) := by
   simp_rw [exp_eq_tsum_rat, ← blockDiagonal'_pow, ← blockDiagonal'_smul, ← blockDiagonal'_tsum]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exp_conjTranspose [StarRing 𝔸] [ContinuousStar 𝔸] (A : Matrix m m 𝔸) :
     exp Aᴴ = (exp A)ᴴ :=
   (star_exp A).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsHermitian.exp [StarRing 𝔸] [ContinuousStar 𝔸] {A : Matrix m m 𝔸} (h : A.IsHermitian) :
     (exp A).IsHermitian :=
   (exp_conjTranspose _).symm.trans <| congr_arg _ h
@@ -110,11 +105,9 @@ section CommRing
 variable [Fintype m] [DecidableEq m] [CommRing 𝔸] [TopologicalSpace 𝔸]
   [IsTopologicalRing 𝔸] [Algebra ℚ 𝔸] [T2Space 𝔸]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exp_transpose (A : Matrix m m 𝔸) : exp Aᵀ = (exp A)ᵀ := by
   simp_rw [exp_eq_tsum_rat, transpose_tsum, transpose_smul, transpose_pow]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsSymm.exp {A : Matrix m m 𝔸} (h : A.IsSymm) : (exp A).IsSymm :=
   (exp_transpose _).symm.trans <| congr_arg _ h
 
@@ -157,7 +150,6 @@ nonrec theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
     exp (U * A * U⁻¹) = U * exp A * U⁻¹ :=
   open scoped Norms.Operator in exp_units_conj U A
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: without disabling this instance we get a timeout, see lean4#10414:
 -- https://github.com/leanprover/lean4/issues/10414
 -- and zulip discussion at
@@ -179,20 +171,17 @@ theorem exp_neg (A : Matrix m m 𝔸) : exp (-A) = (exp A)⁻¹ := by
   rw [nonsing_inv_eq_ringInverse]
   open scoped Norms.Operator in exact (Ring.inverse_exp A).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exp_zsmul (z : ℤ) (A : Matrix m m 𝔸) : exp (z • A) = exp A ^ z := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
   · rw [zpow_natCast, natCast_zsmul, exp_nsmul]
   · have : IsUnit (exp A).det := (Matrix.isUnit_iff_isUnit_det _).mp (isUnit_exp _)
     rw [Matrix.zpow_neg this, zpow_natCast, neg_smul, exp_neg, natCast_zsmul, exp_nsmul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exp_conj (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
     exp (U * A * U⁻¹) = U * exp A * U⁻¹ :=
   let ⟨u, hu⟩ := hy
   hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj u A
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exp_conj' (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
     exp (U⁻¹ * A * U) = U⁻¹ * exp A * U :=
   let ⟨u, hu⟩ := hy

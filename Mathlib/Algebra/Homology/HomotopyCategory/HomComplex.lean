@@ -727,14 +727,13 @@ def isKernel (hm : n + 1 = m) :
         map_zero' := by
           #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
           this was just `cat_disch`. -/
-          simp +instances only [HomComplex_X, Functor.const_obj_obj, parallelPair_obj_zero,
-            map_zero]
-          cat_disch
-        map_add' := by
+          simp +instances only [HomComplex_X, map_zero]
+          rfl
+        map_add' _ _ := by
           #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
           this was just `cat_disch`. -/
-          simp +instances only [HomComplex_X, Functor.const_obj_obj, parallelPair_obj_zero, map_add]
-          cat_disch })
+          simp +instances only [HomComplex_X, map_add]
+          rfl})
     (by cat_disch) (fun s l hl ↦ by ext : 3; simp [← hl])
 
 end Cocycle
