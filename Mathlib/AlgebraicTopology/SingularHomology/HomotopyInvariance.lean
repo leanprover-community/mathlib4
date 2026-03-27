@@ -28,7 +28,7 @@ in a preadditive category induces a homotopy on the alternating face map
 complexes (see `SimplicialObject.Homotopy.toChainHomotopy`, which is defined
 in the file `Mathlib/AlgebraicTopology/SimplicialObject/ChainHomotopy.lean`).
 
-Secondly, in the case the homotopy between `f` and `g` is given
+Secondly, in the case where the homotopy between `f` and `g` is given
 by a usual homotopy of morphisms of simplicial sets (`SSet.Homotopy`),
 i.e. by a morphism `h : X ⊗ Δ[1] ⟶ Y`, we apply the construction above
 to the combinatorial simplicial homotopy that is deduced from `h` by
