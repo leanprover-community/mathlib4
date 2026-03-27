@@ -73,6 +73,7 @@ structure FormalGroup where
   assoc : subst ![subst ![Y₀, Y₁] toFun, Y₂] toFun
     = subst ![Y₀, subst ![Y₁, Y₂] toFun] toFun (S := R)
 
+/-- A formal group is commutative if it satisfies $F(X, Y) = F(Y, X)$. -/
 class FormalGroup.IsComm (F : FormalGroup R) : Prop where
   comm : F.toFun = F.toFun.subst ![X₁, X₀]
 
