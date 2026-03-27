@@ -88,7 +88,7 @@ protected def rec : ∀ a, motive a
 end induction
 
 /-- From an isomorphism in a category, true can build a functor out of `WalkingIso` to
-  that category. -/
+that category. -/
 def fromIso {X Y : C} (e : X ≅ Y) : WalkingIso.{w} ⥤ C where
   obj x := by induction x; exacts [X, Y]
   map {x y} _ := by induction x <;> induction y; exacts [𝟙 X, e.hom, e.inv, 𝟙 Y]
@@ -143,13 +143,13 @@ namespace Codiscrete
 open Simplicial
 
 /-- Since the morphisms in a codiscrete category do not carry information, an n-simplex of
-  coherentIso is equivalent to an X-vector of length (n + 1). -/
+coherentIso is equivalent to an X-vector of length (n + 1). -/
 def equivFun {X : Type u} {n : ℕ} : nerve (Codiscrete X) _⦋n⦌ ≃ (Fin (n + 1) → X) where
   toFun f n := (f.obj n).as
   invFun f := .mk (fun n ↦ .mk (f n)) (fun _ ↦ ⟨⟩) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
 
-/-- Since `Bool` (and hence `WalkingIso`) has decidable equality,
-  the simplices of coherentIso have decidable equality as well. -/
+/-- If a type `X` has decidable equality, the nerve of the codiscrete category on `X`
+has decidable equality as well. -/
 instance {X : Type u} [DecidableEq X] {n : ℕ} : DecidableEq (nerve (Codiscrete X) _⦋n⦌) :=
   fun _ _ ↦ decidable_of_iff _ (Equiv.apply_eq_iff_eq equivFun)
 
@@ -162,7 +162,7 @@ namespace SSet
 open Simplicial Edge
 
 /-- The simplicial set that encodes a single isomorphism.
-  Its n-simplices are formal compositions of arrows in WalkingIso. -/
+Its n-simplices are formal compositions of arrows in WalkingIso. -/
 abbrev coherentIso : SSet := nerve WalkingIso.{u}
 
 namespace coherentIso
@@ -212,7 +212,7 @@ def invStructHom : Edge.InvStruct.{u} coherentIso.hom where
   invHomId := invHomId
 
 /-- If an edge is equal to the image of `hom` under a morphism of simplicial sets,
-  this edge has an inverse. -/
+this edge has an inverse. -/
 def invStructOfEqMapHom {X : SSet.{u}} {x₀ x₁ : X _⦋0⦌}
     {f : Edge x₀ x₁}
     {g : coherentIso ⟶ X}
