@@ -106,4 +106,3 @@ I γ t).2 := by
   have := mfderiv_comp t diff h
   rw [comp_eq] at this
   exact congr($this (1 : ℝ)).symm
-

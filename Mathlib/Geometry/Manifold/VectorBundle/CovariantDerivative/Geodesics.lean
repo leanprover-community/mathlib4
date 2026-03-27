@@ -95,4 +95,3 @@ lemma CovariantDerivative.orbit_geodVF {X : Π x : M, TangentSpace I x}
   refine eventually_congr ?_
   filter_upwards [hX, hγX.eventually_isMIntegralCurveAt] with t ht ht'
   rw [ht'.proj_acceleration cov ht]
-
