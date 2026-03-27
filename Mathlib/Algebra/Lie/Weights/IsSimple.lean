@@ -188,9 +188,9 @@ lemma restr_inf_cartan_eq_biSup_corootSubmodule (I : LieIdeal K L) :
   · simp only [Weight.IsNonZero, not_not] at hμ
     exact LinearMap.mem_ker.mpr (congr_fun hμ b)
 
-lemma mem_rootSet_of_mem_rootSpan (I : LieIdeal K L)
-    {α : H.root} (hα_span : (α : Dual K H) ∈ I.rootSpan) :
-    α ∈ I.rootSet := by
+@[simp]
+lemma mem_rootSpan_iff (I : LieIdeal K L) {α : H.root} :
+    (α : Dual K H) ∈ I.rootSpan ↔ α ∈ I.rootSet :=
   by_contra hα_not
   have hα_nz := H.isNonZero_coe_root α
   have : I.rootSpan ≤ LinearMap.ker (Dual.eval K H (coroot (α : Weight K H L))) := by
