@@ -490,7 +490,7 @@ theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → 
     refine ⟨WellFounded.min h (Set.Ioc a b) ⟨b, hab,rfl.le⟩, ?_⟩
     have hmem := (WellFounded.min_mem h (Set.Ioc a b) ⟨b, hab,rfl.le⟩)
     exact ⟨⟨hmem.1,fun c hac hlt ↦ WellFounded.not_lt_min h
-      (Set.Ioc a b) ⟨b, hab,rfl.le⟩ ⟨hac, hlt.le.trans hmem.2⟩ hlt ⟩, hmem.2⟩
+      (Set.Ioc a b) ⟨hac, hlt.le.trans hmem.2⟩ hlt⟩, hmem.2⟩
 
 theorem IsStronglyCoatomic.of_wellFounded_gt (h : WellFounded ((· > ·) : α → α → Prop)) :
     IsStronglyCoatomic α :=
@@ -876,7 +876,7 @@ def orderIsoBool : α ≃o Bool :=
 @[implicit_reducible]
 protected def booleanAlgebra {α} [DecidableEq α] [Lattice α] [BoundedOrder α] [IsSimpleOrder α] :
     BooleanAlgebra α :=
-  { inferInstanceAs (BoundedOrder α), IsSimpleOrder.distribLattice with
+  { (inferInstance : BoundedOrder α), IsSimpleOrder.distribLattice with
     compl := fun x => if x = ⊥ then ⊤ else ⊥
     sdiff := fun x y => if x = ⊤ ∧ y = ⊥ then ⊤ else ⊥
     sdiff_eq := fun x y => by
@@ -899,28 +899,27 @@ protected noncomputable def completeLattice : CompleteLattice α :=
     (inferInstance : BoundedOrder α) with
     sSup := fun s => if ⊤ ∈ s then ⊤ else ⊥
     sInf := fun s => if ⊥ ∈ s then ⊥ else ⊤
-    le_sSup := fun s x h => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · exact bot_le
-      · rw [if_pos h]
-    sSup_le := fun s x h => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · rw [if_neg]
-        intro con
-        exact bot_ne_top (eq_top_iff.2 (h ⊤ con))
-      · exact le_top
-    sInf_le := fun s x h => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · rw [if_pos h]
-      · exact le_top
-    le_sInf := fun s x h => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · exact bot_le
-      · rw [if_neg]
-        intro con
-        exact top_ne_bot (eq_bot_iff.2 (h ⊥ con)) }
+    isLUB_sSup s := by
+      refine ⟨fun x h ↦ ?_, fun x h ↦ ?_⟩
+      · rcases eq_bot_or_eq_top x with (rfl | rfl)
+        · exact bot_le
+        · rw [if_pos h]
+      · rcases eq_bot_or_eq_top x with (rfl | rfl)
+        · rw [if_neg]
+          intro con
+          exact bot_ne_top (eq_top_iff.2 (h con))
+        · exact le_top
+    isGLB_sInf s := by
+      refine ⟨fun x h ↦ ?_, fun x h ↦ ?_⟩
+      · rcases eq_bot_or_eq_top x with (rfl | rfl)
+        · rw [if_pos h]
+        · exact le_top
+      · rcases eq_bot_or_eq_top x with (rfl | rfl)
+        · exact bot_le
+        · rw [if_neg]
+          intro con
+          exact top_ne_bot (eq_bot_iff.2 (h con)) }
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
 @[implicit_reducible]
@@ -928,7 +927,6 @@ protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :
   { __ := IsSimpleOrder.completeLattice
     __ := IsSimpleOrder.booleanAlgebra }
 
-set_option backward.isDefEq.respectTransparency false in
 instance : ComplementedLattice α :=
   letI := IsSimpleOrder.completeBooleanAlgebra (α := α); inferInstance
 

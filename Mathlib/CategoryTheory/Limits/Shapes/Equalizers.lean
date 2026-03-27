@@ -21,7 +21,7 @@ A coequalizer is the dual concept.
 
 ## Main definitions
 
-* `WalkingParallelPair` is the indexing category used for (co)equalizer_diagrams
+* `WalkingParallelPair` is the indexing category used for (co)equalizer diagrams
 * `parallelPair` is a functor from `WalkingParallelPair` to our category `C`.
 * a `fork` is a cone over a parallel pair.
   * there is really only one interesting morphism in a fork: the arrow from the vertex of the fork
@@ -327,7 +327,7 @@ variable {f g : X ⟶ Y}
 /-- A fork `t` on the parallel pair `f g : X ⟶ Y` consists of two morphisms
 `t.π.app zero : t.pt ⟶ X` and `t.π.app one : t.pt ⟶ Y`. Of these,
 only the first one is interesting, and we give it the shorter name `Fork.ι t`. -/
-def Fork.ι (t : Fork f g) :=
+def Fork.ι (t : Fork f g) : t.pt ⟶ X :=
   t.π.app zero
 
 @[simp]
@@ -337,7 +337,7 @@ theorem Fork.app_zero_eq_ι (t : Fork f g) : t.π.app zero = t.ι :=
 /-- A cofork `t` on the parallelPair `f g : X ⟶ Y` consists of two morphisms
 `t.ι.app zero : X ⟶ t.pt` and `t.ι.app one : Y ⟶ t.pt`. Of these, only the second one is
 interesting, and we give it the shorter name `Cofork.π t`. -/
-def Cofork.π (t : Cofork f g) :=
+def Cofork.π (t : Cofork f g) : Y ⟶ t.pt :=
   t.ι.app one
 
 @[simp]
@@ -364,9 +364,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem Cofork.app_zero_eq_comp_π_right (s : Cofork f g) : s.ι.app zero = g ≫ s.π := by
   rw [← s.app_one_eq_π, ← s.w right, parallelPair_map_right]
 
--- TODO: is there a nice way to fix the non-terminal simp? It's called on four goals,
--- only one needs an assumption at the end.
-set_option linter.flexible false in
 /-- A fork on `f g : X ⟶ Y` is determined by the morphism `ι : P ⟶ X` satisfying `ι ≫ f = ι ≫ g`.
 -/
 @[simps]
@@ -378,7 +375,7 @@ def Fork.ofι {P : C} (ι : P ⟶ X) (w : ι ≫ f = ι ≫ g) : Fork f g where
         · exact ι
         · exact ι ≫ f
       naturality := fun {X} {Y} f =>
-        by cases X <;> cases Y <;> cases f <;> simp; assumption }
+        by cases X <;> cases Y <;> cases f <;> simp [w] }
 
 /-- A cofork on `f g : X ⟶ Y` is determined by the morphism `π : Y ⟶ P` satisfying
 `f ≫ π = g ≫ π`. -/
@@ -397,11 +394,11 @@ theorem Fork.ι_ofι {P : C} (ι : P ⟶ X) (w : ι ≫ f = ι ≫ g) : (Fork.of
 theorem Cofork.π_ofπ {P : C} (π : Y ⟶ P) (w : f ≫ π = g ≫ π) : (Cofork.ofπ π w).π = π :=
   rfl
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem Fork.condition (t : Fork f g) : t.ι ≫ f = t.ι ≫ g := by
   rw [← t.app_one_eq_ι_comp_left, ← t.app_one_eq_ι_comp_right]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem Cofork.condition (t : Cofork f g) : f ≫ t.π = g ≫ t.π := by
   rw [← t.app_zero_eq_comp_π_left, ← t.app_zero_eq_comp_π_right]
 
@@ -622,7 +619,6 @@ theorem Cone.ofFork_π {F : WalkingParallelPair ⥤ C} (t : Fork (F.map left) (F
 theorem Cocone.ofCofork_ι {F : WalkingParallelPair ⥤ C} (t : Cofork (F.map left) (F.map right))
     (j) : (Cocone.ofCofork t).ι.app j = eqToHom (by simp) ≫ t.ι.app j := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `F : WalkingParallelPair ⥤ C`, which is really the same as
 `parallelPair (F.map left) (F.map right)` and a cone on `F`, we get a fork on
 `F.map left` and `F.map right`. -/
@@ -631,7 +627,6 @@ def Fork.ofCone {F : WalkingParallelPair ⥤ C} (t : Cone F) : Fork (F.map left)
   π := { app := fun X => t.π.app X ≫ eqToHom (by simp)
          naturality := by rintro _ _ (_ | _ | _) <;> simp }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `F : WalkingParallelPair ⥤ C`, which is really the same as
 `parallelPair (F.map left) (F.map right)` and a cocone on `F`, we get a cofork on
 `F.map left` and `F.map right`. -/
@@ -651,13 +646,13 @@ theorem Cofork.ofCocone_ι {F : WalkingParallelPair ⥤ C} (t : Cocone F) (j) :
 
 @[simp]
 theorem Fork.ι_postcompose {f' g' : X ⟶ Y} {α : parallelPair f g ⟶ parallelPair f' g'}
-    {c : Fork f g} : Fork.ι ((Cone.postcompose α).obj c) = c.ι ≫ α.app _ :=
+    {c : Fork f g} : Fork.ι ((Cone.postcompose α).obj c) = c.ι ≫ α.app .zero :=
   rfl
 
 @[simp]
 theorem Cofork.π_precompose {f' g' : X ⟶ Y} {α : parallelPair f g ⟶ parallelPair f' g'}
-    {c : Cofork f' g'} : Cofork.π ((Cocone.precompose α).obj c) = α.app _ ≫ c.π :=
-  rfl
+    {c : Cofork f' g'} :
+    Cofork.π ((Cocone.precompose α).obj c) = α.app .one ≫ c.π := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Helper function for constructing morphisms between equalizer forks.
@@ -689,7 +684,7 @@ def ForkOfι.ext {P : C} {ι ι' : P ⟶ X} (w : ι ≫ f = ι ≫ g) (w' : ι' 
 /-- Every fork is isomorphic to one of the form `Fork.of_ι _ _`. -/
 @[simps!]
 def Fork.isoForkOfι (c : Fork f g) : c ≅ Fork.ofι c.ι c.condition :=
-  Fork.ext (by simp only [Fork.ofι_pt, Functor.const_obj_obj]; rfl) (by simp)
+  Fork.ext (Iso.refl _)
 
 /--
 If `f, g : X ⟶ Y` and `f', g : X' ⟶ Y'` pairwise form a commutative square with isomorphisms
@@ -783,7 +778,7 @@ def CoforkOfπ.ext {P : C} {π π' : Y ⟶ P} (w : f ≫ π = g ≫ π) (w' : f 
 
 /-- Every cofork is isomorphic to one of the form `Cofork.ofπ _ _`. -/
 def Cofork.isoCoforkOfπ (c : Cofork f g) : c ≅ Cofork.ofπ c.π c.condition :=
-  Cofork.ext (by simp only [Cofork.ofπ_pt, Functor.const_obj_obj]; rfl) (by simp)
+  Cofork.ext (Iso.refl _)
 
 /--
 Given two coforks with isomorphic components in such a way that the natural diagrams commute, then
@@ -991,11 +986,7 @@ def liftPrecomp {s : Fork f g} (hs : IsLimit s) {c : PullbackCone s.ι h} (hc : 
     (s' : Fork (h ≫ f) (h ≫ g)) :
     s'.pt ⟶ (precompFork h s c).pt :=
   hc.lift <| PullbackCone.mk
-    (hs.lift <| Fork.ofι (s'.ι ≫ h)
-      (by
-        simp only [Functor.const_obj_obj, parallelPair_obj_zero, Category.assoc]
-        rw [s'.condition]))
-    s'.ι
+    (hs.lift <| Fork.ofι (s'.ι ≫ h) (by simp [s'.condition])) s'.ι
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The pullback of an equalizer is an equalizer. -/

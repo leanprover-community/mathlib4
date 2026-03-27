@@ -41,7 +41,6 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
   [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
   {μ : Measure E} [IsFiniteMeasure μ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The characteristic function of a finite measure with a moment of order `n` is `C^n`.
 See `contDiff_charFun'` for the version proving `C^∞` by assuming all moments exist. -/
 @[fun_prop]
@@ -108,7 +107,6 @@ theorem iteratedDeriv_charFun {n : ℕ} {t : ℝ} (hint : MemLp id n μ) :
   rw [iteratedDeriv, iteratedFDeriv_charFun hint]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDeriv_charFun_zero {n : ℕ} (hint : MemLp id n μ) :
     iteratedDeriv n (charFun μ) 0 = I ^ n * ∫ x, x ^ n ∂μ := by
   simp [iteratedDeriv_charFun hint]

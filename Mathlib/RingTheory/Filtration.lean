@@ -331,7 +331,6 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     · rw [map_add]
       exact F'.add_mem hx hy
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the components of a filtration are finitely generated, then the filtration is stable iff
 its associated submodule of is finitely generated. -/
 theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F.Stable := by
@@ -350,12 +349,7 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
       exact hi.trans e
     · dsimp
       rw [← Submodule.span_iUnion, ← submodule_span_single]
-      congr 1
-      ext
-      simp only [Set.mem_iUnion, Set.mem_image, SetLike.mem_coe, exists_prop]
-      constructor
-      · rintro ⟨-, i, -, e⟩; exact ⟨i, e⟩
-      · rintro ⟨i, e⟩; exact ⟨i, i, le_refl i, e⟩
+      simp [Set.biUnion_le_eq_iUnion]
   · rintro ⟨n, hn⟩
     rw [hn]
     simp_rw [Submodule.span_iUnion₂, ← Finset.mem_range_succ_iff, iSup_subtype']
@@ -370,7 +364,6 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
 
 variable {F}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Stable.of_le [IsNoetherianRing R] [Module.Finite R M] (hF : F.Stable)
     {F' : I.Filtration M} (hf : F' ≤ F) : F'.Stable := by
   rw [← submodule_fg_iff_stable] at hF ⊢
