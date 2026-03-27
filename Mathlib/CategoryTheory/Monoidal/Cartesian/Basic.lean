@@ -1083,4 +1083,3 @@ instance IsMonoidal.of_cartesianMonoidalCategory (α : F ⟶ G) : IsMonoidal α 
 end NatTrans
 
 end CategoryTheory
-#lint
