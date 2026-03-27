@@ -625,9 +625,10 @@ noncomputable def lieIdealOrderIso :
 /-- A Killing Lie algebra with an irreducible root system is simple. -/
 theorem isSimple_of_isIrreducible (hIrr : (rootSystem H).IsIrreducible) : IsSimple K L where
   eq_bot_or_eq_top := by
-    have : Nontrivial (Dual K H) := hIrr.1
-    exact (lieIdealOrderIso.isSimpleOrder_iff.mpr
-      ((RootPairing.isIrreducible_iff_invtRootSubmodule _).mp hIrr)).eq_bot_or_eq_top
+    haveI : Nontrivial (Dual K H) := hIrr.1
+    have : IsSimpleOrder (rootSystem H).invtRootSubmodule :=
+      (RootPairing.isIrreducible_iff_invtRootSubmodule _).mp hIrr
+    exact (lieIdealOrderIso.isSimpleOrder_iff.mpr this).eq_bot_or_eq_top
   non_abelian := fun h ↦ by
     have h_ab : IsLieAbelian (⊤ : LieIdeal K L) :=
       (lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv).mpr h
