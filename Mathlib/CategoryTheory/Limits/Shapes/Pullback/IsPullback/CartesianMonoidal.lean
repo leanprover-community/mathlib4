@@ -74,8 +74,8 @@ X ⊗ Z  →  Y ⊗ Z
 -/
 lemma IsPullback.whiskerRight_horiz {X Y : C} (f : X ⟶ Y) (Z : C) :
     IsPullback (f ▷ Z) (fst X Z) (fst Y Z) f := by
-  apply IsPullback.of_right _ (by simp) (IsPullback.fst_snd_toUnit_toUnit _ _).flip
-  simpa using (IsPullback.fst_snd_toUnit_toUnit _ _).flip
+  apply flip <| IsPullback.of_bot _ (by simp) (IsPullback.fst_snd_toUnit_toUnit _ _)
+  simpa using (IsPullback.fst_snd_toUnit_toUnit _ _)
 
 /--
 In a cartesian monoidal category, the following is a pullback square:
