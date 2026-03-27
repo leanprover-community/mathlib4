@@ -160,7 +160,7 @@ theorem limit.cone_x {F : J ⥤ C} [HasLimit F] : (limit.cone F).pt = limit F :=
 theorem limit.cone_π {F : J ⥤ C} [HasLimit F] : (limit.cone F).π.app = limit.π _ :=
   rfl
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem limit.w (F : J ⥤ C) [HasLimit F] {j j' : J} (f : j ⟶ j') :
     limit.π F j ≫ F.map f = limit.π F j' :=
   (limit.cone F).w f
@@ -178,7 +178,7 @@ theorem limit.isLimit_lift {F : J ⥤ C} [HasLimit F] (c : Cone F) :
     (limit.isLimit F).lift c = limit.lift F c :=
   rfl
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem limit.lift_π {F : J ⥤ C} [HasLimit F] (c : Cone F) (j : J) :
     limit.lift F c ≫ limit.π F j = c.π.app j :=
   IsLimit.fac _ c j
@@ -192,7 +192,7 @@ but not necessarily for all functors of shape `J`.
 def limMap {F G : J ⥤ C} [HasLimit F] [HasLimit G] (α : F ⟶ G) : limit F ⟶ limit G :=
   IsLimit.map _ (limit.isLimit G) α
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem limMap_π {F G : J ⥤ C} [HasLimit F] [HasLimit G] (α : F ⟶ G) (j : J) :
     limMap α ≫ limit.π G j = limit.π F j ≫ α.app j :=
   limit.lift_π _ j
@@ -209,12 +209,12 @@ theorem limit.coneMorphism_hom {F : J ⥤ C} [HasLimit F] (c : Cone F) :
 theorem limit.coneMorphism_π {F : J ⥤ C} [HasLimit F] (c : Cone F) (j : J) :
     (limit.coneMorphism c).hom ≫ limit.π F j = c.π.app j := by simp
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem limit.conePointUniqueUpToIso_hom_comp {F : J ⥤ C} [HasLimit F] {c : Cone F} (hc : IsLimit c)
     (j : J) : (IsLimit.conePointUniqueUpToIso hc (limit.isLimit _)).hom ≫ limit.π F j = c.π.app j :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ _
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem limit.conePointUniqueUpToIso_inv_comp {F : J ⥤ C} [HasLimit F] {c : Cone F} (hc : IsLimit c)
     (j : J) : (IsLimit.conePointUniqueUpToIso (limit.isLimit _) hc).inv ≫ limit.π F j = c.π.app j :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ _
@@ -229,13 +229,13 @@ def limit.isoLimitCone {F : J ⥤ C} [HasLimit F] (t : LimitCone F) : limit F �
   IsLimit.conePointUniqueUpToIso (limit.isLimit F) t.isLimit
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem limit.isoLimitCone_hom_π {F : J ⥤ C} [HasLimit F] (t : LimitCone F) (j : J) :
     (limit.isoLimitCone t).hom ≫ t.cone.π.app j = limit.π F j := by
   dsimp [limit.isoLimitCone, IsLimit.conePointUniqueUpToIso]
   simp
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem limit.isoLimitCone_inv_π {F : J ⥤ C} [HasLimit F] (t : LimitCone F) (j : J) :
     (limit.isoLimitCone t).inv ≫ limit.π F j = t.cone.π.app j := by
   dsimp [limit.isoLimitCone, IsLimit.conePointUniqueUpToIso]
@@ -251,7 +251,7 @@ instance isIso_limMap {F G : J ⥤ C} [HasLimit F] [HasLimit G] (α : F ⟶ G) [
   ⟨limMap (inv α), by cat_disch , by cat_disch⟩
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem limit.lift_map {F G : J ⥤ C} [HasLimit F] [HasLimit G] (c : Cone F) (α : F ⟶ G) :
     limit.lift F c ≫ limMap α = limit.lift G ((Cone.postcompose α).obj c) := by
   ext
@@ -312,24 +312,24 @@ if the functors are naturally isomorphic.
 def HasLimit.isoOfNatIso {F G : J ⥤ C} [HasLimit F] [HasLimit G] (w : F ≅ G) : limit F ≅ limit G :=
   IsLimit.conePointsIsoOfNatIso (limit.isLimit F) (limit.isLimit G) w
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem HasLimit.isoOfNatIso_hom_π {F G : J ⥤ C} [HasLimit F] [HasLimit G] (w : F ≅ G) (j : J) :
     (HasLimit.isoOfNatIso w).hom ≫ limit.π G j = limit.π F j ≫ w.hom.app j :=
   IsLimit.conePointsIsoOfNatIso_hom_comp _ _ _ _
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem HasLimit.isoOfNatIso_inv_π {F G : J ⥤ C} [HasLimit F] [HasLimit G] (w : F ≅ G) (j : J) :
     (HasLimit.isoOfNatIso w).inv ≫ limit.π F j = limit.π G j ≫ w.inv.app j :=
   IsLimit.conePointsIsoOfNatIso_inv_comp _ _ _ _
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem HasLimit.lift_isoOfNatIso_hom {F G : J ⥤ C} [HasLimit F] [HasLimit G] (t : Cone F)
     (w : F ≅ G) :
     limit.lift F t ≫ (HasLimit.isoOfNatIso w).hom =
       limit.lift G ((Cone.postcompose w.hom).obj _) :=
   IsLimit.lift_comp_conePointsIsoOfNatIso_hom _ _ _
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem HasLimit.lift_isoOfNatIso_inv {F G : J ⥤ C} [HasLimit F] [HasLimit G] (t : Cone G)
     (w : F ≅ G) :
     limit.lift G t ≫ (HasLimit.isoOfNatIso w).inv =
@@ -372,7 +372,7 @@ def limit.pre : limit F ⟶ limit (E ⋙ F) :=
   limit.lift (E ⋙ F) ((limit.cone F).whisker E)
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem limit.pre_π (k : K) : limit.pre F E ≫ limit.π (E ⋙ F) k = limit.π F (E.obj k) := by
   simp [limit.pre]
 
@@ -414,7 +414,7 @@ def limit.post : G.obj (limit F) ⟶ limit (F ⋙ G) :=
   limit.lift (F ⋙ G) (G.mapCone (limit.cone F))
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem limit.post_π (j : J) : limit.post F G ≫ limit.π (F ⋙ G) j = G.map (limit.π F j) := by
   simp [limit.post]
 
@@ -714,7 +714,7 @@ theorem colimit.cocone_ι {F : J ⥤ C} [HasColimit F] (j : J) :
 theorem colimit.cocone_x {F : J ⥤ C} [HasColimit F] : (colimit.cocone F).pt = colimit F :=
   rfl
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem colimit.w (F : J ⥤ C) [HasColimit F] {j j' : J} (f : j ⟶ j') :
     F.map f ≫ colimit.ι F j' = colimit.ι F j :=
   (colimit.cocone F).w f
@@ -741,7 +741,7 @@ right associated, and it's hard to apply these lemmas about `colimit.ι`.
 We thus use `reassoc` to define additional `@[simp]` lemmas, with an arbitrary extra morphism.
 (see `Mathlib/Tactic/CategoryTheory/Reassoc.lean`)
 -/
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem colimit.ι_desc {F : J ⥤ C} [HasColimit F] (c : Cocone F) (j : J) :
     colimit.ι F j ≫ colimit.desc F c = c.ι.app j :=
   IsColimit.fac _ c j
@@ -755,7 +755,7 @@ but not necessarily for all functors of shape `J`.
 def colimMap {F G : J ⥤ C} [HasColimit F] [HasColimit G] (α : F ⟶ G) : colimit F ⟶ colimit G :=
   IsColimit.map (colimit.isColimit F) _ α
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem ι_colimMap {F G : J ⥤ C} [HasColimit F] [HasColimit G] (α : F ⟶ G) (j : J) :
     colimit.ι F j ≫ colimMap α = α.app j ≫ colimit.ι G j :=
   colimit.ι_desc _ j
@@ -772,13 +772,13 @@ theorem colimit.coconeMorphism_hom {F : J ⥤ C} [HasColimit F] (c : Cocone F) :
 theorem colimit.ι_coconeMorphism {F : J ⥤ C} [HasColimit F] (c : Cocone F) (j : J) :
     colimit.ι F j ≫ (colimit.coconeMorphism c).hom = c.ι.app j := by simp
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem colimit.comp_coconePointUniqueUpToIso_hom {F : J ⥤ C} [HasColimit F] {c : Cocone F}
     (hc : IsColimit c) (j : J) :
     colimit.ι F j ≫ (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) hc).hom = c.ι.app j :=
   IsColimit.comp_coconePointUniqueUpToIso_hom _ _ _
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem colimit.comp_coconePointUniqueUpToIso_inv {F : J ⥤ C} [HasColimit F] {c : Cocone F}
     (hc : IsColimit c) (j : J) :
     colimit.ι F j ≫ (IsColimit.coconePointUniqueUpToIso hc (colimit.isColimit _)).inv = c.ι.app j :=
@@ -795,14 +795,14 @@ def colimit.isoColimitCocone {F : J ⥤ C} [HasColimit F] (t : ColimitCocone F) 
     colimit F ≅ t.cocone.pt :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit F) t.isColimit
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem colimit.isoColimitCocone_ι_hom {F : J ⥤ C} [HasColimit F] (t : ColimitCocone F) (j : J) :
     colimit.ι F j ≫ (colimit.isoColimitCocone t).hom = t.cocone.ι.app j := by
   dsimp [colimit.isoColimitCocone, IsColimit.coconePointUniqueUpToIso]
   simp
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem colimit.isoColimitCocone_ι_inv {F : J ⥤ C} [HasColimit F] (t : ColimitCocone F) (j : J) :
     t.cocone.ι.app j ≫ (colimit.isoColimitCocone t).inv = colimit.ι F j := by
   dsimp [colimit.isoColimitCocone, IsColimit.coconePointUniqueUpToIso]
@@ -873,24 +873,24 @@ def HasColimit.isoOfNatIso {F G : J ⥤ C} [HasColimit F] [HasColimit G] (w : F 
     colimit F ≅ colimit G :=
   IsColimit.coconePointsIsoOfNatIso (colimit.isColimit F) (colimit.isColimit G) w
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem HasColimit.isoOfNatIso_ι_hom {F G : J ⥤ C} [HasColimit F] [HasColimit G] (w : F ≅ G)
     (j : J) : colimit.ι F j ≫ (HasColimit.isoOfNatIso w).hom = w.hom.app j ≫ colimit.ι G j :=
   IsColimit.comp_coconePointsIsoOfNatIso_hom _ _ _ _
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem HasColimit.isoOfNatIso_ι_inv {F G : J ⥤ C} [HasColimit F] [HasColimit G] (w : F ≅ G)
     (j : J) : colimit.ι G j ≫ (HasColimit.isoOfNatIso w).inv = w.inv.app j ≫ colimit.ι F j :=
   IsColimit.comp_coconePointsIsoOfNatIso_inv _ _ _ _
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem HasColimit.isoOfNatIso_hom_desc {F G : J ⥤ C} [HasColimit F] [HasColimit G] (t : Cocone G)
     (w : F ≅ G) :
     (HasColimit.isoOfNatIso w).hom ≫ colimit.desc G t =
       colimit.desc F ((Cocone.precompose w.hom).obj _) :=
   IsColimit.coconePointsIsoOfNatIso_hom_desc _ _ _
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem HasColimit.isoOfNatIso_inv_desc {F G : J ⥤ C} [HasColimit F] [HasColimit G] (t : Cocone F)
     (w : F ≅ G) :
     (HasColimit.isoOfNatIso w).inv ≫ colimit.desc F t =
@@ -931,18 +931,18 @@ def colimit.pre : colimit (E ⋙ F) ⟶ colimit F :=
   colimit.desc (E ⋙ F) ((colimit.cocone F).whisker E)
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem colimit.ι_pre (k : K) : colimit.ι (E ⋙ F) k ≫ colimit.pre F E = colimit.ι F (E.obj k) := by
   simp [colimit.pre]
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem colimit.ι_inv_pre [IsIso (pre F E)] (k : K) :
     colimit.ι F (E.obj k) ≫ inv (colimit.pre F E) = colimit.ι (E ⋙ F) k := by
   simp [IsIso.comp_inv_eq]
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem colimit.pre_desc (c : Cocone F) :
     colimit.pre F E ≫ colimit.desc F c = colimit.desc (E ⋙ F) (c.whisker E) := by
   ext
@@ -989,7 +989,7 @@ def colimit.post : colimit (F ⋙ G) ⟶ G.obj (colimit F) :=
   colimit.desc (F ⋙ G) (G.mapCocone (colimit.cocone F))
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem colimit.ι_post (j : J) :
     colimit.ι (F ⋙ G) j ≫ colimit.post F G = G.map (colimit.ι F j) := by
   simp [colimit.post]
@@ -1072,7 +1072,7 @@ set_option backward.isDefEq.respectTransparency false in -- This seems to be nee
 theorem colimit.ι_map (j : J) : colimit.ι F j ≫ colim.map α = α.app j ≫ colimit.ι G j := by simp
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem colimit.map_desc (c : Cocone G) :
     colimMap α ≫ colimit.desc G c = colimit.desc F ((Cocone.precompose α).obj c) := by
   ext j

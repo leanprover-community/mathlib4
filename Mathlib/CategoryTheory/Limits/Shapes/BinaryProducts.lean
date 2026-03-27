@@ -633,12 +633,12 @@ theorem prod.comp_lift {V W X Y : C} [HasBinaryProduct X Y] (f : V ⟶ W) (g : W
 theorem prod.comp_diag {X Y : C} [HasBinaryProduct Y Y] (f : X ⟶ Y) :
     f ≫ diag Y = prod.lift f f := by simp
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem prod.map_fst {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : W ⟶ Y)
     (g : X ⟶ Z) : prod.map f g ≫ prod.fst = prod.fst ≫ f :=
   limMap_π _ _
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem prod.map_snd {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : W ⟶ Y)
     (g : X ⟶ Z) : prod.map f g ≫ prod.snd = prod.snd ≫ g :=
   limMap_π _ _
@@ -653,7 +653,7 @@ theorem prod.lift_fst_snd {X Y : C} [HasBinaryProduct X Y] :
     prod.lift prod.fst prod.snd = 𝟙 (X ⨯ Y) := by ext <;> simp
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem prod.lift_map {V W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : V ⟶ W)
     (g : V ⟶ X) (h : W ⟶ Y) (k : X ⟶ Z) :
     prod.lift f g ≫ prod.map h k = prod.lift (f ≫ h) (g ≫ k) := by ext <;> simp
@@ -667,7 +667,7 @@ theorem prod.lift_fst_comp_snd_comp {W X Y Z : C} [HasBinaryProduct W Y] [HasBin
 -- We take the right-hand side here to be simp normal form, as this way composition lemmas for
 -- `f ≫ h` and `g ≫ k` can fire (e.g. `id_comp`), while `map_fst` and `map_snd` can still work just
 -- as well.
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem prod.map_map {A₁ A₂ A₃ B₁ B₂ B₃ : C} [HasBinaryProduct A₁ B₁] [HasBinaryProduct A₂ B₂]
     [HasBinaryProduct A₃ B₃] (f : A₁ ⟶ A₂) (g : B₁ ⟶ B₂) (h : A₂ ⟶ A₃) (k : B₂ ⟶ B₃) :
     prod.map f g ≫ prod.map h k = prod.map (f ≫ h) (g ≫ k) := by ext <;> simp
@@ -739,12 +739,12 @@ theorem coprod.desc_comp {V W X Y : C} [HasBinaryCoproduct X Y] (f : V ⟶ W) (g
 theorem coprod.diag_comp {X Y : C} [HasBinaryCoproduct X X] (f : X ⟶ Y) :
     codiag X ≫ f = coprod.desc f f := by simp
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem coprod.inl_map {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] (f : W ⟶ Y)
     (g : X ⟶ Z) : coprod.inl ≫ coprod.map f g = f ≫ coprod.inl :=
   ι_colimMap _ _
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem coprod.inr_map {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] (f : W ⟶ Y)
     (g : X ⟶ Z) : coprod.inr ≫ coprod.map f g = g ≫ coprod.inr :=
   ι_colimMap _ _
@@ -775,7 +775,7 @@ theorem coprod.desc_comp_inl_comp_inr {W X Y Z : C} [HasBinaryCoproduct W Y]
 -- We take the right-hand side here to be simp normal form, as this way composition lemmas for
 -- `f ≫ h` and `g ≫ k` can fire (e.g. `id_comp`), while `inl_map` and `inr_map` can still work just
 -- as well.
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem coprod.map_map {A₁ A₂ A₃ B₁ B₂ B₃ : C} [HasBinaryCoproduct A₁ B₁] [HasBinaryCoproduct A₂ B₂]
     [HasBinaryCoproduct A₃ B₃] (f : A₁ ⟶ A₂) (g : B₁ ⟶ B₂) (h : A₂ ⟶ A₃) (k : B₂ ⟶ B₃) :
     coprod.map f g ≫ coprod.map h k = coprod.map (f ≫ h) (g ≫ k) := by
@@ -1186,11 +1186,11 @@ def coprodComparison (F : C ⥤ D) (A B : C) [HasBinaryCoproduct A B]
     [HasBinaryCoproduct (F.obj A) (F.obj B)] : F.obj A ⨿ F.obj B ⟶ F.obj (A ⨿ B) :=
   coprod.desc (F.map coprod.inl) (F.map coprod.inr)
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem coprodComparison_inl : coprod.inl ≫ coprodComparison F A B = F.map coprod.inl :=
   coprod.inl_desc _ _
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem coprodComparison_inr : coprod.inr ≫ coprodComparison F A B = F.map coprod.inr :=
   coprod.inr_desc _ _
 
@@ -1385,19 +1385,19 @@ pair, these isomorphisms constitute a braiding. -/
 def BinaryFan.braiding (P : IsLimit s) (Q : IsLimit t) : s.pt ≅ t.pt :=
   P.conePointUniqueUpToIso Q.binaryFanSwap
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 lemma BinaryFan.braiding_hom_fst : (braiding P Q).hom ≫ t.fst = s.snd :=
   P.conePointUniqueUpToIso_hom_comp _ ⟨.right⟩
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 lemma BinaryFan.braiding_hom_snd : (braiding P Q).hom ≫ t.snd = s.fst :=
   P.conePointUniqueUpToIso_hom_comp _ ⟨.left⟩
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 lemma BinaryFan.braiding_inv_fst : (braiding P Q).inv ≫ s.fst = t.snd :=
   P.conePointUniqueUpToIso_inv_comp _ ⟨.left⟩
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 lemma BinaryFan.braiding_inv_snd : (braiding P Q).inv ≫ s.snd = t.fst :=
   P.conePointUniqueUpToIso_inv_comp _ ⟨.right⟩
 

@@ -299,7 +299,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem Scheme.homOfLE_appLE {U V : X.Opens} (e : U ≤ V) (W : Opens V) (W' : Opens U) (e') :
     (X.homOfLE e).appLE W W' e' = X.presheaf.map
       (homOfLE ((U.ι.image_mono e').trans (Scheme.ι_image_homOfLE_le_ι_image ..))).op := by
-  simp [Scheme.Hom.appLE, Scheme.homOfLE_app, ← Functor.map_comp, ← op_comp]
+  simp [Hom.appLE]
 
 theorem Scheme.homOfLE_appTop {U V : X.Opens} (e : U ≤ V) :
     (X.homOfLE e).appTop = X.presheaf.map (homOfLE <| X.ι_image_homOfLE_le_ι_image e ⊤).op :=

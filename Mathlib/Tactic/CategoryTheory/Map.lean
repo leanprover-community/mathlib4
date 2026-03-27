@@ -74,8 +74,15 @@ private def applySelectedOptAttrsToDecl (decl : Name) (attrs : TSyntax ``optAttr
 /-- Build `Category Cᵒᵖ` from `C` and `[Category C]` using matching universe levels. -/
 private def mkOppositeCategoryInst (C instC : Expr) : MetaM Expr := do
   let instCty ← inferType instC
-  let (.const ``CategoryTheory.Category [v, u]) := instCty.getAppFn |
-    throwError "`@[map]` expects a category instance"
+  let (u, v) ← match instCty.getAppFn with
+    | .const ``CategoryTheory.Category [v, u] =>
+      pure (u, v)
+    | .const ``CategoryTheory.SmallCategory [u] =>
+      pure (u, u)
+    | .const ``CategoryTheory.LargeCategory [u] =>
+      pure (u, u)
+    | _ =>
+      throwError "`@[map]` expects a category instance; got {instCty}"
   return mkAppN (.const ``Mathlib.Tactic.CategoryTheory.Map.mapOppositeCategory [u, v]) #[C, instC]
 
 /-- Read the registered `@[map_functor]` functors. -/

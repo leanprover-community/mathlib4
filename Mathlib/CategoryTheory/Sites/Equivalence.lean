@@ -139,7 +139,12 @@ def sheafCongr : Sheaf J A ≌ Sheaf K A where
   counitIso := sheafCongr.counitIso J K e A
   functor_unitIso_comp X := by
     ext
-    simp [← Functor.map_comp, ← op_comp]
+    simp only [sheafCongr.functor_obj_obj_obj, ObjectProperty.FullSubcategory.comp_hom,
+      NatTrans.comp_app, sheafCongr.inverse_obj_obj_obj, sheafCongr.functor_map_hom_app,
+      sheafCongr.unitIso_hom_app_hom_app, sheafCongr.counitIso_hom_app_hom_app,
+      sheafCongr.functor_obj_obj_map, Quiver.Hom.unop_op,
+      dsimp% inverse_counitInv_comp_op_map] -- TODO: fix so this is automatic
+    simp
 
 variable [HasSheafify K A]
 

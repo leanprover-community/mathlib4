@@ -269,7 +269,7 @@ theorem counit_app_functor (e : C ≌ D) (X : C) :
 set_option backward.isDefEq.respectTransparency false in
 /-- The other triangle equality. The proof follows the following proof in Globular:
   http://globular.science/1905.001 -/
-@[to_dual (attr := reassoc (attr := simp)) inverse_counitInv_comp]
+@[to_dual (attr := map (attr := reassoc (attr := simp))) inverse_counitInv_comp]
 theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
     dsimp% e.unit.app (e.inverse.obj Y) ≫ e.inverse.map (e.counit.app Y) = 𝟙 (e.inverse.obj Y) := by
   rw [← id_comp (e.inverse.map _), ← map_id e.inverse, ← counitInv_functor_comp, map_comp]

@@ -184,7 +184,7 @@ noncomputable def pushforwardNatIso (α : F ≅ G) :
       pushforward.{v} (φ ≫ (Functor.sheafPushforwardContinuousNatTrans α.hom _ _ _).app S) where
   hom := pushforwardNatTrans _ α.hom
   inv := pushforwardNatTrans _ α.inv ≫
-    (pushforwardCongr (by ext : 3; simp [← Functor.map_comp, ← op_comp])).hom
+    (pushforwardCongr (by ext : 3; simp)).hom
   hom_inv_id := by
     ext X U x
     suffices X.val.presheaf.map (α.hom.app U.unop).op ≫
@@ -256,7 +256,7 @@ variable {C : Type u'} [Category.{v'} C] [HasBinaryProducts C] {J : Grothendieck
 def pushforwardOver (x : C) :
     R ⟶ ((Over.star x).sheafPushforwardContinuous RingCat J (J.over x)).obj (R.over x) :=
   ⟨{app U := R.obj.map Limits.prod.snd.op
-    naturality U V f := by simp [← Functor.map_comp, ← op_comp]; rfl }⟩
+    naturality U V f := by simp }⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between restriction to `Over x` and pushforward along `Over.star x`. -/
@@ -266,7 +266,7 @@ def overPushforwardOverAdj (x : C) :
   · ext y : 2
     simp [pushforwardOver]
   · ext y : 2
-    simp [pushforwardOver, ← Functor.map_comp, ← op_comp]
+    simp [pushforwardOver]
 
 instance (x : C) : IsLeftAdjoint (pushforward.{w} (𝟙 (R.over x))) where
   exists_rightAdjoint := ⟨_, Nonempty.intro (overPushforwardOverAdj x)⟩

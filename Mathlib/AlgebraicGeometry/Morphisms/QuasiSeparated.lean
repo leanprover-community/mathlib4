@@ -311,7 +311,7 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
   intro m hm
   rw [← tsub_add_cancel_of_le hm]
   simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply,
-    pow_add, map_pow, map_mul, mul_assoc, ← Functor.map_comp, ← op_comp, homOfLE_comp,
+    pow_add, map_pow, map_mul, mul_assoc, homOfLE_comp_op_map,
     ← CommRingCat.comp_apply] at e ⊢
   rw [e]
 
@@ -390,12 +390,10 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     · -- This unfolds `X.sheaf`
       change (X.presheaf.map _) _ = (X.presheaf.map _) _
       rw [add_assoc, add_comm n₁]
-      simp only [pow_add, map_pow, map_mul, hy₁, ← CommRingCat.comp_apply, ← mul_assoc,
-        ← Functor.map_comp, ← op_comp, homOfLE_comp]
+      simp [pow_add, hy₁, ← CommRingCat.comp_apply, ← mul_assoc]
     · -- This unfolds `X.sheaf`
       change (X.presheaf.map _) _ = (X.presheaf.map _) _
-      simp only [pow_add, map_pow, map_mul, hy₂, ← CommRingCat.comp_apply, ← mul_assoc,
-        ← Functor.map_comp, ← op_comp, homOfLE_comp]
+      simp [pow_add, hy₂, ← CommRingCat.comp_apply, ← mul_assoc]
 
 /-- If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.
 This is known as the **Qcqs lemma** in [R. Vakil, *The rising sea*][RisingSea]. -/
