@@ -206,9 +206,6 @@ theorem sum_le_lift_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{max u v}) :
 theorem sum_le_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * ⨆ i, f i := by
   simpa using sum_le_lift_mk_mul_iSup_lift f
 
-@[deprecated (since := "2025-09-04")] alias sum_le_iSup_lift := sum_le_lift_mk_mul_iSup
-@[deprecated (since := "2025-09-04")] alias sum_le_iSup := sum_le_mk_mul_iSup
-
 /-- The lift of a supremum is the supremum of the lifts. -/
 theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
     lift.{u} (sSup s) = sSup (lift.{u} '' s) := by
@@ -319,15 +316,21 @@ theorem cantor' (a) {b : Cardinal} (hb : 1 < b) : a < b ^ a := by
   rw [← succ_le_iff, (by norm_cast : succ (1 : Cardinal) = 2)] at hb
   exact (cantor a).trans_le (power_le_power_right hb)
 
-theorem one_le_iff_pos {c : Cardinal} : 1 ≤ c ↔ 0 < c := by
+protected theorem one_le_iff_pos {c : Cardinal} : 1 ≤ c ↔ 0 < c := by
   rw [← succ_zero, succ_le_iff]
 
-theorem one_le_iff_ne_zero {c : Cardinal} : 1 ≤ c ↔ c ≠ 0 := by
-  rw [one_le_iff_pos, pos_iff_ne_zero]
+protected theorem one_le_iff_ne_zero {c : Cardinal} : 1 ≤ c ↔ c ≠ 0 := by
+  rw [Cardinal.one_le_iff_pos, pos_iff_ne_zero]
 
 @[simp]
-theorem lt_one_iff_zero {c : Cardinal} : c < 1 ↔ c = 0 := by
+protected theorem lt_one_iff {c : Cardinal} : c < 1 ↔ c = 0 := by
   simpa using lt_succ_bot_iff (a := c)
+
+@[deprecated (since := "2026-03-24")]
+alias lt_one_iff_zero := Cardinal.lt_one_iff
+
+protected theorem le_one_iff {c : Cardinal} : c ≤ 1 ↔ c = 0 ∨ c = 1 := by
+  simpa using le_succ_bot_iff (a := c)
 
 /-! ### Properties about `aleph0` -/
 
@@ -493,7 +496,7 @@ theorem mul_lt_aleph0_iff {a b : Cardinal} : a * b < ℵ₀ ↔ a = 0 ∨ b = 0 
     by_cases hb : b = 0
     · exact Or.inl hb
     right
-    rw [← Ne, ← one_le_iff_ne_zero] at ha hb
+    rw [← Ne, ← Cardinal.one_le_iff_ne_zero] at ha hb
     constructor
     · rw [← mul_one a]
       exact (mul_le_mul' le_rfl hb).trans_lt h
@@ -523,7 +526,7 @@ theorem eq_one_iff_unique {α : Type*} : #α = 1 ↔ Subsingleton α ∧ Nonempt
   calc
     #α = 1 ↔ #α ≤ 1 ∧ 1 ≤ #α := le_antisymm_iff
     _ ↔ Subsingleton α ∧ Nonempty α :=
-      le_one_iff_subsingleton.and (one_le_iff_ne_zero.trans mk_ne_zero_iff)
+      le_one_iff_subsingleton.and (Cardinal.one_le_iff_ne_zero.trans mk_ne_zero_iff)
 
 theorem infinite_iff {α : Type u} : Infinite α ↔ ℵ₀ ≤ #α := by
   rw [← not_lt, lt_aleph0_iff_finite, not_finite_iff_infinite]

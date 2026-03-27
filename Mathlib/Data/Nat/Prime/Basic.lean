@@ -180,9 +180,8 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
       assumption
   rintro x y hx hy h ⟨a, ha⟩
   have : a ∣ p := ⟨y, by rwa [ha, sq, mul_assoc, mul_right_inj' hp.ne_zero, eq_comm] at h⟩
-  obtain ha1 | hap := (Nat.dvd_prime hp).mp ‹a ∣ p›
-  · subst ha1
-    rw [mul_one] at ha
+  obtain rfl | hap := (Nat.dvd_prime hp).mp ‹a ∣ p›
+  · rw [mul_one] at ha
     subst ha
     simp only [sq, mul_right_inj' hp.ne_zero] at h
     subst h
