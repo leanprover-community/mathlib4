@@ -166,7 +166,6 @@ lemma μ_leftUnitor : (lid k (linearize k G X)).toIntertwiningMap =
     linearizeMap_single (k := k) (λ_ X).hom (PUnit.unit, x1) _ |>.symm
 
 variable (X) in
-set_option backward.isDefEq.respectTransparency false in
 lemma μ_rightUnitor : (rid k (linearize k G X)).toIntertwiningMap =
     ((linearizeMap (ρ_ X).hom).comp (μ X (𝟙_ (Action (Type w) G)))).comp ((ε k G).lTensor
     (linearize k G X)) := by

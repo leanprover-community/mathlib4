@@ -487,7 +487,6 @@ theorem NormedSpace.restrictScalars_eq {E : Type*} [SeminormedAddCommGroup E]
   ext
   apply algebraMap_smul
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a normed space over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
 `RestrictScalars.module` is additionally a `NormedSpace`. -/
 instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 𝕜' E) :=

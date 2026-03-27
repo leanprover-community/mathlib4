@@ -140,7 +140,6 @@ def μIso (X Y : Type u) :
     (free R).obj X ⊗ (free R).obj Y ≅ (free R).obj (X ⊗ Y) :=
   (finsuppTensorFinsupp' R _ _).toModuleIso
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma μIso_hom_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
     (μIso R X Y).hom (freeMk x ⊗ₜ freeMk y) = freeMk (x, y) := by

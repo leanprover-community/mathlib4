@@ -89,7 +89,6 @@ section NoZeroDivisors
 
 variable [Semiring R] [NoZeroDivisors R] {p q : R[X]}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem trailingDegree_mul : (p * q).trailingDegree = p.trailingDegree + q.trailingDegree := by
   by_cases hp : p = 0
   · rw [hp, zero_mul, trailingDegree_zero, top_add]
