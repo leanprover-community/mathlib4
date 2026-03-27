@@ -225,10 +225,10 @@ theorem AnalyticOnNhd.sum_divisor_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
     apply circleAverage_mono_on_of_le_circle
     · exact circleIntegrable_log_norm_meromorphicOn
         (h₁f.mono sphere_subset_closedBall).meromorphicOn
-    · intro z hz
-      by_cases! h : f z = 0
+    · peel f_bound with z hz _
+      obtain (h | h) := eq_zero_or_norm_pos (f z)
       · simpa [h] using log_nonneg hM
-      · exact log_le_log (norm_pos_iff.mpr h) (f_bound z hz)
+      · gcongr
   calc
   -- Bound by the sum from Jensen's formula
   _ ≤ ∑ᶠ u, ((divisor f (closedBall c |R|)) u) * Real.log (R * ‖c - u‖⁻¹) := by
