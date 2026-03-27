@@ -75,7 +75,7 @@ lemma projectiveDimension_eq_of_semiLinearEquiv [Small.{v} R] [Small.{v'} R']
     | coe n =>
       norm_cast
       simp only [projectiveDimension_le_iff]
-      refine ⟨fun h ↦ hasProjectiveDimensionLE_of_semiLinearEquiv e e' n,
+      exact ⟨fun h ↦ hasProjectiveDimensionLE_of_semiLinearEquiv e e' n,
         fun h ↦ hasProjectiveDimensionLE_of_semiLinearEquiv e.symm e'.symm n⟩
 
 end
