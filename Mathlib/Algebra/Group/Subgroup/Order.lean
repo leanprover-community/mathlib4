@@ -98,3 +98,43 @@ lemma MulEquiv.strictMono_symm {G G' : Type*} [CommMonoid G] [LinearOrder G]
     [CommMonoid G'] [Preorder G'] {e : G ≃* G'} (he : StrictMono e) : StrictMono e.symm := by
   intro
   simp [← he.lt_iff_lt]
+
+section correspondence
+
+variable (G : Type*) [CommGroup G]
+
+-- TODO : downstream to `Mathlib.Algebra.Group.Subgroup.Order` or further
+
+@[to_additive]
+theorem Submonoid.oneLE.isMulPointed [PartialOrder G] [IsOrderedMonoid G] :
+    (oneLE G).IsMulPointed := by aesop (add simp ge_antisymm_iff)
+
+@[to_additive]
+theorem Submonoid.oneLE.isMulSpanning [LinearOrder G] [IsOrderedMonoid G] :
+    (oneLE G).IsMulSpanning := by aesop (add safe le_total)
+
+variable {G} {M : Submonoid G} (hM : M.IsMulPointed)
+
+/-- Construct a partial order by designating a submonoid with zero support in an abelian group. -/
+@[to_additive
+/-- Construct a partial order by designating a submonoid with zero support in an abelian group. -/]
+abbrev PartialOrder.mkOfSubmonoid : PartialOrder G where
+  le a b := b / a ∈ M
+  le_refl a := by simp [one_mem]
+  le_trans a b c nab nbc := by simpa using mul_mem nbc nab
+  le_antisymm a b nab nba := by
+    simpa [div_eq_one, eq_comm] using hM.eq_one_of_mem_of_inv_mem nab (by simpa using nba)
+
+variable {hM} in
+@[to_additive (attr := simp)]
+theorem PartialOrder.mkOfSubmonoid_le_iff {a b : G} :
+    (mkOfSubmonoid hM).le a b ↔ b / a ∈ M := .rfl
+
+@[to_additive]
+theorem IsOrderedMonoid.mkOfSubmonoid :
+    letI _ := PartialOrder.mkOfSubmonoid hM
+    IsOrderedMonoid G :=
+  letI _ := PartialOrder.mkOfSubmonoid hM
+  { mul_le_mul_left := fun a b nab c ↦ by simpa [· ≤ ·] using nab }
+
+end correspondence
