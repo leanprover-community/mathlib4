@@ -55,7 +55,7 @@ def FreeRing (α : Type u) : Type u :=
   FreeAbelianGroup <| FreeMonoid α
 
 instance (α : Type u) : Ring (FreeRing α) :=
-  FreeAbelianGroup.ring _
+  fast_instance% FreeAbelianGroup.ring _
 
 instance (α : Type u) : Inhabited (FreeRing α) := by
   dsimp only [FreeRing]
