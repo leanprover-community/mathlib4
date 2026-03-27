@@ -212,7 +212,7 @@ theorem iSup_eq_zero_iff {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] :
   rw [← nonpos_iff_eq_zero, ← h]
   exact Ordinal.le_iSup f i
 
--- TODO: generalize or remove
+@[deprecated congrArg (since := "2026-03-27")]
 theorem iSup_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f = Set.range g) : iSup f = iSup g :=
   congr_arg _ h
