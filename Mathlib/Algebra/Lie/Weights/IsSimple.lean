@@ -55,7 +55,6 @@ lemma corootSubmodule_le (I : LieIdeal K L) {α : Weight K H L}
 /-- The set of roots whose root space is contained in a given Lie ideal. -/
 def rootSet (I : LieIdeal K L) : Set H.root := { α | rootSpace H α.1 ≤ I.restr H }
 
-@[simp]
 lemma mem_rootSet {I : LieIdeal K L} {α : H.root} :
     α ∈ I.rootSet ↔ rootSpace H α.1 ≤ I.restr H := Iff.rfl
 
@@ -188,9 +187,9 @@ lemma restr_inf_cartan_eq_biSup_corootSubmodule (I : LieIdeal K L) :
   · simp only [Weight.IsNonZero, not_not] at hμ
     exact LinearMap.mem_ker.mpr (congr_fun hμ b)
 
-@[simp]
-lemma mem_rootSpan_iff (I : LieIdeal K L) {α : H.root} :
-    (α : Dual K H) ∈ I.rootSpan ↔ α ∈ I.rootSet :=
+lemma mem_rootSet_of_mem_rootSpan (I : LieIdeal K L)
+    {α : H.root} (hα_span : (α : Dual K H) ∈ I.rootSpan) :
+    α ∈ I.rootSet := by
   by_contra hα_not
   have hα_nz := H.isNonZero_coe_root α
   have : I.rootSpan ≤ LinearMap.ker (Dual.eval K H (coroot (α : Weight K H L))) := by
@@ -202,7 +201,7 @@ lemma mem_rootSpan_iff (I : LieIdeal K L) {α : H.root} :
   simp only [Dual.eval_apply, Weight.toLinear_apply, root_apply_coroot hα_nz] at this
   exact absurd this two_ne_zero
 
-lemma restr_eq_biSup_sl2SubmoduleOfRoot (I : LieIdeal K L) :
+lemma restr_eq_iSup_sl2SubmoduleOfRoot (I : LieIdeal K L) :
     I.restr H =
       ⨆ (α : H.root) (_ : α ∈ I.rootSet), sl2SubmoduleOfRoot (H.isNonZero_coe_root α) := by
   apply le_antisymm
@@ -472,7 +471,6 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
   rw [← LieSubmodule.toSubmodule_inj, LieSubmodule.restr_toSubmodule,
     coe_invtSubmoduleToLieIdeal_eq_iSup, LieSubmodule.iSup_toSubmodule]
 
-@[simp]
 lemma mem_rootSet_invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap) {α : H.root} :
     α ∈ (invtSubmoduleToLieIdeal q hq).rootSet ↔ (rootSystem H).root α ∈ q := by
