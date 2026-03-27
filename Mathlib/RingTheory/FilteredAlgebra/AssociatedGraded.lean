@@ -107,7 +107,7 @@ theorem sum_support_of (x : AssociatedGraded F F_lt)
 end support
 
 theorem sum_univ_of [Fintype ι] (x : AssociatedGraded F F_lt) :
-    ∑ i ∈ Finset.univ, of (x i) = x := by
+    ∑ i, of (x i) = x := by
   apply DFinsupp.ext (fun i ↦ ?_)
   rw [DFinsupp.finset_sum_apply]
   simp [of_apply]
