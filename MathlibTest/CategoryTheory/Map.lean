@@ -2,6 +2,7 @@ module
 
 public import Mathlib.Tactic.CategoryTheory.Map
 public import Mathlib.Tactic.CategoryTheory.Reassoc
+public import Mathlib.CategoryTheory.Types.Basic
 
 open CategoryTheory
 
@@ -54,6 +55,22 @@ lemma comp_map_to_dual {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w 
   F.map g ≫ F.map f = F.map h -/
 #guard_msgs in
 #check comp_map_dual_map
+
+@[map_functor] abbrev typesId : Type u₁ ⥤ Type u₁ := 𝟭 (Type u₁)
+
+@[map]
+lemma type_comp {α β γ : Type u₁} (f : α ⟶ β) (g : β ⟶ γ) (h : α ⟶ γ) (w : f ≫ g = h) :
+    f ≫ g = h := w
+
+/-- info: Tests.Map.type_comp_map.{u✝, v✝, u_1} {α β γ : Type u_1} (f : α ⟶ β) (g : β ⟶ γ) (h : α ⟶ γ) (w : f ≫ g = h)
+  {D : Type u✝} [instD : Category.{v✝, u✝} D] (F : Type u_1 ⥤ D) : F.map f ≫ F.map g = F.map h -/
+#guard_msgs in
+#check type_comp_map
+
+/-- info: Tests.Map.type_comp_map_Tests_Map_typesId.{u_1} {α β γ : Type u_1} (f : α ⟶ β) (g : β ⟶ γ) (h : α ⟶ γ) (w : f ≫ g = h) :
+  f ≫ g = h -/
+#guard_msgs in
+#check type_comp_map_Tests_Map_typesId
 
 /-!
 `map_of%` pushes `Functor.map` through an equality and applies `simp only [Functor.map_comp, Functor.map_id]` on each
