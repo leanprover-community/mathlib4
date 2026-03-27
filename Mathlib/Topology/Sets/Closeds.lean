@@ -159,7 +159,6 @@ theorem coe_finset_sup (f : ι → Closeds α) (s : Finset ι) :
     (↑(s.sup f) : Set α) = s.sup ((↑) ∘ f) :=
   map_finset_sup (⟨⟨(↑), coe_sup⟩, coe_bot⟩ : SupBotHom (Closeds α) (Set α)) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_finset_inf (f : ι → Closeds α) (s : Finset ι) :
     (↑(s.inf f) : Set α) = s.inf ((↑) ∘ f) :=
@@ -184,6 +183,7 @@ theorem iInf_mk {ι} (s : ι → Set α) (h : ∀ i, IsClosed (s i)) :
   iInf_def _
 
 /-- Closed sets in a topological space form a coframe. -/
+@[implicit_reducible]
 def coframeMinimalAxioms : Coframe.MinimalAxioms (Closeds α) where
   iInf_sup_le_sup_sInf a s :=
     (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le
@@ -216,6 +216,23 @@ theorem singleton_inj [T1Space α] {x y : α} : ({x} : Closeds α) = {y} ↔ x =
 @[simps]
 def preimage (s : Closeds β) {f : α → β} (hf : Continuous f) : Closeds α :=
   ⟨f ⁻¹' s, s.isClosed.preimage hf⟩
+
+instance : SProd (Closeds α) (Closeds β) (Closeds (α × β)) where
+  sprod s t := ⟨s ×ˢ t, s.isClosed.prod t.isClosed⟩
+
+@[simp]
+theorem coe_prod (s : Closeds α) (t : Closeds β) :
+    (s ×ˢ t : Closeds (α × β)) = (s : Set α) ×ˢ (t : Set β) :=
+  rfl
+
+@[simp]
+theorem mem_prod {s : Closeds α} {t : Closeds β} {x : α × β} : x ∈ s ×ˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
+  Iff.rfl
+
+@[simp]
+theorem singleton_prod_singleton [T1Space α] [T1Space β] (x : α) (y : β) :
+    ({x} ×ˢ {y} : Closeds (α × β)) = {(x, y)} :=
+  Closeds.ext Set.singleton_prod_singleton
 
 end Closeds
 
@@ -376,7 +393,6 @@ lemma coe_finset_sup (s : Finset ι) (U : ι → Clopens α) :
   | empty => simp
   | insert _ _ _ IH => simp [IH]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_disjoint {s t : Clopens α} : Disjoint (s : Set α) t ↔ Disjoint s t := by
   simp [disjoint_iff, ← SetLike.coe_set_eq]

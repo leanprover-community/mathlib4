@@ -38,7 +38,7 @@ instance [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)] :
   have : Nontrivial (IsLocalRing.ResidueField R ⊗[R] S) := by
     rw [eSp.nontrivial_congr, Ideal.Quotient.nontrivial_iff]
     exact ((((local_hom_TFAE (algebraMap R S)).out 0 2 rfl rfl).mp inferInstance).trans_lt
-      (inferInstanceAs (maximalIdeal S).IsMaximal).ne_top.lt_top).ne
+      (inferInstance : (maximalIdeal S).IsMaximal).ne_top.lt_top).ne
   .of_surjective' TensorProduct.includeRight.toRingHom
     (TensorProduct.mk_surjective _ _ _ residue_surjective)
 
@@ -127,6 +127,7 @@ noncomputable def PrimeSpectrum.preimageOrderIsoFiber (p : PrimeSpectrum R) :
 @[deprecated (since := "2025-12-07")]
 alias PrimeSpectrum.preimageOrderIsoTensorResidueField := PrimeSpectrum.preimageOrderIsoFiber
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
 /-- The `OrderIso` between the set of primes lying over a prime ideal `p : Ideal R`,
 and the prime spectrum of `κ(p) ⊗[R] S`. -/
@@ -138,6 +139,7 @@ noncomputable def PrimeSpectrum.primesOverOrderIsoFiber (R S : Type*) [CommRing 
     fun q ↦ ⟨q.1.asIdeal, ⟨q.1.2, ⟨congr($(q.2).1).symm⟩⟩⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
     (PrimeSpectrum.preimageOrderIsoFiber R S ⟨p, ‹_›⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `Homeomorph` between the fiber of `PrimeSpectrum S → PrimeSpectrum R`
 at a prime ideal `p : PrimeSpectrum R` and the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps!]

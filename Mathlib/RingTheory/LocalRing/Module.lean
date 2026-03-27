@@ -100,6 +100,7 @@ theorem subsingleton_tensorProduct [Module.Finite R M] :
     ← Submodule.subsingleton_iff R, ← subsingleton_iff_bot_eq_top,
     ← map_tensorProduct_mk_eq_top (M := M), Submodule.map_bot]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
     (f : ι → M) (b : Basis ι k (k ⊗[R] M))
     (hb : ∀ i, 1 ⊗ₜ f i = b i) : Submodule.span R (Set.range f) = ⊤ := by
@@ -110,6 +111,7 @@ theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
 
 end IsLocalRing
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Module.mem_support_iff_nontrivial_residueField_tensorProduct [Module.Finite R M]
     (p : PrimeSpectrum R) :
     p ∈ Module.support R M ↔ Nontrivial (p.asIdeal.ResidueField ⊗[R] M) := by
@@ -217,6 +219,7 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
   intro j
   simp [iequiv, i]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `M` is a finitely presented module over a local ring `(R, 𝔪)` such that `m ⊗ M → M` is
 injective, then every generating family contains a basis.
@@ -290,6 +293,7 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
     intro i hi; rw [ih i hi, zero_mul]
   · exact ih i hi
 
+set_option backward.isDefEq.respectTransparency false in
 open Finsupp in
 theorem IsLocalRing.linearCombination_bijective_of_flat [Module.Finite R M] [Flat R M] {ι : Type u}
     (v : ι → M) (h : Function.Bijective (linearCombination k (TensorProduct.mk R k M 1 ∘ v))) :
@@ -300,6 +304,7 @@ theorem IsLocalRing.linearCombination_bijective_of_flat [Module.Finite R M] [Fla
   · simpa only [top_le_iff, ← range_linearCombination, LinearMap.range_eq_top] using h.2
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 00NZ]
 theorem free_of_flat_of_isLocalRing [Module.Finite R P] [Flat R P] : Free R P :=
   let w := Free.chooseBasis k (k ⊗[R] P)
@@ -307,7 +312,6 @@ theorem free_of_flat_of_isLocalRing [Module.Finite R P] [Flat R P] : Free R P :=
   .of_basis <| .mk (IsLocalRing.linearIndependent_of_flat _ (eq ▸ w.linearIndependent)) <| by
     exact (span_eq_top_of_tmul_eq_basis _ w <| congr_fun eq).ge
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `M → N → P → 0` is a presentation of `P` over a local ring `(R, 𝔪, k)` with
 `M` finite and `N` finite free, then injectivity of `k ⊗ M → k ⊗ N` implies that `P` is free.
@@ -327,7 +331,6 @@ theorem free_of_lTensor_residueField_injective (hg : Surjective g) (h : Exact f 
 
 end Module
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a linear map `l : M → N` over a local ring `(R, 𝔪, k)`
 with `M` finite and `N` finite free,

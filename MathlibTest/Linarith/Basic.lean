@@ -105,16 +105,12 @@ example (x : Rat) (h : 0 < x) : 0 < x/(2/3) := by linarith
 
 variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
 
-set_option backward.isDefEq.respectTransparency false in
 example (a : K) (ha : 10 / (8 + 2) ≤ a) : 1 ≤ a := by linarith
 
-set_option backward.isDefEq.respectTransparency false in
 example (a : K) (ha : 10 / 10 ^ 1 ≤ a) : 1 ≤ a := by linarith
 
-set_option backward.isDefEq.respectTransparency false in
 example (a : K) (ha : 10⁻¹ * 10 ≤ a) : 1 ≤ a := by linarith
 
-set_option backward.isDefEq.respectTransparency false in
 example (a : K) (ha : 1.0 ≤ a) : 1 ≤ a := by linarith
 
 end cancel_denoms
@@ -549,6 +545,11 @@ example (r : ℚ) (h' : 1 = r * 2) : 1 = 0 ∨ r = 1 / 2 := by
   by_contra! h''
   linarith +splitNe
 
+/-- https://github.com/leanprover-community/mathlib4/issues/29963 -/
+example {V : Type*} [AddCommGroup V] {x : V} (hx : x ≠ 0) {a b : ℚ} (hab : a ≠ b) (hab' : a = b) :
+    False := by
+  linarith +splitNe
+
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x * x := by nlinarith
 
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x ^ 2 := by nlinarith
@@ -836,3 +837,6 @@ theorem after_k_fails (h : (a : ℤ) * 2 ^ k = 2 ^ i) (useless : k ≤ k) : True
   trivial
 
 end metavariables
+
+example {x y : ℤ} (h : x < y) {a b : Set Nat} (h' : ¬a ≤ b) : x < y := by
+  linarith

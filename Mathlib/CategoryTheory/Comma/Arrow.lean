@@ -375,7 +375,6 @@ def mapArrowFunctor : (C ⥤ D) ⥤ (Arrow C ⥤ Arrow D) where
 
 variable {C D}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of categories `Arrow C ≌ Arrow D` induced by an equivalence `C ≌ D`. -/
 def mapArrowEquivalence (e : C ≌ D) : Arrow C ≌ Arrow D where
   functor := e.functor.mapArrow

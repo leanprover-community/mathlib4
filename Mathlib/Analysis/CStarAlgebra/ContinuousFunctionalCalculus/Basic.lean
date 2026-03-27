@@ -207,7 +207,6 @@ lemma inr_comp_cfcₙHom_eq_cfcₙAux (a : A) [ha : IsStarNormal a] :
     (inrNonUnitalStarAlgHom ℂ A).comp (cfcₙHom ha) = cfcₙAux (isStarNormal_inr (R := ℂ)) a ha :=
   inrNonUnitalStarAlgHom_comp_cfcₙHom_eq_cfcₙAux isStarNormal_inr a ha
 
-set_option backward.isDefEq.respectTransparency false in
 open ContinuousMapZero in
 instance IsStarNormal.instNonUnitalIsometricContinuousFunctionalCalculus :
     NonUnitalIsometricContinuousFunctionalCalculus ℂ A IsStarNormal where
@@ -468,7 +467,6 @@ open CStarAlgebra
 
 variable [NonUnitalCStarAlgebra A]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped NonUnitalContinuousFunctionalCalculus in
 /-- This lemma requires a lot from type class synthesis, and so one should instead favor the bespoke
 versions for `ℝ≥0`, `ℝ`, and `ℂ`. -/
@@ -490,7 +488,6 @@ lemma Unitization.cfcₙ_eq_cfc_inr {R : Type*} [Semifield R] [StarRing R] [Metr
     · rw [cfcₙ_apply_of_not_predicate a ha, inr_zero,
         cfc_apply_of_not_predicate _ (not_iff_not.mpr hp |>.mpr ha)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Unitization.complex_cfcₙ_eq_cfc_inr (a : A) (f : ℂ → ℂ) (hf₀ : f 0 = 0 := by cfc_zero_tac) :
     cfcₙ f a = cfc f (a : A⁺¹) :=
   Unitization.cfcₙ_eq_cfc_inr isStarNormal_inr ..
