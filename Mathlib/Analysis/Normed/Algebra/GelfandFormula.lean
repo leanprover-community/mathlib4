@@ -40,7 +40,7 @@ material proven here gets used in contexts that have nothing to do with complex 
 
 variable {𝕜 A : Type*}
 
-open scoped NNReal Topology
+open scoped NNReal Topology Ring
 open Filter ENNReal
 
 namespace spectrum
@@ -60,7 +60,7 @@ differentiable on any closed ball centered at zero of radius `r < (spectralRadiu
 theorem differentiableOn_inverse_one_sub_smul [NontriviallyNormedField 𝕜] [NormedRing A]
     [NormedAlgebra 𝕜 A] [CompleteSpace A] {a : A} {r : ℝ≥0}
     (hr : (r : ℝ≥0∞) < (spectralRadius 𝕜 a)⁻¹) :
-    DifferentiableOn 𝕜 (fun z : 𝕜 => Ring.inverse (1 - z • a)) (Metric.closedBall 0 r) := by
+    DifferentiableOn 𝕜 (fun z : 𝕜 => (1 - z • a)⁻¹ʳ) (Metric.closedBall 0 r) := by
   intro z z_mem
   apply DifferentiableAt.differentiableWithinAt
   have hu : IsUnit (1 - z • a) := by
