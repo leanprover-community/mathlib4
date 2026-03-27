@@ -101,7 +101,7 @@ example {a b : ℤ} (h : 0 ≤ a + b) : 0 ≤ a + b := by positivity
 example {a : ℤ} (hlt : 0 ≤ a) (hne : a ≠ 0) : 0 < a := by positivity
 
 example {a b c d : ℤ} (ha : c < a) (hb : d < b) : 0 < (a - c) * (b - d) := by
-  positivity [sub_pos_of_lt ha, sub_pos_of_lt hb]
+  positivity
 
 section
 
@@ -364,7 +364,7 @@ example {a : ℝ} : 0 < a ^ 0 := by positivity
 example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hat : a ≠ ⊤) : 0 < a ^ b := by positivity []
 example {a b c d : ℝ} (hab : 0 < a * b) (hb : 0 ≤ b) (hcd : c < d) :
     0 < a ^ c + 1 / (d - c) := by
-  positivity [sub_pos_of_lt hcd, pos_of_mul_pos_left hab hb]
+  positivity [pos_of_mul_pos_left hab hb]
 
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 2 + a := by positivity
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 3 + a := by positivity
