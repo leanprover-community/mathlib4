@@ -472,6 +472,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
   rw [← LieSubmodule.toSubmodule_inj, LieSubmodule.restr_toSubmodule,
     coe_invtSubmoduleToLieIdeal_eq_iSup, LieSubmodule.iSup_toSubmodule]
 
+@[simp]
 lemma mem_rootSet_invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap) {α : H.root} :
     α ∈ (invtSubmoduleToLieIdeal q hq).rootSet ↔ (rootSystem H).root α ∈ q := by
