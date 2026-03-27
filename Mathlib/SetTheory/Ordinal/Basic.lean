@@ -173,11 +173,10 @@ theorem type_eq_zero_of_empty (r) [IsWellOrder α r] [IsEmpty α] : type r = 0 :
   (RelIso.relIsoOfIsEmpty r _).ordinal_type_eq
 
 @[simp]
-theorem type_eq_zero_iff_isEmpty [IsWellOrder α r] : type r = 0 ↔ IsEmpty α :=
-  ⟨fun h =>
-    let ⟨s⟩ := type_eq.1 h
-    s.toEquiv.isEmpty,
-    @type_eq_zero_of_empty α r _⟩
+theorem type_eq_zero_iff_isEmpty [IsWellOrder α r] : type r = 0 ↔ IsEmpty α := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ type_eq_zero_of_empty r⟩
+  let ⟨s⟩ := type_eq.1 h
+  exact s.toEquiv.isEmpty
 
 theorem type_ne_zero_iff_nonempty [IsWellOrder α r] : type r ≠ 0 ↔ Nonempty α := by simp
 
@@ -1102,7 +1101,7 @@ theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r },
 @[deprecated (since := "2026-03-15")] alias ord_eq_Inf := ord_eq_iInf
 
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
-theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord #α = @type α r wo :=
+theorem ord_eq (α) : ∃ (r : α → α → Prop) (_ : IsWellOrder α r), ord #α = type r :=
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
   ⟨r.1, r.2, wo.symm⟩
 
