@@ -46,6 +46,21 @@ namespace CategoryTheory
 open Limits MonoidalCategory CartesianMonoidalCategory
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 
+
+/--
+In a cartesian monoidal category, the following is a pullback square:
+```
+X ⊗ Y  -π₁→  X
+  |          |
+  π₂         !
+  ↓          ↓
+  Y   -!→   𝟙_ C
+```
+-/
+lemma IsPullback.fst_snd_toUnit_toUnit (X Y : C) :
+    IsPullback (fst X Y) (snd X Y) (toUnit _) (toUnit _) :=
+  .of_isLimit_binaryFan_of_isTerminal (tensorProductIsBinaryProduct X Y) isTerminalTensorUnit
+
 /--
 In a cartesian monoidal category, the following is a pullback square:
 ```
@@ -59,9 +74,8 @@ X ⊗ Z  →  Y ⊗ Z
 -/
 lemma IsPullback.whiskerRight_horiz {X Y : C} (f : X ⟶ Y) (Z : C) :
     IsPullback (f ▷ Z) (fst X Z) (fst Y Z) f := by
-  simpa using (IsPullback.of_vert_isIso
-    ⟨(CartesianMonoidalCategory.tensorObjProdIso_hom_whiskerRight f)⟩).paste_vert
-    (IsPullback.of_prod_fst_with_id f Z).flip
+  apply IsPullback.of_right _ (by simp) (IsPullback.fst_snd_toUnit_toUnit _ _).flip
+  simpa using (IsPullback.fst_snd_toUnit_toUnit _ _).flip
 
 /--
 In a cartesian monoidal category, the following is a pullback square:
