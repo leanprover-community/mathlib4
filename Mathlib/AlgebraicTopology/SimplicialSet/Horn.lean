@@ -135,6 +135,17 @@ lemma stdSimplex.subcomplex_le_horn_iff {n : ℕ}
           exact ⟨j, by simp [← hS]⟩
         exact face_le_horn _ _ (by rintro rfl; tauto)
 
+lemma stdSimplex.face_le_horn_iff {n : ℕ} (S : Finset (Fin (n + 2))) (j : Fin (n + 2)) :
+    stdSimplex.face.{u} S ≤ horn (n + 1) j ↔ S ≠ .univ ∧ S ≠ {j}ᶜ := by
+  rw [stdSimplex.subcomplex_le_horn_iff, face_le_face_iff, ← not_iff_not]
+  simp only [Finset.le_eq_subset, Decidable.not_not, ne_eq, not_and_or]
+  refine ⟨fun h ↦ ?_, by rintro (rfl | rfl) <;> simp⟩
+  rw [← Finset.compl_subset_compl, compl_compl,
+    Finset.subset_singleton_iff, Finset.compl_eq_empty_iff] at h
+  obtain h | h := h
+  · exact Or.inl h
+  · exact Or.inr (by simp [← h])
+
 namespace horn
 
 open SimplexCategory Finset Opposite

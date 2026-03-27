@@ -274,10 +274,6 @@ lemma Cells.preimage_filtration_map {j : ι} (c : f.Cells j) :
   refine le_antisymm ?_ ?_
   · simpa only [stdSimplex.subcomplex_le_horn_iff, ← Subcomplex.image_le_iff,
       Cells.image_face_index_compl] using c.subcomplex_not_le_filtration
-    /-rw [stdSimplex.subcomplex_le_horn_iff, stdSimplex.face_singleton_compl,
-      Subfunctor.ofSection_le_iff, preimage_obj, Set.mem_preimage]
-    refine fun h ↦ c.simplex_not_mem_filtration_obj ?_
-    rwa [Cells.map_add_objEquiv_symm_δ_index] at h-/
   · rw [← Subcomplex.image_le_iff, N.subcomplex_le_iff]
     intro s hs
     induction s using SSet.Subcomplex.N.cases A with
@@ -365,6 +361,23 @@ lemma isPullback (j : ι) (_ : ¬ IsMax j) :
     exact h.symm)⟩
 
 set_option backward.isDefEq.respectTransparency false in
+lemma range_homOfLE_app_union_range_b_app (j : ι) (d : SimplexCategoryᵒᵖ) :
+    Set.range ((homOfLE (f.filtration_monotone (Order.le_succ j))).app d) ⊔
+      Set.range ((f.b j).app d) = Set.univ := by
+  ext ⟨x, hx⟩
+  simp only [filtration, Order.lt_succ_iff, Subfunctor.max_obj, Subfunctor.iSup_obj, Set.mem_union,
+    Set.mem_iUnion, exists_prop, Subfunctor.toFunctor_obj, Set.sup_eq_union, Set.mem_range,
+    Subtype.ext_iff, Subfunctor.homOfLe_app_coe, Subtype.exists, exists_eq_right, Set.mem_univ,
+    iff_true] at hx ⊢
+  obtain hx | ⟨i, hi, c, hx⟩ := hx
+  · exact Or.inl (Or.inl hx)
+  · obtain hi | rfl := hi.lt_or_eq
+    · exact Or.inl (Or.inr ⟨i, hi, c, hx⟩)
+    · rw [← c.range_map, ← c.mapToSucc_ι, ← c.ι_b_assoc] at hx
+      obtain ⟨y, hy⟩ := hx
+      exact Or.inr ⟨_, hy⟩
+
+set_option backward.isDefEq.respectTransparency false in
 lemma isPushout (j : ι) (hj : ¬ IsMax j) :
     IsPushout (f.t j) (f.m j)
       (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
@@ -375,8 +388,9 @@ lemma isPushout (j : ι) (hj : ¬ IsMax j) :
       (IsPushout.isColimit ?_)
     dsimp
     refine Limits.Types.isPushout_of_isPullback_of_mono'
-      ((f.isPullback j hj).map ((CategoryTheory.evaluation _ _).obj (op ⦋d⦌)))
-      sorry sorry)⟩
+      ((f.isPullback j hj).map ((CategoryTheory.evaluation _ _).obj _))
+      (f.range_homOfLE_app_union_range_b_app _ _) (fun x y hx hy h ↦ ?_)
+    sorry)⟩
 
 end
 
