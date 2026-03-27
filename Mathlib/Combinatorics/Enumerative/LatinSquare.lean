@@ -95,10 +95,6 @@ instance {m n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [ToString α] :
 abbrev LatinSquare (n : Type*) [Fintype n] (α : Type*) [Fintype α] [DecidableEq α] :=
   LatinRectangle n n α
 
-/-- An example of a 5 × 5 Latin rectangle with entries in Fin 5. -/
-example : LatinRectangle (Fin 5) (Fin 5) (Fin 5) := LatinRectangle.mk (fun x y ↦ ((x + y) : Fin 5))
-  (by decide) (by decide) (by decide)
-
 /-- Get the underlying `Matrix` of the LatinRectangle. -/
 instance {m : Type*} {n : Type*} {α : Type*} [Fintype m]
   [Fintype n] [Fintype α] [DecidableEq α] :
