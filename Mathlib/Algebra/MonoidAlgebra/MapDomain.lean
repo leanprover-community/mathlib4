@@ -240,6 +240,7 @@ lemma mapAddEquiv_trans (e₁ : R ≃+ S) (e₂ : S ≃+ T) :
 
 @[deprecated (since := "2026-03-20")] alias mapRangeAddEquiv_trans := mapAddEquiv_trans
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp) (dont_translate := R S) map_mul]
 protected lemma map_mul (f : R →+* S) (x y : R[M]) :
     map (f : R →+ S) (x * y) = map f x * map f y := by
