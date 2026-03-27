@@ -207,7 +207,7 @@ theorem central_limit_multivariate
           (𝓝 (Complex.exp (-(‖t‖ ^ 2 / 2)))) := by
       simpa [mul_comm, mul_left_comm, mul_assoc, pow_two, neg_div]
         using
-          (tendsto_charFun_sqrt_inv_mul_pow
+          (tendsto_charFun_inv_sqrt_mul_pow
             (P := P) (X := Y 0) (hY_ae 0) h0_Y h1_Y ‖t‖)
 
     have h_proj_sum :
@@ -434,8 +434,8 @@ theorem central_limit_multivariate
       -- 3. Substitute the folded LHS
       rw [h_LHS]
 
-      rw [charFun_sqrt_inv_mul_sum]
-      apply hindepY
+      rw [charFun_inv_sqrt_mul_sum]
+      · apply hindepY
       exact hidentY
     -- 1. Rewrite the sequence and the limit point using our two bridge lemmas
     simp_rw [h_char_μn, h_char_μ]

@@ -148,7 +148,6 @@ lemma charFun_tendsto_if_inner_tendsto (hX : Measurable X) (hXn : ∀ n, Measura
 
         rw [integral_add, h_re, h_im_mul, h_im]
         rw [←integral_complex_ofReal, ←integral_complex_ofReal]
-        rfl
 
         apply (ψ_re_bcf.integrable ν).ofReal
         apply (ψ_im_bcf.integrable ν).ofReal.mul_const Complex.I
