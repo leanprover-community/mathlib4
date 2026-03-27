@@ -43,12 +43,16 @@ variable {C : Type u} [Category.{v} C] [Preadditive C] [HasCoproducts.{w} C]
   {X Y : TopCat.{w}} {f g : X ⟶ Y}
 
 /-- Two homotopic morphisms in `TopCat` induce homotopic morphisms on the
-singular chain complexes. -/
+singular chain complexes with coefficients in `R` (e.g. `R := ℤ` considered as
+an object of the category of abelian groups). -/
 noncomputable def singularChainComplexFunctorObjMap (H : TopCat.Homotopy f g) (R : C) :
     _root_.Homotopy (((singularChainComplexFunctor C).obj R).map f)
       (((singularChainComplexFunctor C).obj R).map g) :=
   H.toSSet.singularChainComplexFunctorObjMap R
 
+/-- Two homotopic morphisms in `TopCat` induce equal morphisms on the
+singular homology with coefficients in `R` (e.g. `R := ℤ` considered as
+an object of the category of abelian groups). -/
 open HomologicalComplex in
 lemma congr_homologyMap_singularChainComplexFunctor [CategoryWithHomology C]
     (H : TopCat.Homotopy f g) (R : C) (n : ℕ) :
