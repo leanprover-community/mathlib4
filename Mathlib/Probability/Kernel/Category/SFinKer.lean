@@ -148,11 +148,11 @@ instance : MonoidalCategory SFinKer.{u} where
     congr
   tensorHom_comp_tensorHom κ₁ κ₂ η₁ η₂ := by
     ext : 1; dsimp
-    simp only [Kernel.comp_id_parallelComp]
+    simp only [Kernel.id_parallelComp_comp_parallelComp_id]
     exact Kernel.parallelComp_comp_parallelComp
   associator_naturality κ₁ κ₂ η := by
     ext : 1; dsimp
-    simp only [Kernel.comp_id_parallelComp]
+    simp only [Kernel.id_parallelComp_comp_parallelComp_id]
     rw [Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop),
       Kernel.deterministic_comp_eq_map, Kernel.comp_deterministic_eq_comap]
     ext _ _ hs
@@ -244,7 +244,7 @@ instance : CopyDiscardCategory SFinKer.{u} where
     congr 1
   discard_tensor X Y := by
     ext : 1; dsimp
-    simp only [Kernel.comp_id_parallelComp]
+    simp only [Kernel.id_parallelComp_comp_parallelComp_id]
     rw [Kernel.id_map (by fun_prop), Kernel.deterministic_comp_eq_map]
     ext x s hs
     rw [Kernel.map_apply _ (by fun_prop), Kernel.parallelComp_apply]
