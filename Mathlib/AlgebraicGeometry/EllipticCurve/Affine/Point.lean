@@ -650,7 +650,7 @@ instance : InvolutiveNeg W'.Point where
     · rfl
     · simp only [neg_some, negY_negY]
 
-lemma x_eq_iff {P Q : W.Point} {xP yP xQ yQ : F} {hP' : W.Nonsingular xP yP}
+lemma X_eq_iff {P Q : W.Point} {xP yP xQ yQ : F} {hP' : W.Nonsingular xP yP}
     {hQ' : W.Nonsingular xQ yQ} (hP : P = some xP yP hP') (hQ : Q = some xQ yQ hQ') :
     xP = xQ ↔ P = Q ∨ P = -Q := by
   refine ⟨fun H ↦ ?_, fun H ↦ by grind [neg_some]⟩
@@ -887,7 +887,7 @@ lemma eq_or_eq_neg_of_xRep_eq_xRep {P Q : W.Point} (h : P.xRep = Q.xRep) : P = Q
   | some .., 0 => simp [xRep] at h
   | some x₁ _ _, some x₂ _ _ =>
     simp only [xRep, Matrix.vecCons_inj, and_true] at h
-    exact (x_eq_iff rfl rfl).mp h
+    exact (X_eq_iff rfl rfl).mp h
 
 lemma xRep_eq_xRep_iff {P Q : W.Point} : P.xRep = Q.xRep ↔ P = Q ∨ P = -Q := by
   refine ⟨eq_or_eq_neg_of_xRep_eq_xRep, fun H ↦ ?_⟩
