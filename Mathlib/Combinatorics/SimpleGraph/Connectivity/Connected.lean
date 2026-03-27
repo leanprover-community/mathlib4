@@ -647,8 +647,7 @@ lemma adj_spanningCoe_toSimpleGraph {v w : V} (C : G.ConnectedComponent) :
   apply Iff.intro
   · intro h
     simp_all only [map_adj, SetLike.coe_sort_coe, Subtype.exists, mem_supp_iff]
-    obtain ⟨_, a, _, _, h₁, h₂, h₃⟩ := h
-    subst h₂ h₃
+    obtain ⟨_, a, _, _, h₁, rfl, rfl⟩ := h
     exact ⟨a, h₁⟩
   · simp only [toSimpleGraph, map_adj, comap_adj, Embedding.subtype_apply, Subtype.exists,
       exists_and_left, and_imp]
