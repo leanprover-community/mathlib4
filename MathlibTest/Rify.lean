@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Rify
 import Mathlib.Data.NNReal.Basic

@@ -56,7 +56,7 @@ def submonoid (M : Type*) [CommMonoid M] (p : ℕ) : Submonoid (ℕ → M) where
 alias _root_.Monoid.perfection := submonoid
 
 instance (M : Type*) [CommMonoid M] (p : ℕ) : CommMonoid (Perfection M p) :=
-  (submonoid M p).toCommMonoid
+  fast_instance% (submonoid M p).toCommMonoid
 
 variable (M : Type*) [CommMonoid M] (p : ℕ)
 
@@ -202,7 +202,7 @@ alias _root_.Ring.perfectionSubsemiring := subsemiring
 variable (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
 instance : CommSemiring (Perfection R p) :=
-  (subsemiring R p).toCommSemiring
+  fast_instance% (subsemiring R p).toCommSemiring
 
 instance : CharP (Perfection R p) p :=
   CharP.subsemiring _ _ (subsemiring R p)
@@ -376,10 +376,10 @@ alias _root_.Ring.perfectionSubring := subring
 variable (R : Type*) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
 instance : Ring (Perfection R p) :=
-  (subring R p).toRing
+  fast_instance% (subring R p).toRing
 
 instance : CommRing (Perfection R p) :=
-  (subring R p).toCommRing
+  fast_instance% (subring R p).toCommRing
 
 end CommRing
 
@@ -648,7 +648,6 @@ variable [Fact p.Prime] [Fact (¬ IsUnit (p : O))]
 instance : CommRing (PreTilt O p) :=
   inferInstanceAs <| CommRing <| Perfection _ _
 
-set_option backward.isDefEq.respectTransparency false in
 instance : CharP (PreTilt O p) p :=
   inferInstanceAs <| CharP (Perfection _ _) _
 
@@ -770,7 +769,6 @@ theorem valAux_mul (f g : PreTilt O p) :
       valAux_eq hv (coeff_add_ne_zero hn 1), valAux_eq hv hfg]
   rw [map_mul] at hfg ⊢; rw [ModP.preVal_mul hv hfg, mul_pow]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem valAux_add (f g : PreTilt O p) :
     valAux K v O p (f + g) ≤ max (valAux K v O p f) (valAux K v O p g) := by
   by_cases hf : f = 0
