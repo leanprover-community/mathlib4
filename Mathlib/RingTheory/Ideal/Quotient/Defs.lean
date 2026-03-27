@@ -61,8 +61,7 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
     exact mul_sub_mul_mem I h₁ h₂
 
 instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
-  inferInstanceAs <| Ring
-    (dsimp% [Quotient.ringCon, QuotientAddGroup.con] Quotient.ringCon I).Quotient
+  inferInstanceAs <| Ring (Quotient.ringCon I).Quotient
 
 instance semiring {R} [CommRing R] (I : Ideal R) : Semiring (R ⧸ I) := (ring I).toSemiring
 instance commSemiring {R} [CommRing R] (I : Ideal R) : CommSemiring (R ⧸ I) where
