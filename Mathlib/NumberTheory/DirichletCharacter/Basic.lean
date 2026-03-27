@@ -144,7 +144,8 @@ lemma factorsThrough_iff_ker_unitsMap {d : ℕ} [NeZero n] (hd : d ∣ n) :
     simp_rw [changeLevel_toUnitHom, toUnitHom_eq, ofUnitHom_eq, Equiv.apply_symm_apply, hE,
       toUnitHom_eq]
 
-theorem factorsThrough_of_dvd_dvd {d m : ℕ} [NeZero n] (hχ : FactorsThrough χ d) (hd : d ∣ m)
+/-- If χ factors through d and d ∣ m ∣ n, then χ also factors through m. -/
+theorem FactorsThrough.mono {d m : ℕ} [NeZero n] (hχ : FactorsThrough χ d) (hd : d ∣ m)
     (hm : m ∣ n) :
     FactorsThrough χ m := by
   refine (factorsThrough_iff_ker_unitsMap hm).mpr fun x hx ↦ ?_
@@ -337,7 +338,7 @@ theorem mem_conductorSet_iff_conductor_dvd (hn : n ≠ 0) {d : ℕ} (hd : d ∣ 
     d ∈ χ.conductorSet ↔ χ.conductor ∣ d := by
   refine ⟨fun h ↦ conductor_dvd_of_mem_conductorSet χ hn h, fun h ↦ ?_⟩
   have : NeZero n := ⟨hn⟩
-  exact factorsThrough_of_dvd_dvd χ χ.factorsThrough_conductor h hd
+  exact χ.factorsThrough_conductor.mono χ h hd
 
 private theorem conductor_inv_aux (χ : DirichletCharacter R n) :
     χ⁻¹.conductor ∣ χ.conductor := by
@@ -347,6 +348,7 @@ private theorem conductor_inv_aux (χ : DirichletCharacter R n) :
   refine ⟨χ.conductor_dvd_level, χ.primitiveCharacter⁻¹, ?_⟩
   rw [MonoidHom.map_inv, changeLevel_primitiveCharacter]
 
+/-- The conductor of χ⁻¹ equals the conductor of χ. -/
 theorem conductor_inv (χ : DirichletCharacter R n) :
     χ⁻¹.conductor = χ.conductor := by
   refine dvd_antisymm χ.conductor_inv_aux ?_
@@ -373,6 +375,7 @@ lemma primitive_mul_isPrimitive {m : ℕ} (ψ : DirichletCharacter R m) :
     IsPrimitive (primitive_mul χ ψ) :=
   primitiveCharacter_isPrimitive _
 
+/-- The conductor of χ * ψ divides the lcm of the conductors of χ and ψ. -/
 theorem conductor_mul_dvd_lcm_conductor (hn : n ≠ 0) (χ ψ : DirichletCharacter R n) :
     (χ * ψ).conductor ∣ χ.conductor.lcm ψ.conductor := by
   have h := Nat.lcm_dvd χ.conductor_dvd_level ψ.conductor_dvd_level
@@ -394,7 +397,6 @@ def subgroupOfCoprimeConductor [NeZero n] (d : ℕ) :
 @[simp]
 lemma mem_subgroupOfCoprimeConductor [NeZero n] (d : ℕ) (χ : DirichletCharacter R n) :
     χ ∈ subgroupOfCoprimeConductor d ↔ d.Coprime χ.conductor := Iff.rfl
-
 
 /-
 ### Even and odd characters
