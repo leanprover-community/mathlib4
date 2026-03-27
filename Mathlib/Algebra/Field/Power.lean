@@ -23,13 +23,20 @@ variable {α : Type*}
 
 section DivisionRing
 
-variable [DivisionRing α] {n : ℤ}
+variable [DivisionMonoid α] [HasDistribNeg α] {n : ℤ}
 
-theorem Odd.neg_zpow (h : Odd n) (a : α) : (-a) ^ n = -a ^ n := by
-  have hn : n ≠ 0 := by rintro rfl; exact Int.not_even_iff_odd.2 h .zero
-  obtain ⟨k, rfl⟩ := h
-  simp_rw [zpow_add' (.inr (.inl hn)), zpow_one, zpow_mul, zpow_two, neg_mul_neg,
-    neg_mul_eq_mul_neg]
+theorem Odd.neg_zpow {n : ℤ} {α : Type*} [DivisionMonoid α] [HasDistribNeg α] (h : Odd n)
+  (a : α) : (-a) ^ n = -a ^ n := by
+  obtain ⟨k, rfl⟩ := odd_iff_exists_bit1.mp h
+  cases k with
+  | ofNat k =>
+    rw [Int.ofNat_eq_natCast]
+    norm_cast
+    simp [pow_add]
+  | negSucc k =>
+    simp_rw [Int.negSucc_eq, show 2 * -(↑k + 1) + (1 : ℤ) = - (1 + k*2) by grind,  _root_.zpow_neg]
+    norm_cast
+    simp [pow_add]
 
 theorem Odd.neg_one_zpow (h : Odd n) : (-1 : α) ^ n = -1 := by rw [h.neg_zpow, one_zpow]
 
