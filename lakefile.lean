@@ -124,6 +124,10 @@ Currently, these checks are quite lenient, but could be made stricter in the fut
 lean_exe «check_title_labels» where
   srcDir := "scripts"
 
+/-- `lake exe nightly-testing-checklist` reports nightly-testing branch status. -/
+lean_exe «nightly-testing-checklist» where
+  srcDir := "scripts"
+
 lean_exe mathlib_test_executable where
   root := `MathlibTest.MathlibTestExecutable
 

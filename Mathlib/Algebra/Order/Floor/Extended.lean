@@ -69,10 +69,8 @@ variable {r s : ℝ≥0∞} {n : ℕ∞}
 lemma floor_lt_top : ⌊r⌋ₑ < ⊤ ↔ r < ∞ := by cases r <;> simp
 @[simp] lemma ceil_lt_top : ⌈r⌉ₑ < ⊤ ↔ r < ∞ := by cases r <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma le_floor : n ≤ ⌊r⌋ₑ ↔ n ≤ r := by cases r <;> cases n <;> simp [Nat.le_floor_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma ceil_le : ⌈r⌉ₑ ≤ n ↔ r ≤ n := by cases r <;> cases n <;> simp
 
 @[simp] lemma floor_lt : ⌊r⌋ₑ < n ↔ r < n := lt_iff_lt_of_le_iff_le le_floor
@@ -86,7 +84,6 @@ lemma gc_ceil_toENNReal : GaloisConnection ceil (↑) := fun _ _ ↦ ceil_le
 
 @[simp] lemma floor_le (hn : n ≠ ⊤) : ⌊r⌋ₑ ≤ n ↔ r < n + 1 := by simp [← lt_add_one_iff hn]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma le_ceil (hn₀ : n ≠ 0) (hn : n ≠ ⊤) : n ≤ ⌈r⌉ₑ ↔ n - 1 < r := by
   lift n to ℕ using hn
   cases r
@@ -128,7 +125,6 @@ lemma ceil_pos : 0 < ⌈r⌉ₑ ↔ 0 < r := by simp
 
 @[bound] lemma floor_le_ceil : ⌊r⌋ₑ ≤ ⌈r⌉ₑ := mod_cast floor_le_self.trans le_ceil_self
 
-set_option backward.isDefEq.respectTransparency false in
 @[bound] lemma ceil_le_floor_add_one : ∀ r : ℝ≥0∞, ⌈r⌉ₑ ≤ ⌊r⌋ₑ + 1
   | ∞ => le_rfl
   | (r : ℝ≥0) => by simpa using mod_cast Nat.ceil_le_floor_add_one r
@@ -138,7 +134,6 @@ lemma floor_lt_ceil (hrs : r < s) : ⌊r⌋ₑ < ⌈s⌉ₑ := floor_lt.2 <| hrs
 lemma floor_congr (h : ∀ n : ℕ∞, n ≤ r ↔ n ≤ s) : ⌊r⌋ₑ = ⌊s⌋ₑ := eq_of_forall_le_iff <| by simpa
 lemma ceil_congr (h : ∀ n : ℕ∞, r ≤ n ↔ s ≤ n) : ⌈r⌉ₑ = ⌈s⌉ₑ := eq_of_forall_ge_iff <| by simpa
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma floor_add_toENNReal : ∀ (r : ℝ≥0∞) (n : ℕ∞), ⌊r + n⌋ₑ = ⌊r⌋ₑ + n
   | ∞, _ => by simp
   | _, ⊤ => by simp
@@ -146,7 +141,6 @@ set_option backward.isDefEq.respectTransparency false in
     -- FIXME: Why does `norm_cast` not use `ENNReal.ofNNReal_add_natCast`?
     norm_cast; rw [← ENNReal.ofNNReal_add_natCast]; norm_cast; exact n.floor_add_natCast zero_le'
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma ceil_add_toENNReal : ∀ (r : ℝ≥0∞) (n : ℕ∞), ⌈r + n⌉ₑ = ⌈r⌉ₑ + n
   | ∞, _ => by simp
   | _, ⊤ => by simp
@@ -177,7 +171,6 @@ lemma floor_add_ofNat (r : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] : ⌊r + ofNat(n
 lemma ceil_add_ofNat (r : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] : ⌈r + ofNat(n)⌉ₑ = ⌈r⌉ₑ + ofNat(n) :=
   ceil_add_natCast r n
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma floor_sub_toENNReal : ∀ (r : ℝ≥0∞) (n : ℕ∞), ⌊r - n⌋ₑ = ⌊r⌋ₑ - n
   | ∞, ⊤ => by simp
   | ∞, (n : ℕ) => by simp
@@ -186,7 +179,6 @@ set_option backward.isDefEq.respectTransparency false in
     -- FIXME: Why does `norm_cast` not use `ENNReal.ofNNReal_sub_natCast`?
     norm_cast; rw [← ENNReal.ofNNReal_sub_natCast]; norm_cast; exact Nat.floor_sub_natCast ..
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma ceil_sub_toENNReal : ∀ (r : ℝ≥0∞) (n : ℕ∞), ⌈r - n⌉ₑ = ⌈r⌉ₑ - n
   | ∞, ⊤ => by simp
   | ∞, (n : ℕ) => by simp
@@ -212,7 +204,6 @@ lemma floor_sub_ofNat (r : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] : ⌊r - ofNat(n
 lemma ceil_lt_add_one (hr : r ≠ ∞) : (⌈r⌉ₑ : ℝ≥0∞) < r + 1 := by
   lift r to ℝ≥0 using hr; simpa using mod_cast Nat.ceil_lt_add_one (zero_le r)
 
-set_option backward.isDefEq.respectTransparency false in
 @[bound]
 lemma ceil_add_le : ∀ (r s : ℝ≥0∞), ⌈r + s⌉ₑ ≤ ⌈r⌉ₑ + ⌈s⌉ₑ
   | ∞, _ => by simp
