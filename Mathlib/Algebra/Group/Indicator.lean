@@ -200,23 +200,18 @@ end Group
 section One
 
 @[to_additive]
-lemma mulSupport_subsingleton [One β] {s : γ → Set α} (f : α → β)
-  (i : α) (j : γ) (hj : i ∈ s j) (hs : ∀ ⦃j' : γ⦄ (_ : i ∈ s j') (_ : f i ≠ 1), j' = j) :
-    Function.mulSupport (fun d ↦ (s d).mulIndicator f i) ⊆ {j} := by
-  aesop
-
-@[to_additive]
-lemma mulSupport_subsingleton_of_disjoint [One β] {s : γ → Set α} (f : α → β)
-    (hs : Pairwise (Disjoint on s)) (i : α) (j : γ)
-    (hj : i ∈ s j) : Function.mulSupport (fun d ↦ (s d).mulIndicator f i) ⊆ {j} := by
-  have hs : ∀ ⦃j' : γ⦄ (_ : i ∈ s j') (_ : f i ≠ 1), j' = j := by
-    simp only [Pairwise, ne_eq, Disjoint, le_eq_subset, bot_eq_empty, subset_empty_iff] at hs
-    intro j' hj' hi
-    simp_rw [← singleton_subset_iff] at hj hj'
-    by_contra hjj'
-    specialize hs hjj' hj' hj
-    simp_all only [empty_subset, ne_eq, singleton_ne_empty]
-  exact mulSupport_subsingleton f i j hj hs
+lemma mulSupport_subset_subsingleton_of_disjoint_on_mulSupport [One β] {s : γ → Set α} (f : α → β)
+  (hs : Pairwise (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) (i : α) (j : γ) (hj : i ∈ s j) :
+    (fun d ↦ (s d).mulIndicator f i).mulSupport ⊆ {j} := by
+  simp only [Pairwise, Disjoint, Set.le_eq_subset, Set.subset_inter_iff,] at hs
+  simp only [Set.subset_singleton_iff, mem_mulSupport, ne_eq, Set.mulIndicator_apply_eq_one,
+    Classical.not_imp, and_imp]
+  intro j' hj' hi
+  by_contra h
+  change f i ≠ 1 at hi
+  rw [← mem_mulSupport] at hi
+  simp_rw [← Set.singleton_subset_iff] at hs hj hj' hi
+  simpa only [Set.singleton_subset_iff] using hs h ⟨hj', hi⟩ ⟨hj, hi⟩
 
 end One
 
