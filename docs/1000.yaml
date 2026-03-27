@@ -135,7 +135,7 @@ Q190391X:
 
 Q190391:
   title: Central limit theorem
-  decl: ProbabilityTheory.tendstoInDistribution_sqrt_inv_mul_sum
+  decl: ProbabilityTheory.tendstoInDistribution_inv_sqrt_mul_sum_sub
   authors: Thomas Zhu, Rémy Degenne, Etienne Marion
   date: 2026
 
