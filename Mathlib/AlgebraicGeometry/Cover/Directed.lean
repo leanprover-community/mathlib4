@@ -83,7 +83,6 @@ lemma exists_of_f_eq_f {i j : 𝒰.I₀} (xi : 𝒰.X i) (xj : 𝒰.X j) (h : �
   use k, fi, fj, xk
   simp [← Scheme.Hom.comp_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_of_trans_eq_trans {i j k : 𝒰.I₀} (fi : i ⟶ k) (fj : j ⟶ k) (xi : 𝒰.X i)
     (xj : 𝒰.X j) (h : 𝒰.trans fi xi = 𝒰.trans fj xj) :
     ∃ (l : 𝒰.I₀) (fli : l ⟶ i) (flj : l ⟶ j) (x : 𝒰.X l),

@@ -245,7 +245,6 @@ abbrev quotientToInvariants : Rep k (G ⧸ S) := Rep.of (A.ρ.quotientToInvarian
 
 variable (k G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor sending a representation to its submodule of invariants. -/
 @[simps! obj_carrier map_hom]
 noncomputable def invariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
