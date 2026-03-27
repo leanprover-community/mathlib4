@@ -250,12 +250,6 @@ lemma not_preconnected_bot [Nontrivial V] : ¬(⊥ : SimpleGraph V).Preconnected
 @[simp] lemma preconnected_top : (⊤ : SimpleGraph V).Preconnected := fun x y => by
   if h : x = y then rw [h] else exact Adj.reachable h
 
-@[deprecated (since := "2025-09-23")] alias bot_preconnected := preconnected_bot
-@[deprecated (since := "2025-09-23")]
-alias bot_preconnected_iff_subsingleton := preconnected_bot_iff_subsingleton
-@[deprecated (since := "2025-09-23")] alias bot_not_preconnected := not_preconnected_bot
-@[deprecated (since := "2025-09-23")] alias top_preconnected := preconnected_top
-
 @[nontriviality]
 lemma Preconnected.of_subsingleton {G : SimpleGraph V} [Subsingleton V] : G.Preconnected :=
   fun _ _ ↦ .of_subsingleton
@@ -348,9 +342,6 @@ lemma not_connected_bot [Nontrivial V] : ¬(⊥ : SimpleGraph V).Connected := by
 lemma connected_top_iff : (completeGraph V).Connected ↔ Nonempty V := by simp [connected_iff]
 
 @[simp] lemma connected_top [Nonempty V] : (completeGraph V).Connected := by rwa [connected_top_iff]
-
-@[deprecated (since := "2025-09-23")] alias bot_not_connected := not_connected_bot
-@[deprecated (since := "2025-09-23")] alias top_connected := connected_top
 
 @[nontriviality]
 lemma Connected.of_subsingleton {G : SimpleGraph V} [Nonempty V] [Subsingleton V] :
@@ -656,8 +647,7 @@ lemma adj_spanningCoe_toSimpleGraph {v w : V} (C : G.ConnectedComponent) :
   apply Iff.intro
   · intro h
     simp_all only [map_adj, SetLike.coe_sort_coe, Subtype.exists, mem_supp_iff]
-    obtain ⟨_, a, _, _, h₁, h₂, h₃⟩ := h
-    subst h₂ h₃
+    obtain ⟨_, a, _, _, h₁, rfl, rfl⟩ := h
     exact ⟨a, h₁⟩
   · simp only [toSimpleGraph, map_adj, comap_adj, Embedding.subtype_apply, Subtype.exists,
       exists_and_left, and_imp]
@@ -841,7 +831,6 @@ theorem isBridge_iff_mem_and_forall_cycle_notMem {e : Sym2 V} :
     G.IsBridge e ↔ e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
   Sym2.ind (fun _ _ => isBridge_iff_adj_and_forall_cycle_notMem) e
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
 lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}
     (h : ¬ G.IsBridge s(x, y)) : (G.deleteEdges {s(x, y)}).Connected := by
@@ -866,14 +855,12 @@ theorem IsBridge.anti_of_mem_edgeSet {G' : SimpleGraph V} {e : Sym2 V} (hle : G 
     isBridge_iff_mem_and_forall_cycle_notMem.mp h' |>.right
       (p.mapLe hle) (Walk.IsCycle.mapLe hle hp) (p.edges_mapLe_eq_edges hle ▸ hpe)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Connecting two unreachable vertices by an edge creates a bridge. -/
 theorem IsBridge.sup_fromEdgeSet_of_not_reachable {u v : V} (h : ¬G.Reachable u v) :
     (G ⊔ fromEdgeSet {s(u, v)}).IsBridge s(u, v) := by
   refine isBridge_iff.mpr ⟨.inr ⟨Set.mem_singleton _, mt (· ▸ .rfl) h⟩, ?_⟩
   exact fun h' ↦ h <| .mono (sdiff_le_iff'.mpr <| refl _) h'
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Connecting two unreachable vertices by an edge preserves existing bridges. -/
 theorem IsBridge.sup_fromEdgeSet_of_not_reachable_of_isBridge {u v : V} {e : Sym2 V}
     (h : ¬G.Reachable u v) (h' : G.IsBridge e) : (G ⊔ fromEdgeSet {s(u, v)}).IsBridge e := by
