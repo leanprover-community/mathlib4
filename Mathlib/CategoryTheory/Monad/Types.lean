@@ -49,8 +49,8 @@ category-theoretic version, provided the monad is lawful.
 @[simps]
 def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
   functor :=
-    { obj X := Kleisli.mk _ (X)
-      map f := ⟨TypeCat.ofHom (f)⟩
+    { obj X := Kleisli.mk _ X
+      map f := ⟨TypeCat.ofHom f⟩
       map_id := fun _ => rfl
       map_comp := fun f g => by
         ext

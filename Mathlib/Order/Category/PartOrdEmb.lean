@@ -275,8 +275,8 @@ def CoconePt.desc (s : Cocone F) : CoconePt hc ↪o s.pt where
   map_rel_iff' {x y} := by
     obtain ⟨j, x', y', rfl, rfl⟩ :=
       Types.FilteredColimit.jointly_surjective_of_isColimit₂ hc x y
-    have hx := (ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) x')
-    have hy := (ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) y')
+    have hx := ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) x'
+    have hy := ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) y'
     simp only [Functor.mapCocone_pt, Functor.comp_obj, Functor.const_obj_obj,
       CategoryTheory.comp_apply, Functor.mapCocone_ι_app, ConcreteCategory.hom_ofHom,
       TypeCat.Fun.mk_apply, Function.Embedding.coeFn_mk] at hx hy ⊢

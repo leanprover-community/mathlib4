@@ -159,7 +159,6 @@ theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
 
 attribute [elementwise] Cocone.w Cone.w
 
-
 end
 
 variable {F : J ⥤ C}

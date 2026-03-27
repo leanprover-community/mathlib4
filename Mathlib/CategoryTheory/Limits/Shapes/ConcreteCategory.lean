@@ -105,7 +105,7 @@ singleton. -/
 @[implicit_reducible]
 noncomputable def uniqueOfTerminalOfPreserves [PreservesLimit (Functor.empty.{0} C) (forget C)]
     (X : C) (h : IsTerminal X) : Unique (ToType X) :=
-  Types.isTerminalEquivUnique ((ToType X)) <| IsTerminal.isTerminalObj (forget C) X h
+  Types.isTerminalEquivUnique (ToType X) <| IsTerminal.isTerminalObj (forget C) X h
 
 /-- If `forget C` reflects terminals and `ToType X` is a singleton, then `X` is terminal. -/
 noncomputable def terminalOfUniqueOfReflects [ReflectsLimit (Functor.empty.{0} C) (forget C)]
@@ -207,7 +207,7 @@ elements in `X₁` and `X₂`. -/
 noncomputable def pullbackEquiv :
     ToType (pullback f₁ f₂) ≃ { p : ToType X₁ × ToType X₂ // f₁ p.1 = f₂ p.2 } :=
   (PreservesPullback.iso (forget C) f₁ f₂ ≪≫
-    Types.pullbackIsoPullback (TypeCat.ofHom (f₁)) (TypeCat.ofHom (f₂))).toEquiv
+    Types.pullbackIsoPullback (TypeCat.ofHom f₁) (TypeCat.ofHom f₂)).toEquiv
 
 /-- Constructor for elements in a pullback in a concrete category. -/
 noncomputable def pullbackMk (x₁ : ToType X₁) (x₂ : ToType X₂) (h : f₁ x₁ = f₂ x₂) :

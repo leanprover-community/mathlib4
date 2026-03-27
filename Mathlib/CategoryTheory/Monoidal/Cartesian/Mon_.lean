@@ -130,7 +130,7 @@ variable (X) in
 def MonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
     MonObj X where
   one := α.homEquiv'.symm 1
-  mul := α.homEquiv'.symm ((α.homEquiv' (fst X X) * α.homEquiv' (snd X X)))
+  mul := α.homEquiv'.symm (α.homEquiv' (fst X X) * α.homEquiv' (snd X X))
   one_mul := by
     apply α.homEquiv'.injective
     simp only [α.homEquiv'_comp, Equiv.apply_symm_apply, map_mul]

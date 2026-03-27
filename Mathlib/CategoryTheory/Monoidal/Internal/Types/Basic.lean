@@ -56,7 +56,7 @@ noncomputable def inverse : MonCat.{u} ⥤ Mon (Type u) where
           one_mul := by cat_disch
           mul_one := by cat_disch
           mul_assoc := by ext ⟨⟨x, y⟩, z⟩; simp [_root_.mul_assoc] } }
-  map f := .mk' (TypeCat.ofHom (f))
+  map f := .mk' (TypeCat.ofHom f)
     (one_f := by
       #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
       this argument was provided by the auto_param. -/

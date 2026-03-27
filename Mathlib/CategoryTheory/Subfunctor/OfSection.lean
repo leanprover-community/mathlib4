@@ -85,7 +85,7 @@ end
 
 section
 
-variable {F : Cᵒᵖ ⥤ Type (max v w)}
+variable {F : Cᵒᵖ ⥤ Type max v w}
 
 lemma ofSection_eq_range' {X : Cᵒᵖ} (x : F.obj X) :
     ofSection x = range (uliftYonedaEquiv.symm x) := by

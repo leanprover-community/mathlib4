@@ -206,8 +206,7 @@ noncomputable def FamilyOfElements.sieveExtend (x : FamilyOfElements P R) :
 theorem FamilyOfElements.Compatible.sieveExtend {x : FamilyOfElements P R} (hx : x.Compatible) :
     x.sieveExtend.Compatible := by
   intro _ _ _ _ _ _ _ h₁ h₂ comm
-  dsimp [FamilyOfElements.sieveExtend]
-  iterate 2 rw [← comp_apply, ← Functor.map_comp, ← op_comp]
+  simp only [FamilyOfElements.sieveExtend, ← comp_apply, ← Functor.map_comp, ← op_comp]
   apply hx
   simp [comm, h₁.choose_spec.choose_spec.choose_spec.2, h₂.choose_spec.choose_spec.choose_spec.2]
 

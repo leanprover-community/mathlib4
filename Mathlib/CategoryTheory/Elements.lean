@@ -98,8 +98,6 @@ theorem comp_val {F : C ⥤ Type w} {p q r : F.Elements} {f : p ⟶ q} {g : q �
 theorem id_val {F : C ⥤ Type w} {p : F.Elements} : (𝟙 p : p ⟶ p).val = 𝟙 p.1 :=
   rfl
 
--- lemma map_val {F : C ⥤ Type w} {p q : F.Elements} (f : p ⟶ q) : F.map f.val = TypeCat.ofHom (_)
-
 @[simp]
 theorem map_snd {F : C ⥤ Type w} {p q : F.Elements} (f : p ⟶ q) : (F.map f.val) p.2 = q.2 :=
   f.property
@@ -165,7 +163,7 @@ theorem map_π {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : map α ⋙ π F
   rfl
 
 /-- The forward direction of the equivalence `F.Elements ≅ (*, F)`. -/
-def toStructuredArrow : F.Elements ⥤ StructuredArrow (PUnit) F where
+def toStructuredArrow : F.Elements ⥤ StructuredArrow PUnit F where
   obj X := StructuredArrow.mk <| TypeCat.ofHom (fun _ => X.2)
   map {X Y} f := StructuredArrow.homMk f.val (by ext; simp [f.2])
 

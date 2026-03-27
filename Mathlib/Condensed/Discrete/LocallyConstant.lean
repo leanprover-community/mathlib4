@@ -94,7 +94,7 @@ topology
 -/
 @[simps]
 def locallyConstantIsoContinuousMap (Y X : Type*) [TopologicalSpace Y] :
-    LocallyConstant Y X ≅ C(Y, TopCat.discrete.obj (X)) :=
+    LocallyConstant Y X ≅ C(Y, TopCat.discrete.obj X) :=
   letI : TopologicalSpace X := ⊥
   haveI : DiscreteTopology X := ⟨rfl⟩
   { hom := TypeCat.ofHom fun f ↦ (f : C(Y, X))
@@ -110,8 +110,6 @@ variable {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q Z) (
 
 /-- A fiber of a locally constant map as a `CompHausLike P`. -/
 abbrev fiber : CompHausLike.{u} P := CompHausLike.of P a.val
-
-instance : HasProp P (fiber r a) := inferInstanceAs (HasProp P (Subtype _))
 
 /-- The inclusion map from a component of the coproduct induced by `f` into `S`. -/
 def sigmaIncl : fiber r a ⟶ Q := ofHom _ (TopologicalSpace.Fiber.sigmaIncl _ a)

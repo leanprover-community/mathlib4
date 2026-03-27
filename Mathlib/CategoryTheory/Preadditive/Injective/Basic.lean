@@ -118,9 +118,9 @@ instance (X : Type u₁) [Nonempty X] : Injective X where
 instance Type.enoughInjectives : EnoughInjectives (Type u₁) where
   presentation X :=
     Nonempty.intro
-      { J := (WithBot X)
+      { J := WithBot X
         injective := inferInstance
-        f := TypeCat.ofHom (WithBot.some)
+        f := TypeCat.ofHom WithBot.some
         mono := by
           rw [mono_iff_injective]
           exact WithBot.coe_injective }

@@ -839,7 +839,6 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C :=
         ext (a : yoneda.obj X.unop ⟶ F)
         apply ULift.ext
         dsimp [yonedaEvaluation, yonedaEquiv]
-        change (yoneda.map f.1.unop ≫ a ≫ f.2).app _ _ = _ -- regression
         simp [← NatTrans.naturality_apply])
 
 variable {C}
@@ -1072,7 +1071,7 @@ def coyonedaLemma : coyonedaPairing C ≅ coyonedaEvaluation C :=
         ext (a : coyoneda.obj (op X) ⟶ F)
         apply ULift.ext
         dsimp [coyonedaEquiv, coyonedaEvaluation]
-        simp [← NatTrans.naturality_apply]) -- Not the same regression as in `yonedaLemma`
+        simp [← NatTrans.naturality_apply])
 
 variable {C}
 

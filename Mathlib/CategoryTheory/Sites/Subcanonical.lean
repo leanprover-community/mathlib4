@@ -244,7 +244,7 @@ lemma hom_ext_uliftYoneda {P Q : Sheaf J (Type (max v v'))} {f g : P ⟶ Q}
 @[simps! +dsimpLhs -isSimp]
 def uliftYonedaOpCompCoyoneda :
     J.uliftYoneda.op ⋙ coyoneda ≅
-      evaluation Cᵒᵖ (Type (max v v')) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙
+      evaluation Cᵒᵖ (Type max v v') ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙
       (whiskeringLeft _ _ _).obj (sheafToPresheaf _ _) :=
   ((isoWhiskerLeft (J.yoneda.op ⋙ (sheafCompose J _).op)
     sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf.symm).trans
@@ -256,7 +256,7 @@ def uliftYonedaOpCompCoyoneda :
 attribute [simp] uliftYonedaOpCompCoyoneda_hom_app_app_hom_apply_down
 
 -- @[simp]
-lemma uliftYonedaOpCompCoyoneda_inv_app_app (X : Cᵒᵖ) (F : Sheaf J (Type (max v v')))
+lemma uliftYonedaOpCompCoyoneda_inv_app_app (X : Cᵒᵖ) (F : Sheaf J (Type max v v'))
     (s : ULift.{u} (F.obj.obj X)) :
     dsimp% (J.uliftYonedaOpCompCoyoneda.inv.app X).app F s = J.uliftYonedaEquiv.symm s.down :=
   rfl
@@ -320,7 +320,6 @@ noncomputable def isColimitCofanMkYoneda {ι : Type*} (X : ι → C) {c : Cofan 
     apply Presieve.IsSheafFor.unique_extend
     ext Y ⟨g, hg⟩
     simp [← hm (Sieve.ofArrows.i hg)]
-
 
 /-- If the coproduct inclusions form a covering of `J` and coproducts are disjoint,
 the yoneda embedding to `J`-sheaves preserves coproducts. -/

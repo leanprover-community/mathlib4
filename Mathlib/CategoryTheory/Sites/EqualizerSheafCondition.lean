@@ -68,7 +68,6 @@ lemma FirstObj.ext (z₁ z₂ : FirstObj P R) (h : ∀ (Y : C) (f : Y ⟶ X)
 
 variable (P R)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Show that `FirstObj` is isomorphic to `FamilyOfElements`. -/
 @[simps]
 def firstObjEqFamily : FirstObj P R ≅ (R.FamilyOfElements P) where
@@ -241,7 +240,7 @@ theorem compatible_iff (x : FirstObj P R) :
 theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P R))) := by
   rw [Types.type_equalizer_iff_unique,
     ← Equiv.forall_congr_right (firstObjEqFamily P R).toEquiv.symm]
-  simp_rw [← compatible_iff] --, ← Iso.toEquiv_fun_apply, Equiv.apply_symm_apply]
+  simp_rw [← compatible_iff]
   conv => enter [2, a, 1, 1]; rw [← Iso.toEquiv_apply]
   simp_rw [Equiv.apply_symm_apply]
   apply forall₂_congr

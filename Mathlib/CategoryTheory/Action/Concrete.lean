@@ -33,7 +33,7 @@ instance (X : Type u) : CoeFun (End X) (fun _ ↦ X → X) := (inferInstance : C
 /-- The group isomorphism between `Function.End X` and `CategoryTheory.End X`. -/
 @[simps apply symm_apply]
 def endEquiv (X : Type u) : Function.End X ≃* End X where
-  toFun f := TypeCat.ofHom (f)
+  toFun f := TypeCat.ofHom f
   invFun f := (ConcreteCategory.hom f : _ → _)
   left_inv := by intro; rfl
   right_inv := by intro; rfl

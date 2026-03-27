@@ -148,7 +148,7 @@ def limitConeIsLimit (F : J ⥤ Cat.{v, v}) : IsLimit (limitCone F) where
       intro j
       simp [← comp_apply, ← w j]
     · intro X Y f
-      have := fun j => Functor.congr_hom congr($((w j).symm).toFunctor) f
+      have (j : _) := Functor.congr_hom congr($((w j).symm).toFunctor) f
       simp [this, -homDiagram_obj, limit_π_homDiagram_eqToHom]
 
 end HasLimits

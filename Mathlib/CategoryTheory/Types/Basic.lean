@@ -234,7 +234,7 @@ variable (J)
 
 /-- The functor which sends a functor to types to its sections. -/
 @[simps]
-def sectionsFunctor : (J ⥤ Type w) ⥤ Type (max u w) where
+def sectionsFunctor : (J ⥤ Type w) ⥤ Type max u w where
   obj F := F.sections
   map {F G} φ := TypeCat.ofHom fun x ↦ ⟨fun j => φ.app j (x.1 j), fun {j j'} f =>
     by simp [← NatTrans.naturality_apply, x.2 f]⟩
@@ -312,7 +312,7 @@ def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where
 Write this as `uliftFunctor.{5, 2}` to get `Type 2 ⥤ Type 5`.
 -/
 @[pp_with_univ, simps obj map]
-def uliftFunctor : Type u ⥤ Type (max u v) where
+def uliftFunctor : Type u ⥤ Type max u v where
   obj X := ULift.{v} X
   map {X} {_} f := ofHom fun x : ULift.{v} X => ULift.up (f x.down)
 

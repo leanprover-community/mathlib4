@@ -72,8 +72,8 @@ def connectedComponentsTypeToCatAdj : connectedComponents.{u} ⊣ typeToCat.{u} 
   Adjunction.mk' {
     homEquiv := fun C X ↦ by
       refine TypeCat.homEquiv.trans ?_
-      exact ((ConnectedComponents.typeToCatHomEquiv _ _).trans
-        (Functor.equivCatHom _ _))
+      exact (ConnectedComponents.typeToCatHomEquiv _ _).trans
+        (Functor.equivCatHom _ _)
     unit :=
       { app := fun C ↦ Functor.toCatHom <|
           ConnectedComponents.functorToDiscrete _ (𝟙 (connectedComponents.obj C)) }

@@ -492,7 +492,6 @@ def enrichedNatTransYoneda (F G : EnrichedFunctor V C D) : Vᵒᵖ ⥤ Type (max
           Category.assoc, ← braiding_naturality_assoc, id_tensor_comp_tensor_id_assoc, p,
           tensorHom_comp_tensorHom_assoc, Category.id_comp] }
 
-
 -- TODO assuming `[HasLimits C]` construct the actual object of natural transformations
 -- and show that the functor category is `V`-enriched.
 end

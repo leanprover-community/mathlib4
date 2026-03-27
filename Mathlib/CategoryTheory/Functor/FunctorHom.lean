@@ -166,13 +166,13 @@ lemma natTransEquiv_symm_app_app_apply (F G : C ⥤ D) (f : F ⟶ G)
 @[simp]
 lemma natTransEquiv_symm_whiskerRight_functorHom_app (K L : C ⥤ D) (X : C) (f : K ⟶ K)
     (x : 𝟙_ _ ⊗ (K.functorHom L).obj X) :
-    dsimp% ((natTransEquiv.symm f ▷ K.functorHom L).app X x) =
+    dsimp% (natTransEquiv.symm f ▷ K.functorHom L).app X x =
     (HomObj.ofNatTrans f, x.2) := rfl
 
 @[simp]
 lemma functorHom_whiskerLeft_natTransEquiv_symm_app (K L : C ⥤ D) (X : C) (f : L ⟶ L)
     (x : (K.functorHom L).obj X ⊗ 𝟙_ _) :
-    dsimp% ((K.functorHom L ◁ natTransEquiv.symm f).app X x) =
+    dsimp% (K.functorHom L ◁ natTransEquiv.symm f).app X x =
     (x.1, HomObj.ofNatTrans f) := rfl
 
 @[simp]
@@ -199,7 +199,6 @@ lemma associator_hom_apply (K L M N : C ⥤ D) {X : C}
     dsimp% (α_ ((K.functorHom L).obj X) ((L.functorHom M).obj X) ((M.functorHom N).obj X)).hom x =
     ⟨x.1.1, x.1.2, x.2⟩ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] functorHom types_tensorObj_def in
 instance : EnrichedCategory (C ⥤ Type (max v' v u)) (C ⥤ D) where
   Hom := functorHom

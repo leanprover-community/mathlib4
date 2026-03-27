@@ -145,7 +145,6 @@ lemma IsStronglySheafFor.map_amalgamate (h : E.IsStronglySheafFor F)
   rw [amalgamate, Presieve.IsSheafFor.valid_glue _ _ _ ⟨i⟩]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `F` satisfies the (strong) sheaf condition for the pre-`1`-hypercover `E`, then
 the multiequalizer diagram attached to `E` is limiting. -/
 noncomputable

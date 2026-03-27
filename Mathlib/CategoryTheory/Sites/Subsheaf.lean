@@ -305,7 +305,7 @@ noncomputable def imageFactorization {F F' : Sheaf J (Type (max v u))} (f : F �
         congr 1
         rw [IsIso.inv_comp_eq, Subfunctor.toRange_ι] }
 
-instance : Limits.HasImages (Sheaf J (Type (max v u))) :=
+instance : Limits.HasImages (Sheaf J (Type max v u)) :=
   ⟨fun f => ⟨⟨imageFactorization f⟩⟩⟩
 
 end Image

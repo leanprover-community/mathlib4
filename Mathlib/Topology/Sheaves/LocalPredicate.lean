@@ -285,13 +285,13 @@ def subsheafToTypes (P : LocalPredicate T) : Sheaf (Type _) X :=
 /-- Auxiliary definition for `stalkToFiber`. -/
 def LocalPredicate.cocone (P : LocalPredicate T) (x : X) :
     Cocone ((OpenNhds.inclusion x).op ⋙ subpresheafToTypes P.toPrelocalPredicate) where
-  pt := (T x)
+  pt := T x
   ι := { app U := TypeCat.ofHom (fun f ↦ f.1 ⟨x, (unop U).2⟩) }
 
 /-- There is a canonical map from the stalk to the original fiber, given by evaluating sections.
 -/
 def stalkToFiber (P : LocalPredicate T) (x : X) :
-    (subsheafToTypes P).presheaf.stalk x ⟶ (T x) :=
+    (subsheafToTypes P).presheaf.stalk x ⟶ T x :=
   colimit.desc _ (P.cocone x)
 
 @[simp]

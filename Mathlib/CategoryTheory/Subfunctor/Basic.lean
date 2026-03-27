@@ -47,9 +47,6 @@ structure Subfunctor (F : C ⥤ Type w) where
 
 variable {F F' F'' : C ⥤ Type w} (G G' : Subfunctor F)
 
--- instance (F : C ⥤ Type w) (G : Subfunctor F) (U : C) : Membership (F.obj U) (G.obj U) where
---   mem _ := G.obj U
-
 instance : PartialOrder (Subfunctor F) :=
   PartialOrder.lift Subfunctor.obj (fun _ _ => Subfunctor.ext)
 

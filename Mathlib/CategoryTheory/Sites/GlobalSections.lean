@@ -184,7 +184,7 @@ noncomputable def Sheaf.ΓObjEquivSections [HasWeakSheafify J (Type w)]
     [HasGlobalSectionsFunctor J (Type w)] (F : Sheaf J (Type w)) :
       (Γ J (Type w)).obj F ≃ F.obj.sections :=
   (Equiv.trans (by exact (Equiv.funUnique (PUnit) _).symm.trans TypeCat.homEquiv.symm)
-    ΓHomEquiv.symm).trans (F.obj.sectionsEquivHom (PUnit)).symm
+    ΓHomEquiv.symm).trans (F.obj.sectionsEquivHom PUnit).symm
 
 lemma Sheaf.ΓObjEquivSections_naturality [HasWeakSheafify J (Type w)]
     [HasGlobalSectionsFunctor J (Type w)] {F G : Sheaf J (Type w)} (f : F ⟶ G)

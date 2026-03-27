@@ -51,14 +51,14 @@ def LightCondensed.forget : LightCondMod R ⥤ LightCondSet :=
 
 @[simp]
 lemma LightCondensed.forget_obj_obj_map_hom_apply (X : LightCondMod R)
-    {S T : LightProfiniteᵒᵖ} (f : S ⟶ T) (a : (((sheafToPresheaf _ _).obj X).obj S)) :
+    {S T : LightProfiniteᵒᵖ} (f : S ⟶ T) (a : ((sheafToPresheaf _ _).obj X).obj S) :
     ((forget R).obj X).obj.map f a = X.obj.map f a :=
   rfl
 
 @[simp]
 lemma LightCondensed.forget_map_hom_app_hom_apply
     {X Y : LightCondMod R} (f : X ⟶ Y) (S : LightProfiniteᵒᵖ)
-    (a : (((sheafToPresheaf _ _).obj X).obj S)) :
+    (a : ((sheafToPresheaf _ _).obj X).obj S) :
     ((forget R).map f).hom.app S a = f.hom.app S a :=
   rfl
 

@@ -542,7 +542,7 @@ lemma counitForward_naturality₂ (s t : (CostructuredArrow yoneda A)ᵒᵖ) (f 
     simp
   have : F.map (CostructuredArrow.mkPrecomp
       (YonedaCollection.fst (counitForward F (unop t) x).val) f.unop.left).op
-      (((F.map (eqToHom (by simp; rfl)))) x) = _ :=
+      (F.map (eqToHom (by simp; rfl)) x) = _ :=
     map_mkPrecomp_eqToHom (h := by simp)
   cat_disch
 
