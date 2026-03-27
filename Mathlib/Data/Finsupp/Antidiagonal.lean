@@ -100,8 +100,8 @@ theorem image_sumElim_product_antidiagonal {α β : Type*} [DecidableEq α] [Dec
     v.comapDomain Sum.inl Sum.inl_injective.injOn, u.comapDomain Sum.inr Sum.inr_injective.injOn,
     v.comapDomain Sum.inr Sum.inr_injective.injOn, ⟨?_, ?_⟩, comapDomain_sumElim_comapDomain ..,
     comapDomain_sumElim_comapDomain ..⟩⟩
-  · rw [← h2, ← h3, sumElim_add, h1.left, h1.right]
-  · rw [← comapDomain_add_of_injective Sum.inl_injective, h, comapDomain_sumInl_sumElim]
-  · rw [← comapDomain_add_of_injective Sum.inr_injective, h, comapDomain_sumInr_sumElim]
+  · rw [← h2, ← h3, ← sumElim_add, h1.left, h1.right]
+  · rw [← comapDomain_add_of_injective Sum.inl_injective, h, comapDomain_inl_sumElim]
+  · rw [← comapDomain_add_of_injective Sum.inr_injective, h, comapDomain_inr_sumElim]
 
 end Finsupp
