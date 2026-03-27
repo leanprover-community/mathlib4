@@ -157,6 +157,9 @@ theorem hasSubst_of_constantCoeff_zero [Finite σ]
     HasSubst a :=
   hasSubst_of_constantCoeff_nilpotent (fun s ↦ by simp only [ha s, IsNilpotent.zero])
 
+lemma HasSubst.X_X {i j : σ} : HasSubst ![X i, X j (R := R)] :=
+  hasSubst_of_constantCoeff_zero (by simp)
+
 protected lemma HasSubst.pow {n : ℕ} (hn : n ≠ 0) {a : σ → MvPowerSeries τ S} (h : HasSubst a) :
     HasSubst (a ^ n) :=
   hasSubstIdeal.pow_mem_of_mem h _ (by lia)

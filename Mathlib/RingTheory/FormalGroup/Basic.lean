@@ -73,21 +73,12 @@ structure FormalGroup where
   assoc : subst ![subst ![Y₀, Y₁] toFun, Y₂] toFun
     = subst ![Y₀, subst ![Y₁, Y₂] toFun] toFun (S := R)
 
-variable (R) in
-/-- A commutative formal group law is a formal group law satisfies additional commutativity
-condition. -/
-@[ext]
-structure CommFormalGroup extends FormalGroup R where
-  /- Commutativity condition: `F (X, Y) = F (Y, X)`. -/
-  comm : toFun = toFun.subst ![X₁, X₀]
+class FormalGroup.IsComm (F : FormalGroup R) : Prop where
+  comm : F.toFun = F.toFun.subst ![X₁, X₀]
 
 /-- Given a formal group `F`, `F.comm` is a proposition that `F(X,Y) = F(Y,X)`. -/
 def FormalGroup.comm (F : FormalGroup R) : Prop :=
   F.toFun = MvPowerSeries.subst ![X₁, X₀] F.toFun
-
-/-- A commutative formal group law is a formal group law. -/
-instance : Coe (CommFormalGroup R) (FormalGroup R) where
-  coe := CommFormalGroup.toFormalGroup
 
 section Lemma
 
@@ -95,22 +86,19 @@ namespace MvPowerSeries
 
 variable {F : MvPowerSeries (Fin 2) R}
 
-lemma HasSubst.X_two {i j : σ} : HasSubst ![X i, X j (R := R)] :=
-  hasSubst_of_constantCoeff_zero (by simp)
-
 lemma HasSubst.cons_subst_zero_left (hF : constantCoeff F = 0) :
     HasSubst (![subst ![Y₀, Y₁] F, Y₂]) (S := R) := by
   refine hasSubst_of_constantCoeff_zero ?_
   intro s; fin_cases s
-  · simpa using constantCoeff_subst_eq_zero .X_two (by simp) hF
+  · simpa using constantCoeff_subst_eq_zero .X_X (by simp) hF
   · simp
 
 lemma HasSubst.cons_subst_zero_right (hF : constantCoeff F = 0) :
-    HasSubst ![Y₀, subst ![Y₁, Y₂] F] (S := R):= by
+    HasSubst ![Y₀, subst ![Y₁, Y₂] F] (S := R) := by
   refine hasSubst_of_constantCoeff_zero ?_
   intro s; fin_cases s
   · simp
-  · simpa using constantCoeff_subst_eq_zero .X_two (by simp) hF
+  · simpa using constantCoeff_subst_eq_zero .X_X (by simp) hF
 
 end MvPowerSeries
 
@@ -129,7 +117,7 @@ scoped[FormalGroup] notation:65 f₀:65 " +[" F:0 "] " f₁:66 => add F f₀ f�
 variable (F : FormalGroup R)
 
 /-- Additive formal group law `Gₐ(X,Y) = X + Y`. -/
-def Gₐ : CommFormalGroup R where
+def Gₐ : FormalGroup R where
   toFun := X₀ + X₁
   zero_constantCoeff := by simp
   lin_coeff_X := by simp [coeff_index_single_X]
@@ -138,14 +126,16 @@ def Gₐ : CommFormalGroup R where
     obtain aux₁ := HasSubst.cons_subst_zero_left (F := X₀ + X₁) (by simp)
     obtain aux₂ := HasSubst.cons_subst_zero_right (F := X₀ + X₁) (by simp)
     simp_rw [subst_add aux₁, subst_X aux₁, subst_add aux₂, subst_X aux₂]
-    simp [subst_add .X_two, subst_X .X_two, add_assoc]
-  comm := by simp [subst_add .X_two, subst_X .X_two, add_comm]
+    simp [subst_add .X_X, subst_X .X_X, add_assoc]
 
 @[simp]
 lemma Gₐ_apply : Gₐ.toFun = X₀ + X₁ := rfl
 
+instance : (Gₐ (R := R)).IsComm where
+  comm := by simp [subst_add .X_X, subst_X .X_X, add_comm]
+
 /-- Multiplicative formal group law `Gₘ(X,Y) = X + Y + XY`. -/
-def Gₘ : CommFormalGroup R where
+def Gₘ : FormalGroup R where
   toFun := X₀ + X₁ + X₀ * X₁
   zero_constantCoeff := by simp
   lin_coeff_X := by
@@ -157,14 +147,15 @@ def Gₘ : CommFormalGroup R where
     obtain aux₂ := HasSubst.cons_subst_zero_right (F := X₀ + X₁ + X₀ * X₁) (by simp)
     simp_rw [subst_add aux₁, subst_mul aux₁, subst_X aux₁, subst_add aux₂, subst_mul aux₂,
       subst_X aux₂]
-    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, subst_add .X_two, Fin.isValue, subst_X .X_two,
-      Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one, subst_mul .X_two]
+    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, subst_add .X_X, Fin.isValue, subst_X .X_X,
+      Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one, subst_mul .X_X]
     ring
-  comm := by
-    simp [subst_add .X_two, subst_mul .X_two, subst_X .X_two, add_comm, mul_comm]
 
 @[simp]
 lemma Gₘ_apply : Gₘ.toFun = X₀ + X₁ + X₀ * X₁ := rfl
+
+instance : (Gₘ (R := R)).IsComm where
+  comm := by simp [subst_add .X_X, subst_mul .X_X, subst_X .X_X, add_comm, mul_comm]
 
 omit [Algebra R S] in
 /-- Given a algebra map `f : R →+* S` and a formal group law `F` over `R`, then `f_* F` is a
@@ -178,7 +169,7 @@ def map (f : R →+* S) : FormalGroup S where
   assoc := by
     have (g₁ g₂ : MvPowerSeries (Fin 3) R) : ![g₁.map f, g₂.map f] =
       fun i => (![g₁, g₂] i).map f := by ext1 i; fin_cases i <;> simp
-    simp_rw [(map_X f _).symm, this, ← map_subst .X_two, this, ← map_subst
+    simp_rw [(map_X f _).symm, this, ← map_subst .X_X, this, ← map_subst
       (HasSubst.cons_subst_zero_left F.zero_constantCoeff), F.assoc,
       ← map_subst (HasSubst.cons_subst_zero_right F.zero_constantCoeff)]
 
