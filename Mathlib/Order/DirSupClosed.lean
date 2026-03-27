@@ -174,31 +174,38 @@ theorem DirSupClosed.union (hs : DirSupClosed s) (ht : DirSupClosed t) :
     · exact .inl <| hs inter_subset_right hn hds ⟨fun b hb ↦ ha.1 hb.1, had⟩
     · simp only [lowerBounds, mem_setOf_eq, not_forall] at had
       obtain ⟨b, hb, hb'⟩ := had
-      apply Or.inr <| @ht {x ∈ d ∩ t | ¬ x ≤ b} ..
-      · grind
-      · simp_rw [Set.Nonempty, mem_setOf]
+      have key : {x ∈ d | ¬ x ≤ b} ⊆ d ∩ t :=
+        fun a ⟨had, hab⟩ ↦ ⟨had, (hdu had).resolve_left fun has ↦ hab <| hb ⟨had, has⟩⟩
+      have Hn : {x ∈ d | ¬ x ≤ b}.Nonempty := by
+        simp_rw [Set.Nonempty, mem_setOf]
         by_contra! ht
         apply hb' (ha.2 <| hdst ▸ _)
         rintro c (hc | hc)
         · exact hb hc
-        · exact ht _ hc
-      · intro x ⟨hxt, hxb⟩ y ⟨hyt, hyb⟩
-        obtain ⟨z, hz, hxz, hyz⟩ := hd₁ _ (.inr hxt) _ (.inr hyt)
+        · exact ht _ hc.1
+      apply Or.inr <| ht (key.trans inter_subset_right) Hn _ _
+      · intro x hx y hy
+        obtain ⟨z, hz, hz'⟩ := hd₁ _ (.inr (key hx)) _ (.inr (key hy))
         rw [hdst] at hz
-        refine ⟨z, ⟨⟨hz, ?_⟩, mt hxz.trans hxb⟩, ⟨hxz, hyz⟩⟩
-        exact (hdu hz).resolve_left fun hzs ↦ hxb <| hxz.trans (hb ⟨hz, hzs⟩)
+        exact ⟨z, ⟨⟨hz, mt hz'.1.trans hx.2⟩, hz'⟩⟩
       · constructor
         · intro x hx
-          apply ha.1 hx.1.1
+          apply ha.1 hx.1
         · intro x hx
           apply ha.2
           intro y hy
-          obtain hy' | hy' := hdu hy
-          obtain ⟨z, hz, hxz, hyz⟩ := hd₁ _ (.inr ⟨ ) _ (.inr hyt)
-          · have := hb ⟨hy, hy'⟩
-          apply hx
-          dsimp
-          refine ⟨⟨hy, ?_⟩, ?_⟩
+          by_cases hyb : y ≤ b
+          · obtain ⟨w, hw⟩ := Hn
+            rw [← hdst] at hy
+            obtain ⟨z, hz, hxz, hyz⟩ := hd₁ _ (hy) _ (.inr (key hw))
+            rw [hdst] at hz
+            apply hxz.trans
+            apply hx
+            use hz
+            intro hzb
+            apply hw.2
+            exact hyz.trans hzb
+          · apply hx ⟨hy, hyb⟩
 
 
 #exit
