@@ -419,9 +419,9 @@ theorem eq_of_valuation_isEquiv_valuation {p q : HeightOneSpectrum R}
     ← valuation_lt_one_iff_mem (K := K)]
 
 section Localization
+
 open Localization
 
-set_option backward.isDefEq.respectTransparency false in
 local instance : IsDedekindDomain
     (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors) :=
   IsLocalization.AtPrime.isDedekindDomain R v.asIdeal
@@ -431,7 +431,6 @@ local instance : IsLocalRing (subalgebra.ofField K _ v.asIdeal.primeCompl_le_non
   IsLocalization.AtPrime.isLocalRing
     (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors) v.asIdeal
 
-set_option backward.isDefEq.respectTransparency false in
 variable (K) in
 /-- Given a Dedekind domain `R` in `K`, its field of fractions, the localization of `R` at
 a nonzero prime is a valuation subring of `K`. -/
@@ -458,12 +457,11 @@ instance : Algebra R (valuationSubringAtPrime K v) :=
 instance : IsScalarTower R (valuationSubringAtPrime K v) K :=
   IsScalarTower.of_algebraMap_eq (fun _ ↦ rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsDedekindDomain (valuationSubringAtPrime K v) :=
   IsLocalization.AtPrime.isDedekindDomain R v.asIdeal
     (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors)
 
-instance : Ring.KrullDimLE 1 ↥(valuationSubringAtPrime K v) :=
+instance : Ring.KrullDimLE 1 (valuationSubringAtPrime K v) :=
   Ring.KrullDimLE.mk₁' (fun _ a _ ↦ IsPrime.to_maximal_ideal a)
 
 /-- Given `v : HeightOneSpectrum R`, the valuation associated to `v` has the localization of
