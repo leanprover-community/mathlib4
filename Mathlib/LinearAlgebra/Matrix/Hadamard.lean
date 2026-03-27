@@ -190,6 +190,17 @@ theorem dotProduct_vecMul_hadamard [DecidableEq m] [DecidableEq n] (v : m → α
 
 end trace
 
+section conjTranspose
+
+theorem conjTranspose_hadamard {m n R : Type*} [Mul R] [StarMul R]
+    (A B : Matrix m n R) : (A ⊙ B)ᴴ = Bᴴ ⊙ Aᴴ := by ext; simp
+
+@[simp] theorem conjTranspose_hadamard' {m n R : Type*} [CommMagma R] [StarMul R]
+    (A B : Matrix m n R) : (A ⊙ B)ᴴ = Aᴴ ⊙ Bᴴ := by
+  rw [conjTranspose_hadamard, hadamard_comm]
+
+end conjTranspose
+
 end BasicProperties
 
 end Matrix

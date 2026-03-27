@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
+public import Mathlib.Analysis.Matrix.Hermitian
 public import Mathlib.Analysis.Matrix.PosDef
 public import Mathlib.Analysis.RCLike.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
@@ -322,23 +323,17 @@ variable [Finite n]
 open Matrix in
 open scoped MatrixOrder in
 set_option backward.isDefEq.respectTransparency false in
-/-- Schur's product: The Hadamard product of two PSD matrices is PSD. -/
-theorem hadamard_prod {A B : Matrix n n 𝕜} (hA : A.PosSemidef) (hB : B.PosSemidef) :
-  (A ⊙ B).PosSemidef := by
+/-- The Hadamard product of two positive semidefinite matrices is positive semidefinite . -/
+theorem PosSemidef.hadamard {A B : Matrix n n 𝕜} (hA : A.PosSemidef) (hB : B.PosSemidef) :
+    (A ⊙ B).PosSemidef := by
   have := Fintype.ofFinite n
-  letI := Classical.decEq n
-  --  Use `√A` to rewrite `A ⊙ B` into a finite sum of PSD matrices.
-  have h : A ⊙ B = ∑ k, let Dk := diagonal ((CFC.sqrt A)ᵀ k); Dk * B * Dkᴴ := by
-    ext
-    simp only [hadamard_apply, diagonal_conjTranspose, sum_apply, mul_diagonal, diagonal_mul,
-      transpose_apply, Pi.star_apply, RCLike.star_def, mul_right_comm _ (B _ _) _, ←Finset.sum_mul]
-    congr 1
-    simp_rw [<-RCLike.star_def, (CFC.sqrt_nonneg A).posSemidef.1.apply,
-      <-mul_apply, CFC.sqrt_mul_sqrt_self A]
-  rw [h]
-  refine posSemidef_sum Finset.univ ?_
-  intro k hk
-  exact PosSemidef.mul_mul_conjTranspose_same hB (diagonal ((CFC.sqrt A)ᵀ k))
+  classical
+  let D k := diagonal ((CFC.sqrt A)ᵀ k)
+  suffices A ⊙ B = ∑ k, D k * B * (D k)ᴴ from
+    this ▸ posSemidef_sum _ fun _ _ ↦ hB.mul_mul_conjTranspose_same _
+  ext
+  simp [D, sum_apply, mul_right_comm _ (B _ _), ← Finset.sum_mul,
+    (CFC.sqrt_nonneg A).posSemidef.isHermitian.apply, ← mul_apply, CFC.sqrt_mul_sqrt_self A]
 
 end Hadamard
 

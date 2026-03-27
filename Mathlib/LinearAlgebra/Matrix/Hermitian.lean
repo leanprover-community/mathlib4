@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Star.Pi
 public import Mathlib.LinearAlgebra.Matrix.ZPow
+public import Mathlib.LinearAlgebra.Matrix.Hadamard
 
 /-! # Hermitian matrices
 
@@ -121,6 +122,14 @@ theorem isHermitian_fromBlocks_iff {A : Matrix m m α} {B : Matrix m n α} {C : 
 
 end InvolutiveStar
 
+section StarMul
+
+variable [CommMagma α] [StarMul α]
+
+theorem IsHermitian.hadamard {A B : Matrix m m α} (hA : A.IsHermitian) (hB : B.IsHermitian) :
+    (A ⊙ B).IsHermitian := by simp [IsHermitian, hA.eq, hB.eq]
+
+end StarMul
 section AddMonoid
 
 variable [AddMonoid α] [StarAddMonoid α]
