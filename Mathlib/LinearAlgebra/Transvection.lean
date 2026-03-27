@@ -1,4 +1,4 @@
-module -- shake: keep-all
+module
 
 public import Mathlib.LinearAlgebra.Transvection.Basic
 
