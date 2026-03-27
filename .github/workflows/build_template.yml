@@ -327,7 +327,7 @@ jobs:
 
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
           echo "Attempting to fetch olean for Mathlib/Init.lean from cache..."
-          ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get Mathlib/Init.lean
+          ../tools-branch/.lake/build/bin/cache get Mathlib/Init.lean
 
       - name: get cache (2/3 - test Mathlib.Init cache)
         id: get_cache_part2_test
@@ -381,9 +381,9 @@ jobs:
             echo "Warming up cache using previous commit: $PREV_SHA (source: $PREV_SHA_SOURCE)"
             if git cat-file -e "$PREV_SHA^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$PREV_SHA"; then
               git checkout "$PREV_SHA"
-              ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get
+              ../tools-branch/.lake/build/bin/cache get
               # Run again with --repo, to ensure we actually get the oleans.
-              ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" --skip-proofwidgets get
+              ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" get
 
               echo "Switching back to branch head"
               git checkout "$ORIG_SHA"
@@ -396,18 +396,10 @@ jobs:
 
           echo "Fetching all remaining cache..."
 
-          ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get
+          ../tools-branch/.lake/build/bin/cache get
 
           # Run again with --repo, to ensure we actually get the oleans.
-          ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" --skip-proofwidgets get
-
-      - name: fetch ProofWidgets release
-        # We need network access for ProofWidgets frontend assets.
-        # Run inside landrun so PR-controlled code remains sandboxed.
-        shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
-        run: |
-          cd pr-branch
-          lake build proofwidgets:release
+          ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" get
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         id: mk_all
@@ -462,8 +454,8 @@ jobs:
         shell: bash
         run: |
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get Archive.lean
-          ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get Counterexamples.lean
+          ../tools-branch/.lake/build/bin/cache get Archive.lean
+          ../tools-branch/.lake/build/bin/cache get Counterexamples.lean
 
       - name: build archive
         id: archive
