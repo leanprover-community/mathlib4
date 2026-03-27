@@ -123,13 +123,11 @@ theorem isBounded_closure_iff : IsBounded (closure s) ↔ IsBounded s :=
 
 theorem hasBasis_nhds_isOpen_isBounded (x : α) :
     (𝓝 x).HasBasis (fun a ↦ x ∈ a ∧ IsOpen a ∧ Bornology.IsBounded a) id := by
-  apply Metric.nhds_basis_ball.to_hasBasis
-  · intro r hr
-    use Metric.ball x r
-    simpa [hr] using Metric.isBounded_ball
-  · intro a ⟨hx, h₁, h₂⟩
-    rw [Metric.isOpen_iff] at h₁
-    exact h₁ x hx
+  simp_rw [← and_assoc]
+  apply (nhds_basis_opens x).restrict fun s hs ↦ ?_
+  exact ⟨s ∩ Metric.ball x 1,
+    by aesop (add safe apply IsOpen.inter),
+    by simpa using Metric.isBounded_ball.subset Set.inter_subset_right⟩
 
 theorem hasBasis_cobounded_compl_closedBall (c : α) :
     (cobounded α).HasBasis (fun _ ↦ True) (fun r ↦ (closedBall c r)ᶜ) :=
