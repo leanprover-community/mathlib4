@@ -347,7 +347,7 @@ Let `D` be the decomposition field of `P` in `L/K`. Let `𝓟D` be a prime ideal
 then `𝓟D` is unramified over `K`.
 -/
 theorem ramificationIdx_eq (hp : p ≠ ⊥) :
-    ramificationIdx (algebraMap A 𝓞D) p 𝓟D = 1 := by
+    ramificationIdx p 𝓟D = 1 := by
   have : Module.Finite 𝓞D B := Module.Finite.right A 𝓞D B
   have : Module.IsTorsionFree 𝓞D B := by
     rw [Module.isTorsionFree_iff_faithfulSMul]
@@ -472,7 +472,7 @@ then `𝓟E` is unramified over `K`.
 -/
 theorem ramificationIdx_eq [Ring.HasFiniteQuotients A] [Ring.HasFiniteQuotients B] [𝓟E.IsMaximal]
     [P.IsMaximal] [p.IsMaximal] (hp : p ≠ ⊥) :
-    ramificationIdx (algebraMap A 𝓞E) p 𝓟E = 1 := by
+    ramificationIdx p 𝓟E = 1 := by
   have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
   have : IsGaloisGroup (inertia Gal(L/K) P) 𝓞E B := .of_isFractionRing _ _ _ E L
   have := ramificationIdx_algebra_tower (p := p) (P := 𝓟E) (Q := P) ?_ ?_ ?_
@@ -589,7 +589,7 @@ prime of `F` below `P`.
 -/
 theorem isInertiaField_le_iff [IsFractionRing 𝓞F F] [P.IsMaximal] [IsInertiaField K L P E]
     (hp : p ≠ ⊥) :
-    E ≤ F ↔ ramificationIdx (algebraMap 𝓞F B) 𝓟F P = Module.finrank F L := by
+    E ≤ F ↔ ramificationIdx 𝓟F P = Module.finrank F L := by
   let := IsIntegralClosure.MulSemiringAction 𝓞F F L B
   have : IsGaloisGroup Gal(L/F) 𝓞F B := .of_isFractionRing _ _ _ F L
   let : Algebra F ↥(E ⊔ F) := (inclusion le_sup_right).toAlgebra
@@ -613,7 +613,7 @@ Then, `F` is a subfield of `D` iff `p` is totally split in `F`.
 -/
 theorem le_isDecompositionField_iff [IsFractionRing 𝓞F F] [IsDecompositionField K L P D]
     [p.IsMaximal] [P.IsMaximal] [𝓟F.IsMaximal] (hp : p ≠ ⊥) :
-    F ≤ D ↔ ramificationIdx (algebraMap A 𝓞F) p 𝓟F = 1 ∧ inertiaDeg p 𝓟F = 1 := by
+    F ≤ D ↔ ramificationIdx p 𝓟F = 1 ∧ inertiaDeg p 𝓟F = 1 := by
   have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
   let := IsIntegralClosure.MulSemiringAction 𝓞F F L B
   have : IsGaloisGroup Gal(L/F) 𝓞F B := .of_isFractionRing _ _ _ F L
@@ -639,7 +639,7 @@ Then, `F` is a subfield of `E` iff `p` is unramified in `F`.
 -/
 theorem le_isInertiaField_iff [IsFractionRing 𝓞F F] [IsInertiaField K L P E] [P.IsMaximal]
     (hp : p ≠ ⊥) :
-    F ≤ E ↔ ramificationIdx (algebraMap A 𝓞F) p 𝓟F = 1 := by
+    F ≤ E ↔ ramificationIdx p 𝓟F = 1 := by
   have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
   let := IsIntegralClosure.MulSemiringAction 𝓞F F L B
   have : IsGaloisGroup Gal(L/F) 𝓞F B := .of_isFractionRing _ _ _ F L
@@ -656,7 +656,7 @@ theorem le_isInertiaField_iff [IsFractionRing 𝓞F F] [IsInertiaField K L P E] 
 theorem isDecompositionField_iff [IsFractionRing 𝓞F F] [p.IsMaximal] [P.IsMaximal] [𝓟F.IsMaximal]
     (hp : p ≠ ⊥) :
     IsDecompositionField K L P F ↔ primesOver 𝓟F B = {P} ∧
-      ramificationIdx (algebraMap A 𝓞F) p 𝓟F = 1 ∧ inertiaDeg p 𝓟F = 1 := by
+      ramificationIdx p 𝓟F = 1 ∧ inertiaDeg p 𝓟F = 1 := by
   let D := (FixedPoints.intermediateField (stabilizer Gal(L/K) P) : IntermediateField K L)
   convert_to D = F ↔ _
   · rw [isDecompositionField_iff_fixingSubgroup, ← IsGalois.fixedField_eq_iff_fixingSubgroup_eq,
@@ -665,8 +665,8 @@ theorem isDecompositionField_iff [IsFractionRing 𝓞F F] [p.IsMaximal] [P.IsMax
     isDecompositionField_le_iff K L P F D 𝓞F 𝓟F]
 
 theorem isInertiaField_iff [IsFractionRing 𝓞F F] [P.IsMaximal] (hp : p ≠ ⊥) :
-    IsInertiaField K L P F ↔ ramificationIdx (algebraMap 𝓞F B) 𝓟F P = Module.finrank F L
-      ∧ ramificationIdx (algebraMap A 𝓞F) p 𝓟F = 1 := by
+    IsInertiaField K L P F ↔ ramificationIdx 𝓟F P = Module.finrank F L
+      ∧ ramificationIdx p 𝓟F = 1 := by
   let E := (FixedPoints.intermediateField (inertia Gal(L/K) P) : IntermediateField K L)
   convert_to E = F ↔ _
   · rw [isInertiaField_iff_fixingSubgroup, ← IsGalois.fixedField_eq_iff_fixingSubgroup_eq,
