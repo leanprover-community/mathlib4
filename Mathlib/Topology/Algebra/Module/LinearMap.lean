@@ -427,7 +427,6 @@ instance : AddMonoid (M₁ →SL[σ₁₂] M₂) where
     ext
     simp [add_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
   add_comm := by
     intros
