@@ -558,7 +558,7 @@ lemma preservesFiniteColimits_of_preservesInitial_and_pushouts [HasInitial C]
   refine
     @preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts _ _ _ _ _ _ G _ ?_
   refine ⟨fun _ ↦ ?_⟩
-  apply preservesFiniteCoproductsOfPreservesBinaryAndInitial G
+  apply PreservesFiniteCoproducts.of_preserves_binary_and_initial G
 
 attribute [local instance] preservesFiniteColimits_of_preservesInitial_and_pushouts in
 /-- If a functor creates initial objects and pushouts, it creates finite colimits.

@@ -688,8 +688,6 @@ theorem dom_finite [Finite α] (f : α → σ) : Primrec f :=
     refine ((list_getElem?₁ (l.map f)).comp (list_idxOf₁ l)).of_eq fun a => ?_
     rw [List.getElem?_map, List.getElem?_idxOf (m a), Option.map_some]
 
-@[deprecated (since := "2025-08-23")] alias dom_fintype := dom_finite
-
 /-- A function is `PrimrecBounded` if its size is bounded by a primitive recursive function -/
 def PrimrecBounded (f : α → β) : Prop :=
   ∃ g : α → ℕ, Primrec g ∧ ∀ x, encode (f x) ≤ g x
@@ -853,7 +851,6 @@ namespace Primrec
 variable {α : Type*} {β : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
     haveI := Primcodable.subtype hp
     Primrec (@Subtype.val α p) := by
