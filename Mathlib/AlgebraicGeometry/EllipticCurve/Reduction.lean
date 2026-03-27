@@ -233,7 +233,7 @@ lemma isGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [IsMinim
       ↔ (integralModel R W).Δ ∉ IsLocalRing.maximalIdeal R :=
     not_iff_not.mpr <| valuation_lt_one_iff_mem _ _
   refine ((integralModel_Δ_eq R W ▸ isGoodReduction_iff _ _).trans ?_).trans h
-  simpa using (valuation_le_one _ _).ge_iff_eq.symm
+  simpa using (valuation_le_one (R := R) (K := K) _ _).ge_iff_eq.symm
 
 end Reduction
 
