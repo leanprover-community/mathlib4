@@ -147,7 +147,7 @@ theorem prod_le_prod_of_subset_of_one_le [MulLeftMono N] (h : s ⊆ t)
 alias prod_le_prod_of_subset_of_one_le' := prod_le_prod_of_subset_of_one_le
 
 @[to_additive]
-theorem prod_le_prod_of_subset_of_le_one
+theorem prod_le_prod_of_subset_of_le_one'
     {ι : Type u_1} {N : Type u_5} [CommMonoid N] [Preorder N]
     {f : ι → N} {s t : Finset ι} [MulLeftMono N] (h : s ⊆ t) (hf : ∀ i ∈ t, i ∉ s → f i ≤ 1) :
     ∏ i ∈ t, f i ≤ ∏ i ∈ s, f i :=
@@ -162,11 +162,11 @@ theorem prod_mono_set_of_one_le [MulLeftMono N] (hf : ∀ x, 1 ≤ f x) :
 alias prod_mono_set_of_one_le' := prod_mono_set_of_one_le
 
 @[to_additive]
-theorem prod_anti_set_of_le_one
+theorem prod_anti_set_of_le_one'
     {ι : Type u_1} {N : Type u_5} [CommMonoid N] [Preorder N]
     {f : ι → N} [MulLeftMono N] (hf : ∀ (x : ι), f x ≤ 1) :
     Antitone fun (s : Finset ι) => ∏ x ∈ s, f x :=
-  fun _ _ hst ↦ prod_le_prod_of_subset_of_le_one hst (by simp [hf])
+  fun _ _ hst ↦ prod_le_prod_of_subset_of_le_one' hst (by simp [hf])
 
 @[to_additive]
 theorem prod_le_univ_prod_of_one_le [MulLeftMono N] [Fintype ι] {s : Finset ι} (w : ∀ x, 1 ≤ f x) :
@@ -445,12 +445,6 @@ lemma single_le_prod_of_canonicallyOrdered {i : ι} (hi : i ∈ s) :
     f i ≤ ∏ j ∈ s, f j :=
   have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
   single_le_prod (fun _ _ ↦ one_le _) hi
-
-@[deprecated (since := "2025-09-06")]
-alias _root_.CanonicallyOrderedCommMonoid.single_le_prod := single_le_prod_of_canonicallyOrdered
-
-@[deprecated (since := "2025-09-06")]
-alias _root_.CanonicallyOrderedAddCommMonoid.single_le_sum := single_le_sum_of_canonicallyOrdered
 
 @[to_additive sum_le_sum_of_subset]
 theorem prod_le_prod_of_subset' (h : s ⊆ t) : ∏ x ∈ s, f x ≤ ∏ x ∈ t, f x :=

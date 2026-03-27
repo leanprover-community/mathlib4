@@ -71,7 +71,20 @@ theorem sign_discr :
   · rw [Int.sign_eq_neg_one_of_neg h, Odd.neg_one_pow]
     rwa [← Nat.not_even_iff_odd, ← this, Int.cast_nonneg_iff, not_le]
 
-set_option backward.isDefEq.respectTransparency false in
+section rootDiscr
+
+/-- The root discriminant of a number field `K`. -/
+noncomputable def rootDiscr : ℝ :=
+  |discr K| ^ (finrank ℚ K : ℝ)⁻¹
+
+theorem rootDiscr_def : rootDiscr K = |discr K| ^ (finrank ℚ K : ℝ)⁻¹ := by
+  rw [rootDiscr]
+
+theorem rootDiscr_rat : rootDiscr ℚ = 1 := by
+  simp [rootDiscr_def]
+
+end rootDiscr
+
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
     volume (fundamentalDomain (latticeBasis K)) =
@@ -107,7 +120,6 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
     stdBasis_repr_eq_matrixToStdBasis_mul K _ (fun _ => rfl)]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.covolume_integerLattice :
     ZLattice.covolume (mixedEmbedding.integerLattice K) =
@@ -118,7 +130,6 @@ theorem _root_.NumberField.mixedEmbedding.covolume_integerLattice :
     ENNReal.toReal_inv, toReal_ofNat, ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm,
     Int.norm_eq_abs]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     ZLattice.covolume (mixedEmbedding.idealLattice K I) =
@@ -131,7 +142,6 @@ theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (Fractional
     ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm, Int.norm_eq_abs,
     ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.val)), mul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
       |Algebra.norm ℚ (a : K)| ≤ FractionalIdeal.absNorm I.1 * (4 / π) ^ nrComplexPlaces K *
@@ -191,7 +201,6 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
   simp_rw [Units.val_one, FractionalIdeal.absNorm_one, Rat.cast_one, one_mul] at h_nm
   exact h_nm
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The Minkowski lower bound `n^{2n}/((4/pi)^{2r_2}*n!^2)` for the absolute value of the discriminant
 of a number field of degree n.
@@ -329,7 +338,6 @@ noncomputable abbrev boundOfDiscBdd : ℝ≥0 := sqrt N * (2 : ℝ≥0) ^ rankOf
 
 variable {N} (hK : |discr K| ≤ N)
 
-set_option backward.isDefEq.respectTransparency false in
 include hK in
 /-- If `|discr K| ≤ N` then the degree of `K` is at most `rankOfDiscrBdd`. -/
 theorem rank_le_rankOfDiscrBdd :

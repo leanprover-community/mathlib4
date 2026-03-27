@@ -1,12 +1,13 @@
 /-
-Copyright (c) 2025 Michael Stoll. All rights reserved.
+Copyright (c) 2025 Michael Stoll, Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
+Authors: Michael Stoll, Floris van Doorn
 -/
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Tactic.Ring
 
 /-!
 # Big operators on a finset in groups with zero involving order
@@ -15,18 +16,18 @@ This file contains the results concerning the interaction of finset big operator
 zero, where order is involved.
 -/
 
-public section
+@[expose] public section
 
-variable {α M : Type*}
+variable {ι R : Type*}
 
 namespace Finset
 
 section CommMonoidWithZero
-variable [CommMonoidWithZero M]
+variable [CommMonoidWithZero R]
 
 section PosMulMono
 section Preorder
-variable [Preorder M] [ZeroLEOneClass M] [PosMulMono M] {f g : α → M} {s t : Finset α}
+variable [Preorder R] [ZeroLEOneClass R] [PosMulMono R] {f g : ι → R} {s t : Finset ι}
 
 lemma prod_nonneg (h0 : ∀ i ∈ s, 0 ≤ f i) : 0 ≤ ∏ i ∈ s, f i :=
   prod_induction f (fun i ↦ 0 ≤ i) (fun _ _ ha hb ↦ mul_nonneg ha hb) zero_le_one h0
@@ -41,14 +42,14 @@ lemma prod_le_prod₀ (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g
   | empty => simp
   | cons a s has ih =>
     simp only [prod_cons, forall_mem_cons] at h0 h1 ⊢
-    have := posMulMono_iff_mulPosMono.1 ‹PosMulMono M›
+    have := posMulMono_iff_mulPosMono.1 ‹PosMulMono R›
     gcongr
     exacts [prod_nonneg h0.2, h0.1.trans h1.1, h1.1, ih h0.2 h1.2]
 
 theorem one_le_prod₀ (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
   prod_const_one.symm.trans_le (prod_le_prod₀ (fun _ _ ↦ zero_le_one) h)
 
-theorem one_le_prod'₀ (h : ∀ i : α, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
+theorem one_le_prod'₀ (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
   one_le_prod₀ fun i _ ↦ h i
 
 /-- If each `f i`, `i ∈ s` belongs to `[0, 1]`, then their product is less than or equal to one.
@@ -57,6 +58,7 @@ lemma prod_le_one₀ (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1)
   convert ← prod_le_prod₀ h0 h1
   exact Finset.prod_const_one
 
+@[gcongr]
 theorem prod_le_prod_of_subset_of_one_le₀ (h : s ⊆ t)
     (h0 : ∀ i ∈ s, 0 ≤ f i) (hf : ∀ i ∈ t, i ∉ s → 1 ≤ f i) :
     ∏ i ∈ s, f i ≤ ∏ i ∈ t, f i := by
@@ -93,7 +95,7 @@ theorem prod_anti_set_of_le_one₀ (h0 : ∀ x, 0 ≤ f x) (h1 : ∀ x, f x ≤ 
     Antitone fun s ↦ ∏ x ∈ s, f x :=
   fun _ _ hst ↦ prod_le_prod_of_subset_of_le_one₀ hst (fun x _ ↦ h0 x) fun x _ _ ↦ h1 x
 
-theorem prod_le_univ_prod_of_one_le₀ [Fintype α] {s : Finset α} (w : ∀ x, 1 ≤ f x) :
+theorem prod_le_univ_prod_of_one_le₀ [Fintype ι] {s : Finset ι} (w : ∀ x, 1 ≤ f x) :
     ∏ x ∈ s, f x ≤ ∏ x, f x :=
   prod_le_prod_of_subset_of_one_le₀ (subset_univ s)
     (fun x _ ↦ zero_le_one.trans (w x)) fun a _ _ ↦ w a
@@ -106,7 +108,7 @@ theorem single_le_prod₀ (hf : ∀ i ∈ s, 1 ≤ f i) {a} (h : a ∈ s) :
   rw [mem_singleton] at hi
   exact hi ▸ zero_le_one.trans (hf a h)
 
-lemma mul_le_prod₀ {i j : α} (hf : ∀ i ∈ s, 1 ≤ f i) (hi : i ∈ s) (hj : j ∈ s)
+lemma mul_le_prod₀ {i j : ι} (hf : ∀ i ∈ s, 1 ≤ f i) (hi : i ∈ s) (hj : j ∈ s)
     (hne : i ≠ j) :
     f i * f j ≤ ∏ k ∈ s, f k := by
   rw [← prod_singleton (a := j) (f := f), ← prod_cons (by simpa : i ∉ {j})]
@@ -116,20 +118,20 @@ lemma mul_le_prod₀ {i j : α} (hf : ∀ i ∈ s, 1 ≤ f i) (hi : i ∈ s) (hj
   rw [mem_cons, mem_singleton] at hk
   rcases hk with rfl | rfl <;> assumption
 
-theorem prod_le_pow_card₀ (s : Finset α) (f : α → M) (n : M)
+theorem prod_le_pow_card₀ (s : Finset ι) (f : ι → R) (n : R)
     (h0 : ∀ x ∈ s, 0 ≤ f x) (h : ∀ x ∈ s, f x ≤ n) :
     s.prod f ≤ n ^ #s :=
   (prod_le_prod₀ h0 h).trans_eq (prod_const n)
 
-theorem pow_card_le_prod₀ (s : Finset α) (f : α → M) (n : M)
+theorem pow_card_le_prod₀ (s : Finset ι) (f : ι → R) (n : R)
     (hn : 0 ≤ n) (h : ∀ x ∈ s, n ≤ f x) :
     n ^ #s ≤ s.prod f :=
   (prod_const n).symm.trans_le (prod_le_prod₀ (fun _ _ ↦ hn) h)
 
 theorem prod_fiberwise_le_prod_of_one_le_prod_fiber₀ {β : Type*} [DecidableEq β]
-    {t : Finset β} {g : α → β}
+    {t : Finset β} {g : ι → β}
     (h0 : ∀ x ∈ s, 0 ≤ f x)
-    (h : ∀ y ∉ t, (1 : M) ≤ ∏ x ∈ s with g x = y, f x) :
+    (h : ∀ y ∉ t, (1 : R) ≤ ∏ x ∈ s with g x = y, f x) :
     (∏ y ∈ t, ∏ x ∈ s with g x = y, f x) ≤ ∏ x ∈ s, f x :=
   calc
     (∏ y ∈ t, ∏ x ∈ s with g x = y, f x) ≤
@@ -142,7 +144,7 @@ theorem prod_fiberwise_le_prod_of_one_le_prod_fiber₀ {β : Type*} [DecidableEq
         (fun _ hx ↦ mem_union.2 <| Or.inr <| mem_image_of_mem _ hx) _
 
 theorem prod_le_prod_fiberwise_of_prod_fiber_le_one₀ {β : Type*} [DecidableEq β]
-    {t : Finset β} {g : α → β}
+    {t : Finset β} {g : ι → β}
     (h0 : ∀ x ∈ s, 0 ≤ f x)
     (h : ∀ y ∉ t, ∏ x ∈ s with g x = y, f x ≤ 1) :
     ∏ x ∈ s, f x ≤ ∏ y ∈ t, ∏ x ∈ s with g x = y, f x :=
@@ -157,7 +159,7 @@ theorem prod_le_prod_fiberwise_of_prod_fiber_le_one₀ {β : Type*} [DecidableEq
           fun _ _ hy ↦ h _ hy
 
 lemma prod_image_le_of_one_le₀ {β : Type*} [DecidableEq β]
-    {g : α → β} {f : β → M} (hf : ∀ u ∈ s.image g, 1 ≤ f u) :
+    {g : ι → β} {f : β → R} (hf : ∀ u ∈ s.image g, 1 ≤ f u) :
     ∏ u ∈ s.image g, f u ≤ ∏ u ∈ s, f (g u) := by
   rw [prod_comp f g]
   refine prod_le_prod₀
@@ -168,7 +170,7 @@ lemma prod_image_le_of_one_le₀ {β : Type*} [DecidableEq β]
   exact ⟨i, mem_filter.mpr ⟨hi, hig⟩⟩
 
 lemma le_prod_max_one {N : Type*} [CommMonoidWithZero N] [LinearOrder N] [ZeroLEOneClass N]
-    [PosMulMono N] {i : α} (hi : i ∈ s) (f : α → N) :
+    [PosMulMono N] {i : ι} (hi : i ∈ s) (f : ι → N) :
     f i ≤ ∏ i ∈ s, max (f i) 1 := by
   classical
   rcases lt_or_ge (f i) 0 with hf | hf
@@ -181,7 +183,7 @@ lemma le_prod_max_one {N : Type*} [CommMonoidWithZero N] [LinearOrder N] [ZeroLE
 end Preorder
 
 section PartialOrder
-variable [PartialOrder M] [ZeroLEOneClass M] [PosMulMono M] {f : α → M} {s : Finset α}
+variable [PartialOrder R] [ZeroLEOneClass R] [PosMulMono R] {f : ι → R} {s : Finset ι}
 
 theorem prod_eq_one_iff_of_one_le₀ (hf : ∀ i ∈ s, 1 ≤ f i) :
     (∏ i ∈ s, f i) = 1 ↔ ∀ i ∈ s, f i = 1 := by
@@ -233,8 +235,8 @@ end PartialOrder
 end PosMulMono
 
 section PosMulStrictMono
-variable [PartialOrder M] [ZeroLEOneClass M] [PosMulStrictMono M] [Nontrivial M]
-  {f g : α → M} {s t : Finset α}
+variable [PartialOrder R] [ZeroLEOneClass R] [PosMulStrictMono R] [Nontrivial R]
+  {f g : ι → R} {s t : Finset ι}
 
 lemma prod_pos (h0 : ∀ i ∈ s, 0 < f i) : 0 < ∏ i ∈ s, f i :=
   prod_induction f (fun x ↦ 0 < x) (fun _ _ ha hb ↦ mul_pos ha hb) zero_lt_one h0
@@ -245,7 +247,7 @@ lemma prod_lt_prod (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f i ≤ g i)
   classical
   obtain ⟨i, hi, hilt⟩ := hlt
   rw [← insert_erase hi, prod_insert (notMem_erase _ _), prod_insert (notMem_erase _ _)]
-  have := posMulStrictMono_iff_mulPosStrictMono.1 ‹PosMulStrictMono M›
+  have := posMulStrictMono_iff_mulPosStrictMono.1 ‹PosMulStrictMono R›
   refine mul_lt_mul_of_pos_of_nonneg' hilt ?_ ?_ ?_
   · exact prod_le_prod₀ (fun j hj => le_of_lt (hf j (mem_of_mem_erase hj)))
       (fun _ hj ↦ hfg _ <| mem_of_mem_erase hj)
@@ -264,13 +266,13 @@ end CommMonoidWithZero
 end Finset
 
 namespace Fintype
-variable [Fintype α]
+variable [Fintype ι]
 
 section CommMonoidWithZero
-variable [CommMonoidWithZero M]
+variable [CommMonoidWithZero R]
 
 section Preorder
-variable [Preorder M] [ZeroLEOneClass M] [PosMulMono M] {f g : α → M}
+variable [Preorder R] [ZeroLEOneClass R] [PosMulMono R] {f g : ι → R}
 
 theorem prod_le_prod₀ (h0 : 0 ≤ f) (hfg : f ≤ g) : ∏ i, f i ≤ ∏ i, g i :=
   Finset.prod_le_prod₀ (fun x _ ↦ h0 x) fun x _ ↦ hfg x
@@ -283,7 +285,7 @@ lemma prod_le_one₀ (h0 : 0 ≤ f) (hf : f ≤ 1) : ∏ i, f i ≤ 1 :=
 end Preorder
 
 section PartialOrder
-variable [PartialOrder M] [ZeroLEOneClass M] [PosMulMono M] {f : α → M}
+variable [PartialOrder R] [ZeroLEOneClass R] [PosMulMono R] {f : ι → R}
 
 lemma prod_eq_one_iff_of_one_le₀ (hf : 1 ≤ f) : ∏ i, f i = 1 ↔ f = 1 :=
   (Finset.prod_eq_one_iff_of_one_le₀ fun i _ ↦ hf i).trans <| by simp [funext_iff]

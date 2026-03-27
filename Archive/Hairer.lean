@@ -6,9 +6,8 @@ Junyan Xu
 -/
 import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Analysis.Analytic.Polynomial
-import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
-import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.RingTheory.Algebraic.Integral
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Topology.Algebra.MvPolynomial
 
@@ -113,7 +112,6 @@ lemma inj_L : Injective (L ι) :=
     rw [isOpen_ball.interior_eq]
     apply subset_closure
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
     ∃ (ρ : EuclideanSpace ℝ ι → ℝ), tsupport ρ ⊆ closedBall 0 1 ∧ ContDiff ℝ ∞ ρ ∧
     ∀ (p : MvPolynomial ι ℝ), p.totalDegree ≤ N →

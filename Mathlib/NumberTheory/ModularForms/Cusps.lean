@@ -46,7 +46,6 @@ namespace Subgroup.HasDetPlusMinusOne
 variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
   {𝒢 : Subgroup (GL (Fin 2) K)} [𝒢.HasDetPlusMinusOne]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isParabolic_iff_of_upperTriangular {g} (hg : g ∈ 𝒢) (hg10 : g 1 0 = 0) :
     g.IsParabolic ↔ (∃ x ≠ 0, g = upperRightHom x) ∨ (∃ x ≠ 0, g = -upperRightHom x) :=
   isParabolic_iff_of_upperTriangular_of_det (HasDetPlusMinusOne.det_eq hg) hg10
@@ -84,18 +83,12 @@ lemma isCusp_iff_of_relIndex_ne_zero {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
   rw [Nat.pos_iff_ne_zero] at hn
   rwa [(hgp.pow hn).smul_eq_self_iff, hgp.parabolicFixedPoint_pow hn, ← hgp.smul_eq_self_iff]
 
-@[deprecated (since := "2025-09-13")]
-alias isCusp_iff_of_relindex_ne_zero := isCusp_iff_of_relIndex_ne_zero
-
 lemma Subgroup.Commensurable.isCusp_iff {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
     (h𝒢 : Commensurable 𝒢 𝒢') {c : OnePoint ℝ} :
     IsCusp c 𝒢 ↔ IsCusp c 𝒢' := by
   rw [← isCusp_iff_of_relIndex_ne_zero inf_le_left, isCusp_iff_of_relIndex_ne_zero inf_le_right]
   · simpa [Subgroup.inf_relIndex_right] using h𝒢.1
   · simpa [Subgroup.inf_relIndex_left] using h𝒢.2
-
-@[deprecated (since := "2025-09-17")]
-alias Commensurable.isCusp_iff := Subgroup.Commensurable.isCusp_iff
 
 lemma IsCusp.mono {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c : OnePoint ℝ} (hGH : 𝒢 ≤ ℋ)
     (hc : IsCusp c 𝒢) : IsCusp c ℋ :=
@@ -330,7 +323,6 @@ noncomputable def strictWidthInfty : ℝ :=
       <| AddSubgroup.discrete_iff_addCyclic.mpr h|
   else 0
 
-set_option backward.isDefEq.respectTransparency false in
 lemma strictWidthInfty_nonneg : 0 ≤ 𝒢.strictWidthInfty := by
   unfold strictWidthInfty; aesop
 
@@ -382,7 +374,6 @@ lemma two_mul_withInfty_mem_strictPeriods : 2 * 𝒢.widthInfty ∈ 𝒢.strictP
   rcases this with (h | h) <;>
     simpa [-upperRightHom_apply, ← AddChar.map_nsmul_eq_pow] using Subgroup.pow_mem _ h 2
 
-set_option backward.isDefEq.respectTransparency false in
 variable {𝒢} in
 lemma strictWidthInfty_pos_iff [DiscreteTopology 𝒢.strictPeriods] [𝒢.HasDetPlusMinusOne] :
     0 < 𝒢.strictWidthInfty ↔ IsCusp ∞ 𝒢 := by

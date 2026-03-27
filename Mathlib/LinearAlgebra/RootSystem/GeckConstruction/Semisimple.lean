@@ -47,7 +47,6 @@ variable {ι R M N : Type*} [CommRing R] [IsDomain R] [CharZero R]
   {P : RootPairing ι R M N} [P.IsCrystallographic] [P.IsReduced] {b : P.Base}
   [Fintype ι] [DecidableEq ι] (i : b.support)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma en route to `RootPairing.GeckConstruction.isNilpotent_e`. -/
 private lemma isNilpotent_e_aux {j : ι} (n : ℕ) (h : letI _i := P.indexNeg; j ≠ -i) :
     (e i ^ n).col (.inr j) = 0 ∨
@@ -96,7 +95,6 @@ private lemma isNilpotent_e_aux {j : ι} (n : ℕ) (h : letI _i := P.indexNeg; j
           fun contra ↦ hij ⟨l, by rw [contra, hk₁]; module⟩
         simp [e, -indexNeg_neg, hij]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isNilpotent_e :
     IsNilpotent (e i) := by
   classical
@@ -139,7 +137,6 @@ lemma isNilpotent_e :
     rw [root_add_nsmul_mem_range_iff_le_chainTopCoeff hij'] at hk₁
     lia
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isNilpotent_f :
     IsNilpotent (f i) := by
   obtain ⟨n, hn⟩ := isNilpotent_e i
@@ -188,7 +185,6 @@ open LieModule Matrix
 
 local notation "H" => cartanSubalgebra' b
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι → K)}
     (χ : H → K) (hχ : χ ≠ 0) (hχ' : genWeightSpace U χ ≠ ⊥) :
     ∃ i, v b i ∈ (genWeightSpace U χ).map U.incl := by
@@ -268,7 +264,6 @@ private lemma instIsIrreducible_aux₁ (U : LieSubmodule K H (b.support ⊕ ι �
   have : ⨆ (χ : H → K), ⨆ (_ : χ ≠ 0), (⊥ : LieSubmodule K H U) = ⊥ := biSup_const ⟨1, one_ne_zero⟩
   rw [← iSup_genWeightSpace_eq_top K H U, iSup_split_single _ 0, biSup_congr hU, this, sup_bot_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 omit [P.IsRootSystem] in
 private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
     {U : LieSubmodule K (lieAlgebra b) (b.support ⊕ ι → K)} {i : ι} (hi : v b i ∈ U) :
@@ -359,7 +354,6 @@ lemma coe_genWeightSpace_zero_eq_span_range_u :
 -- See https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/Eigenvalues.20of.20Cartan.20matrices/near/516844801
 variable [Fact ((4 - b.cartanMatrix).det ≠ 0)] [P.IsReduced] [P.IsIrreducible]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Lemma 4.2 from [Geck](Geck2017). -/
 instance instIsIrreducible [Nonempty ι] :
     LieModule.IsIrreducible K (lieAlgebra b) (b.support ⊕ ι → K) := by
@@ -392,7 +386,6 @@ instance instIsIrreducible [Nonempty ι] :
   have : v b j ∉ U := fun hj ↦ by simpa [v] using apply_inr_eq_zero_of_mem_span_range_u b j (hU hj)
   contradiction
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Lemma 4.3 from [Geck](Geck2017). -/
 instance instHasTrivialRadical [IsAlgClosed K] : LieAlgebra.HasTrivialRadical K (lieAlgebra b) := by
   cases isEmpty_or_nonempty ι

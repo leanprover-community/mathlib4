@@ -213,7 +213,6 @@ lemma factoredNumbers.map_prime_pow_mul {F : Type*} [Mul F] {f : ℕ → F}
     f (p ^ e * m) = f (p ^ e) * f m :=
   hmul <| Coprime.pow_left _ <| hp.factoredNumbers_coprime hs <| Subtype.mem m
 
-set_option backward.isDefEq.respectTransparency false in
 open List Perm in
 /-- We establish the bijection from `ℕ × factoredNumbers s` to `factoredNumbers (s ∪ {p})`
 given by `(e, n) ↦ p^e * n` when `p ∉ s` is a prime. See `Nat.factoredNumbers_insert` for
@@ -445,7 +444,7 @@ lemma smoothNumbersUpTo_card_add_roughNumbersUpTo_card (N k : ℕ) :
       simp only [ne_eq, H, not_false_eq_true, true_and, or_not]
     rwa [Finset.filter_congr (s := Finset.range (succ N)) fun n _ ↦ hn' n]
   rw [Finset.filter_ne', Finset.card_erase_of_mem <| Finset.mem_range_succ_iff.mpr <| zero_le N]
-  simp only [Finset.card_range, succ_sub_succ_eq_sub]
+  simp only [Finset.card_range, succ_sub_succ_eq_sub, Nat.sub_zero]
 
 /-- A `k`-smooth number can be written as a square times a product of distinct primes `< k`. -/
 lemma eq_prod_primes_mul_sq_of_mem_smoothNumbers {n k : ℕ} (h : n ∈ smoothNumbers k) :
@@ -489,7 +488,7 @@ lemma smoothNumbersUpTo_card_le (N k : ℕ) :
   convert (Finset.card_le_card <| smoothNumbersUpTo_subset_image N k).trans <|
     Finset.card_image_le
   simp only [Finset.card_product, Finset.card_powerset, Finset.mem_range, zero_lt_succ,
-    Finset.card_erase_of_mem, Finset.card_range, succ_sub_succ_eq_sub]
+    Finset.card_erase_of_mem, Finset.card_range, succ_sub_succ_eq_sub, Nat.sub_zero]
 
 /-- The set of `k`-rough numbers `≤ N` can be written as the union of the sets of multiples `≤ N`
 of primes `k ≤ p ≤ N`. -/

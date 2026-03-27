@@ -95,7 +95,6 @@ theorem pNilradical_prime {R : Type*} [CommSemiring R] {p : ℕ} (hp : p.Prime) 
 theorem pNilradical_one {R : Type*} [CommSemiring R] :
     pNilradical R 1 = ⊥ := pNilradical_eq_bot' rfl.le
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
     x ∈ pNilradical R p ↔ ∃ n : ℕ, x ^ p ^ n = 0 := by
   by_cases hp : 1 < p

@@ -54,6 +54,7 @@ Note that `ConcreteCategory` potentially depends on three independent universe l
 * the universe level `w` appearing in `forget : C ⥤ Type w`
 * the universe level `v` of the morphisms (i.e. we have a `Category.{v} C`)
 * the universe level `u` of the objects (i.e `C : Type u`)
+
 They are specified that order, to avoid unnecessary universe annotations.
 -/
 class ConcreteCategory (C : Type u) [Category.{v} C]
