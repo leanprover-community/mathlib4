@@ -183,7 +183,7 @@ such that there is a local hypothesis `b < a`, `b ≤ a`, `a ≠ b` or `b ≠ a`
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HSub.hSub)
   let mut result := .none
   for decl in ← getLCtx do
-    if !decl.isImplementationDetail then
+    unless decl.isImplementationDetail do
       have e' : Q(Prop) := decl.type
       have p : Q($e') := .fvar decl.fvarId
       result ← orElse result do
