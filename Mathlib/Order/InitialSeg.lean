@@ -288,6 +288,9 @@ theorem coe_fn_mk (f : r ↪r s) (t o) : (@PrincipalSeg.mk _ _ r s f t o : α �
 theorem mem_range_iff_rel (f : r ≺i s) : ∀ {b : β}, b ∈ Set.range f ↔ s b f.top :=
   f.mem_range_iff_rel' _
 
+theorem range_eq (f : r ≺i s) : Set.range f = {b | s b f.top} :=
+  Set.ext_iff.2 fun _ ↦ mem_range_iff_rel f
+
 theorem lt_top (f : r ≺i s) (a : α) : s (f a) f.top :=
   f.mem_range_iff_rel.1 ⟨_, rfl⟩
 

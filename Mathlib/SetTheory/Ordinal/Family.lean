@@ -607,21 +607,18 @@ theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein (α := o.ToType) (· < �
       have h := h.trans_eq (type_toType o).symm
       simpa [typein_enum] using lt_lsub.{u, u} (typein (· < ·)) (enum (· < ·) ⟨_, h⟩))
 
+@[deprecated IsSuccPrelimit.sSup_Iio (since := "2026-03-27")]
 theorem iSup_typein_limit {o : Ordinal.{u}} (ho : ∀ a, a < o → succ a < o) :
     iSup (typein ((· < ·) : o.ToType → o.ToType → Prop)) = o := by
-  rw [(iSup_eq_lsub_iff.{u, u} (typein (· < ·))).2] <;> rw [lsub_typein o]
-  assumption
+  replace ho : IsSuccPrelimit o := by rwa [isSuccPrelimit_iff_succ_lt]
+  rw [iSup, PrincipalSeg.range_eq]
+  simpa [Iio_def] using ho.sSup_Iio
 
-@[simp]
+@[deprecated csSup_Iic (since := "2026-03-27")]
 theorem iSup_typein_succ {o : Ordinal} :
     iSup (typein ((· < ·) : (succ o).ToType → (succ o).ToType → Prop)) = o := by
-  rcases iSup_eq_lsub_or_succ_iSup_eq_lsub
-      (typein ((· < ·) : (succ o).ToType → (succ o).ToType → Prop)) with h | h
-  · rw [iSup_eq_lsub_iff] at h
-    simp only [lsub_typein] at h
-    exact (h o (lt_succ o)).false.elim
-  rw [← succ_eq_succ_iff, h]
-  apply lsub_typein
+  rw [iSup, PrincipalSeg.range_eq]
+  simp [Iic_def]
 
 @[deprecated (since := "2025-10-01")] alias sup_eq_lsub := iSup_eq_lsub
 @[deprecated (since := "2025-10-01")] alias sup_le_lsub := iSup_le_lsub
@@ -787,7 +784,6 @@ theorem blsub_id : ∀ o, (blsub.{u, u} o fun x _ => x) = o :=
 theorem bsup_id_limit {o : Ordinal} : (∀ a < o, succ a < o) → (bsup.{u, u} o fun x _ => x) = o :=
   iSup_typein_limit
 
-@[simp]
 theorem bsup_id_add_one (o) : (bsup.{u, u} (o + 1) fun x _ => x) = o :=
   iSup_typein_succ
 
