@@ -246,16 +246,11 @@ theorem AnalyticOnNhd.sum_divisor_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
           by_cases! h3 : u = c --Need to use the divisor is 0 at c rather than comparing the logs
           · rw [h3, (h₁f c (by simp)).analyticOrderAt_eq_zero.mpr h₂f]
             simp
-          gcongr 1
+          simp +singlePass only [← log_abs]
+          gcongr 2
           · simp
-          · apply log_le_log_of_abs_le_abs
-            · rw [abs_div]
-              apply div_pos <;>linarith
-            · rw [abs_div, div_eq_mul_inv, abs_mul, abs_inv, abs_norm]
-              gcongr
-              · exact norm_pos_iff.mpr (by grind)
-              · simp only [mem_closedBall, dist_eq_norm_sub'] at h2
-                exact h2
+          · have : ‖c - u‖ ≠ 0 := by simpa [sub_eq_zero] using h3.symm
+            simpa [field, abs_div, r_pos.trans r_lt_R, dist_eq_norm'] using h2
         · --In the larger ball but not the smaller so LHS is 0 and RHS nonnegative
           simp only [h2, not_false_eq_true, Function.locallyFinsuppWithin.apply_eq_zero_of_notMem,
             Int.cast_zero, zero_mul]
