@@ -150,8 +150,6 @@ end HasFDerivAtTests
 --- HasDerivAt tests
 section HasDerivAtTests
 
-attribute [to_fun (attr := fun_prop)] HasFDerivAt.comp
-
 -- there are no `HasFDerivAt` theorems for division, it is translated to HasDerivAt
 example (x₀) (h : x₀ ≠ 0) : fderiv ℝ (fun x : ℝ => 1 / x) x₀ 1 = -1 / x₀^2 := by
   simp (disch := positivity) only [deriv_simproc]
