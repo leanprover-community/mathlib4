@@ -132,7 +132,6 @@ namespace AlgebraicClosure
 instance instCommRing : CommRing (AlgebraicClosure k) := Ideal.Quotient.commRing _
 instance instInhabited : Inhabited (AlgebraicClosure k) := ⟨37⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) :=
   Submodule.Quotient.instSMul' _
 
@@ -214,7 +213,6 @@ namespace IntermediateField
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E : IntermediateField K L)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.IsAlgebraic K E] : IsAlgClosure K (AlgebraicClosure E) :=
   ⟨AlgebraicClosure.isAlgClosed E, Algebra.IsAlgebraic.trans K E (AlgebraicClosure E)⟩
 

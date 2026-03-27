@@ -107,6 +107,9 @@ theorem Fin.univ_image_get' [DecidableEq β] (l : List α) (f : α → β) :
     Finset.univ.image (f <| l.get ·) = (l.map f).toFinset := by
   simp
 
+lemma Fin.eq_iff_eq_zero_iff (a b : Fin 2) : a = b ↔ (a = 0 ↔ b = 0) :=
+  ⟨by rintro rfl; rfl, fin_two_eq_of_eq_zero_iff⟩
+
 instance Unique.fintype {α : Type*} [Unique α] : Fintype α :=
   Fintype.ofSubsingleton default
 
@@ -289,9 +292,4 @@ theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : 
     ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise (r on f) := by
   rcases exists_seq_of_forall_finset_exists P r h with ⟨f, hf, hf'⟩
   refine ⟨f, hf, fun m n hmn => ?_⟩
-  rcases lt_trichotomy m n with (h | rfl | h)
-  · exact hf' m n h
-  · exact (hmn rfl).elim
-  · unfold Function.onFun
-    apply symm
-    exact hf' n m h
+  grind +splitIndPred

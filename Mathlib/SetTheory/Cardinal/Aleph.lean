@@ -62,10 +62,14 @@ def IsInitial (o : Ordinal) : Prop :=
 
 theorem IsInitial.ord_card {o : Ordinal} (h : IsInitial o) : o.card.ord = o := h
 
+theorem IsInitial.le_ord_iff_card_le {o : Ordinal} (ho : o.IsInitial) (c : Cardinal) :
+    o ≤ c.ord ↔ o.card ≤ c := by
+  grw [← ord_le_ord, ho.ord_card]
+
 theorem IsInitial.card_le_card {a b : Ordinal} (ha : IsInitial a) : a.card ≤ b.card ↔ a ≤ b := by
   refine ⟨fun h ↦ ?_, Ordinal.card_le_card⟩
-  rw [← ord_le_ord, ha.ord_card] at h
-  exact h.trans (ord_card_le b)
+  rw [← ha.le_ord_iff_card_le] at h
+  grw [h, ord_card_le]
 
 theorem IsInitial.card_lt_card {a b : Ordinal} (hb : IsInitial b) : a.card < b.card ↔ a < b :=
   lt_iff_lt_of_le_iff_le hb.card_le_card
@@ -287,13 +291,14 @@ theorem ord_preAleph (o : Ordinal) : (preAleph o).ord = preOmega o := by
   rw [← o.card_preOmega, (isInitial_preOmega o).ord_card]
 
 @[simp]
-theorem type_cardinal : typeLT Cardinal = Ordinal.univ.{u, u + 1} := by
-  rw [Ordinal.univ_id]
-  exact Quotient.sound ⟨preAleph.symm.toRelIsoLT⟩
+theorem _root_.Ordinal.type_lt_cardinal : typeLT Cardinal = Ordinal.univ.{u, u + 1} := by
+  simpa using preAleph.symm.toRelIsoLT.ordinal_type_eq
+
+@[deprecated (since := "2026-03-20")] alias type_cardinal := type_lt_cardinal
 
 @[simp]
 theorem mk_cardinal : #Cardinal = univ.{u, u + 1} := by
-  simpa only [card_type, card_univ] using congr_arg card type_cardinal
+  simpa only [card_type, card_univ] using congr_arg card type_lt_cardinal
 
 theorem preAleph_lt_preAleph {o₁ o₂ : Ordinal} : preAleph o₁ < preAleph o₂ ↔ o₁ < o₂ :=
   preAleph.lt_iff_lt

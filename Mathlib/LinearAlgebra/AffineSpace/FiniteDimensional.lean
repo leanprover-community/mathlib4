@@ -12,6 +12,9 @@ public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
+import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
+import Mathlib.RingTheory.Finiteness.Prod
+
 /-!
 # Finite-dimensional subspaces of affine spaces.
 
@@ -267,7 +270,6 @@ lemma AffineIndependent.card_le_card_of_subset_affineSpan {s t : Finset V}
   erw [hs.finrank_vectorSpan_add_one] at finrank_le
   simpa using finrank_le.trans <| finrank_vectorSpan_range_add_one_le _ _
 
-set_option backward.isDefEq.respectTransparency false in
 open Finset in
 /-- If the affine span of an affine independent finset is strictly contained in the affine span of
 another finset, then its cardinality is strictly less than the cardinality of that finset. -/
@@ -335,7 +337,6 @@ theorem AffineIndependent.affineSpan_eq_of_le_of_card_eq_finrank_add_one [Fintyp
   rw [← Set.image_univ, ← Finset.coe_univ, ← Finset.coe_image] at hle ⊢
   exact hi.affineSpan_image_finset_eq_of_le_of_card_eq_finrank_add_one hle hc
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `affineSpan` of a finite affinely independent family is `⊤` iff the
 family's cardinality is one more than that of the finite-dimensional space. -/
 theorem AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one [FiniteDimensional k V]
@@ -847,3 +848,26 @@ theorem exists_affineBasis_of_finiteDimensional [Fintype ι] [FiniteDimensional 
 end DivisionRing
 
 end AffineBasis
+
+namespace AffineMap
+
+variable {R S V W P : Type*} [Ring R] [Ring S]
+  [AddCommGroup V] [Module R V] [Module.Finite R V] [Module.Free R V] [AddTorsor V P]
+  [AddCommGroup W] [Module R W] [Module S W] [Module.Finite S W] [SMulCommClass R S W]
+
+instance : Module.Finite S (P →ᵃ[R] W) :=
+  have ⟨p⟩ : Nonempty P := inferInstance
+  .equiv <| (AffineMap.toConstProdLinearMap S).symm ≪≫ₗ (AffineEquiv.vaddConst R p).congrLeftₗ S W
+
+theorem finrank_eq [Module.Free S W] [StrongRankCondition R] [StrongRankCondition S] :
+    Module.finrank S (P →ᵃ[R] W) = (Module.finrank R V + 1) * Module.finrank S W :=
+  calc
+    _ = Module.finrank S (V →ᵃ[R] W) :=
+      have ⟨p⟩ : Nonempty P := inferInstance
+      AffineEquiv.vaddConst R p |>.symm.congrLeftₗ S W |>.finrank_eq
+    _ = Module.finrank S (W × (V →ₗ[R] W)) := (AffineMap.toConstProdLinearMap S).finrank_eq
+    _ = (Module.finrank R V + 1) * Module.finrank S W := by
+      rw [Module.finrank_prod, Module.finrank_linearMap]
+      ring
+
+end AffineMap
