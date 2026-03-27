@@ -85,12 +85,9 @@ variable [HasDerivedCategory.{w} C]
 
 /-- The derived category of an abelian category. -/
 def DerivedCategory : Type (max u v) := HomologicalComplexUpToQuasiIso C (ComplexShape.up ℤ)
+deriving Category
 
 namespace DerivedCategory
-
-instance : Category.{w} (DerivedCategory C) := by
-  dsimp [DerivedCategory]
-  infer_instance
 
 variable {C}
 
