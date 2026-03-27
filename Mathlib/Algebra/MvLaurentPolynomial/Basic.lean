@@ -50,13 +50,13 @@ section CommSemiring
 
 variable [CommSemiring R] [CommSemiring S] {p q : MvLaurentPolynomial σ R}
 
-@[ext]
-theorem ext {p q : MvLaurentPolynomial σ R} (h : ∀ d, p d = q d) : p = q :=
-  Finsupp.ext h
-
 /-- The coefficient of the monomial `d` in the multivariate Laurent polynomial `p`. -/
 def coeff (d : σ →₀ ℤ) (p : MvLaurentPolynomial σ R) : R :=
   p d
+
+@[ext]
+theorem ext {p q : MvLaurentPolynomial σ R} (h : ∀ d, coeff d p = coeff d q) : p = q :=
+  Finsupp.ext h
 
 /-- The finite support of a multivariate Laurent polynomial. -/
 def support (p : MvLaurentPolynomial σ R) : Finset (σ →₀ ℤ) :=
@@ -237,8 +237,7 @@ theorem support_monomial_subset (d : σ →₀ ℤ) (r : R) :
   by_cases hr : r = 0
   · subst r
     intro e he
-    have h0 : coeff e (0 : MvLaurentPolynomial σ R) ≠ 0 := by
-      simpa [support, coeff, monomial_zero] using he
+    have h0 : coeff e (0 : MvLaurentPolynomial σ R) ≠ 0 := by simpa [support] using he
     exact (h0 rfl).elim
   · classical
     simp [support_monomial, hr]
@@ -314,7 +313,7 @@ theorem eq_zero_iff {p : MvLaurentPolynomial σ R} : p = 0 ↔ ∀ d, coeff d p 
     exact coeff_zero d
   · intro hp
     ext d
-    simpa [coeff] using hp d
+    simpa using hp d
 
 theorem ne_zero_iff {p : MvLaurentPolynomial σ R} : p ≠ 0 ↔ ∃ d, coeff d p ≠ 0 := by
   rw [Ne, eq_zero_iff]
@@ -334,11 +333,6 @@ theorem X_ne_zero [Nontrivial R] (n : σ) :
     X n ≠ (0 : MvLaurentPolynomial σ R) := by
   rw [ne_zero_iff]
   exact ⟨Finsupp.single n 1, by simp⟩
-
-theorem sum_def {A : Type*} [AddCommMonoid A] {p : MvLaurentPolynomial σ R}
-    {f : (σ →₀ ℤ) → R → A} :
-    p.sum f = ∑ d ∈ p.support, f d (p.coeff d) := by
-  simp [support, coeff, Finsupp.sum]
 
 section AsSum
 
