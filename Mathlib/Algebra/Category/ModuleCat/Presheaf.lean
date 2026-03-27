@@ -123,7 +123,7 @@ def isoMk (app : ∀ (X : Cᵒᵖ), M₁.obj X ≅ M₂.obj X)
   inv :=
     { app := fun X ↦ (app X).inv
       naturality := fun {X Y} f ↦ by
-        rw [← cancel_epi (app X).hom, ← reassoc_of% (naturality f), Iso.map_hom_inv_id,
+        rw [← cancel_epi (app X).hom, ← reassoc_of% (naturality f), Iso.hom_inv_id_map,
           Category.comp_id, Iso.hom_inv_id_assoc] }
 
 set_option backward.isDefEq.respectTransparency false in

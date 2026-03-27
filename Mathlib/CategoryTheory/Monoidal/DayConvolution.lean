@@ -370,7 +370,7 @@ lemma pentagon (H K : C ⥤ V)
         (unit F (G ⊛ H ⊛ K)).app (i, (j ⊗ k ⊗ l)) ≫ (F ⊛ G ⊛ H ⊛ K).map (α_ i j (k ⊗ l)).inv ≫
         (associator F G (H ⊛ K)).inv.app ((i ⊗ j) ⊗ k ⊗ l) := by
     conv_rhs => simp only [Functor.comp_obj, tensor_obj, NatTrans.naturality,
-      associator_inv_unit_unit_assoc, externalProductBifunctor_obj_obj, Iso.map_hom_inv_id,
+      associator_inv_unit_unit_assoc, externalProductBifunctor_obj_obj, Iso.hom_inv_id_map,
       Category.comp_id]
     simp only [tensor_whiskerLeft_symm, Category.assoc, Iso.hom_inv_id_assoc,
     ← tensorHom_def'_assoc]

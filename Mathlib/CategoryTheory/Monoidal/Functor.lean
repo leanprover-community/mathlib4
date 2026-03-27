@@ -407,6 +407,11 @@ lemma map_μ_δ (G : D ⥤ C') (X Y : C) : G.map (μ F X Y) ≫ G.map (δ F X Y)
 @[deprecated δ_μ_map (since := "2026-03-25")]
 lemma map_δ_μ (G : D ⥤ C') (X Y : C) : G.map (δ F X Y) ≫ G.map (μ F X Y) = 𝟙 _ := by simp
 
+@[deprecated (since := "2026-03-25")] alias map_ε_η_assoc := ε_η_map_assoc
+@[deprecated (since := "2026-03-25")] alias map_η_ε_assoc := η_ε_map_assoc
+@[deprecated (since := "2026-03-25")] alias map_μ_δ_assoc := μ_δ_map_assoc
+@[deprecated (since := "2026-03-25")] alias map_δ_μ_assoc := δ_μ_map_assoc
+
 @[reassoc (attr := simp)]
 lemma whiskerRight_ε_η (T : D) : ε F ▷ T ≫ η F ▷ T = 𝟙 _ := by
   rw [← MonoidalCategory.comp_whiskerRight, ε_η, id_whiskerRight]

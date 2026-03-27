@@ -255,9 +255,9 @@ def isoMk {D₁ D₂ : F.DescentData' sq sq₃} (e : ∀ (i : ι), D₁.obj i �
   inv.hom i := (e i).inv
   inv.comm i₁ i₂ := by
     rw [← cancel_mono ((F.map _).toFunctor.map (e i₂).hom), Category.assoc,
-      Category.assoc, Iso.map_inv_hom_id, Category.comp_id,
+      Category.assoc, Iso.inv_hom_id_map, Category.comp_id,
       ← cancel_epi ((F.map _).toFunctor.map (e i₁).hom),
-      Iso.map_hom_inv_id_assoc, comm i₁ i₂]
+      Iso.hom_inv_id_map_assoc, comm i₁ i₂]
 
 /-- The functor `toDescentDataFunctor : F.DescentData' sq sq₃ ⥤ F.DescentData f`, on objects. -/
 @[simps]
