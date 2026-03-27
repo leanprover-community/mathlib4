@@ -6001,6 +6001,7 @@ public import Mathlib.Probability.Combinatorics.BinomialRandomGraph.Defs
 public import Mathlib.Probability.CondVar
 public import Mathlib.Probability.ConditionalExpectation
 public import Mathlib.Probability.ConditionalProbability
+public import Mathlib.Probability.CramerWold
 public import Mathlib.Probability.Decision.Risk.Basic
 public import Mathlib.Probability.Decision.Risk.Defs
 public import Mathlib.Probability.Density
@@ -6105,6 +6106,7 @@ public import Mathlib.Probability.Moments.MGFAnalytic
 public import Mathlib.Probability.Moments.SubGaussian
 public import Mathlib.Probability.Moments.Tilted
 public import Mathlib.Probability.Moments.Variance
+public import Mathlib.Probability.MultivariateCentralLimitTheorem
 public import Mathlib.Probability.Notation
 public import Mathlib.Probability.ProbabilityMassFunction.Basic
 public import Mathlib.Probability.ProbabilityMassFunction.Binomial
