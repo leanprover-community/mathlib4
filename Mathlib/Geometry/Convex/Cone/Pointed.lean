@@ -5,7 +5,7 @@ Authors: Apurva Nakade, Yury Kudryashov, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Support
+public import Mathlib.Algebra.Group.Subgroup.Order
 public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Analysis.Convex.Hull
@@ -224,11 +224,56 @@ end Maps
 section LinearOrderedField
 
 variable {𝕜 M : Type} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-         [AddCommMonoid M] [Module 𝕜 M]
+
+section AddCommMonoid
+
+variable [AddCommMonoid M] [Module 𝕜 M]
 
 lemma smul_mem_iff (C : PointedCone 𝕜 M)
     {c : 𝕜} (hc : 0 < c) {x : M} : c • x ∈ C ↔ x ∈ C :=
   ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ C.smul_mem (inv_pos.2 hc).le h, C.smul_mem hc.le⟩
+
+end AddCommMonoid
+
+section AddCommGroup
+
+open Pointwise
+
+variable [AddCommGroup M] [Module 𝕜 M] [AddCommGroup M] [Module 𝕜 M]
+         {C : PointedCone 𝕜 M} {s : Set M} {x : M}
+
+/-- The cone hull of a convex set is simply the union of the open halflines through that set. -/
+lemma mem_hull_of_convex (hs : Convex 𝕜 s) : x ∈ hull 𝕜 s ↔ ∃ r : 𝕜, 0 ≤ r ∧ x ∈ r • s where
+  mp hx := (Submodule.span_le (p := {
+              carrier := {y | ∃ r : 𝕜, 0 ≤ r ∧ y ∈ r • s}
+              smul_mem' := by
+                intro r₁ hr₁ y ⟨r₂, hr₂, hy⟩
+                refine ⟨r₁ * r₂, mul_pos hr₁ hr₂, ?_⟩
+                rw [mul_smul]
+                exact smul_mem_smul_set hy
+              add_mem' := by
+                rintro y₁ ⟨r₁, hr₁, hy₁⟩ y₂ ⟨r₂, hr₂, hy₂⟩
+                refine ⟨r₁ + r₂, add_pos hr₁ hr₂, ?_⟩
+                rw [hs.add_smul hr₁.le hr₂.le]
+                exact add_mem_add hy₁ hy₂
+            })).mp (fun y hy ↦ ⟨1, by simpa⟩) hx
+  mpr := by rintro ⟨r, hr, y, hy, rfl⟩; exact (hull 𝕜 s).smul_mem hr <| subset_hull hy
+
+/-- The cone hull of a convex set is simply the union of the open halflines through that set. -/
+lemma coe_hull_of_convex (hs : Convex 𝕜 s) : hull 𝕜 s = {x | ∃ r : 𝕜, 0 < r ∧ x ∈ r • s} := by
+  ext; exact mem_hull_of_convex hs
+
+lemma disjoint_hull_left_of_convex (hs : Convex 𝕜 s) : Disjoint (hull 𝕜 s) C ↔ Disjoint s C where
+  mp := by rw [← disjoint_coe]; exact .mono_left subset_hull
+  mpr := by
+    simp_rw [← disjoint_coe, disjoint_left, SetLike.mem_coe, mem_hull_of_convex hs]
+    rintro hsC _ ⟨r, hr, y, hy, rfl⟩
+    exact (C.smul_mem_iff hr).not.mpr (hsC hy)
+
+lemma disjoint_hull_right_of_convex (hs : Convex 𝕜 s) : Disjoint C (hull 𝕜 s) ↔ Disjoint ↑C s := by
+  rw [disjoint_comm, disjoint_hull_left_of_convex hs, disjoint_comm]
+
+end AddCommGroup
 
 end LinearOrderedField
 
@@ -250,6 +295,10 @@ def positive : PointedCone R E where
 @[simp]
 theorem mem_positive {x : E} : x ∈ positive R E ↔ 0 ≤ x :=
   Iff.rfl
+
+lemma positive.isPointed {G : Type*} [AddCommGroup G] [PartialOrder G] [IsOrderedAddMonoid G]
+    [Module R G] [PosSMulMono R G] : (positive R G).IsPointed :=
+  AddSubmonoid.nonneg.isPointed G
 
 end PositiveCone
 
