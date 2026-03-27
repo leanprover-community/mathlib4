@@ -586,15 +586,15 @@ lemma invtSubmoduleToLieIdeal_mono {q₁ q₂ : Submodule K (Dual K H)}
   exact iSup_le fun ⟨α, hα_mem, hα_nz⟩ ↦ le_iSup_of_le ⟨α, h hα_mem, hα_nz⟩ le_rfl
 
 lemma lieIdealOrderIso_left_inv (I : LieIdeal K L) :
-    invtSubmoduleToLieIdeal (I.rootSpan (H := H))
+    invtSubmoduleToLieIdeal I.rootSpan
       ((rootSystem H).mem_invtRootSubmodule_iff.mp I.rootSpan_mem_invtRootSubmodule) = I := by
-  set J := invtSubmoduleToLieIdeal (I.rootSpan (H := H))
+  set J := invtSubmoduleToLieIdeal I.rootSpan
     ((rootSystem H).mem_invtRootSubmodule_iff.mp I.rootSpan_mem_invtRootSubmodule)
-  have h_eq : ∀ α : H.root, α ∈ J.rootSet (H := H) ↔ α ∈ I.rootSet (H := H) := fun α ↦ by
+  have h_eq : ∀ α : H.root, α ∈ J.rootSet ↔ α ∈ I.rootSet := fun α ↦ by
     rw [mem_rootSet_invtSubmoduleToLieIdeal, rootSystem_root_apply]
     exact ⟨I.mem_rootSet_of_mem_rootSpan, fun h ↦ Submodule.subset_span ⟨α, h, rfl⟩⟩
   have h_restr : J.restr H = I.restr H := by
-    rw [J.restr_eq_iSup_sl2SubmoduleOfRoot (H := H), I.restr_eq_iSup_sl2SubmoduleOfRoot (H := H)]
+    rw [J.restr_eq_iSup_sl2SubmoduleOfRoot, I.restr_eq_iSup_sl2SubmoduleOfRoot]
     exact le_antisymm
       (iSup₂_le fun α hα ↦ le_iSup₂_of_le α ((h_eq α).1 hα) le_rfl)
       (iSup₂_le fun α hα ↦ le_iSup₂_of_le α ((h_eq α).2 hα) le_rfl)
@@ -618,8 +618,7 @@ lemma lieIdealOrderIso_right_inv (q : (rootSystem H).invtRootSubmodule) :
 noncomputable def lieIdealOrderIso :
     LieIdeal K L ≃o (rootSystem H).invtRootSubmodule where
   toFun := LieIdeal.toInvtRootSubmodule
-  invFun q := invtSubmoduleToLieIdeal q.1
-    ((rootSystem H).mem_invtRootSubmodule_iff.mp q.2)
+  invFun q := invtSubmoduleToLieIdeal q.1 ((rootSystem H).mem_invtRootSubmodule_iff.mp q.2)
   left_inv I := lieIdealOrderIso_left_inv I
   right_inv q := lieIdealOrderIso_right_inv q
   map_rel_iff' {I J} :=
