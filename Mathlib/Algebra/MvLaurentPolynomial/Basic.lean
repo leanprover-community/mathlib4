@@ -37,7 +37,7 @@ noncomputable section
 
 variable {R : Type*} {S : Type*} {σ : Type*} {M : Type*}
 
-namespace AddMonoidAlgebra
+namespace MvLaurentPolynomial
 
 section CommSemiring
 
@@ -167,23 +167,23 @@ theorem induction_on' (v : Basis σ ℤ M) {P : AddMonoidAlgebra R M → Prop} (
     simpa [monomial] using hadd (monomial v (v.repr m) r) p (hmonomial (v.repr m) r) hp
 
 /-- The algebra equivalence to the coordinate Laurent model induced by the basis `v`. -/
-def laurentBasisAlgEquiv (v : Basis σ ℤ M) :
+def basisAlgEquiv (v : Basis σ ℤ M) :
     AddMonoidAlgebra R M ≃ₐ[R] AddMonoidAlgebra R (σ →₀ ℤ) :=
   AddMonoidAlgebra.domCongr R R v.repr.toAddEquiv
 
-theorem laurentBasisAlgEquiv_monomial (v : Basis σ ℤ M) (d : σ →₀ ℤ) (r : R) :
-    laurentBasisAlgEquiv v (monomial v d r) = AddMonoidAlgebra.single d r := by
+theorem basisAlgEquiv_monomial (v : Basis σ ℤ M) (d : σ →₀ ℤ) (r : R) :
+    basisAlgEquiv v (monomial v d r) = AddMonoidAlgebra.single d r := by
   ext e
-  simp [laurentBasisAlgEquiv, monomial]
+  simp [basisAlgEquiv, monomial]
 
 @[simp]
-theorem laurentBasisAlgEquiv_apply (v : Basis σ ℤ M) (p : AddMonoidAlgebra R M) (d : σ →₀ ℤ) :
-    laurentBasisAlgEquiv v p d = p (v.repr.symm d) := by
-  simp [laurentBasisAlgEquiv]
+theorem basisAlgEquiv_apply (v : Basis σ ℤ M) (p : AddMonoidAlgebra R M) (d : σ →₀ ℤ) :
+    basisAlgEquiv v p d = p (v.repr.symm d) := by
+  simp [basisAlgEquiv]
 
 end CommSemiring
 
-end AddMonoidAlgebra
+end MvLaurentPolynomial
 
 namespace MvPolynomial
 
@@ -194,13 +194,13 @@ variable [CommSemiring R] [AddCommGroup M]
 /-- The natural inclusion from multivariate polynomials to multivariate Laurent polynomials
 written in the basis `v`. -/
 def toMvLaurent (v : Basis σ ℤ M) : MvPolynomial σ R →ₐ[R] AddMonoidAlgebra R M :=
-  (AddMonoidAlgebra.laurentBasisAlgEquiv v).symm.toAlgHom.comp
+  (MvLaurentPolynomial.basisAlgEquiv v).symm.toAlgHom.comp
     (AddMonoidAlgebra.mapDomainAlgHom R R
       (Finsupp.mapRange.addMonoidHom (Int.ofNatHom : ℕ →+ ℤ)))
 
 @[simp]
-theorem laurentBasisAlgEquiv_toMvLaurent (v : Basis σ ℤ M) (p : MvPolynomial σ R) :
-    AddMonoidAlgebra.laurentBasisAlgEquiv v (p.toMvLaurent v) =
+theorem basisAlgEquiv_toMvLaurent (v : Basis σ ℤ M) (p : MvPolynomial σ R) :
+    MvLaurentPolynomial.basisAlgEquiv v (p.toMvLaurent v) =
       (AddMonoidAlgebra.mapDomainAlgHom R R
         (Finsupp.mapRange.addMonoidHom (Int.ofNatHom : ℕ →+ ℤ))) p := by
   simp only [toMvLaurent, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, comp_apply,
@@ -210,25 +210,25 @@ theorem laurentBasisAlgEquiv_toMvLaurent (v : Basis σ ℤ M) (p : MvPolynomial 
 @[simp]
 theorem toMvLaurent_monomial (v : Basis σ ℤ M) (d : σ →₀ ℕ) (r : R) :
     (MvPolynomial.monomial d r).toMvLaurent v =
-      AddMonoidAlgebra.monomial v (d.mapRange Int.ofNat (by simp)) r := by
-  apply (AddMonoidAlgebra.laurentBasisAlgEquiv v).injective
-  simp only [laurentBasisAlgEquiv_toMvLaurent, mapDomainAlgHom_apply,
-    AddMonoidAlgebra.laurentBasisAlgEquiv_monomial]
+      MvLaurentPolynomial.monomial v (d.mapRange Int.ofNat (by simp)) r := by
+  apply (MvLaurentPolynomial.basisAlgEquiv v).injective
+  simp only [basisAlgEquiv_toMvLaurent, mapDomainAlgHom_apply,
+    MvLaurentPolynomial.basisAlgEquiv_monomial]
   apply mapDomain_single
 
 @[simp]
 theorem toMvLaurent_X (v : Basis σ ℤ M) (i : σ) :
-    (MvPolynomial.X i : MvPolynomial σ R).toMvLaurent v = AddMonoidAlgebra.X v i := by
+    (MvPolynomial.X i : MvPolynomial σ R).toMvLaurent v = MvLaurentPolynomial.X v i := by
   simp only [X, toMvLaurent_monomial, Finsupp.mapRange_single, Int.ofNat_eq_natCast, Nat.cast_one,
-    AddMonoidAlgebra.X_eq_monomial]
+    MvLaurentPolynomial.X_eq_monomial]
 
 theorem toMvLaurent_injective (v : Basis σ ℤ M) :
     Function.Injective fun p : MvPolynomial σ R ↦ p.toMvLaurent v := by
   intro p q hpq
   apply AddMonoidAlgebra.mapDomain_injective
     (Finsupp.mapRange_injective Int.ofNat (by simp) Int.ofNat_injective)
-  simpa [laurentBasisAlgEquiv_toMvLaurent] using
-    congrArg (AddMonoidAlgebra.laurentBasisAlgEquiv v) hpq
+  simpa [basisAlgEquiv_toMvLaurent] using
+    congrArg (MvLaurentPolynomial.basisAlgEquiv v) hpq
 
 theorem toMvLaurent_inj (v : Basis σ ℤ M) {p q : MvPolynomial σ R} :
     p.toMvLaurent v = q.toMvLaurent v ↔ p = q :=
