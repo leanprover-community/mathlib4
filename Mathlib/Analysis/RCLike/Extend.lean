@@ -130,7 +130,7 @@ lemma im_extendRCLike_apply (g : StrongDual ℝ F) (x : F) :
 /-- The extension `StrongDual.extendRCLike` as a linear equivalence between the algebraic duals.
 
 When `F` is a normed space, this can be upgraded to an *isometric* linear equivalence, see
-`StrondDual.extendRCLikeₗᵢ`. -/
+`StrongDual.extendRCLikeₗᵢ`. -/
 @[simps -isSimp apply symm_apply]
 noncomputable def extendRCLikeₗ : StrongDual ℝ F ≃ₗ[ℝ] StrongDual 𝕜 F where
   toFun := StrongDual.extendRCLike (𝕜 := 𝕜)

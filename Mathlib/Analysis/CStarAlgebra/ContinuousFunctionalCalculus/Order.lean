@@ -333,7 +333,7 @@ lemma le_iff_norm_sqrt_mul_rpow (a b : A) (ha : 0 ≤ a := by cfc_tac)
 lemma le_iff_norm_sqrt_mul_sqrt_inv {a : A} {b : Aˣ} (ha : 0 ≤ a) (hb : 0 ≤ (b : A)) :
     a ≤ b ↔ ‖sqrt a * sqrt (↑b⁻¹ : A)‖ ≤ 1 := by
   rw [CFC.sqrt_eq_rpow (a := (↑b⁻¹ : A)), ← CFC.rpow_neg_one_eq_inv b,
-    CFC.rpow_rpow (b : A) _ _ (by simp) (by simp),
+    CFC.rpow_rpow (b : A) _ _ (by simp),
     le_iff_norm_sqrt_mul_rpow a (hb := b.isUnit.isStrictlyPositive hb)]
   simp
 
@@ -423,14 +423,12 @@ variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing
 
 namespace CStarAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 open ComplexOrder in
 instance instNonnegSpectrumClassComplexNonUnital : NonnegSpectrumClass ℂ A where
   quasispectrum_nonneg_of_nonneg a ha x hx := by
     rw [Unitization.quasispectrum_eq_spectrum_inr' ℂ ℂ a] at hx
     exact spectrum_nonneg_of_nonneg (Unitization.inr_nonneg_iff.mpr ha) hx
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :
     ‖a‖ ≤ ‖b‖ := by
   suffices ∀ a b : A⁺¹, 0 ≤ a → a ≤ b → ‖a‖ ≤ ‖b‖ by
@@ -500,7 +498,6 @@ section Icc
 
 open Unitization Set Metric
 
-set_option backward.isDefEq.respectTransparency false in
 lemma inr_mem_Icc_iff_norm_le {x : A} :
     (x : A⁺¹) ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖ ≤ 1 := by
   simp only [mem_Icc, inr_nonneg_iff, and_congr_right_iff]
@@ -520,7 +517,6 @@ end Icc
 
 end CStarAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 open CStarAlgebra Unitization CFC in
 lemma IsStarProjection.mul_right_and_mul_left_of_nonneg_of_le {a e : A}
     (he : IsStarProjection e) (ha : 0 ≤ a) (hae : a ≤ e) : a * e = a ∧ e * a = a := by
