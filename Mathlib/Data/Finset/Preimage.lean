@@ -150,7 +150,7 @@ lemma sup_preimage_val_id [Lattice α] [OrderBot α] {P : α → Prop}
   letI : OrderBot (Subtype P) := Subtype.orderBot Pbot
   ext
   simp only [sup_coe, id_eq]
-  apply sup_preimage_eq_sup_id_of_bij
+  apply sup_preimage_self
   refine ⟨mapsTo_preimage _ _, injOn_of_injective Subtype.val_injective, ?_⟩
   intro x hx; simpa using ⟨hx, ht x hx⟩
 

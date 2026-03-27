@@ -339,7 +339,7 @@ noncomputable def toSubtype {s : α} (P : Finpartition s)
         · simpa [i.property] using hi'
       exact Prsup
     sup_parts := by
-      simpa [Finset.sup_preimage_val_id_eq_sup_toSubtype_id Prsup Prbot hP] using P.sup_parts
+      simpa [Finset.sup_preimage_val_id Prsup Prbot hP] using P.sup_parts
     bot_notMem := by simpa [mem_preimage, Subtype.coe_bot Prbot] using P.bot_notMem }
 
 end Lattice
