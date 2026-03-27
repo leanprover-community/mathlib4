@@ -630,12 +630,10 @@ theorem isSimple_of_isIrreducible (hIrr : (rootSystem H).IsIrreducible) : IsSimp
       (RootPairing.isIrreducible_iff_invtRootSubmodule _).mp hIrr
     exact (lieIdealOrderIso.isSimpleOrder_iff.mpr this).eq_bot_or_eq_top
   non_abelian := fun h ↦ by
-    have h_ab : IsLieAbelian (⊤ : LieIdeal K L) :=
-      (lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv).mpr h
-    have h_bot := @ideal_eq_bot_of_isLieAbelian K L _ _ _ _ _ _ _ _ ⊤ h_ab
-    have h_zero : ∀ x : L, x = 0 := fun x ↦ by
-      have hx : x ∈ (⊤ : LieIdeal K L) := trivial; rw [h_bot] at hx; exact hx
-    haveI : Subsingleton L := subsingleton_of_forall_eq 0 h_zero
+    have h₁ := (LieAlgebra.isLieAbelian_iff_center_eq_top (R := K) (L := L)).mp h
+    have h₂ := LieAlgebra.center_eq_bot (R := K) (L := L)
+    haveI : Subsingleton L := subsingleton_of_forall_eq 0 fun x ↦ by
+      have : x ∈ (⊤ : LieIdeal K L) := trivial; rwa [h₁.symm.trans h₂] at this
     exact not_nontrivial (Dual K H) hIrr.1
 
 /-- The root system of a simple Killing Lie algebra is irreducible. -/
