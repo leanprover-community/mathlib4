@@ -56,13 +56,10 @@ lemma hasProjectiveDimensionLE_of_semiLinearEquiv [Small.{v} R] [Small.{v'} R']
     have : S.g.hom.ker = Submodule.comap e2.toLinearMap S'.g.hom.ker := by
       rw [← LinearMap.ker_comp, comm, LinearEquiv.ker_comp]
     rw [Submodule.comap_equiv_eq_map_symm] at this
-    let eker' : S.g.hom.ker ≃ₛₗ[RingHomClass.toRingHom e] S'.g.hom.ker :=
+    let eker : S.X₁ ≃ₛₗ[RingHomClass.toRingHom e] S'.X₁ :=
       (LinearEquiv.ofEq _ _ this).trans (e2.symm.submoduleMap S'.g.hom.ker).symm
-    have : HasProjectiveDimensionLT S.X₁ (n + 1) :=
-      (S_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).mp h
-    let eker : S.X₁ ≃ₛₗ[RingHomClass.toRingHom e] S'.X₁ := eker'
-    apply (S'_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).mpr
-    exact ih eker
+    have := (S_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).mp h
+    exact (S'_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).mpr (ih eker)
 
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma projectiveDimension_eq_of_semiLinearEquiv [Small.{v} R] [Small.{v'} R']
