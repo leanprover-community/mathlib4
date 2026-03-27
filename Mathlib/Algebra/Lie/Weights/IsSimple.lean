@@ -626,11 +626,11 @@ noncomputable def lieIdealOrderIso :
 theorem isSimple_of_isIrreducible (hIrr : (rootSystem H).IsIrreducible) : IsSimple K L where
   eq_bot_or_eq_top := by
     have : Nontrivial (Dual K H) := hIrr.1
-    exact ((lieIdealOrderIso (H := H)).isSimpleOrder_iff.mpr
+    exact (lieIdealOrderIso.isSimpleOrder_iff.mpr
       ((RootPairing.isIrreducible_iff_invtRootSubmodule _).mp hIrr)).eq_bot_or_eq_top
   non_abelian := fun h ↦ by
     have h_ab : IsLieAbelian (⊤ : LieIdeal K L) :=
-      (lie_abelian_iff_equiv_lie_abelian (R := K) LieIdeal.topEquiv).mpr h
+      (lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv).mpr h
     have h_bot := @ideal_eq_bot_of_isLieAbelian K L _ _ _ _ _ _ _ _ ⊤ h_ab
     have h_zero : ∀ x : L, x = 0 := fun x ↦ by
       have hx : x ∈ (⊤ : LieIdeal K L) := trivial; rw [h_bot] at hx; exact hx
