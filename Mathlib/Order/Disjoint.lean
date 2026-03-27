@@ -54,7 +54,7 @@ theorem disjoint_of_subsingleton [Subsingleton α] : Disjoint a b :=
 
 @[to_dual (attr := grind =)]
 theorem disjoint_comm : Disjoint a b ↔ Disjoint b a :=
-  forall_congr' fun _ ↦ forall_swap
+  forall_congr' fun _ ↦ forall_comm
 
 @[to_dual (attr := symm)]
 theorem Disjoint.symm ⦃a b : α⦄ : Disjoint a b → Disjoint b a :=

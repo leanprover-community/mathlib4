@@ -203,6 +203,7 @@ theorem preimage_equivalence {α β} (f : α → β) {s : β → β → Prop} (h
 namespace RelEmbedding
 
 /-- A relation embedding is also a relation homomorphism -/
+@[reducible]
 def toRelHom (f : r ↪r s) : r →r s where
   toFun := f.toEmbedding.toFun
   map_rel' := (map_rel_iff' f).mpr
@@ -229,7 +230,6 @@ instance : EmbeddingLike (r ↪r s) α β where
 theorem coe_toEmbedding {f : r ↪r s} : ((f : r ↪r s).toEmbedding : α → β) = f :=
   rfl
 
-@[simp]
 theorem coe_toRelHom {f : r ↪r s} : ((f : r ↪r s).toRelHom : α → β) = f :=
   rfl
 
@@ -553,6 +553,7 @@ namespace RelIso
 /-- Convert a `RelIso` to a `RelEmbedding`. This function is also available as a coercion
 but often it is easier to write `f.toRelEmbedding` than to write explicitly `r` and `s`
 in the target type. -/
+@[reducible]
 def toRelEmbedding (f : r ≃r s) : r ↪r s :=
   ⟨f.toEquiv.toEmbedding, f.map_rel_iff'⟩
 
@@ -576,11 +577,9 @@ instance : EquivLike (r ≃r s) α β where
   right_inv f := f.right_inv
   coe_injective' _ _ hf _ := DFunLike.ext' hf
 
-@[simp]
 theorem coe_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f :=
   rfl
 
-@[simp]
 theorem coe_toEmbedding (f : r ≃r s) : (f.toEmbedding : α → β) = f :=
   rfl
 
