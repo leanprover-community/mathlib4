@@ -90,7 +90,7 @@ end induction
 /-- From an isomorphism in a category, true can build a functor out of `WalkingIso` to
   that category. -/
 def fromIso {X Y : C} (e : X ≅ Y) : WalkingIso.{w} ⥤ C where
-  obj x := by induction x ; exacts [X, Y]
+  obj x := by induction x; exacts [X, Y]
   map {x y} _ := by induction x <;> induction y; exacts [𝟙 X, e.hom, e.inv, 𝟙 Y]
   map_comp {x y z} _ _ := by induction x <;> induction y <;> induction z <;> simp
   map_id {x} := by induction x <;> rfl
