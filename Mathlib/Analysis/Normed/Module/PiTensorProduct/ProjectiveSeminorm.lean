@@ -102,6 +102,8 @@ noncomputable instance : Norm (⨂[𝕜] i, E i) :=
 theorem norm_def (x : ⨂[𝕜] i, E i) :
     ‖x‖ = iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.val) := rfl
 
+@[deprecated (since := "2026-03-13")] alias projectiveSeminormFun := norm
+
 theorem projectiveSeminorm_zero : ‖(0 : ⨂[𝕜] i, E i)‖ = 0 :=
   le_antisymm (ciInf_le (bddBelow_projectiveSemiNormAux _) ⟨0, lifts_zero⟩)
     (le_ciInf (fun p ↦ projectiveSeminormAux_nonneg p.val))
@@ -126,6 +128,10 @@ noncomputable instance : SeminormedAddCommGroup (⨂[𝕜] i, E i) :=
   AddGroupSeminorm.toSeminormedAddCommGroup projectiveSeminorm.toAddGroupSeminorm
 
 noncomputable instance : NormedSpace 𝕜 (⨂[𝕜] i, E i) := ⟨projectiveSeminorm_smul_le⟩
+
+@[deprecated norm_def (since := "2026-03-06")]
+theorem projectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
+    projectiveSeminorm x = iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.1) := rfl
 
 theorem projectiveSeminorm_tprod_le (m : Π i, E i) :
     projectiveSeminorm (⨂ₜ[𝕜] i, m i) ≤ ∏ i, ‖m i‖ := by

@@ -47,12 +47,12 @@ theorem integrable_prod_sub (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {f₁ : E
     (hf₁ : Integrable f₁) (hf₂ : Integrable f₂) (hf₁' : Continuous f₁) (hf₂' : Continuous f₂) :
     Integrable (fun (p : E × E) ↦ ‖B‖ * (‖f₁ (p.1 - p.2)‖ * ‖f₂ p.2‖)) (volume.prod volume) := by
   apply Integrable.const_mul
-  rw [integrable_prod_iff' (by measurability)]
+  rw [integrable_prod_iff' (by fun_prop)]
   constructor
   · filter_upwards with x
     exact (hf₁.comp_sub_right x).norm.mul_const _
   have : Integrable (fun x ↦ ((∫ y, ‖f₁ y‖) * ‖f₂ x‖)) := by
-    apply hf₂.norm.bdd_mul (by measurability) (c := ‖(∫ y, ‖f₁ y‖)‖)
+    apply hf₂.norm.bdd_mul (by fun_prop) (c := ‖(∫ y, ‖f₁ y‖)‖)
     filter_upwards with; rfl
   convert this using 1
   ext x
@@ -98,7 +98,6 @@ variable [CompleteSpace F₁] [CompleteSpace F₂] [CompleteSpace F₃]
 
 open ContinuousLinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform of the convolution is given by the bilinear map applied to the Fourier
 transform of the individual functions. -/
 theorem fourier_bilin_convolution_eq (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) {f₁ : E → F₁} {f₂ : E → F₂}
@@ -124,7 +123,7 @@ theorem fourier_bilin_convolution_eq (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) {f
     · simp
     have : MeasureTheory.Integrable (fun x ↦ ‖B‖ * ‖f₁ x‖) MeasureTheory.volume :=
       hf₁.norm.const_mul _
-    apply this.mono (by measurability)
+    apply this.mono (by fun_prop)
     filter_upwards with x
     simpa [← Circle.smul_def] using le_opNorm B (f₁ x)
   _ = B (∫ x, 𝐞 (-inner ℝ x ξ) • f₁ x) (∫ y, 𝐞 (-inner ℝ y ξ) • f₂ y) := by

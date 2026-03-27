@@ -59,7 +59,7 @@ instance instAdmissibleAbsValues : AdmissibleAbsValues K where
   archAbsVal := multisetInfinitePlace K
   nonarchAbsVal := {v | IsFinitePlace v}
   isNonarchimedean v hv := FinitePlace.add_le ⟨v, by simpa using hv⟩
-  mulSupport_finite := FinitePlace.mulSupport_finite
+  hasFiniteMulSupport := FinitePlace.hasFiniteMulSupport
   product_formula {x} hx := private prod_multisetInfinitePlace_eq (· x) ▸ prod_abs_eq_one hx
 
 open AdmissibleAbsValues
@@ -111,6 +111,49 @@ lemma mulHeight_eq {ι : Type*} {x : ι → K} (hx : x ≠ 0) :
   simp only [FinitePlace.coe_apply, InfinitePlace.coe_apply, Height.mulHeight_eq hx,
     prod_archAbsVal_eq, prod_nonarchAbsVal_eq fun v ↦ ⨆ i, v (x i)]
 
+variable (K) in
+lemma totalWeight_eq_sum_mult : totalWeight K = ∑ v : InfinitePlace K, v.mult := by
+  simp only [totalWeight]
+  convert sum_archAbsVal_eq (fun _ ↦ (1 : ℕ))
+  · rw [← Multiset.sum_map_toList, ← Fin.sum_univ_fun_getElem, ← Multiset.length_toList,
+      Fin.sum_const, Multiset.length_toList, smul_eq_mul, mul_one]
+  · simp
+
+variable (K) in
+lemma totalWeight_eq_finrank : totalWeight K = Module.finrank ℚ K := by
+  rw [totalWeight_eq_sum_mult, InfinitePlace.sum_mult_eq]
+
+variable (K) in
+@[grind! .]
+lemma totalWeight_pos : 0 < totalWeight K := by
+  have : Inhabited (InfinitePlace K) := Classical.inhabited_of_nonempty'
+  simpa [totalWeight, archAbsVal, multisetInfinitePlace]
+    using Fintype.sum_pos
+      (Function.ne_iff.mpr ⟨default, (default : InfinitePlace K).mult_ne_zero⟩).pos
+
 end NumberField
+
+/-!
+### Positivity extension for totalWeight on number fields
+-/
+
+namespace Mathlib.Meta.Positivity
+
+open Lean.Meta Qq
+
+/-- Extension for the `positivity` tactic: `Height.totalWeight` is positive for number fields. -/
+@[positivity Height.totalWeight _]
+meta def evalHeightTotalWeight : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(@Height.totalWeight $K $KF $KA) =>
+    -- Check whether there is a `NumberField` instance for `$K` around.
+    match ← trySynthInstanceQ q(NumberField $K) with
+    | .some _instFinite =>
+      assertInstancesCommute
+      return .positive q(NumberField.totalWeight_pos $K)
+    | _ => throwError "field in Height.totalWeight not known to be a number field"
+  | _, _, _ => throwError "not Height.totalWeight"
+
+end Mathlib.Meta.Positivity
 
 end

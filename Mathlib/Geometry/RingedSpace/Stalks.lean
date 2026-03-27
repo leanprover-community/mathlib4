@@ -56,9 +56,9 @@ of `X` at `f x` and the stalk of the restriction of `X` along `f` at `x`.
 -/
 def restrictStalkIso {U : TopCat} (X : PresheafedSpace.{_, _, v} C) {f : U ⟶ (X : TopCat.{v})}
     (h : IsOpenEmbedding f) (x : U) : (X.restrict h).presheaf.stalk x ≅ X.presheaf.stalk (f x) :=
-  haveI := initial_of_adjunction (h.isOpenMap.adjunctionNhds x)
-  Final.colimitIso (h.isOpenMap.functorNhds x).op ((OpenNhds.inclusion (f x)).op ⋙ X.presheaf)
-  -- As a left adjoint, the functor `h.is_open_map.functor_nhds x` is initial.
+  haveI := initial_of_adjunction (h.adjunctionNhds x)
+  Final.colimitIso (h.functorNhds x).op ((OpenNhds.inclusion (f x)).op ⋙ X.presheaf)
+  -- As a left adjoint, the functor `h.functorNhds x` is initial.
   -- Typeclass resolution knows that the opposite of an initial functor is final. The result
   -- follows from the general fact that postcomposing with a final functor doesn't change colimits.
 
@@ -68,8 +68,8 @@ def restrictStalkIso {U : TopCat} (X : PresheafedSpace.{_, _, v} C) {f : U ⟶ (
 theorem restrictStalkIso_hom_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : IsOpenEmbedding f) (V : Opens U) (x : U) (hx : x ∈ V) :
     (X.restrict h).presheaf.germ _ x hx ≫ (restrictStalkIso X h x).hom =
-    X.presheaf.germ (h.isOpenMap.functor.obj V) (f x) ⟨x, hx, rfl⟩ :=
-  colimit.ι_pre ((OpenNhds.inclusion (f x)).op ⋙ X.presheaf) (h.isOpenMap.functorNhds x).op
+    X.presheaf.germ (h.functor.obj V) (f x) ⟨x, hx, rfl⟩ :=
+  colimit.ι_pre ((OpenNhds.inclusion (f x)).op ⋙ X.presheaf) (h.functorNhds x).op
     (op ⟨V, hx⟩)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -78,7 +78,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp, elementwise, reassoc]
 theorem restrictStalkIso_inv_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : IsOpenEmbedding f) (V : Opens U) (x : U) (hx : x ∈ V) :
-    X.presheaf.germ (h.isOpenMap.functor.obj V) (f x) ⟨x, hx, rfl⟩ ≫
+    X.presheaf.germ (h.functor.obj V) (f x) ⟨x, hx, rfl⟩ ≫
         (restrictStalkIso X h x).inv =
       (X.restrict h).presheaf.germ _ x hx := by
   rw [← restrictStalkIso_hom_eq_germ, Category.assoc, Iso.hom_inv_id, Category.comp_id]
@@ -89,12 +89,12 @@ theorem restrictStalkIso_inv_eq_ofRestrict {U : TopCat} (X : PresheafedSpace.{_,
   -- We can't use `ext` here because it would call `stalk_hom_ext` instead.
   refine colimit.hom_ext fun V => ?_
   induction V with | op V => ?_
-  let i : (h.isOpenMap.functorNhds x).obj ((OpenNhds.map f x).obj V) ⟶ V :=
+  let i : (h.functorNhds x).obj ((OpenNhds.map f x).obj V) ⟶ V :=
     homOfLE (Set.image_preimage_subset f _)
   erw [Iso.comp_inv_eq, colimit.ι_map_assoc, colimit.ι_map_assoc, colimit.ι_pre]
   simp_rw [Category.assoc]
   erw [colimit.ι_pre ((OpenNhds.inclusion (f x)).op ⋙ X.presheaf)
-      (h.isOpenMap.functorNhds x).op]
+      (h.functorNhds x).op]
   erw [← X.presheaf.map_comp_assoc]
   exact (colimit.w ((OpenNhds.inclusion (f x)).op ⋙ X.presheaf) i.op).symm
 
@@ -112,12 +112,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem id (X : PresheafedSpace.{_, _, v} C) (x : X) :
     (𝟙 X : X ⟶ X).stalkMap x = 𝟙 (X.presheaf.stalk x) := by
   dsimp [Hom.stalkMap]
-  simp only [stalkPushforward.id]
-  rw [← map_comp]
-  convert (stalkFunctor C x).map_id X.presheaf
   ext
-  simp only [id_c, id_comp, Pushforward.id_hom_app]
-  rfl
+  simp
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -202,7 +198,7 @@ theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
   dsimp
   simp only [colimit.ι_desc_assoc, ι_colimMap_assoc, whiskerLeft_app,
     whiskerRight_app, NatTrans.id_app, colimit.ι_pre, assoc,
-    colimit.pre_desc, colimit.map_desc, colimit.ι_desc, Cocones.precompose_obj_ι,
+    colimit.pre_desc, colimit.map_desc, colimit.ι_desc, Cocone.precompose_obj_ι,
     Cocone.whisker_ι, NatTrans.comp_app]
   tauto
 

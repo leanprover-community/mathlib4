@@ -147,6 +147,7 @@ namespace Classical
 open PSet ZFSet
 
 /-- All functions are classically definable. -/
+@[implicit_reducible]
 noncomputable def allZFSetDefinable {n} (F : (Fin n → ZFSet.{u}) → ZFSet.{u}) : Definable n F where
   out xs := (F (mk <| xs ·)).out
 
@@ -797,7 +798,7 @@ theorem mem_funs {x y f : ZFSet.{u}} : f ∈ funs x y ↔ IsFunc x y f := by sim
 
 instance : Definable₁ ({·}) := .mk ({·}) (fun _ ↦ rfl)
 instance : Definable₂ insert := .mk insert (fun _ _ ↦ rfl)
-instance : Definable₂ pair := by unfold pair; infer_instance
+instance : Definable₂ pair := inferInstanceAs <| Definable₂ fun x y ↦ {{x}, {x, y}}
 
 /-- Graph of a function: `map f x` is the ZFC function which maps `a ∈ x` to `f a` -/
 def map (f : ZFSet → ZFSet) [Definable₁ f] : ZFSet → ZFSet :=

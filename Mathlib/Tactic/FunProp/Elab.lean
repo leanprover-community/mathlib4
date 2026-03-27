@@ -36,6 +36,7 @@ documentation for `Mathlib/Tactic/FunProp.lean` for a detailed explanation.
 * `fun_prop [c, ...]` will unfold the constant(s) `c`, ... before decomposing `f`.
 * `fun_prop (config := cfg)` sets advanced configuration options using `cfg : FunProp.Config`
   (see `FunProp.Config` for details).
+  These options can be combined: `fun_prop (config := cfg) (disch := tac) [c]`
 
 Examples:
 
@@ -59,7 +60,7 @@ syntax (name := funPropTacStx)
 private def emptyDischarge : Expr → MetaM (Option Expr) :=
   fun e =>
     withTraceNode `Meta.Tactic.fun_prop
-      (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
+      (fun _ => do pure s!"discharging: {← ppExpr e}") do
       pure none
 
 /-- Tactic to prove function properties -/

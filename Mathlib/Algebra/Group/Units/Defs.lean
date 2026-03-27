@@ -321,10 +321,6 @@ theorem divp_one (a : α) : a /ₚ 1 = a :=
 theorem divp_assoc (a b : α) (u : αˣ) : a * b /ₚ u = a * (b /ₚ u) :=
   mul_assoc _ _ _
 
-@[deprecated divp_assoc (since := "2025-08-25")]
-theorem divp_assoc' (x y : α) (u : αˣ) : x * (y /ₚ u) = x * y /ₚ u :=
-  (divp_assoc _ _ _).symm
-
 @[simp]
 theorem divp_inv (u : αˣ) : a /ₚ u⁻¹ = a * u :=
   rfl
@@ -634,10 +630,12 @@ section NoncomputableDefs
 variable {M : Type*}
 
 /-- Constructs an inv operation for a `Monoid` consisting only of units. -/
+@[implicit_reducible]
 noncomputable def invOfIsUnit [Monoid M] (h : ∀ a : M, IsUnit a) : Inv M where
   inv := fun a => ↑(h a).unit⁻¹
 
 /-- Constructs a `Group` structure on a `Monoid` consisting only of units. -/
+@[implicit_reducible]
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=
   { hM with
     toInv := invOfIsUnit h,
@@ -646,6 +644,7 @@ noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Grou
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
 
 /-- Constructs a `CommGroup` structure on a `CommMonoid` consisting only of units. -/
+@[implicit_reducible]
 noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a) : CommGroup M :=
   { hM with
     toInv := invOfIsUnit h,

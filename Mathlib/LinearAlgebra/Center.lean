@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir
 
 module
 
-public import Mathlib.LinearAlgebra.Transvection
+public import Mathlib.LinearAlgebra.Transvection.Basic
 
 /-!
 # Center of the algebra of linear endomorphisms
