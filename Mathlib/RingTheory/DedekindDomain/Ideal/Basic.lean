@@ -111,14 +111,6 @@ noncomputable abbrev commGroupWithZero : CommGroupWithZero (FractionalIdeal A⁰
       simp [FractionalIdeal.mul_le, mem_div_iff_of_ne_zero hJ]
     · rw [mul_assoc, mul_comm _ J, isDedekindDomainInv_iff.mp h _ hJ, mul_one]
 
-@[deprecated mul_inv_cancel₀ (since := "2025-09-09")]
-protected lemma mul_inv_eq_one (hI : I ≠ 0) : I * I⁻¹ = 1 := by
-  let := h.commGroupWithZero (K := K); simp [*]
-
-@[deprecated inv_mul_cancel₀ (since := "2025-09-09")]
-protected lemma inv_mul_eq_one (hI : I ≠ 0) : I⁻¹ * I = 1 := by
-  let := h.commGroupWithZero (K := K); simp [*]
-
 theorem isNoetherianRing : IsNoetherianRing A := by
   let := h.commGroupWithZero (K := FractionRing A)
   refine isNoetherianRing_iff.mpr ⟨fun I : Ideal A => ?_⟩
@@ -349,18 +341,6 @@ instance : PosMulReflectLE (FractionalIdeal A⁰ K) where
 instance : MulPosReflectLE (FractionalIdeal A⁰ K) where
   elim I J K hJK := by simpa [I.2.ne'] using mul_left_mono (a := I.1⁻¹) hJK
 
-@[deprecated mul_inv_cancel₀ (since := "2025-09-14")]
-protected theorem mul_inv_cancel {I : FractionalIdeal A⁰ K} (hne : I ≠ 0) : I * I⁻¹ = 1 :=
-  mul_inv_cancel₀ hne
-
-@[deprecated mul_le_mul_iff_left₀ (since := "2025-09-14")]
-theorem mul_right_le_iff {J : FractionalIdeal A⁰ K} (hJ : J ≠ 0) {I I'} : I * J ≤ I' * J ↔ I ≤ I' :=
-  mul_le_mul_iff_left₀ <| pos_iff_ne_zero.2 hJ
-
-@[deprecated mul_le_mul_iff_left₀ (since := "2025-09-14")]
-theorem mul_left_le_iff {J : FractionalIdeal A⁰ K} (hJ : J ≠ 0) {I I'} : J * I ≤ J * I' ↔ I ≤ I' :=
-  mul_le_mul_iff_right₀ <| pos_iff_ne_zero.2 hJ
-
 lemma mul_left_strictMono {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) : StrictMono (· * I) :=
   fun _J _K hJK ↦ mul_lt_mul_of_pos_right hJK <| pos_iff_ne_zero.2 hI
 
@@ -375,9 +355,6 @@ instance [IsDedekindDomain A] : PosMulReflectLE (Ideal A) where
         (by simpa [pos_iff_ne_zero] using I.2.ne'),
       ← FractionalIdeal.coeIdeal_mul, ← FractionalIdeal.coeIdeal_mul,
       FractionalIdeal.coeIdeal_le_coeIdeal]
-
-@[deprecated div_eq_mul_inv (since := "2025-09-14")]
-protected lemma div_eq_mul_inv (I J : FractionalIdeal A⁰ K) : I / J = I * J⁻¹ := div_eq_mul_inv ..
 
 end FractionalIdeal
 

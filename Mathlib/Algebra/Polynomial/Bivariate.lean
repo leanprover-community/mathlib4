@@ -250,8 +250,9 @@ def Bivariate.swap : R[X][Y] ≃ₐ[R] R[X][Y] := by
 @[simp]
 theorem Bivariate.swap_symm : swap.symm = (swap (R := R)) := rfl
 
-@[simp]
 theorem Bivariate.swap_apply (p : R[X][Y]) : swap p = p.aevalAeval (A := R[X][Y]) Y (C X) := rfl
+
+attribute [local simp] Bivariate.swap_apply
 
 theorem Bivariate.swap_X : swap (R := R) (C X) = Y := by simp
 
