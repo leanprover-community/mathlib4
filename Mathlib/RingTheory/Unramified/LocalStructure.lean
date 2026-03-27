@@ -247,6 +247,7 @@ lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
     refine adjoin_singleton_le ?_
     exact Subalgebra.smul_mem _ (self_mem_adjoin_singleton _ _) _
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [-instance] Subalgebra.instSMulSubtypeMem
   Subalgebra.toAlgebra Subalgebra.isScalarTower_left in
 /-- Let `S` be an finite `R`-algebra that is unramified at some prime `Q`. Then there exists some
@@ -295,7 +296,7 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_finite
     (R := R) (S := S') ⟨⟨x, Algebra.self_mem_adjoin_singleton _ _⟩, Subalgebra.map_injective
       (f := S'.val) Subtype.val_injective (by simp [Subalgebra.range_val, S'])⟩ Q'
   obtain ⟨P, φ, hP⟩ := hf.of_dvd (g := f * r) (by simp)
-  exact ⟨_, (inferInstanceAs Q'.IsPrime).mul_notMem hfQ' hrQ', .mk
+  exact ⟨_, (inferInstance : Q'.IsPrime).mul_notMem hfQ' hrQ', .mk
     (f := IsScalarTower.toAlgHom R S' S (f * r))
     ((Localization.awayMapₐ (IsScalarTower.toAlgHom _ _ S) (f * r)).comp φ)
     (by exact (H _ (by simp)).surjective.comp hP)⟩
@@ -354,7 +355,6 @@ lemma IsEtaleAt.exists_isStandardEtale
     exact .trans (PrimeSpectrum.basicOpen_mul_le_left _ _) h
   exact ⟨f * g, ‹Q.IsPrime›.mul_notMem hfQ hgQ, (hg.of_dvd (by simp)).isStandardEtale⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `S` a finitely presented `R`-algebra, and `p` a prime of `S`. If `S` is smooth over `R`
 at `p`, then there exists `f ∉ p` such that `R → S[1/f]` factors through some `R[X₁,...,Xₙ]`,
 and that `S[1/f]` is standard etale over `R[X₁,...,Xₙ]`. -/

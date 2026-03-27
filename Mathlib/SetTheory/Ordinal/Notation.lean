@@ -1133,8 +1133,7 @@ which requires `ONote`, so all these things would have to be defined at once, wh
 representation. -/
 def NONote :=
   { o : ONote // o.NF }
-
-instance : DecidableEq NONote := by unfold NONote; infer_instance
+deriving DecidableEq
 
 namespace NONote
 
