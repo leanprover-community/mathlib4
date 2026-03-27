@@ -64,7 +64,7 @@ variable {m m' : Type*} [Fintype m] [Fintype m']
 variable {n n' : Type*} [Fintype n] [Fintype n']
 variable {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β] [DecidableEq β]
 
-@[expose] public section LatinSquare
+@[expose] public section
 
 /-- For m ≤ n, an m × n Latin rectangle is a partial n × n Latin Square where
     the first m entries are filled. -/
