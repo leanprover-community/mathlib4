@@ -179,8 +179,8 @@ theorem bddAbove_range_comp {ι : Type u} {f : ι → Ordinal.{v}} (hf : BddAbov
 
 /-- `le_ciSup` whenever the input type is small in the output universe. This lemma sometimes
 fails to infer `f` in simple cases and needs it to be given explicitly. -/
-protected theorem le_iSup {ι} (f : ι → Ordinal.{u}) [Small.{u} ι] (i) : f i ≤ ⨆ i, f i :=
-  le_ciSup (bddAbove_of_small _) i
+protected theorem le_iSup {ι} (f : ι → Ordinal.{u}) [Small.{u} ι] : ∀ i, f i ≤ ⨆ i, f i :=
+  le_ciSup (bddAbove_of_small _)
 
 /-- `ciSup_le_iff'` whenever the input type is small in the output universe. -/
 @[simp]
