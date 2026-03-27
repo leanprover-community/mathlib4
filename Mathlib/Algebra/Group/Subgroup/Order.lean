@@ -5,10 +5,10 @@ Authors: Damiano Testa, Ruben Van de Velde
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Algebra.Group.Submonoid.Support
 public import Mathlib.Algebra.Group.Subsemigroup.Operations
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
-public import Mathlib.Algebra.Order.Monoid.Basic
+public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Order.Atoms
 
 /-!
