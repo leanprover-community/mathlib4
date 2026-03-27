@@ -129,7 +129,7 @@ abbrev Foldr (α : Type u) : Type u :=
   End α
 
 def Foldr.mk (f : α → α) : Foldr α :=
-  TypeCat.ofHom (f)
+  TypeCat.ofHom f
 
 def Foldr.get (x : Foldr α) : α → α :=
   ConcreteCategory.hom x
