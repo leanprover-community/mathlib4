@@ -94,9 +94,6 @@ theorem ne_natDegree_of_mem_eraseLead_support {a : ℕ} (h : a ∈ (eraseLead f)
 theorem natDegree_notMem_eraseLead_support : f.natDegree ∉ (eraseLead f).support := fun h =>
   ne_natDegree_of_mem_eraseLead_support h rfl
 
-@[deprecated (since := "2025-05-23")]
-alias natDegree_not_mem_eraseLead_support := natDegree_notMem_eraseLead_support
-
 theorem eraseLead_support_card_lt (h : f ≠ 0) : #(eraseLead f).support < #f.support := by
   rw [eraseLead_support]
   exact card_lt_card (erase_ssubset <| natDegree_mem_support_of_nonzero h)
@@ -351,6 +348,7 @@ theorem induction_with_natDegree_le (motive : R[X] → Prop) (N : ℕ) (zero : m
 "sufficiently monotone" map.  Assume also that
 * `φ` maps to `0` all monomials of degree less than `k`,
 * `φ` maps each monomial `m` in `R[x]` to a polynomial `φ m` of degree `fu (deg m)`.
+
 Then, `φ` maps each polynomial `p` in `R[x]` to a polynomial of degree `fu (deg p)`. -/
 theorem mono_map_natDegree_eq {S F : Type*} [Semiring S]
     [FunLike F R[X] S[X]] [AddMonoidHomClass F R[X] S[X]] {φ : F}

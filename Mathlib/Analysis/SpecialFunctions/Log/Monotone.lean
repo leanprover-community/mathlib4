@@ -18,7 +18,7 @@ form `x ^ a`.
 logarithm, tonality
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Function

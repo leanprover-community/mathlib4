@@ -80,7 +80,7 @@ theorem trunc_succ (f : R⟦X⟧) (n : ℕ) :
   rw [trunc_apply, Ico_zero_eq_range, sum_range_succ, trunc_apply, Ico_zero_eq_range]
 
 theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n + 1 := by
-  simp +contextual [natDegree_le_iff_coeff_eq_zero, coeff_trunc, Nat.lt_add_one_iff]
+  simp +contextual [natDegree_le_iff_coeff_eq_zero, coeff_trunc]
 
 @[simp] lemma trunc_zero' {f : R⟦X⟧} : trunc 0 f = 0 := rfl
 
@@ -185,6 +185,7 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
     rw [coeff_coe, coeff_trunc, if_pos ha]
   · rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem trunc_mul_trunc {n} (f g : R⟦X⟧) :
     trunc n (f * (trunc n g) : R⟦X⟧) = trunc n (f * g) := by
   rw [mul_comm, trunc_trunc_mul, mul_comm]
@@ -193,6 +194,7 @@ theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
     trunc n (trunc n f * trunc n g : R⟦X⟧) = trunc n (f * g) := by
   rw [trunc_trunc_mul, trunc_mul_trunc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem trunc_trunc_pow (f : R⟦X⟧) (n a : ℕ) :
     trunc n ((trunc n f : R⟦X⟧) ^ a) = trunc n (f ^ a) := by
   induction a with

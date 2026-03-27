@@ -42,19 +42,17 @@ open Function
 
 assert_not_exists Field
 
-deriving instance Zero, CommSemiring, Nontrivial,
-  LinearOrder, Bot, Sub,
-  LinearOrderedAddCommMonoidWithTop,
-  IsOrderedRing, CanonicallyOrderedAdd,
-  OrderBot, OrderTop, OrderedSub, SuccOrder,
-  WellFoundedLT,
-  CharZero,
-  NoZeroDivisors
+deriving instance Nontrivial,
+  Add, Sub, LE, LT, Bot,
+  Preorder, LinearOrder, OrderTop, OrderBot, WellFoundedLT, SuccOrder,
+  AddMonoidWithOne, CommSemiring, LinearOrderedAddCommMonoidWithTop,
+  ZeroLEOneClass, OrderedSub, CanonicallyOrderedAdd, IsOrderedRing,
+  CharZero, NoZeroDivisors
   for ENat
 
 namespace ENat
 
-variable {a b c m n : ℕ∞}
+variable {a b c d m n : ℕ∞}
 
 /-- Lemmas about `WithTop` expect (and can output) `WithTop.some` but the normal form for coercion
 `ℕ → ℕ∞` is `Nat.cast`. -/
@@ -62,8 +60,12 @@ variable {a b c m n : ℕ∞}
 
 theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
+@[simp] theorem succ_coe (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := WithTop.succ_coe
+
+@[simp] theorem succ_top : SuccOrder.succ (⊤ : ℕ∞) = ⊤ := rfl
+
 instance : SuccAddOrder ℕ∞ where
-  succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ]
+  succ_eq_add_one x := by cases x <;> simp
 
 theorem coe_zero : ((0 : ℕ) : ℕ∞) = 0 :=
   rfl
@@ -270,7 +272,7 @@ lemma toNat_le_of_le_coe {m : ℕ∞} {n : ℕ} (h : m ≤ n) : toNat m ≤ n :=
 lemma toNat_le_toNat {m n : ℕ∞} (h : m ≤ n) (hn : n ≠ ⊤) : toNat m ≤ toNat n :=
   toNat_le_of_le_coe <| h.trans_eq (coe_toNat hn).symm
 
-@[simp]
+-- TODO: deprecate
 theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 :=
   Order.succ_eq_add_one m
 
@@ -282,6 +284,12 @@ theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
 
 lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
   not_le.symm.trans one_le_iff_ne_zero.not_left
+
+lemma le_one_iff_eq_zero_or_eq_one : n ≤ 1 ↔ n = 0 ∨ n = 1 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by cases h <;> simp_all⟩
+  cases n
+  · simp at h
+  · rwa [← lt_one_iff_eq_zero, ← le_iff_lt_or_eq]
 
 theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
   Order.lt_add_one_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
@@ -337,6 +345,15 @@ lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < 
 
 lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m :=
   WithTop.add_lt_add_iff_left h
+
+protected lemma add_lt_add (hac : a < c) (hbd : b < d) : a + b < c + d :=
+  WithTop.add_lt_add hac hbd
+
+protected theorem add_lt_add_of_le_of_lt : a ≠ ⊤ → a ≤ b → c < d → a + c < b + d :=
+  WithTop.add_lt_add_of_le_of_lt
+
+protected theorem add_lt_add_of_lt_of_le : c ≠ ⊤ → a < b → c ≤ d → a + c < b + d :=
+  WithTop.add_lt_add_of_lt_of_le
 
 lemma ne_top_iff_exists : n ≠ ⊤ ↔ ∃ m : ℕ, ↑m = n := WithTop.ne_top_iff_exists
 
@@ -572,27 +589,72 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
         | top =>
           have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
           simp [mul_top hx, WithTop.mul_top this]
-        | coe y => simp [← Nat.cast_mul, - coe_mul] }
+        | coe y => simp [← Nat.cast_mul, -coe_mul] }
 
 /-- A version of `ENat.map` for `RingHom`s. -/
 @[simps -fullyApplied]
 protected def _root_.RingHom.ENatMap {S : Type*} [CommSemiring S] [PartialOrder S]
     [CanonicallyOrderedAdd S]
     [DecidableEq S] [Nontrivial S] (f : ℕ →+* S) (hf : Function.Injective f) : ℕ∞ →+* WithTop S :=
-  {MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with}
+  { MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with }
+
+@[simp]
+lemma map_natCast_mul {R : Type*} [NonAssocSemiring R] [DecidableEq R] [CharZero R] (a b : ℕ∞) :
+    (map Nat.cast (a * b) : WithTop R) = map Nat.cast a * map Nat.cast b :=
+  map_mul ((Nat.castRingHom R : ℕ →*₀ R).ENatMap Nat.cast_injective) a b
 
 end ENat
 
-lemma WithBot.lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
+namespace ENat.WithBot
+
+lemma lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
   rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
   cases n
   · simp only [bot_le, WithBot.bot_lt_coe]
   · rw [WithBot.coe_lt_coe, Nat.cast_add, ENat.coe_one, ENat.lt_add_one_iff (ENat.coe_ne_top _),
       ← WithBot.coe_le_coe, WithBot.coe_natCast]
 
-lemma WithBot.add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n < m := by
+lemma add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n < m := by
   rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
   cases m
   · simp
   · rw [WithBot.coe_le_coe, ENat.coe_add, ENat.coe_one, ENat.add_one_le_iff (ENat.coe_ne_top n),
       ← WithBot.coe_lt_coe, WithBot.coe_natCast]
+
+@[simp]
+lemma add_natCast_cancel {a b : WithBot ℕ∞} {c : ℕ} : a + c = b + c ↔ a = b :=
+  (IsAddRightRegular.all c).withTop.withBot.eq_iff
+
+@[simp]
+lemma add_one_cancel {a b : WithBot ℕ∞} : a + 1 = b + 1 ↔ a = b :=
+  (IsAddRightRegular.all 1).withTop.withBot.eq_iff
+
+lemma add_ofNat_cancel {a b : WithBot ℕ∞} {c : ℕ} [c.AtLeastTwo] :
+    a + ofNat(c) = b + ofNat(c) ↔ a = b :=
+  WithBot.add_natCast_cancel
+
+@[simp]
+lemma natCast_add_cancel {a b : WithBot ℕ∞} {c : ℕ} : c + a = c + b ↔ a = b :=
+  (IsAddLeftRegular.all c).withTop.withBot.eq_iff
+
+@[simp]
+lemma one_add_cancel {a b : WithBot ℕ∞} : 1 + a = 1 + b ↔ a = b :=
+  (IsAddLeftRegular.all 1).withTop.withBot.eq_iff
+
+lemma ofNat_add_cancel {a b : WithBot ℕ∞} {c : ℕ} [c.AtLeastTwo] :
+    ofNat(c) + a = ofNat(c) + b ↔ a = b :=
+  WithBot.natCast_add_cancel
+
+lemma add_le_add_natCast_right_iff {a b : WithBot ℕ∞} {c : ℕ} : a + c ≤ b + c ↔ a ≤ b :=
+  (Contravariant.AddLECancellable (a := c)).withTop.withBot.add_le_add_iff_right
+
+lemma add_le_add_one_right_iff {a b : WithBot ℕ∞} : a + 1 ≤ b + 1 ↔ a ≤ b :=
+  WithBot.add_le_add_natCast_right_iff
+
+lemma add_le_add_natCast_left_iff {a b : WithBot ℕ∞} {c : ℕ} : c + a ≤ c + b ↔ a ≤ b := by
+  rw [add_comm _ a, add_comm _ b, WithBot.add_le_add_natCast_right_iff]
+
+lemma add_le_add_one_left_iff {a b : WithBot ℕ∞} : 1 + a ≤ 1 + b ↔ a ≤ b :=
+  WithBot.add_le_add_natCast_left_iff
+
+end ENat.WithBot

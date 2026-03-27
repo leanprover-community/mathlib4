@@ -25,15 +25,10 @@ category structure on `SSet`.
 
 universe u
 
-open Simplicial CategoryTheory MonoidalCategory CartesianMonoidalCategory Limits
+open Simplicial CategoryTheory MonoidalCategory CartesianMonoidalCategory
+  Limits SimplicialObject.Truncated
 
 namespace SSet
-
-instance : CartesianMonoidalCategory SSet.{u} :=
-  (inferInstance : CartesianMonoidalCategory (SimplexCategoryᵒᵖ ⥤ Type u))
-
-instance : MonoidalClosed (SSet.{u}) :=
-  inferInstanceAs (MonoidalClosed (SimplexCategoryᵒᵖ ⥤ Type u))
 
 @[simp]
 lemma leftUnitor_hom_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x : (𝟙_ _ ⊗ K).obj Δ) :
@@ -130,6 +125,7 @@ lemma prod_monotone {X Y : SSet.{u}}
     A₁.prod B₁ ≤ A₂.prod B₂ :=
   fun _ _ hx => ⟨hX _ hx.1, hY _ hx.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma range_tensorHom {X₁ X₂ Y₁ Y₂ : SSet.{u}} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) :
     range (f₁ ⊗ₘ f₂) = (range f₁).prod (range f₂) := by
   ext m ⟨y₁, y₂⟩
@@ -175,5 +171,54 @@ lemma ι₁_comp {X Y : SSet.{u}} (f : X ⟶ Y) :
 
 @[simp]
 lemma ι₁_app_fst {X : SSet.{u}} {m} (x : X.obj m) : (ι₁.app _ x).1 = x := rfl
+
+section
+
+variable (X Y : SSet.{u})
+
+section
+
+variable {m n : SimplexCategoryᵒᵖ} (f : m ⟶ n) (z : (X ⊗ Y).obj m)
+@[simp high, grind =] lemma prod_map_fst : ((X ⊗ Y).map f z).1 = X.map f z.1 := rfl
+@[simp high, grind =] lemma prod_map_snd : ((X ⊗ Y).map f z).2 = Y.map f z.2 := rfl
+
+end
+
+@[simp, grind =] lemma prod_δ_fst {n : ℕ} (i : Fin (n + 2)) (z : (X ⊗ Y : SSet.{u}) _⦋n + 1⦌) :
+    ((X ⊗ Y).δ i z).1 = X.δ i z.1 := rfl
+
+@[simp, grind =] lemma prod_δ_snd {n : ℕ} (i : Fin (n + 2)) (z : (X ⊗ Y : SSet.{u}) _⦋n + 1⦌) :
+    ((X ⊗ Y).δ i z).2 = Y.δ i z.2 := rfl
+
+@[simp, grind =] lemma prod_σ_fst {n : ℕ} (i : Fin (n + 1)) (z : (X ⊗ Y : SSet.{u}) _⦋n⦌) :
+    ((X ⊗ Y).σ i z).1 = X.σ i z.1 := rfl
+
+@[simp, grind =] lemma prod_σ_snd {n : ℕ} (i : Fin (n + 1)) (z : (X ⊗ Y : SSet.{u}) _⦋n⦌) :
+    ((X ⊗ Y).σ i z).2 = Y.σ i z.2 := rfl
+
+end
+
+namespace Truncated
+
+variable (n : ℕ)
+
+open MonoidalCategory
+
+instance : (truncation.{u} n).Monoidal :=
+  inferInstanceAs ((Functor.whiskeringLeft _ _ _).obj _).Monoidal
+
+variable {n} {X Y : Truncated.{u} n}
+
+@[simp]
+lemma tensor_map_apply_fst {d e : (SimplexCategory.Truncated n)ᵒᵖ}
+    (f : d ⟶ e) (x : (X ⊗ Y : Truncated _).obj d) :
+    ((X ⊗ Y : Truncated _).map f x).1 = X.map f x.1 := rfl
+
+@[simp]
+lemma tensor_map_apply_snd {d e : (SimplexCategory.Truncated n)ᵒᵖ}
+    (f : d ⟶ e) (x : (X ⊗ Y : Truncated _).obj d) :
+    ((X ⊗ Y : Truncated _).map f x).2 = Y.map f x.2 := rfl
+
+end Truncated
 
 end SSet

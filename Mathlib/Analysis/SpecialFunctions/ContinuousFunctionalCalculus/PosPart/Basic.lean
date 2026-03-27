@@ -16,7 +16,7 @@ the continuous functional calculus and develops the basic API, including the uni
 positive and negative parts.
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 
@@ -102,6 +102,7 @@ section SMul
 
 variable [StarModule ℝ A]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma posPart_smul {r : ℝ≥0} {a : A} : (r • a)⁺ = r • a⁺ := by
   by_cases ha : IsSelfAdjoint a
@@ -205,8 +206,9 @@ local notation "σₙ" => quasispectrum
 
 open ContinuousMapZero
 
-variable [IsTopologicalRing A] [T2Space A]
+variable [IsSemitopologicalRing A] [T2Space A]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in -- simp followed by `exact le_rfl`
 open NonUnitalContinuousFunctionalCalculus in
 /-- The positive and negative parts of a selfadjoint element `a` are unique. That is, if

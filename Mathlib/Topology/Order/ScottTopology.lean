@@ -147,6 +147,7 @@ section ScottHausdorff
 
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
 `d` lies in `u` then there is a tail of `d` which is a subset of `u`. -/
+@[implicit_reducible]
 def scottHausdorff (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α where
   IsOpen u := ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u
@@ -182,7 +183,7 @@ variable {α D}
 lemma isOpen_iff [IsScottHausdorff α D] :
     IsOpen s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
       a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
-  simp [topology_eq_scottHausdorff (α := α) (D := D), IsOpen, scottHausdorff]
+  simp +instances [topology_eq_scottHausdorff (α := α) (D := D), IsOpen, scottHausdorff]
 
 lemma dirSupInaccOn_of_isOpen [IsScottHausdorff α D] (h : IsOpen s) : DirSupInaccOn D s :=
   fun d hd₀ hd₁ hd₂ a hda hd₃ ↦ by
@@ -192,6 +193,28 @@ lemma dirSupClosed_of_isClosed [IsScottHausdorff α univ] (h : IsClosed s) : Dir
   apply DirSupInacc.of_compl
   rw [← dirSupInaccOn_univ]
   exact (dirSupInaccOn_of_isOpen h.isOpen_compl)
+
+theorem isOpen_iff_dirSupInacc [IsScottHausdorff α univ] : IsOpen s ↔ DirSupInacc s where
+  mp h := dirSupInaccOn_univ.1 <| Topology.IsScottHausdorff.dirSupInaccOn_of_isOpen h
+  mpr h := by
+    rw [IsScottHausdorff.isOpen_iff (D := .univ)]
+    intro t _ ht₀ ht₁ a ha has
+    by_contra! H
+    have H : ∀ b : t, ∃ c, b.1 ≤ c ∧ c ∈ t ∧ c ∉ s := by simpa [not_subset, and_assoc] using H
+    choose f hf using H
+    have := ht₀.to_subtype
+    have hft : range f ⊆ t := by grind
+    apply (h (range_nonempty f) _ _ has).ne_empty
+    · aesop
+    · intro a ha b hb
+      obtain ⟨c, hc, _, _⟩ := ht₁ _ (hft ha) _ (hft hb)
+      have := hf ⟨c, hc⟩
+      grind
+    · exact ⟨upperBounds_mono_set hft ha.1,
+        fun b hb ↦ ha.2 fun c hc ↦ (hf ⟨c, hc⟩).1.trans (hb <| by simp)⟩
+
+theorem isClosed_iff_dirSupClosed [IsScottHausdorff α univ] : IsClosed s ↔ DirSupClosed s := by
+  rw [← isOpen_compl_iff, isOpen_iff_dirSupInacc, dirSupInacc_compl]
 
 end IsScottHausdorff
 end ScottHausdorff
@@ -219,6 +242,7 @@ section Preorder
 /-- The Scott topology.
 
 It is defined as the join of the topology of upper sets and the Scott-Hausdorff topology. -/
+@[implicit_reducible]
 def scott (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α :=
   upperSet α ⊔ scottHausdorff α D
 
@@ -281,8 +305,6 @@ instance [IsScott α univ] : ClosedIicTopology α where
   isClosed_Iic _ :=
     isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨isLowerSet_Iic _, dirSupClosed_Iic _⟩
 
-@[deprecated (since := "2025-07-02")] protected alias isClosed_Iic := isClosed_Iic
-
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
 `(-∞,a]`.
@@ -318,9 +340,6 @@ lemma monotone_of_continuous [IsScott α D] (hf : Continuous f) : Monotone f := 
     simp only [upperBounds, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
       mem_setOf] at hb
     exact hfcb <| hb _ hcd
-
-@[deprecated (since := "2025-07-02")]
-alias scottContinuous_iff_continuous := scottContinuousOn_iff_continuous
 
 end Preorder
 
@@ -414,7 +433,12 @@ instance [Inhabited α] : Inhabited (WithScott α) := ‹Inhabited α›
 variable [Preorder α]
 
 instance : Preorder (WithScott α) := ‹Preorder α›
-instance : TopologicalSpace (WithScott α) := scott α univ
+
+instance : TopologicalSpace (WithScott α) :=
+  -- fast_instance% scott α univ fails
+  letI : TopologicalSpace α := scott α univ
+  inferInstanceAs <| TopologicalSpace α
+
 instance : IsScott (WithScott α) univ := ⟨rfl⟩
 
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :

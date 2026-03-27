@@ -5,20 +5,16 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Semifield
-public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Data.Nat.NthRoot.Defs
-public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Ring.Basic
+public import Mathlib.Tactic.Zify
+public import Mathlib.Algebra.Order.Ring.Pow
 
 /-!
 # Lemmas about `Nat.nthRoot`
 
 In this file we prove that `Nat.nthRoot n a` is indeed the floor of `ⁿ√a`.
-
-## TODO
-
-Rewrite the proof of `Nat.nthRoot.lt_pow_go_succ_aux` to avoid dependencies on real numbers,
-so that we can move this file to `Mathlib/Data/Nat/NthRoot`, then to Batteries.
 -/
 
 @[expose] public section
@@ -63,36 +59,37 @@ theorem pow_nthRoot_le_iff : nthRoot n a ^ n ≤ a ↔ n ≠ 0 ∨ a ≠ 0 := by
 
 alias ⟨_, pow_nthRoot_le⟩ := pow_nthRoot_le_iff
 
+private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
+    a ≤ ((a ^ (n + 1) / b ^ n) + n * b) / (n + 1) := by
+  rw [Nat.le_div_iff_mul_le (by positivity), Nat.mul_comm,
+    ← Nat.add_mul_div_right _ _ (by positivity),
+    Nat.le_div_iff_mul_le (by positivity)]
+  have := (Commute.all (b : ℤ) (a - b)).pow_add_mul_le_add_pow_of_sq_nonneg
+    (by positivity) (sq_nonneg _) (sq_nonneg _) (by grind) (n + 1)
+  grind
+
+private theorem nthRoot.always_exists (n a : ℕ) :
+    ∃ c, c ^ (n + 1) ≤ a ∧ a < (c + 1) ^ (n + 1) := by
+  have H : ∃ c, a < (c + 1) ^ (n + 1) := ⟨a, Nat.le_self_pow (by positivity) (a + 1)⟩
+  let +nondep (eq := hc) c := Nat.find H
+  refine ⟨c, ?_, hc ▸ Nat.find_spec H⟩
+  cases c with
+  | zero => simp
+  | succ k => simpa using Nat.find_min H hc.le
+
 /--
 An auxiliary lemma saying that if `b ≠ 0`,
 then `(a / b ^ n + n * b) / (n + 1) + 1` is a strict upper estimate on `√[n + 1] a`.
-
-Currently, the proof relies on the weighted AM-GM inequality,
-which increases the dependency closure of this file by a lot.
-
-A PR proving this inequality by more elementary means is very welcome.
 -/
 theorem nthRoot.lt_pow_go_succ_aux (hb : b ≠ 0) :
-    a < ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
-  rcases Nat.eq_zero_or_pos n with rfl | hn; · simp
-  rw [← Nat.add_mul_div_left a, Nat.div_div_eq_div_mul] <;> try positivity
-  rify
-  calc
-    (a : ℝ) = ((a / b ^ n) ^ (1 / (n + 1) : ℝ) * b ^ (n / (n + 1) : ℝ)) ^ (n + 1) := by
-      rw [mul_pow, ← Real.rpow_mul_natCast, ← Real.rpow_mul_natCast] <;> try positivity
-      simp (disch := positivity) [div_mul_cancel₀]
-    _ ≤ ((1 / (n + 1)) * (a / b ^ n) + (n / (n + 1)) * b) ^ (n + 1) := by
+     a < ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
+  have ⟨c, hc1, hc2⟩ := nthRoot.always_exists n a
+  calc a < (c + 1) ^ (n + 1) := hc2
+    _ ≤ ((c ^ (n + 1) / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
       gcongr
-      apply Real.geom_mean_le_arith_mean2_weighted <;> try positivity
-      simp [field, add_comm]
-    _ = ((a + b ^ n * (n * b)) / (b ^ n * (n + 1))) ^ (n + 1) := by
-      congr 1
-      field
-    _ < _ := by
-      gcongr ?_ ^ _
-      convert lt_floor_add_one (R := ℝ) _ using 1
-      norm_cast
-      rw [Nat.floor_div_natCast, Nat.floor_natCast]
+      exact nthRoot.lt_pow_go_succ_aux0 hb
+    _ ≤ ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
+      gcongr
 
 private theorem nthRoot.lt_pow_go_succ (hlt : a < (guess + 1) ^ (n + 2)) :
     a < (go n a fuel guess + 1) ^ (n + 2) := by

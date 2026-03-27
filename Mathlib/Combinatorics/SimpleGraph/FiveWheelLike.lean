@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.Ring
 /-!
 # Five-wheel like graphs
 
@@ -235,7 +234,7 @@ theorem colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree
     (h : Maximal (fun H => H.CliqueFree (r + 1)) G) : G.Colorable r ↔ G.IsCompleteMultipartite := by
   classical
   match r with
-  | 0 => exact ⟨fun _ ↦ fun x ↦ cliqueFree_one.1 h.1 |>.elim' x,
+  | 0 => exact ⟨fun _ ↦ ⟨fun x ↦ cliqueFree_one.1 h.1 |>.elim' x⟩,
                 fun _ ↦ G.colorable_zero_iff.2 <| cliqueFree_one.1 h.1⟩
   | r + 1 =>
     refine ⟨fun hc ↦ ?_, fun hc ↦ hc.colorable_of_cliqueFree h.1⟩
@@ -383,9 +382,7 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
   have bdX := sum_degree_le_of_le_not_adj xcle (fun _ _ ↦ Nat.zero_le _)
   rw [compl_compl, tsub_zero, add_comm] at bdX
   rw [Nat.le_div_iff_mul_le <| Nat.add_pos_right _ zero_lt_three]
-  have Wc : #W + k = 2 * r + 3 := by
-    change #(insert _ <| insert _ <| insert _ _) + _ = _
-    grind [card_inter_add_card_union]
+  have Wc : #W + k = 2 * r + 3 := by grind
   -- The sum of the degree sum over `W` and twice the degree sum over `s ∩ t`
   -- is at least `G.minDegree * (#W + 2 * #(s ∩ t))` which implies the result
   calc

@@ -9,6 +9,7 @@ public import Mathlib.SetTheory.Ordinal.Enum
 public import Mathlib.Tactic.TFAE
 public import Mathlib.Topology.Order.IsNormal
 public import Mathlib.Topology.Order.Monotone
+public import Mathlib.Topology.Order.SuccPred
 
 /-!
 ### Topology of ordinals
@@ -41,34 +42,17 @@ variable {s : Set Ordinal.{u}} {a : Ordinal.{u}}
 instance : TopologicalSpace Ordinal.{u} := Preorder.topology Ordinal.{u}
 instance : OrderTopology Ordinal.{u} := ⟨rfl⟩
 
--- todo: generalize to other well-orders
-theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬ IsSuccLimit a := by
-  refine ⟨fun h ha => ?_, fun ha => ?_⟩
-  · obtain ⟨b, c, hbc, hbc'⟩ :=
-      (mem_nhds_iff_exists_Ioo_subset' ⟨0, ha.bot_lt⟩ ⟨_, lt_succ a⟩).1
-        (h.mem_nhds rfl)
-    have hba := ha.succ_lt hbc.1
-    exact hba.ne (hbc' ⟨lt_succ b, hba.trans hbc.2⟩)
-  · rcases zero_or_succ_or_isSuccLimit a with (rfl | ⟨b, rfl⟩ | ha')
-    · rw [← bot_eq_zero, ← Set.Iic_bot, ← Iio_succ]
-      exact isOpen_Iio
-    · rw [← Set.Icc_self, Icc_succ_left, ← Ioo_succ_right]
-      exact isOpen_Ioo
-    · exact (ha ha').elim
+@[deprecated SuccOrder.isOpen_singleton_iff (since := "2026-01-20")]
+theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬ IsSuccLimit a :=
+  SuccOrder.isOpen_singleton_iff
 
--- todo: generalize to a `SuccOrder`
+@[deprecated SuccOrder.nhds_eq_pure (since := "2026-01-20")]
 theorem nhds_eq_pure : 𝓝 a = pure a ↔ ¬ IsSuccLimit a :=
-  (isOpen_singleton_iff_nhds_eq_pure _).symm.trans isOpen_singleton_iff
+  SuccOrder.nhds_eq_pure
 
--- todo: generalize this lemma to a `SuccOrder`
-theorem isOpen_iff : IsOpen s ↔ ∀ o ∈ s, IsSuccLimit o → ∃ a < o, Set.Ioo a o ⊆ s := by
-  refine isOpen_iff_mem_nhds.trans <| forall₂_congr fun o ho => ?_
-  by_cases ho' : IsSuccLimit o
-  · simp only [(SuccOrder.hasBasis_nhds_Ioc_of_exists_lt ⟨0, ho'.bot_lt⟩).mem_iff, ho',
-      true_implies]
-    refine exists_congr fun a => and_congr_right fun ha => ?_
-    simp only [← Set.Ioo_insert_right ha, Set.insert_subset_iff, ho, true_and]
-  · simp [nhds_eq_pure.2 ho', ho, ho']
+@[deprecated SuccOrder.isOpen_iff (since := "2026-01-20")]
+theorem isOpen_iff : IsOpen s ↔ ∀ o ∈ s, IsSuccLimit o → ∃ a < o, Set.Ioo a o ⊆ s :=
+  SuccOrder.isOpen_iff
 
 open List Set in
 theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
@@ -95,7 +79,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
     have hlub : IsLUB t (sSup t) := isLUB_csSup hne hbdd
     let ⟨y, hyt⟩ := hne
     classical
-      refine ⟨succ (sSup t), succ_ne_zero _, fun x _ => if x ∈ t then x else y, fun x _ => ?_, ?_⟩
+      refine ⟨sSup t + 1, add_one_ne_zero _, fun x _ => if x ∈ t then x else y, fun x _ => ?_, ?_⟩
       · simp only
         split_ifs with h <;> exact hts ‹_›
       · refine le_antisymm (bsup_le fun x _ => ?_) (csSup_le hne fun x hx => ?_)
@@ -103,7 +87,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
         · refine (if_pos hx).symm.trans_le (le_bsup _ _ <| (hlub.1 hx).trans_lt (lt_succ _))
   tfae_have 5 → 6 := by
     rintro ⟨o, h₀, f, hfs, rfl⟩
-    exact ⟨_, toType_nonempty_iff_ne_zero.2 h₀, familyOfBFamily o f, fun _ => hfs _ _, rfl⟩
+    exact ⟨_, nonempty_toType_iff.2 h₀, familyOfBFamily o f, fun _ => hfs _ _, rfl⟩
   tfae_have 6 → 1 := by
     rintro ⟨ι, hne, f, hfs, rfl⟩
     exact closure_mono (range_subset_iff.2 hfs) <| csSup_mem_closure (range_nonempty f)
@@ -148,42 +132,27 @@ theorem isClosed_iff_bsup :
       ∀ {o : Ordinal}, o ≠ 0 → ∀ f : ∀ a < o, Ordinal,
         (∀ i hi, f i hi ∈ s) → bsup.{u, u} o f ∈ s := by
   rw [isClosed_iff_iSup]
-  refine ⟨fun H o ho f hf => H (toType_nonempty_iff_ne_zero.2 ho) _ ?_, fun H ι hι f hf => ?_⟩
+  refine ⟨fun H o ho f hf => H (nonempty_toType_iff.2 ho) _ ?_, fun H ι hι f hf => ?_⟩
   · exact fun i => hf _ _
   · rw [← bsup_eq_iSup]
     apply H (type_ne_zero_iff_nonempty.2 hι)
     exact fun i hi => hf _
 
--- todo: generalize to other well-orders
-theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a := by
-  simp only [frontier_eq_closure_inter_closure, Set.mem_inter_iff, mem_closure_iff] at ha
-  by_contra h
-  rw [← isOpen_singleton_iff] at h
-  rcases ha.1 _ h rfl with ⟨b, hb, hb'⟩
-  rcases ha.2 _ h rfl with ⟨c, hc, hc'⟩
-  rw [Set.mem_singleton_iff] at *
-  subst hb; subst hc
-  exact hc' hb'
-
-@[deprecated (since := "2025-07-08")]
-alias isLimit_of_mem_frontier := isSuccLimit_of_mem_frontier
-
-@[deprecated Order.isNormal_iff_strictMono_and_continuous (since := "2025-08-21")]
-theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u}) :
-    IsNormal f ↔ StrictMono f ∧ Continuous f :=
-  Order.isNormal_iff_strictMono_and_continuous
+@[deprecated SuccOrder.isSuccLimit_of_mem_frontier (since := "2026-01-20")]
+theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a :=
+  SuccOrder.isSuccLimit_of_mem_frontier ha
 
 theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     IsNormal (enumOrd s) ↔ IsClosed s := by
   have Hs := enumOrd_strictMono hs
   refine
     ⟨fun h => isClosed_iff_iSup.2 fun {ι} hι f hf => ?_, fun h =>
-      (isNormal_iff_strictMono_limit _).2 ⟨Hs, fun a ha o H => ?_⟩⟩
+      isNormal_iff.2 ⟨Hs, fun a ha o H => ?_⟩⟩
   · let g : ι → Ordinal.{u} := fun i => (enumOrdOrderIso s hs).symm ⟨_, hf i⟩
     suffices enumOrd s (⨆ i, g i) = ⨆ i, f i by
       rw [← this]
       exact enumOrd_mem hs _
-    rw [IsNormal.map_iSup h g]
+    rw [h.map_iSup (bddAbove_of_small _)]
     congr
     ext x
     change (enumOrdOrderIso s hs _).val = f x
@@ -221,7 +190,7 @@ theorem isAcc_iff (o : Ordinal) (S : Set Ordinal) : o.IsAcc S ↔
     constructor
     · rintro rfl
       obtain ⟨x, hx⟩ := h (Iio 1) (Iio_mem_nhds zero_lt_one)
-      exact hx.2 <| lt_one_iff_zero.mp hx.1.1
+      exact hx.2 <| lt_one_iff.mp hx.1.1
     · intro p plt
       obtain ⟨x, hx⟩ := h (Ioo p (o + 1)) <| Ioo_mem_nhds plt (lt_succ o)
       use x
@@ -247,9 +216,6 @@ theorem IsAcc.isSuccLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsSu
   refine ⟨h.1, isSuccPrelimit_of_succ_ne fun x hx ↦ ?_⟩
   rcases h.2 x (lt_of_lt_of_le (lt_succ x) hx.le) with ⟨p, hp⟩
   exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_gt hp.2.2
-
-@[deprecated IsAcc.isSuccLimit (since := "2025-07-08")]
-alias IsAcc.isLimit := IsAcc.isSuccLimit
 
 theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) :
     o.IsAcc T := by
@@ -281,7 +247,7 @@ theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
         rw [zero_add] at ho
         specialize h (Iio ⟨1, ho⟩) (Iio_mem_nhds (Subtype.mk_lt_mk.mpr zero_lt_one))
         obtain ⟨_, h⟩ := h
-        exact h.2 <| Subtype.mk_eq_mk.mpr (lt_one_iff_zero.mp h.1.1)
+        exact h.2 <| Subtype.mk_eq_mk.mpr (lt_one_iff.mp h.1.1)
       have plim : IsSuccLimit p := by
         contrapose! h
         obtain ⟨q, hq⟩ := ((zero_or_succ_or_isSuccLimit p).resolve_left ppos).resolve_right h
@@ -304,7 +270,7 @@ theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
       rintro rfl
       obtain ⟨x, hx⟩ := h Set.univ univ_mem
       have : ↑x < o := x.2
-      simp_rw [hp, zero_add, lt_one_iff_zero] at this
+      simp_rw [hp, zero_add, lt_one_iff] at this
       exact hx.2 (SetCoe.ext this)
     obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨0, pos_iff_ne_zero.mpr ppos⟩
     obtain ⟨x, hx⟩ := h (Ioi ⟨l, hl.1.trans hpo⟩) (Ioi_mem_nhds hl.1)

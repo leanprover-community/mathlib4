@@ -24,7 +24,7 @@ Several variants are recorded, generalising in particular to the case of a divis
 which `x` and `y` commute.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedRing
 

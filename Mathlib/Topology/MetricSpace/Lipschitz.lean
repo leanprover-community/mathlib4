@@ -208,12 +208,6 @@ lemma LipschitzWith.properSpace {X Y : Type*} [PseudoMetricSpace X]
   ⟨fun x r ↦ (hf.isCompact_preimage (isCompact_closedBall (f x) (K * r))).of_isClosed_subset
     Metric.isClosed_closedBall (hf'.mapsTo_closedBall x r).subset_preimage⟩
 
-namespace Metric
-
-variable [PseudoMetricSpace α] [PseudoMetricSpace β] {s : Set α} {t : Set β}
-
-end Metric
-
 namespace LipschitzOnWith
 
 section Metric

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.MeasureTheory.Measure.OpenPos
+public import Mathlib.MeasureTheory.Measure.Doubling
 
 /-!
 # The product measure
@@ -346,6 +347,31 @@ instance {X Y : Type*}
     [TopologicalSpace Y] [MeasureSpace Y] [IsFiniteMeasureOnCompacts (volume : Measure Y)] :
     IsFiniteMeasureOnCompacts (volume : Measure (X × Y)) :=
   prod.instIsFiniteMeasureOnCompacts _ _
+
+
+open IsUnifLocDoublingMeasure in
+/--
+The product of two uniformly locally doubling measures is a uniformly locally doubling measure,
+assuming the second one is s-finite.
+-/
+instance _root_.IsUnifLocDoublingMeasure.prod {X Y : Type*}
+    [PseudoMetricSpace X] [MeasurableSpace X] [PseudoMetricSpace Y] [MeasurableSpace Y]
+    (μ : Measure X) (ν : Measure Y) [SFinite ν]
+    [IsUnifLocDoublingMeasure μ] [IsUnifLocDoublingMeasure ν] :
+    IsUnifLocDoublingMeasure (μ.prod ν) := by
+  constructor
+  use doublingConstant μ * doublingConstant ν
+  filter_upwards [eventually_measure_le_doublingConstant_mul μ,
+    eventually_measure_le_doublingConstant_mul ν] with r hμr hνr x
+  rw [← closedBall_prod_same, prod_prod, ← closedBall_prod_same, prod_prod]
+  grw [hμr, hνr, ENNReal.coe_mul, mul_mul_mul_comm]
+
+instance IsUnifLocDoublingMeasure.volume_prod {X Y : Type*} [PseudoMetricSpace X] [MeasureSpace X]
+    [PseudoMetricSpace Y] [MeasureSpace Y] [SFinite (volume : Measure Y)]
+    [IsUnifLocDoublingMeasure (volume : Measure X)]
+    [IsUnifLocDoublingMeasure (volume : Measure Y)] :
+    IsUnifLocDoublingMeasure (volume : Measure (X × Y)) :=
+  .prod _ _
 
 theorem ae_measure_lt_top {s : Set (α × β)} (hs : MeasurableSet s) (h2s : (μ.prod ν) s ≠ ∞) :
     ∀ᵐ x ∂μ, ν (Prod.mk x ⁻¹' s) < ∞ := by
@@ -774,7 +800,7 @@ theorem dirac_prod (x : α) : (dirac x).prod ν = map (Prod.mk x) ν := by
     dirac_apply' _ hs, ← indicator_mul_left _ _ fun _ => sfiniteSeq ν i t, Pi.one_apply, one_mul]
 
 theorem dirac_prod_dirac {x : α} {y : β} : (dirac x).prod (dirac y) = dirac (x, y) := by
-  rw [prod_dirac, map_dirac measurable_prodMk_right]
+  rw [prod_dirac, map_dirac' measurable_prodMk_right]
 
 theorem prod_add (ν' : Measure β) [SFinite ν'] : μ.prod (ν + ν') = μ.prod ν + μ.prod ν' := by
   simp_rw [← sum_sfiniteSeq ν, ← sum_sfiniteSeq ν', sum_add_sum, ← sum_sfiniteSeq μ, prod_sum,

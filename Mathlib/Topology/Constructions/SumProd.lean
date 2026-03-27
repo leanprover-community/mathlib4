@@ -416,10 +416,10 @@ theorem prod_eq_generateFrom :
       generateFrom { g | ∃ (s : Set X) (t : Set Y), IsOpen s ∧ IsOpen t ∧ g = s ×ˢ t } :=
   le_antisymm (le_generateFrom fun _ ⟨_, _, hs, ht, g_eq⟩ => g_eq.symm ▸ hs.prod ht)
     (le_inf
-      (forall_mem_image.2 fun t ht =>
-        GenerateOpen.basic _ ⟨t, univ, by simpa [Set.prod_eq] using ht⟩)
-      (forall_mem_image.2 fun t ht =>
-        GenerateOpen.basic _ ⟨univ, t, by simpa [Set.prod_eq] using ht⟩))
+      (coinduced_le_iff_le_induced.mp fun U hU ↦
+        .basic _ ⟨U, univ, hU, isOpen_univ, prod_univ.symm⟩)
+      (coinduced_le_iff_le_induced.mp fun U hU ↦
+        .basic _ ⟨univ, U, isOpen_univ, hU, univ_prod.symm⟩))
 
 -- TODO: align with `mem_nhds_prod_iff'`
 theorem isOpen_prod_iff {s : Set (X × Y)} :
@@ -520,6 +520,17 @@ theorem frontier_univ_prod_eq (s : Set Y) :
     frontier ((univ : Set X) ×ˢ s) = univ ×ˢ frontier s := by
   simp [frontier_prod_eq]
 
+/-- The hypotheses on `f` are slightly weaker here compared to `mem_map_closure₂`. That
+lemma requires `f` to be jointly continuous, whereas here we only require continuity in each
+variable separately. -/
+theorem map_mem_closure₂' {f : X → Y → Z} {x : X} {y : Y} {s : Set X} {t : Set Y} {u : Set Z}
+    (hf₁ : ∀ x, Continuous (f x)) (hf₂ : ∀ y, Continuous (f · y))
+    (hx : x ∈ closure s) (hy : y ∈ closure t) (h : ∀ a ∈ s, ∀ b ∈ t, f a b ∈ u) :
+    f x y ∈ closure u := by
+  rw [← isClosed_closure.closure_eq]
+  apply map_mem_closure (hf₁ x) hy fun b hb ↦ ?_
+  apply map_mem_closure (hf₂ b) hx fun a ha ↦ h a ha b hb
+
 theorem map_mem_closure₂ {f : X → Y → Z} {x : X} {y : Y} {s : Set X} {t : Set Y} {u : Set Z}
     (hf : Continuous (uncurry f)) (hx : x ∈ closure s) (hy : y ∈ closure t)
     (h : ∀ a ∈ s, ∀ b ∈ t, f a b ∈ u) : f x y ∈ closure u :=
@@ -590,10 +601,14 @@ lemma isEmbedding_prodMkLeft (y : Y) : IsEmbedding (fun x : X ↦ (x, y)) :=
 lemma isEmbedding_prodMkRight (x : X) : IsEmbedding (Prod.mk x : Y → X × Y) :=
   .of_comp (.prodMk_right x) continuous_snd .id
 
-@[deprecated (since := "2025-06-12")] alias isEmbedding_prodMk := isEmbedding_prodMkRight
 theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
     (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
   ⟨.prodMap hf.1 hg.1, .prodMap hf.2 hg.2, .prodMap hf.3 hg.3⟩
+
+theorem TopologicalSpace.prod_mono {α β : Type*} {σ₁ σ₂ : TopologicalSpace α}
+    {τ₁ τ₂ : TopologicalSpace β} (hσ : σ₁ ≤ σ₂) (hτ : τ₁ ≤ τ₂) :
+    @instTopologicalSpaceProd α β σ₁ τ₁ ≤ @instTopologicalSpaceProd α β σ₂ τ₂ :=
+  le_inf (inf_le_left.trans <| induced_mono hσ) (inf_le_right.trans <| induced_mono hτ)
 
 -- Homeomorphisms between the various product: products of two homeomorphisms,
 -- as well as commutativity and associativity. See below for the analogous results for sums,

@@ -8,7 +8,6 @@ module
 public meta import Lean.Elab.PreDefinition.Basic
 public meta import Lean.Elab.Tactic.ElabTerm
 public meta import Lean.Meta.Tactic.Intro
-public meta import Batteries.Tactic.OpenPrivate
 public meta import Batteries.Lean.Expr
 public import Mathlib.Init
 

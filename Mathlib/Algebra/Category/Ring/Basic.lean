@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Algebra.Ring.PUnit
-public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!
 # Category instances for `Semiring`, `Ring`, `CommSemiring`, and `CommRing`.
@@ -37,13 +36,24 @@ structure SemiRingCat where
   carrier : Type u
   [semiring : Semiring carrier]
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `SemiRingCat.of R` being printed as `{ carrier := R, semiring := ... }` by
+`delabStructureInstance`. -/
+@[app_delab SemiRingCat.of]
+meta def SemiRingCat.delabOf : Delab := delabApp
+
+end Notation
+
 attribute [instance] SemiRingCat.semiring
 
 initialize_simps_projections SemiRingCat (-semiring)
 
 namespace SemiRingCat
 
-instance : CoeSort (SemiRingCat) (Type u) :=
+instance : CoeSort SemiRingCat (Type u) :=
   ⟨SemiRingCat.carrier⟩
 
 attribute [coe] SemiRingCat.carrier
@@ -164,6 +174,12 @@ instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
     { obj := fun R ↦ AddCommMonCat.of R
       map := fun f ↦ AddCommMonCat.ofHom f.hom.toAddMonoidHom }
 
+@[simp] lemma forget₂_monCat_map {R S : SemiRingCat} (f : R ⟶ S) (x) :
+    (forget₂ SemiRingCat MonCat).map f x = f x := rfl
+
+@[simp] lemma forget₂_addCommMonCat_map {R S : SemiRingCat} (f : R ⟶ S) (x) :
+    (forget₂ SemiRingCat AddCommMonCat).map f x = f x := rfl
+
 /-- Ring equivalences are isomorphisms in category of semirings -/
 @[simps]
 def _root_.RingEquiv.toSemiRingCatIso {R S : Type u} [Semiring R] [Semiring S] (e : R ≃+* S) :
@@ -189,13 +205,24 @@ structure RingCat where
   carrier : Type u
   [ring : Ring carrier]
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `RingCat.of R` being printed as `{ carrier := R, ring := ... }` by
+`delabStructureInstance`. -/
+@[app_delab RingCat.of]
+meta def RingCat.delabOf : Delab := delabApp
+
+end Notation
+
 attribute [instance] RingCat.ring
 
 initialize_simps_projections RingCat (-ring)
 
 namespace RingCat
 
-instance : CoeSort (RingCat) (Type u) :=
+instance : CoeSort RingCat (Type u) :=
   ⟨RingCat.carrier⟩
 
 attribute [coe] RingCat.carrier
@@ -315,6 +342,9 @@ instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat where
     { obj := fun R ↦ SemiRingCat.of R
       map := fun f ↦ SemiRingCat.ofHom f.hom }
 
+@[simp] lemma forget₂_map {R S : RingCat} (f : R ⟶ S) (x) :
+    (forget₂ RingCat SemiRingCat).map f x = f x := rfl
+
 /-- The forgetful functor from `RingCat` to `SemiRingCat` is fully faithful. -/
 def fullyFaithfulForget₂ToSemiRingCat :
     (forget₂ RingCat SemiRingCat).FullyFaithful where
@@ -352,6 +382,17 @@ structure CommSemiRingCat where
   /-- The underlying type. -/
   carrier : Type u
   [commSemiring : CommSemiring carrier]
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `CommSemiRingCat.of R` being printed as `{ carrier := R, commSemiring := ... }` by
+`delabStructureInstance`. -/
+@[app_delab CommSemiRingCat.of]
+meta def CommSemiRingCat.delabOf : Delab := delabApp
+
+end Notation
 
 attribute [instance] CommSemiRingCat.commSemiring
 
@@ -518,13 +559,24 @@ structure CommRingCat where
   carrier : Type u
   [commRing : CommRing carrier]
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `CommRingCat.of R` being printed as `{ carrier := R, commRing := ... }` by
+`delabStructureInstance`. -/
+@[app_delab CommRingCat.of]
+meta def CommRingCat.delabOf : Delab := delabApp
+
+end Notation
+
 attribute [instance] CommRingCat.commRing
 
 initialize_simps_projections CommRingCat (-commRing)
 
 namespace CommRingCat
 
-instance : CoeSort (CommRingCat) (Type u) :=
+instance : CoeSort CommRingCat (Type u) :=
   ⟨CommRingCat.carrier⟩
 
 attribute [coe] CommRingCat.carrier
@@ -664,7 +716,7 @@ instance hasForgetToAddCommMonCat : HasForget₂ CommRingCat CommSemiRingCat whe
     { obj := fun R ↦ CommSemiRingCat.of R
       map := fun f ↦ CommSemiRingCat.ofHom f.hom }
 
-@[simps]
+@[simps (nameStem := "commMon")]
 instance : HasForget₂ CommRingCat CommMonCat where
   forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
   forget_comp := rfl

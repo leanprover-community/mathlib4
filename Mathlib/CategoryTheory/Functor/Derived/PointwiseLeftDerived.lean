@@ -19,7 +19,7 @@ We show that if `F : C ⥤ H` inverts `W : MorphismProperty C`,
 then it has a pointwise left derived functor.
 
 Note: this file was obtained by dualizing the definitions in the file
-`Functor.Derived.PointwiseRightDerived`. These two files should be
+`Mathlib/CategoryTheory/Functor/Derived/PointwiseRightDerived.lean`. These two files should be
 kept in sync.
 
 -/
@@ -108,6 +108,7 @@ section
 
 variable {F L}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `L : C ⥤ D` is a localization functor for `W` and `e : F ≅ L ⋙ G` is an isomorphism,
 then `e.inv` makes `G` a pointwise right Kan extension of `F` along `L` at `L.obj Y`
 for any `Y : C`. -/

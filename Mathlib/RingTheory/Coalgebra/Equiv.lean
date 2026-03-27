@@ -10,8 +10,8 @@ public import Mathlib.RingTheory.Coalgebra.Hom
 /-!
 # Isomorphisms of `R`-coalgebras
 
-This file defines bundled isomorphisms of `R`-coalgebras. We simply mimic the early parts of
-`Mathlib/Algebra/Module/Equiv.lean`.
+This file defines bundled isomorphisms of `R`-coalgebras. We largely mirror the basic API of
+`Mathlib/Algebra/Module/Equiv/Defs.lean`.
 
 ## Main definitions
 
@@ -292,7 +292,8 @@ theorem coe_ofBijective : (CoalgEquiv.ofBijective hf : A → B) = f :=
   rfl
 
 end
-variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
+variable
+  [AddCommMonoid A] [Module R A] [Coalgebra R A]
   [AddCommMonoid B] [Module R B] [CoalgebraStruct R B]
 
 /-- Let `A` be an `R`-coalgebra and let `B` be an `R`-module with a `CoalgebraStruct`.

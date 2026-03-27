@@ -6,6 +6,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 module
 
 public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Logic.Nontrivial.Basic
 
 /-!
 # Matrices
@@ -29,7 +30,7 @@ The scope `Matrix` gives the following notation:
 
 * `ᵀ` for `Matrix.transpose`
 
-See `Mathlib/Data/Matrix/ConjTranspose.lean` for
+See `Mathlib/LinearAlgebra/Matrix/ConjTranspose.lean` for
 
 * `ᴴ` for `Matrix.conjTranspose`
 
@@ -145,40 +146,40 @@ instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
   inferInstanceAs <| Inhabited <| m → n → α
 
 instance add [Add α] : Add (Matrix m n α) :=
-  Pi.instAdd
+  fast_instance% Pi.instAdd
 
 instance addSemigroup [AddSemigroup α] : AddSemigroup (Matrix m n α) :=
-  Pi.addSemigroup
+  fast_instance% Pi.addSemigroup
 
 instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (Matrix m n α) :=
-  Pi.addCommSemigroup
+  fast_instance% Pi.addCommSemigroup
 
 instance zero [Zero α] : Zero (Matrix m n α) :=
-  Pi.instZero
+  fast_instance% Pi.instZero
 
 instance addZeroClass [AddZeroClass α] : AddZeroClass (Matrix m n α) :=
-  Pi.addZeroClass
+  fast_instance% Pi.addZeroClass
 
 instance addMonoid [AddMonoid α] : AddMonoid (Matrix m n α) :=
-  Pi.addMonoid
+  fast_instance% Pi.addMonoid
 
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (Matrix m n α) :=
-  Pi.addCommMonoid
+  fast_instance% Pi.addCommMonoid
 
 instance neg [Neg α] : Neg (Matrix m n α) :=
-  Pi.instNeg
+  fast_instance% Pi.instNeg
 
 instance sub [Sub α] : Sub (Matrix m n α) :=
-  Pi.instSub
+  fast_instance% Pi.instSub
 
 instance addGroup [AddGroup α] : AddGroup (Matrix m n α) :=
-  Pi.addGroup
+  fast_instance% Pi.addGroup
 
 instance addCommGroup [AddCommGroup α] : AddCommGroup (Matrix m n α) :=
-  Pi.addCommGroup
+  fast_instance% Pi.addCommGroup
 
 instance unique [Unique α] : Unique (Matrix m n α) :=
-  Pi.unique
+  fast_instance% Pi.unique
 
 instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
   inferInstanceAs <| Subsingleton <| m → n → α
@@ -187,7 +188,7 @@ instance nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix
   Function.nontrivial
 
 instance smul [SMul R α] : SMul R (Matrix m n α) :=
-  Pi.instSMul
+  fast_instance% Pi.instSMul
 
 instance smulCommClass [SMul R α] [SMul S α] [SMulCommClass R S α] :
     SMulCommClass R S (Matrix m n α) :=
@@ -202,14 +203,14 @@ instance isCentralScalar [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α]
   Pi.isCentralScalar
 
 instance mulAction [Monoid R] [MulAction R α] : MulAction R (Matrix m n α) :=
-  Pi.mulAction _
+  fast_instance% Pi.mulAction _
 
 instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
     DistribMulAction R (Matrix m n α) :=
-  Pi.distribMulAction _
+  fast_instance% Pi.distribMulAction _
 
 instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) :=
-  Pi.module _ _ _
+  fast_instance% Pi.module _ _ _
 
 section
 
@@ -232,6 +233,7 @@ theorem sub_apply [Sub α] (A B : Matrix m n α) (i : m) (j : n) :
 theorem neg_apply [Neg α] (A : Matrix m n α) (i : m) (j : n) :
     (-A) i j = -(A i j) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem dite_apply (P : Prop) [Decidable P]
     (A : P → Matrix m n α) (B : ¬P → Matrix m n α) (i : m) (j : n) :
     dite P A B i j = dite P (A · i j) (B · i j) := by

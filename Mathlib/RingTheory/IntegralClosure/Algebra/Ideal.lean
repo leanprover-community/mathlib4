@@ -19,11 +19,11 @@ public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
 ## Note
 We actually prove something stronger, namely that the `Xⁿ⁻ⁱ`-th coefficient lives in `Iⁿ`.
-This the definitition that `x` is integral over `I` in https://stacks.math.columbia.edu/tag/00H2.
+This is the definition that `x` is integral over `I` in https://stacks.math.columbia.edu/tag/00H2.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 
@@ -68,7 +68,7 @@ lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral
     rw [mul_pow, mul_left_comm, ← map_pow, coeff_C_mul, coeff_mul_X_pow', if_pos hi, mul_comm]
     simp [Subalgebra.algebraMap_def]
   · rw [hq]
-    simp [q, Nat.lt_succ_iff, apply_ite, coeff_mem_pow_of_mem_adjoin_C_mul_X (p.coeff _).2]
+    simp [q, apply_ite, coeff_mem_pow_of_mem_adjoin_C_mul_X (p.coeff _).2]
 
 lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_mem_map [Algebra.IsIntegral R S]
     {I : Ideal R} {x : S} (hx : x ∈ I.map (algebraMap R S)) :

@@ -151,7 +151,7 @@ instance : Inhabited (AlgCat R) :=
 lemma forget_obj {A : AlgCat.{v} R} : (forget (AlgCat.{v} R)).obj A = A := rfl
 
 lemma forget_map {A B : AlgCat.{v} R} (f : A ⟶ B) :
-    (forget (AlgCat.{v} R)).map f = f :=
+    (forget (AlgCat.{v} R)).map f = (f : _ → _) :=
   rfl
 
 instance {S : AlgCat.{v} R} : Ring ((forget (AlgCat R)).obj S) :=
@@ -180,20 +180,13 @@ lemma forget₂_module_map {X Y : AlgCat.{v} R} (f : X ⟶ Y) :
     (forget₂ (AlgCat.{v} R) (ModuleCat.{v} R)).map f = ModuleCat.ofHom f.hom.toLinearMap :=
   rfl
 
-variable {R} in
-/-- Forgetting to the underlying type and then building the bundled object returns the original
-algebra. -/
-@[deprecated Iso.refl (since := "2025-05-15")]
-def ofSelfIso (M : AlgCat.{v} R) : AlgCat.of R M ≅ M where
-  hom := 𝟙 M
-  inv := 𝟙 M
-
 /-- The "free algebra" functor, sending a type `S` to the free algebra on `S`. -/
 @[simps! obj map]
 def free : Type u ⥤ AlgCat.{u} R where
   obj S := of R (FreeAlgebra R S)
   map f := ofHom <| FreeAlgebra.lift _ <| FreeAlgebra.ι _ ∘ f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free/forget adjunction for `R`-algebras. -/
 def adj : free.{u} R ⊣ forget (AlgCat.{u} R) :=
   Adjunction.mkOfHomEquiv

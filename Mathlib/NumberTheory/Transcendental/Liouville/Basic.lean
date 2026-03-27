@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Calculus.MeanValue
 public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Topology.Algebra.Polynomial
+import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
 

@@ -27,7 +27,7 @@ It's proved in the above papers that
 
 - a left-Noetherian ring (not necessarily commutative) satisfies the `OrzechProperty`,
   which in particular includes the division ring case
-  (see `Mathlib/RingTheory/Noetherian.lean`);
+  (see `Mathlib/RingTheory/Noetherian/Orzech.lean`);
 - a commutative ring satisfies the `OrzechProperty`
   (see `Mathlib/RingTheory/FiniteType.lean`).
 

@@ -150,6 +150,7 @@ lemma completelyRegularSpace_iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     specialize hfsU i (by tauto_set)
     exists i
 
+set_option backward.isDefEq.respectTransparency false in
 lemma completelyRegularSpace_inf {X : Type*} {t₁ t₂ : TopologicalSpace X}
     (ht₁ : @CompletelyRegularSpace X t₁) (ht₂ : @CompletelyRegularSpace X t₂) :
     @CompletelyRegularSpace X (t₁ ⊓ t₂) := by

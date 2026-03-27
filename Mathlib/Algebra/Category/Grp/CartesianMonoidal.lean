@@ -114,15 +114,15 @@ namespace AddCommGrpCat
 
 /-- We choose `AddCommGrpCat.of (G × H)` as the product of `G` and `H` and
 `AddCommGrpCat.of PUnit` as the terminal object. -/
+@[instance_reducible]
 noncomputable def cartesianMonoidalCategory : CartesianMonoidalCategory AddCommGrpCat.{u} :=
   .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (AddCommGrpCat.of PUnit.{u + 1})).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
-@[deprecated (since := "2025-10-10")]
+-- This is deprecated, but still used as a `local instance` in
+-- Mathlib.Algebra.Category.Grp.LeftExactFunctor
+@[instance_reducible, deprecated (since := "2025-10-10")]
 alias cartesianMonoidalCategoryAddCommGrp := cartesianMonoidalCategory
-
-@[deprecated (since := "2025-05-15")]
-alias chosenFiniteProductsAddCommGrp := cartesianMonoidalCategory
 
 attribute [local instance] cartesianMonoidalCategory
 
