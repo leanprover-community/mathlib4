@@ -85,7 +85,8 @@ lemma cfcₙ_comp_re (f : ℝ → ℝ) (a : A)
     rw [cfcₙ_real_eq_complex, ← cfcₙ_re_id a, ← cfcₙ_comp' ..]
     simp
 
-lemma cfcₙ_comp_im (f : ℝ → ℝ) (a : A) (hf : ContinuousOn f (quasispectrum ℝ (ℑ a : A)) := by cfc_cont_tac)
+lemma cfcₙ_comp_im (f : ℝ → ℝ) (a : A)
+    (hf : ContinuousOn f (quasispectrum ℝ (ℑ a : A)) := by cfc_cont_tac)
     (hf0 : f 0 = 0 := by cfc_zero_tac) (ha : IsStarNormal a := by cfc_tac) :
     cfcₙ (fun x : ℂ ↦ f (im x)) a = cfcₙ f (ℑ a : A) := by
   have : ContinuousOn (fun x ↦ (f x.re) : ℂ → ℂ) ((im · : ℂ → ℂ) '' quasispectrum ℂ a) := by
