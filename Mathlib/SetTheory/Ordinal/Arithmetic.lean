@@ -1108,10 +1108,6 @@ theorem isSuccLimit_omega0 : IsSuccLimit ω := by
   obtain ⟨n, rfl⟩ := lt_omega0.1 h
   exact natCast_lt_omega0 (n + 1)
 
-@[simp]
-theorem isSuccPrelimit_omega0 : IsSuccPrelimit ω :=
-  isSuccLimit_omega0.isSuccPrelimit
-
 theorem omega0_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
   ⟨fun h n => (natCast_lt_omega0 _).le.trans h, fun H =>
     le_of_forall_lt fun a h => by
