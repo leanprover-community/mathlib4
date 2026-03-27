@@ -548,7 +548,6 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
   · refine ⟨⟨x, by simpa using hx 1⟩, hxp, top_le_iff.mp fun s _ ↦ ⟨_, ⟨1, rfl⟩, ?_⟩⟩
     simpa [Algebra.mem_bot] using hx s
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Pointwise in
 -- Subsumed by `ZariskisMainProperty.of_finiteType`.
 private lemma ZariskisMainProperty.of_algHom_mvPolynomial

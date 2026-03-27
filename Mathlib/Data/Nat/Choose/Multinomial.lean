@@ -212,8 +212,6 @@ variable {α : Type*}
 noncomputable def countPerms [DecidableEq α] (m : Multiset α) : ℕ :=
   m.toFinsupp.multinomial
 
-@[deprecated (since := "2025-03-13")] alias multinomial := countPerms
-
 theorem countPerms_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
     m.countPerms = m.card.choose (m.count a) * (m.filter (a ≠ ·)).countPerms := by
   dsimp only [countPerms]
@@ -225,13 +223,9 @@ theorem countPerms_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
     · rw [Function.update_of_ne h.symm, toFinsupp_apply]
     · rw [not_ne_iff.1 h, Function.update_self]
 
-@[deprecated (since := "2025-03-13")] alias multinomial_filter_ne := countPerms_filter_ne
-
 @[simp]
 theorem countPerms_zero [DecidableEq α] : countPerms (0 : Multiset α) = 1 := by
   simp [countPerms, Finsupp.multinomial]
-
-@[deprecated (since := "2025-03-13")] alias multinomial_zero := countPerms_zero
 
 end Multiset
 
@@ -383,8 +377,5 @@ theorem countPerms_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x 
       rw [Multiset.filter_eq_nil]
       exact fun j hj ↦ by simp [Multiset.mem_replicate.mp hj]
     · exact fun j hj h ↦ hx <| by simpa [h] using hj
-
-@[deprecated (since := "2025-03-13")] alias multinomial_coe_fill_of_notMemal_filter_ne :=
-  countPerms_coe_fill_of_notMem
 
 end Sym
