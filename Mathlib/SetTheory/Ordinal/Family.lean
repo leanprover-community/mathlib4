@@ -356,7 +356,7 @@ section bsup
 theorem iSup_eq_iSup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' → Prop) [IsWellOrder ι r]
     [IsWellOrder ι' r'] {o : Ordinal} (ho : type r = o) (ho' : type r' = o) (f : ∀ a < o, Ordinal) :
     iSup (familyOfBFamily' r ho f) = iSup (familyOfBFamily' r' ho' f) :=
-  iSup_eq_of_range_eq (by simp)
+  congrArg sSup (by simp)
 
 /-- The supremum of a family of ordinals indexed by the set of ordinals less than some
 `o : Ordinal.{u}`. This is a special case of `iSup` over the family provided by
