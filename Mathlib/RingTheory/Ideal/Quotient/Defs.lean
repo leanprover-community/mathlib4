@@ -60,8 +60,9 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
     rw [Submodule.quotientRel_def] at h₁ h₂ ⊢
     exact mul_sub_mul_mem I h₁ h₂
 
+set_option backward.inferInstanceAs.wrap.data false in
 instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
-  fast_instance% (inferInstance : Ring (Quotient.ringCon I).Quotient)
+  inferInstanceAs <| Ring (Quotient.ringCon I).Quotient
 
 instance semiring {R} [CommRing R] (I : Ideal R) : Semiring (R ⧸ I) := (ring I).toSemiring
 instance commSemiring {R} [CommRing R] (I : Ideal R) : CommSemiring (R ⧸ I) where
