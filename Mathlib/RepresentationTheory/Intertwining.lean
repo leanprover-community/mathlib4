@@ -5,7 +5,7 @@ Authors: Stepan Nesterov, Edison Xie
 -/
 module
 
-public import Mathlib.RepresentationTheory.Basic
+public import Mathlib.RepresentationTheory.Subrepresentation
 
 /-!
 # Intertwining maps
@@ -70,6 +70,13 @@ instance : LinearMapClass (IntertwiningMap ρ σ) A V W where
   map_add f := f.map_add
   map_smulₛₗ f := f.map_smul
 
+-- Despite the other bundled homs having the inverse direction as simp lemmas,
+-- we are actively moving away from these design decisions.
+-- See e.g. https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Concrete.20homomorphism.20type.20vs.20abstract.20class/with/492579416
+@[simp]
+lemma coe_eq_toLinearMap {f : IntertwiningMap ρ σ} :
+  SemilinearMapClass.semilinearMap f = f.toLinearMap := rfl
+
 @[simp] theorem coe_mk (f : V →ₗ[A] W) (h) : ⇑(⟨f, h⟩ : IntertwiningMap ρ σ) = f := rfl
 
 lemma toLinearMap_mk (f : V →ₗ[A] W) (h) :
@@ -112,6 +119,27 @@ instance : SMul ℕ (IntertwiningMap ρ σ) :=
 instance instAddCommMonoid : AddCommMonoid (IntertwiningMap ρ σ) :=
   fast_instance%
   DFunLike.coe_injective.addCommMonoid _ (coe_zero ρ σ) (coe_add ρ σ) (by intro f n; rw [coe_nsmul])
+
+/-- The range of an intertwining map from `V` to `W` as a subrepresentation of `W`. -/
+@[simps]
+def range (f : IntertwiningMap ρ σ) : Subrepresentation σ where
+  toSubmodule := LinearMap.range f.toLinearMap
+  apply_mem_toSubmodule g {w} := fun ⟨v, hv⟩ ↦ ⟨(ρ g) v, by
+    simp [f.isIntertwining, (f.toLinearMap_apply _ _ _).symm.trans hv]⟩
+
+@[simp]
+lemma mem_range (f : IntertwiningMap ρ σ) (w : W) :
+    w ∈ f.range ↔ ∃ v, f v = w := Iff.rfl
+
+/-- The kernel of an intertwining map from `V` to `W` as a subrepresentation of `V`. -/
+@[simps]
+def ker (f : IntertwiningMap ρ σ) : Subrepresentation ρ where
+  toSubmodule := LinearMap.ker f.toLinearMap
+  apply_mem_toSubmodule g := by simp +contextual [f.isIntertwining]
+
+@[simp]
+lemma mem_ker (f : IntertwiningMap ρ σ) (v : V) :
+    v ∈ f.ker ↔ f v = 0 := Iff.rfl
 
 lemma toLinearMap_sum {ι : Type*} (s : Finset ι) (f : ι → IntertwiningMap ρ σ) :
     (∑ i ∈ s, f i : IntertwiningMap ρ σ).toLinearMap = ∑ i ∈ s, (f i).toLinearMap := by

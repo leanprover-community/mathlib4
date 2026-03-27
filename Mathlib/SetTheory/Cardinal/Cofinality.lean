@@ -99,7 +99,7 @@ theorem cof_eq_one_iff : cof α = 1 ↔ ∃ x : α, IsTop x := by
   · apply le_antisymm
     · apply (cof_le (s := {t}) _).trans_eq (mk_singleton _)
       rwa [isCofinal_singleton_iff]
-    · rw [one_le_iff_ne_zero, cof_ne_zero_iff]
+    · rw [Cardinal.one_le_iff_ne_zero, cof_ne_zero_iff]
       use t
 
 @[simp]
@@ -115,7 +115,7 @@ theorem cof_ne_one [h : NoTopOrder α] : cof α ≠ 1 :=
   cof_ne_one_iff.2 h
 
 theorem cof_le_one_iff [Nonempty α] : cof α ≤ 1 ↔ ∃ x : α, IsTop x := by
-  rw [le_iff_lt_or_eq, Cardinal.lt_one_iff_zero, cof_eq_one_iff]
+  rw [le_iff_lt_or_eq, Cardinal.lt_one_iff, cof_eq_one_iff]
   simp
 
 theorem one_lt_cof_iff [Nonempty α] : 1 < cof α ↔ NoTopOrder α := by
