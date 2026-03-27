@@ -175,7 +175,7 @@ def topEquiv : (⊤ : Subring R) ≃+* R :=
   Subsemiring.topEquiv
 
 instance {R : Type*} [NonAssocRing R] [Fintype R] : Fintype (⊤ : Subring R) :=
-  (inferInstance : Fintype (⊤ : Set R))
+  inferInstanceAs <| Fintype (⊤ : Set R)
 
 theorem card_top (R) [NonAssocRing R] [Fintype R] : Fintype.card (⊤ : Subring R) = Fintype.card R :=
   Fintype.card_congr topEquiv.toEquiv
@@ -1034,30 +1034,30 @@ variable {α β : Type*}
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [SMul R α] (S : Subring R) : SMul S α :=
-  (inferInstance : SMul S.toSubsemiring α)
+  inferInstanceAs <| SMul S.toSubsemiring α
 
 theorem smul_def [SMul R α] {S : Subring R} (g : S) (m : α) : g • m = (g : R) • m :=
   rfl
 
 instance smulCommClass_left [SMul R β] [SMul α β] [SMulCommClass R α β] (S : Subring R) :
     SMulCommClass S α β :=
-  (inferInstance : SMulCommClass S.toSubsemiring α β)
+  inferInstanceAs <| SMulCommClass S.toSubsemiring α β
 
 instance smulCommClass_right [SMul α β] [SMul R β] [SMulCommClass α R β] (S : Subring R) :
     SMulCommClass α S β :=
-  (inferInstance : SMulCommClass α S.toSubsemiring β)
+  inferInstanceAs <| SMulCommClass α S.toSubsemiring β
 
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
 instance [SMul α β] [SMul R α] [SMul R β] [IsScalarTower R α β] (S : Subring R) :
     IsScalarTower S α β :=
-  (inferInstance : IsScalarTower S.toSubsemiring α β)
+  inferInstanceAs <| IsScalarTower S.toSubsemiring α β
 
 instance [SMul R α] [FaithfulSMul R α] (S : Subring R) : FaithfulSMul S α :=
-  (inferInstance : FaithfulSMul S.toSubsemiring α)
+  inferInstanceAs <| FaithfulSMul S.toSubsemiring α
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance {R} [Ring R] [MulAction R α] (S : Subring R) : MulAction S α :=
-  (inferInstance : MulAction S.toSubsemiring α)
+  inferInstanceAs <| MulAction S.toSubsemiring α
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance {R} [Ring R] [AddMonoid α] [DistribMulAction R α] (S : Subring R) :
@@ -1069,15 +1069,15 @@ instance {R} [Ring R] [Monoid α] [MulDistribMulAction R α] (S : Subring R) :
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [Zero α] [SMulWithZero R α] (S : Subring R) : SMulWithZero S α :=
-  (inferInstance : SMulWithZero S.toSubsemiring α)
+  inferInstanceAs <| SMulWithZero S.toSubsemiring α
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance {R} [Ring R] [Zero α] [MulActionWithZero R α] (S : Subring R) : MulActionWithZero S α :=
-  (inferInstance : MulActionWithZero S.toSubsemiring α)
+  inferInstanceAs <| MulActionWithZero S.toSubsemiring α
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance {R} [Ring R] [AddCommMonoid α] [Module R α] (S : Subring R) : Module S α :=
-  (inferInstance : Module S.toSubsemiring α)
+  inferInstanceAs <| Module S.toSubsemiring α
 
 /-- The action by a subsemiring is the action by the underlying ring. -/
 instance {R} [Ring R] [Semiring α] [MulSemiringAction R α] (S : Subring R) :
@@ -1094,12 +1094,12 @@ instance center.smulCommClass_right {R} [Ring R] : SMulCommClass R (center R) R 
 /-- The center of a semiring acts commutatively on any `R`-module -/
 instance {R M : Type*} [Ring R] [MulAction R M] :
     SMulCommClass R (Subring.center R) M :=
-  (inferInstance : SMulCommClass R (Submonoid.center R) M)
+  inferInstanceAs <| SMulCommClass R (Submonoid.center R) M
 
 /-- The center of a semiring acts commutatively on any `R`-module -/
 instance {R M : Type*} [Ring R] [MulAction R M] :
     SMulCommClass (Subring.center R) R M :=
-  (inferInstance : SMulCommClass (Submonoid.center R) R M)
+  inferInstanceAs <| SMulCommClass (Submonoid.center R) R M
 
 end Subring
 

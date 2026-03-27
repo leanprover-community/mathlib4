@@ -68,7 +68,7 @@ instance : (quotient V c).EssSurj := Quotient.essSurj_functor _
 instance : (quotient V c).Additive where
 
 instance : Preadditive (CategoryTheory.Quotient (homotopic V c)) :=
-  (inferInstance : Preadditive (HomotopyCategory V c))
+  inferInstanceAs <| Preadditive (HomotopyCategory V c)
 
 instance : Functor.Additive (Quotient.functor (homotopic V c)) where
 
