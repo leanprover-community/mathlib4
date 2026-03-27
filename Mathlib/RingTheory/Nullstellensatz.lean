@@ -95,7 +95,7 @@ theorem le_zeroLocus_iff_le_vanishingIdeal {V : Set (σ → K)} {I : Ideal (MvPo
 theorem zeroLocus_span (S : Set (MvPolynomial σ k)) :
     zeroLocus K (Ideal.span S) = { x | ∀ p ∈ S, aeval x p = 0 } :=
   eq_of_forall_le_iff fun _ => le_zeroLocus_iff_le_vanishingIdeal.trans <|
-    Ideal.span_le.trans forall₂_swap
+    Ideal.span_le.trans forall₂_comm
 
 theorem mem_vanishingIdeal_singleton_iff (x : σ → K) (p : MvPolynomial σ k) :
     p ∈ (vanishingIdeal k {x} : Ideal (MvPolynomial σ k)) ↔ aeval x p = 0 :=
@@ -167,7 +167,6 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton {I : Ideal (MvPolynomial σ K)
   ⟨eq_vanishingIdeal_singleton_of_isMaximal K,
     fun ⟨_, hx⟩ => hx ▸ inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Main statement of the Nullstellensatz -/
 @[simp]
 theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal (MvPolynomial σ k)) :

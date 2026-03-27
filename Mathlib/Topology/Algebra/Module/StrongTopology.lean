@@ -87,7 +87,7 @@ namespace UniformConvergenceCLM
 
 instance instFunLike [TopologicalSpace F] (𝔖 : Set (Set E)) :
     FunLike (UniformConvergenceCLM σ F 𝔖) E F :=
-  ContinuousLinearMap.funLike
+  inferInstanceAs <| FunLike (E →SL[σ] F) E F
 
 @[ext]
 theorem ext [TopologicalSpace F] {𝔖 : Set (Set E)} {f g : UniformConvergenceCLM σ F 𝔖}
@@ -96,7 +96,7 @@ theorem ext [TopologicalSpace F] {𝔖 : Set (Set E)} {f g : UniformConvergenceC
 
 instance instContinuousSemilinearMapClass [TopologicalSpace F] (𝔖 : Set (Set E)) :
     ContinuousSemilinearMapClass (UniformConvergenceCLM σ F 𝔖) σ E F :=
-  ContinuousLinearMap.continuousSemilinearMapClass
+  inferInstanceAs <| ContinuousSemilinearMapClass (E →SL[σ] F) σ E F
 
 instance instTopologicalSpace [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     TopologicalSpace (UniformConvergenceCLM σ F 𝔖) :=
@@ -145,7 +145,8 @@ theorem isEmbedding_coeFn [UniformSpace F] [IsUniformAddGroup F] (𝔖 : Set (Se
   IsUniformEmbedding.isEmbedding (isUniformEmbedding_coeFn _ _ _)
 
 instance instAddCommGroup [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
-    AddCommGroup (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.addCommGroup
+    AddCommGroup (UniformConvergenceCLM σ F 𝔖) :=
+  inferInstanceAs <| AddCommGroup (E →SL[σ] F)
 
 @[simp]
 theorem neg_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
@@ -203,7 +204,8 @@ theorem t2Space [TopologicalSpace F] [IsTopologicalAddGroup F] [T2Space F]
 
 instance instDistribMulAction (M : Type*) [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
-    DistribMulAction M (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.distribMulAction
+    DistribMulAction M (UniformConvergenceCLM σ F 𝔖) :=
+  inferInstanceAs <| DistribMulAction M (E →SL[σ] F)
 
 @[simp]
 theorem smul_apply {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
@@ -214,7 +216,8 @@ theorem smul_apply {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 
 
 instance instModule (R : Type*) [Semiring R] [Module R F] [SMulCommClass 𝕜₂ R F]
     [TopologicalSpace F] [ContinuousConstSMul R F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
-    Module R (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.module
+    Module R (UniformConvergenceCLM σ F 𝔖) :=
+  inferInstanceAs <| Module R (E →SL[σ] F)
 
 theorem continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
     [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] (𝔖 : Set (Set E))
@@ -446,7 +449,7 @@ variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField �
 the operator norm when `E` and `F` are normed spaces. -/
 instance topologicalSpace [TopologicalSpace F] [IsTopologicalAddGroup F] :
     TopologicalSpace (E →SL[σ] F) :=
-  UniformConvergenceCLM.instTopologicalSpace σ F { S | IsVonNBounded 𝕜₁ S }
+  fast_instance% UniformConvergenceCLM.instTopologicalSpace σ F { S | IsVonNBounded 𝕜₁ S }
 
 instance topologicalAddGroup [TopologicalSpace F] [IsTopologicalAddGroup F] :
     IsTopologicalAddGroup (E →SL[σ] F) :=
@@ -457,7 +460,7 @@ instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ] [Topologica
   UniformConvergenceCLM.continuousSMul σ F { S | IsVonNBounded 𝕜₁ S } fun _ hs => hs
 
 instance uniformSpace [UniformSpace F] [IsUniformAddGroup F] : UniformSpace (E →SL[σ] F) :=
-  UniformConvergenceCLM.instUniformSpace σ F { S | IsVonNBounded 𝕜₁ S }
+  fast_instance% UniformConvergenceCLM.instUniformSpace σ F { S | IsVonNBounded 𝕜₁ S }
 
 instance isUniformAddGroup [UniformSpace F] [IsUniformAddGroup F] :
     IsUniformAddGroup (E →SL[σ] F) :=
