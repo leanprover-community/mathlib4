@@ -109,7 +109,6 @@ theorem stabilizerMapOfLiesOver_surjective [IsFractionRing A F] [IsFractionRing 
     apply FaithfulSMul.algebraMap_injective F L
     simp [restrictNormalHom]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem stabilizerMapOfLiesOver_ker (E : IntermediateField K L) [Normal K E]
     [Algebra A E] [MulSemiringAction Gal(E/K) A] [SMulDistribClass Gal(E/K) A E]
     [IsScalarTower A E L] :
@@ -134,7 +133,6 @@ noncomputable def inertiaMapOfLiesOver :
 
 attribute [instance] Ideal.Quotient.field
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inertiaMapOfLiesOver_surjective {R : Type*} [CommRing R] [IsIntegrallyClosed R]
     [Algebra R K] [Algebra R B] [Algebra R L] [Algebra R A] [Algebra.IsIntegral R B]
     [IsFractionRing R K] [IsScalarTower R A B] [IsFractionRing A F] [IsFractionRing B L]
@@ -188,7 +186,6 @@ theorem inertiaMapOfLiesOver_surjective {R : Type*} [CommRing R] [IsIntegrallyCl
     apply FaithfulSMul.algebraMap_injective F L
     simp [restrictNormalHom]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inertiaMapOfLiesOver_ker (E : IntermediateField K L) [Normal K E] [Algebra A E]
     [MulSemiringAction Gal(E/K) A] [SMulDistribClass Gal(E/K) A E] [IsScalarTower A E L] :
     (Ideal.inertiaMapOfLiesOver K L E P p).ker =
