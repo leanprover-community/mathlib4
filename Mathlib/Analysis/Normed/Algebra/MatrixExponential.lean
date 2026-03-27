@@ -171,8 +171,8 @@ end Normed
 
 section NormedComm
 
-theorem isClosed_setOf_blockTriangular {α : Type*} {b : m → α} [LinearOrder α] [NormedCommRing 𝔸] :
-    IsClosed {M : Matrix m m 𝔸 | M.BlockTriangular b} := by
+theorem isClosed_setOf_blockTriangular {α : Type*} {b : m → α} [LinearOrder α] [Zero 𝔸]
+    [TopologicalSpace 𝔸] [T2Space 𝔸] : IsClosed {M : Matrix m m 𝔸 | M.BlockTriangular b} := by
   simp only [BlockTriangular, Set.setOf_forall]
   apply isClosed_iInter; intro i
   apply isClosed_iInter; intro j
@@ -212,7 +212,7 @@ theorem BlockTriangular.exp {α : Type*} {M : Matrix m m 𝔸} {b : m → α} [L
     (hM : BlockTriangular M b) : (NormedSpace.exp M).BlockTriangular b := by
   have : IsClosed (↑(blockTriangularSubsemiring (R := 𝔸) b) : Set (Matrix m m 𝔸)) :=
     isClosed_setOf_blockTriangular
-  rw [exp_eq_tsum ℚ]
+  rw [exp_eq_tsum_rat]
   apply tsum_mem this
   intro i j k h
   rw [smul_apply, (hM.pow i) h, smul_zero]

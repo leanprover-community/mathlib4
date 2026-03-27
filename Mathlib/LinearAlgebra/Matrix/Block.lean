@@ -196,18 +196,20 @@ def blockTriangularSubsemiring [DecidableEq m] [Fintype m] [Semiring R] :
   one_mem' := blockTriangular_one
   mul_mem' := .mul
   add_mem' := .add
+theorem blockTriangular_algebraMap {A : Type*} [CommSemiring A] [Semiring R] [Algebra A R]
+    [DecidableEq m] [Fintype m] (r : A) : (algebraMap A (Matrix m m R) r).BlockTriangular b := by
+  intro i j h
+  rw [algebraMap_matrix_apply, ite_eq_right_iff]
+  intro hij
+  rw [hij] at h
+  simp only [lt_self_iff_false] at h
 
 variable (b) in
 /-- `BlockTriangular` matrices form a subalgebra. -/
 def blockTriangularSubalgebra {A : Type*} [CommSemiring A] [Semiring R] [Algebra A R]
     [DecidableEq m] [Fintype m] : Subalgebra A (Matrix m m R) :=
   { blockTriangularSubsemiring b with
-    algebraMap_mem' _ := by
-      intro i j h
-      rw [algebraMap_matrix_apply, ite_eq_right_iff]
-      intro hij
-      rw [hij] at h
-      simp only [lt_self_iff_false] at h
+    algebraMap_mem' r := blockTriangular_algebraMap r
   }
 
 theorem BlockTriangular.pow [DecidableEq m] [Fintype m] [Semiring R] (hM : BlockTriangular M b)
