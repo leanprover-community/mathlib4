@@ -564,7 +564,7 @@ lemma tensorObjProdIso_inv_whiskerLeft {X Y Z : C} (f : X ⟶ Z) :
     (tensorObjProdIso _ _).inv ≫ (Y ◁ f) = prod.map (𝟙 Y) f ≫ (tensorObjProdIso _ _).inv := by
   ext <;> simp
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma tensorObjProdIso_hom_braiding_hom [BraidedCategory C] {X Y : C} :
     (tensorObjProdIso X Y).hom ≫ (prod.braiding _ _).hom =
       (β_ X Y).hom ≫ (tensorObjProdIso Y X).hom := by
@@ -1083,3 +1083,4 @@ instance IsMonoidal.of_cartesianMonoidalCategory (α : F ⟶ G) : IsMonoidal α 
 end NatTrans
 
 end CategoryTheory
+#lint
