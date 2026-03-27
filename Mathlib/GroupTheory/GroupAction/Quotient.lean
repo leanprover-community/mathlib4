@@ -193,7 +193,7 @@ theorem orbitEquivQuotientStabilizer_symm_apply (b : β) (a : α) :
 theorem stabilizer_quotient {G} [Group G] (H : Subgroup G) :
     MulAction.stabilizer G ((1 : G) : G ⧸ H) = H := by
   ext
-  simp [QuotientGroup.eq]
+  simp [-mk_one, QuotientGroup.eq]
 
 variable (β)
 

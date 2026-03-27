@@ -69,8 +69,11 @@ protected def con : Con G where
         simp only [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
 
 @[to_additive]
+instance : One (G ⧸ N) := ⟨⟦1⟧⟩
+
+@[to_additive]
 instance Quotient.group : Group (G ⧸ N) :=
-  (QuotientGroup.con N).group
+  inferInstanceAs <| Group (QuotientGroup.con N).Quotient
 
 /--
 The congruence relation defined by the kernel of a group homomorphism is equal to its kernel
@@ -150,12 +153,12 @@ theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
 -- for commutative groups we don't need normality assumption
 
 @[to_additive]
-instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGroup (G ⧸ N) :=
-  { toGroup := have := N.normal_of_comm; QuotientGroup.Quotient.group N
-    mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mk (mul_comm a b) }
+instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGroup (G ⧸ N) where
+  mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mk (mul_comm a b)
 
 local notation " Q" => G ⧸ N
 
+omit [nN : N.Normal] in
 @[to_additive (attr := simp)]
 theorem mk_one : ((1 : G) : Q) = 1 :=
   rfl
