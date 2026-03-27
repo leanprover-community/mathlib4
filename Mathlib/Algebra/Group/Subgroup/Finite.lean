@@ -164,6 +164,11 @@ theorem card_subtype (K : Subgroup G) (L : Subgroup K) :
     Nat.card (map K.subtype L) = Nat.card L :=
   card_map_of_injective K.subtype_injective
 
+@[to_additive]
+theorem card_mapSubgroup {G' : Type*} [Group G'] (e : G ≃* G') :
+    Nat.card (e.mapSubgroup H) = Nat.card H :=
+  Subgroup.card_map_of_injective e.injective
+
 end Subgroup
 
 namespace Subgroup
