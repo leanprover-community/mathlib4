@@ -347,9 +347,7 @@ lemma mem_horiz_iff_exists [FiniteDimensional 𝕜 E]
            hcov.mem_horiz_iff_exists]
   constructor
   · rintro ⟨s, sdiff, sval, mfderivs, covs⟩
-    use t.funToSec s, ?_, ?_, ?_
-    · rw [ContinuousLinearMap.coe_coe] at covs
-      simp [t.pushCovDer_funToSec cov, ← hTvtw, covs, t.symm_map_zero 𝕜]
+    use t.funToSec s, ?_, ?_, ?_, ?_
     · exact t.mdifferentiableAt_funToSec hvproj sdiff
     · simp [sval, hvproj]
     · -- TODO needs a lot of cleanup here
@@ -364,6 +362,8 @@ lemma mem_horiz_iff_exists [FiniteDimensional 𝕜 E]
       have : (((Trivialization.deriv I t v) w).1, (Tvt w).2) = Tvt w := rfl
       erw [this, Tvt_def, t.funToSec_proj_eq hvproj sval]
       exact t.derivInv_deriv_apply hvproj w
+    · rw [ContinuousLinearMap.coe_coe] at covs
+      simp [t.pushCovDer_funToSec cov, ← hTvtw, covs, t.symm_map_zero 𝕜]
   · rintro ⟨σ, σdiff, σval, mfderivσ, covσ⟩
     use t.secToFun σ, ?_, ?_, ?_
     · rw [t.pushCovDer_secToFun cov.isCovariantDerivativeOn σdiff]

@@ -179,9 +179,27 @@ lemma CovariantDerivative.lift_vec_eq [FiniteDimensional 𝕜 E] {v : TotalSpace
     have hcov := cov.isCovariantDerivativeOn_pushCovDer e
     have := hcov.lift_vec_mem_horiz v.proj (e v).2 u
     rw [hcov.mem_horiz_iff_exists] at this
+    have proj_lift : (hcov.lift_vec v.proj (e v).2 u).1 = u := by simp
     rcases this with ⟨s, sdiff, sval, mfderivs, covs⟩
-    use e.funToSec s
-    sorry
+    -- TODO: cleanup the proof below and see how to factor stuff in
+    -- `CovariantDerivative.mem_horiz_iff_exists`
+    use e.funToSec s, ?_, ?_, ?_, ?_
+    · exact e.mdifferentiableAt_funToSec hv sdiff
+    · simp [sval, hv]
+    · rw [e.mfderiv_total_funToSec sdiff hv]
+      simp only [TotalSpace.proj_mk', ContinuousLinearMap.coe_comp', Function.comp_apply,
+                 ContinuousLinearMap.prod_apply, ContinuousLinearMap.coe_id', id_eq]
+      congr 2
+      · simp [e.funToSec_proj_eq hv sval]
+      · simp [e.mfderiv_proj_fst_deriv, hv]
+      · simp only [hv, e.mfderiv_proj_derivInv_apply, ContinuousLinearMap.coe_neg,
+                   LinearMap.neg_apply, ContinuousLinearMap.coe_coe]
+        rw [proj_lift] at mfderivs ⊢
+        erw [mfderivs]
+        simp
+    · rw [proj_lift] at covs
+      simp [e.pushCovDer_funToSec cov, e.mfderiv_proj_fst_deriv hv, e.deriv_derivInv_apply hv, covs,
+            e.symm_map_zero 𝕜]
   · simp [hv]
 
 -- noncomputable
