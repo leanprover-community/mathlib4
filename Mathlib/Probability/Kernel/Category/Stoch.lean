@@ -38,18 +38,10 @@ universe u
 abbrev StochHom : MorphismProperty SFinKer := fun _ _ κ => IsMarkovKernel κ.1
 
 instance : StochHom.IsStableUnderBraiding where
-  whiskerLeft X Y Z κ hκ := by
-    dsimp [MonoidalCategory.whiskerLeft, StochHom]
-    infer_instance
-  whiskerRight κ hκ Y := by
-    dsimp [MonoidalCategory.whiskerRight, StochHom]
-    infer_instance
-  id_mem X := by
-    dsimp [CategoryStruct.id]
-    infer_instance
-  comp_mem κ η hκ hη := by
-    dsimp [CategoryStruct.comp]
-    infer_instance
+  id_mem X := by dsimp [StochHom]; infer_instance
+  comp_mem κ η hκ hη := by dsimp [StochHom]; infer_instance
+  whiskerLeft X Y Z κ hκ := by dsimp [StochHom]; infer_instance
+  whiskerRight κ hκ Y := by dsimp [StochHom]; infer_instance
   associator_hom_mem X Y Z := Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
   associator_inv_mem X Y Z := Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
   leftUnitor_hom_mem X := Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
