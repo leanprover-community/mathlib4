@@ -132,12 +132,12 @@ lemma μ_apply_apply (l1 : X.V →₀ k) (l2 : Y.V →₀ k) (xy : (X ⊗ Y).V) 
 lemma μ_comp_rTensor (f : X ⟶ Y) (Z : Action (Type w) G) :
     (μ Y Z).comp (rTensor (linearize k G Z) (linearizeMap f)) =
       (linearizeMap (f ▷ Z)).comp (μ X Z) := by
-  ext; simp [linearizeMap_single _]; rfl
+  ext; simp [linearizeMap_single _]
 
 lemma μ_comp_lTensor (f : X ⟶ Y) (Z : Action (Type w) G) :
     (μ Z Y).comp ((linearizeMap f).lTensor (linearize k G Z)) =
       (linearizeMap (Z ◁ f)).comp (μ Z X) := by
-  ext : 6; simp [linearizeMap_single _]; rfl
+  ext : 6; simp [linearizeMap_single _]
 
 variable (X Y Z) in
 lemma μ_comp_assoc : ((linearizeMap (α_ X Y Z).hom).comp
@@ -171,7 +171,7 @@ lemma μ_rightUnitor : (rid k (linearize k G X)).toIntertwiningMap =
     ((linearizeMap (ρ_ X).hom).comp (μ X (𝟙_ (Action (Type w) G)))).comp ((ε k G).lTensor
     (linearize k G X)) := by
   ext x; simp [types_tensorObj_def, types_tensorUnit_def, Action.tensorObj_V, linearizeMap,
-    Action.rightUnitor_hom_hom]; rfl
+    Action.rightUnitor_hom_hom]
 
 variable (X Y) in
 /-- The comultiplication of the linearize functor. -/
@@ -193,13 +193,12 @@ lemma rTensor_comp_δ (f : X ⟶ Y) :
       (δ Y Z).comp (linearizeMap (f ▷ Z)) := by
   ext
   simp [linearizeMap_single _, δ_apply_single _]
-  rfl
 
 variable (Z) in
 lemma lTensor_comp_δ (f : X ⟶ Y) :
     ((linearizeMap f).lTensor (linearize k G Z)).comp (δ Z X) =
       (δ Z Y).comp (linearizeMap (Z ◁ f)) := by
-  ext; simp [linearizeMap_single _, δ_apply_single _]; rfl
+  ext; simp [linearizeMap_single _, δ_apply_single _]
 
 variable (X Y Z) in
 lemma assoc_comp_δ : ((assoc (linearize k G X) (linearize k G Y)
@@ -209,7 +208,6 @@ lemma assoc_comp_δ : ((assoc (linearize k G X) (linearize k G Y)
   ext
   -- TODO : try not to `simp` with `δ` and `linearizeMap` directly here
   simp [linearizeMap, δ, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul k]
-  rfl
 
 lemma leftUnitor_δ (X : Action (Type u) G) : (lid k (linearize k G X)).symm.toIntertwiningMap =
     (((η k G).rTensor (linearize k G X) ).comp (δ (𝟙_ (Action (Type u) G)) X)).comp
@@ -217,13 +215,12 @@ lemma leftUnitor_δ (X : Action (Type u) G) : (lid k (linearize k G X)).symm.toI
   ext
   -- TODO : try not to `simp` with `δ` and `linearizeMap` directly here
   simp [linearizeMap, δ, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
-  rfl
 
 unif_hint (X : Action (Type u) G) where ⊢ (X ⊗ 𝟙_ (Action (Type u) G)).V ≟ X.V × PUnit in
 lemma rightUnitor_δ (X : Action (Type u) G) : (rid k (linearize k G X)).symm.toIntertwiningMap =
     (((η k G).lTensor (linearize k G X)).comp (δ X (𝟙_ (Action (Type u) G)))).comp
       (linearizeMap (ρ_ X).inv) := by
-  ext; simp [linearizeMap_single _, δ_apply_single _]; rfl
+  ext; simp [linearizeMap_single _, δ_apply_single _]
 
 variable (X Y) in
 lemma μ_δ : (μ X Y).comp (δ (k := k) X Y) = .id _ := by

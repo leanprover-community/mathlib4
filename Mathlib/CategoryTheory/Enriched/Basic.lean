@@ -164,6 +164,7 @@ def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Typ
   comp_id f := ConcreteCategory.congr_hom (e_comp_id (Type v) _ _) f
   assoc f g h := ConcreteCategory.congr_hom (e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩
 
+attribute [local simp] types_tensorObj_def in
 set_option backward.isDefEq.respectTransparency false in
 /-- Construct a `Type v`-enriched category from an honest category.
 -/

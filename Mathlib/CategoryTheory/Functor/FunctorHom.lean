@@ -200,7 +200,7 @@ lemma associator_hom_apply (K L M N : C ⥤ D) {X : C}
     ⟨x.1.1, x.1.2, x.2⟩ := rfl
 
 set_option backward.isDefEq.respectTransparency false in
-attribute [local simp] functorHom in
+attribute [local simp] functorHom types_tensorObj_def in
 instance : EnrichedCategory (C ⥤ Type (max v' v u)) (C ⥤ D) where
   Hom := functorHom
   id F := natTransEquiv.symm (𝟙 F)

@@ -373,6 +373,7 @@ private lemma _root_.Representation.linearizeMap_single_diagonal (m : ℕ) (g : 
 
 unif_hint (X : Type*) where ⊢ Action.V (Action.trivial G X) ≟ X in
 unif_hint where ⊢ (HomologicalComplex.X (standardComplex k G) n).V ≟ ((Fin (n + 1) → G) →₀ k) in
+attribute [local simp] types_tensorObj_def types_tensorUnit_def in
 set_option backward.isDefEq.respectTransparency false in
 lemma d_comp_diagonalSuccIsoFree_inv_eq :
     d k G n ≫ (diagonalSuccIsoFree k G n).inv =

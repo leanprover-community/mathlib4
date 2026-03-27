@@ -50,6 +50,7 @@ def rightAdj : (C ⥤ Type (max w v u)) ⥤ C ⥤ Type (max w v u) where
       aesop  }}
 
 set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] types_tensorObj_def in
 /-- The adjunction `tensorLeft F ⊣ rightAdj F`. -/
 def adj : tensorLeft F ⊣ rightAdj F where
   unit := {

@@ -115,6 +115,7 @@ def compFunctor {J : Type*} [LinearOrder J]
   map f := ⟨⟨⟨Set.union_subset_union f.1.1.1.1 f.2.1.1.1⟩⟩⟩
 
 attribute [local ext (iff := false)] Functor.ext in
+attribute [local simp] types_tensorObj_def in
 @[simps] -- consider making these lemmas `-isSimp` and just local `simp` in this file
 instance (J : Type*) [LinearOrder J] :
     SimplicialCategory (SimplicialThickening J) where
@@ -136,6 +137,7 @@ def functorMap {J K : Type u} [LinearOrder J] [LinearOrder K]
 
 attribute [local simp] nerveMap_app
 
+attribute [local simp] types_tensorObj_def in
 /--
 The simplicial thickening defines a functor from the category of linear orders to the category of
 simplicial categories

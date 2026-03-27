@@ -74,6 +74,7 @@ noncomputable def inverse : (C ⥤ₗ Type v) ⥤ (C ⥤ₗ AddCommGrpCat.{v}) :
 open scoped MonObj
 
 set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] types_tensorObj_def types_tensorUnit_def in
 attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
 /-- Implementation, see `leftExactFunctorForgetEquivalence`.
 This is the complicated bit, where we show that forgetting the group structure in the image of
@@ -95,10 +96,10 @@ noncomputable def unitIsoAux (F : C ⥤ AddCommGrpCat.{v}) [PreservesFiniteLimit
     Category.assoc, ← Functor.map_comp, Preadditive.comp_add, Functor.Monoidal.μ_fst,
     Functor.Monoidal.μ_snd]
   ext
-  simp only [TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply, ConcreteCategory.hom_ofHom,
-    TypeCat.Fun.mk_apply, Preadditive.commGrpEquivalence_functor_obj_X, Functor.comp_obj, hom_add,
-    tensor_apply, AddMonoidHom.add_apply]
-  rw [μ_forget_apply]
+  simp only [TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply, Equiv.toIso_hom_hom_apply,
+    Preadditive.commGrpEquivalence_functor_obj_X, Functor.comp_obj, types_tensorObj_def, hom_add,
+    tensor_apply, TypeCat.hom_ofHom, TypeCat.Fun.mk_apply, AddMonoidHom.add_apply]
+  rw [dsimp% μ_forget_apply]
   rfl
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
