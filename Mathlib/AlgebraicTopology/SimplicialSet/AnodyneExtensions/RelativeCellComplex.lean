@@ -33,6 +33,14 @@ lemma stdSimplex.map_objEquiv_op_apply
     X.map (stdSimplex.objEquiv y).op x = (yonedaEquiv.symm x).app m y :=
   rfl
 
+lemma Subcomplex.existsN {X : SSet.{u}} {n : ℕ} (s : X _⦋n⦌) {A : X.Subcomplex}
+    (hs : s ∉ A.obj _) :
+    ∃ (x : A.N) (f : ⦋n⦌ ⟶ ⦋x.dim⦌), Epi f ∧ X.map f.op x.simplex = s := by
+  refine ⟨⟨(S.mk s).toN, fun h ↦ hs ?_⟩, ?_⟩
+  · simp only [← ofSimplex_le_iff] at h ⊢
+    simpa using h
+  · sorry
+
 end SSet
 
 namespace SSet.Subcomplex.Pairing
