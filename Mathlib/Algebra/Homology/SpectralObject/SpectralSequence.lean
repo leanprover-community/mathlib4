@@ -599,7 +599,7 @@ lemma spectralSequence_iso (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1
     (X.spectralSequence data).iso r r' pq' =
     ((X.spectralSequence data).page r).homologyIsoSc' pq pq' pq'' hpq hpq' ≪≫
       (X.spectralSequenceHomologyData data r r' hrr' hr pq pq' pq'' hpq hpq'
-      i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁' hn₁ hn₂).left.homologyIso ≪≫
+      i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁').left.homologyIso ≪≫
         (X.spectralSequencePageXIso data r' (by lia) _ _ _ _ _
           hi₀' hi₁ hi₂ hi₃' _ _ _ hn₁' hn₁ hn₂).symm := by
   obtain rfl : n₀ = n₁ - 1 := by lia
