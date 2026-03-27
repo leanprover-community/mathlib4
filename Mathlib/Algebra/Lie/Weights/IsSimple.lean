@@ -615,13 +615,12 @@ noncomputable def lieIdealOrderIso :
     LieIdeal K L ≃o (rootSystem H).invtRootSubmodule where
   toFun := LieIdeal.toInvtRootSubmodule
   invFun q := invtSubmoduleToLieIdeal q.1 ((rootSystem H).mem_invtRootSubmodule_iff.mp q.2)
-  left_inv I := lieIdealOrderIso_left_inv I
-  right_inv q := lieIdealOrderIso_right_inv q
-  map_rel_iff' {I J} :=
-    ⟨fun h ↦ by rw [← lieIdealOrderIso_left_inv (H := H) I,
-                    ← lieIdealOrderIso_left_inv (H := H) J]
-                exact invtSubmoduleToLieIdeal_mono _ _ h,
-     LieIdeal.toInvtRootSubmodule_mono⟩
+  left_inv := lieIdealOrderIso_left_inv
+  right_inv := lieIdealOrderIso_right_inv
+  map_rel_iff' {I J} := by
+    refine ⟨fun h ↦ ?_, LieIdeal.toInvtRootSubmodule_mono⟩
+    rw [← lieIdealOrderIso_left_inv (H := H) I, ← lieIdealOrderIso_left_inv (H := H) J]
+    exact invtSubmoduleToLieIdeal_mono _ _ h
 
 /-- A Killing Lie algebra with an irreducible root system is simple. -/
 theorem isSimple_of_isIrreducible (hIrr : (rootSystem H).IsIrreducible) : IsSimple K L where
