@@ -581,7 +581,7 @@ alias one_lt_finprod' := one_lt_finprod
 /-- Monotonicity of `finprod`. See `finprod_le_finprod₀` for a variant where
 `M` is a `CommMonoidWithZero`. -/
 @[to_additive /-- Monotonicity of `finsum.` -/]
-lemma finprod_le_finprod [PartialOrder M] [MulLeftMono M] (hf : f.mulSupport.Finite)
+lemma finprod_le_finprod [PartialOrder M] [MulLeftMono M] (hf : HasFiniteMulSupport f)
     (hg : HasFiniteMulSupport g) (h : f ≤ g) :
     ∏ᶠ a, f a ≤ ∏ᶠ a, g a := by
   have : Fintype ↑(f.mulSupport ∪ g.mulSupport) := (hf.union hg).fintype
@@ -595,7 +595,7 @@ lemma finprod_le_finprod [PartialOrder M] [MulLeftMono M] (hf : f.mulSupport.Fin
 /-- Monotonicity of `finprod`. See `finprod_le_finprod'` for a variant where
 `M` is an ordered `CommMonoid`. -/
 lemma finprod_le_finprod₀ {M : Type*} [CommMonoidWithZero M] [PartialOrder M] [ZeroLEOneClass M]
-    [PosMulMono M] {f g : α → M} (hf : f.mulSupport.Finite) (hf₀ : ∀ a, 0 ≤ f a)
+    [PosMulMono M] {f g : α → M} (hf : HasFiniteMulSupport f) (hf₀ : ∀ a, 0 ≤ f a)
     (hg : HasFiniteMulSupport g) (h : f ≤ g) :
     ∏ᶠ a, f a ≤ ∏ᶠ a, g a := by
   have : Fintype ↑(f.mulSupport ∪ g.mulSupport) := (hf.union hg).fintype
