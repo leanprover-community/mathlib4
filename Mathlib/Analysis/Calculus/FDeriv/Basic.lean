@@ -415,9 +415,11 @@ protected theorem HasFDerivAt.fderiv_forall (f' : E → E →L[𝕜] F)
     fderiv 𝕜 f = f' := by
   funext x; exact (h x).fderiv
 
+/-- Simproc simplifying `fderiv _ _ _` using `fun_prop`. -/
 simproc_decl fderiv_simproc_at (fderiv _ _ _) :=
   Mathlib.Meta.FunProp.mkFunPropSimproc decl_name% ``HasFDerivAt.fderiv
 
+/-- Simproc simplifying `fderiv _ _` using `fun_prop`. -/
 simproc_decl fderiv_simproc_forall (fderiv _ _) :=
   Mathlib.Meta.FunProp.mkFunPropSimproc decl_name% ``HasFDerivAt.fderiv_forall
 
