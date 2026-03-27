@@ -633,7 +633,8 @@ theorem isSimple_of_isIrreducible (hIrr : (rootSystem H).IsIrreducible) : IsSimp
     have h₁ := (LieAlgebra.isLieAbelian_iff_center_eq_top (R := K) (L := L)).mp h
     have h₂ := LieAlgebra.center_eq_bot (R := K) (L := L)
     haveI : Subsingleton L := subsingleton_of_forall_eq 0 fun x ↦ by
-      have : x ∈ (⊤ : LieIdeal K L) := trivial; rwa [h₁.symm.trans h₂] at this
+      have : x ∈ (⊤ : LieIdeal K L) := trivial;
+      rwa [h₁.symm.trans h₂] at this
     exact not_nontrivial (Dual K H) hIrr.1
 
 /-- The root system of a simple Killing Lie algebra is irreducible. -/
