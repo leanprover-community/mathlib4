@@ -629,6 +629,7 @@ end ENat
 
 namespace ENat.WithBot
 
+@[simp]
 lemma coe_eq_natCast (n : ℕ) : (n : ℕ∞) = (n : WithBot ℕ∞) := rfl
 
 lemma lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
