@@ -208,9 +208,8 @@ theorem isCountablyCompact_iff_infinite_subset_has_accPt [T1Space E] {A : Set E}
     rw [← Nat.cofinite_eq_atTop] at hx ⊢
     by_cases! hfin : (Set.range x).Finite
     · -- Case 1: Finite range
-      suffices ∃ a ∈ range x ∩ A, MapClusterPt a cofinite x by
-        exact this.imp fun _ h ↦ ⟨h.1.2, h.2⟩
-      exact (hfin.inter_of_left A).isCompact.exists_mapClusterPt_of_frequently <|
+      suffices ∃ a ∈ range x ∩ A, MapClusterPt a cofinite x by aesop
+      exact hfin.inter_of_left A |>.isCompact.exists_mapClusterPt_of_frequently <|
         hx.frequently.mp (by simp)
     · -- Case 2: Infinite range
       obtain ⟨a, haA, hacc⟩ := h (Set.range x ∩ A) inter_subset_right <| by
@@ -218,8 +217,7 @@ theorem isCountablyCompact_iff_infinite_subset_has_accPt [T1Space E] {A : Set E}
         exact hfin.inter_of_finite_diff (hx.image x |>.subset (by grind))
       refine ⟨a, haA, ?_⟩
       simp_rw [mapClusterPt_iff_frequently, frequently_cofinite_iff_infinite]
-      exact fun s hs ↦ ((Infinite.of_accPt (hacc.nhds_inter hs)).mono
-        (inter_subset_inter_right s inter_subset_left)).preimage'
+      exact fun s hs ↦ Infinite.of_accPt (hacc.nhds_inter hs) |>.mono (by grind) |>.of_image x
 
 /-- A countably compact Lindelöf set is compact. -/
 theorem IsLindelof.isCompact (hA : IsCountablyCompact A) (hl : IsLindelof A) :
