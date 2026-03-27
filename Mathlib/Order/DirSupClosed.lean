@@ -14,7 +14,7 @@ public import Mathlib.Order.UpperLower.Basic
 We say that a set `s` is closed under directed suprema whenever it contains all least upper bounds
 for nonempty, directed subsets. Conversely, a set `s` is inaccessible by directed suprema whenever
 its complement is closed under directed suprema. Equivalently, if the least upper bound of a
-non-empty directed set `t` is contained in `s`, then `t` and `s` must have non-empty intersection.
+nonempty directed set `t` is contained in `s`, then `t` and `s` must have nonempty intersection.
 
 ## Main definitions
 
