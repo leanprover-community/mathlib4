@@ -189,14 +189,12 @@ noncomputable def pushforwardNatIso (α : F ≅ G) :
     ext X U x
     suffices X.val.presheaf.map (α.hom.app U.unop).op ≫
       X.val.presheaf.map (α.inv.app U.unop).op = 𝟙 _ from congr($this x)
-    simp only [← Functor.map_comp, ← op_comp,
-      Iso.inv_hom_id_app, op_id, CategoryTheory.Functor.map_id]
+    simp
   inv_hom_id := by
     ext X U x
     suffices X.val.presheaf.map (α.inv.app U.unop).op ≫
       X.val.presheaf.map (α.hom.app U.unop).op = 𝟙 _ from congr($this x)
-    simp only [← Functor.map_comp, ← op_comp,
-      Iso.hom_inv_id_app, op_id, CategoryTheory.Functor.map_id]
+    simp
 
 end NatTrans
 
@@ -213,6 +211,9 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   (H₁ : Functor.whiskerRight (NatTrans.op adj.counit) R.obj = ψ.hom ≫ G.op.whiskerLeft φ.hom)
   (H₂ : φ.hom ≫ F.op.whiskerLeft ψ.hom ≫
     Functor.whiskerRight (NatTrans.op adj.unit) S.obj = 𝟙 S.obj)
+
+attribute [map (attr := simp)] Adjunction.right_triangle_components
+attribute [simp] Adjunction.right_triangle_components_op_map
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F ⊣ G`, then the pushforwards along `F` and `G` are also adjoint. -/
@@ -236,7 +237,6 @@ def pushforwardPushforwardAdj : pushforward.{v} φ ⊣ pushforward.{v} ψ where
     ext U x
     change (X.val.presheaf.map (G.map (adj.counit.app U.unop)).op ≫
       X.val.presheaf.map (adj.unit.app (G.obj U.unop)).op) _ = _
-    rw [← Functor.map_comp, ← op_comp, adj.right_triangle_components]
     simp
 
 -- Not a simp because the type of the LHS is dsimp-able
