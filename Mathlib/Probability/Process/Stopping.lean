@@ -285,7 +285,7 @@ lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous' [hf : f.IsRightCo
     IsStoppingTime f τ := by
   intro t
   by_cases ht : 𝓝[>] t = ⊥
-  · have h_eq : {ω | τ ω ≤ t} = {ω | τ ω < t} ∪ {ω | τ ω = t} := by ext; simp; grind
+  · have h_eq : {ω | τ ω ≤ t} = {ω | τ ω < t} ∪ {ω | τ ω = t} := by ext; grind
     rw [h_eq]
     exact (hτ1 t).union (hτ2 t ht)
   have : (𝓝[>] t).NeBot := ⟨ht⟩
@@ -456,7 +456,7 @@ protected def measurableSpace (hτ : IsStoppingTime f τ) : MeasurableSpace Ω w
   measurableSet_iUnion s hs := by
     refine ⟨MeasurableSet.iUnion fun i ↦ (hs i).1, fun i ↦ ?_⟩
     replace hs := fun i ↦ (hs i).2
-    rw [forall_swap] at hs
+    rw [forall_comm] at hs
     rw [Set.iUnion_inter]
     exact MeasurableSet.iUnion (hs i)
 
