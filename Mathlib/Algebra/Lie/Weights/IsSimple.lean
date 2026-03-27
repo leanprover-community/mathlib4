@@ -202,7 +202,7 @@ lemma mem_rootSpan_iff (I : LieIdeal K L) {α : H.root} :
   simp only [Dual.eval_apply, Weight.toLinear_apply, root_apply_coroot hα_nz] at this
   exact absurd this two_ne_zero
 
-lemma restr_eq_iSup_sl2SubmoduleOfRoot (I : LieIdeal K L) :
+lemma restr_eq_biSup_sl2SubmoduleOfRoot (I : LieIdeal K L) :
     I.restr H =
       ⨆ (α : H.root) (_ : α ∈ I.rootSet), sl2SubmoduleOfRoot (H.isNonZero_coe_root α) := by
   apply le_antisymm
