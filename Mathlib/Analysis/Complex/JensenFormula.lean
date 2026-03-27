@@ -42,7 +42,7 @@ private noncomputable def herglotzLogIntegrand (w ρ : ℂ) : ℂ → ℝ :=
 
 -- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Continuity of the
 -- herglotzLogIntegrand.
-private lemma herglotzLogIntegrand_continuousAt {w ρ z : ℂ} (hz_w : z ≠ w) (hz_ρ : z ≠ ρ) :
+private lemma continuousAt_herglotzLogIntegrand {w ρ z : ℂ} (hz_w : z ≠ w) (hz_ρ : z ≠ ρ) :
     ContinuousAt (herglotzLogIntegrand w ρ) z := by
   have : ‖z - ρ‖ ≠ 0 := by simp_all [sub_eq_zero]
   simp only [herglotzLogIntegrand, herglotzRieszKernel_fun_def, sub_zero, smul_eq_mul]
@@ -50,20 +50,20 @@ private lemma herglotzLogIntegrand_continuousAt {w ρ z : ℂ} (hz_w : z ≠ w) 
 
 -- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Continuity of the
 -- herglotzLogIntegrand.
-private lemma herglotzLogIntegrand_continuous_on_circle {w ρ : ℂ} {R r : ℝ} (hR : 0 < R)
-    (hρ : ‖ρ‖ = R) (hr_pos : 0 < r) (hr_lt : r < R) (hwr : ‖w‖ < r) :
+private lemma continuous_herglotzLogIntegrand_circle {w ρ : ℂ} {R r : ℝ} (hρ : ‖ρ‖ = R)
+    (hr_lt : r < R) (hwr : ‖w‖ < r) :
     Continuous (fun θ ↦ herglotzLogIntegrand w ρ (circleMap 0 r θ)) := by
   rw [continuous_iff_continuousAt]
   intro θ
-  apply ContinuousAt.comp (herglotzLogIntegrand_continuousAt _ _) (by fun_prop)
+  apply ContinuousAt.comp (continuousAt_herglotzLogIntegrand _ _) (by fun_prop)
   all_goals
     by_contra h
-    grind [norm_circleMap_zero]
+    grind [norm_circleMap_zero, lt_of_le_of_lt (Complex.norm_nonneg w) hwr]
 
 -- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Computation for the
 -- boundedness required by the dominated convergence theorem, Part I.
-private lemma dctBoundedness₀ {r₀ r R : ℝ} {ρ : ℂ} (hρ : ‖ρ‖ = R) (hr₀ : 0 < r₀) (hR : 0 < R)
-    (hr₀r : r₀ ≤ r) (hrR : r ≤ R) (θ : ℝ) :
+private lemma const_mul_norm_sub_circleMap_le_norm_sub_circleMap {r₀ r R : ℝ} {ρ : ℂ} (hρ : ‖ρ‖ = R)
+    (hr₀ : 0 < r₀) (hR : 0 < R) (hr₀r : r₀ ≤ r) (hrR : r ≤ R) (θ : ℝ) :
     sqrt (r₀ / R) * ‖circleMap 0 R θ - ρ‖ ≤ ‖circleMap 0 r θ - ρ‖ := by
   have h_cos_law (r₁ : ℝ) :
       ‖circleMap 0 r₁ θ - ρ‖ ^ 2 = r₁ ^ 2 + R ^ 2 - 2 * r₁ * R * cos (θ - Complex.arg ρ) := by
@@ -83,8 +83,9 @@ private lemma dctBoundedness₀ {r₀ r R : ℝ} {ρ : ℂ} (hρ : ‖ρ‖ = R)
 
 -- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Computation for the
 -- boundedness required by the dominated convergence theorem, Part II.
-private lemma dctBoundedness₁ {w ρ : ℂ} {R r₀ r : ℝ} (hR : 0 < R) (hρ : ‖ρ‖ = R) (hr₀ : 0 < r₀)
-  (hw : ‖w‖ < r₀) (hr₀r : r₀ ≤ r) (hrR : r ≤ R) (θ : ℝ) (hdR : 0 < ‖circleMap 0 R θ - ρ‖) :
+private lemma norm_herglotzLogIntegrand_circleMap_le {w ρ : ℂ} {R r₀ r : ℝ} (hR : 0 < R)
+  (hρ : ‖ρ‖ = R) (hr₀ : 0 < r₀) (hw : ‖w‖ < r₀) (hr₀r : r₀ ≤ r) (hrR : r ≤ R) (θ : ℝ)
+  (hdR : 0 < ‖circleMap 0 R θ - ρ‖) :
   ‖herglotzLogIntegrand w ρ (circleMap 0 r θ)‖ ≤ ((R + ‖w‖) / (r₀ - ‖w‖))
     * (|log (2 * R)| + |log (sqrt (r₀ / R))| + |log ‖circleMap 0 R θ - ρ‖|) := by
   simp only [herglotzLogIntegrand, Pi.smul_apply', Function.comp_apply, smul_eq_mul, norm_mul,
@@ -110,12 +111,13 @@ private lemma dctBoundedness₁ {w ρ : ℂ} {R r₀ r : ℝ} (hR : 0 < R) (hρ 
         rw [← log_mul (by positivity) (by positivity)]
         exact log_le_log
           (mul_pos (sqrt_pos.mpr (div_pos hr₀ hR)) hdR)
-          (by linarith [dctBoundedness₀ hρ hr₀ hR hr₀r hrR θ])
+          (by linarith [const_mul_norm_sub_circleMap_le_norm_sub_circleMap hρ hr₀ hR hr₀r hrR θ])
       grind
     · apply le_trans _ (le_add_of_le_of_nonneg
         (le_add_of_nonneg_right <| abs_nonneg _ ) <| abs_nonneg _)
       apply le_trans (log_le_log _ _) (le_abs_self _)
-      · apply lt_of_lt_of_le _ (dctBoundedness₀ hρ hr₀ hR hr₀r hrR θ)
+      · apply lt_of_lt_of_le _
+          (const_mul_norm_sub_circleMap_le_norm_sub_circleMap hρ hr₀ hR hr₀r hrR θ)
         aesop
       · apply le_trans (norm_sub_le _ _)
         simp only [circleMap, zero_add, Complex.norm_mul, Complex.norm_real, norm_eq_abs,
@@ -126,7 +128,7 @@ private lemma dctBoundedness₁ {w ρ : ℂ} {R r₀ r : ℝ} (hR : 0 < R) (hρ 
 -- theorem: circle average can be computed by a sequence of circle averages integrating over circles
 -- in the interior
 private theorem herglotzLogIntegrand_circleAverage_tendsto {ρ w : ℂ} {R : ℝ} (hR : 0 < R)
-    (hρ : ‖ρ‖ = R) (hw : ‖w‖ < R) {r : ℕ → ℝ} (hr_lt : ∀ n, r n < R) (hr_pos : ∀ n, 0 < r n)
+    (hρ : ‖ρ‖ = R) (hw : ‖w‖ < R) {r : ℕ → ℝ} (hr_lt : ∀ n, r n < R)
     (hr_tendsto : Tendsto r atTop (nhds R)) :
     Tendsto (fun n ↦ circleAverage (herglotzLogIntegrand w ρ) 0 (r n)) atTop
       (nhds (circleAverage (herglotzLogIntegrand w ρ) 0 R)) := by
@@ -138,7 +140,7 @@ private theorem herglotzLogIntegrand_circleAverage_tendsto {ρ w : ℂ} {R : ℝ
   · -- The herglotzLogIntegrand is AEStronglyMeasurable
     filter_upwards [hr_tendsto.eventually (lt_mem_nhds hw) ] with n hn
     apply Continuous.aestronglyMeasurable
-    apply_rules [herglotzLogIntegrand_continuous_on_circle]
+    apply_rules [continuous_herglotzLogIntegrand_circle]
   · -- Pointwise boundedness outside a null set
     obtain ⟨N, hN⟩ : ∃ N, ∀ n ≥ N, r n > (R + ‖w‖) / 2 :=
       Filter.eventually_atTop.mp (hr_tendsto.eventually (lt_mem_nhds (by linarith)))
@@ -148,7 +150,7 @@ private theorem herglotzLogIntegrand_circleAverage_tendsto {ρ w : ℂ} {R : ℝ
       by_cases h : ‖circleMap 0 R θ - ρ‖ = 0
       <;> simp_all only [ge_iff_le, gt_iff_lt, circleMap, zero_add, norm_eq_zero, norm_eq_abs,
         norm_zero, log_zero, abs_zero, add_zero, or_true, bound]
-      convert dctBoundedness₁ hR hρ
+      convert norm_herglotzLogIntegrand_circleMap_le hR hρ
         (show 0 < (R + ‖w‖) / 2 by linarith [norm_nonneg w])
         (show ‖w‖ < (R + ‖w‖) / 2 by linarith [norm_nonneg w])
         (show (R + ‖w‖) / 2 ≤ r n by linarith [hN n hn])
@@ -175,7 +177,7 @@ private theorem herglotzLogIntegrand_circleAverage_tendsto {ρ w : ℂ} {R : ℝ
           ((countable_singleton ρ).preimage_circleMap 0 (hR.ne'))
     filter_upwards [MeasureTheory.measure_eq_zero_iff_ae_notMem.mp h_measure_zero] with θ hθ
     intro _
-    apply (herglotzLogIntegrand_continuousAt (by tauto) (by tauto)).tendsto.comp
+    apply (continuousAt_herglotzLogIntegrand (by tauto) (by tauto)).tendsto.comp
     apply Filter.Tendsto.add tendsto_const_nhds
       (Filter.Tendsto.mul (Complex.continuous_ofReal.continuousAt.tendsto.comp hr_tendsto)
         tendsto_const_nhds)
@@ -207,7 +209,7 @@ theorem circleAverage_re_herglotzRieszKernel_mul_log₀ {w ρ : ℂ} {R : ℝ} (
     le_trans (tendsto_const_nhds.sub <| tendsto_const_nhds.div_atTop <|
       Filter.tendsto_atTop_add_const_right _ _ tendsto_natCast_atTop_atTop)
       (by norm_num)
-  have DCT := herglotzLogIntegrand_circleAverage_tendsto hR hρ hw hr_lt hr_pos hr_tendsto
+  have DCT := herglotzLogIntegrand_circleAverage_tendsto hR hρ hw hr_lt hr_tendsto
   have {n : ℕ} : circleAverage (herglotzLogIntegrand w ρ) 0 (r n) = log ‖w - ρ‖ := by
     unfold herglotzLogIntegrand
     rw [InnerProductSpace.HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul]
