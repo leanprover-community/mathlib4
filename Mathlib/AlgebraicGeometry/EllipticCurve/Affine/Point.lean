@@ -650,6 +650,13 @@ instance : InvolutiveNeg W'.Point where
     · rfl
     · simp only [neg_some, negY_negY]
 
+lemma x_eq_iff {P Q : W.Point} {xP yP xQ yQ : F} {hP' : W.Nonsingular xP yP}
+    {hQ' : W.Nonsingular xQ yQ} (hP : P = some xP yP hP') (hQ : Q = some xQ yQ hQ') :
+    xP = xQ ↔ P = Q ∨ P = -Q := by
+  refine ⟨fun H ↦ ?_, fun H ↦ by grind [neg_some]⟩
+  simp_rw [hP, hQ, neg_some, some.injEq, ← and_or_left]
+  exact ⟨H, Y_eq_of_X_eq hP'.1 hQ'.1 H⟩
+
 variable [DecidableEq F] [DecidableEq K] [DecidableEq L]
 
 /-- The addition of two nonsingular points on a Weierstrass curve in affine coordinates.
@@ -872,13 +879,6 @@ lemma xRep_neg (P : W'.Point) : (-P).xRep = P.xRep := by
   cases P <;> simp [← zero_def]
 
 -- The following lemmas need a field as base ring.
-
-lemma x_eq_iff {P Q : W.Point} {xP yP xQ yQ : F} {hP' : W.Nonsingular xP yP}
-    {hQ' : W.Nonsingular xQ yQ} (hP : P = some xP yP hP') (hQ : Q = some xQ yQ hQ') :
-    xP = xQ ↔ P = Q ∨ P = -Q := by
-  refine ⟨fun H ↦ ?_, fun H ↦ by grind [neg_some]⟩
-  simp_rw [hP, hQ, neg_some, some.injEq, ← and_or_left]
-  exact ⟨H, Y_eq_of_X_eq hP'.1 hQ'.1 H⟩
 
 lemma eq_or_eq_neg_of_xRep_eq_xRep {P Q : W.Point} (h : P.xRep = Q.xRep) : P = Q ∨ P = -Q := by
   match P, Q with
