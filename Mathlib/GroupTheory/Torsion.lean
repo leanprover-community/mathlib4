@@ -348,6 +348,7 @@ end CommGroup
 
 section AddCommGroup
 
+set_option backward.inferInstanceAs.wrap.data false in
 instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
     Module R (M ⧸ AddCommGroup.torsion M) :=
   letI : Submodule R M := { AddCommGroup.torsion M with smul_mem' := fun r m ⟨n, hn, hn'⟩ ↦
