@@ -141,18 +141,6 @@ lemma id_parallelComp_comp_parallelComp_id [IsSFiniteKernel κ] (η : Kernel Z T
   congr
   exact comp_id κ
 
-lemma parallelComp_id_id_map {f : X → Y} (hf : Measurable f) : Kernel.id ∥ₖ Kernel.id.map f =
-    (Kernel.id.map (fun x => (x.1, f x.2)) : Kernel (Z × X) (Z × Y)) := by
-  rw [id_map hf, id_map (by fun_prop)]
-  ext : 1
-  simp [parallelComp_apply, id_apply, deterministic_apply, Measure.dirac_prod_dirac]
-
-lemma parallelComp_id_map_id {f : X → Y} (hf : Measurable f) : Kernel.id.map f ∥ₖ Kernel.id =
-    (Kernel.id.map (fun x => (f x.1, x.2)) : Kernel (X × Z) (Y × Z)) := by
-  rw [id_map hf, id_map (by fun_prop)]
-  ext : 1
-  simp [parallelComp_apply, id_apply, deterministic_apply, Measure.dirac_prod_dirac]
-
 end ParallelComp
 
 end ProbabilityTheory.Kernel

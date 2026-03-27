@@ -166,17 +166,18 @@ instance : MonoidalCategory SFinKer.{u} where
       exact measurable_measure_prodMk_left (by measurability)
   pentagon W X Y Z := by
     ext : 1; dsimp
-    rw [Kernel.parallelComp_id_id_map (by fun_prop), Kernel.parallelComp_id_map_id (by fun_prop),
-      Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop),
-      Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop)]
+    simp only [Kernel.id]
+    repeat rw [Kernel.deterministic_map (by fun_prop) (by fun_prop)]
+    repeat rw [Kernel.deterministic_parallelComp_deterministic (by fun_prop) (by fun_prop)]
     simp [Kernel.deterministic_comp_deterministic]
     congr 1
   triangle X Y := by
     ext : 1; dsimp
-    rw [Kernel.parallelComp_id_id_map (by fun_prop), Kernel.parallelComp_id_map_id (by fun_prop),
-      Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop),
-      Kernel.deterministic_comp_deterministic]
-    congr
+    simp only [Kernel.id]
+    repeat rw [Kernel.deterministic_map (by fun_prop) (by fun_prop)]
+    repeat rw [Kernel.deterministic_parallelComp_deterministic (by fun_prop) (by fun_prop)]
+    simp [Kernel.deterministic_comp_deterministic]
+    congr 1
 
 @[simps]
 instance : SymmetricCategory SFinKer.{u} where
