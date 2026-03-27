@@ -17,7 +17,7 @@ This file proves that homotopic morphisms of simplicial sets induce
 the same maps on singular homology (with coefficients in an object `R`
 of a preadditive category `C` with coproducts).
 
-First, in the case the homotopy between two morphisms of simplicial sets
+First, in the case where the homotopy between two morphisms of simplicial sets
 `f : X ⟶ Y` and `g : X ⟶ Y` is given as combinatorial simplicial homotopy
 (`SimplicialObject.Homotopy`), i.e. as family of morphisms `X _⦋n⦌ ⟶ Y _⦋n + 1⦌`,
 we use the fact that we still have a similar kind of homotopy between
