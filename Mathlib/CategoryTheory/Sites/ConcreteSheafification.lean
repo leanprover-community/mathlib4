@@ -157,9 +157,7 @@ theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x :
   ext i
   simp only [Meq.equiv_apply, Cover.index_left, ← ConcreteCategory.comp_apply, limit.lift_π,
     Multifork.ofι_pt, Multifork.ofι_π_app, Meq.pullback_apply, pullback_obj]
-  have := Meq.equiv_symm_eq_apply x i.base
-  dsimp at this
-  rw [this]
+  rw [dsimp% Meq.equiv_symm_eq_apply x i.base]
   cases i; rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -195,9 +193,7 @@ theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (
   dsimp
   rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply,
     Multiequalizer.lift_ι, Multiequalizer.lift_ι, Multiequalizer.lift_ι]
-  have := Meq.equiv_symm_eq_apply x i.base
-  dsimp at this
-  rw [this]
+  rw [dsimp% Meq.equiv_symm_eq_apply x i.base]
   simpa using (x.condition (Cover.Relation.mk' (I.precompRelation i.f))).symm
 
 theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : ToType (P.obj (op X))) :
