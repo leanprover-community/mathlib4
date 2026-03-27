@@ -78,10 +78,10 @@ lemma dual_insert (x : M) (s : Set M) : dual p (insert x s) = dual p {x} ⊓ dua
   rw [insert_eq, dual_union]
 
 lemma dual_iUnion {ι : Sort*} (f : ι → Set M) : dual p (⋃ i, f i) = ⨅ i, dual p (f i) := by
-  ext; simp [forall_swap (α := M)]
+  ext; simp [forall_comm (α := M)]
 
 lemma dual_sUnion (S : Set (Set M)) : dual p (⋃₀ S) = sInf (dual p '' S) := by
-  ext; simp [forall_swap (α := M)]
+  ext; simp [forall_comm (α := M)]
 
 /-- The dual cone of `s` equals the intersection of dual cones of the points in `s`. -/
 lemma dual_eq_iInter_dual_singleton (s : Set M) :
@@ -103,7 +103,7 @@ variable (s) in
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma dual_span (s : Set M) : dual p (span R s) = dual p s := by
+lemma dual_hull (s : Set M) : dual p (hull R s) = dual p s := by
   refine le_antisymm (dual_anti Submodule.subset_span) (fun x hx y hy => ?_)
   induction hy using Submodule.span_induction with
   | mem _y h => exact hx h
@@ -111,8 +111,11 @@ lemma dual_span (s : Set M) : dual p (span R s) = dual p s := by
   | add y z _hy _hz hy hz => rw [map_add, add_apply]; exact add_nonneg hy hz
   | smul t y _hy hy => rw [map_smul_of_tower, Nonneg.mk_smul, smul_apply]; exact mul_nonneg t.2 hy
 
+@[deprecated "`PointedCone.span` was renamed to `PointedCone.hull`" (since := "2026-03-22")]
+alias dual_span := dual_hull
+
 @[simp] lemma dual_sup (C D : PointedCone R M) : dual p (C ⊔ D : PointedCone R M) = dual p (C ∪ D)
-  := by simp [← dual_span]
+  := by simp [← dual_hull]
 
 variable {M' : Type*} [AddCommGroup M'] [Module R M']
 
