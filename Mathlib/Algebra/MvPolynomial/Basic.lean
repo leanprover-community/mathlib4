@@ -365,8 +365,7 @@ lemma prod_X_pow_eq_monomial : ∏ x ∈ s.support, X x ^ s x = monomial s (1 : 
 
 theorem prod_X_pow (x : σ → ℕ) (t : Finset σ) :
     ∏ y ∈ t, (X y : MvPolynomial σ R) ^ x y = monomial (indicator t (fun i _ ↦ x i)) (1 : R) := by
-  rw [monomial_eq, C_1, one_mul, Finsupp.prod, Finset.prod_subset
-    (s₁ := (Finsupp.indicator t (fun i _ ↦ x i)).support) (s₂ := t) (support_indicator_subset _ _)]
+  rw [monomial_eq, C_1, one_mul, Finsupp.prod, Finset.prod_subset (support_indicator_subset _ _)]
   · exact Finset.prod_congr rfl (fun _ hi ↦ by simp [Finsupp.indicator, hi])
   · intro i hi hi'
     rw [Finsupp.mem_support_iff, ne_eq, not_not] at hi'

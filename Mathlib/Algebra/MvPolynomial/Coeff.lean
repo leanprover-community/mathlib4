@@ -111,9 +111,8 @@ theorem coeff_add_pow (d : Fin 2 →₀ ℕ) (n : ℕ) :
     simp [Finsupp.sum_of_support_subset d (Finset.subset_univ d.support)]
   simp only [Finset.mem_antidiagonal, this]
   split_ifs with hd
-  · rw [multinomial_eq_of_support_subset (Finset.subset_univ d.support)]
-    erw [Nat.binomial_eq_choose Fin.zero_ne_one]
-    simp [hd]
+  · rw [multinomial_eq_of_support_subset (Finset.subset_univ d.support), Finset.univ_fin2,
+      Nat.binomial_eq_choose Fin.zero_ne_one, hd]
   · rfl
 
 end MvPolynomial
