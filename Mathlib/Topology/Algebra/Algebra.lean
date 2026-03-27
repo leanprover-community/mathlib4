@@ -659,7 +659,7 @@ instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
 
 instance [T2Space A] {x : A} : CommSemiring (elemental R x) :=
   commSemiringTopologicalClosure _
-    letI : CommSemiring (adjoin R {x}) :=
+    letI : CommSemiring (R[x]) :=
       adjoinCommSemiringOfComm R fun y hy z hz => by
         rw [mem_singleton_iff] at hy hz
         rw [hy, hz]
