@@ -126,39 +126,22 @@ each polynomial over the field. -/
 @[stacks 09GT]
 def AlgebraicClosure : Type u :=
   MvPolynomial (Vars k) k ⧸ maxIdeal k
+deriving CommRing, Inhabited
 
 namespace AlgebraicClosure
 
-instance instCommRing : CommRing (AlgebraicClosure k) := Ideal.Quotient.commRing _
-instance instInhabited : Inhabited (AlgebraicClosure k) := ⟨37⟩
+instance instField : Field (AlgebraicClosure k) :=
+  fast_instance% Ideal.Quotient.field _
 
 instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) :=
-  Submodule.Quotient.instSMul' _
+  inferInstanceAs <| SMul S (_ ⧸ _)
 
 instance instAlgebra {R : Type*} [CommSemiring R] [Algebra R k] : Algebra R (AlgebraicClosure k) :=
-  Ideal.Quotient.algebra _
+  inferInstanceAs <| Algebra R (_ ⧸ _)
 
 instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k] [Algebra R k]
     [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) :=
-  Ideal.Quotient.isScalarTower _ _ _
-
-instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) where
-  __ := Ideal.Quotient.field _
-
-instance instField : Field (AlgebraicClosure k) where
-  __ := instCommRing _
-  __ := instGroupWithZero _
-  nnqsmul := (· • ·)
-  qsmul := (· • ·)
-  nnratCast q := algebraMap k _ q
-  ratCast q := algebraMap k _ q
-  nnratCast_def q := by change algebraMap k _ _ = _; simp_rw [NNRat.cast_def, map_div₀, map_natCast]
-  ratCast_def q := by
-    change algebraMap k _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
-  nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
-    ext; simp [MvPolynomial.algebraMap_eq, NNRat.smul_def]
-  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
-    ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
+  inferInstanceAs <| IsScalarTower R S (_ ⧸ _)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem Monics.map_eq_prod {f : Monics k} :
