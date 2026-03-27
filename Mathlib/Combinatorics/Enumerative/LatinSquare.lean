@@ -623,7 +623,7 @@ lemma subrect_refl
     {A : LatinRectangle m n α}
     {A' : LatinRectangle m' n α} (h : A ≃ A') :
     IsSubrect A A' := by
-  obtain ⟨f,g,h,hrfl⟩ := h
+  have ⟨f, g, h, hrfl⟩ := h
   simp only [IsSubrect]
   exact ⟨f, g, h, hrfl⟩
 
