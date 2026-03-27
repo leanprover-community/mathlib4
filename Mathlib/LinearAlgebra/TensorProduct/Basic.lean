@@ -286,13 +286,9 @@ attribute [local ext high] ext in
   apply LinearEquiv.toLinearMap_injective; ext; rfl
 
 lemma comm_comp_comm :
-    (TensorProduct.comm R N M).toLinearMap ∘ₗ (TensorProduct.comm R M N).toLinearMap = .id := by
+    (TensorProduct.comm R N M).toLinearMap ∘ₗ (TensorProduct.comm R M N).toLinearMap =
+      (LinearMap.id : M ⊗[R] N →ₗ[R] M ⊗[R] N) := by
   simp
-
-@[simp]
-lemma comm_comp_comm_assoc (f : P →ₗ[R] M ⊗[R] N) :
-    (TensorProduct.comm R N M).toLinearMap ∘ₗ (TensorProduct.comm R M N).toLinearMap ∘ₗ f = f := by
-  rw [← LinearMap.comp_assoc, comm_comp_comm, LinearMap.id_comp]
 
 @[simp] theorem comm_comm (x) :
     TensorProduct.comm R M N (TensorProduct.comm R N M x) = x :=
