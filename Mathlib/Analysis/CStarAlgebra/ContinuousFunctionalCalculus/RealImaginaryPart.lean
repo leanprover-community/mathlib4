@@ -58,14 +58,14 @@ lemma quasispectrum_imaginaryPart' (a : A) (ha : IsStarNormal a := by cfc_tac) :
 variable [ContinuousMapZero.UniqueHom ℂ A]
 
 lemma cfcₙ_realPart (f : ℂ → ℂ) (a : A)
-    (hf : ContinuousOn f (quasispectrum ℂ (ℜ a : A)) := by cfc_tac)
+    (hf : ContinuousOn f (quasispectrum ℂ (ℜ a : A)) := by cfc_cont_tac)
     (hf0 : f 0 = 0 := by cfc_zero_tac) (ha : IsStarNormal a := by cfc_tac) :
     cfcₙ f (ℜ a : A) = cfcₙ (fun x ↦ f (re x)) a := by
   rw [quasispectrum_realPart a] at hf
   rw [← cfcₙ_re_id a, ← cfcₙ_comp' ..]
 
 lemma cfcₙ_imaginaryPart (f : ℂ → ℂ) (a : A)
-    (hf : ContinuousOn f (quasispectrum ℂ (ℑ a : A)) := by cfc_tac)
+    (hf : ContinuousOn f (quasispectrum ℂ (ℑ a : A)) := by cfc_cont_tac)
     (hf0 : f 0 = 0 := by cfc_zero_tac) (ha : IsStarNormal a := by cfc_tac) :
     cfcₙ f (ℑ a : A) = cfcₙ (fun x ↦ f (im x)) a := by
   rw [quasispectrum_imaginaryPart a] at hf
@@ -74,7 +74,7 @@ lemma cfcₙ_imaginaryPart (f : ℂ → ℂ) (a : A)
 variable [T2Space A]
 
 lemma cfcₙ_comp_re (f : ℝ → ℝ) (a : A)
-    (hf : ContinuousOn f (quasispectrum ℝ (ℜ a : A)) := by cfc_tac)
+    (hf : ContinuousOn f (quasispectrum ℝ (ℜ a : A)) := by cfc_cont_tac)
     (hf0 : f 0 = 0 := by cfc_zero_tac) (ha : IsStarNormal a := by cfc_tac) :
     cfcₙ (fun x : ℂ ↦ f (re x)) a = cfcₙ f (ℜ a : A) := by
   have : ContinuousOn (fun x ↦ (f x.re) : ℂ → ℂ) ((re · : ℂ → ℂ) '' quasispectrum ℂ a) := by
@@ -85,7 +85,7 @@ lemma cfcₙ_comp_re (f : ℝ → ℝ) (a : A)
     rw [cfcₙ_real_eq_complex, ← cfcₙ_re_id a, ← cfcₙ_comp' ..]
     simp
 
-lemma cfcₙ_comp_im (f : ℝ → ℝ) (a : A) (hf : ContinuousOn f (quasispectrum ℝ (ℑ a : A)))
+lemma cfcₙ_comp_im (f : ℝ → ℝ) (a : A) (hf : ContinuousOn f (quasispectrum ℝ (ℑ a : A)) := by cfc_cont_tac)
     (hf0 : f 0 = 0 := by cfc_zero_tac) (ha : IsStarNormal a := by cfc_tac) :
     cfcₙ (fun x : ℂ ↦ f (im x)) a = cfcₙ f (ℑ a : A) := by
   have : ContinuousOn (fun x ↦ (f x.re) : ℂ → ℂ) ((im · : ℂ → ℂ) '' quasispectrum ℂ a) := by
