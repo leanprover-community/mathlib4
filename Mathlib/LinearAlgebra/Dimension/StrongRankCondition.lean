@@ -404,7 +404,6 @@ def Submodule.inductionOnRank {R M} [Ring R] [StrongRankCondition R] [AddCommGro
   Submodule.inductionOnRankAux b P ih (Fintype.card ι) N fun hs hli => by
     simpa using b.card_le_card_of_linearIndependent hli
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `S` a module-finite free `R`-algebra, then the `R`-rank of a nonzero `R`-free
 ideal `I` of `S` is the same as the rank of `S`. -/
 theorem Ideal.rank_eq {R S : Type*} [CommRing R] [StrongRankCondition R] [Ring S] [IsDomain S]
@@ -479,6 +478,7 @@ theorem finrank_self : finrank R R = 1 :=
   finrank_eq_of_rank_eq (by simp)
 
 /-- Given a basis of a ring over itself indexed by a type `ι`, then `ι` is `Unique`. -/
+@[implicit_reducible]
 noncomputable def _root_.Module.Basis.unique {ι : Type*} (b : Basis ι R R) : Unique ι := by
   have : Cardinal.mk ι = ↑(Module.finrank R R) := (Module.mk_finrank_eq_card_basis b).symm
   have : Subsingleton ι ∧ Nonempty ι := by simpa [Cardinal.eq_one_iff_unique]
@@ -511,6 +511,11 @@ theorem finrank_eq_zero_iff_of_free [Module.Free R M] [Module.Finite R M] :
   have := Module.rank_lt_aleph0 R M
   rw [← not_le] at this
   simp [Module.finrank, this, Module.rank_zero_iff_of_free]
+
+@[simp]
+theorem finrank_eq_zero_of_subsingleton [Module.Free R M] [Module.Finite R M] [Subsingleton M] :
+    Module.finrank R M = 0 :=
+  (finrank_eq_zero_iff_of_free R M).mpr inferInstance
 
 theorem finrank_pos_iff_of_free [Module.Free R M] [Module.Finite R M] :
     0 < Module.finrank R M ↔ Nontrivial M := by
@@ -585,7 +590,7 @@ theorem strongRankCondition_iff_forall_zero_lt_finrank [Nontrivial R] :
   refine ⟨fun ⟨n, le⟩ ↦ ⟨n + 1, n.succ_pos, ?_⟩, fun ⟨n, pos, eq⟩ ↦ ⟨n, ?_⟩⟩
   · exact .inr <| le.trans <| LinearMap.rank_le_of_injective
       (ExtendByZero.linearMap R _) <| extend_injective (Fin.castSucc_injective n) _
-  · rw [or_iff_not_imp_left, ← Ne, ← one_le_iff_ne_zero, one_le_rank_iff] at eq
+  · rw [or_iff_not_imp_left, ← Ne, ← Cardinal.one_le_iff_ne_zero, one_le_rank_iff] at eq
     rw [← n.succ_pred_eq_of_pos pos] at eq ⊢
     exact eq ⟨.single R (fun _ ↦ _) 0, Pi.single_injective (M := fun _ ↦ _) _⟩
 
