@@ -104,18 +104,18 @@ section SMul
 variable {𝕜' : Type*} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F] {c : 𝕜 → 𝕜'} {c' : 𝕜'}
 
-@[fun_prop, to_fun (attr := fun_prop)]
+@[to_fun (attr := fun_prop)]
 theorem HasDerivWithinAt.smul (hc : HasDerivWithinAt c c' s x) (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (c • f) (c x • f' + c' • f x) s x := by
   simpa using (HasFDerivWithinAt.smul hc hf).hasDerivWithinAt
 
-@[fun_prop, to_fun (attr := fun_prop)]
+@[to_fun (attr := fun_prop)]
 theorem HasDerivAt.smul (hc : HasDerivAt c c' x) (hf : HasDerivAt f f' x) :
     HasDerivAt (c • f) (c x • f' + c' • f x) x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hc.smul hf
 
-@[fun_prop, to_fun (attr := fun_prop)]
+@[to_fun (attr := fun_prop)]
 theorem HasStrictDerivAt.smul (hc : HasStrictDerivAt c c' x) (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (c • f) (c x • f' + c' • f x) x := by
   simpa using (HasStrictFDerivAt.smul hc hf).hasStrictDerivAt
@@ -180,7 +180,7 @@ variable
   -- `DistribMulActionWithZero` typeclass
   {𝕝 : Type*} [DivisionSemiring 𝕝] [Module 𝕝 F] [SMulCommClass 𝕜 𝕝 F] [ContinuousConstSMul 𝕝 F]
 
-@[fun_prop, to_fun (attr := fun_prop)]
+@[to_fun (attr := fun_prop)]
 theorem HasStrictDerivAt.const_smul (c : R) (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (c • f) (c • f') x := by
   simpa using (HasStrictFDerivAt.const_smul hf c).hasStrictDerivAt
@@ -190,12 +190,12 @@ theorem HasDerivAtFilter.const_smul (c : R) (hf : HasDerivAtFilter f f' L) :
     HasDerivAtFilter (c • f) (c • f') L := by
   simpa using (HasFDerivAtFilter.const_smul hf c).hasDerivAtFilter
 
-@[fun_prop, to_fun (attr := fun_prop)]
+@[to_fun (attr := fun_prop)]
 theorem HasDerivWithinAt.const_smul (c : R) (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (c • f) (c • f') s x :=
   HasDerivAtFilter.const_smul c hf
 
-@[fun_prop, to_fun (attr := fun_prop)]
+@[to_fun (attr := fun_prop)]
 theorem HasDerivAt.const_smul (c : R) (hf : HasDerivAt f f' x) :
     HasDerivAt (c • f) (c • f') x :=
   HasDerivAtFilter.const_smul c hf
@@ -264,18 +264,18 @@ section Mul
 variable {𝕜' 𝔸 : Type*} [NormedDivisionRing 𝕜'] [NormedRing 𝔸] [NormedAlgebra 𝕜 𝕜']
   [NormedAlgebra 𝕜 𝔸] {c d : 𝕜 → 𝔸} {c' d' : 𝔸} {u v : 𝕜 → 𝕜'}
 
-@[fun_prop, to_fun (attr := fun_prop)]
+@[to_fun (attr := fun_prop)]
 theorem HasDerivWithinAt.mul (hc : HasDerivWithinAt c c' s x) (hd : HasDerivWithinAt d d' s x) :
     HasDerivWithinAt (c * d) (c' * d x + c x * d') s x := by
   simpa [add_comm] using (HasFDerivWithinAt.mul' hc hd).hasDerivWithinAt
 
-@[fun_prop, to_fun (attr := fun_prop)]
+@[to_fun (attr := fun_prop)]
 theorem HasDerivAt.mul (hc : HasDerivAt c c' x) (hd : HasDerivAt d d' x) :
     HasDerivAt (c * d) (c' * d x + c x * d') x := by
   rw [← hasDerivWithinAt_univ] at *
   exact HasDerivWithinAt.mul hc hd
 
-@[fun_prop, to_fun (attr := fun_prop)]
+@[to_fun (attr := fun_prop)]
 theorem HasStrictDerivAt.mul (hc : HasStrictDerivAt c c' x) (hd : HasStrictDerivAt d d' x) :
     HasStrictDerivAt (c * d) (c' * d x + c x * d') x := by
   simpa [add_comm] using (HasStrictFDerivAt.mul' hc hd).hasStrictDerivAt

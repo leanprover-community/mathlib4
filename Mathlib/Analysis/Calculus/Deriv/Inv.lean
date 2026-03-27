@@ -102,13 +102,13 @@ theorem fderivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s 
 
 variable {c : 𝕜 → 𝕜} {c' : 𝕜}
 
-@[fun_prop, to_fun (attr := fun_prop)]
+@[to_fun (attr := fun_prop)]
 theorem HasDerivWithinAt.inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
     HasDerivWithinAt (c⁻¹) (-c' / c x ^ 2) s x := by
   convert (hasDerivAt_inv hx).comp_hasDerivWithinAt x hc using 1
   ring
 
-@[fun_prop, to_fun (attr := fun_prop)]
+@[to_fun (attr := fun_prop)]
 theorem HasDerivAt.inv (hc : HasDerivAt c c' x) (hx : c x ≠ 0) :
     HasDerivAt (c⁻¹) (-c' / c x ^ 2) x := by
   rw [← hasDerivWithinAt_univ] at *
