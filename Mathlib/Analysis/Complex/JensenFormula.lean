@@ -258,19 +258,12 @@ theorem AnalyticOnNhd.sum_divisor_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
                 exact h2
         · --In the larger ball but not the smaller so LHS is 0 and RHS nonnegative
           simp only [h2, not_false_eq_true, Function.locallyFinsuppWithin.apply_eq_zero_of_notMem,
-          Int.cast_zero, zero_mul]
-          refine mul_nonneg ?_ ?_
-          · norm_cast
-            apply h₁f.divisor_nonneg
-          · rw [← log_one]
-            apply log_le_log_of_abs_le_abs (by norm_num)
-            rw [abs_one, abs_mul, abs_inv, abs_norm]
-            apply inv_le_iff_one_le_mul₀' (by linarith)|>.mp
-            gcongr
-            · simp only [mem_closedBall, dist_eq_norm_sub', not_le] at h2
-              exact lt_of_le_of_lt (abs_nonneg r) h2
-            · simp only [mem_closedBall, dist_eq_norm_sub'] at h1
-              exact h1
+            Int.cast_zero, zero_mul]
+          refine mul_nonneg (mod_cast h₁f.divisor_nonneg ..) ?_
+          apply log_abs _ ▸ log_nonneg
+          simp only [mem_closedBall, dist_eq_norm', not_le] at h1 h2
+          have : ‖c - u‖ ≠ 0 := (r_pos.trans h2).ne'
+          simpa [field]
       · --Outside the larger ball so both sides are 0
         have : u ∉ closedBall c |r| := by
           simp_all
