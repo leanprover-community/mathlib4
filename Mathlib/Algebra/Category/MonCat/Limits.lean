@@ -66,7 +66,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[to_additive /-- `limit.π (F ⋙ forget AddMonCat) j` as an `AddMonoidHom`. -/]
 noncomputable def limitπMonoidHom (j : J) :
     (Types.Small.limitCone.{v, u} (F ⋙ forget MonCat.{u})).pt →*
-      (F.obj j) where
+      F.obj j where
   toFun := (Types.Small.limitCone.{v, u} (F ⋙ forget MonCat.{u})).π.app j
   map_one' := by simp; rfl
   map_mul' _ _ := by simp; rfl
