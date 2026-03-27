@@ -105,7 +105,7 @@ lemma parallelComp_zero_right (κ : Kernel α β) : κ ∥ₖ (0 : Kernel γ δ)
   · exact parallelComp_of_not_isSFiniteKernel_left _ h
 
 @[simp]
-lemma parallelComp_id_id :
+lemma id_parallelComp_id :
     Kernel.id ∥ₖ Kernel.id = (Kernel.id : Kernel (α × β) (α × β)) := by
   ext : 1
   simp [parallelComp_apply, id_apply, Measure.dirac_prod_dirac]
