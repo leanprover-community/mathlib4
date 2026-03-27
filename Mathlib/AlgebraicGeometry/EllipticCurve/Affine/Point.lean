@@ -110,7 +110,6 @@ noncomputable instance : Algebra R[X] W'.CoordinateRing :=
 instance : IsScalarTower R R[X] W'.CoordinateRing :=
   Quotient.isScalarTower R R[X] _
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Subsingleton R] : Subsingleton W'.CoordinateRing :=
   Module.subsingleton R[X] _
 
@@ -119,7 +118,6 @@ variable (W') in
 noncomputable abbrev mk : R[X][Y] →+* W'.CoordinateRing :=
   AdjoinRoot.mk W'.polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 variable (W') in
 /-- The power basis `{1, Y}` for `R[W]` over `R[X]`. -/
@@ -148,18 +146,15 @@ lemma coe_basis : (CoordinateRing.basis W' : Fin 2 → W'.CoordinateRing) = ![1,
   fin_cases n
   exacts [basis_zero, basis_one]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma smul (x : R[X]) (y : W'.CoordinateRing) : x • y = mk W' (C x) * y :=
   (algebraMap_smul W'.CoordinateRing x y).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma smul_basis_eq_zero {p q : R[X]} (hpq : p • (1 : W'.CoordinateRing) + q • mk W' Y = 0) :
     p = 0 ∧ q = 0 := by
   have h := Fintype.linearIndependent_iff.mp (CoordinateRing.basis W').linearIndependent ![p, q]
   rw [Fin.sum_univ_succ, basis_zero, Fin.sum_univ_one, Fin.succ_zero_eq_one, basis_one] at h
   exact ⟨h hpq 0, h hpq 1⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_smul_basis_eq (x : W'.CoordinateRing) :
     ∃ p q : R[X], p • (1 : W'.CoordinateRing) + q • mk W' Y = x := by
   have h := (CoordinateRing.basis W').sum_equivFun x
@@ -408,7 +403,6 @@ lemma mk_XYIdeal'_mul_mk_XYIdeal' [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h�
 
 /-! ## Norms on the affine coordinate ring -/
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_smul_basis (p q : R[X]) : Algebra.norm R[X] (p • (1 : W'.CoordinateRing) + q • mk W' Y) =
     p ^ 2 - p * q * (C W'.a₁ * X + C W'.a₃) -
       q ^ 2 * (X ^ 3 + C W'.a₂ * X ^ 2 + C W'.a₄ * X + C W'.a₆) := by
@@ -751,6 +745,7 @@ private lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
       exact fun hxy => by simpa only [add_some hxy] using some_ne_zero _
     · exact fun ⟨hx, hy⟩ => add_of_Y_eq hx hy
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
   constructor
   · intro hP
