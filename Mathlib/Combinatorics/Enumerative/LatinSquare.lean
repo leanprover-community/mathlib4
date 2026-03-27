@@ -643,7 +643,7 @@ theorem latin_rectangle_extends_to_latin_square
     · let f : k ≃ n := Fintype.equivOfCardEq h_full
       let A' := renameLatinRectangle f (Equiv.refl n) (Equiv.refl α) A
       have h_sim : A ≃ A' := by
-        simp [induced_latin_rectangle_is_equiv f (Equiv.refl n) (Equiv.refl α) A,A']
+        simp [induced_latin_rectangle_is_equiv f (.refl n) (.refl α) A, A']
       use A'
       exact subrect_refl h_sim
     · set k' := Option k with hk'
