@@ -450,9 +450,11 @@ theorem HasDerivAt.deriv_forall {f' : 𝕜 → F} (h : ∀ x, HasDerivAt f (f' x
     deriv f = f' := by
   funext x; exact (h x).deriv
 
+/-- Simproc simplifying `deriv _ _` using `fun_prop`. -/
 simproc_decl deriv_simproc_at (deriv _ _) :=
   Mathlib.Meta.FunProp.mkFunPropSimproc decl_name% ``HasDerivAt.deriv
 
+/-- Simproc simplifying `deriv _` using `fun_prop`. -/
 simproc_decl deriv_simproc_forall (deriv _) :=
   Mathlib.Meta.FunProp.mkFunPropSimproc decl_name% ``HasDerivAt.deriv_forall
 
