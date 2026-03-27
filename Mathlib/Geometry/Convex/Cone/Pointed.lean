@@ -287,10 +287,8 @@ variable [AddCommMonoid E] [PartialOrder E] [IsOrderedAddMonoid E] [Module R E] 
 module. -/
 @[simps]
 def positive : PointedCone R E where
-  carrier := Set.Ici 0
-  zero_mem' := by simp
+  __ := AddSubmonoid.nonneg
   smul_mem' c _ hx := by simpa using smul_nonneg c.property hx
-  add_mem' hx hy := add_nonneg hx hy
 
 @[simp]
 theorem mem_positive {x : E} : x ∈ positive R E ↔ 0 ≤ x :=
