@@ -17,7 +17,7 @@ In this file we introduce `TopPair`, the category of topological pairs.
 We provide the inclusion and diagonal functors `TopCat` ⥤ `TopPair` and show that they are left and
 right adjoint to the first projection functor, respectively.
 
-We also define for two morphisms of topological pairs f, g : X ⟶ Y the structure `Homotopy f g` of
+We also define for two morphisms of topological pairs `f, g : X ⟶ Y` the structure `Homotopy f g` of
 homotopies between them.
 -/
 
