@@ -133,8 +133,8 @@ as `f`, the pullback of that morphism along `f` exists. -/
 protected class HasPullbacksAlong {X Y : C} (f : X ⟶ Y) : Prop where
   hasPullback {W} (g : W ⟶ Y) : P g → HasPullback g f
 
-/-- `P.HasPullbacksAlong f` states that for any morphism satisfying `P` with the same codomain
-as `f`, the pullback of that morphism along `f` exists. -/
+/-- `P.HasPushoutsAlong f` states that for any morphism satisfying `P` with the same domain
+as `f`, the pushout of that morphism along `f` exists. -/
 protected class HasPushoutsAlong {X Y : C} (f : X ⟶ Y) : Prop where
   hasPushout {W} (g : X ⟶ W) : P g → HasPushout g f
 
