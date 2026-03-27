@@ -52,8 +52,8 @@ instance : StochHom.IsStableUnderBraiding where
   braiding_inv_mem X Y := Kernel.instIsMarkovKernelProdSwap
 
 instance {X} : StochHom.IsStableUnderComonoid X where
-  counit_mem := Kernel.instIsMarkovKernelPUnitDiscard
-  comul_mem := Kernel.instIsMarkovKernelProdCopy
+  counit_mem := by dsimp [StochHom]; infer_instance
+  comul_mem := by dsimp [StochHom]; infer_instance
 
 /-- `Stoch` is the wide subcategory of `SFinKer` with Markov-kernel morphisms. -/
 abbrev Stoch := WideSubcategory StochHom
