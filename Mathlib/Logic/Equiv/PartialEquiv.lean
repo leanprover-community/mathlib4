@@ -79,11 +79,6 @@ This is in a separate file from `Mathlib/Tactic/Attr/Register.lean` because attr
 new file to become functional.
 -/
 
-/-- Common `@[simps]` configuration options used for manifold-related declarations. -/
-@[deprecated "Use `@[simps (attr := mfld_simps) -fullyApplied]` instead" (since := "2025-09-23")]
-meta def mfld_cfg : Simps.Config where
-  fullyApplied := false
-
 namespace Tactic.MfldSetTac
 
 /-- A very basic tactic to show that sets showing up in manifolds coincide or are included

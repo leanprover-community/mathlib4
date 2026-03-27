@@ -158,13 +158,13 @@ end Complex
 vector space. -/
 instance (priority := 900) Module.complexToReal (E : Type*) [AddCommGroup E] [Module ℂ E] :
     Module ℝ E :=
-  RestrictScalars.module ℝ ℂ E
+  .restrictScalars ℝ ℂ E
 
 /- Register as an instance (with low priority) the fact that a complex algebra is also a real
 algebra. -/
 instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algebra ℂ A] :
     Algebra ℝ A :=
-  RestrictScalars.algebra ℝ ℂ A
+  .restrictScalars ℝ ℂ A
 
 -- try to make sure we're not introducing diamonds but we will need
 -- `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906

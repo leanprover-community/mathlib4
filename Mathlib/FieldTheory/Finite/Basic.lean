@@ -489,9 +489,8 @@ open FiniteField Polynomial
 
 set_option backward.isDefEq.respectTransparency false in
 theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p, a ^ 2 + b ^ 2 = x := by
-  rcases hp.1.eq_two_or_odd with hp2 | hp_odd
-  · subst p
-    change Fin 2 at x
+  rcases hp.1.eq_two_or_odd with rfl | hp_odd
+  · change Fin 2 at x
     fin_cases x
     · use 0; simp
     · use 0, 1; simp

@@ -586,10 +586,17 @@ theorem integrable_rnDeriv_smul_iff (hμν : μ ≪ ν) :
   rw [← integrable_withDensity_iff_integrable_smul' (E := E)
     (measurable_rnDeriv μ ν) (rnDeriv_lt_top μ ν)]
 
+lemma integrable_toReal_rnDeriv_mul_iff (hμν : μ ≪ ν) {f : α → ℝ} :
+    Integrable (fun x ↦ (μ.rnDeriv ν x).toReal * f x) ν ↔ Integrable f μ :=
+  integrable_rnDeriv_smul_iff hμν
+
 theorem integral_rnDeriv_smul (hμν : μ ≪ ν) :
     ∫ x, (μ.rnDeriv ν x).toReal • f x ∂ν = ∫ x, f x ∂μ := by
   rw [← integral_withDensity_eq_integral_toReal_smul (measurable_rnDeriv _ _) (rnDeriv_lt_top _ _),
     withDensity_rnDeriv_eq _ _ hμν]
+
+lemma integral_toReal_rnDeriv_mul (hμν : μ ≪ ν) {f : α → ℝ} :
+    ∫ x, (μ.rnDeriv ν x).toReal * f x ∂ν = ∫ x, f x ∂μ := integral_rnDeriv_smul hμν
 
 /-- See also `setIntegral_rnDeriv_smul'` for a version that requires both measures to be σ-finite,
 but doesn't require `s` to be a measurable set. -/
@@ -598,6 +605,12 @@ lemma setIntegral_rnDeriv_smul (hμν : μ ≪ ν) {s : Set α} (hs : Measurable
   rw [← setIntegral_withDensity_eq_setIntegral_toReal_smul, withDensity_rnDeriv_eq _ _ hμν]
   exacts [measurable_rnDeriv _ _, ae_restrict_of_ae (rnDeriv_lt_top _ _), hs]
 
+/-- See also `setIntegral_toReal_rnDeriv_mul'` for a version that requires both measures to be
+σ-finite, but doesn't require `s` to be a measurable set. -/
+lemma setIntegral_toReal_rnDeriv_mul (hμν : μ ≪ ν) {f : α → ℝ} {s : Set α} (hs : MeasurableSet s) :
+    ∫ x in s, (μ.rnDeriv ν x).toReal * f x ∂ν = ∫ x in s, f x ∂μ :=
+  setIntegral_rnDeriv_smul hμν hs
+
 omit [HaveLebesgueDecomposition μ ν] in
 /-- A version of `setIntegral_rnDeriv_smul` that requires both measures to be σ-finite,
 but doesn't require `s` to be a measurable set. -/
@@ -605,6 +618,13 @@ lemma setIntegral_rnDeriv_smul' [SigmaFinite ν] (hμν : μ ≪ ν) (s : Set α
     ∫ x in s, (μ.rnDeriv ν x).toReal • f x ∂ν = ∫ x in s, f x ∂μ := by
   rw [← setIntegral_withDensity_eq_setIntegral_toReal_smul', withDensity_rnDeriv_eq _ _ hμν]
   exacts [measurable_rnDeriv _ _, ae_restrict_of_ae (rnDeriv_lt_top _ _)]
+
+omit [HaveLebesgueDecomposition μ ν] in
+/-- A version of `setIntegral_toReal_rnDeriv_mul` that requires both measures to be σ-finite,
+but doesn't require `s` to be a measurable set. -/
+lemma setIntegral_toReal_rnDeriv_mul' [SigmaFinite ν] (hμν : μ ≪ ν) (f : α → ℝ) (s : Set α) :
+    ∫ x in s, (μ.rnDeriv ν x).toReal * f x ∂ν = ∫ x in s, f x ∂μ :=
+  setIntegral_rnDeriv_smul' hμν s
 
 end IntegralRNDerivMul
 
