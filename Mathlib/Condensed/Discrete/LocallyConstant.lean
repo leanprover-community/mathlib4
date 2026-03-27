@@ -111,7 +111,6 @@ variable {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q Z) (
 /-- A fiber of a locally constant map as a `CompHausLike P`. -/
 def fiber : CompHausLike.{u} P := CompHausLike.of P a.val
 
-set_option backward.isDefEq.respectTransparency false in
 instance : HasProp P (fiber r a) := inferInstanceAs (HasProp P (Subtype _))
 
 /-- The inclusion map from a component of the coproduct induced by `f` into `S`. -/

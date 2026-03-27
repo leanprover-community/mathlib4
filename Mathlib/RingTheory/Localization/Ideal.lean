@@ -14,11 +14,17 @@ public import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Ideals in localizations of commutative rings
+
 ## Implementation notes
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
+
+## TODO
+Restate the file in terms of `Ideal.under`.
+
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
+
 -/
 
 @[expose] public section
@@ -167,6 +173,11 @@ def orderEmbedding : Ideal S ↪o Ideal R where
     constructor
     · exact fun hJ => (map_comap M S) J₁ ▸ (map_comap M S) J₂ ▸ Ideal.map_mono hJ
     · exact fun hJ => Ideal.comap_mono hJ
+
+include M in
+theorem comap_le_comap_iff {I J : Ideal S} :
+    I.comap (algebraMap R S) ≤ J.comap (algebraMap R S) ↔ I ≤ J := by
+  exact (IsLocalization.orderEmbedding M S).le_iff_le
 
 /-- If `R` is a ring, then prime ideals in the localization at `M`
 correspond to prime ideals in the original ring `R` that are disjoint from `M`.
