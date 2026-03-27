@@ -10,11 +10,11 @@ public import Mathlib.CategoryTheory.Monoidal.Widesubcategory
 /-!
 # Copy-discard structures on wide subcategories
 
-Given a monoidal category `C` and a morphism property `P : MorphismProperty C`, this file
-introduces `IsStableUnderComonoid`, a condition on `P` ensuring that `WideSubcategory P` inherits a
-`ComonObj` structure, and if `C` is braided and `P` is also stable under braiding, then a
-`IsCommComonObj` structure. Finally, if `C` is a copy-discard category,then `WideSubcategory P` is
-also a copy-discard category.
+Given a monoidal category `C`, a morphism property `P : MorphismProperty C` satisfying
+`P.IsMonoidalStable` and a comonoid object `c : C`, we introduce a condition `P.IsStableUnderComonoid c`
+saying that `c` inherits a comonoid object structure in the category of `WideSubcategory P`.
+If `C` is a copy-discard category, if `P` is also stable under braiding and that this condition `P.IsStableUnderComonoid` holds for all objects `c : C`, we show that `WideSubcategory P`
+is also a copy-discard category.
 -/
 
 @[expose] public section
