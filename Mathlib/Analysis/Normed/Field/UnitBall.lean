@@ -36,7 +36,7 @@ def Subsemigroup.unitBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : Subsem
     exact (norm_mul_le _ _).trans_lt (mul_lt_one_of_nonneg_of_lt_one_left (norm_nonneg _) hx hy.le)
 
 instance Metric.unitBall.instSemigroup [NonUnitalSeminormedRing 𝕜] : Semigroup (ball (0 : 𝕜) 1) :=
-  MulMemClass.toSemigroup (Subsemigroup.unitBall 𝕜)
+  inferInstanceAs <| Semigroup (Subsemigroup.unitBall 𝕜)
 
 instance Metric.unitBall.instContinuousMul [NonUnitalSeminormedRing 𝕜] :
     ContinuousMul (ball (0 : 𝕜) 1) :=
@@ -44,7 +44,7 @@ instance Metric.unitBall.instContinuousMul [NonUnitalSeminormedRing 𝕜] :
 
 instance Metric.unitBall.instCommSemigroup [SeminormedCommRing 𝕜] :
     CommSemigroup (ball (0 : 𝕜) 1) :=
-  MulMemClass.toCommSemigroup (Subsemigroup.unitBall 𝕜)
+  inferInstanceAs <| CommSemigroup (Subsemigroup.unitBall 𝕜)
 
 instance Metric.unitBall.instHasDistribNeg [NonUnitalSeminormedRing 𝕜] :
     HasDistribNeg (ball (0 : 𝕜) 1) :=
@@ -97,7 +97,7 @@ def Subsemigroup.unitClosedBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : 
 
 instance Metric.unitClosedBall.instSemigroup [NonUnitalSeminormedRing 𝕜] :
     Semigroup (closedBall (0 : 𝕜) 1) :=
-  MulMemClass.toSemigroup (Subsemigroup.unitClosedBall 𝕜)
+  inferInstanceAs <| Semigroup (Subsemigroup.unitClosedBall 𝕜)
 
 instance Metric.unitClosedBall.instHasDistribNeg [NonUnitalSeminormedRing 𝕜] :
     HasDistribNeg (closedBall (0 : 𝕜) 1) :=
@@ -139,11 +139,11 @@ def Submonoid.unitClosedBall (𝕜 : Type*) [SeminormedRing 𝕜] [NormOneClass 
 
 instance Metric.unitClosedBall.instMonoid [SeminormedRing 𝕜] [NormOneClass 𝕜] :
     Monoid (closedBall (0 : 𝕜) 1) :=
-  SubmonoidClass.toMonoid (Submonoid.unitClosedBall 𝕜)
+  inferInstanceAs <| Monoid (Submonoid.unitClosedBall 𝕜)
 
 instance Metric.unitClosedBall.instCommMonoid [SeminormedCommRing 𝕜] [NormOneClass 𝕜] :
     CommMonoid (closedBall (0 : 𝕜) 1) :=
-  SubmonoidClass.toCommMonoid (Submonoid.unitClosedBall 𝕜)
+  inferInstanceAs <| CommMonoid (Submonoid.unitClosedBall 𝕜)
 
 @[simp, norm_cast]
 protected theorem Metric.unitClosedBall.coe_one [SeminormedRing 𝕜] [NormOneClass 𝕜] :
@@ -211,11 +211,11 @@ theorem Metric.unitSphere.coe_zpow [NormedDivisionRing 𝕜] (x : sphere (0 : �
 
 instance Metric.unitSphere.instMonoid [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
     Monoid (sphere (0 : 𝕜) 1) :=
-  SubmonoidClass.toMonoid (Submonoid.unitSphere 𝕜)
+  inferInstanceAs <| Monoid (Submonoid.unitSphere 𝕜)
 
 instance Metric.unitSphere.instCommMonoid [SeminormedCommRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
     CommMonoid (sphere (0 : 𝕜) 1) :=
-  SubmonoidClass.toCommMonoid (Submonoid.unitSphere 𝕜)
+  inferInstanceAs <| CommMonoid (Submonoid.unitSphere 𝕜)
 
 @[simp, norm_cast]
 protected theorem Metric.unitSphere.coe_one [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
@@ -247,7 +247,7 @@ theorem unitSphereToUnits_injective [NormedDivisionRing 𝕜] :
   Subtype.ext <| by convert congr_arg Units.val h
 
 instance Metric.unitSphere.instGroup [NormedDivisionRing 𝕜] : Group (sphere (0 : 𝕜) 1) :=
-  unitSphereToUnits_injective.group (unitSphereToUnits 𝕜) (Units.ext rfl)
+  fast_instance% unitSphereToUnits_injective.group (unitSphereToUnits 𝕜) (Units.ext rfl)
     (fun _x _y => Units.ext rfl)
     (fun _x => Units.ext rfl) (fun _x _y => Units.ext <| div_eq_mul_inv _ _)
     (fun x n => Units.ext (Units.val_pow_eq_pow_val (unitSphereToUnits 𝕜 x) n).symm) fun x n =>
