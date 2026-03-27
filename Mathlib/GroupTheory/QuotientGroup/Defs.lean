@@ -69,9 +69,6 @@ protected def con : Con G where
         simp only [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
 
 @[to_additive]
-instance : One (G ⧸ N) := ⟨⟦1⟧⟩
-
-@[to_additive]
 instance Quotient.group : Group (G ⧸ N) :=
   inferInstanceAs <| Group (QuotientGroup.con N).Quotient
 
@@ -158,7 +155,6 @@ instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGro
 
 local notation " Q" => G ⧸ N
 
-omit [nN : N.Normal] in
 @[to_additive (attr := simp)]
 theorem mk_one : ((1 : G) : Q) = 1 :=
   rfl
