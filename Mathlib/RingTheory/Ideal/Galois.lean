@@ -154,7 +154,7 @@ theorem inertiaMapOfLiesOver_surjective {R : Type*} [CommRing R] [IsIntegrallyCl
     refine AlgEquiv.ofRingEquiv
       (f := ((IsFractionRing.stabilizerHom _ p₀ P (R ⧸ p₀) (B ⧸ P) σ)).toRingEquiv) fun q ↦ ?_
     refine Quotient.inductionOn' q fun x ↦ ?_
-    have := IsFractionRing.stabilizerHom_algebraMap_mk Gal(L/K) p₀ P (R ⧸ p₀) (B ⧸ P) σ
+    have := IsFractionRing.stabilizerHom_apply_apply_mk Gal(L/K) p₀ P (R ⧸ p₀) (B ⧸ P) σ
       (algebraMap A B x)
     simp only [Algebra.algebraMap_self, RingHomCompTriple.comp_apply] at this
     rw [show Quotient.mk'' x = Quotient.mk p x by rfl, Quotient.algebraMap_mk_of_liesOver,
@@ -174,11 +174,11 @@ theorem inertiaMapOfLiesOver_surjective {R : Type*} [CommRing R] [IsIntegrallyCl
         rw [algebraMap.smul', algebraMap.smul', AlgEquiv.smul_def, AlgEquiv.smul_def,
           restrictScalars_apply]
     rw [← Quotient.mk_eq_mk_iff_sub_mem]
-    have := IsFractionRing.stabilizerHom_algebraMap_mk Gal(L/K) p₀ P (R ⧸ p₀) (B ⧸ P) σ⁻¹ x
+    have := IsFractionRing.stabilizerHom_apply_apply_mk Gal(L/K) p₀ P (R ⧸ p₀) (B ⧸ P) σ⁻¹ x
     simp only [map_inv, Algebra.algebraMap_self, RingHomCompTriple.comp_apply,
       ← subgroup_smul_def] at this
     rw [← this]
-    have := IsFractionRing.stabilizerHom_algebraMap_mk Gal(L/F) p P (A ⧸ p) (B ⧸ P) ⟨τ, hτ⟩ x
+    have := IsFractionRing.stabilizerHom_apply_apply_mk Gal(L/F) p P (A ⧸ p) (B ⧸ P) ⟨τ, hτ⟩ x
     simp only [Algebra.algebraMap_self, RingHomCompTriple.comp_apply] at this
     rw [← this]
     exact AlgEquiv.congr_fun hτ' x
