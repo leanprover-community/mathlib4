@@ -44,24 +44,7 @@ universe v u
 
 namespace CategoryTheory
 open Limits MonoidalCategory CartesianMonoidalCategory
-variable {C : Type u} [Category.{v} C]
-
-/--
-In any braided category, the following is a pullback square:
-```
-X₁ ⊗ X₂  -β→  X₂ ⊗ X₁
-   |              |
-(f ⊗ₘ g)      (g ⊗ₘ f)
-   ↓              ↓
-X₃ ⊗ X₄  -β→  X₄ ⊗ X₃
-```
--/
-lemma IsPullback.tensorHom_braiding [MonoidalCategory C] [BraidedCategory C] {X₁ X₂ X₃ X₄ : C}
-    (f : X₁ ⟶ X₃) (g : X₂ ⟶ X₄) :
-    IsPullback (f ⊗ₘ g) (β_ X₁ X₂).hom (β_ _ _).hom (g ⊗ₘ f) :=
-  .of_vert_isIso (⟨BraidedCategory.braiding_naturality f g⟩)
-
-variable [CartesianMonoidalCategory C]
+variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 
 /--
 In a cartesian monoidal category, the following is a pullback square:
@@ -76,15 +59,9 @@ X ⊗ Z  →  Y ⊗ Z
 -/
 lemma IsPullback.whiskerRight_horiz {X Y : C} (f : X ⟶ Y) (Z : C) :
     IsPullback (f ▷ Z) (fst X Z) (fst Y Z) f := by
-  refine IsPullback.of_isLimit' (by simp) ?_
-  apply PullbackCone.IsLimit.mk _ fun s => CartesianMonoidalCategory.lift s.snd (s.fst ≫ snd _ _)
-  · intro s
-    ext <;> simp [s.condition]
-  · cat_disch
-  · intro s m hm₁ hm₂
-    ext
-    · simpa
-    · simp [← hm₁]
+  simpa using (IsPullback.of_vert_isIso
+    ⟨(CartesianMonoidalCategory.tensorObjProdIso_hom_whiskerRight f)⟩).paste_vert
+    (IsPullback.of_prod_fst_with_id f Z).flip
 
 /--
 In a cartesian monoidal category, the following is a pullback square:
@@ -99,12 +76,10 @@ Z ⊗ X  →  Z ⊗ Y
 -/
 lemma IsPullback.whiskerLeft_horiz {X Y : C} (f : X ⟶ Y) (Z : C) :
     IsPullback (Z ◁ f) (snd Z X) (snd Z Y) f := by
-  have := BraidedCategory.ofCartesianMonoidalCategory (C := C)
+  let := BraidedCategory.ofCartesianMonoidalCategory (C := C)
   have hleft := IsPullback.whiskerRight_horiz f Z
-  have := (IsPullback.tensorHom_braiding (𝟙 Z) f)
-  simp only [tensorHom_id, id_tensorHom] at this
+  have : IsPullback (Z ◁ f) (β_ Z X).hom (β_ Z Y).hom (f ▷ Z) := .of_vert_isIso .mk
   simpa using this.paste_vert hleft
-
 
 /--
 In a cartesian monoidal category, given two pullback squares:
@@ -137,7 +112,7 @@ lemma IsPullback.tensor
     {f₁ : X₁ ⟶ X₂} {f₂ : X₁ ⟶ X₃} {f₃ : X₂ ⟶ X₄} {f₄ : X₃ ⟶ X₄} (hf : IsPullback f₁ f₂ f₃ f₄)
     {g₁ : Y₁ ⟶ Y₂} {g₂ : Y₁ ⟶ Y₃} {g₃ : Y₂ ⟶ Y₄} {g₄ : Y₃ ⟶ Y₄} (hg : IsPullback g₁ g₂ g₃ g₄) :
     IsPullback (f₁ ⊗ₘ g₁) (f₂ ⊗ₘ g₂) (f₃ ⊗ₘ g₃) (f₄ ⊗ₘ g₄) := by
-  rw [tensorHom_def f₁,tensorHom_def f₄]
+  rw [tensorHom_def f₁, tensorHom_def f₄]
   apply IsPullback.paste_horiz (v₁₂ := f₃ ⊗ₘ g₂)
   · exact IsPullback.of_bot
       (by simpa using (IsPullback.whiskerRight_horiz f₁ Y₁).paste_vert hf)
@@ -173,28 +148,17 @@ lemma IsPullback.pullback_monoidal {X₁ X₂ X₃ X₄ : C}
     {f₃ : X₂ ⟶ X₄} {f₄ : X₃ ⟶ X₄} (hf : IsPullback f₁ f₂ f₃ f₄) :
     IsPullback (f₁ ≫ f₃)
       (CartesianMonoidalCategory.lift f₁ f₂) (CartesianMonoidalCategory.lift (𝟙 X₄) (𝟙 _))
-      (f₃ ⊗ₘ f₄) where
-  w := by
-    apply CartesianMonoidalCategory.hom_ext <;> simp [hf.w]
-  isLimit' := by
-    constructor
-    refine PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_
-    · intro s
-      refine hf.lift (s.snd ≫ fst _ _) (s.snd ≫ snd _ _) ?_
-      have := s.condition
-      simp only [CartesianMonoidalCategory.comp_lift, Category.comp_id,
-        CartesianMonoidalCategory.hom_ext_iff, CartesianMonoidalCategory.lift_fst, Category.assoc,
-        tensorHom_fst, CartesianMonoidalCategory.lift_snd, tensorHom_snd] at this
-      simp [this.left, ← this.right]
-    · intro s
-      simpa using congr($(s.condition) ≫ fst _ _).symm
-    · cat_disch
-    · intro s m hm₁ hm₂
-      simp only [CartesianMonoidalCategory.comp_lift, CartesianMonoidalCategory.hom_ext_iff,
-        CartesianMonoidalCategory.lift_fst, CartesianMonoidalCategory.lift_snd] at hm₂ ⊢
-      apply hf.hom_ext
-      · simpa using hm₂.left
-      · simpa [hm₁] using hm₂.right
+      (f₃ ⊗ₘ f₄) :=
+  IsPullback.mk' (by apply CartesianMonoidalCategory.hom_ext <;> simp [hf.w])
+    (by
+      introv _ h
+      simp [CartesianMonoidalCategory.hom_ext_iff] at h
+      apply hf.hom_ext <;> cat_disch)
+    (by
+      introv h
+      simp [CartesianMonoidalCategory.hom_ext_iff] at h
+      use hf.lift (b ≫ fst _ _) (b ≫ snd _ _) (by cat_disch)
+      cat_disch)
 
 /--
 In a cartesian monoidal category, if we have that the following square is a pullback square,
@@ -220,27 +184,21 @@ lemma IsPullback.of_pullback_monoidal {W X Y Z : C}
     {d : W ⟶ Z} {ι : W ⟶ X ⊗ Y}
     {f : X ⟶ Z} {g : Y ⟶ Z} (hpb : IsPullback d
       ι (CartesianMonoidalCategory.lift (𝟙 Z) (𝟙 _))
-      (f ⊗ₘ g)) : IsPullback (ι ≫ fst _ _) (ι ≫ snd _ _) f g where
-  w := by
+      (f ⊗ₘ g)) : IsPullback (ι ≫ fst _ _) (ι ≫ snd _ _) f g :=
+  IsPullback.mk' (by
     rw [Category.assoc, Category.assoc, ← tensorHom_fst f g, ← tensorHom_snd f g, ← hpb.w_assoc,
-      ← hpb.w_assoc, CartesianMonoidalCategory.lift_fst, CartesianMonoidalCategory.lift_snd]
-  isLimit' := ⟨PullbackCone.IsLimit.mk _
-      (fun s => hpb.lift
-        (s.fst ≫ f) (CartesianMonoidalCategory.lift s.fst s.snd) (by simp [s.condition]))
-      (by
-        intro s
-        rw [hpb.lift_snd_assoc, CartesianMonoidalCategory.lift_fst])
-      (by
-        intro s
-        simp only
-        rw [hpb.lift_snd_assoc, CartesianMonoidalCategory.lift_snd])
-      (by
-        intro s m hm₁ hm₂
-        apply hpb.hom_ext
-        · rw [hpb.lift_fst,← Category.comp_id d, ← CartesianMonoidalCategory.lift_fst (𝟙 Z) (𝟙 Z),
-            hpb.w_assoc, tensorHom_fst, reassoc_of% hm₁]
-        · rw [hpb.lift_snd]
-          apply CartesianMonoidalCategory.hom_ext <;> simpa)⟩
+      ← hpb.w_assoc, CartesianMonoidalCategory.lift_fst, CartesianMonoidalCategory.lift_snd])
+    (by
+      simp_rw [← and_imp, ← Category.assoc, ← CartesianMonoidalCategory.hom_ext_iff]
+      introv h
+      have hw := hpb.w
+      simp [CartesianMonoidalCategory.hom_ext_iff] at hw
+      apply hpb.hom_ext _ h
+      rw [hw.left, reassoc_of% h])
+    (by
+      introv h
+      use hpb.lift (a ≫ f) (CartesianMonoidalCategory.lift a b) (by cat_disch)
+      simp)
 
 lemma IsPullback.pullback_fst_monoidal {A₁ A₂ A₃ B₁ B₂ B₃ Z₁ Z₂ : C}
     {f₁ : A₁ ⟶ Z₁} {f₂ : A₁ ⟶ A₂} {f₃ : Z₁ ⟶ A₃} {f₄ : A₂ ⟶ A₃} (hf : IsPullback f₁ f₂ f₃ f₄)
@@ -265,25 +223,14 @@ section equalizer
 
 lemma IsPullback.equalizer_monoidal {X Y : C} (f g : X ⟶ Y) [HasEqualizer f g] :
     IsPullback (equalizer.ι f g) (equalizer.ι f g ≫ f)
-      (CartesianMonoidalCategory.lift f g) (CartesianMonoidalCategory.lift (𝟙 Y) (𝟙 Y)) where
-  w := by
-    apply CartesianMonoidalCategory.hom_ext <;> simp [equalizer.condition f g]
-  isLimit' := by
-    constructor
-    refine PullbackCone.IsLimit.mk _ (fun s => (equalizer.lift s.fst ?_)) ?_ ?_ ?_
-    · nth_rw 6 [← CartesianMonoidalCategory.lift_snd f g]
-      nth_rw 4 [← CartesianMonoidalCategory.lift_fst f g]
-      rw [s.condition_assoc, s.condition_assoc, CartesianMonoidalCategory.lift_fst,
-        CartesianMonoidalCategory.lift_snd]
-    · intro s
-      simp [equalizer.lift_ι]
-    · intro s
-      simp only [equalizer.lift_ι_assoc]
-      nth_rw 4 [← CartesianMonoidalCategory.lift_fst f g]
-      rw [s.condition_assoc,CartesianMonoidalCategory.lift_fst,Category.comp_id]
-    · intro s m hm₁ hm₂
-      apply equalizer.hom_ext
-      simp [equalizer.lift_ι, hm₁]
+      (CartesianMonoidalCategory.lift f g) (CartesianMonoidalCategory.lift (𝟙 Y) (𝟙 Y)) :=
+  IsPullback.mk' (by apply CartesianMonoidalCategory.hom_ext <;> simp [equalizer.condition f g])
+    (by cat_disch)
+    (by
+      intro s m m' hm₂
+      simp [CartesianMonoidalCategory.hom_ext_iff] at hm₂
+      use (equalizer.lift m (by cat_disch))
+      simpa [equalizer.lift_ι, equalizer.lift_ι_assoc] using ‹m ≫ f = m' ∧ _›.left)
 
 /--
 In a cartesian monoidal category, if we have that the following square is a pullback square,
@@ -298,20 +245,19 @@ Then there is an equalizer of f and g.
 -/
 lemma HasEqualizer.of_isPullback_monoidal {X Y : C} (f g : X ⟶ Y)
     {W : C} (ι : W ⟶ X) (d : W ⟶ Y) (hpb : IsPullback ι d (lift f g) (lift (𝟙 _) (𝟙 _))) :
-    HasEqualizer f g := ⟨⟨⟨Limits.Fork.ofι ι (by
-        let : BraidedCategory C := BraidedCategory.ofCartesianMonoidalCategory
-        nth_rw 1 [← lift_snd f g,← lift_fst f g, hpb.w_assoc, hpb.w_assoc,lift_fst,lift_snd]),
-      (by
-        refine Limits.Fork.IsLimit.mk _ (fun s => hpb.lift s.ι (s.ι ≫ f)
-          (by simp [dsimp% s.condition])) ?_ ?_
-        · intro s
-          simp
-        · intro s m hm
-          apply hpb.hom_ext (by simpa using hm)
-          simp only [parallelPair_obj_zero, Fork.ofι_pt, Fork.ι_ofι, IsPullback.lift_snd] at hm ⊢
-          rw [← Category.comp_id d, ← lift_fst (𝟙 Y) (𝟙 Y), ← hpb.w_assoc,lift_fst,reassoc_of% hm]
-        )⟩
-  ⟩⟩
+    HasEqualizer f g :=
+  ⟨⟨⟨Limits.Fork.ofι ι
+    (by nth_rw 1 [← lift_snd f g, ← lift_fst f g, hpb.w_assoc, hpb.w_assoc, lift_fst, lift_snd]),
+    (by
+      refine Limits.Fork.IsLimit.mk _ (fun s => hpb.lift s.ι (s.ι ≫ f)
+        (by simp [dsimp% s.condition])) ?_ ?_
+      · cat_disch
+      · intro s m hm
+        apply hpb.hom_ext (by simpa using hm)
+        simp only [parallelPair_obj_zero, Fork.ofι_pt, Fork.ι_ofι, IsPullback.lift_snd] at hm ⊢
+        rw [← Category.comp_id d, ← lift_fst (𝟙 Y) (𝟙 Y), ← hpb.w_assoc, lift_fst,
+          reassoc_of% hm])⟩⟩⟩
+
 end equalizer
 
 end CategoryTheory
