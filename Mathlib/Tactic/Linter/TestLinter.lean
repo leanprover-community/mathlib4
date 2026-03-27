@@ -29,24 +29,15 @@ We see through `let`s, and do not increment the index when doing so. This behavi
 with `forallBoundedTelescope`.
 -/
 @[specialize p]
-partial def _root_.Lean.Expr.getUnusedForallBinderIdxsWhere
-    (p : BinderInfo → Expr → Bool) (e : Expr) : Array Nat :=
-  go e 0 #[]
-where
-  /-- Inspects `body`, and if it is a `.forallE` of an instance with type `type` such that `p type`
-  is `true` and the remainder of the type does not depend on it, pushes the `current` index onto
-  the accumulated array. -/
-  go (body : Expr) (current : Nat) (acc : Array Nat) : Array Nat :=
-    match body.cleanupAnnotations with
-    | .forallE _ type body bi => go body (current+1) <|
-      if p bi type && !(body.hasLooseBVar 0) then
-        acc.push current
-      else
-        acc
-    /- See through `letE`, and just as in the interpretation of a bound provided to
-    `forallBoundedTelescope`, do not increment the number of binders we've counted. -/
-    | .letE _ _ _ body _ => go body current acc
-    | _ => acc
+partial def _root_.Lean.Expr.hasUnusedForallBinderIdxsWhere
+    (p : BinderInfo → Expr → Bool) (e : Expr) : Bool :=
+  match e.cleanupAnnotations with
+  | .forallE _ type body bi =>
+    p bi type && !(body.hasLooseBVar 0) || body.hasUnusedForallBinderIdxsWhere p
+  /- See through `letE`, and just as in the interpretation of a bound provided to
+  `forallBoundedTelescope`, do not increment the number of binders we've counted. -/
+  | .letE _ _ _ body _ => body.hasUnusedForallBinderIdxsWhere p
+  | _ => false
 
 /-- Does work. -/
 def workLinter : Linter where
@@ -55,7 +46,7 @@ def workLinter : Linter where
       for n in t.getDeclsByBody do
         unless ← liftCoreM <| Meta.isInstance n do continue
         let some info := (← getEnv).find? n | continue
-        let impossibleIdxs := info.type.getUnusedForallBinderIdxsWhere fun bi _ =>
+        let impossibleIdxs := info.type.hasUnusedForallBinderIdxsWhere fun bi _ =>
           !bi.isInstImplicit
 
 initialize addLinter workLinter
