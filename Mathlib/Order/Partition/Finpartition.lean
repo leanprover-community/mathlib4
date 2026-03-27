@@ -328,11 +328,9 @@ noncomputable def toSubtype {s : α} (P : Finpartition s)
     Finpartition (⟨s, hs⟩ : Subtype Pr) :=
   letI : Lattice (Subtype Pr) := Subtype.lattice Prsup Prinf
   letI : OrderBot (Subtype Pr) := Subtype.orderBot Prbot
-  { parts := preimage P.parts (fun (p : Subtype Pr) => p.val)
-      Subtype.val_injective.injOn
-    supIndep := by
+  { parts := preimage P.parts Subtype.val Subtype.val_injective.injOn
+    supIndep t ht i hi hi' := by
       classical
-      intro t ht i hi hi'
       have : (fun (i : Subtype Pr) => (id i).val) = id ∘ Subtype.val := rfl
       rw [disjoint_subtype_iff Prinf Prbot, sup_coe, this, ← sup_image t Subtype.val id]
       · apply P.supIndep
@@ -342,8 +340,7 @@ noncomputable def toSubtype {s : α} (P : Finpartition s)
       exact Prsup
     sup_parts := by
       simpa [Finset.sup_preimage_val_id_eq_sup_toSubtype_id Prsup Prbot hP] using P.sup_parts
-    bot_notMem := by
-      simpa [mem_preimage, Subtype.coe_bot Prbot] using P.bot_notMem }
+    bot_notMem := by simpa [mem_preimage, Subtype.coe_bot Prbot] using P.bot_notMem }
 
 end Lattice
 
