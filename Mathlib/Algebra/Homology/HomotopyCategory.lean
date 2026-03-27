@@ -49,7 +49,6 @@ def HomotopyCategory :=
 instance : Category (HomotopyCategory V c) :=
   inferInstanceAs <| Category (CategoryTheory.Quotient (homotopic V c))
 
--- TODO the homotopy_category is preadditive
 namespace HomotopyCategory
 
 instance : Preadditive (CategoryTheory.Quotient (homotopic V c)) :=
