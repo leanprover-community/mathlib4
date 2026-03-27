@@ -67,6 +67,9 @@ namespace OmegaCompletePartialOrder
 
 /-- A chain is a monotone sequence.
 
+This is made a one-field structure around order homomorphisms `ℕ →o α` because we want to endow
+chains with the domination order rather than the pointwise order. See `Chain.instLE`.
+
 See the definition on page 114 of [gunter1992]. -/
 structure Chain (α : Type u) [Preorder α] extends ℕ →o α
 
@@ -97,13 +100,14 @@ variable (c c' : Chain α)
 variable (f : α →o β)
 variable (g : β →o γ)
 
-instance : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
+instance instLE : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
 
 lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_range (OrderHomClass.mono c)
 
 lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.directedOn
 
 /-- `map` function for `Chain` -/
+@[simps toOrderHom]
 def map : Chain β where toOrderHom := f.comp c.toOrderHom
 
 @[simp] lemma coe_map : ⇑(c.map f) = f ∘ c := rfl
@@ -135,12 +139,13 @@ theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g := fun _
 
 /-- `OmegaCompletePartialOrder.Chain.zip` pairs up the elements of two chains
 that have the same index. -/
--- Not `@[simps]`: we need `@[simps!]` to see through the type synonym `Chain β = ℕ →o β`,
--- but then we'd get the `FunLike` instance for `OrderHom` instead.
+@[simps toOrderHom]
 def zip (c₀ : Chain α) (c₁ : Chain β) : Chain (α × β) where
   toOrderHom := c₀.toOrderHom.prod c₁.toOrderHom
 
-@[simp] theorem zip_coe (c₀ : Chain α) (c₁ : Chain β) (n : ℕ) : c₀.zip c₁ n = (c₀ n, c₁ n) := rfl
+@[simp] lemma coe_zip (c₀ : Chain α) (c₁ : Chain β) (n : ℕ) : c₀.zip c₁ n = (c₀ n, c₁ n) := rfl
+
+@[deprecated (since := "2026-03-27")] alias zip_coe := coe_zip
 
 /-- An example of a `Chain` constructed from an ordered pair. -/
 def pair (a b : α) (hab : a ≤ b) : Chain α where
