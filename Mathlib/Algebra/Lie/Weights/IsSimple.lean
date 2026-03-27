@@ -583,7 +583,6 @@ lemma invtSubmoduleToLieIdeal_mono {q₁ q₂ : Submodule K (Dual K H)}
     (h : q₁ ≤ q₂) :
     invtSubmoduleToLieIdeal q₁ hq₁ ≤ invtSubmoduleToLieIdeal q₂ hq₂ := by
   change (invtSubmoduleToLieIdeal q₁ hq₁).restr H ≤ (invtSubmoduleToLieIdeal q₂ hq₂).restr H
-  rw [restr_invtSubmoduleToLieIdeal_eq_iSup]
   exact iSup_le fun ⟨α, hα_mem, hα_nz⟩ ↦ le_iSup_of_le ⟨α, h hα_mem, hα_nz⟩ le_rfl
 
 lemma lieIdealOrderIso_left_inv (I : LieIdeal K L) :
