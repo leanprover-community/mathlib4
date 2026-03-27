@@ -759,57 +759,75 @@ theorem hasDerivAtFilter_intCast [IntCast F] (z : ℤ) : HasDerivAtFilter (z : �
 theorem hasDerivAtFilter_ofNat (n : ℕ) [OfNat F n] : HasDerivAtFilter (ofNat(n) : 𝕜 → F) 0 L :=
   hasDerivAtFilter_const _ _
 
+@[fun_prop]
 theorem hasStrictDerivAt_const : HasStrictDerivAt (fun _ => c) 0 x :=
   hasDerivAtFilter_const _ _
 
+@[fun_prop]
 theorem hasStrictDerivAt_zero : HasStrictDerivAt (0 : 𝕜 → F) 0 x :=
   hasStrictDerivAt_const _ _
 
+@[fun_prop]
 theorem hasStrictDerivAt_one [One F] : HasStrictDerivAt (1 : 𝕜 → F) 0 x :=
   hasStrictDerivAt_const _ _
 
+@[fun_prop]
 theorem hasStrictDerivAt_natCast [NatCast F] (n : ℕ) : HasStrictDerivAt (n : 𝕜 → F) 0 x :=
   hasStrictDerivAt_const _ _
 
+@[fun_prop]
 theorem hasStrictDerivAt_intCast [IntCast F] (z : ℤ) : HasStrictDerivAt (z : 𝕜 → F) 0 x :=
   hasStrictDerivAt_const _ _
 
+@[fun_prop]
 theorem HasStrictDerivAt_ofNat (n : ℕ) [OfNat F n] : HasStrictDerivAt (ofNat(n) : 𝕜 → F) 0 x :=
   hasStrictDerivAt_const _ _
 
+@[fun_prop]
 theorem hasDerivWithinAt_const : HasDerivWithinAt (fun _ => c) 0 s x :=
   hasDerivAtFilter_const _ _
 
+@[fun_prop]
 theorem hasDerivWithinAt_zero : HasDerivWithinAt (0 : 𝕜 → F) 0 s x :=
   hasDerivAtFilter_zero _
 
+@[fun_prop]
 theorem hasDerivWithinAt_one [One F] : HasDerivWithinAt (1 : 𝕜 → F) 0 s x :=
   hasDerivWithinAt_const _ _ _
 
+@[fun_prop]
 theorem hasDerivWithinAt_natCast [NatCast F] (n : ℕ) : HasDerivWithinAt (n : 𝕜 → F) 0 s x :=
   hasDerivWithinAt_const _ _ _
 
+@[fun_prop]
 theorem hasDerivWithinAt_intCast [IntCast F] (z : ℤ) : HasDerivWithinAt (z : 𝕜 → F) 0 s x :=
   hasDerivWithinAt_const _ _ _
 
+@[fun_prop]
 theorem hasDerivWithinAt_ofNat (n : ℕ) [OfNat F n] : HasDerivWithinAt (ofNat(n) : 𝕜 → F) 0 s x :=
   hasDerivWithinAt_const _ _ _
 
+@[fun_prop]
 theorem hasDerivAt_const : HasDerivAt (fun _ => c) 0 x :=
   hasDerivAtFilter_const _ _
 
+@[fun_prop]
 theorem hasDerivAt_zero : HasDerivAt (0 : 𝕜 → F) 0 x :=
   hasDerivAtFilter_zero _
 
+@[fun_prop]
 theorem hasDerivAt_one [One F] : HasDerivAt (1 : 𝕜 → F) 0 x :=
   hasDerivAt_const _ _
 
+@[fun_prop]
 theorem hasDerivAt_natCast [NatCast F] (n : ℕ) : HasDerivAt (n : 𝕜 → F) 0 x :=
   hasDerivAt_const _ _
 
+@[fun_prop]
 theorem hasDerivAt_intCast [IntCast F] (z : ℤ) : HasDerivAt (z : 𝕜 → F) 0 x :=
   hasDerivAt_const _ _
 
+@[fun_prop]
 theorem hasDerivAt_ofNat (n : ℕ) [OfNat F n] : HasDerivAt (ofNat(n) : 𝕜 → F) 0 x :=
   hasDerivAt_const _ _
 
