@@ -59,9 +59,9 @@ lemma DerivedCategory.mapTriangleOfSESδ [HasDerivedCategory.{t} C] [HasDerivedC
     {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact) :
     F.mapDerivedCategory.map (triangleOfSESδ hS) =
     (F.mapDerivedCategoryFactors.hom.app S.X₃) ≫
-    triangleOfSESδ (hS.map_of_exact (F.mapHomologicalComplex (ComplexShape.up ℤ))) ≫
-    ((shiftFunctor (DerivedCategory D) (1 : ℤ)).map (F.mapDerivedCategoryFactors.inv.app S.X₁)) ≫
-    ((F.mapDerivedCategory.commShiftIso (1 : ℤ)).inv.app (Q.obj S.X₁)) := by
+      triangleOfSESδ (hS.map_of_exact (F.mapHomologicalComplex _)) ≫
+        (F.mapDerivedCategoryFactors.inv.app S.X₁)⟦1⟧' ≫
+          (F.mapDerivedCategory.commShiftIso (1 : ℤ)).inv.app (Q.obj S.X₁) := by
   have := CochainComplex.mappingCone.quasiIso_descShortComplex hS
   rw [← cancel_epi (F.mapDerivedCategory.map
     (Q.map (CochainComplex.mappingCone.descShortComplex S))), ← Functor.map_comp,
@@ -85,8 +85,8 @@ lemma ShortComplex.ShortExact.mapShiftedHom_singleδ
     [PreservesFiniteLimits F] [PreservesFiniteColimits F] :
     (F.mapDerivedCategorySingleFunctor 0).inv.app S.X₃ ≫
       ShiftedHom.map hS.singleδ F.mapDerivedCategory ≫
-        (shiftFunctor (DerivedCategory D) 1).map ((F.mapDerivedCategorySingleFunctor 0).hom.app
-          S.X₁) = (hS.map_of_exact F).singleδ := by
+        ((F.mapDerivedCategorySingleFunctor 0).hom.app S.X₁)⟦1⟧' =
+    (hS.map_of_exact F).singleδ := by
   simp only [Functor.comp_obj, ShiftedHom.map, ShortComplex.ShortExact.singleδ, Functor.mapIso_hom,
     SingleFunctors.evaluation_obj, SingleFunctors.postcomp_functor, ShortComplex.map_X₁,
     SingleFunctors.evaluation_map, Functor.mapIso_inv, Functor.map_comp, Category.assoc,
