@@ -5,17 +5,14 @@ Authors: Yongxi Lin
 -/
 module
 
-public import Mathlib.Analysis.Normed.Order.Lattice
-public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 
 /-!
 # Uniformly distributed measures
 
-In this file we define uniformly distributed measures and prove Christensen's Lemma. As an
-application, we prove that the restriction of the `n - 1`-dimensional Hausdorff measure onto an
-`n`-dimensional sphere coincides with the spherical measure.
+In this file we define uniformly distributed measures and prove Christensen's Lemma.
 
 ## Main statements
 
@@ -53,6 +50,22 @@ class UniformlyDistributed (μ : Measure X) : Prop where
   zero_lt : ∀ ⦃r : ℝ⦄, 0 < r → ∀ x, 0 < μ (ball x r)
   lt_top : ∀ ⦃r : ℝ⦄, 0 < r → ∀ x, μ (ball x r) < ⊤
 
+theorem lintegral_liminf' {μ : Measure X} {ι : Type*} {f : ι → X → ℝ≥0∞} (u : Filter ι)
+    [IsCountablyGenerated u] (h_meas : ∀ i, AEMeasurable (f i) μ) :
+    ∫⁻ a, liminf (fun i => f i a) u ∂μ ≤ liminf (fun i => ∫⁻ a, f i a ∂μ) u := by
+  by_cases! hu : ¬ u.NeBot
+  · simp_all
+  · obtain ⟨g, hg⟩ : ∃ g : ℕ → ι, Tendsto g atTop u ∧
+      Tendsto (fun n => ∫⁻ a, f (g n) a ∂μ) atTop (𝓝 (liminf (fun i => ∫⁻ a, f i a ∂μ) u)) := by
+      sorry
+    calc
+    _ ≤ ∫⁻ a, liminf (fun n => f (g n) a) atTop ∂μ := by
+      refine lintegral_mono fun a => ?_
+      rw [show (fun n => f (g n) a) = (fun i => f i a) ∘ (fun n => g n) from by grind, liminf_comp]
+      exact liminf_le_liminf_of_le hg.1
+    _ ≤ liminf (fun n => ∫⁻ a, f (g n) a ∂μ) atTop := lintegral_liminf_le' (fun n => h_meas (g n))
+    _ ≤ _ := by sorry
+
 private lemma isUniformlyDistributed_le_smul (μ ν : Measure X) [OpensMeasurableSpace X]
     [UniformlyDistributed μ] [UniformlyDistributed ν] {U : Set X} (hU : IsOpen U) (x : X) :
     μ U ≤ (liminf (fun r => (ν (ball x r))⁻¹ * μ (ball x r)) (𝓝[>] 0)) • (ν U) := calc
@@ -73,25 +86,31 @@ private lemma isUniformlyDistributed_le_smul (μ ν : Measure X) [OpensMeasurabl
   _ = liminf (fun r => ∫⁻ a in U, (ν (ball x r))⁻¹ * ν (U ∩ ball a r) ∂μ) (𝓝[>] 0) := by
     apply liminf_congr
     filter_upwards [self_mem_nhdsWithin] with r hr
-    have (u : X) : ν (ball u r) = ν (ball x r) := UniformlyDistributed.eq_measure hr u x
-    simp_all
-  _ = liminf (fun r => (ν (ball x r))⁻¹ * ∫⁻ a in U, ν (U ∩ ball a r) ∂μ) (𝓝[>] 0) := by sorry
+    simp_all [fun u => UniformlyDistributed.eq_measure (μ := ν) hr u x]
+  _ ≤ liminf (fun r => (ν (ball x r))⁻¹ * ∫⁻ a, ν (U ∩ ball a r) ∂μ) (𝓝[>] 0) := by sorry
   -- apply Fubini
   _ = liminf (fun r => (ν (ball x r))⁻¹ * ∫⁻ a in U, μ (ball a r) ∂ν) (𝓝[>] 0) := by
     congr with r
-    have : ∫⁻ a in U, ν (U ∩ ball a r) ∂μ =  ∫⁻ a in U, μ (ball a r) ∂ν := by sorry
+    have : ∫⁻ a, ν (U ∩ ball a r) ∂μ =  ∫⁻ a in U, μ (ball a r) ∂ν := calc
+      _ = ∫⁻ a, ∫⁻ b in U, (ball a r).indicator (fun b => 1) b ∂ν ∂μ := by
+        refine lintegral_congr fun a => ?_
+        simp [setLIntegral_indicator measurableSet_ball, inter_comm]
+      _ = ∫⁻ b in U, ∫⁻ a, (ball a r).indicator (fun b => 1) b ∂μ ∂ν := by sorry
+      _ = ∫⁻ b in U, ∫⁻ a, (ball b r).indicator (fun a => 1) a ∂μ ∂ν := by
+        refine setLIntegral_congr_fun hU.measurableSet fun a ha => lintegral_congr fun c => ?_
+        simp [indicator, dist_comm]
+      _ = _ := by
+        refine setLIntegral_congr_fun hU.measurableSet fun b hb => ?_
+        rw [← setLIntegral_one, lintegral_indicator measurableSet_ball]
     congr
   -- remove the dependence of `μ (ball a r)` on `a`
   _ = liminf (fun r => (ν (ball x r))⁻¹ * ∫⁻ a in U, μ (ball x r) ∂ν) (𝓝[>] 0) := by
     apply liminf_congr
     filter_upwards [self_mem_nhdsWithin] with r hr
-    have (u : X) : μ (ball u r) = μ (ball x r) := UniformlyDistributed.eq_measure hr u x
-    simp_all
+    simp_all [fun u => UniformlyDistributed.eq_measure (μ := μ) hr u x]
   _ = liminf (fun r => (ν (ball x r))⁻¹ * μ (ball x r) * ν U) (𝓝[>] 0) := by
     congr with r
-    rw [mul_assoc]
-    have :  ∫⁻ a in U, μ (ball x r) ∂ν = μ (ball x r) * ν U := by rw [setLIntegral_const]
-    congr
+    rw [mul_assoc, setLIntegral_const]
   _ = _ := by sorry
 
 /-- **Christensen's Lemma**: Uniformly distributed outerregular measures are unique up to
