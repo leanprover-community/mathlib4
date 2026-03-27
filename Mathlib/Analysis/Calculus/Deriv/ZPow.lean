@@ -37,6 +37,7 @@ variable {m : ℤ}
 
 /-! ### Derivative of `x ↦ x^m` for `m : ℤ` -/
 
+@[fun_prop]
 theorem hasStrictDerivAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) :
     HasStrictDerivAt (fun x => x ^ m) ((m : 𝕜) * x ^ (m - 1)) x := by
   have : ∀ m : ℤ, 0 < m → HasStrictDerivAt (· ^ m) ((m : 𝕜) * x ^ (m - 1)) x := fun m hm ↦ by
@@ -58,10 +59,12 @@ theorem hasStrictDerivAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) :
   · simp only [hm, zpow_zero, Int.cast_zero, zero_mul, hasStrictDerivAt_const]
   · exact this m hm
 
+@[fun_prop]
 theorem hasDerivAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) :
     HasDerivAt (fun x => x ^ m) ((m : 𝕜) * x ^ (m - 1)) x :=
   (hasStrictDerivAt_zpow m x h).hasDerivAt
 
+@[fun_prop]
 theorem hasDerivWithinAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) (s : Set 𝕜) :
     HasDerivWithinAt (fun x => x ^ m) ((m : 𝕜) * x ^ (m - 1)) s x :=
   (hasDerivAt_zpow m x h).hasDerivWithinAt

@@ -16,6 +16,7 @@ public section
 
 variable {𝕜 ι : Type*} [DecidableEq ι] [NontriviallyNormedField 𝕜]
 
+@[fun_prop]
 theorem hasDerivAt_update (x : ι → 𝕜) (i : ι) (y : 𝕜) :
     HasDerivAt (Function.update x i) (Pi.single i (1 : 𝕜)) y := by
   convert (hasFDerivAt_update x y).hasDerivAt
@@ -25,6 +26,7 @@ theorem hasDerivAt_update (x : ι → 𝕜) (i : ι) (y : 𝕜) :
   · simp [h]
   · simp [Pi.single_eq_of_ne h]
 
+@[fun_prop]
 theorem hasDerivAt_single (i : ι) (y : 𝕜) :
     HasDerivAt (Pi.single (M := fun _ ↦ 𝕜) i) (Pi.single i (1 : 𝕜)) y :=
   hasDerivAt_update 0 i y

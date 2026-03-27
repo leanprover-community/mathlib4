@@ -51,6 +51,7 @@ namespace ContinuousLinearMap
 
 variable {B : E →L[𝕜] F →L[𝕜] G} {u : 𝕜 → E} {v : 𝕜 → F} {u' : E} {v' : F}
 
+@[fun_prop]
 theorem hasDerivWithinAt_of_bilinear
     (hu : HasDerivWithinAt u u' s x) (hv : HasDerivWithinAt v v' s x) :
     HasDerivWithinAt (fun x ↦ B (u x) (v x)) (B (u x) v' + B u' (v x)) s x := by
@@ -74,6 +75,7 @@ theorem hasDerivAt_of_bilinear (hu : x ∈ tsupport v → HasDerivAt u u' x)
     · simp [image_eq_zero_of_notMem_tsupport hxu, (hu hxv).unique <| .of_notMem_tsupport hxu]
     · simp [image_eq_zero_of_notMem_tsupport hxu, image_eq_zero_of_notMem_tsupport hxv]
 
+@[fun_prop]
 theorem hasStrictDerivAt_of_bilinear (hu : HasStrictDerivAt u u' x) (hv : HasStrictDerivAt v v' x) :
     HasStrictDerivAt (fun x ↦ B (u x) (v x)) (B (u x) v' + B u' (v x)) x := by
   simpa using
@@ -102,18 +104,18 @@ section SMul
 variable {𝕜' : Type*} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F] {c : 𝕜 → 𝕜'} {c' : 𝕜'}
 
-@[to_fun]
+@[fun_prop, to_fun (attr := fun_prop)]
 theorem HasDerivWithinAt.smul (hc : HasDerivWithinAt c c' s x) (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (c • f) (c x • f' + c' • f x) s x := by
   simpa using (HasFDerivWithinAt.smul hc hf).hasDerivWithinAt
 
-@[to_fun]
+@[fun_prop, to_fun (attr := fun_prop)]
 theorem HasDerivAt.smul (hc : HasDerivAt c c' x) (hf : HasDerivAt f f' x) :
     HasDerivAt (c • f) (c x • f' + c' • f x) x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hc.smul hf
 
-@[to_fun]
+@[fun_prop, to_fun (attr := fun_prop)]
 theorem HasStrictDerivAt.smul (hc : HasStrictDerivAt c c' x) (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (c • f) (c x • f' + c' • f x) x := by
   simpa using (HasStrictFDerivAt.smul hc hf).hasStrictDerivAt
@@ -138,16 +140,19 @@ theorem deriv_smul (hc : DifferentiableAt 𝕜 c x) (hf : DifferentiableAt 𝕜 
     deriv (c • f) x = c x • deriv f x + deriv c x • f x :=
   (hc.hasDerivAt.smul hf.hasDerivAt).deriv
 
+@[fun_prop]
 theorem HasStrictDerivAt.smul_const (hc : HasStrictDerivAt c c' x) (f : F) :
     HasStrictDerivAt (fun y => c y • f) (c' • f) x := by
   have := hc.smul (hasStrictDerivAt_const x f)
   rwa [smul_zero, zero_add] at this
 
+@[fun_prop]
 theorem HasDerivWithinAt.smul_const (hc : HasDerivWithinAt c c' s x) (f : F) :
     HasDerivWithinAt (fun y => c y • f) (c' • f) s x := by
   have := hc.smul (hasDerivWithinAt_const x s f)
   rwa [smul_zero, zero_add] at this
 
+@[fun_prop]
 theorem HasDerivAt.smul_const (hc : HasDerivAt c c' x) (f : F) :
     HasDerivAt (fun y => c y • f) (c' • f) x := by
   rw [← hasDerivWithinAt_univ] at *
@@ -175,7 +180,7 @@ variable
   -- `DistribMulActionWithZero` typeclass
   {𝕝 : Type*} [DivisionSemiring 𝕝] [Module 𝕝 F] [SMulCommClass 𝕜 𝕝 F] [ContinuousConstSMul 𝕝 F]
 
-@[to_fun]
+@[fun_prop, to_fun (attr := fun_prop)]
 theorem HasStrictDerivAt.const_smul (c : R) (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (c • f) (c • f') x := by
   simpa using (HasStrictFDerivAt.const_smul hf c).hasStrictDerivAt
@@ -185,12 +190,12 @@ theorem HasDerivAtFilter.const_smul (c : R) (hf : HasDerivAtFilter f f' L) :
     HasDerivAtFilter (c • f) (c • f') L := by
   simpa using (HasFDerivAtFilter.const_smul hf c).hasDerivAtFilter
 
-@[to_fun]
+@[fun_prop, to_fun (attr := fun_prop)]
 theorem HasDerivWithinAt.const_smul (c : R) (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (c • f) (c • f') s x :=
   HasDerivAtFilter.const_smul c hf
 
-@[to_fun]
+@[fun_prop, to_fun (attr := fun_prop)]
 theorem HasDerivAt.const_smul (c : R) (hf : HasDerivAt f f' x) :
     HasDerivAt (c • f) (c • f') x :=
   HasDerivAtFilter.const_smul c hf
@@ -259,18 +264,18 @@ section Mul
 variable {𝕜' 𝔸 : Type*} [NormedDivisionRing 𝕜'] [NormedRing 𝔸] [NormedAlgebra 𝕜 𝕜']
   [NormedAlgebra 𝕜 𝔸] {c d : 𝕜 → 𝔸} {c' d' : 𝔸} {u v : 𝕜 → 𝕜'}
 
-@[to_fun]
+@[fun_prop, to_fun (attr := fun_prop)]
 theorem HasDerivWithinAt.mul (hc : HasDerivWithinAt c c' s x) (hd : HasDerivWithinAt d d' s x) :
     HasDerivWithinAt (c * d) (c' * d x + c x * d') s x := by
   simpa [add_comm] using (HasFDerivWithinAt.mul' hc hd).hasDerivWithinAt
 
-@[to_fun]
+@[fun_prop, to_fun (attr := fun_prop)]
 theorem HasDerivAt.mul (hc : HasDerivAt c c' x) (hd : HasDerivAt d d' x) :
     HasDerivAt (c * d) (c' * d x + c x * d') x := by
   rw [← hasDerivWithinAt_univ] at *
   exact HasDerivWithinAt.mul hc hd
 
-@[to_fun]
+@[fun_prop, to_fun (attr := fun_prop)]
 theorem HasStrictDerivAt.mul (hc : HasStrictDerivAt c c' x) (hd : HasStrictDerivAt d d' x) :
     HasStrictDerivAt (c * d) (c' * d x + c x * d') x := by
   simpa [add_comm] using (HasStrictFDerivAt.mul' hc hd).hasStrictDerivAt
@@ -297,19 +302,23 @@ theorem deriv_mul (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d
     deriv (c * d) x = deriv c x * d x + c x * deriv d x :=
   (hc.hasDerivAt.mul hd.hasDerivAt).deriv
 
+@[fun_prop]
 theorem HasDerivWithinAt.mul_const (hc : HasDerivWithinAt c c' s x) (d : 𝔸) :
     HasDerivWithinAt (fun y => c y * d) (c' * d) s x := by
   convert hc.mul (hasDerivWithinAt_const x s d) using 1
   rw [mul_zero, add_zero]
 
+@[fun_prop]
 theorem HasDerivAt.mul_const (hc : HasDerivAt c c' x) (d : 𝔸) :
     HasDerivAt (fun y => c y * d) (c' * d) x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hc.mul_const d
 
+@[fun_prop]
 theorem hasDerivAt_mul_const (c : 𝕜) : HasDerivAt (fun x => x * c) c x := by
   simpa only [one_mul] using (hasDerivAt_id' x).mul_const c
 
+@[fun_prop]
 theorem HasStrictDerivAt.mul_const (hc : HasStrictDerivAt c c' x) (d : 𝔸) :
     HasStrictDerivAt (fun y => c y * d) (c' * d) x := by
   convert hc.mul (hasStrictDerivAt_const x d) using 1
@@ -349,19 +358,23 @@ theorem deriv_mul_const_field (v : 𝕜') : deriv (fun y => u y * v) x = deriv u
 theorem deriv_mul_const_field' (v : 𝕜') : (deriv fun x => u x * v) = fun x => deriv u x * v :=
   funext fun _ => deriv_mul_const_field v
 
+@[fun_prop]
 theorem HasDerivWithinAt.const_mul (c : 𝔸) (hd : HasDerivWithinAt d d' s x) :
     HasDerivWithinAt (fun y => c * d y) (c * d') s x := by
   convert (hasDerivWithinAt_const x s c).mul hd using 1
   rw [zero_mul, zero_add]
 
+@[fun_prop]
 theorem HasDerivAt.const_mul (c : 𝔸) (hd : HasDerivAt d d' x) :
     HasDerivAt (fun y => c * d y) (c * d') x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hd.const_mul c
 
+@[fun_prop]
 theorem hasDerivAt_const_mul (c : 𝕜) : HasDerivAt (fun y => c * y) c x := by
   simpa only [mul_one] using (hasDerivAt_id' x).const_mul c
 
+@[fun_prop]
 theorem HasStrictDerivAt.const_mul (c : 𝔸) (hd : HasStrictDerivAt d d' x) :
     HasStrictDerivAt (fun y => c * d y) (c * d') x := by
   convert (hasStrictDerivAt_const _ _).mul hd using 1
@@ -401,29 +414,35 @@ section HasDeriv
 variable {ι : Type*} [DecidableEq ι] {𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
   {u : Finset ι} {f : ι → 𝕜 → 𝔸'} {f' : ι → 𝔸'}
 
+@[fun_prop]
 theorem HasDerivAt.fun_finset_prod (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x) :
     HasDerivAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
   simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
     (HasFDerivAt.finset_prod (fun i hi ↦ (hf i hi).hasFDerivAt)).hasDerivAt
 
+@[fun_prop]
 theorem HasDerivAt.finset_prod (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x) :
     HasDerivAt (∏ i ∈ u, f i) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
   convert HasDerivAt.fun_finset_prod hf; simp
 
+@[fun_prop]
 theorem HasDerivWithinAt.fun_finset_prod (hf : ∀ i ∈ u, HasDerivWithinAt (f i) (f' i) s x) :
     HasDerivWithinAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) s x := by
   simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
     (HasFDerivWithinAt.finset_prod (fun i hi ↦ (hf i hi).hasFDerivWithinAt)).hasDerivWithinAt
 
+@[fun_prop]
 theorem HasDerivWithinAt.finset_prod (hf : ∀ i ∈ u, HasDerivWithinAt (f i) (f' i) s x) :
     HasDerivWithinAt (∏ i ∈ u, f i) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) s x := by
   convert HasDerivWithinAt.fun_finset_prod hf; simp
 
+@[fun_prop]
 theorem HasStrictDerivAt.fun_finset_prod (hf : ∀ i ∈ u, HasStrictDerivAt (f i) (f' i) x) :
     HasStrictDerivAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
   simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
     (HasStrictFDerivAt.finset_prod (fun i hi ↦ (hf i hi).hasStrictFDerivAt)).hasStrictDerivAt
 
+@[fun_prop]
 theorem HasStrictDerivAt.finset_prod (hf : ∀ i ∈ u, HasStrictDerivAt (f i) (f' i) x) :
     HasStrictDerivAt (∏ i ∈ u, f i) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
   convert HasStrictDerivAt.fun_finset_prod hf; simp
@@ -503,14 +522,17 @@ section Div
 
 variable {𝕜' : Type*} [NormedDivisionRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] {c : 𝕜 → 𝕜'} {c' : 𝕜'}
 
+@[fun_prop]
 theorem HasDerivAt.div_const (hc : HasDerivAt c c' x) (d : 𝕜') :
     HasDerivAt (fun x => c x / d) (c' / d) x := by
   simpa only [div_eq_mul_inv] using hc.mul_const d⁻¹
 
+@[fun_prop]
 theorem HasDerivWithinAt.div_const (hc : HasDerivWithinAt c c' s x) (d : 𝕜') :
     HasDerivWithinAt (fun x => c x / d) (c' / d) s x := by
   simpa only [div_eq_mul_inv] using hc.mul_const d⁻¹
 
+@[fun_prop]
 theorem HasStrictDerivAt.div_const (hc : HasStrictDerivAt c c' x) (d : 𝕜') :
     HasStrictDerivAt (fun x => c x / d) (c' / d) x := by
   simpa only [div_eq_mul_inv] using hc.mul_const d⁻¹
@@ -553,15 +575,18 @@ open ContinuousLinearMap
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {c : 𝕜 → F →L[𝕜] G} {c' : F →L[𝕜] G}
   {d : 𝕜 → E →L[𝕜] F} {d' : E →L[𝕜] F} {u : 𝕜 → F} {u' : F}
 
+@[fun_prop]
 theorem HasStrictDerivAt.clm_comp (hc : HasStrictDerivAt c c' x) (hd : HasStrictDerivAt d d' x) :
     HasStrictDerivAt (fun y => (c y).comp (d y)) (c'.comp (d x) + (c x).comp d') x := by
   simpa [add_comm] using (hc.hasStrictFDerivAt.clm_comp hd.hasStrictFDerivAt).hasStrictDerivAt
 
+@[fun_prop]
 theorem HasDerivWithinAt.clm_comp (hc : HasDerivWithinAt c c' s x)
     (hd : HasDerivWithinAt d d' s x) :
     HasDerivWithinAt (fun y => (c y).comp (d y)) (c'.comp (d x) + (c x).comp d') s x := by
   simpa [add_comm] using (hc.hasFDerivWithinAt.clm_comp hd.hasFDerivWithinAt).hasDerivWithinAt
 
+@[fun_prop]
 theorem HasDerivAt.clm_comp (hc : HasDerivAt c c' x) (hd : HasDerivAt d d' x) :
     HasDerivAt (fun y => (c y).comp (d y)) (c'.comp (d x) + (c x).comp d') x := by
   rw [← hasDerivWithinAt_univ] at *
@@ -579,15 +604,18 @@ theorem deriv_clm_comp (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt �
     deriv (fun y => (c y).comp (d y)) x = (deriv c x).comp (d x) + (c x).comp (deriv d x) :=
   (hc.hasDerivAt.clm_comp hd.hasDerivAt).deriv
 
+@[fun_prop]
 theorem HasStrictDerivAt.clm_apply (hc : HasStrictDerivAt c c' x) (hu : HasStrictDerivAt u u' x) :
     HasStrictDerivAt (fun y => (c y) (u y)) (c' (u x) + c x u') x := by
   simpa [add_comm] using (hc.hasStrictFDerivAt.clm_apply hu.hasStrictFDerivAt).hasStrictDerivAt
 
+@[fun_prop]
 theorem HasDerivWithinAt.clm_apply (hc : HasDerivWithinAt c c' s x)
     (hu : HasDerivWithinAt u u' s x) :
     HasDerivWithinAt (fun y => (c y) (u y)) (c' (u x) + c x u') s x := by
   simpa [add_comm] using (hc.hasFDerivWithinAt.clm_apply hu.hasFDerivWithinAt).hasDerivWithinAt
 
+@[fun_prop]
 theorem HasDerivAt.clm_apply (hc : HasDerivAt c c' x) (hu : HasDerivAt u u' x) :
     HasDerivAt (fun y => (c y) (u y)) (c' (u x) + c x u') x := by
   simpa [add_comm] using (hc.hasFDerivAt.clm_apply hu.hasFDerivAt).hasDerivAt

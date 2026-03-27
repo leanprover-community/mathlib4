@@ -44,14 +44,17 @@ theorem HasDerivAtFilter.prodMk (hf₁ : HasDerivAtFilter f₁ f₁' L)
     (hf₂ : HasDerivAtFilter f₂ f₂' L) : HasDerivAtFilter (fun x => (f₁ x, f₂ x)) (f₁', f₂') L :=
   HasFDerivAtFilter.prodMk hf₁ hf₂
 
+@[fun_prop]
 theorem HasDerivWithinAt.prodMk (hf₁ : HasDerivWithinAt f₁ f₁' s x)
     (hf₂ : HasDerivWithinAt f₂ f₂' s x) : HasDerivWithinAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') s x :=
   HasDerivAtFilter.prodMk hf₁ hf₂
 
+@[fun_prop]
 theorem HasDerivAt.prodMk (hf₁ : HasDerivAt f₁ f₁' x) (hf₂ : HasDerivAt f₂ f₂' x) :
     HasDerivAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') x :=
   HasDerivAtFilter.prodMk hf₁ hf₂
 
+@[fun_prop]
 theorem HasStrictDerivAt.prodMk (hf₁ : HasStrictDerivAt f₁ f₁' x)
     (hf₂ : HasStrictDerivAt f₂ f₂' x) : HasStrictDerivAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') x :=
   HasDerivAtFilter.prodMk hf₁ hf₂
@@ -75,12 +78,21 @@ theorem hasStrictDerivAt_pi :
     HasStrictDerivAt φ φ' x ↔ ∀ i, HasStrictDerivAt (fun x => φ x i) (φ' i) x :=
   hasDerivAtFilter_pi
 
+@[fun_prop]
+alias ⟨_, hasStrictDerivAt_pi''⟩ := hasStrictDerivAt_pi
+
 theorem hasDerivAt_pi : HasDerivAt φ φ' x ↔ ∀ i, HasDerivAt (fun x => φ x i) (φ' i) x :=
   hasDerivAtFilter_pi
+
+@[fun_prop]
+alias ⟨_, hasDerivAt_pi''⟩ := hasDerivAt_pi
 
 theorem hasDerivWithinAt_pi :
     HasDerivWithinAt φ φ' s x ↔ ∀ i, HasDerivWithinAt (fun x => φ x i) (φ' i) s x :=
   hasDerivAtFilter_pi
+
+@[fun_prop]
+alias ⟨_, hasDerivWithinAt_pi''⟩ := hasDerivWithinAt_pi
 
 theorem derivWithin_pi (h : ∀ i, DifferentiableWithinAt 𝕜 (fun x => φ x i) s x) :
     derivWithin φ s x = fun i => derivWithin (fun x => φ x i) s x := by
@@ -125,6 +137,7 @@ theorem hasStrictDerivAt_finCons' {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} :
       HasStrictDerivAt φ φ' x ∧ HasStrictDerivAt φs φs' x :=
   hasStrictDerivAt_finCons
 
+@[fun_prop]
 theorem HasStrictDerivAt.finCons {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)}
     (h : HasStrictDerivAt φ φ' x) (hs : HasStrictDerivAt φs φs' x) :
     HasStrictDerivAt (fun x => Fin.cons (φ x) (φs x)) (Fin.cons φ' φs') x :=
@@ -159,6 +172,7 @@ theorem hasDerivAt_finCons' {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} :
       HasDerivAt φ φ' x ∧ HasDerivAt φs φs' x :=
   hasDerivAt_finCons
 
+@[fun_prop]
 theorem HasDerivAt.finCons {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)}
     (h : HasDerivAt φ φ' x) (hs : HasDerivAt φs φs' x) :
     HasDerivAt (fun x => Fin.cons (φ x) (φs x)) (Fin.cons φ' φs') x :=
@@ -176,6 +190,7 @@ theorem hasDerivWithinAt_finCons' {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} :
       HasDerivWithinAt φ φ' s x ∧ HasDerivWithinAt φs φs' s x :=
   hasDerivAtFilter_finCons
 
+@[fun_prop]
 theorem HasDerivWithinAt.finCons {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)}
     (h : HasDerivWithinAt φ φ' s x) (hs : HasDerivWithinAt φs φs' s x) :
     HasDerivWithinAt (fun x => Fin.cons (φ x) (φs x)) (Fin.cons φ' φs') s x :=
