@@ -114,18 +114,9 @@ example : HasFDerivAt (𝕜:=ℝ) (fun _ : ℝ => y) 0 x₀ := by
 example : HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => f (g x)) ((f' (g x₀)).comp (g' x₀)) x₀ := by
   fun_prop
 
-
 example : HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => f (f (f (f x))))
     ((f' (f (f (f x₀)))).comp ((f' (f (f x₀))).comp ((f' (f x₀)).comp (f' x₀)))) x₀ := by
   fun_prop
-
-attribute [fun_prop] HasFDerivAt.exp
-
-theorem hasDerivAt_from_hasFDerivAt {f : ℝ → ℝ} {f' : ℝ}
-    {f'' : ℝ →L[ℝ] ℝ} {x : ℝ} (hf : HasFDerivAt f f'' x) (h : f' = f'' 1) :
-    HasDerivAt f f' x := by
-  rw [h]
-  exact hasFDerivAt_iff_hasDerivAt.1 hf
 
 example {t x : ℝ} (n : ℕ) :
     HasDerivAt (fun t ↦ x ^ n * Real.exp (t * x)) (x ^ (n + 1) * Real.exp (t * x)) t := by
