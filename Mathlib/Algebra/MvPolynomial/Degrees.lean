@@ -140,16 +140,14 @@ theorem mem_degrees {p : MvPolynomial σ R} {i : σ} :
   simp only [degrees_def, Multiset.mem_sup, ← mem_support_iff, Finsupp.mem_toMultiset]
 
 theorem degrees_eq_zero_iff_support_subset_zero : p.degrees = 0 ↔ p.support ⊆ {0} := by
-  rewrite [Finset.subset_singleton_iff', Multiset.eq_zero_iff_forall_notMem]
+  rw [Finset.subset_singleton_iff', Multiset.eq_zero_iff_forall_notMem]
   refine ⟨fun h s hs ↦ ?_, fun h i hi ↦ ?_⟩
-  · apply Finsupp.support_eq_empty.mp
-    refine Finset.eq_empty_of_forall_notMem fun i ↦ ?_
-    have := mem_degrees.not.mp (h i)
-    have := not_and.mp <| not_exists.mp this s
-    exact this (mem_support_iff.mp hs)
+  · rw [← Finsupp.support_eq_empty]
+    simp only [mem_degrees] at h
+    grind
   rcases mem_degrees.mp hi with ⟨s, hs1, hs2⟩
   have := Finsupp.support_eq_empty.mpr (h s <| mem_support_iff.mpr hs1) ▸ hs2
-  exact absurd this (Finset.notMem_empty i)
+  grind
 
 theorem le_degrees_add_left (h : Disjoint p.degrees q.degrees) : p.degrees ≤ (p + q).degrees := by
   classical
@@ -258,10 +256,10 @@ theorem degreeOf_X [DecidableEq σ] (i j : σ) [Nontrivial R] :
 
 @[simp] theorem degreeOf_X_self [Nontrivial R] (i : σ) :
     (X i : MvPolynomial σ R).degreeOf i = 1 := by
-  classical rw [degreeOf_X, if_pos rfl]
+  classical simp [degreeOf_X]
 
-lemma ne_zero_of_degreeOf_ne_zero {i : σ} : p.degreeOf i ≠ 0 → p ≠ 0 :=
-  mt fun h ↦ h ▸ degreeOf_zero i
+lemma ne_zero_of_degreeOf_ne_zero {i : σ} : p.degreeOf i ≠ 0 → p ≠ 0 := by
+  aesop
 
 theorem degreeOf_add_le (n : σ) (f g : MvPolynomial σ R) :
     degreeOf n (f + g) ≤ max (degreeOf n f) (degreeOf n g) := by
@@ -282,10 +280,9 @@ lemma degreeOf_monomial_eq (s : σ →₀ ℕ) (i : σ) {a : R} (ha : a ≠ 0) :
 
 lemma le_degreeOf_of_mem_support (i : σ) {s : σ →₀ ℕ} :
     s ∈ p.support → s i ≤ p.degreeOf i := fun h ↦ by
-  by_cases si : s i = 0
-  · simp only [si, zero_le]
-  have : 0 < s i := Nat.zero_lt_of_ne_zero si
-  rewrite [degreeOf_eq_sup, Finset.le_sup_iff this]
+  obtain si | si := eq_or_lt_of_le <| Nat.zero_le (s i)
+  · simp [← si]
+  rw [degreeOf_eq_sup, Finset.le_sup_iff si]
   use s
 
 lemma notMem_support_of_degreeOf_lt (i : σ) {s : σ →₀ ℕ} : p.degreeOf i < s i → s ∉ p.support :=
