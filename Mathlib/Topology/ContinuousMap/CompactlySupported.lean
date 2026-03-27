@@ -671,6 +671,7 @@ open NNReal
 
 namespace CompactlySupportedContinuousMap
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma exists_add_of_le {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁ ≤ f₂) : ∃ (g : C_c(α, ℝ≥0)),
     f₁ + g = f₂ := by
   refine ⟨⟨f₂.1 - f₁.1, ?_⟩, ?_⟩
