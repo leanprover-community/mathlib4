@@ -1,12 +1,11 @@
 /-
 Copyright (c) 2025 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Michael Rothgang
+Authors: Heather Macbeth, Patrick Massot, Michael Rothgang
 -/
 module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Ehresmann
-public import Mathlib.Geometry.Manifold.IntegralCurve.Basic
 
 /-!
 # Lifting vectors using covariant derivatives
@@ -20,14 +19,6 @@ TODO: add a more complete doc-string
 open Bundle Filter Module Topology Set
 
 open scoped Bundle Manifold ContDiff
-
-section
-variable {B : Type*} (E : B → Type*) {F : Type*}
-
-/-- Given a bundle `π : E → B`, the diagonal section of `π^*E → E`. -/
-def Bundle.pullback_diag (e : TotalSpace F E) : (TotalSpace.proj *ᵖ E) e :=
-  e.2
-end
 
 section
 variable
@@ -109,7 +100,7 @@ lemma CovariantDerivative.lift_vec_apply {v : TotalSpace F V} (u : TangentSpace 
     cov.lift_vec v u = t.derivInv I v (tlift u) := rfl
 
 @[simp]
-lemma CovariantDerivative.lift_vec_horiz {v : TotalSpace F V} (u : TangentSpace I v.proj) :
+lemma CovariantDerivative.lift_vec_mem_horiz {v : TotalSpace F V} (u : TangentSpace I v.proj) :
     cov.lift_vec v u ∈ cov.horiz v := by
   let t := trivializationAt F V v.proj
   have hcov := cov.isCovariantDerivativeOn_pushCovDer t
@@ -126,7 +117,7 @@ lemma CovariantDerivative.lift_vec_horiz {v : TotalSpace F V} (u : TangentSpace 
 lemma CovariantDerivative.proj_lift_vec {v : TotalSpace F V} (u : TangentSpace I v.proj) :
     cov.proj v (cov.lift_vec v u) = 0 := by
   rw [← cov.mem_horiz_iff_proj]
-  exact lift_vec_horiz u
+  exact lift_vec_mem_horiz u
 
 @[simp]
 lemma CovariantDerivative.mfderiv_proj_lift_vec {v : TotalSpace F V} (u : TangentSpace I v.proj) :
@@ -202,184 +193,4 @@ lemma CovariantDerivative.lift_vec_eq [FiniteDimensional 𝕜 E] {v : TotalSpace
             e.symm_map_zero 𝕜]
   · simp [hv]
 
--- noncomputable
--- def CovariantDerivative.lift_vec'
---   (p : TotalSpace E ((TotalSpace.proj : (TotalSpace F V → M)) *ᵖ (TangentSpace I))) :
---     TangentSpace (I.prod 𝓘(𝕜, F)) p.1 :=
---   letI t := trivializationAt F V p.1.proj
---   haveI d_covDerOn := t.pushCovDer_isCovariantDerivativeOn
---     (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
---   letI tlift := d_covDerOn.lift_vec p.1.proj (t p.1).2
---   t.derivInv I p.1 (tlift p.2)
 end
-
-section integralCurve
-variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*}
-  [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type*}
-  [TopologicalSpace M] [ChartedSpace H M] (γ : ℝ → M)
-  (v : (x : M) → TangentSpace I x) (t₀ : ℝ)
-
-variable (I) in
-noncomputable
-def velocity (γ : ℝ → M) (t : ℝ) : TangentBundle I M := ⟨γ t, mfderiv% γ t (1 : ℝ)⟩
-
-@[simp]
-lemma proj_velocity (γ : ℝ → M) (t : ℝ) : (velocity I γ t).proj = γ t := rfl
-
-lemma IsMIntegralCurveAt.mdifferentiableAt (h : IsMIntegralCurveAt γ v t₀) :
-    ∀ᶠ t in 𝓝 t₀, MDiffAt γ t := by
-  filter_upwards [h] with t ht
-  exact ht.mdifferentiableAt
-
-set_option backward.isDefEq.respectTransparency false in
-protected lemma IsMIntegralCurveAt.mfderiv (hγ : IsMIntegralCurveAt γ v t₀) :
-    ∀ᶠ t in 𝓝 t₀, mfderiv% γ t (1 : ℝ) = v (γ t) := by
-  filter_upwards [hγ] with t ht
-  rw [ht.mfderiv]
-  rw [ContinuousLinearMap.smulRight_apply]
-  change 1 • v (γ t) = v (γ t)
-  simp
-
-protected lemma IsMIntegralCurveAt.velocity_eventuallyEq
-    (hγ : IsMIntegralCurveAt γ v t₀) : velocity I γ =ᶠ[𝓝 t₀] T%v ∘ γ := by
-  filter_upwards [hγ.mfderiv] with t ht
-  simp [ht, velocity]
-
--- Is this really missing??
-lemma IsMIntegralCurveAt_iff_mfderiv (hγ : ∀ᶠ t in 𝓝 t₀, MDiffAt γ t) :
-    IsMIntegralCurveAt γ v t₀ ↔ ∀ᶠ t in 𝓝 t₀, mfderiv% γ t (1 : ℝ) = v (γ t) := by
-  refine ⟨fun h ↦ h.mfderiv, fun h ↦ ?_⟩
-  filter_upwards [hγ.and h] with t ⟨ht, ht'⟩
-  rw [← ht']
-  convert ht.hasMFDerivAt
-  ext
-  simp
-  rfl
-
-lemma IsMIntegralCurveAt.eventually_isMIntegralCurveAt
-    {X : Π x : M, TangentSpace I x} {γ : ℝ → M} {t₀ : ℝ}
-    (hγX : IsMIntegralCurveAt γ X t₀) :
-    ∀ᶠ t in 𝓝 t₀, IsMIntegralCurveAt γ X t :=
-  eventually_eventually_nhds.2 hγX
-
-variable [IsManifold I 1 M]
-
-set_option linter.flexible false in --FIXME
-lemma IsMIntegralCurveAt.acceleration {X : Π x : M, TangentSpace I x}
-    {γ : ℝ → M} {t₀ : ℝ} (hX : MDiffAt (T% X) (γ t₀))
-    (hγX : IsMIntegralCurveAt γ X t₀) :
-    velocity I.tangent (velocity I γ) t₀ = mfderiv% (T% X) (γ t₀) (X (γ t₀)) := by
-  have : velocity I γ =ᶠ[𝓝 t₀] T%X ∘ γ := hγX.velocity_eventuallyEq
-  have := this.mfderiv_eq (I := 𝓘(ℝ, ℝ)) (I' := I.tangent)
-  have foo := EventuallyEq.eq_of_nhds hγX.mfderiv
-  simp [velocity, this, foo]
-  have := hγX.mdifferentiableAt.self_of_nhds
-  rw [mfderiv_comp t₀ hX this, ← foo]
-  rfl
-
-lemma IsMIntegralCurveAt.eventually_acceleration {X : Π x : M, TangentSpace I x}
-    {γ : ℝ → M} {t₀ : ℝ} (hX : ∀ᶠ t in 𝓝 t₀, MDiffAt (T% X) (γ t))
-    (hγX : IsMIntegralCurveAt γ X t₀) :
-    ∀ᶠ t in 𝓝 t₀, velocity I.tangent (velocity I γ) t = mfderiv% (T% X) (γ t) (X (γ t)) := by
-  filter_upwards [hX, hγX.eventually_isMIntegralCurveAt] with t hXt hγXt
-  exact acceleration hXt hγXt
-
-end integralCurve
-
-section geodesics
-
-variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M]
-  [ChartedSpace H M]
-  [IsManifold I 2 M]
-  (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
-
--- FIXME: bug in `mfderiv%`?
--- FIXME: missing elaborator support to find I.tangent
-variable (I) in
-@[simp]
-lemma proj_acceleration {γ : ℝ → M} {t : ℝ} (h : MDiffAt (velocity I γ) t) :
-    mfderiv I.tangent I (TotalSpace.proj : TangentBundle I M → M)
-  (velocity I γ t) (velocity I.tangent (velocity I γ) t).2 = (velocity
-I γ t).2 := by
-  have comp_eq: (TotalSpace.proj : TangentBundle I M → M) ∘ (velocity I γ) = γ := by
-    ext t
-    simp
-  have diff : MDifferentiableAt I.tangent I (TotalSpace.proj : TangentBundle I M → M)
-      (velocity I γ t) := by
-    exact mdifferentiableAt_proj (TangentSpace I)
-  have := mfderiv_comp t diff h
-  rw [comp_eq] at this
-  exact congr($this (1 : ℝ)).symm
-
-variable [FiniteDimensional ℝ E]
-
-lemma IsMIntegralCurveAt.proj_acceleration {X : Π x : M, TangentSpace I x}
-    {γ : ℝ → M} {t₀ : ℝ} (hX : MDiffAt (T% X) (γ t₀))
-    (hγX : IsMIntegralCurveAt γ X t₀) :
-    cov.proj _ (velocity I.tangent (velocity I γ) t₀).2 = cov X (γ t₀) (X (γ t₀)) := by
-  rw [hγX.acceleration hX, cov.proj_mderiv _ hX]
-  simp
-
-noncomputable
-def CovariantDerivative.geodVF (v : TotalSpace E (TangentSpace I : M → Type _)) :
-    TangentSpace (I.prod 𝓘(ℝ, E)) v :=  cov.lift_vec v v.2
-
-@[simp]
-lemma CovariantDerivative.geodVF_horiz (v : TotalSpace E (TangentSpace I : M → Type _)) :
-    cov.geodVF v ∈ cov.horiz v := by
-  simp [CovariantDerivative.geodVF]
-
-@[simp]
-lemma CovariantDerivative.proj_geodVF (v : TotalSpace E (TangentSpace I : M → Type _)) :
-    cov.proj v (cov.geodVF v) = 0 := by
-  simp [CovariantDerivative.geodVF]
-
-/-- A curve `γ : ℝ → M` is a geodesic for `cov` at `t` if it is an integral
-curve of the geodesic vector field of `cov` near `t`.
-Remember: `IsMIntegralCurveAt` is local, not pointwise. -/
-def CovariantDerivative.isGeodAt (γ : ℝ → M) (t : ℝ) :=
-  IsMIntegralCurveAt (velocity I γ) cov.geodVF t
-
-set_option backward.isDefEq.respectTransparency false in
-lemma CovariantDerivative.isGeodAt_iff_horiz {γ : ℝ → M} {t₀ : ℝ}
-    (hγ : ∀ᶠ (t : ℝ) in 𝓝 t₀, MDiffAt (velocity I γ) t) :
-    cov.isGeodAt γ t₀ ↔
-    ∀ᶠ (t : ℝ) in 𝓝 t₀, (velocity I.tangent (velocity I γ) t).2 ∈ cov.horiz _ := by
-  unfold CovariantDerivative.isGeodAt CovariantDerivative.geodVF
-  rw [IsMIntegralCurveAt_iff_mfderiv _ _ _ hγ]
-  refine eventually_congr ?_
-  filter_upwards [hγ] with t ht
-  conv_lhs => rw [Eq.comm, cov.lift_vec_eq_iff (velocity I γ t).2]
-  rw [← cov.mem_horiz_iff_proj, proj_velocity,
-      show mfderiv% (velocity I γ) t (1 : ℝ) = (velocity I.tangent (velocity I γ) t).2 from
-        rfl, -- TODO need a simp lemma here?
-      ]
-  -- TODO: understand why
-  -- simp [proj_velocity, proj_acceleration I ht]
-  -- doesn’t close the goal
-  simp only [proj_velocity, and_iff_left_iff_imp]
-  exact fun _ ↦ proj_acceleration I ht
-
-lemma CovariantDerivative.isGeodAt_iff_proj {γ : ℝ → M} {t₀ : ℝ}
-    (hγ : ∀ᶠ (t : ℝ) in 𝓝 t₀, MDiffAt (velocity I γ) t) :
-    cov.isGeodAt γ t₀ ↔
-     ∀ᶠ (t : ℝ) in 𝓝 t₀, cov.proj _ (velocity I.tangent (velocity I γ) t).2 = 0 :=
-  cov.isGeodAt_iff_horiz hγ
-
-def CovariantDerivative.isGeod (γ : ℝ → M) := ∀ t, cov.isGeodAt γ t
-
-set_option backward.isDefEq.respectTransparency false in
-lemma CovariantDerivative.orbit_geodVF {X : Π x : M, TangentSpace I x}
-    {γ : ℝ → M} {t₀ : ℝ} (hX : ∀ᶠ t in 𝓝 t₀, MDiffAt (T% X) (γ t))
-    (hγ : ∀ᶠ (t : ℝ) in 𝓝 t₀, MDiffAt (velocity I γ) t)
-    (hγX : IsMIntegralCurveAt γ X t₀) :
-    cov.isGeodAt γ t₀ ↔ ∀ᶠ t in 𝓝 t₀, cov X (γ t) (X (γ t)) = 0 := by
-  rw [cov.isGeodAt_iff_proj hγ]
-  refine eventually_congr ?_
-  filter_upwards [hX, hγX.eventually_isMIntegralCurveAt] with t ht ht'
-  rw [ht'.proj_acceleration cov ht]
-
-end geodesics
