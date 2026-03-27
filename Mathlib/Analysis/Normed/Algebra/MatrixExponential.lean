@@ -10,8 +10,8 @@ public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.LinearAlgebra.Matrix.ZPow
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
+public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.Topology.UniformSpace.Matrix
-
 /-!
 # Lemmas about the matrix exponential
 
@@ -199,18 +199,21 @@ theorem exp_conj' (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
   hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj' u A
 
 set_option backward.isDefEq.respectTransparency false in
+omit [CompleteSpace 𝔸] in
 theorem BlockTriangular.exp {α : Type*} {M : Matrix m m 𝔸} {b : m → α} [LinearOrder α]
     (hM : BlockTriangular M b) : (NormedSpace.exp M).BlockTriangular b := by
-  intro i j hji
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra ℚ (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
-  have ⟨a, ha⟩ := NormedSpace.expSeries_summable' (𝕂 := ℚ) M
-  have hzero (n : ℕ) : (M ^ n) i j = 0 := BlockTriangular.pow hM n hji
-  have h1 := (continuous_apply i).continuousAt.tendsto.comp ha
-  have h2 := (continuous_apply j).continuousAt.tendsto.comp h1
-  rw [(congr_fun NormedSpace.exp_eq_tsum_rat M).trans ha.tsum_eq]
-  refine tendsto_nhds_unique (h2.congr fun s ↦ ?_) tendsto_const_nhds
-  simp [Function.comp, Matrix.sum_apply, smul_apply, hzero]
+  have hclosed : IsClosed (↑(blockTriangularSubsemiring (R := 𝔸) b) : Set (Matrix m m 𝔸)) := by
+    simp only [coe_blockTriangularSubsemiring, BlockTriangular, Set.setOf_forall]
+    apply isClosed_iInter; intro i
+    apply isClosed_iInter; intro j
+    apply isClosed_iInter; intro _
+    exact isClosed_eq (continuous_id.matrix_elem i j) continuous_const
+  rw [exp_eq_tsum ℚ]
+  apply tsum_mem hclosed
+  intro i j k h
+  rw [smul_apply, (hM.pow i) h, smul_zero]
 
 end NormedComm
 
