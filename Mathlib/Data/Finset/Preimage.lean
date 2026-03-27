@@ -112,7 +112,7 @@ theorem image_eq_preimage_of_leftInvOn_injOn {α β : Type*} [DecidableEq β] {f
     {g : β → α} {s : Finset α} (hgf : Set.LeftInvOn g f s) (ginj : Set.InjOn g (g ⁻¹' s)) :
     s.image f = s.preimage g ginj := by
   simp only [SetLike.ext'_iff, coe_preimage, coe_image]
-  rw [Set.image_eq_preimage_of_leftInvOn_injOn_mapsTo hgf ginj]
+  rw [Set.image_eq_preimage_of_leftInvOn_injOn hgf ginj]
 
 theorem image_preimage_of_bij [DecidableEq β] (f : α → β) (s : Finset β)
     (hf : Set.BijOn f (f ⁻¹' ↑s) ↑s) : image f (preimage s f hf.injOn) = s :=
@@ -140,8 +140,7 @@ theorem sup_preimage {α β : Type*} [hnea : Nonempty α] [SemilatticeSup β] [O
   have hfinvs' : ∀ x ∈ s, (f ∘ finvs) x = id x := (Set.BijOn.invOn_invFunOn hf).2
   rw [← sup_congr (Eq.refl s) hfinvs', ← sup_image]
   congr
-  exact preimage_eq_image_invFunOn_of_inj_mapsTo_rightInv hf.2.1 hf.1
-    (Set.BijOn.invOn_invFunOn hf).2
+  exact (Finset.image_eq_preimage_of_leftInvOn_injOn (Set.BijOn.invOn_invFunOn hf).2 hf.2.1).symm
 
 lemma sup_preimage_val_id_eq_sup_toSubtype_id [Lattice α] [OrderBot α] {P : α → Prop}
     (Psup : ∀ ⦃s t : α⦄, P s → P t → P (s ⊔ t)) (Pbot : P (⊥ : α)) {t : Finset α}

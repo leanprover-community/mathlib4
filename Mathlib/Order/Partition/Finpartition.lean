@@ -333,23 +333,17 @@ noncomputable def toSubtype {s : α} (P : Finpartition s)
     supIndep := by
       classical
       intro t ht i hi hi'
-      simp_all only [id_eq]
-      rw [disjoint_subtype_iff Prinf Prbot, ← sup_image_val_eq_coe_sup_id Prsup Prbot]
-      apply P.supIndep
-      · simpa [image_subset_iff_subset_preimage] using ht
-      · simpa using hi
-      · simpa [i.property] using hi'
-    sup_parts := by
-      ext
-      rw [sup_coe]
-      · simp only [id_eq]
-        rw [sup_val_eq_coe_id Prsup Prbot,
-          Finset.sup_preimage_val_id_eq_sup_toSubtype_id Prsup Prbot hP]
-        simpa using P.sup_parts
+      have : (fun (i : Subtype Pr) => (id i).val) = id ∘ Subtype.val := rfl
+      rw [disjoint_subtype_iff Prinf Prbot, sup_coe, this, ← sup_image t Subtype.val id]
+      · apply P.supIndep
+        · simpa [image_subset_iff_subset_preimage] using ht
+        · simpa using hi
+        · simpa [i.property] using hi'
       exact Prsup
+    sup_parts := by
+      simpa [Finset.sup_preimage_val_id_eq_sup_toSubtype_id Prsup Prbot hP] using P.sup_parts
     bot_notMem := by
-      simp only [mem_preimage]
-      rw [Subtype.coe_bot Prbot]
+      simp only [mem_preimage, Subtype.coe_bot Prbot]
       exact P.bot_notMem }
 
 end Lattice
