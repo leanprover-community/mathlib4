@@ -603,16 +603,12 @@ lemma lieIdealOrderIso_left_inv (I : LieIdeal K L) :
 
 lemma lieIdealOrderIso_right_inv (q : (rootSystem H).invtRootSubmodule) :
     (invtSubmoduleToLieIdeal q.1
-      ((rootSystem H).mem_invtRootSubmodule_iff.mp q.2)).toInvtRootSubmodule (H := H) = q := by
+      ((rootSystem H).mem_invtRootSubmodule_iff.mp q.2)).toInvtRootSubmodule = q := by
   apply Subtype.ext
   simp only [LieIdeal.toInvtRootSubmodule, LieIdeal.rootSpan, LieIdeal.rootSet]
-  apply le_antisymm
-  · exact Submodule.span_le.mpr fun _ ⟨α, hα, hα_eq⟩ ↦ by
-      rw [← hα_eq, rootSystem_root_apply]
-      exact mem_rootSet_invtSubmoduleToLieIdeal _ _ |>.mp hα
-  · exact (RootPairing.invtRootSubmodule.eq_span_root q).le.trans
-      (Submodule.span_mono (Set.image_mono fun i hi ↦
-        (mem_rootSet_invtSubmoduleToLieIdeal _ _ |>.mpr hi)))
+  conv_rhs => rw [RootPairing.invtRootSubmodule.eq_span_root q]
+  congr 2; ext α
+  exact mem_rootSet_invtSubmoduleToLieIdeal _ _
 
 /-- The order isomorphism between Lie ideals and invariant root submodules. -/
 noncomputable def lieIdealOrderIso :
