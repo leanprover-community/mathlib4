@@ -90,10 +90,9 @@ theorem image_prodMap_embDomain_antidiagonal {β : Type*} [DecidableEq β] (f : 
       (isLowerSet_range_embDomain f (le_iff_exists_add'.mpr ⟨u, h.symm⟩) (by simp)))]
 
 open Finset in
-theorem image_sumElim_product_antidiagonal {α β : Type*} [DecidableEq α] [DecidableEq β]
-    {x : α →₀ ℕ} {y : β →₀ ℕ} : image (fun ((x, y), z, w) ↦
-      (x.sumElim z, y.sumElim w)) (antidiagonal x ×ˢ antidiagonal y) =
-    antidiagonal (x.sumElim y) := by
+theorem image_sumElim_product_antidiagonal {β : Type*} [DecidableEq β] {x : α →₀ ℕ}
+    {y : β →₀ ℕ} : image (fun ((x, y), z, w) ↦ (x.sumElim z, y.sumElim w))
+      (antidiagonal x ×ˢ antidiagonal y) = antidiagonal (x.sumElim y) := by
   ext ⟨u, v⟩
   simp only [mem_antidiagonal, mem_image, mem_product, Prod.mk.injEq, Prod.exists]
   refine ⟨fun ⟨a, b, a', b', h1, h2, h3⟩ ↦ ?_, fun h ↦
