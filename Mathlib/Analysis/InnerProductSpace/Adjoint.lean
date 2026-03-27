@@ -452,14 +452,18 @@ theorem _root_.InnerProductSpace.isStarProjection_rankOne_self {x : E} (hx : ‖
     IsStarProjection (rankOne 𝕜 x x) := (isSymmetricProjection_rankOne_self hx).isStarProjection
 
 open Module End Submodule in
+theorem orthogonal_mem_invtSubmodule {T : E →L[𝕜] E} {U : Submodule 𝕜 E}
+    (h : U ∈ invtSubmodule T.adjoint.toLinearMap) :
+    Uᗮ ∈ invtSubmodule T.toLinearMap := by
+  simp only [mem_invtSubmodule_iff_forall_mem_of_mem, coe_coe, mem_orthogonal] at h ⊢
+  grind [T.adjoint_inner_left]
+ 
+open Module End in
 theorem mem_invtSubmodule_adjoint_iff {T : E →L[𝕜] E} {U : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] :
-    U ∈ invtSubmodule T.adjoint.toLinearMap ↔ Uᗮ ∈ invtSubmodule T.toLinearMap := by
-  simp only [mem_invtSubmodule_iff_forall_mem_of_mem, coe_coe, mem_orthogonal]
-  refine ⟨fun h x H u hu ↦ T.adjoint_inner_left _ _ |>.symm ▸ H _ (h _ hu), fun h x hx ↦ ?_⟩
-  rw [← U.orthogonal_orthogonal]
-  simp only [mem_orthogonal, T.adjoint_inner_right, inner_eq_zero_symm (x := T _)]
-  grind
+    U ∈ invtSubmodule T.adjoint.toLinearMap ↔ Uᗮ ∈ invtSubmodule T.toLinearMap where
+  mp := orthogonal_mem_invtSubmodule
+  mpr := by simpa using orthogonal_mem_invtSubmodule (T := T.adjoint) (U := Uᗮ)
 
 end ContinuousLinearMap
 
