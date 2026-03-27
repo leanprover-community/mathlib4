@@ -85,7 +85,7 @@ class LatinRectangle (m : Type*) (n : Type*) (α : Type*)
 attribute [coe] LatinRectangle.M
 
 /-- Pretty printing of Latin rectangles. -/
-instance {m n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [ToString α] [Repr α] :
+instance {m n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [Repr α] :
   Repr (LatinRectangle (Fin m) (Fin n) α) where
   reprPrec L _ := repr L.M
 
