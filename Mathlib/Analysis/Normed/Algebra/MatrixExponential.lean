@@ -171,6 +171,14 @@ end Normed
 
 section NormedComm
 
+theorem isClosed_setOf_blockTriangular {α : Type*} {b : m → α} [LinearOrder α] [NormedCommRing 𝔸] :
+    IsClosed {M : Matrix m m 𝔸 | M.BlockTriangular b} := by
+  simp only [BlockTriangular, Set.setOf_forall]
+  apply isClosed_iInter; intro i
+  apply isClosed_iInter; intro j
+  apply isClosed_iInter; intro _
+  exact isClosed_eq (continuous_id.matrix_elem i j) continuous_const
+
 variable [Fintype m] [DecidableEq m]
   [NormedCommRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
 
@@ -202,16 +210,10 @@ set_option backward.isDefEq.respectTransparency false in
 omit [CompleteSpace 𝔸] in
 theorem BlockTriangular.exp {α : Type*} {M : Matrix m m 𝔸} {b : m → α} [LinearOrder α]
     (hM : BlockTriangular M b) : (NormedSpace.exp M).BlockTriangular b := by
-  letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
-  letI : NormedAlgebra ℚ (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
-  have hclosed : IsClosed (↑(blockTriangularSubsemiring (R := 𝔸) b) : Set (Matrix m m 𝔸)) := by
-    simp only [coe_blockTriangularSubsemiring, BlockTriangular, Set.setOf_forall]
-    apply isClosed_iInter; intro i
-    apply isClosed_iInter; intro j
-    apply isClosed_iInter; intro _
-    exact isClosed_eq (continuous_id.matrix_elem i j) continuous_const
+  have : IsClosed (↑(blockTriangularSubsemiring (R := 𝔸) b) : Set (Matrix m m 𝔸)) :=
+    isClosed_setOf_blockTriangular
   rw [exp_eq_tsum ℚ]
-  apply tsum_mem hclosed
+  apply tsum_mem this
   intro i j k h
   rw [smul_apply, (hM.pow i) h, smul_zero]
 
