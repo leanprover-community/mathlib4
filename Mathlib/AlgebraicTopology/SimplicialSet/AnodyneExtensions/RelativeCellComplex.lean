@@ -49,13 +49,20 @@ lemma Subcomplex.N.eq_iff_sMk_eq {X : SSet.{u}} {A : X.Subcomplex} (x y : A.N) :
 lemma Subcomplex.ofSimplex_map {X : SSet.{u}} {n m : ℕ} (f : ⦋n⦌ ⟶ ⦋m⦌) [Epi f]
     (x : X _⦋m⦌) :
     ofSimplex (X.map f.op x) = ofSimplex x := by
-  sorry
+  refine le_antisymm ?_ ?_
+  · simp only [Subfunctor.ofSection_le_iff]
+    exact ⟨f.op, by simp⟩
+  · simp only [Subfunctor.ofSection_le_iff]
+    have := isSplitEpi_of_epi f
+    exact ⟨(section_ f).op, by simp [← FunctorToTypes.map_comp_apply, ← op_comp]⟩
 
 lemma S.eq_iff_ofSimplex_eq {X : SSet.{u}} {n m : ℕ} (x : X _⦋n⦌) (y : X _⦋m⦌)
     (hx : x ∈ X.nonDegenerate _) (hy : y ∈ X.nonDegenerate _) :
     S.mk x = S.mk y ↔ Subcomplex.ofSimplex x = Subcomplex.ofSimplex y := by
-  sorry
-
+  trans N.mk x hx = N.mk y hy
+  · exact (N.ext_iff (N.mk x hx) (N.mk y hy)).symm
+  · simp only [le_antisymm_iff]
+    rfl
 
 lemma objEquiv_symm_notMem_horn_of_isIso {n : ℕ} (i : Fin (n + 1))
     {d : SimplexCategory} (f : d ⟶ ⦋n⦌) [IsIso f] :
@@ -429,8 +436,7 @@ noncomputable def Cells.type₂ {j : ι} (c : f.Cells j) :
     obtain ⟨rfl, rfl⟩ := hy
     simpa using (objEquiv_symm_δ_mem_horn_iff _ _).1 hy'
 
-lemma isPullback (j : ι) (_ : ¬ IsMax j) :
-    IsPullback (f.t j) (f.m j)
+lemma isPullback (j : ι) : IsPullback (f.t j) (f.m j)
       (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
   w := f.w j
   isLimit' := ⟨evaluationJointlyReflectsLimits _ (fun ⟨d⟩ ↦ by
@@ -527,7 +533,7 @@ lemma isPushout_aux₃ {j : ι} :
   fun _ _ h ↦ f.isPushout_aux₂ (congr_arg (S.map (Subcomplex.ι _)) h)
 
 set_option backward.isDefEq.respectTransparency false in
-lemma isPushout (j : ι) (hj : ¬ IsMax j) :
+lemma isPushout (j : ι) :
     IsPushout (f.t j) (f.m j)
       (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
   w := f.w j
@@ -537,7 +543,7 @@ lemma isPushout (j : ι) (hj : ¬ IsMax j) :
       (IsPushout.isColimit ?_)
     dsimp
     refine Limits.Types.isPushout_of_isPullback_of_mono'
-      ((f.isPullback j hj).map ((CategoryTheory.evaluation _ _).obj _))
+      ((f.isPullback j).map ((CategoryTheory.evaluation _ _).obj _))
       (f.range_homOfLE_app_union_range_b_app _ _) (fun x₁ x₂ hx₁ hx₂ h ↦ ?_)
     obtain ⟨s₁, g₁, _, hg₁⟩ := (Subcomplex.range (f.m j)).existsN x₁ hx₁
     obtain ⟨s₂, g₂, _, hg₂⟩ := (Subcomplex.range (f.m j)).existsN x₂ hx₂
@@ -577,7 +583,7 @@ noncomputable def relativeCellComplex : RelativeCellComplex f.basicCell A.ι whe
     ⟨fun m hm ↦ ⟨isColimitOfPreserves Subcomplex.toSSetFunctor
       (Functor.isColimitOfIsWellOrderContinuous f.filtration_monotone.functor m hm)⟩⟩
   incl.app i := (f.filtration i).ι
-  attachCells j hj :=
+  attachCells j _ :=
     { ι := f.Cells j
       π := id
       cofan₁ := _
@@ -588,7 +594,7 @@ noncomputable def relativeCellComplex : RelativeCellComplex f.basicCell A.ι whe
       hm c := c.ι_m
       g₁ := f.t j
       g₂ := f.b j
-      isPushout := f.isPushout j hj }
+      isPushout := f.isPushout j }
 
 end RankFunction
 
