@@ -155,6 +155,19 @@ lemma variance_eq_integral (hX : AEMeasurable X μ) : Var[X; μ] = ∫ ω, (X ω
   simp [variance, evariance, toReal_enorm, ← integral_toReal ((hX.sub_const _).enorm.pow_const _) <|
     .of_forall fun _ ↦ ENNReal.pow_lt_top enorm_lt_top]
 
+/-- A random variable with variance `0` is almost surely constant. -/
+lemma ae_eq_integral_of_variance_eq_zero [IsFiniteMeasure μ] (hX : MemLp X 2 μ)
+    (h : Var[X; μ] = 0) :
+    ∀ᵐ ω ∂μ, X ω = μ[X] := by
+  rw [variance_eq_integral hX.aemeasurable, integral_eq_zero_iff_of_nonneg] at h
+  · filter_upwards [h] with ω hω
+    simp at hω
+    grind
+  · exact fun _ ↦ by positivity
+  · simp_rw [sub_sq]
+    exact (hX.integrable_sq.sub (((hX.integrable (by simp)).const_mul _).mul_const _)).add
+      (integrable_const _)
+
 lemma variance_of_integral_eq_zero (hX : AEMeasurable X μ) (hXint : μ[X] = 0) :
     variance X μ = ∫ ω, X ω ^ 2 ∂μ := by
   simp [variance_eq_integral hX, hXint]
