@@ -69,6 +69,7 @@ section
 
 variable (S₁ S₂ : ShortComplex (CochainComplex C ℤ)) (f : S₁ ⟶ S₂)
 
+@[map (attr := reassoc)]
 lemma map_descShortComplex : map S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm ≫ descShortComplex S₂ =
     descShortComplex S₁ ≫ f.τ₃ := by
   ext i

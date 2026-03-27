@@ -84,17 +84,15 @@ noncomputable def triangleOfSES.map : triangleOfSES h₁ ⟶ triangleOfSES h₂ 
   hom₁ := Q.map f.τ₁
   hom₂ := Q.map f.τ₂
   hom₃ := Q.map f.τ₃
-  comm₁ := by simp [← Functor.map_comp, f.comm₁₂]
-  comm₂ := by simp [← Functor.map_comp, f.comm₂₃]
+  comm₁ := by simp [f.comm₁₂_map]
+  comm₂ := by simp [f.comm₂₃_map]
   comm₃ := by
     dsimp [triangleOfSES, triangleOfSESδ]
-    rw [assoc, assoc, IsIso.inv_comp_eq, ← Functor.map_comp_assoc,
-      ← CochainComplex.mappingCone.map_descShortComplex,
-      Functor.map_comp_assoc, IsIso.hom_inv_id_assoc,
-      ← Functor.commShiftIso_hom_naturality,
-      ← Functor.map_comp_assoc, ← Functor.map_comp_assoc]
-    congr 2
-    exact (CochainComplex.mappingCone.triangleMap S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm).comm₃
+    rw [assoc, assoc, IsIso.inv_comp_eq,
+      ← CochainComplex.mappingCone.map_descShortComplex_map_assoc,
+      IsIso.hom_inv_id_assoc, ← Functor.commShiftIso_hom_naturality]
+    exact (CochainComplex.mappingCone.triangleMap S₁.f S₂.f f.τ₁ f.τ₂
+      f.comm₁₂.symm).comm₃_map_assoc _ _
 
 end map
 
