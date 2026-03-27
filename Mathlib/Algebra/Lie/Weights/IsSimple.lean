@@ -17,19 +17,21 @@ Weyl-group-invariant submodules of the corresponding root system. In this file w
 and `LieAlgebra.IsKilling.invtSubmoduleToLieIdeal`, which constructs the ideal associated to an
 invariant submodule.
 
-As of Mar 2026, the proofs that these maps are part of an order isomorphism is still pending.
-
 ## Main definitions
 * `LieIdeal.rootSet`: the set of roots whose root space is contained in a given Lie ideal.
 * `LieIdeal.rootSpan`: the submodule of `Dual K H` spanned by `LieIdeal.rootSet`.
 * `LieIdeal.toInvtRootSubmodule`: the invariant root submodule associated to an ideal.
 * `LieAlgebra.IsKilling.invtSubmoduleToLieIdeal`: constructs a Lie ideal from an invariant
-  submodule of the dual space
+  submodule of the dual space.
+* `LieAlgebra.IsKilling.lieIdealOrderIso`: the order isomorphism between Lie ideals and
+  invariant root submodules.
 
 ## Main results
 * `LieAlgebra.IsKilling.restr_inf_cartan_eq_iSup_corootSubmodule`: the intersection of a Lie ideal
   and a Cartan subalgebra is the span of the coroots whose roots have root spaces in the ideal.
-* `LieAlgebra.IsKilling.instIsIrreducible`: the root system of a simple Lie algebra is irreducible
+* `LieAlgebra.IsKilling.isSimple_of_isIrreducible`: a Killing Lie algebra with an irreducible
+  root system is simple.
+* `LieAlgebra.IsKilling.instIsIrreducible`: the root system of a simple Lie algebra is irreducible.
 -/
 
 @[expose] public section
@@ -573,6 +575,76 @@ open LieSubmodule in
       LieSubmodule.toSubmodule_eq_bot] at h_sl2_le
     exact sl2SubmoduleOfRoot_ne_bot i.1 hα₀ h_sl2_le
   · simp [h, invtSubmoduleToLieIdeal]
+
+/-! ### The order isomorphism -/
+
+@[gcongr]
+lemma invtSubmoduleToLieIdeal_mono {q₁ q₂ : Submodule K (Dual K H)}
+    (hq₁ : ∀ i, q₁ ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap)
+    (hq₂ : ∀ i, q₂ ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap)
+    (h : q₁ ≤ q₂) :
+    invtSubmoduleToLieIdeal q₁ hq₁ ≤ invtSubmoduleToLieIdeal q₂ hq₂ := by
+  change (invtSubmoduleToLieIdeal q₁ hq₁).restr H ≤ (invtSubmoduleToLieIdeal q₂ hq₂).restr H
+  rw [restr_invtSubmoduleToLieIdeal_eq_iSup]
+  exact iSup_le fun ⟨α, hα_mem, hα_nz⟩ ↦ le_iSup_of_le ⟨α, h hα_mem, hα_nz⟩ le_rfl
+
+lemma lieIdealOrderIso_left_inv (I : LieIdeal K L) :
+    invtSubmoduleToLieIdeal (I.rootSpan (H := H))
+      ((rootSystem H).mem_invtRootSubmodule_iff.mp I.rootSpan_mem_invtRootSubmodule) = I := by
+  set J := invtSubmoduleToLieIdeal (I.rootSpan (H := H))
+    ((rootSystem H).mem_invtRootSubmodule_iff.mp I.rootSpan_mem_invtRootSubmodule)
+  have h_eq : ∀ α : H.root, α ∈ J.rootSet (H := H) ↔ α ∈ I.rootSet (H := H) := fun α ↦ by
+    rw [mem_rootSet_invtSubmoduleToLieIdeal, rootSystem_root_apply]
+    exact ⟨I.mem_rootSet_of_mem_rootSpan, fun h ↦ Submodule.subset_span ⟨α, h, rfl⟩⟩
+  have h_restr : J.restr H = I.restr H := by
+    rw [J.restr_eq_iSup_sl2SubmoduleOfRoot (H := H), I.restr_eq_iSup_sl2SubmoduleOfRoot (H := H)]
+    exact le_antisymm
+      (iSup₂_le fun α hα ↦ le_iSup₂_of_le α ((h_eq α).1 hα) le_rfl)
+      (iSup₂_le fun α hα ↦ le_iSup₂_of_le α ((h_eq α).2 hα) le_rfl)
+  rw [← LieSubmodule.toSubmodule_inj, ← LieSubmodule.restr_toSubmodule J H,
+    ← LieSubmodule.restr_toSubmodule I H, h_restr]
+
+lemma lieIdealOrderIso_right_inv (q : (rootSystem H).invtRootSubmodule) :
+    (invtSubmoduleToLieIdeal q.1
+      ((rootSystem H).mem_invtRootSubmodule_iff.mp q.2)).toInvtRootSubmodule (H := H) = q := by
+  apply Subtype.ext
+  simp only [LieIdeal.toInvtRootSubmodule, LieIdeal.rootSpan, LieIdeal.rootSet]
+  apply le_antisymm
+  · exact Submodule.span_le.mpr fun _ ⟨α, hα, hα_eq⟩ ↦ by
+      rw [← hα_eq, rootSystem_root_apply]
+      exact mem_rootSet_invtSubmoduleToLieIdeal _ _ |>.mp hα
+  · exact (RootPairing.invtRootSubmodule.eq_span_root q).le.trans
+      (Submodule.span_mono (Set.image_mono fun i hi ↦
+        (mem_rootSet_invtSubmoduleToLieIdeal _ _ |>.mpr hi)))
+
+/-- The order isomorphism between Lie ideals and invariant root submodules. -/
+noncomputable def lieIdealOrderIso :
+    LieIdeal K L ≃o (rootSystem H).invtRootSubmodule where
+  toFun := LieIdeal.toInvtRootSubmodule
+  invFun q := invtSubmoduleToLieIdeal q.1
+    ((rootSystem H).mem_invtRootSubmodule_iff.mp q.2)
+  left_inv I := lieIdealOrderIso_left_inv I
+  right_inv q := lieIdealOrderIso_right_inv q
+  map_rel_iff' {I J} :=
+    ⟨fun h ↦ by rw [← lieIdealOrderIso_left_inv (H := H) I,
+                    ← lieIdealOrderIso_left_inv (H := H) J]
+                exact invtSubmoduleToLieIdeal_mono _ _ h,
+     LieIdeal.toInvtRootSubmodule_mono⟩
+
+/-- A Killing Lie algebra with an irreducible root system is simple. -/
+theorem isSimple_of_isIrreducible (hIrr : (rootSystem H).IsIrreducible) : IsSimple K L where
+  eq_bot_or_eq_top := by
+    have : Nontrivial (Dual K H) := hIrr.1
+    exact ((lieIdealOrderIso (H := H)).isSimpleOrder_iff.mpr
+      ((RootPairing.isIrreducible_iff_invtRootSubmodule _).mp hIrr)).eq_bot_or_eq_top
+  non_abelian := fun h ↦ by
+    have h_ab : IsLieAbelian (⊤ : LieIdeal K L) :=
+      (lie_abelian_iff_equiv_lie_abelian (R := K) LieIdeal.topEquiv).mpr h
+    have h_bot := @ideal_eq_bot_of_isLieAbelian K L _ _ _ _ _ _ _ _ ⊤ h_ab
+    have h_zero : ∀ x : L, x = 0 := fun x ↦ by
+      have hx : x ∈ (⊤ : LieIdeal K L) := trivial; rw [h_bot] at hx; exact hx
+    haveI : Subsingleton L := subsingleton_of_forall_eq 0 h_zero
+    exact not_nontrivial (Dual K H) hIrr.1
 
 instance [IsSimple K L] : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L
