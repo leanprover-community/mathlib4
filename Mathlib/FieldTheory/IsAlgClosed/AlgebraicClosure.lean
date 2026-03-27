@@ -120,16 +120,16 @@ theorem le_maxIdeal : spanCoeffs k ≤ maxIdeal k :=
 
 end AlgebraicClosure
 
-attribute [local instance] Ideal.Quotient.field in
 open AlgebraicClosure in
 /-- The canonical algebraic closure of a field, the direct limit of adding roots to the field for
 each polynomial over the field. -/
 @[stacks 09GT]
 def AlgebraicClosure : Type u :=
   MvPolynomial (Vars k) k ⧸ maxIdeal k
-deriving CommRing, Field, Inhabited
 
 namespace AlgebraicClosure
+
+deriving instance CommRing, Inhabited for AlgebraicClosure
 
 instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) :=
   inferInstanceAs <| SMul S (_ ⧸ _)
@@ -140,6 +140,25 @@ instance instAlgebra {R : Type*} [CommSemiring R] [Algebra R k] : Algebra R (Alg
 instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k] [Algebra R k]
     [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) :=
   inferInstanceAs <| IsScalarTower R S (_ ⧸ _)
+
+attribute [local instance] Ideal.Quotient.field in
+instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) :=
+  inferInstanceAs <| GroupWithZero (_ ⧸ _)
+
+instance instField : Field (AlgebraicClosure k) where
+  __ := instCommRing _
+  __ := instGroupWithZero _
+  nnqsmul := (· • ·)
+  qsmul := (· • ·)
+  nnratCast q := algebraMap k _ q
+  ratCast q := algebraMap k _ q
+  nnratCast_def q := by change algebraMap k _ _ = _; simp_rw [NNRat.cast_def, map_div₀, map_natCast]
+  ratCast_def q := by
+    change algebraMap k _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
+  nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
+    ext; simp [MvPolynomial.algebraMap_eq, NNRat.smul_def]
+  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
+    ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem Monics.map_eq_prod {f : Monics k} :
