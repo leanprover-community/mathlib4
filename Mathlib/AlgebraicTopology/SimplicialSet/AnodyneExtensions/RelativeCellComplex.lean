@@ -41,6 +41,32 @@ lemma Subcomplex.existsN {X : SSet.{u}} {n : ℕ} (s : X _⦋n⦌) {A : X.Subcom
     simpa using h
   · sorry
 
+lemma Subcomplex.N.eq_iff_sMk_eq {X : SSet.{u}} {A : X.Subcomplex} (x y : A.N) :
+    x = y ↔ S.mk x.1.1.2 = S.mk y.1.1.2 := by
+  rw [N.ext_iff, SSet.N.ext_iff]
+
+@[simp]
+lemma Subcomplex.ofSimplex_map {X : SSet.{u}} {n m : ℕ} (f : ⦋n⦌ ⟶ ⦋m⦌) [Epi f]
+    (x : X _⦋m⦌) :
+    ofSimplex (X.map f.op x) = ofSimplex x := by
+  sorry
+
+lemma S.eq_iff_ofSimplex_eq {X : SSet.{u}} {n m : ℕ} (x : X _⦋n⦌) (y : X _⦋m⦌)
+    (hx : x ∈ X.nonDegenerate _) (hy : y ∈ X.nonDegenerate _) :
+    S.mk x = S.mk y ↔ Subcomplex.ofSimplex x = Subcomplex.ofSimplex y := by
+  sorry
+
+
+lemma objEquiv_symm_notMem_horn_of_isIso {n : ℕ} (i : Fin (n + 1))
+    {d : SimplexCategory} (f : d ⟶ ⦋n⦌) [IsIso f] :
+    stdSimplex.objEquiv.symm f ∉ (horn n i).obj (op d) := by
+  sorry
+
+lemma objEquiv_symm_δ_mem_horn_iff {n : ℕ} (i j : Fin (n + 2)) :
+    stdSimplex.objEquiv.symm (SimplexCategory.δ i) ∈ (horn _ j).obj _ ↔
+      i ≠ j := by
+  sorry
+
 end SSet
 
 namespace SSet.Subcomplex.Pairing
@@ -56,6 +82,11 @@ def Cells (i : ι) : Type u := { s : P.II // f.rank s = i }
 namespace Cells
 
 variable {f} {i : ι} (c : f.Cells i)
+
+variable {c} in
+@[ext]
+lemma ext {c' : f.Cells i} (h : c.1 = c'.1) : c = c' :=
+  Subtype.ext h
 
 abbrev dim : ℕ := c.1.1.dim
 
@@ -88,7 +119,7 @@ lemma range_map : Subcomplex.range c.map = (P.p c.1).1.subcomplex := by
     ← S.cast_eq_self _ (P.dim_p c.1)]
   rfl
 
-lemma map_add_objEquiv_symm_δ_index :
+lemma map_app_objEquiv_symm_δ_index :
     c.map.app (op ⦋_⦌) (stdSimplex.objEquiv.symm (SimplexCategory.δ c.index)) =
       c.1.1.simplex :=
   (P.isUniquelyCodimOneFace c.1).δ_index rfl
@@ -193,6 +224,22 @@ lemma iSup_filtration_iio [OrderBot ι] [SuccOrder ι] (m : ι) (hm : Order.IsSu
       (f.subcomplex_le_filtration c (Order.lt_succ_of_not_isMax (not_isMax_of_lt hj))).trans
         (le_trans (by rfl) (le_iSup _ ⟨Order.succ j, hm.succ_lt_iff.2 hj⟩))⟩)
 
+variable {f} in
+lemma Cells.subcomplex_not_le_filtration {j : ι} (x : f.Cells j) :
+    ¬ x.1.1.subcomplex ≤ f.filtration j := by
+  rw [ofSimplex_le_iff]
+  simp only [filtration, Subfunctor.max_obj, Subfunctor.iSup_obj, Set.mem_union,
+    Set.mem_iUnion, not_or, not_exists]
+  refine ⟨x.1.1.notMem, fun i hi y h ↦ ?_⟩
+  rw [← x.2, ← y.2] at hi
+  have : P.AncestralRel x.1 y.1 := by
+    refine ⟨fun hxy ↦ ?_, lt_of_le_of_ne ?_ ((P.ne _ _).symm)⟩
+    · rw [hxy] at hi
+      exact (lt_irrefl _ hi).elim
+    · rw [← ofSimplex_le_iff] at h
+      rwa [Subcomplex.N.le_iff, SSet.N.le_iff]
+  exact lt_irrefl _ (hi.trans (f.lt this))
+
 variable [P.IsProper]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -222,36 +269,28 @@ lemma Cells.mapToSucc_ι {j : ι} [SuccOrder ι] [NoMaxOrder ι] (c : f.Cells j)
     c.mapToSucc ≫ (f.filtration (Order.succ j)).ι = c.map :=
   rfl
 
-omit [P.IsProper] in
-variable {f} in
-lemma Cells.subcomplex_not_le_filtration {j : ι} (x : f.Cells j) :
-    ¬ x.1.1.subcomplex ≤ f.filtration j := by
-  rw [ofSimplex_le_iff]
-  simp only [filtration, Subfunctor.max_obj, Subfunctor.iSup_obj, Set.mem_union,
-    Set.mem_iUnion, not_or, not_exists]
-  refine ⟨x.1.1.notMem, fun i hi y h ↦ ?_⟩
-  rw [← x.2, ← y.2] at hi
-  have : P.AncestralRel x.1 y.1 := by
-    refine ⟨fun hxy ↦ ?_, lt_of_le_of_ne ?_ ((P.ne _ _).symm)⟩
-    · rw [hxy] at hi
-      exact (lt_irrefl _ hi).elim
-    · rw [← ofSimplex_le_iff] at h
-      rwa [Subcomplex.N.le_iff, SSet.N.le_iff]
-  exact lt_irrefl _ (hi.trans (f.lt this))
-
 section
 
-noncomputable abbrev sigmaHorn (j : ι) := ∐ (fun (c : f.Cells j) ↦ (c.horn : SSet))
+noncomputable abbrev sigmaHorn (j : ι) : SSet.{u} :=
+  ∐ fun (c : f.Cells j) ↦ c.horn
 
 noncomputable abbrev Cells.ιSigmaHorn {j : ι} (c : f.Cells j) :
     (c.horn : SSet) ⟶ f.sigmaHorn j :=
   Sigma.ι (fun (c : f.Cells j) ↦ (c.horn : SSet)) c
 
-noncomputable abbrev sigmaStdSimplex (j : ι) := ∐ (fun (i : f.Cells j) ↦ Δ[i.dim + 1])
+noncomputable abbrev sigmaStdSimplex (j : ι) : SSet.{u} :=
+  ∐ fun (i : f.Cells j) ↦ Δ[i.dim + 1]
 
 noncomputable abbrev Cells.ιSigmaStdSimplex {j : ι} (c : f.Cells j) :
     Δ[c.dim + 1] ⟶ f.sigmaStdSimplex j :=
   Sigma.ι (fun (c : f.Cells j) ↦ Δ[c.dim + 1]) c
+
+lemma ιSigmaHorn_jointly_surjective
+    {d : ℕ} {j : ι} (a : (f.sigmaHorn j) _⦋d⦌) :
+    ∃ (c : f.Cells j) (x : (c.horn : SSet) _⦋d⦌), c.ιSigmaHorn.app _ x = a :=
+  Limits.Cofan.inj_jointly_surjective_of_isColimit
+    ((isColimitCofanMkObjOfIsColimit ((CategoryTheory.evaluation _ _).obj _) _ _
+      (coproductIsCoproduct _))) a
 
 omit [P.IsProper] in
 lemma ιSigmaStdSimplex_jointly_surjective
@@ -260,6 +299,22 @@ lemma ιSigmaStdSimplex_jointly_surjective
   Limits.Cofan.inj_jointly_surjective_of_isColimit
     ((isColimitCofanMkObjOfIsColimit ((CategoryTheory.evaluation _ _).obj _) _ _
       (coproductIsCoproduct _))) a
+
+lemma ιSigmaStdSimplex_eq_iff {j : ι} {d : ℕ}
+    (x : f.Cells j) (s : (Δ[x.dim + 1] : SSet.{u}) _⦋d⦌)
+    (y : f.Cells j) (t : (Δ[y.dim + 1] : SSet.{u}) _⦋d⦌) :
+    x.ιSigmaStdSimplex.app (op ⦋d⦌) s = y.ιSigmaStdSimplex.app (op ⦋d⦌) t ↔
+      ∃ (h : x = y), t = cast (by rw [h]) s := by
+  sorry
+
+instance {j : ι} (c : f.Cells j) :
+    Mono c.ιSigmaStdSimplex := by
+  rw [NatTrans.mono_iff_mono_app]
+  rintro ⟨d⟩
+  induction d using SimplexCategory.rec with | _ d
+  rw [mono_iff_injective]
+  intro x y h
+  simpa [f.ιSigmaStdSimplex_eq_iff] using h.symm
 
 noncomputable def m (j : ι) : f.sigmaHorn j ⟶ f.sigmaStdSimplex j :=
   Limits.Sigma.map (basicCell _ _)
@@ -272,7 +327,7 @@ instance (j : ι) : Mono (f.m j) :=
       infer_instance))
 
 @[reassoc (attr := simp)]
-lemma Cells.ιSigmaHorn_m {j : ι} (c : f.Cells j) :
+lemma Cells.ι_m {j : ι} (c : f.Cells j) :
     c.ιSigmaHorn ≫ f.m j = c.horn.ι ≫ c.ιSigmaStdSimplex := by
   simp [m]
 
@@ -339,7 +394,41 @@ lemma w (j : ι) :
   ext c : 1
   simp [← cancel_mono (Subcomplex.ι _)]
 
---set_option backward.isDefEq.respectTransparency false in
+@[simps]
+noncomputable def Cells.type₁ {j : ι} (c : f.Cells j) :
+    (Subcomplex.range (f.m j)).N where
+  simplex := c.ιSigmaStdSimplex.app _ (stdSimplex.objEquiv.symm (𝟙 _))
+  nonDegenerate := by
+    rw [nonDegenerate_iff_of_mono,
+      stdSimplex.mem_nonDegenerate_iff_mono,
+      Equiv.apply_symm_apply]
+    infer_instance
+  notMem := by
+    rintro ⟨y, hy⟩
+    obtain ⟨x', ⟨y, hy'⟩, rfl⟩ := f.ιSigmaHorn_jointly_surjective y
+    rw [← FunctorToTypes.comp, ι_m, FunctorToTypes.comp,
+      ιSigmaStdSimplex_eq_iff] at hy
+    obtain ⟨rfl, rfl⟩ := hy
+    exact objEquiv_symm_notMem_horn_of_isIso _ _ hy'
+
+@[simps]
+noncomputable def Cells.type₂ {j : ι} (c : f.Cells j) :
+    (Subcomplex.range (f.m j)).N where
+  simplex := c.ιSigmaStdSimplex.app _
+    (stdSimplex.objEquiv.symm (SimplexCategory.δ c.index))
+  nonDegenerate := by
+    rw [nonDegenerate_iff_of_mono,
+      stdSimplex.mem_nonDegenerate_iff_mono,
+      Equiv.apply_symm_apply]
+    infer_instance
+  notMem := by
+    rintro ⟨y, hy⟩
+    obtain ⟨x', ⟨y, hy'⟩, rfl⟩ := f.ιSigmaHorn_jointly_surjective y
+    rw [← FunctorToTypes.comp, ι_m, FunctorToTypes.comp,
+      ιSigmaStdSimplex_eq_iff] at hy
+    obtain ⟨rfl, rfl⟩ := hy
+    simpa using (objEquiv_symm_δ_mem_horn_iff _ _).1 hy'
+
 lemma isPullback (j : ι) (_ : ¬ IsMax j) :
     IsPullback (f.t j) (f.m j)
       (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
@@ -385,6 +474,58 @@ lemma range_homOfLE_app_union_range_b_app (j : ι) (d : SimplexCategoryᵒᵖ) :
       obtain ⟨y, hy⟩ := hx
       exact Or.inr ⟨_, hy⟩
 
+noncomputable def mapN {j : ι} (x : (Subcomplex.range (f.m j)).N) : X.S :=
+  S.mk ((f.b j).app _ x.1.1.2).1
+
+@[simp]
+lemma mapN_type₁ {j : ι} (c : f.Cells j) :
+    f.mapN c.type₁ = S.mk (P.p c.1).1.simplex := by
+  dsimp only [Cells.type₁, mapN]
+  rw [← S.cast_eq_self _ (P.dim_p c.1)]
+  dsimp
+  rw [S.ext_iff, ← FunctorToTypes.comp, c.ι_b]
+  apply yonedaEquiv_symm_app_id
+
+@[simp]
+lemma mapN_type₂ {j : ι} (c : f.Cells j) :
+    f.mapN c.type₂ = S.mk c.1.1.simplex := by
+  dsimp [mapN]
+  rw [S.ext_iff, ← FunctorToTypes.comp, c.ι_b, Cells.mapToSucc,
+    lift_app_coe, Cells.map_app_objEquiv_symm_δ_index]
+
+lemma exists_or_of_range_m_N {j : ι}
+    (s : (Subcomplex.range (f.m j)).N) :
+    ∃ (c : f.Cells j), s = c.type₁ ∨ s = c.type₂ := by
+  sorry
+
+lemma isPushout_aux₁ {j : ι}
+    (s : (Subcomplex.range (f.m j)).N) :
+    (f.mapN s).simplex  ∈ SSet.nonDegenerate _ _ := by
+  obtain ⟨c, rfl | rfl⟩ := f.exists_or_of_range_m_N s
+  · rw [f.mapN_type₁]
+    exact (P.p c.1).1.nonDegenerate
+  · rw [f.mapN_type₂]
+    exact c.1.1.nonDegenerate
+
+lemma isPushout_aux₂ {j : ι} :
+    Function.Injective (f.mapN (j := j)) := by
+  intro s t h
+  obtain ⟨c, rfl | rfl⟩ := f.exists_or_of_range_m_N s <;>
+    obtain ⟨c', rfl | rfl⟩ := f.exists_or_of_range_m_N t <;>
+    simp only [mapN_type₁, mapN_type₂, ← Subcomplex.N.eq_iff_sMk_eq,
+      ← Subtype.ext_iff] at h
+  · obtain rfl : c = c' := by
+      ext : 1
+      exact P.p.injective h
+    rfl
+  · exact (P.ne _ _ h).elim
+  · exact (P.ne _ _ h.symm).elim
+  · rw [h]
+
+lemma isPushout_aux₃ {j : ι} :
+    Function.Injective fun (x : (Subcomplex.range (f.m j)).N) ↦ S.mk ((f.b j).app _ x.1.1.2) :=
+  fun _ _ h ↦ f.isPushout_aux₂ (congr_arg (S.map (Subcomplex.ι _)) h)
+
 set_option backward.isDefEq.respectTransparency false in
 lemma isPushout (j : ι) (hj : ¬ IsMax j) :
     IsPushout (f.t j) (f.m j)
@@ -397,8 +538,22 @@ lemma isPushout (j : ι) (hj : ¬ IsMax j) :
     dsimp
     refine Limits.Types.isPushout_of_isPullback_of_mono'
       ((f.isPullback j hj).map ((CategoryTheory.evaluation _ _).obj _))
-      (f.range_homOfLE_app_union_range_b_app _ _) (fun x y hx hy h ↦ ?_)
-    sorry)⟩
+      (f.range_homOfLE_app_union_range_b_app _ _) (fun x₁ x₂ hx₁ hx₂ h ↦ ?_)
+    obtain ⟨s₁, g₁, _, hg₁⟩ := (Subcomplex.range (f.m j)).existsN x₁ hx₁
+    obtain ⟨s₂, g₂, _, hg₂⟩ := (Subcomplex.range (f.m j)).existsN x₂ hx₂
+    obtain rfl : s₁ = s₂ := f.isPushout_aux₃ (by
+      dsimp
+      rw [S.eq_iff_ofSimplex_eq,
+        ← Subcomplex.ofSimplex_map g₁, ← FunctorToTypes.naturality,
+        ← Subcomplex.ofSimplex_map g₂, ← FunctorToTypes.naturality,
+        hg₁, hg₂, h]
+      all_goals
+      · rw [Subcomplex.mem_nonDegenerate_iff]
+        apply f.isPushout_aux₁)
+    obtain rfl := X.unique_nonDegenerate_map (x := (((f.b _)).app _ x₁).1)
+      g₁ ⟨_, f.isPushout_aux₁ s₁⟩ (by simp [mapN, ← hg₁, FunctorToTypes.naturality])
+      g₂ ⟨_, f.isPushout_aux₁ s₁⟩ (by simp [mapN, h, ← hg₂, FunctorToTypes.naturality])
+    rw [← hg₁, hg₂])⟩
 
 end
 
@@ -430,7 +585,7 @@ noncomputable def relativeCellComplex : RelativeCellComplex f.basicCell A.ι whe
       isColimit₁ := colimit.isColimit _
       isColimit₂ := colimit.isColimit _
       m := f.m j
-      hm c := c.ιSigmaHorn_m
+      hm c := c.ι_m
       g₁ := f.t j
       g₂ := f.b j
       isPushout := f.isPushout j hj }

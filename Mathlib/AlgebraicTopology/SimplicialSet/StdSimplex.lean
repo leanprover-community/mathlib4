@@ -258,6 +258,11 @@ lemma yonedaEquiv_comp {X Y : SSet.{u}} {n : SimplexCategory}
     (f : stdSimplex.obj n ⟶ X) (g : X ⟶ Y) :
     yonedaEquiv (f ≫ g) = g.app _ (yonedaEquiv f) := rfl
 
+@[simp]
+lemma yonedaEquiv_symm_app_id {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) :
+    (yonedaEquiv.symm x).app _ (yonedaEquiv (𝟙 _)) = x :=
+  yonedaEquiv.symm.injective (by simp [← yonedaEquiv_symm_comp])
+
 namespace Subcomplex
 
 variable {X : SSet.{u}}
