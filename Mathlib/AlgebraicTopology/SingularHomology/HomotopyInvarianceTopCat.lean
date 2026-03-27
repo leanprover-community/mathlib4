@@ -50,10 +50,10 @@ noncomputable def singularChainComplexFunctorObjMap (H : TopCat.Homotopy f g) (R
       (((singularChainComplexFunctor C).obj R).map g) :=
   H.toSSet.singularChainComplexFunctorObjMap R
 
+open HomologicalComplex in
 /-- Two homotopic morphisms in `TopCat` induce equal morphisms on the
 singular homology with coefficients in `R` (e.g. `R := ℤ` considered as
 an object of the category of abelian groups). -/
-open HomologicalComplex in
 lemma congr_homologyMap_singularChainComplexFunctor [CategoryWithHomology C]
     (H : TopCat.Homotopy f g) (R : C) (n : ℕ) :
     homologyMap (((singularChainComplexFunctor C).obj R).map f) n =
