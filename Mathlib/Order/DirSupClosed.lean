@@ -98,13 +98,13 @@ alias ⟨DirSupInacc.of_compl, DirSupClosed.compl⟩ := dirSupInacc_compl
 
 @[simp] theorem DirSupClosed.empty : DirSupClosed (∅ : Set α) := by simp [DirSupClosed]
 @[simp] theorem DirSupInacc.empty : DirSupInacc (∅ : Set α) := by simp [DirSupInacc]
-@[simp] theorem DirSupClosedOn.empty : DirSupClosedOn D ∅ := DirSupClosed.empty.dirSupClosedOn
-@[simp] theorem DirSupInaccOn.empty : DirSupInaccOn D ∅ := DirSupInacc.empty.dirSupInaccOn
+theorem DirSupClosedOn.empty : DirSupClosedOn D ∅ := by simp
+theorem DirSupInaccOn.empty : DirSupInaccOn D ∅ := by simp
 
 @[simp] theorem DirSupClosed.univ : DirSupClosed (univ : Set α) := by simp [DirSupClosed]
 @[simp] theorem DirSupInacc.univ : DirSupInacc (univ : Set α) := by simp [← compl_empty]
-@[simp] theorem DirSupClosedOn.univ : DirSupClosedOn D univ := DirSupClosed.univ.dirSupClosedOn
-@[simp] theorem DirSupInaccOn.univ : DirSupInaccOn D univ := DirSupInacc.univ.dirSupInaccOn
+theorem DirSupClosedOn.univ : DirSupClosedOn D univ := by simp
+theorem DirSupInaccOn.univ : DirSupInaccOn D univ := by simp
 
 theorem DirSupClosedOn.sInter {s : Set (Set α)} (hs : ∀ x ∈ s, DirSupClosedOn D x) :
     DirSupClosedOn D (⋂₀ s) :=
@@ -149,31 +149,27 @@ theorem DirSupClosedOn.union (hDL : IsLowerSet D)
   wlog h : DirectedOn (· ≤ ·) (d ∩ s) ∧ (d ∩ s).Nonempty
   · rw [union_comm] at hdu hd₀ hd₁ hdst ⊢
     exact this hDL ht hs hD hdu hd₀ hd₁ ha hdst <| (directedOn_union' hd₀ hd₁).resolve_right h
-  · obtain ⟨hds, hn⟩ := h
-    by_cases had : a ∈ lowerBounds (upperBounds (d ∩ s))
-    · exact .inl <| hs (hDL inter_subset_left hD) inter_subset_right hn hds
-        ⟨fun b hb ↦ ha.1 hb.1, had⟩
-    · simp only [lowerBounds, mem_setOf_eq, not_forall] at had
-      obtain ⟨b, hb, hb'⟩ := had
-      have key : {x ∈ d | ¬ x ≤ b} ⊆ d ∩ t :=
-        fun a ⟨had, hab⟩ ↦ ⟨had, (hdu had).resolve_left fun has ↦ hab <| hb ⟨had, has⟩⟩
-      obtain ⟨w, hw⟩ : {x ∈ d | ¬ x ≤ b}.Nonempty := by
-        simp_rw [Set.Nonempty, mem_setOf]
-        by_contra! ht
-        apply hb' (ha.2 <| hdst ▸ _)
-        rintro c (hc | hc)
-        · exact hb hc
-        · exact ht _ hc.1
-      refine Or.inr <| ht (hDL inter_subset_left hD) (key.trans inter_subset_right)
-        ⟨w, hw⟩ (fun x hx y hy ↦ ?_) ?_
-      · obtain ⟨z, hz, hz'⟩ := hd₁ _ (.inr (key hx)) _ (.inr (key hy))
-        rw [hdst] at hz
-        exact ⟨z, ⟨⟨hz, mt hz'.1.trans hx.2⟩, hz'⟩⟩
-      · refine ⟨fun x hx ↦ ha.1 hx.1, fun x hx ↦ ha.2 fun y hy ↦ ?_⟩
-        by_cases hyb : y ≤ b
-        · obtain ⟨z, hz, hxz, hyz⟩ := hd₁ _ (hdst ▸ hy) _ (.inr (key hw))
-          exact hxz.trans (hx ⟨hdst ▸ hz, fun hzb ↦ hw.2 (hyz.trans hzb)⟩)
-        · exact hx ⟨hy, hyb⟩
+  obtain ⟨hds, hn⟩ := h
+  by_cases had : a ∈ lowerBounds (upperBounds (d ∩ s))
+  · exact .inl <| hs (hDL inter_subset_left hD) inter_subset_right hn hds
+      ⟨fun b hb ↦ ha.1 hb.1, had⟩
+  · simp only [lowerBounds, mem_setOf_eq, not_forall] at had
+    obtain ⟨b, hb, hb'⟩ := had
+    have key : {x ∈ d | ¬ x ≤ b} ⊆ d ∩ t := fun a ⟨had, hab⟩ ↦
+      ⟨had, (hdu had).resolve_left fun has ↦ hab <| hb ⟨had, has⟩⟩
+    obtain ⟨w, hw⟩ : {x ∈ d | ¬ x ≤ b}.Nonempty := by
+      contrapose! hb'
+      apply ha.2
+      aesop
+    refine Or.inr <| ht (hDL inter_subset_left hD) (key.trans inter_subset_right)
+      ⟨w, hw⟩ (fun x hx y hy ↦ ?_) ?_
+    · obtain ⟨z, hz, hz'⟩ := hd₁ _ (.inr (key hx)) _ (.inr (key hy))
+      exact ⟨z, ⟨⟨hdst ▸ hz, mt hz'.1.trans hx.2⟩, hz'⟩⟩
+    · refine ⟨fun x hx ↦ ha.1 hx.1, fun x hx ↦ ha.2 fun y hy ↦ ?_⟩
+      by_cases hyb : y ≤ b
+      · obtain ⟨z, hz, hxz, hyz⟩ := hd₁ _ (hdst ▸ hy) _ (.inr (key hw))
+        exact hxz.trans (hx ⟨hdst ▸ hz, fun hzb ↦ hw.2 (hyz.trans hzb)⟩)
+      · exact hx ⟨hy, hyb⟩
 
 theorem DirSupInaccOn.inter (hDL : IsLowerSet D)
     (hs : DirSupInaccOn D s) (ht : DirSupInaccOn D t) : DirSupInaccOn D (s ∩ t) := by
@@ -225,8 +221,14 @@ theorem dirSupInacc_iff_inter_subset :
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
   simpa using dirSupInaccOn_iff_inter_subset isLowerSet_univ
 
+lemma IsUpperSet.dirSupClosedOn (hs : IsUpperSet s) : DirSupClosedOn D s :=
+  fun _d _ hds ⟨_b, hb⟩ _ _a ha ↦ hs (ha.1 hb) <| hds hb
+
 lemma IsUpperSet.dirSupClosed (hs : IsUpperSet s) : DirSupClosed s :=
-  fun _d hds ⟨_b, hb⟩ _ _a ha ↦ hs (ha.1 hb) <| hds hb
+  .of_univ hs.dirSupClosedOn
+
+lemma IsLowerSet.dirSupInaccOn (hs : IsLowerSet s) : DirSupInaccOn D s :=
+  hs.compl.dirSupClosedOn.of_compl
 
 lemma IsLowerSet.dirSupInacc (hs : IsLowerSet s) : DirSupInacc s :=
   hs.compl.dirSupClosed.of_compl
@@ -249,14 +251,32 @@ theorem DirSupInacc.mem_iff_of_antisymmRel (hs : DirSupInacc s) {a b : α}
     (h : AntisymmRel (· ≤ ·) a b) : a ∈ s ↔ b ∈ s := by
   simpa [not_iff_not] using hs.compl.mem_iff_of_antisymmRel h
 
+lemma dirSupClosedOn_Iic (a : α) : DirSupClosedOn D (Iic a) :=
+  fun _d _ h _ _ _a ha ↦ (isLUB_le_iff ha).2 h
+
 lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) :=
-  fun _d h _ _ _a ha ↦ (isLUB_le_iff ha).2 h
+  .of_univ (dirSupClosedOn_Iic a)
+
+lemma dirSupInaccOn_Iic (a : α) : DirSupInaccOn D (Iic a) :=
+  (isLowerSet_Iic a).dirSupInaccOn
+
+lemma dirSupInacc_Iic (a : α) : DirSupInacc (Iic a) :=
+  .of_univ (dirSupInaccOn_Iic a)
 
 end Preorder
 
 namespace PartialOrder
+variable [PartialOrder α]
 
+theorem dirSupClosedOn_singleton (a : α) : DirSupClosedOn D {a} := by
+  intro d hD hdu hd₀ hd₁ b hb
+  rw [subset_singleton_iff_eq] at hdu
+  obtain rfl | rfl := hdu
+  · simp at hd₀
+  · exact hb.unique isLUB_singleton
 
+theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} :=
+  .of_univ (dirSupClosedOn_singleton a)
 
 end PartialOrder
 
