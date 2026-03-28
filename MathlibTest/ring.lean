@@ -278,8 +278,6 @@ info: 'test_axioms' depends on axioms: [propext]
 
 -- Test that the normalization of `ring_nf` does the right thing
 /--
-error: Unknown identifier `text_sorry`
----
 trace: a b c d : ℝ
 ⊢ a - b - c - d = 0
 -/
@@ -287,4 +285,4 @@ trace: a b c d : ℝ
 example (a b c d : ℝ) : a - b - c - d = 0 := by
   ring_nf
   trace_state
-  exact text_sorry
+  exact test_sorry
