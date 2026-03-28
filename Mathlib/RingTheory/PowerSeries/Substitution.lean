@@ -309,7 +309,7 @@ theorem subst_coe (ha : HasSubst a) (p : Polynomial R) :
   rw [← coe_substAlgHom ha, substAlgHom_coe]
 
 @[simp]
-theorem subst_C (r : S) : (C r).subst a = MvPowerSeries.C r:= MvPowerSeries.subst_C _
+theorem subst_C (r : S) : (C r).subst a = MvPowerSeries.C r := MvPowerSeries.subst_C _
 
 theorem subst_X (ha : HasSubst a) :
     subst a (X : R⟦X⟧) = a := by

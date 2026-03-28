@@ -199,7 +199,7 @@ lemma χ_unique (m : F ⟶ G) [Mono m] (χ' : G ⟶ Sheaf.Ω J)
     (hχ' : IsPullback m ((isTerminalTerminal J _).from F) χ' (Sheaf.truth J)) :
     χ' = Sheaf.χ m := by
   ext : 1
-  rw [← cancel_mono (closedSieves J).ι,χ_hom, Subfunctor.lift_ι]
+  rw [← cancel_mono (closedSieves J).ι, χ_hom, Subfunctor.lift_ι]
   apply Presheaf.χ_unique _
   have pb : IsPullback (𝟙 G.obj) χ'.hom (χ'.hom ≫ (closedSieves J).ι)
     (closedSieves J).ι := IsPullback.of_horiz_isIso_mono (by simp)

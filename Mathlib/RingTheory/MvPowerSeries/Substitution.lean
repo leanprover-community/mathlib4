@@ -270,7 +270,7 @@ theorem substAlgHom_monomial (ha : HasSubst a) (e : σ →₀ ℕ) (r : R) :
 
 @[simp]
 theorem subst_C (r : S) :
-    (C r).subst a = MvPowerSeries.C r:= by
+    (C r).subst a = MvPowerSeries.C r := by
   simp [subst, algebraMap_apply]
 
 @[simp]
