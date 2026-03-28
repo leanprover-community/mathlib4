@@ -518,6 +518,26 @@ theorem integral_prod_symm (f : α × β → E) (hf : Integrable f (μ.prod ν))
     ∫ z, f z ∂μ.prod ν = ∫ y, ∫ x, f (x, y) ∂μ ∂ν := by
   rw [← integral_prod_swap f]; exact integral_prod _ hf.swap
 
+lemma integral_continuousBilin_prod {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+    {f : α → E} {g : β → E'} (hf : Integrable f μ) (hg : Integrable g ν) (B : E →L[ℝ] E' →L[ℝ] F) :
+    ∫ p, B (f p.1) (g p.2) ∂μ.prod ν = B (∫ a, f a ∂μ) (∫ b, g b ∂ν) := by
+  let C (x : E') : E →L[ℝ] F :=
+    { toFun y := B y x
+      map_add' y z := by simp
+      map_smul' m y := by simp
+      cont := by fun_prop }
+  rw [integral_prod_symm, ← (B _).integral_comp_comm hg]
+  · congr with b
+    exact (C (g b)).integral_comp_comm hf
+  refine .mono' (g := fun p ↦ ‖B‖ * (‖f p.1‖ * ‖g p.2‖)) ?_ ?_ ?_
+  · refine .const_mul ?_ _
+    exact hf.norm.mul_prod hg.norm
+  · exact Continuous.comp_aestronglyMeasurable₂ (g := fun x y ↦ B x y) (by fun_prop)
+      hf.aestronglyMeasurable.comp_fst hg.aestronglyMeasurable.comp_snd
+  · refine .of_forall fun p ↦ ?_
+    grw [(B _).le_opNorm, B.le_opNorm, mul_assoc]
+
 /-- Reversed version of **Fubini's Theorem**. -/
 theorem integral_integral {f : α → β → E} (hf : Integrable (uncurry f) (μ.prod ν)) :
     ∫ x, ∫ y, f x y ∂ν ∂μ = ∫ z, f z.1 z.2 ∂μ.prod ν :=
@@ -619,26 +639,6 @@ lemma integral_continuousLinearMap_prod (hμ : Integrable id μ) (hν : Integrab
 variable {μ : Measure α} {ν : Measure β}
   [SFinite ν] [SFinite μ]
   [CompleteSpace F] [CompleteSpace E]
-
-lemma integral_continuousBilin_prod {f : α → E} {g : β → F} (hf : Integrable f μ)
-    (hg : Integrable g ν) (B : E →L[ℝ] F →L[ℝ] G) :
-    ∫ p, B (f p.1) (g p.2) ∂μ.prod ν = B (∫ a, f a ∂μ) (∫ b, g b ∂ν) := by
-  let C (x : F) : E →L[ℝ] G :=
-    { toFun y := B y x
-      map_add' y z := by simp
-      map_smul' m y := by simp
-      cont := by fun_prop }
-  rw [integral_prod_symm, ← (B _).integral_comp_comm hg]
-  · congr with b
-    exact (C (g b)).integral_comp_comm hf
-  refine .mono' (g := fun p ↦ ‖B‖ * (‖f p.1‖ * ‖g p.2‖)) ?_ ?_ ?_
-  · refine .const_mul ?_ _
-    exact hf.norm.mul_prod hg.norm
-  · refine Continuous.comp_aestronglyMeasurable₂ (g := fun x y ↦ B x y) ?_
-      hf.aestronglyMeasurable.comp_fst hg.aestronglyMeasurable.comp_snd
-    fun_prop
-  · refine .of_forall fun p ↦ ?_
-    grw [(B _).le_opNorm, B.le_opNorm, mul_assoc]
 
 end ContinuousLinearMap
 
