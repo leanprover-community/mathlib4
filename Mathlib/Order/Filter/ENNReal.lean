@@ -157,6 +157,14 @@ namespace ENNReal
 
 variable {α : Type*} {f : Filter α}
 
+theorem eventually_le_limsup [CountableInterFilter f] (u : α → ℝ≥0∞) :
+    ∀ᶠ y in f, u y ≤ f.limsup u :=
+  _root_.eventually_le_limsup
+
+theorem limsup_eq_zero_iff [CountableInterFilter f] {u : α → ℝ≥0∞} :
+    f.limsup u = 0 ↔ u =ᶠ[f] 0 :=
+  limsup_eq_bot
+
 theorem limsup_const_mul_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
     (f.limsup fun x : α => a * u x) = a * f.limsup u := by
   by_cases ha₀ : a = 0
@@ -220,13 +228,13 @@ theorem limsup_mul_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :
   calc
     f.limsup (u * v) ≤ f.limsup fun x => f.limsup u * v x := by
       refine limsup_le_limsup ?_
-      filter_upwards [eventually_le_limsup (u := u)] with x hx using mul_le_mul' hx le_rfl
+      filter_upwards [@eventually_le_limsup _ f _ u] with x hx using mul_le_mul' hx le_rfl
     _ = f.limsup u * f.limsup v := limsup_const_mul
 
 theorem limsup_add_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :
     f.limsup (u + v) ≤ f.limsup u + f.limsup v :=
-  sInf_le ((eventually_le_limsup (u := u)).mp
-    ((eventually_le_limsup (u := v)).mono fun _ hxg hxf => add_le_add hxf hxg))
+  sInf_le ((eventually_le_limsup u).mp
+    ((eventually_le_limsup v).mono fun _ hxg hxf => add_le_add hxf hxg))
 
 theorem limsup_liminf_le_liminf_limsup {β} [Countable β] {f : Filter α} [CountableInterFilter f]
     {g : Filter β} (u : α → β → ℝ≥0∞) :
