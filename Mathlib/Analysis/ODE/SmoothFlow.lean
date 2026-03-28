@@ -692,21 +692,6 @@ lemma bijective_fderivT_comp_inr {f : E → E} {u : Set E}
   rw [ContinuousLinearMap.coe_coe, ← ContinuousLinearMap.isUnit_iff_bijective]
   exact isUnit_one_sub_of_norm_lt_one hnorm
 
-/-! ## Conditions for applying the implicit function theorem -/
-
-/-- The implicit function theorem applies to `T f u t₀` at a point `(x₀, α₀)` with suitable
-assumptions. -/
-lemma isContDiffImplicitAt_T {n : ℕ∞} {f : E → E} {u : Set E} (hf : ContDiffOn ℝ n f u)
-    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) {α₀ : C(Icc tmin tmax, E)}
-    (hα₀ : range α₀ ⊆ u) (hnorm : ‖fderivIntegralCurry0 f u t₀ α₀‖ < 1) (hn : 1 ≤ n) :
-    IsContDiffImplicitAt n (T f u t₀) (fderivT f u t₀ α₀) (x₀, α₀) where
-  hasFDerivAt := hasFDerivAt_T (hf.of_le (mod_cast hn)) hu t₀ hα₀
-  contDiffAt := contDiffAt_T hu t₀ n hf hα₀
-  bijective := bijective_fderivT_comp_inr t₀ hnorm
-  ne_zero := by
-    simp only [ne_eq, WithTop.coe_eq_zero]
-    exact (one_pos.trans_le hn).ne'
-
 /-- The operator norm of `fderivIntegralCurry0 f u t₀ α` is less than 1 when the time interval is
 sufficiently small relative to the derivative bound on `range α`. -/
 lemma opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E} (hf : ContDiffOn ℝ 1 f u)
@@ -825,14 +810,21 @@ lemma exists_localFlow {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) (
   obtain ⟨u, _, hu_open, hf_diff, ε, hεpos, α₀, hα₀_range, hT_zero, hnorm⟩ :=
     exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one hf t₀
   let t₀' : Icc (t₀ - ε) (t₀ + ε) := ⟨t₀, by simp [le_of_lt hεpos]⟩
-  have h := isContDiffImplicitAt_T hf_diff hu_open t₀' x₀ hα₀_range hnorm le_rfl
-  refine ⟨ε, hεpos, h.implicitFunction, ?_, h.contDiffAt_implicitFunction⟩
-  have hrange_near : ∀ᶠ x in 𝓝 x₀, range (h.implicitFunction x) ⊆ u := by
-    apply h.contDiffAt_implicitFunction.continuousAt.eventually
+  have hcont : ContDiffAt ℝ 1 (T f u t₀') (x₀, α₀) := contDiffAt_T hu_open t₀' 1 hf_diff hα₀_range
+  have hne : (1 : WithTop ℕ∞) ≠ 0 := by simp
+  have hif₂ : (fderiv ℝ (T f u t₀') (x₀, α₀) ∘L .inr ℝ E _).IsInvertible := by
+    rw [(hasFDerivAt_T hf_diff hu_open t₀' hα₀_range).fderiv]
+    have hbij := bijective_fderivT_comp_inr t₀' hnorm
+    exact ⟨.ofBijective _ (LinearMap.ker_eq_bot.mpr hbij.1) (LinearMap.range_eq_top.mpr hbij.2),
+      ContinuousLinearEquiv.coe_ofBijective _ _ _⟩
+  refine ⟨ε, hεpos, hcont.implicitFunction hne hif₂, ?_,
+    hcont.contDiffAt_implicitFunction hne hif₂⟩
+  have hrange_near : ∀ᶠ x in 𝓝 x₀, range (hcont.implicitFunction hne hif₂ x) ⊆ u := by
+    apply (hcont.contDiffAt_implicitFunction hne hif₂).continuousAt.eventually
       <| ContinuousMap.eventually_range_subset hu_open _
-    rw [h.implicitFunction_apply_self]
+    rw [hcont.implicitFunction_apply_self hne hif₂]
     exact hα₀_range
-  filter_upwards [h.apply_implicitFunction, hrange_near] with x hT_eq hrange
+  filter_upwards [hcont.eventually_apply_implicitFunction hne hif₂, hrange_near] with x hT_eq hrange
   constructor
   · intro t ht
     exact hasDerivWithinAt_of_T_eq_zero hf_diff.continuousOn hrange (by rw [hT_eq, hT_zero]) ht
