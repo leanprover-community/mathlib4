@@ -173,87 +173,6 @@ theorem IsSeqCompact.isCountablyCompact (hA : IsSeqCompact A) :
   obtain ⟨a, ha, φ, hφ, hφa⟩ := hA.subseq_of_frequently_in hx.frequently
   exact ⟨a, ha, hφa.mapClusterPt.of_comp hφ.tendsto_atTop⟩
 
-/-- If a sequential space is countably compact, then it is sequentially compact. We follow the
-proof in [kremsater1972sequential]. -/
-instance [SequentialSpace E] [CountablyCompactSpace E] :
-    SeqCompactSpace E := by
-  by_contra!
-  simp_all only [seqCompactSpace_iff, IsSeqCompact, mem_univ, not_forall]
-  obtain ⟨x, hx⟩ := this
-  simp only [true_and, not_exists, not_and, exists_const] at hx
-  let A := ⋃ i, closure {x i}
-  have hc {x : ℕ → E} (hx : ∀ (l : E) (φ : ℕ → ℕ), StrictMono φ → ¬Tendsto (x ∘ φ) atTop (𝓝 l)) :
-    IsClosed (⋃ i, closure {x i}) := by
-    refine IsSeqClosed.isClosed fun y l hy hy' => ?_
-    by_cases! hm : ∃ m, ∃ᶠ n in atTop, y n ∈ closure {x m}
-    · obtain ⟨m, pm⟩ := hm
-      exact subset_iUnion _ m (isClosed_closure.mem_of_frequently_of_tendsto pm hy')
-    · have (j : ℕ) : ∃ᶠ k in atTop, ∃ n ≥ j, y n ∈ closure {x k} := by
-        refine frequently_atTop.2 fun a => ?_
-        have := (Filter.eventually_all_finite (by simp : (Iic a).Finite)).2 fun i hi => hm i
-        simp only [mem_Iic, eventually_atTop, ge_iff_le] at this
-        obtain ⟨c, hc⟩ := this
-        obtain ⟨b, hb⟩ := mem_iUnion.1 (hy (c + j))
-        refine ⟨b, ?_, c + j, by grind, hb⟩
-        by_contra! hab
-        grind [hc (c + j) (by grind) b hab.le]
-      obtain ⟨φ, hφ⟩ := extraction_forall_of_frequently this
-      choose ψ hψ1 hψ2 using hφ.2
-      have : Tendsto ψ atTop atTop := tendsto_atTop_mono hψ1 tendsto_id
-      refine (hx l φ hφ.1 (Tendsto.specializes (hy'.comp this) (fun n => ?_))).elim
-      exact specializes_iff_mem_closure.2 (hψ2 n)
-  have : IsCountablyCompact A :=
-    ((countablyCompactSpace_iff E).1 inferInstance).of_isClosed_subset (hc hx) (by simp)
-  obtain ⟨a, ha⟩ : ∃ a ∈ A, MapClusterPt a atTop x := by
-    refine isCountablyCompact_iff_seq_clusterPt.1 this x (fun n => ?_)
-    exact mem_iUnion_of_mem n <| subset_closure <| mem_singleton (x n)
-  obtain ⟨k, hk⟩ : ∃ k, ∀ n > k, a ∉ closure {x n} := by
-    by_contra!
-    obtain ⟨φ, hφ1, hφ2⟩ := Nat.exists_strictMono_subsequence this
-    refine hx a φ hφ1 (tendsto_atTop_nhds.2 fun U ha hUo => ⟨0, fun n _ => ?_⟩)
-    simpa using mem_closure_iff.1 (hφ2 n) U hUo ha
-  have : a ∉ ⋃ i, closure {x (i + (k + 1))} := by
-    simpa [← iUnion_ge_eq_iUnion_nat_add (fun n => closure {x n}) (k + 1)] using
-      fun i hi => hk i (by grind)
-  have : a ∈ ⋃ i, closure {x (i + (k + 1))} := by
-    have := mapClusterPt_atTop_iff_forall_mem_closure.1 ha.2 (k + 1)
-    suffices h : closure (x '' Ici (k + 1)) ⊆ ⋃ i, closure {x (i + (k + 1))} from h this
-    refine (IsClosed.closure_subset_iff (hc fun l φ hφ => ?_)).2 ?_
-    · suffices (fun i => x (i + (k + 1))) ∘ φ = x ∘ (fun i => i + (k + 1)) ∘ φ from by
-        refine this.symm ▸ hx l _ (StrictMono.comp (strictMono_id.add_const _) hφ)
-      grind
-    · simp only [image_eq_iUnion, mem_Ici, iUnion_ge_eq_iUnion_nat_add _ (k + 1)]
-      exact iUnion_mono fun i => subset_closure
-  grind
-
-/-- If `f : X → Y` is an embedding map, the image `f '' s` of a set `s` is sequentially compact
-  if and only if `s` is sequentially compact. -/
-theorem Topology.IsEmbedding.isSeqCompact_iff {f : E → F} (hf : IsEmbedding f) :
-    IsSeqCompact A ↔ IsSeqCompact (f '' A) where
-  mp hA x hx := by
-    choose y hy using hx
-    obtain ⟨a, ha, ⟨φ, hφ⟩⟩ := hA (fun n => (hy n).1)
-    refine ⟨f a, mem_image_of_mem f ha, φ, hφ.1, ?_⟩
-    suffices f ∘ y ∘ φ = x ∘ φ from this ▸ (hf.continuous.tendsto a).comp hφ.2
-    grind
-  mpr hA x hx := by
-    obtain ⟨fa, hfa, ⟨φ, hφ⟩⟩ := hA (fun n => mem_image_of_mem f (hx n))
-    choose a ha using hfa
-    exact ⟨a, ha.1, φ, hφ.1, hf.tendsto_nhds_iff.2 (ha.2 ▸ hφ.2)⟩
-
-theorem Subtype.isSeqCompact_iff {p : E → Prop} {A : Set { x // p x }} :
-    IsSeqCompact A ↔ IsSeqCompact ((↑) '' A : Set E) :=
-  IsEmbedding.subtypeVal.isSeqCompact_iff
-
-theorem isSeqCompact_iff_isSeqCompact_univ : IsSeqCompact A ↔ IsSeqCompact (univ : Set A) := by
-  rw [Subtype.isSeqCompact_iff, image_univ, Subtype.range_coe]
-
-theorem isSeqCompact_univ_iff : IsSeqCompact (univ : Set E) ↔ SeqCompactSpace E :=
-  ⟨fun h => ⟨h⟩, fun h => h.1⟩
-
-theorem isSeqCompact_iff_seqCompactSpace : IsSeqCompact A ↔ SeqCompactSpace A :=
-  isSeqCompact_iff_isSeqCompact_univ.trans isSeqCompact_univ_iff
-
 /-- The continuous image of a countably compact set is countably compact. -/
 theorem IsCountablyCompact.image (hA : IsCountablyCompact A)
     {f : E → F} (hf : Continuous f) : IsCountablyCompact (f '' A) := by
@@ -292,6 +211,59 @@ theorem isCountablyCompact_univ_iff : IsCountablyCompact (univ : Set E) ↔ Coun
 theorem isCountablyCompact_iff_countablyCompactSpace :
     IsCountablyCompact A ↔ CountablyCompactSpace A :=
   isCountablyCompact_iff_isCountablyCompact_univ.trans isCountablyCompact_univ_iff
+
+/-- If a sequential space is countably compact, then it is sequentially compact. We follow the
+proof in [kremsater1972sequential]. -/
+instance [SequentialSpace E] [CountablyCompactSpace E] :
+    SeqCompactSpace E := by
+  by_contra!
+  simp_all only [seqCompactSpace_iff, IsSeqCompact, mem_univ, not_forall]
+  obtain ⟨x, hx⟩ := this
+  simp only [true_and, not_exists, not_and, exists_const] at hx
+  let A := ⋃ i, closure {x i}
+  have hc {x : ℕ → E} (hx : ∀ (l : E) (φ : ℕ → ℕ), StrictMono φ → ¬Tendsto (x ∘ φ) atTop (𝓝 l)) :
+    IsClosed (⋃ i, closure {x i}) := by
+    refine IsSeqClosed.isClosed fun y l hy hy' => ?_
+    by_cases! hm : ∃ m, ∃ᶠ n in atTop, y n ∈ closure {x m}
+    · obtain ⟨m, pm⟩ := hm
+      exact subset_iUnion _ m (isClosed_closure.mem_of_frequently_of_tendsto pm hy')
+    · have (j : ℕ) : ∃ᶠ k in atTop, ∃ n ≥ j, y n ∈ closure {x k} := by
+        refine frequently_atTop.2 fun a => ?_
+        have := (Filter.eventually_all_finite (by simp : (Iic a).Finite)).2 fun i hi => hm i
+        simp only [mem_Iic, eventually_atTop, ge_iff_le] at this
+        obtain ⟨c, hc⟩ := this
+        obtain ⟨b, hb⟩ := mem_iUnion.1 (hy (c + j))
+        refine ⟨b, ?_, c + j, by grind, hb⟩
+        by_contra! hab
+        grind [hc (c + j) (by grind) b hab.le]
+      obtain ⟨φ, hφ⟩ := extraction_forall_of_frequently this
+      choose ψ hψ1 hψ2 using hφ.2
+      have : Tendsto ψ atTop atTop := tendsto_atTop_mono hψ1 tendsto_id
+      refine (hx l φ hφ.1 (Tendsto.specializes (hy'.comp this) (fun n => ?_))).elim
+      exact specializes_iff_mem_closure.2 (hψ2 n)
+  have : IsCountablyCompact A :=
+    (isCountablyCompact_univ_iff.2 inferInstance).of_isClosed_subset (hc hx) (by simp)
+  obtain ⟨a, ha⟩ : ∃ a ∈ A, MapClusterPt a atTop x := by
+    refine isCountablyCompact_iff_seq_clusterPt.1 this _ (.of_forall fun n => ?_)
+    exact mem_iUnion_of_mem n <| subset_closure <| mem_singleton (x n)
+  obtain ⟨k, hk⟩ : ∃ k, ∀ n > k, a ∉ closure {x n} := by
+    by_contra!
+    obtain ⟨φ, hφ1, hφ2⟩ := Nat.exists_strictMono_subsequence this
+    refine hx a φ hφ1 (tendsto_atTop_nhds.2 fun U ha hUo => ⟨0, fun n _ => ?_⟩)
+    simpa using mem_closure_iff.1 (hφ2 n) U hUo ha
+  have : a ∉ ⋃ i, closure {x (i + (k + 1))} := by
+    simpa [← iUnion_ge_eq_iUnion_nat_add (fun n => closure {x n}) (k + 1)] using
+      fun i hi => hk i (by grind)
+  have : a ∈ ⋃ i, closure {x (i + (k + 1))} := by
+    have := mapClusterPt_atTop_iff_forall_mem_closure.1 ha.2 (k + 1)
+    suffices h : closure (x '' Ici (k + 1)) ⊆ ⋃ i, closure {x (i + (k + 1))} from h this
+    refine (IsClosed.closure_subset_iff (hc fun l φ hφ => ?_)).2 ?_
+    · suffices (fun i => x (i + (k + 1))) ∘ φ = x ∘ (fun i => i + (k + 1)) ∘ φ from by
+        refine this.symm ▸ hx l _ (StrictMono.comp (strictMono_id.add_const _) hφ)
+      grind
+    · simp only [image_eq_iUnion, mem_Ici, iUnion_ge_eq_iUnion_nat_add _ (k + 1)]
+      exact iUnion_mono fun i => subset_closure
+  grind
 
 /-- In a first-countable space, a countably compact set is sequentially compact. -/
 theorem IsCountablyCompact.isSeqCompact [FirstCountableTopology E]
