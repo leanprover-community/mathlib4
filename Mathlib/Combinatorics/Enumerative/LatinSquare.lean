@@ -363,7 +363,7 @@ lemma Function.Embedding.existsUnique_not_mem_image_of_card_succ
     have h := Finset.card_image_of_injective Finset.univ ι.inj'
     simp only [Function.Embedding.toFun_eq_coe, Finset.card_univ] at h
     simp only [Finset.card_sdiff, Finset.inter_univ, Finset.card_univ, h]
-    omega
+    lia
   obtain ⟨x, hx⟩ := Finset.card_eq_one.mp hcard
   refine ⟨x, ?_, ?_⟩
   · exact (Finset.mem_sdiff.mp (hx ▸ Finset.mem_singleton_self x)).2
