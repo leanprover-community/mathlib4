@@ -54,7 +54,7 @@ lemma exists_density_of_mem_open (hU : IsOpen U) (hx : x ∈ U)
 
 namespace Measure
 
-/-- A measure `μ` is uniformly distributed if any balls of the same radius have finite positive 
+/-- A measure `μ` is uniformly distributed if any balls of the same radius have finite positive
 measure. -/
 class UniformlyDistributed (μ : Measure X) : Prop where
   eq_measure : ∀ ⦃r : ℝ⦄, 0 < r → ∀ x y, μ (ball x r) = μ (ball y r)
