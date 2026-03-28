@@ -226,7 +226,7 @@ theorem log_Approximates {basis : Basis}
         simp
     convert replaceFun_Approximates _ h
     · ext g
-      simp [ms_eq_ms_iff_mk_eq_mk, ms]
+      simp [ext_iff, ms]
     simp only [pow_zero, const_toFun, one_mul, add_toFun, const_toFun', powser_toFun,
       mulConst_toFun, mk_toFun, ms]
     have h_tendsto_zero : Tendsto (coef.toReal⁻¹ • (f - fun x ↦ coef.toReal)) atTop (𝓝 0) := by
@@ -304,7 +304,7 @@ theorem log_Approximates {basis : Basis}
         exact inv_Approximates h_basis.tail h_coef_sorted h_coef h_coef_trimmed
     convert replaceFun_Approximates _ h
     · ext g
-      simp [ms_eq_ms_iff_mk_eq_mk, ms]
+      simp [ext_iff, ms]
     have h_tendsto_zero := tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero h_basis
       h_sorted h_approx h_trimmed
     simp only [mulMonomial_toFun, mk_toFun, inv_toFun, h_log_hd_fun, add_toFun, powser_toFun,

@@ -133,12 +133,13 @@ theorem Multiseries.nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     · rfl
     simp only [motive, add_def, add]
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem zero_add' {basis : Basis} {ms : MultiseriesExpansion basis} :
     0 + ms = ms := by
   cases basis with
   | nil => simp [toReal]
   | cons =>
-    simp [ms_eq_ms_iff_mk_eq_mk, zero_def]
+    simp [ext_iff, zero_def]
     rfl
 
 -- copypaste from above
@@ -166,12 +167,13 @@ theorem Multiseries.add_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     · rfl
     simp [motive, add_def, Multiseries.add]
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem add_zero' {basis : Basis} {ms : MultiseriesExpansion basis} :
     ms + 0 = ms := by
   cases basis with
   | nil => simp [toReal]
   | cons basis_hd basis_tl =>
-    simp [ms_eq_ms_iff_mk_eq_mk, zero_def]
+    simp [ext_iff, zero_def]
     rfl
 
 /-- Auxillary definition. It is "unfolded" version of `add` without `corec` in body. In the
@@ -297,7 +299,7 @@ theorem add_mulConst {basis : Basis} {X Y : MultiseriesExpansion basis} {c : ℝ
     simp [mulConst, add_def, add, ofReal, toReal]
     ring_nf
   | cons basis_hd basis_tl =>
-    rw [ms_eq_ms_iff_mk_eq_mk]
+    rw [ext_iff]
     simp [Multiseries.add_mulConst (basis_hd := basis_hd) (basis_tl := basis_tl)]
 
 end
@@ -343,7 +345,7 @@ private theorem add_comm' {basis : Basis} {X Y : MultiseriesExpansion basis} :
     simp
     ring_nf
   | cons basis_hd basis_tl =>
-    rw [ms_eq_ms_iff_mk_eq_mk]
+    rw [ext_iff]
     simp [Multiseries.add_comm' (basis_hd := basis_hd) (basis_tl := basis_tl)]
     ring
 
@@ -401,7 +403,7 @@ private theorem add_assoc' {basis : Basis} {X Y Z : MultiseriesExpansion basis} 
     simp [toReal]
     ring_nf
   | cons basis_hd basis_tl =>
-    rw [ms_eq_ms_iff_mk_eq_mk]
+    rw [ext_iff]
     simp [Multiseries.add_assoc' (basis_hd := basis_hd) (basis_tl := basis_tl)]
     ring
 

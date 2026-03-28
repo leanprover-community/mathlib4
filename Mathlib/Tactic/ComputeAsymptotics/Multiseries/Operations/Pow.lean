@@ -229,7 +229,7 @@ theorem neg_zpow {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℤ} :
   cases basis with
   | nil => simp [neg, pow, mulConst, ← mul_zpow, ofReal, toReal]
   | cons basis_hd basis_tl =>
-    simp only [ms_eq_ms_iff_mk_eq_mk, pow_seq, neg_seq, mulConst_seq, pow_toFun, neg_toFun,
+    simp only [ext_iff, pow_seq, neg_seq, mulConst_seq, pow_toFun, neg_toFun,
       mulConst_toFun]
     constructor
     · exact Multiseries.neg_zpow

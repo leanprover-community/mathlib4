@@ -403,6 +403,7 @@ theorem updateBasis_insert_seq {basis : Basis} {ex : BasisExtension basis}
     (ms.updateBasis (.insert f ex)).seq = Multiseries.cons 0 (ms.updateBasis ex) .nil := by
   simp [MultiseriesExpansion.updateBasis]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem updateBasis_toFun {basis : Basis} {ex : BasisExtension basis}
     {ms : MultiseriesExpansion basis} :
@@ -421,6 +422,7 @@ theorem Multiseries.updateBasis_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     .cons exp (coef.updateBasis ex) (tl.updateBasis ex) := by
   simp [Multiseries.updateBasis]
 
+set_option backward.isDefEq.respectTransparency false in
 mutual
 
 theorem Multiseries.updateBasis_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -446,6 +448,7 @@ theorem updateBasis_Sorted {basis : Basis} {ex : BasisExtension basis}
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 theorem updateBasis_Approximates {basis : Basis} {ex : BasisExtension basis}
     {ms : MultiseriesExpansion basis}
     (h_basis : WellFormedBasis ex.getBasis)

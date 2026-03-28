@@ -155,7 +155,7 @@ theorem neg_inv_comm {basis : Basis} {ms : MultiseriesExpansion basis} :
   cases basis with
   | nil => simp [neg, inv, mulConst, ofReal, toReal]
   | cons basis_hd basis_tl =>
-    simp only [ms_eq_ms_iff_mk_eq_mk, inv_seq, neg_seq, inv_toFun, neg_toFun, inv_neg, and_true]
+    simp only [ext_iff, inv_seq, neg_seq, inv_toFun, neg_toFun, inv_neg, and_true]
     exact Multiseries.neg_inv_comm
 
 end

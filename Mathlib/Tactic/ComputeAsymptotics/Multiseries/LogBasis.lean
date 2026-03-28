@@ -158,6 +158,8 @@ theorem Approximates_log_basis_ne_zero {basis basis' : Basis}
   have := h_nhds.disjoint (disjoint_nhds_atTop _) h_top
   simp only [disjoint_self, Filter.NeBot.ne'] at this
 
+
+set_option backward.isDefEq.respectTransparency false in
 theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : Basis} {f : ℝ → ℝ}
     {logBasis : LogBasis (left ++ right_hd :: right_tl)}
     {ms : MultiseriesExpansion (right_hd :: right_tl)}
@@ -212,6 +214,7 @@ theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : B
         List.cons_append, h_wf, true_and]
       exact extendBasisMiddle_WellFormed h_basis.tail (by grind) (by simpa) h_approx hf h_trimmed
 
+set_option backward.isDefEq.respectTransparency false in
 theorem extendBasisEnd_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
     {logBasis : LogBasis (basis_hd :: basis_tl)} {ms : MultiseriesExpansion [f]}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl ++ [f]))

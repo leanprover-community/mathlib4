@@ -354,6 +354,7 @@ theorem FriendlyOperation.op_cons_head_eq {op : Seq α → Seq α} (h : Friendly
       rw [hs, ht, dist_cons_cons_eq_one h_hd] at h
       norm_num at h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the operation `op` is friendly, then there exists a function
 `T : Option α → Option (α × Subtype FriendlyOperation)` such that for all `s`,
 if `T s.head = none`, then `op s = nil`, and if `T s.head = some (hd, op')`,
@@ -398,6 +399,7 @@ theorem FriendlyOperation.destruct {op : Seq α → Seq α} (h : FriendlyOperati
       | nil => simp at this
       | cons => simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `op` is friendly, then `op s` and `op t` have the same head if `s` and `t`
 have the same head. -/
 theorem FriendlyOperation.op_head_eq {op : Seq α → Seq α} (h : FriendlyOperation op) {s t : Seq α}
@@ -454,6 +456,7 @@ theorem FriendlyOperation.coind (motive : (Seq α → Seq α) → Prop)
     apply ih h_next
     simpa [dist_eq_half_of_head h_head, pow_succ'] using hn
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A generalisation of `FriendlyOperation.coind` for that allows using `opf ∘ op'` in the tail
 of `op s` where `opf` is friendly and `op'` is a function satisfying `motive`. -/
 theorem FriendlyOperation.coind_comp_friend_left {op : Seq α → Seq α}
@@ -503,6 +506,7 @@ theorem FriendlyOperation.coind_comp_friend_left {op : Seq α → Seq α}
   simp [hT]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A generalisation of `FriendlyOperation.coind` for that allows using `op' ∘ opf` in the head
 of `op s` where `opf` is friendly and `op'` is a function satisfying `motive`. -/
 theorem FriendlyOperation.coind_comp_friend_right {op : Seq α → Seq α}

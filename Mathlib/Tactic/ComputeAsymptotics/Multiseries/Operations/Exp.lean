@@ -158,7 +158,7 @@ theorem exp_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
     apply Approximates_nil at h_approx
     convert replaceFun_Approximates _ (one_Approximates h_basis)
     · ext g
-      simp [ms_eq_ms_iff_mk_eq_mk]
+      simp [ext_iff]
     · apply h_approx.mono
       simp +contextual
   | cons exp coef tl f =>

@@ -226,7 +226,7 @@ theorem one_mul' {basis : Basis} {ms : MultiseriesExpansion basis} :
   cases basis with
   | nil => simp [mul, one, const, ofReal, toReal]
   | cons basis_hd basis_tl =>
-    simp only [ms_eq_ms_iff_mk_eq_mk, mul_seq, one_seq, mul_toFun, one_toFun, one_mul, and_true]
+    simp only [ext_iff, mul_seq, one_seq, mul_toFun, one_toFun, one_mul, and_true]
     rw [Multiseries.one_mul']
 
 end
@@ -287,7 +287,7 @@ mutual
       simp [mul, mulConst, ofReal, toReal]
       ring_nf
     | cons basis_hd basis_tl =>
-      simp only [ms_eq_ms_iff_mk_eq_mk, mul_seq, mulConst_seq, mul_toFun, mulConst_toFun,
+      simp only [ext_iff, mul_seq, mulConst_seq, mul_toFun, mulConst_toFun,
         Algebra.mul_smul_comm, and_true]
       rw [Multiseries.mul_mulConst_right]
 
@@ -297,7 +297,7 @@ theorem mulMonomial_mulConst_right {basis_hd basis_tl}
     {B : MultiseriesExpansion (basis_hd :: basis_tl)} {M_coef : MultiseriesExpansion basis_tl}
     {M_exp c : ℝ} :
     B.mulMonomial (M_coef.mulConst c) M_exp = (B.mulMonomial M_coef M_exp).mulConst c := by
-  simp only [ms_eq_ms_iff_mk_eq_mk, mulMonomial_seq, mulConst_seq, mulMonomial_toFun,
+  simp only [ext_iff, mulMonomial_seq, mulConst_seq, mulMonomial_toFun,
     mulConst_toFun, Algebra.mul_smul_comm, and_true]
   apply Multiseries.mulMonomial_mulConst_right
 
@@ -355,7 +355,7 @@ mutual
       simp [mul, mulConst, ofReal, toReal]
       ring_nf
     | cons basis_hd basis_tl =>
-      simp only [ms_eq_ms_iff_mk_eq_mk, mul_seq, mulConst_seq, mul_toFun, mulConst_toFun,
+      simp only [ext_iff, mul_seq, mulConst_seq, mul_toFun, mulConst_toFun,
         Algebra.smul_mul_assoc, and_true]
       apply Multiseries.mul_mulConst_left
 
@@ -365,7 +365,7 @@ theorem mulMonomial_mulConst_left {basis_hd basis_tl}
     {B : MultiseriesExpansion (basis_hd :: basis_tl)} {M_coef : MultiseriesExpansion basis_tl}
     {M_exp c : ℝ} :
     (B.mulConst c).mulMonomial M_coef M_exp = (B.mulMonomial M_coef M_exp).mulConst c := by
-  simp only [ms_eq_ms_iff_mk_eq_mk, mulMonomial_seq, mulConst_seq, mulMonomial_toFun,
+  simp only [ext_iff, mulMonomial_seq, mulConst_seq, mulMonomial_toFun,
     mulConst_toFun, Algebra.smul_mul_assoc, and_true]
   apply Multiseries.mulMonomial_mulConst_left
 
@@ -483,7 +483,7 @@ mutual
       simp [mul, ofReal, toReal]
       ring_nf
     | cons basis_hd basis_tl =>
-      simp only [ms_eq_ms_iff_mk_eq_mk, mul_seq, add_seq, mul_toFun, add_toFun]
+      simp only [ext_iff, mul_seq, add_seq, mul_toFun, add_toFun]
       constructor
       · apply Multiseries.add_mul_left'
       · ext t
@@ -496,7 +496,7 @@ theorem add_mulMonomial_left {basis_hd basis_tl} {B : MultiseriesExpansion (basi
     {M_coef1 M_coef2 : MultiseriesExpansion basis_tl} {M_exp : ℝ} :
     (B.mulMonomial (M_coef1 + M_coef2) M_exp) =
     (B.mulMonomial M_coef1 M_exp) + (B.mulMonomial M_coef2 M_exp) := by
-  simp only [ms_eq_ms_iff_mk_eq_mk, mulMonomial_seq, Multiseries.add_mulMonomial_left, add_seq,
+  simp only [ext_iff, mulMonomial_seq, Multiseries.add_mulMonomial_left, add_seq,
     mulMonomial_toFun, add_toFun, true_and]
   ext t
   simp
@@ -589,7 +589,7 @@ mutual
       simp [mul, ofReal, toReal]
       ring_nf
     | cons basis_hd basis_tl =>
-      simp only [ms_eq_ms_iff_mk_eq_mk, mul_seq, add_seq, mul_toFun, add_toFun]
+      simp only [ext_iff, mul_seq, add_seq, mul_toFun, add_toFun]
       constructor
       · apply Multiseries.add_mul_right' (by simpa using hZ_sorted)
       · ext t
@@ -603,7 +603,7 @@ theorem add_mulMonomial_right {basis_hd basis_tl}
     {M_exp : ℝ} (m_sorted : M_coef.Sorted) :
     (A + B).mulMonomial M_coef M_exp =
     A.mulMonomial M_coef M_exp + B.mulMonomial M_coef M_exp := by
-  simp only [ms_eq_ms_iff_mk_eq_mk, mulMonomial_seq, add_seq,
+  simp only [ext_iff, mulMonomial_seq, add_seq,
     Multiseries.add_mulMonomial_right m_sorted, mulMonomial_toFun, add_toFun, true_and]
   ext t
   simp
@@ -698,7 +698,7 @@ mutual
       simp [mul, ofReal, toReal]
       ring_nf
     | cons basis_hd basis_tl =>
-      simp only [ms_eq_ms_iff_mk_eq_mk, mul_seq, Multiseries.mul_assoc' (by simpa using hZ_sorted),
+      simp only [ext_iff, mul_seq, Multiseries.mul_assoc' (by simpa using hZ_sorted),
         mul_toFun, true_and]
       ext t
       ring_nf

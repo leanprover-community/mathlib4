@@ -569,6 +569,7 @@ lemma log_basis_getLast_IsLittleO_aux {basis : Basis}
   exact id
 
 -- TODO: move?
+set_option backward.isDefEq.respectTransparency false in
 /-- Logarithm of the last basis element is little-o of any function approximated in the basis. -/
 theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis basis)
     {ms : MultiseriesExpansion basis} (h_sorted : ms.Sorted) (h_approx : ms.Approximates)

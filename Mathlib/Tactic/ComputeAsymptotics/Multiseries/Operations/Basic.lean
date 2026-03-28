@@ -105,7 +105,7 @@ theorem const_mulConst {basis : Basis} {x y : ℝ} :
   cases basis with
   | nil => simp [mulConst, const, ofReal, toReal]
   | cons =>
-    rw [ms_eq_ms_iff_mk_eq_mk]
+    rw [ext_iff]
     simp only [mulConst_seq, const_seq, mulConst_toFun, const_toFun']
     refine ⟨?_, rfl⟩
     apply Multiseries.const_mulConst
@@ -127,7 +127,7 @@ theorem mulConst_one {basis} {ms : MultiseriesExpansion basis} :
   cases basis with
   | nil => simp [mulConst, ofReal, toReal]
   | cons =>
-    simp only [ms_eq_ms_iff_mk_eq_mk, mulConst_seq, mulConst_toFun, one_smul, and_true]
+    simp only [ext_iff, mulConst_seq, mulConst_toFun, one_smul, and_true]
     rw [Multiseries.mulConst_one]
 
 end
@@ -151,7 +151,7 @@ theorem mulConst_mulConst {basis : Basis} {ms : MultiseriesExpansion basis} {x y
     simp [mulConst, ofReal, toReal]
     ring_nf
   | cons =>
-    simp only [ms_eq_ms_iff_mk_eq_mk, mulConst_seq, mulConst_toFun]
+    simp only [ext_iff, mulConst_seq, mulConst_toFun]
     constructor
     · rw [Multiseries.mulConst_mulConst]
     · ext1
