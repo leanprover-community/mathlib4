@@ -63,6 +63,37 @@ results for general rings are instead stated about `Ring.inverse`:
 
 public section
 
+section
+
+variable {ι : Type*} (R : Type*) (A : ι → Type*) [CommSemiring R] [∀ i, Semiring (A i)]
+
+/-- Pull back an algebra instance on the coefficients from an instance on a pi type. -/
+@[implicit_reducible]
+def Pi.restrictAlgebra [DecidableEq ι] [Algebra R (Π i, A i)] (i : ι) :
+    Algebra R (A i) where
+  smul r a := (r • Pi.single i a : Π i, A i) i
+  algebraMap := .comp (Pi.evalRingHom A i) <| _root_.algebraMap R (Π i, A i)
+  commutes' r x := by simpa using congrFun (Algebra.commutes r (Pi.single i x)) i
+  smul_def' r x := by simpa using congrFun (Algebra.smul_def r (Pi.single i x)) i
+
+/-- Not an instance as `i` cannot be inferred; though when `A` is non-dependent it can. -/
+theorem IsEmpty.algebraPi (i : ι) [IsEmpty (Algebra R (A i))] : IsEmpty (Algebra R (Π i, A i)) :=
+  Function.isEmpty fun _ => by classical exact Pi.restrictAlgebra R A i
+
+end
+
+/-- Provided the index type is nonempty, a function type cannot be an R-algebra if its coefficients are not. -/
+instance IsEmpty.algebraFun {ι R A : Type*} [Nonempty ι] [CommSemiring R] [Semiring A]
+    [IsEmpty (Algebra R A)] :
+    IsEmpty (Algebra R (ι → A)) :=
+  let ⟨i⟩ := ‹Nonempty ι›
+  IsEmpty.algebraPi R _ i
+
+/-- Provided the index type is nonempty, a function type cannot be an R-algebra if its coefficients are not. -/
+instance IsEmpty.algebraMatrix {ι R A : Type*} [Nonempty ι] [DecidableEq ι] [Fintype ι] [CommSemiring R] [Semiring A]
+    [IsEmpty (Algebra R A)] :
+    IsEmpty (Algebra R (Matrix ι ι A)) := sorry
+
 open scoped Matrix
 
 open NormedSpace -- For `exp`.
@@ -79,16 +110,34 @@ variable [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype
   [∀ i, DecidableEq (n' i)] [Ring 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸]
   [T2Space 𝔸]
 
-theorem exp_diagonal [Algebra ℚ 𝔸] (v : m → 𝔸) : exp (diagonal v) = diagonal (exp v) := by
-  simp_rw [exp_eq_tsum_rat, diagonal_pow, ← diagonal_smul, ← diagonal_tsum]
+theorem exp_diagonal (v : m → 𝔸) : exp (diagonal v) = diagonal (exp v) := by
+  cases isEmpty_or_nonempty m
+  · exact Subsingleton.elim _ _
+  obtain h | ⟨⟨_⟩⟩ := isEmpty_or_nonempty (Algebra ℚ 𝔸)
+  · simp
+  · simp_rw [exp_eq_tsum_rat, diagonal_pow, ← diagonal_smul, ← diagonal_tsum]
 
-theorem exp_blockDiagonal [Algebra ℚ 𝔸] (v : m → Matrix n n 𝔸) :
+theorem exp_blockDiagonal(v : m → Matrix n n 𝔸) :
     exp (blockDiagonal v) = blockDiagonal (exp v) := by
-  simp_rw [exp_eq_tsum_rat, ← blockDiagonal_pow, ← blockDiagonal_smul, ← blockDiagonal_tsum]
+  cases isEmpty_or_nonempty m
+  · exact Subsingleton.elim _ _
+  cases isEmpty_or_nonempty n
+  · exact Subsingleton.elim _ _
+  inhabit m
+  obtain h | ⟨⟨_⟩⟩ := isEmpty_or_nonempty (Algebra ℚ 𝔸)
+  · simp
+  · simp_rw [exp_eq_tsum_rat, ← blockDiagonal_pow, ← blockDiagonal_smul, ← blockDiagonal_tsum]
 
-theorem exp_blockDiagonal' [Algebra ℚ 𝔸] (v : ∀ i, Matrix (n' i) (n' i) 𝔸) :
+theorem exp_blockDiagonal' (v : ∀ i, Matrix (n' i) (n' i) 𝔸) :
     exp (blockDiagonal' v) = blockDiagonal' (exp v) := by
-  simp_rw [exp_eq_tsum_rat, ← blockDiagonal'_pow, ← blockDiagonal'_smul, ← blockDiagonal'_tsum]
+  cases isEmpty_or_nonempty (Σ i, n' i)
+  · exact Subsingleton.elim _ _
+  obtain ⟨i, j⟩ := ‹Nonempty (Σ i, n' i)›
+  have : Nonempty (n' i) := ⟨j⟩
+  obtain h | ⟨⟨_⟩⟩ := isEmpty_or_nonempty (Algebra ℚ 𝔸)
+  · haveI := IsEmpty.algebraPi ℚ (fun i => Matrix (n' i) (n' i) 𝔸) i
+    simp
+  · simp_rw [exp_eq_tsum_rat, ← blockDiagonal'_pow, ← blockDiagonal'_smul, ← blockDiagonal'_tsum]
 
 theorem exp_conjTranspose [StarRing 𝔸] [ContinuousStar 𝔸] (A : Matrix m m 𝔸) :
     exp Aᴴ = (exp A)ᴴ :=
