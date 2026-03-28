@@ -109,6 +109,16 @@ theorem vec_single [DecidableEq m] [DecidableEq n] [Zero R] (i : m) (j : n) (r :
 section Kronecker
 open scoped Kronecker
 
+section CommSemigroup
+variable [CommSemigroup R]
+
+theorem hadamard_kronecker_hadamard
+    (A : Matrix l m R) (B : Matrix n p R) (C : Matrix l m R) (D : Matrix n p R) :
+    (A ⊗ₖ B) ⊙ (C ⊗ₖ D) = (A ⊙ C) ⊗ₖ (B ⊙ D) :=
+  ext fun _ _ => mul_mul_mul_comm _ _ _ _
+
+end CommSemigroup
+
 section NonUnitalSemiring
 variable [NonUnitalSemiring R] [Fintype m] [Fintype n]
 
