@@ -499,20 +499,24 @@ lemma bijective_image_objEquiv_toOrderHom_univ (m : ℕ) :
       exact h
     · simp [e, ← Finset.image_image, Finset.image_univ_of_surjective e.surjective]
 
-noncomputable def nonDegenerateEquiv' {n m : ℕ} : (Δ[n] : SSet.{u}).nonDegenerate m ≃
-    { S : Finset (Fin (n + 1)) | S.card = m + 1 } :=
-  Equiv.ofBijective _ (bijective_image_objEquiv_toOrderHom_univ n m)
+/-- Nondegenerate `d`-dimensional simplices of the standard simplex `Δ[n]`
+identify to subsets of `Fin (n + 1)` of cardinality `d + 1`. -/
+noncomputable def nonDegenerateEquiv' {n d : ℕ} : (Δ[n] : SSet.{u}).nonDegenerate d ≃
+    { S : Finset (Fin (n + 1)) | S.card = d + 1 } :=
+  Equiv.ofBijective _ (bijective_image_objEquiv_toOrderHom_univ n d)
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp]
-lemma nonDegenerateEquiv'_iff {n m : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate m) (j : Fin (n + 1)) :
-    j ∈ (nonDegenerateEquiv' x).1 ↔ ∃ (i : Fin (m + 1)), x.1 i = j := by
+lemma nonDegenerateEquiv'_iff {n d : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate d) (j : Fin (n + 1)) :
+    j ∈ (nonDegenerateEquiv' x).1 ↔ ∃ (i : Fin (d + 1)), x.1 i = j := by
+  simp only [Set.mem_setOf_eq, Set.coe_setOf]
   dsimp [nonDegenerateEquiv']
   aesop
 
 set_option backward.isDefEq.respectTransparency false in
-noncomputable def orderIsoOfNonDegenerate {n m : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate m) :
-    Fin (m + 1) ≃o (nonDegenerateEquiv' x).1 where
+/-- If `x` is a nondegenerate `d`-simplex of `Δ[n]`, this is the order isomorphism
+between `Fin (d + 1)` and the corresponding subset of `Fin (n + 1)` of cardinality `d + 1`. -/
+noncomputable def orderIsoOfNonDegenerate {n d : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate d) :
+    Fin (d + 1) ≃o (nonDegenerateEquiv' x).1 where
   toEquiv := Equiv.ofBijective (fun i ↦ ⟨x.1 i, Finset.mem_image_of_mem _ (by simp)⟩) (by
     constructor
     · have := (mem_nonDegenerate_iff_mono x.1).1 x.2
@@ -537,21 +541,21 @@ noncomputable def orderIsoOfNonDegenerate {n m : ℕ} (x : (Δ[n] : SSet.{u}).no
     · intro h
       exact monotone_apply _ h
 
-lemma face_nonDegenerateEquiv' {n m : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate m) :
+lemma face_nonDegenerateEquiv' {n d : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate d) :
     face (nonDegenerateEquiv' x).1 = Subcomplex.ofSimplex x.1 :=
   face_eq_ofSimplex.{u} _ _ (orderIsoOfNonDegenerate x)
 
 set_option backward.isDefEq.respectTransparency false in
-lemma nonDegenerateEquiv'_symm_apply_mem {n m : ℕ}
-    (S : { S : Finset (Fin (n + 1)) | S.card = m + 1 }) (i : Fin (m + 1)) :
+lemma nonDegenerateEquiv'_symm_apply_mem {n d : ℕ}
+    (S : { S : Finset (Fin (n + 1)) | S.card = d + 1 }) (i : Fin (d + 1)) :
       (nonDegenerateEquiv'.{u}.symm S).1 i ∈ S.1 := by
   obtain ⟨f, rfl⟩ := nonDegenerateEquiv'.{u}.surjective S
   dsimp [nonDegenerateEquiv']
   simp only [Equiv.ofBijective_symm_apply_apply, Finset.mem_image, Finset.mem_univ, true_and]
   exact ⟨i, rfl⟩
 
-lemma nonDegenerateEquiv'_symm_mem_iff_face_le {n m : ℕ}
-    (S : { S : Finset (Fin (n + 1)) | S.card = m + 1 })
+lemma nonDegenerateEquiv'_symm_mem_iff_face_le {n d : ℕ}
+    (S : { S : Finset (Fin (n + 1)) | S.card = d + 1 })
     (A : (Δ[n] : SSet.{u}).Subcomplex) :
     (nonDegenerateEquiv'.symm S).1 ∈ A.obj _ ↔ face S ≤ A := by
   obtain ⟨x, rfl⟩ := nonDegenerateEquiv'.{u}.surjective S
