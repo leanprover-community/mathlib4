@@ -265,11 +265,39 @@ instance [SequentialSpace E] [CountablyCompactSpace E] :
       exact iUnion_mono fun i => subset_closure
   grind
 
+/-- If `f : X → Y` is an embedding map, the image `f '' s` of a set `s` is sequentially compact
+  if and only if `s` is sequentially compact. -/
+theorem Topology.IsEmbedding.isSeqCompact_iff {f : E → F} (hf : IsEmbedding f) :
+    IsSeqCompact A ↔ IsSeqCompact (f '' A) where
+  mp hA x hx := by
+    choose y hy using hx
+    obtain ⟨a, ha, ⟨φ, hφ⟩⟩ := hA (fun n => (hy n).1)
+    refine ⟨f a, mem_image_of_mem f ha, φ, hφ.1, ?_⟩
+    suffices f ∘ y ∘ φ = x ∘ φ from this ▸ (hf.continuous.tendsto a).comp hφ.2
+    grind
+  mpr hA x hx := by
+    obtain ⟨fa, hfa, ⟨φ, hφ⟩⟩ := hA (fun n => mem_image_of_mem f (hx n))
+    choose a ha using hfa
+    exact ⟨a, ha.1, φ, hφ.1, hf.tendsto_nhds_iff.2 (ha.2 ▸ hφ.2)⟩
+
+theorem Subtype.isSeqCompact_iff {p : E → Prop} {A : Set { x // p x }} :
+    IsSeqCompact A ↔ IsSeqCompact ((↑) '' A : Set E) :=
+  IsEmbedding.subtypeVal.isSeqCompact_iff
+
+theorem isSeqCompact_iff_isSeqCompact_univ : IsSeqCompact A ↔ IsSeqCompact (univ : Set A) := by
+  rw [Subtype.isSeqCompact_iff, image_univ, Subtype.range_coe]
+
+theorem isSeqCompact_univ_iff : IsSeqCompact (univ : Set E) ↔ SeqCompactSpace E :=
+  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+
+theorem isSeqCompact_iff_seqCompactSpace : IsSeqCompact A ↔ SeqCompactSpace A :=
+  isSeqCompact_iff_isSeqCompact_univ.trans isSeqCompact_univ_iff
+
 /-- In a first-countable space, a countably compact set is sequentially compact. -/
 theorem IsCountablyCompact.isSeqCompact [FirstCountableTopology E]
-    (hA : IsCountablyCompact A) : IsSeqCompact A := fun x hx =>
-    let ⟨a, haA, hac⟩ := IsCountablyCompact.seq_clusterPt hA x (Eventually.of_forall hx)
-    ⟨a, haA, TopologicalSpace.FirstCountableTopology.tendsto_subseq hac⟩
+    (hA : IsCountablyCompact A) : IsSeqCompact A :=
+  have : CountablyCompactSpace A := isCountablyCompact_iff_countablyCompactSpace.1 hA
+  isSeqCompact_iff_seqCompactSpace.2 inferInstance
 
 /-- In a first-countable space, a set is countably compact iff it is sequentially compact. -/
 theorem isCountablyCompact_iff_isSeqCompact [FirstCountableTopology E] :
