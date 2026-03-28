@@ -100,6 +100,12 @@ noncomputable def createsKernels [P.IsClosedUnderKernels] {X Y : P.FullSubcatego
   · exact (IsLimit.postcomposeInvEquiv _ _).symm (kernelIsKernel f.hom)
   · exact P.prop_kernel f.hom X.property Y.property
 
+lemma preservesKernels_ι [HasKernels C] [P.IsClosedUnderKernels] ⦃X Y : P.FullSubcategory⦄
+    (f : X ⟶ Y) : PreservesLimit (parallelPair f 0) P.ι := by
+  have := P.createsKernels f
+  have := P.hasLimit_parallelPair_comp_ι f
+  exact preservesLimit_of_createsLimit_and_hasLimit _ _
+
 instance [P.IsClosedUnderKernels] [HasKernels C] : HasKernels P.FullSubcategory where
   has_limit f :=
     letI := P.createsKernels f
@@ -141,6 +147,12 @@ noncomputable def createsCokernels [P.IsClosedUnderCokernels] {X Y : P.FullSubca
       (Cofork.ofπ (cokernel.π f.hom) (by simp))
   · exact (IsColimit.precomposeHomEquiv _ _).symm (cokernelIsCokernel f.hom)
   · exact P.prop_cokernel f.hom X.property Y.property
+
+lemma preservesCokernels_ι [HasCokernels C] [P.IsClosedUnderCokernels] ⦃X Y : P.FullSubcategory⦄
+    (f : X ⟶ Y) : PreservesColimit (parallelPair f 0) P.ι := by
+  have := P.createsCokernels f
+  have := P.hasColimit_parallelPair_comp_ι f
+  exact preservesColimit_of_createsColimit_and_hasColimit _ _
 
 instance [P.IsClosedUnderCokernels] [HasCokernels C] : HasCokernels P.FullSubcategory where
   has_colimit f :=
