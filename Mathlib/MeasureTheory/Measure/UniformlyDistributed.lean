@@ -95,7 +95,7 @@ private lemma le_smul (μ ν : Measure X) [OpensMeasurableSpace X]
     simp [ENNReal.div_eq_inv_mul]
   -- apply Fatou's lemma
   _ ≤ liminf (fun r => ∫⁻ a in U, (ν (ball a r))⁻¹ * ν (U ∩ ball a r) ∂μ) (𝓝[>] 0) := by
-    refine lintegral_liminf_le' _ fun r => (Measurable.mul (Measurable.inv ?_) ?_).aemeasurable
+    refine lintegral_liminf_le' fun r => (Measurable.mul (Measurable.inv ?_) ?_).aemeasurable
     · have : (fun a => ν (ball a r)) = fun a => ν (ball x r) := by
         ext
         by_cases! hr : 0 < r
