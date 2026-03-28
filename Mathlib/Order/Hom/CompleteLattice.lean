@@ -171,11 +171,10 @@ variable [EquivLike F α β]
 -- See note [lower instance priority]
 @[to_dual]
 instance (priority := 100) OrderIsoClass.tosSupHomClass [CompleteLattice α]
-    [CompleteLattice β] [OrderIsoClass F α β] : sSupHomClass F α β :=
-  { show OrderHomClass F α β from inferInstance with
-    map_sSup := fun f s =>
-      eq_of_forall_ge_iff fun c => by
-        simp only [← le_map_inv_iff, sSup_le_iff, Set.forall_mem_image] }
+    [CompleteLattice β] [OrderIsoClass F α β] : sSupHomClass F α β where
+  map_sSup := fun f s =>
+    eq_of_forall_ge_iff fun c => by
+      simp only [← le_map_inv_iff, sSup_le_iff, Set.forall_mem_image]
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toCompleteLatticeHomClass [CompleteLattice α]
