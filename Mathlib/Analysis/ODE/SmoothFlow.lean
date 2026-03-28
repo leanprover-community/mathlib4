@@ -680,17 +680,17 @@ lemma fderivT_comp_inr {f : E → E} {u : Set E}
   ext y
   simp [fderivT]
 
-/-- The derivative of `T` restricted to the second component is bijective when the norm of
+/-- The derivative of `T` restricted to the second component is invertible when the norm of
 `fderivIntegralCurry0 f u t₀ α` is less than 1. This is the key condition for the implicit function
 theorem to apply. -/
-lemma bijective_fderivT_comp_inr {f : E → E} {u : Set E}
+lemma isInvertible_fderivT_comp_inr {f : E → E} {u : Set E}
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
     (hnorm : ‖fderivIntegralCurry0 f u t₀ α‖ < 1) :
-    Function.Bijective ((fderivT f u t₀ α) ∘L (ContinuousLinearMap.inr ℝ E _)) := by
+    ((fderivT f u t₀ α) ∘L (ContinuousLinearMap.inr ℝ E _)).IsInvertible := by
   rw [fderivT_comp_inr t₀, neg_add_eq_sub, ← neg_sub]
-  apply ContinuousLinearEquiv.neg ℝ |>.bijective.comp
-  rw [ContinuousLinearMap.coe_coe, ← ContinuousLinearMap.isUnit_iff_bijective]
-  exact isUnit_one_sub_of_norm_lt_one hnorm
+  have hu := isUnit_one_sub_of_norm_lt_one hnorm
+  exact ⟨(ContinuousLinearEquiv.ofUnit hu.unit).trans (.neg ℝ),
+    ContinuousLinearMap.ext fun _ => rfl⟩
 
 /-- The operator norm of `fderivIntegralCurry0 f u t₀ α` is less than 1 when the time interval is
 sufficiently small relative to the derivative bound on `range α`. -/
@@ -814,9 +814,7 @@ lemma exists_localFlow {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) (
   have hne : (1 : WithTop ℕ∞) ≠ 0 := by simp
   have hif₂ : (fderiv ℝ (T f u t₀') (x₀, α₀) ∘L .inr ℝ E _).IsInvertible := by
     rw [(hasFDerivAt_T hf_diff hu_open t₀' hα₀_range).fderiv]
-    have hbij := bijective_fderivT_comp_inr t₀' hnorm
-    exact ⟨.ofBijective _ (LinearMap.ker_eq_bot.mpr hbij.1) (LinearMap.range_eq_top.mpr hbij.2),
-      ContinuousLinearEquiv.coe_ofBijective _ _ _⟩
+    exact isInvertible_fderivT_comp_inr t₀' hnorm
   refine ⟨ε, hεpos, hcont.implicitFunction hne hif₂, ?_,
     hcont.contDiffAt_implicitFunction hne hif₂⟩
   have hrange_near : ∀ᶠ x in 𝓝 x₀, range (hcont.implicitFunction hne hif₂ x) ⊆ u := by
