@@ -32,10 +32,10 @@ noncomputable section
 
 /-- The type of extended real numbers `[-∞, ∞]`, constructed as `WithBot (WithTop ℝ)`. -/
 def EReal := WithBot (WithTop ℝ)
-deriving Inhabited, Nontrivial,
-  Zero, One, AddMonoid, AddCommMonoid, AddCommMonoidWithOne,
+deriving Nontrivial,
+  Zero, One, AddMonoid, AddCommMonoid, AddCommMonoidWithOne, CharZero,
   Top, Bot, SupSet, InfSet, PartialOrder, LinearOrder, CompleteLinearOrder, DenselyOrdered,
-  ZeroLEOneClass, IsOrderedAddMonoid, CharZero
+  ZeroLEOneClass, IsOrderedAddMonoid
 
 /-- The canonical inclusion from reals to ereals. Registered as a coercion. -/
 @[coe] def Real.toEReal : ℝ → EReal := WithBot.some ∘ WithTop.some
@@ -79,6 +79,8 @@ protected theorem coe_natCast {n : ℕ} : ((n : ℝ) : EReal) = n := rfl
 
 instance hasCoeENNReal : Coe ℝ≥0∞ EReal :=
   ⟨ENNReal.toEReal⟩
+
+instance : Inhabited EReal := ⟨0⟩
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : ℝ) : EReal) = 0 := rfl
