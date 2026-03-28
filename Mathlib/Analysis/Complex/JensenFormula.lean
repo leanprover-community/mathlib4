@@ -54,8 +54,7 @@ lemma circleAverage_log_norm_factorizedRational {R : ℝ} {c : ℂ}
     rw [circleAverage_sum]
     intro u hu
     apply IntervalIntegrable.const_mul
-    apply circleIntegrable_log_norm_meromorphicOn (f := (· - u))
-    apply (analyticOnNhd_id.sub analyticOnNhd_const).meromorphicOn
+    apply (analyticOnNhd_id.sub analyticOnNhd_const).meromorphicOn.circleIntegrable_log_norm
   _ = ∑ u ∈ h.toFinset, D u * log R := by
     apply Finset.sum_congr rfl
     intro u hu
@@ -134,7 +133,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
         hR]
     _ = circleAverage (∑ᶠ u, (divisor f CB u * log ‖· - u‖)) c R + circleAverage (log ‖g ·‖) c R :=
       circleAverage_add (circleIntegrable_log_norm_factorizedRational (divisor f CB))
-        (circleIntegrable_log_norm_meromorphicOn (h₁g.mono sphere_subset_closedBall).meromorphicOn)
+        ((h₁g.mono sphere_subset_closedBall).meromorphicOn.circleIntegrable_log_norm)
     _ = ∑ᶠ u, divisor f CB u * log R + log ‖g c‖ := by
       simp only [circleAverage_log_norm_factorizedRational, add_right_inj]
       rw [h₁g.circleAverage_log_norm_of_ne_zero]
