@@ -308,9 +308,7 @@ lemma Fin.prod_Iic_div {M : Type*} [CommGroup M] {n : ℕ} (a : Fin n) (f : Fin 
   rw [← Finset.prod_ite_mem_eq, Finset.prod_fin_eq_prod_range]
   convert Finset.prod_range_div (fun i ↦ if hi : i < n + 1 then f ⟨i, hi⟩ else 1) (a + 1)
     using 1 with k hk
-  · refine Finset.prod_congr_of_eq_on_inter (by grind) (by grind) ?_
-    simp_all
-    grind
+  · exact Finset.prod_congr_of_eq_on_inter (by grind) (by grind) (by simp_all; grind)
   · grind
 
 /-- Telescopic product over `Fin`. -/
