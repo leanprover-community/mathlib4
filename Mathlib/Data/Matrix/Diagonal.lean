@@ -161,7 +161,7 @@ theorem diagonal_intCast [Zero α] [IntCast α] (m : ℤ) : diagonal (fun _ : n 
 theorem diagonal_intCast' [Zero α] [IntCast α] (m : ℤ) : diagonal ((m : n → α)) = m := rfl
 
 @[simp]
-theorem diagonal_eq_intCast  [Zero α] [IntCast α] {d : n → α} {m : ℤ} :
+theorem diagonal_eq_intCast [Zero α] [IntCast α] {d : n → α} {m : ℤ} :
     diagonal d = m ↔ d = m :=
   diagonal_injective.eq_iff' <| diagonal_intCast' _
 
