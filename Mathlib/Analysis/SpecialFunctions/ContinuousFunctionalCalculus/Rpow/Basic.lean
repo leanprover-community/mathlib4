@@ -787,8 +787,7 @@ lemma _root_.isStrictlyPositive_ringInverse_iff {a : A} :
     by_contra H
     rw [Ring.inverse_non_unit _ H, IsStrictlyPositive.iff_of_unital] at h
     exact not_isUnit_zero h.2
-  have : a = Ring.inverse (Ring.inverse a) := by rw [Ring.inverse_inverse ha]
-  rw [this]
+  rw [← Ring.inverse_inverse ha]
   exact h.ringInverse
 
 omit [IsSemitopologicalRing A] [T2Space A] in
@@ -804,17 +803,13 @@ lemma sqrt_ringInverse {a : A} : sqrt a⁻¹ʳ = (sqrt a)⁻¹ʳ := by
         inverse_eq_rpow_neg_one, rpow_rpow _ _ _ (by grind)]
     grind only
   · have ha' : ¬IsUnit (sqrt a) := by rwa [CFC.isUnit_sqrt_iff_isStrictlyPositive]
-    have hcases : ¬0 ≤ a ∨ ¬IsUnit a := by grind
-    obtain H|H := hcases
-    · have h₁ : sqrt a = 0 := by rw [sqrt_of_not_nonneg H]
-      rw [h₁, inverse_zero]
+    obtain (H|H) : ¬0 ≤ a ∨ ¬IsUnit a := by grind
+    · rw [sqrt_of_not_nonneg H, inverse_zero]
       by_cases hunit : IsUnit a
       · have h₂ : ¬0 ≤ inverse a := by grind [CFC.ringInverse_nonneg_iff_nonneg_of_isUnit]
         rw [sqrt_of_not_nonneg h₂]
-      · rw [inverse_non_unit _ hunit]
-        simp
-    · rw [inverse_non_unit _ ha', inverse_non_unit _ H]
-      simp
+      · simp [inverse_non_unit _ hunit]
+    · simp [inverse_non_unit _ ha', inverse_non_unit _ H]
 
 /-- For an element `a` in a C⋆-algebra, TFAE:
 1. `a` is strictly positive,

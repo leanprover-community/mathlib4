@@ -36,33 +36,29 @@ public lemma convexOn_ringInverse :
   refine ⟨by grind [convex_iff_forall_pos], ?_⟩
   intro x (xpos : IsStrictlyPositive x) y (ypos : IsStrictlyPositive y) a b ha hb hab
   let z := conjSqrt x⁻¹ʳ y
-  have hz : IsStrictlyPositive z := ypos.conjugate_of_isSelfAdjoint (by grind) (by cfc_tac)
   have zpos : IsStrictlyPositive z := by grind
   have xinvpos : IsStrictlyPositive x⁻¹ʳ := by grind
   have hsp : IsStrictlyPositive (a • 1 + b • z) := by
-    have : 0 ≤ b • z := by grind [smul_nonneg]
-    have : 0 ≤ a • (1 : A) := smul_nonneg ha zero_le_one
-    by_cases ha' : 0 < a <;> grind
+    by_cases ha' : 0 < a <;> grind [smul_nonneg]
   have h₁ : (a • 1 + b • z) ^ (-1 : ℝ) = cfc (fun r => (a + b * r) ^ (-1 : ℝ)) z := by
     rw [← cfc_smul_id (R := ℝ) (S := ℝ) b z, ← Algebra.algebraMap_eq_smul_one,
         ← cfc_const_add a (fun r => b • r) z]
     simp only [smul_eq_mul]
-    rw [cfc_comp_rpow]
-    intro r hr
+    refine cfc_comp_rpow fun r hr => ?_
     by_cases ha' : a = 0
     · have hb' : b = 1 := by grind
       simp only [ha', hb', one_mul, zero_add, gt_iff_lt]
       grind
     · grind [add_pos_of_pos_of_nonneg, mul_nonneg]
   have h₂ : (a • 1 + b • z ^ (-1 : ℝ)) = cfc (fun r => (a + b * r ^ (-1 : ℝ))) z := by
-    rw [CFC.rpow_eq_cfc_real hz.nonneg]
+    rw [CFC.rpow_eq_cfc_real zpos.nonneg]
     have hcont : ContinuousOn (fun r : ℝ => (r ^ (-1 : ℝ))) (spectrum ℝ z) :=
       ContinuousOn.rpow_const (f := id) (by fun_prop) (by grind)
     rw [← cfc_smul b _ z hcont, ← Algebra.algebraMap_eq_smul_one, ← cfc_const_add a _ z]
     refine cfc_congr fun r hr => ?_
     simp
   calc _ = (a • conjSqrt x 1 + b • conjSqrt x z)⁻¹ʳ := by
-        rw [conjSqrt_conjSqrt_ringInverse _ _ xpos, conjSqrt_one _ xpos]
+        rw [conjSqrt_conjSqrt_ringInverse _ _ xpos, conjSqrt_one x xpos.nonneg]
       _ = (conjSqrt x (a • 1 + b • z))⁻¹ʳ := by simp
       _ = conjSqrt x⁻¹ʳ ((a • 1 + b • z) ^ (-1 : ℝ)) := by
         rw [ringInverse_conjSqrt _ _ xpos, ← inverse_eq_rpow_neg_one]
@@ -72,7 +68,7 @@ public lemma convexOn_ringInverse :
         refine (cfc_le_iff _ _ _ ?_ ?_).mpr ?_
         · apply ContinuousOn.rpow_const (by fun_prop)
           intro r hr
-          have := hz.spectrum_pos hr
+          have := zpos.spectrum_pos hr
           have : 0 ≤ b * r := by positivity
           cases lt_or_eq_of_le ha <;> grind
         · refine ContinuousOn.const_add (ContinuousOn.const_mul ?_ _) _
@@ -85,7 +81,7 @@ public lemma convexOn_ringInverse :
           grind [ConvexOn, IsStrictlyPositive.spectrum_pos]
       _ = conjSqrt x⁻¹ʳ (a • 1 + b • z⁻¹ʳ) := by rw [← inverse_eq_rpow_neg_one]
       _ = a • inverse x + b • conjSqrt x⁻¹ʳ z⁻¹ʳ := by
-        simp [conjSqrt_one _ xinvpos]
+        simp [conjSqrt_one x⁻¹ʳ (by grind)]
       _ = _ := by
         rw [← ringInverse_conjSqrt _ _ xpos, conjSqrt_conjSqrt_ringInverse _ _ xpos]
 
