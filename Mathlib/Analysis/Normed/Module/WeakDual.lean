@@ -175,6 +175,7 @@ theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
   exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 
 end Polar
+
 section Bornology
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
