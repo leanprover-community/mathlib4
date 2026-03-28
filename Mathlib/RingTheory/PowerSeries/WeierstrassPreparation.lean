@@ -180,6 +180,7 @@ its maximal ideal. -/
 abbrev IsWeierstrassDivisor [IsLocalRing A] : Prop :=
   g.IsWeierstrassDivisorAt (IsLocalRing.maximalIdeal A)
 
+set_option backward.isDefEq.respectTransparency false in
 variable {g} in
 /-- If `g` is a power series over a local ring such that
 its image in the residue field is not zero, then `g` can be used as a Weierstrass divisor. -/
@@ -259,6 +260,7 @@ theorem coeff_seq_mem (k : ℕ) {i : ℕ} (hi : i ≥ (g.map (Ideal.Quotient.mk 
     rw [coeff_mk]
     exact hq (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_seq_succ_sub_seq_mem (k i : ℕ) :
     coeff i (H.seq f (k + 1) - H.seq f k) ∈ I ^ k := by
   rw [seq, add_sub_cancel_left]
@@ -754,6 +756,7 @@ theorem natDegree_eq_toNat_order_map :
 
 end IsWeierstrassFactorization
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsWeierstrassDivision.isUnit_of_map_ne_zero
     {g q : A⟦X⟧} {r : A[X]} (hg : g.map (IsLocalRing.residue A) ≠ 0)
     (H : (X ^ (g.map (IsLocalRing.residue A)).order.toNat).IsWeierstrassDivision g q r) :

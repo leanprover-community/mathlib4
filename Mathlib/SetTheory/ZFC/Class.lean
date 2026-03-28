@@ -278,7 +278,7 @@ theorem eq_univ_of_powerset_subset {A : Class} (hA : powerset A ⊆ A) : A = uni
         WellFounded.min_mem ZFSet.mem_wf _ hnA
           (hA fun x hx =>
             Classical.not_not.1 fun hB =>
-              WellFounded.not_lt_min ZFSet.mem_wf _ hnA hB <| coe_apply.1 hx))
+              WellFounded.not_lt_min ZFSet.mem_wf _ hB <| coe_apply.1 hx))
 
 /-- The definite description operator, which is `{x}` if `{y | A y} = {x}` and `∅` otherwise. -/
 def iota (A : Class) : Class :=
@@ -345,6 +345,7 @@ theorem choice_mem (h : ∅ ∉ x) (y : ZFSet.{u}) (yx : y ∈ x) :
   rw [@map_fval _ (Classical.allZFSetDefinable _) x y yx, Class.coe_mem, Class.coe_apply]
   exact choice_mem_aux x h y yx
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private lemma coe_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
     (mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out) = s := by

@@ -182,8 +182,7 @@ theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
     rw [← hl, take, head_eq_some h_get]
     simp
   | succ k ih =>
-    obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_lt h_mn
-    subst hl
+    obtain ⟨l, rfl⟩ := Nat.exists_eq_add_of_lt h_mn
     have : ∃ y, s.get? 0 = some y := by
       apply ge_stable _ _ h_get
       simp

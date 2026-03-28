@@ -53,6 +53,7 @@ end Sheaf
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The stalk functor is additive -/
 instance (p₀ : X) {C : Type v} [Category.{u} C] [Abelian C] [HasColimits C] :
     (Presheaf.stalkFunctor C p₀).Additive := by
@@ -75,7 +76,7 @@ instance : Limits.PreservesFiniteLimits (forget C X ⋙ stalkFunctor C p₀) :=
     simp only [(forget C X ⋙ stalkFunctor C p₀).exact_tfae.out 2 0]
     intro S h
     have := ((forget C X ⋙ stalkFunctor C p₀).preservesFiniteColimits_tfae.out 3 0).mp
-      (inferInstanceAs (PreservesFiniteColimits _))
+      (inferInstance : (PreservesFiniteColimits _))
     refine ShortComplex.ShortExact.mk' (this S h).left ?_ (this S h).right
     have := h.2
     exact Functor.map_mono (forget C X ⋙ stalkFunctor C p₀) _

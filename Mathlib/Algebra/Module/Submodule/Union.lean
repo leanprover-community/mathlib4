@@ -20,7 +20,7 @@ This file is a home for results about unions of submodules.
 
 ## Main results:
 * `Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt`: a finite union of proper submodules is
-a proper subset, provided the coefficients are a sufficiently large field.
+  a proper subset, provided the coefficients are a sufficiently large field.
 
 -/
 
@@ -30,7 +30,6 @@ open Function Set
 
 variable {ι K M : Type*} [Field K] [AddCommGroup M] [Module K M]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt (s : Finset ι) (p : ι → Submodule K M)
     (h₁ : ∀ i, p i ≠ ⊤) (h₂ : s.card < ENat.card K) :
     ⋃ i ∈ s, (p i : Set M) ⊂ univ := by
