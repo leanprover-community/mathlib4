@@ -17,14 +17,14 @@ public import Mathlib.Order.TypeTags
 variable {α : Type*}
 
 instance [Fintype α] : Fintype (WithTop α) :=
-  instFintypeOption
+  inferInstanceAs <| Fintype (Option α)
 
 instance [Finite α] : Finite (WithTop α) :=
   have := Fintype.ofFinite α
   Finite.of_fintype _
 
 instance [Fintype α] : Fintype (WithBot α) :=
-  instFintypeOption
+  inferInstanceAs <| Fintype (Option α)
 
 instance [Finite α] : Finite (WithBot α) :=
   have := Fintype.ofFinite α
