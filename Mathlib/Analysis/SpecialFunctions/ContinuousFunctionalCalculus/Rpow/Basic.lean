@@ -436,11 +436,10 @@ lemma rpow_eq_cfc_real [IsSemitopologicalRing A] [T2Space A] {a : A} {y : ℝ}
 lemma cfc_comp_rpow [IsSemitopologicalRing A] [T2Space A] {a : A} {y : ℝ} {f : ℝ → ℝ}
     (hf₁ : ∀ x ∈ spectrum ℝ a, 0 < f x) (hf₂ : ContinuousOn f (spectrum ℝ a) := by cfc_cont_tac)
     (ha : IsSelfAdjoint a := by cfc_tac) : cfc f a ^ y = cfc (fun r => f r ^ y) a := by
-  rw [CFC.rpow_eq_cfc_real (by grind [cfc_nonneg])]
   have hg : ContinuousOn (fun r => r ^ y) (f '' spectrum ℝ a) :=
     ContinuousOn.rpow_const (f := id) (by fun_prop) (by grind)
-  rw [← cfc_comp _ _ a ha]
-  congr
+  rw [CFC.rpow_eq_cfc_real (by grind [cfc_nonneg]), ← cfc_comp _ _ a ha]
+  rfl
 
 lemma rpow_one (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (1 : ℝ) = a := by
   simp only [rpow_def, NNReal.rpow_one, cfc_id' ℝ≥0 a]
