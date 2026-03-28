@@ -433,7 +433,7 @@ lemma rpow_eq_cfc_real [IsSemitopologicalRing A] [T2Space A] {a : A} {y : ℝ}
   simp only [NNReal.coe_rpow, Real.coe_toNNReal']
   grind
 
-lemma cfc_comp_rpow [IsTopologicalRing A] [T2Space A] {a : A} {y : ℝ} {f : ℝ → ℝ}
+lemma cfc_comp_rpow [IsSemitopologicalRing A] [T2Space A] {a : A} {y : ℝ} {f : ℝ → ℝ}
     (hf₁ : ∀ x ∈ spectrum ℝ a, 0 < f x) (hf₂ : ContinuousOn f (spectrum ℝ a) := by cfc_cont_tac)
     (ha : IsSelfAdjoint a := by cfc_tac) : cfc f a ^ y = cfc (fun r => f r ^ y) a := by
   rw [CFC.rpow_eq_cfc_real (by grind [cfc_nonneg])]
@@ -770,14 +770,14 @@ lemma inverse_rpow (a : A) (x : ℝ) (hx : x ≠ 0) (ha : IsStrictlyPositive a :
   rw [← inverse_eq_rpow_neg_one (by grind)] at this
   rw [this]
 
-omit [IsTopologicalRing A] [T2Space A] in
+omit [IsSemitopologicalRing A] [T2Space A] in
 @[aesop safe apply]
 lemma _root_.IsStrictlyPositive.ringInverse {a : A} (ha : IsStrictlyPositive a) :
     IsStrictlyPositive a⁻¹ʳ := by
   rw [CFC.inverse_eq_rpow_neg_one]
   cfc_tac
 
-omit [IsTopologicalRing A] [T2Space A] in
+omit [IsSemitopologicalRing A] [T2Space A] in
 @[grind =]
 lemma _root_.isStrictlyPositive_ringInverse_iff {a : A} :
     IsStrictlyPositive a⁻¹ʳ ↔ IsStrictlyPositive a := by
@@ -791,7 +791,7 @@ lemma _root_.isStrictlyPositive_ringInverse_iff {a : A} :
   rw [this]
   exact h.ringInverse
 
-omit [IsTopologicalRing A] [T2Space A] in
+omit [IsSemitopologicalRing A] [T2Space A] in
 open Ring in
 lemma ringInverse_nonneg_iff_nonneg_of_isUnit {a : A} (ha : IsUnit a) :
     0 ≤ a⁻¹ʳ ↔ 0 ≤ a := by
