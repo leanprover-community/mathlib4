@@ -198,8 +198,8 @@ theorem lintegral_iSup_directed [Countable β] {f : β → α → ℝ≥0∞} (h
     apply EventuallyEq.symm
     exact aeSeq.aeSeq_n_eq_fun_n_ae hf hp _
 
-/-- **Fatou's lemma**, version with `AEMeasurable` functions. -/
-theorem lintegral_liminf_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AEMeasurable (f n) μ) :
+/-- **Fatou's lemma**, version with `AEMeasurable` functions indexed by `ℕ`. -/
+theorem lintegral_liminf_nat_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AEMeasurable (f n) μ) :
     ∫⁻ a, liminf (fun n => f n a) atTop ∂μ ≤ liminf (fun n => ∫⁻ a, f n a ∂μ) atTop :=
   calc
     ∫⁻ a, liminf (fun n => f n a) atTop ∂μ = ∫⁻ a, ⨆ n : ℕ, ⨅ i ≥ n, f i a ∂μ := by
@@ -210,10 +210,34 @@ theorem lintegral_liminf_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AE
     _ ≤ ⨆ n : ℕ, ⨅ i ≥ n, ∫⁻ a, f i a ∂μ := iSup_mono fun _ => le_iInf₂_lintegral _
     _ = atTop.liminf fun n => ∫⁻ a, f n a ∂μ := Filter.liminf_eq_iSup_iInf_of_nat.symm
 
-/-- **Fatou's lemma**, version with `Measurable` functions. -/
-theorem lintegral_liminf_le {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measurable (f n)) :
+/-- **Fatou's lemma**, version with `AEMeasurable` functions. -/
+theorem lintegral_liminf_le' {ι : Type*} {f : ι → α → ℝ≥0∞} (u : Filter ι) [u.NeBot]
+    [IsCountablyGenerated u] (h_meas : ∀ i, AEMeasurable (f i) μ) :
+    ∫⁻ a, liminf (fun i => f i a) u ∂μ ≤ liminf (fun i => ∫⁻ a, f i a ∂μ) u := by
+  by_cases! hu : ¬ u.NeBot
+  · simp_all
+  · obtain ⟨g, hg⟩ : ∃ g : ℕ → ι, Tendsto g atTop u ∧
+      Tendsto (fun n => ∫⁻ a, f (g n) a ∂μ) atTop (𝓝 (liminf (fun i => ∫⁻ a, f i a ∂μ) u)) :=
+      exists_seq_tendsto_liminf
+    calc
+    _ ≤ ∫⁻ a, liminf (fun n => f (g n) a) atTop ∂μ := by
+      refine lintegral_mono fun a => ?_
+      rw [show (fun n => f (g n) a) = (fun i => f i a) ∘ (fun n => g n) from by grind, liminf_comp]
+      exact liminf_le_liminf_of_le hg.1
+    _ ≤ liminf (fun n => ∫⁻ a, f (g n) a ∂μ) atTop :=
+      lintegral_liminf_nat_le' (fun n => h_meas (g n))
+    _ = _ := hg.2.liminf_eq
+
+/-- **Fatou's lemma**, version with `Measurable` functions indexed by `ℕ`. -/
+theorem lintegral_liminf_nat_le {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measurable (f n)) :
     ∫⁻ a, liminf (fun n => f n a) atTop ∂μ ≤ liminf (fun n => ∫⁻ a, f n a ∂μ) atTop :=
-  lintegral_liminf_le' fun n => (h_meas n).aemeasurable
+  lintegral_liminf_nat_le' fun n => (h_meas n).aemeasurable
+
+/-- **Fatou's lemma**, version with `Measurable` functions. -/
+theorem lintegral_liminf_le {ι : Type*} {f : ι → α → ℝ≥0∞} (u : Filter ι) [u.NeBot]
+    [IsCountablyGenerated u] (h_meas : ∀ i, Measurable (f i)) :
+    ∫⁻ a, liminf (fun i => f i a) u ∂μ ≤ liminf (fun i => ∫⁻ a, f i a ∂μ) u :=
+  lintegral_liminf_le' u fun n => (h_meas n).aemeasurable
 
 end MonotoneConvergence
 
