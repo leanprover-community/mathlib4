@@ -33,14 +33,35 @@ partial def _root_.Lean.Expr.hasUnusedForallBinderIdxsWhere
   | .letE _ _ _ body _ => body.hasUnusedForallBinderIdxsWhere p
   | _ => false
 
+#check Nat.lt
+
+@[inline] protected def _root_.Lean.Position.qlt : Position → Position → Bool
+  | ⟨l₁, c₁⟩, ⟨l₂, c₂⟩ => l₁.blt l₂ || l₁.beq l₂ && c₁.blt c₂
+
+/--
+If `pos` is a `String.Pos`, then `getNamesFrom pos` returns the array of identifiers
+for the names of the declarations whose syntax begins in position at least `pos`.
+-/
+def getNamesAndRanges {m} [Monad m] [MonadEnv m] [MonadFileMap m] (pos : String.Pos.Raw) :
+    m (Array Name) := do
+  -- declarations from parallelism branches should not be interesting here, so use `local`
+  let drs := declRangeExt.getState (asyncMode := .local) (← getEnv)
+  let fm ← getFileMap
+  let pos := fm.toPosition pos
+  let mut nms := #[]
+  for (name, { range .. }) in drs do
+    unless range.pos.qlt pos do
+      nms := nms.push name
+  return nms
+
 /-- Does work. -/
 def workLinter : Linter where
-  run _ := do
-    for t in ← getInfoTrees do
-      for n in t.getDeclsByBody do
-        unless ← liftCoreM <| Meta.isInstance n do continue
-        let some info := (← getEnv).find? n | continue
-        let impossibleIdxs := info.type.hasUnusedForallBinderIdxsWhere fun bi _ =>
-          !bi.isInstImplicit
+  run cmd := do
+    let some pos := cmd.getPos? | return
+    for n in ← getNamesAndRanges pos do
+      unless ← liftCoreM <| Meta.isInstance n do continue
+      let some info := (← getEnv).find? n | continue
+      let impossibleIdxs := info.type.hasUnusedForallBinderIdxsWhere fun bi _ =>
+        !bi.isInstImplicit
 
 initialize addLinter workLinter
