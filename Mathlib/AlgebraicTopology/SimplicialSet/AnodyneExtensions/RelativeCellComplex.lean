@@ -17,6 +17,14 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 /-!
 # The relative cell complex attached to a rank function for a pairing
 
+Let `A` be a subcomplex of a simplicial set `X`. Let `P : A.Pairing`
+be a proper pairing (in the sense of Moss) and `f : P.RankFunction ι`
+a rank function. We show that the inclusion `A.ι` is a relative
+cell complex with basic cells given by horn inclusions.
+
+## References
+* [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
+
 -/
 
 @[expose] public section
@@ -372,6 +380,11 @@ lemma Cells.ι_t {j : ι} (c : f.Cells j) :
     c.ιSigmaHorn ≫ f.t j = c.mapHorn:= by
   simp [t]
 
+/-- Given a rank `j` cell `c` for a rank function `f` for a proper
+pairing of a subcomplex of a simplicial set, this is
+the nondegenerate simplex in `f.sigmaStdSimplex j`
+not in the image of `f.m j : f.sigmaHorn j ⟶ f.sigmaStdSimplex j`
+which corresponds to `c.ιSigmaStdSimplex`. -/
 @[simps]
 noncomputable def Cells.type₁ {j : ι} (c : f.Cells j) :
     (Subcomplex.range (f.m j)).N where
@@ -389,6 +402,11 @@ noncomputable def Cells.type₁ {j : ι} (c : f.Cells j) :
     obtain ⟨rfl, rfl⟩ := hy
     exact objEquiv_symm_notMem_horn_of_isIso _ _ hy'
 
+/-- Given a rank `j` cell `c` for a rank function `f` for a proper
+pairing of a subcomplex of a simplicial set, this is
+the nondegenerate simplex in `f.sigmaStdSimplex j`
+not in the image of `f.m j : f.sigmaHorn j ⟶ f.sigmaStdSimplex j`
+which corresponds to the `c.index`-face of `c.type₁`. -/
 @[simps]
 noncomputable def Cells.type₂ {j : ι} (c : f.Cells j) :
     (Subcomplex.range (f.m j)).N where
@@ -429,6 +447,9 @@ lemma exists_or_of_range_m_N {j : ι}
 
 variable [SuccOrder ι] [NoMaxOrder ι]
 
+/-- Given a rank function `f : P.RankFunction ι` for a proper pairing `P`
+of a subcomplex of a simplicial set, this is the induced morphism
+`f.sigmaStdSimplex j ⟶ f.filtration (Order.succ j)` for any `j : ι`. -/
 noncomputable def b (j : ι) :
     f.sigmaStdSimplex j ⟶ f.filtration (Order.succ j) :=
   Sigma.desc (fun c ↦ c.mapToSucc)
@@ -443,7 +464,6 @@ lemma w (j : ι) :
     f.t j ≫ homOfLE (f.filtration_monotone (Order.le_succ j)) = f.m j ≫ f.b j := by
   ext c : 1
   simp [← cancel_mono (Subcomplex.ι _)]
-
 
 lemma isPullback (j : ι) : IsPullback (f.t j) (f.m j)
       (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
@@ -489,6 +509,9 @@ lemma range_homOfLE_app_union_range_b_app (j : ι) (d : SimplexCategoryᵒᵖ) :
       obtain ⟨y, hy⟩ := hx
       exact Or.inr ⟨_, hy⟩
 
+/-- Given a rank function `f : P.RankFunction ι` for a proper pairing
+of a subcomplex of a simplicial set `X`, this is the simplex of `X`
+corresponding to an element in `(Subcomplex.range (f.m j)).N`. -/
 noncomputable def mapN {j : ι} (x : (Subcomplex.range (f.m j)).N) : X.S :=
   S.mk ((f.b j).app _ x.1.1.2).1
 
@@ -575,7 +598,12 @@ instance : f.filtration_monotone.functor.IsWellOrderContinuous where
     rw [← f.iSup_filtration_iio m hm]
     apply isLUB_iSup)⟩
 
-noncomputable def relativeCellComplex : RelativeCellComplex f.basicCell A.ι where
+/-- Given a rank function `f : P.RankFunction ι` for a
+proper pairing `P` of a subcomplex `A` of simplicial set `X`,
+the inclusion `A.ι` is a relative cell complex with basic cells
+given by horn inclusions. -/
+noncomputable def relativeCellComplex :
+    RelativeCellComplex f.basicCell A.ι where
   F := f.filtration_monotone.functor ⋙ Subcomplex.toSSetFunctor
   isoBot := Subcomplex.eqToIso (filtration_bot _)
   isColimit :=
@@ -601,5 +629,5 @@ noncomputable def relativeCellComplex : RelativeCellComplex f.basicCell A.ι whe
       isPushout := f.isPushout j }
 
 end RankFunction
-#lint
+
 end SSet.Subcomplex.Pairing
