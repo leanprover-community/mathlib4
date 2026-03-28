@@ -36,8 +36,8 @@ which states that if `f` is sufficiently smooth, then
 * `exists_taylor_mean_remainder_bound`: Taylor's theorem for vector-valued functions with a
   polynomial bound on the remainder
 * `taylor_integral_remainder_of_absolutelyContinuous`,
-`taylor_integral_remainder`: Taylor's theorem with the integral form of the
-remainder
+  `taylor_integral_remainder`: Taylor's theorem with the integral form of the
+  remainder
 
 ## TODO
 
