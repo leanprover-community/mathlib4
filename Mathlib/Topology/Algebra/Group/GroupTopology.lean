@@ -165,14 +165,14 @@ topologies contained in the intersection of `s` and `t`. -/
   The supremum of two group topologies `s` and `t` is the infimum of the family of all group
   topologies contained in the intersection of `s` and `t`. -/]
 instance : CompleteSemilatticeInf (GroupTopology α) :=
-  { inferInstanceAs (InfSet (GroupTopology α)),
-    inferInstanceAs (PartialOrder (GroupTopology α)) with
+  { (inferInstance : InfSet (GroupTopology α)),
+    (inferInstance : PartialOrder (GroupTopology α)) with
     isGLB_sInf _ := .of_image toTopologicalSpace_le (isGLB_sInf _) }
 
 @[to_additive]
 instance : CompleteLattice (GroupTopology α) :=
-  { inferInstanceAs (BoundedOrder (GroupTopology α)),
-    inferInstanceAs (SemilatticeInf (GroupTopology α)),
+  { (inferInstance : BoundedOrder (GroupTopology α)),
+    (inferInstance : SemilatticeInf (GroupTopology α)),
     completeLatticeOfCompleteSemilatticeInf _ with
     inf := (· ⊓ ·) }
 
