@@ -279,21 +279,16 @@ variable [FirstCountableTopology α] {f : Filter β}
 theorem exists_seq_tendsto_limsup [f.NeBot] [IsCountablyGenerated f] {u : β → α}
     (hc : IsCoboundedUnder (· ≤ ·) f u := by isBoundedDefault)
     (hb : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
-    ∃ x : ℕ → β, Tendsto (u ∘ x) atTop (𝓝 (limsup u f)) := by
+    ∃ x : ℕ → β, Tendsto x atTop f ∧ Tendsto (u ∘ x) atTop (𝓝 (limsup u f)) := by
   have := MapClusterPt.limsup
-  rw [MapClusterPt, ClusterPt] at this
-  obtain ⟨y, hy⟩ := exists_seq_tendsto (𝓝 (limsup u f) ⊓ map u f)
-  obtain ⟨k, hk⟩ : ∃ k, ∀ n, ∃ b, u b = y (n + k) := by
-    obtain ⟨k, hk⟩ := eventually_atTop.1 <| (tendsto_inf.1 hy).2 |>.eventually_mem range_mem_map
-    exact ⟨k, fun n => Set.mem_range.1 <| hk (n + k) (by simp)⟩
-  choose x hx using hk
-  exact ⟨x, Tendsto.congr (fun n => (hx n).symm)
-    ((tendsto_add_atTop_iff_nat k).2 (tendsto_inf.1 hy).1)⟩
+  rw [MapClusterPt, ClusterPt, ← Filter.push_pull', map_neBot_iff] at this
+  obtain ⟨x, hx⟩ := exists_seq_tendsto (comap u (𝓝 (limsup u f)) ⊓ f)
+  exact ⟨x, (tendsto_inf.1 hx).2, tendsto_comap_iff.1 (tendsto_inf.1 hx).1⟩
 
 theorem exists_seq_tendsto_liminf [f.NeBot] {u : β → α} [IsCountablyGenerated f]
     (hc : IsCoboundedUnder (· ≥ ·) f u := by isBoundedDefault)
     (hb : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
-    ∃ x : ℕ → β, Tendsto (u ∘ x) atTop (𝓝 (liminf u f)) :=
+    ∃ x : ℕ → β, Tendsto x atTop f ∧ Tendsto (u ∘ x) atTop (𝓝 (liminf u f)) :=
   exists_seq_tendsto_limsup (α := αᵒᵈ)
 
 variable [CountableInterFilter f] {u : β → α}
