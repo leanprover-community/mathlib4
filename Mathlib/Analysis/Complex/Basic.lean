@@ -185,7 +185,6 @@ theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
 theorem imCLM_apply (z : ℂ) : (imCLM : ℂ → ℝ) z = z.im :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem restrictScalars_toSpanSingleton' (x : E) :
     ContinuousLinearMap.restrictScalars ℝ (toSpanSingleton ℂ x : ℂ →L[ℂ] E) =
       reCLM.smulRight x + I • imCLM.smulRight x := by

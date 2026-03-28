@@ -166,6 +166,8 @@ instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algeb
     Algebra ℝ A :=
   .restrictScalars ℝ ℂ A
 
+instance : Algebra ℝ ℂ := inferInstance
+
 -- try to make sure we're not introducing diamonds but we will need
 -- `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
 example : Prod.algebra ℝ ℂ ℂ = (Prod.algebra ℂ ℂ ℂ).complexToReal := rfl
