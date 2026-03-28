@@ -132,7 +132,7 @@ lemma toReal_liminf : liminf (fun i ↦ (u i : ℝ)) f = liminf u f := by
   refine eq_of_forall_le_iff fun c ↦ ?_
   rw [← Real.toNNReal_le_iff_le_coe, le_liminf_iff (by simpa) ⟨0, by simp⟩, le_liminf_iff]
   simp only [← coe_lt_coe, Real.coe_toNNReal', lt_sup_iff, or_imp, isEmpty_Prop, not_lt,
-    zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_swap (α := _ ≤ _)]
+    zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_comm (α := _ ≤ _)]
   refine forall₂_congr fun r hr ↦ ?_
   simpa using (le_or_gt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
 
@@ -147,7 +147,7 @@ lemma toReal_limsup : limsup (fun i ↦ (u i : ℝ)) f = limsup u f := by
   refine eq_of_forall_le_iff fun c ↦ ?_
   rw [← Real.toNNReal_le_iff_le_coe, le_limsup_iff (by simpa) (by simpa), le_limsup_iff ‹_›]
   simp only [← coe_lt_coe, Real.coe_toNNReal', lt_sup_iff, or_imp, isEmpty_Prop, not_lt,
-    zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_swap (α := _ ≤ _)]
+    zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_comm (α := _ ≤ _)]
   refine forall₂_congr fun r hr ↦ ?_
   simpa using (le_or_gt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
 

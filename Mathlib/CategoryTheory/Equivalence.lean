@@ -662,10 +662,10 @@ instance isEquivalence_trans (F : C ⥤ D) (G : D ⥤ E) [IsEquivalence F] [IsEq
     IsEquivalence (F ⋙ G) where
 
 instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringLeft C D E).obj F) :=
-  (inferInstance : IsEquivalence (Equivalence.congrLeft F.asEquivalence).inverse)
+  inferInstanceAs <| IsEquivalence (Equivalence.congrLeft F.asEquivalence).inverse
 
 instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringRight E C D).obj F) :=
-  (inferInstance : IsEquivalence (Equivalence.congrRight F.asEquivalence).functor)
+  inferInstanceAs <| IsEquivalence (Equivalence.congrRight F.asEquivalence).functor
 
 end Functor
 
