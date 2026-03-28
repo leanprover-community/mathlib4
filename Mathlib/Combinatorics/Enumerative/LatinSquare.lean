@@ -140,11 +140,11 @@ section Equivalence
 /-- Given relabeling maps for the rows, columns, and symbols,
     produce the relabeled Latin rectangle. -/
 @[reducible]
-def renameLatinRectangle
+def LatinRectangle.relabel
+    (A : LatinRectangle m n α)
     (f : m ≃ m')
     (g : n ≃ n')
-    (h : α ≃ β)
-    (A : LatinRectangle m n α) :
+    (h : α ≃ β) :
     LatinRectangle m' n' β := {
   M := fun i' j' ↦ h (A.M (f.symm i') (g.symm j')),
   exactly_n_symbols := by
@@ -198,7 +198,7 @@ lemma induced_latin_rectangle_is_equiv
     (f : m ≃ m')
     (g : n ≃ n')
     (h : α ≃ β)
-    (A : LatinRectangle m n α) : A ≃ (renameLatinRectangle f g h A) :=
+    (A : LatinRectangle m n α) : A ≃ (LatinRectangle.relabel A f g h) :=
   ⟨f, g, h, by simp [LatinRectangle.M]⟩
 
 end Equivalence
@@ -219,7 +219,7 @@ noncomputable instance n_nonempty
   have f :=  Fintype.equivFin n
   have h' := Fintype.equivFinOfCardEq h.out.symm
   have h'' := Fintype.equivFin α
-  have b := renameLatinRectangle f.symm f.symm h'.symm a
+  have b := LatinRectangle.relabel a f.symm f.symm h'.symm
   exact Nonempty.intro (b : LatinSquare n α)
 
 end Nonvacuous
@@ -638,7 +638,7 @@ theorem LatinRectangle.exists_LatinSquare_of_LatinRectangle
   | h a ih =>
     by_cases h_full : Fintype.card k = Fintype.card n
     · let f : k ≃ n := Fintype.equivOfCardEq h_full
-      let A' := renameLatinRectangle f (Equiv.refl n) (Equiv.refl α) A
+      let A' := LatinRectangle.relabel A f (Equiv.refl n) (Equiv.refl α)
       have h_sim : A ≃ A' := by
         simp [induced_latin_rectangle_is_equiv f (.refl n) (.refl α) A, A']
       use A'
