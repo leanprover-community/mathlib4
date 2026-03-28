@@ -15,10 +15,6 @@ base category.
 
 ## TODO
 - The dual result for `Under B`.
-
-## References
-- [Stephen Lack and Paweł Sobociński, *Adhesive Categories*][adhesive2004], Proposition 8 (ii)
-
 -/
 
 @[expose] public section
