@@ -791,11 +791,13 @@ lemma _root_.isStrictlyPositive_ringInverse_iff {a : A} :
 
 omit [IsSemitopologicalRing A] [T2Space A] in
 open Ring in
+@[grind =]
 lemma ringInverse_nonneg_iff_nonneg_of_isUnit {a : A} (ha : IsUnit a) :
     0 ≤ a⁻¹ʳ ↔ 0 ≤ a := by
   grind [isStrictlyPositive_ringInverse_iff]
 
 open Ring in
+@[grind _=_]
 lemma sqrt_ringInverse {a : A} : sqrt a⁻¹ʳ = (sqrt a)⁻¹ʳ := by
   by_cases ha : IsStrictlyPositive a
   · rw [sqrt_eq_rpow, sqrt_eq_rpow, inverse_rpow _ _ (by grind),
