@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 public import Mathlib.MeasureTheory.Measure.Regular
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 
+import Mathlib.MeasureTheory.Measure.Prod
+import Mathlib.Order.Filter.ENNReal
+
 /-!
 # Uniformly distributed measures
 
@@ -16,8 +19,14 @@ In this file we define uniformly distributed measures and prove Christensen's Le
 
 ## Main statements
 
-* `isUniformlyDistributed_eq_smul`: Uniformly distributed outer regular measures in a
-  pseudometric space are unique up to a finite constant.
+* `UniformlyDistributed.eq_smul`: Uniformly distributed outer regular measures in a
+  second countable pseudometric space are unique up to a finite constant. We follow the proof
+  in chapter 3 of [*Geometry of sets and measures in {E}uclidean spaces*][mattila1995].
+
+## TODO
+
+Use `UniformlyDistributed.eq_smul` to prove that the restriction of the `n - 1`-dimensional
+Hausdorff measure onto an `n`-dimensional sphere coincides with the spherical measure.
 
 -/
 
@@ -27,13 +36,13 @@ open Filter MeasureTheory Measure Metric Set
 
 open scoped ENNReal NNReal Topology
 
-variable {X : Type*} [PseudoMetricSpace X] [MeasurableSpace X]
+variable {X : Type*} [PseudoMetricSpace X] [MeasurableSpace X] {μ ν : Measure X} {U : Set X} {x : X}
 
 namespace MeasureTheory
 
 /-- At a point `x` in an open set `U`, if `μ` is nonzero and bounded for small balls centered at
 `x`, then the density of `U` at `x` is `1`. -/
-lemma exists_density_of_mem_open {U : Set X} (hU : IsOpen U) {x : X} (hx : x ∈ U)
+lemma exists_density_of_mem_open (hU : IsOpen U) (hx : x ∈ U)
     (μ : Measure X) (hμz : ∀ᶠ a in 𝓝[>] 0, 0 < μ (ball x a))
     (hμt : ∀ᶠ a in 𝓝[>] 0, μ (ball x a) < ∞) :
     Tendsto (fun r => μ (U ∩ ball x r) / μ (ball x r)) (𝓝[>] 0) (𝓝 1) := by
@@ -50,86 +59,107 @@ class UniformlyDistributed (μ : Measure X) : Prop where
   zero_lt : ∀ ⦃r : ℝ⦄, 0 < r → ∀ x, 0 < μ (ball x r)
   lt_top : ∀ ⦃r : ℝ⦄, 0 < r → ∀ x, μ (ball x r) < ⊤
 
-theorem lintegral_liminf' {μ : Measure X} {ι : Type*} {f : ι → X → ℝ≥0∞} (u : Filter ι)
-    [IsCountablyGenerated u] (h_meas : ∀ i, AEMeasurable (f i) μ) :
-    ∫⁻ a, liminf (fun i => f i a) u ∂μ ≤ liminf (fun i => ∫⁻ a, f i a ∂μ) u := by
-  by_cases! hu : ¬ u.NeBot
-  · simp_all
-  · obtain ⟨g, hg⟩ : ∃ g : ℕ → ι, Tendsto g atTop u ∧
-      Tendsto (fun n => ∫⁻ a, f (g n) a ∂μ) atTop (𝓝 (liminf (fun i => ∫⁻ a, f i a ∂μ) u)) := by
-      sorry
-    calc
-    _ ≤ ∫⁻ a, liminf (fun n => f (g n) a) atTop ∂μ := by
-      refine lintegral_mono fun a => ?_
-      rw [show (fun n => f (g n) a) = (fun i => f i a) ∘ (fun n => g n) from by grind, liminf_comp]
-      exact liminf_le_liminf_of_le hg.1
-    _ ≤ liminf (fun n => ∫⁻ a, f (g n) a ∂μ) atTop := lintegral_liminf_le' (fun n => h_meas (g n))
-    _ ≤ _ := by sorry
+namespace UniformlyDistributed
 
-private lemma isUniformlyDistributed_le_smul (μ ν : Measure X) [OpensMeasurableSpace X]
-    [UniformlyDistributed μ] [UniformlyDistributed ν] {U : Set X} (hU : IsOpen U) (x : X) :
-    μ U ≤ (liminf (fun r => (ν (ball x r))⁻¹ * μ (ball x r)) (𝓝[>] 0)) • (ν U) := calc
+/-- If a measure is uniformly distributed, then every bounded set has finite measure. -/
+theorem measure_ne_top_of_isBounded [UniformlyDistributed μ]
+    (hb : Bornology.IsBounded U) : μ U ≠ ∞ := by
+  by_cases! hx : Nonempty X
+  · apply ne_of_lt
+    obtain ⟨r, hr⟩ := hb.subset_ball_lt 0 hx.some
+    apply (measure_mono hr.2).trans_lt (lt_top hr.1 hx.some)
+  · simp
+
+private lemma le_smul (μ ν : Measure X) [OpensMeasurableSpace X]
+    [SecondCountableTopology X] [UniformlyDistributed μ] [UniformlyDistributed ν] (hU : IsOpen U)
+    (hb : Bornology.IsBounded U) (x : X) :
+    μ U ≤ (liminf (fun r => (ν (ball x r))⁻¹ * μ (ball x r)) (𝓝[>] 0)) • (ν U) :=
+  have : IsFiniteMeasure (ν.restrict U) :=
+    isFiniteMeasure_restrict.2 (measure_ne_top_of_isBounded hb)
+  have hum (r) : Measurable (Function.uncurry fun x => (ball x r).indicator
+    fun b => (1 : ℝ≥0∞)) := by
+    have : (Function.uncurry fun a => (ball a r).indicator fun b => 1) =
+      {p : X × X | dist p.1 p.2 < r}.indicator fun p => (1 : ℝ≥0∞) := by
+      ext; simp [Function.uncurry, indicator, dist_comm]
+    -- `SecondCountableTopology` is only used for the measurability of the distance function
+    exact this ▸ measurable_const.indicator <| measurableSet_lt measurable_dist measurable_const
+  calc
   _ = ∫⁻ a in U, liminf (fun r => (ν (ball a r))⁻¹ * ν (U ∩ ball a r)) (𝓝[>] 0) ∂μ := by
     rw [← setLIntegral_one]
     refine setLIntegral_congr_fun hU.measurableSet fun x hx => (Tendsto.liminf_eq ?_).symm
     have hνz : ∀ᶠ a in 𝓝[>] 0, 0 < ν (ball x a) := by
-      filter_upwards [self_mem_nhdsWithin] with a ha
-      exact UniformlyDistributed.zero_lt ha x
+      filter_upwards [self_mem_nhdsWithin] with a ha using zero_lt ha x
     have hνt : ∀ᶠ a in 𝓝[>] 0, ν (ball x a) < ∞ := by
-      filter_upwards [self_mem_nhdsWithin] with a ha
-      exact UniformlyDistributed.lt_top ha x
+      filter_upwards [self_mem_nhdsWithin] with a ha using lt_top ha x
     apply (exists_density_of_mem_open hU hx ν hνz hνt).congr'
     simp [ENNReal.div_eq_inv_mul]
   -- apply Fatou's lemma
-  _ ≤ liminf (fun r => ∫⁻ a in U, (ν (ball a r))⁻¹ * ν (U ∩ ball a r) ∂μ) (𝓝[>] 0) := by sorry
+  _ ≤ liminf (fun r => ∫⁻ a in U, (ν (ball a r))⁻¹ * ν (U ∩ ball a r) ∂μ) (𝓝[>] 0) := by
+    refine lintegral_liminf_le' _ fun r => (Measurable.mul (Measurable.inv ?_) ?_).aemeasurable
+    · have : (fun a => ν (ball a r)) = fun a => ν (ball x r) := by
+        ext
+        by_cases! hr : 0 < r
+        · exact eq_measure hr _ _
+        · simp [Metric.ball_eq_empty.2 hr]
+      exact this ▸ measurable_const
+    · have : (fun a => ν (U ∩ ball a r)) =
+        fun a => ∫⁻ b in U, (ball a r).indicator (fun b => 1) b ∂ν := by
+        ext; simp [setLIntegral_indicator measurableSet_ball, inter_comm]
+      exact this ▸ Measurable.lintegral_prod_right (hum r)
   -- remove the dependence of `ν (ball a r)` on `a`
-  _ = liminf (fun r => ∫⁻ a in U, (ν (ball x r))⁻¹ * ν (U ∩ ball a r) ∂μ) (𝓝[>] 0) := by
+  _ = liminf (fun r => (ν (ball x r))⁻¹ * ∫⁻ a in U, ν (U ∩ ball a r) ∂μ) (𝓝[>] 0) := by
     apply liminf_congr
     filter_upwards [self_mem_nhdsWithin] with r hr
-    simp_all [fun u => UniformlyDistributed.eq_measure (μ := ν) hr u x]
-  _ ≤ liminf (fun r => (ν (ball x r))⁻¹ * ∫⁻ a, ν (U ∩ ball a r) ∂μ) (𝓝[>] 0) := by sorry
+    rw [← lintegral_const_mul']
+    · grind [fun a => eq_measure (μ := ν) hr a]
+    · exact ENNReal.inv_ne_top.2 (zero_lt hr x).ne.symm
   -- apply Fubini
-  _ = liminf (fun r => (ν (ball x r))⁻¹ * ∫⁻ a in U, μ (ball a r) ∂ν) (𝓝[>] 0) := by
+  _ = liminf (fun r => (ν (ball x r))⁻¹ * ∫⁻ a in U, μ (U ∩ ball a r) ∂ν) (𝓝[>] 0) := by
     congr with r
-    have : ∫⁻ a, ν (U ∩ ball a r) ∂μ =  ∫⁻ a in U, μ (ball a r) ∂ν := calc
-      _ = ∫⁻ a, ∫⁻ b in U, (ball a r).indicator (fun b => 1) b ∂ν ∂μ := by
+    have : ∫⁻ a in U, ν (U ∩ ball a r) ∂μ =  ∫⁻ a in U, μ (U ∩ ball a r) ∂ν := calc
+      _ = ∫⁻ a in U, ∫⁻ b in U, (ball a r).indicator (fun b => 1) b ∂ν ∂μ := by
         refine lintegral_congr fun a => ?_
         simp [setLIntegral_indicator measurableSet_ball, inter_comm]
-      _ = ∫⁻ b in U, ∫⁻ a, (ball a r).indicator (fun b => 1) b ∂μ ∂ν := by sorry
-      _ = ∫⁻ b in U, ∫⁻ a, (ball b r).indicator (fun a => 1) a ∂μ ∂ν := by
+      _ = ∫⁻ b in U, ∫⁻ a in U, (ball a r).indicator (fun b => 1) b ∂μ ∂ν := by
+        have : IsFiniteMeasure (μ.restrict U) :=
+          isFiniteMeasure_restrict.2 (measure_ne_top_of_isBounded hb)
+        exact lintegral_lintegral_swap (hum r).aemeasurable
+      _ = ∫⁻ b in U, ∫⁻ a in U, (ball b r).indicator (fun a => 1) a ∂μ ∂ν := by
         refine setLIntegral_congr_fun hU.measurableSet fun a ha => lintegral_congr fun c => ?_
         simp [indicator, dist_comm]
       _ = _ := by
         refine setLIntegral_congr_fun hU.measurableSet fun b hb => ?_
-        rw [← setLIntegral_one, lintegral_indicator measurableSet_ball]
+        rw [setLIntegral_indicator measurableSet_ball, ← setLIntegral_one, inter_comm]
     congr
-  -- remove the dependence of `μ (ball a r)` on `a`
-  _ = liminf (fun r => (ν (ball x r))⁻¹ * ∫⁻ a in U, μ (ball x r) ∂ν) (𝓝[>] 0) := by
-    apply liminf_congr
+  _ ≤ liminf (fun r => (ν (ball x r))⁻¹ * ∫⁻ a in U, μ (ball x r) ∂ν) (𝓝[>] 0) := by
+    refine liminf_le_liminf ?_
     filter_upwards [self_mem_nhdsWithin] with r hr
-    simp_all [fun u => UniformlyDistributed.eq_measure (μ := μ) hr u x]
+    gcongr ?_ * (∫⁻ a in U, ?_ ∂ν)
+    exact (measure_mono inter_subset_right).trans (eq_measure hr _ _).le
   _ = liminf (fun r => (ν (ball x r))⁻¹ * μ (ball x r) * ν U) (𝓝[>] 0) := by
     congr with r
     rw [mul_assoc, setLIntegral_const]
-  _ = _ := by sorry
+  _ = _ := by
+    simp [ENNReal.liminf_mul_const_of_ne_top (measure_ne_top_of_isBounded hb), mul_comm (ν U)]
 
 /-- **Christensen's Lemma**: Uniformly distributed outerregular measures are unique up to
 a finite constant. -/
-theorem isUniformlyDistributed_eq_smul (μ ν : Measure X) [OpensMeasurableSpace X]
-    [OuterRegular μ] [OuterRegular ν] [UniformlyDistributed μ] [UniformlyDistributed ν] :
+theorem eq_smul (μ ν : Measure X) [OpensMeasurableSpace X]
+    [SecondCountableTopology X] [OuterRegular μ] [OuterRegular ν] [UniformlyDistributed μ]
+    [UniformlyDistributed ν] :
     ∃ c : ℝ≥0, μ = c • ν := by
   by_cases! hX : IsEmpty X
   · simp [eq_zero_of_isEmpty]
-  · obtain ⟨c, hc⟩ : ∃ c : ℝ≥0∞, ∀ U, IsOpen U → μ U = (c • ν) U := by
+  · obtain ⟨c, hc⟩ : ∃ c : ℝ≥0∞, ∀ U, IsOpen U → Bornology.IsBounded U → μ U = (c • ν) U := by
       refine ⟨liminf (fun r => (ν (ball hX.some r))⁻¹ * μ (ball hX.some r)) (𝓝[>] 0),
-        fun U hU => le_antisymm (isUniformlyDistributed_le_smul μ ν hU hX.some) ?_⟩
+        fun U hU hb => le_antisymm (le_smul μ ν hU hb hX.some) ?_⟩
       calc
       _ ≤ (limsup (fun r ↦ (ν (ball hX.some r))⁻¹ * μ (ball hX.some r)) (𝓝[>] 0)) *
         ((liminf (fun r => (μ (ball hX.some r))⁻¹ * ν (ball hX.some r)) (𝓝[>] 0)) * (μ U)) := by
         simp only [smul_apply, smul_eq_mul]
         gcongr
         · exact liminf_le_limsup
-        · exact isUniformlyDistributed_le_smul ν μ hU hX.some
+        · exact le_smul ν μ hU hb hX.some
       _ = (liminf (fun r => (μ (ball hX.some r))⁻¹ * ν (ball hX.some r)) (𝓝[>] 0))⁻¹ *
         ((liminf (fun r => (μ (ball hX.some r))⁻¹ * ν (ball hX.some r)) (𝓝[>] 0)) * (μ U)) := by
         rw [ENNReal.inv_liminf]
@@ -138,8 +168,8 @@ theorem isUniformlyDistributed_eq_smul (μ ν : Measure X) [OpensMeasurableSpace
           apply limsup_congr
           filter_upwards [self_mem_nhdsWithin] with a ha
           rw [ENNReal.mul_inv, mul_comm, inv_inv]
-          · exact Or.inr (UniformlyDistributed.lt_top ha hX.some).ne
-          · exact Or.inr (UniformlyDistributed.zero_lt ha hX.some).ne.symm
+          · exact Or.inr (lt_top ha hX.some).ne
+          · exact Or.inr (zero_lt ha hX.some).ne.symm
         congr
       _ ≤ (μ U) := by
         nth_rw 2 [← one_mul (μ U)]
@@ -150,16 +180,16 @@ theorem isUniformlyDistributed_eq_smul (μ ν : Measure X) [OpensMeasurableSpace
       intro h
       have : ∞ < ∞ := calc
         _ = c • ν (ball hX.some 1) := by
-          simp [h, ENNReal.top_mul (UniformlyDistributed.zero_lt _ hX.some).ne.symm]
-        _ = μ (ball hX.some 1) := (hc (ball hX.some 1) isOpen_ball).symm
-        _ < _ := UniformlyDistributed.lt_top (by grind) hX.some
+          simp [h, ENNReal.top_mul (zero_lt _ hX.some).ne.symm]
+        _ = μ (ball hX.some 1) := (hc (ball hX.some 1) isOpen_ball isBounded_ball).symm
+        _ < _ := lt_top (by grind) hX.some
       grind
     have : (c • ν).OuterRegular := OuterRegular.smul ν hci
     exact (ENNReal.exists_ne_top (p := fun r => μ = r • ν)).1
-      ⟨c, hci, OuterRegular.ext_isOpen fun U hU => hc U hU⟩
+      ⟨c, hci, OuterRegular.ext_isOpen_isBounded fun U hU hb => hc U hU hb⟩
+
+end UniformlyDistributed
 
 end Measure
 
 end MeasureTheory
-
-#min_imports

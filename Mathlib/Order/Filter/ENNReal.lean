@@ -190,7 +190,7 @@ theorem liminf_const_mul_of_ne_top [f.NeBot] {u : α → ℝ≥0∞} {a : ℝ≥
   exact liminf_const_mul_of_ne_zero_of_ne_top ha₀ ha_top
 
 theorem liminf_mul_const_of_ne_top [f.NeBot] {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
-    (f.liminf fun x : α => a * u x) = a * f.liminf u := by
+    (f.liminf fun x : α => u x * a) = a * f.liminf u := by
   simpa [mul_comm] using liminf_const_mul_of_ne_top ha_top
 
 theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : ℝ≥0∞} :
