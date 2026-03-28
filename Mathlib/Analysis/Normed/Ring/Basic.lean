@@ -11,6 +11,8 @@ public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Analysis.Normed.Group.Subgroup
 public import Mathlib.Analysis.Normed.Group.Submodule
 
+import Mathlib.Data.Fintype.Order
+
 /-!
 # Normed rings
 
@@ -908,13 +910,14 @@ end SubringClass
 namespace AbsoluteValue
 
 /-- A real absolute value on a ring determines a `NormedRing` structure. -/
+@[implicit_reducible]
 noncomputable def toNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing R where
   norm := v
   dist x y := v (-x + y)
   dist_eq _ _ := rfl
   dist_self x := by simp
   dist_comm x y := by rw [add_comm (-x), add_comm (-y), ← sub_eq_add_neg, v.map_sub, sub_eq_add_neg]
-  dist_triangle x y z := by simpa [neg_add_eq_sub, add_comm ( v (y - x))] using v.sub_le z y x
+  dist_triangle x y z := by simpa [neg_add_eq_sub, add_comm (v (y - x))] using v.sub_le z y x
   edist_dist x y := rfl
   norm_mul_le x y := (v.map_mul x y).le
   eq_of_dist_eq_zero := by
@@ -923,3 +926,61 @@ noncomputable def toNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : 
     exact hxy.symm
 
 end AbsoluteValue
+
+namespace Real
+
+/-
+Note: We cannot easily generalize this to targets other than `ℝ`, because we need
+the fact that `⨆ i, f i = 0` when the indexing type is empty (`Real.iSup_of_isEmpty`).
+-/
+
+section mul
+
+variable {R ι ι' : Type*} [Semiring R] [Finite ι] [Finite ι']
+
+lemma iSup_fun_mul_eq_iSup_mul_iSup_of_nonneg {F : Type*} [FunLike F R ℝ]
+    [NonnegHomClass F R ℝ] [MulHomClass F R ℝ] (v : F) (x : ι → R) (y : ι' → R) :
+    ⨆ a : ι × ι', v (x a.1 * y a.2) = (⨆ i, v (x i)) * ⨆ j, v (y j) := by
+  rcases isEmpty_or_nonempty ι
+  · simp
+  rcases isEmpty_or_nonempty ι'
+  · simp
+  simp_rw [Real.iSup_mul_of_nonneg (iSup_nonneg fun i ↦ apply_nonneg v (y i)),
+    Real.mul_iSup_of_nonneg (apply_nonneg v _), map_mul, Finite.ciSup_prod]
+
+end mul
+
+/-
+Note: We cannot easily generalize this to targets other than `ℝ`, because we need
+the fact that `⨆ i, f i = 0` when the indexing type is empty (`Real.iSup_of_isEmpty`).
+-/
+
+section prod
+
+universe u v
+
+variable {α R : Type*} [Fintype α] {ι : α → Type u} [∀ a, Finite (ι a)]
+
+lemma iSup_prod_eq_prod_iSup_of_nonneg {f : (a : α) → ι a → ℝ} (hf₀ : ∀ a i, 0 ≤ f a i) :
+    ⨆ (i : (a : α) → ι a), ∏ a, f a (i a) = ∏ a, ⨆ i, f a i := by
+  rcases isEmpty_or_nonempty ((a : α) → ι a) with h | h
+  · rw [iSup_of_isEmpty, eq_comm, Finset.prod_eq_zero_iff]
+    obtain ⟨a, ha⟩ := isEmpty_pi.mp h
+    exact ⟨a, by simp⟩
+  refine le_antisymm ?_ ?_
+  · exact ciSup_le fun i ↦ Finset.prod_le_prod (by simp [hf₀])
+      fun a ha ↦ Finite.le_ciSup_of_le _ le_rfl
+  · rw [Classical.nonempty_pi] at h
+    have H a : ∃ i : ι a, f a i = ⨆ i, f a i := exists_eq_ciSup_of_finite
+    choose i hi using H
+    simp only [← hi]
+    exact Finite.le_ciSup_of_le i le_rfl
+
+lemma iSup_prod_eq_prod_iSup_of_nonnegHomClass {F : Type*} [FunLike F R ℝ]
+    [NonnegHomClass F R ℝ] (v : F) {x : (a : α) → ι a → R} :
+    ⨆ (i : (a : α) → ι a), ∏ a, v (x a (i a)) = ∏ a, ⨆ i, v (x a i) :=
+  Real.iSup_prod_eq_prod_iSup_of_nonneg (f := fun a i ↦ v (x a i)) (fun _ _ ↦ apply_nonneg v _)
+
+end prod
+
+end Real

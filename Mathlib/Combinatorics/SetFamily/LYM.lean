@@ -170,7 +170,6 @@ theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
     rintro rfl
     exact notMem_erase _ _ (hst ha)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A bound on any top part of the sum in LYM in terms of the size of `falling k 𝒜`. -/
 theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :

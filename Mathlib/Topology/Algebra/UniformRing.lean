@@ -81,8 +81,8 @@ instance : ContinuousMul (Completion α) where
     exact (di.extend_Z_bilin di this :)
 
 instance ring : Ring (Completion α) :=
-  { AddMonoidWithOne.unary, (inferInstanceAs (AddCommGroup (Completion α))),
-      (inferInstanceAs (Mul (Completion α))), (inferInstanceAs (One (Completion α))) with
+  { AddMonoidWithOne.unary, ((inferInstance : AddCommGroup (Completion α))),
+      ((inferInstance : Mul (Completion α))), ((inferInstance : One (Completion α))) with
     zero_mul a :=
       Completion.induction_on a (isClosed_eq (by fun_prop) continuous_const)
         fun a => by rw [← coe_zero, ← coe_mul, zero_mul]
@@ -191,13 +191,13 @@ theorem map_smul_eq_mul_coe (r : R) :
     Completion.map (r • ·) = ((algebraMap R A r : Completion A) * ·) := by
   ext x
   refine Completion.induction_on x ?_ fun a => ?_
-  · exact isClosed_eq Completion.continuous_map (continuous_mul_left _)
+  · exact isClosed_eq Completion.continuous_map (continuous_const_mul _)
   · simp_rw [map_coe (uniformContinuous_const_smul r) a, Algebra.smul_def, coe_mul]
 
 instance algebra : Algebra R (Completion A) where
   algebraMap := (UniformSpace.Completion.coeRingHom : A →+* Completion A).comp (algebraMap R A)
   commutes' := fun r x =>
-    Completion.induction_on x (isClosed_eq (continuous_mul_left _) (continuous_mul_right _))
+    Completion.induction_on x (isClosed_eq (continuous_const_mul _) (continuous_mul_const _))
       fun a => by
       simpa only [coe_mul] using congr_arg ((↑) : A → Completion A) (Algebra.commutes r a)
   smul_def' := fun r x => congr_fun (map_smul_eq_mul_coe A R r) x

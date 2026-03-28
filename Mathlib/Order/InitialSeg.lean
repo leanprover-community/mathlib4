@@ -339,7 +339,7 @@ instance (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
 segment embedding -/
 def transInitial (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, fun a => by
-    simp [g.exists_eq_iff_rel, ← PrincipalSeg.mem_range_iff_rel, exists_swap, ← exists_and_left]⟩
+    simp [g.exists_eq_iff_rel, ← PrincipalSeg.mem_range_iff_rel, exists_comm, ← exists_and_left]⟩
 
 @[simp]
 theorem transInitial_apply (f : r ≺i s) (g : s ≼i t) (a : α) : f.transInitial g a = g (f a) :=
@@ -416,7 +416,7 @@ theorem ofElement_apply {α : Type*} (r : α → α → Prop) (a : α) (b) : ofE
 @[simps! symm_apply]
 noncomputable def subrelIso (f : r ≺i s) : Subrel s (s · f.top) ≃r r :=
   RelIso.symm ⟨(Equiv.ofInjective f f.injective).trans
-    (Equiv.setCongr (funext fun _ ↦ propext f.mem_range_iff_rel)), f.map_rel_iff⟩
+    (Equiv.subtypeEquivProp <| funext fun _ ↦ propext f.mem_range_iff_rel), f.map_rel_iff⟩
 
 @[simp]
 theorem apply_subrelIso (f : r ≺i s) (b : {b // s b f.top}) : f (f.subrelIso b) = b :=
@@ -511,7 +511,7 @@ private noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : Π a, { 
   (RelEmbedding.isWellFounded f).fix _ fun a IH =>
     have H : f a ∈ { b | ∀ a h, s (IH a h).1 b } :=
       fun b h => trans_trichotomous_left (IH b h).2 (f.map_rel_iff.2 h)
-    ⟨_, IsWellFounded.wf.not_lt_min _ ⟨_, H⟩ H⟩
+    ⟨_, IsWellFounded.wf.not_lt_min _ H⟩
 
 private theorem collapseF_lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
     ∀ {a'}, r a' a → s (collapseF f a') (collapseF f a) := by
@@ -524,7 +524,7 @@ private theorem collapseF_not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
     (h : ∀ a', r a' a → s (collapseF f a') b) : ¬s b (collapseF f a) := by
   rw [collapseF, IsWellFounded.fix_eq]
   dsimp only
-  exact WellFounded.not_lt_min _ _ _ h
+  exact WellFounded.not_lt_min _ {b | ∀ a', r a' a → s (collapseF f a') b} h
 
 /-- Construct an initial segment embedding `r ≼i s` by "filling in the gaps". That is, each
 subsequent element in `α` is mapped to the least element in `β` that hasn't been used yet.

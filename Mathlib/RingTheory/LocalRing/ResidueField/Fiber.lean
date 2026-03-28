@@ -38,7 +38,7 @@ instance [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)] :
   have : Nontrivial (IsLocalRing.ResidueField R ⊗[R] S) := by
     rw [eSp.nontrivial_congr, Ideal.Quotient.nontrivial_iff]
     exact ((((local_hom_TFAE (algebraMap R S)).out 0 2 rfl rfl).mp inferInstance).trans_lt
-      (inferInstanceAs (maximalIdeal S).IsMaximal).ne_top.lt_top).ne
+      (inferInstance : (maximalIdeal S).IsMaximal).ne_top.lt_top).ne
   .of_surjective' TensorProduct.includeRight.toRingHom
     (TensorProduct.mk_surjective _ _ _ residue_surjective)
 
@@ -58,7 +58,6 @@ lemma Ideal.ResidueField.exists_smul_eq_tmul_one
     ← IsLocalRing.ResidueField.algebraMap_eq, ← algebraMap.coe_smul,
     ← IsScalarTower.algebraMap_apply] using congr(t • $e)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The fiber of a prime `p` of `R` in an `R`-algebra `S`, defined to be `κ(p) ⊗ S`.
 
 See `PrimeSpectrum.preimageHomeomorphFiber` for the homeomorphism between the spectrum of it

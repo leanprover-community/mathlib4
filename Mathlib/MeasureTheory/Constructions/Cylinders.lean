@@ -44,7 +44,7 @@ a product set.
 
 @[expose] public section
 
-open Function Set
+open Function Set MeasurableSpace
 
 namespace MeasureTheory
 
@@ -232,7 +232,6 @@ theorem cylinder_eq_cylinder_union [DecidableEq ι] (I : Finset ι) (S : Set (�
       cylinder (I ∪ J) (Finset.restrict₂ Finset.subset_union_left ⁻¹' S) := by
   ext1 f; simp only [mem_cylinder, Finset.restrict_def, Finset.restrict₂_def, mem_preimage]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_cylinder_iff [Nonempty (∀ i, α i)] {s t : Finset ι} {S : Set (∀ i : s, α i)}
     {T : Set (∀ i : t, α i)} [DecidableEq ι] :
     Disjoint (cylinder s S) (cylinder t T) ↔
@@ -390,6 +389,7 @@ variable {α ι : Type*} {X : ι → Type*} {mα : MeasurableSpace α} [m : ∀ 
 
 /-- The σ-algebra of cylinder events on `Δ`. It is the smallest σ-algebra making the projections
 on the `i`-th coordinate measurable for all `i ∈ Δ`. -/
+@[implicit_reducible]
 def cylinderEvents (Δ : Set ι) : MeasurableSpace (∀ i, X i) := ⨆ i ∈ Δ, (m i).comap fun σ ↦ σ i
 
 @[simp] lemma cylinderEvents_univ : cylinderEvents (X := X) univ = MeasurableSpace.pi := by
@@ -455,4 +455,27 @@ lemma measurable_restrict_cylinderEvents (Δ : Set ι) :
   rw [@measurable_pi_iff]; exact fun i ↦ measurable_cylinderEvent_apply i.2
 
 end cylinderEvents
+
+/-- A measurable set from the product sigma-algebra only depends on countably many coordinates. -/
+lemma MeasurableSet.eq_preimage_restrict_countable
+    [∀ i, MeasurableSpace (α i)] {s : Set (Π i, α i)} (hs : MeasurableSet s) :
+    ∃ I : Set ι, ∃ t, I.Countable ∧ s = I.restrict ⁻¹' t := by
+  refine induction_on_inter generateFrom_squareCylinders.symm
+    (isPiSystem_squareCylinders (fun _ ↦ isPiSystem_measurableSet) (by simp))
+    ⟨∅, ∅, by simp⟩ ?_ ?_ ?_ s hs
+  · rintro - ⟨I, t, -, rfl⟩
+    exact ⟨I, univ.pi (fun i ↦ t i), I.countable_toSet, by ext; simp⟩
+  · rintro - - ⟨I, t, hI, rfl⟩
+    exact ⟨I, tᶜ, hI, by simp⟩
+  intro f df mf hf
+  choose! I t hI hf using hf
+  refine ⟨⋃ n, I n, ⋃ n, (⋃ k, I k).restrict '' (f n), countable_iUnion hI, ?_⟩
+  ext x
+  simp only [hf, mem_iUnion, mem_preimage, preimage_iUnion, mem_image]
+  refine ⟨fun ⟨i, hi⟩ ↦ ⟨i, x, hi, rfl⟩, fun ⟨n, x', hn, hx⟩ ↦ ⟨n, ?_⟩⟩
+  have (x : Π i, α i) : (I n).restrict x =
+      (fun (x : Π (i : ⋃ k, I k), α i) (i : I n) ↦ x ⟨i.1, subset_iUnion I n i.2⟩)
+      ((⋃ k, I k).restrict x) := rfl
+  rwa [this, ← hx, ← this]
+
 end MeasureTheory
