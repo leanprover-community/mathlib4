@@ -123,7 +123,7 @@ theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := 
 
 /-- A ring morphism `R[ε] →+* R'` is determined by its restriction
 on `R` and its value on `ε`. -/
-@[ext]
+@[ext high]
 lemma ringHom_ext {R' : Type*} [CommSemiring R'] {f g : R[ε] →+* R'}
     (h₀ : f.comp (algebraMap R R[ε]) = g.comp (algebraMap R R[ε]))
     (hε : f ε = g ε) : f = g := by
