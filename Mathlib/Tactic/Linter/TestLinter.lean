@@ -15,18 +15,13 @@ open Lean Elab Command
 namespace Mathlib.Tactic
 
 /--
-Gets the indices `i` (in ascending order) of the binders of a nested `.forallE`,
-`(x₀ : A₀) → (x₁ : A₁) → ⋯ → X`, such that
--  `p Aᵢ bi` is `true`, with `bi` the `biinderInfo`
-- The rest of the type `(xᵢ₊₁ : Aᵢ₊₁) → ⋯ → X` does not depend on `xᵢ`. (It's in this sense that
-  `xᵢ : Aᵢ` is "unused".)
+Tests if any of the binders of `(x₀ : A₀) → (x₁ : A₁) → ⋯ → X` which satisfy `p Aᵢ bi` (with `bi` the `binderInfo`) are unused in the renainder of the type (i.e. in `(xᵢ₊₁ : Aᵢ₊₁) → ⋯ → X`).
 
 Note that the argument to `p` may have loose bvars. This is a performance optimization.
 
-This function runs `cleanupAnnotations` on each expression before examining it.
+This function runs `cleanupAnnotations` on each type suffix `(xᵢ₊₁ : Aᵢ₊₁) → ⋯ → X` before examining it.
 
-We see through `let`s, and do not increment the index when doing so. This behavior is compatible
-with `forallBoundedTelescope`.
+We see through `let`s, and do not report if any of them are unused.
 -/
 @[specialize p]
 partial def _root_.Lean.Expr.hasUnusedForallBinderIdxsWhere
@@ -34,8 +29,7 @@ partial def _root_.Lean.Expr.hasUnusedForallBinderIdxsWhere
   match e.cleanupAnnotations with
   | .forallE _ type body bi =>
     p bi type && !(body.hasLooseBVar 0) || body.hasUnusedForallBinderIdxsWhere p
-  /- See through `letE`, and just as in the interpretation of a bound provided to
-  `forallBoundedTelescope`, do not increment the number of binders we've counted. -/
+  /- See through `letE` -/
   | .letE _ _ _ body _ => body.hasUnusedForallBinderIdxsWhere p
   | _ => false
 
