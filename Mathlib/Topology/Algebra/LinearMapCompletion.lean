@@ -24,7 +24,7 @@ lifted to a continuous semilinear map between the completions of those modules.
 
 namespace ContinuousLinearMap
 
-open UniformSpace UniformSpace.Completion
+open UniformSpace Completion
 
 variable {α β : Type*} {R₁ R₂ : Type*} [UniformSpace α] [AddCommGroup α] [IsUniformAddGroup α]
   [Semiring R₁] [Module R₁ α] [UniformContinuousConstSMul R₁ α] [Semiring R₂] [UniformSpace β]
