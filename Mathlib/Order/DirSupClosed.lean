@@ -231,22 +231,34 @@ lemma IsUpperSet.dirSupClosed (hs : IsUpperSet s) : DirSupClosed s :=
 lemma IsLowerSet.dirSupInacc (hs : IsLowerSet s) : DirSupInacc s :=
   hs.compl.dirSupClosed.of_compl
 
-theorem DirSupClosed.mem_imp_of_antisymmRel (hs : DirSupClosed s) {a b : α}
+theorem isLUB_congr_of_antisymmRel {a b : α} (h : AntisymmRel (· ≤ ·) a b) :
+    IsLUB s a ↔ IsLUB s b := by
+  simp [isLUB_iff_le_iff, h.le_congr_left]
+
+private theorem DirSupClosed.mem_imp_of_antisymmRel (hs : DirSupClosed s) {a b : α}
     (h : AntisymmRel (· ≤ ·) a b) (ha : a ∈ s) : b ∈ s := by
-  apply hs (singleton_subset_iff.2 ha) ⟨a, rfl⟩
-  · apply directedOn_singleton
-    sorry
-  · sorry
+  apply hs (singleton_subset_iff.2 ha) ⟨a, rfl⟩ (directedOn_singleton Std.Refl.refl a)
+  rw [← isLUB_congr_of_antisymmRel h]
+  exact isLUB_singleton
 
 theorem DirSupClosed.mem_iff_of_antisymmRel (hs : DirSupClosed s) {a b : α}
     (h : AntisymmRel (· ≤ ·) a b) : a ∈ s ↔ b ∈ s :=
   ⟨hs.mem_imp_of_antisymmRel h, hs.mem_imp_of_antisymmRel h.symm⟩
-#exit
+
+theorem DirSupInacc.mem_iff_of_antisymmRel (hs : DirSupInacc s) {a b : α}
+    (h : AntisymmRel (· ≤ ·) a b) : a ∈ s ↔ b ∈ s := by
+  simpa [not_iff_not] using hs.compl.mem_iff_of_antisymmRel h
 
 lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) :=
   fun _d h _ _ _a ha ↦ (isLUB_le_iff ha).2 h
 
 end Preorder
+
+namespace PartialOrder
+
+
+
+end PartialOrder
 
 section CompleteLattice
 variable [CompleteLattice α]
