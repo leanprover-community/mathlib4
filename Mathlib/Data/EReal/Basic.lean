@@ -35,8 +35,7 @@ def EReal := WithBot (WithTop ℝ)
 deriving Inhabited, Nontrivial,
   Zero, One, AddMonoid, AddCommMonoid, AddCommMonoidWithOne,
   Top, Bot, SupSet, InfSet, PartialOrder, LinearOrder, CompleteLinearOrder, DenselyOrdered,
-  ZeroLEOneClass, IsOrderedAddMonoid, CharZero,
-  DecidableLT
+  ZeroLEOneClass, IsOrderedAddMonoid, CharZero
 
 /-- The canonical inclusion from reals to ereals. Registered as a coercion. -/
 @[coe] def Real.toEReal : ℝ → EReal := WithBot.some ∘ WithTop.some
