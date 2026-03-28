@@ -1963,6 +1963,7 @@ public import Mathlib.Analysis.InnerProductSpace.LinearMap
 public import Mathlib.Analysis.InnerProductSpace.LinearPMap
 public import Mathlib.Analysis.InnerProductSpace.MeanErgodic
 public import Mathlib.Analysis.InnerProductSpace.MulOpposite
+public import Mathlib.Analysis.InnerProductSpace.NormDet
 public import Mathlib.Analysis.InnerProductSpace.NormPow
 public import Mathlib.Analysis.InnerProductSpace.OfNorm
 public import Mathlib.Analysis.InnerProductSpace.Orientation

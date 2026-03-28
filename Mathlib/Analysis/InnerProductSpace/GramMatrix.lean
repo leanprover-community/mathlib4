@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.LinearAlgebra.Matrix.PosDef
+import Mathlib.Analysis.Matrix.Order
 
 /-! # Gram Matrices
 
@@ -94,6 +95,12 @@ theorem linearIndependent_of_posDef_gram {v : n → E} (h_gram : PosDef (gram �
   intro y hy
   have := h_gram.dotProduct_mulVec_pos (x := y)
   simp_all [star_dotProduct_gram_mulVec]
+
+omit [Finite n] in
+theorem linearIndependent_of_det_gram_ne_zero [Fintype n] [DecidableEq n] {v : n → E}
+    (h : (gram 𝕜 v).det ≠ 0) : LinearIndependent 𝕜 v := by
+  apply linearIndependent_of_posDef_gram
+  simpa [(Matrix.posSemidef_gram _ _).posDef_iff_isUnit, Matrix.isUnit_iff_isUnit_det] using h
 
 end SemiInnerProductSpace
 
