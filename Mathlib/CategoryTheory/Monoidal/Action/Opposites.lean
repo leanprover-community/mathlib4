@@ -41,7 +41,7 @@ open MonoidalOpposite
 
 /-- Define a left action of `C` on `D` from a right action of `Cᴹᵒᵖ` on `D` via
 the formula `c ⊙ₗ d := d ⊙ᵣ (mop c)`. -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 def leftActionOfMonoidalOppositeRightAction [MonoidalRightAction Cᴹᵒᵖ D] :
     MonoidalLeftAction C D where
   actionObj c d := d ⊙ᵣ mop c
@@ -257,7 +257,7 @@ open MonoidalOpposite
 
 /-- Define a right action of `C` on `D` from a left action of `Cᴹᵒᵖ` on `D` via
 the formula `d ⊙ᵣ c := (mop c) ⊙ₗ d`. -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 def rightActionOfMonoidalOppositeLeftAction [MonoidalLeftAction Cᴹᵒᵖ D] :
     MonoidalRightAction C D where
   actionObj d c := mop c ⊙ₗ d

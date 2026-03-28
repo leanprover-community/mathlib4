@@ -37,6 +37,8 @@ Our star rings are actually star non-unital, non-associative, semirings, but of 
 
 assert_not_exists Finset Subgroup Rat.instField
 
+open scoped Ring
+
 universe u v w
 
 open MulOpposite
@@ -261,11 +263,9 @@ theorem star_neg [AddGroup R] [StarAddMonoid R] (r : R) : star (-r) = -star r :=
 theorem star_sub [AddGroup R] [StarAddMonoid R] (r s : R) : star (r - s) = star r - star s :=
   (starAddEquiv : R ≃+ R).map_sub _ _
 
-@[simp]
 theorem star_nsmul [AddMonoid R] [StarAddMonoid R] (n : ℕ) (x : R) : star (n • x) = n • star x :=
   (starAddEquiv : R ≃+ R).toAddMonoidHom.map_nsmul _ _
 
-@[simp]
 theorem star_zsmul [AddGroup R] [StarAddMonoid R] (n : ℤ) (x : R) : star (n • x) = n • star x :=
   (starAddEquiv : R ≃+ R).toAddMonoidHom.map_zsmul _ _
 
@@ -406,10 +406,10 @@ attribute [simp] star_smul
 instance StarMul.toStarModule [CommMonoid R] [StarMul R] : StarModule R R :=
   ⟨star_mul'⟩
 
-instance StarAddMonoid.toStarModuleNat {α} [AddCommMonoid α] [StarAddMonoid α] :
-    StarModule ℕ α where star_smul := star_nsmul
+instance StarAddMonoid.toStarModuleNat {α} [AddMonoid α] [StarAddMonoid α] : StarModule ℕ α where
+  star_smul := star_nsmul
 
-instance StarAddMonoid.toStarModuleInt {α} [AddCommGroup α] [StarAddMonoid α] : StarModule ℤ α where
+instance StarAddMonoid.toStarModuleInt {α} [AddGroup α] [StarAddMonoid α] : StarModule ℤ α where
   star_smul := star_zsmul
 
 namespace RingHomInvPair
@@ -469,7 +469,7 @@ theorem isUnit_star [Monoid R] [StarMul R] {a : R} : IsUnit (star a) ↔ IsUnit 
   ⟨fun h => star_star a ▸ h.star, IsUnit.star⟩
 
 theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
-    Ring.inverse (star a) = star (Ring.inverse a) := by
+    (star a)⁻¹ʳ = star (a⁻¹ʳ) := by
   by_cases ha : IsUnit a
   · obtain ⟨u, rfl⟩ := ha
     rw [Ring.inverse_unit, ← Units.coe_star, Ring.inverse_unit, ← Units.coe_star_inv]

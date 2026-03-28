@@ -45,8 +45,6 @@ class HopfObj (X : C) extends BimonObj X where
   antipode_left (X) : Δ ≫ antipode ▷ X ≫ μ = ε ≫ η := by cat_disch
   antipode_right (X) : Δ ≫ X ◁ antipode ≫ μ = ε ≫ η := by cat_disch
 
-@[deprecated (since := "2025-09-14")] alias Hopf_Class := HopfObj
-
 namespace HopfObj
 
 @[inherit_doc] scoped notation "𝒮" => HopfObj.antipode
@@ -67,8 +65,6 @@ structure Hopf where
   X : C
   [hopf : HopfObj X]
 
-@[deprecated (since := "2025-09-15")] alias Hopf_ := Hopf
-
 attribute [instance] Hopf.hopf
 
 namespace Hopf
@@ -77,8 +73,6 @@ variable {C}
 
 /-- A Hopf monoid is a bimonoid. -/
 def toBimon (A : Hopf C) : Bimon C := .mk' A.X
-
-@[deprecated (since := "2025-09-15")] alias toBimon_ := toBimon
 
 /--
 Morphisms of Hopf monoids are just morphisms of the underlying bimonoids.

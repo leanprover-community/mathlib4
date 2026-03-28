@@ -29,7 +29,7 @@ instance [∀ i, NonUnitalCommCStarAlgebra (A i)] : NonUnitalCommCStarAlgebra (l
 -- it's because we have no way to say that `‖(1 : A i)‖` is uniformly bounded as a type class
 -- aside from `∀ i, NormOneClass (A i)`, this holds automatically for C⋆-algebras though.
 instance [∀ i, Nontrivial (A i)] [∀ i, CStarAlgebra (A i)] : NormedRing (lp A ∞) where
-  dist_eq := dist_eq_norm
+  dist_eq := dist_eq_norm_neg_add
   norm_mul_le := norm_mul_le
 
 set_option backward.isDefEq.respectTransparency false in

@@ -133,15 +133,7 @@ theorem is_one_preprimitive_iff :
     rw [isMultiplyPreprimitive_iff]
     constructor
     · exact is_one_pretransitive_iff.mpr h.toIsPretransitive
-    · intro s hs
-      suffices s = ∅ by
-        rwa [this, isPreprimitive_of_fixingSubgroup_empty_iff]
-      rw [← Set.encard_eq_zero]
-      suffices s.encard ≠ (⊤ : ℕ∞) by
-        obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp this
-        rw [← hm, ← Nat.cast_one, ← ENat.coe_add, Nat.cast_inj, Nat.add_eq_right] at hs
-        simp [← hm, hs]
-      exact fun h ↦ by simp [h] at hs
+    · simpa using isPreprimitive_of_fixingSubgroup_empty_iff.mpr h
 
 /-- The action of `stabilizer M a` is one-less preprimitive. -/
 @[to_additive /-- The action of `stabilizer M a` is one-less preprimitive. -/]

@@ -180,6 +180,7 @@ its maximal ideal. -/
 abbrev IsWeierstrassDivisor [IsLocalRing A] : Prop :=
   g.IsWeierstrassDivisorAt (IsLocalRing.maximalIdeal A)
 
+set_option backward.isDefEq.respectTransparency false in
 variable {g} in
 /-- If `g` is a power series over a local ring such that
 its image in the residue field is not zero, then `g` can be used as a Weierstrass divisor. -/
@@ -495,7 +496,7 @@ noncomputable def _root_.Polynomial.IsDistinguishedAt.algEquivQuotient :
       obtain ⟨f, rfl⟩ := Ideal.Quotient.mk_surjective f
       refine ⟨f %ₘ g, Polynomial.degree_modByMonic_lt f H.monic, ?_⟩
       rw [Eq.comm, Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton']
-      exact ⟨f /ₘ g, by rw [Polynomial.modByMonic_eq_sub_mul_div _ H.monic]; ring⟩
+      exact ⟨f /ₘ g, by rw [Polynomial.modByMonic_eq_sub_mul_div]; ring⟩
     have h1 : g.degree = ((g : A⟦X⟧).map (Ideal.Quotient.mk I)).order.toNat := by
       convert H.degree_eq_coe_lift_order_map g 1
         (by rwa [constantCoeff_one, ← Ideal.ne_top_iff_one]) (by simp)
@@ -755,6 +756,7 @@ theorem natDegree_eq_toNat_order_map :
 
 end IsWeierstrassFactorization
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsWeierstrassDivision.isUnit_of_map_ne_zero
     {g q : A⟦X⟧} {r : A[X]} (hg : g.map (IsLocalRing.residue A) ≠ 0)
     (H : (X ^ (g.map (IsLocalRing.residue A)).order.toNat).IsWeierstrassDivision g q r) :
