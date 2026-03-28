@@ -937,7 +937,8 @@ jobs:
       - if: >- # bot usernames will cause this step to error with "Could not resolve to a User..."
           contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI') &&
           steps.get-label-actor.outputs.username != 'mathlib-nolints' &&
-          steps.get-label-actor.outputs.username != 'mathlib-update-dependencies'
+          steps.get-label-actor.outputs.username != 'mathlib-update-dependencies' &&
+          steps.get-label-actor.outputs.username != 'mathlib-splicebot'
         name: check team membership
         uses: tspascoal/get-user-teams-membership@57e9f42acd78f4d0f496b3be4368fc5f62696662 # v3.0.0
         id: actorTeams
@@ -952,6 +953,7 @@ jobs:
           (
             steps.get-label-actor.outputs.username == 'mathlib-nolints' ||
             steps.get-label-actor.outputs.username == 'mathlib-update-dependencies' ||
+            steps.get-label-actor.outputs.username == 'mathlib-splicebot' ||
             contains(steps.actorTeams.outputs.teams, 'mathlib-maintainers') ||
             contains(steps.actorTeams.outputs.teams, 'bot-users')
           )
