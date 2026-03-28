@@ -242,7 +242,7 @@ theorem Finset.prod_fin_eq_prod_range [CommMonoid β] {n : ℕ} (c : Fin n → �
 lemma Finset.prod_fin_Icc_eq_prod_Icc [CommMonoid α] {n : ℕ} (a b : Fin n) (f : Fin n → α) :
     ∏ i ∈ Finset.Icc a b, f i = ∏ i ∈ Finset.Icc (a : ℕ) b, if h : i < n then f ⟨i, h⟩ else 1 := by
   rw [← Finset.prod_ite_mem_eq, Finset.prod_fin_eq_prod_range]
-  exact Finset.prod_congr_of_eq_on_inter (by grind) (by grind) (by grind)
+  apply Finset.prod_congr_of_eq_on_inter <;> grind
 
 @[to_additive]
 theorem Finset.prod_toFinset_eq_subtype {M : Type*} [CommMonoid M] [Fintype α] (p : α → Prop)
