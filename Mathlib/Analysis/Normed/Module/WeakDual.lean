@@ -114,6 +114,10 @@ open Filter Function Bornology Metric Set Topology Filter
 ### Equivalences between `StrongDual` and `WeakDual`
 -/
 
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [Module 𝕜 M]
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+
 namespace StrongDual
 
 section
@@ -141,9 +145,6 @@ end StrongDual
 
 namespace WeakDual
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [Module 𝕜 M]
-
 /-- For vector spaces `E`, there is a canonical map `WeakDual 𝕜 E → StrongDual 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. Here it is implemented as the inverse of the linear
 equivalence `StrongDual.toWeakDual` in the other direction. -/
@@ -159,8 +160,6 @@ theorem toStrongDual_inj (x' y' : WeakDual 𝕜 M) : toStrongDual x' = toStrongD
   (LinearEquiv.injective toStrongDual).eq_iff
 
 section Bornology
-
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- The bornology on `WeakDual 𝕜 F` is the norm bornology inherited from `StrongDual 𝕜 F`.
 
@@ -196,9 +195,6 @@ We prove in particular that the canonical mapping `StrongDual 𝕜 E → WeakDua
 i.e., that the weak-* topology is coarser (not necessarily strictly) than the topology given
 by the dual-norm (i.e. the operator-norm).
 -/
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 namespace NormedSpace
 
@@ -321,7 +317,6 @@ theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : �
 section PolarSets
 
 variable (𝕜)
-variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [Module 𝕜 M]
 
 /-- The polar set `polar 𝕜 s` of `s : Set E` seen as a subset of the dual of `E` with the
 weak-star topology is `WeakDual.polar 𝕜 s`. -/
