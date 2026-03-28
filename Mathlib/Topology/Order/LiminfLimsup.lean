@@ -150,7 +150,7 @@ section ConditionallyCompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
 
-/-- The `limsSup` of a filter `f` is the cluster point of `f`. -/
+/-- The `limsSup` of a filter `f` is a cluster point of `f`. -/
 theorem ClusterPt.limsSup {f : Filter α} [f.NeBot]
     (hc : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
     (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) : ClusterPt (limsSup f) f := by
