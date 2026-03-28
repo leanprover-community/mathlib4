@@ -78,7 +78,7 @@
    "rev": "61cd682f2a25175996bc1b9e8d8231e76cded866",
    "name": "Cli",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "v4.29.0",
+   "inputRev": "v4.29.0-rc8",
    "inherited": true,
    "configFile": "lakefile.toml"}],
  "name": "mathlib",
