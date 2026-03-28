@@ -5,6 +5,7 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.FieldTheory.Perfect
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 
@@ -30,4 +31,8 @@ class Algebra.IsTranscendentalSeparable : Prop where
 lemma tensorProduct_of_isSeparablyGenerated {k : Type*} [Field k]
     {S : Type*} [CommRing S] [IsReduced S] [Algebra k S] {K : Type*} [Field K] [Algebra k K] :
     IsReduced (TensorProduct k K S) := by
+  sorry
+
+lemma Algebra.isTranscendentalSeparable_of_perfectField {k : Type*} [Field k] [PerfectField k]
+    {K : Type*} [Field K] [Algebra k K] : Algebra.IsTranscendentalSeparable k K := by
   sorry
