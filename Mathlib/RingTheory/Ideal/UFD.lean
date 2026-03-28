@@ -81,30 +81,21 @@ theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
         (IsPrime.mem_or_mem ‹_› (by simpa using hyp)).resolve_left hxp, rfl, ?_⟩
       rw [map_span, Set.image_singleton, ← span_singleton_eq_span_singleton.2]
       · rw [← hy, map_span, Set.image_singleton]
-      · rw [map_mul]
-        exact associated_unit_mul_left _ _ (IsLocalization.Away.algebraMap_isUnit x)
+      · simpa using associated_unit_mul_left _ _ (IsLocalization.Away.algebraMap_isUnit x)
     have hxb : span {x * b} ≤ span {b} := span_singleton_le_span_singleton.2 ⟨x, mul_comm x b⟩
     have hb0 : b ≠ 0 := fun hb0 ↦ hy0 <| by simp [hb0]
-    exact hImax (span {b}) hsp <| lt_of_le_of_ne hxb <| by
-      intro hEq
-      have hb : b ∈ span {x * b} := by simpa only [hEq] using subset_span (by simp)
-      rcases mem_span_singleton.mp hb with ⟨c, hc⟩
-      exact hx.not_unit <| IsUnit.of_mul_eq_one c <| mul_right_cancel₀ hb0
-        (by simpa [mul_assoc, mul_left_comm, mul_comm] using hc.symm)
+    exact hImax (span {b}) hsp <| lt_of_le_of_ne hxb <| fun hEq ↦
+      have : Associated (x * b) b := Ideal.span_singleton_eq_span_singleton.1 hEq
+      hx.not_unit <| isUnit_of_associated_mul (by rwa [mul_comm]) hb0
   refine ⟨y, le_antisymm (fun z hz ↦ ?_) hyp⟩
   have hzmap := mem_map_of_mem (algebraMap R (Localization.Away x)) hz
   rw [← hy, IsLocalization.algebraMap_mem_map_algebraMap_iff M] at hzmap
   rcases hzmap with ⟨s, hs, hsz⟩
   rcases (Submonoid.mem_powers_iff s x).1 hs with ⟨n, rfl⟩
-  clear hs
-  induction n with
-  | zero => simpa using hsz
-  | succ n ih =>
-      have hxn : x * (x ^ n * z) ∈ span {y} := by simpa [pow_succ', mul_assoc] using hsz
-      rcases mem_span_singleton.mp hxn with ⟨a, ha⟩
-      rcases (hx.2.2 y a ⟨x ^ n * z, ha.symm⟩).resolve_left hxy with ⟨b, hb⟩
-      exact ih <| by simpa only [mem_span_singleton] using ⟨b, mul_left_cancel₀ hx.ne_zero <| by
-        simpa [hb, mul_assoc, mul_left_comm, mul_comm] using ha⟩
+  rcases mem_span_singleton.mp hsz with ⟨a, ha⟩
+  rcases hx.pow_dvd_of_dvd_mul_right n hxy ⟨z, by simpa [mul_comm] using ha.symm⟩ with ⟨b, hb⟩
+  exact mem_span_singleton.2 ⟨b, mul_left_cancel₀ (pow_ne_zero n hx.ne_zero) <| by
+    simp [ha, hb, mul_assoc, mul_comm]⟩
 
 /-- Let `R` be a Noetherian domain, `x ∈ R` be a prime element. If `Rₓ` is a UFD,
   then `R` is also a UFD. -/
@@ -117,8 +108,7 @@ theorem ufd_of_ufd_localization_away_of_prime {x : R} (hx : Prime x)
   by_cases hxp : x ∈ p
   · exact ⟨x, p.eq_span_singleton_of_primeHeight_eq_one h1 hxp hx⟩
   · have hd := (Ideal.disjoint_powers_iff_notMem x (Ideal.IsPrime.isRadical hp)).mpr hxp
-    have : (Ideal.map (algebraMap R (Localization.Away x)) p).IsPrime :=
-      IsLocalization.isPrime_of_isPrime_disjoint M (Localization.Away x) p ‹_› hd
+    have := IsLocalization.isPrime_of_isPrime_disjoint M (Localization.Away x) p ‹_› hd
     exact p.isPrincipal_of_isPrincipal_localization_away_of_prime hx hxp <|
       Ideal.ufd_iff_height_one_primes_principal.1 ‹_› _ <| by
         rw [← IsLocalization.primeHeight_comap M (Ideal.map (algebraMap R (Localization.Away x)) p)]
