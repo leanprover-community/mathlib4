@@ -32,7 +32,7 @@ theorem Odd.neg_zpow (h : Odd n) (a : α) : (-a) ^ n = -a ^ n := by
     norm_cast
     simp [pow_add]
   | negSucc k =>
-    simp_rw [Int.negSucc_eq, show 2 * -(↑k + 1) + (1 : ℤ) = - (1 + k*2) by grind,  _root_.zpow_neg]
+    simp_rw [Int.negSucc_eq, show 2 * -(↑k + 1) + (1 : ℤ) = - (1 + k*2) by grind, _root_.zpow_neg]
     norm_cast
     simp [pow_add]
 
