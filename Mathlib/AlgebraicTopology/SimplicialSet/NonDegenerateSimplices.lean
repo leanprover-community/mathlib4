@@ -172,6 +172,14 @@ namespace S
 
 variable {X}
 
+lemma eq_iff_ofSimplex_eq {X : SSet.{u}} {n m : ℕ} (x : X _⦋n⦌) (y : X _⦋m⦌)
+    (hx : x ∈ X.nonDegenerate _) (hy : y ∈ X.nonDegenerate _) :
+    S.mk x = S.mk y ↔ Subcomplex.ofSimplex x = Subcomplex.ofSimplex y := by
+  trans N.mk x hx = N.mk y hy
+  · exact (N.ext_iff (N.mk x hx) (N.mk y hy)).symm
+  · simp only [le_antisymm_iff]
+    rfl
+
 lemma subcomplex_eq_of_epi (x y : X.S) (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌) [Epi f]
     (hf : X.map f.op y.simplex = x.simplex) :
     x.subcomplex = y.subcomplex := by

@@ -162,6 +162,12 @@ lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
     yonedaEquiv.{u} (stdSimplex.map f) = objEquiv.symm f :=
   yonedaEquiv.symm.injective rfl
 
+lemma map_objEquiv_op_apply
+    {X : SSet.{u}} {n : SimplexCategory} (x : X.obj (op n))
+    {m : SimplexCategoryᵒᵖ} (y : (stdSimplex.obj n).obj m) :
+    dsimp% X.map (stdSimplex.objEquiv y).op x = (yonedaEquiv.symm x).app m y := by
+  rfl
+
 lemma yonedaEquiv_symm_app_objEquiv_symm {X : SSet.{u}} {n : SimplexCategory}
     (x : X.obj (op n)) {m : SimplexCategoryᵒᵖ} (f : unop m ⟶ n) :
     dsimp% (yonedaEquiv.symm x).app _ (stdSimplex.objEquiv.symm f) =

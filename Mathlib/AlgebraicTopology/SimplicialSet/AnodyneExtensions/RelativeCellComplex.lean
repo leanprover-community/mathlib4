@@ -25,65 +25,6 @@ universe v u
 
 open CategoryTheory HomotopicalAlgebra Simplicial Limits Opposite
 
-namespace SSet
-
-lemma stdSimplex.map_objEquiv_op_apply
-    {X : SSet.{u}} {n : SimplexCategory} (x : X.obj (op n))
-    {m : SimplexCategoryᵒᵖ} (y : (stdSimplex.obj n).obj m) :
-    X.map (stdSimplex.objEquiv y).op x = (yonedaEquiv.symm x).app m y :=
-  rfl
-
-lemma Subcomplex.existsN {X : SSet.{u}} {n : ℕ} (s : X _⦋n⦌) {A : X.Subcomplex}
-    (hs : s ∉ A.obj _) :
-    ∃ (x : A.N) (f : ⦋n⦌ ⟶ ⦋x.dim⦌), Epi f ∧ X.map f.op x.simplex = s := by
-  refine ⟨⟨(S.mk s).toN, fun h ↦ hs ?_⟩, ⟨(S.mk s).toNπ, inferInstance, by simp⟩⟩
-  simp only [← ofSimplex_le_iff] at h ⊢
-  simpa using h
-
-lemma Subcomplex.N.eq_iff_sMk_eq {X : SSet.{u}} {A : X.Subcomplex} (x y : A.N) :
-    x = y ↔ S.mk x.1.1.2 = S.mk y.1.1.2 := by
-  rw [N.ext_iff, SSet.N.ext_iff]
-
-@[simp]
-lemma Subcomplex.ofSimplex_map {X : SSet.{u}} {n m : ℕ} (f : ⦋n⦌ ⟶ ⦋m⦌) [Epi f]
-    (x : X _⦋m⦌) :
-    ofSimplex (X.map f.op x) = ofSimplex x := by
-  refine le_antisymm ?_ ?_
-  · simp only [Subfunctor.ofSection_le_iff]
-    exact ⟨f.op, by simp⟩
-  · simp only [Subfunctor.ofSection_le_iff]
-    have := isSplitEpi_of_epi f
-    exact ⟨(section_ f).op, by simp [← FunctorToTypes.map_comp_apply, ← op_comp]⟩
-
-lemma S.eq_iff_ofSimplex_eq {X : SSet.{u}} {n m : ℕ} (x : X _⦋n⦌) (y : X _⦋m⦌)
-    (hx : x ∈ X.nonDegenerate _) (hy : y ∈ X.nonDegenerate _) :
-    S.mk x = S.mk y ↔ Subcomplex.ofSimplex x = Subcomplex.ofSimplex y := by
-  trans N.mk x hx = N.mk y hy
-  · exact (N.ext_iff (N.mk x hx) (N.mk y hy)).symm
-  · simp only [le_antisymm_iff]
-    rfl
-
-lemma objEquiv_symm_notMem_horn_of_isIso {n : ℕ} (i : Fin (n + 1))
-    {d : SimplexCategory} (f : d ⟶ ⦋n⦌) [IsIso f] :
-    stdSimplex.objEquiv.symm f ∉ (horn.{u} n i).obj (op d) := by
-  rw [mem_horn_iff, ne_eq, Decidable.not_not]
-  ext i
-  simpa using Or.inr ⟨inv f i, by change (inv f ≫ f) i = i; cat_disch⟩
-
-lemma objEquiv_symm_δ_mem_horn_iff {n : ℕ} (i j : Fin (n + 2)) :
-    (stdSimplex.objEquiv (m := op ⦋n⦌)).symm
-      (SimplexCategory.δ i) ∈ (horn.{u} (n + 1) j).obj (op ⦋n⦌) ↔ i ≠ j := by
-  dsimp
-  rw [← Subcomplex.ofSimplex_le_iff, ← stdSimplex.face_singleton_compl, face_le_horn_iff]
-  simp
-
-lemma objEquiv_symm_δ_notMem_horn_iff {n : ℕ} (i j : Fin (n + 2)) :
-    (stdSimplex.objEquiv (m := op ⦋n⦌)).symm
-      (SimplexCategory.δ i) ∉ (horn.{u} _ j).obj (op ⦋n⦌) ↔ i = j := by
-  simp [objEquiv_symm_δ_mem_horn_iff.{u}]
-
-end SSet
-
 namespace SSet.Subcomplex.Pairing
 
 variable {X : SSet.{u}} {A : X.Subcomplex} {P : A.Pairing}

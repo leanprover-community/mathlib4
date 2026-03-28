@@ -144,6 +144,26 @@ lemma face_le_horn_iff {n : ℕ} (S : Finset (Fin (n + 2))) (j : Fin (n + 2)) :
   · exact Or.inl h
   · exact Or.inr (by simp [← h])
 
+lemma objEquiv_symm_notMem_horn_of_isIso {n : ℕ} (i : Fin (n + 1))
+    {d : SimplexCategory} (f : d ⟶ ⦋n⦌) [IsIso f] :
+    stdSimplex.objEquiv.symm f ∉ (horn.{u} n i).obj (op d) := by
+  rw [mem_horn_iff, ne_eq, Decidable.not_not]
+  ext i
+  simpa using Or.inr ⟨inv f i, by change (inv f ≫ f) i = i; cat_disch⟩
+
+lemma objEquiv_symm_δ_mem_horn_iff {n : ℕ} (i j : Fin (n + 2)) :
+    (stdSimplex.objEquiv (m := op ⦋n⦌)).symm
+      (SimplexCategory.δ i) ∈ (horn.{u} (n + 1) j).obj (op ⦋n⦌) ↔ i ≠ j := by
+  dsimp
+  rw [← Subcomplex.ofSimplex_le_iff, ← stdSimplex.face_singleton_compl, face_le_horn_iff]
+  simp
+
+lemma objEquiv_symm_δ_notMem_horn_iff {n : ℕ} (i j : Fin (n + 2)) :
+    (stdSimplex.objEquiv (m := op ⦋n⦌)).symm
+      (SimplexCategory.δ i) ∉ (horn.{u} _ j).obj (op ⦋n⦌) ↔ i = j := by
+  simp [objEquiv_symm_δ_mem_horn_iff.{u}]
+
+
 namespace horn
 
 open SimplexCategory Finset Opposite
