@@ -240,7 +240,7 @@ def symbolsNotIn (A : LatinRectangle k n α) (j : n) :=
 
 /-- Given a finite collection of finite subsets $B_1, \ldots, B_k$ and, for every
     $x \in \bigcup_i B_i$, let $C_x$ be the set of indices of the $B_i$'s that contain $x$.
-    Then, $\sum_i |B_i| = \sum_x |C_x|$. 
+    Then, $\sum_i |B_i| = \sum_x |C_x|$.
     This is abstracted in PR #37190 and will be removed
 -/
 lemma sum_card_eq_sum_card_fiber_biUnion
@@ -262,7 +262,7 @@ lemma sum_card_eq_sum_card_fiber_biUnion
 
 /-- Given a finite collection of finite subsets $B_1, \ldots, B_r$,
     each with cardinality k, if the cardinality of their union is less than r,
-    then there exists an element x appearing in strictly more than k of the $B_j$'s. 
+    then there exists an element x appearing in strictly more than k of the $B_j$'s.
 
     This is abstracted in PR #37190 and will be removed.
 -/
@@ -348,34 +348,27 @@ lemma row_entry_to_column_entry
   exact hrow
 
 /-- Given an injective map f : k → k' such that k' has cardinality one more than k,
-    there is a unique element of k' not in the image of f. -/
-lemma unique_missed_element
+    there is a unique element of k' not in the image of f.
+
+    This needs to be moved out of this file also. Probably to
+    Mathlib.Data.Fintype.Card in the Function.Embedding.
+-/
+lemma Function.Embedding.existsUnique_not_mem_image_of_card_succ
     {k : Type*} [Fintype k]
     {k' : Type*} [Fintype k'] [DecidableEq k']
     (ι : k ↪ k')
     (h₂ : Fintype.card k' = Fintype.card k + 1) :
     ∃! x, x ∉ Finset.image ι Finset.univ := by
-  have h₃pre : (Finset.image ι Finset.univ) ⊆ Finset.univ := by simp
-  have h₃ := Finset.card_sdiff_of_subset h₃pre
-  simp only [Finset.card_univ] at h₃
-  rw [h₂] at h₃
-  have h4 := Finset.card_image_of_injective Finset.univ ι.inj'
-  simp only [Function.Embedding.toFun_eq_coe, Finset.card_univ] at h4
-  rw [h4] at h₃
-  simp only [add_tsub_cancel_left] at h₃
-  rw [Finset.card_eq_one] at h₃
-  rw [Finset.singleton_iff_unique_mem] at h₃
-  obtain ⟨x, hx1, hx2⟩ := h₃
-  use x
-  dsimp
-  rw [Finset.mem_sdiff] at hx1
-  refine ⟨hx1.2, ?_⟩
-  intro y hy
-  specialize hx2 y
-  dsimp at hx2
-  rw [Finset.mem_sdiff] at hx2
-  simp only [Finset.mem_univ, true_and] at hx2
-  exact hx2 hy
+  have hcard : (Finset.univ \ Finset.image ι Finset.univ).card = 1 := by
+    have h := Finset.card_image_of_injective Finset.univ ι.inj'
+    simp only [Function.Embedding.toFun_eq_coe, Finset.card_univ] at h
+    simp only [Finset.card_sdiff, Finset.inter_univ, Finset.card_univ, h]
+    omega
+  obtain ⟨x, hx⟩ := Finset.card_eq_one.mp hcard
+  refine ⟨x, ?_, ?_⟩
+  · exact (Finset.mem_sdiff.mp (hx ▸ Finset.mem_singleton_self x)).2
+  · intro y hy
+    exact Finset.mem_singleton.mp (hx ▸ Finset.mem_sdiff.mpr ⟨Finset.mem_univ _, hy⟩)
 
 /-- A non-square `LatinRectangle k n α` can be extended by one row to a new Latin rectangle. -/
 theorem LatinRectangle.exists_extension_of_non_square_LatinRectangle
@@ -581,7 +574,7 @@ theorem LatinRectangle.exists_extension_of_non_square_LatinRectangle
         -- If a1 and a2 aren't in the image of ι and
         -- card codomain of ι = card domain of ι + 1 then
         -- both a1 and a2 are the unique element ι misses.
-        have h := unique_missed_element ι h₂
+        have h := Function.Embedding.existsUnique_not_mem_image_of_card_succ ι h₂
         simp only [Finset.mem_image] at h
         intro _
         exact ExistsUnique.unique (y₁ := a1) (y₂ := a2) h
