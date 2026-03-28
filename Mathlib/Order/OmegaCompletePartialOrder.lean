@@ -169,13 +169,13 @@ def pair (a b : α) (hab : a ≤ b) : Chain α where
 def inl (c : Chain α) : Chain (α ⊕ β) := c.map ⟨.inl, Sum.inl_mono⟩
 
 @[simp]
-lemma inl_coe (c : Chain α) (n : ℕ) : inl (β := β) c n = .inl (c n) := rfl
+lemma coe_inl (c : Chain α) (n : ℕ) : inl (β := β) c n = .inl (c n) := rfl
 
 /-- Right injection for chains of sums. -/
 def inr (c : Chain β) : Chain (α ⊕ β) := c.map ⟨.inr, Sum.inr_mono⟩
 
 @[simp]
-lemma inr_coe (c : Chain β) (n : ℕ) : inr (α := α) c n = .inr (c n) := rfl
+lemma coe_inr (c : Chain β) (n : ℕ) : inr (α := α) c n = .inr (c n) := rfl
 
 /-- Projects left values out of a chain.
 If the chain contains right values (chains can contain only left values, or only right values),
@@ -185,7 +185,7 @@ def projl [Inhabited α] (c : Chain (α ⊕ β)) : Chain α where
   monotone' := Sum.elim_mono monotone_snd monotone_const c.monotone
 
 @[simp]
-lemma projl_coe [Inhabited α] (c : Chain (α ⊕ β)) (n : ℕ) :
+lemma coe_projl [Inhabited α] (c : Chain (α ⊕ β)) (n : ℕ) :
     projl c n = Sum.elim id (fun _ ↦ default) (c n) :=
   rfl
 
@@ -196,7 +196,7 @@ def projr [Inhabited β] (c : Chain (α ⊕ β)) : Chain β :=
   projl (c.map ⟨Sum.swap, Sum.swap_mono⟩)
 
 @[simp]
-lemma projr_coe [Inhabited β] (c : Chain (α ⊕ β)) (n : ℕ) :
+lemma coe_projr [Inhabited β] (c : Chain (α ⊕ β)) (n : ℕ) :
       projr c n = Sum.elim (fun _ ↦ default) id (c n) := by
   simp [projr]
 
@@ -222,7 +222,7 @@ lemma sum_cases {p : Chain (α ⊕ β) → Prop} (inl : ∀ c, p (inl c)) (inr :
     | inl c => exact inl c
     | inr c => exact inr c
   ext n
-  have hc := c.monotone (Nat.zero_le n)
+  have hc : c 0 ≤ c n := c.monotone (Nat.zero_le n)
   generalize h₀ : c 0 = c0 at ⊢ hc
   generalize hₙ : c n = cn at ⊢ hc
   cases hc <;> simp [toSum, h₀, hₙ]
