@@ -240,7 +240,7 @@ def symbolsNotIn (A : LatinRectangle k n α) (j : n) :=
 
 /-- Given a finite collection of finite subsets $B_1, \ldots, B_k$ and, for every
     $x \in \bigcup_i B_i$, let $C_x$ be the set of indices of the $B_i$'s that contain $x$.
-    Then, $\sum_i |B_i| = \sum_x |C_x|$. 
+    Then, $\sum_i |B_i| = \sum_x |C_x|$.
     This is abstracted in PR #37190 and will be removed
 -/
 lemma sum_card_eq_sum_card_fiber_biUnion
@@ -262,7 +262,7 @@ lemma sum_card_eq_sum_card_fiber_biUnion
 
 /-- Given a finite collection of finite subsets $B_1, \ldots, B_r$,
     each with cardinality k, if the cardinality of their union is less than r,
-    then there exists an element x appearing in strictly more than k of the $B_j$'s. 
+    then there exists an element x appearing in strictly more than k of the $B_j$'s.
 
     This is abstracted in PR #37190 and will be removed.
 -/
