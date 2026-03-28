@@ -139,7 +139,9 @@ lemma cuspFunction_apply_zero [ModularFormClass F Γ k] (hh : 0 < h) (hΓ : h �
   exact qParam_tendsto_atImInfty hh
 
 variable (h) in
-/-- The `q`-expansion of a level `n` modular form, bundled as a `PowerSeries`. -/
+/-- The `q`-expansion of a modular form with strict period `h`, bundled as a `PowerSeries`.
+The `m`-th coefficient is the Taylor coefficient of the `cuspFunction` at `q = 0`, where
+`q = exp(2πiτ/h)` is the local parameter at the cusp. -/
 def qExpansion (f : ℍ → ℂ) : PowerSeries ℂ :=
   .mk fun m ↦ (↑m.factorial)⁻¹ * iteratedDeriv m (cuspFunction h f) 0
 
