@@ -440,37 +440,37 @@ theorem Multiseries.add_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 mutual
 
 theorem Multiseries.add_Sorted {basis_hd basis_tl} {X Y : Multiseries basis_hd basis_tl}
-    (hX_wo : X.Sorted) (hY_wo : Y.Sorted) : (X + Y).Sorted := by
+    (hX_sorted : X.Sorted) (hY_sorted : Y.Sorted) : (X + Y).Sorted := by
   let motive : (Multiseries basis_hd basis_tl) → Prop := fun ms =>
     ∃ (X Y : Multiseries basis_hd basis_tl),
       ms = X + Y ∧ X.Sorted ∧ Y.Sorted
   apply Multiseries.Sorted.coind motive
   · use X, Y
-  intro exp coef tl ⟨X, Y, h_eq, hX_wo, hY_wo⟩
+  intro exp coef tl ⟨X, Y, h_eq, hX_sorted, hY_sorted⟩
   cases X with
   | nil =>
     simp only [Multiseries.nil_add] at h_eq
     subst h_eq
-    obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := Sorted_cons hY_wo
-    simp only [h_coef_wo, h_comp, true_and, motive]
+    obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons hY_sorted
+    simp only [h_coef_sorted, h_comp, true_and, motive]
     use .nil, tl
-    simp [Multiseries.Sorted.nil, h_tl_wo]
+    simp [Multiseries.Sorted.nil, h_tl_sorted]
   | cons X_exp X_coef X_tl =>
-    obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := Sorted_cons hX_wo
+    obtain ⟨hX_coef_sorted, hX_comp, hX_tl_sorted⟩ := Sorted_cons hX_sorted
     cases Y with
     | nil =>
       simp at h_eq
-      simp only [h_eq, hX_coef_wo, hX_comp, true_and, motive]
+      simp only [h_eq, hX_coef_sorted, hX_comp, true_and, motive]
       use .nil, X_tl
-      simp [Multiseries.Sorted.nil, hX_tl_wo]
+      simp [Multiseries.Sorted.nil, hX_tl_sorted]
     | cons Y_exp Y_coef Y_tl =>
-      obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := Sorted_cons hY_wo
+      obtain ⟨hY_coef_sorted, hY_comp, hY_tl_sorted⟩ := Sorted_cons hY_sorted
       rw [Multiseries.add_cons_cons] at h_eq
       split_ifs at h_eq with h1 h2 <;> simp at h_eq
-      · simp only [h_eq, hX_coef_wo, Multiseries.add_leadingExp, Multiseries.leadingExp_cons,
+      · simp only [h_eq, hX_coef_sorted, Multiseries.add_leadingExp, Multiseries.leadingExp_cons,
         sup_lt_iff, hX_comp, WithBot.coe_lt_coe, h1, and_self, true_and, motive]
         use ?_, ?_
-      · simp only [h_eq, hY_coef_wo, Multiseries.add_leadingExp, Multiseries.leadingExp_cons,
+      · simp only [h_eq, hY_coef_sorted, Multiseries.add_leadingExp, Multiseries.leadingExp_cons,
         sup_lt_iff, WithBot.coe_lt_coe, h2, hY_comp, and_self, true_and, motive]
         use ?_, ?_
       · have h_exp : X_exp = Y_exp := by linarith
@@ -483,13 +483,13 @@ theorem Multiseries.add_Sorted {basis_hd basis_tl} {X Y : Multiseries basis_hd b
 
 /-- `X + Y` is well-ordered when `X` and `Y` are well-ordered. -/
 theorem add_Sorted {basis : Basis} {X Y : MultiseriesExpansion basis}
-    (hX_wo : X.Sorted) (hY_wo : Y.Sorted) : (X + Y).Sorted := by
+    (hX_sorted : X.Sorted) (hY_sorted : Y.Sorted) : (X + Y).Sorted := by
   cases basis with
   | nil =>
     constructor
   | cons basis_hd basis_tl =>
-    simp only [Sorted_iff_Seq_Sorted, add_seq] at hX_wo hY_wo ⊢
-    apply Multiseries.add_Sorted hX_wo hY_wo
+    simp only [Sorted_iff_Seq_Sorted, add_seq] at hX_sorted hY_sorted ⊢
+    apply Multiseries.add_Sorted hX_sorted hY_sorted
 
 end
 
@@ -594,9 +594,9 @@ theorem sub_toFun {basis : Basis} {X Y : MultiseriesExpansion basis} :
 
 /-- `X - Y` is well-ordered when `X` and `Y` are well-ordered. -/
 theorem sub_Sorted {basis : Basis} {X Y : MultiseriesExpansion basis}
-    (hX_wo : X.Sorted) (hY_wo : Y.Sorted) : (X.sub Y).Sorted := by
-  apply add_Sorted hX_wo
-  apply neg_Sorted hY_wo
+    (hX_sorted : X.Sorted) (hY_sorted : Y.Sorted) : (X.sub Y).Sorted := by
+  apply add_Sorted hX_sorted
+  apply neg_Sorted hY_sorted
 
 /-- If `X` approximates `fX` and `Y` approximates `fY`, then `X - Y` approximates `fX - fY`. -/
 theorem sub_Approximates {basis : Basis} {X Y : MultiseriesExpansion basis}
@@ -728,21 +728,21 @@ theorem Multiseries.Sorted.add_coind' {basis_hd : ℝ → ℝ} {basis_tl : Basis
   intro exp coef tl ih
   specialize h_step _ ih
   simp only [cons_ne_nil, false_or] at h_step
-  obtain ⟨A, B, h_eq, hA_wo, hBA, hB⟩ := h_step
+  obtain ⟨A, B, h_eq, hA_sorted, hBA, hB⟩ := h_step
   cases A with
   | nil => simp at hBA
   | cons A_exp A_coef A_tl =>
-  obtain ⟨hA_coef_wo, hA_comp, hA_tl⟩ := Sorted_cons hA_wo
+  obtain ⟨hA_coef_sorted, hA_comp, hA_tl⟩ := Sorted_cons hA_sorted
   cases B with
   | nil =>
     simp only [add_nil, cons_eq_cons] at h_eq
-    simp only [h_eq, hA_coef_wo, hA_comp, true_and]
+    simp only [h_eq, hA_coef_sorted, hA_comp, true_and]
     use A_tl, .nil
     simp [hA_tl, hB]
   | cons B_exp B_coef B_tl =>
   simp only [add_cons_left hBA, cons_eq_cons] at h_eq
   simp only [leadingExp_cons, WithBot.coe_lt_coe] at hBA
-  simp only [h_eq, hA_coef_wo, add_leadingExp, leadingExp_cons, sup_lt_iff, hA_comp,
+  simp only [h_eq, hA_coef_sorted, add_leadingExp, leadingExp_cons, sup_lt_iff, hA_comp,
     WithBot.coe_lt_coe, hBA, and_self, true_and]
   use A_tl, .cons B_exp B_coef B_tl
 

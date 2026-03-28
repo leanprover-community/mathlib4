@@ -107,7 +107,7 @@ partial def createMSImp (x body : Q(ℝ)) : BasisM MS := do
         let ⟨_, h_msF⟩ ← Normalization.getFun q($ms.val)
         let ⟨_, h_resF⟩ ← Normalization.getFun q($res.val)
         let h : Q(($res.val).toFun =ᶠ[atTop] $g) := ← mkAppM ``MultiseriesExpansion.pow_eq_exp_toFun
-          #[ms.h_basis, ms.h_wo, ms.h_approx, h_trimmed, h_pos, h_msF, h_resF]
+          #[ms.h_basis, ms.h_sorted, ms.h_approx, h_trimmed, h_pos, h_msF, h_resF]
         return ← res.replaceFun q($g) q($h)
       else
         throwError
@@ -163,18 +163,18 @@ def computeTendstoAtTop (f : Q(ℝ → ℝ)) :
         match ← compareReal q($coef) with
         | .neg h_coef =>
           pure q(MultiseriesExpansion.tendsto_bot_of_FirstIsPos (f := $f)
-            $ms_trimmed.h_wo $ms_trimmed.h_approx $h_trimmed?.get! $ms_trimmed.h_basis
+            $ms_trimmed.h_sorted $ms_trimmed.h_approx $h_trimmed?.get! $ms_trimmed.h_basis
             $h_leading_eq $h_exps $h_coef rfl)
         | .pos h_coef =>
           pure q(MultiseriesExpansion.tendsto_top_of_FirstIsPos (f := $f)
-            $ms_trimmed.h_wo $ms_trimmed.h_approx $h_trimmed?.get! $ms_trimmed.h_basis
+            $ms_trimmed.h_sorted $ms_trimmed.h_approx $h_trimmed?.get! $ms_trimmed.h_basis
             $h_leading_eq $h_exps $h_coef rfl)
         | .zero _ => panic! "Unexpected zero coef with FirstIsPos"
       | .neg h_exps =>
-        pure q(MultiseriesExpansion.tendsto_zero_of_FirstIsNeg (f := $f) $ms_trimmed.h_wo
+        pure q(MultiseriesExpansion.tendsto_zero_of_FirstIsNeg (f := $f) $ms_trimmed.h_sorted
           $ms_trimmed.h_approx $h_leading_eq $h_exps rfl)
       | .zero h_exps =>
-        pure (q(MultiseriesExpansion.tendsto_const_of_AllZero (f := $f) $ms_trimmed.h_wo
+        pure (q(MultiseriesExpansion.tendsto_const_of_AllZero (f := $f) $ms_trimmed.h_sorted
           $ms_trimmed.h_approx $h_trimmed?.get! $ms_trimmed.h_basis $h_leading_eq $h_exps rfl) :
             Expr)
     | _ => panic! "Unexpected result of trimMS"

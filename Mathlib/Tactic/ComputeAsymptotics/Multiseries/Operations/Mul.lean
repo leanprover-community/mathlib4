@@ -158,7 +158,7 @@ theorem Multiseries.mul_leadingExp {basis_hd} {basis_tl} {X Y : Multiseries basi
 -- Then `lhs = [1, 2]` while `rhs = [2, 1]`.
 theorem Multiseries.mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_exp : ℝ}
     {Y_coef : MultiseriesExpansion basis_tl} {Y_tl X : Multiseries basis_hd basis_tl}
-    (hX_wo : (cons Y_exp Y_coef Y_tl).Sorted) :
+    (hX_sorted : (cons Y_exp Y_coef Y_tl).Sorted) :
     X.mul (cons Y_exp Y_coef Y_tl) = (mulMonomial X Y_coef Y_exp) + X.mul Y_tl := by
   cases X with
   | nil => simp
@@ -166,7 +166,7 @@ theorem Multiseries.mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_exp 
     simp only [mul_cons_cons, mulMonomial_cons]
     rw [add_cons_left]
     simp
-    obtain ⟨_, hX_comp, hX_tail_wo⟩ := Sorted_cons hX_wo
+    obtain ⟨_, hX_comp, hX_tail_sorted⟩ := Sorted_cons hX_sorted
     cases Y_tl
     · simp
     · simp at hX_comp ⊢
@@ -506,7 +506,7 @@ mutual
 
   theorem Multiseries.add_mulMonomial_right {basis_hd} {basis_tl}
       {A B : Multiseries basis_hd basis_tl} {M_coef : MultiseriesExpansion basis_tl} {M_exp : ℝ}
-      (m_wo : M_coef.Sorted) :
+      (m_sorted : M_coef.Sorted) :
       (Multiseries.mulMonomial (A + B) M_coef M_exp) =
       (Multiseries.mulMonomial A M_coef M_exp) + (Multiseries.mulMonomial B M_coef M_exp) := by
     let motive (X Y : Multiseries basis_hd basis_tl) : Prop :=
@@ -539,12 +539,12 @@ mutual
         subst this
         simp only [Multiseries.mulMonomial_cons, Multiseries.cons_eq_cons, ↓existsAndEq, true_and]
         refine ⟨_, _, rfl, ?_, rfl⟩
-        rw [add_mul_right' m_wo]
+        rw [add_mul_right' m_sorted]
 
   -- Note: `Z.Sorted` is necessary. Counterexample: `X = [0]`, `Y = [1]`, `Z = [0, 2]`.
   -- Then `lhs = [0, 2] * [1, 0] = [1, 3, 2, 0]` while `rhs = [0, 2] + [1, 3] = [1, 3, 0, 2]`.
   theorem Multiseries.add_mul_right' {basis_hd basis_tl} {X Y Z : Multiseries basis_hd basis_tl}
-      (hZ_wo : Z.Sorted) :
+      (hZ_sorted : Z.Sorted) :
       (X + Y).mul Z = X.mul Z + Y.mul Z := by
     let motive (A B : Multiseries basis_hd basis_tl) : Prop :=
       ∃ (Z : Multiseries basis_hd basis_tl),
@@ -553,7 +553,7 @@ mutual
         Z.Sorted
     apply Multiseries.eq_of_bisim_add' motive
     · use Z
-    rintro A B ⟨Z, rfl, rfl, hZ_wo⟩
+    rintro A B ⟨Z, rfl, rfl, hZ_sorted⟩
     cases Z with
     | nil => simp
     | cons Z_exp Z_coef Z_tl =>
@@ -562,12 +562,12 @@ mutual
     by_cases hY : Y = .nil
     · simp [hY]
     right
-    obtain ⟨hZ_coef_wo, hZ_comp, hZ_tl_wo⟩ := Sorted_cons hZ_wo
-    simp only [Multiseries.mul_cons hZ_wo, Multiseries.add_mulMonomial_right hZ_coef_wo,
+    obtain ⟨hZ_coef_sorted, hZ_comp, hZ_tl_sorted⟩ := Sorted_cons hZ_sorted
+    simp only [Multiseries.mul_cons hZ_sorted, Multiseries.add_mulMonomial_right hZ_coef_sorted,
       exists_and_left, ↓existsAndEq, Multiseries.add_leadingExp, Multiseries.mul_leadingExp,
       sup_lt_iff, true_and, motive]
     use (X + Y).mulMonomial Z_coef Z_exp, Z_tl
-    simp only [Multiseries.add_mulMonomial_right hZ_coef_wo, Multiseries.add_leadingExp,
+    simp only [Multiseries.add_mulMonomial_right hZ_coef_sorted, Multiseries.add_leadingExp,
       Multiseries.mulMonomial_leadingExp, lt_sup_iff, true_and]
     constructorm* _ ∧ _
     · abel
@@ -582,7 +582,7 @@ mutual
   -- Note: `Z.Sorted` is necessary. Counterexample: `X = [0]`, `Y = [1]`, `Z = [0, 2]`.
   -- Then `lhs = [0, 2] * [1, 0] = [1, 3, 2, 0]` while `rhs = [0, 2] + [1, 3] = [1, 3, 0, 2]`.
   theorem add_mul_right' {basis : Basis} {X Y Z : MultiseriesExpansion basis}
-      (hZ_wo : Z.Sorted) :
+      (hZ_sorted : Z.Sorted) :
       (X + Y).mul Z = X.mul Z + Y.mul Z := by
     cases basis with
     | nil =>
@@ -591,7 +591,7 @@ mutual
     | cons basis_hd basis_tl =>
       simp only [ms_eq_ms_iff_mk_eq_mk, mul_seq, add_seq, mul_toFun, add_toFun]
       constructor
-      · apply Multiseries.add_mul_right' (by simpa using hZ_wo)
+      · apply Multiseries.add_mul_right' (by simpa using hZ_sorted)
       · ext t
         simp
         ring
@@ -600,11 +600,11 @@ end
 
 theorem add_mulMonomial_right {basis_hd basis_tl}
     {A B : MultiseriesExpansion (basis_hd :: basis_tl)} {M_coef : MultiseriesExpansion basis_tl}
-    {M_exp : ℝ} (m_wo : M_coef.Sorted) :
+    {M_exp : ℝ} (m_sorted : M_coef.Sorted) :
     (A + B).mulMonomial M_coef M_exp =
     A.mulMonomial M_coef M_exp + B.mulMonomial M_coef M_exp := by
   simp only [ms_eq_ms_iff_mk_eq_mk, mulMonomial_seq, add_seq,
-    Multiseries.add_mulMonomial_right m_wo, mulMonomial_toFun, add_toFun, true_and]
+    Multiseries.add_mulMonomial_right m_sorted, mulMonomial_toFun, add_toFun, true_and]
   ext t
   simp
   ring
@@ -613,7 +613,7 @@ mutual
 
   theorem Multiseries.mulMonomial_mul {basis_hd} {basis_tl} {B : Multiseries basis_hd basis_tl}
       {M_coef1 M_coef2 : MultiseriesExpansion basis_tl} {M_exp1 M_exp2 : ℝ}
-      (h_coef2_wo : M_coef2.Sorted) :
+      (h_coef2_sorted : M_coef2.Sorted) :
       (B.mulMonomial M_coef1 M_exp1).mulMonomial M_coef2 M_exp2 =
       B.mulMonomial (M_coef1.mul M_coef2) (M_exp1 + M_exp2) := by
     simp only [Multiseries.mulMonomial, ← Multiseries.map_comp, comp_add_right]
@@ -622,11 +622,11 @@ mutual
     simp only [Function.comp_apply]
     ext coef
     rw [mul_assoc']
-    exact h_coef2_wo
+    exact h_coef2_sorted
 
   theorem Multiseries.mul_mulMonomial {basis_hd} {basis_tl} {A B : Multiseries basis_hd basis_tl}
       {M_coef : MultiseriesExpansion basis_tl} {M_exp : ℝ}
-      (hM_wo : M_coef.Sorted) :
+      (hM_sorted : M_coef.Sorted) :
       A.mul (B.mulMonomial M_coef M_exp) =
       (A.mul B).mulMonomial M_coef M_exp := by
     let motive (X Y : Multiseries basis_hd basis_tl) : Prop :=
@@ -648,11 +648,11 @@ mutual
     refine ⟨_, _, rfl, ?_⟩
     constructorm* _ ∧ _
     · ring
-    · apply mul_assoc' hM_wo
-    · rw [Multiseries.add_mulMonomial_right hM_wo, Multiseries.mulMonomial_mul hM_wo]
+    · apply mul_assoc' hM_sorted
+    · rw [Multiseries.add_mulMonomial_right hM_sorted, Multiseries.mulMonomial_mul hM_sorted]
 
   theorem Multiseries.mul_assoc' {basis_hd basis_tl} {X Y Z : Multiseries basis_hd basis_tl}
-      (hZ_wo : Z.Sorted) :
+      (hZ_sorted : Z.Sorted) :
       (X.mul Y).mul Z = X.mul (Y.mul Z) := by
     let motive (A B : Multiseries basis_hd basis_tl) : Prop :=
       ∃ Z : Multiseries basis_hd basis_tl,
@@ -661,7 +661,7 @@ mutual
         Z.Sorted
     apply Multiseries.eq_of_bisim_add' motive
     · use Z
-    rintro A B ⟨Z, rfl, rfl, hZ_wo⟩
+    rintro A B ⟨Z, rfl, rfl, hZ_sorted⟩
     cases Z with
     | nil => simp
     | cons Z_exp Z_coef Z_tl =>
@@ -670,12 +670,12 @@ mutual
     by_cases hY : Y = .nil
     · simp [hY]
     right
-    obtain ⟨hZ_coef_wo, hZ_comp, hZ_tl_wo⟩ := Sorted_cons hZ_wo
-    simp only [Multiseries.mul_cons hZ_wo, Multiseries.add_mul_left', exists_and_left,
+    obtain ⟨hZ_coef_sorted, hZ_comp, hZ_tl_sorted⟩ := Sorted_cons hZ_sorted
+    simp only [Multiseries.mul_cons hZ_sorted, Multiseries.add_mul_left', exists_and_left,
       ↓existsAndEq, Multiseries.mul_leadingExp, true_and, motive]
     use (X.mul Y).mulMonomial Z_coef Z_exp, Z_tl
-    simp only [Multiseries.mul_mulMonomial hZ_coef_wo, add_assoc,
-      Multiseries.mulMonomial_leadingExp, Multiseries.mul_leadingExp, hZ_tl_wo, and_true,
+    simp only [Multiseries.mul_mulMonomial hZ_coef_sorted, add_assoc,
+      Multiseries.mulMonomial_leadingExp, Multiseries.mul_leadingExp, hZ_tl_sorted, and_true,
       and_self, true_and]
     apply WithBot.add_lt_add_of_le_of_lt (by simp [hX]) (by rfl)
     apply WithBot.add_lt_add_of_le_of_lt (by simp [hY]) (by rfl) hZ_comp
@@ -691,14 +691,14 @@ mutual
   -- There is a difference in the second coefficient.
   -- It is enough, however, if all coefs of `Z` is well-ordered.
   theorem mul_assoc' {basis : Basis} {X Y Z : MultiseriesExpansion basis}
-      (hZ_wo : Z.Sorted) :
+      (hZ_sorted : Z.Sorted) :
       (X.mul Y).mul Z = X.mul (Y.mul Z) := by
     cases basis with
     | nil =>
       simp [mul, ofReal, toReal]
       ring_nf
     | cons basis_hd basis_tl =>
-      simp only [ms_eq_ms_iff_mk_eq_mk, mul_seq, Multiseries.mul_assoc' (by simpa using hZ_wo),
+      simp only [ms_eq_ms_iff_mk_eq_mk, mul_seq, Multiseries.mul_assoc' (by simpa using hZ_sorted),
         mul_toFun, true_and]
       ext t
       ring_nf
@@ -709,7 +709,7 @@ mutual
 
   theorem Multiseries.mulMonomial_Sorted {basis_hd} {basis_tl} {B : Multiseries basis_hd basis_tl}
       {M_coef : MultiseriesExpansion basis_tl} {M_exp : ℝ}
-      (hB_wo : B.Sorted) (hM_wo : M_coef.Sorted) :
+      (hB_sorted : B.Sorted) (hM_sorted : M_coef.Sorted) :
       (B.mulMonomial M_coef M_exp).Sorted := by
     let motive (X : Multiseries basis_hd basis_tl) : Prop :=
       ∃ (B : Multiseries basis_hd basis_tl), X = B.mulMonomial M_coef M_exp ∧
@@ -719,54 +719,54 @@ mutual
       use B
     · intro exp coef tl ih
       simp only [motive] at ih
-      obtain ⟨B, h_eq, hB_wo⟩ := ih
+      obtain ⟨B, h_eq, hB_sorted⟩ := ih
       cases B with
       | nil => simp at h_eq
       | cons B_exp B_coef B_tl =>
-      obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := Multiseries.Sorted_cons hB_wo
+      obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Multiseries.Sorted_cons hB_sorted
       simp only [Multiseries.mulMonomial_cons, Multiseries.cons_eq_cons] at h_eq
       simp only [h_eq, Multiseries.mulMonomial_leadingExp, WithBot.coe_add, motive]
       constructorm* _ ∧ _
-      · apply mul_Sorted h_coef_wo hM_wo
+      · apply mul_Sorted h_coef_sorted hM_sorted
       · apply WithBot.add_lt_add_right
         · simp
         · assumption
       use B_tl
 
   theorem Multiseries.mul_Sorted {basis_hd basis_tl} {X Y : Multiseries basis_hd basis_tl}
-      (hX_wo : X.Sorted) (hY_wo : Y.Sorted) :
+      (hX_sorted : X.Sorted) (hY_sorted : Y.Sorted) :
       (X.mul Y).Sorted := by
     let motive (ms : Multiseries basis_hd basis_tl) : Prop :=
       ∃ Y : Multiseries basis_hd basis_tl,
         ms = X.mul Y ∧ Y.Sorted
     apply Multiseries.Sorted.add_coind' motive
     · use Y
-    rintro ms ⟨Y, rfl, hY_wo⟩
+    rintro ms ⟨Y, rfl, hY_sorted⟩
     cases Y with
     | nil => simp
     | cons Y_exp Y_coef Y_tl =>
     by_cases hX : X = .nil
     · simp [hX]
-    obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := Multiseries.Sorted_cons hY_wo
+    obtain ⟨hY_coef_sorted, hY_comp, hY_tl_sorted⟩ := Multiseries.Sorted_cons hY_sorted
     right
-    simp only [Multiseries.mul_cons hY_wo]
+    simp only [Multiseries.mul_cons hY_sorted]
     refine ⟨_, _, rfl, ?_⟩
     simp only [Multiseries.mul_leadingExp, Multiseries.mulMonomial_leadingExp, motive]
     constructorm* _ ∧ _
-    · apply Multiseries.mulMonomial_Sorted hX_wo hY_coef_wo
+    · apply Multiseries.mulMonomial_Sorted hX_sorted hY_coef_sorted
     · apply WithBot.add_lt_add_left
       · simpa
       · exact hY_comp
     · use Y_tl
 
   theorem mul_Sorted {basis : Basis} {X Y : MultiseriesExpansion basis}
-      (hX_wo : X.Sorted) (hY_wo : Y.Sorted) :
+      (hX_sorted : X.Sorted) (hY_sorted : Y.Sorted) :
       (X.mul Y).Sorted := by
     cases basis with
     | nil => constructor
     | cons basis_hd basis_tl =>
       simp only [Sorted_iff_Seq_Sorted, mul_seq] at *
-      exact Multiseries.mul_Sorted hX_wo hY_wo
+      exact Multiseries.mul_Sorted hX_sorted hY_sorted
 
 end
 
@@ -927,7 +927,7 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl))
     (motive : MultiseriesExpansion (basis_hd :: basis_tl) → Prop)
-    (h_wo : ms.Sorted)
+    (h_sorted : ms.Sorted)
     (h_base : motive ms)
     (h_step :
       ∀ (ms : MultiseriesExpansion (basis_hd :: basis_tl)),
@@ -944,9 +944,9 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     ∃ A B, ms ≈ MultiseriesExpansion.mul A B ∧ A.Approximates ∧ B.Sorted ∧ motive B
   apply Approximates.add_coind motive'
   · use one, ms
-    simp at h_wo
-    simp [h_base, one_Approximates h_basis, h_wo]
-  rintro ms ⟨A, B, ⟨h_seq_eq, hf_eq⟩, hA, hB_wo, hB⟩
+    simp at h_sorted
+    simp [h_base, one_Approximates h_basis, h_sorted]
+  rintro ms ⟨A, B, ⟨h_seq_eq, hf_eq⟩, hA, hB_sorted, hB⟩
   cases A with
   | nil fA =>
     apply Approximates_nil at hA
@@ -958,7 +958,7 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   | cons A_exp A_coef A_tl fA =>
   specialize h_step _ hB
   obtain ⟨hB_seq, hB_fun⟩ | ⟨B_exp, B_coef, B_tl, hB_seq, hB_coef, hB_maj,
-    X, Y, rfl, hfB, hX, hY_wo, hY⟩ := h_step
+    X, Y, rfl, hfB, hX, hY_sorted, hY⟩ := h_step
   · simp only [h_seq_eq, mul_seq, mk_seq, hB_seq, Multiseries.mul_nil, true_and, ↓existsAndEq,
     Multiseries.nil_ne_cons, false_and, exists_const, or_false]
     simp only [mul_toFun, mk_toFun] at hf_eq
@@ -983,7 +983,7 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   use (mk (.cons A_exp A_coef A_tl) fA).mul X, Y
   constructorm* _ ∧ _
   · simp only [mul_seq, mk_seq]
-    rw [Multiseries.mul_assoc' (by simpa using hY_wo)]
+    rw [Multiseries.mul_assoc' (by simpa using hY_sorted)]
   · grw [hf_eq, hfB]
     apply (h_basis.head_eventually_pos).mono
     intro t ht
@@ -991,7 +991,7 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     rw [Real.rpow_add ht]
     ring
   · apply mul_Approximates h_basis hA hX
-  · simpa using hY_wo
+  · simpa using hY_sorted
   · exact hY
 
 end MultiseriesExpansion

@@ -352,19 +352,19 @@ lemma Multiseries.map_leadingExp {basis_hd basis_hd' basis_tl basis_tl'}
 lemma Multiseries.map_id_Sorted {basis_hd basis_hd' basis_tl basis_tl'}
     {f : MultiseriesExpansion basis_tl → MultiseriesExpansion basis_tl'}
     {ms : Multiseries basis_hd basis_tl}
-    (h_wo : ms.Sorted)
+    (h_sorted : ms.Sorted)
     (hf : ∀ coef, coef.Sorted → (f coef).Sorted) :
     (ms.map (basis_hd' := basis_hd') id f).Sorted := by
   let motive (ms : Multiseries basis_hd' basis_tl') : Prop :=
     ∃ (ms' : Multiseries basis_hd basis_tl), ms = ms'.map id f ∧ ms'.Sorted
   apply Multiseries.Sorted.coind motive
   · use ms
-  intro exp coef tl ⟨ms, h_eq, h_wo⟩
+  intro exp coef tl ⟨ms, h_eq, h_sorted⟩
   cases ms with
   | nil => simp at h_eq
   | cons exp' coef' tl' =>
   simp at h_eq
-  obtain ⟨h_coef, h_comp, h_tl⟩ := Sorted_cons h_wo
+  obtain ⟨h_coef, h_comp, h_tl⟩ := Sorted_cons h_sorted
   simp [h_eq, h_comp, motive]
   grind
 
@@ -424,25 +424,25 @@ theorem Multiseries.updateBasis_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 mutual
 
 theorem Multiseries.updateBasis_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    (ex : BasisExtension basis_tl) {ms : Multiseries basis_hd basis_tl} (h_wo : ms.Sorted) :
+    (ex : BasisExtension basis_tl) {ms : Multiseries basis_hd basis_tl} (h_sorted : ms.Sorted) :
     (ms.updateBasis ex).Sorted := by
   simp only [Multiseries.updateBasis]
-  apply Multiseries.map_id_Sorted h_wo
+  apply Multiseries.map_id_Sorted h_sorted
   apply updateBasis_Sorted
 
 theorem updateBasis_Sorted {basis : Basis} {ex : BasisExtension basis}
     {ms : MultiseriesExpansion basis}
-    (h_wo : ms.Sorted) :
+    (h_sorted : ms.Sorted) :
     (ms.updateBasis ex).Sorted := by
   cases ex with
   | nil => simpa [updateBasis]
   | insert f ex_tl =>
     simp only [updateBasis]
     apply Sorted.cons_nil
-    exact updateBasis_Sorted h_wo
+    exact updateBasis_Sorted h_sorted
   | @keep basis_hd basis_tl ex_tl =>
-    simp only [Sorted_iff_Seq_Sorted, updateBasis, mk_seq] at h_wo ⊢
-    apply Multiseries.updateBasis_Sorted ex_tl h_wo
+    simp only [Sorted_iff_Seq_Sorted, updateBasis, mk_seq] at h_sorted ⊢
+    apply Multiseries.updateBasis_Sorted ex_tl h_sorted
 
 end
 
@@ -480,7 +480,7 @@ theorem extendBasisMiddle_toFun {left right : Basis} {b : ℝ → ℝ}
 
 theorem extendBasisMiddle_Sorted {left right : Basis} {b : ℝ → ℝ}
     {ms : MultiseriesExpansion (left ++ right)}
-    (h_wo : ms.Sorted) : (ms.extendBasisMiddle b).Sorted := by
+    (h_sorted : ms.Sorted) : (ms.extendBasisMiddle b).Sorted := by
   cases left with
   | nil =>
     simp only [List.nil_append, extendBasisMiddle]
@@ -490,7 +490,7 @@ theorem extendBasisMiddle_Sorted {left right : Basis} {b : ℝ → ℝ}
   simp only [List.cons_append, extendBasisMiddle, List.append_eq, Sorted_iff_Seq_Sorted,
     mk_seq]
   apply Multiseries.map_id_Sorted
-  · simpa using h_wo
+  · simpa using h_sorted
   · apply extendBasisMiddle_Sorted
 
 theorem extendBasisMiddle_Approximates {left right : Basis} {b : ℝ → ℝ}
@@ -538,20 +538,20 @@ theorem Multiseries.extendBasisEnd_cons {basis_hd : ℝ → ℝ} {basis_tl : Bas
 mutual
 
 theorem Multiseries.extendBasisEnd_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
-    {ms : Multiseries basis_hd basis_tl} (h_wo : ms.Sorted) :
+    {ms : Multiseries basis_hd basis_tl} (h_sorted : ms.Sorted) :
     (ms.extendBasisEnd f).Sorted := by
   simp only [Multiseries.extendBasisEnd]
-  apply Multiseries.map_id_Sorted h_wo
+  apply Multiseries.map_id_Sorted h_sorted
   apply extendBasisEnd_Sorted
 
 theorem extendBasisEnd_Sorted {basis : Basis} {b : ℝ → ℝ} {ms : MultiseriesExpansion basis}
-    (h_wo : ms.Sorted) : (ms.extendBasisEnd b).Sorted := by
+    (h_sorted : ms.Sorted) : (ms.extendBasisEnd b).Sorted := by
   cases basis with
   | nil => simpa only [extendBasisEnd] using const_Sorted
   | cons basis_hd basis_tl =>
   simp only [Sorted_iff_Seq_Sorted, List.cons_append, List.append_eq,
     extendBasisEnd_seq] at *
-  exact Multiseries.extendBasisEnd_Sorted h_wo
+  exact Multiseries.extendBasisEnd_Sorted h_sorted
 
 end
 

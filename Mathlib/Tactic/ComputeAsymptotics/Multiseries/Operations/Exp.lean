@@ -108,7 +108,7 @@ mutual
 theorem Multiseries.exp_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : Multiseries basis_hd basis_tl}
     (h : ms.Sorted)
-    (h_nonpos : ¬ Term.FirstIsPos ms.exps) :
+    (h_nonpos : ¬ List.FirstIsPos ms.exps) :
     ms.exp.Sorted := by
   cases ms with
   | nil => simpa [Multiseries.exp] using Multiseries.one_Sorted
@@ -124,17 +124,17 @@ theorem Multiseries.exp_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     grind
   subst h_exp
   clear h_if
-  obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := Sorted_cons h
+  obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h
   apply Multiseries.mulMonomial_Sorted
-  · exact Multiseries.powser_Sorted h_tl_wo h_comp
-  · apply exp_Sorted h_coef_wo
+  · exact Multiseries.powser_Sorted h_tl_sorted h_comp
+  · apply exp_Sorted h_coef_sorted
     contrapose! h_nonpos
     simp only [Multiseries.cons_exps]
-    exact Term.FirstIsPos_of_tail rfl h_nonpos
+    exact List.FirstIsPos_of_tail rfl h_nonpos
 
 theorem exp_Sorted {basis : Basis} {ms : MultiseriesExpansion basis}
     (h : ms.Sorted)
-    (h_nonpos : ¬ Term.FirstIsPos ms.exps) :
+    (h_nonpos : ¬ List.FirstIsPos ms.exps) :
     ms.exp.Sorted := by
   cases basis with
   | nil => apply Sorted.const
@@ -146,9 +146,9 @@ end
 
 theorem exp_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_basis : WellFormedBasis basis)
-    (h_wo : ms.Sorted)
+    (h_sorted : ms.Sorted)
     (h_approx : ms.Approximates)
-    (h_nonpos : ¬ Term.FirstIsPos ms.exps) :
+    (h_nonpos : ¬ List.FirstIsPos ms.exps) :
     ms.exp.Approximates := by
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
   · simp
@@ -165,7 +165,7 @@ theorem exp_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
   simp only [MultiseriesExpansion.exp, mk_seq, Multiseries.exp, Multiseries.destruct_cons, mk_toFun]
   split_ifs with h_if
   · rw [← expSeries_toFun]
-    exact powser_Approximates expSeries_convergent h_basis (by simpa) h_wo h_approx
+    exact powser_Approximates expSeries_convergent h_basis (by simpa) h_sorted h_approx
   have h_exp : exp = 0 := by
     contrapose! h_nonpos
     simp
@@ -173,7 +173,7 @@ theorem exp_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
     grind
   subst h_exp
   clear h_if
-  obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := Sorted_cons h_wo
+  obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
   obtain ⟨h_coef, h_majorized, h_tl⟩ := Approximates_cons h_approx
   let ms := ((mk tl (f - basis_hd ^ 0 * coef.toFun)).powser expSeries).mulMonomial coef.exp 0
   have h : ms.Approximates := by
@@ -182,10 +182,10 @@ theorem exp_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
     · apply powser_Approximates expSeries_convergent h_basis (by simpa) (by simpa)
       convert h_tl
       simp
-    · apply exp_Approximates h_basis.tail h_coef_wo h_coef
+    · apply exp_Approximates h_basis.tail h_coef_sorted h_coef
       contrapose! h_nonpos
       simp only [exps_eq_Seq_exps, mk_seq, Multiseries.cons_exps]
-      exact Term.FirstIsPos_of_tail rfl h_nonpos
+      exact List.FirstIsPos_of_tail rfl h_nonpos
   apply replaceFun_Approximates _ h
   simp only [pow_zero, one_mul, mulMonomial_toFun, powser_toFun, expSeries_toFun, mk_toFun,
     Real.pi_rpow_zero, mul_one, exp_toFun, ms]
@@ -197,12 +197,12 @@ theorem pow_eq_exp_toFun
     {basis1 basis2 : Basis} {ms1 : MultiseriesExpansion basis1} {ms2 : MultiseriesExpansion basis2}
     {f g : ℝ → ℝ}
     (h_basis1 : WellFormedBasis basis1)
-    (h_wo1 : ms1.Sorted) (h_approx1 : ms1.Approximates) (h_trimmed1 : ms1.Trimmed)
+    (h_sorted1 : ms1.Sorted) (h_approx1 : ms1.Approximates) (h_trimmed1 : ms1.Trimmed)
     (h_pos1 : 0 < ms1.leadingTerm.coef)
     (h1 : ms1.toFun = f)
     (h2 : ms2.toFun = (Real.exp ∘ ((Real.log ∘ f) * g))) :
     ms2.toFun =ᶠ[atTop] (fun x ↦ (f x) ^ (g x)) := by
-  have := eventually_pos_of_coef_pos h_pos1 h_wo1 h_approx1 h_trimmed1 h_basis1
+  have := eventually_pos_of_coef_pos h_pos1 h_sorted1 h_approx1 h_trimmed1 h_basis1
   rw [h1] at this
   apply this.mono
   intro t h_pos

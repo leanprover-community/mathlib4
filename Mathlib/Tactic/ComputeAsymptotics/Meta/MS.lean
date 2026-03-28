@@ -32,7 +32,7 @@ structure MS where
   /-- `MultiseriesExpansion` value of the multiseries. -/
   val : Q(MultiseriesExpansion $basis)
   /-- Proof of well-ordering of the multiseries. -/
-  h_wo : Q(MultiseriesExpansion.Sorted $val)
+  h_sorted : Q(MultiseriesExpansion.Sorted $val)
   /-- Proof of approximation of the multiseries. -/
   h_approx : Q(MultiseriesExpansion.Approximates $val)
   /-- Proof of well-formedness of the basis. -/
@@ -50,7 +50,7 @@ def const (basis : Q(Basis)) (logBasis : Q(LogBasis $basis)) (c : Q(ℝ))
   logBasis := logBasis
   val := q(MultiseriesExpansion.const $basis $c)
   -- f := q(fun _ ↦ $c)
-  h_wo := q(MultiseriesExpansion.const_Sorted)
+  h_sorted := q(MultiseriesExpansion.const_Sorted)
   h_approx := q(MultiseriesExpansion.const_Approximates $h_basis)
   h_basis := h_basis
   h_logBasis := h_logBasis
@@ -63,7 +63,7 @@ def monomialRpow (basis : Q(Basis)) (logBasis : Q(LogBasis $basis))
   logBasis := logBasis
   val := q(MultiseriesExpansion.monomialRpow $basis $n $r)
   -- f := q(fun x ↦ (List.get $basis $n x)^$r)
-  h_wo := q(MultiseriesExpansion.monomialRpow_Sorted)
+  h_sorted := q(MultiseriesExpansion.monomialRpow_Sorted)
   h_approx := q(MultiseriesExpansion.monomialRpow_Approximates $h_basis)
   h_basis := h_basis
   h_logBasis := h_logBasis
@@ -75,7 +75,7 @@ def monomial (basis : Q(Basis)) (logBasis : Q(LogBasis $basis)) (n : Q(Fin (List
   logBasis := logBasis
   val := q(MultiseriesExpansion.monomial $basis $n)
   -- f := q(List.get $basis $n)
-  h_wo := q(MultiseriesExpansion.monomial_Sorted)
+  h_sorted := q(MultiseriesExpansion.monomial_Sorted)
   h_approx := q(MultiseriesExpansion.monomial_Approximates $h_basis)
   h_basis := h_basis
   h_logBasis := h_logBasis
@@ -86,7 +86,7 @@ def mulConst (x : MS) (c : Q(ℝ)) : MS where
   logBasis := x.logBasis
   val := q(MultiseriesExpansion.mulConst $c $x.val)
   -- f := q($c • $x.f)
-  h_wo := q(MultiseriesExpansion.mulConst_Sorted $x.h_wo)
+  h_sorted := q(MultiseriesExpansion.mulConst_Sorted $x.h_sorted)
   h_approx := q(MultiseriesExpansion.mulConst_Approximates $x.h_approx)
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
@@ -97,7 +97,7 @@ def neg (x : MS) : MS where
   logBasis := x.logBasis
   val := q(MultiseriesExpansion.neg $x.val)
   -- f := q(-$x.f)
-  h_wo := q(MultiseriesExpansion.neg_Sorted $x.h_wo)
+  h_sorted := q(MultiseriesExpansion.neg_Sorted $x.h_sorted)
   h_approx := q(MultiseriesExpansion.neg_Approximates $x.h_approx)
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
@@ -110,7 +110,7 @@ def add (x y : MS) : MS :=
     logBasis := x.logBasis
     val := q(MultiseriesExpansion.add $x.val $y.val)
     -- f := q($x.f + $y.f)
-    h_wo := q(MultiseriesExpansion.add_Sorted $x.h_wo $y.h_wo)
+    h_sorted := q(MultiseriesExpansion.add_Sorted $x.h_sorted $y.h_sorted)
     h_approx := q(MultiseriesExpansion.add_Approximates $x.h_approx $y.h_approx)
     h_basis := x.h_basis
     h_logBasis := x.h_logBasis
@@ -124,7 +124,7 @@ def sub (x y : MS) : MS :=
     logBasis := x.logBasis
     val := q(MultiseriesExpansion.add $x.val (MultiseriesExpansion.neg $y.val))
     -- f := q($x.f - $y.f)
-    h_wo := q(MultiseriesExpansion.sub_Sorted $x.h_wo $y.h_wo)
+    h_sorted := q(MultiseriesExpansion.sub_Sorted $x.h_sorted $y.h_sorted)
     h_approx := q(MultiseriesExpansion.sub_Approximates $x.h_approx $y.h_approx)
     h_basis := x.h_basis
     h_logBasis := x.h_logBasis
@@ -138,7 +138,7 @@ def mul (x y : MS) : MS :=
     logBasis := x.logBasis
     val := q(MultiseriesExpansion.mul $x.val $y.val)
     -- f := q($x.f * $y.f)
-    h_wo := q(MultiseriesExpansion.mul_Sorted $x.h_wo $y.h_wo)
+    h_sorted := q(MultiseriesExpansion.mul_Sorted $x.h_sorted $y.h_sorted)
     h_approx := q(MultiseriesExpansion.mul_Approximates $x.h_basis $x.h_approx $y.h_approx)
     h_basis := x.h_basis
     h_logBasis := x.h_logBasis
@@ -150,8 +150,8 @@ def inv (x : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $x.val)) : MS where
   logBasis := x.logBasis
   val := q(MultiseriesExpansion.inv $x.val)
   -- f := q($x.f⁻¹)
-  h_wo := q(MultiseriesExpansion.inv_Sorted $x.h_wo)
-  h_approx := q(MultiseriesExpansion.inv_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
+  h_sorted := q(MultiseriesExpansion.inv_Sorted $x.h_sorted)
+  h_approx := q(MultiseriesExpansion.inv_Approximates $x.h_basis $x.h_sorted $x.h_approx $h_trimmed)
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
@@ -163,8 +163,8 @@ def div (x y : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $y.val)) : MS :=
     logBasis := x.logBasis
     val := q(MultiseriesExpansion.mul $x.val (MultiseriesExpansion.inv $y.val))
     -- f := q($x.f / $y.f)
-    h_wo := q(MultiseriesExpansion.div_Sorted $x.h_wo $y.h_wo)
-    h_approx := q(MultiseriesExpansion.div_Approximates $x.h_basis $y.h_wo $h_trimmed
+    h_sorted := q(MultiseriesExpansion.div_Sorted $x.h_sorted $y.h_sorted)
+    h_approx := q(MultiseriesExpansion.div_Approximates $x.h_basis $y.h_sorted $h_trimmed
       $x.h_approx $y.h_approx)
     h_basis := x.h_basis
     h_logBasis := x.h_logBasis
@@ -177,8 +177,9 @@ def npow (x : MS) (a : Q(ℕ)) (h_trimmed : Q(MultiseriesExpansion.Trimmed $x.va
   logBasis := x.logBasis
   val := q(MultiseriesExpansion.npow $x.val $a)
   -- f := q($x.f ^ $a)
-  h_wo := q(MultiseriesExpansion.npow_Sorted $x.h_wo)
-  h_approx := q(MultiseriesExpansion.npow_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
+  h_sorted := q(MultiseriesExpansion.npow_Sorted $x.h_sorted)
+  h_approx := q(MultiseriesExpansion.npow_Approximates $x.h_basis $x.h_sorted
+    $x.h_approx $h_trimmed)
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
@@ -189,8 +190,9 @@ def zpow (x : MS) (a : Q(ℤ)) (h_trimmed : Q(MultiseriesExpansion.Trimmed $x.va
   logBasis := x.logBasis
   val := q(MultiseriesExpansion.zpow $x.val $a)
   -- f := q($x.f ^ $a)
-  h_wo := q(MultiseriesExpansion.zpow_Sorted $x.h_wo)
-  h_approx := q(MultiseriesExpansion.zpow_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
+  h_sorted := q(MultiseriesExpansion.zpow_Sorted $x.h_sorted)
+  h_approx := q(MultiseriesExpansion.zpow_Approximates $x.h_basis $x.h_sorted
+    $x.h_approx $h_trimmed)
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
@@ -202,8 +204,8 @@ def rpow (x : MS) (a : Q(ℝ)) (h_trimmed : Q(MultiseriesExpansion.Trimmed $x.va
   logBasis := x.logBasis
   val := q(MultiseriesExpansion.pow $x.val $a)
   -- f := q($x.f ^ $a)
-  h_wo := q(MultiseriesExpansion.pow_Sorted $x.h_wo)
-  h_approx := q(MultiseriesExpansion.pow_Approximates $x.h_basis $x.h_wo $x.h_approx
+  h_sorted := q(MultiseriesExpansion.pow_Sorted $x.h_sorted)
+  h_approx := q(MultiseriesExpansion.pow_Approximates $x.h_basis $x.h_sorted $x.h_approx
     $h_trimmed $h_pos)
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
@@ -221,7 +223,7 @@ def updateBasis (ms : MS) (ex : Q(BasisExtension $ms.basis))
     logBasis := logBasis
     val := q(MultiseriesExpansion.updateBasis $ex $ms.val)
     -- f := ms.f
-    h_wo := q(MultiseriesExpansion.updateBasis_Sorted $ms.h_wo)
+    h_sorted := q(MultiseriesExpansion.updateBasis_Sorted $ms.h_sorted)
     h_approx := q(MultiseriesExpansion.updateBasis_Approximates $h_basis $ms.h_approx)
     h_basis := h_basis
     h_logBasis := h_logBasis
@@ -244,7 +246,7 @@ def insertLastLog (ms : MS) : MetaM MS := do
     basis := basis
     val := q(MultiseriesExpansion.extendBasisEnd (Real.log ∘ $last) $ms.val)
     -- f := ms.f
-    h_wo := q(MultiseriesExpansion.extendBasisEnd_Sorted $ms.h_wo)
+    h_sorted := q(MultiseriesExpansion.extendBasisEnd_Sorted $ms.h_sorted)
     h_approx := q(MultiseriesExpansion.extendBasisEnd_Approximates $h_basis $ms.h_approx)
     h_basis := h_basis
     logBasis := logBasis
@@ -255,27 +257,27 @@ def insertLastLog (ms : MS) : MetaM MS := do
 /-- Given a multiseries representing `f`, returns the multiseries representing `log ∘ f`. -/
 def log (x : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $x.val))
     (h_pos : Q(0 < (MultiseriesExpansion.leadingTerm $x.val).coef))
-    (h_last : Q(∀ a, (MultiseriesExpansion.leadingTerm $x.val).exps.getLast? =
+    (h_last : Q(∀ a, (MultiseriesExpansion.leadingTerm $x.val).monomial.getLast? =
       .some a → a = 0)) : MS where
   basis := q($x.basis)
   val := q(MultiseriesExpansion.log $x.logBasis $x.val)
   -- f := q(Real.log ∘ $x.f)
-  h_wo := q(MultiseriesExpansion.log_Sorted $x.h_logBasis $h_last $x.h_wo)
-  h_approx := q(MultiseriesExpansion.log_Approximates $x.h_basis $x.h_logBasis $x.h_wo $x.h_approx
-    $h_trimmed $h_pos $h_last)
+  h_sorted := q(MultiseriesExpansion.log_Sorted $x.h_logBasis $h_last $x.h_sorted)
+  h_approx := q(MultiseriesExpansion.log_Approximates $x.h_basis $x.h_logBasis $x.h_sorted
+    $x.h_approx $h_trimmed $h_pos $h_last)
   h_basis := x.h_basis
   logBasis := q($x.logBasis)
   h_logBasis := x.h_logBasis
 
 /-- Given a multiseries representing `f`, returns the multiseries representing `exp ∘ f`. -/
 def exp (x : MS)
-    (h_nonpos : Q(¬ Term.FirstIsPos (MultiseriesExpansion.leadingTerm $x.val).exps)) : MS where
+    (h_nonpos : Q(¬ List.FirstIsPos (MultiseriesExpansion.leadingTerm $x.val).monomial)) : MS where
   basis := x.basis
   logBasis := x.logBasis
   val := q(MultiseriesExpansion.exp $x.val)
   -- f := q(Real.exp ∘ $x.f)
-  h_wo := q(MultiseriesExpansion.exp_Sorted $x.h_wo $h_nonpos)
-  h_approx := q(MultiseriesExpansion.exp_Approximates $x.h_basis $x.h_wo $x.h_approx $h_nonpos)
+  h_sorted := q(MultiseriesExpansion.exp_Sorted $x.h_sorted $h_nonpos)
+  h_approx := q(MultiseriesExpansion.exp_Approximates $x.h_basis $x.h_sorted $x.h_approx $h_nonpos)
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
@@ -286,7 +288,7 @@ def replaceFun (ms : MS) (f : Q(ℝ → ℝ)) (h : Q(($ms.val).toFun =ᶠ[Filter
   let ~q($basis_hd :: $basis_tl) := ms.basis | panic! "replaceFun: unexpected basis"
   return {ms with
     val := q(MultiseriesExpansion.replaceFun $ms.val $f)
-    h_wo := q(MultiseriesExpansion.replaceFun_Sorted $ms.h_wo)
+    h_sorted := q(MultiseriesExpansion.replaceFun_Sorted $ms.h_sorted)
     h_approx := q(MultiseriesExpansion.replaceFun_Approximates $h $ms.h_approx)
   }
 

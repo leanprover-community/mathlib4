@@ -102,23 +102,24 @@ def compare (x y : MS)
   let res ← compareLists q($x_exps) q($y_exps')
   match res with
   | .lt h' =>
-    let h : Q(($x.val).leadingTerm.exps < List.replicate (List.length $left) 0 ++
-      ($y.val).leadingTerm.exps) := q($htx ▸ $hty ▸ $h')
+    let h : Q(($x.val).leadingTerm.monomial < List.replicate (List.length $left) 0 ++
+      ($y.val).leadingTerm.monomial) := q($htx ▸ $hty ▸ $h')
     let h_ne_zero : Q(¬ MultiseriesExpansion.IsZero $y.val) ← proveNeZero y
-    return .lt q(MultiseriesExpansion.IsLittleO_of_lt_leadingTerm_left $x.h_wo $y.h_wo
+    return .lt q(MultiseriesExpansion.IsLittleO_of_lt_leadingTerm_left $x.h_sorted $y.h_sorted
       $x.h_approx $y.h_approx $hx_trimmed $hy_trimmed $x.h_basis $h_ne_zero $h)
   | .gt h' =>
-    let h : Q(List.replicate (List.length $left) 0 ++ ($y.val).leadingTerm.exps <
-      ($x.val).leadingTerm.exps) := q($hty ▸ $htx ▸ $h')
+    let h : Q(List.replicate (List.length $left) 0 ++ ($y.val).leadingTerm.monomial <
+      ($x.val).leadingTerm.monomial) := q($hty ▸ $htx ▸ $h')
     let h_ne_zero : Q(¬ MultiseriesExpansion.IsZero $x.val) ← proveNeZero x
-    return .gt q(MultiseriesExpansion.IsLittleO_of_lt_leadingTerm_right $x.h_wo $y.h_wo
+    return .gt q(MultiseriesExpansion.IsLittleO_of_lt_leadingTerm_right $x.h_sorted $y.h_sorted
       $x.h_approx $y.h_approx $hx_trimmed $hy_trimmed $x.h_basis $h_ne_zero $h)
   | .eq h' =>
     let c : Q(ℝ) := q($x_coef / $y_coef)
     let hc' := ← CompareReal.proveNeZero c
     return .eq c q($hc')
-      q((MultiseriesExpansion.IsEquivalent_of_leadingTerm_zeros_append_mul_coef $x.h_wo $y.h_wo
-      $x.h_approx $y.h_approx $hx_trimmed $hy_trimmed $x.h_basis $htx $hty $hc' ($h').symm))
+      q((MultiseriesExpansion.IsEquivalent_of_leadingTerm_zeros_append_mul_coef $x.h_sorted
+        $y.h_sorted $x.h_approx $y.h_approx $hx_trimmed $hy_trimmed $x.h_basis $htx $hty $hc'
+        ($h').symm))
 
 end MS
 
@@ -162,9 +163,9 @@ open MultiseriesExpansion
 lemma WellFormedBasis.insert_pos_exp (left : Basis) (right_hd : ℝ → ℝ) (right_tl : Basis)
     {f' : ℝ → ℝ}
     {ms : MultiseriesExpansion (left ++ right_hd :: right_tl)}
-    (h_wo : ms.Sorted) (h_approx : ms.Approximates)
+    (h_sorted : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : MultiseriesExpansion.Trimmed ms)
-    (h_exps : Term.FirstIsPos (ms.leadingTerm).exps)
+    (h_exps : List.FirstIsPos (ms.leadingTerm).monomial)
     (h_coef : 0 < (ms.leadingTerm).coef)
     (h_basis : WellFormedBasis (left ++ right_hd :: right_tl))
     (h_equiv : ms.toFun ~[atTop] f')
@@ -174,7 +175,7 @@ lemma WellFormedBasis.insert_pos_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
   apply WellFormedBasis.insert h_basis
   · apply Tendsto.comp Real.tendsto_exp_atTop
     apply h_equiv.tendsto_atTop
-    exact MultiseriesExpansion.tendsto_top_of_FirstIsPos h_wo h_approx h_trimmed h_basis rfl
+    exact MultiseriesExpansion.tendsto_top_of_FirstIsPos h_sorted h_approx h_trimmed h_basis rfl
       h_exps h_coef rfl
   · exact log_congr_IsEquivalent_left left h_equiv h_left
   · exact log_congr_IsEquivalent_right' right_hd right_tl h_equiv h_right
@@ -182,9 +183,9 @@ lemma WellFormedBasis.insert_pos_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
 lemma WellFormedBasis.insert_neg_exp (left : Basis) (right_hd : ℝ → ℝ) (right_tl : Basis)
     {f' : ℝ → ℝ}
     {ms : MultiseriesExpansion (left ++ right_hd :: right_tl)}
-    (h_wo : ms.Sorted) (h_approx : ms.Approximates)
+    (h_sorted : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : MultiseriesExpansion.Trimmed ms)
-    (h_exps : Term.FirstIsPos (ms.leadingTerm).exps)
+    (h_exps : List.FirstIsPos (ms.leadingTerm).monomial)
     (h_coef : (ms.leadingTerm).coef < 0)
     (h_basis : WellFormedBasis (left ++ right_hd :: right_tl))
     (h_equiv : ms.toFun ~[atTop] f')
@@ -192,7 +193,7 @@ lemma WellFormedBasis.insert_neg_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
     (h_right : (Real.log ∘ right_hd) =o[atTop] ms.toFun) :
     WellFormedBasis (left ++ (Real.exp ∘ (-f')) :: right_hd :: right_tl) := by
   apply WellFormedBasis.insert_pos_exp _ _ _ (ms := ms.neg)
-    (neg_Sorted h_wo) (neg_Approximates h_approx) (neg_Trimmed h_trimmed)
+    (neg_Sorted h_sorted) (neg_Approximates h_approx) (neg_Trimmed h_trimmed)
   · simpa [neg_leadingTerm]
   · simpa [neg_leadingTerm]
   · exact h_basis

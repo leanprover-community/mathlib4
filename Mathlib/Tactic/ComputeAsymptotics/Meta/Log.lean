@@ -40,7 +40,7 @@ theorem last_exp_zero_aux {basis : Basis} {ms : MultiseriesExpansion basis}
     {coef : ℝ} {exps : List ℝ}
     (h_leading : MultiseriesExpansion.leadingTerm ms = ⟨coef, exps⟩)
     (h_last : ∀ a, List.getLast? exps = .some a → a = 0) :
-    ∀ a, List.getLast? ms.leadingTerm.exps = .some a → a = 0 := by
+    ∀ a, List.getLast? ms.leadingTerm.monomial = .some a → a = 0 := by
   grind
 
 /-- Given a trimmed `ms` returns the MS approximating `log ∘ ms.f`. -/

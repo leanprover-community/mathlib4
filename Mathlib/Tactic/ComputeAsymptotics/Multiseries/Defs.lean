@@ -784,8 +784,8 @@ theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
       rw [h_eq]
       apply h_preserves
       apply Sorted.nil
-    obtain ⟨h_coef_wo, h_comp, h_tl⟩ := Sorted_cons this
-    exact ⟨h_coef_wo, h_comp, fun _ ↦ tl, .nil, rfl, FriendlyOperation.const,
+    obtain ⟨h_coef_sorted, h_comp, h_tl⟩ := Sorted_cons this
+    exact ⟨h_coef_sorted, h_comp, fun _ ↦ tl, .nil, rfl, FriendlyOperation.const,
       fun _ _ ↦ h_tl, hx⟩
   | cons x_exp x_coef x_tl =>
   obtain ⟨hx_coef, hx_comp, op', y, hx_tl, h_friend', h_preserves', hy⟩ :=
@@ -809,7 +809,7 @@ theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
           rw [hx_tl]
           apply h_preserves'
           apply Sorted.nil
-        obtain ⟨h_coef_wo, h_comp, h_tl⟩ := Sorted_cons this
+        obtain ⟨h_coef_sorted, h_comp, h_tl⟩ := Sorted_cons this
         assumption
       | cons y_exp y_coef y_tl =>
         have : Sorted (basis_hd := basis_hd) (.cons y_exp y_coef .nil) := by
@@ -830,7 +830,7 @@ theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
         obtain ⟨rfl, rfl, rfl⟩ := h2
         apply destruct_eq_cons at h1
         rw [h1] at this
-        obtain ⟨h_coef_wo, h_comp, h_tl⟩ := Sorted_cons this
+        obtain ⟨h_coef_sorted, h_comp, h_tl⟩ := Sorted_cons this
         assumption
   apply h_preserves at this
   obtain ⟨T, hT⟩ := FriendlyOperation.destruct h_friend
@@ -846,8 +846,8 @@ theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
   obtain ⟨rfl, rfl, h_tl_eq⟩ := h2
   apply destruct_eq_cons at h1
   rw [h1] at this
-  obtain ⟨h_coef_wo, h_comp, h_tl⟩ := Sorted_cons this
-  refine ⟨h_coef_wo, ?_, ?_⟩
+  obtain ⟨h_coef_sorted, h_comp, h_tl⟩ := Sorted_cons this
+  refine ⟨h_coef_sorted, ?_, ?_⟩
   · simpa [h_tl_eq, leadingExp, FriendlyOperation.head_eq_head h_friend'' hx_tl_head] using h_comp
   simp only [motive']
   use (fun z ↦ if (op' z).leadingExp < x_exp then
@@ -887,8 +887,8 @@ theorem Sorted.coind_friend' {ms : Multiseries basis_hd basis_tl}
   apply Sorted.coind_friend motive h_base
   intro exp coef tl ih
   specialize h_step exp coef tl ih
-  obtain ⟨h_coef_wo, h_comp, c, x, h_tl, h_C, hx⟩ := h_step
-  refine ⟨h_coef_wo, h_comp, op c, x, h_tl, FriendlyOperationClass.FriendlyOperation _,
+  obtain ⟨h_coef_sorted, h_comp, c, x, h_tl, h_C, hx⟩ := h_step
+  refine ⟨h_coef_sorted, h_comp, op c, x, h_tl, FriendlyOperationClass.FriendlyOperation _,
     by grind, hx⟩
 
 end Multiseries
@@ -1009,9 +1009,9 @@ theorem Approximates_cons {exp : ℝ}
   cases h <;> simp at h_ms; grind
 
 theorem replaceFun_Sorted {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
-    {f : ℝ → ℝ} (h_wo : ms.Sorted) :
+    {f : ℝ → ℝ} (h_sorted : ms.Sorted) :
     (ms.replaceFun f).Sorted := by
-  simpa using h_wo
+  simpa using h_sorted
 
 /-- One can replace `f` in `Approximates` with the funcion that eventually equals `f`. -/
 theorem replaceFun_Approximates {ms : MultiseriesExpansion (basis_hd :: basis_tl)} {f : ℝ → ℝ}
