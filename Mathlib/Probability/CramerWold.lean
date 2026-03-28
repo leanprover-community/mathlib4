@@ -1,3 +1,10 @@
+/-
+Copyright (c) 2026 Ivo Malinowski. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Ivo Malinowski
+-/
+module
+
 import Mathlib.Probability.CentralLimitTheorem
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 import Mathlib.Topology.MetricSpace.Pseudo.Defs
