@@ -45,6 +45,7 @@ variable [CategoryStruct.{v} C] [CategoryStruct.{v'} D]
 lemma le_def {P Q : ObjectProperty C} :
     P ≤ Q ↔ ∀ (X : C), P X → Q X := Iff.rfl
 
+@[push]
 lemma not_le_iff_exists {P Q : ObjectProperty C} :
     ¬ P ≤ Q ↔ ∃ (X : C), P X ∧ ¬ Q X := by
   simp [le_def]

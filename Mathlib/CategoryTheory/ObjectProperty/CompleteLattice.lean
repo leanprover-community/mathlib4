@@ -87,6 +87,7 @@ instance [∀ a, (P a).IsClosedUnderIsomorphisms] :
 
 end
 
+@[push]
 lemma neq_bot_iff_exists (P : ObjectProperty C) :
     ¬ P = ⊥ ↔ ∃ X, P X := by
   simp [← le_bot_iff, not_le_iff_exists]

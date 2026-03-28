@@ -83,13 +83,13 @@ lemma triangEnvelopeIter_succ' [IsTriangulated C] (n : ℕ) :
     ← retractClosure_extensionProduct_retractClosure_retractClosure,
     retractClosure_eq_self (P.shiftClosure ℤ).binaryProductsClosure.retractClosure]
 
-lemma triangEnvelopeIter_add [IsTriangulated C] {n m n' : ℕ} (h : n = n' + 1) :
+lemma triangEnvelopeIter_add [IsTriangulated C] {n m n' : ℕ} (h : n = n' + 1 := by lia) :
     P.triangEnvelopeIter (n + m) =
       (extensionProduct (P.triangEnvelopeIter n') (P.triangEnvelopeIter m)).retractClosure := by
   simp only [triangEnvelopeIter, retractClosure_extensionProduct_retractClosure_retractClosure,
     extensionProductIter_add _ h]
 
-lemma triangEnvelopeIter_add' [IsTriangulated C] {n m m' : ℕ} (h : m = m' + 1) :
+lemma triangEnvelopeIter_add' [IsTriangulated C] {n m m' : ℕ} (h : m = m' + 1 := by lia) :
     P.triangEnvelopeIter (n + m) =
       (extensionProduct (P.triangEnvelopeIter n) (P.triangEnvelopeIter m')).retractClosure := by
   simp only [triangEnvelopeIter, retractClosure_extensionProduct_retractClosure_retractClosure,
@@ -101,13 +101,12 @@ lemma monotone_triangEnvelopeIter {Q : ObjectProperty C} (hPQ : P ≤ Q) (n : �
   monotone_retractClosure <| monotone_extensionProductIter
     (monotone_retractClosure <| limitsClosure_monotone _ <| monotone_shiftClosure hPQ) n
 
-lemma monotone'_triangEnvelopeIter {n m : ℕ} (h : n ≤ m) :
+lemma monotone'_triangEnvelopeIter {n m : ℕ} (h : n ≤ m := by lia) :
     P.triangEnvelopeIter n ≤ P.triangEnvelopeIter m := by
   apply monotone_retractClosure
-  by_cases hP : P = ⊥
+  by_cases! hP : P = ⊥
   · simp [hP]
-  · rw [neq_bot_iff_exists] at hP
-    obtain ⟨X, hX⟩ := hP
+  · obtain ⟨X, hX⟩ := hP
     letI : (P.shiftClosure ℤ).binaryProductsClosure.retractClosure.ContainsZero :=
       IsStableUnderRetracts.containsZero _ <| le_retractClosure _ _ <|
         le_limitsClosure _ _ _ (P.le_shiftClosure _ hX)
@@ -115,9 +114,9 @@ lemma monotone'_triangEnvelopeIter {n m : ℕ} (h : n ≤ m) :
 
 lemma le_triangEnvelopeIter (n : ℕ) : P ≤ P.triangEnvelopeIter n :=
   calc
-    P ≤ P.shiftClosure ℤ := by apply le_shiftClosure
-    _ ≤ (P.shiftClosure ℤ).binaryProductsClosure := by apply le_limitsClosure
-    _ ≤ (P.shiftClosure ℤ).binaryProductsClosure.retractClosure  := by apply le_retractClosure
+    P ≤ P.shiftClosure ℤ := le_shiftClosure _ 
+    _ ≤ (P.shiftClosure ℤ).binaryProductsClosure := le_limitsClosure _ _
+    _ ≤ (P.shiftClosure ℤ).binaryProductsClosure.retractClosure := le_retractClosure _
     _ ≤ P.triangEnvelopeIter n := by
       rw [← triangEnvelopeIter_zero]
       exact P.monotone'_triangEnvelopeIter (Nat.zero_le n)
@@ -126,7 +125,7 @@ lemma le_triangEnvelopeIter (n : ℕ) : P ≤ P.triangEnvelopeIter n :=
 can be reached from objects in `P` by shifts, binary products, retracts and at most `n`
 extensions, for some fixed `n`. -/
 @[stacks 09SJ "(2)"]
-def IsStrongTriangulatedGenerator : Prop := ∃ n, ∀ X, P.triangEnvelopeIter n X
+def IsStrongTriangulatedGenerator : Prop := ∃ n, P.triangEnvelopeIter n = ⊤
 
 /-- All objects that can be reached by shifts, binary products, retracts and extensions
 from objects in `P`. This is the smallest triangulated object property closed under retracts

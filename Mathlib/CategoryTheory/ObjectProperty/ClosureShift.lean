@@ -26,8 +26,8 @@ variable {C : Type*} [Category* C] (P : ObjectProperty C)
 instance {A : Type*} [AddMonoid A] [HasShift C A] [P.IsStableUnderShift A] :
     P.retractClosure.IsStableUnderShift A where
   isStableUnderShiftBy a := IsStableUnderShiftBy.mk <| by
-    intro X ⟨Y, hY, ⟨⟨i, r, w⟩⟩⟩
-    exact ⟨Y⟦a⟧, IsStableUnderShiftBy.le_shift Y hY, ⟨⟨i⟦a⟧', r⟦a⟧', by grind⟩⟩⟩
+    intro X ⟨Y, hY, i, r, w⟩
+    exact ⟨Y⟦a⟧, IsStableUnderShiftBy.le_shift Y hY, i⟦a⟧', r⟦a⟧', by grind⟩
 
 instance {A : Type*} [AddGroup A] [HasShift C A] {α : Type*} {J : α → Type*}
     [∀ (i : α), Category (J i)] [P.IsStableUnderShift A] :
