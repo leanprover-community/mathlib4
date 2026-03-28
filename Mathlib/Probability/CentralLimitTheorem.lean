@@ -22,7 +22,7 @@ We prove the central limit theorem in dimension 1.
 * `tendstoInDistribution_inv_sqrt_mul_sum_sub`: Given a sequence of random variables
   `X : ℕ → Ω → ℝ` that are independent, identically distributed with mean `μ` and variance `v`,
   and a random variable `Y : Ω' → ℝ` following `gaussianReal 0 v`, the sequence
-  `n ↦ (√(n)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * μ)` converges to `Y` in distribution.
+  `n ↦ (√n)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * μ)` converges to `Y` in distribution.
 
 ## Tags
 
@@ -119,7 +119,7 @@ private theorem tendstoInDistribution_inv_sqrt_mul_var_mul_sum_sub
 /-- **Central Limit Theorem:** Given a sequence of random variables `X : ℕ → Ω → ℝ` that are
 independent, identically distributed with mean `μ` and variance `v`, and a random variable
 `Y : Ω' → ℝ` following `gaussianReal 0 v`, the sequence
-`n ↦ (√(n)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * μ)` converges to `Y` in distribution. -/
+`n ↦ (√n)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * μ)` converges to `Y` in distribution. -/
 theorem tendstoInDistribution_inv_sqrt_mul_sum_sub
     (hY : HasLaw Y (gaussianReal 0 Var[X 0; P].toNNReal) P')
     (hX : MemLp (X 0) 2 P) (hindep : iIndepFun X P)
