@@ -41,7 +41,6 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
   [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
   {μ : Measure E} [IsFiniteMeasure μ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The characteristic function of a finite measure with a moment of order `n` is `C^n`.
 See `contDiff_charFun'` for the version proving `C^∞` by assuming all moments exist. -/
 @[fun_prop]

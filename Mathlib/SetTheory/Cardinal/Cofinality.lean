@@ -99,7 +99,7 @@ theorem cof_eq_one_iff : cof α = 1 ↔ ∃ x : α, IsTop x := by
   · apply le_antisymm
     · apply (cof_le (s := {t}) _).trans_eq (mk_singleton _)
       rwa [isCofinal_singleton_iff]
-    · rw [one_le_iff_ne_zero, cof_ne_zero_iff]
+    · rw [Cardinal.one_le_iff_ne_zero, cof_ne_zero_iff]
       use t
 
 @[simp]
@@ -115,7 +115,7 @@ theorem cof_ne_one [h : NoTopOrder α] : cof α ≠ 1 :=
   cof_ne_one_iff.2 h
 
 theorem cof_le_one_iff [Nonempty α] : cof α ≤ 1 ↔ ∃ x : α, IsTop x := by
-  rw [le_iff_lt_or_eq, Cardinal.lt_one_iff_zero, cof_eq_one_iff]
+  rw [le_iff_lt_or_eq, Cardinal.lt_one_iff, cof_eq_one_iff]
   simp
 
 theorem one_lt_cof_iff [Nonempty α] : 1 < cof α ↔ NoTopOrder α := by
@@ -162,6 +162,13 @@ theorem cof_lt_aleph0_iff : Order.cof α < ℵ₀ ↔ Order.cof α ≤ 1 := by
 @[simp]
 theorem aleph0_le_cof_iff : ℵ₀ ≤ Order.cof α ↔ 1 < Order.cof α := by
   simp [← not_lt]
+
+@[simp]
+theorem cof_eq_aleph0 [NoMaxOrder α] [Nonempty α] [Countable α] : cof α = ℵ₀ :=
+  ((cof_le_cardinalMk _).trans mk_le_aleph0).antisymm (by simp)
+
+theorem cof_nat : cof ℕ = ℵ₀ := by simp
+theorem cof_int : cof ℤ = ℵ₀ := by simp
 
 end LinearOrder
 end Order
@@ -271,6 +278,10 @@ theorem cof_ne_zero {o} : cof o ≠ 0 ↔ o ≠ 0 :=
   cof_eq_zero.not
 
 @[simp]
+theorem cof_pos {o} : 0 < cof o ↔ 0 < o := by
+  simp [pos_iff_ne_zero]
+
+@[simp]
 theorem cof_zero : cof 0 = 0 :=
   cof_eq_zero.2 rfl
 
@@ -306,13 +317,16 @@ theorem aleph0_le_cof_iff {o : Ordinal} : ℵ₀ ≤ cof o ↔ 1 < cof o := by
 theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsSuccLimit o := by
   rw [aleph0_le_cof_iff, one_lt_cof_iff]
 
+/-- A countable limit ordinal has cofinality `ℵ₀`. -/
+theorem cof_eq_aleph0_of_isSuccLimit {o : Ordinal} (ho : IsSuccLimit o) (ho' : o < ω₁) :
+    cof o = ℵ₀ := by
+  apply ((cof_le_card _).trans _).antisymm
+  · rwa [aleph0_le_cof_iff, one_lt_cof_iff]
+  · rwa [card_le_iff, succ_aleph0, ord_aleph]
+
 @[simp]
-theorem cof_omega0 : cof ω = ℵ₀ := by
-  apply le_antisymm
-  · rw [← card_omega0]
-    exact cof_le_card ω
-  · rw [aleph0_le_cof_iff, one_lt_cof_iff]
-    exact isSuccLimit_omega0
+theorem cof_omega0 : cof ω = ℵ₀ :=
+  cof_eq_aleph0_of_isSuccLimit isSuccLimit_omega0 omega0_lt_omega_one
 
 @[deprecated (since := "2026-02-18")] alias cof_eq_one_iff_is_succ := cof_eq_one_iff
 
@@ -361,9 +375,8 @@ theorem lift_cof_iSup_add_one [Small.{u} β] {f : β → Ordinal} (hf : StrictMo
         Cardinal.lift_umax.{_, u + 1}, Cardinal.lift_umax.{_, u + 1}, this]
       simp
     · intro ⟨b, hb⟩
-      rw [mem_Iio, lt_ciSup_iff' (bddAbove_of_small _)] at hb
+      rw [mem_Iio, Ordinal.lt_iSup_add_one_iff] at hb
       obtain ⟨i, hi⟩ := hb
-      rw [lt_add_one_iff] at hi
       exact ⟨_, Set.mem_range_self i, hi⟩
   · rw [mem_Iio]
     exact (lt_add_one _).trans_le <| le_ciSup  (bddAbove_of_small _) _
@@ -426,8 +439,7 @@ theorem sSup_add_one_lt_of_lt_cof {s : Set Ordinal.{u}} {a : Ordinal.{u}}
     simp
   rw [← this, sSup_range]
   apply lt_of_le_of_ne
-  · rw [Ordinal.iSup_le_iff]
-    simp [hs]
+  · simp [hs]
   · rintro rfl
     rw [← lift_cof, ← Cardinal.lift_lt.{_, u + 2}, Cardinal.lift_lift,
       lift_cof_iSup_add_one fun _ ↦ by simp, cof_Iio, ← lift_cof, cof_type,
@@ -464,8 +476,7 @@ theorem iSup_lt_of_lt_cof {f : α → Ordinal.{u}} {a : Ordinal.{u}}
 theorem cof_lift_iSup_add_one_le [Small.{u} β] (f : β → Ordinal.{u}) :
     cof (lift.{v} (⨆ i, f i + 1)) ≤ Cardinal.lift.{u} (#β) := by
   by_contra! hf
-  apply (lift_iSup_add_one_lt_of_lt_cof hf _).false
-  exact fun i ↦ (lt_add_one _).trans_le (le_ciSup (bddAbove_of_small _) i)
+  exact (lift_iSup_add_one_lt_of_lt_cof hf <| Ordinal.lt_iSup_add_one _).false
 
 theorem cof_iSup_add_one_le (f : α → Ordinal.{u}) : cof (⨆ i, f i + 1) ≤ #α := by
   simpa using cof_lift_iSup_add_one_le f
