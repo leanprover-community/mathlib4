@@ -482,9 +482,9 @@ theorem edgeSet_ssubset_edgeSet : edgeSet G₁ ⊂ edgeSet G₂ ↔ G₁ < G₂ 
 theorem edgeSet_injective : Injective (edgeSet : SimpleGraph V → Set (Sym2 V)) :=
   (edgeSetEmbedding V).injective
 
-@[gcongr] alias ⟨_, edgeSet_mono⟩ := edgeSet_subset_edgeSet
+alias ⟨_, edgeSet_mono⟩ := edgeSet_subset_edgeSet
 
-@[gcongr] alias ⟨_, edgeSet_strict_mono⟩ := edgeSet_ssubset_edgeSet
+alias ⟨_, edgeSet_strict_mono⟩ := edgeSet_ssubset_edgeSet
 
 attribute [mono] edgeSet_mono edgeSet_strict_mono
 
