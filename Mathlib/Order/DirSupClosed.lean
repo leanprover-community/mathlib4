@@ -161,42 +161,50 @@ theorem directedOn_union' (hn : (s ∪ t).Nonempty) (h : DirectedOn (· ≤ ·) 
     · aesop
     · exact .inr ⟨h, ht⟩
 
-theorem DirSupClosed.union (hs : DirSupClosed s) (ht : DirSupClosed t) :
-    DirSupClosed (s ∪ t) := by
-  intro d hdu hd₀ hd₁ a ha
+theorem DirSupClosedOn.union (hDL : IsLowerSet D)
+    (hs : DirSupClosedOn D s) (ht : DirSupClosedOn D t) : DirSupClosedOn D (s ∪ t) := by
+  intro d hD hdu hd₀ hd₁ a ha
   have hdst : d ∩ s ∪ d ∩ t = d := by grind
   rw [← hdst] at hd₀ hd₁
   wlog h : DirectedOn (· ≤ ·) (d ∩ s) ∧ (d ∩ s).Nonempty
   · rw [union_comm] at hdu hd₀ hd₁ hdst ⊢
-    exact this ht hs hdu hd₀ hd₁ ha hdst <| (directedOn_union' hd₀ hd₁).resolve_right h
+    exact this hDL ht hs hD hdu hd₀ hd₁ ha hdst <| (directedOn_union' hd₀ hd₁).resolve_right h
   · obtain ⟨hds, hn⟩ := h
     by_cases had : a ∈ lowerBounds (upperBounds (d ∩ s))
-    · exact .inl <| hs inter_subset_right hn hds ⟨fun b hb ↦ ha.1 hb.1, had⟩
+    · exact .inl <| hs (hDL inter_subset_left hD) inter_subset_right hn hds
+        ⟨fun b hb ↦ ha.1 hb.1, had⟩
     · simp only [lowerBounds, mem_setOf_eq, not_forall] at had
       obtain ⟨b, hb, hb'⟩ := had
       have key : {x ∈ d | ¬ x ≤ b} ⊆ d ∩ t :=
         fun a ⟨had, hab⟩ ↦ ⟨had, (hdu had).resolve_left fun has ↦ hab <| hb ⟨had, has⟩⟩
-      have Hn : {x ∈ d | ¬ x ≤ b}.Nonempty := by
+      obtain ⟨w, hw⟩ : {x ∈ d | ¬ x ≤ b}.Nonempty := by
         simp_rw [Set.Nonempty, mem_setOf]
         by_contra! ht
         apply hb' (ha.2 <| hdst ▸ _)
         rintro c (hc | hc)
         · exact hb hc
         · exact ht _ hc.1
-      apply Or.inr <| ht (key.trans inter_subset_right) Hn _ _
-      · intro x hx y hy
-        obtain ⟨z, hz, hz'⟩ := hd₁ _ (.inr (key hx)) _ (.inr (key hy))
+      refine Or.inr <| ht (hDL inter_subset_left hD) (key.trans inter_subset_right)
+        ⟨w, hw⟩ (fun x hx y hy ↦ ?_) ?_
+      · obtain ⟨z, hz, hz'⟩ := hd₁ _ (.inr (key hx)) _ (.inr (key hy))
         rw [hdst] at hz
         exact ⟨z, ⟨⟨hz, mt hz'.1.trans hx.2⟩, hz'⟩⟩
       · refine ⟨fun x hx ↦ ha.1 hx.1, fun x hx ↦ ha.2 fun y hy ↦ ?_⟩
         by_cases hyb : y ≤ b
-        · obtain ⟨w, hw⟩ := Hn
-          obtain ⟨z, hz, hxz, hyz⟩ := hd₁ _ (hdst ▸ hy) _ (.inr (key hw))
+        · obtain ⟨z, hz, hxz, hyz⟩ := hd₁ _ (hdst ▸ hy) _ (.inr (key hw))
           exact hxz.trans (hx ⟨hdst ▸ hz, fun hzb ↦ hw.2 (hyz.trans hzb)⟩)
         · exact hx ⟨hy, hyb⟩
 
+theorem DirSupInaccOn.inter (hDL : IsLowerSet D)
+    (hs : DirSupInaccOn D s) (ht : DirSupInaccOn D t) : DirSupInaccOn D (s ∩ t) := by
+  rw [← dirSupClosedOn_compl, compl_inter]; exact hs.compl.union hDL ht.compl
 
-#exit
+theorem DirSupClosed.union (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClosed (s ∪ t) :=
+  .of_univ (hs.to_univ.union isLowerSet_univ ht.to_univ)
+
+theorem DirSupInacc.inter (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∩ t) :=
+  .of_univ (hs.to_univ.inter isLowerSet_univ ht.to_univ)
+
 lemma IsUpperSet.dirSupClosed (hs : IsUpperSet s) : DirSupClosed s :=
   fun _d hds ⟨_b, hb⟩ _ _a ha ↦ hs (ha.1 hb) <| hds hb
 
