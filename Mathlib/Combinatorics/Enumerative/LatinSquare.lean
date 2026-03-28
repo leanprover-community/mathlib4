@@ -150,7 +150,7 @@ def renameLatinRectangle
     have g' : Fintype.card n = Fintype.card n' := Fintype.card_congr g
     have h' : Fintype.card α = Fintype.card β := Fintype.card_congr h
     have k' := A.exactly_n_symbols
-    omega,
+    lia,
   once_per_row i' :=
     h.bijective.comp (A.once_per_row (f.symm i') |>.comp g.symm.bijective)
   distinct_col_entries := by
@@ -170,7 +170,7 @@ def renameLatinRectangle
     have ineq := A.m_le_n
     have f' : Fintype.card m = Fintype.card m' := Fintype.card_congr f
     have g' : Fintype.card n = Fintype.card n' := Fintype.card_congr g
-    omega
+    lia
   }
 
 /-- An equivalence of Latin Rectangles -/
@@ -283,7 +283,7 @@ lemma latin_rect_hall_property
     {n : Type*} [Fintype n] [DecidableEq n]
     {k : Type*} [Fintype k]
     {B : n → Finset α}
-    (h₁ : Fintype.card k < Fintype.card n := by omega)
+    (h₁ : Fintype.card k < Fintype.card n := by lia)
     (h₂ : ∀ j, Finset.card (B j) = Fintype.card n - Fintype.card k)
     (h₃ : ∀ x, ∀ (t : Finset n),
     Finset.card {j | j ∈ t ∧ x ∈ B j} ≤ Fintype.card n - Fintype.card k) :
@@ -299,11 +299,11 @@ lemma latin_rect_hall_property
     simp [hl]
   by_contra hc
   simp only [ge_iff_le, not_le] at hc
-  have _ : NeZero ((Fintype.card n) - (Fintype.card k) ) := {out := by omega}
+  have _ : NeZero ((Fintype.card n) - (Fintype.card k) ) := {out := by lia}
   have hcount := exists_larger_subset h₂ hc
   obtain ⟨ x, hx ⟩ := hcount
   specialize h₃ x s
-  omega
+  lia
 
 /-- For a k × n Latin rectangle, the set of entries in each column has cardinality k. -/
 lemma col_card
@@ -376,7 +376,7 @@ theorem latin_rectangle_extends_one_row
     {n : Type*} [Fintype n]
     {k : Type*} [Fintype k] [Nonempty k]
     (A : LatinRectangle k n α)
-    (h : Fintype.card k < Fintype.card n := by omega)
+    (h : Fintype.card k < Fintype.card n := by lia)
     {k' : Type*} [Fintype k']
     (ι : k ↪ k')
     (h₂ : Fintype.card k' = Fintype.card k + 1) :
@@ -476,7 +476,7 @@ theorem latin_rectangle_extends_one_row
       simp [exists_or_forall_not]
     have h_card := Finset.card_union As Bs
     simp [h_union_card, h_As_card, h_intersect] at h_card
-    omega
+    lia
   have pre_property_H : ∀ x, ∀ (t : Finset n),
     (Finset.card {j | j ∈ t ∧ x ∈ B j}) ≤ Fintype.card n - Fintype.card k := by
     intro x t
@@ -580,7 +580,7 @@ theorem latin_rectangle_extends_one_row
         intro _
         exact ExistsUnique.unique (y₁ := a1) (y₂ := a2) h
           (by simpa using if_h₁) (by simpa using if_h₂)
-    m_le_n := by omega
+    m_le_n := by lia
   }
   use A'
   unfold IsSubrect
@@ -630,7 +630,7 @@ theorem latin_rectangle_extends_to_latin_square
     {n : Type*} [Fintype n]
     {k : Type*} [Fintype k] [Nonempty k]
     (A : LatinRectangle k n α)
-    (h : Fintype.card k ≤ Fintype.card n := by omega) :
+    (h : Fintype.card k ≤ Fintype.card n := by lia) :
     ∃ (A' : LatinRectangle n n α), IsSubrect A A' := by
   induction h_gap : (Fintype.card n - Fintype.card k) using
     Nat.strong_induction_on generalizing k A with
@@ -647,11 +647,11 @@ theorem latin_rectangle_extends_to_latin_square
       have hk'_card := Fintype.card_option (α := k)
       replace hk' := hk'.symm
       simp only [hk'] at hk'_card
-      have hk'_le : Fintype.card k ≤ Fintype.card k' := by omega
-      have h_k_lt_n : Fintype.card k < Fintype.card n := by omega
-      have h_k'_le_n : Fintype.card k' ≤ Fintype.card n := by omega
+      have hk'_le : Fintype.card k ≤ Fintype.card k' := by lia
+      have h_k_lt_n : Fintype.card k < Fintype.card n := by lia
+      have h_k'_le_n : Fintype.card k' ≤ Fintype.card n := by lia
       set m := Fintype.card n - Fintype.card k' with hm
-      have hm_lt : m < a := by omega
+      have hm_lt : m < a := by lia
       have ι_h := Function.Embedding.nonempty_of_card_le hk'_le
       let ι' : k ↪ k' := Classical.choice ι_h
       have H := latin_rectangle_extends_one_row A h_k_lt_n ι' hk'_card
