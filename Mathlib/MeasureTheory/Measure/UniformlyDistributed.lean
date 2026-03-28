@@ -128,7 +128,7 @@ theorem isUniformlyDistributed_eq_smul (μ ν : Measure X) [OpensMeasurableSpace
         ((liminf (fun r => (μ (ball hX.some r))⁻¹ * ν (ball hX.some r)) (𝓝[>] 0)) * (μ U)) := by
         simp only [smul_apply, smul_eq_mul]
         gcongr
-        · exact liminf_le_limsup (by isBoundedDefault) (by isBoundedDefault)
+        · exact liminf_le_limsup
         · exact isUniformlyDistributed_le_smul ν μ hU hX.some
       _ = (liminf (fun r => (μ (ball hX.some r))⁻¹ * ν (ball hX.some r)) (𝓝[>] 0))⁻¹ *
         ((liminf (fun r => (μ (ball hX.some r))⁻¹ * ν (ball hX.some r)) (𝓝[>] 0)) * (μ U)) := by
