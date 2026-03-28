@@ -142,11 +142,6 @@ theorem isClosed_iff_bsup :
 theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a :=
   SuccOrder.isSuccLimit_of_mem_frontier ha
 
-@[deprecated Order.isNormal_iff_strictMono_and_continuous (since := "2025-08-21")]
-theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u}) :
-    IsNormal f ↔ StrictMono f ∧ Continuous f :=
-  Order.isNormal_iff_strictMono_and_continuous
-
 theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     IsNormal (enumOrd s) ↔ IsClosed s := by
   have Hs := enumOrd_strictMono hs
@@ -195,7 +190,7 @@ theorem isAcc_iff (o : Ordinal) (S : Set Ordinal) : o.IsAcc S ↔
     constructor
     · rintro rfl
       obtain ⟨x, hx⟩ := h (Iio 1) (Iio_mem_nhds zero_lt_one)
-      exact hx.2 <| lt_one_iff_zero.mp hx.1.1
+      exact hx.2 <| lt_one_iff.mp hx.1.1
     · intro p plt
       obtain ⟨x, hx⟩ := h (Ioo p (o + 1)) <| Ioo_mem_nhds plt (lt_succ o)
       use x
@@ -252,7 +247,7 @@ theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
         rw [zero_add] at ho
         specialize h (Iio ⟨1, ho⟩) (Iio_mem_nhds (Subtype.mk_lt_mk.mpr zero_lt_one))
         obtain ⟨_, h⟩ := h
-        exact h.2 <| Subtype.mk_eq_mk.mpr (lt_one_iff_zero.mp h.1.1)
+        exact h.2 <| Subtype.mk_eq_mk.mpr (lt_one_iff.mp h.1.1)
       have plim : IsSuccLimit p := by
         contrapose! h
         obtain ⟨q, hq⟩ := ((zero_or_succ_or_isSuccLimit p).resolve_left ppos).resolve_right h
@@ -275,7 +270,7 @@ theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
       rintro rfl
       obtain ⟨x, hx⟩ := h Set.univ univ_mem
       have : ↑x < o := x.2
-      simp_rw [hp, zero_add, lt_one_iff_zero] at this
+      simp_rw [hp, zero_add, lt_one_iff] at this
       exact hx.2 (SetCoe.ext this)
     obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨0, pos_iff_ne_zero.mpr ppos⟩
     obtain ⟨x, hx⟩ := h (Ioi ⟨l, hl.1.trans hpo⟩) (Ioi_mem_nhds hl.1)

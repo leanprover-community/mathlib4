@@ -112,13 +112,7 @@ private lemma comm_succ (n : ℕ) :
     exact Finset.sum_congr rfl (fun x hx ↦ by simp [h_succ_comp_δ_castSucc_succ, β, γ₃, γ₄])
   have h₁ : Disjoint (Finset.image γ₁ Sᶜ) (Finset.image γ₂ S) := by
     rw [Finset.disjoint_iff_ne]
-    simp only [Finset.compl_filter, not_lt, Finset.mem_image, Finset.mem_filter, Finset.mem_univ,
-      true_and, Prod.exists, ne_eq, forall_exists_index, and_imp, Prod.forall, Prod.mk.injEq,
-      not_and, γ₁, S, γ₂]
-    rintro _ _ ⟨a, _⟩ ⟨b, _⟩ h₁ rfl rfl _ _ ⟨a', _⟩ ⟨b', _⟩ h₂ rfl rfl h₃ h₄
-    simp only [Fin.castSucc_mk, Fin.mk_le_mk, Fin.mk_lt_mk,
-      Fin.succ_mk, Fin.mk.injEq] at h₁ h₂ h₃ h₄
-    grind
+    grind [Finset.mem_compl]
   have h₂ : Disjoint (Finset.image γ₃ .univ) (Finset.image γ₄ .univ) := by
     rw [Finset.disjoint_iff_ne]
     grind
