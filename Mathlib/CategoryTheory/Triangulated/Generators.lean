@@ -127,6 +127,9 @@ extensions, for some fixed `n`. -/
 @[stacks 09SJ "(2)"]
 def IsStrongTriangulatedGenerator : Prop := ∃ n, P.triangEnvelopeIter n = ⊤
 
+lemma isStrongTriangulatedGenerator_iff :
+    P.IsStrongTriangulatedGenerator ↔ ∃ n, P.triangEnvelopeIter n = ⊤ := Iff.rfl
+
 /-- All objects that can be reached by shifts, binary products, retracts and extensions
 from objects in `P`. This is the smallest triangulated object property closed under retracts
 that contains `P`, see `ObjectProperty.triangEnvelope_le_iff`. -/
@@ -199,12 +202,15 @@ lemma triangEnvelope_le_iff {Q : ObjectProperty C} [Q.IsStableUnderRetracts] [Q.
 /-- An object property `P` is called a classical generator, if every object can be reached
 from objects in `P` by shifts, binary products, retracts and extensions. -/
 @[stacks 09SJ "(1)"]
-def IsClassicalTriangulatedGenerator : Prop := ∀ X, P.triangEnvelope X
+def IsClassicalTriangulatedGenerator : Prop := P.triangEnvelope = ⊤
+
+lemma isClassicalTriangulatedGenerator_iff :
+    P.IsClassicalTriangulatedGenerator ↔ P.triangEnvelope = ⊤ := Iff.rfl
 
 lemma IsStrongTriangulatedGenerator.isClassicalTriangulatedGenerator
     (h : P.IsStrongTriangulatedGenerator) : P.IsClassicalTriangulatedGenerator := by
   obtain ⟨n, hn⟩ := h
-  intro X
-  exact (P.triangEnvelopeIter_le_triangEnvelope n) _ (hn X)
+  rw [isClassicalTriangulatedGenerator_iff, eq_top_iff]
+  exact hn ▸ (P.triangEnvelopeIter_le_triangEnvelope n)
 
 end CategoryTheory.ObjectProperty
