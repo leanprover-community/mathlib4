@@ -74,7 +74,6 @@ lemma single_eq_indicator (b : α) : single i b = indicator {i} (fun _ _ => b) :
 theorem indicator_indicator [DecidableEq ι] :
     indicator t (fun i _ ↦ indicator s f i) =
       indicator (s ∩ t) (fun i hi ↦ f i (Finset.mem_of_mem_inter_left hi)) := by
-  ext i
   grind [indicator_apply]
 
 theorem eq_indicator_iff {g : ι → α} :

@@ -86,10 +86,10 @@ lemma isIso_map_fourδ₄Toδ₃ (h : (X.H n₁).map (twoδ₁Toδ₀ f₃ f₄ 
   apply ShortComplex.isIso_homologyMap_of_epi_of_isIso_of_mono'
   · exact (X.exact₂ f₃ f₄ f₃₄ h₃₄ _).epi_f h
   · dsimp
-    convert inferInstanceAs (IsIso ((X.H n₂).map (𝟙 _)))
+    convert (inferInstance : IsIso ((X.H n₂).map (𝟙 _)))
     cat_disch
   · dsimp
-    convert inferInstanceAs (Mono ((X.H n₃).map (𝟙 (mk₁ f₁))))
+    convert (inferInstance : Mono ((X.H n₃).map (𝟙 (mk₁ f₁))))
     cat_disch
 
 lemma isIso_map_fourδ₄Toδ₃_of_isZero (h : IsZero ((X.H n₁).obj (mk₁ f₄)) := by cat_disch)
@@ -116,10 +116,10 @@ lemma isIso_map_fourδ₁Toδ₀ (h : (X.H n₂).map (twoδ₂Toδ₁ f₂ f₃ 
     IsIso (X.map f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) n₀ n₁ n₂ hn₁ hn₂) := by
   apply ShortComplex.isIso_homologyMap_of_epi_of_isIso_of_mono'
   · dsimp
-    convert inferInstanceAs (Epi ((X.H n₀).map (𝟙 _)))
+    convert (inferInstance : Epi ((X.H n₀).map (𝟙 _)))
     cat_disch
   · dsimp
-    convert inferInstanceAs (IsIso ((X.H n₁).map (𝟙 _)))
+    convert (inferInstance : IsIso ((X.H n₁).map (𝟙 _)))
     cat_disch
   · exact (X.exact₂ f₂ f₃ f₂₃ h₂₃ n₂).mono_g h
 

@@ -4,7 +4,7 @@ public import Aesop.Frontend.Attribute
 public import Aesop.Frontend.Command
 import all Mathlib.Tactic.Linter.Whitespace
 public import Mathlib.Tactic.Linter.Whitespace
-import Mathlib.Tactic.Lemma
+import Mathlib.Init
 public import Lean.Elab.Command
 public meta import Lean.Meta.Tactic.TryThis
 public import Mathlib.Util.ParseCommand

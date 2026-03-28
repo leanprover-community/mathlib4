@@ -78,8 +78,8 @@ instance normedAlgebra : NormedAlgebra ℚ_[p] (PadicAlgCl p) := spectralNorm.no
 theorem spectralNorm_eq (x : PadicAlgCl p) : spectralNorm ℚ_[p] (PadicAlgCl p) x = ‖x‖ := rfl
 
 /-- The norm on `PadicAlgCl p` extends the `p`-adic norm on `ℚ_[p]`. -/
-@[simp] theorem norm_extends (x : ℚ_[p]) : ‖(x : PadicAlgCl p)‖ = ‖x‖ :=
-  spectralAlgNorm_extends (K := ℚ_[p]) (L := PadicAlgCl p) _
+theorem norm_extends (x : ℚ_[p]) : ‖(x : PadicAlgCl p)‖ = ‖x‖ := by
+  simp
 
 /-- The underlying metric space of `PadicAlgCl p` is ultrametric. -/
 instance isUltrametricDist : IsUltrametricDist (PadicAlgCl p) :=
@@ -103,7 +103,6 @@ theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 /
 
 open MonoidWithZeroHom.ValueGroup₀
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `PadicAlgCl p` has rank one. -/
 instance : RankOne (PadicAlgCl.valued p).v where
@@ -166,7 +165,6 @@ theorem valuation_p : Valued.v (p : ℂ_[p]) = 1 / (p : ℝ≥0) := by
 
 open MonoidWithZeroHom.ValueGroup₀
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `ℂ_[p]` has rank one. -/
 instance : RankOne (PadicComplex.valued p).v where

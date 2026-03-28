@@ -140,7 +140,7 @@ theorem theta_le_log4_mul_x {x : ℝ} (hx : 0 ≤ x) : θ x ≤ log 4 * x := by
   rw [theta_eq_log_primorial]
   trans log (4 ^ ⌊x⌋₊)
   · apply log_le_log <;> norm_cast
-    exacts [primorial_pos _, primorial_le_4_pow _]
+    exacts [primorial_pos _, primorial_le_four_pow _]
   rw [Real.log_pow, mul_comm]
   gcongr
   exact floor_le hx
