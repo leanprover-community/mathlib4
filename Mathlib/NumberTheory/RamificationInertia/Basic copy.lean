@@ -444,19 +444,39 @@ noncomputable def equiv [Algebra.QuasiFinite R S] : p.primesOver S ≃ MaximalSp
 
 noncomputable instance : Algebra S (p.Fiber S) := Algebra.TensorProduct.rightAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 theorem equiv_symm_apply [Algebra.QuasiFinite R S] (q : MaximalSpectrum (p.Fiber S)) :
     (equiv p).symm q = q.1.comap (algebraMap S (p.Fiber S)) := by
   rfl
 
+open TensorProduct
+
 set_option backward.isDefEq.respectTransparency false in
-theorem foo3 [Algebra.QuasiFinite R S] [Module.Flat R S] (q : MaximalSpectrum (p.Fiber S)) :
+theorem foo3 (q : MaximalSpectrum (p.Fiber S)) :
     letI r := q.1.comap (algebraMap S (p.Fiber S))
     letI Sr := Localization.AtPrime r
     letI A := Sr ⧸ p.map (algebraMap R Sr)
     Module.length (Localization.AtPrime p) (Localization.AtPrime q.1) =
       Module.length (Localization.AtPrime p) A := by
   apply LinearEquiv.length_eq
+  let A := S ⧸ p.map (algebraMap R S)
+  let Rp := Localization.AtPrime p
+  have key : p.map (algebraMap R S) ≤ RingHom.ker (algebraMap S (p.Fiber S)) := by
+    rw [map_le_iff_le_comap, RingHom.ker_eq_comap_bot, comap_comap, ← IsScalarTower.algebraMap_eq,
+      IsScalarTower.algebraMap_eq R p.ResidueField (p.Fiber S), ← comap_comap]
+    exact p.ker_algebraMap_residueField.symm.trans_le (comap_mono bot_le)
+  let f : A →ₐ[S] p.Fiber S := Ideal.Quotient.liftₐ _ (IsScalarTower.toAlgHom S S (p.Fiber S)) key
+  let := f.toAlgebra
+  have : IsScalarTower S A (p.Fiber S) := IsScalarTower.of_algebraMap_eq' rfl
+  let q' := q.1.comap (algebraMap A (p.Fiber S))
+  let e1 : p.Fiber S ≃ₐ[S] Localization (Algebra.algebraMapSubmonoid A p.primeCompl) := by
+    refine (Algebra.TensorProduct.commRight R S p.ResidueField).symm.trans ?_
+    refine (Algebra.TensorProduct.tensorQuotientEquiv S Rp S (IsLocalRing.maximalIdeal Rp)).trans ?_
+    sorry
+  -- -- now e2 gets us to (S⧸pS)ₚ
+  let e2 := IsLocalization.localizationLocalizationAtPrimeIsoLocalization
+    (Algebra.algebraMapSubmonoid (S ⧸ p.map (algebraMap R S)) p.primeCompl) (q.1.map e1)
+  -- now rephrase `e2` as follows:
+  let e3 : Localization.AtPrime q' ≃ₐ[A] Localization.AtPrime (map e1 q.asIdeal) := sorry
   sorry
 
 set_option backward.isDefEq.respectTransparency false in
@@ -495,6 +515,7 @@ theorem sum_ramification_inertia'
       ∑ q : p.primesOver S, p.ramificationIdx q.1 *
         Module.finrank p.ResidueField q.1.ResidueField := by
   rw [← sum_ramification_inertia]
+  -- might need to also assume `[Domain R]` (to get connected base)?
   sorry
 
 end Ideal
