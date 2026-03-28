@@ -214,7 +214,6 @@ theorem dvd_pow_sub_one_of_dvd {r : R} {a b : ℕ} (h : a ∣ b) :
   obtain ⟨n, rfl⟩ := h
   exact pow_one_sub_dvd_pow_mul_sub_one r a n
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dvd_pow_pow_sub_self_of_dvd {r : R} {p a b : ℕ} (h : a ∣ b) :
     r ^ p ^ a - r ∣ r ^ p ^ b - r := by
   by_cases hp₀ : p = 0
@@ -340,13 +339,8 @@ protected lemma sub_dvd_pow_sub_pow : x - y ∣ x ^ n - y ^ n := by
   · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_left h.le _
     exact (Nat.sub_eq_zero_of_le this).symm ▸ dvd_zero (x - y)
 
-@[deprecated (since := "2025-08-23")] alias nat_sub_dvd_pow_sub_pow := Nat.sub_dvd_pow_sub_pow
-
 lemma sub_one_dvd_pow_sub_one : x - 1 ∣ x ^ n - 1 := by
   simpa using x.sub_dvd_pow_sub_pow 1 n
-
-@[deprecated (since := "2025-08-23")]
-alias nat_pow_one_sub_dvd_pow_mul_sub_one := Nat.sub_one_dvd_pow_sub_one
 
 lemma pow_sub_pow_dvd_pow_sub_pow (hmk : m ∣ k) : x ^ m - y ^ m ∣ x ^ k - y ^ k := by
   obtain ⟨n, rfl⟩ := hmk; simpa [pow_mul] using (x ^ m).sub_dvd_pow_sub_pow (y ^ m) n

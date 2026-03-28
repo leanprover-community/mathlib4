@@ -188,13 +188,9 @@ def pellZd (n : ℕ) : ℤ√(d a1) :=
 theorem re_pellZd (n : ℕ) : (pellZd a1 n).re = xn a1 n :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias pellZd_re := re_pellZd
-
 @[simp]
 theorem im_pellZd (n : ℕ) : (pellZd a1 n).im = yn a1 n :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias pellZd_im := im_pellZd
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -261,16 +257,14 @@ theorem n_lt_xn (n) : n < xn a1 n :=
 theorem x_pos (n) : 0 < xn a1 n :=
   lt_of_le_of_lt (Nat.zero_le n) (n_lt_xn a1 n)
 
--- TODO: fix non-terminal simp
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-set_option linter.flexible false in
 theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
     b ≤ pellZd a1 n → ∃ n, b = pellZd a1 n
-  | 0, _ => fun h1 _ hl => ⟨0, @Zsqrtd.le_antisymm _ (dnsq a1) _ _ hl h1⟩
+  | 0, _ => fun h1 _ hl => ⟨0, le_antisymm hl h1⟩
   | n + 1, b => fun h1 hp h =>
     have a1p : (0 : ℤ√(d a1)) ≤ ⟨a, 1⟩ := trivial
-    have am1p : (0 : ℤ√(d a1)) ≤ ⟨a, -1⟩ := show (_ : Nat) ≤ _ by simp; exact Nat.pred_le _
+    have am1p : (0 : ℤ√(d a1)) ≤ ⟨a, -1⟩ := show (_ : Nat) ≤ _ by simp [d]
     have a1m : (⟨a, 1⟩ * ⟨a, -1⟩ : ℤ√(d a1)) = 1 := isPell_norm.1 (isPell_one a1)
     if ha : (⟨↑a, 1⟩ : ℤ√(d a1)) ≤ b then
       let ⟨m, e⟩ :=
@@ -323,7 +317,6 @@ theorem eq_pellZd (b : ℤ√(d a1)) (b1 : 1 ≤ b) (hp : IsPell b) : ∃ n, b =
         Zsqrtd.le_of_le_le (Int.ofNat_le_ofNat_of_le <| le_of_lt <| n_lt_xn _ _)
           (Int.natCast_nonneg _)
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Every solution to **Pell's equation** is recursively obtained from the initial solution
@@ -553,7 +546,6 @@ theorem xn_modEq_x2n_add_lem (n j) : xn a1 n ∣ d a1 * yn a1 n * (yn a1 n * xn 
     apply add_eq_of_eq_sub' (Eq.symm (pell_eqz a1 n))
   rw [h2] at h1; rw [h1, mul_assoc]; exact dvd_mul_right _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem xn_modEq_x2n_add (n j) : xn a1 (2 * n + j) + xn a1 j ≡ 0 [MOD xn a1 n] := by
   rw [two_mul, add_assoc, xn_add, add_assoc, ← zero_add 0]
   refine (dvd_mul_right (xn a1 n) (xn a1 (n + j))).modEq_zero_nat.add ?_
@@ -561,7 +553,6 @@ theorem xn_modEq_x2n_add (n j) : xn a1 (2 * n + j) + xn a1 j ≡ 0 [MOD xn a1 n]
   exact
     ((dvd_mul_right _ _).mul_left _).modEq_zero_nat.add (xn_modEq_x2n_add_lem _ _ _).modEq_zero_nat
 
-set_option backward.isDefEq.respectTransparency false in
 theorem xn_modEq_x2n_sub_lem {n j} (h : j ≤ n) : xn a1 (2 * n - j) + xn a1 j ≡ 0 [MOD xn a1 n] := by
   have h1 : xz a1 n ∣ d a1 * yz a1 n * yz a1 (n - j) + xz a1 j := by
     rw [yz_sub _ h, mul_sub_left_distrib, sub_add_eq_add_sub]
@@ -577,7 +568,6 @@ theorem xn_modEq_x2n_sub_lem {n j} (h : j ≤ n) : xn a1 (2 * n - j) + xn a1 j �
     (dvd_mul_right _ _).modEq_zero_nat.add
       (Int.natCast_dvd_natCast.1 <| by simpa [xz, yz] using h1).modEq_zero_nat
 
-set_option backward.isDefEq.respectTransparency false in
 theorem xn_modEq_x2n_sub {n j} (h : j ≤ 2 * n) : xn a1 (2 * n - j) + xn a1 j ≡ 0 [MOD xn a1 n] :=
   (le_total j n).elim (xn_modEq_x2n_sub_lem a1) fun jn => by
     have : 2 * n - j + j ≤ n + j := by
@@ -619,7 +609,6 @@ theorem eq_of_xn_modEq_lem2 {n} (h : 2 * xn a1 n = xn a1 (n + 1)) : a = 2 ∧ n 
         h
   cases this; simp at h; exact ⟨h.symm, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
     ∀ {j}, i < j → j ≤ 2 * n → j ≠ n → ¬(a = 2 ∧ n = 1 ∧ i = 0 ∧ j = 2) →
         xn a1 i % xn a1 n < xn a1 j % xn a1 n
@@ -721,7 +710,6 @@ theorem eq_of_xn_modEq {i j n} (i2n : i ≤ 2 * n) (j2n : j ≤ 2 * n)
     fun ij =>
     (eq_of_xn_modEq_le a1 ij i2n h.symm fun ⟨a2, n1, j0, i2⟩ => (ntriv a2 n1).right i2 j0).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_xn_modEq' {i j n} (ipos : 0 < i) (hin : i ≤ n) (j4n : j ≤ 4 * n)
     (h : xn a1 j ≡ xn a1 i [MOD xn a1 n]) : j = i ∨ j + i = 4 * n :=
   have i2n : i ≤ 2 * n := by apply le_trans hin; rw [two_mul]; apply Nat.le_add_left

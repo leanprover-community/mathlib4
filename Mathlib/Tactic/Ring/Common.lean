@@ -9,6 +9,8 @@ public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Pow
 public meta import Mathlib.Tactic.NormNum.Result
 
+meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+
 /-!
 # `ring`-like tactics
 
@@ -77,7 +79,7 @@ This feature wasn't needed yet, so it's not implemented yet.
 ring, semiring, exponent, power
 -/
 
-@[expose] public meta section
+public meta section
 
 assert_not_exists IsOrderedMonoid
 
@@ -197,7 +199,7 @@ meta inductive ExSumNat : (e : Q(ℕ)) → Type
   | add {a b : Q(ℕ)} : ExProdNat a → ExSumNat b → ExSumNat q($a + $b)
 end
 
--- TODO: this should be somewheVre else
+-- TODO: this should be somewhere else
 instance : Ord Rat where
   compare a b := if a ≤ b then if b ≤ a then .eq else .lt else .gt
 

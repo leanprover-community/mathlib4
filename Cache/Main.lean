@@ -39,6 +39,7 @@ Commands:
 Options:
   --repo=OWNER/REPO  Override the repository to fetch/push cache from
   --staging-dir=<output-directory> Required for 'stage', 'stage!', 'unstage' and 'put-staged': staging directory.
+  --skip-proofwidgets  Skip fetching/building ProofWidgets release assets during 'get'
 
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
@@ -83,6 +84,10 @@ def parseNamedOpt (opt : String) (args : List String) : IO (Option String) := do
     return some val.toString
   return none
 
+/-- Parses a boolean `--foo` flag. -/
+def parseFlagOpt (opt : String) (args : List String) : Bool :=
+  args.elem s!"--{opt}"
+
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
   if args.isEmpty then
@@ -96,6 +101,7 @@ def main (args : List String) : IO Unit := do
   -- parse relevant options, ignore the rest
   let repo? ← parseNamedOpt "repo" options
   let stagingDir? ← parseNamedOpt "staging-dir" options
+  let skipProofWidgets := parseFlagOpt "skip-proofwidgets" options
 
   let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
   if roots.isEmpty then do
@@ -112,12 +118,12 @@ def main (args : List String) : IO Unit := do
   if leanTarArgs.contains (args.headD "") then validateLeanTar
   let get (args : List String) (force := false) (decompress := true) := do
     let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
-    getFiles repo? hashMap force force goodCurl decompress
+    getFiles repo? hashMap force force goodCurl decompress skipProofWidgets
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
     let repo := repo?.getD MATHLIBREPO
-    putFiles repo (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
+    putFiles repo (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getUploadAuth)
   let stage outDir (unpackedOnly := true) := do
     stageFiles outDir (← pack (verbose := true) (unpackedOnly := unpackedOnly))
   let unstage (overwrite := false) := do
@@ -128,7 +134,8 @@ def main (args : List String) : IO Unit := do
     if !(←stagingDir.isDir) then IO.println "--staging-dir must be a directory" return
     else
       let fileSet ← getFilesWithExtension stagingDir "ltar"
-      putFilesAbsolute repo fileSet (tempConfigFilePath := stagingDir / "curl.config") (overwrite := false) (← getToken)
+      putFilesAbsolute repo fileSet (tempConfigFilePath := stagingDir / "curl.config")
+        (overwrite := false) (← getUploadAuth)
 
   match args with
   | "get"  :: args => get args
@@ -155,10 +162,10 @@ def main (args : List String) : IO Unit := do
     putStaged stagingDir?.get!
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap false (← getToken)
+    commit hashMap false (← getUploadAuth)
   | ["commit!"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap true (← getToken)
+    commit hashMap true (← getUploadAuth)
   | ["collect"] => IO.println "TODO"
   | "lookup" :: _ => lookup hashMap roots.keys
   | _ => println help

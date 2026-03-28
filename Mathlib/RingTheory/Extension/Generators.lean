@@ -161,7 +161,6 @@ def self : Generators R S S where
   σ' := X
   aeval_val_σ' := aeval_X _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The extension `R[X₁,...,Xₙ] → S` given a family of generators. -/
 @[simps]
 noncomputable
@@ -171,7 +170,8 @@ def toExtension : Extension R S where
   algebraMap_σ := by simp
 
 /-- Transport generators along an algebra isomorphism. -/
-def ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
+noncomputable def ofAlgEquiv
+    (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
     Generators R T ι where
   val := e ∘ P.val
   σ' := P.σ ∘ e.symm
@@ -211,7 +211,6 @@ end Localization
 
 variable {ι' : Type*} {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,
 we may construct the family of generators `R[X, Y] → T`. -/
 @[simps val, simps -isSimp σ]
@@ -302,7 +301,6 @@ variable {σ : Type*} {I : Ideal (MvPolynomial σ R)}
   (s : MvPolynomial σ R ⧸ I → MvPolynomial σ R)
   (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The naive generators for a quotient `R[Xᵢ] ⧸ I`.
 If the definitional equality of the section matters, it can be explicitly provided.
@@ -601,7 +599,6 @@ lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R
     AlgHomClass.toRingHom_toAlgHom, AlgHom.ker_coe_equiv, ← RingHom.ker_eq_comap_bot,
     ← ker_eq_ker_aeval_val]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     P.ker.map (Q.toComp P).toAlgHom = RingHom.ker (Q.ofComp P).toAlgHom := by
   letI : DecidableEq (ι' →₀ ℕ) := Classical.decEq _

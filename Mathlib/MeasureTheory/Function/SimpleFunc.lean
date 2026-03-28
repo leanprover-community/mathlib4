@@ -696,7 +696,7 @@ instance instOrderTop [LE β] [OrderTop β] : OrderTop (α →ₛ β) where
   le_top _ _ := le_top
 
 @[to_additive]
-instance [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] :
+instance [CommMonoid β] [Preorder β] [IsOrderedMonoid β] :
     IsOrderedMonoid (α →ₛ β) where
   mul_le_mul_left _ _ h _ _ := mul_le_mul_left (h _) _
 
@@ -1178,7 +1178,7 @@ protected theorem map {g : β → γ} (hf : f.FinMeasSupp μ) (hg : g 0 = 0) : (
 
 theorem of_map {g : β → γ} (h : (f.map g).FinMeasSupp μ) (hg : ∀ b, g b = 0 → b = 0) :
     f.FinMeasSupp μ :=
-  flip lt_of_le_of_lt h <| measure_mono <| support_subset_comp @(hg) _
+  flip lt_of_le_of_lt h <| measure_mono <| support_subset_comp @hg _
 
 theorem map_iff {g : β → γ} (hg : ∀ {b}, g b = 0 ↔ b = 0) :
     (f.map g).FinMeasSupp μ ↔ f.FinMeasSupp μ :=
