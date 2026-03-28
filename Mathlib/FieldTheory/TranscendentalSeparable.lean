@@ -5,6 +5,8 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.TensorProduct.DirectLimitFG
 public import Mathlib.FieldTheory.Perfect
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
@@ -19,6 +21,8 @@ variable (R : Type u) (A : Type v) [CommRing R] [CommRing A] [Algebra R A]
 
 @[expose] public section
 
+open TensorProduct
+
 class Algebra.IsSeparablyGenerated : Prop where
   isSeparable' : ∃ (ι : Type v) (f : ι → A),
     IsTranscendenceBasis R f ∧
@@ -27,6 +31,38 @@ class Algebra.IsSeparablyGenerated : Prop where
 class Algebra.IsTranscendentalSeparable : Prop where
   forall_isSeparablyGenerated : ∀ (A' : Subalgebra R A),
     Algebra.EssFiniteType R A' → Algebra.IsSeparablyGenerated R A'
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If `R ⊗[k] S` is nonreduced, then this already occurs on finitely generated `k`-subalgebras
+of `R` and `S`. -/
+lemma exists_subalgebra_fg_of_not_isReduced_tensorProduct
+    (k R S : Type*) [Field k] [CommRing R] [CommRing S] [Algebra k R] [Algebra k S]
+    (h : ¬ IsReduced (R ⊗[k] S)) :
+    ∃ R' : Subalgebra k R, ∃ S' : Subalgebra k S, R'.FG ∧ S'.FG ∧ ¬ IsReduced (R' ⊗[k] S') := by
+  obtain ⟨z, hz_ne, ⟨n, hn⟩⟩ := exists_isNilpotent_of_not_isReduced h
+  rcases TensorProduct.Algebra.exists_of_fg z with ⟨R', fgR, ⟨y, hy⟩⟩
+  rcases TensorProduct.Algebra.exists_of_fg ((TensorProduct.comm k _ _) y) with ⟨S', fgS, ⟨x, hx⟩⟩
+  use R', S', fgR, fgS
+  rw [isReduced_iff, not_forall₂]
+  use (TensorProduct.comm k _ _) x
+  refine exists_prop.mpr ⟨?_, ?_⟩
+  · use n
+    have hx' : (Algebra.TensorProduct.rTensor _ S'.val) x =
+      (Algebra.TensorProduct.comm k _ _) y := hx
+    have : x ^ n = 0 := by
+      rw [← map_eq_zero_iff (Algebra.TensorProduct.rTensor R' S'.val)
+        (Module.Flat.rTensor_preserves_injective_linearMap S'.val.toLinearMap
+        Subtype.val_injective), map_pow, hx', ← map_pow,
+        map_eq_zero_iff _ (AlgEquiv.injective _), ← map_eq_zero_iff
+        (Algebra.TensorProduct.rTensor S R'.val) (Module.Flat.rTensor_preserves_injective_linearMap
+        R'.val.toLinearMap Subtype.val_injective), map_pow, ← hn, ← hy]
+      rfl
+    rwa [← map_eq_zero_iff (Algebra.TensorProduct.comm k _ _) (AlgEquiv.injective _), map_pow]
+      at this
+  · rw [LinearEquiv.map_eq_zero_iff]
+    by_contra eq0
+    rw [eq0, map_zero, eq_comm, LinearEquiv.map_eq_zero_iff] at hx
+    simp [hx, map_zero, eq_comm, hz_ne] at hy
 
 lemma tensorProduct_of_isSeparablyGenerated {k : Type*} [Field k]
     {S : Type*} [CommRing S] [IsReduced S] [Algebra k S] {K : Type*} [Field K] [Algebra k K] :
