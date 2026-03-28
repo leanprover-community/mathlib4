@@ -142,39 +142,21 @@ end StrongDual
 namespace WeakDual
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [Module 𝕜 E]
+variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [Module 𝕜 M]
 
 /-- For vector spaces `E`, there is a canonical map `WeakDual 𝕜 E → StrongDual 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. Here it is implemented as the inverse of the linear
 equivalence `StrongDual.toWeakDual` in the other direction. -/
-def toStrongDual : WeakDual 𝕜 E ≃ₗ[𝕜] StrongDual 𝕜 E :=
+def toStrongDual : WeakDual 𝕜 M ≃ₗ[𝕜] StrongDual 𝕜 M :=
   StrongDual.toWeakDual.symm
 
 @[simp]
-theorem toStrongDual_apply (x : WeakDual 𝕜 E) (y : E) : (toStrongDual x) y = x y := rfl
+theorem toStrongDual_apply (x : WeakDual 𝕜 M) (y : M) : (toStrongDual x) y = x y := rfl
 
-theorem coe_toStrongDual (x' : WeakDual 𝕜 E) : (toStrongDual x' : E → 𝕜) = x' := rfl
+theorem coe_toStrongDual (x' : WeakDual 𝕜 M) : (toStrongDual x' : M → 𝕜) = x' := rfl
 
-theorem toStrongDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongDual y' ↔ x' = y' :=
+theorem toStrongDual_inj (x' y' : WeakDual 𝕜 M) : toStrongDual x' = toStrongDual y' ↔ x' = y' :=
   (LinearEquiv.injective toStrongDual).eq_iff
-
-section Polar
-
-variable (𝕜)
-
-/-- The polar set `polar 𝕜 s` of `s : Set E` seen as a subset of the dual of `E` with the
-weak-star topology is `WeakDual.polar 𝕜 s`. -/
-def polar (s : Set E) : Set (WeakDual 𝕜 E) := toStrongDual ⁻¹' (StrongDual.polar 𝕜) s
-
-theorem polar_def (s : Set E) : polar 𝕜 s = { f : WeakDual 𝕜 E | ∀ x ∈ s, ‖f x‖ ≤ 1 } := rfl
-
-/-- The polar `polar 𝕜 s` of a set `s : E` is a closed subset when the weak star topology
-is used. -/
-theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
-  simp only [polar_def, setOf_forall]
-  exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
-
-end Polar
 
 section Bornology
 
@@ -337,7 +319,21 @@ theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : �
 -/
 
 section PolarSets
+
 variable (𝕜)
+variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [Module 𝕜 M]
+
+/-- The polar set `polar 𝕜 s` of `s : Set E` seen as a subset of the dual of `E` with the
+weak-star topology is `WeakDual.polar 𝕜 s`. -/
+def polar (s : Set M) : Set (WeakDual 𝕜 M) := toStrongDual ⁻¹' (StrongDual.polar 𝕜) s
+
+theorem polar_def (s : Set M) : polar 𝕜 s = { f : WeakDual 𝕜 M | ∀ x ∈ s, ‖f x‖ ≤ 1 } := rfl
+
+/-- The polar `polar 𝕜 s` of a set `s : E` is a closed subset when the weak star topology
+is used. -/
+theorem isClosed_polar (s : Set M) : IsClosed (polar 𝕜 s) := by
+  simp only [polar_def, setOf_forall]
+  exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 
 /-- Polar sets of neighborhoods of the origin are bounded in the weak dual. -/
 theorem isBounded_polar {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E)) : IsBounded (polar 𝕜 s) :=
