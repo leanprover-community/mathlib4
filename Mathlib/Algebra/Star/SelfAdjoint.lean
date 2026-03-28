@@ -230,15 +230,11 @@ protected theorem ofNat (n : ℕ) [n.AtLeastTwo] : IsSelfAdjoint (ofNat(n) : R) 
 @[aesop safe apply, grind ←]
 protected theorem ringInverse {a : A} [Semiring A] [StarRing A]
     (ha : IsSelfAdjoint a) : IsSelfAdjoint a⁻¹ʳ := by
-  rw [isSelfAdjoint_iff] at ha ⊢
-  rw [← Ring.inverse_star, ha]
+  rw [isSelfAdjoint_iff, ← Ring.inverse_star, ha.star_eq]
 
 theorem _root_.isSelfAdjoint_ringInverse_iff {a : A} [Semiring A] [StarRing A] (ha : IsUnit a) :
-    IsSelfAdjoint a⁻¹ʳ ↔ IsSelfAdjoint a := by
-  refine ⟨fun h => ?_, fun h => h.ringInverse⟩
-  grind =>
-    have : a = Ring.inverse (Ring.inverse a)
-    instantiate only [IsSelfAdjoint.ringInverse]
+    IsSelfAdjoint a⁻¹ʳ ↔ IsSelfAdjoint a :=
+  ⟨fun h => by grind [h.ringInverse], fun h => h.ringInverse⟩
 
 end Semiring
 

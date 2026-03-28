@@ -77,10 +77,9 @@ lemma _root_.Units.isStrictlyPositive_of_le [LE A] [Monoid A] [Zero A] {a : Aˣ}
     (h : (0 : A) ≤ a) : IsStrictlyPositive (a : A) := a.isStrictlyPositive_iff.mpr h
 
 @[nontriviality]
-lemma isStrictlyPositive_of_subsingleton [PartialOrder A] [Monoid A] [Zero A] [Subsingleton A]
-    {a : A} : IsStrictlyPositive a := by
-  rw [IsStrictlyPositive.iff_of_unital]
-  exact ⟨by simp, isUnit_of_subsingleton _⟩
+protected lemma of_subsingleton [PartialOrder A] [Monoid A] [Zero A] [Subsingleton A]
+    {a : A} : IsStrictlyPositive a :=
+  iff_of_unital.mpr ⟨by simp, isUnit_of_subsingleton _⟩
 
 end basic
 
@@ -98,20 +97,17 @@ lemma _root_.IsUnit.isStrictlyPositive_star_left_conjugate_iff {u a : A} (hu : I
   simpa using hu.star.isStrictlyPositive_star_right_conjugate_iff
 
 @[aesop safe apply]
-theorem conjugate_of_isSelfAdjoint {a b : A} (hb : IsUnit b) (hb₂ : IsSelfAdjoint b)
-    (ha : IsStrictlyPositive a) : IsStrictlyPositive (b * a * b) := by
-  grind =>
-    have : star b = b
-    instantiate [IsUnit.isStrictlyPositive_star_right_conjugate_iff]
+theorem conjugate_of_isSelfAdjoint (a b : A) (hb : IsUnit b) (hb₂ : IsSelfAdjoint b := by cfc_tac)
+    (ha : IsStrictlyPositive a := by cfc_tac) : IsStrictlyPositive (b * a * b) := by
+  grind [hb.isStrictlyPositive_star_right_conjugate_iff]
 
 @[grind =]
-theorem _root_.isStrictlyPositive_iff_conjugate_of_isSelfAdjoint {a b : A} (hb : IsUnit b)
-    (hb₂ : IsSelfAdjoint b) : IsStrictlyPositive (b * a * b) ↔ IsStrictlyPositive a := by
-  refine ⟨fun ha => ?_, fun ha => ha.conjugate_of_isSelfAdjoint hb hb₂⟩
+theorem _root_.isStrictlyPositive_iff_conjugate_of_isSelfAdjoint (a b : A) (hb : IsUnit b)
+    (hb₂ : IsSelfAdjoint b := by cfc_tac) :
+    IsStrictlyPositive (b * a * b) ↔ IsStrictlyPositive a := by
+  refine ⟨fun ha => ?_, fun ha => ha.conjugate_of_isSelfAdjoint _ _ hb⟩
   have h₁ : IsStrictlyPositive (Ring.inverse b * (b * a * b) * Ring.inverse b) :=
-    ha.conjugate_of_isSelfAdjoint (isUnit_ringInverse.mpr hb) (by cfc_tac)
-  have h₂ : IsStrictlyPositive ((Ring.inverse b * b) * a * (b * Ring.inverse b)) := by
-    grind only
+    ha.conjugate_of_isSelfAdjoint _ _ (isUnit_ringInverse.mpr hb)
   grind [Ring.inverse_mul_cancel, Ring.mul_inverse_cancel]
 
 end StarOrderedRing
