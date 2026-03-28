@@ -44,7 +44,7 @@ namespace IsStrictlyPositive
 
 section basic
 
-@[grind =]
+@[grind _=_]
 lemma iff_of_unital [LE A] [Monoid A] [Zero A] {a : A} :
     IsStrictlyPositive a ↔ 0 ≤ a ∧ IsUnit a := Iff.rfl
 
