@@ -163,7 +163,7 @@ theorem transpose_hadamard [Mul α] (A B : Matrix m n α) : (A ⊙ B)ᵀ = Aᵀ 
   ext fun _ _ => rfl
 
 theorem conjTranspose_hadamard [Mul α] [StarMul α] (A B : Matrix m n α) : (A ⊙ B)ᴴ = Bᴴ ⊙ Aᴴ :=
-  ext fun _ _ => star_mul _ _
+  ext fun _ _ => StarMul.star_mul _ _
 
 section single
 
