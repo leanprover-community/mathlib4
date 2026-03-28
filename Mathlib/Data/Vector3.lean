@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Fin.Fin2
 public import Mathlib.Util.Notation3
-public import Mathlib.Tactic.TypeStar
 
 /-!
 # Alternate definition of `Vector` in terms of `Fin2`

@@ -20,8 +20,8 @@ presheaves `Cᵒᵖ ⥤ A` and show that it is a sheaf when `G` is a sheaf.
 TODO:
 - turn both `presheafHom` and `sheafHom` into bifunctors
 - for a sheaf of types `F`, the `sheafHom` functor from `F` is right-adjoint to
-the product functor with `F`, i.e. for all `X` and `Y`, there is a
-natural bijection `(X ⨯ F ⟶ Y) ≃ (X ⟶ sheafHom F Y)`.
+  the product functor with `F`, i.e. for all `X` and `Y`, there is a
+  natural bijection `(X ⨯ F ⟶ Y) ≃ (X ⟶ sheafHom F Y)`.
 - use these results in order to show that the category of sheaves of types is Cartesian closed
 
 -/
@@ -234,8 +234,8 @@ def sheafHom'Iso (F G : Sheaf J A) :
 this `sheafHom F G` is the sheaf of types which sends an object `X : C`
 to the type of morphisms between the "restrictions" of `F` and `G` to the category `Over X`. -/
 def sheafHom (F G : Sheaf J A) : Sheaf J (Type _) where
-  val := sheafHom' F G
-  cond := (Presheaf.isSheaf_of_iso_iff (sheafHom'Iso F G)).2 (G.2.hom F.1)
+  obj := sheafHom' F G
+  property := (Presheaf.isSheaf_of_iso_iff (sheafHom'Iso F G)).2 (G.2.hom F.1)
 
 /-- The sections of the sheaf `sheafHom F G` identify to morphisms `F ⟶ G`. -/
 def sheafHomSectionsEquiv (F G : Sheaf J A) :

@@ -115,12 +115,16 @@ def _root_.CategoryTheory.InducedCategory.homAddEquiv
 
 end InducedCategory
 
-instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory :=
-  inferInstanceAs (Preadditive (InducedCategory _ ObjectProperty.FullSubcategory.obj))
+instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory where
+  homGroup P Q := {
+      -- Note: Add zero field explicitly for a better transparency of definitional properties
+      zero := Z.homMk 0
+      __ := InducedCategory.homEquiv.addCommGroup }
+  add_comp _ _ _ _ _ _ := by ext; apply add_comp
+  comp_add _ _ _ _ _ _ := by ext; apply comp_add
 
-instance (X : C) : AddCommGroup (End X) := by
-  dsimp [End]
-  infer_instance
+instance (X : C) : AddCommGroup (End X) :=
+  inferInstanceAs <| AddCommGroup (X ⟶ X)
 
 /-- Composition by a fixed left argument as a group homomorphism -/
 def leftComp {P Q : C} (R : C) (f : P ⟶ Q) : (Q ⟶ R) →+ (P ⟶ R) :=

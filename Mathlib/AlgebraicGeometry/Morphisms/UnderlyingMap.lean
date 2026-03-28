@@ -9,8 +9,7 @@ public import Mathlib.Topology.LocalAtTarget
 public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 
 /-!
-
-## Properties on the underlying functions of morphisms of schemes.
+# Properties on the underlying functions of morphisms of schemes
 
 This file includes various results on properties of morphisms of schemes that come from properties
 of the underlying map of topological spaces, including
@@ -63,6 +62,7 @@ class Surjective : Prop where
 lemma surjective_eq_topologically :
     @Surjective = topologically Function.Surjective := by ext; exact surjective_iff _
 
+@[grind .]
 lemma Scheme.Hom.surjective (f : X ⟶ Y) [Surjective f] : Function.Surjective f :=
   Surjective.surj
 
@@ -133,6 +133,11 @@ def Scheme.Hom.cover {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X
   .singleton f <| by
     rw [singleton_mem_precoverage_iff]
     exact ⟨f.surjective, hf⟩
+
+@[simp]
+lemma Scheme.Hom.presieve₀_cover {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S)
+    (hf : P f) [Surjective f] : (f.cover hf).presieve₀ = Presieve.singleton f := by
+  simp [cover]
 
 instance {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f)
     [Surjective f] : Unique (Scheme.Hom.cover f hf).I₀ :=

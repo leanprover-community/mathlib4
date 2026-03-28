@@ -88,6 +88,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Mul
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Pow
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Powser
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term.Predicates
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 public import Mathlib.Tactic.ComputeDegree
 public import Mathlib.Tactic.CongrExclamation
@@ -100,7 +101,9 @@ public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.DSimpPercent
 public import Mathlib.Tactic.DeclarationNames
+public import Mathlib.Tactic.DefEqAbuse
 public import Mathlib.Tactic.DefEqTransformations
 public import Mathlib.Tactic.DepRewrite
 public import Mathlib.Tactic.DeprecateTo
@@ -169,6 +172,7 @@ public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Linarith.Frontend
 public import Mathlib.Tactic.Linarith.Lemmas
+public import Mathlib.Tactic.Linarith.NNRealPreprocessor
 public import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
 public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
 public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
@@ -306,6 +310,7 @@ public import Mathlib.Tactic.Simproc.Divisors
 public import Mathlib.Tactic.Simproc.ExistsAndEq
 public import Mathlib.Tactic.Simproc.Factors
 public import Mathlib.Tactic.Simproc.FinsetInterval
+public import Mathlib.Tactic.Simproc.VecPerm
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.SplitIfs
@@ -329,8 +334,10 @@ public import Mathlib.Tactic.ToExpr
 public import Mathlib.Tactic.ToFun
 public import Mathlib.Tactic.ToLevel
 public import Mathlib.Tactic.Trace
+public import Mathlib.Tactic.Translate.Attributes
 public import Mathlib.Tactic.Translate.Core
 public import Mathlib.Tactic.Translate.GuessName
+public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.TagUnfoldBoundary
 public import Mathlib.Tactic.Translate.ToAdditive
 public import Mathlib.Tactic.Translate.ToDual

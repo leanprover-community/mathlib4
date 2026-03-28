@@ -245,7 +245,7 @@ lemma _root_.IsCancelSMul.stabilizer_eq_bot [IsCancelSMul G α] (a : α) :
 @[to_additive]
 lemma _root_.isCancelSMul_iff_stabilizer_eq_bot :
     IsCancelSMul G α ↔ (∀ a : α, stabilizer G a = ⊥) := by
-  simp [isCancelSMul_iff_eq_one_of_smul_eq, Subgroup.eq_bot_iff_forall, forall_swap (α := G)]
+  simp [isCancelSMul_iff_eq_one_of_smul_eq, Subgroup.eq_bot_iff_forall, forall_comm (α := G)]
 
 /-- If the stabilizer of `a` is `S`, then the stabilizer of `g • a` is `gSg⁻¹`. -/
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
@@ -395,7 +395,6 @@ end MulAction
 section
 variable (R M : Type*) [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [IsTorsionFree R M]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {M} in
 lemma Module.stabilizer_units_eq_bot_of_ne_zero {x : M} (hx : x ≠ 0) :
     MulAction.stabilizer Rˣ x = ⊥ := by

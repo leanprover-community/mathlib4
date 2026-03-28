@@ -39,7 +39,6 @@ lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by grind
 
 lemma even_or_odd (n : ℤ) : Even n ∨ Odd n := by grind
 
-set_option backward.isDefEq.respectTransparency false in
 lemma even_or_odd' (n : ℤ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
   simpa only [two_mul, exists_or, Odd, Even] using even_or_odd n
 

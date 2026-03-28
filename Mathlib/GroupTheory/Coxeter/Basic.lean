@@ -472,7 +472,6 @@ lemma listTake_succ_alternatingWord (i j : B) (p : ℕ) (k : ℕ) (h : k + 1 < 2
   · simp [(by rw [Nat.not_even_iff_odd] at h_even; exact Odd.add_one h_even : Even (k + 1)),
       alternatingWord_succ', h_even]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
     π (alternatingWord i i' m) = (if Even m then 1 else s i') * (s i * s i') ^ (m / 2) := by
   induction m with
