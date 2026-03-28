@@ -78,7 +78,7 @@ theorem Ideal.dvd_span_singleton {I : Ideal A} {x : A} : I ∣ Ideal.span {x} �
   Ideal.dvd_iff_le.trans (Ideal.span_le.trans Set.singleton_subset_iff)
 
 theorem Ideal.isPrime_of_prime {P : Ideal A} (h : Prime P) : IsPrime P := by
-  refine ⟨?_, fun hxy => ?_⟩
+  refine .of_comm ?_ fun hxy => ?_
   · rintro rfl
     rw [← Ideal.one_eq_top] at h
     exact h.not_unit isUnit_one

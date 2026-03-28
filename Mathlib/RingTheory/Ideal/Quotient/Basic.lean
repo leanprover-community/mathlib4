@@ -85,18 +85,16 @@ lemma mk_singleton_self (x : R) [(Ideal.span {x}).IsTwoSided] : mk (Ideal.span {
 
 variable (I)
 
-instance noZeroDivisors [hI : I.IsPrime] : NoZeroDivisors (R ⧸ I) where
+instance noZeroDivisors [hI : I.IsCompletelyPrime] : NoZeroDivisors (R ⧸ I) where
     eq_zero_or_eq_zero_of_mul_eq_zero {a b} := Quotient.inductionOn₂' a b fun {_ _} hab =>
       (hI.mem_or_mem (eq_zero_iff_mem.1 hab)).elim (Or.inl ∘ eq_zero_iff_mem.2)
         (Or.inr ∘ eq_zero_iff_mem.2)
 
-set_option backward.isDefEq.respectTransparency false in
-instance isDomain [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
+instance isDomain [hI : I.IsCompletelyPrime] : IsDomain (R ⧸ I) :=
   let _ := Quotient.nontrivial_iff.mpr hI.1
   NoZeroDivisors.to_isDomain _
 
-set_option backward.isDefEq.respectTransparency false in
-theorem isDomain_iff_prime : IsDomain (R ⧸ I) ↔ I.IsPrime := by
+theorem isDomain_iff_isCompletelyPrime : IsDomain (R ⧸ I) ↔ I.IsCompletelyPrime := by
   refine ⟨fun H => ⟨zero_ne_one_iff.1 ?_, fun {x y} h => ?_⟩, fun h => inferInstance⟩
   · haveI : Nontrivial (R ⧸ I) := ⟨H.2.1⟩
     exact zero_ne_one
@@ -104,7 +102,10 @@ theorem isDomain_iff_prime : IsDomain (R ⧸ I) ↔ I.IsPrime := by
     haveI := @IsDomain.to_noZeroDivisors (R ⧸ I) _ H
     exact eq_zero_or_eq_zero_of_mul_eq_zero h
 
-set_option backward.isDefEq.respectTransparency false in
+theorem isDomain_iff_prime {R : Type*} [CommRing R] (I : Ideal R) :
+    IsDomain (R ⧸ I) ↔ I.IsPrime :=
+  (isDomain_iff_isCompletelyPrime I).trans isCompletelyPrime_iff_isPrime
+
 variable {I} in
 theorem exists_inv [hI : I.IsMaximal] :
     ∀ {a : R ⧸ I}, a ≠ 0 → ∃ b : R ⧸ I, a * b = 1 := by

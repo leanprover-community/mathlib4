@@ -50,7 +50,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
     (homogeneous_mem_or_mem :
       ∀ {x y : A}, IsHomogeneousElem 𝒜 x → IsHomogeneousElem 𝒜 y → x * y ∈ I → x ∈ I ∨ y ∈ I) :
     Ideal.IsPrime I :=
-  ⟨I_ne_top, by
+  .of_comm I_ne_top <| by
     intro x y hxy
     by_contra! ⟨rid₁, rid₂⟩
     classical
@@ -130,7 +130,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
           with h | h
         · apply neither_mem.1 h
         · apply neither_mem.2 h
-      exact notMem_I mem_I⟩
+      exact notMem_I mem_I
 
 theorem Ideal.IsHomogeneous.isPrime_iff {I : Ideal A} (h : I.IsHomogeneous 𝒜) :
     I.IsPrime ↔

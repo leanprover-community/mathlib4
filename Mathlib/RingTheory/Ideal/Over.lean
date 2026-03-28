@@ -97,8 +97,12 @@ abbrev under : Ideal A := Ideal.comap (algebraMap A B) P
 
 theorem under_def : P.under A = Ideal.comap (algebraMap A B) P := rfl
 
-instance IsPrime.under [hP : P.IsPrime] : (P.under A).IsPrime :=
+instance IsCompletelyPrime.under [hP : P.IsCompletelyPrime] : (P.under A).IsCompletelyPrime :=
   hP.comap (algebraMap A B)
+
+instance IsPrime.under {B : Type*} [CommSemiring B] [Algebra A B] (P : Ideal B) [hP : P.IsPrime] :
+    (P.under A).IsPrime :=
+  inferInstance
 
 @[simp]
 lemma under_smul : (g • P : Ideal B).under A = P.under A := by
@@ -215,7 +219,7 @@ theorem under_map_eq_map_under {C D : Type*} [CommSemiring C] [Semiring D] [Alge
     map_under_le_under_map P
 
 theorem disjoint_primeCompl_of_liesOver [p.IsPrime] [hPp : 𝔓.LiesOver p] :
-  Disjoint ((Algebra.algebraMapSubmonoid C p.primeCompl) : Set C) (𝔓 : Set C) := by
+    Disjoint ((Algebra.algebraMapSubmonoid C p.primeCompl) : Set C) (𝔓 : Set C) := by
   rw [liesOver_iff, under_def, SetLike.ext'_iff, coe_comap] at hPp
   simpa only [Algebra.algebraMapSubmonoid, primeCompl, hPp, ← le_compl_iff_disjoint_left]
     using Set.subset_compl_comm.mp (by simp)
@@ -246,7 +250,7 @@ theorem ne_bot_of_liesOver_of_ne_bot (hp : p ≠ ⊥) (P : Ideal B) [P.LiesOver 
 
 end CommRing
 
-instance {K A : Type*} [Field K] [Semiring A] [Algebra K A] (P : Ideal A) [P.IsPrime] :
+instance {K A : Type*} [Field K] [Semiring A] [Algebra K A] (P : Ideal A) [P.IsCompletelyPrime] :
     P.LiesOver (⊥ : Ideal K) :=
   ⟨((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right Ideal.IsPrime.ne_top').symm⟩
 namespace Quotient

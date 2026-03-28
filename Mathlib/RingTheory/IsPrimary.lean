@@ -90,7 +90,7 @@ lemma isPrimary_finsetInf {ι : Type*} {s : Finset ι} {f : ι → Submodule R M
       hs' (mem_insert_self _ _), hs' (mem_insert_of_mem hy)]
 
 theorem IsPrimary.isPrime_radical_colon (hI : S.IsPrimary) : (S.colon .univ).radical.IsPrime := by
-  refine isPrime_iff.mpr <| hI.imp (by simp) fun h x y ⟨n, hn⟩ ↦ ?_
+  refine isPrime_iff_of_comm.mpr <| hI.imp (by simp) fun h x y ⟨n, hn⟩ ↦ ?_
   simp_rw [← mem_colon_iff_le, ← mem_radical_iff] at h
   refine or_iff_not_imp_left.mpr fun hx ↦ ⟨n, ?_⟩
   simp only [mul_pow, mem_colon, Set.mem_univ, true_imp_iff, mul_smul] at hn ⊢
