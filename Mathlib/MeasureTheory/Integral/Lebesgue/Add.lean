@@ -211,7 +211,7 @@ theorem lintegral_liminf_nat_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n
     _ = atTop.liminf fun n => ∫⁻ a, f n a ∂μ := Filter.liminf_eq_iSup_iInf_of_nat.symm
 
 /-- **Fatou's lemma**, version with `AEMeasurable` functions. -/
-theorem lintegral_liminf_le' {ι : Type*} {f : ι → α → ℝ≥0∞} (u : Filter ι) [u.NeBot]
+theorem lintegral_liminf_le' {ι : Type*} {f : ι → α → ℝ≥0∞} {u : Filter ι} [u.NeBot]
     [IsCountablyGenerated u] (h_meas : ∀ i, AEMeasurable (f i) μ) :
     ∫⁻ a, liminf (fun i => f i a) u ∂μ ≤ liminf (fun i => ∫⁻ a, f i a ∂μ) u := by
   by_cases! hu : ¬ u.NeBot
@@ -234,10 +234,10 @@ theorem lintegral_liminf_nat_le {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n,
   lintegral_liminf_nat_le' fun n => (h_meas n).aemeasurable
 
 /-- **Fatou's lemma**, version with `Measurable` functions. -/
-theorem lintegral_liminf_le {ι : Type*} {f : ι → α → ℝ≥0∞} (u : Filter ι) [u.NeBot]
+theorem lintegral_liminf_le {ι : Type*} {f : ι → α → ℝ≥0∞} {u : Filter ι} [u.NeBot]
     [IsCountablyGenerated u] (h_meas : ∀ i, Measurable (f i)) :
     ∫⁻ a, liminf (fun i => f i a) u ∂μ ≤ liminf (fun i => ∫⁻ a, f i a ∂μ) u :=
-  lintegral_liminf_le' u fun n => (h_meas n).aemeasurable
+  lintegral_liminf_le' fun n => (h_meas n).aemeasurable
 
 end MonotoneConvergence
 
