@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.Field.Power  
+public import Mathlib.Algebra.Field.Power
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 public import Mathlib.Util.Qq
 
