@@ -24,8 +24,7 @@ section DivisionMonoid
 
 variable [DivisionMonoid α] [HasDistribNeg α] {n : ℤ}
 
-theorem Odd.neg_zpow {n : ℤ} {α : Type*} [DivisionMonoid α] [HasDistribNeg α] (h : Odd n)
-  (a : α) : (-a) ^ n = -a ^ n := by
+theorem Odd.neg_zpow (h : Odd n) (a : α) : (-a) ^ n = -a ^ n := by
   obtain ⟨k, rfl⟩ := odd_iff_exists_bit1.mp h
   cases k with
   | ofNat k =>
