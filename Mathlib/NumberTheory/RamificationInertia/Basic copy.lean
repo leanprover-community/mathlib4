@@ -452,10 +452,8 @@ noncomputable def equiv [Algebra.QuasiFinite R S] : p.primesOver S ≃ MaximalSp
   (PrimeSpectrum.primesOverOrderIsoFiber R S p).toEquiv.trans
     IsArtinianRing.primeSpectrumEquivMaximalSpectrum
 
-noncomputable instance : Algebra S (p.Fiber S) := Algebra.TensorProduct.rightAlgebra
-
 theorem equiv_symm_apply [Algebra.QuasiFinite R S] (q : MaximalSpectrum (p.Fiber S)) :
-    (equiv p).symm q = q.1.comap (algebraMap S (p.Fiber S)) := by
+    (equiv p).symm q = q.1.comap Algebra.TensorProduct.includeRight := by
   rfl
 
 open TensorProduct
@@ -498,12 +496,12 @@ theorem ker_localRingHom {R S : Type*} [CommSemiring R] [CommSemiring S]
 set_option backward.isDefEq.respectTransparency false in
 set_option maxHeartbeats 10000000 in
 theorem foo3 (q : MaximalSpectrum (p.Fiber S)) :
-    letI r := q.1.comap (algebraMap S (p.Fiber S))
+    letI r := q.1.comap Algebra.TensorProduct.includeRight
     letI Sr := Localization.AtPrime r
     Module.length (Localization.AtPrime p) (Localization.AtPrime q.1) =
       Module.length (Localization.AtPrime p) (Sr ⧸ p.map (algebraMap R Sr)) := by
   let Rp := Localization.AtPrime p
-  let r := q.1.comap (algebraMap S (p.Fiber S))
+  let r := q.1.comap (Algebra.TensorProduct.includeRight)
   let Sr := Localization.AtPrime r
   let f₀ : Sr →ₐ[R] Localization.AtPrime q.1 :=
     Localization.localAlgHom r q.1 Algebra.TensorProduct.includeRight rfl
@@ -542,9 +540,10 @@ theorem foo3 (q : MaximalSpectrum (p.Fiber S)) :
 set_option backward.isDefEq.respectTransparency false in
 theorem foo2 [Algebra.QuasiFinite R S] [Module.Flat R S] (q : MaximalSpectrum (p.Fiber S)) :
     Module.finrank p.ResidueField (Localization.AtPrime q.1) =
-      p.ramificationIdx (q.1.comap (algebraMap S (p.Fiber S))) *
-        Module.finrank p.ResidueField (q.1.comap (algebraMap S (p.Fiber S))).ResidueField := by
-  set r := q.1.comap (algebraMap S (p.Fiber S))
+      p.ramificationIdx (q.1.comap Algebra.TensorProduct.includeRight) *
+        Module.finrank p.ResidueField
+          (q.1.comap Algebra.TensorProduct.includeRight).ResidueField := by
+  set r := q.1.comap Algebra.TensorProduct.includeRight
   set Sr := Localization.AtPrime r
   set A := Sr ⧸ p.map (algebraMap R Sr)
   have := length_restrictScalars (Localization.AtPrime p) (Localization.AtPrime r) A
