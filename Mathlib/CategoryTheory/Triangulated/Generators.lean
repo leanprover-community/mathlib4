@@ -114,7 +114,7 @@ lemma monotone'_triangEnvelopeIter {n m : ℕ} (h : n ≤ m := by lia) :
 
 lemma le_triangEnvelopeIter (n : ℕ) : P ≤ P.triangEnvelopeIter n :=
   calc
-    P ≤ P.shiftClosure ℤ := le_shiftClosure _ 
+    P ≤ P.shiftClosure ℤ := le_shiftClosure _
     _ ≤ (P.shiftClosure ℤ).binaryProductsClosure := le_limitsClosure _ _
     _ ≤ (P.shiftClosure ℤ).binaryProductsClosure.retractClosure := le_retractClosure _
     _ ≤ P.triangEnvelopeIter n := by
