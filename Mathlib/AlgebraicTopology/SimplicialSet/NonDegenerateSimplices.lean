@@ -172,6 +172,14 @@ namespace S
 
 variable {X}
 
+lemma subcomplex_eq_of_epi (x y : X.S) (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌) [Epi f]
+    (hf : X.map f.op y.simplex = x.simplex) :
+    x.subcomplex = y.subcomplex := by
+  refine le_antisymm ?_ ?_ <;> simp only [Subcomplex.ofSimplex_le_iff]
+  · exact ⟨_, hf⟩
+  · have := isSplitEpi_of_epi f
+    exact ⟨(section_ f).op, by simp [← hf, ← FunctorToTypes.map_comp_apply, ← op_comp]⟩
+
 lemma existsUnique_n (x : X.S) : ∃! (y : X.N), y.subcomplex = x.subcomplex :=
   existsUnique_of_exists_of_unique (by
     obtain ⟨n, x, hx, rfl⟩ := x.mk_surjective
@@ -201,6 +209,31 @@ lemma subcomplex_toN (x : X.S) : x.toN.subcomplex = x.subcomplex :=
 lemma toN_eq_iff {x : X.S} {y : X.N} :
     x.toN = y ↔ y.subcomplex = x.subcomplex :=
   ⟨by rintro rfl; simp, fun h ↦ x.existsUnique_n.unique (by simp) h⟩
+
+set_option backward.isDefEq.respectTransparency false in
+lemma existsUnique_toNπ {x : X.S} {y : X.N} (hy : x.toN = y) :
+    ∃! (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌), Epi f ∧ X.map f.op y.simplex = x.simplex := by
+  obtain ⟨n, x, hx, rfl⟩ := x.mk_surjective
+  obtain ⟨m, f, _, z, rfl⟩ := X.exists_nonDegenerate x
+  obtain rfl : y = N.mk _ z.2 := by
+    rw [toN_eq_iff] at hy
+    rw [← N.subcomplex_injective_iff, hy]
+    exact subcomplex_eq_of_epi _ _ f rfl
+  refine existsUnique_of_exists_of_unique ⟨f, inferInstance, rfl⟩
+    (fun f₁ f₂ ⟨_, hf₁⟩ ⟨_, hf₂⟩ ↦ unique_nonDegenerate_map _ _ _ _ hf₁.symm _ _ hf₂.symm)
+
+noncomputable def toNπ (x : X.S) : ⦋x.dim⦌ ⟶ ⦋x.toN.dim⦌ :=
+  (existsUnique_toNπ rfl).exists.choose
+
+instance (x : X.S) : Epi x.toNπ := (existsUnique_toNπ rfl).exists.choose_spec.1
+
+@[simp]
+lemma map_toNπ_op_apply (x : X.S) :
+    X.map x.toNπ.op x.toN.simplex = x.simplex := (existsUnique_toNπ rfl).exists.choose_spec.2
+
+lemma dim_toN_le (x : X.S) :
+    x.toN.dim ≤ x.dim :=
+  SimplexCategory.le_of_epi x.toNπ
 
 end S
 

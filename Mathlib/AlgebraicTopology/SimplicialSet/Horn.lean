@@ -39,7 +39,7 @@ def horn (n : ℕ) (i : Fin (n + 1)) : (Δ[n] : SSet.{u}).Subcomplex where
 /-- The `i`-th horn `Λ[n, i]` of the standard `n`-simplex -/
 scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 
-lemma stdSimplex.mem_horn_iff {n : ℕ} (i : Fin (n + 1)) {m : SimplexCategoryᵒᵖ}
+lemma mem_horn_iff {n : ℕ} (i : Fin (n + 1)) {m : SimplexCategoryᵒᵖ}
     (x : (Δ[n] : SSet.{u}).obj m) :
     x ∈ (horn n i).obj m ↔ Set.range (stdSimplex.asOrderHom x) ∪ {i} ≠ Set.univ := Iff.rfl
 
@@ -103,12 +103,12 @@ lemma horn_obj_eq_top {n : ℕ} (i : Fin (n + 1)) (m : ℕ) (h : m + 1 < n := by
     Finset.mem_compl, Finset.mem_singleton, exists_prop, Set.mem_univ, iff_true]
   exact ⟨j, hij, fun k hk ↦ hj ⟨k, hk⟩⟩
 
-lemma stdSimplex.subcomplex_le_horn_iff {n : ℕ}
+lemma subcomplex_le_horn_iff {n : ℕ}
     (A : (Δ[n + 1] : SSet.{u}).Subcomplex) (i : Fin (n + 2)) :
-    A ≤ horn (n + 1) i ↔ ¬ face {i}ᶜ ≤ A := by
+    A ≤ horn (n + 1) i ↔ ¬ stdSimplex.face {i}ᶜ ≤ A := by
   refine ⟨fun hA h ↦ ?_, fun h ↦ ?_⟩
   · replace h := h.trans hA
-    rw [face_singleton_compl, Subcomplex.ofSimplex_le_iff, mem_horn_iff] at h
+    rw [stdSimplex.face_singleton_compl, Subcomplex.ofSimplex_le_iff, mem_horn_iff] at h
     apply h
     change Set.range (Fin.succAboveOrderEmb i) ∪ _ = _
     rw [Fin.range_succAboveOrderEmb]
@@ -135,9 +135,9 @@ lemma stdSimplex.subcomplex_le_horn_iff {n : ℕ}
           exact ⟨j, by simp [← hS]⟩
         exact face_le_horn _ _ (by rintro rfl; tauto)
 
-lemma stdSimplex.face_le_horn_iff {n : ℕ} (S : Finset (Fin (n + 2))) (j : Fin (n + 2)) :
+lemma face_le_horn_iff {n : ℕ} (S : Finset (Fin (n + 2))) (j : Fin (n + 2)) :
     stdSimplex.face.{u} S ≤ horn (n + 1) j ↔ S ≠ .univ ∧ S ≠ {j}ᶜ := by
-  rw [stdSimplex.subcomplex_le_horn_iff, face_le_face_iff, ← not_iff_not]
+  rw [subcomplex_le_horn_iff, stdSimplex.face_le_face_iff, ← not_iff_not]
   simp only [Finset.le_eq_subset, Decidable.not_not, ne_eq, not_and_or]
   refine ⟨fun h ↦ ?_, by rintro (rfl | rfl) <;> simp⟩
   rw [← Finset.compl_subset_compl, compl_compl,
