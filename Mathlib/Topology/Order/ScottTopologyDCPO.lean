@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Edwin Fernando. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Edwin Fernando
+Authors: Edwin Fernando, Bhavik Mehta
 -/
 module
 
@@ -95,7 +95,7 @@ open Topology.IsScott TopologicalSpace Set Topology CompletePartialOrder
 section CompletePartialOrder
 
 variable {α : Type*} [TopologicalSpace α] [CompletePartialOrder α]
-  [IsScott α {d | DirectedOn (· ≤ ·) d}]
+  [IsScott α univ]
 
 /-- The order from `CompletePartialOrder` and the specialization order induced by the Scott
 topology, correspond. Unfortunately Mathlib's specialization order `⤳` is opposite to `≤`.
@@ -104,11 +104,11 @@ lemma specialization_iff_ge {x y : α} : x ≤ y ↔ y ⤳ x := by
   rw [specializes_iff_forall_open]
   constructor
   · intro x_le_y u hu x_in_u
-    apply (isUpperSet_of_isOpen {d | DirectedOn (· ≤ ·) d }) at hu
+    apply isUpperSet_of_isOpen univ at hu
     exact hu x_le_y x_in_u
   · let u := {z : α | ¬(z ≤ y)}
     have hu: IsOpen u := by
-      rw [isOpen_iff_isUpperSet_and_dirSupInaccOn {d | DirectedOn (· ≤ ·) d }]
+      rw [isOpen_iff_isUpperSet_and_dirSupInaccOn univ]
       constructor
       · intro a b a_le_b a_in_u b_le_y
         exact (and_not_self_iff (a ≤ y)).1 ⟨a_le_b.trans b_le_y, a_in_u⟩
@@ -135,7 +135,7 @@ lemma specialization_iff_ge {x y : α} : x ≤ y ↔ y ⤳ x := by
 /-- The upward closure of a compact element (`Ici e`) is an open set.
 We refer to the `Ici e` as basis due to `isTopologicalBasis_Ici_image_compactSet`. -/
 lemma isOpen_of_basis (e : α) (he₀ : IsCompactElement e) : IsOpen (Ici e) := by
-  rw [isOpen_iff_isUpperSet_and_dirSupInaccOn {d | DirectedOn (· ≤ ·) d }]
+  rw [isOpen_iff_isUpperSet_and_dirSupInaccOn univ]
   constructor
   · -- u is an upper set
     unfold IsUpperSet
@@ -148,7 +148,7 @@ lemma isOpen_of_basis (e : α) (he₀ : IsCompactElement e) : IsOpen (Ici e) := 
     -- However the directed sets for our topology are defined precisely as
     -- the directed sets of the our DCPOs
     -- So compact points are precisely those points which have directed innaccessable joins
-    intro d hd nonempty _  x hx hx' -- he₁
+    intro d _ nonempty hd  x hx hx' -- he₁
     rw [isCompactElement_iff_le_of_directed_sSup_le] at he₀
     -- rewrite `x`'s LUB propoerty in terms of sSup
     have hx : x = sSup d := IsLUB.unique hx (lubOfDirected d hd)
@@ -171,7 +171,7 @@ private lemma Opens.mem_iff_Ici_subset {e : α} {u : Opens α} : e ∈ u ↔ Ici
   constructor
   · intro e_in_u
     have u_open := u.isOpen
-    rw [isOpen_iff_isUpperSet_and_dirSupInaccOn {d | DirectedOn (· ≤ ·) d }] at u_open
+    rw [isOpen_iff_isUpperSet_and_dirSupInaccOn univ] at u_open
     let ⟨u_Ici, _⟩ := u_open
     intro a ha
     exact u_Ici ha e_in_u
@@ -181,7 +181,7 @@ private lemma Opens.mem_iff_Ici_subset {e : α} {u : Opens α} : e ∈ u ↔ Ici
 end CompletePartialOrder
 
 section AlgebraicDCPO
-variable {D : Type*} [TopologicalSpace D] [AlgebraicDCPO D] [IsScott D {d | DirectedOn (· ≤ ·) d}]
+variable {D : Type*} [TopologicalSpace D] [AlgebraicDCPO D] [IsScott D univ]
 open Opens
 
 /-- Given any point `x` in `D` in an open set `u`, there exists
@@ -189,7 +189,7 @@ an upward closure of a compact element (`Ici e`), within `u` which contains `x`.
 We refer to the `Ici e` as basis due to `isTopologicalBasis_Ici_image_compactSet`. -/
 lemma exists_basis_mem_basis (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen u)
     : ∃ c, IsCompactElement c ∧ x ∈ Ici c ∧ Ici c ⊆ u := by
-  rw [isOpen_iff_isUpperSet_and_dirSupInaccOn {d | DirectedOn (· ≤ ·) d }] at hu
+  rw [isOpen_iff_isUpperSet_and_dirSupInaccOn univ] at hu
   obtain ⟨upper, hausdorff⟩ := hu
   have compactLowerBounded : ∃ c: D, c ≤ x ∧ c ∈ u ∧ IsCompactElement c := by
     -- the Algebraicity property
@@ -202,7 +202,7 @@ lemma exists_basis_mem_basis (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen
       apply CompletePartialOrder.lubOfDirected cls directed_cls
     -- We use the innacessible joins property to show get a nonempty intersection
     -- The intersection contains exactly what we want, a compact point in u and ≤ x
-    have nonempty_inter := hausdorff directed_cls nonempty directed_cls x_is_LUB x_in_u
+    have nonempty_inter := hausdorff (mem_univ _) nonempty directed_cls x_is_LUB x_in_u
     simp only [inter_nonempty] at nonempty_inter
     obtain ⟨c, ⟨hc₀, hc₁⟩, hc₂⟩ := nonempty_inter
     exact ⟨c, hc₁, hc₂, hc₀⟩
