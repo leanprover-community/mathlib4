@@ -158,6 +158,23 @@ theorem coe_toStrongDual (x' : WeakDual 𝕜 E) : (toStrongDual x' : E → 𝕜)
 theorem toStrongDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongDual y' ↔ x' = y' :=
   (LinearEquiv.injective toStrongDual).eq_iff
 
+section Polar
+
+variable (𝕜)
+
+/-- The polar set `polar 𝕜 s` of `s : Set E` seen as a subset of the dual of `E` with the
+weak-star topology is `WeakDual.polar 𝕜 s`. -/
+def polar (s : Set E) : Set (WeakDual 𝕜 E) := toStrongDual ⁻¹' (StrongDual.polar 𝕜) s
+
+theorem polar_def (s : Set E) : polar 𝕜 s = { f : WeakDual 𝕜 E | ∀ x ∈ s, ‖f x‖ ≤ 1 } := rfl
+
+/-- The polar `polar 𝕜 s` of a set `s : E` is a closed subset when the weak star topology
+is used. -/
+theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
+  simp only [polar_def, setOf_forall]
+  exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
+
+end Polar
 section Bornology
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -315,18 +332,6 @@ theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : �
 
 section PolarSets
 variable (𝕜)
-
-/-- The polar set `polar 𝕜 s` of `s : Set E` seen as a subset of the dual of `E` with the
-weak-star topology is `WeakDual.polar 𝕜 s`. -/
-def polar (s : Set E) : Set (WeakDual 𝕜 E) := toStrongDual ⁻¹' (StrongDual.polar 𝕜) s
-
-theorem polar_def (s : Set E) : polar 𝕜 s = { f : WeakDual 𝕜 E | ∀ x ∈ s, ‖f x‖ ≤ 1 } := rfl
-
-/-- The polar `polar 𝕜 s` of a set `s : E` is a closed subset when the weak star topology
-is used. -/
-theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
-  simp only [polar_def, setOf_forall]
-  exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 
 /-- Polar sets of neighborhoods of the origin are bounded in the weak dual. -/
 theorem isBounded_polar {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E)) : IsBounded (polar 𝕜 s) :=
