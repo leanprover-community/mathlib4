@@ -205,7 +205,7 @@ end Equivalence
 
 section Nonvacuous
 
-instance Zn_nonempty {n : Nat} [NeZero n] : LatinSquare (ZMod n) (ZMod n) :=
+instance {n : Nat} [NeZero n] : LatinSquare (ZMod n) (ZMod n) :=
   addGroupToCayleyTable (ZMod n)
 
 /-- For any positive natural number n, there exists an n × n Latin square. -/
