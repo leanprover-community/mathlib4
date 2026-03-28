@@ -70,6 +70,7 @@ class AddGroupConeClass (S : Type*) (G : outParam Type*) [AddCommGroup G] [SetLi
     extends AddSubmonoidClass S G where
   eq_zero_of_mem_of_neg_mem {C : S} {a : G} : a ∈ C → -a ∈ C → a = 0
 
+set_option linter.existingAttributeWarning false in
 /-- `GroupConeClass S G` says that `S` is a type of cones in `G`. -/
 @[to_additive, deprecated "Unbundled to `Submonoid.IsMulPointed`" (since := "2026-03-28")]
 class GroupConeClass (S : Type*) (G : outParam Type*) [CommGroup G] [SetLike S G] : Prop
@@ -87,6 +88,7 @@ some order making the group into a partially ordered group. -/
 structure AddGroupCone (G : Type*) [AddCommGroup G] extends AddSubmonoid G where
   eq_zero_of_mem_of_neg_mem' {a} : a ∈ carrier → -a ∈ carrier → a = 0
 
+set_option linter.existingAttributeWarning false in
 /-- A (positive) cone in an abelian group is a submonoid that
 does not contain both `a` and `a⁻¹` for any non-identity `a`.
 This is equivalent to being the set of elements that are at least 1 in
@@ -95,15 +97,15 @@ some order making the group into a partially ordered group. -/
 structure GroupCone (G : Type*) [CommGroup G] extends Submonoid G where
   eq_one_of_mem_of_inv_mem' {a} : a ∈ carrier → a⁻¹ ∈ carrier → a = 1
 
-@[to_additive (attr := deprecated (since := "2026-03-28"))]
+@[to_additive (attr := deprecated "no replacement" (since := "2026-03-28"))]
 instance GroupCone.instSetLike (G : Type*) [CommGroup G] : SetLike (GroupCone G) G where
   coe C := C.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-@[to_additive (attr := deprecated (since := "2026-03-28"))]
+@[to_additive (attr := deprecated "no replacement" (since := "2026-03-28"))]
 instance (G : Type*) [CommGroup G] : PartialOrder (GroupCone G) := .ofSetLike (GroupCone G) G
 
-@[to_additive (attr := deprecated (since := "2026-03-28"))]
+@[to_additive (attr := deprecated "no replacement" (since := "2026-03-28"))]
 instance GroupCone.instGroupConeClass (G : Type*) [CommGroup G] :
     GroupConeClass (GroupCone G) G where
   mul_mem {C} := C.mul_mem'
@@ -124,11 +126,11 @@ def oneLE : GroupCone H where
   __ := Submonoid.oneLE H
   eq_one_of_mem_of_inv_mem' {a} := by simpa using ge_antisymm
 
-@[to_additive (attr := simp, deprecated (since := "2026-03-28"))]
+@[to_additive (attr := simp, deprecated "no replacement" (since := "2026-03-28"))]
 lemma oneLE_toSubmonoid : (oneLE H).toSubmonoid = .oneLE H := rfl
-@[to_additive (attr := simp, deprecated (since := "2026-03-28"))]
+@[to_additive (attr := simp, deprecated "no replacement" (since := "2026-03-28"))]
 lemma mem_oneLE : a ∈ oneLE H ↔ 1 ≤ a := Iff.rfl
-@[to_additive (attr := simp, norm_cast, deprecated (since := "2026-03-28"))]
+@[to_additive (attr := simp, norm_cast, deprecated "no replacement" (since := "2026-03-28"))]
 lemma coe_oneLE : oneLE H = {x : H | 1 ≤ x} := rfl
 
 @[to_additive (attr := deprecated Submonoid.oneLE.isMulSpanning (since := "2026-03-28"))]

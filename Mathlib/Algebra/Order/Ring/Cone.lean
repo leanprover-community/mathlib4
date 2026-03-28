@@ -51,15 +51,15 @@ structure RingCone (R : Type*) [Ring R] extends Subsemiring R, AddGroupCone R
 /-- Interpret a cone in a ring as a cone in the underlying additive group. -/
 add_decl_doc RingCone.toAddGroupCone
 
-@[deprecated (since := "2026-03-28")]
+@[deprecated "no replacement" (since := "2026-03-28")]
 instance RingCone.instSetLike (R : Type*) [Ring R] : SetLike (RingCone R) R where
   coe C := C.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-@[deprecated (since := "2026-03-28")]
+@[deprecated "no replacement" (since := "2026-03-28")]
 instance (R : Type*) [Ring R] : PartialOrder (RingCone R) := .ofSetLike (RingCone R) R
 
-@[deprecated (since := "2026-03-28")]
+@[deprecated "no replacement" (since := "2026-03-28")]
 instance RingCone.instRingConeClass (R : Type*) [Ring R] :
     RingConeClass (RingCone R) R where
   add_mem {C} := C.add_mem'
@@ -68,12 +68,12 @@ instance RingCone.instRingConeClass (R : Type*) [Ring R] :
   one_mem {C} := C.one_mem'
   eq_zero_of_mem_of_neg_mem {C} := C.eq_zero_of_mem_of_neg_mem'
 
-@[simp, deprecated (since := "2026-03-28")]
+@[simp, deprecated "no replacement" (since := "2026-03-28")]
 theorem RingCone.mem_mk {R : Type*} [Ring R] {toSubsemiring : Subsemiring R}
     (eq_zero_of_mem_of_neg_mem) {x : R} :
     x ∈ mk toSubsemiring eq_zero_of_mem_of_neg_mem ↔ x ∈ toSubsemiring := .rfl
 
-@[simp, deprecated (since := "2026-03-28")]
+@[simp, deprecated "no replacement" (since := "2026-03-28")]
 theorem RingCone.coe_set_mk {R : Type*} [Ring R] {toSubsemiring : Subsemiring R}
     (eq_zero_of_mem_of_neg_mem) :
     (mk toSubsemiring eq_zero_of_mem_of_neg_mem : Set R) = toSubsemiring := rfl
@@ -89,16 +89,16 @@ def nonneg : RingCone T where
   __ := Subsemiring.nonneg T
   eq_zero_of_mem_of_neg_mem' {a} := by simpa using ge_antisymm
 
-@[simp, deprecated (since := "2026-03-28")]
+@[simp, deprecated "no replacement" (since := "2026-03-28")]
 lemma nonneg_toSubsemiring : (nonneg T).toSubsemiring = .nonneg T := rfl
 
-@[simp, deprecated (since := "2026-03-28")]
+@[simp, deprecated "no replacement" (since := "2026-03-28")]
 lemma nonneg_toAddGroupCone : (nonneg T).toAddGroupCone = .nonneg T := rfl
 
-@[simp, deprecated (since := "2026-03-28")]
+@[simp, deprecated "no replacement" (since := "2026-03-28")]
 lemma mem_nonneg : a ∈ nonneg T ↔ 0 ≤ a := Iff.rfl
 
-@[simp, deprecated (since := "2026-03-28")]
+@[simp, deprecated "no replacement" (since := "2026-03-28")]
 lemma coe_nonneg : nonneg T = {x : T | 0 ≤ x} := rfl
 
 @[deprecated Subsemiring.nonneg.isSpanning (since := "2026-03-28")]
