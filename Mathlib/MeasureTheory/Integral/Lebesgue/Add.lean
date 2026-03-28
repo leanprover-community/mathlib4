@@ -199,7 +199,7 @@ theorem lintegral_iSup_directed [Countable β] {f : β → α → ℝ≥0∞} (h
     exact aeSeq.aeSeq_n_eq_fun_n_ae hf hp _
 
 /-- **Fatou's lemma**, version with `AEMeasurable` functions indexed by `ℕ`. -/
-theorem lintegral_liminf_nat_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AEMeasurable (f n) μ) :
+private theorem lintegral_liminf_nat_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AEMeasurable (f n) μ) :
     ∫⁻ a, liminf (fun n => f n a) atTop ∂μ ≤ liminf (fun n => ∫⁻ a, f n a ∂μ) atTop :=
   calc
     ∫⁻ a, liminf (fun n => f n a) atTop ∂μ = ∫⁻ a, ⨆ n : ℕ, ⨅ i ≥ n, f i a ∂μ := by
@@ -229,7 +229,7 @@ theorem lintegral_liminf_le' {ι : Type*} {f : ι → α → ℝ≥0∞} {u : Fi
     _ = _ := hg.2.liminf_eq
 
 /-- **Fatou's lemma**, version with `Measurable` functions indexed by `ℕ`. -/
-theorem lintegral_liminf_nat_le {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measurable (f n)) :
+private theorem lintegral_liminf_nat_le {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measurable (f n)) :
     ∫⁻ a, liminf (fun n => f n a) atTop ∂μ ≤ liminf (fun n => ∫⁻ a, f n a ∂μ) atTop :=
   lintegral_liminf_nat_le' fun n => (h_meas n).aemeasurable
 
