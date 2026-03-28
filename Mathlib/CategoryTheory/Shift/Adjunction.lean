@@ -548,6 +548,7 @@ The identity equivalence is compatible with shifts.
 -/
 instance : (Equivalence.refl (C := C)).CommShift A :=
   inferInstanceAs <| Adjunction.id.CommShift A
+
 /--
 If an equivalence `E : C ≌ D` is compatible with shifts, so is `E.symm`.
 -/

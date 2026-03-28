@@ -55,12 +55,15 @@ the monoidal functor `Discrete.addMonoidalFunctor φ : Discrete A ⥤ Discrete B
 instance : HasShift (PullbackShift C φ) A where
   shift := Discrete.addMonoidalFunctor φ ⋙ shiftMonoidalFunctor C B
 
-instance [HasZeroObject C] : HasZeroObject (PullbackShift C φ) := ‹_›
+instance [HasZeroObject C] : HasZeroObject (PullbackShift C φ) :=
+  inferInstanceAs <| HasZeroObject C
 
-instance [Preadditive C] : Preadditive (PullbackShift C φ) := ‹_›
+instance [Preadditive C] : Preadditive (PullbackShift C φ) :=
+  inferInstanceAs <| Preadditive C
 
 instance [Preadditive C] (a : A) [(shiftFunctor C (φ a)).Additive] :
-    (shiftFunctor (PullbackShift C φ) a).Additive := ‹_›
+    (shiftFunctor (PullbackShift C φ) a).Additive :=
+  inferInstanceAs (shiftFunctor C (φ a)).Additive
 
 /-- When `b = φ a`, this is the canonical
 isomorphism `shiftFunctor (PullbackShift C φ) a ≅ shiftFunctor C b`. -/
