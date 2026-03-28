@@ -273,6 +273,10 @@ theorem image_eq_empty {α β} {f : α → β} {s : Set α} : f '' s = ∅ ↔ s
   simp only [eq_empty_iff_forall_notMem]
   exact ⟨fun H a ha => H _ ⟨_, ha, rfl⟩, fun H b ⟨_, ha, _⟩ => H _ ha⟩
 
+@[simp, mfld_simps]
+theorem empty_eq_image {α β} {f : α → β} {s : Set α} : ∅ = f '' s ↔ s = ∅ := by
+  rw [eq_comm, image_eq_empty]
+
 theorem preimage_compl_eq_image_compl [BooleanAlgebra α] (s : Set α) :
     Compl.compl ⁻¹' s = Compl.compl '' s :=
   Set.ext fun x =>
@@ -521,8 +525,6 @@ theorem imageFactorization_eq {f : α → β} {s : Set α} :
 theorem imageFactorization_surjective {f : α → β} {s : Set α} :
     Surjective (imageFactorization f s) :=
   fun ⟨_, ⟨a, ha, rfl⟩⟩ => ⟨⟨a, ha⟩, rfl⟩
-
-@[deprecated (since := "2025-08-18")] alias surjective_onto_image := imageFactorization_surjective
 
 /-- If the only elements outside `s` are those left fixed by `σ`, then mapping by `σ` has no effect.
 -/
@@ -877,8 +879,6 @@ theorem rangeFactorization_coe (f : ι → β) (a : ι) : (rangeFactorization f 
 
 @[simp]
 theorem coe_comp_rangeFactorization (f : ι → β) : (↑) ∘ rangeFactorization f = f := rfl
-
-@[deprecated (since := "2025-08-18")] alias surjective_onto_range := rangeFactorization_surjective
 
 theorem image_eq_range (f : α → β) (s : Set α) : f '' s = range fun x : s => f x := by
   ext

@@ -41,6 +41,7 @@ noncomputable section
 universe u v w z
 
 open Finset Matrix Polynomial
+open scoped Ring
 
 variable {R : Type u} [CommRing R]
 variable {n G : Type v} [DecidableEq n] [Fintype n]
@@ -144,7 +145,6 @@ theorem trace_eq_neg_charpoly_nextCoeff (M : Matrix n n R) : M.trace = -M.charpo
   nontriviality
   simp [trace_eq_neg_charpoly_coeff, nextCoeff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem det_eq_sign_charpoly_coeff (M : Matrix n n R) :
     M.det = (-1) ^ Fintype.card n * M.charpoly.coeff 0 := by
   rw [coeff_zero_eq_eval_zero, charpoly, eval_det, matPolyEquiv_charmatrix, ← det_smul]
@@ -258,6 +258,7 @@ theorem pow_eq_aeval_mod_charpoly (M : Matrix n n R) (k : ℕ) :
 
 section Ideal
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k : ℕ) :
     M.charpoly.coeff k ∈ I ^ (Fintype.card n - k) := by
   delta charpoly
@@ -309,9 +310,8 @@ lemma reverse_charpoly (M : Matrix n n R) :
     diagonal_one, invert.map_det]
   simp [t_inv, map_sub, map_one, map_mul, t, smul_eq_diagonal_mul]
 
-set_option linter.flexible false in -- simp followed by ac_rfl
 theorem charpoly_inv (A : Matrix n n R) (h : IsUnit A) :
-    A⁻¹.charpoly = (-1) ^ Fintype.card n * C (Ring.inverse A.det) * A.charpolyRev := by
+    A⁻¹.charpoly = (-1) ^ Fintype.card n * C A.det⁻¹ʳ * A.charpolyRev := by
   have : Invertible A := h.invertible
   calc
   _ = (scalar n X - C.mapMatrix A⁻¹).det := rfl
