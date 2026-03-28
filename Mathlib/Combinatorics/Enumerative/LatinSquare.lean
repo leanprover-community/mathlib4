@@ -194,7 +194,7 @@ def LatinRectangle.EquivRelation (A : LatinRectangle m n α) (A' : LatinRectangl
 /-- Notation for two `LatinRectangle`s to be equivalent. -/
 infixl:25 " ≃ " => LatinRectangle.EquivRelation
 
-lemma induced_latin_rectangle_is_equiv
+lemma LatinRectangle.equiv_relabel
     (f : m ≃ m')
     (g : n ≃ n')
     (h : α ≃ β)
@@ -239,8 +239,10 @@ def symbolsNotIn (A : LatinRectangle k n α) (j : n) :=
   Finset.univ \ D
 
 /-- Given a finite collection of finite subsets $B_1, \ldots, B_k$ and, for every
-$x \in \bigcup_i B_i$, let $C_x$ be the set of indices of the $B_i$'s that contain $x$.
-Then, $\sum_i |B_i| = \sum_x |C_x|$. -/
+    $x \in \bigcup_i B_i$, let $C_x$ be the set of indices of the $B_i$'s that contain $x$.
+    Then, $\sum_i |B_i| = \sum_x |C_x|$. 
+    This is abstracted in PR #37190 and will be removed
+-/
 lemma sum_card_eq_sum_card_fiber_biUnion
     {α : Type*} [DecidableEq α]
     {ι : Type*} [Fintype ι] [DecidableEq ι]
@@ -260,7 +262,10 @@ lemma sum_card_eq_sum_card_fiber_biUnion
 
 /-- Given a finite collection of finite subsets $B_1, \ldots, B_r$,
     each with cardinality k, if the cardinality of their union is less than r,
-    then there exists an element x appearing in strictly more than k of the $B_j$'s. -/
+    then there exists an element x appearing in strictly more than k of the $B_j$'s. 
+
+    This is abstracted in PR #37190 and will be removed.
+-/
 lemma exists_larger_subset
     {n : Type*} [DecidableEq n] [Fintype n]
     {α : Type*} [DecidableEq α]
@@ -640,7 +645,7 @@ theorem LatinRectangle.exists_LatinSquare_of_LatinRectangle
     · let f : k ≃ n := Fintype.equivOfCardEq h_full
       let A' := LatinRectangle.relabel A f (Equiv.refl n) (Equiv.refl α)
       have h_sim : A ≃ A' := by
-        simp [induced_latin_rectangle_is_equiv f (.refl n) (.refl α) A, A']
+        simp [LatinRectangle.equiv_relabel f (.refl n) (.refl α) A, A']
       use A'
       exact IsSubrect.refl h_sim
     · set k' := Option k with hk'
