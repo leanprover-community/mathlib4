@@ -37,10 +37,11 @@ square; this theorem is formalized as
 ## Main results
 
 - `group_to_cayley_table`: every finite group `G` yields a `LatinSquare G G`.
-- `latin_rectangle_extends_one_row`: a (non-square) `LatinRectangle` extends to a `LatinRectangle`
-   with one more row. This is an application of **Hall's Marriage Theorem**,
-   `hallMatchingsOn.nonempty`.
-- `latin_rectangle_extends_to_latin_square`:  a `LatinRectangle` extends to a `LatinSquare`.
+- `LatinRectangle.exists_extension_of_non_square_LatinRectangle`: a (non-square) `LatinRectangle`
+   extends to a `LatinRectangle` with one more row. This is an application of
+  **Hall's Marriage Theorem**, `hallMatchingsOn.nonempty`.
+- `LatinRectangle.exists_LatinSquare_of_LatinRectangle`: a `LatinRectangle`
+  extends to a `LatinSquare`.
 
 ## Notation
 
@@ -105,7 +106,7 @@ abbrev LatinRectangle.col (A : LatinRectangle m n α) : n → m → α := Matrix
 /-- Get a specific row of the `LatinRectangle`. -/
 abbrev LatinRectangle.row (A : LatinRectangle m n α) : m → n → α := Matrix.row A
 
-/-- Alernative constructor for LatinSquares using the OncePerColumn property -/
+/-- Alernative constructor for LatinSquares using the once_per_column property -/
 @[reducible]
 def LatinSquare.fromOncePerColumn
   [Fintype n] [Fintype α] [DecidableEq α]
@@ -372,7 +373,7 @@ lemma unique_missed_element
   exact hx2 hy
 
 /-- A non-square `LatinRectangle k n α` can be extended by one row to a new Latin rectangle. -/
-theorem latin_rectangle_extends_one_row
+theorem LatinRectangle.exists_extension_of_non_square_LatinRectangle
     {n : Type*} [Fintype n]
     {k : Type*} [Fintype k] [Nonempty k]
     (A : LatinRectangle k n α)
@@ -614,7 +615,7 @@ lemma IsSubrect.trans {m'' : Type*} [Fintype m'']
   simp [h'', f'', g'',h₂,h₁]
 
 /-- Any two equivalent `LatinRectangle`s are subrectangles of each other. -/
-lemma subrect_refl
+lemma IsSubrect.refl
     {n : Type*} [Fintype n]
     {A : LatinRectangle m n α}
     {A' : LatinRectangle m' n α} (h : A ≃ A') :
@@ -626,7 +627,7 @@ lemma subrect_refl
 /-- A Latin rectangle `LatinRectangle m n α` extends to a Latin square `LatinSquare n α`.
     In other words, there always exists a Latin square that contains a given Latin rectangle
     as a substructure. -/
-theorem latin_rectangle_extends_to_latin_square
+theorem LatinRectangle.exists_LatinSquare_of_LatinRectangle
     {n : Type*} [Fintype n]
     {k : Type*} [Fintype k] [Nonempty k]
     (A : LatinRectangle k n α)
@@ -641,7 +642,7 @@ theorem latin_rectangle_extends_to_latin_square
       have h_sim : A ≃ A' := by
         simp [induced_latin_rectangle_is_equiv f (.refl n) (.refl α) A, A']
       use A'
-      exact subrect_refl h_sim
+      exact IsSubrect.refl h_sim
     · set k' := Option k with hk'
       letI : Fintype k' := (inferInstance : Fintype (Option k))
       have hk'_card := Fintype.card_option (α := k)
@@ -654,7 +655,7 @@ theorem latin_rectangle_extends_to_latin_square
       have hm_lt : m < a := by lia
       have ι_h := Function.Embedding.nonempty_of_card_le hk'_le
       let ι' : k ↪ k' := Classical.choice ι_h
-      have H := latin_rectangle_extends_one_row A h_k_lt_n ι' hk'_card
+      have H := LatinRectangle.exists_extension_of_non_square_LatinRectangle A h_k_lt_n ι' hk'_card
       have ⟨A', hA⟩ := H
       have ih := ih m hm_lt (k := k') (A := A') h_k'_le_n hm
       have ⟨A'', hA''⟩ := ih
