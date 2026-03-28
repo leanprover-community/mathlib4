@@ -1100,7 +1100,6 @@ theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r },
 
 @[deprecated (since := "2026-03-15")] alias ord_eq_Inf := ord_eq_iInf
 
--- TODO: deprecate in favor of `ord_eq_type_lt`?
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem ord_eq (α) : ∃ (r : α → α → Prop) (_ : IsWellOrder α r), ord #α = type r :=
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
@@ -1518,5 +1517,3 @@ theorem List.SortedGT.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : Li
           (List.head_le_of_lt hmltl))
 
 @[deprecated (since := "2025-11-27")] alias List.Sorted.lt_ord_of_lt := List.SortedGT.lt_ord_of_lt
-
-set_option linter.style.longFile 1700
