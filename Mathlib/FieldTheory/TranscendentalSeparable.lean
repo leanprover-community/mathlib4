@@ -26,3 +26,8 @@ class Algebra.IsSeparablyGenerated : Prop where
 class Algebra.IsTranscendentalSeparable : Prop where
   forall_isSeparablyGenerated : ∀ (A' : Subalgebra R A),
     Algebra.EssFiniteType R A' → Algebra.IsSeparablyGenerated R A'
+
+lemma tensorProduct_of_isSeparablyGenerated {k : Type*} [Field k]
+    {S : Type*} [CommRing S] [IsReduced S] [Algebra k S] {K : Type*} [Field K] [Algebra k K] :
+    IsReduced (TensorProduct k K S) := by
+  sorry
