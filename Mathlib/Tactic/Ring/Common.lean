@@ -199,11 +199,6 @@ meta inductive ExSumNat : (e : Q(ℕ)) → Type
   | add {a b : Q(ℕ)} : ExProdNat a → ExSumNat b → ExSumNat q($a + $b)
 end
 
--- TODO: this should be somewhere else
-instance : Ord Rat where
-  compare a b := if a ≤ b then if b ≤ a then .eq else .lt else .gt
-
-
 /-!
 The `BaseType` parameter is used to specify how constant coefficients are stored. In the ring
 tactic we need only to store coefficients as normalizations to rational numbers, but in a future
