@@ -182,7 +182,7 @@ lemma rv_tendsto_if_charFun_tendsto (hX : Measurable X) (hXn : ∀ n, Measurable
   (∀ t : EuclideanSpace ℝ (Fin d), Tendsto (fun n ↦ charFun (P.map (hXn n).aemeasurable) t) atTop (𝓝 (charFun (Q.map hX.aemeasurable) t))) → Tendsto (fun n ↦ P.map (hXn n).aemeasurable) atTop (𝓝 (Q.map hX.aemeasurable)) :=
   by
     intro h
-    exact MeasureTheory.ProbabilityMeasure.tendsto_iff_tendsto_charFun.mpr h
+    exact ProbabilityMeasure.tendsto_iff_tendsto_charFun.mpr h
 
 theorem cramerWold (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n)) :
   (∀ t : EuclideanSpace ℝ (Fin d), Tendsto (fun n : ℕ => P.map (aemeasurable_dotProduct (hXn n) t)) atTop (𝓝 (Q.map (aemeasurable_dotProduct' hX t)))) → (Tendsto (fun n : ℕ => P.map (hXn n).aemeasurable) atTop (𝓝 (Q.map hX.aemeasurable)))
