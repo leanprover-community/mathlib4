@@ -5,6 +5,7 @@ Authors: Christopher Hoskin, Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.UpperLower.Basic
 
@@ -140,27 +141,6 @@ lemma DirSupInaccOn.union (hs : DirSupInaccOn D s) (ht : DirSupInaccOn D t) :
 lemma DirSupInacc.union (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∪ t) := by
   rw [← dirSupClosed_compl, compl_union]; exact hs.compl.inter ht.compl
 
-theorem directedOn_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
-    DirectedOn (· ≤ ·) s ∨ DirectedOn (· ≤ ·) t := by
-  simp_rw [DirectedOn]
-  by_contra!
-  obtain ⟨⟨a, ha, b, hb, hab⟩, ⟨c, hc, d, hd, hcd⟩⟩ := this
-  obtain ⟨x, hx, hax, hbx⟩ := h a (.inl ha) b (.inl hb)
-  obtain ⟨y, hy, hcy, hdy⟩ := h c (.inr hc) d (.inr hd)
-  obtain ⟨z, hz | hz, hxz, hyz⟩ := h x hx y hy
-  · exact hab z hz (hax.trans hxz) (hbx.trans hxz)
-  · exact hcd z hz (hcy.trans hyz) (hdy.trans hyz)
-
-theorem directedOn_union' (hn : (s ∪ t).Nonempty) (h : DirectedOn (· ≤ ·) (s ∪ t)) :
-    DirectedOn (· ≤ ·) s ∧ s.Nonempty ∨ DirectedOn (· ≤ ·) t ∧ t.Nonempty := by
-  obtain h | h := directedOn_union h
-  · obtain rfl | hs := s.eq_empty_or_nonempty
-    · aesop
-    · exact .inl ⟨h, hs⟩
-  · obtain rfl | ht := t.eq_empty_or_nonempty
-    · aesop
-    · exact .inr ⟨h, ht⟩
-
 theorem DirSupClosedOn.union (hDL : IsLowerSet D)
     (hs : DirSupClosedOn D s) (ht : DirSupClosedOn D t) : DirSupClosedOn D (s ∪ t) := by
   intro d hD hdu hd₀ hd₁ a ha
@@ -217,8 +197,8 @@ theorem dirSupInacc_of_inter_subset
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s) : DirSupInacc s :=
   .of_univ (dirSupInaccOn_of_inter_subset (by simpa))
 
-/-- If `d` is a set whose LUB is contained in a `DirSupInaccOn` set, then there's an entire tail of
-the set contained. -/
+/-- If `d` is a set whose LUB is contained in a `DirSupInaccOn` set, then it contains an entire tail
+of `d`. -/
 theorem dirSupInaccOn_iff_inter_subset (hDL : IsLowerSet D) :
     DirSupInaccOn D s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d →
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s where
@@ -238,8 +218,8 @@ theorem dirSupInaccOn_iff_inter_subset (hDL : IsLowerSet D) :
     · exact ⟨upperBounds_mono_set hft ha.1,
         fun b hb ↦ ha.2 fun c hc ↦ (hf ⟨c, hc⟩).1.trans (hb <| by simp)⟩
 
-/-- If `d` is a set whose LUB is contained in a `DirSupInaccOn` set, then there's an entire tail of
-the set contained. -/
+/-- If `d` is a set whose LUB is contained in a `DirSupInaccOn` set, then it contains an entire tail
+of `d`. -/
 theorem dirSupInacc_iff_inter_subset :
     DirSupInacc s ↔ ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d →
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
@@ -251,7 +231,20 @@ lemma IsUpperSet.dirSupClosed (hs : IsUpperSet s) : DirSupClosed s :=
 lemma IsLowerSet.dirSupInacc (hs : IsLowerSet s) : DirSupInacc s :=
   hs.compl.dirSupClosed.of_compl
 
-lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) := fun _d h _ _ _a ha ↦ (isLUB_le_iff ha).2 h
+theorem DirSupClosed.mem_imp_of_antisymmRel (hs : DirSupClosed s) {a b : α}
+    (h : AntisymmRel (· ≤ ·) a b) (ha : a ∈ s) : b ∈ s := by
+  apply hs (singleton_subset_iff.2 ha) ⟨a, rfl⟩
+  · apply directedOn_singleton
+    sorry
+  · sorry
+
+theorem DirSupClosed.mem_iff_of_antisymmRel (hs : DirSupClosed s) {a b : α}
+    (h : AntisymmRel (· ≤ ·) a b) : a ∈ s ↔ b ∈ s :=
+  ⟨hs.mem_imp_of_antisymmRel h, hs.mem_imp_of_antisymmRel h.symm⟩
+#exit
+
+lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) :=
+  fun _d h _ _ _a ha ↦ (isLUB_le_iff ha).2 h
 
 end Preorder
 
