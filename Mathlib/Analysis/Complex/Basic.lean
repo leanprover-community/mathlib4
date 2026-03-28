@@ -65,7 +65,7 @@ instance : DenselyNormedField ℂ where
     ⟨x, by rwa [norm_real, Real.norm_of_nonneg (h₀.trans_lt h.1).le]⟩
 
 set_option backward.isDefEq.respectTransparency false in
-instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ where
+instance (priority := 90) {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ where
   norm_smul_le r x := by
     rw [← algebraMap_smul ℝ r x, real_smul, norm_mul, norm_real, norm_algebraMap']
 
