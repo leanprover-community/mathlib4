@@ -92,7 +92,7 @@ def replicate {α : Q(Type)} (n : Nat) (x : Q($α)) : MetaM Q(List $α) := do
 using `List.append`. -/
 partial def reduceAppend {α : Q(Type)} (left right : Q(List $α)) : MetaM Q(List $α) := do
   match left with
-  | ~q(List.nil), _ => return right
+  | ~q(List.nil) => return right
   | ~q(List.cons $left_hd $left_tl) =>
     let tl ← reduceAppend left_tl right
     return q(List.cons $left_hd $tl)

@@ -243,13 +243,12 @@ def insertLastLog (ms : MS) : MetaM MS := do
     $ms.logBasis := ⟨⟩
   let h_basis : Q(WellFormedBasis $basis) := q(($ms.h_basis).push_log_last)
   let ms' : MS := {
-    basis := basis
+    basis := q($basis)
     val := q(MultiseriesExpansion.extendBasisEnd (Real.log ∘ $last) $ms.val)
-    -- f := ms.f
     h_sorted := q(MultiseriesExpansion.extendBasisEnd_Sorted $ms.h_sorted)
     h_approx := q(MultiseriesExpansion.extendBasisEnd_Approximates $h_basis $ms.h_approx)
-    h_basis := h_basis
-    logBasis := logBasis
+    h_basis := q($h_basis)
+    logBasis := q($logBasis)
     h_logBasis := q(LogBasis.insertLastLog_WellFormed $ms.h_basis $ms.h_logBasis)
   }
   return ms'

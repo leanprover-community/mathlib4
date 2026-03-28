@@ -385,7 +385,7 @@ partial def normalizeMultiseries {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis
     (ms' : Q(Multiseries $basis_hd' $basis_tl'))]) =>
     have : $basis_hd =Q $basis_hd' := ⟨⟩
     have : $basis_tl =Q $basis_tl' ++ [$f] := ⟨⟩
-    let res ← normalizeMultiseries q($ms')
+    let res ← @normalizeMultiseries q($basis_hd') q($basis_tl') q($ms')
     match res with
     | .nil h =>
       return .nil (q(extendBasisEnd_nil $f $h) : Expr)
@@ -676,7 +676,8 @@ partial def getSeq {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       have : $basis_tl =Q $basis_tl' ++ [$f] := ⟨⟩
       let ⟨s, h⟩ ← getSeq q($ms')
       have : $ms =Q MultiseriesExpansion.extendBasisEnd $f $ms' := ⟨⟩
-      return ⟨q(Multiseries.extendBasisEnd $f $s), q(extendBasisEnd_seq' $h)⟩
+      return ⟨q(@Multiseries.extendBasisEnd $basis_hd' $basis_tl' $f $s), q(extendBasisEnd_seq' $h)⟩
+    | _ => panic! "Unexpected basis'"
   | (``MultiseriesExpansion.updateBasis, #[(oldBasis : Q(Basis)),
       (ex : Q(BasisExtension $oldBasis)), (ms' : Q(MultiseriesExpansion $oldBasis))]) =>
     have : ($basis_hd :: $basis_tl) =Q ($ex).getBasis := ⟨⟩

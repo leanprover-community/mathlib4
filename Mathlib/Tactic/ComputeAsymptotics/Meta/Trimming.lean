@@ -49,7 +49,8 @@ def checkZero {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis)) :
     | ~q(MultiseriesExpansion.mk .nil $f) => return .eq q(MultiseriesExpansion.IsZero.nil $f)
     | ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) =>
       return .neq q(MultiseriesExpansion.cons_not_IsZero)
-    | _ => throwError "checkZero: unexpected ms"
+    | _ => panic! "checkZero: unexpected ms"
+  | _ => panic! "unexpected basis"
 
 theorem approx_cons_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ} {exp : ℝ}
     {coef coef' : MultiseriesExpansion basis_tl}
@@ -180,6 +181,8 @@ partial def trimWithoutOracle {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $b
           h_fun := q($tl_trimmed.h_fun ▸
             (MultiseriesExpansion.mk_toFun.trans ($h_eq_extracted ▸ rfl)))
         }
+    | _ => panic! "unexpected ms_extracted"
+  | _ => panic! s!"unexpected basis {← ppExpr basis}"
 
 /-- Trims a multiseries. -/
 partial def trim {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis))
@@ -210,7 +213,7 @@ end
 def trimMS (ms : MS) :
     TacticM ((ms' : MS) × Q(($ms'.val).toFun = ($ms.val).toFun) ×
       Q(MultiseriesExpansion.Trimmed $ms'.val)) := do
-  let res ← trim ms.val ms.h_sorted ms.h_approx ms.h_basis false
+  let res ← trim q($ms.val) q($ms.h_sorted) q($ms.h_approx) q($ms.h_basis) false
   let newMs : MS := {
     basis := q($ms.basis)
     logBasis := q($ms.logBasis)
