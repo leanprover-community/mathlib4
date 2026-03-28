@@ -39,7 +39,6 @@ namespace AddCommGrpCat
 
 open CharacterModule
 
-set_option backward.isDefEq.respectTransparency false in
 instance enoughInjectives : EnoughInjectives AddCommGrpCat.{u} where
   presentation A_ := Nonempty.intro
     { J := of <| (CharacterModule A_) → ULift.{u} (AddCircle (1 : ℚ))

@@ -273,7 +273,6 @@ private lemma RingEquiv.height_comap_of_isPrime {S : Type*} [CommRing S] (e : R 
   have := p.map_comap_of_equiv e.symm
   congr
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma RingEquiv.height_comap {S : Type*} [CommRing S] (e : R ≃+* S) (I : Ideal S) :
     (I.comap e).height = I.height := by

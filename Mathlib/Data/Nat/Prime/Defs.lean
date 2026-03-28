@@ -141,7 +141,6 @@ theorem prime_iff_not_exists_mul_eq {p : ℕ} :
   exact (Nat.mul_eq_right (by lia)).mp
     (hp.symm.trans (hpn.antisymm (hp ▸ Nat.le_mul_of_pos_left _ (by lia))))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.Coprime m) : Prime n := by
   refine prime_def_lt.mpr ⟨h1, fun m mlt mdvd => ?_⟩
   have hm : m ≠ 0 := by
@@ -253,9 +252,8 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
         have := minFac_lemma n k h
         minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [k, e, Nat.left_distrib, add_right_comm])
           fun m m2 d => ?_
-      rcases Nat.eq_or_lt_of_le (a m m2 d) with me | ml
-      · subst me
-        contradiction
+      rcases Nat.eq_or_lt_of_le (a m m2 d) with rfl | ml
+      · contradiction
       apply (Nat.eq_or_lt_of_le ml).resolve_left
       intro me
       rw [← me, e] at d
