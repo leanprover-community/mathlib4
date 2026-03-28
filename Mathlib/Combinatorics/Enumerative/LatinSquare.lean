@@ -107,7 +107,7 @@ abbrev LatinRectangle.row (A : LatinRectangle m n α) : m → n → α := Matrix
 
 /-- Alernative constructor for LatinSquares using the OncePerColumn property -/
 @[reducible]
-def LatinSquareFromOncePerColumn
+def LatinSquare.fromOncePerColumn
   [Fintype n] [Fintype α] [DecidableEq α]
     (M : Matrix n n α)
     (exactly_n_symbols : Fintype.card α = Fintype.card n)
@@ -124,7 +124,7 @@ def LatinSquareFromOncePerColumn
   reducible]
 def groupToCayleyTable (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
     LatinSquare G G :=
-  LatinSquareFromOncePerColumn
+  LatinSquare.fromOncePerColumn
     (M := fun i j ↦ i * j)
     (exactly_n_symbols := by rfl)
     (once_per_row := by
