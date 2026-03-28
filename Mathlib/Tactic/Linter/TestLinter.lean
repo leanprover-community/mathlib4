@@ -35,7 +35,7 @@ partial def _root_.Lean.Expr.hasUnusedForallBinderIdxsWhere
 
 /-- quick lt -/
 @[inline] protected def _root_.Lean.Position.qlt : Position → Position → Bool
-  | ⟨l₁, c₁⟩, ⟨l₂, c₂⟩ => l₁.blt l₂ || l₁.beq l₂ && c₁.blt c₂
+  | ⟨l₁, c₁⟩, ⟨l₂, c₂⟩ => l₁ < l₂ || l₁ = l₂ && c₁ < c₂
 
 /--
 If `pos` is a `String.Pos`, then `getNamesFrom pos` returns the array of identifiers
