@@ -157,14 +157,6 @@ namespace ENNReal
 
 variable {α : Type*} {f : Filter α}
 
-theorem eventually_le_limsup [CountableInterFilter f] (u : α → ℝ≥0∞) :
-    ∀ᶠ y in f, u y ≤ f.limsup u :=
-  _root_.eventually_le_limsup
-
-theorem limsup_eq_zero_iff [CountableInterFilter f] {u : α → ℝ≥0∞} :
-    f.limsup u = 0 ↔ u =ᶠ[f] 0 :=
-  limsup_eq_bot
-
 theorem limsup_const_mul_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
     (f.limsup fun x : α => a * u x) = a * f.limsup u := by
   by_cases ha₀ : a = 0
@@ -173,6 +165,33 @@ theorem limsup_const_mul_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_
   let g_iso := (ENNReal.mul_right_strictMono ha₀ ha_top).orderIsoOfSurjective _ fun x ↦
     ⟨a⁻¹ * x, ENNReal.mul_inv_cancel_left ha₀ ha_top⟩
   exact g_iso.limsup_apply.symm
+
+theorem limsup_mul_const_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
+    (f.limsup fun x : α => u x * a) = a * f.limsup u := by
+  simpa [mul_comm] using limsup_const_mul_of_ne_top ha_top
+
+theorem liminf_const_mul_of_ne_zero_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞}
+    (ha₀ : a ≠ 0) (ha_top : a ≠ ⊤) :
+    (f.liminf fun x : α => a * u x) = a * f.liminf u := by
+  let g_iso := (ENNReal.mul_right_strictMono ha₀ ha_top).orderIsoOfSurjective _ fun x ↦
+    ⟨a⁻¹ * x, ENNReal.mul_inv_cancel_left ha₀ ha_top⟩
+  exact g_iso.liminf_apply.symm
+
+theorem liminf_mul_const_of_ne_zero_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞}
+    (ha₀ : a ≠ 0) (ha_top : a ≠ ⊤) :
+    (f.liminf fun x : α => u x * a) = a * f.liminf u := by
+  simpa [mul_comm] using liminf_const_mul_of_ne_zero_of_ne_top ha₀ ha_top
+
+theorem liminf_const_mul_of_ne_top [f.NeBot] {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
+    (f.liminf fun x : α => a * u x) = a * f.liminf u := by
+  by_cases ha₀ : a = 0
+  · simp_rw [ha₀, zero_mul, ← ENNReal.bot_eq_zero]
+    apply liminf_const
+  exact liminf_const_mul_of_ne_zero_of_ne_top ha₀ ha_top
+
+theorem liminf_mul_const_of_ne_top [f.NeBot] {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
+    (f.liminf fun x : α => a * u x) = a * f.liminf u := by
+  simpa [mul_comm] using liminf_const_mul_of_ne_top ha_top
 
 theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : ℝ≥0∞} :
     f.limsup (a * u ·) = a * f.limsup u := by
@@ -185,13 +204,15 @@ theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : �
     simp
   · have hu_mul : ∃ᶠ x : α in f, ⊤ ≤ ite (u x = 0) (0 : ℝ≥0∞) ⊤ := by
       rw [EventuallyEq, not_eventually] at hu
-      refine hu.mono fun x hx => ?_
-      rw [Pi.zero_apply] at hx
-      simp [hx]
+      exact hu.mono fun x hx => by simpa
     have h_top_le : (f.limsup fun x : α => ite (u x = 0) (0 : ℝ≥0∞) ⊤) = ⊤ :=
       eq_top_iff.mpr (le_limsup_of_frequently_le hu_mul)
-    have hfu : f.limsup u ≠ 0 := mt limsup_eq_zero_iff.1 hu
-    simp only [ha_top, top_mul', h_top_le, hfu, ite_false]
+    have hfu : f.limsup u ≠ 0 := mt limsup_eq_bot.1 hu
+    simp [ha_top, top_mul', h_top_le, hfu]
+
+theorem limsup_mul_const [CountableInterFilter f] {u : α → ℝ≥0∞} {a : ℝ≥0∞} :
+    f.limsup (u · * a) = a * f.limsup u := by
+  simpa [mul_comm] using limsup_const_mul
 
 /-- See also `limsup_mul_le'` -/
 theorem limsup_mul_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :
@@ -199,13 +220,13 @@ theorem limsup_mul_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :
   calc
     f.limsup (u * v) ≤ f.limsup fun x => f.limsup u * v x := by
       refine limsup_le_limsup ?_
-      filter_upwards [@eventually_le_limsup _ f _ u] with x hx using mul_le_mul' hx le_rfl
+      filter_upwards [eventually_le_limsup (u := u)] with x hx using mul_le_mul' hx le_rfl
     _ = f.limsup u * f.limsup v := limsup_const_mul
 
 theorem limsup_add_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :
     f.limsup (u + v) ≤ f.limsup u + f.limsup v :=
-  sInf_le ((eventually_le_limsup u).mp
-    ((eventually_le_limsup v).mono fun _ hxg hxf => add_le_add hxf hxg))
+  sInf_le ((eventually_le_limsup (u := u)).mp
+    ((eventually_le_limsup (u := v)).mono fun _ hxg hxf => add_le_add hxf hxg))
 
 theorem limsup_liminf_le_liminf_limsup {β} [Countable β] {f : Filter α} [CountableInterFilter f]
     {g : Filter β} (u : α → β → ℝ≥0∞) :
@@ -213,7 +234,7 @@ theorem limsup_liminf_le_liminf_limsup {β} [Countable β] {f : Filter α} [Coun
       g.liminf fun b => f.limsup fun a => u a b :=
   have h1 : ∀ᶠ a in f, ∀ b, u a b ≤ f.limsup fun a' => u a' b := by
     rw [eventually_countable_forall]
-    exact fun b => ENNReal.eventually_le_limsup fun a => u a b
+    exact fun b => eventually_le_limsup (u := fun a => u a b)
   sInf_le <| h1.mono fun x hx => Filter.liminf_le_liminf (Filter.Eventually.of_forall hx)
 
 lemma ofReal_limsup {u : α → ℝ}
