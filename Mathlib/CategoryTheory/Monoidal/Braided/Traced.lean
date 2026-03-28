@@ -20,7 +20,7 @@ public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 
 
-universe v v₁ v₂ v₃ u u₁ u₂ u₃
+universe u v
 
 namespace CategoryTheory
 
