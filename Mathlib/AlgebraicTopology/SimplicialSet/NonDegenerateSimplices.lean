@@ -53,6 +53,8 @@ lemma mk_surjective (x : X.N) :
     ∃ (n : ℕ) (y : X.nonDegenerate n), x = N.mk _ y.prop :=
   ⟨x.dim, ⟨_, x.nonDegenerate⟩, rfl⟩
 
+/-- Induction principle for the type `X.N` of nondegenerate simplices of
+a simplicial set `X`. -/
 @[elab_as_elim]
 def induction {motive : X.N → Sort*}
     (mk : ∀ (n : ℕ) (x : X.nonDegenerate n), motive (mk x.1 x.2)) (s : X.N) :
@@ -230,6 +232,10 @@ lemma existsUnique_toNπ {x : X.S} {y : X.N} (hy : x.toN = y) :
   refine existsUnique_of_exists_of_unique ⟨f, inferInstance, rfl⟩
     (fun f₁ f₂ ⟨_, hf₁⟩ ⟨_, hf₂⟩ ↦ unique_nonDegenerate_map _ _ _ _ hf₁.symm _ _ hf₂.symm)
 
+/-- Given a simplex `x : X.S` of a simplicial set `X`, this is the unique
+(epi)morphism `f : ⦋x.dim⦌ ⟶ ⦋x.toN.dim⦌` such that `x.simplex` is
+`X.map f.op x.toN.simplex` where `x.toN : X.N` is the unique nondegenerate
+simplex of `X` which generates the same subcomplex as `x`. -/
 noncomputable def toNπ (x : X.S) : ⦋x.dim⦌ ⟶ ⦋x.toN.dim⦌ :=
   (existsUnique_toNπ rfl).exists.choose
 
