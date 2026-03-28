@@ -37,6 +37,7 @@ variable
   [SymmetricCategory.{v} C]
   [RRC : RightRigidCategory C]
 
+/-- `TracedCategory.trace` -/
 @[inline]
 def trace {A B : C} (W : C) (f : A ⊗ W ⟶ B ⊗ W) : A ⟶ B :=
   (ρ_ A).inv ≫ A ◁ η_ W Wᘁ ≫ (α_ A W Wᘁ).inv ≫ f ▷ Wᘁ ≫
