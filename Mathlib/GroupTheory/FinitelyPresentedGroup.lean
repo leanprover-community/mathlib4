@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Hang Lu Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Riccardo Brasca, Fabrizio Barroero, Thomas Browning, Kevin Buzzard, Stefano Francaviglia,
+Authors: Fabrizio Barroero, Riccardo Brasca, Thomas Browning, Kevin Buzzard, Stefano Francaviglia,
   Francesco Milizia, Valerio Proietti, Hang Lu Su, Lawrence Wu
 -/
 module
