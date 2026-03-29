@@ -123,7 +123,8 @@ namespace StrongDual
 section
 
 variable {R : Type*} [CommSemiring R] [TopologicalSpace R] [ContinuousAdd R]
-variable [ContinuousConstSMul R R] [Module R M]
+  [ContinuousConstSMul R R]
+variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [Module R M]
 
 /-- For vector spaces `M`, there is a canonical map `StrongDual R M → WeakDual R M` (the "identity"
 mapping). It is a linear equivalence. -/
@@ -378,7 +379,7 @@ lemma exists_countable_separating : ∃ (gs : ℕ → (WeakDual 𝕜 E) → 𝕜
 /-- A compact subset of the weak dual of a separable normed space is metrizable. -/
 lemma metrizable_of_isCompact (K_cpt : IsCompact K) : TopologicalSpace.MetrizableSpace K := by
   have : CompactSpace K := isCompact_iff_compactSpace.mp K_cpt
-  obtain ⟨gs, gs_cont, gs_sep⟩ := exists_countable_separating 𝕜 (E := E)
+  obtain ⟨gs, gs_cont, gs_sep⟩ := exists_countable_separating 𝕜 E
   exact Metric.PiNatEmbed.TopologicalSpace.MetrizableSpace.of_countable_separating
     (fun n k ↦ gs n k) (fun n ↦ (gs_cont n).comp continuous_subtype_val)
     fun x y hxy ↦ gs_sep <| Subtype.val_injective.ne hxy
@@ -392,7 +393,7 @@ theorem isSeqCompact_of_isBounded_of_isClosed {s : Set (WeakDual 𝕜 E)}
   have b_isCompact' : CompactSpace s :=
     isCompact_iff_compactSpace.mp <| isCompact_of_bounded_of_closed hb hc
   have b_isMetrizable : TopologicalSpace.MetrizableSpace s :=
-    metrizable_of_isCompact 𝕜 s <| isCompact_of_bounded_of_closed hb hc
+    metrizable_of_isCompact 𝕜 E s <| isCompact_of_bounded_of_closed hb hc
   have seq_cont_phi : SeqContinuous (fun φ : s ↦ (φ : WeakDual 𝕜 E)) :=
     continuous_iff_seqContinuous.mp continuous_subtype_val
   simpa using IsSeqCompact.range seq_cont_phi
@@ -401,13 +402,14 @@ theorem isSeqCompact_of_isBounded_of_isClosed {s : Set (WeakDual 𝕜 E)}
 a separable normed space `V` is a sequentially compact subset of `WeakDual 𝕜 V`. -/
 theorem isSeqCompact_polar {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
     IsSeqCompact (polar 𝕜 s) :=
-  isSeqCompact_of_isBounded_of_isClosed 𝕜 (isBounded_polar 𝕜 s_nhd) (isClosed_polar _ _)
-
+  isSeqCompact_of_isBounded_of_isClosed (s := polar 𝕜 s) _ _
+    (isBounded_polar 𝕜 s_nhd) (isClosed_polar _ _)
 
 /-- The **Sequential Banach-Alaoglu theorem**: closed balls of the dual of a separable
 normed space `V` are sequentially compact in the weak-* topology. -/
 theorem isSeqCompact_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
     IsSeqCompact (toStrongDual ⁻¹' Metric.closedBall x' r) :=
-  isSeqCompact_of_isBounded_of_isClosed 𝕜 (isBounded_closedBall x' r) (isClosed_closedBall x' r)
+  isSeqCompact_of_isBounded_of_isClosed 𝕜 E
+    (isBounded_closedBall x' r) (isClosed_closedBall x' r)
 
 end WeakDual
