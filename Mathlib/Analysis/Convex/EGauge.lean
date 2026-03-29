@@ -190,7 +190,6 @@ lemma egauge_smul_left (hc : c ≠ 0) (s : Set E) (x : E) :
     _ ≤ egauge 𝕜 (c⁻¹ • c • s) x := le_egauge_smul_left _ _ _
     _ = egauge 𝕜 s x := by rw [inv_smul_smul₀ hc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_egauge_smul_right (c : 𝕜) (s : Set E) (x : E) :
     ‖c‖ₑ * egauge 𝕜 s x ≤ egauge 𝕜 s (c • x) := by
   rw [le_egauge_iff]
@@ -334,7 +333,6 @@ lemma le_egauge_ball_one (x : E) : ‖x‖ₑ ≤ egauge 𝕜 (ball 0 1) x := by
 variable {𝕜}
 variable {c : 𝕜} {x : E} {r : ℝ≥0}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ ‖x‖ ≠ 0) :
     egauge 𝕜 (ball 0 r) x ≤ ‖c‖ₑ * ‖x‖ₑ / r := by
   letI : NontriviallyNormedField 𝕜 := ⟨c, hc⟩

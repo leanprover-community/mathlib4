@@ -55,7 +55,6 @@ lemma corootSubmodule_le (I : LieIdeal K L) {α : Weight K H L}
 /-- The set of roots whose root space is contained in a given Lie ideal. -/
 def rootSet (I : LieIdeal K L) : Set H.root := { α | rootSpace H α.1 ≤ I.restr H }
 
-@[simp]
 lemma mem_rootSet {I : LieIdeal K L} {α : H.root} :
     α ∈ I.rootSet ↔ rootSpace H α.1 ≤ I.restr H := Iff.rfl
 
@@ -187,6 +186,38 @@ lemma restr_inf_cartan_eq_biSup_corootSubmodule (I : LieIdeal K L) :
     · exact I.root_apply_eq_zero_of_notMem_rootSet hbI hμI
   · simp only [Weight.IsNonZero, not_not] at hμ
     exact LinearMap.mem_ker.mpr (congr_fun hμ b)
+
+lemma mem_rootSet_of_mem_rootSpan (I : LieIdeal K L)
+    {α : H.root} (hα_span : (α : Dual K H) ∈ I.rootSpan) :
+    α ∈ I.rootSet := by
+  by_contra hα_not
+  have hα_nz := H.isNonZero_coe_root α
+  have : I.rootSpan ≤ LinearMap.ker (Dual.eval K H (coroot (α : Weight K H L))) := by
+    rw [LieIdeal.rootSpan, Submodule.span_le]
+    rintro _ ⟨γ, hγ, rfl⟩
+    simp only [SetLike.mem_coe, LinearMap.mem_ker, Dual.eval_apply, rootSystem_root_apply]
+    exact I.rootSet_apply_coroot_eq_zero_of_notMem_rootSet hγ hα_not
+  have := LinearMap.mem_ker.mp (this hα_span)
+  simp only [Dual.eval_apply, Weight.toLinear_apply, root_apply_coroot hα_nz] at this
+  exact absurd this two_ne_zero
+
+lemma restr_eq_iSup_sl2SubmoduleOfRoot (I : LieIdeal K L) :
+    I.restr H =
+      ⨆ (α : H.root) (_ : α ∈ I.rootSet), sl2SubmoduleOfRoot (H.isNonZero_coe_root α) := by
+  apply le_antisymm
+  · rw [lieIdeal_eq_inf_cartan_sup_biSup_rootSpace, restr_inf_cartan_eq_biSup_corootSubmodule]
+    apply sup_le
+    · exact iSup₂_le fun β hβ ↦ le_iSup₂_of_le β hβ
+        (by rw [sl2SubmoduleOfRoot_eq_sup]; exact le_sup_right)
+    · exact iSup₂_le fun α hα ↦ le_iSup₂_of_le α hα
+        (by rw [sl2SubmoduleOfRoot_eq_sup]; exact le_sup_of_le_left le_sup_left)
+  · exact iSup₂_le fun α hα ↦ by
+      rw [sl2SubmoduleOfRoot_eq_sup]
+      refine sup_le (sup_le ?_ ?_) ?_
+      · exact hα
+      · apply I.rootSpace_le_of_apply_coroot_ne_zero hα
+        simp [Pi.neg_apply, root_apply_coroot (H.isNonZero_coe_root α)]
+      · exact I.corootSubmodule_le hα
 
 end LieIdeal
 
@@ -432,6 +463,42 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     (invtSubmoduleToLieIdeal q hq).toSubmodule =
       ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 :=
   rfl
+
+@[simp] lemma restr_invtSubmoduleToLieIdeal_eq_iSup (q : Submodule K (Dual K H))
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap) :
+    (invtSubmoduleToLieIdeal q hq).restr H =
+      ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
+  rw [← LieSubmodule.toSubmodule_inj, LieSubmodule.restr_toSubmodule,
+    coe_invtSubmoduleToLieIdeal_eq_iSup, LieSubmodule.iSup_toSubmodule]
+
+lemma mem_rootSet_invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap) {α : H.root} :
+    α ∈ (invtSubmoduleToLieIdeal q hq).rootSet ↔ (rootSystem H).root α ∈ q := by
+  set J := invtSubmoduleToLieIdeal q hq
+  constructor
+  · intro hα_mem
+    by_contra hα_not
+    have hα_nz := H.isNonZero_coe_root α
+    have hne (χ : Weight K H L) (hχ : ↑χ ∈ q) : (χ : H → K) ≠ ((α : Weight K H L) : H → K) :=
+      fun heq ↦ hα_not (by simpa [rootSystem_root_apply] using DFunLike.coe_injective heq ▸ hχ)
+    have h_le : J.restr H ≤ ⨆ (χ : H → K) (_ : χ ≠ (α : Weight K H L)), genWeightSpace L χ := by
+      refine iSup_le fun ⟨β, hβ_mem, hβ_nz⟩ ↦ ?_
+      rw [sl2SubmoduleOfRoot_eq_sup]
+      refine sup_le (sup_le ?_ ?_) ?_
+      · exact le_iSup₂_of_le _ (hne β hβ_mem) le_rfl
+      · have : ↑(-β) ∈ q := by rw [Weight.toLinear_neg]; exact q.neg_mem hβ_mem
+        exact le_iSup₂_of_le _ (hne (-β) this) le_rfl
+      · apply (LieSubmodule.map_incl_le.trans (rootSpace_zero_eq K L H).symm.le).trans
+        exact le_iSup₂_of_le 0 (fun h ↦ hα_nz h.symm) le_rfl
+    have h_disj := ((iSupIndep_genWeightSpace K H L _).mono_right h_le).mono_right hα_mem
+    exact (α : Weight K H L).genWeightSpace_ne_bot L (disjoint_self.mp h_disj)
+  · intro hα
+    calc rootSpace H (α : Weight K H L)
+        ≤ sl2SubmoduleOfRoot (H.isNonZero_coe_root α) := by
+          rw [sl2SubmoduleOfRoot_eq_sup]; exact le_sup_of_le_left le_sup_left
+      _ ≤ ⨆ x : {β : Weight K H L // ↑β ∈ q ∧ β.IsNonZero}, sl2SubmoduleOfRoot x.2.2 :=
+          le_iSup_of_le ⟨↑α, hα, H.isNonZero_coe_root α⟩ le_rfl
+      _ = J.restr H := (restr_invtSubmoduleToLieIdeal_eq_iSup q hq).symm
 
 open LieSubmodule in
 @[simp] lemma invtSubmoduleToLieIdeal_top :

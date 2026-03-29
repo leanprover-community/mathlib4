@@ -260,7 +260,6 @@ lemma sqrt_zero : sqrt (0 : A) = 0 := by simp [sqrt]
 
 variable [IsSemitopologicalRing A] [T2Space A]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma nnrpow_sqrt {a : A} {x : ℝ≥0} : (sqrt a) ^ x = a ^ (x / 2) := by
   rw [sqrt_eq_nnrpow, nnrpow_nnrpow, one_div_mul_eq_div 2 x]

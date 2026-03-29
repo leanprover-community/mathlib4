@@ -105,7 +105,6 @@ def Goodm (xs : Miustr) : Prop :=
   List.headI xs = M ∧ M ∉ List.tail xs
 deriving Decidable
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Demonstration that `"MI"` starts with `M` and has no `M` in its tail.
 -/
 theorem goodmi : Goodm [M, I] := by
@@ -119,7 +118,6 @@ We'll show, for each `i` from 1 to 4, that if `en` follows by Rule `i` from `st`
 -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 theorem goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ [I])) (h₂ : Goodm (xs ++ [I])) :
     Goodm (xs ++ [I, U]) := by
   obtain ⟨mhead, nmtail⟩ := h₂
@@ -139,7 +137,6 @@ theorem goodm_of_rule2 (xs : Miustr) (_ : Derivable (M :: xs)) (h₂ : Goodm (M 
     rw [cons_append] at mtail
     exact or_self_iff.mp (mem_append.mp mtail)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ [I, I, I] ++ bs))
     (h₂ : Goodm (as ++ [I, I, I] ++ bs)) : Goodm (as ++ (U :: bs)) := by
   obtain ⟨mhead, nmtail⟩ := h₂
@@ -158,7 +155,6 @@ The proof of the next lemma is identical, on the tactic level, to the previous p
 -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ [U, U] ++ bs))
     (h₂ : Goodm (as ++ [U, U] ++ bs)) : Goodm (as ++ bs) := by
   obtain ⟨mhead, nmtail⟩ := h₂
