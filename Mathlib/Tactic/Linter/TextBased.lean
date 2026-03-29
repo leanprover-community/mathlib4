@@ -96,7 +96,7 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
   | semicolon => "This line contains a space before a semicolon"
   | StyleError.unwantedUnicode c => s!"This line contains a blocklisted unicode character \
     '{c}' ({c.printCodepointHex}). \
-    For proposing new symbols see `Mathlib.Linter.TextBased.UnicodeLinter.othersInMathlib`."
+    For adding new symbols see `Mathlib.Linter.TextBased.UnicodeLinter.othersInMathlib`."
   | StyleError.unicodeVariant s selector =>
     let variantText := if selector == UnicodeVariant.emoji then
       "emoji"
