@@ -261,7 +261,7 @@ theorem monomialRpow_Approximates {basis : Basis} {n : Fin (List.length basis)} 
       simp only [Fin.val_succ, Multiseries.monomialRpow, List.getElem_cons_succ]
       apply Approximates.cons
       · exact monomialRpow_Approximates h_basis.tail
-      · apply basis_tail_pow_Majorized_head h_basis
+      · apply h_basis.tail_pow_Majorized_head
         simp
       · simp
 

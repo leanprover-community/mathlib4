@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
-public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term
-public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term.Basic
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term.LeadingTerm
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LogBasis

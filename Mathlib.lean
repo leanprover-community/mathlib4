@@ -6943,7 +6943,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Corecursion
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
-public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LogBasis
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations
@@ -6955,7 +6954,8 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Log
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Mul
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Pow
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Powser
-public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term.Basic
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term.LeadingTerm
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term.Predicates
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 public import Mathlib.Tactic.ComputeDegree

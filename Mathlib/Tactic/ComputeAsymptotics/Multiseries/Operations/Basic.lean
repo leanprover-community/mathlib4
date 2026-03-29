@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
-public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term.LeadingTerm
 
 /-!
 # Basic operations for multiseries: multiplication by constant and negation

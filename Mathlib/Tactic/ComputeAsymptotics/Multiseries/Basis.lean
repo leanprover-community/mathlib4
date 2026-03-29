@@ -5,6 +5,7 @@ Authors: Vasilii Nesterov
 -/
 module
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
@@ -158,61 +159,32 @@ end WellFormedBasis
 
 /-- Auxillary lemma. If function `f` is eventually positive, `g` tends to `atTop`, and
 `log f =o[atTop] log g` then for any `a` and `b > 0`, then `f^a =o[atTop] g^b`. -/
-theorem basis_compare {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x in atTop, 0 < f x)
+theorem pow_isLittleO_pow_of_log {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x in atTop, 0 < f x)
     (hg : Tendsto g atTop atTop) (h : (Real.log ∘ f) =o[atTop] (Real.log ∘ g)) (hb : 0 < b) :
-    (fun x ↦ (f x)^a) =o[atTop] fun x ↦ (g x)^b := by
-  obtain ⟨φ, h1, h2⟩ := IsLittleO.exists_eq_mul <| IsLittleO.const_mul_right' (c := b)
-    (isUnit_iff_ne_zero.mpr hb.ne.symm) (IsLittleO.const_mul_left h a)
-  have hf_exp_log : (fun x ↦ (f x)^a) =ᶠ[atTop] fun x ↦ Real.exp (a * (Real.log (f x))) := by
-    simp only [EventuallyEq]
-    apply hf.mono
-    intro x hx
-    rw [mul_comm, Real.exp_mul, Real.exp_log hx]
-  have hg_exp_log : (fun x ↦ (g x)^b) =ᶠ[atTop] fun x ↦ Real.exp (b * (Real.log (g x))) := by
-    simp only [EventuallyEq]
-    apply (Tendsto.eventually_gt_atTop hg 0).mono
-    intro x hx
-    rw [mul_comm, Real.exp_mul, Real.exp_log hx]
-  apply IsLittleO.trans_eventuallyEq _ hg_exp_log.symm
-  apply EventuallyEq.trans_isLittleO hf_exp_log
-  simp only [Function.comp_apply] at h2
-  have h2 := EventuallyEq.fun_comp h2 Real.exp
-  eta_expand at h2
-  simp only [Function.comp_apply, Pi.mul_apply] at h2
-  apply EventuallyEq.trans_isLittleO h2
-  apply isLittleO_of_tendsto'
-  · apply Eventually.of_forall
-    intro x h
-    absurd h
-    apply (Real.exp_pos _).ne.symm
-  · simp only [← Real.exp_sub, Real.tendsto_exp_comp_nhds_zero]
-    conv =>
-      arg 1
-      ext x
-      rw [show φ x * (b * Real.log (g x)) - b * Real.log (g x) =
-        b * ((φ x - 1) * Real.log (g x)) by ring]
-    apply Tendsto.const_mul_atBot hb
-    apply Tendsto.neg_mul_atTop (C := -1) (by simp)
-    · simp_rw [show (-1 : ℝ) = 0 - 1 by simp]
-      apply Tendsto.sub_const h1
-    · exact Tendsto.comp Real.tendsto_log_atTop hg
+    (f ^ a) =o[atTop] (g ^ b) := by
+  apply IsLittleO.of_tendsto_div_atTop
+  apply Tendsto.congr' (f₁ := Real.exp ∘ (b • Real.log ∘ g - a • Real.log ∘ f))
+  · refine (hf.and (hg.eventually_gt_atTop 0)).mono (fun x ⟨hf, hg⟩ ↦ ?_)
+    simp [Real.exp_sub, mul_comm a, mul_comm b, Real.exp_mul, Real.exp_log hg, Real.exp_log hf]
+  apply Real.tendsto_exp_atTop.comp
+  have h' : (b • Real.log ∘ g - a • Real.log ∘ f) ~[atTop] b • Real.log ∘ g := by
+    replace h : (a • Real.log ∘ f) =o[atTop] (b • Real.log ∘ g) :=
+      (h.const_mul_left a).const_mul_right (hb.ne')
+    grind only [IsEquivalent.sub_isLittleO, IsEquivalent.refl]
+  rw [h'.tendsto_atTop_iff]
+  apply Filter.Tendsto.const_mul_atTop hb
+  apply Real.tendsto_log_atTop.comp hg
 
-/-- Any power of function from well-formed basis' tail is Majorized by
+/-- Any power of function from a well-formed basis' tail is Majorized by
 basis' head with zero exponent. -/
-theorem basis_tail_pow_Majorized_head {hd f : ℝ → ℝ} {tl : Basis}
+theorem WellFormedBasis.tail_pow_Majorized_head {hd f : ℝ → ℝ} {tl : Basis}
     (h_basis : WellFormedBasis (hd :: tl)) (hf : f ∈ tl) (r : ℝ) :
-    Majorized (fun x ↦ (f x)^r) hd 0 := by
-  simp only [Majorized]
+    Majorized (f ^ r) hd 0 := by
   intro exp h_exp
-  apply basis_compare
-  · apply h_basis.tail.eventually_pos.mono
-    intro x h
-    apply h
-    exact hf
-  · apply h_basis.tendsto_atTop
-    simp
-  · simp only [WellFormedBasis, List.pairwise_cons, List.mem_cons, forall_eq_or_imp] at h_basis
-    tauto
+  apply pow_isLittleO_pow_of_log
+  · exact h_basis.tail.eventually_pos.mono fun x h ↦ h _ hf
+  · exact h_basis.tendsto_atTop (by simp)
+  · grind [WellFormedBasis, List.pairwise_cons]
   · exact h_exp
 
 /-- If `basis_hd :: basis_tl` is well-formed and function `fC` can be approximated by
@@ -239,7 +211,7 @@ theorem MultiseriesExpansion.Approximates_coef_Majorized_head {basis_hd : ℝ �
       simp only [mk_toFun]
       intro exp' h_exp
       apply Asymptotics.IsLittleO.trans <| h_maj (exp + 1) (by linarith)
-      apply basis_compare
+      apply pow_isLittleO_pow_of_log
       · apply h_basis.tail.head_eventually_pos
       · apply h_basis.tendsto_atTop
         simp only [List.mem_cons, true_or]

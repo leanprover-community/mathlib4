@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Powser
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
-public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term.LeadingTerm
 
 /-!
 # Inversion for multiseries

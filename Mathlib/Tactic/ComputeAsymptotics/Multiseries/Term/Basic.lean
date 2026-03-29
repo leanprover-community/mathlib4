@@ -123,11 +123,11 @@ theorem tail_toFun_IsLittleO_head {m : Monomial} {basis_hd : ℝ → ℝ} {basis
       simp only [List.length_cons, Nat.add_right_cancel_iff, toFun_cons] at h_length ⊢
       rw [show (0 : ℝ) = 0 + 0 by simp]
       apply Majorized.mul
-      · apply basis_tail_pow_Majorized_head h_basis (by simp)
+      · apply h_basis.tail_pow_Majorized_head  (by simp)
       · specialize ih h_length h_basis.tail 1 (by simp)
         intro exp h_exp
         apply ih.trans
-        exact basis_tail_pow_Majorized_head (f := basis_tl_hd) h_basis (by simp) 1 exp h_exp
+        exact h_basis.tail_pow_Majorized_head (by simp) 1 exp h_exp
       · exact h_basis.head_eventually_pos
 
 theorem toFun_pos {m : Monomial} {basis : Basis}

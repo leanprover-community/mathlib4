@@ -5,7 +5,7 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term.Basic
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 
 /-!
