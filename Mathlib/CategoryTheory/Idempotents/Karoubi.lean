@@ -234,7 +234,7 @@ def toKaroubiEquivalence [IsIdempotentComplete C] : C ≌ Karoubi C :=
 
 instance toKaroubiEquivalence_functor_additive [Preadditive C] [IsIdempotentComplete C] :
     (toKaroubiEquivalence C).functor.Additive :=
-  (inferInstance : (toKaroubi C).Additive)
+  inferInstanceAs <| (toKaroubi C).Additive
 
 namespace Karoubi
 

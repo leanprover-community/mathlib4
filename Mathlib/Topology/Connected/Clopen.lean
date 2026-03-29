@@ -616,7 +616,6 @@ lemma equivOfIsClopenOfIsConnected_mk (hconn : ∀ i, IsConnected (U i)) {i : ι
 end
 
 variable (α) in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `X` has infinitely many connected components, it admits disjoint union decompositions with
 arbitrarily many summands. -/
 lemma exists_fun_isClopen_of_infinite [Infinite (ConnectedComponents α)] (n : ℕ) (hn : 0 < n) :

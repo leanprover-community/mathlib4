@@ -243,7 +243,6 @@ theorem ofScalars_radius_eq_inv_of_tendsto [NormOneClass E] {r : ℝ≥0} (hr : 
   simp_rw [ofScalars_norm]
   exact tendsto_succ_norm_div_norm c (by aesop) hc
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A convenience lemma restating the result of `ofScalars_radius_eq_inv_of_tendsto` under
 the inverse ratio. -/
 theorem ofScalars_radius_eq_of_tendsto [NormOneClass E] {r : NNReal} (hr : r ≠ 0)

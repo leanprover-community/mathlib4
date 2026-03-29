@@ -53,12 +53,10 @@ set_option backward.isDefEq.respectTransparency false in
 lemma cauchyBound_X : cauchyBound (X : K[X]) = 1 := by
   simp [cauchyBound]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma cauchyBound_X_add_C (x : K) : cauchyBound (X + C x) = ‖x‖₊ + 1 := by
   simp [cauchyBound]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma cauchyBound_X_sub_C (x : K) : cauchyBound (X - C x) = ‖x‖₊ + 1 := by
   simp [cauchyBound]
@@ -71,7 +69,6 @@ lemma cauchyBound_smul {x : K} (hx : x ≠ 0) (p : K[X]) : cauchyBound (x • p)
   apply mul_div_mul_left
   simpa
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 `cauchyBound` is a bound on the norm of polynomial roots.
 -/
