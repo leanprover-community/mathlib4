@@ -6,7 +6,6 @@ Authors: Huanyu Zheng
 module
 
 public import Mathlib.NumberTheory.LSeries.Nonvanishing
-public import Mathlib.Topology.DiscreteSubset
 
 /-!
 # Discreteness of the zeros of the Riemann zeta function
