@@ -525,6 +525,44 @@ end Lex
 
 end Sum
 
+/-! ### Order embeddings -/
+
+namespace OrderEmbedding
+
+variable [Preorder α] [Preorder β]
+
+/-- `Sum.inl` as an `OrderEmbedding`. -/
+@[simps]
+def inl : α ↪o α ⊕ β where
+  toFun := Sum.inl
+  inj' := Sum.inl_injective
+  map_rel_iff' := by simp
+
+/-- `Sum.inr` as an `OrderEmbedding`. -/
+@[simps]
+def inr : β ↪o α ⊕ β where
+  toFun := Sum.inr
+  inj' := Sum.inr_injective
+  map_rel_iff' := by simp
+
+end OrderEmbedding
+
+/-! ### Order homomorphisms -/
+
+namespace OrderHom
+
+variable [Preorder α] [Preorder β]
+
+/-- `Sum.inl` as an `OrderHom`. -/
+@[simps!]
+def inl : α →o α ⊕ β := OrderEmbedding.inl.toOrderHom
+
+/-- `Sum.inr` as an `OrderHom`. -/
+@[simps!]
+def inr : β →o α ⊕ β := OrderEmbedding.inr.toOrderHom
+
+end OrderHom
+
 /-! ### Order isomorphisms -/
 
 
