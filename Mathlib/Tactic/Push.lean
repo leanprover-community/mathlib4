@@ -232,10 +232,10 @@ To instead move a constant closer to the head of the expression, use the `pull` 
 * `push (disch := tac) c` uses the tactic `tac` to discharge any hypotheses for `@[push]` lemmas.
 
 Examples:
+* `push Not` is the same as `push ¬ _`, and it rewrites `¬ ∀ ε > 0, ∃ δ > 0, δ < ε` into
+  `∃ ε > 0, ∀ δ > 0, ε ≤ δ`. Notably, this preserves the binder names.
 * `push _ ∈ _` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`.
 * `push (disch := positivity) Real.log` rewrites `log (a * b ^ 2)` into `log a + 2 * log b`.
-* `push ¬ _` is the same as `push Not`, and it rewrites `¬ ∀ ε > 0, ∃ δ > 0, δ < ε` into
-  `∃ ε > 0, ∀ δ > 0, ε ≤ δ`. Notably, this preserves the binder names.
 * `push fun _ ↦ _` rewrites `fun x => f x ^ 2 + 5` into `f ^ 2 + 5`
 * `push ∀ _, _` rewrites `∀ a, p a ∧ q a` into `(∀ a, p a) ∧ (∀ a, q a)`.
 -/
