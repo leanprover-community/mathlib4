@@ -116,6 +116,12 @@ lemma anodyneExtensions_eq_retracts_transfiniteCompositions :
       (coproducts.{u} modelCategoryQuillen.J.{u}).pushouts).retracts := by
   rw [anodyneExtensions_eq_llp_rlp, llp_rlp_of_hasSmallObjectArgument]
 
+lemma anodyneExtensions_eq_retracts_transfiniteCompositionsOfShape :
+    anodyneExtensions = (transfiniteCompositionsOfShape
+      (coproducts.{u} modelCategoryQuillen.J.{u}).pushouts ℕ).retracts := by
+  rw [anodyneExtensions_eq_llp_rlp,
+    SmallObject.llp_rlp_of_isCardinalForSmallObjectArgument_aleph0]
+
 /-- In the category of simplicial sets, a strong anodyne extension is a morphism
 which belongs to the closure of horn inclusions by pushouts, coproducts,
 transfinite compositions (but not by retracts). We define this class here
@@ -142,7 +148,6 @@ lemma strongAnodyneExtensions_ι_iff {X : SSet.{u}} (A : X.Subcomplex) :
       exact ⟨_, P, inferInstance, by simp⟩
     exact ⟨P, inferInstance⟩,
   fun ⟨P, _⟩ ↦ P.strongAnodyneExtensions⟩
-
 
 lemma Subcomplex.Pairing.anodyneExtensions {X : SSet.{u}} {A : X.Subcomplex}
     (P : A.Pairing) [P.IsRegular] :
