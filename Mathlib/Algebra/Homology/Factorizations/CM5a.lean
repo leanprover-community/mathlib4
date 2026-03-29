@@ -386,7 +386,7 @@ lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
     have h₂ := (CochainComplex.homologyMap_exact₂_of_distTriang _
       (DerivedCategory.mappingCocone_triangle_distinguished (α f n)) n).fIsKernel
     have : homologyMap (ι f n) n = (IsLimit.conePointUniqueUpToIso h₁ h₂).hom := by
-      simp [← cancel_mono (homologyMap (π f n) n), 
+      simp [← cancel_mono (homologyMap (π f n) n),
         dsimp% IsLimit.conePointUniqueUpToIso_hom_comp h₁ h₂ .zero,
         ← homologyMap_comp, mappingCocone.lift_fst]
     rw [quasiIsoAt_iff_isIso_homologyMap, this]
