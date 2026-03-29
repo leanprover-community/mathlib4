@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2026 Prof. Dr. Fei Gao. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Prof. Dr. Fei Gao <gaof@whut.edu.cn>
+-/
+
 module
 
 public import Mathlib.Uncertainty.BaseDistribution
@@ -438,13 +444,15 @@ class UncertainDEWellposednessStructure (U : UncertainSpace)
 theorem uncertainDE_existence_interface (U : UncertainSpace)
     (de : UncertainDE) (P : UncertainProcess U) (dt : ℝ)
     [EulerSchemeStructure U de P dt] [UncertainDEWellposednessStructure U de P dt] :
-    UncertainDEWellposednessStructure.existence_statement (U := U) (de := de) (P := P) (dt := dt) :=
+    UncertainDEWellposednessStructure.existence_statement
+      (U := U) (de := de) (P := P) (dt := dt) :=
   UncertainDEWellposednessStructure.existence_axiom (U := U) (de := de) (P := P) (dt := dt)
 
 theorem uncertainDE_uniqueness_interface (U : UncertainSpace)
     (de : UncertainDE) (P : UncertainProcess U) (dt : ℝ)
     [EulerSchemeStructure U de P dt] [UncertainDEWellposednessStructure U de P dt] :
-    UncertainDEWellposednessStructure.uniqueness_statement (U := U) (de := de) (P := P) (dt := dt) :=
+    UncertainDEWellposednessStructure.uniqueness_statement
+      (U := U) (de := de) (P := P) (dt := dt) :=
   UncertainDEWellposednessStructure.uniqueness_axiom (U := U) (de := de) (P := P) (dt := dt)
 
 /-- D-line start: uncertain programming / solver correctness interface. -/
@@ -515,7 +523,10 @@ structure CompleteLiuProcess (U : UncertainSpace) [AlgebraicUncertainSpace U]
     extends LiuProcess U where
   /-- Path continuity for each sample point. -/
   path_continuous : ∀ ω, Continuous (fun t => toLiuProcess.toProcess.proc t ω)
-  /-- Stationary increments at distribution level: equal interval lengths give equal increment laws. -/
+  /--
+  Stationary increments at distribution level:
+  equal interval lengths give equal increment laws.
+  -/
   stationary_increment_law : ∀ s t u v,
     t - s = v - u →
       IncrementLaw U toLiuProcess.toProcess s t = IncrementLaw U toLiuProcess.toProcess u v
