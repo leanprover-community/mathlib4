@@ -39,7 +39,7 @@ continuous linear map when the input is itself a continuous linear map.
 noncomputable def completion (f : α →SL[σ] β) : Completion α →SL[σ] Completion β where
   __ := f.toAddMonoidHom.completion f.continuous
   map_smul' r x := by
-    induction x using Completion.induction_on with
+    induction x using induction_on with
     | hp =>
       exact isClosed_eq (continuous_map.comp <| continuous_const_smul r)
         (continuous_map.const_smul _)

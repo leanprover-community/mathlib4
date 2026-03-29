@@ -154,19 +154,19 @@ noncomputable def gnsNonUnitalStarAlgHom : A →⋆ₙₐ[ℂ] (f.GNS →L[ℂ] 
   map_zero' := by simpa using f.gnsNonUnitalStarAlgHom_map_smul 0 0
   map_add' _ _ := by
     ext c
-    induction c using Completion.induction_on with
+    induction c using induction_on with
       | hp => apply isClosed_eq <;> fun_prop
       | ih c => simp [add_mul, Completion.coe_add]
   map_mul' _ _ := by
     ext c
-    induction c using Completion.induction_on with
+    induction c using induction_on with
       | hp => apply isClosed_eq <;> fun_prop
       | ih c => simp
   map_star' a := by
     refine (eq_adjoint_iff (f.leftMulMapPreGNS (star a)).completion
       (f.leftMulMapPreGNS a).completion).mpr ?_
     intro x y
-    induction x, y using Completion.induction_on₂ with
+    induction x, y using induction_on₂ with
     | hp => apply isClosed_eq <;> fun_prop
     | ih x y => simp [mul_assoc, preGNS_inner_def]
 
@@ -184,7 +184,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 private lemma gnsNonUnitalStarAlgHom_map_one : f.gnsNonUnitalStarAlgHom 1 = 1 := by
   ext b
-  induction b using Completion.induction_on with
+  induction b using induction_on with
   | hp => apply isClosed_eq <;> fun_prop
   | ih b => simp [gnsNonUnitalStarAlgHom]
 
