@@ -585,9 +585,10 @@ lemma invtSubmoduleToLieIdeal_mono {q₁ q₂ : Submodule K (Dual K H)}
   change (invtSubmoduleToLieIdeal q₁ hq₁).restr H ≤ (invtSubmoduleToLieIdeal q₂ hq₂).restr H
   exact iSup_le fun ⟨α, hα_mem, hα_nz⟩ ↦ le_iSup_of_le ⟨α, h hα_mem, hα_nz⟩ le_rfl
 
-lemma lieIdealOrderIso_left_inv (I : LieIdeal K L) :
-    invtSubmoduleToLieIdeal I.rootSpan
-      ((rootSystem H).mem_invtRootSubmodule_iff.mp I.rootSpan_mem_invtRootSubmodule) = I := by
+lemma lieIdealOrderIso_left_inv (I : LieIdeal K L)
+    (hI : ∀ α, I.rootSpan ∈ End.invtSubmodule ((rootSystem H).reflection α).toLinearMap :=
+      (rootSystem H).mem_invtRootSubmodule_iff.mp I.rootSpan_mem_invtRootSubmodule) :
+    invtSubmoduleToLieIdeal I.rootSpan hI = I := by
   set J := invtSubmoduleToLieIdeal I.rootSpan
     ((rootSystem H).mem_invtRootSubmodule_iff.mp I.rootSpan_mem_invtRootSubmodule)
   have h_eq : ∀ α : H.root, α ∈ J.rootSet ↔ α ∈ I.rootSet := fun α ↦ by
