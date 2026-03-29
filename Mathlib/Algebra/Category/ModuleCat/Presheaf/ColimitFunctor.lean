@@ -59,7 +59,9 @@ functor `Cᵒᵖ ⥤ AddCommGrpCat` of `M`, this is the type `cM.pt` on which we
 a module structure below. -/
 @[nolint unusedArguments]
 def ModuleColimit (_ : IsColimit cR) (_ : IsColimit cM) : Type w := cM.pt
-  deriving AddCommGroup
+
+instance : AddCommGroup (ModuleColimit hcR hcM) :=
+  inferInstanceAs (AddCommGroup cM.pt)
 
 namespace ModuleColimit
 

@@ -274,24 +274,22 @@ noncomputable def descOfBilinearMap :
             obtain ⟨U, m₁, m₂, m₂', rfl, rfl, rfl⟩ := ιM_jointly_surjective₃ m₁ m₂ m₂'
             simp [← map_add]
           map_smul' r m₂ := by
+            let H := (isColimitOfPreserves (forget₂ _ RingCat) hcR)
             obtain ⟨U, r, m₁, m₂, rfl, rfl, rfl⟩ := jointly_surjective₃' r m₁ m₂
             dsimp
-            erw [smul_eq]
-            rw [descOfBilinearMapAux_apply, descOfBilinearMapAux_apply]
-            erw [smul_eq]
-            rw [b.map_smul] }
+            rw [dsimp% smul_eq H, descOfBilinearMapAux_apply,
+              descOfBilinearMapAux_apply, dsimp% smul_eq H, b.map_smul] }
       map_add' m₁ m₁' := by
         ext m₂
         obtain ⟨U, m₁, m₁', m₂, rfl, rfl, rfl⟩ := ιM_jointly_surjective₃ m₁ m₁' m₂
         simp [← map_add]
       map_smul' r m₁ := by
+        let H := (isColimitOfPreserves (forget₂ _ RingCat) hcR)
         ext m₂
         obtain ⟨U, r, m₁, m₂, rfl, rfl, rfl⟩ := jointly_surjective₃' r m₁ m₂
         dsimp
-        erw [smul_eq]
-        rw [descOfBilinearMapAux_apply, descOfBilinearMapAux_apply]
-        erw [smul_eq]
-        rw [b.smul_map] }
+        rw [dsimp% smul_eq H, descOfBilinearMapAux_apply,
+          descOfBilinearMapAux_apply, dsimp% smul_eq H, b.smul_map] }
 
 @[simp]
 lemma descOfBilinearMap_tmul {X : Cᵒᵖ} (m₁ : M₁.obj X) (m₂ : M₂.obj X) :

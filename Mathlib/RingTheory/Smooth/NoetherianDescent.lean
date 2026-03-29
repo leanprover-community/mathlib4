@@ -62,17 +62,13 @@ instance : CommRing (D.subalgebra R) := inferInstanceAs <| CommRing (Algebra.adj
 
 instance algebra₀ : Algebra R (D.subalgebra R) := inferInstanceAs <| Algebra R (Algebra.adjoin _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 instance algebra₁ : Algebra (D.subalgebra R) A := inferInstanceAs <| Algebra (Algebra.adjoin _ _) A
 
-set_option backward.isDefEq.respectTransparency false in
 instance algebra₂ : Algebra (D.subalgebra R) B := inferInstanceAs <| Algebra (Algebra.adjoin _ _) B
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower (D.subalgebra R) A B :=
   inferInstanceAs <| IsScalarTower (Algebra.adjoin _ _) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 instance : FaithfulSMul (D.subalgebra R) A := inferInstanceAs <| FaithfulSMul (Algebra.adjoin _ _) _
 
 lemma fg_subalgebra [Finite D.vars] [Finite D.rels] : (D.subalgebra R).FG := by
@@ -85,7 +81,6 @@ lemma fg_subalgebra [Finite D.vars] [Finite D.rels] : (D.subalgebra R).FG := by
   · refine Set.finite_iUnion fun i ↦ ?_
     exact Set.Finite.biUnion (Finset.finite_toSet _) (fun i hi ↦ Finset.finite_toSet _)
 
-set_option backward.isDefEq.respectTransparency false in
 instance hasCoeffs : D.P.HasCoeffs (D.subalgebra R) where
   coeffs_subset_range := by
     grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]
