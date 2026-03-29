@@ -433,69 +433,34 @@ lemma fTower_linearIndependent
 triple. -/
 abbrev weightSpace (h : L) (μ : K) := End.eigenspace (toEnd K L M h) μ
 
--- lemma finrank_weightSpace_ge_one
---     [FiniteDimensional K M]
---     {μ : K} (h_nontrivial : (weightSpace (M := M) K h μ) ≠ ⊥) :
---     finrank K (weightSpace (M := M) K h μ) ≥ 1 := by
---   have h_pos : 0 < finrank K (weightSpace (M := M) K h μ) := by
---     rw [finrank_pos_iff]
---     exact Submodule.nontrivial_iff_ne_bot.mpr h_nontrivial
---   omega
+/-- Each weight space containing an element f^N m of f-tower is non trivial -/
+lemma fTower_weightSpace_nontrivial
+  (t : IsSl2Triple h e f) {μ₀ : K} {m₀ : M} (P : t.HasPrimitiveVectorWith m₀ μ₀)
+      (i : {n : ℕ | ((toEnd K L M f) ^ n) m₀ ≠ 0}) :
+      weightSpace (M := M) K h (μ₀ - 2 * (i.val : K)) ≠ ⊥ := by
+    intro h_bot
+    have h_mem : ((toEnd K L M f) ^ (i.val : ℕ)) m₀ ∈
+      weightSpace (M := M) K h (μ₀ - 2 * (i.val : K)) := by
+      rw [Module.End.mem_eigenspace_iff]
+      exact P.lie_h_pow_toEnd_f i.val
+    rw [h_bot, Submodule.mem_bot] at h_mem
+    exact i.property h_mem
 
--- /-- Each weight space containing an element f^N m of f-tower is non trivial -/
--- lemma fTower_weightSpace_nontrivial
---   (t : IsSl2Triple h e f) {μ₀ : K} {m₀ : M} (P : t.HasPrimitiveVectorWith m₀ μ₀)
---       (i : {n : ℕ | ((toEnd K L M f) ^ n) m₀ ≠ 0}) :
---       weightSpace (M := M) K h (μ₀ - 2 * (i.val : K)) ≠ ⊥ := by
---     intro h_bot
---     have h_mem : ((toEnd K L M f) ^ (i.val : ℕ)) m₀ ∈
---       weightSpace (M := M) K h (μ₀ - 2 * (i.val : K)) := by
---       rw [Module.End.mem_eigenspace_iff]
---       exact P.lie_h_pow_toEnd_f i.val
---     rw [h_bot, Submodule.mem_bot] at h_mem
---     exact i.property h_mem
-
--- /-- weight spaces are disjoint -/
--- lemma fTower_weightSpace_independent
---     [CharZero K]
---     {μ₀ : K} {m₀ : M} : iSupIndep (fun (i : {n : ℕ | ((toEnd K L M f) ^ n) m₀ ≠ 0}) ↦
---     weightSpace (M := M) K h (μ₀ - 2 * (i.val : K))) := by
---   have h_inj : Function.Injective (fun (i : {n : ℕ | ((toEnd K L M f) ^ n) m₀ ≠ 0})
---   ↦ μ₀ - 2 * (i.val : K)) := by
---     intro i j hij
---     simp only [sub_right_inj, mul_eq_mul_left_iff, Nat.cast_inj, OfNat.ofNat_ne_zero, or_false]
---     at hij
---     ext
---     exact hij
---   have h_indep := Module.End.eigenspaces_iSupIndep (toEnd K L M h)
---   exact h_indep.comp h_inj
-
--- lemma fTower_card_eq_finrank
---     (t : IsSl2Triple h e f) (hL : t.toLieSubalgebra K = ⊤)
---     [CharZero K] [FiniteDimensional K M] [LieModule.IsIrreducible K L M]
---     {μ : K} {m : M} (P : t.HasPrimitiveVectorWith m μ) :
---     Nat.card {n : ℕ | ((toEnd K L M f) ^ n) m ≠ 0} = finrank K M := by
---   let S := {n : ℕ | ((toEnd K L M f) ^ n) m ≠ 0}
---   let v : S → M := fun i ↦ ((toEnd K L M f) ^ (i : ℕ)) m
---   have h_indep : LinearIndependent K v := fTower_linearIndependent K P
---   have h_span : Submodule.span K (Set.range v) = ⊤ := by
---     rw [← fTowerSubmodule_eq_top K hL P, fTowerSubmodule]
---     apply le_antisymm
---     · apply Submodule.span_mono
---       rintro _ ⟨i, rfl⟩
---       exact ⟨i.val, rfl⟩
---     · rw [Submodule.span_le]
---       rintro _ ⟨i, rfl⟩
---       dsimp only
---       by_cases h_zero : ((toEnd K L M f) ^ i) m = 0
---       · rw [h_zero]
---         exact Submodule.zero_mem _
---       · apply Submodule.subset_span
---         exact ⟨⟨i, h_zero⟩, rfl⟩
---   let b := Basis.mk h_indep h_span.ge
---   haveI : Fintype S := FiniteDimensional.fintypeBasisIndex b
---   rw [Nat.card_eq_fintype_card]
---   exact (finrank_eq_card_basis b).symm
+/-- The weight spaces with weights `μ₀ - 2n` corresponding to the non-zero elements of the
+`f`-tower form an independent family of submodules. -/
+lemma fTower_weightSpace_independent
+    [CharZero K]
+    {μ₀ : K} {m₀ : M} : iSupIndep (fun (i : {n : ℕ | ((toEnd K L M f) ^ n) m₀ ≠ 0}) ↦
+    weightSpace (M := M) K h (μ₀ - 2 * (i.val : K))) := by
+  have h_inj : Function.Injective (fun (i : {n : ℕ | ((toEnd K L M f) ^ n) m₀ ≠ 0})
+  ↦ μ₀ - 2 * (i.val : K)) := by
+    intro i j hij
+    simp only [sub_right_inj, mul_eq_mul_left_iff, Nat.cast_inj, OfNat.ofNat_ne_zero, or_false]
+    at hij
+    ext
+    exact hij
+  have h_indep := Module.End.eigenspaces_iSupIndep (toEnd K L M h)
+  exact h_indep.comp h_inj
 
 lemma exists_mem_fTower_of_weightSpace_ne_bot
     (t : IsSl2Triple h e f) (hL : t.toLieSubalgebra K = ⊤)
@@ -533,14 +498,11 @@ lemma exists_mem_fTower_of_weightSpace_ne_bot
   have H_inter : weightSpace (M := M) K h μ ⊓ (⨆ (i : S),
   weightSpace (M := M) K h (μ₀ - 2 * (i.val : K))) ≤ ⊥ :=
     le_trans (inf_le_inf_left _ H_le) H_disjoint.le_bot
-  have H_bot : weightSpace (M := M) K h μ ⊓ ⊤ ≤ ⊥ := by
-    rw [← H_top]
-    exact H_inter
-  rw [inf_top_eq] at H_bot
-  exact h_nontrivial (eq_bot_iff.mpr H_bot)
+  rw [H_top, inf_top_eq] at H_inter
+  exact h_nontrivial (eq_bot_iff.mpr H_inter)
 
 /-- If `K` is an algebraically closed field with characteristic zero, then each non-trivial
-weight space of a finite dimensional irreducible representation of `sl(2,K)` has dimension 1. -/
+weight space of a finite-dimensional irreducible representation of `sl(2,K)` has dimension 1. -/
 theorem finrank_weightSpace_eq_one_of_isIrreducible
     (t : IsSl2Triple h e f)
     (hL : t.toLieSubalgebra K = ⊤)
@@ -619,5 +581,3 @@ theorem finrank_weightSpace_eq_one_of_isIrreducible
 end IsAlgClosedIrreducible
 
 end IsSl2Triple
-
--- #lint
