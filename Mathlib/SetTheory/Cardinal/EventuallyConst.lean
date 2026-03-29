@@ -34,7 +34,7 @@ theorem eventuallyConst_of_monotone (hf : Monotone f) : atTop.EventuallyConst f 
   rwa [apply_rangeSplitting f] at this
 
 theorem eventuallyConst_of_antitone (hf : Antitone f) : atTop.EventuallyConst f :=
-  eventuallyConst_of_monotone.{u} (α := αᵒᵈ) hf
+  eventuallyConst_of_monotone (α := αᵒᵈ) hf
 
 end Cardinal
 
@@ -49,6 +49,6 @@ theorem eventuallyConst_of_monotone (hf : Monotone f) : atTop.EventuallyConst f 
   rwa [apply_rangeSplitting f] at this
 
 theorem eventuallyConst_of_antitone (hf : Antitone f) : atTop.EventuallyConst f :=
-  eventuallyConst_of_monotone.{u} (α := αᵒᵈ) hf
+  eventuallyConst_of_monotone (α := αᵒᵈ) hf
 
 end Ordinal
