@@ -97,14 +97,17 @@ some order making the group into a partially ordered group. -/
 structure GroupCone (G : Type*) [CommGroup G] extends Submonoid G where
   eq_one_of_mem_of_inv_mem' {a} : a ∈ carrier → a⁻¹ ∈ carrier → a = 1
 
+set_option linter.deprecated false in
 @[to_additive (attr := deprecated "no replacement" (since := "2026-03-28"))]
 instance GroupCone.instSetLike (G : Type*) [CommGroup G] : SetLike (GroupCone G) G where
   coe C := C.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
+set_option linter.deprecated false in
 @[to_additive (attr := deprecated "no replacement" (since := "2026-03-28"))]
 instance (G : Type*) [CommGroup G] : PartialOrder (GroupCone G) := .ofSetLike (GroupCone G) G
 
+set_option linter.deprecated false in
 @[to_additive (attr := deprecated "no replacement" (since := "2026-03-28"))]
 instance GroupCone.instGroupConeClass (G : Type*) [CommGroup G] :
     GroupConeClass (GroupCone G) G where
@@ -118,6 +121,7 @@ initialize_simps_projections AddGroupCone (carrier → coe, as_prefix coe)
 namespace GroupCone
 variable {H : Type*} [CommGroup H] [PartialOrder H] [IsOrderedMonoid H] {a : H}
 
+set_option linter.deprecated false in
 variable (H) in
 /-- The cone of elements that are at least 1. -/
 @[to_additive (attr := deprecated Submonoid.oneLE.isMulPointed (since := "2026-03-28"))
@@ -126,13 +130,19 @@ def oneLE : GroupCone H where
   __ := Submonoid.oneLE H
   eq_one_of_mem_of_inv_mem' {a} := by simpa using ge_antisymm
 
+set_option linter.deprecated false in
 @[to_additive (attr := simp, deprecated "no replacement" (since := "2026-03-28"))]
 lemma oneLE_toSubmonoid : (oneLE H).toSubmonoid = .oneLE H := rfl
+
+set_option linter.deprecated false in
 @[to_additive (attr := simp, deprecated "no replacement" (since := "2026-03-28"))]
 lemma mem_oneLE : a ∈ oneLE H ↔ 1 ≤ a := Iff.rfl
+
+set_option linter.deprecated false in
 @[to_additive (attr := simp, norm_cast, deprecated "no replacement" (since := "2026-03-28"))]
 lemma coe_oneLE : oneLE H = {x : H | 1 ≤ x} := rfl
 
+set_option linter.deprecated false in
 @[to_additive (attr := deprecated Submonoid.oneLE.isMulSpanning (since := "2026-03-28"))]
 instance oneLE.hasMemOrInvMem {H : Type*} [CommGroup H] [LinearOrder H] [IsOrderedMonoid H] :
     HasMemOrInvMem (oneLE H) where
@@ -142,6 +152,7 @@ end GroupCone
 
 variable {S G : Type*} [CommGroup G] [SetLike S G] (C : S)
 
+set_option linter.deprecated false in
 /-- Construct a partial order by designating a cone in an abelian group. -/
 @[to_additive (attr := deprecated PartialOrder.mkOfSubmonoid (since := "2026-03-28"))
 /-- Construct a partial order by designating a cone in an abelian group. -/]
@@ -152,11 +163,13 @@ abbrev PartialOrder.mkOfGroupCone [GroupConeClass S G] : PartialOrder G where
   le_antisymm a b nab nba := by
     simpa [div_eq_one, eq_comm] using eq_one_of_mem_of_inv_mem nab (by simpa using nba)
 
+set_option linter.deprecated false in
 @[to_additive (attr := simp, deprecated PartialOrder.mkOfSubmonoid_le_iff (since := "2026-03-28"))]
 lemma PartialOrder.mkOfGroupCone_le_iff {S G : Type*} [CommGroup G] [SetLike S G]
     [GroupConeClass S G] {C : S} {a b : G} :
     (mkOfGroupCone C).le a b ↔ b / a ∈ C := Iff.rfl
 
+set_option linter.deprecated false in
 /-- Construct a linear order by designating a maximal cone in an abelian group. -/
 @[to_additive (attr := deprecated LinearOrder.mkOfSubmonoid (since := "2026-03-28"))
 /-- Construct a linear order by designating a maximal cone in an abelian group. -/]
@@ -166,6 +179,7 @@ abbrev LinearOrder.mkOfGroupCone
   le_total a b := by simpa using mem_or_inv_mem C (b / a)
   toDecidableLE _ := _
 
+set_option linter.deprecated false in
 /-- Construct a partially ordered abelian group by designating a cone in an abelian group. -/
 @[to_additive (attr := deprecated IsOrderedMonoid.mkOfSubmonoid (since := "2026-03-28"))
   /-- Construct a partially ordered abelian group by designating a cone in an abelian group. -/]
