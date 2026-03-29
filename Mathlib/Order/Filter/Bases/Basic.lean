@@ -493,7 +493,7 @@ theorem HasBasis.principal_inf (hl : l.HasBasis p s) (s' : Set α) :
 
 theorem HasBasis.inf_basis_neBot_iff (hl : l.HasBasis p s) (hl' : l'.HasBasis p' s') :
     NeBot (l ⊓ l') ↔ ∀ ⦃i⦄, p i → ∀ ⦃i'⦄, p' i' → (s i ∩ s' i').Nonempty :=
-  (hl.inf' hl').neBot_iff.trans <| by simp [@forall_swap _ ι']
+  (hl.inf' hl').neBot_iff.trans <| by simp [@forall_comm _ ι']
 
 theorem HasBasis.inf_neBot_iff (hl : l.HasBasis p s) :
     NeBot (l ⊓ l') ↔ ∀ ⦃i⦄, p i → ∀ ⦃s'⦄, s' ∈ l' → (s i ∩ s').Nonempty :=
