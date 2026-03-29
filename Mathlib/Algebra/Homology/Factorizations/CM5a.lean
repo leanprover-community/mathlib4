@@ -236,7 +236,7 @@ given by `Injective.ι _`. -/
 noncomputable def p : (cokernel f).truncGE n ⟶ S f n :=
   mkHomToSingle (Injective.ι _) (fun i hi ↦ by
     simp only [ComplexShape.up_Rel] at hi
-    exact (isZero_of_isStrictlyGE _ n _ (by lia)).eq_of_src _ _)
+    exact (isZero_of_isStrictlyGE _ n _).eq_of_src _ _)
 
 instance : Mono ((p f n).f n) := by
   simp only [p, mkHomToSingle_f, mono_comp_iff_of_mono]
@@ -371,7 +371,6 @@ lemma quasiIso_truncGEπ [Mono f] [Mono (homologyMap f n)] :
   rw [quasiIso_πTruncGE_iff]
   exact isGE_cokernel f n hf
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] HasDerivedCategory.standard in
 lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
     QuasiIsoAt (ι f n) q := by
@@ -386,7 +385,7 @@ lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
     have h₂ := (CochainComplex.homologyMap_exact₂_of_distTriang _
       (DerivedCategory.mappingCocone_triangle_distinguished (α f n)) n).fIsKernel
     have : homologyMap (ι f n) n = (IsLimit.conePointUniqueUpToIso h₁ h₂).hom := by
-      simp [← cancel_mono (homologyMap (π f n) n), 
+      simp [← cancel_mono (homologyMap (π f n) n),
         dsimp% IsLimit.conePointUniqueUpToIso_hom_comp h₁ h₂ .zero,
         ← homologyMap_comp, mappingCocone.lift_fst]
     rw [quasiIsoAt_iff_isIso_homologyMap, this]
