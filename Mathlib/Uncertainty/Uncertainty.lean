@@ -1,6 +1,8 @@
 module
 
-import Mathlib.Uncertainty.Base
+public import Mathlib.Uncertainty.Base
+
+@[expose] public section
 
 /-!
 # Uncertainty theory library

@@ -1,8 +1,10 @@
 module
 
-import Mathlib.Uncertainty.BaseCore
-import Mathlib.Uncertainty.BaseDistribution
-import Mathlib.Uncertainty.BaseProcess
+public import Mathlib.Uncertainty.BaseCore
+public import Mathlib.Uncertainty.BaseDistribution
+public import Mathlib.Uncertainty.BaseProcess
+
+@[expose] public section
 
 /-!
 # Uncertainty theory

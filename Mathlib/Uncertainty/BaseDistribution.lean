@@ -1,6 +1,10 @@
 module
 
-import Mathlib.Uncertainty.BaseCore
+public import Mathlib.Uncertainty.BaseCore
+
+/-! # Uncertainty Distribution -/
+
+@[expose] public section
 
 open Filter
 open scoped Topology

@@ -1,17 +1,21 @@
 module
 
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Set.Basic
-import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.MeasureTheory.Measure.MeasureSpace
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.Topology.Basic
-import Mathlib.Topology.ContinuousOn
-import Mathlib.Topology.Order
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.MeasureTheory.Measure.MeasureSpace
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.Topology.Basic
+public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.Order
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Topology.MetricSpace.Basic
+
+/-! # Uncertainty Core -/
+
+@[expose] public section
 
 
 open Filter
