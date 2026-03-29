@@ -326,7 +326,6 @@ omit [EnoughInjectives C] in
 lemma shortExact [Mono f] : (ShortComplex.mk _ _ (cokernel.condition f)).ShortExact where
   exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel f)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exact_homologyShortComplex [Mono f] :
     (homologyShortComplex f n).Exact := by
   let T := ShortComplex.mk (homologyMap f n) (homologyMap (cokernel.π f) n)
