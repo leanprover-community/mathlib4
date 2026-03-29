@@ -31,7 +31,6 @@ invariant submodule.
   and a Cartan subalgebra is the span of the coroots whose roots have root spaces in the ideal.
 * `LieAlgebra.IsKilling.isSimple_iff_isIrreducible`: a Killing Lie algebra is simple if and only
   if its root system is irreducible.
-* `LieAlgebra.IsKilling.instIsIrreducible`: the root system of a simple Lie algebra is irreducible.
 -/
 
 @[expose] public section
@@ -550,6 +549,7 @@ noncomputable def lieIdealOrderIso :
     rw [← lieIdealOrderIso_left_inv (H := H) I, ← lieIdealOrderIso_left_inv (H := H) J]
     exact invtSubmoduleToLieIdeal_mono _ _ h
 
+/-- A Killing Lie algebra is simple if and only if its root system is irreducible. -/
 theorem isSimple_iff_isIrreducible : (rootSystem H).IsIrreducible ↔ IsSimple K L := by
   cases subsingleton_or_nontrivial H
   · have : Subsingleton L := by
@@ -564,7 +564,6 @@ theorem isSimple_iff_isIrreducible : (rootSystem H).IsIrreducible ↔ IsSimple K
   rw [RootPairing.isIrreducible_iff_invtRootSubmodule, ← isSimple_iff_of_not_isLieAbelian K L hL,
     (lieIdealOrderIso H).isSimpleOrder_iff]
 
-/-- The root system of a simple Killing Lie algebra is irreducible. -/
 instance [IsSimple K L] : (rootSystem H).IsIrreducible :=
   isSimple_iff_isIrreducible.mpr ‹_›
 
