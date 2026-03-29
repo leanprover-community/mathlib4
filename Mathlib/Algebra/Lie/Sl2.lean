@@ -256,90 +256,36 @@ variable {L M : Type*}
 [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M]
 variable {h e f : L} {t : IsSl2Triple h e f}
 
--- K is algebraically closed and M fin-dim so h has eigenvalue μ and eigen-vector m in M.
--- e acting on m raises the eigenvalue of m
--- this must stop at some n otherwise the span would be of infinite dimension
 lemma exists_primitiveVector (t : IsSl2Triple h e f)
     [IsAlgClosed K] [CharZero K] [FiniteDimensional K M] [Nontrivial M] :
     ∃ (μ : K) (m : M), m ≠ 0 ∧ HasPrimitiveVectorWith t m μ := by
-  -- Get an eigenvalue μ₀ and eigenvector m₀ for h.
   obtain ⟨μ₀, hμ₀⟩ := Module.End.exists_eigenvalue (toEnd K L M h)
   obtain ⟨m₀, hm₀⟩ := hμ₀.exists_hasEigenvector
-  have h_m₀_ne : m₀ ≠ 0 := hm₀.2
   let evals : ℕ → K := fun n ↦ μ₀ + 2 * (n : K)
-  let e_vecs : ℕ → M := fun n ↦ ((toEnd K L M e)^n) m₀
-  -- prove that e_vecs vanishes at some k
-  have e_exists_k_zero : ∃ (k : Nat), k ≠ 0 ∧ ((toEnd K L M e)^k) m₀ = 0  := by
+  let e_vecs : ℕ → M := fun n ↦ ((toEnd K L M e) ^ n) m₀
+  have h_exists_zero : ∃ (k : ℕ), e_vecs k = 0 := by
     by_contra! contra
-    have h_indep :=
-      Module.End.eigenvectors_linearIndependent
-      (toEnd K L M h)
-      (Set.range evals)
-      (fun ⟨μ, hμ⟩ ↦ e_vecs (Classical.choose hμ))
-      (by
-        rintro ⟨μ, hμ⟩
-        dsimp only
-        rw [Module.End.hasEigenvector_iff, Module.End.mem_eigenspace_iff]
-        let v := e_vecs (Classical.choose hμ)
-        --obtain the n such that μ = μ₀ + 2n and v = e^n m₀
-        let n := Classical.choose hμ
-        have h_n_def : Classical.choose hμ = n := by rfl
-        have h_μ_μ0 : μ₀ + 2 * (n : K) = μ := Classical.choose_spec hμ
-        -- prove that v = e_vecs (Classical.choose hμ) is the eigen vector for μ
-        have h_v_μ : ⁅h, v⁆ = μ•v := by
-          unfold v e_vecs
-          have h_lie := t.lie_h_pow_toEnd_e hm₀.apply_eq_smul n
-          rw [h_μ_μ0] at h_lie
-          unfold n at h_lie
-          exact h_lie
-        -- prove that v ≠ 0
-        have h_v_ne : v ≠ 0 := by
-          by_cases h_n : n = 0
-          · unfold v
-            rw [h_n_def, h_n]
-            simp only [pow_zero, End.one_apply, ne_eq, e_vecs]
-            push_neg
-            exact h_m₀_ne
-          · apply contra
-            exact h_n
-        exact ⟨h_v_μ,h_v_ne⟩
-      )
-    have h_inj : Function.Injective evals := by
-      intro a b hab
-      dsimp only [evals] at hab
-      simpa only [add_right_inj, mul_eq_mul_left_iff, Nat.cast_inj, OfNat.ofNat_ne_zero, or_false]
-      using hab
-    have h_infty : (Set.range evals).Infinite := Set.infinite_range_of_injective h_inj
-    have := h_indep.finite
-    exact h_infty (Set.toFinite _)
-  -- use the well-ordering principle of ℕ to find the primitive vector
-  have h_exists_zero : ∃ (n : ℕ), e_vecs n = 0 := by
-      rcases e_exists_k_zero with ⟨k, _, hk⟩
-      exact ⟨k, hk⟩
-  classical
-  let N := Nat.find h_exists_zero
-  have hN_zero : e_vecs N = 0 := Nat.find_spec h_exists_zero
-  have hN_min : ∀ m < N, e_vecs m ≠ 0 := fun m hm ↦ Nat.find_min h_exists_zero hm
-  -- verify that N-1 corresponds to the primitive vector
-  let n_prim := N - 1
-  let m_prim := e_vecs n_prim
-  let μ_prim := evals n_prim
-  have : n_prim < N := by
-    by_contra! h
-    have h_eq : N = 0 := by omega
-    rw [h_eq] at hN_zero
-    exact h_m₀_ne hN_zero
-  have m_prim_ne : m_prim ≠ 0 := hN_min n_prim this
-  have m_prim_eq : t.HasPrimitiveVectorWith m_prim μ_prim := by
-    refine ⟨m_prim_ne, ?_, ?_⟩
-    · dsimp only [m_prim, μ_prim, evals, e_vecs]
-      exact t.lie_h_pow_toEnd_e hm₀.apply_eq_smul n_prim
-    · simp only [m_prim, e_vecs]
-      have h_eq : n_prim + 1 = N := by omega
-      rw [lie_e_pow_toEnd_e n_prim, h_eq]
-      exact hN_zero
-  exact ⟨μ_prim, m_prim, m_prim_ne, m_prim_eq⟩
-
+    have h_inj : Function.Injective evals := fun a b hab ↦ by
+      simpa [evals, add_right_inj, mul_eq_mul_left_iff, Nat.cast_inj] using hab
+    have h_indep := Module.End.eigenvectors_linearIndependent
+      (toEnd K L M h) (Set.range evals) (fun ⟨γ, hγ⟩ ↦ e_vecs (Classical.choose hγ)) (by
+        rintro ⟨γ, hγ⟩
+        let n := Classical.choose hγ
+        refine ⟨?_, contra n⟩
+        rw [Module.End.mem_eigenspace_iff, toEnd_apply_apply]
+        change ⁅h, e_vecs n⁆ = γ • e_vecs n
+        rw [← Classical.choose_spec hγ]
+        exact t.lie_h_pow_toEnd_e hm₀.apply_eq_smul n)
+    haveI := h_indep.finite
+    exact (Set.infinite_range_of_injective h_inj) (Set.toFinite _)
+  obtain ⟨n, hn_ne, hn_zero⟩ := Nat.exists_not_and_succ_of_not_zero_of_exists hm₀.2 h_exists_zero
+  refine ⟨evals n, e_vecs n, hn_ne, {
+    ne_zero := hn_ne
+    lie_h := t.lie_h_pow_toEnd_e hm₀.apply_eq_smul n
+    lie_e := by
+      rw [lie_e_pow_toEnd_e n]
+      exact hn_zero
+  }⟩
 
 /-- The `K`-span of the f-tower `{f^k(m) | k ∈ ℕ}` for a vector `m`, not necessarily primitive -/
 def fTowerSubmodule (f : L) (m : M) : Submodule K M :=
