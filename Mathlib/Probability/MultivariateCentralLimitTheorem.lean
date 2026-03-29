@@ -6,7 +6,9 @@ Authors: Ivo Malinowski
 module
 
 import Mathlib.Probability.CentralLimitTheorem
-import Mathlib.Probability.CramerWold
+--import Mathlib.Probability.CramerWold
+import Mathlib.MeasureTheory.Measure.LevyConvergence
+import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 
 noncomputable section
 
