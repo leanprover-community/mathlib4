@@ -101,7 +101,6 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
 
 attribute [-instance] instSeminormedAddCommGroup in
 set_option linter.deprecated false in
-set_option backward.isDefEq.respectTransparency false in
 @[deprecated
   "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
   (since := "2026-03-27")]

@@ -539,12 +539,9 @@ section
 
 variable {A : AddCommGrpCat} (φ : R →+* End A)
 
-instance : AddCommGroup (mkOfSMul' φ) := by
-  dsimp only [mkOfSMul']
-  infer_instance
+instance : AddCommGroup (mkOfSMul' φ) :=
+  inferInstanceAs <| AddCommGroup A
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : SMul R (mkOfSMul' φ) := ⟨fun r (x : A) => (show A ⟶ A from φ r) x⟩
 
 @[simp]

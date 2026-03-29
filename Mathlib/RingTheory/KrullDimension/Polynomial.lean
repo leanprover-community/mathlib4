@@ -28,7 +28,6 @@ For noetherian rings:
 
 public section
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Polynomial.ringKrullDim_le {R : Type*} [CommRing R] :
     ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1 := by
   rw [ringKrullDim, ringKrullDim]
