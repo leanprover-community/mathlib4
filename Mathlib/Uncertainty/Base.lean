@@ -1,3 +1,5 @@
+module
+
 import Mathlib.Uncertainty.BaseCore
 import Mathlib.Uncertainty.BaseDistribution
 import Mathlib.Uncertainty.BaseProcess
