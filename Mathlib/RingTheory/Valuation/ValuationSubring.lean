@@ -686,7 +686,6 @@ def principalUnitGroupOrderEmbedding : ValuationSubring K ↪o (Subgroup Kˣ)ᵒ
   inj' := principalUnitGroup_injective
   map_rel_iff' {_A _B} := principalUnitGroup_le_principalUnitGroup
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_mem_principalUnitGroup_iff {x : A.unitGroup} :
     (x : Kˣ) ∈ A.principalUnitGroup ↔
       A.unitGroupMulEquiv x ∈ (Units.map (IsLocalRing.residue A).toMonoidHom).ker := by
