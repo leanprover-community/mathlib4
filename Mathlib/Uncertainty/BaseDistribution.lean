@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2026 Prof. Dr. Fei Gao. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Prof. Dr. Fei Gao <gaof@whut.edu.cn>
+-/
+
 module
 
 public import Mathlib.Uncertainty.BaseCore
@@ -108,7 +114,7 @@ lemma linearInverse_eq_affine (params : LinearParams) {α : ℝ}
 noncomputable def uncertainExpectedValue (params : LinearParams) : ℝ :=
   ∫ α in (0 : ℝ)..1, if α ∈ Set.Icc 0 1 then linearInverse params α else 0
 
-/-- Integral of the affine form on [0,1].-/
+/-- Integral of the affine form on [0,1]. -/
 lemma integral_affine (params : LinearParams) :
     (∫ α in (0 : ℝ)..1, params.a + α * (params.b - params.a)) = (params.a + params.b) / 2 := by
   have h_const : ∫ α in (0 : ℝ)..1, (params.a : ℝ) = params.a := by
@@ -145,15 +151,13 @@ lemma integral_affine (params : LinearParams) :
 theorem linearExpectedValue (params : LinearParams) :
     uncertainExpectedValue params = (params.a + params.b) / 2 := by
   unfold uncertainExpectedValue
-
   -- ∫_0^1 linearInverse params α dα = ∫_0^1 (params.a + α * (params.b - params.a)) dα
   have h_eq : ∀ α ∈ Set.Icc (0 : ℝ) 1,
       (if α ∈ Set.Icc 0 1 then linearInverse params α else 0)
         = params.a + α * (params.b - params.a) := by
     intro α hα
     simp [hα]
-    exact linearInverse_eq_affine params hα
-
+    simpa using linearInverse_eq_affine params hα
   -- Therefore, the integral equals ∫_0^1 (params.a + α * (params.b - params.a)) dα
   have h_int :
       ∫ α in (0 : ℝ)..1, (if α ∈ Set.Icc 0 1 then linearInverse params α else 0)
@@ -162,8 +166,7 @@ theorem linearExpectedValue (params : LinearParams) :
     intro α hα
     have hIcc : α ∈ Set.Icc (0 : ℝ) 1 := by
       simpa [Set.uIcc_of_le (show (0 : ℝ) ≤ 1 by norm_num)] using hα
-    exact h_eq α hIcc
-
+    simpa using h_eq α hIcc
   -- Which equals (params.a + params.b) / 2 by integral_affine
   rw [h_int]
   exact integral_affine params
@@ -509,9 +512,13 @@ theorem normalUncertainDistribution_tendsto_atTop (params : NormalParams) :
     simpa [sub_eq_add_neg, add_comm, add_left_comm, add_assoc, div_eq_mul_inv] using hmul
   have hexp0 : Tendsto (fun x : ℝ => Real.exp ((params.e - x) / params.σ)) atTop (𝓝 0) :=
     Real.tendsto_exp_atBot.comp hlin
-  have hden1 : Tendsto (fun x : ℝ => 1 + Real.exp ((params.e - x) / params.σ)) atTop (𝓝 (1 + 0)) :=
+  have hden1 :
+      Tendsto (fun x : ℝ => 1 + Real.exp ((params.e - x) / params.σ))
+        atTop (𝓝 (1 + 0)) :=
     tendsto_const_nhds.add hexp0
-  have hinv1 : Tendsto (fun x : ℝ => (1 + Real.exp ((params.e - x) / params.σ))⁻¹) atTop (𝓝 ((1 + 0)⁻¹)) := by
+  have hinv1 :
+      Tendsto (fun x : ℝ => (1 + Real.exp ((params.e - x) / params.σ))⁻¹)
+        atTop (𝓝 ((1 + 0)⁻¹)) := by
     refine Tendsto.inv₀ hden1 ?_
     norm_num
   have hrepr :
@@ -592,16 +599,15 @@ instance : UncertainDistributionLike LinearParams where
 /-- Operational-law interface for transformed inverse distributions (book Thm 3.2 style). -/
 class OperationalLawStructure (U : UncertainSpace) where
   inverse_transform_formula :
-    ∀ (X Y : UncertainVariable U)
-      (invX invY invZ : ℝ → ℝ)
+    ∀ (invX invY invZ : ℝ → ℝ)
       (f : ℝ → ℝ → ℝ),
       ∀ α, invZ α = f (invX α) (invY α)
 
 theorem operational_inverse_transform_formula (U : UncertainSpace)
     [OperationalLawStructure U]
-    (X Y : UncertainVariable U) (invX invY invZ : ℝ → ℝ) (f : ℝ → ℝ → ℝ) :
+    (invX invY invZ : ℝ → ℝ) (f : ℝ → ℝ → ℝ) :
     ∀ α, invZ α = f (invX α) (invY α) :=
-  OperationalLawStructure.inverse_transform_formula X Y invX invY invZ f
+  OperationalLawStructure.inverse_transform_formula (U := U) invX invY invZ f
 
 instance : UncertainDistributionLike NormalParams where
   cdf := normalUncertainDistribution
