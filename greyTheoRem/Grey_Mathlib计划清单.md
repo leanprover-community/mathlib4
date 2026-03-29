@@ -656,48 +656,48 @@ grep -hE "^axiom[[:space:]]" GrayAxioms*.lean GrayBufferAxioms.lean GrayOperatio
 
 下面是可直接粘贴到 PR 描述的 35 条逐条状态清单。
 
-1. ID 1 | axiom: greyness_non_decreasing | 策略: 接口化完成 | 对应 wrapper/instance: IsGraySystemOp, white_gray_op_greyness_ge_interface | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems  
-2. ID 2 | axiom: union_greyness_property | 策略: 接口化完成 | 对应 wrapper/instance: IsGrayA1A4, union_inter_bounds_interface | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems  
-3. ID 3 | axiom: general_gray_add_nonneg | 策略: 接口化完成 | 对应 wrapper/instance: IsGrayAddSubGreynessComposite, add_greyness_nonneg | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems  
-4. ID 4 | axiom: general_gray_add_le_one | 策略: 接口化完成 | 对应 wrapper/instance: IsGrayAddSubGreynessComposite, add_greyness_le_one | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems  
+1. ID 1 | axiom: greyness_non_decreasing | 策略: 接口化完成 | 对应 wrapper/instance: IsGraySystemOp, white_gray_op_greyness_ge_interface | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems
+2. ID 2 | axiom: union_greyness_property | 策略: 接口化完成 | 对应 wrapper/instance: IsGrayA1A4, union_inter_bounds_interface | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems
+3. ID 3 | axiom: general_gray_add_nonneg | 策略: 接口化完成 | 对应 wrapper/instance: IsGrayAddSubGreynessComposite, add_greyness_nonneg | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems
+4. ID 4 | axiom: general_gray_add_le_one | 策略: 接口化完成 | 对应 wrapper/instance: IsGrayAddSubGreynessComposite, add_greyness_le_one | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems
 
-5. ID 5 | axiom: sequence_operator_fixed_point | 策略: 可拆证明包装完成 | 对应 wrapper/instance: sequence_operator_fixed_point_at | 构建命令: lake build GrayAxiomsTheorems  
-6. ID 6 | axiom: sequence_operator_information | 策略: 保留研究层（按策略） | 对应 wrapper/instance: 无单独 wrapper，作为研究层条件保留 | 构建命令: lake build GrayAxioms  
-7. ID 7 | axiom: sequence_operator_expression | 策略: 保留研究层（按策略） | 对应 wrapper/instance: 无单独 wrapper，作为研究层条件保留 | 构建命令: lake build GrayAxioms  
-8. ID 8 | axiom: rule_agor | 策略: 可拆证明包装完成 | 对应 wrapper/instance: rule_agor_zero, rule_agor_succ | 构建命令: lake build GrayAxiomsTheorems  
-9. ID 9 | axiom: step_smooth_ratio_relation | 策略: 可拆证明包装完成 | 对应 wrapper/instance: step_ratio_eq_inv_smooth_ratio | 构建命令: lake build GrayAxiomsTheorems  
-10. ID 10 | axiom: increasing_sequence_step_ratio_range | 策略: 可拆证明包装完成 | 对应 wrapper/instance: increasing_sequence_step_ratio_ge_one_at | 构建命令: lake build GrayAxiomsTheorems  
+5. ID 5 | axiom: sequence_operator_fixed_point | 策略: 可拆证明包装完成 | 对应 wrapper/instance: sequence_operator_fixed_point_at | 构建命令: lake build GrayAxiomsTheorems
+6. ID 6 | axiom: sequence_operator_information | 策略: 保留研究层（按策略） | 对应 wrapper/instance: 无单独 wrapper，作为研究层条件保留 | 构建命令: lake build GrayAxioms
+7. ID 7 | axiom: sequence_operator_expression | 策略: 保留研究层（按策略） | 对应 wrapper/instance: 无单独 wrapper，作为研究层条件保留 | 构建命令: lake build GrayAxioms
+8. ID 8 | axiom: rule_agor | 策略: 可拆证明包装完成 | 对应 wrapper/instance: rule_agor_zero, rule_agor_succ | 构建命令: lake build GrayAxiomsTheorems
+9. ID 9 | axiom: step_smooth_ratio_relation | 策略: 可拆证明包装完成 | 对应 wrapper/instance: step_ratio_eq_inv_smooth_ratio | 构建命令: lake build GrayAxiomsTheorems
+10. ID 10 | axiom: increasing_sequence_step_ratio_range | 策略: 可拆证明包装完成 | 对应 wrapper/instance: increasing_sequence_step_ratio_ge_one_at | 构建命令: lake build GrayAxiomsTheorems
 
-11. ID 11 | axiom: union_greyness_equality | 策略: 保留研究层并封装完成 | 对应 wrapper/instance: union_greyness_exact_under_subset | 构建命令: lake build GrayAxiomsTheorems  
-12. ID 12 | axiom: bijection_interval_gray | 策略: 可拆证明包装完成 | 对应 wrapper/instance: bijection_interval_gray_left, bijection_interval_gray_right | 构建命令: lake build GrayAxiomsTheorems  
+11. ID 11 | axiom: union_greyness_equality | 策略: 保留研究层并封装完成 | 对应 wrapper/instance: union_greyness_exact_under_subset | 构建命令: lake build GrayAxiomsTheorems
+12. ID 12 | axiom: bijection_interval_gray | 策略: 可拆证明包装完成 | 对应 wrapper/instance: bijection_interval_gray_left, bijection_interval_gray_right | 构建命令: lake build GrayAxiomsTheorems
 
-13. ID 13 | axiom: homogeneous_exponential_detection | 策略: 保留研究层并封装完成 | 对应 wrapper/instance: homogeneous_exponential_detection_iff, homogeneous_exponential_detection_forward, homogeneous_exponential_detection_backward | 构建命令: lake build GrayAxiomsTheorems GrayAxioms  
-14. ID 14 | axiom: nonnegative_quasi_smooth_ago_exponential | 策略: 保留研究层并封装完成 | 对应 wrapper/instance: nonnegative_quasi_smooth_ago_exponential_exists, nonnegative_quasi_smooth_ago_exponential_unpack | 构建命令: lake build GrayAxiomsTheorems GrayAxioms  
-15. ID 15 | axiom: multi_order_ago_exponential | 策略: 保留研究层并封装完成 | 对应 wrapper/instance: multi_order_ago_exponential_exists, exponential_law_bundle | 构建命令: lake build GrayAxiomsTheorems GrayAxioms  
+13. ID 13 | axiom: homogeneous_exponential_detection | 策略: 保留研究层并封装完成 | 对应 wrapper/instance: homogeneous_exponential_detection_iff, homogeneous_exponential_detection_forward, homogeneous_exponential_detection_backward | 构建命令: lake build GrayAxiomsTheorems GrayAxioms
+14. ID 14 | axiom: nonnegative_quasi_smooth_ago_exponential | 策略: 保留研究层并封装完成 | 对应 wrapper/instance: nonnegative_quasi_smooth_ago_exponential_exists, nonnegative_quasi_smooth_ago_exponential_unpack | 构建命令: lake build GrayAxiomsTheorems GrayAxioms
+15. ID 15 | axiom: multi_order_ago_exponential | 策略: 保留研究层并封装完成 | 对应 wrapper/instance: multi_order_ago_exponential_exists, exponential_law_bundle | 构建命令: lake build GrayAxiomsTheorems GrayAxioms
 
-16. ID 16 | axiom: translation_transform_positive | 策略: 可拆证明包装完成 | 对应 wrapper/instance: translation_transform_positive_member | 构建命令: lake build GrayAxiomsTheorems  
-17. ID 17 | axiom: range_normalization_in_interval | 策略: 可拆证明包装完成 | 对应 wrapper/instance: range_normalization_lower_bound, range_normalization_upper_bound, range_normalization_bounds_bundle | 构建命令: lake build GrayAxiomsTheorems  
-18. ID 18 | axiom: range_normalization_inverse_correct | 策略: 保留研究层并封装完成 | 对应 wrapper/instance: range_normalization_inverse_correct_wrapper | 构建命令: lake build GrayAxiomsTheorems  
+16. ID 16 | axiom: translation_transform_positive | 策略: 可拆证明包装完成 | 对应 wrapper/instance: translation_transform_positive_member | 构建命令: lake build GrayAxiomsTheorems
+17. ID 17 | axiom: range_normalization_in_interval | 策略: 可拆证明包装完成 | 对应 wrapper/instance: range_normalization_lower_bound, range_normalization_upper_bound, range_normalization_bounds_bundle | 构建命令: lake build GrayAxiomsTheorems
+18. ID 18 | axiom: range_normalization_inverse_correct | 策略: 保留研究层并封装完成 | 对应 wrapper/instance: range_normalization_inverse_correct_wrapper | 构建命令: lake build GrayAxiomsTheorems
 
-19. ID 19 | axiom: weakening_buffer_operator_property | 策略: 接口化完成 | 对应 wrapper/instance: IsWeakeningBufferFamily, weakening_buffer_is_weakening_family, weakening_buffer_property_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms  
-20. ID 20 | axiom: strengthening_buffer_operator_property | 策略: 接口化完成 | 对应 wrapper/instance: IsStrengtheningBufferFamily, strengthening_buffer_is_strengthening_family, strengthening_buffer_property_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms  
-21. ID 21 | axiom: buffer_operator_fluctuation_property | 策略: 保留研究层并封装完成 | 对应 wrapper/instance: buffer_fluctuation_max_side, buffer_fluctuation_min_side | 构建命令: lake build GrayAxiomsTheorems GrayBufferAxioms  
+19. ID 19 | axiom: weakening_buffer_operator_property | 策略: 接口化完成 | 对应 wrapper/instance: IsWeakeningBufferFamily, weakening_buffer_is_weakening_family, weakening_buffer_property_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms
+20. ID 20 | axiom: strengthening_buffer_operator_property | 策略: 接口化完成 | 对应 wrapper/instance: IsStrengtheningBufferFamily, strengthening_buffer_is_strengthening_family, strengthening_buffer_property_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms
+21. ID 21 | axiom: buffer_operator_fluctuation_property | 策略: 保留研究层并封装完成 | 对应 wrapper/instance: buffer_fluctuation_max_side, buffer_fluctuation_min_side | 构建命令: lake build GrayAxiomsTheorems GrayBufferAxioms
 
-22. ID 22 | axiom: monotonic_increasing_buffer_properties | 策略: 可拆证明包装完成 | 对应 wrapper/instance: monotonic_increasing_awbo_ge, monotonic_increasing_strengthening_le, monotonic_increasing_buffer_properties_bundle | 构建命令: lake build GrayAxiomsTheorems GrayBufferAxioms  
-23. ID 23 | axiom: monotonic_decreasing_buffer_properties | 策略: 可拆证明包装完成 | 对应 wrapper/instance: monotonic_decreasing_awbo_le, monotonic_decreasing_strengthening_ge, monotonic_decreasing_buffer_properties_bundle | 构建命令: lake build GrayAxiomsTheorems GrayBufferAxioms  
-24. ID 24 | axiom: fluctuating_buffer_properties | 策略: 保留研究层并封装完成 | 对应 wrapper/instance: fluctuating_awbo_amplitude_le, fluctuating_strengthening_amplitude_ge, fluctuating_buffer_properties_bundle | 构建命令: lake build GrayAxiomsTheorems GrayBufferAxioms  
+22. ID 22 | axiom: monotonic_increasing_buffer_properties | 策略: 可拆证明包装完成 | 对应 wrapper/instance: monotonic_increasing_awbo_ge, monotonic_increasing_strengthening_le, monotonic_increasing_buffer_properties_bundle | 构建命令: lake build GrayAxiomsTheorems GrayBufferAxioms
+23. ID 23 | axiom: monotonic_decreasing_buffer_properties | 策略: 可拆证明包装完成 | 对应 wrapper/instance: monotonic_decreasing_awbo_le, monotonic_decreasing_strengthening_ge, monotonic_decreasing_buffer_properties_bundle | 构建命令: lake build GrayAxiomsTheorems GrayBufferAxioms
+24. ID 24 | axiom: fluctuating_buffer_properties | 策略: 保留研究层并封装完成 | 对应 wrapper/instance: fluctuating_awbo_amplitude_le, fluctuating_strengthening_amplitude_ge, fluctuating_buffer_properties_bundle | 构建命令: lake build GrayAxiomsTheorems GrayBufferAxioms
 
-25. ID 25 | axiom: awbo_is_weakening_operator | 策略: 接口化完成 | 对应 wrapper/instance: awbo_is_weakening_family | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms  
-26. ID 26 | axiom: wawbo_is_weakening_operator | 策略: 接口化完成 | 对应 wrapper/instance: IsWeightedWeakeningBufferFamily, wawbo_is_weighted_weakening_family, wawbo_weakening_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms  
-27. ID 27 | axiom: wgawbo_is_weakening_operator | 策略: 接口化完成 | 对应 wrapper/instance: IsWeightedWeakeningBufferFamily, wgawbo_is_weighted_weakening_family, wgawbo_weakening_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms  
-28. ID 28 | axiom: esbo_is_strengthening_operator | 策略: 接口化完成 | 对应 wrapper/instance: IsStrengtheningBufferFamily, esbo_is_strengthening_family, esbo_strengthening_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms  
-29. ID 29 | axiom: asbo_is_strengthening_operator | 策略: 接口化完成 | 对应 wrapper/instance: IsStrengtheningBufferFamily, asbo_is_strengthening_family, asbo_strengthening_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms  
-30. ID 30 | axiom: wasbo_is_strengthening_operator | 策略: 接口化完成 | 对应 wrapper/instance: IsWeightedStrengtheningBufferFamily, wasbo_is_weighted_strengthening_family, wasbo_strengthening_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms  
-31. ID 31 | axiom: gfbo_negative_is_weakening | 策略: 接口化完成 | 对应 wrapper/instance: IsGeneralizedBufferBySign, gfbo_is_generalized_buffer_by_sign, gfbo_negative_weaken_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms  
-32. ID 32 | axiom: gfbo_positive_is_strengthening | 策略: 接口化完成 | 对应 wrapper/instance: IsGeneralizedBufferBySign, gfbo_is_generalized_buffer_by_sign, gfbo_positive_strengthen_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms  
+25. ID 25 | axiom: awbo_is_weakening_operator | 策略: 接口化完成 | 对应 wrapper/instance: awbo_is_weakening_family | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms
+26. ID 26 | axiom: wawbo_is_weakening_operator | 策略: 接口化完成 | 对应 wrapper/instance: IsWeightedWeakeningBufferFamily, wawbo_is_weighted_weakening_family, wawbo_weakening_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms
+27. ID 27 | axiom: wgawbo_is_weakening_operator | 策略: 接口化完成 | 对应 wrapper/instance: IsWeightedWeakeningBufferFamily, wgawbo_is_weighted_weakening_family, wgawbo_weakening_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms
+28. ID 28 | axiom: esbo_is_strengthening_operator | 策略: 接口化完成 | 对应 wrapper/instance: IsStrengtheningBufferFamily, esbo_is_strengthening_family, esbo_strengthening_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms
+29. ID 29 | axiom: asbo_is_strengthening_operator | 策略: 接口化完成 | 对应 wrapper/instance: IsStrengtheningBufferFamily, asbo_is_strengthening_family, asbo_strengthening_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms
+30. ID 30 | axiom: wasbo_is_strengthening_operator | 策略: 接口化完成 | 对应 wrapper/instance: IsWeightedStrengtheningBufferFamily, wasbo_is_weighted_strengthening_family, wasbo_strengthening_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms
+31. ID 31 | axiom: gfbo_negative_is_weakening | 策略: 接口化完成 | 对应 wrapper/instance: IsGeneralizedBufferBySign, gfbo_is_generalized_buffer_by_sign, gfbo_negative_weaken_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms
+32. ID 32 | axiom: gfbo_positive_is_strengthening | 策略: 接口化完成 | 对应 wrapper/instance: IsGeneralizedBufferBySign, gfbo_is_generalized_buffer_by_sign, gfbo_positive_strengthen_at | 构建命令: lake build GrayAxiomInterfaces GrayAxiomsTheorems GrayBufferAxioms
 
-33. ID 33 | axiom: awbo_is_special_wawbo | 策略: 可拆证明包装完成 | 对应 wrapper/instance: awbo_eq_wawbo_unit_weights, buffer_specialization_bundle | 构建命令: lake build GrayAxiomsTheorems GrayBufferAxioms  
-34. ID 34 | axiom: wawbo_is_special_gfbo | 策略: 保留研究层并封装完成 | 对应 wrapper/instance: wawbo_eq_gfbo_neg_one, buffer_specialization_bundle | 构建命令: lake build GrayAxiomsTheorems GrayBufferAxioms  
-35. ID 35 | axiom: wasbo_is_special_gfbo | 策略: 可拆证明包装完成 | 对应 wrapper/instance: wasbo_eq_gfbo_one, buffer_specialization_bundle | 构建命令: lake build GrayAxiomsTheorems GrayBufferAxioms  
+33. ID 33 | axiom: awbo_is_special_wawbo | 策略: 可拆证明包装完成 | 对应 wrapper/instance: awbo_eq_wawbo_unit_weights, buffer_specialization_bundle | 构建命令: lake build GrayAxiomsTheorems GrayBufferAxioms
+34. ID 34 | axiom: wawbo_is_special_gfbo | 策略: 保留研究层并封装完成 | 对应 wrapper/instance: wawbo_eq_gfbo_neg_one, buffer_specialization_bundle | 构建命令: lake build GrayAxiomsTheorems GrayBufferAxioms
+35. ID 35 | axiom: wasbo_is_special_gfbo | 策略: 可拆证明包装完成 | 对应 wrapper/instance: wasbo_eq_gfbo_one, buffer_specialization_bundle | 构建命令: lake build GrayAxiomsTheorems GrayBufferAxioms
 
 可附一行总验收命令：lake build
