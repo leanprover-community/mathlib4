@@ -201,7 +201,6 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
   simp_rw [Units.val_one, FractionalIdeal.absNorm_one, Rat.cast_one, one_mul] at h_nm
   exact h_nm
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The Minkowski lower bound `n^{2n}/((4/pi)^{2r_2}*n!^2)` for the absolute value of the discriminant
 of a number field of degree n.

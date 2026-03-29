@@ -29,6 +29,8 @@ the derived series of a group.
 
 open Subgroup
 
+open scoped commutatorElement
+
 variable {G G' : Type*} [Group G] [Group G'] {f : G →* G'}
 
 section derivedSeries
