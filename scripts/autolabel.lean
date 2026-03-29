@@ -491,7 +491,7 @@ def autolabel : Cli.Cmd := `[Cli|
   "
   FLAGS:
     "pr" : Nat;      "the mathlib PR number. Must be combined with `--gh` or `--curl`."
-    "gh";            "apply label(s) using`gh`. Usage: `lake exe autolabel --pr 20156 --gh`"
+    "gh";            "apply label(s) using `gh`. Usage: `lake exe autolabel --pr 20156 --gh`"
     "curl" : String; "apply label(s) using `curl`. \
                       Usage: `lake exe autolabel --pr 20156 --curl <ACCESS_TOKEN>`. \
                       (currently, this implies `--force`)"
@@ -503,7 +503,6 @@ def autolabel : Cli.Cmd := `[Cli|
 ## Exit codes:
 
 - `0`: success
-- `1`: invalid arguments provided
 - `2`: invalid labels defined
 - `3`: ~labels do not cover all of `Mathlib/`~ (unused; only emitting warning)
 -/
