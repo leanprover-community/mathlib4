@@ -150,43 +150,6 @@ section ConditionallyCompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
 
-/-- The `limsSup` of a filter `f` is a cluster point of `f`. -/
-theorem ClusterPt.limsSup {f : Filter α} [NeBot f]
-    (hc : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
-    (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) : ClusterPt f.limsSup f := by
-  by_cases! hn : Nontrivial α
-  · by_cases! htop : ∀ x, x ≤ f.limsSup
-    · let : OrderTop α := { top := f.limsSup, le_top := htop }
-      exact nhds_top_basis.clusterPt_iff_frequently |>.mpr fun a => frequently_lt_of_lt_limsSup hc
-    · by_cases! hbot : ∀ x, f.limsSup ≤ x
-      · let : OrderBot α := { bot := f.limsSup, bot_le := hbot }
-        refine nhds_bot_basis.clusterPt_iff_frequently |>.mpr fun a h => ?_
-        exact lt_mem_sets_of_limsSup_lt hb h |>.frequently
-      · refine (nhds_basis_Ioo' hbot htop).clusterPt_iff_frequently |>.mpr fun a ⟨hl, hg⟩ => ?_
-        exact frequently_lt_of_lt_limsSup hc hl |>.and_eventually <| lt_mem_sets_of_limsSup_lt hb hg
-  · simp_all [ClusterPt, Filter.eq_top_of_neBot]
-
-set_option backward.isDefEq.respectTransparency false in
-/-- The `limsInf` of a filter `f` is a cluster point of `f`. -/
-theorem ClusterPt.limsInf {f : Filter α} [NeBot f]
-    (hc : f.IsCobounded (· ≥ ·) := by isBoundedDefault)
-    (hb : f.IsBounded (· ≥ ·) := by isBoundedDefault) : ClusterPt f.limsInf f :=
-  ClusterPt.limsSup (α := αᵒᵈ) hc hb
-
-/-- The `limsup` of a function `u` along a filter `f` is a cluster point of `u` along `f`. -/
-theorem MapClusterPt.limsup {u : β → α} {f : Filter β} [NeBot f]
-    (hc : IsCoboundedUnder (· ≤ ·) f u := by isBoundedDefault)
-    (hb : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
-    MapClusterPt (limsup u f) f u :=
-  ClusterPt.limsSup
-
-/-- The `liminf` of a function `u` along a filter `f` is a cluster point of `u` along `f`. -/
-theorem MapClusterPt.liminf {u : β → α} {f : Filter β} [NeBot f]
-    (hc : IsCoboundedUnder (· ≥ ·) f u := by isBoundedDefault)
-    (hb : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
-    MapClusterPt (liminf u f) f u :=
-  MapClusterPt.limsup (α := αᵒᵈ)
-
 /-- If the liminf and the limsup of a filter coincide, then this filter converges to
 their common value, at least if the filter is eventually bounded above and below. -/
 theorem le_nhds_of_limsSup_eq_limsInf {f : Filter α} {a : α} (hl : f.IsBounded (· ≤ ·))
@@ -233,6 +196,79 @@ theorem Filter.Tendsto.limsup_eq {f : Filter β} {u : β → α} {a : α} [NeBot
 theorem Filter.Tendsto.liminf_eq {f : Filter β} {u : β → α} {a : α} [NeBot f]
     (h : Tendsto u f (𝓝 a)) : liminf u f = a :=
   limsInf_eq_of_le_nhds h
+
+/-- The `limsSup` of a filter `f` is a cluster point of `f`. -/
+theorem ClusterPt.limsSup {f : Filter α} [NeBot f]
+    (hc : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
+    (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) : ClusterPt f.limsSup f := by
+  by_cases! hn : Nontrivial α
+  · by_cases! htop : ∀ x, x ≤ f.limsSup
+    · let : OrderTop α := { top := f.limsSup, le_top := htop }
+      exact nhds_top_basis.clusterPt_iff_frequently |>.mpr fun a => frequently_lt_of_lt_limsSup hc
+    · by_cases! hbot : ∀ x, f.limsSup ≤ x
+      · let : OrderBot α := { bot := f.limsSup, bot_le := hbot }
+        refine nhds_bot_basis.clusterPt_iff_frequently |>.mpr fun a h => ?_
+        exact lt_mem_sets_of_limsSup_lt hb h |>.frequently
+      · refine (nhds_basis_Ioo' hbot htop).clusterPt_iff_frequently |>.mpr fun a ⟨hl, hg⟩ => ?_
+        exact frequently_lt_of_lt_limsSup hc hl |>.and_eventually <| lt_mem_sets_of_limsSup_lt hb hg
+  · simp_all [ClusterPt, Filter.eq_top_of_neBot]
+
+/-- The `limsSup` of a filter `f` is the greatest cluster point of `f`. This version assumes that
+neighborhoods are eventually bounded below. -/
+theorem isGreatest_clusterPt_limsSup {f : Filter α} [NeBot f]
+    (hc : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
+    (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) :
+    IsGreatest {x | ClusterPt x f} f.limsSup := by
+  refine ⟨ClusterPt.limsSup, fun a ha => ?_⟩
+  simp only [ClusterPt, Set.mem_setOf_eq] at ha
+  have : (𝓝 a ⊓ f).limsSup = a := limsSup_eq_of_le_nhds inf_le_left
+  refine this ▸ limsSup_le_limsSup_of_le inf_le_right ?_ hb
+  exact (IsBounded.mono inf_le_left (isBounded_ge_nhds a)).isCobounded_le
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The `limsInf` of a filter `f` is a cluster point of `f`. -/
+theorem ClusterPt.limsInf {f : Filter α} [NeBot f]
+    (hc : f.IsCobounded (· ≥ ·) := by isBoundedDefault)
+    (hb : f.IsBounded (· ≥ ·) := by isBoundedDefault) : ClusterPt f.limsInf f :=
+  ClusterPt.limsSup (α := αᵒᵈ) hc hb
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The `limsInf` of a filter `f` is the least cluster point of `f`. -/
+theorem isLeast_clusterPt_limsInf {f : Filter α} [NeBot f]
+    (hc : f.IsCobounded (· ≥ ·) := by isBoundedDefault)
+    (hb : f.IsBounded (· ≥ ·) := by isBoundedDefault) :
+    IsLeast {x | ClusterPt x f} f.limsInf :=
+  isGreatest_clusterPt_limsSup (α := αᵒᵈ)
+
+/-- The `limsup` of a function `u` along a filter `f` is a cluster point of `u` along `f`. -/
+theorem MapClusterPt.limsup {u : β → α} {f : Filter β} [NeBot f]
+    (hc : IsCoboundedUnder (· ≤ ·) f u := by isBoundedDefault)
+    (hb : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
+    MapClusterPt (limsup u f) f u :=
+  ClusterPt.limsSup
+
+/-- The `limsup` of a function `u` along a filter `f` is the greateset cluster point of `u` along
+`f`. -/
+theorem isGreatest_mapClusterPt_limsup {u : β → α} {f : Filter β} [NeBot f]
+    (hc : IsCoboundedUnder (· ≤ ·) f u := by isBoundedDefault)
+    (hb : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
+    IsGreatest {x | MapClusterPt x f u} (limsup u f) :=
+  isGreatest_clusterPt_limsSup
+
+/-- The `liminf` of a function `u` along a filter `f` is a cluster point of `u` along `f`. -/
+theorem MapClusterPt.liminf {u : β → α} {f : Filter β} [NeBot f]
+    (hc : IsCoboundedUnder (· ≥ ·) f u := by isBoundedDefault)
+    (hb : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
+    MapClusterPt (liminf u f) f u :=
+  MapClusterPt.limsup (α := αᵒᵈ)
+
+/-- The `liminf` of a function `u` along a filter `f` is the least cluster point of `u` along
+`f`. -/
+theorem isLeast_mapClusterPt_liminf {u : β → α} {f : Filter β} [NeBot f]
+    (hc : IsCoboundedUnder (· ≥ ·) f u := by isBoundedDefault)
+    (hb : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
+    IsLeast {x | MapClusterPt x f u} (liminf u f) :=
+  isGreatest_mapClusterPt_limsup (α := αᵒᵈ)
 
 /-- If the liminf and the limsup of a function coincide, then the limit of the function
 exists and has the same value. -/
