@@ -70,9 +70,6 @@ differentiable at `x`.
 
 variable {σ σ' σ'' τ τ' τ'' : Π x : M, V x}
 
--- set_option trace.profiler true
--- set_option profiler.threshold 500
-
 /-- The scalar product of two sections. -/
 noncomputable abbrev product (σ τ : Π x : M, V x) : M → ℝ :=
   fun x ↦ inner ℝ (σ x) (τ x)

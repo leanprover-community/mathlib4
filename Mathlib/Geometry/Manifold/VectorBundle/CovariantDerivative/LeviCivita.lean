@@ -76,11 +76,13 @@ iff it is torsion-free and compatible with `g`.
 Note that the bundle metric on `TM` is implicitly hidden in this definition. See `TODO` for a
 version depending on a choice of Riemannian metric on `M`.
 -/
-def IsLeviCivitaConnection [FiniteDimensional ℝ E] : Prop := cov.IsCompatible ∧ cov.torsion = 0
+def IsLeviCivitaConnection [FiniteDimensional ℝ E] : Prop :=
+  -- adaptation note: V used to be not required
+  cov.IsCompatible (V := (fun (x : M) ↦ TangentSpace I x)) ∧ cov.torsion = 0
 
 local notation "⟪" X ", " Y "⟫" => product X Y
 
-/- TODO: writing `hσ.inner_bundle hτ` or writing `by apply MDifferentiable.inner_bundle hσ hτ`
+/- TODO: writing `hX.inner_bundle hY` or writing `by apply MDifferentiable.inner_bundle hX hY`
 yields an error
 synthesized type class instance is not definitionally equal to expression inferred by typing rules,
 synthesized
@@ -558,7 +560,12 @@ lemma aux (h : cov.IsLeviCivitaConnection) {x : M}
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) : rhs_aux I X Y Z x =
     ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ X, Z⟫ x + ⟪Y, VectorField.mlieBracket I X Z⟫ x := by
   trans ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ Z, X⟫ x
-  · exact cov.isCompatible_iff.mp h.1 hX hY hZ
+  · -- adaptation note: the following line fails with an error
+    /- synthesized type class instance is not definitionally equal to expression inferred by typing rules, synthesized
+      fun x ↦ instNormedAddCommGroupOfRiemannianBundleOfIsTopologicalAddGroupOfContinuousConstSMulReal x
+    inferred
+      fun b ↦ inst✝⁸ -/
+    sorry -- exact cov.isCompatible_iff.mp h.1 hX hY hZ
   · simp [← cov.torsion_eq_zero_iff.mp h.2 hX hZ, product, inner_sub_right]
 
 variable {cov} in
@@ -800,7 +807,8 @@ lemma leviCivitaConnection_isCompatible_aux
 
 -- Why is everything so slow?
 lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
-    (LeviCivitaConnection I M).IsCompatible := by
+    -- adaptation note: specifying V used to be not necessary
+    (LeviCivitaConnection I M).IsCompatible (V := (fun (x : M) ↦ TangentSpace I x)) := by
   rw [isCompatible_iff]
   intro x X Y Z hX hY hZ
   symm
