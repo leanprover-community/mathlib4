@@ -73,39 +73,15 @@ namespace Mathlib.Tactic
 
 open Lean Parser Elab Tactic Meta
 
-/-- Lift an expression to another type.
-* Usage: `'lift' expr 'to' expr ('using' expr)? ('with' id (id id?)?)?`.
-* If `n : ℤ` and `hn : n ≥ 0` then the tactic `lift n to ℕ using hn` creates a new
-  constant of type `ℕ`, also named `n` and replaces all occurrences of the old variable `(n : ℤ)`
-  with `↑n` (where `n` in the new variable). It will clear `n` from the context and
-  try to clear `hn` from the context.
-  + So for example the tactic `lift n to ℕ using hn` transforms the goal
-    `n : ℤ, hn : n ≥ 0, h : P n ⊢ n = 3` to `n : ℕ, h : P ↑n ⊢ ↑n = 3`
-    (here `P` is some term of type `ℤ → Prop`).
-* The argument `using hn` is optional, the tactic `lift n to ℕ` does the same, but also creates a
-  new subgoal that `n ≥ 0` (where `n` is the old variable).
-  This subgoal will be placed at the top of the goal list.
-  + So for example the tactic `lift n to ℕ` transforms the goal
-    `n : ℤ, h : P n ⊢ n = 3` to two goals
-    `n : ℤ, h : P n ⊢ n ≥ 0` and `n : ℕ, h : P ↑n ⊢ ↑n = 3`.
-* You can also use `lift n to ℕ using e` where `e` is any expression of type `n ≥ 0`.
-* Use `lift n to ℕ with k` to specify the name of the new variable.
-* Use `lift n to ℕ with k hk` to also specify the name of the equality `↑k = n`. In this case, `n`
-  will remain in the context. You can use `rfl` for the name of `hk` to substitute `n` away
-  (i.e. the default behavior).
-* You can also use `lift e to ℕ with k hk` where `e` is any expression of type `ℤ`.
-  In this case, the `hk` will always stay in the context, but it will be used to rewrite `e` in
-  all hypotheses and the target.
-  + So for example the tactic `lift n + 3 to ℕ using hn with k hk` transforms the goal
-    `n : ℤ, hn : n + 3 ≥ 0, h : P (n + 3) ⊢ n + 3 = 2 * n` to the goal
-    `n : ℤ, k : ℕ, hk : ↑k = n + 3, h : P ↑k ⊢ ↑k = 2 * n`.
-* The tactic `lift n to ℕ using h` will remove `h` from the context. If you want to keep it,
-  specify it again as the third argument to `with`, like this: `lift n to ℕ using h with n rfl h`.
-* More generally, this can lift an expression from `α` to `β` assuming that there is an instance
-  of `CanLift α β`. In this case the proof obligation is specified by `CanLift.prf`.
-* Given an instance `CanLift β γ`, it can also lift `α → β` to `α → γ`; more generally, given
-  `β : Π a : α, Type*`, `γ : Π a : α, Type*`, and `[Π a : α, CanLift (β a) (γ a)]`, it
-  automatically generates an instance `CanLift (Π a, β a) (Π a, γ a)`.
+/--
+`lift e to t with x` lifts the expression `e` to the type `t` by introducing a new variable `x : t`
+such that `↑x = e`, and then replacing occurrences of `e` with `↑x`. `lift` requires an instance of
+the class `CanLift t' t coe cond`, where `t'` is the type of `e`, and creates a side goal for the
+lifting condition, of the form `⊢ cond x`, placing this on top of the goal stack.
+
+Given an instance `CanLift β γ`, `lift` can also lift `α → β` to `α → γ`; more generally, given
+`β : Π a : α, Type*`, `γ : Π a : α, Type*`, and `[Π a : α, CanLift (β a) (γ a)]`, it
+automatically generates an instance `CanLift (Π a, β a) (Π a, γ a)`.
 
 `lift` is in some sense dual to the `zify` tactic. `lift (z : ℤ) to ℕ` will change the type of an
 integer `z` (in the supertype) to `ℕ` (the subtype), given a proof that `z ≥ 0`;
@@ -113,6 +89,58 @@ propositions concerning `z` will still be over `ℤ`. `zify` changes proposition
 subtype) to propositions about `ℤ` (the supertype), without changing the type of any variable.
 
 The `norm_cast` tactic can be used after `lift` to normalize introduced casts.
+
+* `lift e to t using h with x` uses the expression `h` to prove the lifting condition `cond e`.
+  If `h` is a variable, `lift` will try to clear it from the context. If you want to keep `h` in
+  the context, write `lift e to t using h with x rfl h` (see below).
+* If `e` is a variable, `lift e to t` is equivalent to `lift e to t with e`. The original variable
+  `e` will be cleared from the context.
+* `lift e to t with x hx` adds `hx : ↑x = e` to the context (and if `e` is a variable, does not
+  clear it).
+* `lift e to t with x hx h` adds `hx : ↑x = e` and `h : cond e` to the context (and if `e` is a
+  variable, does not clear it). In particular, `lift e to t using h with x hx h`, where `h` is a
+  variable, keeps `h` in the context.
+* `lift e to t with x rfl h` adds `h : cond e` to the context (and if `e` is a variable, does not
+  clear it). In particular, `lift e to t using h with x rfl h`, where `h` is a variable, keeps `h`
+  in the context.
+
+Examples:
+```
+def P (n : ℤ) : Prop := n = 3
+
+example (n : ℤ) (h : P n) : n = 3 := by
+  lift n to ℕ
+  /-
+  Two goals:
+  n : ℤ, h : P n ⊢ n ≥ 0
+  n : ℕ, h : P ↑n ⊢ ↑n = 3
+  -/
+  · unfold P at h; linarith
+  · exact h
+
+example (n : ℤ) (hn : n ≥ 0) (h : P n) : n = 3 := by
+  lift n to ℕ using hn
+  /-
+  One goal:
+  n : ℕ
+  h : P ↑n
+  ⊢ ↑n = 3
+  -/
+  exact h
+
+example (n : ℤ) (hn : n + 3 ≥ 0) (h : P (n + 3)) :
+    n + 3 = n * 2 + 3 := by
+  lift n + 3 to ℕ using hn with k hk
+  /-
+  One goal:
+  n : ℤ
+  k : ℕ
+  hk : ↑k = n + 3
+  h : P ↑k
+  ⊢ ↑k = 2 * n + 3
+  -/
+  unfold P at h; linarith
+```
 -/
 syntax (name := lift) "lift " term " to " term (" using " term)?
   (" with " ident (ppSpace colGt ident)? (ppSpace colGt ident)?)? : tactic

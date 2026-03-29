@@ -91,7 +91,7 @@ lemma insert_univ (h : IsCompactSystem S) : IsCompactSystem (insert univ S) := b
   classical
   let n := Nat.find h₀
   let s' := fun i ↦ if s i ∈ S then s i else s n
-  have h₁ : ∀ i, s' i ∈ S := by simp [s']; grind
+  have h₁ : ∀ i, s' i ∈ S := by grind
   have h₂ : ⋂ i, s i = ⋂ i, s' i := by ext; simp; grind
   apply h₂ ▸ h s' h₁
   by_contra! ⟨j, hj⟩
