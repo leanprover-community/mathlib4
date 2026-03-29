@@ -1107,7 +1107,7 @@ theorem ord_eq (α) : ∃ (r : α → α → Prop) (_ : IsWellOrder α r), ord #
 
 open Classical in
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
-theorem ord_eq_type_lt (α) : ∃ (_ : LinearOrder α) (_: WellFoundedLT α), ord #α = typeLT α :=
+theorem exists_ord_eq_type_lt (α) : ∃ (_ : LinearOrder α) (_: WellFoundedLT α), ord #α = typeLT α :=
   let ⟨r, _, hr⟩ := ord_eq α
   let := linearOrderOfSTO r
   ⟨this, inferInstance, hr⟩
