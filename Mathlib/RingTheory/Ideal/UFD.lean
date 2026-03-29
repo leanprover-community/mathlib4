@@ -40,7 +40,7 @@ theorem Ideal.ufd_iff_height_one_primes_principal :
     rcases Ideal.exists_minimalPrimes_le (I.span_singleton_le_iff_mem.2 hxI) with ⟨p, hpmin, hpl⟩
     have : p.IsPrime := Ideal.minimalPrimes_isPrime hpmin
     have hpn : p ≠ ⊥ := fun hp_bot ↦
-      hx0 (Ideal.span_singleton_eq_bot.1 (le_antisymm (hp_bot ▸ hpmin.1.2) bot_le))
+      hx0 <| Ideal.span_singleton_eq_bot.1 <| le_antisymm (hp_bot ▸ hpmin.1.2) bot_le
     have hpp : p.IsPrincipal := h p <| by
       refine le_antisymm ?_ <| ENat.one_le_iff_ne_zero.2 <|
         p.primeHeight_eq_zero_iff_eq_bot.not.2 hpn
@@ -59,7 +59,7 @@ theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
   · simpa [hpbot] using bot_isPrincipal
   let S : Set (Ideal R) := {I | ∃ y : R, span {y} ≤ p ∧ I = span {y} ∧
     map (algebraMap R (Localization.Away x)) (span {y}) = map (algebraMap R _) p}
-  obtain ⟨I, ⟨y, hyp, rfl, hy⟩, hImax⟩ : ∃ I ∈ S, ∀ J ∈ S, ¬ I < J := by
+  obtain ⟨I, ⟨y, hyp, rfl, hy⟩, hm⟩ : ∃ I ∈ S, ∀ J ∈ S, ¬ I < J := by
     refine IsWellFounded.wf.has_min S ?_
     obtain ⟨g, hg⟩ := hp
     obtain ⟨a, s, hgs⟩ := IsLocalization.exists_mk'_eq M g
@@ -72,8 +72,7 @@ theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
       exact associated_mul_unit_left _ _ (IsLocalization.map_units (Localization.Away x) s)
   have hpb : map (algebraMap R (Localization.Away x)) p ≠ ⊥ := by
     simpa [Ideal.map_eq_bot_iff_of_injective (IsLocalization.injective _ hM)] using hpbot
-  have hyb : span {y} ≠ ⊥ := fun hbot ↦ hpb <| by rw [← hy, hbot, map_bot]
-  have hy0 : y ≠ 0 := fun hy0 ↦ by simp [hy0] at hyb
+  have hy0 : y ≠ 0 := fun hy0 ↦ hpb <| by simpa [hy0] using hy.symm
   have hxy : ¬ x ∣ y := by
     rintro ⟨b, rfl⟩
     have hsp : span {b} ∈ S := by
@@ -84,7 +83,7 @@ theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
       · simpa using associated_unit_mul_left _ _ (IsLocalization.Away.algebraMap_isUnit x)
     have hxb : span {x * b} ≤ span {b} := span_singleton_le_span_singleton.2 ⟨x, mul_comm x b⟩
     have hb0 : b ≠ 0 := fun hb0 ↦ hy0 <| by simp [hb0]
-    exact hImax (span {b}) hsp <| lt_of_le_of_ne hxb <| fun hEq ↦
+    exact hm (span {b}) hsp <| lt_of_le_of_ne hxb <| fun hEq ↦
       have : Associated (x * b) b := Ideal.span_singleton_eq_span_singleton.1 hEq
       hx.not_unit <| isUnit_of_associated_mul (by rwa [mul_comm]) hb0
   refine ⟨y, le_antisymm (fun z hz ↦ ?_) hyp⟩
