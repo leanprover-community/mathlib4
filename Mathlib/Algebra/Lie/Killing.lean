@@ -98,7 +98,6 @@ instance instHasTrivialRadical
     HasTrivialRadical R L :=
   (hasTrivialRadical_iff_no_abelian_ideals R L).mpr IsKilling.ideal_eq_bot_of_isLieAbelian
 
-variable {R L} in
 theorem isLieAbelian_iff_subsingleton
     [Module.Free R L] [Module.Finite R L] [IsDomain R] [IsPrincipalIdealRing R] :
     IsLieAbelian L ↔ Subsingleton L := by
