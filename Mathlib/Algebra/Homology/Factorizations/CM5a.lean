@@ -408,7 +408,7 @@ public lemma step [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ 
     ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₁ F ∧ isIsoLE n₀ F := by
   obtain ⟨F₁, h₁, h₂, _⟩ := step₁ f n₀ n₁ hf
   obtain ⟨F₂, h₃, h₄⟩ := step₂ F₁.obj.ι n₀ n₁ h₁
-  refine ⟨.mk { mid := F₂.obj.mid, ι := F₂.obj.ι , π := F₂.obj.π ≫ F₁.obj.π }
+  refine ⟨.mk { mid := F₂.obj.mid, ι := F₂.obj.ι, π := F₂.obj.π ≫ F₁.obj.π }
     ⟨by dsimp; infer_instance, MorphismProperty.comp_mem _ _ _ F₂.property.2 F₁.property.2⟩,
     ⟨h₃, fun i hi ↦ ?_⟩⟩
   have := h₂ i hi
