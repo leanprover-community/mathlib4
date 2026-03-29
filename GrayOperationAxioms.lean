@@ -1,4 +1,5 @@
 import GrayNumber
+import GrayOperations
 import GrayAxiomInterfaces
 
 /-!
@@ -33,12 +34,16 @@ axiom general_gray_add_le_one (g1 g2 : GrayNumber) :
 -- ==============================================================================
 
 -- [AxiomTrack] round1=include(A6-mul); role=base-axiom
-axiom general_gray_mul_nondec (g1 g2 : GrayNumber) :
-  max g1.greyness g2.greyness ≤ (gray_mul g1 g2).greyness
+theorem general_gray_mul_nondec (g1 g2 : GrayNumber) :
+  max g1.greyness g2.greyness ≤ (gray_mul g1 g2).greyness := by
+  simp [gray_mul]
 
 -- [AxiomTrack] round1=include(A6-div); role=base-axiom
-axiom general_gray_div_nondec (g1 g2 : GrayNumber) (h : g2.kernel ≠ 0) :
-  max g1.greyness g2.greyness ≤ (gray_div g1 g2 h).greyness
+theorem general_gray_div_nondec (g1 g2 : GrayNumber) (h : g2.kernel ≠ 0) :
+  max g1.greyness g2.greyness ≤ (gray_div g1 g2 h).greyness := by
+  simpa [gray_div, gray_mul, gray_inv, max_le_iff] using
+    (And.intro (le_max_left g1.greyness g2.greyness)
+      (le_max_right g1.greyness g2.greyness))
 
 /-- Export A6 as a reusable interface instance for downstream lemmas. -/
 instance instIsGrayMulDivGreynessNondecOfA6 : IsGrayMulDivGreynessNondec where

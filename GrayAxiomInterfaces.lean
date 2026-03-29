@@ -1,6 +1,5 @@
 import GrayNumber
 import GrayOperations
-import GraySequences
 import Mathlib.Tactic
 
 /-!
@@ -296,31 +295,34 @@ theorem grayAxiom5_holds
   h.axiom5
 
 /-- Interface for weakening buffer families `W x n`. -/
-class IsWeakeningBufferFamily (W : Sequence → ℕ → Sequence) : Prop where
+class IsWeakeningBufferFamily (W : (ℕ → ℝ) → ℕ → (ℕ → ℝ)) : Prop where
   weakening : ∀ x n k, k ≤ n → W x n k ≤ x k
 
 /-- Interface for strengthening buffer families `S x n`. -/
-class IsStrengtheningBufferFamily (S : Sequence → ℕ → Sequence) : Prop where
+class IsStrengtheningBufferFamily (S : (ℕ → ℝ) → ℕ → (ℕ → ℝ)) : Prop where
   strengthening : ∀ x n k, k ≤ n → x k ≤ S x n k
 
 /-- Interface for weighted weakening families `W x ω n`. -/
-class IsWeightedWeakeningBufferFamily (W : Sequence → Sequence → ℕ → Sequence) : Prop where
+class IsWeightedWeakeningBufferFamily
+    (W : (ℕ → ℝ) → (ℕ → ℝ) → ℕ → (ℕ → ℝ)) : Prop where
   weakening : ∀ x ω n, (∀ k ≤ n, 0 < ω k) → ∀ k ≤ n, W x ω n k ≤ x k
 
 /-- Interface for weighted strengthening families `S x ω n`. -/
-class IsWeightedStrengtheningBufferFamily (S : Sequence → Sequence → ℕ → Sequence) : Prop where
+class IsWeightedStrengtheningBufferFamily
+    (S : (ℕ → ℝ) → (ℕ → ℝ) → ℕ → (ℕ → ℝ)) : Prop where
   strengthening : ∀ x ω n, (∀ k ≤ n, 0 < ω k) → ∀ k ≤ n, x k ≤ S x ω n k
 
 /-- Sign-parametric interface for generalized buffer families `G x ω n α`. -/
-class IsGeneralizedBufferBySign (G : Sequence → Sequence → ℕ → ℝ → Sequence) : Prop where
+class IsGeneralizedBufferBySign
+    (G : (ℕ → ℝ) → (ℕ → ℝ) → ℕ → ℝ → (ℕ → ℝ)) : Prop where
   negative_weaken : ∀ x ω n α, (∀ k ≤ n, 0 < ω k) → α < 0 → ∀ k ≤ n, G x ω n α k ≤ x k
   positive_strengthen : ∀ x ω n α, (∀ k ≤ n, 0 < ω k) → 0 < α → ∀ k ≤ n, x k ≤ G x ω n α k
 
 /-- Interface for AWBO/WAWBO/GFBO special-case identities. -/
 class IsBufferSpecialization
-    (A : Sequence → ℕ → Sequence)
-    (W : Sequence → Sequence → ℕ → Sequence)
-    (G : Sequence → Sequence → ℕ → ℝ → Sequence) : Prop where
+    (A : (ℕ → ℝ) → ℕ → (ℕ → ℝ))
+    (W : (ℕ → ℝ) → (ℕ → ℝ) → ℕ → (ℕ → ℝ))
+    (G : (ℕ → ℝ) → (ℕ → ℝ) → ℕ → ℝ → (ℕ → ℝ)) : Prop where
   awbo_eq_wawbo_unit : ∀ x n, A x n = W x (fun _ => 1) n
   wawbo_eq_gfbo_negone :
     ∀ x ω n,
@@ -330,16 +332,16 @@ class IsBufferSpecialization
 
 /-- Interface for WASBO/GFBO special-case identity at `α = 1`. -/
 class IsStrengtheningBufferSpecialization
-    (S : Sequence → Sequence → ℕ → Sequence)
-    (G : Sequence → Sequence → ℕ → ℝ → Sequence) : Prop where
+  (S : (ℕ → ℝ) → (ℕ → ℝ) → ℕ → (ℕ → ℝ))
+  (G : (ℕ → ℝ) → (ℕ → ℝ) → ℕ → ℝ → (ℕ → ℝ)) : Prop where
   wasbo_eq_gfbo_one : ∀ x ω n, S x ω n = G x ω n 1
 
 namespace IsWeakeningBufferFamily
 
 theorem pointwise_le
-    {W : Sequence → ℕ → Sequence}
+  {W : (ℕ → ℝ) → ℕ → (ℕ → ℝ)}
     [hW : IsWeakeningBufferFamily W]
-    (x : Sequence) (n k : ℕ) (hk : k ≤ n) :
+  (x : ℕ → ℝ) (n k : ℕ) (hk : k ≤ n) :
     W x n k ≤ x k :=
   hW.weakening x n k hk
 
@@ -348,9 +350,9 @@ end IsWeakeningBufferFamily
 namespace IsStrengtheningBufferFamily
 
 theorem pointwise_ge
-    {S : Sequence → ℕ → Sequence}
+  {S : (ℕ → ℝ) → ℕ → (ℕ → ℝ)}
     [hS : IsStrengtheningBufferFamily S]
-    (x : Sequence) (n k : ℕ) (hk : k ≤ n) :
+  (x : ℕ → ℝ) (n k : ℕ) (hk : k ≤ n) :
     x k ≤ S x n k :=
   hS.strengthening x n k hk
 
@@ -359,18 +361,18 @@ end IsStrengtheningBufferFamily
 namespace IsGeneralizedBufferBySign
 
 theorem negative_pointwise_weaken
-    {G : Sequence → Sequence → ℕ → ℝ → Sequence}
+    {G : (ℕ → ℝ) → (ℕ → ℝ) → ℕ → ℝ → (ℕ → ℝ)}
     [hG : IsGeneralizedBufferBySign G]
-    (x ω : Sequence) (n : ℕ) (α : ℝ)
+    (x ω : ℕ → ℝ) (n : ℕ) (α : ℝ)
     (hω : ∀ k ≤ n, 0 < ω k) (hα : α < 0)
     (k : ℕ) (hk : k ≤ n) :
     G x ω n α k ≤ x k :=
   hG.negative_weaken x ω n α hω hα k hk
 
 theorem positive_pointwise_strengthen
-    {G : Sequence → Sequence → ℕ → ℝ → Sequence}
+    {G : (ℕ → ℝ) → (ℕ → ℝ) → ℕ → ℝ → (ℕ → ℝ)}
     [hG : IsGeneralizedBufferBySign G]
-    (x ω : Sequence) (n : ℕ) (α : ℝ)
+    (x ω : ℕ → ℝ) (n : ℕ) (α : ℝ)
     (hω : ∀ k ≤ n, 0 < ω k) (hα : 0 < α)
     (k : ℕ) (hk : k ≤ n) :
     x k ≤ G x ω n α k :=
@@ -403,9 +405,6 @@ end IsGrayMulDivGreynessNondec
 namespace IsGrayAddSubGreynessComposite
 
 theorem add_greyness_le_one
-    {grayUnion grayInter : GrayNumber → GrayNumber → GrayNumber}
-    {white fullSpace : GrayNumber}
-    [IsGrayA1A4 grayUnion grayInter white fullSpace]
     [hA56 : IsGrayAddSubGreynessComposite] (g1 g2 : GrayNumber) :
     (gray_add g1 g2).greyness ≤ 1 := by
   rcases hA56.add_sub_greyness_formula g1 g2 with ⟨w1, w2, hw1, hw2, hsum, hadd, _⟩
@@ -420,9 +419,6 @@ theorem add_greyness_le_one
   linarith [hadd, hsum_le]
 
 theorem add_greyness_nonneg
-    {grayUnion grayInter : GrayNumber → GrayNumber → GrayNumber}
-    {white fullSpace : GrayNumber}
-    [IsGrayA1A4 grayUnion grayInter white fullSpace]
     [hA56 : IsGrayAddSubGreynessComposite] (g1 g2 : GrayNumber) :
     0 ≤ (gray_add g1 g2).greyness := by
   rcases hA56.add_sub_greyness_formula g1 g2 with ⟨w1, w2, hw1, hw2, _hsum, hadd, _⟩
@@ -435,9 +431,6 @@ theorem add_greyness_nonneg
   linarith [hadd, hsum_nonneg]
 
 theorem sub_greyness_le_one
-    {grayUnion grayInter : GrayNumber → GrayNumber → GrayNumber}
-    {white fullSpace : GrayNumber}
-    [IsGrayA1A4 grayUnion grayInter white fullSpace]
     [hA56 : IsGrayAddSubGreynessComposite] (g1 g2 : GrayNumber) :
     (gray_sub g1 g2).greyness ≤ 1 := by
   rcases hA56.add_sub_greyness_formula g1 g2 with ⟨w1, w2, hw1, hw2, hsum, _, hsub⟩
@@ -452,9 +445,6 @@ theorem sub_greyness_le_one
   linarith [hsub, hsum_le]
 
 theorem sub_greyness_nonneg
-    {grayUnion grayInter : GrayNumber → GrayNumber → GrayNumber}
-    {white fullSpace : GrayNumber}
-    [IsGrayA1A4 grayUnion grayInter white fullSpace]
     [hA56 : IsGrayAddSubGreynessComposite] (g1 g2 : GrayNumber) :
     0 ≤ (gray_sub g1 g2).greyness := by
   rcases hA56.add_sub_greyness_formula g1 g2 with ⟨w1, w2, hw1, hw2, _hsum, _, hsub⟩
@@ -465,20 +455,4 @@ theorem sub_greyness_nonneg
   have hsum_nonneg : 0 ≤ w1 * g1.greyness + w2 * g2.greyness :=
     add_nonneg hw1_term_nonneg hw2_term_nonneg
   linarith [hsub, hsum_nonneg]
-
 end IsGrayAddSubGreynessComposite
-
-section InterfaceExamples
-
-/-- Example theorem proved only from `IsGrayA1A4`, without research axioms. -/
-theorem white_union_ge_right_of_interface
-    {grayUnion grayInter : GrayNumber → GrayNumber → GrayNumber}
-    {white fullSpace : GrayNumber}
-    [IsGrayA1A4 grayUnion grayInter white fullSpace]
-    (g : GrayNumber) :
-    g.greyness ≤ (grayUnion white g).greyness := by
-  exact IsGrayA1A4.union_ge_right
-    (grayUnion := grayUnion) (grayInter := grayInter)
-    (white := white) (fullSpace := fullSpace) white g
-
-end InterfaceExamples

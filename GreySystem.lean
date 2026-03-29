@@ -1,6 +1,6 @@
 import GrayNumber
 import GrayOperations
-import GraySequences
+import GrayAlgebraLemmas
 import GrayAxiomInterfaces
 import GrayOperationAxioms
 
@@ -15,6 +15,6 @@ A1-A6 axiom layer:
 - A1-A4 via `GrayAxiomInterfaces.lean`
 - A5-A6 via `GrayOperationAxioms.lean`
 
-For the repository-side second-round preparation bundle, use
-`GraySecondRound.lean`.
+For repository-side second-round preparation, see the dedicated
+second-round module in this project.
 -/
