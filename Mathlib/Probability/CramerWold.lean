@@ -22,6 +22,8 @@ We prove first step of Cramèr-Wold theorem and use Lévy Continuity Theorem to 
 cramer-wold
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Mathlib MeasureTheory ProbabilityTheory Topology Filter Vector Complex Isometry

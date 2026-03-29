@@ -23,6 +23,8 @@ We prove the central limit theorem in dimension `d : ℕ+`.
 multivariate central limit theorem
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open MeasureTheory ProbabilityTheory Filter Complex RealInnerProductSpace
