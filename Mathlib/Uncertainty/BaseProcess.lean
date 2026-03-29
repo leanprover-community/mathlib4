@@ -447,11 +447,17 @@ theorem uncertainDE_uniqueness_interface (U : UncertainSpace)
 
 /-- D-line start: uncertain programming / solver correctness interface. -/
 class UncertainProgrammingStructure (U : UncertainSpace) where
+  /-- Decision variable type for the uncertain programming problem. -/
   Decision : Type _
+  /-- Objective function to be minimized. -/
   Objective : Decision → ℝ
+  /-- Feasibility predicate for candidate decisions. -/
   Feasible : Decision → Prop
+  /-- Distinguished solver output (candidate optimum). -/
   solver : Decision
+  /-- The solver output is feasible. -/
   solver_feasible : Feasible solver
+  /-- The solver output is optimal among all feasible candidates. -/
   solver_optimal : ∀ d, Feasible d → Objective solver ≤ Objective d
 
 theorem uncertainProgramming_solver_correct (U : UncertainSpace)
