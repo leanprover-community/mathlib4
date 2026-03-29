@@ -18,6 +18,7 @@ public section
 
 
 open Filter ENNReal
+open scoped NNReal
 
 namespace Real
 variable {ι : Type*} {f : Filter ι} {u : ι → ℝ}
@@ -129,7 +130,7 @@ lemma toReal_liminf : liminf (fun i ↦ (u i : ℝ)) f = liminf u f := by
   refine eq_of_forall_le_iff fun c ↦ ?_
   rw [← Real.toNNReal_le_iff_le_coe, le_liminf_iff (by simpa) ⟨0, by simp⟩, le_liminf_iff]
   simp only [← coe_lt_coe, Real.coe_toNNReal', lt_sup_iff, or_imp, isEmpty_Prop, not_lt,
-    zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_swap (α := _ ≤ _)]
+    zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_comm (α := _ ≤ _)]
   refine forall₂_congr fun r hr ↦ ?_
   simpa using (le_or_gt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
 
@@ -143,7 +144,7 @@ lemma toReal_limsup : limsup (fun i ↦ (u i : ℝ)) f = limsup u f := by
   refine eq_of_forall_le_iff fun c ↦ ?_
   rw [← Real.toNNReal_le_iff_le_coe, le_limsup_iff (by simpa) (by simpa), le_limsup_iff ‹_›]
   simp only [← coe_lt_coe, Real.coe_toNNReal', lt_sup_iff, or_imp, isEmpty_Prop, not_lt,
-    zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_swap (α := _ ≤ _)]
+    zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_comm (α := _ ≤ _)]
   refine forall₂_congr fun r hr ↦ ?_
   simpa using (le_or_gt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
 
@@ -230,6 +231,18 @@ lemma ofReal_limsup {u : α → ℝ}
     have : 0 < x := hx.trans_le' (by simp)
     filter_upwards [h (.ofReal x) (by simpa [this] using hx)] with a ha
     exact (toReal_lt_of_lt_ofReal ha).trans_le' (by simp [toReal_ofReal'])
+
+lemma ofReal_limsup_toReal [f.NeBot] {u : α → ℝ≥0∞} {C : ℝ≥0} (hf : ∀ᶠ a in f, u a ≤ C) :
+    ENNReal.ofReal (limsup (fun a ↦ (u a).toReal) f) = limsup u f := by
+  have h₁ : IsCoboundedUnder (· ≤ ·) f (fun a ↦ (u a).toReal) :=
+    IsCoboundedUnder.of_frequently_ge <| .of_forall fun _ ↦ by positivity
+  have h₂ : IsBoundedUnder (· ≤ ·) f (fun a ↦ (u a).toReal) := by
+    refine isBoundedUnder_of_eventually_le (a := C) ?_
+    filter_upwards [hf] with a ha
+    exact ENNReal.toReal_le_coe_of_le_coe ha
+  refine (ENNReal.ofReal_limsup h₁ h₂).trans (limsup_congr ?_)
+  filter_upwards [hf] with x hx
+  exact ENNReal.ofReal_toReal (ne_top_of_le_ne_top (by simp : C ≠ ∞) hx)
 
 lemma toReal_limsup {u : α → ℝ≥0∞} (h₁ : ∀ᶠ a in f, u a ≠ ∞)
     (h₂ : IsBoundedUnder (· ≤ ·) f fun a ↦ (u a).toReal := by isBoundedDefault) :

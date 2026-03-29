@@ -116,7 +116,7 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
   use p
   apply mem_biInter
   intro i hi
-  let i : s := ⟨i, hi⟩
+  lift i to s using hi
   /- It suffices to show that for any subcollection `J` of `s` containing `i`, the convex
   hull of `a '' (s \ J)` is contained in `F i`. -/
   suffices ∀ J : Set s, (i ∈ J) → (convexHull 𝕜) (a '' Jᶜ) ⊆ F i by
@@ -132,13 +132,8 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
   /- Since `j ∈ Jᶜ` and `i ∈ J`, we conclude that `i ≠ j`, and hence by the definition of `a`:
   `a j ∈ ⋂ F '' (Set.univ \ {j}) ⊆ F i`. -/
   apply mem_of_subset_of_mem (s₁ := ⋂ k ∈ (s.erase j), F k)
-  · apply biInter_subset_of_mem
-    simp only [erase_val]
-    suffices h : i.val ∈ s.erase j by assumption
-    simp only [mem_erase]
-    constructor
-    · exact fun h' ↦ hj ((show i = j from SetCoe.ext h') ▸ hi)
-    · assumption
+  · apply iInter₂_subset
+    simp [mem_erase, ne_of_mem_of_not_mem hi hj]
   · apply Nonempty.some_mem
 
 /-- **Helly's theorem** for finite families of convex sets in its classical form.

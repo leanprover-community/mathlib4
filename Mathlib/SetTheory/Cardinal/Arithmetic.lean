@@ -49,7 +49,6 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
   rcases ord_eq α with ⟨r, wo, e⟩
   classical
   letI := linearOrderOfSTO r
-  haveI : IsWellOrder α (· < ·) := wo
   -- Define an order `s` on `α × α` by writing `(a, b) < (c, d)` if `max a b < max c d`, or
   -- the max are equal and `a < c`, or the max are equal and `a = c` and `b < d`.
   let g : α × α → α := fun p => max p.1 p.2
@@ -144,7 +143,7 @@ theorem mul_eq_max_of_aleph0_le_left {a b : Cardinal} (h : ℵ₀ ≤ a) (h' : b
   refine (mul_le_max_of_aleph0_le_left h).antisymm ?_
   have : b ≤ a := hb.le.trans h
   rw [max_eq_left this]
-  convert mul_le_mul_right (one_le_iff_ne_zero.mpr h') a
+  convert mul_le_mul_right (Cardinal.one_le_iff_ne_zero.mpr h') a
   rw [mul_one]
 
 theorem mul_le_max_of_aleph0_le_right {a b : Cardinal} (h : ℵ₀ ≤ b) : a * b ≤ max a b := by
@@ -178,7 +177,7 @@ theorem mul_eq_right {a b : Cardinal} (hb : ℵ₀ ≤ b) (ha : a ≤ b) (ha' : 
   rw [mul_comm, mul_eq_left hb ha ha']
 
 theorem le_mul_left {a b : Cardinal} (h : b ≠ 0) : a ≤ b * a := by
-  convert mul_le_mul_left (one_le_iff_ne_zero.mpr h) a
+  convert mul_le_mul_left (Cardinal.one_le_iff_ne_zero.mpr h) a
   rw [one_mul]
 
 theorem le_mul_right {a b : Cardinal} (h : b ≠ 0) : a ≤ a * b := by
@@ -216,7 +215,7 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
     · contradiction
     · contradiction
     rw [← Ne] at h2a
-    rw [← one_le_iff_ne_zero] at h2a hb
+    rw [← Cardinal.one_le_iff_ne_zero] at h2a hb
     norm_cast at h2a hb h ⊢
     apply le_antisymm _ hb
     rw [← not_lt]
@@ -432,9 +431,6 @@ theorem sum_eq_iSup_of_mk_le_iSup {f : ι → Cardinal.{u}} (hι : ℵ₀ ≤ #�
     sum f = ⨆ i, f i :=
   sum_eq_iSup_of_lift_mk_le_iSup hι ((lift_id #ι).symm ▸ h)
 
-@[deprecated (since := "2025-09-06")] alias sum_eq_iSup_lift := sum_eq_iSup_of_lift_mk_le_iSup
-@[deprecated (since := "2025-09-06")] alias sum_eq_iSup := sum_eq_iSup_of_mk_le_iSup
-
 end ciSup
 
 /-! ### Properties of `aleph` -/
@@ -470,7 +466,68 @@ theorem add_nat_le_add_nat_iff {α β : Cardinal} (n : ℕ) : α + n ≤ β + n 
 theorem add_one_le_add_one_iff {α β : Cardinal} : α + 1 ≤ β + 1 ↔ α ≤ β :=
   add_le_add_iff_of_lt_aleph0 one_lt_aleph0
 
+lemma add_lt_add_iff_of_right_lt_aleph0 {a b c : Cardinal} (hc : c < ℵ₀) :
+    a + c < b + c ↔ a < b := by
+  constructor <;> contrapose! <;> simp [add_le_add_iff_of_lt_aleph0 hc]
+
+lemma add_lt_add_iff_of_left_lt_aleph0 {a b c : Cardinal} (hc : c < ℵ₀) :
+    c + a < c + b ↔ a < b := by
+  simpa [add_comm] using add_lt_add_iff_of_right_lt_aleph0 (a := a) (b := b) hc
+
+protected lemma add_lt_add {κ₁ κ₂ μ₁ μ₂ : Cardinal}
+    (hκ : κ₁ < κ₂) (hμ : μ₁ < μ₂) : κ₁ + μ₁ < κ₂ + μ₂ := by
+  rcases le_or_gt ℵ₀ (κ₂ + μ₂) with hinf | hfin
+  · refine add_lt_of_lt hinf ?_ ?_ <;> apply lt_of_lt_of_le <;> solve | assumption | simp
+  · have hfin_ : κ₂ < ℵ₀ ∧ μ₂ < ℵ₀ := add_lt_aleph0_iff.1 hfin
+    apply lt_of_le_of_lt
+    · exact (add_le_add_iff_of_lt_aleph0 (hμ.trans hfin_.right)).mpr hκ.le
+    · simpa [add_comm] using (add_lt_add_iff_of_right_lt_aleph0 hfin_.left).mpr hμ
+
 end aleph
+
+section mul_strictMono
+
+variable {n : ℕ} {a b : Cardinal}
+
+lemma natCast_mul_strictMono {n : ℕ} (hn : n ≠ 0) : StrictMono fun a : Cardinal ↦ n * a := by
+  match n, hn with
+  | 1, _ => simpa using strictMono_id
+  | (n + 1) + 1, hneq1 =>
+    intro a μ hlt
+    push_cast
+    conv_lhs => rw [add_mul, one_mul]
+    conv_rhs => rw [add_mul, one_mul]
+    refine Cardinal.add_lt_add ?_ hlt
+    simpa using (natCast_mul_strictMono (Nat.succ_ne_zero n) hlt)
+
+lemma mul_natCast_strictMono (hn : n ≠ 0) : StrictMono fun a : Cardinal ↦ a * n :=
+  fun _ _ hlt => by simpa [mul_comm] using natCast_mul_strictMono hn hlt
+
+@[simp]
+lemma natCast_mul_inj (hn : n ≠ 0) : n * a = n * b ↔ a = b :=
+  (natCast_mul_strictMono hn).injective.eq_iff
+
+@[simp]
+lemma mul_natCast_inj (hn : n ≠ 0) : a * n = b * n ↔ a = b :=
+  (mul_natCast_strictMono hn).injective.eq_iff
+
+@[simp]
+lemma natCast_mul_le_natCast_mul (hn : n ≠ 0) : n * a ≤ n * b ↔ a ≤ b :=
+  (natCast_mul_strictMono hn).le_iff_le
+
+@[simp]
+lemma mul_natCast_le_mul_natCast (hn : n ≠ 0) : a * n ≤ b * n ↔ a ≤ b :=
+  (mul_natCast_strictMono hn).le_iff_le
+
+@[simp]
+lemma natCast_mul_lt_natCast_mul (hn : n ≠ 0) : n * a < n * b ↔ a < b :=
+  (natCast_mul_strictMono hn).lt_iff_lt
+
+@[simp]
+lemma mul_natCast_lt_mul_natCast (hn : n ≠ 0) : a * n < b * n ↔ a < b :=
+  (mul_natCast_strictMono hn).lt_iff_lt
+
+end mul_strictMono
 
 /-! ### Properties about `power` -/
 section power
@@ -529,10 +586,7 @@ lemma power_le_aleph0 {a b : Cardinal.{u}} (ha : a ≤ ℵ₀) (hb : b < ℵ₀)
 theorem powerlt_aleph0 {c : Cardinal} (h : ℵ₀ ≤ c) : c ^< ℵ₀ = c := by
   apply le_antisymm
   · rw [powerlt_le]
-    intro c'
-    rw [lt_aleph0]
-    rintro ⟨n, rfl⟩
-    apply power_nat_le h
+    exact fun _ a ↦ pow_le h a
   convert le_powerlt c one_lt_aleph0; rw [power_one]
 
 theorem powerlt_aleph0_le (c : Cardinal) : c ^< ℵ₀ ≤ max c ℵ₀ := by

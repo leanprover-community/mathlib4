@@ -92,7 +92,7 @@ section Definitions
 /-- A family of sets of sets `π : ι → Set (Set Ω)` is independent with respect to a measure `μ` if
 for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
 `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then `μ (⋂ i in s, f i) = ∏ i ∈ s, μ (f i) `.
-It will be used for families of pi_systems. -/
+It will be used for families of π-systems. -/
 def iIndepSets {_mΩ : MeasurableSpace Ω}
     (π : ι → Set (Set Ω)) (μ : Measure Ω := by volume_tac) : Prop :=
   Kernel.iIndepSets π (Kernel.const Unit μ) (Measure.dirac () : Measure Unit)
@@ -877,6 +877,8 @@ lemma iIndepFun_iff_finset : iIndepFun f μ ↔ ∀ s : Finset ι, iIndepFun (s.
     have : ⋂ i ∈ s, f i = ⋂ i : s, f i := by ext; simp
     rw [← Finset.prod_coe_sort, this]
     exact (h s).meas_iInter fun i ↦ hs i i.2
+
+alias ⟨iIndepFun.restrict, _⟩ := iIndepFun_iff_finset
 
 end iIndepFun
 

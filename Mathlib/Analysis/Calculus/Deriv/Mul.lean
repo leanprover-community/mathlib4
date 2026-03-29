@@ -5,7 +5,7 @@ Authors: Gabriel Ebner, Anatole Dedecker, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Support
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
 public import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
@@ -43,7 +43,7 @@ variable {f : 𝕜 → F}
 variable {f' : F}
 variable {x : 𝕜}
 variable {s : Set 𝕜}
-variable {L : Filter 𝕜}
+variable {L : Filter (𝕜 × 𝕜)}
 
 /-! ### Derivative of bilinear maps -/
 
@@ -57,9 +57,22 @@ theorem hasDerivWithinAt_of_bilinear
   simpa using (B.hasFDerivWithinAt_of_bilinear
     hu.hasFDerivWithinAt hv.hasFDerivWithinAt).hasDerivWithinAt
 
-theorem hasDerivAt_of_bilinear (hu : HasDerivAt u u' x) (hv : HasDerivAt v v' x) :
+theorem hasDerivAt_of_bilinear (hu : x ∈ tsupport v → HasDerivAt u u' x)
+    (hv : x ∈ tsupport u → HasDerivAt v v' x) :
     HasDerivAt (fun x ↦ B (u x) (v x)) (B (u x) v' + B u' (v x)) x := by
-  simpa using (B.hasFDerivAt_of_bilinear hu.hasFDerivAt hv.hasFDerivAt).hasDerivAt
+  by_cases hxu : x ∈ tsupport u
+  · by_cases hxv : x ∈ tsupport v
+    · simpa using (B.hasFDerivAt_of_bilinear (hu hxv).hasFDerivAt (hv hxu).hasFDerivAt).hasDerivAt
+    · have hx : x ∉ tsupport fun x ↦ B (u x) (v x) :=
+        mt (closure_mono (fun x ↦ mt fun h ↦ by simp [h]) ·) hxv
+      convert HasDerivAt.of_notMem_tsupport hx
+      simp [(hv hxu).unique <| .of_notMem_tsupport hxv, image_eq_zero_of_notMem_tsupport hxv]
+  · have hx : x ∉ tsupport fun x ↦ B (u x) (v x) :=
+      mt (closure_mono (fun x ↦ mt fun h ↦ by simp [h]) ·) hxu
+    convert HasDerivAt.of_notMem_tsupport hx
+    by_cases hxv : x ∈ tsupport v
+    · simp [image_eq_zero_of_notMem_tsupport hxu, (hu hxv).unique <| .of_notMem_tsupport hxu]
+    · simp [image_eq_zero_of_notMem_tsupport hxu, image_eq_zero_of_notMem_tsupport hxv]
 
 theorem hasStrictDerivAt_of_bilinear (hu : HasStrictDerivAt u u' x) (hv : HasStrictDerivAt v v' x) :
     HasStrictDerivAt (fun x ↦ B (u x) (v x)) (B (u x) v' + B u' (v x)) x := by
@@ -74,9 +87,10 @@ theorem derivWithin_of_bilinear
   · exact (B.hasDerivWithinAt_of_bilinear hu.hasDerivWithinAt hv.hasDerivWithinAt).derivWithin hsx
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
-theorem deriv_of_bilinear (hu : DifferentiableAt 𝕜 u x) (hv : DifferentiableAt 𝕜 v x) :
+theorem deriv_of_bilinear (hu : x ∈ tsupport v → DifferentiableAt 𝕜 u x)
+    (hv : x ∈ tsupport u → DifferentiableAt 𝕜 v x) :
     deriv (fun y => B (u y) (v y)) x = B (u x) (deriv v x) + B (deriv u x) (v x) :=
-  (B.hasDerivAt_of_bilinear hu.hasDerivAt hv.hasDerivAt).deriv
+  (B.hasDerivAt_of_bilinear (fun hx ↦ (hu hx).hasDerivAt) fun hx ↦ (hv hx).hasDerivAt).deriv
 
 end ContinuousLinearMap
 
@@ -167,8 +181,8 @@ theorem HasStrictDerivAt.const_smul (c : R) (hf : HasStrictDerivAt f f' x) :
   simpa using (HasStrictFDerivAt.const_smul hf c).hasStrictDerivAt
 
 @[to_fun]
-theorem HasDerivAtFilter.const_smul (c : R) (hf : HasDerivAtFilter f f' x L) :
-    HasDerivAtFilter (c • f) (c • f') x L := by
+theorem HasDerivAtFilter.const_smul (c : R) (hf : HasDerivAtFilter f f' L) :
+    HasDerivAtFilter (c • f) (c • f') L := by
   simpa using (HasFDerivAtFilter.const_smul hf c).hasDerivAtFilter
 
 @[to_fun]

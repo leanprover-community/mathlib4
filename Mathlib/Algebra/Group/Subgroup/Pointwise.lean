@@ -239,7 +239,7 @@ theorem sup_eq_closure_mul (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) *
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
 
 @[to_additive]
-theorem set_mul_normalizer_comm (S : Set G) (N : Subgroup G) (hLE : S ⊆ N.normalizer) :
+theorem set_mul_normalizer_comm (S : Set G) (N : Subgroup G) (hLE : S ⊆ normalizer (N : Set G)) :
     S * N = N * S := by
   rw [← iUnion_mul_left_image, ← iUnion_mul_right_image]
   simp only [image_mul_left, image_mul_right, Set.preimage]
@@ -254,7 +254,7 @@ theorem set_mul_normal_comm (S : Set G) (N : Subgroup G) [hN : N.Normal] :
 when `H` is a subgroup of the normalizer of `N` in `G`. -/
 @[to_additive /-- The carrier of `H ⊔ N` is just `↑H + ↑N` (pointwise set addition)
 when `H` is a subgroup of the normalizer of `N` in `G`. -/]
-theorem coe_mul_of_left_le_normalizer_right (H N : Subgroup G) (hLE : H ≤ N.normalizer) :
+theorem coe_mul_of_left_le_normalizer_right (H N : Subgroup G) (hLE : H ≤ normalizer N) :
     (↑(H ⊔ N) : Set G) = H * N := by
   rw [sup_eq_closure_mul]
   refine Set.Subset.antisymm (fun x hx => ?_) subset_closure
@@ -276,7 +276,7 @@ theorem coe_mul_of_left_le_normalizer_right (H N : Subgroup G) (hLE : H ≤ N.no
 `H` is a subgroup of the normalizer of `N` in `G`. -/
 @[to_additive /-- The carrier of `N ⊔ H` is just `↑N + ↑H` (pointwise set addition)
 when `H` is a subgroup of the normalizer of `N` in `G`. -/]
-theorem coe_mul_of_right_le_normalizer_left (N H : Subgroup G) (hLE : H ≤ N.normalizer) :
+theorem coe_mul_of_right_le_normalizer_left (N H : Subgroup G) (hLE : H ≤ normalizer N) :
     (↑(N ⊔ H) : Set G) = N * H := by
   rw [← set_mul_normalizer_comm _ _ hLE, sup_comm, coe_mul_of_left_le_normalizer_right _ _ hLE]
 
@@ -359,6 +359,7 @@ variable [Monoid α] [MulDistribMulAction α G]
 /-- The action on a subgroup corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 protected def pointwiseMulAction : MulAction α (Subgroup G) where
   smul a S := S.map (MulDistribMulAction.toMonoidEnd _ _ a)
   one_smul S := by
@@ -496,7 +497,7 @@ theorem normalCore_eq_iInf_conjAct (H : Subgroup G) :
 
 lemma conjAct_pointwise_smul_iff {H : Subgroup G} {g : G} :
     ConjAct.toConjAct g • H = H ↔ g ∈ normalizer H := by
-  rw [← H.normalizer.inv_mem_iff]
+  rw [← (normalizer H : Subgroup G).inv_mem_iff]
   simp only [Subgroup.ext_iff, mem_pointwise_smul_iff_inv_smul_mem,
     ← ConjAct.toConjAct_inv, ConjAct.toConjAct_smul, mem_normalizer_iff, inv_inv, Iff.comm]
 

@@ -56,6 +56,7 @@ lemma exact_shortComplex (h : IsPushout t l r b) : h.shortComplex.Exact :=
   h.shortComplex.exact_of_g_is_cokernel
     h.isColimitCokernelCofork
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a pushout square in an abelian category
 ```
 X₁ ⟶ X₂
@@ -145,6 +146,7 @@ lemma mono_cokernel_map_of_isPullback (sq : IsPullback t l r b) :
   obtain ⟨x₁, hx₁, rfl⟩ := sq.exists_lift (π₂ ≫ x₂) x₃ (by simpa)
   simp [← cancel_epi π₁, ← cancel_epi π₂, hx₂, ← reassoc_of% hx₁]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma epi_kernel_map_of_isPushout (sq : IsPushout t l r b) :
     Epi (kernel.map _ _ _ _ sq.w) := by
   rw [epi_iff_surjective_up_to_refinements]
