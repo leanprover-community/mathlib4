@@ -624,20 +624,15 @@ noncomputable def lieIdealOrderIso :
     rw [← lieIdealOrderIso_left_inv (H := H) I, ← lieIdealOrderIso_left_inv (H := H) J]
     exact invtSubmoduleToLieIdeal_mono _ _ h
 
-/-- A Killing Lie algebra with an irreducible root system is simple. -/
-theorem isSimple_of_isIrreducible (hIrr : (rootSystem H).IsIrreducible) : IsSimple K L where
-  eq_bot_or_eq_top := by
-    haveI : Nontrivial (Dual K H) := hIrr.1
-    have : IsSimpleOrder (rootSystem H).invtRootSubmodule :=
-      (RootPairing.isIrreducible_iff_invtRootSubmodule _).mp hIrr
-    exact (lieIdealOrderIso.isSimpleOrder_iff.mpr this).eq_bot_or_eq_top
-  non_abelian := fun h ↦ by
-    have h₁ := (LieAlgebra.isLieAbelian_iff_center_eq_top (R := K) (L := L)).mp h
-    have h₂ := LieAlgebra.center_eq_bot (R := K) (L := L)
-    haveI : Subsingleton L := subsingleton_of_forall_eq 0 fun x ↦ by
-      have : x ∈ (⊤ : LieIdeal K L) := trivial;
-      rwa [h₁.symm.trans h₂] at this
-    exact not_nontrivial (Dual K H) hIrr.1
+theorem isSimple_iff_isIrreducible : (rootSystem H).IsIrreducible ↔ IsSimple K L := by
+  cases subsingleton_or_nontrivial H
+  · -- Should follow from general API
+    sorry
+  have hL : ¬ IsLieAbelian L := by
+    -- Should follow from general API
+    sorry
+  rw [RootPairing.isIrreducible_iff_invtRootSubmodule, ← isSimple_iff_of_not_isLieAbelian K L hL,
+    (lieIdealOrderIso H).isSimpleOrder_iff]
 
 /-- The root system of a simple Killing Lie algebra is irreducible. -/
 instance [IsSimple K L] : (rootSystem H).IsIrreducible := by

@@ -108,6 +108,10 @@ instance : HasTrivialRadical R L := by
 
 end IsSimple
 
+lemma isSimple_iff_of_not_isLieAbelian (hL : ¬ IsLieAbelian L) :
+    IsSimpleOrder (LieIdeal R L) ↔ IsSimple R L :=
+  ⟨fun _ ↦ ⟨IsSimpleOrder.eq_bot_or_eq_top, hL⟩, fun _ ↦ inferInstance⟩
+
 namespace IsSemisimple
 
 open CompleteLattice IsCompactlyGenerated
