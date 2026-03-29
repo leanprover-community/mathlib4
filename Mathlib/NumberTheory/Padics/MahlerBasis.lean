@@ -153,6 +153,7 @@ section norm_fwdDiff
 variable {p : ℕ} [hp : Fact p.Prime] {E : Type*}
   [NormedAddCommGroup E] [Module ℤ_[p] E] [IsBoundedSMul ℤ_[p] E] [IsUltrametricDist E]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Second step in Bojanić's proof of Mahler's theorem (equation (11) of [bojanic74]): show that values
 `Δ_[1]^[n + p ^ t] f 0` for large enough `n` are bounded by the max of `(‖f‖ / p ^ s)` and `1 / p`

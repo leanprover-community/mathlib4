@@ -180,6 +180,7 @@ variable [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
   [NonnegSpectrumClass ℝ A] [IsTopologicalRing A] [T2Space A]
   [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
+set_option backward.isDefEq.respectTransparency false in
 variable [StarModule 𝕜 A] [StarModule ℝ A] [IsScalarTower ℝ 𝕜 A] in
 @[simp]
 lemma abs_smul (r : 𝕜) (a : A) : abs (r • a) = ‖r‖ • abs a := by
@@ -235,6 +236,7 @@ lemma abs_one : abs (1 : A) = 1 := by simp
 
 variable [StarModule ℝ A]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma abs_algebraMap_nnreal (x : ℝ≥0) : abs (algebraMap ℝ≥0 A x) = algebraMap ℝ≥0 A x := by
   simp [Algebra.algebraMap_eq_smul_one]
