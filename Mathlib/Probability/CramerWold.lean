@@ -8,6 +8,7 @@ module
 import Mathlib.Probability.CentralLimitTheorem
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 import Mathlib.Topology.MetricSpace.Pseudo.Defs
+import Mathlib.MeasureTheory.Measure.LevyConvergence
 
 noncomputable section
 
