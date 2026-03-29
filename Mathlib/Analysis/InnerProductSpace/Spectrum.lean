@@ -131,8 +131,7 @@ theorem orthogonalComplement_iSup_eigenspaces (hT : T.IsSymmetric) (μ : 𝕜) :
 
 /-! ### Finite-dimensional theory -/
 
-variable [FiniteDimensional 𝕜 E]
-variable [FiniteDimensional 𝕜 E']
+variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 E']
 
 /-- The mutual orthogonal complement of the eigenspaces of a self-adjoint operator on a
 finite-dimensional inner product space is trivial. -/
