@@ -340,12 +340,12 @@ protected theorem Language.IsContextFree.reverse {L : Language T} (h : L.IsConte
 
 protected theorem Language.IsContextFree.of_reverse {L : Language T} (h : L.reverse.IsContextFree) :
     L.IsContextFree := by
-  simpa [reverse_reverse] using IsContextFree.reverse L.reverse h
+  simpa [reverse_reverse] using IsContextFree.reverse h
 
 /-- The class of context-free languages is closed under reversal. -/
 @[simp]
 theorem Language.isContextFree_reverse {L : Language T} :
     L.reverse.IsContextFree ↔ L.IsContextFree :=
-  ⟨.of_reverse L, .reverse L⟩
+  ⟨.of_reverse, .reverse⟩
 
 end closure_reversal
