@@ -10,6 +10,20 @@ import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 import Mathlib.Topology.MetricSpace.Pseudo.Defs
 import Mathlib.MeasureTheory.Measure.LevyConvergence
 
+/-!
+# Cramèr-Wold Theorem
+
+We prove first step of Cramèr-Wold theorem and use Lévy Continuity Theorem to conclude the proof.
+
+## Main statement
+
+*
+
+## Tags
+
+cramer-wold
+-/
+
 noncomputable section
 
 open Mathlib MeasureTheory ProbabilityTheory Topology Filter Vector Complex Isometry BoundedContinuousFunction Finset RealInnerProductSpace ProbabilityMeasure Measurable

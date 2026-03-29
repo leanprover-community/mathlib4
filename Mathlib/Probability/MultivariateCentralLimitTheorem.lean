@@ -10,6 +10,20 @@ import Mathlib.Probability.CentralLimitTheorem
 import Mathlib.MeasureTheory.Measure.LevyConvergence
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 
+/-!
+# Multivariate central limit theorem
+
+We prove the central limit theorem in dimension `d : ℕ+`.
+
+## Main statement
+
+*
+
+## Tags
+
+multivariate central limit theorem
+-/
+
 noncomputable section
 
 open MeasureTheory ProbabilityTheory Filter Complex RealInnerProductSpace
