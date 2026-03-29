@@ -51,8 +51,7 @@ open Polynomial Finset Nat
 
 variable {K : Type*} [CommRing K] [IsDomain K]
 
-/-- The introspective relation, named by the original authors, only used for the construction of the
-final theorem, and thus made private. -/
+/-- The introspective relation, currently only useful for the proof of the AKS primality theorem. -/
 public def Introspective (f : K[X]) (n : ℕ) (r : ℕ) : Prop :=
   ∀ μ ∈ (primitiveRoots r K), f.eval (μ ^ n) = f.eval μ ^ n
 
