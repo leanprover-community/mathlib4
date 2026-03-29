@@ -355,10 +355,10 @@ theorem central_limit_multivariate
         -- 3. Combine the product of exponentials into the exponential of a sum
         rw [← Complex.exp_sum]
         simp
-        ring
+        ring_nf
         rw [← Finset.sum_mul, ← Finset.mul_sum, ← Complex.ofReal_pow, ← Complex.ofReal_pow]
         simp [PiLp.norm_sq_eq_of_L2]
-        ring
+        ring_nf
 
       have hcf :
           charFun (ProbabilityMeasure.map μ hmInner.aemeasurable) (1 : ℝ)
