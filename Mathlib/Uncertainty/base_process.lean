@@ -1,30 +1,4 @@
-/-!
-# Uncertainty processes
-
-This module defines uncertain processes and related concepts including
-Euler schemes and renewal processes.
-
-## Main definitions
-
-* `UncertainProcess`: A stochastic process in uncertainty theory.
-* `EulerSchemeStructure`: Structure for Euler discretization schemes.
-* `UncertainRenewalProcess`: Renewal processes in uncertainty theory.
-
-## References
-
-* [1] Liu, B. (2026). *Uncertainty Theory* (5th ed.). Uncertainty Theory Laboratory.
-  Retrieved from https://cloud.tsinghua.edu.cn/d/df71e9ec330e49e59c9c/
-* [2] Liu, B. (2015). *Uncertainty Theory* (4th ed.). Springer Berlin, Heidelberg.
-  https://doi.org/10.1007/978-3-662-44354-5
-
-Authors: Prof. Dr. Fei Gao <gaof@whut.edu.cn>
-Date: 2026-03-02
-
-Copyright (c) 2026 Prof. Dr. Fei Gao. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
--/
-
-import Mathlib.Uncertainty.base_distribution
+import uncertainty.base_distribution
 
 open Filter
 open scoped Topology
@@ -43,10 +17,8 @@ structure UncertainProcess (U : UncertainSpace) where
 /-- A simple model for an uncertain renewal process. -/
 structure UncertainRenewalProcess (U : UncertainSpace) where
   interarrival : ℕ → UncertainVariable U  -- ξ₁, ξ₂, …
-  /-- Interarrival times are identically distributed (same uncertain distribution for all `n`). -/
-  identicallyDistributed :
-    ∀ n m, uncertainDistribution U (interarrival n)
-      = uncertainDistribution U (interarrival m)
+  iid : ∀ n m, uncertainDistribution U (interarrival n)
+          = uncertainDistribution U (interarrival m)
   positive : ∀ n ω, (interarrival n).f ω > 0
   /-- Nₜ = max{n ≥ 0 | Sₙ ≤ t} where Sₙ = ξ₁ + … + ξₙ -/
   N : ℝ → UncertainVariable U
@@ -105,7 +77,7 @@ def mkRenewalUpdateStrongAssumption (U : UncertainSpace)
   renewal_reward_distribution_axiom := reward_distribution_axiom_rule
   renewal_reward_expectation_axiom := reward_expectation_axiom_rule
 
-instance (priority := 90) renewalUpdateStrong_of_structure
+def renewalUpdateStrong_of_structure
     (U : UncertainSpace) [AlgebraicUncertainSpace U] [ExpectationStructure U]
     [RenewalUpdateTheoryStructure U] :
     RenewalUpdateStrongAssumption U where
@@ -292,6 +264,8 @@ future hooks for consistency/convergence statements. -/
 class EulerSchemeStructure (U : UncertainSpace)
     (de : UncertainDE) (P : UncertainProcess U) (dt : ℝ) where
   traceVar : ℕ → UncertainVariable U
+  /-- Target process used for terminal-error comparison (may differ from the driver). -/
+  targetProc : UncertainProcess U := P
   /-- Grid time `t_n = n * dt`. -/
   gridTime : ℕ → ℝ := fun n => (n : ℝ) * dt
   trace_zero : ∀ ω, (traceVar 0).f ω = de.x0
@@ -304,7 +278,7 @@ class EulerSchemeStructure (U : UncertainSpace)
           + de.diffusion t xn * (P.proc (t + dt) ω - P.proc t ω)
   /-- Terminal-time pathwise error on grid index `n`. -/
   terminalPathError : ℝ → ℕ → U.Ω → ℝ :=
-    fun T n ω => |(traceVar n).f ω - P.proc T ω|
+    fun T n ω => |(traceVar n).f ω - targetProc.proc T ω|
   /-- Terminal-time error event `{ |X̂_n(T)-X(T)| ≥ ε }`. -/
   terminalErrorEvent : ℝ → ℕ → Set U.Ω :=
     fun ε n => {ω | terminalPathError (gridTime n) n ω ≥ ε}
@@ -326,6 +300,7 @@ noncomputable def mkEulerSchemeFromTrace (U : UncertainSpace)
     (hMeas : ∀ n x, {ω | eulerTrace U de P dt n ω ≤ x} ∈ U.𝒜) :
     EulerSchemeStructure U de P dt where
   traceVar := eulerTraceVar U de P dt hMeas
+  targetProc := P
   trace_zero := by
     intro ω
     exact eulerTraceVar_zero U de P dt hMeas ω
