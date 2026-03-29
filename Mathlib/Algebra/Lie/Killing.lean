@@ -98,6 +98,18 @@ instance instHasTrivialRadical
     HasTrivialRadical R L :=
   (hasTrivialRadical_iff_no_abelian_ideals R L).mpr IsKilling.ideal_eq_bot_of_isLieAbelian
 
+variable {R L} in
+theorem isLieAbelian_iff_subsingleton
+    [Module.Free R L] [Module.Finite R L] [IsDomain R] [IsPrincipalIdealRing R] :
+    IsLieAbelian L ↔ Subsingleton L := by
+  constructor
+  · intro h
+    rw [isLieAbelian_iff_center_eq_top R] at h
+    have hc := center_eq_bot R L
+    rw [h] at hc
+    exact subsingleton_of_forall_eq 0 fun x => by simpa using congr_arg (x ∈ ·) hc
+  · exact fun _ => inferInstance
+
 end IsKilling
 
 section LieEquiv

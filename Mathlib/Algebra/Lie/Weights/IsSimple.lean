@@ -552,17 +552,16 @@ noncomputable def lieIdealOrderIso :
 
 theorem isSimple_iff_isIrreducible : (rootSystem H).IsIrreducible ↔ IsSimple K L := by
   cases subsingleton_or_nontrivial H
-  · have hnt : ¬ Nontrivial L := fun h => by
-      letI := h; exact absurd (inferInstance : Nontrivial ↑H) (not_nontrivial _)
-    haveI : Subsingleton L := not_nontrivial_iff_subsingleton.mp hnt
-    exact iff_of_false (fun h => not_nontrivial _ h.nontrivial) (fun h => h.2 inferInstance)
-  have hL : ¬ IsLieAbelian L := by
-    haveI : Nontrivial L :=
-      (Subtype.val_injective (p := (· ∈ H.toSubmodule))).nontrivial
-    intro habel
-    rw [LieAlgebra.isLieAbelian_iff_center_eq_top K L] at habel
-    have := LieAlgebra.center_eq_bot K L
-    rw [habel] at this; exact absurd this top_ne_bot
+  · have : Subsingleton L := by
+      by_contra h
+      rw [not_subsingleton_iff_nontrivial] at h
+      exact not_nontrivial H inferInstance
+    exact iff_of_false
+      (fun h => not_nontrivial _ h.nontrivial)
+      (fun h => (IsSimple.non_abelian K) (inferInstance : IsLieAbelian L))
+  have : Nontrivial L := Subtype.val_injective.nontrivial (α := H)
+  have hL : ¬ IsLieAbelian L :=
+    (isLieAbelian_iff_subsingleton (R := K)).not.mpr (not_subsingleton L)
   rw [RootPairing.isIrreducible_iff_invtRootSubmodule, ← isSimple_iff_of_not_isLieAbelian K L hL,
     (lieIdealOrderIso H).isSimpleOrder_iff]
 
