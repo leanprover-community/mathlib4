@@ -233,7 +233,6 @@ variable (𝕜 E)
 variable [NormedField 𝕜] [Infinite 𝕜] [NormedAddCommGroup E] [Nontrivial E] [NormedSpace 𝕜 E]
 include 𝕜
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A normed vector space over an infinite normed field is a noncompact space.
 This cannot be an instance because in order to apply it,
 Lean would have to search for `NormedSpace 𝕜 E` with unknown `𝕜`.
@@ -401,10 +400,9 @@ abbrev NormedAlgebra.induced {F : Type*} (𝕜 R S : Type*) [NormedField 𝕜] [
   letI := SeminormedRing.induced R S f
   ⟨fun a b ↦ show ‖f (a • b)‖ ≤ ‖a‖ * ‖f b‖ from (map_smul f a b).symm ▸ norm_smul_le a (f b)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
-  NormedAlgebra.induced 𝕜 S A S.val
+  fast_instance% NormedAlgebra.induced 𝕜 S A S.val
 
 section SubalgebraClass
 
@@ -468,25 +466,8 @@ variable (𝕜 𝕜' E)
 variable [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
   [SeminormedAddCommGroup E] [NormedSpace 𝕜' E]
 
-set_option backward.isDefEq.respectTransparency false in
-/-- If `E` is a normed space over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
-`RestrictScalars.module` is additionally a `NormedSpace`. -/
-instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
-  { RestrictScalars.module 𝕜 𝕜' E with
-    norm_smul_le := fun c x =>
-      (norm_smul_le (algebraMap 𝕜 𝕜' c) (_ : E)).trans_eq <| by rw [norm_algebraMap'] }
-
--- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
--- appropriately modified here.
-/-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
-This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
--/
-def Module.RestrictScalars.normedSpaceOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
-    [SeminormedAddCommGroup E] [I : NormedSpace 𝕜' E] : NormedSpace 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
-  I
-
 /-- Warning: This declaration should be used judiciously.
-Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` instead.
+Please consider using `IsScalarTower` instead.
 
 This definition allows the `RestrictScalars.normedSpace` instance to be put directly on `E`
 rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
@@ -494,14 +475,32 @@ inferred, and because it is likely to create instance diamonds.
 
 See Note [reducible non-instances].
 -/
-abbrev NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
-  RestrictScalars.normedSpace _ 𝕜' E
+@[implicit_reducible]
+def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
+  { Module.restrictScalars 𝕜 𝕜' E with
+    norm_smul_le := fun c x =>
+      (norm_smul_le (algebraMap 𝕜 𝕜' c) (_ : E)).trans_eq <| by rw [norm_algebraMap'] }
 
 theorem NormedSpace.restrictScalars_eq {E : Type*} [SeminormedAddCommGroup E]
     [h : NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E] :
     NormedSpace.restrictScalars 𝕜 𝕜' E = h := by
   ext
   apply algebraMap_smul
+
+/-- If `E` is a normed space over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
+`RestrictScalars.module` is additionally a `NormedSpace`. -/
+instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
+  fast_instance% NormedSpace.restrictScalars 𝕜 𝕜' E
+
+-- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
+-- appropriately modified here.
+/-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
+This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
+-/
+@[implicit_reducible]
+def Module.RestrictScalars.normedSpaceOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
+    [SeminormedAddCommGroup E] [I : NormedSpace 𝕜' E] : NormedSpace 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
+  I
 
 end NormedSpace
 
@@ -511,23 +510,8 @@ variable (𝕜 𝕜' E)
 variable [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
   [SeminormedRing E] [NormedAlgebra 𝕜' E]
 
-/-- If `E` is a normed algebra over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
-`RestrictScalars.module` is additionally a `NormedAlgebra`. -/
-instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
-  { RestrictScalars.algebra 𝕜 𝕜' E with
-    norm_smul_le := norm_smul_le }
-
--- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
--- appropriately modified here.
-/-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
-This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
--/
-def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
-    [SeminormedRing E] [I : NormedAlgebra 𝕜' E] : NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
-  I
-
 /-- Warning: This declaration should be used judiciously.
-Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` instead.
+Please consider using `IsScalarTower` instead.
 
 This definition allows the `RestrictScalars.normedAlgebra` instance to be put directly on `E`
 rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
@@ -535,9 +519,24 @@ inferred, and because it is likely to create instance diamonds.
 
 See Note [reducible non-instances].
 -/
-abbrev NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
-  RestrictScalars.normedAlgebra _ 𝕜' _
+@[implicit_reducible]
+def NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
+  { NormedSpace.restrictScalars 𝕜 𝕜' E, Algebra.restrictScalars 𝕜 𝕜' E with }
 
+/-- If `E` is a normed algebra over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
+`RestrictScalars.module` is additionally a `NormedAlgebra`. -/
+instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
+  fast_instance% NormedAlgebra.restrictScalars 𝕜 𝕜' E
+
+-- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
+-- appropriately modified here.
+/-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
+This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
+-/
+@[implicit_reducible]
+def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
+    [SeminormedRing E] [I : NormedAlgebra 𝕜' E] : NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
+  I
 end NormedAlgebra
 
 end RestrictScalars

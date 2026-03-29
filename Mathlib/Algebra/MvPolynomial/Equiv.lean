@@ -27,7 +27,7 @@ As in other polynomial files, we typically use the notation:
 + `R : Type*` `[CommSemiring R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
+  This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
 
 + `a : R`
 
@@ -431,8 +431,8 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
   congr 2
   apply MvPolynomial.algHom_ext
   rw [Option.forall]
-  simp only [aeval_X, Option.elim_none, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp,
-    Polynomial.coe_aeval_eq_eval, AlgHom.coe_mk, coe_mapRingHom, AlgHom.coe_coe, comp_apply,
+  simp only [aeval_X, Option.elim_none, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, comp_apply,
+    Polynomial.coe_aeval_eq_eval, AlgHom.coe_mk, Polynomial.coe_mapRingHom, AlgHom.coe_coe,
     optionEquivLeft_apply, Polynomial.map_X, Polynomial.eval_X, Option.elim_some, Polynomial.map_C,
     eval_X, Polynomial.eval_C, implies_true, and_self, φ]
 

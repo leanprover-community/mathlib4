@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Yury Kudryashov, Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Synonym
+public import Mathlib.Order.OrderDual
 
 /-!
 # Minimal/maximal and bottom/top elements

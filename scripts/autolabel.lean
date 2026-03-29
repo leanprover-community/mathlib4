@@ -30,8 +30,8 @@ These are printed for testing purposes.
 
 See `lake exe autolabel --help` for all arguments available.
 
-For the time being, the script only adds a label if it finds a **single unique label**
-which would apply. If multiple labels are found, nothing happens.
+The script can add up to `MAX_LABELS` labels (defined below).
+If more than `MAX_LABELS` labels would be applicable, nothing happens.
 
 ## Workflow
 
@@ -53,6 +53,9 @@ Additionally, the script does a few consistency checks:
 open Lean System
 
 namespace AutoLabel
+
+/-- Maximal number of labels which can be added. If more are applicable, nothing will be added. -/
+def MAX_LABELS := 1
 
 /-- Mathlib's Github topic labels -/
 inductive Label where
@@ -178,11 +181,13 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Algebra",
       "Mathlib" / "FieldTheory",
       "Mathlib" / "RepresentationTheory",
-      "Mathlib" / "LinearAlgebra"] }
+      "Mathlib" / "LinearAlgebra"],
+    dependencies := #[.«t-data»] }
   | .«t-algebraic-geometry» => {
     dirs := #[
       "Mathlib" / "AlgebraicGeometry",
-      "Mathlib" / "Geometry" / "RingedSpace"] }
+      "Mathlib" / "Geometry" / "RingedSpace"],
+      dependencies := #[.«t-ring-theory»] }
   | .«t-algebraic-topology» => {}
   | .«t-analysis» => {}
   | .«t-category-theory» => {}
@@ -196,13 +201,19 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Control",
       "Mathlib" / "Data"] }
   | .«t-differential-geometry» => {
-    dirs := #["Mathlib" / "Geometry" / "Manifold"] }
+    dirs := #[
+      "Mathlib" / "Geometry" / "Diffeology",
+      "Mathlib" / "Geometry" / "Manifold"],
+    dependencies := #[.«t-analysis», .«t-topology»] }
   | .«t-dynamics» => {}
   | .«t-euclidean-geometry» => {
-    dirs := #["Mathlib" / "Geometry" / "Euclidean"] }
+    dirs := #[
+      "Mathlib" / "Geometry" / "Euclidean",
+      "Mathlib" / "Geometry" / "Polygon"] }
   | .«t-geometric-group-theory» => {
     dirs := #["Mathlib" / "Geometry" / "Group"] }
-  | .«t-group-theory» => {}
+  | .«t-group-theory» => {
+    dependencies := #[.«t-algebra»] }
   | .«t-linter» => {
     dirs := #[
       "Mathlib" / "Tactic" / "Linter",
@@ -227,12 +238,14 @@ def mathlibLabelData : (l : Label) → LabelData l
     exclusions := #["Mathlib" / "Tactic" / "Linter"] }
   | .«t-number-theory» => {}
   | .«t-order» => {}
-  | .«t-ring-theory» => {}
+  | .«t-ring-theory» => {
+    dependencies := #[.«t-algebra», .«t-group-theory»] }
   | .«t-set-theory» => {}
   | .«t-topology» => {}
   | .«CI» => {
     dirs := #[
       ".github",
+      "Cache",
       "scripts",
       "scripts" / "nolints.json",
       "scripts" / "nolints-style.txt",
@@ -280,7 +293,7 @@ def getMatchingLabels (files : Array FilePath) : Array Label :=
   -- return sorted list of labels
   applicable |>.qsort (·.toString < ·.toString)
 
-/-- Helper function: union of all labels an all their dependent labels -/
+/-- Helper function: union of all labels and all their dependent labels -/
 partial def collectLabelsAndDependentLabels (labels: Array Label) : Array Label :=
   labels.flatMap fun label ↦
     (collectLabelsAndDependentLabels (mathlibLabelData label).dependencies).push label
@@ -288,8 +301,8 @@ partial def collectLabelsAndDependentLabels (labels: Array Label) : Array Label 
 /-- Reduce a list of labels to not include any which are dependencies of other
 labels in the list -/
 def dropDependentLabels (labels: Array Label) : Array Label :=
-  let dependentLabels := labels.flatMap fun label ↦
-    (mathlibLabelData label).dependencies
+  let dependentLabels := collectLabelsAndDependentLabels <|
+    labels.flatMap fun label ↦ (mathlibLabelData label).dependencies
   labels.filter (!dependentLabels.contains ·)
 
 /-!
@@ -428,7 +441,10 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
   match newLabels with
   | #[] =>
     println s!"::warning::no labels to add"
-  | #[_] =>
+  | newLabels =>
+    if newLabels.size > MAX_LABELS then
+      println s!"::notice::not adding more than {MAX_LABELS} labels: {newLabels}"
+      return 0
     match tool with
     | .gh prNr =>
       let labelsPresent ← if force then pure "" else IO.Process.run {
@@ -461,7 +477,6 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
       println s!"::notice::added label: {newLabels}"
     | .none =>
       println s!"::notice::github interaction disabled, not adding labels."
-  | _ => println s!"::notice::not adding multiple labels: {newLabels}"
   return 0
 
 end AutoLabel
