@@ -26,17 +26,21 @@ public section ConjSqrt
 variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
   [StarOrderedRing A] [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
   [NonnegSpectrumClass ℝ A] [SeparatelyContinuousMul A]
-  [IsSemitopologicalRing A] [T2Space A]
 
 /-- Conjugation by the square root of an element, i.e. `sqrt c * a * sqrt c`. -/
 @[expose]
 noncomputable def conjSqrt (c : A) : A →L[ℝ] A where
-  toFun a := sqrt c * a * sqrt c
-  map_add' a b := by grind
-  map_smul' r a := by simp
+  toLinearMap := .mulLeftRight ℝ (sqrt c, sqrt c)
+  cont := by
+    dsimp [LinearMap.mulLeftRight, LinearMap.mulLeft, LinearMap.mulRight]
+    fun_prop
 
-omit [IsSemitopologicalRing A] [T2Space A] in
+@[simp] lemma toLinearMap_conjSqrt (c : A) :
+    (conjSqrt c).toLinearMap = .mulLeftRight ℝ (sqrt c, sqrt c) := rfl
+
 lemma conjSqrt_apply {c a : A} : conjSqrt c a = sqrt c * a * sqrt c := rfl
+
+variable [IsSemitopologicalRing A] [T2Space A]
 
 @[grind =]
 lemma isStrictlyPositive_conjSqrt_iff (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
