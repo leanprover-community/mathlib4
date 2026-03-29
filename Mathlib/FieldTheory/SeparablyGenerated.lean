@@ -64,6 +64,7 @@ theorem aeval_toPolynomialAdjoinImageCompl_eq_zero
   simp_rw [toPolynomialAdjoinImageCompl, ← AlgEquiv.coe_algHom, ← AlgHom.comp_apply]
   congr; ext; aesop (add simp optionEquivLeft_X_some) (add simp optionEquivLeft_X_none)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_toPolynomialAdjoinImageCompl {F : MvPolynomial ι k} (hF : Irreducible F) (i : ι)
     (H : AlgebraicIndependent k fun x : {j | j ≠ i} ↦ a x) :
     Irreducible (toPolynomialAdjoinImageCompl F a i) := by
@@ -131,6 +132,7 @@ theorem isAlgebraic_of_mem_vars_of_forall_totalDegree_le (hFa : F.aeval a = 0) (
       (Finsupp.mem_support_iff.mp hσi) ?_, aeval_toPolynomialAdjoinImageCompl_eq_zero hFa ..⟩
   rw [h, Polynomial.coeff_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 include hp H in
 theorem exists_mem_support_not_dvd_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa : F.aeval a = 0) :
     ∃ i, ∃ σ ∈ F.support, ¬ p ∣ σ i := by
@@ -158,7 +160,7 @@ theorem exists_mem_support_not_dvd_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa
   have hF'' : aeval a F'' = 0 := by
     have : (aeval a).toLinearMap ∘ₗ (Finsupp.lmapDomain k k fun s : F.support ↦ σ' s) =
         (Finsupp.linearCombination k fun s : F.support ↦ aeval a (monomial (σ' s) (1 : k))) := by
-      ext v; simp [MvPolynomial, AddMonoidAlgebra, monomial]
+      ext v; simp [AddMonoidAlgebra, monomial]
     simp only [← hF', F'', ← this]; rfl
   suffices hpm : p * F''.totalDegree ≤ F.totalDegree by
     have hF''0' : F''.totalDegree ≠ 0 := by
@@ -194,26 +196,28 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
     (ha' : IsTranscendenceBasis k fun i : {i // i ≠ n} ↦ a i) :
     ∃ i : ι, IsTranscendenceBasis k (fun j : {j // j ≠ i} ↦ a j) ∧
       IsSeparable (adjoin k (a '' {i}ᶜ)) (a i) := by
-  have : a '' {n}ᶜ = Set.range (ι := { i // i ≠ n }) (a ·) := by aesop
-  have ha'' : ¬ AlgebraicIndependent k a := fun h ↦
-    ((AlgebraicIndepOn.insert_iff (show n ∉ {n}ᶜ by simp)).mp
-      (by simpa [Set.insert_def, eq_or_ne])).2 (by convert ha'.isAlgebraic.isAlgebraic _)
-  have HF : {F : MvPolynomial ι k | F ≠ 0 ∧ F.aeval a = 0}.Nonempty := by
-    simpa [algebraicIndependent_iff, and_comm] using ha''
-  let F := totalDegree.argminOn _ HF
-  obtain ⟨hF0, hFa⟩ := totalDegree.argminOn_mem _ HF
-  replace HF f h₁ h₂ := totalDegree.argminOn_le _ (a := f) (.intro h₁ h₂) HF
-  have hFirr : Irreducible F := irreducible_of_forall_totalDegree_le HF hF0 hFa
-  obtain ⟨i, σ, hσ, hi⟩ := exists_mem_support_not_dvd_of_forall_totalDegree_le p hp H HF hF0 hFa
+  set S := {F : MvPolynomial ι k | F ≠ 0 ∧ F.aeval a = 0}
+  obtain ⟨F, ⟨hF₀, hFa⟩, hFmin⟩ :
+      ∃ F ∈ S, ∀ G : MvPolynomial ι k, G ≠ 0 → G.aeval a = 0 → totalDegree F ≤ totalDegree G := by
+    suffices S.Nonempty from
+      ⟨totalDegree.argminOn S this, totalDegree.argminOn_mem ..,
+        fun _ h₁ h₂ ↦ totalDegree.argminOn_le S ⟨h₁, h₂⟩⟩
+    suffices ¬ AlgebraicIndependent k a by simpa [S, algebraicIndependent_iff, and_comm] using this
+    intro h
+    refine h.transcendental_adjoin (i := n) (s := {n}ᶜ) (by simp) ?_
+    have : a '' {n}ᶜ = Set.range (ι := {i // i ≠ n}) (a ·) := by aesop
+    convert ha'.isAlgebraic.isAlgebraic _
+  have hFirr : Irreducible F := irreducible_of_forall_totalDegree_le hFmin hF₀ hFa
+  obtain ⟨i, σ, hσ, hi⟩ := exists_mem_support_not_dvd_of_forall_totalDegree_le p hp H hFmin hF₀ hFa
   have hσi : σ i ≠ 0 := by aesop
-  have alg := isAlgebraic_of_mem_vars_of_forall_totalDegree_le HF hFa i <|
+  have alg := isAlgebraic_of_mem_vars_of_forall_totalDegree_le hFmin hFa i <|
     (mem_vars i).mpr ⟨σ, hσ, by simpa⟩
   have Hi := ha'.of_isAlgebraic_adjoin_image_compl _ i _ alg
   refine ⟨i, Hi, ?_⟩
   let k' := adjoin k (a '' {i}ᶜ)
   have hF₁irr := irreducible_toPolynomialAdjoinImageCompl hFirr i Hi.1
   have := (AlgebraicIndepOn.aevalEquiv (s := {i}ᶜ) Hi.1).uniqueFactorizationMonoid inferInstance
-  have coeff_ne := coeff_toPolynomialAdjoinImageCompl_ne_zero HF σ hσ i hσi
+  have coeff_ne := coeff_toPolynomialAdjoinImageCompl_ne_zero hFmin σ hσ i hσi
   open scoped algebraAdjoinAdjoin in
   have hF₂irr := (hF₁irr.isPrimitive fun h ↦ coeff_ne <| Polynomial.coeff_eq_zero_of_natDegree_lt <|
     h.trans_lt <| Nat.pos_iff_ne_zero.2 hσi).irreducible_iff_irreducible_map_fraction_map

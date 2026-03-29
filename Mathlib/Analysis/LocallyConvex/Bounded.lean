@@ -106,7 +106,7 @@ theorem IsVonNBounded.of_subsingleton [Subsingleton E] {s : Set E} : IsVonNBound
 @[simp]
 theorem isVonNBounded_iUnion {ι : Sort*} [Finite ι] {s : ι → Set E} :
     IsVonNBounded 𝕜 (⋃ i, s i) ↔ ∀ i, IsVonNBounded 𝕜 (s i) := by
-  simp only [IsVonNBounded, absorbs_iUnion, @forall_swap ι]
+  simp only [IsVonNBounded, absorbs_iUnion, @forall_comm ι]
 
 theorem isVonNBounded_biUnion {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set E} :
     IsVonNBounded 𝕜 (⋃ i ∈ I, s i) ↔ ∀ i ∈ I, IsVonNBounded 𝕜 (s i) := by

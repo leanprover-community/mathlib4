@@ -387,6 +387,7 @@ lemma killingForm_eq :
     killingForm R I = (killingForm R L).restrict I :=
   LieSubmodule.traceForm_eq_of_le_idealizer I I <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma le_killingCompl_top_of_isLieAbelian [IsLieAbelian I] :
     I ≤ LieIdeal.killingCompl R L ⊤ := by
   intro x (hx : x ∈ I)
@@ -425,7 +426,7 @@ lemma traceForm_eq_sum_finrank_nsmul :
       (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) := by
   ext
   rw [traceForm_eq_sum_finrank_nsmul_mul, ← Finset.sum_attach]
-  simp
+  simp [-LinearMap.coe_smul]
 
 /-- A variant of `LieModule.traceForm_eq_sum_finrank_nsmul` in which the sum is taken only over the
 non-zero weights. -/

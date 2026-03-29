@@ -120,6 +120,7 @@ end Comparison
 
 variable [HasKernels C] [HasCokernels C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coimage-image comparison morphism is functorial. -/
 @[simps! obj map]
 def coimageImageComparisonFunctor : Arrow C ⥤ Arrow C where

@@ -255,8 +255,7 @@ private lemma AddContent.supClosureFun_apply_of_mem (hC : IsSetSemiring C)
       rw [hJs i hi]
       exact subset_sUnion_of_mem ha
     let K : Finset (Set α) := Finset.biUnion I J
-    have : ⋃₀ ↑I = ⋃₀ (↑K : Set (Set α)) := by
-      simp [K, sUnion_eq_biUnion] at hJs ⊢; grind
+    have : ⋃₀ ↑I = ⋃₀ (↑K : Set (Set α)) := by grind
     rw [this, m.supClosureFun_apply hC (J := K) (by simpa [K] using hJC) _ rfl]; swap
     · simp only [K, coe_biUnion]
       refine (h'I.mono_on ?_).biUnion hJdisj
@@ -285,7 +284,7 @@ lemma AddContent.supClosure_apply_finpartition (hC : IsSetSemiring C)
     m.supClosure hC s = ∑ s ∈ J.parts, m s := by
   rw [m.supClosure_apply _ hJ J.disjoint]
   nth_rewrite 1 [← J.sup_parts, Finset.sup_set_eq_biUnion, sUnion_eq_biUnion]
-  rfl
+  simp
 
 lemma AddContent.supClosure_apply_of_mem (hC : IsSetSemiring C)
     (m : AddContent G C) {s : Set α} (hs : s ∈ C) :
@@ -688,6 +687,22 @@ theorem isSigmaSubadditive_of_addContent_iUnion_eq_tsum {m : AddContent ℝ≥0�
   refine le_of_tendsto_of_tendsto' h_tendsto h_tendsto' fun _ ↦ ?_
   rw [partialSups_eq_biUnion_range]
   exact addContent_biUnion_le hC (fun _ _ ↦ hf _)
+
+/-- If an additive content is continuous from below on monotone sequences of sets,
+then it is countably additive on pairwise disjoint sequences. -/
+theorem addContent_iUnion_eq_tsum_of_addContent_iUnion_eq_iSup
+    (hC : IsSetRing C) (m : AddContent ℝ≥0∞ C)
+    {s : ℕ → Set α} (hd : Pairwise (Disjoint on s)) (hs : ∀ i, s i ∈ C)
+    (hm_iSup : ∀ ⦃s : ℕ → Set α⦄, (∀ n, s n ∈ C) → Monotone s → m (⋃ n, s n) = ⨆ n, m (s n)) :
+    m (⋃ i, s i) = ∑' i, m (s i) :=
+  calc
+    m (⋃ i, s i) = m (⋃ i, accumulate s i) := by simp
+    _ = ⨆ i, m (accumulate s i) :=
+      hm_iSup (fun n ↦ IsSetRing.accumulate_mem hC hs n) monotone_accumulate
+    _ = ⨆ i, ∑ j ∈ range (i + 1), m (s j) :=
+      iSup_congr fun i ↦ addContent_accumulate m hC hd hs i
+    _ = ∑' i, m (s i) :=
+      (ENNReal.tsum_eq_iSup_nat' (tendsto_add_atTop_nat 1)).symm
 
 end IsSetRing
 

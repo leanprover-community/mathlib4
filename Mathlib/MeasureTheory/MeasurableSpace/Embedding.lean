@@ -123,6 +123,15 @@ theorem measurable_comp_iff (hg : MeasurableEmbedding g) : Measurable (g ∘ f) 
     rwa [(rightInverse_rangeSplitting hg.injective).comp_eq_id] at this
   exact hg.measurable_rangeSplitting.comp H.subtype_mk
 
+lemma natCast {α : Type*} [MeasurableSpace α]
+    [MeasurableSingletonClass α] [AddMonoidWithOne α] [CharZero α] :
+    MeasurableEmbedding (Nat.cast : ℕ → α) where
+  injective := Nat.cast_injective
+  measurable := measurable_from_nat
+  measurableSet_image' := fun _ _ =>
+    ((Set.countable_range (Nat.cast : ℕ → α)).mono
+      (Set.image_subset_range _ _)).measurableSet
+
 end MeasurableEmbedding
 
 section gluing
@@ -445,6 +454,16 @@ def sumProdSum (α β γ δ) [MeasurableSpace α] [MeasurableSpace β] [Measurab
   (sumProdDistrib _ _ _).trans <| sumCongr (prodSumDistrib _ _ _) (prodSumDistrib _ _ _)
 
 variable {π π' : δ' → Type*} [∀ x, MeasurableSpace (π x)] [∀ x, MeasurableSpace (π' x)]
+
+/-- The type of functions `f : ∀ a, β a` such that for all `a` we have `p a (f a)` is measurably
+equivalent to the type of functions `∀ a, {b : β a // p a b}`. -/
+def subtypePiEquivPi {p : (a : δ') → π a → Prop} :
+    { f : (a : δ') → π a // ∀ (a : δ'), p a (f a) } ≃ᵐ ((a : δ') → { b : π a // p a b }) where
+  toEquiv := .subtypePiEquivPi
+  measurable_toFun := measurable_pi_lambda _ (fun a =>
+    ((measurable_pi_apply a).comp measurable_subtype_coe).subtype_mk)
+  measurable_invFun := (measurable_pi_lambda _ (fun a =>
+    measurable_subtype_coe.comp (measurable_pi_apply a))).subtype_mk
 
 /-- A family of measurable equivalences `Π a, β₁ a ≃ᵐ β₂ a` generates a measurable equivalence
   between `Π a, β₁ a` and `Π a, β₂ a`. -/
