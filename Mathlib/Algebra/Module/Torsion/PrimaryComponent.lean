@@ -80,16 +80,16 @@ theorem primaryComponent.map_ker_eq (φ : M₁ →ₗ[A] M₂) :
       (primaryComponent φ.ker I).map φ.ker.subtype := by
   aesop (add norm [map, Subtype.ext_iff])
 
-theorem primaryComponent_of_torsion_eq_inf (I : Ideal A) :
+theorem primaryComponent_torsionBySet_eq_inf (I : Ideal A) :
     (primaryComponent (torsionBySet A M ↑I) I).map (Submodule.subtype _) =
     (primaryComponent M I) ⊓ (torsionBySet A M ↑I) := by
   ext x
   simp
 
-theorem primaryComponent_torsion_of_coprime (J : Ideal A)
-    (hD : I ⊔ J = ⊤) : primaryComponent (torsionBySet A M ↑J) I = ⊥ := by
+theorem primaryComponent_torsionBySet_of_isCoprime (J : Ideal A) (hD : IsCoprime I J) :
+    primaryComponent (torsionBySet A M J) I = ⊥ := by
   have (n : ℕ) : Disjoint (torsionBySet A M ↑(I ^ n)) (torsionBySet A M ↑J) :=
-    Submodule.disjoint_torsionBySet_ideal (M := M) (Ideal.pow_sup_eq_top hD)
+    Submodule.disjoint_torsionBySet_ideal (M := M) (Ideal.pow_sup_eq_top hD.sup_eq)
   apply Submodule.map_injective_of_injective (Submodule.subtype_injective (torsionBySet A M ↑J))
   ext x
   simp only [mem_map, primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe,
