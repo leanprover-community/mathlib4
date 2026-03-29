@@ -151,9 +151,9 @@ section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
 
 /-- The `limsSup` of a filter `f` is a cluster point of `f`. -/
-theorem ClusterPt.limsSup {f : Filter α} [f.NeBot]
+theorem ClusterPt.limsSup {f : Filter α} [NeBot f]
     (hc : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
-    (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) : ClusterPt (limsSup f) f := by
+    (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) : ClusterPt f.limsSup f := by
   by_cases! hn : Nontrivial α
   · by_cases! htop : ∀ x, x ≤ f.limsSup
     · let : OrderTop α := { top := f.limsSup, le_top := htop }
@@ -162,26 +162,26 @@ theorem ClusterPt.limsSup {f : Filter α} [f.NeBot]
       · let : OrderBot α := { bot := f.limsSup, bot_le := hbot }
         refine nhds_bot_basis.clusterPt_iff_frequently |>.mpr fun a h => ?_
         exact lt_mem_sets_of_limsSup_lt hb h |>.frequently
-      refine (nhds_basis_Ioo' hbot htop).clusterPt_iff_frequently |>.mpr fun a ⟨hl, hg⟩ => ?_
-      exact frequently_lt_of_lt_limsSup hc hl |>.and_eventually <| lt_mem_sets_of_limsSup_lt hb hg
+      · refine (nhds_basis_Ioo' hbot htop).clusterPt_iff_frequently |>.mpr fun a ⟨hl, hg⟩ => ?_
+        exact frequently_lt_of_lt_limsSup hc hl |>.and_eventually <| lt_mem_sets_of_limsSup_lt hb hg
   · simp_all [ClusterPt, Filter.eq_top_of_neBot]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The `limsInf` of a filter `f` is a cluster point of `f`. -/
-theorem ClusterPt.limsinf {f : Filter α} [f.NeBot]
+theorem ClusterPt.limsInf {f : Filter α} [NeBot f]
     (hc : f.IsCobounded (· ≥ ·) := by isBoundedDefault)
-    (hb : f.IsBounded (· ≥ ·) := by isBoundedDefault) : ClusterPt (limsInf f) f :=
+    (hb : f.IsBounded (· ≥ ·) := by isBoundedDefault) : ClusterPt f.limsInf f :=
   ClusterPt.limsSup (α := αᵒᵈ) hc hb
 
 /-- The `limsup` of a function `u` along a filter `f` is a cluster point of `u` along `f`. -/
-theorem MapClusterPt.limsup {u : β → α} {f : Filter β} [f.NeBot]
+theorem MapClusterPt.limsup {u : β → α} {f : Filter β} [NeBot f]
     (hc : IsCoboundedUnder (· ≤ ·) f u := by isBoundedDefault)
     (hb : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
     MapClusterPt (limsup u f) f u :=
   ClusterPt.limsSup
 
 /-- The `liminf` of a function `u` along a filter `f` is a cluster point of `u` along `f`. -/
-theorem MapClusterPt.liminf {u : β → α} {f : Filter β} [f.NeBot]
+theorem MapClusterPt.liminf {u : β → α} {f : Filter β} [NeBot f]
     (hc : IsCoboundedUnder (· ≥ ·) f u := by isBoundedDefault)
     (hb : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
     MapClusterPt (liminf u f) f u :=
@@ -274,22 +274,33 @@ theorem tendsto_of_no_upcrossings [DenselyOrdered α] {f : Filter β} {u : β �
   have B : ∃ᶠ n in f, b < u n := frequently_lt_of_lt_limsup (IsBounded.isCobounded_le h') bu
   exact H a as b bs ab ⟨A, B⟩
 
-variable [FirstCountableTopology α] {f : Filter β}
+variable [FirstCountableTopology α] {f : Filter α}
 
-theorem exists_seq_tendsto_limsup [f.NeBot] [IsCountablyGenerated f] {u : β → α}
+theorem exists_seq_tendsto_limsSup [NeBot f] [IsCountablyGenerated f]
+    (hc : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
+    (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) :
+    ∃ x : ℕ → α, Tendsto x atTop f ∧ Tendsto x atTop (𝓝 f.limsSup) :=
+  (ClusterPt.limsSup).exists_seq_tendsto
+
+theorem exists_seq_tendsto_limsInf [NeBot f] [IsCountablyGenerated f]
+    (hc : f.IsCobounded (· ≥ ·) := by isBoundedDefault)
+    (hb : f.IsBounded (· ≥ ·) := by isBoundedDefault) :
+    ∃ x : ℕ → α, Tendsto x atTop f ∧ Tendsto x atTop (𝓝 f.limsInf) :=
+  (ClusterPt.limsInf).exists_seq_tendsto
+
+variable {f : Filter β}
+
+theorem exists_seq_tendsto_limsup [NeBot f] [IsCountablyGenerated f] {u : β → α}
     (hc : IsCoboundedUnder (· ≤ ·) f u := by isBoundedDefault)
     (hb : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
-    ∃ x : ℕ → β, Tendsto x atTop f ∧ Tendsto (u ∘ x) atTop (𝓝 (limsup u f)) := by
-  have := MapClusterPt.limsup
-  rw [MapClusterPt, ClusterPt, ← Filter.push_pull', map_neBot_iff] at this
-  obtain ⟨x, hx⟩ := exists_seq_tendsto (comap u (𝓝 (limsup u f)) ⊓ f)
-  exact ⟨x, (tendsto_inf.1 hx).2, tendsto_comap_iff.1 (tendsto_inf.1 hx).1⟩
+    ∃ x : ℕ → β, Tendsto x atTop f ∧ Tendsto (u ∘ x) atTop (𝓝 (limsup u f)) :=
+  (MapClusterPt.limsup).exists_seq_tendsto
 
-theorem exists_seq_tendsto_liminf [f.NeBot] {u : β → α} [IsCountablyGenerated f]
+theorem exists_seq_tendsto_liminf [NeBot f] {u : β → α} [IsCountablyGenerated f]
     (hc : IsCoboundedUnder (· ≥ ·) f u := by isBoundedDefault)
     (hb : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
     ∃ x : ℕ → β, Tendsto x atTop f ∧ Tendsto (u ∘ x) atTop (𝓝 (liminf u f)) :=
-  exists_seq_tendsto_limsup (α := αᵒᵈ)
+  (MapClusterPt.liminf).exists_seq_tendsto
 
 variable [CountableInterFilter f] {u : β → α}
 
