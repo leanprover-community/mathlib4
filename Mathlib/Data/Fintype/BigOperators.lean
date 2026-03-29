@@ -14,7 +14,6 @@ public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Fintype.Vector
 
-
 /-!
 Results about "big operations" over a `Fintype`, and consequent
 results about cardinalities of certain types.
