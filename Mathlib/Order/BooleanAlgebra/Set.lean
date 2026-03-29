@@ -146,7 +146,7 @@ theorem subset_compl_comm : s ⊆ tᶜ ↔ t ⊆ sᶜ :=
 theorem compl_subset_compl : sᶜ ⊆ tᶜ ↔ t ⊆ s :=
   compl_le_compl_iff_le
 
-@[gcongr] theorem compl_subset_compl_of_subset (h : t ⊆ s) : sᶜ ⊆ tᶜ := compl_le_compl h
+theorem compl_subset_compl_of_subset (h : t ⊆ s) : sᶜ ⊆ tᶜ := by gcongr
 
 theorem subset_union_compl_iff_inter_subset {s t u : Set α} : s ⊆ t ∪ uᶜ ↔ s ∩ u ⊆ t :=
   (@isCompl_compl _ u _).le_sup_right_iff_inf_left_le
@@ -254,15 +254,14 @@ theorem union_inter_compl_left_subset (s t : Set α) : (s ∪ t) ∩ sᶜ ⊆ t 
 theorem union_inter_compl_right_subset (s t : Set α) : (s ∪ t) ∩ tᶜ ⊆ s := by
   simp [union_inter_distrib_right]
 
-@[gcongr]
-theorem diff_subset_diff {s₁ s₂ t₁ t₂ : Set α} : s₁ ⊆ s₂ → t₂ ⊆ t₁ → s₁ \ t₁ ⊆ s₂ \ t₂ :=
-  sdiff_le_sdiff
+theorem diff_subset_diff {s₁ s₂ t₁ t₂ : Set α} : s₁ ⊆ s₂ → t₂ ⊆ t₁ → s₁ \ t₁ ⊆ s₂ \ t₂ := by
+  intros; gcongr
 
-theorem diff_subset_diff_left {s₁ s₂ t : Set α} (h : s₁ ⊆ s₂) : s₁ \ t ⊆ s₂ \ t :=
-  sdiff_le_sdiff_right ‹s₁ ≤ s₂›
+theorem diff_subset_diff_left {s₁ s₂ t : Set α} (h : s₁ ⊆ s₂) : s₁ \ t ⊆ s₂ \ t := by
+  gcongr
 
-theorem diff_subset_diff_right {s t u : Set α} (h : t ⊆ u) : s \ u ⊆ s \ t :=
-  sdiff_le_sdiff_left ‹t ≤ u›
+theorem diff_subset_diff_right {s t u : Set α} (h : t ⊆ u) : s \ u ⊆ s \ t := by
+  gcongr
 
 theorem diff_subset_diff_iff_subset {r : Set α} (hs : s ⊆ r) (ht : t ⊆ r) :
     r \ s ⊆ r \ t ↔ t ⊆ s :=

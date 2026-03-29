@@ -178,7 +178,7 @@ lemma cons_sdiff_cons (hab : a ≠ b) (ha hb) : s.cons a ha \ s.cons b hb = {a} 
 theorem sdiff_insert_of_notMem {x : α} (h : x ∉ s) (t : Finset α) : s \ insert x t = s \ t := by
   grind
 
-@[simp] theorem sdiff_subset {s t : Finset α} : s \ t ⊆ s := sdiff_le
+theorem sdiff_subset {s t : Finset α} : s \ t ⊆ s := by simp
 
 theorem sdiff_ssubset (h : t ⊆ s) (ht : t.Nonempty) : s \ t ⊂ s := by grind
 

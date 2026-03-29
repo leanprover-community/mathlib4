@@ -105,6 +105,7 @@ lemma IsCofinalFor.of_subset (hst : s ⊆ t) : IsCofinalFor s t :=
 alias LE.le.isCofinalFor := IsCofinalFor.of_subset
 
 @[deprecated (since := "2026-03-23")] alias HasSubset.Subset.isCofinalFor := LE.le.isCofinalFor
+@[deprecated (since := "2026-03-23")] alias HasSubset.Subset.isCoinitialFor := LE.le.isCoinitialFor
 
 @[deprecated LE.le.isCofinalFor (since := "2026-01-08")]
 alias HasSubset.Subset.iscofinalfor := IsCofinalFor.of_subset
@@ -770,7 +771,7 @@ theorem isGreatest_himp [GeneralizedHeytingAlgebra α] (a b : α) :
 
 theorem isLeast_sdiff [GeneralizedCoheytingAlgebra α] (a b : α) :
     IsLeast {w | a ≤ b ⊔ w} (a \ b) := by
-  simp [IsLeast, mem_lowerBounds, sdiff_le_iff]
+  simp [IsLeast, mem_lowerBounds]
 
 theorem isGreatest_compl [HeytingAlgebra α] (a : α) :
     IsGreatest {w | Disjoint w a} (aᶜ) := by
