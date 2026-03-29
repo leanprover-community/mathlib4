@@ -61,6 +61,11 @@ lemma isSmall_iff_eq_ofHoms :
   · rintro ⟨_, _, _, _, rfl⟩
     infer_instance
 
+instance isSmall_iSup {α : Type*} (W : α → MorphismProperty C)
+    [Small.{w} α] [∀ a, IsSmall.{w} (W a)] :
+    IsSmall.{w} (iSup W) := by
+  sorry
+
 end MorphismProperty
 
 end CategoryTheory

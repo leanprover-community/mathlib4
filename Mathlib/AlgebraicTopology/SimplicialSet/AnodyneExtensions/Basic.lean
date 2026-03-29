@@ -8,7 +8,8 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RankNat
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RelativeCellComplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
-public import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
+public import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
+public import Mathlib.CategoryTheory.SmallObject.Basic
 
 /-!
 # Anodyne extensions
@@ -88,6 +89,32 @@ lemma anodyneExtensions.horn_ι {n : ℕ} [NeZero n] (i : Fin (n + 1)) :
     anodyneExtensions.{u} Λ[n, i].ι := by
   rw [anodyneExtensions_eq_llp_rlp]
   exact le_llp_rlp _ _ (modelCategoryQuillen.horn_ι_mem_J n i)
+
+attribute [local instance] Cardinal.fact_isRegular_aleph0
+  Cardinal.orderBotAleph0OrdToType
+
+instance (n : ℕ) : MorphismProperty.IsSmall.{u}
+    (MorphismProperty.ofHoms.{u} (fun (i : Fin (n + 2)) ↦ Λ[n + 1, i].ι)) :=
+  isSmall_ofHoms ..
+
+instance : MorphismProperty.IsSmall.{u} modelCategoryQuillen.J.{u} :=
+  isSmall_iSup ..
+
+instance : IsCardinalForSmallObjectArgument modelCategoryQuillen.J.{u} Cardinal.aleph0.{u} where
+  preservesColimit {A B X Y} i hi f hf := by
+    have : IsFinitelyPresentable.{u} A := by
+      simp only [modelCategoryQuillen.J, iSup_iff] at hi
+      obtain ⟨n, ⟨i⟩⟩ := hi
+      infer_instance
+    infer_instance
+
+instance : HasSmallObjectArgument.{u} modelCategoryQuillen.J.{u} :=
+  ⟨.aleph0, inferInstance, inferInstance, inferInstance⟩
+
+lemma anodyneExtensions_eq_retracts_transfiniteCompositions :
+    anodyneExtensions = (transfiniteCompositions.{u}
+      (coproducts.{u} modelCategoryQuillen.J.{u}).pushouts).retracts := by
+  rw [anodyneExtensions_eq_llp_rlp, llp_rlp_of_hasSmallObjectArgument]
 
 /-- In the category of simplicial sets, a strong anodyne extension is a morphism
 which belongs to the closure of horn inclusions by pushouts, coproducts,
