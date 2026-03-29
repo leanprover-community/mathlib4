@@ -8,6 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.Trace
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
 
 /-!
@@ -50,6 +51,13 @@ lemma det_eq_prod_roots_charpoly_of_splits {f : End K V} (h : f.charpoly.Splits)
   let b := Module.Free.chooseBasis K V
   rw [← det_toMatrix b, Matrix.det_eq_prod_roots_charpoly_of_splits (by simpa using h),
     charpoly_toMatrix]
+
+lemma trace_eq_sum_roots_charpoly_of_splits {f : End K V} (h : f.charpoly.Splits) :
+    f.trace K V = f.charpoly.roots.sum := by
+  let b := Module.Free.chooseBasis K V
+  rw [trace_eq_matrix_trace K b, Matrix.trace_eq_sum_roots_charpoly_of_splits (by simpa using h),
+    charpoly_toMatrix]
+
 
 end End
 
