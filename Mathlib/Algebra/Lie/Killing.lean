@@ -104,7 +104,7 @@ theorem isLieAbelian_iff_subsingleton
   constructor
   · intro h
     rw [isLieAbelian_iff_center_eq_top R] at h
-    have hc : (⊤ : LieIdeal R L) = ⊥ := h ▸ center_eq_bot R L
+    have hc : (⊤ : LieIdeal R L) = ⊥ := by rw [← center_eq_bot R L, h]
     exact (LieSubmodule.subsingleton_iff R L L).mp (subsingleton_of_top_eq_bot hc)
   · exact fun _ => inferInstance
 

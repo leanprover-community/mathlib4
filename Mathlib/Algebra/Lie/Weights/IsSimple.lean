@@ -551,14 +551,7 @@ noncomputable def lieIdealOrderIso :
 
 /-- A Killing Lie algebra is simple if and only if its root system is irreducible. -/
 theorem isSimple_iff_isIrreducible : (rootSystem H).IsIrreducible ↔ IsSimple K L := by
-  cases subsingleton_or_nontrivial H
-  · have : Subsingleton L := by
-      by_contra h
-      rw [not_subsingleton_iff_nontrivial] at h
-      exact not_nontrivial H inferInstance
-    refine iff_of_false (fun h => not_nontrivial _ h.nontrivial) fun h => ?_
-    exact h.non_abelian inferInstance
-  have : Nontrivial L := Subtype.val_injective.nontrivial (α := H)
+  nontriviality L
   have hL : ¬ IsLieAbelian L :=
     (isLieAbelian_iff_subsingleton K (L := L)).not.mpr (not_subsingleton L)
   rw [RootPairing.isIrreducible_iff_invtRootSubmodule, ← isSimple_iff_of_not_isLieAbelian K L hL,
