@@ -28,22 +28,26 @@ variable {α β : Type*} [DecidableEq β]
 
 /-- If scalar multiplication by elements of `α` sends `(0 : β)` to zero,
 then the same is true for `(0 : Finset β)`. -/
+@[instance_reducible]
 protected def smulZeroClass [Zero β] [SMulZeroClass α β] : SMulZeroClass α (Finset β) :=
   coe_injective.smulZeroClass ⟨_, coe_zero⟩ coe_smul_finset
 
 /-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
 then so is `(· • ·) : α → Finset β → Finset β`. -/
+@[instance_reducible]
 protected noncomputable def distribSMul [AddZeroClass β] [DistribSMul α β] :
     DistribSMul α (Finset β) :=
   coe_injective.distribSMul coeAddMonoidHom coe_smul_finset
 
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
 multiplicative action on `Finset β`. -/
+@[instance_reducible]
 protected noncomputable def distribMulAction [Monoid α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α (Finset β) :=
   coe_injective.distribMulAction coeAddMonoidHom coe_smul_finset
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
+@[instance_reducible]
 protected noncomputable def mulDistribMulAction [Monoid α] [Monoid β] [MulDistribMulAction α β] :
     MulDistribMulAction α (Finset β) :=
   coe_injective.mulDistribMulAction coeMonoidHom coe_smul_finset

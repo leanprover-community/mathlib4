@@ -191,7 +191,7 @@ variable {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
 variable {Q : Ideal S} {σ σ' : G}
 
 lemma mul_inv_mem_inertia (H : IsArithFrobAt R σ Q) (H' : IsArithFrobAt R σ' Q) :
-    σ * σ'⁻¹ ∈ Q.toAddSubgroup.inertia G := by
+    σ * σ'⁻¹ ∈ Q.inertia G := by
   intro x
   simpa [mul_smul] using sub_mem (H (σ'⁻¹ • x)) (H' (σ'⁻¹ • x))
 

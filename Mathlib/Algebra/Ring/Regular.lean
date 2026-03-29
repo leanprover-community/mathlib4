@@ -32,26 +32,28 @@ theorem isRightRegular_of_non_zero_divisor [NonUnitalNonAssocRing α] (k : α)
   refine fun x y (h' : x * k = y * k) => sub_eq_zero.mp (h _ ?_)
   rw [sub_mul, sub_eq_zero, h']
 
-theorem isRegular_of_ne_zero' [NonUnitalNonAssocRing α] [NoZeroDivisors α] {k : α} (hk : k ≠ 0) :
+theorem IsRegular.of_ne_zero' [NonUnitalNonAssocRing α] [NoZeroDivisors α] {k : α} (hk : k ≠ 0) :
     IsRegular k :=
   ⟨isLeftRegular_of_non_zero_divisor k fun _ h =>
       (NoZeroDivisors.eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_left hk,
     isRightRegular_of_non_zero_divisor k fun _ h =>
       (NoZeroDivisors.eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hk⟩
 
+@[deprecated (since := "2026-01-21")] alias isRegular_of_ne_zero' := IsRegular.of_ne_zero'
+
 theorem isRegular_iff_ne_zero' [Nontrivial α] [NonUnitalNonAssocRing α] [NoZeroDivisors α]
     {k : α} : IsRegular k ↔ k ≠ 0 :=
   ⟨fun h => by
     rintro rfl
-    exact not_not.mpr h.left not_isLeftRegular_zero, isRegular_of_ne_zero'⟩
+    exact not_not.mpr h.left not_isLeftRegular_zero, .of_ne_zero'⟩
 
 /-- A ring with no zero divisors is a cancellative `MonoidWithZero`.
 
 Note this is not an instance as it forms a typeclass loop. -/
 lemma NoZeroDivisors.toIsCancelMulZero [NonUnitalNonAssocRing α] [NoZeroDivisors α] :
     IsCancelMulZero α where
-  mul_left_cancel_of_ne_zero ha := (isRegular_of_ne_zero' ha).1
-  mul_right_cancel_of_ne_zero hb := (isRegular_of_ne_zero' hb).2
+  mul_left_cancel_of_ne_zero ha := (IsRegular.of_ne_zero' ha).1
+  mul_right_cancel_of_ne_zero hb := (IsRegular.of_ne_zero' hb).2
 
 namespace IsDedekindFiniteMonoid
 

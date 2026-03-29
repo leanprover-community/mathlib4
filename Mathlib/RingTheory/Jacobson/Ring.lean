@@ -179,13 +179,8 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
         rwa [disjoint_powers_iff_notMem y hI.right.isPrime.isRadical]
       have : J ≤ I.map (algebraMap R S) := map_comap (Submonoid.powers y) S J ▸ map_mono hI.left
       exact absurd (h.1.2 _ (lt_of_le_of_ne this hJ)) hI_p.1
-  · refine fun h => ⟨⟨fun hJ => h.1.ne_top (eq_top_iff.2 ?_), fun I hI => ?_⟩⟩
-    · rwa [eq_top_iff, ← (IsLocalization.orderEmbedding (powers y) S).le_iff_le] at hJ
-    · have := congr_arg (Ideal.map (algebraMap R S)) (h.1.1.2 _ ⟨comap_mono (le_of_lt hI), ?_⟩)
-      · rwa [map_comap (powers y) S I, Ideal.map_top] at this
-      refine fun hI' => hI.right ?_
-      rw [← map_comap (powers y) S I, ← map_comap (powers y) S J]
-      exact map_mono hI'
+  · simp only [Ideal.mem_comap, and_imp]
+    exact (fun _ _ ↦ IsMaximal.of_isLocalization_of_disjoint (powers y))
 
 /-- If `R` is a Jacobson ring, then maximal ideals in the localization at `y`
 correspond to maximal ideals in the original ring `R` that don't contain `y`.
@@ -301,7 +296,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
     ((algebraMap (R[X] ⧸ P) Sₘ).comp (Ideal.Quotient.mk P) '' insert X { p | p.degree ≤ 0 }) ?_
     ((algebraMap (R[X] ⧸ P) Sₘ) p') ?_
   · rintro x ⟨p, hp, rfl⟩
-    simp only [Set.mem_insert_iff] at hp
+    push _ ∈ _ at hp
     rcases hp with hy | hy
     · rw [hy]
       refine φ.isIntegralElem_localization_at_leadingCoeff ((Ideal.Quotient.mk P) X)
@@ -309,7 +304,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
       · rwa [eval₂_map, hφ', ← hom_eval₂, Quotient.eq_zero_iff_mem, eval₂_C_X]
       · use 1
         simp only [P', pow_one]
-    · rw [Set.mem_setOf_eq, degree_le_zero_iff] at hy
+    · rw [degree_le_zero_iff] at hy
       rw [hy]
       refine ⟨X - C (algebraMap _ _ ((Ideal.Quotient.mk P') (p.coeff 0))), monic_X_sub_C _, ?_⟩
       simp only [eval₂_sub, eval₂_X, eval₂_C]

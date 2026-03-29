@@ -50,8 +50,8 @@ open Function Quiver
 
 universe u v w
 
-variable {U : Type _} [Quiver.{u + 1} U] {V : Type _} [Quiver.{v + 1} V] (φ : U ⥤q V) {W : Type _}
-  [Quiver.{w + 1} W] (ψ : V ⥤q W)
+variable {U : Type _} [Quiver.{u} U] {V : Type _} [Quiver.{v} V] (φ : U ⥤q V) {W : Type _}
+  [Quiver.{w} W] (ψ : V ⥤q W)
 
 /-- The `Quiver.Star` at a vertex is the collection of arrows whose source is the vertex.
 The type `Quiver.Star u` is defined to be `Σ (v : U), (u ⟶ v)`. -/
@@ -136,6 +136,7 @@ def Quiver.symmetrifyCostar (u : U) :
     Quiver.Costar (Symmetrify.of.obj u) ≃ Quiver.Costar u ⊕ Quiver.Star u :=
   Equiv.sigmaSumDistrib _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Prefunctor.symmetrifyStar (u : U) :
     φ.symmetrify.star u =
       (Quiver.symmetrifyStar _).symm ∘ Sum.map (φ.star u) (φ.costar u) ∘
@@ -147,6 +148,7 @@ theorem Prefunctor.symmetrifyStar (u : U) :
     erw [Equiv.sigmaSumDistrib_apply, Equiv.sigmaSumDistrib_apply] <;>
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem Prefunctor.symmetrifyCostar (u : U) :
     φ.symmetrify.costar u =
       (Quiver.symmetrifyCostar _).symm ∘
@@ -158,6 +160,7 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
     erw [Equiv.sigmaSumDistrib_apply, Equiv.sigmaSumDistrib_apply] <;>
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem Prefunctor.IsCovering.symmetrify (hφ : φ.IsCovering) :
     φ.symmetrify.IsCovering := by
   refine ⟨fun u => ?_, fun u => ?_⟩ <;>

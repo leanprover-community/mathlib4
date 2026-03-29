@@ -161,6 +161,18 @@ theorem dense_iff (hf : IsInducing f) {s : Set X} :
 theorem of_subsingleton [Subsingleton X] (f : X → Y) : IsInducing f :=
   ⟨Subsingleton.elim _ _⟩
 
+theorem indiscreteTopology [IndiscreteTopology Y] {f : X → Y} (hf : IsInducing f) :
+    IndiscreteTopology X where
+  eq_top := by
+    cases IndiscreteTopology.eq_top Y
+    letI : TopologicalSpace Y := ⊤
+    rw [hf.eq_induced, induced_top]
+
+theorem nontrivialTopology [NontrivialTopology X] {f : X → Y} (hf : IsInducing f) :
+    NontrivialTopology Y :=
+  not_imp_not.1
+    (by simpa using (fun _ : IndiscreteTopology Y => hf.indiscreteTopology)) ‹NontrivialTopology X›
+
 end IsInducing.IsInducing
 
 namespace IsEmbedding
@@ -415,8 +427,6 @@ theorem isOpenMap_iff_clusterPt_comap :
 theorem isOpenMap_iff_image_interior : IsOpenMap f ↔ ∀ s, f '' interior s ⊆ interior (f '' s) :=
   ⟨IsOpenMap.image_interior_subset, fun hs u hu =>
     subset_interior_iff_isOpen.mp <| by simpa only [hu.interior_eq] using hs u⟩
-
-@[deprecated (since := "2025-08-30")] alias isOpenMap_iff_interior := isOpenMap_iff_image_interior
 
 /-- A map is open if and only if the `Set.kernImage` of every *closed* set is closed. -/
 lemma isOpenMap_iff_closure_kernImage :
