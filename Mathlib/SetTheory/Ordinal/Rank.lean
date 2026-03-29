@@ -10,7 +10,7 @@ public import Mathlib.SetTheory.Ordinal.Family
 /-!
 # Rank in a well-founded relation
 
-For `r` a well-founded relation, `IsWellFounded.rank r a` is recursively defined as the least
+For `r` a well-founded relation, `WellFounded.rank r a` is recursively defined as the least
 ordinal greater than the ranks of all elements below `a`.
 -/
 
@@ -59,40 +59,40 @@ end Acc
 
 /-! ### Rank in a well-founded relation -/
 
-namespace IsWellFounded
+namespace WellFounded
 
-variable (r : α → α → Prop) [hwf : IsWellFounded α r]
+variable (r : α → α → Prop) [hwf : WellFounded r]
 
 /-- The rank of an element `a` under a well-founded relation `r` is defined recursively as the
 smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
 `r b a`). -/
 noncomputable def rank (a : α) : Ordinal.{u} :=
-  (hwf.apply r a).rank
+  (hwf.apply a).rank
 
 theorem rank_eq (a : α) : rank r a = ⨆ b : { b // r b a }, Order.succ (rank r b) :=
-  (hwf.apply r a).rank_eq
+  (hwf.apply a).rank_eq
 
-variable {r : α → α → Prop} [hwf : IsWellFounded α r]
+variable {r : α → α → Prop} [hwf : WellFounded r]
 
 theorem rank_lt_of_rel (h : r a b) : rank r a < rank r b :=
   Acc.rank_lt_of_rel _ h
 
 theorem mem_range_rank_of_le {o : Ordinal} (h : o ≤ rank r a) : o ∈ Set.range (rank r) := by
-  obtain ⟨b, hb, rfl⟩ := Acc.mem_range_rank_of_le (hwf.apply r a) h
+  obtain ⟨b, hb, rfl⟩ := Acc.mem_range_rank_of_le (hwf.apply a) h
   exact ⟨b, rfl⟩
 
-end IsWellFounded
+end WellFounded
 
 theorem WellFoundedLT.rank_strictMono [Preorder α] [WellFoundedLT α] :
-    StrictMono (IsWellFounded.rank (α := α) (· < ·)) :=
-  fun _ _ => IsWellFounded.rank_lt_of_rel
+    StrictMono (WellFounded.rank (α := α) (· < ·)) :=
+  fun _ _ => WellFounded.rank_lt_of_rel
 
 theorem WellFoundedGT.rank_strictAnti [Preorder α] [WellFoundedGT α] :
-    StrictAnti (IsWellFounded.rank (α := α) (· > ·)) :=
-  fun _ _ a => IsWellFounded.rank_lt_of_rel a
+    StrictAnti (WellFounded.rank (α := α) (· > ·)) :=
+  fun _ _ a => WellFounded.rank_lt_of_rel a
 
 @[simp]
-theorem IsWellFounded.rank_eq_typein (r) [IsWellOrder α r] : rank r = Ordinal.typein r := by
+theorem WellFounded.rank_eq_typein (r) [IsWellOrder α r] : rank r = Ordinal.typein r := by
   classical
   letI := linearOrderOfSTO r
   ext a

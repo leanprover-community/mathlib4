@@ -209,8 +209,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       simp only [Finsupp.coe_zero, Pi.zero_apply, mul_zero, degree_zero, map_zero]
       exact bot_le
     · exact (div hb) (m.subLTerm f)
-termination_by WellFounded.wrap
-  ((isWellFounded_iff m.syn fun x x_1 ↦ x < x_1).mp m.wf) (m.toSyn (m.degree f))
+termination_by WellFounded.wrap m.wf (m.toSyn (m.degree f))
 decreasing_by
 · exact deg_reduce
 · apply degree_sub_LTerm_lt

@@ -131,9 +131,9 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
   by_contra hy'
   exact hm' y hy' hy
 
-theorem not_rel_apply_succ [h : IsWellFounded α r] (f : ℕ → α) : ∃ n, ¬ r (f (n + 1)) (f n) := by
+theorem not_rel_apply_succ [h : WellFounded r] (f : ℕ → α) : ∃ n, ¬ r (f (n + 1)) (f n) := by
   by_contra! hf
-  exact (wellFounded_iff_isEmpty_descending_chain.1 h.wf).elim ⟨f, hf⟩
+  exact (wellFounded_iff_isEmpty_descending_chain.1 h).elim ⟨f, hf⟩
 
 open Set
 
@@ -327,9 +327,9 @@ end Induction
 /-- A nonempty linear order with well-founded `>` has a top element. -/]
 noncomputable def WellFoundedLT.toOrderBot (α) [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
     OrderBot α where
-  bot := h.wf.min _ Set.univ_nonempty
-  bot_le a := h.wf.min_le (Set.mem_univ a)
+  bot := h.min _ Set.univ_nonempty
+  bot_le a := h.min_le (Set.mem_univ a)
 
 @[to_dual]
-instance [LT α] [h : WellFoundedLT α] : WellFoundedLT (ULift α) where
-  wf := InvImage.wf ULift.down h.wf
+instance [LT α] [h : WellFoundedLT α] : WellFoundedLT (ULift α) :=
+  InvImage.wf ULift.down h

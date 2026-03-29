@@ -78,7 +78,7 @@ theorem toFinset_ssubset : s.toFinset ⊂ t.toFinset ↔ s ⊂ t := by
 theorem toFinset_dedup (m : Multiset α) : m.dedup.toFinset = m.toFinset := by
   simp_rw [toFinset, dedup_idem]
 
-instance isWellFounded_ssubset : IsWellFounded (Multiset β) (· ⊂ ·) := by
+instance isWellFounded_ssubset : @WellFounded (Multiset β) (· ⊂ ·) := by
   classical
   exact Subrelation.isWellFounded (InvImage _ toFinset) toFinset_ssubset.2
 

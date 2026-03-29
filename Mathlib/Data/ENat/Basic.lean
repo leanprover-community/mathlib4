@@ -126,9 +126,7 @@ def lift (x : ℕ∞) (h : x < ⊤) : ℕ := WithTop.untop x (WithTop.lt_top_iff
 
 instance canLift : CanLift ℕ∞ ℕ (↑) (· ≠ ⊤) := WithTop.canLift
 
-instance : WellFoundedRelation ℕ∞ where
-  rel := (· < ·)
-  wf := IsWellFounded.wf
+instance : WellFoundedRelation ℕ∞ := WellFoundedLT.toWellFoundedRelation
 
 /-- Conversion of `ℕ∞` to `ℕ` sending `∞` to `0`. -/
 def toNat : ℕ∞ → ℕ := WithTop.untopD 0

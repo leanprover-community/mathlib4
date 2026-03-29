@@ -540,7 +540,7 @@ variable {K K'} in
 variable (R L)
 
 instance wellFoundedGT_of_noetherian [IsNoetherian R L] : WellFoundedGT (LieSubalgebra R L) :=
-  RelHomClass.isWellFounded (⟨toSubmodule, @fun _ _ h ↦ h⟩ : _ →r (· > ·))
+  RelHomClass.wellFounded' (⟨toSubmodule, @fun _ _ h ↦ h⟩ : _ →r (· > ·))
 
 variable {R L K K' f}
 
