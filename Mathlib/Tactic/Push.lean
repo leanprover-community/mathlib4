@@ -274,9 +274,9 @@ example (h : ¬ ∀ ε > 0, ∃ δ > 0, ∀ x, |x - x₀| ≤ δ → |f x - y₀
 ```
 -/
 elab (name := push_neg) "push_neg" cfg:optConfig loc:(location)? : tactic => do
-  -- (since := "2026-03-09")
+  -- (since := "2026-03-29")
   logWarning "`push_neg` has been deprecated. Prefer using `push Not` instead.
-If you insist to continue using `push_neg` in your project, you can implement it as follows:
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
 ```
 open Lean.Parser.Tactic in
 macro \"push_neg\" cfg:optConfig loc:(location)? : tactic =>
@@ -341,9 +341,9 @@ elab "push" cfg:optConfig disch?:(discharger)? head:(ppSpace colGt term) : conv 
 
 @[inherit_doc push_neg]
 elab "push_neg" cfg:optConfig : conv => do
-  -- (since := "2026-03-09")
+  -- (since := "2026-03-29")
   logWarning "`push_neg` has been deprecated. Prefer using `push Not` instead.
-If you insist to continue using `push_neg` in your project, you can implement it as follows:
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
 ```
 open Lean.Parser.Tactic in
 macro \"push_neg\" cfg:optConfig : conv => `(conv| push $cfg:optConfig Not)
