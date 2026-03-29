@@ -352,7 +352,7 @@ lemma fTowerSubmodule_lie_f_mem
     ⁅f, v⁆ ∈ fTowerSubmodule K f m := by
   unfold fTowerSubmodule
   induction hv using Submodule.span_induction with
-  | zero => simp
+  | zero => simp only [lie_zero, zero_mem]
   | add _ _ _ _ ihx ihy => simpa only [lie_add] using add_mem ihx ihy
   | smul c _ _ hx' => simpa only [lie_smul] using Submodule.smul_mem _ c hx'
   | mem _ hx =>
@@ -367,7 +367,7 @@ lemma fTowerSubmodule_lie_h_mem
     ⁅h, v⁆ ∈ fTowerSubmodule K f m := by
   unfold fTowerSubmodule
   induction hv using Submodule.span_induction with
-  | zero => simp
+  | zero => simp only [lie_zero, zero_mem]
   | add _ _ _ _ ihx ihy => simpa only [lie_add] using add_mem ihx ihy
   | smul c _ _ hx' => simpa only [lie_smul] using Submodule.smul_mem _ c hx'
   | mem _ hx =>
@@ -382,7 +382,7 @@ lemma fTowerSubmodule_lie_e_mem
     ⁅e, v⁆ ∈ fTowerSubmodule K f m := by
   unfold fTowerSubmodule
   induction hv using Submodule.span_induction with
-  | zero => simp
+  | zero => simp only [lie_zero, zero_mem]
   | add _ _ _ _ ihx ihy => simpa only [lie_add] using add_mem ihx ihy
   | smul c _ _ hx' => simpa only [lie_smul] using Submodule.smul_mem _ c hx'
   | mem _ hx =>
@@ -401,7 +401,7 @@ lemma fTowerSubmodule_lie_mem
     ⁅x, v⁆ ∈ fTowerSubmodule K f m := by
   have hx_mem : x ∈ t.toLieSubalgebra K := by
     rw[hL]
-    simp
+    simp only [LieSubalgebra.mem_top]
   rw [mem_toLieSubalgebra_iff] at hx_mem
   obtain ⟨c₁,c₂,c₃,hx_eq⟩ := hx_mem
   rw [hx_eq]
@@ -429,7 +429,6 @@ lemma fTowerLieSubmodule_eq_top
     (hL : t.toLieSubalgebra K = ⊤)
     {μ : K} {m : M} (P : t.HasPrimitiveVectorWith m μ) :
     fTowerLieSubmodule K hL P = ⊤ := by
-    -- prove that the primitive vector 0 ≠ m ∈ M so M ≠ ⊥
   have hm_mem : m ∈ fTowerSubmodule K f m := by
     rw [fTowerSubmodule]
     apply Submodule.mem_span_of_mem
@@ -552,12 +551,12 @@ abbrev weightSpace (h : L) (μ : K) := End.eigenspace (toEnd K L M h) μ
 --   rw [Nat.card_eq_fintype_card]
 --   exact (finrank_eq_card_basis b).symm
 
-lemma exists_eq_evals_of_weightSpace_ne_bot
+lemma exists_mem_fTower_of_weightSpace_ne_bot
     (t : IsSl2Triple h e f) (hL : t.toLieSubalgebra K = ⊤)
     [LieModule.IsIrreducible K L M]
     {μ₀ : K} {m₀ : M} (P : t.HasPrimitiveVectorWith m₀ μ₀)
     {μ : K} (h_nontrivial : weightSpace (M := M) K h μ ≠ ⊥) :
-    ∃ k : ℕ, μ = μ₀ - 2 * (k : K) := by
+    ∃ k : ℕ, ((toEnd K L M f) ^ k) m₀ ≠ 0 ∧ μ = μ₀ - 2 * (k : K):= by
   by_contra! contra
   let S := {n : ℕ | ((toEnd K L M f) ^ n) m₀ ≠ 0}
   have H_span : ⊤ ≤ ⨆ (i : S), weightSpace (M := M) K h (μ₀ - 2 * (i.val : K)) := by
@@ -583,7 +582,7 @@ lemma exists_eq_evals_of_weightSpace_ne_bot
   weightSpace (M := M) K h γ := by
     apply iSup_le
     intro i
-    have h_ne : μ₀ - 2 * (i.val : K) ≠ μ := (contra i.val).symm
+    have h_ne : μ₀ - 2 * (i.val : K) ≠ μ := (contra i.val i.property).symm
     exact le_iSup₂ (f := fun γ _ ↦ weightSpace (M := M) K h γ) (μ₀ - 2 * (i.val : K)) h_ne
   have H_inter : weightSpace (M := M) K h μ ⊓ (⨆ (i : S),
   weightSpace (M := M) K h (μ₀ - 2 * (i.val : K))) ≤ ⊥ :=
@@ -604,72 +603,22 @@ theorem finrank_weightSpace_eq_one_of_isIrreducible
     {μ : K} (h_nontrivial : (weightSpace (M := M) K h μ) ≠ ⊥) :
     finrank K (weightSpace (M := M) K h μ) = 1 := by
   haveI : Nontrivial M := by
-    rw [nontrivial_iff]
-    by_contra h_triv
-    push_neg at h_triv
-    apply h_nontrivial
-    ext x
-    simp only [Submodule.mem_bot]
-    constructor
-    · intro _; exact h_triv x 0
-    · intro h; rw [h]; exact Submodule.zero_mem _
+    obtain ⟨x, h_x_mem, h_x_ne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot h_nontrivial
+    exact nontrivial_of_ne x 0 h_x_ne
   obtain ⟨μ₀, m₀, hm₀_ne, P⟩ := t.exists_primitiveVector (M:=M) K
-  obtain ⟨k, hk_eq⟩ := exists_eq_evals_of_weightSpace_ne_bot K t hL P h_nontrivial
+  obtain ⟨k, hk_ne, hk_eq⟩ := exists_mem_fTower_of_weightSpace_ne_bot K t hL P h_nontrivial
   let S := {n : ℕ | ((toEnd K L M f) ^ n) m₀ ≠ 0}
-  have hk_mem : k ∈ S := by
-    by_contra contra
-    have h_zero : ((toEnd K L M f) ^ k) m₀ = 0 := not_not.mp contra
-    have h_bot : weightSpace (M := M) K h (μ₀ - 2 * (k : K)) = ⊥ := by
-      have H_span : ⊤ ≤ ⨆ (i : S), weightSpace (M := M) K h (μ₀ - 2 * (i.val : K)) := by
-        rw[← fTowerSubmodule_eq_top K hL P, fTowerSubmodule]
-        rw [Submodule.span_le]
-        rintro x ⟨n, rfl⟩
-        by_cases h_z : ((toEnd K L M f) ^ n) m₀ = 0
-        · simp only[h_z, SetLike.mem_coe, zero_mem]
-        · let i : S := ⟨n, h_z⟩
-          have h_mem : ((toEnd K L M f) ^ n) m₀ ∈ weightSpace (M := M) K h (μ₀ - 2 * (i.val : K))
-          := by
-            rw [Module.End.mem_eigenspace_iff]
-            exact P.lie_h_pow_toEnd_f n
-          have h_le : weightSpace (M := M) K h (μ₀ - 2 * (i.val : K)) ≤ ⨆ (j : S),
-          weightSpace (M := M) K h (μ₀ - 2 * (j.val : K)) :=
-            le_iSup (fun (j : S) ↦ weightSpace (M := M) K h (μ₀ - 2 * (j.val : K))) i
-          exact h_le h_mem
-      have H_top : ⨆ (i : S), weightSpace (M := M) K h (μ₀ - 2 * (i.val : K)) = ⊤
-      := top_le_iff.mp H_span
-      have H_indep := Module.End.eigenspaces_iSupIndep (toEnd K L M h)
-      have H_disjoint : Disjoint (weightSpace (M := M) K h (μ₀ - 2 * (k : K))) (⨆ (γ)
-      (_ : γ ≠ μ₀ - 2 * (k : K)), weightSpace (M := M) K h γ) := H_indep (μ₀ - 2 * (k : K))
-      have H_le : (⨆ (i : S), weightSpace (M := M) K h (μ₀ - 2 * (i.val : K))) ≤ ⨆ (γ)
-      (_ : γ ≠ μ₀ - 2 * (k : K)), weightSpace (M := M) K h γ := by
-        apply iSup_le
-        intro i
-        have h_ne : μ₀ - 2 * (i.val : K) ≠ μ₀ - 2 * (k : K) := by
-          intro h_eq
-          simp only[sub_right_inj, mul_eq_mul_left_iff, Nat.cast_inj, OfNat.ofNat_ne_zero,
-          or_false] at h_eq
-          have h_zero' : ((toEnd K L M f) ^ k) m₀ ≠ 0 := by
-            rw[← h_eq]
-            exact i.property
-          exact h_zero' h_zero
-        exact le_iSup₂ (f := fun γ _ ↦ weightSpace (M := M) K h γ) (μ₀ - 2 * (i.val : K)) h_ne
-      have H_inter : weightSpace (M := M) K h (μ₀ - 2 * (k : K)) ⊓
-      (⨆ (i : S), weightSpace (M := M) K h (μ₀ - 2 * (i.val : K))) ≤ ⊥ :=
-        le_trans (inf_le_inf_left _ H_le) H_disjoint.le_bot
-      rw[H_top, inf_top_eq] at H_inter
-      exact eq_bot_iff.mpr H_inter
-    simp only [hk_eq, ne_eq] at h_nontrivial
-    exact h_nontrivial h_bot
+  have hk_mem : k ∈ S := hk_ne
   let v : S → M := fun i ↦ ((toEnd K L M f) ^ (i : ℕ)) m₀
   have h_indep : LinearIndependent K v := fTower_linearIndependent K P
   have h_span : Submodule.span K (Set.range v) = ⊤ := by
     rw [← fTowerSubmodule_eq_top K hL P, fTowerSubmodule]
-    apply le_antisymm
-    · apply Submodule.span_mono; rintro _ ⟨i, rfl⟩; exact ⟨i.val, rfl⟩
-    · rw [Submodule.span_le]; rintro _ ⟨i, rfl⟩
-      by_cases h_zero : ((toEnd K L M f) ^ i) m₀ = 0
-      · simp only [h_zero, SetLike.mem_coe, zero_mem]
-      · exact Submodule.subset_span ⟨⟨i, h_zero⟩, rfl⟩
+    refine le_antisymm (Submodule.span_mono <| by rintro _ ⟨i, rfl⟩; exact
+      ⟨i.val, rfl⟩) (Submodule.span_le.mpr ?_)
+    rintro _ ⟨i, rfl⟩
+    by_cases h_zero : ((toEnd K L M f) ^ i) m₀ = 0
+    · simp only [h_zero, SetLike.mem_coe, zero_mem]
+    · exact Submodule.subset_span ⟨⟨i, h_zero⟩, rfl⟩
   let b := Basis.mk h_indep h_span.ge
   have h_eq_span : weightSpace (M := M) K h (μ₀ - 2 * (k : K)) = K ∙ (v ⟨k, hk_mem⟩) := by
     apply le_antisymm
@@ -681,22 +630,20 @@ theorem finrank_weightSpace_eq_one_of_isIrreducible
       := by
         have h_x_eq : x = b.equivFun.symm c := (LinearEquiv.symm_apply_apply b.equivFun x).symm
         nth_rw 1 [h_x_eq]
-        simp only[Basis.equivFun_symm_apply]
-        rw [map_sum]
-        apply Finset.sum_congr rfl
-        intro i _
+        simp only [Basis.equivFun_symm_apply, map_sum]
+        refine Finset.sum_congr rfl (fun i _ ↦ ?_)
         have h_bi : b i = v i := Basis.mk_apply h_indep h_span.ge i
-        have h_end_eq : (toEnd K L M h) (v i) = ⁅h, v i⁆ := rfl
-        rw[map_smul, h_bi, h_end_eq, P.lie_h_pow_toEnd_f i.val, smul_smul]
+        rw [map_smul, h_bi, (rfl : (toEnd K L M h) (v i) = ⁅h, v i⁆)]
+        dsimp
+        rw [P.lie_h_pow_toEnd_f i.val, smul_smul]
       have h_equiv_Dx : b.equivFun ((toEnd K L M h) x) = fun i ↦ c i * (μ₀ - 2 * (i.val : K)) := by
-        rw[h_Dx_sum, LinearEquiv.apply_symm_apply]
+        rw [h_Dx_sum, LinearEquiv.apply_symm_apply]
       have h_equiv_Dx_1 : b.equivFun ((toEnd K L M h) x) = fun i ↦ (μ₀ - 2 * (k : K)) * c i := by
-        ext i
-        rw[h_Dx, map_smul, Pi.smul_apply, smul_eq_mul]
+        ext i; rw [h_Dx, map_smul, Pi.smul_apply, smul_eq_mul]
       have h_c_i : ∀ i : S, i ≠ ⟨k, hk_mem⟩ → c i = 0 := by
         intro i hi
         have H : c i * (μ₀ - 2 * (i.val : K)) = (μ₀ - 2 * (k : K)) * c i := by
-          rw[← congr_fun h_equiv_Dx i, congr_fun h_equiv_Dx_1 i]
+          rw [← congr_fun h_equiv_Dx i, congr_fun h_equiv_Dx_1 i]
         have H2 : c i * (2 * (k : K) - 2 * (i.val : K)) = 0 := by
           calc c i * (2 * (k : K) - 2 * (i.val : K))
             _ = c i * (μ₀ - 2 * (i.val : K)) - c i * (μ₀ - 2 * (k : K)) := by ring
@@ -705,31 +652,23 @@ theorem finrank_weightSpace_eq_one_of_isIrreducible
         cases mul_eq_zero.mp H2 with
         | inl h_ci => exact h_ci
         | inr h_diff =>
-          have h_k_eq_i : (k : K) = (i.val : K) := by
-            have H3 : (2 : K) * (k : K) = (2 : K) * (i.val : K) := sub_eq_zero.mp h_diff
-            exact mul_left_cancel₀ (by norm_num) H3
-          have h_k_eq_i_nat : k = i.val := Nat.cast_inj.mp h_k_eq_i
-          have h_i_eq : i = ⟨k, hk_mem⟩ := Subtype.ext h_k_eq_i_nat.symm
-          exact False.elim (hi h_i_eq)
+          have h_k_eq_i_nat : k = i.val := by simpa only [sub_eq_zero, mul_eq_mul_left_iff,
+            Nat.cast_inj, OfNat.ofNat_ne_zero, or_false] using h_diff
+          exact False.elim (hi <| Subtype.ext h_k_eq_i_nat.symm)
       have h_x_final : x = c ⟨k, hk_mem⟩ • v ⟨k, hk_mem⟩ := by
-        let k_idx : S := ⟨k, hk_mem⟩
-        have H_symm : x = b.equivFun.symm c := (LinearEquiv.symm_apply_apply b.equivFun x).symm
-        rw [H_symm]
-        simp only [Basis.equivFun_symm_apply]
-        have h_bi : b k_idx = v k_idx := Basis.mk_apply h_indep h_span.ge k_idx
+        rw [(LinearEquiv.symm_apply_apply b.equivFun x).symm, Basis.equivFun_symm_apply]
+        have h_bi : b ⟨k, hk_mem⟩ = v ⟨k, hk_mem⟩ := Basis.mk_apply h_indep h_span.ge ⟨k, hk_mem⟩
         rw [← h_bi]
-        apply Finset.sum_eq_single k_idx
-        · intro i _ hi
-          rw[h_c_i i hi, zero_smul]
-        · intro h_not_mem
-          exact False.elim (h_not_mem (Finset.mem_univ k_idx))
-      rw [Submodule.mem_span_singleton]
-      exact ⟨c ⟨k, hk_mem⟩, h_x_final.symm⟩
+        refine Finset.sum_eq_single
+          _ (fun i _ hi ↦ ?_) (fun h ↦ False.elim (h <| Finset.mem_univ _))
+        change c i • b i = 0
+        rw [h_c_i i hi, zero_smul]
+      exact Submodule.mem_span_singleton.mpr ⟨c ⟨k, hk_mem⟩, h_x_final.symm⟩
     · rw [Submodule.span_le, Set.singleton_subset_iff]
       simp only [SetLike.mem_coe, End.mem_genEigenspace_one, toEnd_apply_apply]
       exact P.lie_h_pow_toEnd_f k
   rw [hk_eq, h_eq_span]
-  exact finrank_span_singleton (hk_mem)
+  exact finrank_span_singleton hk_ne
 
 end IsAlgClosedIrreducible
 
