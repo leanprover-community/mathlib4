@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
+import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 /-!
 # Hermitian matrices over ℝ and ℂ
@@ -50,6 +51,18 @@ lemma isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] :
   · intro h
     ext i j
     simpa [(Pi.single_star i 1).symm] using h (Pi.single i 1) (Pi.single j 1)
+
+/-- A version of `Matrix.isHermitian_iff_isSymmetric` that allows using any `OrthonormalBasis`. -/
+lemma isHermitian_iff_isSymmetric_of_orthonormalBasis [Fintype n] [DecidableEq n] {E : Type*}
+    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] (b : OrthonormalBasis n 𝕜 E) :
+    IsHermitian A ↔ (A.toLin b.toBasis b.toBasis).IsSymmetric := by
+  have : FiniteDimensional 𝕜 E := b.toBasis.finiteDimensional_of_finite
+  simp_rw [LinearMap.IsSymmetric, ← LinearMap.adjoint_inner_left, ← toLin_conjTranspose]
+  constructor
+  · intro (h : Aᴴ = A) x y
+    rw [h]
+  · intro h
+    simpa using (LinearMap.ext fun x ↦ ext_inner_right _ (h x)).symm
 
 lemma IsHermitian.im_star_dotProduct_mulVec_self [Fintype n] (hA : A.IsHermitian) (x : n → 𝕜) :
      RCLike.im (star x ⬝ᵥ A *ᵥ x) = 0 := by
