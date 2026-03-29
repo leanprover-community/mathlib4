@@ -167,7 +167,7 @@ theorem MeromorphicOn.circleIntegrable_log_norm (hf : MeromorphicOn f (sphere c 
 alias circleIntegrable_log_norm_meromorphicOn := MeromorphicOn.circleIntegrable_log_norm
 
 /--
-Variant of `circleIntegrable_log_norm_meromorphicOn` for non-negative radii.
+Variant of `MeromorphicOn.circleIntegrable_log_norm` for non-negative radii.
 -/
 theorem MeromorphicOn.circleIntegrable_log_norm_of_nonneg (hf : MeromorphicOn f (sphere c R))
     (hR : 0 ≤ R) :
@@ -180,7 +180,7 @@ alias circleIntegrable_log_norm_meromorphicOn_of_nonneg :=
     MeromorphicOn.circleIntegrable_log_norm_of_nonneg
 
 /--
-Variant of `circleIntegrable_log_norm_meromorphicOn` for factorized rational functions.
+Variant of `MeromorphicOn.circleIntegrable_log_norm` for factorized rational functions.
 -/
 theorem circleIntegrable_log_norm_factorizedRational {R : ℝ} {c : ℂ} (D : ℂ → ℤ) :
     CircleIntegrable (∑ᶠ u, ((D u) * log ‖· - u‖)) c R :=
@@ -202,7 +202,7 @@ theorem MeromorphicOn.circleIntegrable_posLog_norm (hf : MeromorphicOn f (sphere
 alias circleIntegrable_posLog_norm_meromorphicOn := MeromorphicOn.circleIntegrable_posLog_norm
 
 /--
-Variant of `circleIntegrable_posLog_norm_meromorphicOn` for non-negative radii.
+Variant of `MeromorphicOn.circleIntegrable_posLog_norm` for non-negative radii.
 -/
 theorem MeromorphicOn.circleIntegrable_posLog_norm_of_nonneg (hf : MeromorphicOn f (sphere c R))
     (hR : 0 ≤ R) :
