@@ -17,20 +17,24 @@ public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 
 universe u v
 
-variable (R : Type u) (A : Type v) [CommRing R] [CommRing A] [Algebra R A]
-
 @[expose] public section
 
 open TensorProduct
 
+section
+
+variable (k : Type u) (K : Type v) [Field k] [Field K] [Algebra k K]
+
 class Algebra.IsSeparablyGenerated : Prop where
-  isSeparable' : ∃ (ι : Type v) (f : ι → A),
-    IsTranscendenceBasis R f ∧
-    Algebra.IsSeparable (Algebra.adjoin R (Set.range f)) A
+  isSeparable' : ∃ (ι : Type v) (f : ι → K),
+    IsTranscendenceBasis k f ∧
+    Algebra.IsSeparable (Algebra.adjoin k (Set.range f)) K
 
 class Algebra.IsTranscendentalSeparable : Prop where
-  forall_isSeparablyGenerated : ∀ (A' : Subalgebra R A),
-    Algebra.EssFiniteType R A' → Algebra.IsSeparablyGenerated R A'
+  forall_isSeparablyGenerated : ∀ (A' : IntermediateField k K),
+    Algebra.EssFiniteType k A' → Algebra.IsSeparablyGenerated k A'
+
+end
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `R ⊗[k] S` is nonreduced, then this already occurs on finitely generated `k`-subalgebras
