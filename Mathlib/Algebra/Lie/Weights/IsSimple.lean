@@ -611,6 +611,7 @@ lemma lieIdealOrderIso_right_inv (q : (rootSystem H).invtRootSubmodule)
   congr 2; ext α
   exact mem_rootSet_invtSubmoduleToLieIdeal _ _
 
+variable (H) in
 /-- The order isomorphism between Lie ideals and invariant root submodules. -/
 noncomputable def lieIdealOrderIso :
     LieIdeal K L ≃o (rootSystem H).invtRootSubmodule where
