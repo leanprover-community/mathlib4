@@ -24,7 +24,7 @@ that the two ways to deduce an isomorphism
 `mapBifunctor (K₁⟦x⟧) (K₂⟦y⟧) F ≅ (mapBifunctor K₁ K₂ F)⟦x + y⟧` differ by the sign
 `(x * y).negOnePow`.
 
-These definitions and properties can be summarised by saysing that the bifunctor
+These definitions and properties can be summarised by saying that the bifunctor
 `F.map₂CochainComplex : CochainComplex C₁ ℤ ⥤ CochainComplex C₂ ℤ ⥤ CochainComplex D ℤ`
 commutes with shifts by `ℤ`.
 

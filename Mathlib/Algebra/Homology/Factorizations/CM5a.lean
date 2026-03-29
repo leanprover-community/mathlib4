@@ -25,9 +25,9 @@ on the available bounds for `K` and `L`): this is
 `CochainComplex.Plus.modelCategoryQuillen.cm5a`. Using the factorization
 obtained in the file `Mathlib/Algebra/Homology/Factorizations/CM5b.lean`,
 we may assume `f : K ⇨ L` is a monomorphism (a case which appears as
-the lemma `CochainComplex.Plus.modelCategoryQuillen.cm5a`).
+the lemma `CochainComplex.Plus.modelCategoryQuillen.cm5a_cof`).
 
-In the proof, the key (private) lemma is the
+In the proof, the key (private) lemma is be
 `CochainComplex.Plus.modelCategoryQuillen.cm5a_cof.step` which shows that
 if `f` is a monomorphism which is a quasi-isomorphism in degrees `≤ n₀` and
 `n₀ + 1 = n₁`, then `f` has a factorisation `ι ≫ π = f`
@@ -51,23 +51,7 @@ lemma `cm5a_cof`.
 
 open CategoryTheory Limits Opposite Abelian HomologicalComplex Pretriangulated
 
-variable {C : Type*} [Category* C]
-
-namespace HomologicalComplex
-
-instance [HasZeroMorphisms C] [HasZeroObject C]
-    {ι : Type*} [DecidableEq ι] (c : ComplexShape ι) (i j : ι) (I : C)
-    [Injective I] :
-    Injective (((single C c i).obj I).X j) := by
-  by_cases hij : j = i
-  · subst hij
-    simp only [single_obj_X_self]
-    infer_instance
-  · exact (isZero_single_obj_X _ _ _ _ hij).injective
-
-end HomologicalComplex
-
-variable [Abelian C] [EnoughInjectives C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 namespace CochainComplex.Plus.modelCategoryQuillen
 
@@ -85,18 +69,20 @@ instance (F : (cofFib f).FullSubcategory) : Mono F.obj.ι :=
   F.property.1
 
 variable {f} in
-/-- The property that the first morphism of the factorisation is
+/-- The property that the first morphism of a factorisation is
 a quasi-isomorphisms in degrees `≤ n`. -/
 def quasiIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
   fun F ↦ ∀ i ≤ n, QuasiIsoAt F.obj.ι i
 
 variable {f} in
-/-- The property that the second morphism of the factorisation is
+/-- The property that the second morphism of a factorisation is
 an isomorphism in degrees `≤ n`. -/
 def isIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
   fun F ↦ ∀ i ≤ n, IsIso (F.obj.π.f i)
 
 namespace step₁
+
+variable [EnoughInjectives C]
 
 /-!
 This section provides the material in order to prove the lemma `step₁` below.
@@ -153,7 +139,7 @@ lemma degreewiseEpiWithInjectiveKernel_π :
     ⟨{ r := (biprod.fst : mid K L n₁ ⟶ _).f q, s := (biprod.inr : _ ⟶ mid K L n₁).f q }⟩⟩
 
 variable (K L) in
-lemma isIso_π_f (i : ℤ) (hi : i ≠ n₁) :
+lemma isIso_π_f (i : ℤ) (hi : i ≠ n₁ := by lia) :
     IsIso ((π K L n₁).f i) := by
   refine ⟨(biprod.inr : _ ⟶ mid K L n₁).f i, ?_, by simp⟩
   rw [biprodX_ext_to_iff]
@@ -163,14 +149,14 @@ lemma isIso_π_f (i : ℤ) (hi : i ≠ n₁) :
 
 include hn₁ in
 variable (K L) in
-lemma quasiIsoAt_π (i : ℤ) (hi : i ≤ n₀) :
+lemma quasiIsoAt_π (i : ℤ) (hi : i ≤ n₀ := by lia) :
     QuasiIsoAt (π K L n₁) i := by
   obtain (hi | rfl) := hi.lt_or_eq
   · rw [quasiIsoAt_iff' _ (i - 1) i (i + 1) (by simp) (by simp)]
     let φ := (shortComplexFunctor' C _ (i - 1) i (i + 1)).map (π K L n₁)
-    have : IsIso φ.τ₁ := isIso_π_f _ _ _ _ (by lia)
-    have : IsIso φ.τ₂ := isIso_π_f _ _ _ _ (by lia)
-    have : IsIso φ.τ₃ := isIso_π_f _ _ _ _ (by lia)
+    have : IsIso φ.τ₁ := isIso_π_f ..
+    have : IsIso φ.τ₂ := isIso_π_f ..
+    have : IsIso φ.τ₃ := isIso_π_f ..
     exact ShortComplex.quasiIso_of_epi_of_isIso_of_mono φ
   · rw [quasiIsoAt_iff_isIso_homologyMap]
     have : homologyMap (biprod.inl : _ ⟶ mid K L n₁) i = 0 :=
@@ -212,7 +198,7 @@ instance : Mono (homologyMap (ι f n₁) n₁) := by
 end step₁
 
 open step₁ in
-lemma step₁ [Mono f] (n₀ n₁ : ℤ)
+lemma step₁ [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) (hn₁ : n₀ + 1 = n₁ := by lia) :
     ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₀ F ∧ isIsoLE n₀ F ∧
       Mono (homologyMap F.obj.ι n₁) :=
@@ -237,7 +223,7 @@ which also induces isomorphisms in degrees `≤ n`.
 
 open HomComplex
 
-variable (n : ℤ)
+variable [EnoughInjectives C] (n : ℤ)
 
 /-- Given a morphism `f : K ⟶ L`, this is the single cochain complex in degree `n`
 which is given an injective object which contains `((cokernel f).truncGE n).X n`,
@@ -250,7 +236,7 @@ given by `Injective.ι _`. -/
 noncomputable def p : (cokernel f).truncGE n ⟶ S f n :=
   mkHomToSingle (Injective.ι _) (fun i hi ↦ by
     simp only [ComplexShape.up_Rel] at hi
-    exact (isZero_of_isStrictlyGE _ n _ (by lia)).eq_of_src _ _)
+    exact (isZero_of_isStrictlyGE _ n _).eq_of_src _ _)
 
 instance : Mono ((p f n).f n) := by
   simp only [p, mkHomToSingle_f, mono_comp_iff_of_mono]
@@ -283,7 +269,7 @@ lemma degreewiseEpiWithInjectiveKernel_π :
     degreewiseEpiWithInjectiveKernel (π f n) := by
   intro i
   rw [epiWithInjectiveKernel_iff]
-  refine ⟨_, inferInstance, (mappingCocone.inr (α f n)).1.v (i - 1) i (by lia), by simp,
+  exact ⟨_, inferInstance, (mappingCocone.inr (α f n)).1.v (i - 1) i (by lia), by simp,
     ⟨{r := (mappingCocone.snd (α f n)).v _ _ (by lia)
       s := (mappingCocone.inl (α f n)).v _ _ (by lia)
       id := (add_comm _ _).trans (by simp [mappingCocone.id_X]) }⟩⟩
@@ -340,7 +326,6 @@ omit [EnoughInjectives C] in
 lemma shortExact [Mono f] : (ShortComplex.mk _ _ (cokernel.condition f)).ShortExact where
   exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel f)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exact_homologyShortComplex [Mono f] :
     (homologyShortComplex f n).Exact := by
   let T := ShortComplex.mk (homologyMap f n) (homologyMap (cokernel.π f) n)
@@ -352,10 +337,10 @@ lemma exact_homologyShortComplex [Mono f] :
       comm₂₃ := by
         dsimp
         rw [Category.id_comp, ← homologyMap_comp, α] }
-  have : Mono φ.τ₃ := by
+  obtain ⟨_, _, _⟩ : Mono φ.τ₃ ∧ IsIso φ.τ₂ ∧ Epi φ.τ₁ := by
     dsimp [φ]
     rw [homologyMap_comp]
-    infer_instance
+    exact ⟨inferInstance, inferInstance, inferInstance⟩
   rw [← ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ]
   exact (shortExact f).homology_exact₂ n
 
@@ -385,7 +370,6 @@ lemma quasiIso_truncGEπ [Mono f] [Mono (homologyMap f n)] :
   rw [quasiIso_πTruncGE_iff]
   exact isGE_cokernel f n hf
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] HasDerivedCategory.standard in
 lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
     QuasiIsoAt (ι f n) q := by
@@ -400,30 +384,29 @@ lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
     have h₂ := (CochainComplex.homologyMap_exact₂_of_distTriang _
       (DerivedCategory.mappingCocone_triangle_distinguished (α f n)) n).fIsKernel
     have : homologyMap (ι f n) n = (IsLimit.conePointUniqueUpToIso h₁ h₂).hom := by
-      have := IsLimit.conePointUniqueUpToIso_hom_comp h₁ h₂ .zero
-      dsimp at this
-      rw [← cancel_mono (homologyMap (π f n) n), this, ← homologyMap_comp,
-        mappingCocone.lift_fst]
+      simp [← cancel_mono (homologyMap (π f n) n),
+        dsimp% IsLimit.conePointUniqueUpToIso_hom_comp h₁ h₂ .zero,
+        ← homologyMap_comp, mappingCocone.lift_fst]
     rw [quasiIsoAt_iff_isIso_homologyMap, this]
     infer_instance
 
 end step₂
 
 open step₂ in
-lemma step₂ [Mono f] (n₀ n₁ : ℤ) (hf : ∀ i ≤ n₀, QuasiIsoAt f i)
-    [Mono (homologyMap f n₁)] (hn₁ : n₀ + 1 = n₁ := by lia) :
+lemma step₂ [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
+    (hf : ∀ i ≤ n₀, QuasiIsoAt f i) [Mono (homologyMap f n₁)] (hn₁ : n₀ + 1 = n₁ := by lia) :
     ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₁ F ∧ isIsoLE n₁ F :=
   ⟨.mk { mid := mid f n₁, ι := ι f n₁, π := π f n₁}
     ⟨inferInstance, degreewiseEpiWithInjectiveKernel_π f n₁⟩,
     fun i hi ↦ quasiIsoAt_ι f n₁ (fun j hj ↦ hf j (by lia)) _ hi,
     isIso_π_f f n₁⟩
 
-lemma step [Mono f] (n₀ n₁ : ℤ)
+lemma step [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) (hn₁ : n₀ + 1 = n₁ := by lia) :
     ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₁ F ∧ isIsoLE n₀ F := by
   obtain ⟨F₁, h₁, h₂, _⟩ := step₁ f n₀ n₁ hf
   obtain ⟨F₂, h₃, h₄⟩ := step₂ F₁.obj.ι n₀ n₁ h₁
-  refine ⟨.mk { mid := F₂.obj.mid, ι := F₂.obj.ι , π := F₂.obj.π ≫ F₁.obj.π }
+  refine ⟨.mk { mid := F₂.obj.mid, ι := F₂.obj.ι, π := F₂.obj.π ≫ F₁.obj.π }
     ⟨by dsimp; infer_instance, MorphismProperty.comp_mem _ _ _ F₂.property.2 F₁.property.2⟩,
     ⟨h₃, fun i hi ↦ ?_⟩⟩
   have := h₂ i hi
@@ -434,6 +417,8 @@ lemma step [Mono f] (n₀ n₁ : ℤ)
 /-- The category of factorisations of `f` as a monomorphism that is a quasi-isomorphism
 in degrees `≤ n` followed by a degreewise epimorphism with an injective kernel. -/
 abbrev CofFibFactorizationQuasiIsoLE (n : ℤ) := (quasiIsoLE (f := f) n).FullSubcategory
+
+variable [EnoughInjectives C]
 
 namespace CofFibFactorizationQuasiIsoLE
 
@@ -642,6 +627,8 @@ lemma degreewiseEpiWithInjectiveKernel_π : degreewiseEpiWithInjectiveKernel (π
     ((CofFibFactorizationQuasiIsoLE.sequence f n₀ q).obj.property.2 i)
 
 end cm5a_cof
+
+variable [EnoughInjectives C]
 
 open cm5a_cof in
 public lemma cm5a_cof (n : ℤ) [K.IsStrictlyGE n] [L.IsStrictlyGE n] [Mono f] :

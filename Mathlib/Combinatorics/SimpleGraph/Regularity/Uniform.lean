@@ -61,11 +61,9 @@ random-like. -/
 def IsUniform (s t : Finset α) : Prop :=
   ∀ ⦃s'⦄, s' ⊆ s → ∀ ⦃t'⦄, t' ⊆ t → (#s : 𝕜) * ε ≤ #s' →
     (#t : 𝕜) * ε ≤ #t' → |(G.edgeDensity s' t' : 𝕜) - (G.edgeDensity s t : 𝕜)| < ε
+deriving Decidable
 
 variable {G ε}
-
-instance IsUniform.instDecidableRel : DecidableRel (G.IsUniform ε) := by
-  unfold IsUniform; infer_instance
 
 theorem IsUniform.mono {ε' : 𝕜} (h : ε ≤ ε') (hε : IsUniform G ε s t) : IsUniform G ε' s t :=
   fun s' hs' t' ht' hs ht => by
@@ -401,8 +399,8 @@ that have edge density at least `δ`. -/
     rwa [edgeDensity_comm]
   loopless := ⟨fun a h ↦ G.loopless.irrefl a h.1⟩
 
-instance regularityReduced.instDecidableRel_adj : DecidableRel (G.regularityReduced P ε δ).Adj := by
-  unfold regularityReduced; infer_instance
+instance regularityReduced.instDecidableRel_adj : DecidableRel (G.regularityReduced P ε δ).Adj :=
+  inferInstanceAs <| DecidableRel (mk _ _).Adj
 
 variable {G P}
 
