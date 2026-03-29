@@ -428,7 +428,9 @@ theorem ito_formula_interface (U : UncertainSpace) [AlgebraicUncertainSpace U]
 class UncertainDEWellposednessStructure (U : UncertainSpace)
     (de : UncertainDE) (P : UncertainProcess U) (dt : ℝ)
     [EulerSchemeStructure U de P dt] where
+  /-- Existence statement for the uncertain differential equation under the scheme. -/
   existence_statement : Prop
+  /-- Uniqueness statement for the uncertain differential equation under the scheme. -/
   uniqueness_statement : Prop
   existence_axiom : existence_statement
   uniqueness_axiom : uniqueness_statement
