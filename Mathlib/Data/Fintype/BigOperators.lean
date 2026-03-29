@@ -13,7 +13,7 @@ public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Fintype.Vector
--- public import Mathlib.Algebra.BigOperators.Intervals
+
 
 /-!
 Results about "big operations" over a `Fintype`, and consequent
