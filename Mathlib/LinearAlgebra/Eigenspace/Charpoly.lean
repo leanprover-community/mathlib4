@@ -58,7 +58,6 @@ lemma trace_eq_sum_roots_charpoly_of_splits {f : End K V} (h : f.charpoly.Splits
   rw [trace_eq_matrix_trace K b, Matrix.trace_eq_sum_roots_charpoly_of_splits (by simpa using h),
     charpoly_toMatrix]
 
-
 end End
 
 end Module
