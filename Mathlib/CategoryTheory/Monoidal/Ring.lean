@@ -120,6 +120,22 @@ def forget : Rng C ⥤ C where
 
 instance : (forget C).Faithful where
 
+variable (C) in
+/-- The forgetful functor from the category of ring objects in `C`
+to the category of monoid objects in `C`. -/
+@[simps]
+def forget₂Mon : Rng C ⥤ Mon C where
+  obj R := .mk R.X
+  map f := .mk f.hom
+
+variable (C) in
+/-- The forgetful functor from the category of ring objects in `C`
+to the category of additive monoid objects in `C`. -/
+@[simps]
+def forget₂AddMon : Rng C ⥤ AddMon C where
+  obj R := .mk R.X
+  map f := .mk f.hom
+
 end Rng
 
 variable (C) in
@@ -127,11 +143,11 @@ variable (C) in
 structure CommRng where
   /-- The underlying object in the ambient monoidal category -/
   X : C
-  [ringObj : RingObj X]
+  [commRingObj : CommRingObj X]
 
 namespace CommRng
 
-attribute [instance] ringObj
+attribute [instance] commRingObj
 
 /-- A morphism of commutative ring objects. -/
 @[ext]
@@ -162,20 +178,20 @@ def forget : CommRng C ⥤ C where
 variable (C) in
 /-- The forgetful functor from the category of commutative ring objects
 to the category of ring objects. -/
-def forget₂Ring : CommRng C ⥤ Rng C where
+def forget₂Rng : CommRng C ⥤ Rng C where
   obj R := .mk R.X
   map f := { hom := f.hom }
 
 variable (C) in
 /-- The forgetful functor `CommRng C ⥤ Rng C` is fully faithful. -/
-def fullyFaithfulForget₂Ring : (forget₂Ring C).FullyFaithful where
+def fullyFaithfulForget₂Rng : (forget₂Rng C).FullyFaithful where
   preimage f := { hom := f.hom, isRingHom := f.isRingHom }
 
-instance : (forget₂Ring C).Faithful :=
-  (fullyFaithfulForget₂Ring C).faithful
+instance : (forget₂Rng C).Faithful :=
+  (fullyFaithfulForget₂Rng C).faithful
 
-instance : (forget₂Ring C).Full :=
-  (fullyFaithfulForget₂Ring C).full
+instance : (forget₂Rng C).Full :=
+  (fullyFaithfulForget₂Rng C).full
 
 instance : (forget C).Faithful where
 
