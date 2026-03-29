@@ -502,17 +502,6 @@ lemma mem_rootSet_invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
           le_iSup_of_le ⟨↑α, hα, H.isNonZero_coe_root α⟩ le_rfl
       _ = J.restr H := (restr_invtSubmoduleToLieIdeal_eq_iSup q hq).symm
 
-open LieSubmodule in
-@[simp] lemma invtSubmoduleToLieIdeal_top :
-    invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) = ⊤ := by
-  simp_rw [← toSubmodule_inj, coe_invtSubmoduleToLieIdeal_eq_iSup, iSup_toSubmodule,
-    top_toSubmodule, iSup_toSubmodule_eq_top, eq_top_iff, ← cartan_sup_iSup_rootSpace_eq_top H,
-    iSup_subtype, Submodule.mem_top, true_and, sup_le_iff, iSup_le_iff, sl2SubmoduleOfRoot_eq_sup]
-  refine ⟨?_, fun α hα ↦ le_iSup₂_of_le α hα <| le_sup_of_le_left <| le_sup_of_le_left <| le_refl _⟩
-  suffices H.toLieSubmodule ≤ ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSubmodule α from
-    this.trans <| iSup₂_mono fun α hα ↦ le_sup_right
-  simp
-
 @[gcongr]
 lemma invtSubmoduleToLieIdeal_mono {q₁ q₂ : Submodule K (Dual K H)}
     (hq₁ : ∀ i, q₁ ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap)
