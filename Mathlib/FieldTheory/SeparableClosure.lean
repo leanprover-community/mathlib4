@@ -212,7 +212,7 @@ or `IsSepClosure.isGalois`, and every separable extension embeds into it (`IsSep
 abbrev SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
 
 instance SeparableClosure.isSepClosed : IsSepClosed (SeparableClosure F) :=
-  (inferInstanceAs (IsSepClosure F (SeparableClosure F))).sep_closed
+  (inferInstance : IsSepClosure F (SeparableClosure F)).sep_closed
 
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/
@@ -370,6 +370,7 @@ end Field
 
 namespace IntermediateField
 
+set_option maxHeartbeats 800000 in -- This blows up after leanprover/lean4#12897
 /-- In a finitely generated field extension, there exists a maximal
 separably generated field extension. -/
 lemma exists_finset_maximalFor_isTranscendenceBasis_separableClosure
