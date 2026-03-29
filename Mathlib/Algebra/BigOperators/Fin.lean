@@ -735,7 +735,7 @@ theorem prod_take_ofFn {n : ℕ} (f : Fin n → M) (i : ℕ) :
       have A : ({j | j.val < i + 1} : Finset (Fin n)) =
           insert ⟨i, h⟩ ({j | Fin.val j < i} : Finset (Fin n)) := by
         ext ⟨_, _⟩
-        simp [Nat.lt_succ_iff_lt_or_eq, or_comm, -Order.lt_add_one_iff]
+        simp [Nat.lt_succ_iff_lt_or_eq, or_comm]
       rw [A, prod_insert (by simp), IH, mul_comm]
       simp
     · have A : (ofFn f).take i = (ofFn f).take i.succ := by
