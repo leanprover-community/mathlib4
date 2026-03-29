@@ -88,7 +88,7 @@ instance : OrderHomClass (Chain α) ℕ α where
 /-- See note [partially-applied ext lemmas]. -/
 @[ext] lemma ext ⦃f g : Chain α⦄ (h : ⇑f = ⇑g) : f = g := DFunLike.ext' h
 
-@[simp] lemma toOrderHom_apply (c : Chain α) (n : ℕ) : c.toOrderHom n = c n := rfl
+@[simp] lemma coe_toOrderHom (c : Chain α) : ⇑c.toOrderHom = c := rfl
 
 instance [Inhabited α] : Inhabited (Chain α) :=
   ⟨⟨default, fun _ _ _ => le_rfl⟩⟩
