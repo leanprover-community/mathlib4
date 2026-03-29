@@ -190,7 +190,7 @@ noncomputable def indCoindNatIso :
 /-- Given a finite index subgroup `S ≤ G`, `Ind_S^G` is right adjoint to the restriction functor
 `Res k G ⥤ Res k S`, since it is naturally isomorphic to `Coind_S^G`. -/
 noncomputable def resIndAdjunction :
-    resFunctor S.subtype ⊣ indFunctor.{max w u v} k S.subtype :=
+    resFunctor.{max w u v} S.subtype ⊣ indFunctor.{max w u v} k S.subtype :=
   (resCoindAdjunction.{max w u v} k S.subtype).ofNatIsoRight (indCoindNatIso.{max w u v} k S).symm
 
 
@@ -203,27 +203,27 @@ theorem instIsRightAdjointSubtypeMemSubgroupIndFunctorSubtype :
 variable {k S}
 
 @[simp]
-lemma resIndAdjunction_counit_app (A : Rep k S) :
+lemma resIndAdjunction_counit_app (A : Rep.{max w u v} k S) :
     (resIndAdjunction k S).counit.app A =
       (resFunctor S.subtype).map (indCoindIso.{max w (max u v)} A).hom ≫
       (resCoindAdjunction.{max w u} k S.subtype).counit.app A := rfl
 
 @[simp]
-lemma resIndAdjunction_unit_app (B : Rep k G) :
+lemma resIndAdjunction_unit_app (B : Rep.{max w u v} k G) :
     (resIndAdjunction k S).unit.app B =
       (resCoindAdjunction.{max w u} k S.subtype).unit.app B ≫
       (indCoindIso.{max w (max u v)} (res S.subtype B)).inv := rfl
 
 set_option backward.isDefEq.respectTransparency false in
-lemma resIndAdjunction_homEquiv_apply (A : Rep k S)
-    {B : Rep k G} (f : res S.subtype B ⟶ A) :
+lemma resIndAdjunction_homEquiv_apply (A : Rep.{max w u v} k S)
+    {B : Rep.{max w u v} k G} (f : res S.subtype B ⟶ A) :
     (resIndAdjunction k S).homEquiv _ _ f =
       resCoindHomEquiv.{max w u v} S.subtype B A f ≫ (indCoindIso.{max w u v} A).inv := by
   rw [resIndAdjunction, Adjunction.homEquiv_ofNatIsoRight_apply]
   simp [resCoindHomEquiv]
 
-lemma resIndAdjunction_homEquiv_symm_apply (A : Rep k S)
-    {B : Rep k G}
+lemma resIndAdjunction_homEquiv_symm_apply (A : Rep.{max w u v} k S)
+    {B : Rep.{max w u v} k G}
     (f : B ⟶ (indFunctor k S.subtype).obj A) :
     ((resIndAdjunction k S).homEquiv _ _).symm f =
       (resCoindHomEquiv.{max w u v} S.subtype B A).symm (f ≫ (indCoindIso.{max w u v} A).hom) := by
@@ -243,7 +243,7 @@ theorem instIsLeftAdjointSubtypeMemSubgroupCoindFunctorSubtype :
   open scoped Classical in (coindResAdjunction k S).isLeftAdjoint
 
 @[simp]
-lemma coindResAdjunction_counit_app (B : Rep k G) :
+lemma coindResAdjunction_counit_app (B : Rep.{max w u v} k G) :
     (coindResAdjunction k S).counit.app B =
       (indCoindIso.{max w u v} (res S.subtype B)).inv ≫
       (indResAdjunction k S.subtype).counit.app B := by
@@ -251,20 +251,20 @@ lemma coindResAdjunction_counit_app (B : Rep k G) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma coindResAdjunction_unit_app (A : Rep k S) :
+lemma coindResAdjunction_unit_app (A : Rep.{max w u v} k S) :
     (coindResAdjunction k S).unit.app A = (indResAdjunction k S.subtype).unit.app A ≫
       (resFunctor S.subtype).map (indCoindIso.{max w u v} A).hom := by
   ext
   simp [coindResAdjunction, Adjunction.ofNatIsoLeft,
     indResAdjunction, indCoindIso]
 
-lemma coindResAdjunction_homEquiv_apply (A : Rep k S)
+lemma coindResAdjunction_homEquiv_apply (A : Rep.{max w u v} k S)
     {B : Rep k G} (f : coind S.subtype A ⟶ B) :
     (coindResAdjunction k S).homEquiv _ _ f =
       indResHomEquiv S.subtype A B ((indCoindIso.{max w u v} A).hom ≫ f) := by
   rfl
 
-lemma coindResAdjunction_homEquiv_symm_apply (A : Rep k S)
+lemma coindResAdjunction_homEquiv_symm_apply (A : Rep.{max w u v} k S)
     {B : Rep k G} (f : A ⟶ res S.subtype B) :
     ((coindResAdjunction k S).homEquiv _ _).symm f =
       (indCoindIso.{max w u v} A).inv ≫ (indResHomEquiv S.subtype A B).symm f := by
