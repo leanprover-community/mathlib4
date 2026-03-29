@@ -64,7 +64,7 @@ variable {r : ℕ}
 theorem one {f : K[X]} : Introspective f 1 r := by
   grind [Introspective]
 
-theorem prime {p a : ℕ} [Fact p.Prime] [ExpChar K p] :
+theorem X_sub_C {p a : ℕ} [Fact p.Prime] [ExpChar K p] :
     Introspective (X - C (a : K)) p r := by
   intro μ hμ
   simp only [eval_sub, eval_X, eval_C]
@@ -135,7 +135,7 @@ theorem of_multiset {p n b : ℕ} [Fact p.Prime] [ExpChar K p] (d e : ℕ)
       | zero => simp [one]
       | succ i hi =>
         simp only [map_natCast, pow_succ, mul_comm]
-        exact mul_of_coprime prime hi hcprm2
+        exact mul_of_coprime X_sub_C hi hcprm2
     · induction e with
       | zero => simp [one]
       | succ i hi =>
