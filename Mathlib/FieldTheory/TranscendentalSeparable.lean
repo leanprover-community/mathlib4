@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.TensorProduct.DirectLimitFG
 public import Mathlib.FieldTheory.Perfect
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.LocalProperties.Reduced
 
 /-!
 # Transcendental separable extensions
@@ -35,6 +38,39 @@ class Algebra.IsTranscendentalSeparable : Prop where
     Algebra.EssFiniteType k A' → Algebra.IsSeparablyGenerated k A'
 
 end
+
+lemma localization_minimal_isField {S : Type*} [CommRing S] [IsReduced S]
+    (p : Ideal S) (min : p ∈ minimalPrimes S) :
+    letI := min.1.1
+    IsField (Localization.AtPrime p) := by
+  let := min.1.1
+  rw [IsLocalRing.isField_iff_maximalIdeal_eq, eq_bot_iff]
+  intro x hx
+  apply IsReduced.eq_zero x (nilpotent_iff_mem_prime.mpr (fun q hq ↦ ?_))
+  convert hx
+  have : Ideal.comap (algebraMap S (Localization.AtPrime p)) q ≤ p := by
+    apply le_of_le_of_eq _ (IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime p) p)
+    exact Ideal.comap_mono (IsLocalRing.le_maximalIdeal_of_isPrime q)
+  rw [← Localization.AtPrime.eq_maximalIdeal_iff_comap_eq]
+  exact le_antisymm this (min.2 ⟨q.comap_isPrime _, bot_le⟩ this)
+
+def toLocalizationMinimal (S : Type*) [CommRing S] :=
+  (Pi.ringHom (fun (p : minimalPrimes S) ↦
+    letI := Ideal.minimalPrimes_isPrime p.2
+    algebraMap S (Localization.AtPrime p.1)))
+
+lemma isReduced_injective_to_prod_localizations {S : Type*} [CommRing S] [IsReduced S] :
+    Function.Injective (toLocalizationMinimal S) := by
+  rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
+  intro x hx
+  apply IsReduced.eq_zero x (nilpotent_iff_mem_prime.mpr (fun q hq ↦ ?_))
+  rcases Ideal.exists_minimalPrimes_le (bot_le (a := q)) with ⟨p, min, hp⟩
+  let := min.1.1
+  apply hp
+  rw [← IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime p) p, Ideal.mem_comap]
+  have : (toLocalizationMinimal S) x ⟨p, min⟩ = 0 := by simp [hx]
+  simp only [toLocalizationMinimal, Pi.ringHom_apply] at this
+  simp [this]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `R ⊗[k] S` is nonreduced, then this already occurs on finitely generated `k`-subalgebras
@@ -68,9 +104,9 @@ lemma exists_subalgebra_fg_of_not_isReduced_tensorProduct
     rw [eq0, map_zero, eq_comm, LinearEquiv.map_eq_zero_iff] at hx
     simp [hx, map_zero, eq_comm, hz_ne] at hy
 
-lemma tensorProduct_of_isSeparablyGenerated {k : Type*} [Field k]
-    {S : Type*} [CommRing S] [IsReduced S] [Algebra k S] {K : Type*} [Field K] [Algebra k K] :
-    IsReduced (TensorProduct k K S) := by
+lemma tensorProduct_of_isTranscendentalSeparable_of_isReduced {k : Type*} [Field k]
+    {S : Type*} [CommRing S] [IsReduced S] [Algebra k S] {K : Type*} [Field K] [Algebra k K]
+    [Algebra.IsTranscendentalSeparable k K] : IsReduced (TensorProduct k K S) := by
   sorry
 
 lemma Algebra.isTranscendentalSeparable_of_perfectField {k : Type*} [Field k] [PerfectField k]
