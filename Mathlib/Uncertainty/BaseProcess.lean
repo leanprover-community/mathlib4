@@ -1,4 +1,4 @@
-import Mathlib.Uncertainty.base_distribution
+import Mathlib.Uncertainty.BaseDistribution
 
 open Filter
 open scoped Topology

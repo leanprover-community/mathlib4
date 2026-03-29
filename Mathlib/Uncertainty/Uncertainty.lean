@@ -1,4 +1,4 @@
-import Mathlib.Uncertainty.base
+import Mathlib.Uncertainty.Base
 
 /-!
 # Uncertainty theory library

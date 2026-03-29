@@ -1,4 +1,4 @@
-import Mathlib.Uncertainty.base_core
+import Mathlib.Uncertainty.BaseCore
 
 open Filter
 open scoped Topology

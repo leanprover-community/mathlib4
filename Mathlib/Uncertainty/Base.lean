@@ -1,6 +1,6 @@
-import Mathlib.Uncertainty.base_core
-import Mathlib.Uncertainty.base_distribution
-import Mathlib.Uncertainty.base_process
+import Mathlib.Uncertainty.BaseCore
+import Mathlib.Uncertainty.BaseDistribution
+import Mathlib.Uncertainty.BaseProcess
 
 /-!
 # Uncertainty theory
