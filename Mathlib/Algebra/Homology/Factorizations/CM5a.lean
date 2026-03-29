@@ -338,10 +338,10 @@ lemma exact_homologyShortComplex [Mono f] :
       comm₂₃ := by
         dsimp
         rw [Category.id_comp, ← homologyMap_comp, α] }
-  have : Mono φ.τ₃ := by
+  obtain ⟨_, _, _⟩ : Mono φ.τ₃ ∧ IsIso φ.τ₂ ∧ Epi φ.τ₁ := by
     dsimp [φ]
     rw [homologyMap_comp]
-    infer_instance
+    exact ⟨inferInstance, inferInstance, inferInstance⟩
   rw [← ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ]
   exact (shortExact f).homology_exact₂ n
 
