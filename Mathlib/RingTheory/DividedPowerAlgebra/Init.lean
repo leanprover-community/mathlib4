@@ -67,7 +67,7 @@ namespace DividedPowerAlgebra
 
 /-- The type coding the basic relations that will give rise to the divided power algebra.
   The class of `MvPolynomial.X (n, a)` will be equal to `dpow n a`, for `a ∈ M`. -/
-inductive Rel : (MvPolynomial (ℕ × M) R) → (MvPolynomial (ℕ × M) R) → Prop
+inductive Rel : MvPolynomial (ℕ × M) R → MvPolynomial (ℕ × M) R → Prop
   | rfl_zero : Rel 0 0 -- Needed for technical reasons.
   | zero {a : M} : Rel (X (0, a)) 1
   | smul {r : R} {n : ℕ} {a : M} : Rel (X (n, r • a)) (r ^ n • X (n, a))
