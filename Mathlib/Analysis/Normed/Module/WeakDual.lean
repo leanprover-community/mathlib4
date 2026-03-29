@@ -123,8 +123,7 @@ namespace StrongDual
 section
 
 variable {R : Type*} [CommSemiring R] [TopologicalSpace R] [ContinuousAdd R]
-  [ContinuousConstSMul R R]
-variable [Module R M]
+variable [ContinuousConstSMul R R] [Module R M]
 
 /-- For vector spaces `M`, there is a canonical map `StrongDual R M → WeakDual R M` (the "identity"
 mapping). It is a linear equivalence. -/
