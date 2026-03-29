@@ -116,10 +116,9 @@ theorem mul_of_coprime {d e : ℕ} {f : K[X]} (hf : Introspective f e r)
   ring
 
 /-- Necessary condition for the auxilliary proof. -/
-theorem of_multiset {p n b : ℕ} [Fact p.Prime] [ExpChar K p] (d e : ℕ)
-    (s : Multiset (Fin b)) (hs : ∀ x : Fin b, Introspective (ofMultiset {(x.val : K)}) n r)
-    (hcprm : n.Coprime r) (hdiv : p ∣ n) :
-    (Introspective (ofMultiset (s.map fun x ↦ (x.val : K))) (p ^ d * (n / p) ^ e) r) := by
+theorem of_multiset {p n b : ℕ} [ExpChar K p] (d e : ℕ) (s : Multiset (Fin b)) (hcprm : n.Coprime r)
+    (hs : ∀ x : Fin b, Introspective (ofMultiset {(x.val : K)}) n r) (hdiv : p ∣ n) :
+    Introspective (ofMultiset (s.map fun x ↦ (x.val : K))) (p ^ d * (n / p) ^ e) r := by
   simp only [ofMultiset_apply]
   have hcprm2 := Coprime.coprime_mul_right (Eq.symm (Nat.mul_div_cancel' hdiv) ▸ hcprm)
   induction s using Multiset.induction_on with
@@ -217,7 +216,7 @@ theorem forall_in_se1_in_image_sp1_introspective (h : Conditions r p n a q μ) :
   simp only [se1, Set.image_univ, Set.mem_range, Prod.exists] at he
   obtain ⟨i, j, heq⟩ := he
   rw [← heq]
-  refine Introspective.of_multiset (p := p) (K := K) (r := r) i j s ?_ n_coprime_r p_dvd_n
+  refine Introspective.of_multiset (p := p) (K := K) (r := r) i j s n_coprime_r ?_ p_dvd_n
   intro ⟨m, hm⟩
   replace heq := icc_introspective ⟨m, (by grind)⟩
   simp only [map_natCast, ofMultiset_apply, Multiset.map_singleton,
