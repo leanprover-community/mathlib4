@@ -50,6 +50,7 @@ variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Field L]
   [IsIntegrallyClosed A] [IsIntegralClosure B A L]
 
 /-- In the AKLB setup, the Galois group of `L/K` acts on `B`. -/
+@[implicit_reducible]
 noncomputable def IsIntegralClosure.MulSemiringAction [Algebra.IsAlgebraic K L] :
     MulSemiringAction Gal(L/K) B :=
   MulSemiringAction.compHom B (galRestrict A K L B).toMonoidHom
@@ -225,7 +226,6 @@ variable (K L : Type*) [Field K] [Field L]
   [Algebra K L] [IsScalarTower (A ⧸ P) K L]
   [Algebra.IsInvariant A B G]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A technical lemma for `fixed_of_fixed1`. -/
 private theorem fixed_of_fixed1_aux1 :
     ∃ a b : B, (∀ g : G, g • a = a) ∧ a ∉ Q ∧
@@ -282,7 +282,6 @@ private theorem fixed_of_fixed1_aux1 :
     · rw [smul_zero, sub_zero]
       exact hr' h⁻¹ hh
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A technical lemma for `fixed_of_fixed1`. -/
 private theorem fixed_of_fixed1_aux2 (b₀ : B)
     (hx : ∀ g : G, g • Q = Q → algebraMap B (B ⧸ Q) (g • b₀) = algebraMap B (B ⧸ Q) b₀) :
@@ -310,7 +309,6 @@ private theorem fixed_of_fixed1_aux3 [NoZeroDivisors B] {b : B} {i j : ℕ} {p :
     zero_eq_mul, or_iff_left (pow_ne_zero j ha), pow_eq_zero_iff hi, sub_eq_zero] at hf
   exact hf.symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This theorem will be made redundant by `IsFractionRing.stabilizerHom_surjective`. -/
 private theorem fixed_of_fixed1 [Module.IsTorsionFree (B ⧸ Q) L] (f : Gal(L/K)) (b : B ⧸ Q)
     (hx : ∀ g : MulAction.stabilizer G Q, Ideal.Quotient.stabilizerHom Q P G g b = b) :
@@ -352,6 +350,13 @@ variable [IsFractionRing (A ⧸ P) K] [IsFractionRing (B ⧸ Q) L]
 noncomputable def IsFractionRing.stabilizerHom : MulAction.stabilizer G Q →* Gal(L/K) :=
   MonoidHom.comp (IsFractionRing.fieldEquivOfAlgEquivHom K L) (Ideal.Quotient.stabilizerHom Q P G)
 
+omit [Finite G] [Q.IsPrime] [Algebra.IsInvariant A B G] in
+@[simp]
+theorem IsFractionRing.stabilizerHom_apply_apply_mk (σ : MulAction.stabilizer G Q) (x : B) :
+    IsFractionRing.stabilizerHom G P Q K L σ (algebraMap _  L (Ideal.Quotient.mk Q x)) =
+      algebraMap _ L (Ideal.Quotient.mk Q (σ.val • x)) := by
+  simp [IsFractionRing.stabilizerHom, MulAction.subgroup_smul_def]
+
 /-- This theorem will be made redundant by `IsFractionRing.stabilizerHom_surjective`. -/
 private theorem fixed_of_fixed2 (f : Gal(L/K)) (x : L)
     (hx : ∀ g : MulAction.stabilizer G Q, IsFractionRing.stabilizerHom G P Q K L g x = x) :
@@ -359,7 +364,7 @@ private theorem fixed_of_fixed2 (f : Gal(L/K)) (x : L)
   obtain ⟨_⟩ := nonempty_fintype G
   have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under A Q
   have : Algebra.IsIntegral A B := Algebra.IsInvariant.isIntegral A B G
-  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := B ⧸ Q) x
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (B ⧸ Q) x
   obtain ⟨b, a, ha, h⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A ⧸ P) y).exists_smul_eq_mul x hy
   replace ha : algebraMap (A ⧸ P) L a ≠ 0 := by
     rwa [Ne, algebraMap_apply (A ⧸ P) K L, algebraMap_eq_zero_iff, algebraMap_eq_zero_iff]
@@ -487,7 +492,6 @@ lemma Ideal.Quotient.exists_algEquiv_fixedPoint_quotient_under
     refine .trans ?_ (σ.apply_symm_apply _)
     rw [← h₂, ← e, h₁]
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Ideal.Quotient.field in
 include G in
 /--

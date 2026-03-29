@@ -383,7 +383,7 @@ open RightAdjointCommShift in
 Given an adjunction `F ⊣ G` and a `CommShift` structure on `F`, this constructs
 the unique compatible `CommShift` structure on `G`.
 -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 noncomputable def rightAdjointCommShift [F.CommShift A] : G.CommShift A where
   commShiftIso a := iso adj a
   commShiftIso_zero := by
@@ -468,7 +468,7 @@ open LeftAdjointCommShift in
 Given an adjunction `F ⊣ G` and a `CommShift` structure on `G`, this constructs
 the unique compatible `CommShift` structure on `F`.
 -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 noncomputable def leftAdjointCommShift [G.CommShift A] : F.CommShift A where
   commShiftIso a := iso adj a
   commShiftIso_zero := by
@@ -532,24 +532,21 @@ lemma mk' (h : NatTrans.CommShift E.unitIso.hom A) :
 /--
 The forward functor of the identity equivalence is compatible with shifts.
 -/
-instance : (Equivalence.refl (C := C)).functor.CommShift A := by
-  dsimp
-  infer_instance
+instance : (Equivalence.refl (C := C)).functor.CommShift A :=
+  inferInstanceAs <| (𝟭 C).CommShift A
 
 /--
 The inverse functor of the identity equivalence is compatible with shifts.
 -/
-instance : (Equivalence.refl (C := C)).inverse.CommShift A := by
-  dsimp
-  infer_instance
+instance : (Equivalence.refl (C := C)).inverse.CommShift A :=
+  inferInstanceAs <| (𝟭 C).CommShift A
 
-set_option backward.isDefEq.respectTransparency false in
+
 /--
 The identity equivalence is compatible with shifts.
 -/
-instance : (Equivalence.refl (C := C)).CommShift A := by
-  dsimp [Equivalence.CommShift, refl_toAdjunction]
-  infer_instance
+instance : (Equivalence.refl (C := C)).CommShift A :=
+  inferInstanceAs <| Adjunction.id.CommShift A
 
 /--
 If an equivalence `E : C ≌ D` is compatible with shifts, so is `E.symm`.
@@ -598,6 +595,7 @@ variable (A : Type*) [AddGroup A] [HasShift C A] [HasShift D A]
 If `E : C ≌ D` is an equivalence and we have a `CommShift` structure on `E.functor`,
 this constructs the unique compatible `CommShift` structure on `E.inverse`.
 -/
+@[implicit_reducible]
 noncomputable def commShiftInverse [E.functor.CommShift A] : E.inverse.CommShift A :=
   E.toAdjunction.rightAdjointCommShift A
 
@@ -611,10 +609,10 @@ lemma commShift_of_functor [E.functor.CommShift A] :
 If `E : C ≌ D` is an equivalence and we have a `CommShift` structure on `E.inverse`,
 this constructs the unique compatible `CommShift` structure on `E.functor`.
 -/
+@[implicit_reducible]
 noncomputable def commShiftFunctor [E.inverse.CommShift A] : E.functor.CommShift A :=
   E.symm.toAdjunction.rightAdjointCommShift A
 
-set_option backward.isDefEq.respectTransparency false in
 lemma commShift_of_inverse [E.inverse.CommShift A] :
     letI := E.commShiftFunctor A
     E.CommShift A := by

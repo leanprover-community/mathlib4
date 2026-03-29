@@ -135,6 +135,10 @@ lemma klDiv_eq_lintegral_klFun :
     symm
     simp [hμν, h_int, h_int_iff, integrable_klFun_rnDeriv_iff hμν]
 
+lemma klDiv_eq_lintegral_klFun_of_ac (h_ac : μ ≪ ν) :
+    klDiv μ ν = ∫⁻ x, ENNReal.ofReal (klFun (μ.rnDeriv ν x).toReal) ∂ν := by
+  simp [klDiv_eq_lintegral_klFun, h_ac]
+
 end AlternativeFormulas
 
 section Real
