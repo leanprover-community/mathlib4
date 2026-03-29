@@ -64,8 +64,7 @@ variable {r : ℕ}
 theorem one {f : K[X]} : Introspective f 1 r := by
   grind [Introspective]
 
-theorem X_sub_C {p a : ℕ} [Fact p.Prime] [ExpChar K p] :
-    Introspective (X - C (a : K)) p r := by
+theorem X_sub_C {p a : ℕ} [ExpChar K p] : Introspective (X - C (a : K)) p r := by
   intro μ hμ
   simp only [eval_sub, eval_X, eval_C]
   change (frobenius K p) μ - _ = (frobenius K p) (μ - a)
@@ -85,9 +84,8 @@ theorem eval_pow {μ : K} {f : K[X]} {n : ℕ} (h : IsPrimitiveRoot μ r)
   haveI : r ≠ 0 := NeZero.out
   exact hi μ ((mem_primitiveRoots (by lia)).mpr h)
 
-theorem div {p a n : ℕ} [Fact p.Prime] [ExpChar K p]
-    (h : Introspective (X - C (a : K)) n r) (hd : p ∣ n) (hc : p.Coprime r) :
-    Introspective (X - C (a : K)) (n / p) r := by
+theorem div {p a n : ℕ} [ExpChar K p] (h : Introspective (X - C (a : K)) n r) (hd : p ∣ n)
+    (hc : p.Coprime r) : Introspective (X - C (a : K)) (n / p) r := by
   simp only [map_natCast, Introspective] at ⊢ h
   intro μ hμ
   have h2 : p * (n / p) = n := Nat.mul_div_cancel' hd
@@ -174,6 +172,7 @@ variable {p n a q : ℕ} {μ : K} [Fact p.Prime] [CharP K p] [ExpChar K p]
 variable {r : ℕ} [NeZero r]
 
 /-- Function used in the AKS proof. -/
+@[nolint unusedArguments]
 def f (_ : Conditions r p n a q μ) : ℕ × ℕ → ℕ := fun x : ℕ × ℕ ↦ p ^ x.1 * (n / p) ^ x.2
 
 /-- Set used in the AKS proof. -/
@@ -190,6 +189,7 @@ theorem se3_subset_se1 (h : Conditions r p n a q μ) : se3 h ⊆ se1 h := by
   grind [se3, se1]
 
 /-- Function used in the AKS proof. -/
+@[nolint unusedArguments]
 noncomputable def sp1 (_ : Conditions r p n a q μ) :=
   fun s : Multiset (Fin (a + 1)) ↦ ofMultiset (s.map (fun x ↦ (x.val : K)))
 
