@@ -29,8 +29,8 @@ invariant submodule.
 ## Main results
 * `LieAlgebra.IsKilling.restr_inf_cartan_eq_iSup_corootSubmodule`: the intersection of a Lie ideal
   and a Cartan subalgebra is the span of the coroots whose roots have root spaces in the ideal.
-* `LieAlgebra.IsKilling.isSimple_of_isIrreducible`: a Killing Lie algebra with an irreducible
-  root system is simple.
+* `LieAlgebra.IsKilling.isSimple_iff_isIrreducible`: a Killing Lie algebra is simple if and only
+  if its root system is irreducible.
 * `LieAlgebra.IsKilling.instIsIrreducible`: the root system of a simple Lie algebra is irreducible.
 -/
 
@@ -513,69 +513,6 @@ open LieSubmodule in
     this.trans <| iSup₂_mono fun α hα ↦ le_sup_right
   simp
 
-@[simp] lemma invtSubmoduleToLieIdeal_apply_eq_top_iff (q : Submodule K (Dual K H))
-    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap) :
-    invtSubmoduleToLieIdeal q hq = ⊤ ↔ q = ⊤ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
-  have h : (⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2) = ⊤ := by
-    rw [← LieSubmodule.toSubmodule_inj] at h
-    have := coe_invtSubmoduleToLieIdeal_eq_iSup q hq
-    exact (LieSubmodule.toSubmodule_eq_top (⨆ α, sl2SubmoduleOfRoot α.property.right)).mp h
-  by_contra hq_ne_top
-  have h_ne_bot : q.dualCoannihilator ≠ ⊥ := by
-    contrapose! hq_ne_top
-    have := Subspace.finrank_add_finrank_dualCoannihilator_eq q
-    rw [hq_ne_top, finrank_bot, add_zero] at this
-    exact Submodule.eq_top_of_finrank_eq (this.trans Subspace.dual_finrank_eq.symm)
-  obtain ⟨y, hy_mem, hy_ne_zero⟩ := Submodule.exists_mem_ne_zero_of_ne_bot h_ne_bot
-  have hy_ortho : ∀ f ∈ q, f y = 0 := (Submodule.mem_dualCoannihilator y).mp hy_mem
-  have h_comm : ∀ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero},
-      ∀ z ∈ sl2SubmoduleOfRoot α.2.2, ⁅(y : L), z⁆ = 0 := fun α z hz => by
-    have hy : (α.1 : H → K) y = 0 := hy_ortho _ α.2.1
-    rw [sl2SubmoduleOfRoot_eq_sup] at hz
-    obtain ⟨z_αneg, hz_αneg, z_cor, ⟨h_cor, _, rfl⟩, rfl⟩ := Submodule.mem_sup.mp hz
-    obtain ⟨z_α, hz_α, z_negα, hz_negα, rfl⟩ := Submodule.mem_sup.mp hz_αneg
-    simp only [lie_add, ← LieSubalgebra.coe_bracket_of_module]
-    rw [lie_eq_smul_of_mem_rootSpace hz_α, hy, zero_smul, zero_add,
-        lie_eq_smul_of_mem_rootSpace hz_negα, Pi.neg_apply, hy, neg_zero, zero_smul, zero_add]
-    have h_cor_in_zero : (h_cor : L) ∈ rootSpace H (0 : H → K) := by
-      rw [rootSpace_zero_eq]; exact h_cor.property
-    convert lie_eq_smul_of_mem_rootSpace h_cor_in_zero y using 1; simp
-  have h_comm_all : ∀ z : L, ⁅(y : L), z⁆ = 0 := fun z => by
-    have hz : z ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero},
-        (sl2SubmoduleOfRoot α.2.2).toSubmodule := by
-      convert Submodule.mem_top using 1
-      rw [← LieSubmodule.iSup_toSubmodule, h]; rfl
-    rw [Submodule.mem_iSup] at hz
-    exact hz (LinearMap.ker (ad K L y)) fun α z hz => by simpa using h_comm α z hz
-  have h_y_center : (y : L) ∈ LieAlgebra.center K L := fun z => by
-    rw [← lie_skew, h_comm_all, neg_zero]
-  simp only [center_eq_bot, LieSubmodule.mem_bot, ZeroMemClass.coe_eq_zero] at h_y_center
-  exact hy_ne_zero h_y_center
-
-@[simp] lemma invtSubmoduleToLieIdeal_apply_eq_bot_iff (q : Submodule K (Module.Dual K H))
-    (hq : ∀ i, q ∈ Module.End.invtSubmodule ((rootSystem H).reflection i).toLinearMap) :
-    invtSubmoduleToLieIdeal q hq = ⊥ ↔ q = ⊥ := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · by_contra hq_nonzero
-    have hq_invt : q ∈ (rootSystem H).invtRootSubmodule := by
-      rw [RootPairing.mem_invtRootSubmodule_iff]; exact hq
-    have h_ne_bot : (⟨q, hq_invt⟩ : (rootSystem H).invtRootSubmodule) ≠ ⊥ :=
-      fun h_eq => hq_nonzero (Subtype.ext_iff.mp h_eq)
-    rw [Ne, RootPairing.invtRootSubmodule.eq_bot_iff, not_forall] at h_ne_bot
-    obtain ⟨i, hi⟩ := h_ne_bot
-    rw [not_not] at hi
-    have hα₀ : i.val.IsNonZero := (Finset.mem_filter.mp i.property).2
-    have h_sl2_le : (sl2SubmoduleOfRoot hα₀ : Submodule K L) ≤ invtSubmoduleToLieIdeal q hq := by
-      rw [LieIdeal.toLieSubalgebra_toSubmodule, coe_invtSubmoduleToLieIdeal_eq_iSup,
-        LieSubmodule.iSup_toSubmodule]
-      exact le_iSup_of_le ⟨i.val, hi, hα₀⟩ le_rfl
-    rw [h] at h_sl2_le
-    simp only [LieIdeal.toLieSubalgebra_toSubmodule, LieSubmodule.bot_toSubmodule, le_bot_iff,
-      LieSubmodule.toSubmodule_eq_bot] at h_sl2_le
-    exact sl2SubmoduleOfRoot_ne_bot i.1 hα₀ h_sl2_le
-  · simp [h, invtSubmoduleToLieIdeal]
-
 @[gcongr]
 lemma invtSubmoduleToLieIdeal_mono {q₁ q₂ : Submodule K (Dual K H)}
     (hq₁ : ∀ i, q₁ ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap)
@@ -626,19 +563,22 @@ noncomputable def lieIdealOrderIso :
 
 theorem isSimple_iff_isIrreducible : (rootSystem H).IsIrreducible ↔ IsSimple K L := by
   cases subsingleton_or_nontrivial H
-  · -- Should follow from general API
-    sorry
+  · have hnt : ¬ Nontrivial L := fun h => by
+      letI := h; exact absurd (inferInstance : Nontrivial ↑H) (not_nontrivial _)
+    haveI : Subsingleton L := not_nontrivial_iff_subsingleton.mp hnt
+    exact iff_of_false (fun h => not_nontrivial _ h.nontrivial) (fun h => h.2 inferInstance)
   have hL : ¬ IsLieAbelian L := by
-    -- Should follow from general API
-    sorry
+    haveI : Nontrivial L :=
+      (Subtype.val_injective (p := (· ∈ H.toSubmodule))).nontrivial
+    intro habel
+    rw [LieAlgebra.isLieAbelian_iff_center_eq_top K L] at habel
+    have := LieAlgebra.center_eq_bot K L
+    rw [habel] at this; exact absurd this top_ne_bot
   rw [RootPairing.isIrreducible_iff_invtRootSubmodule, ← isSimple_iff_of_not_isLieAbelian K L hL,
     (lieIdealOrderIso H).isSimpleOrder_iff]
 
 /-- The root system of a simple Killing Lie algebra is irreducible. -/
-instance [IsSimple K L] : (rootSystem H).IsIrreducible := by
-  have _i := nontrivial_of_isIrreducible K L L
-  exact RootPairing.IsIrreducible.mk' (rootSystem H) <| fun q h₀ h₁ ↦ by
-    have := IsSimple.eq_bot_or_eq_top (invtSubmoduleToLieIdeal q h₀)
-    aesop
+instance [IsSimple K L] : (rootSystem H).IsIrreducible :=
+  isSimple_iff_isIrreducible.mpr ‹_›
 
 end LieAlgebra.IsKilling
