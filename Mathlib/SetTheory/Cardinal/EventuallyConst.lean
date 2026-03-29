@@ -30,7 +30,7 @@ theorem eventuallyConst_of_monotone (hf : Monotone f) : atTop.EventuallyConst f 
   rw [eventuallyConst_atTop]
   obtain ⟨a, ha⟩ := bddAbove_of_small (range (rangeSplitting f))
   refine ⟨a, fun b hb ↦ (hf hb).antisymm' ?_⟩
-  have := hf <| ha (mem_range_self (ι := range f) ⟨f b, b, rfl⟩)
+  have := hf <| ha (mem_range_self ⟨f b, b, rfl⟩)
   rwa [apply_rangeSplitting f] at this
 
 theorem eventuallyConst_of_antitone (hf : Antitone f) : atTop.EventuallyConst f :=
@@ -45,7 +45,7 @@ theorem eventuallyConst_of_monotone (hf : Monotone f) : atTop.EventuallyConst f 
   rw [eventuallyConst_atTop]
   obtain ⟨a, ha⟩ := bddAbove_of_small (range (rangeSplitting f))
   refine ⟨a, fun b hb ↦ (hf hb).antisymm' ?_⟩
-  have := hf <| ha (mem_range_self (ι := range f) ⟨f b, b, rfl⟩)
+  have := hf <| ha (mem_range_self ⟨f b, b, rfl⟩)
   rwa [apply_rangeSplitting f] at this
 
 theorem eventuallyConst_of_antitone (hf : Antitone f) : atTop.EventuallyConst f :=
