@@ -30,7 +30,7 @@ noncomputable def linearDistribution (params : LinearParams) (x : ℝ) : ℝ :=
   else (x - params.a) / (params.b - params.a)
 
 /-- Inverse function for linear uncertain distribution (quantile function). -/
-noncomputable def linearInverse (params : LinearParams) (α : ℝ) (_hα : α ∈ Set.Icc 0 1) : ℝ :=
+noncomputable def linearInverse (params : LinearParams) (α : ℝ) : ℝ :=
   if α = 0 then params.a
   else if α = 1 then params.b
   else params.a + α * (params.b - params.a)
@@ -84,17 +84,17 @@ theorem linearDistribution_is_uncertain (params : LinearParams) :
     · intro x hx
       exact linearDistribution_mem_Icc params hx
 
-@[simp] theorem linearInverse_zero (params : LinearParams)
-    (h0 : (0 : ℝ) ∈ Set.Icc 0 1) : linearInverse params 0 h0 = params.a := by
+@[simp] theorem linearInverse_zero (params : LinearParams) :
+    linearInverse params 0 = params.a := by
   simp [linearInverse]
 
-@[simp] theorem linearInverse_one (params : LinearParams)
-    (h1 : (1 : ℝ) ∈ Set.Icc 0 1) : linearInverse params 1 h1 = params.b := by
+@[simp] theorem linearInverse_one (params : LinearParams) :
+    linearInverse params 1 = params.b := by
   simp [linearInverse]
 
 lemma linearInverse_eq_affine (params : LinearParams) {α : ℝ}
     (hα : α ∈ Set.Icc 0 1) :
-    linearInverse params α hα = params.a + α * (params.b - params.a) := by
+    linearInverse params α = params.a + α * (params.b - params.a) := by
   rcases hα with ⟨h0, h1⟩
   rcases lt_or_eq_of_le h0 with hlt0 | rfl
   · rcases lt_or_eq_of_le h1 with hlt1 | rfl
@@ -106,7 +106,7 @@ lemma linearInverse_eq_affine (params : LinearParams) {α : ℝ}
 
 /-- The expected value of an uncertain variable with linear distribution. -/
 noncomputable def uncertainExpectedValue (params : LinearParams) : ℝ :=
-  ∫ α in (0 : ℝ)..1, if h : α ∈ Set.Icc 0 1 then linearInverse params α h else 0
+  ∫ α in (0 : ℝ)..1, if α ∈ Set.Icc 0 1 then linearInverse params α else 0
 
 /-- Integral of the affine form on [0,1].-/
 lemma integral_affine (params : LinearParams) :
@@ -147,13 +147,17 @@ theorem linearExpectedValue (params : LinearParams) :
   unfold uncertainExpectedValue
 
   -- ∫_0^1 linearInverse params α dα = ∫_0^1 (params.a + α * (params.b - params.a)) dα
-  have h_eq : ∀ α ∈ Set.Icc (0 : ℝ) 1, (if h : α ∈ Set.Icc 0 1 then linearInverse params α h else 0) = params.a + α * (params.b - params.a) := by
+  have h_eq : ∀ α ∈ Set.Icc (0 : ℝ) 1,
+      (if α ∈ Set.Icc 0 1 then linearInverse params α else 0)
+        = params.a + α * (params.b - params.a) := by
     intro α hα
     simp [hα]
     exact linearInverse_eq_affine params hα
 
   -- Therefore, the integral equals ∫_0^1 (params.a + α * (params.b - params.a)) dα
-  have h_int : ∫ α in (0 : ℝ)..1, (if h : α ∈ Set.Icc 0 1 then linearInverse params α h else 0) = ∫ α in (0 : ℝ)..1, params.a + α * (params.b - params.a) := by
+  have h_int :
+      ∫ α in (0 : ℝ)..1, (if α ∈ Set.Icc 0 1 then linearInverse params α else 0)
+        = ∫ α in (0 : ℝ)..1, params.a + α * (params.b - params.a) := by
     apply intervalIntegral.integral_congr
     intro α hα
     have hIcc : α ∈ Set.Icc (0 : ℝ) 1 := by
@@ -393,7 +397,7 @@ class RegularDistributionLike (D : Type _) [UncertainDistributionLike D] where
 
 /-- Totalized linear inverse used by `RegularDistributionLike`. -/
 noncomputable def linearInverseTotal (params : LinearParams) (α : ℝ) : ℝ :=
-  if hα : α ∈ Set.Icc (0 : ℝ) 1 then linearInverse params α hα
+  if _hα : α ∈ Set.Icc (0 : ℝ) 1 then linearInverse params α
   else if α < 0 then params.a else params.b
 
 -- [ENGINEERING_AXIOM] Regularity assumptions (replace progressively by proved lemmas).
@@ -790,13 +794,13 @@ structure CreatedLinearVariable where
   cdf : ℝ → ℝ
   quantile : ∀ α, α ∈ Set.Icc (0 : ℝ) 1 → ℝ
   cdf_spec : cdf = linearDistribution params
-  quantile_spec : ∀ α hα, quantile α hα = linearInverse params α hα
+  quantile_spec : ∀ α hα, quantile α hα = linearInverse params α
 
 /-- Refactored Stage 2 constructor. -/
 noncomputable def createLinearVariable (params : LinearParams) : CreatedLinearVariable where
   params := params
   cdf := linearDistribution params
-  quantile := fun α hα => linearInverse params α hα
+  quantile := fun α _hα => linearInverse params α
   cdf_spec := rfl
   quantile_spec := by
     intro α hα
@@ -808,7 +812,7 @@ noncomputable def createLinearVariable (params : LinearParams) : CreatedLinearVa
 
 @[simp] theorem createLinearVariable_quantile (params : LinearParams) (α : ℝ)
   (hα : α ∈ Set.Icc (0 : ℝ) 1) :
-    (createLinearVariable params).quantile α hα = linearInverse params α hα := by
+    (createLinearVariable params).quantile α hα = linearInverse params α := by
   rfl
 
 /-- Stage 2 check: constructed variable has the target linear distribution. -/
