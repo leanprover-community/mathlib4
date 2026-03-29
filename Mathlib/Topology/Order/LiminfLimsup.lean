@@ -213,8 +213,7 @@ theorem ClusterPt.limsSup {f : Filter α} [NeBot f]
         exact frequently_lt_of_lt_limsSup hc hl |>.and_eventually <| lt_mem_sets_of_limsSup_lt hb hg
   · simp_all [ClusterPt, Filter.eq_top_of_neBot]
 
-/-- The `limsSup` of a filter `f` is the greatest cluster point of `f`. This version assumes that
-neighborhoods are eventually bounded below. -/
+/-- The `limsSup` of a filter `f` is the greatest cluster point of `f`. -/
 theorem isGreatest_clusterPt_limsSup {f : Filter α} [NeBot f]
     (hc : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
     (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) :
