@@ -828,7 +828,6 @@ namespace QuotientTorsion
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Quotienting by the torsion submodule gives a torsion-free module. -/
 @[simp]
 theorem torsion_eq_bot : torsion R (M ⧸ torsion R M) = ⊥ :=
@@ -905,7 +904,6 @@ open Submodule
 
 universe w
 
-set_option backward.isDefEq.respectTransparency false in
 theorem torsionBy_eq_span_singleton {R : Type w} [CommRing R] (a b : R) (ha : a ∈ R⁰) :
     torsionBy R (R ⧸ R ∙ a * b) a = R ∙ mk (R ∙ a * b) b := by
   ext x; rw [mem_torsionBy_iff, Submodule.mem_span_singleton]
