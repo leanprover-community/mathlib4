@@ -361,8 +361,7 @@ end PolarSets
 
 open TopologicalSpace
 
-variable (𝕜 V)
-variable [TopologicalSpace.SeparableSpace E] (K : Set (WeakDual 𝕜 E))
+variable (𝕜 E) [TopologicalSpace.SeparableSpace E] (K : Set (WeakDual 𝕜 E))
 
 /-- In a separable normed space, there exists a sequence of continuous functions that
 separates points of the weak dual. -/
