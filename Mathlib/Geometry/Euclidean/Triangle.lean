@@ -108,19 +108,7 @@ theorem norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi {x y : V}
     rw [inner_sub_right, inner_sub_right, real_inner_comm x y, real_inner_self_eq_norm_mul_norm,
       real_inner_self_eq_norm_mul_norm, mul_sub_right_distrib, mul_sub_right_distrib,
       mul_self_mul_inv, mul_self_mul_inv, sub_eq_sub_iff_sub_eq_sub, ← mul_sub_left_distrib] at h
-    by_cases hx0 : x = 0
-    · rw [hx0, norm_zero, inner_zero_left, zero_mul, zero_sub, neg_eq_zero] at h
-      rw [hx0, norm_zero, h]
-    · by_cases hy0 : y = 0
-      · rw [hy0, norm_zero, inner_zero_right, zero_mul, sub_zero] at h
-        rw [hy0, norm_zero, h]
-      · rw [inv_sub_inv (fun hz => hx0 (norm_eq_zero.1 hz)) fun hz => hy0 (norm_eq_zero.1 hz), ←
-          neg_sub, ← mul_div_assoc, mul_comm, mul_div_assoc, ← mul_neg_one] at h
-        symm
-        by_contra hyx
-        replace h := (mul_left_cancel₀ (sub_ne_zero_of_ne hyx) h).symm
-        rw [real_inner_div_norm_mul_norm_eq_neg_one_iff, ← angle_eq_pi_iff] at h
-        exact hpi h
+    grind [cos_angle_mul_norm_mul_norm, cos_eq_neg_one_iff_angle_eq_pi]
 
 /-- The cosine of the sum of two angles in a possibly degenerate
 triangle (where two given sides are nonzero), vector angle form. -/

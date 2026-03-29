@@ -123,11 +123,7 @@ protected theorem nonzero {q : ℚ} (hq : q ≠ 0) : padicNorm p q ≠ 0 := by
 
 /-- If the `p`-adic norm of `q` is 0, then `q` is `0`. -/
 theorem zero_of_padicNorm_eq_zero {q : ℚ} (h : padicNorm p q = 0) : q = 0 := by
-  apply by_contradiction; intro hq
-  unfold padicNorm at h; rw [if_neg hq] at h
-  apply absurd h
-  apply zpow_ne_zero
-  exact mod_cast hp.1.ne_zero
+  grind [padicNorm.nonzero]
 
 /-- The `p`-adic norm is multiplicative. -/
 @[simp]

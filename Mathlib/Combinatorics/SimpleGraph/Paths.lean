@@ -395,8 +395,7 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
     by_cases hn0 : n = 0 <;> by_cases hm0 : m = 0
     · lia
     · simp only [hn0, getVert_zero, Walk.getVert_cons p h hm0] at hnm
-      have hvp : v ∉ p.support := by aesop
-      exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(m - 1), ⟨hnm.symm, by lia⟩⟩)).elim
+      grind [cons_isPath_iff, getVert_mem_support]
     · simp only [hm0, Walk.getVert_cons p h hn0] at hnm
       have hvp : v ∉ p.support := by simp_all
       exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(n - 1), ⟨hnm, by lia⟩⟩)).elim
@@ -714,14 +713,8 @@ theorem length_bypass_le (p : G.Walk u v) : p.bypass.length ≤ p.length := by
   induction p with
   | nil => rfl
   | cons _ _ ih =>
-    simp only [bypass]
-    split_ifs
-    · trans
-      · apply length_dropUntil_le
-      rw [length_cons]
-      lia
-    · rw [length_cons, length_cons]
-      exact Nat.add_le_add_right ih 1
+    simp only [bypass, length_cons]
+    grind [length_dropUntil, length_cons]
 
 lemma bypass_eq_self_of_length_le (p : G.Walk u v) (h : p.length ≤ p.bypass.length) :
     p.bypass = p := by
