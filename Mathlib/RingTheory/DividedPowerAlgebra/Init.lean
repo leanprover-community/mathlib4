@@ -103,8 +103,7 @@ lemma mkRingHom_C (a : R) :
     mkRingHom (Rel R M) (C a) = algebraMap R (DividedPowerAlgebra R M) a := by
   rw [← mkAlgHom_C, mkAlgHom, AlgHom.coe_mk]
 
-variable (R)
-
+variable (R) in
 /-- `dp R n m` is the equivalence class of `X (⟨n, m⟩)` in `DividedPowerAlgebra R M`. -/
 def dp (n : ℕ) (m : M) : DividedPowerAlgebra R M := mkAlgHom R (Rel R M) (X ⟨n, m⟩)
 
@@ -133,7 +132,7 @@ protected theorem induction_on' {P : DividedPowerAlgebra R M → Prop} (f : Divi
 protected theorem induction_on {P : DividedPowerAlgebra R M → Prop} (f : DividedPowerAlgebra R M)
     (C : ∀ a, P (algebraMap R _ a)) (add : ∀ f g, P f → P g → P (f + g))
     (dp : ∀ (f : DividedPowerAlgebra R M) (n : ℕ) (m : M), P f → P (f * dp R n m)) : P f :=
-  DividedPowerAlgebra.induction_on' R f (fun a => by rw [mkAlgHom_C]; exact C a) add dp
+  DividedPowerAlgebra.induction_on' f (fun a => by rw [mkAlgHom_C]; exact C a) add dp
 
 theorem dp_eq_mkRingHom (n : ℕ) (m : M) :
     dp R n m = mkRingHom (Rel R M) (X (⟨n, m⟩)) := by
@@ -157,7 +156,7 @@ theorem dp_null {n : ℕ} : dp R n (0 : M) = if n = 0 then 1 else 0 := by
     rw [zero_pow (Nat.pos_iff_ne_zero.mp hn), zero_smul]
 
 theorem dp_null_of_ne_zero {n : ℕ} (hn : n ≠ 0) : dp R n (0 : M) = 0 := by
-  rw [dp_null R, if_neg hn]
+  rw [dp_null, if_neg hn]
 
 theorem dp_mul {n p : ℕ} {m : M} :
     dp R n m * dp R p m = (n + p).choose n • dp R (n + p) m := by
@@ -173,8 +172,8 @@ theorem dp_add {n : ℕ} {x y : M} :
 theorem dp_sum {ι : Type*} [DecidableEq ι] (s : Finset ι) (q : ℕ) (x : ι → M) :
     dp R q (s.sum x) =
       (Finset.sym s q).sum fun k => s.prod fun i => dp R (Multiset.count i k) (x i) :=
-  DividedPowers.dpow_sum' (I := ⊤) _ (fun _ ↦ dp_zero R)
-    (fun _ _ ↦ dp_add R) (dp_null_of_ne_zero R) (fun _ _ ↦ trivial)
+  DividedPowers.dpow_sum' (I := ⊤) _ (fun _ ↦ dp_zero)
+    (fun _ _ ↦ dp_add) dp_null_of_ne_zero (fun _ _ ↦ trivial)
 
 theorem dp_sum_smul {ι : Type*} [DecidableEq ι] (s : Finset ι) (q : ℕ) (a : ι → R) (x : ι → M) :
     dp R q (s.sum fun i => a i • x i) =
@@ -206,7 +205,7 @@ theorem natFactorial_mul_dp_eq (n : ℕ) (x : M) :
     rw [pow_succ, ← h, mul_assoc, dp_mul, nsmul_eq_mul, ← mul_assoc, ← Nat.cast_mul]
     simp [mul_comm _ (n + 1), Nat.factorial_succ]
 
-variable (M) in
+variable (R M) in
 /-- The canonical linear map `M →ₗ[R] DividedPowerAlgebra R M`. -/
 def embed : M →ₗ[R] DividedPowerAlgebra R M where
   toFun m   := dp R 1 m
@@ -214,8 +213,6 @@ def embed : M →ₗ[R] DividedPowerAlgebra R M where
   map_smul' _ _ := by simp [dp_smul, pow_one, RingHom.id_apply]
 
 theorem embed_def (m : M) : embed R M m = dp R 1 m := rfl
-
-variable {R}
 
 theorem algHom_ext_iff {A : Type*} [CommSemiring A] [Algebra R A]
     {f g : DividedPowerAlgebra R M →ₐ[R] A} :
@@ -264,11 +261,11 @@ theorem submodule_span_prod_dp_eq_top (hv : span R (Set.range v) = ⊤) :
       | mem x hx =>
         obtain ⟨n, rfl⟩ := hx
         simp only
-        rw [← n.mul_prod_erase' i _ (fun i ↦ dp_zero R (m := v i)), mul_comm,
+        rw [← n.mul_prod_erase' i _ (fun i ↦ dp_zero (m := v i)), mul_comm,
           ← mul_assoc, dp_mul, nsmul_eq_mul, mul_assoc, ← nsmul_eq_mul]
         refine smul_of_tower_mem _ _ (mem_span_of_mem ⟨Finsupp.single i k + n, ?_⟩)
         simp only
-        rw [← (Finsupp.single i k + n).mul_prod_erase' i _ (fun i ↦ dp_zero _ (m := v i))]
+        rw [← (Finsupp.single i k + n).mul_prod_erase' i _ (fun i ↦ dp_zero (m := v i))]
         simp
       | add x y hxmem hymem hx hy =>
         rw [add_mul]
