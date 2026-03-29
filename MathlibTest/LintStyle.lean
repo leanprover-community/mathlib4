@@ -623,6 +623,11 @@ section unicodeLinter
 open Mathlib.Linter.TextBased
 open Mathlib.Linter.TextBased.UnicodeLinter
 
+/- A character either does or doesn't have an abbreviation in the VSCode extension. -/
+#guard withVSCodeAbbrev.toList ∩ othersInMathlib.toList = ∅
+
+/- A character either is or isn't an emoji. -/
+#guard emojis.toList ∩ nonEmojis.toList = ∅
 
 def allLinterDefinedCharacterLists : List (List Char) := [
   withVSCodeAbbrev,
@@ -630,9 +635,6 @@ def allLinterDefinedCharacterLists : List (List Char) := [
   emojis,
   nonEmojis
 ].map Array.toList
-
-/- Ensure each character can only be listed in one character list. -/
-#guard List.Pairwise (· ∩ · = ∅) allLinterDefinedCharacterLists
 
 /- Ensure none of the lists contain duplicates -/
 #guard allLinterDefinedCharacterLists.all <| (List.Pairwise (· != ·) ·)
