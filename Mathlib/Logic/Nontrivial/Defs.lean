@@ -134,5 +134,5 @@ instance : Nontrivial Bool :=
 
 end Bool
 
-theorem NeZero.toNontrivial {α : Type*} [Zero α] (a : α) [NeZero a] : Nontrivial α :=
+theorem NeZero.nontrivial {α : Type*} [Zero α] (a : α) [NeZero a] : Nontrivial α :=
   ⟨⟨a, 0, NeZero.ne a⟩⟩
