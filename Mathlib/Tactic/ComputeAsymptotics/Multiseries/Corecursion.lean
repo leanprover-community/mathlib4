@@ -314,13 +314,13 @@ theorem FriendlyOperation.cons (hd : α) : FriendlyOperation (cons hd) := by
   intro x y
   linarith [dist_nonneg (x := x) (y := y)]
 
-/-- The operation `(op (.cons hd ·)).tail` is friendly if `op` is friendly. -/
-theorem FriendlyOperation.cons_tail {op : Seq α → Seq α} {hd : α} (h : FriendlyOperation op) :
-    FriendlyOperation (fun s ↦ (op (.cons hd s)).tail) := by
-  simp_rw [friendlyOperation_iff_dist_le_dist] at h ⊢
-  intro x y
-  specialize h (.cons hd x) (.cons hd y)
-  simp only [dist_cons_cons] at h
+/-- If two sequences have the same head and applying `op` reduces their distance, then
+it also reduces the distance of their tails. -/
+lemma dist_const_tail_cons_tail_le
+    {op : Seq α → Seq α} {hd : α} {x y : Stream'.Seq α}
+    (h : dist (op (cons hd x)) (op (cons hd y)) ≤ dist (cons hd x) (cons hd y)) :
+    dist (op (cons hd x)).tail (op (cons hd y)).tail ≤ dist x y := by
+  rw [dist_cons_cons] at h
   cases hx : op (.cons hd x) with
   | nil =>
     cases hy : op (.cons hd y) with
@@ -339,6 +339,14 @@ theorem FriendlyOperation.cons_tail {op : Seq α → Seq α} {hd : α} (h : Frie
       contrapose! h with h_hd
       grw [hx, hy, dist_cons_cons_eq_one h_hd, dist_le_one]
       norm_num
+
+/-- The operation `(op (.cons hd ·)).tail` is friendly if `op` is friendly. -/
+theorem FriendlyOperation.cons_tail {op : Seq α → Seq α} {hd : α} (h : FriendlyOperation op) :
+    FriendlyOperation (fun s ↦ (op (.cons hd s)).tail) := by
+  simp_rw [friendlyOperation_iff_dist_le_dist] at h ⊢
+  intro x y
+  specialize h (.cons hd x) (.cons hd y)
+  exact dist_const_tail_cons_tail_le h
 
 /-- The first element of `op (a :: s)` depends only on `a`. -/
 theorem FriendlyOperation.op_cons_head_eq {op : Seq α → Seq α} (h : FriendlyOperation op) {a : α}
@@ -362,15 +370,12 @@ def FriendlyOperation.unfold {op : Seq α → Seq α} (h : FriendlyOperation op)
     Option (α × Subtype (@FriendlyOperation α)) :=
   match hd? with
   | none =>
-    let t := op nil
-    match t.destruct with
+    match (op nil).destruct with
     | none => none
     | some (t_hd, t_tl) =>
       some (t_hd, ⟨fun _ ↦ t_tl, FriendlyOperation.const⟩)
   | some s_hd =>
-    let s := .cons s_hd nil
-    let t := op s
-    match t.destruct with
+    match (op <| .cons s_hd nil).destruct with
     | none => none
     | some (t_hd, _) =>
       some (t_hd, ⟨fun s_tl ↦ (op (.cons s_hd s_tl)).tail, FriendlyOperation.cons_tail h⟩)
