@@ -5,8 +5,8 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
-public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
