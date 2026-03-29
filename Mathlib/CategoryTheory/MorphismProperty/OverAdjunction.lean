@@ -94,7 +94,7 @@ noncomputable def Over.pullback (f : X ⟶ Y) [P.HasPullbacksAlong f]
     (pullback_snd A.hom f A.prop)
   map {A B} g := Over.homMk (pullback.lift (pullback.fst A.hom f ≫ g.left)
     (pullback.snd A.hom f) (by simp [pullback.condition])) (by simp)
-    (baseChange_map' _ _ g.prop_hom_left)
+    (pullbackLift_fst_snd _ _ g.prop_hom_left)
 
 variable {P} {Q}
 
@@ -153,7 +153,7 @@ noncomputable def Over.pullbackMapHomPullback [P.IsStableUnderComposition]
       Over.pullback P Q g where
   app A :=
     Over.homMk (pullback.map _ _ _ _ (𝟙 A.left) f (𝟙 Z) (by simp) (by cat_disch))
-    (by simp) (Q.pullback_map (Q.id_mem _) hQf (by simp) (by cat_disch))
+    (by simp) (Q.pullbackMap (Q.id_mem _) hQf (by simp) (by cat_disch))
 
 end Pullback
 
