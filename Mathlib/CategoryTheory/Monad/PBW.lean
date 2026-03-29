@@ -83,10 +83,31 @@ def inducedRightModule {M N : Monad C} (φ : M ⟶ N) : RightModule M where
 def HasPBW {M N : Monad C} (φ : M ⟶ N) [HasReflexiveCoequalizers (Algebra N)] :=
   ∃ X : C ⥤ C, Nonempty (directImageFunctor φ ⋙ N.forget ≅ M.forget ⋙ X)
 
+instance {M N : Monad C} (φ : M ⟶ N) (c : M.Algebra) :
+    IsReflexivePair (N.map (φ.app c.A) ≫ N.μ.app c.A) (N.map c.a) := by
+  refine ⟨N.map (M.η.app c.A), ?_, ?_⟩
+  · have h := φ.app_η c.A
+    simp_rw [Functor.id_obj] at h
+    rw [← Category.assoc, ← N.map_comp, h]
+    exact N.right_unit c.A
+  · have h := c.unit
+    simp_rw [Functor.id_obj] at h
+    rw [← N.map_comp, h, Functor.map_id]
+
+-- i believe this can be done assuming `[HasReflexiveCoequalizers N.Algebra]` alone but it needs
+-- some extra work
+instance {M N : Monad C} (φ : M ⟶ N) (c : M.Algebra) [HasReflexiveCoequalizers C] :
+    HasCoequalizer (N.map (φ.app c.A) ≫ N.μ.app c.A) (N.map c.a) := by
+  infer_instance
+
+-- we will probably need an instance proving `algerba N` has reflexive coequalizers if `C` does,
+-- until we prove the previous lemmas using `HasReflexiveCoequalizers (Algebra N)`.
 theorem hasPBW_iff {M N : Monad C} (φ : M ⟶ N) [HasReflexiveCoequalizers (Algebra N)] :
     HasPBW φ ↔ (inducedRightModule φ).IsFree := by
-  -- got sleepy, will continue another day
-  sorry
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · sorry
+  ·
+    sorry
 
 end Monad
 
