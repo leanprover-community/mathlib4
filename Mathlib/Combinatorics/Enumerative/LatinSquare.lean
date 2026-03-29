@@ -146,7 +146,7 @@ def LatinRectangle.relabel
     (g : n ≃ n')
     (h : α ≃ β) :
     LatinRectangle m' n' β := {
-  M := fun i' j' ↦ h (A.M (f.symm i') (g.symm j')),
+  M := (A.M.reindex f g).map h.toFun
   exactly_n_symbols := by
     have g' : Fintype.card n = Fintype.card n' := Fintype.card_congr g
     have h' : Fintype.card α = Fintype.card β := Fintype.card_congr h
@@ -155,18 +155,12 @@ def LatinRectangle.relabel
   once_per_row i' :=
     h.bijective.comp (A.once_per_row (f.symm i') |>.comp g.symm.bijective)
   distinct_col_entries := by
-    simp only [Matrix.col]
     have h' := A.distinct_col_entries
-    simp only [Matrix.col] at h'
-    intro j'
-    specialize h' (g.symm j')
-    have h_comp :
-      (Matrix.transpose (fun i' j' ↦ h (LatinRectangle.M (f.symm i') (g.symm j'))) j') =
-      h ∘ (LatinRectangle.M.transpose (g.symm j')) ∘ f.symm := by
-      ext
-      simp
-    rw [h_comp]
-    exact h.injective.comp (h'.comp f.symm.injective)
+    simp only [Function.Injective, Matrix.col_apply, Matrix.reindex_apply, Equiv.toFun_as_coe,
+      Matrix.map_apply, Matrix.submatrix_apply, EmbeddingLike.apply_eq_iff_eq] at *
+    intro y a₁ a₂ h
+    convert h' (g.symm y) h
+    simp
   m_le_n := by
     have ineq := A.m_le_n
     have f' : Fintype.card m = Fintype.card m' := Fintype.card_congr f
