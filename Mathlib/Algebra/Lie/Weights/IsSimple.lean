@@ -602,11 +602,11 @@ lemma lieIdealOrderIso_left_inv (I : LieIdeal K L)
   rw [← LieSubmodule.toSubmodule_inj, ← LieSubmodule.restr_toSubmodule J H,
     ← LieSubmodule.restr_toSubmodule I H, h_restr]
 
-lemma lieIdealOrderIso_right_inv (q : (rootSystem H).invtRootSubmodule) :
-    (invtSubmoduleToLieIdeal q.1
-      ((rootSystem H).mem_invtRootSubmodule_iff.mp q.2)).toInvtRootSubmodule = q := by
-  apply Subtype.ext
-  simp only [LieIdeal.toInvtRootSubmodule, LieIdeal.rootSpan, LieIdeal.rootSet]
+lemma lieIdealOrderIso_right_inv (q : (rootSystem H).invtRootSubmodule)
+    (hq : ∀ α, ↑q ∈ End.invtSubmodule ((rootSystem H).reflection α).toLinearMap :=
+      (rootSystem H).mem_invtRootSubmodule_iff.mp q.property) :
+    (invtSubmoduleToLieIdeal q.1 hq).toInvtRootSubmodule = q := by
+  simp only [Subtype.ext_iff, LieIdeal.toInvtRootSubmodule, LieIdeal.rootSpan, LieIdeal.rootSet]
   conv_rhs => rw [RootPairing.invtRootSubmodule.eq_span_root q]
   congr 2; ext α
   exact mem_rootSet_invtSubmoduleToLieIdeal _ _
