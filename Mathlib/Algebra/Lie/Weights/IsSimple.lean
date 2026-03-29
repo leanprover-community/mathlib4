@@ -556,9 +556,8 @@ theorem isSimple_iff_isIrreducible : (rootSystem H).IsIrreducible ↔ IsSimple K
       by_contra h
       rw [not_subsingleton_iff_nontrivial] at h
       exact not_nontrivial H inferInstance
-    exact iff_of_false
-      (fun h => not_nontrivial _ h.nontrivial)
-      (fun h => (IsSimple.non_abelian K) (inferInstance : IsLieAbelian L))
+    refine iff_of_false (fun h => not_nontrivial _ h.nontrivial) fun h => ?_
+    exact h.non_abelian inferInstance
   have : Nontrivial L := Subtype.val_injective.nontrivial (α := H)
   have hL : ¬ IsLieAbelian L :=
     (isLieAbelian_iff_subsingleton (R := K)).not.mpr (not_subsingleton L)
