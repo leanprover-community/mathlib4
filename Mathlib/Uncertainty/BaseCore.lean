@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2026 Prof. Dr. Fei Gao. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Prof. Dr. Fei Gao <gaof@whut.edu.cn>
+-/
+
 module
 
 public import Mathlib.Data.Real.Basic
@@ -116,7 +122,8 @@ def bookAxiom4_product (U : UncertainSpace) [BookAxiomSet U] : Prop :=
   (inferInstance : BookAxiomSet U).product
 
 /-- The uncertain distribution function of an uncertain variable. -/
-noncomputable def uncertainDistribution (U : UncertainSpace) (X : UncertainVariable U) (x : ℝ) : ℝ :=
+noncomputable def uncertainDistribution
+    (U : UncertainSpace) (X : UncertainVariable U) (x : ℝ) : ℝ :=
   U.M {ω | X.f ω ≤ x}
 
 /-- Duality theorem: follows directly from the duality axiom of `UncertainSpace`. -/
