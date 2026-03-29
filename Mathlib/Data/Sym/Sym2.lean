@@ -621,11 +621,11 @@ lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) (f
   ext ⟨a, b⟩; simp
 
 @[simp] lemma diagSet_subset_fromRel (hr : Symmetric r) : diagSet ⊆ fromRel hr ↔ Std.Refl r := by
-  simp [Set.subset_def, Sym2.forall, stdRefl_def]
+  simp [Set.subset_def, Sym2.forall, refl_def]
 
 @[simp] lemma disjoint_diagSet_fromRel (hr : Symmetric r) :
     Disjoint diagSet (fromRel hr) ↔ Std.Irrefl r := by
-  simp [Set.disjoint_left, Sym2.forall, stdIrrefl_def]
+  simp [Set.disjoint_left, Sym2.forall, irrefl_def]
 
 @[simp] lemma fromRel_subset_compl_diagSet (hr : Symmetric r) :
     fromRel hr ⊆ diagSetᶜ ↔ Std.Irrefl r := by simp [Set.subset_compl_iff_disjoint_left]

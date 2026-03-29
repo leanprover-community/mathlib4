@@ -958,12 +958,12 @@ variable {r : L.Relations 2}
 
 @[simp]
 theorem realize_reflexive : M ⊨ r.reflexive ↔ Std.Refl fun x y : M => RelMap r ![x, y] := by
-  rw [stdRefl_def]
+  rw [refl_def]
   exact forall_congr' fun _ ↦ realize_rel₂
 
 @[simp]
 theorem realize_irreflexive : M ⊨ r.irreflexive ↔ Std.Irrefl fun x y : M => RelMap r ![x, y] := by
-  rw [stdIrrefl_def]
+  rw [irrefl_def]
   exact forall_congr' fun _ ↦ not_congr realize_rel₂
 
 @[simp]
@@ -973,7 +973,7 @@ theorem realize_symmetric : M ⊨ r.symmetric ↔ Symmetric fun x y : M => RelMa
 @[simp]
 theorem realize_antisymmetric :
     M ⊨ r.antisymmetric ↔ Std.Antisymm fun x y : M => RelMap r ![x, y] := by
-  rw [stdAntisymm_def]
+  rw [antisymm_def]
   exact forall₂_congr fun _ _ ↦ imp_congr realize_rel₂ <| imp_congr realize_rel₂ .rfl
 
 @[simp]
@@ -983,7 +983,7 @@ theorem realize_transitive : M ⊨ r.transitive ↔ IsTrans M fun x y ↦ RelMap
 
 @[simp]
 theorem realize_total : M ⊨ r.total ↔ Std.Total fun x y : M ↦ RelMap r ![x, y] := by
-  rw [stdTotal_def]
+  rw [total_def]
   exact forall₂_congr fun _ _ ↦ realize_sup.trans <| or_congr realize_rel₂ realize_rel₂
 
 end Relations

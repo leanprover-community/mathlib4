@@ -126,28 +126,28 @@ lemma asymm [Std.Asymm r] : a ≺ b → ¬b ≺ a := Std.Asymm.asymm _ _
 lemma trichotomous [Std.Trichotomous r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
   fun _ _ ↦ Std.Trichotomous.rel_or_eq_or_rel_swap
 
-lemma stdIrrefl_def : Std.Irrefl r ↔ ∀ ⦃a⦄, ¬r a a :=
+lemma irrefl_def : Std.Irrefl r ↔ ∀ ⦃a⦄, ¬r a a :=
   ⟨(·.irrefl), .mk⟩
 
-lemma stdRefl_def : Std.Refl r ↔ ∀ ⦃a⦄, r a a :=
+lemma refl_def : Std.Refl r ↔ ∀ ⦃a⦄, r a a :=
   ⟨(·.refl), .mk⟩
 
 lemma isTrans_def {α : Sort*} {r : α → α → Prop} : IsTrans α r ↔ ∀ ⦃a b c⦄, r a b → r b c → r a c :=
   ⟨(·.trans), .mk⟩
 
-lemma stdSymm_def : Std.Symm r ↔ ∀ ⦃a b⦄, r a b → r b a :=
+lemma symm_def : Std.Symm r ↔ ∀ ⦃a b⦄, r a b → r b a :=
   ⟨(·.symm), .mk⟩
 
-lemma stdAntisymm_def : Std.Antisymm r ↔ ∀ ⦃a b⦄, r a b → r b a → a = b :=
+lemma antisymm_def : Std.Antisymm r ↔ ∀ ⦃a b⦄, r a b → r b a → a = b :=
   ⟨(·.antisymm), .mk⟩
 
-lemma stdAsymm_def : Std.Asymm r ↔ ∀ ⦃a b⦄, r a b → ¬r b a :=
+lemma asymm_def : Std.Asymm r ↔ ∀ ⦃a b⦄, r a b → ¬r b a :=
   ⟨(·.asymm), .mk⟩
 
-lemma stdTotal_def : Std.Total r ↔ ∀ ⦃a b⦄, r a b  ∨ r b a :=
+lemma total_def : Std.Total r ↔ ∀ ⦃a b⦄, r a b  ∨ r b a :=
   ⟨(·.total), .mk⟩
 
-lemma stdTrichotomous_def : Std.Trichotomous r ↔ ∀ ⦃a b⦄, ¬r a b → ¬r b a → a = b :=
+lemma trichotomous_def : Std.Trichotomous r ↔ ∀ ⦃a b⦄, ¬r a b → ¬r b a → a = b :=
   ⟨(·.trichotomous), .mk⟩
 
 instance (priority := 90) asymm_of_isTrans_of_irrefl [IsTrans α r] [Std.Irrefl r] : Std.Asymm r :=
