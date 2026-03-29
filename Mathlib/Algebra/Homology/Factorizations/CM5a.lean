@@ -523,12 +523,12 @@ the intermediate object in the factorization lemma `cm5a_cof`. -/
 noncomputable abbrev cochainComplexFunctor : ℕᵒᵖ ⥤ CochainComplex C ℤ :=
   functor f n₀ ⋙ ObjectProperty.ι _ ⋙ Factorisation.forget
 
-lemma isEventuallyConstantTo (i : ℤ) (q : ℕ) (h : i ≤ n₀ + q) :
+lemma isEventuallyConstantTo (i : ℤ) (q : ℕ) (h : i ≤ n₀ + q := by lia) :
     (cochainComplexFunctor f n₀ ⋙ eval _ _ i).IsEventuallyConstantTo (op q) :=
   fun _ _ ↦ isIso_functor_map_hom_h_f _ _ _ _ (by lia)
 
 instance (i : ℤ) : HasLimit (cochainComplexFunctor f n₀ ⋙ eval _ _ i) :=
-  (isEventuallyConstantTo f n₀ i (n₀ - i).natAbs (by lia)).hasLimit
+  (isEventuallyConstantTo f n₀ i (n₀ - i).natAbs).hasLimit
 
 /-- Given a monomorphism `f : K ⟶ L` between complexes that are strictly `≥ n₀ + 1`,
 this is the limit of the projective system
@@ -553,17 +553,18 @@ lemma midπ_w_f (q₁ q₂ : ℕ) (hq : q₁ ≤ q₂) (i : ℤ) :
   rw [← midπ_w f n₀ q₁ q₂ hq]
   dsimp
 
-lemma isIso_midπ_f (q : ℕ) (i : ℤ) (h : i ≤ n₀ + q) : IsIso ((midπ f n₀ q).f i) :=
+lemma isIso_midπ_f (q : ℕ) (i : ℤ) (h : i ≤ n₀ + q := by lia) :
+    IsIso ((midπ f n₀ q).f i) :=
   isIso_π_f_of_isLimit_of_isEventuallyConstantTo _ (limit.isLimit _) _ _
-    (isEventuallyConstantTo f n₀ _ _ h)
+    (isEventuallyConstantTo f n₀ _ _)
 
 lemma quasiIsoAt_midπ (q : ℕ) (i : ℤ) (h : i + 1 ≤ n₀ + q) :
     QuasiIsoAt (midπ f n₀ q) i :=
   quasiIsoAt_π_of_isLimit_of_isEventuallyConstantTo _ (limit.isLimit _)
     (i - 1) i (i + 1) (by simp) (by simp) _
-    (isEventuallyConstantTo f n₀ _ _ (by lia))
-    (isEventuallyConstantTo f n₀ _ _ (by lia))
-    (isEventuallyConstantTo f n₀ _ _ (by lia))
+    (isEventuallyConstantTo f n₀ _ _)
+    (isEventuallyConstantTo f n₀ _ _)
+    (isEventuallyConstantTo f n₀ _ _)
 
 /-- The first morphism `ι f n₀ : K ⟶ mid f n₀` of the factorization lemma `cm5a_cof`. -/
 noncomputable def ι : K ⟶ mid f n₀ :=
@@ -601,13 +602,13 @@ set_option backward.isDefEq.respectTransparency false in
 instance : (mid f n₀).IsStrictlyGE (n₀ + 1) := by
   rw [isStrictlyGE_iff]
   intro i hi
-  have := isIso_midπ_f f n₀ 0 i (by lia)
+  have := isIso_midπ_f f n₀ 0 i
   exact (L.isZero_of_isStrictlyGE (n₀ + 1) i).of_iso (asIso ((midπ f n₀ 0).f i))
 
 instance : Mono (ι f n₀) :=
   HomologicalComplex.mono_of_mono_f _ (fun i ↦ by
     obtain ⟨q, _⟩ : ∃ (q : ℕ), IsIso ((midπ f n₀ q).f i) :=
-      ⟨(i - n₀).natAbs, isIso_midπ_f f n₀ _ i (by lia)⟩
+      ⟨(i - n₀).natAbs, isIso_midπ_f f n₀ _ i⟩
     exact mono_of_mono_fac (ι_midπ_f f n₀ q i))
 
 instance : QuasiIso (ι f n₀) where
@@ -621,7 +622,7 @@ lemma degreewiseEpiWithInjectiveKernel_π : degreewiseEpiWithInjectiveKernel (π
   intro i
   obtain ⟨q, hq⟩ : ∃ (q : ℕ), i ≤ n₀ + q := ⟨(i - n₀).natAbs, by lia⟩
   rw [← midπ_π_f f n₀ q]
-  have := isIso_midπ_f f n₀ q i hq
+  have := isIso_midπ_f f n₀ q i
   exact MorphismProperty.comp_mem _ _ _
     (epiWithInjectiveKernel_of_iso _)
     ((CofFibFactorizationQuasiIsoLE.sequence f n₀ q).obj.property.2 i)
