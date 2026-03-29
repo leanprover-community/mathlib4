@@ -145,13 +145,8 @@ Some guidelines:
 - No invisible characters
 - No characters affecting text directionality (Mathlib uses left-to-right text).
 - No [Private Use Areas](https://en.wikipedia.org/wiki/Private_Use_Areas)
-- Check if a VSCode-extension abbreviation exists (if yes, update list `withVSCodeAbbrev` instead)
-- Consider proposing an abbreviation to [the extension](https://github.com/leanprover/vscode-lean4)
-- Consider if adding the character is really justified without having the abbreviation
-- Consider making a separate PR for adding symbols
-- Avoid characters which modify appearance of other characters
-- Avoid non-[Mathematical symbols](https://en.wikipedia.org/wiki/Mathematical_operators_and_symbols_in_Unicode)
-- Avoid symbols that increase ambiguity or worsen readability
+
+The list `withVSCodeAbbrev` contains characters with abbreviations, if an abbreviation already has been defined, you might need to update the list `withVSCodeAbbrev`. Further, consider proposing an abbreviation to [the extension](https://github.com/leanprover/vscode-lean4) for new symbols.
 
 Empty lines for improved readability (otherwise some characters overlap in some fonts).
 -/
