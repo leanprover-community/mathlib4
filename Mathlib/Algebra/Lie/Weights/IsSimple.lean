@@ -560,7 +560,7 @@ theorem isSimple_iff_isIrreducible : (rootSystem H).IsIrreducible ↔ IsSimple K
     exact h.non_abelian inferInstance
   have : Nontrivial L := Subtype.val_injective.nontrivial (α := H)
   have hL : ¬ IsLieAbelian L :=
-    (isLieAbelian_iff_subsingleton (R := K)).not.mpr (not_subsingleton L)
+    (isLieAbelian_iff_subsingleton K (L := L)).not.mpr (not_subsingleton L)
   rw [RootPairing.isIrreducible_iff_invtRootSubmodule, ← isSimple_iff_of_not_isLieAbelian K L hL,
     (lieIdealOrderIso H).isSimpleOrder_iff]
 
