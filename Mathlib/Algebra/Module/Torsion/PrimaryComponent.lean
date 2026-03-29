@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 /-!
 # I-Primary Components of modules
 
-Let `A` be a commutative ring and `I`, a nonzero prime ideal of `A`.
+Let `A` be a commutative ring and `I`, an ideal of `A`.
 Given an `A`-Module `M` it's `I`-primary component is defined as
   $$M(I) := \bigcup_{i : \mathbb{N}} \text{torsionBySet A  M }  I ^ i.$$
 
@@ -20,7 +20,7 @@ For `P : HeightOneSpectrum A`, the main result of this file (TODO) is that
 
 ## Main definitions
 
-* `Module.primaryComponent` : The `I`-primary component of an `A`-module `M`.
+* `Ideal.primaryComponent` : The `I`-primary component of an `A`-module `M`.
 
 -/
 
@@ -134,15 +134,3 @@ end AddCommGroup
 end CommRing
 
 end Ideal
-
-namespace IsDedekindDomain.HeightOneSpectrum
-
-open Submodule
-
-variable (P : HeightOneSpectrum A) [AddCommMonoid M] [Module A M]
-
-/--
-The `P`-primaryComponent component of a module `M` where `P` is of type `HeigtOneSpectrum A`. -/
-abbrev primaryComponent := P.asIdeal.primaryComponent M
-
-end IsDedekindDomain.HeightOneSpectrum
