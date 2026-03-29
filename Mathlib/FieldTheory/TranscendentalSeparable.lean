@@ -104,6 +104,11 @@ lemma exists_subalgebra_fg_of_not_isReduced_tensorProduct
     rw [eq0, map_zero, eq_comm, LinearEquiv.map_eq_zero_iff] at hx
     simp [hx, map_zero, eq_comm, hz_ne] at hy
 
+lemma tensorProduct_of_isTranscendentalSeparable_of_isDomain {k : Type*} [Field k]
+    {S : Type*} [CommRing S] [IsDomain S] [Algebra k S] {K : Type*} [Field K] [Algebra k K]
+    [Algebra.IsTranscendentalSeparable k K] : IsReduced (TensorProduct k K S) := by
+  sorry
+
 lemma tensorProduct_of_isTranscendentalSeparable_of_isReduced {k : Type*} [Field k]
     {S : Type*} [CommRing S] [IsReduced S] [Algebra k S] {K : Type*} [Field K] [Algebra k K]
     [Algebra.IsTranscendentalSeparable k K] : IsReduced (TensorProduct k K S) := by
