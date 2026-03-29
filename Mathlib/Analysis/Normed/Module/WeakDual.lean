@@ -124,7 +124,7 @@ section
 
 variable {R : Type*} [CommSemiring R] [TopologicalSpace R] [ContinuousAdd R]
   [ContinuousConstSMul R R]
-variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [Module R M]
+variable [Module R M]
 
 /-- For vector spaces `M`, there is a canonical map `StrongDual R M → WeakDual R M` (the "identity"
 mapping). It is a linear equivalence. -/
@@ -362,25 +362,25 @@ end PolarSets
 
 open TopologicalSpace
 
-variable (𝕜 V : Type*) [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V] [NormedSpace 𝕜 V]
-variable [TopologicalSpace.SeparableSpace V] (K : Set (WeakDual 𝕜 V))
+variable (𝕜 V)
+variable [TopologicalSpace.SeparableSpace E] (K : Set (WeakDual 𝕜 E))
 
 /-- In a separable normed space, there exists a sequence of continuous functions that
 separates points of the weak dual. -/
-lemma exists_countable_separating : ∃ (gs : ℕ → (WeakDual 𝕜 V) → 𝕜),
+lemma exists_countable_separating : ∃ (gs : ℕ → (WeakDual 𝕜 E) → 𝕜),
     (∀ n, Continuous (gs n)) ∧ (∀ ⦃x y⦄, x ≠ y → ∃ n, gs n x ≠ gs n y) := by
-  use (fun n φ ↦ φ (denseSeq V n))
+  use (fun n φ ↦ φ (denseSeq E n))
   constructor
   · exact fun _ ↦ eval_continuous _
   · intro w y w_ne_y
     contrapose! w_ne_y
     exact DFunLike.ext'_iff.mpr <| (map_continuous w).ext_on
-      (denseRange_denseSeq V) (map_continuous y) (Set.eqOn_range.mpr (funext w_ne_y))
+      (denseRange_denseSeq E) (map_continuous y) (Set.eqOn_range.mpr (funext w_ne_y))
 
 /-- A compact subset of the weak dual of a separable normed space is metrizable. -/
 lemma metrizable_of_isCompact (K_cpt : IsCompact K) : TopologicalSpace.MetrizableSpace K := by
   have : CompactSpace K := isCompact_iff_compactSpace.mp K_cpt
-  obtain ⟨gs, gs_cont, gs_sep⟩ := exists_countable_separating 𝕜 V
+  obtain ⟨gs, gs_cont, gs_sep⟩ := exists_countable_separating 𝕜 (E := E)
   exact Metric.PiNatEmbed.TopologicalSpace.MetrizableSpace.of_countable_separating
     (fun n k ↦ gs n k) (fun n ↦ (gs_cont n).comp continuous_subtype_val)
     fun x y hxy ↦ gs_sep <| Subtype.val_injective.ne hxy
@@ -388,29 +388,28 @@ lemma metrizable_of_isCompact (K_cpt : IsCompact K) : TopologicalSpace.Metrizabl
 variable [ProperSpace 𝕜] (K_cpt : IsCompact K)
 
 /-- Bounded closed sets in the weak dual of a separable normed space are sequentially compact. -/
-theorem isSeqCompact_of_isBounded_of_isClosed {s : Set (WeakDual 𝕜 V)}
+theorem isSeqCompact_of_isBounded_of_isClosed {s : Set (WeakDual 𝕜 E)}
     (hb : IsBounded s) (hc : IsClosed s) :
     IsSeqCompact s := by
   have b_isCompact' : CompactSpace s :=
     isCompact_iff_compactSpace.mp <| isCompact_of_bounded_of_closed hb hc
   have b_isMetrizable : TopologicalSpace.MetrizableSpace s :=
-    metrizable_of_isCompact 𝕜 V s <| isCompact_of_bounded_of_closed hb hc
-  have seq_cont_phi : SeqContinuous (fun φ : s ↦ (φ : WeakDual 𝕜 V)) :=
+    metrizable_of_isCompact 𝕜 s <| isCompact_of_bounded_of_closed hb hc
+  have seq_cont_phi : SeqContinuous (fun φ : s ↦ (φ : WeakDual 𝕜 E)) :=
     continuous_iff_seqContinuous.mp continuous_subtype_val
   simpa using IsSeqCompact.range seq_cont_phi
 
 /-- The **Sequential Banach-Alaoglu theorem**: the polar set of a neighborhood `s` of the origin in
 a separable normed space `V` is a sequentially compact subset of `WeakDual 𝕜 V`. -/
-theorem isSeqCompact_polar {s : Set V} (s_nhd : s ∈ 𝓝 (0 : V)) :
+theorem isSeqCompact_polar {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
     IsSeqCompact (polar 𝕜 s) :=
-  isSeqCompact_of_isBounded_of_isClosed (s := polar 𝕜 s) _ _
-    (isBounded_polar 𝕜 s_nhd) (isClosed_polar _ _)
+  isSeqCompact_of_isBounded_of_isClosed 𝕜 (isBounded_polar 𝕜 s_nhd) (isClosed_polar _ _)
+
 
 /-- The **Sequential Banach-Alaoglu theorem**: closed balls of the dual of a separable
 normed space `V` are sequentially compact in the weak-* topology. -/
-theorem isSeqCompact_closedBall (x' : StrongDual 𝕜 V) (r : ℝ) :
+theorem isSeqCompact_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
     IsSeqCompact (toStrongDual ⁻¹' Metric.closedBall x' r) :=
-  isSeqCompact_of_isBounded_of_isClosed 𝕜 V
-    (isBounded_closedBall x' r) (isClosed_closedBall x' r)
+  isSeqCompact_of_isBounded_of_isClosed 𝕜 (isBounded_closedBall x' r) (isClosed_closedBall x' r)
 
 end WeakDual
