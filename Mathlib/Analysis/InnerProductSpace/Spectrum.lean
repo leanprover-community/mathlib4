@@ -69,7 +69,6 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -81,7 +80,7 @@ namespace LinearMap
 
 namespace IsSymmetric
 
-variable {T : E →ₗ[𝕜] E} {T' : E' →ₗ[𝕜] E'}
+variable {T : E →ₗ[𝕜] E}
 
 /-- A self-adjoint operator preserves orthogonal complements of its eigenspaces. -/
 theorem invariant_orthogonalComplement_eigenspace (hT : T.IsSymmetric) (μ : 𝕜)
@@ -131,7 +130,7 @@ theorem orthogonalComplement_iSup_eigenspaces (hT : T.IsSymmetric) (μ : 𝕜) :
 
 /-! ### Finite-dimensional theory -/
 
-variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 E']
+variable [FiniteDimensional 𝕜 E]
 
 /-- The mutual orthogonal complement of the eigenspaces of a self-adjoint operator on a
 finite-dimensional inner product space is trivial. -/
@@ -374,7 +373,8 @@ theorem sort_roots_charpoly_eq_eigenvalues (hT : T.IsSymmetric) (hn : Module.fin
   simp_rw [decide_eq_true_eq, ← List.sortedGE_iff_pairwise]
   convert (hT.eigenvalues_antitone hn).sortedGE_ofFn
 
-theorem eigenvalues_eq_eigenvalues_iff (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
+theorem eigenvalues_eq_eigenvalues_iff {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+    [FiniteDimensional 𝕜 E'] {T' : E' →ₗ[𝕜] E'} (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
     (hT' : T'.IsSymmetric) (hn' : Module.finrank 𝕜 E' = n) :
     hT.eigenvalues hn = hT'.eigenvalues hn' ↔ T.charpoly = T'.charpoly where
   mp h := by rw [hT.charpoly_eq hn, hT'.charpoly_eq hn', h]
