@@ -173,7 +173,9 @@ theorem linearExpectedValue (params : LinearParams) :
 
 /-- Stage A+B: normal uncertain distribution parameters. -/
 structure NormalParams where
+  /-- Location parameter. -/
   e : ℝ
+  /-- Positive scale parameter. -/
   σ : ℝ
   hσ : 0 < σ
 
@@ -279,6 +281,7 @@ inductive NormalDistributionForm
   | legacy
   | book
 
+/-- Evaluate normal uncertain distribution in either legacy or book convention. -/
 noncomputable def normalDistributionUnified
     (form : NormalDistributionForm) (params : NormalParams) (x : ℝ) : ℝ :=
   match form with
@@ -305,8 +308,11 @@ theorem normalDistributionUnified_legacy_as_book_scaled (params : NormalParams) 
 
 /-- Stage A+B: zigzag uncertain distribution parameters. -/
 structure ZigzagParams where
+  /-- Left endpoint. -/
   a : ℝ
+  /-- Peak location. -/
   b : ℝ
+  /-- Right endpoint. -/
   c : ℝ
   h_ab : a < b
   h_bc : b < c
@@ -383,6 +389,7 @@ noncomputable def lognormalInverseBook (params : NormalParams) (α : ℝ) : ℝ 
 
 /-- Stage B: weak distribution interface for reusable CDF-style families. -/
 class UncertainDistributionLike (D : Type _) where
+  /-- Distribution function of an element of `D`. -/
   cdf : D → ℝ → ℝ
   cdf_nonneg : ∀ d x, 0 ≤ cdf d x
   cdf_le_one : ∀ d x, cdf d x ≤ 1
@@ -396,6 +403,7 @@ class RegularDistributionLike (D : Type _) [UncertainDistributionLike D] where
         ∧ UncertainDistributionLike.cdf (D := D) d x < 1}
   cdf_tendsto_atBot : ∀ d, Tendsto (UncertainDistributionLike.cdf (D := D) d) atBot (𝓝 0)
   cdf_tendsto_atTop : ∀ d, Tendsto (UncertainDistributionLike.cdf (D := D) d) atTop (𝓝 1)
+  /-- Inverse distribution/quantile map. -/
   inverse : D → ℝ → ℝ
 
 /-- Totalized linear inverse used by `RegularDistributionLike`. -/
@@ -404,6 +412,7 @@ noncomputable def linearInverseTotal (params : LinearParams) (α : ℝ) : ℝ :=
   else if α < 0 then params.a else params.b
 
 -- [ENGINEERING_AXIOM] Regularity assumptions (replace progressively by proved lemmas).
+/-- Regularity assumptions for linear uncertain distributions. -/
 class LinearDistributionRegularityStructure where
   continuous : ∀ params : LinearParams, Continuous (linearDistribution params)
   tendsto_atBot : ∀ params : LinearParams, Tendsto (linearDistribution params) atBot (𝓝 0)
@@ -463,6 +472,7 @@ theorem normalUncertainDistribution_continuous (params : NormalParams) :
   have hpos : 0 < 1 + Real.exp ((params.e - x) / params.σ) := by
     nlinarith [Real.exp_pos ((params.e - x) / params.σ)]
   exact ne_of_gt hpos
+/-- Regularity assumptions for normal uncertain distributions. -/
 class NormalDistributionRegularityStructure where
   strictMonoOn_core : ∀ params : NormalParams,
     StrictMonoOn (normalUncertainDistribution params)
@@ -528,6 +538,7 @@ theorem normalUncertainDistribution_tendsto_atTop (params : NormalParams) :
     simp [normalUncertainDistribution, one_div]
   simpa [hrepr] using hinv1
 
+/-- Regularity assumptions for zigzag uncertain distributions. -/
 class ZigzagDistributionRegularityStructure where
   continuous : ∀ params : ZigzagParams, Continuous (zigzagDistribution params)
   strictMonoOn_core : ∀ params : ZigzagParams,
@@ -645,6 +656,7 @@ instance [ZigzagDistributionRegularityStructure] : RegularDistributionLike Zigza
 noncomputable def linearVarianceClosedForm (params : LinearParams) : ℝ :=
   (params.b - params.a) ^ 2 / 12
 
+/-- Closed-form variance for the normal uncertain distribution. -/
 noncomputable def normalVarianceClosedForm (params : NormalParams) : ℝ :=
   params.σ ^ 2
 
@@ -665,6 +677,7 @@ theorem normalInverseBook_median (params : NormalParams) :
   rw [hfrac]
   simp
 
+/-- Interface collecting closed-form statistics for special uncertain distributions. -/
 class SpecialDistributionStatsStructure where
   linear_expectation : ∀ params : LinearParams,
     uncertainExpectedValue params = (params.a + params.b) / 2
@@ -796,8 +809,11 @@ theorem linearDistribution_eq_intervalMassLE (params : LinearParams) (x : ℝ) :
 
 /-- Stage 2: packaged linear variable constructor with distribution/quantile specs. -/
 structure CreatedLinearVariable where
+  /-- Parameters defining the underlying linear uncertain distribution. -/
   params : LinearParams
+  /-- CDF representation of the constructed variable. -/
   cdf : ℝ → ℝ
+  /-- Quantile representation on `[0,1]`. -/
   quantile : ∀ α, α ∈ Set.Icc (0 : ℝ) 1 → ℝ
   cdf_spec : cdf = linearDistribution params
   quantile_spec : ∀ α hα, quantile α hα = linearInverse params α

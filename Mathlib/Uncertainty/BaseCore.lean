@@ -77,11 +77,13 @@ models one uncertain space and does not yet formalize a product uncertain space.
 def bookAxiom1_normality (U : UncertainSpace) : Prop :=
   U.M ∅ = 0 ∧ U.M Set.univ = 1
 
+/-- Book-style primitive axiom bundle for uncertain measure spaces. -/
 class BookAxiomSet (U : UncertainSpace) where
   normality : U.M ∅ = 0 ∧ U.M Set.univ = 1
   duality : ∀ Λ : Set U.Ω, Λ ∈ U.𝒜 → U.M Λ + U.M Λᶜ = 1
   subadditivity : ∀ f : ℕ → Set U.Ω, (∀ n, f n ∈ U.𝒜) →
     U.M (⋃ n, f n) ≤ ∑' n, U.M (f n)
+  /-- Marker for the product axiom (kept abstract in this file). -/
   product : Prop
 
 theorem bookAxiom1_normality_from_space (U : UncertainSpace) :
@@ -284,6 +286,7 @@ theorem measurable_linearComb (U : UncertainSpace) [AlgebraicUncertainSpace U]
 
 /-- Stage 4 (Step 1): minimal assumption layer for expectation on uncertain variables. -/
 class ExpectationStructure (U : UncertainSpace) [AlgebraicUncertainSpace U] where
+  /-- Expected-value operator on uncertain variables. -/
   expectedValue : UncertainVariable U → ℝ
   map_smul : ∀ (c : ℝ) (X : UncertainVariable U),
     expectedValue (smul_uncertain U c X) = c * expectedValue X
@@ -350,6 +353,7 @@ noncomputable abbrev E (U : UncertainSpace) [AlgebraicUncertainSpace U] [Expecta
 /-- Stage 3 target: expectation linearity under an explicit independence layer. -/
 class ExpectationIndependenceStructure (U : UncertainSpace) [AlgebraicUncertainSpace U]
     [ExpectationStructure U] where
+  /-- Independence predicate for uncertain variables. -/
   Independent : UncertainVariable U → UncertainVariable U → Prop
   map_add_of_independent : ∀ (X Y : UncertainVariable U),
     Independent X Y → E U (add_uncertain U X Y) = E U X + E U Y
@@ -400,6 +404,7 @@ theorem E_affine (U : UncertainSpace) [AlgebraicUncertainSpace U]
 
 /-- Minimal uncertain sequence interface (distribution at each index). -/
 structure UncertainSequence (U : UncertainSpace) where
+  /-- The sequence of uncertain variables. -/
   X : ℕ → UncertainVariable U
 
 /-- IID-style extension: identical distribution + pairwise independence. -/
@@ -426,7 +431,9 @@ theorem iid_pairwise_independent (U : UncertainSpace) [AlgebraicUncertainSpace U
 /-- Second-moment interface: variance/covariance as abstract operators. -/
 class SecondMomentStructure (U : UncertainSpace) [AlgebraicUncertainSpace U]
     [ExpectationStructure U] where
+  /-- Variance functional on uncertain variables. -/
   variance : UncertainVariable U → ℝ
+  /-- Covariance functional on pairs of uncertain variables. -/
   covariance : UncertainVariable U → UncertainVariable U → ℝ
   variance_nonneg : ∀ X, 0 ≤ variance X
   covariance_comm : ∀ X Y, covariance X Y = covariance Y X
@@ -659,7 +666,9 @@ noncomputable def standardNormalUncertainDistribution (x : ℝ) : ℝ :=
 /-- LLN/CLT abstract interface layer (no heavy proof in main branch). -/
 class LimitTheoryStructure (U : UncertainSpace) [AlgebraicUncertainSpace U]
     [ExpectationStructure U] [ExpectationIndependenceStructure U] [SecondMomentStructure U] where
+  /-- Sample-mean operator associated with a sequence. -/
   sampleMean : UncertainSequence U → ℕ → UncertainVariable U
+  /-- CLT-style normalized-sum operator associated with a sequence. -/
   normalizedSum : UncertainSequence U → ℕ → UncertainVariable U
   law_of_large_numbers : ∀ (seq : UncertainSequence U) [UncertainSequenceIID U seq]
       (μ : ℝ) (_hmean : ∀ n, E U (seq.X n) = μ),
@@ -736,26 +745,34 @@ theorem uncertain_mean_LLN (U : UncertainSpace) [AlgebraicUncertainSpace U]
 
 /-- Chance-space layer for mixed uncertain-random constructions (P2 foundation). -/
 structure ChanceSpace where
+  /-- Underlying random sample space. -/
   Ωr : Type _
+  /-- Sigma-field candidate on `Ωr`. -/
   𝓕 : Set (Set Ωr)
+  /-- Chance measure on events in `Ωr`. -/
   P : Set Ωr → ℝ
   P_emptyset : P ∅ = 0
   P_univ : P Set.univ = 1
 
 /-- Random variable on a chance space (measurability kept as an interface predicate). -/
 structure ChanceVariable (C : ChanceSpace) where
+  /-- Underlying random-variable map. -/
   f : C.Ωr → ℝ
+  /-- Measurability marker for the random variable. -/
   measurable : Prop
 
 /-- Uncertain-random variable on product sample space `U.Ω × C.Ωr`. -/
 structure UncertainRandomVariable (U : UncertainSpace) (C : ChanceSpace) where
+  /-- Underlying map on the product space. -/
   f : U.Ω → C.Ωr → ℝ
   measurable_uncertain : ∀ (r : C.Ωr) (x : ℝ), {ω | f ω r ≤ x} ∈ U.𝒜
+  /-- Measurability marker in the chance-space coordinate. -/
   measurable_chance : ∀ (_ω : U.Ω), Prop
 
 /-- Appendix A.23 mixed LLN assumption package. -/
 class MixedLLNStructure (U : UncertainSpace) (C : ChanceSpace)
     [AlgebraicUncertainSpace U] [ExpectationStructure U] where
+  /-- Statement package for the mixed LLN in uncertain-random settings. -/
   mixed_lln_statement :
     (η_seq : ℕ → ChanceVariable C) →
     (τ_seq : ℕ → UncertainVariable U) →
@@ -769,6 +786,7 @@ class MixedLLNStructure (U : UncertainSpace) (C : ChanceSpace)
 /-- Stronger assumption package to auto-derive `MixedLLNStructure`. -/
 class MixedLLNStrongAssumption (U : UncertainSpace) (C : ChanceSpace)
     [AlgebraicUncertainSpace U] [ExpectationStructure U] where
+  /-- Strong-assumption version of the mixed LLN statement package. -/
   mixed_lln_statement :
     (η_seq : ℕ → ChanceVariable C) →
     (τ_seq : ℕ → UncertainVariable U) →

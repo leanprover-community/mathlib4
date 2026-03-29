@@ -20,6 +20,7 @@ noncomputable section
 
 namespace Uncertainty
 
+/-- Time-indexed uncertain process with pointwise measurability. -/
 structure UncertainProcess (U : UncertainSpace) where
   /-- Sample paths: for each time, a real-valued uncertain variable on `U.Ω`. -/
   proc : ℝ → U.Ω → ℝ
@@ -28,6 +29,7 @@ structure UncertainProcess (U : UncertainSpace) where
 
 /-- A simple model for an uncertain renewal process. -/
 structure UncertainRenewalProcess (U : UncertainSpace) where
+  /-- Interarrival uncertain variables. -/
   interarrival : ℕ → UncertainVariable U  -- ξ₁, ξ₂, …
   iid : ∀ n m, uncertainDistribution U (interarrival n)
           = uncertainDistribution U (interarrival m)
@@ -38,9 +40,13 @@ structure UncertainRenewalProcess (U : UncertainSpace) where
 /-- Chapter-13 renewal/update theorem package (statement level, replacing `True` skeletons). -/
 class RenewalUpdateTheoryStructure (U : UncertainSpace) [AlgebraicUncertainSpace U]
     [ExpectationStructure U] where
+  /-- Distribution statement for the elementary renewal theorem. -/
   elementary_renewal_distribution_statement : UncertainRenewalProcess U → Prop
+  /-- Expectation statement for the elementary renewal theorem. -/
   elementary_renewal_expectation_statement : UncertainRenewalProcess U → Prop
+  /-- Distribution statement for the renewal-reward theorem. -/
   renewal_reward_distribution_statement : Prop
+  /-- Expectation statement for the renewal-reward theorem. -/
   renewal_reward_expectation_statement : Prop
   elementary_renewal_distribution_axiom :
     ∀ renewal : UncertainRenewalProcess U,
@@ -54,9 +60,13 @@ class RenewalUpdateTheoryStructure (U : UncertainSpace) [AlgebraicUncertainSpace
 /-- Stronger assumption package to auto-derive `RenewalUpdateTheoryStructure`. -/
 class RenewalUpdateStrongAssumption (U : UncertainSpace) [AlgebraicUncertainSpace U]
     [ExpectationStructure U] where
+  /-- Distribution statement for the elementary renewal theorem. -/
   elementary_renewal_distribution_statement : UncertainRenewalProcess U → Prop
+  /-- Expectation statement for the elementary renewal theorem. -/
   elementary_renewal_expectation_statement : UncertainRenewalProcess U → Prop
+  /-- Distribution statement for the renewal-reward theorem. -/
   renewal_reward_distribution_statement : Prop
+  /-- Expectation statement for the renewal-reward theorem. -/
   renewal_reward_expectation_statement : Prop
   elementary_renewal_distribution_axiom :
     ∀ renewal : UncertainRenewalProcess U,
@@ -89,6 +99,7 @@ def mkRenewalUpdateStrongAssumption (U : UncertainSpace)
   renewal_reward_distribution_axiom := reward_distribution_axiom_rule
   renewal_reward_expectation_axiom := reward_expectation_axiom_rule
 
+/-- Build `RenewalUpdateStrongAssumption` from `RenewalUpdateTheoryStructure`. -/
 def renewalUpdateStrong_of_structure
     (U : UncertainSpace) [AlgebraicUncertainSpace U] [ExpectationStructure U]
     [RenewalUpdateTheoryStructure U] :
@@ -191,8 +202,11 @@ noncomputable def IncrementLaw (U : UncertainSpace) [AlgebraicUncertainSpace U]
 
 /-- Minimal uncertain differential equation interface: drift, diffusion, initial value. -/
 structure UncertainDE where
+  /-- Drift coefficient. -/
   drift : ℝ → ℝ → ℝ
+  /-- Diffusion coefficient. -/
   diffusion : ℝ → ℝ → ℝ
+  /-- Initial value at time zero. -/
   x0 : ℝ
 
 /-- One-step Euler update as an uncertain variable. -/
@@ -275,6 +289,7 @@ noncomputable def eulerTraceVar (U : UncertainSpace)
 future hooks for consistency/convergence statements. -/
 class EulerSchemeStructure (U : UncertainSpace)
     (de : UncertainDE) (P : UncertainProcess U) (dt : ℝ) where
+  /-- Euler trace variables indexed by grid step. -/
   traceVar : ℕ → UncertainVariable U
   /-- Target process used for terminal-error comparison (may differ from the driver). -/
   targetProc : UncertainProcess U := P
@@ -297,11 +312,15 @@ class EulerSchemeStructure (U : UncertainSpace)
   /-- Terminal-time error measure on grid index `n`. -/
   terminalErrorMeasure : ℝ → ℕ → ℝ :=
     fun ε n => U.M (terminalErrorEvent ε n)
+  /-- Grid-level consistency marker for the scheme. -/
   consistencyAtGrid : Prop := True
+  /-- Convergence-in-measure marker for the scheme. -/
   convergenceInMeasure : Prop := True
+  /-- Terminal consistency statement. -/
   terminalConsistency : Prop :=
     ∀ ε > 0, ∀ δ > 0, ∃ N0 : ℕ, ∀ n ≥ N0,
       terminalErrorMeasure ε n ≤ δ
+  /-- Terminal convergence-in-measure statement. -/
   terminalConvergence : Prop :=
     ∀ ε > 0,
       Tendsto (fun n => terminalErrorMeasure ε n) atTop (𝓝 0)
@@ -420,6 +439,7 @@ theorem euler_gridConsistency_of_terminalConvergence (U : UncertainSpace)
 /-- D-line start: Ito layer as interface-only assumptions. -/
 class ItoStructure (U : UncertainSpace) [AlgebraicUncertainSpace U]
     [ExpectationStructure U] [ExpectationIndependenceStructure U] where
+  /-- Ito formula statement for uncertain processes. -/
   ito_formula_statement : UncertainProcess U → Prop
   ito_formula_axiom : ∀ P : UncertainProcess U, ito_formula_statement P
 
