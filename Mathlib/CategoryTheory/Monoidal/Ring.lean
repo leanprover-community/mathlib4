@@ -75,10 +75,110 @@ scoped[CategoryTheory.MonObj] attribute [instance] Hom.commRing
 class IsRingHom {R₁ R₂ : C} [RingObj R₁] [RingObj R₂] (f : R₁ ⟶ R₂)
   extends IsAddMonHom f, IsMonHom f
 
-instance (R : C) [RingObj R] : IsRingHom (𝟙 R) where
+instance IsRingHom.id (R : C) [RingObj R] : IsRingHom (𝟙 R) where
 
-instance {R₁ R₂ R₃ : C} [RingObj R₁] [RingObj R₂] [RingObj R₃]
+instance IsRingHom.comp {R₁ R₂ R₃ : C} [RingObj R₁] [RingObj R₂] [RingObj R₃]
     (f : R₁ ⟶ R₂) (g : R₂ ⟶ R₃) [IsRingHom f] [IsRingHom g] :
     IsRingHom (f ≫ g) where
+
+variable (C) in
+/-- The category of ring objects in a cartesian monoidal category. -/
+structure Rng where
+  /-- The underlying object in the ambient monoidal category -/
+  X : C
+  [ringObj : RingObj X]
+
+namespace Rng
+
+attribute [instance] ringObj
+
+/-- A morphism of ring objects. -/
+@[ext]
+structure Hom (R₁ R₂ : Rng C) where
+  /-- The underlying morphism -/
+  hom : R₁.X ⟶ R₂.X
+  [isRingHom : IsRingHom hom]
+
+attribute [instance] Hom.isRingHom
+
+@[simps]
+instance : Category (Rng C) where
+  Hom R₁ R₂ := Hom R₁ R₂
+  id X := { hom := 𝟙 _ }
+  comp f g := { hom := f.hom ≫ g.hom }
+
+@[ext]
+lemma hom_ext {R₁ R₂ : Rng C} {f g : R₁ ⟶ R₂} (h : f.hom = g.hom) : f = g :=
+  Hom.ext h
+
+variable (C) in
+/-- The forgetful functor from the category of ring objects in `C` to `C`. -/
+@[simps]
+def forget : Rng C ⥤ C where
+  obj R := R.X
+  map f := f.hom
+
+instance : (forget C).Faithful where
+
+end Rng
+
+variable (C) in
+/-- The category of commutative ring objects in a cartesian monoidal category. -/
+structure CommRng where
+  /-- The underlying object in the ambient monoidal category -/
+  X : C
+  [ringObj : RingObj X]
+
+namespace CommRng
+
+attribute [instance] ringObj
+
+/-- A morphism of commutative ring objects. -/
+@[ext]
+structure Hom (R₁ R₂ : CommRng C) where
+  /-- The underlying morphism -/
+  hom : R₁.X ⟶ R₂.X
+  [isRingHom : IsRingHom hom]
+
+attribute [instance] Hom.isRingHom
+
+@[simps]
+instance : Category (CommRng C) where
+  Hom R₁ R₂ := Hom R₁ R₂
+  id X := { hom := 𝟙 _ }
+  comp f g := { hom := f.hom ≫ g.hom }
+
+@[ext]
+lemma hom_ext {R₁ R₂ : CommRng C} {f g : R₁ ⟶ R₂} (h : f.hom = g.hom) : f = g :=
+  Hom.ext h
+
+variable (C) in
+/-- The forgetful functor from the category of ring objects in `C` to `C`. -/
+@[simps]
+def forget : CommRng C ⥤ C where
+  obj R := R.X
+  map f := f.hom
+
+variable (C) in
+/-- The forgetful functor from the category of commutative ring objects
+to the category of ring objects. -/
+def forget₂Ring : CommRng C ⥤ Rng C where
+  obj R := .mk R.X
+  map f := { hom := f.hom }
+
+variable (C) in
+/-- The forgetful functor `CommRng C ⥤ Rng C` is fully faithful. -/
+def fullyFaithfulForget₂Ring : (forget₂Ring C).FullyFaithful where
+  preimage f := { hom := f.hom, isRingHom := f.isRingHom }
+
+instance : (forget₂Ring C).Faithful :=
+  (fullyFaithfulForget₂Ring C).faithful
+
+instance : (forget₂Ring C).Full :=
+  (fullyFaithfulForget₂Ring C).full
+
+instance : (forget C).Faithful where
+
+end CommRng
 
 end CategoryTheory
