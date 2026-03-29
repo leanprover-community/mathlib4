@@ -80,7 +80,7 @@ theorem mul_poly {n : ℕ} {f g : K[X]} (hf : Introspective f n r)
 
 variable [NeZero r]
 
-theorem eval_pow_eq_pow_eval {μ : K} {f : K[X]} {n : ℕ} (h : IsPrimitiveRoot μ r)
+theorem eval_pow {μ : K} {f : K[X]} {n : ℕ} (h : IsPrimitiveRoot μ r)
     (hi : Introspective f n r) : f.eval (μ ^ n) = f.eval μ ^ n := by
   haveI : r ≠ 0 := NeZero.out
   exact hi μ ((mem_primitiveRoots (by lia)).mpr h)
@@ -364,8 +364,8 @@ theorem sp2_le (h : Conditions r p n a q μ) :
     have ho : o ∈ sp1 h '' Set.univ := by grind
     have hi1 := forall_in_se1_in_image_sp1_introspective h x (by grind [se3_subset_se1]) o ho
     have hi2 := forall_in_se1_in_image_sp1_introspective h y (by grind [se3_subset_se1]) o ho
-    rw [← Introspective.eval_pow_eq_pow_eval is_primitive_root hi1,
-     ← Introspective.eval_pow_eq_pow_eval is_primitive_root hi2]
+    rw [← Introspective.eval_pow is_primitive_root hi1,
+     ← Introspective.eval_pow is_primitive_root hi2]
     suffices μ ^ x = μ ^ y by rw [this]
     replace heq : x ≡ y [MOD r] := by rw [← ZMod.natCast_eq_natCast_iff x y r, heq]
     exact pow_eq_pow_of_modEq heq is_primitive_root.pow_eq_one
@@ -433,8 +433,8 @@ theorem se2_choose_le_sp2 (h : Conditions r p n a q μ) :
           simp [ModEq]
         have hif := (forall_in_se1_in_image_sp1_introspective h) e he1 (sp1 h hf) (by grind)
         have hig := (forall_in_se1_in_image_sp1_introspective h) e he1 (sp1 h hg) (by grind)
-        rw [← hs, ← hf2, ← hg2, ← he2, ht, Introspective.eval_pow_eq_pow_eval is_primitive_root hif,
-          Introspective.eval_pow_eq_pow_eval is_primitive_root hig]
+        rw [← hs, ← hf2, ← hg2, ← he2, ht, Introspective.eval_pow is_primitive_root hif,
+          Introspective.eval_pow is_primitive_root hig]
         grind
       have hs : (f - g).natDegree ≤ #ss := by
         simp only [ss, Finset.card_map, ← Set.ncard_eq_toFinset_card]
