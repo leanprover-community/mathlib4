@@ -56,6 +56,7 @@ public def Introspective (f : K[X]) (n : ℕ) (r : ℕ) : Prop :=
   ∀ μ ∈ (primitiveRoots r K), f.eval (μ ^ n) = f.eval μ ^ n
 
 @[expose] public section Introspective
+
 namespace Introspective
 
 variable {r : ℕ}
