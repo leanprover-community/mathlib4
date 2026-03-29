@@ -137,12 +137,26 @@ def withVSCodeAbbrev : Array Char := #[
 ]
 
 /--
-Other unicode characters present in Mathlib but not present in any of the above lists.
-(as of March 17, 2026)
-Empty lines make sure the characters don't overlap as displayed.
+Other unicode characters present in Mathlib but not present in any of the above lists
+(as of March 17, 2026).
+
+This list may be extended by more characters for which no VSCode-extension abbreviation exists.
+Some guidelines:
+- No invisible characters
+- No characters affecting text directionality (Mathlib uses left-to-right text).
+- No [Private Use Areas](https://en.wikipedia.org/wiki/Private_Use_Areas)
+- Check if a VSCode-extension abbreviation exists (if yes, update list `withVSCodeAbbrev` instead)
+- Consider proposing an abbreviation to [the extension](https://github.com/leanprover/vscode-lean4)
+- Consider if adding the character is really justified without having the abbreviation
+- Consider making a separate PR for adding symbols
+- Avoid characters which modify appearance of other characters
+- Avoid non-[Mathematical symbols](https://en.wikipedia.org/wiki/Mathematical_operators_and_symbols_in_Unicode)
+- Avoid symbols that increase ambiguity or worsen readability
+
+Empty lines for improved readability (otherwise some characters overlap in some fonts).
 -/
 def othersInMathlib : Array Char := #[
-  '✔', '«', '»', '⟍', 'ł', 'ń', '⎯', '⏐', 'ć', 'š', '̂', 'ᘁ', '𝖣', 'ß', 'ỳ', '⤏',
+  '✔', '⟍', 'ł', 'ń', '⎯', '⏐', 'ć', 'š', '̂', 'ᘁ', '𝖣', 'ß', 'ỳ', '⤏',
 
   '┌', '┐', '│', '├', '└', '┬', '┘', '▼', '◄', '⋅', 'ś', '－', '＼', '◥', '／', '◢',
 
