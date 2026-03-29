@@ -200,10 +200,9 @@ theorem CompletelyRegularSpace.of_isTopologicalBasis_clopens
     CompletelyRegularSpace X where
   completely_regular x K hK hx := by
     obtain ⟨s, hs, hx, hsK⟩ := h.exists_subset_of_mem_open hx hK.isOpen_compl
-    refine ⟨(sᶜ).indicator 1, ?_, ?_, fun x hx ↦ indicator_of_mem ?_ _⟩
+    refine ⟨sᶜ.indicator 1, ?_, by simpa, fun x hx ↦ indicator_of_mem ?_ _⟩
     · exact hs.compl.continuous_indicator continuous_const
-    · simpa
-    · exact fun hs ↦ hsK hs hx
+    · exact (mem_compl_iff s x).mpr fun hs ↦ hsK hs hx
 
 open TopologicalSpace Cardinal in
 theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_continuum
