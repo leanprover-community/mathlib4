@@ -49,15 +49,15 @@ lemma isStrictlyPositive_conjSqrt_iff (c a : A) (hc : IsStrictlyPositive c := by
 lemma ringInverse_conjSqrt (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
     (conjSqrt c a)⁻¹ʳ = conjSqrt c⁻¹ʳ a⁻¹ʳ := by
   by_cases ha : IsUnit a
-  · grind [conjSqrt_apply, sqrt_ringInverse]
+  · grind [conjSqrt_apply]
   · have : ¬IsUnit (conjSqrt c a) := by grind [conjSqrt_apply, IsUnit.mul_left_iff]
     simp [inverse_non_unit a ha, inverse_non_unit _ this]
 
 @[grind =]
 lemma conjSqrt_ringInverse_conjSqrt (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
     conjSqrt c⁻¹ʳ (conjSqrt c a) = a := by
-  grind [IsSelfAdjoint.commute_of_mul_eq_isSelfAdjoint _ (sqrt c) 1,
-         sqrt_ringInverse, Ring.inverse_mul_cancel, conjSqrt_apply] =>
+  grind [IsSelfAdjoint.commute_of_mul_eq_isSelfAdjoint _ (sqrt c) 1, Ring.inverse_mul_cancel,
+         conjSqrt_apply] =>
     have : sqrt c⁻¹ʳ * sqrt c = 1
     have : Commute (sqrt c) (sqrt c⁻¹ʳ)
     finish
