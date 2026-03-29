@@ -93,17 +93,20 @@ def decidableEqOfEncodable (α) [Encodable α] : DecidableEq α
   | _, _ => decidable_of_iff _ encode_inj
 
 /-- If `α` is encodable and there is an injection `f : β → α`, then `β` is encodable as well. -/
+@[implicit_reducible]
 def ofLeftInjection [Encodable α] (f : β → α) (finv : α → Option β)
     (linv : ∀ b, finv (f b) = some b) : Encodable β :=
   ⟨fun b => encode (f b), fun n => (decode n).bind finv, fun b => by
     simp [Encodable.encodek, linv]⟩
 
 /-- If `α` is encodable and `f : β → α` is invertible, then `β` is encodable as well. -/
+@[implicit_reducible]
 def ofLeftInverse [Encodable α] (f : β → α) (finv : α → β) (linv : ∀ b, finv (f b) = b) :
     Encodable β :=
   ofLeftInjection f (some ∘ finv) fun b => congr_arg some (linv b)
 
 /-- Encodability is preserved by equivalence. -/
+@[implicit_reducible]
 def ofEquiv (α) [Encodable α] (e : β ≃ α) : Encodable β :=
   ofLeftInverse e e.symm e.left_inv
 
@@ -193,8 +196,10 @@ theorem decode₂_ne_none_iff [Encodable α] {n : ℕ} :
   simp_rw [Set.range, Set.mem_setOf_eq, Ne, Option.eq_none_iff_forall_not_mem,
     Encodable.mem_decode₂, not_forall, not_not]
 
-theorem decode₂_is_partial_inv [Encodable α] : IsPartialInv encode (decode₂ α) := fun _ _ =>
+theorem decode₂_isPartialInv [Encodable α] : IsPartialInv encode (decode₂ α) := fun _ _ =>
   mem_decode₂
+
+@[deprecated (since := "2026-03-11")] alias decode₂_is_partial_inv := decode₂_isPartialInv
 
 theorem decode₂_inj [Encodable α] {n : ℕ} {a₁ a₂ : α} (h₁ : a₁ ∈ decode₂ α n)
     (h₂ : a₂ ∈ decode₂ α n) : a₁ = a₂ :=
@@ -208,25 +213,20 @@ theorem encodek₂ [Encodable α] (a : α) : decode₂ α (encode a) = some a :=
 def decidableRangeEncode (α : Type*) [Encodable α] : DecidablePred (· ∈ Set.range (@encode α _)) :=
   fun x =>
   decidable_of_iff (Option.isSome (decode₂ α x))
-    ⟨fun h => ⟨Option.get _ h, by rw [← decode₂_is_partial_inv (Option.get _ h), Option.some_get]⟩,
+    ⟨fun h => ⟨Option.get _ h, by rw [← decode₂_isPartialInv (Option.get _ h), Option.some_get]⟩,
       fun ⟨n, hn⟩ => by rw [← hn, encodek₂]; exact rfl⟩
 
 /-- An encodable type is equivalent to the range of its encoding function. -/
 def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α _) where
-  toFun := fun a : α => ⟨encode a, Set.mem_range_self _⟩
+  toFun a := ⟨encode a, Set.mem_range_self _⟩
   invFun n :=
     Option.get _
       (show isSome (decode₂ α n.1) by obtain ⟨x, hx⟩ := n.2; rw [← hx, encodek₂]; exact rfl)
-  left_inv a := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
-  right_inv := fun ⟨n, x, hx⟩ => by
-    apply Subtype.ext
-    dsimp
-    conv =>
-      rhs
-      rw [← hx]
-    rw [encode_injective.eq_iff, ← Option.some_inj, Option.some_get, ← hx, encodek₂]
+  left_inv _ := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
+  right_inv _ := Subtype.ext <| decode₂_isPartialInv.get_eq _ _
 
 /-- A type with unique element is encodable. This is not an instance to avoid diamonds. -/
+@[implicit_reducible]
 def _root_.Unique.encodable [Unique α] : Encodable α :=
   ⟨fun _ => 0, fun _ => some default, Unique.forall_iff.2 rfl⟩
 
@@ -387,11 +387,12 @@ instance _root_.PLift.encodable [Encodable α] : Encodable (PLift α) :=
   ofEquiv _ Equiv.plift
 
 /-- If `β` is encodable and there is an injection `f : α → β`, then `α` is encodable as well. -/
+@[implicit_reducible]
 noncomputable def ofInj [Encodable β] (f : α → β) (hf : Injective f) : Encodable α :=
-  ofLeftInjection f (partialInv f) fun _ => (partialInv_of_injective hf _ _).2 rfl
+  ofLeftInjection f (partialInv f) hf.isPartialInv.eq
 
 /-- If `α` is countable, then it has a (non-canonical) `Encodable` structure. -/
-@[no_expose]
+@[no_expose, implicit_reducible]
 noncomputable def ofCountable (α : Type*) [Countable α] : Encodable α :=
   Nonempty.some <|
     let ⟨f, hf⟩ := exists_injective_nat α
@@ -489,9 +490,9 @@ private def good : Option α → Prop
   | none => False
 
 set_option backward.privateInPublic true in
-private local instance decidable_good : DecidablePred (good p) :=
-  fun n => by
-    cases n <;> unfold good <;> dsimp <;> infer_instance
+private local instance decidable_good : DecidablePred (good p)
+  | some a => inferInstanceAs <| Decidable (p a)
+  | none => inferInstanceAs <| Decidable False
 
 open Encodable
 
@@ -614,6 +615,7 @@ theorem Quotient.rep_spec (q : Quotient s) : ⟦q.rep⟧ = q :=
   choose_spec (exists_rep q)
 
 /-- The quotient of an encodable space by a decidable equivalence relation is encodable. -/
+@[implicit_reducible]
 def encodableQuotient : Encodable (Quotient s) :=
   ⟨fun q => encode q.rep, fun n => Quotient.mk'' <$> decode n, by
     rintro ⟨l⟩; dsimp; rw [encodek]; exact congr_arg some ⟦l⟧.rep_spec⟩

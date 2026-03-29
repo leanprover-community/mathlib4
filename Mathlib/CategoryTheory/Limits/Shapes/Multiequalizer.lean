@@ -559,14 +559,13 @@ theorem condition (b) : K.ι (J.fst b) ≫ I.fst b = K.ι (J.snd b) ≫ I.snd b 
 @[simps!]
 def ext {t s : Multifork I} (e : t.pt ≅ s.pt)
     (h : ∀ i : J.L, e.hom ≫ s.ι i = t.ι i := by cat_disch) : t ≅ s :=
-  Cones.ext e (by rintro (i | j) <;> simp [← h])
+  Cone.ext e (by rintro (i | j) <;> simp [← h])
 
 /-- Every multifork is isomorphic to one of the form `Multifork.ofι`. -/
 @[simps!]
 def isoOfι (t : Multifork I) : t ≅ ofι _ t.pt t.ι t.condition :=
   ext (Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This definition provides a convenient way to show that a multifork is a limit. -/
 @[simps]
 def IsLimit.mk (lift : ∀ E : Multifork I, E.pt ⟶ K.pt)
@@ -648,7 +647,6 @@ theorem toPiFork_π_app_one :
       Fan.IsLimit.lift hc K.ι ≫ I.fstPiMapOfIsLimit c hd :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable {hd} in
 /-- Given a fork over `∏ᶜ I.left ⇉ ∏ᶜ I.right`, we may obtain a multifork. -/
 @[simps pt]
@@ -702,7 +700,6 @@ def toPiForkFunctor :
         · apply Fan.IsLimit.hom_ext hd
           simp }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Multifork.ofPiFork` as a functor. -/
 @[simps]
 def ofPiForkFunctor :
@@ -723,7 +720,7 @@ def multiforkEquivPiForkOfIsLimit :
   inverse := ofPiForkFunctor I hd
   unitIso :=
     NatIso.ofComponents fun K =>
-      Cones.ext (Iso.refl _) (by
+      Cone.ext (Iso.refl _) (by
         rintro (_ | _) <;> simp)
   counitIso :=
     NatIso.ofComponents (fun K =>
@@ -889,7 +886,6 @@ theorem toSigmaCofork_π :
     (K.toSigmaCofork hc hd).π = Cofan.IsColimit.desc hd K.π :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable {hc} in
 /-- Given a cofork over `∐ I.left ⇉ ∐ I.right`, we may obtain a multicofork. -/
 @[simps pt]
@@ -933,7 +929,7 @@ alias ofSigmaCofork_ι_app_right' := ofSigmaCofork_π
 def ext {K K' : Multicofork I}
     (e : K.pt ≅ K'.pt) (h : ∀ (i : J.R), K.π i ≫ e.hom = K'.π i := by cat_disch) :
     K ≅ K' :=
-  Cocones.ext e (by rintro (i | j) <;> simp [h])
+  Cocone.ext e (by rintro (i | j) <;> simp [h])
 
 /-- Every multicofork is isomorphic to one of the form `Multicofork.ofπ`. -/
 @[simps!]
@@ -961,7 +957,6 @@ noncomputable def toSigmaCoforkFunctor :
       · apply Cofan.IsColimit.hom_ext hd
         simp }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Multicofork.ofSigmaCofork` as a functor. -/
 @[simps]
 noncomputable def ofSigmaCoforkFunctor :
@@ -981,7 +976,7 @@ noncomputable def multicoforkEquivSigmaCoforkOfIsColimit :
     Multicofork I ≌ Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc) where
   functor := toSigmaCoforkFunctor I hc hd
   inverse := ofSigmaCoforkFunctor I hc
-  unitIso := NatIso.ofComponents fun K => Cocones.ext (Iso.refl _) (by
+  unitIso := NatIso.ofComponents fun K => Cocone.ext (Iso.refl _) (by
       rintro (_ | _) <;> simp)
   counitIso := NatIso.ofComponents fun K =>
     Cofork.ext (Iso.refl _)
@@ -1113,7 +1108,7 @@ theorem multicofork_ι_app_right (b) :
     (Multicoequalizer.multicofork I).ι.app (WalkingMultispan.right b) = Multicoequalizer.π I b :=
   rfl
 
-/-- `@[simp]`-normal form of multicofork_ι_app_right. -/
+/-- `@[simp]`-normal form of `multicofork_ι_app_right`. -/
 @[simp]
 theorem multicofork_ι_app_right' (b) :
     colimit.ι (MultispanIndex.multispan I) (WalkingMultispan.right b) = π I b :=

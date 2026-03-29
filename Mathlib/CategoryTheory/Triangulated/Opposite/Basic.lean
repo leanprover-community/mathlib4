@@ -62,13 +62,13 @@ set_option backward.privateInPublic.warn false in
 /-- The category `Cᵒᵖ` is equipped with the shift such that the shift by `n` on `Cᵒᵖ`
 corresponds to the shift by `-n` on `C`. -/
 scoped instance : HasShift Cᵒᵖ ℤ :=
-  (inferInstance : HasShift (OppositeShiftAux C) ℤ)
+  inferInstanceAs <| HasShift (OppositeShiftAux C) ℤ
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] (n : ℤ) :
     (shiftFunctor Cᵒᵖ n).Additive :=
-  (inferInstance : (shiftFunctor (OppositeShiftAux C) n).Additive)
+  inferInstanceAs <| (shiftFunctor (OppositeShiftAux C) n).Additive
 
 end Opposite
 
@@ -315,7 +315,7 @@ lemma shiftFunctorCompIsoId_op_inv_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 
         (shiftFunctorOpIso C m n (by omega)).inv.app (Opposite.op (X.unop⟦m⟧)) ≫
           ((shiftFunctorOpIso C n m hnm).inv.app X)⟦m⟧' := by
   simp [shiftFunctorCompIsoId, shiftFunctorZero_op_inv_app X,
-    shiftFunctorAdd'_op_hom_app X n m 0 hnm m n 0 hnm (by omega) (add_zero 0)]
+    shiftFunctorAdd'_op_hom_app X n m 0 hnm m n 0 hnm (by lia) (add_zero 0)]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
@@ -334,10 +334,7 @@ lemma shift_opShiftFunctorEquivalence_counitIso_inv_app
     shift_shiftFunctorCompIsoId_hom_app, op_comp, unop_comp, Quiver.Hom.unop_op,
     Functor.map_comp, Iso.inv_hom_id_app_assoc, Functor.op_obj]
   apply Quiver.Hom.unop_inj
-  dsimp
-  simp only [Category.assoc, ← Functor.map_comp_assoc, Iso.unop_hom_inv_id_app_assoc]
-  congr 3
-  exact (NatIso.naturality_1 (shiftFunctorCompIsoId C n (-n) (by lia)) _).symm
+  simp
 
 /-- Given objects `X` and `Y` in `Cᵒᵖ`, this is the bijection
 `(op (X.unop⟦n⟧) ⟶ Y) ≃ (X ⟶ Y⟦n⟧)` for any `n : ℤ`. -/

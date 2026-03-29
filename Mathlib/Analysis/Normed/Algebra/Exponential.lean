@@ -96,7 +96,7 @@ namespace NormedSpace
 
 open Filter RCLike ContinuousMultilinearMap NormedField Asymptotics FormalMultilinearSeries
 
-open scoped Nat Topology ENNReal
+open scoped Nat Topology ENNReal Ring
 
 section TopologicalAlgebra
 
@@ -173,7 +173,7 @@ theorem expSeries_apply_zero (n : ℕ) :
     expSeries 𝕂 𝔸 n (fun _ => (0 : 𝔸)) = Pi.single (M := fun _ => 𝔸) 0 1 n := by
   rw [expSeries_apply_eq]
   rcases n with - | n
-  · rw [pow_zero, Nat.factorial_zero, Nat.cast_one, inv_one, one_smul, Pi.single_eq_same]
+  · simp
   · rw [zero_pow (Nat.succ_ne_zero _), smul_zero, Pi.single_eq_of_ne n.succ_ne_zero]
 
 @[simp]
@@ -206,6 +206,16 @@ theorem star_exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] (x : 𝔸)
   · obtain ⟨_⟩ := h
     simp_rw [exp_eq_tsum ℚ, ← star_pow, ← star_inv_natCast_smul, ← tsum_star]
   · rw [exp, exp, dif_neg h, dif_neg h, star_one]
+
+/-- A subalgebra of `𝔸` that is closed topologically and under `ℚ`-scaling is closed under `exp`. -/
+theorem exp_mem
+    {R S : Type*} [Monoid R] [SMul ℚ R] [MulAction R 𝔸] [Algebra ℚ 𝔸] [IsScalarTower ℚ R 𝔸]
+    [SetLike S 𝔸] [SubsemiringClass S 𝔸] [SMulMemClass S R 𝔸] {s : S}
+    (h_closed : IsClosed (s : Set 𝔸)) {x : 𝔸} (h : x ∈ s) :
+    exp x ∈ s := by
+  have := SMulMemClass.ofIsScalarTower S ℚ R 𝔸
+  rw [exp_eq_tsum ℚ]
+  exact tsum_mem h_closed fun i => SMulMemClass.smul_mem _ <| pow_mem h _
 
 variable (𝕂)
 
@@ -343,6 +353,7 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
   field_simp [n.factorial_ne_zero]
 
 /-- `NormedSpace.exp x` has explicit two-sided inverse `NormedSpace.exp (-x)`. -/
+@[implicit_reducible]
 noncomputable def invertibleExpOfMemBall [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) : Invertible (exp x)
     where
@@ -512,6 +523,7 @@ theorem exp_add_of_commute {x y : 𝔸} (hxy : Commute x y) : exp (x + y) = exp 
     ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
 
 /-- `NormedSpace.exp x` has explicit two-sided inverse `NormedSpace.exp (-x)`. -/
+@[implicit_reducible]
 noncomputable def invertibleExp (x : 𝔸) : Invertible (exp x) :=
   invertibleExpOfMemBall <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
 
@@ -521,7 +533,7 @@ theorem isUnit_exp (x : 𝔸) : IsUnit (exp x) :=
 theorem invOf_exp (x : 𝔸) [Invertible (exp x)] : ⅟(exp x) = exp (-x) :=
   invOf_exp_of_mem_ball <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
 
-theorem _root_.Ring.inverse_exp (x : 𝔸) : Ring.inverse (exp x) = exp (-x) :=
+theorem _root_.Ring.inverse_exp (x : 𝔸) : (exp x)⁻¹ʳ = exp (-x) :=
   letI := invertibleExp x
   Ring.inverse_invertible _
 
