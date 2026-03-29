@@ -33,6 +33,9 @@ open scoped Topology
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {d : ℕ+}
 variable {X : ℕ → Ω → EuclideanSpace ℝ (Fin d)} [IsProbabilityMeasure P]
 
+/-- The standard multivariate Gaussian measure on Euclidean space ℝ^d,
+defined as the pushforward of the product of d independent standard Gaussian measures
+under the isomorphism to `EuclideanSpace ℝ (Fin d)`. -/
 def standardGaussianRealMultivariate : Measure (EuclideanSpace ℝ (Fin d)) :=
   Measure.map (MeasurableEquiv.toLp 2 (Fin d → ℝ)) (Measure.pi (fun _ : Fin d => gaussianReal 0 1))
 

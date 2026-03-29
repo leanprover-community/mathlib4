@@ -73,10 +73,14 @@ lemma cexp_bound_exact : ∀ (u v : ℝ), dist (Complex.exp (↑u * I)) (Complex
       _ = 1 + 1 := by rw [norm_exp_ofReal_mul_I, norm_exp_ofReal_mul_I]
       _ = 2 := by norm_num
 
+/-- The bounded continuous function `z ↦ exp(z * I)` from ℝ to ℂ,
+bounded by 2 since |exp(u * I)| = 1 for all real u. -/
 def bounded_continuous_exp_ofReal_mul_I : ℝ →ᵇ ℂ :=
   BoundedContinuousFunction.mkOfBound
     ⟨fun u => Complex.exp (u * Complex.I), continuous_exp_ofReal_mul_I⟩ 2 cexp_bound_exact
 
+/-- For a vector `t` in Euclidean space, the bounded continuous function
+that composes the inner product with `t` and then applies `exp(· * I)`. -/
 def bounded_continuous_exp_inner_mul_I (t : EuclideanSpace ℝ (Fin d)) :
   EuclideanSpace ℝ (Fin d) →ᵇ ℂ :=
   BoundedContinuousFunction.compContinuous bounded_continuous_exp_ofReal_mul_I ⟨fun x => ⟪x, t⟫,
