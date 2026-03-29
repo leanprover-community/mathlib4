@@ -623,8 +623,29 @@ section unicodeLinter
 open Mathlib.Linter.TextBased
 open Mathlib.Linter.TextBased.UnicodeLinter
 
-/- Ensure each character can only be listed in either selector-list. -/
-#guard emojis.toList ∩ nonEmojis.toList = ∅
+
+def allLinterDefinedCharacterLists : List (List Char) := [
+  withVSCodeAbbrev,
+  othersInMathlib,
+  emojis,
+  nonEmojis
+].map Array.toList
+
+/- Ensure each character can only be listed in one character list. -/
+#guard List.Pairwise (· ∩ · = ∅) allLinterDefinedCharacterLists
+
+/- Ensure none of the lists contain duplicates -/
+#guard allLinterDefinedCharacterLists.all <| (List.Pairwise (· != ·) ·)
+
+/- See [Private Use Area](https://en.wikipedia.org/wiki/Private_Use_Areas). -/
+def isPrivateUseAreaChar (c : Char) : Bool :=
+  let N := c.toNat
+  (N ≥ 0xE000 && N ≤ 0xF8FF) ||
+  (N ≥ 0xF0000  && N ≤ 0xFFFFF) ||
+  (N ≥ 0x100000 && N ≤ 0x10FFFF)
+
+/- Ensure no list contains [Private Use Area](https://en.wikipedia.org/wiki/Private_Use_Areas) characters. -/
+#guard !(allLinterDefinedCharacterLists.any <| (List.any · isPrivateUseAreaChar))
 
 /-!
 Ensure parsing back error messages in `parse?_errorContext` works.
