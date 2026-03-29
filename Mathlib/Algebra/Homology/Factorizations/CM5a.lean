@@ -197,8 +197,6 @@ instance : Mono (homologyMap (ι f n₁) n₁) := by
 
 end step₁
 
--- This lemma and a few definitions above are made public only in order to please CI.
--- They will be made private again when the proofs of `cm5a_cof` and `cm5a` are added.
 open step₁ in
 lemma step₁ [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) (hn₁ : n₀ + 1 = n₁ := by lia) :
@@ -397,6 +395,8 @@ lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
 
 end step₂
 
+-- This lemma and a few definitions above are made public only in order to please CI.
+-- They will be made private again when the proofs of `cm5a_cof` and `cm5a` are added.
 open step₂ in
 lemma step₂ [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) [Mono (homologyMap f n₁)] (hn₁ : n₀ + 1 = n₁ := by lia) :
