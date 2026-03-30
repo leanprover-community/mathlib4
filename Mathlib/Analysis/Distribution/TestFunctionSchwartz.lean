@@ -65,11 +65,9 @@ private theorem seminorm_toSchwartzMap_le (k n : ℕ) (f : ContDiffMapSupportedI
   have hbound : 0 ≤ powNormBound K k := by
     unfold powNormBound
     simp
-
   refine SchwartzMap.seminorm_le_bound 𝕜 k n (toSchwartzMap f)
     (mul_nonneg hbound
       (apply_nonneg (ContDiffMapSupportedIn.seminorm 𝕜 E F ⊤ K n) f)) ?_
-
   intro x
   by_cases hx : x ∈ K
   · have hK : ‖x‖ ^ k ≤ powNormBound K k :=
@@ -128,3 +126,129 @@ theorem toSchwartzMapCLM_apply (f : ContDiffMapSupportedIn E F ⊤ K) (x : E) :
 end ToSchwartzMap
 
 end ContDiffMapSupportedIn
+
+namespace TestFunction
+
+section ToSchwartzMap
+
+variable [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
+  [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
+  [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
+
+
+/-- Smooth compactly-supported functions are Schwartz. -/
+def toSchwartzMap (f : TestFunction Ω F ⊤) : 𝓢(E, F) :=
+  f.hasCompactSupport.toSchwartzMap f.contDiff
+
+@[simp]
+theorem toSchwartzMap_apply (f : TestFunction Ω F ⊤) (x : E) : toSchwartzMap f x = f x :=
+  rfl
+
+/-- Map from test functions to Schwartz functions. -/
+noncomputable def toSchwartzMapCLM : TestFunction Ω F ⊤ →L[𝕜] 𝓢(E, F) :=
+  TestFunction.limitCLM 𝕜
+    (TestFunction.toSchwartzMap (E := E) (Ω := Ω) (F := F))
+    (fun K hK =>
+      ContDiffMapSupportedIn.toSchwartzMapCLM
+        (𝕜 := 𝕜) (E := E) (F := F) (K := K))
+    (fun K₁ K₂ h => rfl)
+
+
+@[simp]
+theorem toSchwartzMapCLM_apply (f : TestFunction Ω F ⊤) (x : E) :
+    toSchwartzMapCLM (𝕜 := 𝕜) f x = f x :=
+  rfl
+
+
+end ToSchwartzMap
+
+section ToComplexSchwartzMap
+
+variable [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
+
+
+/-- Mapfrom ℝ-valued test functions on `Ω` to ℂ-valued Schwartz functions. -/
+noncomputable def toComplexSchwartzMapCLM : TestFunction Ω ℝ ⊤ →L[ℝ] 𝓢(E, ℂ) :=
+  (TestFunction.toSchwartzMapCLM (𝕜 := ℝ) (E := E) (Ω := Ω) (F := ℂ)).comp
+    (TestFunction.postcompCLM (Ω := Ω) (n := (⊤ : ℕ∞)) (𝕜 := ℝ) Complex.ofRealCLM)
+
+@[simp]
+theorem toComplexSchwartzMapCLM_apply (f : TestFunction Ω ℝ ⊤) (x : E) :
+    toComplexSchwartzMapCLM (E := E) (Ω := Ω) f x = Complex.ofReal (f x) :=
+  rfl
+
+end ToComplexSchwartzMap
+
+end TestFunction
+
+namespace TemperedDistribution
+
+section ToDistribution
+
+variable [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
+  [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace ℂ F] [IsScalarTower ℝ ℂ F]
+
+private theorem toComplexSchwartzMapCLM_real_smul (c : ℝ) (φ : TestFunction Ω ℝ ⊤) :
+    TestFunction.toComplexSchwartzMapCLM (E := E) (Ω := Ω) (c • φ) =
+      (c : ℂ) • TestFunction.toComplexSchwartzMapCLM (E := E) (Ω := Ω) φ := by
+  simp
+
+/-- Given tempered distribution T, we build continuous linear map on ℝ-valued test functions
+by `φ ↦ T (toComplexSchwartzMapCLM φ)`. -/
+noncomputable def toDistributionCLM (T : 𝓢'(E, F)) : TestFunction Ω ℝ ⊤ →L[ℝ] F :=
+  { toFun := fun φ ↦ T (TestFunction.toComplexSchwartzMapCLM (E := E) (Ω := Ω) φ)
+    map_add' := by
+      simp
+    map_smul' := by
+      intro c φ
+      let ψ := TestFunction.toComplexSchwartzMapCLM (E := E) (Ω := Ω) φ
+      rw [toComplexSchwartzMapCLM_real_smul (E := E) (Ω := Ω) c φ]
+      change T (c • ψ) = c • T ψ
+      rw [← algebraMap_smul (A := ℂ) c (T ψ)]
+      exact T.map_smul (c : ℂ) ψ
+    cont := by
+      exact T.continuous.comp
+        (TestFunction.toComplexSchwartzMapCLM (E := E) (Ω := Ω)).continuous
+        }
+
+@[simp]
+theorem toDistributionCLM_apply (T : 𝓢'(E, F)) (φ : TestFunction Ω ℝ ⊤) :
+    toDistributionCLM (E := E) (Ω := Ω) T φ =
+      T ((TestFunction.toComplexSchwartzMapCLM (E := E) (Ω := Ω)) φ) :=
+  rfl
+
+/-- Restriction of tempered distribution to real-valued test functions. -/
+noncomputable def toDistribution (T : 𝓢'(E, F)) : Distribution Ω F ⊤ :=
+  (ContinuousLinearMap.toUniformConvergenceCLM (RingHom.id ℝ) F
+      {s : Set (TestFunction Ω ℝ ⊤) | IsCompact s})
+    (toDistributionCLM (E := E) (Ω := Ω) T)
+
+@[simp]
+theorem toDistribution_apply (T : 𝓢'(E, F)) (φ : TestFunction Ω ℝ ⊤) :
+    toDistribution (E := E) (Ω := Ω) T φ =
+      T ((TestFunction.toComplexSchwartzMapCLM (E := E) (Ω := Ω)) φ) :=
+  rfl
+
+/-- Linear restriction map from tempered distribution to distribution. -/
+def toDistributionLM : 𝓢'(E, F) →ₗ[ℂ] Distribution Ω F ⊤ where
+  toFun := toDistribution (E := E) (Ω := Ω)
+  map_add' T S := by
+    ext φ
+    rw [UniformConvergenceCLM.add_apply, toDistribution_apply, toDistribution_apply,
+      toDistribution_apply]
+    rfl
+  map_smul' c T := by
+    ext φ
+    rw [UniformConvergenceCLM.smul_apply, toDistribution_apply, toDistribution_apply]
+    rfl
+
+@[simp]
+theorem toDistributionLM_apply_apply (T : 𝓢'(E, F)) (φ : TestFunction Ω ℝ ⊤) :
+    toDistributionLM (E := E) (Ω := Ω) T φ =
+      T ((TestFunction.toComplexSchwartzMapCLM (E := E) (Ω := Ω)) φ) :=
+  rfl
+
+end ToDistribution
+
+end TemperedDistribution
