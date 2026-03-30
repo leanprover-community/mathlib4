@@ -44,27 +44,44 @@ public register_option linter.globalSyntax : Bool := {
   descr := "enable the globalSyntax linter"
 }
 
+/--
+Structure storing the mapping from syntax ranges to command kinds,
+as well as auxiliary state used to detect cancelling command pairs.
+-/
 structure RangesToKinds where
   toKinds : Std.HashMap Syntax.Range Name
   mod2 : Std.HashSet String.Pos.Raw
   importEnd : Option String.Pos.Raw
   deriving Inhabited
 
+/--
+Toggle membership of an element in a hash set: insert it if absent,
+otherwise remove it.
+-/
 def toggle {α} [BEq α] [Hashable α] (h : Std.HashSet α) (a : α) :=
   if h.contains a then h.erase a else h.insert a
 
+/--
+Insert a `(range, kind)` pair into a `RangesToKinds` structure,
+updating auxiliary state for command‑pair detection.
+-/
 def RangesToKinds.insert (h : RangesToKinds) (rg : Syntax.Range) (k : Name) : RangesToKinds where
   toKinds := h.toKinds.insert rg k
   mod2 := toggle (toggle h.mod2 rg.start) rg.stop
   importEnd := h.importEnd
 
+/--
+A global reference storing the accumulated `RangesToKinds` information.
+-/
 initialize toKindsRef : IO.Ref RangesToKinds ← IO.mkRef {toKinds := ∅, mod2 := ∅, importEnd := none}
 
 namespace GlobalSyntax
 
+/-- String representation of a syntax range. -/
 local instance : ToString Syntax.Range where
   toString := fun | {start, stop} => s!"({start}, {stop})"
 
+/-- String representation for debugging `RangesToKinds`. -/
 local instance : ToString RangesToKinds where
   toString := fun
   | {toKinds := toKs, mod2 := m2, importEnd := pos?} =>
@@ -73,6 +90,9 @@ local instance : ToString RangesToKinds where
     mod2: {m2.toArray.qsort}\n\n\
     toKinds:\n* {"\n* ".intercalate (sorted.map (s!"{·}")).toList}"
 
+/--
+Map of command starters to the kinds that close or cancel them.
+-/
 abbrev startersEnders : NameMap (Array Name) := .ofArray (cmp := Name.quickCmp) #[
     (``Parser.Command.namespace, #[``Parser.Command.end]),
     (``Parser.Command.section, #[``Parser.Command.end]),
@@ -81,6 +101,10 @@ abbrev startersEnders : NameMap (Array Name) := .ofArray (cmp := Name.quickCmp) 
     (``Parser.Command.universe, #[``Parser.Command.end, ``Parser.Command.eoi]),
   ]
 
+/--
+Given an array of `(range, command kind)` pairs, detect all consecutive
+pairs that cancel each other (e.g. `namespace` followed immediately by `end`).
+-/
 def cancellingPairs (h : Array (Syntax.Range × Name)) :
     Array (Syntax.Range × Syntax.Range) := Id.run do
   if this : h.size ≤ 1 then return #[] else
@@ -95,6 +119,10 @@ def cancellingPairs (h : Array (Syntax.Range × Name)) :
     curr := next
   return pairs
 
+/--
+Extract the substring of `s` corresponding to the given syntax range,
+trimmed of leading/trailing whitespace.
+-/
 def substringOfRange (s : String) (rg : Syntax.Range) : String :=
   {s.toRawSubstring with startPos := rg.start, stopPos := rg.stop}.trim.toString
 
