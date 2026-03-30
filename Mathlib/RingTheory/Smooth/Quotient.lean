@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.RingHom.Smooth
 # Some Lemma About Formally Smooth Under Quotient
 
 In this file, we formalize the result [Stacks 031L] : For flat ring homomorphism `f : R →+* S`,
-`I` an ideal of `R` which is square zero, if `R ⧸ I →+* S ⧸ IS` is formally smooth, so do `f`.
+`I` an ideal of `R` which is square zero, if `R ⧸ I →+* S ⧸ IS` is formally smooth, so is `f`.
 
 -/
 
@@ -58,7 +58,7 @@ lemma LinearMap.ker_inf_smul_top_eq_smul_of_flat {M N : Type*} [AddCommGroup M] 
     | add y ymem z zmem hy hz => exact add_mem hy hz
 
 /-- For flat ring homomorphism `f : R →+* S`, `I` an ideal of `R` which is square zero,
-if `R ⧸ I →+* S ⧸ IS` is formally smooth, so do `f`. -/
+if `R ⧸ I →+* S ⧸ IS` is formally smooth, so is `f`. -/
 @[stacks 031L]
 lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat {S : Type v} [CommRing S]
     [Algebra R S] {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra R' S']
@@ -223,7 +223,7 @@ lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat {S : Type v} [C
           ⟨y, Ideal.mul_le_left ymem⟩ + ⟨z, Ideal.mul_le_left zmem⟩ := rfl
         rw [this, map_add, map_add, hy, hz, add_zero]
     intro x hx
-    rcases  Submodule.mem_map.mp hx with ⟨x', hx', eq⟩
+    rcases Submodule.mem_map.mp hx with ⟨x', hx', eq⟩
     simpa [← eq] using this hx'
   let δ : J'.Cotangent →ₗ[P.Ring] J.Cotangent :=
     (Submodule.liftQ _ Δ (le_of_eq_of_le cotker leΔk)).comp
