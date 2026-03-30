@@ -85,6 +85,10 @@ theorem lfpApprox_monotone : Monotone (lfpApprox f x) := by
   use a'
   exact ⟨lt_of_lt_of_le h' h, rfl⟩
 
+theorem lfpApprox_zero : lfpApprox f x 0 = x := by
+  rw [lfpApprox]
+  aesop
+
 theorem le_lfpApprox {a : Ordinal} : x ≤ lfpApprox f x a := by
   rw [lfpApprox]
   apply le_sSup
@@ -111,6 +115,21 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
     apply Or.inl
     simp only [Set.mem_setOf_eq]
     use a
+
+theorem lfpApprox_limit {a : Ordinal} (ha : Order.IsSuccLimit a) :
+    lfpApprox f x a = ⨆ b : Set.Iio a, lfpApprox f x b := by
+  refine le_antisymm ?_ (iSup_le fun b => lfpApprox_monotone f x b.2.le)
+  rw [lfpApprox]
+  simp only [exists_prop, Set.union_singleton, sSup_insert, sup_le_iff, sSup_le_iff,
+    Set.mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+  constructor
+  · exact (lfpApprox_zero f x).symm.trans_le
+      (le_iSup (fun b : Set.Iio a => lfpApprox f x b) ⟨0, ha.bot_lt⟩)
+  · intro b hb
+    trans lfpApprox f x (⟨b + 1, ha.succ_lt hb⟩ : Set.Iio a)
+    · nth_rw 2 [lfpApprox]
+      exact le_sSup <| Or.inl ⟨b, lt_add_one b, rfl⟩
+    · exact (le_iSup (fun c : Set.Iio a => lfpApprox f x c) ⟨b + 1, ha.succ_lt hb⟩)
 
 theorem lfpApprox_mono_left : Monotone (lfpApprox : (α →o α) → _) := by
   intro f g h x a
@@ -250,6 +269,9 @@ termination_by a
 -- by definitional equality
 unseal gfpApprox lfpApprox
 
+theorem gfpApprox_zero : gfpApprox f x 0 = x := by
+  exact lfpApprox_zero f.dual x
+
 theorem gfpApprox_antitone : Antitone (gfpApprox f x) :=
   lfpApprox_monotone f.dual x
 
@@ -259,6 +281,10 @@ theorem gfpApprox_le {a : Ordinal} : gfpApprox f x a ≤ x :=
 theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
     gfpApprox f x (a + 1) = f (gfpApprox f x a) :=
   lfpApprox_add_one f.dual x h a
+
+theorem gfpApprox_limit {a : Ordinal} (ha : Order.IsSuccLimit a) :
+    gfpApprox f x a = ⨅ b : Set.Iio a, gfpApprox f x b :=
+  lfpApprox_limit f.dual x ha
 
 theorem gfpApprox_mono_left : Monotone (gfpApprox : (α →o α) → _) := by
   intro f g h
