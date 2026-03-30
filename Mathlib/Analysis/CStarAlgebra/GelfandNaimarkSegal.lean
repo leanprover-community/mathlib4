@@ -138,10 +138,10 @@ consequence.
 @[simp]
 private lemma gnsNonUnitalStarAlgHom_map_smul (m : ℂ) (x : A) :
    (f.leftMulMapPreGNS (m • x)).completion = m • (f.leftMulMapPreGNS x).completion := by
- ext a
- induction a using induction_on with
- | hp => apply isClosed_eq <;> fun_prop
- | ih a => simp [smul_mul_assoc]
+  ext a
+  induction a using induction_on with
+  | hp => apply isClosed_eq <;> fun_prop
+  | ih a => simp [smul_mul_assoc]
 
 /--
 The non-unital ⋆-homomorphism/⋆-representation of `A` into the algebra of bounded operators on
