@@ -57,7 +57,8 @@ def pushFVarAliasInfo {m : Type → Type} [Monad m] [MonadInfoTree m]
 
 /--
 `introv` introduces the parameters to a dependent function according to their parameter name. If the
-first parameter is not depended on by the rest of the function type, `introv` with no (remaining) arguments does nothing.
+first parameter is not depended on by the rest of the function type, `introv` with no (remaining)
+arguments does nothing.
 
 * `introv h₁ h₂ ...` introduces non-depended-on parameters in between sequences of depended-on
   parameters, using the names `h₁`, `h₂`, ... in turn. Use `_` to anonymize a specific hypothesis.
