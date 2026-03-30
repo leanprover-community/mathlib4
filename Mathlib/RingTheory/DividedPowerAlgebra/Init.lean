@@ -5,32 +5,60 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos—Fernández
 -/
 module
 
+public import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.Algebra.RingQuot
 public import Mathlib.RingTheory.DividedPowers.Basic
 
 /-!
 # The universal divided power algebra
 
-Let `R` be a ring and `M` be an `R`-module. In this file we define `Γ_R(M)`, the universal
-divided power algebra of `M`, as the ring quotient of the polynomial ring in the variables `ℕ × M`
-by the relation `DividedPowerAlgebra.Rel`.
+Let `R` be a (commutative) semiring and `M` be an `R`-module. In this file we define `Γ_R(M)`,
+the universal divided power algebra of `M`, as the ring quotient of the polynomial ring
+in the variables `ℕ × M` by the relation `DividedPowerAlgebra.Rel`.
 
 `DividedPowerAlgebra R M` satisfies a weak universal property for morphisms to rings with
-divided_powers.
+divided powers.
 
 ## Main definitions
 
 * `DividedPowerAlgebra.Rel`: the type coding the basic relations that will give rise to the
-  divided power algebra. The class of `X (n, a)` will be equal to `dpow n a`, for `a ∈ M`.
+  divided power algebra.
 
-* `DividedPowerAlgebra R M`: the universal divided power algebra of the `R`-module `M`.
+* `DividedPowerAlgebra R M`: the universal divided power algebra of the `R`-module `M`,
+  defined as `RingQuot` of `DividedPowerAlgebra.Rel R M`.
 
-* `DividedPowerAlgebra.dp R n m`: the equivalence class of `X (⟨n, m⟩)` in
-  `DividedPowerAlgebra R M`.
+* `DividedPowerAlgebra.dp R n m`: for `n : ℕ` and `m : M`, this is the equivalence class of
+  `MvPolynomial.X (⟨n, m⟩)` in `DividedPowerAlgebra R M`.
+
+  When that algebra is endowed with its canonical divided power structure (to be defined),
+  the image of `MvPolynomial.X (n, m)`, for any `n : ℕ` and `m : M`, is equal to
+  the `n`th divided power of the image of `m`.
+
+  The API will be setup so that it is never (never say never…) necessary to lift to `MvPolynomial`.
+
+* `DividedPowerAlgebra.LinearMap.lift`: the functoriality map between divided power algebras
+  associated with a linear map of the underlying modules.
+  Given an `R`-algebra `S`, an `S`-module `N` and an `R`-linear map `f : M →ₗ[R] N`,
+  this is the map `DividedPowerAlgebra R M →ₐ[R] DividedPowerAlgebra S N`
+  sending `dp R n m` to `dp S n (f m)`.
+
+* `DividedPowerAlgebra.lift'`: the weak universal property of `DividedPowerAlgebra R M`.
+
+## References
+
+* [P. Berthelot (1974), *Cohomologie cristalline des schémas de
+  caractéristique $p$ > 0*][Berthelot-1974]
+
+* [P. Berthelot and A. Ogus (1978), *Notes on crystalline
+  cohomology*][BerthelotOgus-1978]
+
+* [N. Roby (1963), *Lois polynomes et lois formelles en théorie des
+  modules*][Roby-1963]
+
+* [N. Roby (1965), *Les algèbres à puissances dividées*][Roby-1965]
 
 ## TODO
 
-* Add the weak universal property of `DividedPowerAlgebra R M`.
 * Show in upcoming files that `DividedPowerAlgebra R M` has divided powers.
 
 -/
@@ -45,8 +73,8 @@ variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
 namespace DividedPowerAlgebra
 
 /-- The type coding the basic relations that will give rise to the divided power algebra.
-  The class of `X (n, a)` will be equal to `dpow n a`, for `a ∈ M`. -/
-inductive Rel : (MvPolynomial (ℕ × M) R) → (MvPolynomial (ℕ × M) R) → Prop
+  The class of `MvPolynomial.X (n, a)` will be equal to `dpow n a`, for `a ∈ M`. -/
+inductive Rel : MvPolynomial (ℕ × M) R → MvPolynomial (ℕ × M) R → Prop
   | rfl_zero : Rel 0 0 -- Needed for technical reasons.
   | zero {a : M} : Rel (X (0, a)) 1
   | smul {r : R} {n : ℕ} {a : M} : Rel (X (n, r • a)) (r ^ n • X (n, a))
@@ -62,7 +90,7 @@ end DividedPowerAlgebra
 /-- The divided power algebra of a module M is defined as the ring quotient of the polynomial ring
   in the variables `ℕ × M` by the ring relation defined by `DividedPowerAlgebra.Rel`.
   We will later show that that `DividedPowerAlgebra R M` has divided powers.
-  It satisfies a weak universal property for morphisms to rings with divided_powers. -/
+  It satisfies a weak universal property for morphisms to rings with divided powers. -/
 abbrev DividedPowerAlgebra := RingQuot (DividedPowerAlgebra.Rel R M)
 
 namespace DividedPowerAlgebra
@@ -82,8 +110,7 @@ lemma mkRingHom_C (a : R) :
     mkRingHom (Rel R M) (C a) = algebraMap R (DividedPowerAlgebra R M) a := by
   rw [← mkAlgHom_C, mkAlgHom, AlgHom.coe_mk]
 
-variable (R)
-
+variable (R) in
 /-- `dp R n m` is the equivalence class of `X (⟨n, m⟩)` in `DividedPowerAlgebra R M`. -/
 def dp (n : ℕ) (m : M) : DividedPowerAlgebra R M := mkAlgHom R (Rel R M) (X ⟨n, m⟩)
 
@@ -106,27 +133,28 @@ protected theorem induction_on' {P : DividedPowerAlgebra R M → Prop} (f : Divi
       have h' : (mkRingHom (Rel R M)) (X nm) = dp R nm.1 nm.2 := by
         simp only [dp_def, Prod.mk.eta, mkAlgHom, AlgHom.coe_mk]
       rw [_root_.map_mul, h']
-      exact h_dp _ _ _ (h (mkRingHom (Rel R M) g) rfl)
+      exact h_dp _ _ _ (h ((mkRingHom (Rel R M)) g) rfl)
 
 @[elab_as_elim]
 protected theorem induction_on {P : DividedPowerAlgebra R M → Prop} (f : DividedPowerAlgebra R M)
-    (h_C : ∀ a, P (algebraMap R _ a)) (h_add : ∀ f g, P f → P g → P (f + g))
-    (h_dp : ∀ (f : DividedPowerAlgebra R M) (n : ℕ) (m : M), P f → P (f * dp R n m)) : P f :=
-  DividedPowerAlgebra.induction_on' R f (fun a => by rw [mkAlgHom_C]; exact h_C a) h_add h_dp
+    (C : ∀ a, P (algebraMap R _ a)) (add : ∀ f g, P f → P g → P (f + g))
+    (dp : ∀ (f : DividedPowerAlgebra R M) (n : ℕ) (m : M), P f → P (f * dp R n m)) : P f :=
+  DividedPowerAlgebra.induction_on' f (fun a => by rw [mkAlgHom_C]; exact C a) add dp
 
 theorem dp_eq_mkRingHom (n : ℕ) (m : M) :
     dp R n m = mkRingHom (Rel R M) (X (⟨n, m⟩)) := by
   simp [dp, mkRingHom, mkAlgHom]
 
-theorem dp_zero (m : M) : dp R 0 m = 1 := by
+@[simp]
+theorem dp_zero {m : M} : dp R 0 m = 1 := by
   rw [dp_def, ← map_one (mkAlgHom R (Rel R M))]
   exact RingQuot.mkAlgHom_rel R Rel.zero
 
-theorem dp_smul (r : R) (n : ℕ) (m : M) : dp R n (r • m) = r ^ n • dp R n m := by
+theorem dp_smul {r : R} {n : ℕ} {m : M} : dp R n (r • m) = r ^ n • dp R n m := by
   rw [dp_def, dp_def, ← map_smul]
   exact mkAlgHom_rel R Rel.smul
 
-theorem dp_null (n : ℕ) : dp R n (0 : M) = if n = 0 then 1 else 0 := by
+theorem dp_null {n : ℕ} : dp R n (0 : M) = if n = 0 then 1 else 0 := by
   cases Nat.eq_zero_or_pos n with
   | inl hn =>
     rw [if_pos hn, hn, dp_zero]
@@ -135,14 +163,14 @@ theorem dp_null (n : ℕ) : dp R n (0 : M) = if n = 0 then 1 else 0 := by
     rw [zero_pow (Nat.pos_iff_ne_zero.mp hn), zero_smul]
 
 theorem dp_null_of_ne_zero {n : ℕ} (hn : n ≠ 0) : dp R n (0 : M) = 0 := by
-  rw [dp_null R n, if_neg hn]
+  rw [dp_null, if_neg hn]
 
-theorem dp_mul (n p : ℕ) (m : M) :
+theorem dp_mul {n p : ℕ} {m : M} :
     dp R n m * dp R p m = (n + p).choose n • dp R (n + p) m := by
   simp only [dp_def, ← _root_.map_mul, ← map_nsmul]
   exact mkAlgHom_rel R Rel.mul
 
-theorem dp_add (n : ℕ) (x y : M) :
+theorem dp_add {n : ℕ} {x y : M} :
     dp R n (x + y) = (antidiagonal n).sum fun k => dp R k.1 x * dp R k.2 y := by
   simp only [dp_def]
   rw [mkAlgHom_rel (A := MvPolynomial (ℕ × M) R) R Rel.add, map_sum,
@@ -151,8 +179,8 @@ theorem dp_add (n : ℕ) (x y : M) :
 theorem dp_sum {ι : Type*} [DecidableEq ι] (s : Finset ι) (q : ℕ) (x : ι → M) :
     dp R q (s.sum x) =
       (Finset.sym s q).sum fun k => s.prod fun i => dp R (Multiset.count i k) (x i) :=
-  DividedPowers.dpow_sum' (I := ⊤) _ (fun {m} _ ↦ dp_zero R m)
-    (fun {n x y} _ _ ↦ dp_add R n x y) (dp_null_of_ne_zero R) (fun _ _ ↦ trivial)
+  DividedPowers.dpow_sum' (I := ⊤) _ (fun _ ↦ dp_zero)
+    (fun _ _ ↦ dp_add) dp_null_of_ne_zero (fun _ _ ↦ trivial)
 
 theorem dp_sum_smul {ι : Type*} [DecidableEq ι] (s : Finset ι) (q : ℕ) (a : ι → R) (x : ι → M) :
     dp R q (s.sum fun i => a i • x i) =
@@ -162,7 +190,7 @@ theorem dp_sum_smul {ι : Type*} [DecidableEq ι] (s : Finset ι) (q : ℕ) (a :
   simp_rw [dp_sum, dp_smul, Algebra.smul_def, map_prod, ← Finset.prod_mul_distrib]
 
 open Nat in
-lemma prod_dp {ι : Type*} (s : Finset ι) {n : ι → ℕ} (m : M) :
+lemma prod_dp {ι : Type*} {s : Finset ι} {n : ι → ℕ} {m : M} :
     ∏ i ∈ s, (dp R (n i) m) = (Nat.multinomial s n) * dp R (s.sum n) m := by
   classical
   induction s using Finset.induction with
@@ -184,7 +212,7 @@ theorem natFactorial_mul_dp_eq (n : ℕ) (x : M) :
     rw [pow_succ, ← h, mul_assoc, dp_mul, nsmul_eq_mul, ← mul_assoc, ← Nat.cast_mul]
     simp [mul_comm _ (n + 1), Nat.factorial_succ]
 
-variable (M) in
+variable (R M) in
 /-- The canonical linear map `M →ₗ[R] DividedPowerAlgebra R M`. -/
 def embed : M →ₗ[R] DividedPowerAlgebra R M where
   toFun m   := dp R 1 m
@@ -193,11 +221,9 @@ def embed : M →ₗ[R] DividedPowerAlgebra R M where
 
 theorem embed_def (m : M) : embed R M m = dp R 1 m := rfl
 
-variable {R}
-
 theorem algHom_ext_iff {A : Type*} [CommSemiring A] [Algebra R A]
     {f g : DividedPowerAlgebra R M →ₐ[R] A} :
-    (f = g) ↔ (∀ n m, f (dp R n m) = g (dp R n m)) := by
+    f = g ↔ ∀ n m, f (dp R n m) = g (dp R n m) := by
   refine ⟨fun h _ _ ↦ by rw [h], fun h ↦ ?_⟩
   rw [DFunLike.ext'_iff]
   apply Function.Surjective.injective_comp_right mkAlgHom_surjective
@@ -226,11 +252,11 @@ theorem submodule_span_prod_dp_eq_top (hv : span R (Set.range v) = ⊤) :
   intro p hp
   clear hp
   induction p using DividedPowerAlgebra.induction_on with
-  | h_C r =>
+  | C r =>
     simp only [Algebra.algebraMap_eq_smul_one]
     exact smul_mem _ _ (subset_span ⟨0, by simp⟩)
-  | h_add x y hx hy => exact Submodule.add_mem _ hx hy
-  | h_dp x k m hx =>
+  | add x y hx hy => exact Submodule.add_mem _ hx hy
+  | dp x k m hx =>
     have hm : m ∈ span R (Set.range v) := by simp [hv, mem_top]
     induction hm using span_induction generalizing x k with
     | zero => rw [dp_null]; split_ifs <;> simp [hx]
@@ -242,11 +268,11 @@ theorem submodule_span_prod_dp_eq_top (hv : span R (Set.range v) = ⊤) :
       | mem x hx =>
         obtain ⟨n, rfl⟩ := hx
         simp only
-        rw [← n.mul_prod_erase' i _ (fun i ↦ dp_zero R (v i)), mul_comm,
+        rw [← n.mul_prod_erase' i _ (fun i ↦ dp_zero (m := v i)), mul_comm,
           ← mul_assoc, dp_mul, nsmul_eq_mul, mul_assoc, ← nsmul_eq_mul]
         refine smul_of_tower_mem _ _ (mem_span_of_mem ⟨Finsupp.single i k + n, ?_⟩)
         simp only
-        rw [← (Finsupp.single i k + n).mul_prod_erase' i _ (fun i ↦ dp_zero _ (v i))]
+        rw [← (Finsupp.single i k + n).mul_prod_erase' i _ (fun i ↦ dp_zero (m := v i))]
         simp
       | add x y hxmem hymem hx hy =>
         rw [add_mul]
@@ -261,5 +287,211 @@ theorem submodule_span_prod_dp_eq_top (hv : span R (Set.range v) = ⊤) :
       exact hn (x * dp R c.1 m) c.2 (hm x c.1 hx)
 
 end
+
+section UniversalProperty
+
+variable (R M)
+
+variable {A : Type*} [CommSemiring A] [Algebra R A]
+
+theorem lift'_imp {f : ℕ × M → A} (hf_zero : ∀ m, f (0, m) = 1)
+    (hf_smul : ∀ (n : ℕ) (r : R) (m : M), f ⟨n, r • m⟩ = r ^ n • f ⟨n, m⟩)
+    (hf_mul : ∀ n p m, f ⟨n, m⟩ * f ⟨p, m⟩ = (n + p).choose n • f ⟨n + p, m⟩)
+    (hf_add : ∀ n u v, f ⟨n, u + v⟩ = (antidiagonal n).sum fun (k, l) ↦ f ⟨k, u⟩ * f ⟨l, v⟩)
+    (p q : MvPolynomial (ℕ × M) R) (h : (Rel R M) p q) :
+    (eval₂AlgHom R f) p = (eval₂AlgHom R f) q := by
+  rcases h <;>
+  simp_all
+
+variable {R M}
+/-- The weak universal property of `DividedPowerAlgebra R M`. -/
+def lift' {f : ℕ × M → A} (hf_zero : ∀ m, f (0, m) = 1)
+    (hf_smul : ∀ (n : ℕ) (r : R) (m : M), f ⟨n, r • m⟩ = r ^ n • f ⟨n, m⟩)
+    (hf_mul : ∀ n p m, f ⟨n, m⟩ * f ⟨p, m⟩ = (n + p).choose n • f ⟨n + p, m⟩)
+    (hf_add : ∀ n u v, f ⟨n, u + v⟩ = (antidiagonal n).sum fun (k, l) ↦ f ⟨k, u⟩ * f ⟨l, v⟩) :
+    DividedPowerAlgebra R M →ₐ[R] A :=
+  RingQuot.liftAlgHom R
+    {val := eval₂AlgHom R f, property := lift'_imp R M hf_zero hf_smul hf_mul hf_add }
+
+@[simp]
+theorem lift'_apply {f : ℕ × M → A} (hf_zero : ∀ m, f (0, m) = 1)
+    (hf_smul : ∀ (n : ℕ) (r : R) (m : M), f ⟨n, r • m⟩ = r ^ n • f ⟨n, m⟩)
+    (hf_mul : ∀ n p m, f ⟨n, m⟩ * f ⟨p, m⟩ = (n + p).choose n • f ⟨n + p, m⟩)
+    (hf_add : ∀ n u v, f ⟨n, u + v⟩ = (antidiagonal n).sum fun (k, l) => f ⟨k, u⟩ * f ⟨l, v⟩)
+    (p : MvPolynomial (ℕ × M) R) :
+    lift' hf_zero hf_smul hf_mul hf_add (mkAlgHom R (Rel R M) p) = aeval f p := by
+  rw [lift', RingQuot.liftAlgHom_mkAlgHom_apply, coe_eval₂AlgHom]
+  rfl
+
+@[simp]
+theorem lift'_apply_dp {f : ℕ × M → A} (hf_zero : ∀ m, f (0, m) = 1)
+    (hf_smul : ∀ (n : ℕ) (r : R) (m : M), f ⟨n, r • m⟩ = r ^ n • f ⟨n, m⟩)
+    (hf_mul : ∀ n p m, f ⟨n, m⟩ * f ⟨p, m⟩ = (n + p).choose n • f ⟨n + p, m⟩)
+    (hf_add : ∀ n u v, f ⟨n, u + v⟩ = (antidiagonal n).sum fun (k, l) => f ⟨k, u⟩ * f ⟨l, v⟩)
+    (n : ℕ) (m : M) :
+    lift' hf_zero hf_smul hf_mul hf_add (dp R n m) = f ⟨n, m⟩ := by
+  rw [dp_def, lift'_apply hf_zero hf_smul hf_mul hf_add, aeval_X]
+
+variable {I : Ideal A} (hI : DividedPowers I) (g : M →ₗ[R] A) (hg : ∀ m, g m ∈ I)
+
+/-- The weak universal property of a divided power algebra for morphisms to divided power rings -/
+def lift : DividedPowerAlgebra R M →ₐ[R] A :=
+  lift' (f := fun nm => hI.dpow nm.1 (g nm.2))
+    (fun m => hI.dpow_zero (hg m))
+    (fun n r m => by
+      dsimp only
+      rw [LinearMap.map_smulₛₗ, RingHom.id_apply, ← algebraMap_smul A r (g m), smul_eq_mul,
+        hI.dpow_mul (hg m), ← smul_eq_mul, ← map_pow, algebraMap_smul])
+    (fun n p m => by rw [hI.mul_dpow (hg m), ← nsmul_eq_mul])
+    (fun n u v => by simp [hI.dpow_add (hg u) (hg v)])
+
+variable {g}
+
+@[simp]
+theorem lift_apply (p : MvPolynomial (ℕ × M) R) :
+    lift hI g hg (mkAlgHom R (Rel R M) p) = aeval (fun nm : ℕ × M => hI.dpow nm.1 (g nm.2)) p := by
+  rw [lift, lift'_apply]
+
+@[simp]
+theorem lift_apply_dp (n : ℕ) (m : M) :
+    lift hI g hg (dp R n m) = hI.dpow n (g m) := by rw [lift, lift'_apply_dp]
+
+theorem lift_unique {f : DividedPowerAlgebra R M →ₐ[R] A}
+    (hf : ∀ n m, f (dp R n m) = hI.dpow n (g m)) : f = lift hI g hg :=
+  algHom_ext (fun _ _ ↦ by rw [lift_apply_dp, hf])
+
+@[simp]
+theorem lift_embed_apply (m : M) : lift hI g hg (embed R M m) = g m := by
+  simp [embed_def, hI.dpow_one (hg m)]
+
+@[simp]
+theorem embed_comp_lift : (lift hI g hg).toLinearMap.comp (embed R M) = g := by
+  ext; simp
+
+end UniversalProperty
+
+
+section Functoriality
+
+namespace LinearMap
+
+variable {S : Type*} [CommSemiring S] {N : Type*} [AddCommMonoid N] [Module R N] [Module S N]
+  (f : M →ₗ[R] N)
+
+lemma dp_zero {a : M} : dp S 0 (f a) = 1 := DividedPowerAlgebra.dp_zero
+
+lemma dp_mul {m n : ℕ} {a : M} :
+    dp S m (f a) * dp S n (f a) = (Nat.choose (m + n) m) • dp S (m + n) (f a) :=
+  DividedPowerAlgebra.dp_mul
+
+lemma dp_add {n : ℕ} {a b : M} :
+    dp S n (f (a + b)) = (Finset.antidiagonal n).sum fun k => dp S k.1 (f a) * dp S k.2 (f b) := by
+  rw [map_add, DividedPowerAlgebra.dp_add]
+
+section IsScalarTower
+
+variable (S)
+
+variable [Algebra R S] [IsScalarTower R S N]
+
+lemma dp_smul {n : ℕ} {r : R} {a : M} : dp S n (f (r • a)) = r ^ n • dp S n (f a) := by
+  rw [f.map_smul, algebra_compatible_smul S r (f a),
+    DividedPowerAlgebra.dp_smul, ← map_pow, algebraMap_smul]
+
+/-- The functoriality map between divided power algebras associated with a linear map of the
+  underlying modules.
+  Given an `R`-algebra `S`, an `S`-module `N` and an `R`-linear map `f : M →ₗ[R] N`,
+  this is the map `DividedPowerAlgebra R M →ₐ[R] DividedPowerAlgebra S N`
+  sending `dp R n m` to `dp S n (f m)`. -/
+protected def lift : DividedPowerAlgebra R M →ₐ[R] DividedPowerAlgebra S N :=
+  DividedPowerAlgebra.lift' (f := fun nm => dp S nm.fst (f nm.snd))
+    (fun _ ↦ LinearMap.dp_zero f)
+    (fun _ _ _ ↦ LinearMap.dp_smul S f)
+    (fun _ _ _ ↦ LinearMap.dp_mul f)
+    (fun _ _ _ ↦ LinearMap.dp_add f)
+
+theorem lift_apply {p : MvPolynomial (ℕ × M) R} :
+    LinearMap.lift S f (mkAlgHom R (Rel R M) p) = aeval (fun nm => dp S nm.fst (f nm.snd)) p := by
+  rw [LinearMap.lift, lift'_apply]
+
+theorem lift_apply_dp {n : ℕ} {a : M} : LinearMap.lift S f (dp R n a) = dp S n (f a) := by
+  rw [LinearMap.lift, lift'_apply_dp]
+
+@[simp]
+theorem lift_embed_apply {m : M} : LinearMap.lift S f (embed R M m) = embed S N (f m) := by
+  simp [embed_def, LinearMap.lift_apply_dp]
+
+theorem lift_comp_embed :
+    (LinearMap.lift S f).toLinearMap.comp (embed R M) = ((embed S N).restrictScalars R).comp f := by
+  ext; simp
+
+theorem lift_surjective {f : M →ₗ[R] N} (hf : Function.Surjective f) :
+    Function.Surjective (LinearMap.lift R f) := by
+  rw [← AlgHom.range_eq_top, ← Algebra.map_top (LinearMap.lift R f), eq_top_iff,
+    ← (AlgHom.range_eq_top (mkAlgHom R (Rel R N))).mpr mkAlgHom_surjective,
+    ← Algebra.map_top, (Subalgebra.gc_map_comap _).le_iff_le, ← MvPolynomial.adjoin_range_X,
+    Algebra.adjoin_le_iff]
+  intro
+  simp only [Set.mem_range, Prod.exists]
+  rintro ⟨n, m, rfl⟩
+  obtain ⟨l, rfl⟩ := hf m
+  simp only [Algebra.map_top, Subalgebra.coe_comap, AlgHom.coe_range, Set.mem_preimage,
+    Set.mem_range]
+  use dp R n l
+  rw [lift_apply_dp, dp]
+
+end IsScalarTower
+
+end LinearMap
+
+variable (S : Type*) [CommSemiring S] {N : Type*} [AddCommMonoid N] [Module R N] [Module S N]
+  (f : M →ₗ[R] N)
+
+section IsScalarTower
+
+variable [Algebra R S] [IsScalarTower R S N] {P : Type*} [AddCommMonoid P] [Module R P]
+
+lemma LinearMap.lift_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
+    LinearMap.lift R (g.comp f) = (LinearMap.lift R g).comp (LinearMap.lift R f) := by
+  rw [algHom_ext_iff]
+  intros; simp [lift_apply_dp]
+
+lemma LinearMap.lift_id :
+    LinearMap.lift R (LinearMap.id (R := R) (M := M)) = AlgHom.id R _ := by
+  rw [algHom_ext_iff]
+  intros
+  simp [lift_apply_dp]
+
+/-- The functoriality map between divided power algebras associated with a linear equivalence of
+  the underlying modules.
+  Given an `R`-algebra `S`, an `S`-module `N` and an `R`-linear equivalence `f : M →ₗ[R] N`,
+  this is the map `DividedPowerAlgebra R M →ₐ[R] DividedPowerAlgebra S N`
+  sending `dp R n m` to `dp S n (f m)`. -/
+def LinearEquiv.lift (g : M ≃ₗ[R] N) :
+    DividedPowerAlgebra R M ≃ₐ[R] DividedPowerAlgebra R N :=
+  AlgEquiv.ofAlgHom (LinearMap.lift R g.toLinearMap) (LinearMap.lift R g.symm.toLinearMap)
+    (by simp [← LinearMap.lift_comp, LinearMap.lift_id])
+    (by simp [← LinearMap.lift_comp, LinearMap.lift_id])
+
+theorem LinearEquiv.lift_symm (g : M ≃ₗ[R] N) :
+    (LinearEquiv.lift g).symm = LinearEquiv.lift g.symm := rfl
+
+theorem LinearEquiv.coe_lift (g : M ≃ₗ[R] N) :
+    LinearEquiv.lift g = LinearMap.lift R g.toLinearMap := rfl
+
+theorem LinearEquiv.coe_lift_symm (g : M ≃ₗ[R] N) :
+    (LinearEquiv.lift g).symm = LinearMap.lift R g.symm.toLinearMap := rfl
+
+theorem LinearEquiv.lift_refl :
+    LinearEquiv.lift (LinearEquiv.refl R M) = AlgEquiv.refl :=
+  AlgEquiv.coe_algHom_injective (by exact LinearMap.lift_id)
+
+theorem LinearEquiv.lift_trans (g : M ≃ₗ[R] N) (h : N ≃ₗ[R] P) :
+    (LinearEquiv.lift g).trans (LinearEquiv.lift h) = LinearEquiv.lift (g.trans h) :=
+  AlgEquiv.coe_algHom_injective (by exact (LinearMap.lift_comp _ _).symm)
+
+end IsScalarTower
+
+end Functoriality
 
 end DividedPowerAlgebra
