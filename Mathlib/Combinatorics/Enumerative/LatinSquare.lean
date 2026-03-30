@@ -177,8 +177,9 @@ structure LatinRectangle.Equiv (A : LatinRectangle m n α) (A' : LatinRectangle 
   /-- A symbol relabeling. -/
   (h : α ≃ β)
   /-- Relabelings preserve structure. -/
-  (map_rel : ∀ (r : m) (c : n),
-    A'.M (f r) (g c) = h (A.M r c))
+  -- (map_rel : ∀ (r : m) (c : n),
+  --   A'.M (f r) (g c) = h (A.M r c))
+  (map_rel : LatinRectangle.relabel A f g h = A')
 
 /-- Two Latin rectangles are equivalent if one can be obtained from the other by some combination
     of relabeling the row indices, column indices, and symbols. -/
@@ -193,7 +194,7 @@ lemma LatinRectangle.equiv_relabel
     (g : n ≃ n')
     (h : α ≃ β)
     (A : LatinRectangle m n α) : A ≃ (LatinRectangle.relabel A f g h) :=
-  ⟨f, g, h, by simp [LatinRectangle.M]⟩
+  ⟨f, g, h, by rfl⟩
 
 end Equivalence
 
@@ -225,7 +226,7 @@ variable {k : Type*} [Fintype k] [Nonempty k] [DecidableEq k]
 
 /-- Property of `LatinRectangle` being contained in another `LatinRectangle` -/
 def IsSubrect (A : LatinRectangle m n α) (B : LatinRectangle m' n' α) :=
-  ∃ (ι : m ↪ m') (ι' : n ↪ n') (h : α ≃ α), ∀ (i : m), ∀ (j : n), B.M (ι i) (ι' j) = h (A.M i j)
+  ∃ (ι : m ↪ m') (ι' : n ↪ n'), B.M.submatrix ι ι' = A.M
 
 /-- A map returning the set of symbols in α not in column j. -/
 def symbolsNotIn (A : LatinRectangle k n α) (j : n) :=
@@ -578,15 +579,29 @@ theorem LatinRectangle.exists_extension_of_non_square_LatinRectangle
   use A'
   unfold IsSubrect
   unfold LatinRectangle.M
-  simp only [A', M']
   use ι
   use (Equiv.refl n)
-  use (Equiv.refl α)
-  intro i j
+  ext
+  simp only [A', M']
+  unfold Matrix.submatrix
+  simp only [Finset.mem_image, Finset.mem_univ, EmbeddingLike.apply_eq_iff_eq, true_and, exists_eq,
+    reduceDIte, Equiv.refl_toEmbedding, Function.Embedding.refl_apply, Matrix.of_apply]
   rw [<-Function.comp_apply (f := Function.invFun ι)]
   rw [Function.invFun_comp ι.injective]
-  simp
   rfl
+
+lemma submatrix_map_comp
+   {m m' m'' n n' n'' α α' α'' : Type*}
+   (M : Matrix m'' n'' α'')
+   (f₁ : m → m')
+   (g₁ : n → n')
+   (h₁ : α' → α)
+   (f₂ : m' → m'')
+   (g₂ : n' → n'')
+   (h₂ : α'' → α') :
+   (((M.submatrix f₂ g₂).map h₂).submatrix f₁ g₁).map h₁ =
+     (M.submatrix (f₂ ∘ f₁) (g₂ ∘ g₁)).map (h₁ ∘ h₂) := by
+   rw[Matrix.submatrix_map, Matrix.map_map, Matrix.submatrix_submatrix]
 
 /-- Being a subrectangle of a `LatinRectangle` is a transitive property. -/
 lemma IsSubrect.trans {m'' : Type*} [Fintype m'']
@@ -598,23 +613,36 @@ lemma IsSubrect.trans {m'' : Type*} [Fintype m'']
     (h₂ : IsSubrect A' A'') :
     IsSubrect A A'' := by
   unfold IsSubrect at *
-  obtain ⟨f,g,h,h₁⟩ := h₁
-  obtain ⟨f',g',h',h₂⟩ := h₂
+  obtain ⟨f,g,h₁⟩ := h₁
+  obtain ⟨f',g',h₂⟩ := h₂
   set f'' := Function.Embedding.trans f f'
   set g'' := Function.Embedding.trans g g'
-  set h'' := Equiv.trans h h'
-  use f'', g'', h''
-  simp [h'', f'', g'',h₂,h₁]
+  use f'', g''
+  simp only [f'', g'']
+  repeat rw [Function.Embedding.coe_trans]
+  rw [<- Matrix.submatrix_submatrix]
+  rw [h₂, h₁]
 
 /-- Any two equivalent `LatinRectangle`s are subrectangles of each other. -/
 lemma IsSubrect.refl
     {n : Type*} [Fintype n]
     {A : LatinRectangle m n α}
-    {A' : LatinRectangle m' n α} (h : A ≃ A') :
+    {A' : LatinRectangle m' n α}
+    (f : m ≃ m')
+    (h : A' = A.relabel f (.refl n) (.refl α)) :
     IsSubrect A A' := by
-  have ⟨f, g, h, hrfl⟩ := h
   simp only [IsSubrect]
-  exact ⟨f, g, h, hrfl⟩
+  use f
+  use Equiv.refl n
+  unfold LatinRectangle.relabel at h
+  simp only [Matrix.submatrix, Equiv.coe_toEmbedding, Equiv.refl_toEmbedding,
+    Function.Embedding.refl_apply]
+  have h2 := congr_arg (·.M) h
+  simp only [Matrix.reindex_apply, Equiv.refl_symm, Equiv.coe_refl, Equiv.toFun_as_coe,
+    Matrix.map_id] at h2
+  rw [h2]
+  simp only [Matrix.submatrix_apply, Equiv.symm_apply_apply, id_eq]
+  rfl
 
 /-- A Latin rectangle `LatinRectangle m n α` extends to a Latin square `LatinSquare n α`.
     In other words, there always exists a Latin square that contains a given Latin rectangle
@@ -630,11 +658,9 @@ theorem LatinRectangle.exists_LatinSquare_of_LatinRectangle
   | h a ih =>
     by_cases h_full : Fintype.card k = Fintype.card n
     · let f : k ≃ n := Fintype.equivOfCardEq h_full
-      let A' := LatinRectangle.relabel A f (Equiv.refl n) (Equiv.refl α)
-      have h_sim : A ≃ A' := by
-        simp [LatinRectangle.equiv_relabel f (.refl n) (.refl α) A, A']
+      set A' := LatinRectangle.relabel A f (Equiv.refl n) (Equiv.refl α) with hA'
       use A'
-      exact IsSubrect.refl h_sim
+      exact IsSubrect.refl f hA'
     · set k' := Option k with hk'
       letI : Fintype k' := (inferInstance : Fintype (Option k))
       have hk'_card := Fintype.card_option (α := k)
