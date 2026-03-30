@@ -332,7 +332,7 @@ lemma orthogonal_rootSpan_eq :
   obtain ⟨u, hu, v, hv, rfl⟩ : ∃ᵉ (u ∈ P.rootSpan R) (v ∈ LinearMap.ker P.RootForm), u + v = y := by
     rw [← Submodule.mem_sup, P.isCompl_rootSpan_ker_rootForm.sup_eq_top]; exact Submodule.mem_top
   simp only [LinearMap.mem_ker] at hv
-  simp [hx _ hu, hv]
+  simp [LinearMap.IsOrtho, hx _ hu, hv]
 
 @[simp]
 lemma orthogonal_corootSpan_eq :
