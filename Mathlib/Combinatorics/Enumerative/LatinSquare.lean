@@ -177,8 +177,6 @@ structure LatinRectangle.Equiv (A : LatinRectangle m n α) (A' : LatinRectangle 
   /-- A symbol relabeling. -/
   (h : α ≃ β)
   /-- Relabelings preserve structure. -/
-  -- (map_rel : ∀ (r : m) (c : n),
-  --   A'.M (f r) (g c) = h (A.M r c))
   (map_rel : LatinRectangle.relabel A f g h = A')
 
 /-- Two Latin rectangles are equivalent if one can be obtained from the other by some combination
@@ -393,10 +391,9 @@ theorem LatinRectangle.exists_extension_of_non_square_LatinRectangle
       intro a1 a2 h₁
       have h₁' := h₁.symm
       have h₁'' := h₁
-      rw [<- hf] at h₁
-      rw [<- hf] at h₁'
+      rw [<- hf] at h₁ h₁'
       rw [h₁''] at h₁'
-      rw [<-h₁'] at h₁
+      rw [<- h₁'] at h₁
       have hinj := A.distinct_col_entries
       specialize hinj (f a2)
       simp only [Function.Injective, Matrix.col] at hinj
@@ -565,10 +562,6 @@ theorem LatinRectangle.exists_extension_of_non_square_LatinRectangle
         have h := h.symm
         contradiction
       · rename_i if_h₁ if_h₂
-        -- Here the f drops out and it really is about ι and cards
-        -- If a1 and a2 aren't in the image of ι and
-        -- card codomain of ι = card domain of ι + 1 then
-        -- both a1 and a2 are the unique element ι misses.
         have h := Function.Embedding.existsUnique_not_mem_image_of_card_succ ι h₂
         simp only [Finset.mem_image] at h
         intro _
@@ -590,19 +583,6 @@ theorem LatinRectangle.exists_extension_of_non_square_LatinRectangle
   rw [Function.invFun_comp ι.injective]
   rfl
 
-lemma submatrix_map_comp
-   {m m' m'' n n' n'' α α' α'' : Type*}
-   (M : Matrix m'' n'' α'')
-   (f₁ : m → m')
-   (g₁ : n → n')
-   (h₁ : α' → α)
-   (f₂ : m' → m'')
-   (g₂ : n' → n'')
-   (h₂ : α'' → α') :
-   (((M.submatrix f₂ g₂).map h₂).submatrix f₁ g₁).map h₁ =
-     (M.submatrix (f₂ ∘ f₁) (g₂ ∘ g₁)).map (h₁ ∘ h₂) := by
-   rw[Matrix.submatrix_map, Matrix.map_map, Matrix.submatrix_submatrix]
-
 /-- Being a subrectangle of a `LatinRectangle` is a transitive property. -/
 lemma IsSubrect.trans {m'' : Type*} [Fintype m'']
     {n : Type*} [Fintype n]
@@ -623,7 +603,7 @@ lemma IsSubrect.trans {m'' : Type*} [Fintype m'']
   rw [<- Matrix.submatrix_submatrix]
   rw [h₂, h₁]
 
-/-- Any two equivalent `LatinRectangle`s are subrectangles of each other. -/
+/-- Any two row relabeled `LatinRectangle`s are subrectangles of each other. -/
 lemma IsSubrect.refl
     {n : Type*} [Fintype n]
     {A : LatinRectangle m n α}
