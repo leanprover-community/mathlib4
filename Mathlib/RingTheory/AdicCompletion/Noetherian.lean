@@ -7,9 +7,7 @@ module
 
 public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.RingTheory.Filtration
-public import Mathlib.RingTheory.Artinian.Module
-
-import Mathlib.RingTheory.HopkinsLevitzki
+public import Mathlib.RingTheory.HopkinsLevitzki
 
 /-!
 # Hausdorff-ness for Noetherian rings
