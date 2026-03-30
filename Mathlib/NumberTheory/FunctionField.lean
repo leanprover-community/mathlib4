@@ -262,14 +262,13 @@ end InftyValuation
 
 section constantExtension
 
-variable {Fq}
-variable (F : Type*) [Field F]
-
-attribute [local instance] Polynomial.algebra
-
 open RatFunc
 
+variable {Fq}
+variable (F : Type*) [Field F]
 variable [Algebra Fq[X] F] [FaithfulSMul Fq[X] F] [FunctionField Fq F]
+
+attribute [local instance] Polynomial.algebra
 
 section Unbundled
 
@@ -291,9 +290,7 @@ contained in `F` then it is finite over `Fq`. -/
 theorem FiniteDimensional_constantExtension [IsScalarTower Fq[X] E[X] F]
     [Algebra.IsAlgebraic Fq E] : FiniteDimensional Fq E :=
   letI := FunctionField.FiniteDimensional_constantExtension_ratFunc (Fq := Fq) (E := E) F
-  letI : NoZeroSMulDivisors (RatFunc Fq) (RatFunc E) :=
-    GroupWithZero.toNoZeroSMulDivisors
-    have finrank_FracRing_FracRing := RatFunc.finrank_ratFunc_ratFunc Fq E
+  have finrank_FracRing_FracRing := RatFunc.finrank_ratFunc_ratFunc Fq E
   Module.finite_of_finrank_pos (finrank_FracRing_FracRing ▸ Module.finrank_pos)
 
 end Unbundled
