@@ -315,17 +315,20 @@ open TensorProduct
 variable {R : Type*} [CommRing R] (M : Submonoid R) (Rₘ : Type*) [CommRing Rₘ] [Algebra R Rₘ]
   (S : Type*) [CommRing S] [Algebra R S]
 
+-- PRed
 /-- The isomorphism `S ⊗[R] Rₘ ≃ₐ[S] Sₘ`. This is a specialization of `IsLocalization.algEquiv`,
 but with additional properties since now `Sₘ` is automatically an `Rₘ`-algebra. -/
 noncomputable def Localization.tensor_localization_algEquiv :
     (S ⊗[R] Localization M) ≃ₐ[S] Localization (Algebra.algebraMapSubmonoid S M) :=
   (Localization.algEquiv (Algebra.algebraMapSubmonoid S M) (S ⊗[R] Localization M)).symm
 
+-- PRed
 @[simp]
 theorem Localization.tensor_localization_algEquiv_apply_tmul_one (x : S) :
     Localization.tensor_localization_algEquiv M S (x ⊗ₜ[R] 1) = algebraMap _ _ x :=
   (Localization.tensor_localization_algEquiv M S).commutes x
 
+-- PRed
 @[simp]
 theorem Localization.tensor_localization_algEquiv_apply_one_tmul (x : Localization M) :
     Localization.tensor_localization_algEquiv M S (1 ⊗ₜ[R] x) = algebraMap _ _ x := by
@@ -342,17 +345,20 @@ theorem Localization.tensor_localization_algEquiv_apply_one_tmul (x : Localizati
     rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
   rw [h, h, ← map_mul, IsLocalization.mk'_spec]
 
+-- PRed
 noncomputable def Localization.localization_tensor_algEquiv :
     (Localization M ⊗[R] S) ≃ₐ[Localization M] Localization (Algebra.algebraMapSubmonoid S M) :=
   { __ := (Algebra.TensorProduct.comm R (Localization M) S).toRingEquiv.trans
       (Localization.tensor_localization_algEquiv M S).toRingEquiv
     commutes' := Localization.tensor_localization_algEquiv_apply_one_tmul M S }
 
+-- PRed
 @[simp]
 theorem Localization.localization_tensor_algEquiv_apply_tmul_one (x : Localization M) :
     Localization.localization_tensor_algEquiv M S (x ⊗ₜ[R] 1) = algebraMap _ _ x :=
   (Localization.localization_tensor_algEquiv M S).commutes x
 
+-- PRed
 @[simp]
 theorem Localization.localization_tensor_algEquiv_apply_one_tmul (x : S) :
     Localization.localization_tensor_algEquiv M S (1 ⊗ₜ[R] x) = algebraMap _ _ x :=
@@ -436,6 +442,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.
 noncomputable instance [Algebra.QuasiFinite R S] : Fintype (p.primesOver S) :=
   (Algebra.QuasiFinite.finite_primesOver p).fintype
 
+-- PRed
 open TensorProduct in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def _root_.Algebra.TensorProduct.quotientTensorEquiv
@@ -451,24 +458,26 @@ noncomputable def _root_.Algebra.TensorProduct.quotientTensorEquiv
         rfl
     commutes' _ := rfl }
 
+-- PRed
 open TensorProduct in
 set_option backward.isDefEq.respectTransparency false in
-noncomputable def _root_.Algebra.TensorProduct.quotientTensorEquiv_apply_tmul_one
+noncomputable def _root_.Algebra.TensorProduct.quotientTensorEquiv_apply_tmul
     {R : Type*} (S T A : Type*) [CommRing R] [CommRing S]
     [Algebra R S] [CommRing T] [Algebra R T] [CommRing A] [Algebra R A]
-    [Algebra S T] [IsScalarTower R S T] (I : Ideal T) (x : T) :
-    Algebra.TensorProduct.quotientTensorEquiv S T A I (Ideal.Quotient.mk I x ⊗ₜ 1) =
-      Ideal.Quotient.mk _ (x ⊗ₜ[R] 1) :=
+    [Algebra S T] [IsScalarTower R S T] (I : Ideal T) (x : T) (y : A) :
+    Algebra.TensorProduct.quotientTensorEquiv S T A I (x ⊗ₜ y) =
+      Ideal.Quotient.mk _ (x ⊗ₜ[R] y) :=
   rfl
 
+-- PRed
 open TensorProduct in
 set_option backward.isDefEq.respectTransparency false in
-noncomputable def _root_.Algebra.TensorProduct.quotientTensorEquiv_apply_one_tmul
+noncomputable def _root_.Algebra.TensorProduct.quotientTensorEquiv_symm_apply_tmul
     {R : Type*} (S T A : Type*) [CommRing R] [CommRing S]
     [Algebra R S] [CommRing T] [Algebra R T] [CommRing A] [Algebra R A]
-    [Algebra S T] [IsScalarTower R S T] (I : Ideal T) (x : A) :
-    Algebra.TensorProduct.quotientTensorEquiv S T A I (1 ⊗ₜ[R] x) =
-      Ideal.Quotient.mk _ (1 ⊗ₜ[R] x) :=
+    [Algebra S T] [IsScalarTower R S T] (I : Ideal T) (x : T) (y : A) :
+    (Algebra.TensorProduct.quotientTensorEquiv S T A I).symm (Ideal.Quotient.mk _ (x ⊗ₜ[R] y)) =
+      (Ideal.Quotient.mk _ x) ⊗ₜ[R] y :=
   rfl
 
 open TensorProduct in
@@ -516,7 +525,7 @@ theorem Fiber.equivQuotient_apply_one_tmul :
   letI pRp := IsLocalRing.maximalIdeal Rp
   dsimp only [Ideal.Fiber.equivQuotient]
   simp [-AlgEquiv.symm_toRingEquiv]
-  erw [Algebra.TensorProduct.quotientTensorEquiv_apply_one_tmul]
+  erw [Algebra.TensorProduct.quotientTensorEquiv_apply_tmul]
   simp
 
 set_option backward.isDefEq.respectTransparency false in
