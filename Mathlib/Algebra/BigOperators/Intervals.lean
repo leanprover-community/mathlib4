@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 public import Mathlib.Algebra.Order.Interval.Finset.Basic
 public import Mathlib.Algebra.Order.Sub.Basic
-public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Results about big operators over intervals
@@ -18,7 +18,7 @@ We prove results about big operators over intervals.
 
 public section
 
-open Nat
+open Nat Finset
 
 variable {α G M : Type*}
 
@@ -242,3 +242,36 @@ end Group
 
 end Nat
 end Finset
+
+section Fin
+
+@[to_additive]
+lemma Finset.prod_fin_Icc_eq_prod_nat_Icc [CommMonoid α] {n : ℕ} (a b : Fin n) (f : Fin n → α) :
+    ∏ i ∈ Icc a b, f i = ∏ i ∈ Icc (a : ℕ) b, if h : i < n then f ⟨i, h⟩ else 1 := by
+  rw [← prod_ite_mem_eq, prod_fin_eq_prod_range]
+  apply prod_congr_of_eq_on_inter <;> grind
+
+/-- Telescopic product over `Fin`. -/
+@[to_additive /-- Telescopic sum over `Fin`. -/]
+lemma Fin.prod_Iic_div [CommGroup M] {n : ℕ} (a : Fin n) (f : Fin (n + 1) → M) :
+    ∏ i ∈ Iic a, (f i.succ / f i.castSucc) = f a.succ / f 0 := by
+  rw [← prod_ite_mem_eq, prod_fin_eq_prod_range]
+  convert prod_range_div (fun i ↦ if hi : i < n + 1 then f ⟨i, hi⟩ else 1) (a + 1)
+    using 1 with k hk
+  · exact prod_congr_of_eq_on_inter (by grind) (by grind) (by simp_all; grind)
+  · grind
+
+/-- Telescopic product over `Fin`. -/
+@[to_additive /-- Telescopic sum over `Fin`. -/]
+lemma Fin.prod_Icc_div [CommGroup M] {n : ℕ} {a b : Fin n} (hab : a ≤ b)
+    (f : Fin (n + 1) → M) :
+    ∏ i ∈ Icc a b, (f i.succ / f i.castSucc) = f b.succ / f a.castSucc := by
+  rw [prod_fin_Icc_eq_prod_nat_Icc]
+  convert Finset.prod_Icc_div (Fin.le_def.1 hab) (fun i ↦ if hi : i < n + 1 then f ⟨i, hi⟩ else 1)
+  · simp_all
+    grind
+  · grind
+  · simp only [Order.lt_add_one_iff, is_le', ↓reduceDIte]
+    rfl
+
+end Fin

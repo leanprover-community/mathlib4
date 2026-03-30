@@ -116,7 +116,7 @@ theorem id_φ : (id X n).φ = 𝟙 _ := by
   simp only [← P_add_Q_f (n + 1) (n + 1), φ]
   congr 1
   · simp only [id, PInfty_f, P_f_idem]
-  · exact Eq.trans (by simp [-Order.lt_add_one_iff]) (decomposition_Q n (n + 1)).symm
+  · exact Eq.trans (by simp) (decomposition_Q n (n + 1)).symm
 
 variable {X n}
 
