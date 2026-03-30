@@ -679,7 +679,6 @@ theorem nf_repr_split' : ∀ {o o' m} [NF o], split' o = (o', m) → NF o' ∧ r
       · rw [this]
         simp [mul_add, mul_assoc, add_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem scale_eq_mul (x) [NF x] : ∀ (o) [NF o], scale x o = oadd x 1 0 * o
   | 0, _ => rfl
   | oadd e n a, h => by
@@ -1102,8 +1101,7 @@ theorem fastGrowing_zero : fastGrowing 0 = Nat.succ :=
 @[simp]
 theorem fastGrowing_one : fastGrowing 1 = fun n => 2 * n := by
   rw [@fastGrowing_succ 1 0 rfl]; funext i; rw [two_mul, fastGrowing_zero]
-  suffices ∀ a b, Nat.succ^[a] b = b + a from this _ _
-  intro a b; induction a <;> simp [*, Function.iterate_succ', Nat.add_assoc, -Function.iterate_succ]
+  exact Nat.succ_iterate _ _
 
 @[simp]
 theorem fastGrowing_two : fastGrowing 2 = fun n => (2 ^ n) * n := by
