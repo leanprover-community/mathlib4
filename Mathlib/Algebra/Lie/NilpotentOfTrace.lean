@@ -109,30 +109,25 @@ lemma exists_lagrange_polynomial
       Polynomial.eval 0 r = 0 := by
   classical
   haveI : Fintype ι := Fintype.ofFinite ι
-  let diffs : Finset K := Finset.univ.image (fun p : ι × ι => a p.1 - a p.2)
-  have ha_diff : ∀ i j, a i - a j ∈ E := fun i j => E.sub_mem (ha i) (ha j)
+  let diffs := Finset.univ.image (fun p : ι × ι => a p.1 - a p.2)
   let g : K → K := fun d => if hd : d ∈ E then algebraMap ℚ K (f ⟨d, hd⟩) else 0
   let v : K → K := fun x => x
+  have hinj : Set.InjOn v ↑diffs := fun _ _ _ _ h => h
+  have hg : ∀ d (hd : d ∈ E), g d = algebraMap ℚ K (f ⟨d, hd⟩) := fun _ hd => dif_pos hd
+  have hmem : ∀ i j, a i - a j ∈ diffs :=
+    fun i j => Finset.mem_image.mpr ⟨(i, j), Finset.mem_univ _, rfl⟩
   refine ⟨Lagrange.interpolate diffs v g, fun i j => ?_, ?_⟩
-  · have h_mem : a i - a j ∈ diffs :=
-      Finset.mem_image.mpr ⟨(i, j), Finset.mem_univ _, rfl⟩
-    rw [Lagrange.eval_interpolate_at_node g (fun _ _ _ _ h => h) h_mem,
-      show g (a i - a j) = algebraMap ℚ K (f ⟨a i - a j, ha_diff i j⟩) from
-        dif_pos (ha_diff i j)]
-    have : (⟨a i - a j, ha_diff i j⟩ : E) = ⟨a i, ha i⟩ - ⟨a j, ha j⟩ := rfl
-    rw [this, map_sub, map_sub]
-  · by_cases h_ne : Nonempty ι
-    · obtain ⟨i⟩ := h_ne
-      have h_mem : (0 : K) ∈ diffs :=
-        Finset.mem_image.mpr ⟨(i, i), Finset.mem_univ _, sub_self _⟩
-      rw [Lagrange.eval_interpolate_at_node g (fun _ _ _ _ h => h) h_mem,
-        show g 0 = algebraMap ℚ K (f ⟨0, E.zero_mem⟩) from dif_pos E.zero_mem]
-      have : (⟨(0 : K), E.zero_mem⟩ : E) = 0 := rfl
-      rw [this, map_zero, map_zero]
-    · rw [not_nonempty_iff] at h_ne
-      have h_empty : diffs = ∅ := by
-        simp only [diffs, Finset.image_eq_empty]; exact Finset.univ_eq_empty
-      simp [Lagrange.interpolate_apply, h_empty]
+  · rw [Lagrange.eval_interpolate_at_node g hinj (hmem i j),
+      hg _ (E.sub_mem (ha i) (ha j)),
+      show (⟨a i - a j, E.sub_mem (ha i) (ha j)⟩ : E) = ⟨a i, ha i⟩ - ⟨a j, ha j⟩ from rfl,
+      map_sub, map_sub]
+  · by_cases h : Nonempty ι
+    · obtain ⟨i⟩ := h
+      rw [Lagrange.eval_interpolate_at_node g hinj
+        (Finset.mem_image.mpr ⟨(i, i), Finset.mem_univ _, sub_self _⟩),
+        hg _ E.zero_mem, show (⟨(0 : K), E.zero_mem⟩ : E) = 0 from rfl, map_zero, map_zero]
+    · have : IsEmpty ι := not_nonempty_iff.mp h
+      simp [show diffs = ∅ from by simp [diffs]]
 
 end Lagrange
 
