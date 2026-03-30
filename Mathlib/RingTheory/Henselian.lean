@@ -260,3 +260,21 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         refine ha.symm.trans (SModEq.rfl.add ?_)
         rw [SModEq.zero, Ideal.neg_mem_iff]
         exact Ideal.mul_mem_right _ _ h₁
+
+open Polynomial in
+@[stacks 06RR]
+theorem IsLocalRing.eq_of_eval_eq_zero_of_not_isUnit_sub {R : Type*} [CommRing R] [IsLocalRing R]
+    {f : Polynomial R} {a b : R} (ha : f.eval a = 0) (hb : f.eval b = 0) (h : ¬ IsUnit (a - b))
+    (h' : IsUnit (f.derivative.eval a)) : a = b := by
+  obtain ⟨c, hc⟩ := exists_mul_sq_add_linear_part_eq_eval_add f a (b - a)
+  rw [add_sub_cancel, ha, hb, add_zero, pow_two, ← mul_assoc, ← add_mul] at hc
+  suffices IsUnit (c * (b - a) + eval a (derivative f)) by
+    rw [isUnit_iff_exists] at this
+    rcases this with ⟨u, _, hu⟩
+    apply mul_eq_zero_of_right u at hc
+    rwa [← mul_assoc, hu, one_mul, sub_eq_zero, eq_comm] at hc
+  by_contra
+  rw [← notMem_maximalIdeal, not_not] at h this
+  replace this := (maximalIdeal R).add_mem this ((maximalIdeal R).mul_mem_left c h)
+  ring_nf at this
+  contradiction
