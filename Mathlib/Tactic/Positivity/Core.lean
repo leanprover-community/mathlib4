@@ -30,8 +30,10 @@ The term (with underscores) `t` indicates which expressions this extension accep
 An extension will be given an expression `e : α`, together with hypotheses
 `[Zero α] [PartialOrder α]` and attempts to prove `e > 0`, `e ≥ 0`, or `e ≠ 0`.
 
-It is not guaranteed that the extension is called on expressions that match `t` perfectly:
-validate the form of the expression before building a proof.
+When `Positivity.core` calls this extension on an expression `e`, it does not guarantee that `e`
+matches `t` perfectly: validate the form of the expression (using e.g.
+`match_expr (← withReducible (whnf e))`) before building a proof. See also the
+`let .app ... ← withReducible (whnf e) | throwError ...` lines in the example below.
 
 An extension can call `Mathlib.Meta.Positivity.core` to recursively solve subgoals.
 
