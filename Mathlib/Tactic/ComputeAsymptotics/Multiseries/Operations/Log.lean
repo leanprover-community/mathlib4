@@ -75,7 +75,7 @@ noncomputable def Multiseries.log {basis_hd basis_tl}
         (.cons 0 (log logBasis_tl coef + log_hd.mulConst exp) .nil) +
           (tl.mulMonomial coef.inv (-exp)).powser logSeries
 
-/-- If `ms` approximates `f` and the last exponent of the leading term of `ms` is 0,
+/-- If `ms` approximates `f` and the last exponent of the leading monomial of `ms` is 0,
 then `ms.log logBasis` approximates `Real.log ∘ f`. -/
 noncomputable def log {basis : Basis}
     (logBasis : LogBasis basis)
@@ -115,7 +115,7 @@ theorem Multiseries.log_Sorted {basis_hd basis_tl}
   | nil =>
     have h_exp : exp = 0 := by
       simp at h_last
-      simpa [leadingTerm] using h_last
+      simpa [leadingMonomial] using h_last
     obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
     simp only [Multiseries.log, Multiseries.destruct_cons]
     apply Multiseries.add_Sorted Multiseries.const_Sorted
@@ -208,7 +208,7 @@ theorem log_Approximates {basis : Basis}
     simp only [log, mk_seq, Multiseries.log, Multiseries.destruct_cons, mk_toFun]
     have h_exp : exp = 0 := by
       simp at h_last
-      simpa [leadingTerm] using h_last
+      simpa [leadingMonomial] using h_last
     subst h_exp
     simp only [WithBot.coe_zero] at h_comp
     let ms := (MultiseriesExpansion.const [basis_hd] (Real.log coef.toReal)) + (powser logSeries

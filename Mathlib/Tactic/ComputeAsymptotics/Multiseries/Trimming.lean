@@ -56,7 +56,7 @@ theorem cons_not_IsZero {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExp
 
 /-- We call multiseries `Trimmed` if it is either constant, `[]` or `cons (exp, coef) tl` where
 coef is trimmed and is not zero. Intuitively, when multiseries is trimmed, it guarantees that
-leading term of multiseries is main asymptotics of the function, approximated by multiseries. -/
+leading monomial of multiseries is main asymptotics of the function, approximated by multiseries. -/
 inductive Trimmed : {basis : Basis} → MultiseriesExpansion basis → Prop
 | const {c : ℝ} : @Trimmed [] c
 | nil {basis_hd} {basis_tl} {f} : @Trimmed (basis_hd :: basis_tl) (mk .nil f)
@@ -67,7 +67,7 @@ inductive Trimmed : {basis : Basis} → MultiseriesExpansion basis → Prop
 
 /-- We call multiseries `Trimmed` if it is either constant, `[]` or `cons (exp, coef) tl` where
 coef is trimmed and is not zero. Intuitively, when multiseries is trimmed, it guarantees that
-leading term of multiseries is main asymptotics of the function, approximated by multiseries. -/
+leading monomial of multiseries is main asymptotics of the function, approximated by multiseries. -/
 def Multiseries.Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (ms : Multiseries basis_hd basis_tl) : Prop :=
   (mk ms 0).Trimmed

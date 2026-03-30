@@ -9,7 +9,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.CompareReal
 
 /-!
-# Computing the leading term of a trimmed multiseries
+# Computing the leading monomial of a trimmed multiseries
 -/
 
 public meta section
@@ -18,9 +18,9 @@ open Lean Meta Elab Tactic Qq
 
 namespace Tactic.ComputeAsymptotics
 
-/-- Given a trimmed multiseries `ms`, computes its leading term. -/
-partial def getLeadingTerm {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis)) :
-    MetaM Q(Term) := do
+/-- Given a trimmed multiseries `ms`, computes its leading monomial. -/
+partial def getLeadingMonomial {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis)) :
+    MetaM Q(Monomial) := do
   match basis with
   | ~q(List.nil) =>
     return q(⟨$ms, List.nil⟩)
@@ -29,47 +29,47 @@ partial def getLeadingTerm {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basi
     | ~q(MultiseriesExpansion.mk .nil $f) =>
       return q(⟨0, List.replicate (List.length ($basis_hd :: $basis_tl)) 0⟩)
     | ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) =>
-      match ← getLeadingTerm coef with
+      match ← getLeadingMonomial coef with
       | ~q(⟨$coef_coef, $coef_exps⟩) =>
         return q(⟨$coef_coef, $exp :: $coef_exps⟩)
       | _ =>
-        return q(⟨Term.coef (MultiseriesExpansion.leadingTerm $coef),
-          $exp :: Term.monomial (MultiseriesExpansion.leadingTerm $coef)⟩)
+        return q(⟨Monomial.coef (MultiseriesExpansion.leadingMonomial $coef),
+          $exp :: Monomial.unit (MultiseriesExpansion.leadingMonomial $coef)⟩)
     | _ =>
-      return q(MultiseriesExpansion.leadingTerm $ms)
-  | _ => panic! "Unexpected basis in getLeadingTerm"
+      return q(MultiseriesExpansion.leadingMonomial $ms)
+  | _ => panic! "Unexpected basis in getLeadingMonomial"
 
-/-- Given a trimmed multiseries `ms`, computes its leading term with a proof. -/
-partial def getLeadingTermWithProof {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis)) :
-    TacticM ((t : Q(Term)) × Q(MultiseriesExpansion.leadingTerm $ms = $t)) := do
+/-- Given a trimmed multiseries `ms`, computes its leading monomial with a proof. -/
+partial def getLeadingMonomialWithProof {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis)) :
+    TacticM ((t : Q(Monomial)) × Q(MultiseriesExpansion.leadingMonomial $ms = $t)) := do
   match basis with
   | ~q(List.nil) =>
     let coef_t := q(($ms).toReal)
     let ⟨coef_t', h_coef_t_eq⟩ ← normalizeReal q($coef_t)
-    return ⟨q(⟨$coef_t', List.nil⟩), q($h_coef_t_eq ▸ MultiseriesExpansion.const_leadingTerm)⟩
+    return ⟨q(⟨$coef_t', List.nil⟩), q($h_coef_t_eq ▸ MultiseriesExpansion.const_leadingMonomial)⟩
   | ~q(List.cons $basis_hd $basis_tl) =>
     match ms with
     | ~q(MultiseriesExpansion.mk .nil $f) =>
       return ⟨q(⟨0, List.replicate (List.length ($basis_hd :: $basis_tl)) 0⟩),
-        q(MultiseriesExpansion.nil_leadingTerm)⟩
+        q(MultiseriesExpansion.nil_leadingMonomial)⟩
     | ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) =>
-      let ⟨coef_t, coef_h_eq⟩ ← getLeadingTermWithProof coef
+      let ⟨coef_t, coef_h_eq⟩ ← getLeadingMonomialWithProof coef
       match coef_t with
       | ~q(⟨$coef_coef, $coef_exps⟩) =>
         return ⟨q(⟨$coef_coef, $exp :: $coef_exps⟩),
-          q(MultiseriesExpansion.cons_leadingTerm' $coef_h_eq)⟩
+          q(MultiseriesExpansion.cons_leadingMonomial' $coef_h_eq)⟩
       | _ =>
-        return ⟨q(⟨Term.coef (MultiseriesExpansion.leadingTerm $coef),
-          $exp :: Term.monomial (MultiseriesExpansion.leadingTerm $coef)⟩),
-          q(MultiseriesExpansion.cons_leadingTerm)⟩
+        return ⟨q(⟨Monomial.coef (MultiseriesExpansion.leadingMonomial $coef),
+          $exp :: Monomial.unit (MultiseriesExpansion.leadingMonomial $coef)⟩),
+          q(MultiseriesExpansion.cons_leadingMonomial)⟩
     | _ =>
-      return ⟨q(MultiseriesExpansion.leadingTerm $ms), q(rfl)⟩
-  | _ => panic! "Unexpected basis in getLeadingTerm"
+      return ⟨q(MultiseriesExpansion.leadingMonomial $ms), q(rfl)⟩
+  | _ => panic! "Unexpected basis in getLeadingMonomial"
 
-/-- Proves that the coefficient of the leading term of a trimmed multiseries is positive.
+/-- Proves that the coefficient of the leading monomial of a trimmed multiseries is positive.
 Return `none` if cannot prove it. -/
-def getLeadingTermCoefPos {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis)) :
-    TacticM (Option Q(0 < (MultiseriesExpansion.leadingTerm $ms).coef)) := do
+def getLeadingMonomialCoefPos {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis)) :
+    TacticM (Option Q(0 < (MultiseriesExpansion.leadingMonomial $ms).coef)) := do
   match basis with
   | ~q(List.nil) =>
     let .pos pf ← compareReal q(($ms).toReal) | return .none
@@ -78,11 +78,11 @@ def getLeadingTermCoefPos {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis
     match ms with
     | ~q(MultiseriesExpansion.mk .nil $f) => return .none
     | _ =>
-      let ⟨rhs, h_eq⟩ ← getLeadingTermWithProof ms
+      let ⟨rhs, h_eq⟩ ← getLeadingMonomialWithProof ms
       let ~q(⟨$coef, $exps⟩) := rhs | return .none
       let .pos pf ← compareReal coef | return .none
-      return .some q(Eq.subst (motive := fun (x : Term) ↦ 0 < x.coef) (Eq.symm $h_eq) $pf)
-  | _ => panic! "Unexpected basis in getLeadingTermCoefPos"
+      return .some q(Eq.subst (motive := fun (x : Monomial) ↦ 0 < x.coef) (Eq.symm $h_eq) $pf)
+  | _ => panic! "Unexpected basis in getLeadingMonomialCoefPos"
 
 /-- Result of checking for a `x : List ℝ` if `x.FirstNonzeroIsPos` or `x.FirstNonzeroIsNeg`
 or `x.AllZero`. -/

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.BasisM
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.Trimming
-public import Mathlib.Tactic.ComputeAsymptotics.Meta.LeadingTerm
+public import Mathlib.Tactic.ComputeAsymptotics.Meta.LeadingMonomial
 
 /-!
 # TODO
@@ -38,26 +38,26 @@ partial def proveLastExpZero (li : Q(List ℝ)) : TacticM <| Option <|
 
 theorem last_exp_zero_aux {basis : Basis} {ms : MultiseriesExpansion basis}
     {coef : ℝ} {exps : List ℝ}
-    (h_leading : MultiseriesExpansion.leadingTerm ms = ⟨coef, exps⟩)
+    (h_leading : MultiseriesExpansion.leadingMonomial ms = ⟨coef, exps⟩)
     (h_last : ∀ a, List.getLast? exps = .some a → a = 0) :
-    ∀ a, List.getLast? ms.leadingTerm.monomial = .some a → a = 0 := by
+    ∀ a, List.getLast? ms.leadingMonomial.unit = .some a → a = 0 := by
   grind
 
 /-- Given a trimmed `ms` returns the MS approximating `log ∘ ms.f`. -/
 def createLogMS (arg : Q(ℝ)) (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $ms.val)) :
     BasisM MS := do
-  let ⟨leading, h_leading⟩ ← getLeadingTermWithProof ms.val
+  let ⟨leading, h_leading⟩ ← getLeadingMonomialWithProof ms.val
   let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in computeTendsto"
-  let .some h_pos ← getLeadingTermCoefPos ms.val
+  let .some h_pos ← getLeadingMonomialCoefPos ms.val
     | throwError f!"Cannot prove that argument of log is eventually positive: {← ppExpr arg}"
   match ← proveLastExpZero exps with
   | .some h_last => return MS.log ms h_trimmed h_pos q(last_exp_zero_aux $h_leading $h_last)
   | .none =>
     let ⟨ms, _, h_trimmed⟩ ← trimMS (← ms.insertLastLog)
-    let ⟨leading, h_leading⟩ ← getLeadingTermWithProof ms.val
+    let ⟨leading, h_leading⟩ ← getLeadingMonomialWithProof ms.val
     let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in computeTendsto"
     -- TODO: prove h_pos' from h_pos
-    let .some h_pos' ← getLeadingTermCoefPos ms.val
+    let .some h_pos' ← getLeadingMonomialCoefPos ms.val
       | panic! s!"Cannot prove that argument of log is eventually positive: {← ppExpr arg}"
     let .some h_last ← proveLastExpZero exps | panic! "Unexpected last exp in log"
     let new_n_id ← mkAppM ``Fin.castSucc #[(← get).n_id]

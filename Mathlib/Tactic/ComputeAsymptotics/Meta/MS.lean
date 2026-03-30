@@ -199,7 +199,7 @@ def zpow (x : MS) (a : Q(ℤ)) (h_trimmed : Q(MultiseriesExpansion.Trimmed $x.va
 /-- Given a multiseries representing `f` and constant `a : ℝ`,
 returns the multiseries representing `f ^ a`. -/
 def rpow (x : MS) (a : Q(ℝ)) (h_trimmed : Q(MultiseriesExpansion.Trimmed $x.val))
-    (h_pos : Q(0 < (MultiseriesExpansion.leadingTerm $x.val).coef)) : MS where
+    (h_pos : Q(0 < (MultiseriesExpansion.leadingMonomial $x.val).coef)) : MS where
   basis := x.basis
   logBasis := x.logBasis
   val := q(MultiseriesExpansion.pow $x.val $a)
@@ -255,8 +255,8 @@ def insertLastLog (ms : MS) : MetaM MS := do
 
 /-- Given a multiseries representing `f`, returns the multiseries representing `log ∘ f`. -/
 def log (x : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $x.val))
-    (h_pos : Q(0 < (MultiseriesExpansion.leadingTerm $x.val).coef))
-    (h_last : Q(∀ a, (MultiseriesExpansion.leadingTerm $x.val).monomial.getLast? =
+    (h_pos : Q(0 < (MultiseriesExpansion.leadingMonomial $x.val).coef))
+    (h_last : Q(∀ a, (MultiseriesExpansion.leadingMonomial $x.val).unit.getLast? =
       .some a → a = 0)) : MS where
   basis := q($x.basis)
   val := q(MultiseriesExpansion.log $x.logBasis $x.val)
@@ -270,7 +270,7 @@ def log (x : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $x.val))
 
 /-- Given a multiseries representing `f`, returns the multiseries representing `exp ∘ f`. -/
 def exp (x : MS)
-    (h_nonpos : Q(¬ FirstNonzeroIsPos (MultiseriesExpansion.leadingTerm $x.val).monomial)) :
+    (h_nonpos : Q(¬ FirstNonzeroIsPos (MultiseriesExpansion.leadingMonomial $x.val).unit)) :
     MS where
   basis := x.basis
   logBasis := x.logBasis

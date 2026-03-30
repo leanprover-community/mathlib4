@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 public import Mathlib.Analysis.Analytic.Binomial
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Inv
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
-public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term.LeadingTerm
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Monomial.LeadingMonomial
 
 /-!
 # Powers of multiseries
@@ -321,7 +321,7 @@ theorem pow_zero_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
 
 theorem pow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℝ}
     (h_basis : WellFormedBasis basis) (h_sorted : ms.Sorted)
-    (h_approx : ms.Approximates) (h_trimmed : ms.Trimmed) (h_pos : 0 < ms.leadingTerm.coef) :
+    (h_approx : ms.Approximates) (h_trimmed : ms.Trimmed) (h_pos : 0 < ms.leadingMonomial.coef) :
     (ms.pow a).Approximates := by
   by_cases ha : a = 0
   · rw [ha]
@@ -460,7 +460,7 @@ theorem zpow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a :
   rw [zpow_eq_pow]
   rcases lt_trichotomy 0 ms.realCoef with (h_leading | h_leading | h_leading)
   · apply pow_Approximates <;> assumption
-  · have : IsZero ms := by apply IsZero_of_leadingTerm_zero_coef h_trimmed h_leading.symm
+  · have : IsZero ms := by apply IsZero_of_leadingMonomial_zero_coef h_trimmed h_leading.symm
     cases basis with
     | nil => simp
     | cons basis_hd basis_tl =>
@@ -480,7 +480,7 @@ theorem zpow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a :
   · have h_neg_approx : (ms.neg.pow a).Approximates := by
       apply pow_Approximates h_basis (neg_Sorted h_sorted) (neg_Approximates h_approx)
       · exact neg_Trimmed h_trimmed
-      · simpa [neg_leadingTerm]
+      · simpa [neg_leadingMonomial]
     rw [neg_zpow] at h_neg_approx
     have h_eq : ms.pow a = ((ms.pow a).mulConst ((-1)^a)).mulConst ((-1)^a) := by
       simp [← mul_zpow]

@@ -63,7 +63,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Meta.ConstSimp
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.ConstSimpAttribute
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.ConvertDomain
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.Exp
-public import Mathlib.Tactic.ComputeAsymptotics.Meta.LeadingTerm
+public import Mathlib.Tactic.ComputeAsymptotics.Meta.LeadingMonomial
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.Log
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.MS
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.Misc
@@ -77,6 +77,9 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Corecursion
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LogBasis
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Monomial.Basic
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Monomial.LeadingMonomial
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Monomial.Predicates
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Add
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Basic
@@ -86,9 +89,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Log
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Mul
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Pow
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Powser
-public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term.Basic
-public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term.LeadingTerm
-public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term.Predicates
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 public import Mathlib.Tactic.ComputeDegree
 public import Mathlib.Tactic.CongrExclamation

@@ -7,13 +7,13 @@ module
 
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.CompareReal
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.MS
-public import Mathlib.Tactic.ComputeAsymptotics.Meta.LeadingTerm
+public import Mathlib.Tactic.ComputeAsymptotics.Meta.LeadingMonomial
 
 /-!
 # Comparing growth rates of multiseries
 
-To compare the growth rate of two trimmed multiseries it's enough to compare their leading terms
-as lists using lexigraphic order. In this file we implement this procedure.
+To compare the growth rate of two trimmed multiseries it's enough to compare their leading
+monomials as lists using lexigraphic order. In this file we implement this procedure.
 
 ## Main definitions
 
@@ -89,35 +89,35 @@ def compare (x y : MS)
     TacticM <| CompareResult q(($x.val).toFun) q(($y.val).toFun) := do
   let left ← expressAsAppend x.basis y.basis
   haveI : $x.basis =Q $left ++ $y.basis := ⟨⟩; do
-  let ⟨tx, htx⟩ ← getLeadingTermWithProof x.val
-  let ⟨ty, hty⟩ ← getLeadingTermWithProof y.val
-  let ~q(⟨$x_coef, $x_exps⟩) := tx | panic! "Unexpected x in compareLeadingTerms"
-  let ~q(⟨$y_coef, $y_exps⟩) := ty | panic! "Unexpected y in compareLeadingTerms"
+  let ⟨tx, htx⟩ ← getLeadingMonomialWithProof x.val
+  let ⟨ty, hty⟩ ← getLeadingMonomialWithProof y.val
+  let ~q(⟨$x_coef, $x_exps⟩) := tx | panic! "Unexpected x in compareLeadingMonomials"
+  let ~q(⟨$y_coef, $y_exps⟩) := ty | panic! "Unexpected y in compareLeadingMonomials"
   let n : Nat := (← computeLength x.basis) - (← computeLength y.basis)
   let zeros ← replicate n q(0 : ℝ)
   let y_exps' : Q(List ℝ) := ← reduceAppend (α := q(ℝ)) q($zeros) q($y_exps)
-  -- haveI : $x_exps =Q (MultiseriesExpansion.leadingTerm $x.val).exps := ⟨⟩; do
+  -- haveI : $x_exps =Q (MultiseriesExpansion.leadingMonomial $x.val).exps := ⟨⟩; do
   haveI : $y_exps' =Q List.replicate (List.length $left) 0 ++ $y_exps := ⟨⟩
   do
   let res ← compareLists q($x_exps) q($y_exps')
   match res with
   | .lt h' =>
-    let h : Q(($x.val).leadingTerm.monomial < List.replicate (List.length $left) 0 ++
-      ($y.val).leadingTerm.monomial) := q($htx ▸ $hty ▸ $h')
+    let h : Q(($x.val).leadingMonomial.unit < List.replicate (List.length $left) 0 ++
+      ($y.val).leadingMonomial.unit) := q($htx ▸ $hty ▸ $h')
     let h_ne_zero : Q(¬ MultiseriesExpansion.IsZero $y.val) ← proveNeZero y
-    return .lt q(MultiseriesExpansion.IsLittleO_of_lt_leadingTerm_left $x.h_sorted $y.h_sorted
+    return .lt q(MultiseriesExpansion.IsLittleO_of_lt_leadingMonomial_left $x.h_sorted $y.h_sorted
       $x.h_approx $y.h_approx $hx_trimmed $hy_trimmed $x.h_basis $h_ne_zero $h)
   | .gt h' =>
-    let h : Q(List.replicate (List.length $left) 0 ++ ($y.val).leadingTerm.monomial <
-      ($x.val).leadingTerm.monomial) := q($hty ▸ $htx ▸ $h')
+    let h : Q(List.replicate (List.length $left) 0 ++ ($y.val).leadingMonomial.unit <
+      ($x.val).leadingMonomial.unit) := q($hty ▸ $htx ▸ $h')
     let h_ne_zero : Q(¬ MultiseriesExpansion.IsZero $x.val) ← proveNeZero x
-    return .gt q(MultiseriesExpansion.IsLittleO_of_lt_leadingTerm_right $x.h_sorted $y.h_sorted
+    return .gt q(MultiseriesExpansion.IsLittleO_of_lt_leadingMonomial_right $x.h_sorted $y.h_sorted
       $x.h_approx $y.h_approx $hx_trimmed $hy_trimmed $x.h_basis $h_ne_zero $h)
   | .eq h' =>
     let c : Q(ℝ) := q($x_coef / $y_coef)
     let hc' := ← CompareReal.proveNeZero c
     return .eq c q($hc')
-      q((MultiseriesExpansion.IsEquivalent_of_leadingTerm_zeros_append_mul_coef $x.h_sorted
+      q((MultiseriesExpansion.IsEquivalent_of_leadingMonomial_zeros_append_mul_coef $x.h_sorted
         $y.h_sorted $x.h_approx $y.h_approx $hx_trimmed $hy_trimmed $x.h_basis $htx $hty $hc'
         ($h').symm))
 
@@ -165,8 +165,8 @@ lemma WellFormedBasis.insert_pos_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
     {ms : MultiseriesExpansion (left ++ right_hd :: right_tl)}
     (h_sorted : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : MultiseriesExpansion.Trimmed ms)
-    (h_exps : FirstNonzeroIsPos (ms.leadingTerm).monomial)
-    (h_coef : 0 < (ms.leadingTerm).coef)
+    (h_exps : FirstNonzeroIsPos (ms.leadingMonomial).unit)
+    (h_coef : 0 < (ms.leadingMonomial).coef)
     (h_basis : WellFormedBasis (left ++ right_hd :: right_tl))
     (h_equiv : ms.toFun ~[atTop] f')
     (h_left : ∀ g ∈ left.getLast?, ms.toFun =o[atTop] (Real.log ∘ g))
@@ -185,8 +185,8 @@ lemma WellFormedBasis.insert_neg_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
     {ms : MultiseriesExpansion (left ++ right_hd :: right_tl)}
     (h_sorted : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : MultiseriesExpansion.Trimmed ms)
-    (h_exps : FirstNonzeroIsPos (ms.leadingTerm).monomial)
-    (h_coef : (ms.leadingTerm).coef < 0)
+    (h_exps : FirstNonzeroIsPos (ms.leadingMonomial).unit)
+    (h_coef : (ms.leadingMonomial).coef < 0)
     (h_basis : WellFormedBasis (left ++ right_hd :: right_tl))
     (h_equiv : ms.toFun ~[atTop] f')
     (h_left : ∀ g ∈ left.getLast?, ms.toFun =o[atTop] (Real.log ∘ g))
@@ -194,8 +194,8 @@ lemma WellFormedBasis.insert_neg_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
     WellFormedBasis (left ++ (Real.exp ∘ (-f')) :: right_hd :: right_tl) := by
   apply WellFormedBasis.insert_pos_exp _ _ _ (ms := ms.neg)
     (neg_Sorted h_sorted) (neg_Approximates h_approx) (neg_Trimmed h_trimmed)
-  · simpa [neg_leadingTerm]
-  · simpa [neg_leadingTerm]
+  · simpa [neg_leadingMonomial]
+  · simpa [neg_leadingMonomial]
   · exact h_basis
   · convert h_equiv.neg using 1
     ext t

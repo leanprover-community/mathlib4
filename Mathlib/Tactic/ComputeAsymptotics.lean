@@ -91,14 +91,14 @@ partial def createMSImp (x body : Q(ℝ)) : BasisM MS := do
       else if t == q(ℤ) then
         return MS.zpow ms exp h_trimmed
       else if t == q(ℝ) then
-        let .some h_pos ← getLeadingTermCoefPos ms.val
+        let .some h_pos ← getLeadingMonomialCoefPos ms.val
           | throwError f!"Cannot prove that argument of rpow is eventually positive: {← ppExpr arg}"
         return MS.rpow ms exp h_trimmed h_pos
       else
         throwError f!"Unexpected type in pow: {← ppExpr t}. Only ℕ, ℤ and ℝ are supported."
     else
       if t == q(ℝ) then
-        let .some h_pos ← getLeadingTermCoefPos ms.val
+        let .some h_pos ← getLeadingMonomialCoefPos ms.val
           | throwError f!"Cannot prove that argument of rpow is eventually positive: {← ppExpr arg}"
         let exp : Q(ℝ) := exp
         let res ← createMSImp x q(Real.exp ((Real.log $arg) * $exp))
@@ -156,7 +156,7 @@ def computeTendstoAtTop (f : Q(ℝ → ℝ)) :
     | ~q(MultiseriesExpansion.mk .nil $f) =>
       pure (q(MultiseriesExpansion.nil_tendsto_zero $ms_trimmed.h_approx) : Expr)
     | ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) =>
-      let ⟨leading, h_leading_eq⟩ ← getLeadingTermWithProof ms_trimmed.val
+      let ⟨leading, h_leading_eq⟩ ← getLeadingMonomialWithProof ms_trimmed.val
       let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in computeTendstoAtTop"
       let h_tendsto ← match ← getFirstIs exps with
       | .pos h_exps =>

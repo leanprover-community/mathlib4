@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
-public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term.LeadingTerm
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Monomial.LeadingMonomial
 
 /-!
 # Basic operations for multiseries: multiplication by constant and negation
@@ -294,9 +294,10 @@ theorem mulConst_exps {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ
 
 end
 
-theorem mulConst_leadingTerm {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ} :
-    (ms.mulConst c).leadingTerm = ⟨c * ms.leadingTerm.coef, ms.leadingTerm.monomial⟩ := by
-  simp [leadingTerm, mulConst_realCoef, mulConst_exps]
+theorem mulConst_leadingMonomial {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ} :
+    (ms.mulConst c).leadingMonomial =
+    ⟨c * ms.leadingMonomial.coef, ms.leadingMonomial.unit⟩ := by
+  simp [leadingMonomial, mulConst_realCoef, mulConst_exps]
 
 @[simp]
 theorem neg_toFun {basis : Basis} {ms : MultiseriesExpansion basis} :
@@ -354,9 +355,9 @@ theorem neg_Trimmed {basis : Basis} {ms : MultiseriesExpansion basis} (h_trimmed
     ms.neg.Trimmed :=
   mulConst_Trimmed h_trimmed (by simp)
 
-theorem neg_leadingTerm {basis : Basis} {ms : MultiseriesExpansion basis} :
-    ms.neg.leadingTerm = ⟨-ms.leadingTerm.coef, ms.leadingTerm.monomial⟩ := by
-  simp [neg, mulConst_leadingTerm]
+theorem neg_leadingMonomial {basis : Basis} {ms : MultiseriesExpansion basis} :
+    ms.neg.leadingMonomial = ⟨-ms.leadingMonomial.coef, ms.leadingMonomial.unit⟩ := by
+  simp [neg, mulConst_leadingMonomial]
 
 end MultiseriesExpansion
 

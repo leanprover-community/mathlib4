@@ -225,7 +225,7 @@ def trimMS (ms : MS) :
   }
   return ⟨newMs, q($res.h_fun), res.h_trimmed.get!⟩
 
-/-- Same as `trimMS` but stops when it is clear that `FirstNonzeroIsNeg ms.leadingTerm.exps`
+/-- Same as `trimMS` but stops when it is clear that `FirstNonzeroIsNeg ms.leadingMonomial.exps`
 is true. In such case one can prove that the limit is zero without the `ms.Trimmed` assumption. -/
 def trimPartialMS (ms : MS) :
     TacticM ((ms' : MS) × Q(($ms'.val).toFun = ($ms.val).toFun) ×

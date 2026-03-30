@@ -198,7 +198,7 @@ theorem pow_eq_exp_toFun
     {f g : ℝ → ℝ}
     (h_basis1 : WellFormedBasis basis1)
     (h_sorted1 : ms1.Sorted) (h_approx1 : ms1.Approximates) (h_trimmed1 : ms1.Trimmed)
-    (h_pos1 : 0 < ms1.leadingTerm.coef)
+    (h_pos1 : 0 < ms1.leadingMonomial.coef)
     (h1 : ms1.toFun = f)
     (h2 : ms2.toFun = (Real.exp ∘ ((Real.log ∘ f) * g))) :
     ms2.toFun =ᶠ[atTop] (fun x ↦ (f x) ^ (g x)) := by
