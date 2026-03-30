@@ -57,8 +57,6 @@ for the empty set by convention.
 * `ω` is a notation for the first infinite ordinal in the scope `Ordinal`.
 -/
 
-set_option linter.style.longFile 1700
-
 @[expose] public section
 
 assert_not_exists Module Field
@@ -1102,7 +1100,6 @@ theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r },
 
 @[deprecated (since := "2026-03-15")] alias ord_eq_Inf := ord_eq_iInf
 
--- TODO: deprecate in favor of `ord_eq_type_lt`?
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem ord_eq (α) : ∃ (r : α → α → Prop) (_ : IsWellOrder α r), ord #α = type r :=
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
