@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bjørn Kjos-Hanssen, Patrick Massot, Yongxi Lin
+Authors: Bjørn Kjos-Hanssen, Patrick Massot
 -/
 module
 
@@ -9,7 +9,7 @@ public import Mathlib.Topology.Order.OrderClosed
 public import Mathlib.Topology.Order.LocalExtr
 
 /-!
-# Extrema from monotonicity and antitonicity
+# Local maxima from monotonicity and antitonicity
 
 In this file we prove a lemma that is useful for the First Derivative Test in calculus,
 and its dual.
@@ -25,13 +25,13 @@ and its dual.
 
 public section
 
-open Set Topology Filter
+open Set
 
 variable {α β : Type*} [LinearOrder α] [Preorder β] {s : Set α} {a b c : α} {f : α → β}
 
 /-- If `f` is monotone on `(a, b]` and antitone on `[b,c)`, then the maximum of `f` on `(a, c)` is
 attained at `b`. -/
-lemma isMaxOn_of_mono_anti_Ioo (h₀ : MonotoneOn f (Ioc a b)) (h₁ : AntitoneOn f (Ico b c)) :
+lemma isMaxOn_Ioo_of_mono_anti (h₀ : MonotoneOn f (Ioc a b)) (h₁ : AntitoneOn f (Ico b c)) :
     IsMaxOn f (Ioo a c) b := by
   intro x hx
   by_cases! g₀ : x ≤ b
@@ -40,13 +40,13 @@ lemma isMaxOn_of_mono_anti_Ioo (h₀ : MonotoneOn f (Ioc a b)) (h₁ : AntitoneO
 
 /-- If `f` is antitone on `(a, b]` and monotone on `[b,c)`, then the minimum of `f` on `(a, c)` is
 attained at `b`. -/
-lemma isMinOn_of_anti_mono_Ioo (h₀ : AntitoneOn f (Ioc a b)) (h₁ : MonotoneOn f (Ico b c)) :
+lemma isMinOn_Ioo_of_anti_mono (h₀ : AntitoneOn f (Ioc a b)) (h₁ : MonotoneOn f (Ico b c)) :
     IsMinOn f (Ioo a c) b :=
-  isMaxOn_of_mono_anti_Ioo (β := βᵒᵈ) h₀ h₁
+  isMaxOn_Ioo_of_mono_anti (β := βᵒᵈ) h₀ h₁
 
 /-- If `f` is monotone on `[a, b]` and antitone on `[b,c)`, then the maximum of `f` on `[a, c)` is
 attained at `b`. -/
-lemma isMaxOn_of_mono_anti_Ico
+lemma isMaxOn_Ico_of_mono_anti
     (h₀ : MonotoneOn f (Icc a b))
     (h₁ : AntitoneOn f (Ico b c)) : IsMaxOn f (Ico a c) b := by
   intro x hx
@@ -56,13 +56,13 @@ lemma isMaxOn_of_mono_anti_Ico
 
 /-- If `f` is antitone on `[a, b]` and monotone on `[b,c)`, then the minimum of `f` on `[a, c)` is
 attained at `b`. -/
-lemma isMinOn_of_anti_mono_Ico (h₀ : AntitoneOn f (Icc a b)) (h₁ : MonotoneOn f (Ico b c)) :
+lemma isMinOn_Ico_of_anti_mono (h₀ : AntitoneOn f (Icc a b)) (h₁ : MonotoneOn f (Ico b c)) :
     IsMinOn f (Ico a c) b :=
-  isMaxOn_of_mono_anti_Ico (β := βᵒᵈ) h₀ h₁
+  isMaxOn_Ico_of_mono_anti (β := βᵒᵈ) h₀ h₁
 
 /-- If `f` is monotone on `(a, b]` and antitone on `[b,c]`, then the maximum of `f` on `(a, c]` is
 attained at `b`. -/
-lemma isMaxOn_of_mono_anti_Ioc (h₀ : MonotoneOn f (Ioc a b)) (h₁ : AntitoneOn f (Icc b c)) :
+lemma isMaxOn_Ioc_of_mono_anti (h₀ : MonotoneOn f (Ioc a b)) (h₁ : AntitoneOn f (Icc b c)) :
     IsMaxOn f (Ioc a c) b := by
   intro x hx
   by_cases! g₀ : x ≤ b
@@ -71,13 +71,13 @@ lemma isMaxOn_of_mono_anti_Ioc (h₀ : MonotoneOn f (Ioc a b)) (h₁ : AntitoneO
 
 /-- If `f` is monotone on `(a, b]` and antitone on `[b,c]`, then the maximum of `f` on `(a, c]` is
 attained at `b`. -/
-lemma isMinOn_of_anti_mono_Ioc (h₀ : AntitoneOn f (Ioc a b)) (h₁ : MonotoneOn f (Icc b c)) :
+lemma isMinOn_Ioc_of_anti_mono (h₀ : AntitoneOn f (Ioc a b)) (h₁ : MonotoneOn f (Icc b c)) :
     IsMinOn f (Ioc a c) b :=
-  isMaxOn_of_mono_anti_Ioc (β := βᵒᵈ) h₀ h₁
+  isMaxOn_Ioc_of_mono_anti (β := βᵒᵈ) h₀ h₁
 
 /-- If `f` is monotone on `[a, b]` and antitone on `[b,c]`, then the maximum of `f` on `[a, c]` is
 attained at `b`. -/
-lemma isMaxOn_of_mono_anti_Icc (h₀ : MonotoneOn f (Icc a b)) (h₁ : AntitoneOn f (Icc b c)) :
+lemma isMaxOn_Icc_of_mono_anti (h₀ : MonotoneOn f (Icc a b)) (h₁ : AntitoneOn f (Icc b c)) :
     IsMaxOn f (Icc a c) b := by
   intro x hx
   by_cases! g₀ : x ≤ b
@@ -86,13 +86,13 @@ lemma isMaxOn_of_mono_anti_Icc (h₀ : MonotoneOn f (Icc a b)) (h₁ : AntitoneO
 
 /-- If `f` is antitone on `[a, b]` and monotone on `[b,c]`, then the minimum of `f` on `(a, c]` is
 attained at `b`. -/
-lemma isMinOn_of_anti_mono_Icc (h₀ : AntitoneOn f (Icc a b)) (h₁ : MonotoneOn f (Icc b c)) :
+lemma isMinOn_Icc_of_anti_mono (h₀ : AntitoneOn f (Icc a b)) (h₁ : MonotoneOn f (Icc b c)) :
     IsMinOn f (Icc a c) b :=
-  isMaxOn_of_mono_anti_Icc (β := βᵒᵈ) h₀ h₁
+  isMaxOn_Icc_of_mono_anti (β := βᵒᵈ) h₀ h₁
 
 /-- If `f` is monotone on `(a, b]` and antitone on `[b,∞)`, then the maximum of `f` on `(a, ∞)` is
 attained at `b`. -/
-lemma isMaxOn_of_mono_anti_Ioi (h₀ : MonotoneOn f (Ioc a b)) (h₁ : AntitoneOn f (Ici b)) :
+lemma isMaxOn_Ioi_of_mono_anti (h₀ : MonotoneOn f (Ioc a b)) (h₁ : AntitoneOn f (Ici b)) :
     IsMaxOn f (Ioi a) b := by
   intro x hx
   by_cases! g₀ : x ≤ b
@@ -101,13 +101,13 @@ lemma isMaxOn_of_mono_anti_Ioi (h₀ : MonotoneOn f (Ioc a b)) (h₁ : AntitoneO
 
 /-- If `f` is antitone on `(a, b]` and monotone on `[b,∞)`, then the minimum of `f` on `(a, ∞)` is
 attained at `b`. -/
-lemma isMinOn_of_anti_mono_Ioi (h₀ : AntitoneOn f (Ioc a b)) (h₁ : MonotoneOn f (Ici b)) :
+lemma isMinOn_Ioi_of_anti_mono (h₀ : AntitoneOn f (Ioc a b)) (h₁ : MonotoneOn f (Ici b)) :
     IsMinOn f (Ioi a) b :=
-  isMaxOn_of_mono_anti_Ioi (β := βᵒᵈ) h₀ h₁
+  isMaxOn_Ioi_of_mono_anti (β := βᵒᵈ) h₀ h₁
 
 /-- If `f` is monotone on `[a, b]` and antitone on `[b,∞)`, then the maximum of `f` on `[a, ∞)` is
 attained at `b`. -/
-lemma isMaxOn_of_mono_anti_Ici (h₀ : MonotoneOn f (Icc a b)) (h₁ : AntitoneOn f (Ici b)) :
+lemma isMaxOn_Ici_of_mono_anti (h₀ : MonotoneOn f (Icc a b)) (h₁ : AntitoneOn f (Ici b)) :
     IsMaxOn f (Ici a) b := by
   intro x hx
   by_cases! g₀ : x ≤ b
@@ -116,13 +116,13 @@ lemma isMaxOn_of_mono_anti_Ici (h₀ : MonotoneOn f (Icc a b)) (h₁ : AntitoneO
 
 /-- If `f` is antitone on `(a, b]` and monotone on `[b,∞)`, then the minimum of `f` on `[a, ∞)` is
 attained at `b`. -/
-lemma isMinOn_of_anti_mono_Ici (h₀ : AntitoneOn f (Icc a b)) (h₁ : MonotoneOn f (Ici b)) :
+lemma isMinOn_Ici_of_anti_mono (h₀ : AntitoneOn f (Icc a b)) (h₁ : MonotoneOn f (Ici b)) :
     IsMinOn f (Ici a) b :=
-  isMaxOn_of_mono_anti_Ici (β := βᵒᵈ) h₀ h₁
+  isMaxOn_Ici_of_mono_anti (β := βᵒᵈ) h₀ h₁
 
 /-- If `f` is monotone on `(-∞, b]` and antitone on `[b,a)`, then the maximum of `f` on `(-∞, a)` is
 attained at `b`. -/
-lemma isMaxOn_of_mono_anti_Iio (h₀ : MonotoneOn f (Iic b)) (h₁ : AntitoneOn f (Ico b a)) :
+lemma isMaxOn_Iio_of_mono_anti (h₀ : MonotoneOn f (Iic b)) (h₁ : AntitoneOn f (Ico b a)) :
     IsMaxOn f (Iio a) b := by
   intro x hx
   by_cases! g₀ : x ≤ b
@@ -131,13 +131,13 @@ lemma isMaxOn_of_mono_anti_Iio (h₀ : MonotoneOn f (Iic b)) (h₁ : AntitoneOn 
 
 /-- If `f` is antitone on `(-∞, b]` and monotone on `[b,a)`, then the minimum of `f` on `(-∞, a)` is
 attained at `b`. -/
-lemma isMinOn_of_anti_mono_Iio (h₀ : AntitoneOn f (Iic b)) (h₁ : MonotoneOn f (Ico b a)) :
+lemma isMinOn_Iio_of_anti_mono (h₀ : AntitoneOn f (Iic b)) (h₁ : MonotoneOn f (Ico b a)) :
     IsMinOn f (Iio a) b :=
-  isMaxOn_of_mono_anti_Iio (β := βᵒᵈ) h₀ h₁
+  isMaxOn_Iio_of_mono_anti (β := βᵒᵈ) h₀ h₁
 
 /-- If `f` is monotone on `(-∞, b]` and antitone on `[b,a]`, then the maximum of
 `f` on `(-∞, a]` is attained at `b`. -/
-lemma isMaxOn_of_mono_anti_Iic (h₀ : MonotoneOn f (Iic b)) (h₁ : AntitoneOn f (Icc b a)) :
+lemma isMaxOn_Iic_of_mono_anti (h₀ : MonotoneOn f (Iic b)) (h₁ : AntitoneOn f (Icc b a)) :
     IsMaxOn f (Iic a) b := by
   intro x hx
   by_cases! g₀ : x ≤ b
@@ -146,21 +146,21 @@ lemma isMaxOn_of_mono_anti_Iic (h₀ : MonotoneOn f (Iic b)) (h₁ : AntitoneOn 
 
 /-- If `f` is antitone on `(-∞, b]` and monotone on `[b,a]`, then the minimum of `f` on `(-∞, a]` is
 attained at `b`. -/
-lemma isMinOn_of_anti_mono_Iic (h₀ : AntitoneOn f (Iic b)) (h₁ : MonotoneOn f (Icc b a)) :
+lemma isMinOn_Iic_of_anti_mono (h₀ : AntitoneOn f (Iic b)) (h₁ : MonotoneOn f (Icc b a)) :
     IsMinOn f (Iic a) b :=
-  isMaxOn_of_mono_anti_Iic (β := βᵒᵈ) h₀ h₁
+  isMaxOn_Iic_of_mono_anti (β := βᵒᵈ) h₀ h₁
 
 /-- If `f` is monotone on `(-∞, b]` and antitone on `[b,∞)`, then the maximum of `f` is attained
 at `b`. -/
-lemma isMaxOn_of_mono_anti_univ (h₀ : MonotoneOn f (Iic b)) (h₁ : AntitoneOn f (Ici b)) :
+lemma isMaxOn_univ_of_mono_anti (h₀ : MonotoneOn f (Iic b)) (h₁ : AntitoneOn f (Ici b)) :
     IsMaxOn f univ b :=
   fun x _ => by rcases le_total x b <;> aesop
 
 /-- If `f` is antitone on `(-∞, b]` and monotone on `[b,∞)`, then the minimum of `f` is attained
 at `b`. -/
-lemma isMinOn_of_anti_mono_univ (h₀ : AntitoneOn f (Iic b)) (h₁ : MonotoneOn f (Ici b)) :
+lemma isMinOn_univ_of_anti_mono (h₀ : AntitoneOn f (Iic b)) (h₁ : MonotoneOn f (Ici b)) :
     IsMinOn f univ b :=
-  isMaxOn_of_mono_anti_univ (β := βᵒᵈ) h₀ h₁
+  isMaxOn_univ_of_mono_anti (β := βᵒᵈ) h₀ h₁
 
 /-- If `f` is monotone on `(a,b]` and antitone on `[b,c)` then `f` has
 a local maximum at `b`. -/
@@ -170,7 +170,7 @@ lemma isLocalMax_of_mono_anti
     {a b c : α} (g₀ : a < b) (g₁ : b < c) {f : α → β}
     (h₀ : MonotoneOn f (Ioc a b))
     (h₁ : AntitoneOn f (Ico b c)) : IsLocalMax f b :=
-  isLocalMax_of_mono_anti' (Ioc_mem_nhdsLE g₀) (Ico_mem_nhdsGE g₁) h₀ h₁
+  (isMaxOn_Ioo_of_mono_anti h₀ h₁).isLocalMax (Ioo_mem_nhds g₀ g₁)
 
 /-- If `f` is antitone on `(a,b]` and monotone on `[b,c)` then `f` has
 a local minimum at `b`. -/
@@ -178,4 +178,4 @@ lemma isLocalMin_of_anti_mono
     {α : Type*} [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
     {β : Type*} [Preorder β] {a b c : α} (g₀ : a < b) (g₁ : b < c) {f : α → β}
     (h₀ : AntitoneOn f (Ioc a b)) (h₁ : MonotoneOn f (Ico b c)) : IsLocalMin f b :=
-  mem_of_superset (Ioo_mem_nhds g₀ g₁) (fun x hx => by rcases le_total x b <;> aesop)
+  isLocalMax_of_mono_anti (β := βᵒᵈ) g₀ g₁ h₀ h₁
