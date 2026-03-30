@@ -27,8 +27,6 @@ Cartan's criterion for semisimplicity.
 ## Main definitions
 
 * `NilpotentOfTrace.M`: the set `{x ∈ gl(V) : [x, B] ⊆ A}`.
-* `NilpotentOfTrace.eigenbasis`: an eigenbasis for a semisimple endomorphism over an algebraically
-  closed field.
 
 ## Main results
 
@@ -96,27 +94,6 @@ lemma aeval_ad_maps_to
 
 end General
 
-section EigenBasis
-
-variable {K : Type*} [Field K] [IsAlgClosed K]
-  {V : Type*} [AddCommGroup V] [Module K V] [FiniteDimensional K V]
-
-open Classical in
-/-- An eigenbasis for a semisimple endomorphism over an algebraically closed field,
-constructed from the eigenspace direct sum decomposition. -/
-noncomputable def eigenbasis (s : Module.End K V) (hs : s.IsSemisimple) :=
-  (DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
-    s.eigenspaces_iSupIndep hs.iSup_eigenspace_eq_top).collectedBasis
-    (fun μ => Module.finBasis K (s.eigenspace μ))
-
-open Classical in
-theorem eigenbasis_eigenvalue (s : Module.End K V) (hs : s.IsSemisimple)
-    (σ : Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))) :
-    s (eigenbasis s hs σ) = σ.1 • eigenbasis s hs σ :=
-  mem_eigenspace_iff.mp ((DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
-    s.eigenspaces_iSupIndep hs.iSup_eigenspace_eq_top).collectedBasis_mem _ σ)
-
-end EigenBasis
 
 section Lagrange
 
@@ -177,9 +154,13 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   · exact .zero
   obtain ⟨n, hn_adj, s, hs_adj, hn_nil, hs_ss, hxns⟩ :=
     x.exists_isNilpotent_isSemisimple
-  let v := eigenbasis s hs_ss
+  classical
+  let hI := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
+    s.eigenspaces_iSupIndep hs_ss.iSup_eigenspace_eq_top
+  let v := hI.collectedBasis (fun μ => Module.finBasis K (s.eigenspace μ))
   let a : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))) → K := fun i => i.1
-  have hv_diag : ∀ i, s (v i) = a i • v i := eigenbasis_eigenvalue s hs_ss
+  have hv_diag : ∀ i, s (v i) = a i • v i := fun σ =>
+    mem_eigenspace_iff.mp (hI.collectedBasis_mem _ σ)
   let E : Submodule ℚ K := Submodule.span ℚ (Set.range a)
   suffices hs_zero : s = 0 by rw [hxns, hs_zero, add_zero]; exact hn_nil
   suffices h_f_zero : ∀ f : E →ₗ[ℚ] ℚ, f = 0 by
@@ -191,9 +172,8 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     exact congr_arg Subtype.val <| (Module.forall_dual_apply_eq_zero_iff ℚ ⟨μ, hμ_E⟩).mp hφ
   intro f
   have ha : ∀ i, a i ∈ E := fun i => Submodule.subset_span (Set.mem_range_self i)
-  classical
   haveI : Fintype (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))) :=
-    (eigenbasis s hs_ss).fintypeIndexOfRankLtAleph0 (Module.rank_lt_aleph0 K V)
+    v.fintypeIndexOfRankLtAleph0 (Module.rank_lt_aleph0 K V)
   let c : _ → K := fun i => algebraMap ℚ K (f ⟨a i, ha i⟩)
   let y := Matrix.toLin v v (Matrix.diagonal c)
   have hy_diag : ∀ i, y (v i) = c i • v i := fun i =>
