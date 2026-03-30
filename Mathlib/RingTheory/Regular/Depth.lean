@@ -195,7 +195,7 @@ lemma CategoryTheory.Abelian.Ext.pow_mono_of_mono (a : R) (k : ℕ) (i : ℕ) {M
   exact f_mono.pow k
 
 lemma ModuleCat.subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
-    (N : ModuleCat.{v} R) [Nntr : Nontrivial N] [Nfin : Module.Finite R N]
+    (N : ModuleCat.{v} R) [Nfin : Module.Finite R N]
     (Nsupp : Module.support R N ⊆ PrimeSpectrum.zeroLocus I)
     (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
     (rs : List R) (len : rs.length = n) (mem : ∀ r ∈ rs, r ∈ I) (reg : IsRegular M rs) :
@@ -213,10 +213,6 @@ lemma ModuleCat.subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : I
     | a :: rs' =>
       -- find a positive power of `a` lying in `Ann(N)`
       rcases le_rad (mem a List.mem_cons_self) with ⟨k, hk⟩
-      have kpos : k > 0 := by
-        by_contra h
-        simp only [Nat.eq_zero_of_not_pos h, pow_zero, Module.mem_annihilator, one_smul] at hk
-        exact (not_nontrivial_iff_subsingleton.mpr (subsingleton_of_forall_eq 0 hk)) Nntr
       simp only [isRegular_cons_iff] at reg
       simp only [List.mem_cons, forall_eq_or_imp] at mem
       simp only [List.length_cons, Nat.add_left_inj] at len
