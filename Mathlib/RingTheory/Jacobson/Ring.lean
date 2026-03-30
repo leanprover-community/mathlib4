@@ -168,7 +168,7 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
     rw [isPrime_iff_isPrime_disjoint (Submonoid.powers y)] at hJ
     have : y ∉ (comap (algebraMap R S) J).1 := Set.disjoint_left.1 hJ.right (Submonoid.mem_powers _)
     rw [← H.out hJ.left.isRadical, jacobson, Submodule.mem_toAddSubmonoid, Ideal.mem_sInf] at this
-    push_neg at this
+    push Not at this
     rcases this with ⟨I, hI, hI'⟩
     convert hI.right
     by_cases hJ : J = I.map (algebraMap R S)
