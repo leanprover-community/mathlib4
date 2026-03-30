@@ -91,22 +91,14 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
             (Module.supportDim_ne_bot_of_nontrivial R (QuotSMulTop x L)) < r := by
             have : (Module.supportDim R (QuotSMulTop x L)) + 1 ≤ Module.supportDim R L := by
               simp only [Module.supportDim_eq_ringKrullDim_quotient_annihilator]
-              rw [LinearEquiv.annihilator_eq e, Ideal.annihilator_quotient]
+              rw [e.annihilator_eq, Ideal.annihilator_quotient]
               have ple : p.1 ≤ Module.annihilator R (QuotSMulTop x L) := by
                 rw [← p.1.annihilator_quotient, ← LinearEquiv.annihilator_eq e]
                 exact (Submodule.mkQ _).annihilator_le_of_surjective (Submodule.mkQ_surjective _)
-              let f := Quotient.factor ple
-              have mem_ann : x ∈ Module.annihilator R (QuotSMulTop x L) := by
-                apply Module.mem_annihilator.mpr (fun l ↦ ?_)
-                induction l using Submodule.Quotient.induction_on
-                rename_i l
-                simpa [← Submodule.Quotient.mk_smul] using
-                  Submodule.smul_mem_pointwise_smul l x ⊤ trivial
-              have : Ideal.Quotient.mk p.asIdeal x ∈ nonZeroDivisors (R ⧸ p.asIdeal) := by
+              have : Ideal.Quotient.mk p.asIdeal x ∈ nonZeroDivisors (R ⧸ p.1) := by
                 simpa [Ideal.Quotient.eq_zero_iff_mem] using Set.notMem_of_mem_diff hx
-              exact ringKrullDim_succ_le_of_surjective (Quotient.factor ple)
-                (Quotient.factor_surjective ple) this
-                (by simpa [Quotient.eq_zero_iff_mem] using mem_ann)
+              exact ringKrullDim_succ_le_of_surjective _ (Quotient.factor_surjective ple) this
+                (by simpa [Quotient.eq_zero_iff_mem] using QuotSMulTop.mem_annihilator L x)
             have succle : (Module.supportDim R (QuotSMulTop x L)).unbot
               (Module.supportDim_ne_bot_of_nontrivial R (QuotSMulTop x L)) + 1 ≤ r := by
               simpa [← dim_eq, WithBot.le_unbot_iff] using this
@@ -126,10 +118,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
             have : (i + 1 : ℕ) ≤ IsLocalRing.depth M - r := by
               simpa [ENat.add_one_le_iff (ENat.coe_ne_top i)] using hi
             apply lt_of_le_of_lt this
-            have le : r ≤ k := by
-              simp only [← hk, ← ENat.coe_sub, Nat.cast_lt] at hi
-              omega
-            simp only [← hk, ← ENat.coe_sub, Nat.cast_lt]
+            simp only [← hk, ← ENat.coe_sub, Nat.cast_lt] at hi ⊢
             omega
         have zero : IsZero (AddCommGrpCat.of (Ext (ModuleCat.of R (QuotSMulTop x L)) M (i + 1))) :=
           @AddCommGrpCat.isZero_of_subsingleton _ this
