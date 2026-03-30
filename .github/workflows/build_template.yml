@@ -955,6 +955,7 @@ jobs:
             steps.get-label-actor.outputs.username == 'mathlib-update-dependencies' ||
             steps.get-label-actor.outputs.username == 'mathlib-splicebot' ||
             contains(steps.actorTeams.outputs.teams, 'mathlib-maintainers') ||
+            contains(steps.actorTeams.outputs.teams, 'lean-release-managers') ||
             contains(steps.actorTeams.outputs.teams, 'bot-users')
           )
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
