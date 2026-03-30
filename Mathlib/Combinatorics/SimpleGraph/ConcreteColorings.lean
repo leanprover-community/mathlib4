@@ -41,12 +41,12 @@ assert_not_exists Field
 
 namespace SimpleGraph
 
-/-- The chromatic number of a graph is at most 2 if and only if the graph is bipartite -/
+/-- The chromatic number of a graph is at most 2 if and only if the graph is bipartite. -/
 theorem chromaticNumber_le_two_iff_isBipartite {V : Type*} {G : SimpleGraph V} :
     G.chromaticNumber ≤ 2 ↔ G.IsBipartite :=
   chromaticNumber_le_iff_colorable
 
-/-- The chromatic number of a graph is at least 2 if and only if the graph is not empty -/
+/-- The chromatic number of a graph is at least 2 if and only if the graph is not empty. -/
 theorem chromaticNumber_eq_two_iff {V : Type*} {G : SimpleGraph V} :
     G.chromaticNumber = 2 ↔ G.IsBipartite ∧ G ≠ ⊥ :=
   ⟨fun h ↦ ⟨chromaticNumber_le_two_iff_isBipartite.mp (by simp [h]),
@@ -55,7 +55,7 @@ theorem chromaticNumber_eq_two_iff {V : Type*} {G : SimpleGraph V} :
       ⟨fun h ↦ h.trans <| chromaticNumber_le_two_iff_isBipartite.mpr h₁,
        fun h ↦ h.trans <| two_le_chromaticNumber_iff_ne_bot.mpr h₂⟩⟩
 
-/-- Bicoloring of a path graph -/
+/-- Bicoloring of a path graph. -/
 def pathGraph.bicoloring (n : ℕ) :
     Coloring (pathGraph n) Bool :=
   Coloring.mk (fun u ↦ u.val % 2 = 0) <| by
@@ -63,7 +63,7 @@ def pathGraph.bicoloring (n : ℕ) :
     rw [pathGraph_adj]
     rintro (h | h) <;> simp [← h, not_iff, Nat.succ_mod_two_eq_zero_iff]
 
-/-- Embedding of `pathGraph 2` into the first two elements of `pathGraph n` for `2 ≤ n` -/
+/-- Embedding of `pathGraph 2` into the first two elements of `pathGraph n` for `2 ≤ n`. -/
 def pathGraph_two_embedding (n : ℕ) (h : 2 ≤ n) : pathGraph 2 ↪g pathGraph n where
   toFun v := ⟨v, trans v.2 h⟩
   inj' := by
@@ -74,7 +74,7 @@ def pathGraph_two_embedding (n : ℕ) (h : 2 ≤ n) : pathGraph 2 ↪g pathGraph
     intro v w
     fin_cases v <;> fin_cases w <;> simp [pathGraph, ← Fin.coe_covBy_iff]
 
-/-- The chromatic number of a path graph of size at least 2 is 2 -/
+/-- The chromatic number of a path graph of size at least 2 is 2. -/
 theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
     (pathGraph n).chromaticNumber = 2 := by
   have hc := (pathGraph.bicoloring n).colorable
@@ -83,7 +83,7 @@ theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
   · have hadj : (pathGraph n).Adj ⟨0, Nat.zero_lt_of_lt h⟩ ⟨1, h⟩ := by simp [pathGraph_adj]
     exact two_le_chromaticNumber_of_adj hadj
 
-/-- A walk has even length if and only if its endpoints have the same color -/
+/-- A walk has even length if and only if its endpoints have the same color. -/
 theorem Coloring.even_length_iff_congr {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
     Even p.length ↔ (c u ↔ c v) := by
@@ -96,14 +96,30 @@ theorem Coloring.even_length_iff_congr {α} {G : SimpleGraph α}
       exact c.valid h
     tauto
 
-/-- A walk has odd length if and only if its endpoints have different colors -/
+/-- A walk has odd length if and only if its endpoints have different colors. -/
 theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
     Odd p.length ↔ (¬c u ↔ c v) := by
   rw [← Nat.not_even_iff_odd, c.even_length_iff_congr p]
   tauto
 
-/-- A graph containing an odd loop has chromatic number at least 3 -/
+variable {V : Type*} (G : SimpleGraph V)
+
+/-- A walk has even length if and only if its endpoints have the same color
+    in a 2-coloring. -/
+lemma Coloring.even_length_iff_same_color (c : G.Coloring (Fin 2)) {u v : V} (p : G.Walk u v) :
+    Even p.length ↔ c u = c v := by
+  let c' : G.Coloring Bool := G.recolorOfEquiv (finTwoEquiv : Fin 2 ≃ Bool) c
+  simp [Coloring.even_length_iff_congr c', c']
+
+/-- The bypass of a loop in a graph with all cycles of even length is the nil walk. -/
+@[simp]
+lemma Walk.bypass_self
+    [DecidableEq V] {G : SimpleGraph V} {u : V} (w : G.Walk u u) :
+    w.bypass = Walk.nil :=
+  (isPath_iff_eq_nil _).mp (Walk.bypass_isPath _)
+
+/-- A graph containing an odd loop has chromatic number at least 3. -/
 theorem Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u : α} (p : G.Walk u u)
     (hOdd : Odd p.length) : 3 ≤ G.chromaticNumber := by
   by_contra h
@@ -113,7 +129,7 @@ theorem Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u :
   have : ¬c' u ↔ c' u := (c'.odd_length_iff_not_congr p).mp hOdd
   simp_all
 
-/-- Bicoloring of a cycle graph of even size -/
+/-- Bicoloring of a cycle graph of even size. -/
 def cycleGraph.bicoloring_of_even (n : ℕ) (h : Even n) : Coloring (cycleGraph n) Bool :=
   Coloring.mk (fun u ↦ u.val % 2 = 0) <| by
     intro u v hadj
@@ -130,7 +146,7 @@ def cycleGraph.bicoloring_of_even (n : ℕ) (h : Even n) : Coloring (cycleGraph 
         apply Classical.not_iff.mpr
         simp [Fin.not_odd_iff_even_of_even h, Fin.not_even_iff_odd_of_even h]
 
-/-- The chromatic number of a cycle graph of even size is 2 -/
+/-- The chromatic number of a cycle graph of even size is 2. -/
 theorem chromaticNumber_cycleGraph_of_even (n : ℕ) (h : 2 ≤ n) (hEven : Even n) :
     (cycleGraph n).chromaticNumber = 2 := by
   have hc := (cycleGraph.bicoloring_of_even n hEven).colorable
@@ -140,7 +156,7 @@ theorem chromaticNumber_cycleGraph_of_even (n : ℕ) (h : 2 ≤ n) (hEven : Even
       simp [cycleGraph_adj', Fin.sub_val_of_le]
     exact two_le_chromaticNumber_of_adj hadj
 
-/-- Tricoloring of a cycle graph -/
+/-- Tricoloring of a cycle graph. -/
 def cycleGraph.tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
     (Fin 3) := Coloring.mk (fun u ↦ if u.val = n - 1 then 2 else ⟨u.val % 2, by lia⟩) <| by
     intro u v hadj
@@ -168,7 +184,7 @@ def cycleGraph.tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
           simp only [Nat.not_even_one, iff_false, not_iff_self, iff_not_self]
           exact id
 
-/-- The chromatic number of a cycle graph of odd size is 3 -/
+/-- The chromatic number of a cycle graph of odd size is 3. -/
 theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n) :
     (cycleGraph n).chromaticNumber = 3 := by
   have hc := (cycleGraph.tricoloring n h).colorable
@@ -201,7 +217,7 @@ theorem completeEquipartiteGraph_colorable :
 end CompleteEquipartiteGraph
 
 open Walk
-/-- A simple graph is 2-colorable if and only if all its loops have even length -/
+/-- A simple graph is 2-colorable if and only if all its loops have even length. -/
 lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
     G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), Even w.length := by
   simp_rw [← Nat.not_odd_iff_even]
@@ -224,24 +240,8 @@ lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
 
 section OddCycleTheorem
 
-variable {V : Type*} (G : SimpleGraph V)
-
-/-- A walk has even length if and only if its endpoints have the same color
-    in a 2-coloring -/
-lemma Coloring.even_length_iff_same_color (c : G.Coloring (Fin 2)) {u v : V} (p : G.Walk u v) :
-    Even p.length ↔ c u = c v := by
-  let c' : G.Coloring Bool := G.recolorOfEquiv (finTwoEquiv : Fin 2 ≃ Bool) c
-  simp [Coloring.even_length_iff_congr c', c']
-
-/-- The bypass of a loop in a graph with all cycles of even length is the nil walk -/
-@[simp]
-lemma Walk.bypass_eq_nil
-    [DecidableEq V] {G : SimpleGraph V} {u : V} (w : G.Walk u u) :
-    w.bypass = Walk.nil :=
-  (isPath_iff_eq_nil _).mp (Walk.bypass_isPath _)
-
 /-- If all cycles in a graph have even length, then extending a path by an adjacent edge
-    results in a walk of even length -/
+    results in a walk of even length. -/
 theorem even_length_cons_of_isPath
     (h_cycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
     {u v : V} (q : G.Walk v u) (hq : q.IsPath) (ha : G.Adj u v) :
@@ -291,7 +291,7 @@ lemma IsPath.length_eq_one_of_mem_edges
   | inr h_4 => exact right_1 (Walk.fst_mem_support_of_mem_edges _ h_4)
 
 /-- If all cycles in a graph have even length, then extending a path by an adjacent edge
-    and taking until a vertex `u` results in a walk of even length -/
+    and taking until a vertex `u` results in a walk of even length. -/
 lemma even_length_cons_takeUntil_of_bypass [DecidableEq V]
     {u v w : V} (q : G.Walk v w) (hq : q.IsPath) (ha : G.Adj u v) (hs : u ∈ q.support)
     (h_cycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length) :
@@ -307,7 +307,7 @@ lemma even_length_cons_takeUntil_of_bypass [DecidableEq V]
       · rwa [Sym2.eq_swap]
     aesop
 
-/-- If all cycles in a graph have even length, then a walk has even length -/
+/-- If all cycles in a graph have even length, then a walk has even length. -/
 lemma even_length_iff_even_bypass_length [DecidableEq V]
     (h_cycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
     {u v : V} (p : G.Walk u v) :
@@ -331,7 +331,7 @@ lemma even_length_iff_even_bypass_length [DecidableEq V]
       rw [← SimpleGraph.Walk.length_append, SimpleGraph.Walk.take_spec]
     grind
 
-/-- A graph is bipartite if and only if it does not contain an odd cycle -/
+/-- A graph is bipartite if and only if it does not contain an odd cycle. -/
 theorem bipartite_iff_all_cycles_even :
     G.IsBipartite ↔ ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
   classical
@@ -350,11 +350,11 @@ theorem bipartite_iff_all_cycles_even :
         apply even_length_iff_even_bypass_length
         assumption
       rw [h_even_bypass]
-      rw [bypass_eq_nil]
+      rw [bypass_self]
       aesop
     exact Colorable.mono_left (fun ⦃v w⦄ a => a) h_colorable
 
-/-- The same as `bipartite_iff_all_cycles_even`, but as a direct implication -/
+/-- The same as `bipartite_iff_all_cycles_even`, but as a direct implication. -/
 theorem IsBipartite.of_no_odd_cycle
     (h : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length) :
     G.IsBipartite := (bipartite_iff_all_cycles_even G).mpr h
