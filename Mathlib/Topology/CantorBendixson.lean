@@ -1,4 +1,4 @@
- /-
+/-
 Copyright (c) 2026 Zikang Yu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zikang Yu
@@ -87,14 +87,9 @@ theorem iteratedDerivedSet_zero :
 
 @[simp]
 theorem iteratedDerivedSet_succ :
-    sᵈ[Order.succ a] = relDerivedSet (sᵈ[a]) := by
-  simpa [iteratedDerivedSet, Order.succ_eq_add_one] using
-    gfpApprox_add_one relDerivedSet s relDerivedSet_subset a
-
-@[simp]
-theorem iteratedDerivedSet_succ' :
     sᵈ[a + 1] = relDerivedSet (sᵈ[a]) := by
-  simp [← Order.succ_eq_add_one]
+  simpa [iteratedDerivedSet] using
+    gfpApprox_add_one relDerivedSet s relDerivedSet_subset a
 
 theorem iteratedDerivedSet_limit (ha : Order.IsSuccLimit a) :
     sᵈ[a] = ⋂ b : Set.Iio a, sᵈ[b] := by
@@ -112,7 +107,7 @@ theorem iteratedDerivedSet_constant_iff_preperfect :
     · simp [gfpApprox_zero]
     simpa [Function.IsFixedPt, gfpApprox_zero, relDerivedSet] using h
   · specialize h 1
-    rw [← zero_add 1, iteratedDerivedSet_succ'] at h
+    rw [← zero_add 1, iteratedDerivedSet_succ] at h
     simpa [relDerivedSet] using h
 
 theorem isClosed_iteratedDerivedSet (hs : IsClosed s) :
@@ -210,7 +205,7 @@ theorem perfect_perfectKernel (hs : IsClosed s) :
   obtain ⟨a, ha⟩ := iteratedDerivedSet_stay s
   rw [perfectKernel_eq_iteratedDerivedSet_of_stayOn ha]
   refine perfect_iff_eq_derivedSet.mpr ?_
-  simpa [iteratedDerivedSet_succ', (isClosed_iteratedDerivedSet hs a).relDerivedSet_eq] using
+  simpa [iteratedDerivedSet_succ, (isClosed_iteratedDerivedSet hs a).relDerivedSet_eq] using
     (ha (a + 1) le_self_add).symm
 
 /-- Taking the perfect kernel of a closed set is idempotent. -/
