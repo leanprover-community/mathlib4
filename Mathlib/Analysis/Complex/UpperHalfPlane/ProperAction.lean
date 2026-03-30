@@ -14,7 +14,8 @@ public import Mathlib.Topology.Algebra.ProperAction.CompactlyGenerated
 # Transitivity and properness of actions
 
 We show that the actions of `SL(2, ℝ)` and `GL(2, ℝ)` on the upper half-plane are jointly
-continuous, and the action of `SL(2, ℝ)` is proper.
+continuous, and the action of `SL(2, ℝ)` is proper. (These results require more imports
+than in `UpperHalfPlane.Topology`, because they use the topology on the group as well)
 
 TODO: Show properness of the action of `PGL(2, ℝ)` once this is defined.
 -/
@@ -23,45 +24,7 @@ open scoped MatrixGroups Pointwise
 
 public section
 
--- This lemma has nothing to do with the upper half-plane, but there is no obvious upstream
--- place for it to go.
-/-- The set of matrices with bounded entries is compact. -/
-lemma Matrix.isCompact_forall_apply_le {R m n : Type*} [SeminormedAddCommGroup R]
-    [ProperSpace R] (B : ℝ) [Finite m] [Finite n] :
-    IsCompact {m : Matrix m n R | ∀ i j, ‖m i j‖ ≤ B} := by
-  have := Fintype.ofFinite m
-  have := Fintype.ofFinite n
-  let : SeminormedAddCommGroup (Matrix m n R) := Matrix.seminormedAddCommGroup
-  have : ProperSpace (Matrix m n R) := pi_properSpace
-  rcases isEmpty_or_nonempty m with hm | hm; · simp
-  rcases isEmpty_or_nonempty n with hn | hn; · simp
-  convert (isCompact_closedBall (0 : Matrix m n R) B) using 1
-  ext
-  simp [Metric.closedBall, Matrix.norm_def, pi_norm_le_iff_of_nonempty]
-
 namespace UpperHalfPlane
-
-section toSL2R
-
-/-- Map from `ℍ` to `SL(2, ℝ)`, giving a continuous section of the map `g ↦ g • I`. -/
-noncomputable def toSL2R (z : ℍ) : SL(2, ℝ) :=
-  ⟨!![√z.im, z.re / √z.im; 0, 1 / √z.im], by
-    simp [mul_inv_cancel₀ (Real.sqrt_ne_zero'.mpr z.im_pos)]⟩
-
-lemma toSL2R_apply (z : ℍ) : z.toSL2R =
-  ⟨!![√z.im, z.re / √z.im; 0, 1 / √z.im], by
-    simp [mul_inv_cancel₀ (Real.sqrt_ne_zero'.mpr z.im_pos)]⟩ := (rfl)
-
-@[simp] lemma coe_toSL2R (z : ℍ) : z.toSL2R = !![√z.im, z.re / √z.im; 0, 1 / √z.im] := (rfl)
-
-@[simp] lemma toSL2R_smul_I (z : ℍ) : z.toSL2R • I = z := by
-  have : √z.im ≠ (0 : ℂ) := by simpa [Real.sqrt_ne_zero'] using z.im_pos
-  ext
-  suffices z.re / √z.im + √z.im * Complex.I = z * (↑√z.im)⁻¹ by
-    rw [coe_specialLinearGroup_apply, div_eq_iff (mod_cast denom_ne_zero z.toSL2R I)]
-    simpa [add_comm]
-  rw [div_add' (hc := this), mul_right_comm, ← Complex.ofReal_mul, ← Real.sqrt_mul z.im_pos.le,
-    Real.sqrt_mul_self z.im_pos.le, re_add_im, div_eq_mul_inv]
 
 lemma continuous_toSL2R : Continuous toSL2R := by
   refine continuous_induced_rng.mpr (continuous_matrix fun i j ↦ ?_)
@@ -70,16 +33,6 @@ lemma continuous_toSL2R : Continuous toSL2R := by
   · exact continuous_re.div₀ (by fun_prop) (fun τ : ℍ ↦ Real.sqrt_ne_zero'.mpr τ.im_pos)
   · exact continuous_const
   · simpa using .inv₀ (by fun_prop) (fun τ : ℍ ↦ Real.sqrt_ne_zero'.mpr τ.im_pos)
-
-end toSL2R
-
-/-- `SL(2, ℝ)` acts transitively on the upper half-plane. -/
-instance isPretransitiveSL2R : MulAction.IsPretransitive SL(2, ℝ) ℍ :=
-  .of_orbit fun z ↦ ⟨_, toSL2R_smul_I z⟩
-
-/-- `GL(2, ℝ)` acts transitively on the upper half-plane. -/
-instance isPretransitiveGL2R : MulAction.IsPretransitive (GL (Fin 2) ℝ) ℍ :=
-  .of_smul_eq ((↑) : SL(2, ℝ) → _) fun {g z} ↦ (MulAction.compHom_smul_def _ g z).symm
 
 /-- The action of `SL(2, ℝ)` on `ℍ` is jointly continuous. -/
 instance instContinuousSMulSL2R : ContinuousSMul SL(2, ℝ) ℍ := by
@@ -148,8 +101,13 @@ lemma isProperMap_smul_I : IsProperMap fun g : SL(2, ℝ) ↦ g • I := by
   refine isProperMap_iff_isCompact_preimage.mpr ⟨by fun_prop, fun K hK ↦ ?_⟩
   obtain ⟨A, hA⟩ := absq_le hK
   obtain ⟨A', hA'⟩ := cdsq_le hK
+  -- active the sup-norm on matrices
+  let : SeminormedAddCommGroup (Matrix (Fin 2) (Fin 2) ℝ) := Matrix.seminormedAddCommGroup
+  have : ProperSpace (Matrix (Fin 2) (Fin 2) ℝ) := pi_properSpace
   have : IsCompact {m : Matrix (Fin 2) (Fin 2) ℝ | ∀ i j, |m i j| ≤ max √A √A'} := by
-    apply Matrix.isCompact_forall_apply_le
+    convert ProperSpace.isCompact_closedBall (0 : Matrix (Fin 2) (Fin 2) ℝ) (max √A √A')
+    simp [Metric.closedBall, Matrix.norm_def, pi_norm_le_iff_of_nonempty]
+    grind
   have := Matrix.SpecialLinearGroup.isClosedEmbedding_val.isCompact_preimage this
   refine this.of_isClosed_subset (hK.isClosed.preimage <| by fun_prop) (fun g hg ↦ ?_)
   intro i j
