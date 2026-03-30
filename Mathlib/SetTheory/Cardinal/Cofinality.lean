@@ -22,7 +22,7 @@ This file contains the definition of cofinality of an order and an ordinal numbe
 
 ## Main Statements
 
-* `Cardinal.lt_power_cof`: A consequence of König's theorem stating that `c < c ^ c.ord.cof` for
+* `Cardinal.lt_power_coford_`: A consequence of König's theorem stating that `c < c ^ c.ord.cof` for
   `c ≥ ℵ₀`.
 
 ## Implementation Notes
@@ -788,7 +788,7 @@ alias unbounded_of_unbounded_iUnion := isCofinal_of_isCofinal_iUnion
 
 /-! ### Consequences of König's lemma -/
 
-theorem lt_power_cof {c : Cardinal} (hc : ℵ₀ ≤ c) : c < c ^ c.ord.cof := by
+theorem lt_power_cof_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : c < c ^ c.ord.cof := by
   induction c using Cardinal.inductionOn with | mk α
   obtain ⟨_, _, hα⟩ := exists_ord_eq_type_lt α
   have : NoMaxOrder α := by
@@ -799,9 +799,15 @@ theorem lt_power_cof {c : Cardinal} (hc : ℵ₀ ≤ c) : c < c ^ c.ord.cof := b
   refine (mk_iUnion_le_sum_mk.trans' ?_).trans_lt (sum_lt_prod _ _ fun i ↦ mk_Iio_lt i.1 hα)
   rw [← mk_univ, ← isCofinal_iff_iUnion_Iio_eq_univ.1 hs, iUnion_coe_set]
 
-theorem lt_cof_power {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : 1 < b) : a < (b ^ a).ord.cof := by
+@[deprecated (since := "2026-03-30")]
+alias lt_power_cof := lt_power_cof_ord
+
+theorem lt_cof_ord_power {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : 1 < b) : a < (b ^ a).ord.cof := by
   apply lt_imp_lt_of_le_imp_le (power_le_power_left <| power_ne_zero a hb.ne_bot)
   rw [← power_mul, mul_eq_self ha]
-  exact lt_power_cof (ha.trans <| (cantor' _ hb).le)
+  exact lt_power_cof_ord (ha.trans <| (cantor' _ hb).le)
+
+@[deprecated (since := "2026-03-30")]
+alias lt_cof_power := lt_cof_ord_power
 
 end Cardinal
