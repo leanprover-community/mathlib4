@@ -74,20 +74,6 @@ section
 variable {R₄ M₄ : Type*} [CommRing R₄] [IsDomain R₄]
 variable [AddCommGroup M₄] [Module R₄ M₄] {G : BilinForm R₄ M₄}
 
-@[simp]
-theorem isOrtho_smul_left {x y : M₄} {a : R₄} (ha : a ≠ 0) :
-    G (a • x) y = 0 ↔ G x y = 0 := by
-  rw [map_smul]
-  simp only [LinearMap.smul_apply, smul_eq_mul, mul_eq_zero, or_iff_right_iff_imp]
-  exact fun a ↦ (ha a).elim
-
-@[simp]
-theorem isOrtho_smul_right {x y : M₄} {a : R₄} (ha : a ≠ 0) :
-    G x (a • y) = 0 ↔ G x y = 0 := by
-  rw [map_smul]
-  simp only [smul_eq_mul, mul_eq_zero, or_iff_right_iff_imp]
-  exact fun a ↦ (ha a).elim
-
 /-- A set of orthogonal vectors `v` with respect to some bilinear form `B` is linearly independent
   if for all `i`, `B (v i) (v i) ≠ 0`. -/
 theorem linearIndependent_of_iIsOrtho {n : Type w} {B : BilinForm K V} {v : n → V}
