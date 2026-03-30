@@ -94,8 +94,7 @@ lemma preGNS_norm_def (a : f.PreGNS) :
 lemma preGNS_norm_sq (a : f.PreGNS) :
     ‖a‖ ^ 2 = f (star (f.ofPreGNS a) * f.ofPreGNS a) := by
   have : 0 ≤ f (star (f.ofPreGNS a) * f.ofPreGNS a) := f.map_nonneg (star_mul_self_nonneg _)
-  simp_all [preGNS_norm_def, ← ofReal_pow, re_nonneg_iff_nonneg, this.isSelfAdjoint,
-    conj_eq_iff_re.mp this.star_eq]
+  simp [preGNS_norm_def, ← ofReal_pow, Real.sq_sqrt this.1, conj_eq_iff_re.mp this.star_eq]
 
 /--
 The Hilbert space constructed from a positive linear functional on a C⋆-algebra.
