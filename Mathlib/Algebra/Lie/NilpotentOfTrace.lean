@@ -102,36 +102,19 @@ variable {K : Type*} [Field K] [IsAlgClosed K]
   {V : Type*} [AddCommGroup V] [Module K V] [FiniteDimensional K V]
 
 open Classical in
-/-- The eigenspaces of a semisimple endomorphism over an algebraically closed field form an
-internal direct sum decomposition. -/
-noncomputable def eigenspaceIsInternal
-    (s : Module.End K V) (hs : s.IsSemisimple) :
-    DirectSum.IsInternal (fun μ : K => s.eigenspace μ) := by
-  rw [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top]
-  exact ⟨s.eigenspaces_iSupIndep, by
-    have := iSup_maxGenEigenspace_eq_top s
-    simp_rw [hs.isFinitelySemisimple.maxGenEigenspace_eq_eigenspace] at this
-    exact this⟩
-
-open Classical in
-/-- An eigenbasis for a semisimple endomorphism over an algebraically closed field. -/
+/-- An eigenbasis for a semisimple endomorphism over an algebraically closed field,
+constructed from the eigenspace direct sum decomposition. -/
 noncomputable def eigenbasis (s : Module.End K V) (hs : s.IsSemisimple) :=
-  (eigenspaceIsInternal s hs).collectedBasis
+  (DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
+    s.eigenspaces_iSupIndep hs.iSup_eigenspace_eq_top).collectedBasis
     (fun μ => Module.finBasis K (s.eigenspace μ))
-
-open Classical in
-noncomputable instance eigenbasisFintype (s : Module.End K V) (hs : s.IsSemisimple) :
-    Fintype (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))) :=
-  Module.Basis.fintypeIndexOfRankLtAleph0 (eigenbasis s hs)
-    (Module.rank_lt_aleph0 K V)
 
 open Classical in
 theorem eigenbasis_eigenvalue (s : Module.End K V) (hs : s.IsSemisimple)
     (σ : Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))) :
-    s (eigenbasis s hs σ) = σ.1 • eigenbasis s hs σ := by
-  have hmem := (eigenspaceIsInternal s hs).collectedBasis_mem
-    (fun μ => Module.finBasis K (s.eigenspace μ)) σ
-  exact mem_eigenspace_iff.mp hmem
+    s (eigenbasis s hs σ) = σ.1 • eigenbasis s hs σ :=
+  mem_eigenspace_iff.mp ((DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
+    s.eigenspaces_iSupIndep hs.iSup_eigenspace_eq_top).collectedBasis_mem _ σ)
 
 end EigenBasis
 
@@ -210,7 +193,7 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   have ha : ∀ i, a i ∈ E := fun i => Submodule.subset_span (Set.mem_range_self i)
   classical
   haveI : Fintype (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))) :=
-    eigenbasisFintype s hs_ss
+    (eigenbasis s hs_ss).fintypeIndexOfRankLtAleph0 (Module.rank_lt_aleph0 K V)
   let c : _ → K := fun i => algebraMap ℚ K (f ⟨a i, ha i⟩)
   let y := Matrix.toLin v v (Matrix.diagonal c)
   have hy_diag : ∀ i, y (v i) = c i • v i := fun i =>
