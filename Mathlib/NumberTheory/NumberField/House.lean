@@ -285,27 +285,20 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
       _ ≤ (c₂ K) * A := ?_
     · simp only [Int.cast_abs, ← Real.norm_eq_abs (asiegel K a kr lu)]; rfl
     · have remark := basis_repr_norm_le_const_mul_house K
-      simp only [Basis.repr_reindex, Finsupp.mapDomain_equiv_apply,
-        integralBasis_repr_apply, eq_intCast, Rat.cast_intCast,
-          Complex.norm_intCast] at remark
+      simp only [Basis.repr_reindex, Finsupp.mapDomain_equiv_apply, integralBasis_repr_apply,
+        eq_intCast, Rat.cast_intCast, Complex.norm_intCast] at remark
       exact mod_cast remark ((a kr.1 lu.1 * ((newBasis K) lu.2))) kr.2
     · simp only [house, map_mul, mul_assoc]
       exact mul_le_mul_of_nonneg_left (norm_mul_le _ _) (c_nonneg K)
     · rw [mul_assoc, mul_assoc]
-      apply mul_le_mul_of_nonneg_left ?_ (c_nonneg K)
-      · apply mul_le_mul_of_nonneg_right (habs kr.1 lu.1) ?_
-        · exact norm_nonneg ((canonicalEmbedding K) ((algebraMap (𝓞 K) K)
-            ((newBasis K) lu.2)))
+      apply mul_le_mul_of_nonneg_left (mul_le_mul_of_nonneg_right (habs kr.1 lu.1)
+        (norm_nonneg ((canonicalEmbedding K) ((algebraMap (𝓞 K) K) ((newBasis K) lu.2)))))
+        (c_nonneg K)
     ·  apply mul_le_mul_of_nonneg_left ?_ (mul_nonneg (c_nonneg K) Apos)
        · simp only [supOfBasis, le_sup'_iff, mem_univ]; use lu.2
     · rw [mul_right_comm]
-      apply mul_le_mul_of_nonneg_right ?_ Apos
-      unfold c₂
-      apply  mul_le_mul
-      · apply le_max_right
-      · apply le_max_right
-      · exact supOfBasis_nonneg K
-      · apply (le_trans zero_le_one (le_max_left ..))
+      apply mul_le_mul_of_nonneg_right (mul_le_mul (le_max_right ..) (le_max_right ..)
+        (supOfBasis_nonneg K) (le_trans zero_le_one (le_max_left ..))) Apos
   · rw [mul_nonneg_iff]; left; exact ⟨c₂_nonneg K, Apos⟩
 
 /-- `c₁ K` is the product of `finrank ℚ K` and  `c₂ K` and depends on `K`. -/
@@ -331,31 +324,25 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
     apply mul_le_mul_of_nonneg_left ?_ (norm_nonneg (x (l,r)))
     · simp only [le_sup'_iff, mem_univ, true_and]; use r
   · apply sum_le_sum; intros r _
-    apply mul_le_mul_of_nonneg_right ?_ (supOfBasis_nonneg K)
-    exact le_trans (norm_le_pi_norm x ⟨l, r⟩) hxbound
+    apply mul_le_mul_of_nonneg_right (le_trans (norm_le_pi_norm x ⟨l, r⟩) hxbound)
+      (supOfBasis_nonneg K)
   · simp only [sum_const, card_univ, nsmul_eq_mul]
     rw [Embeddings.card, mul_comm _ (supOfBasis K), c₂, c₁, ← mul_assoc]
     apply mul_le_mul
     · apply mul_le_mul_of_nonneg_left ?_ (Nat.cast_nonneg' _)
-      · nth_rw 1 [← mul_one (a:=supOfBasis K)]
-        rw [mul_comm]
-        apply mul_le_mul
-        · apply le_max_left ..
-        · apply le_max_right ..
-        · apply (supOfBasis_nonneg _)
-        · exact (le_trans zero_le_one (le_max_left ..))
+      · nth_rw 1 [← mul_one (a:=supOfBasis K)]; rw [mul_comm]
+        apply mul_le_mul (le_max_left ..) (le_max_right ..) (supOfBasis_nonneg _)
+          (le_trans zero_le_one (le_max_left ..))
     · apply Real.rpow_le_rpow (mul_nonneg (mul_nonneg (Nat.cast_nonneg' _) (Nat.cast_nonneg' _))
         (norm_nonneg _))
       · rw [← mul_assoc, mul_assoc (_*_)]
         apply mul_le_mul_of_nonneg_left (asiegel_remark K a habs Apos)
           (mul_nonneg (Nat.cast_nonneg' _) (Nat.cast_nonneg _))
       · exact div_nonneg (Nat.cast_nonneg' _) (sub_nonneg.2 (mod_cast hpq.le))
-    · apply Real.rpow_nonneg
-      exact mul_nonneg (mul_nonneg (Nat.cast_nonneg' _) (Nat.cast_nonneg' _))
-        (norm_nonneg _)
-    · apply mul_nonneg (Nat.cast_nonneg' _)
-      apply mul_nonneg (le_trans zero_le_one (le_max_left ..))
-      apply (le_trans zero_le_one (le_max_left ..))
+    · apply Real.rpow_nonneg (mul_nonneg (mul_nonneg (Nat.cast_nonneg' _) (Nat.cast_nonneg' _))
+        (norm_nonneg _))
+    · apply mul_nonneg (Nat.cast_nonneg' _) (mul_nonneg (le_trans zero_le_one (le_max_left ..))
+        (le_trans zero_le_one (le_max_left ..)))
   · rw [mul_comm (q : ℝ) (c₁ K)]; rfl
 
 set_option backward.privateInPublic true in
