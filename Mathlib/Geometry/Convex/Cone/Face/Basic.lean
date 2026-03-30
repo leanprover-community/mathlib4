@@ -125,6 +125,16 @@ theorem sum_mem_iff_mem {ι : Type*} [Fintype ι] {f : ι → M} (hF : F.IsFaceO
   refine hF.mem_of_add_mem (hsC i) (sum_mem (fun j (_ : j ∈ Finset.univ.erase i) => hsC j)) ?_
   simp [hs]
 
+/-- If the positive combination of points of a cone is in a face, then all the points are
+  in the face. -/
+theorem mem_of_sum_smul_mem {ι : Type*} [Fintype ι] {f : ι → M} {c : ι → R}
+    (hF : F.IsFaceOf C) (hsC : ∀ i : ι, f i ∈ C) (hc : ∀ i, 0 ≤ c i) (hs : ∑ i : ι, c i • f i ∈ F)
+    (i : ι) (hci : 0 < c i) : f i ∈ F := by classical
+  rw [Finset.sum_eq_add_sum_diff_singleton i] at hs
+  · refine hF.mem_of_smul_add_mem (hsC i) ?_ hci hs
+    exact C.sum_mem fun i _ => C.smul_mem (hc i) (hsC i)
+  · simp
+
 section Map
 
 variable [AddCommGroup N] [Module R N]
@@ -208,18 +218,6 @@ theorem isFaceOf_iff_mem_of_add_mem : F.IsFaceOf C ↔
 
 namespace IsFaceOf
 
-/-- If the positive combination of points of a cone is in a face, then all the points are
-  in the face. -/
-theorem mem_of_sum_smul_mem {ι : Type*} [Fintype ι] {f : ι → M} {c : ι → R}
-    (hF : F.IsFaceOf C) (hsC : ∀ i : ι, f i ∈ C) (hc : ∀ i, 0 ≤ c i) (hs : ∑ i : ι, c i • f i ∈ F)
-    (i : ι) (hci : 0 < c i) : f i ∈ F := by
-  classical
-  have := (sum_mem_iff_mem hF (fun i => C.smul_mem (hc i) (hsC i))).mp hs i
-  convert smul_mem (C := F) (x := (c i : R) • f i) (le_of_lt (Right.inv_pos.mpr hci)) this
-  rw [← smul_assoc, smul_eq_mul, mul_comm, Field.mul_inv_cancel]
-  · exact (MulAction.one_smul (f i)).symm
-  · exact Ne.symm (ne_of_lt hci)
-
 /-- The lineality space of a cone is a face. -/
 lemma lineal (C : PointedCone R M) : IsFaceOf C.lineal C := by
   rw [isFaceOf_iff_mem_of_add_mem]
@@ -241,9 +239,22 @@ lemma lineal_eq_lineal (hF : F.IsFaceOf C) : F.lineal = C.lineal := by
   · exact hF.mem_of_add_mem hx hx' (by simp)
   · exact hF.mem_of_add_mem hx' hx (by simp)
 
+end IsFaceOf
+
+end Field
+
+section DivisionRing
+
+variable [DivisionRing R] [LinearOrder R] [IsOrderedRing R]
+variable [AddCommGroup M] [Module R M]
+variable {C F F₁ F₂ : PointedCone R M}
+
+namespace IsFaceOf
+
 section Prod
 
 variable [AddCommGroup N] [Module R N]
+
 
 /-- The product of two faces of two cones is a face of the product of the cones. -/
 theorem prod {C₁ F₁ : PointedCone R M} {C₂ F₂ : PointedCone R N}
@@ -285,6 +296,6 @@ end Prod
 
 end IsFaceOf
 
-end Field
+end DivisionRing
 
 end PointedCone

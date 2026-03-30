@@ -62,8 +62,11 @@ theorem ext (h : ∀ x, x ∈ F₁ ↔ x ∈ F₂) : F₁ = F₂ := SetLike.ext 
 
 @[simp]
 theorem toPointedCone_le_toPointedCone {F₁ F₂ : Face C} :
-    F₁.toPointedCone ≤ F₂.toPointedCone ↔ F₁ ≤ F₂ := by
-  constructor <;> intro h x xF₁ <;> exact h xF₁
+    F₁.toPointedCone ≤ F₂.toPointedCone ↔ F₁ ≤ F₂ := .rfl
+
+@[simp]
+theorem toPointedCone_lt_toPointedCone {F₁ F₂ : Face C} :
+    F₁.toPointedCone < F₂.toPointedCone ↔ F₁ < F₂ := .rfl
 
 @[simp]
 theorem mem_coe {F : Face C} (x : M) : x ∈ F.toPointedCone ↔ x ∈ F := .rfl
