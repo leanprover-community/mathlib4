@@ -142,6 +142,11 @@ def dsimpExpr (e : Expr) : MetaM Expr := do
   let ctx ← Simp.Context.mkDefault
   return (← Meta.dsimp (← instantiateMVars e) ctx #[]).1
 
+/-- Run a final `dsimp` pass on the type of a generated proof. -/
+def finalizeGeneratedProof (pf : Expr) : MetaM Expr := do
+  let ty' ← dsimpExpr (← inferType pf)
+  mkExpectedTypeHint pf ty'
+
 private def extractCatInstanceFromEq (eqTy : Expr) : MetaM (Expr × Expr) := do
   let some (α, _, _) := eqTy.cleanupAnnotations.eq? | throwError "`@[map]` expects an equality"
   let (``Quiver.Hom, #[C, instQuiv, _, _]) := α.getAppFnArgs |
@@ -360,7 +365,7 @@ initialize registerBuiltinAttribute {
       Term.TermElabM.run' <| Term.withSynthesize do
         let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
         let value := value.instantiateLevelParams levels levelMVars
-        let pf ← opExpr' value
+        let pf ← finalizeGeneratedProof (← opExpr' value)
         let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) pf
         pure (r.expr, r.newParamNames.toList)
     addRelatedDecl src tgt ref noAttr fun value levels => do
@@ -368,6 +373,7 @@ initialize registerBuiltinAttribute {
         let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
         let value := value.instantiateLevelParams levels levelMVars
         let (pf, tgtLevelNames) ← mapExpr' value
+        let pf ← finalizeGeneratedProof pf
         let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) pf
         let outLevels := tgtLevelNames.toList ++ r.newParamNames.toList
         pure (r.expr, outLevels)
@@ -376,6 +382,7 @@ initialize registerBuiltinAttribute {
         let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
         let value := value.instantiateLevelParams levels levelMVars
         let (pf, tgtLevelNames) ← opMapExpr' value
+        let pf ← finalizeGeneratedProof pf
         let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) pf
         let outLevels := tgtLevelNames.toList ++ r.newParamNames.toList
         pure (r.expr, outLevels)
@@ -395,6 +402,7 @@ initialize registerBuiltinAttribute {
             let F ← mkConstWithFreshMVarLevels functorName
             let some pf ← mapSpecializedExpr value F
               | throwError "`@[map]` internal error: specialization disappeared unexpectedly"
+            let pf ← finalizeGeneratedProof pf
             let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) pf
             pure (r.expr, r.newParamNames.toList)
         specializedTargets := specializedTargets.push specializedTgt
