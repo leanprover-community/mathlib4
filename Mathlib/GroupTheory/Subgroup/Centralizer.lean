@@ -134,7 +134,7 @@ abbrev closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x *
 
 /-- The conjugation action of N(H) on H. -/
 @[simps]
-instance : MulDistribMulAction H.normalizer H where
+instance : MulDistribMulAction (normalizer H : Subgroup G) H where
   smul g h := ⟨g * h * g⁻¹, (g.2 h).mp h.2⟩
   one_smul g := by simp [HSMul.hSMul]
   mul_smul := by simp [HSMul.hSMul, mul_assoc]
@@ -143,11 +143,11 @@ instance : MulDistribMulAction H.normalizer H where
 
 /-- The homomorphism N(H) → Aut(H) with kernel C(H). -/
 @[simps!]
-def normalizerMonoidHom : H.normalizer →* MulAut H :=
-  MulDistribMulAction.toMulAut H.normalizer H
+def normalizerMonoidHom : normalizer (H : Set G) →* MulAut H :=
+  MulDistribMulAction.toMulAut (normalizer H : Subgroup G) H
 
 theorem normalizerMonoidHom_ker :
-    H.normalizerMonoidHom.ker = (Subgroup.centralizer H).subgroupOf H.normalizer := by
+    H.normalizerMonoidHom.ker = (centralizer H).subgroupOf (normalizer H : Subgroup G) := by
   simp [Subgroup.ext_iff, DFunLike.ext_iff, Subtype.ext_iff,
     mem_subgroupOf, mem_centralizer_iff, eq_mul_inv_iff_mul_eq, eq_comm]
 

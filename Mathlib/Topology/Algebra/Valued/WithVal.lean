@@ -188,7 +188,6 @@ section CommRing
 
 variable [CommRing R] (v : Valuation R Γ₀)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : CommRing (WithVal v) := fast_instance% (equiv v).commRing
 
 instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
@@ -268,7 +267,7 @@ section left
 variable [CommRing R] (v : Valuation R Γ₀) [Semiring S] [Algebra R S]
 
 instance : Algebra (WithVal v) S where
-  __ := inferInstanceAs (Module (WithVal v) S)
+  __ := (inferInstance : Module (WithVal v) S)
   __ := Algebra.compHom S (equiv v).toRingHom
 
 theorem algebraMap_left_apply (s : WithVal v) :
@@ -294,8 +293,6 @@ theorem algebraMap_right_apply (r : R) :
 theorem algebraMap_right_injective (h : Function.Injective (algebraMap R S)) :
     Function.Injective (algebraMap R (WithVal v)) := (toVal_injective v).comp h
 
-variable {R : Type*} [CommRing R] (v : Valuation R Γ₀) (w : Valuation S Γ₀) [Algebra R S]
-
 end right
 
 variable [CommSemiring R] [Ring S] [Algebra R S] (v : Valuation S Γ₀)
@@ -318,10 +315,8 @@ section Field
 
 variable [Field R] (v : Valuation R Γ₀)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Field (WithVal v) := fast_instance% (equiv v).field
 
-set_option backward.isDefEq.respectTransparency false in
 instance [NumberField R] : NumberField (WithVal v) where
 
 @[simp] lemma toVal_div (x y : R) : toVal v (x / y) = toVal v x / toVal v y := rfl
