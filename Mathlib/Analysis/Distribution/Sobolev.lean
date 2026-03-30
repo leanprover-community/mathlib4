@@ -17,6 +17,10 @@ tempered distribution `u` belongs to the Sobolev space `H^{s,p}` if
 `besselPotential E F s u` can be represented by a `Lp` function, informally this is written as
 `𝓕⁻ (fun x ↦ (1 + ‖x‖ ^ 2) ^ (s / 2)) 𝓕 u ∈ Lp`.
 
+Note that the Bessel potential is the operator `(1 - (2 * π) ^ 2 • Δ) ^ (s / 2)` and not
+`(1 - Δ) ^ (s / 2)` due to the convention of the Fourier transform. This obviously does not impact
+the definition of the Sobolev spaces.
+
 ## Main definitions
 
 * `TemperedDistribution.besselPotential`: The Bessel potential operator is the Fourier multiplier
