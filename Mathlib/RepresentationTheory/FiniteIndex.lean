@@ -244,7 +244,7 @@ theorem instIsLeftAdjointSubtypeMemSubgroupCoindFunctorSubtype :
 
 @[simp]
 lemma coindResAdjunction_counit_app (B : Rep.{max w u v} k G) :
-    (coindResAdjunction.{max w u v} k S).counit.app B =
+    (coindResAdjunction.{w, u, v} k S).counit.app B =
       (indCoindIso.{max w u v} (res S.subtype B)).inv ≫
       (indResAdjunction k S.subtype).counit.app B := by
   rfl
