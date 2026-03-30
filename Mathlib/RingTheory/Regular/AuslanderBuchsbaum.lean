@@ -183,17 +183,11 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
   rcases Basis.exists_basis (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))
     with ⟨ι, ⟨B⟩⟩
   let fin := FiniteDimensional.fintypeBasisIndex B
-  let f := Classical.choose (Module.projective_lifting_property
+  obtain ⟨f, hf⟩ := Module.projective_lifting_property
     (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
-    ((LinearEquiv.restrictScalars R B.repr).symm.toLinearMap.comp
-    (Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
-    (Shrink.linearEquiv R R).toLinearMap))) (Submodule.mkQ_surjective _))
-  have hf : (maximalIdeal R • (⊤ : Submodule R M)).mkQ.comp f = _ :=
-    Classical.choose_spec (Module.projective_lifting_property
-    (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
-    ((LinearEquiv.restrictScalars R B.repr).symm.toLinearMap.comp
-    (Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
-    (Shrink.linearEquiv R R).toLinearMap))) (Submodule.mkQ_surjective _))
+    ((B.repr.restrictScalars R).symm.toLinearMap.comp (Finsupp.mapRange.linearMap
+    ((Submodule.mkQ (maximalIdeal R)).comp (Shrink.linearEquiv R R).toLinearMap)))
+    (Submodule.mkQ_surjective _)
   have surjf : Function.Surjective f := basis_lift M ι B f hf
   let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
   have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
