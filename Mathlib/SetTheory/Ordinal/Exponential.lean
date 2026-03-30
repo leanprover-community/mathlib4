@@ -410,13 +410,13 @@ theorem log_mod_opow_log_lt_log_self {b o : Ordinal} (hb : 1 < b) (hbo : b ≤ o
     exact mod_lt _ (opow_pos _ hb.pos).ne'
 
 theorem log_eq_iff {b x : Ordinal} (hb : 1 < b) (hx : x ≠ 0) (y : Ordinal) :
-    log b x = y ↔ b ^ y ≤ x ∧ x < b ^ succ y := by
+    log b x = y ↔ b ^ y ≤ x ∧ x < b ^ (y + 1) := by
   constructor
   · rintro rfl
     use opow_log_le_self b hx, lt_opow_succ_log_self hb x
   · rintro ⟨hx₁, hx₂⟩
     apply le_antisymm
-    · rwa [← lt_succ_iff, ← lt_opow_iff_log_lt hb hx]
+    · rwa [← lt_add_one_iff, ← lt_opow_iff_log_lt hb hx]
     · rwa [← opow_le_iff_le_log hb hx]
 
 theorem log_opow_mul_add {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hw : w < b ^ u) :
@@ -425,7 +425,7 @@ theorem log_opow_mul_add {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hw : w
   · constructor
     · grw [opow_add, opow_log_le_self b hv, ← le_self_add]
     · apply (add_lt_add_right hw _).trans_le
-      rw [← mul_add_one, succ_eq_add_one, add_assoc, opow_add]
+      rw [← mul_add_one, add_assoc, opow_add]
       gcongr
       rw [add_one_le_iff]
       exact lt_opow_succ_log_self hb _
