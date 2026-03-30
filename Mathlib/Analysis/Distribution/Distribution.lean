@@ -201,6 +201,15 @@ def delta (x : E) : 𝓓'^{n}(Ω, ℝ) where
 theorem delta_apply (x : E) (f : 𝓓^{n}(Ω, ℝ)) : delta x f = f x := by
   rfl
 
+@[simp]
+theorem delta_eq_zero_outside (x : E) (hx : x ∉ Ω) : delta (n := n) (Ω := Ω) x = 0 := by
+  ext f
+  change f x = 0
+  have hx_support : x ∉ tsupport f := by
+    intro hx_mem
+    exact hx (f.tsupport_subset hx_mem)
+  exact image_eq_zero_of_notMem_tsupport hx_support
+
 end DiracDelta
 
 end Distribution
