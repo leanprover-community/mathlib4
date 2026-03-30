@@ -15,11 +15,12 @@ algebras that are graded by a collection `ℒ` of submodules. The additivity of 
 the bracket product is encoded by an addition condition so we can avoid the usual difficulties of
 adding elements of `A (i + j)` to elements of `A (j + i)`.
 ## Main definitions
-* `SetLike.GradedBracket` : A typeclass for a bracket to respect an additive grading.
-* `GradedLieAlgebra` : A typeclass for a Lie algebra to respect an additive grading.
-* ``
-## TODO
-* Derivation from scalar multiplication by an additive map applied to degree.
+* `SetLike.GradedBracket`: A typeclass for a bracket to respect an additive grading.
+* `GradedLieAlgebra`: A typeclass for a Lie algebra to respect an additive grading.
+* `LieDerivation.ofGradingSum`: A Lie derivation on the direct sum of graded pieces, that scalar-
+multiplies the pieces by an additive map applied to degree.
+* `LieDerivation.ofGrading`: A Lie derivation on a graded Lie algebra, that scalar-multiplies graded
+pieces by an additive map applied to degree.
 ## Tags
 graded Lie algebra
 -/
@@ -29,27 +30,6 @@ graded Lie algebra
 open DirectSum
 
 variable {ι σ R L : Type*}
-
-section put_elsewhere
-
-variable [DecidableEq ι] [CommSemiring R] [AddCommMonoid L] [Module R L]
-(ℒ : ι → Submodule R L)
-
-private lemma toModule_lof_smul_of [AddCommMonoid ι] (φ : ι →+ R) {k : ι} {b : ⨁ i, ℒ i}
-    (hb : b ∈ (lof R ι (ℒ ·) k).range) :
-    (toModule R ι (⨁ (i : ι), ℒ i) fun i ↦ lof R ι (ℒ ·) i ∘ₗ (φ i • LinearMap.id)) b =
-    (φ k) • b := by
-  obtain ⟨a, ha⟩ := hb
-  rw [lof_eq_of R] at ha
-  simp [← ha, ← lof_eq_of R]
---#find_home! toModule_lof_smul_of --[Mathlib.Algebra.DirectSum.Module]
-
-variable [Decomposition ℒ]
-
-
---#find_home! decompose_symm_mem_iff --[Mathlib.Algebra.DirectSum.Decomposition]
-
-end put_elsewhere
 
 section SetLike
 
@@ -108,13 +88,21 @@ namespace LieDerivation
 variable [DecidableEq ι] [AddCommMonoid ι] [CommRing R] [LieRing L] [LieAlgebra R L]
 (ℒ : ι → Submodule R L) [GradedLieAlgebra ℒ]
 
-set_option backward.isDefEq.respectTransparency false in -- Module instance diamond
+set_option backward.isDefEq.respectTransparency false in
 /-- A derivation on the direct sum of graded pieces of a graded Lie algebra, coming from an additive
 map on the grading monoid. -/
 def ofGradingSum (φ : ι →+ R) : LieDerivation R (⨁ i, ℒ i) (⨁ i, ℒ i) :=
   { __ := DirectSum.toModule R ι (⨁ i, ℒ i)
       fun i ↦ (lof R ι (ℒ ·) i).comp (Module.End.smulLeft (φ i) (by simp))
     leibniz' x y := by
+      have hM (k : ι) (b : ⨁ i, ℒ i) (hb : (decompose ℒ).symm b ∈ ℒ k) :
+          (toModule R ι (⨁ (i : ι), ℒ i) fun i ↦ lof R ι (ℒ ·) i ∘ₗ (φ i • LinearMap.id)) b =
+          (φ k) • b := by
+        have : b ∈ LinearMap.range (lof R ι (ℒ ·) k) := by
+          use ⟨(decompose ℒ).symm b, hb⟩
+          simp [lof_eq_of, ← decompose_of_mem]
+        obtain ⟨_, h⟩ := this
+        simp [← h]
       ext j
       induction x using DirectSum.induction_on' with
       | h0 => simp
@@ -122,8 +110,7 @@ def ofGradingSum (φ : ι →+ R) : LieDerivation R (⨁ i, ℒ i) (⨁ i, ℒ i
         simp only [Module.End.smulLeft_eq, DirectSum.sub_apply, AddSubgroupClass.coe_sub] at ih
         simp only [Module.End.smulLeft_eq, add_lie, map_add, DirectSum.add_apply, Submodule.coe_add,
           ih, lie_add, DirectSum.sub_apply, AddSubgroupClass.coe_sub]
-        rw [add_sub_add_comm, add_right_cancel_iff, toModule_lof_smul_of ℒ φ
-          ((decompose_symm_mem_iff ℒ (of (ℒ ·) i a) i).mp <| by simp)]
+        rw [add_sub_add_comm, add_right_cancel_iff, hM i (of (ℒ ·) i a) (by simp)]
         clear ih
         induction y using DirectSum.induction_on' with
         | h0 => simp
@@ -133,12 +120,8 @@ def ofGradingSum (φ : ι →+ R) : LieDerivation R (⨁ i, ℒ i) (⨁ i, ℒ i
             add_lie, smul_add]
           rw [add_sub, ← sub_sub]
           congr 1
-          have hmem : ⁅of (ℒ ·) i a, of (ℒ ·) k b⁆ ∈ LinearMap.range (lof R ι (ℒ ·) (i + k)) := by
-            apply (decompose_symm_mem_iff ℒ _ (i + k)).mp
-            rw [decompose_symm_bracket, decompose_symm_of, decompose_symm_of]
-            exact SetLike.GradedBracket.bracket_mem rfl (Submodule.coe_mem a) (Submodule.coe_mem b)
-          rw [toModule_lof_smul_of ℒ φ ((decompose_symm_mem_iff ℒ (of (ℒ ·) k b) k).mp <| by simp),
-            toModule_lof_smul_of ℒ φ hmem, add_sub_right_comm,
+          rw [hM _ _ (by simpa using (SetLike.GradedBracket.bracket_mem rfl (Submodule.coe_mem a)
+            (Submodule.coe_mem b))), hM k (of (ℒ ·) k b) (by simp), add_sub_right_comm,
             add_right_cancel_iff, add_comm i k, map_add, add_smul, DirectSum.add_apply,
             Submodule.coe_add, sub_eq_add_neg, lie_smul, add_left_cancel_iff,
             ← lie_skew (of (ℒ ·) k b), smul_neg, ← sub_eq_zero, sub_neg_eq_add, ← Submodule.coe_add,
@@ -147,8 +130,7 @@ def ofGradingSum (φ : ι →+ R) : LieDerivation R (⨁ i, ℒ i) (⨁ i, ℒ i
 @[simp]
 lemma ofGradingSum_of (φ : ι →+ R) (i : ι) (a : ℒ i) :
     ofGradingSum ℒ φ (of (ℒ ·) i a) = (φ i) • (of (ℒ ·) i a) := by
-  rw [← toModule_lof_smul_of ℒ φ ((decompose_symm_mem_iff ℒ (of (ℒ ·) i a) i).mp <| by simp)]
-  exact DFunLike.congr_arg (ofGradingSum ℒ φ) rfl
+  simp [← lof_eq_of R, ofGradingSum]
 
 /-- The Lie derivation on a graded Lie algebra that scalar-multiplies by an additive function of
 the degree. -/
