@@ -263,9 +263,11 @@ end InftyValuation
 section constantExtension
 
 variable {Fq}
-variable (F : Type*) [Field F] [Algebra Fq F]
+variable (F : Type*) [Field F]
 
-attribute [local instance] Polynomial.algebra RatFunc.liftAlgebra RatFunc.isScalarTower_liftAlgebra
+attribute [local instance] Polynomial.algebra
+
+open RatFunc
 
 variable [Algebra Fq[X] F] [FaithfulSMul Fq[X] F] [FunctionField Fq F]
 
@@ -273,10 +275,9 @@ section Unbundled
 
 open Polynomial
 
-variable {E : Type*} [Field E] [Algebra Fq E]
+variable {E : Type*} [Field E] [Algebra Fq E] [Algebra E[X] F] [FaithfulSMul E[X] F]
 
-theorem FiniteDimensional_constantExtension_ratFunc [Algebra E F] [IsScalarTower Fq E F]
-    [Algebra E[X] F] [FaithfulSMul E[X] F] [IsScalarTower Fq[X] E[X] F] :
+theorem FiniteDimensional_constantExtension_ratFunc [IsScalarTower Fq[X] E[X] F] :
     FiniteDimensional (RatFunc Fq) (RatFunc E) :=
   .equiv (AlgEquiv.ofInjectiveField
     (IsScalarTower.toAlgHom (RatFunc Fq) (RatFunc E) F)).toLinearEquiv.symm
@@ -287,9 +288,8 @@ attribute [-instance] RatFunc.instSMulOfFractionRingPolynomial
 /--
 Let `F` be a function field over `Fq`. If `E` is an algebraic extension of `Fq` which is
 contained in `F` then it is finite over `Fq`. -/
-theorem FiniteDimensional_constantExtension [Algebra E F] [IsScalarTower Fq E F] [Algebra E[X] F]
-    [FaithfulSMul E[X] F] [IsScalarTower Fq[X] E[X] F] [Algebra.IsAlgebraic Fq E] :
-    FiniteDimensional Fq E :=
+theorem FiniteDimensional_constantExtension [IsScalarTower Fq[X] E[X] F]
+    [Algebra.IsAlgebraic Fq E] : FiniteDimensional Fq E :=
   letI := FunctionField.FiniteDimensional_constantExtension_ratFunc (Fq := Fq) (E := E) F
   letI : NoZeroSMulDivisors (RatFunc Fq) (RatFunc E) :=
     GroupWithZero.toNoZeroSMulDivisors
@@ -300,7 +300,7 @@ end Unbundled
 
 section IntermediateField
 
-variable (E : IntermediateField Fq F) [Algebra E[X] F] [FaithfulSMul E[X] F]
+variable [Algebra Fq F] (E : IntermediateField Fq F) [Algebra E[X] F] [FaithfulSMul E[X] F]
   [IsScalarTower Fq[X] E[X] F]
 
 instance : FiniteDimensional (RatFunc Fq) (RatFunc E) :=
