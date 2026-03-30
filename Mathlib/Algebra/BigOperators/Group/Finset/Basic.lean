@@ -986,18 +986,6 @@ theorem card_eq_sum_card_image [DecidableEq M] (f : ι → M) (s : Finset ι) :
 
 end Nat
 
-@[to_additive]
-lemma rel_prod_prod [CommMonoid M] {r : M → M → Prop} (hr_one : r 1 1)
-    (hr_mul : ∀ {a b c d}, r a c → r b d → r (a * b) (c * d)) {f g : ι → M}
-    (H : ∀ i ∈ s, r (f i) (g i)) :
-    r (∏ i ∈ s, f i) (∏ i ∈ s, g i) := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => exact hr_one
-  | @insert i s hi hs =>
-    simp only [prod_insert hi]
-    exact hr_mul (H _ (mem_insert_self _ _)) (hs (fun _ hi ↦ H _ (mem_insert_of_mem hi)))
-
 end Finset
 
 namespace Fintype

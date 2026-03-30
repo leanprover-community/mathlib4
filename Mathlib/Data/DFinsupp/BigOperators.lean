@@ -6,8 +6,9 @@ Authors: Johannes Hölzl, Kenny Lau
 module
 
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-public import Mathlib.Data.DFinsupp.Ext
 public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+public import Mathlib.Data.DFinsupp.Ext
+public import Mathlib.GroupTheory.Congruence.BigOperators
 
 /-!
 # Dependent functions with finite support
@@ -216,14 +217,13 @@ theorem prod_eq_prod_fintype [Fintype ι] [∀ i, Zero (β i)] [∀ (i : ι) (x 
   rw [mem_support_iff, not_not] at hi
   rw [hi, hf]
 
-lemma rel_sum_sum {A : Type*} [AddCommMonoid A] {r : A → A → Prop} [∀ i, AddCommMonoid (β i)]
-    (hr_zero : r 0 0) (hr_add : ∀ {a b c d}, r a c → r b d → r (a + b) (c + d))
+lemma addCon_sum {A : Type*} [AddCommMonoid A] {r : AddCon A} [∀ i, AddCommMonoid (β i)]
     [∀ i (y : β i), Decidable (y ≠ 0)] (h : (i : ι) → (β i →+ A)) (h' : (i : ι) → (β i →+ A))
     {f g : Π₀ i, β i} (H : ∀ i, r (h i (f i)) (h' i (g i))) :
     r (f.sum fun i y => h i y) (g.sum fun i y => h' i y) := by
   rw [sum_of_support_subset (Finset.subset_union_left (s₁ := f.support) (s₂ := g.support)),
     sum_of_support_subset (Finset.subset_union_right (s₁ := f.support) (s₂ := g.support))]
-  exact Finset.rel_sum_sum hr_zero hr_add (fun i _ ↦ H i)
+  exact AddCon.finset_sum r (f.support ∪ g.support) fun i _ ↦ H i
 
 section CommMonoidWithZero
 variable [Π i, Zero (β i)] [CommMonoidWithZero γ] [Nontrivial γ] [NoZeroDivisors γ]
