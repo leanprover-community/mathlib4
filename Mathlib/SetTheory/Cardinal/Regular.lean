@@ -90,7 +90,7 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
         apply lt_imp_lt_of_le_imp_le fun h => mul_le_mul_left h c
         rw [mul_eq_self h, ← succ_le_iff, ← αe, ← sum_const']
         refine le_trans ?_ (sum_le_sum (fun (x : S) => card (typein r (x : α))) _ fun i => ?_)
-        · simp only [← card_typein, ← mk_sigma]
+        · simp only [card_typein, ← mk_sigma]
           exact
             ⟨Embedding.ofSurjective (fun x => x.2.1) fun a =>
                 let ⟨b, h, ab⟩ := H a
@@ -118,7 +118,7 @@ alias iSup_sequence_lt_omega_one := Ordinal.iSup_lt_omega_one
 alias iSup_sequence_lt_omega1 := Ordinal.iSup_lt_omega_one
 
 theorem isRegular_preAleph_add_one {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (o + 1)) := by
-  rw [preAleph_add_one]
+  rw [← succ_preAleph]
   exact isRegular_succ (aleph0_le_preAleph.2 h)
 
 @[deprecated isRegular_preAleph_add_one (since := "2026-03-23")]
@@ -130,7 +130,7 @@ theorem cof_preOmega_add_one {o : Ordinal} (h : ω ≤ o) :
   rw [← ord_preAleph, (isRegular_preAleph_add_one h).cof_ord]
 
 theorem isRegular_aleph_add_one (o : Ordinal) : IsRegular (ℵ_ (o + 1)) := by
-  rw [aleph_add_one]
+  rw [← succ_aleph]
   exact isRegular_succ (aleph0_le_aleph o)
 
 @[deprecated isRegular_aleph_add_one (since := "2026-03-23")]
