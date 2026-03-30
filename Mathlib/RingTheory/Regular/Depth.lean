@@ -191,10 +191,10 @@ lemma CategoryTheory.Abelian.Ext.pow_mono_of_mono
     by_cases eq0 : k = 0
     · rw [eq0, pow_zero, one_mul]
       exact f_mono
-    · have : (a ^ k * a) • (LinearMap.id (R := R) (M := M)) =
-        (a • (LinearMap.id (M := M))).comp ((a ^ k) • (LinearMap.id (M := M))) := by
-        rw [LinearMap.comp_smul, LinearMap.smul_comp, smul_smul, LinearMap.id_comp]
-      simpa [smulShortComplex, this, ModuleCat.ofHom_comp, ← extFunctorObj_map,
+    · have : lsmul _ M (a ^ k * a) = (lsmul _ M a).comp (lsmul _ M (a ^ k)) := by
+        ext
+        simp [mul_smul]
+      simpa [this, ModuleCat.ofHom_comp, ← extFunctorObj_map,
         (extFunctorObj N i).map_comp] using mono_comp' (ih (Nat.zero_lt_of_ne_zero eq0)) f_mono
 
 lemma ModuleCat.subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
