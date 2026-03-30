@@ -96,6 +96,10 @@ theorem dvd_of_forall_prime_mul_dvd {a b : ℕ}
 theorem Prime.even_iff {p : ℕ} (hp : Prime p) : Even p ↔ p = 2 := by
   rw [even_iff_two_dvd, prime_dvd_prime_iff_eq prime_two hp, eq_comm]
 
+theorem Prime.odd_iff {p : ℕ} (hp : Prime p) : Odd p ↔ 3 ≤ p := by
+  rw [← not_iff_not, not_odd_iff_even, hp.even_iff, not_le]
+  grind [hp.two_le]
+
 theorem Prime.odd_of_ne_two {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2) : Odd p :=
   hp.eq_two_or_odd'.resolve_left h_two
 
@@ -176,9 +180,8 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
       assumption
   rintro x y hx hy h ⟨a, ha⟩
   have : a ∣ p := ⟨y, by rwa [ha, sq, mul_assoc, mul_right_inj' hp.ne_zero, eq_comm] at h⟩
-  obtain ha1 | hap := (Nat.dvd_prime hp).mp ‹a ∣ p›
-  · subst ha1
-    rw [mul_one] at ha
+  obtain rfl | hap := (Nat.dvd_prime hp).mp ‹a ∣ p›
+  · rw [mul_one] at ha
     subst ha
     simp only [sq, mul_right_inj' hp.ne_zero] at h
     subst h
