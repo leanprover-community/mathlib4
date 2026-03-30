@@ -68,7 +68,7 @@ lemma ordMonoidWithZeroHom_eq_ordMonoidHom [Nontrivial R] (x : R⁰) :
 /--
 Analogue of `ord_ne_top` for `ordMonoidWithZeroHom`.
 -/
-lemma ordMonoidWithZeroHom_ne_zero [Nontrivial R] (a : R) (ha : a ∈ nonZeroDivisors R) :
+lemma ordMonoidWithZeroHom_ne_zero [Nontrivial R] {a : R} (ha : a ∈ nonZeroDivisors R) :
     ordMonoidWithZeroHom R a ≠ 0 := by
   lift a to R⁰ using ha
   simp [ordMonoidWithZeroHom_eq_ordMonoidHom, -ordMonoidWithZeroHom_eq_ord]
