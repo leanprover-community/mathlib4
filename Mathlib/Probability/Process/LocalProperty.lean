@@ -266,14 +266,14 @@ def mkStrictMonoAux (x : ℕ → ℕ) : ℕ → ℕ
   | 0 => x 0
   | n + 1 => max (x (n + 1)) (mkStrictMonoAux x n) + 1
 
-lemma mkStrictMonoAux_strictMono (x : ℕ → ℕ) : StrictMono (mkStrictMonoAux x) :=
+private lemma mkStrictMonoAux_strictMono (x : ℕ → ℕ) : StrictMono (mkStrictMonoAux x) :=
   strictMono_nat_of_lt_succ <| fun n ↦ by grind [mkStrictMonoAux]
 
-lemma le_mkStrictMonoAux (x : ℕ → ℕ) : ∀ n, x n ≤ mkStrictMonoAux x n
+private lemma le_mkStrictMonoAux (x : ℕ → ℕ) : ∀ n, x n ≤ mkStrictMonoAux x n
   | 0 => by simp [mkStrictMonoAux]
   | n + 1 => by grind [mkStrictMonoAux]
 
-lemma isPreLocalizingSequence_of_isLocalizingSequence_aux
+private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux
     {τ : ℕ → Ω → WithTop ι} {σ : ℕ → ℕ → Ω → WithTop ι}
     (hτ : IsLocalizingSequence 𝓕 τ P) (hσ : ∀ n, IsLocalizingSequence 𝓕 (σ n) P) :
     ∃ (nk : ℕ → ℕ) (T : ℕ → ι), StrictMono nk ∧ Tendsto T atTop atTop ∧
