@@ -186,7 +186,6 @@ def lineDerivOpCLM (m : V) : E →L[R] F where
   toFun := ∂_{m}
   map_add' := lineDerivOp_add m
   map_smul' := lineDerivOp_smul m
-  cont := by fun_prop
 
 @[simp]
 theorem lineDerivOpCLM_apply (m : V) (x : E) :
@@ -254,7 +253,6 @@ def iteratedLineDerivOpCLM {n : ℕ} (m : Fin n → V) : E →L[R] E where
   toFun := ∂^{m}
   map_add' := iteratedLineDerivOp_add m
   map_smul' := iteratedLineDerivOp_smul m
-  cont := by fun_prop
 
 @[simp]
 theorem iteratedLineDerivOpCLM_apply {n : ℕ} (m : Fin n → V) (x : E) :

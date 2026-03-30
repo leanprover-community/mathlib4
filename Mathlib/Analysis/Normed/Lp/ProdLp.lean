@@ -567,13 +567,11 @@ lemma prodContinuousLinearEquiv_symm_apply (x : α × β) :
 @[simps! coe apply]
 def fstL : WithLp p (α × β) →L[𝕜] α where
   __ := fstₗ ..
-  cont := WithLp.continuous_fst ..
 
 /-- `WithLp.snd` as a continuous linear map. -/
 @[simps! coe apply]
 def sndL : WithLp p (α × β) →L[𝕜] β where
   __ := sndₗ ..
-  cont := WithLp.continuous_snd ..
 
 end ContinuousLinearEquiv
 
