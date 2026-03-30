@@ -1071,11 +1071,6 @@ lemma comapDomain_sumElim_comapDomain (c : α ⊕ β →₀ γ) :
       (comapDomain Sum.inr c Sum.inr_injective.injOn) = c := by
   ext (_ | _) <;> simp
 
-@[simp]
-lemma sumElim_add [AddZeroClass M] (a b : α →₀ M) (c d : β →₀ M) :
-    (a + b).sumElim (c + d) = a.sumElim c + b.sumElim d := by
-  ext (_ | _) <;> simp
-
 /-- The equivalence between `(α ⊕ β) →₀ γ` and `(α →₀ γ) × (β →₀ γ)`.
 
 This is the `Finsupp` version of `Equiv.sum_arrow_equiv_prod_arrow`. -/
@@ -1302,6 +1297,104 @@ def splitSupport (l : (Σ i, αs i) →₀ M) : Finset ι :=
   l.support.image Sigma.fst
 
 theorem mem_splitSupport_iff_nonzero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
+  classical rw [splitSupport, mem_image, Ne, ← support_eq_empty, ← Ne,
+    ← Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
+  simp only [Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
+    Sigma.exists, Ne]
+
+/-- Given `l`, a finitely supported function from the sigma type `Σ i, αs i` to `β` and
+an `ι`-indexed family `g` of functions from `(αs i →₀ β)` to `γ`, `split_comp` defines a
+finitely supported function from the index type `ι` to `γ` given by composing `g i` with
+`split l i`. -/
+def splitComp [Zero N] (g : ∀ i, (αs i →₀ M) → N) (hg : ∀ i x, x = 0 ↔ g i x = 0) : ι →₀ N where
+  support := splitSupport l
+  toFun i := g i (split l i)
+  mem_support_toFun := by
+    intro i
+    rw [mem_splitSupport_iff_nonzero, not_iff_not, hg]
+
+theorem sigma_support : l.support = l.splitSupport.sigma fun i => (l.split i).support := by
+  simp_rw [Finset.ext_iff, splitSupport, split, comapDomain, Sigma.forall, mem_sigma, mem_image,
+    mem_preimage]
+  tauto
+
+theorem sigma_sum [AddCommMonoid N] (f : (Σ i : ι, αs i) → M → N) :
+    l.sum f = ∑ i ∈ splitSupport l, (split l i).sum fun (a : αs i) b => f ⟨i, a⟩ b := by
+  simp only [sum, sigma_support, sum_sigma, split_apply]
+
+variable {η : Type*} [Fintype η] {ιs : η → Type*} [Zero α]
+
+/-- On a `Fintype η`, `Finsupp.split` is an equivalence between `(Σ (j : η), ιs j) →₀ α`
+and `Π j, (ιs j →₀ α)`.
+
+This is the `Finsupp` version of `Equiv.Pi_curry`. -/
+noncomputable def sigmaFinsuppEquivPiFinsupp : ((Σ j, ιs j) →₀ α) ≃ ∀ j, ιs j →₀ α where
+  toFun := split
+  invFun f :=
+    onFinset (Finset.univ.sigma fun j => (f j).support) (fun ji => f ji.1 ji.2) fun _ hg =>
+      Finset.mem_sigma.mpr ⟨Finset.mem_univ _, mem_support_iff.mpr hg⟩
+  left_inv f := by
+    ext
+    simp [split]
+  right_inv f := by
+    ext
+    simp [split]
+
+@[simp]
+theorem sigmaFinsuppEquivPiFinsupp_apply (f : (Σ j, ιs j) →₀ α) (j i) :
+    sigmaFinsuppEquivPiFinsupp f j i = f ⟨j, i⟩ :=
+  rfl
+
+/-- On a `Fintype η`, `Finsupp.split` is an additive equivalence between
+`(Σ (j : η), ιs j) →₀ α` and `Π j, (ιs j →₀ α)`.
+
+This is the `AddEquiv` version of `Finsupp.sigmaFinsuppEquivPiFinsupp`.
+-/
+noncomputable def sigmaFinsuppAddEquivPiFinsupp {α : Type*} {ιs : η → Type*} [AddMonoid α] :
+    ((Σ j, ιs j) →₀ α) ≃+ ∀ j, ιs j →₀ α :=
+  { sigmaFinsuppEquivPiFinsupp with
+    map_add' := fun f g => by
+      ext
+      simp }
+
+@[simp]
+theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [AddMonoid α]
+    (f : (Σ j, ιs j) →₀ α) (j i) : sigmaFinsuppAddEquivPiFinsupp f j i = f ⟨j, i⟩ :=
+  rfl
+
+end Sigma
+
+lemma mem_range_embDomain_iff [AddCommMonoid M] (f : α ↪ β) (x : β →₀ M) :
+    x ∈ Set.range (embDomain f) ↔ ↑x.support ⊆ Set.range f := by
+  convert mem_range_mapDomain_iff _ f.injective _
+  · ext; rw [embDomain_eq_mapDomain]
+  · grind
+
+theorem embDomain_trans_apply [AddCommMonoid M] (v : α →₀ M) (f : α ↪ β) (g : β ↪ γ) :
+    embDomain (f.trans g) v = embDomain g (embDomain f v) := by
+  simp only [embDomain_eq_mapDomain, ← mapDomain_comp, Embedding.coe_trans]
+
+theorem mapDomain_support_of_subsingletonAddUnits [DecidableEq β] [AddCommMonoid M]
+    (f : α → β) [Subsingleton (AddUnits M)] (x : α →₀ M) :
+      (x.mapDomain f).support = x.support.image f := by
+  ext t
+  rw [mem_support_iff, ne_eq, Finset.mem_image]
+  refine ⟨?_, fun ⟨i, i_in, hi⟩ ↦ ?_⟩
+  · simpa [mapDomain, sum, single_apply] using fun i h h' _ ↦ ⟨i, h, h'⟩
+  simpa [mapDomain, sum, ← hi, single_apply] using ⟨i, by simp [mem_support_iff.mp i_in]⟩
+
+theorem mapDomain_apply_eq_sum [DecidableEq β] [AddCommMonoid M] (f : α → β)
+    (x : α →₀ M) {a : α} : (x.mapDomain f) (f a) = ∑ i ∈ x.support with f i = f a, x i := by
+  simp [mapDomain, sum, single_apply, Finset.sum_ite]
+
+theorem mapDomain_apply_eq_zero_iff_of_subsingletonAddUnits [AddCommMonoid M] (f : α → β)
+    [Subsingleton (AddUnits M)] (x : α →₀ M) : mapDomain (M := M) f x = 0 ↔ x = 0 := by
+  classical
+  refine ⟨fun h ↦ Finsupp.ext (fun i ↦ ?_), fun h ↦ by rw [h, mapDomain_zero]⟩
+  replace h := Finsupp.ext_iff.mp h (f i)
+  simp [mapDomain_apply_eq_sum] at h; grind
+
+end Finsupp
   classical rw [splitSupport, mem_image, Ne, ← support_eq_empty, ← Ne,
     ← Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
   simp only [Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
