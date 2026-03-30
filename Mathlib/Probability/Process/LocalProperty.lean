@@ -30,12 +30,12 @@ This is notably useful for local martingales.
   "satisfies `p` locally" is also stable.
 * `ProbabilityTheory.IsPreLocalizingSequence.isLocalizingSequence_biInf`: Given a
   pre-localizing sequence `(τ n)`, the sequence `⊓ j ≥ n, τ j` is a localizing sequence.
-* `ProbabilityTheory.locally_of_isPreLocalizingSequence`: If a property `p` is stable, then to prove
-  that `X` satisfies `p` locally, one can replace the localizing sequence in the definition of
-  "locally" by a pre-localizing sequence.
-* `ProbabilityTheory.locally_locally`: For stable properties, locally is idempotent.
-* `ProbabilityTheory.locally_induction`: If `q` is a stable property, and `p` implies locally `q`,
-  then locally `p` implies locally `q`.
+* `ProbabilityTheory.IsStable.locally_of_isPreLocalizingSequence`: If a property `p` is stable, then
+  to prove that `X` satisfies `p` locally, one can replace the localizing sequence in the definition
+  of "locally" by a pre-localizing sequence.
+* `ProbabilityTheory.IsStable.locally_locally`: For stable properties, locally is idempotent.
+* `ProbabilityTheory.IsStable.locally_induction`: If `q` is a stable property, and `p` implies locally
+  `q`, then locally `p` implies locally `q`.
 
 ### Tags
 
