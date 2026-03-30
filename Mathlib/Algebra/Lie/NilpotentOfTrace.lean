@@ -50,10 +50,7 @@ section General
 
 variable {K : Type*} [Field K] {V : Type*} [AddCommGroup V] [Module K V]
 
-noncomputable instance eigenspaceFree (s : Module.End K V) (μ : K) :
-    @Module.Free K ↥(s.eigenspace μ) _ _ (s.eigenspace μ).module :=
-  @Module.Free.of_divisionRing K ↥(s.eigenspace μ) _ _ (s.eigenspace μ).module
-
+/-- The diagonal endomorphism `b i ↦ c i • b i` relative to a basis `b`. -/
 noncomputable def diagEnd {ι : Type*}
     (b : Module.Basis ι K V) (c : ι → K) : Module.End K V :=
   b.constr K (fun i => c i • b i)
@@ -80,11 +77,11 @@ theorem ad_diag_basis {ι : Type*} [Fintype ι]
     (b : Module.Basis ι K V) (a : ι → K) (s : Module.End K V)
     (hs : ∀ k, s (b k) = a k • b k)
     (i j : ι) :
-    ⁅s, (b.linearMap b) (i, j)⁆ = (a i - a j) • (b.linearMap b) (i, j) := by
+    ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
   apply b.ext; intro k
-  change s ((b.linearMap b) (i, j) (b k)) - (b.linearMap b) (i, j) (s (b k)) =
-    (a i - a j) • (b.linearMap b) (i, j) (b k)
-  simp only [Module.Basis.linearMap_apply_apply, hs k, map_smul]
+  change s (b.end (i, j) (b k)) - b.end (i, j) (s (b k)) =
+    (a i - a j) • b.end (i, j) (b k)
+  simp only [Module.Basis.end_apply_apply, hs k, map_smul]
   by_cases hjk : j = k
   · subst hjk; simp [hs i, sub_smul]
   · simp [hjk]
@@ -127,6 +124,8 @@ variable {K : Type*} [Field K] [IsAlgClosed K]
   {V : Type*} [AddCommGroup V] [Module K V] [FiniteDimensional K V]
 
 open Classical in
+/-- The eigenspaces of a semisimple endomorphism over an algebraically closed field form an
+internal direct sum decomposition. -/
 noncomputable def eigenspaceIsInternal
     (s : Module.End K V) (hs : s.IsSemisimple) :
     DirectSum.IsInternal (fun μ : K => s.eigenspace μ) := by
@@ -137,6 +136,7 @@ noncomputable def eigenspaceIsInternal
     exact this⟩
 
 open Classical in
+/-- An eigenbasis for a semisimple endomorphism over an algebraically closed field. -/
 noncomputable def eigenbasis (s : Module.End K V) (hs : s.IsSemisimple) :=
   (eigenspaceIsInternal s hs).collectedBasis
     (fun μ => Module.finBasis K (s.eigenspace μ))
@@ -223,28 +223,28 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   suffices hs_zero : s = 0 by rw [hxns, hs_zero, add_zero]; exact hn_nil
   suffices h_f_zero : ∀ f : E →ₗ[ℚ] ℚ, f = 0 by
     refine hs_ss.eq_zero_iff_forall_eigenvalue.mpr fun μ hμ => ?_
-    haveI : Nontrivial (s.eigenspace μ) :=
+    have : Nontrivial (s.eigenspace μ) :=
       Submodule.nontrivial_iff_ne_bot.mpr (hasEigenvalue_iff.mp hμ)
     have hμ_E : μ ∈ E := Submodule.subset_span ⟨⟨μ, ⟨0, Module.finrank_pos⟩⟩, rfl⟩
-    exact congr_arg Subtype.val <|
-      (Module.forall_dual_apply_eq_zero_iff ℚ (⟨μ, hμ_E⟩ : E)).mp (fun φ => by simp [h_f_zero φ])
+    have hφ : ∀ φ : Module.Dual ℚ E, φ ⟨μ, hμ_E⟩ = 0 := fun φ => by simp [h_f_zero φ]
+    exact congr_arg Subtype.val <| (Module.forall_dual_apply_eq_zero_iff ℚ ⟨μ, hμ_E⟩).mp hφ
   intro f
   have ha : ∀ i, a i ∈ E := fun i => Submodule.subset_span (Set.mem_range_self i)
   classical
   haveI : Fintype (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))) :=
     eigenbasisFintype s hs_ss
   let y := diagEnd v (fun i => algebraMap ℚ K (f ⟨a i, ha i⟩))
-  have had_s : ∀ i j, ⁅s, (v.linearMap v) (i, j)⁆ =
-      (a i - a j) • (v.linearMap v) (i, j) := ad_diag_basis v a s hv_diag
-  have had_y : ∀ i j, ⁅y, (v.linearMap v) (i, j)⁆ =
+  have had_s : ∀ i j, ⁅s, v.end (i, j)⁆ =
+      (a i - a j) • v.end (i, j) := ad_diag_basis v a s hv_diag
+  have had_y : ∀ i j, ⁅y, v.end (i, j)⁆ =
       (algebraMap ℚ K (f ⟨a i, ha i⟩) - algebraMap ℚ K (f ⟨a j, ha j⟩)) •
-        (v.linearMap v) (i, j) :=
+        v.end (i, j) :=
     fun i j => ad_diag_basis v _ (diagEnd v _) (diagEnd_apply_basis v _) i j
   obtain ⟨r, hr_eval, hr_zero⟩ := exists_lagrange_polynomial a E f ha
   let ad_s := LieAlgebra.ad K (Module.End K V) s
   have had_y_eq : LieAlgebra.ad K (Module.End K V) y = Polynomial.aeval ad_s r := by
-    apply (v.linearMap v).ext; intro ⟨i, j⟩
-    change ⁅y, (v.linearMap v) (i, j)⁆ = (Polynomial.aeval ad_s r) ((v.linearMap v) (i, j))
+    apply v.end.ext; intro ⟨i, j⟩
+    change ⁅y, v.end (i, j)⁆ = (Polynomial.aeval ad_s r) (v.end (i, j))
     rw [Module.End.aeval_apply_of_mem_eigenspace (had_s i j), hr_eval i j, had_y i j]
   have h_ad_s_mem : ad_s ∈ Algebra.adjoin K {LieAlgebra.ad K _ x} := by
     rw [hxns]; exact LieAlgebra.ad_mem_adjoin_of_isSemisimple
@@ -265,31 +265,37 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     rw [had_y_adx]
     exact aeval_ad_maps_to A B hAB x hxM _ (by simp [Polynomial.eval_comp, hp_zero, hr_zero]) b hb
   have htr_xy : trace K V (x * y) = 0 := htr y hyM
+  let eigenvals : Finset K := Finset.univ.image a
+  let c_val : K → K := fun μ => if hμ : μ ∈ E then algebraMap ℚ K (f ⟨μ, hμ⟩) else 0
+  let g := Lagrange.interpolate eigenvals _root_.id c_val
+  have hg_eval : ∀ i, Polynomial.eval (a i) g = algebraMap ℚ K (f ⟨a i, ha i⟩) := fun i =>
+    (Lagrange.eval_interpolate_at_node c_val (fun _ _ _ _ h => h)
+      (Finset.mem_image.mpr ⟨i, Finset.mem_univ _, rfl⟩)).trans (dif_pos (ha i))
+  have hy_eq : Polynomial.aeval s g = y := v.ext fun i => by
+    rw [Module.End.aeval_apply_of_mem_eigenspace (hv_diag i), hg_eval i, diagEnd_apply_basis]
+  have hy_adj : y ∈ Algebra.adjoin K {s} := by
+    rw [Algebra.adjoin_singleton_eq_range_aeval]; exact ⟨g, hy_eq⟩
+  have hny_comm : Commute n y :=
+    Algebra.commute_of_mem_adjoin_singleton_of_commute
+      (Algebra.adjoin_singleton_le hs_adj hy_adj)
+      (Algebra.commute_of_mem_adjoin_self hn_adj).symm
+  have htr_ny : trace K V (n * y) = 0 :=
+    (LinearMap.isNilpotent_trace_of_isNilpotent
+      (hny_comm.isNilpotent_mul_right hn_nil)).eq_zero
+  have htr_sy : trace K V (s * y) = ∑ i, a i * algebraMap ℚ K (f ⟨a i, ha i⟩) := by
+    have : s * y = diagEnd v (fun i => a i * algebraMap ℚ K (f ⟨a i, ha i⟩)) := v.ext fun i => by
+      change s (y (v i)) = _
+      rw [show y (v i) = algebraMap ℚ K (f ⟨a i, ha i⟩) • v i from diagEnd_apply_basis v _ i,
+        diagEnd_apply_basis, map_smul, hv_diag i, smul_smul, mul_comm]
+    rw [this, trace_diagEnd]
+  -- Combine: tr(xy) = tr(ny) + tr(sy) = 0 + Σ aᵢ f(aᵢ), so Σ aᵢ f(aᵢ) = 0
   have htr_sum : ∑ i : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))),
       a i * algebraMap ℚ K (f ⟨a i, ha i⟩) = 0 := by
-    let eigenvals : Finset K := Finset.univ.image a
-    let c_val : K → K := fun μ => if hμ : μ ∈ E then algebraMap ℚ K (f ⟨μ, hμ⟩) else 0
-    let g := Lagrange.interpolate eigenvals _root_.id c_val
-    have hg_eval : ∀ i, Polynomial.eval (a i) g = algebraMap ℚ K (f ⟨a i, ha i⟩) := fun i =>
-      (Lagrange.eval_interpolate_at_node c_val (fun _ _ _ _ h => h)
-        (Finset.mem_image.mpr ⟨i, Finset.mem_univ _, rfl⟩)).trans (dif_pos (ha i))
-    have hy_eq : Polynomial.aeval s g = y := v.ext fun i => by
-      rw [Module.End.aeval_apply_of_mem_eigenspace (hv_diag i), hg_eval i, diagEnd_apply_basis]
-    have htr_ny : trace K V (n * y) = 0 :=
-      (LinearMap.isNilpotent_trace_of_isNilpotent
-        ((Algebra.commute_of_mem_adjoin_singleton_of_commute
-          (Algebra.adjoin_singleton_le hs_adj <| by
-            rw [Algebra.adjoin_singleton_eq_range_aeval]; exact ⟨g, hy_eq⟩)
-          (Algebra.commute_of_mem_adjoin_self hn_adj).symm).isNilpotent_mul_right hn_nil)).eq_zero
-    have htr_sy : trace K V (s * y) = ∑ i, a i * algebraMap ℚ K (f ⟨a i, ha i⟩) := by
-      have : s * y = diagEnd v (fun i => a i * algebraMap ℚ K (f ⟨a i, ha i⟩)) := v.ext fun i => by
-        change s (y (v i)) = _
-        rw [show y (v i) = algebraMap ℚ K (f ⟨a i, ha i⟩) • v i from diagEnd_apply_basis v _ i,
-          diagEnd_apply_basis, map_smul, hv_diag i, smul_smul, mul_comm]
-      rw [this, trace_diagEnd]
-    have htr_split : trace K V (x * y) = trace K V (n * y) + trace K V (s * y) := by
+    rw [← htr_sy]
+    have : trace K V (x * y) = trace K V (n * y) + trace K V (s * y) := by
       rw [hxns, add_mul]; exact map_add _ _ _
-    rw [← htr_sy]; have := htr_split.symm.trans htr_xy; rw [htr_ny, zero_add] at this; exact this
+    rw [this, htr_ny, zero_add] at htr_xy
+    exact htr_xy
   have h_sum_E : ∑ i : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))),
       (f ⟨a i, ha i⟩) • (⟨a i, ha i⟩ : E) = 0 := by
     apply_fun E.subtype using Subtype.val_injective
@@ -300,6 +306,7 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     have := congr_arg f h_sum_E
     simp only [map_sum, map_smul, smul_eq_mul, map_zero] at this
     convert this using 1; congr 1; ext i; ring
-  exact (Submodule.linearMap_eq_zero_iff_of_eq_span f rfl).mpr fun ⟨_, ⟨i, rfl⟩⟩ =>
+  have h_each_zero : ∀ i, f ⟨a i, ha i⟩ = 0 := fun i =>
     eq_zero_of_pow_eq_zero ((Finset.sum_eq_zero_iff_of_nonneg
       (fun j _ => sq_nonneg _)).mp h_sum_sq i (Finset.mem_univ _))
+  exact (Submodule.linearMap_eq_zero_iff_of_eq_span f rfl).mpr fun ⟨_, ⟨i, rfl⟩⟩ => h_each_zero i
