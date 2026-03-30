@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.SetTheory.Ordinal.Family
 public import Mathlib.Data.Nat.Log
+public import Mathlib.SetTheory.Ordinal.Family
 
 /-!
 # Ordinal exponential
