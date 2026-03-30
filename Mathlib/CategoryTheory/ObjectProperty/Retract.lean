@@ -6,6 +6,9 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 public import Mathlib.CategoryTheory.ObjectProperty.Small
 public import Mathlib.CategoryTheory.Retract
 
@@ -21,6 +24,8 @@ universe w v u
 
 namespace CategoryTheory.ObjectProperty
 
+open Limits
+
 variable {C : Type u} [Category.{v} C] (P : ObjectProperty C)
 
 /-- A predicate `C → Prop` on the objects of a category is stable under retracts
@@ -30,6 +35,50 @@ class IsStableUnderRetracts where
 
 lemma prop_of_retract [IsStableUnderRetracts P] {X Y : C} (h : Retract X Y) (hY : P Y) : P X :=
   IsStableUnderRetracts.of_retract h hY
+
+instance : IsStableUnderRetracts (⊥ : ObjectProperty C) where
+  of_retract _ h := h
+
+instance : IsStableUnderRetracts (⊤ : ObjectProperty C) where
+  of_retract _ _ := by trivial
+
+namespace IsStableUnderRetracts
+
+open scoped ZeroObject
+
+variable [P.IsStableUnderRetracts]
+
+instance : P.IsClosedUnderIsomorphisms where
+  of_iso i h := IsStableUnderRetracts.of_retract i.symm.retract h
+
+lemma containsZero [HasZeroObject C] {X : C} (h : P X) : P.ContainsZero where
+  exists_zero := ⟨0, isZero_zero _, of_retract ((isZero_zero _).retract X) h⟩
+
+lemma of_binaryBicone_left [HasZeroMorphisms C] {X Y : C} (c : BinaryBicone X Y) (h : P c.pt) :
+    P X :=
+  of_retract c.retract_left h
+
+lemma of_binaryBicone_right [HasZeroMorphisms C] {X Y : C} (c : BinaryBicone X Y) (h : P c.pt) :
+    P Y :=
+  of_retract c.retract_right h
+
+lemma of_biprod_left [HasZeroMorphisms C] {X Y : C} [HasBinaryBiproduct X Y] (h : P (X ⊞ Y)) :
+    P X :=
+  of_binaryBicone_left P (BinaryBiproduct.bicone X Y) h
+
+lemma of_biprod_right [HasZeroMorphisms C] {X Y : C} [HasBinaryBiproduct X Y] (h : P (X ⊞ Y)) :
+    P Y :=
+  of_binaryBicone_right P (BinaryBiproduct.bicone X Y) h
+
+lemma of_bicone [HasZeroMorphisms C] {J : Type*} (F : J → C) (c : Bicone F) (h : P c.pt) (j : J) :
+    P (F j) :=
+  of_retract (c.retract j) h
+
+lemma of_biproduct [HasZeroMorphisms C] {J : Type*} (F : J → C) [HasBiproduct F] (h : P (⨁ F))
+    (j : J) : P (F j) :=
+  of_bicone P F (biproduct.bicone F) h j
+
+end IsStableUnderRetracts
 
 /-- The closure by retracts of a predicate on objects in a category. -/
 def retractClosure : ObjectProperty C := fun X => ∃ (Y : C) (_ : P Y), Nonempty (Retract X Y)
@@ -54,6 +103,14 @@ lemma retractClosure_eq_self [IsStableUnderRetracts P] : retractClosure P = P :=
   · intro X ⟨Y, hY, ⟨e⟩⟩
     exact prop_of_retract P e hY
   · exact le_retractClosure P
+
+@[simp]
+lemma retractClosure_bot : retractClosure (⊥ : ObjectProperty C) = ⊥ :=
+  retractClosure_eq_self _
+
+@[simp]
+lemma retractClosure_top : retractClosure (⊤ : ObjectProperty C) = ⊤ :=
+  retractClosure_eq_self _
 
 lemma retractClosure_le_iff (Q : ObjectProperty C) [IsStableUnderRetracts Q] :
     retractClosure P ≤ Q ↔ P ≤ Q :=

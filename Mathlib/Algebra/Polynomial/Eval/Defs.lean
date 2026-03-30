@@ -343,8 +343,8 @@ theorem eval_finset_sum (s : Finset ι) (g : ι → R[X]) (x : R) :
 def IsRoot (p : R[X]) (a : R) : Prop :=
   p.eval a = 0
 
-instance IsRoot.decidable [DecidableEq R] : Decidable (IsRoot p a) := by
-  unfold IsRoot; infer_instance
+instance IsRoot.decidable [DecidableEq R] : Decidable (IsRoot p a) :=
+  inferInstanceAs <| Decidable (eval a p = 0)
 
 @[simp]
 theorem IsRoot.def : IsRoot p a ↔ p.eval a = 0 :=

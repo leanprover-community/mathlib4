@@ -200,7 +200,7 @@ theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
       · have ih := orderedInsert_sublist x ‹a :: as <+ bs› hb.of_cons
         rw [orderedInsert_cons, if_neg hr] at ih
         exact .cons _ ih
-      · simp_all only [pairwise_cons, cons_sublist_cons]
+      · simp_all
       · exact .cons₂ _ <| orderedInsert_sublist x ‹as <+ bs› hb.of_cons
 
 section TotalAndTransitive
@@ -215,9 +215,8 @@ theorem Pairwise.orderedInsert (a : α) : ∀ l, Pairwise r l → Pairwise r (or
     · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
         simpa [orderedInsert_cons, h', h.of_cons.orderedInsert a l]
       intro b' bm
-      rcases (mem_orderedInsert r).mp bm with be | bm
-      · subst b'
-        exact (total_of r _ _).resolve_left h'
+      rcases (mem_orderedInsert r).mp bm with rfl | bm
+      · exact (total_of r _ _).resolve_left h'
       · exact rel_of_pairwise_cons h bm
 
 @[deprecated (since := "2025-10-11")]
