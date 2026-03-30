@@ -61,7 +61,7 @@ variable {ι E F : Type*} [TopologicalSpace E] [TopologicalSpace F] {A B : Set E
 /-- A set `A` is countably compact if every countably generated proper filter `f` with
 `f ≤ 𝓟 A` has a cluster point in `A`. -/
 def IsCountablyCompact (A : Set E) : Prop :=
-  ∀ ⦃f⦄ [NeBot f] [Filter.IsCountablyGenerated f], f ≤ 𝓟 A → ∃ a ∈ A, ClusterPt a f
+  ∀ ⦃f⦄ [NeBot f] [f.IsCountablyGenerated], f ≤ 𝓟 A → ∃ a ∈ A, ClusterPt a f
 
 /-- A topological space is countably compact if every countably generated proper filter has a
 cluster point. -/
