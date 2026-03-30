@@ -22,7 +22,7 @@ This file contains the definition of cofinality of an order and an ordinal numbe
 
 ## Main Statements
 
-* `Cardinal.lt_power_coford_`: A consequence of König's theorem stating that `c < c ^ c.ord.cof` for
+* `Cardinal.lt_power_cof_ord`: A consequence of König's theorem stating that `c < c ^ c.ord.cof` for
   `c ≥ ℵ₀`.
 
 ## Implementation Notes
