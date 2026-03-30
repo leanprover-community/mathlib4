@@ -45,7 +45,6 @@ def kerLift : R ⧸ ker f →+* S :=
 theorem kerLift_mk (r : R) : kerLift f (Ideal.Quotient.mk (ker f) r) = f r :=
   Ideal.Quotient.lift_mk _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lift_injective_of_ker_le_ideal (I : Ideal R) [I.IsTwoSided]
     {f : R →+* S} (H : ∀ a : R, a ∈ I → f a = 0)
     (hI : ker f ≤ I) : Function.Injective (Ideal.Quotient.lift I f H) := by
@@ -130,7 +129,6 @@ theorem map_quotient_self (I : Ideal R) [I.IsTwoSided] : map (Quotient.mk I) I =
     Ideal.map_le_iff_le_comap.2 fun _ hx =>
       (Submodule.mem_bot (R ⧸ I)).2 <| Ideal.Quotient.eq_zero_iff_mem.2 hx
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mk_ker {I : Ideal R} [I.IsTwoSided] : ker (Quotient.mk I) = I := by
   ext
@@ -218,7 +216,6 @@ lemma quotientInfToPiQuotient_inj (I : ι → Ideal R) [∀ i, (I i).IsTwoSided]
 
 variable {R : Type*} [CommRing R] {ι : Type*} [Finite ι]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quotientInfToPiQuotient_surj {I : ι → Ideal R}
     (hI : Pairwise (IsCoprime on I)) : Surjective (quotientInfToPiQuotient I) := by
   classical
@@ -590,7 +587,6 @@ section Ring_Ring
 
 variable {S : Type v} [Ring S]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The ring hom `R/I →+* S/J` induced by a ring hom `f : R →+* S` with `I ≤ f⁻¹(J)` -/
 def quotientMap {I : Ideal R} (J : Ideal S) [I.IsTwoSided] [J.IsTwoSided] (f : R →+* S)
     (hIJ : I ≤ J.comap f) : R ⧸ I →+* S ⧸ J :=
@@ -651,7 +647,6 @@ theorem quotientEquiv_symm_mk (x : S) :
 
 end quotientEquiv
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `H` and `h` are kept as separate hypothesis since H is used in constructing the quotient map. -/
 theorem quotientMap_injective' {J : Ideal R} {I : Ideal S} [I.IsTwoSided] [J.IsTwoSided]
     {f : R →+* S} {H : J ≤ I.comap f} (h : I.comap f ≤ J) :

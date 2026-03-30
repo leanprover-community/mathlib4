@@ -499,10 +499,7 @@ where the morphisms are matrices with components in `R`. -/
 @[nolint unusedArguments]
 def Mat (_ : Type u) :=
   FintypeCat.{u}
-
-instance (R : Type u) : Inhabited (Mat R) := by
-  dsimp [Mat]
-  infer_instance
+deriving Inhabited
 
 instance (R : Type u) : CoeSort (Mat R) (Type u) :=
   FintypeCat.instCoeSort
