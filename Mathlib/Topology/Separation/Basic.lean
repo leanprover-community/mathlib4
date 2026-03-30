@@ -314,6 +314,7 @@ variable (X) in
 /-- In an R₀ space, relatively compact sets form a bornology.
 Its cobounded filter is `Filter.coclosedCompact`.
 See also `Bornology.inCompact` the bornology of sets contained in a compact set. -/
+@[implicit_reducible]
 def Bornology.relativelyCompact : Bornology X where
   cobounded := Filter.coclosedCompact X
   le_cofinite := Filter.coclosedCompact_le_cofinite
@@ -402,7 +403,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
   tfae_have 2 ↔ 3 := by
     simp only [isOpen_compl_iff]
   tfae_have 5 ↔ 3 := by
-    refine forall_swap.trans ?_
+    refine forall_comm.trans ?_
     simp only [isOpen_iff_mem_nhds, mem_compl_iff, mem_singleton_iff]
   tfae_have 5 ↔ 6 := by
     simp only [← subset_compl_singleton_iff, exists_mem_subset_iff]
@@ -411,7 +412,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
       and_left_comm]
   tfae_have 5 ↔ 8 := by
     simp only [← principal_singleton, disjoint_principal_right]
-  tfae_have 8 ↔ 9 := forall_swap.trans (by simp only [disjoint_comm, ne_comm])
+  tfae_have 8 ↔ 9 := forall_comm.trans (by simp only [disjoint_comm, ne_comm])
   tfae_have 1 → 4 := by
     simp only [continuous_def, CofiniteTopology.isOpen_iff']
     rintro H s (rfl | hs)
@@ -731,9 +732,6 @@ theorem ContinuousWithinAt.eq_const_of_mem_closure [TopologicalSpace Y] [T1Space
     (ht : ∀ y ∈ s, f y = c) : f x = c := by
   rw [← Set.mem_singleton_iff, ← closure_singleton]
   exact h.mem_closure hx ht
-
-@[deprecated (since := "2025-08-22")] alias ContinousWithinAt.eq_const_of_mem_closure :=
-  ContinuousWithinAt.eq_const_of_mem_closure
 
 theorem ContinuousWithinAt.eqOn_const_closure [TopologicalSpace Y] [T1Space Y]
     {f : X → Y} {s : Set X} {c : Y} (h : ∀ x ∈ closure s, ContinuousWithinAt f s x)

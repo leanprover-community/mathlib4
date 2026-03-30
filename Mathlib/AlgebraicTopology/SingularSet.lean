@@ -69,12 +69,18 @@ It is left adjoint to `TopCat.toSSet`, as witnessed by `sSetTopAdj`. -/
 noncomputable def SSet.toTop : SSet.{u} ⥤ TopCat.{u} :=
   stdSimplex.{u}.leftKanExtension SimplexCategory.toTop
 
+/-- The geometric realization of a simplicial set. -/
+scoped [Simplicial] notation "|" X "|" => SSet.toTop.obj X
+
 set_option backward.isDefEq.respectTransparency false in
 /-- Geometric realization is left adjoint to the singular simplicial set construction. -/
 noncomputable def sSetTopAdj : SSet.toTop.{u} ⊣ TopCat.toSSet.{u} :=
   Presheaf.uliftYonedaAdjunction
     (SSet.stdSimplex.{u}.leftKanExtension SimplexCategory.toTop)
     (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.toTop)
+
+instance : SSet.toTop.{u}.IsLeftAdjoint := sSetTopAdj.isLeftAdjoint
+instance : TopCat.toSSet.{u}.IsRightAdjoint := sSetTopAdj.isRightAdjoint
 
 /-- The geometric realization of the representable simplicial sets agree
   with the usual topological simplices. -/

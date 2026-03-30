@@ -232,7 +232,6 @@ lemma preservesLimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesLimitsOf
     PreservesLimitsOfSize.{w, w'} G where
   preservesLimitsOfShape := preservesLimitsOfShape_of_natIso h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Transfer preservation of limits along an equivalence in the shape. -/
 lemma preservesLimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [PreservesLimitsOfShape J F] : PreservesLimitsOfShape J' F where
@@ -292,7 +291,6 @@ lemma preservesColimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesColimi
     PreservesColimitsOfSize.{w, w'} G where
   preservesColimitsOfShape {_J} _𝒥₁ := preservesColimitsOfShape_of_natIso h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Transfer preservation of colimits along an equivalence in the shape. -/
 lemma preservesColimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [PreservesColimitsOfShape J F] : PreservesColimitsOfShape J' F where
@@ -720,7 +718,7 @@ lemma isIso_app_coconePt_of_preservesColimit
     IsIso (α.app c.pt) := by
   let e := IsColimit.coconePointsIsoOfNatIso
     (isColimitOfPreserves L hc) (isColimitOfPreserves L' hc) (asIso (whiskerLeft K α))
-  convert inferInstanceAs (IsIso e.hom)
+  convert (inferInstance : IsIso e.hom)
   apply (isColimitOfPreserves L hc).hom_ext fun j ↦ ?_
   simp only [Functor.comp_obj, Functor.mapCocone_pt, Functor.const_obj_obj, Functor.mapCocone_ι_app,
     NatTrans.naturality, IsColimit.coconePointsIsoOfNatIso_hom, asIso_hom, e]
