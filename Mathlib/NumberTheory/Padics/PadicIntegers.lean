@@ -530,7 +530,6 @@ theorem ideal_eq_span_pow_p {s : Ideal ℤ_[p]} (hs : s ≠ ⊥) :
 
 open CauSeq
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p] where
   prec' x hx := by
     simp only [← Ideal.one_eq_top, smul_eq_mul, mul_one, SModEq.sub_mem, maximalIdeal_eq_span_p,

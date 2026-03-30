@@ -28,6 +28,7 @@ This file introduces abstract configurations of points and lines, and proves som
 * `Configuration.HasPoints.card_le`: `HasPoints` implies `|L| ≤ |P|`.
 * `Configuration.HasLines.hasPoints`: `HasLines` and `|P| = |L|` implies `HasPoints`.
 * `Configuration.HasPoints.hasLines`: `HasPoints` and `|P| = |L|` implies `HasLines`.
+
 Together, these four statements say that any two of the following properties imply the third:
 (a) `HasLines`, (b) `HasPoints`, (c) `|P| = |L|`.
 
@@ -64,6 +65,7 @@ instance : Membership (Dual L) (Dual P) :=
   2) there does not exist a point that is on all of the lines,
   3) there is at most one line through any two points,
   4) any two lines have at most one intersection point.
+
   Conditions 3 and 4 are equivalent. -/
 class Nondegenerate : Prop where
   exists_point : ∀ l : L, ∃ p, p ∉ l

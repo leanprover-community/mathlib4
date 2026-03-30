@@ -29,7 +29,7 @@ We also prove that independent Gaussian random variables are jointly Gaussian.
 * `IndepFun.hasGaussianLaw`: Independent Gaussian random variables are jointly Gaussian,
   product version.
 * `HasGaussianLaw.iIndepFun_of_covariance_eq_zero`: If $(X_i)_{i \in \iota}$ are jointly Gaussian,
-  then they are independent if for all $i \ne j$, \mathrm{Cov}(X_i, X_j) = 0$.
+  then they are independent if for all $i \ne j$, $\mathrm{Cov}(X_i, X_j) = 0$.
 * `HasGaussianLaw.indepFun_of_covariance_eq_zero`: If $(X, Y)$ is Gaussian,
   then $X$ and $Y$ are independent if $\mathrm{Cov}(X, Y) = 0$.
 
