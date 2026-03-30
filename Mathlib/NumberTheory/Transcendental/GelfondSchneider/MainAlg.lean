@@ -177,8 +177,7 @@ lemma IsIntegral_assoc (K : Type) [Field K] {x y : ℤ} (z : ℤ) (α : K) (ha :
   simpa [Int.cast_mul, zsmul_eq_mul, mul_assoc] using IsIntegral.smul (x * y) ha
 
 lemma isIntegral_c₁α : IsIntegral ℤ (h7.c₁ • h7.α') := by
-  have h := IsIntegral_assoc (x := c₀Coeff h7.γ')
-    (y := c₀Coeff h7.β') h7.K (c₀Coeff h7.α') h7.α'
+  have h := IsIntegral_assoc (x := c₀Coeff h7.γ') (y := c₀Coeff h7.β') h7.K (c₀Coeff h7.α') h7.α'
     ((c₀ h7.α').2.2)
   conv => enter [2]; rw [c₁, mul_comm, mul_comm (c₀Coeff h7.α')
     (c₀Coeff h7.β'), ← mul_assoc]
@@ -188,8 +187,7 @@ lemma isIntegral_c₁α : IsIntegral ℤ (h7.c₁ • h7.α') := by
   · rw [H2]; rw [← IsIntegral.neg_iff, neg_smul, neg_neg]; exact h
 
 lemma isIntegral_c₁β : IsIntegral ℤ (h7.c₁ • h7.β') := by
-  have h := IsIntegral_assoc (x := c₀Coeff h7.γ')
-    (y := c₀Coeff h7.α') h7.K (c₀Coeff h7.β') h7.β'
+  have h := IsIntegral_assoc (x := c₀Coeff h7.γ') (y := c₀Coeff h7.α') h7.K (c₀Coeff h7.β') h7.β'
     ((c₀ h7.β').2.2)
   rw [c₁, mul_comm, ← mul_assoc]
   rcases abs_choice (c₀Coeff h7.γ' * c₀Coeff h7.α' *
@@ -198,8 +196,7 @@ lemma isIntegral_c₁β : IsIntegral ℤ (h7.c₁ • h7.β') := by
   · rw [H2]; rw [← IsIntegral.neg_iff, neg_smul, neg_neg]; exact h
 
 lemma isIntegral_c₁γ : IsIntegral ℤ (h7.c₁ • h7.γ') := by
-  have h := IsIntegral_assoc (x := c₀Coeff h7.α')
-    (y := c₀Coeff h7.β') h7.K (c₀Coeff h7.γ') h7.γ'
+  have h := IsIntegral_assoc (x := c₀Coeff h7.α') (y := c₀Coeff h7.β') h7.K (c₀Coeff h7.γ') h7.γ'
     ((c₀ h7.γ').2.2)
   rw [c₁]
   rcases abs_choice (c₀Coeff h7.α' * c₀Coeff h7.β' *
@@ -775,9 +772,9 @@ lemma house_eta_le_c₄_pow : house (algebraMap (𝓞 h7.K) h7.K (h7.η q hq0 h2
            (h7.n q : ℝ) ^ (((h7.n q : ℝ) - 1) / 2)))) := ?_
        _ ≤ h7.c₄ ^ (h7.n q : ℝ) * ((h7.n q : ℝ) ^ (((h7.n q : ℝ) + 1) / 2) : ℝ) := ?_
   · exact mod_cast ((house.exists_ne_zero_int_vec_house_le
-    h7.K (h7.A q) (h7.hM_ne_zero q hq0 h2mq) (mul_pos (Nat.zero_lt_succ (2 * h7.h + 1))
-    (h7.one_le_n q hq0 h2mq)) (h7.m_mul_n_lt_q_mul_q q hq0 h2mq) (Fintype.card_fin _)
-    (fun u t ↦ h7.house_matrixA_le q hq0 u t h2mq) (Fintype.card_fin _)).choose_spec).2.2 t
+      h7.K (h7.A q) (h7.hM_ne_zero q hq0 h2mq) (mul_pos (Nat.zero_lt_succ (2 * h7.h + 1))
+      (h7.one_le_n q hq0 h2mq)) (h7.m_mul_n_lt_q_mul_q q hq0 h2mq) (Fintype.card_fin _)
+      (fun u t ↦ h7.house_matrixA_le q hq0 u t h2mq) (Fintype.card_fin _)).choose_spec).2.2 t
   · have q_sq_eq_two_mn : q ^ 2 = 2 * h7.m * h7.n q := Eq.symm (Nat.mul_div_cancel' h2mq)
     have : (q * q : ℝ) = q^2 := mod_cast (pow_two ↑q).symm
     rw [← pow_two q, this, q_sq_eq_two_mn]
