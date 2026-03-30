@@ -141,14 +141,13 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           omega
       have zero : IsZero (AddCommGrpCat.of (Ext (ModuleCat.of R (QuotSMulTop x L)) M (i + 1))) :=
         @AddCommGrpCat.isZero_of_subsingleton _ this
-      have epi' : Function.Surjective
-        ⇑(x • LinearMap.id (R := R) (M := (Ext (of R L) M i))) := by
+      have epi' : Function.Surjective (x • LinearMap.id (R := R) (M := (Ext (of R L) M i))) := by
         convert (AddCommGrpCat.epi_iff_surjective _).mp <| ShortComplex.Exact.epi_f
           (Ext.contravariant_sequence_exact₁' hS M i (i + 1) (Nat.add_comm 1 i))
           (zero.eq_zero_of_tgt _)
         ext a
-        simp only [smul_apply, id_coe, id_eq, smulShortComplex_X₂, smulShortComplex_X₁,
-          smulShortComplex_f, AddCommGrpCat.hom_ofHom, Ext.bilinearComp_apply_apply]
+        simp only [smul_apply, id_coe, id_eq, smulShortComplex, AddCommGrpCat.hom_ofHom,
+          Ext.bilinearComp_apply_apply]
         nth_rw 1 [← Ext.mk₀_id_comp a, ← Ext.smul_comp, ← Ext.mk₀_smul]
         congr
       have range : LinearMap.range (x • LinearMap.id) =
