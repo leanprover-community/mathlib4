@@ -159,11 +159,9 @@ macro (name := grwSeq) "grw " c:optConfig s:rwRuleSeq l:(location)? : tactic =>
   | _ => Macro.throwUnsupported
 
 /--
-`apply_rewrite [e₁, ..., eₙ]` uses the expressions `e₁`, ..., `eₙ` as generalized rewrite rules on
-the main goal. In addition to equalities, `apply_rewrite` supports implications and any two-argument
-relation for the types of `e₁`, ..., `eₙ` and the main goal.
-`apply_rewrite [e₁, ..., eₙ]` is a shorthand for `grewrite +implicationHyp [e₁, ..., eₙ]`: it
-interprets `· → ·` as a relation instead of adding side conditions.
+`apply_rewrite [e₁, ..., eₙ]` uses the expressions `e₁`, ..., `eₙ` as generalized rewrite rules, of
+type `pᵢ → qᵢ`, on the main goal, replacing occurrences of `pᵢ` with `qᵢ`. The difference with
+`grewrite` is that `grewrite` would turn `pᵢ` into a side goal and expect `qᵢ` to be a relation.
 
 If an expression `e` is a defined constant, then the equational theorems associated with `e` are
 used. This provides a convenient way to unfold `e`.
@@ -178,11 +176,9 @@ macro "apply_rewrite" c:optConfig s:rwRuleSeq loc:(location)? : tactic => do
   `(tactic| grewrite $[$(getConfigItems c)]* +implicationHyp $s:rwRuleSeq $(loc)?)
 
 /--
-`apply_rw [e₁, ..., eₙ]` uses the expressions `e₁`, ..., `eₙ` as generalized rewrite rules on the
-main goal, then tries to close the goal by "cheap" (reducible) `rfl`. In addition to equalities,
-`apply_rw` supports implications and any two-argument relation for the types of `e₁`, ..., `eₙ` and
-the main goal. `apply_rw [e₁, ..., eₙ]` is a shorthand for `grw +implicationHyp [e₁, ..., eₙ]`: it
-interprets `· → ·` as a relation instead of adding side conditions.
+`apply_rw [e₁, ..., eₙ]` uses the expressions `e₁`, ..., `eₙ` as generalized rewrite rules, of type
+`pᵢ → qᵢ`, on the main goal, replacing occurrences of `pᵢ` with `qᵢ`. The difference with `grw` is
+that `grw` would turn `pᵢ` into a side goal and expect `qᵢ` to be a relation.
 
 If an expression `e` is a defined constant, then the equational theorems associated with `e` are
 used. This provides a convenient way to unfold `e`.
