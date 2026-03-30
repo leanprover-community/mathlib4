@@ -114,14 +114,16 @@ open Filter Function Bornology Metric Set Topology Filter
 ### Equivalences between `StrongDual` and `WeakDual`
 -/
 
-variable {R : Type*} [CommSemiring R] [TopologicalSpace R] [ContinuousAdd R]
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [ContinuousConstSMul R R]
-variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [Module 𝕜 M] [Module R M]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [Module 𝕜 M]
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 namespace StrongDual
 
 section
+
+variable {R : Type*} [CommSemiring R] [TopologicalSpace R] [ContinuousAdd R]
+variable [ContinuousConstSMul R R] [Module R M]
 
 /-- For vector spaces `M`, there is a canonical map `StrongDual R M → WeakDual R M` (the "identity"
 mapping). It is a linear equivalence. -/
