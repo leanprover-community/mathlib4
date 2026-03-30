@@ -55,7 +55,7 @@ variable {s : SignedMeasure α} {i j : Set α}
 
 section ExistsSubsetRestrictNonpos
 
-/-! ### exists_subset_restrict_nonpos
+/-! ### `exists_subset_restrict_nonpos`
 
 In this section we will prove that a set `i` whose measure is negative contains a negative subset
 `j` with respect to the signed measure `s` (i.e. `s ≤[j] 0`), whose measure is negative. This lemma

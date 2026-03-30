@@ -691,6 +691,15 @@ lemma isFiniteRelIndex_iff_finiteIndex :
 theorem not_finiteIndex_iff : ¬ H.FiniteIndex ↔ H.index = 0 :=
   by simp [finiteIndex_iff]
 
+@[simp]
+theorem finiteIndex_toAddSubgroup_iff : H.toAddSubgroup.FiniteIndex ↔ H.FiniteIndex := by
+  simp [finiteIndex_iff, AddSubgroup.finiteIndex_iff]
+
+@[simp]
+theorem _root_.AddSubgroup.finiteIndex_toSubgroup_iff {G : Type*} [AddGroup G] (H : AddSubgroup G) :
+    H.toSubgroup.FiniteIndex ↔ H.FiniteIndex := by
+  simp [finiteIndex_iff, AddSubgroup.finiteIndex_iff]
+
 /-- A finite index subgroup has finite quotient. -/
 @[to_additive (attr := implicit_reducible) /-- A finite index subgroup has finite quotient -/]
 noncomputable def fintypeQuotientOfFiniteIndex [FiniteIndex H] : Fintype (G ⧸ H) :=
@@ -783,6 +792,13 @@ instance finiteIndex_ker {G' : Type*} [Group G'] (f : G →* G') [Finite f.range
 instance finiteIndex_normalCore [H.FiniteIndex] : H.normalCore.FiniteIndex := by
   rw [normalCore_eq_ker]
   infer_instance
+
+instance _root_.AddSubgroup.finiteIndex_normalCore {G : Type*} [AddGroup G] (H : AddSubgroup G)
+    [h : H.FiniteIndex] : H.normalCore.FiniteIndex := by
+  rw [← AddSubgroup.finiteIndex_toSubgroup_iff] at h ⊢
+  exact H.toSubgroup.finiteIndex_normalCore
+
+attribute [to_additive existing] finiteIndex_normalCore
 
 @[to_additive]
 theorem index_range {f : G →* G} [hf : f.ker.FiniteIndex] :

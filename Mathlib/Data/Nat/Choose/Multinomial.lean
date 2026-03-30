@@ -29,7 +29,7 @@ This file defines the multinomial coefficients and several small lemmas for mani
 
 - `Multiset.multinomial`.
   Given a multiset `m` of natural numbers, `m.multinomial` is the
-  multinomial coefficient defined by (m.sum) ! / ∏ i ∈ m, m i !.
+  multinomial coefficient defined by `(m.sum) ! / ∏ i ∈ m, m i !`.
 
 This should not be confused with `m.countPerms` which
 is defined as `m.toFinsupp.multinomial`.
@@ -246,8 +246,6 @@ theorem countPerms_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
     · rw [Function.update_of_ne h.symm, toFinsupp_apply]
     · rw [not_ne_iff.1 h, Function.update_self]
 
-@[deprecated (since := "2025-03-13")] alias multinomial_filter_ne := countPerms_filter_ne
-
 @[simp]
 theorem countPerms_zero [DecidableEq α] : countPerms (0 : Multiset α) = 1 := by
   simp [countPerms, Finsupp.multinomial]
@@ -403,10 +401,13 @@ theorem countPerms_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x 
       exact fun j hj ↦ by simp [Multiset.mem_replicate.mp hj]
     · exact fun j hj h ↦ hx <| by simpa [h] using hj
 
-@[deprecated (since := "2025-03-13")] alias multinomial_coe_fill_of_notMemal_filter_ne :=
-  countPerms_coe_fill_of_notMem
-
 end Sym
+
+theorem Finsupp.multinomial_of_support_subset {σ : Type*} {d : σ →₀ ℕ} {s : Finset σ}
+    (h : d.support ⊆ s) : Nat.multinomial s d = d.multinomial := by
+  rw [Nat.multinomial, Finsupp.multinomial,
+    sum_of_support_subset _ h _ (by simp), prod_of_support_subset _ h _ (by simp)]
+  simp
 
 namespace List
 
@@ -419,7 +420,7 @@ lemma toFinsupp_sum {α : Type*} [AddCommMonoid α] [DecidableEq α] (l : List �
   | x :: l =>
     simp only [toFinsupp_cons_eq_single_add_embDomain, sum_cons]
     rw [Finsupp.sum_add_index (by simp) (by simp)]
-    simp only [Finsupp.sum_single_index, Finsupp.sum_embDomain, l.toFinsupp_sum]
+    simp [Finsupp.sum_embDomain, l.toFinsupp_sum]
 
 /-- The multinomial coefficients given by a list of natural numbers.
 
@@ -451,9 +452,7 @@ end List
 namespace Multiset
 
 /-- The `multinomial` coefficients on `Multiset ℕ`. -/
-def multinomial (m : Multiset ℕ) : ℕ := by
-  apply Quot.liftOn m List.multinomial
-  intro l l' h
+def multinomial (m : Multiset ℕ) : ℕ := Quot.liftOn m List.multinomial <| fun l l' h ↦ by
   induction h with
   | nil => simp
   | @cons x l l' hl hl' => simp [List.multinomial_cons, hl', hl.sum_nat]
@@ -462,7 +461,7 @@ def multinomial (m : Multiset ℕ) : ℕ := by
     rw [← Nat.choose_symm (Nat.le_add_right y _), add_tsub_cancel_left]
     rw [add_left_comm, Nat.choose_mul (Nat.le_add_right _ _), add_tsub_cancel_left]
     simp [← Nat.choose_symm (Nat.le_add_right _ _), add_tsub_cancel_left]
-  | @trans l l' l'' h h' ih ih' => rw [ih, ← ih']
+  | @trans l l' l'' h h' ih ih' => rw [ih, ih']
 
 theorem multinomial_cons (x : ℕ) (m : Multiset ℕ) :
     (x ::ₘ m).multinomial = Nat.choose (x + m.sum) x * m.multinomial := by
@@ -470,8 +469,7 @@ theorem multinomial_cons (x : ℕ) (m : Multiset ℕ) :
   exact List.multinomial_cons x l
 
 @[simp]
-theorem multinomial_zero : Multiset.multinomial 0 = 1 := by
-  rfl
+theorem multinomial_zero : Multiset.multinomial 0 = 1 := rfl
 
 @[simp]
 theorem multinomial_singleton (n : ℕ) :
@@ -483,14 +481,11 @@ theorem multinomial_add (m m' : Multiset ℕ) :
   induction m using Multiset.induction_on with
   | empty => simp
   | cons x m hind =>
-    simp only [cons_add, sum_cons, sum_add, multinomial_cons, hind,
-      ← mul_assoc]
+    simp only [cons_add, sum_cons, sum_add, multinomial_cons, hind, ← mul_assoc]
     congr 2
-    rw [← Nat.choose_symm (Nat.le_add_right _ _), add_tsub_cancel_left]
-    rw [eq_comm]
-    rw [Nat.choose_mul (Nat.le_add_right _ _)]
-    rw [← Nat.choose_symm (Nat.le_add_right x (m.sum + m'.sum))]
-    simp only [add_tsub_cancel_left]
+    rw [← Nat.choose_symm (Nat.le_add_right _ _), add_tsub_cancel_left, eq_comm,
+      Nat.choose_mul (Nat.le_add_right _ _), ← Nat.choose_symm (Nat.le_add_right x _)]
+    simp [add_tsub_cancel_left]
 
 theorem multinomial_nsmul (k : ℕ) (m : Multiset ℕ) :
     (k • m).multinomial = Nat.multinomial (Finset.range k) (fun _ ↦ m.sum) * m.multinomial ^ k := by
@@ -499,7 +494,7 @@ theorem multinomial_nsmul (k : ℕ) (m : Multiset ℕ) :
   | succ k hk =>
     rw [succ_nsmul', multinomial_add, hk, Finset.range_add_one,
       Nat.multinomial_insert (by simp), sum_add, sum_nsmul, pow_succ']
-    simp only [smul_eq_mul, Finset.sum_const, Finset.card_range]
+    simp [smul_eq_mul, Finset.sum_const, Finset.card_range]
     ring
 
 theorem multinomial_nsmul_singleton (k n : ℕ) :
@@ -507,3 +502,5 @@ theorem multinomial_nsmul_singleton (k n : ℕ) :
   simp [multinomial_nsmul]
 
 end Multiset
+
+
