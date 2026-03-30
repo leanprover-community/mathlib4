@@ -45,7 +45,7 @@ def modulesSpecToSheaf :
     (Spec R).Modules ⥤ TopCat.Sheaf (ModuleCat R) (Spec R) :=
   SheafOfModules.forgetToSheafModuleCat (Spec R).ringCatSheaf (.op ⊤)
     (Limits.initialOpOfTerminal Limits.isTerminalTop) ⋙
-  sheafCompose _ (ModuleCat.restrictScalars (StructureSheaf.globalSectionsIso R).hom.hom)
+  sheafCompose _ (ModuleCat.restrictScalars (Scheme.ΓSpecIso R).inv.hom)
 
 /-- The global section functor for `𝒪_{Spec R}` modules -/
 noncomputable
@@ -475,29 +475,20 @@ lemma isIso_iff_isIso_basicOpens {M N : TopCat.Sheaf (ModuleCat.{u} R) (Spec R)}
   refine ⟨(basicOpen f), ⟨hf₃, ⟨?_, hf₂⟩⟩⟩
   apply (ConcreteCategory.bijective_of_isIso (φ.hom.app (op (basicOpen f)))).surjective
 
-lemma isLocalizedModule_comp' {R : Type*} [CommRing R] (S : Submonoid R) {M : Type*}
-    {M' : Type*} {M'' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M'']
-    [Module R M] [Module R M'] [Module R M''] (f : M →ₗ[R] M') (g : M' →ₗ[R] M'')
-    [IsLocalizedModule S f] [h : IsLocalizedModule S (g ∘ₗ f)] :
-    IsLocalizedModule.linearEquiv S f (g ∘ₗ f) = g  := by
-  refine IsLocalizedModule.ext S f h.1 ?_
-  ext
-  simp
-
-lemma isLocalizedModule_comp {S : Submonoid R} {M₁ M₂ M₃ : ModuleCat R} {f₁ : M₁ ⟶ M₂}
+lemma isIso_of_isLocalizedModule_comp {S : Submonoid R} {M₁ M₂ M₃ : ModuleCat R} {f₁ : M₁ ⟶ M₂}
     {f₂ : M₂ ⟶ M₃} (h₁ : IsLocalizedModule S f₁.hom) (h₂ : IsLocalizedModule S (f₁ ≫ f₂).hom) :
     IsIso f₂ := by
   have : Function.Bijective f₂.hom := by
-    rw [← isLocalizedModule_comp' S f₁.hom f₂.hom]
+    rw [← IsLocalizedModule.linearEquiv_of_isLocalizedModule_comp S f₁.hom f₂.hom]
     exact (IsLocalizedModule.linearEquiv ..).bijective
   simpa [ConcreteCategory.isIso_iff_bijective]
 
-theorem isLocalizing_isIso {M N : TopCat.Sheaf (ModuleCat.{u} R) (Spec R)} {φ : M ⟶ N}
+theorem isLocalizing_of_isIso_app_top {M N : TopCat.Sheaf (ModuleCat.{u} R) (Spec R)} {φ : M ⟶ N}
     (h : IsIso (φ.hom.app (op ⊤))) (hM : IsLocalizing M) (hN : IsLocalizing N) :
     IsIso φ := by
   rw [isIso_iff_isIso_basicOpens]
   intro f
-  refine isLocalizedModule_comp (hM f) ?_
+  refine isIso_of_isLocalizedModule_comp (hM f) ?_
   rw [φ.hom.naturality]
   exact IsLocalizedModule.of_linearEquiv_right _ _ (asIso (φ.hom.app (op ⊤))).toLinearEquiv
 
@@ -518,79 +509,48 @@ theorem isIso_fromTildeΓ_iff' (M : (Spec R).Modules) :
     exact isLocalizing_tilde _
   intro h
   rw [← isIso_iff_of_reflects_iso _ modulesSpecToSheaf]
-  refine isLocalizing_isIso ?_ (isLocalizing_tilde _) h
+  refine isLocalizing_of_isIso_app_top ?_ (isLocalizing_tilde _) h
   rw [← isIso_comp_left_iff (tilde.toOpen ((modulesSpecToSheaf.obj M).presheaf.obj (op ⊤)) ⊤),
   Scheme.Modules.toOpen_fromTildeΓ_app]
   simpa using IsIso.id _
 
 set_option backward.isDefEq.respectTransparency false in
-def pushforward_modulesSpecToSheaf_iso_modulesSpecToSheaf_pushforward :
+def pushforward_modulesSpecToSheaf_iso :
     Scheme.Modules.pushforward (Spec.map φ) ⋙ modulesSpecToSheaf ≅
     modulesSpecToSheaf ⋙ TopCat.Sheaf.pushforward (ModuleCat S) (Spec.map φ).base ⋙
-    sheafCompose _ (ModuleCat.restrictScalars φ.hom) := sorry
-
-#check Scheme.ΓSpecIso_naturality
-example : (Scheme.ΓSpecIso R).inv = (StructureSheaf.globalSectionsIso R).hom := rfl
-
-set_option backward.isDefEq.respectTransparency false in
-def test :
-    Scheme.Modules.pushforward (Spec.map φ) ⋙
-    SheafOfModules.forgetToSheafModuleCat (Spec R).ringCatSheaf (.op ⊤)
-    (Limits.initialOpOfTerminal Limits.isTerminalTop) ≅
-    SheafOfModules.forgetToSheafModuleCat (Spec S).ringCatSheaf (.op ⊤)
-    (Limits.initialOpOfTerminal Limits.isTerminalTop) ⋙
-    (Opens.map (Spec.map φ).base).sheafPushforwardContinuous (ModuleCat ((Spec S).ringCatSheaf.obj.obj (op ⊤)))
-    (Opens.grothendieckTopology (Spec R)) (Opens.grothendieckTopology (Spec S)) ⋙
-    sheafCompose _ (ModuleCat.restrictScalars ((Scheme.Hom.toRingCatSheafHom (Spec.map φ)).hom.app (op ⊤)).hom) := Iso.refl _
-
-#check AlgebraicGeometry.StructureSheaf.toOpen_comp_comap_assoc
-
-example :
-  (Scheme.ΓSpecIso R).inv ≫ (Spec.map φ).c.app (op ⊤) = φ ≫ (Scheme.ΓSpecIso S).inv := by
-  exact Eq.symm (Scheme.ΓSpecIso_inv_naturality φ)
-
-#check IsLocalizedModule.of_restrictScalars
-
-lemma restrictScalars {R : Type*} [CommRing R] {M : Type*} [AddCommMonoid M]
-    {A : Type*} [CommRing A] [Algebra R A]
-    [Module R M] [Module A M] [IsScalarTower R A M]
-    {N : Type*} [AddCommMonoid N] [Module R N] [Module A N] [IsScalarTower R A N]
-    (S : Submonoid R) (f : M →ₗ[A] N) [h : IsLocalizedModule (Algebra.algebraMapSubmonoid A S) f] :
-    IsLocalizedModule S (f.restrictScalars R) where
-      map_units s := by
-        simpa [← IsScalarTower.algebraMap_apply, Module.End.isUnit_iff] using
-          h.1 ⟨algebraMap R A s, Algebra.mem_algebraMapSubmonoid_of_mem s⟩
-      surj y := by
-        obtain ⟨⟨x, ⟨_, ⟨r, ⟨hr₁, rfl⟩⟩⟩⟩, hx⟩ := h.2 y
-        exact ⟨⟨x, ⟨r, hr₁⟩⟩, by simpa [Submonoid.smul_def] using hx⟩
-      exists_of_eq {x₁ x₂} e := by
-        obtain ⟨⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩, hc⟩ := h.3 e
-        exact ⟨⟨r, hr⟩, by simpa [Submonoid.smul_def] using hc⟩
-
-lemma restrictScalars_powers {R : Type*} [CommRing R] {M : Type*} [AddCommMonoid M]
-    {A : Type*} [CommRing A] [Algebra R A]
-    [Module R M] [Module A M] [IsScalarTower R A M]
-    {N : Type*} [AddCommMonoid N] [Module R N] [Module A N] [IsScalarTower R A N]
-    (r : R) (f : M →ₗ[A] N) [h : IsLocalizedModule (.powers (algebraMap R A r)) f] :
-    IsLocalizedModule (.powers r) (f.restrictScalars R) := by
-  rw [← Algebra.algebraMapSubmonoid_powers] at h
-  exact restrictScalars _ f
-
-#check ModuleCat.Algebra.instIsScalarTowerCarrier
+    sheafCompose _ (ModuleCat.restrictScalars φ.hom) := eqToIso (by
+  conv_lhs =>
+    change SheafOfModules.forgetToSheafModuleCat (Spec S).ringCatSheaf (.op ⊤)
+      (Limits.initialOpOfTerminal Limits.isTerminalTop) ⋙
+      TopCat.Sheaf.pushforward (ModuleCat Γ(Spec S, ⊤)) (Spec.map φ).base ⋙
+      sheafCompose _ (ModuleCat.restrictScalars (Spec.map φ).appTop.hom) ⋙
+      sheafCompose _ (ModuleCat.restrictScalars (Scheme.ΓSpecIso R).inv.hom)
+    arg 2
+    arg 2
+    equals sheafCompose (Opens.grothendieckTopology (Spec R))
+      (ModuleCat.restrictScalars (Scheme.ΓSpecIso S).inv.hom) ⋙
+      sheafCompose _ (ModuleCat.restrictScalars φ.hom) =>
+      exact Eq.symm congr(sheafCompose (Opens.grothendieckTopology (Spec R))
+        (ModuleCat.restrictScalars $(Scheme.ΓSpecIso_inv_naturality φ).hom))
+  rfl)
 
 open scoped ModuleCat.Algebra in
-lemma restrictScalars_Loc {M N : ModuleCat S} {f : M ⟶ N} {r : R}
-    (h : IsLocalizedModule (.powers (φ r)) f.hom) :
-    IsLocalizedModule (.powers r) ((ModuleCat.restrictScalars φ.hom).map f).hom := by
-  algebraize [φ.hom]
-  exact restrictScalars_powers r f.hom (h := h)
-
-theorem isLocalizing_pushforward_of_isLocalaizing (M : (Spec S).Modules)
+theorem isLocalizing_pushforward_of_isLocalaizing {M : (Spec S).Modules}
     (h : IsLocalizing (modulesSpecToSheaf.obj M)) :
   IsLocalizing (modulesSpecToSheaf.obj ((Scheme.Modules.pushforward (Spec.map φ)).obj M)) := by
   rw [← Functor.comp_obj,
-  isLocalizing_iso_iff ((pushforward_modulesSpecToSheaf_iso_modulesSpecToSheaf_pushforward φ).app M)]
-  exact fun f => restrictScalars_Loc _ (h (φ f))
+  isLocalizing_iso_iff ((pushforward_modulesSpecToSheaf_iso φ).app M)]
+  intro f
+  haveI : CommRing ((Spec S).ringCatSheaf.obj.obj ((Opens.map (Spec.map φ).base).op.obj (op ⊤))) :=
+    inferInstanceAs (CommRing Γ(Spec S, ⊤))
+  algebraize [φ.hom]
+  exact IsLocalizedModule.restrictScalars_powers f _ (h := h (φ f))
+
+theorem pushforward_isIso_fromTildeΓ (M : (Spec S).Modules) [h : IsIso M.fromTildeΓ] :
+    IsIso ((Scheme.Modules.pushforward (Spec.map φ)).obj M).fromTildeΓ := by
+  rw [isIso_fromTildeΓ_iff']
+  rw [isIso_fromTildeΓ_iff'] at h
+  exact isLocalizing_pushforward_of_isLocalaizing φ h
 
 end IsQuasicoherent
 
