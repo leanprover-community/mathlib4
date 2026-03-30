@@ -51,7 +51,7 @@ def relDerivedSet : Set X →o Set X where
   toFun := fun s => derivedSet s ∩ s
   monotone' := fun _ _ h ↦ Set.inter_subset_inter (derivedSet_mono _ _ h) (h)
 
-lemma relDerivedSet_subset {s : Set X} : relDerivedSet s ⊆ s :=
+lemma relDerivedSet_subset {A : Set X} : relDerivedSet A ⊆ A :=
   Set.inter_subset_right
 
 theorem Continuous.image_derivedSet {β : Type*} [TopologicalSpace β] {A : Set X} {f : X → β}
