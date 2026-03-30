@@ -70,13 +70,14 @@ lemma invtSubmodule_inf_invtSubmodule_le_invtSubmodule_add :
 
 section CommRing
 
-variable {R : Type*} [CommSemiring R] [Module R M] (f : End R M)
+variable {R S : Type*} [Semiring R] [Semiring S] [Module R M] [Module S M]
+  [DistribSMul S R] [SMulCommClass R S M] [IsScalarTower S R M] (f : End R M)
 
-lemma invtSubmodule_le_invtSubmodule_smul (c : R) : f.invtSubmodule ≤ (c • f).invtSubmodule :=
-  fun p hfp _ hx ↦ p.smul_mem c (hfp hx)
+lemma invtSubmodule_le_invtSubmodule_smul (c : S) : f.invtSubmodule ≤ (c • f).invtSubmodule :=
+  fun p hfp _ hx ↦ p.smul_of_tower_mem c (hfp hx)
 
-lemma invtSubmodule_smul (c : Rˣ) : (c • f).invtSubmodule = f.invtSubmodule := by
-  apply le_antisymm ?_ (invtSubmodule_le_invtSubmodule_smul f c)
+lemma invtSubmodule_smul (c : Sˣ) : (c • f).invtSubmodule = f.invtSubmodule := by
+  apply le_antisymm ?_ (invtSubmodule_le_invtSubmodule_smul f c.1)
   grw [invtSubmodule_le_invtSubmodule_smul (c.1 • f) c⁻¹.1]
   simp [smul_smul]
 
