@@ -326,6 +326,58 @@ theorem length_restrictScalars :
 
 end flatBaseChange
 
+section
+
+open TensorProduct
+
+variable {R : Type*} [CommRing R] (M : Submonoid R) (Rₘ : Type*) [CommRing Rₘ] [Algebra R Rₘ]
+  (S : Type*) [CommRing S] [Algebra R S]
+
+/-- The isomorphism `S ⊗[R] Rₘ ≃ₐ[S] Sₘ`. This is a specialization of `IsLocalization.algEquiv`,
+but with additional properties since now `Sₘ` is automatically an `Rₘ`-algebra. -/
+noncomputable def Localization.tensor_localization_algEquiv :
+    (S ⊗[R] Localization M) ≃ₐ[S] Localization (Algebra.algebraMapSubmonoid S M) :=
+  (Localization.algEquiv (Algebra.algebraMapSubmonoid S M) (S ⊗[R] Localization M)).symm
+
+@[simp]
+theorem Localization.tensor_localization_algEquiv_apply_tmul_one (x : S) :
+    Localization.tensor_localization_algEquiv M S (x ⊗ₜ[R] 1) = algebraMap _ _ x :=
+  (Localization.tensor_localization_algEquiv M S).commutes x
+
+@[simp]
+theorem Localization.tensor_localization_algEquiv_apply_one_tmul (x : Localization M) :
+    Localization.tensor_localization_algEquiv M S (1 ⊗ₜ[R] x) = algebraMap _ _ x := by
+  let Rₘ := Localization M
+  let Sₘ := Localization (Algebra.algebraMapSubmonoid S M)
+  obtain ⟨x, y, rfl⟩ := IsLocalization.exists_mk'_eq M x
+  letI : Algebra Rₘ (S ⊗[R] Rₘ) := Algebra.TensorProduct.rightAlgebra
+  have h1 : (1 : S) ⊗ₜ[R] IsLocalization.mk' Rₘ x y = algebraMap _ _ (IsLocalization.mk' Rₘ x y) :=
+    rfl
+  rw [h1, Localization.tensor_localization_algEquiv, Localization.algEquiv_symm_apply,
+    IsLocalization.algebraMap_mk' S, IsLocalization.map_mk', IsLocalization.mk'_eq_iff_eq_mul]
+  simp_rw [RingHom.id_apply]
+  have h x : algebraMap S Sₘ ((algebraMap R S) x) = algebraMap Rₘ Sₘ ((algebraMap R Rₘ) x) := by
+    rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
+  rw [h, h, ← map_mul, IsLocalization.mk'_spec]
+
+noncomputable def Localization.localization_tensor_algEquiv :
+    (Localization M ⊗[R] S) ≃ₐ[Localization M] Localization (Algebra.algebraMapSubmonoid S M) :=
+  { __ := (Algebra.TensorProduct.comm R (Localization M) S).toRingEquiv.trans
+      (Localization.tensor_localization_algEquiv M S).toRingEquiv
+    commutes' := Localization.tensor_localization_algEquiv_apply_one_tmul M S }
+
+@[simp]
+theorem Localization.localization_tensor_algEquiv_apply_tmul_one (x : Localization M) :
+    Localization.localization_tensor_algEquiv M S (x ⊗ₜ[R] 1) = algebraMap _ _ x :=
+  (Localization.localization_tensor_algEquiv M S).commutes x
+
+@[simp]
+theorem Localization.localization_tensor_algEquiv_apply_one_tmul (x : S) :
+    Localization.localization_tensor_algEquiv M S (1 ⊗ₜ[R] x) = algebraMap _ _ x :=
+  (Localization.tensor_localization_algEquiv M S).commutes x
+
+end
+
 namespace Ideal
 
 open Classical in
@@ -403,52 +455,6 @@ noncomputable instance [Algebra.QuasiFinite R S] : Fintype (p.primesOver S) :=
   (Algebra.QuasiFinite.finite_primesOver p).fintype
 
 open TensorProduct in
-variable (S) in
-set_option backward.isDefEq.respectTransparency false in
-noncomputable def tempres :
-    letI Rp := Localization p.primeCompl
-    letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
-    (Rp ⊗[R] S) ≃ₐ[Rp] Sp :=
-  letI Rp := Localization p.primeCompl
-  letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
-  letI : Algebra S (Rp ⊗[R] S) := Algebra.TensorProduct.rightAlgebra
-  show (Rp ⊗[R] S) ≃ₐ[Rp] Sp from
-  .symm
-  { __ := Localization.algEquiv (Algebra.algebraMapSubmonoid S p.primeCompl) (Rp ⊗[R] S)
-    commutes' x := by
-      obtain ⟨y, z, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
-      have key : (algebraMap Rp Sp) (IsLocalization.mk' Rp y z) =
-          IsLocalization.mk' Sp (algebraMap R S y) ⟨algebraMap R S z,
-            Algebra.mem_algebraMapSubmonoid_of_mem z⟩ := by
-        exact IsLocalization.algebraMap_mk' S Rp Sp y z
-      simp only [AlgEquiv.toEquiv_eq_coe, IsLocalization.algebraMap_mk' S Rp Sp y z,
-        Equiv.toFun_as_coe, EquivLike.coe_coe, Localization.algEquiv_apply]
-      rw [IsLocalization.map_mk', IsLocalization.mk'_eq_iff_eq_mul]
-      have key x : algebraMap S (Rp ⊗[R] S) ((algebraMap R S) x) =
-          algebraMap Rp (Rp ⊗[R] S) ((algebraMap R Rp) x) := by
-        rw [Algebra.TensorProduct.algebraMap_apply,
-          Algebra.TensorProduct.algebraMap_eq_includeRight]
-        simp
-      simp [key] }
-
-
-open TensorProduct in
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
-theorem tempres_apply_tmul_one (x : S) :
-    tempres S p (1 ⊗ₜ[R] x) = algebraMap S _ x := by
-  simp [tempres]
-  letI Rp := Localization p.primeCompl
-  letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
-  letI : Algebra S (Rp ⊗[R] S) := Algebra.TensorProduct.rightAlgebra
-  change (Localization.algEquiv (Algebra.algebraMapSubmonoid S p.primeCompl)
-    (Localization p.primeCompl ⊗[R] S)).symm _ = _
-  simp
-  have : (1 : Rp) ⊗ₜ[R] x = algebraMap S _ x := rfl
-  rw [this, IsLocalization.map_eq]
-  rfl
-
-open TensorProduct in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def _root_.Algebra.TensorProduct.quotientTensorEquiv
     {R : Type*} (S T A : Type*) [CommRing R] [CommRing S]
@@ -504,7 +510,7 @@ noncomputable def Fiber.equivQuotient :
       rfl }
   refine foo.trans ?_
   exact
-    { __ := quotientEquiv _ _ (tempres S p) (by
+    { __ := quotientEquiv _ _ (Localization.localization_tensor_algEquiv p.primeCompl S) (by
         rw [map_map, AlgEquiv.toRingEquiv_toRingHom, ← AlgEquiv.toAlgHom_toRingHom,
           AlgHom.comp_algebraMap])
       commutes' x := by
@@ -512,9 +518,7 @@ noncomputable def Fiber.equivQuotient :
         rw [← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply,
           ← IsScalarTower.algebraMap_apply]
         simp [-AlgEquiv.symm_toRingEquiv]
-        have : y ⊗ₜ[R] (1 : S) = algebraMap Rp (Rp ⊗[R] S) y := by
-          rfl
-        rw [this, (tempres S p).commutes]
+        rw [Localization.localization_tensor_algEquiv_apply_tmul_one p.primeCompl]
         rfl }
 
 set_option backward.isDefEq.respectTransparency false in
@@ -532,13 +536,6 @@ theorem Fiber.equivQuotient_apply_one_tmul :
   simp [-AlgEquiv.symm_toRingEquiv]
   erw [Algebra.TensorProduct.quotientTensorEquiv_apply_one_tmul]
   simp
-
-open TensorProduct in
-set_option backward.isDefEq.respectTransparency false in
-noncomputable def keyequiv_comm (x : S) : (Fiber.equivQuotient S p)
-      (Algebra.TensorProduct.includeRight x) =
-    algebraMap _ _ x := by
-  simp [Algebra.TensorProduct.includeRight_apply]
 
 set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.QuasiFinite R S] :
@@ -635,7 +632,7 @@ theorem equiv_apply [Algebra.QuasiFinite R S] :
     comap_comap]
   congr
   ext x
-  apply keyequiv_comm
+  apply Fiber.equivQuotient_apply_one_tmul
 
 set_option backward.isDefEq.respectTransparency false in
 set_option maxHeartbeats 10000000 in
