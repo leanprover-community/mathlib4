@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Copyright (c) 2026 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
@@ -24,12 +24,12 @@ In this file we show how to find a limit of `Monomial` and how to asymptotically
 ## Main definitions
 
 * `UnitMonomial`: type to represent monomials without coefficient. It's easier to reason
-  about them and then translate result to `Monomial`.
+  about them and then translate the result to `Monomial`.
 * `Monomial`: type to represent monomials.
 * `UnitMonomial.toFun`/`Monomial.toFun`: converts structures to real functions.
 * `UnitMonomial.logToFun_isEquivalent_of_nonzero_head`: `log m.toFun` is asymptotically equivalent
   to its first summand - `m[0] • log basis[0]` if `m[0] ≠ 0`. Using this theorem we can prove that
-  the asymptotical behaviour of the monomials is determined by its first non-zero exponent.
+  the asymptotic behaviour of the monomials is determined by its first non-zero exponent.
 * `toFun_tendsto_top_of_FirstNonzeroIsPos` and its variants are used to infer the limit of
   `t.toFun` from `FirstNonzeroIsPos`/`FirstNonzeroIsNeg`/`AllZero`.
 * `IsLittleO_of_lt_exps` and its variants are used to asymptotically compare two monomials.
@@ -42,15 +42,15 @@ namespace Tactic.ComputeAsymptotics
 
 open Asymptotics Filter Topology Real
 
-/-- Unit monomial, represented as a list of its exponents. `[e1, e2, ..., en]` corresponds to
-`basis[0] ^ e1 * ... * basis[n] ^ en` where `basis` is the basis of functions. -/
+/-- Unit monomial, represented as a list of its exponents. `[e₁, e₂, ..., eₙ]` corresponds to
+`basis[0] ^ e₁ * ... * basis[n] ^ eₙ` where `basis` is the basis of functions. -/
 abbrev UnitMonomial := List ℝ
 
 /-- Structure for representing monomials with coefficients. -/
 structure Monomial where
-  /-- Real coefficient of monomial. -/
+  /-- Real coefficient of the monomial. -/
   coef : ℝ
-  /-- Exponents of monomial. -/
+  /-- Unit part of the monomial. -/
   unit : UnitMonomial
 
 namespace UnitMonomial
@@ -60,7 +60,7 @@ noncomputable def toFun (m : UnitMonomial) (basis : Basis) : ℝ → ℝ :=
   fun x ↦ (m.zipWith (fun exp b ↦ (b x)^exp) basis).prod
 
 /-- Logarithm of function represented by a monomial, i.e.
-`m[0] * log basis[0] + ... m[n] * log basis[n]`. -/
+`m[0] * log basis[0] + ... + m[n] * log basis[n]`. -/
 noncomputable def toLogFun (m : UnitMonomial) (basis : Basis) : ℝ → ℝ :=
   fun x ↦ (m.zipWith (fun exp b ↦ exp * log (b x)) basis).sum
 
@@ -98,11 +98,11 @@ theorem toLogFun_cons (exp : ℝ) (tl : UnitMonomial) (basis_hd : ℝ → ℝ) (
   ext x
   simp [toLogFun]
 
-/-- Multiplication of monomials. -/
+/-- Multiplication of unit monomials. -/
 noncomputable def mul (m1 m2 : UnitMonomial) : UnitMonomial :=
   m1.zipWith (· + ·) m2
 
-/-- Inversion of a monomial. -/
+/-- Inversion of a unit monomial. -/
 noncomputable def inv (m : UnitMonomial) : UnitMonomial :=
   m.map (-·)
 
@@ -394,12 +394,12 @@ theorem cons_toFun {coef exp : ℝ} {m : UnitMonomial} {basis_hd : ℝ → ℝ} 
   simp [toFun]
   ring
 
-/-- If `t.coef = 0`, then t.toFun is zero. -/
+/-- If `t.coef = 0`, then `t.toFun` is zero. -/
 theorem zero_coef_toFun {t : Monomial} (basis : Basis) (h_coef : t.coef = 0) :
     t.toFun basis = 0 := by
   simp [toFun, h_coef]
 
-/-- If `t.coef = 0`, then t.toFun is zero. -/
+/-- If `t.coef = 0`, then `t.toFun` is zero. -/
 theorem zero_coef_toFun' (basis : Basis) (exps : List ℝ) :
     Monomial.toFun ⟨0, exps⟩ basis = 0 := zero_coef_toFun _ rfl
 
@@ -420,8 +420,8 @@ noncomputable def inv (t : Monomial) : Monomial :=
   ⟨t.coef⁻¹, t.unit.inv⟩
 
 /-- Flipping the sign of `coef` flips the sign of `toFun`. The theorem is stated in this form,
-because it allows one to rewrite `t.toFun basis` expression. It is used below in cases where we want
-to reduce the case of `t.coef < 0` to `t.coef > 0`. -/
+because it allows one to rewrite the `t.toFun basis` expression. It is used below in cases where we
+want to reduce the case of `t.coef < 0` to `t.coef > 0`. -/
 theorem neg_toFun {t : Monomial} {basis : Basis} :
     t.toFun basis = -t.neg.toFun basis := by
   ext x
@@ -455,7 +455,7 @@ theorem inv_length (t : Monomial) :
     t.inv.unit.length = t.unit.length := by
   simp [inv]
 
-/-- If `t.coef > 0` then t.toFun is eventually positive. -/
+/-- If `t.coef > 0` then `t.toFun` is eventually positive. -/
 theorem toFun_pos {t : Monomial} {basis : Basis}
     (h_basis : WellFormedBasis basis) (h_coef : 0 < t.coef) :
     ∀ᶠ x in atTop, 0 < t.toFun basis x := by

@@ -13,14 +13,14 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 
 # Predicates on monomials
 
-In thie file we define some predicates on lists of real numbers:
-1. `FirstNonzeroIsPos li` means that the firs non-zero element of the list `li` is positive.
-2. `FirstNonzeroIsNeg li` means that the firs non-zero element of the list `li` is negative.
+In this file we define some predicates on lists of real numbers:
+1. `FirstNonzeroIsPos li` means that the first non-zero element of the list `li` is positive.
+2. `FirstNonzeroIsNeg li` means that the first non-zero element of the list `li` is negative.
 3. `AllZero li` means that all elements in `li` are zero.
 
-When `li` is the list of exponent of the monomial in a well-formed basis, this trichotomy determines
-its asymptotic behaviour: `FirstNonzeroIsPos` means it tends to infinity, `FirstNonzeroIsNeg` means
-it tends to zero and `AllZero` means it tends to a constant.
+When `li` is the list of exponents of the monomial in a well-formed basis, this trichotomy
+determines its asymptotic behaviour: `FirstNonzeroIsPos` means it tends to infinity,
+`FirstNonzeroIsNeg` means it tends to zero and `AllZero` means it tends to a constant.
 -/
 
 @[expose] public section
