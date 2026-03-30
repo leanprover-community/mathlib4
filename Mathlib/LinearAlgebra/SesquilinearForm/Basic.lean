@@ -26,7 +26,7 @@ basic lemmas about construction and elementary calculations are found there.
 ## Main declarations
 
 * `IsSymm`, `IsAlt`: states that a sesquilinear form is symmetric and alternating, respectively
-* `orthogonalBilin` provides the orthogonal complement with respect to a sesquilinear form
+* `orthogonalBilin` provides the orthogonal complement with respect to a sesquilinear map
 
 ## References
 
@@ -57,8 +57,7 @@ variable [CommSemiring R] [CommSemiring R₁] [AddCommMonoid M₁] [Module R₁ 
 
 open scoped Function in -- required for scoped `on` notation
 /-- A set of vectors `v` is orthogonal with respect to some bilinear map `B` if and only
-if for all `i ≠ j`, `B (v i) (v j) = 0`. For orthogonality between two elements, use
-`BilinForm.isOrtho` -/
+if for all `i ≠ j`, `B (v i) (v j) = 0`. -/
 def IsOrthoᵢ (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M) (v : n → M₁) : Prop :=
   Pairwise ((fun n m => B n m = 0) on v)
 
