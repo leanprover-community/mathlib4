@@ -48,7 +48,7 @@ theorem card_fixed_points :
   simp only [card_congr (fixedPointsEquiv α), card_sigma, card_perm]
   have (x : _) : ({x}ᶜ : Set α) = Finset.filter (· ≠ x) Finset.univ := by
     ext; simp
-  simp [this, -nsmul_eq_mul]
+  simp [this]
 
 /-- Given `α : Type*` and `k : ℕ`, `fiber α k` is the set of permutations of `α` with exactly `k`
 fixed points. -/
