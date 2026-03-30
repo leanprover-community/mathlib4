@@ -46,7 +46,7 @@ theorem isOka_fg : IsOka (FG (R := R)) where
     refine ⟨image p univ ∪ image (a • i) univ, le_antisymm ?_ (fun y hy ↦ ?_)⟩
     <;> simp only [coe_union, coe_image, coe_univ, image_univ, Pi.smul_apply, span_union]
     · simp only [sup_le_iff, span_le, range_subset_iff, smul_eq_mul]
-      exact ⟨p_mem_I, fun _ ↦ mul_comm a _ ▸ mem_colon_singleton.1 (hi ▸ mem_span_range_self)⟩
+      exact ⟨p_mem_I, fun _ ↦ mul_comm a _ ▸ mem_colon_span_singleton.1 (hi ▸ mem_span_range_self)⟩
     · rw [Submodule.mem_sup]
       obtain ⟨s, H⟩ := mem_span_range_iff_exists_fun.1 (hf ▸ Ideal.mem_sup_left hy)
       simp_rw [← Hf] at H
@@ -55,7 +55,7 @@ theorem isOka_fg : IsOka (FG (R := R)) where
       refine ⟨(∑ k, s k * p k), sum_mem _ (fun _ _ ↦ mul_mem_left _ _ mem_span_range_self),
         (∑ k, s k * r k) * a, ?_, H⟩
       rw [mul_comm, ← smul_eq_mul, range_smul, ← submodule_span_eq, Submodule.span_smul, hi]
-      exact smul_mem_smul_set <| mem_colon_singleton.2 <|
+      exact smul_mem_smul_set <| mem_colon_span_singleton.2 <|
         (I.add_mem_iff_right <| I.sum_mem (fun _ _ ↦ mul_mem_left _ _ <| p_mem_I _)).1 (H ▸ hy)
 
 end Ideal

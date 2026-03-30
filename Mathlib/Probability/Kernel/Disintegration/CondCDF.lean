@@ -95,15 +95,12 @@ theorem tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableS
       Tendsto (fun r : ℚ ↦ ρ (s ×ˢ Iic ↑(-r))) atTop (𝓝 (ρ (⋂ r : ℚ, s ×ˢ Iic ↑(-r)))) by
     have h_inter_eq : ⋂ r : ℚ, s ×ˢ Iic ↑(-r) = ⋂ r : ℚ, s ×ˢ Iic (r : ℝ) := by
       ext1 x
-      simp only [mem_iInter, mem_prod, mem_Iic]
+      push _ ∈ _
       refine ⟨fun h i ↦ ⟨(h i).1, ?_⟩, fun h i ↦ ⟨(h i).1, ?_⟩⟩ <;> have h' := h (-i)
       · rw [neg_neg] at h'; exact h'.2
       · exact h'.2
     rw [h_inter_eq] at h_neg
-    have h_fun_eq : (fun r : ℚ ↦ ρ (s ×ˢ Iic (r : ℝ))) = fun r : ℚ ↦ ρ (s ×ˢ Iic ↑(- -r)) := by
-      simp_rw [neg_neg]
-    rw [h_fun_eq]
-    exact h_neg.comp tendsto_neg_atBot_atTop
+    exact tendsto_comp_neg_atTop_iff.mp h_neg
   refine tendsto_measure_iInter_atTop (fun q ↦ (hs.prod measurableSet_Iic).nullMeasurableSet)
     ?_ ⟨0, measure_ne_top ρ _⟩
   refine fun q r hqr ↦ Set.prod_mono subset_rfl fun x hx ↦ ?_

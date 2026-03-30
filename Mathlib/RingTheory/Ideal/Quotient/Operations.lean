@@ -94,6 +94,16 @@ lemma quotientKerEquivOfSurjective_apply_mk {f : R →+* S} (hf : Function.Surje
     f.quotientKerEquivOfSurjective hf (Ideal.Quotient.mk _ x) = f x :=
   rfl
 
+@[simp]
+lemma quotientKerEquivOfSurjective_symm_apply {f : R →+* S} (hf : Function.Surjective f) (x : R) :
+    (RingHom.quotientKerEquivOfSurjective hf).symm (f x) = Ideal.Quotient.mk _ x := by
+  apply (RingHom.quotientKerEquivOfSurjective hf).injective
+  simp
+
+lemma quotientKerEquivOfSurjective_symm_comp {f : R →+* S} (hf : Function.Surjective f) :
+    (RingHom.quotientKerEquivOfSurjective hf).symm.toRingHom.comp f = Ideal.Quotient.mk _ := by
+  ext; simp
+
 /-- The **first isomorphism theorem** for commutative rings (`RingHom.rangeS` version). -/
 noncomputable def quotientKerEquivRangeS (f : R →+* S) : R ⧸ ker f ≃+* f.rangeS :=
   (Ideal.quotEquivOfEq f.ker_rangeSRestrict.symm).trans <|
@@ -300,7 +310,7 @@ theorem snd_comp_quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCopri
 /-- **Chinese remainder theorem**, specialized to two ideals. -/
 noncomputable def quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
     R ⧸ I * J ≃+* (R ⧸ I) × R ⧸ J :=
-  Ideal.quotEquivOfEq (inf_eq_mul_of_isCoprime coprime).symm |>.trans <|
+  Ideal.quotEquivOfEq (mul_eq_inf_of_isCoprime coprime) |>.trans <|
     Ideal.quotientInfEquivQuotientProd I J coprime
 
 @[simp]
@@ -1132,6 +1142,7 @@ section PowQuot
 
 variable {R : Type*} [CommRing R] (I : Ideal R) (n : ℕ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `I ^ n ⧸ I ^ (n + 1)` can be viewed as a quotient module and as ideal of `R ⧸ I ^ (n + 1)`.
 This definition gives the `R`-linear equivalence between the two. -/
 noncomputable

@@ -41,6 +41,7 @@ attribute [local instance] Set.monad
 
 /-- If `s : Set α` is a set with `Fintype` instance and `f : α → Set β` is a function such that
 each `f a`, `a ∈ s`, has a `Fintype` structure, then `s >>= f` has a `Fintype` structure. -/
+@[implicit_reducible]
 def fintypeBind {α β} [DecidableEq β] (s : Set α) [Fintype s] (f : α → Set β)
     (H : ∀ a ∈ s, Fintype (f a)) : Fintype (s >>= f) :=
   Set.fintypeBiUnion s f H

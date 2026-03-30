@@ -33,8 +33,6 @@ notation when treating the isomorphisms as maps.
 Equiv, MulEquiv, AddEquiv
 -/
 
-set_option backward.proofsInPublic true
-
 @[expose] public section
 
 open Function
