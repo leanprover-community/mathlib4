@@ -177,7 +177,7 @@ theorem IsSeqCompact.isCountablyCompact (hA : IsSeqCompact A) :
 theorem IsCountablyCompact.isSeqCompact [FirstCountableTopology E]
     (hA : IsCountablyCompact A) : IsSeqCompact A := fun x hx =>
     let ⟨a, haA, hac⟩ := IsCountablyCompact.seq_clusterPt hA x (Eventually.of_forall hx)
-    ⟨a, haA, TopologicalSpace.FirstCountableTopology.tendsto_subseq hac⟩
+    ⟨a, haA, hac.tendsto_subseq ⟩
 
 /-- In a first-countable space, a set is countably compact iff it is sequentially compact. -/
 theorem isCountablyCompact_iff_isSeqCompact [FirstCountableTopology E] :
