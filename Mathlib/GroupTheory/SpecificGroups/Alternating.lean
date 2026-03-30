@@ -5,12 +5,11 @@ Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Data.Fintype.Units
 public import Mathlib.GroupTheory.IndexNormal
+public import Mathlib.GroupTheory.Perm.ConjAct
 public import Mathlib.GroupTheory.Perm.Fin
 public import Mathlib.GroupTheory.Subgroup.Simple
-public import Mathlib.Logic.Equiv.Fin.Rotate
 public import Mathlib.Tactic.IntervalCases
 
 /-!
@@ -205,8 +204,19 @@ theorem closure_three_cycles_eq_alternating :
     rw [List.prod_cons, List.prod_cons, ← mul_assoc]
     apply mul_mem <;> grind [IsSwap.mul_mem_closure_three_cycles]
 
+theorem isThreeCycle_subset_alternatingGroup :
+    {g : Perm α | g.IsThreeCycle} ⊆ alternatingGroup α :=
+  fun _ ↦ IsThreeCycle.mem_alternatingGroup
+
+theorem _root_.alternatingGroup.closure_isThreeCycles_eq_top :
+    Subgroup.closure {g : alternatingGroup α | Equiv.Perm.IsThreeCycle (g : Equiv.Perm α)} = ⊤ := by
+  rw [← map_subtype_inj, MonoidHom.map_closure]
+  have : (alternatingGroup α).subtype '' _ = {g : Perm α | IsThreeCycle g} :=
+    Subtype.coe_image_of_subset isThreeCycle_subset_alternatingGroup
+  aesop
+
 /-- The alternating group is the closure of the set of permutations with cycle type (2, 2). -/
-theorem closure_cycleType_eq_2_2_eq_alternatingGroup (h5 : 5 ≤ Nat.card α) :
+theorem closure_cycleType_eq_two_two_eq_alternatingGroup (h5 : 5 ≤ Nat.card α) :
     Subgroup.closure {g : Perm α | g.cycleType = {2, 2}} = alternatingGroup α := by
   apply le_antisymm
   · rw [Subgroup.closure_le]
@@ -226,6 +236,24 @@ theorem closure_cycleType_eq_2_2_eq_alternatingGroup (h5 : 5 ≤ Nat.card α) :
     apply mul_mem <;>
     · apply Subgroup.subset_closure
       exact cycleType_swap_mul_swap_of_nodup (by grind [Finset.mem_compl])
+
+@[deprecated (since := "2026-03-10")]
+alias closure_cycleType_eq_2_2_eq_alternatingGroup :=
+  closure_cycleType_eq_two_two_eq_alternatingGroup
+
+theorem cycleType_eq_two_two_subset_alternatingGroup :
+    {g : Perm α | g.cycleType = {2, 2}} ⊆ alternatingGroup α := by
+  intro g hg
+  rw [Set.mem_setOf_eq] at hg
+  simp [sign_of_cycleType, hg, ← Units.val_inj]
+
+theorem _root_.alternatingGroup.closure_cycleType_eq_two_two_eq_top (h5 : 5 ≤ Nat.card α) :
+    Subgroup.closure {g : alternatingGroup α | (g : Perm α).cycleType = {2, 2}} = ⊤ := by
+  rw [← map_subtype_inj, MonoidHom.map_closure]
+  have : (alternatingGroup α).subtype '' _ = {g : Perm α | g.cycleType = {2, 2}} :=
+    Subtype.coe_image_of_subset cycleType_eq_two_two_subset_alternatingGroup
+  have := closure_cycleType_eq_two_two_eq_alternatingGroup h5
+  aesop
 
 /-- A key lemma to prove $A_5$ is simple. Shows that any normal subgroup of an alternating group on
   at least 5 elements is the entire alternating group if it contains a 3-cycle. -/
@@ -436,6 +464,43 @@ theorem center_eq_bot (hα4 : 4 ≤ Nat.card α) :
   suffices k ∈ alternatingGroup α by
     simp only [← Subgroup.mk_smul k this, ← mul_smul, hg']
   simp [k, hc.2.symm, hd.2.symm]
+
+/-- The element of `alternatingGroup α` induced by an element
+of `alternatingGroup s`, when `s : Finset α`. -/
+def ofSubtype (s : Finset α) : alternatingGroup s →* alternatingGroup α where
+  toFun x := ⟨Perm.ofSubtype (x : Perm s), by
+    rw [mem_alternatingGroup, sign_ofSubtype, mem_alternatingGroup.mp x.prop]⟩
+  map_mul' := by simp
+  map_one' := by simp
+
+theorem map_ofSubtype (s : Finset α) :
+    (alternatingGroup s).map (Perm.ofSubtype : Perm s →* Perm α) =
+      (Perm.ofSubtype : Perm s →* Perm α).range ⊓ (alternatingGroup α) := by
+  ext k
+  rw [Subgroup.mem_map, Subgroup.mem_inf, MonoidHom.mem_range]
+  grind [sign_ofSubtype, mem_alternatingGroup]
+
+theorem ofSubtype_comp_subtype (s : Finset α) : (alternatingGroup α).subtype.comp (ofSubtype s) =
+    Perm.ofSubtype.comp (alternatingGroup s).subtype := by
+  rfl
+
+theorem range_ofSubtype (s : Finset α) : (ofSubtype s).range =
+    (Perm.ofSubtype (p := (· ∈ s))).range.subgroupOf (alternatingGroup α) := by
+  rw [← map_subtype_inj, ← MonoidHom.range_comp, ofSubtype_comp_subtype, MonoidHom.range_comp,
+    range_subtype, subgroupOf_map_subtype, map_ofSubtype]
+
+theorem mem_range_ofSubtype_iff (s : Finset α) (k : alternatingGroup α) :
+    k ∈ (ofSubtype s).range ↔ (k : Perm α).support ⊆ s := by
+  rw [range_ofSubtype, mem_subgroupOf, Perm.mem_range_ofSubtype_iff]
+  simp
+
+open Pointwise in
+theorem conj_smul_range_ofSubtype (s : Finset α) (g : alternatingGroup α) :
+    MulAut.conj g • (ofSubtype s).range = (ofSubtype (g • s)).range := by
+  ext k
+  simp_rw [mem_pointwise_smul_iff_inv_smul_mem, mem_range_ofSubtype_iff, ← map_inv,
+    MulAut.smul_def, ← ConjAct.toConjAct_smul_eq_mulAut_conj, ConjAct.coe_smul]
+  simp [support_conj_eq_smul_support, Finset.subset_smul_finset_iff, Subgroup.smul_def]
 
 end alternatingGroup
 

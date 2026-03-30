@@ -162,7 +162,7 @@ lemma forget_map {R S : SemiRingCat} (f : R ⟶ S) :
   rfl
 
 instance {R : SemiRingCat} : Semiring ((forget SemiRingCat).obj R) :=
-  (inferInstance : Semiring R.carrier)
+  inferInstanceAs <| Semiring R.carrier
 
 instance hasForgetToMonCat : HasForget₂ SemiRingCat MonCat where
   forget₂ :=
@@ -335,7 +335,7 @@ lemma forget_map {R S : RingCat} (f : R ⟶ S) :
   rfl
 
 instance {R : RingCat} : Ring ((forget RingCat).obj R) :=
-  (inferInstance : Ring R.carrier)
+  inferInstanceAs <| Ring R.carrier
 
 instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat where
   forget₂ :=
@@ -510,7 +510,7 @@ lemma forget_map {R S : CommSemiRingCat} (f : R ⟶ S) :
   rfl
 
 instance {R : CommSemiRingCat} : CommSemiring ((forget CommSemiRingCat).obj R) :=
-  (inferInstance : CommSemiring R.carrier)
+  inferInstanceAs <| CommSemiring R.carrier
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -688,7 +688,7 @@ lemma forget_map {R S : CommRingCat} (f : R ⟶ S) :
   rfl
 
 instance {R : CommRingCat} : CommRing ((forget CommRingCat).obj R) :=
-  (inferInstance : CommRing R.carrier)
+  inferInstanceAs <| CommRing R.carrier
 
 instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat where
   forget₂ :=

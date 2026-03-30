@@ -53,9 +53,9 @@ instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [IsTopologicalAddGrou
 
 instance {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
   ⟨fun x hx ↦
-    let : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
-    let : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
-    have : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower ℝ 𝕜 E
+    let : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
+    let : Module ℝ E := .restrictScalars ℝ 𝕜 E
+    have : IsScalarTower ℝ 𝕜 E := .restrictScalars ℝ 𝕜 E
     have : LocallyConvexSpace ℝ E := NormedSpace.toLocallyConvexSpace' 𝕜
     RCLike.geometric_hahn_banach_point_point hx |>.imp fun f hf hf' ↦ by simp [hf'] at hf⟩
 
@@ -84,6 +84,19 @@ protected theorem t2Space [T2Space R] : T2Space V := by
   apply (t2Space_iff _).2 (fun {x} {y} hxy ↦ ?_)
   rcases exists_separating_of_ne (R := R) hxy with ⟨f, hf⟩
   exact separated_by_continuous f.continuous hf
+
+theorem eq_zero_of_forall_dual_eq_zero {x : V} (h : ∀ f : StrongDual R V, f x = 0) : x = 0 := by
+  by_contra hx
+  rcases exists_ne_zero (R := R) hx with ⟨f, hf⟩
+  exact hf (h f)
+
+theorem eq_zero_iff_forall_dual_eq_zero (x : V) : x = 0 ↔ ∀ g : StrongDual R V, g x = 0 :=
+  ⟨by simp +contextual, fun h => eq_zero_of_forall_dual_eq_zero (R := R) h⟩
+
+/-- See also `geometric_hahn_banach_point_point`. -/
+theorem eq_iff_forall_dual_eq {x y : V} : x = y ↔ ∀ g : StrongDual R V, g x = g y := by
+  rw [← sub_eq_zero, eq_zero_iff_forall_dual_eq_zero (R := R) (x - y)]
+  simp [sub_eq_zero]
 
 end Ring
 

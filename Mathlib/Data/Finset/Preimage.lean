@@ -51,6 +51,12 @@ theorem preimage_univ {f : α → β} [Fintype α] [Fintype β] (hf) : preimage 
   Finset.coe_injective (by simp)
 
 @[simp]
+theorem disjoint_preimage {f : α → β} {s t : Finset β}
+    {hs : Set.InjOn f (f ⁻¹' ↑s)} {ht : Set.InjOn f (f ⁻¹' ↑t)} (hd : Disjoint s t) :
+    Disjoint (s.preimage f hs) (t.preimage f ht) := by
+  grind [not_disjoint_iff, mem_preimage]
+
+@[simp]
 theorem preimage_inter [DecidableEq α] [DecidableEq β] {f : α → β} {s t : Finset β}
     (hs : Set.InjOn f (f ⁻¹' ↑s)) (ht : Set.InjOn f (f ⁻¹' ↑t)) :
     (preimage (s ∩ t) f fun _ hx₁ _ hx₂ =>
@@ -102,6 +108,12 @@ theorem image_preimage [DecidableEq β] (f : α → β) (s : Finset β) [∀ x, 
   Finset.coe_inj.1 <| by
     simp only [coe_image, coe_preimage, coe_filter, Set.image_preimage_eq_inter_range,
       ← Set.sep_mem_eq]; rfl
+
+theorem image_eq_preimage_of_leftInvOn_injOn {α β : Type*} [DecidableEq β] {f : α → β}
+    {g : β → α} {s : Finset α} (hgf : Set.LeftInvOn g f s) (ginj : Set.InjOn g (g ⁻¹' s)) :
+    s.image f = s.preimage g ginj := by
+  simp only [SetLike.ext'_iff, coe_preimage, coe_image]
+  rw [Set.image_eq_preimage_of_leftInvOn_injOn_mapsTo hgf ginj]
 
 theorem image_preimage_of_bij [DecidableEq β] (f : α → β) (s : Finset β)
     (hf : Set.BijOn f (f ⁻¹' ↑s) ↑s) : image f (preimage s f hf.injOn) = s :=

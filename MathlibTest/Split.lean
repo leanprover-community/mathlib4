@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Basic
 
 example : (α : Type) × List α := by
