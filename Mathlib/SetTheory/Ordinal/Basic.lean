@@ -599,7 +599,7 @@ theorem card_type (r : α → α → Prop) [IsWellOrder α r] : card (type r) = 
 
 @[simp]
 theorem card_typein {r : α → α → Prop} [IsWellOrder α r] (x : α) :
-    #{ y // r y x } = (typein r x).card :=
+    (typein r x).card = #{ y // r y x } :=
   rfl
 
 @[gcongr]
@@ -1105,6 +1105,13 @@ theorem ord_eq (α) : ∃ (r : α → α → Prop) (_ : IsWellOrder α r), ord #
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
   ⟨r.1, r.2, wo.symm⟩
 
+open Classical in
+/-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
+theorem exists_ord_eq_type_lt (α) : ∃ (_ : LinearOrder α) (_: WellFoundedLT α), ord #α = typeLT α :=
+  let ⟨r, _, hr⟩ := ord_eq α
+  let := linearOrderOfSTO r
+  ⟨this, inferInstance, hr⟩
+
 theorem ord_le_type (r : α → α → Prop) [h : IsWellOrder α r] : ord #α ≤ type r :=
   ciInf_le' _ (Subtype.mk r h)
 
@@ -1214,18 +1221,24 @@ theorem lift_ord (c) : Ordinal.lift.{u, v} (ord c) = ord (lift.{u, v} c) := by
 
 theorem mk_ord_toType (c : Cardinal) : #c.ord.ToType = c := by simp
 
-theorem card_typein_lt (r : α → α → Prop) [IsWellOrder α r] (x : α) (h : ord #α = type r) :
+theorem card_typein_lt {r : α → α → Prop} [IsWellOrder α r] (x : α) (h : ord #α = type r) :
     card (typein r x) < #α := by
   rw [← lt_ord, h]
   apply typein_lt_type
 
-theorem card_typein_toType_lt (c : Cardinal) (x : c.ord.ToType) :
-    card (typein (α := c.ord.ToType) (· < ·) x) < c := by
-  rw [← lt_ord]
-  apply typein_lt_self
+theorem mk_Iio_lt [LinearOrder α] [WellFoundedLT α] (i : α) (h : ord #α = typeLT α) :
+    #(Iio i) < #α :=
+  card_typein_lt (r := LT.lt) i h
 
-theorem mk_Iio_ord_toType {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c :=
-  card_typein_toType_lt c i
+theorem mk_Iio_toType_ord_lt {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c := by
+  simpa using mk_Iio_lt i
+
+@[deprecated (since := "2026-03-20")] alias mk_Iio_ord_toType := mk_Iio_toType_ord_lt
+
+@[deprecated mk_Iio_toType_ord_lt (since := "2026-03-20")]
+theorem card_typein_toType_lt (c : Cardinal) (x : c.ord.ToType) :
+    card (typein (α := c.ord.ToType) (· < ·) x) < c :=
+  mk_Iio_toType_ord_lt x
 
 theorem ord_injective : Injective ord := by
   intro c c' h
