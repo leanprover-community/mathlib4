@@ -347,12 +347,35 @@ theorem bot_covers (S : Sieve X) (f : Y ⟶ X) : (⊥ : GrothendieckTopology C).
 theorem top_covers (S : Sieve X) (f : Y ⟶ X) : (⊤ : GrothendieckTopology C).Covers S f := by
   simp [covers_iff]
 
+set_option backward.isDefEq.respectTransparency false in
+lemma eq_top_iff (J : GrothendieckTopology C) : J = ⊤ ↔ ∀ X, ⊥ ∈ J X := by
+  refine ⟨fun h ↦ h ▸ by simp, fun h ↦ ?_⟩
+  rw [_root_.eq_top_iff]
+  intro X S _
+  exact J.superset_covering bot_le (h X)
+
+lemma eq_top_of_isEmpty [IsEmpty C] (J : GrothendieckTopology C) : J = ⊤ := by
+  rw [eq_top_iff]
+  intro X
+  exact IsEmpty.elim ‹IsEmpty C› X
+
+@[simp]
+lemma bot_eq_top_iff_isEmpty : (⊥ : GrothendieckTopology C) = ⊤ ↔ IsEmpty C := by
+  refine ⟨fun h ↦ ⟨fun X ↦ ?_⟩, fun h ↦ eq_top_of_isEmpty _⟩
+  apply bot_ne_top (α := Sieve X)
+  simp only [← GrothendieckTopology.bot_covering, h, top_covering]
+
+@[simp]
+lemma bot_lt_top_iff_nonempty : (⊥ : GrothendieckTopology C) < ⊤ ↔ Nonempty C := by
+  contrapose!
+  simp
+
 /-- The dense Grothendieck topology.
 
 See https://ncatlab.org/nlab/show/dense+topology, or [MM92] Chapter III, Section 2, example (e).
 -/
 def dense : GrothendieckTopology C where
-  sieves X S := ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : _) (g : Z ⟶ Y), S (g ≫ f)
+  sieves X := {S | ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : _) (g : Z ⟶ Y), S (g ≫ f)}
   top_mem' _ Y _ := ⟨Y, 𝟙 Y, ⟨⟩⟩
   pullback_stable' := by
     intro X Y S h H Z f
@@ -384,7 +407,7 @@ For the pullback stability condition, we need the right Ore condition to hold.
 See https://ncatlab.org/nlab/show/atomic+site, or [MM92] Chapter III, Section 2, example (f).
 -/
 def atomic (hro : RightOreCondition C) : GrothendieckTopology C where
-  sieves X S := ∃ (Y : _) (f : Y ⟶ X), S f
+  sieves X := {S | ∃ (Y : _) (f : Y ⟶ X), S f}
   top_mem' _ := ⟨_, 𝟙 _, ⟨⟩⟩
   pullback_stable' := by
     rintro X Y S h ⟨Z, f, hf⟩

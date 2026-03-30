@@ -23,7 +23,7 @@ ideal, filter, prime, distributive lattice
 ## References
 
 * [M. H. Stone, Topological representations of distributive lattices and Brouwerian logics
-(1938)][Sto1938]
+  (1938)][Sto1938]
 -/
 
 public section

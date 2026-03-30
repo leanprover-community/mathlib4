@@ -180,7 +180,7 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_large : 2 < n)
     refine pow_right_mono₀ n2_pos ((Finset.card_le_card fun x hx => ?_).trans this.le)
     obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hx
     exact Finset.mem_Icc.mpr ⟨(Finset.mem_filter.1 h1).2.one_lt.le, h2⟩
-  · refine le_trans ?_ (primorial_le_4_pow (2 * n / 3))
+  · refine le_trans ?_ (primorial_le_four_pow (2 * n / 3))
     refine (Finset.prod_le_prod' fun p hp => (?_ : f p ≤ p)).trans ?_
     · obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hp
       refine (pow_right_mono₀ (Finset.mem_filter.1 h1).2.one_lt.le ?_).trans (pow_one p).le

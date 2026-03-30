@@ -190,7 +190,7 @@ theorem map_zero [Nonempty ι] : f 0 = 0 :=
 
 theorem map_eq_zero_of_not_injective (v : ι → M) (hv : ¬Function.Injective v) : f v = 0 := by
   rw [Function.Injective] at hv
-  push_neg at hv
+  push Not at hv
   rcases hv with ⟨i₁, i₂, heq, hne⟩
   exact f.map_eq_zero_of_eq v heq hne
 
@@ -849,7 +849,6 @@ end MultilinearMap
 
 namespace AlternatingMap
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Alternatizing a multilinear map that is already alternating results in a scale factor of `n!`,
 where `n` is the number of inputs. -/
 theorem coe_alternatization [DecidableEq ι] [Fintype ι] (a : M [⋀^ι]→ₗ[R] N') :
