@@ -60,7 +60,7 @@ private def powNormBound (K : Compacts E) (k : ℕ) : ℝ :=
   max (sSup A) 0
 
 omit [NormedSpace ℝ E] in
-private theorem norm_pow_le_powNormBound (k : ℕ) {x : E} (hx : x ∈ K) :
+private theorem norm_pow_le_bound_on_compact (k : ℕ) {x : E} (hx : x ∈ K) :
     ‖x‖ ^ k ≤ powNormBound K k := by
   refine (le_csSup
     (IsCompact.bddAbove <|
@@ -75,7 +75,7 @@ theorem toSchwartzMap_apply (f : ContDiffMapSupportedIn E F ⊤ K) (x : E) :
   rfl
 
 /-- Main continuity estimate: each Schwartz seminorm is bounded by a defining seminorm on `𝓓_K`. -/
-private theorem seminorm_toSchwartzMap_le (k n : ℕ) (f : ContDiffMapSupportedIn E F ⊤ K) :
+private theorem schwartzSeminorm_le_localSeminorm (k n : ℕ) (f : ContDiffMapSupportedIn E F ⊤ K) :
     SchwartzMap.seminorm 𝕜 k n (toSchwartzMap f) ≤
       powNormBound K k * N[𝕜]_{K, n} f := by
   have hbound : 0 ≤ powNormBound K k := by
@@ -87,7 +87,7 @@ private theorem seminorm_toSchwartzMap_le (k n : ℕ) (f : ContDiffMapSupportedI
   intro x
   by_cases hx : x ∈ K
   · have hK : ‖x‖ ^ k ≤ powNormBound K k :=
-      norm_pow_le_powNormBound (K := K) k hx
+      norm_pow_le_bound_on_compact (K := K) k hx
     have hderiv :
         ‖iteratedFDeriv ℝ n f x‖ ≤ N[𝕜]_{K, n} f :=
       norm_iteratedFDeriv_apply_le_seminorm_top (𝕜 := 𝕜) (f := f) (x := x) (i := n)
@@ -133,7 +133,7 @@ noncomputable def toSchwartzMapCLM : ContDiffMapSupportedIn E F ⊤ K →L[𝕜]
     refine ⟨{n}, powNormBound K k, ?_⟩
     intro f
     simpa [Finset.sup_singleton, Seminorm.smul_apply] using
-      seminorm_toSchwartzMap_le (𝕜 := 𝕜) (K := K) k n f
+      schwartzSeminorm_le_localSeminorm (𝕜 := 𝕜) (K := K) k n f
 
 @[simp]
 theorem toSchwartzMapCLM_apply (f : ContDiffMapSupportedIn E F ⊤ K) (x : E) :
@@ -213,7 +213,7 @@ private theorem toComplexSchwartzMapCLM_real_smul (c : ℝ) (φ : TestFunction �
 A tempered distribution defines a continuous ℝ-linear map on ℝ-valued test functions.
 We do this by precomposing the tempered distribution with `toComplexSchwartzMapCLM`.
 -/
-noncomputable def toDistributionCLM (T : 𝓢'(E, F)) : TestFunction Ω ℝ ⊤ →L[ℝ] F :=
+noncomputable def restrictToTestFunctionsCLM (T : 𝓢'(E, F)) : TestFunction Ω ℝ ⊤ →L[ℝ] F :=
   { toFun := fun φ ↦ T (TestFunction.toComplexSchwartzMapCLM (E := E) (Ω := Ω) φ)
     map_add' := by
       simp
@@ -230,15 +230,15 @@ noncomputable def toDistributionCLM (T : 𝓢'(E, F)) : TestFunction Ω ℝ ⊤ 
         }
 
 @[simp]
-theorem toDistributionCLM_apply (T : 𝓢'(E, F)) (φ : TestFunction Ω ℝ ⊤) :
-    toDistributionCLM (E := E) (Ω := Ω) T φ =
+theorem restrictToTestFunctionsCLM_apply (T : 𝓢'(E, F)) (φ : TestFunction Ω ℝ ⊤) :
+    restrictToTestFunctionsCLM (E := E) (Ω := Ω) T φ =
       T ((TestFunction.toComplexSchwartzMapCLM (E := E) (Ω := Ω)) φ) :=
   rfl
 
 noncomputable def toDistribution (T : 𝓢'(E, F)) : Distribution Ω F ⊤ :=
   (ContinuousLinearMap.toUniformConvergenceCLM (RingHom.id ℝ) F
       {s : Set (TestFunction Ω ℝ ⊤) | IsCompact s})
-    (toDistributionCLM (E := E) (Ω := Ω) T)
+    (restrictToTestFunctionsCLM (E := E) (Ω := Ω) T)
 
 @[simp]
 theorem toDistribution_apply (T : 𝓢'(E, F)) (φ : TestFunction Ω ℝ ⊤) :
