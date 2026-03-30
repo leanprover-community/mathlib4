@@ -494,6 +494,7 @@ theorem mem_leadingCoeff (x) : x ∈ I.leadingCoeff ↔ ∃ p ∈ I, Polynomial.
     ⟨i + j, I.leadingCoeffNth_mono (Nat.le_add_right _ _),
       I.leadingCoeffNth_mono (Nat.le_add_left _ _)⟩
 
+@[gcongr] 
 lemma leadingCoeff_mono {I J : Ideal R[X]} (hIJ : I ≤ J) : I.leadingCoeff ≤ J.leadingCoeff := by
   intro x hx
   rcases (I.mem_leadingCoeff x).1 hx with ⟨p, hpI, rfl⟩
