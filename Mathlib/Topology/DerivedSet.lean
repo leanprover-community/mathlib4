@@ -46,6 +46,14 @@ lemma derivedSet_union (A B : Set X) : derivedSet (A ∪ B) = derivedSet A ∪ d
 lemma derivedSet_mono (A B : Set X) (h : A ⊆ B) : derivedSet A ⊆ derivedSet B :=
   fun _ hx ↦ hx.mono <| le_principal_iff.mpr <| mem_principal.mpr h
 
+/-- The relative derived set operator viewed as a monotone self-map of `Set X`. -/
+def relDerivedSet : Set X →o Set X where
+  toFun := fun s => derivedSet s ∩ s
+  monotone' := fun _ _ h ↦ Set.inter_subset_inter (derivedSet_mono _ _ h) (h)
+
+lemma relDerivedSet_subset {s : Set X} : relDerivedSet s ⊆ s :=
+  Set.inter_subset_right
+
 theorem Continuous.image_derivedSet {β : Type*} [TopologicalSpace β] {A : Set X} {f : X → β}
     (hf1 : Continuous f) (hf2 : Function.Injective f) :
     f '' derivedSet A ⊆ derivedSet (f '' A) := by
@@ -67,6 +75,10 @@ lemma isClosed_iff_derivedSet_subset (A : Set X) : IsClosed A ↔ derivedSet A �
     have : A = A \ {a} := by simp [nh]
     rw [this, ← accPt_principal_iff_clusterPt] at ha
     exact nh (h ha)
+
+lemma IsClosed.relDerivedSet_eq {A : Set X} (hA : IsClosed A) :
+    relDerivedSet A = derivedSet A := by
+  simpa [relDerivedSet] using (isClosed_iff_derivedSet_subset A).mp hA
 
 lemma closure_eq_self_union_derivedSet (A : Set X) : closure A = A ∪ derivedSet A := by
   ext
