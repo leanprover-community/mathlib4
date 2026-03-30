@@ -123,7 +123,6 @@ def copy {a b : α} (P : Finpartition a) (h : a = b) : Finpartition b where
   sup_parts := h ▸ P.sup_parts
   bot_notMem := P.bot_notMem
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Transfer a finpartition over an order isomorphism. -/
 def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (e : α ≃o β) (P : Finpartition a) :
     Finpartition (e a) where
@@ -416,7 +415,7 @@ def combine {ι : Type*} {I : Finset ι} {a : ι → α} (P : ∀ i, Finpartitio
     rw [sup_biUnion]
     exact sup_congr rfl fun i _ => (P i).sup_parts
   bot_notMem := by
-    rw [mem_biUnion]; push_neg; exact fun i _ => (P i).bot_notMem
+    rw [mem_biUnion]; push Not; exact fun i _ => (P i).bot_notMem
 
 /-- The sum of a set-valued function over a combined partition equals the sum of sums over component
 partitions. -/

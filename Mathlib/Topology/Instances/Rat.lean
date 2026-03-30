@@ -25,7 +25,7 @@ open Filter Metric Set Topology
 namespace Rat
 
 instance : MetricSpace ℚ :=
-  MetricSpace.induced (↑) Rat.cast_injective Real.metricSpace
+  fast_instance% MetricSpace.induced (↑) Rat.cast_injective Real.metricSpace
 
 theorem dist_eq (x y : ℚ) : dist x y = |(x : ℝ) - y| := rfl
 
@@ -110,7 +110,7 @@ end Rat
 namespace NNRat
 
 instance : MetricSpace ℚ≥0 :=
-  Subtype.metricSpace
+  inferInstanceAs <| MetricSpace (Subtype _)
 
 set_option linter.style.whitespace false in
 @[simp ←, push_cast]

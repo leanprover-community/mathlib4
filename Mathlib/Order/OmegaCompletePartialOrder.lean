@@ -469,7 +469,7 @@ lemma ωScottContinuous.iSup {f : ι → α → β} (hf : ∀ i, ωScottContinuo
     ωScottContinuous (⨆ i, f i) := by
   refine ωScottContinuous.of_monotone_map_ωSup
     ⟨Monotone.iSup fun i ↦ (hf i).monotone, fun c ↦ eq_of_forall_ge_iff fun a ↦ ?_⟩
-  simp +contextual [ωSup_le_iff, (hf _).map_ωSup, @forall_swap ι]
+  simp +contextual [ωSup_le_iff, (hf _).map_ωSup, @forall_comm ι]
 
 lemma ωScottContinuous.sSup {s : Set (α → β)} (hs : ∀ f ∈ s, ωScottContinuous f) :
     ωScottContinuous (sSup s) := by
@@ -709,7 +709,7 @@ theorem forall_forall_merge (c₀ : Chain (α →𝒄 β)) (c₁ : Chain α) (z 
 @[simp]
 theorem forall_forall_merge' (c₀ : Chain (α →𝒄 β)) (c₁ : Chain α) (z : β) :
     (∀ j i : ℕ, (c₀ i) (c₁ j) ≤ z) ↔ ∀ i : ℕ, (c₀ i) (c₁ i) ≤ z := by
-  rw [forall_swap, forall_forall_merge]
+  rw [forall_comm, forall_forall_merge]
 
 /-- The `ωSup` operator for continuous functions, which takes the pointwise countable supremum
 of the functions in the `ω`-chain. -/
