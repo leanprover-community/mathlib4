@@ -96,19 +96,16 @@ lemma _root_.IsUnit.isStrictlyPositive_star_left_conjugate_iff {u a : A} (hu : I
     IsStrictlyPositive (star u * a * u) ↔ IsStrictlyPositive a := by
   simpa using hu.star.isStrictlyPositive_star_right_conjugate_iff
 
-@[aesop safe apply]
-theorem conjugate_of_isSelfAdjoint (a b : A) (hb : IsUnit b) (hb₂ : IsSelfAdjoint b := by cfc_tac)
-    (ha : IsStrictlyPositive a := by cfc_tac) : IsStrictlyPositive (b * a * b) := by
-  grind [hb.isStrictlyPositive_star_right_conjugate_iff]
-
 @[grind =]
-theorem _root_.isStrictlyPositive_iff_conjugate_of_isSelfAdjoint (a b : A) (hb : IsUnit b)
+theorem _root_.IsUnit.isStrictlyPositive_iff_conjugate_of_isSelfAdjoint (a b : A) (hb : IsUnit b)
     (hb₂ : IsSelfAdjoint b := by cfc_tac) :
     IsStrictlyPositive (b * a * b) ↔ IsStrictlyPositive a := by
-  refine ⟨fun ha => ?_, fun ha => ha.conjugate_of_isSelfAdjoint _ _ hb⟩
-  have h₁ : IsStrictlyPositive (Ring.inverse b * (b * a * b) * Ring.inverse b) :=
-    ha.conjugate_of_isSelfAdjoint _ _ (isUnit_ringInverse.mpr hb)
-  grind [Ring.inverse_mul_cancel, Ring.mul_inverse_cancel]
+  grind [hb.isStrictlyPositive_star_left_conjugate_iff]
+
+@[aesop safe apply]
+theorem conjugate_of_isSelfAdjoint (a b : A) (hb : IsUnit b) (hb₂ : IsSelfAdjoint b := by cfc_tac)
+    (ha : IsStrictlyPositive a := by cfc_tac) : IsStrictlyPositive (b * a * b) :=
+  (hb.isStrictlyPositive_iff_conjugate_of_isSelfAdjoint _ _ hb₂).mpr ha
 
 end StarOrderedRing
 

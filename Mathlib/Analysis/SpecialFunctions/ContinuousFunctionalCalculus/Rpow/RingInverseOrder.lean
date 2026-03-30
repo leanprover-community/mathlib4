@@ -44,7 +44,7 @@ public lemma convexOn_ringInverse :
     rw [← cfc_smul_id (R := ℝ) (S := ℝ) b z, ← Algebra.algebraMap_eq_smul_one,
         ← cfc_const_add a (fun r => b • r) z]
     simp only [smul_eq_mul]
-    refine cfc_comp_rpow fun r hr => ?_
+    refine cfc_rpow fun r hr => ?_
     by_cases ha' : a = 0
     · have hb' : b = 1 := by grind
       simp only [ha', hb', one_mul, zero_add, gt_iff_lt]

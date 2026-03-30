@@ -433,7 +433,7 @@ lemma rpow_eq_cfc_real [IsSemitopologicalRing A] [T2Space A] {a : A} {y : ℝ}
   simp only [NNReal.coe_rpow, Real.coe_toNNReal']
   grind
 
-lemma cfc_comp_rpow [IsSemitopologicalRing A] [T2Space A] {a : A} {y : ℝ} {f : ℝ → ℝ}
+lemma cfc_rpow [IsSemitopologicalRing A] [T2Space A] {a : A} {y : ℝ} {f : ℝ → ℝ}
     (hf₁ : ∀ x ∈ spectrum ℝ a, 0 < f x) (hf₂ : ContinuousOn f (spectrum ℝ a) := by cfc_cont_tac)
     (ha : IsSelfAdjoint a := by cfc_tac) : cfc f a ^ y = cfc (fun r => f r ^ y) a := by
   have hg : ContinuousOn (fun r => r ^ y) (f '' spectrum ℝ a) :=
@@ -745,7 +745,7 @@ lemma isUnit_sqrt_iff_isStrictlyPositive {a : A} : IsUnit (sqrt a) ↔ IsStrictl
   rwa [isUnit_sqrt_iff _ ha] at h
 
 @[aesop safe apply]
-lemma _root_.IsUnit.cfcSqrt (a : A) (ha : IsStrictlyPositive a := by cfc_tac) :
+lemma _root_.IsStrictlyPositive.isUnit_cfcSqrt (a : A) (ha : IsStrictlyPositive a := by cfc_tac) :
     IsUnit (sqrt a) := by grind
 
 @[aesop safe apply]
