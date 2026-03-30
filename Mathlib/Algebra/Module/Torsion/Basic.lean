@@ -444,7 +444,6 @@ theorem sup_torsionBySet_ideal_eq_torsionBySet_inf (P Q : Ideal R) {hc : P ⊔ Q
     simpa [Finset.top_eq_univ, Fin.univ_succ, Fin.isValue, coe_iInf, this] using heq
   · simp_all [Set.pairwise_pair, Fin.univ_succ, map, sup_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem supIndep_torsionBySet_ideal (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤) :
     S.SupIndep fun i => torsionBySet R M <| p i :=
   fun T hT i hi hiT => by
@@ -708,6 +707,10 @@ def submodule_torsionBy_orderIso (a : R) :
     left_inv := by intro; ext; simp [restrictScalarsEmbedding]
     right_inv := by intro; ext; simp [restrictScalarsEmbedding] }
 
+instance (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M] (I : Ideal R) :
+    Module.Finite (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
+  Module.Finite.of_restrictScalars_finite R _ _
+
 end Submodule
 
 end NeedsGroup
@@ -824,7 +827,6 @@ namespace QuotientTorsion
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Quotienting by the torsion submodule gives a torsion-free module. -/
 @[simp]
 theorem torsion_eq_bot : torsion R (M ⧸ torsion R M) = ⊥ :=
@@ -901,7 +903,6 @@ open Submodule
 
 universe w
 
-set_option backward.isDefEq.respectTransparency false in
 theorem torsionBy_eq_span_singleton {R : Type w} [CommRing R] (a b : R) (ha : a ∈ R⁰) :
     torsionBy R (R ⧸ R ∙ a * b) a = R ∙ mk (R ∙ a * b) b := by
   ext x; rw [mem_torsionBy_iff, Submodule.mem_span_singleton]

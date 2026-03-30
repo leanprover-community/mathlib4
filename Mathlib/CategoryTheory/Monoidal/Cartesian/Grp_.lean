@@ -55,8 +55,6 @@ def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{w}) (α : (F ⋙ forget _)
     simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
     simp [-Functor.comp_obj]
 
-@[deprecated (since := "2025-09-13")] alias Grp_Class.ofRepresentableBy := GrpObj.ofRepresentableBy
-
 /-- If `G` is a group object, then `Hom(X, G)` has a group structure. -/
 abbrev Hom.group : Group (X ⟶ G) where
   inv f := f ≫ ι
@@ -85,10 +83,6 @@ variable (G) in
 lemma GrpObj.ofRepresentableBy_yonedaGrpObjRepresentableBy :
     ofRepresentableBy G _ (yonedaGrpObjRepresentableBy G) = ‹GrpObj G› := by
   ext; change lift (fst G G) (snd G G) ≫ μ = μ; rw [lift_fst_snd, Category.id_comp]
-
-@[deprecated (since := "2025-09-13")]
-alias Grp_Class.ofRepresentableBy_yonedaGrpObjRepresentableBy :=
-  GrpObj.ofRepresentableBy_yonedaGrpObjRepresentableBy
 
 variable (X) in
 /-- If `X` represents a presheaf of groups `F`, then `Hom(-, X)` is isomorphic to `F` as
@@ -145,40 +139,28 @@ lemma essImage_yonedaGrp :
 lemma GrpObj.inv_comp (f : X ⟶ G) (g : G ⟶ H) [IsMonHom g] : f⁻¹ ≫ g = (f ≫ g)⁻¹ := by
   simp [Hom.inv_def]
 
-@[deprecated (since := "2025-09-13")] alias Grp_Class.inv_comp := GrpObj.inv_comp
-
 @[reassoc]
 lemma GrpObj.div_comp (f g : X ⟶ G) (h : G ⟶ H) [IsMonHom h] :
     (f / g) ≫ h = (f ≫ h) / (g ≫ h) :=
   ((yonedaGrp.map (Grp.homMk (A := .mk G) (B := .mk H) h)).app (op X)).hom.map_div f g
-
-@[deprecated (since := "2025-09-13")] alias Grp_Class.div_comp := GrpObj.div_comp
 
 @[reassoc]
 lemma GrpObj.zpow_comp (f : X ⟶ G) (n : ℤ) (g : G ⟶ H) [IsMonHom g] :
     (f ^ n) ≫ g = (f ≫ g) ^ n :=
   ((yonedaGrp.map (Grp.homMk (A := .mk G) (B := .mk H) g)).app (op X)).hom.map_zpow f n
 
-@[deprecated (since := "2025-09-13")] alias Grp_Class.zpow_comp := GrpObj.zpow_comp
-
 @[reassoc]
 lemma GrpObj.comp_inv (f : X ⟶ Y) (g : Y ⟶ G) : f ≫ g⁻¹ = (f ≫ g)⁻¹ :=
   ((yonedaGrp.obj ⟨G⟩).map f.op).hom.map_inv g
-
-@[deprecated (since := "2025-09-13")] alias Grp_Class.comp_inv := GrpObj.comp_inv
 
 @[reassoc]
 lemma GrpObj.comp_div (f : X ⟶ Y) (g h : Y ⟶ G) : f ≫ (g / h) = f ≫ g / f ≫ h :=
   ((yonedaGrp.obj ⟨G⟩).map f.op).hom.map_div g h
 
-@[deprecated (since := "2025-09-13")] alias Grp_Class.comp_div := GrpObj.comp_div
-
 @[reassoc]
 lemma GrpObj.comp_zpow (f : X ⟶ Y) (g : Y ⟶ G) : ∀ n : ℤ, f ≫ g ^ n = (f ≫ g) ^ n
   | (n : ℕ) => by simp [comp_pow]
   | .negSucc n => by simp [comp_pow, comp_inv]
-
-@[deprecated (since := "2025-09-13")] alias Grp_Class.comp_zpow := GrpObj.comp_zpow
 
 lemma GrpObj.inv_eq_inv : ι = (𝟙 G)⁻¹ := by simp [Hom.inv_def]
 
@@ -192,8 +174,6 @@ then `Hom(X, G) → Hom(F X, F G)` preserves inverses. -/
     [F.Monoidal] {X G : C} (f : X ⟶ G) [GrpObj G] :
     F.map (f⁻¹) = (F.map f)⁻¹ := by
   rw [eq_inv_iff_mul_eq_one, ← Functor.map_mul, inv_mul_cancel, Functor.map_one]
-
-@[deprecated (since := "2025-09-13")] alias Grp_Class.inv_eq_inv := GrpObj.inv_eq_inv
 
 /-- Conjugation in `G` as a morphism. This is the map `(x, y) ↦ x * y * x⁻¹`,
 see `CategoryTheory.GrpObj.lift_conj_eq_mul_mul_inv`. -/
