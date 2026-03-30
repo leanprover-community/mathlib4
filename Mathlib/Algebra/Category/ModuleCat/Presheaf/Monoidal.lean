@@ -5,8 +5,8 @@ Authors: Dagur Asgeirsson, Jack McKoen, Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf
-public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 
 /-!
 # The monoidal category structure on presheaves of modules
@@ -25,7 +25,7 @@ This contribution was created as part of the AIM workshop
 
 @[expose] public section
 
-open CategoryTheory MonoidalCategory Category
+open CategoryTheory MonoidalCategory BraidedCategory Category Limits
 
 universe v u v₁ u₁
 
@@ -138,5 +138,34 @@ noncomputable instance monoidalCategory :
   rightUnitor_naturality _ := by ext1; apply rightUnitor_naturality
   pentagon _ _ _ _ := by ext1; apply pentagon
   triangle _ _ := by ext1; apply triangle
+
+instance symmetricCategory :
+    SymmetricCategory (PresheafOfModules.{u} (R ⋙ forget₂ _ _)) where
+  braiding M₁ M₂ :=
+    isoMk (fun X ↦ BraidedCategory.braiding (C := ModuleCat (R.obj X)) (M₁.obj X) (M₂.obj X))
+      (fun _ _ f ↦ ModuleCat.MonoidalCategory.tensor_ext (fun _ _ ↦ rfl))
+  braiding_naturality_right _ _ _ _ := by
+    ext : 1; exact ModuleCat.MonoidalCategory.tensor_ext (fun _ _ ↦ rfl)
+  braiding_naturality_left _ _ := by
+    ext : 1; exact ModuleCat.MonoidalCategory.tensor_ext (fun _ _ ↦ rfl)
+  hexagon_forward _ _ _ := by
+    ext : 1
+    apply hexagon_forward (C := ModuleCat (R.obj _))
+  hexagon_reverse _ _ _ := by
+    ext : 1
+    apply hexagon_reverse (C := ModuleCat (R.obj _))
+  symmetry _ _ := by
+    ext : 1
+    apply SymmetricCategory.symmetry (C := ModuleCat (R.obj _))
+
+instance (F : PresheafOfModules.{u} (R ⋙ forget₂ _ _)) :
+    PreservesColimitsOfSize.{u, u} (tensorLeft F) where
+  preservesColimitsOfShape := ⟨⟨fun hc ↦ ⟨evaluationJointlyReflectsColimits _ _
+      (fun X ↦ isColimitOfPreserves (tensorLeft (show ModuleCat (R.obj X) from F.obj X))
+        (isColimitOfPreserves (evaluation _ X) hc))⟩⟩⟩
+
+instance (F : PresheafOfModules.{u} (R ⋙ forget₂ _ _)) :
+    PreservesColimitsOfSize.{u, u} (tensorRight F) :=
+  preservesColimits_of_natIso (tensorLeftIsoTensorRight F)
 
 end PresheafOfModules
