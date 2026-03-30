@@ -171,6 +171,14 @@ theorem mono {f : (i : α) → E i} {g : α → ℝ}
     gcongr
     exact hfg i
 
+/-- Often it is more convenient to use `Memℓp.mono`, where the bounding function is real-valued.
+This version is provable from that one using `Memℓp.toNorm` applied to the argument with type
+`Memℓp g p`. -/
+theorem mono' {F : α → Type*} [∀ i, NormedAddCommGroup (F i)] {f : (i : α) → E i}
+    {g : (i : α) → F i} (hg : Memℓp g p) (hfg : ∀ i, ‖f i‖ ≤ ‖g i‖) :
+    Memℓp f p :=
+  hg.norm.mono hfg
+
 theorem finite_dsupport {f : ∀ i, E i} (hf : Memℓp f 0) : Set.Finite { i | f i ≠ 0 } :=
   memℓp_zero_iff.1 hf
 
@@ -725,11 +733,10 @@ noncomputable def tsumCLM : ℓ¹(α, E) →L[𝕜] E :=
   LinearMap.mkContinuous
     { toFun f := ∑' i, f i
       map_add' f g := by
-        simp only [AddSubgroup.coe_add, Pi.add_apply]
         rw [← Summable.tsum_add]
-        exacts [.of_norm (by simpa using f.2.summable), .of_norm (by simpa using g.2.summable)]
+        exacts [rfl, .of_norm (by simpa using f.2.summable), .of_norm (by simpa using g.2.summable)]
       map_smul' c f := by
-        simp only [coeFn_smul, Pi.smul_apply, RingHom.id_apply]
+        simp only [coeFn_smul]
         exact Summable.tsum_const_smul _ (.of_norm (by simpa using f.2.summable))  }
     1 (fun f ↦ by simpa using norm_tsum_le f)
 
@@ -1048,7 +1055,7 @@ def lsingle (p) (i : α) : E i →ₗ[𝕜] lp E p where
 noncomputable def zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜) where
   repr :=
     { toFun x := .ofSupportFinite ⇑x <| memℓp_zero_iff.mp x.2
-      invFun x := ⟨⇑x, memℓp_zero_iff.mpr x.finite_support⟩
+      invFun x := ⟨⇑x, memℓp_zero_iff.mpr x.hasFiniteSupport⟩
       map_add' _ _ := Finsupp.ext fun _ ↦ rfl
       map_smul' _ _ := Finsupp.ext fun _ ↦ rfl
       left_inv _ := rfl
@@ -1203,18 +1210,19 @@ variable (𝕜 E) in
 /-- The `AddSubgroup.inclusion` between `lp` spaces, as a linear map. -/
 def linearMapOfLE (h : p ≤ q) : lp E p →ₗ[𝕜] lp E q where
   toFun f := ⟨f, lp.memℓp f |>.of_exponent_ge h⟩
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
+  map_add' _ _ := by ext; rfl
+  map_smul' _ _ := by ext; rfl
 
 @[simp]
 lemma coe_linearMapOfLE_apply (h : p ≤ q) (f : lp E p) :
-    ⇑(linearMapOfLE 𝕜 E h f) = f :=
-  funext fun _ ↦ rfl
+    ⇑(linearMapOfLE 𝕜 E h f) = f := by
+  ext; rfl
+
 
 @[simp]
 lemma toAddMonoidHom_linearMapOfLE (h : p ≤ q) :
-    (linearMapOfLE 𝕜 E h).toAddMonoidHom = AddSubgroup.inclusion (lp.monotone h) :=
-  rfl
+    (linearMapOfLE 𝕜 E h).toAddMonoidHom = AddSubgroup.inclusion (lp.monotone h) := by
+  ext; rfl
 
 lemma linearMapOfLE_comp (hpq : p ≤ q) (hqr : q ≤ r) :
    (linearMapOfLE 𝕜 E hqr).comp (linearMapOfLE 𝕜 E hpq) =
