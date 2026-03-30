@@ -82,7 +82,7 @@ theorem commutator_def (H₁ H₂ : Subgroup G) :
     ⁅H₁, H₂⁆ = closure { g | ∃ g₁ ∈ H₁, ∃ g₂ ∈ H₂, ⁅g₁, g₂⁆ = g } :=
   rfl
 
-variable {g₁ g₂ g₃} {H₁ H₂ H₃ K₁ K₂ : Subgroup G}
+variable {g₁ g₂ g₃} {H H₁ H₂ H₃ K₁ K₂ : Subgroup G}
 
 @[to_additive]
 theorem commutator_mem_commutator (h₁ : g₁ ∈ H₁) (h₂ : g₂ ∈ H₂) : ⁅g₁, g₂⁆ ∈ ⁅H₁, H₂⁆ :=
@@ -155,6 +155,15 @@ theorem commutator_le_right [h : H₂.Normal] : ⁅H₁, H₂⁆ ≤ H₂ :=
 @[to_additive]
 theorem commutator_le_left [H₁.Normal] : ⁅H₁, H₂⁆ ≤ H₁ :=
   commutator_comm H₂ H₁ ▸ commutator_le_right H₂ H₁
+
+@[to_additive]
+theorem commutator_top_left_le_iff : ⁅(⊤ : Subgroup G), H⁆ ≤ H ↔ H.Normal := by
+  refine ⟨fun hle ↦ ⟨fun h hh g ↦ ?_⟩, fun h ↦ commutator_le_right ⊤ H⟩
+  exact (H.mul_mem_cancel_right <| H.inv_mem hh).mp <| commutator_le.mp hle g trivial h hh
+
+@[to_additive]
+theorem commutator_top_right_le_iff : ⁅H, ⊤⁆ ≤ H ↔ H.Normal :=
+  commutator_comm H ⊤ ▸ commutator_top_left_le_iff
 
 @[to_additive (attr := simp)]
 theorem commutator_bot_left : ⁅(⊥ : Subgroup G), H₁⁆ = ⊥ :=
@@ -263,6 +272,9 @@ variable (G)
 def commutator : Subgroup G := ⁅(⊤ : Subgroup G), ⊤⁆
 deriving Subgroup.Normal, Subgroup.Characteristic
 
+attribute [to_additive] instNormalCommutator
+attribute [to_additive] instCharacteristicCommutator
+
 @[to_additive]
 lemma commutator_def : commutator G = ⁅(⊤ : Subgroup G), ⊤⁆ :=
   rfl
@@ -285,6 +297,11 @@ variable {G} in
 @[to_additive]
 lemma Subgroup.commutator_le_self (H : Subgroup G) : ⁅H, H⁆ ≤ H :=
   H.map_subtype_commutator.symm.trans_le (map_subtype_le _)
+
+@[to_additive]
+theorem Subgroup.Normal.of_commutator_le {H : Subgroup G} (h : _root_.commutator G ≤ H) :
+    H.Normal :=
+  commutator_top_left_le_iff.mp <| commutator_mono le_top le_top |>.trans h
 
 @[to_additive]
 theorem commutator_eq_bot_iff_center_eq_top : commutator G = ⊥ ↔ Subgroup.center G = ⊤ := by
