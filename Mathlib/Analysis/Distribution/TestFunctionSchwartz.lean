@@ -18,7 +18,7 @@ that this assignment is linear and continuous (with respect to the natural local
 convex topologies.)
 
 Then, a tempered distribution can be restricted to a distribution by
-precomposing with the above map, and we show that this assignment is linear. We don't
+precomposing with the above map, and we show that this assignment is linear. But we don't
 show continuity since the source and target dual spaces use different topologies.
 
 ## Main definitions
@@ -31,7 +31,7 @@ show continuity since the source and target dual spaces use different topologies
 
 ## Tags
 
-distributions, test function
+distributions, test function, Schwartz space, tempered distributions
 -/
 
 @[expose] public noncomputable section
@@ -104,7 +104,8 @@ private theorem seminorm_toSchwartzMap_le (k n : ℕ) (f : ContDiffMapSupportedI
       mul_nonneg hbound (apply_nonneg (ContDiffMapSupportedIn.seminorm 𝕜 E F ⊤ K n) f)
 
 
-/-- Map from smooth functions supported in `K` to Schwartz. -/
+/-- Local map `𝓓_K → 𝓢` is continuous linear map. Continuity via `WithSeminorms`
+and previous estimate. -/
 noncomputable def toSchwartzMapCLM : ContDiffMapSupportedIn E F ⊤ K →L[𝕜] 𝓢(E, F) where
   toFun := toSchwartzMap
   map_add' f g := by
@@ -152,7 +153,7 @@ variable [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
   [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
 
-/-- Smooth compactly-supported functions are Schwartz. -/
+/-- Map from smooth compactly-supported functions to Schwartz functions. -/
 def toSchwartzMap (f : TestFunction Ω F ⊤) : 𝓢(E, F) :=
   f.hasCompactSupport.toSchwartzMap f.contDiff
 
@@ -160,7 +161,8 @@ def toSchwartzMap (f : TestFunction Ω F ⊤) : 𝓢(E, F) :=
 theorem toSchwartzMap_apply (f : TestFunction Ω F ⊤) (x : E) : toSchwartzMap f x = f x :=
   rfl
 
-/-- Map from test functions to Schwartz functions. -/
+/-- Canonical continuous linear map from test functions to Schwartz functions.
+Uses `TestFunction.limitCLM` to glue the local maps from `ContDiffMapSupportedIn`. -/
 noncomputable def toSchwartzMapCLM : TestFunction Ω F ⊤ →L[𝕜] 𝓢(E, F) :=
   TestFunction.limitCLM 𝕜
     (TestFunction.toSchwartzMap (E := E) (Ω := Ω) (F := F))
@@ -180,7 +182,8 @@ section ToComplexSchwartzMap
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
 
-/-- Map from ℝ-valued test functions on `Ω` to ℂ-valued Schwartz functions. -/
+/-- Map from ℝ-valued test functions on `Ω` to ℂ-valued Schwartz functions.
+This allows tempered distributions to act on ℝ-valued test functions. -/
 noncomputable def toComplexSchwartzMapCLM : TestFunction Ω ℝ ⊤ →L[ℝ] 𝓢(E, ℂ) :=
   (TestFunction.toSchwartzMapCLM (𝕜 := ℝ) (E := E) (Ω := Ω) (F := ℂ)).comp
     (TestFunction.postcompCLM (Ω := Ω) (n := (⊤ : ℕ∞)) (𝕜 := ℝ) Complex.ofRealCLM)
@@ -206,8 +209,10 @@ private theorem toComplexSchwartzMapCLM_real_smul (c : ℝ) (φ : TestFunction �
       (c : ℂ) • TestFunction.toComplexSchwartzMapCLM (E := E) (Ω := Ω) φ := by
   simp
 
-/-- Given tempered distribution T, we build continuous linear map on ℝ-valued test functions
-by `φ ↦ T (toComplexSchwartzMapCLM φ)`. -/
+/--
+A tempered distribution defines a continuous ℝ-linear map on ℝ-valued test functions.
+We do this by precomposing the tempered distribution with `toComplexSchwartzMapCLM`.
+-/
 noncomputable def toDistributionCLM (T : 𝓢'(E, F)) : TestFunction Ω ℝ ⊤ →L[ℝ] F :=
   { toFun := fun φ ↦ T (TestFunction.toComplexSchwartzMapCLM (E := E) (Ω := Ω) φ)
     map_add' := by
@@ -230,7 +235,6 @@ theorem toDistributionCLM_apply (T : 𝓢'(E, F)) (φ : TestFunction Ω ℝ ⊤)
       T ((TestFunction.toComplexSchwartzMapCLM (E := E) (Ω := Ω)) φ) :=
   rfl
 
-/-- Restriction of tempered distribution to real-valued test functions. -/
 noncomputable def toDistribution (T : 𝓢'(E, F)) : Distribution Ω F ⊤ :=
   (ContinuousLinearMap.toUniformConvergenceCLM (RingHom.id ℝ) F
       {s : Set (TestFunction Ω ℝ ⊤) | IsCompact s})
@@ -242,7 +246,11 @@ theorem toDistribution_apply (T : 𝓢'(E, F)) (φ : TestFunction Ω ℝ ⊤) :
       T ((TestFunction.toComplexSchwartzMapCLM (E := E) (Ω := Ω)) φ) :=
   rfl
 
-/-- Linear restriction map from tempered distribution to distribution. -/
+/--
+Linear restriction map from tempered distributions to distributions.
+We send a tempered distribution `T` to the distribution
+`φ ↦ T (TestFunction.toComplexSchwartzMapCLM φ)`.
+-/
 def toDistributionLM : 𝓢'(E, F) →ₗ[ℂ] Distribution Ω F ⊤ where
   toFun := toDistribution (E := E) (Ω := Ω)
   map_add' T S := by
