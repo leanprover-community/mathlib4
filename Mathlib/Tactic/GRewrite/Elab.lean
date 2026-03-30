@@ -61,9 +61,10 @@ def grewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : G
 declare_config_elab elabGRewriteConfig GRewrite.Config
 
 /--
-`grewrite [e₁, ..., eₙ]` uses the expressions `e₁`, ..., `eₙ` as generalized rewrite rules on the
-main goal. In addition to equalities, `grewrite` supports any two-argument relation for the types of
-`e₁`, ..., `eₙ` and the main goal.
+`grewrite [e₁, ..., eₙ]` uses each expression `eᵢ : Rᵢ aᵢ bᵢ` (where `Rᵢ` is any two-argument
+relation) as a generalized rewrite rule on the main goal, replacing occurrences of `aᵢ` with `bᵢ`.
+Occurrences of `bᵢ` are not rewritten, even if logically possible. Use `grewrite [← eᵢ]` to rewrite
+in the other direction, replacing occurrences of `bᵢ` with `aᵢ`.
 
 If an expression `e` is a defined constant, then the equational theorems associated with `e` are
 used. This provides a convenient way to unfold `e`. If `e` has parameters, the tactic will try to
@@ -104,9 +105,11 @@ syntax (name := grewriteSeq) "grewrite" optConfig rwRuleSeq (location)? : tactic
       (throwTacticEx `grewrite · "did not find instance of the pattern in the current goal")
 
 /--
-`grw [e₁, ..., eₙ]` uses the expressions `e₁`, ..., `eₙ` as generalized rewrite rules on the
-main goal, then tries to close the goal by "cheap" (reducible) `rfl`. In addition to equalities,
-`grw` supports any two-argument relation for the types of `e₁`, ..., `eₙ`.
+`grw [e₁, ..., eₙ]` uses each expression `eᵢ : Rᵢ aᵢ bᵢ` (where `Rᵢ` is any two-argument
+relation) as a generalized rewrite rule on the main goal, replacing occurrences of `aᵢ` with `bᵢ`,
+then tries to close the main goal by "cheap" (reducible) `rfl`.
+Occurrences of `bᵢ` are not rewritten, even if logically possible. Use `grw [← eᵢ]` to rewrite
+in the other direction, replacing occurrences of `bᵢ` with `aᵢ`.
 
 If an expression `e` is a defined constant, then the equational theorems associated with `e` are
 used. This provides a convenient way to unfold `e`. If `e` has parameters, the tactic will try to
@@ -200,11 +203,11 @@ macro (name := applyRwSeq) "apply_rw " c:optConfig s:rwRuleSeq loc:(location)? :
   `(tactic| grw $[$(getConfigItems c)]* +implicationHyp $s:rwRuleSeq $(loc)?)
 
 /--
-`nth_grewrite n₁ ... nₖ [e₁, ..., eₙ]` is a variant of `grewrite` that only changes the `n₁, ...,
-nₖ`th occurrence of each expression to be rewritten. It uses the expressions `e₁`, ..., `eₙ` as
-generalized rewrite rules on the main goal, and for each `eᵢ`, each specified occurrence will be
-rewritten. In addition to equalities, `nth_grewrite` supports any two-argument relation
-for the types of `e₁`, ..., `eₙ` and the main goal.
+`nth_grewrite n₁ ... nₖ [e₁, ..., eₙ]` is a variant of `grewrite` that for each expression
+`eᵢ : R aᵢ bᵢ` only replaces the `n₁, ..., nₖ`th occurrence of `aᵢ` with `bᵢ`.
+Occurrences of `bᵢ` are not rewritten, even if logically possible. Use
+`nth_grewrite n₁ ... nₖ [← eᵢ]` to rewrite in the other direction, replacing occurrences of `bᵢ`
+with `aᵢ`.
 
 If an expression `e` is a defined constant, then the equational theorems associated with `e` are
 used. This provides a convenient way to unfold `e`. If `e` has parameters, the tactic will try to
@@ -231,11 +234,10 @@ macro "nth_grewrite" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)?
   `(tactic| grewrite $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
 
 /--
-`nth_grw n₁ ... nₖ [e₁, ..., eₙ]` is a variant of `grw` that only changes the `n₁, ..., nₖ`th
-occurrence of each expression to be rewritten. It uses the expressions `e₁`, ..., `eₙ` as
-generalized rewrite rules on the main goal, and for each `eᵢ`, each specified occurrence will be
-rewritten. In addition to equalities, `nth_grw` supports any two-argument relation for the types of
-`e₁`, ..., `eₙ` and the main goal.
+`nth_grw n₁ ... nₖ [e₁, ..., eₙ]` is a variant of `grw` that for each expression `eᵢ : R aᵢ bᵢ` only
+replaces the `n₁, ..., nₖ`th occurrence of `aᵢ` with `bᵢ`. Occurrences of `bᵢ` are not rewritten,
+even if logically possible. Use `nth_grw n₁ ... nₖ [← eᵢ]` to rewrite in the other direction,
+replacing occurrences of `bᵢ` with `aᵢ`.
 
 If an expression `e` is a defined constant, then the equational theorems associated with `e` are
 used. This provides a convenient way to unfold `e`. If `e` has parameters, the tactic will try to
