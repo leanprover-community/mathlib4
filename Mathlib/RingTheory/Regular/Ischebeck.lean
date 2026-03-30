@@ -187,23 +187,16 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
             simpa [← not_nontrivial_iff_subsingleton] using Classical.not_and_iff_not_or_not.mp ntr
           rcases this with sub1|sub3
           · have : Function.Injective g := by
-              rw [← ker_eq_bot, exact_iff.mp exac, range_eq_bot, Subsingleton.eq_zero f]
+              simp [← ker_eq_bot, exact_iff.mp exac, Subsingleton.eq_zero f]
             let eg : L2 ≃ₗ[R] L3 := LinearEquiv.ofBijective g ⟨this, surj⟩
-            let L3ntr : Nontrivial L3 := Function.Injective.nontrivial this
-            have dimeq3 : (((Module.supportDim R L3).unbot
-              (Module.supportDim_ne_bot_of_nontrivial R L3))) = r := by
-              rw [← dim_eq]
-              congr 1
-              exact (Module.supportDim_eq_of_equiv eg).symm
             rw [moduleDepth_eq_of_iso_fst M eg.toModuleIso]
-            apply ih3' L3ntr
+            apply ih3' this.nontrivial
             rw [← dim_eq, WithBot.unbot_inj, Module.supportDim_eq_of_equiv eg]
           · have : Function.Surjective f := by
-              rw [← range_eq_top, ← exact_iff.mp exac, ker_eq_top, Subsingleton.eq_zero g]
+              simp [← range_eq_top, ← exact_iff.mp exac, Subsingleton.eq_zero g]
             let ef : L1 ≃ₗ[R] L2 := LinearEquiv.ofBijective f ⟨inj, this⟩
-            let L1ntr : Nontrivial L1 := Function.Surjective.nontrivial this
             rw [← moduleDepth_eq_of_iso_fst M ef.toModuleIso]
-            apply ih1' L1ntr
+            apply ih1' this.nontrivial
             rw [← dim_eq, WithBot.unbot_inj, Module.supportDim_eq_of_equiv ef]
 
 lemma quotient_prime_ringKrullDim_ne_bot {P : Ideal R} (prime : P.IsPrime) :
