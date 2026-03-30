@@ -208,7 +208,7 @@ lemma IsPreLocalizingSequence.isLocalizingSequence_biInf
 /-- A process `X` satisfies a stable property `p` locally if there exists a pre-localizing
 sequence `τ` for which the stopped processes of `fun i ↦ {ω | ⊥ < τ n ω}.indicator (X i)` satisfy
 `p`. -/
-lemma locally_of_isPreLocalizingSequence
+lemma IsStable.locally_of_isPreLocalizingSequence
     [Zero E] [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι] {τ : ℕ → Ω → WithTop ι}
     (hp : IsStable 𝓕 p) [IsRightContinuous 𝓕] (hτ : IsPreLocalizingSequence 𝓕 τ P)
     (hpτ : ∀ n, p (stoppedProcess (fun i ↦ {ω | ⊥ < τ n ω}.indicator (X i)) (τ n))) :
@@ -231,11 +231,11 @@ variable [SecondCountableTopology ι] [IsFiniteMeasure P]
 private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
     {τ : ℕ → Ω → WithTop ι} {σ : ℕ → ℕ → Ω → WithTop ι}
     (hτ : IsLocalizingSequence 𝓕 τ P) (hσ : ∀ n, IsLocalizingSequence 𝓕 (σ n) P) :
-    ∃ T : ℕ → ι, Tendsto T atTop atTop
-      ∧ ∀ n, ∃ k, P {ω | σ n k ω < min (τ n ω) (T n)} ≤ (1 / 2) ^ n := by
+    ∃ T : ℕ → ι, Tendsto T atTop atTop ∧
+      ∀ n, ∃ k, P {ω | σ n k ω < min (τ n ω) (T n)} ≤ (1 / 2) ^ n := by
   obtain ⟨T, -, hT⟩ := Filter.exists_seq_monotone_tendsto_atTop_atTop ι
   refine ⟨T, hT, fun n ↦ ?_⟩
-  by_contra hn; push_neg at hn
+  by_contra! hn
   suffices (1 / 2) ^ n ≤ P (⋂ k : ℕ, {ω | σ n k ω < min (τ n ω) (T n)}) by
     refine (by simp : ¬ (1 / 2 : ℝ≥0∞) ^ n ≤ 0) <| this.trans <| nonpos_iff_eq_zero.2 ?_
     rw [measure_eq_zero_iff_ae_notMem]
@@ -251,92 +251,75 @@ private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
   · filter_upwards [(hσ n).mono] with ω hω
     intros i j hij
     specialize hω hij
-    simp only [lt_inf_iff, le_Prop_eq] at *
-    change σ n j ω < τ n ω ∧ σ n j ω < T n → σ n i ω < τ n ω ∧ σ n i ω < T n
+    simp [setOf] at *
     grind
-  · intro i
-    refine MeasurableSet.nullMeasurableSet ?_
-    simp_rw [lt_inf_iff]
-    rw [(_ : {ω | σ n i ω < τ n ω ∧ σ n i ω < T n} = {ω | σ n i ω < τ n ω} ∩ {ω | σ n i ω < T n})]
-    · exact MeasurableSet.inter
-        (measurableSet_lt ((hσ n).isStoppingTime i).measurable' (hτ.isStoppingTime n).measurable')
+  · refine fun i ↦ .nullMeasurableSet ?_
+    simp_rw [lt_inf_iff, Set.setOf_and]
+    exact MeasurableSet.inter
+      (measurableSet_lt ((hσ n).isStoppingTime i).measurable' (hτ.isStoppingTime n).measurable')
         <| measurableSet_lt ((hσ n).isStoppingTime i).measurable' measurable_const
-    · rfl
   · exact ⟨0, measure_ne_top P _⟩
 
 /-- Auxiliary definition for `isPreLocalizingSequence_of_isLocalizingSequence` which constructs a
 strictly increasing sequence from a given sequence. -/
 def mkStrictMonoAux (x : ℕ → ℕ) : ℕ → ℕ
-| 0 => x 0
-| n + 1 => max (x (n + 1)) (mkStrictMonoAux x n) + 1
+  | 0 => x 0
+  | n + 1 => max (x (n + 1)) (mkStrictMonoAux x n) + 1
 
-lemma mkStrictMonoAux_strictMono (x : ℕ → ℕ) : StrictMono (mkStrictMonoAux x) := by
-  refine strictMono_nat_of_lt_succ <| fun n ↦ ?_
-  simp only [mkStrictMonoAux]
-  exact lt_of_le_of_lt (le_max_right (x (n + 1)) _) (lt_add_one (max (x (n + 1)) _))
+lemma mkStrictMonoAux_strictMono (x : ℕ → ℕ) : StrictMono (mkStrictMonoAux x) :=
+  strictMono_nat_of_lt_succ <| fun n ↦ by grind [mkStrictMonoAux]
 
 lemma le_mkStrictMonoAux (x : ℕ → ℕ) : ∀ n, x n ≤ mkStrictMonoAux x n
-| 0 => by simp [mkStrictMonoAux]
-| n + 1 => by
-    simp only [mkStrictMonoAux]
-    exact (le_max_left (x (n + 1)) (mkStrictMonoAux x n)).trans <|
-       Nat.le_add_right (max (x (n + 1)) (mkStrictMonoAux x n)) 1
+  | 0 => by simp [mkStrictMonoAux]
+  | n + 1 => by grind [mkStrictMonoAux]
 
 lemma isPreLocalizingSequence_of_isLocalizingSequence_aux
     {τ : ℕ → Ω → WithTop ι} {σ : ℕ → ℕ → Ω → WithTop ι}
     (hτ : IsLocalizingSequence 𝓕 τ P) (hσ : ∀ n, IsLocalizingSequence 𝓕 (σ n) P) :
-    ∃ nk : ℕ → ℕ, StrictMono nk ∧ ∃ T : ℕ → ι, Tendsto T atTop atTop
-      ∧ ∀ n, P {ω | σ n (nk n) ω < min (τ n ω) (T n)} ≤ (1 / 2) ^ n := by
+    ∃ (nk : ℕ → ℕ) (T : ℕ → ι), StrictMono nk ∧ Tendsto T atTop atTop ∧
+      ∀ n, P {ω | σ n (nk n) ω < min (τ n ω) (T n)} ≤ (1 / 2) ^ n := by
   obtain ⟨T, hT, h⟩ := isPreLocalizingSequence_of_isLocalizingSequence_aux' hτ hσ
   choose nk hnk using h
-  refine ⟨mkStrictMonoAux nk, mkStrictMonoAux_strictMono nk, T, hT, fun n ↦
-    le_trans (EventuallyLE.measure_le ?_) (hnk n)⟩
+  refine ⟨mkStrictMonoAux nk, mkStrictMonoAux_strictMono nk, T, hT,
+    fun n ↦ le_trans (EventuallyLE.measure_le ?_) (hnk n)⟩
   filter_upwards [(hσ n).mono] with ω hω
   specialize hω (le_mkStrictMonoAux nk n)
-  simp only [lt_inf_iff, le_Prop_eq]
-  change σ n (mkStrictMonoAux nk n) ω < τ n ω ∧ σ n (mkStrictMonoAux nk n) ω < T n →
-    σ n (nk n) ω < τ n ω ∧ σ n (nk n) ω < T n
+  simp [setOf]
   grind
 
-lemma isPreLocalizingSequence_of_isLocalizingSequence
+lemma IsLocalizingSequence.isPrelocalizingSequence_inf_extraction
     [NoMaxOrder ι] {τ : ℕ → Ω → WithTop ι} {σ : ℕ → ℕ → Ω → WithTop ι}
     (hτ : IsLocalizingSequence 𝓕 τ P) (hσ : ∀ n, IsLocalizingSequence 𝓕 (σ n) P) :
-    ∃ nk : ℕ → ℕ, StrictMono nk
-      ∧ IsPreLocalizingSequence 𝓕 (fun i ω ↦ (τ i ω) ⊓ (σ i (nk i) ω)) P := by
+    ∃ nk : ℕ → ℕ, StrictMono nk ∧
+      IsPreLocalizingSequence 𝓕 (fun i ω ↦ (τ i ω) ⊓ (σ i (nk i) ω)) P := by
   obtain ⟨nk, hnk, T, hT, hP⟩ := isPreLocalizingSequence_of_isLocalizingSequence_aux hτ hσ
   refine ⟨nk, hnk, fun n ↦ (hτ.isStoppingTime n).min ((hσ _).isStoppingTime _), ?_⟩
   have : ∑' n, P {ω | σ n (nk n) ω < min (τ n ω) (T n)} < ∞ :=
     lt_of_le_of_lt (ENNReal.summable.tsum_mono ENNReal.summable hP)
-      (tsum_geometric_lt_top.2 <| by norm_num)
-  have hτTop := hτ.tendsto_top
-  filter_upwards [ae_eventually_notMem this.ne, hτTop] with ω hω hωτ
-  replace hT := hωτ.min <| WithTop.tendsto_coe_atTop.comp hT
-  simp_rw [eventually_atTop, not_lt, ← eventually_atTop] at hω
-  rw [min_self] at hT
-  rw [← min_self ⊤]
-  refine hωτ.min <| tendsto_of_tendsto_of_tendsto_of_le_of_le' hT tendsto_const_nhds hω ?_
-  simp only [le_top, eventually_atTop, ge_iff_le, implies_true, exists_const]
+      (tsum_geometric_lt_top.2 <| by simp)
+  filter_upwards [ae_eventually_notMem this.ne, hτ.tendsto_top] with ω hω hωτ
+  exact hωτ.min <| tendsto_of_tendsto_of_tendsto_of_le_of_le'
+    (hωτ.min <| WithTop.tendsto_coe_atTop.comp hT) tendsto_const_nhds (by grind) (by simp)
 
 variable [DenselyOrdered ι] [NoMaxOrder ι] [Zero E]
 
 /-- A stable property holding locally is idempotent. -/
-lemma locally_locally
-    [IsRightContinuous 𝓕] (hp : IsStable 𝓕 p) :
+@[simp]
+lemma IsStable.locally_locally_iff [IsRightContinuous 𝓕] (hp : IsStable 𝓕 p) :
     Locally (fun Y ↦ Locally p 𝓕 Y P) 𝓕 X P ↔ Locally p 𝓕 X P := by
-  refine ⟨fun hL ↦ ?_, fun hL ↦ ?_⟩
-  · have hLL := hL.stoppedProcess
-    choose τ hτ₁ hτ₂ using hLL
+  refine ⟨fun hL ↦ ?_, fun hL ↦ ⟨hL.localSeq, hL.IsLocalizingSequence,
+    fun n ↦ .of_prop <| hL.stoppedProcess n⟩⟩
+  choose τ hτ₁ hτ₂ using hL.stoppedProcess
     obtain ⟨nk, hnk, hpre⟩ := isPreLocalizingSequence_of_isLocalizingSequence
       hL.IsLocalizingSequence hτ₁
     refine locally_of_isPreLocalizingSequence hp hpre <| fun n ↦ ?_
-    specialize hτ₂ n (nk n)
-    convert hτ₂ using 1
+    convert hτ₂ n (nk n) using 1 with
     ext i ω
     rw [stoppedProcess_indicator_comm', stoppedProcess_indicator_comm',
       stoppedProcess_stoppedProcess, stoppedProcess_indicator_comm']
     simp only [lt_inf_iff, Set.indicator_indicator]
     congr 1
-    · ext ω'; simp only [And.comm, Set.mem_setOf_eq, Set.mem_inter_iff]
+    · ext; grind
     · simp_rw [inf_comm]
       rfl
   · exact ⟨hL.localSeq, hL.IsLocalizingSequence, fun n ↦ Locally.of_prop <| hL.stoppedProcess n⟩
@@ -352,8 +335,8 @@ lemma locally_induction₂ {r : (ι → Ω → E) → Prop} [IsRightContinuous �
     (hr : IsStable 𝓕 r) (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q)
     (hrX : Locally r 𝓕 X P) (hpX : Locally p 𝓕 X P) :
     Locally q 𝓕 X P :=
-  locally_induction (p := fun Y ↦ r Y ∧ p Y) (and_imp.2 <| hrpq ·) hq
-    <| (hr.locally_and_iff hp).2 ⟨hrX, hpX⟩
+  locally_induction (p := fun Y ↦ r Y ∧ p Y) (and_imp.2 <| hrpq ·) hq <|
+    (hr.locally_and_iff hp).2 ⟨hrX, hpX⟩
 
 end
 
