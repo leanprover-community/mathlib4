@@ -254,7 +254,7 @@ lemma map {G'} [Group G'] {f : G →* G'} (hf : Function.Surjective f) (hS : H.I
 /-- The quotient of a subnormal subgroup by a normal subgroup is subnormal. -/
 @[to_additive
 /-- The quotient of a subnormal additive subgroup by a normal additive subgroup is subnormal. -/]
-lemma quotient [K.Normal] (hS : H.IsSubnormal) :
+protected lemma quotient [K.Normal] (hS : H.IsSubnormal) :
     IsSubnormal (map (QuotientGroup.mk' K) H) :=
   hS.map (QuotientGroup.mk'_surjective K)
 
@@ -277,7 +277,7 @@ protected lemma subgroupOf (hH : H.IsSubnormal) : (H.subgroupOf K).IsSubnormal :
 
 /-- The intersection of two subnormal subgroups is subnormal. -/
 @[to_additive /-- The intersection of two subnormal additive subgroups is additive subnormal. -/]
-lemma inf (hH : H.IsSubnormal) (hK : K.IsSubnormal) : (H ⊓ K).IsSubnormal := by
+protected lemma inf (hH : H.IsSubnormal) (hK : K.IsSubnormal) : (H ⊓ K).IsSubnormal := by
   simpa using hH.subgroupOf.trans' hK
 
 open scoped Pointwise
@@ -285,7 +285,7 @@ open scoped Pointwise
 /--
 If `g : Γ` is an element of a group acting on `G` and `H` is subnormal, then `g • H` is subnormal.
 -/
-lemma smul {Γ : Type*} [Group Γ] [MulDistribMulAction Γ G] (hS : H.IsSubnormal)
+protected lemma smul {Γ : Type*} [Group Γ] [MulDistribMulAction Γ G] (hS : H.IsSubnormal)
     (g : Γ) : (g • H).IsSubnormal :=
   hS.map (MulAction.surjective g)
 
