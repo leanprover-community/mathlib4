@@ -409,9 +409,14 @@ theorem toBaseChange_injective : Function.Injective (p.toBaseChange A) :=
     (Module.Flat.lTensor_preserves_injective_linearMap p.subtype (injective_subtype p))
 
 /-- `Submodule.toBaseChange` as a `LinearEquiv`. -/
-@[simps!]
+@[simps! apply]
 noncomputable def toBaseChangeEquiv : A ⊗[R] ↥p ≃ₗ[A] baseChange A p :=
   .ofBijective (p.toBaseChange A) ⟨p.toBaseChange_injective A, p.toBaseChange_surjective A⟩
+
+@[simp]
+theorem toBaseChangeEquiv_symm_apply (a : A) (m : p) :
+    (p.toBaseChangeEquiv A).symm ⟨a ⊗ₜ[R] m, tmul_mem_baseChange_of_mem a m.2⟩ = a ⊗ₜ[R] m :=
+  (p.toBaseChangeEquiv A).symm_apply_apply (a ⊗ₜ[R] m)
 
 end Submodule
 
