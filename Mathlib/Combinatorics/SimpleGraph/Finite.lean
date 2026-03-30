@@ -234,6 +234,12 @@ theorem nontrivial_of_degree_ne_zero {G : SimpleGraph V} {v : V} [Fintype (G.nei
   by_contra!
   simp_all [degree_eq_zero_of_subsingleton]
 
+/-- Every vertex `v` of degree at least two has a neighbor different from any fixed vertex `u`. -/
+lemma exists_ne_adj_of_one_lt_degree (hv : 1 < G.degree v) (u : V) : ∃ w ≠ u, G.Adj v w := by
+  have h_nontrivial : (G.neighborFinset v).Nontrivial := by
+    simpa [Finset.one_lt_card_iff_nontrivial, ← card_neighborFinset_eq_degree] using hv
+  simpa [and_comm] using h_nontrivial.exists_ne u
+
 theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
     Gᶜ.degree v = Fintype.card V - 1 - G.degree v := by
   classical
@@ -337,17 +343,6 @@ theorem neighborFinset_compl [DecidableEq V] [DecidableRel G.Adj] (v : V) :
     Gᶜ.neighborFinset v = (G.neighborFinset v)ᶜ \ {v} := by
   simp only [neighborFinset, neighborSet_compl, Set.toFinset_diff, Set.toFinset_compl,
     Set.toFinset_singleton]
-
-/-- Every vertex `u` of degree at least two has a neighbor different from any fixed vertex `v`. -/
-theorem exists_neighbor_ne_of_one_lt_degree {V : Type*} [Fintype V] {G : SimpleGraph V}
-    [DecidableRel G.Adj] {u : V} (h_ge_2 : 2 ≤ G.degree u) (v : V) :
-    ∃ w ≠ v, G.Adj u w := by
-  have h_nontrivial : (G.neighborFinset u).Nontrivial := by
-    rw [← Finset.one_lt_card_iff_nontrivial]
-    exact h_ge_2
-  have ⟨w, hw_mem, hw_ne⟩ := h_nontrivial.exists_ne v
-  rw [G.mem_neighborFinset] at hw_mem
-  exact ⟨w, hw_ne, hw_mem⟩
 
 @[simp]
 theorem complete_graph_degree [DecidableEq V] (v : V) :
