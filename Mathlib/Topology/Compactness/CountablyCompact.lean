@@ -54,7 +54,7 @@ cluster point in `A`, and every countable open cover of `A` admits a finite subc
 
 noncomputable section
 
-open Set Filter Topology
+open Set Filter Topology TopologicalSpace
 
 variable {ι E F : Type*} [TopologicalSpace E] [TopologicalSpace F] {A B : Set E}
 
@@ -177,7 +177,7 @@ theorem IsSeqCompact.isCountablyCompact (hA : IsSeqCompact A) :
 theorem IsCountablyCompact.isSeqCompact [FirstCountableTopology E]
     (hA : IsCountablyCompact A) : IsSeqCompact A := fun x hx =>
     let ⟨a, haA, hac⟩ := IsCountablyCompact.seq_clusterPt hA x (Eventually.of_forall hx)
-    ⟨a, haA, hac.tendsto_subseq ⟩
+    ⟨a, haA, hac.tendsto_subseq⟩
 
 /-- In a first-countable space, a set is countably compact iff it is sequentially compact. -/
 theorem isCountablyCompact_iff_isSeqCompact [FirstCountableTopology E] :
