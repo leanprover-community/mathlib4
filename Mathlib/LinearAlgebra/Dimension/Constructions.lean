@@ -544,7 +544,6 @@ section Ring
 variable {F E : Type*} [CommRing F] [IsDomain F] [Ring E] [Algebra F E]
 variable [StrongRankCondition F] [IsTorsionFree F E] [Nontrivial E]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
   (Subalgebra.toSubmoduleEquiv (⊥ : Subalgebra F E)).symm.rank_eq.trans <| by
@@ -552,7 +551,6 @@ theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
     have := Module.nontrivial F E
     exact .singleton one_ne_zero
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Subalgebra.finrank_bot : finrank F (⊥ : Subalgebra F E) = 1 :=
   finrank_eq_of_rank_eq (by simp)

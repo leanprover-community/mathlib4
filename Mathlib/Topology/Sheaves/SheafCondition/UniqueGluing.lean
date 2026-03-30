@@ -197,8 +197,7 @@ theorem existsUnique_gluing' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover
   · intro gl' gl'_spec
     convert congr_arg _ (gl_uniq (F.1.map (eqToHom V_eq_supr_U.symm).op gl') fun i => _) <;>
       rw [← ConcreteCategory.comp_apply, ← F.1.map_comp]
-    · rw [eqToHom_op, eqToHom_op, eqToHom_trans, eqToHom_refl, F.1.map_id,
-        ConcreteCategory.id_apply]
+    · simp
     · exact gl'_spec i
 
 @[ext]

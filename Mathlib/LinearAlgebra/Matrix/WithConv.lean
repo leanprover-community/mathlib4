@@ -5,17 +5,20 @@ Authors: Monica Omar
 -/
 module
 
+public import Mathlib.Algebra.Star.LinearMap
+public import Mathlib.Algebra.Star.StarAlgHom
 public import Mathlib.Algebra.WithConv
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
-/-! The convolutive star ring on matrices
+/-! # The convolutive star ring on matrices
 
 In this file, we provide the star algebra instance on `WithConv (Matrix m n R)` given by
 the Hadamard product and intrinsic star (i.e., the star of each element in the matrix). -/
 
 @[expose] public section
 
-variable {α β m n : Type*}
+variable {m n α β : Type*}
 
 open Matrix WithConv
 
@@ -94,3 +97,47 @@ instance [Monoid β] [MulAction β α] [Mul α] [IsScalarTower β α α] :
 
 instance [CommSemiring β] [Semiring α] [Algebra β α] : Algebra β (WithConv (Matrix m n α)) :=
   .ofModule smul_mul_assoc mul_smul_comm
+
+/-- All matrices are intrinsically self-adjoint if they are convolutively idempotent. -/
+theorem Matrix.WithConv.IsIdempotentElem.isSelfAdjoint [Semiring α] [IsLeftCancelMulZero α]
+    [StarRing α] {f : WithConv (Matrix m n α)} (hf : IsIdempotentElem f) : IsSelfAdjoint f := by
+  simp_rw [IsIdempotentElem, WithConv.ext_iff, ← Matrix.ext_iff, convMul_def, hadamard_apply,
+    ← isIdempotentElem_iff, IsIdempotentElem.iff_eq_zero_or_one] at hf
+  rw [IsSelfAdjoint, WithConv.ext_iff]
+  ext i j
+  obtain (h | h) := hf i j <;> simp_all
+
+section toLin'
+variable [CommSemiring α] [StarRing α] [Fintype n] [DecidableEq n]
+
+namespace WithConv
+
+variable (m n α) in
+/-- `WithConv (Matrix m n α)` is ⋆-algebraically equivalent to `WithConv ((n → α) →ₗ m → α)`.
+
+In particular, the convolutive product on linear maps corresponds to the Hadamard product
+on matrices and the intrinsic star on linear maps corresponds to taking the star of each element in
+the matrix. -/
+def matrixToLin'StarAlgEquiv :
+    WithConv (Matrix m n α) ≃⋆ₐ[α] WithConv ((n → α) →ₗ[α] m → α) where
+  __ := congrLinearEquiv toLin'
+  map_mul' _ _ := by ext; simp
+  map_star' _ := by classical exact Matrix.intrinsicStar_toLin' _ |>.symm
+
+@[simp] lemma matrixToLin'StarAlgEquiv_apply (x : WithConv (Matrix m n α)) :
+    matrixToLin'StarAlgEquiv m n α x = toConv x.ofConv.toLin' := rfl
+@[simp] lemma symm_matrixToLin'StarAlgEquiv_apply (x : WithConv ((n → α) →ₗ[α] m → α)) :
+    (matrixToLin'StarAlgEquiv m n α).symm x = toConv x.ofConv.toMatrix' := rfl
+
+end WithConv
+
+omit [StarRing α] in
+lemma Matrix.toLin'_hadamard (x y : Matrix m n α) :
+    (x ⊙ y).toLin' = (toConv x.toLin' * toConv y.toLin').ofConv := by ext; simp
+
+theorem Matrix.isSymm_iff_intrinsicStar_toLin' {A : Matrix n n α} :
+    A.IsSymm ↔ star (toConv A.toLin') = toConv (star A).toLin' := by
+  rw [intrinsicStar_toLin', toConv_injective.eq_iff, toLin'.injective.eq_iff,
+    ← transpose_conjTranspose, star_eq_conjTranspose, conjTranspose_inj, IsSymm]
+
+end toLin'

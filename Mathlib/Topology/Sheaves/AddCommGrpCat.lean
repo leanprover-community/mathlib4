@@ -31,33 +31,35 @@ Results for sheaves of abelian groups on topological spaces.
 
 universe u
 
-open TopologicalSpace Opposite CategoryTheory
+open TopologicalSpace Opposite CategoryTheory TopCat
 open scoped AlgebraicGeometry
-
-namespace TopCat
 
 variable {X : TopCat.{u}} {U : Opens X}
 
+namespace TopCat
+
 set_option backward.isDefEq.respectTransparency false in
-theorem Presheaf.addCommGrpCat_exact {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)}
-    (hS : S.Exact) {s : S.X₂.obj (op U)} (h : S.g.app (op U) s = 0) :
-    ∃ (t : S.X₁.obj (op U)), S.f.app (op U) t = s := by
+theorem Presheaf.sections_exact_of_exact
+    {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)}
+    (hS : S.Exact) {s : S.X₂.obj (Opposite.op U)} (h : S.g.app (Opposite.op U) s = 0) :
+    ∃ (t : S.X₁.obj (Opposite.op U)), S.f.app (Opposite.op U) t = s := by
   dsimp [Presheaf] at S
-  let F := (evaluation (Opens X)ᵒᵖ AddCommGrpCat.{u}).obj (op U)
+  let F := (evaluation (Opens X)ᵒᵖ AddCommGrpCat.{u}).obj (Opposite.op U)
   exact (ShortComplex.ab_exact_iff (S.map F)).mp (((Functor.exact_tfae F).out 1 3 rfl rfl).mpr
     ⟨inferInstance, inferInstance⟩ S hS) _ h
+
+lemma Sheaf.sections_exact_of_left_exact {S : ShortComplex (TopCat.Sheaf AddCommGrpCat X)}
+    (hS : S.Exact) (hf : Mono S.f) (s : S.X₂.obj.obj (Opposite.op U))
+    (h : S.g.hom.app (Opposite.op U) s = 0) :
+    ∃ (t : S.X₁.obj.obj (Opposite.op U)), S.f.hom.app (Opposite.op U) t = s :=
+  Presheaf.sections_exact_of_exact
+    (((Functor.preservesFiniteLimits_tfae (Sheaf.forget ..)).out 1 3 rfl rfl).mpr
+    inferInstance S ⟨hS, hf⟩).left h
 
 lemma Presheaf.restrict_sum {V : Opens X} {F : Presheaf AddCommGrpCat X} (h : V ≤ U)
     (s t : F.obj (op U)) : (s + t) |_ V = s |_V + t |_V := by
   delta Presheaf.restrictOpen Presheaf.restrict
   cat_disch
-
-lemma Sheaf.addCommGrpCat_mono_exact {S : ShortComplex (Sheaf AddCommGrpCat X)}
-    (hS : S.Exact) (hf : Mono S.f) (s : S.X₂.obj.obj (op U)) (h : S.g.hom.app (op U) s = 0) :
-    ∃ (t : S.X₁.obj.obj (op U)), S.f.hom.app (op U) t = s :=
-  Presheaf.addCommGrpCat_exact (((Functor.preservesFiniteLimits_tfae
-  (forget AddCommGrpCat X)).out 1 3 rfl rfl).mpr (inferInstanceAs (Limits.PreservesFiniteLimits
-  (forget AddCommGrpCat X))) S ⟨hS, hf⟩).left h
 
 namespace Sheaf
 
