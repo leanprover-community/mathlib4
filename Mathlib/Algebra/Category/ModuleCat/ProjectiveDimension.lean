@@ -20,7 +20,7 @@ public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 
 universe v v' u u'
 
-variable {R : Type u} [CommRing R] [Small.{v} R]
+variable {R : Type u} [CommRing R]
 
 open CategoryTheory Abelian Module
 
@@ -28,7 +28,7 @@ namespace CategoryTheory
 
 section
 
-variable {R' : Type u'} [CommRing R'] [Small.{v'} R'] (e : R ≃+* R')
+variable [Small.{v} R] {R' : Type u'} [CommRing R'] [Small.{v'} R'] (e : R ≃+* R')
 
 variable {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'}
 
@@ -81,7 +81,7 @@ end
 
 section
 
-variable [Small.{v'} R] {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R}
+variable [Small.{v} R] [Small.{v'} R] {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R}
 
 lemma hasProjectiveDimensionLE_of_linearEquiv (e : M ≃ₗ[R] N)
     (n : ℕ) [HasProjectiveDimensionLE M n] : HasProjectiveDimensionLE N n :=
@@ -94,3 +94,10 @@ lemma projectiveDimension_eq_of_linearEquiv (e : M ≃ₗ[R] N) :
 end
 
 end CategoryTheory
+
+lemma projectiveDimension_eq_zero_of_projective (M : ModuleCat.{v} R) [Nontrivial M]
+    [Projective M] : projectiveDimension M = 0 := by
+  apply ((projectiveDimension_le_iff M 0).mpr inferInstance).antisymm
+    ((projectiveDimension_ge_iff M 0).mpr _)
+  rw [hasProjectiveDimensionLT_zero_iff_isZero, ModuleCat.isZero_iff_subsingleton]
+  exact not_subsingleton_iff_nontrivial.mpr ‹_›
