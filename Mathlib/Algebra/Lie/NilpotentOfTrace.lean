@@ -44,23 +44,7 @@ namespace NilpotentOfTrace
 
 open LinearMap Module.End
 
-section General
-
 variable {K : Type*} [Field K] {V : Type*} [AddCommGroup V] [Module K V]
-
-open Classical in
-theorem ad_diag_basis {ι : Type*} [Fintype ι]
-    (b : Module.Basis ι K V) (a : ι → K) (s : Module.End K V)
-    (hs : ∀ k, s (b k) = a k • b k)
-    (i j : ι) :
-    ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
-  apply b.ext; intro k
-  change s (b.end (i, j) (b k)) - b.end (i, j) (s (b k)) =
-    (a i - a j) • b.end (i, j) (b k)
-  simp only [Module.Basis.end_apply_apply, hs k, map_smul]
-  by_cases hjk : j = k
-  · subst hjk; simp [hs i, sub_smul]
-  · simp [hjk]
 
 /-- The set `M = {x ∈ gl(V) : [x, B] ⊆ A}`. -/
 abbrev M (A B : Submodule K (Module.End K V)) : Set (Module.End K V) :=
@@ -91,9 +75,6 @@ lemma aeval_ad_maps_to
   intro b hb
   rw [map_mul, Polynomial.aeval_X, Module.End.mul_apply]
   exact hxM _ (hpoly_B q' b hb)
-
-end General
-
 
 section Lagrange
 
@@ -174,10 +155,10 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   have hy_diag : ∀ i, y (v i) = c i • v i := fun i =>
     mem_eigenspace_iff.mp (hasEigenvector_toLin_diagonal c i v).1
   have had_s : ∀ i j, ⁅s, v.end (i, j)⁆ =
-      (a i - a j) • v.end (i, j) := ad_diag_basis v a s hv_diag
+      (a i - a j) • v.end (i, j) := LieAlgebra.ad_diag_basis v a s hv_diag
   have had_y : ∀ i j, ⁅y, v.end (i, j)⁆ =
       (c i - c j) • v.end (i, j) :=
-    ad_diag_basis v _ y hy_diag
+    LieAlgebra.ad_diag_basis v _ y hy_diag
   obtain ⟨r, hr_eval, hr_zero⟩ := exists_lagrange_polynomial a E f ha
   let ad_s := LieAlgebra.ad K (Module.End K V) s
   have had_y_eq : LieAlgebra.ad K (Module.End K V) y = Polynomial.aeval ad_s r := by
