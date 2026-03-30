@@ -166,6 +166,7 @@ within proof terms.
 
 The indices start at 0, and do not count `let`s.
 -/
+@[specialize p]
 partial def _root_.Lean.Expr.collectUnnecessaryInstanceBinderIdxsWhere (p : Expr → Bool)
     (e : Expr) : MetaM (Array Nat) := do
   let (instances, fvarIdSet) ← go e 0 #[] |>.run {}
@@ -182,7 +183,7 @@ where
   Used fvarIds (i.e., instances of concern) are recorded in the `StateRefT`'s `FVarIdSet`; the
   returned `Array InstanceOfConcern` records all instances of concern that have been introduced,
   used or not. -/
-  go (e : Expr) (currentBinderIdx : Nat) (currentFVars : Array InstanceOfConcern) :
+  @[specialize p] go (e : Expr) (currentBinderIdx : Nat) (currentFVars : Array InstanceOfConcern) :
       StateRefT FVarIdSet MetaM (Array InstanceOfConcern) := do
     let e := e.cleanupAnnotations
     if h : e.isForall then
@@ -228,6 +229,7 @@ Note that `p` is non-monadic, and may encounter loose bvars in its argument. Thi
 optimization. However, the `Parameter`s are created in a telescope, and their fields will *not*
 have loose bound variables.
 -/
+@[specialize p logOnUnused]
 def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
     (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) :
     TermElabM Unit := do
