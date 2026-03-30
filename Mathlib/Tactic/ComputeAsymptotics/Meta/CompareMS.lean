@@ -165,7 +165,7 @@ lemma WellFormedBasis.insert_pos_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
     {ms : MultiseriesExpansion (left ++ right_hd :: right_tl)}
     (h_sorted : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : MultiseriesExpansion.Trimmed ms)
-    (h_exps : List.FirstIsPos (ms.leadingTerm).monomial)
+    (h_exps : FirstNonzeroIsPos (ms.leadingTerm).monomial)
     (h_coef : 0 < (ms.leadingTerm).coef)
     (h_basis : WellFormedBasis (left ++ right_hd :: right_tl))
     (h_equiv : ms.toFun ~[atTop] f')
@@ -175,8 +175,8 @@ lemma WellFormedBasis.insert_pos_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
   apply WellFormedBasis.insert h_basis
   · apply Tendsto.comp Real.tendsto_exp_atTop
     apply h_equiv.tendsto_atTop
-    exact MultiseriesExpansion.tendsto_top_of_FirstIsPos h_sorted h_approx h_trimmed h_basis rfl
-      h_exps h_coef rfl
+    exact MultiseriesExpansion.tendsto_top_of_FirstNonzeroIsPos h_sorted h_approx h_trimmed
+      h_basis rfl h_exps h_coef rfl
   · exact log_congr_IsEquivalent_left left h_equiv h_left
   · exact log_congr_IsEquivalent_right' right_hd right_tl h_equiv h_right
 
@@ -185,7 +185,7 @@ lemma WellFormedBasis.insert_neg_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
     {ms : MultiseriesExpansion (left ++ right_hd :: right_tl)}
     (h_sorted : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : MultiseriesExpansion.Trimmed ms)
-    (h_exps : List.FirstIsPos (ms.leadingTerm).monomial)
+    (h_exps : FirstNonzeroIsPos (ms.leadingTerm).monomial)
     (h_coef : (ms.leadingTerm).coef < 0)
     (h_basis : WellFormedBasis (left ++ right_hd :: right_tl))
     (h_equiv : ms.toFun ~[atTop] f')

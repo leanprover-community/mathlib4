@@ -270,7 +270,8 @@ def log (x : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $x.val))
 
 /-- Given a multiseries representing `f`, returns the multiseries representing `exp ∘ f`. -/
 def exp (x : MS)
-    (h_nonpos : Q(¬ List.FirstIsPos (MultiseriesExpansion.leadingTerm $x.val).monomial)) : MS where
+    (h_nonpos : Q(¬ FirstNonzeroIsPos (MultiseriesExpansion.leadingTerm $x.val).monomial)) :
+    MS where
   basis := x.basis
   logBasis := x.logBasis
   val := q(MultiseriesExpansion.exp $x.val)

@@ -47,7 +47,7 @@ deriving Inhabited
 /-- Given `ms : MS` with `ms.basis = left ++ cur :: right` return the place where `ms` can be
 inserted into the log-basis. Assumes `ms` is o-little of logarithms of `left`. -/
 partial def findPlaceAux (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $ms.val))
-    (h_pos : Q(List.FirstIsPos (MultiseriesExpansion.leadingTerm $ms.val).monomial))
+    (h_pos : Q(FirstNonzeroIsPos (MultiseriesExpansion.leadingTerm $ms.val).monomial))
     (left : Q(Basis)) (cur : Q(ℝ → ℝ)) (right : Q(Basis))
     (logBasis : Q(LogBasis ($cur :: $right)))
     (h_logBasis : Q(LogBasis.WellFormed $logBasis))
@@ -132,7 +132,7 @@ partial def findPlaceAux (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $
 /-- Finds `left`, `right_hd`, `right_tl` such that `ms.basis = left ++ right_hd :: right_tl`,
 `ms` is o-little of logs of `left`, and `left` is maximal. Assumes `ms` tendsto infinity. -/
 partial def findPlace (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $ms.val))
-    (h_pos : Q(List.FirstIsPos (MultiseriesExpansion.leadingTerm $ms.val).monomial)) :
+    (h_pos : Q(FirstNonzeroIsPos (MultiseriesExpansion.leadingTerm $ms.val).monomial)) :
     BasisM (FindPlaceResult ms) := do
   let basis : Q(Basis) := (← get).basis
   let ~q(List.cons $basis_hd $basis_tl) := basis | panic! "Unexpected basis (nil) in findPlace"
@@ -237,10 +237,10 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimme
     (right_hd : Q(ℝ → ℝ)) (right_tl : Q(Basis))
     (coef : Q(ℝ)) (exps : Q(List ℝ))
     (h_leading : Q((MultiseriesExpansion.leadingTerm $ms.val) = ⟨$coef, $exps⟩))
-    (h_first_is_pos' : Q(List.FirstIsPos $exps))
+    (h_first_is_pos' : Q(FirstNonzeroIsPos $exps))
     (h_left : Q(∀ g ∈ List.getLast? $left, $(ms.val).toFun =o[atTop] (Real.log ∘ g)))
     (h_right : Q((Real.log ∘ $right_hd) =o[atTop] $(ms.val).toFun)) : BasisM (MS × MS) := do
-  let h_first_is_pos : Q(List.FirstIsPos (($ms.val).leadingTerm).monomial) :=
+  let h_first_is_pos : Q(FirstNonzeroIsPos (($ms.val).leadingTerm).monomial) :=
     q($h_leading ▸ $h_first_is_pos')
   haveI : $ms.basis =Q $left ++ $right_hd :: $right_tl := ⟨⟩; do
   -- extract deep coef `G`
@@ -371,15 +371,16 @@ partial def createExpMSImp (ms : MS) (h_trimmed? : Option Q(MultiseriesExpansion
     BasisM <| (res : MS) × Q(($res.val).toFun = Real.exp ∘ ($ms.val).toFun) := do
   let ⟨leading, h_leading⟩ ← getLeadingTermWithProof ms.val
   let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in createExpMS"
-  match ← getFirstIsPos exps with
+  match ← getFirstNonzeroIsPos exps with
   | .wrong h_nonpos' =>
-    let h_nonpos : Q(¬ List.FirstIsPos ($ms.val).leadingTerm.monomial) := q($h_leading ▸ $h_nonpos')
+    let h_nonpos : Q(¬ FirstNonzeroIsPos ($ms.val).leadingTerm.monomial) :=
+      q($h_leading ▸ $h_nonpos')
     let res := ms.exp q($h_nonpos)
     have : $res.basis =Q $ms.basis := ⟨⟩
     have : $res.val =Q MultiseriesExpansion.exp $ms.val := ⟨⟩
     return ⟨res, q(MultiseriesExpansion.exp_toFun)⟩
   | .right h_first_is_pos' =>
-    let h_first_is_pos : Q(List.FirstIsPos (($ms.val).leadingTerm).monomial) :=
+    let h_first_is_pos : Q(FirstNonzeroIsPos (($ms.val).leadingTerm).monomial) :=
       q($h_leading ▸ $h_first_is_pos')
     let h_trimmed := h_trimmed?.get!
     -- find place for a new basis element
@@ -416,11 +417,12 @@ partial def createExpMSImp (ms : MS) (h_trimmed? : Option Q(MultiseriesExpansion
       -- create H = F - G
       let ms ← updateBasis ms
       let ⟨H, hH_fun, _⟩ ← trimPartialMS (ms.sub G)
-      -- prove `¬ FirstIsPos` for `H`
+      -- prove `¬ FirstNonzeroIsPos` for `H`
       let ⟨H_leading, hH_leading⟩ ← getLeadingTermWithProof H.val
       let ~q(⟨$H_coef, $H_exps⟩) := H_leading | panic! "Unexpected leading of H in createExpMS"
-      let .wrong h_H_nonpos' := (← getFirstIsPos H_exps) | panic! "Unexpected nonpos in createExpMS"
-      let h_H_nonpos : Q(¬ List.FirstIsPos ($H.val).leadingTerm.monomial) :=
+      let .wrong h_H_nonpos' := (← getFirstNonzeroIsPos H_exps)
+        | panic! "Unexpected nonpos in createExpMS"
+      let h_H_nonpos : Q(¬ FirstNonzeroIsPos ($H.val).leadingTerm.monomial) :=
         q($hH_leading ▸ $h_H_nonpos')
       let H_exp := H.exp q($h_H_nonpos)
       -- g ~ G

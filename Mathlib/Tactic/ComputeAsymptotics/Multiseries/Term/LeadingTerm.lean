@@ -452,17 +452,17 @@ theorem IsEquivalent_of_leadingTerm_zeros_append_mul_coef {left right : Basis}
   contrapose! h_coef
   simp [h_coef]
 
-theorem FirstIsPos_ne_zero {basis : Basis} {ms : MultiseriesExpansion basis}
-    (h_pos : List.FirstIsPos ms.exps) :
+theorem FirstNonzeroIsPos_ne_zero {basis : Basis} {ms : MultiseriesExpansion basis}
+    (h_pos : FirstNonzeroIsPos ms.exps) :
     ¬ IsZero ms := by
   intro h
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
   · simp only [const_exps'] at h_pos
     cases h_pos
-  · apply List.not_FirstIsPos_of_AllZero _ h_pos
+  · apply not_FirstNonzeroIsPos_of_AllZero _ h_pos
     cases h with | nil f =>
     simp only [exps_eq_Seq_exps, mk_seq, Multiseries.nil_exps, List.length_cons]
-    exact List.AllZero_of_replicate
+    exact AllZero_of_replicate
 
 /- ## Leading terms of basic constructions -/
 
@@ -561,7 +561,7 @@ theorem extendBasisEnd_leadingTerm_eq {basis : Basis} {b : ℝ → ℝ}
 
 lemma log_basis_getLast_IsLittleO_aux {basis : Basis}
     {ms : MultiseriesExpansion basis}
-    (h_pos : List.FirstIsPos ms.exps) :
+    (h_pos : FirstNonzeroIsPos ms.exps) :
     basis ≠ [] := by
   contrapose! h_pos
   subst h_pos
@@ -573,7 +573,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Logarithm of the last basis element is little-o of any function approximated in the basis. -/
 theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis basis)
     {ms : MultiseriesExpansion basis} (h_sorted : ms.Sorted) (h_approx : ms.Approximates)
-    (h_trimmed : ms.Trimmed) (h_pos : List.FirstIsPos ms.leadingTerm.monomial) :
+    (h_trimmed : ms.Trimmed) (h_pos : FirstNonzeroIsPos ms.leadingTerm.monomial) :
     (Real.log ∘ (basis.getLast (log_basis_getLast_IsLittleO_aux h_pos))) =o[atTop] ms.toFun := by
   simp only [leadingTerm] at h_pos
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
@@ -603,7 +603,7 @@ theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis b
   rw [← h_log_toFun, ← h_toFun]
   apply IsLittleO_of_lt_leadingTerm h_log_sorted h_sorted' h_log_approx h_approx' h_log_trimmed
     h_trimmed' h_basis'
-  · exact extendBasisEnd_ne_zero (FirstIsPos_ne_zero h_pos)
+  · exact extendBasisEnd_ne_zero (FirstNonzeroIsPos_ne_zero h_pos)
   simp only [ms_log, ms']
   rw [monomial_leadingTerm_eq (by simp)]
   simp only [List.cons_append, List.length_cons, List.length_append, List.length_nil, zero_add,
@@ -652,7 +652,7 @@ theorem tendsto_const_of_AllZero {basis : Basis} {ms : MultiseriesExpansion basi
     (h_basis : WellFormedBasis basis)
     {t_coef : ℝ} {t_exps : List ℝ}
     (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
-    (h_exps : List.AllZero t_exps)
+    (h_exps : AllZero t_exps)
     (hf_eq : f = ms.toFun) :
     Tendsto f atTop (𝓝 t_coef) := by
   rw [hf_eq]
@@ -661,16 +661,16 @@ theorem tendsto_const_of_AllZero {basis : Basis} {ms : MultiseriesExpansion basi
   rw [h_eq]
   apply Term.toFun_tendsto_const_of_AllZero h_exps
 
-theorem tendsto_zero_of_FirstIsNeg_aux {basis : Basis} {ms : MultiseriesExpansion basis}
+theorem tendsto_zero_of_FirstNonzeroIsNeg_aux {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_sorted : ms.Sorted)
     (h_approx : ms.Approximates)
     {t_coef : ℝ} {t_exps : List ℝ}
     (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
-    (h_exps : List.FirstIsNeg t_exps) :
+    (h_exps : FirstNonzeroIsNeg t_exps) :
     Tendsto ms.toFun atTop (𝓝 0) := by
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
   · simp only [leadingTerm, realCoef, exps, Term.mk.injEq, List.nil_eq] at h_eq
-    simp [h_eq.right, List.FirstIsNeg] at h_exps
+    simp [h_eq.right, FirstNonzeroIsNeg] at h_exps
   cases ms with
   | nil =>
     apply Approximates_nil at h_approx
@@ -681,11 +681,11 @@ theorem tendsto_zero_of_FirstIsNeg_aux {basis : Basis} {ms : MultiseriesExpansio
     obtain ⟨h_coef_approx, h_maj, h_tl_approx⟩ := Approximates_cons h_approx
     simp only [leadingTerm, realCoef, mk_seq, Multiseries.head_cons, exps_eq_Seq_exps,
       Multiseries.cons_exps, Term.mk.injEq] at h_eq
-    simp only [← h_eq.right, List.FirstIsNeg] at h_exps
+    simp only [← h_eq.right, FirstNonzeroIsNeg] at h_exps
     obtain h_neg | h_zero := h_exps
     · exact Majorized.tendsto_zero_of_neg h_neg h_maj
     have hC : Tendsto coef.toFun atTop (𝓝 0) := by
-      apply tendsto_zero_of_FirstIsNeg_aux (t_coef := t_coef) h_coef_sorted h_coef_approx _
+      apply tendsto_zero_of_FirstNonzeroIsNeg_aux (t_coef := t_coef) h_coef_sorted h_coef_approx _
         h_zero.right
       rw [← h_eq.left]
       rfl
@@ -699,25 +699,27 @@ theorem tendsto_zero_of_FirstIsNeg_aux {basis : Basis} {ms : MultiseriesExpansio
       rfl
     simpa using Tendsto.add h_tl hC
 
-theorem tendsto_zero_of_FirstIsNeg {basis : Basis} {ms : MultiseriesExpansion basis} {f : ℝ → ℝ}
+theorem tendsto_zero_of_FirstNonzeroIsNeg {basis : Basis} {ms : MultiseriesExpansion basis}
+    {f : ℝ → ℝ}
     (h_sorted : ms.Sorted)
     (h_approx : ms.Approximates)
     {t_coef : ℝ} {t_exps : List ℝ}
     (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
-    (h_exps : List.FirstIsNeg t_exps)
+    (h_exps : FirstNonzeroIsNeg t_exps)
     (hf_eq : f = ms.toFun) :
     Tendsto f atTop (𝓝 0) := by
   rw [hf_eq]
-  apply tendsto_zero_of_FirstIsNeg_aux h_sorted h_approx h_eq h_exps
+  apply tendsto_zero_of_FirstNonzeroIsNeg_aux h_sorted h_approx h_eq h_exps
 
-theorem tendsto_top_of_FirstIsPos {basis : Basis} {ms : MultiseriesExpansion basis} {f : ℝ → ℝ}
+theorem tendsto_top_of_FirstNonzeroIsPos {basis : Basis} {ms : MultiseriesExpansion basis}
+    {f : ℝ → ℝ}
     (h_sorted : ms.Sorted)
     (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed)
     (h_basis : WellFormedBasis basis)
     {t_coef : ℝ} {t_exps : List ℝ}
     (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
-    (h_exps : List.FirstIsPos t_exps)
+    (h_exps : FirstNonzeroIsPos t_exps)
     (h_coef : 0 < t_coef)
     (hf_eq : f = ms.toFun) :
     Tendsto f atTop atTop := by
@@ -725,17 +727,18 @@ theorem tendsto_top_of_FirstIsPos {basis : Basis} {ms : MultiseriesExpansion bas
   apply (IsEquivalent.tendsto_atTop_iff
     (IsEquivalent_leadingTerm h_sorted h_approx h_trimmed h_basis)).mpr
   simp [leadingTerm] at h_eq
-  apply Term.toFun_tendsto_top_of_FirstIsPos h_basis leadingTerm_length
+  apply Term.toFun_tendsto_top_of_FirstNonzeroIsPos h_basis leadingTerm_length
   all_goals simpa [leadingTerm, h_eq]
 
-theorem tendsto_bot_of_FirstIsPos {basis : Basis} {ms : MultiseriesExpansion basis} {f : ℝ → ℝ}
+theorem tendsto_bot_of_FirstNonzeroIsPos {basis : Basis} {ms : MultiseriesExpansion basis}
+    {f : ℝ → ℝ}
     (h_sorted : ms.Sorted)
     (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed)
     (h_basis : WellFormedBasis basis)
     {t_coef : ℝ} {t_exps : List ℝ}
     (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
-    (h_exps : List.FirstIsPos t_exps)
+    (h_exps : FirstNonzeroIsPos t_exps)
     (h_coef : t_coef < 0)
     (hf_eq : f = ms.toFun) :
     Tendsto f atTop atBot := by
@@ -743,7 +746,7 @@ theorem tendsto_bot_of_FirstIsPos {basis : Basis} {ms : MultiseriesExpansion bas
   apply (IsEquivalent.tendsto_atBot_iff
     (IsEquivalent_leadingTerm h_sorted h_approx h_trimmed h_basis)).mpr
   simp [leadingTerm] at h_eq
-  apply Term.toFun_tendsto_bot_of_FirstIsPos h_basis leadingTerm_length
+  apply Term.toFun_tendsto_bot_of_FirstNonzeroIsPos h_basis leadingTerm_length
   all_goals simpa [leadingTerm, h_eq]
 
 end MultiseriesExpansion

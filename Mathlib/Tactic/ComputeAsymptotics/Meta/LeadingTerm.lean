@@ -84,38 +84,39 @@ def getLeadingTermCoefPos {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis
       return .some q(Eq.subst (motive := fun (x : Term) ↦ 0 < x.coef) (Eq.symm $h_eq) $pf)
   | _ => panic! "Unexpected basis in getLeadingTermCoefPos"
 
-/-- Result of checking for a `x : List ℝ` if `x.FirstIsPos` or `x.FirstIsNeg` or `x.AllZero`. -/
+/-- Result of checking for a `x : List ℝ` if `x.FirstNonzeroIsPos` or `x.FirstNonzeroIsNeg`
+or `x.AllZero`. -/
 inductive FirstIsResult (x : Q(List ℝ))
-| zero (pf : Q(List.AllZero $x))
-| pos (pf : Q(List.FirstIsPos $x))
-| neg (pf : Q(List.FirstIsNeg $x))
+| zero (pf : Q(AllZero $x))
+| pos (pf : Q(FirstNonzeroIsPos $x))
+| neg (pf : Q(FirstNonzeroIsNeg $x))
 
-/-- Given a list `x`, checks if `x.FirstIsPos` or `x.FirstIsNeg` or `x.AllZero`. -/
+/-- Given a list `x`, checks if `x.FirstNonzeroIsPos` or `x.FirstNonzeroIsNeg` or `x.AllZero`. -/
 partial def getFirstIs (x : Q(List ℝ)) : TacticM (FirstIsResult x) := do
   match x with
-  | ~q(List.nil) => return .zero q(List.AllZero_of_nil)
+  | ~q(List.nil) => return .zero q(AllZero_of_nil)
   | ~q(List.cons $hd $tl) =>
     match ← compareReal q($hd) with
-    | .pos h_hd => return .pos q(List.FirstIsPos_of_head $tl $h_hd)
-    | .neg h_hd => return .neg q(List.FirstIsNeg_of_head $tl $h_hd)
+    | .pos h_hd => return .pos q(FirstNonzeroIsPos_of_head $tl $h_hd)
+    | .neg h_hd => return .neg q(FirstNonzeroIsNeg_of_head $tl $h_hd)
     | .zero h_hd =>
       match ← getFirstIs q($tl) with
-      | .zero h_tl => return .zero q(List.AllZero_of_tail $h_hd $h_tl)
-      | .pos h_tl => return .pos q(List.FirstIsPos_of_tail $h_hd $h_tl)
-      | .neg h_tl => return .neg q(List.FirstIsNeg_of_tail $h_hd $h_tl)
-  | ~q(List.replicate $n 0) => return .zero q(List.AllZero_of_replicate)
+      | .zero h_tl => return .zero q(AllZero_of_tail $h_hd $h_tl)
+      | .pos h_tl => return .pos q(FirstNonzeroIsPos_of_tail $h_hd $h_tl)
+      | .neg h_tl => return .neg q(FirstNonzeroIsNeg_of_tail $h_hd $h_tl)
+  | ~q(List.replicate $n 0) => return .zero q(AllZero_of_replicate)
   | _ => panic! "Unexpected list in getFirstIs"
 
-/-- Result of checking for a `x : List ℝ` if `x.FirstIsPos`. -/
-inductive FirstIsPosResult (x : Q(List ℝ))
-| right (pf : Q(List.FirstIsPos $x))
-| wrong (pf : Q(¬ List.FirstIsPos $x))
+/-- Result of checking for a `x : List ℝ` if `x.FirstNonzeroIsPos`. -/
+inductive FirstNonzeroIsPosResult (x : Q(List ℝ))
+| right (pf : Q(FirstNonzeroIsPos $x))
+| wrong (pf : Q(¬ FirstNonzeroIsPos $x))
 
-/-- Given a list `x`, checks if `x.FirstIsPos`. -/
-def getFirstIsPos (x : Q(List ℝ)) : TacticM (FirstIsPosResult x) := do
+/-- Given a list `x`, checks if `x.FirstNonzeroIsPos`. -/
+def getFirstNonzeroIsPos (x : Q(List ℝ)) : TacticM (FirstNonzeroIsPosResult x) := do
   match ← getFirstIs x with
   | .pos pf => return .right pf
-  | .neg pf => return .wrong q(List.not_FirstIsPos_of_FirstIsNeg $pf)
-  | .zero pf => return .wrong q(List.not_FirstIsPos_of_AllZero $pf)
+  | .neg pf => return .wrong q(not_FirstNonzeroIsPos_of_FirstNonzeroIsNeg $pf)
+  | .zero pf => return .wrong q(not_FirstNonzeroIsPos_of_AllZero $pf)
 
 end Tactic.ComputeAsymptotics

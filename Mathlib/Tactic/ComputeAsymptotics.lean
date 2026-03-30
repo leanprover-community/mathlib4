@@ -162,16 +162,16 @@ def computeTendstoAtTop (f : Q(ℝ → ℝ)) :
       | .pos h_exps =>
         match ← compareReal q($coef) with
         | .neg h_coef =>
-          pure q(MultiseriesExpansion.tendsto_bot_of_FirstIsPos (f := $f)
+          pure q(MultiseriesExpansion.tendsto_bot_of_FirstNonzeroIsPos (f := $f)
             $ms_trimmed.h_sorted $ms_trimmed.h_approx $h_trimmed?.get! $ms_trimmed.h_basis
             $h_leading_eq $h_exps $h_coef rfl)
         | .pos h_coef =>
-          pure q(MultiseriesExpansion.tendsto_top_of_FirstIsPos (f := $f)
+          pure q(MultiseriesExpansion.tendsto_top_of_FirstNonzeroIsPos (f := $f)
             $ms_trimmed.h_sorted $ms_trimmed.h_approx $h_trimmed?.get! $ms_trimmed.h_basis
             $h_leading_eq $h_exps $h_coef rfl)
-        | .zero _ => panic! "Unexpected zero coef with FirstIsPos"
+        | .zero _ => panic! "Unexpected zero coef with FirstNonzeroIsPos"
       | .neg h_exps =>
-        pure q(MultiseriesExpansion.tendsto_zero_of_FirstIsNeg (f := $f) $ms_trimmed.h_sorted
+        pure q(MultiseriesExpansion.tendsto_zero_of_FirstNonzeroIsNeg (f := $f) $ms_trimmed.h_sorted
           $ms_trimmed.h_approx $h_leading_eq $h_exps rfl)
       | .zero h_exps =>
         pure (q(MultiseriesExpansion.tendsto_const_of_AllZero (f := $f) $ms_trimmed.h_sorted
