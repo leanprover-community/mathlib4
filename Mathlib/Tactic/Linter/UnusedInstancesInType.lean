@@ -233,6 +233,7 @@ def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
     TermElabM Unit := do
   let unusedInstances ← decl.type.collectUnnecessaryInstanceBinderIdxsWhere p
   if let some maxIdx := unusedInstances.back? then
+    unless unusedInstances.isEmpty do return -- don't llint for now
     unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" interactive case
       forallBoundedTelescope decl.type (some <| maxIdx + 1)
         (cleanupAnnotations := true) fun fvars _ => do
