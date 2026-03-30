@@ -276,8 +276,7 @@ end IsInducedSubgraph
 
 lemma IsSubgraph.not_isInducedSubgraph_iff (hHG : H ≤ G) :
     ¬ H ≤i G ↔ ∃ e x y, G.IsLink e x y ∧ x ∈ V(H) ∧ y ∈ V(H) ∧ e ∉ E(H) := by
-  rw [not_iff_comm]
-  push_neg
+  contrapose!; symm
   exact ⟨fun hnind ↦ ⟨hHG, fun e x y hxy hx hy => hxy.anti_of_mem hHG (hnind e x y hxy hx hy)⟩,
     fun hind _ _ _ hexy hx hy ↦ hind.isLink_of_mem_mem hexy hx hy |>.edge_mem⟩
 
@@ -344,8 +343,7 @@ end IsClosedSubgraph
 
 lemma IsInducedSubgraph.not_isClosedSubgraph_iff_exists_adj (hHG : H ≤i G) :
     ¬ H ≤c G ↔ ∃ x y, G.Adj x y ∧ x ∈ V(H) ∧ y ∉ V(H) := by
-  rw [not_iff_comm]
-  push_neg
+  contrapose!; symm
   exact ⟨fun hncl ↦ ⟨hHG, fun e x ⟨y, hexy⟩ hxH =>
     hHG.isLink_of_mem_mem hexy hxH (hncl x y ⟨e, hexy⟩ hxH) |>.edge_mem⟩,
     fun hcl _ _ hexy ↦ (hcl.mem_iff_of_adj hexy).mp⟩

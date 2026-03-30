@@ -506,10 +506,7 @@ variable {L} (A) {N : Type w'} [L.Structure N] (f : M ↪[L] N)
 are interpreted via the embedding `f`. -/
 @[nolint unusedArguments]
 def Embedding.withConstants (_f : M ↪[L] N) (_A : Set M) : Type w' := N
-
-instance : L.Structure (f.withConstants A) := by
-  dsimp [Embedding.withConstants]
-  infer_instance
+deriving L.Structure
 
 instance (f : M ↪[L] N) : (constantsOn A).Structure (f.withConstants A) :=
   constantsOn.structure fun a => f a
