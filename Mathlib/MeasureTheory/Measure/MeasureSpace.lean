@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.MeasurableSpace.MeasurablyGenerated
 public import Mathlib.MeasureTheory.Measure.NullMeasurable
 public import Mathlib.Order.Interval.Set.Monotone
-public import Mathlib.Data.Set.Dissipate
 import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
