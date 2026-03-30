@@ -346,7 +346,7 @@ theorem exists_neighbor_ne_of_one_lt_degree {V : Type*} [Fintype V] {G : SimpleG
     rw [← Finset.one_lt_card_iff_nontrivial]
     exact h_ge_2
   have ⟨w, hw_mem, hw_ne⟩ := h_nontrivial.exists_ne v
-  rw[G.mem_neighborFinset] at hw_mem
+  rw [G.mem_neighborFinset] at hw_mem
   exact ⟨w, hw_ne, hw_mem⟩
 
 @[simp]
