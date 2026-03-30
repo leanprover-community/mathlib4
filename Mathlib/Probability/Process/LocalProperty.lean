@@ -34,8 +34,8 @@ This is notably useful for local martingales.
   to prove that `X` satisfies `p` locally, one can replace the localizing sequence in the definition
   of "locally" by a pre-localizing sequence.
 * `ProbabilityTheory.IsStable.locally_locally`: For stable properties, locally is idempotent.
-* `ProbabilityTheory.IsStable.locally_induction`: If `q` is a stable property, and `p` implies locally
-  `q`, then locally `p` implies locally `q`.
+* `ProbabilityTheory.IsStable.locally_induction`: If `q` is a stable property, and `p` implies
+  locally `q`, then locally `p` implies locally `q`.
 
 ### Tags
 
