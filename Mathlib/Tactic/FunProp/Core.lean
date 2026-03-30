@@ -410,8 +410,11 @@ def getDeclTheorems (funPropDecl : FunPropDecl) (funName : Name)
       match compare dt ds with
       | .lt => true
       | .gt => false
-      | .eq => t.mainArgs.size < s.mainArgs.size)
-  -- todo: sorting and filtering
+      | .eq =>
+        match compare t.priority s.priority with
+        | .lt => false
+        | .gt => true
+        | .eq => t.mainArgs.size < s.mainArgs.size)
   return thms
 
 /--
@@ -462,7 +465,11 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
       match compare dt ds with
       | .lt => true
       | .gt => false
-      | .eq => t.mainArgs.size < s.mainArgs.size)
+      | .eq =>
+        match compare t.priority s.priority with
+        | .lt => false
+        | .gt => true
+        | .eq => t.mainArgs.size < s.mainArgs.size)
 
   return thms
 

@@ -101,6 +101,8 @@ structure LambdaTheorem where
   thmName : Name
   /-- Type and important argument of the theorem. -/
   thmArgs : LambdaTheoremArgs
+  /-- priority -/
+  priority    : Nat  := eval_prio default
   deriving Inhabited, BEq
 
 /-- Collection of lambda theorems -/
@@ -132,7 +134,7 @@ initialize lambdaTheoremsExt : LambdaTheoremsExt ←
 def getLambdaTheorems (funPropName : Name) (type : LambdaTheoremType) :
     CoreM (Array LambdaTheorem) := do
   return (lambdaTheoremsExt.getState (← getEnv)).theorems.getD (funPropName,type) #[]
-
+    |>.qsort (fun t s => t.priority > s.priority)
 
 --------------------------------------------------------------------------------
 
@@ -245,7 +247,7 @@ def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
     trace[Debug.Meta.Tactic.fun_prop] m!"look up key {← RefinedDiscrTree.encodeExpr e true}"
     thms.getMatch e false true
   modify ({ · with transitionTheorems := ⟨thms⟩ })
-  return (← MonadExcept.ofExcept candidates).toArray
+  return (← MonadExcept.ofExcept candidates).toArray.qsort (fun t s => t.priority > s.priority)
 
 /-- Environment extension for morphism theorems. -/
 initialize morTheoremsExt : GeneralTheoremsExt ←
@@ -268,7 +270,7 @@ def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
     trace[Debug.Meta.Tactic.fun_prop] m!"look up key {← RefinedDiscrTree.encodeExpr e true}"
     thms.getMatch e false true
   modify ({ · with morTheorems := ⟨thms⟩ })
-  return (← MonadExcept.ofExcept candidates).toArray
+  return (← MonadExcept.ofExcept candidates).toArray.qsort (fun t s => t.priority > s.priority)
 
 
 --------------------------------------------------------------------------------

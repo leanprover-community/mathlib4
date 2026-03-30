@@ -216,4 +216,15 @@ example (hx₀ : x₀ ∈ Set.Ioo 0 1) :
   have ⟨_,_⟩ := hx₀
   simp (disch := nlinarith) [deriv_simproc]
 
+set_option trace.Meta.Tactic.fun_prop true
+example (x : ℝ) (h1p : (0 : ℝ) < 1 + x) :
+    HasDerivAt (fun u => u ^ 8 + 4 * u ^ 7 - 4 * u ^ 6 + 24 * u ^ 5
+        + 250 * u ^ 4 + 520 * u ^ 3 + 420 * u ^ 2 + 120 * u
+        - 120 * (1 + u) ^ 4 * Real.log (1 + u))
+        (8 * x ^ 7 + 28 * x ^ 6 - 24 * x ^ 5 + 120 * x ^ 4 + 880 * x ^ 3 + 1200 * x ^ 2
+          + 480 * x - 480 * (1 + x) ^ 3 * Real.log (1 + x)) x := by
+  apply HasDerivAt.congr_deriv
+  · fun_prop (disch := grind)
+  · simp; grind
+
 end HasDerivAtTests

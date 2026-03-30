@@ -31,30 +31,36 @@ section NormedRing
 variable [NontriviallyNormedField 𝕜] [NormedRing 𝔸]
 variable [NormedAlgebra 𝕜 𝔸] {f : 𝕜 → 𝔸} {f' : 𝔸} {x : 𝕜} {s : Set 𝕜}
 
+@[fun_prop low]
 theorem HasStrictDerivAt.fun_pow' (h : HasStrictDerivAt f f' x) (n : ℕ) :
     HasStrictDerivAt (fun x ↦ f x ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) x := by
   simpa using h.hasStrictFDerivAt.pow' n |>.hasStrictDerivAt
 
+@[fun_prop low]
 theorem HasStrictDerivAt.pow' (h : HasStrictDerivAt f f' x) (n : ℕ) :
     HasStrictDerivAt (f ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) x :=
   h.fun_pow' n
 
+@[fun_prop low]
 theorem HasDerivWithinAt.fun_pow' (h : HasDerivWithinAt f f' s x) (n : ℕ) :
     HasDerivWithinAt (fun x ↦ f x ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) s x := by
   simpa using h.hasFDerivWithinAt.pow' n |>.hasDerivWithinAt
 
+@[fun_prop low]
 theorem HasDerivWithinAt.pow' (h : HasDerivWithinAt f f' s x) (n : ℕ) :
     HasDerivWithinAt (f ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) s x := h.fun_pow' n
 
+@[fun_prop low]
 theorem HasDerivAt.fun_pow' (h : HasDerivAt f f' x) (n : ℕ) :
     HasDerivAt (fun x ↦ f x ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) x := by
   simpa using h.hasFDerivAt.pow' n |>.hasDerivAt
 
+@[fun_prop low]
 theorem HasDerivAt.pow' (h : HasDerivAt f f' x) (n : ℕ) :
     HasDerivAt (f ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) x := h.fun_pow' n

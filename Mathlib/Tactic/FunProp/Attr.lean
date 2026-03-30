@@ -27,7 +27,7 @@ private def funPropHelpString : String :=
 For `fun_prop` definition like `HasFDerivAt` you can additionally specify the output argument `f'`
 as `fun_prop out f'`. With this `fun_prop` can solve `HasFDerivAt f ?f' x` by filling the
 metavariable `?f'` first and then proving the proposition.  -/
-syntax (name:=fun_prop) "fun_prop" (&"out" ident*)? : attr
+syntax (name:=fun_prop) "fun_prop" (prio)? (&"out" ident*)? : attr
 
 /-- Initialization of `funProp` attribute -/
 initialize
@@ -37,17 +37,20 @@ initialize
     applicationTime := AttributeApplicationTime.afterCompilation
     add   := fun declName stx attrKind =>
        match stx with
-       | `(attr| fun_prop $[out $xs:ident*]?) =>
+       | `(attr| fun_prop $[$p:prio]? $[out $xs:ident*]?) =>
          discard <| MetaM.run do
          let info ← getConstInfo declName
          forallTelescope info.type fun _ b => do
            let outArgNames := (xs.getD #[]).map (·.getId)
            if b.isProp then
+             if p.isSome then
+               throwError "Can not specify priority for a definition!"
              addFunPropDecl declName outArgNames
            else
              if xs.isSome then
                throwError "Can not specify output arguments on a theorem!"
-             addTheorem declName attrKind
+             let p := p.map (·.raw.isNatLit?) |>.join |>.getD (eval_prio default)
+             addTheorem declName attrKind p
        | _ =>
          Elab.throwUnsupportedSyntax
     erase := fun _declName =>
