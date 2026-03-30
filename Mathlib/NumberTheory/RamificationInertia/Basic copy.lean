@@ -513,7 +513,6 @@ theorem Fiber.equivQuotient_apply_one_tmul :
   erw [Algebra.TensorProduct.quotientTensorEquiv_apply_tmul]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.QuasiFinite R S] :
     letI Rp := Localization p.primeCompl
     letI pRp := IsLocalRing.maximalIdeal Rp
@@ -524,7 +523,6 @@ instance [Algebra.QuasiFinite R S] :
     (Fiber.equivQuotient S p).surjective
   Module.Finite.of_quasiFinite
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance [Algebra.QuasiFinite R S] :
     letI Rp := Localization p.primeCompl
     letI pRp := IsLocalRing.maximalIdeal Rp
@@ -533,7 +531,6 @@ noncomputable instance [Algebra.QuasiFinite R S] :
     IsArtinianRing (Sp ⧸ pSp) :=
   .of_finite p.ResidueField _
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.QuasiFinite R S] :
     letI Rp := Localization p.primeCompl
     letI pRp := IsLocalRing.maximalIdeal Rp
@@ -554,7 +551,6 @@ noncomputable instance [Algebra.QuasiFinite R S] :
   letI pSp := pRp.map (algebraMap Rp Sp)
   Fintype.ofFinite (MaximalSpectrum (Sp ⧸ pSp))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nfoo1 [Algebra.QuasiFinite R S] :
     letI Rp := Localization p.primeCompl
     letI pRp := IsLocalRing.maximalIdeal Rp
@@ -570,48 +566,65 @@ theorem nfoo1 [Algebra.QuasiFinite R S] :
   have key := (IsArtinianRing.equivPiLocalization (Sp ⧸ pSp)).restrictScalars p.ResidueField
   rw [key.toLinearEquiv.finrank_eq, Module.finrank_pi_fintype]
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable def nequiv' :
     letI Rp := Localization p.primeCompl
     letI pRp := IsLocalRing.maximalIdeal Rp
     letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
     letI pSp := pRp.map (algebraMap Rp Sp)
-    p.primesOver S ≃o PrimeSpectrum (Sp ⧸ pSp) :=
-  (PrimeSpectrum.primesOverOrderIsoFiber R S p).trans
-    (PrimeSpectrum.comapEquiv (Fiber.equivQuotient S p).toRingEquiv)
+    p.primesOver S ≃ PrimeSpectrum (Sp ⧸ pSp) :=
+  letI Rp := Localization p.primeCompl
+  letI pRp := IsLocalRing.maximalIdeal Rp
+  letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+  letI pSp := pRp.map (algebraMap Rp Sp)
+  have h1 (q : p.primesOver S) : pSp ≤ q.1.map (algebraMap S Sp) := by
+    dsimp only [pSp, pRp]
+    rw [← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq,
+      IsScalarTower.algebraMap_eq R S Sp, ← map_map]
+    exact map_mono (map_le_iff_le_comap.mpr q.2.2.over.le)
+  { toFun q := ⟨q.1.map (algebraMap _ _), by
+      change (q.1.map (algebraMap S (Sp ⧸ pSp))).IsPrime
+      rw [IsScalarTower.algebraMap_eq S Sp (Sp ⧸ pSp), ← map_map, Quotient.algebraMap_eq]
+      have : (q.1.map (algebraMap S Sp)).IsPrime :=
+        IsLocalization.AtPrime.isPrime_map_of_liesOver S p Sp q
+      exact Ideal.isPrime_map_quotientMk_of_isPrime (h1 q)⟩
+    invFun q := ⟨q.1.under S, q.2.under S, by
+      rw [liesOver_iff, under_under, ← under_under (B := Rp)]
+      apply le_antisymm
+      · rw [under_def, ← map_le_iff_le_comap, Localization.AtPrime.map_eq_maximalIdeal,
+          ← under_under (B := Sp), under_def, ← map_le_iff_le_comap,
+          under_def, ← map_le_iff_le_comap, Quotient.algebraMap_eq, map_quotient_self]
+        exact bot_le
+      · exact Set.disjoint_compl_left_iff_subset.mp
+          (((IsLocalization.isPrime_iff_isPrime_disjoint p.primeCompl Rp (q.1.under Rp)).mp
+          (q.2.under Rp)).2)⟩
+    left_inv q := by
+      ext1
+      change (q.1.map (algebraMap S (Sp ⧸ pSp))).comap (algebraMap S (Sp ⧸ pSp)) = q.1
+      rw [IsScalarTower.algebraMap_eq S Sp (Sp ⧸ pSp), ← map_map, ← comap_comap,
+        Quotient.algebraMap_eq, comap_map_of_surjective _ Quotient.mk_surjective,
+        ← RingHom.ker_eq_comap_bot, mk_ker, sup_of_le_left (h1 q),
+        IsLocalization.comap_map_of_isPrime_disjoint (Algebra.algebraMapSubmonoid S p.primeCompl) Sp
+          q.2.1]
+      exact Set.disjoint_image_left.mpr (Set.disjoint_compl_left_iff_subset.mpr q.2.2.over.ge)
+    right_inv q := by
+      ext1
+      change (q.1.comap (algebraMap S (Sp ⧸ pSp))).map (algebraMap S (Sp ⧸ pSp)) = q.1
+      rw [IsScalarTower.algebraMap_eq S Sp (Sp ⧸ pSp), ← map_map, ← comap_comap,
+        IsLocalization.map_comap (Algebra.algebraMapSubmonoid S p.primeCompl) Sp,
+        Quotient.algebraMap_eq, map_comap_of_surjective _ Quotient.mk_surjective] }
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable def nequiv [Algebra.QuasiFinite R S] :
     letI Rp := Localization p.primeCompl
     letI pRp := IsLocalRing.maximalIdeal Rp
     letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
     letI pSp := pRp.map (algebraMap Rp Sp)
     MaximalSpectrum (Sp ⧸ pSp) ≃ p.primesOver S :=
-  IsArtinianRing.primeSpectrumEquivMaximalSpectrum.symm.trans p.nequiv'.symm.toEquiv
+  IsArtinianRing.primeSpectrumEquivMaximalSpectrum.symm.trans p.nequiv'.symm
+
+theorem equiv_apply [Algebra.QuasiFinite R S] (q) : ((nequiv p) q).1 = q.1.under S :=
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
-theorem equiv_apply [Algebra.QuasiFinite R S] :
-    letI Rp := Localization p.primeCompl
-    letI pRp := IsLocalRing.maximalIdeal Rp
-    letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
-    letI pSp := pRp.map (algebraMap Rp Sp)
-    ∀ q : MaximalSpectrum (Sp ⧸ pSp), (nequiv p) q = q.1.comap (algebraMap S (Sp ⧸ pSp)) := by
-  intro q
-  let Rp := Localization p.primeCompl
-  let pRp := IsLocalRing.maximalIdeal Rp
-  let Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
-  let pSp := pRp.map (algebraMap Rp Sp)
-  simp [nequiv, nequiv',
-    PrimeSpectrum.primesOverOrderIsoFiber,
-    PrimeSpectrum.preimageOrderIsoFiber,
-    PrimeSpectrum.preimageEquivFiber,
-    comap_comap]
-  congr
-  ext x
-  apply Fiber.equivQuotient_apply_one_tmul
-
-set_option backward.isDefEq.respectTransparency false in
-set_option maxHeartbeats 10000000 in
 theorem nfoo3 [Algebra.QuasiFinite R S] :
     letI Rp := Localization p.primeCompl
     letI pRp := IsLocalRing.maximalIdeal Rp
@@ -623,15 +636,22 @@ theorem nfoo3 [Algebra.QuasiFinite R S] :
     Module.length (Localization.AtPrime p) (Localization.AtPrime q.1) =
       Module.length (Localization.AtPrime p) (Sr ⧸ p.map (algebraMap R Sr)) := by
   intro q
-  let Rp := Localization p.primeCompl
-  let pRp := IsLocalRing.maximalIdeal Rp
-  let pS := p.map (algebraMap R S)
-  let Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
-  let pSp := pRp.map (algebraMap Rp Sp)
-  let r := (p.nequiv q).1
-  let Sr := Localization.AtPrime r
   apply LinearEquiv.length_eq
-  have := equiv_apply p q
+  have : (q.1.under S).LiesOver p := inferInstanceAs ((p.nequiv q).1.LiesOver p)
+  change Localization.AtPrime q.asIdeal ≃ₗ[Localization.AtPrime p]
+    Localization.AtPrime (q.1.under S) ⧸ map (algebraMap R (Localization.AtPrime (q.1.under S))) p
+  have : q.1.LiesOver p := LiesOver.trans q.1 (q.1.under S) p
+  let f := IsScalarTower.toAlgHom (Localization.AtPrime p) (Localization.AtPrime (q.1.under S))
+    (Localization.AtPrime q.1)
+  have hf : Function.Surjective f := by
+    sorry
+  suffices RingHom.ker f = p.map (algebraMap R (Localization.AtPrime (under S q.asIdeal))) by
+    rw [← this]
+    symm
+    have := (Ideal.quotientKerAlgEquivOfSurjective hf).toLinearEquiv
+    convert this
+    ext
+    sorry
   sorry
 
 set_option backward.isDefEq.respectTransparency false in
@@ -657,8 +677,7 @@ theorem nfoo2 [Algebra.QuasiFinite R S] [Module.Flat R S] :
   replace this := congrArg ENat.toNat this
   rw [ENat.toNat_mul, Cardinal.toNat_toENat] at this
   convert this
-  · have : IsScalarTower (Localization.AtPrime p) (IsLocalRing.ResidueField (Localization.AtPrime p))
-        (Localization.AtPrime q.asIdeal) := by
+  · have : IsScalarTower Rp (IsLocalRing.ResidueField Rp) (Localization.AtPrime q.asIdeal) := by
       apply IsScalarTower.of_algebraMap_eq
       intro
       rfl
