@@ -411,7 +411,6 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
         linarith
       · have qpos : 0 < (q : ℝ) := by positivity
         ring_nf
-        simp only [add_lt_iff_neg_right, neg_add_lt_iff_lt_add, add_zero, gt_iff_lt]
         have : (q : ℝ) - 1 < p * q := by
           have h1 := mul_lt_mul_of_pos_right hp.1 qpos
           have h2 : (1 - (q : ℝ)⁻¹) * ↑q = q - 1 := by calc (1 - (q : ℝ)⁻¹) * ↑q
