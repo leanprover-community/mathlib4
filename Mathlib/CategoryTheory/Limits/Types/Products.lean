@@ -62,45 +62,37 @@ theorem pi_map_π_apply' {β : Type v} {f g : β → Type v} (α : ∀ j, f j �
     (Pi.π g b : ∏ᶜ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ᶜ f → f b) x) := by
   simp
 
+/-- The terminal object in `Type u` is `PUnit`. -/
+def isTerminalPUnit : IsTerminal (PUnit : Type u) :=
+  letI (X : Type u) : Unique (X ⟶ PUnit) := inferInstanceAs (Unique (X → PUnit))
+  .ofUnique _
+
+@[simp]
+lemma isTerminalPUnit_from_apply {X : Type u} (x : X) : isTerminalPUnit.from X x = .unit := rfl
+
+@[deprecated (since := "2026-02-08")] alias isTerminalPunit := isTerminalPUnit
+
 /-- The category of types has `PUnit` as a terminal object. -/
-def terminalLimitCone : Limits.LimitCone (Functor.empty (Type u)) where
-  -- Porting note: tidy was able to fill the structure automatically
-  cone :=
-    { pt := PUnit
-      π := (Functor.uniqueFromEmpty _).hom }
-  isLimit :=
-    { lift := fun _ _ => PUnit.unit
-      fac := fun _ => by rintro ⟨⟨⟩⟩ }
+def terminalLimitCone : Limits.LimitCone (Functor.empty (Type u)) := ⟨_, isTerminalPUnit⟩
 
 /-- The terminal object in `Type u` is `PUnit`. -/
 noncomputable def terminalIso : ⊤_ Type u ≅ PUnit :=
-  limit.isoLimitCone terminalLimitCone.{u, 0}
-
-/-- The terminal object in `Type u` is `PUnit`. -/
-noncomputable def isTerminalPunit : IsTerminal (PUnit : Type u) :=
-  terminalIsTerminal.ofIso terminalIso
-
-noncomputable instance : Inhabited (⊤_ (Type u)) :=
-  ⟨@terminal.from (Type u) _ _ (ULift (Fin 1)) (ULift.up 0)⟩
-
-instance : Subsingleton (⊤_ (Type u)) := ⟨fun a b =>
-  congr_fun (@Subsingleton.elim (_ ⟶ ⊤_ (Type u)) _
-    (fun _ => a) (fun _ => b)) (ULift.up (0 : Fin 1))⟩
-
-noncomputable instance : Unique (⊤_ (Type u)) := Unique.mk' _
+  terminalIsTerminal.uniqueUpToIso isTerminalPUnit
 
 /-- A type is terminal if and only if it contains exactly one element. -/
-noncomputable def isTerminalEquivUnique (X : Type u) : IsTerminal X ≃ Unique X :=
+def isTerminalEquivUnique (X : Type u) : IsTerminal X ≃ Unique X :=
   equivOfSubsingletonOfSubsingleton
-    (fun h => ((Iso.toEquiv (terminalIsoIsTerminal h).symm).unique))
-    (fun _ => IsTerminal.ofIso terminalIsTerminal (Equiv.toIso (Equiv.ofUnique _ _)))
+    (fun h => (IsTerminal.uniqueUpToIso h isTerminalPUnit).toEquiv.unique)
+    (fun _ => IsTerminal.ofIso isTerminalPUnit (Equiv.toIso (Equiv.ofUnique _ _)))
 
 /-- A type is terminal if and only if it is isomorphic to `PUnit`. -/
-noncomputable def isTerminalEquivIsoPUnit (X : Type u) : IsTerminal X ≃ (X ≅ PUnit) := by
+def isTerminalEquivIsoPUnit (X : Type u) : IsTerminal X ≃ (X ≅ PUnit) := by
   calc
     IsTerminal X ≃ Unique X := isTerminalEquivUnique _
     _ ≃ (X ≃ PUnit.{u + 1}) := uniqueEquivEquivUnique _ _
     _ ≃ (X ≅ PUnit) := equivEquivIso
+
+noncomputable instance : Unique (⊤_ (Type u)) := isTerminalEquivUnique _ terminalIsTerminal
 
 open CategoryTheory.Limits.WalkingPair
 
@@ -168,6 +160,7 @@ def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u where
     { app := fun Y =>
       (binaryProductLimit X₂ Y).lift (BinaryFan.mk (_root_.Prod.fst ≫ f) _root_.Prod.snd) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product functor given by the instance `HasBinaryProducts (Type u)` is isomorphic to the
 explicit binary product functor given by the product type.
 -/

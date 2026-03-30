@@ -115,8 +115,6 @@ lemma mk'_mul_mk' (n₁ n₂ : ℤ) (d₁ d₂ : ℕ) (hd₁ hd₂ hnd₁ hnd₂
 lemma mul_eq_mkRat (q r : ℚ) : q * r = mkRat (q.num * r.num) (q.den * r.den) := by
   rw [mul_def, normalize_eq_mkRat]
 
-@[deprecated (since := "2025-08-25")] alias divInt_eq_divInt := divInt_eq_divInt_iff
-
 lemma pow_eq_mkRat (q : ℚ) (n : ℕ) : q ^ n = mkRat (q.num ^ n) (q.den ^ n) := by
   rw [pow_def, mk_eq_mkRat]
 
@@ -127,12 +125,8 @@ lemma pow_eq_divInt (q : ℚ) (n : ℕ) : q ^ n = q.num ^ n /. q.den ^ n := by
     mk' num den hd hdn ^ n = mk' (num ^ n) (den ^ n)
       (by simp [Nat.pow_eq_zero, hd]) (by rw [Int.natAbs_pow]; exact hdn.pow _ _) := rfl
 
-@[deprecated (since := "2025-08-25")] alias inv_divInt' := inv_divInt
-
 @[simp] lemma inv_mkRat (a : ℤ) (b : ℕ) : (mkRat a b)⁻¹ = b /. a := by
   rw [mkRat_eq_divInt, inv_divInt]
-
-@[deprecated (since := "2025-08-25")] alias inv_def' := inv_def
 
 @[simp] lemma divInt_div_divInt (n₁ d₁ n₂ d₂) :
     (n₁ /. d₁) / (n₂ /. d₂) = (n₁ * d₂) /. (d₁ * n₂) := by
@@ -204,14 +198,6 @@ instance monoid : Monoid ℚ := by infer_instance
 instance commSemigroup : CommSemigroup ℚ := by infer_instance
 
 instance semigroup : Semigroup ℚ := by infer_instance
-
-theorem eq_iff_mul_eq_mul {p q : ℚ} : p = q ↔ p.num * q.den = q.num * p.den := by
-  conv =>
-    lhs
-    rw [← num_divInt_den p, ← num_divInt_den q]
-  apply Rat.divInt_eq_divInt_iff <;>
-    · rw [← Int.natCast_zero, Ne, Int.ofNat_inj]
-      apply den_nz
 
 @[simp]
 theorem den_neg_eq_den (q : ℚ) : (-q).den = q.den :=

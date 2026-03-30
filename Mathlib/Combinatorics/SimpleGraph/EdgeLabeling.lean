@@ -123,7 +123,7 @@ def mk (f : ∀ x y : V, G.Adj x y → K)
     (f_symm : ∀ (x y : V) (H : G.Adj x y), f y x H.symm = f x y H) : EdgeLabeling G K
   | ⟨e, he⟩ => by
     revert he
-    refine Sym2.hrec (fun xy ↦ f xy.1 xy.2) (fun a b ↦ ?_) e
+    refine Sym2.hrec f (fun a b ↦ ?_) e
     apply Function.hfunext (by simp [adj_comm])
     grind
 

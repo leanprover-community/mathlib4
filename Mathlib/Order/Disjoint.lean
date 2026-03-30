@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Aesop
 public import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
@@ -55,7 +54,7 @@ theorem disjoint_of_subsingleton [Subsingleton α] : Disjoint a b :=
 
 @[to_dual (attr := grind =)]
 theorem disjoint_comm : Disjoint a b ↔ Disjoint b a :=
-  forall_congr' fun _ ↦ forall_swap
+  forall_congr' fun _ ↦ forall_comm
 
 @[to_dual (attr := symm)]
 theorem Disjoint.symm ⦃a b : α⦄ : Disjoint a b → Disjoint b a :=
@@ -600,7 +599,7 @@ theorem mk_inf_mk {a b : α} (ha : IsComplemented a) (hb : IsComplemented b) :
     (⟨a, ha⟩ ⊓ ⟨b, hb⟩ : Complementeds α) = ⟨a ⊓ b, ha.inf hb⟩ := rfl
 
 instance : DistribLattice (Complementeds α) :=
-  Complementeds.coe_injective.distribLattice _ coe_sup coe_inf
+  Complementeds.coe_injective.distribLattice _ .rfl .rfl coe_sup coe_inf
 
 @[simp, norm_cast]
 theorem disjoint_coe : Disjoint (a : α) b ↔ Disjoint a b := by

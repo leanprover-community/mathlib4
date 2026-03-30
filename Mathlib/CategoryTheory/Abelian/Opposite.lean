@@ -138,6 +138,7 @@ def imageOpUnop : (image f.op).unop ≅ image f :=
 def imageUnopUnop : (image g).unop ≅ image g.unop :=
   (imageUnopOp g).unop
 
+set_option backward.isDefEq.respectTransparency false in
 theorem image_ι_op_comp_imageUnopOp_hom :
     (image.ι g.unop).op ≫ (imageUnopOp g).hom = factorThruImage g := by
   simp only [imageUnopOp, Iso.trans, Iso.symm, Iso.op, cokernelOpOp_inv, cokernelEpiComp_hom,

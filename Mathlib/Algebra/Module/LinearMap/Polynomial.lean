@@ -327,10 +327,11 @@ open Algebra.TensorProduct MvPolynomial in
 
 Proof strategy:
 1. Rewrite `polyCharpolyAux` as the (honest, ordinary) characteristic polynomial
-   of the basechange of `φ` to the multivariate polynomial ring `MvPolynomial ι R`.
+   of the base change of `φ` to the multivariate polynomial ring `MvPolynomial ι R`.
 2. Use that the characteristic polynomial of a linear map is independent of the choice of basis.
    This independence result is used transitively via
-   `LinearMap.polyCharpolyAux_map_aeval` and `LinearMap.polyCharpolyAux_map_eq_charpoly`. -/
+   `LinearMap.polyCharpolyAux_map_aeval` and `LinearMap.polyCharpolyAux_map_eq_charpoly`.
+-/
 lemma polyCharpolyAux_basisIndep {ιM' : Type*} [Fintype ιM'] [DecidableEq ιM']
     (bₘ' : Basis ιM' R M) :
     polyCharpolyAux φ b bₘ = polyCharpolyAux φ b bₘ' := by
