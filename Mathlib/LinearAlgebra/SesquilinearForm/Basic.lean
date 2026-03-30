@@ -79,26 +79,8 @@ variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁
   [Field K₂] [AddCommGroup V₂] [Module K₂ V₂]
   {I₁ : K₁ →+* K} {I₂ : K₂ →+* K} {I₁' : K₁ →+* K} {J₁ : K →+* K} {J₂ : K →+* K}
 
--- todo: this also holds for [CommRing R] [IsDomain R] when J₁ is invertible
-@[deprecated "unused?"]
-theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} {a : K₁} (ha : a ≠ 0) :
-    B x y = 0 ↔ B (a • x) y = 0 := by
-  constructor <;> intro H
-  · rw [map_smulₛₗ₂, H, smul_zero]
-  · rw [map_smulₛₗ₂, smul_eq_zero] at H
-    rcases H with H | H
-    · rw [map_eq_zero I₁] at H
-      trivial
-    · exact H
-
--- todo: this also holds for [CommRing R] [IsDomain R] when J₂ is invertible
-@[deprecated "unused?"]
-theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} {a : K₂} {ha : a ≠ 0} :
-    B x y = 0 ↔ B x (a • y) = 0 := by simp_all
-
 /-- A set of orthogonal vectors `v` with respect to some sesquilinear map `B` is linearly
   independent if for all `i`, `B (v i) (v i) ≠ 0`. -/
-@[deprecated "unused?"]
 theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ[I₁'] V} {v : n → V₁}
     (hv₁ : B.IsOrthoᵢ v) (hv₂ : ∀ i, B (v i) (v i) ≠ 0) : LinearIndependent K₁ v := by
   classical
@@ -116,7 +98,6 @@ theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ
 end Field
 
 /-! ### Reflexive bilinear maps -/
-
 
 section Reflexive
 
@@ -166,7 +147,6 @@ end IsRefl
 end Reflexive
 
 /-! ### Symmetric bilinear forms -/
-
 
 section Symmetric
 
@@ -255,7 +235,6 @@ end PositiveSemidefinite
 
 /-! ### Alternating bilinear maps -/
 
-
 section Alternating
 
 section CommSemiring
@@ -333,10 +312,11 @@ namespace Submodule
 
 /-! ### The orthogonal complement -/
 
-variable [CommSemiring R] [CommSemiring R₁]
-variable [AddCommMonoid M][Module R M]
+variable [CommSemiring R] [CommSemiring R₁] [CommSemiring R₂]
+variable [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid M₁] [Module R₁ M₁]
-variable {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
+variable [AddCommMonoid M₂] [Module R₂ M₂]
+variable {I₁ : R₁ →+* R} {I₂ : R₂ →+* R} {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
 
 /-- The orthogonal complement of a submodule `N` with respect to some bilinear map is the set of
 elements `x` which are orthogonal to all elements of `N`; i.e., for all `y` in `N`, `B x y = 0`.
@@ -345,7 +325,7 @@ Note that for general (neither symmetric nor antisymmetric) bilinear maps this d
 chirality; in addition to this "left" orthogonal complement one could define a "right" orthogonal
 complement for which, for all `y` in `N`, `B y x = 0`.  This variant definition is not currently
 provided in mathlib. -/
-def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Submodule R₁ M₁ where
+def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Submodule R₂ M₂ where
   carrier := { m | ∀ n ∈ N, B n m = 0 }
   zero_mem' x _ := map_zero _
   add_mem' hx hy n hn := by
@@ -356,11 +336,13 @@ def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →
 variable {N L : Submodule R₁ M₁}
 
 @[simp]
-theorem mem_orthogonalBilin_iff {m : M₁} : m ∈ N.orthogonalBilin B ↔ ∀ n ∈ N, B n m = 0:=
+theorem mem_orthogonalBilin_iff {m : M₂} : m ∈ N.orthogonalBilin B ↔ ∀ n ∈ N, B n m = 0:=
   Iff.rfl
 
 theorem orthogonalBilin_le (h : N ≤ L) : L.orthogonalBilin B ≤ N.orthogonalBilin B :=
   fun _ hn l hl ↦ hn l (h hl)
+
+variable {I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
 theorem le_orthogonalBilin_orthogonalBilin (b : B.IsRefl) :
     N ≤ (N.orthogonalBilin B).orthogonalBilin B := fun n hn _m hm ↦ b _ _ (hm n hn)
@@ -416,7 +398,6 @@ theorem isCompl_span_singleton_orthogonal {B : V →ₗ[K] V →ₗ[K] K} {x : V
 end Orthogonal
 
 /-! ### Adjoint pairs -/
-
 
 section AdjointPair
 
@@ -526,7 +507,6 @@ end AdjointPair
 
 /-! ### Self-adjoint pairs -/
 
-
 section SelfadjointPair
 
 section AddCommMonoid
@@ -624,7 +604,6 @@ end AddCommGroup
 end SelfadjointPair
 
 /-! ### Nondegenerate bilinear maps -/
-
 
 section Nondegenerate
 
