@@ -179,26 +179,23 @@ lemma ModuleCat.exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R]
     simpa [len, hk] using ⟨mem, hx.pow k, reg⟩
 
 set_option backward.isDefEq.respectTransparency false in
-lemma CategoryTheory.Abelian.Ext.pow_mono_of_mono
-    (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleCat.{v} R}
+lemma CategoryTheory.Abelian.Ext.pow_mono_of_mono (a : R) (k : ℕ) (i : ℕ) {M N : ModuleCat.{v} R}
     (f_mono : Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp
     N (add_zero i)))) : Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp
     N (add_zero i))) := by
-  induction k with
-  | zero => simp at kpos
-  | succ k ih =>
-    rw [pow_succ]
-    by_cases eq0 : k = 0
-    · rw [eq0, pow_zero, one_mul]
-      exact f_mono
-    · have : (a ^ k * a) • (LinearMap.id (R := R) (M := M)) =
-        (a • (LinearMap.id (M := M))).comp ((a ^ k) • (LinearMap.id (M := M))) := by
-        rw [LinearMap.comp_smul, LinearMap.smul_comp, smul_smul, LinearMap.id_comp]
-      simpa [smulShortComplex, this, ModuleCat.ofHom_comp, ← extFunctorObj_map,
-        (extFunctorObj N i).map_comp] using mono_comp' (ih (Nat.zero_lt_of_ne_zero eq0)) f_mono
+  have (x : R) : Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M x).f).postcomp
+    N (add_zero i))) ↔ IsSMulRegular (Ext N M i) x := by
+    simp only [IsSMulRegular, AddCommGrpCat.mono_iff_injective]
+    congr!
+    ext
+    simp only [smulShortComplex_f_eq_smul_id, AddCommGrpCat.hom_ofHom, Ext.mk₀_smul,
+      AddMonoidHom.flip_apply, bilinearComp_apply_apply, comp_smul]
+    exact congrArg _ (Ext.comp_mk₀_id _)
+  rw [this] at f_mono ⊢
+  exact f_mono.pow k
 
 lemma ModuleCat.subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
-    (N : ModuleCat.{v} R) [Nntr : Nontrivial N] [Nfin : Module.Finite R N]
+    (N : ModuleCat.{v} R) [Nfin : Module.Finite R N]
     (Nsupp : Module.support R N ⊆ PrimeSpectrum.zeroLocus I)
     (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
     (rs : List R) (len : rs.length = n) (mem : ∀ r ∈ rs, r ∈ I) (reg : IsRegular M rs) :
@@ -216,10 +213,6 @@ lemma ModuleCat.subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : I
     | a :: rs' =>
       -- find a positive power of `a` lying in `Ann(N)`
       rcases le_rad (mem a List.mem_cons_self) with ⟨k, hk⟩
-      have kpos : k > 0 := by
-        by_contra h
-        simp only [Nat.eq_zero_of_not_pos h, pow_zero, Module.mem_annihilator, one_smul] at hk
-        exact (not_nontrivial_iff_subsingleton.mpr (subsingleton_of_forall_eq 0 hk)) Nntr
       simp only [isRegular_cons_iff] at reg
       simp only [List.mem_cons, forall_eq_or_imp] at mem
       simp only [List.length_cons, Nat.add_left_inj] at len
@@ -245,7 +238,7 @@ lemma ModuleCat.subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : I
             (ih (ModuleCat.of R (QuotSMulTop a M)) ne.lt_top rs' len mem.2 reg.2 (i - 1) (by omega))
         let gk := (AddCommGrpCat.ofHom
           ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp N (add_zero i)))
-        have mono_gk := Ext.pow_mono_of_mono a kpos i mono_g
+        have mono_gk := Ext.pow_mono_of_mono a k i mono_g
         -- scalar multiple by `aᵏ` on `Ext N M i` is zero since `aᵏ ∈ Ann(N)`, so `Ext N M i` vanish
         have zero_gk : gk = 0 := Ext.smul_id_postcomp_eq_zero_of_mem_ann hk i
         exact AddCommGrpCat.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
