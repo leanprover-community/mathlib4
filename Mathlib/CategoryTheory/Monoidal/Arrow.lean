@@ -5,6 +5,7 @@ Authors: Jack McKoen
 -/
 module
 
+public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackObjObj
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
@@ -78,6 +79,52 @@ namespace PushoutProduct
 section
 
 variable [HasPushouts C]
+
+noncomputable section Iso
+
+open CartesianMonoidalCategory
+
+variable [CartesianMonoidalCategory C] [MonoidalClosed C]
+
+set_option backward.isDefEq.respectTransparency false in
+def _root_.CategoryTheory.Limits.pushout.isInitialWhiskerLeftIso
+    {A B I W : C} (f : A ⟶ B) (hI : IsInitial I) :
+    pushout (f ▷ I) (A ◁ hI.to W) ≅ A ⊗ W where
+  hom := pushout.desc ((hI.ofIso (zeroMul hI).symm).to _) (𝟙 _)
+    ((hI.ofIso (zeroMul hI).symm).hom_ext _ _)
+  inv := pushout.inr _ _
+  hom_inv_id := pushout.hom_ext ((hI.ofIso (zeroMul hI).symm).hom_ext _ _) (by simp)
+
+set_option backward.isDefEq.respectTransparency false in
+def _root_.CategoryTheory.Limits.pushout.isInitialWhiskerRightIso [BraidedCategory C]
+    {A B I W : C} (f : A ⟶ B) (hI : IsInitial I) :
+    pushout (hI.to W ▷ A) (I ◁ f) ≅ W ⊗ A where
+  hom := pushout.desc (𝟙 _) ((hI.ofIso (mulZero hI).symm).to _)
+    ((hI.ofIso (mulZero hI).symm).hom_ext _ _)
+  inv := pushout.inl _ _
+  hom_inv_id := pushout.hom_ext (by simp) ((hI.ofIso (mulZero hI).symm).hom_ext _ _)
+
+set_option backward.isDefEq.respectTransparency false in
+def isInitialIsoWhiskerRight (X : Arrow C) {I W : C} (hI : IsInitial I) :
+    (X □ Arrow.mk (hI.to W)) ≅ Arrow.mk (X.hom ▷ W) :=
+  Arrow.isoMk' _ _ (pushout.isInitialWhiskerLeftIso X.hom hI) (Iso.refl _) (pushout.hom_ext
+    ((hI.ofIso (zeroMul hI).symm).hom_ext _ _) (by simp [pushout.isInitialWhiskerLeftIso]))
+
+-- not strictly necessary
+set_option backward.isDefEq.respectTransparency false in
+def isInitialIsoWhiskerLeft [BraidedCategory C] (X : Arrow C) {I W : C} (hI : IsInitial I) :
+    ((Arrow.mk (hI.to W)) □ X) ≅ Arrow.mk (W ◁ X.hom) :=
+  Arrow.isoMk' _ _ (pushout.isInitialWhiskerRightIso X.hom hI) (Iso.refl _) (pushout.hom_ext
+    (by simp [pushout.isInitialWhiskerRightIso]) ((hI.ofIso (mulZero hI).symm).hom_ext _ _))
+
+def isInitialIsTerminalIso (X : Arrow C) {I T : C} (hI : IsInitial I) (hT : IsTerminal T) :
+    (X □ (Arrow.mk (hI.to T))) ≅ X :=
+  (isInitialIsoWhiskerRight X hI) ≪≫ Arrow.isoMk' _ _
+    (whiskerLeftIso X.left (hT.uniqueUpToIso isTerminalTensorUnit) ≪≫ ρ_ X.left)
+    (whiskerLeftIso X.right (hT.uniqueUpToIso isTerminalTensorUnit) ≪≫ ρ_ X.right)
+    (by simp [← whisker_exchange_assoc])
+
+end Iso
 
 section Monoidal
 
@@ -328,7 +375,74 @@ scoped instance [HasPullbacks C] : MonoidalClosed (Arrow C) where
 
 end
 
+/-- `X □ Y` lifts against `Z` if and only if `Y` lifts against `X ⋔ Z`. -/
+lemma hasLiftingProperty_iff [HasPushouts C] [HasPullbacks C]
+    [MonoidalCategory C] [MonoidalClosed C] {X Y Z : Arrow C} :
+    HasLiftingProperty (X □ Y).hom Z.hom ↔ HasLiftingProperty Y.hom ((.op X) ⋔ Z).hom :=
+  ParametrizedAdjunction.hasLiftingProperty_iff MonoidalClosed.internalHomAdjunction₂
+    (PushoutObjObj.ofHasPushout ..) (PullbackObjObj.ofHasPullback ..)
+
+/-- `X □ Y` lifts against `Z` if and only if `X` lifts against `Y ⋔ Z`. -/
+lemma hasLiftingProperty_iff' [HasPushouts C] [HasPullbacks C]
+    [MonoidalCategory C] [MonoidalClosed C] [BraidedCategory C] {X Y Z : Arrow C} :
+    HasLiftingProperty (X □ Y).hom Z.hom ↔ HasLiftingProperty X.hom ((.op Y) ⋔ Z).hom := by
+  rw [← hasLiftingProperty_iff]
+  exact HasLiftingProperty.iff_of_arrow_iso_left (braiding X Y) Z.hom
+
 end PushoutProduct
+
+namespace PullbackHom
+
+variable [HasPullbacks C]
+
+noncomputable section Iso
+
+open CartesianClosed
+
+variable [MonoidalCategory C] [MonoidalClosed C]
+
+set_option backward.isDefEq.respectTransparency false in
+def _root_.CategoryTheory.Limits.pullback.isInitialWhiskerLeftIso
+    {A B : C} (f : A ⟶ B) {T : C} (hT : IsTerminal T) {W : C} :
+    pullback ((ihom A).map (hT.from W)) ((MonoidalClosed.pre f).app T) ≅ A ⟹ W where
+  hom := pullback.fst _ _
+  inv := by
+    refine pullback.lift (𝟙 _) (MonoidalClosed.curry (hT.from _)) ?_
+    · rw [MonoidalClosed.curry_pre_app, MonoidalClosed.eq_curry_iff]
+      exact hT.hom_ext _ _
+  hom_inv_id := by
+    apply pullback.hom_ext (by simp)
+    · have : T ≅ B ⟹ T := by
+        refine { hom := ?_, inv := ?_, hom_inv_id := ?_, inv_hom_id := ?_ }
+        · exact MonoidalClosed.curry (hT.from _)
+        · exact (hT.from _)
+        · exact hT.hom_ext _ _
+        · rw [MonoidalClosed.curry_eq, ihom.coev_naturality_assoc, Category.assoc,
+            ← Functor.map_comp, ← MonoidalClosed.curry_eq, MonoidalClosed.curry_eq_iff]
+          exact hT.hom_ext _ _
+      have : IsTerminal <| B ⟹ T := by
+        apply hT.ofIso this
+      exact this.hom_ext _ _
+
+set_option backward.isDefEq.respectTransparency false in
+def isTerminalIso_pre (X : Arrow C) {T : C} (hT : IsTerminal T) {W : C} :
+    ((.op X) ⋔ Arrow.mk (hT.from W)) ≅
+      Arrow.mk ((MonoidalClosed.pre X.hom).app W) :=
+  Arrow.isoMk' _ _ (Iso.refl _) (pullback.isInitialWhiskerLeftIso X.hom hT)
+    (by simp [PullbackObjObj.ofHasPullback_π, pullback.isInitialWhiskerLeftIso])
+
+noncomputable
+def isInitialIso_ihom {I : C} (hI : IsInitial I) :
+    ((.op (Arrow.mk (hI.to W))) ⋔ X) ≅
+      Arrow.mk ((ihom W).map X.hom) := by
+  refine Arrow.isoMk' _ _ (Iso.refl _) ?_ ?_
+  · dsimp
+    sorry
+  · sorry
+
+end Iso
+
+end PullbackHom
 
 end MonoidalCategory.Arrow
 
