@@ -322,7 +322,7 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
 
 @[to_additive]
 lemma conj_mem_sup_of_mem_inf_normalizer_of_mem_inf
-    {H K : Subgroup G} {s : G} (hs : s ∈ H.normalizer ⊓ K.normalizer) (g : G) (hg : g ∈ H ⊔ K) :
+    {H K : Subgroup G} {s : G} (hs : s ∈ normalizer H ⊓ normalizer K) (g : G) (hg : g ∈ H ⊔ K) :
     s * g * s⁻¹ ∈ H ⊔ K := by
   simp only [mem_inf, mem_normalizer_iff] at hs
   rw [sup_eq_closure] at hg
@@ -340,27 +340,27 @@ lemma conj_mem_sup_of_mem_inf_normalizer_of_mem_inf
 
 @[to_additive]
 lemma normalizer_inf_normalizer_le_normalizer_sup (H K : Subgroup G) :
-    H.normalizer ⊓ K.normalizer ≤ (H ⊔ K).normalizer := by
+    normalizer H ⊓ normalizer K ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) := by
   intro s hs g
   refine ⟨conj_mem_sup_of_mem_inf_normalizer_of_mem_inf hs g, ?_⟩
   simpa [← mul_assoc] using conj_mem_sup_of_mem_inf_normalizer_of_mem_inf (inv_mem hs) (s * g * s⁻¹)
 
 @[to_additive]
 lemma normalizer_le_normalizer_sup_of_normalizer_le_left
-    {H K : Subgroup G} (hHnK : H.normalizer ≤ K.normalizer) :
-    H.normalizer ≤ (H ⊔ K).normalizer :=
+    {H K : Subgroup G} (hHnK : normalizer H ≤ normalizer (K : Set G)) :
+    normalizer H ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) :=
   (inf_of_le_left hHnK).symm.trans_le (H.normalizer_inf_normalizer_le_normalizer_sup K)
 
 @[to_additive]
 lemma normalizer_le_normalizer_sup_of_normalizer_le_right {H K : Subgroup G}
-    (hHnK : H.normalizer ≤ K.normalizer) :
-    H.normalizer ≤ (K ⊔ H).normalizer := by
+    (hHnK : normalizer H ≤ normalizer (K : Set G)) :
+    normalizer H ≤ normalizer ((K ⊔ H : Subgroup G) : Set G) := by
   rw [sup_comm]
   exact normalizer_le_normalizer_sup_of_normalizer_le_left hHnK
 
 @[to_additive]
 lemma normalizer_le_normalizer_sup_normal {H K : Subgroup G} [hK : K.Normal] :
-    H.normalizer ≤ (H ⊔ K).normalizer :=
+    normalizer H ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) :=
   normalizer_le_normalizer_sup_of_normalizer_le_left le_normalizer_of_normal
 
 @[to_additive]
