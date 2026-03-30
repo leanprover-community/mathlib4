@@ -131,6 +131,24 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
   by_contra hy'
   exact hm' y hy' hy
 
+theorem wellFoundedLT_iff_exists_isMin [Preorder α] :
+    WellFoundedLT α ↔ ∀ s : Set α, s.Nonempty → ∃ m : s, IsMin m := by
+  rw [WellFoundedLT, isWellFounded_iff, wellFounded_iff_has_min]
+  refine ⟨fun h s hs ↦ ?_, fun h s hs ↦ ?_⟩
+  · have ⟨m, hms, hm⟩ := h s hs
+    refine ⟨⟨m, hms⟩, fun ⟨x, hxs⟩ ↦ ?_⟩
+    simpa [lt_iff_le_not_ge] using hm x hxs
+  · have ⟨⟨m, hms⟩, hm⟩ := h s hs
+    refine ⟨m, hms, fun x hxs ↦ ?_⟩
+    simpa [lt_iff_le_not_ge] using @hm ⟨x, hxs⟩
+
+theorem isWellOrder_iff_exists_not_lt_and_eq_or_lt :
+    IsWellOrder α r ↔ ∀ s : Set α, s.Nonempty → ∃ m ∈ s, ∀ x ∈ s, ¬r x m ∧ (m = x ∨ r m x) := by
+  refine ⟨fun h s hs ↦ ?_, fun h ↦ @IsWellOrder.mk α r ⟨?_⟩ ⟨fun a b ↦ ?_⟩⟩
+  · grind [h.wf.has_min, trichotomous_of r]
+  · grind [wellFounded_iff_has_min]
+  · grind [h {a, b} <| by simp]
+
 theorem not_rel_apply_succ [h : IsWellFounded α r] (f : ℕ → α) : ∃ n, ¬ r (f (n + 1)) (f n) := by
   by_contra! hf
   exact (wellFounded_iff_isEmpty_descending_chain.1 h.wf).elim ⟨f, hf⟩
