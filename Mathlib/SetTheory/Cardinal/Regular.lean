@@ -38,11 +38,11 @@ namespace Cardinal
 /-! ### Regular cardinals -/
 
 /-- A cardinal is regular if it is infinite and it equals its own cofinality. -/
-def IsRegular (c : Cardinal) : Prop :=
-  ℵ₀ ≤ c ∧ c ≤ c.ord.cof
-
-theorem IsRegular.aleph0_le {c : Cardinal} (H : c.IsRegular) : ℵ₀ ≤ c :=
-  H.1
+structure IsRegular (c : Cardinal) : Prop where
+  /-- A regular cardinal is infinite. -/
+  aleph0_le : ℵ₀ ≤ c
+  /-- A cardinal equals its own cofinality. See `IsRegular.cof_eq`. -/
+  le_cof_ord : c ≤ c.ord.cof
 
 theorem IsRegular.cof_ord {c : Cardinal} (H : c.IsRegular) : c.ord.cof = c :=
   (cof_ord_le c).antisymm H.2
@@ -90,7 +90,7 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
         apply lt_imp_lt_of_le_imp_le fun h => mul_le_mul_left h c
         rw [mul_eq_self h, ← succ_le_iff, ← αe, ← sum_const']
         refine le_trans ?_ (sum_le_sum (fun (x : S) => card (typein r (x : α))) _ fun i => ?_)
-        · simp only [← card_typein, ← mk_sigma]
+        · simp only [card_typein, ← mk_sigma]
           exact
             ⟨Embedding.ofSurjective (fun x => x.2.1) fun a =>
                 let ⟨b, h, ab⟩ := H a
@@ -102,13 +102,33 @@ theorem isRegular_aleph_one : IsRegular ℵ₁ := by
   rw [← succ_aleph0]
   exact isRegular_succ le_rfl
 
-theorem isRegular_preAleph_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (succ o)) := by
-  rw [preAleph_succ]
+@[simp]
+theorem cof_omega_one : cof ω₁ = ℵ₁ := by
+  simpa using isRegular_aleph_one.cof_omega_eq
+
+theorem isRegular_preAleph_add_one {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (o + 1)) := by
+  rw [← succ_preAleph]
   exact isRegular_succ (aleph0_le_preAleph.2 h)
 
-theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (ℵ_ (succ o)) := by
-  rw [aleph_succ]
+@[deprecated isRegular_preAleph_add_one (since := "2026-03-23")]
+theorem isRegular_preAleph_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (succ o)) :=
+  isRegular_preAleph_add_one h
+
+theorem cof_preOmega_add_one {o : Ordinal} (h : ω ≤ o) :
+    (preOmega (o + 1)).cof = preAleph (o + 1) := by
+  rw [← ord_preAleph, (isRegular_preAleph_add_one h).cof_ord]
+
+theorem isRegular_aleph_add_one (o : Ordinal) : IsRegular (ℵ_ (o + 1)) := by
+  rw [← succ_aleph]
   exact isRegular_succ (aleph0_le_aleph o)
+
+@[deprecated isRegular_aleph_add_one (since := "2026-03-23")]
+theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (ℵ_ (succ o)) :=
+  isRegular_aleph_add_one o
+
+@[simp]
+theorem cof_omega_add_one (o : Ordinal) : (ω_ (o + 1)).cof = ℵ_ (o + 1) :=
+  (isRegular_aleph_add_one o).cof_omega_eq
 
 lemma IsRegular.lift {κ : Cardinal.{v}} (h : κ.IsRegular) :
     (Cardinal.lift.{u} κ).IsRegular := by
@@ -252,11 +272,13 @@ theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' :
 /-! ### Inaccessible cardinals -/
 
 /-- A cardinal is inaccessible if it is an uncountable regular strong limit cardinal. -/
-def IsInaccessible (c : Cardinal) : Prop :=
-  ℵ₀ < c ∧ c ≤ c.ord.cof ∧ ∀ x < c, 2 ^ x < c
-
-theorem IsInaccessible.aleph0_lt {c : Cardinal} (h : IsInaccessible c) : ℵ₀ < c :=
-  h.1
+structure IsInaccessible (c : Cardinal) : Prop where
+  /-- An inaccessible cardinal is uncountable. -/
+  aleph0_lt : ℵ₀ < c
+  /-- An inaccessible cardinal is equal to its own cofinality, see `IsInaccessible.isRegular`. -/
+  le_cof_ord : c ≤ c.ord.cof
+  /-- An inaccessible cardinal is a strong limit, see `IsInaccessible.isStrongLimit`. -/
+  two_power_lt ⦃x⦄ : x < c → 2 ^ x < c
 
 theorem IsInaccessible.nat_lt {c : Cardinal} (h : IsInaccessible c) (n : ℕ) : n < c :=
   natCast_lt_aleph0.trans h.1
@@ -268,17 +290,15 @@ theorem IsInaccessible.ne_zero {c : Cardinal} (h : IsInaccessible c) : c ≠ 0 :
   h.pos.ne'
 
 theorem IsInaccessible.isRegular {c : Cardinal} (h : IsInaccessible c) : IsRegular c :=
-  ⟨h.aleph0_lt.le, h.2.1⟩
+  ⟨h.aleph0_lt.le, h.le_cof_ord⟩
 
 theorem IsInaccessible.isStrongLimit {c : Cardinal} (h : IsInaccessible c) : IsStrongLimit c :=
-  ⟨h.ne_zero, h.2.2⟩
+  ⟨h.ne_zero, h.two_power_lt⟩
 
 theorem isInaccessible_def {c : Cardinal} :
     IsInaccessible c ↔ ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c where
   mp h := ⟨h.aleph0_lt, h.isRegular, h.isStrongLimit⟩
   mpr := fun ⟨h₁, h₂, h₃⟩ ↦ ⟨h₁, h₂.2, h₃.two_power_lt⟩
-
-@[deprecated (since := "2025-08-20")] alias isInaccesible_def := isInaccessible_def
 
 -- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals
 theorem IsInaccessible.univ : IsInaccessible univ.{u, v} :=

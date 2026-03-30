@@ -185,7 +185,7 @@ theorem left_le_opow (a : Ordinal) {b : Ordinal} (b1 : 0 < b) : a ≤ a ^ b := b
   nth_rw 1 [← opow_one a]
   rcases le_or_gt a 1 with a1 | a1
   · rcases lt_or_eq_of_le a1 with a0 | a1
-    · rw [lt_one_iff_zero] at a0
+    · rw [lt_one_iff] at a0
       rw [a0, zero_opow Ordinal.one_ne_zero]
       exact zero_le _
     rw [a1, one_opow, one_opow]
@@ -256,21 +256,11 @@ theorem opow_mul_add_lt_opow_mul {b u w x : Ordinal} {v : Ordinal} (hw : w < b ^
   · rwa [mul_add_one, add_lt_add_iff_left]
   · grw [add_one_le_of_lt hv]
 
-@[deprecated opow_mul_add_lt_opow_mul (since := "2025-08-27")]
-theorem opow_mul_add_lt_opow_mul_succ {b u w : Ordinal} (v : Ordinal) (hw : w < b ^ u) :
-    b ^ u * v + w < b ^ u * succ v :=
-  opow_mul_add_lt_opow_mul hw (lt_succ v)
-
 theorem opow_mul_add_lt_opow {b u v w x : Ordinal} (hv : v < b) (hw : w < b ^ u) (hu : u < x) :
     b ^ u * v + w < b ^ x := by
   apply (opow_mul_add_lt_opow_mul hw hv).trans_le
   rw [← opow_succ]
   exact opow_le_opow_right hv.pos (succ_le_of_lt hu)
-
-@[deprecated opow_mul_add_lt_opow_succ (since := "2025-08-27")]
-theorem opow_mul_add_lt_opow_succ {b u v w : Ordinal} (hvb : v < b) (hw : w < b ^ u) :
-    b ^ u * v + w < b ^ succ u :=
-  opow_mul_add_lt_opow hvb hw (lt_succ u)
 
 theorem opow_mul_lt_opow {b u v x : Ordinal} (hv : v < b) (hu : u < x) : b ^ u * v < b ^ x := by
   simpa using opow_mul_add_lt_opow hv (opow_pos _ hv.pos) hu

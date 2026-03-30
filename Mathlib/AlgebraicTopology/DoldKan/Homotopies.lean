@@ -143,8 +143,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The maps `hσ' q n m hnm` are natural on the simplicial object -/
 theorem hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op ⦋n⦌) ≫ hσ' q n m hnm = hσ' q n m hnm ≫ f.app (op ⦋m⦌) := by
-  have h : n + 1 = m := hnm
-  subst h
+  obtain rfl : n + 1 = m := hnm
   simp only [hσ', eqToHom_refl, comp_id]
   unfold hσ
   split_ifs

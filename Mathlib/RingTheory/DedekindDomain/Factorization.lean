@@ -595,7 +595,7 @@ theorem finite_factors' {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     have hv_irred : Irreducible v.asIdeal := v.irreducible
     by_contra h_notMem
     rw [mem_union, mem_setOf_eq, mem_setOf_eq] at h_notMem
-    push_neg at h_notMem
+    push Not at h_notMem
     rw [← Associates.count_ne_zero_iff_dvd ha_ne_zero hv_irred, not_not,
       ← Associates.count_ne_zero_iff_dvd hJ_ne_zero hv_irred, not_not] at h_notMem
     rw [mem_setOf_eq, h_notMem.1, h_notMem.2, sub_self] at hv
@@ -821,7 +821,7 @@ If `p` is a maximal ideal, then the lift of `p` in an extension is the product o
 over `p` to the power the ramification index.
 -/
 theorem Ideal.map_algebraMap_eq_finset_prod_pow {p : Ideal S} [p.IsMaximal] (hp : p ≠ 0) :
-    map (algebraMap S R) p = ∏ P ∈ p.primesOver R, P ^ p.ramificationIdx (algebraMap S R) P := by
+    map (algebraMap S R) p = ∏ P ∈ p.primesOver R, P ^ p.ramificationIdx P := by
   classical
   have h : map (algebraMap S R) p ≠ 0 := map_ne_bot_of_ne_bot hp
   rw [← finprod_heightOneSpectrum_factorization (I := p.map (algebraMap S R)) h]
