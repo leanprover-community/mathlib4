@@ -12,7 +12,7 @@ public import Mathlib.Tactic.AdaptationNote
 # Regular Expressions
 
 This file contains the formal definition for regular expressions and basic lemmas. Note these are
-regular expressions in terms of formal language theory. This is different from regexes used in
+regular expressions in terms of formal language theory. Note this is different to regexes used in
 computer science such as the POSIX standard.
 
 ## TODO
