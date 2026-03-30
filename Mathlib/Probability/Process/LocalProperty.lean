@@ -323,18 +323,21 @@ lemma IsStable.locally_locally_iff [IsRightContinuous 𝓕] (hp : IsStable 𝓕 
   · simp_rw [inf_comm]
     rfl
 
-/-- If `p` implies `q` locally, then `p` locally implies `q` locally. -/
-lemma locally_induction [IsRightContinuous 𝓕]
-    (hpq : ∀ Y, p Y → Locally q 𝓕 Y P) (hq : IsStable 𝓕 q) (hpX : Locally p 𝓕 X P) :
+/-- If `q` is a stable property and `p` implies `q` locally, then `p` locally implies
+`q` locally. -/
+lemma IsStable.locally_induction [IsRightContinuous 𝓕]
+    (hq : IsStable 𝓕 q) (hpq : ∀ Y, p Y → Locally q 𝓕 Y P) (hpX : Locally p 𝓕 X P) :
     Locally q 𝓕 X P :=
   hq.locally_locally_iff.1 <| hpX.mono hpq
 
-lemma locally_induction₂ {r : (ι → Ω → E) → Prop} [IsRightContinuous 𝓕]
+/-- If `p, q, r` are stable properties and `r` and `p` implies locally `q`, then `r` locally
+and `p` locally imply `q` locally. -/
+lemma IsStable.locally_induction₂ {r : (ι → Ω → E) → Prop} [IsRightContinuous 𝓕]
     (hrpq : ∀ Y, r Y → p Y → Locally q 𝓕 Y P)
     (hr : IsStable 𝓕 r) (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q)
     (hrX : Locally r 𝓕 X P) (hpX : Locally p 𝓕 X P) :
     Locally q 𝓕 X P :=
-  locally_induction (p := fun Y ↦ r Y ∧ p Y) (and_imp.2 <| hrpq ·) hq <|
+  hq.locally_induction (p := fun Y ↦ r Y ∧ p Y) (and_imp.2 <| hrpq ·) <|
     (hr.locally_and_iff hp).2 ⟨hrX, hpX⟩
 
 end
