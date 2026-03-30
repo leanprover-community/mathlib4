@@ -79,7 +79,7 @@ Helper lemma to pass between the orders on `ℕ∞` and `ℤᵐ⁰` (which notab
 `∞`). Note that here we're using the fact that the order of any non zero divisor is finite, hence
 the assumptions on the ring.
 -/
-lemma ord_le_iff (a b : R) (ha : a ∈ nonZeroDivisors R) (hb : b ∈ nonZeroDivisors R) :
+lemma ord_le_iff {a b : R} (ha : a ∈ nonZeroDivisors R) (hb : b ∈ nonZeroDivisors R) :
     ord R a ≤ ord R b ↔ ordMonoidWithZeroHom R a ≤ ordMonoidWithZeroHom R b := by
   lift a to R⁰ using ha
   lift b to R⁰ using hb
