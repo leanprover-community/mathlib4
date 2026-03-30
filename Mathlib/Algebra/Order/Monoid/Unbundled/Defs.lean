@@ -257,9 +257,14 @@ class AddRightReflectLE [Add M] [LE M] : Prop where
 
 attribute [to_additive existing] MulLeftReflectLE MulRightReflectLE
 
+variable {M N μ r} in
+theorem rel_iff_cov' (hcov : Covariant M N μ r) (hcontra : Contravariant M N μ r) {m : M}
+    {a b : N} : r (μ m a) (μ m b) ↔ r a b :=
+  ⟨hcontra m, hcov m⟩
+
 theorem rel_iff_cov [CovariantClass M N μ r] [ContravariantClass M N μ r] (m : M) {a b : N} :
     r (μ m a) (μ m b) ↔ r a b :=
-  ⟨ContravariantClass.elim _, CovariantClass.elim _⟩
+  rel_iff_cov' CovariantClass.elim ContravariantClass.elim
 
 section flip
 
