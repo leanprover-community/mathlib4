@@ -45,15 +45,15 @@ open Matrix
 variable {X α l m n p S R : Type*} {m' n' : l → Type*}
 
 instance [TopologicalSpace R] : TopologicalSpace (Matrix m n R) :=
-  Pi.topologicalSpace
+  inferInstanceAs <| TopologicalSpace (m → n → R)
 
 instance [TopologicalSpace R] [T2Space R] : T2Space (Matrix m n R) :=
-  Pi.t2Space
+  inferInstanceAs <| T2Space (m → n → R)
 
 /-- The topology on finite matrices over a discrete space is discrete. -/
 instance [TopologicalSpace R] [Finite m] [Finite n] [DiscreteTopology R] :
     DiscreteTopology (Matrix m n R) :=
-  Pi.discreteTopology
+  inferInstanceAs <| DiscreteTopology (m → n → R)
 
 section Set
 

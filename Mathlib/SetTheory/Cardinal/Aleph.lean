@@ -292,13 +292,14 @@ theorem ord_preAleph (o : Ordinal) : (preAleph o).ord = preOmega o := by
   rw [← o.card_preOmega, (isInitial_preOmega o).ord_card]
 
 @[simp]
-theorem type_cardinal : typeLT Cardinal = Ordinal.univ.{u, u + 1} := by
-  rw [Ordinal.univ_id]
-  exact Quotient.sound ⟨preAleph.symm.toRelIsoLT⟩
+theorem _root_.Ordinal.type_lt_cardinal : typeLT Cardinal = Ordinal.univ.{u, u + 1} := by
+  simpa using preAleph.symm.toRelIsoLT.ordinal_type_eq
+
+@[deprecated (since := "2026-03-20")] alias type_cardinal := type_lt_cardinal
 
 @[simp]
 theorem mk_cardinal : #Cardinal = univ.{u, u + 1} := by
-  simpa only [card_type, card_univ] using congr_arg card type_cardinal
+  simpa only [card_type, card_univ] using congr_arg card type_lt_cardinal
 
 theorem preAleph_lt_preAleph {o₁ o₂ : Ordinal} : preAleph o₁ < preAleph o₂ ↔ o₁ < o₂ :=
   preAleph.lt_iff_lt
@@ -313,10 +314,15 @@ theorem preAleph_max (o₁ o₂ : Ordinal) : preAleph (max o₁ o₂) = max (pre
 theorem preAleph_zero : preAleph 0 = 0 :=
   preAleph.map_bot
 
+@[simp]
+theorem succ_preAleph (o : Ordinal) : succ (preAleph o) = preAleph (o + 1) :=
+  (preAleph.map_succ o).symm
+
+@[deprecated succ_preAleph (since := "2026-03-24")]
 theorem preAleph_add_one (o : Ordinal) : preAleph (o + 1) = succ (preAleph o) :=
   preAleph.map_succ o
 
--- TODO: deprecate
+@[deprecated succ_preAleph (since := "2026-03-24")]
 theorem preAleph_succ (o : Ordinal) : preAleph (succ o) = succ (preAleph o) :=
   preAleph.map_succ o
 
@@ -409,12 +415,16 @@ theorem preAleph_le_aleph (o : Ordinal) : preAleph o ≤ ℵ_ o :=
   preAleph_le_preAleph.2 le_add_self
 
 @[simp]
-theorem aleph_add_one (o : Ordinal) : ℵ_ (o + 1) = succ (ℵ_ o) := by
-  rw [aleph_eq_preAleph, ← add_assoc, preAleph_add_one, aleph_eq_preAleph]
+theorem succ_aleph (o : Ordinal) : succ (ℵ_ o) = ℵ_ (o + 1) := by
+  rw [aleph_eq_preAleph, succ_preAleph, add_assoc, aleph_eq_preAleph]
 
--- TODO: deprecate
+@[deprecated succ_aleph (since := "2026-03-24")]
+theorem aleph_add_one (o : Ordinal) : ℵ_ (o + 1) = succ (ℵ_ o) := by
+  simp
+
+@[deprecated succ_aleph (since := "2026-03-24")]
 theorem aleph_succ (o : Ordinal) : ℵ_ (succ o) = succ (ℵ_ o) :=
-  aleph_add_one o
+  (succ_aleph o).symm
 
 @[simp]
 theorem aleph_zero : ℵ_ 0 = ℵ₀ := by rw [aleph_eq_preAleph, add_zero, preAleph_omega0]
@@ -475,7 +485,7 @@ theorem lt_omega_iff_card_lt {x o : Ordinal} : x < ω_ o ↔ x.card < ℵ_ o := 
 
 @[simp]
 theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by
-  rw [← aleph_zero, ← aleph_add_one, zero_add]
+  rw [← aleph_zero, succ_aleph, zero_add]
 
 @[simp]
 theorem aleph_one_le_iff {c : Cardinal} : ℵ₁ ≤ c ↔ ℵ₀ < c := by
