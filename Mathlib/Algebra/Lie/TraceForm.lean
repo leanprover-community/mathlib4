@@ -375,7 +375,7 @@ noncomputable def killingCompl : LieIdeal R L :=
 lemma coe_killingCompl_top :
     killingCompl R L ⊤ = LinearMap.ker (killingForm R L) := by
   ext x
-  simp [LinearMap.ext_iff, LinearMap.BilinForm.IsOrtho, LieModule.traceForm_comm R L L x]
+  simp [LinearMap.ext_iff, LieModule.traceForm_comm R L L x]
 
 lemma restrict_killingForm :
     (killingForm R L).restrict I = LieModule.traceForm R I L :=
