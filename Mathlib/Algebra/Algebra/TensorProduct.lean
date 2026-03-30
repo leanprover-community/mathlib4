@@ -14,7 +14,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Tower
 If `A` is an `R`-algebra, then the tensor product `M ⊗[A] N` of two modules `M, N` over `A`
 can be constructed as a quotient of `M ⊗[R] N` by the span of
 `{(a • m) ⊗ₜ[R] n - m ⊗ₜ[R] (a • n) | (a : A) (m : M) (n : N)}`.
-In other words `(mapOfCompatibleSMul' A R M N) : M ⊗[A] N →ₗ[A] M ⊗[R] N` is surjective and its
+In other words `(mapOfCompatibleSMul A R A M N) : M ⊗[A] N →ₗ[A] M ⊗[R] N` is surjective and its
 kernel is the span of `{(a • m) ⊗ₜ[R] n - m ⊗ₜ[R] (a • n) | (a : A) (m : M) (n : N)}`.
 
 -/
@@ -31,13 +31,10 @@ variable
   {M : Type*} [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
   {N : Type*} [AddCommMonoid N] [Module R N] [Module A N] [IsScalarTower R A N]
 
-lemma surjective_mapOfCompatibleSMul' : Surjective (mapOfCompatibleSMul' A R M N) := by
-  exact mapOfCompatibleSMul_surjective A R M N
-
-lemma ker_mapOfCompatibleSMul' :
-    (mapOfCompatibleSMul' A R M N).ker =
+lemma ker_mapOfCompatibleSMul :
+    (mapOfCompatibleSMul A R A M N).ker =
       span A {(a • m) ⊗ₜ[R] n - m ⊗ₜ[R] (a • n) | (a : A) (m : M) (n : N)} := by
-  refine Eq.symm (span_eq_of_le (mapOfCompatibleSMul' A R M N).ker ?_ ?_)
+  refine Eq.symm (span_eq_of_le (mapOfCompatibleSMul A R A M N).ker ?_ ?_)
   · rintro x ⟨a, m, n, h⟩
     simp [← h, smul_tmul]
   · let S := span A {(a • m) ⊗ₜ[R] n - m ⊗ₜ[R] (a • n) | (a : A) (m : M) (n : N)}
@@ -51,12 +48,12 @@ lemma ker_mapOfCompatibleSMul' :
           exact Submodule.subset_span ⟨a, m, n, rfl⟩ }
       map_add' _ _ := by ext _; simp [add_tmul]
       map_smul' _ _ := by simp; rfl })
-    have h : F ∘ₗ(mapOfCompatibleSMul' A R M N) = S.mkQ := by
+    have h : F ∘ₗ(mapOfCompatibleSMul A R A M N) = S.mkQ := by
       ext m n
       simp [mkQ_apply, S, F]
-    change (mapOfCompatibleSMul' A R M N).ker ≤ S
+    change (mapOfCompatibleSMul A R A M N).ker ≤ S
     rw [← ker_mkQ S, ← h]
-    exact LinearMap.ker_le_ker_comp (mapOfCompatibleSMul' A R M N) F
+    exact LinearMap.ker_le_ker_comp (mapOfCompatibleSMul A R A M N) F
 
 end TensorProduct
 end
