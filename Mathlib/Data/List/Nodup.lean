@@ -284,7 +284,7 @@ theorem nodup_flatMap {l₁ : List α} {f : α → List β} :
   simp only [List.flatMap, nodup_flatten, pairwise_map, and_comm, mem_map,
     exists_imp, and_imp]
   rw [show (∀ (l : List β) (x : α), f x = l → x ∈ l₁ → Nodup l) ↔ ∀ x : α, x ∈ l₁ → Nodup (f x)
-      from forall_swap.trans <| forall_congr' fun _ => forall_eq']
+      from forall_comm.trans <| forall_congr' fun _ => forall_eq']
 
 protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l₂.Nodup) :
     (l₁ ×ˢ l₂).Nodup :=
