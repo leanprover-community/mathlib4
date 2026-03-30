@@ -55,6 +55,11 @@ variable [CommSemiring R] [CommSemiring R₁] [AddCommMonoid M₁] [Module R₁ 
   [AddCommMonoid M₂] [Module R₂ M₂] [AddCommMonoid M] [Module R M]
   {I₁ : R₁ →+* R} {I₂ : R₂ →+* R} {I₁' : R₁ →+* R}
 
+/-- The proposition that two elements of a sesquilinear map space are orthogonal -/
+@[deprecated "Use `B x y = 0`" (since := "2026-03-30")]
+def IsOrtho (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x : M₁) (y : M₂) : Prop :=
+  B x y = 0
+
 open scoped Function in -- required for scoped `on` notation
 /-- A set of vectors `v` is orthogonal with respect to some bilinear map `B` if and only
 if for all `i ≠ j`, `B (v i) (v j) = 0`. -/

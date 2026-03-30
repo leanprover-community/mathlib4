@@ -48,6 +48,12 @@ namespace LinearMap
 
 namespace BilinForm
 
+/-- The proposition that two elements of a bilinear form space are orthogonal. For orthogonality
+of an indexed set of elements, use `BilinForm.iIsOrtho`. -/
+@[deprecated "Use `B x y = 0`." (since := "2026-03-30")]
+def IsOrtho (B : BilinForm R M) (x y : M) : Prop :=
+  B x y = 0
+
 theorem ne_zero_of_not_isOrtho_self {B : BilinForm K V} (x : V) (hx₁ : B x x ≠ 0) : x ≠ 0 := by
   by_contra; simp [this] at hx₁
 
