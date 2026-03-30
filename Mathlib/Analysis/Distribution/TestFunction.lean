@@ -402,8 +402,8 @@ theorem injective_toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTow
     Function.Injective (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F) :=
   fun f g ↦ by simp [toBoundedContinuousFunctionCLM]
 
-instance : ContinuousEvalConst 𝓓^{n}(Ω, F) E F :=
-  ContinuousEvalConst.of_continuous_forget
+instance : ContinuousEval 𝓓^{n}(Ω, F) E F :=
+  ContinuousEval.of_continuous_forget
     (toBoundedContinuousFunctionCLM ℝ).continuous
 
 instance : T3Space 𝓓^{n}(Ω, F) :=

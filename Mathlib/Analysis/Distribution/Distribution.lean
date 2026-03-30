@@ -190,7 +190,7 @@ end mapCLM
 
 section DiracDelta
 
-/-- The Dirac delta distribution -/
+/-- The Dirac delta distribution. This is zero if `x` does not belong to `Ω`. -/
 def delta (x : E) : 𝓓'^{n}(Ω, ℝ) where
   toFun f := f x
   map_add' _ _ := rfl
