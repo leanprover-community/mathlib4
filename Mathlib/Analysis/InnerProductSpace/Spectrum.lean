@@ -379,12 +379,12 @@ theorem eigenvalues_eq_eigenvalues_iff {E' : Type*} [NormedAddCommGroup E'] [Inn
     hT.eigenvalues hn = hT'.eigenvalues hn' ↔ T.charpoly = T'.charpoly where
   mp h := by rw [hT.charpoly_eq hn, hT'.charpoly_eq hn', h]
   mpr h := by
-    rw [← List.ofFn_inj, ← sort_roots_charpoly_eq_eigenvalues, ← sort_roots_charpoly_eq_eigenvalues]
-    rw [h]
+    rw [← List.ofFn_inj, ← sort_roots_charpoly_eq_eigenvalues, ← sort_roots_charpoly_eq_eigenvalues,
+      h]
 
-theorem splits_charpoly (hT : T.IsSymmetric) : T.charpoly.Splits :=
-  Polynomial.splits_iff_card_roots.mpr (by
-    simp [hT.roots_charpoly_eq_eigenvalues rfl, LinearMap.charpoly_natDegree])
+theorem splits_charpoly (hT : T.IsSymmetric) : T.charpoly.Splits := by
+  refine Polynomial.splits_iff_card_roots.mpr ?_
+  simp [hT.roots_charpoly_eq_eigenvalues rfl, LinearMap.charpoly_natDegree]
 
 theorem det_eq_prod_eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
     T.det = ∏ i, (hT.eigenvalues hn i : 𝕜) := by
