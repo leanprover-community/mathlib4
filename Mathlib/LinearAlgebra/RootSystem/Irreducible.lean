@@ -166,6 +166,11 @@ lemma isSimpleModule_weylGroupRootRep [P.IsIrreducible] :
   have := IsIrreducible.nontrivial P
   P.isSimpleModule_weylGroupRootRep_iff.mpr IsIrreducible.eq_top_of_invtSubmodule_reflection
 
+@[nontriviality]
+lemma not_isIrreducible_of_subsingleton [Subsingleton M] :
+    ¬ P.IsIrreducible :=
+  fun contra ↦ not_nontrivial _ contra.nontrivial
+
 /-- A nonempty irreducible root pairing is a root system. -/
 instance [Nonempty ι] [NeZero (2 : R)] [P.IsIrreducible] : P.IsRootSystem where
   span_root_eq_top := IsIrreducible.eq_top_of_invtSubmodule_reflection

@@ -28,7 +28,7 @@ theorem acc_def {α} {r : α → α → Prop} {a : α} : Acc r a ↔ ∀ b, r b 
 
 theorem exists_not_acc_lt_of_not_acc {α} {a : α} {r} (h : ¬Acc r a) : ∃ b, ¬Acc r b ∧ r b a := by
   rw [acc_def] at h
-  push_neg at h
+  push Not at h
   simpa only [and_comm]
 
 theorem not_acc_iff_exists_descending_chain {α} {r : α → α → Prop} {x : α} :
