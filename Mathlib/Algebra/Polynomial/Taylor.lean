@@ -160,12 +160,18 @@ theorem taylor_taylor (f : R[X]) (r s : R) : taylor r (taylor s f) = taylor (r +
 theorem taylor_eval (r : R) (f : R[X]) (s : R) : (taylor r f).eval s = f.eval (s + r) := by
   simp only [taylor_apply, eval_comp, eval_C, eval_X, eval_add]
 
+theorem exists_mul_sq_add_linear_part_eq_eval_add (p : R[X]) (x y : R) :
+    ∃ c : R, c * y ^ 2 + p.derivative.eval x * y + p.eval x = p.eval (x + y) := by
+  rw [show x + y = y + x from add_comm .., ← p.taylor_eval x y, ((taylor x) p).eval_eq_sum_range'
+    ((Nat.lt_succ_self _).trans (Nat.lt_succ_self _)), Finset.sum_range_succ',
+    Finset.sum_range_succ']
+  use ∑ x_1 ∈ Finset.range p.natDegree, ((taylor x) p).coeff (x_1 + 1 + 1) * y ^ x_1
+  simp [pow_succ, mul_assoc, Finset.sum_mul]
+
 theorem eval_add_of_sq_eq_zero (p : R[X]) (x y : R) (hy : y ^ 2 = 0) :
     p.eval (x + y) = p.eval x + p.derivative.eval x * y := by
-  rw [add_comm, ← Polynomial.taylor_eval,
-    Polynomial.eval_eq_sum_range' ((Nat.lt_succ_self _).trans (Nat.lt_succ_self _)),
-    Finset.sum_range_succ', Finset.sum_range_succ']
-  simp [pow_succ, mul_assoc, ← pow_two, hy, add_comm (eval x p)]
+  rcases exists_mul_sq_add_linear_part_eq_eval_add p x y with ⟨c, h⟩
+  rw [← h, hy]; ring
 
 theorem aeval_add_of_sq_eq_zero {S : Type*} [CommRing S] [Algebra R S]
     (p : R[X]) (x y : S) (hy : y ^ 2 = 0) :
