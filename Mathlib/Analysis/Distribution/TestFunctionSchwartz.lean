@@ -9,10 +9,29 @@ public import Mathlib.Analysis.Distribution.Distribution
 public import Mathlib.Analysis.Distribution.TemperedDistribution
 
 /-!
-# Compactly supported smooth functions as Schwartz functions
+# Maps between test functions, Schwartz functions, tempered distributions, and distributions
 
 This file defines the canonical continuous linear map from test functions to Schwartz functions,
-and the induced (linear) restriction map from tempered distributions to distributions.
+and the induced (linear) restriction map from tempered distributions to distributions. More
+explicitly, a smooth compactly supported function is automatically a Schwartz function, and we show
+that this assignment is linear and continuous (with respect to the natural locally
+convex topologies.)
+
+Then, a tempered distribution can be restricted to a distribution by
+precomposing with the above map, and we show that this assignment is linear. We don't
+show continuity since the source and target dual spaces use different topologies.
+
+## Main definitions
+
+- `ContDiffMapSupportedIn.toSchwartzMapCLM`: the local map `𝓓_K(E, F) →L[𝕜] 𝓢(E, F)`.
+- `TestFunction.toSchwartzMapCLM`: the canonical continuous linear map `𝓓(Ω, F) →L[𝕜] 𝓢(E, F)`.
+- `TestFunction.toComplexSchwartzMapCLM`: the canonical continuous linear map
+  `𝓓(Ω, ℝ) →L[ℝ] 𝓢(E, ℂ)`, used to let tempered distributions act on real-valued test functions.
+- `TemperedDistribution.toDistributionLM`: the induced linear map `𝓢'(E, F) →ₗ[ℂ] 𝓓'(Ω, F)`.
+
+## Tags
+
+distributions, test function
 -/
 
 @[expose] public noncomputable section
