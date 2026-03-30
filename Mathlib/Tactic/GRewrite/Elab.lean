@@ -83,6 +83,8 @@ relation.
 `apply_rewrite [e₁, ..., eₙ]` is a shorthand for `grewrite +implicationHyp [e₁, ..., eₙ]`: it
 interprets `· → ·` as a relation instead of adding side conditions.
 
+* `grewrite [← e]` applies the rewrite rule `e : R a b` in the reverse direction, replacing
+  occurrences of `b` with `a`.
 * `grewrite (config := cfg) [e₁, ..., eₙ]` uses `cfg` as configuration. See `GRewrite.Config` for
   details.
   * To let `grewrite` unfold more aggressively, as in `erw`, use
@@ -123,13 +125,14 @@ This is useful when `grw` tries to rewrite in a position that is not valid for t
 `apply_rw [rules]` is a shorthand for `grw +implicationHyp [rules]`: it interprets `· → ·` as a
 relation instead of adding side conditions.
 
+* `grw [← e]` applies the rewrite rule `e : R a b` in the reverse direction, replacing occurrences
+  of `b` with `a`.
 * `grw (config := cfg) [e₁, ..., eₙ]` uses `cfg` as configuration. See `GRewrite.Config` for
   details.
   * To let `grw` unfold more aggressively, as in `erw`, use
     `grw (transparency := default) [e₁, ..., eₙ]`.
   * `grw +implicationHyp [e₁, ..., e\_n]` interprets `· → ·` as a relation (see `apply_rw`).
-* `grw [← e]` applies the rewrite rule in the reverse direction.
-* `grw [e₁, ..., e\_n] at l` rewrites at the location(s) `l`.
+* `grw [e₁, ..., eₙ] at l` rewrites at the location(s) `l`.
 
 Examples:
 
@@ -166,6 +169,8 @@ type `pᵢ → qᵢ`, on the main goal, replacing occurrences of `pᵢ` with `q�
 If an expression `e` is a defined constant, then the equational theorems associated with `e` are
 used. This provides a convenient way to unfold `e`.
 
+* `apply_rewrite [← e]` applies the rewrite rule `e : p → q` in the reverse direction, replacing
+  occurrences of `q` with `p`.
 * `apply_rewrite (config := cfg) [e₁, ..., eₙ]` uses `cfg` as configuration. See `GRewrite.Config`
   for details.
   To let `apply_rewrite` unfold more aggressively, as in `erw`, use
@@ -183,6 +188,8 @@ that `grw` would turn `pᵢ` into a side goal and expect `qᵢ` to be a relation
 If an expression `e` is a defined constant, then the equational theorems associated with `e` are
 used. This provides a convenient way to unfold `e`.
 
+* `apply_rw [← e]` applies the rewrite rule `e : p → q` in the reverse direction, replacing
+  occurrences of `q` with `p`.
 * `apply_rw (config := cfg) [e₁, ..., eₙ]` uses `cfg` as configuration. See `GRewrite.Config`
   for details.
   To let `apply_rw` unfold more aggressively, as in `erw`, use
@@ -211,6 +218,8 @@ The strict inequality `a < b` is turned into the non-strict inequality `a ≤ b`
 A future version of `nth_grewrite` may get special support for making better use of strict
 inequalities.
 
+* `nth_grewrite n₁ ... nₖ [← e]` applies the rewrite rule `e : R a b` in the reverse direction,
+  replacing the `n₁, ..., nₖ`th occurrences of `b` with `a`.
 * `nth_grewrite (config := cfg) n₁ ... nₖ [e₁, ..., eₙ]` uses `cfg` as configuration. See
   `GRewrite.Config` for details.
   * To let `nth_grewrite` unfold more aggressively, as in `erw`, use
@@ -240,6 +249,8 @@ The strict inequality `a < b` is turned into the non-strict inequality `a ≤ b`
 A future version of `nth_grw` may get special support for making better use of strict
 inequalities.
 
+* `nth_grw n₁ ... nₖ [← e]` applies the rewrite rule `e : R a b` in the reverse direction, replacing
+  the `n₁, ..., nₖ`th occurrences of `b` with `a`.
 * `nth_grw (config := cfg) n₁ ... nₖ [e₁, ..., eₙ]` uses `cfg` as configuration. See
   `GRewrite.Config` for details.
   * To let `nth_grw` unfold more aggressively, as in `erw`, use
