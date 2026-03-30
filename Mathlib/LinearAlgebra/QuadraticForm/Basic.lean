@@ -1073,7 +1073,6 @@ section CommRing
 variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
   {Q : QuadraticMap R M N}
 
-@[simp]
 theorem isOrtho_polarBilin {x y : M} : Q.polarBilin x y = 0 ↔ IsOrtho Q x y := by
   simp_rw [isOrtho_def, polarBilin_apply_apply, polar, sub_sub, sub_eq_zero]
 
