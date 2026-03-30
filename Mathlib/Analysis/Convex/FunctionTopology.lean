@@ -21,9 +21,10 @@ We prove the following facts:
 open scoped Topology
 open Set
 
-variable {𝕜 α β : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [TopologicalSpace β]
-    [PartialOrder β] [OrderClosedTopology β] [SMul 𝕜 α] [SMul 𝕜 β]
+variable {𝕜 α β : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [PartialOrder β]
+    [TopologicalSpace β] [OrderClosedTopology β]
     [AddCommMonoid α] [AddCommMonoid β] [TopologicalSpace 𝕜]
+    [SMul 𝕜 α] [SMul 𝕜 β]
     [ContinuousSMul 𝕜 β] [ContinuousAdd β]
 
 /-- The set of convex functions on a set `s` is closed. -/
