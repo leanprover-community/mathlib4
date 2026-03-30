@@ -63,19 +63,6 @@ def dual (s : Set M) : PointedCone R N where
 @[simp] lemma dual_singleton_zero : dual p {0} = ⊤ := dual_zero
 @[simp] lemma dual_ker : dual p (ker p) = ⊤ := by ext; simp +contextual
 
-lemma dual_univ_ker : dual p .univ = ker p.flip := by
-  ext x
-  simp_rw [mem_dual, Set.mem_univ, forall_const, Submodule.restrictScalars_mem,
-    mem_ker, LinearMap.ext_iff, flip_apply, zero_apply]
-  constructor <;> intro h y
-  · exact le_antisymm (by simpa using @h (-y)) (@h y)
-  · rw [h y]
-
-lemma dual_flip_univ_ker : dual p.flip .univ = ker p := by
-  nth_rw 2 [← flip_flip p]; exact dual_univ_ker
-
-variable [Fact p.SeparatingRight] in
-@[simp] lemma dual_univ : dual p .univ = ⊥ := by simp [dual_univ_ker]
 @[gcongr] lemma dual_anti (h : t ⊆ s) : dual p s ≤ dual p t := fun _y hy _x hx ↦ hy (h hx)
 
 alias dual_le_dual := dual_anti
@@ -159,10 +146,16 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {N : Type*} [AddCommMonoid N] [Module R N]
 variable {p : M →ₗ[R] N →ₗ[R] R}
 
-lemma dual_univ (hp : Injective p.flip) : dual p univ = 0 := by
-  refine le_antisymm (fun y hy ↦ (map_eq_zero_iff p.flip hp).1 ?_) (by simp)
+lemma dual_univ_ker : dual p .univ = ker p.flip := by
   ext x
-  exact (hy <| mem_univ x).antisymm' <| by simpa using hy <| mem_univ (-x)
+  simp_rw [mem_dual, Set.mem_univ, forall_const, Submodule.restrictScalars_mem,
+    mem_ker, LinearMap.ext_iff, flip_apply, zero_apply]
+  constructor <;> intro h y
+  · exact le_antisymm (by simpa using @h (-y)) (@h y)
+  · rw [h y]
+
+variable [Fact p.SeparatingRight] in
+@[simp] lemma dual_univ : dual p .univ = ⊥ := by simp [dual_univ_ker]
 
 variable {N : Type*} [AddCommGroup N] [Module R N]
 variable {p : M →ₗ[R] N →ₗ[R] R}
