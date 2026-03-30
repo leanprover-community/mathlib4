@@ -554,6 +554,33 @@ theorem _root_.Monotone.measure_iInter [Preorder ι] [IsCodirectedOrder ι]
       rcases (hx.eventually_le_atBot i).exists with ⟨n, hn⟩
       exact ⟨n, hs hn⟩
 
+theorem measure_iInter_of_ae_monotone [Preorder ι] [IsCodirectedOrder ι]
+    [(atBot : Filter ι).IsCountablyGenerated] {s : ι → Set α}
+    (hs : ∀ᵐ ω ∂μ, Monotone (ω ∈ s ·))
+    (hsm : ∀ i, NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
+    μ (⋂ i, s i) = ⨅ i, μ (s i) := by
+  haveI : Nonempty ι := by
+    obtain ⟨i, -⟩ := hfin
+    exact ⟨i⟩
+  set t : ι → Set α := fun i ↦ s i ∩ {ω | Monotone (ω ∈ s ·)} with ht
+  have hst (i : ι) : s i =ᵐ[μ] t i := by
+    filter_upwards [hs] with ω hω
+    suffices ω ∈ s i ↔ ω ∈ t i by
+      exact propext this
+    simp only [ht, mem_inter_iff, mem_setOf_eq, iff_self_and]
+    exact fun _ ↦ hω
+  have hMono : Monotone t := fun i j hij ω hω ↦ ⟨hω.2 hij hω.1, hω.2⟩
+  rw [iInf_congr <| fun i ↦ measure_congr <| hst i,
+    ← hMono.measure_iInter (μ := μ) (fun i ↦ (hsm i).congr (hst i))]
+  · refine measure_congr ?_
+    simp only [ht]
+    rw [← iInter_inter]
+    nth_rw 1 [← inter_univ (⋂ i, s i)]
+    exact ae_eq_set_inter (by rfl) (ae_eq_univ.2 hs).symm
+  · obtain ⟨i, hi⟩ := hfin
+    refine ⟨i, (lt_of_le_of_lt ?_ <| lt_top_iff_ne_top.2 hi).ne⟩
+    rw [measure_congr (hst i)]
+
 /-- **Continuity from above**:
 the measure of the intersection of an antitone family of measurable sets
 indexed by a type with countably generated `atTop` filter
@@ -564,28 +591,13 @@ theorem _root_.Antitone.measure_iInter [Preorder ι] [IsDirectedOrder ι]
     μ (⋂ i, s i) = ⨅ i, μ (s i) :=
   hs.dual_left.measure_iInter hsm hfin
 
-lemma measure_iInter_of_ae_antitone [Preorder ι] [IsDirectedOrder ι] [Countable ι]
-    {s : ι → Set α} (hs : ∀ᵐ ω ∂μ, Antitone (s · ω))
+lemma measure_iInter_of_ae_antitone [Preorder ι] [IsDirectedOrder ι]
+    [(atTop : Filter ι).IsCountablyGenerated]
+    {s : ι → Set α} (hs : ∀ᵐ ω ∂μ, Antitone (ω ∈ s ·))
     (hsm : ∀ (i : ι), NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
-    μ (⋂ (i : ι), s i) = ⨅ (i : ι), μ (s i) := by
-  set t : ι → Set α := fun i ↦ ⋂ j ≤ i, s j with ht
-  have hst (i : ι) : s i =ᵐ[μ] t i := by
-    filter_upwards [hs] with ω hω
-    suffices ω ∈ s i ↔ ω ∈ t i by
-      exact propext this
-    simp only [ht, Set.mem_iInter]
-    refine ⟨fun (h : s i ω) j hj ↦ ?_, fun h ↦ h i le_rfl⟩
-    change s j ω
-    specialize hω hj
-    simp only [le_Prop_eq] at hω
-    exact hω h
-  rw [measure_congr <| Filter.EventuallyEq.countable_iInter hst, Antitone.measure_iInter]
-  · exact iInf_congr <| fun i ↦ measure_congr <| (hst i).symm
-  · exact Set.antitone_dissipate
-  · exact fun _ ↦ NullMeasurableSet.iInter <| fun j ↦ NullMeasurableSet.iInter <| fun _ ↦ hsm j
-  · obtain ⟨i, hi⟩ := hfin
-    refine ⟨i, (lt_of_le_of_lt ?_ <| lt_top_iff_ne_top.2 hi).ne⟩
-    rw [measure_congr (hst i)]
+    μ (⋂ i, s i) = ⨅ i, μ (s i) := by
+  refine measure_iInter_of_ae_monotone (ι := ιᵒᵈ) ?_ hsm hfin
+  filter_upwards [hs] with ω hω using hω.dual_left
 
 /-- Continuity from above: the measure of the intersection of a sequence of
 measurable sets is the infimum of the measures of the partial intersections. -/
