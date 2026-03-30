@@ -1,7 +1,8 @@
 /-
 Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bjørn Kjos-Hanssen, Patrick Massot, Floris van Doorn, Jireh Loreaux, Eric Wieser
+Authors: Bjørn Kjos-Hanssen, Patrick Massot, Floris van Doorn, Jireh Loreaux, Eric Wieser,
+Yongxi Lin, Louis (Yiyang) Liu
 -/
 module
 
@@ -95,7 +96,7 @@ lemma isMaxOn_Ioo_of_deriv {f : ℝ → ℝ} {a b c : ℝ} (h : ContinuousAt f b
     (hd₀ : DifferentiableOn ℝ f (Ioo a b)) (hd₁ : DifferentiableOn ℝ f (Ioo b c))
     (h₀ : ∀ x ∈ Ioo a b, 0 ≤ deriv f x) (h₁ : ∀ x ∈ Ioo b c, deriv f x ≤ 0) :
     IsMaxOn f (Ioo a c) b := by
-  refine isMaxOn_of_mono_anti_Ioo ?_ ?_
+  refine isMaxOn_Ioo_of_mono_anti ?_ ?_
   · apply monotoneOn_of_deriv_nonneg (convex_Ioc a b) (continuousOn_Ioc h hd₀) <;> simp_all
   · apply antitoneOn_of_deriv_nonpos (convex_Ico b c) (continuousOn_Ico h hd₁) <;> simp_all
 
@@ -105,7 +106,7 @@ lemma isMaxOn_Ioc_of_deriv {f : ℝ → ℝ} {a b c : ℝ} (hb : ContinuousAt f 
     (hd₀ : DifferentiableOn ℝ f (Ioo a b)) (hd₁ : DifferentiableOn ℝ f (Ioo b c))
     (h₀ : ∀ x ∈ Ioo a b, 0 ≤ deriv f x) (h₁ : ∀ x ∈ Ioo b c, deriv f x ≤ 0) :
     IsMaxOn f (Ioc a c) b := by
-  refine isMaxOn_of_mono_anti_Ioc ?_ ?_
+  refine isMaxOn_Ioc_of_mono_anti ?_ ?_
   · apply monotoneOn_of_deriv_nonneg (convex_Ioc a b) (continuousOn_Ioc hb hd₀) <;> simp_all
   · apply antitoneOn_of_deriv_nonpos (convex_Icc b c) (continuousOn_Icc hb hc hd₁) <;> simp_all
 
@@ -115,7 +116,7 @@ lemma isMaxOn_Ico_of_deriv {f : ℝ → ℝ} {a b c : ℝ} (ha : ContinuousAt f 
     (hd₀ : DifferentiableOn ℝ f (Ioo a b)) (hd₁ : DifferentiableOn ℝ f (Ioo b c))
     (h₀ : ∀ x ∈ Ioo a b, 0 ≤ deriv f x) (h₁ : ∀ x ∈ Ioo b c, deriv f x ≤ 0) :
     IsMaxOn f (Ico a c) b := by
-  refine isMaxOn_of_mono_anti_Ico ?_ ?_
+  refine isMaxOn_Ico_of_mono_anti ?_ ?_
   · apply monotoneOn_of_deriv_nonneg (convex_Icc a b) (continuousOn_Icc ha hb hd₀) <;> simp_all
   · apply antitoneOn_of_deriv_nonpos (convex_Ico b c) (continuousOn_Ico hb hd₁) <;> simp_all
 
@@ -125,7 +126,7 @@ lemma isMaxOn_Icc_of_deriv {f : ℝ → ℝ} {a b c : ℝ} (ha : ContinuousAt f 
     (hc : ContinuousAt f c) (hd₀ : DifferentiableOn ℝ f (Ioo a b))
     (hd₁ : DifferentiableOn ℝ f (Ioo b c)) (h₀ : ∀ x ∈ Ioo a b, 0 ≤ deriv f x)
     (h₁ : ∀ x ∈ Ioo b c, deriv f x ≤ 0) : IsMaxOn f (Icc a c) b := by
-  refine isMaxOn_of_mono_anti_Icc ?_ ?_
+  refine isMaxOn_Icc_of_mono_anti ?_ ?_
   · apply monotoneOn_of_deriv_nonneg (convex_Icc a b) (continuousOn_Icc ha hb hd₀) <;> simp_all
   · apply antitoneOn_of_deriv_nonpos (convex_Icc b c) (continuousOn_Icc hb hc hd₁) <;> simp_all
 
@@ -135,7 +136,7 @@ lemma isMaxOn_Ioi_of_deriv {f : ℝ → ℝ} {a b : ℝ} (hb : ContinuousAt f b)
     (hd₀ : DifferentiableOn ℝ f (Ioo a b)) (hd₁ : DifferentiableOn ℝ f (Ioi b))
     (h₀ : ∀ x ∈ Ioo a b, 0 ≤ deriv f x) (h₁ : ∀ x ∈ Ioi b, deriv f x ≤ 0) :
     IsMaxOn f (Ioi a) b := by
-  refine isMaxOn_of_mono_anti_Ioi ?_ ?_
+  refine isMaxOn_Ioi_of_mono_anti ?_ ?_
   · apply monotoneOn_of_deriv_nonneg (convex_Ioc a b) (continuousOn_Ioc hb hd₀) <;> simp_all
   · apply antitoneOn_of_deriv_nonpos (convex_Ici b) (continuousOn_Ici hb hd₁) <;> simp_all
 
@@ -145,7 +146,7 @@ lemma isMaxOn_Ici_of_deriv {f : ℝ → ℝ} {a b : ℝ} (ha : ContinuousAt f a)
     (hd₀ : DifferentiableOn ℝ f (Ioo a b)) (hd₁ : DifferentiableOn ℝ f (Ioi b))
     (h₀ : ∀ x ∈ Ioo a b, 0 ≤ deriv f x) (h₁ : ∀ x ∈ Ioi b, deriv f x ≤ 0) :
     IsMaxOn f (Ici a) b := by
-  refine isMaxOn_of_mono_anti_Ici ?_ ?_
+  refine isMaxOn_Ici_of_mono_anti ?_ ?_
   · apply monotoneOn_of_deriv_nonneg (convex_Icc a b) (continuousOn_Icc ha hb hd₀) <;> simp_all
   · apply antitoneOn_of_deriv_nonpos (convex_Ici b) (continuousOn_Ici hb hd₁) <;> simp_all
 
@@ -155,7 +156,7 @@ lemma isMaxOn_Iio_of_deriv {f : ℝ → ℝ} {b c : ℝ} (hb : ContinuousAt f b)
     (hd₀ : DifferentiableOn ℝ f (Iio b)) (hd₁ : DifferentiableOn ℝ f (Ioo b c))
     (h₀ : ∀ x ∈ Iio b, 0 ≤ deriv f x) (h₁ : ∀ x ∈ Ioo b c, deriv f x ≤ 0) :
     IsMaxOn f (Iio c) b := by
-  refine isMaxOn_of_mono_anti_Iio ?_ ?_
+  refine isMaxOn_Iio_of_mono_anti ?_ ?_
   · apply monotoneOn_of_deriv_nonneg (convex_Iic b) (continuousOn_Iic hb hd₀) <;> simp_all
   · apply antitoneOn_of_deriv_nonpos (convex_Ico b c) (continuousOn_Ico hb hd₁) <;> simp_all
 
@@ -165,7 +166,7 @@ lemma isMaxOn_Iic_of_deriv {f : ℝ → ℝ} {b c : ℝ} (hb : ContinuousAt f b)
     (hd₀ : DifferentiableOn ℝ f (Iio b)) (hd₁ : DifferentiableOn ℝ f (Ioo b c))
     (h₀ : ∀ x ∈ Iio b, 0 ≤ deriv f x) (h₁ : ∀ x ∈ Ioo b c, deriv f x ≤ 0) :
     IsMaxOn f (Iic c) b := by
-  refine isMaxOn_of_mono_anti_Iic ?_ ?_
+  refine isMaxOn_Iic_of_mono_anti ?_ ?_
   · apply monotoneOn_of_deriv_nonneg (convex_Iic b) (continuousOn_Iic hb hd₀) <;> simp_all
   · apply antitoneOn_of_deriv_nonpos (convex_Icc b c) (continuousOn_Icc hb hc hd₁) <;> simp_all
 
@@ -174,12 +175,10 @@ nonpositive on `(b, ∞)`. Then `f` attains its maximum on `ℝ` at `b`. -/
 lemma isMaxOn_univ_of_deriv {f : ℝ → ℝ} {b : ℝ} (hb : ContinuousAt f b)
     (hd₀ : DifferentiableOn ℝ f (Iio b)) (hd₁ : DifferentiableOn ℝ f (Ioi b))
     (h₀ : ∀ x ∈ Iio b, 0 ≤ deriv f x) (h₁ : ∀ x ∈ Ioi b, deriv f x ≤ 0) :
-    IsMaxOn f univ b :=
-  isMaxOn_of_mono_anti_univ
-    (monotoneOn_of_deriv_nonneg (convex_Iic b) (continuousOn_Iic hb hd₀) (by simp_all)
-      (by simp_all))
-    (antitoneOn_of_deriv_nonpos (convex_Ici b) (continuousOn_Ici hb hd₁) (by simp_all)
-      (by simp_all))
+    IsMaxOn f univ b := by
+  refine isMaxOn_univ_of_mono_anti ?_ ?_
+  · apply monotoneOn_of_deriv_nonneg (convex_Iic b) (continuousOn_Iic hb hd₀) <;> simp_all
+  · apply antitoneOn_of_deriv_nonpos (convex_Ici b) (continuousOn_Ici hb hd₁) <;> simp_all
 
 /-- The First-Derivative Test from calculus, maxima version.
 Suppose `a < b < c`, `f : ℝ → ℝ` is continuous at `b`, the derivative `f'` is nonnegative on `(a,b)`
@@ -196,7 +195,7 @@ lemma isMinOn_Ioo_of_deriv {f : ℝ → ℝ} {a b c : ℝ} (h : ContinuousAt f b
     (hd₀ : DifferentiableOn ℝ f (Ioo a b)) (hd₁ : DifferentiableOn ℝ f (Ioo b c))
     (h₀ : ∀ x ∈ Ioo a b, deriv f x ≤ 0) (h₁ : ∀ x ∈ Ioo b c, 0 ≤ deriv f x) :
     IsMinOn f (Ioo a c) b := by
-  refine isMinOn_of_anti_mono_Ioo ?_ ?_
+  refine isMinOn_Ioo_of_anti_mono ?_ ?_
   · apply antitoneOn_of_deriv_nonpos (convex_Ioc a b) (continuousOn_Ioc h hd₀) <;> simp_all
   · apply monotoneOn_of_deriv_nonneg (convex_Ico b c) (continuousOn_Ico h hd₁) <;> simp_all
 
@@ -206,7 +205,7 @@ lemma isMinOn_Ioc_of_deriv {f : ℝ → ℝ} {a b c : ℝ} (hb : ContinuousAt f 
     (hd₀ : DifferentiableOn ℝ f (Ioo a b)) (hd₁ : DifferentiableOn ℝ f (Ioo b c))
     (h₀ : ∀ x ∈ Ioo a b, deriv f x ≤ 0) (h₁ : ∀ x ∈ Ioo b c, 0 ≤ deriv f x) :
     IsMinOn f (Ioc a c) b := by
-  refine isMinOn_of_anti_mono_Ioc ?_ ?_
+  refine isMinOn_Ioc_of_anti_mono ?_ ?_
   · apply antitoneOn_of_deriv_nonpos (convex_Ioc a b) (continuousOn_Ioc hb hd₀) <;> simp_all
   · apply monotoneOn_of_deriv_nonneg (convex_Icc b c) (continuousOn_Icc hb hc hd₁) <;> simp_all
 
@@ -216,7 +215,7 @@ lemma isMinOn_Ico_of_deriv {f : ℝ → ℝ} {a b c : ℝ} (ha : ContinuousAt f 
     (hd₀ : DifferentiableOn ℝ f (Ioo a b)) (hd₁ : DifferentiableOn ℝ f (Ioo b c))
     (h₀ : ∀ x ∈ Ioo a b, deriv f x ≤ 0) (h₁ : ∀ x ∈ Ioo b c, 0 ≤ deriv f x) :
     IsMinOn f (Ico a c) b := by
-  refine isMinOn_of_anti_mono_Ico ?_ ?_
+  refine isMinOn_Ico_of_anti_mono ?_ ?_
   · apply antitoneOn_of_deriv_nonpos (convex_Icc a b) (continuousOn_Icc ha hb hd₀) <;> simp_all
   · apply monotoneOn_of_deriv_nonneg (convex_Ico b c) (continuousOn_Ico hb hd₁) <;> simp_all
 
@@ -226,7 +225,7 @@ lemma isMinOn_Icc_of_deriv {f : ℝ → ℝ} {a b c : ℝ} (ha : ContinuousAt f 
     (hc : ContinuousAt f c) (hd₀ : DifferentiableOn ℝ f (Ioo a b))
     (hd₁ : DifferentiableOn ℝ f (Ioo b c)) (h₀ : ∀ x ∈ Ioo a b, deriv f x ≤ 0)
     (h₁ : ∀ x ∈ Ioo b c, 0 ≤ deriv f x) : IsMinOn f (Icc a c) b := by
-  refine isMinOn_of_anti_mono_Icc ?_ ?_
+  refine isMinOn_Icc_of_anti_mono ?_ ?_
   · apply antitoneOn_of_deriv_nonpos (convex_Icc a b) (continuousOn_Icc ha hb hd₀) <;> simp_all
   · apply monotoneOn_of_deriv_nonneg (convex_Icc b c) (continuousOn_Icc hb hc hd₁) <;> simp_all
 
@@ -236,7 +235,7 @@ lemma isMinOn_Ioi_of_deriv {f : ℝ → ℝ} {a b : ℝ} (hb : ContinuousAt f b)
     (hd₀ : DifferentiableOn ℝ f (Ioo a b)) (hd₁ : DifferentiableOn ℝ f (Ioi b))
     (h₀ : ∀ x ∈ Ioo a b, deriv f x ≤ 0) (h₁ : ∀ x ∈ Ioi b, 0 ≤ deriv f x) :
     IsMinOn f (Ioi a) b := by
-  refine isMinOn_of_anti_mono_Ioi ?_ ?_
+  refine isMinOn_Ioi_of_anti_mono ?_ ?_
   · apply antitoneOn_of_deriv_nonpos (convex_Ioc a b) (continuousOn_Ioc hb hd₀) <;> simp_all
   · apply monotoneOn_of_deriv_nonneg (convex_Ici b) (continuousOn_Ici hb hd₁) <;> simp_all
 
@@ -246,7 +245,7 @@ lemma isMinOn_Ici_of_deriv {f : ℝ → ℝ} {a b : ℝ} (ha : ContinuousAt f a)
     (hd₀ : DifferentiableOn ℝ f (Ioo a b)) (hd₁ : DifferentiableOn ℝ f (Ioi b))
     (h₀ : ∀ x ∈ Ioo a b, deriv f x ≤ 0) (h₁ : ∀ x ∈ Ioi b, 0 ≤ deriv f x) :
     IsMinOn f (Ici a) b := by
-  refine isMinOn_of_anti_mono_Ici ?_ ?_
+  refine isMinOn_Ici_of_anti_mono ?_ ?_
   · apply antitoneOn_of_deriv_nonpos (convex_Icc a b) (continuousOn_Icc ha hb hd₀) <;> simp_all
   · apply monotoneOn_of_deriv_nonneg (convex_Ici b) (continuousOn_Ici hb hd₁) <;> simp_all
 
@@ -256,7 +255,7 @@ lemma isMinOn_Iio_of_deriv {f : ℝ → ℝ} {b c : ℝ} (hb : ContinuousAt f b)
     (hd₀ : DifferentiableOn ℝ f (Iio b)) (hd₁ : DifferentiableOn ℝ f (Ioo b c))
     (h₀ : ∀ x ∈ Iio b, deriv f x ≤ 0) (h₁ : ∀ x ∈ Ioo b c, 0 ≤ deriv f x) :
     IsMinOn f (Iio c) b := by
-  refine isMinOn_of_anti_mono_Iio ?_ ?_
+  refine isMinOn_Iio_of_anti_mono ?_ ?_
   · apply antitoneOn_of_deriv_nonpos (convex_Iic b) (continuousOn_Iic hb hd₀) <;> simp_all
   · apply monotoneOn_of_deriv_nonneg (convex_Ico b c) (continuousOn_Ico hb hd₁) <;> simp_all
 
@@ -266,7 +265,7 @@ lemma isMinOn_Iic_of_deriv {f : ℝ → ℝ} {b c : ℝ} (hb : ContinuousAt f b)
     (hd₀ : DifferentiableOn ℝ f (Iio b)) (hd₁ : DifferentiableOn ℝ f (Ioo b c))
     (h₀ : ∀ x ∈ Iio b, deriv f x ≤ 0) (h₁ : ∀ x ∈ Ioo b c, 0 ≤ deriv f x) :
     IsMinOn f (Iic c) b := by
-  refine isMinOn_of_anti_mono_Iic ?_ ?_
+  refine isMinOn_Iic_of_anti_mono ?_ ?_
   · apply antitoneOn_of_deriv_nonpos (convex_Iic b) (continuousOn_Iic hb hd₀) <;> simp_all
   · apply monotoneOn_of_deriv_nonneg (convex_Icc b c) (continuousOn_Icc hb hc hd₁) <;> simp_all
 
@@ -276,10 +275,9 @@ lemma isMinOn_univ_of_deriv {f : ℝ → ℝ} {b : ℝ} (hb : ContinuousAt f b)
     (hd₀ : DifferentiableOn ℝ f (Iio b)) (hd₁ : DifferentiableOn ℝ f (Ioi b))
     (h₀ : ∀ x ∈ Iio b, deriv f x ≤ 0) (h₁ : ∀ x ∈ Ioi b, 0 ≤ deriv f x) :
     IsMinOn f univ b := by
-  refine isMinOn_of_anti_mono_univ
-    (antitoneOn_of_deriv_nonpos (convex_Iic b) (continuousOn_Iic hb hd₀) ?_ ?_)
-    (monotoneOn_of_deriv_nonneg (convex_Ici b) (continuousOn_Ici hb hd₁) ?_ ?_)
-  <;> simp_all
+  refine isMinOn_univ_of_anti_mono ?_ ?_
+  · apply antitoneOn_of_deriv_nonpos (convex_Iic b) (continuousOn_Iic hb hd₀) <;> simp_all
+  · apply monotoneOn_of_deriv_nonneg (convex_Ici b) (continuousOn_Ici hb hd₁) <;> simp_all
 
 /-- The First-Derivative Test from calculus, minima version. -/
 lemma isLocalMin_of_deriv_Ioo {f : ℝ → ℝ} {a b c : ℝ} (g₀ : a < b) (g₁ : b < c)
