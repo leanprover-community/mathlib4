@@ -34,6 +34,47 @@ TODO: create Try This suggestions
 
 meta section
 
+namespace Lean
+
+/-- A quicker version of `Position.lt`, without sacrificing semantics. We need the performance
+optimization since we're doing this for many positions on every declaration within linters. -/
+@[inline] protected def Position.quickLt : Position → Position → Bool
+  | ⟨l₁, c₁⟩, ⟨l₂, c₂⟩ => l₁ < l₂ || l₁ = l₂ && c₁ < c₂
+
+/--
+If `pos` is a `Lean.Position`, then `pos.getDeclsAfter` returns the array of names of declarations
+whose selection range begins in position at least `pos`. By using the `selectionRange`, which is
+usually smaller than the `range`, we err on the side of including declarations when possible.
+
+By default, this only inspects the local branch of the environment. This is compatible with being
+used to find declarations from the current command in a linter, where we have already waited for
+async tasks/parallel branches to complete. Further, since the environment exposed to linters does
+not include constants added after the elaboration of the current command, it is safe to use this on
+the command's start position without picking up later declarations.
+-/
+protected def Position.getDeclsAfter (env : Environment) (pos : Position)
+    (asyncMode := EnvExtension.AsyncMode.local) : Array Name :=
+  declRangeExt.getState env asyncMode |>.foldl (init := #[])
+    fun acc name { selectionRange .. } =>
+      if selectionRange.pos.quickLt pos then acc else acc.push name
+
+/--
+If `pos` is a `String.Pos.Raw`, then `pos.getDeclsAfter` returns the array of names of declarations
+whose selection range begins in position at least `pos`. By using the `selectionRange`, which is
+usually smaller than the `range`, we err on the side of including declarations when possible.
+
+By default, this only inspects the local branch of the environment. This is compatible with being
+used to find declarations from the current command in a linter, where we have already waited for
+async tasks/parallel branches to complete. Further, since the environment exposed to linters does
+not include constants added after the elaboration of the current command, it is safe to use this on
+the command's start position without picking up later declarations.
+-/
+@[inline] protected def _root_.String.Pos.Raw.getDeclsAfter (env : Environment) (map : FileMap)
+    (pos : String.Pos.Raw) (asyncMode := EnvExtension.AsyncMode.local) : Array Name :=
+  map.toPosition pos |>.getDeclsAfter env asyncMode
+
+end Lean
+
 open Lean Meta Elab Command Linter
 
 namespace Mathlib.Linter.UnusedInstancesInType
@@ -244,21 +285,23 @@ Note: This linter can be disabled with `set_option {linter.fooLinter.name} false
 pluralizing as appropriate.
 -/
 @[nolint unusedArguments] -- TODO: we plan to use `_cmd` in future
-def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (_cmd : Syntax)
+def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (cmd : Syntax)
     (instanceTypeFilter : Expr → Bool)
-    (log : InfoTree → ConstantVal → Array Parameter → TermElabM Unit)
+    (log : ConstantVal → Array Parameter → TermElabM Unit)
     (declFilter : ConstantVal → Bool := fun _ => true) :
     CommandElabM Unit := do
-  for t in ← getInfoTrees do
-    let thms := t.getTheorems (← getEnv) |>.filter fun thm =>
+  let some pos := cmd.getPos? | return
+  let thms := pos.getDeclsAfter (← getEnv) (← getFileMap)
+    |>.filterMap (← getEnv).findTheoremConstVal?
+    |>.filter fun thm =>
       declFilter thm && thm.type.hasInstanceBinderOf instanceTypeFilter
-    -- use `liftTermElabM` on the outside in the hopes of sharing a cache
-    unless thms.isEmpty do liftTermElabM do for thm in thms do
-      thm.onUnusedInstancesWhere instanceTypeFilter
-        fun unusedParams =>
-          -- TODO: restore in order to log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
-          -- t.withDeclSigRef cmd thm.name do
-          log t thm unusedParams
+  -- use `liftTermElabM` on the outside in the hopes of sharing a cache
+  unless thms.isEmpty do liftTermElabM do for thm in thms do
+    thm.onUnusedInstancesWhere instanceTypeFilter
+      fun unusedParams =>
+        -- TODO: restore in order to log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
+        -- t.withDeclSigRef cmd thm.name do
+        log thm unusedParams
 
 section Decidable
 
@@ -331,7 +374,7 @@ def unusedDecidableInType : Linter where
       on decidable instances without using them in the type. -/
       (declFilter := (!(`Decidable).isPrefixOf ·.name))
       isDecidableVariant
-      fun _ thm unusedParams => do
+      fun thm unusedParams => do
         logLint linter.unusedDecidableInType (← getRef) m!"\
           {thm.name.unusedInstancesMsg unusedParams}\n\n\
           Consider removing \
@@ -372,7 +415,7 @@ def unusedFintypeInType : Linter where
       return
     cmd.logUnusedInstancesInTheoremsWhere
       (·.isAppOrForallOfConst `Fintype)
-      fun _ thm unusedParams => do
+      fun thm unusedParams => do
         let importFintypeOfFiniteNote? :=
           if (← getEnv).isImportedConst `Fintype.ofFinite then none else
             some <| .note "Add `import Mathlib.Data.Fintype.EquivFin` \
