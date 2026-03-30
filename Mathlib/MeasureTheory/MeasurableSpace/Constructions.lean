@@ -911,11 +911,11 @@ variable [MeasurableSpace β] {g : β → Set α}
 
 /-- This instance is useful when talking about Bernoulli sequences of random variables or binomial
 random graphs. -/
-instance Set.instMeasurableSpace : MeasurableSpace (Set α) := by unfold Set; infer_instance
+instance Set.instMeasurableSpace : MeasurableSpace (Set α) :=
+  inferInstanceAs <| MeasurableSpace (α → Prop)
 
-set_option backward.isDefEq.respectTransparency false in
-instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) := by
-  unfold Set; infer_instance
+instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) :=
+  inferInstanceAs <| MeasurableSingletonClass (α → Prop)
 
 @[simp, fun_prop] lemma measurable_setOf : Measurable fun p : α → Prop ↦ {a | p a} := measurable_id
 

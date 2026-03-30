@@ -482,11 +482,11 @@ instance : LT ZNum :=
 instance : LE ZNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : DecidableLT ZNum
-  | a, b => by dsimp [LT.lt]; infer_instance
+instance decidableLT : DecidableLT ZNum :=
+  inferInstanceAs <| DecidableRel fun a b => cmp a b = Ordering.lt
 
-instance decidableLE : DecidableLE ZNum
-  | a, b => by dsimp [LE.le]; infer_instance
+instance decidableLE : DecidableLE ZNum :=
+  inferInstanceAs <| DecidableRel fun a b => ¬b < a
 
 end ZNum
 
