@@ -327,25 +327,6 @@ def isDecidableVariant (type : Expr) : Bool :=
     n == ``DecidableLE   ||
     n == ``DecidableLT
 
-/-- `withSetOptionIn` currently breaks infotree searches, so we simply set `Bool` options
-until this is fixed in [lean4#11313](https://github.com/leanprover/lean4/pull/11313). -/
-partial def withSetBoolOptionIn (x : CommandElab) : CommandElab
-  | `(command| set_option $opt:ident $val in $cmd:command) => do
-    match val.raw with
-    | Syntax.atom _ "true"  =>
-      withBoolOption opt.getId true <| withSetBoolOptionIn x cmd
-    | Syntax.atom _ "false" =>
-      withBoolOption opt.getId false <| withSetBoolOptionIn x cmd
-    | _ => withSetBoolOptionIn x cmd
-  | `(command| $_:command in $cmd:command) => withSetBoolOptionIn x cmd
-  | stx => x stx
-where
-  /-- Set a `Bool` option in `CommandElabM`. Ideally, `CommandElabM` would have a
-  `MonadWithOptions` instance to this effect. -/
-  withBoolOption (n : Name) (val : Bool) (k : CommandElabM Unit) : CommandElabM Unit := do
-    let opts := (← getOptions).setBool n val
-    Command.withScope (fun scope => { scope with opts }) k
-
 /--
 The `unusedDecidableInType` linter checks if a theorem's hypotheses include `Decidable*` instances
 which are not used in the remainder of the type. If so, it suggests removing the instances and using
@@ -367,7 +348,7 @@ public register_option linter.unusedDecidableInType : Bool := {
 remainder of the type, and suggests replacing them with a use of `classical` in the proof or
 `open scoped Classical in` at the term level. -/
 def unusedDecidableInType : Linter where
-  run := withSetBoolOptionIn fun cmd => do
+  run := withSetOptionIn fun cmd => do
     unless getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
       return
     cmd.logUnusedInstancesInTheoremsWhere
@@ -408,7 +389,7 @@ public register_option linter.unusedFintypeInType : Bool := {
 remainder of the type, and suggests replacing them with the corresponding hypothesis of `Finite`
 and the use of `Fintype.ofFinite` in the proof. -/
 def unusedFintypeInType : Linter where
-  run := withSetBoolOptionIn fun cmd => do
+  run := withSetOptionIn fun cmd => do
     unless getLinterValue linter.unusedFintypeInType (← getLinterOptions) do
       return
     -- Cheap early exit if `Fintype` is not imported.
