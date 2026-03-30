@@ -76,6 +76,7 @@ variable {R S : Type*} [Semiring R] [Semiring S] [Module R M] [Module S M]
 lemma invtSubmodule_le_invtSubmodule_smul (c : S) : f.invtSubmodule ≤ (c • f).invtSubmodule :=
   fun p hfp _ hx ↦ p.smul_of_tower_mem c (hfp hx)
 
+@[simp]
 lemma invtSubmodule_smul (c : Sˣ) : (c • f).invtSubmodule = f.invtSubmodule := by
   apply le_antisymm ?_ (invtSubmodule_le_invtSubmodule_smul f c.1)
   grw [invtSubmodule_le_invtSubmodule_smul (c.1 • f) c⁻¹.1]
