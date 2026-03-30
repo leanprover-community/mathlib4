@@ -273,8 +273,6 @@ section Unbundled
 
 open Polynomial
 
-attribute [local instance] Polynomial.algebra RatFunc.liftAlgebra RatFunc.isScalarTower_liftAlgebra
-
 variable {E : Type*} [Field E] [Algebra Fq E]
 
 theorem FiniteDimensional_constantExtension_ratFunc [Algebra E F] [IsScalarTower Fq E F]
@@ -283,7 +281,7 @@ theorem FiniteDimensional_constantExtension_ratFunc [Algebra E F] [IsScalarTower
   .equiv (AlgEquiv.ofInjectiveField
     (IsScalarTower.toAlgHom (RatFunc Fq) (RatFunc E) F)).toLinearEquiv.symm
 
--- TODO: Fix competing intances
+-- TODO: Fix competing instances
 attribute [-instance] RatFunc.instSMulOfFractionRingPolynomial
 
 /--
