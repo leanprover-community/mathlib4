@@ -26,7 +26,6 @@ namespace ContDiffMapSupportedIn
 
 section ToSchwartzMap
 
--- will need that the scalar actions on F commute
 variable [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
@@ -36,7 +35,7 @@ variable [NontriviallyNormedField 𝕜]
 def toSchwartzMap (f : ContDiffMapSupportedIn E F ⊤ K) : 𝓢(E, F) :=
   f.hasCompactSupport.toSchwartzMap f.contDiff
 
-/-- Nonnegative bound for `‖x‖^k` on compact set `K`, will be used later. -/
+/-- A nonnegative bound for `‖x‖^k` on the compact set `K`. -/
 private def powNormBound (K : Compacts E) (k : ℕ) : ℝ :=
   let A : Set ℝ := (fun x : E => ‖x‖ ^ k) '' (K : Set E)
   max (sSup A) 0
@@ -56,9 +55,7 @@ theorem toSchwartzMap_apply (f : ContDiffMapSupportedIn E F ⊤ K) (x : E) :
     toSchwartzMap f x = f x :=
   rfl
 
-/-- Main continuity estimate: if you fix a Schwartz norm (indexed by k,n) and apply it to f, result is
-bounded by one of the defining seminorms on `𝓓_K`.
--/
+/-- Main continuity estimate: each Schwartz seminorm is bounded by a defining seminorm on `𝓓_K`. -/
 private theorem seminorm_toSchwartzMap_le (k n : ℕ) (f : ContDiffMapSupportedIn E F ⊤ K) :
     SchwartzMap.seminorm 𝕜 k n (toSchwartzMap f) ≤
       powNormBound K k * N[𝕜]_{K, n} f := by
@@ -136,7 +133,6 @@ variable [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
   [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
 
-
 /-- Smooth compactly-supported functions are Schwartz. -/
 def toSchwartzMap (f : TestFunction Ω F ⊤) : 𝓢(E, F) :=
   f.hasCompactSupport.toSchwartzMap f.contDiff
@@ -149,17 +145,15 @@ theorem toSchwartzMap_apply (f : TestFunction Ω F ⊤) (x : E) : toSchwartzMap 
 noncomputable def toSchwartzMapCLM : TestFunction Ω F ⊤ →L[𝕜] 𝓢(E, F) :=
   TestFunction.limitCLM 𝕜
     (TestFunction.toSchwartzMap (E := E) (Ω := Ω) (F := F))
-    (fun K hK =>
+    (fun K _ =>
       ContDiffMapSupportedIn.toSchwartzMapCLM
         (𝕜 := 𝕜) (E := E) (F := F) (K := K))
-    (fun K₁ K₂ h => rfl)
-
+    (fun _ _ _ => rfl)
 
 @[simp]
 theorem toSchwartzMapCLM_apply (f : TestFunction Ω F ⊤) (x : E) :
     toSchwartzMapCLM (𝕜 := 𝕜) f x = f x :=
   rfl
-
 
 end ToSchwartzMap
 
@@ -167,8 +161,7 @@ section ToComplexSchwartzMap
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
 
-
-/-- Mapfrom ℝ-valued test functions on `Ω` to ℂ-valued Schwartz functions. -/
+/-- Map from ℝ-valued test functions on `Ω` to ℂ-valued Schwartz functions. -/
 noncomputable def toComplexSchwartzMapCLM : TestFunction Ω ℝ ⊤ →L[ℝ] 𝓢(E, ℂ) :=
   (TestFunction.toSchwartzMapCLM (𝕜 := ℝ) (E := E) (Ω := Ω) (F := ℂ)).comp
     (TestFunction.postcompCLM (Ω := Ω) (n := (⊤ : ℕ∞)) (𝕜 := ℝ) Complex.ofRealCLM)
