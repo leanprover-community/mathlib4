@@ -6,6 +6,8 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+public import Mathlib.Analysis.Normed.Group.Indicator
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 
 /-!
 # ℒp seminorms and indicator functions
@@ -80,7 +82,7 @@ lemma eLpNormEssSup_indicator_const_eq (s : Set α) (c : ε) (hμs : μ s ≠ 0)
   refine le_antisymm (eLpNormEssSup_indicator_const_le s c) ?_
   by_contra! h
   have h' := ae_iff.mp (ae_lt_of_essSup_lt h)
-  push_neg at h'
+  push Not at h'
   refine hμs (measure_mono_null (fun x hx_mem => ?_) h')
   rw [Set.mem_setOf_eq, Set.indicator_of_mem hx_mem]
 

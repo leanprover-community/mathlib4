@@ -325,12 +325,11 @@ subgroup itself, because this allows all the spaces `lp E p` (for varying `p`) t
 the same ambient group, which permits lemma statements like `lp.monotone` (below). -/
 @[nolint unusedArguments]
 def PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] : Type _ :=
-  ∀ i, E i --deriving AddCommGroup
-
-instance : AddCommGroup (PreLp E) := by unfold PreLp; infer_instance
+  ∀ i, E i
+deriving AddCommGroup
 
 instance PreLp.unique [IsEmpty α] : Unique (PreLp E) :=
-  Pi.uniqueOfIsEmpty E
+  inferInstanceAs <| Unique (∀ _, _)
 
 /-- **The (little) ℓᵖ space**: The additive subgroup of a type synonym of `Π i, E i`, which consists
 of those functions `f` such that `Memℓp f p` (i.e., `f` has finite `p`-norm).
@@ -358,11 +357,10 @@ scoped[lp] notation "ℓ²(" ι ", " E ")" => lp (fun _ : ι ↦ E) 2
 
 namespace lp
 
-instance : CoeOut (lp E p) (∀ i, E i) :=
-  ⟨Subtype.val (α := ∀ i, E i)⟩
-
+-- TODO: this instance is bad because it inserts `Subtype.val` as the casting function,
+-- which abuses definitional equality.
 instance coeFun : CoeFun (lp E p) fun _ => ∀ i, E i :=
-  ⟨fun f => (f : ∀ i, E i)⟩
+  ⟨Subtype.val (α := ∀ i, E i)⟩
 
 @[ext]
 theorem ext {f g : lp E p} (h : (f : ∀ i, E i) = g) : f = g :=
@@ -403,8 +401,8 @@ def coeFnAddMonoidHom : lp E p →+ (∀ i, E i) where
 theorem coeFnAddMonoidHom_apply (x : lp E p) : coeFnAddMonoidHom E p x = ⇑x := rfl
 
 theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
-    ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, ⇑(f i) := by
-  simp
+    ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, ⇑(f i) :=
+  (lp E p).val_finset_sum f s
 
 @[simp]
 theorem coeFn_sub (f g : lp E p) : ⇑(f - g) = f - g :=
@@ -437,11 +435,7 @@ theorem norm_rpow_eq_tsum (hp : 0 < p.toReal) (f : lp E p) :
   rw [norm_eq_tsum_rpow hp, ← Real.rpow_mul]
   · field_simp
     simp
-  apply tsum_nonneg
-  intro i
-  calc
-    (0 : ℝ) = (0 : ℝ) ^ p.toReal := by rw [Real.zero_rpow hp.ne']
-    _ ≤ _ := by gcongr; apply norm_nonneg
+  positivity
 
 theorem hasSum_norm (hp : 0 < p.toReal) (f : lp E p) :
     HasSum (fun i => ‖f i‖ ^ p.toReal) (‖f‖ ^ p.toReal) := by
@@ -473,6 +467,7 @@ theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
     refine Real.rpow_nonneg (tsum_nonneg ?_) _
     exact fun i => Real.rpow_nonneg (norm_nonneg _) _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem norm_zero : ‖(0 : lp E p)‖ = 0 := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -522,7 +517,7 @@ theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
     simpa only [coeFn_neg, Pi.neg_apply, _root_.norm_neg] using lp.hasSum_norm hp f
 
 instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) :=
-  AddGroupNorm.toNormedAddCommGroup
+  fast_instance% AddGroupNorm.toNormedAddCommGroup
     { toFun := norm
       map_zero' := norm_zero
       neg' := norm_neg
@@ -638,16 +633,16 @@ variable [NormedRing 𝕜] [NormedRing 𝕜']
 variable [∀ i, Module 𝕜 (E i)] [∀ i, Module 𝕜' (E i)]
 
 instance : Module 𝕜 (PreLp E) :=
-  Pi.module α E 𝕜
+  inferInstanceAs <| Module 𝕜 (∀ i, E i)
 
 instance [∀ i, SMulCommClass 𝕜' 𝕜 (E i)] : SMulCommClass 𝕜' 𝕜 (PreLp E) :=
-  Pi.smulCommClass
+  inferInstanceAs <| SMulCommClass 𝕜' 𝕜 (∀ i, E i)
 
 instance [SMul 𝕜' 𝕜] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] : IsScalarTower 𝕜' 𝕜 (PreLp E) :=
-  Pi.isScalarTower
+  inferInstanceAs <| IsScalarTower 𝕜' 𝕜 (∀ i, E i)
 
 instance [∀ i, Module 𝕜ᵐᵒᵖ (E i)] [∀ i, IsCentralScalar 𝕜 (E i)] : IsCentralScalar 𝕜 (PreLp E) :=
-  Pi.isCentralScalar
+  inferInstanceAs <| IsCentralScalar 𝕜 (∀ i, E i)
 
 variable [∀ i, IsBoundedSMul 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜' (E i)]
 
@@ -667,7 +662,7 @@ theorem coe_lpSubmodule : (lpSubmodule 𝕜 E p).toAddSubgroup = lp E p :=
   rfl
 
 instance : Module 𝕜 (lp E p) :=
-  { (lpSubmodule 𝕜 E p).module with }
+  inferInstanceAs <| Module 𝕜 (lpSubmodule 𝕜 E p)
 
 @[simp]
 theorem coeFn_smul (c : 𝕜) (f : lp E p) : ⇑(c • f) = c • ⇑f :=
@@ -809,7 +804,7 @@ variable [Star 𝕜] [NormedRing 𝕜]
 variable [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
 
 instance : StarModule 𝕜 (lp E p) where
-  star_smul _r _f := ext <| star_smul (A := ∀ i, E i) _ _
+  star_smul _r _f := ext <| star_smul (R := 𝕜) (A := ∀ i, E i) _ _
 
 end NormedStarGroup
 
@@ -884,7 +879,7 @@ section NormedRing
 variable {I : Type*} {B : I → Type*} [∀ i, NormedRing (B i)]
 
 instance _root_.PreLp.ring : Ring (PreLp B) :=
-  Pi.ring
+  inferInstanceAs (Ring (∀ i, B i))
 
 variable [∀ i, NormOneClass (B i)]
 
@@ -901,7 +896,7 @@ def _root_.lpInftySubring : Subring (PreLp B) :=
     mul_mem' := Memℓp.infty_mul }
 
 instance inftyRing : Ring (lp B ∞) :=
-  (lpInftySubring B).toRing
+  inferInstanceAs <| Ring (lpInftySubring B)
 
 theorem _root_.Memℓp.infty_pow {f : ∀ i, B i} (hf : Memℓp f ∞) (n : ℕ) : Memℓp (f ^ n) ∞ :=
   (lpInftySubring B).pow_mem hf n
@@ -950,12 +945,8 @@ section Algebra
 variable {I : Type*} {B : I → Type*}
 variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
-/-- A variant of `Pi.algebra` that lean can't find otherwise. -/
-instance _root_.Pi.algebraOfNormedAlgebra : Algebra 𝕜 (∀ i, B i) :=
-  @Pi.algebra I 𝕜 B _ _ fun _ => NormedAlgebra.toAlgebra
-
 instance _root_.PreLp.algebra : Algebra 𝕜 (PreLp B) :=
-  Pi.algebraOfNormedAlgebra
+  inferInstanceAs <| Algebra 𝕜 (∀ i, B i)
 
 variable [∀ i, NormOneClass (B i)]
 
@@ -974,8 +965,10 @@ def _root_.lpInftySubalgebra : Subalgebra 𝕜 (PreLp B) :=
 
 variable {𝕜 B}
 
-instance inftyNormedAlgebra : NormedAlgebra 𝕜 (lp B ∞) :=
-  { (lpInftySubalgebra 𝕜 B).algebra, (lp.instNormedSpace : NormedSpace 𝕜 (lp B ∞)) with }
+instance : Algebra 𝕜 (lp B ∞) := inferInstanceAs <| Algebra 𝕜 (lpInftySubalgebra 𝕜 B)
+
+instance inftyNormedAlgebra : NormedAlgebra 𝕜 (lp B ∞) where
+  norm_smul_le := norm_smul_le
 
 end Algebra
 
@@ -1336,6 +1329,7 @@ theorem tendsto_lp_of_tendsto_pi {F : ℕ → lp E p} (hF : CauchySeq F) {f : lp
     NormedAddCommGroup.uniformity_basis_dist.mem_of_mem hε
   refine (hF.eventually_eventually hε').mono ?_
   rintro n (hn : ∀ᶠ l in atTop, ‖(fun f => F n - f) (F l)‖ < ε)
+  rw [mem_closedBall_iff_norm]
   refine norm_le_of_tendsto (hn.mono fun k hk => hk.le) ?_
   rw [tendsto_pi_nhds]
   intro a
@@ -1383,9 +1377,12 @@ theorem LipschitzOnWith.coordinate [PseudoMetricSpace α] (f : α → ℓ^∞(ι
   constructor
   · intro hfl i x hx y hy
     calc
-      dist (f x i) (f y i) ≤ dist (f x) (f y) := lp.norm_apply_le_norm top_ne_zero (f x - f y) i
+      dist (f x i) (f y i) ≤ dist (f x) (f y) := by
+        simp only [dist_eq_norm]
+        exact lp.norm_apply_le_norm top_ne_zero (f x - f y) i
       _ ≤ K * dist x y := hfl x hx y hy
   · intro hgl x hx y hy
+    rw [dist_eq_norm]
     apply lp.norm_le_of_forall_le
     · positivity
     intro i

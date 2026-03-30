@@ -83,6 +83,7 @@ class RCLike (K : semiOutParam Type*) extends DenselyNormedField K, StarRing K,
   -- note we cannot put this in the `extends` clause
   [toDecidableEq : DecidableEq K]
 
+attribute [instance_reducible] RCLike.toPartialOrder RCLike.toDecidableEq
 scoped[ComplexOrder] attribute [instance 100] RCLike.toPartialOrder
 attribute [instance 100] RCLike.toDecidableEq
 
@@ -222,8 +223,16 @@ theorem re_ofReal_mul (r : ℝ) (z : K) : re (↑r * z) = r * re z := by
   simp only [mul_re, ofReal_im, zero_mul, ofReal_re, sub_zero]
 
 @[rclike_simps]
+theorem re_mul_ofReal (z : K) (r : ℝ) : re (z * ↑r) = re z * r := by
+  rw [mul_comm, re_ofReal_mul, mul_comm]
+
+@[rclike_simps]
 theorem im_ofReal_mul (r : ℝ) (z : K) : im (↑r * z) = r * im z := by
   simp only [add_zero, ofReal_im, zero_mul, ofReal_re, mul_im]
+
+@[rclike_simps]
+theorem im_mul_ofReal (z : K) (r : ℝ) : im (z * ↑r) = im z * r := by
+  rw [mul_comm, im_ofReal_mul, mul_comm]
 
 @[rclike_simps]
 theorem smul_re (r : ℝ) (z : K) : re (r • z) = r * re z := by
@@ -625,6 +634,7 @@ theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
   rw [← ofReal_natCast]
   exact norm_of_nonneg (Nat.cast_nonneg n)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, rclike_simps, norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : K)‖₊ = n := by simp [nnnorm]
 
 @[simp, rclike_simps]
@@ -642,6 +652,7 @@ lemma nnnorm_two : ‖(2 : K)‖₊ = 2 := nnnorm_ofNat 2
 lemma norm_nnratCast (q : ℚ≥0) : ‖(q : K)‖ = q := by
   rw [← ofReal_nnratCast]; exact norm_of_nonneg q.cast_nonneg
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, rclike_simps, norm_cast]
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]
 
@@ -1009,7 +1020,7 @@ end CleanupLemmas
 section LinearMaps
 
 /-- The real part in an `RCLike` field, as a linear map. -/
-def reLm : K →ₗ[ℝ] ℝ :=
+noncomputable def reLm : K →ₗ[ℝ] ℝ :=
   { re with map_smul' := smul_re }
 
 @[simp, rclike_simps]
@@ -1035,7 +1046,7 @@ theorem continuous_re : Continuous (re : K → ℝ) :=
   reCLM.continuous
 
 /-- The imaginary part in an `RCLike` field, as a linear map. -/
-def imLm : K →ₗ[ℝ] ℝ :=
+noncomputable def imLm : K →ₗ[ℝ] ℝ :=
   { im with map_smul' := smul_im }
 
 @[simp, rclike_simps]
@@ -1172,7 +1183,7 @@ lemma instOrderClosedTopology : OrderClosedTopology K where
   isClosed_le' := by
     conv in _ ≤ _ => rw [RCLike.le_iff_re_im]
     simp_rw [Set.setOf_and]
-    refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> continuity
+    refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> fun_prop
 
 scoped[ComplexOrder] attribute [instance] RCLike.instOrderClosedTopology
 
@@ -1247,6 +1258,7 @@ instance (priority := 100) (𝕜 : Type*) [h : RCLike 𝕜] : IsRCLikeNormedFiel
 
 /-- A copy of an `RCLike` field in which the `NormedField` field is adjusted to be become defeq
 to a propeq one. -/
+@[implicit_reducible]
 noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (hk : NormedField 𝕜)
     (h'' : hk = h.toNormedField) : RCLike 𝕜 where
   __ := hk
@@ -1290,6 +1302,7 @@ noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (h
 
 /-- Given a normed field `𝕜` satisfying `IsRCLikeNormedField 𝕜`, build an associated `RCLike 𝕜`
 structure on `𝕜` which is definitionally compatible with the given normed field structure. -/
+@[implicit_reducible]
 noncomputable def IsRCLikeNormedField.rclike (𝕜 : Type*)
     [hk : NormedField 𝕜] [h : IsRCLikeNormedField 𝕜] : RCLike 𝕜 := by
   choose p hp using h.out

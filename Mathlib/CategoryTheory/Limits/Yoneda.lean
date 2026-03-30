@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Types.Yoneda
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+public import Mathlib.CategoryTheory.ShrinkYoneda
 
 /-!
 # Limit properties relating to the (co)yoneda embedding.
@@ -47,7 +48,7 @@ def colimitCoconeIsColimit (X : Cᵒᵖ) : IsColimit (colimitCocone X) where
   fac s Y := by
     funext f
     convert congr_fun (s.w f).symm (𝟙 (unop X))
-    simp only [Functor.flip_obj_obj, yoneda_obj_obj, Functor.const_obj_obj, Functor.flip_obj_map,
+    simp only [Functor.flip_obj_obj, yoneda_obj_obj, Functor.flip_obj_map,
       types_comp_apply, yoneda_map_app, Category.id_comp]
   uniq s m w := by
     apply funext; rintro ⟨⟩
@@ -98,6 +99,7 @@ variable (J) in
 noncomputable instance yoneda_preservesLimitsOfShape (X : C) :
     PreservesLimitsOfShape J (yoneda.obj X) where
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embeddings jointly reflect limits. -/
 def yonedaJointlyReflectsLimits (F : J ⥤ Cᵒᵖ) (c : Cone F)
     (hc : ∀ X : C, IsLimit ((yoneda.obj X).mapCone c)) : IsLimit c where
@@ -140,6 +142,7 @@ variable (J) in
 noncomputable instance coyonedaPreservesLimitsOfShape (X : Cᵒᵖ) :
     PreservesLimitsOfShape J (coyoneda.obj X) where
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coyoneda embeddings jointly reflect limits. -/
 def coyonedaJointlyReflectsLimits (F : J ⥤ C) (c : Cone F)
     (hc : ∀ X : Cᵒᵖ, IsLimit ((coyoneda.obj X).mapCone c)) : IsLimit c where
@@ -198,6 +201,13 @@ instance uliftYonedaFunctor_preservesLimits :
   intro K
   change PreservesLimitsOfSize.{t, w} (coyoneda.obj K ⋙ uliftFunctor.{w'})
   infer_instance
+
+instance [LocallySmall.{w'} C] :
+    PreservesLimitsOfSize.{t, w} (shrinkYoneda.{w'} (C := C)) :=
+  preservesLimits_of_evaluation _ (fun K ↦ ⟨fun {J _} ↦ by
+    have := preservesLimitsOfShape_of_natIso (J := J) (Functor.associator _ _ _ ≪≫
+      shrinkYonedaCompEvaluationCompUliftFunctorIsoUliftFunctor.{w'} K).symm
+    exact preservesLimitsOfShape_of_reflects_of_preserves _ uliftFunctor.{v}⟩)
 
 namespace Functor
 

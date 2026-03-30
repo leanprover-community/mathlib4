@@ -52,7 +52,7 @@ We could introduce another notation `∞` for `⊤ : ℕ∞`, but we believe it 
 
 ### `abbrev` or `def`
 
-At this point in time, it is not clear wether we should enforce a separation between the API
+At this point in time, it is not clear whether we should enforce a separation between the API
 for `𝓓'(Ω, F)` and the more generic API about `𝓓(Ω, ℝ) →L_c[ℝ] F`.
 For now, we have made the "default" choice to implement `Distribution` as an `abbrev`, which means
 that we get a lot of instances for free, but also that there is no such separation of APIs.
@@ -127,7 +127,7 @@ which we follow here.
 
 Finally, note that a **sequence** of distributions converges in `𝓓'(Ω, F)` if and only if it
 converges pointwise
-(see [L. Schwartz, *Théorie des distributions*, Chapitre III, §3, Theorème XIII][schwartz1950]).
+(see [L. Schwartz, *Théorie des distributions*, Chapitre III, §3, Théorème XIII][schwartz1950]).
 Due to this fact, some texts endow `𝓓'(Ω, F)` with the pointwise convergence topology. While this
 gives the same converging sequences as the topology of bounded/compact convergence, this is no
 longer true for general filters.
