@@ -34,7 +34,7 @@ pass `"git commit -m 'message with spaces'`, the command will be split into
 `["git", "commit", "-m", "'message", "with", "spaces'"]`, which is not what you want.
 -/
 def runCmd (s : String) : IO String := do
-  let cmd::args := s.splitOn | EStateM.throw "Please provide at least one word in your command!"
+  let cmd::args := s.splitOn | EIO.throw "Please provide at least one word in your command!"
   IO.Process.run {cmd := cmd, args := args.toArray}
 
 /--
@@ -123,9 +123,9 @@ formatted as a collapsible message. In practice, `msg` is either `last modified`
 it returns the pair `(<hash>, <msg> in <PRdescr> <hash> <diff of file wrt previous commit>)`,
 formatted as a collapsible message.
 -/
-def processPrettyOneLine (log msg fname : String) : IO (String × MessageData) := do
+def processPrettyOneLine (log msg fname : String.Slice) : IO (String.Slice × MessageData) := do
   let hash := log.takeWhile (!·.isWhitespace)
-  let PRdescr := (log.drop hash.length).trim
+  let PRdescr := (log.dropWhile (·.isWhitespace)).trimAscii
   let gitDiffCLI := s!"git diff {hash}^...{hash} -- {fname}"
   let diff ← runCmd gitDiffCLI <|> pure s!"{hash}: error in computing '{gitDiffCLI}'"
   let diffCollapsed := .trace {cls := .str .anonymous s!"{hash}"} m!"{gitDiffCLI}" #[m!"{diff}"]
@@ -143,14 +143,14 @@ git considers renames with likelihood at least the input `percent`.
 
 If no input is provided, the default percentage is `100`.
 -/
-def mkRenamesDict (percent : Nat := 100) : IO (Std.HashMap String String) := do
+def mkRenamesDict (percent : Nat := 100) : IO (Std.HashMap String.Slice String.Slice) := do
   let mut dict := ∅
   let gitDiff ← runCmd s!"git diff --name-status origin/master...HEAD"
   let lines := gitDiff.trim.splitOn "\n"
   for git in lines do
     -- If `git` corresponds to a rename, it contains `3` segments, separated by a
     -- tab character (`\t`): `R%%`, `oldName`, `newName`.
-    let [pct, oldName, newName] := git.split (· == '\t') | continue
+    let [pct, oldName, newName] := git.split (· == '\t') |>.toList | continue
     if pct.take 1 != "R" then
       IO.println
         s!"mkRenamesDict: '{pct}' should have been of the form Rxxx, denoting a `R`ename \
@@ -233,7 +233,7 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
       let modName := mkModName rename
       pure s!"import {modName}"
     | none => getHeader fname file false
-  let deprecatedFile := s!"{fileHeader.trimRight}\n\n{deprecation.pretty.trimRight}\n"
+  let deprecatedFile := s!"{fileHeader.trimAsciiEnd}\n\n{deprecation.pretty.trimAsciiEnd}\n"
   msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]
   return (msgs, deprecatedFile)
 
@@ -300,10 +300,12 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? bang:&"%"? : 
   -- (throwing an error if that doesn't exist).
   let getHashAndMessage (n : Nat) : CommandElabM (String × MessageData) := do
     let log ← runCmd s!"git log --pretty=oneline -{n}"
-    let some last := log.trim.splitOn "\n" |>.getLast? | throwError "Found no commits!"
+    let log1 := log.trim.splitOn "\n"
+    let last := (log.trim.splitOn "\n").getLast!
+    -- TODO: make the previous line `some last` and add `| throwError "Found no commits!"`
     let commitHash := last.takeWhile (!·.isWhitespace)
-    let PRdescr := (last.drop commitHash.length).trim
-    return (commitHash, .trace {cls := `Commit} m!"{PRdescr}" #[m!"{commitHash}"])
+    let PRdescr := (last.dropWhile (·.isWhitespace)).trimAscii
+    return (commitHash.toString, .trace {cls := `Commit} m!"{PRdescr}" #[m!"{commitHash}"])
   let getFilesAtHash (hash : String) : CommandElabM (Std.HashSet String) := do
     let files ← runCmd s!"git ls-tree -r --name-only {hash} Mathlib/"
     return .ofList <| files.splitOn "\n"
