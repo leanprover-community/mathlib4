@@ -447,39 +447,6 @@ theorem isLocalizing_iso_iff {M N : TopCat.Sheaf (ModuleCat R) (Spec R)} (φ : M
     IsLocalizing M ↔ IsLocalizing N :=
   ⟨fun h => isLocalizing_of_iso φ h, fun h => isLocalizing_of_iso φ.symm h⟩
 
-lemma isIso_iff_isIso_basis
-    {X : TopCat.{u}} {C : Type*} [Category.{u} C] {FC : C → C → Type*} {CC : C → Type u}
-    [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [instCC : ConcreteCategory.{u} C FC]
-    [(forget C).ReflectsIsomorphisms] [HasLimits C] [PreservesLimits (forget C)]
-    {F G : TopCat.Sheaf C X} (φ : F ⟶ G)
-    {B : Set (Opens X)} (hB : Opens.IsBasis B) :
-    IsIso φ ↔ ∀ U ∈ B, IsIso (φ.hom.app (op U)) := by
-  constructor
-  · intro h U hU
-    erw [← isIso_iff_of_reflects_iso _ (Sheaf.forget _ X), NatTrans.isIso_iff_isIso_app] at h
-    exact h (op U)
-  intro h
-  erw [← Sheaf.isLocallyBijective_iff_isIso φ]
-  constructor
-  · rw [Sheaf.isLocallyInjective_iff_injective]
-    intro _ s t hst
-    refine Presheaf.IsSheaf.section_ext F.property ?_
-    intro x hx
-    obtain ⟨V, ⟨hV, ⟨hxV, hVU⟩⟩⟩ := Opens.isBasis_iff_nbhd.mp hB hx
-    refine ⟨V, ⟨hVU, ⟨hxV, ?_⟩⟩⟩
-    change s |_ V = t |_ V
-    apply ((ConcreteCategory.isIso_iff_bijective _).mp (h V hV)).injective
-    rw [Presheaf.map_restrict, hst]
-    delta Presheaf.restrictOpen Presheaf.restrict
-    simp
-  change Presheaf.IsLocallySurjective φ.hom
-  rw [Presheaf.isLocallySurjective_iff]
-  intro _ _ _ hx
-  obtain ⟨V, ⟨hV, ⟨hxV, hVU⟩⟩⟩ := Opens.isBasis_iff_nbhd.mp hB hx
-  refine ⟨V, ⟨hVU, ?_, hxV⟩⟩
-  haveI := h V hV
-  apply (ConcreteCategory.bijective_of_isIso (φ.hom.app (op V))).surjective
-
 lemma isIso_of_isLocalizedModule_comp {S : Submonoid R} {M₁ M₂ M₃ : ModuleCat R} {f₁ : M₁ ⟶ M₂}
     {f₂ : M₂ ⟶ M₃} (h₁ : IsLocalizedModule S f₁.hom) (h₂ : IsLocalizedModule S (f₁ ≫ f₂).hom) :
     IsIso f₂ := by
@@ -491,8 +458,8 @@ lemma isIso_of_isLocalizedModule_comp {S : Submonoid R} {M₁ M₂ M₃ : Module
 theorem isLocalizing_of_isIso_app_top {M N : TopCat.Sheaf (ModuleCat.{u} R) (Spec R)} {φ : M ⟶ N}
     (h : IsIso (φ.hom.app (op ⊤))) (hM : IsLocalizing M) (hN : IsLocalizing N) :
     IsIso φ := by
-  rw [isIso_iff_isIso_basis φ isBasis_basic_opens]
-  rintro U ⟨f, rfl⟩
+  apply TopCat.Sheaf.isIso_iff_isIso_basis (φ := φ) isBasis_basic_opens
+  rintro f
   refine isIso_of_isLocalizedModule_comp (hM f) ?_
   rw [φ.hom.naturality]
   exact IsLocalizedModule.of_linearEquiv_right _ _ (asIso (φ.hom.app (op ⊤))).toLinearEquiv
