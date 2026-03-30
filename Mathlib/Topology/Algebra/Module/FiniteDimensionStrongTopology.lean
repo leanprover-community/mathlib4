@@ -20,7 +20,115 @@ TODO: Generalize this to `UniformConvergenceCLM`.
 
 @[expose] public section
 
-open Module ContinuousLinearMap LinearMap Topology
+open Module ContinuousLinearMap LinearMap Topology Bornology
+
+namespace UniformConvergenceCLM
+
+variable {ι 𝕜 R E F V Vᵤ : Type*} [Semiring R] [NontriviallyNormedField 𝕜]
+  [AddCommGroup E] [AddCommGroup F] [AddCommGroup V] [AddCommGroup Vᵤ]
+  [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 V] [Module 𝕜 Vᵤ]
+  [Module R V] [SMulCommClass 𝕜 R V]
+  [TopologicalSpace E] [IsTopologicalAddGroup E] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [TopologicalSpace V] [IsTopologicalAddGroup V] [UniformSpace Vᵤ] [IsUniformAddGroup Vᵤ]
+  [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] [ContinuousSMul 𝕜 V] [ContinuousSMul 𝕜 Vᵤ]
+  [ContinuousConstSMul R V]
+  [CompleteSpace 𝕜] [T2Space E] -- hypotheses for automatic continuity in finite dimension
+  {𝔖 : Set (Set E)} {𝔗 : Set (Set F)}
+
+open Basis in
+theorem continuous_constrL [Finite ι] (b : Basis ι 𝕜 E)
+    (h𝔖 : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s) :
+    -- Without `id`, Lean sees through the type alias too much and infers the
+    -- topology of `E →L[𝕜] V`...
+    Continuous
+      (id (b.constrL) : (ι → V) → (UniformConvergenceCLM (.id 𝕜) V 𝔖)) := by
+  rcases nonempty_fintype ι
+  letI Φ : (ι → V) →ₗ[𝕜] (E →L[𝕜] V) := ⟨⟨b.constrL, by simp [constrL]⟩, by simp [constrL]⟩
+  -- This gets a bit painful because of the type alias
+  suffices Continuous fun (p : _ × _) ↦ Φ p.1 p.2 by
+    exact UniformConvergenceCLM.continuous_of_continuous_uncurry h𝔖 Φ this
+  simp only [Φ, LinearMap.coe_mk, AddHom.coe_mk, b.constrL_apply, equivFun_apply, ← equivFunL_apply]
+  fun_prop
+
+variable (R) in
+/-- `Basis.constrL` upgraded to a `ContinuousLinearEquiv`, between `ι → V`
+and `E →L[𝕜] V` with the topology of `𝔖`-convergence. -/
+@[simps]
+protected noncomputable def constrCLE [Finite ι] (b : Basis ι 𝕜 E)
+    (h𝔖₁ : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s)
+    (h𝔖₂ : ⋃₀ 𝔖 = .univ) :
+    (ι → V) ≃L[R] (UniformConvergenceCLM (.id 𝕜) V 𝔖) :=
+  have := UniformConvergenceCLM.continuousEvalConst (.id 𝕜) V _ h𝔖₂
+  { toFun := b.constrL
+    invFun f i := f (b i)
+    map_add' f g := toLinearMap_injective (map_add (b.constr R) f g)
+    map_smul' c f := toLinearMap_injective (map_smul (b.constr R) c f)
+    left_inv := b.constr R |>.left_inv
+    right_inv _ := toLinearMap_injective (b.constr R |>.right_inv _)
+    continuous_toFun := UniformConvergenceCLM.continuous_constrL b h𝔖₁
+    continuous_invFun := continuous_pi fun i ↦ continuous_eval_const (b i) }
+
+/-- If `E` is finite dimensional, the topology of `𝔖`-convergence on `E →L[𝕜] F`
+identifies with the product topology. -/
+theorem isEmbedding_coeFn_of_finiteDimensional
+    [FiniteDimensional 𝕜 E]
+    (h𝔖₁ : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s)
+    (h𝔖₂ : ⋃₀ 𝔖 = .univ) :
+    IsEmbedding ((↑) : UniformConvergenceCLM (.id 𝕜) V 𝔖 → (E → V)) := by
+  have := UniformConvergenceCLM.continuousEvalConst (.id 𝕜) V _ h𝔖₂
+  let b : Basis _ 𝕜 E := Free.chooseBasis 𝕜 E
+  have : Continuous (fun (f : E → V) i ↦ f (b i)) := continuous_pi fun i ↦ continuous_apply _
+  exact .of_comp continuous_coeFun this
+    (UniformConvergenceCLM.constrCLE 𝕜 b h𝔖₁ h𝔖₂).symm.toHomeomorph.isEmbedding
+
+/-- If `E` is finite dimensional, the topology of `𝔖`-convergence on `E →L[𝕜] F`
+identifies with the product topology. -/
+theorem isUniformEmbedding_coeFn_of_finiteDimensional
+    [FiniteDimensional 𝕜 E]
+    (h𝔖₁ : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s)
+    (h𝔖₂ : ⋃₀ 𝔖 = .univ) :
+    IsUniformEmbedding ((↑) : UniformConvergenceCLM (.id 𝕜) Vᵤ 𝔖 → (E → Vᵤ)) :=
+  let Φ : UniformConvergenceCLM (.id 𝕜) Vᵤ 𝔖 →ₗ[𝕜] (E → Vᵤ) := LinearMap.ltoFun _ _ _ _ ∘ₗ coeLM _
+  AddMonoidHom.isUniformEmbedding_of_isEmbedding (f := Φ)
+    (isEmbedding_coeFn_of_finiteDimensional h𝔖₁ h𝔖₂)
+
+/-- If `E` is finite dimensional, the topology of `𝔖`-convergence on `E →L[𝕜] F`
+identifies with the product topology. -/
+def flipOfFiniteDimensionalAux
+    [FiniteDimensional 𝕜 E]
+    (h𝔖₁ : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s)
+    (h𝔖₂ : ⋃₀ 𝔖 = .univ) :
+    (UniformConvergenceCLM (.id 𝕜) (UniformConvergenceCLM (.id 𝕜) V 𝔗) 𝔖) →L[𝕜]
+      (UniformConvergenceCLM (.id 𝕜) (UniformConvergenceCLM (.id 𝕜) V 𝔖) 𝔗) where
+  toFun φ :=
+    { toFun f := sorry
+      map_add' := sorry
+      map_smul' := sorry
+      cont := sorry }
+  map_add' := sorry
+  map_smul' := sorry
+  cont := sorry
+
+/-- If `E` is finite dimensional, the topology of `𝔖`-convergence on `E →L[𝕜] F`
+identifies with the product topology. -/
+def flipOfFiniteDimensional
+    [FiniteDimensional 𝕜 E]
+    (h𝔖₁ : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s)
+    (h𝔖₂ : ⋃₀ 𝔖 = .univ) :
+    (UniformConvergenceCLM (.id 𝕜) (UniformConvergenceCLM (.id 𝕜) V 𝔗) 𝔖) ≃L[𝕜]
+      (UniformConvergenceCLM (.id 𝕜) (UniformConvergenceCLM (.id 𝕜) V 𝔖) 𝔗) where
+  toFun f := sorry
+  invFun := sorry
+  map_add' := sorry
+  map_smul' := sorry
+  left_inv := sorry
+  right_inv := sorry
+  continuous_toFun := sorry
+  continuous_invFun := sorry
+
+end UniformConvergenceCLM
+
+section ContinuousLinearMap
 
 variable {ι 𝕜 R E F Fᵤ : Type*} [Semiring R] [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   [AddCommGroup E] [AddCommGroup F] [AddCommGroup Fᵤ] [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 Fᵤ]
@@ -30,27 +138,18 @@ variable {ι 𝕜 R E F Fᵤ : Type*} [Semiring R] [NontriviallyNormedField 𝕜
   [ContinuousConstSMul R F]
 
 theorem Module.Basis.continuous_constrL [Finite ι] (b : Basis ι 𝕜 E) :
-    Continuous (b.constrL : (ι → F) → (E →L[𝕜] F)) := by
-  rcases nonempty_fintype ι
-  letI Φ : (ι → F) →ₗ[𝕜] (E →L[𝕜] F) := ⟨⟨b.constrL, by simp [constrL]⟩, by simp [constrL]⟩
-  apply continuous_of_continuous_uncurry Φ
-  simp only [LinearMap.coe_mk, AddHom.coe_mk, b.constrL_apply, equivFun_apply, Φ, ← equivFunL_apply]
-  fun_prop
+    Continuous (b.constrL : (ι → F) → (E →L[𝕜] F)) :=
+  UniformConvergenceCLM.continuous_constrL b (fun _ ↦ id)
+
+#lint
 
 variable (R) in
 /-- `Basis.constrL` upgraded to a `ContinuousLinearEquiv`, where `E →L[𝕜] F` is endowed with
 the topology of bounded convergence. -/
-@[simps]
+@[simps! apply symm_apply]
 protected noncomputable def Module.Basis.constrCLE [Finite ι] (b : Basis ι 𝕜 E) :
     (ι → F) ≃L[R] (E →L[𝕜] F) :=
-  { toFun := b.constrL
-    invFun f i := f (b i)
-    map_add' f g := toLinearMap_injective (map_add (b.constr R) f g)
-    map_smul' c f := toLinearMap_injective (map_smul (b.constr R) c f)
-    left_inv := b.constr R |>.left_inv
-    right_inv _ := toLinearMap_injective (b.constr R |>.right_inv _)
-    continuous_toFun := b.continuous_constrL
-    continuous_invFun := continuous_pi fun i ↦ continuous_eval_const (b i) }
+  UniformConvergenceCLM.constrCLE R b (fun _ ↦ id) (sUnion_isVonNBounded_eq_univ)
 
 /-- If `E` is finite dimensional, the topology of bounded convergence on `E →L[𝕜] F`
 identifies with the product topology. -/
@@ -68,3 +167,5 @@ theorem ContinuousLinearMap.isUniformEmbedding_coeFn_of_finiteDimensional
     IsUniformEmbedding ((↑) : (E →L[𝕜] Fᵤ) → (E → Fᵤ)) :=
   let Φ : (E →L[𝕜] Fᵤ) →ₗ[𝕜] (E → Fᵤ) := LinearMap.ltoFun _ _ _ _ ∘ₗ coeLM _
   AddMonoidHom.isUniformEmbedding_of_isEmbedding (f := Φ) isEmbedding_coeFn_of_finiteDimensional
+
+end ContinuousLinearMap
