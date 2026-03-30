@@ -14,8 +14,8 @@ import Mathlib.Topology.Algebra.Monoid
 
 We prove the following facts:
 
-* `isClosed_convexOn` : the set of convex functions on a set is closed
-* `isClosed_concaveOn` : the set of concave functions on a set is closed
+* `isClosed_setOf_convexOn` : the set of convex functions on a set is closed
+* `isClosed_setOf_concaveOn` : the set of concave functions on a set is closed
 -/
 
 open scoped Topology
@@ -38,6 +38,6 @@ public theorem isClosed_setOf_convexOn {s : Set α} :
       isClosed_le (by fun_prop) (by fun_prop)
 
 /-- The set of concave functions on a set `s` is closed. -/
-public theorem isClosed_concaveOn {s : Set α} :
+public theorem isClosed_setOf_concaveOn {s : Set α} :
     IsClosed {f : α → β | ConcaveOn 𝕜 s f} :=
   isClosed_convexOn (α := α) (β := βᵒᵈ)
