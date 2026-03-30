@@ -204,20 +204,20 @@ variable {k S}
 
 @[simp]
 lemma resIndAdjunction_counit_app (A : Rep.{max w u v} k S) :
-    (resIndAdjunction k S).counit.app A =
+    (resIndAdjunction.{w, u, v} k S).counit.app A =
       (resFunctor S.subtype).map (indCoindIso.{max w (max u v)} A).hom ≫
       (resCoindAdjunction.{max w u} k S.subtype).counit.app A := rfl
 
 @[simp]
 lemma resIndAdjunction_unit_app (B : Rep.{max w u v} k G) :
-    (resIndAdjunction k S).unit.app B =
+    (resIndAdjunction.{w, u, v} k S).unit.app B =
       (resCoindAdjunction.{max w u} k S.subtype).unit.app B ≫
       (indCoindIso.{max w (max u v)} (res S.subtype B)).inv := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 lemma resIndAdjunction_homEquiv_apply (A : Rep.{max w u v} k S)
     {B : Rep.{max w u v} k G} (f : res S.subtype B ⟶ A) :
-    (resIndAdjunction k S).homEquiv _ _ f =
+    (resIndAdjunction.{w, u, v} k S).homEquiv _ _ f =
       resCoindHomEquiv.{max w u v} S.subtype B A f ≫ (indCoindIso.{max w u v} A).inv := by
   rw [resIndAdjunction, Adjunction.homEquiv_ofNatIsoRight_apply]
   simp [resCoindHomEquiv]
@@ -244,7 +244,7 @@ theorem instIsLeftAdjointSubtypeMemSubgroupCoindFunctorSubtype :
 
 @[simp]
 lemma coindResAdjunction_counit_app (B : Rep.{max w u v} k G) :
-    (coindResAdjunction k S).counit.app B =
+    (coindResAdjunction.{max w u v} k S).counit.app B =
       (indCoindIso.{max w u v} (res S.subtype B)).inv ≫
       (indResAdjunction k S.subtype).counit.app B := by
   rfl
@@ -266,7 +266,7 @@ lemma coindResAdjunction_homEquiv_apply (A : Rep.{max w u v} k S)
 
 lemma coindResAdjunction_homEquiv_symm_apply (A : Rep.{max w u v} k S)
     {B : Rep k G} (f : A ⟶ res S.subtype B) :
-    ((coindResAdjunction k S).homEquiv _ _).symm f =
+    ((coindResAdjunction.{max w u v} k S).homEquiv _ _).symm f =
       (indCoindIso.{max w u v} A).inv ≫ (indResHomEquiv S.subtype A B).symm f := by
   simp only [coindResAdjunction, indResAdjunction,
     Adjunction.homEquiv_ofNatIsoLeft_symm_apply _]
