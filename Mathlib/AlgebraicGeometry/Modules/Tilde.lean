@@ -447,8 +447,6 @@ theorem isLocalizing_iso_iff {M N : TopCat.Sheaf (ModuleCat R) (Spec R)} (φ : M
     IsLocalizing M ↔ IsLocalizing N :=
   ⟨fun h => isLocalizing_of_iso φ h, fun h => isLocalizing_of_iso φ.symm h⟩
 
-#check TopCat.Sheaf.hom_ext
-
 lemma isIso_iff_isIso_basis
     {X : TopCat.{u}} {C : Type*} [Category.{u} C] {FC : C → C → Type*} {CC : C → Type u}
     [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [instCC : ConcreteCategory.{u} C FC]
