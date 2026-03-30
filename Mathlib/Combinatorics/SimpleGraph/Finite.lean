@@ -342,20 +342,12 @@ theorem neighborFinset_compl [DecidableEq V] [DecidableRel G.Adj] (v : V) :
 theorem exists_neighbor_ne_of_one_lt_degree {V : Type*} [Fintype V] {G : SimpleGraph V}
     [DecidableRel G.Adj] {u : V} (h_ge_2 : 2 ≤ G.degree u) (v : V) :
     ∃ w ≠ v, G.Adj u w := by
-  have h_card : (G.neighborSet u).Nontrivial := by
-    rw [SimpleGraph.card_neighborFinset_eq_degree G u]
+  have h_nontrivial : (G.neighborFinset u).Nontrivial := by
+    rw [← Finset.one_lt_card_iff_nontrivial]
     exact h_ge_2
-  by_contra! h_all_v
-  have h_subset : G.neighborFinset u ⊆ {v} := by
-    intro x hx
-    rw [mem_neighborFinset] at hx
-    by_contra hne
-    rw [Finset.mem_singleton] at hne
-    exact h_all_v x hne hx
-  have h_card_le_1 := Finset.card_le_card h_subset
-  rw [Finset.card_singleton, ← Nat.lt_add_one_iff] at h_card_le_1
-  simp only [card_neighborFinset_eq_degree, Nat.reduceAdd] at h_card_le_1
-  exact Nat.not_le_of_gt h_card_le_1 h_ge_2
+  have ⟨w, hw_mem, hw_ne⟩ := h_nontrivial.exists_ne v
+  rw[G.mem_neighborFinset] at hw_mem
+  exact ⟨w, hw_ne, hw_mem⟩
 
 @[simp]
 theorem complete_graph_degree [DecidableEq V] (v : V) :
