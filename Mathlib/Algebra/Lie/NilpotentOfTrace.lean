@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Lie.Nilpotent
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+public import Mathlib.LinearAlgebra.Eigenspace.Matrix
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.LinearAlgebra.Dual.Lemmas
@@ -26,7 +27,6 @@ Cartan's criterion for semisimplicity.
 ## Main definitions
 
 * `NilpotentOfTrace.M`: the set `{x ∈ gl(V) : [x, B] ⊆ A}`.
-* `NilpotentOfTrace.diagEnd`: the diagonal endomorphism `b i ↦ c i • b i` relative to a basis `b`.
 * `NilpotentOfTrace.eigenbasis`: an eigenbasis for a semisimple endomorphism over an algebraically
   closed field.
 
@@ -49,28 +49,6 @@ open LinearMap Module.End
 section General
 
 variable {K : Type*} [Field K] {V : Type*} [AddCommGroup V] [Module K V]
-
-/-- The diagonal endomorphism `b i ↦ c i • b i` relative to a basis `b`. -/
-noncomputable def diagEnd {ι : Type*}
-    (b : Module.Basis ι K V) (c : ι → K) : Module.End K V :=
-  b.constr K (fun i => c i • b i)
-
-theorem diagEnd_apply_basis {ι : Type*}
-    (b : Module.Basis ι K V) (c : ι → K) (k : ι) :
-    diagEnd b c (b k) = c k • b k := by
-  simp [diagEnd, Module.Basis.constr_basis]
-
-theorem trace_diagEnd {ι : Type*} [Fintype ι]
-    (b : Module.Basis ι K V) (c : ι → K) :
-    trace K V (diagEnd b c) = ∑ i, c i := by
-  classical
-  have : LinearMap.toMatrix b b (diagEnd b c) = Matrix.diagonal c := by
-    ext i j
-    rw [LinearMap.toMatrix_apply, diagEnd_apply_basis]
-    simp only [map_smul, Module.Basis.repr_self, Finsupp.smul_single, smul_eq_mul, mul_one,
-      Matrix.diagonal_apply]
-    by_cases h : i = j <;> simp [h]
-  rw [trace_eq_matrix_trace K b, this, Matrix.trace_diagonal]
 
 open Classical in
 theorem ad_diag_basis {ι : Type*} [Fintype ι]
@@ -233,13 +211,15 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   classical
   haveI : Fintype (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))) :=
     eigenbasisFintype s hs_ss
-  let y := diagEnd v (fun i => algebraMap ℚ K (f ⟨a i, ha i⟩))
+  let c : _ → K := fun i => algebraMap ℚ K (f ⟨a i, ha i⟩)
+  let y := Matrix.toLin v v (Matrix.diagonal c)
+  have hy_diag : ∀ i, y (v i) = c i • v i := fun i =>
+    mem_eigenspace_iff.mp (hasEigenvector_toLin_diagonal c i v).1
   have had_s : ∀ i j, ⁅s, v.end (i, j)⁆ =
       (a i - a j) • v.end (i, j) := ad_diag_basis v a s hv_diag
   have had_y : ∀ i j, ⁅y, v.end (i, j)⁆ =
-      (algebraMap ℚ K (f ⟨a i, ha i⟩) - algebraMap ℚ K (f ⟨a j, ha j⟩)) •
-        v.end (i, j) :=
-    fun i j => ad_diag_basis v _ (diagEnd v _) (diagEnd_apply_basis v _) i j
+      (c i - c j) • v.end (i, j) :=
+    ad_diag_basis v _ y hy_diag
   obtain ⟨r, hr_eval, hr_zero⟩ := exists_lagrange_polynomial a E f ha
   let ad_s := LieAlgebra.ad K (Module.End K V) s
   have had_y_eq : LieAlgebra.ad K (Module.End K V) y = Polynomial.aeval ad_s r := by
@@ -272,7 +252,7 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     (Lagrange.eval_interpolate_at_node c_val (fun _ _ _ _ h => h)
       (Finset.mem_image.mpr ⟨i, Finset.mem_univ _, rfl⟩)).trans (dif_pos (ha i))
   have hy_eq : Polynomial.aeval s g = y := v.ext fun i => by
-    rw [Module.End.aeval_apply_of_mem_eigenspace (hv_diag i), hg_eval i, diagEnd_apply_basis]
+    rw [Module.End.aeval_apply_of_mem_eigenspace (hv_diag i), hg_eval i, hy_diag]
   have hy_adj : y ∈ Algebra.adjoin K {s} := by
     rw [Algebra.adjoin_singleton_eq_range_aeval]; exact ⟨g, hy_eq⟩
   have hny_comm : Commute n y :=
@@ -282,15 +262,16 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   have htr_ny : trace K V (n * y) = 0 :=
     (LinearMap.isNilpotent_trace_of_isNilpotent
       (hny_comm.isNilpotent_mul_right hn_nil)).eq_zero
-  have htr_sy : trace K V (s * y) = ∑ i, a i * algebraMap ℚ K (f ⟨a i, ha i⟩) := by
-    have : s * y = diagEnd v (fun i => a i * algebraMap ℚ K (f ⟨a i, ha i⟩)) := v.ext fun i => by
-      change s (y (v i)) = _
-      rw [show y (v i) = algebraMap ℚ K (f ⟨a i, ha i⟩) • v i from diagEnd_apply_basis v _ i,
-        diagEnd_apply_basis, map_smul, hv_diag i, smul_smul, mul_comm]
-    rw [this, trace_diagEnd]
+  have htr_sy : trace K V (s * y) = ∑ i, a i * c i := by
+    have : s * y = Matrix.toLin v v (Matrix.diagonal (fun i => a i * c i)) :=
+      v.ext fun i => by
+        rw [Module.End.mul_apply, hy_diag, map_smul, hv_diag i, smul_smul, mul_comm (c i),
+          ← mem_eigenspace_iff.mp
+            (hasEigenvector_toLin_diagonal (fun i => a i * c i) i v).1]
+    rw [this, Matrix.trace_toLin_eq, Matrix.trace_diagonal]
   -- Combine: tr(xy) = tr(ny) + tr(sy) = 0 + Σ aᵢ f(aᵢ), so Σ aᵢ f(aᵢ) = 0
   have htr_sum : ∑ i : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))),
-      a i * algebraMap ℚ K (f ⟨a i, ha i⟩) = 0 := by
+      a i * c i = 0 := by
     rw [← htr_sy]
     have : trace K V (x * y) = trace K V (n * y) + trace K V (s * y) := by
       rw [hxns, add_mul]; exact map_add _ _ _
