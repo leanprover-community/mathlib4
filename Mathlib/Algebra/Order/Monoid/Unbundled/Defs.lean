@@ -228,32 +228,32 @@ namely `a * b₁ ≤ a * b₂ → b₁ ≤ b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `OrderedCancelCommMonoid`. -/
-abbrev MulLeftReflectLE [Mul M] [LE M] : Prop :=
-  ContravariantClass M M (· * ·) (· ≤ ·)
+class MulLeftReflectLE [Mul M] [LE M] : Prop where
+  protected elim : Contravariant M M (· * ·) (· ≤ ·)
 
 /-- Typeclass for reverse monotonicity of multiplication on the right,
 namely `a₁ * b ≤ a₂ * b → a₁ ≤ a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `OrderedCancelCommMonoid`. -/
-abbrev MulRightReflectLE [Mul M] [LE M] : Prop :=
-  ContravariantClass M M (swap (· * ·)) (· ≤ ·)
+class MulRightReflectLE [Mul M] [LE M] : Prop where
+  protected elim : Contravariant M M (swap (· * ·)) (· ≤ ·)
 
 /-- Typeclass for reverse monotonicity of addition on the left,
 namely `a + b₁ ≤ a + b₂ → b₁ ≤ b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `OrderedCancelAddCommMonoid`. -/
-abbrev AddLeftReflectLE [Add M] [LE M] : Prop :=
-  ContravariantClass M M (· + ·) (· ≤ ·)
+class AddLeftReflectLE [Add M] [LE M] : Prop where
+  protected elim : Contravariant M M (· + ·) (· ≤ ·)
 
 /-- Typeclass for reverse monotonicity of addition on the right,
 namely `a₁ + b ≤ a₂ + b → a₁ ≤ a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `OrderedCancelAddCommMonoid`. -/
-abbrev AddRightReflectLE [Add M] [LE M] : Prop :=
-  ContravariantClass M M (swap (· + ·)) (· ≤ ·)
+class AddRightReflectLE [Add M] [LE M] : Prop where
+  protected elim : Contravariant M M (swap (· + ·)) (· ≤ ·)
 
 attribute [to_additive existing] MulLeftReflectLE MulRightReflectLE
 
@@ -296,8 +296,8 @@ instance (priority := 100) Group.covconv [Group N] [CovariantClass N N (· * ·)
 
 @[to_additive]
 theorem Group.mulLeftReflectLE_of_mulLeftMono [Group N] [LE N]
-    [MulLeftMono N] : MulLeftReflectLE N :=
-  inferInstance
+    [MulLeftMono N] : MulLeftReflectLE N where
+  elim := Group.covariant_iff_contravariant.mp CovariantClass.elim
 
 @[to_additive]
 theorem Group.mulLeftReflectLT_of_mulLeftStrictMono [Group N] [LT N]
@@ -321,8 +321,8 @@ instance (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swa
 
 @[to_additive]
 theorem Group.mulRightReflectLE_of_mulRightMono [Group N] [LE N]
-    [MulRightMono N] : MulRightReflectLE N :=
-  inferInstance
+    [MulRightMono N] : MulRightReflectLE N where
+  elim := Group.covariant_swap_iff_contravariant_swap.mp CovariantClass.elim
 
 @[to_additive]
 theorem Group.mulRightReflectLT_of_mulRightStrictMono [Group N] [LT N]
@@ -480,13 +480,13 @@ instance covariant_lt_of_contravariant_le [LinearOrder N]
 
 @[to_additive]
 theorem mulLeftStrictMono_of_mulLeftReflectLE [Mul N] [LinearOrder N] [MulLeftReflectLE N] :
-    MulLeftStrictMono N :=
-  inferInstance
+    MulLeftStrictMono N where
+  elim := covariant_lt_iff_contravariant_le .. |>.mpr MulLeftReflectLE.elim
 
 @[to_additive]
 theorem mulRightStrictMono_of_mulRightReflectLE [Mul N] [LinearOrder N] [MulRightReflectLE N] :
-    MulRightStrictMono N :=
-  inferInstance
+    MulRightStrictMono N where
+  elim := covariant_lt_iff_contravariant_le .. |>.mpr MulRightReflectLE.elim
 
 @[to_additive]
 instance covariant_swap_mul_of_covariant_mul [CommSemigroup N]
@@ -510,8 +510,8 @@ instance contravariant_swap_mul_of_contravariant_mul [CommSemigroup N]
 
 @[to_additive]
 theorem mulRightReflectLE_of_mulLeftReflectLE [CommSemigroup N] [LE N] [MulLeftReflectLE N] :
-    MulRightReflectLE N :=
-  inferInstance
+    MulRightReflectLE N where
+  elim := contravariant_flip_iff .. |>.mpr MulLeftReflectLE.elim
 
 @[to_additive]
 theorem mulRightReflectLT_of_mulLeftReflectLT [CommSemigroup N] [LT N] [MulLeftReflectLT N] :
