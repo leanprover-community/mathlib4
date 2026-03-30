@@ -131,6 +131,7 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
   by_contra hy'
   exact hm' y hy' hy
 
+@[to_dual]
 theorem wellFoundedLT_iff_exists_isMin [Preorder α] :
     WellFoundedLT α ↔ ∀ s : Set α, s.Nonempty → ∃ m : s, IsMin m := by
   rw [WellFoundedLT, isWellFounded_iff, wellFounded_iff_has_min]
