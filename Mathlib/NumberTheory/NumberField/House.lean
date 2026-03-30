@@ -125,12 +125,12 @@ section DecidableEq
 variable [DecidableEq (K →+* ℂ)]
 
 set_option backward.privateInPublic true in
-/-- `c` is defined as the product of the maximum absolute
+/-- `basisMatrixInvSupNorm` is defined as the product of the maximum absolute
   value of the entries of the inverse of the matrix `basisMatrix` and  `finrank ℚ K`. -/
-def c := (finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖
+def basisMatrixInvSupNorm := (finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖
 
-private theorem c_nonneg : 0 ≤ c K := by
-  rw [c]
+private theorem c_nonneg : 0 ≤ basisMatrixInvSupNorm K := by
+  rw [basisMatrixInvSupNorm]
   positivity
 
 set_option backward.isDefEq.respectTransparency false in
@@ -138,7 +138,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
     ‖(((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)‖ ≤
-      (c K) * house (algebraMap (𝓞 K) K α) := by
+      (basisMatrixInvSupNorm K) * house (algebraMap (𝓞 K) K α) := by
   let σ := canonicalEmbedding K
   calc
     _ ≤ ∑ j, ‖(basisMatrix K)ᵀ⁻¹ i j‖ * ‖σ (algebraMap (𝓞 K) K α) j‖ := by
@@ -261,7 +261,7 @@ variable {A : ℝ} (habs : ∀ k l, (house ((algebraMap (𝓞 K) K) (a k l))) �
 variable [DecidableEq (K →+* ℂ)]
 
 /-- `c₂` is the product of the maximum of `1` and `c`, and `supOfBasis`. -/
-abbrev c₂ := max 1 (c K) * (max 1 (supOfBasis K))
+abbrev c₂ := max 1 (basisMatrixInvSupNorm K) * (max 1 (supOfBasis K))
 
 private theorem c₂_nonneg : 0 ≤ c₂ K := by
   apply mul_nonneg (le_trans zero_le_one (le_max_left ..))
@@ -276,12 +276,12 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
   · intro kr lu
     calc
       ‖asiegel K a kr lu‖ = |asiegel K a kr lu| := ?_
-      _ ≤ (c K) *
+      _ ≤ (basisMatrixInvSupNorm K) *
         house ((algebraMap (𝓞 K) K) (a kr.1 lu.1 * ((newBasis K) lu.2))) := ?_
-      _ ≤ (c K) * house ((algebraMap (𝓞 K) K) (a kr.1 lu.1)) *
+      _ ≤ (basisMatrixInvSupNorm K) * house ((algebraMap (𝓞 K) K) (a kr.1 lu.1)) *
         house ((algebraMap (𝓞 K) K) ((newBasis K) lu.2)) := ?_
-      _ ≤ (c K) * A * house ((algebraMap (𝓞 K) K) ((newBasis K) lu.2)) := ?_
-      _ ≤ (c K) * A * (supOfBasis K) := ?_
+      _ ≤ (basisMatrixInvSupNorm K) * A * house ((algebraMap (𝓞 K) K) ((newBasis K) lu.2)) := ?_
+      _ ≤ (basisMatrixInvSupNorm K) * A * (supOfBasis K) := ?_
       _ ≤ (c₂ K) * A := ?_
     · simp only [Int.cast_abs, ← Real.norm_eq_abs (asiegel K a kr lu)]; rfl
     · have remark := basis_repr_norm_le_const_mul_house K
