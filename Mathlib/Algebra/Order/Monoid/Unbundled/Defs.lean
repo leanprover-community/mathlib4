@@ -514,7 +514,7 @@ instance contravariant_swap_mul_of_contravariant_mul [CommSemigroup N]
   elim := (contravariant_flip_iff N r (· * ·)).mpr ContravariantClass.elim
 
 @[to_additive]
-theorem mulRightReflectLE_of_mulLeftReflectLE [CommSemigroup N] [LE N] [MulLeftReflectLE N] :
+instance mulRightReflectLE_of_mulLeftReflectLE [CommSemigroup N] [LE N] [MulLeftReflectLE N] :
     MulRightReflectLE N where
   elim := contravariant_flip_iff .. |>.mpr MulLeftReflectLE.elim
 

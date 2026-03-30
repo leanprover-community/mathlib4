@@ -83,13 +83,11 @@ instance (priority := 200) IsOrderedCancelMonoid.toMulLeftReflectLE
   ⟨IsOrderedCancelMonoid.le_of_mul_le_mul_left⟩
 
 @[to_additive]
-instance (priority := 900) IsOrderedCancelMonoid.toMulLeftReflectLT :
-    MulLeftReflectLT α where
-  elim := contravariant_lt_of_contravariant_le α α _ ContravariantClass.elim
+instance (priority := 900) IsOrderedCancelMonoid.toMulLeftReflectLT : MulLeftReflectLT α where
+  elim := contravariant_lt_of_contravariant_le α α _ MulLeftReflectLE.elim
 
 @[to_additive]
-theorem IsOrderedCancelMonoid.toMulRightReflectLT :
-    MulRightReflectLT α :=
+theorem IsOrderedCancelMonoid.toMulRightReflectLT : MulRightReflectLT α :=
   inferInstance
 
 -- See note [lower instance priority]
