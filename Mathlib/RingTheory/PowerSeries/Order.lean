@@ -80,7 +80,6 @@ theorem coeff_order (h : φ ≠ 0) : coeff φ.order.toNat φ ≠ 0 := by
   generalize_proofs h
   exact Nat.find_spec h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the `n`th coefficient of a formal power series is nonzero,
 then the order of the power series is less than or equal to `n`. -/
 theorem order_le (n : ℕ) (h : coeff n φ ≠ 0) : order φ ≤ n := by
@@ -101,7 +100,6 @@ theorem coeff_of_lt_order_toNat (n : ℕ) (h : n < φ.order.toNat) : coeff n φ 
   · refine coeff_of_lt_order _ ?_
     rwa [← coe_toNat_order h', ENat.coe_lt_coe]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The order of a formal power series is at least `n` if
 the `i`th coefficient is `0` for all `i < n`. -/
 theorem nat_le_order (φ : R⟦X⟧) (n : ℕ) (h : ∀ i < n, coeff i φ = 0) : ↑n ≤ order φ := by
@@ -111,7 +109,6 @@ theorem nat_le_order (φ : R⟦X⟧) (n : ℕ) (h : ∀ i < n, coeff i φ = 0) :
   · simp
   · simpa [Nat.le_find_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The order of a formal power series is at least `n` if
 the `i`th coefficient is `0` for all `i < n`. -/
 theorem le_order (φ : R⟦X⟧) (n : ℕ∞) (h : ∀ i : ℕ, ↑i < n → coeff i φ = 0) :
@@ -122,7 +119,6 @@ theorem le_order (φ : R⟦X⟧) (n : ℕ∞) (h : ∀ i : ℕ, ↑i < n → coe
     convert nat_le_order φ n _
     simpa using h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The order of a formal power series is exactly `n` if the `n`th coefficient is nonzero,
 and the `i`th coefficient is `0` for all `i < n`. -/
 theorem order_eq_nat {φ : R⟦X⟧} {n : ℕ} :
@@ -132,7 +128,6 @@ theorem order_eq_nat {φ : R⟦X⟧} {n : ℕ} :
   · simp
   simp [order, dif_neg hφ, Nat.find_eq_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The order of a formal power series is exactly `n` if the `n`th coefficient is nonzero,
 and the `i`th coefficient is `0` for all `i < n`. -/
 theorem order_eq {φ : R⟦X⟧} {n : ℕ∞} :
@@ -157,7 +152,6 @@ theorem min_order_le_order_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) �
   refine le_order _ _ ?_
   simp +contextual [coeff_of_lt_order]
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem order_add_of_order_ne.aux (φ ψ : R⟦X⟧)
     (H : order φ < order ψ) : order (φ + ψ) ≤ order φ ⊓ order ψ := by
   suffices order (φ + ψ) = order φ by
@@ -173,7 +167,6 @@ private theorem order_add_of_order_ne.aux (φ ψ : R⟦X⟧)
     rw [(coeff _).map_add, coeff_of_lt_order i hi, coeff_of_lt_order i (lt_trans hi H),
       zero_add]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The order of the sum of two formal power series
 is the minimum of their orders if their orders differ. -/
 theorem order_add_of_order_ne (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
@@ -182,8 +175,6 @@ theorem order_add_of_order_ne (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
   rcases h.lt_or_gt with (φ_lt_ψ | ψ_lt_φ)
   · apply order_add_of_order_ne.aux _ _ φ_lt_ψ
   · simpa only [add_comm, inf_comm] using order_add_of_order_ne.aux _ _ ψ_lt_φ
-
-@[deprecated (since := "2025-09-17")] alias order_add_of_order_eq := order_add_of_order_ne
 
 theorem le_order_map {S : Type*} [Semiring S] (f : R →+* S) :
     φ.order ≤ (φ.map f).order :=
@@ -208,13 +199,11 @@ theorem le_order_mul (φ ψ : R⟦X⟧) : order φ + order ψ ≤ order (φ * ψ
   apply ne_of_lt (lt_of_lt_of_le hn <| add_le_add hi hj)
   rw [← Nat.cast_add, hij]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_order_pow (φ : R⟦X⟧) (n : ℕ) : n • order φ ≤ order (φ ^ n) := by
   induction n with
   | zero => simp
   | succ n ih => grw [add_smul, one_smul, pow_succ, ih, le_order_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*} (φ : ι → R⟦X⟧) (s : Finset ι) :
     ∑ i ∈ s, (φ i).order ≤ (∏ i ∈ s, φ i).order := by
   induction s using Finset.cons_induction with
@@ -223,7 +212,6 @@ theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*} (φ : ι → R�
 
 alias order_mul_ge := le_order_mul
 
-set_option backward.isDefEq.respectTransparency false in
 theorem one_le_order_iff_constCoeff_eq_zero :
     1 ≤ φ.order ↔ φ.constantCoeff = 0 := by
   constructor
@@ -245,7 +233,6 @@ theorem le_order_pow_of_constantCoeff_eq_zero (n : ℕ) (hf : φ.constantCoeff =
   refine .trans ?_ (le_order_pow _ n)
   simpa using le_mul_of_one_le_right' (one_le_order_iff_constCoeff_eq_zero.mpr hf)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The order of the monomial `a*X^n` is infinite if `a = 0` and `n` otherwise. -/
 theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :
     order (monomial n a) = if a = 0 then (⊤ : ℕ∞) else n := by
@@ -264,7 +251,6 @@ theorem order_monomial_of_ne_zero (n : ℕ) (a : R) (h : a ≠ 0) : order (monom
   classical
   rw [order_monomial, if_neg h]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `n` is strictly smaller than the order of `ψ`, then the `n`th coefficient of its product
 with any other power series is `0`. -/
 theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order) :
@@ -278,12 +264,10 @@ theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order)
   norm_cast
   lia
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_mul_one_sub_of_lt_order {R : Type*} [Ring R] {φ ψ : R⟦X⟧} (n : ℕ)
     (h : ↑n < ψ.order) : coeff n (φ * (1 - ψ)) = coeff n φ := by
   simp [coeff_mul_of_lt_order h, mul_sub]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ) (s : Finset ι)
     (φ : R⟦X⟧) (f : ι → R⟦X⟧) :
     (∀ i ∈ s, ↑k < (f i).order) → coeff k (φ * ∏ i ∈ s, (1 - f i)) = coeff k φ := by
@@ -296,7 +280,6 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ)
     rw [Finset.prod_insert ha, ← mul_assoc, mul_right_comm, coeff_mul_one_sub_of_lt_order _ t.1]
     exact ih t.2
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem order_neg {R : Type*} [Ring R] (φ : PowerSeries R) : (-φ).order = φ.order := by
   by_contra! h
@@ -335,13 +318,12 @@ theorem X_pow_order_mul_divXPowOrder {f : R⟦X⟧} :
   rw [coeff_X_pow_mul']
   split_ifs with h
   · simp [h]
-  · push_neg at h
+  · push Not at h
     rw [coeff_of_lt_order_toNat _ h]
 
 theorem X_pow_order_dvd : X ^ φ.order.toNat ∣ φ := by
   simpa only [X_pow_dvd_iff] using coeff_of_lt_order_toNat
 
-set_option backward.isDefEq.respectTransparency false in
 theorem order_eq_emultiplicity_X {R : Type*} [Semiring R] (φ : R⟦X⟧) :
     order φ = emultiplicity X φ := by
   classical
@@ -378,7 +360,6 @@ variable [Semiring R] [Nontrivial R]
 theorem order_one : order (1 : R⟦X⟧) = 0 := by
   simpa using order_monomial_of_ne_zero 0 (1 : R) one_ne_zero
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The order of an invertible power series is `0`. -/
 theorem order_zero_of_unit {f : R⟦X⟧} : IsUnit f → f.order = 0 := by
   rintro ⟨⟨u, v, hu, hv⟩, hf⟩
@@ -430,7 +411,6 @@ theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := 
       · rw [coeff_of_lt_order_toNat ij.1 h', zero_mul]
       · rw [coeff_of_lt_order_toNat ij.2 h', mul_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The operation of dividing a power series by the largest possible power of `X`
 preserves multiplication. -/
 theorem divXPowOrder_mul {f g : R⟦X⟧} :

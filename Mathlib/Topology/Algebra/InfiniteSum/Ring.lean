@@ -172,7 +172,7 @@ theorem HasSum.mul (hf : HasSum f s) (hg : HasSum g t)
   let ⟨_u, hu⟩ := hfg
   (hf.mul_eq hg hu).symm ▸ hu
 
-/-- Product of two infinites sums indexed by arbitrary types.
+/-- Product of two infinite sums indexed by arbitrary types.
 See also `tsum_mul_tsum_of_summable_norm` if `f` and `g` are absolutely summable. -/
 protected theorem Summable.tsum_mul_tsum (hf : Summable f) (hg : Summable g)
     (hfg : Summable fun x : ι × κ ↦ f x.1 * g x.2) :
@@ -241,7 +241,7 @@ theorem summable_sum_mul_range_of_summable_mul (h : Summable fun x : ℕ × ℕ 
   simp_rw [← Nat.sum_antidiagonal_eq_sum_range_succ fun k l ↦ f k * g l]
   exact summable_sum_mul_antidiagonal_of_summable_mul h
 
-/-- The **Cauchy product formula** for the product of two infinites sums indexed by `ℕ`, expressed
+/-- The **Cauchy product formula** for the product of two infinite sums indexed by `ℕ`, expressed
 by summing on `Finset.range`.
 
 See also `tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm` if `f` and `g` are absolutely summable.

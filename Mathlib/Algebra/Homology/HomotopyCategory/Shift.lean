@@ -115,7 +115,7 @@ instance : HasShift (CochainComplex C ℤ) ℤ := hasShiftMk _ _
 
 instance (n : ℤ) :
     (CategoryTheory.shiftFunctor (HomologicalComplex C (ComplexShape.up ℤ)) n).Additive :=
-  (inferInstance : (CochainComplex.shiftFunctor C n).Additive)
+  inferInstanceAs <| (CochainComplex.shiftFunctor C n).Additive
 
 instance (n : ℤ) {R : Type*} [Ring R] [Linear R C] :
     Functor.Linear R

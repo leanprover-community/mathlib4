@@ -104,12 +104,26 @@ instance starModule (s : StarSubalgebra R A) : StarModule R s where
   star_smul r a := Subtype.ext (star_smul r (a : A))
 
 /-- Turn a `StarSubalgebra` into a `NonUnitalStarSubalgebra` by forgetting that it contains `1`. -/
+@[reducible]
 def toNonUnitalStarSubalgebra (S : StarSubalgebra R A) : NonUnitalStarSubalgebra R A where
   __ := S
   smul_mem' r _x hx := S.smul_mem hx r
 
 lemma one_mem_toNonUnitalStarSubalgebra (S : StarSubalgebra R A) :
     1 ∈ S.toNonUnitalStarSubalgebra := S.one_mem'
+
+@[simp]
+lemma mem_toNonUnitalStarSubalgebra {S : StarSubalgebra R A} {x : A} :
+    x ∈ S.toNonUnitalStarSubalgebra ↔ x ∈ S :=
+  Iff.rfl
+
+lemma toNonUnitalStarSubalgebra_injective : Function.Injective
+    (toNonUnitalStarSubalgebra : StarSubalgebra R A → NonUnitalStarSubalgebra R A) :=
+  fun _ _ ↦ by simp [SetLike.ext_iff]
+
+lemma toNonUnitalStarSubalgebra_inj {S U : StarSubalgebra R A} :
+    S.toNonUnitalStarSubalgebra = U.toNonUnitalStarSubalgebra ↔ S = U :=
+  toNonUnitalStarSubalgebra_injective.eq_iff
 
 theorem mem_carrier {s : StarSubalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl

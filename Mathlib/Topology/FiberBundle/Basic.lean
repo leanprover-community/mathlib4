@@ -272,6 +272,25 @@ theorem totalSpaceMk_isClosedEmbedding [T1Space B] (x : B) :
     rw [TotalSpace.range_mk]
     exact isClosed_singleton.preimage <| continuous_proj F E⟩
 
+/-- An arbitrary homeomorphism between any fiber and the model fiber.
+This is useful to transfer topological properties of the model fiber. -/
+noncomputable def homeomorphAt (b : B) : E b ≃ₜ F :=
+  ((totalSpaceMk_isEmbedding F E b).toHomeomorph.trans <|
+    Homeomorph.ofEqSubtypes <| TotalSpace.range_mk b).trans <|
+    (trivializationAt F E b).preimageSingletonHomeomorph <| mem_baseSet_trivializationAt' b
+
+lemma t0Space [T0Space F] (b : B) : T0Space (E b) :=
+  FiberBundle.homeomorphAt F E b |>.symm.t0Space
+
+lemma t1Space [T1Space F] (b : B) : T1Space (E b) :=
+  FiberBundle.homeomorphAt F E b |>.symm.t1Space
+
+lemma t2Space [T2Space F] (b : B) : T2Space (E b) :=
+  FiberBundle.homeomorphAt F E b |>.symm.t2Space
+
+lemma t3Space [T3Space F] (b : B) : T3Space (E b) :=
+  FiberBundle.homeomorphAt F E b |>.symm.t3Space
+
 variable {E F}
 
 @[simp, mfld_simps]
@@ -369,7 +388,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
   · /- If `(c, d)` is nonempty, then take `d' ∈ (c, d)`. Since the base set of `ec` includes
           `[a, d)`, it includes `[a, d'] ⊆ [a, d)` as well. -/
     rw [disjoint_left] at he
-    push_neg at he
+    push Not at he
     rcases he with ⟨d', hdd' : d' < d, hd'c⟩
     exact ⟨d', ⟨hd'c, hdd'.le.trans hdcb.2⟩, ec, (Icc_subset_Ico_right hdd').trans had⟩
 
