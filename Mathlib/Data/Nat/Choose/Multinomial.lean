@@ -502,5 +502,3 @@ theorem multinomial_nsmul_singleton (k n : ℕ) :
   simp [multinomial_nsmul]
 
 end Multiset
-
-
