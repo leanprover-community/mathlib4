@@ -178,9 +178,12 @@ protected theorem induction_on {motive : (⨁ i, β i) → Prop} (x : ⨁ i, β 
   intro i b f h1 h2 ih
   solve_by_elim
 
-protected theorem induction_of {motive : (⨁ i, β i) → Prop} (f : ⨁ i, β i) (h0 : motive 0)
-    (ha : ∀ (i b) (f : ⨁ i, β i), f i = 0 → b ≠ 0 → motive f → motive (of β i b + f)) : motive f :=
-    DFinsupp.induction f h0 ha
+/-- An alternative induction, where the addition assumption is restricted to singles. -/
+@[elab_as_elim]
+protected theorem induction_on' {motive : (⨁ i, β i) → Prop} (f : ⨁ i, β i) (h0 : motive 0)
+    (hadd : ∀ (i b) (f : ⨁ i, β i), f i = 0 → b ≠ 0 → motive f → motive (of β i b + f)) :
+    motive f :=
+  DFinsupp.induction f h0 hadd
 
 /-- If two additive homomorphisms from `⨁ i, β i` are equal on each `of β i y`,
 then they are equal. -/

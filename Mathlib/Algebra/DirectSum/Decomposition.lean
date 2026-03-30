@@ -285,6 +285,15 @@ theorem decompose_smul (r : R) (x : M) : decompose ℳ (r • x) = r • decompo
     decomposeLinearEquiv ℳ x = lof R _ _ i x :=
   (LinearEquiv.eq_symm_apply _).mp (decomposeLinearEquiv_symm_lof ..).symm
 
+lemma decompose_symm_mem_iff (x : ⨁ i, ℳ i) (i : ι) :
+    (decompose ℳ).symm x ∈ ℳ i ↔ x ∈ LinearMap.range (lof R ι (ℳ ·) i) := by
+  refine ⟨fun h ↦ LinearMap.mem_range.mpr ?_, fun h ↦ ?_⟩
+  · use ⟨(decompose ℳ).symm x, h⟩
+    simp [lof_eq_of, ← decompose_of_mem]
+  · obtain ⟨a, ha⟩ := h
+    rw [← ha, lof_eq_of, decompose_symm_of]
+    exact Submodule.coe_mem a
+
 /-- Two linear maps from a module with a decomposition agree if they agree on every piece.
 
 Note this cannot be `@[ext]` as `ℳ` cannot be inferred. -/

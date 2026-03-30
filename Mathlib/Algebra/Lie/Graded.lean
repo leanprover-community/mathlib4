@@ -5,22 +5,21 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.Algebra.DirectSum.Basic
-public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.Algebra.Lie.Derivation.Basic
 
 /-!
 # Graded Lie algebras
-This file defines typeclasses `GBracket` and `GLieRing`, for working with Lie algebras that are
-graded by a collection of modules `A : ι → Type*`. The additivity of degree with respect to the
-bracket product is encoded by a `Prop` so we can avoid the usual difficulties of adding elements of
-`A (i + j)` to elements of `A (j + i)`.
+This file defines typeclasses `SetLike.GradedBracket` and `GradedLieAlgebra`, for working with Lie
+algebras that are graded by a collection `ℒ` of submodules. The additivity of degree with respect to
+the bracket product is encoded by an addition condition so we can avoid the usual difficulties of
+adding elements of `A (i + j)` to elements of `A (j + i)`.
 ## Main definitions
-* `GBracket` : A typeclass for a graded bracket
-* `GLieRing` : A typeclass for a graded bracket to have a Lie ring structure.
+* `SetLike.GradedBracket` : A typeclass for a bracket to respect an additive grading.
+* `GradedLieAlgebra` : A typeclass for a Lie algebra to respect an additive grading.
+* ``
 ## TODO
-* `GLieAlgebra` : Graded Lie algebra structure
-* Internal direct sums
-* Derivation from scalar multiplication by a linear map applied to degree.
+* Derivation from scalar multiplication by an additive map applied to degree.
 ## Tags
 graded Lie algebra
 -/
@@ -29,148 +28,140 @@ graded Lie algebra
 
 open DirectSum
 
-variable {ι R L : Type*}
+variable {ι σ R L : Type*}
 
-section GradedLieRing
+section put_elsewhere
 
-variable (A : ι → Type*)
-/-- A graded version of `Bracket`. Grades are combined additively, like
-`AddMonoidAlgebra`. -/
-class GBracket [Add ι] where
-  /-- The homogeneous multiplication map `bracket`. We do not use `A i → A j → A (i + j)` because
-    the `leibniz_lie` rule for graded Lie algebras would then require a cast. -/
-  bracket {i j k} (h : i + j = k) : A i → A j → A k
+variable [DecidableEq ι] [CommSemiring R] [AddCommMonoid L] [Module R L]
+(ℒ : ι → Submodule R L)
 
-/-- A graded version of `LieRing`. -/
-class GLieRing [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] extends GBracket A where
-  /-- A graded Lie ring bracket is additive in its first component. -/
-  protected add_lie : ∀ {i j k} (h : i + j = k) (x y : A i) (z : A j),
-    bracket h (x + y) z = bracket h x z + bracket h y z
-  /-- A graded Lie ring bracket is additive in its second component. -/
-  protected lie_add : ∀ {i j k} (h : i + j = k) (x : A i) (y z : A j),
-    bracket h x (y + z) = bracket h x y + bracket h x z
-  /-- A graded Lie ring bracket vanishes on the diagonal in each graded piece. -/
-  protected lie_self : ∀ {i j} (h : i + i = j) (x : A i), bracket h x x = 0
-  /-- Homogeneous symmetric sums of graded Lie ring brackets vanish. -/
-  protected lie_antisymm : ∀ {i j k} (hij : i + j = k) (hji : j + i = k) (x : A i) (y : A j),
-    bracket hij x y + bracket hji y x = 0
-  /-- A graded Lie ring bracket satisfies a Leibniz / Jacobi identity. -/
-  protected leibniz_lie : ∀ {i j k ij ik jk ijk} (hij : i + j = ij) (hik : i + k = ik)
-      (hjk : j + k = jk) (hi : i + jk = ijk) (hk : ij + k = ijk) (hj : j + ik = ijk) (x : A i)
-      (y : A j) (z : A k),
-      bracket hi x (bracket hjk y z) =
-        bracket hk (bracket hij x y) z + bracket hj y (bracket hik x z)
+private lemma toModule_lof_smul_of [AddCommMonoid ι] (φ : ι →+ R) {k : ι} {b : ⨁ i, ℒ i}
+    (hb : b ∈ (lof R ι (ℒ ·) k).range) :
+    (toModule R ι (⨁ (i : ι), ℒ i) fun i ↦ lof R ι (ℒ ·) i ∘ₗ (φ i • LinearMap.id)) b =
+    (φ k) • b := by
+  obtain ⟨a, ha⟩ := hb
+  rw [lof_eq_of R] at ha
+  simp [← ha, ← lof_eq_of R]
+--#find_home! toModule_lof_smul_of --[Mathlib.Algebra.DirectSum.Module]
 
-namespace GLieRing
+variable [Decomposition ℒ]
 
-/-- The piecewise multiplication from the `GLieRing` instance, as a bundled homomorphism. -/
-@[simps]
-def gBracketHom [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A] {i j k} (h : i + j = k) :
-    A i →+ A j →+ A k where
-  toFun a :=
-    { toFun := fun b => GBracket.bracket h a b
-      map_zero' := by
-        have := rfl (a := GBracket.bracket h a (0 : A j))
-        nth_rw 1 [← add_zero 0] at this
-        rwa [GLieRing.lie_add, add_eq_left] at this
-      map_add' x y := by rw [GLieRing.lie_add] }
-  map_zero' := by
-    ext b
-    have := rfl (a := GBracket.bracket h (0 : A i) b)
-    nth_rw 1 [← add_zero 0] at this
-    rwa [GLieRing.add_lie, add_eq_left] at this
-  map_add' _ _ := by
-    ext b
-    simp [GLieRing.add_lie]
 
-/-- The multiplication from the `GLieRing` instance, as a bundled homomorphism. -/
--- See note [non-reducible instance]
-@[reducible]
-def bracketHom [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A] :
-    (⨁ i, A i) →+ (⨁ i, A i) →+ ⨁ i, A i :=
-  DirectSum.toAddMonoid fun _ =>
-    AddMonoidHom.flip <|
-      DirectSum.toAddMonoid fun _ =>
-        AddMonoidHom.flip <| (DirectSum.of A _).compHom.comp <| gBracketHom A rfl
+--#find_home! decompose_symm_mem_iff --[Mathlib.Algebra.DirectSum.Decomposition]
 
-instance [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A] :
-    Bracket (⨁ i, A i)  (⨁ i, A i) where
-  bracket a b := bracketHom A a b
+end put_elsewhere
+
+section SetLike
+
+/-- A class that ensures a bracket product preserves an additive grading. -/
+class SetLike.GradedBracket [SetLike σ L] [Bracket L L] [Add ι] (ℒ : ι → σ) : Prop where
+  /-- Bracket is homogeneous -/
+  bracket_mem : ∀ ⦃i j k⦄ {gi gj}, i + j = k → gi ∈ ℒ i → gj ∈ ℒ j → ⁅gi, gj⁆ ∈ ℒ k
+
+variable [DecidableEq ι] [AddCommMonoid ι] [CommRing R] [LieRing L] [LieAlgebra R L]
+(ℒ : ι → Submodule R L)
+
+/-- A class that ensures a Lie algebra has a bracket that preserves a decomposition. -/
+class GradedLieAlgebra extends SetLike.GradedBracket ℒ, DirectSum.Decomposition ℒ
+
+end SetLike
+
+namespace DirectSum
+
+variable [DecidableEq ι] [AddCommMonoid ι] [CommRing R] [LieRing L] [LieAlgebra R L]
+(ℒ : ι → Submodule R L) [GradedLieAlgebra ℒ]
+
+instance : LieRing (⨁ i, ℒ i) where
+  bracket x y := (decomposeLinearEquiv (M := L) (R := R) (ι := ι) ℒ)
+    ⁅(decomposeLinearEquiv (M := L) ℒ).symm x, (decomposeLinearEquiv ℒ).symm y⁆
+  add_lie _ _ _ := by simp
+  lie_add _ _ _ := by simp
+  lie_self _ := by simp
+  leibniz_lie _ _ _ := by simp
+
+instance : LieAlgebra R (⨁ i, ℒ i) where
+  add_smul _ _ _ := by simp [add_smul]
+  zero_smul _ := by simp
+  lie_smul _ _ _ := by simp [Bracket.bracket]
+
+/-- If `L` is graded by `ι` with degree `i` component `ℒ i`, then it is isomorphic as
+a Lie algebra to a direct sum of components. -/
+def decomposeLieEquiv : L ≃ₗ⁅R⁆ ⨁ i, ℒ i :=
+  { decomposeLinearEquiv ℒ with
+    map_lie' {x y} := by simp [Bracket.bracket] }
 
 @[simp]
-lemma bracketHom_apply [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A]
-    (a b : ⨁ i, A i) :
-    bracketHom A a b = ⁅a, b⁆ := rfl
-
-lemma rec_bracket [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A]
-    {i j k l} (a : A i) (b : A j) (hk : i + j = k) (hl : i + j = l) (hkl : k = l) :
-    Eq.rec (GBracket.bracket hk a b) hkl = GBracket.bracket hl a b := by
-  grind
+lemma decompose_bracket (x y : L) : decompose ℒ ⁅x, y⁆ = ⁅decompose ℒ x, decompose ℒ y⁆ := by
+  simp only [← decomposeLinearEquiv_apply]
+  simp [Bracket.bracket]
 
 @[simp]
-lemma bracket_of_of [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A]
-    {i j} (a : A i) (b : A j) :
-    ⁅of A i a, of A j b⁆ = of A (i + j) (GBracket.bracket rfl a b) := by
-  simp [← bracketHom_apply]
+lemma decompose_symm_bracket (x y : ⨁ i, ℒ i) :
+    (decompose ℒ).symm ⁅x, y⁆  = ⁅(decompose ℒ).symm x, (decompose ℒ).symm y⁆ := by
+  simp only [← decomposeLinearEquiv_symm_apply]
+  simp [Bracket.bracket]
 
-/-- `GLieRing` implies a Lie ring structure. -/
-instance toLieRing [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)]
-    [GLieRing A] :
-    LieRing (⨁ i, A i) :=
-  { (inferInstance : AddCommGroup _) with
-    bracket x y := ⁅x, y⁆
-    add_lie _ _ _ := by simp [← bracketHom_apply]
-    lie_add _ _ _ := by simp [← bracketHom_apply]
-    lie_self x := by
-      have hsum (i : ι) (a : A i) (f : (⨁ i, A i)) : ⁅(of A i a), f⁆ + ⁅f, (of A i a)⁆ = 0 := by
-        induction f using DirectSum.induction_of with
-        | h0 => simp [← bracketHom_apply]
-        | ha j b f hj _ h =>
-          simp only [← bracketHom_apply, map_add, AddMonoidHom.add_apply] at h ⊢
-          rw [add_rotate, add_left_comm, h, add_zero]
-          ext k
-          by_cases h : i + j = k
-          · simp [of_apply, h, add_comm i j ▸ h, rec_bracket, GLieRing.lie_antisymm]
-          · simp [of_apply, h, add_comm i j ▸ h]
-      induction x using DirectSum.induction_of with
-      | h0 => simp [← bracketHom_apply]
-      | ha j b f hj _ h =>
-        simp only [← bracketHom_apply] at h hsum
-        rw [← bracketHom_apply, map_add, map_add, AddMonoidHom.add_apply, AddMonoidHom.add_apply, h,
-          add_zero, add_assoc, add_comm (((bracketHom A) f) ((of A j) b)), hsum]
-        simp [GLieRing.lie_self]
-    leibniz_lie x y z := by
-      have hboo (i j : ι) (a : A i) (b : A j) :
-          ⁅of A i a, ⁅of A j b, z⁆⁆ = ⁅of A j b, ⁅of A i a, z⁆⁆ + ⁅⁅of A i a, of A j b⁆, z⁆ := by
-        induction z using DirectSum.induction_of with
-        | h0 => simp [← bracketHom_apply]
-        | ha k c f _ _ ih =>
-          simp only [← bracketHom_apply, map_add] at ih ⊢
-          rw [ih]
-          simp only [bracketHom_apply, ← add_assoc]
-          rw [add_right_cancel_iff, add_right_comm, add_right_cancel_iff]
-          ext l
-          by_cases h : i + j + k = l
-          · simp [of_apply, h, add_assoc i j k ▸ h, add_assoc j i k ▸ add_comm i j ▸ h, rec_bracket,
-              GLieRing.leibniz_lie, add_comm (GBracket.bracket _ (GBracket.bracket _ a b) c)]
-          · simp [of_apply, h, add_assoc i j k ▸ h, add_assoc j i k ▸ add_comm i j ▸ h]
-      have hbo (i : ι) (a : A i) :
-          ⁅of A i a, ⁅y, z⁆⁆ = ⁅y, ⁅of A i a, z⁆⁆ + ⁅⁅of A i a, y⁆, z⁆ := by
-        induction y using DirectSum.induction_of with
-        | h0 => simp [← bracketHom_apply]
-        | ha j b f _ _ ih =>
-          simp only [← bracketHom_apply, map_add, AddMonoidHom.add_apply] at ih ⊢
-          rw [ih]
-          simp only [bracketHom_apply, ← add_assoc]
-          rw [add_right_cancel_iff, add_right_comm, add_right_cancel_iff]
-          exact hboo i j a b
-      induction x using DirectSum.induction_of with
-      | h0 => simp [← bracketHom_apply]
-      | ha i a f _ _ ih =>
-        simp only [← bracketHom_apply, map_add, AddMonoidHom.add_apply] at ih ⊢
-        rw [ih]
-        simp only [bracketHom_apply, ← add_assoc]
-        rw [add_right_cancel_iff, ← add_rotate, add_right_cancel_iff]
-        exact hbo i a }
+end DirectSum
 
-end GLieRing
+namespace LieDerivation
+
+variable [DecidableEq ι] [AddCommMonoid ι] [CommRing R] [LieRing L] [LieAlgebra R L]
+(ℒ : ι → Submodule R L) [GradedLieAlgebra ℒ]
+
+set_option backward.isDefEq.respectTransparency false in -- Module instance diamond
+/-- A derivation on the direct sum of graded pieces of a graded Lie algebra, coming from an additive
+map on the grading monoid. -/
+def ofGradingSum (φ : ι →+ R) : LieDerivation R (⨁ i, ℒ i) (⨁ i, ℒ i) :=
+  { __ := DirectSum.toModule R ι (⨁ i, ℒ i)
+      fun i ↦ (lof R ι (ℒ ·) i).comp (Module.End.smulLeft (φ i) (by simp))
+    leibniz' x y := by
+      ext j
+      induction x using DirectSum.induction_on' with
+      | h0 => simp
+      | hadd i a f _ _ ih =>
+        simp only [Module.End.smulLeft_eq, DirectSum.sub_apply, AddSubgroupClass.coe_sub] at ih
+        simp only [Module.End.smulLeft_eq, add_lie, map_add, DirectSum.add_apply, Submodule.coe_add,
+          ih, lie_add, DirectSum.sub_apply, AddSubgroupClass.coe_sub]
+        rw [add_sub_add_comm, add_right_cancel_iff, toModule_lof_smul_of ℒ φ
+          ((decompose_symm_mem_iff ℒ (of (ℒ ·) i a) i).mp <| by simp)]
+        clear ih
+        induction y using DirectSum.induction_on' with
+        | h0 => simp
+        | hadd k b f _ _ ih =>
+          simp only [lie_smul] at ih
+          simp only [lie_add, map_add, DirectSum.add_apply, Submodule.coe_add, ih, lie_smul,
+            add_lie, smul_add]
+          rw [add_sub, ← sub_sub]
+          congr 1
+          have hmem : ⁅of (ℒ ·) i a, of (ℒ ·) k b⁆ ∈ LinearMap.range (lof R ι (ℒ ·) (i + k)) := by
+            apply (decompose_symm_mem_iff ℒ _ (i + k)).mp
+            rw [decompose_symm_bracket, decompose_symm_of, decompose_symm_of]
+            exact SetLike.GradedBracket.bracket_mem rfl (Submodule.coe_mem a) (Submodule.coe_mem b)
+          rw [toModule_lof_smul_of ℒ φ ((decompose_symm_mem_iff ℒ (of (ℒ ·) k b) k).mp <| by simp),
+            toModule_lof_smul_of ℒ φ hmem, add_sub_right_comm,
+            add_right_cancel_iff, add_comm i k, map_add, add_smul, DirectSum.add_apply,
+            Submodule.coe_add, sub_eq_add_neg, lie_smul, add_left_cancel_iff,
+            ← lie_skew (of (ℒ ·) k b), smul_neg, ← sub_eq_zero, sub_neg_eq_add, ← Submodule.coe_add,
+            Submodule.coe_eq_zero, ← DirectSum.add_apply, add_neg_cancel, DirectSum.zero_apply] }
+
+@[simp]
+lemma ofGradingSum_of (φ : ι →+ R) (i : ι) (a : ℒ i) :
+    ofGradingSum ℒ φ (of (ℒ ·) i a) = (φ i) • (of (ℒ ·) i a) := by
+  rw [← toModule_lof_smul_of ℒ φ ((decompose_symm_mem_iff ℒ (of (ℒ ·) i a) i).mp <| by simp)]
+  exact DFunLike.congr_arg (ofGradingSum ℒ φ) rfl
+
+/-- The Lie derivation on a graded Lie algebra that scalar-multiplies by an additive function of
+the degree. -/
+def ofGrading (φ : ι →+ R) :
+    LieDerivation R L L where
+  toFun x := (decomposeLinearEquiv ℒ).symm (ofGradingSum ℒ φ (decomposeLinearEquiv ℒ x))
+  map_add' _ _ := by simp
+  map_smul' _ _ := by simp
+  leibniz' x y := by simp [decomposeLinearEquiv_apply, decomposeLinearEquiv_symm_apply]
+
+lemma ofGrading_of_mem (φ : ι →+ R) {i : ι} {a : L} (ha : a ∈ ℒ i) :
+    ofGrading ℒ φ a = φ i • a := by
+  simp [ofGrading, decomposeLinearEquiv_apply, decompose_of_mem ℒ ha]
+  simp [decomposeLinearEquiv_symm_apply]
+
+end LieDerivation
