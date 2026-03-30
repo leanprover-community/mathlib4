@@ -44,9 +44,8 @@ open Set Function Submodule Module
 variable (M)
 /--
 The `I`-primaryComponent component of a module `M` where `I` is an ideal of `A`. -/
-def primaryComponent := (⨆ i : ℕ, torsionBySet A M ↑(I ^ i))
+def primaryComponent : Submodule A M := ⨆ i : ℕ, torsionBySet A M ↑(I ^ i)
 
-@[simp]
 theorem primaryComponent_mem (x : M) :
     x ∈ primaryComponent M I ↔ ∃ n, x ∈ torsionBySet A M ↑(I ^ n) := by
   simp only [primaryComponent, mem_torsionBySet_iff, SetLike.coe_sort_coe, Subtype.forall]
@@ -56,8 +55,8 @@ theorem primaryComponent_mem (x : M) :
     · simpa using a
     · intro x y
       use max x y
-      aesop (add safe torsionBySet_le_torsionBySet_pow)
-  · aesop (add norm Submodule.mem_iSup)
+      simp [torsionBySet_le_torsionBySet_pow]
+  · aesop (add safe Submodule.mem_iSup_of_mem)
 
 theorem primaryComponent_map_mem (φ : M₁ →ₗ[A] M₂) (c : primaryComponent M₁ I) :
     φ c ∈ primaryComponent M₂ I := by
@@ -70,21 +69,20 @@ theorem primaryComponent_map_mem (φ : M₁ →ₗ[A] M₂) (c : primaryComponen
 
 /-- Given an A-linear map between M₁ and M₂, `primaryComponent.map` is the
 restriction to the I-primaryComponent components of M₁ and M₂. -/
-def primaryComponent.map (φ : M₁ →ₗ[A] M₂) :
-    primaryComponent M₁ I →ₗ[A] primaryComponent M₂ I :=
+def primaryComponent.map (φ : M₁ →ₗ[A] M₂) : primaryComponent M₁ I →ₗ[A] primaryComponent M₂ I :=
   (φ.domRestrict (primaryComponent M₁ I)).codRestrict (primaryComponent M₂ I) (fun c ↦
     by simpa only [LinearMap.domRestrict_apply] using primaryComponent_map_mem I φ c)
 
 theorem primaryComponent.map_ker_eq (φ : M₁ →ₗ[A] M₂) :
     (primaryComponent.map I φ).ker.map (primaryComponent M₁ I).subtype =
       (primaryComponent φ.ker I).map φ.ker.subtype := by
-  aesop (add norm [map, Subtype.ext_iff])
+  aesop (add norm [map, Subtype.ext_iff, primaryComponent_mem])
 
 theorem primaryComponent_torsionBySet_eq_inf (I : Ideal A) :
     (primaryComponent (torsionBySet A M ↑I) I).map (Submodule.subtype _) =
-    (primaryComponent M I) ⊓ (torsionBySet A M ↑I) := by
+    primaryComponent M I ⊓ torsionBySet A M ↑I := by
   ext x
-  simp
+  simp [primaryComponent_mem]
 
 theorem primaryComponent_torsionBySet_of_isCoprime (J : Ideal A) (hD : IsCoprime I J) :
     primaryComponent (torsionBySet A M J) I = ⊥ := by
@@ -108,7 +106,7 @@ variable [AddCommGroup M] [Module A M]
 open Submodule in
 theorem primaryComponent_sup (N₁ N₂ : Submodule A M) (hD : Disjoint N₁ N₂) :
     (primaryComponent ↥(N₁ ⊔ N₂) I).map (N₁ ⊔ N₂).subtype =
-    ((primaryComponent N₁ I).map N₁.subtype) ⊔ (primaryComponent N₂ I).map N₂.subtype := by
+    (primaryComponent N₁ I).map N₁.subtype ⊔ (primaryComponent N₂ I).map N₂.subtype := by
   ext x
   simp_all only [mem_map, primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe,
     Subtype.forall, subtype_apply, Subtype.exists, SetLike.mk_smul_mk, mk_eq_zero, exists_and_left,
