@@ -214,24 +214,6 @@ noncomputable def Submodule.toBaseChangeEquiv
   LinearEquiv.ofBijective (p.toBaseChange A)
     ⟨p.toBaseChange_injective A, p.toBaseChange_surjective A⟩
 
--- PRed
-theorem IsLocalRing.map_maximalIdeal_le {A B : Type*} [CommRing A] [CommRing B] [IsLocalRing A]
-    [IsLocalRing B] (f : A →+* B) [IsLocalHom f] :
-    (IsLocalRing.maximalIdeal A).map f ≤ IsLocalRing.maximalIdeal B := by
-  rw [Ideal.map_le_iff_le_comap, IsLocalRing.maximalIdeal_comap]
-
--- PRed
-theorem Ideal.IsMaximal.lt_top {R : Type*} [CommRing R] {I : Ideal R} (hI : IsMaximal I) :
-    I < ⊤ :=
-  lt_top_iff_ne_top.mpr hI.ne_top
-
--- PRed
-theorem IsLocalRing.map_maximalIdeal_lt_top
-    {A B : Type*} [CommRing A] [CommRing B] [IsLocalRing A]
-    [IsLocalRing B] (f : A →+* B) [IsLocalHom f] :
-    (IsLocalRing.maximalIdeal A).map f < ⊤ :=
-  (IsLocalRing.map_maximalIdeal_le f).trans_lt (IsLocalRing.maximalIdeal.isMaximal B).lt_top
-
 variable {A B M : Type*} [CommRing A] [CommRing B] [IsLocalRing A] [IsLocalRing B] [Algebra A B]
   [IsLocalHom (algebraMap A B)] [Module.Flat A B] [AddCommGroup M] [Module A M]
 
