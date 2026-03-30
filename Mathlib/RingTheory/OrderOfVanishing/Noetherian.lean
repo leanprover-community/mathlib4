@@ -144,7 +144,7 @@ context. Further, the order here is different to similar lemmas involving `Ring.
 here the order is on `ℤᵐ⁰` has the `∞` element less than everything else, whereas in `Ring.ord`
 we work with the order on `ℕ∞` where the `∞` element is interpreted as a `⊤` element.
 -/
-lemma ordFrac_ge_one_of_ne_zero (x : R) (hx : x ≠ 0) :
+lemma ordFrac_ge_one_of_ne_zero {x : R} (hx : x ≠ 0) :
     ordFrac R (algebraMap R K x) ≥ 1 := by
   obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp (ord_ne_top x (by simpa))
   simp_rw [ordFrac_eq_ord R x hx, ordMonoidWithZeroHom_eq_coe _ (by simpa) hm.symm,
