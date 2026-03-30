@@ -217,6 +217,7 @@ theorem completeEquipartiteGraph_colorable :
 end CompleteEquipartiteGraph
 
 open Walk
+
 /-- A simple graph is 2-colorable if and only if all its loops have even length. -/
 lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
     G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), Even w.length := by
