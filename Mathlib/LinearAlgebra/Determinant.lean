@@ -336,11 +336,6 @@ theorem finite_of_det_ne_one {f : M →ₗ[R] M} (hf : f.det ≠ 1) : Module.Fin
     exact Module.Finite.of_basis hs
   · classical simp [LinearMap.coe_det, H] at hf
 
-@[deprecated "use `finite_of_det_ne_one` instead" (since := "2025-09-15")]
-theorem finiteDimensional_of_det_ne_one {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f : M →ₗ[𝕜] M)
-    (hf : LinearMap.det f ≠ 1) : FiniteDimensional 𝕜 M :=
-  finite_of_det_ne_one hf
-
 /-- If the determinant of a map vanishes, then the map is not injective. -/
 theorem bot_lt_ker_of_det_eq_zero [IsDomain R] [Free R M] {f : M →ₗ[R] M} (hf : f.det = 0) :
     ⊥ < ker f := by
@@ -458,7 +453,6 @@ end LinearEquiv
   have ⟨_, h⟩ := AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K W)
   (by simpa using congr($h x)) ▸ det_conj _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem Matrix.det_map {K m n : Type*} [Field K] [Fintype m] [Fintype n]
     [DecidableEq m] [DecidableEq n] {F : Type*} [EquivLike F (Matrix m m K) (Matrix n n K)]
     [AlgEquivClass F K _ _] (f : F) (x : Matrix m m K) : (f x).det = x.det := by
@@ -797,7 +791,6 @@ variable {R V : Type*} [CommRing R] [AddCommGroup V]
     [Module R V] [Module.Finite R V]
     (W : Submodule R V) [Module.Free R W] [Module.Finite R W] [Module.Free R (V ⧸ W)]
 
-set_option backward.isDefEq.respectTransparency false in
 open Module.Basis in
 theorem LinearMap.det_eq_det_mul_det (e : V →ₗ[R] V) (he : W ≤ W.comap e) :
     e.det = (e.restrict he).det * (W.mapQ W e he).det := by

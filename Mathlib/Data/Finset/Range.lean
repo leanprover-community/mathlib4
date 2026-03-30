@@ -78,9 +78,6 @@ theorem range_one : range 1 = {0} :=
 
 theorem range_add_one : range (n + 1) = insert n (range n) := by grind
 
-@[deprecated range_add_one (since := "2025-09-08")]
-theorem range_succ : range (succ n) = insert n (range n) := range_add_one
-
 theorem notMem_range_self : n ∉ range n := by grind
 
 theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) := by grind
@@ -115,9 +112,6 @@ theorem range_eq_empty_iff : range n = ∅ ↔ n = 0 := by
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_range_add_one : (range <| n + 1).Nonempty :=
   nonempty_range_iff.2 n.succ_ne_zero
-
-@[deprecated nonempty_range_add_one (since := "2025-09-08")]
-alias nonempty_range_succ := nonempty_range_add_one
 
 lemma range_nontrivial {n : ℕ} (hn : 1 < n) : (range n).Nontrivial := by
   rw [Finset.Nontrivial, Finset.coe_range]
