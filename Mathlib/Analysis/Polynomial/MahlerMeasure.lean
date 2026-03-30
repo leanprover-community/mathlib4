@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fabrizio Barroero, Kim Morrison
+Authors: Fabrizio Barroero
 -/
 module
 
@@ -326,6 +326,7 @@ theorem mahlerMeasure_le_sqrt_sum_sq_norm_coeff (p : Polynomial ℂ) :
   rw [circleAverage_eq_intervalAverage]
   calc exp (⨍ (θ : ℝ) in 0..(2 * π), log ‖p.eval (circleMap 0 1 θ)‖)
     ≤ ⨍ (θ : ℝ) in 0..(2 * π), exp (log ‖p.eval (circleMap 0 1 θ)‖) := by
+        -- First Jensen's inequality invocation
         refine convexOn_exp.map_average_le continuousOn_exp isClosed_univ (by simp) ?_ ?_
         · rw [Set.uIoc_of_le (by positivity : 0 ≤ 2 * Real.pi)]
           exact (circleIntegrable_log_norm_meromorphicOn
@@ -335,6 +336,7 @@ theorem mahlerMeasure_le_sqrt_sum_sq_norm_coeff (p : Polynomial ℂ) :
     _ = √ ((⨍ (θ : ℝ) in 0..(2 * π), ‖p.eval (circleMap 0 1 θ)‖) ^ 2) := by
         rw [sqrt_sq]; exact integral_nonneg (fun _ ↦ norm_nonneg _)
     _ ≤ √ (⨍ (θ : ℝ) in 0..(2 * π),  ‖p.eval (circleMap 0 1 θ)‖ ^ 2) := by
+        -- Second Jensen's inequality invocation
         gcongr
         refine (convexOn_pow 2).map_average_le (continuousOn_pow 2)
             isClosed_Ici (by filter_upwards; simp) ?_ ?_
@@ -416,22 +418,8 @@ theorem supNorm_le_choose_natDegree_div_two_mul_mahlerMeasure (p : Polynomial �
         p.mahlerMeasure_nonneg
 
 /-!
-### Monotonicity under multiplication and the Mignotte bound
+### The Mignotte bound
 -/
-
-/-- Right-multiplying by a polynomial with Mahler measure at least 1 does not decrease the Mahler
-measure. -/
-theorem le_mahlerMeasure_mul_right {q : ℂ[X]} (hq : 1 ≤ q.mahlerMeasure) (p : ℂ[X]) :
-    p.mahlerMeasure ≤ (p * q).mahlerMeasure := by
-  rw [mahlerMeasure_mul]
-  exact le_mul_of_one_le_right p.mahlerMeasure_nonneg hq
-
-/-- Left-multiplying by a polynomial with Mahler measure at least 1 does not decrease the Mahler
-measure. -/
-theorem le_mahlerMeasure_mul_left {p : ℂ[X]} (hp : 1 ≤ p.mahlerMeasure) (q : ℂ[X]) :
-    q.mahlerMeasure ≤ (p * q).mahlerMeasure := by
-  rw [mahlerMeasure_mul]
-  exact le_mul_of_one_le_left q.mahlerMeasure_nonneg hp
 
 /-- **Mignotte's coefficient bound**: if `f = g * h` and `h` has Mahler measure at least 1
 (which holds in particular when `h` has integer coefficients with nonzero leading coefficient),
@@ -447,6 +435,7 @@ theorem norm_coeff_le_choose_mul_mahlerMeasure_of_one_le_mahlerMeasure (n : ℕ)
     ‖g.coeff n‖ ≤ g.natDegree.choose n * (g * h).mahlerMeasure :=
   (g.norm_coeff_le_choose_mul_mahlerMeasure n).trans <| by
     gcongr
-    exact le_mahlerMeasure_mul_right hh g
+    rw [mahlerMeasure_mul]
+    exact le_mul_of_one_le_right g.mahlerMeasure_nonneg hh
 
 end Polynomial
