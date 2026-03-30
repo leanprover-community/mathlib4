@@ -23,9 +23,7 @@ In this file, we formalize the result [Stacks 031L] : For flat ring homomorphism
 
 open IsLocalRing
 
-universe u v
-
-variable {R : Type u} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 lemma LinearMap.ker_inf_smul_top_eq_smul_of_flat {M N : Type*} [AddCommGroup M] [AddCommGroup N]
     [Module R M] [Module R N] (I : Ideal R) (f : M →ₗ[R] N) (surj : Function.Surjective f)
@@ -57,12 +55,13 @@ lemma LinearMap.ker_inf_smul_top_eq_smul_of_flat {M N : Type*} [AddCommGroup M] 
       simpa [LinearMap.mem_ker.mp hm] using Submodule.smul_mem_smul hr Submodule.mem_top
     | add y ymem z zmem hy hz => exact add_mem hy hz
 
+variable {S : Type*} [CommRing S] {R' S' : Type*} [CommRing R'] [CommRing S']
+
 /-- For flat ring homomorphism `f : R →+* S`, `I` an ideal of `R` which is square zero,
 if `R ⧸ I →+* S ⧸ IS` is formally smooth, so is `f`. -/
 @[stacks 031L]
-lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat {S : Type v} [CommRing S]
-    [Algebra R S] {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra R' S']
-    [Algebra S S'] [Algebra R S'] [IsScalarTower R S S'] [IsScalarTower R R' S']
+lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat [Algebra R S] [Algebra R R']
+    [Algebra R' S'] [Algebra S S'] [Algebra R S'] [IsScalarTower R S S'] [IsScalarTower R R' S']
     [Module.Flat R S] (surj : Function.Surjective (algebraMap R R'))
     (surjS : Function.Surjective (algebraMap S S'))
     (eqmap : RingHom.ker (algebraMap S S') = (RingHom.ker (algebraMap R R')).map (algebraMap R S))
@@ -237,8 +236,7 @@ lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat {S : Type v} [C
   exact add_eq_of_eq_sub' δ_spec
 
 /-- A pure `RingHom` variant of `Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat` -/
-lemma RingHom.FormallySmooth.of_flat_of_ker_eq_map_of_square_zero {S : Type v} [CommRing S]
-    (f : R →+* S) (flat : f.Flat) {R' S' : Type*} [CommRing R'] [CommRing S']
+lemma RingHom.FormallySmooth.of_flat_of_ker_eq_map_of_square_zero (f : R →+* S) (flat : f.Flat)
     (qR : R →+* R') (qS : S →+* S') (g : R' →+* S') (surjR : Function.Surjective qR)
     (surjS : Function.Surjective qS) (comm : qS.comp f = g.comp qR)
     (sq0 : (RingHom.ker qR) ^ 2 = ⊥) (eqmap : RingHom.ker qS = (RingHom.ker qR).map f)
