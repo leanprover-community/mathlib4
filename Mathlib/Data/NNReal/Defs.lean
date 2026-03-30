@@ -57,19 +57,6 @@ open Function
 /-- Nonnegative real numbers, denoted as `ℝ≥0` within the NNReal namespace -/
 def NNReal := { r : ℝ // 0 ≤ r }
 
-deriving instance
-  Inhabited, SemilatticeInf, DistribLattice for NNReal
-
--- This is needed here or we get errors in `Mathlib/Data/ENNReal/Basic.lean` or downstream.
-set_option backward.inferInstanceAs.wrap false in
-deriving instance
-  Zero, One, Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
-  PartialOrder, SemilatticeSup for NNReal
-
-#adaptation_note /-- nightly-2026-03-04: strange we need `noncomputable` for a Prop?
-Will be fixed by https://github.com/leanprover/lean4/pull/12789 -/
-deriving noncomputable instance Nontrivial for NNReal
-
 namespace NNReal
 
 deriving instance
@@ -122,7 +109,6 @@ noncomputable section
 deriving instance LinearOrderedCommGroupWithZero for NNReal
 end
 
-set_option backward.isDefEq.respectTransparency false in
 example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
   with_reducible_and_instances exact inv_anti₀ h1p h2p
 
@@ -443,7 +429,6 @@ theorem bddBelow_coe (s : Set ℝ≥0) : BddBelow (((↑) : ℝ≥0 → ℝ) '' 
 noncomputable instance : ConditionallyCompleteLinearOrderBot ℝ≥0 :=
   fast_instance% Nonneg.conditionallyCompleteLinearOrderBot 0
 
-set_option backward.isDefEq.respectTransparency false in
 @[norm_cast]
 theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥0 → ℝ) '' s) := by
   rcases Set.eq_empty_or_nonempty s with rfl | hs
@@ -554,7 +539,6 @@ lemma toNNReal_eq_iff_eq_coe {r : ℝ} {p : ℝ≥0} (hp : p ≠ 0) : r.toNNReal
   ⟨fun h ↦ h ▸ (coe_toNNReal _ <| not_lt.1 fun hlt ↦ hp <| h ▸ toNNReal_of_nonpos hlt.le).symm,
     fun h ↦ h.symm ▸ toNNReal_coe⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toNNReal_eq_one {r : ℝ} : r.toNNReal = 1 ↔ r = 1 := toNNReal_eq_iff_eq_coe one_ne_zero
 
@@ -703,7 +687,6 @@ namespace NNReal
 
 section Mul
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul_eq_mul_left {a b c : ℝ≥0} (h : a ≠ 0) : a * b = a * c ↔ b = c := by
   rw [mul_eq_mul_left_iff, or_iff_left h]
 
@@ -755,7 +738,6 @@ section Inv
 theorem inv_le {r p : ℝ≥0} (h : r ≠ 0) : r⁻¹ ≤ p ↔ 1 ≤ r * p := by
   rw [← mul_le_mul_iff_right₀ (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inv_le_of_le_mul {r p : ℝ≥0} (h : 1 ≤ r * p) : r⁻¹ ≤ p := by
   by_cases r = 0 <;> simp [*, inv_le]
 
@@ -767,7 +749,6 @@ theorem le_inv_iff_mul_le {r p : ℝ≥0} (h : p ≠ 0) : r ≤ p⁻¹ ↔ r * p
 theorem lt_inv_iff_mul_lt {r p : ℝ≥0} (h : p ≠ 0) : r < p⁻¹ ↔ r * p < 1 := by
   rw [← mul_lt_mul_iff_right₀ (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem div_le_of_le_mul {a b c : ℝ≥0} (h : a ≤ b * c) : a / c ≤ b :=
   if h0 : c = 0 then by simp [h0] else (div_le_iff₀ (pos_iff_ne_zero.2 h0)).2 h
 
@@ -777,7 +758,6 @@ theorem div_le_of_le_mul' {a b c : ℝ≥0} (h : a ≤ b * c) : a / b ≤ c :=
 theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
   (lt_div_iff₀ <| pos_iff_ne_zero.2 fun hr => False.elim <| by simp [hr] at h).1 h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) : x ≤ y :=
   le_of_forall_lt_imp_le_of_dense fun a ha => by
     have hx : x ≠ 0 := pos_iff_ne_zero.1 (lt_of_le_of_lt (zero_le _) ha)
@@ -795,7 +775,6 @@ nonrec theorem half_lt_self {a : ℝ≥0} (h : a ≠ 0) : a / 2 < a :=
 theorem div_lt_one_of_lt {a b : ℝ≥0} (h : a < b) : a / b < 1 := by
   rwa [div_lt_iff₀ h.bot_lt, one_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Real.toNNReal_inv {x : ℝ} : Real.toNNReal x⁻¹ = (Real.toNNReal x)⁻¹ := by
   rcases le_total 0 x with hx | hx
   · nth_rw 1 [← Real.coe_toNNReal x hx]
@@ -873,7 +852,6 @@ theorem image_coe_nnreal_real (h : t.OrdConnected) : ((↑) '' t : Set ℝ).OrdC
   ⟨forall_mem_image.2 fun x hx =>
       forall_mem_image.2 fun _y hy z hz => ⟨⟨z, x.2.trans hz.1⟩, h.out hx hy hz, rfl⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: does it generalize to a `GaloisInsertion`?
 theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConnected := by
   refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => ?_⟩
@@ -933,7 +911,6 @@ lemma nnreal_dichotomy (r : ℝ) : ∃ x : ℝ≥0, r = x ∨ r = -x := by
     lift (_ : ℝ) to ℝ≥0 using hr with r
     aesop
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every real number is either zero, positive or negative, phrased using `ℝ≥0`. -/
 lemma nnreal_trichotomy (r : ℝ) : r = 0 ∨ ∃ x : ℝ≥0, 0 < x ∧ (r = x ∨ r = -x) := by
   obtain ⟨x, hx⟩ := nnreal_dichotomy r
