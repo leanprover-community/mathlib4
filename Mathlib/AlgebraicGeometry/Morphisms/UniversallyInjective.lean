@@ -62,7 +62,7 @@ theorem universallyInjective_eq_diagonal :
     refine ⟨fun x ↦ ⟨pullback.fst f f x, hf.1 _ _ _ (IsPullback.of_hasPullback f f) ?_⟩⟩
     rw [← Scheme.Hom.comp_apply, pullback.diagonal_fst]
     rfl
-  · rw [← universally_eq_iff.mpr (inferInstanceAs (IsStableUnderBaseChange (diagonal @Surjective))),
+  · rw [← universally_eq_iff.mpr (inferInstance : IsStableUnderBaseChange (diagonal @Surjective)),
       universallyInjective_eq]
     apply universally_mono
     intro X Y f hf x₁ x₂ e
