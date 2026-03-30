@@ -145,7 +145,7 @@ def zip (c₀ : Chain α) (c₁ : Chain β) : Chain (α × β) where
 
 @[simp] lemma zip_apply (c₀ : Chain α) (c₁ : Chain β) (n : ℕ) : c₀.zip c₁ n = (c₀ n, c₁ n) := rfl
 
-@[deprecated (since := "2026-03-27")] alias zip_coe := coe_zip
+@[deprecated (since := "2026-03-27")] alias zip_coe := zip_apply
 
 /-- An example of a `Chain` constructed from an ordered pair. -/
 def pair (a b : α) (hab : a ≤ b) : Chain α where
