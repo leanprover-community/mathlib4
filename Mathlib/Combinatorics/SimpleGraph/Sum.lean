@@ -161,8 +161,9 @@ lemma neighborSet_sum_inl (v : V) : (G ⊕g H).neighborSet (.inl v) = Sum.inl ''
 lemma neighborSet_sum_inr (w : W) : (G ⊕g H).neighborSet (.inr w) = Sum.inr '' H.neighborSet w := by
   ext (v' | w') <;> simp
 
-noncomputable instance [LocallyFinite G] [LocallyFinite H] : LocallyFinite (G ⊕g H) := by
+instance [DecidableEq V] [DecidableEq W] [LocallyFinite G] [LocallyFinite H] :
+    LocallyFinite (G ⊕g H) := by
   rintro (v | w) <;> simp only [neighborSet_sum_inl, neighborSet_sum_inr] <;>
-    exact Set.Finite.fintype <| Finite.Set.finite_image _ _
+    infer_instance
 
 end SimpleGraph
