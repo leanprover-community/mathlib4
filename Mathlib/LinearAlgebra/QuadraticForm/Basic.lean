@@ -901,15 +901,13 @@ def associatedHom : QuadraticMap R M N →ₗ[S] (BilinMap R M N) where
 
 variable (Q : QuadraticMap R M N)
 
-@[simp]
 theorem associated_apply (x y : M) :
-    associatedHom S Q x y = ⅟(2 : Module.End R N) • (Q (x + y) - Q x - Q y) :=
-  rfl
+    associatedHom S Q x y = ⅟(2 : Module.End R N) • (Q (x + y) - Q x - Q y) := rfl
 
 /-- Twice the associated bilinear map of `Q` is the same as the polar of `Q`. -/
 @[simp] theorem two_nsmul_associated : 2 • associatedHom S Q = Q.polarBilin := by
   ext
-  dsimp
+  dsimp [associated_apply]
   rw [← LinearMap.smul_apply, nsmul_eq_mul, Nat.cast_ofNat, mul_invOf_self', Module.End.one_apply,
     polar]
 
