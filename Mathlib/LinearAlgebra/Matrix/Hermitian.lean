@@ -160,7 +160,7 @@ section StarMul
 variable [CommMagma α] [StarMul α]
 
 theorem IsHermitian.hadamard {A B : Matrix m m α} (hA : A.IsHermitian) (hB : B.IsHermitian) :
-    (A ⊙ B).IsHermitian := by simp [IsHermitian, hA.eq, hB.eq]
+    (A ⊙ B).IsHermitian := by rw [IsHermitian, conjTranspose_hadamard, hA.eq, hB.eq, hadamard_comm]
 
 end StarMul
 section AddMonoid
