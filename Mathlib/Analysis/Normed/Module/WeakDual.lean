@@ -204,6 +204,7 @@ namespace NormedSpace
 
 namespace Dual
 
+@[fun_prop]
 theorem toWeakDual_continuous : Continuous fun x' : StrongDual 𝕜 E => StrongDual.toWeakDual x' :=
   WeakBilin.continuous_of_continuous_eval _ fun z => (ContinuousLinearMap.apply 𝕜 𝕜 z).continuous
 
@@ -211,7 +212,7 @@ theorem toWeakDual_continuous : Continuous fun x' : StrongDual 𝕜 E => StrongD
 `StrongDual 𝕜 E → WeakDual 𝕜 E` is continuous. This definition implements it as a continuous linear
 map. -/
 def continuousLinearMapToWeakDual : StrongDual 𝕜 E →L[𝕜] WeakDual 𝕜 E :=
-  { StrongDual.toWeakDual with cont := toWeakDual_continuous }
+  { StrongDual.toWeakDual with }
 
 /-- The weak-star topology is coarser than the dual-norm topology. -/
 theorem dual_norm_topology_le_weak_dual_topology :
