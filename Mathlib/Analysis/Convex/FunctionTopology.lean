@@ -40,4 +40,4 @@ public theorem isClosed_setOf_convexOn {s : Set α} :
 /-- The set of concave functions on a set `s` is closed. -/
 public theorem isClosed_setOf_concaveOn {s : Set α} :
     IsClosed {f : α → β | ConcaveOn 𝕜 s f} :=
-  isClosed_convexOn (α := α) (β := βᵒᵈ)
+  isClosed_setOf_convexOn (α := α) (β := βᵒᵈ)
