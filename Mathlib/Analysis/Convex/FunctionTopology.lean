@@ -10,7 +10,7 @@ public import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.Monoid
 
 /-!
-# Topological properties of convex/concave functions
+# Topological properties of the set of convex/concave functions
 
 We prove the following facts:
 
@@ -23,12 +23,12 @@ open Set
 
 variable {𝕜 α β : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [PartialOrder β]
     [TopologicalSpace β] [OrderClosedTopology β]
-    [AddCommMonoid α] [AddCommMonoid β] [TopologicalSpace 𝕜]
+    [AddCommMonoid α] [AddCommMonoid β]
     [SMul 𝕜 α] [SMul 𝕜 β]
-    [ContinuousSMul 𝕜 β] [ContinuousAdd β]
+    [ContinuousConstSMul 𝕜 β] [ContinuousAdd β]
 
 /-- The set of convex functions on a set `s` is closed. -/
-public theorem isClosed_convexOn {s : Set α} :
+public theorem isClosed_setOf_convexOn {s : Set α} :
     IsClosed {f : α → β | ConvexOn 𝕜 s f} := by
   simp only [ConvexOn, setOf_and, setOf_forall]
   refine IsClosed.inter isClosed_const ?_
