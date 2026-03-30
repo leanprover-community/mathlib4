@@ -1912,6 +1912,7 @@ public import Mathlib.Analysis.Distribution.Support
 public import Mathlib.Analysis.Distribution.TemperateGrowth
 public import Mathlib.Analysis.Distribution.TemperedDistribution
 public import Mathlib.Analysis.Distribution.TestFunction
+public import Mathlib.Analysis.Distribution.TestFunctionSchwartz
 public import Mathlib.Analysis.Fourier.AddCircle
 public import Mathlib.Analysis.Fourier.AddCircleMulti
 public import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
