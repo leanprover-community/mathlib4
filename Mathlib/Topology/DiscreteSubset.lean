@@ -118,6 +118,9 @@ lemma IsInducing.isDiscrete_range [DiscreteTopology X] (hf : IsInducing f) :
     IsDiscrete (Set.range f) := by
   simpa using IsDiscrete.univ.image hf
 
+@[deprecated (since := "2026-03-30")] alias
+  IsEmbedding.isDiscrete_range := IsInducing.isDiscrete_range
+
 lemma IsDiscrete.preimage {s : Set Y} (hs : IsDiscrete s)
     (hf : ContinuousOn f (f ⁻¹' s)) (hf' : Function.Injective f) :
     IsDiscrete (f ⁻¹' s) := by
