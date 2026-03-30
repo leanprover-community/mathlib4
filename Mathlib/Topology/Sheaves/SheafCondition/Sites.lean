@@ -268,7 +268,7 @@ theorem isIso_iff_isIso_basis {F G : Sheaf C X} (h : Opens.IsBasis (Set.range B)
         erw [InducedCategory.comp_hom]
         cat_disch
   ⟩
-  
+
 
 end TopCat.Sheaf
 
