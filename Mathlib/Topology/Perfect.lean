@@ -125,6 +125,21 @@ theorem Preperfect.perfect_closure (hC : Preperfect C) : Perfect (closure C) := 
   rw [closure_eq_cluster_pts] at hx
   exact hx
 
+/-
+Open subsects in perfect spaces are preperfect.
+-/
+theorem PerfectSpace.preperfect_of_isOpen [PerfectSpace α] {U : Set α} (hU : IsOpen U) :
+    Preperfect U := by
+  rw [← inter_univ (a := U)]
+  exact Preperfect.open_inter univ_preperfect hU
+
+/-
+Closures of open subsects in perfect spaces are preperfect, hence perfect.
+-/
+theorem PerfectSpace.preperfect_closure_of_isOpen [PerfectSpace α] {U : Set α} (hU : IsOpen U) :
+    Preperfect (closure U) :=
+  (PerfectSpace.preperfect_of_isOpen hU).perfect_closure.2
+
 /-- In a T1 space, being preperfect is equivalent to having perfect closure. -/
 theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect C ↔ Perfect (closure C) := by
   constructor <;> intro h
