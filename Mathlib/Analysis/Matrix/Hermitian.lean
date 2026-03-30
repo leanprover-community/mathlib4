@@ -52,10 +52,8 @@ lemma isHermitian_iff_isSymmetric_of_orthonormalBasis [Fintype n] [DecidableEq n
 /-- A matrix is Hermitian iff the corresponding linear map on the Euclidean space is self adjoint.
 -/
 lemma isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] :
-    IsHermitian A ↔ A.toEuclideanLin.IsSymmetric := by
-  rw [toEuclideanLin, isHermitian_iff_isSymmetric_of_orthonormalBasis
-      (EuclideanSpace.basisFun n 𝕜), toLpLin_eq_toLin]
-  rfl
+    IsHermitian A ↔ A.toEuclideanLin.IsSymmetric :=
+  isHermitian_iff_isSymmetric_of_orthonormalBasis (EuclideanSpace.basisFun n 𝕜)
 
 lemma IsHermitian.im_star_dotProduct_mulVec_self [Fintype n] (hA : A.IsHermitian) (x : n → 𝕜) :
      RCLike.im (star x ⬝ᵥ A *ᵥ x) = 0 := by
