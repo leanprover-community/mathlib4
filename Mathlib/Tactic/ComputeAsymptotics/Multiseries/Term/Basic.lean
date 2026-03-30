@@ -33,6 +33,7 @@ In this file we show how to find a limit of `Term` and how to asymptotically com
   `t.toFun` from `FirstNonzeroIsPos`/`FirstNonzeroIsNeg`/`AllZero`.
 * `IsLittleO_of_lt_exps` and its variants are used to asymptotically compare two terms.
 
+TODO: rename (Monomial, Term) => (UnitMonomial, Monomial)
 -/
 
 @[expose] public section
@@ -69,10 +70,32 @@ theorem toFun_nil (basis : Basis) : (Monomial.toFun [] basis) = 1 := by
   simp [toFun]
 
 @[simp]
+theorem toFun_nil_basis (m : Monomial) : (Monomial.toFun m []) = 1 := by
+  ext x
+  simp [toFun]
+
+@[simp]
 theorem toFun_cons (exp : ℝ) (tl : Monomial) (basis_hd : ℝ → ℝ) (basis_tl : Basis) :
     (Monomial.toFun (exp :: tl) (basis_hd :: basis_tl)) = basis_hd ^ exp * tl.toFun basis_tl := by
   ext x
   simp [toFun]
+
+@[simp]
+theorem toLogFun_nil (basis : Basis) : (Monomial.toLogFun [] basis) = 0 := by
+  ext x
+  simp [toLogFun]
+
+@[simp]
+theorem toLogFun_nil_basis (m : Monomial) : (Monomial.toLogFun m []) = 0 := by
+  ext x
+  simp [toLogFun]
+
+@[simp]
+theorem toLogFun_cons (exp : ℝ) (tl : Monomial) (basis_hd : ℝ → ℝ) (basis_tl : Basis) :
+    (Monomial.toLogFun (exp :: tl) (basis_hd :: basis_tl)) =
+    exp • Real.log ∘ basis_hd + Monomial.toLogFun tl basis_tl := by
+  ext x
+  simp [toLogFun]
 
 /-- Multiplication of monomials. -/
 noncomputable def mul (m1 m2 : Monomial) : Monomial :=
@@ -123,32 +146,27 @@ theorem inv_toFun {m : Monomial} {basis : Basis} (h_basis : WellFormedBasis basi
     | nil => simp
     | cons basis_hd basis_tl =>
       apply ((h_basis.head_eventually_pos).and (ih (h_basis.tail))).mono
-      rintro x ⟨h_pos, ih⟩
+      intro x ⟨h_pos, ih⟩
       simp only [List.map_cons, List.zipWith_cons_cons, List.prod_cons, mul_inv_rev] at ih ⊢
-      rw [ih, ← Real.rpow_neg h_pos.le]
-      ring
+      grind [Real.rpow_neg h_pos.le]
 
 theorem tail_toFun_IsLittleO_head {m : Monomial} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h_length : m.length = basis_tl.length)
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
     Majorized (m.toFun basis_tl) basis_hd 0 := by
   induction m generalizing basis_hd basis_tl with
-  | nil =>
-    simpa using Majorized.const (h_basis.tendsto_atTop (by simp))
+  | nil => simpa using Majorized.const (h_basis.tendsto_atTop (by simp))
   | cons hd tl ih =>
     cases basis_tl with
-    | nil =>
-      simp at h_length
+    | nil => simp at h_length
     | cons basis_tl_hd basis_tl_tl =>
       simp only [List.length_cons, Nat.add_right_cancel_iff, toFun_cons] at h_length ⊢
       rw [show (0 : ℝ) = 0 + 0 by simp]
-      apply Majorized.mul
-      · apply h_basis.tail_pow_Majorized_head  (by simp)
-      · specialize ih h_length h_basis.tail 1 (by simp)
-        intro exp h_exp
-        apply ih.trans
-        exact h_basis.tail_pow_Majorized_head (by simp) 1 exp h_exp
-      · exact h_basis.head_eventually_pos
+      apply Majorized.mul (h_basis.tail_pow_Majorized_head (by simp) _) _
+        h_basis.head_eventually_pos
+      exact fun exp h_exp ↦
+        (ih h_length h_basis.tail 1 (by simp)).trans <|
+        h_basis.tail_pow_Majorized_head (by simp) 1 exp h_exp
 
 theorem toFun_pos {m : Monomial} {basis : Basis}
     (h_basis : WellFormedBasis basis) :
@@ -163,13 +181,12 @@ theorem toFun_pos {m : Monomial} {basis : Basis}
     | nil => simp
     | cons basis_hd basis_tl =>
       simp only [List.zipWith_cons_cons, List.prod_cons]
-      apply mul_pos
-      · exact Real.rpow_pos_of_pos (hx basis_hd (by simp)) _
-      · exact ih h_basis.tail (fun f hf => hx f (by simp [hf]))
+      apply mul_pos (Real.rpow_pos_of_pos (hx basis_hd (by simp)) _)
+      exact ih h_basis.tail (fun f hf => hx f (by simp [hf]))
 
 theorem toFun_ne_zero {m : Monomial} {basis : Basis} (h_basis : WellFormedBasis basis) :
-    ∀ᶠ x in atTop, m.toFun basis x ≠ 0 := by
-  exact (toFun_pos h_basis).mono fun x hx => hx.ne'
+    ∀ᶠ x in atTop, m.toFun basis x ≠ 0 :=
+  (toFun_pos h_basis).mono fun _ hx => hx.ne'
 
 theorem zeros_append_toFun {m : Monomial} {left right : Basis} :
     let m' : Monomial := List.replicate left.length 0 ++ m
@@ -182,33 +199,22 @@ theorem zeros_append_toFun {m : Monomial} {left right : Basis} :
 
 theorem logToFun_eq_toLogFun {m : Monomial} {basis : Basis} (h_basis : WellFormedBasis basis) :
     Real.log ∘ m.toFun basis =ᶠ[atTop] m.toLogFun basis := by
-  apply (h_basis.eventually_pos).mono
+  apply h_basis.eventually_pos.mono
   intro x hx
-  simp only [Function.comp_apply, toFun, toLogFun]
+  suffices h : (0 < m.toFun basis x ∧ (log ∘ m.toFun basis) x = m.toLogFun basis x) from h.2
   induction m generalizing basis with
   | nil => simp
-  | cons exp exps ih =>
+  | cons e es ih =>
     cases basis with
     | nil => simp
-    | cons basis_hd basis_tl =>
-      simp only [List.zipWith_cons_cons, List.prod_cons, List.sum_cons]
-      have h_head : 0 < basis_hd x := hx basis_hd (by simp)
-      have h_prod_pos : 0 < (List.zipWith (fun e b => b x ^ e) exps basis_tl).prod := by
-        have hx_tl : ∀ f ∈ basis_tl, 0 < f x := fun f hf => hx f (by simp [hf])
-        clear h_basis hx ih
-        induction exps generalizing basis_tl with
-        | nil => simp
-        | cons e' es' ih' =>
-          cases basis_tl with
-          | nil => simp
-          | cons bh bt =>
-            simp only [List.zipWith_cons_cons, List.prod_cons]
-            exact mul_pos (Real.rpow_pos_of_pos (hx_tl bh (by simp)) _)
-              (ih' bt (fun f hf => hx_tl f (List.mem_cons.mpr (Or.inr hf))))
-      rw [Real.log_mul (Real.rpow_pos_of_pos h_head _).ne' h_prod_pos.ne',
-          Real.log_rpow h_head]
-      congr 1
-      exact ih h_basis.tail (fun f hf => hx f (by simp [hf]))
+    | cons b bs =>
+      simp only [toFun_cons, Pi.mul_apply, Pi.pow_apply, Function.comp_apply, toLogFun_cons,
+        Pi.add_apply, Pi.smul_apply, smul_eq_mul]
+      obtain ⟨hpos, heq⟩ := ih h_basis.tail (fun f hf => hx f (by simp [hf]))
+      refine ⟨mul_pos (Real.rpow_pos_of_pos (hx b (by simp)) _) hpos, ?_⟩
+      rw [Real.log_mul (Real.rpow_pos_of_pos (hx b (by simp)) _).ne' hpos.ne',
+            Real.log_rpow (hx b (by simp)), ← heq]
+      rfl
 
 theorem logToFun_isEquivalent_of_nonzero_head {exps_hd : ℝ} {exps_tl : Monomial} {basis_hd : ℝ → ℝ}
     {basis_tl : Basis}
@@ -216,50 +222,19 @@ theorem logToFun_isEquivalent_of_nonzero_head {exps_hd : ℝ} {exps_tl : Monomia
     (h_nonzero : exps_hd ≠ 0) :
     Monomial.toLogFun (exps_hd :: exps_tl) (basis_hd :: basis_tl) ~[atTop]
       exps_hd • log ∘ basis_hd := by
-  unfold toLogFun
-  simp only [List.zipWith_cons_cons, List.sum_cons]
-  rw [show (fun x => exps_hd * Real.log (basis_hd x) +
-      (List.zipWith (fun exp b => exp * Real.log (b x)) exps_tl basis_tl).sum) =
-      (exps_hd • Real.log ∘ basis_hd) + fun x =>
-      (List.zipWith (fun exp b => exp * Real.log (b x)) exps_tl basis_tl).sum from by
-    ext x; simp [smul_eq_mul]]
-  apply IsEquivalent.add_isLittleO IsEquivalent.refl
+  simp only [toLogFun_cons]
+  apply IsEquivalent.refl.add_isLittleO
   apply IsLittleO.const_mul_right' (isUnit_iff_ne_zero.mpr h_nonzero)
-  have h_key : ∀ (li : List (ℝ × (ℝ → ℝ))),
-      (∀ p ∈ li, (Real.log ∘ p.2) =o[atTop] (Real.log ∘ basis_hd)) →
-      (fun x => (li.map (fun p => p.1 * Real.log (p.2 x))).sum) =o[atTop]
-        (Real.log ∘ basis_hd) := by
-    intro li
-    induction li with
-    | nil => simp
-    | cons hd tl ih =>
-      intro h
-      simp only [List.map_cons, List.sum_cons]
-      have : (fun x => hd.1 * Real.log (hd.2 x) + (tl.map (fun p => p.1 * Real.log (p.2 x))).sum) =
-          (fun x => hd.1 * Real.log (hd.2 x)) +
-          fun x => (tl.map (fun p => p.1 * Real.log (p.2 x))).sum := rfl
-      rw [this]
-      apply IsLittleO.add
-      · apply IsLittleO.const_mul_left; exact h _ (by simp)
-      · exact ih (fun p hp => h p (by right; exact hp))
-  have h_conv : ∀ (l₁ : List ℝ) (l₂ : Basis) (x : ℝ),
-      List.zipWith (fun exp b => exp * Real.log (b x)) l₁ l₂ =
-      (l₁.zip l₂).map (fun p => p.1 * Real.log (p.2 x)) := by
-    intro l₁
-    induction l₁ with
-    | nil => simp
-    | cons e es ih =>
-      intro l₂ x
-      cases l₂ with
-      | nil => simp
-      | cons b bs => simp [List.zipWith_cons_cons, List.zip_cons_cons, ih]
-  rw [show (fun x => (List.zipWith (fun exp b => exp * Real.log (b x)) exps_tl basis_tl).sum) =
-      fun x => ((exps_tl.zip basis_tl).map (fun p => p.1 * Real.log (p.2 x))).sum from by
-    ext x; congr 1; exact h_conv exps_tl basis_tl x]
-  apply h_key
-  intro p hp
-  apply h_basis.tail_isLittleO_head
-  exact (List.of_mem_zip hp).right
+  have hlo : ∀ b ∈ basis_tl, (Real.log ∘ b) =o[atTop] (Real.log ∘ basis_hd) :=
+    fun b hb => h_basis.tail_isLittleO_head hb
+  clear h_basis
+  induction exps_tl generalizing basis_tl with
+  | nil => simpa using Asymptotics.isLittleO_zero _ _
+  | cons e es ih =>
+    cases basis_tl with
+    | nil => simpa using Asymptotics.isLittleO_zero _ _
+    | cons b bs =>
+      exact (IsLittleO.const_mul_left (hlo b (by simp)) e).add (ih (by grind))
 
 theorem toFun_tendsto_top_of_head_pos {exps_hd : ℝ} {exps_tl : Monomial} {basis_hd : ℝ → ℝ}
     {basis_tl : Basis}
@@ -272,8 +247,7 @@ theorem toFun_tendsto_top_of_head_pos {exps_hd : ℝ} {exps_tl : Monomial} {basi
       (logToFun_eq_toLogFun h_basis).symm
   suffices h_log : Tendsto (Real.log ∘ toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl))
       atTop atTop by
-    have hmono := Real.tendsto_exp_atTop.comp h_log
-    apply Filter.Tendsto.congr' _ hmono
+    apply Filter.Tendsto.congr' _ (Real.tendsto_exp_atTop.comp h_log)
     apply (toFun_pos (m := (exps_hd :: exps_tl)) h_basis).mono
     intro x hx
     simp only [Function.comp_apply]
@@ -371,7 +345,6 @@ lemma IsLittleO_of_lt {basis : Basis} {m1 m2 : Monomial}
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
   · simp only [List.length_nil, List.length_eq_zero_iff] at h1 h2
     simp [h1, h2] at h_lt
-
   obtain _ | ⟨exp1, m1⟩ := m1
   · simp at h1
   obtain _ | ⟨exp2, m2⟩ := m2
@@ -424,9 +397,7 @@ theorem cons_toFun {coef exp : ℝ} {m : Monomial} {basis_hd : ℝ → ℝ} {bas
 /-- If `t.coef = 0`, then t.toFun is zero. -/
 theorem zero_coef_toFun {t : Term} (basis : Basis) (h_coef : t.coef = 0) :
     t.toFun basis = 0 := by
-  unfold toFun
-  ext x
-  simp [h_coef]
+  simp [toFun, h_coef]
 
 /-- If `t.coef = 0`, then t.toFun is zero. -/
 theorem zero_coef_toFun' (basis : Basis) (exps : List ℝ) :
@@ -461,24 +432,22 @@ theorem mul_toFun {t1 t2 : Term} {basis : Basis} (h_basis : WellFormedBasis basi
     (mul t1 t2).toFun basis =ᶠ[atTop] t1.toFun basis * t2.toFun basis := by
   simp only [toFun, mul, Algebra.mul_smul_comm, Algebra.smul_mul_assoc]
   grw [Monomial.mul_toFun h_basis h_length]
-  apply EventuallyEq.of_eq
-  ext t
-  simp
+  filter_upwards [] with t
+  simp [Pi.smul_apply, Pi.mul_apply]
   ring
 
 theorem smul_toFun {t : Term} {basis : Basis} (c : ℝ) :
     (smul t c).toFun basis = c • t.toFun basis := by
   ext x
   simp [smul, toFun]
-  grind
+  ring
 
 theorem inv_toFun {t : Term} {basis : Basis} (h_basis : WellFormedBasis basis) :
     t.inv.toFun basis =ᶠ[atTop] (t.toFun basis)⁻¹ := by
   simp only [toFun, inv]
   grw [Monomial.inv_toFun h_basis]
-  apply EventuallyEq.of_eq
-  ext x
-  simp
+  filter_upwards [] with x
+  simp [Pi.smul_apply, Pi.inv_apply]
   ring
 
 @[simp]
@@ -499,9 +468,7 @@ theorem toFun_pos {t : Term} {basis : Basis}
 theorem zeros_append_toFun (coef : ℝ) {exps : List ℝ} {left right : Basis} :
     let t : Term := ⟨coef, List.replicate left.length 0 ++ exps⟩;
     t.toFun (left ++ right) = (mk coef exps).toFun right := by
-  simp only [toFun]
-  congr 1
-  exact Monomial.zeros_append_toFun
+  exact congrArg (coef • ·) Monomial.zeros_append_toFun
 
 /-- `t.toFun` tends to `𝓝 0` when `t.coef = 0`. -/
 theorem tendsto_zero_of_coef_zero {coef : ℝ} {exps : List ℝ} (basis : Basis)
@@ -509,10 +476,8 @@ theorem tendsto_zero_of_coef_zero {coef : ℝ} {exps : List ℝ} (basis : Basis)
     let t : Term := ⟨coef, exps⟩;
     Tendsto (t.toFun basis) atTop (𝓝 0) := by
   intro t
-  rw [zero_coef_toFun]
-  · eta_expand
-    simp
-  · simpa [t]
+  rw [zero_coef_toFun _ (by simpa [t])]
+  exact tendsto_const_nhds
 
 theorem toFun_tendsto_zero_of_FirstNonzeroIsNeg {coef : ℝ} {exps : List ℝ} {basis : Basis}
     (h_basis : WellFormedBasis basis)
@@ -567,9 +532,7 @@ theorem tail_toFun_IsLittleO_head {t : Term} {basis_hd : ℝ → ℝ} {basis_tl 
     (h_length : t.monomial.length = basis_tl.length)
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
     Majorized (t.toFun basis_tl) basis_hd 0 := by
-  unfold toFun
-  apply Majorized.smul
-  apply Monomial.tail_toFun_IsLittleO_head h_length h_basis
+  exact Majorized.smul (Monomial.tail_toFun_IsLittleO_head h_length h_basis)
 
 lemma IsLittleO_of_lt_exps {basis : Basis} {t1 t2 : Term}
     (h_basis : WellFormedBasis basis)
