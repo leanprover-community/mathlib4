@@ -273,8 +273,7 @@ lemma comap {G'} [Group G'] {H' : Subgroup G'} (f : G →* G') (h : H'.IsSubnorm
     exact (comap_mono hN).trans (le_normalizer_comap f)
 
 @[to_additive (attr := simp)]
-protected
-lemma subgroupOf (hH : H.IsSubnormal) : (H.subgroupOf K).IsSubnormal := hH.comap _
+protected lemma subgroupOf (hH : H.IsSubnormal) : (H.subgroupOf K).IsSubnormal := hH.comap _
 
 /-- The intersection of two subnormal subgroups is subnormal. -/
 @[to_additive /-- The intersection of two subnormal additive subgroups is additive subnormal. -/]
@@ -288,7 +287,7 @@ If `g : Γ` is an element of a group acting on `G` and `H` is subnormal, then `g
 -/
 lemma smul {Γ : Type*} [Group Γ] [MulDistribMulAction Γ G] (hS : H.IsSubnormal)
     (g : Γ) : (g • H).IsSubnormal :=
-  IsSubnormal.map (MulAction.surjective g) hS
+  hS.map (MulAction.surjective g)
 
 /-- If the subgroup `H` of a group `G` is trivial, then it is subnormal. -/
 @[to_additive /-- If the additive subgroup `H` of a group `G` is trivial, then it is subnormal. -/]
