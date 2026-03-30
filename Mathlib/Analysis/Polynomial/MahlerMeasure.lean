@@ -35,8 +35,8 @@ properties.
   outside the unit disk.
 - `mahlerMeasure_le_sqrt_sum_sq_norm_coeff`: **Landau's inequality** — the Mahler measure is
   at most the ℓ² norm of the coefficient vector.
-- `norm_coeff_le_choose_mul_mahlerMeasure_mul`: **Mignotte's coefficient bound** — if `f = g * h`
-  with `M(h) ≥ 1`, then `‖g.coeff n‖ ≤ C(deg g, n) · M(f)`.
+- `norm_coeff_le_choose_mul_mahlerMeasure_of_one_le_mahlerMeasure`: **Mignotte's coefficient
+  bound** — if `f = g * h` with `M(h) ≥ 1`, then `‖g.coeff n‖ ≤ C(deg g, n) · M(f)`.
 -/
 
 @[expose] public section
@@ -255,7 +255,8 @@ lemma prod_max_one_norm_roots_le_mahlerMeasure_of_one_le_leadingCoeff {p : ℂ[X
 /-- If the leading coefficient of a polynomial has norm at least 1, then its Mahler measure
 is at least 1. This holds in particular for nonzero polynomials with integer coefficients,
 since their leading coefficient is a nonzero integer. -/
-lemma one_le_mahlerMeasure {p : ℂ[X]} (hlc : 1 ≤ ‖p.leadingCoeff‖) : 1 ≤ p.mahlerMeasure :=
+lemma one_le_mahlerMeasure_of_one_le_norm_leadingCoeff {p : ℂ[X]}
+    (hlc : 1 ≤ ‖p.leadingCoeff‖) : 1 ≤ p.mahlerMeasure :=
   hlc.trans (leading_coeff_le_mahlerMeasure p)
 
 open Filter MeasureTheory Set in
@@ -418,14 +419,14 @@ theorem supNorm_le_choose_natDegree_div_two_mul_mahlerMeasure (p : Polynomial �
 ### Monotonicity under multiplication and the Mignotte bound
 -/
 
-/-- Multiplying by a polynomial with Mahler measure at least 1 does not decrease the Mahler
+/-- Right-multiplying by a polynomial with Mahler measure at least 1 does not decrease the Mahler
 measure. -/
 theorem le_mahlerMeasure_mul_right {q : ℂ[X]} (hq : 1 ≤ q.mahlerMeasure) (p : ℂ[X]) :
     p.mahlerMeasure ≤ (p * q).mahlerMeasure := by
   rw [mahlerMeasure_mul]
   exact le_mul_of_one_le_right p.mahlerMeasure_nonneg hq
 
-/-- Multiplying by a polynomial with Mahler measure at least 1 does not decrease the Mahler
+/-- Left-multiplying by a polynomial with Mahler measure at least 1 does not decrease the Mahler
 measure. -/
 theorem le_mahlerMeasure_mul_left {p : ℂ[X]} (hp : 1 ≤ p.mahlerMeasure) (q : ℂ[X]) :
     q.mahlerMeasure ≤ (p * q).mahlerMeasure := by
@@ -434,12 +435,14 @@ theorem le_mahlerMeasure_mul_left {p : ℂ[X]} (hp : 1 ≤ p.mahlerMeasure) (q :
 
 /-- **Mignotte's coefficient bound**: if `f = g * h` and `h` has Mahler measure at least 1
 (which holds in particular when `h` has integer coefficients with nonzero leading coefficient),
-then the coefficients of `g` are bounded by a binomial coefficient times the Mahler measure of `f`.
+then the coefficients of `g` are bounded by a binomial coefficient times the Mahler measure
+of `g * h`.
 
 Combined with `mahlerMeasure_le_sqrt_sum_sq_norm_coeff` (Landau's inequality), this gives
-the classical Mignotte bound `‖g.coeff n‖ ≤ C(deg g, n) · ‖f‖₂` used in polynomial
-factorization algorithms (Berlekamp–Zassenhaus). -/
-theorem norm_coeff_le_choose_mul_mahlerMeasure_mul (n : ℕ) (g h : ℂ[X])
+the classical Mignotte bound
+`‖g.coeff n‖ ≤ C(deg g, n) · √(∑ i ∈ f.support, ‖f.coeff i‖ ^ 2)`
+used in polynomial factorization algorithms (Berlekamp–Zassenhaus). -/
+theorem norm_coeff_le_choose_mul_mahlerMeasure_of_one_le_mahlerMeasure (n : ℕ) (g h : ℂ[X])
     (hh : 1 ≤ h.mahlerMeasure) :
     ‖g.coeff n‖ ≤ g.natDegree.choose n * (g * h).mahlerMeasure :=
   (g.norm_coeff_le_choose_mul_mahlerMeasure n).trans <| by
