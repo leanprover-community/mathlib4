@@ -175,6 +175,8 @@ theorem _root_.IsCompact.isBounded {s : Set α} (h : IsCompact s) : IsBounded s 
   -- A compact set is totally bounded, thus bounded
   h.totallyBounded.isBounded
 
+instance (priority := low) [CompactSpace α] : BoundedSpace α := ⟨isCompact_univ.isBounded⟩
+
 theorem cobounded_le_cocompact : cobounded α ≤ cocompact α :=
   hasBasis_cocompact.ge_iff.2 fun _s hs ↦ hs.isBounded
 

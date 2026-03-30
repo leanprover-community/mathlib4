@@ -58,20 +58,20 @@ theorem residuallyFinite_iff_exists_finiteIndexNormalSubgroup :
     ResiduallyFinite G ↔ ∀ g : G, g ≠ 1 → ∃ H : FiniteIndexNormalSubgroup G, g ∉ H := by
   simp_rw [residuallyFinite_iff_forall_finiteIndexNormalSubgroup, ← not_forall, not_imp_not]
 
--- todo: @[to_additive] once #34784 is merged
+@[to_additive]
 theorem residuallyFinite_iff_forall_finiteIndex :
     ResiduallyFinite G ↔ ∀ g : G, (∀ (H : Subgroup G) [H.FiniteIndex], g ∈ H) → g = 1 := by
   rw [residuallyFinite_iff_forall_finiteIndexNormalSubgroup]
   exact forall_congr' fun g ↦ ⟨fun h hg ↦ h fun H ↦ hg H,
     fun h hg ↦ h fun H hH ↦ H.normalCore_le (hg (.ofSubgroup H.normalCore))⟩
 
--- todo: @[to_additive] once #34784 is merged
+@[to_additive]
 theorem residuallyFinite_iff_exists_finiteIndex :
     ResiduallyFinite G ↔ ∀ g : G, g ≠ 1 → ∃ (H : Subgroup G), H.FiniteIndex ∧ g ∉ H := by
   simp_rw [residuallyFinite_iff_forall_finiteIndex, ← Classical.not_imp, ← not_forall,
     not_imp_not]
 
--- todo: @[to_additive] once #34784 is merged
+@[to_additive]
 instance [Finite G] : ResiduallyFinite G :=
   residuallyFinite_iff_forall_finiteIndex.mpr fun _ hg ↦ hg ⊥
 
