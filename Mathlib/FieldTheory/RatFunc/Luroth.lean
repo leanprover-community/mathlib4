@@ -36,20 +36,19 @@ variable {K : Type*} [Field K]
 
 namespace RatFunc
 
-open IntermediateField algebraAdjoinAdjoin Polynomial
+open IntermediateField algebraAdjoinAdjoin Polynomial Algebra
 
 @[expose] public section
 
 variable (f : K⟮X⟯)
-
-local notation "K[f]" => Algebra.adjoin K {(f : K⟮X⟯)}
 
 theorem adjoin_X : K⟮(X : K⟮X⟯)⟯ = ⊤ :=
   eq_top_iff.mpr fun g _ ↦ (mem_adjoin_simple_iff _ _).mpr ⟨g.num, g.denom, by simp⟩
 
 theorem IntermediateField.adjoin_X (E : IntermediateField K K⟮X⟯) :
     E⟮(X : K⟮X⟯)⟯ = ⊤ := by
-  rw [← restrictScalars_eq_top_iff (K := K), restrictScalars_adjoin, eq_top_iff]
+  rw [← restrictScalars_eq_top_iff (K := K), IntermediateField.restrictScalars_adjoin,
+    _root_.eq_top_iff]
   exact le_trans (le_of_eq RatFunc.adjoin_X.symm) (IntermediateField.adjoin.mono _ _ _ (by simp))
 
 /-- The equivalence between `E⟮X⟯` and `K⟮X⟯` as `E`-algebras. -/
