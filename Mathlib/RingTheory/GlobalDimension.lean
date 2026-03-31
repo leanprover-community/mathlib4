@@ -122,7 +122,7 @@ lemma globalDimension_eq_sup_injectiveDimension [Small.{v} R] : globalDimension.
     | coe n => simpa using aux n
 
 /-- Global dimension is invariant of universe level when assume ring itself small. -/
-lemma globalDimension_eq_of_small [Small.{v} R] [IsNoetherianRing R] :
+lemma globalDimension_eq_of_small [Small.{v} R] :
     globalDimension.{v} R = globalDimension.{u} R := by
   apply le_antisymm
   · rw [globalDimension_eq_sup_projectiveDimension_finite]
@@ -142,7 +142,7 @@ lemma globalDimension_eq_of_small [Small.{v} R] [IsNoetherianRing R] :
 
 universe u' in
 attribute [local instance] RingHomInvPair.of_ringEquiv in
-lemma globalDimension_eq_of_ringEquiv [IsNoetherianRing R] (R' : Type u') [CommRing R']
+lemma globalDimension_eq_of_ringEquiv (R' : Type u') [CommRing R']
     (e : R ≃+* R') : globalDimension.{u} R = globalDimension.{u'} R' := by
   apply le_antisymm
   · rw [globalDimension_eq_sup_projectiveDimension_finite]
@@ -169,7 +169,7 @@ lemma globalDimension_eq_of_ringEquiv [IsNoetherianRing R] (R' : Type u') [CommR
     exact le_iSup _ _
 
 variable {R} in
-lemma globalDimension_localization_le [Small.{v} R] [IsNoetherianRing R] (S : Submonoid R) :
+lemma globalDimension_localization_le [Small.{v} R] (S : Submonoid R) :
     globalDimension.{v} (Localization S) ≤ globalDimension.{v} R := by
   simp only [iSup_le_iff, globalDimension]
   intro M
