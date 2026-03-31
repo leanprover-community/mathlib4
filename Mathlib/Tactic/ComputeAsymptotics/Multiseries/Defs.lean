@@ -221,12 +221,11 @@ theorem destruct_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : Multi
     {exp : ℝ} {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl}
     (h : destruct ms = some (exp, coef, tl)) : ms = cons exp coef tl := by
   apply Stream'.Seq.destruct_eq_cons
+  simp [destruct] at h
   #adaptation_note /--
-  After leanprover/lean4#13166, by design
-  `grind` will not look through the semireducible `Seq1` type definition.
-  -/
-  simp only [destruct, Option.map_eq_some_iff, Seq1] at h
-  grind
+  This proof is abusing the defeq of `Seq1`, so after leanprover/lean4#13166,
+  we need to tell `grind` it can unfold `Seq`. -/
+  grind [Seq1]
 
 @[simp]
 theorem head_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
