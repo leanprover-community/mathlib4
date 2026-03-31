@@ -183,7 +183,7 @@ lemma ι₀_app_fst {X : SSet.{u}} {m} (x : X.obj m) : dsimp% (ι₀.app _ x).1 
 
 @[simp]
 lemma ι₀_app_snd_apply {X : SSet.{u}} {m : ℕ} (x : X _⦋m⦌) (k : Fin (m + 1)) :
-    (ι₀.app _ x).2 k = 0 := rfl
+    dsimp% (ι₀.app _ x).2 k = 0 := rfl
 
 /-- The inclusion `X ⟶ X ⊗ Δ[1]` which is `1` on the second factor. -/
 noncomputable def ι₁ {X : SSet.{u}} : X ⟶ X ⊗ Δ[1] :=
