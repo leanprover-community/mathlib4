@@ -107,7 +107,6 @@ theorem multiplicity_eq_count_normalizedFactors {a b : R} (ha : Irreducible a) (
   rwa [(finiteMultiplicity_of_emultiplicity_eq_natCast this).emultiplicity_eq_multiplicity,
     ENat.coe_inj] at this
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The number of times an irreducible factor `p` appears in `normalizedFactors x` is defined by
 the number of times it divides `x`.
 
