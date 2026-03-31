@@ -157,11 +157,8 @@ theorem inner_of_deriv_curve_eq_zero_of_const_magnitude_curve (hI : IsOpen I)
   have h : I.EqOn (fun x ↦ inner ℝ (γ x) (γ x)) (fun x ↦ r ^ 2) := fun x hx ↦ by simp [hγ₂ x hx]
   have hd : HasDerivAt γ (deriv γ t) t :=
     (hγ₁.contDiffAt (hI.mem_nhds ht)).differentiableAt_one.hasDerivAt
-  symm
-  calc
-    (0 : ℝ) = 0 / 2 := by norm_num
-    _ = inner ℝ (deriv γ t) (γ t) := by
-      rw [← inners_sum_eq_zero_of_const_inner_on_open hI ht hd hd h, real_inner_comm]; ring
+  suffices 2 * inner ℝ (deriv γ t) (γ t) = 0 by simpa
+  rw [← inners_sum_eq_zero_of_const_inner_on_open hI ht hd hd h, real_inner_comm, two_mul]
 
 /-- For any twice continuously differentiable parametrized curve with constant speed, at any given
 point the velocity vector is perpendicular to the acceleration vector. -/
