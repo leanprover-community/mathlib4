@@ -76,14 +76,19 @@ noncomputable def Spec.fiberToSpecResidueFieldIso (R S : Type u) [CommRing R] [C
     Arrow.mk ((Spec.map (CommRingCat.ofHom <| algebraMap R S)).fiberToSpecResidueField p) ≅
       Arrow.mk (Spec.map <| CommRingCat.ofHom <|
         algebraMap p.asIdeal.ResidueField (p.asIdeal.Fiber S)) := by
+  let e₀ := (Ideal.Fiber.algEquivTensor p.1 S).toRingEquiv
+  rw [(Ideal.Fiber.algEquivTensor p.1 S).symm.toAlgHom.comp_algebraMap.symm]
+  simp
+  let e := asIso (Spec.map e₀.toCommRingCatIso.hom)
   refine Arrow.isoMk' _ _
-    (pullbackSymmetry _ _ ≪≫ ?_ ≪≫ pullbackSpecIso R p.asIdeal.ResidueField S) ?_ ?_
+    (pullbackSymmetry _ _ ≪≫ ?_ ≪≫ pullbackSpecIso R p.asIdeal.ResidueField S ≪≫ e) ?_ ?_
   · refine pullback.congrHom
       (Scheme.Spec.map_residueFieldIso_inv_eq_fromSpecResidueField (.of R) p).symm rfl ≪≫ ?_
     refine asIso <| pullback.map _ _ _ _ (Spec.map <| (Scheme.Spec.residueFieldIso (.of R) _).inv)
       (𝟙 _) (𝟙 _) (by simp) (by simp)
   · exact Scheme.Spec.mapIso (Scheme.Spec.residueFieldIso (.of R) _).symm.op
-  · cat_disch
+  · dsimp only [e, e₀]
+    cat_disch
 
 set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.range_fiberι (f : X ⟶ Y) (y : Y) :
