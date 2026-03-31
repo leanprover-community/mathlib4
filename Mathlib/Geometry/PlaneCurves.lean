@@ -154,8 +154,7 @@ the position vector of the curve at every point (in other words their dot produc
 theorem inner_of_deriv_curve_eq_zero_of_const_magnitude_curve (hI : IsOpen I)
     (hγ₁ : ContDiffOn ℝ 1 γ I) {r : ℝ} (hγ₂ : ∀ t ∈ I, ‖γ t‖ = r) (ht : t ∈ I) :
     inner ℝ (deriv γ t) (γ t) = 0 := by
-  have h : Set.EqOn (fun x ↦  inner ℝ (γ x) (γ x)) (fun x ↦  r^2) I :=
-    fun x hx ↦  by simp [hγ₂ x hx]
+  have h : I.EqOn (fun x ↦ inner ℝ (γ x) (γ x)) (fun x ↦ r ^ 2) := fun x hx ↦ by simp [hγ₂ x hx]
   have hd : HasDerivAt γ (deriv γ t) t :=
     (hγ₁.contDiffAt (hI.mem_nhds ht)).differentiableAt_one.hasDerivAt
   symm
