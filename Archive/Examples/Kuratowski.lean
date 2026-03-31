@@ -233,7 +233,7 @@ theorem not_eq_univ_of_mem_theClosedSix_fourteenSet {s}
   rw [theClosedSix, kckckc_fourteenSet, kckck_fourteenSet,
     kckc_fourteenSet, kck_fourteenSet, kc_fourteenSet, k_fourteenSet] at h
   rw [Ne, eq_univ_iff_forall]
-  push_neg
+  push Not
   repeat obtain _ | ⟨_, h⟩ := h; rotate_left
   · use 1 / 2; norm_num
   · use 1 / 2; norm_num

@@ -156,7 +156,7 @@ theorem hasConstantSpeedOnWith_zero_iff :
   constructor
   · by_contra! ⟨h, hfs⟩
     simp_rw [ne_eq, eVariationOn.eq_zero_iff] at hfs h
-    push_neg at hfs
+    push Not at hfs
     obtain ⟨x, xs, y, ys, hxy⟩ := hfs
     rcases le_total x y with (xy | yx)
     · exact hxy (h xs ys x ⟨xs, le_rfl, xy⟩ y ⟨ys, xy, le_rfl⟩)
