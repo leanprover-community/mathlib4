@@ -696,7 +696,7 @@ instance IsQuadraticExtension.isCyclic : IsCyclic Gal(K/F) := by
 /--
 A quadratic extension has abelian Galois group.
 -/
-instance IsQuadraticExtension.isMulCommutative_galoisGroup :
-    IsMulCommutative Gal(K/F) := ⟨IsCyclic.commutative⟩
+instance IsQuadraticExtension.isMulCommutative_galoisGroup : IsMulCommutative Gal(K/F) :=
+  IsCyclic.commutative
 
 end Algebra
