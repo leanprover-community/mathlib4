@@ -308,5 +308,5 @@ theorem Submodule.length_quotient_lt [IsArtinian R M] [IsNoetherian R M] (p : Su
     (h : p ≠ ⊥) : Module.length R (M ⧸ p) < Module.length R M := by
   rw [Module.length_eq_add_of_exact p.subtype p.mkQ p.subtype_injective p.mkQ_surjective
     (LinearMap.exact_subtype_mkQ p)]
-  nth_rw 1 [← zero_add (Module.length R (M ⧸ p)), ENat.add_lt_add_iff_right Module.length_ne_top]
-  exact Module.length_pos_iff.mpr (nontrivial_iff_ne_bot.mpr h)
+  exact ENat.lt_add_left Module.length_ne_top
+    (Module.length_pos_iff.mpr (nontrivial_iff_ne_bot.mpr h))
