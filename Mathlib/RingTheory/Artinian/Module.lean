@@ -441,11 +441,9 @@ theorem IsArtinianRing.of_finite (R S) [Ring R] [Ring S] [Module R S] [IsScalarT
     [IsArtinianRing R] [Module.Finite R S] : IsArtinianRing S :=
   isArtinian_of_tower R isArtinian_of_fg_of_artinian'
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n R) [Fintype n] [DecidableEq n] [Ring R] [IsNoetherianRing R] :
     IsNoetherianRing (Matrix n n R) := .of_finite R _
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n R) [Fintype n] [DecidableEq n] [Ring R] [IsArtinianRing R] :
     IsArtinianRing (Matrix n n R) := .of_finite R _
 

@@ -118,7 +118,7 @@ theorem not_frequently_of_upcrossings_lt_top (hab : a < b) (hω : upcrossings a 
   rintro ⟨h₁, h₂⟩
   rw [frequently_atTop] at h₁ h₂
   refine Classical.not_not.2 hω ?_
-  push_neg
+  push Not
   intro k
   induction k with
   | zero => simp only [zero_le, exists_const]
