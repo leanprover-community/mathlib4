@@ -110,7 +110,7 @@ protected lemma ext [CharZero R] [IsDomain R] [IsTorsionFree R M]
     simp only [root_reflectionPerm, reflection_apply, coroot']
     simp only [hr, he, hc']
   suffices P₁.coroot = P₂.coroot by
-    obtain ⟨p₁⟩ := P₁; obtain ⟨p₂⟩ := P₂; grind
+    obtain ⟨p₁⟩ := P₁; obtain ⟨p₂⟩ := P₂; simp_all
   have : IsAddTorsionFree M := .of_isTorsionFree R M
   ext i
   apply P₁.injOn_dualMap_subtype_span_root_coroot (mem_range_self i) (hc ▸ mem_range_self i)

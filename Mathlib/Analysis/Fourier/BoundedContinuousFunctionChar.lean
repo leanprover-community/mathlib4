@@ -92,7 +92,9 @@ theorem ext_of_char_eq (he : Continuous e) (he' : e ≠ 1)
     ← e.map_neg_eq_inv, ← Submonoid.coe_mul, ← e.map_add_eq_mul, OneMemClass.coe_eq_one]
   simp only [map_sub, LinearMap.sub_apply, LinearMap.zero_apply, AddChar.one_apply,
     map_smul, smul_eq_mul] at ha hw ⊢
-  grind
+  ring_nf
+  field_simp
+  assumption
 
 /-- Monoid homomorphism mapping `w` to `fun v ↦ e (L v w)`. -/
 noncomputable def charMonoidHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :

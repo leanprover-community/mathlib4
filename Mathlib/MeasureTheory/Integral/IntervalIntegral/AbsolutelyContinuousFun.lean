@@ -128,7 +128,8 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
   have hT₄ (s : Finset u) := (u_coe s).intervalGapsWithin_pairwiseDisjoint_Ioc rfl (hu₁ s)
   have hT : univ.MapsTo T (disjWithin d b) := by
     intro s _
-    grind [disjWithin, uIcc_of_le]
+    simp [disjWithin]
+    grind [uIcc_of_le]
   have u_coe_sum (s : Finset u) (g : ℝ → ℝ → ℝ) :
       ∑ b ∈ s, (g b.val.1 b.val.2) = ∑ z ∈ u_coe s, (g z.1 z.2) :=
     Finset.sum_nbij Subtype.val (by simp [u_coe]) (by simp)
