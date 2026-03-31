@@ -150,7 +150,7 @@ lemma prop_initial [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] [HasIn
 
 -- see Note [lower instance priority]
 instance (priority := 100) [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] [HasInitial C] :
-    P.Nonempty := 
+    P.Nonempty :=
   nonempty_of_prop P.prop_initial
 
 lemma IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms [HasInitial C]
