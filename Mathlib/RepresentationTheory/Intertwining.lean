@@ -5,7 +5,7 @@ Authors: Stepan Nesterov, Edison Xie
 -/
 module
 
-public import Mathlib.RepresentationTheory.Basic
+public import Mathlib.RepresentationTheory.Subrepresentation
 
 /-!
 # Intertwining maps
@@ -119,6 +119,27 @@ instance : SMul ℕ (IntertwiningMap ρ σ) :=
 instance instAddCommMonoid : AddCommMonoid (IntertwiningMap ρ σ) :=
   fast_instance%
   DFunLike.coe_injective.addCommMonoid _ (coe_zero ρ σ) (coe_add ρ σ) (by intro f n; rw [coe_nsmul])
+
+/-- The range of an intertwining map from `V` to `W` as a subrepresentation of `W`. -/
+@[simps]
+def range (f : IntertwiningMap ρ σ) : Subrepresentation σ where
+  toSubmodule := LinearMap.range f.toLinearMap
+  apply_mem_toSubmodule g {w} := fun ⟨v, hv⟩ ↦ ⟨(ρ g) v, by
+    simp [f.isIntertwining, (f.toLinearMap_apply _ _ _).symm.trans hv]⟩
+
+@[simp]
+lemma mem_range (f : IntertwiningMap ρ σ) (w : W) :
+    w ∈ f.range ↔ ∃ v, f v = w := Iff.rfl
+
+/-- The kernel of an intertwining map from `V` to `W` as a subrepresentation of `V`. -/
+@[simps]
+def ker (f : IntertwiningMap ρ σ) : Subrepresentation ρ where
+  toSubmodule := LinearMap.ker f.toLinearMap
+  apply_mem_toSubmodule g := by simp +contextual [f.isIntertwining]
+
+@[simp]
+lemma mem_ker (f : IntertwiningMap ρ σ) (v : V) :
+    v ∈ f.ker ↔ f v = 0 := Iff.rfl
 
 lemma toLinearMap_sum {ι : Type*} (s : Finset ι) (f : ι → IntertwiningMap ρ σ) :
     (∑ i ∈ s, f i : IntertwiningMap ρ σ).toLinearMap = ∑ i ∈ s, (f i).toLinearMap := by

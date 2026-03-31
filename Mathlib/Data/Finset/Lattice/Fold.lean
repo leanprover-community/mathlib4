@@ -167,8 +167,9 @@ theorem comp_sup_eq_sup_comp [SemilatticeSup γ] [OrderBot γ] {s : Finset β} {
 /-- Computing `sup` in a subtype (closed under `sup`) is the same as computing it in `α`. -/
 theorem sup_coe {P : α → Prop} {Pbot : P ⊥} {Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)} (t : Finset β)
     (f : β → { x : α // P x }) :
-    (@sup { x // P x } _ (Subtype.semilatticeSup Psup) (Subtype.orderBot Pbot) t f : α) =
-      t.sup fun x => ↑(f x) := by
+    letI := Subtype.semilatticeSup Psup
+    letI := Subtype.orderBot Pbot
+    (t.sup f).val = t.sup fun x => ↑(f x) := by
   letI := Subtype.semilatticeSup Psup
   letI := Subtype.orderBot Pbot
   apply comp_sup_eq_sup_comp Subtype.val <;> intros <;> rfl
@@ -544,12 +545,10 @@ theorem sup_himp_left (hs : s.Nonempty) (f : ι → α) (a : α) :
     (s.sup fun b => a ⇨ f b) = a ⇨ s.sup f :=
   @inf_sdiff_right αᵒᵈ _ _ _ hs _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem compl_sup (s : Finset ι) (f : ι → α) : (s.sup f)ᶜ = s.inf fun i => (f i)ᶜ :=
   map_finset_sup (OrderIso.compl α) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem compl_inf (s : Finset ι) (f : ι → α) : (s.inf f)ᶜ = s.sup fun i => (f i)ᶜ :=
   map_finset_inf (OrderIso.compl α) _ _

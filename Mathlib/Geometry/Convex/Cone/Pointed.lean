@@ -331,16 +331,11 @@ def lineal (C : PointedCone R E) : Submodule R E where
     · have hr := le_of_lt <| neg_pos_of_neg <| lt_of_not_ge hr
       simpa using And.intro (C.smul_mem hr hx.2) (C.smul_mem hr hx.1)
 
-@[simp] lemma ofSubmodule_lineal (C : PointedCone R E) : C.lineal = C ⊓ -C :=
-  rfl
+@[simp] lemma ofSubmodule_lineal (C : PointedCone R E) : C.lineal = C ⊓ -C := rfl
 
-@[simp]
-lemma mem_lineal {C : PointedCone R E} {x : E} : x ∈ C.lineal ↔ x ∈ C ∧ -x ∈ C := by
-  rfl
+@[simp] lemma mem_lineal {C : PointedCone R E} {x : E} : x ∈ C.lineal ↔ x ∈ C ∧ -x ∈ C := by rfl
 
-@[simp]
-theorem support_eq {C : PointedCone R E} : C.support = C.lineal.toAddSubgroup :=
-  rfl
+@[simp] theorem support_eq {C : PointedCone R E} : C.support = C.lineal.toAddSubgroup := rfl
 
 /-- The lineality space of a cone is the largest submodule contained in the cone. -/
 theorem gc_ofSubmodule_lineal :
