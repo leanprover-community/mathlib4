@@ -638,7 +638,7 @@ abbrev MulDistribMulActionHomClass (F : Type*) (M : outParam Type*)
     [MulDistribMulAction M A] [MulDistribMulAction M B] [FunLike F A B] :=
     MulDistribMulActionSemiHomClass F (MonoidHom.id M) A B
 
-instance DistribMulAction.distribMulActionFunLike [AddMonoid A] [DistribMulAction M A] [AddMonoid B]
+instance DistribMulAction.instFunLike [AddMonoid A] [DistribMulAction M A] [AddMonoid B]
     [DistribMulAction N B] : FunLike (A →ₑ+[φ] B) A B where
   coe m := m.toFun
   coe_injective' f g h := by
@@ -647,9 +647,8 @@ instance DistribMulAction.distribMulActionFunLike [AddMonoid A] [DistribMulActio
 
 namespace MulDistribMulActionHom
 
-@[to_additive existing (dont_translate := M N) (relevant_arg := A)
-  DistribMulAction.distribMulActionFunLike]
-instance mulDistribMulActionFunLike : FunLike (A →ₑ*[φ] B) A B where
+@[to_additive existing (dont_translate := M N) (relevant_arg := A) DistribMulAction.instFunLike]
+instance : FunLike (A →ₑ*[φ] B) A B where
   coe m := m.toFun
   coe_injective' f g h := by
     rcases f with ⟨tF, _, _⟩; rcases g with ⟨tG, _, _⟩
