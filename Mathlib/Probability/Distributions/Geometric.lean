@@ -118,11 +118,22 @@ lemma hasSum_integral_geometricMeasure [CompleteSpace E]
   convert (integrable_geometricMeasure_iff hp).1 hf with n
   rw [ENNReal.toReal_ofReal (geometricMeasure_nonneg p n)]
 
+/-- If a function is integrable with respect to `geometricMeasure p`, then its integral
+against this measure is given by its sum weighted by `(1 - p) ^ n * p`.
+
+See `integral_geometricMeasure` for a version where the codomain is finite-dimensional
+and does not require the integrability hypothesis. -/
 lemma integral_geometricMeasure' [CompleteSpace E] (hp : p ≠ 0)
     (hf : Integrable f (geometricMeasure p)) :
     ∫ n, f n ∂geometricMeasure p = ∑' n : ℕ, ((1 - p : ℝ) ^ n * p) • f n :=
   (hasSum_integral_geometricMeasure hp hf).tsum_eq.symm
 
+/-- The integral of a function taking values in a finite-dimensional space
+against `geometricMeasure p` is given by its sum weighted by `(1 - p) ^ n * p`. This version
+does not require integrability, as the integral exists if and only if the sum exists, and otherwise
+they are both defined to be zero.
+
+See `integral_geometricMeasure'` with a general codomain which assumes integrability. -/
 lemma integral_geometricMeasure [FiniteDimensional ℝ E] (hp : p ≠ 0) (f : ℕ → E) :
     ∫ n, f n ∂geometricMeasure p = ∑' n : ℕ, ((1 - p : ℝ) ^ n * p) • f n := by
   rw [geometricMeasure_eq hp, integral_sum_dirac (by simp)]
