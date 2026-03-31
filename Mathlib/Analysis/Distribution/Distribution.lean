@@ -202,7 +202,7 @@ theorem delta_apply (x : E) (f : 𝓓^{n}(Ω, ℝ)) : delta x f = f x := by
   rfl
 
 @[simp]
-theorem delta_eq_zero_outside (x : E) (hx : x ∉ Ω) : delta (n := n) (Ω := Ω) x = 0 := by
+theorem delta_eq_zero_of_notMem (x : E) (hx : x ∉ Ω) : (delta x : 𝓓'^{n}(Ω, ℝ)) = 0 := by
   ext f
   change f x = 0
   have hx_support : x ∉ tsupport f := by
