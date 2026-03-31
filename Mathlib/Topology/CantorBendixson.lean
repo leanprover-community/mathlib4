@@ -99,16 +99,18 @@ theorem iteratedDerivedSet_limit (ha : Order.IsSuccLimit a) :
 is equal to the original set. -/
 theorem iteratedDerivedSet_constant_iff_preperfect :
     Preperfect s ↔ ∀ a : Ordinal, sᵈ[a] = s := by
-  simp only [preperfect_iff_subset_derivedSet]
+  simp only [preperfect_iff_eq_relDerivedSet]
   constructor <;> intro h
   · intro a
-    rw [iteratedDerivedSet,
-      gfpApprox_eq_of_mem_fixedPoints _ s relDerivedSet_subset (zero_le a)]
-    · simp [gfpApprox_zero]
-    simpa [Function.IsFixedPt, gfpApprox_zero, relDerivedSet] using h
-  · specialize h 1
-    rw [← zero_add 1, iteratedDerivedSet_succ] at h
-    simpa [relDerivedSet] using h
+    induction a using Ordinal.limitRecOn with
+    | zero => simp
+    | succ a ha => nth_rw 2 [h] ; simp [ha]
+    | limit a ha ih =>
+      simp only [iteratedDerivedSet_limit ha]
+      haveI : Nonempty ↑(Iio a) := nonempty_subtype.mpr ⟨0, mem_Iio.mpr ha.bot_lt⟩
+      exact iInter_eq_const (by simpa using ih)
+  · specialize h 1 ; symm
+    rwa [← zero_add 1, iteratedDerivedSet_succ, iteratedDerivedSet_zero] at h
 
 theorem isClosed_iteratedDerivedSet (hs : IsClosed s) :
     ∀ a : Ordinal, IsClosed (sᵈ[a]) := by
@@ -142,7 +144,7 @@ theorem stayOn.mono (h : stayOn s a) (hle : a ≤ b) :
 theorem stayOn_of_iteratedDerivedSet_succ_eq (ha : sᵈ[a + 1] = sᵈ[a]) :
     stayOn s a := by
   exact fun b hab =>
-    gfpApprox_eq_of_mem_fixedPoints _ s relDerivedSet_subset hab <|
+    gfpApprox_eq_of_mem_fixedPoints _ s hab <|
       Function.mem_fixedPoints_iff.mpr <| by simpa using ha
 
 variable (s)
@@ -150,7 +152,7 @@ variable (s)
 theorem iteratedDerivedSet_stay :
     ∃ a : Ordinal, stayOn s a := by
   exact ⟨(Order.succ #(Set X)).ord, fun b hb =>
-    gfpApprox_eq_of_mem_fixedPoints _ s relDerivedSet_subset hb <|
+    gfpApprox_eq_of_mem_fixedPoints _ s hb <|
       gfpApprox_ord_mem_fixedPoint _ s relDerivedSet_subset⟩
 
 /-- The perfect kernel of a set, defined as the intersection of all iterated derived sets. It is
