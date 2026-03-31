@@ -252,7 +252,7 @@ theorem coe_bot : ((⊥ : Submonoid M) : Set M) = {1} :=
 
 @[to_additive (attr := simp)]
 lemma mk_eq_top (toSubsemigroup : Subsemigroup M) (one_mem') :
-    mk toSubsemigroup one_mem' = ⊤ ↔ toSubsemigroup = ⊤ := by simp [← SetLike.coe_set_eq]
+    mk toSubsemigroup one_mem' = ⊤ ↔ toSubsemigroup = ⊤ := by simp [← SetLike.coe_set_eq, Top.top]
 
 @[to_additive (attr := simp)]
 lemma mk_eq_bot (toSubsemigroup : Subsemigroup M) (one_mem') :

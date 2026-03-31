@@ -160,7 +160,7 @@ theorem unop_iInf (S : ι → Subsemigroup Mᵐᵒᵖ) : (iInf S).unop = ⨅ i, 
 
 @[to_additive]
 theorem op_closure (s : Set M) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
-  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, Subsemigroup.coe_unop]
+  simp_rw [SetLike.closure_apply, op_sInf, Set.preimage_setOf_eq, Subsemigroup.coe_unop]
   congr with a
   exact MulOpposite.unop_surjective.forall
 

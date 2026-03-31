@@ -144,7 +144,9 @@ def closure : LowerAdjoint (SetLike.coe : A → Set B) where
 def gi : GaloisInsertion (closure A) (SetLike.coe : A → Set B) :=
   (closure A).gc.toGaloisInsertion fun _ => le_sInf (fun _ => coe_subset_coe.1)
 
-theorem isGLB_closure {s : Set B} : IsGLB {a : A | s ⊆ a} (closure A s) := isGLB_sInf _
+theorem closure_apply (s : Set B) : closure A s = sInf {a : A | s ≤ a} := rfl
+
+theorem isGLB_closure (s : Set B) : IsGLB {a : A | s ⊆ a} (closure A s) := isGLB_sInf _
 
 @[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_closure {s : Set B} :

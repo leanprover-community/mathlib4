@@ -49,7 +49,7 @@ theorem mem_biSup_of_directedOn {ι} {p : ι → Prop} {K : ι → Subsemigroup 
     {x : M} : x ∈ (⨆ i, ⨆ (_h : p i), K i) ↔ ∃ i, p i ∧ x ∈ K i := by
   refine ⟨?_, fun ⟨i, hi', hi⟩ ↦ ?_⟩
   · suffices x ∈ closure (⋃ i, ⋃ (_ : p i), (K i : Set M)) → ∃ i, p i ∧ x ∈ K i by
-      simpa only [closure_iUnion, closure_eq (K _)] using this
+      simpa only [SetLike.closure_iUnion, SetLike.closure_eq _ (K _)] using this
     refine fun hx ↦ closure_induction (fun _ ↦ ?_) ?_ hx
     · simp
     · rintro x y _ _ ⟨i, hip, hi⟩ ⟨j, hjp, hj⟩
@@ -78,9 +78,7 @@ theorem mem_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ 
 @[to_additive (attr := simp)]
 theorem mem_iSup_prop {p : Prop} {S : p → Subsemigroup M} {x : M} :
     x ∈ ⨆ (h : p), S h ↔ ∃ (h : p), x ∈ S h := by
-  by_cases h : p
-  · simp +contextual [h]
-  · simpa [h] using id
+  by_cases h : p <;> simp [h]
 
 @[to_additive]
 theorem coe_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) :
@@ -131,7 +129,7 @@ elements of `S i` for all `i`, and is preserved under addition, then it holds fo
 the supremum of `S`. -/]
 theorem iSup_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M} (hx₁ : x₁ ∈ ⨆ i, S i)
     (mem : ∀ i, ∀ x₂ ∈ S i, C x₂) (mul : ∀ x y, C x → C y → C (x * y)) : C x₁ := by
-  rw [iSup_eq_closure] at hx₁
+  rw [SetLike.iSup_eq_closure] at hx₁
   refine closure_induction (fun x₂ hx₂ => ?_) (fun x y _ _ ↦ mul x y) hx₁
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx₂
   exact mem _ _ hi
