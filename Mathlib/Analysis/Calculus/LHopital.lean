@@ -165,9 +165,7 @@ theorem lhopital_zero_atBot_on_Iio (hff' : ∀ x ∈ Iio a, HasDerivAt f (f' x) 
   rw [neg_Iio] at hdnf hdng
   have := lhopital_zero_atTop_on_Ioi hdnf hdng (by grind)
     (hfbot.comp tendsto_neg_atTop_atBot) (hgbot.comp tendsto_neg_atTop_atBot)
-    (by
-      simp only [mul_one, mul_neg, neg_div_neg_eq]
-      exact (hdiv.comp tendsto_neg_atTop_atBot))
+    (by simpa using hdiv.comp tendsto_neg_atTop_atBot)
   have := this.comp tendsto_neg_atBot_atTop
   unfold Function.comp at this
   simpa only [neg_neg]
