@@ -1854,6 +1854,7 @@ public import Mathlib.Analysis.Convex.Exposed
 public import Mathlib.Analysis.Convex.Extrema
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Analysis.Convex.FunctionTopology
 public import Mathlib.Analysis.Convex.Gauge
 public import Mathlib.Analysis.Convex.GaugeRescale
 public import Mathlib.Analysis.Convex.Hull
@@ -1905,6 +1906,7 @@ public import Mathlib.Analysis.Distribution.SchwartzSpace
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
+public import Mathlib.Analysis.Distribution.Support
 public import Mathlib.Analysis.Distribution.TemperateGrowth
 public import Mathlib.Analysis.Distribution.TemperedDistribution
 public import Mathlib.Analysis.Distribution.TestFunction
@@ -2153,6 +2155,7 @@ public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.Analysis.Normed.Order.UpperLower
 public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.Analysis.Normed.Ring.Finite
+public import Mathlib.Analysis.Normed.Ring.InfiniteProd
 public import Mathlib.Analysis.Normed.Ring.InfiniteSum
 public import Mathlib.Analysis.Normed.Ring.Int
 public import Mathlib.Analysis.Normed.Ring.Lemmas
@@ -3312,6 +3315,7 @@ public import Mathlib.CategoryTheory.Subfunctor.Sieves
 public import Mathlib.CategoryTheory.Subfunctor.Subobject
 public import Mathlib.CategoryTheory.Subobject.ArtinianObject
 public import Mathlib.CategoryTheory.Subobject.Basic
+public import Mathlib.CategoryTheory.Subobject.Classifier.Defs
 public import Mathlib.CategoryTheory.Subobject.Comma
 public import Mathlib.CategoryTheory.Subobject.FactorThru
 public import Mathlib.CategoryTheory.Subobject.HasCardinalLT
@@ -3334,7 +3338,6 @@ public import Mathlib.CategoryTheory.Sums.Associator
 public import Mathlib.CategoryTheory.Sums.Basic
 public import Mathlib.CategoryTheory.Sums.Products
 public import Mathlib.CategoryTheory.Thin
-public import Mathlib.CategoryTheory.Topos.Classifier
 public import Mathlib.CategoryTheory.Topos.Sheaf
 public import Mathlib.CategoryTheory.Triangulated.Adjunction
 public import Mathlib.CategoryTheory.Triangulated.Basic
@@ -5574,6 +5577,7 @@ public import Mathlib.NumberTheory.ModularForms.Cusps
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
 public import Mathlib.NumberTheory.ModularForms.Delta
 public import Mathlib.NumberTheory.ModularForms.Derivative
+public import Mathlib.NumberTheory.ModularForms.Discriminant
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Defs
@@ -6658,6 +6662,7 @@ public import Mathlib.RingTheory.Regular.Depth
 public import Mathlib.RingTheory.Regular.Flat
 public import Mathlib.RingTheory.Regular.IsSMulRegular
 public import Mathlib.RingTheory.Regular.RegularSequence
+public import Mathlib.RingTheory.RegularLocalRing.Defs
 public import Mathlib.RingTheory.RingHom.Bijective
 public import Mathlib.RingTheory.RingHom.EssFiniteType
 public import Mathlib.RingTheory.RingHom.Etale
@@ -7295,8 +7300,10 @@ public import Mathlib.Topology.Algebra.Module.PerfectPairing
 public import Mathlib.Topology.Algebra.Module.PerfectSpace
 public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
 public import Mathlib.Topology.Algebra.Module.Simple
+public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
+public import Mathlib.Topology.Algebra.Module.Spaces.UniformConvergenceCLM
 public import Mathlib.Topology.Algebra.Module.Star
-public import Mathlib.Topology.Algebra.Module.StrongTopology
 public import Mathlib.Topology.Algebra.Module.TopDualPairing
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
