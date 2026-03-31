@@ -50,7 +50,7 @@ lemma IsBaseChange.of_right_exact (comm1 : h₂.comp f = (f'.restrictScalars R).
     (comm2 : h₃.comp g = (g'.restrictScalars R).comp h₂)(isb1 : IsBaseChange S h₁)
     (isb2 : IsBaseChange S h₂) (exac1 : Function.Exact f g) (surj1 : Function.Surjective g)
     (exac2 : Function.Exact f' g') (surj2 : Function.Surjective g') : IsBaseChange S h₃ := by
-  change Function.Bijective _ at isb1 isb2 ⊢
+  simp only [IsBaseChange, IsTensorProduct] at isb1 isb2 ⊢
   refine LinearMap.bijective_of_surjective_of_bijective_of_right_exact
     ((f.baseChange S).restrictScalars R) ((g.baseChange S).restrictScalars R)
     (f'.restrictScalars R) (g'.restrictScalars R) _ _ _ ?_ ?_ ?_ exac2 isb1.2 isb2 ?_ surj2
