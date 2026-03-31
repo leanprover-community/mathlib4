@@ -70,9 +70,7 @@ def orientedCurvature : ℝ :=
 
 /-- Normal vector at a point of a plane curve. This definition is only meaningful when c is
 differentiable at t, and it's supposed to be used for plane curves parametrized by arc-length. -/
-def normal : EuclideanSpace ℝ (Fin 2) :=
-  let c' := deriv c t
-  !₂[-(c' 1), c' 0]
+def normal : EuclideanSpace ℝ (Fin 2) := !₂[-(deriv c t 1), deriv c t 0]
 
 /-- The `normal` vector at point of a plane curve is orthogonal to the velocity vector at the point.
 -/
