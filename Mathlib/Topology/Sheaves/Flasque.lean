@@ -204,7 +204,7 @@ theorem H_isZero (F : Sheaf AddCommGrpCat X) [IsFlasque F] (n : ℕ) :
     obtain ⟨I, _, f, hf⟩ := CategoryTheory.EnoughInjectives.presentation F
     let S := ShortComplex.mk f (cokernel.π f) (by cat_disch)
     have hS : S.ShortExact := ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel f)
-    have hLS := Sheaf.H.longSequence_exact hS 0 1
+    have hLS := Sheaf.H.longSequence_exact hS 0 1 rfl
     refine ShortComplex.Exact.isZero_of_both_zeros (hLS.exact 2) ?_
       (zero_of_target_iso_zero _ (IsZero.isoZero (AddCommGrpCat.isZero_of_subsingleton
       (AddCommGrpCat.of (H I 1)))))
@@ -220,10 +220,11 @@ theorem H_isZero (F : Sheaf AddCommGrpCat X) [IsFlasque F] (n : ℕ) :
     let S := ShortComplex.mk f (cokernel.π f) (by cat_disch)
     have hS : S.ShortExact := ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel f)
     have hX₃ : S.X₃.IsFlasque := of_shortExact_of_isFlasque₁₂ hS
-    have hLS := Sheaf.H.longSequence_exact hS (n+1) (n+2)
+    have hLS := Sheaf.H.longSequence_exact hS (n+1) (n+2) rfl
     exact ShortComplex.Exact.isZero_of_both_isZero (hLS.exact 2) (hn _)
       (AddCommGrpCat.isZero_of_subsingleton (AddCommGrpCat.of (H I (n + 2))))
 
+set_option backward.isDefEq.respectTransparency false in
 instance {F : Sheaf AddCommGrpCat X} [IsFlasque F] (n : ℕ) : Subsingleton (H F (n + 1)) :=
   AddCommGrpCat.subsingleton_of_isZero (H_isZero F n)
 

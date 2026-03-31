@@ -7,7 +7,7 @@ Authors: Brian Nugent
 module
 
 public import Mathlib.Topology.Sheaves.Abelian
-public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
+public import Mathlib.CategoryTheory.Sites.SheafCohomology.ExactSequences
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
 
 /-!
