@@ -146,7 +146,6 @@ lemma Ideal.ResidueField.exists_smul_eq_tmul_one
 
 See `PrimeSpectrum.preimageHomeomorphFiber` for the homeomorphism between the spectrum of it
 and the actual set-theoretic fiber of `PrimeSpectrum S → PrimeSpectrum R` at `p`. -/
-@[ext]
 structure Ideal.Fiber where
   of : p.ResidueField ⊗[R] S
 
@@ -181,7 +180,6 @@ instance : IsScalarTower R S (p.Fiber S) :=
 /-- `p.Fiber S` is isomorphic to the tensor product `κ(p) ⊗[R] S`. -/
 noncomputable def algEquivTensor : p.Fiber S ≃ₐ[p.ResidueField] p.ResidueField ⊗[R] S :=
   (Ideal.Fiber.equiv p S).algEquiv p.ResidueField
-
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- `p.Fiber S` is isomorphic to the tensor product `κ(p) ⊗[R] S`. -/
@@ -232,9 +230,6 @@ theorem ker_algebraMap_localization' :
   rw [ker_algebraMap_localization, ← Localization.AtPrime.map_eq_maximalIdeal, map_map,
     ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R S, ← map_map]
 
-instance (p : Ideal R) [p.IsPrime] (q : Ideal (p.Fiber S)) [q.IsPrime] : q.LiesOver p :=
-  .trans _ (⊥ : Ideal p.ResidueField) _
-
 instance (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] :
     (q.map (algebraMap S (p.Fiber S))).IsPrime := by
   rw [IsScalarTower.algebraMap_eq S (Localization (algebraMapSubmonoid S p.primeCompl)), ← map_map]
@@ -243,6 +238,9 @@ instance (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] :
   apply Ideal.map_isPrime_of_surjective (algebraMap_localization_surjective p S)
   rw [ker_algebraMap_localization']
   exact map_mono (map_le_iff_le_comap.mpr LiesOver.over.le)
+
+instance (p : Ideal R) [p.IsPrime] (q : Ideal (p.Fiber S)) [q.IsPrime] : q.LiesOver p :=
+  .trans _ (⊥ : Ideal p.ResidueField) _
 
 lemma exists_smul_eq_algebraMap (x : p.Fiber S) :
     ∃ r ∉ p, ∃ s, r • x = algebraMap S (p.Fiber S) s := by
