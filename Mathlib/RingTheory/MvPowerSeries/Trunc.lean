@@ -54,7 +54,7 @@ public import Mathlib.Algebra.MvPolynomial.Degrees
 
 -/
 
-public section
+@[expose] public section
 
 noncomputable section
 
