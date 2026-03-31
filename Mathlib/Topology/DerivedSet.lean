@@ -51,6 +51,8 @@ def relDerivedSet : Set X →o Set X where
   toFun := fun s => derivedSet s ∩ s
   monotone' := fun _ _ h ↦ Set.inter_subset_inter (derivedSet_mono _ _ h) (h)
 
+@[simp] lemma relDerivedSet_apply (A : Set X) : relDerivedSet A = derivedSet A ∩ A := rfl
+
 lemma relDerivedSet_subset {A : Set X} : relDerivedSet A ⊆ A :=
   Set.inter_subset_right
 
@@ -78,7 +80,7 @@ lemma isClosed_iff_derivedSet_subset (A : Set X) : IsClosed A ↔ derivedSet A �
 
 lemma IsClosed.relDerivedSet_eq {A : Set X} (hA : IsClosed A) :
     relDerivedSet A = derivedSet A := by
-  simpa [relDerivedSet] using (isClosed_iff_derivedSet_subset A).mp hA
+  simpa using (isClosed_iff_derivedSet_subset A).mp hA
 
 lemma closure_eq_self_union_derivedSet (A : Set X) : closure A = A ∪ derivedSet A := by
   ext
@@ -108,7 +110,7 @@ lemma preperfect_iff_subset_derivedSet {U : Set X} : Preperfect U ↔ U ⊆ deri
   Iff.rfl
 
 lemma preperfect_iff_eq_relDerivedSet {U : Set X} : Preperfect U ↔ U = relDerivedSet U := by
-  simp [preperfect_iff_subset_derivedSet, relDerivedSet]
+  simp [preperfect_iff_subset_derivedSet]
 
 lemma perfect_iff_eq_derivedSet {U : Set X} : Perfect U ↔ U = derivedSet U := by
   rw [perfect_def, isClosed_iff_derivedSet_subset, preperfect_iff_subset_derivedSet,
