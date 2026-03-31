@@ -82,7 +82,7 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
       (by
         have αe := Cardinal.mk_out (succ c)
         set α := (succ c).out
-        rcases ord_eq α with ⟨r, wo, re⟩
+        rcases exists_ord_eq α with ⟨r, wo, re⟩
         have := isSuccLimit_ord (h.trans (le_succ _))
         rw [← αe, re] at this ⊢
         rcases cof_eq' r this with ⟨S, H, Se⟩

@@ -1101,14 +1101,16 @@ theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r },
 @[deprecated (since := "2026-03-15")] alias ord_eq_Inf := ord_eq_iInf
 
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
-theorem ord_eq (α) : ∃ (r : α → α → Prop) (_ : IsWellOrder α r), ord #α = type r :=
+theorem exists_ord_eq (α) : ∃ (r : α → α → Prop) (_ : IsWellOrder α r), ord #α = type r :=
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
   ⟨r.1, r.2, wo.symm⟩
+
+@[deprecated (since := "2026-03-29")] alias ord_eq := exists_ord_eq
 
 open Classical in
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem exists_ord_eq_type_lt (α) : ∃ (_ : LinearOrder α) (_: WellFoundedLT α), ord #α = typeLT α :=
-  let ⟨r, _, hr⟩ := ord_eq α
+  let ⟨r, _, hr⟩ := exists_ord_eq α
   let := linearOrderOfSTO r
   ⟨this, inferInstance, hr⟩
 
@@ -1117,7 +1119,7 @@ theorem ord_le_type (r : α → α → Prop) [h : IsWellOrder α r] : ord #α �
 
 theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card := by
   refine c.inductionOn fun α ↦ o.inductionOn fun β s _ ↦ ?_
-  let ⟨r, _, e⟩ := ord_eq α
+  let ⟨r, _, e⟩ := exists_ord_eq α
   constructor <;> intro h
   · rw [e] at h
     exact card_le_card h
@@ -1133,7 +1135,7 @@ theorem lt_ord {c o} : o < ord c ↔ o.card < c :=
 
 @[simp]
 theorem card_ord (c) : (ord c).card = c :=
-  c.inductionOn fun α ↦ let ⟨r, _, e⟩ := ord_eq α; e ▸ card_type r
+  c.inductionOn fun α ↦ let ⟨r, _, e⟩ := exists_ord_eq α; e ▸ card_type r
 
 theorem card_surjective : Function.Surjective card :=
   fun c ↦ ⟨_, card_ord c⟩
