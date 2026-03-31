@@ -525,7 +525,7 @@ def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
 def HomotopyGroup.pi1EquivFundamentalGroup : π_ 1 X x ≃ FundamentalGroup X x :=
   homotopyGroupEquivFundamentalGroupOfUnique (Fin 1)
 
-lemma HomotopyGroup.genLoopEquivOfUnique_transAt (N) [Unique N] (p q : Ω^ N X x) :
+lemma HomotopyGroup.genLoopEquivOfUnique_transAt (N) [DecidableEq N] [Unique N] (p q : Ω^ N X x) :
     genLoopEquivOfUnique _ (transAt default q p) =
       (genLoopEquivOfUnique _ q).trans (genLoopEquivOfUnique _ p) := by
   ext t
@@ -534,17 +534,7 @@ lemma HomotopyGroup.genLoopEquivOfUnique_transAt (N) [Unique N] (p q : Ω^ N X x
     Function.comp_apply]
   refine ite_congr rfl (fun _ ↦ congrArg q ?_)
     fun _ ↦ congrArg p ?_
-  <;> (ext i; exact (Unique.eq_default i ▸ rfl))
-
-lemma HomotopyGroup.genLoopEquivOfFinOne_transAt (p q : Ω^ (Fin 1) X x) :
-    genLoopEquivOfUnique _ (transAt 0 q p) =
-      (genLoopEquivOfUnique _ q).trans (genLoopEquivOfUnique _ p) := by
-  ext t
-  simp only [genLoopEquivOfUnique, Fin.default_eq_zero, Fin.isValue, GenLoop.transAt, GenLoop.copy,
-    one_div, Equiv.coe_fn_mk, GenLoop.mk_apply, ContinuousMap.coe_mk, Path.coe_mk', Path.trans,
-    Function.comp_apply]
-  exact ite_congr rfl (fun _ ↦ congrArg q (List.ofFn_inj.mp rfl))
-    fun _ ↦ congrArg p (List.ofFn_inj.mp rfl)
+  <;> (ext i; rw [Unique.eq_default i]; simp)
 
 namespace HomotopyGroup
 
@@ -619,20 +609,18 @@ instance commGroup [Nontrivial N] : CommGroup (HomotopyGroup N X x) :=
 def homotopyGroupOfUniqueMulEquivFundamentalGroup (N) [Unique N] :
     HomotopyGroup N X x ≃* FundamentalGroup X x where
   toEquiv := homotopyGroupEquivFundamentalGroupOfUnique N
-  map_mul' a b := by
-    refine Quotient.inductionOn₂ a b fun p q => by
-      simp only [HomotopyGroup.mul_spec (i := default)]
-      apply Quotient.sound
-      simp [genLoopEquivOfUnique_transAt]
+  map_mul' a b := Quotient.inductionOn₂ a b fun p q => by
+    simp only [HomotopyGroup.mul_spec (i := default)]
+    apply Quotient.sound
+    simp [genLoopEquivOfUnique_transAt]
 
 /-- The first homotopy group at `x` is isomorphic to the fundamental group. -/
 def pi1MulEquivFundamentalGroup :
     π_ 1 X x ≃* FundamentalGroup X x where
   toEquiv := HomotopyGroup.pi1EquivFundamentalGroup (X := X) (x := x)
-  map_mul' a b := by
-    refine Quotient.inductionOn₂ a b fun p q => by
-      simp only [HomotopyGroup.mul_spec (i := (0 : Fin 1))]
-      apply Quotient.sound
-      simp [genLoopEquivOfFinOne_transAt]
+  map_mul' a b := Quotient.inductionOn₂ a b fun p q => by
+    simp only [HomotopyGroup.mul_spec (i := (0 : Fin 1))]
+    apply Quotient.sound
+    rw [Unique.eq_default 0, genLoopEquivOfUnique_transAt]
 
 end HomotopyGroup
