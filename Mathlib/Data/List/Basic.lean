@@ -471,7 +471,7 @@ theorem exists_mem_iff_get {l : List α} {p : α → Prop} :
 
 theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
-  simp [mem_iff_getElem, @forall_comm α]
+  simp [mem_iff_getElem, @forall_swap α]
 
 theorem forall_mem_iff_get {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : Fin l.length), p (l.get i) :=
@@ -973,6 +973,10 @@ theorem length_eq_length_filter_add {l : List (α)} (f : α → Bool) :
     l.length = (l.filter f).length + (l.filter (!f ·)).length := by
   simp_rw [← List.countP_eq_length_filter, l.length_eq_countP_add_countP f, Bool.not_eq_true,
     Bool.decide_eq_false]
+
+@[simp]
+theorem filter_nezero_sum (l : List ℕ) : (List.filter (· ≠ 0) l).sum = l.sum := by
+  induction l <;> grind
 
 /-! ### filterMap -/
 
