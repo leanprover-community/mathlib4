@@ -40,7 +40,7 @@ instance nonempty_sup_right [Q.Nonempty] : (P ⊔ Q).Nonempty :=
 
 instance nonempty_top [_root_.Nonempty C] : Nonempty (⊤ : ObjectProperty C) :=
   nonempty_of_prop (X := Classical.arbitrary C) (by trivial)
-  
+
 lemma isoClosure_sup : (P ⊔ Q).isoClosure = P.isoClosure ⊔ Q.isoClosure := by
   ext X
   simp only [prop_sup_iff]
