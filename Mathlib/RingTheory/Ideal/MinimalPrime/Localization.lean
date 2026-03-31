@@ -127,7 +127,7 @@ section
 
 variable {R S : Type*} [CommRing R] [CommRing S] {I J : Ideal R}
 
-theorem Ideal.minimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
+theorem Ideal.minimalPrimes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
     {I J : Ideal S} (h : J ∈ I.minimalPrimes) : J.comap f ∈ (I.comap f).minimalPrimes := by
   have := h.1.1
   refine ⟨⟨inferInstance, Ideal.comap_mono h.1.2⟩, ?_⟩
@@ -147,7 +147,7 @@ theorem Ideal.comap_minimalPrimes_eq_of_surjective {f : R →+* S} (hf : Functio
     obtain ⟨p, h, rfl⟩ := Ideal.exists_minimalPrimes_comap_eq f J H
     exact ⟨p, h, rfl⟩
   · rintro ⟨J, hJ, rfl⟩
-    exact Ideal.minimal_primes_comap_of_surjective hf hJ
+    exact Ideal.minimalPrimes_comap_of_surjective hf hJ
 
 lemma Ideal.minimalPrimes_map_of_surjective {S : Type*} [CommRing S] {f : R →+* S}
     (hf : Function.Surjective f) (I : Ideal R) :
