@@ -244,11 +244,20 @@ theorem Bijective.of_comp_iff' {f : α → β} (hf : Bijective f) (g : γ → α
     Function.Bijective (f ∘ g) ↔ Function.Bijective g :=
   and_congr (Injective.of_comp_iff hf.injective _) (Surjective.of_comp_iff' hf _)
 
+/-- If `f : α → α → β` is surjective, then every endofunction on `β` has a fixed point.
+This is an instance of Lawvere's fixed-point theorem applied to the category of types
+and functions. It is the diagonal argument underlying `cantor_surjective` and
+`cantor_injective`. -/
+theorem exists_fixed_point_of_surjective {α β : Type*} (f : α → α → β)
+    (hf : Surjective f) (g : β → β) : ∃ x, g x = x :=
+  let ⟨a, ha⟩ := hf fun a => g (f a a)
+  ⟨f a a, (congr_fun ha a).symm⟩
+
 /-- **Cantor's diagonal argument** implies that there are no surjective functions from `α`
 to `Set α`. -/
-theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f
-  | h => let ⟨D, e⟩ := h {a | a ∉ f a}
-        @iff_not_self (D ∈ f D) <| iff_of_eq <| congr_arg (D ∈ ·) e
+theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f := fun h =>
+  let ⟨_, hx⟩ := exists_fixed_point_of_surjective f h (¬·)
+  not_iff_self (iff_of_eq hx)
 
 /-- **Cantor's diagonal argument** implies that there are no injective functions from `Set α`
 to `α`. -/
@@ -277,16 +286,34 @@ theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjecti
 def IsPartialInv {α β} (f : α → β) (g : β → Option α) : Prop :=
   ∀ x y, g y = some x ↔ f x = y
 
-theorem isPartialInv_left {α β} {f : α → β} {g} (H : IsPartialInv f g) (x) : g (f x) = some x :=
+theorem IsPartialInv.eq {α β} {f : α → β} {g} (H : IsPartialInv f g) (x) : g (f x) = some x :=
   (H _ _).2 rfl
 
-theorem injective_of_isPartialInv {α β} {f : α → β} {g} (H : IsPartialInv f g) :
+theorem IsPartialInv.get_eq {α β} {f : α → β} {g} (H : IsPartialInv f g) (x) (h : g x |>.isSome) :
+    f (g x |>.get h) = x :=
+  (H _ _).1 (Option.eq_some_of_isSome h)
+
+theorem IsPartialInv.surjective_getD {α β} {f : α → β} {g} (H : IsPartialInv f g) (x) :
+    Function.Surjective (g · |>.getD x) :=
+  fun y => ⟨f y, by simp [H.eq]⟩
+
+@[deprecated (since := "2026-03-11")] alias isPartialInv_left := IsPartialInv.eq
+
+theorem IsPartialInv.injective {α β} {f : α → β} {g} (H : IsPartialInv f g) :
     Injective f := fun _ _ h ↦
   Option.some.inj <| ((H _ _).2 h).symm.trans ((H _ _).2 rfl)
+
+@[deprecated (since := "2026-03-11")] alias injective_of_isPartialInv := IsPartialInv.injective
 
 theorem injective_of_isPartialInv_right {α β} {f : α → β} {g} (H : IsPartialInv f g) (x y b)
     (h₁ : b ∈ g x) (h₂ : b ∈ g y) : x = y :=
   ((H _ _).1 h₁).symm.trans ((H _ _).1 h₂)
+
+theorem IsPartialInv.comp {α β γ} {f : α → β} {g : β → Option α} {h : β → γ} {i : γ → Option β}
+    (hf : IsPartialInv f g) (hh : IsPartialInv h i) :
+    IsPartialInv (h ∘ f) (i · |>.bind g) := by
+  intros a b
+  simp [Option.bind_eq_some_iff, hh _, hf _]
 
 lemma LeftInverse.eq {g : β → α} {f : α → β} (h : LeftInverse g f) (x : α) : g (f x) = x := h x
 
@@ -352,7 +379,7 @@ noncomputable def partialInv {α β} (f : α → β) (b : β) : Option α :=
   open scoped Classical in
   if h : ∃ a, f a = b then some (Classical.choose h) else none
 
-theorem partialInv_of_injective {α β} {f : α → β} (I : Injective f) : IsPartialInv f (partialInv f)
+theorem Injective.isPartialInv {α β} {f : α → β} (I : Injective f) : IsPartialInv f (partialInv f)
   | a, b =>
   ⟨fun h =>
     open scoped Classical in
@@ -367,8 +394,10 @@ theorem partialInv_of_injective {α β} {f : α → β} (I : Injective f) : IsPa
   fun e => e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
               (dif_pos h).trans (congr_arg _ (I <| Classical.choose_spec h))⟩
 
+@[deprecated (since := "2026-03-11")] alias partialInv_of_injective := Injective.isPartialInv
+
 theorem partialInv_left {α β} {f : α → β} (I : Injective f) : ∀ x, partialInv f (f x) = some x :=
-  isPartialInv_left (partialInv_of_injective I)
+  I.isPartialInv.eq
 
 end
 

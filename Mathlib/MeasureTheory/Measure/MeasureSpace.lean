@@ -1104,11 +1104,9 @@ private theorem measure_le_sInf (h : ∀ μ' ∈ m, μ ≤ μ') : μ ≤ sInf m 
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-instance instCompleteSemilatticeInf {_ : MeasurableSpace α} : CompleteSemilatticeInf (Measure α) :=
-  { (by infer_instance : PartialOrder (Measure α)),
-    (by infer_instance : InfSet (Measure α)) with
-    sInf_le := fun _s _a => measure_sInf_le
-    le_sInf := fun _s _a => measure_le_sInf }
+instance instCompleteSemilatticeInf {_ : MeasurableSpace α} :
+    CompleteSemilatticeInf (Measure α) where
+  isGLB_sInf _ := ⟨fun x ↦ measure_sInf_le, fun _ ↦ by exact measure_le_sInf⟩
 
 instance instCompleteLattice {_ : MeasurableSpace α} : CompleteLattice (Measure α) :=
   { completeLatticeOfCompleteSemilatticeInf (Measure α) with
@@ -1296,7 +1294,7 @@ theorem sum_apply_eq_zero' {μ : ι → Measure α} {s : Set α} (hs : Measurabl
     sum μ s = 0 ↔ ∀ i, μ i s = 0 := by simp [hs]
 
 @[simp] lemma sum_eq_zero : sum f = 0 ↔ ∀ i, f i = 0 := by
-  simp +contextual [Measure.ext_iff, forall_swap (α := ι)]
+  simp +contextual [Measure.ext_iff, forall_comm (α := ι)]
 
 @[simp]
 lemma sum_zero : Measure.sum (fun (_ : ι) ↦ (0 : Measure α)) = 0 := by

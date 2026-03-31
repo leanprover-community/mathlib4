@@ -528,7 +528,7 @@ def homologyMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.HomologyData)
 instance isIso_homologyMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
     (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData) :
     IsIso (homologyMap' φ h₁ h₂) :=
-  (inferInstance : IsIso (homologyMapIso' (asIso φ) h₁ h₂).hom)
+  inferInstanceAs <| IsIso (homologyMapIso' (asIso φ) h₁ h₂).hom
 
 /-- The homology isomorphism `S₁.homology ⟶ S₂.homology` induced by an isomorphism
 `S₁ ≅ S₂` of short complexes. -/
@@ -543,7 +543,7 @@ noncomputable def homologyMapIso (e : S₁ ≅ S₂) [S₁.HasHomology]
 instance isIso_homologyMap_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.HasHomology]
     [S₂.HasHomology] :
     IsIso (homologyMap φ) :=
-  (inferInstance : IsIso (homologyMapIso (asIso φ)).hom)
+  inferInstanceAs <| IsIso (homologyMapIso (asIso φ)).hom
 
 variable {S}
 
@@ -832,7 +832,7 @@ instance isIso_homologyMap_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [S₁.Ha
 instance isIso_homologyFunctor_map_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [CategoryWithHomology C]
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     IsIso ((homologyFunctor C).map φ) :=
-  (inferInstance : IsIso (homologyMap φ))
+  inferInstanceAs <| IsIso (homologyMap φ)
 
 set_option backward.isDefEq.respectTransparency false in
 instance isIso_homologyMap_of_isIso (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology] [IsIso φ] :
