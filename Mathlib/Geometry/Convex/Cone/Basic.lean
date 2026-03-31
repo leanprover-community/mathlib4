@@ -388,9 +388,7 @@ section Reproducing
 variable [AddCommGroup M] [Module R M]
 
 /-- A convex cone is reproducing if its set of element differences equals the entire module,
-i.e., every element of `M` can be written as a difference of two elements of `C`.
-
-See also (`IsGenerating`). -/
+i.e., every element of `M` can be written as a difference of two elements of `C`. -/
 def IsReproducing (C : ConvexCone R M) : Prop :=
   (C : Set M) - (C : Set M) = Set.univ
 
