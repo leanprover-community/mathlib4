@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Finset.Pairwise
 public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.SupIndep
@@ -313,13 +312,16 @@ theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : #Q.parts ≤ #
 
 end Order
 
+section ToSubtype
+
+variable {s : α} (P : Finpartition s) {Pr : α → Prop}
+  (Prsup : ∀ ⦃s t : α⦄, Pr s → Pr t → Pr (s ⊔ t)) (Prinf : ∀ ⦃s t : α⦄, Pr s → Pr t → Pr (s ⊓ t))
+  (Prbot : Pr (⊥ : α)) (hs : Pr s) (hP : ∀ p ∈ P.parts, Pr p)
+
 /-- A `Finpartition` constructor in `Subtype Pr` for `Pr : Set X → Prop` such that `Pr` is closed
 under intersection and union and `Pr ⊥` holds from a `P : Finpartition s` with explicit assumptions
 that `Pr s` and `Pr p` for each part `p`. -/
-noncomputable def toSubtype {s : α} (P : Finpartition s)
-    {Pr : α → Prop} (Prsup : ∀ ⦃s t : α⦄, Pr s → Pr t → Pr (s ⊔ t))
-    (Prinf : ∀ ⦃s t : α⦄, Pr s → Pr t → Pr (s ⊓ t)) (Prbot : Pr (⊥ : α))
-    (hs : Pr s) (hP : ∀ p ∈ P.parts, Pr p) :
+noncomputable def toSubtype :
     letI : Lattice (Subtype Pr) := Subtype.lattice Prsup Prinf
     letI : OrderBot (Subtype Pr) := Subtype.orderBot Prbot
     Finpartition (⟨s, hs⟩ : Subtype Pr) :=
@@ -338,6 +340,24 @@ noncomputable def toSubtype {s : α} (P : Finpartition s)
     sup_parts := by
       simpa [Finset.sup_preimage_val_id Prsup Prbot hP] using P.sup_parts
     bot_notMem := by simpa [mem_preimage, Subtype.coe_bot Prbot] using P.bot_notMem }
+
+@[simp]
+lemma mem_toSubtype_iff (p : Subtype Pr) :
+    letI : Lattice (Subtype Pr) := Subtype.lattice Prsup Prinf
+    letI : OrderBot (Subtype Pr) := Subtype.orderBot Prbot
+    p ∈ (toSubtype P Prsup Prinf Prbot hs hP).parts ↔ p.val ∈ P.parts := by rw [toSubtype]; simp
+
+lemma sum_eq_sum_finpartition_subtype {X : Type*} [AddCommMonoid X] (f : α → X) :
+    letI : Lattice (Subtype Pr) := Subtype.lattice Prsup Prinf
+    letI : OrderBot (Subtype Pr) := Subtype.orderBot Prbot
+    ∑ p ∈ P.parts, f p = ∑ p ∈ (Finpartition.toSubtype P Prsup Prinf Prbot hs hP).parts, f p := by
+  apply Finset.sum_bij (fun p hpP => ⟨p, hP p hpP⟩)
+  · intro _ ht; simpa [Finpartition.toSubtype] using ht
+  · intro _ _ _ _ h; simpa [Subtype.mk.injEq] using h
+  · simp
+  · intro _ _; congr
+
+end ToSubtype
 
 end Lattice
 
