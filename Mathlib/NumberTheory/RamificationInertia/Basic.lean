@@ -75,7 +75,6 @@ variable (K)
 
 open scoped Matrix
 
-set_option backward.isDefEq.respectTransparency false in
 variable {K} in
 /-- If `b` mod `p` spans `S/p` as `R/p`-space, then `b` itself spans `Frac(S)` as `K`-space.
 
