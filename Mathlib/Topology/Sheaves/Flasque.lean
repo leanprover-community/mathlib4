@@ -219,7 +219,7 @@ theorem H_isZero (F : Sheaf AddCommGrpCat X) [IsFlasque F] (n : ℕ) :
     obtain ⟨I, _, f, hf⟩ := CategoryTheory.EnoughInjectives.presentation F
     let S := ShortComplex.mk f (cokernel.π f) (by cat_disch)
     have hS : S.ShortExact := ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel f)
-    have hX₃ : S.X₃.IsFlasque := X₃_shortExact_isFlasque_X₁_isFlasque_X₂ hS
+    have hX₃ : S.X₃.IsFlasque := of_shortExact_of_isFlasque₁₂ hS
     have hLS := Sheaf.H.longSequence_exact hS (n+1) (n+2)
     exact ShortComplex.Exact.isZero_of_both_isZero (hLS.exact 2) (hn _)
       (AddCommGrpCat.isZero_of_subsingleton (AddCommGrpCat.of (H I (n + 2))))
