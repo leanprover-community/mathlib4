@@ -27,7 +27,7 @@ namespace AddCircle
 variable (p : ℝ)
 
 instance pathConnectedSpace : PathConnectedSpace <| AddCircle p :=
-  (inferInstance : PathConnectedSpace (Quotient _))
+  inferInstanceAs <| PathConnectedSpace (Quotient _)
 
 /-- The "additive circle" `ℝ ⧸ ℤ ∙ p` is compact. -/
 instance compactSpace [Fact (0 < p)] : CompactSpace <| AddCircle p := by
