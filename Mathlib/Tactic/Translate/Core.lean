@@ -962,7 +962,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   if let some b := unfoldBoundaries? then
     srcType ← b.unfoldInsertions srcType
   srcType := srcType.instantiateLevelParams
-    (reorder.permuteUniv srcDecl.levelParams) (tgtDecl.levelParams.map mkLevelParam)
+    (univReorder.permuteList! srcDecl.levelParams) (tgtDecl.levelParams.map mkLevelParam)
   let tgtType := tgtDecl.type
   unless ← withReducible <| isDefEq srcType tgtType do
     throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\nbut '{tgt}' has \
