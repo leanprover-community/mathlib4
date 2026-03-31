@@ -277,27 +277,26 @@ set_option backward.isDefEq.respectTransparency false in
 theorem Submodule.measurePreserving_measurableEquivProd (s : Submodule ℝ V) (p : P) :
     MeasurePreserving (s.measurableEquivProd p) μHE[finrank ℝ V] := by
   refine (EuclideanGeometry.measurePreserving_vaddConst _).symm.trans ?_
-  refine (s.orthogonalDecomposition.measurePreserving).trans ?_
+  refine s.orthogonalDecomposition.measurePreserving.trans ?_
   exact WithLp.volume_preserving_ofLp _ _
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The $n$-dimensional volume of an object in an $n$-dimensional space is equal to the integral
 of the volume of $(n-d)$-dimensional cross-section along an orthogonal $d$-dimensional subspace.
-This is a generalization of `MeasureTheory.Measure.prod_apply` in the affine Euclidean space. -/
+This is an analogue to `MeasureTheory.Measure.prod_apply`. -/
 theorem AffineSubspace.euclideanHausdorffMeasure_eq_lintegral (s : AffineSubspace ℝ P)
     [hs : Nonempty s] {t : Set P} (ht : MeasurableSet t) :
     μHE[finrank ℝ V] t = ∫⁻ (x : s), μHE[finrank ℝ s.directionᗮ] (t ∩ mk' x.val s.directionᗮ)
       ∂μHE[finrank ℝ s.direction] := by
   obtain p := hs.some
   rw [← (s.direction.measurePreserving_measurableEquivProd p.val).symm.measure_preimage_equiv,
-    volume_eq_prod, prod_apply (by simpa using ht),
+    volume_eq_prod, prod_apply (by measurability),
     EuclideanGeometry.euclideanHausdorffMeasure_eq p, MeasurableEmbedding.lintegral_map
-    (by simpa using (IsometryEquiv.vaddConst p).toHomeomorph.measurableEmbedding)]
-  congr
-  ext x
+        (by simpa using (IsometryEquiv.vaddConst p).toHomeomorph.measurableEmbedding)]
+  congr with x
   let u : Set (mk' (x +ᵥ p).val s.directionᗮ) := Subtype.val ⁻¹' (t ∩ mk' (x +ᵥ p).val s.directionᗮ)
   have hu : MeasurableSet u :=
-    .preimage (ht.inter (closed_of_finiteDimensional _).measurableSet) measurable_subtype_coe
+    (ht.inter (closed_of_finiteDimensional _).measurableSet).preimage measurable_subtype_coe
   have hinter : t ∩ (mk' (x +ᵥ p).val s.directionᗮ) = Subtype.val '' u := by
     ext x
     simp [u]
@@ -305,8 +304,7 @@ theorem AffineSubspace.euclideanHausdorffMeasure_eq_lintegral (s : AffineSubspac
   have hrank : finrank ℝ s.directionᗮ = finrank ℝ (mk' (x +ᵥ p).val s.directionᗮ).direction := by
     rw [direction_mk']
   rw [IsometryEquiv.vaddConst_apply, hinter, euclideanHausdorffMeasure_coe_image, hrank,
-    EuclideanGeometry.euclideanHausdorffMeasure_eq ⟨x +ᵥ p, hxp⟩,
-    map_apply (by simpa using (IsometryEquiv.vaddConst _).toHomeomorph.measurable) hu]
+    EuclideanGeometry.euclideanHausdorffMeasure_eq ⟨x +ᵥ p, hxp⟩, map_apply (by fun_prop) hu]
   /- we have ⊢ volume (a : Set A) = volume (b : Set B). We'd like show a = b, but A and B are
     non-defeq subspaces!
     Lucky we have just developed euclideanHausdorffMeasure, which allows us to move the measure to
@@ -325,18 +323,21 @@ vector. This is a special case of `AffineSubspace.euclideanHausdorffMeasure_eq_l
 one-dimensional subspace. -/
 theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral (p : P) {v : V} (hv : v ≠ 0)
     {t : Set P} (ht : MeasurableSet t) :
-    μHE[finrank ℝ V] t = ‖v‖ₑ * ∫⁻ (x : ℝ), μHE[finrank ℝ (ℝ ∙ v)ᗮ]
+    μHE[finrank ℝ V] t = ‖v‖ₑ * ∫⁻ (x : ℝ), μHE[finrank ℝ V - 1]
       (t ∩ AffineSubspace.mk' (x • v +ᵥ p) (ℝ ∙ v)ᗮ) := by
   have hrank : finrank ℝ (AffineSubspace.mk' p (ℝ ∙ v)).direction = 1 := by
     rw [AffineSubspace.direction_mk']
     apply finrank_span_singleton hv
+  have hranksub : finrank ℝ V - 1 = finrank ℝ (ℝ ∙ v)ᗮ := by
+    rw [← (ℝ ∙ v).finrank_add_finrank_orthogonal, add_comm, finrank_span_singleton hv,
+      Nat.add_sub_cancel]
   have hrank' : finrank ℝ (AffineSubspace.mk' p (ℝ ∙ v)).directionᗮ = finrank ℝ (ℝ ∙ v)ᗮ := by
     rw [AffineSubspace.direction_mk']
   let f : ℝ ≃L[ℝ] (AffineSubspace.mk' p (ℝ ∙ v)).direction :=
     (ContinuousLinearEquiv.toSpanNonzeroSingleton ℝ v hv).trans
     (ContinuousLinearEquiv.ofEq (ℝ ∙ v) ((AffineSubspace.mk' p (ℝ ∙ v)).direction) (by simp))
   have hf : MeasurableEmbedding f := f.toHomeomorph.measurableEmbedding
-  let p' : AffineSubspace.mk' p (ℝ ∙ v) := ⟨p, by simp [AffineSubspace.mem_mk']⟩
+  let p' : AffineSubspace.mk' p (ℝ ∙ v) := ⟨p, by simp⟩
   let g : ℝ → AffineSubspace.mk' p (ℝ ∙ v) := IsometryEquiv.vaddConst p' ∘ f
   have hadd : MeasurableEmbedding (IsometryEquiv.vaddConst p') :=
     (IsometryEquiv.vaddConst p').toHomeomorph.measurableEmbedding
@@ -351,5 +352,5 @@ theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral (p : P) {v : V}
     suffices volume = ‖v'‖ₑ • volume.map f by simpa [v']
     exact volume_eq_of_finrank_eq_one hrank (by simpa [v'] using hv)
   have hx (x : ℝ) : x • v +ᵥ p = g x := by rfl
-  simp_rw [(AffineSubspace.mk' p (ℝ ∙ v)).euclideanHausdorffMeasure_eq_lintegral ht, hx, hm,
-    lintegral_smul_measure, hg.lintegral_map, smul_eq_mul, hrank', AffineSubspace.direction_mk']
+  simp_rw [hranksub, (AffineSubspace.mk' p (ℝ ∙ v)).euclideanHausdorffMeasure_eq_lintegral ht, hx,
+    hm, lintegral_smul_measure, hg.lintegral_map, smul_eq_mul, hrank', AffineSubspace.direction_mk']
