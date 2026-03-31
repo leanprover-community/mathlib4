@@ -80,7 +80,7 @@ theorem isRegular_succ {c : Cardinal} (hc : ℵ₀ ≤ c) : IsRegular (succ c) :
   refine ⟨hc.trans (le_succ c), ?_⟩
   generalize hd : succ c = d
   induction d using Cardinal.inductionOn with | mk α
-  obtain ⟨_, _, hα⟩ := ord_eq_type_lt α
+  obtain ⟨_, _, hα⟩ := exists_ord_eq_type_lt α
   have : NoMaxOrder α := by
     rw [← isSuccPrelimit_type_lt_iff, ← hα]
     exact (isSuccLimit_ord (hd ▸ hc.trans (le_succ c))).isSuccPrelimit
