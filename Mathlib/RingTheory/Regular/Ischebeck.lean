@@ -104,12 +104,10 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
             apply lt_of_le_of_lt this
             simp only [← hk, ← ENat.coe_sub, Nat.cast_lt] at hi ⊢
             omega
-        have zero : IsZero (AddCommGrpCat.of (Ext (ModuleCat.of R (QuotSMulTop x L)) M (i + 1))) :=
-          @AddCommGrpCat.isZero_of_subsingleton _ this
         have epi' : Function.Surjective (x • LinearMap.id (R := R) (M := (Ext (of R L) M i))) := by
           convert (AddCommGrpCat.epi_iff_surjective _).mp <| ShortComplex.Exact.epi_f
             (Ext.contravariant_sequence_exact₁' hS M i (i + 1) (Nat.add_comm 1 i))
-            (zero.eq_zero_of_tgt _)
+            ((@AddCommGrpCat.isZero_of_subsingleton _ this).eq_zero_of_tgt _)
           ext a
           simp only [smul_apply, id_coe, id_eq, smulShortComplex, AddCommGrpCat.hom_ofHom,
             Ext.bilinearComp_apply_apply]
@@ -120,8 +118,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           ext y
           simp only [mem_range, smul_apply, id_coe, id_eq, Submodule.mem_smul_pointwise_iff_exists,
             Submodule.mem_top, true_and]
-        by_contra ntr
-        rw [not_subsingleton_iff_nontrivial] at ntr
+        by_contra! ntr
         have mem : x ∈ (Module.annihilator R (Ext (of R L) M i)).jacobson :=
           maximalIdeal_le_jacobson _ hx1
         absurd Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator mem
@@ -166,7 +163,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
             let S := ModuleCat.shortComplexOfCompEqZero f g exac.linearMap_comp_eq_zero
             have hS := ModuleCat.shortComplex_shortExact S exac inj surj
             exact ge_trans (moduleDepth_ge_min_of_shortExact_snd_fst S hS M) (le_inf_iff.mpr
-              ⟨le_trans (tsub_le_tsub_left dimle1 _) ge1, (tsub_le_tsub_left dimle3 _).trans ge3⟩)
+              ⟨(tsub_le_tsub_left dimle1 _).trans ge1, (tsub_le_tsub_left dimle3 _).trans ge3⟩)
 
 lemma quotient_prime_ringKrullDim_ne_bot {P : Ideal R} (prime : P.IsPrime) :
     ringKrullDim (R ⧸ P) ≠ ⊥ :=
