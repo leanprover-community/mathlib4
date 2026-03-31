@@ -99,7 +99,7 @@ Show that $x_m \in (x, x + 3 / (2b^m)]$, and it tends to $x$ by squeeze theorem.
 theorem lt_seq {b : ℝ} (hb : 0 < b) (x : ℝ) (m : ℕ) : x < seq b x m := by
   grw [seq, ← Int.sub_one_lt_floor]
   field_simp
-  grind
+  linarith
 
 theorem le_seq {b : ℝ} (hb : 0 < b) (x : ℝ) (m : ℕ) : x ≤ seq b x m := (lt_seq hb x m).le
 
@@ -143,8 +143,7 @@ theorem weierstrass_partial {a : ℝ} (ha : 0 < a) {b : ℕ} (hab : 1 < a * b) (
     ring
   simp_rw [this, ← Finset.sum_mul, geom_sum_eq hab.ne.symm]
   field_simp
-  refine div_le_div_of_nonneg_right ?_ (sub_nonneg.mpr hab.le)
-  simp [sub_one_mul]
+  gcongr <;> linarith
 
 /-- The remainder has lower bound in absolute value $|B| \ge |x_m - x| 2 (ab)^m / 3$ -/
 theorem weierstrass_remainder {a : ℝ} (ha : 0 < a) {b : ℕ} (hb : Odd b) {x : ℝ} {m : ℕ}
@@ -162,14 +161,12 @@ theorem weierstrass_remainder {a : ℝ} (ha : 0 < a) {b : ℕ} (hb : Odd b) {x :
         a ^ m * (1 + cos ((b ^ m * x - ⌊b ^ m * x + 2⁻¹⌋) * π)) by
       convert this using 1
       ring
-    refine mul_le_mul_of_nonneg_left ?_ (pow_nonneg ha.le _)
+    gcongr
     trans 1
     · rw [abs_of_nonneg (by simpa using (lt_seq hb0' _ _).le), seq]
       grw [Int.floor_le]
       apply le_of_eq
-      have : b ^ m ≠ (0 : ℝ) := by simp [hb0]
-      field_simp
-      ring
+      field
     · rw [le_add_iff_nonneg_right]
       refine cos_nonneg_of_mem_Icc (Set.mem_Icc.mpr ⟨?_, ?_⟩)
       · grw [Int.floor_le]

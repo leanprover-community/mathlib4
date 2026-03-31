@@ -115,7 +115,7 @@ theorem uniformContinuousOn_inv₀ {s : Set α} (hs : sᶜ ∈ 𝓝 0) :
     _ ≤ r⁻¹ * (ε * r ^ 2) * r⁻¹ := by
       rw [dist_comm]
       gcongr <;> exact hr ‹_›
-    _ = ε := by field_simp
+    _ = ε := by field
 
 @[to_fun]
 theorem UniformContinuousOn.inv₀ {X : Type*} [UniformSpace X] {f : X → α} {s : Set X}

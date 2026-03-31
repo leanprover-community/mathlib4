@@ -373,8 +373,7 @@ lemma tendsto_pow_exp_of_isLittleO_sub_add_div {f : ℕ → ℂ} (t : ℂ)
   convert hf.tendsto_inv_smul_nhds_zero.congr' ?_
   filter_upwards [eventually_ne_atTop 0] with n h0
   simp
-  field_simp [n.cast_ne_zero.2 h0]
-  ring
+  field [n.cast_ne_zero.2 h0]
 
 end Complex
 
