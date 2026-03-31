@@ -24,7 +24,8 @@ in some category `C`, creates new lemmas `H_op`, `H_map`, and `H_op_map`.
 Declarations tagged with `@[map_functor]` register concrete functors. For each registered functor
 compatible with the source category of `H`, `@[map]` also generates a specialized lemma
 `H_map_<functorDeclName>` by specializing `F` to that functor and simplifying the result with
-`dsimp`.
+`dsimp`, and similarly an `H_op_map_<functorDeclName>` lemma by specializing the `_op_map`
+construction to `mapFunctorOp` of that functor (with target category `Dᵒᵖ`).
 
 There is also a term elaborator `map_of% t` for use within proofs.
 -/
@@ -36,7 +37,11 @@ open CategoryTheory
 
 namespace Mathlib.Tactic.CategoryTheory.Map
 
-initialize mapFunctorExt : SimplePersistentEnvExtension Name (Array Name) ←
+structure MapFunctorEntry where
+  declName : Name
+  lemmaName : Name := .anonymous
+
+initialize mapFunctorExt : SimplePersistentEnvExtension MapFunctorEntry (Array MapFunctorEntry) ←
   registerSimplePersistentEnvExtension {
     addEntryFn := Array.push
     addImportedFn := fun as => as.foldl (init := #[]) (· ++ ·)
@@ -50,9 +55,17 @@ private def flattenName : Name → String
   | .str p s => s!"{flattenName p}_{s}"
   | .num p n => s!"{flattenName p}_{n}"
 
+/-- The suffix used for a specialized `@[map]` lemma at a registered functor. -/
+private def mapFunctorLemmaName (entry : MapFunctorEntry) : Name :=
+  if entry.lemmaName.isAnonymous then privateToUserName entry.declName else entry.lemmaName
+
 /-- The target name for the `@[map]` specialization at a registered functor. -/
-private def specializedMapName (src functorName : Name) : Name :=
-  src.appendAfter s!"_map_{flattenName (privateToUserName functorName)}"
+private def specializedMapName (src : Name) (entry : MapFunctorEntry) : Name :=
+  src.appendAfter s!"_map_{flattenName (mapFunctorLemmaName entry)}"
+
+/-- The target name for the `@[map]` `_op_map` specialization at a registered functor. -/
+private def specializedOpMapName (src : Name) (entry : MapFunctorEntry) : Name :=
+  src.appendAfter s!"_op_map_{flattenName (mapFunctorLemmaName entry)}"
 
 /-- Empty `(attr := ...)` syntax for `addRelatedDecl` without touching the source decl. -/
 private def emptyOptAttrArg : TSyntax ``optAttrArg :=
@@ -86,7 +99,7 @@ private def mkOppositeCategoryInst (C instC : Expr) : MetaM Expr := do
   return mkAppN (.const ``Mathlib.Tactic.CategoryTheory.Map.mapOppositeCategory [u, v]) #[C, instC]
 
 /-- Read the registered `@[map_functor]` functors. -/
-private def getMapFunctors : CoreM (Array Name) :=
+private def getMapFunctors : CoreM (Array MapFunctorEntry) :=
   return mapFunctorExt.getState (← getEnv)
 
 /-- Extract the source and target categories from a functor type. -/
@@ -102,10 +115,43 @@ private def extractFunctorType? (ty : Expr) : MetaM (Option (Expr × Expr)) := d
 private def validateMapFunctorDecl (declName : Name) : MetaM Unit := do
   let F ← mkConstWithFreshMVarLevels declName
   let Fty := (← inferType F).cleanupAnnotations
-  if Fty.isForall then
-    throwError "`map_functor` expects a declaration whose type is directly a functor, not a family"
-  unless (← extractFunctorType? Fty).isSome do
-    throwError "`map_functor` expects a declaration whose type reduces to `C ⥤ D`"
+  forallTelescopeReducing Fty fun _ body => do
+    unless (← extractFunctorType? body).isSome do
+      throwError "`map_functor` expects a declaration whose type reduces to `C ⥤ D`"
+
+/-- Instantiate a registered functor declaration, adding binders for its remaining assumptions. -/
+private partial def withFunctorBinders (F : Expr)
+    (k : Array Expr → Expr → MetaM (Option Expr)) (acc : Array Expr := #[]) :
+    MetaM (Option Expr) := do
+  let Fty := (← inferType F).cleanupAnnotations
+  match Fty with
+  | .forallE binderName binderType _ binderInfo =>
+    let binderType ← instantiateMVars binderType
+    withLocalDecl binderName binderInfo binderType fun x =>
+      withFunctorBinders (mkApp F x) k (acc.push x)
+  | _ => k acc F
+
+/--
+Instantiate a theorem with the chosen source category and category instance, introducing binders
+for all remaining assumptions.
+-/
+private partial def withSourceSpecializedProofBinders (pf srcC instC : Expr)
+    (k : Array Expr → Expr → MetaM (Option Expr)) (acc : Array Expr := #[]) :
+    MetaM (Option Expr) := do
+  let pfTy := (← inferType pf).cleanupAnnotations
+  match pfTy with
+  | .forallE binderName binderType _ binderInfo =>
+    let binderType ← instantiateMVars binderType
+    let srcCType ← inferType srcC
+    let instCType ← inferType instC
+    if binderInfo.isInstImplicit && (← isDefEq binderType instCType) then
+      withSourceSpecializedProofBinders (mkApp pf instC) srcC instC k acc
+    else if binderType.isSort && (← isDefEq binderType srcCType) then
+      withSourceSpecializedProofBinders (mkApp pf srcC) srcC instC k acc
+    else
+      withLocalDecl binderName binderInfo binderType fun x =>
+        withSourceSpecializedProofBinders (mkApp pf x) srcC instC k (acc.push x)
+  | _ => k acc pf
 
 /-- `simp only` with `Functor.map_comp` and `Functor.map_id` on a single expression
 (used on each side via `simpEq`). -/
@@ -302,21 +348,40 @@ Produce the `@[map]`-specialized proof obtained by fixing `F` to a registered co
 then simplifying with `dsimp`. Returns `none` when the functor has an incompatible source category.
 -/
 def mapSpecializedExpr (pf F : Expr) : MetaM (Option Expr) := do
-  let Fty := (← inferType F).cleanupAnnotations
-  let some (CF, _) ← extractFunctorType? Fty
-    | throwError "`@[map]` internal error: registered declaration is not a functor"
-  forallTelescopeReducing (← inferType pf) fun xs _ => do
-    let pfApp := mkAppN pf xs
-    let eqTy := (← inferType pfApp).cleanupAnnotations
-    let (C, _) ← extractCatInstanceFromEq eqTy
-    unless ← isDefEq C CF do
-      return none
-    let pf₀ ← mkAppM ``CategoryTheory.Functor.congr_map #[F, pfApp]
-    let ty ← instantiateMVars (← inferType pf₀)
-    let (ty', pf') ← simpEq (fun e => mapCompSimp e) ty pf₀
-    let ty'' ← dsimpExpr ty'
-    let pf'' ← mkExpectedTypeHint pf' ty''
-    return some (← mkLambdaFVars xs pf'')
+  withFunctorBinders F fun ys F' => do
+      let Fty := (← inferType F').cleanupAnnotations
+      let some (CF, _) ← extractFunctorType? Fty | return none
+      let (``CategoryTheory.Functor, #[_, instCF, _, _]) := Fty.getAppFnArgs | return none
+      withSourceSpecializedProofBinders pf CF instCF fun xs pf' => do
+        let pf₀ ← mkAppM ``CategoryTheory.Functor.congr_map #[F', pf']
+        let ty ← instantiateMVars (← inferType pf₀)
+        let (ty', pf'') ← simpEq (fun e => mapCompSimp e) ty pf₀
+        let ty'' ← dsimpExpr ty'
+        let pf''' ← mkExpectedTypeHint pf'' ty''
+        let lam ← mkLambdaFVars (ys ++ xs) pf'''
+        let _ ← inferType lam
+        return some (← instantiateMVars lam)
+
+/--
+Like `mapSpecializedExpr`, but for the `_op_map` lemma: specialize the quantified functor to
+`Functor.op` of the registered functor (so morphisms lie in `Dᵒᵖ` when `G : C ⥤ D`).
+-/
+private def opMapSpecializedExpr (pf F : Expr) : MetaM (Option Expr) := do
+  withFunctorBinders F fun ys F' => do
+    let Fty := (← inferType F').cleanupAnnotations
+    let some (CF, _) ← extractFunctorType? Fty | return none
+    let (``CategoryTheory.Functor, #[_, instCF, _, _]) := Fty.getAppFnArgs | return none
+    withSourceSpecializedProofBinders pf CF instCF fun xs pf' => do
+      let opPf ← opExprCore pf'
+      let Fop ← mkAppM ``Mathlib.Tactic.CategoryTheory.Map.mapFunctorOp #[F']
+      let pf₀ ← mkAppM ``CategoryTheory.Functor.congr_map #[Fop, opPf]
+      let ty ← instantiateMVars (← inferType pf₀)
+      let (ty', pf'') ← simpEq (fun e => mapCompSimp e) ty pf₀
+      let ty'' ← dsimpExpr ty'
+      let pf''' ← mkExpectedTypeHint pf'' ty''
+      let lam ← mkLambdaFVars (ys ++ xs) pf'''
+      let _ ← inferType lam
+      return some (← instantiateMVars lam)
 
 /--
 Adding `@[map]` to a lemma named `H` of shape `∀ .., f = g`, where `f` and `g` are morphisms
@@ -327,26 +392,33 @@ in some category `C`, creates `H_op`, `H_map`, and `H_op_map`.
   `simp only [Functor.map_comp, Functor.map_id]`.
 - `H_op_map` applies the same `map` procedure to `H_op`.
 
-For each compatible registered `@[map_functor]` declaration `G`, it also creates
-`H_map_<G>` by specializing `F := G` and applying `dsimp`.
+For each compatible registered `@[map_functor]` declaration `G`, it also creates `H_map_<G>` by
+specializing `F := G` and applying `dsimp`, and `H_op_map_<G>` by specializing the `_op_map`
+functor to `mapFunctorOp G` (agreeing with `CategoryTheory.Functor.op G` once `Opposites` is
+available). A registered functor can optionally specify the suffix `<G>` explicitly using
+`@[map_functor (name := ...)]`.
 
 Use `@[map (attr := simp)]` to mark the original lemma and all generated `map` lemmas as
 `simp` lemmas. Other copied attributes continue to apply to the original lemma, `H_map`, and the
-specialized `H_map_<G>` lemmas.
+specialized `H_map_<G>` and `H_op_map_<G>` lemmas.
 -/
 syntax (name := map) "map" optAttrArg : attr
-syntax (name := map_functor) "map_functor" : attr
+syntax mapFunctorNameArg := " (" &"name" " := " ident ")"
+syntax (name := map_functor) "map_functor" (mapFunctorNameArg)? : attr
 
 initialize registerBuiltinAttribute {
   name := `map_functor
   descr := "Register a concrete functor for specialized `@[map]` lemmas."
   applicationTime := .afterTypeChecking
   add := fun declName stx kind => match stx with
-  | `(attr| map_functor) => do
+  | `(attr| map_functor $[(name := $lemmaName:ident)]?) => do
     if kind != AttributeKind.global then
       throwError "`map_functor` can only be used as a global attribute"
     MetaM.run' do validateMapFunctorDecl declName
-    modifyEnv (mapFunctorExt.addEntry · declName)
+    modifyEnv (mapFunctorExt.addEntry · {
+      declName := declName
+      lemmaName := lemmaName.map (·.getId) |>.getD .anonymous
+    })
   | _ => throwUnsupportedSyntax }
 
 initialize registerBuiltinAttribute {
@@ -387,31 +459,47 @@ initialize registerBuiltinAttribute {
         let outLevels := tgtLevelNames.toList ++ r.newParamNames.toList
         pure (r.expr, outLevels)
     let mut specializedTargets := #[]
-    for functorName in ← getMapFunctors do
+    let mut specializedOpMapTargets := #[]
+    for entry in ← getMapFunctors do
       let info ← withoutExporting <| getConstInfo src
       let levelMVars ← info.levelParams.mapM fun _ => mkFreshLevelMVar
       let value := (Expr.const src (info.levelParams.map mkLevelParam)).instantiateLevelParams
         info.levelParams levelMVars
-      let F ← mkConstWithFreshMVarLevels functorName
+      let F ← mkConstWithFreshMVarLevels entry.declName
       if (← mapSpecializedExpr value F).isSome then
-        let specializedTgt := specializedMapName src functorName
+        let specializedTgt := specializedMapName src entry
         addRelatedDecl src specializedTgt ref noAttr fun value levels => do
           Term.TermElabM.run' <| Term.withSynthesize do
             let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
             let value := value.instantiateLevelParams levels levelMVars
-            let F ← mkConstWithFreshMVarLevels functorName
+            let F ← mkConstWithFreshMVarLevels entry.declName
             let some pf ← mapSpecializedExpr value F
               | throwError "`@[map]` internal error: specialization disappeared unexpectedly"
             let pf ← finalizeGeneratedProof pf
             let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) pf
             pure (r.expr, r.newParamNames.toList)
         specializedTargets := specializedTargets.push specializedTgt
+        let specializedOpMapTgt := specializedOpMapName src entry
+        addRelatedDecl src specializedOpMapTgt ref noAttr fun value levels => do
+          Term.TermElabM.run' <| Term.withSynthesize do
+            let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
+            let value := value.instantiateLevelParams levels levelMVars
+            let F ← mkConstWithFreshMVarLevels entry.declName
+            let some pf ← opMapSpecializedExpr value F
+              | throwError "`@[map]` internal error:\
+              op_map specialization disappeared unexpectedly"
+            let pf ← finalizeGeneratedProof pf
+            let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) pf
+            pure (r.expr, r.newParamNames.toList)
+        specializedOpMapTargets := specializedOpMapTargets.push specializedOpMapTgt
     applyOptAttrsToDecl src optAttr
     applyOptAttrsToDecl tgt optAttr
     applyOptAttrsToDecl opTgt optAttr
     applyOptAttrsToDecl opMapTgt optAttr
     for specializedTgt in specializedTargets do
       applyOptAttrsToDecl specializedTgt optAttr
+    for specializedOpMapTgt in specializedOpMapTargets do
+      applyOptAttrsToDecl specializedOpMapTgt optAttr
   | _ => throwUnsupportedSyntax }
 
 /--

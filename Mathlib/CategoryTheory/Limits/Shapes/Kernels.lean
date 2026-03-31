@@ -82,7 +82,7 @@ abbrev KernelFork :=
 variable {f}
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem KernelFork.condition (s : KernelFork f) : Fork.ι s ≫ f = 0 := by
   rw [Fork.condition, HasZeroMorphisms.comp_zero]
 
@@ -249,7 +249,7 @@ def mapOfIsLimit (kf : KernelFork f) {kf' : KernelFork f'} (hf' : IsLimit kf')
     (φ : Arrow.mk f ⟶ Arrow.mk f') : kf.pt ⟶ kf'.pt :=
   hf'.lift (KernelFork.ofι (kf.ι ≫ φ.left) (by simp))
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 lemma mapOfIsLimit_ι (kf : KernelFork f) {kf' : KernelFork f'} (hf' : IsLimit kf')
     (φ : Arrow.mk f ⟶ Arrow.mk f') :
     kf.mapOfIsLimit hf' φ ≫ kf'.ι = kf.ι ≫ φ.left :=
@@ -284,7 +284,7 @@ abbrev kernel.ι : kernel f ⟶ X :=
 @[simp]
 theorem equalizer_as_kernel : equalizer.ι f 0 = kernel.ι f := rfl
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem kernel.condition : kernel.ι f ≫ f = 0 :=
   KernelFork.condition _
 
@@ -297,7 +297,7 @@ via `kernel.lift : W ⟶ kernel f`. -/
 abbrev kernel.lift {W : C} (k : W ⟶ X) (h : k ≫ f = 0) : W ⟶ kernel f :=
   (kernelIsKernel f).lift (KernelFork.ofι k h)
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem kernel.lift_ι {W : C} (k : W ⟶ X) (h : k ≫ f = 0) : kernel.lift f k h ≫ kernel.ι f = k :=
   (kernelIsKernel f).fac (KernelFork.ofι k h) WalkingParallelPair.zero
 
@@ -404,23 +404,23 @@ theorem kernelIsoOfEq_refl {h : f = f} : kernelIsoOfEq h = Iso.refl (kernel f) :
   ext
   simp [kernelIsoOfEq]
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem kernelIsoOfEq_hom_comp_ι {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g) :
     (kernelIsoOfEq h).hom ≫ kernel.ι g = kernel.ι f := by
   subst h; simp
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem kernelIsoOfEq_inv_comp_ι {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g) :
     (kernelIsoOfEq h).inv ≫ kernel.ι _ = kernel.ι _ := by
   subst h; simp
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem lift_comp_kernelIsoOfEq_hom {Z} {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g)
     (e : Z ⟶ X) (he) :
     kernel.lift _ e he ≫ (kernelIsoOfEq h).hom = kernel.lift _ e (by simp [← h, he]) := by
   subst h; simp
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem lift_comp_kernelIsoOfEq_inv {Z} {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g)
     (e : Z ⟶ X) (he) :
     kernel.lift _ e he ≫ (kernelIsoOfEq h).inv = kernel.lift _ e (by simp [h, he]) := by
@@ -596,7 +596,7 @@ abbrev CokernelCofork :=
 
 variable {f}
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem CokernelCofork.condition (s : CokernelCofork f) : f ≫ s.π = 0 := by
   rw [Cofork.condition, zero_comp]
 
@@ -762,7 +762,7 @@ def mapOfIsColimit {cc : CokernelCofork f} (hf : IsColimit cc) (cc' : CokernelCo
   hf.desc (CokernelCofork.ofπ (φ.right ≫ cc'.π) (by
     erw [← Arrow.w_assoc φ, condition, comp_zero]))
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 lemma π_mapOfIsColimit {cc : CokernelCofork f} (hf : IsColimit cc) (cc' : CokernelCofork f')
     (φ : Arrow.mk f ⟶ Arrow.mk f') :
     cc.π ≫ mapOfIsColimit hf cc' φ = φ.right ≫ cc'.π :=
@@ -798,7 +798,7 @@ abbrev cokernel.π : Y ⟶ cokernel f :=
 theorem coequalizer_as_cokernel : coequalizer.π f 0 = cokernel.π f :=
   rfl
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem cokernel.condition : f ≫ cokernel.π f = 0 :=
   CokernelCofork.condition _
 
@@ -812,13 +812,13 @@ via `cokernel.desc : cokernel f ⟶ W`. -/
 abbrev cokernel.desc {W : C} (k : Y ⟶ W) (h : f ≫ k = 0) : cokernel f ⟶ W :=
   (cokernelIsCokernel f).desc (CokernelCofork.ofπ k h)
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem cokernel.π_desc {W : C} (k : Y ⟶ W) (h : f ≫ k = 0) :
     cokernel.π f ≫ cokernel.desc f k h = k :=
   (cokernelIsCokernel f).fac (CokernelCofork.ofπ k h) WalkingParallelPair.one
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 lemma colimit_ι_zero_cokernel_desc {C : Type*} [Category* C]
     [HasZeroMorphisms C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : f ≫ g = 0) [HasCokernel f] :
     colimit.ι (parallelPair f 0) WalkingParallelPair.zero ≫ cokernel.desc f g h = 0 := by
@@ -933,23 +933,23 @@ set_option backward.isDefEq.respectTransparency false in
 theorem cokernelIsoOfEq_refl {h : f = f} : cokernelIsoOfEq h = Iso.refl (cokernel f) := by
   ext; simp [cokernelIsoOfEq]
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem π_comp_cokernelIsoOfEq_hom {f g : X ⟶ Y} [HasCokernel f] [HasCokernel g] (h : f = g) :
     cokernel.π f ≫ (cokernelIsoOfEq h).hom = cokernel.π g := by
   cases h; simp
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem π_comp_cokernelIsoOfEq_inv {f g : X ⟶ Y} [HasCokernel f] [HasCokernel g] (h : f = g) :
     cokernel.π _ ≫ (cokernelIsoOfEq h).inv = cokernel.π _ := by
   cases h; simp
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem cokernelIsoOfEq_hom_comp_desc {Z} {f g : X ⟶ Y} [HasCokernel f] [HasCokernel g] (h : f = g)
     (e : Y ⟶ Z) (he) :
     (cokernelIsoOfEq h).hom ≫ cokernel.desc _ e he = cokernel.desc _ e (by simp [h, he]) := by
   cases h; simp
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem cokernelIsoOfEq_inv_comp_desc {Z} {f g : X ⟶ Y} [HasCokernel f] [HasCokernel g] (h : f = g)
     (e : Y ⟶ Z) (he) :
     (cokernelIsoOfEq h).inv ≫ cokernel.desc _ e he = cokernel.desc _ e (by simp [← h, he]) := by
@@ -1103,12 +1103,12 @@ variable (f : X ⟶ Y) [HasKernel f] [HasImage f] [HasKernel (factorThruImage f)
 def kernelFactorThruImage : kernel (factorThruImage f) ≅ kernel f :=
   (kernelCompMono (factorThruImage f) (image.ι f)).symm ≪≫ (kernel.congr _ _ (by simp))
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem kernelFactorThruImage_hom_comp_ι :
     (kernelFactorThruImage f).hom ≫ kernel.ι f = kernel.ι (factorThruImage f) := by
   simp [kernelFactorThruImage]
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem kernelFactorThruImage_inv_comp_ι :
     (kernelFactorThruImage f).inv ≫ kernel.ι (factorThruImage f) = kernel.ι f := by
   simp [kernelFactorThruImage]
@@ -1219,12 +1219,12 @@ def kernelComparison [HasKernel f] [HasKernel (G.map f)] : G.obj (kernel f) ⟶ 
   kernel.lift _ (G.map (kernel.ι f))
     (by simp only [← G.map_comp, kernel.condition, Functor.map_zero])
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem kernelComparison_comp_ι [HasKernel f] [HasKernel (G.map f)] :
     kernelComparison f G ≫ kernel.ι (G.map f) = G.map (kernel.ι f) :=
   kernel.lift_ι _ _ _
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem map_lift_kernelComparison [HasKernel f] [HasKernel (G.map f)] {Z : C} {h : Z ⟶ X}
     (w : h ≫ f = 0) :
     G.map (kernel.lift _ h w) ≫ kernelComparison f G =
@@ -1248,12 +1248,12 @@ def cokernelComparison [HasCokernel f] [HasCokernel (G.map f)] :
   cokernel.desc _ (G.map (coequalizer.π _ _))
     (by simp only [← G.map_comp, cokernel.condition, Functor.map_zero])
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem π_comp_cokernelComparison [HasCokernel f] [HasCokernel (G.map f)] :
     cokernel.π (G.map f) ≫ cokernelComparison f G = G.map (cokernel.π _) :=
   cokernel.π_desc _ _ _
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 theorem cokernelComparison_map_desc [HasCokernel f] [HasCokernel (G.map f)] {Z : C} {h : Y ⟶ Z}
     (w : f ≫ h = 0) :
     cokernelComparison f G ≫ G.map (cokernel.desc _ h w) =
@@ -1308,7 +1308,8 @@ noncomputable def ker : Arrow C ⥤ C where
 /-- The kernel inclusion is natural. -/
 @[simps] def ker.ι : ker (C := C) ⟶ Arrow.leftFunc where app f := kernel.ι _
 
-@[reassoc (attr := simp)] lemma ker.condition : ι C ≫ Arrow.leftToRight = 0 := by cat_disch
+@[map (attr := reassoc (attr := simp))]
+lemma ker.condition : ι C ≫ Arrow.leftToRight = 0 := by cat_disch
 
 end HasKernels
 
@@ -1325,7 +1326,8 @@ noncomputable def coker : Arrow C ⥤ C where
 /-- The cokernel projection is natural. -/
 @[simps] def coker.π : Arrow.rightFunc ⟶ coker (C := C) where app f := cokernel.π _
 
-@[reassoc (attr := simp)] lemma coker.condition : Arrow.leftToRight ≫ π C = 0 := by cat_disch
+@[map (attr := reassoc (attr := simp))]
+lemma coker.condition : Arrow.leftToRight ≫ π C = 0 := by cat_disch
 
 end HasCokernels
 end CategoryTheory.Limits

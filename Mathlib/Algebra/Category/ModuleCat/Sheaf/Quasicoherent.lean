@@ -158,8 +158,7 @@ def Presentation.mapGenerators : free P.generators.I ⟶ F.obj M :=
 @[reassoc (attr := simp)]
 theorem Presentation.mapRelations_mapGenerators :
     P.mapRelations F η ≫ P.mapGenerators F η = 0 := by
-  simp only [mapRelations, mapGenerators, Category.assoc, Iso.hom_inv_id_assoc,
-    ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
+  simp [mapRelations, mapGenerators]
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
@@ -171,7 +170,7 @@ def Presentation.map : Presentation (F.obj M) :=
     refine IsColimit.equivOfNatIsoOfIso (parallelPairIsoMk (mapFree F η _) (mapFree F η _)
       (by simp [Presentation.mapRelations]) (by simp)) _ _ ?_ (isColimitOfPreserves F P.isColimit)
     exact (Cocone.ext (Iso.refl _) <| by rintro (_ | _)
-      <;> simp [Presentation.mapRelations, Presentation.mapGenerators, ← Functor.map_comp])
+      <;> simp [Presentation.mapRelations, Presentation.mapGenerators])
 
 theorem Presentation.map_π_eq :
     (P.map F η).generators.π = (mapFree F η _).inv ≫ F.map (P.generators.π) :=

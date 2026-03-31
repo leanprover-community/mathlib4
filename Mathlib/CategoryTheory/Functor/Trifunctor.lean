@@ -134,7 +134,7 @@ def bifunctorComp₂₃FunctorObj (F : C₁ ⥤ C₂₃ ⥤ C₄) :
           naturality X₂ Y₂ f := by
             ext X₃
             dsimp
-            simp [← NatTrans.comp_app_map, -NatTrans.comp_app] } }
+            simp [← NatTrans.comp_app_map, -NatTrans.comp_app, -Functor.map_comp] } }
 
 /-- Auxiliary definition for `bifunctorComp₂₃Functor`. -/
 @[simps]

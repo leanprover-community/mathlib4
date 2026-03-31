@@ -2,10 +2,12 @@ module
 
 public import Mathlib.Tactic.CategoryTheory.Map
 public import Mathlib.Tactic.CategoryTheory.Reassoc
+public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Types.Basic
 
 open Lean Meta Elab Term Command
 open CategoryTheory
+open Mathlib.Tactic.CategoryTheory.Map
 
 namespace Tests.Map
 
@@ -75,6 +77,25 @@ lemma comp_map_to_dual {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w 
   F.map g ≫ F.map f = F.map h -/
 #guard_msgs in
 #check comp_map_dual_map
+
+def taggedId : PUnit ⥤ PUnit := 𝟭 _
+
+attribute [map_functor (name := tagged_id)] taggedId
+
+@[map]
+lemma comp_map_tagged {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) :
+    f ≫ g = h := w
+
+/-- info: Tests.Map.comp_map_tagged_map_tagged_id.{u_1} {x y z : PUnit.{u_1 + 1}} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z)
+  (w : f ≫ g = h) : taggedId.map f ≫ taggedId.map g = taggedId.map h -/
+#guard_msgs in
+#check comp_map_tagged_map_tagged_id
+
+/-- info: Tests.Map.comp_map_tagged_op_map_tagged_id.{u_1} {x y z : PUnit.{u_1 + 1}} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z)
+  (w : f ≫ g = h) :
+  (mapFunctorOp taggedId).map g.op ≫ (mapFunctorOp taggedId).map f.op = (mapFunctorOp taggedId).map h.op -/
+#guard_msgs in
+#check comp_map_tagged_op_map_tagged_id
 
 /-!
 `map_of%` pushes `Functor.map` through an equality and applies `simp only [Functor.map_comp, Functor.map_id]` on each

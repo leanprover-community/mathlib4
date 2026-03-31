@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Functor.Basic
 namespace Mathlib.Tactic.CategoryTheory.Map
 
 open CategoryTheory
+open scoped CategoryTheory
 
 @[reducible] def mapOppositeCategoryStruct {C : Type*} [CategoryTheory.Category C] :
     CategoryTheory.CategoryStruct Cᵒᵖ where
@@ -74,5 +75,31 @@ theorem mapOp_id {C : Type*} [CategoryTheory.Category C] (X : C) :
         (@CategoryTheory.Category.toCategoryStruct Cᵒᵖ (mapOppositeCategory (C := C)))
         (Opposite.op X) :=
   rfl
+
+theorem mapUnop_comp {C : Type*} [CategoryTheory.Category C] {X Y Z : Cᵒᵖ}
+    (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (CategoryTheory.CategoryStruct.comp f g).unop =
+      CategoryTheory.CategoryStruct.comp (Quiver.Hom.unop g) (Quiver.Hom.unop f) := by
+  rw [(mapOp_comp_unop f g).symm, mapUnop_op]
+
+universe u1 u2 v1 v2
+
+open Opposite
+
+variable {C : Type u1} [CategoryTheory.Category.{v1} C] {D : Type u2}
+  [CategoryTheory.Category.{v2} D]
+
+/--
+Opposite functor, definitional copy of `CategoryTheory.Functor.op` for specialized `@[map]` lemmas
+without importing `Mathlib.CategoryTheory.Opposites`.
+-/
+@[reducible] def mapFunctorOp (F : CategoryTheory.Functor C D) :
+    CategoryTheory.Functor (Opposite C) (Opposite D) where
+  obj X := op (F.obj (unop X))
+  map f := (F.map f.unop).op
+  map_id X := by
+    rw [mapUnop_id (X := X), F.map_id, mapOp_id]
+  map_comp {X Y Z} f g := by
+    rw [mapUnop_comp f g, F.map_comp, mapOp_comp]
 
 end Mathlib.Tactic.CategoryTheory.Map

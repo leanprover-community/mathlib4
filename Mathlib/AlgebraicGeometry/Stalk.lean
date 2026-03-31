@@ -42,6 +42,9 @@ noncomputable def IsAffineOpen.fromSpecStalk
     Spec (X.presheaf.stalk x) ⟶ X :=
   Spec.map (X.presheaf.germ _ x hxU) ≫ hU.fromSpec
 
+attribute [map] TopCat.Presheaf.germ_res
+attribute [reassoc] TopCat.Presheaf.germ_res_op_map
+
 set_option backward.isDefEq.respectTransparency false in
 /--
 The morphism from `Spec(O_x)` to `X` given by `IsAffineOpen.fromSpec` does not depend on the affine
@@ -55,13 +58,13 @@ theorem IsAffineOpen.fromSpecStalk_eq (x : X) (hxU : x ∈ U) (hxV : x ∈ V) :
   · delta fromSpecStalk
     rw [← hU.map_fromSpec h₁ (homOfLE <| h₃.trans inf_le_left).op]
     erw [← Scheme.Spec_map (X.presheaf.map _).op, ← Scheme.Spec_map (X.presheaf.germ _ x h₂).op]
-    rw [← Functor.map_comp_assoc, ← op_comp, TopCat.Presheaf.germ_res, Scheme.Spec_map,
-      Quiver.Hom.unop_op]
+    rw [TopCat.Presheaf.germ_res_op_map_assoc]
+    simp
   · delta fromSpecStalk
     rw [← hV.map_fromSpec h₁ (homOfLE <| h₃.trans inf_le_right).op]
     erw [← Scheme.Spec_map (X.presheaf.map _).op, ← Scheme.Spec_map (X.presheaf.germ _ x h₂).op]
-    rw [← Functor.map_comp_assoc, ← op_comp, TopCat.Presheaf.germ_res, Scheme.Spec_map,
-      Quiver.Hom.unop_op]
+    rw [TopCat.Presheaf.germ_res_op_map_assoc]
+    simp
 
 /--
 If `x` is a point of `X`, this is the canonical morphism from `Spec(O_x)` to `X`.
