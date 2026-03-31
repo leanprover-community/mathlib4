@@ -134,14 +134,13 @@ theorem mem_omegaLimit_iff_frequently₂ (y : β) :
 
 /-- An element `y` is in the ω-limit of `x` w.r.t. `f` if the forward
 images of `x` frequently (w.r.t. `f`) falls within an arbitrary neighbourhood of `y`. -/
-theorem mem_omegaLimit_singleton_iff_mapClusterPoint (x : α) (y : β) :
+theorem mem_omegaLimit_singleton_iff_mapClusterPt (x : α) (y : β) :
     y ∈ ω f ϕ {x} ↔ MapClusterPt y f fun t ↦ ϕ t x := by
   simp_rw [mem_omegaLimit_iff_frequently, mapClusterPt_iff_frequently, singleton_inter_nonempty,
     mem_preimage]
 
 @[deprecated (since := "2026-03-31")]
-alias mem_omegaLimit_singleton_iff_map_cluster_point :=
-  mem_omegaLimit_singleton_iff_mapClusterPoint
+alias mem_omegaLimit_singleton_iff_map_cluster_point := mem_omegaLimit_singleton_iff_mapClusterPt
 
 /-!
 ### Set operations and omega limits
