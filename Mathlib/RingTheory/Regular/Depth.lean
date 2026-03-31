@@ -359,8 +359,7 @@ lemma moduleDepth_lt_top_iff (N M : ModuleCat.{v} R) :
     moduleDepth N M < ⊤ ↔ ∃ n, Nontrivial (Ext N M n) := by
   convert (moduleDepth_eq_top_iff N M).not
   · exact lt_top_iff_ne_top
-  · push_neg
-    rfl
+  · simp [not_subsingleton_iff_nontrivial]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma moduleDepth_eq_iff (N M : ModuleCat.{v} R) (n : ℕ) : moduleDepth N M = n ↔
@@ -683,14 +682,13 @@ lemma moduleDepth_quotSMulTop_succ_eq_moduleDepth (N M : ModuleCat.{v} R) (x : R
   simp only [moduleDepth, add_comm]
   have iff (i : ℕ) : Subsingleton (Ext N (ModuleCat.of R (QuotSMulTop x M)) i) ↔
     (Subsingleton (Ext N M i) ∧ Subsingleton (Ext N M (i + 1))) := by
-    refine ⟨fun h ↦ ?_, fun ⟨h1, h3⟩ ↦ ?_⟩
-    · constructor
-      · exact @Function.Injective.subsingleton _ _ _ ((AddCommGrpCat.mono_iff_injective _).mp <|
-          (Ext.covariant_sequence_exact₂' N reg.smulShortComplex_shortExact i).mono_g
-          (Ext.smul_id_postcomp_eq_zero_of_mem_ann mem i)) h
-      · exact @Function.Surjective.subsingleton _ _ _ h ((AddCommGrpCat.epi_iff_surjective _).mp <|
-          (Ext.covariant_sequence_exact₁' N reg.smulShortComplex_shortExact i (i + 1) rfl).epi_f
-          (Ext.smul_id_postcomp_eq_zero_of_mem_ann mem (i + 1)))
+    refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨h1, h3⟩ ↦ ?_⟩
+    · exact @Function.Injective.subsingleton _ _ _ ((AddCommGrpCat.mono_iff_injective _).mp <|
+        (Ext.covariant_sequence_exact₂' N reg.smulShortComplex_shortExact i).mono_g
+        (Ext.smul_id_postcomp_eq_zero_of_mem_ann mem i)) h
+    · exact @Function.Surjective.subsingleton _ _ _ h ((AddCommGrpCat.epi_iff_surjective _).mp <|
+        (Ext.covariant_sequence_exact₁' N reg.smulShortComplex_shortExact i (i + 1) rfl).epi_f
+        (Ext.smul_id_postcomp_eq_zero_of_mem_ann mem (i + 1)))
     · exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         (Ext.covariant_sequence_exact₃' N reg.smulShortComplex_shortExact i (i + 1) rfl)
         ((@AddCommGrpCat.isZero_of_subsingleton _ h1).eq_zero_of_src _)
