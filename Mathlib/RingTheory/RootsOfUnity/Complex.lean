@@ -71,7 +71,6 @@ theorem isPrimitiveRoot_exp_rat_of_even_num (q : ℚ) (h : Even q.num) :
     convert q.reduced
     grind
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isPrimitiveRoot_exp_rat_of_odd_num (q : ℚ) (h : Odd q.num) :
     IsPrimitiveRoot (exp (π * I * q)) (2 * q.den) := by
   convert isPrimitiveRoot_exp_rat (q / 2) using 1
@@ -189,7 +188,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
   simp only [Int.cast_sub, Int.cast_natCast, Set.mem_Ioc]
   field_simp
   constructor
-  · push_neg at h₂
+  · push Not at h₂
     rify at h₂
     linear_combination h₂
   · rify at h

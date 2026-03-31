@@ -331,10 +331,7 @@ theorem integral_cos_mul_complex {z : ℂ} (hz : z ≠ 0) (a b : ℝ) :
   have b : HasDerivAt (fun y => y * z : ℂ → ℂ) z ↑x := hasDerivAt_mul_const _
   have c : HasDerivAt (Complex.sin ∘ fun y : ℂ => (y * z)) _ ↑x := HasDerivAt.comp (𝕜 := ℂ) x a b
   have d := HasDerivAt.comp_ofReal (c.div_const z)
-  simp only [mul_comm] at d
-  convert d using 1
-  conv_rhs => arg 1; rw [mul_comm]
-  rw [mul_div_cancel_right₀ _ hz]
+  grind
 
 theorem integral_cos_sq_sub_sin_sq :
     ∫ x in a..b, cos x ^ 2 - sin x ^ 2 = sin b * cos b - sin a * cos a := by
@@ -600,7 +597,6 @@ theorem integral_sin_pow_three :
   have := @integral_sin_pow_odd_mul_cos_pow a b 1 0
   norm_num at this; exact this
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Simplification of the integral of `sin x ^ m * cos x ^ n`, case `m` and `n` are both even. -/
 theorem integral_sin_pow_even_mul_cos_pow_even (m n : ℕ) :
     (∫ x in a..b, sin x ^ (2 * m) * cos x ^ (2 * n)) =
