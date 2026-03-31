@@ -7,10 +7,12 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.Baer
+public import Mathlib.Algebra.Category.ModuleCat.ProjectiveDimension
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.RingTheory.Finiteness.Small
 public import Mathlib.RingTheory.LocalProperties.ProjectiveDimension
 
 /-!
@@ -118,6 +120,53 @@ lemma globalDimension_eq_sup_injectiveDimension [Small.{v} R] : globalDimension.
     induction N with
     | top => simp
     | coe n => simpa using aux n
+
+/-- Global dimension is invariant of universe level when assume ring itself small. -/
+lemma globalDimension_eq_of_small [Small.{v} R] [IsNoetherianRing R] :
+    globalDimension.{v} R = globalDimension.{u} R := by
+  apply le_antisymm
+  · rw [globalDimension_eq_sup_projectiveDimension_finite]
+    simp only [iSup_le_iff]
+    intro M hM
+    let := Module.Finite.small.{u} R M
+    let e : M ≃ₗ[R] ModuleCat.of R (Shrink.{u} M) := (Shrink.linearEquiv R M).symm
+    rw [projectiveDimension_eq_of_linearEquiv e]
+    exact le_iSup _ _
+  · rw [globalDimension_eq_sup_projectiveDimension_finite]
+    simp only [iSup_le_iff]
+    intro M hM
+    let := Module.Finite.small.{v} R M
+    let e : M ≃ₗ[R] ModuleCat.of R (Shrink.{v} M) := (Shrink.linearEquiv R M).symm
+    rw [projectiveDimension_eq_of_linearEquiv e]
+    exact le_iSup _ _
+
+universe u' in
+attribute [local instance] RingHomInvPair.of_ringEquiv in
+lemma globalDimension_eq_of_ringEquiv [IsNoetherianRing R] (R' : Type u') [CommRing R']
+    (e : R ≃+* R') : globalDimension.{u} R = globalDimension.{u'} R' := by
+  apply le_antisymm
+  · rw [globalDimension_eq_sup_projectiveDimension_finite]
+    simp only [iSup_le_iff]
+    intro M hM
+    let : Small.{u'} R := Small.mk' e.toEquiv
+    let := Module.Finite.small.{u'} R M
+    let : Module R' (Shrink.{u'} M) := Module.compHom _ e.symm.toRingHom
+    let e' : (ModuleCat.of R' (Shrink.{u'} M)) ≃ₛₗ[RingHomClass.toRingHom e.symm] M  := {
+      __ := (Shrink.linearEquiv R M)
+      map_smul' r m := map_smul (Shrink.linearEquiv R M) (e.symm r) _ }
+    rw [← projectiveDimension_eq_of_semiLinearEquiv e.symm e']
+    exact le_iSup _ _
+  · rw [globalDimension_eq_sup_projectiveDimension_finite]
+    simp only [iSup_le_iff]
+    intro M hM
+    let : Small.{u} R' := Small.mk' e.symm.toEquiv
+    let := Module.Finite.small.{u} R' M
+    let : Module R (Shrink.{u} M) := Module.compHom _ e.toRingHom
+    let e' : (ModuleCat.of R (Shrink.{u} M)) ≃ₛₗ[RingHomClass.toRingHom e] M  := {
+      __ := (Shrink.linearEquiv R' M)
+      map_smul' r m := map_smul (Shrink.linearEquiv R' M) (e r) _ }
+    rw [← projectiveDimension_eq_of_semiLinearEquiv e e']
+    exact le_iSup _ _
 
 variable {R} in
 lemma globalDimension_localization_le [Small.{v} R] [IsNoetherianRing R] (S : Submonoid R) :
