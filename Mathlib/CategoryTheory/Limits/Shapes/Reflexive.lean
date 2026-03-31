@@ -541,7 +541,7 @@ coforks on the underlying parallel pair. -/
 def reflexiveCoforkEquivCofork :
     ReflexiveCofork F ≌ Cofork (F.map left) (F.map right) :=
   (Functor.Final.coconesEquiv _ F).symm.trans (Cocone.precomposeEquivalence
-    (diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F))).symm
+    (diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F)))
 
 @[simp]
 lemma reflexiveCoforkEquivCofork_functor_obj_π (G : ReflexiveCofork F) :
