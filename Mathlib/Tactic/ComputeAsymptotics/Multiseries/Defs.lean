@@ -26,6 +26,8 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 * `MultiseriesExpansion basis` is a multiseries expansion of some function `f : ℝ → ℝ`.
   If `basis = []`, then the multiseries represents a constant function, otherwise it is
   a pair of a multiseries `ms : Multiseries basis_hd basis_tl` and a function `f : ℝ → ℝ`.
+* `MultiseriesExpansion.Approximates ms` means that the multiseries `ms` can be used to obtain
+  an asymptotical approximations of its attached function.
 
 ## Implementation details
 
