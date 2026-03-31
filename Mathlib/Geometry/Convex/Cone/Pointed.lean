@@ -36,7 +36,7 @@ abbrev PointedCone (R E)
 
 namespace PointedCone
 
-open Function Submodule
+open Function Submodule Pointwise
 
 section Submodule
 
@@ -56,6 +56,14 @@ lemma mem_ofSubmodule_iff {S : Submodule R E} {x : E} : x ∈ (S : PointedCone R
 set_option backward.isDefEq.respectTransparency false in
 lemma ofSubmodule_inj {S T : Submodule R E} : ofSubmodule S = ofSubmodule T ↔ S = T :=
   restrictScalars_inj ..
+
+set_option backward.isDefEq.respectTransparency false in
+lemma ofSubmodule_le {S T : Submodule R E} : ofSubmodule S ≤ ofSubmodule T ↔ S ≤ T :=
+  restrictScalars_le ..
+
+set_option backward.isDefEq.respectTransparency false in
+lemma ofSubmodule_lt {S T : Submodule R E} : ofSubmodule S < ofSubmodule T ↔ S < T :=
+  restrictScalars_lt ..
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Coercion from submodules to pointed cones as an order embedding. -/
@@ -180,6 +188,10 @@ lemma subset_hull {s : Set E} : s ⊆ PointedCone.hull R s := subset_span
 @[deprecated "`PointedCone.span` was renamed to `PointedCone.hull`" (since := "2026-03-22")]
 alias subset_span := subset_hull
 
+set_option backward.isDefEq.respectTransparency false in
+variable (R) in
+lemma hull_le_span (s : Set E) : hull R s ≤ span R s := span_le_restrictScalars R≥0 R s
+
 /-- Elements of the cone hull are expressible as conical combination of elements from s. -/
 lemma mem_hull_set {s : Set E} : x ∈ hull R s ↔
       ∃ c : E →₀ R, ↑c.support ⊆ s ∧ (∀ y, 0 ≤ c y) ∧ c.sum (fun m r => r • m) = x := by
@@ -285,6 +297,7 @@ theorem toConvexCone_positive : ↑(positive R E) = ConvexCone.positive R E :=
 end PositiveCone
 
 section OrderedAddCommGroup
+
 variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [PartialOrder E]
   [IsOrderedAddMonoid E] [Module R E]
 
@@ -294,6 +307,16 @@ lemma to_isOrderedModule (C : PointedCone R E) (h : ∀ x y : E, x ≤ y ↔ y -
     IsOrderedModule R E := .of_smul_nonneg <| by simp +contextual [h, C.smul_mem]
 
 end OrderedAddCommGroup
+
+section Ring
+
+variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+
+open Pointwise
+@[simp] lemma neg_ofSubmodule {S : Submodule R E} : -(ofSubmodule S) = S := by
+  ext x; simp
+
+end Ring
 
 section Lineal
 
@@ -310,17 +333,12 @@ def lineal (C : PointedCone R E) : Submodule R E where
     · simpa using And.intro (C.smul_mem hr hx.1) (C.smul_mem hr hx.2)
     · have hr := le_of_lt <| neg_pos_of_neg <| lt_of_not_ge hr
       simpa using And.intro (C.smul_mem hr hx.2) (C.smul_mem hr hx.1)
-@[simp]
-lemma ofSubmodule_lineal (C : PointedCone R E) : C.lineal = C ⊓ -C :=
-  rfl
 
-@[simp]
-lemma mem_lineal {C : PointedCone R E} {x : E} : x ∈ C.lineal ↔ x ∈ C ∧ -x ∈ C := by
-  rfl
+@[simp] lemma ofSubmodule_lineal (C : PointedCone R E) : C.lineal = C ⊓ -C := rfl
 
-@[simp]
-theorem support_eq {C : PointedCone R E} : C.support = C.lineal.toAddSubgroup :=
-  rfl
+@[simp] lemma mem_lineal {C : PointedCone R E} {x : E} : x ∈ C.lineal ↔ x ∈ C ∧ -x ∈ C := by rfl
+
+@[simp] theorem support_eq {C : PointedCone R E} : C.support = C.lineal.toAddSubgroup := rfl
 
 /-- The lineality space of a cone is the largest submodule contained in the cone. -/
 theorem gc_ofSubmodule_lineal :
@@ -335,6 +353,7 @@ theorem lineal_eq_sSup (C : PointedCone R E) : C.lineal = sSup {S : Submodule R 
 end Lineal
 
 section Salient
+
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
 
 /-- A pointed cone is salient iff the intersection of the cone with its negative
