@@ -1,10 +1,12 @@
 /-
-Copyright (c) 2025 Artie Khovanov. All rights reserved.
+Copyright (c) 2026 Artie Khovanov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Artie Khovanov
 -/
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Data.Set.Lattice
+module
+l
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Typeclass for lattices with a closure-adjoint embedding into a power set.
@@ -27,6 +29,8 @@ of this class is to abstract the closure construction common to most algebraic s
   `LatticeSetLike.closure` and `SetLike.coe` (the embedding) form a Galois insertion.
 
 -/
+
+@[expose] public section
 
 class IsConcreteSInf (A B : Type*) [SetLike A B] [InfSet A] where
   coe_sInf' {s : Set A} : ((sInf s : A) : Set B) = ⋂ a ∈ s, ↑a
@@ -91,33 +95,30 @@ end CompleteLattice
 
 end IsConcreteSInf
 
-class HasClosure (A B : Type*) where
-  closure : Set B → A
-
-class IsConcreteClosure (A B : Type*) [SetLike A B] [Preorder A] [HasClosure A B] where
-  gi : GaloisInsertion (α := Set B) (β := A) HasClosure.closure SetLike.coe
+class IsConcreteClosure {A B : Type*} [SetLike A B] [Preorder A] (cl : Set B → A) : Prop :=
+    GaloisInsertion cl (↑)
 
 namespace IsConcreteClosure
 
-variable {L α : Type*} [SetLike L α] [HasClosure L α]
+variable {L α : Type*} [SetLike L α] (cl : Set B → A)
 
 section Preorder
 
-variable [Preorder L] [IsConcreteClosure L α]
+variable [Preorder L] [IsConcreteClosure cl]
 
 @[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_closure {s : Set α} :
-    s ⊆ HasClosure.closure (A := L) s := IsConcreteClosure.gi.gc.le_u_l s
+    s ⊆ cl s := IsConcreteClosure.gi.gc.le_u_l s
 
 @[aesop unsafe 50% apply (rule_sets := [SetLike])]
 theorem mem_closure_of_mem {s : Set α} {x : α} (hx : x ∈ s) :
-    x ∈ HasClosure.closure (A := L) s := subset_closure hx
+    x ∈ cl s := subset_closure hx
 
-theorem not_mem_of_not_mem_closure {s : Set α} {x : α} (hx : x ∉ HasClosure.closure (A := L) s) :
+theorem not_mem_of_not_mem_closure {s : Set α} {x : α} (hx : x ∉  cl s) :
     x ∉ s := (hx <| subset_closure ·)
 
 @[simp] theorem closure_le {s : Set α} {l : L} :
-    HasClosure.closure s ≤ l ↔ s ⊆ l := IsConcreteClosure.gi.gc.le_iff_le
+    cl s ≤ l ↔ s ⊆ l := IsConcreteClosure.gi.gc.le_iff_le
 
 theorem coe_monotone :
     Monotone (SetLike.coe : L → Set α) := IsConcreteClosure.gi.gc.monotone_u
@@ -125,10 +126,10 @@ theorem coe_monotone :
 @[gcongr] theorem coe_mono ⦃l m : L⦄ (h : l ≤ m) : (l : Set α) ⊆ m := coe_monotone h
 
 theorem closure_monotone :
-    Monotone (HasClosure.closure : Set α → L) := IsConcreteClosure.gi.gc.monotone_l
+    Monotone (cl : Set α → L) := IsConcreteClosure.gi.gc.monotone_l
 
 @[gcongr] theorem closure_mono ⦃s t : Set α⦄ (h : s ⊆ t) :
-    HasClosure.closure (A := L) s ≤ HasClosure.closure t := closure_monotone h
+     cl s ≤ cl t := closure_monotone h
 
 end Preorder
 
@@ -139,34 +140,34 @@ variable [PartialOrder L] [IsConcreteClosure L α]
 instance : IsConcreteLE L α where
   coe_subset_coe' := IsConcreteClosure.gi.u_le_u_iff
 
-theorem closure_eq_of_le {s : Set α} {l : L} (h₁ : s ⊆ l) (h₂ : l ≤ HasClosure.closure s) :
-    HasClosure.closure s = l := le_antisymm (closure_le.2 h₁) h₂
+theorem closure_eq_of_le {s : Set α} {l : L} (h₁ : s ⊆ l) (h₂ : l ≤ cl s) :
+    cl s = l := le_antisymm (closure_le.2 h₁) h₂
 
 @[simp] theorem closure_eq (l : L) :
-    HasClosure.closure (l : Set α) = l := IsConcreteClosure.gi.l_u_eq l
+    cl (l : Set α) = l := IsConcreteClosure.gi.l_u_eq l
 
 @[simp] theorem closure_empty [OrderBot L] :
-    HasClosure.closure (∅ : Set α) = (⊥ : L) := IsConcreteClosure.gi.gc.l_bot
+    cl (∅ : Set α) = (⊥ : L) := IsConcreteClosure.gi.gc.l_bot
 
 @[simp] theorem closure_univ [OrderTop L] :
-    HasClosure.closure (Set.univ : Set α) = (⊤ : L) := IsConcreteClosure.gi.l_top
+    cl (Set.univ : Set α) = (⊤ : L) := IsConcreteClosure.gi.l_top
 
 theorem closure_singleton_le_iff_mem (x : α) (l : L) :
-    HasClosure.closure {x} ≤ l ↔ x ∈ l := by
+    cl {x} ≤ l ↔ x ∈ l := by
   rw [closure_le, Set.singleton_subset_iff, SetLike.mem_coe]
 
-theorem isGLB_closure {s : Set α} : IsGLB {l : L | s ⊆ l} (HasClosure.closure s) :=
+theorem isGLB_closure {s : Set α} : IsGLB {l : L | s ⊆ l} (cl s) :=
   IsConcreteClosure.gi.gc.isGLB_l
 
 end PartialOrder
 
 theorem closure_union [SemilatticeSup L] [IsConcreteClosure L α] (s t : Set α) :
-    HasClosure.closure (A := L) (s ∪ t) = HasClosure.closure s ⊔ HasClosure.closure t :=
+     cl (s ∪ t) = cl s ⊔ cl t :=
   IsConcreteClosure.gi.gc.l_sup
 
 theorem closure_eq_sInf [CompleteSemilatticeInf L] [IsConcreteClosure L α] {s : Set α} :
-    HasClosure.closure s = sInf {a : L | s ⊆ a} := by
-  suffices sInf {a : L | s ⊆ a} = HasClosure.closure s from Eq.symm this
+    cl s = sInf {a : L | s ⊆ a} := by
+  suffices sInf {a : L | s ⊆ a} = cl s from Eq.symm this
   rw [← isGLB_iff_sInf_eq]
   exact isGLB_closure
 
@@ -186,19 +187,19 @@ instance : IsConcreteSInf L α where
     simp [← closure_le] /- no loop because simp acts on subterms first -/
 
 theorem coe_closure {s : Set α} :
-    (HasClosure.closure (A := L) s : Set α) = ⋂ l ∈ {m : L | s ⊆ m}, l := by
+    ( cl s : Set α) = ⋂ l ∈ {m : L | s ⊆ m}, l := by
   rw [closure_eq_sInf]; exact IsConcreteSInf.coe_sInf
 
 theorem mem_closure {s : Set α} {x : α} :
-    x ∈ HasClosure.closure (A := L) s ↔ ∀ l : L, s ⊆ l → x ∈ l := by
+    x ∈  cl s ↔ ∀ l : L, s ⊆ l → x ∈ l := by
   rw [closure_eq_sInf]; exact IsConcreteSInf.mem_sInf
 
 theorem closure_iUnion {ι} (s : ι → Set α) :
-    HasClosure.closure (A := L) (⋃ i, s i) = ⨆ i, HasClosure.closure (s i) :=
+     cl (⋃ i, s i) = ⨆ i, cl (s i) :=
   IsConcreteClosure.gi.gc.l_iSup
 
 theorem iSup_eq_closure {ι : Sort*} (l : ι → L) :
-    ⨆ i, l i = HasClosure.closure (⋃ i, (l i : Set α)) := by
+    ⨆ i, l i = cl (⋃ i, (l i : Set α)) := by
   simp_rw [closure_iUnion, closure_eq]
 
 end CompleteLattice
@@ -222,20 +223,16 @@ and arbitrary infima.
 Construct a complete lattice on a type `A` from an injection `A → Set B`
 that reflects arbitrary intersections.
 -/
-@[reducible] noncomputable def toCompleteLattice_abstract
-    (exists_coe_eq_iInter : ∀ {s : Set A}, ∃ a : A, (a : Set B) = ⋂ a' ∈ s, a') :
+@[reducible] noncomputable def toCompleteLattice_of_exists_isGLB
+    (exists_coe_eq_iInter : ∀ {s : Set A}, ∃ a : A, IsGLB s (a : Set B)) :
     CompleteLattice A :=
   let _ : InfSet A := ⟨fun _ => Classical.choose exists_coe_eq_iInter⟩
   @toCompleteLattice _ _ _ (toPartialOrder _ _) _ _
     ⟨fun {_} => by simpa using Classical.choose_spec exists_coe_eq_iInter⟩
 
-@[reducible] def toHasClosure [InfSet A] [LE A] : HasClosure A B where
-  closure s := sInf {a : A | s ≤ a}
-
-attribute [local instance] SetLike.toHasClosure
-
 open IsConcreteLE IsConcreteSInf in
-instance [CompleteLattice A] [IsConcreteSInf A B] : IsConcreteClosure A B where
+instance [CompleteLattice A] [IsConcreteSInf A B] :
+    IsConcreteClosure fun (s : Set B) ↦ sInf {a : A | s ≤ a} where
   gi := GaloisConnection.toGaloisInsertion
     (fun _ _ =>
       ⟨fun h => Set.Subset.trans
