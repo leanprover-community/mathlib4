@@ -179,9 +179,8 @@ theorem martingalePart_bdd_difference {R : ℝ≥0} {f : ℕ → Ω → ℝ} (�
 
 end Difference
 
-variable [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E]
-
-lemma isPredictable_predictablePart : IsPredictable ℱ (predictablePart f ℱ μ) :=
+lemma isPredictable_predictablePart [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] :
+    IsPredictable ℱ (predictablePart f ℱ μ) :=
   isPredictable_of_measurable_add_one (by simp [measurable_const'])
     fun n ↦ (stronglyAdapted_predictablePart n).measurable
 
