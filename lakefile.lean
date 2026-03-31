@@ -9,10 +9,11 @@ open Lake DSL
 require batteries from git "https://github.com/riccardobrasca/batteries" @ "v4.29.0-less-choice"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "main"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.95" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
-    "ProofWidgets failed to reuse pre-built JS code. \
-    Please report this issue on the Lean Zulip."
+    "ProofWidgets not up-to-date. \
+    Please run `lake exe cache get` to fetch the latest ProofWidgets. \
+    If this does not work, report your issue on the Lean Zulip."
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
