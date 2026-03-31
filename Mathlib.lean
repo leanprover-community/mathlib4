@@ -1854,6 +1854,7 @@ public import Mathlib.Analysis.Convex.Exposed
 public import Mathlib.Analysis.Convex.Extrema
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Analysis.Convex.FunctionTopology
 public import Mathlib.Analysis.Convex.Gauge
 public import Mathlib.Analysis.Convex.GaugeRescale
 public import Mathlib.Analysis.Convex.Hull
