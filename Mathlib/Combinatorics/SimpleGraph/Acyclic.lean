@@ -525,9 +525,7 @@ theorem IsTree.exists_ne_degree_eq_one [Fintype V] [Nontrivial V] [DecidableRel 
   have ⟨u, v, p, hp_isPath, hp_max⟩ := exists_isPath_forall_isPath_length_le_length G
   obtain ⟨x, y, hxy⟩ := exists_pair_ne V
   have ⟨walk_xy, h_walk_is_path⟩ := hTree.isConnected.exists_isPath x y
-  have h_len_ge_1 : 1 ≤ p.length := by
-    refine (Nat.succ_le_of_lt ?_).trans (hp_max _ _ _ h_walk_is_path)
-    cases walk_xy with | nil => exact (hxy rfl).elim | cons _ _ => exact Nat.succ_pos _
+  have h_len_ge_1 : 1 ≤ p.length := by grind [nil_iff_length_eq, walk_xy.not_nil_of_ne hxy]
   classical
   let h_is_leaf (v1 v2 : V) (path : G.Walk v1 v2) (h_p : path.IsPath)
       (h_m : ∀ (x y : V) (w : G.Walk x y), w.IsPath → w.length ≤ path.length)
