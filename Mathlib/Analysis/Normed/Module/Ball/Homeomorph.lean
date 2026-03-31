@@ -65,7 +65,7 @@ def OpenPartialHomeomorph.univUnitBall : OpenPartialHomeomorph E E where
     match_scalars
     simp [norm_smul]
     field_simp
-    simp [field, sq_abs, Real.sq_sqrt this.le]
+    simp [field, sq_abs, Real.sq_sqrt this.le, -eqComm]
   open_source := isOpen_univ
   open_target := isOpen_ball
   continuousOn_toFun := by

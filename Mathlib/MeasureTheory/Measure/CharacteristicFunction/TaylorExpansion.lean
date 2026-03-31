@@ -137,7 +137,7 @@ lemma taylorWithinEval_charFun_two_zero (hX : AEMeasurable X P)
     Nat.factorial_two, Nat.cast_ofNat]
   rw [integral_map, integral_map]
   any_goals fun_prop
-  simp [field]
+  simp [field, -eqComm]
   ring
 
 lemma taylorWithinEval_charFun_two_zero' (hX : AEMeasurable X P)

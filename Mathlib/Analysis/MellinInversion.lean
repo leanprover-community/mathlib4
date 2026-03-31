@@ -66,7 +66,7 @@ theorem mellin_eq_fourier (f : ℝ → E) {s : ℂ} :
         push_cast
         ring_nf
       congr
-      simp [field]
+      simp [field, -eqComm]
     _ = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) := by
       simp [fourier_eq', mul_comm (_ / _)]
 

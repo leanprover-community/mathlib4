@@ -115,7 +115,7 @@ instance : SMulInvariantMeasure (GL (Fin 2) ℝ) ℍ volume := by
     have := denom_ne_zero g τ
     norm_cast
     ext
-    simp [det_smulFDeriv, *, im_smul_eq_div_normSq, Complex.normSq_eq_norm_sq, field]
+    simp [det_smulFDeriv, *, im_smul_eq_div_normSq, Complex.normSq_eq_norm_sq, field, -eqComm]
 
 end UpperHalfPlane
 
