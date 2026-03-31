@@ -340,7 +340,7 @@ lemma X_pow_mul {n : ℕ} : X ^ n * p = sum p (fun (a : ℕ) b ↦ monomial a (�
 
 @[simp]
 lemma monomial_mul_X (n : ℕ) (r : R) : monomial n r * X = monomial (n + 1) r := by
-  erw [monomial_mul_monomial, iterate_map_one, mul_one]
+  rw [X, monomial_mul_monomial, iterate_map_one, mul_one]
 
 @[simp]
 lemma monomial_mul_X_pow (n : ℕ) (r : R) (k : ℕ) : monomial n r * X ^ k = monomial (n+k) r := by
