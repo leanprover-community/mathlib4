@@ -781,7 +781,7 @@ section LinearOrder
 
 /-! ## Stopped value and stopped process -/
 
-variable [Nonempty ι]
+variable [Nonempty ι] {u v : ι → Ω → β} {τ σ : Ω → WithTop ι}
 
 /-- Given a map `u : ι → Ω → E`, its stopped value with respect to the stopping
 time `τ` is the map `x ↦ u (τ ω) ω`. -/
@@ -790,6 +790,12 @@ def stoppedValue (u : ι → Ω → β) (τ : Ω → WithTop ι) : Ω → β := 
 
 theorem stoppedValue_const (u : ι → Ω → β) (i : ι) : (stoppedValue u fun _ => i) = u i :=
   rfl
+
+@[simp] lemma stoppedValue_comp {γ : Type*} (f : β → γ) :
+    stoppedValue (fun t ω ↦ f (u t ω)) τ = fun ω ↦ f (stoppedValue u τ ω) := rfl
+
+lemma stoppedValue_norm [SeminormedAddCommGroup β] :
+    stoppedValue (fun t ω => ‖u t ω‖) τ = fun ω ↦ ‖stoppedValue u τ ω‖ := rfl
 
 variable [LinearOrder ι]
 
@@ -801,13 +807,35 @@ noncomputable
 def stoppedProcess (u : ι → Ω → β) (τ : Ω → WithTop ι) : ι → Ω → β :=
   fun i ω => u (min (i : WithTop ι) (τ ω)).untopA ω
 
-variable {u : ι → Ω → β} {τ σ : Ω → WithTop ι}
-
 theorem stoppedProcess_eq_stoppedValue :
     stoppedProcess u τ = fun i : ι => stoppedValue u fun ω => min i (τ ω) := rfl
 
 theorem stoppedProcess_eq_stoppedValue_apply (i : ι) (ω : Ω) :
     stoppedProcess u τ i ω = stoppedValue u (fun ω ↦ min i (τ ω)) ω := rfl
+
+@[simp] lemma stoppedProcess_const {u₀ : Ω → β} :
+    stoppedProcess (fun _ ↦ u₀) τ = fun _ ↦ u₀ := rfl
+
+@[simp] lemma stoppedProcess_comp {γ : Type*} (f : β → γ) :
+    stoppedProcess (fun t ω ↦ f (u t ω)) τ = fun i ω ↦ f (stoppedProcess u τ i ω) := rfl
+
+@[simp] lemma stoppedProcess_neg [Neg β] : stoppedProcess (-u) τ = -stoppedProcess u τ := rfl
+
+@[simp] lemma stoppedProcess_add [Add β] :
+    stoppedProcess (u + v) τ = stoppedProcess u τ + stoppedProcess v τ := rfl
+
+@[simp] lemma stoppedProcess_sub [Sub β] :
+    stoppedProcess (u - v) τ = stoppedProcess u τ - stoppedProcess v τ := rfl
+
+@[simp] lemma stoppedProcess_const_smul [SMul ℝ β] (c : ℝ) :
+    stoppedProcess (c • u) τ = c • stoppedProcess u τ := rfl
+
+@[simp] lemma stoppedProcess_const_bot [OrderBot ι] :
+    stoppedProcess u (fun _ ↦ ⊥) = fun _ ↦ u ⊥ := by
+  ext; simp [stoppedProcess, ← WithTop.coe_bot]
+
+@[simp] lemma stoppedProcess_const_top : stoppedProcess u (fun _ ↦ ⊤) = u := by
+  ext; simp [stoppedProcess]
 
 theorem stoppedValue_stoppedProcess :
     stoppedValue (stoppedProcess u τ) σ =
