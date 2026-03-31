@@ -260,9 +260,10 @@ lemma exists_smul_eq_algebraMap (x : p.Fiber S) :
 
 end Ideal.Fiber
 
-variable (R)
+variable {S}
 
 set_option backward.isDefEq.respectTransparency false in
+variable (R S) in
 /-- The fiber `PrimeSpectrum S → PrimeSpectrum R` at a prime ideal
 `p : PrimeSpectrum R` is in bijection with the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps]
@@ -289,6 +290,7 @@ noncomputable def PrimeSpectrum.preimageEquivFiber (p : PrimeSpectrum R) :
       IsLocalization.map_comap (Algebra.algebraMapSubmonoid S p.1.primeCompl),
       Ideal.map_comap_of_surjective _ (Ideal.Fiber.algebraMap_localization_surjective p.1 S)]
 
+variable (R S) in
 /-- The `OrderIso` between the fiber of `PrimeSpectrum S → PrimeSpectrum R` at a prime
 ideal `p : PrimeSpectrum R` and the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps!]
@@ -305,6 +307,7 @@ noncomputable def PrimeSpectrum.preimageOrderIsoFiber (p : PrimeSpectrum R) :
 @[deprecated (since := "2025-12-07")]
 alias PrimeSpectrum.preimageOrderIsoTensorResidueField := PrimeSpectrum.preimageOrderIsoFiber
 
+variable (R S) in
 /-- The `OrderIso` between the set of primes lying over a prime ideal `p : Ideal R`,
 and the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps!]
@@ -315,6 +318,7 @@ noncomputable def PrimeSpectrum.primesOverOrderIsoFiber (R S : Type*) [CommRing 
     fun q ↦ ⟨q.1.asIdeal, ⟨q.1.2, ⟨congr($(q.2).1).symm⟩⟩⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
     (PrimeSpectrum.preimageOrderIsoFiber R S ⟨p, ‹_›⟩)
 
+variable (R S) in
 /-- The `Homeomorph` between the fiber of `PrimeSpectrum S → PrimeSpectrum R`
 at a prime ideal `p : PrimeSpectrum R` and the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps!]
