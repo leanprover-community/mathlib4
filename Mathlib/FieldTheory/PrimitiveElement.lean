@@ -94,7 +94,7 @@ theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
   obtain ⟨c, hc⟩ := Infinite.exists_notMem_finset s'
   simp_rw [s', s, Finset.mem_preimage, Multiset.mem_toFinset, Multiset.mem_bind, Multiset.mem_map]
     at hc
-  push_neg at hc
+  push Not at hc
   exact ⟨c, hc⟩
 
 variable (F)
