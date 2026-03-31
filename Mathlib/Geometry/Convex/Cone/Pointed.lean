@@ -55,25 +55,25 @@ lemma mem_ofSubmodule_iff {S : Submodule R E} {x : E} : x ∈ (S : PointedCone R
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ofSubmodule_inj {S T : Submodule R E} : ofSubmodule S = ofSubmodule T ↔ S = T :=
-  Submodule.restrictScalars_inj ..
+  restrictScalars_inj ..
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Coercion from submodules to pointed cones as an order embedding. -/
 abbrev ofSubmoduleEmbedding : Submodule R E ↪o PointedCone R E :=
-  Submodule.restrictScalarsEmbedding ..
+  restrictScalarsEmbedding ..
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Coercion from submodules to pointed cones as a lattice homomorphism. -/
 abbrev ofSubmoduleLatticeHom : CompleteLatticeHom (Submodule R E) (PointedCone R E) :=
-  Submodule.restrictScalarsLatticeHom ..
+  restrictScalarsLatticeHom ..
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ofSubmodule_inf (S T : Submodule R E) : S ⊓ T = (S ⊓ T : PointedCone R E) :=
-  Submodule.restrictScalars_inf _ _ _
+  restrictScalars_inf _ _ _
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ofSubmodule_sup (S T : Submodule R E) : S ⊔ T = (S ⊔ T : PointedCone R E) :=
-  Submodule.restrictScalars_sup _ _ _
+  restrictScalars_sup _ _ _
 
 lemma ofSubmodule_sInf (s : Set (Submodule R E)) : sInf s = sInf (ofSubmodule '' s) :=
   ofSubmoduleLatticeHom.map_sInf' s
@@ -117,9 +117,7 @@ theorem pointed_toConvexCone (C : PointedCone R E) : (C : ConvexCone R E).Pointe
 
 lemma convex (C : PointedCone R E) : Convex R (C : Set E) := C.toConvexCone.convex
 
-instance instZero (C : PointedCone R E) : Zero C :=
-  ⟨0, C.zero_mem⟩
-
+@[aesop 90% (rule_sets := [SetLike])]
 nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
   C.smul_mem ⟨r, hr⟩ hx
 
@@ -152,7 +150,7 @@ lemma _root_.ConvexCone.coe_toPointedCone (C : ConvexCone R E) (hC : C.Pointed) 
 @[simp]
 lemma _root_.ConvexCone.toPointedCone_top : (⊤ : ConvexCone R E).toPointedCone trivial = ⊤ := rfl
 
-instance canLift : CanLift (ConvexCone R E) (PointedCone R E) (↑) ConvexCone.Pointed where
+instance : CanLift (ConvexCone R E) (PointedCone R E) (↑) ConvexCone.Pointed where
   prf C hC := ⟨C.toPointedCone hC, rfl⟩
 
 end ConvexCone
@@ -164,29 +162,36 @@ variable {C : PointedCone R E} {x : E}
 
 /-- Construct a pointed cone from closure under two-element conical combinations.
 I.e., a nonempty set closed under two-element conical combinations is a pointed cone. -/
+@[simps!]
 def ofConeComb (C : Set E) (nonempty : C.Nonempty)
     (coneComb : ∀ x ∈ C, ∀ y ∈ C, ∀ a : R, 0 ≤ a → ∀ b : R, 0 ≤ b → a • x + b • y ∈ C) :
     PointedCone R E :=
   .ofLinearComb C nonempty fun x hx y hy ⟨a, ha⟩ ⟨b, hb⟩ => coneComb x hx y hy a ha b hb
 
 variable (R) in
-/-- The span of a set `s` is the smallest pointed cone that contains `s`.
+/-- The cone hull of a set `s` is the smallest pointed cone that contains `s`.
 
-Pointed cones being defined as submodules over nonnegative scalars, this is exactly the
-submodule span of `s` w.r.t. nonnegative scalars. -/
-abbrev span (s : Set E) : PointedCone R E := Submodule.span R≥0 s
+Pointed cones being defined as submodules over nonnegative scalars, this is implemented as
+the submodule span of `s` w.r.t. nonnegative scalars. -/
+abbrev hull (s : Set E) : PointedCone R E := span R≥0 s
 
-lemma subset_span {s : Set E} : s ⊆ PointedCone.span R s := Submodule.subset_span
+lemma subset_hull {s : Set E} : s ⊆ PointedCone.hull R s := subset_span
+
+@[deprecated "`PointedCone.span` was renamed to `PointedCone.hull`" (since := "2026-03-22")]
+alias subset_span := subset_hull
 
 /-- Elements of the cone hull are expressible as conical combination of elements from s. -/
-lemma mem_span_set {s : Set E} : x ∈ span R s ↔
+lemma mem_hull_set {s : Set E} : x ∈ hull R s ↔
       ∃ c : E →₀ R, ↑c.support ⊆ s ∧ (∀ y, 0 ≤ c y) ∧ c.sum (fun m r => r • m) = x := by
-  rw [Submodule.mem_span_set]
+  rw [mem_span_set]
   constructor
   · rintro ⟨c, hc, rfl⟩
     exact ⟨⟨c.support, Subtype.val ∘ c, by simp [← Subtype.val_inj]⟩, hc, fun y ↦ (c y).2, rfl⟩
   · rintro ⟨c, hc, hc₀, rfl⟩
     exact ⟨⟨c.support, fun y ↦ ⟨c y, hc₀ _⟩, by simp⟩, hc, rfl⟩
+
+@[deprecated "`PointedCone.span` was renamed to `PointedCone.hull`" (since := "2026-03-22")]
+alias mem_span_set := mem_hull_set
 
 end Definitions
 
