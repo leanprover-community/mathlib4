@@ -351,8 +351,7 @@ lemma moduleDepth_lt_top_iff (N M : ModuleCat.{v} R) :
     moduleDepth N M < ⊤ ↔ ∃ n, Nontrivial (Ext N M n) := by
   convert (moduleDepth_eq_top_iff N M).not
   · exact lt_top_iff_ne_top
-  · push_neg
-    rfl
+  · simp [not_subsingleton_iff_nontrivial]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma moduleDepth_eq_iff (N M : ModuleCat.{v} R) (n : ℕ) : moduleDepth N M = n ↔
