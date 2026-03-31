@@ -76,7 +76,7 @@ lemma normal_eq : normal c t = !₂[-(deriv c t 1), deriv c t 0] := rfl
 /-- The `normal` vector at point of a plane curve is orthogonal to the velocity vector at the point.
 -/
 theorem inner_of_velocity_normal_eq_zero : inner ℝ (deriv c t) (normal c t) = 0 := by
-  simp [normal, inner]; ring
+  simp [normal_eq, PiLp.inner_apply, real_inner_eq_re_inner, mul_comm]
 
 end
 
