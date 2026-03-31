@@ -5,7 +5,6 @@ Authors: Apurva Nakade, Yury Kudryashov, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Order
 public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Analysis.Convex.Hull
@@ -263,16 +262,6 @@ lemma mem_hull_of_convex (hs : Convex 𝕜 s) : x ∈ hull 𝕜 s ↔ ∃ r : �
 lemma coe_hull_of_convex (hs : Convex 𝕜 s) : hull 𝕜 s = {x | ∃ r : 𝕜, 0 < r ∧ x ∈ r • s} := by
   ext; exact mem_hull_of_convex hs
 
-lemma disjoint_hull_left_of_convex (hs : Convex 𝕜 s) : Disjoint (hull 𝕜 s) C ↔ Disjoint s C where
-  mp := by rw [← disjoint_coe]; exact .mono_left subset_hull
-  mpr := by
-    simp_rw [← disjoint_coe, disjoint_left, SetLike.mem_coe, mem_hull_of_convex hs]
-    rintro hsC _ ⟨r, hr, y, hy, rfl⟩
-    exact (C.smul_mem_iff hr).not.mpr (hsC hy)
-
-lemma disjoint_hull_right_of_convex (hs : Convex 𝕜 s) : Disjoint C (hull 𝕜 s) ↔ Disjoint ↑C s := by
-  rw [disjoint_comm, disjoint_hull_left_of_convex hs, disjoint_comm]
-
 end AddCommGroup
 
 end LinearOrderedField
@@ -285,9 +274,9 @@ variable [AddCommMonoid E] [PartialOrder E] [IsOrderedAddMonoid E] [Module R E] 
 
 /-- The positive cone is the pointed cone formed by the set of nonnegative elements in an ordered
 module. -/
-@[simps]
+@[simps!]
 def positive : PointedCone R E where
-  __ := AddSubmonoid.nonneg
+  __ := AddSubmonoid.nonneg E
   smul_mem' c _ hx := by simpa using smul_nonneg c.property hx
 
 @[simp]
