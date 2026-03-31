@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yaël Dillies
 module
 
 public import Mathlib.Data.Set.Image
+public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Util.Delaborators
 
 /-!
@@ -126,7 +127,7 @@ theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
     (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊓ j ∈ S) : DirectedOn (· ≥ ·) S :=
   directedOn_of_sup_mem (α := αᵒᵈ) H
 
-theorem directedOn_union [Preorder α] {s t : Set α} (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+theorem or_of_directedOn_union [Preorder α] {s t : Set α} (h : DirectedOn (· ≤ ·) (s ∪ t)) :
     DirectedOn (· ≤ ·) s ∨ DirectedOn (· ≤ ·) t := by
   simp_rw [DirectedOn]
   by_contra!
@@ -137,10 +138,10 @@ theorem directedOn_union [Preorder α] {s t : Set α} (h : DirectedOn (· ≤ ·
   · exact hab z hz (hax.trans hxz) (hbx.trans hxz)
   · exact hcd z hz (hcy.trans hyz) (hdy.trans hyz)
 
-theorem directedOn_union' [Preorder α] {s t : Set α}
+theorem or_of_directedOn_union' [Preorder α] {s t : Set α}
     (hn : (s ∪ t).Nonempty) (h : DirectedOn (· ≤ ·) (s ∪ t)) :
     DirectedOn (· ≤ ·) s ∧ s.Nonempty ∨ DirectedOn (· ≤ ·) t ∧ t.Nonempty := by
-  obtain h | h := directedOn_union h
+  obtain h | h := or_of_directedOn_union h
   · obtain rfl | hs := s.eq_empty_or_nonempty
     · aesop
     · exact .inl ⟨h, hs⟩
