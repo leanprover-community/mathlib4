@@ -350,7 +350,7 @@ theorem lhopital_zero_atBot (hff' : ∀ᶠ x in atBot, HasDerivAt f (f' x) x)
   rw [mem_atBot_sets] at hs
   rcases hs with ⟨l, hl⟩
   have hl' : Iio l ⊆ s := fun x hx => hl x (le_of_lt hx)
-  refine lhopital_zero_atBot_on_Iio ?_ ?_ (fun x hx => hg' x (hl' hx).2) hfbot hgbot hdiv <;> grind
+  refine lhopital_zero_atBot_on_Iio ?_ ?_ (fun x hx ↦ hg' x (hl' hx).2) hfbot hgbot hdiv <;> grind
 
 end HasDerivAt
 
