@@ -795,7 +795,7 @@ theorem stoppedValue_const (u : ι → Ω → β) (i : ι) : (stoppedValue u fun
     stoppedValue (fun t ω ↦ f (u t ω)) τ = fun ω ↦ f (stoppedValue u τ ω) := rfl
 
 lemma stoppedValue_norm [SeminormedAddCommGroup β] :
-    stoppedValue (fun t ω => ‖u t ω‖) τ = fun ω ↦ ‖stoppedValue u τ ω‖ := rfl
+    stoppedValue (fun t ω ↦ ‖u t ω‖) τ = fun ω ↦ ‖stoppedValue u τ ω‖ := rfl
 
 variable [LinearOrder ι]
 
@@ -819,13 +819,19 @@ theorem stoppedProcess_eq_stoppedValue_apply (i : ι) (ω : Ω) :
 @[simp] lemma stoppedProcess_comp {γ : Type*} (f : β → γ) :
     stoppedProcess (fun t ω ↦ f (u t ω)) τ = fun i ω ↦ f (stoppedProcess u τ i ω) := rfl
 
-@[simp] lemma stoppedProcess_neg [Neg β] : stoppedProcess (-u) τ = -stoppedProcess u τ := rfl
+@[simp] lemma stoppedProcess_norm [SeminormedAddCommGroup β] :
+    stoppedProcess (fun t ω ↦ ‖u t ω‖) τ = fun i ω ↦ ‖stoppedProcess u τ i ω‖ := rfl
 
-@[simp] lemma stoppedProcess_add [Add β] :
-    stoppedProcess (u + v) τ = stoppedProcess u τ + stoppedProcess v τ := rfl
+@[to_additive (attr := simp)]
+lemma stoppedProcess_inv [Inv β] : stoppedProcess (u⁻¹) τ = (stoppedProcess u τ)⁻¹ := rfl
 
-@[simp] lemma stoppedProcess_sub [Sub β] :
-    stoppedProcess (u - v) τ = stoppedProcess u τ - stoppedProcess v τ := rfl
+@[to_additive (attr := simp)]
+lemma stoppedProcess_mul [Mul β] :
+    stoppedProcess (u * v) τ = stoppedProcess u τ * stoppedProcess v τ := rfl
+
+@[to_additive (attr := simp)]
+lemma stoppedProcess_div [Div β] :
+    stoppedProcess (u / v) τ = stoppedProcess u τ / stoppedProcess v τ := rfl
 
 @[simp] lemma stoppedProcess_const_smul {𝕜 : Type*} [SMul 𝕜 β] (c : 𝕜) :
     stoppedProcess (c • u) τ = c • stoppedProcess u τ := rfl
