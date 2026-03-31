@@ -163,7 +163,6 @@ theorem Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert {q p : Ide
       ← comap_map_of_surjective f hf p]
     exact comap_mono hrp
 
-set_option backward.isDefEq.respectTransparency false in
 open IsLocalRing in
 /-- **Krull's height theorem** (also known as **Krullscher Höhensatz**) :
   In a commutative Noetherian ring `R`, any prime ideal that is minimal over an ideal generated
@@ -311,7 +310,6 @@ lemma Ideal.exists_finset_card_eq_height_of_isNoetherianRing (p : Ideal R) [p.Is
       simpa [Submodule.fg_iff_spanRank_eq_spanFinrank] using (IsNoetherian.noetherian I)
     · exact I.height_le_spanRank_toENat_of_mem_minimal_primes _ hI
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `I ≤ p` and `p` is prime, the height of `p` is bounded by the height of `p ⧸ I R` plus
 the span rank of `I`. -/
 lemma Ideal.height_le_height_add_spanFinrank_of_le {I p : Ideal R} [p.IsPrime] (hrp : I ≤ p) :
@@ -401,7 +399,6 @@ section Algebra
 
 variable {S : Type*} [CommRing S] [Algebra R S]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `P` lies over `p`, the height of `P` is bounded by the height of `p` plus
 the height of the image of `P` in `S ⧸ p S`.
@@ -472,5 +469,12 @@ lemma Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown [IsNoetherianRing S
   apply Order.length_le_height
   simp [hlq, l', ← PrimeSpectrum.asIdeal_le_asIdeal, map_le_iff_le_comap,
     LiesOver.over (p := p) (P := P)]
+
+variable (R) in
+lemma ringKrullDim_le_spanFinrank_maximalIdeal [IsLocalRing R] :
+    ringKrullDim R ≤ (IsLocalRing.maximalIdeal R).spanFinrank :=
+  le_of_eq_of_le IsLocalRing.maximalIdeal_height_eq_ringKrullDim.symm
+    (WithBot.coe_le_coe.mpr (Ideal.height_le_spanFinrank (IsLocalRing.maximalIdeal R)
+      Ideal.IsPrime.ne_top'))
 
 end Algebra
