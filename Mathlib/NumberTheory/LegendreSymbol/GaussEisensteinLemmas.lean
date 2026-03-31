@@ -191,7 +191,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
     have hxp : x.1 < p := lt_of_le_of_lt (b := p / 2)
       (by grind) (Nat.div_lt_self hp.1.pos (by decide))
     have : (x.1 : ZMod p) = 0 := by
-      simpa [hq0] using congr_arg ((↑) : ℕ → ZMod p) (le_antisymm hpq hqp)
+      simpa [hq0] using congr_arg ((↑) : ℕ → ZMod p) (le_antisymm hqp hpq)
     apply_fun ZMod.val at this
     rw [val_cast_of_lt hxp, val_zero] at this
     simp only [this, nonpos_iff_eq_zero, mem_Ico, one_ne_zero, false_and, mem_product] at hx
