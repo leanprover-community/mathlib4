@@ -105,7 +105,7 @@ namespace Flow
 variable {τ : Type*} [AddMonoid τ] [TopologicalSpace τ] [ContinuousAdd τ]
   {α : Type*} [TopologicalSpace α] (ϕ : Flow τ α)
 
-instance instCoeFun : CoeFun (Flow τ α) fun _ => τ → α → α := ⟨Flow.toFun⟩
+instance : CoeFun (Flow τ α) fun _ => τ → α → α := ⟨Flow.toFun⟩
 
 variable (τ α) in
 /-- The identity map as a constant flow. -/
