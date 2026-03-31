@@ -328,11 +328,9 @@ theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral (p : P) {v : V}
   have hrank : finrank ℝ (AffineSubspace.mk' p (ℝ ∙ v)).direction = 1 := by
     rw [AffineSubspace.direction_mk']
     apply finrank_span_singleton hv
-  have hranksub : finrank ℝ V - 1 = finrank ℝ (ℝ ∙ v)ᗮ := by
-    rw [← (ℝ ∙ v).finrank_add_finrank_orthogonal, add_comm, finrank_span_singleton hv,
-      Nat.add_sub_cancel]
-  have hrank' : finrank ℝ (AffineSubspace.mk' p (ℝ ∙ v)).directionᗮ = finrank ℝ (ℝ ∙ v)ᗮ := by
-    rw [AffineSubspace.direction_mk']
+  have hrank' : finrank ℝ (AffineSubspace.mk' p (ℝ ∙ v)).directionᗮ = finrank ℝ V - 1 := by
+    rw [← (AffineSubspace.mk' p (ℝ ∙ v)).direction.finrank_add_finrank_orthogonal, hrank,
+      Nat.add_sub_cancel_left]
   let f : ℝ ≃L[ℝ] (AffineSubspace.mk' p (ℝ ∙ v)).direction :=
     (ContinuousLinearEquiv.toSpanNonzeroSingleton ℝ v hv).trans
     (ContinuousLinearEquiv.ofEq (ℝ ∙ v) ((AffineSubspace.mk' p (ℝ ∙ v)).direction) (by simp))
@@ -352,5 +350,5 @@ theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral (p : P) {v : V}
     suffices volume = ‖v'‖ₑ • volume.map f by simpa [v']
     exact volume_eq_of_finrank_eq_one hrank (by simpa [v'] using hv)
   have hx (x : ℝ) : x • v +ᵥ p = g x := by rfl
-  simp_rw [hranksub, (AffineSubspace.mk' p (ℝ ∙ v)).euclideanHausdorffMeasure_eq_lintegral ht, hx,
+  simp_rw [(AffineSubspace.mk' p (ℝ ∙ v)).euclideanHausdorffMeasure_eq_lintegral ht, hx,
     hm, lintegral_smul_measure, hg.lintegral_map, smul_eq_mul, hrank', AffineSubspace.direction_mk']
