@@ -158,30 +158,22 @@ example (P : ObjectProperty C) [P.IsClosedUnderQuotients] {X Y : C} (hX : P X) (
 lemma prop_sSup_subobjectOf (P : ObjectProperty C)
     [P.IsClosedUnderQuotients] [∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J)]
     [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C]
-    (X : C) :
-    P (Subobject.sSup {A : Subobject X | P (A : C)}) := by
+    (X : C) : P (Subobject.sSup {A : Subobject X | P (A : C)}) := by
   let subobjs := {A : Subobject X | P (A : C)}
   let I := equivShrink (Subobject X) '' subobjs
   let D : Discrete I ⥤ C := Discrete.functor fun j => ((equivShrink (Subobject X)).symm j : C)
   have hPDi (i : Discrete I) : P (D.obj i) := by
-    rcases i with ⟨i⟩
-    change P (((equivShrink (Subobject X)).symm i : Subobject X) : C)
-    rcases i.2 with ⟨A, hA, hi⟩
-    have : ((equivShrink (Subobject X)).symm i : Subobject X) = A := by
-      simpa using (congrArg (Equiv.symm (equivShrink (Subobject X))) hi).symm
-    rw [this]
-    exact hA
+    obtain ⟨⟨_, A, hA, rfl⟩⟩ := i
+    simpa [D] using hA
   have hPcolimD : P (colimit D) := by
     simpa using P.prop_colimit D hPDi
   let f := Subobject.smallCoproductDesc subobjs
   have hPimage : P (image f) :=
     P.prop_of_epi (factorThruImage f) hPcolimD
-  rw [Subobject.sSup]
-  let e : Subobject.underlying.obj
-      (Subobject.mk (Limits.image.ι (Subobject.smallCoproductDesc subobjs))) ≅
+  let e : ((Subobject.mk (Limits.image.ι (Subobject.smallCoproductDesc subobjs))) : C) ≅
       Limits.image (Subobject.smallCoproductDesc subobjs) :=
     Subobject.underlyingIso (Limits.image.ι (Subobject.smallCoproductDesc subobjs))
-  exact P.prop_of_iso e.symm hPimage
+  simpa [Subobject.sSup] using P.prop_of_iso e.symm hPimage
 
 /-
 These should be all the ingredients for the converse of `isTorsion_iff`, but currently in an
