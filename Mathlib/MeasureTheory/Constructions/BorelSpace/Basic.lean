@@ -519,7 +519,7 @@ theorem ContinuousOn.measurable_piecewise {f g : α → γ} {s : Set α} [∀ j 
     exact u_open.measurableSet.inter hs.compl
 
 @[to_additive]
-instance (priority := 100) ContinuousMul.measurableMul [Mul γ] [ContinuousMul γ] :
+instance (priority := 100) ContinuousMul.measurableMul [Mul γ] [SeparatelyContinuousMul γ] :
     MeasurableMul γ where
 
 instance (priority := 100) ContinuousSub.measurableSub [Sub γ] [ContinuousSub γ] :
@@ -587,9 +587,6 @@ theorem Continuous.aemeasurable2 [SecondCountableTopologyEither α β]
 instance (priority := 100) ContinuousInv₀.measurableInv [GroupWithZero γ] [T1Space γ]
     [ContinuousInv₀ γ] : MeasurableInv γ :=
   ⟨measurable_of_continuousOn_compl_singleton 0 continuousOn_inv₀⟩
-
-@[deprecated (since := "2025-09-01")] alias HasContinuousInv₀.measurableInv :=
-  ContinuousInv₀.measurableInv
 
 @[to_additive]
 instance (priority := 100) ContinuousMul.measurableMul₂ [SecondCountableTopology γ] [Mul γ]
@@ -659,7 +656,6 @@ lemma MeasurableEmbedding.borelSpace {α β : Type*} [MeasurableSpace α] [Topol
 instance _root_.ULift.instBorelSpace : BorelSpace (ULift α) :=
   MeasurableEquiv.ulift.measurableEmbedding.borelSpace Homeomorph.ulift.isInducing
 
-set_option backward.isDefEq.respectTransparency false in
 instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
   constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, MeasurableSet.of_discrete]
@@ -705,10 +701,10 @@ instance Real.borelSpace : BorelSpace ℝ :=
   ⟨rfl⟩
 
 instance NNReal.measurableSpace : MeasurableSpace ℝ≥0 :=
-  Subtype.instMeasurableSpace
+  inferInstanceAs <| MeasurableSpace (Subtype _)
 
 instance NNReal.borelSpace : BorelSpace ℝ≥0 :=
-  Subtype.borelSpace _
+  inferInstanceAs <| BorelSpace (Subtype _)
 
 instance ENNReal.measurableSpace : MeasurableSpace ℝ≥0∞ :=
   borel ℝ≥0∞

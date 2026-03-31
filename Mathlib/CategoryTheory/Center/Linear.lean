@@ -30,6 +30,7 @@ namespace Linear
 
 variable (R : Type w) [Ring R] (C : Type u) [Category.{v} C] [Preadditive C]
 
+open scoped IsMulCommutative in
 /-- The canonical morphism `R →+* CatCenter C` when `C` is an `R`-linear category. -/
 @[simps]
 def toCatCenter [Linear R C] : R →+* CatCenter C where
@@ -94,7 +95,6 @@ def homModuleOfRingMorphism : Module R (X ⟶ Y) := by
     add_smul := fun a b f => by
       simp [smulOfRingMorphism_smul_eq] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `R`-linear structure on a preadditive category `C` equipped with
 a ring morphism `R →+* CatCenter C`. -/
 @[implicit_reducible]
