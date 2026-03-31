@@ -168,7 +168,7 @@ theorem isHermitian {M : Matrix n n R} (hM : M.PosDef) : M.IsHermitian :=
 theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef :=
   ⟨hM.1, fun x ↦ by obtain rfl | hx := eq_or_ne x 0 <;> simp [le_of_lt, hM.2, *]⟩
 
-lemma submatrix {M : Matrix n n R} (hM : M.PosDef) {e : m → n}
+theorem submatrix {M : Matrix n n R} (hM : M.PosDef) {e : m → n}
     (he : Function.Injective e) : (M.submatrix e e).PosDef := by
   refine ⟨hM.1.submatrix _, fun x hx ↦ ?_⟩
   have hne : x.mapDomain e ≠ 0 :=
