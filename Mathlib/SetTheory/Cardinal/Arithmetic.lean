@@ -51,11 +51,9 @@ theorem mul_eq_self {c : Cardinal} (hc : ℵ₀ ≤ c) : c * c = c := by
   have : NoMaxOrder α := by
     rw [← isSuccPrelimit_type_lt_iff, ← hα]
     exact (isSuccLimit_ord hc).isSuccPrelimit
-  -- Define an order `s` on `α × α` by writing `(a, b) < (c, d)` if `max a b < max c d`, or
-  -- the max are equal and `a < c`, or the max are equal and `a = c` and `b < d`.
+  -- Define an order `s` on `α × α`, comparing first by `max x.1 x.2`, then by `toLex (x.1, x.2)`.
   let g : α × α → α := uncurry max
-  let f : α × α ↪ Ordinal ×ₗ (α ×ₗ α) :=
-    ⟨fun p ↦ toLex (typein LT.lt (g p), toLex p), fun p q ↦ congrArg Prod.snd⟩
+  let f : α × α ↪ α ×ₗ (α ×ₗ α) := ⟨fun p ↦ toLex (g p, toLex p), fun p q ↦ congrArg Prod.snd⟩
   let s := f ⁻¹'o (· < ·)
   have : IsWellOrder _ s := (RelEmbedding.preimage _ _).isWellOrder
   -- Every initial segment of `s` is contained in `β × β` for some `β` of cardinality `< c`.
@@ -74,6 +72,7 @@ theorem mul_eq_self {c : Cardinal} (hc : ℵ₀ ≤ c) : c * c = c := by
   · have := mk_Iio_lt q hα
     rwa [IH _ this hq]
 
+#exit
 /-- If `α` and `β` are infinite types, then the cardinality of `α × β` is the maximum
 of the cardinalities of `α` and `β`. -/
 theorem mul_eq_max {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : ℵ₀ ≤ b) : a * b = max a b :=
