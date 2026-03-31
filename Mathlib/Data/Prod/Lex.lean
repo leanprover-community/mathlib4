@@ -10,6 +10,7 @@ public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.Lex
 public import Mathlib.Tactic.Tauto
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Lexicographic order
@@ -146,7 +147,7 @@ instance instPartialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] :
     PartialOrder (α ×ₗ β) where
   le_antisymm _ _ := antisymm_of (Prod.Lex _ _)
 
-instance instOrdLexProd [Ord α] [Ord β] : Ord (α ×ₗ β) := lexOrd
+instance instOrdLexProd [Ord α] [Ord β] : Ord (α ×ₗ β) := fast_instance% lexOrd
 
 theorem compare_def [Ord α] [Ord β] : @compare (α ×ₗ β) _ =
     compareLex (compareOn fun x => (ofLex x).1) (compareOn fun x => (ofLex x).2) := rfl

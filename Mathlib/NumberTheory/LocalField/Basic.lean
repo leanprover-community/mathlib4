@@ -109,7 +109,6 @@ instance : IsDiscreteValuationRing 𝒪[K] :=
   haveI : CompactSpace (Valued.integer K) := inferInstanceAs (CompactSpace 𝒪[K])
   Valued.integer.isDiscreteValuationRing_of_compactSpace
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The value group of a local field is (uniquely) isomorphic to `ℤᵐ⁰`. -/
 noncomputable
 def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
@@ -117,7 +116,7 @@ def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
   letI := IsTopologicalAddGroup.rightUniformSpace K
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
   obtain ⟨_⟩ := Valued.integer.locallyFiniteOrder_units_mrange_of_isCompact_integer
-    (isCompact_iff_compactSpace.mpr (inferInstanceAs (CompactSpace 𝒪[K])))
+    (isCompact_iff_compactSpace.mpr (inferInstance : CompactSpace 𝒪[K]))
   let e : (MonoidHom.mrange (valuation K)) ≃*o ValueGroupWithZero K :=
     ⟨.ofBijective (MonoidHom.mrange (valuation K)).subtype ⟨Subtype.val_injective, fun x ↦
       ⟨⟨x, ValuativeRel.valuation_surjective x⟩, rfl⟩⟩, .rfl⟩
