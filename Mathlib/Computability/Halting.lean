@@ -214,13 +214,7 @@ theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C)
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
           ((Partrec.nat_iff.2 hf).comp snd).to₂).to₂
   simp only [Bool.cond_decide] at e
-  by_cases H : eval c ∈ C
-  · simp only [H, if_true] at e
-    change (fun b => g b) ∈ C
-    rwa [← e]
-  · simp only [H, if_false] at e
-    rw [e] at H
-    contradiction
+  by_cases H : eval c ∈ C <;> simp_all
 
 theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C ↔ cg ∈ C)) :
     (ComputablePred fun c => c ∈ C) ↔ C = ∅ ∨ C = Set.univ := by
@@ -319,7 +313,6 @@ theorem of_prim {n} {f : List.Vector ℕ n → ℕ} (hf : Primrec f) : @Partrec'
 theorem head {n : ℕ} : @Partrec' n.succ (@head ℕ n) :=
   prim Nat.Primrec'.head
 
-set_option backward.isDefEq.respectTransparency false in
 theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ fun v => f v.tail :=
   (hf.comp _ fun i => @prim _ _ <| Nat.Primrec'.get i.succ).of_eq fun v => by
     rw [← ofFn_get v.tail, funext (get_tail_succ v)]

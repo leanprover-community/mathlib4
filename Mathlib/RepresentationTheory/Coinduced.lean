@@ -119,7 +119,6 @@ defined by letting `H` act on the `G`-equivariant functions `H → A` by `(h •
 -/
 noncomputable abbrev coind : Rep k H := Rep.of (Representation.coind φ A.ρ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a monoid morphism `φ : G →* H` and a morphism of `G`-representations `f : A ⟶ B`, there
 is a natural `H`-representation morphism `coind φ A ⟶ coind φ B`, given by postcomposition by
 `f`. -/
@@ -156,7 +155,6 @@ instance {G : Type v'} [Group G] (S : Subgroup G) :
 end Coind
 section Coind'
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `φ : G →* H` and `A : Rep k G` then `coind' φ A`, the coinduction of `A` along `φ`,
 is defined as an `H`-action on `Hom_{k[G]}(k[H], A)`. If `f : k[H] → A` is `G`-equivariant
@@ -208,7 +206,6 @@ noncomputable def coindFunctor' : Rep k G ⥤ Rep k H where
 end Coind'
 noncomputable section CoindIso
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `φ : G →* H` and `A : Rep k G` then the `k`-submodule of functions `f : H → A`
 such that for all `g : G`, `h : H`, `f (φ g * h) = A.ρ g (f h)`, is `k`-linearly equivalent
 to the `G`-representation morphisms `k[H] ⟶ A`. -/
@@ -225,7 +222,6 @@ noncomputable def coindVEquiv :
   left_inv x := by simp
   right_inv x := coind'_ext φ fun _ => by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `coind φ A` and `coind' φ A` are isomorphic representations, with the underlying
 `k`-linear equivalence given by `coindVEquiv`. -/
 noncomputable def coindIso : coind φ A ≅ coind' φ A :=
