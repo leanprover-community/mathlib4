@@ -151,12 +151,12 @@ def ZMod : ℕ → Type
   | n + 1 => Fin (n + 1)
 
 instance ZMod.decidableEq : ∀ n : ℕ, DecidableEq (ZMod n)
-  | 0 => (inferInstance : DecidableEq ℤ)
-  | n + 1 => (inferInstance : DecidableEq (Fin (n + 1)))
+  | 0 => inferInstanceAs <| DecidableEq ℤ
+  | n + 1 => inferInstanceAs <| DecidableEq (Fin (n + 1))
 
 instance ZMod.repr : ∀ n : ℕ, Repr (ZMod n)
-  | 0 => by dsimp [ZMod]; infer_instance
-  | n + 1 => by dsimp [ZMod]; infer_instance
+  | 0 => inferInstanceAs <| Repr ℤ
+  | n + 1 => inferInstanceAs <| Repr (Fin (n + 1))
 
 namespace ZMod
 

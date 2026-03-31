@@ -266,7 +266,7 @@ def Sober (X : TopCat) := IsHomeomorph (adjunctionTopToLocalePT.unit.app X)
 --    ↔ Sober X := by sorry
 
 variable {D : Type*} [tD : TopologicalSpace D] [aD : AlgebraicDCPO D]
-  [sD : IsScott D {d | DirectedOn (· ≤ ·) d}]
+  [sD : IsScott D univ]
 
 /-- The set of compact elements generating opens contained in the frame homomorphism `x` -/
 abbrev K (x : PT (Opens D)) := {c | ∃ hc: IsCompactElement c, x hc.toOpen}
