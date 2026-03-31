@@ -935,6 +935,11 @@ theorem Sorted_cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
     coef.Sorted ∧ tl.leadingExp < exp ∧ tl.Sorted := by
   apply Multiseries.Sorted_cons (by simpa using h)
 
+theorem replaceFun_Sorted {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
+    {f : ℝ → ℝ} (h_sorted : ms.Sorted) :
+    (ms.replaceFun f).Sorted := by
+  simpa using h_sorted
+
 end Sorted
 
 section Approximates
@@ -963,9 +968,7 @@ majorized with exponent `exp` by `basis_hd`, and `tl` approximates `f - fC * bas
 
 variable {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
--- TODO: this is just to tag `const` with `@[simp]`
-@[simp]
-theorem Approximates.const' {c : MultiseriesExpansion []} : Approximates c := Approximates.const _
+attribute [simp] Approximates.const
 
 theorem Approximates.coind {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
     (motive : MultiseriesExpansion (basis_hd :: basis_tl) → Prop)
@@ -1020,11 +1023,6 @@ theorem Approximates_cons {exp : ℝ}
     (mk (basis_hd := basis_hd) tl (f - basis_hd ^ exp * coef.toFun)).Approximates := by
   generalize h_ms : (mk (.cons exp coef tl) f) = ms at h
   cases h <;> simp at h_ms; grind
-
-theorem replaceFun_Sorted {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
-    {f : ℝ → ℝ} (h_sorted : ms.Sorted) :
-    (ms.replaceFun f).Sorted := by
-  simpa using h_sorted
 
 /-- One can replace `f` in `Approximates` with the funcion that eventually equals `f`. -/
 theorem replaceFun_Approximates {ms : MultiseriesExpansion (basis_hd :: basis_tl)} {f : ℝ → ℝ}
