@@ -12,29 +12,31 @@ public import Mathlib.NumberTheory.ModularForms.Identities
 public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
-# q-expansions of modular forms
+# q-expansions of functions on the upper half plane
 
-We show that a modular form of level `Γ(n)` can be written as `τ ↦ F (𝕢 n τ)` where `F` is
-analytic on the open unit disc, and `𝕢 n` is the parameter `τ ↦ exp (2 * I * π * τ / n)`. As an
-application, we show that cusp forms decay exponentially to 0 as `im τ → ∞`.
+We show that a function on the upper half plane with strict period `n` can be written as
+`τ ↦ F (𝕢 n τ)` where `F` is analytic on the open unit disc, and `𝕢 n` is the parameter
+`τ ↦ exp (2 * I * π * τ / n)`. As an application, we show that cusp forms decay exponentially to 0
+as `im τ → ∞`.
 
-We also define the `q`-expansion of a modular form, either as a power series or as a
-`FormalMultilinearSeries`, and show that it converges to `f` on the upper half plane.
+We also define the `q`-expansion of a function `f` on the upper half plane, either as a power series
+or as a `FormalMultilinearSeries`, and show that it converges to `f` if `f` is periodic, holomorphic
+and bounded at infinity.
 
 ## Main definitions and results
 
-* `UpperHalfPlane.cuspFunction`: for a level `n` slash-invariant form, this is the function
-  `F` such that `f τ = F (exp (2 * π * I * τ / n))`, extended by a choice of limit at `0`.
+* `UpperHalfPlane.cuspFunction`: for a function on the upper half plane with strict period `n`,
+  this is the function `F` such that `f τ = F (exp (2 * π * I * τ / n))`, extended by a choice of
+  limit at `0`.
 * `ModularFormClass.differentiableAt_cuspFunction`: when `f` is a modular form, its `cuspFunction`
   is differentiable on the open unit disc (including at `0`).
-* `UpperHalfPlane.qExpansion`: the `q`-expansion of a modular form (defined as the Taylor series
-  of its `cuspFunction`), bundled as a `PowerSeries`.
+* `UpperHalfPlane.qExpansion`: the `q`-expansion of a function on the upper half plane (defined as
+  the Taylor series of its `cuspFunction`), bundled as a `PowerSeries`.
 * `UpperHalfPlane.hasSum_qExpansion`: the `q`-expansion evaluated at `𝕢 n τ` sums to `f τ`, for
   `τ` in the upper half plane.
-* `qExpansionRingHom` defines the ring homomorphism from the graded ring of modular forms to power
-  series given by taking `q`-expansions.
+* `ModularForm.qExpansionRingHom` defines the ring homomorphism from the graded ring of
+  modular forms to power series given by taking `q`-expansions.
 * `qExpansion_coeff_unique` shows that q-expansion coefficients are uniquely determined.
-
 -/
 
 @[expose] public noncomputable section
@@ -139,11 +141,16 @@ protected lemma ModularFormClass.differentiableOn_cuspFunction_ball [ModularForm
   differentiableOn_cuspFunction_ball hh (periodic_comp_ofComplex f hΓ)
     (fun z ↦ differentiableAt_comp_ofComplex f z.2) (bounded_at_infty_comp_ofComplex f hh hΓ)
 
-lemma ModularFormClass.analyticAt_cuspFunction_zero [ModularFormClass F Γ k] (hh : 0 < h)
-    (hΓ : h ∈ Γ.strictPeriods) : AnalyticAt ℂ (cuspFunction h f) 0 :=
-  DifferentiableOn.analyticAt
-    (fun q hq ↦ (ModularFormClass.differentiableAt_cuspFunction _ hh hΓ hq).differentiableWithinAt)
+lemma UpperHalfPlane.analyticAt_cuspFunction_zero {f : ℍ → ℂ} (hh : 0 < h)
+    (hfper : Periodic (f ∘ ofComplex) h) (hfhol : ∀ z : ℍₒ, DifferentiableAt ℂ (f ∘ ofComplex) z)
+    (hfbdd : IsBoundedAtImInfty f) : AnalyticAt ℂ (cuspFunction h f) 0 :=
+  DifferentiableOn.analyticAt (differentiableOn_cuspFunction_ball hh hfper hfhol hfbdd)
     (by simpa [ball_zero_eq] using Metric.ball_mem_nhds (0 : ℂ) zero_lt_one)
+
+protected lemma ModularFormClass.analyticAt_cuspFunction_zero [ModularFormClass F Γ k] (hh : 0 < h)
+    (hΓ : h ∈ Γ.strictPeriods) : AnalyticAt ℂ (cuspFunction h f) 0 :=
+  analyticAt_cuspFunction_zero hh (periodic_comp_ofComplex f hΓ)
+    (fun z ↦ differentiableAt_comp_ofComplex f z.2) (bounded_at_infty_comp_ofComplex f hh hΓ)
 
 lemma UpperHalfPlane.cuspFunction_apply_zero {f : ℍ → ℂ} (hh : 0 < h)
     (hfanalytic : AnalyticAt ℂ (cuspFunction h f) 0)
@@ -156,10 +163,13 @@ lemma UpperHalfPlane.cuspFunction_apply_zero {f : ℍ → ℂ} (hh : 0 < h)
 
 protected lemma ModularFormClass.cuspFunction_apply_zero [ModularFormClass F Γ k] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) : cuspFunction h f 0 = valueAtInfty f :=
-  cuspFunction_apply_zero hh (analyticAt_cuspFunction_zero f hh hΓ) (periodic_comp_ofComplex f hΓ)
+  cuspFunction_apply_zero hh (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ)
+    (periodic_comp_ofComplex f hΓ)
 
 variable (h) in
-/-- The `q`-expansion of a level `n` modular form, bundled as a `PowerSeries`. -/
+/-- The `q`-expansion of a function on the upper half plane with strict period `h`, bundled as a
+`PowerSeries`. The `m`-th coefficient is the Taylor coefficient of the `cuspFunction` at `q = 0`,
+where `q = exp(2πiτ/h)` is the local parameter at the cusp. -/
 def UpperHalfPlane.qExpansion (f : ℍ → ℂ) : PowerSeries ℂ :=
   .mk fun m ↦ (↑m.factorial)⁻¹ * iteratedDeriv m (cuspFunction h f) 0
 
@@ -175,7 +185,8 @@ lemma UpperHalfPlane.qExpansion_coeff_zero {f : ℍ → ℂ} (hh : 0 < h)
 
 protected lemma ModularFormClass.qExpansion_coeff_zero [ModularFormClass F Γ k] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) : (qExpansion h f).coeff 0 = valueAtInfty f :=
-  qExpansion_coeff_zero hh (analyticAt_cuspFunction_zero f hh hΓ) (periodic_comp_ofComplex f hΓ)
+  qExpansion_coeff_zero hh (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ)
+    (periodic_comp_ofComplex f hΓ)
 
 lemma UpperHalfPlane.hasSum_qExpansion_of_norm_lt {f : ℍ → ℂ} (hh : 0 < h)
     (hfper : Periodic (f ∘ ofComplex) h) (hfhol : ∀ z : ℍₒ, DifferentiableAt ℂ (f ∘ ofComplex) z)
@@ -210,7 +221,7 @@ protected lemma ModularFormClass.hasSum_qExpansion [ModularFormClass F Γ k] (hh
 
 variable (h) in
 /--
-The `q`-expansion of a modular form, bundled as a `FormalMultilinearSeries`.
+The `q`-expansion of a function on the upper half plane, bundled as a `FormalMultilinearSeries`.
 
 TODO: Maybe get rid of this and instead define a general API for converting `PowerSeries` to
 `FormalMultilinearSeries`.
@@ -292,8 +303,9 @@ lemma UpperHalfPlane.hasFPowerSeriesOnBall_cuspFunction {f : ℍ → ℂ} {c : �
     simpa [update_self] using this.eq_of_nhds
   rwa [update_eq_self_iff.mpr H2] at H1
 
-lemma UpperHalfPlane.hasFPowerSeries_cuspFunction {c : ℕ → ℂ}
-    (hh : 0 < h) (hfanalytic : AnalyticAt ℂ (cuspFunction h f) 0)
+/-- The `q`-expansion of `f` is an `FPowerSeries` representing `cuspFunction n f`. -/
+lemma UpperHalfPlane.hasFPowerSeries_cuspFunction {c : ℕ → ℂ} (hh : 0 < h)
+    (hfanalytic : AnalyticAt ℂ (cuspFunction h f) 0)
     (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) :
     HasFPowerSeriesOnBall (cuspFunction h f) (qExpansionFormalMultilinearSeries h f) 0 1 := by
   have h1 := (hasFPowerSeriesOnBall_cuspFunction hh hfanalytic hf).hasFPowerSeriesAt
@@ -302,13 +314,14 @@ lemma UpperHalfPlane.hasFPowerSeries_cuspFunction {c : ℕ → ℂ}
       using hfanalytic.hasFPowerSeriesAt
   simpa [h1.eq_formalMultilinearSeries h2] using hasFPowerSeriesOnBall_cuspFunction hh hfanalytic hf
 
-/-- The `q`-expansion of `f` is an `FPowerSeries` representing `cuspFunction n f`. -/
 protected lemma ModularFormClass.hasFPowerSeries_cuspFunction [ModularFormClass F Γ k]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     HasFPowerSeriesOnBall (cuspFunction h f) (qExpansionFormalMultilinearSeries h f) 0 1 :=
-  hasFPowerSeries_cuspFunction f hh (analyticAt_cuspFunction_zero f hh hΓ)
+  hasFPowerSeries_cuspFunction f hh (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ)
     (ModularFormClass.hasSum_qExpansion f hh hΓ)
 
+/-- The `q`-expansion coefficient can be expressed as a `circleIntegral` for any radius `0 < R < 1`.
+-/
 lemma UpperHalfPlane.qExpansion_coeff_eq_circleIntegral {f : ℍ → ℂ} (hh : 0 < h)
     (hfper : Periodic (f ∘ ofComplex) h)
     (hfhol : ∀ z : ℍₒ, DifferentiableAt ℂ (f ∘ ofComplex) z)
@@ -321,8 +334,6 @@ lemma UpperHalfPlane.qExpansion_coeff_eq_circleIntegral {f : ℍ → ℂ} (hh : 
   simp_rw [qExpansion, PowerSeries.coeff_mk, ← this, sub_zero, smul_eq_mul, one_div_mul_eq_div,
     div_eq_inv_mul]
 
-/-- The `q`-expansion coefficient can be expressed as a `circleIntegral` for any radius `0 < R < 1`.
--/
 protected lemma ModularFormClass.qExpansion_coeff_eq_circleIntegral [ModularFormClass F Γ k]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (n : ℕ) {R : ℝ} (hR : 0 < R) (hR' : R < 1) :
     (qExpansion h f).coeff n =
@@ -378,21 +389,21 @@ protected lemma ModularFormClass.qExpansion_coeff_eq_intervalIntegral [ModularFo
 
 theorem UpperHalfPlane.exp_decay_sub_atImInfty {f : ℍ → ℂ} (hh : 0 < h)
     (hfper : Periodic (f ∘ ofComplex) h) (hfhol : ∀ z : ℍₒ, DifferentiableAt ℂ (f ∘ ofComplex) z)
-    (hfbdd : IsBoundedAtImInfty f) (hfanalytic : AnalyticAt ℂ (cuspFunction h f) 0) :
+    (hfbdd : IsBoundedAtImInfty f) :
     (fun τ ↦ f τ - valueAtInfty f) =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / h) := by
   have := hfbdd.comp_tendsto tendsto_comap_im_ofComplex
   convert (hfper.exp_decay_sub_of_bounded_at_inf hh
     (eventually_of_mem (preimage_mem_comap (Ioi_mem_atTop 0))
       fun z hz ↦ by simpa using (hfhol ⟨z, hz⟩))
         this).comp_tendsto tendsto_coe_atImInfty
-  simpa [cuspFunction] using (cuspFunction_apply_zero hh hfanalytic hfper).symm
+  simpa [cuspFunction] using
+    (cuspFunction_apply_zero hh (analyticAt_cuspFunction_zero hh hfper hfhol hfbdd) hfper).symm
 
 protected theorem ModularFormClass.exp_decay_sub_atImInfty [ModularFormClass F Γ k] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) :
     (fun τ ↦ f τ - valueAtInfty f) =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / h) :=
   exp_decay_sub_atImInfty hh (periodic_comp_ofComplex f hΓ)
     (fun z ↦ differentiableAt_comp_ofComplex f z.2) (bounded_at_infty_comp_ofComplex f hh hΓ)
-      (analyticAt_cuspFunction_zero f hh hΓ)
 
 /-- Version of `exp_decay_sub_atImInfty` stating a less precise result but easier to apply in
 practice (not specifying the growth rate precisely).
@@ -425,9 +436,9 @@ theorem cuspFunction_apply_zero {f : ℍ → ℂ} (hf : IsZeroAtImInfty f) (hh :
 theorem exp_decay_atImInfty {f : ℍ → ℂ} (hf : IsZeroAtImInfty f) (hh : 0 < h)
     (hfper : Periodic (f ∘ ofComplex) h)
     (hfhol : ∀ z : ℍₒ, DifferentiableAt ℂ (f ∘ ofComplex) z)
-    (hfbdd : IsBoundedAtImInfty f) (hfanalytic : AnalyticAt ℂ (cuspFunction h f) 0) :
+    (hfbdd : IsBoundedAtImInfty f) :
     f =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / h) := by
-  simpa [hf.valueAtInfty_eq_zero] using exp_decay_sub_atImInfty hh hfper hfhol hfbdd hfanalytic
+  simpa [hf.valueAtInfty_eq_zero] using exp_decay_sub_atImInfty hh hfper hfhol hfbdd
 
 end UpperHalfPlane.IsZeroAtImInfty
 
@@ -436,7 +447,6 @@ theorem ModularFormClass.exp_decay_atImInfty [ModularFormClass F Γ k]
     f =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / h) :=
   UpperHalfPlane.IsZeroAtImInfty.exp_decay_atImInfty hf hh (periodic_comp_ofComplex f hΓ)
     (fun z ↦ differentiableAt_comp_ofComplex f z.2) (bounded_at_infty_comp_ofComplex f hh hΓ)
-      (analyticAt_cuspFunction_zero f hh hΓ)
 
 /-- Version of `exp_decay_atImInfty` stating a less precise result but easier to apply in practice
 (not specifying the growth rate precisely). Note that the `Fact` hypothesis is automatically
@@ -496,8 +506,8 @@ lemma cuspFunction_mul {f g : ℍ → ℂ}
 protected lemma ModularForm.cuspFunction_mul [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ} (f : ModularForm Γ a) (g : ModularForm Γ b) :
     cuspFunction h (f.mul g) = cuspFunction h f * cuspFunction h g :=
-  cuspFunction_mul (analyticAt_cuspFunction_zero f hh hΓ).continuousAt
-    (analyticAt_cuspFunction_zero g hh hΓ).continuousAt
+  cuspFunction_mul (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ).continuousAt
+    (ModularFormClass.analyticAt_cuspFunction_zero g hh hΓ).continuousAt
 
 lemma cuspFunction_smul {f : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0) (a : ℂ) :
     cuspFunction h (a • f) = a • cuspFunction h f := by
@@ -531,7 +541,8 @@ lemma qExpansion_mul {f g : ℍ → ℂ}
 protected lemma ModularForm.qExpansion_mul [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ} (f : ModularForm Γ a) (g : ModularForm Γ b) :
     qExpansion h (f.mul g) = qExpansion h f * qExpansion h g :=
-  qExpansion_mul (analyticAt_cuspFunction_zero f hh hΓ) (analyticAt_cuspFunction_zero g hh hΓ)
+  qExpansion_mul (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ)
+    (ModularFormClass.analyticAt_cuspFunction_zero g hh hΓ)
 
 lemma qExpansion_add {f g : ℍ → ℂ}
     (hf : AnalyticAt ℂ (cuspFunction h f) 0) (hg : AnalyticAt ℂ (cuspFunction h g) 0) :
@@ -543,7 +554,8 @@ lemma qExpansion_add {f g : ℍ → ℂ}
 protected lemma ModularFormClass.qExpansion_add {G : Type*} [FunLike G ℍ ℂ] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ} (f : F) [ModularFormClass F Γ a] (g : G)
     [ModularFormClass G Γ b] : qExpansion h (f + g) = qExpansion h f + qExpansion h g :=
-    qExpansion_add (analyticAt_cuspFunction_zero f hh hΓ) (analyticAt_cuspFunction_zero g hh hΓ)
+    qExpansion_add (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ)
+      (ModularFormClass.analyticAt_cuspFunction_zero g hh hΓ)
 
 lemma qExpansion_smul {f : ℍ → ℂ} (hf : AnalyticAt ℂ (cuspFunction h f) 0) (a : ℂ) :
     qExpansion h (a • f) = a • qExpansion h f := by
@@ -553,7 +565,7 @@ lemma qExpansion_smul {f : ℍ → ℂ} (hf : AnalyticAt ℂ (cuspFunction h f) 
 
 protected lemma ModularFormClass.qExpansion_smul (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (a : ℂ)
     (f : F) [ModularFormClass F Γ k] : qExpansion h (a • f) = a • qExpansion h f :=
-  qExpansion_smul (analyticAt_cuspFunction_zero f hh hΓ) a
+  qExpansion_smul (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ) a
 
 set_option backward.isDefEq.respectTransparency false in
 lemma qExpansion_neg {f : ℍ → ℂ} (hf : AnalyticAt ℂ (cuspFunction h f) 0) :
@@ -562,7 +574,7 @@ lemma qExpansion_neg {f : ℍ → ℂ} (hf : AnalyticAt ℂ (cuspFunction h f) 0
 
 protected lemma ModularFormClass.qExpansion_neg (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (f : F)
     [ModularFormClass F Γ k] : qExpansion h (-f) = -qExpansion h f :=
-  qExpansion_neg (analyticAt_cuspFunction_zero f hh hΓ)
+  qExpansion_neg (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ)
 
 lemma qExpansion_sub {f g : ℍ → ℂ} (hf : AnalyticAt ℂ (cuspFunction h f) 0) (hg : AnalyticAt ℂ
     (cuspFunction h g) 0) : qExpansion h (f - g) = qExpansion h f - qExpansion h g := by
@@ -573,7 +585,8 @@ lemma qExpansion_sub {f g : ℍ → ℂ} (hf : AnalyticAt ℂ (cuspFunction h f)
 protected lemma ModularForm.qExpansion_sub (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ}
     (f : ModularForm Γ a) (g : ModularForm Γ b) :
     qExpansion h (f - g) = qExpansion h f - qExpansion h g :=
-  qExpansion_sub (analyticAt_cuspFunction_zero f hh hΓ) (analyticAt_cuspFunction_zero g hh hΓ)
+  qExpansion_sub (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ)
+    (ModularFormClass.analyticAt_cuspFunction_zero g hh hΓ)
 
 lemma qExpansion_zero (h) : qExpansion h 0 = 0 := by
   suffices cuspFunction h 0 = 0 by ext; simp [qExpansion_coeff, this]
@@ -617,6 +630,8 @@ protected lemma ModularForm.qExpansion_one [Γ.HasDetPlusMinusOne] :
     qExpansion h (1 : ModularForm Γ 0) = 1 := by
   simp [qExpansion_one]
 
+namespace ModularForm
+
 open scoped DirectSum in
 /-- The qExpansion map as a map from the graded ring of modular forms to power series over `ℂ`. -/
 def qExpansionRingHom (h) [Γ.HasDetPlusMinusOne] (hh : 0 < h)
@@ -642,6 +657,8 @@ lemma qExpansion_of_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
   have := (qExpansionRingHom h hh hΓ).map_pow (DirectSum.of _ k f) n
   simpa [DirectSum.ofPow]
 
+end ModularForm
+
 end ring
 
 section uniqueness
@@ -658,4 +675,4 @@ protected lemma ModularFormClass.qExpansion_coeff_unique {c : ℕ → ℂ} (hh :
     (hΓ : h ∈ Γ.strictPeriods) {f : F} [ModularFormClass F Γ k]
     (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) (m : ℕ) :
     c m = (qExpansion h f).coeff m :=
-  qExpansion_coeff_unique f hh (analyticAt_cuspFunction_zero f hh hΓ) hf m
+  qExpansion_coeff_unique f hh (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ) hf m
