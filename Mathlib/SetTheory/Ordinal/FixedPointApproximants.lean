@@ -101,18 +101,18 @@ theorem apply_lfpApprox_le_lfpApprox_of_lt {a b : Ordinal} (h : a < b) :
 
 theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
     lfpApprox f x (a + 1) = f (lfpApprox f x a) := by
-  refine le_antisymm ?_ (apply_lfpApprox_le_lfpApprox_of_lt f x (lt_add_one a))
-  · conv => left; rw [lfpApprox]
-    apply sSup_le
-    simp only [lt_add_one_iff, exists_prop, Set.union_singleton,
-      Set.mem_insert_iff, Set.mem_setOf_eq, forall_eq_or_imp, forall_exists_index, and_imp,
-      forall_apply_eq_imp_iff₂]
-    apply And.intro
-    · apply le_trans h
-      apply Monotone.imp f.monotone
-      exact le_lfpApprox f x
-    · intro a' h
-      apply f.2; apply lfpApprox_monotone; exact h
+  apply (apply_lfpApprox_le_lfpApprox_of_lt f x (lt_add_one a)).antisymm'
+  conv => left; rw [lfpApprox]
+  apply sSup_le
+  simp only [lt_add_one_iff, exists_prop, Set.union_singleton,
+    Set.mem_insert_iff, Set.mem_setOf_eq, forall_eq_or_imp, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂]
+  apply And.intro
+  · apply le_trans h
+    apply Monotone.imp f.monotone
+    exact le_lfpApprox f x
+  · intro a' h
+    apply f.2; apply lfpApprox_monotone; exact h
 
 theorem lfpApprox_of_isSuccLimit {a : Ordinal} (ha : Order.IsSuccLimit a) :
     lfpApprox f x a = ⨆ b : Set.Iio a, lfpApprox f x b := by
@@ -125,7 +125,7 @@ theorem lfpApprox_of_isSuccLimit {a : Ordinal} (ha : Order.IsSuccLimit a) :
       (le_iSup (fun b : Set.Iio a => lfpApprox f x b) ⟨0, ha.bot_lt⟩)
   · intro b hb
     apply (apply_lfpApprox_le_lfpApprox_of_lt f x (lt_add_one b)).trans
-    · exact (le_iSup (fun c : Set.Iio a => lfpApprox f x c) ⟨b + 1, ha.succ_lt hb⟩)
+    exact (le_iSup (fun c : Set.Iio a => lfpApprox f x c) ⟨b + 1, ha.succ_lt hb⟩)
 
 theorem lfpApprox_mono_left : Monotone (lfpApprox : (α →o α) → _) := by
   intro f g h x a
