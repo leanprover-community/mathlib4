@@ -249,7 +249,7 @@ theorem IsLindelof.isCompact (hA : IsCountablyCompact A) (hl : IsLindelof A) :
   · exact ⟨∅, by simp_all⟩
 
 /-- A countably compact Lindelöf space is compact. -/
-instance LindelofSpace.CompactSpace {X : Type*} [TopologicalSpace X]
+theorem LindelofSpace.CompactSpace {X : Type*} [TopologicalSpace X]
     [LindelofSpace X] [h : CountablyCompactSpace X] : CompactSpace X where
     isCompact_univ := isLindelof_univ.isCompact h.isCountablyCompact_univ
 
