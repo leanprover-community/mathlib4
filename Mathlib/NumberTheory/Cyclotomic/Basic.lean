@@ -677,17 +677,12 @@ splitting field of `cyclotomic n K`. If `n` is nonzero in `K`, it has
 the instance `IsCyclotomicExtension {n} K (CyclotomicField n K)`. -/
 def CyclotomicField : Type w :=
   (cyclotomic n K).SplittingField
+deriving Field, Inhabited
 
 namespace CyclotomicField
 
-instance : Field (CyclotomicField n K) :=
-  inferInstanceAs <| Field (cyclotomic n K).SplittingField
-
 instance algebra : Algebra K (CyclotomicField n K) :=
   inferInstanceAs <| Algebra K (cyclotomic n K).SplittingField
-
-instance : Inhabited (CyclotomicField n K) :=
-  inferInstanceAs <| Inhabited (cyclotomic n K).SplittingField
 
 instance [CharZero K] : CharZero (CyclotomicField n K) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
@@ -763,17 +758,9 @@ is nonzero in `A`, it has the instance `IsCyclotomicExtension {n} A (CyclotomicR
 @[nolint unusedArguments]
 def CyclotomicRing : Type w :=
   adjoin A {b : CyclotomicField n K | b ^ n = 1}
+deriving CommRing, IsDomain, Inhabited
 
 namespace CyclotomicRing
-
-instance : CommRing (CyclotomicRing n A K) :=
-  inferInstanceAs <| CommRing (adjoin A _)
-
-instance : IsDomain (CyclotomicRing n A K) :=
-  inferInstanceAs <| IsDomain (adjoin A _)
-
-instance : Inhabited (CyclotomicRing n A K) :=
-  inferInstanceAs <| Inhabited (adjoin A _)
 
 /-- The `A`-algebra structure on `CyclotomicRing n A K`. -/
 instance algebraBase : Algebra A (CyclotomicRing n A K) :=
