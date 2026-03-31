@@ -416,13 +416,8 @@ lemma spanFinrank_maximalIdeal_quotient [IsLocalRing R] [IsNoetherianRing R] (x 
     e (ResidueField.map_bijective_of_surjective _ Ideal.Quotient.mk_surjective) (fun r m ↦ by
       induction m using Submodule.Quotient.induction_on
       induction r using Submodule.Quotient.induction_on
-      rw [← Submodule.Quotient.mk_smul]
-      simp only [AddEquiv.ofBijective_apply, e, f']
       rename_i m r
-      change f (r • m) = (ResidueField.map (Ideal.Quotient.mk (Ideal.span {x})))
-        (IsLocalRing.residue R r) • (f m)
-      simp only [map_smul]
-      rfl)
+      exact map_smul f r m)
   have frk : Module.finrank (ResidueField R) Q = Module.finrank
     (ResidueField (R ⧸ Ideal.span {x})) (CotangentSpace (R ⧸ Ideal.span {x})) := by
     simp only [Module.finrank, rk]
@@ -465,9 +460,7 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
     rcases xm'.exists_isCompl with ⟨J', ⟨inf, sup⟩⟩
     let g : (maximalIdeal R) →ₛₗ[residue R] (maximalIdeal R).Cotangent := {
       __ := (maximalIdeal R).toCotangent
-      map_smul' r m := by
-        simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, map_smul]
-        rfl }
+      map_smul' r m := map_smul (maximalIdeal R).toCotangent r m }
     have surjg : Function.Surjective g := (maximalIdeal R).toCotangent_surjective
     have supeq : (J'.comap g) ⊔ Submodule.span R {⟨x, mem⟩} = ⊤ := by
       let : RingHomSurjective (residue R) := ⟨residue_surjective⟩
