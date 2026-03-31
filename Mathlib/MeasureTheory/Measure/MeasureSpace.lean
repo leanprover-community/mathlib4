@@ -567,12 +567,11 @@ theorem measure_iInter_of_ae_monotone [Preorder ι] [IsCodirectedOrder ι]
     simpa [t] using fun _ ↦ hω
   have hMono : Monotone t := fun i j hij ω hω ↦ ⟨hω.2 hij hω.1, hω.2⟩
   rw [iInf_congr <| fun i ↦ measure_congr <| hst i,
-    ← hMono.measure_iInter (μ := μ) (fun i ↦ (hsm i).congr (hst i))]
-  · refine measure_congr ?_
-    nth_rw 1 [← iInter_inter, ← inter_univ (⋂ i, s i)]
-    exact ae_eq_set_inter (by rfl) (ae_eq_univ.2 hs).symm
-  · obtain ⟨i, hi⟩ := hfin
-    exact ⟨i, by rwa [← measure_congr (hst i)]⟩
+    ← hMono.measure_iInter (fun i ↦ (hsm i).congr (hst i))
+     ⟨i, by rwa [← measure_congr (hst i)]⟩]
+  refine measure_congr ?_
+  nth_rw 1 [← iInter_inter, ← inter_univ (⋂ i, s i)]
+  exact ae_eq_set_inter (by rfl) (ae_eq_univ.2 hs).symm
 
 /-- **Continuity from above**:
 the measure of the intersection of an antitone family of measurable sets
