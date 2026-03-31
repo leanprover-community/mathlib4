@@ -737,11 +737,11 @@ protected theorem map_zero (f : A →ₑ*[φ] B) : f 1 = 1 :=
 protected theorem map_mul (f : A →ₑ*[φ] B) (x y : A) : f (x * y) = f x * f y :=
   map_mul f x y
 
-@[to_additive (dont_translate := M N) (relevant_arg := A')]
+@[to_additive (dont_translate := M N)]
 protected theorem map_inv (f : A' →ₑ*[φ] B') (x : A') : f x⁻¹ = (f x)⁻¹ :=
   map_inv f x
 
-@[to_additive (dont_translate := M N) (relevant_arg := A')]
+@[to_additive (dont_translate := M N)]
 protected theorem map_sub (f : A' →ₑ*[φ] B') (x y : A') : f (x / y) = f x / f y :=
   map_div f x y
 
