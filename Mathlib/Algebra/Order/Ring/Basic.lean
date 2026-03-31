@@ -55,7 +55,7 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
           add_assoc (x * x ^ n) (x * y ^ n), add_comm (x * y ^ n) (y * y ^ n), ← add_assoc]
       _ ≤ (x + y) ^ (n + 1) := by
         rw [pow_succ' _ n]
-        exact mul_le_mul_of_nonneg_left (ih (Nat.succ_ne_zero k)) h2
+        gcongr; exacts [h2, ih (Nat.succ_ne_zero k)]
 
 attribute [bound] pow_le_one₀ one_le_pow₀
 

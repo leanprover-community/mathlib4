@@ -376,7 +376,8 @@ lemma pow_right_anti₀ [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : 
   antitone_nat_of_succ_le fun n ↦ by
     have : ZeroLEOneClass M₀ := ⟨ha₀.trans ha₁⟩
     rw [← mul_one (a ^ n), pow_succ]
-    exact mul_le_mul_of_nonneg_left ha₁ (pow_nonneg ha₀ n)
+    gcongr
+    exact pow_nonneg ha₀ n
 
 lemma pow_le_pow_of_le_one [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) {m n : ℕ}
     (hmn : m ≤ n) : a ^ n ≤ a ^ m := pow_right_anti₀ ha₀ ha₁ hmn
@@ -1186,7 +1187,7 @@ lemma div_le_one_of_le₀ [ZeroLEOneClass G₀] (h : a ≤ b) (hb : 0 ≤ b) : a
 @[mono, gcongr, bound]
 lemma div_le_div_of_nonneg_right (hab : a ≤ b) (hc : 0 ≤ c) : a / c ≤ b / c := by
   rw [div_eq_mul_inv a c, div_eq_mul_inv b c]
-  exact mul_le_mul_of_nonneg_right hab (Right.inv_nonneg.2 hc)
+  gcongr; exact Right.inv_nonneg.2 hc
 
 @[gcongr, bound]
 lemma div_lt_div_of_pos_right (h : a < b) (hc : 0 < c) : a / c < b / c := by
