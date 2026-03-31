@@ -232,17 +232,8 @@ theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
 
 theorem isClosedBelow_iff {S : Set Ordinal} {o : Ordinal} : IsClosedBelow S o ↔
     ∀ p < o, IsAcc p S → p ∈ S := by
-  dsimp [IsClosedBelow]
-  rw [isClosed_iff_clusterPt, Subtype.forall]
-  constructor
-  · intro h p plto hp
-    apply h p plto
-    rw [← comap_principal]
-    exact isOpen_Iio.isOpenEmbedding_subtypeVal.isOpenMap.clusterPt_comap hp.clusterPt
-  · intro h r hro hr
-    refine (clusterPt_principal.mp hr).elim id fun h' => h r hro ?_
-    rw [← comap_principal] at h'
-    exact isOpen_Iio.isOpenEmbedding_subtypeVal.accPt_comap_iff.1 h'
+  simp [IsClosedBelow, IsAcc, isClosed_iff_accPt, ← comap_principal,
+    isOpen_Iio.isOpenEmbedding_subtypeVal.accPt_comap_iff]
 
 alias ⟨IsClosedBelow.forall_lt, _⟩ := isClosedBelow_iff
 
