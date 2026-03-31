@@ -39,42 +39,40 @@ lemma analyticOrderAt_deriv_eq_top_iff_of_eq_zero (z₀ : ℂ) (f : ℂ → ℂ)
       exact Metric.ball_subset_ball (min_le_right r₁ r₂) hz
     simp
 
-lemma analyticOrderAt_eq_succ_iff_deriv_order_eq_pred {z₀ : ℂ} {f : ℂ → ℂ} (hf : AnalyticAt ℂ f z₀)
-    {n : ℕ} (hzero : f z₀ = 0) (horder : analyticOrderAt (deriv f) z₀ = n) :
+lemma analyticOrderAt_deriv_order_eq_succ {z₀ : ℂ} {f : ℂ → ℂ} (hf : AnalyticAt ℂ f z₀) {n : ℕ}
+    (hzero : f z₀ = 0) (horder : analyticOrderAt (deriv f) z₀ = n) :
     analyticOrderAt f z₀ = n + 1 := by
-  cases Hn' : analyticOrderAt f z₀ with
-  | top => grind [ENat.coe_ne_top, analyticOrderAt_deriv_eq_top_iff_of_eq_zero]
-  | coe n' =>
-    cases n' with
-    | zero => exact hf.analyticOrderAt_eq_zero.mp Hn' hzero |>.elim
-    | succ n'' =>
-      have := horder ▸ analyticOrderAt_deriv_of_pos hf Hn'
-      norm_cast at this ⊢
-      have hchar : ringChar ℂ = 0 := by aesop
-      aesop
+  match Hn' : analyticOrderAt f z₀ with
+  | none =>
+    have Hn_top : analyticOrderAt f z₀ = ⊤ := Hn'
+    have h_deriv_top := (analyticOrderAt_deriv_eq_top_iff_of_eq_zero z₀ f hf hzero).mpr Hn_top
+    grind [ENat.coe_ne_top]
+  | some 0 =>
+    have Hn_zero : analyticOrderAt f z₀ = 0 := Hn'
+    exact hf.analyticOrderAt_eq_zero.mp Hn_zero hzero |>.elim
+  | some (n'' + 1) =>
+    have Hn_coe : analyticOrderAt f z₀ = ↑(n'' + 1) := Hn'
+    have := horder ▸ analyticOrderAt_deriv_of_pos hf Hn_coe
+    norm_cast at this ⊢
+    have hchar : ringChar ℂ = 0 := by aesop
+    aesop
 
-lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero {z₀ : ℂ} (n : ℕ) :
-  ∀ (f : ℂ → ℂ) (_ : AnalyticAt ℂ f z₀),
-    ((∀ k < n, deriv^[k] f z₀ = 0) ∧ deriv^[n] f z₀ ≠ 0) ↔ analyticOrderAt f z₀ = n := by
-  induction n with
-  | zero =>
-    simp only [ne_eq, not_lt_zero', IsEmpty.forall_iff, implies_true, true_and, CharP.cast_eq_zero]
-    exact fun f hf ↦ (AnalyticAt.analyticOrderAt_eq_zero hf).symm
+lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero {f : ℂ → ℂ} {z₀ : ℂ} {n : ℕ}
+    (hf : AnalyticAt ℂ f z₀) :
+    analyticOrderAt f z₀ = n ↔ (∀ k < n, deriv^[k] f z₀ = 0) ∧ deriv^[n] f z₀ ≠ 0 := by
+  induction n generalizing f with
+  | zero => simpa using (AnalyticAt.analyticOrderAt_eq_zero hf)
   | succ n IH =>
-    refine fun f hf ↦ ⟨fun ⟨hz, hnz⟩ ↦ ?_, ?_⟩
-    · have IH' := IH (deriv f) (AnalyticAt.deriv hf)
-      · exact analyticOrderAt_eq_succ_iff_deriv_order_eq_pred hf (hz 0 (by grind))
-          (by simpa using ((IH').1 ⟨fun k hk => hz (k + 1) (Nat.succ_lt_succ hk), hnz⟩))
+    refine ⟨?_, fun ⟨hz, hnz⟩ ↦ ?_⟩
     · refine fun ho ↦ ⟨fun k hk ↦ (analyticOrderAt_ne_zero.mp ?_).2, ?_⟩
       · grind only [(analyticOrderAt_iterated_deriv (f:=f) hf (n := (n + 1))
           ho.symm (by grind) hk.le), Nat.cast_ne_zero]
       · have := analyticOrderAt_iterated_deriv (f := f) hf (k := n + 1) (n := n + 1)
           ho.symm (by grind) (by omega)
         grind only [AnalyticAt.analyticOrderAt_eq_zero (hf := iterated_deriv hf (n + 1))]
-
-lemma analyticOrderAt_eq_nat_imp_iteratedDeriv_eq_zero {f : ℂ → ℂ} {z₀ : ℂ} (hf : AnalyticAt ℂ f z₀)
-    (n : ℕ) : analyticOrderAt f z₀ = n → (∀ k < n, deriv^[k] f z₀ = 0) ∧ (deriv^[n] f z₀ ≠ 0) :=
-  fun h ↦ (analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero n (f := f) hf).mpr h
+    · have IH' := IH (AnalyticAt.deriv hf)
+      exact analyticOrderAt_deriv_order_eq_succ hf (hz 0 (by grind))
+        (by simpa using (IH'.2 ⟨fun k hk => hz (k + 1) (Nat.succ_lt_succ hk), hnz⟩))
 
 lemma le_analyticOrderAt_iff_iteratedDeriv_eq_zero {f : ℂ → ℂ} {z₀ : ℂ}
     (hf : AnalyticAt ℂ f z₀) (n : ℕ) (ho : analyticOrderAt f z₀ ≠ ⊤) :
@@ -83,4 +81,4 @@ lemma le_analyticOrderAt_iff_iteratedDeriv_eq_zero {f : ℂ → ℂ} {z₀ : ℂ
   obtain ⟨m, Hm⟩ := ENat.ne_top_iff_exists (n := analyticOrderAt f z₀).mp ho
   rw [← Hm, ENat.coe_le_coe]
   by_contra! h
-  exact ((analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero (n := m) f hf).mpr (Hm.symm)).2 (hkn m h)
+  exact ((analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero hf).mp (Hm.symm)).2 (hkn m h)
