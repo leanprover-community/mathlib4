@@ -8,7 +8,7 @@ module
 public import Mathlib.Tactic.Ring
 
 /-!
-# linear_combination' Tactic
+# `linear_combination'` Tactic
 
 In this file, the `linear_combination'` tactic is created.  This tactic, which
 works over `CommRing`s, attempts to simplify the target by creating a linear combination

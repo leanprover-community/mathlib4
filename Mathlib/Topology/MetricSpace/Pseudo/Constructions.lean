@@ -107,18 +107,17 @@ end MulOpposite
 
 section NNReal
 
-instance : PseudoMetricSpace ℝ≥0 := Subtype.pseudoMetricSpace
+instance : PseudoMetricSpace ℝ≥0 :=
+  inferInstanceAs <| PseudoMetricSpace (Subtype _)
 
 lemma NNReal.dist_eq (a b : ℝ≥0) : dist a b = |(a : ℝ) - b| := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma NNReal.nndist_eq (a b : ℝ≥0) : nndist a b = max (a - b) (b - a) :=
   eq_of_forall_ge_iff fun _ => by
     simp only [max_le_iff, tsub_le_iff_right (α := ℝ≥0)]
     simp only [← NNReal.coe_le_coe, coe_nndist, dist_eq, abs_sub_le_iff,
       tsub_le_iff_right, NNReal.coe_add]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma NNReal.nndist_zero_eq_val (z : ℝ≥0) : nndist 0 z = z := by
   simp only [NNReal.nndist_eq, max_eq_right, tsub_zero, zero_tsub, zero_le']
@@ -157,7 +156,8 @@ end NNReal
 namespace ULift
 variable [PseudoMetricSpace β]
 
-instance : PseudoMetricSpace (ULift β) := PseudoMetricSpace.induced ULift.down ‹_›
+instance : PseudoMetricSpace (ULift β) :=
+  fast_instance% PseudoMetricSpace.induced ULift.down ‹_›
 
 lemma dist_eq (x y : ULift β) : dist x y = dist x.down y.down := rfl
 
