@@ -138,7 +138,7 @@ theorem IsSymmetric.restrict_invariant {T : E →ₗ[𝕜] E} (hT : IsSymmetric 
 
 theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
     letI := InnerProductSpace.rclikeToReal 𝕜 E
-    letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
+    haveI := IsScalarTower.restrictScalars ℝ 𝕜 E
     (T.restrictScalars ℝ).IsSymmetric :=
   fun x y => by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars ℝ]
 

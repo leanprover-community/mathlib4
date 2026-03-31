@@ -178,11 +178,11 @@ instance instNonUnitalSubringClass : NonUnitalSubringClass (NonUnitalSubalgebra 
     neg_mem {_ x} hx := neg_one_smul R x ▸ SMulMemClass.smul_mem _ hx }
 
 /-- A non-unital subalgebra over a ring is also a `Subring`. -/
+@[reducible]
 def toNonUnitalSubring (S : NonUnitalSubalgebra R A) : NonUnitalSubring A where
   toNonUnitalSubsemiring := S.toNonUnitalSubsemiring
   neg_mem' := neg_mem (s := S)
 
-@[simp]
 theorem mem_toNonUnitalSubring {S : NonUnitalSubalgebra R A} {x} :
     x ∈ S.toNonUnitalSubring ↔ x ∈ S :=
   Iff.rfl
