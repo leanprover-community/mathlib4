@@ -111,7 +111,6 @@ def single (h : i ≠ j) : R →ₗ[R] sl n R :=
 theorem val_single (h : i ≠ j) (r : R) : (single i j h r).val = Matrix.single i j r :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The matrices with matching positive and negative elements on the diagonal are elements of
 `sl n R`. Along with `single`, a subset of these form a basis for `sl n R`. -/
 def singleSubSingle : R →ₗ[R] sl n R :=
@@ -277,6 +276,7 @@ theorem jd_transform [Fintype l] : (PD l R)ᵀ * JD l R * PD l R = (2 : R) • S
   rw [h, PD, s_as_blocks, Matrix.fromBlocks_multiply, Matrix.fromBlocks_smul]
   simp [two_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pd_inv [Fintype l] [Invertible (2 : R)] : PD l R * ⅟(2 : R) • (PD l R)ᵀ = 1 := by
   rw [PD, Matrix.fromBlocks_transpose, Matrix.fromBlocks_smul,
     Matrix.fromBlocks_multiply]
