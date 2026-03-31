@@ -29,7 +29,7 @@ open ModularForm EisensteinSeries Matrix.SpecialLinearGroup Filter Complex Matri
 
 namespace EisensteinSeries
 
-/-- This is an auxilary summand used to define the Eisenstein serires `G2`. -/
+/-- This is an auxiliary summand used to define the Eisenstein series `G2`. -/
 def e2Summand (m : ℤ) (z : ℍ) : ℂ := ∑' n, eisSummand 2 ![m, n] z
 
 lemma e2Summand_summable (m : ℤ) (z : ℍ) : Summable (fun n ↦ eisSummand 2 ![m, n] z) := by

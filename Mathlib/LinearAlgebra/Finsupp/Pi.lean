@@ -7,15 +7,16 @@ module
 
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Properties of the module `α →₀ M`
 
 * `Finsupp.linearEquivFunOnFinite`: `α →₀ β` and `a → β` are equivalent if `α` is finite
 * `FunOnFinite.map`: the map `(X → M) → (Y → M)` induced by a map `f : X ⟶ Y` when
-`X` and `Y` are finite.
+  `X` and `Y` are finite.
 * `FunOnFinite.linearMmap`: the linear map `(X → M) →ₗ[R] (Y → M)` induced
-by a map `f : X ⟶ Y` when `X` and `Y` are finite.
+  by a map `f : X ⟶ Y` when `X` and `Y` are finite.
 
 ## Tags
 
@@ -68,7 +69,6 @@ variable [AddCommMonoid P] [Module R P]
 /-- Forget that a function is finitely supported.
 
 This is the linear version of `Finsupp.toFun`. -/
-@[simps]
 def lcoeFun : (α →₀ M) →ₗ[R] α → M where
   toFun := (⇑)
   map_add' x y := by
@@ -77,6 +77,12 @@ def lcoeFun : (α →₀ M) →ₗ[R] α → M where
   map_smul' x y := by
     ext
     simp
+
+@[simp] theorem lcoeFun_apply (f : α →₀ M) : lcoeFun (R := R) f = ⇑f := rfl
+
+@[simp] theorem lcoeFun_comp_lsingle [DecidableEq α] (x : α) :
+    lcoeFun ∘ₗ lsingle x = .single R (fun _ ↦ M) x := by
+  ext; simp [single_eq_pi_single]
 
 end Finsupp
 
@@ -102,7 +108,7 @@ def prodOfFinsuppNat : (ℕ →₀ P) →ₗ[R] P × M :=
 
 theorem fst_prodOfFinsuppNat (x : ℕ →₀ P) : (prodOfFinsuppNat f x).1 = x 0 := by
   simp_rw [prodOfFinsuppNat, coe_lsum, sum, Prod.fst_sum]
-  rw [Finset.sum_eq_single 0 (fun n _ hn ↦ ?_) (by simp_all)]
+  rw [Finset.sum_eq_single 0 (fun n _ hn ↦ ?_) (by simp)]
   · simp
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn
   simp [pow_succ']

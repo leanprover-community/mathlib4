@@ -5,7 +5,6 @@ Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Span.Defs
 
