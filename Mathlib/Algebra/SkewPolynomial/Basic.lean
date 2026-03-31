@@ -37,6 +37,18 @@ to saying that `φ` is an endomorphism.
 
 Furthermore, with this notation `φ^[n](a) = (ofAdd n) • a`, see `φ_iterate_apply`.
 
+## Main definitions
+
+* `monomial n a` is the skew polynomial `a X ^ n`. Note that `monomial n` is defined as an
+  `R`-linear map.
+* `C a` is the constant skew polynomial `a`. Note that `C` is defined as a additive homomorphism.
+* `CRingHom a` is the constant skew polynomial `a`, as a ring homomorphism. This requires
+  to assume `[MulSemiringAction (Multiplicative ℕ) R]`.
+* `X` is the skew polynomial `X`, i.e., `monomial 1 1`.
+* `p.sum f` is `∑ n ∈ p.support, f n (p.coeff n)`, i.e., one sums the values of functions applied
+  to coefficients of the polynomial `p`.
+* `coeff p n` is the coefficient of `X ^ n` in `p`.
+
 ## Implementation notes
 
 The implementation uses `Multiplicative ℕ` instead of `ℕ` as some notion
@@ -61,7 +73,6 @@ Skew Polynomials, Twisted Polynomials.
 
 ## TODO :
   - Add algebra instance
-  - Add `ext` lemma in terms of `Coeff`.
 
 Note that [ore33] proposes a more general definition of skew polynomial ring, where the
 multiplication is determined by  $Xa = \varphi (a)X + δ (a)$, where `ϕ` is as above and
@@ -137,7 +148,7 @@ lemma card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
 lemma support_add : (p + q).support ⊆ p.support ∪ q.support := by
   simpa [support, ← Finset.map_union, Finset.map_subset_map] using SkewMonoidAlgebra.support_add
 
-/-- coeff p n is the coefficient of X ^ n in p -/
+/-- `coeff p n` is the coefficient of `X ^ n` in `p`. -/
 def coeff (p : SkewPolynomial R) : ℕ → R := fun n ↦ (SkewMonoidAlgebra.coeff p (ofAdd n))
 
 @[simp]
@@ -146,11 +157,12 @@ lemma mem_support_iff : n ∈ p.support ↔ p.coeff n ≠ 0 := by
 
 lemma notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
 
-/-- Summing the values of a function applied to the coefficients of a polynomial -/
+/-- `p.sum f` is `∑ n ∈ p.support, f n (p.coeff n)`, i.e., one sums the values of functions applied
+  to coefficients of the polynomial `p`. -/
 def sum {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → R → S) : S :=
   SkewMonoidAlgebra.sum p (fun n r ↦ f (toAdd n : ℕ) r)
 
-/-- For a skew polynomial `p`, `p.sum f` can be written in terms of `SkewMonoidAlgebra,sum p`. -/
+/-- For a skew polynomial `p`, `p.sum f` can be written in terms of `SkewMonoidAlgebra.sum p`. -/
 lemma sum_def' {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → R → S) :
     p.sum f = SkewMonoidAlgebra.sum p (fun n r ↦ f (toAdd n : ℕ) r) :=
   rfl
@@ -164,7 +176,6 @@ lemma sum_def {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → 
   · aesop (add norm coeff)
   · simp [coeff]
 
-/- Note: the proof "rw [sum_sum_index] <;> aesop" complains about termination.-/
 lemma sum_sum_index {R' P : Type*} [AddCommMonoid P] [Semiring R']
     {f : SkewPolynomial R} {g : ℕ → R → SkewPolynomial R'} {h : ℕ → R' → P}
     (h_zero : ∀ (a : ℕ), h a 0 = 0)
@@ -181,7 +192,7 @@ lemma sum_zero {N : Type*} [AddCommMonoid N] {f : SkewPolynomial R} :
 
 section Monomial
 
-/-- `monomial s a` is the monomial `a * X^s` -/
+/-- `monomial s a` is the monomial `a * X ^ s`. -/
 def monomial (n : ℕ) : R →ₗ[R] SkewPolynomial R := lsingle (ofAdd n)
 
 lemma monomial_zero_right (n : ℕ) : monomial n (0 : R) = 0 := single_zero _
@@ -254,7 +265,7 @@ lemma mul_def {f g : SkewPolynomial R} [MulSemiringAction (Multiplicative ℕ) R
 
 section Constant
 
-/-- `C a` is the constant SkewPolynomial `a`. `C` is provided as a ring homomorphism. -/
+/-- `C a` is the constant SkewPolynomial `a`. `C` is provided as an additive homomorphism. -/
 def C : R →+ SkewPolynomial R := SkewMonoidAlgebra.singleAddHom 1
 
 @[simp] lemma monomial_zero_left (a : R) : monomial 0 a = C a := rfl
@@ -271,7 +282,8 @@ section RingHom
 
 variable [MulSemiringAction (Multiplicative ℕ) R]
 
-/-- `C a` is the constant SkewPolynomial `a`. `C` is provided as a ring homomorphism. -/
+/-- `CRingHom a` is the constant SkewPolynomial `a`, as a ring homomorphism. This requires
+`[MulSemiringAction (Multiplicative ℕ) R]`. -/
 def CRingHom : R →+* SkewPolynomial R := SkewMonoidAlgebra.singleOneRingHom
 
 lemma CRingHom_eq_C : CRingHom a = C a := rfl
