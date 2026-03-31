@@ -221,7 +221,7 @@ lemma closure_eq_one_union (s : Set M) :
   apply le_antisymm
   · intro x hx
     induction hx using closure_induction with
-    | mem x hx => exact Or.inr <| Subsemigroup.subset_closure hx
+    | mem x hx => exact Or.inr <| SetLike.subset_closure _ hx
     | one => exact Or.inl <| by simp
     | mul x hx y hy hx hy =>
       push _ ∈ _ at hx hy
@@ -229,7 +229,7 @@ lemma closure_eq_one_union (s : Set M) :
       all_goals simp_all [mul_mem]
   · rintro x (hx | hx)
     · exact (show x = 1 by simpa using hx) ▸ one_mem (closure s)
-    · exact Subsemigroup.closure_le.mpr subset_closure hx
+    · exact (SetLike.closure_le (A := (Subsemigroup _))).mpr subset_closure hx
 
 variable (M)
 
