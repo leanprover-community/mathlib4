@@ -724,12 +724,9 @@ theorem image_mem_nhds {f : X → Y} (hf : IsOpenEmbedding f) {s : Set X} {x : X
 theorem accPt_comap_iff
     (hf : IsOpenEmbedding f) {x : X} {l : Filter Y} :
     AccPt x (comap f l) ↔ AccPt (f x) l := by
-  refine ⟨fun h => ?_, hf.isOpenMap.accPt_comap⟩
-  rw [accPt_iff_clusterPt] at h ⊢
-  refine h.map hf.continuous.continuousAt (.inf ?_ ?_)
-  · refine (SurjOn.mapsTo_compl ?_ hf.injective).tendsto
-    simp
-  · exact tendsto_comap
+  rw [accPt_iff_clusterPt, accPt_iff_clusterPt, ← hf.injective.preimage_image {x}, image_singleton,
+    ← preimage_compl, ← comap_principal, ← comap_inf,
+    hf.isOpenMap.clusterPt_comap_iff hf.continuous]
 
 end IsOpenEmbedding
 
