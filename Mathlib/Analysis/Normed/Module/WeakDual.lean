@@ -11,6 +11,7 @@ public import Mathlib.Topology.Algebra.Module.WeakDual
 public import Mathlib.Topology.MetricSpace.PiNat
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 public import Mathlib.Analysis.LocallyConvex.WeakDual
+public import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
 # Weak dual of normed space
@@ -119,45 +120,7 @@ variable [NontriviallyNormedField 𝕜]
 variable [AddCommGroup M] [TopologicalSpace M] [Module 𝕜 M]
 variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-namespace StrongDual
-
-section
-
-variable {R M : Type*} [CommSemiring R] [TopologicalSpace R] [ContinuousAdd R]
-variable [ContinuousConstSMul R R] [AddCommMonoid M] [TopologicalSpace M] [Module R M]
-
-/-- For vector spaces `M`, there is a canonical map `StrongDual R M → WeakDual R M` (the "identity"
-mapping). It is a linear equivalence. -/
-def toWeakDual : StrongDual R M ≃ₗ[R] WeakDual R M :=
-  LinearEquiv.refl R (StrongDual R M)
-
-theorem coe_toWeakDual (x' : StrongDual R M) : (toWeakDual x' : M → R) = x' := rfl
-
-@[simp]
-theorem toWeakDual_apply (x' : StrongDual R M) (y : M) : (toWeakDual x') y = x' y := rfl
-
-theorem toWeakDual_inj (x' y' : StrongDual R M) : toWeakDual x' = toWeakDual y' ↔ x' = y' :=
-  (LinearEquiv.injective toWeakDual).eq_iff
-
-end
-
-end StrongDual
-
 namespace WeakDual
-
-/-- For vector spaces `E`, there is a canonical map `WeakDual 𝕜 E → StrongDual 𝕜 E` (the "identity"
-mapping). It is a linear equivalence. Here it is implemented as the inverse of the linear
-equivalence `StrongDual.toWeakDual` in the other direction. -/
-def toStrongDual : WeakDual 𝕜 M ≃ₗ[𝕜] StrongDual 𝕜 M :=
-  StrongDual.toWeakDual.symm
-
-@[simp]
-theorem toStrongDual_apply (x : WeakDual 𝕜 M) (y : M) : (toStrongDual x) y = x y := rfl
-
-theorem coe_toStrongDual (x' : WeakDual 𝕜 M) : (toStrongDual x' : M → 𝕜) = x' := rfl
-
-theorem toStrongDual_inj (x' y' : WeakDual 𝕜 M) : toStrongDual x' = toStrongDual y' ↔ x' = y' :=
-  (LinearEquiv.injective toStrongDual).eq_iff
 
 section Bornology
 
