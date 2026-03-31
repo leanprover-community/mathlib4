@@ -182,7 +182,7 @@ theorem mkSpanSingleton_apply (K L : Type*) {E F : Type*} [DivisionRing K] [Divi
     {σ : K →+* L} [AddCommGroup E] [Module K E] [AddCommGroup F] [Module L F] {x : E} (hx : x ≠ 0)
     (y : F) :
     (mkSpanSingleton x y hx : E →ₛₗ.[σ] F)
-     ⟨x, (Submodule.mem_span_singleton_self x : x ∈ Submodule.span K {x})⟩ = y :=
+      ⟨x, (Submodule.mem_span_singleton_self x : x ∈ Submodule.span K {x})⟩ = y :=
   LinearPMap.mkSpanSingleton'_apply_self _ _ _ _
 
 /-- Projection to the first coordinate as a `LinearPMap` -/
