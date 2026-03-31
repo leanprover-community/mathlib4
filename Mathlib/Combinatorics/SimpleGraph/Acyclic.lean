@@ -522,20 +522,25 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
 theorem IsTree.exists_ne_degree_eq_one [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
     (hTree : G.IsTree) :
     ∃ v1 v2, v1 ≠ v2 ∧ G.degree v1 = 1 ∧ G.degree v2 = 1 := by
+  -- Get the longest possible path `p` between some `u` and `v`.
   have ⟨u, v, p, hp_isPath, hp_max⟩ := exists_isPath_forall_isPath_length_le_length G
   obtain ⟨x, y, hxy⟩ := exists_pair_ne V
   have ⟨walk_xy, h_walk_is_path⟩ := hTree.isConnected.exists_isPath x y
   have h_len_ge_1 : 1 ≤ p.length := by grind [nil_iff_length_eq, walk_xy.not_nil_of_ne hxy]
   classical
+  -- Helper: Proves the start of a maximal path has degree 1.
   let h_is_leaf (v1 v2 : V) (path : G.Walk v1 v2) (h_p : path.IsPath)
       (h_m : ∀ (x y : V) (w : G.Walk x y), w.IsPath → w.length ≤ path.length)
       (h_len_ge_1 : 1 ≤ path.length) : G.degree v1 = 1 := by
+    -- Assume degree isn't 1 for a proof by contradiction
     by_contra h_deg_not_1
     have h_ge_2 : 2 ≤ G.degree v1 := by
       have h_pos : 0 < G.degree v1 := G.degree_pos_iff_exists_adj v1 |>.mpr
         ⟨_, path.adj_snd <| not_nil_iff_lt_length.mpr <| by lia⟩
       lia
+    -- Find a neighbor `w` that isn't the next vertex on the path.
     obtain ⟨w, hw_not_next, hw_adj⟩ := exists_neighbor_ne_of_one_lt_degree h_ge_2 (path.getVert 1)
+    -- Prove `w` isn't already in the path (which would create a cycle)
     have hw_not_in_p: w ∉ path.support := by
       by_contra hw_in_p
       have h_acyclic := hTree.IsAcyclic
@@ -547,6 +552,7 @@ theorem IsTree.exists_ne_degree_eq_one [Fintype V] [Nontrivial V] [DecidableRel 
       have hp2_path : p2.IsPath := h_p.takeUntil hw_in_p
       let path1 : G.Path v1 w := ⟨p1, hp1_path⟩
       let path2 : G.Path v1 w := ⟨p2, hp2_path⟩
+      -- Verify the single edge to `w` and path to `w` are different.
       have h_ne : p1 ≠ p2 := by
         rintro h_eq
         have h_len : p1.length = p2.length := by rw [h_eq]
@@ -555,10 +561,13 @@ theorem IsTree.exists_ne_degree_eq_one [Fintype V] [Nontrivial V] [DecidableRel 
           rw [h_len, h_p2_def, path.getVert_length_takeUntil]
         exact hw_not_next h1
       apply h_ne
+      -- Contradiction: Trees are acyclic, so paths must be unique.
       exact Subtype.val_inj.mpr (h_acyclic path1 path2)
+    -- Extend the path with `w`, contradicting that `p` was the maximal path.
     let p_ext := (SimpleGraph.Walk.cons' w v1 v2 hw_adj.symm path)
     have h_ext_path : p_ext.IsPath := (SimpleGraph.Walk.cons_isPath_iff _ _).mpr ⟨h_p, hw_not_in_p⟩
     exact (Nat.not_succ_le_self path.length (h_m w v2 p_ext h_ext_path)).elim
+  -- Prove the start and end of the longest path have degree 1.
   refine ⟨u, v, ?_, ?_, ?_⟩
   · rintro rfl
     cases p with
