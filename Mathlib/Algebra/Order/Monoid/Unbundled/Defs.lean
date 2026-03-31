@@ -300,7 +300,7 @@ instance (priority := 100) Group.covconv [Group N] [CovariantClass N N (· * ·)
   ⟨Group.covariant_iff_contravariant.mp CovariantClass.elim⟩
 
 @[to_additive]
-theorem Group.mulLeftReflectLE_of_mulLeftMono [Group N] [LE N]
+instance Group.mulLeftReflectLE_of_mulLeftMono [Group N] [LE N]
     [MulLeftMono N] : MulLeftReflectLE N where
   elim := Group.covariant_iff_contravariant.mp CovariantClass.elim
 
@@ -325,7 +325,7 @@ instance (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swa
   ⟨Group.covariant_swap_iff_contravariant_swap.mp CovariantClass.elim⟩
 
 @[to_additive]
-theorem Group.mulRightReflectLE_of_mulRightMono [Group N] [LE N]
+instance Group.mulRightReflectLE_of_mulRightMono [Group N] [LE N]
     [MulRightMono N] : MulRightReflectLE N where
   elim := Group.covariant_swap_iff_contravariant_swap.mp CovariantClass.elim
 
@@ -484,12 +484,12 @@ instance covariant_lt_of_contravariant_le [LinearOrder N]
   elim := (covariant_lt_iff_contravariant_le N N mu).mpr ContravariantClass.elim
 
 @[to_additive]
-theorem mulLeftStrictMono_of_mulLeftReflectLE [Mul N] [LinearOrder N] [MulLeftReflectLE N] :
+instance mulLeftStrictMono_of_mulLeftReflectLE [Mul N] [LinearOrder N] [MulLeftReflectLE N] :
     MulLeftStrictMono N where
   elim := covariant_lt_iff_contravariant_le .. |>.mpr MulLeftReflectLE.elim
 
 @[to_additive]
-theorem mulRightStrictMono_of_mulRightReflectLE [Mul N] [LinearOrder N] [MulRightReflectLE N] :
+instance mulRightStrictMono_of_mulRightReflectLE [Mul N] [LinearOrder N] [MulRightReflectLE N] :
     MulRightStrictMono N where
   elim := covariant_lt_iff_contravariant_le .. |>.mpr MulRightReflectLE.elim
 
