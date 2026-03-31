@@ -69,7 +69,7 @@ lemma IsHermitian.im_star_dotProduct_mulVec_self [Fintype n] (hA : A.IsHermitian
 
 end Matrix
 
-/-- A linear map is self adjoint iff the corresponding matrix with an orthonormal basis is
+/-- A linear map is symmetric iff the corresponding matrix with an orthonormal basis is
 Hermitian. -/
 @[simp]
 lemma LinearMap.isHermitian_toMatrix_iff {n 𝕜 E : Type*} [Fintype n] [DecidableEq n] [RCLike 𝕜]
