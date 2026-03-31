@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Metric
 
@@ -137,7 +138,6 @@ lemma IsAcyclic.isTree_connectedComponent (h : G.IsAcyclic) (c : G.ConnectedComp
   connected := c.connected_toSimpleGraph
   isAcyclic := h.comap c.toSimpleGraph_hom <| by simp [ConnectedComponent.toSimpleGraph_hom]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsAcyclic.of_card_le_two (h : ENat.card V ≤ 2) : G.IsAcyclic := by
   intro v p hp
   have := hp.three_le_length
@@ -409,7 +409,6 @@ lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
   refine h.le_of_ge ⟨?_, h.prop.right.isAcyclic_sup_fromEdgeSet_of_not_reachable this⟩ le_sup_left
   grind [Maximal, sup_le, le_iff_adj, fromEdgeSet_adj, huv.symm]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A subgraph is maximal acyclic iff its reachability relation agrees with the larger graph. -/
 theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hle : F ≤ G) (hF : F.IsAcyclic) :
     Maximal (fun F ↦ F ≤ G ∧ F.IsAcyclic) F ↔ F.Reachable = G.Reachable := by
@@ -639,5 +638,21 @@ lemma IsAcyclic.chromaticNumber_le_two (hG : G.IsAcyclic) : G.chromaticNumber �
 /-- The chromatic number of a tree is at most 2. -/
 lemma IsTree.chromaticNumber_le_two (hG : G.IsTree) : G.chromaticNumber ≤ 2 :=
   hG.colorable_two.chromaticNumber_le
+
+lemma exists_isCycle_of_two_le_isEdgeReachable {u v : V} (huv : u ≠ v) {n : ℕ} (hn : 2 ≤ n)
+    (h : G.IsEdgeReachable n u v) : ∃ w : G.Walk u u, w.IsCycle := by
+  classical
+  obtain ⟨w, hw, h⟩ := exists_adj_isEdgeReachable_two huv (h.anti hn)
+  have := @h {s(u, w)} (by simp)
+  obtain ⟨w, p, hp₁, hp₂⟩ := adj_and_reachable_delete_edges_iff_exists_cycle.mp ⟨hw, this⟩
+  exact ⟨p.rotate _ (p.fst_mem_support_of_mem_edges hp₂), IsCycle.rotate hp₁ _⟩
+
+lemma isAcyclic_iff_pairwise_not_isEdgeReachable_two :
+    G.IsAcyclic ↔ Pairwise (¬G.IsEdgeReachable 2 · ·) := by
+  refine ⟨fun h _ _ hne he ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨w, hw⟩ := exists_isCycle_of_two_le_isEdgeReachable hne le_rfl he
+    exact h w hw
+  · refine isAcyclic_iff_forall_adj_isBridge.mpr fun _ _ hadj ↦ ?_
+    exact isBridge_iff_adj_and_not_isEdgeConnected_two.mpr ⟨hadj, h hadj.ne⟩
 
 end SimpleGraph

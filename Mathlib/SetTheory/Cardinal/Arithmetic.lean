@@ -46,10 +46,9 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
   -- the only nontrivial part is `c * c ≤ c`. We prove it inductively.
   refine Acc.recOn (Cardinal.lt_wf.apply c) (fun c _ => Cardinal.inductionOn c fun α IH ol => ?_) h
   -- consider the minimal well-order `r` on `α` (a type with cardinality `c`).
-  rcases ord_eq α with ⟨r, wo, e⟩
+  rcases exists_ord_eq α with ⟨r, wo, e⟩
   classical
   letI := linearOrderOfSTO r
-  haveI : IsWellOrder α (· < ·) := wo
   -- Define an order `s` on `α × α` by writing `(a, b) < (c, d)` if `max a b < max c d`, or
   -- the max are equal and `a < c`, or the max are equal and `a = c` and `b < d`.
   let g : α × α → α := fun p => max p.1 p.2
@@ -149,7 +148,7 @@ theorem mul_eq_max_of_aleph0_le_left {a b : Cardinal} (h : ℵ₀ ≤ a) (h' : b
   refine (mul_le_max_of_aleph0_le_left h).antisymm ?_
   have : b ≤ a := hb.le.trans h
   rw [max_eq_left this]
-  convert mul_le_mul_right (one_le_iff_ne_zero.mpr h') a
+  convert mul_le_mul_right (Cardinal.one_le_iff_ne_zero.mpr h') a
   rw [mul_one]
 
 theorem mul_le_max_of_aleph0_le_right {a b : Cardinal} (h : ℵ₀ ≤ b) : a * b ≤ max a b := by
@@ -183,7 +182,7 @@ theorem mul_eq_right {a b : Cardinal} (hb : ℵ₀ ≤ b) (ha : a ≤ b) (ha' : 
   rw [mul_comm, mul_eq_left hb ha ha']
 
 theorem le_mul_left {a b : Cardinal} (h : b ≠ 0) : a ≤ b * a := by
-  convert mul_le_mul_left (one_le_iff_ne_zero.mpr h) a
+  convert mul_le_mul_left (Cardinal.one_le_iff_ne_zero.mpr h) a
   rw [one_mul]
 
 theorem le_mul_right {a b : Cardinal} (h : b ≠ 0) : a ≤ a * b := by
@@ -221,7 +220,7 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
     · contradiction
     · contradiction
     rw [← Ne] at h2a
-    rw [← one_le_iff_ne_zero] at h2a hb
+    rw [← Cardinal.one_le_iff_ne_zero] at h2a hb
     norm_cast at h2a hb h ⊢
     apply le_antisymm _ hb
     rw [← not_lt]
@@ -437,9 +436,6 @@ theorem sum_eq_iSup_of_mk_le_iSup {f : ι → Cardinal.{u}} (hι : ℵ₀ ≤ #�
     sum f = ⨆ i, f i :=
   sum_eq_iSup_of_lift_mk_le_iSup hι ((lift_id #ι).symm ▸ h)
 
-@[deprecated (since := "2025-09-06")] alias sum_eq_iSup_lift := sum_eq_iSup_of_lift_mk_le_iSup
-@[deprecated (since := "2025-09-06")] alias sum_eq_iSup := sum_eq_iSup_of_mk_le_iSup
-
 end ciSup
 
 /-! ### Properties of `aleph` -/
@@ -595,10 +591,7 @@ lemma power_le_aleph0 {a b : Cardinal.{u}} (ha : a ≤ ℵ₀) (hb : b < ℵ₀)
 theorem powerlt_aleph0 {c : Cardinal} (h : ℵ₀ ≤ c) : c ^< ℵ₀ = c := by
   apply le_antisymm
   · rw [powerlt_le]
-    intro c'
-    rw [lt_aleph0]
-    rintro ⟨n, rfl⟩
-    apply power_nat_le h
+    exact fun _ a ↦ pow_le h a
   convert le_powerlt c one_lt_aleph0; rw [power_one]
 
 theorem powerlt_aleph0_le (c : Cardinal) : c ^< ℵ₀ ≤ max c ℵ₀ := by

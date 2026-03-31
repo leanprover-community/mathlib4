@@ -563,9 +563,8 @@ end
 set_option backward.privateInPublic true in
 private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) :
     ∃ f : ↥(sSup (domain '' c)) →ₗ[R] F, (⟨_, f⟩ : E →ₗ.[R] F) ∈ upperBounds c := by
-  rcases c.eq_empty_or_nonempty with ceq | cne
-  · subst c
-    simp
+  rcases c.eq_empty_or_nonempty with rfl | cne
+  · simp
   have hdir : DirectedOn (· ≤ ·) (domain '' c) :=
     directedOn_image.2 (hc.mono @(domain_mono.monotone))
   have P : ∀ x : ↥(sSup (domain '' c)), { p : c // (x : E) ∈ p.val.domain } := by
